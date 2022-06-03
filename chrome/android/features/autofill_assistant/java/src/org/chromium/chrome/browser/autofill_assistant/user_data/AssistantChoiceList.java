@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayout;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -21,11 +19,14 @@ import android.widget.Space;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.gridlayout.widget.GridLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.ui.widget.TintedDrawable;
+import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.ArrayList;
@@ -73,6 +74,13 @@ public class AssistantChoiceList extends GridLayout {
      * If true, the list will have an additional 'add' button at the end.
      */
     private final boolean mCanAddItems;
+
+    /**
+     * |mLayoutHasEditButton| is true if the custom view parameter |layout_has_edit_button| was not
+     * set to false.
+     */
+    private final boolean mLayoutHasEditButton;
+
     /**
      * |mAddButton| and |mAddButtonLabel| are guaranteed to be non-null if |mCanAddItems| is true.
      */
@@ -98,16 +106,17 @@ public class AssistantChoiceList extends GridLayout {
      * Constructor for use in Java code.
      */
     public AssistantChoiceList(Context context, AttributeSet attrs, @Nullable String addButtonText,
-            int rowSpacingInPixels, int columnSpacingInPixels) {
+            int rowSpacingInPixels, int columnSpacingInPixels, boolean layoutHasEditButton) {
         super(context, attrs);
         mCanAddItems = addButtonText != null;
+        mLayoutHasEditButton = layoutHasEditButton;
         mRowSpacing = rowSpacingInPixels;
         mColumnSpacing = columnSpacingInPixels;
         mMinimumTouchTargetSize = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_minimum_touch_target_size);
 
         // One column for the radio buttons, one for the content, one for the edit buttons.
-        setColumnCount(3);
+        setColumnCount(mLayoutHasEditButton ? 3 : 2);
 
         if (mCanAddItems) {
             mAddButton = createAddButtonIcon();
@@ -131,7 +140,8 @@ public class AssistantChoiceList extends GridLayout {
                         ? a.getString(R.styleable.AssistantChoiceList_add_button_text)
                         : null,
                 a.getDimensionPixelSize(R.styleable.AssistantChoiceList_row_spacing, 0),
-                a.getDimensionPixelSize(R.styleable.AssistantChoiceList_column_spacing, 0));
+                a.getDimensionPixelSize(R.styleable.AssistantChoiceList_column_spacing, 0),
+                a.getBoolean(R.styleable.AssistantChoiceList_layout_has_edit_button, true));
         a.recycle();
     }
 
@@ -191,6 +201,9 @@ public class AssistantChoiceList extends GridLayout {
     public void addItem(View view, boolean hasEditButton,
             @Nullable Callback<Boolean> itemSelectedListener, @Nullable Runnable itemEditedListener,
             @DrawableRes int editButtonDrawable, String editButtonContentDescription) {
+        assert !(!mLayoutHasEditButton && hasEditButton)
+            : "This AssistantChoiceList does not support edit buttons";
+
         CompoundButton radioButton =
                 mAllowMultipleChoices ? new CheckBox(getContext()) : new RadioButton(getContext());
         radioButton.setPadding(0, 0, mColumnSpacing, 0);
@@ -205,18 +218,20 @@ public class AssistantChoiceList extends GridLayout {
 
         View editButton = null;
         LinearLayout spacer = null;
-        if (hasEditButton) {
-            editButton = createEditButton(editButtonDrawable, editButtonContentDescription);
-            editButton.setOnClickListener(unusedView -> {
-                if (itemEditedListener != null) {
-                    itemEditedListener.run();
-                }
-            });
-            addViewInternal(editButton, viewIndex++, createEditButtonLayoutParams());
-        } else {
-            spacer = createMinimumTouchSizeContainer();
-            spacer.addView(new Space(getContext()));
-            addViewInternal(spacer, viewIndex++, createEditButtonLayoutParams());
+        if (mLayoutHasEditButton) {
+            if (hasEditButton) {
+                editButton = createEditButton(editButtonDrawable, editButtonContentDescription);
+                editButton.setOnClickListener(unusedView -> {
+                    if (itemEditedListener != null) {
+                        itemEditedListener.run();
+                    }
+                });
+                addViewInternal(editButton, viewIndex++, createEditButtonLayoutParams());
+            } else {
+                spacer = createMinimumTouchSizeContainer();
+                spacer.addView(new Space(getContext()));
+                addViewInternal(spacer, viewIndex++, createEditButtonLayoutParams());
+            }
         }
 
         Item item = new Item(radioButton, itemSelectedListener, view, editButton, spacer);
@@ -360,7 +375,7 @@ public class AssistantChoiceList extends GridLayout {
     private TextView createAddButtonLabel(String addButtonText) {
         TextView addButtonLabel = new TextView(getContext());
         ApiCompatibilityUtils.setTextAppearance(
-                addButtonLabel, R.style.TextAppearance_BlueButtonText2);
+                addButtonLabel, R.style.TextAppearance_Button_Text_Blue);
         addButtonLabel.setText(addButtonText);
         addButtonLabel.setOnClickListener(unusedView -> {
             if (mAddButtonListener != null) {
@@ -410,6 +425,7 @@ public class AssistantChoiceList extends GridLayout {
         editButton.setLayoutParams(new ViewGroup.LayoutParams(editButtonSize, editButtonSize));
 
         LinearLayout editButtonLayout = createMinimumTouchSizeContainer();
+        editButtonLayout.setTag(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON);
         editButtonLayout.setGravity(Gravity.CENTER);
         editButtonLayout.addView(editButton);
         editButtonLayout.setContentDescription(editButtonContentDescription);

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+[RuntimeEnabled=WebXRHitTestEntityTypes]
 enum XRHitTestTrackableType {
   "point",
   "plane"
@@ -9,6 +10,6 @@ enum XRHitTestTrackableType {
 
 dictionary XRHitTestOptionsInit {
   required XRSpace space;
-  FrozenArray<XRHitTestTrackableType> entityTypes;
+  [RuntimeEnabled=WebXRHitTestEntityTypes] FrozenArray<XRHitTestTrackableType> entityTypes;
   XRRay offsetRay;
 };

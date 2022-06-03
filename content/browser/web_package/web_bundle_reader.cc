@@ -6,10 +6,10 @@
 
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_math.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/web_package/web_bundle_blob_data_source.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -19,14 +19,15 @@
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/web_package/signed_exchange_request_matcher.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
 namespace content {
 
 WebBundleReader::SharedFile::SharedFile(
     std::unique_ptr<WebBundleSource> source) {
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           [](std::unique_ptr<WebBundleSource> source)
               -> std::unique_ptr<base::File> { return source->OpenFile(); },
@@ -55,9 +56,8 @@ base::File* WebBundleReader::SharedFile::operator->() {
 WebBundleReader::SharedFile::~SharedFile() {
   // Move the last reference to |file_| that leads an internal blocking call
   // that is not permitted here.
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce([](std::unique_ptr<base::File> file) {},
                      std::move(file_)));
 }
@@ -68,8 +68,8 @@ void WebBundleReader::SharedFile::SetFile(std::unique_ptr<base::File> file) {
   if (duplicate_callback_.is_null())
     return;
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           [](base::File* file) -> base::File { return file->Duplicate(); },
           file_.get()),
@@ -94,6 +94,9 @@ class WebBundleReader::SharedFileDataSource final
       error_ = MOJO_RESULT_INVALID_ARGUMENT;
     }
   }
+
+  SharedFileDataSource(const SharedFileDataSource&) = delete;
+  SharedFileDataSource& operator=(const SharedFileDataSource&) = delete;
 
  private:
   // Implements mojo::DataPipeProducer::DataSource. Following methods are called
@@ -130,8 +133,6 @@ class WebBundleReader::SharedFileDataSource final
   MojoResult error_;
   const uint64_t offset_;
   const uint64_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedFileDataSource);
 };
 
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)
@@ -150,7 +151,7 @@ WebBundleReader::WebBundleReader(
     : source_(std::move(source)),
       parser_(std::make_unique<data_decoder::SafeWebBundleParser>()) {
   DCHECK(source_->is_network());
-  mojo::PendingRemote<data_decoder::mojom::BundleDataSource> pending_remote;
+  mojo::PendingRemote<web_package::mojom::BundleDataSource> pending_remote;
   blob_data_source_ = std::make_unique<WebBundleBlobDataSource>(
       content_length, std::move(outer_response_body), std::move(endpoints),
       std::move(blob_context_getter));
@@ -188,30 +189,30 @@ void WebBundleReader::ReadResponse(
 
   auto it = entries_.find(net::SimplifyUrlForRequest(resource_request.url));
   if (it == entries_.end() || it->second->response_locations.empty()) {
-    PostTask(
+    base::ThreadPool::PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback), nullptr,
-            data_decoder::mojom::BundleResponseParseError::New(
-                data_decoder::mojom::BundleParseErrorType::kParserInternalError,
+            web_package::mojom::BundleResponseParseError::New(
+                web_package::mojom::BundleParseErrorType::kParserInternalError,
                 "Not found in Web Bundle file.")));
     return;
   }
-  const data_decoder::mojom::BundleIndexValuePtr& entry = it->second;
+  const web_package::mojom::BundleIndexValuePtr& entry = it->second;
 
   size_t response_index = 0;
   if (!entry->variants_value.empty()) {
     // Select the best variant for the request.
-    blink::SignedExchangeRequestMatcher matcher(resource_request.headers,
-                                                accept_langs);
+    blink::WebPackageRequestMatcher matcher(resource_request.headers,
+                                            accept_langs);
     auto found = matcher.FindBestMatchingIndex(entry->variants_value);
     if (!found || *found >= entry->response_locations.size()) {
-      PostTask(
+      base::ThreadPool::PostTask(
           FROM_HERE,
           base::BindOnce(
               std::move(callback), nullptr,
-              data_decoder::mojom::BundleResponseParseError::New(
-                  data_decoder::mojom::BundleParseErrorType::
+              web_package::mojom::BundleResponseParseError::New(
+                  web_package::mojom::BundleParseErrorType::
                       kParserInternalError,
                   "Cannot find a response that matches request headers.")));
       return;
@@ -233,7 +234,7 @@ void WebBundleReader::ReadResponse(
 }
 
 void WebBundleReader::ReadResponseInternal(
-    data_decoder::mojom::BundleResponseLocationPtr location,
+    web_package::mojom::BundleResponseLocationPtr location,
     ResponseCallback callback) {
   parser_->ParseResponse(
       location->offset, location->length,
@@ -252,38 +253,38 @@ void WebBundleReader::Reconnect() {
     return;
   }
   DCHECK(source_->is_network());
-  mojo::PendingRemote<data_decoder::mojom::BundleDataSource> pending_remote;
+  mojo::PendingRemote<web_package::mojom::BundleDataSource> pending_remote;
   blob_data_source_->AddReceiver(
       pending_remote.InitWithNewPipeAndPassReceiver());
   parser_->OpenDataSource(std::move(pending_remote));
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&WebBundleReader::DidReconnect, this,
-                                base::nullopt /* error */));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&WebBundleReader::DidReconnect, this,
+                                absl::nullopt /* error */));
 }
 
 void WebBundleReader::ReconnectForFile(base::File file) {
   base::File::Error file_error = parser_->OpenFile(std::move(file));
-  base::Optional<std::string> error;
+  absl::optional<std::string> error;
   if (file_error != base::File::FILE_OK)
     error = base::File::ErrorToString(file_error);
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&WebBundleReader::DidReconnect, this, std::move(error)));
 }
 
-void WebBundleReader::DidReconnect(base::Optional<std::string> error) {
+void WebBundleReader::DidReconnect(absl::optional<std::string> error) {
   DCHECK_EQ(state_, State::kDisconnected);
   DCHECK(parser_);
   auto read_tasks = std::move(pending_read_responses_);
 
   if (error) {
     for (auto& pair : read_tasks) {
-      PostTask(
+      base::ThreadPool::PostTask(
           FROM_HERE,
           base::BindOnce(std::move(pair.second), nullptr,
-                         data_decoder::mojom::BundleResponseParseError::New(
-                             data_decoder::mojom::BundleParseErrorType::
+                         web_package::mojom::BundleResponseParseError::New(
+                             web_package::mojom::BundleParseErrorType::
                                  kParserInternalError,
                              *error)));
     }
@@ -298,7 +299,7 @@ void WebBundleReader::DidReconnect(base::Optional<std::string> error) {
 }
 
 void WebBundleReader::ReadResponseBody(
-    data_decoder::mojom::BundleResponsePtr response,
+    web_package::mojom::BundleResponsePtr response,
     mojo::ScopedDataPipeProducerHandle producer_handle,
     BodyCompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -352,12 +353,12 @@ void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
   DCHECK(source_->is_trusted_file() || source_->is_file());
   base::File::Error error = parser_->OpenFile(std::move(file));
   if (base::File::FILE_OK != error) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            data_decoder::mojom::BundleMetadataParseError::New(
-                data_decoder::mojom::BundleParseErrorType::kParserInternalError,
+            web_package::mojom::BundleMetadataParseError::New(
+                web_package::mojom::BundleParseErrorType::kParserInternalError,
                 GURL() /* fallback_url */, base::File::ErrorToString(error))));
   } else {
     parser_->ParseMetadata(base::BindOnce(&WebBundleReader::OnMetadataParsed,
@@ -368,8 +369,8 @@ void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
 
 void WebBundleReader::OnMetadataParsed(
     MetadataCallback callback,
-    data_decoder::mojom::BundleMetadataPtr metadata,
-    data_decoder::mojom::BundleMetadataParseErrorPtr error) {
+    web_package::mojom::BundleMetadataPtr metadata,
+    web_package::mojom::BundleMetadataParseErrorPtr error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kInitial);
 
@@ -386,8 +387,8 @@ void WebBundleReader::OnMetadataParsed(
 
 void WebBundleReader::OnResponseParsed(
     ResponseCallback callback,
-    data_decoder::mojom::BundleResponsePtr response,
-    data_decoder::mojom::BundleResponseParseErrorPtr error) {
+    web_package::mojom::BundleResponsePtr response,
+    web_package::mojom::BundleResponseParseErrorPtr error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kInitial);
 

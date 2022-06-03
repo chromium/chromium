@@ -27,6 +27,8 @@ import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.media.MediaNotificationController;
+import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.services.media_session.MediaPosition;
 
@@ -39,10 +41,10 @@ import org.chromium.services.media_session.MediaPosition;
         // Remove this after updating to a version of Robolectric that supports
         // notification channel creation. crbug.com/774315
         sdk = Build.VERSION_CODES.N_MR1, shadows = MediaNotificationTestShadowResources.class)
-public class MediaNotificationManagerNotificationTest extends MediaNotificationManagerTestBase {
+public class MediaNotificationManagerNotificationTest extends MediaNotificationTestBase {
     @Test
     public void updateNotificationBuilderDisplaysCorrectMetadata_PreN_NonEmptyArtistAndAlbum() {
-        MediaNotificationManager.sOverrideIsRunningNForTesting = false;
+        MediaNotificationController.sOverrideIsRunningNForTesting = false;
 
         mMediaNotificationInfoBuilder.setMetadata(new MediaMetadata("title", "artist", "album"));
         mMediaNotificationInfoBuilder.setOrigin("https://example.com/");
@@ -71,7 +73,7 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
 
     @Test
     public void updateNotificationBuilderDisplaysCorrectMetadata_PreN_EmptyArtistAndAlbum() {
-        MediaNotificationManager.sOverrideIsRunningNForTesting = false;
+        MediaNotificationController.sOverrideIsRunningNForTesting = false;
 
         mMediaNotificationInfoBuilder.setMetadata(new MediaMetadata("title", "", ""));
         mMediaNotificationInfoBuilder.setOrigin("https://example.com/");
@@ -95,7 +97,7 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
 
     @Test
     public void updateNotificationBuilderDisplaysCorrectMetadata_AtLeastN_EmptyArtistAndAlbum() {
-        MediaNotificationManager.sOverrideIsRunningNForTesting = true;
+        MediaNotificationController.sOverrideIsRunningNForTesting = true;
 
         mMediaNotificationInfoBuilder.setMetadata(new MediaMetadata("title", "", ""));
         mMediaNotificationInfoBuilder.setOrigin("https://example.com/");
@@ -149,13 +151,13 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
         if (hasNApis()) {
             assertNull(notification.getLargeIcon());
         }
-        assertNull(getManager().mDefaultNotificationLargeIcon);
+        assertNull(getController().mDefaultNotificationLargeIcon);
     }
 
     @Test
     public void updateNotificationBuilderDisplaysCorrectLargeIcon_WithoutLargeIcon_PreN() {
-        MediaNotificationManager.sOverrideIsRunningNForTesting = false;
-        assertNull(getManager().mDefaultNotificationLargeIcon);
+        MediaNotificationController.sOverrideIsRunningNForTesting = false;
+        assertNull(getController().mDefaultNotificationLargeIcon);
 
         mMediaNotificationInfoBuilder.setNotificationLargeIcon(null);
 
@@ -165,9 +167,9 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
                         .build();
         Notification notification = updateNotificationBuilderAndBuild(info);
 
-        assertNotNull(getManager().mDefaultNotificationLargeIcon);
+        assertNotNull(getController().mDefaultNotificationLargeIcon);
         if (hasNApis()) {
-            assertTrue(getManager().mDefaultNotificationLargeIcon.sameAs(
+            assertTrue(getController().mDefaultNotificationLargeIcon.sameAs(
                     iconToBitmap(notification.getLargeIcon())));
         }
     }
@@ -238,12 +240,12 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
         mMediaNotificationInfoBuilder.setPaused(false);
         mMediaNotificationInfoBuilder.setMediaPosition(position);
         mMediaNotificationInfoBuilder.setPrivate(false);
-        getManager().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
+        getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
 
-        MediaMetadataCompat metadata = getManager().createMetadata();
+        MediaMetadataCompat metadata = getController().createMetadata();
         assertEquals(10, metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
 
-        PlaybackStateCompat state = getManager().createPlaybackState();
+        PlaybackStateCompat state = getController().createPlaybackState();
         assertEquals(PlaybackStateCompat.STATE_PLAYING, state.getState());
         assertEquals(2.0f, state.getPlaybackSpeed(), 0);
         assertEquals(5, state.getPosition());
@@ -256,12 +258,12 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
         mMediaNotificationInfoBuilder.setPaused(true);
         mMediaNotificationInfoBuilder.setMediaPosition(position);
         mMediaNotificationInfoBuilder.setPrivate(false);
-        getManager().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
+        getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
 
-        MediaMetadataCompat metadata = getManager().createMetadata();
+        MediaMetadataCompat metadata = getController().createMetadata();
         assertEquals(10, metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
 
-        PlaybackStateCompat state = getManager().createPlaybackState();
+        PlaybackStateCompat state = getController().createPlaybackState();
         assertEquals(PlaybackStateCompat.STATE_PAUSED, state.getState());
         assertEquals(2.0f, state.getPlaybackSpeed(), 0);
         assertEquals(5, state.getPosition());
@@ -272,12 +274,12 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
     public void mediaPosition_Missing() {
         mMediaNotificationInfoBuilder.setPaused(false);
         mMediaNotificationInfoBuilder.setPrivate(false);
-        getManager().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
+        getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
 
-        MediaMetadataCompat metadata = getManager().createMetadata();
+        MediaMetadataCompat metadata = getController().createMetadata();
         assertFalse(metadata.containsKey(MediaMetadataCompat.METADATA_KEY_DURATION));
 
-        PlaybackStateCompat state = getManager().createPlaybackState();
+        PlaybackStateCompat state = getController().createPlaybackState();
         assertEquals(PlaybackStateCompat.STATE_PLAYING, state.getState());
         assertEquals(1.0f, state.getPlaybackSpeed(), 0);
         assertEquals(PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, state.getPosition());
@@ -287,27 +289,27 @@ public class MediaNotificationManagerNotificationTest extends MediaNotificationM
     public void mediaPosition_Missing_Paused() {
         mMediaNotificationInfoBuilder.setPaused(true);
         mMediaNotificationInfoBuilder.setPrivate(false);
-        getManager().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
+        getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
 
-        MediaMetadataCompat metadata = getManager().createMetadata();
+        MediaMetadataCompat metadata = getController().createMetadata();
         assertFalse(metadata.containsKey(MediaMetadataCompat.METADATA_KEY_DURATION));
 
-        PlaybackStateCompat state = getManager().createPlaybackState();
+        PlaybackStateCompat state = getController().createPlaybackState();
         assertEquals(PlaybackStateCompat.STATE_PAUSED, state.getState());
         assertEquals(1.0f, state.getPlaybackSpeed(), 0);
         assertEquals(PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, state.getPosition());
     }
 
     private Notification updateNotificationBuilderAndBuild(MediaNotificationInfo info) {
-        getManager().mMediaNotificationInfo = info;
+        getController().mMediaNotificationInfo = info;
 
         // This is the fake implementation to ensure |mMediaSession| is non-null.
         //
         // TODO(zqzhang): move around code so that updateNotification() doesn't need a MediaSession.
-        getManager().updateMediaSession();
-        getManager().updateNotificationBuilder();
+        getController().updateMediaSession();
+        getController().updateNotificationBuilder();
 
-        return getManager().mNotificationBuilder.build();
+        return getController().mNotificationBuilder.build();
     }
 
     private boolean hasNApis() {

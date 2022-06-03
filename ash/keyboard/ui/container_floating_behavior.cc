@@ -4,10 +4,14 @@
 
 #include "ash/keyboard/ui/container_floating_behavior.h"
 
+#include <memory>
+
 #include "ash/keyboard/ui/display_util.h"
 #include "ash/keyboard/ui/drag_descriptor.h"
-#include "base/optional.h"
+#include "base/numerics/safe_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/events/event.h"
@@ -17,8 +21,9 @@
 
 namespace keyboard {
 
-// Length of the animation to show and hide the keyboard.
-constexpr int kAnimationDurationMs = 200;
+// The virtual keyboard show/hide animation durations.
+constexpr auto kShowAnimationDuration = base::Milliseconds(200);
+constexpr auto kHideAnimationDuration = base::Milliseconds(100);
 
 // Distance the keyboard moves during the animation
 constexpr int kAnimationDistance = 30;
@@ -36,7 +41,7 @@ void ContainerFloatingBehavior::DoHidingAnimation(
     aura::Window* container,
     ::wm::ScopedHidingAnimationSettings* animation_settings) {
   animation_settings->layer_animation_settings()->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kAnimationDurationMs));
+      kHideAnimationDuration);
   gfx::Transform transform;
   transform.Translate(0, kAnimationDistance);
   container->SetTransform(transform);
@@ -47,8 +52,7 @@ void ContainerFloatingBehavior::DoShowingAnimation(
     aura::Window* container,
     ui::ScopedLayerAnimationSettings* animation_settings) {
   animation_settings->SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
-  animation_settings->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kAnimationDurationMs));
+  animation_settings->SetTransitionDuration(kShowAnimationDuration);
 
   container->SetTransform(gfx::Transform());
   container->layer()->SetOpacity(1.0);
@@ -69,23 +73,9 @@ void ContainerFloatingBehavior::InitializeShowAnimationStartingState(
 gfx::Rect ContainerFloatingBehavior::AdjustSetBoundsRequest(
     const gfx::Rect& display_bounds,
     const gfx::Rect& requested_bounds_in_screen) {
-  gfx::Rect keyboard_bounds_in_screen = requested_bounds_in_screen;
-
-  if (!default_position_in_screen_) {
-    // If the keyboard hasn't been shown yet, ignore the request and use
-    // default.
-    gfx::Point default_location = GetPositionForShowingKeyboard(
-        keyboard_bounds_in_screen.size(), display_bounds);
-    keyboard_bounds_in_screen =
-        gfx::Rect(default_location, keyboard_bounds_in_screen.size());
-  } else {
-    // Otherwise, simply make sure that the new bounds are not off the edge of
-    // the screen.
-    keyboard_bounds_in_screen = ContainKeyboardToDisplayBounds(
-        keyboard_bounds_in_screen, display_bounds);
-    SavePosition(keyboard_bounds_in_screen, display_bounds.size());
-  }
-
+  gfx::Rect keyboard_bounds_in_screen = ContainKeyboardToDisplayBounds(
+      requested_bounds_in_screen, display_bounds);
+  SavePosition(keyboard_bounds_in_screen, display_bounds.size());
   return keyboard_bounds_in_screen;
 }
 
@@ -196,8 +186,8 @@ gfx::Point ContainerFloatingBehavior::GetPositionForShowingKeyboard(
                   position->left_padding_allotment_ratio;
     double top = (display_bounds.height() - keyboard_size.height()) *
                  position->top_padding_allotment_ratio;
-    top_left_offset.set_x(int{left});
-    top_left_offset.set_y(int{top});
+    top_left_offset.set_x(base::ClampFloor(left));
+    top_left_offset.set_y(base::ClampFloor(top));
   }
 
   // Make sure that this location is valid according to the current size of the
@@ -216,7 +206,8 @@ gfx::Point ContainerFloatingBehavior::GetPositionForShowingKeyboard(
 bool ContainerFloatingBehavior::HandlePointerEvent(
     const ui::LocatedEvent& event,
     const display::Display& current_display) {
-  const gfx::Vector2d kb_offset(int{event.x()}, int{event.y()});
+  const gfx::Vector2d kb_offset(base::ClampFloor(event.x()),
+                                base::ClampFloor(event.y()));
 
   const gfx::Rect& keyboard_bounds_in_screen = delegate_->GetBoundsInScreen();
 
@@ -242,7 +233,7 @@ bool ContainerFloatingBehavior::HandlePointerEvent(
         // Mouse events are limited to just the left mouse button.
         drag_descriptor_.reset();
       } else if (!drag_descriptor_) {
-        drag_descriptor_.reset(new DragDescriptor{
+        drag_descriptor_ = std::make_unique<DragDescriptor>(DragDescriptor{
             keyboard_bounds_in_screen.origin(), kb_offset, pointer_id});
       }
       break;
@@ -301,6 +292,12 @@ bool ContainerFloatingBehavior::HandlePointerEvent(
       drag_descriptor_.reset();
       break;
   }
+  return false;
+}
+
+bool ContainerFloatingBehavior::HandleGestureEvent(
+    const ui::GestureEvent& event,
+    const gfx::Rect& bounds_in_screen) {
   return false;
 }
 

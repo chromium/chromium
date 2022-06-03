@@ -1,13 +1,13 @@
 [document web]
 ++[tree table] xml-roles:treegrid cols=1 headers=(NONE); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
-++++[table row] selectable level:1 xml-roles:row
-++++++[table cell] name='Cell at level 1' selectable xml-roles:gridcell (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++[table row] level:1 xml-roles:row
+++++++[table cell] name='Cell at level 1' xml-roles:gridcell (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++[static] name='Cell at level 1'
-++++[table row] selectable level:2 xml-roles:row
-++++++[table cell] name='Cell at level 2' selectable xml-roles:gridcell (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++[table row] level:2 xml-roles:row
+++++++[table cell] name='Cell at level 2' xml-roles:gridcell (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++[static] name='Cell at level 2'
 ++[tree table] xml-roles:treegrid cols=1 headers=(NONE); rows=1 headers=(NONE); caption=false; spans=(all: 1x1)
 ++++[panel] xml-roles:rowgroup
-++++++[table row] selectable level:1 xml-roles:row
-++++++++[table cell] name='Cell at level 1' selectable xml-roles:gridcell (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++[table row] level:1 xml-roles:row
+++++++++[table cell] name='Cell at level 1' xml-roles:gridcell (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++[static] name='Cell at level 1'

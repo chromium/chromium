@@ -4,41 +4,40 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
-import android.support.v4.app.NotificationCompat;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.notifications.ChromeNotification;
-import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
-import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
-import org.chromium.chrome.browser.notifications.NotificationManagerProxy;
-import org.chromium.chrome.browser.notifications.NotificationManagerProxyImpl;
-import org.chromium.chrome.browser.notifications.NotificationMetadata;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
-import org.chromium.chrome.browser.notifications.PendingIntentProvider;
-import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -56,15 +55,6 @@ public class AutoFetchNotifier {
             "OfflinePageAutoFetchInProgressNotification";
     private static final String EXTRA_URL = "org.chromium.chrome.browser.offlinepages.URL";
     private static final String EXTRA_ACTION = "notification_action";
-
-    // Name of an application preference variable used to track whether or not the in-progress
-    // notification is being shown. This is an alternative to
-    // NotificationManager.getActiveNotifications, which isn't available prior to API level 23.
-    private static final String PREF_SHOWING_IN_PROGRESS = "offline_auto_fetch_showing_in_progress";
-    // The application preference variable which is set to the NotificationAction that triggered the
-    // cancellation, when a cancellation is requested by the user.
-    private static final String PREF_USER_CANCEL_ACTION_IN_PROGRESS =
-            "offline_auto_fetch_user_cancel_action_in_progress";
 
     @VisibleForTesting
     public static TestHooks mTestHooks;
@@ -113,16 +103,14 @@ public class AutoFetchNotifier {
                 return;
             }
 
-            // Chrome may or may not be running. Use runNowOrAfterNativeInitialization() to trigger
-            // the cancellation if Chrome is running. If Chrome isn't running,
-            // runNowOrAfterNativeInitialization() will never call our runnable, so set a pref to
-            // remember to cancel on next startup.
-            ContextUtils.getAppSharedPreferences()
-                    .edit()
-                    .putInt(PREF_USER_CANCEL_ACTION_IN_PROGRESS, action)
-                    .apply();
+            // Chrome may or may not be running. Use runNowOrAfterFullBrowserStarted() to trigger
+            // the cancellation if Chrome is running in full browser. If Chrome isn't running in
+            // full browser, runNowOrAfterFullBrowserStarted() will never call our runnable, so set
+            // a pref to remember to cancel on next startup.
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS, action);
             // This will call us back with cancellationComplete().
-            ChromeBrowserInitializer.getInstance().runNowOrAfterNativeInitialization(
+            ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(
                     AutoFetchNotifier::cancelInProgress);
             // Finally, whether chrome is running or not, remove the notification.
             closeInProgressNotification();
@@ -169,26 +157,30 @@ public class AutoFetchNotifier {
                 R.plurals.offline_pages_auto_fetch_in_progress_notification_text, inProgressCount);
 
         // Create the notification.
-        ChromeNotificationBuilder builder =
-                NotificationBuilderFactory
-                        .createChromeNotificationBuilder(
-                                true /* preferCompat */, ChannelDefinitions.ChannelId.DOWNLOADS)
+        NotificationMetadata metadata = new NotificationMetadata(
+                NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
+                IN_PROGRESS_NOTIFICATION_TAG, /*notificationId=*/0);
+        NotificationWrapperBuilder builder =
+                NotificationWrapperBuilderFactory
+                        .createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.DOWNLOADS, metadata)
                         .setContentTitle(title)
                         .setGroup(COMPLETE_NOTIFICATION_TAG)
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_LOW)
                         .setSmallIcon(R.drawable.ic_chrome)
                         .addAction(0 /* icon */, context.getString(R.string.cancel),
-                                PendingIntent.getBroadcast(context, 0 /* requestCode */,
-                                        cancelButtonIntent, 0 /* flags */))
-                        .setDeleteIntent(PendingIntent.getBroadcast(
+                                PendingIntentProvider.getBroadcast(context, 0 /* requestCode */,
+                                        cancelButtonIntent, 0 /* flags */),
+                                NotificationUmaTracker.ActionType.AUTO_FETCH_CANCEL)
+                        .setDeleteIntent(PendingIntentProvider.getBroadcast(
                                 context, 0 /* requestCode */, deleteIntent, 0 /* flags */));
 
-        NotificationManager manager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = builder.build();
-        manager.notify(IN_PROGRESS_NOTIFICATION_TAG, 0, notification);
+        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        NotificationWrapper notification = builder.buildNotificationWrapper();
+        manager.notify(notification);
         NotificationUmaTracker.getInstance().onNotificationShown(
-                NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES, notification);
+                NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
+                notification.getNotification());
         reportInProgressNotificationAction(NotificationAction.SHOWN);
         if (mTestHooks != null) {
             mTestHooks.inProgressNotificationShown(cancelButtonIntent, deleteIntent);
@@ -207,17 +199,16 @@ public class AutoFetchNotifier {
     // user interacting with the in-progress notification.
     @CalledByNative
     private static void cancellationComplete() {
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
         @NotificationAction
-        int currentAction = ContextUtils.getAppSharedPreferences().getInt(
-                PREF_USER_CANCEL_ACTION_IN_PROGRESS, NotificationAction.NUM_ENTRIES);
+        int currentAction = prefs.readInt(
+                ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
+                NotificationAction.NUM_ENTRIES);
         if (currentAction == NotificationAction.NUM_ENTRIES) {
             return;
         }
         reportInProgressNotificationAction(currentAction);
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .remove(PREF_USER_CANCEL_ACTION_IN_PROGRESS)
-                .apply();
+        prefs.removeKey(ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS);
     }
 
     /**
@@ -227,8 +218,9 @@ public class AutoFetchNotifier {
     @VisibleForTesting
     @CalledByNative
     public static boolean autoFetchInProgressNotificationCanceled() {
-        return ContextUtils.getAppSharedPreferences().getInt(
-                       PREF_USER_CANCEL_ACTION_IN_PROGRESS, NotificationAction.NUM_ENTRIES)
+        return SharedPreferencesManager.getInstance().readInt(
+                       ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
+                       NotificationAction.NUM_ENTRIES)
                 != NotificationAction.NUM_ENTRIES;
     }
 
@@ -277,11 +269,13 @@ public class AutoFetchNotifier {
     @CalledByNative
     private static void showCompleteNotification(
             String pageTitle, String originalUrl, String finalUrl, int tabId, long offlineId) {
+        // Since offline pages are only available in regular mode, any downloaded content should be
+        // triggered by regular mode. Hence, it is correct to pass always regular profile.
         OfflinePageUtils.getLoadUrlParamsForOpeningOfflineVersion(
                 finalUrl, offlineId, LaunchLocation.NOTIFICATION, (params) -> {
                     showCompleteNotificationWithParams(
                             pageTitle, tabId, offlineId, originalUrl, finalUrl, params);
-                });
+                }, Profile.getLastUsedRegularProfile());
     }
 
     private static void showCompleteNotificationWithParams(String pageTitle, int tabId,
@@ -320,11 +314,10 @@ public class AutoFetchNotifier {
         NotificationMetadata metadata = new NotificationMetadata(
                 NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
                 COMPLETE_NOTIFICATION_TAG, notificationId);
-        ChromeNotificationBuilder builder =
-                NotificationBuilderFactory
-                        .createChromeNotificationBuilder(true /* preferCompat */,
-                                ChannelDefinitions.ChannelId.DOWNLOADS,
-                                null /* remoteAppPackageName */, metadata)
+        NotificationWrapperBuilder builder =
+                NotificationWrapperBuilderFactory
+                        .createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.DOWNLOADS, metadata)
                         .setAutoCancel(true)
                         .setContentIntent(pendingClickIntent)
                         .setContentTitle(pageTitle)
@@ -336,7 +329,7 @@ public class AutoFetchNotifier {
                         .setDeleteIntent(PendingIntentProvider.getBroadcast(
                                 context, 0 /* requestCode */, deleteIntent, 0 /* flags */));
 
-        ChromeNotification notification = builder.buildChromeNotification();
+        NotificationWrapper notification = builder.buildNotificationWrapper();
         NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
         manager.notify(notification);
         NotificationUmaTracker.getInstance().onNotificationShown(
@@ -355,26 +348,24 @@ public class AutoFetchNotifier {
     }
 
     private static void reportCompleteNotificationAction(@NotificationAction int action) {
-        // Native may or may not be running, so use CachedMetrics.EnumeratedHistogramSample.
-        EnumeratedHistogramSample sample =
-                new EnumeratedHistogramSample("OfflinePages.AutoFetch.CompleteNotificationAction",
-                        NotificationAction.NUM_ENTRIES);
-        sample.record(action);
+        RecordHistogram.recordEnumeratedHistogram(
+                "OfflinePages.AutoFetch.CompleteNotificationAction", action,
+                NotificationAction.NUM_ENTRIES);
     }
 
     private static boolean isShowingInProgressNotification() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(PREF_SHOWING_IN_PROGRESS, false);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS, false);
     }
 
     private static void setIsShowingInProgressNotification(boolean showing) {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(PREF_SHOWING_IN_PROGRESS, showing)
-                .apply();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS, showing);
     }
 
     private static void cancelInProgress() {
-        AutoFetchNotifierJni.get().cancelInProgress(Profile.getLastUsedProfile());
+        // Using regular profile here, since this function is only called in regular mode.
+        AutoFetchNotifierJni.get().cancelInProgress(Profile.getLastUsedRegularProfile());
     }
 
     @NativeMethods

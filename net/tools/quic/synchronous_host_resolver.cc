@@ -13,10 +13,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/host_port_pair.h"
@@ -25,6 +24,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -34,6 +34,9 @@ namespace {
 class ResolverThread : public base::SimpleThread {
  public:
   ResolverThread();
+
+  ResolverThread(const ResolverThread&) = delete;
+  ResolverThread& operator=(const ResolverThread&) = delete;
 
   ~ResolverThread() override;
 
@@ -49,8 +52,6 @@ class ResolverThread : public base::SimpleThread {
   AddressList* addresses_;
   std::string host_;
   int rv_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolverThread);
 };
 
 ResolverThread::ResolverThread()
@@ -72,7 +73,7 @@ void ResolverThread::Run() {
   // not used by net/ consumers.
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(host_port_pair, NetworkIsolationKey(),
-                              NetLogWithSource(), base::nullopt);
+                              NetLogWithSource(), absl::nullopt);
 
   base::RunLoop run_loop;
   rv_ = request->Start(base::BindOnce(&ResolverThread::OnResolutionComplete,

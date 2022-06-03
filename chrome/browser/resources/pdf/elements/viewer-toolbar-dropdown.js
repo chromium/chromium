@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * Size of additional padding in the inner scrollable section of the dropdown.
@@ -20,107 +20,114 @@ const DROPDOWN_OUTER_PADDING = 2;
 /** Minimum height of toolbar dropdowns (px). */
 const MIN_DROPDOWN_HEIGHT = 200;
 
-Polymer({
-  is: 'viewer-toolbar-dropdown',
+export class ViewerToolbarDropdownElement extends PolymerElement {
+  static get is() {
+    return 'viewer-toolbar-dropdown';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** Icon to display when the dropdown is closed. */
-    closedIcon: String,
+  static get properties() {
+    return {
+      /** Icon to display when the dropdown is closed. */
+      closedIcon: String,
 
-    /** Whether the dropdown should be centered or right aligned. */
-    dropdownCentered: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-    },
+      /** Whether the dropdown should be centered or right aligned. */
+      dropdownCentered: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
 
-    /** True if the dropdown is currently open. */
-    dropdownOpen: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-    },
+      /** True if the dropdown is currently open. */
+      dropdownOpen: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      /**
+       * String to be displayed at the top of the dropdown and for the tooltip
+       * of the button.
+       */
+      header: String,
+
+      /** Whether to hide the header at the top of the dropdown. */
+      hideHeader: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** Lowest vertical point that the dropdown should occupy (px). */
+      lowerBound: {
+        type: Number,
+        observer: 'lowerBoundChanged_',
+      },
+
+      /** Whether the dropdown must be selected before opening. */
+      openAfterSelect: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** Icon to display when the dropdown is open. */
+      openIcon: String,
+
+      /** Whether the dropdown is marked as selected. */
+      selected: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
+      /**
+       * Toolbar icon currently being displayed.
+       * @private
+       */
+      dropdownIcon_: {
+        type: String,
+        computed: 'computeIcon_(dropdownOpen, closedIcon, openIcon)',
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * String to be displayed at the top of the dropdown and for the tooltip
-     * of the button.
-      */
-    header: String,
-
-    /** Whether to hide the header at the top of the dropdown. */
-    hideHeader: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** Lowest vertical point that the dropdown should occupy (px). */
-    lowerBound: {
-      type: Number,
-      observer: 'lowerBoundChanged_',
-    },
-
-    /** Unique id to identify this dropdown for metrics purposes. */
-    metricsId: String,
-
-    /** Whether the dropdown must be selected before opening. */
-    openAfterSelect: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** Icon to display when the dropdown is open. */
-    openIcon: String,
-
-    /** Whether the dropdown is marked as selected. */
-    selected: {
-      type: Boolean,
-      reflectToAttribute: true,
-      value: false,
-    },
-
-    /**
-     * Toolbar icon currently being displayed.
-     * @private
+     * Current animation being played, or null if there is none.
+     * @private {?Object}
      */
-    dropdownIcon_: {
-      type: String,
-      computed: 'computeIcon_(dropdownOpen, closedIcon, openIcon)',
-    },
-  },
+    this.animation_ = null;
 
-  /**
-   * Current animation being played, or null if there is none.
-   * @private {?Object}
-   */
-  animation_: null,
-
-  /**
-   * True if the max-height CSS property for the dropdown scroll container
-   * is valid. If false, the height will be updated the next time the
-   * dropdown is visible.
-   * @private {boolean}
-   */
-  maxHeightValid_: false,
+    /**
+     * True if the max-height CSS property for the dropdown scroll container
+     * is valid. If false, the height will be updated the next time the
+     * dropdown is visible.
+     * @private {boolean}
+     */
+    this.maxHeightValid_ = false;
+  }
 
   /**
    * @return {string} Current icon for the dropdown.
    * @private
    */
-  computeIcon_: function(dropdownOpen, closedIcon, openIcon) {
+  computeIcon_(dropdownOpen, closedIcon, openIcon) {
     return dropdownOpen ? openIcon : closedIcon;
-  },
+  }
 
   /** @private */
-  lowerBoundChanged_: function() {
+  lowerBoundChanged_() {
     this.maxHeightValid_ = false;
     if (this.dropdownOpen) {
       this.updateMaxHeight();
     }
-  },
+  }
 
-  toggleDropdown: function() {
+  toggleDropdown() {
     if (!this.dropdownOpen && this.openAfterSelect && !this.selected) {
       // The dropdown has `openAfterSelect` set, but is not yet selected.
       return;
@@ -131,10 +138,7 @@ Polymer({
       if (!this.maxHeightValid_) {
         this.updateMaxHeight();
       }
-      this.fire('dropdown-opened', this.metricsId);
-    }
 
-    if (this.dropdownOpen) {
       const listener = (e) => {
         if (e.path.includes(this)) {
           return;
@@ -150,16 +154,16 @@ Polymer({
     }
 
     this.playAnimation_(this.dropdownOpen);
-  },
+  }
 
-  updateMaxHeight: function() {
+  updateMaxHeight() {
     const scrollContainer = this.$['scroll-container'];
     let height = this.lowerBound - scrollContainer.getBoundingClientRect().top -
         DROPDOWN_INNER_PADDING;
     height = Math.max(height, MIN_DROPDOWN_HEIGHT);
     scrollContainer.style.maxHeight = height + 'px';
     this.maxHeightValid_ = true;
-  },
+  }
 
   /**
    * Start an animation on the dropdown.
@@ -167,7 +171,7 @@ Polymer({
    * exit.
    * @private
    */
-  playAnimation_: function(isEntry) {
+  playAnimation_(isEntry) {
     this.animation_ = isEntry ? this.animateEntry_() : this.animateExit_();
     this.animation_.onfinish = () => {
       this.animation_ = null;
@@ -175,13 +179,13 @@ Polymer({
         this.$.dropdown.style.display = 'none';
       }
     };
-  },
+  }
 
   /**
    * @return {!Object} Animation
    * @private
    */
-  animateEntry_: function() {
+  animateEntry_() {
     let maxHeight =
         this.$.dropdown.getBoundingClientRect().height - DROPDOWN_OUTER_PADDING;
 
@@ -204,13 +208,13 @@ Polymer({
           duration: 250,
           easing: 'cubic-bezier(0, 0, 0.2, 1)',
         });
-  },
+  }
 
   /**
    * @return {!Object} Animation
    * @private
    */
-  animateExit_: function() {
+  animateExit_() {
     return this.$.dropdown.animate(
         [
           {transform: 'translateY(0)', opacity: 1},
@@ -221,4 +225,7 @@ Polymer({
           easing: 'cubic-bezier(0.4, 0, 1, 1)',
         });
   }
-});
+}
+
+customElements.define(
+    ViewerToolbarDropdownElement.is, ViewerToolbarDropdownElement);

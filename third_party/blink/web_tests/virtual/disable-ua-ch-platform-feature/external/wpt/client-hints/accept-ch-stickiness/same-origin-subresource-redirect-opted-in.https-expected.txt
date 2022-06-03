@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL same-origin subresource redirect with opt-in got client hints according to expectations. assert_true: expected true got false
+Harness: the test ran to completion.
+

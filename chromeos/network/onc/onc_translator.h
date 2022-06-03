@@ -12,6 +12,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace chromeos {
@@ -22,21 +23,21 @@ namespace onc {
 
 struct OncValueSignature;
 
-// Translates a hierarchical ONC dictionary |onc_object| to a flat Shill
-// dictionary. The |signature| declares the type of |onc_object| and must point
-// to one of the signature objects in "onc_signature.h". The resulting Shill
-// dictionary is returned.
+// Translates a hierarchical ONC dictionary |onc_object| (a Value of type
+// DICTIONARY) to a flat Shill dictionary. The |signature| declares the type of
+// |onc_object| and must point to one of the signature objects in
+// "onc_signature.h". The resulting Shill dictionary is returned.
 //
 // This function is used to translate network settings from ONC to Shill's
 // format before sending them to Shill.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::unique_ptr<base::DictionaryValue> TranslateONCObjectToShill(
     const OncValueSignature* signature,
-    const base::DictionaryValue& onc_object);
+    const base::Value& onc_object);
 
-// Translates a |shill_dictionary| to an ONC object according to the given
-// |onc_signature|. |onc_signature| must point to a signature object in
-// "onc_signature.h". The resulting ONC object is returned.
+// Translates a |shill_dictionary| (a Value of type DICTIONARY) to an ONC object
+// according to the given |onc_signature|. |onc_signature| must point to a
+// signature object in "onc_signature.h". The resulting ONC object is returned.
 //
 // This function is used to translate network settings coming from Shill to ONC
 // before sending them to the UI. The result doesn't have to be valid ONC, but
@@ -48,7 +49,7 @@ std::unique_ptr<base::DictionaryValue> TranslateONCObjectToShill(
 // be set.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::unique_ptr<base::DictionaryValue> TranslateShillServiceToONCPart(
-    const base::DictionaryValue& shill_dictionary,
+    const base::Value& shill_dictionary,
     ::onc::ONCSource onc_source,
     const OncValueSignature* onc_signature,
     const NetworkState* network_state);

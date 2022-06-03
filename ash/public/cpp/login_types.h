@@ -5,20 +5,20 @@
 #ifndef ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 #define ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 
+#include "ash/components/security_token_pin/constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
-#include "chromeos/constants/security_token_pin_types.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
 
 // State of the Oobe UI dialog, which is used to update the visibility of login
 // shelf buttons.
-// This comes from SIGNIN_UI_STATE defined in display_manager.js, with an
+// This comes from OOBE_UI_STATE defined in display_manager_types.js, with an
 // additional value HIDDEN to indicate the visibility of the oobe ui dialog.
 enum class OobeDialogState {
   // Showing other screen, which does not impact the visibility of login shelf
@@ -48,19 +48,33 @@ enum class OobeDialogState {
   // Showing error screen.
   ERROR = 8,
 
-  // Showing sync consent screen.
-  SYNC_CONSENT = 9,
+  // Showing any of post-login onboarding screens.
+  ONBOARDING = 9,
+
+  // Screen that blocks device usage for some reason.
+  BLOCKING = 10,
+
+  // Showing any of kiosk launch screens.
+  KIOSK_LAUNCH = 11,
+
+  // Showing data migration screen.
+  MIGRATION = 12,
 
   // Oobe UI dialog is currently hidden.
-  HIDDEN = 10,
+  HIDDEN = 13,
 
   // Showing login UI provided by a Chrome extension using chrome.loginScreenUi
   // API.
-  EXTENSION_LOGIN = 11,
+  EXTENSION_LOGIN = 14,
+
+  // Showing user creation screen.
+  USER_CREATION = 15,
+
+  // Showing enrollment screen with the possibility to cancel.
+  ENROLLMENT_CANCEL_ENABLED = 16,
 };
 
 // Supported multi-profile user behavior values.
-// Keep in sync with the enum in chromeos_user_pod_row.js and user_pod_row.js
 // TODO(estade): change all the enums to use kCamelCase.
 enum class MultiProfileUserBehavior {
   UNRESTRICTED = 0,
@@ -69,8 +83,8 @@ enum class MultiProfileUserBehavior {
   OWNER_PRIMARY_ONLY = 3,
 };
 
-// Easy unlock icon choices.
-enum class EasyUnlockIconId {
+// Easy unlock icon states.
+enum class EasyUnlockIconState {
   // No icon shown.
   NONE,
   // The user has clicked the easy unlock icon and disabled easy unlock for this
@@ -97,7 +111,12 @@ enum class FingerprintState {
   //  - the device does not have a fingerprint sensor
   UNAVAILABLE,
   // Fingerprint can be used to unlock the device.
-  AVAILABLE,
+  AVAILABLE_DEFAULT,
+  // Fingerprint can be used to unlock the device but the user touched the
+  // fingerprint icon instead of the fingerprint sensor. A warning message
+  // should be displayed for 3 seconds before getting back to AVAILABLE_DEFAULT
+  // state.
+  AVAILABLE_WITH_TOUCH_SENSOR_WARNING,
   // There have been too many attempts, so now fingerprint is disabled.
   DISABLED_FROM_ATTEMPTS,
   // It has been too long since the device was last used.
@@ -106,22 +125,22 @@ enum class FingerprintState {
 };
 
 // Information about the custom icon in the user pod.
-struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
-  EasyUnlockIconOptions();
-  EasyUnlockIconOptions(const EasyUnlockIconOptions& other);
-  EasyUnlockIconOptions(EasyUnlockIconOptions&& other);
-  ~EasyUnlockIconOptions();
+struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
+  EasyUnlockIconInfo();
+  EasyUnlockIconInfo(const EasyUnlockIconInfo& other);
+  EasyUnlockIconInfo(EasyUnlockIconInfo&& other);
+  ~EasyUnlockIconInfo();
 
-  EasyUnlockIconOptions& operator=(const EasyUnlockIconOptions& other);
-  EasyUnlockIconOptions& operator=(EasyUnlockIconOptions&& other);
+  EasyUnlockIconInfo& operator=(const EasyUnlockIconInfo& other);
+  EasyUnlockIconInfo& operator=(EasyUnlockIconInfo&& other);
 
   // Icon that should be displayed.
-  EasyUnlockIconId icon = EasyUnlockIconId::NONE;
+  EasyUnlockIconState icon_state = EasyUnlockIconState::NONE;
   // Tooltip that is associated with the icon. This is shown automatically if
   // |autoshow_tooltip| is true. The user can always see the tooltip if they
   // hover over the icon. The tooltip should be used for the accessibility label
   // if it is present.
-  base::string16 tooltip;
+  std::u16string tooltip;
   // If true, the tooltip should be displayed (even if the user is not currently
   // hovering over the icon, ie, this makes |tooltip| act like a little like a
   // notification).
@@ -129,7 +148,7 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
   // Accessibility label. Only used if |tooltip| is empty.
   // TODO(jdufault): Always populate and use |aria_label|, even if |tooltip| is
   // non-empty.
-  base::string16 aria_label;
+  std::u16string aria_label;
   // If true, clicking the easy unlock icon should fire a hardlock event which
   // will disable easy unlock. The hardlock event will request a new icon
   // display via a separate EasyUnlockIconsOption update. See
@@ -170,6 +189,8 @@ struct ASH_PUBLIC_EXPORT LocaleItem {
   LocaleItem& operator=(const LocaleItem& other);
   LocaleItem& operator=(LocaleItem&& other);
 
+  bool operator==(const LocaleItem& other) const;
+
   // Language code of the locale.
   std::string language_code;
 
@@ -177,7 +198,7 @@ struct ASH_PUBLIC_EXPORT LocaleItem {
   std::string title;
 
   // Group name of the locale.
-  base::Optional<std::string> group_name;
+  absl::optional<std::string> group_name;
 };
 
 // Information about a public account user.
@@ -190,8 +211,10 @@ struct ASH_PUBLIC_EXPORT PublicAccountInfo {
   PublicAccountInfo& operator=(const PublicAccountInfo& other);
   PublicAccountInfo& operator=(PublicAccountInfo&& other);
 
-  // The domain name displayed in the login screen UI.
-  base::Optional<std::string> enterprise_domain;
+  // The name of the device manager displayed in the login screen UI for
+  // device-level management. May be either a domain (foo.com) or an email
+  // address (user@foo.com).
+  absl::optional<std::string> device_enterprise_manager;
 
   // A list of available user locales.
   std::vector<LocaleItem> available_locales;
@@ -255,8 +278,21 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // Show pin pad for password for this user or not.
   bool show_pin_pad_for_password = false;
 
+  // True if the display password button should be visible on the login/lock
+  // screen for this user.
+  bool show_display_password_button = false;
+
+  // The name of the entity that manages this user's account displayed in the
+  // login screen UI for user-level management. Will be either a domain name
+  // (foo.com) or the email address of the admin (some_user@foo.com).
+  // This is only set if the relevant user is managed.
+  absl::optional<std::string> user_account_manager;
+
   // Contains the public account information if user type is PUBLIC_ACCOUNT.
-  base::Optional<PublicAccountInfo> public_account_info;
+  absl::optional<PublicAccountInfo> public_account_info;
+
+  // True if this user chooses to use 24 hour clock in preference.
+  bool use_24hour_clock = false;
 };
 
 enum class AuthDisabledReason {
@@ -300,18 +336,6 @@ struct ASH_PUBLIC_EXPORT AuthDisabledData {
   bool disable_lock_screen_media = false;
 };
 
-// Possible reasons why the parent access code is required. This corresponds to
-// actions that children can't perform on a Chromebook, but their parents can on
-// their behalf.
-enum class ParentAccessRequestReason {
-  // Unlock a Chromebook that is locked due to a Time Limit policy.
-  kUnlockTimeLimits,
-  // Update values on the date time dialog.
-  kChangeTime,
-  // Update values on the timezone settings page.
-  kChangeTimezone,
-};
-
 // Parameters and callbacks for a security token PIN request that is to be shown
 // to the user.
 struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {
@@ -324,16 +348,16 @@ struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {
   AccountId account_id;
 
   // Type of the code requested from the user.
-  chromeos::SecurityTokenPinCodeType code_type =
-      chromeos::SecurityTokenPinCodeType::kPin;
+  ash::security_token_pin::CodeType code_type =
+      ash::security_token_pin::CodeType::kPin;
 
   // Whether the UI controls that allow user to enter the value should be
   // enabled. MUST be |false| when |attempts_left| is zero.
   bool enable_user_input = true;
 
   // An optional error to be displayed to the user.
-  chromeos::SecurityTokenPinErrorLabel error_label =
-      chromeos::SecurityTokenPinErrorLabel::kNone;
+  ash::security_token_pin::ErrorLabel error_label =
+      ash::security_token_pin::ErrorLabel::kNone;
 
   // When non-negative, the UI should indicate this number to the user;
   // otherwise must be equal to -1.
@@ -341,11 +365,13 @@ struct ASH_PUBLIC_EXPORT SecurityTokenPinRequest {
 
   // Called when the user submits the input. Will not be called if the UI is
   // closed before that happens.
-  base::OnceCallback<void(const std::string& user_input)> pin_entered_callback;
+  using OnPinEntered = base::OnceCallback<void(const std::string& user_input)>;
+  OnPinEntered pin_entered_callback;
 
   // Called when the PIN request UI gets closed. Will not be called when the
   // browser itself requests the UI to be closed.
-  base::OnceClosure pin_ui_closed_callback;
+  using OnUiClosed = base::OnceClosure;
+  OnUiClosed pin_ui_closed_callback;
 };
 
 }  // namespace ash

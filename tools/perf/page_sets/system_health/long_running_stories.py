@@ -10,7 +10,7 @@ from page_sets.system_health import system_health_story
 
 IDLE_TIME_IN_SECONDS = 100
 SAMPLING_INTERVAL_IN_SECONDS = 1
-STEPS = IDLE_TIME_IN_SECONDS / SAMPLING_INTERVAL_IN_SECONDS
+STEPS = IDLE_TIME_IN_SECONDS // SAMPLING_INTERVAL_IN_SECONDS
 
 
 class _LongRunningStory(system_health_story.SystemHealthStory):
@@ -24,7 +24,7 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
       action_runner.tab.browser.tabs.New()
     if self._take_memory_measurement:
       action_runner.MeasureMemory()
-    for _ in xrange(STEPS):
+    for _ in range(STEPS):
       action_runner.Wait(SAMPLING_INTERVAL_IN_SECONDS)
       if self._take_memory_measurement:
         action_runner.MeasureMemory()
@@ -37,6 +37,12 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
     else:
       return ('Load %s then let it stay in foreground for %s seconds.' %
               (cls.URL, IDLE_TIME_IN_SECONDS))
+
+  def WillStartTracing(self, chrome_trace_config):
+    # Long running stories generate large traces, so use a large tracing buffer
+    # size.
+    chrome_trace_config.SetTraceBufferSizeInKb(350 * 1024)
+
 
 
 ##############################################################################
@@ -94,7 +100,7 @@ class LongRunningGmailMobileForegroundStory(_LongRunningGmailMobileBase):
 
 class LongRunningGmailDesktopForegroundStory(_LongRunningGmailDesktopBase):
   NAME = 'long_running:tools:gmail-foreground'
-  TAGS = [story_tags.YEAR_2016]
+  TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2016]
 
 
 class LongRunningGmailMobileBackgroundStory(_LongRunningGmailMobileBase):

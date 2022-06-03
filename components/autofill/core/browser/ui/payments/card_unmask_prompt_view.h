@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
 
 namespace autofill {
 
@@ -15,18 +14,19 @@ namespace autofill {
 // lifetime.
 class CardUnmaskPromptView {
  public:
+  CardUnmaskPromptView(const CardUnmaskPromptView&) = delete;
+  CardUnmaskPromptView& operator=(const CardUnmaskPromptView&) = delete;
+
   virtual void Show() = 0;
+  virtual void Dismiss() {}
   virtual void ControllerGone() = 0;
   virtual void DisableAndWaitForVerification() = 0;
-  virtual void GotVerificationResult(const base::string16& error_message,
+  virtual void GotVerificationResult(const std::u16string& error_message,
                                      bool allow_retry) = 0;
 
  protected:
   CardUnmaskPromptView() {}
   virtual ~CardUnmaskPromptView() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptView);
 };
 
 }  // namespace autofill

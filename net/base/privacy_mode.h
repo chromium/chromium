@@ -12,7 +12,13 @@ namespace net {
 enum PrivacyMode {
   PRIVACY_MODE_DISABLED = 0,
   PRIVACY_MODE_ENABLED = 1,
+
+  // Due to http://crbug.com/775438, PRIVACY_MODE_ENABLED still sends client
+  // certs. This mode ensures that the request is sent without client certs.
+  PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS = 2,
 };
+
+const char* PrivacyModeToDebugString(PrivacyMode privacy_mode);
 
 }  // namespace net
 

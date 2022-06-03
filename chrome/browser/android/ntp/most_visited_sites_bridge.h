@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 class Profile;
 
@@ -22,6 +21,9 @@ class MostVisitedSites;
 class MostVisitedSitesBridge {
  public:
   explicit MostVisitedSitesBridge(Profile* profile);
+
+  MostVisitedSitesBridge(const MostVisitedSitesBridge&) = delete;
+  MostVisitedSitesBridge& operator=(const MostVisitedSitesBridge&) = delete;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
@@ -37,11 +39,10 @@ class MostVisitedSitesBridge {
                          const base::android::JavaParamRef<jobject>& obj,
                          const base::android::JavaParamRef<jobject>& j_client);
 
-  void AddOrRemoveBlacklistedUrl(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& j_url,
-      jboolean add_url);
+  void AddOrRemoveBlockedUrl(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>& obj,
+                             const base::android::JavaParamRef<jobject>& j_url,
+                             jboolean add_url);
   void RecordPageImpression(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj,
                             jint jtiles_count);
@@ -52,16 +53,14 @@ class MostVisitedSitesBridge {
                             jint jicon_type,
                             jint jtitle_source,
                             jint jsource,
-                            jlong jdata_generation_time_ms,
-                            const base::android::JavaParamRef<jstring>& jurl);
+                            const base::android::JavaParamRef<jobject>& jurl);
   void RecordOpenedMostVisitedItem(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jint index,
       jint tile_type,
       jint title_source,
-      jint source,
-      jlong jdata_generation_time_ms);
+      jint source);
 
  private:
   ~MostVisitedSitesBridge();
@@ -71,8 +70,6 @@ class MostVisitedSitesBridge {
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(MostVisitedSitesBridge);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NTP_MOST_VISITED_SITES_BRIDGE_H_

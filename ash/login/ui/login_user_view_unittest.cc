@@ -18,6 +18,10 @@ namespace ash {
 namespace {
 
 class LoginUserViewUnittest : public LoginTestBase {
+ public:
+  LoginUserViewUnittest(const LoginUserViewUnittest&) = delete;
+  LoginUserViewUnittest& operator=(const LoginUserViewUnittest&) = delete;
+
  protected:
   LoginUserViewUnittest() = default;
   ~LoginUserViewUnittest() override = default;
@@ -36,7 +40,7 @@ class LoginUserViewUnittest : public LoginTestBase {
     }
 
     auto* view =
-        new LoginUserView(display_style, show_dropdown, public_account,
+        new LoginUserView(display_style, show_dropdown,
                           base::BindRepeating(&LoginUserViewUnittest::OnTapped,
                                               base::Unretained(this)),
                           on_remove_warning_shown, on_remove);
@@ -75,8 +79,6 @@ class LoginUserViewUnittest : public LoginTestBase {
   void OnTapped() { ++tap_count_; }
   void OnRemoveWarningShown() { ++remove_show_warning_count_; }
   void OnRemove() { ++remove_count_; }
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUserViewUnittest);
 };
 
 }  // namespace

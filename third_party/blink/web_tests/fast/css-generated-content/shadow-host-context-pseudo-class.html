@@ -4,7 +4,7 @@
 </body>
 <script>
 var host = document.getElementById('host');
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = '\
 <style>\
   :host-context(body.shadow)::before { content: "before shadow root:"; }\

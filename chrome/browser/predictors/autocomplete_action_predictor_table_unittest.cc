@@ -21,7 +21,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using predictors::AutocompleteActionPredictorTable;
 
 namespace predictors {
@@ -82,17 +81,14 @@ void AutocompleteActionPredictorTableTest::SetUp() {
   content::RunAllTasksUntilIdle();
 
   test_db_.push_back(AutocompleteActionPredictorTable::Row(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF",
-      base::ASCIIToUTF16("goog"), GURL("http://www.google.com/"),
-      1, 0));
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
+      GURL("http://www.google.com/"), 1, 0));
   test_db_.push_back(AutocompleteActionPredictorTable::Row(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0",
-      base::ASCIIToUTF16("slash"), GURL("http://slashdot.org/"),
-      3, 2));
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"slash",
+      GURL("http://slashdot.org/"), 3, 2));
   test_db_.push_back(AutocompleteActionPredictorTable::Row(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1",
-      base::ASCIIToUTF16("news"), GURL("http://slashdot.org/"),
-      0, 1));
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"news",
+      GURL("http://slashdot.org/"), 0, 1));
 }
 
 void AutocompleteActionPredictorTableTest::TearDown() {

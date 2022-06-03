@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL Global object's getter throws when called on incompatible object assert_throws_js: function "() => { Object.create(globalThis).self; }" did not throw
+PASS Global object's setter throws when called on incompatible object
+PASS Global object's operation throws when called on incompatible object
+PASS Global object's getter throws when called on incompatible object (document.all)
+PASS Global object's setter throws when called on incompatible object (document.all)
+PASS Global object's operation throws when called on incompatible object (document.all)
+PASS Global object's getter works when called on null / undefined
+PASS Global object's setter works when called on null / undefined
+PASS Global object's operation works when called on null / undefined
+Harness: the test ran to completion.
+

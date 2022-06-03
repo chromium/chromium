@@ -8,10 +8,10 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

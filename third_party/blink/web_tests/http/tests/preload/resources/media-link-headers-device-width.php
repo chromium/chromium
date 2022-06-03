@@ -16,8 +16,9 @@
         }
         if (nonzeroLoaded)
             window.opener.postMessage("success", "*")
-        window.opener.postMessage("nonzeronotloaded", "*");
+        else
+            window.opener.postMessage("nonzeronotloaded", "*");
     });
 </script>
-<script src="../resources/slow-script.pl?delay=200"></script>
+<script src="/resources/slow-script.pl?delay=200"></script>
 

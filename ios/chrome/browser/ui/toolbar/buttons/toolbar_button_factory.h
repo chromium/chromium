@@ -49,10 +49,8 @@
 - (ToolbarButton*)reloadButton;
 // Stop ToolbarButton.
 - (ToolbarButton*)stopButton;
-// Bookmark ToolbarButton.
-- (ToolbarButton*)bookmarkButton;
-// ToolbarButton to focus the omnibox.
-- (ToolbarButton*)searchButton;
+// ToolbarButton to create a new tab.
+- (ToolbarButton*)openNewTabButton;
 // Button to cancel the edit of the location bar.
 - (UIButton*)cancelButton;
 

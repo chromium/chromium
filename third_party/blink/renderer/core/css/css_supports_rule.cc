@@ -47,7 +47,7 @@ String CSSSupportsRule::cssText() const {
   AppendCSSTextForItems(result);
   result.Append('}');
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 }  // namespace blink

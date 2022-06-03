@@ -1,5 +1,4 @@
 specific_include_rules = {
-  # TODO(mash): Remove. http://crbug.com/678705
   "display_info_provider_chromeos_unittest\.cc": [
     "+ash/display",
     "+ash/shell.h",

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Check iframe activeElement after focusing out different site iframe assert_equals: expected "outerlog:willfocusinput,windowfocus,didfocusinput,innerlog:willfocusinput,windowfocus,didfocusinput,activeElement:INPUT,windowblur,activeElement:BODY," but got "outerlog:willfocusinput,didfocusinput,innerlog:willfocusinput,didfocusinput,activeElement:BODY,"
+FAIL Check iframe activeElement after focusing out same site iframe assert_equals: expected "outerlog:willfocusinput,windowfocus,didfocusinput,innerlog:willfocusinput,windowfocus,didfocusinput,activeElement:INPUT,windowblur,activeElement:BODY," but got "outerlog:willfocusinput,didfocusinput,innerlog:willfocusinput,didfocusinput,activeElement:INPUT,windowblur,activeElement:BODY,"
+Harness: the test ran to completion.
+

@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<script src = "/resources/testharness.js"></script>
+<script src = "/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+// The old quota-based flow control system would never fragment messages less
+// than 64KB as long as there was sufficient time between messages to refresh
+// quota. Some servers may have come to rely on this behaviour. The new
+// datapipe-based flow control system has code to emulate the behaviour.
+// This test verifies that small messages are reassembled correctly.
+// This behaviour is Chromium-specific.
+
+// TODO(ricea): If we decide this behaviour is not needed we should remove
+// this test. See https://crbug.com/1086273.
+
+// Prime number under 65536. Messages of 65536 bytes or less should not be
+// fragmented. Prime so that it is extremely unlikely to fit exactly into
+// any data pipe size that might be used.
+const MESSAGE_SIZE = 65521;
+
+// 32 * 65521 = 2096672 is probably larger than any data pipe that would be
+// used. We can't go much bigger without making the test too slow.
+const NUMBER_OF_MESSAGES = 32;
+
+async_test(t => {
+  const ws = new WebSocket('ws://127.0.0.1:8880/expect-unfragmented');
+  let finished = false;
+  let sent_messages = 0;
+  const message = new ArrayBuffer(MESSAGE_SIZE);
+  ws.onopen = () => {
+    // We wait for acknowledgement of each message before sending the next one.
+    // This ensures that the quota would have been updated with the old
+    // quota-based flow control.
+    ws.send(message);
+    sent_messages = 1;
+  };
+  ws.onerror = t.unreached_func('onerror should not be fired');
+  ws.onmessage = t.step_func(evt => {
+    if (sent_messages < NUMBER_OF_MESSAGES) {
+      assert_equals(evt.data,
+                    `OK: message ${sent_messages - 1} not fragmented`);
+      ws.send(message);
+      ++sent_messages;
+      return;
+    }
+    assert_equals(evt.data, 'OK: message 31 not fragmented');
+    finished = true;
+  });
+  ws.onclose = t.step_func_done(() => {
+    assert_true(finished, 'Test must finish');
+  });
+}, 'Small messages should not be fragmented');
+</script>
+</html>

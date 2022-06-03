@@ -1,0 +1,303 @@
+; Copyright 2017 The Chromium Authors. All rights reserved.
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+(version 1)
+
+; Helper function to check if a param is set to true.
+(define (param-true? str) (string=? (param str) "TRUE"))
+
+; Helper function to determine if a parameter is defined or not.
+(define (param-defined? str) (string? (param str)))
+
+; Define constants for all of the parameter strings passed in.
+(define browser-pid "BROWSER_PID")
+(define bundle-id "BUNDLE_ID")
+(define bundle-path "BUNDLE_PATH")
+(define component-path "COMPONENT_PATH")
+(define current-pid "CURRENT_PID")
+(define disable-sandbox-denial-logging "DISABLE_SANDBOX_DENIAL_LOGGING")
+(define enable-logging "ENABLE_LOGGING")
+(define executable-path "EXECUTABLE_PATH")
+(define homedir-as-literal "USER_HOMEDIR_AS_LITERAL")
+(define log-file-path "LOG_FILE_PATH")
+(define os-version (string->number (param "OS_VERSION")))
+(define darwin-user-cache-dir "DARWIN_USER_CACHE_DIR")
+(define darwin-user-dir "DARWIN_USER_DIR")
+(define darwin-user-temp-dir "DARWIN_USER_TEMP_DIR")
+; There are two separate flags for syscall filtering to allow it
+; to be rolled out to one process type at a time, while still allowing
+; local development.
+(define filter-syscalls "FILTER_SYSCALLS")
+(define filter-syscalls-debug "FILTER_SYSCALLS_DEBUG")
+
+; Backwards compatibility for 10.11.
+(if (not (defined? 'iokit-registry-entry-class))
+  (define iokit-registry-entry-class iokit-user-client-class))
+
+; --enable-sandbox-logging causes the sandbox to log failures to the syslog.
+(if (param-true? disable-sandbox-denial-logging)
+  (deny default (with no-log))
+  (deny default))
+
+(if (param-true? enable-logging) (debug deny))
+
+; Allow sending signals to self - https://crbug.com/20370
+(allow signal (target self))
+
+; Consumes a subpath and appends it to the user's homedir path.
+(define (user-homedir-path subpath)
+  (string-append (param homedir-as-literal) subpath))
+
+; A function that specific profiles (i.e. renderer) can call to allow
+; font rendering.
+(define (allow-font-access)
+  (begin
+    (allow file-read-data
+      (subpath "/Library/Fonts")
+      (subpath "/System/Library/Fonts")
+      (subpath (user-homedir-path "/Library/Fonts"))
+    )
+    (allow mach-lookup
+      ; https://crbug.com/756145, https://crbug.com/786615
+      (global-name "com.apple.FontObjectsServer")
+      (global-name "com.apple.fonts")
+    )
+    (if (< os-version 1012)
+      (allow mach-lookup (global-name "com.apple.FontServer")))
+    ; To allow accessing downloaded and other hidden fonts in
+    ; /System/Library/Asssets/com_apple_MobileAsset_Font*.
+    ; (https://crbug.com/662686)
+    (allow file-read* (extension "com.apple.app-sandbox.read"))))
+
+; Reads of signed Mach-O blobs created by the CVMS server.
+; https://crbug.com/850021
+(define (allow-cvms-blobs)
+  (if (>= os-version 1014)
+    (begin
+      (allow file-read* file-write-unlink
+        (prefix "/private/tmp/cvmsCodeSignObj"))
+      (allow file-read*
+        (extension "com.apple.cvms.kernel")
+        (prefix "/private/var/db/CVMS/cvmsCodeSignObj"))
+)))
+
+; Allow logging for all processes.
+(allow file-write*
+  (require-all
+    (path (param log-file-path))
+    (vnode-type REGULAR-FILE)))
+
+; Allow component builds to work.
+(if (param-defined? component-path)
+  (allow file-read* (subpath (param component-path))))
+
+(allow process-exec (path (param executable-path)))
+(allow file-read* (path (param executable-path)))
+
+; The browser exposes Mach services at "bundle-id.service-name.browser-pid".
+; This macro is a helper for doing the string concatenation.
+(define (browser-service-name service-name)
+  (global-name (string-append (param bundle-id)
+                              "." service-name "."
+                              (param browser-pid))))
+
+(allow mach-lookup
+  (browser-service-name "MachPortRendezvousServer")
+)
+
+; Allow realpath() to work.
+(allow file-read-metadata (subpath "/"))
+
+; All processes can read the bundle contents.
+(allow file-read* (subpath (param bundle-path)))
+
+; Allow reads of system libraries and frameworks.
+(allow file-read*
+  (subpath "/System/Library/CoreServices/CoreTypes.bundle")
+  (subpath "/System/Library/CoreServices/SystemVersion.bundle")
+  (subpath "/System/Library/Frameworks")
+  (subpath "/System/Library/Preferences/Logging")
+  (subpath "/System/Library/PrivateFrameworks")
+  (subpath "/usr/lib")
+)
+
+; Reads from /etc.
+; This is read by CFPrefs calling getpwuid in a loop. libinfo then fails to
+; contact any of the opendirectoryd mach services, and falls back to
+; the /etc/passwd file for the user info. The access is OK because
+; no actual password hashes are in /etc/passwd anymore.
+(allow file-read-data (path "/private/etc/passwd"))
+
+; Access to /dev.
+(allow file-ioctl file-read-data file-write-data
+  (require-all
+    (path "/dev/dtracehelper")
+    (vnode-type CHARACTER-DEVICE)))
+
+(allow file-read-data
+  (path "/dev/null")
+  (path "/dev/random")
+  (path "/dev/urandom")
+)
+
+(if (>= os-version 1013)
+  (begin (allow file-read* (subpath "/private/var/db/timezone"))
+         (allow file-read-data (subpath "/usr/share/zoneinfo.default"))))
+
+(if (< os-version 1013)
+  (allow file-read-data (subpath "/usr/share/zoneinfo")))
+
+; Reads from /Library.
+(allow file-read-data
+  (path "/Library/Managed Preferences/.GlobalPreferences.plist")
+  (path "/Library/Preferences/.GlobalPreferences.plist")
+  (path (string-append "/Library/Managed Preferences/" (param bundle-id) ".plist"))
+  (path (string-append "/Library/Preferences/" (param bundle-id) ".plist"))
+  (regex #"/Library/Managed Preferences/.*/\.GlobalPreferences\.plist")
+  (regex (string-append #"/Library/Managed Preferences/.*/" (regex-quote (param bundle-id)) #"\.plist"))
+)
+
+; Reads from /System.
+(allow file-read-data
+  (path "/System/Library/CoreServices/SystemVersion.plist")
+  (path "/System/Library/CoreServices/SystemVersionCompat.plist") ; https://crbug.com/1108832
+  (path "/System/Library/CoreServices/checkfixlist")
+)
+
+; Reads from /usr.
+(allow file-read-data
+  (subpath "/usr/share/icu")
+)
+
+; Access to the home directory.
+(allow file-read-data
+  (path (string-append (user-homedir-path "/Library/Preferences/") (param bundle-id) ".plist"))
+  (path (user-homedir-path "/Library/Preferences/.GlobalPreferences.plist"))
+  (regex (user-homedir-path #"/Library/Preferences/ByHost/.GlobalPreferences.*"))
+  (path (user-homedir-path "/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist"))
+)
+
+; Mach IPC needed by all Chromium Helper instances.
+(allow mach-lookup
+  (global-name "com.apple.logd")  ; https://crbug.com/792229
+  (global-name "com.apple.system.logger")
+  (global-name "com.apple.system.opendirectoryd.libinfo")  ; https://crbug.com/792228
+)
+
+; sysctls permitted.
+(allow sysctl-read
+  (sysctl-name "hw.activecpu")
+  (sysctl-name "hw.busfrequency_compat")
+  (sysctl-name "hw.byteorder")
+  (sysctl-name "hw.cachelinesize_compat")
+  (sysctl-name "hw.cpufrequency_compat")
+  (sysctl-name "hw.cputype")
+  (sysctl-name "hw.logicalcpu_max")
+  (sysctl-name "hw.machine")
+  (sysctl-name "hw.ncpu")
+  (sysctl-name "hw.pagesize_compat")
+  (sysctl-name "hw.physicalcpu_max")
+  (sysctl-name "hw.tbfrequency_compat")
+  (sysctl-name "hw.vectorunit")
+  (sysctl-name "kern.hostname")
+  (sysctl-name "kern.maxfilesperproc")
+  (sysctl-name "kern.osproductversion")
+  (sysctl-name "kern.osrelease")
+  (sysctl-name "kern.ostype")
+  (sysctl-name "kern.osvariant_status")
+  (sysctl-name "kern.osversion")
+  (sysctl-name "kern.secure_kernel")
+  (sysctl-name "kern.usrstack64")
+  (sysctl-name "kern.version")
+  (sysctl-name "sysctl.proc_cputype")
+  (sysctl-name (string-append "kern.proc.pid." (param current-pid)))
+)
+
+(allow network-outbound
+  (literal "/private/var/run/asl_input")
+  (literal "/private/var/run/syslog")
+)
+
+; This is available in 10.15+, and rolled out as a Finch experiment.
+(if (param-true? filter-syscalls)
+  (when (defined? 'syscall-unix)
+    (allow syscall-unix
+      (syscall-number SYS___disable_threadsignal)
+      (syscall-number SYS___mac_syscall)
+      (syscall-number SYS___pthread_kill)
+      (syscall-number SYS___pthread_markcancel)
+      (syscall-number SYS___pthread_sigmask)
+      (syscall-number SYS___semwait_signal)
+      (syscall-number SYS___semwait_signal_nocancel)
+      (syscall-number SYS_access)
+      (syscall-number SYS_bsdthread_create)
+      (syscall-number SYS_bsdthread_ctl)
+      (syscall-number SYS_bsdthread_register)
+      (syscall-number SYS_bsdthread_terminate)
+      (syscall-number SYS_close)
+      (syscall-number SYS_close_nocancel)
+      (syscall-number SYS_csops_audittoken)
+      (syscall-number SYS_exit)
+      (syscall-number SYS_fcntl)
+      (syscall-number SYS_fileport_makefd)
+      (syscall-number SYS_fileport_makeport)
+      (syscall-number SYS_fstat64)
+      (syscall-number SYS_fstatat64)
+      (syscall-number SYS_fstatfs64)
+      (syscall-number SYS_getattrlist)
+      (syscall-number SYS_getattrlistbulk)
+      (syscall-number SYS_getaudit_addr)
+      (syscall-number SYS_getdirentries64)
+      (syscall-number SYS_geteuid)
+      (syscall-number SYS_getgid)
+      (syscall-number SYS_gethostuuid)
+      (syscall-number SYS_getpid)
+      (syscall-number SYS_getppid)
+      (syscall-number SYS_getpriority)
+      (syscall-number SYS_getrlimit)
+      (syscall-number SYS_gettimeofday)
+      (syscall-number SYS_getuid)
+      (syscall-number SYS_ioctl)
+      (syscall-number SYS_issetugid)
+      (syscall-number SYS_kdebug_trace64)
+      (syscall-number SYS_kevent64)
+      (syscall-number SYS_kevent_id)
+      (syscall-number SYS_kevent_qos)
+      (syscall-number SYS_kqueue)
+      (syscall-number SYS_lstat64)
+      (syscall-number SYS_madvise)
+      (syscall-number SYS_mmap)
+      (syscall-number SYS_mprotect)
+      (syscall-number SYS_munmap)
+      (syscall-number SYS_open)
+      (syscall-number SYS_open_dprotected_np)
+      (syscall-number SYS_open_nocancel)
+      (syscall-number SYS_pread)
+      (syscall-number SYS_proc_info)
+      (syscall-number SYS_psynch_mutexdrop)
+      (syscall-number SYS_psynch_mutexwait)
+      (syscall-number SYS_psynch_rw_downgrade)
+      (syscall-number SYS_psynch_rw_longrdlock)
+      (syscall-number SYS_psynch_rw_rdlock)
+      (syscall-number SYS_psynch_rw_unlock)
+      (syscall-number SYS_psynch_rw_unlock2)
+      (syscall-number SYS_psynch_rw_upgrade)
+      (syscall-number SYS_psynch_rw_wrlock)
+      (syscall-number SYS_psynch_rw_yieldwrlock)
+      (syscall-number SYS_read)
+      (syscall-number SYS_read_nocancel)
+      (syscall-number SYS_readlink)
+      (syscall-number SYS_shm_open)
+      (syscall-number SYS_sigaction)
+      (syscall-number SYS_sigprocmask)
+      (syscall-number SYS_sigreturn)
+      (syscall-number SYS_stat64)
+      (syscall-number SYS_statfs64)
+      (syscall-number SYS_sysctl)
+      (syscall-number SYS_sysctlbyname)
+      (syscall-number SYS_thread_selfid)
+      (syscall-number SYS_ulock_wait)
+      (syscall-number SYS_ulock_wake)
+      (syscall-number SYS_workq_kernreturn)
+      (syscall-number SYS_workq_open)
+)))

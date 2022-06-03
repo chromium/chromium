@@ -5,15 +5,14 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 
-#import <Cocoa/Cocoa.h>
-
+#include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/mac/scoped_block.h"
-#include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/common/mac/attributed_string_coder.h"
+#include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -54,6 +53,9 @@ class CONTENT_EXPORT TextInputClientMac {
   // Returns the singleton instance.
   static TextInputClientMac* GetInstance();
 
+  TextInputClientMac(const TextInputClientMac&) = delete;
+  TextInputClientMac& operator=(const TextInputClientMac&) = delete;
+
   // Each of the three methods mentioned above has an associated pair of methods
   // to get data from the renderer. The Get*() methods block the calling thread
   // (always the UI thread) with a short timeout after the async message has
@@ -76,8 +78,8 @@ class CONTENT_EXPORT TextInputClientMac {
   void SetCharacterIndexAndSignal(uint32_t index);
   void SetFirstRectAndSignal(const gfx::Rect& first_rect);
 
-  typedef base::OnceCallback<
-      void(const mac::AttributedStringCoder::EncodedString&, gfx::Point)>
+  typedef base::OnceCallback<void(ui::mojom::AttributedStringPtr,
+                                  const gfx::Point&)>
       GetStringCallback;
 
   // This async method is invoked from RenderWidgetHostViewCocoa's
@@ -90,12 +92,6 @@ class CONTENT_EXPORT TextInputClientMac {
                         const gfx::Point& point,
                         GetStringCallback callback);
 
-  // This is called on the IO thread when we get the renderer's reply for
-  // GetStringAtPoint.
-  void GetStringAtPointReply(
-      const mac::AttributedStringCoder::EncodedString& string,
-      const gfx::Point& point);
-
   // This async method is invoked when browser tries to retreive the text for
   // certain range and doesn't want to wait for the reply from blink.
   // The reply callback will be invoked from the IO thread; the caller is
@@ -106,14 +102,9 @@ class CONTENT_EXPORT TextInputClientMac {
                           const gfx::Range& range,
                           GetStringCallback callback);
 
-  // This is called on the IO thread when we get the renderer's reply for
-  // GetStringFromRange.
-  void GetStringFromRangeReply(
-      const mac::AttributedStringCoder::EncodedString& string,
-      const gfx::Point& point);
-
  private:
   friend struct base::DefaultSingletonTraits<TextInputClientMac>;
+  FRIEND_TEST_ALL_PREFIXES(TextInputClientMacTest, TimeoutRectForRange);
   TextInputClientMac();
   ~TextInputClientMac();
 
@@ -121,24 +112,26 @@ class CONTENT_EXPORT TextInputClientMac {
   // These methods lock the internal condition for use before the asynchronous
   // message is sent to the renderer to lookup the required information. These
   // are only used on the UI thread.
-  void BeforeRequest();
+  void BeforeRequest() EXCLUSIVE_LOCK_FUNCTION(lock_);
   // Called at the end of a critical section. This will release the lock and
   // condition.
-  void AfterRequest();
+  void AfterRequest() UNLOCK_FUNCTION(lock_);
+
+  base::TimeDelta wait_timeout_for_tests() const { return wait_timeout_; }
+  void set_wait_timeout_for_tests(base::TimeDelta wait_timeout) {
+    wait_timeout_ = wait_timeout;
+  }
 
   uint32_t character_index_;
   gfx::Rect first_rect_;
 
   base::Lock lock_;
   base::ConditionVariable condition_;
-
-  // The callback when received IPC TextInputClientReplyMsg_GotStringAtPoint.
-  GetStringCallback replyForPointHandler_;
-
-  // The callback when received IPC TextInputClientReplyMsg_GotStringForRange.
-  GetStringCallback replyForRangeHandler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputClientMac);
+  // The amount of time that the browser process will wait for a response from
+  // the renderer.
+  // TODO(rsesek): Using the histogram data, find the best upper-bound for this
+  // value.
+  base::TimeDelta wait_timeout_ = base::Milliseconds(1500);
 };
 
 }  // namespace content

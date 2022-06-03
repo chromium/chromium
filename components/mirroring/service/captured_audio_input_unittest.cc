@@ -5,9 +5,9 @@
 #include "components/mirroring/service/captured_audio_input.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +22,8 @@ using ::testing::InvokeWithoutArgs;
 
 namespace mirroring {
 
+using AudioSourceErrorCode = media::AudioCapturerSource::ErrorCode;
+
 namespace {
 
 class MockStream final : public media::mojom::AudioInputStream {
@@ -35,15 +37,15 @@ class MockDelegate final : public media::AudioInputIPCDelegate {
   MockDelegate() {}
   ~MockDelegate() override {}
 
-  MOCK_METHOD1(StreamCreated, void(bool initially_muted));
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD0(StreamCreated, void());
+  MOCK_METHOD1(OnError, void(AudioSourceErrorCode code));
   MOCK_METHOD1(OnMuted, void(bool muted));
   MOCK_METHOD0(OnIPCClosed, void());
 
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override {
-    StreamCreated(initially_muted);
+    StreamCreated();
   }
 };
 
@@ -53,14 +55,16 @@ class CapturedAudioInputTest : public ::testing::Test {
  public:
   CapturedAudioInputTest() {}
 
+  CapturedAudioInputTest(const CapturedAudioInputTest&) = delete;
+  CapturedAudioInputTest& operator=(const CapturedAudioInputTest&) = delete;
+
   ~CapturedAudioInputTest() override { task_environment_.RunUntilIdle(); }
 
   void CreateMockStream(
-      bool initially_muted,
       mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
       const media::AudioParameters& params,
       uint32_t total_segments) {
-    EXPECT_EQ(base::SyncSocket::kInvalidHandle, socket_.handle());
+    EXPECT_FALSE(socket_.IsValid());
     EXPECT_FALSE(stream_);
     mojo::PendingRemote<media::mojom::AudioInputStream> pending_stream;
     auto input_stream = std::make_unique<MockStream>();
@@ -77,17 +81,15 @@ class CapturedAudioInputTest : public ::testing::Test {
     audio_client->StreamCreated(
         std::move(pending_stream), stream_client_.BindNewPipeAndPassReceiver(),
         {base::in_place, base::ReadOnlySharedMemoryRegion::Create(1024).region,
-         mojo::WrapPlatformFile(foreign_socket.Release())},
-        initially_muted);
+         mojo::PlatformHandle(foreign_socket.Take())});
   }
 
  protected:
-  void CreateStream(bool initially_muted) {
-    audio_input_ = std::make_unique<CapturedAudioInput>(
-        base::BindRepeating(&CapturedAudioInputTest::CreateMockStream,
-                            base::Unretained(this), initially_muted));
+  void CreateStream() {
+    audio_input_ = std::make_unique<CapturedAudioInput>(base::BindRepeating(
+        &CapturedAudioInputTest::CreateMockStream, base::Unretained(this)));
     base::RunLoop run_loop;
-    EXPECT_CALL(delegate_, StreamCreated(initially_muted))
+    EXPECT_CALL(delegate_, StreamCreated())
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     audio_input_->CreateStream(&delegate_, media::AudioParameters(), false, 10);
     run_loop.Run();
@@ -105,9 +107,19 @@ class CapturedAudioInputTest : public ::testing::Test {
   void SignalStreamError() {
     EXPECT_TRUE(stream_client_.is_bound());
     base::RunLoop run_loop;
-    EXPECT_CALL(delegate_, OnError())
+    EXPECT_CALL(delegate_, OnError(AudioSourceErrorCode::kUnknown))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    stream_client_->OnError();
+    stream_client_->OnError(media::mojom::InputStreamErrorCode::kUnknown);
+    run_loop.Run();
+  }
+
+  void SignalStreamPermissionsError() {
+    EXPECT_TRUE(stream_client_.is_bound());
+    base::RunLoop run_loop;
+    EXPECT_CALL(delegate_, OnError(AudioSourceErrorCode::kSystemPermissions))
+        .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    stream_client_->OnError(
+        media::mojom::InputStreamErrorCode::kSystemPermissions);
     run_loop.Run();
   }
 
@@ -145,38 +157,40 @@ class CapturedAudioInputTest : public ::testing::Test {
   MockStream* stream_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStreamClient> stream_client_;
   base::CancelableSyncSocket socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturedAudioInputTest);
 };
 
 TEST_F(CapturedAudioInputTest, CreateStream) {
-  // Test that the initial muted state can be propagated to |delegate_|.
-  CreateStream(false);
-  CloseStream();
-  CreateStream(true);
+  // Test that |delegate_| runs OnStreamCreated().
+  CreateStream();
   CloseStream();
 }
 
 TEST_F(CapturedAudioInputTest, PropagatesStreamError) {
-  CreateStream(false);
+  CreateStream();
   SignalStreamError();
   CloseStream();
 }
 
+TEST_F(CapturedAudioInputTest, PropagatesStreamPermissionsError) {
+  CreateStream();
+  SignalStreamPermissionsError();
+  CloseStream();
+}
+
 TEST_F(CapturedAudioInputTest, PropagatesMutedStateChange) {
-  CreateStream(false);
+  CreateStream();
   SignalMutedStateChanged(true);
   CloseStream();
 }
 
 TEST_F(CapturedAudioInputTest, SetVolume) {
-  CreateStream(false);
+  CreateStream();
   SetVolume(0.8);
   CloseStream();
 }
 
 TEST_F(CapturedAudioInputTest, Record) {
-  CreateStream(false);
+  CreateStream();
   Record();
   CloseStream();
 }

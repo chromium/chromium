@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-23 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "qrZePjKjcYAEId2PuvAx2MQsYIfhgn_DV1qfYiFrGMUC"  # 30.6.5
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-23/google_apis/x86"
+  version: "3lLeyG6bG6CvZW9Lyb1fCyPKbSNNqxA2AOs89xt-Er8C"  # 33
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-23;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-23/google_apis/x86/generic_android23_tablet"
+  dest_path: ".android"
+}
+avd_name: "generic_android23_tablet"
+
+avd_settings {
+  screen {
+    density: 160
+    height: 1024
+    width: 600
+  }
+  sdcard {
+    size: "1G"
+  }
+  # crbug.com/1110997: Disable GLDMA for android-23
+  advanced_features {
+    key: "GLDMA"
+    value: "off"
+  }
+  # Tests can run into low memory issue with the default ram size 1024MB
+  # Incease to 2048MB, which is the same as that on Nexus 5X
+  ram_size: 2048
+}

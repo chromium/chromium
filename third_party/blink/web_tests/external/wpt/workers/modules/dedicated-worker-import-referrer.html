@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>DedicatedWorker: Referrer</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -124,21 +125,21 @@ function import_referrer_test(settings, description) {
 //                     using [Window]'s URL as the referrer.
 
 import_referrer_test(
-    { scriptURL: 'referrer-checker.py',
+    { scriptURL: 'postmessage-referrer-checker.py',
       windowReferrerPolicy: 'no-referrer',
       fetchType: 'top-level' },
     'Same-origin top-level module script loading with "no-referrer" referrer ' +
         'policy');
 
 import_referrer_test(
-    { scriptURL: 'referrer-checker.py',
+    { scriptURL: 'postmessage-referrer-checker.py',
       windowReferrerPolicy: 'origin',
       fetchType: 'top-level' },
     'Same-origin top-level module script loading with "origin" referrer ' +
         'policy');
 
 import_referrer_test(
-    { scriptURL: 'referrer-checker.py',
+    { scriptURL: 'postmessage-referrer-checker.py',
       windowReferrerPolicy: 'same-origin',
       fetchType: 'top-level' },
     'Same-origin top-level module script loading with "same-origin" referrer ' +

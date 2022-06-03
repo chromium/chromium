@@ -50,7 +50,7 @@ std::map<std::string, std::string> BreakpadHTTPFormParametersFromMinidump(
       }
     }
 
-    for (std::string annotation : module->AnnotationsVector()) {
+    for (const std::string& annotation : module->AnnotationsVector()) {
       list_annotations.append(annotation);
       list_annotations.append("\n");
     }

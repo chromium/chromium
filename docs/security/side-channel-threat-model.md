@@ -3,7 +3,7 @@
 Contributors: awhalley, creis, dcheng, jschuh, jyasskin, lukasza, mkwst, nasko,
 palmer, tsepez. Patches and corrections welcome!
 
-Last Updated: 29 May 2018
+Last Updated: 27 April 2021
 
 [TOC]
 
@@ -134,7 +134,7 @@ timeframe.)
 ##### Incompleteness of CORB
 
 Site Isolation depends on [cross-origin read
-blocking](https://chromium.googlesource.com/chromium/src/+/master/content/browser/loader/cross_origin_read_blocking_explainer.md)
+blocking](https://chromium.googlesource.com/chromium/src/+/main/content/browser/loader/cross_origin_read_blocking_explainer.md)
 (CORB; formerly known as cross-site document blocking or XSDB) to prevent a
 malicious website from pulling in sensitive cross-origin data. Otherwise, an
 attacker could use markup like `<img src="http://example.com/secret.json">` to
@@ -208,11 +208,7 @@ tracked this as [Issue
 ###### Flash
 
 Click To Play greatly reduces the risk that Flash-borne Spectre (and other)
-exploits will be effective at scale.  Additionally, the enterprise policies
-[PluginsBlockedForUrls](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=PluginsBlockedForUrls)
-and
-[PluginsAllowedForUrls](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=PluginsAllowedForUrls)
-can be combined to restrict Flash to specific websites.
+exploits will be effective at scale.
 Even so,
 [we might want to consider teaching CORB about Flash flavour of CORS](https://crbug.com/816318).
 
@@ -327,7 +323,7 @@ we don’t expect that we can get much long-term defensive value from doing so,
 for several reasons:
 
 * There are [many explicit and implicit clocks in the
-  platform](https://bugs.chromium.org/p/chromium/issues/detail?id=798795)
+  platform](https://gruss.cc/files/fantastictimers.pdf)
 * It is not always possible to coarsen or jitter them enough to slow or stop
   exploitation…
 * …while also maintaining web platform compatibility and utility
@@ -341,12 +337,34 @@ clocks, and we want the OWP to be able to support them.
 
 ### Gating Access To APIs That Enable Exploitation
 
+We want to support a powerful web, though we recognize that some kinds of APIs
+a powerful web requires are more likely than others to facilitate exploitation,
+either because they can be used as very high-resolution timers
+(`SharedArrayBuffer`), or because they provide powerful introspection
+capabilities (`performance.measureMemory`). We can mitigate the risks these APIs
+pose by exposing them only in contexts that have opted-into a set of
+restrictions that limits access to cross-origin data.
+
+In particular, [`Cross-Origin-Opener-Policy` (COOP) and
+`Cross-Origin-Embedder-Policy` (COEP)](https://docs.google.com/document/d/1zDlfvfTJ_9e8Jdc8ehuV4zMEu9ySMCiTGMS9y0GU92k/edit)
+seem promising. Together, these mechanisms change web-facing behavior to enable
+origin-level process isolation, and ensure that cross-origin subresources will
+flow into a given process only if they opt-into that usage. These properties
+give us a higher degree of confidence that otherwise dangerous APIs can be
+exposed safely, as any attack they enable would only gain access to same-origin
+data, or data that explicitly asserted that it accepted the risk of exposure.
+
+Both COOP and COEP are enabled as of M83, and we [plan to require both before
+enabling APIs like `SharedArrayBuffer`](https://groups.google.com/a/chromium.org/d/msg/blink-dev/_0MEXs6TJhg/F0UduPfpAQAJ).
+Other browsers seem likely to do the same.
+
+#### Other Gating Mechanisms
+
 **Note:** This section explores ideas but we are not currently planning on
 implementing anything along these lines.
 
-Although we want to support applications that necessarily need access to
-features that enable exploitation, such as `SharedArrayBuffer`, we don’t
-necessarily need to make the features available unconditionally. For example, a
+Looking beyond developer opt-ins such as COOP and COEP, we might be able to find
+other ways of limiting the scope of APIs to reduce their risk. For example, a
 third-party `iframe` that is trying to exploit Spectre is very different than a
 WebAssembly game, in the top-level frame, that the person is actively playing
 (and issuing many gestures to). We could programmatically detect engagement and

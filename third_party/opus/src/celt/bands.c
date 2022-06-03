@@ -70,10 +70,10 @@ opus_int16 bitexact_cos(opus_int16 x)
    opus_int32 tmp;
    opus_int16 x2;
    tmp = (4096+((opus_int32)(x)*(x)))>>13;
-   celt_assert(tmp<=32767);
+   celt_sig_assert(tmp<=32767);
    x2 = tmp;
    x2 = (32767-x2) + FRAC_MUL16(x2, (-7651 + FRAC_MUL16(x2, (8277 + FRAC_MUL16(-626, x2)))));
-   celt_assert(x2<=32766);
+   celt_sig_assert(x2<=32766);
    return 1+x2;
 }
 
@@ -282,7 +282,7 @@ void anti_collapse(const CELTMode *m, celt_norm *X_, unsigned char *collapse_mas
 
       N0 = m->eBands[i+1]-m->eBands[i];
       /* depth in 1/8 bits */
-      celt_assert(pulses[i]>=0);
+      celt_sig_assert(pulses[i]>=0);
       depth = celt_udiv(1+pulses[i], (m->eBands[i+1]-m->eBands[i]))>>LM;
 
 #ifdef FIXED_POINT
@@ -371,14 +371,14 @@ void anti_collapse(const CELTMode *m, celt_norm *X_, unsigned char *collapse_mas
 static void compute_channel_weights(celt_ener Ex, celt_ener Ey, opus_val16 w[2])
 {
    celt_ener minE;
-#if FIXED_POINT
+#ifdef FIXED_POINT
    int shift;
 #endif
    minE = MIN32(Ex, Ey);
    /* Adjustment to make the weights a bit more conservative. */
    Ex = ADD32(Ex, minE/3);
    Ey = ADD32(Ey, minE/3);
-#if FIXED_POINT
+#ifdef FIXED_POINT
    shift = celt_ilog2(EPSILON+MAX32(Ex, Ey))-14;
 #endif
    w[0] = VSHR32(Ex, shift);
@@ -478,7 +478,7 @@ static void stereo_merge(celt_norm * OPUS_RESTRICT X, celt_norm * OPUS_RESTRICT 
 /* Decide whether we should spread the pulses in the current frame */
 int spreading_decision(const CELTMode *m, const celt_norm *X, int *average,
       int last_decision, int *hf_average, int *tapset_decision, int update_hf,
-      int end, int C, int M)
+      int end, int C, int M, const int *spread_weight)
 {
    int i, c, N0;
    int sum = 0, nbBands=0;
@@ -519,8 +519,8 @@ int spreading_decision(const CELTMode *m, const celt_norm *X, int *average,
          if (i>m->nbEBands-4)
             hf_sum += celt_udiv(32*(tcount[1]+tcount[0]), N);
          tmp = (2*tcount[2] >= N) + (2*tcount[1] >= N) + (2*tcount[0] >= N);
-         sum += tmp*256;
-         nbBands++;
+         sum += tmp*spread_weight[i];
+         nbBands+=spread_weight[i];
       }
    } while (++c<C);
 
@@ -544,7 +544,7 @@ int spreading_decision(const CELTMode *m, const celt_norm *X, int *average,
    /*printf("%d %d %d\n", hf_sum, *hf_average, *tapset_decision);*/
    celt_assert(nbBands>0); /* end has to be non-zero */
    celt_assert(sum>=0);
-   sum = celt_udiv(sum, nbBands);
+   sum = celt_udiv((opus_int32)sum<<8, nbBands);
    /* Recursive averaging */
    sum = (sum+*average)>>1;
    *average = sum;
@@ -901,7 +901,7 @@ static void compute_theta(struct band_ctx *ctx, struct split_ctx *sctx,
    sctx->itheta = itheta;
    sctx->qalloc = qalloc;
 }
-static unsigned quant_band_n1(struct band_ctx *ctx, celt_norm *X, celt_norm *Y, int b,
+static unsigned quant_band_n1(struct band_ctx *ctx, celt_norm *X, celt_norm *Y,
       celt_norm *lowband_out)
 {
    int c;
@@ -926,7 +926,6 @@ static unsigned quant_band_n1(struct band_ctx *ctx, celt_norm *X, celt_norm *Y, 
             sign = ec_dec_bits(ec, 1);
          }
          ctx->remaining_bits -= 1<<BITRES;
-         b-=1<<BITRES;
       }
       if (ctx->resynth)
          x[0] = sign ? -NORM_SCALING : NORM_SCALING;
@@ -1134,7 +1133,7 @@ static unsigned quant_band(struct band_ctx *ctx, celt_norm *X,
    /* Special case for one sample */
    if (N==1)
    {
-      return quant_band_n1(ctx, X, NULL, b, lowband_out);
+      return quant_band_n1(ctx, X, NULL, lowband_out);
    }
 
    if (tf_change>0)
@@ -1256,7 +1255,7 @@ static unsigned quant_band_stereo(struct band_ctx *ctx, celt_norm *X, celt_norm 
    /* Special case for one sample */
    if (N==1)
    {
-      return quant_band_n1(ctx, X, Y, b, lowband_out);
+      return quant_band_n1(ctx, X, Y, lowband_out);
    }
 
    orig_fill = fill;
@@ -1492,6 +1491,7 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
       else
          Y = NULL;
       N = M*eBands[i+1]-M*eBands[i];
+      celt_assert(N > 0);
       tell = ec_tell_frac(ec);
 
       /* Compute how many bits we want to allocate to this band */
@@ -1507,7 +1507,7 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
          b = 0;
       }
 
-#ifdef ENABLE_UPDATE_DRAFT
+#ifndef DISABLE_UPDATE_DRAFT
       if (resynth && (M*eBands[i]-N >= M*eBands[start] || i==start+1) && (update_lowband || lowband_offset==0))
             lowband_offset = i;
       if (i == start+1)
@@ -1541,7 +1541,7 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
          fold_start = lowband_offset;
          while(M*eBands[--fold_start] > effective_lowband+norm_offset);
          fold_end = lowband_offset-1;
-#ifdef ENABLE_UPDATE_DRAFT
+#ifndef DISABLE_UPDATE_DRAFT
          while(++fold_end < i && M*eBands[fold_end] < effective_lowband+norm_offset+N);
 #else
          while(M*eBands[++fold_end] < effective_lowband+norm_offset+N);
@@ -1621,8 +1621,10 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
                ctx = ctx_save;
                OPUS_COPY(X, X_save, N);
                OPUS_COPY(Y, Y_save, N);
+#ifndef DISABLE_UPDATE_DRAFT
                if (i == start+1)
                   special_hybrid_folding(m, norm, norm2, start, M, dual_stereo);
+#endif
                /* Encode and round up. */
                ctx.theta_round = 1;
                x_cm = quant_band_stereo(&ctx, X, Y, N, b, B,

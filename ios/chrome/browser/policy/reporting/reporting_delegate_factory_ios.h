@@ -1,0 +1,48 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_POLICY_REPORTING_REPORTING_DELEGATE_FACTORY_IOS_H_
+#define IOS_CHROME_BROWSER_POLICY_REPORTING_REPORTING_DELEGATE_FACTORY_IOS_H_
+
+#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+
+#include <memory>
+
+#include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/profile_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
+#include "components/enterprise/browser/reporting/report_generator.h"
+#include "components/enterprise/browser/reporting/report_scheduler.h"
+
+namespace enterprise_reporting {
+
+// iOS implementation of the reporting delegate factory. Creates iOS-specific
+// delegates for the enterprise reporting classes.
+class ReportingDelegateFactoryIOS : public ReportingDelegateFactory {
+ public:
+  ReportingDelegateFactoryIOS() = default;
+  ReportingDelegateFactoryIOS(const ReportingDelegateFactoryIOS&) = delete;
+  ReportingDelegateFactoryIOS& operator=(const ReportingDelegateFactoryIOS&) =
+      delete;
+  ~ReportingDelegateFactoryIOS() override = default;
+
+  std::unique_ptr<BrowserReportGenerator::Delegate>
+  GetBrowserReportGeneratorDelegate() override;
+
+  std::unique_ptr<ProfileReportGenerator::Delegate>
+  GetProfileReportGeneratorDelegate() override;
+
+  std::unique_ptr<ReportGenerator::Delegate> GetReportGeneratorDelegate()
+      override;
+
+  std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate()
+      override;
+
+  std::unique_ptr<RealTimeReportGenerator::Delegate>
+  GetRealTimeReportGeneratorDelegate() override;
+};
+
+}  // namespace enterprise_reporting
+
+#endif  // IOS_CHROME_BROWSER_POLICY_REPORTING_REPORTING_DELEGATE_FACTORY_IOS_H_

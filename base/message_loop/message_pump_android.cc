@@ -17,8 +17,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 
@@ -81,9 +82,13 @@ STACK_ALIGN int DelayedLooperCallback(int fd, int events, void* data) {
   return 1;  // continue listening for events
 }
 
+// A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
+// native tasks below.
+constexpr uint64_t kTryNativeTasksBeforeIdleBit = uint64_t(1) << 32;
 }  // namespace
 
-MessagePumpForUI::MessagePumpForUI() {
+MessagePumpForUI::MessagePumpForUI()
+    : env_(base::android::AttachCurrentThread()) {
   // The Android native ALooper uses epoll to poll our file descriptors and wake
   // us up. We use a simple level-triggered eventfd to signal that non-delayed
   // work is available, and a timerfd to signal when delayed work is ready to
@@ -121,6 +126,14 @@ MessagePumpForUI::~MessagePumpForUI() {
 }
 
 void MessagePumpForUI::OnDelayedLooperCallback() {
+  // There may be non-Chromium callbacks on the same ALooper which may have left
+  // a pending exception set, and ALooper does not check for this between
+  // callbacks. Check here, and if there's already an exception, just skip this
+  // iteration without clearing the fd. If the exception ends up being non-fatal
+  // then we'll just get called again on the next polling iteration.
+  if (base::android::HasException(env_))
+    return;
+
   // ALooper_pollOnce may call this after Quit() if OnNonDelayedLooperCallback()
   // resulted in Quit() in the same round.
   if (ShouldQuit())
@@ -140,10 +153,13 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
   // the timerfd, and they both run on the same thread as this callback, so
   // there are no obvious timing or multi-threading related issues.
   DPCHECK(ret >= 0 || errno == EAGAIN);
+  DoDelayedLooperWork();
+}
 
+void MessagePumpForUI::DoDelayedLooperWork() {
   delayed_scheduled_time_.reset();
 
-  Delegate::NextWorkInfo next_work_info = delegate_->DoSomeWork();
+  Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
 
   if (ShouldQuit())
     return;
@@ -159,31 +175,38 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
 }
 
 void MessagePumpForUI::OnNonDelayedLooperCallback() {
+  // There may be non-Chromium callbacks on the same ALooper which may have left
+  // a pending exception set, and ALooper does not check for this between
+  // callbacks. Check here, and if there's already an exception, just skip this
+  // iteration without clearing the fd. If the exception ends up being non-fatal
+  // then we'll just get called again on the next polling iteration.
+  if (base::android::HasException(env_))
+    return;
+
   // ALooper_pollOnce may call this after Quit() if OnDelayedLooperCallback()
   // resulted in Quit() in the same round.
   if (ShouldQuit())
     return;
 
-  // A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
-  // native tasks below.
-  constexpr uint64_t kTryNativeTasksBeforeIdleBit = uint64_t(1) << 32;
-
   // We're about to process all the work requested by ScheduleWork().
   // MessagePump users are expected to do their best not to invoke
-  // ScheduleWork() again before DoSomeWork() returns a non-immediate
+  // ScheduleWork() again before DoWork() returns a non-immediate
   // NextWorkInfo below. Hence, capturing the file descriptor's value now and
   // resetting its contents to 0 should be okay. The value currently stored
   // should be greater than 0 since work having been scheduled is the reason
   // we're here. See http://man7.org/linux/man-pages/man2/eventfd.2.html
-  uint64_t pre_work_value = 0;
-  int ret = read(non_delayed_fd_, &pre_work_value, sizeof(pre_work_value));
+  uint64_t value = 0;
+  int ret = read(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
-  DCHECK_GT(pre_work_value, 0U);
+  DCHECK_GT(value, 0U);
+  bool do_idle_work = value == kTryNativeTasksBeforeIdleBit;
+  DoNonDelayedLooperWork(do_idle_work);
+}
 
-  // Note: We can't skip DoSomeWork() even if
-  // |pre_work_value == kTryNativeTasksBeforeIdleBit| here (i.e. no additional
-  // ScheduleWork() since yielding to native) as delayed tasks might have come
-  // in and we need to re-sample |next_work_info|.
+void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
+  // Note: We can't skip DoWork() even if |do_idle_work| is true here (i.e. no
+  // additional ScheduleWork() since yielding to native) as delayed tasks might
+  // have come in and we need to re-sample |next_work_info|.
 
   // Runs all application tasks scheduled to run.
   Delegate::NextWorkInfo next_work_info;
@@ -191,7 +214,15 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
     if (ShouldQuit())
       return;
 
-    next_work_info = delegate_->DoSomeWork();
+    next_work_info = delegate_->DoWork();
+    // If we are prioritizing native, and the next work would normally run
+    // immediately, skip the next work and let the native tasks have a chance to
+    // run. This is useful when user input is waiting for native to have a
+    // chance to run.
+    if (next_work_info.is_immediate() && next_work_info.yield_to_native) {
+      ScheduleWork();
+      return;
+    }
   } while (next_work_info.is_immediate());
 
   // Do not resignal |non_delayed_fd_| if we're quitting (this pump doesn't
@@ -202,15 +233,8 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
 
   // Before declaring this loop idle, yield to native tasks and arrange to be
   // called again (unless we're already in that second call).
-  if (pre_work_value != kTryNativeTasksBeforeIdleBit) {
-    // Note: This write() is racing with potential ScheduleWork() calls. This is
-    // fine as write() is adding this bit, not overwriting the existing value,
-    // and as such racing ScheduleWork() calls would merely add 1 to the lower
-    // bits and we would find |pre_work_value != kTryNativeTasksBeforeIdleBit|
-    // in the next cycle again, retrying this.
-    ret = write(non_delayed_fd_, &kTryNativeTasksBeforeIdleBit,
-                sizeof(kTryNativeTasksBeforeIdleBit));
-    DPCHECK(ret >= 0);
+  if (!do_idle_work) {
+    ScheduleWorkInternal(/*do_idle_work=*/true);
     return;
   }
 
@@ -223,7 +247,7 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
   // SchedulerWork() but still keep the system non-idle (e.g., the Java Handler
   // API). It would be better to add an API to query the presence of native
   // tasks instead of relying on yielding once + kTryNativeTasksBeforeIdleBit.
-  DCHECK_EQ(pre_work_value, kTryNativeTasksBeforeIdleBit);
+  DCHECK(do_idle_work);
 
   if (ShouldQuit())
     return;
@@ -250,25 +274,7 @@ void MessagePumpForUI::DoIdleWork() {
 }
 
 void MessagePumpForUI::Run(Delegate* delegate) {
-  DCHECK(IsTestImplementation());
-  // This function is only called in tests. We manually pump the native looper
-  // which won't run any java tasks.
-  quit_ = false;
-
-  SetDelegate(delegate);
-
-  // Pump the loop once in case we're starting off idle as ALooper_pollOnce will
-  // never return in that case.
-  ScheduleWork();
-  while (true) {
-    // Waits for either the delayed, or non-delayed fds to be signalled, calling
-    // either OnDelayedLooperCallback, or OnNonDelayedLooperCallback,
-    // respectively. This uses Android's Looper implementation, which is based
-    // off of epoll.
-    ALooper_pollOnce(-1, nullptr, nullptr, nullptr);
-    if (quit_)
-      break;
-  }
+  CHECK(false) << "Unexpected call to Run()";
 }
 
 void MessagePumpForUI::Attach(Delegate* delegate) {
@@ -309,16 +315,26 @@ void MessagePumpForUI::Quit() {
 }
 
 void MessagePumpForUI::ScheduleWork() {
-  // Write (add) 1 to the eventfd. This tells the Looper to wake up and call our
-  // callback, allowing us to run tasks. This also allows us to detect, when we
-  // clear the fd, whether additional work was scheduled after we finished
-  // performing work, but before we cleared the fd, as we'll read back >=2
-  // instead of 1 in that case.
-  // See the eventfd man pages
+  ScheduleWorkInternal(/*do_idle_work=*/false);
+}
+
+void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
+  // Write (add) |value| to the eventfd. This tells the Looper to wake up and
+  // call our callback, allowing us to run tasks. This also allows us to detect,
+  // when we clear the fd, whether additional work was scheduled after we
+  // finished performing work, but before we cleared the fd, as we'll read back
+  // >=2 instead of 1 in that case. See the eventfd man pages
   // (http://man7.org/linux/man-pages/man2/eventfd.2.html) for details on how
   // the read and write APIs for this file descriptor work, specifically without
   // EFD_SEMAPHORE.
-  uint64_t value = 1;
+  // Note: Calls with |do_idle_work| set to true may race with potential calls
+  // where the parameter is false. This is fine as write() is adding |value|,
+  // not overwriting the existing value, and as such racing calls would merely
+  // have their values added together. Since idle work is only executed when the
+  // value read equals kTryNativeTasksBeforeIdleBit, a race would prevent idle
+  // work from being run and trigger another call to this method with
+  // |do_idle_work| set to true.
+  uint64_t value = do_idle_work ? kTryNativeTasksBeforeIdleBit : 1;
   int ret = write(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
 }
@@ -352,8 +368,12 @@ void MessagePumpForUI::QuitWhenIdle(base::OnceClosure callback) {
   ScheduleWork();
 }
 
-bool MessagePumpForUI::IsTestImplementation() const {
-  return false;
+MessagePump::Delegate* MessagePumpForUI::SetDelegate(Delegate* delegate) {
+  return std::exchange(delegate_, delegate);
+}
+
+bool MessagePumpForUI::SetQuit(bool quit) {
+  return std::exchange(quit_, quit);
 }
 
 }  // namespace base

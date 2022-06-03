@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/embedder_support/android",
+  "+components/favicon/android",
+  "+components/url_formatter/android",
+  "+content/public/android",
+  "+services/media_session/public/cpp/android",
+  "+ui/android",
+  "+url:gurl_java",
+]

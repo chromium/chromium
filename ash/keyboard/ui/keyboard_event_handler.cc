@@ -18,6 +18,9 @@ void KeyboardEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       break;
     default:
+      auto* controller = KeyboardUIController::Get();
+      if (controller->IsEnabled() && controller->HandleGestureEvent(*event))
+        event->SetHandled();
       break;
   }
 }

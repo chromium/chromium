@@ -4,6 +4,7 @@
 
 package org.chromium.device.bluetooth;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanFilter;
@@ -12,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
@@ -209,12 +211,34 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
 
     /**
      * @return true if Chromium has permission to scan for Bluetooth devices and location services
-     * are on.
+     *         are on.
      */
     private boolean canScan() {
+        if (mAdapter == null) {
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Context context = mAdapter.getContext();
+            return context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
+                    == PackageManager.PERMISSION_GRANTED
+                    && context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+
         LocationUtils locationUtils = LocationUtils.getInstance();
-        return locationUtils.hasAndroidLocationPermission()
-                && locationUtils.isSystemLocationSettingEnabled();
+        if (!locationUtils.isSystemLocationSettingEnabled()) return false;
+
+        Context context = mAdapter.getContext();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+
+        return (context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                       == PackageManager.PERMISSION_GRANTED)
+                || (context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED);
     }
 
     private void registerBroadcastReceiver() {
@@ -296,7 +320,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                         result.getDevice().getAddress(), result.getDevice(),
                         result.getScanRecord_getDeviceName(), result.getRssi(), uuid_strings,
                         result.getScanRecord_getTxPowerLevel(), serviceDataKeys, serviceDataValues,
-                        manufacturerDataKeys, manufacturerDataValues);
+                        manufacturerDataKeys, manufacturerDataValues,
+                        result.getScanRecord_getAdvertiseFlags());
             }
         }
 
@@ -360,7 +385,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 Wrappers.BluetoothDeviceWrapper deviceWrapper, String localName, int rssi,
                 String[] advertisedUuids, int txPower, String[] serviceDataKeys,
                 Object[] serviceDataValues, int[] manufacturerDataKeys,
-                Object[] manufacturerDataValues);
+                Object[] manufacturerDataValues, int advertiseFlags);
 
         // Binds to BluetoothAdapterAndroid::nativeOnAdapterStateChanged
         void onAdapterStateChanged(

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests console.table.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       console.table();
@@ -56,6 +56,6 @@
       console.table("foo", [1,2,3]);
   `);
 
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();
 })();

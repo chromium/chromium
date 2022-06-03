@@ -17,7 +17,7 @@
     <output filename="remoting/resources/de.pak" lang="de" type="data_package"/>
     <output filename="remoting/resources/el.pak" lang="el" type="data_package"/>
     <output filename="remoting/resources/en-GB.pak" lang="en-GB" type="data_package"/>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <output filename="remoting/resources/en-US.pak" lang="en" type="data_package"/>
     </if>
     <output filename="remoting/resources/en.pak" lang="en" type="data_package"/>
@@ -31,10 +31,6 @@
     <output filename="remoting/resources/es.pak" lang="es" type="data_package"/>
     <output filename="remoting/resources/et.pak" lang="et" type="data_package"/>
     <output filename="remoting/resources/fa.pak" lang="fa" type="data_package"/>
-    <if expr="not is_ios or not _official_build">
-      <!-- The fake-bidi locale isn't accepted by the app store. -->
-      <output filename="remoting/resources/fake-bidi.pak" lang="fake-bidi" type="data_package"/>
-    </if>
     <output filename="remoting/resources/fi.pak" lang="fi" type="data_package"/>
     <output filename="remoting/resources/fil.pak" lang="fil" type="data_package"/>
     <output filename="remoting/resources/fr.pak" lang="fr" type="data_package"/>
@@ -44,6 +40,9 @@
     <output filename="remoting/resources/hr.pak" lang="hr" type="data_package"/>
     <output filename="remoting/resources/hu.pak" lang="hu" type="data_package"/>
     <output filename="remoting/resources/id.pak" lang="id" type="data_package"/>
+    <if expr="chromeos or lacros">
+      <output filename="remoting/resources/is.pak" lang="is" type="data_package"/>
+    </if>
     <output filename="remoting/resources/it.pak" lang="it" type="data_package"/>
     <output filename="remoting/resources/ja.pak" lang="ja" type="data_package"/>
     <output filename="remoting/resources/kn.pak" lang="kn" type="data_package"/>
@@ -81,6 +80,10 @@
     <output filename="remoting/resources/zh-CN.pak" lang="zh-CN" type="data_package"/>
     <output filename="remoting/resources/zh-TW.pak" lang="zh-TW" type="data_package"/>
 
+    <!-- Pseudolocales -->
+    <output filename="remoting/resources/ar-XB.pak" lang="ar-XB" type="data_package"/>
+    <output filename="remoting/resources/en-XA.pak" lang="en-XA" type="data_package"/>
+
     <output filename="remoting/resources/_locales/am/messages.json" lang="am" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ar/messages.json" lang="ar" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bg/messages.json" lang="bg" type="chrome_messages_json"/>
@@ -90,13 +93,9 @@
     <output filename="remoting/resources/_locales/da/messages.json" lang="da" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/de/messages.json" lang="de" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fa/messages.json" lang="fa" type="chrome_messages_json"/>
-    <if expr="not is_ios or not _official_build">
-      <!-- The fake-bidi locale isn't accepted by the app store. -->
-      <output filename="remoting/resources/_locales/fake_bidi/messages.json" lang="fake-bidi" type="chrome_messages_json"/>
-    </if>
     <output filename="remoting/resources/_locales/el/messages.json" lang="el" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/en/messages.json" lang="en" type="chrome_messages_json"/>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
       <!-- lang="en-US" will create an empty json file. -->
       <output filename="remoting/resources/_locales/en_US/messages.json" lang="en" type="chrome_messages_json"/>
     </if>
@@ -119,6 +118,9 @@
     <output filename="remoting/resources/_locales/hr/messages.json" lang="hr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hu/messages.json" lang="hu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/id/messages.json" lang="id" type="chrome_messages_json"/>
+    <if expr="chromeos or lacros">
+      <output filename="remoting/resources/_locales/is/messages.json" lang="is" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/it/messages.json" lang="it" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ja/messages.json" lang="ja" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/kn/messages.json" lang="kn" type="chrome_messages_json"/>
@@ -155,6 +157,10 @@
     <output filename="remoting/resources/_locales/vi/messages.json" lang="vi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_CN/messages.json" lang="zh-CN" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_TW/messages.json" lang="zh-TW" type="chrome_messages_json"/>
+
+    <!-- Pseudolocales -->
+    <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
+    <output filename="remoting/resources/_locales/en_XA/messages.json" lang="en-XA" type="chrome_messages_json"/>
 
     <if expr="is_android">
       <output filename="remoting/android/res/values-am/remoting_strings.xml" lang="am" type="android" context="android_java"/>
@@ -203,91 +209,91 @@
       <output filename="remoting/android/res/values-zh-rCN/remoting_strings.xml" lang="zh-CN" type="android" context="android_java"/>
       <output filename="remoting/android/res/values-zh-rTW/remoting_strings.xml" lang="zh-TW" type="android" context="android_java"/>
     </if>
-
   </outputs>
   <translations>
-    <file lang="af" path="remoting_strings_af.xtb"/>
-    <file lang="am" path="remoting_strings_am.xtb"/>
-    <file lang="ar" path="remoting_strings_ar.xtb"/>
-    <file lang="as" path="remoting_strings_as.xtb"/>
-    <file lang="az" path="remoting_strings_az.xtb"/>
-    <file lang="be" path="remoting_strings_be.xtb"/>
-    <file lang="bg" path="remoting_strings_bg.xtb"/>
-    <file lang="bn" path="remoting_strings_bn.xtb"/>
-    <file lang="bs" path="remoting_strings_bs.xtb"/>
-    <file lang="ca" path="remoting_strings_ca.xtb"/>
-    <file lang="cs" path="remoting_strings_cs.xtb"/>
-    <file lang="da" path="remoting_strings_da.xtb"/>
-    <file lang="de" path="remoting_strings_de.xtb"/>
-    <file lang="el" path="remoting_strings_el.xtb"/>
-    <file lang="en-GB" path="remoting_strings_en-GB.xtb"/>
-    <file lang="es" path="remoting_strings_es.xtb"/>
-    <file lang="es-419" path="remoting_strings_es-419.xtb"/>
-    <file lang="et" path="remoting_strings_et.xtb"/>
-    <file lang="eu" path="remoting_strings_eu.xtb"/>
-    <file lang="fa" path="remoting_strings_fa.xtb"/>
-    <file lang="fi" path="remoting_strings_fi.xtb"/>
-    <file lang="fil" path="remoting_strings_fil.xtb"/>
-    <file lang="fr" path="remoting_strings_fr.xtb"/>
-    <file lang="fr-CA" path="remoting_strings_fr-CA.xtb"/>
-    <file lang="gl" path="remoting_strings_gl.xtb"/>
-    <file lang="gu" path="remoting_strings_gu.xtb"/>
+    <file path="remoting_strings_af.xtb" lang="af"/>
+    <file path="remoting_strings_am.xtb" lang="am"/>
+    <file path="remoting_strings_ar.xtb" lang="ar"/>
+    <file path="remoting_strings_as.xtb" lang="as"/>
+    <file path="remoting_strings_az.xtb" lang="az"/>
+    <file path="remoting_strings_be.xtb" lang="be"/>
+    <file path="remoting_strings_bg.xtb" lang="bg"/>
+    <file path="remoting_strings_bn.xtb" lang="bn"/>
+    <file path="remoting_strings_bs.xtb" lang="bs"/>
+    <file path="remoting_strings_ca.xtb" lang="ca"/>
+    <file path="remoting_strings_cs.xtb" lang="cs"/>
+    <file path="remoting_strings_da.xtb" lang="da"/>
+    <file path="remoting_strings_de.xtb" lang="de"/>
+    <file path="remoting_strings_el.xtb" lang="el"/>
+    <file path="remoting_strings_en-GB.xtb" lang="en-GB"/>
+    <file path="remoting_strings_es.xtb" lang="es"/>
+    <file path="remoting_strings_es-419.xtb" lang="es-419"/>
+    <file path="remoting_strings_et.xtb" lang="et"/>
+    <file path="remoting_strings_eu.xtb" lang="eu"/>
+    <file path="remoting_strings_fa.xtb" lang="fa"/>
+    <file path="remoting_strings_fi.xtb" lang="fi"/>
+    <file path="remoting_strings_fil.xtb" lang="fil"/>
+    <file path="remoting_strings_fr.xtb" lang="fr"/>
+    <file path="remoting_strings_fr-CA.xtb" lang="fr-CA"/>
+    <file path="remoting_strings_gl.xtb" lang="gl"/>
+    <file path="remoting_strings_gu.xtb" lang="gu"/>
     <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
-    <file lang="he" path="remoting_strings_iw.xtb"/>
-    <file lang="hi" path="remoting_strings_hi.xtb"/>
-    <file lang="hr" path="remoting_strings_hr.xtb"/>
-    <file lang="hu" path="remoting_strings_hu.xtb"/>
-    <file lang="hy" path="remoting_strings_hy.xtb"/>
-    <file lang="id" path="remoting_strings_id.xtb"/>
-    <file lang="is" path="remoting_strings_is.xtb"/>
-    <file lang="it" path="remoting_strings_it.xtb"/>
-    <file lang="ja" path="remoting_strings_ja.xtb"/>
-    <file lang="ka" path="remoting_strings_ka.xtb"/>
-    <file lang="kk" path="remoting_strings_kk.xtb"/>
-    <file lang="km" path="remoting_strings_km.xtb"/>
-    <file lang="kn" path="remoting_strings_kn.xtb"/>
-    <file lang="ko" path="remoting_strings_ko.xtb"/>
-    <file lang="ky" path="remoting_strings_ky.xtb"/>
-    <file lang="lo" path="remoting_strings_lo.xtb"/>
-    <file lang="lt" path="remoting_strings_lt.xtb"/>
-    <file lang="lv" path="remoting_strings_lv.xtb"/>
-    <file lang="mk" path="remoting_strings_mk.xtb"/>
-    <file lang="ml" path="remoting_strings_ml.xtb"/>
-    <file lang="mn" path="remoting_strings_mn.xtb"/>
-    <file lang="mr" path="remoting_strings_mr.xtb"/>
-    <file lang="ms" path="remoting_strings_ms.xtb"/>
-    <file lang="my" path="remoting_strings_my.xtb"/>
-    <file lang="ne" path="remoting_strings_ne.xtb"/>
-    <file lang="nl" path="remoting_strings_nl.xtb"/>
-    <file lang="no" path="remoting_strings_no.xtb"/>
-    <file lang="or" path="remoting_strings_or.xtb"/>
-    <file lang="pa" path="remoting_strings_pa.xtb"/>
-    <file lang="pl" path="remoting_strings_pl.xtb"/>
-    <file lang="pt-BR" path="remoting_strings_pt-BR.xtb"/>
-    <file lang="pt-PT" path="remoting_strings_pt-PT.xtb"/>
-    <file lang="ro" path="remoting_strings_ro.xtb"/>
-    <file lang="ru" path="remoting_strings_ru.xtb"/>
-    <file lang="si" path="remoting_strings_si.xtb"/>
-    <file lang="sk" path="remoting_strings_sk.xtb"/>
-    <file lang="sl" path="remoting_strings_sl.xtb"/>
-    <file lang="sq" path="remoting_strings_sq.xtb"/>
-    <file lang="sr" path="remoting_strings_sr.xtb"/>
-    <file lang="sv" path="remoting_strings_sv.xtb"/>
-    <file lang="sw" path="remoting_strings_sw.xtb"/>
-    <file lang="ta" path="remoting_strings_ta.xtb"/>
-    <file lang="te" path="remoting_strings_te.xtb"/>
-    <file lang="th" path="remoting_strings_th.xtb"/>
-    <file lang="tr" path="remoting_strings_tr.xtb"/>
-    <file lang="uk" path="remoting_strings_uk.xtb"/>
-    <file lang="ur" path="remoting_strings_ur.xtb"/>
-    <file lang="uz" path="remoting_strings_uz.xtb"/>
-    <file lang="vi" path="remoting_strings_vi.xtb"/>
-    <file lang="zh-CN" path="remoting_strings_zh-CN.xtb"/>
-    <file lang="zh-HK" path="remoting_strings_zh-HK.xtb"/>
-    <file lang="zh-TW" path="remoting_strings_zh-TW.xtb"/>
-    <file lang="zu" path="remoting_strings_zu.xtb"/>
+    <file path="remoting_strings_iw.xtb" lang="he"/>
+    <file path="remoting_strings_hi.xtb" lang="hi"/>
+    <file path="remoting_strings_hr.xtb" lang="hr"/>
+    <file path="remoting_strings_hu.xtb" lang="hu"/>
+    <file path="remoting_strings_hy.xtb" lang="hy"/>
+    <file path="remoting_strings_id.xtb" lang="id"/>
+    <file path="remoting_strings_is.xtb" lang="is"/>
+    <file path="remoting_strings_it.xtb" lang="it"/>
+    <file path="remoting_strings_ja.xtb" lang="ja"/>
+    <file path="remoting_strings_ka.xtb" lang="ka"/>
+    <file path="remoting_strings_kk.xtb" lang="kk"/>
+    <file path="remoting_strings_km.xtb" lang="km"/>
+    <file path="remoting_strings_kn.xtb" lang="kn"/>
+    <file path="remoting_strings_ko.xtb" lang="ko"/>
+    <file path="remoting_strings_ky.xtb" lang="ky"/>
+    <file path="remoting_strings_lo.xtb" lang="lo"/>
+    <file path="remoting_strings_lt.xtb" lang="lt"/>
+    <file path="remoting_strings_lv.xtb" lang="lv"/>
+    <file path="remoting_strings_mk.xtb" lang="mk"/>
+    <file path="remoting_strings_ml.xtb" lang="ml"/>
+    <file path="remoting_strings_mn.xtb" lang="mn"/>
+    <file path="remoting_strings_mr.xtb" lang="mr"/>
+    <file path="remoting_strings_ms.xtb" lang="ms"/>
+    <file path="remoting_strings_my.xtb" lang="my"/>
+    <file path="remoting_strings_ne.xtb" lang="ne"/>
+    <file path="remoting_strings_nl.xtb" lang="nl"/>
+    <file path="remoting_strings_no.xtb" lang="no"/>
+    <file path="remoting_strings_or.xtb" lang="or"/>
+    <file path="remoting_strings_pa.xtb" lang="pa"/>
+    <file path="remoting_strings_pl.xtb" lang="pl"/>
+    <file path="remoting_strings_pt-BR.xtb" lang="pt-BR"/>
+    <file path="remoting_strings_pt-PT.xtb" lang="pt-PT"/>
+    <file path="remoting_strings_ro.xtb" lang="ro"/>
+    <file path="remoting_strings_ru.xtb" lang="ru"/>
+    <file path="remoting_strings_si.xtb" lang="si"/>
+    <file path="remoting_strings_sk.xtb" lang="sk"/>
+    <file path="remoting_strings_sl.xtb" lang="sl"/>
+    <file path="remoting_strings_sq.xtb" lang="sq"/>
+    <file path="remoting_strings_sr.xtb" lang="sr"/>
+    <file path="remoting_strings_sr-Latn.xtb" lang="sr-Latn"/>
+    <file path="remoting_strings_sv.xtb" lang="sv"/>
+    <file path="remoting_strings_sw.xtb" lang="sw"/>
+    <file path="remoting_strings_ta.xtb" lang="ta"/>
+    <file path="remoting_strings_te.xtb" lang="te"/>
+    <file path="remoting_strings_th.xtb" lang="th"/>
+    <file path="remoting_strings_tr.xtb" lang="tr"/>
+    <file path="remoting_strings_uk.xtb" lang="uk"/>
+    <file path="remoting_strings_ur.xtb" lang="ur"/>
+    <file path="remoting_strings_uz.xtb" lang="uz"/>
+    <file path="remoting_strings_vi.xtb" lang="vi"/>
+    <file path="remoting_strings_zh-CN.xtb" lang="zh-CN"/>
+    <file path="remoting_strings_zh-HK.xtb" lang="zh-HK"/>
+    <file path="remoting_strings_zh-TW.xtb" lang="zh-TW"/>
+    <file path="remoting_strings_zu.xtb" lang="zu"/>
   </translations>
-  <release allow_pseudo="false" seq="1">
+  <release seq="1">
     <messages fallback_to_english="true">
 
       <if expr="_google_chrome">
@@ -303,50 +309,8 @@
           </message>
         </if>  <!-- is_android or is_ios -->
 
-        <message desc="Message shown when the Chrome Remote Desktop client tab is closed while a connection is active." name="IDS_CLOSE_PROMPT">
-          Leaving this page will end your Chrome Remote Desktop session.
-        </message>
-        <message desc="Confirmation prompt shown when a user needs to authenticate against a third party, explaining the need to authorize the Chrome Remote Desktop app to access the authentication URL." name="IDS_DESCRIPTION_THIRD_PARTY_AUTH">
-          The remote host requires you to authenticate to a third-party website. To continue, you must grant Chrome Remote Desktop additional permissions to access this address:
-        </message>
-        <message desc="Description for the home screen. This is shown when the app starts up, above buttons to share or connect." name="IDS_DESCRIPTION_HOME">
-          Chrome Remote Desktop allows you to securely share your computer over the Web. Both users must be running the Chrome Remote Desktop app, which can be found at <ph name="URL">$1<ex>&lt;a href=http://chrome.google.com/remotedesktop&gt;chrome.google.com/remotedesktop&lt;/a&gt;</ex></ph>.
-        </message>
         <message desc="Error displayed if authentication fails. This can be caused by stale credentials, in which logging out of the web-app and retrying can fix the problem." name="IDS_ERROR_AUTHENTICATION_FAILED" formatter_data="android_java">
           Authentication failed. Please sign in to Chrome again.
-        </message>
-        <message desc="Error displayed when the computer has a policy that only users in a particular domain may use it as a Chrome Remote Desktop host, but a user in a different domain is trying to use it as a Chrome Remote Desktop host. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer)." name="IDS_ERROR_INVALID_HOST_DOMAIN">
-          Policy settings do not permit sharing this computer as a Chrome Remote Desktop host. Contact your system administrator for assistance.
-        </message>
-        <message desc="Error displayed when an operation is attempted that requires a signed-in user, but no-one is currently signed in." name="IDS_ERROR_NOT_AUTHENTICATED">
-          You are not signed in to Chrome. Please sign in and try again.
-        </message>
-        <message desc="Message displayed when the current computer is accepting remote connections." name="IDS_HOME_DAEMON_ACTIVE_MESSAGE">
-          You may securely access this computer using Chrome Remote Desktop.
-        </message>
-        <message desc="Message displayed when the current computer is not accepting remote connections, instructing the user how to enable them." name="IDS_HOME_DAEMON_START_MESSAGE">
-          You must enable remote connections if you want to use Chrome Remote Desktop to access this computer.
-        </message>
-        <message desc="Message displayed to the user if there are no hosts registered to their account, informing them how to set up a host on another computer." name="IDS_HOST_LIST_EMPTY_HOSTING_SUPPORTED">
-          To enable remote connections to a different computer, install Chrome Remote Desktop there and click “<ph name="BUTTON_NAME">$1<ex>Enable remote connections</ex></ph>”.
-        </message>
-        <message desc="Message displayed to the user if there are no hosts registered to their account, informing them how to set up a host on another computer." name="IDS_HOST_LIST_EMPTY_HOSTING_UNSUPPORTED">
-          You have no computers registered. To enable remote connections to a computer, install Chrome Remote Desktop there and click “<ph name="BUTTON_NAME">$1<ex>Enable remote connections</ex></ph>”.
-        </message>
-        <message desc="Message displayed to the user if there are no hosts registered to their account.  If the user has previously signed-in to the v1 app with an account other than their profile, they will lose access to all their hosts once they upgrade to the v2 app.  This message informs them to sign in to the chrome with that account and re-install Chromoting." name="IDS_HOST_LIST_EMPTY_V2_MIGRATION">
-          You have previously signed in as <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>).  To access your computers in that account, <ph name="LINK_BEGIN">$3<ex>&lt;a href="https://support.google.com/chrome/answer/2364824?hl=en"&gt;</ex></ph>sign in to Google Chrome<ph name="LINK_END">$4<ex>&lt;/a&gt;</ex></ph> with that account and re-install Chrome Remote Desktop.
-        </message>
-        <message desc="Message displayed next to the checkbox that the user can select to allow crash dump collection and reporting." name="IDS_HOST_SETUP_CRASH_REPORTING_MESSAGE">
-          Help us improve Chrome Remote Desktop by allowing us to collect usage statistics and crash reports.
-        </message>
-        <message desc="Title of the dialog used to download and install the Chrome Remote Desktop host component. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer)." name="IDS_INSTALLER_DOWNLOAD">
-          Download Chrome Remote Desktop Host Installer
-        </message>
-        <message desc="Message shown to inform the user that the product is governed by Google's terms of service and to include a link to view them. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer)." name="IDS_HOST_SETUP_TERMS_OF_SERVICE">
-          By downloading the Chrome Remote Desktop Host Installer, you are agreeing to the Google <ph name="LINK_BEGIN">$1<ex>&lt;a href="http://www.google.com/intl/en/policies/terms"&gt;</ex></ph>Terms of Service<ph name="LINK_END">$4<ex>&lt;/a&gt;</ex></ph>.
-        </message>
-        <message desc="Message shown when user is asked to manually install the Host components. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer)." name="IDS_HOST_SETUP_INSTALL">
-          Chrome is downloading the Chrome Remote Desktop Host installer.  Once the download is complete, please run the installer before continuing.
         </message>
         <message desc="Message displayed when the client or host has disconnected." name="IDS_MESSAGE_SESSION_FINISHED">
           Your Chrome Remote Desktop session has ended.
@@ -354,20 +318,11 @@
         <message desc="The product name. Displayed in various Chrome pages, including the New Tab page, and displayed prominently on the app's main page." name="IDS_PRODUCT_NAME">
           Chrome Remote Desktop
         </message>
-        <message desc="The product name. Displayed in various Chrome pages, including the New Tab page, and displayed prominently on the app's main page." name="IDS_PRODUCT_NAME_APP_STREAMING">
-          Chrome App Streaming
-        </message>
-        <message desc="Message displayed at the bottom of the client connect dialog if Chrome Remote Desktop is running in the wrong start-up mode." name="IDS_WARNING_NOT_WINDOWED">
-          NOTE: To ensure that all keyboard shortcuts are available, you can configure Chrome Remote Desktop to ‘Open as window’.
-        </message>
-        <message desc="Error message displayed if the user tries to connect to a computer running out-of-date Me2Me host software." name="IDS_HOST_NEEDS_UPDATE_TITLE">
-          Chrome Remote Desktop on <ph name="HOSTNAME">$1<ex>My Linux desktop</ex></ph> is out-of-date and needs to be updated.
-        </message>
         <message name="IDS_COMPANY_NAME" desc="The company name specified in the version information of each Chrome Remote Desktop Host executable.">
-          Google Inc.
+          Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2013 Google Inc. All Rights Reserved.
+          Copyright 2021 Google LLC. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
@@ -375,17 +330,11 @@
         <message name="IDS_SERVICE_DESCRIPTION" desc="The description of the Windows service installed by Chrome Remote Desktop.">
           This service enables incoming connections from Chrome Remote Desktop clients.
         </message>
-        <message name="IDS_CONTROLLER_NAME" desc="The name of the component to be elevated shown on the UAC prompt when enabling or disabling Chrome Remote Desktop Host. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer).">
-          Chrome Remote Desktop Host Controller
-        </message>
-        <message name="IDS_VERIFY_PIN_DIALOG_MESSAGE" desc="The message displayed by the PIN verification dialog.">
-          Please confirm your account and PIN below to allow access by Chrome Remote Desktop.
-        </message>
         <message name="IDS_MAC_UNINSTALLER_BUNDLE_NAME" desc="The bundle name specified in the property list of Chrome Remote Desktop Host Uninstaller bundle on MacOS. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer).">
           Chrome Remote Desktop Host Uninstaller
         </message>
-        <message desc="Error displayed when the local computer is configured badly." name="IDS_ERROR_POLICY">
-          There is an error with the policy settings for Chrome Remote Desktop. Contact your system administrator for assistance.
+        <message name="IDS_MAC_MICROPHONE_USAGE" desc="The description explaining how the Chrome Remote Desktop host requests for microphone access.">
+          Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.
         </message>
       </if>  <!-- _google_chrome -->
 
@@ -402,50 +351,8 @@
           </message>
         </if>  <!-- is_android or is_ios -->
 
-        <message desc="Message shown when the Chromoting client tab is closed while a connection is active." name="IDS_CLOSE_PROMPT">
-          Leaving this page will end your Chromoting session.
-        </message>
-        <message desc="Confirmation prompt shown when a user needs to authenticate against a third party, explaining the need to authorize the Chromoting app to access the authentication URL." name="IDS_DESCRIPTION_THIRD_PARTY_AUTH">
-          The remote host requires you to authenticate to a third-party website. To continue, you must grant Chromoting additional permissions to access this address:
-        </message>
-        <message desc="Description for the home screen. This is shown when the app starts up, above buttons to share or connect." name="IDS_DESCRIPTION_HOME">
-          Chromoting allows you to securely share your computer over the Web. Both users must be running the Chromoting app, which can be found at <ph name="URL">$1<ex>&lt;a href=http://chrome.google.com/remotedesktop&gt;chrome.google.com/remotedesktop&lt;/a&gt;</ex></ph>.
-        </message>
         <message desc="Error displayed if authentication fails. This can be caused by stale credentials, in which logging out of the web-app and retrying can fix the problem." name="IDS_ERROR_AUTHENTICATION_FAILED" formatter_data="android_java">
           Authentication failed. Please sign in to Chromium again.
-        </message>
-        <message desc="Error displayed when the computer has a policy that only users in a particular domain may use it as a Chromoting host, but a user in a different domain is trying to use it as a Chromoting host. The Chromoting host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer)." name="IDS_ERROR_INVALID_HOST_DOMAIN">
-          Policy settings do not permit sharing this computer as a Chromoting host. Contact your system administrator for assistance.
-        </message>
-        <message desc="Error displayed when an operation is attempted that requires a signed-in user, but no-one is currently signed in." name="IDS_ERROR_NOT_AUTHENTICATED">
-          You are not signed in to Chromium. Please sign in and try again.
-        </message>
-        <message desc="Message displayed when the current computer is accepting remote connections." name="IDS_HOME_DAEMON_ACTIVE_MESSAGE">
-          You may securely access this computer using Chromoting.
-        </message>
-        <message desc="Message displayed when the current computer is not accepting remote connections, instructing the user how to enable them." name="IDS_HOME_DAEMON_START_MESSAGE">
-          You must enable remote connections if you want to use Chromoting to access this computer.
-        </message>
-        <message desc="Message displayed to the user if there are no hosts registered to their account, informing them how to set up a host on another computer." name="IDS_HOST_LIST_EMPTY_HOSTING_SUPPORTED">
-          To enable remote connections to a different computer, install Chromoting there and click “<ph name="BUTTON_NAME">$1<ex>Enable remote connections</ex></ph>”.
-        </message>
-        <message desc="Message displayed to the user if there are no hosts registered to their account, informing them how to set up a host on another computer." name="IDS_HOST_LIST_EMPTY_HOSTING_UNSUPPORTED">
-          You have no computers registered. To enable remote connections to a computer, install Chromoting there and click “<ph name="BUTTON_NAME">$1<ex>Enable remote connections</ex></ph>”.
-        </message>
-        <message desc="Message displayed to the user if there are no hosts registered to their account.  If the user has previously signed-in to the v1 app with an account other than their profile, they will lose access to all their hosts once they upgrade to the v2 app.  This message informs them to sign in to the chrome with that account and re-install Chromoting." name="IDS_HOST_LIST_EMPTY_V2_MIGRATION">
-          You have previously signed in as <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="USER_EMAIL">$2<ex>john.doe@gmail.com</ex></ph>).  To access your computers in that account, <ph name="LINK_BEGIN">$3<ex>&lt;a href="https://support.google.com/chrome/answer/2364824?hl=en"&gt;</ex></ph>sign in to Chromium<ph name="LINK_END">$4<ex>&lt;/a&gt;</ex></ph> with that account and re-install Chromoting.
-        </message>
-        <message desc="Message displayed next to the checkbox that the user can select to allow crash dump collection and reporting." name="IDS_HOST_SETUP_CRASH_REPORTING_MESSAGE">
-          Help us improve Chromoting by allowing us to collect usage statistics and crash reports.
-        </message>
-        <message desc="Title of the dialog used to download and install the Chromoting host component. The Chromoting host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer)." name="IDS_INSTALLER_DOWNLOAD">
-          Download Chromoting Host Installer
-        </message>
-        <message desc="Message shown to inform the user that the product is governed by Google's terms of service and to include a link to view them." name="IDS_HOST_SETUP_TERMS_OF_SERVICE">
-          By downloading the Chromoting Host Installer, you are agreeing to the Google <ph name="LINK_BEGIN">$1<ex>&lt;a href="http://www.google.com/intl/en/policies/terms"&gt;</ex></ph>Terms of Service<ph name="LINK_END">$4<ex>&lt;/a&gt;</ex></ph>.
-        </message>
-        <message desc="Message shown when user is asked to manually install the Host components." name="IDS_HOST_SETUP_INSTALL">
-          Chrome is downloading the Chromoting Host installer.  Once the download is complete, please run the installer before continuing.
         </message>
         <message desc="Message displayed when the client or host has disconnected." name="IDS_MESSAGE_SESSION_FINISHED">
           Your Chromoting session has ended.
@@ -453,20 +360,11 @@
         <message desc="The product name. Displayed in various Chrome pages, including the New Tab page, and displayed prominently on the app's main page." name="IDS_PRODUCT_NAME">
           Chromoting
         </message>
-        <message desc="The product name. Displayed in various Chrome pages, including the New Tab page, and displayed prominently on the app's main page." name="IDS_PRODUCT_NAME_APP_STREAMING">
-          Chromium App Streaming
-        </message>
-        <message desc="Message displayed at the bottom of the client connect dialog if Chromoting is running in the wrong start-up mode." name="IDS_WARNING_NOT_WINDOWED">
-          NOTE: To ensure that all keyboard shortcuts are available, you can configure Chromoting to ‘Open as window’.
-        </message>
-        <message desc="Error message displayed if the user tries to connect to a computer running out-of-date Me2Me host software." name="IDS_HOST_NEEDS_UPDATE_TITLE">
-          Chromoting on <ph name="HOSTNAME">$1<ex>My Linux desktop</ex></ph> is out-of-date and needs to be updated.
-        </message>
         <message name="IDS_COMPANY_NAME" desc="The company name specified in the version information of each Chromoting Host executable.">
           The Chromium Authors
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chromoting Host executable. It should be updated every year.">
-          Copyright 2013 The Chromium Authors. All Rights Reserved.
+          Copyright 2021 The Chromium Authors. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chromoting.">
           Chromoting Service
@@ -474,140 +372,28 @@
         <message name="IDS_SERVICE_DESCRIPTION" desc="The description of the Windows service installed by Chromoting.">
           This service enables incoming connections from Chromoting clients.
         </message>
-        <message name="IDS_CONTROLLER_NAME" desc="The name of the component to be elevated shown on the UAC prompt when enabling or disabling Chromoting Host.">
-          Chromoting Host Controller
-        </message>
-        <message name="IDS_VERIFY_PIN_DIALOG_MESSAGE" desc="The message displayed by the PIN verification dialog.">
-          Please confirm your account and PIN below to allow access by Chromoting.
-        </message>
         <message name="IDS_MAC_UNINSTALLER_BUNDLE_NAME" desc="The bundle name specified in the property list of Chromoting Host Uninstaller bundle on MacOS.">
           Chromoting Host Uninstaller
         </message>
-        <message desc="Error displayed when the local computer is configured badly." name="IDS_ERROR_POLICY">
-          There is an error with the policy settings for Chrome Remote Desktop. Contact your system administrator for assistance.
+        <message name="IDS_MAC_MICROPHONE_USAGE" desc="The description explaining how the Chrome Remote Desktop host uses microphone.">
+          Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.
         </message>
       </if>  <!-- not _google_chrome -->
 
       <message desc="Error that is shown on the client side when incompatible Chrome Remote Desktop versions are installed on host and client." name="IDS_ERROR_INCOMPATIBLE_PROTOCOL" formatter_data="android_java">
         An incompatible protocol version was detected. Please make sure that you have the latest version of the software installed on both computers and try again.
       </message>
-      <message desc="Text shown when the app first starts, or if the access token is invalidated, explaining the need to authorize the Chromoting app before use." name="IDS_DESCRIPTION_AUTHORIZE">
-        To continue you must first grant extended access permissions to your computer. You only have to do this once.
-      </message>
       <message desc="Error displayed if the client plugin are missing or if they could not be loaded." name="IDS_ERROR_BAD_PLUGIN_VERSION">
         Some required components are missing. Please make sure you have installed the latest version of the software and try again.
-      </message>
-      <message desc="Error displayed if the client plugin fails to load." name="IDS_ERROR_MISSING_PLUGIN">
-        Some required components are missing. Please make sure you're running the latest version of Chrome and try again.
-      </message>
-      <message desc="Error displayed if the client plugin crashes." name="IDS_ERROR_NACL_PLUGIN_CRASHED">
-        A required component has stopped working. Please report this problem to the developers.
-      </message>
-      <message desc="Error displayed if Native Client is not enabled." name="IDS_ERROR_NACL_DISABLED">
-        Some required components are missing. Please go to chrome://plugins and make sure Native Client is enabled.
-      </message>
-      <message desc="Message shown if the user is not authorized to perform the requested action." name="IDS_ERROR_NOT_AUTHORIZED">
-        You do not have permission to perform that action.
       </message>
       <message desc="Message shown if the user is is trying to modify an object that does not exist." name="IDS_ERROR_NOT_FOUND">
         The requested object does not exist.
       </message>
-      <!-- The following strings are AppRemoting-specific -->
-      <message desc="Message shown if the user is not authorized to run the app." name="IDS_ERROR_APP_NOT_AUTHORIZED">
-        You do not have permission to run this application.
-      </message>
-      <message desc="Menu option to toggle the debugging stats." name="IDS_SHOW_STATS">
-        Show statistics
-      </message>
-      <message desc="Menu option to toggle the debugging stats, including a summary of the current connection quality." name="IDS_SHOW_STATS_WITH_RTT">
-        Show statistics (connection: <ph name="QUALITY">$1<ex>Good</ex></ph>)
-      </message>
-      <message desc="Indicates a 'good' quality connection." name="IDS_CONNECTION_QUALITY_GOOD">
-        Good
-      </message>
-      <message desc="Indicates a 'fair' quality connection." name="IDS_CONNECTION_QUALITY_FAIR">
-        Fair
-      </message>
-      <message desc="Indicates a 'poor' quality connection." name="IDS_CONNECTION_QUALITY_POOR">
-        Poor
-      </message>
       <message desc="Menu option to submit feedback about the product." name="IDS_SEND_FEEDBACK">
         Report an issue…
       </message>
-      <message desc="Title for the dialog prompting the user to consent to their email address being included as part of their feedback." name="IDS_FEEDBACK_CONSENT_TITLE">
-        Report an issue
-      </message>
-      <message desc="Text asking the user for consent to their email address being included as part of their feedback." name="IDS_FEEDBACK_CONSENT_EMAIL">
-        To allow us to contact you for further information, your email address will be included in any feedback you submit.
-      </message>
-      <message desc="Text asking the user to choose a category for their feedback." name="IDS_FEEDBACK_CATEGORY_INSTRUCTIONS">
-        To help us solve your problem, please tell us what went wrong:
-      </message>
-      <message desc="The initial 'category', indicating that the user must select something to continue." name="IDS_FEEDBACK_CATEGORY_SELECT">
-        Select…
-      </message>
-      <message desc="Category indicating that the user is having problems launching the application." name="IDS_FEEDBACK_CATEGORY_APP_LAUNCH">
-        I can't open the application.
-      </message>
-      <message desc="Category indicating that the application is running too slowly." name="IDS_FEEDBACK_CATEGORY_APP_PERFORMANCE">
-        The application is too slow.
-      </message>
-      <message desc="Category indicating that the user is having keyboard or mouse issues." name="IDS_FEEDBACK_CATEGORY_INPUT">
-        I'm having problems with my keyboard or mouse.
-      </message>
-      <message desc="Category indicating that the user is having problems with Google Drive not uploading their files." name="IDS_FEEDBACK_CATEGORY_DRIVE_UPLOAD">
-        I can't see my saved files on-line in Google Drive.
-      </message>
-      <message desc="Category indicating that the user is having problems with Google Drive not downloading their files." name="IDS_FEEDBACK_CATEGORY_DRIVE_DOWNLOAD">
-        I can't open my Google Drive files.
-      </message>
-      <message desc="Category indicating that the user is having a problem not covered by any of the common categories." name="IDS_FEEDBACK_CATEGORY_OTHER">
-        Something else.
-      </message>
-      <message desc="Title for the submenu item containing a list of windows opened by the remote app." name="IDS_WINDOWS_SUBMENU_TITLE">
-        Windows
-      </message>
-      <message desc="Checkbox allowing the user to request that their virtual machine be rebooted if it becomes unconnectable." name="IDS_FEEDBACK_ABANDON_HOST">
-        Reset the application. You will lose any unsaved work.
-      </message>
-      <message desc="Checkbox allowing the user to request that logs be included in their feedback." name="IDS_FEEDBACK_INCLUDE_LOGS">
-        Include application logs to help us resolve your problem (logs may include private information).
-      </message>
-      <message desc="Link allowing the user to get additional information." name="IDS_LEARN_MORE">
-        Learn more.
-      </message>
-      <message desc="Detailed privacy information for the feedback feature." name="IDS_FEEDBACK_PRIVACY_INFORMATION1">
-        Application logs may include private information, including your identity (email address) and the names and properties of files and folders in Google Drive.
-      </message>
-      <message desc="Detailed privacy information for the feedback feature." name="IDS_FEEDBACK_PRIVACY_INFORMATION2">
-        This information is used only for diagnosing the problem you are reporting, is available only to someone investigating your report, and is retained for no more than 30 days.
-      </message>
-      <message desc="Error message displayed if the reset attempt fails." name="IDS_FEEDBACK_ABANDON_FAILED">
-        Could not reset the application. You can still send a bug report.
-      </message>
-      <message desc="Title for the submenu item containing a list of windows opened by the remote app." name="IDS_KEYBOARD_LAYOUTS_SUBMENU_TITLE">
-        Keyboard layouts
-      </message>
       <message desc="Title for the connection error dialog." name="IDS_CONNECTION_FAILED">
         Connection failed
-      </message>
-      <message desc="Warning shown if the platform does not support transparency." name="IDS_NO_TRANSPARENCY_WARNING">
-        Desktop integration is not supported on this platform. You can still use the application, but the user experience will be degraded.
-      </message>
-      <message desc="Message shown if the user has been idle for a long time, informing them that their session will be disconnected shortly." name="IDS_IDLE_TIMEOUT_WARNING">
-        Your <ph name="APPLICATION_NAME">$1<ex>SampleApp Streaming</ex></ph> session has been inactive for a while and will be disconnected shortly.
-      </message>
-      <message desc="Button to allow the user to indicate that they are still using the service" name="IDS_IDLE_CONTINUE">
-        Continue
-      </message>
-      <message desc="Button to allow the user to indicate that they are no longer using the service." name="IDS_IDLE_DISCONNECT">
-        Disconnect now
-      </message>
-      <message desc="Button to restart the app after the connection is dropped." name="IDS_RESTART_BUTTON">
-        Restart now
-      </message>
-      <message desc="Message show to the user when the connection is dropped." name="IDS_ERROR_CONNECTION_DROPPED">
-        A network error occurred. We will restart the app when your device is on-line again.
       </message>
 
       <if expr="is_android or is_ios">
@@ -662,23 +448,11 @@
         <message desc="Text shown in tooltip when user touches an offline host on the device." name="IDS_HOST_OFFLINE_TOOLTIP" formatter_data="android_java">
           Host is offline.
         </message>
-        <message name="IDS_MOBILE_NETWORK_WARNING" desc="Message shown in an alert dialog that warns the user that they are trying to connect to a device over mobile network.">
-          Data charges may apply when connecting to a device over mobile network. Do you want to continue?
-        </message>
         <message name="IDS_THIRD_PARTY_AUTH_NOT_SUPPORTED" desc="Error message shown when the user attempts to connect to a remote device under third party authentication, which is currently unsupported by the client.">
           This device is not supported by this client because it requires third party authentication.
         </message>
         <message name="IDS_REPORT_THIS" desc="Label text for a button to report a connection failure to the developers.">
           Report this
-        </message>
-        <message name="IDS_IOS_PHOTO_LIBRARY_USAGE_DESCRIPTION" desc="Message shown when the app requests permission to access the user's photo library.">
-          To choose a profile picture, allow Chrome Remote Desktop to access your photos
-        </message>
-        <message name="IDS_IOS_CAMERA_USAGE_DESCRIPTION" desc="Message shown when the app requests permission to use the camera of the device.">
-          To choose a profile picture, allow Chrome Remote Desktop to access your camera
-        </message>
-        <message name="IDS_SERVER_COMMUNICATION_ERROR" desc="Message shown when the client fails to communicate with the back end server.">
-          Failed to communicate with the server: <ph name="ERROR">$1<ex>Server Unavailable</ex></ph>
         </message>
         <message name="IDS_TERMS_OF_SERVICE" desc="The label to access the terms of service, displayed in navigation menu." formatter_data="android_java">
           Terms of Service
@@ -757,9 +531,6 @@
       <message desc="Title for the button that brings up the frequently asked questions page." name="IDS_FAQS">
         FAQs
       </message>
-      <message desc="Subtitle (description) of the option controlling whether or not the remote desktop is scaled down if it is too large to fit in the window." name="IDS_SHRINK_TO_FIT_SUBTITLE">
-        Keep whole remote desktop visible
-      </message>
       <message desc="Subtitle (description) of the option controlling whether or not the remote desktop is resized to match the window size as closely as possible." name="IDS_RESIZE_TO_CLIENT_SUBTITLE">
         Update remote resolution to match window
       </message>
@@ -792,23 +563,11 @@
       <message desc="Label for the access code entry box. This is where the client user enters the code that permits access to the host." name="IDS_ACCESS_CODE">
         Access code
       </message>
-      <message desc="Text displayed when the access code is due to time out within 30 seconds." name="IDS_ACCESS_CODE_TIMER">
-        This access code will expire in <ph name="TIMEOUT">$1<ex>0:30</ex></ph>
-      </message>
-      <message desc="In the connection history dialog, clicking this button shows all recent connections unfiltered." name="IDS_ALL_CONNECTIONS">
-        All connections
-      </message>
       <message desc="Label next to the PIN entry edit box. The user must enter a PIN before enabling remote access to their computer." name="IDS_ASK_PIN_DIALOG_LABEL">
         PIN
       </message>
-      <message desc="Label next to the PIN confirmation edit box. The user must enter a PIN before enabling remote access to their computer." name="IDS_ASK_PIN_DIALOG_CONFIRM_LABEL">
-        Re-type PIN
-      </message>
       <message desc="Label for general-purpose Cancel buttons." name="IDS_CANCEL" formatter_data="android_java">
         Cancel
-      </message>
-      <message desc="In the connection history dialog, clicking this button will delete the connection history." name="IDS_CLEAR_HISTORY">
-        Clear history
       </message>
       <message desc="Label for general-purpose Close buttons." name="IDS_CLOSE" formatter_data="android_java">
         Close
@@ -816,23 +575,11 @@
       <message desc="Label for the connect button. Clicking this button will start the Chrome Remote Desktop session if the access code is correct." name="IDS_CONNECT_BUTTON" formatter_data="android_java">
         Connect
       </message>
-      <message desc="Label for the connect button for hosts running an out-of-date version of the Me2Me host software. The user clicks this button to acknowledge the message but continue with the connection anyway." name="IDS_CONNECT_ANYWAY">
-        Connect anyway
-      </message>
       <message desc="Confirmation prompt shown when a user attempts to delete a Me2Me host from their host list." name="IDS_CONFIRM_HOST_DELETE">
         Are you sure you want to disable remote connections to <ph name="HOSTNAME">$1<ex>My Linux desktop</ex></ph>? If you change your mind, you'll need to visit that computer to re-enable connections.
       </message>
       <message desc="Confirmation prompt shown when a user attempts remove or deactivate a machine from the list of their remotely-accessible machines." name="IDS_CONFIRM_HOST_DELETE_ANDROID" formatter_data="android_java">
         Are you sure you want to disable remote connections to <ph name="HOSTNAME">%1$s<ex>My Linux desktop</ex></ph>?
-      </message>
-      <message desc="Column header in the connection history table showing the email address of the client end of the connection (the initiator) which may be this or another computer." name="IDS_CONNECTION_FROM_HEADER">
-        From
-      </message>
-      <message desc="Title for the connection history dialog. This dialog shows recent connections made to and from this computer" name="IDS_CONNECTION_HISTORY_TITLE">
-        Connection History
-      </message>
-      <message desc="Column header in the connection history table showing the email address of the host end of the connection (the connectee) which may be this or another computer." name="IDS_CONNECTION_TO_HEADER">
-        To
       </message>
       <message desc="Label for the continue button on the pre-authorization page. Clicking this button takes the user to the standard Google Accounts authorization page." name="IDS_CONTINUE_BUTTON">
         Continue
@@ -840,17 +587,8 @@
       <message desc="Message displayed when the session has lasted longer than five minutes, explaining that the host computer is being shared and asking whether or not the user wants to continue sharing it." name="IDS_CONTINUE_PROMPT">
         You are currently sharing this machine with another user. Do you want to continue sharing?
       </message>
-      <message desc="Description for the client app. This is shown to the client user above the access code entry box before the connection is started. Note that the 'Share Now' quote should be copied verbatim from the corresponding translation." name="IDS_DESCRIPTION_CONNECT">
-        Ask the user whose computer you wish to access to click “<ph name="SHARE">$1<ex>Share</ex></ph>” and give you the access code.
-      </message>
-      <message desc="Label for the 'yes' response to the dialog asking the user to confirm whether or not they want to disable remote access to a host." name="IDS_DISABLE_HOST">
-        Disable
-      </message>
       <message desc="Label for the client-side disconnect button. Clicking this button disconnects oneself from the host." name="IDS_DISCONNECT_MYSELF_BUTTON" formatter_data="android_java">
         Disconnect
-      </message>
-      <message desc="Column header in the connection history table showing the length of time for which a connection was active, if available." name="IDS_DURATION_HEADER">
-        Duration
       </message>
       <message desc="Error that is shown on the client side when the host is blocking all connections due to failed authentication attempts." name="IDS_ERROR_HOST_OVERLOAD" formatter_data="android_java">
         Connections to the remote computer are temporarily blocked because somebody was trying to connect to it with an invalid PIN. Please try again later.
@@ -877,9 +615,6 @@
       <message desc="Error displayed when the host is online, but we are unable to connect to it due to network configuration." name="IDS_ERROR_NETWORK_FAILURE">
         Could not connect to the network. Please check that your device is on-line.
       </message>
-      <message desc="Error displayed when the service returns a 503 error. Such errors are usually temporary, and resolve themselves in about 30 seconds." name="IDS_ERROR_SERVICE_UNAVAILABLE">
-        The service is temporarily unavailable. Please try again later.
-      </message>
       <message desc="Error displayed when the user's oauth token is invalid." name="IDS_ERROR_OAUTH_TOKEN_INVALID">
         There was an issue authenticating, please login again.
       </message>
@@ -889,32 +624,8 @@
       <message desc="Text displayed while a client is connecting to a host, but before the connection is established." name="IDS_FOOTER_CONNECTING" formatter_data="android_java">
         Connecting…
       </message>
-      <message desc="Footer text displayed at the host after an access code has been generated, but before a client connects." name="IDS_FOOTER_WAITING">
-        waiting for connection…
-      </message>
       <message desc="Menu option for toggle full-screen mode." name="IDS_FULL_SCREEN" formatter_data="android_java">
         Full screen
-      </message>
-      <message desc="Icon to leave full-screen mode." name="IDS_EXIT_FULL_SCREEN">
-        Exit full screen
-      </message>
-      <message desc="Tool-tip for the window's close icon." name="IDS_CLOSE_WINDOW">
-        Close window
-      </message>
-      <message desc="Tool-tip for the window's maximize icon." name="IDS_MAXIMIZE_WINDOW">
-        Maximize window
-      </message>
-      <message desc="Tool-tip for the window's minimize icon." name="IDS_MINIMIZE_WINDOW">
-        Minimize window
-      </message>
-      <message desc="Tool-tip for the window's restore icon." name="IDS_RESTORE_WINDOW">
-        Restore window
-      </message>
-      <message desc="Tool-tip for the window's options menu icon." name="IDS_OPTIONS_MENU">
-        Options
-      </message>
-      <message desc="Button displayed underneath explanatory text for app features. Clicking causes the text, infographic and the button itself to be replaced by the actual UI for that feature." name="IDS_GET_STARTED">
-        Get started
       </message>
       <message desc="Help link, displayed in the top-left (assuming ltr layout) corner of the main screen. Clicking this takes the user to our FAQ." name="IDS_HELP">
         Help
@@ -922,104 +633,8 @@
       <message desc="Credits link, displayed in the top-left (assuming ltr layout) corner of the main screen. Clicking this takes the user to our acknowledgements screen." name="IDS_CREDITS" formatter_data="android_java">
         Credits
       </message>
-      <message desc="Clicking this button starts the desktop access process." name="IDS_HOME_ACCESS_BUTTON">
-        Access
-      </message>
-      <message desc="Description of the 'access' or 'client' functionality, displayed next to a button that instigates an access operation." name="IDS_HOME_ACCESS_DESCRIPTION">
-        See and control a shared computer.
-      </message>
-      <message desc="Hyperlink displayed immediately after the message indicating that the current computer is accepting remote connectins. Clicking this link allows the user to change the PIN (personal identification number) for accessing this host." name="IDS_HOME_DAEMON_CHANGE_PIN_LINK">
-        Change PIN
-      </message>
-      <message desc="Button displayed when the current computer is accepting remote connections. Clicking this button causes it to stop accepting remote connections." name="IDS_HOME_DAEMON_STOP_BUTTON">
-        Disable remote connections
-      </message>
-      <message desc="Button displayed when the current computer is not accepting remote connections. Clicking this button causes it to start accepting remote connections." name="IDS_HOME_DAEMON_START_BUTTON">
-        Enable remote connections
-      </message>
-      <message desc="Message displayed in the application to indicate that this computer is remotely accessible, but only from a different account than the one that the user is currently signed in as." name="IDS_HOME_DAEMON_HOST_ENABLED_OTHER_ACCOUNT">
-        This computer is currently shared under a different account.
-      </message>
-      <message desc="Explanatory text displayed when the user enables remote access or changes the PIN." name="IDS_HOST_SETUP_DIALOG_DESCRIPTION">
-        To protect access to this computer, please choose a PIN of <ph name="BOLD_START">$1<ex>&lt;b&gt;</ex></ph>at least six digits<ph name="BOLD_END">$2<ex>&lt;/b&gt;</ex></ph>. This PIN will be required when connecting from another location.
-      </message>
-      <message desc="Message shown when host service fails to start when enabling the host on local computer." name="IDS_HOST_SETUP_HOST_FAILED">
-        Failed to start remote access service.
-      </message>
-      <message desc="Message shown when user has attempted to continue past the manual install dialog, but the Host components are not yet installed." name="IDS_HOST_SETUP_INSTALL_PENDING">
-        Please run the installer before continuing.
-      </message>
-      <message desc="Message shown when host registration fails when enabling the host on local computer." name="IDS_ERROR_HOST_REGISTRATION_FAILED">
-        Failed to register this computer.
-      </message>
-      <message desc="Message shown after access to local computer has been enabled successfully." name="IDS_HOST_SETUP_STARTED">
-        Remote connections for this computer have been enabled.
-      </message>
-      <message desc="Instructions to the user to ask them to disable power management for the computer in order to be able to connect to it." name="IDS_HOST_SETUP_STARTED_DISABLE_SLEEP">
-        Please check your computer's power management settings and ensure that it is not configured to sleep when idle.
-      </message>
-      <message desc="Message shown when local machine is being registered in the directory and when starting the host." name="IDS_HOST_SETUP_STARTING">
-        Enabling remote connections for this computer…
-      </message>
-      <message desc="Message shown after we've failed to stop the host." name="IDS_HOST_SETUP_STOP_FAILED">
-        Failed to disable remote access to this computer. Please try again later.
-      </message>
-      <message desc="Message shown after host has been stopped." name="IDS_HOST_SETUP_STOPPED">
-        Remote connections for this computer have been disabled.
-      </message>
-      <message desc="Message shown when host is being stopped on the local machine." name="IDS_HOST_SETUP_STOPPING">
-        Disabling remote connections for this computer…
-      </message>
-      <message desc="Message shown after changing PIN for the local computer." name="IDS_HOST_SETUP_UPDATED_PIN">
-        Your PIN has been updated.
-      </message>
-      <message desc="Message shown while changing PIN for the local computer." name="IDS_HOST_SETUP_UPDATING_PIN">
-        The PIN for this computer is being updated…
-      </message>
-      <message desc="Message shown we fail to update PIN for the local computer." name="IDS_HOST_SETUP_UPDATE_PIN_FAILED">
-        Failed to update the PIN. Please try again later.
-      </message>
-      <message desc="Clicking this button starts the desktop sharing process." name="IDS_HOME_SHARE_BUTTON">
-        Share
-      </message>
-      <message desc="Description of the 'share' or 'host' functionality, displayed next to a button that instigates a share operation." name="IDS_HOME_SHARE_DESCRIPTION">
-        Share this computer for another user to see and control.
-      </message>
-      <message desc="Text displayed below the description of the 'share' or 'host' functionality on an unsupported platform." name="IDS_HOME_SHARE_DESCRIPTION_UNSUPPORTED">
-        (this feature is not yet available for your computer)
-      </message>
-      <message desc="In the connection history dialog, clicking this button shows only recent connections to this computer." name="IDS_INCOMING_CONNECTIONS">
-        To this computer
-      </message>
-      <message desc="Instructions shown above the access code when it is ready to be conveyed to the client." name="IDS_INSTRUCTIONS_SHARE_ABOVE">
-        To begin sharing your desktop, give the access code below to the person who will be assisting you.
-      </message>
-      <message desc="Instructions shown below the access code when it is ready to be conveyed to the client." name="IDS_INSTRUCTIONS_SHARE_BELOW">
-        Once they enter the code, you will be prompted to accept the connection and begin the sharing session.
-      </message>
-      <message desc="Instructions shown when the local user must accept or reject the incoming connection request."  name="IDS_INSTRUCTIONS_SHARE_PROMPT">
-        Please select '<ph name="SHARE">$1<ex>Share</ex></ph>' on the connection dialog box to complete the process.
-      </message>
-      <message desc="An error message displayed if the user enters an invalid PIN while setting up a host." name="IDS_INVALID_PIN">
-        Please enter a PIN consisting of six or more digits.
-      </message>
-      <message desc="Description of the 'IT2Me' remote support functionality, displayed until the user clicks a 'get started' button, at which point it is replaced by the actual UI for that functionality." name="IDS_IT2ME_FIRST_RUN">
-        User-to-user screen sharing, perfect for remote technical support.
-      </message>
-      <message desc="String displayed in front of the host when a connection is active informing the client user who they are connected to." name="IDS_LABEL_CONNECTED">
-        Connected:
-      </message>
-      <message desc="Description of the 'Me2Me' remote access functionality, displayed until the user clicks a 'get started' button, at which point it is replaced by the actual UI for that functionality." name="IDS_ME2ME_FIRST_RUN">
-        Access your own computer from anywhere.
-      </message>
-      <message desc="Text shown while generating an access code." name="IDS_MESSAGE_GENERATING">
-        Generating access code…
-      </message>
       <message desc="Message shown on the host computer while a session is active informing them who is connected." name="IDS_MESSAGE_SHARED">
         Your desktop is currently shared with <ph name="USER">$1<ex>user@domain.com</ex></ph>.
-      </message>
-      <message desc="Sub-title for the one-time authorization step. Displayed after the product name and separated by a chevron." name="IDS_MODE_AUTHORIZE">
-        Authorize
       </message>
       <message desc="Sub-title for the remote assistance section of the UI, which contains buttons to share this computer or to connect to another computer, both on a one-off basis." name="IDS_MODE_IT2ME">
         Remote Assistance
@@ -1119,15 +734,6 @@
           Unrecognized host error: <ph name="HOST_OFFLINE_REASON">$1<ex>EXIT_CODE_FROM_HOST_NEWER_THAN_CLIENT</ex></ph>.
         </message>
       </if>
-      <message desc="Modified version of the host name shown for hosts that are running an out-of-date version of the Me2Me host software." name="IDS_UPDATE_REQUIRED">
-        <ph name="HOSTNAME">$1<ex>My Linux desktop</ex></ph> (out-of-date)
-      </message>
-      <message desc="Explanatory text displayed if the user tries to connect to a computer running out-of-date Me2Me host software." name="IDS_HOST_NEEDS_UPDATE_DETAIL">
-        Software updates usually happen automatically, but can fail in some rare cases. Updating the software should take no more than a few minutes and can be done while connected to your computer remotely.
-      </message>
-      <message desc="In the connection history dialog, clicking this button shows only recent connections from this computer." name="IDS_OUTGOING_CONNECTIONS">
-        From this computer
-      </message>
       <message desc="Label for the PIN entry box." name="IDS_PIN">
         PIN
       </message>
@@ -1136,12 +742,6 @@
       </message>
       <message desc="Message displayed to the user asking them to enter a PIN for the host they are connecting to." name="IDS_PIN_MESSAGE_ANDROID" formatter_data="android_java">
         Please enter your PIN for the remote computer.
-      </message>
-      <message desc="Error message displayed to the user if they enter different PINs in the boxes marked 'PIN' and 'retype PIN'." name="IDS_PINS_NOT_EQUAL">
-        Please enter the same PIN in both boxes.
-      </message>
-      <message desc="Web-app description. Displayed in Chrome's extensions page. KEEP THIS TO 132 CHARACTERS OR LESS, as this is a hard limit imposed by Chrome Web Store." name="IDS_PRODUCT_DESCRIPTION">
-        Access other computers or allow another user to access your computer securely over the Internet.
       </message>
       <message desc="Label for button to reconnect to the previous Me2Me host. This button appears on the 'session-finished' page." name="IDS_RECONNECT">
         Reconnect
@@ -1152,23 +752,11 @@
       <message desc="Label for button to retry connecting to a Me2Me host, after failing to connect to that host. This button appears on the 'session-finished' page." name="IDS_RETRY">
         Retry
       </message>
-      <message desc="Tool-bar button used to access the Full-screen and shrink-to-fit features ('screen' in this context refers to the fact that the options are related to how the remote screen is displayed)." name="IDS_SCREEN_OPTIONS">
-        Screen options
-      </message>
       <message desc="Label for the client-side menu button that sends a Ctrl-Alt-Del sequence to the host. Clicking this button behaves as if Ctrl, Alt and Del were pressed and then released at the host." name="IDS_SEND_CTRL_ALT_DEL" formatter_data="android_java">
         Send Ctrl-Alt-Del
       </message>
-      <message desc="Tool-bar button used to access buttons for pressing and releasing keys or sequences of keys that might not otherwise be available. For example, Ctrl-Alt-Del, which if pressed at a client would take effect there, rather than being sent to the host as the user expected." name="IDS_SEND_KEYS">
-        Send keys
-      </message>
       <message desc="Label for the client-side menu button that sends a PrtScn key press to the host. The 'PrtScn' abbreviation (as typically printed on the keycap on English keyboards) is preferred over 'Print Screen', to make it clearer that this refers to the physical PrtScn key, and not the OS-specific keyboard shortcut for the screen capture functionality." name="IDS_SEND_PRINT_SCREEN">
         Send PrtScn
-      </message>
-      <message desc="Label for the client-side menu button that toggles whether or not the right-hand Ctrl key is used to send the Windows/Command key." name="IDS_MAP_RIGHT_CTRL_TO_META">
-        Use right Ctrl for Win key (⌘ on Mac)
-      </message>
-      <message desc="Menu option for enabling shrink-to-fit. When clicked, the remote desktop will be scaled down so that it fits in the browser window." name="IDS_SHRINK_TO_FIT">
-        Shrink to fit
       </message>
       <message desc="Sign in button, visible if the user's authentication token is corrupt, in which case the user has to sign in (authenticate) to the app again." name="IDS_SIGN_IN_BUTTON">
         Sign in
@@ -1179,29 +767,8 @@
       <message desc="Label for the 'stop sharing' button on the host-side. Clicking this button disconnects the client." name="IDS_STOP_SHARING_BUTTON">
         Stop Sharing
       </message>
-      <message desc="Column header in the connection history table showing the time and date of a connection." name="IDS_TIME_HEADER">
-        Time
-      </message>
-      <message desc="The tool-tip shown when the user hovers over an on-line host. Clicking the host will initiate a connection to it." name="IDS_TOOLTIP_CONNECT">
-        Connect to <ph name="HOSTNAME">$1<ex>My Linux desktop</ex></ph>
-      </message>
-      <message desc="The tool-tip shown when the user hovers over the 'delete host' button. Clicking this button removes the host from the list and disables connections to it." name="IDS_TOOLTIP_DELETE">
-        Disable remote connections to this computer
-      </message>
       <message desc="The tool-tip shown when the user hovers over the 'refresh host list' button. Clicking this button reloads the host list without reloading the app." name="IDS_TOOLTIP_REFRESH" formatter_data="android_java">
         Refresh the list of hosts
-      </message>
-      <message desc="The tool-tip shown when the user hovers over the 'rename host' button. Clicking this button allows the host name to be edited in-place." name="IDS_TOOLTIP_RENAME">
-        Edit computer name
-      </message>
-      <message desc="Message displayed at the bottom of the host screen if local policy dictates that NAT traversal is disabled, meaning that connections outside the local network will not work." name="IDS_WARNING_NAT_DISABLED">
-        NOTE: Policy settings permit connections only between computers within your network.
-      </message>
-      <message desc="Link to learn more detailed information on a topic." name="IDS_LEARN_HOW">
-        Learn how.
-      </message>
-      <message desc="Help link displayed when the user enables the host on this computer. Clicking this link opens a page that explains why this operation is safe. This string appears in a UI with limited horizontal space. Please try to keep translations no more than about 30 characters." name="IDS_WHY_IS_THIS_SAFE">
-        Why is this safe?
       </message>
       <message desc="Check-box displayed when the user enters their PIN to connect to a host allowing them to 'pair' the client and host, avoiding the need to enter the PIN each time." name="IDS_REMEMBER_PIN" formatter_data="android_java">
         Don't ask for a PIN again when connecting to this host from this device.
@@ -1224,14 +791,11 @@
       <message name="IDS_REMOTING_REMOTE_SECURITY_KEY_DESCRIPTION" desc="The file description specified in the version information of remote_security_key.exe.">
         Security Key Remoting Process
       </message>
-      <message name="IDS_REMOTING_HOST_COMMAND_DESCRIPTION" desc="The file description specified in the version information of remoting_host_command.exe. The Chrome Remote Desktop host allows a user to connect to their computer remotely (it 'hosts' a connection from a remote computer).">
-        Application to issue commands to Chrome remote desktop host.
-      </message>
       <message name="IDS_REMOTING_START_HOST_DESCRIPTION" desc="The file description specified in the version information of remoting_start_host.exe.">
         Host Provisioning Utility
       </message>
-      <message name="IDS_VERIFY_PIN_DIALOG_EMAIL_LABEL" desc="The message displayed by the PIN verification dialog.">
-        Account
+      <message name="IDS_REMOTING_REMOTE_WEBAUTHN_DESCRIPTION" desc="The file description specified in the version information of remote_webauthn.exe.">
+        Web Authentication Remoting Process
       </message>
       <message name="IDS_HOST_CATEGORY" desc="Name of the message category assigned to all messages written to the EventLog by Chromoting Host.">
         Host
@@ -1254,41 +818,14 @@
       <message name="IDS_HOST_STOPPED" desc="The message reported to the EventLog by Chromoting Host every time it is stopped.">
         Host stopped.
       </message>
-      <message desc="Link to allow a host's paired clients to be viewed or edited." name="IDS_HOME_DAEMON_MANAGE_PAIRINGS">
-        View/edit
+      <message name="IDS_HOST_LOG_EVENT" desc="The message reported to the EventLog by Chromoting Host every time it logs a message. Since we are just logging debugging messages directly, no localizable text is required in this string.">
+        <ph name="ORIGINAL_LOG_MESSAGE">%1</ph>
       </message>
       <message desc="This text is used on a button or context-menu or similar control. When chosen or pressed, it deletes a selected item from a list." meaning="Delete an item from a list." name="IDS_DELETE_LIST_ITEM" formatter_data="android_java">
         Delete
       </message>
-      <message desc="Link to delete a specific paired client." name="IDS_DELETE_PAIRED_CLIENT">
-        Delete
-      </message>
-      <message desc="Link to delete all paired clients." name="IDS_DELETE_ALL_PAIRED_CLIENTS">
-        Delete all
-      </message>
-      <message desc="Message displayed in the paired client manager dialog when all paired clients have been deleted." name="IDS_NO_PAIRED_CLIENTS">
-        All paired clients have been deleted.
-      </message>
-      <message desc="Message displayed when the current computer has been paired with one or more clients, allowing them to connect without needing a PIN." name="IDS_HOME_DAEMON_PAIRED_MESSAGE">
-        This computer is configured to allow one or more clients to connect without entering a PIN.
-      </message>
-      <message desc="Message displayed above the list of paired clients, explaining its purpose." name="IDS_PAIRED_CLIENTS_INTRODUCTION">
-        The following clients have been paired with this computer and can connect without supplying a PIN. You can revoke this permission at any time, either individually, or for all clients.
-      </message>
-      <message desc="Table header for the dates at which clients were paired." name="IDS_PAIRED_CLIENT_DATE">
-        Pairing date
-      </message>
-      <message desc="Table header for the names of paired clients." name="IDS_PAIRED_CLIENT_NAME">
-        Client
-      </message>
       <message desc="Text shown while a background operation is in progress." name="IDS_WORKING">
         Working…
-      </message>
-      <message desc="Menu option to toggle the visibility of connection statistics." name="IDS_TOGGLE_STATS">
-        Show statistics
-      </message>
-      <message desc="Menu option to open a new window." name="IDS_NEW_WINDOW">
-        New window…
       </message>
       <message desc="Label for the Feedback button displayed in the Android Help screen. Pressing this button causes the Feedback screen to be shown." name="IDS_ACTIONBAR_FEEDBACK" formatter_data="android_java">
         Feedback
@@ -1296,17 +833,14 @@
       <message desc="Label for the menu button displayed on the Android toolbar. Pressing this button will open a drawer with a list of menu options." name="IDS_ACTIONBAR_MENU" formatter_data="android_java">
         Menu
       </message>
-      <message desc="Label for button to accept remote assistance.  This button appears in the Hangouts confirm dialog." name="IDS_HANGOUTS_CONFIRM_DIALOG_ACCEPT" >
-        Accept
-      </message>
-      <message desc="Label for button to decline remote assistance.  This button appears in the Hangouts confirm dialog." name="IDS_HANGOUTS_CONFIRM_DIALOG_DECLINE" >
-        Decline
-      </message>
       <message desc="Message displayed before sharing computer in 'It2Me' mode." name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE" >
         Would you like to share this computer for another user to see and control?
       </message>
       <message desc="Message displayed before sharing computer in 'It2Me' mode when the email of the remote user attempting to connect is known." name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME" >
         Would you like to allow <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> to see and control your computer?
+      </message>
+      <message desc="Message displayed before sharing computer when admin initiated the connection remotely" name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED">
+        <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see your screen and control your keyboard and mouse. Press ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE">{1}<ex>cancel</ex></ph>'' if you are not expecting this request. Otherwise select ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM">{2}<ex>share</ex></ph>'' to allow the connection when ready.
       </message>
       <message desc="Label for the button to accept sharing the computer in 'It2Me' mode." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" >
         Share
@@ -1314,35 +848,20 @@
       <message desc="Label for the button to decline sharing the computer in 'It2Me' mode." name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" >
         Cancel
       </message>
-      <message desc="Text shown in tooltip to inform the user that a setting is managed by domain policy." name="IDS_SETTING_MANAGED_BY_POLICY">
-        This setting is managed by your domain policy.
-      </message>
-      <message desc="Platform-specific text indicating that a component is for the Windows OS." name="IDS_FOR_PLATFORM_WINDOWS">
-        For Windows 7 and above
-      </message>
-      <message desc="Platform-specific text indicating that a component is for the Mac OS." name="IDS_FOR_PLATFORM_MAC">
-        For Mac (OS X Yosemite 10.10 and above)
-      </message>
-      <message desc="Text for the button the user clicks to indicate that they agree to the terms of service and want to proceed with downloading the installer." name="IDS_ACCEPT_AND_INSTALL">
-        Accept and Install
-      </message>
-      <message  name="IDS_WEBSITE_INVITE_BETA" desc="Invitation to early adopters to try the new version">
-        Get a sneak peek at the new <ph name="LINK_BEGIN">$1<ex>&lt;a href=http://example.com&gt;</ex></ph>Chrome Remote Desktop web app<ph name="LINK_END">$2<ex>&lt;/a&gt;</ex></ph>. We'd love to hear your feedback.
-      </message>
-      <message  name="IDS_WEBSITE_INVITE_STABLE" desc="Invitation to all users to try the new version">
-        Chrome Remote Desktop is now on the web! Check out our <ph name="LINK_BEGIN">$1<ex>&lt;a href=http://example.com&gt;</ex></ph>free web app<ph name="LINK_END">$2<ex>&lt;/a&gt;</ex></ph>.
-      </message>
-      <message  name="IDS_WEBSITE_INVITE_FILE_TRANSFER" desc="Announcement of the file transfer feature">
-        Chrome Remote Desktop is now on the web with new features including file transfer! Check out our <ph name="LINK_BEGIN">$1<ex>&lt;a href=http://example.com&gt;</ex></ph>web app<ph name="LINK_END">$2<ex>&lt;/a&gt;</ex></ph>.
-      </message>
-      <message  name="IDS_WEBSITE_INVITE_MULTI_MONITOR" desc="Announcement of improved support for multi-monitor">
-        Chrome Remote Desktop is now on the web. Try our <ph name="LINK_BEGIN">$1<ex>&lt;a href=http://example.com&gt;</ex></ph>web app<ph name="LINK_END">$2<ex>&lt;/a&gt;</ex></ph>—it's fast and free, with even more features, including improved support for multiple monitors.
-      </message>
-      <message  name="IDS_WEBSITE_INVITE_DEPRECATION" desc="Requirement all users to try the new version">
-        This app is no longer supported. To ensure you're getting the latest features and security updates, please use the <ph name="LINK_BEGIN">$1<ex>&lt;a href=http://example.com&gt;</ex></ph>Chrome Remote Desktop web app<ph name="LINK_END">$2<ex>&lt;/a&gt;</ex></ph>.
-      </message>
       <message name="IDS_DOWNLOAD_FILE_DIALOG_TITLE" desc="Window title for file chooser to select file to download to the client">
         Download File
+      </message>
+      <message name="IDS_URL_FORWARDER_NAME" desc="Name of an application that is used by Chrome Remote Desktop to forward URLs from the remote device to the client device.">
+        <ph name="PRODUCT_NAME">%s<ex>Chrome Remote Desktop</ex></ph> URL Forwarder
+      </message>
+      <message name="IDS_URL_FORWARDER_DESCRIPTION" desc="Description of an application that is used by Chrome Remote Desktop to forward URLs from the remote device to the client device.">
+        Helper application to open a URL on the <ph name="PRODUCT_NAME">%s<ex>Chrome Remote Desktop</ex></ph> client
+      </message>
+      <message name="IDS_SET_UP_URL_FORWARDER_PROMPT" desc="Prompt to be displayed to inform the user how they can set up the Chrome Remote Desktop URL forwarder.">
+        To allow links clicked on the remote device to be opened on the client browser, you need to change the system's web browser to "<ph name="URL_FORWARDER_NAME">%s<ex>Chrome Remote Desktop URL Forwarder</ex></ph>".
+      </message>
+      <message name="IDS_OPEN_DEFAULT_APPS_SETTINGS_BUTTON" desc="Label for the button to open the default apps settings page, which allows the user to change the system's default application that is associated with a specific file type or URL scheme.">
+        Open Default Apps Settings
       </message>
       <if expr="is_macosx">
         <message name="IDS_HOST_AUTHENTICATION_PROMPT" desc="The prompt to be displayed in the authentication dialog when making changes to the system.  The system will add a sentence asking for an administrator's name and password.  Mac-only.">
@@ -1366,12 +885,12 @@
         <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_TITLE" desc="The title of the prompt that asks the user to grant 'Accessibility' permission to the Chrome Remote Desktop service. This permission is part of the 'Privacy and Security' preferences pane. Mac-only.">
           Grant 'Accessibility' permission to <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>
         </message>
-        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_BODY_TEXT" desc="The body text of the prompt that asks the user to turn on the Chrome Remote Desktop service. This setting lives in the 'Accessibility' section of the 'Privacy and Security' preferences pane. Mac-only.">
+        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_BODY_TEXT" desc="The body text of the prompt that asks the user to grant Accessibility permission to the local Chrome Remote Desktop service. This setting lives in the 'Accessibility' section of the 'Privacy and Security' preferences pane. This permission is needed so that input that we receive from the remote machine can be injected. Mac-only.">
 To use <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>, you need to grant the 'Accessibility' permission so that input from the remote machine can be injected on this Mac.
 
-To grant this permission, click '<ph name="BUTTON_NAME">$2<ex>Open Accessibility Preferences</ex></ph>' below to open the 'Accessibility' preferences pane and then check the box next to '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>'.
+To grant this permission, click '<ph name="BUTTON_NAME">$2<ex>Open Accessibility Preferences</ex></ph>' below. In the 'Accessibility' preferences pane that opens, check the box next to '<ph name="SERVICE_SCRIPT_NAME">$3<ex>ChromeRemoteDesktopHost</ex></ph>'.
 
-If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>' is already checked, uncheck it and then check it again.
+If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>ChromeRemoteDesktopHost</ex></ph>' is already checked, uncheck it and then check it again.
         </message>
         <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_OPEN_BUTTON" desc="The button text of the prompt that asks the user to turn on the Chrome Remote Desktop service. This setting lives in the 'Accessibility' section of the 'Privacy and Security' preferences pane. Selecting this button will open the 'Privacy and Security' preferences pane. Mac-only.">
           Open Accessibility Preferences
@@ -1393,11 +912,23 @@ If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></
           Open Screen Recording Preferences
         </message>
       </if>
+      <message name="IDS_REMOTE_OPEN_URL_FAILED" desc="Message shown when Chrome Remote Desktop fails to open a URL from the host device on the client device.">
+        Failed to open <ph name="URL">$1<ex>http://google.com</ex></ph> on the client.
+      </message>
+      <message name="IDS_CHOOSE_FALLBACK_BROWSER" desc="Message shown on a browser chooser dialog when the Chrome Remote Desktop URL forwarder cannot determine the browser for opening a URL locally (when the URL cannot be remotely opened by the client).">
+        Chrome Remote Desktop cannot determine the browser to open URLs locally. Please choose it from the list below.
+      </message>
+      <message name="IDS_BROWSER_IS_INVALID" desc="Message shown when the user has chosen an invalid app as the browser to open URLs locally.">
+        The chosen browser cannot be used to open URLs on the local machine.
+      </message>
+      <message name="IDS_URL_FORWARDER_INCORRECTLY_CONFIGURED" desc="Message shown when the Chrome Remote Desktop URL forwarder is incorrectly configured.">
+        <ph name="URL_FORWARDER_NAME">%s<ex>Chrome Remote Desktop URL Forwarder</ex></ph> is not configured correctly. Please choose a different default web browser and then enable URL forwarding again.
+      </message>
       <if expr="is_linux">
         <message name="IDS_SESSION_DIALOG_MESSAGE" desc="The message to show at the top of the session-selection dialog.">
           Select a session to launch within your Chrome Remote Desktop environment. (Note that some session types may not support running within Chrome Remote Desktop and on the local console simultaneously.)
         </message>
-        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions.">
+        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions." meaning="Name of an inanimate object">
           Name
         </message>
         <message name="IDS_SESSION_DIALOG_COMMENT_COLUMN" desc="The title of the column containing the comment/description of potential sessions.">

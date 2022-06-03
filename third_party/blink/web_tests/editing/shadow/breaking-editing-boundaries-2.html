@@ -15,13 +15,13 @@
 if (window.testRunner)
     testRunner.dumpAsText();
 
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 var div = document.createElement('div');
 div.setAttribute('contenteditable', 'true');
 shadowRoot.appendChild(div);
 div.innerHTML = "<div id='source'>before shadow</div><shadow></shadow><div>after shadow</div>";
 
-var nestedShadowRoot = div.createShadowRoot();
+var nestedShadowRoot = div.attachShadow({mode: 'open'});
 nestedShadowRoot.innerHTML = "<div contenteditable>before nested<shadow></shadow>after nested</div>";
 
 var source = shadowRoot.getElementById('source');

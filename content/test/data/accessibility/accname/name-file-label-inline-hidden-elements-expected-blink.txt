@@ -1,0 +1,2 @@
+# BUG: The expected result is: '2 4 6 8 10'
+button name='2468 9 10' nameFrom=relatedElement

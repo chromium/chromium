@@ -1,0 +1,23 @@
+[document web] text-align:left
+++[section] text-align:left
+++++[static] name='Left-aligned text'
+++[section] text-align:right
+++++[static] name='Right-aligned text'
+++[section] text-align:center
+++++[static] name='Centered text'
+++[section] text-align:justify
+++++[static] name='Justified text'
+++[section] text-align:left
+++++[static] name='Webkit left-aligned text'
+++[section] text-align:right
+++++[static] name='Webkit right-aligned text'
+++[section] text-align:center
+++++[static] name='Webkit centered text'
+++[section] text-align:left
+++++[static] name='Start-aligned text'
+++[section] text-align:right
+++++[static] name='End-aligned text'
+++[section] text-align:left
+++++[static] name='No text alignment specified'
+++[section] text-align:left
+++++[static] name='Invalid text alignment'

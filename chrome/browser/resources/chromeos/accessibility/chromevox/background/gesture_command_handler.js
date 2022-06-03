@@ -8,12 +8,16 @@
 
 goog.provide('GestureCommandHandler');
 
+goog.require('ChromeVoxState');
 goog.require('CommandHandler');
+goog.require('EventGenerator');
 goog.require('EventSourceState');
 goog.require('GestureCommandData');
+goog.require('PointerHandler');
 
 goog.scope(function() {
-var RoleType = chrome.automation.RoleType;
+const RoleType = chrome.automation.RoleType;
+const Gesture = chrome.accessibilityPrivate.Gesture;
 
 /**
  * Global setting for the enabled state of this handler.
@@ -37,44 +41,77 @@ GestureCommandHandler.getEnabled = function() {
  *     ax::mojom::Gesture enum defined in ui/accessibility/ax_enums.mojom
  * @private
  */
-GestureCommandHandler.onAccessibilityGesture_ = function(gesture) {
-  if (!GestureCommandHandler.enabled_ ||
-      !ChromeVoxState.instance.currentRange) {
+GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
+  if (!GestureCommandHandler.enabled_) {
     return;
   }
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
 
-  var commandData = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
+  const chromeVoxState = ChromeVoxState.instance;
+  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
+  if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&
+      !monitor.onGesture(gesture)) {
+    // UserActionMonitor returns true if this gesture should propagate.
+    // Prevent this gesture from propagating if it returns false.
+    // Always allow SWIPE_LEFT2 to propagate, since it simulates the escape key.
+    return;
+  }
+
+  if (gesture === Gesture.TOUCH_EXPLORE) {
+    GestureCommandHandler.pointerHandler_.onTouchMove(x, y);
+    return;
+  }
+
+  const commandData = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
   if (!commandData) {
     return;
   }
 
   Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
 
-  // Map gestures to arrow keys while within menus.
-  var range = ChromeVoxState.instance.currentRange;
-  if (commandData.menuKeyOverride && range.start && range.start.node &&
-      range.start.node.role == RoleType.MENU_ITEM &&
-      (range.start.node.root.docUrl.indexOf(chrome.extension.getURL('')) == 0 ||
-       range.start.node.root.role == RoleType.DESKTOP)) {
-    var key = commandData.keyOverride;
-    BackgroundKeyboardHandler.sendKeyPress(key.keyCode, key.modifiers);
+  // Check first for an accelerator action.
+  if (commandData.acceleratorAction) {
+    chrome.accessibilityPrivate.performAcceleratorAction(
+        commandData.acceleratorAction);
     return;
   }
 
-  var textEditHandler = DesktopAutomationHandler.instance.textEditHandler;
-  if (textEditHandler && commandData.keyOverride) {
-    var key = commandData.keyOverride;
-    if (!key.multiline ||
-        ((!key.skipStart || !textEditHandler.isSelectionOnFirstLine()) &&
-         (!key.skipEnd || !textEditHandler.isSelectionOnLastLine()))) {
-      BackgroundKeyboardHandler.sendKeyPress(key.keyCode, key.modifiers);
-      return;
+  // Always try to recover the range to the previous valid target which may
+  // have been invalidated by touch explore; this recovery omits touch explore
+  // explicitly.
+  ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+
+  // Handle gestures mapped to keys. Global keys are handled in place of
+  // commands, and menu key overrides are handled only in menus.
+  let key;
+  const range = ChromeVoxState.instance.currentRange;
+  if (range && range.start && range.start.node) {
+    let inMenu = false;
+    let node = range.start.node;
+    while (node) {
+      if (AutomationPredicate.menuItem(node)) {
+        inMenu = true;
+        break;
+      }
+      node = node.parent;
+    }
+
+    if (commandData.menuKeyOverride && inMenu) {
+      key = commandData.menuKeyOverride;
     }
   }
 
-  var command = commandData.command;
+  if (!key) {
+    key = commandData.globalKey;
+  }
+
+  if (key) {
+    EventGenerator.sendKeyPress(key.keyCode, key.modifiers);
+    return;
+  }
+
+  const command = commandData.command;
   if (command) {
     CommandHandler.onCommand(command);
   }
@@ -87,6 +124,8 @@ GestureCommandHandler.enabled_ = true;
 GestureCommandHandler.init_ = function() {
   chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
       GestureCommandHandler.onAccessibilityGesture_);
+
+  GestureCommandHandler.pointerHandler_ = new PointerHandler();
 };
 
 /**

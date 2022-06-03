@@ -1,11 +1,27 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './shared_style.js';
+import './toggle_row.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from '../permission_util.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {getPermission, getPermissionValueBool, getSelectedApp, recordAppManagementUserAction} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-permission-item',
 
   behaviors: [
-    app_management.StoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -17,8 +33,7 @@ Polymer({
 
     /**
      * A string version of the permission type. Must be a value of the
-     * permission type enum corresponding to the AppType of app_.
-     * E.g. A value of PwaPermissionType if app_.type === AppType.kWeb.
+     * permission type enum in apps.mojom.PermissionType.
      * @type {string}
      */
     permissionType: String,
@@ -27,6 +42,15 @@ Polymer({
      * @type {string}
      */
     icon: String,
+
+    /**
+     * If set to true, toggling the permission item will not set the permission
+     * in the backend. Call `syncPermission()` to set the permission to reflect
+     * the current UI state.
+     *
+     * @type {boolean}
+     */
+    syncPermissionManually: Boolean,
 
     /**
      * @type {App}
@@ -58,8 +82,8 @@ Polymer({
 
   listeners: {click: 'onClick_', change: 'togglePermission_'},
 
-  attached: function() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+  attached() {
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   },
 
@@ -70,14 +94,14 @@ Polymer({
    * @param {string} permissionType
    * @private
    */
-  isAvailable_: function(app, permissionType) {
+  isAvailable_(app, permissionType) {
     if (app === undefined || permissionType === undefined) {
       return false;
     }
 
     assert(app);
 
-    return app_management.util.getPermission(app, permissionType) !== undefined;
+    return getPermission(app, permissionType) !== undefined;
   },
 
   /**
@@ -85,14 +109,14 @@ Polymer({
    * @param {string} permissionType
    * @return {boolean}
    */
-  isManaged_: function(app, permissionType) {
+  isManaged_(app, permissionType) {
     if (app === undefined || permissionType === undefined ||
         !this.isAvailable_(app, permissionType)) {
       return false;
     }
 
     assert(app);
-    const permission = app_management.util.getPermission(app, permissionType);
+    const permission = getPermission(app, permissionType);
 
     assert(permission);
     return permission.isManaged;
@@ -103,100 +127,107 @@ Polymer({
    * @param {string} permissionType
    * @return {boolean}
    */
-  getValue_: function(app, permissionType) {
+  getValue_(app, permissionType) {
     if (app === undefined || permissionType === undefined) {
       return false;
     }
-
     assert(app);
 
-    return app_management.util.getPermissionValueBool(app, permissionType);
+    return getPermissionValueBool(app, permissionType);
+  },
+
+  resetToggle() {
+    const currentValue = this.getValue_(this.app_, this.permissionType);
+    this.$$('#toggle-row').setToggle(currentValue);
   },
 
   /**
    * @private
    */
-  onClick_: function() {
+  onClick_() {
     this.$$('#toggle-row').click();
   },
 
   /**
    * @private
    */
-  togglePermission_: function() {
+  togglePermission_() {
+    if (!this.syncPermissionManually) {
+      this.syncPermission();
+    }
+  },
+
+  /**
+   * Set the permission to match the current UI state. This only needs to be
+   * called when `syncPermissionManually` is set.
+   */
+  syncPermission() {
     assert(this.app_);
 
     /** @type {!Permission} */
     let newPermission;
 
     let newBoolState = false;  // to keep the closure compiler happy.
+    const permissionValue = getPermission(this.app_, this.permissionType).value;
+    if (isBoolValue(permissionValue)) {
+      newPermission =
+          this.getUIPermissionBoolean_(this.app_, this.permissionType);
+      newBoolState = getBoolPermissionValue(newPermission.value);
+    } else if (isTriStateValue(permissionValue)) {
+      newPermission =
+          this.getUIPermissionTriState_(this.app_, this.permissionType);
 
-    switch (app_management.util.getPermission(this.app_, this.permissionType)
-                .valueType) {
-      case PermissionValueType.kBool:
-        newPermission =
-            this.getNewPermissionBoolean_(this.app_, this.permissionType);
-        newBoolState = newPermission.value === Bool.kTrue;
-        break;
-      case PermissionValueType.kTriState:
-        newPermission =
-            this.getNewPermissionTriState_(this.app_, this.permissionType);
-        newBoolState = newPermission.value === TriState.kAllow;
-        break;
-      default:
-        assertNotReached();
+      newBoolState =
+          getTriStatePermissionValue(newPermission.value) === TriState.kAllow;
+    } else {
+      assertNotReached();
     }
 
-    app_management.BrowserProxy.getInstance().handler.setPermission(
+    BrowserProxy.getInstance().handler.setPermission(
         this.app_.id, newPermission);
 
-    app_management.util.recordAppManagementUserAction(
+    recordSettingChange();
+    recordAppManagementUserAction(
         this.app_.type,
         this.getUserMetricActionForPermission_(
             newBoolState, this.permissionType));
   },
 
   /**
+   * Gets the permission boolean based on the toggle's UI state.
+   *
    * @param {App} app
    * @param {string} permissionType
    * @return {!Permission}
    * @private
    */
-  getNewPermissionBoolean_: function(app, permissionType) {
-    let newPermissionValue;
-    const currentPermission =
-        app_management.util.getPermission(app, permissionType);
+  getUIPermissionBoolean_(app, permissionType) {
+    const currentPermission = getPermission(app, permissionType);
 
-    switch (currentPermission.value) {
-      case Bool.kFalse:
-        newPermissionValue = Bool.kTrue;
-        break;
-      case Bool.kTrue:
-        newPermissionValue = Bool.kFalse;
-        break;
-      default:
-        assertNotReached();
-    }
+    assert(isBoolValue(currentPermission.value));
 
-    assert(newPermissionValue !== undefined);
-    return app_management.util.createPermission(
-        app_management.util.permissionTypeHandle(app, permissionType),
-        PermissionValueType.kBool, newPermissionValue,
+    const newPermissionValue = !getBoolPermissionValue(currentPermission.value);
+
+    return createBoolPermission(
+        PermissionType[permissionType], newPermissionValue,
         currentPermission.isManaged);
   },
 
   /**
+   * Gets the permission tristate based on the toggle's UI state.
+   *
    * @param {App} app
    * @param {string} permissionType
    * @return {!Permission}
    * @private
    */
-  getNewPermissionTriState_: function(app, permissionType) {
+  getUIPermissionTriState_(app, permissionType) {
     let newPermissionValue;
-    const currentPermission =
-        app_management.util.getPermission(app, permissionType);
+    const currentPermission = getPermission(app, permissionType);
 
-    switch (currentPermission.value) {
+    assert(isTriStateValue(currentPermission.value));
+
+    switch (getTriStatePermissionValue(currentPermission.value)) {
       case TriState.kBlock:
         newPermissionValue = TriState.kAllow;
         break;
@@ -215,9 +246,8 @@ Polymer({
     }
 
     assert(newPermissionValue !== undefined);
-    return app_management.util.createPermission(
-        app_management.util.permissionTypeHandle(app, permissionType),
-        PermissionValueType.kTriState, newPermissionValue,
+    return createTriStatePermission(
+        PermissionType[permissionType], newPermissionValue,
         currentPermission.isManaged);
   },
 
@@ -227,34 +257,35 @@ Polymer({
    * @return {AppManagementUserAction}
    * @private
    */
-  getUserMetricActionForPermission_: function(permissionValue, permissionType) {
+  getUserMetricActionForPermission_(permissionValue, permissionType) {
     switch (permissionType) {
-      case 'NOTIFICATIONS':
+      case 'kNotifications':
         return permissionValue ? AppManagementUserAction.NotificationsTurnedOn :
                                  AppManagementUserAction.NotificationsTurnedOff;
 
-      case 'GEOLOCATION':
-      case 'LOCATION':
+      case 'kLocation':
         return permissionValue ? AppManagementUserAction.LocationTurnedOn :
                                  AppManagementUserAction.LocationTurnedOff;
 
-      case 'MEDIASTREAM_CAMERA':
-      case 'CAMERA':
+      case 'kCamera':
         return permissionValue ? AppManagementUserAction.CameraTurnedOn :
                                  AppManagementUserAction.CameraTurnedOff;
 
-      case 'MEDIASTREAM_MIC':
-      case 'MICROPHONE':
+      case 'kMicrophone':
         return permissionValue ? AppManagementUserAction.MicrophoneTurnedOn :
                                  AppManagementUserAction.MicrophoneTurnedOff;
 
-      case 'CONTACTS':
+      case 'kContacts':
         return permissionValue ? AppManagementUserAction.ContactsTurnedOn :
                                  AppManagementUserAction.ContactsTurnedOff;
 
-      case 'STORAGE':
+      case 'kStorage':
         return permissionValue ? AppManagementUserAction.StorageTurnedOn :
                                  AppManagementUserAction.StorageTurnedOff;
+
+      case 'kPrinting':
+        return permissionValue ? AppManagementUserAction.PrintingTurnedOn :
+                                 AppManagementUserAction.PrintingTurnedOff;
 
       default:
         assertNotReached();

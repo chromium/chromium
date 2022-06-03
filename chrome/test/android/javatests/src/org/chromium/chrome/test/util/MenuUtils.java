@@ -8,7 +8,7 @@ import android.app.Instrumentation;
 
 import org.junit.Assert;
 
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 
 /**
  * Collection of menu utilities.

@@ -50,6 +50,10 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   PluginGlobals(
       PpapiGlobals::PerThreadForTest,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner);
+
+  PluginGlobals(const PluginGlobals&) = delete;
+  PluginGlobals& operator=(const PluginGlobals&) = delete;
+
   ~PluginGlobals() override;
 
   // Getter for the global singleton. Generally, you should use
@@ -70,8 +74,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   thunk::ResourceCreationAPI* GetResourceCreationAPI(
       PP_Instance instance) override;
   PP_Module GetModuleForInstance(PP_Instance instance) override;
-  std::string GetCmdLine() override;
-  void PreCacheFontForFlash(const void* logfontw) override;
   void LogWithSource(PP_Instance instance,
                      PP_LogLevel level,
                      const std::string& source,
@@ -140,9 +142,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   // is known. This will be used for error logging.
   void set_plugin_name(const std::string& name) { plugin_name_ = name; }
 
-  // The embedder should call this function when the command line is known.
-  void set_command_line(const std::string& c) { command_line_ = c; }
-
   ResourceReplyThreadRegistrar* resource_reply_thread_registrar() {
     return resource_reply_thread_registrar_.get();
   }
@@ -177,10 +176,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   // set_plugin_name is called.
   std::string plugin_name_;
 
-  // Command line for the plugin. This will be empty until set_command_line is
-  // called.
-  std::string command_line_;
-
   std::unique_ptr<BrowserSender> browser_sender_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
@@ -195,8 +190,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
 
   // Member variables should appear before the WeakPtrFactory, see weak_ptr.h.
   base::WeakPtrFactory<PluginGlobals> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginGlobals);
 };
 
 }  // namespace proxy

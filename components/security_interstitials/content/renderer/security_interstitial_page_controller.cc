@@ -4,11 +4,13 @@
 
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller.h"
 
+#include "components/security_interstitials/core/common/mojom/interstitial_commands.mojom.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -17,64 +19,12 @@ namespace security_interstitials {
 gin::WrapperInfo SecurityInterstitialPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};
 
-void SecurityInterstitialPageController::Delegate::SendCommand(
-    security_interstitials::SecurityInterstitialCommand command) {
-  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
-      interface = GetInterface();
-  switch (command) {
-    case security_interstitials::CMD_DONT_PROCEED:
-      interface->DontProceed();
-      break;
-    case security_interstitials::CMD_PROCEED:
-      interface->Proceed();
-      break;
-    case security_interstitials::CMD_SHOW_MORE_SECTION:
-      interface->ShowMoreSection();
-      break;
-    case security_interstitials::CMD_OPEN_HELP_CENTER:
-      interface->OpenHelpCenter();
-      break;
-    case security_interstitials::CMD_OPEN_DIAGNOSTIC:
-      interface->OpenDiagnostic();
-      break;
-    case security_interstitials::CMD_RELOAD:
-      interface->Reload();
-      break;
-    case security_interstitials::CMD_OPEN_DATE_SETTINGS:
-      interface->OpenDateSettings();
-      break;
-    case security_interstitials::CMD_OPEN_LOGIN:
-      interface->OpenLogin();
-      break;
-    case security_interstitials::CMD_DO_REPORT:
-      interface->DoReport();
-      break;
-    case security_interstitials::CMD_DONT_REPORT:
-      interface->DontReport();
-      break;
-    case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
-      interface->OpenReportingPrivacy();
-      break;
-    case security_interstitials::CMD_OPEN_WHITEPAPER:
-      interface->OpenWhitepaper();
-      break;
-    case security_interstitials::CMD_REPORT_PHISHING_ERROR:
-      interface->ReportPhishingError();
-      break;
-    default:
-      // Other values in the enum are only used by tests so this
-      // method should not be called with them.
-      NOTREACHED();
-  }
-}
-
-SecurityInterstitialPageController::Delegate::~Delegate() {}
-
 void SecurityInterstitialPageController::Install(
-    content::RenderFrame* render_frame,
-    base::WeakPtr<Delegate> delegate) {
+    content::RenderFrame* render_frame) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context =
       render_frame->GetWebFrame()->MainWorldScriptContext();
   if (context.IsEmpty())
@@ -84,7 +34,7 @@ void SecurityInterstitialPageController::Install(
 
   gin::Handle<SecurityInterstitialPageController> controller =
       gin::CreateHandle(isolate,
-                        new SecurityInterstitialPageController(delegate));
+                        new SecurityInterstitialPageController(render_frame));
   if (controller.IsEmpty())
     return;
 
@@ -96,8 +46,8 @@ void SecurityInterstitialPageController::Install(
 }
 
 SecurityInterstitialPageController::SecurityInterstitialPageController(
-    base::WeakPtr<Delegate> delegate)
-    : delegate_(delegate) {}
+    content::RenderFrame* render_frame)
+    : RenderFrameObserver(render_frame) {}
 
 SecurityInterstitialPageController::~SecurityInterstitialPageController() {}
 
@@ -164,10 +114,67 @@ void SecurityInterstitialPageController::ReportPhishingError() {
                   CMD_REPORT_PHISHING_ERROR);
 }
 
+void SecurityInterstitialPageController::OpenEnhancedProtectionSettings() {
+  SendCommand(security_interstitials::SecurityInterstitialCommand::
+                  CMD_OPEN_ENHANCED_PROTECTION_SETTINGS);
+}
+
 void SecurityInterstitialPageController::SendCommand(
     security_interstitials::SecurityInterstitialCommand command) {
-  if (delegate_) {
-    delegate_->SendCommand(command);
+  if (!render_frame() || !active_)
+    return;
+
+  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
+      interface;
+  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&interface);
+
+  switch (command) {
+    case security_interstitials::CMD_DONT_PROCEED:
+      interface->DontProceed();
+      break;
+    case security_interstitials::CMD_PROCEED:
+      interface->Proceed();
+      break;
+    case security_interstitials::CMD_SHOW_MORE_SECTION:
+      interface->ShowMoreSection();
+      break;
+    case security_interstitials::CMD_OPEN_HELP_CENTER:
+      interface->OpenHelpCenter();
+      break;
+    case security_interstitials::CMD_OPEN_DIAGNOSTIC:
+      interface->OpenDiagnostic();
+      break;
+    case security_interstitials::CMD_RELOAD:
+      interface->Reload();
+      break;
+    case security_interstitials::CMD_OPEN_DATE_SETTINGS:
+      interface->OpenDateSettings();
+      break;
+    case security_interstitials::CMD_OPEN_LOGIN:
+      interface->OpenLogin();
+      break;
+    case security_interstitials::CMD_DO_REPORT:
+      interface->DoReport();
+      break;
+    case security_interstitials::CMD_DONT_REPORT:
+      interface->DontReport();
+      break;
+    case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
+      interface->OpenReportingPrivacy();
+      break;
+    case security_interstitials::CMD_OPEN_WHITEPAPER:
+      interface->OpenWhitepaper();
+      break;
+    case security_interstitials::CMD_REPORT_PHISHING_ERROR:
+      interface->ReportPhishingError();
+      break;
+    case security_interstitials::CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+      interface->OpenEnhancedProtectionSettings();
+      break;
+    default:
+      // Other values in the enum are only used by tests so this
+      // method should not be called with them.
+      NOTREACHED();
   }
 }
 
@@ -198,7 +205,17 @@ SecurityInterstitialPageController::GetObjectTemplateBuilder(
           .SetMethod("openWhitepaper",
                      &SecurityInterstitialPageController::OpenWhitepaper)
           .SetMethod("reportPhishingError",
-                     &SecurityInterstitialPageController::ReportPhishingError);
+                     &SecurityInterstitialPageController::ReportPhishingError)
+          .SetMethod("openEnhancedProtectionSettings",
+                     &SecurityInterstitialPageController::
+                         OpenEnhancedProtectionSettings);
+}
+
+void SecurityInterstitialPageController::OnDestruct() {}
+
+void SecurityInterstitialPageController::DidCommitProvisionalLoad(
+    ui::PageTransition transition) {
+  active_ = false;
 }
 
 }  // namespace security_interstitials

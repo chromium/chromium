@@ -14,17 +14,16 @@
 
 #include "base/callback.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -46,9 +45,15 @@ namespace discardable_memory {
 class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     : public base::DiscardableMemoryAllocator,
       public base::trace_event::MemoryDumpProvider,
-      public base::MessageLoopCurrent::DestructionObserver {
+      public base::CurrentThread::DestructionObserver {
  public:
   DiscardableSharedMemoryManager();
+
+  DiscardableSharedMemoryManager(const DiscardableSharedMemoryManager&) =
+      delete;
+  DiscardableSharedMemoryManager& operator=(
+      const DiscardableSharedMemoryManager&) = delete;
+
   ~DiscardableSharedMemoryManager() override;
 
   // Returns the global instance of DiscardableSharedMemoryManager, usable from
@@ -104,6 +109,9 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
    public:
     MemorySegment(std::unique_ptr<base::DiscardableSharedMemory> memory);
 
+    MemorySegment(const MemorySegment&) = delete;
+    MemorySegment& operator=(const MemorySegment&) = delete;
+
     base::DiscardableSharedMemory* memory() const { return memory_.get(); }
 
    private:
@@ -112,8 +120,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     ~MemorySegment();
 
     std::unique_ptr<base::DiscardableSharedMemory> memory_;
-
-    DISALLOW_COPY_AND_ASSIGN(MemorySegment);
   };
 
   static bool CompareMemoryUsageTime(const scoped_refptr<MemorySegment>& a,
@@ -122,7 +128,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
     return a->memory()->last_known_usage() > b->memory()->last_known_usage();
   }
 
-  // base::MessageLoopCurrent::DestructionObserver implementation:
+  // base::CurrentThread::DestructionObserver implementation:
   void WillDestroyCurrentMessageLoop() override;
 
   void AllocateLockedDiscardableSharedMemory(
@@ -166,7 +172,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       GUARDED_BY(lock_);
   scoped_refptr<base::SingleThreadTaskRunner> enforce_memory_policy_task_runner_
       GUARDED_BY(lock_);
-  base::Closure enforce_memory_policy_callback_ GUARDED_BY(lock_);
+  base::RepeatingClosure enforce_memory_policy_callback_ GUARDED_BY(lock_);
   bool enforce_memory_policy_pending_ GUARDED_BY(lock_);
 
   // The message loop for running mojom::DiscardableSharedMemoryManager
@@ -175,7 +181,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // when the thread is gone and remove this.
   // A prerequisite for this is allowing objects to be bound to the lifetime
   // of a sequence directly.
-  base::MessageLoopCurrent mojo_thread_message_loop_;
+  base::CurrentThread mojo_thread_message_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> mojo_thread_task_runner_;
 
   base::WeakPtrFactory<DiscardableSharedMemoryManager> weak_ptr_factory_{this};
@@ -183,8 +189,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // WeakPtrFractory for generating weak pointers used in the mojo thread.
   base::WeakPtrFactory<DiscardableSharedMemoryManager>
       mojo_thread_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableSharedMemoryManager);
 };
 
 }  // namespace discardable_memory

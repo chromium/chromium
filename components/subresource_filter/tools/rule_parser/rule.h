@@ -41,7 +41,7 @@ enum class TriState {
 // A single URL filtering rule as parsed from EasyList.
 // TODO(pkalinnikov): Add 'sitekey', 'collapse', and 'donottrack' options.
 struct UrlRule {
-  // Constructs a default empty blacklist rule. That means URL pattern is empty,
+  // Constructs a default empty blocklist rule. That means URL pattern is empty,
   // not case sensitive and not anchored, domain list is empty, and the rule is
   // associated with all ElementType's (except POPUP), and none of the
   // ActivationType's.
@@ -66,8 +66,8 @@ struct UrlRule {
   // Canonicalizes the rule's |url_pattern|.
   void CanonicalizeUrlPattern();
 
-  // This is a whitelist rule (aka rule-level exception).
-  bool is_whitelist = false;
+  // This is an allowlist rule (aka rule-level exception).
+  bool is_allowlist = false;
   // An anchor used at the beginning of the URL pattern.
   AnchorType anchor_left = url_pattern_index::proto::ANCHOR_TYPE_NONE;
   // The same for the end of the pattern. Never equals to ANCHOR_TYPE_SUBDOMAIN.
@@ -77,7 +77,7 @@ struct UrlRule {
   // Apply the filter only to addresses with matching case.
   // TODO(pkalinnikov): Implement case insensitivity in matcher.
   bool match_case = false;
-  // A bitmask that reflects what ElementType's to block/whitelist and what
+  // A bitmask that reflects what ElementType's to block/allow and what
   // kinds of ActivationType's to associate this rule with.
   TypeMask type_mask = kDefaultElementTypes;
   // The list of domains to be included/excluded from the filter's affected set.
@@ -95,7 +95,7 @@ struct UrlRule {
 
 // A single CSS element hiding rule as parsed from EasyList.
 struct CssRule {
-  // Constructs a default empty blacklist rule (no domains, empty selector).
+  // Constructs a default empty blocklist rule (no domains, empty selector).
   CssRule();
 
   CssRule(const CssRule&);
@@ -111,8 +111,8 @@ struct CssRule {
   // Canonicalizes the rule, i.e. orders the |domains| list properly.
   void Canonicalize();
 
-  // This is a whitelist rule (aka rule-level exception).
-  bool is_whitelist = false;
+  // This is an allowlist rule (aka rule-level exception).
+  bool is_allowlist = false;
   // The list of domains, same as UrlRule::domains.
   std::vector<std::string> domains;
   // A CSS selector as specified in http://www.w3.org/TR/css3-selectors.

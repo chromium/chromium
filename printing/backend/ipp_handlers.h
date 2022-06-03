@@ -42,7 +42,7 @@ void EnumHandler(const CupsOptionProvider& printer,
                  AdvancedCapabilities* capabilities);
 
 // Attribute that takes subsets of supported integer values.
-// |none_value| is ignored: it's used since IPP doesn't allow empty sets here.
+// `none_value` is ignored: it's used since IPP doesn't allow empty sets here.
 void MultivalueEnumHandler(int none_value,
                            const CupsOptionProvider& printer,
                            const char* attribute_name,

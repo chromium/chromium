@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @protocol PopupMenuViewControllerDelegate;
-@protocol PopupMenuViewControllerDelegate;
 
 // ViewController displaying a popup for a menu. The view of this controller is
 // a transparent scrim, dismissing the popup if tapped.

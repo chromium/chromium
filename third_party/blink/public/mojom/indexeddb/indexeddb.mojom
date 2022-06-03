@@ -4,11 +4,11 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 
 // kIDBMaxMessageSize is 128MB, originally based on
 // IPC::Channel::kMaximumMessageSize.  The "usable" size is this value less
@@ -18,6 +18,20 @@ const int32 kIDBMaxMessageSize = 134217728;
 // kIDBMaxMessageOverhead is the size we expect to be used for the rest of
 // the message we will send.  The "usable" size is the max size less this value.
 const int32 kIDBMaxMessageOverhead = 1048576;  // 1MB; arbitrarily chosen.
+
+// Default threshold for IDBValueWrapper::WrapIfBiggerThan().
+//
+// This should be tuned to achieve a compromise between short-term IndexedDB
+// throughput and long-term I/O load and memory usage. LevelDB, the underlying
+// storage for IndexedDB, was not designed with large values in mind. At the
+// very least, large values will slow down compaction, causing occasional I/O
+// spikes.
+const int32 kIDBWrapThreshold = 65536;
+
+// To avoid GetAll returning too much data in one mojo message, it is returned
+// in chunks of keys or values.  This constant is the max number of keys/values
+// returned per IDBDatabaseGetAllResultSink::Receive call.
+const int32 kIDBGetAllChunkSize = 1000;
 
 enum IDBCursorDirection {
   Next,
@@ -71,7 +85,7 @@ enum IDBTransactionDurability {
   Relaxed,
 };
 
-union IDBKeyData {
+union IDBKey {
   array<IDBKey> key_array;
   array<uint8> binary;
   mojo_base.mojom.String16 string;
@@ -79,11 +93,6 @@ union IDBKeyData {
   double number;
   // TODO(jsbell): Consider using Optional<> instead.
   bool other_none;
-};
-
-// Defined as a structure so that it can by typemapped with StructTraits.
-struct IDBKey {
-  IDBKeyData data;
 };
 
 // In order of the least to the highest precedent in terms of sort order.
@@ -196,7 +205,6 @@ struct IDBIndexKeys {
 };
 
 struct IDBFileInfo {
-  mojo_base.mojom.FilePath path;
   mojo_base.mojom.String16 name;
   mojo_base.mojom.Time last_modified;
 };
@@ -209,33 +217,20 @@ struct IDBBlobInfo {
   IDBFileInfo? file;
 };
 
+union IDBExternalObject {
+  IDBBlobInfo blob_or_file;
+  pending_remote<FileSystemAccessTransferToken> file_system_access_token;
+};
+
 struct IDBValue {
   array<uint8> bits;
-  array<IDBBlobInfo> blob_or_file_info;
+  array<IDBExternalObject> external_objects;
 };
 
 struct IDBReturnValue {
   IDBValue value;
   IDBKey primary_key;
   IDBKeyPath key_path;
-};
-
-struct IDBObservation {
-  int64 object_store_id;
-  IDBOperationType type;
-  IDBKeyRange key_range;
-  IDBValue? value;
-};
-
-struct IDBObserverTransaction {
-  int64 id;
-  array<int64> scope;
-};
-
-struct IDBObserverChanges {
-  map<int32, array<int32>> observation_index_map;
-  map<int32, IDBObserverTransaction> transaction_map;
-  array<IDBObservation> observations;
 };
 
 // The IDBCallbacks interface is used to return results for individual requests.
@@ -249,9 +244,6 @@ interface IDBCallbacks {
 
   // Factory::GetDatabaseInfo
   SuccessNamesAndVersionsList(array<IDBNameAndVersion> value);
-
-  // Factory::GetDatabaseNames
-  SuccessStringList(array<mojo_base.mojom.String16> value);
 
   // Factory::Open / DeleteDatabase
   Blocked(int64 existing_version);
@@ -282,7 +274,6 @@ interface IDBDatabaseCallbacks {
   Abort(int64 transaction_id, IDBException code,
         mojo_base.mojom.String16 message);
   Complete(int64 transaction_id);
-  Changes(IDBObserverChanges changes);
 };
 
 struct IDBError {
@@ -342,10 +333,20 @@ union IDBDatabaseGetResult {
   IDBReturnValue value;
 };
 
-union IDBDatabaseGetAllResult {
-  IDBError error_result;  // |error| is reserved, so call this |error_result|.
-  IDBKey key;
-  array<IDBReturnValue> values;
+// Result receiver type for GetAll to incrementally receive chunks of results.
+// When the mojo connection disconnects, this signals that all of the results
+// have been sent.
+interface IDBDatabaseGetAllResultSink {
+  // Incrementally receive some values.
+  ReceiveValues(array<IDBReturnValue> values);
+
+  // Incrementally receive some keys.
+  ReceiveKeys(array<IDBKey> keys);
+
+  // If any error occurs, call this function.  Once this function has been
+  // called, ReceiveValues/ReceiveKeys should not be called again and
+  // the entire result should be considered an error.
+  OnError(IDBError error);
 };
 
 struct IDBDatabaseOpenCursorValue {
@@ -372,13 +373,6 @@ interface IDBDatabase {
                     IDBTransactionDurability durability);
   Close();
   VersionChangeIgnored();
-  AddObserver(int64 transaction_id,
-              int32 observer_id,
-              bool include_transaction,
-              bool no_records,
-              bool values,
-              uint32 operation_types);
-  RemoveObservers(array<int32> observers);
   Get(int64 transaction_id,
       int64 object_store_id,
       int64 index_id,
@@ -391,7 +385,7 @@ interface IDBDatabase {
          IDBKeyRange key_range,
          bool key_only,
          int64 max_count)
-    => (IDBDatabaseGetAllResult result);
+    => (pending_receiver<IDBDatabaseGetAllResultSink> receiver);
   SetIndexKeys(int64 transaction_id,
                int64 object_store_id,
                IDBKey primary_key,
@@ -446,10 +440,6 @@ interface IDBFactory {
   // Gets high level info about databases that exist in the frame's
   // origin. Posts results to |pending_callbacks|.
   GetDatabaseInfo(pending_associated_remote<IDBCallbacks> pending_callbacks);
-
-  // Gets a list of database names that exist in the frame's
-  // origin. Posts results to |pending_callbacks|.
-  GetDatabaseNames(pending_associated_remote<IDBCallbacks> pending_callbacks);
 
   // Opens a database |name| in the frame's origin at version |version|.
   // |version_change_transaction_receiver| will have version change

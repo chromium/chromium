@@ -2,6 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DialogType} from '../../common/js/dialog_type.js';
+import {metrics} from '../../common/js/metrics.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {AppStateController} from './app_state_controller.js';
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {NamingController} from './naming_controller.js';
+import {TaskController} from './task_controller.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+import {FileTapHandler} from './ui/file_tap_handler.js';
+import {ListContainer} from './ui/list_container.js';
+
 /**
  * Component for the main window.
  *
@@ -11,7 +28,7 @@
  * The class also observes model/browser API's event to update the misc
  * components.
  */
-class MainWindowComponent {
+export class MainWindowComponent {
   /**
    * @param {DialogType} dialogType
    * @param {!FileManagerUI} ui
@@ -154,22 +171,18 @@ class MainWindowComponent {
   handleTouchEvents_(event) {
     // We only need to know that a tap happens somewhere in the list.
     // Also the 2nd parameter of handleTouchEvents is just passed back to the
-    // callback. Therefore we can pass a dummy value to it.
-    // TODO(yamaguchi): Revise TapHandler.handleTouchEvents to delete the param.
+    // callback. Therefore we can pass a dummy value -1.
     this.tapHandler_.handleTouchEvents(event, -1, (e, index, eventType) => {
       if (eventType == FileTapHandler.TapEvent.TAP) {
-        if (e.target.classList.contains('detail-checkmark')) {
-          // Tap on the checkmark should only toggle select the item just like a
-          // mouse click on it.
+        // Taps on the checkmark should only toggle select the item.
+        if (event.target.classList.contains('detail-checkmark') ||
+            event.target.classList.contains('detail-icon')) {
           return false;
         }
-        // The selection model has the single selection at this point.
-        // When using touchscreen, the selection should be cleared because
-        // we don't want show the file selected when not in check-select
-        // mode.
-        return this.handleOpenDefault(
-            event, true /* clearSelectionAfterLaunch */);
+
+        return this.handleOpenDefault_(event);
       }
+
       return false;
     });
   }
@@ -211,7 +224,7 @@ class MainWindowComponent {
    * @private
    */
   onDoubleClick_(event) {
-    this.handleOpenDefault(event, false);
+    this.handleOpenDefault_(event);
   }
 
   /**
@@ -220,22 +233,21 @@ class MainWindowComponent {
    * Otherwise, accepts the current selection.
    *
    * @param {Event} event The dblclick event.
-   * @param {boolean} clearSelectionAfterLaunch
    * @return {boolean} true if successfully opened the item.
    * @private
    */
-  handleOpenDefault(event, clearSelectionAfterLaunch) {
+  handleOpenDefault_(event) {
     if (this.namingController_.isRenamingInProgress()) {
-      // Don't pay attention to clicks during a rename.
+      // Don't pay attention to clicks or taps during a rename.
       return false;
     }
 
+    // It is expected that the target item should have already been selected
+    // by previous touch or mouse event processing.
     const listItem = this.ui_.listContainer.findListItemForNode(
         event.touchedElement || event.srcElement);
-    // It is expected that the target item should have already been selected in
-    // LiseSelectionController.handlePointerDownUp on preceding mousedown event.
     const selection = this.selectionHandler_.selection;
-    if (!listItem || !listItem.selected || selection.totalCount != 1) {
+    if (!listItem || !listItem.selected || selection.totalCount !== 1) {
       return false;
     }
 
@@ -243,27 +255,22 @@ class MainWindowComponent {
     if (entry.isDirectory) {
       this.directoryModel_.changeDirectoryEntry(
           /** @type {!DirectoryEntry} */ (entry));
-    } else {
-      return this.acceptSelection_(clearSelectionAfterLaunch);
+      return false;
     }
-    return false;
+
+    return this.acceptSelection_();
   }
 
   /**
-   * Accepts the current selection depending on the mode.
-   * @param {boolean} clearSelectionAfterLaunch
+   * Accepts the current selection depending on the files app dialog mode.
    * @return {boolean} true if successfully accepted the current selection.
    * @private
    */
-  acceptSelection_(clearSelectionAfterLaunch) {
-    const selection = this.selectionHandler_.selection;
-    if (this.dialogType_ == DialogType.FULL_PAGE) {
+  acceptSelection_() {
+    if (this.dialogType_ === DialogType.FULL_PAGE) {
       this.taskController_.getFileTasks()
           .then(tasks => {
             tasks.executeDefault();
-            if (clearSelectionAfterLaunch) {
-              this.directoryModel_.clearSelection();
-            }
           })
           .catch(error => {
             if (error) {
@@ -272,10 +279,12 @@ class MainWindowComponent {
           });
       return true;
     }
+
     if (!this.ui_.dialogFooter.okButton.disabled) {
       this.ui_.dialogFooter.okButton.click();
       return true;
     }
+
     return false;
   }
 
@@ -395,8 +404,7 @@ class MainWindowComponent {
             this.directoryModel_.changeDirectoryEntry(
                 /** @type {!DirectoryEntry} */ (selection.entries[0]));
           }
-        } else if (this.acceptSelection_(
-                       false /* clearSelectionAfterLaunch */)) {
+        } else if (this.acceptSelection_()) {
           event.preventDefault();
         }
         break;
@@ -478,7 +486,6 @@ class MainWindowComponent {
   onDriveConnectionChanged_() {
     const connection = this.volumeManager_.getDriveConnectionState();
     this.ui_.dialogContainer.setAttribute('connection', connection.type);
-    this.ui_.suggestAppsDialog.onDriveConnectionChanged(connection.type);
   }
 
   /**
@@ -487,8 +494,7 @@ class MainWindowComponent {
   onWindowFocus_() {
     // When the window have got a focus while the current directory is Recent
     // root, refresh the contents.
-    if (this.directoryModel_.getCurrentRootType() ===
-        VolumeManagerCommon.RootType.RECENT) {
+    if (util.isRecentRootType(this.directoryModel_.getCurrentRootType())) {
       this.directoryModel_.rescan(true /* refresh */);
       // Do not start the spinner here to silently refresh the contents.
     }

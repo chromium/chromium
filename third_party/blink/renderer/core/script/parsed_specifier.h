@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_PARSED_SPECIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_PARSED_SPECIFIER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -37,9 +36,7 @@ class ParsedSpecifier final {
   // https://html.spec.whatwg.org/#resolve-a-module-specifier
   // but doesn't reject bare specifiers, which should be rejected by callers
   // if needed.
-  static ParsedSpecifier Create(const String& specifier,
-                                const KURL& base_url,
-                                bool support_builtin_modules);
+  static ParsedSpecifier Create(const String& specifier, const KURL& base_url);
 
   enum class Type { kInvalid, kBare, kURL };
 

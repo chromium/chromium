@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# libusb is only used by //services/device/usb on Windows and macOS.
-assert(is_win || is_mac)
+# libusb is only used by //services/device/usb on macOS.
+assert(is_mac)
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 config("libusb_config") {
@@ -28,7 +29,7 @@ config("libusb_warnings") {
   if (is_clang) {
     # guid_eq in windows_usb.c is unused.
     cflags = [ "-Wno-unused-function" ]
-    if (is_linux && !use_udev) {
+    if ((is_linux || is_chromeos) && !use_udev) {
       cflags += [ "-Wno-pointer-sign" ]
     }
   }
@@ -104,7 +105,7 @@ static_library("libusb") {
       # Needed on OSX 10.12 to silence a deprecation warning.
       "OBJC_SILENCE_GC_DEPRECATIONS=1",
     ]
-    libs = [
+    frameworks = [
       "CoreFoundation.framework",
       "IOKit.framework",
     ]
@@ -115,7 +116,7 @@ static_library("libusb") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "src/libusb/os/linux_usbfs.c",
       "src/libusb/os/linux_usbfs.h",
@@ -126,7 +127,7 @@ static_library("libusb") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     defines += [ "USBI_TIMERFD_AVAILABLE" ]
   }
 
@@ -139,7 +140,7 @@ static_library("libusb") {
     deps += [ "//build/linux/libudev" ]
   }
 
-  if (is_linux && !use_udev) {
+  if ((is_linux || is_chromeos) && !use_udev) {
     sources += [ "src/libusb/os/linux_netlink.c" ]
     defines += [ "HAVE_LINUX_NETLINK_H" ]
   }

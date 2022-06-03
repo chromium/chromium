@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/exo/wayland_server_controller.h"
 
+#include "base/logging.h"
 #include "chromecast/browser/exo/cast_wm_helper.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "components/exo/display.h"
@@ -17,7 +18,6 @@ WaylandServerController::WaylandServerController(
     CastWindowManagerAura* window_manager) {
   wm_helper_ = std::make_unique<exo::CastWMHelper>(
       window_manager, static_cast<CastScreen*>(CastScreen::GetScreen()));
-  exo::WMHelper::SetInstance(wm_helper_.get());
   display_ = std::make_unique<exo::Display>();
   wayland_server_ = exo::wayland::Server::Create(display_.get());
   // Wayland server creation can fail if XDG_RUNTIME_DIR is not set correctly.
@@ -29,12 +29,6 @@ WaylandServerController::WaylandServerController(
   }
 }
 
-WaylandServerController::~WaylandServerController() {
-  wayland_watcher_.reset();
-  wayland_server_.reset();
-  display_.reset();
-  exo::WMHelper::SetInstance(nullptr);
-  wm_helper_.reset();
-}
+WaylandServerController::~WaylandServerController() {}
 
 }  // namespace chromecast

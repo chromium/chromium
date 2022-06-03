@@ -1,0 +1,65 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# OOBE - Polymer 3 - Auto Imports File
+#
+# This file is used when generating Polymer3 code from Polymer2 elements.
+# Polymer2 relies on HTML Imports to import the resources a file may need,
+# whereas Polymer3 relies on JS Modules.
+#
+# Suppose that the files `/components/my_elements.html/js` define a Polymer
+# element `MyElement`. Another element that depends on this element would do
+# the following to include it:
+#
+#   <link rel="import" href="/components/my_element.html"> (Polymer2)
+#
+#   import {MyElement} from '/components/my_element.m.js'  (Polymer3)
+#
+# The entries in this file instructs the polymer_modulizer() to replace the '.html' import
+# with the proper JS Module counterpart when generating Polymer3 from Polymer2.
+#
+# For example, adding the rule
+#
+#         `/components/my_element.html|MyElement`
+#
+# instructs polymer_modulizer() to replace  the import
+#
+#         <link rel="import" href="/components/my_element.html">
+#
+# with the following:
+#
+#         import {MyElement} from '/components/my_element.m.js'
+#
+
+oobe_auto_imports = [
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_i18n_behavior.html|OobeI18nBehavior,OobeI18nBehaviorInterface",
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_dialog_host_behavior.html|OobeDialogHostBehavior",
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_focus_behavior.html|OobeFocusBehavior",
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_scrollable_behavior.html|OobeScrollableBehavior",
+  "chrome/browser/resources/chromeos/login/components/behaviors/login_screen_behavior.html|LoginScreenBehavior,LoginScreenBehaviorInterface",
+  "chrome/browser/resources/chromeos/login/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
+  "chrome/browser/resources/chromeos/login/components/display_manager_types.html|OOBE_UI_STATE",
+  "chrome/browser/resources/chromeos/login/components/long_touch_detector.html|LongTouchDetector",
+  "chrome/browser/resources/chromeos/login/components/oobe_select.html|getSelectedValue,getSelectedTitle,SelectListType,setupSelect",
+  "chrome/browser/resources/chromeos/login/components/oobe_types.html|OobeTypes",
+  "chrome/browser/resources/chromeos/login/components/oobe_a11y_option.html|OobeA11yOption",
+  "chrome/browser/resources/chromeos/login/components/web_view_helper.html|WebViewHelper",
+  "chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.html|OobeWelcomeDialog",
+  "chrome/browser/resources/chromeos/login/cr_ui.html|Oobe",
+  "chrome/browser/resources/chromeos/login/login_ui_tools.html|addSubmitListener",
+  "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
+  "ui/webui/resources/cr_components/chromeos/network/network_list_types.html|NetworkList",
+  "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
+  "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
+  "ui/webui/resources/html/assert.html|assert,assertNotReached",
+  "ui/webui/resources/html/util.html|announceAccessibleMessage",
+]
+
+oobe_namespace_rewrites = [
+  "action_link.m.js|action_link.js",
+  "Polymer.mixinBehaviors|mixinBehaviors",
+  "Polymer.Element|PolymerElement",
+  "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
+  "cr.ui.LoginUITools.addSubmitListener|addSubmitListener",
+]

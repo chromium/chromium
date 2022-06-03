@@ -1,0 +1,22 @@
+Test that permissions could be granted to all origins
+Grant geolocation audioCapture to all
+    Granted: ["geolocation","audioCapture"]
+Query geolocation
+    => granted
+Query microphone
+    => granted
+Resetting all permissions
+Query geolocation
+    => denied
+Query microphone
+    => denied
+Testing local permissions override global permissions
+Grant geolocation to all
+    Granted: ["geolocation"]
+Grant audioCapture to http://devtools.test:8000
+    Granted: ["audioCapture"]
+Query geolocation
+    => denied
+Query microphone
+    => granted
+

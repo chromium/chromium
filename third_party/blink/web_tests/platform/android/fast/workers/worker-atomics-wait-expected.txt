@@ -1,4 +1,0 @@
-Test that Atomics.wait is not allowed on the main thread.
-
-SharedArrayBuffers are not enabled -- skipping test.
-

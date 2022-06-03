@@ -12,7 +12,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
@@ -30,6 +29,10 @@ class PnaclCoordinator;
 class PnaclTranslateThread {
  public:
   PnaclTranslateThread();
+
+  PnaclTranslateThread(const PnaclTranslateThread&) = delete;
+  PnaclTranslateThread& operator=(const PnaclTranslateThread&) = delete;
+
   ~PnaclTranslateThread();
 
   // Set up the state for RunCompile and RunLink. When an error is
@@ -76,7 +79,7 @@ class PnaclTranslateThread {
   int64_t GetCompileTime() const { return compile_time_; }
 
   // Returns true if the translation process is initiated via SetupState.
-  bool started() const { return coordinator_ != NULL; }
+  bool started() const { return !!coordinator_; }
 
  private:
   ppapi::proxy::SerializedHandle GetHandleForSubprocess(base::File* file,
@@ -91,20 +94,26 @@ class PnaclTranslateThread {
    public:
     CompileThread(PnaclTranslateThread* obj)
       : base::SimpleThread("pnacl_compile"), pnacl_translate_thread_(obj) {}
+
+    CompileThread(const CompileThread&) = delete;
+    CompileThread& operator=(const CompileThread&) = delete;
+
    private:
     PnaclTranslateThread* pnacl_translate_thread_;
     void Run() override;
-    DISALLOW_COPY_AND_ASSIGN(CompileThread);
   };
 
   class LinkThread : public base::SimpleThread {
    public:
     LinkThread(PnaclTranslateThread* obj)
       : base::SimpleThread("pnacl_link"), pnacl_translate_thread_(obj) {}
+
+    LinkThread(const LinkThread&) = delete;
+    LinkThread& operator=(const LinkThread&) = delete;
+
    private:
     PnaclTranslateThread* pnacl_translate_thread_;
     void Run() override;
-    DISALLOW_COPY_AND_ASSIGN(LinkThread);
   };
 
   // Signal that Pnacl translation failed, from the translation thread only.
@@ -168,9 +177,6 @@ class PnaclTranslateThread {
   // These IPC::SyncMessageFilters can be used by the child thread.
   scoped_refptr<IPC::SyncMessageFilter> compiler_channel_filter_;
   scoped_refptr<IPC::SyncMessageFilter> ld_channel_filter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PnaclTranslateThread);
 };
 
 }

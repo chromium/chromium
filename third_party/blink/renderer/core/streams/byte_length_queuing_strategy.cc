@@ -6,8 +6,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
 #include "third_party/blink/renderer/core/streams/queuing_strategy_common.h"
-#include "third_party/blink/renderer/core/streams/queuing_strategy_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -16,13 +16,27 @@ namespace blink {
 
 namespace {
 
+static const V8PrivateProperty::SymbolKey
+    kByteLengthQueuingStrategySizeFunction;
+
 class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
     ByteLengthQueuingStrategySizeFunction* self =
         MakeGarbageCollected<ByteLengthQueuingStrategySizeFunction>(
             script_state);
-    return self->BindToV8Function();
+
+    // https://streams.spec.whatwg.org/#byte-length-queuing-strategy-size-function
+
+    // 2. Let F be ! CreateBuiltinFunction(steps, « », globalObject’s relevant
+    //    Realm).
+    // 4. Perform ! SetFunctionLength(F, 1).
+    v8::Local<v8::Function> function = self->BindToV8Function(/*length=*/1);
+
+    // 3. Perform ! SetFunctionName(F, "size").
+    function->SetName(V8String(script_state->GetIsolate(), "size"));
+
+    return function;
   }
 
   explicit ByteLengthQueuingStrategySizeFunction(ScriptState* script_state)
@@ -40,8 +54,10 @@ class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
       chunk = args[0];
     }
 
-    // https://streams.spec.whatwg.org/#blqs-size
-    // 1. Return ? GetV(chunk, "byteLength").
+    // https://streams.spec.whatwg.org/#byte-length-queuing-strategy-size-function
+
+    // 1. Let steps be the following steps, given chunk:
+    //   1. Return ? GetV(chunk, "byteLength").
 
     // https://tc39.es/ecma262/#sec-getv
     // 1. Assert: IsPropertyKey(P) is true.
@@ -74,28 +90,18 @@ ByteLengthQueuingStrategy* ByteLengthQueuingStrategy::Create(
 ByteLengthQueuingStrategy::ByteLengthQueuingStrategy(
     ScriptState* script_state,
     const QueuingStrategyInit* init)
-    : high_water_mark_(script_state->GetIsolate(),
-                       HighWaterMarkOrUndefined(script_state, init)) {}
+    : high_water_mark_(init->highWaterMark()) {}
 
 ByteLengthQueuingStrategy::~ByteLengthQueuingStrategy() = default;
 
-ScriptValue ByteLengthQueuingStrategy::highWaterMark(
-    ScriptState* script_state) const {
-  return ScriptValue(script_state->GetIsolate(),
-                     high_water_mark_.NewLocal(script_state->GetIsolate()));
-}
-
 ScriptValue ByteLengthQueuingStrategy::size(ScriptState* script_state) const {
-  // We don't cache the result because normally this method will only be called
-  // once anyway.
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ByteLengthQueuingStrategySizeFunction::CreateFunction(script_state));
-}
-
-void ByteLengthQueuingStrategy::Trace(Visitor* visitor) {
-  visitor->Trace(high_water_mark_);
-  ScriptWrappable::Trace(visitor);
+  // https://streams.spec.whatwg.org/#byte-length-queuing-strategy-size-function
+  // 5. Set globalObject’s byte length queuing strategy size function to a
+  //    Function that represents a reference to F, with callback context equal
+  //    to globalObject’s relevant settings object.
+  return GetCachedSizeFunction(
+      script_state, kByteLengthQueuingStrategySizeFunction,
+      &ByteLengthQueuingStrategySizeFunction::CreateFunction);
 }
 
 }  // namespace blink

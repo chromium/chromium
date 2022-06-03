@@ -3,43 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/palette/palette_ids.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ash {
-
-std::string PaletteToolIdToString(PaletteToolId tool_id) {
-  switch (tool_id) {
-    case PaletteToolId::NONE:
-      return "NONE";
-    case PaletteToolId::CREATE_NOTE:
-      return "CREATE_NOTE";
-    case PaletteToolId::CAPTURE_REGION:
-      return "CAPTURE_REGION";
-    case PaletteToolId::CAPTURE_SCREEN:
-      return "CAPTURE_SCREEN";
-    case PaletteToolId::LASER_POINTER:
-      return "LASER_POINTER";
-    case PaletteToolId::MAGNIFY:
-      return "MAGNIFY";
-    case PaletteToolId::METALAYER:
-      return "METALAYER";
-  }
-
-  NOTREACHED();
-  return std::string();
-}
-
-std::string PaletteGroupToString(PaletteGroup group) {
-  switch (group) {
-    case PaletteGroup::ACTION:
-      return "ACTION";
-    case PaletteGroup::MODE:
-      return "MODE";
-  }
-
-  NOTREACHED();
-  return std::string();
-}
 
 PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id) {
   switch (tool_id) {
@@ -47,16 +13,14 @@ PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id) {
       return PALETTE_OPTIONS_COUNT;
     case PaletteToolId::CREATE_NOTE:
       return PALETTE_NEW_NOTE;
-    case PaletteToolId::CAPTURE_REGION:
-      return PALETTE_CAPTURE_REGION;
-    case PaletteToolId::CAPTURE_SCREEN:
-      return PALETTE_CAPTURE_SCREEN;
     case PaletteToolId::LASER_POINTER:
       return PALETTE_LASER_POINTER;
     case PaletteToolId::MAGNIFY:
       return PALETTE_MAGNIFY;
     case PaletteToolId::METALAYER:
       return PALETTE_METALAYER;
+    case PaletteToolId::ENTER_CAPTURE_MODE:
+      return PALETTE_ENTER_CAPTURE_MODE;
   }
 
   NOTREACHED();

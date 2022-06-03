@@ -1,0 +1,9 @@
+Tests that extension does not get disconnected after a page with OOPIFs is reloaded
+
+Started extension.
+Running tests...
+RUNNING TEST: extension_testRequestNotification
+Request finished: .../extensions/resources/abe.png
+Request finished: .../extensions/resources/abe.png
+All tests done.
+

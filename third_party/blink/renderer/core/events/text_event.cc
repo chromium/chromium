@@ -119,7 +119,7 @@ const AtomicString& TextEvent::InterfaceName() const {
   return event_interface_names::kTextEvent;
 }
 
-void TextEvent::Trace(blink::Visitor* visitor) {
+void TextEvent::Trace(Visitor* visitor) const {
   visitor->Trace(pasting_fragment_);
   UIEvent::Trace(visitor);
 }

@@ -9,7 +9,18 @@
 
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+template <>
+struct ui::metadata::TypeConverter<TabStyle::TabColors>
+    : ui::metadata::BaseTypeConverter<true> {
+  static std::u16string ToString(
+      ui::metadata::ArgType<TabStyle::TabColors> source_value);
+  static absl::optional<TabStyle::TabColors> FromString(
+      const std::u16string& source_value);
+  static ui::metadata::ValidStrings GetValidStrings();
+};
 
 class Tab;
 

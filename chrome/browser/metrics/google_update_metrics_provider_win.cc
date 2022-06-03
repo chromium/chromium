@@ -7,9 +7,10 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
@@ -51,20 +52,21 @@ GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() {
 }
 
 void GoogleUpdateMetricsProviderWin::AsyncInit(
-    const base::Closure& done_callback) {
+    base::OnceClosure done_callback) {
   if (!IsGoogleChromeBuild()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, done_callback);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(done_callback));
     return;
   }
 
   // Schedules a task on a blocking pool thread to gather Google Update
   // statistics (requires Registry reads).
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::Bind(&GoogleUpdateMetricsProviderWin::GetGoogleUpdateDataBlocking),
-      base::Bind(&GoogleUpdateMetricsProviderWin::ReceiveGoogleUpdateData,
-                 weak_ptr_factory_.GetWeakPtr(), done_callback));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          &GoogleUpdateMetricsProviderWin::GetGoogleUpdateDataBlocking),
+      base::BindOnce(&GoogleUpdateMetricsProviderWin::ReceiveGoogleUpdateData,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
 void GoogleUpdateMetricsProviderWin::ProvideSystemProfileMetrics(
@@ -134,8 +136,8 @@ GoogleUpdateMetricsProviderWin::GetGoogleUpdateDataBlocking() {
 }
 
 void GoogleUpdateMetricsProviderWin::ReceiveGoogleUpdateData(
-    const base::Closure& done_callback,
+    base::OnceClosure done_callback,
     const GoogleUpdateMetrics& google_update_metrics) {
   google_update_metrics_ = google_update_metrics;
-  done_callback.Run();
+  std::move(done_callback).Run();
 }

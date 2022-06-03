@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_HOST_H_
 
+#include "base/values.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -40,7 +41,7 @@ namespace blink {
 class FrontendMenuProvider;
 class InspectorFrontendClient;
 class LocalFrame;
-struct WebMenuItemInfo;
+struct MenuItemInfo;
 
 class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -49,7 +50,7 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   DevToolsHost(InspectorFrontendClient*, LocalFrame* frontend_frame);
   ~DevToolsHost() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
   void DisconnectClient();
 
   float zoomFactor();
@@ -61,7 +62,8 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   void ShowContextMenu(LocalFrame* target_frame,
                        float x,
                        float y,
-                       WebVector<WebMenuItemInfo> items);
+                       WebVector<MenuItemInfo> items);
+  void sendMessageToEmbedder(base::Value message);
   void sendMessageToEmbedder(const String& message);
 
   bool isHostedMode();

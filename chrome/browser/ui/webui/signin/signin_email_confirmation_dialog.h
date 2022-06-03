@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -23,7 +23,8 @@ class WebUIMessageHandler;
 }
 
 // A tab-modal dialog to ask the user to confirm his email before signing in.
-class SigninEmailConfirmationDialog : public ui::WebDialogDelegate {
+class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
+                                      public SigninViewControllerDelegate {
  public:
   // Actions that can be taken when the user is asked to confirm their account.
   enum Action {
@@ -39,15 +40,20 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate {
   };
 
   // Callback indicating action performed by the user.
-  using Callback = base::Callback<void(Action)>;
+  using Callback = base::OnceCallback<void(Action)>;
 
   // Create and show the dialog, which owns itself.
   // Ask the user for confirmation before starting to sync.
-  static void AskForConfirmation(content::WebContents* contents,
-                                 Profile* profile,
-                                 const std::string& last_email,
-                                 const std::string& email,
-                                 const Callback& callback);
+  static SigninEmailConfirmationDialog* AskForConfirmation(
+      content::WebContents* contents,
+      Profile* profile,
+      const std::string& last_email,
+      const std::string& email,
+      Callback callback);
+
+  SigninEmailConfirmationDialog(const SigninEmailConfirmationDialog&) = delete;
+  SigninEmailConfirmationDialog& operator=(
+      const SigninEmailConfirmationDialog&) = delete;
 
   ~SigninEmailConfirmationDialog() override;
 
@@ -58,11 +64,11 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate {
                                 Profile* profile,
                                 const std::string& last_email,
                                 const std::string& new_email,
-                                const Callback& callback);
+                                Callback callback);
 
   // WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -72,6 +78,12 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
+
+  // SigninViewControllerDelegate:
+  void CloseModalSignin() override;
+  void ResizeNativeView(int height) override;
+  content::WebContents* GetWebContents() override;
+  void SetWebContents(content::WebContents* web_contents) override;
 
   // Shows the dialog and releases ownership of this object. Another object will
   // take ownership and delete this object.
@@ -97,8 +109,6 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate {
 
   // Observer for lifecycle events of the web contents of the dialog.
   std::unique_ptr<DialogWebContentsObserver> dialog_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninEmailConfirmationDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_DIALOG_H_

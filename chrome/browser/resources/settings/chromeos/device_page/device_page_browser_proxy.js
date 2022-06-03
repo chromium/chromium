@@ -2,17 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview A helper object used for testing the Device page. */
-cr.exportPath('settings');
+// clang-format off
+import { addSingletonGetter, addWebUIListener,WebUIListener} from 'chrome://resources/js/cr.m.js';
+// clang-format on
 
-/**
- * @typedef {{
- *   id: string,
- *   is_dedicated_charger: boolean,
- *   description: string
- * }}
- */
-settings.PowerSource;
+  /**
+   * Enumeration for device state about remaining space.
+   * These values must be kept in sync with
+   * StorageManagerHandler::StorageSpaceState in C++ code.
+   * @enum {number}
+   */
+export const StorageSpaceState = {
+  NORMAL: 0,
+  LOW: 1,
+  CRITICALLY_LOW: 2
+};
+
+let systemDisplayApi = null;
+
+export function setDisplayApiForTesting(testDisplayApi) {
+  systemDisplayApi = testDisplayApi;
+}
+
+export function getDisplayApi() {
+  if (!systemDisplayApi) {
+    systemDisplayApi = chrome.system.display;
+  }
+  return systemDisplayApi;
+}
+
+  /**
+   * @typedef {{
+   *   id: string,
+   *   is_dedicated_charger: boolean,
+   *   description: string
+   * }}
+   */
+export let PowerSource;
 
 /**
  * @typedef {{
@@ -23,24 +49,25 @@ settings.PowerSource;
  *   statusText: string,
  * }}
  */
-settings.BatteryStatus;
+export let BatteryStatus;
 
 /**
  * Mirrors chromeos::settings::PowerHandler::IdleBehavior.
  * @enum {number}
  */
-settings.IdleBehavior = {
+export const IdleBehavior = {
   DISPLAY_OFF_SLEEP: 0,
   DISPLAY_OFF: 1,
   DISPLAY_ON: 2,
-  OTHER: 3,
+  SHUT_DOWN: 3,
+  STOP_SESSION: 4,
 };
 
 /**
  * Mirrors chromeos::PowerPolicyController::Action.
  * @enum {number}
  */
-settings.LidClosedBehavior = {
+export const LidClosedBehavior = {
   SUSPEND: 0,
   STOP_SESSION: 1,
   SHUT_DOWN: 2,
@@ -49,21 +76,25 @@ settings.LidClosedBehavior = {
 
 /**
  * @typedef {{
- *   idleBehavior: settings.IdleBehavior,
- *   idleControlled: boolean,
- *   lidClosedBehavior: settings.LidClosedBehavior,
+ *   possibleAcIdleBehaviors: !Array<IdleBehavior>,
+ *   possibleBatteryIdleBehaviors: !Array<IdleBehavior>,
+ *   acIdleManaged: boolean,
+ *   batteryIdleManaged: boolean,
+ *   currentAcIdleBehavior: IdleBehavior,
+ *   currentBatteryIdleBehavior: IdleBehavior,
+ *   lidClosedBehavior: LidClosedBehavior,
  *   lidClosedControlled: boolean,
  *   hasLid: boolean,
  * }}
  */
-settings.PowerManagementSettings;
+export let PowerManagementSettings;
 
 /**
  * A note app's availability for running as note handler app from lock screen.
- * Mirrors chromeos::NoteTakingLockScreenSupport.
+ * Mirrors `ash::NoteTakingLockScreenSupport`.
  * @enum {number}
  */
-settings.NoteAppLockScreenSupport = {
+export const NoteAppLockScreenSupport = {
   NOT_SUPPORTED: 0,
   NOT_ALLOWED_BY_POLICY: 1,
   SUPPORTED: 2,
@@ -71,12 +102,14 @@ settings.NoteAppLockScreenSupport = {
 };
 
 /**
- * @typedef {{name:string,
- *            value:string,
- *            preferred:boolean,
- *            lockScreenSupport: settings.NoteAppLockScreenSupport}}
+ * @typedef {{
+ *   name:string,
+ *   value:string,
+ *   preferred:boolean,
+ *   lockScreenSupport: NoteAppLockScreenSupport,
+ * }}
  */
-settings.NoteAppInfo;
+export let NoteAppInfo;
 
 /**
  * @typedef {{
@@ -84,190 +117,233 @@ settings.NoteAppInfo;
  *   uuid: string
  * }}
  */
-settings.ExternalStorage;
+export let ExternalStorage;
 
-cr.define('settings', function() {
-  /** @interface */
-  class DevicePageBrowserProxy {
-    /** Initializes the mouse and touchpad handler. */
-    initializePointers() {}
+/** @interface */
+export class DevicePageBrowserProxy {
+  /** Initializes the mouse and touchpad handler. */
+  initializePointers() {}
 
-    /** Initializes the stylus handler. */
-    initializeStylus() {}
+  /** Initializes the stylus handler. */
+  initializeStylus() {}
 
-    /** Initializes the keyboard WebUI handler. */
-    initializeKeyboard() {}
+  /** Initializes the keyboard WebUI handler. */
+  initializeKeyboard() {}
 
-    /** Shows the Ash keyboard shortcut viewer. */
-    showKeyboardShortcutViewer() {}
+  /** Initializes the keyboard update watcher. */
+  initializeKeyboardWatcher() {}
 
-    /** Requests an ARC status update. */
-    updateAndroidEnabled() {}
+  /** Shows the Ash keyboard shortcut viewer. */
+  showKeyboardShortcutViewer() {}
 
-    /** Requests a power status update. */
-    updatePowerStatus() {}
+  /** Requests an ARC status update. */
+  updateAndroidEnabled() {}
 
-    /**
-     * Sets the ID of the power source to use.
-     * @param {string} powerSourceId ID of the power source. '' denotes the
-     *     battery (no external power source).
-     */
-    setPowerSource(powerSourceId) {}
-
-    /** Requests the current power management settings. */
-    requestPowerManagementSettings() {}
-
-    /**
-     * Sets the idle power management behavior.
-     * @param {settings.IdleBehavior} behavior Idle behavior.
-     */
-    setIdleBehavior(behavior) {}
-
-    /**
-     * Sets the lid-closed power management behavior.
-     * @param {settings.LidClosedBehavior} behavior Lid-closed behavior.
-     */
-    setLidClosedBehavior(behavior) {}
-
-    /**
-     * |callback| is run when there is new note-taking app information
-     * available or after |requestNoteTakingApps| has been called.
-     * @param {function(Array<settings.NoteAppInfo>, boolean):void} callback
-     */
-    setNoteTakingAppsUpdatedCallback(callback) {}
-
-    /**
-     * Open up the play store with the given URL.
-     * @param {string} url
-     */
-    showPlayStore(url) {}
-
-    /**
-     * Request current note-taking app info. Invokes any callback registered in
-     * |onNoteTakingAppsUpdated|.
-     */
-    requestNoteTakingApps() {}
-
-    /**
-     * Changes the preferred note taking app.
-     * @param {string} appId The app id. This should be a value retrieved from a
-     *     |onNoteTakingAppsUpdated| callback.
-     */
-    setPreferredNoteTakingApp(appId) {}
-
-    /**
-     * Sets whether the preferred note taking app should be enabled to run as a
-     * lock screen note action handler.
-     * @param {boolean} enabled Whether the app should be enabled to handle note
-     *     actions from the lock screen.
-     */
-    setPreferredNoteTakingAppEnabledOnLockScreen(enabled) {}
-
-    /** Requests an external storage list update. */
-    updateExternalStorages() {}
-
-    /**
-     * |callback| is run when the list of plugged-in external storages is
-     * available after |updateExternalStorages| has been called.
-     * @param {function(Array<!settings.ExternalStorage>):void} callback
-     */
-    setExternalStoragesUpdatedCallback(callback) {}
-  }
+  /** Requests a power status update. */
+  updatePowerStatus() {}
 
   /**
-   * @implements {settings.DevicePageBrowserProxy}
+   * Sets the ID of the power source to use.
+   * @param {string} powerSourceId ID of the power source. '' denotes the
+   *     battery (no external power source).
    */
-  class DevicePageBrowserProxyImpl {
-    /** @override */
-    initializePointers() {
-      chrome.send('initializePointerSettings');
-    }
+  setPowerSource(powerSourceId) {}
 
-    /** @override */
-    initializeStylus() {
-      chrome.send('initializeStylusSettings');
-    }
+  /** Requests the current power management settings. */
+  requestPowerManagementSettings() {}
 
-    /** @override */
-    initializeKeyboard() {
-      chrome.send('initializeKeyboardSettings');
-    }
+  /**
+   * Sets the idle power management behavior.
+   * @param {IdleBehavior} behavior Idle behavior.
+   * @param {boolean} whenOnAc If true sets AC idle behavior. Otherwise sets
+   *     battery idle behavior.
+   */
+  setIdleBehavior(behavior, whenOnAc) {}
 
-    /** @override */
-    showKeyboardShortcutViewer() {
-      chrome.send('showKeyboardShortcutViewer');
-    }
+  /**
+   * Sets the lid-closed power management behavior.
+   * @param {LidClosedBehavior} behavior Lid-closed behavior.
+   */
+  setLidClosedBehavior(behavior) {}
 
-    /** @override */
-    updateAndroidEnabled() {
-      chrome.send('updateAndroidEnabled');
-    }
+  /**
+   * |callback| is run when there is new note-taking app information
+   * available or after |requestNoteTakingApps| has been called.
+   * @param {function(Array<NoteAppInfo>, boolean):void} callback
+   */
+  setNoteTakingAppsUpdatedCallback(callback) {}
 
-    /** @override */
-    updatePowerStatus() {
-      chrome.send('updatePowerStatus');
-    }
+  /**
+   * Open up the play store with the given URL.
+   * @param {string} url
+   */
+  showPlayStore(url) {}
 
-    /** @override */
-    setPowerSource(powerSourceId) {
-      chrome.send('setPowerSource', [powerSourceId]);
-    }
+  /**
+   * Request current note-taking app info. Invokes any callback registered in
+   * |onNoteTakingAppsUpdated|.
+   */
+  requestNoteTakingApps() {}
 
-    /** @override */
-    requestPowerManagementSettings() {
-      chrome.send('requestPowerManagementSettings');
-    }
+  /**
+   * Changes the preferred note taking app.
+   * @param {string} appId The app id. This should be a value retrieved from a
+   *     |onNoteTakingAppsUpdated| callback.
+   */
+  setPreferredNoteTakingApp(appId) {}
 
-    /** @override */
-    setIdleBehavior(behavior) {
-      chrome.send('setIdleBehavior', [behavior]);
-    }
+  /**
+   * Sets whether the preferred note taking app should be enabled to run as a
+   * lock screen note action handler.
+   * @param {boolean} enabled Whether the app should be enabled to handle note
+   *     actions from the lock screen.
+   */
+  setPreferredNoteTakingAppEnabledOnLockScreen(enabled) {}
 
-    /** @override */
-    setLidClosedBehavior(behavior) {
-      chrome.send('setLidClosedBehavior', [behavior]);
-    }
+  /** Requests an external storage list update. */
+  updateExternalStorages() {}
 
-    /** @override */
-    setNoteTakingAppsUpdatedCallback(callback) {
-      cr.addWebUIListener('onNoteTakingAppsUpdated', callback);
-    }
+  /**
+   * |callback| is run when the list of plugged-in external storages is
+   * available after |updateExternalStorages| has been called.
+   * @param {function(Array<!ExternalStorage>):void} callback
+   */
+  setExternalStoragesUpdatedCallback(callback) {}
 
-    /** @override */
-    showPlayStore(url) {
-      chrome.send('showPlayStoreApps', [url]);
-    }
+  /**
+   * Sets |id| of display to render identification highlight on. Invalid |id|
+   * turns identification highlight off. Handles any invalid input string as
+   * invalid id.
+   * @param {string} id Display id of selected display.
+   */
+  highlightDisplay(id) {}
 
-    /** @override */
-    requestNoteTakingApps() {
-      chrome.send('requestNoteTakingApps');
-    }
+  /**
+   * Updates the position of the dragged display to render preview indicators
+   * as the display is being dragged around.
+   * @param {string} id Display id of selected display.
+   * @param {number} deltaX x-axis position change since the last update.
+   * @param {number} deltaY y-axis position change since the last update.
+   */
+  dragDisplayDelta(id, deltaX, deltaY) {}
 
-    /** @override */
-    setPreferredNoteTakingApp(appId) {
-      chrome.send('setPreferredNoteTakingApp', [appId]);
-    }
+  updateStorageInfo() {}
+  openMyFiles() {}
+}
 
-    /** @override */
-    setPreferredNoteTakingAppEnabledOnLockScreen(enabled) {
-      chrome.send('setPreferredNoteTakingAppEnabledOnLockScreen', [enabled]);
-    }
-
-    /** @override */
-    updateExternalStorages() {
-      chrome.send('updateExternalStorages');
-    }
-
-    /** @override */
-    setExternalStoragesUpdatedCallback(callback) {
-      cr.addWebUIListener('onExternalStoragesUpdated', callback);
-    }
+/**
+ * @implements {DevicePageBrowserProxy}
+ */
+export class DevicePageBrowserProxyImpl {
+  /** @override */
+  initializePointers() {
+    chrome.send('initializePointerSettings');
   }
 
-  cr.addSingletonGetter(DevicePageBrowserProxyImpl);
+  /** @override */
+  initializeStylus() {
+    chrome.send('initializeStylusSettings');
+  }
 
-  return {
-    DevicePageBrowserProxy: DevicePageBrowserProxy,
-    DevicePageBrowserProxyImpl: DevicePageBrowserProxyImpl,
-  };
-});
+  /** @override */
+  initializeKeyboard() {
+    chrome.send('initializeKeyboardSettings');
+  }
+
+  /** @override */
+  showKeyboardShortcutViewer() {
+    chrome.send('showKeyboardShortcutViewer');
+  }
+
+  /** @override */
+  initializeKeyboardWatcher() {
+    chrome.send('initializeKeyboardWatcher');
+  }
+
+  /** @override */
+  updateAndroidEnabled() {
+    chrome.send('updateAndroidEnabled');
+  }
+
+  /** @override */
+  updatePowerStatus() {
+    chrome.send('updatePowerStatus');
+  }
+
+  /** @override */
+  setPowerSource(powerSourceId) {
+    chrome.send('setPowerSource', [powerSourceId]);
+  }
+
+  /** @override */
+  requestPowerManagementSettings() {
+    chrome.send('requestPowerManagementSettings');
+  }
+
+  /** @override */
+  setIdleBehavior(behavior, whenOnAc) {
+    chrome.send('setIdleBehavior', [behavior, whenOnAc]);
+  }
+
+  /** @override */
+  setLidClosedBehavior(behavior) {
+    chrome.send('setLidClosedBehavior', [behavior]);
+  }
+
+  /** @override */
+  setNoteTakingAppsUpdatedCallback(callback) {
+    addWebUIListener('onNoteTakingAppsUpdated', callback);
+  }
+
+  /** @override */
+  showPlayStore(url) {
+    chrome.send('showPlayStoreApps', [url]);
+  }
+
+  /** @override */
+  requestNoteTakingApps() {
+    chrome.send('requestNoteTakingApps');
+  }
+
+  /** @override */
+  setPreferredNoteTakingApp(appId) {
+    chrome.send('setPreferredNoteTakingApp', [appId]);
+  }
+
+  /** @override */
+  setPreferredNoteTakingAppEnabledOnLockScreen(enabled) {
+    chrome.send('setPreferredNoteTakingAppEnabledOnLockScreen', [enabled]);
+  }
+
+  /** @override */
+  updateExternalStorages() {
+    chrome.send('updateExternalStorages');
+  }
+
+  /** @override */
+  setExternalStoragesUpdatedCallback(callback) {
+    addWebUIListener('onExternalStoragesUpdated', callback);
+  }
+
+  /** @override */
+  highlightDisplay(id) {
+    chrome.send('highlightDisplay', [id]);
+  }
+
+  /** @override */
+  dragDisplayDelta(id, deltaX, deltaY) {
+    chrome.send('dragDisplayDelta', [id, deltaX, deltaY]);
+  }
+
+  /** @override */
+  updateStorageInfo() {
+    chrome.send('updateStorageInfo');
+  }
+
+  /** @override */
+  openMyFiles() {
+    chrome.send('openMyFiles');
+  }
+}
+
+addSingletonGetter(DevicePageBrowserProxyImpl);

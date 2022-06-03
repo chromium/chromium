@@ -28,6 +28,9 @@ class MojoDataPump {
   MojoDataPump(mojo::ScopedDataPipeConsumerHandle receive_stream,
                mojo::ScopedDataPipeProducerHandle send_stream);
 
+  MojoDataPump(const MojoDataPump&) = delete;
+  MojoDataPump& operator=(const MojoDataPump&) = delete;
+
   ~MojoDataPump();
 
   // Reads from |receive_stream|. It's illegal to call Read() when a previous
@@ -62,8 +65,6 @@ class MojoDataPump {
   scoped_refptr<net::IOBuffer> pending_write_buffer_;
   int pending_write_buffer_size_ = 0;
   uint32_t read_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDataPump);
 };
 
 }  //  namespace extensions

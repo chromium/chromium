@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -19,22 +18,29 @@
 
 namespace content {
 
+class TestContentClientInitializer;
+
 class ContentTestSuite : public ContentTestSuiteBase {
  public:
   ContentTestSuite(int argc, char** argv);
+
+  ContentTestSuite(const ContentTestSuite&) = delete;
+  ContentTestSuite& operator=(const ContentTestSuite&) = delete;
+
   ~ContentTestSuite() override;
 
  protected:
   void Initialize() override;
+  void Shutdown() override;
 
  private:
+  std::unique_ptr<TestContentClientInitializer>
+      test_content_client_initializer_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
 #if defined(OS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentTestSuite);
 };
 
 }  // namespace content

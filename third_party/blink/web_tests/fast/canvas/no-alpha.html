@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<canvas id="c"></canvas>
+<script type="text/javascript">
+/*
+  A test to make sure drawing a canvas with alpha = false works appropriately.
+*/
+const color = "rgba(120, 45, 200, 0.7)"; // A kind of half purple
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d", { alpha: false });
+ctx.fillStyle = color;
+ctx.fillRect(10, 10, 100, 100);
+</script>
+</html>

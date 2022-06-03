@@ -15,6 +15,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/blockfile/bitmap.h"
 #include "net/disk_cache/blockfile/disk_format.h"
+#include "net/disk_cache/disk_cache.h"
 
 namespace net {
 class IOBuffer;
@@ -23,7 +24,6 @@ class DrainableIOBuffer;
 
 namespace disk_cache {
 
-class Entry;
 class EntryImpl;
 
 // This class provides support for the sparse capabilities of the disk cache.
@@ -44,6 +44,10 @@ class SparseControl {
   };
 
   explicit SparseControl(EntryImpl* entry);
+
+  SparseControl(const SparseControl&) = delete;
+  SparseControl& operator=(const SparseControl&) = delete;
+
   ~SparseControl();
 
   // Initializes the object for the current entry. If this entry already stores
@@ -68,7 +72,7 @@ class SparseControl {
               CompletionOnceCallback callback);
 
   // Implements Entry::GetAvailableRange().
-  int GetAvailableRange(int64_t offset, int len, int64_t* start);
+  RangeResult GetAvailableRange(int64_t offset, int len);
 
   // Cancels the current sparse operation (if any).
   void CancelIO();
@@ -173,8 +177,6 @@ class SparseControl {
   int child_offset_;  // Offset to use for the current child.
   int child_len_;  // Bytes to read or write for this child.
   int result_;
-
-  DISALLOW_COPY_AND_ASSIGN(SparseControl);
 };
 
 }  // namespace disk_cache

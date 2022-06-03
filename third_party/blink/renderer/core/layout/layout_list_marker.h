@@ -26,70 +26,65 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/list_marker.h"
 
 namespace blink {
 
 class LayoutListItem;
 
-// Used to layout the list item's marker.
+// Used to layout a list item's marker with 'content: normal'.
 // The LayoutListMarker always has to be a child of a LayoutListItem.
 class CORE_EXPORT LayoutListMarker final : public LayoutBox {
+  friend class LayoutListItem;
+
  public:
-  static LayoutListMarker* CreateAnonymous(LayoutListItem*);
+  explicit LayoutListMarker(Element*);
   ~LayoutListMarker() override;
+  void Trace(Visitor*) const override;
 
   // Marker text without suffix, e.g. "1".
-  const String& GetText() const { return text_; }
+  const String& GetText() const {
+    NOT_DESTROYED();
+    return text_;
+  }
 
   // Marker text with suffix, e.g. "1. ", for use in accessibility.
   String TextAlternative() const;
 
-  // A reduced set of list style categories allowing for more concise expression
-  // of list style specific logic.
-  enum class ListStyleCategory { kNone, kSymbol, kLanguage, kStaticString };
-
-  // Returns the list's style as one of a reduced high level categorical set of
-  // styles.
-  ListStyleCategory GetListStyleCategory() const;
-  static ListStyleCategory GetListStyleCategory(EListStyleType);
+  ListMarker::ListStyleCategory GetListStyleCategory() const;
+  const CounterStyle& GetCounterStyle() const;
 
   bool IsInside() const;
 
-  void UpdateMarginsAndContent();
-
-  // Compute inline margins for 'list-style-position: inside' and 'outside'.
-  static std::pair<LayoutUnit, LayoutUnit> InlineMarginsForInside(
-      const ComputedStyle&,
-      bool is_image);
-  static std::pair<LayoutUnit, LayoutUnit> InlineMarginsForOutside(
-      const ComputedStyle&,
-      bool is_image,
-      LayoutUnit marker_inline_size);
-
   LayoutRect GetRelativeMarkerRect() const;
-  static LayoutRect RelativeSymbolMarkerRect(const ComputedStyle&, LayoutUnit);
-  static LayoutUnit WidthOfSymbol(const ComputedStyle&);
 
   bool IsImage() const override;
-  const StyleImage* GetImage() const { return image_.Get(); }
-  const LayoutListItem* ListItem() const { return list_item_; }
+  const StyleImage* GetImage() const {
+    NOT_DESTROYED();
+    return image_.Get();
+  }
+  const LayoutListItem* ListItem() const;
   LayoutSize ImageBulletSize() const;
 
-  void ListItemStyleDidChange();
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutListMarker";
+  }
 
-  const char* GetName() const override { return "LayoutListMarker"; }
-
-  LayoutUnit LineOffset() const { return line_offset_; }
+  LayoutUnit ListItemInlineStartOffset() const {
+    NOT_DESTROYED();
+    return list_item_inline_start_offset_;
+  }
 
  protected:
   void WillBeDestroyed() override;
 
  private:
-  LayoutListMarker(LayoutListItem*);
-
-  void ComputePreferredLogicalWidths() override;
+  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
+  MinMaxSizes PreferredLogicalWidths() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectListMarker || LayoutBox::IsOfType(type);
   }
 
@@ -111,28 +106,31 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const override;
 
-  bool IsText() const { return !IsImage(); }
+  bool IsText() const {
+    NOT_DESTROYED();
+    return !IsImage();
+  }
 
-  LayoutUnit GetWidthOfText(ListStyleCategory) const;
+  LayoutUnit GetWidthOfText(ListMarker::ListStyleCategory) const;
+  void UpdateMargins(LayoutUnit marker_inline_size);
   void UpdateMargins();
   void UpdateContent();
 
-  void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style) override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  bool AnonymousHasStylePropagationOverride() override { return true; }
-
-  bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override {
-    return false;
-  }
+  void UpdateMarkerImageIfNeeded(StyleImage* image);
+  void ListStyleTypeChanged();
+  void CounterStyleChanged();
 
   String text_;
-  Persistent<StyleImage> image_;
-  LayoutListItem* list_item_;
-  LayoutUnit line_offset_;
+  Member<StyleImage> image_;
+  LayoutUnit list_item_inline_start_offset_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutListMarker, IsListMarker());
+template <>
+struct DowncastTraits<LayoutListMarker> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsListMarkerForNormalContent();
+  }
+};
 
 }  // namespace blink
 

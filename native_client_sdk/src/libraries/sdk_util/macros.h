@@ -46,4 +46,4 @@
 #define PRINTF_LIKE(a, b)
 #endif
 
-#endif  /* LIBRARIES_SDK_UTIL_MACROS_H_ */
+#endif  // LIBRARIES_SDK_UTIL_MACROS_H_

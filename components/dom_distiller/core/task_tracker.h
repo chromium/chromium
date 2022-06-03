@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distiller.h"
@@ -28,20 +28,23 @@ class DistilledContentStore;
 // be cancelled when the handle is destroyed.
 class ViewerHandle {
  public:
-  typedef base::Callback<void()> CancelCallback;
+  using CancelCallback = base::OnceCallback<void()>;
   explicit ViewerHandle(CancelCallback callback);
   ~ViewerHandle();
 
+  ViewerHandle(const ViewerHandle&) = delete;
+  ViewerHandle& operator=(const ViewerHandle&) = delete;
+
  private:
   CancelCallback cancel_callback_;
-  DISALLOW_COPY_AND_ASSIGN(ViewerHandle);
 };
 
 // Interface for a DOM distiller entry viewer. Implement this to make a view
 // request and receive the data for an entry when it becomes available.
-class ViewRequestDelegate {
+class ViewRequestDelegate : public base::CheckedObserver {
  public:
-  virtual ~ViewRequestDelegate() {}
+  ~ViewRequestDelegate() override = default;
+
   // Called when the distilled article contents are available. The
   // DistilledArticleProto is owned by a TaskTracker instance and is invalidated
   // when the corresponding ViewerHandle is destroyed (or when the
@@ -72,10 +75,9 @@ class ViewRequestDelegate {
 // and at least one of the sources should be started.
 class TaskTracker {
  public:
-  typedef base::Callback<void(TaskTracker*)> CancelCallback;
-  typedef base::Callback<
-      void(const ArticleEntry&, const DistilledArticleProto*, bool)>
-      SaveCallback;
+  using CancelCallback = base::OnceCallback<void(TaskTracker*)>;
+  using SaveCallback = base::OnceCallback<
+      void(const ArticleEntry&, const DistilledArticleProto*, bool)>;
 
   TaskTracker(const ArticleEntry& entry,
               CancelCallback callback,
@@ -87,7 +89,7 @@ class TaskTracker {
                       std::unique_ptr<DistillerPage> distiller_page);
   void StartBlobFetcher();
 
-  void AddSaveCallback(const SaveCallback& callback);
+  void AddSaveCallback(SaveCallback callback);
 
   void CancelSaveCallbacks();
 
@@ -97,6 +99,9 @@ class TaskTracker {
   const std::string& GetEntryId() const;
   bool HasEntryId(const std::string& entry_id) const;
   bool HasUrl(const GURL& url) const;
+
+  TaskTracker(const TaskTracker&) = delete;
+  TaskTracker& operator=(const TaskTracker&) = delete;
 
  private:
   void OnArticleDistillationUpdated(
@@ -136,7 +141,7 @@ class TaskTracker {
   std::vector<SaveCallback> save_callbacks_;
   // A ViewRequestDelegate will be added to this list when a view request is
   // made and removed when the corresponding ViewerHandle is destroyed.
-  std::vector<ViewRequestDelegate*> viewers_;
+  base::ObserverList<ViewRequestDelegate> viewers_;
 
   std::unique_ptr<Distiller> distiller_;
   bool blob_fetcher_running_;
@@ -151,8 +156,6 @@ class TaskTracker {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<TaskTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTracker);
 };
 
 }  // namespace dom_distiller

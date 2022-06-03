@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/tracing",
-  "+components/viz",
-  "+third_party/skia",
-  "+ui",
-]

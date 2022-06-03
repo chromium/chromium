@@ -6,6 +6,8 @@
 """A tool to extract size information for chrome.
 
 For a list of command-line options, call this script with '--help'.
+
+This script uses Python 2 due to dependence on tracing.value.
 """
 
 from __future__ import print_function
@@ -22,6 +24,7 @@ import subprocess
 import sys
 import tempfile
 
+
 SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Add Catapult to the path so we can import the chartjson-histogramset
@@ -29,8 +32,12 @@ SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(SRC_DIR, 'third_party', 'catapult', 'tracing'))
 from tracing.value import convert_chart_json
 
+sys.path.insert(0, os.path.join(SRC_DIR, 'build', 'util'))
+from lib.results import result_sink
+from lib.results import result_types
 
-class ResultsCollector(object):
+
+class ResultsCollector:
 
   def __init__(self):
     self.results = {}
@@ -71,6 +78,7 @@ def get_linux_stripped_size(filename):
 
 
 def run_process(result, command):
+  # TODO: When converting to Python 3, pass param encoding='ascii'.
   p = subprocess.Popen(command, stdout=subprocess.PIPE)
   stdout = p.communicate()[0]
   if p.returncode != 0:
@@ -135,9 +143,14 @@ def main_mac(output_directory, results_collector, size_path):
           re.search(r'(\d+)\s+(\d+)\s+(\d+)', stdout).groups()
 
       # Collect the whole size of the App bundle on disk (include the framework)
-      result, stdout = run_process(result, ['du', '-s', '-k', chromium_app_dir])
-      du_s = re.search(r'(\d+)', stdout).group(1)
-      print_dict['app_bundle_size'] = (int(du_s) * 1024)
+      whole_size = 0
+      for root_dir, _, filenames in os.walk(chromium_app_dir,
+                                            followlinks=False):
+        for filename in filenames:
+          full_path = os.path.join(root_dir, filename)
+          if not os.path.islink(full_path):
+            whole_size += get_size(full_path)
+      print_dict['app_bundle_size'] = whole_size
 
       results_collector.add_result(print_dict['app_name'],
                                    print_dict['app_name'],
@@ -260,7 +273,7 @@ def main_linux(output_directory, results_collector, size_path):
     path = os.path.join(output_directory, filename)
     try:
       size = get_size(path)
-    except OSError, e:
+    except OSError as e:
       if e.errno == errno.ENOENT:
         continue  # Don't print anything for missing files.
       raise
@@ -270,7 +283,7 @@ def main_linux(output_directory, results_collector, size_path):
   # TODO(mcgrathr): This should all be refactored so the mac and win flavors
   # also deliver data structures rather than printing, and the logic for
   # the printing and the summing totals is shared across all three flavors.
-  for (identifier, units), value in sorted(totals.iteritems()):
+  for (identifier, units), value in sorted(totals.items()):
     results_collector.add_result('totals-%s' % identifier, identifier, value,
                                  units)
 
@@ -303,6 +316,22 @@ def check_android_binaries(binaries,
       results_collector.add_result(name, identifier, value, units)
 
   return result
+
+
+def main_android(output_directory, results_collector, size_path):
+  """Print appropriate size information about built Android targets.
+
+  Returns the first non-zero exit status of any command it executes,
+  or zero on success.
+  """
+  assert size_path is None
+  binaries = [
+      'chrome_public_apk/libs/armeabi-v7a/libchrome.so',
+      'lib/libchrome.so',
+      'libchrome.so',
+  ]
+
+  return check_android_binaries(binaries, output_directory, results_collector)
 
 
 def main_android_cronet(output_directory, results_collector, size_path):
@@ -388,6 +417,7 @@ def main():
     default_platform = None
 
   main_map = {
+      'android': main_android,
       'android-cronet': main_android_cronet,
       'linux': main_linux,
       'mac': main_mac,
@@ -444,6 +474,7 @@ def main():
       os.makedirs(results_directory)
 
   results_collector = ResultsCollector()
+  result_sink_client = result_sink.TryInitClient()
   try:
     rc = real_main(args.output_directory, results_collector, args.size_path)
     isolated_script_output = {
@@ -472,6 +503,13 @@ def main():
       else:
         with open(histogram_path, 'w') as f:
           f.write(histogram_result.stdout)
+    if result_sink_client:
+      status = result_types.PASS
+      if not isolated_script_output['valid']:
+        status = result_types.UNKNOWN
+      elif isolated_script_output['failures']:
+        status = result_types.FAIL
+      result_sink_client.Post(test_name, status, None, None, None)
 
   return rc
 

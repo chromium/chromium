@@ -11,7 +11,15 @@ const char MediaNotificationItem::kUserActionHistogramName[] =
     "Media.Notification.UserAction";
 
 // static
+const char MediaNotificationItem::kCastUserActionHistogramName[] =
+    "Media.Notification.Cast.UserAction";
+
+// static
 const char MediaNotificationItem::kSourceHistogramName[] =
     "Media.Notification.Source";
+
+// static
+const char MediaNotificationItem::kCastStartStopHistogramName[] =
+    "Media.Notification.Cast.StartStop";
 
 }  // namespace media_message_center

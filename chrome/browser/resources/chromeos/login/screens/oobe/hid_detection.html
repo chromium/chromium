@@ -1,0 +1,162 @@
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<link rel="import" href="../../components/hd_iron_icon.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
+
+<dom-module id="hid-detection-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      .hid-selection-entry {
+        border-bottom: 1px solid var(--google-grey-200);
+        color: var(--google-grey-900);
+      }
+
+      #touchscreen-icon,
+      #keyboard-icon,
+      #mouse-icon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        padding-inline-end: 16px;
+      }
+
+      #hid-touchscreen-row,
+      #hid-mouse-row,
+      #hid-keyboard-row {
+        min-height: 48px;
+      }
+
+      #touchscreen-tick,
+      #keyboard-tick,
+      #mouse-tick {
+        margin-inline-start: -28px;
+        position: relative;
+        top: 4px;
+      }
+
+      #hid-keyboard-pincode {
+       padding: 30px 0 30px 0;
+      }
+
+      .key-next {
+        background: rgb(26, 115, 232); /*#1a73e8*/
+        border-radius: 5px;
+        color: #fff;
+      }
+
+      .pin-code-style {
+        color: rgb(26, 115, 232); /*#1a73e8*/
+        font-size: 48px;
+        line-height: 48px;
+      }
+
+      .content-padding {
+        padding-top: 12px;
+      }
+
+      .icon-active {
+        height: 24px;
+        width: 24px;
+      }
+    </style>
+    <oobe-adaptive-dialog>
+      <iron-icon slot="icon" icon="oobe-32:connect-devices">
+      </iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'hidDetectionInvitation')]]
+      </h1>
+      <div slot="subtitle">
+        [[getPrerequisitesText_(locale, touchscreenDetected_)]]
+      </div>
+      <div slot="content" class="landscape-header-aligned">
+        <div id="hid-touchscreen-entry"
+            class="layout vertical justified hid-selection-entry"
+            hidden="[[!touchscreenDetected_]]">
+          <div id="hid-touchscreen-row" class="flex layout horizontal center">
+            <hd-iron-icon id="touchscreen-icon" alt=""
+                icon1x="oobe-20:hid-touchscreen"
+                icon2x="oobe-40:hid-touchscreen">
+            </hd-iron-icon>
+            <img id="touchscreen-tick" alt=""
+                src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
+            <div id="touchscreen-label" aria-live="polite">
+                [[i18nDynamic(locale, 'hidDetectionTouchscreenDetected')]]
+            </div>
+          </div>
+        </div>
+        <div class="layout vertical hid-selection-entry">
+          <div id="hid-mouse-row" class="flex layout horizontal center">
+            <hd-iron-icon id="mouse-icon" alt=""
+                icon1x="oobe-20:hid-mouse" icon2x="oobe-40:hid-mouse">
+            </hd-iron-icon>
+            <img id="mouse-tick" alt=""
+                hidden="[[!tickIsVisible_(mouseState_)]]"
+                src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
+            <div id="mouse-label" aria-live="polite" class="flex">
+              [[getMouseLabel_(locale, mouseState_, pointingDeviceName)]]
+            </div>
+            <paper-spinner-lite class="icon-active"
+                hidden="[[!spinnerIsVisible_(mouseState_)]]" active>
+            </paper-spinner-lite>
+          </div>
+        </div>
+        <div class="layout vertical hid-selection-entry">
+          <div id="hid-keyboard-row" class="flex layout horizontal center"
+              on-click="openPinDialog_">
+            <hd-iron-icon id="keyboard-icon" alt=""
+                icon1x="oobe-20:hid-keyboard" icon2x="oobe-40:hid-keyboard">
+            </hd-iron-icon>
+            <img id="keyboard-tick" alt=""
+                hidden="[[!tickIsVisible_(keyboardState_)]]"
+                src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
+            <div id="keyboard-label" aria-live="polite" class="flex">
+              [[getKeyboardLabel_(locale, keyboardState_, keyboardDeviceName)]]
+            </div>
+            <paper-spinner-lite class="icon-active"
+                hidden="[[!spinnerIsVisible_(keyboardState_)]]" active>
+            </paper-spinner-lite>
+          </div>
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button inverse on-click="onHIDContinueTap_"
+            text-key="hidDetectionContinue"
+            id="hid-continue-button"
+            disabled="[[!continueButtonEnabled]]"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- Popup that displays the PIN for pairing with a bluetooth keyboard. -->
+    <oobe-modal-dialog id="hid-pin-popup" on-close="onPinDialogClosed_">
+      <h1 slot="title">[[pinDialogTitle]]</h1>
+      <div slot="content" class="content-padding">
+        <div>
+          [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCode')]]
+        </div>
+        <div id="hid-keyboard-pincode"
+            class="layout horizontal center-justified pin-code-style">
+          <div id="hid-pincode-sym-1"></div>
+          <div id="hid-pincode-sym-2"></div>
+          <div id="hid-pincode-sym-3"></div>
+          <div id="hid-pincode-sym-4"></div>
+          <div id="hid-pincode-sym-5"></div>
+          <div id="hid-pincode-sym-6"></div>
+        </div>
+        <div>
+          [[i18nDynamic(locale, 'hidDetectionBluetoothPairingCodeExplanation')]]
+        </div>
+      </div>
+    </oobe-modal-dialog>
+  </template>
+  <script src="hid_detection.js"></script>
+</dom-module>

@@ -52,7 +52,7 @@ function testLangInShadow(description, elementAndExpectedList) {
 }
 
 function createShadowRootWithInnerHtml(host, shadowHtml) {
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.innerHTML = shadowHtml;
     return root;
 }

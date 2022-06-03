@@ -5,13 +5,24 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_PROMPT_STATUS_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_PROMPT_STATUS_H_
 
-// The status of the download prompt.
+// The status of the download location prompt.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.download
 enum class DownloadPromptStatus {
   SHOW_INITIAL,     // Show the prompt because it hasn't been shown before.
   SHOW_PREFERENCE,  // Show the prompt because user indicated preference.
-  DONT_SHOW         // Don't show the prompt because user indicated preference.
+  DONT_SHOW,        // Don't show the prompt because user indicated preference.
+  MAX_VALUE
+};
+
+// The status of the download later prompt.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.download
+enum class DownloadLaterPromptStatus {
+  kShowInitial,     // Show the prompt because it hasn't been shown before.
+  kShowPreference,  // Show the prompt because user indicated preference.
+  kDontShow,        // Don't show the prompt because user indicated preference.
+  kMaxValue = kDontShow
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_PROMPT_STATUS_H_

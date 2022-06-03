@@ -1,0 +1,264 @@
+This is a testharness.js-based test.
+Found 260 tests; 149 PASS, 111 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Setting protocol with leading U+0000 (https:)
+PASS Setting protocol with U+0000 before inserted colon (https:)
+PASS Setting username with leading U+0000 (https:)
+PASS Setting username with middle U+0000 (https:)
+PASS Setting username with trailing U+0000 (https:)
+PASS Setting password with leading U+0000 (https:)
+PASS Setting password with middle U+0000 (https:)
+PASS Setting password with trailing U+0000 (https:)
+PASS Setting host with leading U+0000 (https:)
+PASS Setting hostname with leading U+0000 (https:)
+PASS Setting host with middle U+0000 (https:)
+PASS Setting hostname with middle U+0000 (https:)
+PASS Setting host with trailing U+0000 (https:)
+PASS Setting hostname with trailing U+0000 (https:)
+PASS Setting port with leading U+0000 (https:)
+PASS Setting port with middle U+0000 (https:)
+PASS Setting port with trailing U+0000 (https:)
+FAIL Setting pathname with leading U+0000 (https:) assert_equals: property expected "/%00test" but got "/path"
+FAIL Setting pathname with middle U+0000 (https:) assert_equals: property expected "/te%00st" but got "/path"
+FAIL Setting pathname with trailing U+0000 (https:) assert_equals: property expected "/test%00" but got "/path"
+PASS Setting search with leading U+0000 (https:)
+PASS Setting search with middle U+0000 (https:)
+PASS Setting search with trailing U+0000 (https:)
+PASS Setting hash with leading U+0000 (https:)
+PASS Setting hash with middle U+0000 (https:)
+PASS Setting hash with trailing U+0000 (https:)
+FAIL Setting protocol with leading U+0009 (https:) assert_equals: property expected "http:" but got "https:"
+FAIL Setting protocol with U+0009 before inserted colon (https:) assert_equals: property expected "http:" but got "https:"
+PASS Setting username with leading U+0009 (https:)
+PASS Setting username with middle U+0009 (https:)
+PASS Setting username with trailing U+0009 (https:)
+PASS Setting password with leading U+0009 (https:)
+PASS Setting password with middle U+0009 (https:)
+PASS Setting password with trailing U+0009 (https:)
+PASS Setting host with leading U+0009 (https:)
+PASS Setting hostname with leading U+0009 (https:)
+PASS Setting host with middle U+0009 (https:)
+PASS Setting hostname with middle U+0009 (https:)
+PASS Setting host with trailing U+0009 (https:)
+PASS Setting hostname with trailing U+0009 (https:)
+PASS Setting port with leading U+0009 (https:)
+PASS Setting port with middle U+0009 (https:)
+PASS Setting port with trailing U+0009 (https:)
+PASS Setting pathname with leading U+0009 (https:)
+PASS Setting pathname with middle U+0009 (https:)
+PASS Setting pathname with trailing U+0009 (https:)
+PASS Setting search with leading U+0009 (https:)
+PASS Setting search with middle U+0009 (https:)
+PASS Setting search with trailing U+0009 (https:)
+PASS Setting hash with leading U+0009 (https:)
+PASS Setting hash with middle U+0009 (https:)
+PASS Setting hash with trailing U+0009 (https:)
+FAIL Setting protocol with leading U+000A (https:) assert_equals: property expected "http:" but got "https:"
+FAIL Setting protocol with U+000A before inserted colon (https:) assert_equals: property expected "http:" but got "https:"
+PASS Setting username with leading U+000A (https:)
+PASS Setting username with middle U+000A (https:)
+PASS Setting username with trailing U+000A (https:)
+PASS Setting password with leading U+000A (https:)
+PASS Setting password with middle U+000A (https:)
+PASS Setting password with trailing U+000A (https:)
+PASS Setting host with leading U+000A (https:)
+PASS Setting hostname with leading U+000A (https:)
+PASS Setting host with middle U+000A (https:)
+PASS Setting hostname with middle U+000A (https:)
+PASS Setting host with trailing U+000A (https:)
+PASS Setting hostname with trailing U+000A (https:)
+PASS Setting port with leading U+000A (https:)
+PASS Setting port with middle U+000A (https:)
+PASS Setting port with trailing U+000A (https:)
+PASS Setting pathname with leading U+000A (https:)
+PASS Setting pathname with middle U+000A (https:)
+PASS Setting pathname with trailing U+000A (https:)
+PASS Setting search with leading U+000A (https:)
+PASS Setting search with middle U+000A (https:)
+PASS Setting search with trailing U+000A (https:)
+PASS Setting hash with leading U+000A (https:)
+PASS Setting hash with middle U+000A (https:)
+PASS Setting hash with trailing U+000A (https:)
+FAIL Setting protocol with leading U+000D (https:) assert_equals: property expected "http:" but got "https:"
+FAIL Setting protocol with U+000D before inserted colon (https:) assert_equals: property expected "http:" but got "https:"
+PASS Setting username with leading U+000D (https:)
+PASS Setting username with middle U+000D (https:)
+PASS Setting username with trailing U+000D (https:)
+PASS Setting password with leading U+000D (https:)
+PASS Setting password with middle U+000D (https:)
+PASS Setting password with trailing U+000D (https:)
+PASS Setting host with leading U+000D (https:)
+PASS Setting hostname with leading U+000D (https:)
+PASS Setting host with middle U+000D (https:)
+PASS Setting hostname with middle U+000D (https:)
+PASS Setting host with trailing U+000D (https:)
+PASS Setting hostname with trailing U+000D (https:)
+PASS Setting port with leading U+000D (https:)
+PASS Setting port with middle U+000D (https:)
+PASS Setting port with trailing U+000D (https:)
+PASS Setting pathname with leading U+000D (https:)
+PASS Setting pathname with middle U+000D (https:)
+PASS Setting pathname with trailing U+000D (https:)
+PASS Setting search with leading U+000D (https:)
+PASS Setting search with middle U+000D (https:)
+PASS Setting search with trailing U+000D (https:)
+PASS Setting hash with leading U+000D (https:)
+PASS Setting hash with middle U+000D (https:)
+PASS Setting hash with trailing U+000D (https:)
+PASS Setting protocol with leading U+001F (https:)
+PASS Setting protocol with U+001F before inserted colon (https:)
+PASS Setting username with leading U+001F (https:)
+PASS Setting username with middle U+001F (https:)
+PASS Setting username with trailing U+001F (https:)
+PASS Setting password with leading U+001F (https:)
+PASS Setting password with middle U+001F (https:)
+PASS Setting password with trailing U+001F (https:)
+FAIL Setting host with leading U+001F (https:) assert_equals: property expected "\x1ftest:8000" but got "host:8000"
+FAIL Setting hostname with leading U+001F (https:) assert_equals: property expected "\x1ftest" but got "host"
+FAIL Setting host with middle U+001F (https:) assert_equals: property expected "te\x1fst:8000" but got "host:8000"
+FAIL Setting hostname with middle U+001F (https:) assert_equals: property expected "te\x1fst" but got "host"
+FAIL Setting host with trailing U+001F (https:) assert_equals: property expected "test\x1f:8000" but got "host:8000"
+FAIL Setting hostname with trailing U+001F (https:) assert_equals: property expected "test\x1f" but got "host"
+PASS Setting port with leading U+001F (https:)
+PASS Setting port with middle U+001F (https:)
+PASS Setting port with trailing U+001F (https:)
+PASS Setting pathname with leading U+001F (https:)
+PASS Setting pathname with middle U+001F (https:)
+PASS Setting pathname with trailing U+001F (https:)
+PASS Setting search with leading U+001F (https:)
+PASS Setting search with middle U+001F (https:)
+PASS Setting search with trailing U+001F (https:)
+PASS Setting hash with leading U+001F (https:)
+PASS Setting hash with middle U+001F (https:)
+PASS Setting hash with trailing U+001F (https:)
+PASS Setting protocol with leading U+0000 (wpt++:)
+PASS Setting protocol with U+0000 before inserted colon (wpt++:)
+FAIL Setting username with leading U+0000 (wpt++:) assert_equals: property expected "%00test" but got ""
+FAIL Setting username with middle U+0000 (wpt++:) assert_equals: property expected "te%00st" but got ""
+FAIL Setting username with trailing U+0000 (wpt++:) assert_equals: property expected "test%00" but got ""
+FAIL Setting password with leading U+0000 (wpt++:) assert_equals: property expected "%00test" but got ""
+FAIL Setting password with middle U+0000 (wpt++:) assert_equals: property expected "te%00st" but got ""
+FAIL Setting password with trailing U+0000 (wpt++:) assert_equals: property expected "test%00" but got ""
+FAIL Setting host with leading U+0000 (wpt++:) assert_equals: property expected "host:8000" but got ""
+FAIL Setting hostname with leading U+0000 (wpt++:) assert_equals: property expected "host" but got ""
+FAIL Setting host with middle U+0000 (wpt++:) assert_equals: property expected "host:8000" but got ""
+FAIL Setting hostname with middle U+0000 (wpt++:) assert_equals: property expected "host" but got ""
+FAIL Setting host with trailing U+0000 (wpt++:) assert_equals: property expected "host:8000" but got ""
+FAIL Setting hostname with trailing U+0000 (wpt++:) assert_equals: property expected "host" but got ""
+FAIL Setting port with leading U+0000 (wpt++:) assert_equals: property expected "8000" but got ""
+FAIL Setting port with middle U+0000 (wpt++:) assert_equals: property expected "90" but got ""
+FAIL Setting port with trailing U+0000 (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting pathname with leading U+0000 (wpt++:) assert_equals: property expected "/%00test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with middle U+0000 (wpt++:) assert_equals: property expected "/te%00st" but got "//username:password@host:8000/path"
+FAIL Setting pathname with trailing U+0000 (wpt++:) assert_equals: property expected "/test%00" but got "//username:password@host:8000/path"
+PASS Setting search with leading U+0000 (wpt++:)
+PASS Setting search with middle U+0000 (wpt++:)
+PASS Setting search with trailing U+0000 (wpt++:)
+PASS Setting hash with leading U+0000 (wpt++:)
+PASS Setting hash with middle U+0000 (wpt++:)
+PASS Setting hash with trailing U+0000 (wpt++:)
+FAIL Setting protocol with leading U+0009 (wpt++:) assert_equals: property expected "wpt--:" but got "wpt++:"
+FAIL Setting protocol with U+0009 before inserted colon (wpt++:) assert_equals: property expected "wpt--:" but got "wpt++:"
+FAIL Setting username with leading U+0009 (wpt++:) assert_equals: property expected "%09test" but got ""
+FAIL Setting username with middle U+0009 (wpt++:) assert_equals: property expected "te%09st" but got ""
+FAIL Setting username with trailing U+0009 (wpt++:) assert_equals: property expected "test%09" but got ""
+FAIL Setting password with leading U+0009 (wpt++:) assert_equals: property expected "%09test" but got ""
+FAIL Setting password with middle U+0009 (wpt++:) assert_equals: property expected "te%09st" but got ""
+FAIL Setting password with trailing U+0009 (wpt++:) assert_equals: property expected "test%09" but got ""
+FAIL Setting host with leading U+0009 (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with leading U+0009 (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting host with middle U+0009 (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with middle U+0009 (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting host with trailing U+0009 (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with trailing U+0009 (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting port with leading U+0009 (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting port with middle U+0009 (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting port with trailing U+0009 (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting pathname with leading U+0009 (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with middle U+0009 (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with trailing U+0009 (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+PASS Setting search with leading U+0009 (wpt++:)
+PASS Setting search with middle U+0009 (wpt++:)
+PASS Setting search with trailing U+0009 (wpt++:)
+PASS Setting hash with leading U+0009 (wpt++:)
+PASS Setting hash with middle U+0009 (wpt++:)
+PASS Setting hash with trailing U+0009 (wpt++:)
+FAIL Setting protocol with leading U+000A (wpt++:) assert_equals: property expected "wpt--:" but got "wpt++:"
+FAIL Setting protocol with U+000A before inserted colon (wpt++:) assert_equals: property expected "wpt--:" but got "wpt++:"
+FAIL Setting username with leading U+000A (wpt++:) assert_equals: property expected "%0Atest" but got ""
+FAIL Setting username with middle U+000A (wpt++:) assert_equals: property expected "te%0Ast" but got ""
+FAIL Setting username with trailing U+000A (wpt++:) assert_equals: property expected "test%0A" but got ""
+FAIL Setting password with leading U+000A (wpt++:) assert_equals: property expected "%0Atest" but got ""
+FAIL Setting password with middle U+000A (wpt++:) assert_equals: property expected "te%0Ast" but got ""
+FAIL Setting password with trailing U+000A (wpt++:) assert_equals: property expected "test%0A" but got ""
+FAIL Setting host with leading U+000A (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with leading U+000A (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting host with middle U+000A (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with middle U+000A (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting host with trailing U+000A (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with trailing U+000A (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting port with leading U+000A (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting port with middle U+000A (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting port with trailing U+000A (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting pathname with leading U+000A (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with middle U+000A (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with trailing U+000A (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+PASS Setting search with leading U+000A (wpt++:)
+PASS Setting search with middle U+000A (wpt++:)
+PASS Setting search with trailing U+000A (wpt++:)
+PASS Setting hash with leading U+000A (wpt++:)
+PASS Setting hash with middle U+000A (wpt++:)
+PASS Setting hash with trailing U+000A (wpt++:)
+FAIL Setting protocol with leading U+000D (wpt++:) assert_equals: property expected "wpt--:" but got "wpt++:"
+FAIL Setting protocol with U+000D before inserted colon (wpt++:) assert_equals: property expected "wpt--:" but got "wpt++:"
+FAIL Setting username with leading U+000D (wpt++:) assert_equals: property expected "%0Dtest" but got ""
+FAIL Setting username with middle U+000D (wpt++:) assert_equals: property expected "te%0Dst" but got ""
+FAIL Setting username with trailing U+000D (wpt++:) assert_equals: property expected "test%0D" but got ""
+FAIL Setting password with leading U+000D (wpt++:) assert_equals: property expected "%0Dtest" but got ""
+FAIL Setting password with middle U+000D (wpt++:) assert_equals: property expected "te%0Dst" but got ""
+FAIL Setting password with trailing U+000D (wpt++:) assert_equals: property expected "test%0D" but got ""
+FAIL Setting host with leading U+000D (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with leading U+000D (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting host with middle U+000D (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with middle U+000D (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting host with trailing U+000D (wpt++:) assert_equals: property expected "test:8000" but got ""
+FAIL Setting hostname with trailing U+000D (wpt++:) assert_equals: property expected "test" but got ""
+FAIL Setting port with leading U+000D (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting port with middle U+000D (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting port with trailing U+000D (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting pathname with leading U+000D (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with middle U+000D (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+FAIL Setting pathname with trailing U+000D (wpt++:) assert_equals: property expected "/test" but got "//username:password@host:8000/path"
+PASS Setting search with leading U+000D (wpt++:)
+PASS Setting search with middle U+000D (wpt++:)
+PASS Setting search with trailing U+000D (wpt++:)
+PASS Setting hash with leading U+000D (wpt++:)
+PASS Setting hash with middle U+000D (wpt++:)
+PASS Setting hash with trailing U+000D (wpt++:)
+PASS Setting protocol with leading U+001F (wpt++:)
+PASS Setting protocol with U+001F before inserted colon (wpt++:)
+FAIL Setting username with leading U+001F (wpt++:) assert_equals: property expected "%1Ftest" but got ""
+FAIL Setting username with middle U+001F (wpt++:) assert_equals: property expected "te%1Fst" but got ""
+FAIL Setting username with trailing U+001F (wpt++:) assert_equals: property expected "test%1F" but got ""
+FAIL Setting password with leading U+001F (wpt++:) assert_equals: property expected "%1Ftest" but got ""
+FAIL Setting password with middle U+001F (wpt++:) assert_equals: property expected "te%1Fst" but got ""
+FAIL Setting password with trailing U+001F (wpt++:) assert_equals: property expected "test%1F" but got ""
+FAIL Setting host with leading U+001F (wpt++:) assert_equals: property expected "%1Ftest:8000" but got ""
+FAIL Setting hostname with leading U+001F (wpt++:) assert_equals: property expected "%1Ftest" but got ""
+FAIL Setting host with middle U+001F (wpt++:) assert_equals: property expected "te%1Fst:8000" but got ""
+FAIL Setting hostname with middle U+001F (wpt++:) assert_equals: property expected "te%1Fst" but got ""
+FAIL Setting host with trailing U+001F (wpt++:) assert_equals: property expected "test%1F:8000" but got ""
+FAIL Setting hostname with trailing U+001F (wpt++:) assert_equals: property expected "test%1F" but got ""
+FAIL Setting port with leading U+001F (wpt++:) assert_equals: property expected "8000" but got ""
+FAIL Setting port with middle U+001F (wpt++:) assert_equals: property expected "90" but got ""
+FAIL Setting port with trailing U+001F (wpt++:) assert_equals: property expected "9000" but got ""
+FAIL Setting pathname with leading U+001F (wpt++:) assert_equals: property expected "/%1Ftest" but got "//username:password@host:8000/path"
+FAIL Setting pathname with middle U+001F (wpt++:) assert_equals: property expected "/te%1Fst" but got "//username:password@host:8000/path"
+FAIL Setting pathname with trailing U+001F (wpt++:) assert_equals: property expected "/test%1F" but got "//username:password@host:8000/path"
+PASS Setting search with leading U+001F (wpt++:)
+PASS Setting search with middle U+001F (wpt++:)
+PASS Setting search with trailing U+001F (wpt++:)
+PASS Setting hash with leading U+001F (wpt++:)
+PASS Setting hash with middle U+001F (wpt++:)
+PASS Setting hash with trailing U+001F (wpt++:)
+Harness: the test ran to completion.
+

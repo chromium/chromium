@@ -7,8 +7,8 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/views/apps/app_window_native_widget_mac.h"
 #import "chrome/browser/ui/views/apps/native_app_window_frame_view_mac.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
@@ -20,7 +20,8 @@
   // Weak. Owns us.
   ChromeNativeAppWindowViewsMac* _nativeAppWindow;
 }
-- (id)initForNativeAppWindow:(ChromeNativeAppWindowViewsMac*)nativeAppWindow;
+- (instancetype)initForNativeAppWindow:
+    (ChromeNativeAppWindowViewsMac*)nativeAppWindow;
 - (void)onWindowWillStartLiveResize:(NSNotification*)notification;
 - (void)onWindowWillExitFullScreen:(NSNotification*)notification;
 - (void)onWindowDidExitFullScreen:(NSNotification*)notification;
@@ -29,7 +30,8 @@
 
 @implementation ResizeNotificationObserver
 
-- (id)initForNativeAppWindow:(ChromeNativeAppWindowViewsMac*)nativeAppWindow {
+- (instancetype)initForNativeAppWindow:
+    (ChromeNativeAppWindowViewsMac*)nativeAppWindow {
   if ((self = [super init])) {
     _nativeAppWindow = nativeAppWindow;
     [[NSNotificationCenter defaultCenter]
@@ -55,6 +57,11 @@
                         .GetNativeNSWindow()];
   }
   return self;
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
 }
 
 - (void)onWindowWillStartLiveResize:(NSNotification*)notification {
@@ -123,14 +130,14 @@ void ChromeNativeAppWindowViewsMac::OnBeforeWidgetInit(
                                                  widget);
 }
 
-views::NonClientFrameView*
+std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsMac::CreateStandardDesktopAppFrame() {
-  return new NativeAppWindowFrameViewMac(widget(), this);
+  return std::make_unique<NativeAppWindowFrameViewMac>(widget(), this);
 }
 
-views::NonClientFrameView*
+std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsMac::CreateNonStandardAppFrame() {
-  return new NativeAppWindowFrameViewMac(widget(), this);
+  return std::make_unique<NativeAppWindowFrameViewMac>(widget(), this);
 }
 
 bool ChromeNativeAppWindowViewsMac::IsMaximized() const {
@@ -166,9 +173,15 @@ void ChromeNativeAppWindowViewsMac::Restore() {
 }
 
 void ChromeNativeAppWindowViewsMac::FlashFrame(bool flash) {
-  apps::ExtensionAppShimHandler::Get()->RequestUserAttentionForWindow(
-      app_window(), flash ? chrome::mojom::AppShimAttentionType::kCritical
-                          : chrome::mojom::AppShimAttentionType::kCancel);
+  Profile* profile =
+      Profile::FromBrowserContext(app_window()->browser_context());
+  AppShimHost* shim_host = apps::AppShimManager::Get()->FindHost(
+      profile, app_window()->extension_id());
+  if (!shim_host)
+    return;
+  shim_host->GetAppShim()->SetUserAttention(
+      flash ? chrome::mojom::AppShimAttentionType::kCritical
+            : chrome::mojom::AppShimAttentionType::kCancel);
 }
 
 void ChromeNativeAppWindowViewsMac::OnWidgetCreated(views::Widget* widget) {

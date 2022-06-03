@@ -3,6 +3,3 @@ twellington@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# TEAM: contextual-search-dev@chromium.org
-# COMPONENT: UI>Browser>Search>ContextualSearch

@@ -5,11 +5,13 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
@@ -17,7 +19,7 @@
 #include "chrome/browser/extensions/extension_error_ui_default.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_error.h"
-#include "chrome/browser/extensions/test_blacklist.h"
+#include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/recovery/recovery_install_global_error.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +32,7 @@
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_prefs.h"
@@ -40,7 +43,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/signin_global_error.h"
 #include "chrome/browser/signin/signin_global_error_factory.h"
 #endif
@@ -83,8 +86,11 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
  public:
   explicit GlobalErrorWaiter(Profile* profile)
       : service_(GlobalErrorServiceFactory::GetForProfile(profile)) {
-    scoped_observer_.Add(service_);
+    scoped_observation_.Observe(service_);
   }
+
+  GlobalErrorWaiter(const GlobalErrorWaiter&) = delete;
+  GlobalErrorWaiter& operator=(const GlobalErrorWaiter&) = delete;
 
   ~GlobalErrorWaiter() override = default;
 
@@ -99,10 +105,8 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
  private:
   base::RunLoop run_loop_;
   GlobalErrorService* service_;
-  ScopedObserver<GlobalErrorService, GlobalErrorObserver> scoped_observer_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorWaiter);
+  base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace
@@ -113,11 +117,11 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
     extensions::ExtensionPrefs::SetRunAlertsInFirstRunForTest();
   }
 
+  GlobalErrorBubbleTest(const GlobalErrorBubbleTest&) = delete;
+  GlobalErrorBubbleTest& operator=(const GlobalErrorBubbleTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorBubbleTest);
 };
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
@@ -129,7 +133,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
 
   extensions::ExtensionBuilder builder("Browser Action");
   builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION);
-  builder.SetLocation(extensions::Manifest::INTERNAL);
+  builder.SetLocation(extensions::mojom::ManifestLocation::kInternal);
   scoped_refptr<const extensions::Extension> test_extension = builder.Build();
   extension_service->AddExtension(test_extension.get());
 
@@ -146,27 +150,27 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     waiter.Wait();
     ShowPendingError(browser());
   } else if (name == "ExtensionGlobalError") {
-    extensions::TestBlacklist test_blacklist(
-        extensions::Blacklist::Get(profile));
-    extension_registry->AddBlacklisted(test_extension);
-    // Only BLACKLISTED_MALWARE results in a bubble displaying to the user.
-    // Other types are greylisted, not blacklisted.
-    test_blacklist.SetBlacklistState(test_extension->id(),
-                                     extensions::BLACKLISTED_MALWARE, true);
-    // Ensure ExtensionService::ManageBlacklist() runs, which shows the dialog.
+    extensions::TestBlocklist test_blocklist(
+        extensions::Blocklist::Get(profile));
+    extension_registry->AddBlocklisted(test_extension);
+    // Only BLOCKLISTED_MALWARE results in a bubble displaying to the user.
+    // Other types are greylisted, not blocklisted.
+    test_blocklist.SetBlocklistState(test_extension->id(),
+                                     extensions::BLOCKLISTED_MALWARE, true);
+    // Ensure ExtensionService::ManageBlocklist() runs, which shows the dialog.
     // (This flow doesn't use OnGlobalErrorsChanged.) This is asynchronous, and
-    // using TestBlacklist ensures the tasks run without delay, but some tasks
+    // using TestBlocklist ensures the tasks run without delay, but some tasks
     // run on the IO thread, so post a task there to ensure it was flushed. The
-    // test also needs to invoke OnBlacklistUpdated() directly. Usually this
-    // happens via a callback from the SafeBrowsing DB, but TestBlacklist
+    // test also needs to invoke OnBlocklistUpdated() directly. Usually this
+    // happens via a callback from the SafeBrowsing DB, but TestBlocklist
     // replaced the SafeBrowsing DB with a fake one, so the notification source
     // is different.
-    static_cast<extensions::Blacklist::Observer*>(extension_service)
-        ->OnBlacklistUpdated();
+    static_cast<extensions::Blocklist::Observer*>(extension_service)
+        ->OnBlocklistUpdated();
     base::RunLoop().RunUntilIdle();
     base::RunLoop flush_io;
-    base::PostTaskAndReply(FROM_HERE, {content::BrowserThread::IO},
-                           base::DoNothing(), flush_io.QuitClosure());
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), flush_io.QuitClosure());
     flush_io.Run();
 
     // Oh no! This relies on RunUntilIdle() to show the bubble. The bubble is
@@ -184,7 +188,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
 
     GlobalErrorWaiter waiter(profile);
     auto provider = std::make_unique<extensions::MockExternalProvider>(
-        extension_service, extensions::Manifest::EXTERNAL_PREF);
+        extension_service, extensions::mojom::ManifestLocation::kExternalPref);
     extensions::MockExternalProvider* provider_ptr = provider.get();
     extension_service->AddProviderForTesting(std::move(provider));
     provider_ptr->UpdateOrAddExtension(kExtensionWithUpdateUrl, "1.0.0.0",
@@ -200,7 +204,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
         prefs::kRecoveryComponentNeedsElevation, true);
     waiter.Wait();
     ShowPendingError(browser());
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (name == "SigninGlobalError") {
     SigninGlobalErrorFactory::GetForProfile(profile)->ShowBubbleView(browser());
 #endif
@@ -237,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
 }
 
 // RecoveryInstallGlobalError only exists on Windows and Mac.
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
                        InvokeUi_RecoveryInstallGlobalError) {
   ShowAndVerifyUi();
@@ -245,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
 #endif
 
 // Signin global errors never happon on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest, InvokeUi_SigninGlobalError) {
   ShowAndVerifyUi();
 }

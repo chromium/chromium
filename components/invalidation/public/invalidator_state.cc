@@ -4,9 +4,7 @@
 
 #include "components/invalidation/public/invalidator_state.h"
 
-#include "base/logging.h"
-
-namespace syncer {
+namespace invalidation {
 
 const char* InvalidatorStateToString(InvalidatorState state) {
   switch (state) {
@@ -18,15 +16,9 @@ const char* InvalidatorStateToString(InvalidatorState state) {
       return "INVALIDATIONS_ENABLED";
     case INVALIDATOR_SHUTTING_DOWN:
       return "INVALIDATOR_SHUTTING_DOWN";
-    case SUBSCRIPTION_FAILURE:
-      return "SUBSCRIPTION_FAILURE";
     case STOPPED:
       return "STOPPED";
-    case NOT_STARTED_NO_ACTIVE_ACCOUNT:
-      return "NOT_STARTED_NO_ACTIVE_ACCOUNT";
-    case NOT_STARTED_NO_REFRESH_TOKEN:
-      return "NOT_STARTED_NO_REFRESH_TOKEN";
   }
 }
 
-}  // namespace syncer
+}  // namespace invalidation

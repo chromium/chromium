@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGEllipse circle id='bounce'",
-          "rect": [101, 101, 68, 68],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [1, 1, 68, 68],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [101, 101, 68, 68],
+        [1, 1, 68, 68]
       ]
     }
   ]

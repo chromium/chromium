@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/base/data_buffer.h"
 #include "media/base/timestamp_constants.h"
 
@@ -269,8 +269,7 @@ void SeekableBuffer::UpdateCurrentTime(BufferQueue::iterator buffer,
     int64_t time_offset = ((*buffer)->duration().InMicroseconds() * offset) /
                           (*buffer)->data_size();
 
-    current_time_ = (*buffer)->timestamp() +
-                    base::TimeDelta::FromMicroseconds(time_offset);
+    current_time_ = (*buffer)->timestamp() + base::Microseconds(time_offset);
   }
 }
 

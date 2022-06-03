@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that call stack sidebar contains correct urls for call frames.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../debugger/resources/unformatted-async.js');
   await TestRunner.evaluateInPagePromise(`
@@ -25,17 +25,17 @@
   }
 
   function step4() {
-    TestRunner.addSniffer(Sources.ScriptFormatterEditorAction.prototype, '_updateButton', step5);
-    scriptFormatter._toggleFormatScriptSource();
+    TestRunner.addSniffer(Sources.ScriptFormatterEditorAction.prototype, 'updateButton', step5);
+    scriptFormatter.toggleFormatScriptSource();
   }
 
   function step5() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
-    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, '_updatedForTest', step6);
+    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, 'updatedForTest', step6);
   }
 
   function step6() {
-    var pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+    var pane = Sources.CallStackSidebarPane.instance();
     for (var element of pane.contentElement.querySelectorAll('.call-frame-item'))
       TestRunner.addResult(element.deepTextContent().replace(/VM\d+/g, 'VM'));
     SourcesTestRunner.completeDebuggerTest();

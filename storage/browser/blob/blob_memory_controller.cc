@@ -9,11 +9,11 @@
 #include <numeric>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/small_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/location.h"
@@ -22,15 +22,16 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
@@ -40,6 +41,13 @@ using base::File;
 using base::FilePath;
 
 namespace storage {
+
+// static
+const base::Feature
+    BlobMemoryController::kInhibitBlobMemoryControllerMemoryPressureResponse{
+        "InhibitBlobMemoryControllerMemoryPressureResponse",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 constexpr int64_t kUnknownDiskAvailability = -1ll;
 constexpr uint64_t kMegabyte = 1024ull * 1024;
@@ -56,7 +64,8 @@ File::Error CreateBlobDirectory(const FilePath& blob_storage_dir) {
   UMA_HISTOGRAM_ENUMERATION("Storage.Blob.CreateDirectoryResult", -error,
                             -File::FILE_ERROR_MAX);
   DLOG_IF(ERROR, error != File::FILE_OK)
-      << "Error creating blob storage directory: " << error;
+      << "Error creating blob storage directory '"
+      << blob_storage_dir.LossyDisplayName() << "': " << error;
   return error;
 }
 
@@ -74,7 +83,7 @@ File::Error CreateBlobDirectory(const FilePath& blob_storage_dir) {
 BlobStorageLimits CalculateBlobStorageLimitsImpl(
     const FilePath& storage_dir,
     bool disk_enabled,
-    base::Optional<int64_t> optional_memory_size_for_testing) {
+    absl::optional<int64_t> optional_memory_size_for_testing) {
   int64_t disk_size = 0ull;
   int64_t memory_size = optional_memory_size_for_testing
                             ? optional_memory_size_for_testing.value()
@@ -86,7 +95,8 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
 
   // Don't do specialty configuration for error size (-1).
   if (memory_size > 0) {
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID) && defined(ARCH_CPU_64_BITS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && \
+    defined(ARCH_CPU_64_BITS)
     constexpr size_t kTwoGigabytes = 2ull * 1024 * 1024 * 1024;
     limits.max_blob_in_memory_space = kTwoGigabytes;
 #elif defined(OS_ANDROID)
@@ -103,7 +113,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
 
   // Don't do specialty configuration for error size (-1). Allow no disk.
   if (disk_size >= 0) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     limits.desired_max_disk_space = static_cast<uint64_t>(disk_size / 2ll);
 #elif defined(OS_ANDROID)
     limits.desired_max_disk_space = static_cast<uint64_t>(3ll * disk_size / 50);
@@ -127,7 +137,7 @@ void DestructFile(File infos_without_references) {}
 void DeleteFiles(std::vector<FileCreationInfo> files) {
   for (FileCreationInfo& file_info : files) {
     file_info.file.Close();
-    base::DeleteFile(file_info.path, false);
+    base::DeleteFile(file_info.path);
   }
 }
 
@@ -247,7 +257,7 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
   }
   if (!file.Flush()) {
     file.Close();
-    base::DeleteFile(file_path, false);
+    base::DeleteFile(file_path);
     creation_info.error = File::FILE_ERROR_FAILED;
     return std::make_pair(std::move(creation_info), free_disk_space);
   }
@@ -326,6 +336,10 @@ class BlobMemoryController::MemoryQuotaAllocationTask
         done_callback_(std::move(done_callback)),
         allocation_size_(quota_request_size) {}
 
+  MemoryQuotaAllocationTask(const MemoryQuotaAllocationTask&) = delete;
+  MemoryQuotaAllocationTask& operator=(const MemoryQuotaAllocationTask&) =
+      delete;
+
   ~MemoryQuotaAllocationTask() override = default;
 
   void RunDoneCallback(bool success) {
@@ -365,7 +379,6 @@ class BlobMemoryController::MemoryQuotaAllocationTask
   PendingMemoryQuotaTaskList::iterator my_list_position_;
 
   base::WeakPtrFactory<MemoryQuotaAllocationTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MemoryQuotaAllocationTask);
 };
 
 class BlobMemoryController::FileQuotaAllocationTask
@@ -426,6 +439,10 @@ class BlobMemoryController::FileQuotaAllocationTask
                        allocation_size_));
     controller_->RecordTracingCounters();
   }
+
+  FileQuotaAllocationTask(const FileQuotaAllocationTask&) = delete;
+  FileQuotaAllocationTask& operator=(const FileQuotaAllocationTask&) = delete;
+
   ~FileQuotaAllocationTask() override = default;
 
   void RunDoneCallback(std::vector<FileCreationInfo> file_info, bool success) {
@@ -522,7 +539,6 @@ class BlobMemoryController::FileQuotaAllocationTask
   PendingFileQuotaTaskList::iterator my_list_position_;
 
   base::WeakPtrFactory<FileQuotaAllocationTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileQuotaAllocationTask);
 };
 
 BlobMemoryController::BlobMemoryController(
@@ -533,8 +549,9 @@ BlobMemoryController::BlobMemoryController(
       file_runner_(std::move(file_runner)),
       disk_space_function_(&base::SysInfo::AmountOfFreeDiskSpace),
       populated_memory_items_(
-          base::MRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
+          base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_pressure_listener_(
+          FROM_HERE,
           base::BindRepeating(&BlobMemoryController::OnMemoryPressure,
                               base::Unretained(this))) {}
 
@@ -1039,6 +1056,24 @@ void BlobMemoryController::OnEvictionComplete(
 
 void BlobMemoryController::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  // Under critical memory pressure the system is probably already swapping out
+  // memory and making heavy use of IO. Adding to that is not desirable.
+  // Furthermore, scheduling a task to write files to disk risks paging-in
+  // memory that was already committed to disk which compounds the problem. Do
+  // not take any action on critical memory pressure.
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kInhibitBlobMemoryControllerMemoryPressureResponse)) {
+    return;
+  }
+
+  // TODO(crbug.com/1087530): Run trial to see if we should get rid of this
+  // whole intervention or leave it on for MEMORY_PRESSURE_LEVEL_MODERATE.
+
   auto time_from_last_evicion = base::TimeTicks::Now() - last_eviction_time_;
   if (last_eviction_time_ != base::TimeTicks() &&
       time_from_last_evicion.InSeconds() < kMinSecondsForPressureEvictions) {

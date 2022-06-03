@@ -31,9 +31,16 @@ class DistillerNativeJavaScript {
   void BindFunctionToObject(v8::Isolate* isolate,
                             v8::Local<v8::Object> javascript_object,
                             const std::string& name,
-                            const base::Callback<Sig> callback);
+                            const base::RepeatingCallback<Sig>& callback);
+
   // Make sure the mojo service is connected.
   void EnsureServiceConnected();
+
+  // Wrappers to convert integer representations of the pref enums, then send
+  // the enum values to the browser process.
+  void StoreIntTheme(int theme);
+  void StoreIntFontFamily(int font_family);
+  void StoreFloatFontScaling(float font_scale);
 
   content::RenderFrame* render_frame_;
   mojo::Remote<mojom::DistillerJavaScriptService> distiller_js_service_;

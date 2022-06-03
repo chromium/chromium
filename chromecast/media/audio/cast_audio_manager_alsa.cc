@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
+#include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_buildflags.h"
 #include "chromecast/media/audio/cast_audio_input_stream.h"
-#include "chromecast/media/cma/backend/cma_backend_factory.h"
 #include "media/audio/alsa/alsa_input.h"
 #include "media/audio/alsa/alsa_wrapper.h"
 
@@ -27,8 +27,10 @@ const int kDefaultSampleRate = BUILDFLAG(AUDIO_INPUT_SAMPLE_RATE);
 // TODO(jyw): Query the preferred value from media backend.
 const int kDefaultInputBufferSize = 1024;
 
+#if BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
 const int kCommunicationsSampleRate = 16000;
 const int kCommunicationsInputBufferSize = 160;  // 10 ms.
+#endif
 
 // Since "default" and "dmix" devices are virtual devices mapped to real
 // devices, we remove them from the list to avoiding duplicate counting.
@@ -81,19 +83,19 @@ std::string UnwantedDeviceTypeWhenEnumerating(
 CastAudioManagerAlsa::CastAudioManagerAlsa(
     std::unique_ptr<::media::AudioThread> audio_thread,
     ::media::AudioLogFactory* audio_log_factory,
+    CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    GetSessionIdCallback get_session_id_callback,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+    external_service_support::ExternalConnector* connector,
     bool use_mixer)
     : CastAudioManager(std::move(audio_thread),
                        audio_log_factory,
+                       delegate,
                        std::move(backend_factory_getter),
-                       std::move(get_session_id_callback),
                        browser_task_runner,
                        media_task_runner,
-                       std::move(connector),
+                       connector,
                        use_mixer),
       wrapper_(new ::media::AlsaWrapper()) {}
 
@@ -125,11 +127,12 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
     NOTIMPLEMENTED()
         << "Capture Service is not enabled, return a fake AudioParameters.";
     return ::media::AudioParameters();
-#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
+#else
     return ::media::AudioParameters(::media::AudioParameters::AUDIO_PCM_LINEAR,
                                     ::media::CHANNEL_LAYOUT_MONO,
                                     kCommunicationsSampleRate,
                                     kCommunicationsInputBufferSize);
+#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
   }
   // TODO(jyw): Be smarter about sample rate instead of hardcoding it.
   // Need to send a valid AudioParameters object even when it will be unused.
@@ -166,8 +169,9 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
 #if !BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
     NOTIMPLEMENTED() << "Capture Service is not enabled, return nullptr.";
     return nullptr;
-#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
+#else
     return new CastAudioInputStream(this, params, device_name);
+#endif  // BUILDFLAG(ENABLE_AUDIO_CAPTURE_SERVICE)
   }
   return new ::media::AlsaPcmInputStream(this, device_name, params,
                                          wrapper_.get());

@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -41,15 +41,15 @@ void DoomHttpCache(std::unique_ptr<disk_cache::Backend*> backend,
                    int error) {
   // |*backend| may be null in case of error.
   if (*backend) {
-    net::CompletionRepeatingCallback copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto callback_pair = base::SplitOnceCallback(std::move(callback));
     const int rv = (*backend)->DoomEntriesBetween(
         delete_begin, delete_end,
-        base::BindOnce(&PostCallback, client_task_runner, copyable_callback));
+        base::BindOnce(&PostCallback, client_task_runner,
+                       std::move(callback_pair.first)));
     // DoomEntriesBetween does not invoke callback unless rv is ERR_IO_PENDING.
     if (rv != net::ERR_IO_PENDING) {
-      client_task_runner->PostTask(FROM_HERE,
-                                   base::BindOnce(copyable_callback, rv));
+      client_task_runner->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_pair.second), rv));
     }
   } else {
     client_task_runner->PostTask(FROM_HERE,
@@ -71,22 +71,23 @@ void ClearHttpCacheOnIOThread(
   // Clear QUIC server information from memory and the disk cache.
   http_cache->GetSession()
       ->quic_stream_factory()
-      ->ClearCachedStatesInCryptoConfig(base::Callback<bool(const GURL&)>());
+      ->ClearCachedStatesInCryptoConfig(
+          base::RepeatingCallback<bool(const GURL&)>());
 
   std::unique_ptr<disk_cache::Backend*> backend(
       new disk_cache::Backend*(nullptr));
   disk_cache::Backend** backend_ptr = backend.get();
 
-  net::CompletionRepeatingCallback doom_callback =
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&DoomHttpCache, std::move(backend), client_task_runner,
-                         delete_begin, delete_end, std::move(callback)));
+  auto doom_callback_pair = base::SplitOnceCallback(
+      base::BindOnce(&DoomHttpCache, std::move(backend), client_task_runner,
+                     delete_begin, delete_end, std::move(callback)));
 
-  const int rv = http_cache->GetBackend(backend_ptr, doom_callback);
+  const int rv =
+      http_cache->GetBackend(backend_ptr, std::move(doom_callback_pair.first));
   if (rv != net::ERR_IO_PENDING) {
     // GetBackend doesn't call the callback if it completes synchronously, so
     // call it directly here.
-    doom_callback.Run(rv);
+    std::move(doom_callback_pair.second).Run(rv);
   }
 }
 

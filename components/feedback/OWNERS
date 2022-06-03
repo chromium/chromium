@@ -1,7 +1,11 @@
+# Primary OWNERS
+jimmyxgong@chromium.org
+
+# Backup OWNERS
+zentaro@chromium.org
 afakhry@chromium.org
-jkardatzke@chromium.org
-zork@chromium.org
+iby@chromium.org
+mutexlox@chromium.org
 
-per-file anonymizer_tool*=jkardatzke@chromium.org
-
-# COMPONENT: Platform>Apps>Feedback
+per-file redaction_tool*=iby@chromium.org
+per-file redaction_tool*=mutexlox@chromium.org

@@ -11,11 +11,14 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -30,23 +33,26 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/shared_user_script_master.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/switches.h"
+#include "extensions/test/test_content_script_load_waiter.h"
 #include "net/base/filename_util.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 using extensions::FeatureSwitch;
@@ -55,6 +61,51 @@ using extensions::ExtensionRegistry;
 // This file contains high-level startup tests for the extensions system. We've
 // had many silly bugs where command line flags did not get propagated correctly
 // into the services, so we didn't start correctly.
+
+// A waiter for manifest content script loads. The waiter finishes when all of
+// its observed extensions have finished loading their manifest scripts.
+class ManifestContentScriptWaiter
+    : public extensions::UserScriptLoader::Observer {
+ public:
+  ManifestContentScriptWaiter() = default;
+  ~ManifestContentScriptWaiter() = default;
+  ManifestContentScriptWaiter(const ManifestContentScriptWaiter& other) =
+      delete;
+  ManifestContentScriptWaiter& operator=(
+      const ManifestContentScriptWaiter& other) = delete;
+
+  // Adds an extension for this waiter to wait on their next script load.
+  void Observe(extensions::UserScriptLoader* loader) {
+    scoped_observation_.AddObservation(loader);
+  }
+
+  // Start waiting for manifest scripts to be loaded.
+  void Wait() {
+    if (scoped_observation_.IsObservingAnySource())
+      run_loop_.Run();
+  }
+
+ private:
+  // UserScriptLoader::Observer:
+  void OnScriptsLoaded(extensions::UserScriptLoader* loader,
+                       content::BrowserContext* browser_context) override {
+    ASSERT_TRUE(loader->initial_load_complete());
+    scoped_observation_.RemoveObservation(loader);
+    if (!scoped_observation_.IsObservingAnySource())
+      run_loop_.Quit();
+  }
+
+  void OnUserScriptLoaderDestroyed(
+      extensions::UserScriptLoader* loader) override {
+    scoped_observation_.RemoveObservation(loader);
+  }
+
+  base::RunLoop run_loop_;
+
+  base::ScopedMultiSourceObservation<extensions::UserScriptLoader,
+                                     extensions::UserScriptLoader::Observer>
+      scoped_observation_{this};
+};
 
 class ExtensionStartupTestBase : public InProcessBrowserTest {
  public:
@@ -74,9 +125,9 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
           base::StringPrintf(
               "%s/%s/", chrome_prefs::internals::kSettingsEnforcementTrialName,
               chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement));
-#if defined(OFFICIAL_BUILD) && (defined(OS_WIN) || defined(OS_MACOSX))
-      // In Windows and MacOS official builds, it is not possible to disable
-      // settings enforcement.
+#if defined(OS_WIN) || defined(OS_MAC)
+      // In Windows and MacOS builds, it is not possible to disable settings
+      // enforcement.
       unauthenticated_load_allowed_ = false;
 #endif
     } else {
@@ -118,11 +169,11 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    EXPECT_TRUE(base::DeleteFile(preferences_file_, false));
+    EXPECT_TRUE(base::DeleteFile(preferences_file_));
 
     // TODO(phajdan.jr): Check return values of the functions below, carefully.
-    base::DeleteFileRecursively(user_scripts_dir_);
-    base::DeleteFileRecursively(extensions_dir_);
+    base::DeletePathRecursively(user_scripts_dir_);
+    base::DeletePathRecursively(extensions_dir_);
 
     InProcessBrowserTest::TearDown();
   }
@@ -140,25 +191,46 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
 
   void WaitForServicesToStart(int num_expected_extensions,
                               bool expect_extensions_enabled) {
+    extensions::ExtensionSystem* extension_system =
+        extensions::ExtensionSystem::Get(browser()->profile());
+    // Wait until the extension system is ready.
+    base::RunLoop run_loop;
+    extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
     if (!unauthenticated_load_allowed_)
       num_expected_extensions = 0;
     ASSERT_EQ(num_expected_extensions,
               GetNonComponentEnabledExtensionCount(browser()->profile()));
 
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
-    ASSERT_EQ(expect_extensions_enabled, service->extensions_enabled());
+    ASSERT_EQ(expect_extensions_enabled,
+              extension_system->extension_service()->extensions_enabled());
 
-    content::WindowedNotificationObserver user_scripts_observer(
-        extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-        content::NotificationService::AllSources());
-    extensions::SharedUserScriptMaster* master =
+    if (num_expected_extensions == 0)
+      return;
+
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(browser()->profile());
+
+    ManifestContentScriptWaiter waiter;
+    extensions::UserScriptManager* manager =
         extensions::ExtensionSystem::Get(browser()->profile())
-            ->shared_user_script_master();
-    if (!master->script_loader()->initial_load_complete())
-      user_scripts_observer.Wait();
-    ASSERT_TRUE(master->script_loader()->initial_load_complete());
+            ->user_script_manager();
+
+    for (const auto& extension : registry->enabled_extensions()) {
+      extensions::ExtensionUserScriptLoader* loader =
+          manager->GetUserScriptLoaderForExtension(extension->id());
+
+      // Do not wait for extensions which have no manifest scripts or have
+      // already finished a script load.
+      if (!extensions::ContentScriptsInfo::GetContentScripts(extension.get())
+               .empty() &&
+          !loader->initial_load_complete()) {
+        waiter.Observe(loader);
+      }
+    }
+
+    waiter.Wait();
   }
 
   void TestInjection(bool expect_css, bool expect_script) {
@@ -173,7 +245,8 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     test_file =
         test_file.AppendASCII("extensions").AppendASCII("test_file.html");
 
-    ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), net::FilePathToFileURL(test_file)));
 
     bool result = false;
     ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -204,23 +277,19 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
   int num_expected_extensions_;
 };
 
-
 // ExtensionsStartupTest
 // Ensures that we can startup the browser with --enable-extensions and some
 // extensions installed and see them run and do basic things.
-typedef ExtensionStartupTestBase ExtensionsStartupTest;
+typedef ExtensionStartupTestBase ExtensionStartupTest;
 
-// Broken in official builds, http://crbug.com/474659
-IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_Test) {
+IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, Test) {
   WaitForServicesToStart(num_expected_extensions_, true);
   TestInjection(true, true);
 }
 
-// Broken in official builds, http://crbug.com/474659
-// Sometimes times out on Mac.  http://crbug.com/48151
 // Tests that disallowing file access on an extension prevents it from injecting
 // script into a page with a file URL.
-IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_NoFileAccess) {
+IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, NoFileAccess) {
   WaitForServicesToStart(num_expected_extensions_, true);
 
   // Keep a separate list of extensions for which to disable file access, since
@@ -232,19 +301,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_NoFileAccess) {
   for (extensions::ExtensionSet::const_iterator it =
            registry->enabled_extensions().begin();
        it != registry->enabled_extensions().end(); ++it) {
-    if ((*it)->location() == extensions::Manifest::COMPONENT)
+    if ((*it)->location() == extensions::mojom::ManifestLocation::kComponent)
       continue;
     if (extensions::util::AllowFileAccess((*it)->id(), browser()->profile()))
       extension_list.push_back(it->get());
   }
 
+  extensions::UserScriptManager* manager =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->user_script_manager();
+
   for (size_t i = 0; i < extension_list.size(); ++i) {
-    content::WindowedNotificationObserver user_scripts_observer(
-        extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-        content::NotificationService::AllSources());
-    extensions::util::SetAllowFileAccess(extension_list[i]->id(),
-                                         browser()->profile(), false);
-    user_scripts_observer.Wait();
+    extensions::ExtensionId id = extension_list[i]->id();
+    extensions::TestExtensionRegistryObserver registry_observer(registry, id);
+    ManifestContentScriptWaiter waiter;
+
+    extensions::util::SetAllowFileAccess(id, browser()->profile(), false);
+    registry_observer.WaitForExtensionLoaded();
+    extensions::ExtensionUserScriptLoader* loader =
+        manager->GetUserScriptLoaderForExtension(id);
+    if (!loader->initial_load_complete()) {
+      waiter.Observe(loader);
+      waiter.Wait();
+    }
   }
 
   TestInjection(false, false);
@@ -272,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest, Test) {
   TestInjection(true, true);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
                        SigninProfileCommandLineExtensionsDontLoad) {
@@ -282,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
                    chromeos::ProfileHelper::GetSigninProfile()));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // ExtensionsLoadMultipleTest
 // Ensures that we can startup the browser with multiple extensions

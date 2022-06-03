@@ -19,6 +19,11 @@ class NotificationMetricsLoggerFactory
       content::BrowserContext* browser_context);
   static NotificationMetricsLoggerFactory* GetInstance();
 
+  NotificationMetricsLoggerFactory(const NotificationMetricsLoggerFactory&) =
+      delete;
+  NotificationMetricsLoggerFactory& operator=(
+      const NotificationMetricsLoggerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<NotificationMetricsLoggerFactory>;
 
@@ -29,8 +34,6 @@ class NotificationMetricsLoggerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMetricsLoggerFactory);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_FACTORY_H_

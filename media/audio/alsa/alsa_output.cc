@@ -37,12 +37,12 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -75,7 +75,7 @@ static const ChannelLayout kDefaultOutputChannelLayout = CHANNEL_LAYOUT_STEREO;
 // http://0pointer.de/blog/projects/guide-to-sound-apis.html
 //
 // This function makes a best guess at the specific > 2 channel device name
-// based on the number of channels requested.  NULL is returned if no device
+// based on the number of channels requested.  nullptr is returned if no device
 // can be found to match the channel numbers.  In this case, using
 // kDefaultDevice is probably the best bet.
 //
@@ -103,7 +103,7 @@ static const char* GuessSpecificDeviceName(uint32_t channels) {
       return "surround40";
 
     default:
-      return NULL;
+      return nullptr;
   }
 }
 
@@ -156,7 +156,7 @@ AlsaPcmOutputStream::AlsaPcmOutputStream(const std::string& device_name,
       bytes_per_frame_(params.GetBytesPerFrame(kSampleFormat)),
       packet_size_(params.GetBytesPerBuffer(kSampleFormat)),
       latency_(std::max(
-          base::TimeDelta::FromMicroseconds(kMinLatencyMicros),
+          base::Microseconds(kMinLatencyMicros),
           AudioTimestampHelper::FramesToTime(params.frames_per_buffer() * 2,
                                              sample_rate_))),
       bytes_per_output_frame_(bytes_per_frame_),
@@ -165,11 +165,11 @@ AlsaPcmOutputStream::AlsaPcmOutputStream(const std::string& device_name,
       wrapper_(wrapper),
       manager_(manager),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      playback_handle_(NULL),
+      playback_handle_(nullptr),
       frames_per_packet_(packet_size_ / bytes_per_frame_),
       state_(kCreated),
       volume_(1.0f),
-      source_callback_(NULL),
+      source_callback_(nullptr),
       audio_bus_(AudioBus::Create(params)),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(manager_->GetTaskRunner()->BelongsToCurrentThread());
@@ -221,7 +221,7 @@ bool AlsaPcmOutputStream::Open() {
   }
 
   // Finish initializing the stream if the device was opened successfully.
-  if (playback_handle_ == NULL) {
+  if (playback_handle_ == nullptr) {
     stop_stream_ = true;
     TransitionTo(kInError);
     return false;
@@ -230,7 +230,7 @@ bool AlsaPcmOutputStream::Open() {
       channel_mixer_ ? mixed_audio_bus_->channels() * bytes_per_sample_
                      : bytes_per_frame_;
   uint32_t output_packet_size = frames_per_packet_ * bytes_per_output_frame_;
-  buffer_.reset(new SeekableBuffer(0, output_packet_size));
+  buffer_ = std::make_unique<SeekableBuffer>(0, output_packet_size);
 
   // Get alsa buffer size.
   snd_pcm_uframes_t buffer_size;
@@ -260,7 +260,7 @@ void AlsaPcmOutputStream::Close() {
     if (alsa_util::CloseDevice(wrapper_, playback_handle_) < 0) {
       LOG(WARNING) << "Unable to close audio device. Leaking handle.";
     }
-    playback_handle_ = NULL;
+    playback_handle_ = nullptr;
 
     // Release the buffer.
     buffer_.reset();
@@ -330,7 +330,7 @@ void AlsaPcmOutputStream::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Reset the callback, so that it is not called anymore.
-  set_source_callback(NULL);
+  set_source_callback(nullptr);
   weak_factory_.InvalidateWeakPtrs();
 
   TransitionTo(kIsStopped);
@@ -525,7 +525,7 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
     // Polling in this manner allows us to ensure a more consistent callback
     // schedule.  In testing this yields a variance of +/- 5ms versus the non-
     // polling strategy which is around +/- 30ms and bimodal.
-    next_fill_time = base::TimeDelta::FromMilliseconds(5);
+    next_fill_time = base::Milliseconds(5);
   } else if (available_frames < kTargetFramesAvailable) {
     // Schedule the next write for the moment when the available buffer of the
     // sound card hits |kTargetFramesAvailable|.
@@ -538,7 +538,7 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
   } else {
     // The sound card has frames available, but our source is exhausted, so
     // avoid busy looping by delaying a bit.
-    next_fill_time = base::TimeDelta::FromMilliseconds(10);
+    next_fill_time = base::Milliseconds(10);
   }
 
   task_runner_->PostDelayedTask(FROM_HERE,
@@ -559,19 +559,19 @@ std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {
     return std::string();
 
   std::string guessed_device;
-  void** hints = NULL;
+  void** hints = nullptr;
   int error = wrapper_->DeviceNameHint(kGetAllDevices,
                                        kPcmInterfaceName,
                                        &hints);
   if (error == 0) {
     // NOTE: Do not early return from inside this if statement.  The
     // hints above need to be freed.
-    for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+    for (void** hint_iter = hints; *hint_iter != nullptr; hint_iter++) {
       // Only examine devices that are output capable..  Valid values are
-      // "Input", "Output", and NULL which means both input and output.
+      // "Input", "Output", and nullptr which means both input and output.
       std::unique_ptr<char, base::FreeDeleter> io(
           wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
-      if (io != NULL && strcmp(io.get(), "Input") == 0)
+      if (io != nullptr && strcmp(io.get(), "Input") == 0)
         continue;
 
       // Attempt to select the closest device for number of channels.
@@ -585,7 +585,7 @@ std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {
 
     // Destroy the hint now that we're done with it.
     wrapper_->DeviceNameFreeHint(hints);
-    hints = NULL;
+    hints = nullptr;
   } else {
     LOG(ERROR) << "Unable to get hints for devices: "
                << wrapper_->StrError(error);
@@ -673,24 +673,22 @@ snd_pcm_t* AlsaPcmOutputStream::AutoSelectDevice(unsigned int latency) {
   //   4) Fallback to kDefaultDevice.
   //   5) If that fails too, try the "plug:" version of kDefaultDevice.
   //   6) Give up.
-  snd_pcm_t* handle = NULL;
+  snd_pcm_t* handle = nullptr;
   device_name_ = FindDeviceForChannels(channels_);
 
   // Step 1.
   if (!device_name_.empty()) {
-    if ((handle = alsa_util::OpenPlaybackDevice(wrapper_, device_name_.c_str(),
-                                                channels_, sample_rate_,
-                                                pcm_format_,
-                                                latency)) != NULL) {
+    if ((handle = alsa_util::OpenPlaybackDevice(
+             wrapper_, device_name_.c_str(), channels_, sample_rate_,
+             pcm_format_, latency)) != nullptr) {
       return handle;
     }
 
     // Step 2.
     device_name_ = kPlugPrefix + device_name_;
-    if ((handle = alsa_util::OpenPlaybackDevice(wrapper_, device_name_.c_str(),
-                                                channels_, sample_rate_,
-                                                pcm_format_,
-                                                latency)) != NULL) {
+    if ((handle = alsa_util::OpenPlaybackDevice(
+             wrapper_, device_name_.c_str(), channels_, sample_rate_,
+             pcm_format_, latency)) != nullptr) {
       return handle;
     }
 
@@ -700,7 +698,7 @@ snd_pcm_t* AlsaPcmOutputStream::AutoSelectDevice(unsigned int latency) {
       device_name_ = kPlugPrefix + device_name_;
       if ((handle = alsa_util::OpenPlaybackDevice(
                wrapper_, device_name_.c_str(), channels_, sample_rate_,
-               pcm_format_, latency)) != NULL) {
+               pcm_format_, latency)) != nullptr) {
         return handle;
       }
     }
@@ -712,8 +710,8 @@ snd_pcm_t* AlsaPcmOutputStream::AutoSelectDevice(unsigned int latency) {
   // downmixing.
   uint32_t default_channels = channels_;
   if (default_channels > 2) {
-    channel_mixer_.reset(
-        new ChannelMixer(channel_layout_, kDefaultOutputChannelLayout));
+    channel_mixer_ = std::make_unique<ChannelMixer>(
+        channel_layout_, kDefaultOutputChannelLayout);
     default_channels = 2;
     mixed_audio_bus_ = AudioBus::Create(
         default_channels, audio_bus_->frames());
@@ -722,22 +720,22 @@ snd_pcm_t* AlsaPcmOutputStream::AutoSelectDevice(unsigned int latency) {
   // Step 4.
   device_name_ = kDefaultDevice;
   if ((handle = alsa_util::OpenPlaybackDevice(
-      wrapper_, device_name_.c_str(), default_channels, sample_rate_,
-      pcm_format_, latency)) != NULL) {
+           wrapper_, device_name_.c_str(), default_channels, sample_rate_,
+           pcm_format_, latency)) != nullptr) {
     return handle;
   }
 
   // Step 5.
   device_name_ = kPlugPrefix + device_name_;
   if ((handle = alsa_util::OpenPlaybackDevice(
-      wrapper_, device_name_.c_str(), default_channels, sample_rate_,
-      pcm_format_, latency)) != NULL) {
+           wrapper_, device_name_.c_str(), default_channels, sample_rate_,
+           pcm_format_, latency)) != nullptr) {
     return handle;
   }
 
   // Unable to open any device.
   device_name_.clear();
-  return NULL;
+  return nullptr;
 }
 
 bool AlsaPcmOutputStream::CanTransitionTo(InternalState to) {
@@ -800,7 +798,7 @@ void AlsaPcmOutputStream::RunErrorCallback(int code) {
     source_callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
-// Changes the AudioSourceCallback to proxy calls to.  Pass in NULL to
+// Changes the AudioSourceCallback to proxy calls to.  Pass in nullptr to
 // release ownership of the currently registered callback.
 void AlsaPcmOutputStream::set_source_callback(AudioSourceCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

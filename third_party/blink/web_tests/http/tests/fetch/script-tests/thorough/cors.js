@@ -5,6 +5,8 @@ if (self.importScripts) {
 
 // Tests for CORS check and CORS filtered response.
 
+var {BASE_ORIGIN, OTHER_BASE_URL} = get_thorough_test_options();
+
 var TEST_TARGETS = [
   // CORS test
 

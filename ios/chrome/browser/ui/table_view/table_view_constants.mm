@@ -8,4 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* const kTableViewIllustratedEmptyViewID =
+    @"TableViewIllustratedEmptyView";
 NSString* const kTableViewEmptyViewID = @"TableViewEmptyView";

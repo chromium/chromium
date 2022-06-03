@@ -20,7 +20,7 @@ namespace extensions {
 // Tests that the ExtensionEvents enum in enums.xml exactly matches the
 // C++ enum definition.
 TEST(ExtensionEventHistogramValueTest, CheckEnums) {
-  base::Optional<base::HistogramEnumEntryMap> enums =
+  absl::optional<base::HistogramEnumEntryMap> enums =
       base::ReadEnumFromEnumsXml("ExtensionEvents");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of

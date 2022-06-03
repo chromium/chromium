@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"

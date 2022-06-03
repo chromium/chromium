@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -26,6 +25,8 @@ namespace blink {
 class WebMediaStreamDeviceObserver;
 }  // namespace blink
 
+using blink::mojom::MediaDeviceType;
+
 namespace content {
 
 class PepperMediaDeviceManager
@@ -37,6 +38,10 @@ class PepperMediaDeviceManager
  public:
   static base::WeakPtr<PepperMediaDeviceManager> GetForRenderFrame(
       RenderFrame* render_frame);
+
+  PepperMediaDeviceManager(const PepperMediaDeviceManager&) = delete;
+  PepperMediaDeviceManager& operator=(const PepperMediaDeviceManager&) = delete;
+
   ~PepperMediaDeviceManager() override;
 
   // PepperDeviceEnumerationHostHelper::Delegate implementation:
@@ -49,7 +54,7 @@ class PepperMediaDeviceManager
 
   // blink::mojom::MediaDevicesListener implementation.
   void OnDevicesChanged(
-      blink::MediaDeviceType type,
+      MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& device_infos) override;
 
   using OpenDeviceCallback =
@@ -95,7 +100,7 @@ class PepperMediaDeviceManager
 
   void DevicesEnumerated(
       DevicesOnceCallback callback,
-      blink::MediaDeviceType type,
+      MediaDeviceType type,
       const std::vector<blink::WebMediaDeviceInfoArray>& enumeration,
       std::vector<blink::mojom::VideoInputDeviceCapabilitiesPtr>
           video_input_capabilities,
@@ -112,15 +117,14 @@ class PepperMediaDeviceManager
 
   using Subscription = std::pair<size_t, DevicesCallback>;
   using SubscriptionList = std::vector<Subscription>;
-  SubscriptionList device_change_subscriptions_[blink::NUM_MEDIA_DEVICE_TYPES];
+  SubscriptionList device_change_subscriptions_[static_cast<size_t>(
+      MediaDeviceType::NUM_MEDIA_DEVICE_TYPES)];
 
   mojo::Remote<blink::mojom::MediaStreamDispatcherHost> dispatcher_host_;
   mojo::Remote<blink::mojom::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
 
   mojo::ReceiverSet<blink::mojom::MediaDevicesListener> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperMediaDeviceManager);
 };
 
 }  // namespace content

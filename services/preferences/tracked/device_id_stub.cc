@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "services/preferences/tracked/device_id.h"
 
 MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {

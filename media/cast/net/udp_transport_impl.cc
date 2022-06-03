@@ -5,6 +5,7 @@
 #include "media/cast/net/udp_transport_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -54,7 +55,7 @@ UdpTransportImpl::UdpTransportImpl(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_thread_proxy,
     const net::IPEndPoint& local_end_point,
     const net::IPEndPoint& remote_end_point,
-    const CastTransportStatusCallback& status_callback)
+    CastTransportStatusCallback status_callback)
     : io_thread_proxy_(io_thread_proxy),
       local_addr_(local_end_point),
       remote_addr_(remote_end_point),
@@ -67,7 +68,7 @@ UdpTransportImpl::UdpTransportImpl(
       next_dscp_value_(net::DSCP_NO_CHANGE),
       send_buffer_size_(media::cast::kMaxBurstSize *
                         media::cast::kMaxIpPacketSize),
-      status_callback_(status_callback),
+      status_callback_(std::move(status_callback)),
       bytes_sent_(0) {
   DCHECK(!IsEmpty(local_end_point) || !IsEmpty(remote_end_point));
 }
@@ -75,7 +76,7 @@ UdpTransportImpl::UdpTransportImpl(
 UdpTransportImpl::~UdpTransportImpl() = default;
 
 void UdpTransportImpl::StartReceiving(
-    const PacketReceiverCallbackWithStatus& packet_receiver) {
+    PacketReceiverCallbackWithStatus packet_receiver) {
   DCHECK(io_thread_proxy_->RunsTasksInCurrentSequence());
 
   if (!udp_socket_) {
@@ -83,7 +84,7 @@ void UdpTransportImpl::StartReceiving(
     return;
   }
 
-  packet_receiver_ = packet_receiver;
+  packet_receiver_ = std::move(packet_receiver);
   udp_socket_->SetMulticastLoopbackMode(true);
   if (!IsEmpty(local_addr_)) {
     if (udp_socket_->Open(local_addr_.GetFamily()) < 0 ||
@@ -174,13 +175,13 @@ void UdpTransportImpl::ReceiveNextPacket(int length_or_status) {
   // the future when a packet is ready.
   while (true) {
     if (length_or_status == net::ERR_IO_PENDING) {
-      next_packet_.reset(new Packet(media::cast::kMaxIpPacketSize));
+      next_packet_ = std::make_unique<Packet>(media::cast::kMaxIpPacketSize);
       recv_buf_ = base::MakeRefCounted<net::WrappedIOBuffer>(
           reinterpret_cast<char*>(&next_packet_->front()));
       length_or_status = udp_socket_->RecvFrom(
           recv_buf_.get(), media::cast::kMaxIpPacketSize, &recv_addr_,
-          base::BindRepeating(&UdpTransportImpl::ReceiveNextPacket,
-                              weak_factory_.GetWeakPtr()));
+          base::BindOnce(&UdpTransportImpl::ReceiveNextPacket,
+                         weak_factory_.GetWeakPtr()));
       if (length_or_status == net::ERR_IO_PENDING) {
         receive_pending_ = true;
         return;
@@ -220,8 +221,7 @@ void UdpTransportImpl::ReceiveNextPacket(int length_or_status) {
   }
 }
 
-bool UdpTransportImpl::SendPacket(PacketRef packet,
-                                  const base::RepeatingClosure& cb) {
+bool UdpTransportImpl::SendPacket(PacketRef packet, base::OnceClosure cb) {
   DCHECK(io_thread_proxy_->RunsTasksInCurrentSequence());
   if (!udp_socket_)
     return true;
@@ -252,8 +252,9 @@ bool UdpTransportImpl::SendPacket(PacketRef packet,
       reinterpret_cast<char*>(&packet->data.front()));
 
   int result;
-  base::RepeatingCallback<void(int)> callback = base::BindRepeating(
-      &UdpTransportImpl::OnSent, weak_factory_.GetWeakPtr(), buf, packet, cb);
+  net::CompletionOnceCallback callback =
+      base::BindOnce(&UdpTransportImpl::OnSent, weak_factory_.GetWeakPtr(), buf,
+                     packet, std::move(cb));
   if (client_connected_) {
     // If we called Connect() before we must call Write() instead of
     // SendTo(). Otherwise on some platforms we might get
@@ -288,11 +289,11 @@ bool UdpTransportImpl::SendPacket(PacketRef packet,
 
     result =
         udp_socket_->Write(buf.get(), static_cast<int>(packet->data.size()),
-                           callback, traffic_annotation);
+                           std::move(callback), traffic_annotation);
   } else if (!IsEmpty(remote_addr_)) {
     result =
         udp_socket_->SendTo(buf.get(), static_cast<int>(packet->data.size()),
-                            remote_addr_, callback);
+                            remote_addr_, std::move(callback));
   } else {
     VLOG(1) << "Failed to send packet; socket is neither bound nor "
             << "connected.";
@@ -313,7 +314,7 @@ int64_t UdpTransportImpl::GetBytesSent() {
 
 void UdpTransportImpl::OnSent(const scoped_refptr<net::IOBuffer>& buf,
                               PacketRef packet,
-                              const base::RepeatingClosure& cb,
+                              base::OnceClosure cb,
                               int result) {
   DCHECK(io_thread_proxy_->RunsTasksInCurrentSequence());
 
@@ -324,7 +325,7 @@ void UdpTransportImpl::OnSent(const scoped_refptr<net::IOBuffer>& buf,
   ScheduleReceiveNextPacket();
 
   if (!cb.is_null()) {
-    cb.Run();
+    std::move(cb).Run();
   }
 }
 
@@ -350,7 +351,7 @@ void UdpTransportImpl::StartSending(
     mojo::ScopedDataPipeConsumerHandle packet_pipe) {
   DCHECK(packet_pipe.is_valid());
 
-  reader_.reset(new UdpPacketPipeReader(std::move(packet_pipe)));
+  reader_ = std::make_unique<UdpPacketPipeReader>(std::move(packet_pipe));
   ReadNextPacketToSend();
 }
 

@@ -5,7 +5,6 @@
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/big_endian.h"
@@ -29,12 +28,8 @@ namespace gcm {
 namespace {
 
 const char kEncryptionProperty[] = "encryption";
-const char kContentEncodingProperty[] = "content-encoding";
 const char kCryptoKeyProperty[] = "crypto-key";
 const char kInternalRawData[] = "_googRawData";
-
-// Content coding name defined by ietf-httpbis-encryption-encoding.
-const char kContentCodingAes128Gcm[] = "aes128gcm";
 
 // Directory in the GCM Store in which the encryption database will be stored.
 const base::FilePath::CharType kEncryptionDirectoryName[] =
@@ -52,6 +47,13 @@ GCMEncryptionProvider::GCMEncryptionProvider() {}
 
 GCMEncryptionProvider::~GCMEncryptionProvider() = default;
 
+// static
+const char GCMEncryptionProvider::kContentEncodingProperty[] =
+    "content-encoding";
+
+// static
+const char GCMEncryptionProvider::kContentCodingAes128Gcm[] = "aes128gcm";
+
 void GCMEncryptionProvider::Init(
     const base::FilePath& store_path,
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner) {
@@ -64,8 +66,8 @@ void GCMEncryptionProvider::Init(
   if (!store_path.empty())
     encryption_store_path = store_path.Append(kEncryptionDirectoryName);
 
-  key_store_.reset(
-      new GCMKeyStore(encryption_store_path, blocking_task_runner));
+  key_store_ = std::make_unique<GCMKeyStore>(encryption_store_path,
+                                             blocking_task_runner);
 }
 
 void GCMEncryptionProvider::GetEncryptionInfo(
@@ -128,13 +130,12 @@ bool GCMEncryptionProvider::IsEncryptedMessage(
   return message.raw_data.size() > 0;
 }
 
-void GCMEncryptionProvider::DecryptMessage(
-    const std::string& app_id,
-    const IncomingMessage& message,
-    const DecryptMessageCallback& callback) {
+void GCMEncryptionProvider::DecryptMessage(const std::string& app_id,
+                                           const IncomingMessage& message,
+                                           DecryptMessageCallback callback) {
   DCHECK(key_store_);
   if (!IsEncryptedMessage(message)) {
-    callback.Run(GCMDecryptionResult::UNENCRYPTED, message);
+    std::move(callback).Run(GCMDecryptionResult::UNENCRYPTED, message);
     return;
   }
 
@@ -158,8 +159,8 @@ void GCMEncryptionProvider::DecryptMessage(
           !(parser = std::make_unique<MessagePayloadParser>(raw_data))
                ->IsValid()) {
         DLOG(ERROR) << "Unable to parse the message's binary header";
-        callback.Run(parser->GetFailureReason(),
-                     CreateMessageWithId(message.message_id));
+        std::move(callback).Run(parser->GetFailureReason(),
+                                CreateMessageWithId(message.message_id));
         return;
       }
     }
@@ -183,16 +184,16 @@ void GCMEncryptionProvider::DecryptMessage(
         encryption_header->second.begin(), encryption_header->second.end());
     if (!encryption_header_iterator.GetNext()) {
       DLOG(ERROR) << "Unable to parse the value of the Encryption header";
-      callback.Run(GCMDecryptionResult::INVALID_ENCRYPTION_HEADER,
-                   CreateMessageWithId(message.message_id));
+      std::move(callback).Run(GCMDecryptionResult::INVALID_ENCRYPTION_HEADER,
+                              CreateMessageWithId(message.message_id));
       return;
     }
 
     if (encryption_header_iterator.salt().size() !=
         GCMMessageCryptographer::kSaltSize) {
       DLOG(ERROR) << "Invalid values supplied in the Encryption header";
-      callback.Run(GCMDecryptionResult::INVALID_ENCRYPTION_HEADER,
-                   CreateMessageWithId(message.message_id));
+      std::move(callback).Run(GCMDecryptionResult::INVALID_ENCRYPTION_HEADER,
+                              CreateMessageWithId(message.message_id));
       return;
     }
 
@@ -203,8 +204,8 @@ void GCMEncryptionProvider::DecryptMessage(
         crypto_key_header->second.begin(), crypto_key_header->second.end());
     if (!crypto_key_header_iterator.GetNext()) {
       DLOG(ERROR) << "Unable to parse the value of the Crypto-Key header";
-      callback.Run(GCMDecryptionResult::INVALID_CRYPTO_KEY_HEADER,
-                   CreateMessageWithId(message.message_id));
+      std::move(callback).Run(GCMDecryptionResult::INVALID_CRYPTO_KEY_HEADER,
+                              CreateMessageWithId(message.message_id));
       return;
     }
 
@@ -232,8 +233,8 @@ void GCMEncryptionProvider::DecryptMessage(
 
     if (!valid_crypto_key_header) {
       DLOG(ERROR) << "Invalid values supplied in the Crypto-Key header";
-      callback.Run(GCMDecryptionResult::INVALID_CRYPTO_KEY_HEADER,
-                   CreateMessageWithId(message.message_id));
+      std::move(callback).Run(GCMDecryptionResult::INVALID_CRYPTO_KEY_HEADER,
+                              CreateMessageWithId(message.message_id));
       return;
     }
 
@@ -250,7 +251,7 @@ void GCMEncryptionProvider::DecryptMessage(
                      weak_ptr_factory_.GetWeakPtr(), message.message_id,
                      message.collapse_key, message.sender_id, std::move(salt),
                      std::move(public_key), record_size, std::move(ciphertext),
-                     version, callback));
+                     version, std::move(callback)));
 }  // namespace gcm
 
 void GCMEncryptionProvider::EncryptMessage(const std::string& app_id,
@@ -293,20 +294,21 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
     uint32_t record_size,
     const std::string& ciphertext,
     GCMMessageCryptographer::Version version,
-    const DecryptMessageCallback& callback,
+    DecryptMessageCallback callback,
     std::unique_ptr<crypto::ECPrivateKey> key,
     const std::string& auth_secret) {
   if (!key) {
     DLOG(ERROR) << "Unable to retrieve the keys for the incoming message.";
-    callback.Run(GCMDecryptionResult::NO_KEYS, CreateMessageWithId(message_id));
+    std::move(callback).Run(GCMDecryptionResult::NO_KEYS,
+                            CreateMessageWithId(message_id));
     return;
   }
 
   std::string shared_secret;
   if (!ComputeSharedP256Secret(*key, public_key, &shared_secret)) {
     DLOG(ERROR) << "Unable to calculate the shared secret.";
-    callback.Run(GCMDecryptionResult::INVALID_SHARED_SECRET,
-                 CreateMessageWithId(message_id));
+    std::move(callback).Run(GCMDecryptionResult::INVALID_SHARED_SECRET,
+                            CreateMessageWithId(message_id));
     return;
   }
 
@@ -321,8 +323,8 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
                              auth_secret, salt, ciphertext, record_size,
                              &plaintext)) {
     DLOG(ERROR) << "Unable to decrypt the incoming data.";
-    callback.Run(GCMDecryptionResult::INVALID_PAYLOAD,
-                 CreateMessageWithId(message_id));
+    std::move(callback).Run(GCMDecryptionResult::INVALID_PAYLOAD,
+                            CreateMessageWithId(message_id));
     return;
   }
 
@@ -337,10 +339,10 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
   // to make sure that we don't end up in an infinite decryption loop.
   DCHECK_EQ(0u, decrypted_message.data.size());
 
-  callback.Run(version == GCMMessageCryptographer::Version::DRAFT_03
-                   ? GCMDecryptionResult::DECRYPTED_DRAFT_03
-                   : GCMDecryptionResult::DECRYPTED_DRAFT_08,
-               decrypted_message);
+  std::move(callback).Run(version == GCMMessageCryptographer::Version::DRAFT_03
+                              ? GCMDecryptionResult::DECRYPTED_DRAFT_03
+                              : GCMDecryptionResult::DECRYPTED_DRAFT_08,
+                          std::move(decrypted_message));
 }
 
 void GCMEncryptionProvider::EncryptMessageWithKey(

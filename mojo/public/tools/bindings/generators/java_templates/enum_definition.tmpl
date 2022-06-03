@@ -1,19 +1,25 @@
-{%- macro enum_value(enum, field, index) -%}
-{%- if field.value -%}
-{{field.value|expression_to_text('i32')}};
-{%- elif index == 0 -%}
-{{field.numeric_value}};
-{%- else -%}
-{{field.numeric_value}}; // {{enum.fields[index - 1]|name}} + 1
-{%- endif -%}
-{%- endmacro -%}
-
 {%- macro enum_def(enum, top_level) -%}
 public {{ 'static ' if not top_level }}final class {{enum|name}} {
     private static final boolean IS_EXTENSIBLE = {% if enum.extensible %}true{% else %}false{% endif %};
+    @IntDef({
 {% for field in enum.fields %}
-    public static final int {{field|name}} = {{enum_value(enum, field, loop.index0)}}
+        {{enum|name}}.{{field|name}}
+{%-   if not loop.last %},
+{%-   endif %}
+{%- endfor %}})
+    public @interface EnumType {}
+{% for field in enum.fields %}
+    public static final int {{field|name}} = {{field.numeric_value}};
 {%- endfor %}
+{%- if enum.min_value is not none %}
+    public static final int MIN_VALUE = {{enum.min_value}};
+{%- endif %}
+{%- if enum.max_value is not none %}
+    public static final int MAX_VALUE = {{enum.max_value}};
+{%- endif %}
+{%- if enum.default_field %}
+    public static final int DEFAULT_VALUE = {{enum.default_field.numeric_value}};
+{%- endif %}
 
 {%- if enum|covers_continuous_range %}
 
@@ -38,6 +44,17 @@ public {{ 'static ' if not top_level }}final class {{enum|name}} {
     public static void validate(int value) {
         if (IS_EXTENSIBLE || isKnownValue(value)) return;
         throw new org.chromium.mojo.bindings.DeserializationException("Invalid enum value.");
+    }
+
+    public static int toKnownValue(int value) {
+{%- if enum.extensible and enum.default_field %}
+      if (isKnownValue(value)) {
+        return value;
+      }
+      return DEFAULT_VALUE;
+{%- else %}
+      return value;
+{%- endif %}
     }
 
     private {{enum|name}}() {}

@@ -100,6 +100,24 @@ TEST_F(CPUTemperatureReaderTest, SingleDirWithName) {
   EXPECT_EQ("t3", cpu_temp_readings[0].label);
 }
 
+TEST_F(CPUTemperatureReaderTest, SingleDirWithDeviceSubdir) {
+  base::FilePath subdir = CreateHwmonSubdir("hwmon0");
+  CreateFileWithContents(subdir.Append("temp1_input"), "10000\n");
+  base::FilePath device_subdir = subdir.Append("device");
+  base::CreateDirectory(device_subdir);
+  CreateFileWithContents(device_subdir.Append("temp1_input"), "20000\n");
+
+  std::vector<CPUTemperatureInfo> cpu_temp_readings =
+      reader_.GetCPUTemperatures();
+
+  ASSERT_EQ(2U, cpu_temp_readings.size());
+  EXPECT_EQ(10.0f, cpu_temp_readings[0].temp_celsius);
+  EXPECT_EQ(subdir.Append("temp1_label").value(), cpu_temp_readings[0].label);
+  EXPECT_EQ(20.0f, cpu_temp_readings[1].temp_celsius);
+  EXPECT_EQ(device_subdir.Append("temp1_label").value(),
+            cpu_temp_readings[1].label);
+}
+
 TEST_F(CPUTemperatureReaderTest, MultipleDirs) {
   base::FilePath subdir0 = CreateHwmonSubdir("hwmon0");
   CreateFileWithContents(subdir0.Append("temp1_input"), "10000\n");

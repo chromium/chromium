@@ -194,8 +194,8 @@ class YahooAnswersMobile2018Page(TopRealWorldMobilePage):
         shared_page_state_class=shared_page_state_class)
 
   def RunNavigateSteps(self, action_runner):
-   super(YahooAnswersMobile2018Page, self).RunNavigateSteps(action_runner)
-   action_runner.ScrollElement(selector='#page_scrollable')
+    super(YahooAnswersMobile2018Page, self).RunNavigateSteps(action_runner)
+    action_runner.ScrollElement(selector='#page_scrollable')
 
 
 class GoogleNewsMobile2018Page(TopRealWorldMobilePage):

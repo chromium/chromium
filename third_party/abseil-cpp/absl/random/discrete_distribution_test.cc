@@ -29,6 +29,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
+#include "absl/random/internal/pcg_engine.h"
 #include "absl/random/internal/sequence_urbg.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_cat.h"
@@ -98,6 +99,7 @@ TYPED_TEST(DiscreteDistributionTypeTest, Constructor) {
 }
 
 TEST(DiscreteDistributionTest, InitDiscreteDistribution) {
+  using testing::_;
   using testing::Pair;
 
   {
@@ -110,8 +112,8 @@ TEST(DiscreteDistributionTest, InitDiscreteDistribution) {
     // Each bucket is p=1/3, so bucket 0 will send half it's traffic
     // to bucket 2, while the rest will retain all of their traffic.
     EXPECT_THAT(q, testing::ElementsAre(Pair(0.5, 2),  //
-                                        Pair(1.0, 1),  //
-                                        Pair(1.0, 2)));
+                                        Pair(1.0, _),  //
+                                        Pair(1.0, _)));
   }
 
   {
@@ -134,7 +136,7 @@ TEST(DiscreteDistributionTest, InitDiscreteDistribution) {
 
     EXPECT_THAT(q, testing::ElementsAre(Pair(b0, 3),   //
                                         Pair(b1, 3),   //
-                                        Pair(1.0, 2),  //
+                                        Pair(1.0, _),  //
                                         Pair(b3, 2),   //
                                         Pair(b1, 3)));
   }
@@ -156,7 +158,10 @@ TEST(DiscreteDistributionTest, ChiSquaredTest50) {
   std::iota(std::begin(weights), std::end(weights), 1);
   absl::discrete_distribution<int> dist(std::begin(weights), std::end(weights));
 
-  absl::InsecureBitGen rng;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng(0x2B7E151628AED2A6);
 
   std::vector<int32_t> counts(kBuckets, 0);
   for (size_t i = 0; i < kTrials; i++) {

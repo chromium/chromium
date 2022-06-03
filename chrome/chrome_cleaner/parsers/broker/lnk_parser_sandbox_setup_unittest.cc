@@ -17,7 +17,6 @@
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/shortcut_parser_api.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/sandboxed_lnk_parser_test_util.h"
 #include "chrome/chrome_cleaner/parsers/target/sandbox_setup.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,8 +78,10 @@ TEST_F(LnkParserSandboxSetupTest, ParseCorrectShortcutSandboxedTest) {
 
   base::win::ShortcutProperties shortcut_properties;
   shortcut_properties.set_target(not_lnk_file_path_);
-  shortcut_properties.set_icon(not_lnk_file_path_, /*icon_index=*/0);
-  const base::string16 lnk_arguments = L"argument1 -f -t -a -o";
+  shortcut_properties.set_working_dir(temp_dir_.GetPath());
+  const int32_t icon_index = 0;
+  shortcut_properties.set_icon(not_lnk_file_path_, icon_index);
+  const std::wstring lnk_arguments = L"argument1 -f -t -a -o";
   shortcut_properties.set_arguments(lnk_arguments);
 
   base::win::ScopedHandle lnk_file_handle = CreateAndOpenShortcutInTempDir(
@@ -98,7 +99,8 @@ TEST_F(LnkParserSandboxSetupTest, ParseCorrectShortcutSandboxedTest) {
 
   ASSERT_EQ(test_result_code_, mojom::LnkParsingResult::SUCCESS);
   EXPECT_TRUE(CheckParsedShortcut(test_parsed_shortcut_, not_lnk_file_path_,
-                                  lnk_arguments, not_lnk_file_path_));
+                                  temp_dir_.GetPath(), lnk_arguments,
+                                  not_lnk_file_path_, icon_index));
 }
 
 TEST_F(LnkParserSandboxSetupTest, ParseIncorrectShortcutSandboxedTest) {
@@ -120,7 +122,8 @@ TEST_F(LnkParserSandboxSetupTest, ParseIncorrectShortcutSandboxedTest) {
 
   ASSERT_NE(test_result_code_, mojom::LnkParsingResult::SUCCESS);
   EXPECT_TRUE(CheckParsedShortcut(test_parsed_shortcut_, base::FilePath(L""),
-                                  L"", base::FilePath(L"")));
+                                  base::FilePath(L""), L"", base::FilePath(L""),
+                                  /*icon_index=*/-1));
 }
 
 }  // namespace chrome_cleaner

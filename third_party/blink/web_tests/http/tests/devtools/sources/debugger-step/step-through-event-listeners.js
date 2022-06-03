@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that debugger will pause in all event listeners when corresponding breakpoint is set. Bug 77331.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" id="test">
@@ -39,8 +39,8 @@
     SourcesTestRunner.waitUntilPaused(paused1);
     TestRunner.evaluateInPageWithTimeout('addListenerAndClick()');
 
-    function paused1(callFrames) {
-      SourcesTestRunner.captureStackTrace(callFrames);
+    async function paused1(callFrames) {
+      await SourcesTestRunner.captureStackTrace(callFrames);
       SourcesTestRunner.resumeExecution(resumed1);
     }
 
@@ -48,8 +48,8 @@
       SourcesTestRunner.waitUntilPaused(paused2);
     }
 
-    function paused2(callFrames) {
-      SourcesTestRunner.captureStackTrace(callFrames);
+    async function paused2(callFrames) {
+      await SourcesTestRunner.captureStackTrace(callFrames);
       SourcesTestRunner.resumeExecution(resumed2);
     }
 
@@ -57,8 +57,8 @@
       SourcesTestRunner.waitUntilPaused(paused3);
     }
 
-    function paused3(callFrames) {
-      SourcesTestRunner.captureStackTrace(callFrames);
+    async function paused3(callFrames) {
+      await SourcesTestRunner.captureStackTrace(callFrames);
       SourcesTestRunner.resumeExecution(resumed3);
     }
 
@@ -66,8 +66,8 @@
       SourcesTestRunner.waitUntilPaused(paused4);
     }
 
-    function paused4(callFrames) {
-      SourcesTestRunner.captureStackTrace(callFrames);
+    async function paused4(callFrames) {
+      await SourcesTestRunner.captureStackTrace(callFrames);
       SourcesTestRunner.setEventListenerBreakpoint('listener:click', false);
       SourcesTestRunner.resumeExecution(next);
     }

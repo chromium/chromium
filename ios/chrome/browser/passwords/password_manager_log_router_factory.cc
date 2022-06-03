@@ -18,7 +18,7 @@ using autofill::LogRouter;
 
 // static
 LogRouter* PasswordManagerLogRouterFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<LogRouter*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

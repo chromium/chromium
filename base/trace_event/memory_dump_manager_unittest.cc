@@ -17,9 +17,10 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/threading/platform_thread.h"
@@ -30,7 +31,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/memory_dump_scheduler.h"
-#include "base/trace_event/memory_infra_background_whitelist.h"
+#include "base/trace_event/memory_infra_background_allowlist.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -163,7 +164,7 @@ class TestSequencedTaskRunner : public SequencedTaskRunner {
   ~TestSequencedTaskRunner() override = default;
 
   const scoped_refptr<SequencedTaskRunner> task_runner_ =
-      CreateSequencedTaskRunner({ThreadPool()});
+      ThreadPool::CreateSequencedTaskRunner({});
   bool enabled_ = true;
   unsigned num_of_post_tasks_ = 0;
 };
@@ -174,6 +175,9 @@ class MemoryDumpManagerTest : public testing::Test {
  public:
   MemoryDumpManagerTest(bool is_coordinator = false)
       : is_coordinator_(is_coordinator) {}
+
+  MemoryDumpManagerTest(const MemoryDumpManagerTest&) = delete;
+  MemoryDumpManagerTest& operator=(const MemoryDumpManagerTest&) = delete;
 
   void SetUp() override {
     // Bring up and initialize MemoryDumpManager while single-threaded (before
@@ -262,16 +266,16 @@ class MemoryDumpManagerTest : public testing::Test {
   // Whether the test MemoryDumpManager should be initialized as the
   // coordinator.
   const bool is_coordinator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManagerTest);
 };
 
 class MemoryDumpManagerTestAsCoordinator : public MemoryDumpManagerTest {
  public:
   MemoryDumpManagerTestAsCoordinator() : MemoryDumpManagerTest(true) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManagerTestAsCoordinator);
+  MemoryDumpManagerTestAsCoordinator(
+      const MemoryDumpManagerTestAsCoordinator&) = delete;
+  MemoryDumpManagerTestAsCoordinator& operator=(
+      const MemoryDumpManagerTestAsCoordinator&) = delete;
 };
 
 // Basic sanity checks. Registers a memory dump provider and checks that it is
@@ -752,7 +756,7 @@ TEST_F(MemoryDumpManagerTest, TriggerDumpWithoutTracing) {
 }
 
 TEST_F(MemoryDumpManagerTest, BackgroundWhitelisting) {
-  SetDumpProviderWhitelistForTesting(kTestMDPWhitelist);
+  SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
 
   // Standard provider with default options (create dump for current process).
   MockMemoryDumpProvider backgroundMdp;
@@ -857,7 +861,7 @@ class SimpleMockMemoryDumpProvider : public MemoryDumpProvider {
 };
 
 TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
-  SetDumpProviderWhitelistForTesting(kTestMDPWhitelist);
+  SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
 
   int kMDPCount = 1000;
   std::vector<std::unique_ptr<SimpleMockMemoryDumpProvider>> mdps;

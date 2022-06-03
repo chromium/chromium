@@ -29,11 +29,12 @@ class MockEventListenerForPresentationReceiver : public NativeEventListener {
 
 class PresentationReceiverTest : public testing::Test {
  public:
+  using ConnectionListProperty = PresentationReceiver::ConnectionListProperty;
   PresentationReceiverTest()
       : connection_info_(KURL("https://example.com"), "id") {}
   void AddConnectionavailableEventListener(EventListener*,
                                            const PresentationReceiver*);
-  void VerifyConnectionListPropertyState(ScriptPromisePropertyBase::State,
+  void VerifyConnectionListPropertyState(ConnectionListProperty::State,
                                          const PresentationReceiver*);
   void VerifyConnectionListSize(size_t expected_size,
                                 const PresentationReceiver*);
@@ -65,7 +66,7 @@ void PresentationReceiverTest::AddConnectionavailableEventListener(
 }
 
 void PresentationReceiverTest::VerifyConnectionListPropertyState(
-    ScriptPromisePropertyBase::State expected_state,
+    ConnectionListProperty::State expected_state,
     const PresentationReceiver* receiver) {
   EXPECT_EQ(expected_state, receiver->connection_list_property_->GetState());
 }
@@ -81,7 +82,7 @@ using testing::StrictMock;
 TEST_F(PresentationReceiverTest, NoConnectionUnresolvedConnectionList) {
   V8TestingScope scope;
   auto* receiver =
-      MakeGarbageCollected<PresentationReceiver>(&scope.GetFrame());
+      MakeGarbageCollected<PresentationReceiver>(&scope.GetWindow());
 
   auto* event_handler = MakeGarbageCollected<
       StrictMock<MockEventListenerForPresentationReceiver>>();
@@ -90,15 +91,14 @@ TEST_F(PresentationReceiverTest, NoConnectionUnresolvedConnectionList) {
 
   receiver->connectionList(scope.GetScriptState());
 
-  VerifyConnectionListPropertyState(ScriptPromisePropertyBase::kPending,
-                                    receiver);
+  VerifyConnectionListPropertyState(ConnectionListProperty::kPending, receiver);
   VerifyConnectionListSize(0, receiver);
 }
 
 TEST_F(PresentationReceiverTest, OneConnectionResolvedConnectionListNoEvent) {
   V8TestingScope scope;
   auto* receiver =
-      MakeGarbageCollected<PresentationReceiver>(&scope.GetFrame());
+      MakeGarbageCollected<PresentationReceiver>(&scope.GetWindow());
 
   auto* event_handler = MakeGarbageCollected<
       StrictMock<MockEventListenerForPresentationReceiver>>();
@@ -112,7 +112,7 @@ TEST_F(PresentationReceiverTest, OneConnectionResolvedConnectionListNoEvent) {
       connection_info_.Clone(), std::move(controller_connection_),
       std::move(receiver_connection_receiver_));
 
-  VerifyConnectionListPropertyState(ScriptPromisePropertyBase::kResolved,
+  VerifyConnectionListPropertyState(ConnectionListProperty::kResolved,
                                     receiver);
   VerifyConnectionListSize(1, receiver);
 }
@@ -120,7 +120,7 @@ TEST_F(PresentationReceiverTest, OneConnectionResolvedConnectionListNoEvent) {
 TEST_F(PresentationReceiverTest, TwoConnectionsFireOnconnectionavailableEvent) {
   V8TestingScope scope;
   auto* receiver =
-      MakeGarbageCollected<PresentationReceiver>(&scope.GetFrame());
+      MakeGarbageCollected<PresentationReceiver>(&scope.GetWindow());
 
   StrictMock<MockEventListenerForPresentationReceiver>* event_handler =
       MakeGarbageCollected<
@@ -157,7 +157,7 @@ TEST_F(PresentationReceiverTest, TwoConnectionsFireOnconnectionavailableEvent) {
 TEST_F(PresentationReceiverTest, TwoConnectionsNoEvent) {
   V8TestingScope scope;
   auto* receiver =
-      MakeGarbageCollected<PresentationReceiver>(&scope.GetFrame());
+      MakeGarbageCollected<PresentationReceiver>(&scope.GetWindow());
 
   StrictMock<MockEventListenerForPresentationReceiver>* event_handler =
       MakeGarbageCollected<
@@ -187,7 +187,7 @@ TEST_F(PresentationReceiverTest, TwoConnectionsNoEvent) {
       std::move(receiver_connection_receiver_2));
 
   receiver->connectionList(scope.GetScriptState());
-  VerifyConnectionListPropertyState(ScriptPromisePropertyBase::kResolved,
+  VerifyConnectionListPropertyState(ConnectionListProperty::kResolved,
                                     receiver);
   VerifyConnectionListSize(2, receiver);
 }

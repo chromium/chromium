@@ -1,3 +1,3 @@
 # This suite runs the tests in http/tests/lazyload with
-# --enable-features=LazyImageLoading.
+# --enable-features=AutomaticLazyImageLoading.
 

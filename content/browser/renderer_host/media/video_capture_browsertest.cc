@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
@@ -16,11 +17,16 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 using testing::_;
 using testing::AtLeast;
@@ -46,8 +52,8 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID&, int buffer_id));
   MOCK_METHOD3(OnBufferReady,
                void(const VideoCaptureControllerID& id,
-                    int buffer_id,
-                    const media::mojom::VideoFrameInfoPtr& frame_info));
+                    const ReadyBuffer& fullsized_buffer,
+                    const std::vector<ReadyBuffer>& downscaled_buffers));
   MOCK_METHOD1(OnStarted, void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnEnded, void(const VideoCaptureControllerID&));
   MOCK_METHOD2(OnError,
@@ -128,6 +134,9 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
     }
   }
 
+  VideoCaptureBrowserTest(const VideoCaptureBrowserTest&) = delete;
+  VideoCaptureBrowserTest& operator=(const VideoCaptureBrowserTest&) = delete;
+
   ~VideoCaptureBrowserTest() override {}
 
   void SetUpAndStartCaptureDeviceOnIOThread(base::OnceClosure continuation) {
@@ -199,7 +208,8 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
     const auto& descriptor = descriptors[params_.device_index_to_use];
     blink::MediaStreamDevice media_stream_device(
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-        descriptor.device_id, descriptor.display_name(), descriptor.facing);
+        descriptor.device_id, descriptor.display_name(),
+        media::VideoCaptureControlSupport(), descriptor.facing);
     session_id_ = video_capture_manager_->Open(media_stream_device);
     media::VideoCaptureParams capture_params;
     capture_params.requested_format = media::VideoCaptureFormat(
@@ -234,9 +244,6 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   MockMediaStreamProviderListener mock_stream_provider_listener_;
   MockVideoCaptureControllerEventHandler mock_controller_event_handler_;
   base::WeakPtr<VideoCaptureController> controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
@@ -248,8 +255,8 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
       base::BindOnce(&VideoCaptureBrowserTest::TearDownCaptureDeviceOnIOThread,
                      base::Unretained(this),
                      std::move(quit_run_loop_on_current_thread_cb), true);
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &VideoCaptureBrowserTest::SetUpAndStartCaptureDeviceOnIOThread,
           base::Unretained(this), std::move(after_start_continuation)));
@@ -257,8 +264,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 }
 
 // Flaky on MSAN. https://crbug.com/840294
-// Flaky on MacOS 10.12. https://crbug.com/938074
-#if defined(MEMORY_SANITIZER) || defined(MAC_OS_X_VERSION_10_12)
+#if defined(MEMORY_SANITIZER) || defined(OS_MAC)
 #define MAYBE_ReceiveFramesFromFakeCaptureDevice \
   DISABLED_ReceiveFramesFromFakeCaptureDevice
 #else
@@ -267,6 +273,13 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 #endif
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                        MAYBE_ReceiveFramesFromFakeCaptureDevice) {
+#if defined(OS_MAC)
+  if (base::mac::IsOS10_12()) {
+    // Flaky on MacOS 10.12. https://crbug.com/938074
+    return;
+  }
+#endif
+
   // Only fake device with index 2 delivers MJPEG.
   if (params_.exercise_accelerated_jpeg_decoding &&
       params_.device_index_to_use != 2) {
@@ -288,7 +301,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                      std::move(quit_run_loop_on_current_thread_cb), true);
 
   bool must_wait_for_gpu_decode_to_start = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_.exercise_accelerated_jpeg_decoding) {
     // Since the GPU jpeg decoder is created asynchronously while decoding
     // in software is ongoing, we have to keep pushing frames until a message
@@ -301,23 +314,26 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
           must_wait_for_gpu_decode_to_start = false;
         }));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_CALL(mock_controller_event_handler_, DoOnNewBuffer(_, _, _))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_controller_event_handler_, OnBufferReady(_, _, _))
       .WillRepeatedly(Invoke(
           [this, &received_frame_infos, &must_wait_for_gpu_decode_to_start,
-           &finish_test_cb](VideoCaptureControllerID id, int buffer_id,
-                            const media::mojom::VideoFrameInfoPtr& frame_info) {
+           &finish_test_cb](const VideoCaptureControllerID& id,
+                            const ReadyBuffer& buffer,
+                            const std::vector<ReadyBuffer>& scaled_buffers) {
             FrameInfo received_frame_info;
-            received_frame_info.pixel_format = frame_info->pixel_format;
-            received_frame_info.size = frame_info->coded_size;
-            received_frame_info.timestamp = frame_info->timestamp;
+            received_frame_info.pixel_format = buffer.frame_info->pixel_format;
+            received_frame_info.size = buffer.frame_info->coded_size;
+            received_frame_info.timestamp = buffer.frame_info->timestamp;
             received_frame_infos.emplace_back(received_frame_info);
 
-            const double kArbitraryUtilization = 0.5;
+            const media::VideoCaptureFeedback kArbitraryFeedback =
+                media::VideoCaptureFeedback(0.5, 60.0,
+                                            std::numeric_limits<int>::max());
             controller_->ReturnBuffer(id, &mock_controller_event_handler_,
-                                      buffer_id, kArbitraryUtilization);
+                                      buffer.buffer_id, kArbitraryFeedback);
 
             if ((received_frame_infos.size() >= kMinFramesToReceive &&
                  !must_wait_for_gpu_decode_to_start) ||
@@ -326,11 +342,11 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
             }
           }));
 
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &VideoCaptureBrowserTest::SetUpAndStartCaptureDeviceOnIOThread,
-          base::Unretained(this), base::DoNothing::Once()));
+          base::Unretained(this), base::DoNothing()));
   run_loop.Run();
 
   EXPECT_FALSE(must_wait_for_gpu_decode_to_start);

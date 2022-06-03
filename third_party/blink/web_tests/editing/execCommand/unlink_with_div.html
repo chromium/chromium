@@ -1,0 +1,22 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug when removing links from a selection with Unlink. There
+// shouldn't be any links *inside the selection* below.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="http:://a.b"><div>Hel^lo</div></a>',
+            '<div>W|orld!</div>',
+        '</div>',
+    ],
+    'Unlink',
+    [
+        '<div contenteditable>',
+            '<div><a href="http:://a.b">Hel</a>^lo</div>',
+            '<div>W|orld!</div>',
+        '</div>',
+    ]);
+</script>

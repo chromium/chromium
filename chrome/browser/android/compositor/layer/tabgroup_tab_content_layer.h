@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,6 +28,9 @@ class TabGroupTabContentLayer : public Layer {
  public:
   static scoped_refptr<TabGroupTabContentLayer> Create(
       TabContentManager* tab_content_manager);
+
+  TabGroupTabContentLayer(const TabGroupTabContentLayer&) = delete;
+  TabGroupTabContentLayer& operator=(const TabGroupTabContentLayer&) = delete;
 
   void SetProperties(int id,
                      bool can_use_live_layer,
@@ -55,7 +57,6 @@ class TabGroupTabContentLayer : public Layer {
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<ContentLayer> content_;
   scoped_refptr<cc::NinePatchLayer> front_border_inner_shadow_;
-  DISALLOW_COPY_AND_ASSIGN(TabGroupTabContentLayer);
 };
 
 }  //  namespace android

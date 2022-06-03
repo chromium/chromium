@@ -1,0 +1,21 @@
+{
+  "lifetimeDuration": "400s",
+  "iceServers": [
+    {
+      "urls": [
+        "stun:url1"
+      ]
+    },
+    {
+      "urls": [
+        "turn:url2?transport=udp",
+        "turn:url3?transport=tcp"
+      ],
+      "username": "username",
+      "credential": "credential",
+      "maxRateKbps": "1"
+    }
+  ],
+  "blockStatus": "NOT_BLOCKED",
+  "iceTransportPolicy": "all"
+}

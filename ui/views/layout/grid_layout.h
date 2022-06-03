@@ -8,13 +8,18 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 
+// DEPRECATED - Prefer other solutions as follows:
+// * For true table- and grid-like layouts, use TableLayout.
+// * For aligning a few objects and other cases, use nested FlexLayouts and/or
+//   BoxLayouts.
+//
 // GridLayout is a LayoutManager that positions child Views in a grid. You
 // define the structure of the Grid first, then add the Views.
 // The following creates a trivial grid with two columns separated by
@@ -25,12 +30,13 @@
 //                    FILL, // Views starting in this column are vertically
 //                          // resized.
 //                    1.0,  // This column has a resize weight of 1.
-//                    USE_PREF, // Use the preferred size of the view.
-//                    0,   // Ignored for USE_PREF.
+//                    ColumnSize::kUsePreferred, // Use the preferred size of
+//                                               // the view.
+//                    0,   // Ignored for kUsePref.
 //                    0);  // A minimum width of 0.
 // columns->AddPaddingColumn(kFixedSize, // The padding column is not resizable.
 //                           10);        // And has a width of 10 pixels.
-// columns->AddColumn(FILL, FILL, kFixedSize, USE_PREF, 0, 0);
+// columns->AddColumn(FILL, FILL, kFixedSize, ColumnSize::kUsePreferred, 0, 0);
 // Now add the views:
 // // First start a row.
 // layout->StartRow(kFixedSize,  // This row isn't vertically resizable.
@@ -103,15 +109,19 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   };
 
   // An enumeration of the possible ways the size of a column may be obtained.
-  enum SizeType {
+  enum class ColumnSize {
     // The column size is fixed.
-    FIXED,
+    kFixed,
 
     // The preferred size of the view is used to determine the column size.
-    USE_PREF
+    kUsePreferred
   };
 
   GridLayout();
+
+  GridLayout(const GridLayout&) = delete;
+  GridLayout& operator=(const GridLayout&) = delete;
+
   ~GridLayout() override;
 
   // See class description for what this does.
@@ -128,14 +138,16 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   // Returns the column set for the specified id, or NULL if one doesn't exist.
   ColumnSet* GetColumnSet(int id);
 
-  // Adds a padding row. Padding rows typically don't have any views, and
+  // Adds a padding row. Padding rows typically don't have any views,
   // but are used to provide vertical white space between views.
   // Size specifies the height of the row.
   void AddPaddingRow(float vertical_resize, int size);
 
   // A convenience for AddPaddingRow followed by StartRow.
-  void StartRowWithPadding(float vertical_resize, int column_set_id,
-                           float padding_resize, int padding);
+  void StartRowWithPadding(float vertical_resize,
+                           int column_set_id,
+                           float padding_resize,
+                           int padding);
 
   // Starts a new row with the specified column set and height (0 for
   // unspecified height).
@@ -220,9 +232,9 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
                           int height,
                           gfx::Size* pref) const;
 
-  // Calculates the master columns of all the column sets. See Column for
-  // a description of what a master column is.
-  void CalculateMasterColumnsIfNecessary() const;
+  // Calculates the primary columns of all the column sets. See Column for
+  // a description of what a primary column is.
+  void CalculatePrimaryColumnsIfNecessary() const;
 
   // These are called internally from AddView<T>.
   void AddViewImpl(std::unique_ptr<View> view, int col_span, int row_span);
@@ -262,8 +274,8 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   // The View this is installed on.
   View* host_ = nullptr;
 
-  // Whether or not we've calculated the master/linked columns.
-  mutable bool calculated_master_columns_ = false;
+  // Whether or not we've calculated the primary/linked columns.
+  mutable bool calculated_primary_columns_ = false;
 
   // Used to verify a view isn't added with a row span that expands into
   // another column structure.
@@ -294,8 +306,6 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   gfx::Size minimum_size_;
 
   bool honors_min_width_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GridLayout);
 };
 
 // ColumnSet is used to define a set of columns. GridLayout may have any
@@ -303,6 +313,9 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
 // use the AddColumnSet method of GridLayout.
 class VIEWS_EXPORT ColumnSet {
  public:
+  ColumnSet(const ColumnSet&) = delete;
+  ColumnSet& operator=(const ColumnSet&) = delete;
+
   ~ColumnSet();
 
   // Adds a column for padding. When adding views, padding columns are
@@ -327,7 +340,7 @@ class VIEWS_EXPORT ColumnSet {
   void AddColumn(GridLayout::Alignment h_align,
                  GridLayout::Alignment v_align,
                  float resize_percent,
-                 GridLayout::SizeType size_type,
+                 GridLayout::ColumnSize size_type,
                  int fixed_width,
                  int min_width);
 
@@ -355,7 +368,7 @@ class VIEWS_EXPORT ColumnSet {
   void AddColumn(GridLayout::Alignment h_align,
                  GridLayout::Alignment v_align,
                  float resize_percent,
-                 GridLayout::SizeType size_type,
+                 GridLayout::ColumnSize size_type,
                  int fixed_width,
                  int min_width,
                  bool is_padding);
@@ -363,8 +376,8 @@ class VIEWS_EXPORT ColumnSet {
   void AddViewState(ViewState* view_state);
 
   // Set description of these.
-  void CalculateMasterColumns();
-  void AccumulateMasterColumns();
+  void CalculatePrimaryColumns();
+  void AccumulatePrimaryColumns();
 
   // Sets the size of each linked column to be the same.
   void UnifyLinkedColumnSizes();
@@ -387,9 +400,9 @@ class VIEWS_EXPORT ColumnSet {
   // NOTE: this doesn't include the insets.
   void ResetColumnXCoordinates();
 
-  enum SizeCalculationType {
-    PREFERRED,
-    MINIMUM,
+  enum class SizeCalculationType {
+    kPreferred,
+    kMinimum,
   };
 
   // Calculate the preferred width of each view in this column set, as well
@@ -422,15 +435,13 @@ class VIEWS_EXPORT ColumnSet {
   // order.
   std::vector<ViewState*> view_states_;
 
-  // The master column of those columns that are linked. See Column
-  // for a description of what the master column is.
-  std::vector<Column*> master_columns_;
+  // The primary column of those columns that are linked. See Column
+  // for a description of what the primary column is.
+  std::vector<Column*> primary_columns_;
 
 #if DCHECK_IS_ON()
-  SizeCalculationType last_calculation_type_ = SizeCalculationType::PREFERRED;
+  SizeCalculationType last_calculation_type_ = SizeCalculationType::kPreferred;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ColumnSet);
 };
 
 }  // namespace views

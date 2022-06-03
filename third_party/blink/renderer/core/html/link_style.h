@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/link_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -26,8 +25,6 @@ struct LinkLoadParameters;
 // changing @rel makes it harder to move such a design so we are
 // sticking current way so far.
 class LinkStyle final : public LinkResource, ResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(LinkStyle);
-
  public:
   explicit LinkStyle(HTMLLinkElement* owner);
   ~LinkStyle() override;
@@ -36,7 +33,7 @@ class LinkStyle final : public LinkResource, ResourceClient {
   void Process() override;
   void OwnerRemoved() override;
   bool HasLoaded() const override { return loaded_sheet_; }
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void StartLoadingDynamicSheet();
   void NotifyLoadedSheetAndAllCriticalSubresources(
@@ -53,6 +50,8 @@ class LinkStyle final : public LinkResource, ResourceClient {
     return disabled_state_ == kEnabledViaScript;
   }
   bool IsUnset() const { return disabled_state_ == kUnset; }
+
+  bool IsExplicitlyEnabled() const { return explicitly_enabled_; }
 
   CSSStyleSheet* Sheet() const { return sheet_.Get(); }
 
@@ -75,7 +74,9 @@ class LinkStyle final : public LinkResource, ResourceClient {
   Member<CSSStyleSheet> sheet_;
   DisabledState disabled_state_;
   PendingSheetType pending_sheet_type_;
+  RenderBlockingBehavior render_blocking_behavior_;
   StyleEngineContext style_engine_context_;
+  bool explicitly_enabled_;
   bool loading_;
   bool fired_load_;
   bool loaded_sheet_;
@@ -83,4 +84,4 @@ class LinkStyle final : public LinkResource, ResourceClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_STYLE_H_

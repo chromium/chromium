@@ -2,6 +2,7 @@ import struct
 
 from mod_pywebsocket import msgutil
 from mod_pywebsocket import stream
+from mod_pywebsocket import util
 
 
 def web_socket_do_extra_handshake(request):
@@ -16,7 +17,10 @@ def web_socket_transfer_data(request):
 
     # Send only first two bytes of the received frame. The remaining four bytes
     # are "masking key", which changes every time the test runs.
-    data = struct.pack('!H', 1000) + 'close_frame[:2]=%r' % close_frame[:2]
+
+    message = "close_frame[:2]='%s'" % util.hexify(close_frame[:2])
+    data = struct.pack('!H', 1000) + message.encode('UTF-8')
+
     request.connection.write(stream.create_close_frame(data))
 
     # Tell pywebsocket we have sent a close frame to the client, so it can close

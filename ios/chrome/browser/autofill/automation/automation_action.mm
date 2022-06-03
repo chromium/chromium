@@ -215,7 +215,7 @@
 
 // Creates a selector targeting the element specified in the action.
 - (ElementSelector*)selectorForTarget {
-  const std::string xpath = [self getStringFromDictionaryWithKey:"selector"];
+  const std::string xpath = [self stringFromDictionaryWithKey:"selector"];
 
   // Creates a selector from the action dictionary.
   ElementSelector* selector = [ElementSelector selectorWithXPathQuery:xpath];
@@ -225,7 +225,7 @@
 // Returns a std::string corrensponding to the given key in the action
 // dictionary. Will raise a test failure if the key is missing or the value is
 // empty.
-- (std::string)getStringFromDictionaryWithKey:(std::string)key {
+- (std::string)stringFromDictionaryWithKey:(const std::string&)key {
   const base::Value* expectedTypeValue(
       self.actionDictionary->FindKeyOfType(key, base::Value::Type::STRING));
   GREYAssert(expectedTypeValue, @"%s is missing in action.", key.c_str());
@@ -239,7 +239,7 @@
 // Returns an int corrensponding to the given key in the action
 // dictionary. Will raise a test failure if the key is missing or the value is
 // empty.
-- (int)getIntFromDictionaryWithKey:(std::string)key {
+- (int)intFromDictionaryWithKey:(const std::string&)key {
   const base::Value* expectedTypeValue(
       self.actionDictionary->FindKeyOfType(key, base::Value::Type::INTEGER));
   GREYAssert(expectedTypeValue, @"%s is missing in action.", key.c_str());
@@ -372,9 +372,9 @@
   [ChromeEarlGrey waitForWebStateContainingElement:selector];
 
   NSString* expectedType = base::SysUTF8ToNSString(
-      [self getStringFromDictionaryWithKey:"expectedAutofillType"]);
+      [self stringFromDictionaryWithKey:"expectedAutofillType"]);
   NSString* expectedValue = base::SysUTF8ToNSString(
-      [self getStringFromDictionaryWithKey:"expectedValue"]);
+      [self stringFromDictionaryWithKey:"expectedValue"]);
 
   NSString* predictionType = base::mac::ObjCCastStrict<NSString>([self
       executeJavaScript:"return target.placeholder;"
@@ -401,7 +401,7 @@
   // Wait for the element to be visible on the page.
   [ChromeEarlGrey waitForWebStateContainingElement:selector];
 
-  int selectedIndex = [self getIntFromDictionaryWithKey:"index"];
+  int selectedIndex = [self intFromDictionaryWithKey:"index"];
   [self executeJavaScript:
             base::SysNSStringToUTF8([NSString
                 stringWithFormat:@"target.options.selectedIndex = %d; "
@@ -428,7 +428,7 @@
 
 - (void)execute {
   ElementSelector* selector = [self selectorForTarget];
-  std::string value = [self getStringFromDictionaryWithKey:"value"];
+  std::string value = [self stringFromDictionaryWithKey:"value"];
   [self executeJavaScript:
             base::SysNSStringToUTF8([NSString
                 stringWithFormat:

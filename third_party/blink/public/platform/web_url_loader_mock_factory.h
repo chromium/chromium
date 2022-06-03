@@ -22,7 +22,7 @@ struct WebURLError;
 
 class WebURLLoaderMockFactory {
  public:
-  static std::unique_ptr<WebURLLoaderMockFactory> Create();
+  static WebURLLoaderMockFactory* GetSingletonInstance();
 
   virtual ~WebURLLoaderMockFactory() = default;
 

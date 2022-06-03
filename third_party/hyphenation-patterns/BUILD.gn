@@ -1,0 +1,60 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/zip.gni")
+
+zip("hyphenation-patterns") {
+  inputs = [
+    "hyb/hyph-as.hyb",
+    "hyb/hyph-be.hyb",
+    "hyb/hyph-bg.hyb",
+    "hyb/hyph-bn.hyb",
+    "hyb/hyph-cu.hyb",
+    "hyb/hyph-cy.hyb",
+    "hyb/hyph-da.hyb",
+    "hyb/hyph-de-1901.hyb",
+    "hyb/hyph-de-1996.hyb",
+    "hyb/hyph-de-ch-1901.hyb",
+    "hyb/hyph-en-gb.hyb",
+    "hyb/hyph-en-us.hyb",
+    "hyb/hyph-es.hyb",
+    "hyb/hyph-et.hyb",
+    "hyb/hyph-eu.hyb",
+    "hyb/hyph-fr.hyb",
+    "hyb/hyph-ga.hyb",
+    "hyb/hyph-gu.hyb",
+    "hyb/hyph-hi.hyb",
+    "hyb/hyph-hr.hyb",
+    "hyb/hyph-hu.hyb",
+    "hyb/hyph-hy.hyb",
+    "hyb/hyph-kn.hyb",
+    "hyb/hyph-la.hyb",
+    "hyb/hyph-ml.hyb",
+    "hyb/hyph-mn-cyrl.hyb",
+    "hyb/hyph-mr.hyb",
+    "hyb/hyph-nb.hyb",
+    "hyb/hyph-nn.hyb",
+    "hyb/hyph-or.hyb",
+    "hyb/hyph-pa.hyb",
+    "hyb/hyph-pt.hyb",
+    "hyb/hyph-sl.hyb",
+    "hyb/hyph-ta.hyb",
+    "hyb/hyph-te.hyb",
+    "hyb/hyph-tk.hyb",
+    "hyb/hyph-und-ethi.hyb",
+  ]
+  output = "$root_build_dir/hyphens-data.zip"
+  base_dir = "hyb"
+}
+
+copy("test_data") {
+  testonly = true
+  sources = [
+    # Dictionaries used in unit tests and web_tests.
+    "hyb/hyph-de-1996.hyb",
+    "hyb/hyph-en-gb.hyb",
+    "hyb/hyph-en-us.hyb",
+  ]
+  outputs = [ "$root_gen_dir/hyphen-data/{{source_file_part}}" ]
+}

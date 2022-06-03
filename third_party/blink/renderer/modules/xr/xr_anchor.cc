@@ -3,41 +3,55 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_anchor.h"
-#include "third_party/blink/renderer/modules/xr/type_converters.h"
-#include "third_party/blink/renderer/modules/xr/xr.h"
 #include "third_party/blink/renderer/modules/xr/xr_object_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_system.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
+namespace {
+
+constexpr char kAnchorAlreadyDeleted[] =
+    "Unable to access anchor properties, the anchor was already deleted.";
+
+}
 
 namespace blink {
 
-XRAnchor::XRAnchor(uint64_t id, XRSession* session)
-    : id_(id), session_(session), anchor_data_(base::nullopt) {}
-
 XRAnchor::XRAnchor(uint64_t id,
                    XRSession* session,
-                   const device::mojom::blink::XRAnchorDataPtr& anchor_data,
-                   double timestamp)
+                   const device::mojom::blink::XRAnchorData& anchor_data)
     : id_(id),
+      is_deleted_(false),
       session_(session),
-      anchor_data_(base::in_place, anchor_data, timestamp) {}
+      mojo_from_anchor_(anchor_data.mojo_from_anchor) {
+  DVLOG(3) << __func__ << ": id_=" << id_
+           << ", anchor_data.mojo_from_anchor.has_value()="
+           << anchor_data.mojo_from_anchor.has_value();
+}
 
-void XRAnchor::Update(const device::mojom::blink::XRAnchorDataPtr& anchor_data,
-                      double timestamp) {
-  if (!anchor_data_) {
-    anchor_data_ = AnchorData(anchor_data, timestamp);
-  } else {
-    *anchor_data_->pose_matrix_ =
-        mojo::ConvertTo<blink::TransformationMatrix>(anchor_data->pose);
-    anchor_data_->last_changed_time_ = timestamp;
+void XRAnchor::Update(const device::mojom::blink::XRAnchorData& anchor_data) {
+  DVLOG(3) << __func__ << ": id_=" << id_ << ", is_deleted_=" << is_deleted_
+           << ", anchor_data.mojo_from_anchor.has_value()="
+           << anchor_data.mojo_from_anchor.has_value();
+
+  if (is_deleted_) {
+    return;
   }
+
+  mojo_from_anchor_ = anchor_data.mojo_from_anchor;
 }
 
 uint64_t XRAnchor::id() const {
   return id_;
 }
 
-XRSpace* XRAnchor::anchorSpace() const {
-  if (!anchor_data_) {
+XRSpace* XRAnchor::anchorSpace(ExceptionState& exception_state) const {
+  DVLOG(2) << __func__ << ": id_=" << id_ << ", is_deleted_=" << is_deleted_
+           << " anchor_space_ is valid? " << !!anchor_space_;
+
+  if (is_deleted_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kAnchorAlreadyDeleted);
     return nullptr;
   }
 
@@ -49,43 +63,39 @@ XRSpace* XRAnchor::anchorSpace() const {
   return anchor_space_;
 }
 
-TransformationMatrix XRAnchor::MojoFromObject() const {
-  if (anchor_data_) {
-    return *anchor_data_->pose_matrix_;
+device::mojom::blink::XRNativeOriginInformationPtr XRAnchor::NativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewAnchorId(
+      this->id());
+}
+
+absl::optional<TransformationMatrix> XRAnchor::MojoFromObject() const {
+  DVLOG(3) << __func__ << ": id_=" << id_;
+
+  if (!mojo_from_anchor_) {
+    DVLOG(3) << __func__ << ": id_=" << id_ << ", mojo_from_anchor_ is not set";
+    return absl::nullopt;
   }
 
-  // |poseMatrix()| shouldn't be called by anyone except XRObjectSpace and if
-  // XRObjectSpace already exists for this anchor, then anchor_data_ should also
-  // exist for this anchor.
-  NOTREACHED();
-  return {};
+  return TransformationMatrix(mojo_from_anchor_->ToTransform().matrix());
 }
 
-double XRAnchor::lastChangedTime(bool& is_null) const {
-  if (!anchor_data_) {
-    is_null = true;
-    return 0;
+void XRAnchor::Delete() {
+  DVLOG(1) << __func__ << ": id_=" << id_ << ", is_deleted_=" << is_deleted_;
+
+  if (!is_deleted_) {
+    session_->xr()->xrEnvironmentProviderRemote()->DetachAnchor(id_);
+    mojo_from_anchor_ = absl::nullopt;
+    anchor_space_ = nullptr;
   }
 
-  is_null = false;
-  return anchor_data_->last_changed_time_;
+  is_deleted_ = true;
 }
 
-void XRAnchor::detach() {
-  session_->xr()->xrEnvironmentProviderRemote()->DetachAnchor(id_);
-}
-
-void XRAnchor::Trace(blink::Visitor* visitor) {
+void XRAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   visitor->Trace(anchor_space_);
   ScriptWrappable::Trace(visitor);
 }
-
-XRAnchor::AnchorData::AnchorData(
-    const device::mojom::blink::XRAnchorDataPtr& anchor_data,
-    double timestamp)
-    : pose_matrix_(std::make_unique<TransformationMatrix>(
-          mojo::ConvertTo<blink::TransformationMatrix>(anchor_data->pose))),
-      last_changed_time_(timestamp) {}
 
 }  // namespace blink

@@ -6,16 +6,15 @@
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_FETCHER_H_
 
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_info.h"
 #include "components/ntp_snippets/remote/json_to_categories.h"
 #include "components/ntp_snippets/remote/remote_suggestion.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ntp_snippets {
@@ -27,7 +26,7 @@ GURL GetFetchEndpoint();
 // Fetches suggestion data for the NTP from the server.
 class RemoteSuggestionsFetcher {
  public:
-  using OptionalFetchedCategories = base::Optional<FetchedCategoriesVector>;
+  using OptionalFetchedCategories = absl::optional<FetchedCategoriesVector>;
   using SnippetsAvailableCallback =
       base::OnceCallback<void(Status status,
                               OptionalFetchedCategories fetched_categories)>;

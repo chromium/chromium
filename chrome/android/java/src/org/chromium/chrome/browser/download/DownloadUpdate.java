@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.download;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -22,6 +25,7 @@ public final class DownloadUpdate {
     private final Bitmap mIcon;
     private final int mIconId;
     private final boolean mIsOffTheRecord;
+    private final @Nullable OTRProfileID mOTRProfileID;
     private final boolean mIsOpenable;
     private final boolean mIsSupportedMimeType;
     private final boolean mIsTransient;
@@ -44,6 +48,7 @@ public final class DownloadUpdate {
         this.mIcon = builder.mIcon;
         this.mIconId = builder.mIconId;
         this.mIsOffTheRecord = builder.mIsOffTheRecord;
+        this.mOTRProfileID = builder.mOTRProfileID;
         this.mIsOpenable = builder.mIsOpenable;
         this.mIsSupportedMimeType = builder.mIsSupportedMimeType;
         this.mIsTransient = builder.mIsTransient;
@@ -86,6 +91,11 @@ public final class DownloadUpdate {
 
     public boolean getIsOffTheRecord() {
         return mIsOffTheRecord;
+    }
+
+    @Nullable
+    public OTRProfileID getOTRProfileID() {
+        return mOTRProfileID;
     }
 
     public boolean getIsOpenable() {
@@ -154,6 +164,7 @@ public final class DownloadUpdate {
         private Bitmap mIcon;
         private int mIconId = -1;
         private boolean mIsOffTheRecord;
+        private @Nullable OTRProfileID mOTRProfileID;
         private boolean mIsOpenable;
         private boolean mIsSupportedMimeType;
         private boolean mIsTransient;
@@ -194,8 +205,11 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setIsOffTheRecord(boolean isOffTheRecord) {
-            this.mIsOffTheRecord = isOffTheRecord;
+        public Builder setOTRProfileID(@Nullable OTRProfileID otrProfileID) {
+            this.mOTRProfileID = otrProfileID;
+            // TODO(crbug.com/1161132): Remove this after replacing |DownloadUpdate#isOffTheRecord|
+            // usages with |DownloadUpdate#getOTRProfileID|.
+            this.mIsOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileID);
             return this;
         }
 

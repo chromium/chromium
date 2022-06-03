@@ -16,18 +16,20 @@ class WebContents;
 // operations outside of the content layer.
 class CONTENT_EXPORT BrowserPluginGuestManager {
  public:
-  virtual ~BrowserPluginGuestManager() {}
+  virtual ~BrowserPluginGuestManager() = default;
 
-  // Requests a guest WebContents associated with the provided
-  // <owner_process_id, browser_plugin_instance_id> tuple.
-  virtual WebContents* GetGuestByInstanceID(int owner_process_id,
-                                            int browser_plugin_instance_id);
+  // Iterates over guest WebContents that belong to a given
+  // |owner_web_contents|, but have not yet been attached.
+  virtual void ForEachUnattachedGuest(
+      WebContents* owner_web_contents,
+      base::RepeatingCallback<void(WebContents*)> callback) {}
 
-  // Iterates over all WebContents belonging to a given |embedder_web_contents|,
+  // Prefer using |RenderFrameHost::ForEachRenderFrameHost|.
+  // Iterates over all WebContents belonging to a given |owner_web_contents|,
   // calling |callback| for each. If one of the callbacks returns true, then
   // the iteration exits early.
   using GuestCallback = base::RepeatingCallback<bool(WebContents*)>;
-  virtual bool ForEachGuest(WebContents* embedder_web_contents,
+  virtual bool ForEachGuest(WebContents* owner_web_contents,
                             const GuestCallback& callback);
 
   // Returns the "full page" guest if there is one. That is, if there is a

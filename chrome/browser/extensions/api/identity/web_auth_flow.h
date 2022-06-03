@@ -7,9 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/gfx/geometry/rect.h"
@@ -19,8 +17,7 @@ class Profile;
 class WebAuthFlowTest;
 
 namespace content {
-class NotificationDetails;
-class NotificationSource;
+class StoragePartition;
 }
 
 namespace extensions {
@@ -42,13 +39,17 @@ namespace extensions {
 //
 // A WebAuthFlow can be started in Mode::SILENT, which never displays
 // a window. If a window would be required, the flow fails.
-class WebAuthFlow : public content::NotificationObserver,
-                    public content::WebContentsObserver,
+class WebAuthFlow : public content::WebContentsObserver,
                     public AppWindowRegistry::Observer {
  public:
   enum Mode {
     INTERACTIVE,  // Show UI to the user if necessary.
     SILENT        // No UI should be shown.
+  };
+
+  enum Partition {
+    GET_AUTH_TOKEN,       // Use the getAuthToken() partition.
+    LAUNCH_WEB_AUTH_FLOW  // Use the launchWebAuthFlow() partition.
   };
 
   enum Failure {
@@ -64,9 +65,9 @@ class WebAuthFlow : public content::NotificationObserver,
     virtual void OnAuthFlowFailure(Failure failure) = 0;
     // Called on redirects and other navigations to see if the URL should stop
     // the flow.
-    virtual void OnAuthFlowURLChange(const GURL& redirect_url) = 0;
+    virtual void OnAuthFlowURLChange(const GURL& redirect_url) {}
     // Called when the title of the current page changes.
-    virtual void OnAuthFlowTitleChange(const std::string& title) = 0;
+    virtual void OnAuthFlowTitleChange(const std::string& title) {}
 
    protected:
     virtual ~Delegate() {}
@@ -77,7 +78,11 @@ class WebAuthFlow : public content::NotificationObserver,
   WebAuthFlow(Delegate* delegate,
               Profile* profile,
               const GURL& provider_url,
-              Mode mode);
+              Mode mode,
+              Partition partition);
+
+  WebAuthFlow(const WebAuthFlow&) = delete;
+  WebAuthFlow& operator=(const WebAuthFlow&) = delete;
 
   ~WebAuthFlow() override;
 
@@ -87,6 +92,19 @@ class WebAuthFlow : public content::NotificationObserver,
   // Prevents further calls to the delegate and deletes the flow.
   void DetachDelegateAndDelete();
 
+  // Returns a StoragePartition of the guest webview. Used to inject cookies
+  // into Gaia page. Can override for testing.
+  virtual content::StoragePartition* GetGuestPartition();
+
+  // Returns an ID string attached to the window. Can override for testing.
+  virtual const std::string& GetAppWindowKey() const;
+
+  // Returns the StoragePartitionConfig for a given |partition| used in the
+  // WebAuthFlow.
+  static content::StoragePartitionConfig GetWebViewPartitionConfig(
+      Partition partition,
+      content::BrowserContext* browser_context);
+
  private:
   friend class ::WebAuthFlowTest;
 
@@ -94,14 +112,12 @@ class WebAuthFlow : public content::NotificationObserver,
   void OnAppWindowAdded(AppWindow* app_window) override;
   void OnAppWindowRemoved(AppWindow* app_window) override;
 
-  // NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // WebContentsObserver implementation.
   void DidStopLoading() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void InnerWebContentsCreated(
+      content::WebContents* inner_web_contents) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -117,14 +133,11 @@ class WebAuthFlow : public content::NotificationObserver,
   Profile* profile_;
   GURL provider_url_;
   Mode mode_;
+  Partition partition_;
 
   AppWindow* app_window_;
   std::string app_window_key_;
   bool embedded_window_created_;
-
-  content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthFlow);
 };
 
 }  // namespace extensions

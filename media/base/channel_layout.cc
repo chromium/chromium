@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 
 namespace media {
 

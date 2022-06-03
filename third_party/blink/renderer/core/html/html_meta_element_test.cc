@@ -11,33 +11,28 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
 class HTMLMetaElementTest : public PageTestBase,
-                            private ScopedDisplayCutoutAPIForTest,
-                            private ScopedMetaColorSchemeForTest,
-                            private ScopedMediaQueryPrefersColorSchemeForTest,
-                            private ScopedCSSColorSchemeForTest {
+                            private ScopedDisplayCutoutAPIForTest {
  public:
-  HTMLMetaElementTest()
-      : ScopedDisplayCutoutAPIForTest(true),
-        ScopedMetaColorSchemeForTest(true),
-        ScopedMediaQueryPrefersColorSchemeForTest(true),
-        ScopedCSSColorSchemeForTest(true) {}
+  HTMLMetaElementTest() : ScopedDisplayCutoutAPIForTest(true) {}
   void SetUp() override {
     PageTestBase::SetUp();
     GetDocument().GetSettings()->SetViewportMetaEnabled(true);
@@ -74,7 +69,7 @@ class HTMLMetaElementTest : public PageTestBase,
 
  private:
   void LoadTestPageWithViewportFitValue(const String& value) {
-    GetDocument().documentElement()->SetInnerHTMLFromString(
+    GetDocument().documentElement()->setInnerHTML(
         "<head>"
         "<meta name='viewport' content='viewport-fit=" +
         value +
@@ -105,7 +100,7 @@ TEST_F(HTMLMetaElementTest, ViewportFit_Invalid) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="color-scheme" content="dark">
     <meta name="color-scheme" content="light">
   )HTML");
@@ -114,7 +109,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta id="first-meta" name="color-scheme" content="dark">
     <meta name="color-scheme" content="light">
   )HTML");
@@ -127,7 +122,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="color-scheme" content="dark">
   )HTML");
 
@@ -140,7 +135,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="color-scheme" content="dark">
   )HTML");
 
@@ -152,7 +147,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
@@ -165,7 +160,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
@@ -178,7 +173,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveNameAttribute) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
@@ -227,18 +222,18 @@ TEST_F(HTMLMetaElementTest, ColorSchemeParsing) {
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
-  ColorSchemeHelper color_scheme_helper;
-  color_scheme_helper.SetPreferredColorScheme(GetDocument(),
-                                              PreferredColorScheme::kDark);
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
 
   auto* media_query = GetDocument().GetMediaQueryMatcher().MatchMedia(
       "(prefers-color-scheme: dark)");
   EXPECT_TRUE(media_query->matches());
   GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
-  EXPECT_FALSE(media_query->matches());
+  EXPECT_TRUE(media_query->matches());
 
   GetDocument().head()->AppendChild(CreateColorSchemeMeta("light"));
-  EXPECT_FALSE(media_query->matches());
+  EXPECT_TRUE(media_query->matches());
 
   SetColorScheme("dark");
   EXPECT_TRUE(media_query->matches());
@@ -248,19 +243,31 @@ TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="referrer" content="strict-origin">
     <meta name="referrer" >
   )HTML");
   EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
-            GetDocument().GetReferrerPolicy());
+            GetFrame().DomWindow()->GetReferrerPolicy());
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
+            GetFrame().DomWindow()->GetPolicyContainer()->GetReferrerPolicy());
+}
+
+TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <meta name="referrer" content="strict-origin">
+  )HTML");
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
+            GetFrame().DomWindow()->GetReferrerPolicy());
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
+            GetFrame().DomWindow()->GetPolicyContainer()->GetReferrerPolicy());
 }
 
 // This tests whether Web Monetization counter is properly triggered.
 TEST_F(HTMLMetaElementTest, WebMonetizationCounter) {
   // <meta> elements that don't have name equal to "monetization" or that lack
   // a content attribute are not counted.
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="color-scheme" content="dark">
     <meta name="monetization">
   )HTML");
@@ -268,7 +275,7 @@ TEST_F(HTMLMetaElementTest, WebMonetizationCounter) {
       GetDocument().IsUseCounted(WebFeature::kHTMLMetaElementMonetization));
 
   // A <link rel="monetization"> with a content attribute is counted.
-  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="monetization" content="$payment.pointer.url">
   )HTML");
   EXPECT_TRUE(
@@ -286,19 +293,19 @@ TEST_F(HTMLMetaElementSimTest, WebMonetizationNotCountedInSubFrame) {
 
   LoadURL("https://example.com/");
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(
       R"HTML(
         <body onload='console.log("main body onload");'>
           <iframe src='https://example.com/subframe.html'
                   onload='console.log("child frame element onload");'></iframe>
-        </body>)HTML"));
+        </body>)HTML");
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  child_frame_resource.Complete(String::Format(R"HTML(
+  child_frame_resource.Complete(R"HTML(
     <meta name="monetization" content="$payment.pointer.url">
-  )HTML"));
+  )HTML");
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

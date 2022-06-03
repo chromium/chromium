@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer_impl.h"
@@ -61,7 +61,7 @@ SingleScrollbarAnimationControllerThinning::
       mouse_is_over_scrollbar_thumb_(false),
       mouse_is_near_scrollbar_thumb_(false),
       mouse_is_near_scrollbar_track_(false),
-      thickness_change_(NONE),
+      thickness_change_(AnimationChange::NONE),
       thinning_duration_(thinning_duration) {
   ApplyThumbThicknessScale(kIdleThicknessScale);
 }
@@ -94,13 +94,13 @@ bool SingleScrollbarAnimationControllerThinning::Animate(base::TimeTicks now) {
 
 float SingleScrollbarAnimationControllerThinning::AnimationProgressAtTime(
     base::TimeTicks now) {
-  base::TimeDelta delta = now - last_awaken_time_;
-  float progress = delta.InSecondsF() / Duration().InSecondsF();
-  return base::ClampToRange(progress, 0.0f, 1.0f);
-}
+  // In tests, there may be no duration; snap to the end in such a case.
+  if (thinning_duration_.is_zero())
+    return 1.0f;
 
-const base::TimeDelta& SingleScrollbarAnimationControllerThinning::Duration() {
-  return thinning_duration_;
+  const base::TimeDelta delta = now - last_awaken_time_;
+  return base::clamp(static_cast<float>(delta / thinning_duration_), 0.0f,
+                     1.0f);
 }
 
 void SingleScrollbarAnimationControllerThinning::RunAnimationFrame(
@@ -113,7 +113,7 @@ void SingleScrollbarAnimationControllerThinning::RunAnimationFrame(
   client_->SetNeedsRedrawForScrollbarAnimation();
   if (progress == 1.f) {
     StopAnimation();
-    thickness_change_ = NONE;
+    thickness_change_ = AnimationChange::NONE;
   }
 }
 
@@ -144,10 +144,10 @@ void SingleScrollbarAnimationControllerThinning::DidMouseUp() {
   StopAnimation();
 
   if (!mouse_is_near_scrollbar_thumb_) {
-    thickness_change_ = DECREASE;
+    thickness_change_ = AnimationChange::DECREASE;
     StartAnimation();
   } else {
-    thickness_change_ = NONE;
+    thickness_change_ = AnimationChange::NONE;
   }
 }
 
@@ -162,7 +162,7 @@ void SingleScrollbarAnimationControllerThinning::DidMouseLeave() {
   if (captured_)
     return;
 
-  thickness_change_ = DECREASE;
+  thickness_change_ = AnimationChange::DECREASE;
   StartAnimation();
 }
 
@@ -189,7 +189,9 @@ void SingleScrollbarAnimationControllerThinning::DidMouseMove(
 
   if (!captured_ &&
       mouse_is_near_scrollbar_thumb != mouse_is_near_scrollbar_thumb_) {
-    thickness_change_ = mouse_is_near_scrollbar_thumb ? INCREASE : DECREASE;
+    thickness_change_ = mouse_is_near_scrollbar_thumb
+                            ? AnimationChange::INCREASE
+                            : AnimationChange::DECREASE;
     StartAnimation();
   }
   mouse_is_near_scrollbar_thumb_ = mouse_is_near_scrollbar_thumb;
@@ -198,9 +200,11 @@ void SingleScrollbarAnimationControllerThinning::DidMouseMove(
 
 float SingleScrollbarAnimationControllerThinning::ThumbThicknessScaleAt(
     float progress) {
-  if (thickness_change_ == NONE)
+  if (thickness_change_ == AnimationChange::NONE)
     return mouse_is_near_scrollbar_thumb_ ? 1.f : kIdleThicknessScale;
-  float factor = thickness_change_ == INCREASE ? progress : (1.f - progress);
+  float factor = thickness_change_ == AnimationChange::INCREASE
+                     ? progress
+                     : (1.f - progress);
   return ((1.f - kIdleThicknessScale) * factor) + kIdleThicknessScale;
 }
 
@@ -211,9 +215,11 @@ float SingleScrollbarAnimationControllerThinning::AdjustScale(
     float min_value,
     float max_value) {
   float result;
-  if (animation_change == INCREASE && current_value > new_value)
+  if (animation_change == AnimationChange::INCREASE &&
+      current_value > new_value)
     result = current_value;
-  else if (animation_change == DECREASE && current_value < new_value)
+  else if (animation_change == AnimationChange::DECREASE &&
+           current_value < new_value)
     result = current_value;
   else
     result = new_value;

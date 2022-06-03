@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/strings/string16.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {
@@ -28,13 +27,17 @@ class ManifestPermissionSet;
 class ManifestHandler {
  public:
   ManifestHandler();
+
+  ManifestHandler(const ManifestHandler&) = delete;
+  ManifestHandler& operator=(const ManifestHandler&) = delete;
+
   virtual ~ManifestHandler();
 
   // Attempts to parse the extension's manifest.
   // Returns true on success or false on failure; if false, |error| will
   // be set to a failure message.
   // This does not perform any IO operations.
-  virtual bool Parse(Extension* extension, base::string16* error) = 0;
+  virtual bool Parse(Extension* extension, std::u16string* error) = 0;
 
   // Validate that files associated with this manifest key exist.
   // Validation takes place after parsing. May also append a series of
@@ -43,7 +46,7 @@ class ManifestHandler {
   //
   // Otherwise, returns false, and a description of the error is
   // returned in |error|.
-  // TODO(yoz): Change error to base::string16. See crbug.com/71980.
+  // TODO(yoz): Change error to std::u16string. See crbug.com/71980.
   virtual bool Validate(const Extension* extension,
                         std::string* error,
                         std::vector<InstallWarning>* warnings) const;
@@ -88,7 +91,7 @@ class ManifestHandler {
 
   // Call Parse on all registered manifest handlers that should parse
   // this extension.
-  static bool ParseExtension(Extension* extension, base::string16* error);
+  static bool ParseExtension(Extension* extension, std::u16string* error);
 
   // Call Validate on all registered manifest handlers for this extension. This
   // may perform IO operations.
@@ -114,14 +117,14 @@ class ManifestHandler {
   // A convenience method for handlers that only register for 1 key,
   // so that they can define keys() { return SingleKey(kKey); }
   static const std::vector<std::string> SingleKey(const std::string& key);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManifestHandler);
 };
 
 // The global registry for manifest handlers.
 class ManifestHandlerRegistry {
  public:
+  ManifestHandlerRegistry(const ManifestHandlerRegistry&) = delete;
+  ManifestHandlerRegistry& operator=(const ManifestHandlerRegistry&) = delete;
+
   // Get the one true instance.
   static ManifestHandlerRegistry* Get();
 
@@ -146,7 +149,7 @@ class ManifestHandlerRegistry {
 
   void Finalize();
 
-  bool ParseExtension(Extension* extension, base::string16* error);
+  bool ParseExtension(Extension* extension, std::u16string* error);
   bool ValidateExtension(const Extension* extension,
                          std::string* error,
                          std::vector<InstallWarning>* warnings);
@@ -177,7 +180,7 @@ class ManifestHandlerRegistry {
   // Any new manifest handlers added may cause the small_map to overflow
   // to the backup std::unordered_map, which we don't want, as that would
   // defeat the optimization of using small_map.
-  static constexpr size_t kHandlerMax = 75;
+  static constexpr size_t kHandlerMax = 87;
   using FallbackMap = std::unordered_map<std::string, ManifestHandler*>;
   using ManifestHandlerMap = base::small_map<FallbackMap, kHandlerMax>;
   using FallbackPriorityMap = std::unordered_map<ManifestHandler*, int>;
@@ -198,8 +201,6 @@ class ManifestHandlerRegistry {
   ManifestHandlerPriorityMap priority_map_;
 
   bool is_finalized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestHandlerRegistry);
 };
 
 }  // namespace extensions

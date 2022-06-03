@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SetTimeBrowserProxyImpl} from 'chrome://set-time/set_time_browser_proxy.js';
 
-import {TestBrowserProxy} from './test_browser_proxy.m.js';
+import {TestBrowserProxy} from './test_browser_proxy.js';
 
 suite('SetTimeDialog', function() {
   let setTimeElement = null;
@@ -46,13 +46,13 @@ suite('SetTimeDialog', function() {
     /** @override */
     doneClicked() {
       this.methodCalled('doneClicked');
-      cr.webUIListenerCallback('validation-complete');
     }
   }
 
   suiteSetup(function() {
     // Must use existing timezones in the test.
     loadTimeData.overrideValues({
+      showTimezone: true,
       currentTimezoneId: 'America/Sao_Paulo',
       timezoneList: [
         [
@@ -96,7 +96,7 @@ suite('SetTimeDialog', function() {
     assertLE(now, maxDate);
   });
 
-  test('SetDate', () => {
+  test('SetDate', async () => {
     const dateInput = setTimeElement.$$('#dateInput');
     assertTrue(!!dateInput);
 
@@ -107,13 +107,15 @@ suite('SetTimeDialog', function() {
     dateInput.valueAsDate = nextWeek;
     setTimeElement.$$('#doneButton').click();
 
+    // The browser validates the change.
+    await testBrowserProxy.whenCalled('doneClicked');
+    cr.webUIListenerCallback('validation-complete');
+
     // Verify the page sends a request to move time forward.
-    return testBrowserProxy.whenCalled('setTimeInSeconds')
-        .then(timeInSeconds => {
-          const todaySeconds = today.getTime() / 1000;
-          // The exact value isn't important (it depends on the current time).
-          assertGT(timeInSeconds, todaySeconds);
-        });
+    const timeInSeconds = await testBrowserProxy.whenCalled('setTimeInSeconds');
+    const todaySeconds = today.getTime() / 1000;
+    // The exact value isn't important (it depends on the current time).
+    assertGT(timeInSeconds, todaySeconds);
   });
 
   test('Revert invalid date on blur', () => {
@@ -138,7 +140,8 @@ suite('SetTimeDialog', function() {
     expectEquals('Asia/Seoul', timezoneSelect.value);
   });
 
-  test('SetDateAndTimezone', () => {
+  // Disabled for flake. https://crbug.com/1043598
+  test.skip('SetDateAndTimezone', async () => {
     const dateInput = setTimeElement.$$('#dateInput');
     assertTrue(!!dateInput);
 
@@ -155,9 +158,9 @@ suite('SetTimeDialog', function() {
     const updatedTime = new Date(originalTime.getTime() + 15 * 60 * 1000);
     dateInput.focus();
     dateInput.valueAsDate = updatedTime;
-    setTimeElement.$$('#doneButton').click();
+    dateInput.blur();
 
-    // Simulate timezone change.
+    // Simulate the user changing the time zone.
     cr.webUIListenerCallback('system-timezone-changed', 'America/Los_Angeles');
     expectEquals('America/Los_Angeles', timezoneSelect.value);
 
@@ -169,28 +172,31 @@ suite('SetTimeDialog', function() {
     // one, therefore even with the 15 minutes forwarded it should be smaller.
     expectGT(updatedTime.getTime(), updatedTimeAndTimezone.getTime());
 
-    assertEquals(1, testBrowserProxy.getCallCount('setTimezone'));
+    // Close the dialog.
+    setTimeElement.$$('#doneButton').click();
 
-    return testBrowserProxy.whenCalled('setTimeInSeconds')
-        .then(timeInSeconds => {
-          const todaySeconds = originalTime.getTime() / 1000;
-          // The exact value isn't important (it depends on the current time).
-          // timeInSeconds should be bigger, because this timestamp is seconds
-          // since epoch and it does not hold any information regarding the
-          // current timezone.
-          assertGT(timeInSeconds, todaySeconds);
-        });
+    // The browser validates the change.
+    await testBrowserProxy.whenCalled('doneClicked');
+    cr.webUIListenerCallback('validation-complete');
+
+    const timeInSeconds = await testBrowserProxy.whenCalled('setTimeInSeconds');
+    const todaySeconds = originalTime.getTime() / 1000;
+    // The exact value isn't important (it depends on the current time).
+    // timeInSeconds should be bigger, because this timestamp is seconds
+    // since epoch and it does not hold any information regarding the
+    // current timezone.
+    expectGT(timeInSeconds, todaySeconds);
+
+    const newTimezone = await testBrowserProxy.whenCalled('setTimezone');
+    expectEquals('America/Los_Angeles', newTimezone);
   });
 
-  suite('NullTimezone', () => {
+  suite('HideTimezone', () => {
     suiteSetup(() => {
-      loadTimeData.overrideValues({
-        currentTimezoneId: '',
-        timezoneList: [],
-      });
+      loadTimeData.overrideValues({showTimezone: false});
     });
 
-    test('SetDateNullTimezone', () => {
+    test('SetDate', async () => {
       const dateInput = setTimeElement.$$('#dateInput');
       assertTrue(!!dateInput);
 
@@ -208,19 +214,30 @@ suite('SetTimeDialog', function() {
       dateInput.valueAsDate = twoDaysAgo;
       setTimeElement.$$('#doneButton').click();
 
-      assertEquals(0, testBrowserProxy.getCallCount('setTimezone'));
+      // The browser validates the change.
+      await testBrowserProxy.whenCalled('doneClicked');
+      cr.webUIListenerCallback('validation-complete');
 
       // Verify the page sends a request to move time backward.
-      return testBrowserProxy.whenCalled('setTimeInSeconds')
-          .then(newTimeSeconds => {
-            const todaySeconds = today.getTime() / 1000;
-            // Check that the current time is bigger than the new time, which
-            // is supposed to be two days ago. The exact value isn't
-            // important, checking it is difficult because it depends on the
-            // current time, which is constantly updated, therefore we only
-            // assert that one is bigger than the other.
-            assertGT(todaySeconds, newTimeSeconds);
-          });
+      const newTimeSeconds =
+          await testBrowserProxy.whenCalled('setTimeInSeconds');
+      const todaySeconds = today.getTime() / 1000;
+      // Check that the current time is bigger than the new time, which
+      // is supposed to be two days ago. The exact value isn't
+      // important, checking it is difficult because it depends on the
+      // current time, which is constantly updated, therefore we only
+      // assert that one is bigger than the other.
+      assertGT(todaySeconds, newTimeSeconds);
+
+      // Verify the page didn't try to change the timezone.
+      assertEquals(0, testBrowserProxy.getCallCount('setTimezone'));
+    });
+
+    test('TimezoneUpdate', () => {
+      assertEquals(null, setTimeElement.$$('#timezoneSelect'));
+      cr.webUIListenerCallback(
+          'system-timezone-changed', 'America/Los_Angeles');
+      // No crash.
     });
   });
 });

@@ -3,7 +3,8 @@
   "manifest_version": 2,
   "name": "Tests whether an extension can inject script into file frames",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "permissions": ["<all_urls>", "tabs"]
 }

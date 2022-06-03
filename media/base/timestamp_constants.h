@@ -5,21 +5,15 @@
 #ifndef MEDIA_BASE_TIMESTAMP_CONSTANTS_H_
 #define MEDIA_BASE_TIMESTAMP_CONSTANTS_H_
 
-#include <stdint.h>
-
-#include <limits>
-
 #include "base/time/time.h"
 
 namespace media {
 
 // Indicates an invalid or missing timestamp.
-constexpr base::TimeDelta kNoTimestamp =
-    base::TimeDelta::FromMicroseconds(std::numeric_limits<int64_t>::min());
+constexpr base::TimeDelta kNoTimestamp = base::TimeDelta::Min();
 
 // Represents an infinite stream duration.
-constexpr base::TimeDelta kInfiniteDuration =
-    base::TimeDelta::FromMicroseconds(std::numeric_limits<int64_t>::max());
+constexpr base::TimeDelta kInfiniteDuration = base::TimeDelta::Max();
 
 }  // namespace media
 

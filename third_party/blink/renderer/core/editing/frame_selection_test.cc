@@ -37,10 +37,11 @@ namespace blink {
 class FrameSelectionTest : public EditingTestBase {
  public:
   FrameSelectionTest()
-      : root_paint_property_client_("root"),
-        root_paint_chunk_id_(root_paint_property_client_,
+      : root_paint_property_client_(
+            MakeGarbageCollected<FakeDisplayItemClient>("root")),
+        root_paint_chunk_id_(root_paint_property_client_->Id(),
                              DisplayItem::kUninitializedType) {}
-  FakeDisplayItemClient root_paint_property_client_;
+  Persistent<FakeDisplayItemClient> root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
 
  protected:
@@ -48,7 +49,7 @@ class FrameSelectionTest : public EditingTestBase {
     return Selection().ComputeVisibleSelectionInDOMTree();
   }
   VisibleSelectionInFlatTree GetVisibleSelectionInFlatTree() const {
-    return Selection().GetSelectionInFlatTree();
+    return Selection().ComputeVisibleSelectionInFlatTree();
   }
 
   Text* AppendTextNode(const String& data);
@@ -126,28 +127,30 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
   GetDocument().body()->focus();
   EXPECT_TRUE(GetDocument().body()->IsFocused());
 
-  Selection().SetCaretVisible(true);
+  Selection().SetCaretEnabled(true);
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 0)).Build());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsCaret());
-  EXPECT_TRUE(To<LayoutBlock>(GetDocument().body()->GetLayoutObject())
-                  ->ShouldPaintCursorCaret());
+  EXPECT_TRUE(Selection().ShouldPaintCaret(
+      *To<LayoutBlock>(GetDocument().body()->GetLayoutObject())));
 
   unsigned start_count = LayoutCount();
   {
     // To force layout in next updateLayout calling, widen view.
     LocalFrameView& frame_view = GetDummyPageHolder().GetFrameView();
     IntRect frame_rect = frame_view.FrameRect();
-    frame_rect.SetWidth(frame_rect.Width() + 1);
-    frame_rect.SetHeight(frame_rect.Height() + 1);
+    frame_rect.set_width(frame_rect.width() + 1);
+    frame_rect.set_height(frame_rect.height() + 1);
     GetDummyPageHolder().GetFrameView().SetFrameRect(frame_rect);
   }
-  auto paint_controller = std::make_unique<PaintController>();
+  auto paint_controller =
+      std::make_unique<PaintController>(PaintController::kTransient);
   {
     GraphicsContext context(*paint_controller);
     paint_controller->UpdateCurrentPaintChunkProperties(
-        root_paint_chunk_id_, PropertyTreeState::Root());
+        root_paint_chunk_id_, *root_paint_property_client_,
+        PropertyTreeState::Root());
     Selection().PaintCaret(context, PhysicalOffset());
   }
   paint_controller->CommitNewDisplayItems();
@@ -188,7 +191,7 @@ TEST_F(FrameSelectionTest, SelectWordAroundCaret2) {
 
 TEST_F(FrameSelectionTest, ModifyExtendWithFlatTree) {
   SetBodyContent("<span id=host></span>one");
-  SetShadowContent("two<content></content>", "host");
+  SetShadowContent("two<slot></slot>", "host");
   Element* host = GetDocument().getElementById("host");
   Node* const two = FlatTreeTraversal::FirstChild(*host);
   // Select "two" for selection in DOM tree
@@ -272,7 +275,7 @@ TEST_F(FrameSelectionTest, MoveRangeSelectionNoLiveness) {
   EXPECT_EQ("xyz", Selection().SelectedText());
   sample->insertBefore(Text::Create(GetDocument(), "abc"),
                        sample->firstChild());
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   const VisibleSelection& selection =
       Selection().ComputeVisibleSelectionInDOMTree();
   // Inserting "abc" before "xyz" should not affect to selection.
@@ -307,7 +310,7 @@ TEST_F(FrameSelectionTest, SelectAllWithInputElement) {
 TEST_F(FrameSelectionTest, SelectAllWithUnselectableRoot) {
   Element* select = GetDocument().CreateRawElement(html_names::kSelectTag);
   GetDocument().ReplaceChild(select, GetDocument().documentElement());
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectAll();
   EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsNone())
       << "Nothing should be selected if the "
@@ -606,10 +609,10 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInDisabledTextControl) {
   // FrameSelection::SelectAll (= textarea.select() in JavaScript) would have
   // been shorter, but currently that doesn't work on a *disabled* text control.
   const IntRect elem_bounds = textarea->BoundsInViewport();
-  WebMouseEvent double_click(WebMouseEvent::kMouseDown, 0,
+  WebMouseEvent double_click(WebMouseEvent::Type::kMouseDown, 0,
                              WebInputEvent::GetStaticTimeStampForTests());
-  double_click.SetPositionInWidget(elem_bounds.X(), elem_bounds.Y());
-  double_click.SetPositionInScreen(elem_bounds.X(), elem_bounds.Y());
+  double_click.SetPositionInWidget(elem_bounds.x(), elem_bounds.y());
+  double_click.SetPositionInScreen(elem_bounds.x(), elem_bounds.y());
   double_click.button = WebMouseEvent::Button::kLeft;
   double_click.click_count = 2;
   double_click.SetFrameScale(1);
@@ -1063,8 +1066,8 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
   // bottom is visible. The unclipped selection bounds should not be clipped.
   const int scroll_offset = 500;
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->LayoutViewport()->SetScrollOffset(ScrollOffset(0, scroll_offset),
-                                                kProgrammaticScroll);
+  frame_view->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
   EXPECT_EQ(PhysicalRect(0, node_margin_top, node_width, node_height),
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
 
@@ -1100,6 +1103,37 @@ TEST_F(FrameSelectionTest, SelectedTextForClipboardEntersTextControls) {
       SetSelectionTextToBody("^foo<input value=\"bar\">baz|"),
       SetSelectionOptions());
   EXPECT_EQ("foo\nbar\nbaz", Selection().SelectedTextForClipboard());
+}
+
+// For https://crbug.com/1177295
+TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
+  SetBodyContent("<div id=host>x</div>y");
+  SetShadowContent("", "host");
+  Element* host = GetElementById("host");
+  Node* text = host->firstChild();
+  Position positions[] = {
+      Position::BeforeNode(*host),         Position::FirstPositionInNode(*host),
+      Position::LastPositionInNode(*host), Position::AfterNode(*host),
+      Position::BeforeNode(*text),         Position::FirstPositionInNode(*text),
+      Position::LastPositionInNode(*text), Position::AfterNode(*text)};
+  for (const Position& base : positions) {
+    EXPECT_TRUE(base.IsConnected());
+    bool flat_base_is_connected = ToPositionInFlatTree(base).IsConnected();
+    EXPECT_EQ(base.AnchorNode() == host, flat_base_is_connected);
+    for (const Position& extent : positions) {
+      const SelectionInDOMTree& selection =
+          SelectionInDOMTree::Builder().SetBaseAndExtent(base, extent).Build();
+      Selection().SetSelection(selection, SetSelectionOptions());
+      EXPECT_TRUE(extent.IsConnected());
+      bool flat_extent_is_connected =
+          ToPositionInFlatTree(selection.Extent()).IsConnected();
+      EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
+                    ? "<div id=\"host\"></div>|y"
+                    : "<div id=\"host\"></div>y",
+                GetSelectionTextInFlatTreeFromBody(
+                    GetVisibleSelectionInFlatTree().AsSelection()));
+    }
+  }
 }
 
 }  // namespace blink

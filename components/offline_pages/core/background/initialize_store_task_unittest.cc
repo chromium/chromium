@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
@@ -41,7 +42,7 @@ TEST_F(InitializeStoreTaskTest, SuccessfulInitialization) {
   InitializeStoreTask task(
       &store_, base::BindOnce(&InitializeStoreTaskTest::InitializeCallback,
                               base::Unretained(this)));
-  task.Run();
+  task.Execute(base::DoNothing());
   PumpLoop();
   EXPECT_TRUE(callback_called());
   EXPECT_TRUE(last_call_successful());
@@ -54,7 +55,7 @@ TEST_F(InitializeStoreTaskTest, SuccessfulReset) {
   InitializeStoreTask task(
       &store_, base::BindOnce(&InitializeStoreTaskTest::InitializeCallback,
                               base::Unretained(this)));
-  task.Run();
+  task.Execute(base::DoNothing());
 
   PumpLoop();
 
@@ -71,7 +72,7 @@ TEST_F(InitializeStoreTaskTest, FailedReset) {
   InitializeStoreTask task(
       &store_, base::BindOnce(&InitializeStoreTaskTest::InitializeCallback,
                               base::Unretained(this)));
-  task.Run();
+  task.Execute(base::DoNothing());
   PumpLoop();
   EXPECT_TRUE(callback_called());
   EXPECT_FALSE(last_call_successful());

@@ -32,8 +32,8 @@ chrome.app.runtime.onLaunched.addListener(function() {
                                e.message);
         failedToAddLast = true;
       }
-      chrome.test.assertBool(
-          true, failedToAddLast,
+      chrome.test.assertTrue(
+          failedToAddLast,
           "there should be an error when adding the 11th listener");
 
       listeners.forEach(function(x) {

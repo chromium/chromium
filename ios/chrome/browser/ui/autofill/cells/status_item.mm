@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/status_item.h"
 
-#include "base/logging.h"
+#import <MaterialComponents/MaterialActivityIndicator.h>
+#import <MaterialComponents/MaterialTypography.h>
+
+#include "base/check.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
-#import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MaterialActivityIndicator.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

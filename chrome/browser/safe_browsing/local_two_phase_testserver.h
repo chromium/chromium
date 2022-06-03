@@ -5,30 +5,35 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_LOCAL_TWO_PHASE_TESTSERVER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_LOCAL_TWO_PHASE_TESTSERVER_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "net/test/spawned_test_server/local_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
 
 namespace safe_browsing {
 
-// Runs a Python-based two phase upload test server on the same machine in which
-// the LocalTwoPhaseTestServer runs.
-class LocalTwoPhaseTestServer : public net::LocalTestServer {
+// Runs an in-process two phase upload test server.
+class LocalTwoPhaseTestServer {
  public:
   // Initialize a two phase protocol test server.
   LocalTwoPhaseTestServer();
 
-  ~LocalTwoPhaseTestServer() override;
+  LocalTwoPhaseTestServer(const LocalTwoPhaseTestServer&) = delete;
+  LocalTwoPhaseTestServer& operator=(const LocalTwoPhaseTestServer&) = delete;
 
-  // Returns the path to two_phase_testserver.py.
-  bool GetTestServerPath(base::FilePath* testserver_path) const override;
+  ~LocalTwoPhaseTestServer();
+
+  GURL GetURL(const std::string& relative_path) {
+    return embedded_test_server_.GetURL(relative_path);
+  }
+
+  bool Start() WARN_UNUSED_RESULT { return embedded_test_server_.Start(); }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LocalTwoPhaseTestServer);
+  net::EmbeddedTestServer embedded_test_server_;
 };
 
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_LOCAL_TWO_PHASE_TESTSERVER_H_
-

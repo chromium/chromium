@@ -5,5 +5,5 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUFenceDescriptor : GPUObjectDescriptorBase {
-    unsigned long long initialValue = 0;
+    GPUFenceValue initialValue = 0;
 };

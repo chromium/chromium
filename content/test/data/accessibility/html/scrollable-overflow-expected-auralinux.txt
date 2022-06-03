@@ -1,0 +1,39 @@
+[document web]
+++[paragraph]
+++++[static] name='no overflow'
+++[paragraph]
+++++[static] name='clipped large lots of text more text'
+++[entry] selectable-text class:textarea scrollable
+++[section]
+++++[paragraph]
+++++++[static] name='tiny'
+++[panel] class:x-overflow-group
+++++[section] class:x-hidden-small not-scrollable
+++++++[paragraph]
+++++++++[static] name='x=hidden'
+++++[section] name='x=hidden' class:x-hidden-large scrollable
+++++++[paragraph]
+++++++++[static] name='x=hidden'
+++++[section] name='x=auto' class:x-auto scrollable
+++++++[paragraph]
+++++++++[static] name='x=auto'
+++++[section] name='x=scroll' class:x-scroll scrollable
+++++++[paragraph]
+++++++++[static] name='x=scroll'
+++++[paragraph]
+++++++[static] name='x=visible'
+++[panel] class:y-overflow-group
+++++[section] class:y-hidden-small not-scrollable
+++++++[paragraph]
+++++++++[static] name='y=hidden'
+++++[section] name='y=hidden' class:y-hidden-large scrollable
+++++++[paragraph]
+++++++++[static] name='y=hidden'
+++++[section] name='y=auto' class:y-auto scrollable
+++++++[paragraph]
+++++++++[static] name='y=auto'
+++++[section] name='y=scroll' class:y-scroll scrollable
+++++++[paragraph]
+++++++++[static] name='y=scroll'
+++++[paragraph]
+++++++[static] name='y=visible'

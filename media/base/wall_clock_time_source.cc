@@ -94,8 +94,8 @@ base::TimeDelta WallClockTimeSource::CurrentMediaTime_Locked() {
 
   base::TimeTicks now = tick_clock_->NowTicks();
   return base_timestamp_ +
-         base::TimeDelta::FromMicroseconds(
-             (now - reference_time_).InMicroseconds() * playback_rate_);
+         base::Microseconds((now - reference_time_).InMicroseconds() *
+                            playback_rate_);
 }
 
 }  // namespace media

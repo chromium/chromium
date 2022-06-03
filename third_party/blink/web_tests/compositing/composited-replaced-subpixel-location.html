@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <style>
 img {
-  width: 40.4px;
-  height: 30.3px;
-  will-change: transform;
+  width: 70.4px;
+  height: 50.3px;
+  /* Not using will-change:transform because it ignores subpixel accumulation. */ 
+  will-change: opacity;
 }
 </style>
 <div>

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS outerHTML with html assigned via policy (successful HTML transformation).
-PASS `outerHTML = string` throws.
-PASS `outerHTML = null` throws.
-PASS `outerHTML = string` assigned via default policy (successful HTML transformation).
-FAIL `outerHTML = null` assigned via default policy does not throw assert_equals: expected "null" but got ""
-Harness: the test ran to completion.
-

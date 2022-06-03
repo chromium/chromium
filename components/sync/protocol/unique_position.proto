@@ -53,7 +53,7 @@ message UniquePosition {
   // The uncompressed string of bytes representing the position.
   //
   // Deprecated.  See history note above.
-  optional bytes value = 1;
+  optional bytes value = 1 [deprecated = true];
 
   // The client may choose to write a compressed position to this field instead
   // of populating the 'value' above.  If it chooses to use compression, the
@@ -63,8 +63,8 @@ message UniquePosition {
   // uncompressed_length field.
   //
   // Deprecated.  See history note above.
-  optional bytes compressed_value = 2;
-  optional uint64 uncompressed_length = 3;
+  optional bytes compressed_value = 2 [deprecated = true];
+  optional uint64 uncompressed_length = 3 [deprecated = true];
 
   // This encoding uses compression scheme designed especially for unique
   // positions.  It has the property that X < Y precisely when Compressed(X) <

@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace gfx {
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -55,6 +55,7 @@ class CoverageTest(unittest.TestCase):
                                                    'report1_no_components')
     self.REPORT_DIR_2 = os.path.join(self.BUILD_DIR, 'report2')
     self.REPORT_DIR_3 = os.path.join(self.BUILD_DIR, 'report3')
+    self.REPORT_DIR_4 = os.path.join(self.BUILD_DIR, 'report4')
 
     self.LLVM_COV = os.path.join(self.CHROMIUM_SRC_DIR, 'third_party',
                                  'llvm-build', 'Release+Asserts', 'bin',
@@ -123,6 +124,15 @@ class CoverageTest(unittest.TestCase):
     with open(filepath) as f:
       data = f.read()
 
+    self.assertGreater(data.count('crypto'), 100)
+    self.assertGreater(data.count('libpng'), 10)
+
+  def verify_lcov_file(self, filepath):
+    """Asserts that a given lcov file looks correct."""
+    with open(filepath) as f:
+      data = f.read()
+
+    self.assertGreater(data.count('SF:'), 100)
     self.assertGreater(data.count('crypto'), 100)
     self.assertGreater(data.count('libpng'), 10)
 
@@ -266,7 +276,7 @@ class CoverageTest(unittest.TestCase):
     summary_output = self.run_cmd(cmd)
 
     summary_path = os.path.join(self.REPORT_DIR_3, 'summary.json')
-    with open(summary_path, 'w') as f:
+    with open(summary_path, 'wb') as f:
       f.write(summary_output)
 
     cmd = [
@@ -295,6 +305,28 @@ class CoverageTest(unittest.TestCase):
         os.path.join(self.REPORT_DIR_3, self.PLATFORM, 'file_view_index.html'))
     self.assertEqual(report_1_file_view_data_no_component,
                      report_3_file_view_data)
+
+    # Testcase 4. Export coverage data in lcov format using coverage.py script.
+    cmd = [
+        self.COVERAGE_SCRIPT,
+        'crypto_unittests',
+        'libpng_read_fuzzer',
+        '--format',
+        'lcov',
+        '-v',
+        '-b',
+        self.BUILD_DIR,
+        '-o',
+        self.REPORT_DIR_4,
+        '-c'
+        '%s/crypto_unittests' % self.BUILD_DIR,
+        '-c',
+        '%s/libpng_read_fuzzer -runs=0 third_party/libpng/' % self.BUILD_DIR,
+    ]
+    self.run_cmd(cmd)
+
+    output_dir = os.path.join(self.REPORT_DIR_4, self.PLATFORM)
+    self.verify_lcov_file(os.path.join(output_dir, 'coverage.lcov'))
 
 
 if __name__ == '__main__':

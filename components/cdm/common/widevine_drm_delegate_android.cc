@@ -4,7 +4,7 @@
 
 #include "components/cdm/common/widevine_drm_delegate_android.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/cdm/cenc_utils.h"
 
 namespace cdm {

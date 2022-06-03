@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GL_CONTEXT_VIRTUAL_H_
 
 #include <string>
-#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -30,10 +29,13 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
                    gl::GLContext* shared_context,
                    base::WeakPtr<GLContextVirtualDelegate> delegate);
 
+  GLContextVirtual(const GLContextVirtual&) = delete;
+  GLContextVirtual& operator=(const GLContextVirtual&) = delete;
+
   // Implement GLContext.
   bool Initialize(gl::GLSurface* compatible_surface,
                   const gl::GLContextAttribs& attribs) override;
-  bool MakeCurrent(gl::GLSurface* surface) override;
+  bool MakeCurrentImpl(gl::GLSurface* surface) override;
   void ReleaseCurrent(gl::GLSurface* surface) override;
   bool IsCurrent(gl::GLSurface* surface) override;
   void* GetHandle() override;
@@ -42,12 +44,12 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   std::string GetGLRenderer() override;
   const gfx::ExtensionSet& GetExtensions() override;
   void SetSafeToForceGpuSwitch() override;
-  unsigned int CheckStickyGraphicsResetStatus() override;
+  unsigned int CheckStickyGraphicsResetStatusImpl() override;
   void SetUnbindFboOnMakeCurrent() override;
   gl::YUVToRGBConverter* GetYUVToRGBConverter(
       const gfx::ColorSpace& color_space) override;
   void ForceReleaseVirtuallyCurrent() override;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   uint64_t BackpressureFenceCreate() override;
   void BackpressureFenceWait(uint64_t fence) override;
   void FlushForDriverCrashWorkaround() override;
@@ -62,8 +64,6 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
 
   scoped_refptr<gl::GLContext> shared_context_;
   base::WeakPtr<GLContextVirtualDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextVirtual);
 };
 
 }  // namespace gpu

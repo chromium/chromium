@@ -1,0 +1,146 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/coverage/coverage.gni")
+import("//build/config/ios/ios_sdk.gni")
+import("//build/util/generate_wrapper.gni")
+
+# Invokes generate_wrapper to create an executable script wrapping iOS'
+# run.py with baked in arguments. Only takes effect when test entry in
+# gn_isolate_map.pyl is updated to type="generated_script" with script
+# set to the wrapper output path.
+#
+# Arguments:
+#
+# data
+#   (optional, default [ "//ios/build/bots/scripts/" ]) list of files or
+#   directories required to run target
+#
+# data_deps
+#   (optional) list of target non-linked labels
+#
+# deps
+#   (optional) list of files or directories required to run target
+#
+# executable_args
+#   (optional) a list of string arguments to pass to run.py
+#
+# retries
+#   (optional, default 3) number of retry attempts
+#
+# shards
+#   (optional, default 1) number of shards to execute tests in parallel. not
+#   the same as swarming shards.
+#
+# wrapper_output_name
+#   (optional, default "run_${target_name}") name of the wrapper script
+#
+template("ios_test_runner_wrapper") {
+  generate_wrapper(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "retries",
+                             "shards",
+                             "wrapper_output_name",
+                           ])
+    testonly = true
+    executable = "//testing/test_env.py"
+
+    # iOS main test runner
+    _runner_path =
+        rebase_path("//ios/build/bots/scripts/run.py", root_build_dir)
+
+    executable_args = [ "@WrappedPath(${_runner_path})" ]
+
+    # arguments passed to run.py
+    if (defined(invoker.executable_args)) {
+      executable_args += invoker.executable_args
+    }
+
+    _rebased_mac_toolchain = rebase_path("//mac_toolchain", root_build_dir)
+    _rebased_xcode_path = rebase_path("//Xcode.app", root_build_dir)
+    _rebased_ios_runtime_cache_prefix =
+        rebase_path("//Runtime-ios-", root_build_dir)
+
+    # --out-dir argument is specified in gn_isolate_map.pyl because
+    # ${ISOLATED_OUTDIR} doesn't get resolved through this wrapper.
+    executable_args += [
+      "--xcode-path",
+      "@WrappedPath(${_rebased_xcode_path})",
+      "--mac-toolchain-cmd",
+      "@WrappedPath(${_rebased_mac_toolchain})",
+      "--runtime-cache-prefix",
+      "@WrappedPath(${_rebased_ios_runtime_cache_prefix})",
+    ]
+
+    # Default retries to 3
+    if (!defined(retries)) {
+      retries = 3
+    }
+    executable_args += [
+      "--retries",
+      "${retries}",
+    ]
+
+    # Default shards to 1
+    if (!defined(shards)) {
+      shards = 1
+    }
+    executable_args += [
+      "--shards",
+      "${shards}",
+    ]
+
+    data_deps = [ "//testing:test_scripts_shared" ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+
+    # test runner relies on iossim for simulator builds.
+    if (target_environment == "simulator") {
+      _rebased_root_build_dir = rebase_path("${root_build_dir}", root_build_dir)
+      data_deps += [ "//testing/iossim" ]
+
+      executable_args += [
+        "--iossim",
+        "@WrappedPath(${_rebased_root_build_dir}/iossim)",
+      ]
+    }
+
+    if (use_clang_coverage) {
+      executable_args += [ "--use-clang-coverage" ]
+    }
+
+    if (!is_debug) {
+      executable_args += [ "--release" ]
+    }
+
+    # wrapper script output name and path
+    if (!defined(wrapper_output_name)) {
+      _wrapper_output_name = "run_${target_name}"
+    } else {
+      _wrapper_output_name = wrapper_output_name
+    }
+
+    # Test targets may attempt to generate multiple wrappers for a suite with
+    # multiple different toolchains when running with additional_target_cpus.
+    # Generate the wrapper script into root_out_dir rather than root_build_dir
+    # to ensure those wrappers are distinct.
+    wrapper_script = "${root_out_dir}/bin/${_wrapper_output_name}"
+
+    data = []
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
+    data += [
+      "//.vpython",
+      "//ios/build/bots/scripts/",
+
+      # Variations test utilities used by variations_runner script.
+      "//testing/scripts/variations_seed_access_helper.py",
+      "//testing/test_env.py",
+    ]
+  }
+}

@@ -1,6 +1,9 @@
 <html>
 <head>
 <script>
+if (window.testRunner)
+    testRunner.waitUntilDone();
+
 function runTests() {
     if (window.testRunner) {
         testRunner.dumpAsText();
@@ -9,9 +12,11 @@ function runTests() {
 
     document.title = 'New non-empty title';
     document.title = '';
+    if (window.testRunner)
+        testRunner.notifyDone();
 }
 </script>
 </head>
-<body onload='runTests();'>
+<body onload="setTimeout(runTests, 0);" >
 </body>
 </html>

@@ -197,7 +197,7 @@ function testRemoveSelf(page, pattern) {
   var kDefaultPattern = /</;
 
   if (page.includes('start')) {
-    pattern = pattern || /^<html><\/html>$/;
+    pattern = pattern || /^<\s*html[^>]*><\/html>$/;
     pattern = TEST_HOST === 'synchronous' ? pattern : kDefaultPattern;
   } else if (page.includes('end')) {
     pattern = pattern || kDefaultPattern;

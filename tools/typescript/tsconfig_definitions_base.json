@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "noEmitOnError": true,
+
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "pretty": true,
+    "removeComments": true,
+    "listEmittedFiles": true
+  }
+}

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -18,7 +18,7 @@ import shutil
 import subprocess
 import sys
 
-from build import GetCommitCount, CheckoutLLVM, LLVM_DIR
+from build import CheckoutLLVM, GetCommitDescription, LLVM_DIR
 from update import CHROMIUM_DIR
 
 # Path constants.
@@ -26,30 +26,51 @@ THIS_DIR = os.path.dirname(__file__)
 UPDATE_PY_PATH = os.path.join(THIS_DIR, "update.py")
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 
+# Keep lines in here at <= 72 columns, else they wrap in gerrit.
+COMMIT_FOOTER = \
+'''
+Bug: TODO. Remove the Tricium: line below when filling this in.
+Tricium: skip
+Cq-Include-Trybots: chromium/try:android-asan
+Cq-Include-Trybots: chromium/try:chromeos-amd64-generic-cfi-thin-lto-rel
+Cq-Include-Trybots: chromium/try:dawn-win10-x86-deps-rel
+Cq-Include-Trybots: chromium/try:linux-chromeos-dbg
+Cq-Include-Trybots: chromium/try:linux_chromium_cfi_rel_ng
+Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
+Cq-Include-Trybots: chromium/try:linux_chromium_compile_dbg_32_ng
+Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
+Cq-Include-Trybots: chromium/try:mac11-arm64-rel,mac_chromium_asan_rel_ng
+Cq-Include-Trybots: chromium/try:win-asan,win7-rel
+Cq-Include-Trybots: chromium/try:android-official,fuchsia-official
+Cq-Include-Trybots: chromium/try:mac-official,linux-official
+Cq-Include-Trybots: chromium/try:win-official,win32-official
+Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
+Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
+Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,mac-chrome
+Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
+'''
+
 is_win = sys.platform.startswith('win32')
 
-def PatchRevision(clang_git_revision, clang_svn_revision, clang_sub_revision):
-  with open(UPDATE_PY_PATH, 'rb') as f:
+
+def PatchRevision(clang_git_revision, clang_sub_revision):
+  with open(UPDATE_PY_PATH) as f:
     content = f.read()
-  m = re.search("CLANG_REVISION = '([0-9a-f]+)'", content)
+  m = re.search("CLANG_REVISION = '([0-9a-z-]+)'", content)
   clang_old_git_revision = m.group(1)
-  m = re.search("CLANG_SVN_REVISION = '(n[0-9]+)'", content)
-  clang_old_svn_revision = m.group(1)
   m = re.search("CLANG_SUB_REVISION = ([0-9]+)", content)
   clang_old_sub_revision = m.group(1)
 
-  content = re.sub("CLANG_REVISION = '[0-9a-f]+'",
+  content = re.sub("CLANG_REVISION = '[0-9a-z-]+'",
                    "CLANG_REVISION = '{}'".format(clang_git_revision),
-                   content, count=1)
-  content = re.sub("CLANG_SVN_REVISION = 'n[0-9]+'",
-                   "CLANG_SVN_REVISION = '{}'".format(clang_svn_revision),
-                   content, count=1)
+                   content,
+                   count=1)
   content = re.sub("CLANG_SUB_REVISION = [0-9]+",
                    "CLANG_SUB_REVISION = {}".format(clang_sub_revision),
                    content, count=1)
-  with open(UPDATE_PY_PATH, 'wb') as f:
+  with open(UPDATE_PY_PATH, 'w') as f:
     f.write(content)
-  return clang_old_git_revision, clang_old_svn_revision, clang_old_sub_revision
+  return "{}-{}".format(clang_old_git_revision, clang_old_sub_revision)
 
 
 def Git(args):
@@ -66,45 +87,37 @@ def main():
 
   args = parser.parse_args()
 
-  clang_git_revision = args.clang_git_revision[0]
+  clang_raw_git_revision = args.clang_git_revision[0]
 
-  # To get the commit count, we need a checkout.
-  CheckoutLLVM(clang_git_revision, LLVM_DIR);
-  clang_svn_revision = 'n' + GetCommitCount(clang_git_revision)
+  # To `git describe`, we need a checkout.
+  CheckoutLLVM(clang_raw_git_revision, LLVM_DIR)
+  clang_git_revision = GetCommitDescription(clang_raw_git_revision)
   clang_sub_revision = args.clang_sub_revision
 
-  # Needs shell=True on Windows due to git.bat in depot_tools.
   os.chdir(CHROMIUM_DIR)
-  git_revision = subprocess.check_output(
-      ["git", "rev-parse", "origin/master"], shell=is_win).strip()
 
-  print("Making a patch for Clang {}-{}-{}".format(
-      clang_svn_revision, clang_git_revision[:8], clang_sub_revision))
-  print("Chrome revision: {}".format(git_revision))
+  print("Making a patch for Clang {}-{}".format(clang_git_revision,
+                                                clang_sub_revision))
 
-  clang_old_git_revision, clang_old_svn_revision, clang_old_sub_revision = \
-      PatchRevision(clang_git_revision, clang_svn_revision, clang_sub_revision)
+  rev_string = "{}-{}".format(clang_git_revision, clang_sub_revision)
+  Git(["checkout", "origin/main", "-b", "clang-{}".format(rev_string)])
 
-  rev_string = "{}-{}-{}".format(clang_svn_revision,
-                                 clang_git_revision[:8],
-                                 clang_sub_revision)
-  Git(["checkout", "-b", "clang-{}".format(rev_string)])
+  old_rev_string = PatchRevision(clang_git_revision, clang_sub_revision)
+
   Git(["add", UPDATE_PY_PATH])
 
-  old_rev_string = "{}-{}-{}".format(clang_old_svn_revision,
-                                     clang_old_git_revision[:8],
-                                     clang_old_sub_revision)
-
-  commit_message = 'Ran `{}`.'.format(' '.join(sys.argv))
-  Git(["commit", "-m", "Roll clang {} : {}.\n\n{}".format(
-      old_rev_string, rev_string, commit_message)])
+  commit_message = 'Ran `{}`.'.format(' '.join(sys.argv)) + COMMIT_FOOTER
+  Git([
+      "commit", "-m",
+      "Roll clang {} : {}\n\n{}".format(old_rev_string, rev_string,
+                                        commit_message)
+  ])
 
   Git(["cl", "upload", "-f", "--bypass-hooks"])
-  Git(["cl", "try", "-B", "chromium/try",
-       "-b", "linux_upload_clang",
-       "-b", "mac_upload_clang",
-       "-b", "win_upload_clang",
-       "-r", git_revision])
+  Git([
+      "cl", "try", "-B", "chromium/try", "-b", "linux_upload_clang", "-b",
+      "mac_upload_clang", "-b", "mac_upload_clang_arm", "-b", "win_upload_clang"
+  ])
 
   print ("Please, wait until the try bots succeeded "
          "and then push the binaries to goma.")

@@ -1,0 +1,131 @@
+<!--
+@AURALINUX-DENY:*
+@AURALINUX-ALLOW:STATE-CHANGE:EXPANDED*
+@AURALINUX-ALLOW:STATE-CHANGE:SHOWING*
+@MAC-DENY:*
+@MAC-ALLOW:AXExpandedChanged*
+@MAC-ALLOW:AXMenu*
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
+@WIN-ALLOW:EVENT_SYSTEM_MENUPOPUP*
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:ExpandCollapse*
+@UIA-WIN-ALLOW:Menu*
+@UIA-WIN-ALLOW:Name*
+-->
+<!DOCTYPE html>
+<style>
+ul { list-style-type: none;}
+</style>
+<ul role="menubar" id="menubar">
+  <li role="menuitem" id="file-menuitem" aria-haspopup="true" aria-label="File">File
+    <ul role="menu" id="file-menu" aria-label="File">
+      <li role="menuitem" id="new-menuitem" aria-haspopup="true" aria-label="New">New
+	<ul role="menu" id="new-menu" aria-label="New">
+	  <li role="menuitem">Document</li>
+	  <li role="menuitem">Spreadsheet</li>
+	  <li role="menuitem">Presentation</li>
+	</ul>
+      </li>
+      <li role="menuitem">Open...</li>
+      <li role="menuitem">Quit</li>
+    </ul>
+  </li>
+  <li role="menuitem">About</li>
+</ul>
+<span id="status" tabindex="0"></span>
+<script>
+  fileMenu = document.getElementById("file-menu");
+  fileMenuItem = document.getElementById("file-menuitem");
+  newMenu = document.getElementById("new-menu");
+  newMenuItem = document.getElementById("new-menuitem");
+  menubar = document.getElementById("menubar");
+  setInitialState();
+
+  function setInitialState() {
+    newMenu.style.display = "none";
+    newMenuItem.setAttribute("aria-expanded", "false");
+    fileMenu.style.display = "none";
+    fileMenuItem.setAttribute("aria-expanded", "false");
+  }
+
+  function updateStatus(string) {
+    document.getElementById("status").innerText = string;
+  }
+
+  function openFileMenu() {
+    fileMenu.style.display = "block";
+    fileMenuItem.setAttribute("aria-expanded", "true");
+    updateStatus("open file done");
+  }
+
+  function closeFileMenu() {
+    fileMenu.style.display = "none";
+    fileMenuItem.setAttribute("aria-expanded", "false");
+  }
+
+  function openNewMenu() {
+    newMenu.style.display = "block";
+    newMenuItem.setAttribute("aria-expanded", "true");
+    updateStatus("open new done");
+  }
+
+  function closeNewMenu() {
+    newMenu.style.display = "none";
+    newMenuItem.setAttribute("aria-expanded", "false");
+  }
+
+  function openFileAndNewMenus() {
+    // We don't call openFileMenu() and openNewMenu() here because those
+    // functions also call updateStatus() which might cause the event
+    // recorder to conclude it had obtained every event.
+    fileMenu.style.display = "block";
+    fileMenuItem.setAttribute("aria-expanded", "true");
+    newMenu.style.display = "block";
+    newMenuItem.setAttribute("aria-expanded", "true");
+    updateStatus("open file and new done");
+  }
+
+  function closeFileAndNewMenus() {
+    closeNewMenu();
+    closeFileMenu();
+    updateStatus("close file and new done");
+  }
+
+  function hideMenubar() {
+    menubar.style.display = "none";
+    updateStatus("hide menubar done");
+  }
+
+  function showMenubar() {
+    setInitialState();
+    menubar.style.display = "block";
+    updateStatus("show menubar done");
+  }
+
+  const go_passes = [
+    () => openFileAndNewMenus(),
+    () => closeFileAndNewMenus(),
+
+    // This should not generate any events because the parent container has
+    // display:none.
+    () => openNewMenu(),
+
+    // This should generate events for both menus, because functionally they
+    // are now both being displayed.
+    () => openFileMenu(),
+
+    // When the menubar is hidden, we want to be sure menus which fired events
+    // to notify they were showing also fire events notifying they were closed.
+    () => hideMenubar(),
+
+    // There should be no menu-related events here.
+    () => showMenubar(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

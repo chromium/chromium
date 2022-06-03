@@ -1,5 +1,11 @@
 # Quick Start Guide to using BackgroundTaskScheduler
 
+## Overview
+
+This document describes how to schedule a background task in Android using
+BackgroundTaskScheduler API. Although most of the examples are described in
+Java, the exact same API is available in C++ as well.
+
 ## Background
 
 In Android M+ it is encouraged to use `JobScheduler` for all background jobs,
@@ -76,14 +82,14 @@ such as when to run it, whether it requires battery, and other similar
 constraints. This object is called `TaskInfo` and has a builder you can use
 to set all the relevant fields.
 
-There are two main types of tasks; one-off tasks and periodic tasks. One-off
+There are three main types of tasks; one-off tasks, periodic tasks, and exact timing info tasks. One-off
 tasks are only executed once, whereas periodic tasks are executed once per
-a defined interval.
+a defined interval. The exact info tasks are triggered at the exact scheduled time.
 
 There are two steps in the process of creating a TaskInfo:
 
- 1. the specific timing info is created; there are two objects available - `OneOffInfo` and
- `PeriodicInfo`; each one of these objects has its own builder;
+ 1. the specific timing info is created; there are three objects available - `OneOffInfo`,
+ `PeriodicInfo`, and `ExactInfo`; each one of these objects has its own builder;
  2. the task info is created using the `createTask` method; other parameters can be set afterwards.
 
 As an example for how to create a one-off task that executes in 200 minutes,
@@ -173,6 +179,9 @@ boolean onStartTask(Context context,
   ...
 }
 ```
+For native tasks, the extras are packed into a std::string, It's the caller's
+responsibility to pack and unpack the task extras correctly into the std::string.
+We recommend using a proto for consistency.
 
 ## Performing actions over TimingInfo objects
 
@@ -202,7 +211,7 @@ myTimingInfo.accept(visitor);
 Some of the tasks running in the background require native parts of the browser
 to be initialized. In order to simplify implementation of such tasks, we provide
 a base `NativeBackgroundTask`
-[implementation](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/background_task_scheduler/NativeBackgroundTask.java)
+[implementation](https://cs.chromium.org/chromium/src/components/background_task_scheduler/android/java/src/org/chromium/components/background_task_scheduler/NativeBackgroundTask.java)
 in the browser layer. It requires extending classes to implement 4 methods:
 
  * `onStartTaskBeforeNativeLoaded(...)` where the background task can decide
@@ -220,6 +229,15 @@ While in a normal execution, both `onStart...` methods are called, only one of
 the stopping methods will be triggered, depending on whether the native parts of
 the browser are loaded at the time the underlying scheduler decides to stop the
 task.
+
+## Launching Browser process
+
+After the advent of servicfication in chrome, we have the option of launching a
+background task in a reduced service manager only mode without the need to
+launch the full browser process. In order to enable this, you have to override
+`NativeBackgroundTask#supportsMinimalBrowser` and return true or false
+depending on whether you want to launch service-manager only mode or full
+browser.
 
 ## Background processing
 

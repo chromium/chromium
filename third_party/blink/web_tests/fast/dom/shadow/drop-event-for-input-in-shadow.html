@@ -18,7 +18,7 @@ function createInput(name) {
 }
 
 function runTest() {
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     var shadowInput = createInput('shadow');
     shadowRoot.appendChild(shadowInput);
 

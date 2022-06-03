@@ -15,9 +15,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,7 +45,7 @@ bool GetModulePath(base::ProcessHandle process,
     temp_path.resize(2 * temp_path.size());
   }
 
-  *path = base::FilePath(base::StringPiece16(temp_path.data(), length));
+  *path = base::FilePath(base::WStringPiece(temp_path.data(), length));
   return true;
 }
 
@@ -174,9 +175,9 @@ void ModuleEventSinkImpl::OnModuleEvents(
 
   for (uint64_t load_address : module_load_addresses) {
     // Handle the event on a background sequence.
-    base::PostTask(
+    base::ThreadPool::PostTask(
         FROM_HERE,
-        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+        {base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
         base::BindOnce(&HandleModuleEvent, process_.Duplicate(), process_type_,
                        load_address, base::SequencedTaskRunnerHandle::Get(),

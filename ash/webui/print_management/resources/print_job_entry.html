@@ -1,0 +1,131 @@
+<style include="print-management-shared print-management-fonts">
+  :host {
+    @apply --print-management-default-font;
+    color: var(--print-management-default-text-color);
+  }
+
+  .collapsed-status {
+    @apply --print-management-header-font;
+    color: var(--google-blue-600);
+  }
+
+  /* Override focus CSS for selectable items. */
+  .list-item:focus,
+  .list-item > :focus {
+    outline: none;
+  }
+
+  .list-item:focus-within {
+    background-color: var(--google-blue-50);
+    outline: none;
+  }
+
+  .list-item {
+    min-height: 40px;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  #cancelPrintJobButton {
+    --iron-icon-fill-color: rgb(95,99,104);
+    margin-inline-start: 4px;
+    padding-bottom: 2px;
+  }
+
+  #fileIcon {
+    margin-inline-end: 16px;
+    min-width: 22px;
+  }
+
+  #numericalProgress {
+    color: var(--google-blue-600);
+    margin-inline-end: 16px;
+  }
+
+  #rowWrapper:active {
+    background-color: var(--google-blue-50);
+    outline: none;
+  }
+
+  paper-progress {
+    --paper-progress-active-color: var(--google-blue-600);
+    --paper-progress-container-color: rgba(var(--google-blue-600-rgb), .24);
+    width: 72px;
+  }
+</style>
+<div id="rowWrapper" focus-row-container>
+  <!-- TODO(crbug/1073693): Update the a11y based on expert guidance -->
+  <div class="list-item flex-center"
+      aria-label$="[[jobEntryAriaLabel_]]">
+    <iron-icon id="fileIcon" class="flex-center"
+        icon="[[getFileIcon_(jobTitle_)]]" alt="">
+    </iron-icon>
+    <div id="jobTitle" class="file-name-column overflow-ellipsis"
+        aria-hidden="true">
+      [[jobTitle_]]
+    </div>
+    <div id="printerName"
+        class="printer-name-column overflow-ellipsis padded-left"
+        aria-hidden="true">
+      [[printerName_]]
+    </div>
+    <div id="creationTime" class="date-column overflow-ellipsis padded-left"
+        aria-hidden="true">
+      [[creationTime_]]
+    </div>
+
+    <template is="dom-if" if="[[isCompletedPrintJob_(jobEntry)]]" restamp>
+      <div id="completionStatus"
+          class="status-column overflow-ellipsis padded-left"
+          focus-row-control
+          focus-type="completedStatus"
+          aria-hidden="true">
+        [[completionStatus_]]
+      </div>
+    </template>
+
+    <template is="dom-if" if="[[!isCompletedPrintJob_(jobEntry)]]" restamp>
+        <iron-media-query query="(min-width: 768px)"
+            query-matches="{{showFullOngoingStatus_}}">
+        </iron-media-query>
+        <div id="activeStatusContainer"
+            class="status-column padded-left flex-center">
+          <!-- Non-error printing status -->
+          <template is="dom-if" if="[[!ongoingErrorStatus_]]" restamp>
+            <template is="dom-if" if="[[showFullOngoingStatus_]]">
+              <div id="numericalProgress" aria-hidden="true">
+                [[readableProgress_]]
+              </div>
+              <paper-progress
+                  value="[[computePrintPagesProgress_(
+                      jobEntry.activePrintJobInfo.printedPages,
+                      jobEntry.numberOfPages)]]"
+                  aria-hidden="true">
+              </paper-progress>
+            </template>
+            <div class="collapsed-status" hidden="[[showFullOngoingStatus_]]"
+                aria-hidden="true">
+              [[i18n('collapsedPrintingText')]]
+            </div>
+          </template>
+          <!-- Error printing status -->
+          <template is="dom-if" if="[[ongoingErrorStatus_]]" restamp>
+            <div id="ongoingError" class="overflow-ellipsis" aria-hidden="true"
+                hidden="[[!showFullOngoingStatus_]]">
+              [[ongoingErrorStatus_]]
+            </div>
+            <div hidden="[[showFullOngoingStatus_]]" aria-hidden="true">
+              [[i18n('stoppedGeneric')]]
+            </div>
+          </template>
+          <cr-icon-button id="cancelPrintJobButton"
+              iron-icon="print-management:cancel"
+              focus-row-control
+              focus-type="cancelPrintJob"
+              aria-hidden="true"
+            on-click="onCancelPrintJobClicked_">
+          </cr-icon-button>
+        </div>
+    </template>
+  </div>
+</div>

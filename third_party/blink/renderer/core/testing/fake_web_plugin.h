@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_WEB_PLUGIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_FAKE_WEB_PLUGIN_H_
 
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_plugin.h"
 
 namespace cc {
@@ -53,23 +54,23 @@ class FakeWebPlugin : public WebPlugin {
   bool Initialize(WebPluginContainer*) override;
   void Destroy() override;
   bool CanProcessDrag() const override { return false; }
-  void UpdateAllLifecyclePhases(WebWidget::LifecycleUpdateReason) override {}
-  void Paint(cc::PaintCanvas*, const WebRect&) override {}
-  void UpdateGeometry(const WebRect& client_rect,
-                      const WebRect& clip_rect,
-                      const WebRect& window_clip_rect,
+  void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) override {}
+  void Paint(cc::PaintCanvas*, const gfx::Rect&) override {}
+  void UpdateGeometry(const gfx::Rect& client_rect,
+                      const gfx::Rect& clip_rect,
+                      const gfx::Rect& window_clip_rect,
                       bool is_visible) override {}
-  void UpdateFocus(bool, WebFocusType) override {}
+  void UpdateFocus(bool, mojom::blink::FocusType) override {}
   void UpdateVisibility(bool) override {}
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&,
-                                       WebCursorInfo&) override {
+                                       ui::Cursor*) override {
     return WebInputEventResult::kNotHandled;
   }
   bool HandleDragStatusUpdate(WebDragStatus,
                               const WebDragData&,
-                              WebDragOperationsMask,
-                              const WebFloatPoint& position,
-                              const WebFloatPoint& screen_position) override {
+                              DragOperationsMask,
+                              const gfx::PointF& position,
+                              const gfx::PointF& screen_position) override {
     return false;
   }
   void DidReceiveResponse(const WebURLResponse&) override {}

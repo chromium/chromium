@@ -2,19 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("prerender_pref") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public = [ "prerender_pref.h" ]
+  sources = [ "prerender_pref.mm" ]
+
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser:pref_names",
+  ]
+}
+
 source_set("prerender") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  public = [
+    "preload_controller_delegate.h",
+    "prerender_service.h",
+    "prerender_service_factory.h",
+  ]
   sources = [
     "preload_controller.h",
     "preload_controller.mm",
-    "preload_controller_delegate.h",
-    "prerender_service.h",
-    "prerender_service.mm",
-    "prerender_service_factory.h",
     "prerender_service_factory.mm",
+    "prerender_service_impl.h",
+    "prerender_service_impl.mm",
   ]
 
+  friend = [ ":unit_tests" ]
+
   deps = [
+    ":prerender_pref",
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
@@ -25,21 +44,31 @@ source_set("prerender") {
     "//ios/chrome/browser/app_launcher:app_launcher",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report:crash_report_internal",
-    "//ios/chrome/browser/geolocation:geolocation_internal",
+    "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/history:tab_helper",
     "//ios/chrome/browser/itunes_urls:itunes_urls",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net",
+    "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",
-    "//ios/web/public/deprecated",
-    "//ios/web/public/deprecated:deprecated_web_util",
     "//ui/base",
     "//url",
   ]
+}
+
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "fake_prerender_service.h",
+    "fake_prerender_service.mm",
+  ]
+
+  deps = [ ":prerender" ]
 }
 
 source_set("unit_tests") {
@@ -48,10 +77,11 @@ source_set("unit_tests") {
 
   sources = [
     "preload_controller_unittest.mm",
-    "prerender_service_unittest.mm",
+    "prerender_service_impl_unittest.mm",
   ]
   deps = [
     ":prerender",
+    ":prerender_pref",
     "//base",
     "//components/prefs",
     "//ios/chrome/browser",
@@ -62,41 +92,22 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-source_set("eg_tests") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  testonly = true
-  sources = [
-    "prerender_egtest.mm",
-  ]
-  deps = [
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/web/public/test/http_server",
-    "//net:test_support",
-  ]
-  libs = [
-    "UIKit.framework",
-    "XCTest.framework",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "prerender_egtest.mm",
-  ]
+  sources = [ "prerender_egtest.mm" ]
   deps = [
+    "//components/version_info",
+    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common:user_agent",
     "//net:test_support",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

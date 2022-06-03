@@ -40,8 +40,8 @@ class TextResourceDecoder;
 class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
                                    public NameClient {
  public:
-  virtual ~DocumentParser();
-  virtual void Trace(Visitor*);
+  ~DocumentParser() override;
+  virtual void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "DocumentParser"; }
 
   virtual ScriptableDocumentParser* AsScriptableDocumentParser() {

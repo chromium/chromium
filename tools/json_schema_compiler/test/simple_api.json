@@ -4,6 +4,16 @@
     "description": "This is a simple API.",
     "types": [
       {
+        "id": "TestEnum",
+        "type": "string",
+        "enum": ["one", "two", "three"]
+      },
+      {
+        "id": "3D",
+        "type": "string",
+        "enum": ["yes", "no"]
+      },
+      {
         "id": "TestType",
         "type": "object",
         "properties": {
@@ -22,15 +32,72 @@
           "integer": {
             "type": "integer",
             "description": "Some integer."
+          },
+          "object": {
+            "type": "object",
+            "optional": true,
+            "properties": {
+              "foo": {
+                "type": "integer"
+              }
+            }
+          },
+          "array": {
+            "type": "array",
+            "optional": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "opt_external_enum": {
+            "optional": true,
+            "$ref": "enums.Enumeration"
+          }
+        }
+      }
+    ],
+    "manifest_keys": {
+      "key_string": {
+        "type": "string",
+        "description": "String key."
+      },
+      "key_ref": {
+        "$ref": "TestType",
+        "description": "Reference key"
+      },
+      "key_obj": {
+        "type": "object",
+        "optional": true,
+        "properties": {
+          "obj_string": {
+            "type": "string"
+          },
+          "obj_bool": {
+            "type": "boolean"
+          },
+          "obj_optional_enum_array": {
+            "optional": true,
+            "type": "array",
+            "items": {
+              "$ref": "enums.Enumeration"
+            }
           }
         }
       },
-      {
-        "id": "TestEnum",
-        "type": "string",
-        "enum": ["one", "two", "three"]
+      "key_enum": {
+        "$ref": "TestEnum"
+      },
+      "key_enum_array": {
+        "type": "array",
+        "items": {
+          "$ref": "TestEnum"
+        }
+      },
+      "3d_key": {
+        "optional": true,
+        "$ref": "3D"
       }
-    ],
+    },
     "functions": [
       {
         "name": "incrementInteger",

@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 
-#include <string>
-
-#include "base/macros.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -47,6 +44,8 @@ class RequestThrottler {
   };
 
   RequestThrottler(PrefService* pref_service, RequestType type);
+  RequestThrottler(const RequestThrottler&) = delete;
+  RequestThrottler& operator=(const RequestThrottler&) = delete;
 
   // Registers profile prefs for all RequestTypes. Called from browser_prefs.cc.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -89,8 +88,6 @@ class RequestThrottler {
   base::HistogramBase* histogram_request_status_;
   base::HistogramBase* histogram_per_day_background_;
   base::HistogramBase* histogram_per_day_interactive_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestThrottler);
 };
 
 }  // namespace ntp_snippets

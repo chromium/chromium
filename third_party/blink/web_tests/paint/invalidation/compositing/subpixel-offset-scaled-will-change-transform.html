@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<style>
+.container { position: relative; width: 0; height: 0; }
+.composited { will-change: transform; }
+.scale { transform-origin: 0 0; transform: scale(40); }
+.child { width: 1px; height: 1px; background: blue; position: relative; left: 0.4px }
+</style>
+<div id="container1" class="container scale">
+  <div id="child1" class="child composited"></div>
+</div>
+<div id="container2" class="container" style="top: 50px">
+  <div id="child2" class="child scale composited"></div>
+</div>
+<div id="container3" class="container scale composited" style="top: 100px">
+  <div id="child3" class="child"></div>
+</div>
+<div id="container4" class="container composited" style="top: 150px">
+  <div id="child4" class="child scale"></div>
+</div>
+<div id="container5" class="container scale composited" style="top: 200px">
+  <div id="child5" class="child composited"></div>
+</div>
+<div id="container6" class="container composited" style="top: 250px">
+  <div id="child6" class="child scale composited"></div>
+</div>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  for (var container of document.getElementsByClassName('container'))
+    container.style.left = '0.3px';
+}
+onload = runRepaintAndPixelTest;
+</script>

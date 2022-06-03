@@ -1,3 +1,9 @@
 file://media/OWNERS
+mfoltz@chromium.org
+jophba@chromium.org
 
-# COMPONENT: Internals>Media
+# WebRTC OWNERS.
+hbos@chromium.org
+tommi@chromium.org
+guidou@chromium.org
+olka@chromium.org

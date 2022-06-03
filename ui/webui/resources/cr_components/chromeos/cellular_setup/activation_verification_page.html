@@ -1,0 +1,40 @@
+<link rel="import" href="../../../html/polymer.html">
+
+<link rel="import" href="base_page.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+
+<dom-module id="activation-verification-page">
+  <template>
+    <style>
+      #pageBody {
+        height: 282px;
+        margin-top: -20px;
+        overflow: hidden;
+      }
+
+      #animationContainer {
+        display: flex;
+        height: 216px;
+        margin-bottom: 30px;
+        margin-top: 24px;
+      }
+
+      cr-lottie {
+        margin: auto;
+      }
+    </style>
+
+    <base-page>
+      <div slot="page-body" id="pageBody" class="layout vertical center-center">
+        <span>[[i18n('verifyingActivationCode')]]</span>
+        <div id="animationContainer">
+          <cr-lottie id="spinner" animation-url="spinner.json" autoplay>
+          </cr-lottie>
+        </div>
+      </div>
+    </base-page>
+  </template>
+  <script src="activation_verification_page.js"></script>
+</dom-module>

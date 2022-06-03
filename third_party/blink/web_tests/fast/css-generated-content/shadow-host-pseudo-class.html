@@ -5,7 +5,7 @@ div { font-family: monospace; }
 <div id="host">HOST</div>
 <script>
 var host = document.getElementById('host');
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 root.innerHTML = '\
 <style>\
   :host::before { content: "before shadow root:"; }\

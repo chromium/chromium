@@ -25,7 +25,7 @@ base::TimeDelta ComputeBrokenAlternativeServiceExpirationDelay(
   DCHECK_GE(broken_count, 0);
   if (broken_count > kBrokenDelayMaxShift)
     broken_count = kBrokenDelayMaxShift;
-  return base::TimeDelta::FromSeconds(kBrokenAlternativeProtocolDelaySecs) *
+  return base::Seconds(kBrokenAlternativeProtocolDelaySecs) *
          (1 << broken_count);
 }
 
@@ -222,7 +222,7 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
   recently_broken_alternative_services_.Swap(
       *recently_broken_alternative_services);
   // Add back all existing recently broken alt svcs to cache so they're at
-  // front of recency list (MRUCache::Get() does this automatically).
+  // front of recency list (LRUCache::Get() does this automatically).
   for (auto it = recently_broken_alternative_services->rbegin();
        it != recently_broken_alternative_services->rend(); ++it) {
     if (recently_broken_alternative_services_.Get(it->first) ==

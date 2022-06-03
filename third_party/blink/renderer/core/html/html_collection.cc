@@ -213,9 +213,10 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kDocForms:
       return element.HasTagName(html_names::kFormTag);
     case kDocumentNamedItems:
-      return ToDocumentNameCollection(html_collection).ElementMatches(element);
+      return To<DocumentNameCollection>(html_collection)
+          .ElementMatches(element);
     case kDocumentAllNamedItems:
-      return ToDocumentAllNameCollection(html_collection)
+      return To<DocumentAllNameCollection>(html_collection)
           .ElementMatches(element);
     case kTableTBodies:
       return element.HasTagName(html_names::kTbodyTag);
@@ -225,13 +226,13 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kTSectionRows:
       return element.HasTagName(html_names::kTrTag);
     case kSelectOptions:
-      return ToHTMLOptionsCollection(html_collection).ElementMatches(element);
+      return To<HTMLOptionsCollection>(html_collection).ElementMatches(element);
     case kSelectedOptions: {
       auto* option_element = DynamicTo<HTMLOptionElement>(element);
       return option_element && option_element->Selected();
     }
     case kDataListOptions:
-      return ToHTMLDataListOptionsCollection(html_collection)
+      return To<HTMLDataListOptionsCollection>(html_collection)
           .ElementMatches(element);
     case kMapAreas:
       return element.HasTagName(html_names::kAreaTag);
@@ -281,13 +282,13 @@ inline bool HTMLCollection::ElementMatches(const Element& element) const {
     case kTagCollectionType:
       return To<TagCollection>(*this).ElementMatches(element);
     case kHTMLTagCollectionType:
-      return ToHTMLTagCollection(*this).ElementMatches(element);
+      return To<HTMLTagCollection>(*this).ElementMatches(element);
     case kTagCollectionNSType:
       return To<TagCollectionNS>(*this).ElementMatches(element);
     case kWindowNamedItems:
-      return ToWindowNameCollection(*this).ElementMatches(element);
+      return To<WindowNameCollection>(*this).ElementMatches(element);
     case kDocumentAllNamedItems:
-      return ToDocumentAllNameCollection(*this).ElementMatches(element);
+      return To<DocumentAllNameCollection>(*this).ElementMatches(element);
     default:
       break;
   }
@@ -311,7 +312,7 @@ class IsMatch {
   }
 
  private:
-  Member<const HTMLCollectionType> list_;
+  const HTMLCollectionType* list_;
 };
 
 }  // namespace
@@ -352,7 +353,7 @@ Element* HTMLCollection::TraverseToFirst() const {
   switch (GetType()) {
     case kHTMLTagCollectionType:
       return ElementTraversal::FirstWithin(
-          RootNode(), MakeIsMatch(ToHTMLTagCollection(*this)));
+          RootNode(), MakeIsMatch(To<HTMLTagCollection>(*this)));
     case kClassCollectionType:
       return ElementTraversal::FirstWithin(
           RootNode(), MakeIsMatch(To<ClassCollection>(*this)));
@@ -381,7 +382,7 @@ Element* HTMLCollection::TraverseForwardToOffset(
     case kHTMLTagCollectionType:
       return TraverseMatchingElementsForwardToOffset(
           current_element, &RootNode(), offset, current_offset,
-          MakeIsMatch(ToHTMLTagCollection(*this)));
+          MakeIsMatch(To<HTMLTagCollection>(*this)));
     case kClassCollectionType:
       return TraverseMatchingElementsForwardToOffset(
           current_element, &RootNode(), offset, current_offset,
@@ -543,7 +544,7 @@ void HTMLCollection::NamedItems(const AtomicString& name,
 
 HTMLCollection::NamedItemCache::NamedItemCache() = default;
 
-void HTMLCollection::Trace(Visitor* visitor) {
+void HTMLCollection::Trace(Visitor* visitor) const {
   visitor->Trace(named_item_cache_);
   visitor->Trace(collection_items_cache_);
   ScriptWrappable::Trace(visitor);

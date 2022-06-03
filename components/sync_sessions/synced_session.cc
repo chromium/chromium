@@ -20,6 +20,13 @@ using sessions::SerializedNavigationEntry;
 // See original constant in serialized_navigation_entry.cc.
 const int kObsoleteReferrerPolicyNever = 2;
 
+// Some pages embed the favicon image itself in the URL, using the data: scheme.
+// These cases, or more generally any favicon URL that is unreasonably large,
+// should simply be ignored, because it otherwise runs into the risk that the
+// entire tab may fail to sync due to max size limits imposed by the sync
+// server. And after all, the favicon is somewhat optional.
+const int kMaxFaviconUrlSizeToSync = 2048;
+
 sync_pb::SyncEnums_PageTransition ToSyncPageTransition(
     ui::PageTransition transition_type) {
   switch (ui::PageTransitionStripQualifier(transition_type)) {
@@ -233,8 +240,10 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
 
   sync_data.set_http_status_code(navigation.http_status_code());
 
-  if (navigation.favicon_url().is_valid())
+  if (navigation.favicon_url().is_valid() &&
+      navigation.favicon_url().spec().size() <= kMaxFaviconUrlSizeToSync) {
     sync_data.set_favicon_url(navigation.favicon_url().spec());
+  }
 
   if (navigation.blocked_state() != SerializedNavigationEntry::STATE_INVALID) {
     sync_data.set_blocked_state(
@@ -245,11 +254,6 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
   sync_data.set_password_state(
       static_cast<sync_pb::TabNavigation_PasswordState>(
           navigation.password_state()));
-
-  for (const std::string& content_pack_category :
-       navigation.content_pack_categories()) {
-    sync_data.add_content_pack_categories(content_pack_category);
-  }
 
   // Copy all redirect chain entries except the last URL (which should match
   // the virtual_url).
@@ -268,7 +272,7 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
     }
   }
 
-  const base::Optional<SerializedNavigationEntry::ReplacedNavigationEntryData>&
+  const absl::optional<SerializedNavigationEntry::ReplacedNavigationEntryData>&
       replaced_entry_data = navigation.replaced_entry_data();
   if (replaced_entry_data.has_value()) {
     sync_pb::ReplacedNavigation* replaced_navigation =
@@ -296,9 +300,10 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
   tab->current_navigation_index = sync_data.current_navigation_index();
   tab->pinned = sync_data.pinned();
   tab->extension_app_id = sync_data.extension_app_id();
-  tab->user_agent_override.clear();
+  tab->user_agent_override = sessions::SerializedUserAgentOverride();
   tab->timestamp = timestamp;
   tab->navigations.clear();
+  tab->navigations.reserve(sync_data.navigation_size());
   for (int i = 0; i < sync_data.navigation_size(); ++i) {
     tab->navigations.push_back(
         SessionNavigationFromSyncData(i, sync_data.navigation(i)));
@@ -306,7 +311,9 @@ void SetSessionTabFromSyncData(const sync_pb::SessionTab& sync_data,
   tab->session_storage_persistent_id.clear();
 }
 
-sync_pb::SessionTab SessionTabToSyncData(const sessions::SessionTab& tab) {
+sync_pb::SessionTab SessionTabToSyncData(
+    const sessions::SessionTab& tab,
+    absl::optional<sync_pb::SessionWindow::BrowserType> browser_type) {
   sync_pb::SessionTab sync_data;
   sync_data.set_tab_id(tab.tab_id.id());
   sync_data.set_window_id(tab.window_id.id());
@@ -317,12 +324,15 @@ sync_pb::SessionTab SessionTabToSyncData(const sessions::SessionTab& tab) {
   for (const SerializedNavigationEntry& navigation : tab.navigations) {
     SessionNavigationToSyncData(navigation).Swap(sync_data.add_navigation());
   }
+  if (browser_type.has_value()) {
+    sync_data.set_browser_type(*browser_type);
+  }
   return sync_data;
 }
 
-SyncedSessionWindow::SyncedSessionWindow() {}
+SyncedSessionWindow::SyncedSessionWindow() = default;
 
-SyncedSessionWindow::~SyncedSessionWindow() {}
+SyncedSessionWindow::~SyncedSessionWindow() = default;
 
 sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
   sync_pb::SessionWindow sync_data;
@@ -339,7 +349,7 @@ sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
 SyncedSession::SyncedSession()
     : session_tag("invalid"), device_type(sync_pb::SyncEnums::TYPE_UNSET) {}
 
-SyncedSession::~SyncedSession() {}
+SyncedSession::~SyncedSession() = default;
 
 sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   sync_pb::SessionHeader header;

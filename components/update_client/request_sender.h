@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "url/gurl.h"
@@ -43,6 +42,10 @@ class RequestSender {
       void(int error, const std::string& response, int retry_after_sec)>;
 
   explicit RequestSender(scoped_refptr<Configurator> config);
+
+  RequestSender(const RequestSender&) = delete;
+  RequestSender& operator=(const RequestSender&) = delete;
+
   ~RequestSender();
 
   // |use_signing| enables CUP signing of protocol messages exchanged using
@@ -71,6 +74,7 @@ class RequestSender {
                                 std::unique_ptr<std::string> response_body,
                                 int net_error,
                                 const std::string& header_etag,
+                                const std::string& xheader_cup_server_proof,
                                 int64_t xheader_retry_after_sec);
 
   // Implements the error handling and url fallback mechanism.
@@ -81,6 +85,7 @@ class RequestSender {
   void SendInternalComplete(int error,
                             const std::string& response_body,
                             const std::string& response_etag,
+                            const std::string& response_cup_server_proof,
                             int retry_after_sec);
 
   // Helper function to handle a non-continuable error in Send.
@@ -102,8 +107,6 @@ class RequestSender {
   std::unique_ptr<client_update_protocol::Ecdsa> signer_;
 
   int response_code_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestSender);
 };
 
 }  // namespace update_client

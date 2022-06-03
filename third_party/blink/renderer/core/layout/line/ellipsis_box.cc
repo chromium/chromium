@@ -31,7 +31,7 @@
 namespace blink {
 
 void EllipsisBox::Paint(const PaintInfo& paint_info,
-                        const LayoutPoint& paint_offset,
+                        const PhysicalOffset& paint_offset,
                         LayoutUnit line_top,
                         LayoutUnit line_bottom) const {
   EllipsisBoxPainter(*this).Paint(paint_info, paint_offset, line_top,

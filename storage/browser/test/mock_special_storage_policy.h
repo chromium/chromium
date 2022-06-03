@@ -8,15 +8,13 @@
 #include <set>
 #include <string>
 
-#include "services/network/session_cleanup_cookie_store.h"
+#include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
 
-using storage::SpecialStoragePolicy;
+namespace storage {
 
-namespace content {
-
-class MockSpecialStoragePolicy : public storage::SpecialStoragePolicy {
+class MockSpecialStoragePolicy : public SpecialStoragePolicy {
  public:
   MockSpecialStoragePolicy();
 
@@ -26,8 +24,7 @@ class MockSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   bool HasIsolatedStorage(const GURL& origin) override;
   bool HasSessionOnlyOrigins() override;
   bool IsStorageDurable(const GURL& origin) override;
-  network::SessionCleanupCookieStore::DeleteCookiePredicate
-  CreateDeleteCookieOnExitPredicate() override;
+  network::DeleteCookiePredicate CreateDeleteCookieOnExitPredicate() override;
 
   void AddProtected(const GURL& origin) { protected_.insert(origin); }
 
@@ -54,15 +51,17 @@ class MockSpecialStoragePolicy : public storage::SpecialStoragePolicy {
     all_unlimited_ = false;
   }
 
-  void NotifyGranted(const GURL& origin, int change_flags) {
+  void NotifyGranted(const url::Origin& origin, int change_flags) {
     SpecialStoragePolicy::NotifyGranted(origin, change_flags);
   }
 
-  void NotifyRevoked(const GURL& origin, int change_flags) {
+  void NotifyRevoked(const url::Origin& origin, int change_flags) {
     SpecialStoragePolicy::NotifyRevoked(origin, change_flags);
   }
 
   void NotifyCleared() { SpecialStoragePolicy::NotifyCleared(); }
+
+  void NotifyPolicyChanged() { SpecialStoragePolicy::NotifyPolicyChanged(); }
 
  protected:
   ~MockSpecialStoragePolicy() override;
@@ -79,6 +78,7 @@ class MockSpecialStoragePolicy : public storage::SpecialStoragePolicy {
 
   bool all_unlimited_;
 };
-}  // namespace content
+
+}  // namespace storage
 
 #endif  // STORAGE_BROWSER_TEST_MOCK_SPECIAL_STORAGE_POLICY_H_

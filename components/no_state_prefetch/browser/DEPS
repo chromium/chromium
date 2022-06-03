@@ -1,0 +1,17 @@
+include_rules = [
+  "+components/content_settings/core",
+  "+components/google/core/common",
+  "+components/guest_view/browser",
+  "+components/keyed_service/core",
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
+  "+mojo/public",
+  "+net/http",
+  "+services/metrics/public/cpp",
+  "+services/resource_coordinator/public",
+  "+services/service_manager/public",
+  "+third_party/blink/public",
+  "+ui/base",
+  "+ui/gfx",
+]

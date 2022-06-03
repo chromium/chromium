@@ -9,6 +9,7 @@
 #include "ash/login_status.h"
 #include "ash/metrics/user_metrics_recorder_test_api.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -33,6 +34,8 @@ const char kAsh_Shelf_NumberOfPinnedItems[] = "Ash.Shelf.NumberOfPinnedItems";
 const char kAsh_Shelf_NumberOfUnpinnedItems[] =
     "Ash.Shelf.NumberOfUnpinnedItems";
 
+const char kAsh_NotificationBadgeShownPref[] = "Ash.AppNotificationBadgingPref";
+
 }  // namespace
 
 // Test fixture for the UserMetricsRecorder class. The tests manage their own
@@ -40,6 +43,10 @@ const char kAsh_Shelf_NumberOfUnpinnedItems[] =
 class UserMetricsRecorderTest : public NoSessionAshTestBase {
  public:
   UserMetricsRecorderTest() = default;
+
+  UserMetricsRecorderTest(const UserMetricsRecorderTest&) = delete;
+  UserMetricsRecorderTest& operator=(const UserMetricsRecorderTest&) = delete;
+
   ~UserMetricsRecorderTest() override = default;
 
   UserMetricsRecorderTestAPI& test_api() { return test_api_; }
@@ -52,8 +59,6 @@ class UserMetricsRecorderTest : public NoSessionAshTestBase {
 
   // Histogram value verifier.
   base::HistogramTester histograms_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorderTest);
 };
 
 // Verifies the return value of IsUserInActiveDesktopEnvironment() for the
@@ -102,6 +107,7 @@ TEST_F(UserMetricsRecorderTest,
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfItems, 0);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfPinnedItems, 0);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfUnpinnedItems, 0);
+  histograms().ExpectTotalCount(kAsh_NotificationBadgeShownPref, 0);
 }
 
 // Verifies that the IsUserInActiveDesktopEnvironment() dependent stats are
@@ -116,6 +122,7 @@ TEST_F(UserMetricsRecorderTest,
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfItems, 1);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfPinnedItems, 1);
   histograms().ExpectTotalCount(kAsh_Shelf_NumberOfUnpinnedItems, 1);
+  histograms().ExpectTotalCount(kAsh_NotificationBadgeShownPref, 1);
 }
 
 // Verifies recording of stats which are always recorded by
@@ -137,19 +144,24 @@ TEST_F(UserMetricsRecorderTest, ValuesRecordedByRecordShelfItemCounts) {
   ASSERT_EQ(0u, shelf_model->items().size());
 
   ShelfItem shelf_item;
-  shelf_item.type = ash::TYPE_PINNED_APP;
+  shelf_item.type = TYPE_PINNED_APP;
   shelf_item.id = ShelfID("app_id_1");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_2");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
-  shelf_item.type = ash::TYPE_APP;
+  shelf_item.type = TYPE_APP;
   shelf_item.id = ShelfID("app_id_3");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_4");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_5");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
   test_api().RecordPeriodicMetrics();
   histograms().ExpectBucketCount(kAsh_Shelf_NumberOfItems, 5, 1);

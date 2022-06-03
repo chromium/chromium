@@ -9,14 +9,23 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
+
+#if defined(HEADLESS_USE_PREFS)
+class PrefService;
+#endif
+
+#if defined(HEADLESS_USE_POLICY)
+namespace policy {
+class PolicyService;
+}  // namespace policy
+#endif
 
 namespace ui {
 class Compositor;
@@ -42,6 +51,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   HeadlessBrowserImpl(
       base::OnceCallback<void(HeadlessBrowser*)> on_start_callback,
       HeadlessBrowser::Options options);
+
+  HeadlessBrowserImpl(const HeadlessBrowserImpl&) = delete;
+  HeadlessBrowserImpl& operator=(const HeadlessBrowserImpl&) = delete;
+
   ~HeadlessBrowserImpl() override;
 
   // HeadlessBrowser implementation:
@@ -94,6 +107,14 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
                                     const gfx::Rect& bounds);
   ui::Compositor* PlatformGetCompositor(HeadlessWebContentsImpl* web_contents);
 
+#if defined(HEADLESS_USE_PREFS)
+  PrefService* GetPrefs();
+#endif
+
+#if defined(HEADLESS_USE_POLICY)
+  policy::PolicyService* GetPolicyService();
+#endif
+
  protected:
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   HeadlessBrowser::Options options_;
@@ -107,9 +128,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;
   base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserImpl);
 };
 
 }  // namespace headless

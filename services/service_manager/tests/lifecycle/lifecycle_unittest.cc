@@ -24,7 +24,7 @@
 #include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/cpp/test/test_service_manager.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
@@ -123,6 +123,10 @@ class InstanceState : public mojom::ServiceManagerListener {
       : receiver_(this, std::move(receiver)),
         on_init_complete_(std::move(on_init_complete)),
         on_destruction_(destruction_loop_.QuitClosure()) {}
+
+  InstanceState(const InstanceState&) = delete;
+  InstanceState& operator=(const InstanceState&) = delete;
+
   ~InstanceState() override {}
 
   bool HasInstanceForName(const std::string& name) const {
@@ -195,8 +199,6 @@ class InstanceState : public mojom::ServiceManagerListener {
   // of an instance before proceeding.
   base::RunLoop destruction_loop_;
   base::OnceClosure on_destruction_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceState);
 };
 
 }  // namespace
@@ -205,15 +207,18 @@ class LifecycleTest : public testing::Test {
  public:
   LifecycleTest()
       : test_service_manager_(GetTestManifests()),
-        test_service_binding_(
+        test_service_receiver_(
             &test_service_,
             test_service_manager_.RegisterInstance(
                 Identity{kTestName, kSystemInstanceGroup, base::Token{},
                          base::Token::CreateRandom()})) {}
 
+  LifecycleTest(const LifecycleTest&) = delete;
+  LifecycleTest& operator=(const LifecycleTest&) = delete;
+
   ~LifecycleTest() override {}
 
-  Connector* connector() { return test_service_binding_.GetConnector(); }
+  Connector* connector() { return test_service_receiver_.GetConnector(); }
 
  protected:
   void SetUp() override {
@@ -261,10 +266,8 @@ class LifecycleTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestServiceManager test_service_manager_;
   Service test_service_;
-  ServiceBinding test_service_binding_;
+  ServiceReceiver test_service_receiver_;
   std::unique_ptr<InstanceState> instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleTest);
 };
 
 TEST_F(LifecycleTest, Standalone_GracefulQuit) {

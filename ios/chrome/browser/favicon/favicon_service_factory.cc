@@ -15,8 +15,8 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildFaviconService(web::BrowserState* context) {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<favicon::FaviconServiceImpl>(
       std::make_unique<FaviconClientImpl>(),
       ios::HistoryServiceFactory::GetForBrowserState(
@@ -29,7 +29,7 @@ namespace ios {
 
 // static
 favicon::FaviconService* FaviconServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state,
+    ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
   if (!browser_state->IsOffTheRecord()) {
     return static_cast<favicon::FaviconService*>(
@@ -40,7 +40,7 @@ favicon::FaviconService* FaviconServiceFactory::GetForBrowserState(
             browser_state->GetOriginalChromeBrowserState(), true));
   }
 
-  // ios::ChromeBrowserState is OffTheRecord without access.
+  // ChromeBrowserState is OffTheRecord without access.
   NOTREACHED() << "ChromeBrowserState is OffTheRecord";
   return nullptr;
 }

@@ -4,10 +4,11 @@
 
 #include "third_party/libxml/chromium/xml_reader.h"
 
+#include <libxml/xmlreader.h>
+
 #include <vector>
 
 #include "third_party/libxml/chromium/libxml_utils.h"
-#include "third_party/libxml/src/include/libxml/xmlreader.h"
 
 using internal::XmlStringToStdString;
 

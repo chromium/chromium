@@ -5,9 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "video_geometry_setter.mojom",
-  ]
+  sources = [ "video_geometry_setter.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",

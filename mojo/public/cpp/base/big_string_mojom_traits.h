@@ -15,7 +15,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(MOJO_BASE_MOJOM)
+struct COMPONENT_EXPORT(MOJO_BASE_TRAITS)
     StructTraits<mojo_base::mojom::BigStringDataView, std::string> {
   static mojo_base::BigBuffer data(const std::string& str);
 

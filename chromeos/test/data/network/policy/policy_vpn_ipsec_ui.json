@@ -1,0 +1,20 @@
+{
+  "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
+  "Name": "my vpn",
+  "Type": "VPN",
+  "VPN": {
+    "AutoConnect": false,
+    "Host": "vpn.my.domain.com",
+    "Type": "L2TP-IPsec",
+    "IPsec": {
+      "AuthenticationType": "PSK",
+      "PSK": "my_updated_psk",
+      // ClientCertType Should be ignored if the AuthenticationType is PSK
+      // (see onc_spec.md).
+      "ClientCertType": ""
+    },
+    "L2TP": {
+      "Password": "my_updated_password"
+    }
+  }
+}

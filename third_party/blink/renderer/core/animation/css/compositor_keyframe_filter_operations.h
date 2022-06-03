@@ -23,7 +23,7 @@ class CompositorKeyframeFilterOperations final
     return operation_wrapper_->Operations();
   }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(operation_wrapper_);
     CompositorKeyframeValue::Trace(visitor);
   }
@@ -34,8 +34,12 @@ class CompositorKeyframeFilterOperations final
   Member<FilterOperationsWrapper> operation_wrapper_;
 };
 
-DEFINE_COMPOSITOR_KEYFRAME_VALUE_TYPE_CASTS(CompositorKeyframeFilterOperations,
-                                            IsFilterOperations());
+template <>
+struct DowncastTraits<CompositorKeyframeFilterOperations> {
+  static bool AllowFrom(const CompositorKeyframeValue& value) {
+    return value.IsFilterOperations();
+  }
+};
 
 }  // namespace blink
 

@@ -15,12 +15,12 @@ WidgetScheduler::WidgetScheduler(
       MainThreadTaskQueue::QueueCreationParams(
           MainThreadTaskQueue::QueueType::kInput)
           .SetShouldMonitorQuiescence(true)
-          .SetFixedPriority(
-              base::make_optional(TaskQueue::QueuePriority::kHighestPriority)));
+          .SetPrioritisationType(
+              MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput));
   input_task_runner_ =
       input_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueInput);
   input_task_queue_enabled_voter_ =
-      input_task_queue_->CreateQueueEnabledVoter();
+      input_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter();
 }
 
 WidgetScheduler::~WidgetScheduler() {

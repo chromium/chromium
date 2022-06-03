@@ -4,7 +4,6 @@
 
 #include "base/android/library_loader/anchor_functions.h"
 
-#include "base/logging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)

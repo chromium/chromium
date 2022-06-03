@@ -16,7 +16,7 @@
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 class SingleThreadTaskRunner;
 class Version;
 }  // namespace base
@@ -29,7 +29,6 @@ constexpr uint32_t kTargetMajorVrAssetsComponentVersion = 2;
 // set of features.
 constexpr uint32_t kMinMajorVrAssetsComponentVersion = 1;
 
-class MetricsHelper;
 struct AssetsLoaderSingletonTrait;
 struct Assets;
 
@@ -57,14 +56,12 @@ class VR_BASE_EXPORT AssetsLoader {
   // Tells VR assets that a new VR assets component version is ready for use.
   void OnComponentReady(const base::Version& version,
                         const base::FilePath& install_dir,
-                        std::unique_ptr<base::DictionaryValue> manifest);
+                        base::Value manifest);
 
   // Loads asset files and calls |on_loaded| passing the loaded asset files.
   // |on_loaded| will be called on the caller's thread. Component must be ready
   // when calling this function.
   void Load(OnAssetsLoadedCallback on_loaded);
-
-  MetricsHelper* GetMetricsHelper();
 
   // Returns true if the component is ready.
   // Must be called on the main thread.
@@ -93,7 +90,6 @@ class VR_BASE_EXPORT AssetsLoader {
   base::Version component_version_;
   base::FilePath component_install_dir_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  std::unique_ptr<MetricsHelper> metrics_helper_;
   OnComponentReadyCallback on_component_ready_callback_;
 
   base::WeakPtrFactory<AssetsLoader> weak_ptr_factory_{this};

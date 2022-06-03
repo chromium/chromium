@@ -7,10 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "components/autofill/core/common/password_form.h"
-
 namespace password_manager {
 
 // Abstract class to define a communication interface for the http-auth UI and
@@ -19,19 +15,19 @@ class HttpAuthObserver {
  public:
   HttpAuthObserver() = default;
 
+  HttpAuthObserver(const HttpAuthObserver&) = delete;
+  HttpAuthObserver& operator=(const HttpAuthObserver&) = delete;
+
   // Called by the model when |credentials| has been identified as a match for
   // the pending login prompt. Checks that the realm matches, and passes
   // |credentials| to OnAutofillDataAvailableInternal.
-  virtual void OnAutofillDataAvailable(const base::string16& username,
-                                       const base::string16& password) = 0;
+  virtual void OnAutofillDataAvailable(const std::u16string& username,
+                                       const std::u16string& password) = 0;
 
   virtual void OnLoginModelDestroying() = 0;
 
  protected:
   virtual ~HttpAuthObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthObserver);
 };
 
 }  // namespace password_manager

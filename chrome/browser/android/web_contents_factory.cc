@@ -16,13 +16,9 @@ using base::android::ScopedJavaLocalRef;
 static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
-    jboolean incognito,
     jboolean initially_hidden,
     jboolean initialize_renderer) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  if (incognito)
-    profile = profile->GetOffTheRecordProfile();
-
   content::WebContents::CreateParams params(profile);
   params.initially_hidden = static_cast<bool>(initially_hidden);
   params.desired_renderer_state =

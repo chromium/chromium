@@ -16,9 +16,9 @@
 #include "media/base/reentrancy_checker.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
 namespace media {
 class AudioBus;
@@ -46,10 +46,15 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
       public media::AudioConverter::InputCallback,
       public WebMediaStreamAudioSink {
  public:
-  static const size_t kWebAudioRenderBufferSize;
+  static const int kWebAudioRenderBufferSize;
 
-  explicit WebAudioMediaStreamAudioSink(const WebMediaStreamTrack& track,
+  explicit WebAudioMediaStreamAudioSink(MediaStreamComponent* component,
                                         int context_sample_rate);
+
+  WebAudioMediaStreamAudioSink(const WebAudioMediaStreamAudioSink&) = delete;
+  WebAudioMediaStreamAudioSink& operator=(const WebAudioMediaStreamAudioSink&) =
+      delete;
+
   ~WebAudioMediaStreamAudioSink() override;
 
   // WebMediaStreamAudioSink implementation.
@@ -61,7 +66,7 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // WebAudioSourceProvider implementation.
   void SetClient(WebAudioSourceProviderClient* client) override;
   void ProvideInput(const WebVector<float*>& audio_data,
-                    size_t number_of_frames) override;
+                    int number_of_frames) override;
 
   // Method to allow the unittests to inject its own sink parameters to avoid
   // query the hardware.
@@ -95,7 +100,7 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
   // The audio track that this source provider is connected to.
   // No lock protection needed since only accessed in constructor and
   // destructor.
-  WebMediaStreamTrack track_;
+  Persistent<MediaStreamComponent> component_;
 
   // Flag to tell if the track has been stopped or not.
   // No lock protection needed since only accessed in constructor, destructor
@@ -111,8 +116,6 @@ class MODULES_EXPORT WebAudioMediaStreamAudioSink
 
   // Used to assert that OnReadyStateChanged() is not accessed concurrently.
   REENTRANCY_CHECKER(ready_state_reentrancy_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioMediaStreamAudioSink);
 };
 
 }  // namespace blink

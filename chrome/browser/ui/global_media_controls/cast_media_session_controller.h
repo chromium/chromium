@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_SESSION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_SESSION_CONTROLLER_H_
 
-#include "base/macros.h"
-#include "chrome/common/media_router/mojom/media_controller.mojom.h"
+#include "base/cancelable_callback.h"
+#include "base/memory/weak_ptr.h"
+#include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
@@ -31,13 +32,24 @@ class CastMediaSessionController {
   virtual void OnMediaStatusUpdated(
       media_router::mojom::MediaStatusPtr media_status);
 
+  virtual void SeekTo(base::TimeDelta time);
+
+  virtual void SetMute(bool mute);
+
+  virtual void SetVolume(float volume);
+
   void FlushForTesting();
 
  private:
   base::TimeDelta PutWithinBounds(const base::TimeDelta& time);
 
+  void IncrementCurrentTimeAfterOneSecond();
+  void IncrementCurrentTime();
+
   mojo::Remote<media_router::mojom::MediaController> route_controller_;
   media_router::mojom::MediaStatusPtr media_status_;
+  base::CancelableOnceClosure increment_current_time_callback_;
+  base::WeakPtrFactory<CastMediaSessionController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_SESSION_CONTROLLER_H_

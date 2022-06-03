@@ -135,6 +135,23 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   firCount: 'number',
   pliCount: 'number',
   sliCount: 'number',
+  frameWidth: 'number',
+  frameHeight: 'number',
+  frameBitDepth: 'number',
+  framesPerSecond: 'number',
+  jitterBufferDelay: 'number',
+  jitterBufferEmittedCount: 'number',
+  totalSamplesReceived: 'number',
+  concealedSamples: 'number',
+  silentConcealedSamples: 'number',
+  concealmentEvents: 'number',
+  insertedSamplesForDeceleration: 'number',
+  removedSamplesForAcceleration: 'number',
+  audioLevel: 'number',
+  totalAudioEnergy: 'number',
+  totalSamplesDuration: 'number',
+  framesReceived: 'number',
+  framesDropped: 'number',
   estimatedPlayoutTimestamp: 'number',
   fractionLost: 'number',  // Obsolete, moved to RTCRemoteInboundRtpStreamStats.
   decoderImplementation: 'string',
@@ -152,6 +169,8 @@ let kRTCRemoteInboundRtpStreamStats =
   localId: 'string',
   roundTripTime: 'number',
   fractionLost: 'number',
+  totalRoundTripTime: 'number',
+  roundTripTimeMeasurements: 'number',
 });
 // TODO(https://crbug.com/967382): Update the browser_tests to wait for the
 // existence of remote-inbound-rtp as well (these are created later than
@@ -204,6 +223,12 @@ let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   pliCount: 'number',
   sliCount: 'number',
   encoderImplementation: 'string',
+  rid: 'string',
+  frameWidth: 'number',
+  frameHeight: 'number',
+  framesPerSecond: 'number',
+  framesSent: 'number',
+  hugeFramesSent: 'number',
 });
 addRTCStatsToWhitelist(
     Presence.MANDATORY, 'outbound-rtp', kRTCOutboundRtpStreamStats);
@@ -216,6 +241,10 @@ addRTCStatsToWhitelist(
 let kRTCRemoteOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   localId: 'string',
   remoteTimestamp: 'number',
+  reportsSent: 'number',
+  roundTripTime: 'number',
+  totalRoundTripTime: 'number',
+  roundTripTimeMeasurements: 'number',
 });
 // TODO(hbos): When remote-outbound-rtp is implemented, make presence MANDATORY.
 addRTCStatsToWhitelist(
@@ -240,6 +269,8 @@ const kRTCAudioSourceStats = new RTCStats(kRTCMediaSourceStats, {
   audioLevel: 'number',
   totalAudioEnergy: 'number',
   totalSamplesDuration: 'number',
+  echoReturnLoss: 'number',
+  echoReturnLossEnhancement: 'number',
 });
 addRTCStatsToWhitelist(
     Presence.MANDATORY, 'media-source', kRTCAudioSourceStats);
@@ -280,15 +311,12 @@ addRTCStatsToWhitelist(
  * @private
  */
 let kRTCCodecStats = new RTCStats(null, {
+  transportId: 'string',
   payloadType: 'number',
   mimeType: 'string',
-  // TODO(hbos): As soon as |codec| has been renamed |mimeType| in the webrtc
-  // repo, remove this line. https://bugs.webrtc.org/7061
-  codec: 'string',
   clockRate: 'number',
   channels: 'number',
   sdpFmtpLine: 'string',
-  implementation: 'string',
 });
 addRTCStatsToWhitelist(Presence.MANDATORY, 'codec', kRTCCodecStats);
 
@@ -471,7 +499,7 @@ addRTCStatsToWhitelist(
 let kRTCDataChannelStats = new RTCStats(null, {
   label: 'string',
   protocol: 'string',
-  datachannelid: 'number',
+  dataChannelIdentifier: 'number',
   state: 'string',
   messagesSent: 'number',
   bytesSent: 'number',
@@ -488,7 +516,9 @@ addRTCStatsToWhitelist(
  */
 let kRTCTransportStats = new RTCStats(null, {
   bytesSent: 'number',
+  packetsSent: 'number',
   bytesReceived: 'number',
+  packetsReceived: 'number',
   rtcpTransportStatsId: 'string',
   dtlsState: 'string',
   selectedCandidatePairId: 'string',
@@ -511,6 +541,7 @@ let kRTCIceCandidateStats = new RTCStats(null, {
   isRemote: 'boolean',
   networkType: 'string',
   ip: 'string',
+  address: 'string',
   port: 'number',
   protocol: 'string',
   relayProtocol: 'string',
@@ -538,6 +569,8 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   nominated: 'boolean',
   writable: 'boolean',
   readable: 'boolean',
+  packetsSent: 'number',
+  packetsReceived: 'number',
   bytesSent: 'number',
   bytesReceived: 'number',
   totalRoundTripTime: 'number',
@@ -554,6 +587,8 @@ let kRTCIceCandidatePairStats = new RTCStats(null, {
   consentRequestsSent: 'number',
   consentResponsesReceived: 'number',
   consentResponsesSent: 'number',
+  packetsDiscardedOnSend: 'number',
+  bytesDiscardedOnSend: 'number',
 });
 addRTCStatsToWhitelist(
     Presence.MANDATORY, 'candidate-pair', kRTCIceCandidatePairStats);

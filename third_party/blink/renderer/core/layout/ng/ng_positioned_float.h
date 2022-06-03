@@ -17,8 +17,11 @@ class NGLayoutResult;
 // Contains the information necessary for copying back data to a FloatingObject.
 struct CORE_EXPORT NGPositionedFloat {
   NGPositionedFloat(scoped_refptr<const NGLayoutResult> layout_result,
-                    const NGBfcOffset& bfc_offset)
-      : layout_result(layout_result), bfc_offset(bfc_offset) {}
+                    const NGBfcOffset& bfc_offset,
+                    bool need_break_before = false)
+      : layout_result(layout_result),
+        bfc_offset(bfc_offset),
+        need_break_before(need_break_before) {}
   NGPositionedFloat(NGPositionedFloat&&) noexcept = default;
   NGPositionedFloat(const NGPositionedFloat&) = default;
   NGPositionedFloat& operator=(NGPositionedFloat&&) = default;
@@ -26,6 +29,7 @@ struct CORE_EXPORT NGPositionedFloat {
 
   scoped_refptr<const NGLayoutResult> layout_result;
   NGBfcOffset bfc_offset;
+  bool need_break_before = false;
 };
 
 }  // namespace blink

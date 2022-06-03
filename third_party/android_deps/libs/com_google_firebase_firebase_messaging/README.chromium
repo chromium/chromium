@@ -1,0 +1,13 @@
+Name: firebase-messaging
+Short Name: firebase-messaging
+URL: https://firebase.google.com
+Version: 21.0.1
+License: Android Software Development Kit License
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Firebase Cloud Messaging SDK to send and receive push messages via FCM.
+
+Local Modifications:
+No modifications.

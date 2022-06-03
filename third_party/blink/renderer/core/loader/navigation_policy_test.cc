@@ -29,12 +29,14 @@
  */
 
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
+
 #include "base/auto_reset.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/platform/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/page/create_window.h"
@@ -46,7 +48,7 @@ class NavigationPolicyTest : public testing::Test {
   NavigationPolicy GetPolicyForCreateWindow(int modifiers,
                                             WebMouseEvent::Button button,
                                             bool as_popup) {
-    WebMouseEvent event(WebInputEvent::kMouseUp, modifiers,
+    WebMouseEvent event(WebInputEvent::Type::kMouseUp, modifiers,
                         WebInputEvent::GetStaticTimeStampForTests());
     event.button = button;
     if (as_popup)
@@ -80,7 +82,7 @@ class NavigationPolicyTest : public testing::Test {
                                       WebMouseEvent::Button button,
                                       int user_modifiers,
                                       WebMouseEvent::Button user_button) {
-    WebMouseEvent event(WebInputEvent::kMouseUp, user_modifiers,
+    WebMouseEvent event(WebInputEvent::Type::kMouseUp, user_modifiers,
                         WebInputEvent::GetStaticTimeStampForTests());
     event.button = user_button;
     base::AutoReset<const WebInputEvent*> current_event_change(
@@ -124,7 +126,7 @@ TEST_F(NavigationPolicyTest, ShiftLeftClickPopup) {
 }
 
 TEST_F(NavigationPolicyTest, ControlOrMetaLeftClick) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -136,7 +138,7 @@ TEST_F(NavigationPolicyTest, ControlOrMetaLeftClick) {
 }
 
 TEST_F(NavigationPolicyTest, ControlOrMetaLeftClickPopup) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -148,7 +150,7 @@ TEST_F(NavigationPolicyTest, ControlOrMetaLeftClickPopup) {
 }
 
 TEST_F(NavigationPolicyTest, ControlOrMetaAndShiftLeftClick) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -161,7 +163,7 @@ TEST_F(NavigationPolicyTest, ControlOrMetaAndShiftLeftClick) {
 }
 
 TEST_F(NavigationPolicyTest, ControlOrMetaAndShiftLeftClickPopup) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -233,8 +235,8 @@ TEST_F(NavigationPolicyTest, NoOpener) {
 
   for (const auto& test : kCases) {
     EXPECT_EQ(test.policy,
-              NavigationPolicyForCreateWindow(
-                  GetWindowFeaturesFromString(test.feature_string)))
+              NavigationPolicyForCreateWindow(GetWindowFeaturesFromString(
+                  test.feature_string, nullptr /* dom_window */)))
         << "Testing '" << test.feature_string << "'";
   }
 }
@@ -256,8 +258,8 @@ TEST_F(NavigationPolicyTest, NoOpenerAndNoReferrer) {
 
   for (const auto& test : kCases) {
     EXPECT_EQ(test.policy,
-              NavigationPolicyForCreateWindow(
-                  GetWindowFeaturesFromString(test.feature_string)))
+              NavigationPolicyForCreateWindow(GetWindowFeaturesFromString(
+                  test.feature_string, nullptr /* dom_window */)))
         << "Testing '" << test.feature_string << "'";
   }
 }
@@ -279,8 +281,8 @@ TEST_F(NavigationPolicyTest, NoReferrer) {
 
   for (const auto& test : kCases) {
     EXPECT_EQ(test.policy,
-              NavigationPolicyForCreateWindow(
-                  GetWindowFeaturesFromString(test.feature_string)))
+              NavigationPolicyForCreateWindow(GetWindowFeaturesFromString(
+                  test.feature_string, nullptr /* dom_window */)))
         << "Testing '" << test.feature_string << "'";
   }
 }
@@ -309,7 +311,7 @@ TEST_F(NavigationPolicyTest, EventShiftLeftClick) {
 }
 
 TEST_F(NavigationPolicyTest, EventControlOrMetaLeftClick) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -320,7 +322,7 @@ TEST_F(NavigationPolicyTest, EventControlOrMetaLeftClick) {
 }
 
 TEST_F(NavigationPolicyTest, EventControlOrMetaLeftClickWithUserEvent) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -332,7 +334,7 @@ TEST_F(NavigationPolicyTest, EventControlOrMetaLeftClickWithUserEvent) {
 
 TEST_F(NavigationPolicyTest,
        EventControlOrMetaLeftClickWithDifferentUserEvent) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey;
 #else
   int modifiers = WebInputEvent::kControlKey;
@@ -343,7 +345,7 @@ TEST_F(NavigationPolicyTest,
 }
 
 TEST_F(NavigationPolicyTest, EventShiftControlOrMetaLeftClick) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   int modifiers = WebInputEvent::kMetaKey | WebInputEvent::kShiftKey;
 #else
   int modifiers = WebInputEvent::kControlKey | WebInputEvent::kShiftKey;

@@ -52,6 +52,10 @@ class MODULES_EXPORT WebSocketChannel
   enum class SendResult { SENT_SYNCHRONOUSLY, CALLBACK_WILL_BE_CALLED };
 
   WebSocketChannel() = default;
+
+  WebSocketChannel(const WebSocketChannel&) = delete;
+  WebSocketChannel& operator=(const WebSocketChannel&) = delete;
+
   virtual ~WebSocketChannel() = default;
 
   enum CloseEventCode {
@@ -115,10 +119,7 @@ class MODULES_EXPORT WebSocketChannel
   // to indicate that they are ready to receive new messages.
   virtual void RemoveBackpressure() = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketChannel);
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

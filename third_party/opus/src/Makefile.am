@@ -82,7 +82,7 @@ if OPUS_ARM_EXTERNAL_ASM
 libopus_la_LIBADD += libarmasm.la
 endif
 
-pkginclude_HEADERS = include/opus.h include/opus_multistream.h include/opus_types.h include/opus_defines.h
+pkginclude_HEADERS = include/opus.h include/opus_multistream.h include/opus_types.h include/opus_defines.h include/opus_projection.h
 
 noinst_HEADERS = $(OPUS_HEAD) $(SILK_HEAD) $(CELT_HEAD)
 
@@ -102,7 +102,9 @@ noinst_PROGRAMS = celt/tests/test_unit_cwrs32 \
                   tests/test_opus_api \
                   tests/test_opus_decode \
                   tests/test_opus_encode \
-                  tests/test_opus_padding
+                  tests/test_opus_padding \
+                  tests/test_opus_projection \
+                  trivial_example
 
 TESTS = celt/tests/test_unit_cwrs32 \
         celt/tests/test_unit_dft \
@@ -116,7 +118,8 @@ TESTS = celt/tests/test_unit_cwrs32 \
         tests/test_opus_api \
         tests/test_opus_decode \
         tests/test_opus_encode \
-        tests/test_opus_padding
+        tests/test_opus_padding \
+        tests/test_opus_projection
 
 opus_demo_SOURCES = src/opus_demo.c
 
@@ -128,6 +131,9 @@ repacketizer_demo_LDADD = libopus.la $(NE10_LIBS) $(LIBM)
 
 opus_compare_SOURCES = src/opus_compare.c
 opus_compare_LDADD = $(LIBM)
+
+trivial_example_SOURCES = doc/trivial_example.c
+trivial_example_LDADD = libopus.la $(LIBM)
 
 tests_test_opus_api_SOURCES = tests/test_opus_api.c tests/test_opus_common.h
 tests_test_opus_api_LDADD = libopus.la $(NE10_LIBS) $(LIBM)
@@ -143,6 +149,13 @@ tests_test_opus_padding_LDADD = libopus.la $(NE10_LIBS) $(LIBM)
 
 CELT_OBJ = $(CELT_SOURCES:.c=.lo)
 SILK_OBJ = $(SILK_SOURCES:.c=.lo)
+OPUS_OBJ = $(OPUS_SOURCES:.c=.lo)
+
+tests_test_opus_projection_SOURCES = tests/test_opus_projection.c tests/test_opus_common.h
+tests_test_opus_projection_LDADD = $(OPUS_OBJ) $(SILK_OBJ) $(CELT_OBJ) $(NE10_LIBS) $(LIBM)
+if OPUS_ARM_EXTERNAL_ASM
+tests_test_opus_projection_LDADD += libarmasm.la
+endif
 
 silk_tests_test_unit_LPC_inv_pred_gain_SOURCES = silk/tests/test_unit_LPC_inv_pred_gain.c
 silk_tests_test_unit_LPC_inv_pred_gain_LDADD = $(SILK_OBJ) $(CELT_OBJ) $(NE10_LIBS) $(LIBM)
@@ -201,6 +214,29 @@ EXTRA_DIST = opus.pc.in \
              opus.m4 \
              Makefile.mips \
              Makefile.unix \
+             CMakeLists.txt \
+             cmake/CFeatureCheck.cmake \
+             cmake/OpusBuildtype.cmake \
+             cmake/OpusConfig.cmake \
+             cmake/OpusConfig.cmake.in \
+             cmake/OpusFunctions.cmake \
+             cmake/OpusPackageVersion.cmake \
+             cmake/OpusSources.cmake \
+             cmake/RunTest.cmake \
+             cmake/config.h.cmake.in \
+             cmake/vla.c \
+             meson/get-version.py \
+             meson/read-sources-list.py \
+             meson.build \
+             meson_options.txt \
+             include/meson.build \
+             celt/meson.build \
+             celt/tests/meson.build \
+             silk/meson.build \
+             silk/tests/meson.build \
+             src/meson.build \
+             tests/meson.build \
+             doc/meson.build \
              tests/run_vectors.sh \
              celt/arm/arm2gnu.pl \
              celt/arm/celt_pitch_xcorr_arm.s \

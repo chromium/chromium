@@ -1,0 +1,15 @@
+<!--
+@MAC-ALLOW:AXDetailsElements
+@BLINK-ALLOW:details*
+@WIN-ALLOW:details-roles:*
+@UIA-WIN-ALLOW:Annotation.AnnotationType*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    Some <span role="mark" id="annotated-text" aria-details="comment footnote definition">highlighted text</span> example.
+    <div role="comment" id="comment">Good job!</div>
+    <div role="doc-footnote" id="footnote">Some footnote.</div>
+    <div id="definition" role="definition">The meaning is.</div>
+  </body>
+</html>

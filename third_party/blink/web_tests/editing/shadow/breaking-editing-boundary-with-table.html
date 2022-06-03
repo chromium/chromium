@@ -14,7 +14,7 @@ This test checks the &lt;span&gt; does not changed to non-contenteditable elemen
 <pre id="console"></pre>
 
 <script>
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = '<table border="1">' +
     '<tr><td id="dst">aaaaa</td><td id="another">aaaaa</td></tr>' +
     '<tr><td>aaaaa</td><td>aaaaa</td></tr>' +

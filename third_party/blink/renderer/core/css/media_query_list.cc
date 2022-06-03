@@ -24,13 +24,15 @@
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
 
 namespace blink {
 
 MediaQueryList::MediaQueryList(ExecutionContext* context,
                                MediaQueryMatcher* matcher,
                                scoped_refptr<MediaQuerySet> media)
-    : ContextLifecycleObserver(context),
+    : ExecutionContextLifecycleObserver(context),
       matcher_(matcher),
       media_(media),
       matches_dirty_(true),
@@ -72,7 +74,7 @@ bool MediaQueryList::HasPendingActivity() const {
          (listeners_.size() || HasEventListeners(event_type_names::kChange));
 }
 
-void MediaQueryList::ContextDestroyed(ExecutionContext*) {
+void MediaQueryList::ContextDestroyed() {
   listeners_.clear();
   RemoveAllEventListeners();
 }
@@ -98,15 +100,24 @@ bool MediaQueryList::UpdateMatches() {
 }
 
 bool MediaQueryList::matches() {
+  // If this is an iframe, viewport size depends on the layout of the embedding
+  // document.
+  if (matcher_->GetDocument() && matcher_->GetDocument()->GetFrame()) {
+    if (auto* owner =
+            matcher_->GetDocument()->GetFrame()->OwnerLayoutObject()) {
+      owner->GetDocument().UpdateStyleAndLayout(
+          DocumentUpdateReason::kJavaScript);
+    }
+  }
   UpdateMatches();
   return matches_;
 }
 
-void MediaQueryList::Trace(blink::Visitor* visitor) {
+void MediaQueryList::Trace(Visitor* visitor) const {
   visitor->Trace(matcher_);
   visitor->Trace(listeners_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 const AtomicString& MediaQueryList::InterfaceName() const {
@@ -114,7 +125,7 @@ const AtomicString& MediaQueryList::InterfaceName() const {
 }
 
 ExecutionContext* MediaQueryList::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
 }  // namespace blink

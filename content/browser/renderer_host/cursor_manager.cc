@@ -9,9 +9,7 @@
 namespace content {
 
 CursorManager::CursorManager(RenderWidgetHostViewBase* root)
-    : view_under_cursor_(root),
-      root_view_(root),
-      tooltip_observer_for_testing_(nullptr) {}
+    : view_under_cursor_(root), root_view_(root) {}
 
 CursorManager::~CursorManager() {}
 
@@ -20,17 +18,6 @@ void CursorManager::UpdateCursor(RenderWidgetHostViewBase* view,
   cursor_map_[view] = cursor;
   if (view == view_under_cursor_)
     root_view_->DisplayCursor(cursor);
-}
-
-void CursorManager::SetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                                          const base::string16& tooltip_text) {
-  if (view == view_under_cursor_) {
-    root_view_->DisplayTooltipText(tooltip_text);
-    if (tooltip_observer_for_testing_ && view) {
-      tooltip_observer_for_testing_->OnSetTooltipTextForView(view,
-                                                             tooltip_text);
-    }
-  }
 }
 
 void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
@@ -42,11 +29,10 @@ void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
   // though this is only guaranteed if the view's tooltip is non-empty, so
   // clearing here is important. Tooltips sent from the previous view will be
   // ignored.
-  SetTooltipTextForView(view_under_cursor_, base::string16());
+  root_view_->UpdateTooltip(std::u16string());
   view_under_cursor_ = view;
-  WebCursor cursor;
+  WebCursor cursor(ui::mojom::CursorType::kPointer);
 
-  // If no UpdateCursor has been received for this view, use an empty cursor.
   auto it = cursor_map_.find(view);
   if (it != cursor_map_.end())
     cursor = it->second;
@@ -63,6 +49,10 @@ void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewBase* view) {
     UpdateViewUnderCursor(root_view_);
 }
 
+bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewBase* view) const {
+  return view == view_under_cursor_;
+}
+
 bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
                                         WebCursor& cursor) {
   if (cursor_map_.find(view) == cursor_map_.end())
@@ -70,10 +60,6 @@ bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
 
   cursor = cursor_map_[view];
   return true;
-}
-
-void CursorManager::SetTooltipObserverForTesting(TooltipObserver* observer) {
-  tooltip_observer_for_testing_ = observer;
 }
 
 }  // namespace content

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div {
+  width: 100vw;
+  height: 100vh;
+}
+img {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<!-- To contain the overlay popup image ad -->
+<div></div>
+
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+
+<script>
+if (window.testRunner) {
+  // Inject a subresource filter to mark 'alpha.png' as a would be disallowed resource.
+  testRunner.setDisallowedSubresourcePathSuffixes(["alpha.png"], false /* block_subresources */);
+}
+
+promise_test(() => {
+  return new Promise(async (resolve, reject) => {
+      // After 1500ms, force a layout update so that the interstitial detector
+      // is aware of the first meaningful paint, and future overlay candidates
+      // will be considered for pop-ups rather than for prestitials.
+    await timeout(1500);
+    await forceLayoutUpdate();
+
+    // Create the overlay pop-up ad, and wait for image load so that the ad
+    // status are propagated.
+    await new Promise(resolve => {
+      let ad_img = document.createElement('img');
+      ad_img.addEventListener('load', () => {
+        resolve();
+      });
+      ad_img.src = "../resources/alpha.png";
+      document.getElementsByTagName('div')[0].appendChild(ad_img);
+    });
+
+    // Force a layout update, so that the interstitial detector is aware of the
+    // overlay candidate.
+    await forceLayoutUpdate();
+
+    // Hide the pop-up.
+    document.getElementsByTagName('img')[0].style.display = 'none';
+
+    // Force a layout update, so that the interstitial detector is aware of the
+    // overlay candidate's dismissal.
+    await forceLayoutUpdate();
+
+    // Expect the OverlayPopupAd UseCounter.
+    if (!internals.isUseCounted(document, kOverlayPopupAd)) {
+      reject();
+    }
+
+    resolve();
+  });
+}, "Test UseCounter for overlay-popup-ad when the image itself has a fixed position.");
+
+</script>
+</body>
+</html>

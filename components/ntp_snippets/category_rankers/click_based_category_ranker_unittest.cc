@@ -42,6 +42,9 @@ class ClickBasedCategoryRankerTest : public testing::Test {
     ranker_ = std::make_unique<ClickBasedCategoryRanker>(
         pref_service_.get(), base::DefaultClock::GetInstance());
   }
+  ClickBasedCategoryRankerTest(const ClickBasedCategoryRankerTest&) = delete;
+  ClickBasedCategoryRankerTest& operator=(const ClickBasedCategoryRankerTest&) =
+      delete;
 
   int GetUnusedRemoteCategoryID() { return unused_remote_category_id_++; }
 
@@ -95,8 +98,6 @@ class ClickBasedCategoryRankerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   int unused_remote_category_id_;
   std::unique_ptr<ClickBasedCategoryRanker> ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickBasedCategoryRankerTest);
 };
 
 TEST_F(ClickBasedCategoryRankerTest, ShouldSortRemoteCategoriesByWhenAdded) {
@@ -276,7 +277,7 @@ TEST_F(ClickBasedCategoryRankerTest, ShouldDecayClickCountsWithTime) {
 
   // Let multiple years pass by.
   base::SimpleTestClock test_clock;
-  test_clock.SetNow(base::Time::Now() + base::TimeDelta::FromDays(1000));
+  test_clock.SetNow(base::Time::Now() + base::Days(1000));
   // Reset the ranker to pick up the new clock.
   ResetRanker(&test_clock);
 
@@ -308,7 +309,7 @@ TEST_F(ClickBasedCategoryRankerTest, ShouldDecayAfterClearHistory) {
 
   // Let multiple years pass by.
   base::SimpleTestClock test_clock;
-  test_clock.SetNow(base::Time::Now() + base::TimeDelta::FromDays(1000));
+  test_clock.SetNow(base::Time::Now() + base::Days(1000));
   // Reset the ranker to pick up the new clock.
   ResetRanker(&test_clock);
 
@@ -338,7 +339,7 @@ TEST_F(ClickBasedCategoryRankerTest, ShouldPersistLastDecayTimeWhenRestarted) {
 
   // Ensure that |Now()| is different from |before| by injecting our clock.
   base::SimpleTestClock test_clock;
-  test_clock.SetNow(base::Time::Now() + base::TimeDelta::FromSeconds(10));
+  test_clock.SetNow(base::Time::Now() + base::Seconds(10));
   ResetRanker(&test_clock);
 
   EXPECT_EQ(before, ranker()->GetLastDecayTime());
@@ -482,7 +483,7 @@ TEST_F(ClickBasedCategoryRankerTest, ShouldIgnorePartialClearHistory) {
   ASSERT_FALSE(CompareCategories(first, second));
 
   // The user partially clears history.
-  base::Time begin = base::Time::Now() - base::TimeDelta::FromHours(1),
+  base::Time begin = base::Time::Now() - base::Hours(1),
              end = base::Time::Max();
   ranker()->ClearHistory(begin, end);
 

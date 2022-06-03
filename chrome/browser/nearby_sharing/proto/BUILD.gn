@@ -1,0 +1,29 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Nearby Share is CrOS only")
+
+proto_library("proto") {
+  sources = [
+    "certificate_rpc.proto",
+    "contact_rpc.proto",
+    "device_rpc.proto",
+    "encrypted_metadata.proto",
+    "field_mask.proto",
+    "rpc_resources.proto",
+    "timestamp.proto",
+  ]
+}
+
+proto_library("tachyon_proto") {
+  sources = [
+    "duration.proto",
+    "ice.proto",
+    "tachyon.proto",
+    "tachyon_common.proto",
+    "tachyon_enums.proto",
+  ]
+}

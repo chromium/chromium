@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 
 #include <memory>
-#include "base/single_thread_task_runner.h"
+#include <utility>
+
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_color_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_keyword_value.h"
@@ -17,7 +19,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -103,7 +105,7 @@ TEST_F(CrossThreadStyleValueTest, PassUnsupportedValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckUnsupportedValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -134,7 +136,7 @@ TEST_F(CrossThreadStyleValueTest, PassUnparsedValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckUnparsedValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -166,7 +168,7 @@ TEST_F(CrossThreadStyleValueTest, PassKeywordValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckKeywordValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -198,7 +200,7 @@ TEST_F(CrossThreadStyleValueTest, PassUnitValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckUnitValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -230,7 +232,7 @@ TEST_F(CrossThreadStyleValueTest, PassColorValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckColorValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -244,7 +246,7 @@ TEST_F(CrossThreadStyleValueTest, CrossThreadColorValueToCSSStyleValue) {
   CSSStyleValue* style_value = value->ToCSSStyleValue();
   EXPECT_EQ(style_value->GetType(),
             CSSStyleValue::StyleValueType::kUnsupportedColorType);
-  EXPECT_EQ(static_cast<CSSUnsupportedColorValue*>(style_value)->Value(),
+  EXPECT_EQ(static_cast<CSSUnsupportedColor*>(style_value)->Value(),
             Color(0, 255, 0));
 }
 

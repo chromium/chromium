@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Check trailing events assert_false: Should have gotten innerbodyfocus after willspineventloop expected false got true
+PASS Check more trailing events
+PASS Check result
+Harness: the test ran to completion.
+

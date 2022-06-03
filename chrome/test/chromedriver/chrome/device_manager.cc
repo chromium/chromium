@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -20,15 +20,15 @@
 
 const char kChromeCmdLineFile[] = "/data/local/tmp/chrome-command-line";
 
-Device::Device(
-    const std::string& device_serial, Adb* adb,
-    base::Callback<void()> release_callback)
+Device::Device(const std::string& device_serial,
+               Adb* adb,
+               base::OnceCallback<void()> release_callback)
     : serial_(device_serial),
       adb_(adb),
-      release_callback_(release_callback) {}
+      release_callback_(std::move(release_callback)) {}
 
 Device::~Device() {
-  release_callback_.Run();
+  std::move(release_callback_).Run();
 }
 
 // Only allow completely alpha exec names.
@@ -45,6 +45,7 @@ Status Device::SetUp(const std::string& package,
                      const std::string& exec_name,
                      const std::string& args,
                      bool use_running_app,
+                     bool keep_app_data_dir,
                      int* devtools_port) {
   if (!active_package_.empty())
     return Status(kUnknownError,
@@ -80,8 +81,20 @@ Status Device::SetUp(const std::string& package,
     command_line_file = base::StringPrintf("/data/local/tmp/%s_devtools_remote",
                                            exec_name.c_str());
     use_debug_flag = true;
+  } else if (package.find("webview") != std::string::npos) {
+    command_line_file = "/data/local/tmp/webview-command-line";
+    // This name isn't really important, what is important is that it's
+    // non-empty. If empty, it means webview treats the the first value of
+    // |args| as the executable name, and not an argument (in other words,
+    // args[0] is effectively ignored as a command line switch).
+    known_exec_name = "webview";
   } else if (package.find("weblayer") != std::string::npos) {
     command_line_file = "/data/local/tmp/weblayer-command-line";
+    // This name isn't really important, what is important is that it's
+    // non-empty. If empty, it means weblayer treats the the first value of
+    // |args| as the executable name, and not an argument (in other words,
+    // args[0] is effectively ignored as a command line switch).
+    known_exec_name = "weblayer_shell";
   }
 
   if (!use_running_app) {
@@ -101,9 +114,11 @@ Status Device::SetUp(const std::string& package,
         return status;
     }
 
-    status = adb_->ClearAppData(serial_, package);
-    if (status.IsError())
-      return status;
+    if (!keep_app_data_dir) {
+      status = adb_->ClearAppData(serial_, package);
+      if (status.IsError())
+        return status;
+    }
 
     if (!known_activity.empty()) {
       if (!activity.empty() ||
@@ -178,7 +193,10 @@ Status Device::ForwardDevtoolsPort(const std::string& package,
     *device_socket = socket_name.substr(1);
   }
 
-  return adb_->ForwardPort(serial_, *device_socket, devtools_port);
+  Status status = adb_->ForwardPort(serial_, *device_socket, devtools_port);
+  if (status.IsOk())
+    devtools_port_ = *devtools_port;
+  return status;
 }
 
 Status Device::TearDown() {
@@ -188,6 +206,12 @@ Status Device::TearDown() {
     if (status.IsError())
       return status;
     active_package_ = "";
+  }
+  if (devtools_port_ != 0) {
+    Status status = adb_->KillForwardPort(serial_, devtools_port_);
+    if (status.IsError())
+      return status;
+    devtools_port_ = 0;
   }
   return Status(kOk);
 }
@@ -252,8 +276,8 @@ void DeviceManager::ReleaseDevice(const std::string& device_serial) {
 Device* DeviceManager::LockDevice(const std::string& device_serial) {
   active_devices_.push_back(device_serial);
   return new Device(device_serial, adb_,
-      base::Bind(&DeviceManager::ReleaseDevice, base::Unretained(this),
-                 device_serial));
+                    base::BindOnce(&DeviceManager::ReleaseDevice,
+                                   base::Unretained(this), device_serial));
 }
 
 bool DeviceManager::IsDeviceLocked(const std::string& device_serial) {

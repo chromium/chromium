@@ -9,9 +9,7 @@ proto_library("scopes_metadata_proto") {
 
   proto_in_dir = "."
   proto_out_dir = "components/services/storage/indexed_db/scopes"
-  sources = [
-    "scopes_metadata.proto",
-  ]
+  sources = [ "scopes_metadata.proto" ]
 
   generate_python = false
 }

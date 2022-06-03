@@ -1,0 +1,49 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "chromoting_host_services.mojom",
+    "desktop_session.mojom",
+    "remote_support.mojom",
+    "remote_url_opener.mojom",
+    "remoting_host.mojom",
+    "testing.mojom",
+    "webauthn_proxy.mojom",
+  ]
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "remoting.mojom.ClipboardEvent"
+          cpp = "::remoting::protocol::ClipboardEvent"
+        },
+      ]
+      traits_headers = [ "remoting_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "remoting_mojom_traits.cc",
+    "remoting_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":mojom_shared_cpp_sources",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//mojo/public/cpp/bindings",
+    "//remoting/proto",
+  ]
+}

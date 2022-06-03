@@ -13,7 +13,7 @@ WorkletAnimationOptions::WorkletAnimationOptions(
     : data_(data) {}
 
 std::unique_ptr<cc::AnimationOptions> WorkletAnimationOptions::Clone() const {
-  return std::make_unique<WorkletAnimationOptions>(this->data_);
+  return std::make_unique<WorkletAnimationOptions>(data_);
 }
 
 WorkletAnimationOptions::~WorkletAnimationOptions() {}

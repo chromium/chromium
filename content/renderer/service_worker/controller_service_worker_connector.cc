@@ -5,7 +5,7 @@
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace content {
 
@@ -74,6 +74,12 @@ void ControllerServiceWorkerConnector::OnControllerConnectionClosed() {
   controller_service_worker_.reset();
   for (auto& observer : observer_list_)
     observer.OnConnectionClosed();
+}
+
+void ControllerServiceWorkerConnector::EnsureFileAccess(
+    const std::vector<base::FilePath>& file_paths,
+    base::OnceClosure callback) {
+  container_host_->EnsureFileAccess(file_paths, std::move(callback));
 }
 
 void ControllerServiceWorkerConnector::AddBinding(

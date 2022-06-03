@@ -6,27 +6,21 @@
 #define IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_CLEAR_BROWSING_DATA_COORDINATOR_H_
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_local_commands.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
 
 enum class UrlLoadStrategy;
 
-@protocol ApplicationCommands;
-@protocol BrowsingDataCommands;
-@protocol HistoryLocalCommands;
+@protocol HistoryUIDelegate;
 @protocol HistoryPresentationDelegate;
 @protocol HistoryClearBrowsingDataLocalCommands;
 
 // Coordinator that presents Clear Browsing Data Table View from History.
 // Delegates are hooked up to History coordinator-specific methods.
 @interface HistoryClearBrowsingDataCoordinator
-    : ChromeCoordinator<ClearBrowsingDataLocalCommands>
+    : ChromeCoordinator <ClearBrowsingDataUIDelegate>
 
 // Delegate for this coordinator.
-@property(nonatomic, weak) id<HistoryLocalCommands> localDispatcher;
-
-// Dispatcher for view controller.
-@property(nonatomic, weak) id<ApplicationCommands, BrowsingDataCommands>
-    dispatcher;
+@property(nonatomic, weak) id<HistoryUIDelegate> delegate;
 
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;

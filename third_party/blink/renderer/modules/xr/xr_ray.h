@@ -18,6 +18,7 @@ namespace blink {
 class DOMPointInit;
 class DOMPointReadOnly;
 class ExceptionState;
+class XRRayDirectionInit;
 class XRRigidTransform;
 
 class XRRay final : public ScriptWrappable {
@@ -25,11 +26,9 @@ class XRRay final : public ScriptWrappable {
 
  public:
   XRRay();
-  explicit XRRay(const TransformationMatrix& matrix,
-                 ExceptionState& exception_state);
   explicit XRRay(XRRigidTransform* transform, ExceptionState& exception_state);
   XRRay(DOMPointInit* origin,
-        DOMPointInit* direction,
+        XRRayDirectionInit* direction,
         ExceptionState& exception_state);
   ~XRRay() override;
 
@@ -41,15 +40,13 @@ class XRRay final : public ScriptWrappable {
   // that will be returned, the only difference is the returned type.
   TransformationMatrix RawMatrix();
 
-  static XRRay* Create(ExceptionState& exception_state);
-  static XRRay* Create(DOMPointInit* origin, ExceptionState& exception_state);
   static XRRay* Create(DOMPointInit* origin,
-                       DOMPointInit* direction,
+                       XRRayDirectionInit* direction,
                        ExceptionState& exception_state);
   static XRRay* Create(XRRigidTransform* transform,
                        ExceptionState& exception_state);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void Set(const TransformationMatrix& matrix, ExceptionState& exception_state);

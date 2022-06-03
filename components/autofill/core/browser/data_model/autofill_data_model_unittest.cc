@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -16,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+using structured_address::VerificationStatus;
 
 namespace {
 
@@ -33,16 +34,21 @@ class TestAutofillDataModel : public AutofillDataModel {
     set_use_count(use_count);
     set_use_date(use_date);
   }
+
+  TestAutofillDataModel(const TestAutofillDataModel&) = delete;
+  TestAutofillDataModel& operator=(const TestAutofillDataModel&) = delete;
+
   ~TestAutofillDataModel() override {}
 
  private:
-  base::string16 GetRawInfo(ServerFieldType type) const override {
-    return base::string16();
+  std::u16string GetRawInfo(ServerFieldType type) const override {
+    return std::u16string();
   }
-  void SetRawInfo(ServerFieldType type, const base::string16& value) override {}
+  void SetRawInfoWithVerificationStatus(
+      ServerFieldType type,
+      const std::u16string& value,
+      structured_address::VerificationStatus status) override {}
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillDataModel);
 };
 
 }  // namespace
@@ -106,7 +112,7 @@ TEST(AutofillDataModelTest, IsDeletable) {
   EXPECT_FALSE(model.IsDeletable());
 
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::TimeDelta::FromDays(1));
+                    base::Days(1));
   EXPECT_TRUE(model.IsDeletable());
 }
 
@@ -154,24 +160,22 @@ INSTANTIATE_TEST_SUITE_P(
                                        LESS},
         // Same frequency, model_a is more recent.
         HasGreaterFrecencyThanTestCase{"guid_a", 8, now, "guid_b", 8,
-                                       now - base::TimeDelta::FromDays(1),
-                                       GREATER},
+                                       now - base::Days(1), GREATER},
         // Same frequency, model_a is less recent.
-        HasGreaterFrecencyThanTestCase{"guid_a", 8,
-                                       now - base::TimeDelta::FromDays(1),
+        HasGreaterFrecencyThanTestCase{"guid_a", 8, now - base::Days(1),
                                        "guid_b", 8, now, LESS},
         // Special case: occasional profiles. A profile with relatively low
         // usage and used recently (model_b) should not rank higher than a more
         // used profile that has been unused for a short amount of time
         // (model_a).
-        HasGreaterFrecencyThanTestCase{
-            "guid_a", 300, now - base::TimeDelta::FromDays(5), "guid_b", 10,
-            now - base::TimeDelta::FromDays(1), GREATER},
+        HasGreaterFrecencyThanTestCase{"guid_a", 300, now - base::Days(5),
+                                       "guid_b", 10, now - base::Days(1),
+                                       GREATER},
         // Special case: moving. A new profile used frequently (model_b) should
         // rank higher than a profile with more usage that has not been used for
         // a while (model_a).
-        HasGreaterFrecencyThanTestCase{
-            "guid_a", 300, now - base::TimeDelta::FromDays(15), "guid_b", 10,
-            now - base::TimeDelta::FromDays(1), LESS}));
+        HasGreaterFrecencyThanTestCase{"guid_a", 300, now - base::Days(15),
+                                       "guid_b", 10, now - base::Days(1),
+                                       LESS}));
 
 }  // namespace autofill

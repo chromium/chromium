@@ -9,17 +9,18 @@
 #include <limits>
 #include <string>
 #include <utility>
-#include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/gtest_prod_util.h"
-#include "base/logging.h"
-#include "base/optional.h"
-#include "third_party/blink/public/platform/web_media_constraints.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-struct WebMediaTrackConstraintSet;
+struct MediaTrackConstraintSetPlatform;
 
 template <typename ConstraintType>
 bool ConstraintHasMax(const ConstraintType& constraint) {
@@ -53,22 +54,22 @@ template <typename T>
 class NumericRangeSet {
  public:
   NumericRangeSet() = default;
-  NumericRangeSet(base::Optional<T> min, base::Optional<T> max)
+  NumericRangeSet(absl::optional<T> min, absl::optional<T> max)
       : min_(std::move(min)), max_(std::move(max)) {}
   NumericRangeSet(const NumericRangeSet& other) = default;
   NumericRangeSet& operator=(const NumericRangeSet& other) = default;
   ~NumericRangeSet() = default;
 
-  const base::Optional<T>& Min() const { return min_; }
-  const base::Optional<T>& Max() const { return max_; }
+  const absl::optional<T>& Min() const { return min_; }
+  const absl::optional<T>& Max() const { return max_; }
   bool IsEmpty() const { return max_ && min_ && *max_ < *min_; }
 
   NumericRangeSet Intersection(const NumericRangeSet& other) const {
-    base::Optional<T> min = min_;
+    absl::optional<T> min = min_;
     if (other.Min())
       min = min ? std::max(*min, *other.Min()) : other.Min();
 
-    base::Optional<T> max = max_;
+    absl::optional<T> max = max_;
     if (other.Max())
       max = max ? std::min(*max, *other.Max()) : other.Max();
 
@@ -102,10 +103,10 @@ class NumericRangeSet {
     return NumericRangeSet<T>(
         ConstraintHasMin(constraint) && ConstraintMin(constraint) >= lower_bound
             ? ConstraintMin(constraint)
-            : base::Optional<T>(),
+            : absl::optional<T>(),
         ConstraintHasMax(constraint) && ConstraintMax(constraint) <= upper_bound
             ? ConstraintMax(constraint)
-            : base::Optional<T>());
+            : absl::optional<T>());
   }
 
   // Creates a NumericRangeSet based on the minimum and maximum values of
@@ -114,9 +115,9 @@ class NumericRangeSet {
   static NumericRangeSet<T> FromConstraint(ConstraintType constraint) {
     return NumericRangeSet<T>(
         ConstraintHasMin(constraint) ? ConstraintMin(constraint)
-                                     : base::Optional<T>(),
+                                     : absl::optional<T>(),
         ConstraintHasMax(constraint) ? ConstraintMax(constraint)
-                                     : base::Optional<T>());
+                                     : absl::optional<T>());
   }
 
   // Creates a NumericRangeSet based on a single value representing both the
@@ -128,8 +129,8 @@ class NumericRangeSet {
   static NumericRangeSet<T> EmptySet() { return NumericRangeSet(1, 0); }
 
  private:
-  base::Optional<T> min_;
-  base::Optional<T> max_;
+  absl::optional<T> min_;
+  absl::optional<T> max_;
 };
 
 // This class defines a set of discrete elements suitable for resolving
@@ -151,10 +152,10 @@ class DiscreteSet {
   // It is the responsibility of the caller to ensure that |elements| is not
   // equivalent to the universal set and that |elements| has no repeated
   // values. Takes ownership of |elements|.
-  explicit DiscreteSet(std::vector<T> elements)
+  explicit DiscreteSet(Vector<T> elements)
       : is_universal_(false), elements_(std::move(elements)) {}
   // Creates an empty set;
-  static DiscreteSet EmptySet() { return DiscreteSet(std::vector<T>()); }
+  static DiscreteSet EmptySet() { return DiscreteSet(Vector<T>()); }
   static DiscreteSet UniversalSet() { return DiscreteSet(); }
 
   DiscreteSet(const DiscreteSet& other) = default;
@@ -167,9 +168,9 @@ class DiscreteSet {
     return is_universal_ || base::Contains(elements_, value);
   }
 
-  bool IsEmpty() const { return !is_universal_ && elements_.empty(); }
+  bool IsEmpty() const { return !is_universal_ && elements_.IsEmpty(); }
 
-  bool HasExplicitElements() const { return !elements_.empty(); }
+  bool HasExplicitElements() const { return !elements_.IsEmpty(); }
 
   DiscreteSet Intersection(const DiscreteSet& other) const {
     if (is_universal_)
@@ -180,7 +181,7 @@ class DiscreteSet {
       return EmptySet();
 
     // Both sets have explicit elements.
-    std::vector<T> intersection;
+    Vector<T> intersection;
     for (const auto& entry : elements_) {
       if (base::Contains(other.elements_, entry))
         intersection.push_back(entry);
@@ -198,7 +199,7 @@ class DiscreteSet {
 
   // Returns a reference to the list of elements in the set.
   // Behavior is undefined if the set is universal.
-  const std::vector<T>& elements() const {
+  const Vector<T>& elements() const {
     DCHECK(!is_universal_);
     return elements_;
   }
@@ -207,7 +208,7 @@ class DiscreteSet {
 
  private:
   bool is_universal_;
-  std::vector<T> elements_;
+  Vector<T> elements_;
 };
 
 // Special case for DiscreteSet<bool> where it is easy to produce an explicit
@@ -366,7 +367,7 @@ class MODULES_EXPORT ResolutionSet {
   //
   // This function has undefined behavior if this set is empty.
   Point SelectClosestPointToIdeal(
-      const WebMediaTrackConstraintSet& constraint_set,
+      const MediaTrackConstraintSetPlatform& constraint_set,
       int default_height,
       int default_width) const;
 
@@ -384,7 +385,7 @@ class MODULES_EXPORT ResolutionSet {
   // Returns a ResolutionCandidateSet initialized with |constraint_set|'s
   // width, height and aspectRatio constraints.
   static ResolutionSet FromConstraintSet(
-      const WebMediaTrackConstraintSet& constraint_set);
+      const MediaTrackConstraintSetPlatform& constraint_set);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamConstraintsUtilSetsTest,
@@ -413,7 +414,7 @@ class MODULES_EXPORT ResolutionSet {
   // consecutive vertices (modulo the size of the list) corresponds to a side of
   // the polygon, with the vertices given in counterclockwise order.
   // The list cannot contain more than six points.
-  std::vector<Point> ComputeVertices() const;
+  Vector<Point> ComputeVertices() const;
 
  private:
   // Implements SelectClosestPointToIdeal() for the case when only the ideal
@@ -425,11 +426,11 @@ class MODULES_EXPORT ResolutionSet {
   // Returns the vertices of the set that have the property accessed
   // by |accessor| closest to |value|. The returned vector always has one or two
   // elements. Behavior is undefined if the set is empty.
-  std::vector<Point> GetClosestVertices(double (Point::*accessor)() const,
-                                        double value) const;
+  Vector<Point> GetClosestVertices(double (Point::*accessor)() const,
+                                   double value) const;
 
   // Adds |point| to |vertices| if |point| is included in this candidate set.
-  void TryAddVertex(std::vector<ResolutionSet::Point>* vertices,
+  void TryAddVertex(Vector<ResolutionSet::Point>* vertices,
                     const ResolutionSet::Point& point) const;
 
   int min_height_;

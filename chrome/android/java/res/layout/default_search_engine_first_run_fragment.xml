@@ -42,12 +42,12 @@
                     android:paddingBottom="@dimen/signin_chooser_padding"
                     android:background="@color/signin_head_background"
                     android:importantForAccessibility="no"
-                    android:textAppearance="@style/TextAppearance.BlackHeadline"
+                    android:textAppearance="@style/TextAppearance.Headline.Primary"
                     android:text="@string/search_engine_dialog_title" />
 
                 <View style="@style/HorizontalDivider" />
 
-                <org.chromium.chrome.browser.ui.widget.RadioButtonLayout
+                <org.chromium.components.browser_ui.widget.RadioButtonLayout
                     android:id="@+id/default_search_engine_dialog_options"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/search_engine_dialog_footer"
-        android:textAppearance="@style/TextAppearance.BlackBody"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:padding="@dimen/signin_chooser_padding" />
 
     <!--suppress ButtonStyle -->
@@ -74,8 +74,6 @@
         android:layout_marginBottom="10dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="22dp"
-        android:paddingStart="@dimen/fre_button_padding"
-        android:paddingEnd="@dimen/fre_button_padding"
         android:text="@string/ok"
         style="@style/FilledButton.Flat" />
 

@@ -13,7 +13,7 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -39,7 +39,7 @@ const char kMobileDataNotificationId[] =
 const char kNotifierMobileData[] = "ash.mobile-data";
 
 void MobileDataNotificationClicked(const std::string& network_id) {
-  SystemTrayClient::Get()->ShowNetworkSettings(network_id);
+  SystemTrayClientImpl::Get()->ShowNetworkSettings(network_id);
 }
 
 constexpr int kNotificationCheckDelayInSeconds = 2;
@@ -136,7 +136,7 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
           message_center::NOTIFICATION_TYPE_SIMPLE, kMobileDataNotificationId,
           l10n_util::GetStringUTF16(IDS_MOBILE_DATA_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(IDS_3G_NOTIFICATION_MESSAGE),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierMobileData),
@@ -156,7 +156,7 @@ void MobileDataNotifications::DelayedShowOptionalMobileDataNotification() {
     return;
   }
   one_shot_notification_check_delay_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kNotificationCheckDelayInSeconds),
+      FROM_HERE, base::Seconds(kNotificationCheckDelayInSeconds),
       base::BindOnce(
           &MobileDataNotifications::ShowOptionalMobileDataNotification,
           // Callbacks won't run after this object is destroyed by using weak

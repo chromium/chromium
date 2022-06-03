@@ -23,10 +23,9 @@
  * DAMAGE.
  */
 
-// See https://webaudio.github.io/web-audio-api/#channelsplitternode
+// https://webaudio.github.io/web-audio-api/#channelsplitternode
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface ChannelSplitterNode : AudioNode {
-  [RaisesException] constructor(BaseAudioContext context, optional ChannelSplitterOptions options);
+  [RaisesException, Measure] constructor(BaseAudioContext context, optional ChannelSplitterOptions options = {});
 };

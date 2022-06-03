@@ -9,12 +9,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 using content::DesktopMediaID;
 
-FakeDesktopMediaList::FakeDesktopMediaList(DesktopMediaID::Type type)
-    : observer_(NULL), type_(type) {}
+FakeDesktopMediaList::FakeDesktopMediaList(DesktopMediaList::Type type)
+    : observer_(nullptr), type_(type) {}
 FakeDesktopMediaList::~FakeDesktopMediaList() {}
 
 void FakeDesktopMediaList::AddSource(int id) {
@@ -29,29 +29,34 @@ void FakeDesktopMediaList::AddSourceByFullMediaID(
   source.name = base::NumberToString16(media_id.id);
 
   sources_.push_back(source);
-  observer_->OnSourceAdded(this, sources_.size() - 1);
+  observer_->OnSourceAdded(sources_.size() - 1);
 }
 
 void FakeDesktopMediaList::RemoveSource(int index) {
   sources_.erase(sources_.begin() + index);
-  observer_->OnSourceRemoved(this, index);
+  observer_->OnSourceRemoved(index);
 }
 
 void FakeDesktopMediaList::MoveSource(int old_index, int new_index) {
   Source source = sources_[old_index];
   sources_.erase(sources_.begin() + old_index);
   sources_.insert(sources_.begin() + new_index, source);
-  observer_->OnSourceMoved(this, old_index, new_index);
+  observer_->OnSourceMoved(old_index, new_index);
 }
 
 void FakeDesktopMediaList::SetSourceThumbnail(int index) {
   sources_[index].thumbnail = thumbnail_;
-  observer_->OnSourceThumbnailChanged(this, index);
+  observer_->OnSourceThumbnailChanged(index);
 }
 
-void FakeDesktopMediaList::SetSourceName(int index, base::string16 name) {
+void FakeDesktopMediaList::SetSourceName(int index, std::u16string name) {
   sources_[index].name = name;
-  observer_->OnSourceNameChanged(this, index);
+  observer_->OnSourceNameChanged(index);
+}
+
+void FakeDesktopMediaList::SetSourcePreview(int index, gfx::ImageSkia preview) {
+  sources_[index].preview = preview;
+  observer_->OnSourcePreviewChanged(index);
 }
 
 void FakeDesktopMediaList::SetUpdatePeriod(base::TimeDelta period) {}
@@ -83,6 +88,9 @@ const DesktopMediaList::Source& FakeDesktopMediaList::GetSource(
   return sources_[index];
 }
 
-DesktopMediaID::Type FakeDesktopMediaList::GetMediaListType() const {
+DesktopMediaList::Type FakeDesktopMediaList::GetMediaListType() const {
   return type_;
 }
+
+void FakeDesktopMediaList::SetPreviewedSource(
+    const absl::optional<content::DesktopMediaID>& id) {}

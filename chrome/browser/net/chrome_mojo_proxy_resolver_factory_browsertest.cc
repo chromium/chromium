@@ -8,27 +8,24 @@
 
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-constexpr base::TimeDelta kServiceShutdownTimeout =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kServiceShutdownTimeout = base::Seconds(3);
 
 constexpr char kPacScript[] =
     "function FindProxyForURL(url, host) { return 'PROXY proxy.example.com:1; "
@@ -90,6 +87,10 @@ class ProxyResolverProcessObserver
     content::ServiceProcessHost::AddObserver(this);
   }
 
+  ProxyResolverProcessObserver(const ProxyResolverProcessObserver&) = delete;
+  ProxyResolverProcessObserver& operator=(const ProxyResolverProcessObserver&) =
+      delete;
+
   ~ProxyResolverProcessObserver() override {
     content::ServiceProcessHost::RemoveObserver(this);
   }
@@ -125,8 +126,6 @@ class ProxyResolverProcessObserver
   bool is_service_running_ = false;
   base::RunLoop launch_loop_;
   base::RunLoop death_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverProcessObserver);
 };
 
 // Ensures the proxy resolver service is started correctly and stopped when no
@@ -158,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverFactoryBrowserTest,
   // Wait a little bit and check it's still running.
   {
     base::RunLoop run_loop;
-    base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
-                          run_loop.QuitClosure(), kServiceShutdownTimeout);
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), kServiceShutdownTimeout);
     run_loop.Run();
   }
 
@@ -202,8 +201,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverFactoryBrowserTest,
   // Wait a little bit and check it's still running.
   {
     base::RunLoop run_loop;
-    base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
-                          run_loop.QuitClosure(), kServiceShutdownTimeout);
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), kServiceShutdownTimeout);
     run_loop.Run();
   }
 
@@ -221,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverFactoryBrowserTest,
   mojo::Remote<proxy_resolver::mojom::ProxyResolverFactory> resolver_factory(
       ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver());
 
-  base::Optional<ProxyResolverProcessObserver> observer{base::in_place};
+  absl::optional<ProxyResolverProcessObserver> observer{absl::in_place};
 
   // Create a resolver, this should create and start the service.
   std::unique_ptr<DumbProxyResolverFactoryRequestClient> resolver_client =

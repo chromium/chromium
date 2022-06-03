@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 namespace {
@@ -103,6 +103,24 @@ SessionRateImpact::SessionRateImpact(const SessionRateImpact& other) = default;
 
 SessionRateImpact::~SessionRateImpact() = default;
 
+BlockedBy::BlockedBy() = default;
+
+BlockedBy::BlockedBy(const BlockedBy& other) = default;
+
+BlockedBy::~BlockedBy() = default;
+
+Blocking::Blocking() = default;
+
+Blocking::Blocking(const Blocking& other) = default;
+
+Blocking::~Blocking() = default;
+
+SnoozeParams::SnoozeParams() = default;
+
+SnoozeParams::SnoozeParams(const SnoozeParams& other) = default;
+
+SnoozeParams::~SnoozeParams() = default;
+
 std::ostream& operator<<(std::ostream& os, const SessionRateImpact& impact) {
   os << "{ type: " << impact.type << ", affected_features: ";
   if (!impact.affected_features.has_value())
@@ -126,7 +144,12 @@ bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs) {
          std::tie(rhs.type, rhs.affected_features);
 }
 
-FeatureConfig::FeatureConfig() : valid(false), tracking_only(false) {}
+bool operator==(const BlockedBy& lhs, const BlockedBy& rhs) {
+  return std::tie(lhs.type, lhs.affected_features) ==
+         std::tie(rhs.type, rhs.affected_features);
+}
+
+FeatureConfig::FeatureConfig() : valid(false) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig& other) = default;
 

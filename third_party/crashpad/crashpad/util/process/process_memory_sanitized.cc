@@ -28,17 +28,17 @@
 namespace crashpad {
 
 ProcessMemorySanitized::ProcessMemorySanitized()
-    : ProcessMemory(), memory_(nullptr), whitelist_() {}
+    : ProcessMemory(), memory_(nullptr), allowed_ranges_() {}
 
 ProcessMemorySanitized::~ProcessMemorySanitized() {}
 
 bool ProcessMemorySanitized::Initialize(
     const ProcessMemory* memory,
-    const std::vector<std::pair<VMAddress, VMAddress>>* whitelist) {
+    const std::vector<std::pair<VMAddress, VMAddress>>* allowed_ranges) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   memory_ = memory;
-  if (whitelist)
-    whitelist_ = *whitelist;
+  if (allowed_ranges)
+    allowed_ranges_ = *allowed_ranges;
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -49,7 +49,7 @@ ssize_t ProcessMemorySanitized::ReadUpTo(VMAddress address,
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
   VMAddress end = address + size;
-  for (auto&& entry : whitelist_) {
+  for (auto&& entry : allowed_ranges_) {
     if (address >= entry.first && address < entry.second &&
         end >= entry.first && end <= entry.second) {
       return memory_->ReadUpTo(address, size, buffer);
@@ -57,7 +57,7 @@ ssize_t ProcessMemorySanitized::ReadUpTo(VMAddress address,
   }
 
   DLOG(ERROR)
-      << "ProcessMemorySanitized failed to read unwhitelisted region. address="
+      << "ProcessMemorySanitized failed to read disallowed region. address="
       << address << " size=" << size;
   return 0;
 }

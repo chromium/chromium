@@ -15,4 +15,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_TEXT name='Email' value='value' FOCUSABLE
 ++++ROLE_SYSTEM_TEXT name='l5' FOCUSABLE IA2_STATE_MULTI_LINE
 ++++ROLE_SYSTEM_TEXT name='l6' value='Value' FOCUSABLE IA2_STATE_MULTI_LINE
-++++ROLE_SYSTEM_TEXT name='Name' value='value' FOCUSABLE description='Description'
+++++ROLE_SYSTEM_TEXT name='Name' value='value' FOCUSABLE description-from:tooltip description='Description'

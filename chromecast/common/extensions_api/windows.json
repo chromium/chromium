@@ -92,6 +92,14 @@
         "type": "string",
         "description": "Specifies what type of browser window to create. 'panel' is deprecated and only available to existing whitelisted extensions on Chrome OS.",
         "enum": ["normal", "popup", "panel"]
+      },
+      {
+        "id": "QueryOptions",
+        "type": "object",
+        "properties": {
+          "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
+          "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned is filtered based on its type. If unset, the default filter is set to <code>['normal', 'popup']</code>."}
+        }
       }
     ],
     "properties": {
@@ -112,14 +120,9 @@
         "parameters": [
           {"type": "integer", "name": "windowId", "minimum": -2},
           {
-            "type": "object",
-            "name": "getInfo",
-            "optional": true,
-            "description": "",
-            "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object will have a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code> and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
-              "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned will be filtered based on its type. If unset the default filter is set to <code>['normal', 'popup']</code>."}
-            }
+            "name": "queryOptions",
+            "$ref": "QueryOptions",
+            "optional": true
           },
           {
             "type": "function",
@@ -138,14 +141,9 @@
         "description": "Gets the <a href='#current-window'>current window</a>.",
         "parameters": [
           {
-            "type": "object",
-            "name": "getInfo",
-            "optional": true,
-            "description": "",
-            "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object will have a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code> and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
-              "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned will be filtered based on its type. If unset the default filter is set to <code>['normal', 'popup']</code>."}
-            }
+            "name": "queryOptions",
+            "$ref": "QueryOptions",
+            "optional": true
           },
           {
             "type": "function",
@@ -164,14 +162,9 @@
         "description": "Gets the window that was most recently focused &mdash; typically the window 'on top'.",
         "parameters": [
           {
-            "type": "object",
-            "name": "getInfo",
-            "optional": true,
-            "description": "",
-            "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object will have a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code> and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
-              "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned will be filtered based on its type. If unset the default filter is set to <code>['normal', 'popup']</code>."}
-            }
+            "name": "queryOptions",
+            "$ref": "QueryOptions",
+            "optional": true
           },
           {
             "type": "function",
@@ -190,14 +183,9 @@
         "description": "Gets all windows.",
         "parameters": [
           {
-            "type": "object",
-            "name": "getInfo",
-            "optional": true,
-            "description": "",
-            "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, each $(ref:windows.Window) object will have a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects for that window. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code> and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
-              "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned will be filtered based on its type. If unset the default filter is set to <code>['normal', 'popup']</code>."}
-            }
+            "name": "queryOptions",
+            "$ref": "QueryOptions",
+            "optional": true
           },
           {
             "type": "function",

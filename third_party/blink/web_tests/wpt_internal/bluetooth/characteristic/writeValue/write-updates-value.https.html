@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'A regular write request to a writable characteristic ' +
+    'should update value.';
+const newValue = new TextEncoder().encode('foo');
+let characteristic, fake_characteristic;
+
+bluetooth_test(() => getMeasurementIntervalCharacteristic()
+    .then(_ => ({characteristic, fake_characteristic} = _))
+    .then(() => assert_equals(characteristic.value, null))
+    .then(() => fake_characteristic.setNextWriteResponse({GATT_SUCCESS}))
+    .then(() => characteristic.writeValue(newValue))
+    .then(() => assert_array_equals(
+        new Uint8Array(characteristic.value.buffer), newValue))
+    .then(() => fake_characteristic.getLastWrittenValue())
+    .then(({lastValue, lastWriteType}) => {
+      assert_array_equals(lastValue, newValue);
+      assert_equals(lastWriteType, 'default-deprecated');
+    }),
+    test_desc);
+</script>

@@ -15,9 +15,7 @@ source_set("huffman_trie_generator_sources") {
     "trie_entry.cc",
     "trie_entry.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("huffman_trie_generator_test_sources") {

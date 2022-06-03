@@ -4,15 +4,16 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 
+#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
-#include "base/stl_util.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -60,9 +61,8 @@ static_assert(
 #pragma mark Initialization
 
 - (instancetype)initWithPrefs:(PrefService*)prefs {
-  UITableViewStyle style = UITableViewStylePlain;
-  self = [super initWithTableViewStyle:style
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  UITableViewStyle style = ChromeTableViewStyle();
+  self = [super initWithStyle:style];
   if (self) {
     self.title = l10n_util::GetNSString(
         IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
@@ -74,8 +74,6 @@ static_assert(
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.styler.tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
-  self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
   [self loadModel];
 }
 

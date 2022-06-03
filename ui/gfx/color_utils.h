@@ -8,11 +8,9 @@
 #include <string>
 #include <tuple>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
-
-class SkBitmap;
 
 namespace color_utils {
 
@@ -33,6 +31,11 @@ struct BlendResult {
 // The minimum contrast between text and background that is still readable.
 // This value is taken from w3c accessibility guidelines.
 constexpr float kMinimumReadableContrastRatio = 4.5f;
+
+// The minimum contrast between button glyphs, focus indicators, large text, or
+// other "have to see it but perhaps don't have to read fine detail" cases and
+// background.
+constexpr float kMinimumVisibleContrastRatio = 3.0f;
 
 // Determines the contrast ratio of two colors or two relative luminance values
 // (as computed by RelativeLuminance()), calculated according to
@@ -93,15 +96,6 @@ GFX_EXPORT bool IsHSLShiftMeaningful(const HSL& hsl);
 //    1 = full lightness (make all pixels white).
 GFX_EXPORT SkColor HSLShift(SkColor color, const HSL& shift);
 
-// Builds a histogram based on the Y' of the Y'UV representation of this image.
-GFX_EXPORT void BuildLumaHistogram(const SkBitmap& bitmap, int histogram[256]);
-
-// Calculates how "boring" an image is. The boring score is the
-// 0,1 ranged percentage of pixels that are the most common
-// luma. Higher boring scores indicate that a higher percentage of a
-// bitmap are all the same brightness.
-GFX_EXPORT double CalculateBoringScore(const SkBitmap& bitmap);
-
 // Returns a blend of the supplied colors, ranging from |background| (for
 // |alpha| == 0) to |foreground| (for |alpha| == 255). The alpha channels of
 // the supplied colors are also taken into account, so the returned color may
@@ -127,6 +121,10 @@ GFX_EXPORT bool IsDark(SkColor color);
 // |color|.
 GFX_EXPORT SkColor GetColorWithMaxContrast(SkColor color);
 
+// Returns whichever of white or the darkest available color contrasts less with
+// |color|.
+GFX_EXPORT SkColor GetEndpointColorWithMinContrast(SkColor color);
+
 // Blends towards the color with max contrast by |alpha|. The alpha of
 // the original color is preserved.
 GFX_EXPORT SkColor BlendTowardMaxContrast(SkColor color, SkAlpha alpha);
@@ -147,7 +145,7 @@ GFX_EXPORT SkColor PickContrastingColor(SkColor foreground1,
 GFX_EXPORT BlendResult BlendForMinContrast(
     SkColor default_foreground,
     SkColor background,
-    base::Optional<SkColor> high_contrast_foreground = base::nullopt,
+    absl::optional<SkColor> high_contrast_foreground = absl::nullopt,
     float contrast_ratio = kMinimumReadableContrastRatio);
 
 // Invert a color.
@@ -156,14 +154,16 @@ GFX_EXPORT SkColor InvertColor(SkColor color);
 // Gets a Windows system color as a SkColor
 GFX_EXPORT SkColor GetSysSkColor(int which);
 
-// Returns true only if Chrome should use an inverted color scheme - which is
-// only true if the system has high-contrast mode enabled and and is using a
-// light-on-dark color scheme.
-GFX_EXPORT bool IsInvertedColorScheme();
-
 // Derives a color for icons on a UI surface based on the text color on the same
 // surface.
 GFX_EXPORT SkColor DeriveDefaultIconColor(SkColor text_color);
+
+// Gets a Google color that matches the hue of `color` and contrasts well
+// enough against `background_color` to meet `min_contrast`. If `color` isn't
+// very saturated, grey will be used instead.
+GFX_EXPORT SkColor PickGoogleColor(SkColor color,
+                                   SkColor background_color,
+                                   float min_contrast);
 
 // Creates an rgba string for an SkColor. For example: 'rgba(255,0,255,0.5)'.
 GFX_EXPORT std::string SkColorToRgbaString(SkColor color);

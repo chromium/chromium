@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 7: Uncaught TypeError: document.getElementById(...).createShadowRoot is not a function
-CONSOLE ERROR: line 19: Uncaught TypeError: Cannot read property 'addEventListener' of undefined
-FAIL Unexpected error: Uncaught TypeError: Cannot read property 'addEventListener' of undefined
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

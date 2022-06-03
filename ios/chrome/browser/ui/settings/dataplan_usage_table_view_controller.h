@@ -14,21 +14,16 @@ class PrefService;
 @interface DataplanUsageTableViewController : SettingsRootTableViewController
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
-                     basePref:(const char*)basePreference
-                     wifiPref:(const char*)wifiPreference
+                  settingPref:(const char*)settingPreference
                         title:(NSString*)title NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Returns the text for the current setting, based on the values of the
 // preferences.  Kept in this class, so that all of the code to translate from
 // preferences to UI is in one place.
 + (NSString*)currentLabelForPreference:(PrefService*)prefs
-                              basePref:(const char*)basePreference
-                              wifiPref:(const char*)wifiPreference;
+                           settingPref:(const char*)settingsPreference;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_DATAPLAN_USAGE_TABLE_VIEW_CONTROLLER_H_

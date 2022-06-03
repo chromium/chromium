@@ -5,10 +5,10 @@
 #ifndef UI_BASE_MODELS_TREE_MODEL_H_
 #define UI_BASE_MODELS_TREE_MODEL_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 class ImageSkia;
@@ -27,14 +27,14 @@ class TreeModel;
 class TreeModelNode {
  public:
   // Returns the title for the node.
-  virtual const base::string16& GetTitle() const = 0;
+  virtual const std::u16string& GetTitle() const = 0;
 
  protected:
   virtual ~TreeModelNode() {}
 };
 
 // Observer for the TreeModel. Notified of significant events to the model.
-class UI_BASE_EXPORT TreeModelObserver {
+class COMPONENT_EXPORT(UI_BASE) TreeModelObserver {
  public:
   // Notification that nodes were added to the specified parent.
   virtual void TreeNodesAdded(TreeModel* model,
@@ -61,7 +61,7 @@ class UI_BASE_EXPORT TreeModelObserver {
 // of bookkeeping for the tree to be implemented. Generally you will want to
 // use TreeNodeModel which provides a standard implementation for basic
 // hierarchy and observer notification. See tree_node_model.h.
-class UI_BASE_EXPORT TreeModel {
+class COMPONENT_EXPORT(UI_BASE) TreeModel {
  public:
   using Nodes = std::vector<TreeModelNode*>;
 
@@ -86,7 +86,7 @@ class UI_BASE_EXPORT TreeModel {
 
   // Sets the title of |node|.
   // This is only invoked if the node is editable and the user edits a node.
-  virtual void SetTitle(TreeModelNode* node, const base::string16& title);
+  virtual void SetTitle(TreeModelNode* node, const std::u16string& title);
 
   // Returns the set of icons for the nodes in the tree. You only need override
   // this if you don't want to use the default folder icons.

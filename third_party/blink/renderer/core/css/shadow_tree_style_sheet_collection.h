@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SHADOW_TREE_STYLE_SHEET_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SHADOW_TREE_STYLE_SHEET_COLLECTION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/tree_scope_style_sheet_collection.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -44,16 +43,20 @@ class ShadowTreeStyleSheetCollection final
     : public TreeScopeStyleSheetCollection {
  public:
   explicit ShadowTreeStyleSheetCollection(ShadowRoot&);
-  void UpdateActiveStyleSheets(StyleEngine& master_engine);
+  ShadowTreeStyleSheetCollection(const ShadowTreeStyleSheetCollection&) =
+      delete;
+  ShadowTreeStyleSheetCollection& operator=(
+      const ShadowTreeStyleSheetCollection&) = delete;
+
+  void UpdateActiveStyleSheets(StyleEngine&);
   bool IsShadowTreeStyleSheetCollection() const final { return true; }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     TreeScopeStyleSheetCollection::Trace(visitor);
   }
 
  private:
-  void CollectStyleSheets(StyleEngine& master_engine, StyleSheetCollection&);
-  DISALLOW_COPY_AND_ASSIGN(ShadowTreeStyleSheetCollection);
+  void CollectStyleSheets(StyleEngine&, StyleSheetCollection&);
 };
 
 template <>
@@ -65,4 +68,4 @@ struct DowncastTraits<ShadowTreeStyleSheetCollection> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SHADOW_TREE_STYLE_SHEET_COLLECTION_H_

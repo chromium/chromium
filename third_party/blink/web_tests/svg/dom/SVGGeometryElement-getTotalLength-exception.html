@@ -8,9 +8,9 @@
 </svg>
 <script>
   test(function() {
-    assert_throws("InvalidStateError", function() { rectTest.getTotalLength(); });
+    assert_throws_dom("InvalidStateError", function() { rectTest.getTotalLength(); });
   });
   test(function() {
-    assert_throws("InvalidStateError", function() { circleTest.getTotalLength(); });
+    assert_throws_dom("InvalidStateError", function() { circleTest.getTotalLength(); });
   });
 </script>

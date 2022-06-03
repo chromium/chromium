@@ -1,0 +1,10 @@
+Verifies that CSS.fontsUpdated events are sent as the web font is loaded by font data buffer.
+Ahem
+normal
+normal
+normal
+normal
+U+0-10FFFF
+Ahem
+
+

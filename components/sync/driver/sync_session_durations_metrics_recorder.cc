@@ -4,24 +4,33 @@
 
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
-#include "base/metrics/histogram_macros.h"
+#include <string>
+
+#include "base/metrics/histogram_functions.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
 namespace syncer {
 
 namespace {
+
 base::TimeDelta SubtractInactiveTime(base::TimeDelta total_length,
                                      base::TimeDelta inactive_time) {
   // Substract any time the user was inactive from our session length. If this
   // ends up giving the session negative length, which can happen if the feature
   // state changed after the user became inactive, log the length as 0.
   base::TimeDelta session_length = total_length - inactive_time;
-  if (session_length < base::TimeDelta()) {
+  if (session_length.is_negative()) {
     session_length = base::TimeDelta();
   }
   return session_length;
 }
+
+void LogDuration(const std::string& histogram, base::TimeDelta session_length) {
+  DVLOG(1) << "Logging " << histogram << " of " << session_length;
+  base::UmaHistogramLongTimes(histogram, session_length);
+}
+
 }  // namespace
 
 SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
@@ -30,13 +39,15 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
     : sync_service_(sync_service), identity_manager_(identity_manager) {
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_) {
-    sync_observer_.Add(sync_service_);
+    sync_observation_.Observe(sync_service_);
   }
-  identity_manager_observer_.Add(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_);
 
   // Since this is created after the profile itself is created, we need to
   // handle the initial state.
   HandleSyncAndAccountChange();
+
+  DCHECK_NE(account_status_, FeatureState::UNKNOWN);
 
   // Check if we already know the signed in cookies. This will trigger a fetch
   // if we don't have them yet.
@@ -52,8 +63,9 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
 
 SyncSessionDurationsMetricsRecorder::~SyncSessionDurationsMetricsRecorder() {
   DCHECK(!total_session_timer_) << "Missing a call to OnSessionEnded().";
-  sync_observer_.RemoveAll();
-  identity_manager_observer_.RemoveAll();
+  sync_observation_.Reset();
+  DCHECK(identity_manager_observation_.IsObserving());
+  identity_manager_observation_.Reset();
 }
 
 void SyncSessionDurationsMetricsRecorder::OnSessionStarted(
@@ -71,6 +83,12 @@ void SyncSessionDurationsMetricsRecorder::OnSessionEnded(
   if (!total_session_timer_) {
     // If there was no active session, just ignore this call.
     return;
+  }
+
+  if (session_length.is_zero()) {
+    // During Profile teardown, this method is called with a |session_length|
+    // of zero.
+    session_length = total_session_timer_->Elapsed();
   }
 
   base::TimeDelta total_session_time = total_session_timer_->Elapsed();
@@ -126,6 +144,12 @@ void SyncSessionDurationsMetricsRecorder::OnStateChanged(SyncService* sync) {
   HandleSyncAndAccountChange();
 }
 
+void SyncSessionDurationsMetricsRecorder::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  DVLOG(1) << __func__;
+  HandleSyncAndAccountChange();
+}
+
 void SyncSessionDurationsMetricsRecorder::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DVLOG(1) << __func__;
@@ -164,6 +188,13 @@ bool SyncSessionDurationsMetricsRecorder::ShouldLogUpdate(
 void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
     FeatureState new_sync_status,
     FeatureState new_account_status) {
+  DVLOG(1) << "UpdateSyncAndAccountStatus:"
+           << " new_sync_status: " << static_cast<int>(new_sync_status)
+           << " new_account_status: " << static_cast<int>(new_account_status);
+
+  // |new_sync_status| may be unknown when there is a primary account, but
+  // the sync engine has not yet started.
+  DCHECK_NE(FeatureState::UNKNOWN, new_account_status);
   if (ShouldLogUpdate(new_sync_status, new_account_status)) {
     LogSyncAndAccountDuration(sync_account_session_timer_->Elapsed());
     sync_account_session_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -173,97 +204,115 @@ void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
 }
 
 void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
-  if (!sync_service_ || !sync_service_->CanSyncFeatureStart()) {
-    // Only the account status needs to be updated when sync is off.
-    UpdateSyncAndAccountStatus(FeatureState::OFF, DetermineAccountStatus());
-    return;
-  }
+  UpdateSyncAndAccountStatus(DetermineSyncStatus(),
+                             DeterminePrimaryAccountStatus());
+}
 
-  // Sync has potential to turn on, or get into account error state.
-  if (sync_service_->GetAuthError().state() ==
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
-    // Sync is enabled, but we have an account issue.
-    UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::OFF);
-  } else if (sync_service_->IsSyncFeatureActive() &&
-             sync_service_->HasCompletedSyncCycle()) {
-    // Sync is on and running, we must have an account too.
-    UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::ON);
-  } else {
-    // We don't know yet if sync is going to work.
-    // At least update the account status, so that if we never learn what the
-    // sync state is, we know the signin state.
-    //
-    // TODO(msarda): The current code uses the account status for all accounts
-    // (i.e. it is not scoped to the sync account). Figure out whether this
-    // should be changed to only capture the status of the sync account when
-    // the user has opted in to sync.
-    account_status_ = DetermineAccountStatus();
-  }
+// static
+constexpr int SyncSessionDurationsMetricsRecorder::GetFeatureStates(
+    FeatureState feature1,
+    FeatureState feature2) {
+  return 100 * static_cast<int>(feature1) + static_cast<int>(feature2);
 }
 
 void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
     base::TimeDelta session_length) {
   switch (signin_status_) {
     case FeatureState::ON:
-      DVLOG(1) << "Logging Session.TotalDuration.WithAccount of "
-               << session_length;
-      UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration.WithAccount",
-                               session_length);
+      LogDuration("Session.TotalDuration.WithAccount", session_length);
       break;
-    case FeatureState::OFF:
-    // Since the feature wasn't working for the user if we didn't know its
-    // state, log the status as off.
     case FeatureState::UNKNOWN:
-      DVLOG(1) << "Logging Session.TotalDuration.WithoutAccount of "
-               << session_length;
-      UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration.WithoutAccount",
-                               session_length);
+      // Since the feature wasn't working for the user if we didn't know its
+      // state, log the status as off.
+      FALLTHROUGH;
+    case FeatureState::OFF:
+      LogDuration("Session.TotalDuration.WithoutAccount", session_length);
+      break;
   }
 }
 
 void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
     base::TimeDelta session_length) {
-  if (sync_status_ == FeatureState::ON) {
-    if (account_status_ == FeatureState::ON) {
-      DVLOG(1) << "Logging Session.TotalDuration.OptedInToSyncWithAccount of "
-               << session_length;
-      UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration.OptedInToSyncWithAccount",
-                               session_length);
-    } else {
-      DVLOG(1)
-          << "Logging Session.TotalDuration.OptedInToSyncWithoutAccount of "
-          << session_length;
-      UMA_HISTOGRAM_LONG_TIMES(
-          "Session.TotalDuration.OptedInToSyncWithoutAccount", session_length);
-    }
-  } else {
-    if (account_status_ == FeatureState::ON) {
-      DVLOG(1)
-          << "Logging Session.TotalDuration.NotOptedInToSyncWithAccount of "
-          << session_length;
-      UMA_HISTOGRAM_LONG_TIMES(
-          "Session.TotalDuration.NotOptedInToSyncWithAccount", session_length);
-    } else {
-      DVLOG(1)
-          << "Logging Session.TotalDuration.NotOptedInToSyncWithoutAccount of "
-          << session_length;
-      UMA_HISTOGRAM_LONG_TIMES(
-          "Session.TotalDuration.NotOptedInToSyncWithoutAccount",
-          session_length);
-    }
+  switch (GetFeatureStates(account_status_, sync_status_)) {
+    case GetFeatureStates(FeatureState::UNKNOWN, FeatureState::ON):
+    case GetFeatureStates(FeatureState::UNKNOWN, FeatureState::UNKNOWN):
+    case GetFeatureStates(FeatureState::UNKNOWN, FeatureState::OFF):
+      NOTREACHED() << "Account status is determined in the constructor so it is"
+                      " known when LogSyncAndAccountDuration() is called";
+      break;
+    case GetFeatureStates(FeatureState::ON, FeatureState::ON):
+      LogDuration("Session.TotalDuration.OptedInToSyncWithAccount",
+                  session_length);
+      break;
+    case GetFeatureStates(FeatureState::ON, FeatureState::UNKNOWN):
+      // Sync engine not initialized yet, default to it being off.
+      FALLTHROUGH;
+    case GetFeatureStates(FeatureState::ON, FeatureState::OFF):
+      LogDuration("Session.TotalDuration.NotOptedInToSyncWithAccount",
+                  session_length);
+      break;
+    case GetFeatureStates(FeatureState::OFF, FeatureState::ON):
+      LogDuration("Session.TotalDuration.OptedInToSyncWithoutAccount",
+                  session_length);
+      break;
+    case GetFeatureStates(FeatureState::OFF, FeatureState::UNKNOWN):
+      // Sync engine not initialized yet, default to it being off.
+      FALLTHROUGH;
+    case GetFeatureStates(FeatureState::OFF, FeatureState::OFF):
+      LogDuration("Session.TotalDuration.NotOptedInToSyncWithoutAccount",
+                  session_length);
+      break;
+    default:
+      NOTREACHED() << "Unexpected feature states: "
+                   << GetFeatureStates(account_status_, sync_status_);
+      break;
   }
 }
 
 SyncSessionDurationsMetricsRecorder::FeatureState
-SyncSessionDurationsMetricsRecorder::DetermineAccountStatus() const {
-  for (const auto& account :
-       identity_manager_->GetAccountsWithRefreshTokens()) {
-    if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            account.account_id)) {
-      return SyncSessionDurationsMetricsRecorder::FeatureState::ON;
-    }
+SyncSessionDurationsMetricsRecorder::DeterminePrimaryAccountStatus() const {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
   }
-  return SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
+
+  CoreAccountId primary_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return (identity_manager_->HasAccountWithRefreshToken(primary_account_id) &&
+          !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+              primary_account_id))
+             ? SyncSessionDurationsMetricsRecorder::FeatureState::ON
+             : SyncSessionDurationsMetricsRecorder::FeatureState::OFF;
+}
+
+SyncSessionDurationsMetricsRecorder::FeatureState
+SyncSessionDurationsMetricsRecorder::DetermineSyncStatus() const {
+  if (!sync_service_ || !sync_service_->CanSyncFeatureStart()) {
+    return FeatureState::OFF;
+  }
+
+  if (sync_service_->GetTransportState() ==
+      SyncService::TransportState::PAUSED) {
+    // Sync is considered to be ON even when paused.
+    return FeatureState::ON;
+  }
+
+  if (sync_service_->IsSyncFeatureActive() &&
+      sync_service_->HasCompletedSyncCycle()) {
+    return FeatureState::ON;
+  }
+
+  // This branch corresponds to the case when the sync engine is initializing.
+  //
+  // The sync state may already be set to ON/OFF if updated previously. Return
+  // the current sync status.
+  //
+  // Note: It is possible for |sync_status_| to be ON/OFF at this point. This
+  // corresponds to sync state transitions that can happen if a turns sync on
+  // or off. For example if during browser startup there is no signed-in user,
+  /// then |sync_state_| is OFF. When the user turns on Sync, the sync state
+  // is essentially unknown for a while - the current implementation keeps
+  // previous |sync_state_|.
+  return sync_status_;
 }
 
 }  // namespace syncer

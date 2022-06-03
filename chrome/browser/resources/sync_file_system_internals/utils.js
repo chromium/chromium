@@ -6,11 +6,13 @@
  * Creates an element named |elementName| containing the content |text|.
  * @param {string} elementName Name of the new element to be created.
  * @param {string} text Text to be contained in the new element.
- * @param {Object} opt_attributes Optional attribute dictionary for the element.
- * @return {HTMLElement} The newly created HTML element.
+ * @param {Object=} opt_attributes Optional attribute dictionary for the
+ *     element.
+ * @return {!HTMLElement} The newly created HTML element.
  */
-function createElementFromText(elementName, text, opt_attributes) {
-  const element = document.createElement(elementName);
+export function createElementFromText(elementName, text, opt_attributes) {
+  const element =
+      /** @type {!HTMLElement} */ (document.createElement(elementName));
   element.appendChild(document.createTextNode(text));
   if (opt_attributes) {
     for (const key in opt_attributes) {
@@ -25,10 +27,11 @@ function createElementFromText(elementName, text, opt_attributes) {
  * @param {string} elementName Name of the new element to be created.
  * @param {Object<string>} dict Dictionary to be contained in the new
  * element.
- * @return {HTMLElement} The newly created HTML element.
+ * @return {!HTMLElement} The newly created HTML element.
  */
-function createElementFromDictionary(elementName, dict) {
-  const element = document.createElement(elementName);
+export function createElementFromDictionary(elementName, dict) {
+  const element =
+      /** @type {!HTMLElement} */ (document.createElement(elementName));
   for (const key in dict) {
     element.appendChild(document.createTextNode(key + ': ' + dict[key]));
     element.appendChild(document.createElement('br'));

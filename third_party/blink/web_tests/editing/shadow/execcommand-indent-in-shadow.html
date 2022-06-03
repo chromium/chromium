@@ -13,7 +13,7 @@ to confirm a crash doesn't happen.</p>
 <pre id="console"></div>
 
 <script>
-var shadowRoot = container.createShadowRoot();
+var shadowRoot = container.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = "<span contenteditable>Kotori Otonashi</span>"
 var span = shadowRoot.firstChild;
 

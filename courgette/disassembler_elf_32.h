@@ -85,17 +85,21 @@ class DisassemblerElf32 : public Disassembler {
    public:
     Elf32RvaVisitor_Rel32(
         const std::vector<std::unique_ptr<TypedRVA>>& rva_locations);
+
+    Elf32RvaVisitor_Rel32(const Elf32RvaVisitor_Rel32&) = delete;
+    Elf32RvaVisitor_Rel32& operator=(const Elf32RvaVisitor_Rel32&) = delete;
+
     ~Elf32RvaVisitor_Rel32() override { }
 
     // VectorRvaVisitor<TypedRVA*> interfaces.
     RVA Get() const override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Elf32RvaVisitor_Rel32);
   };
 
  public:
   DisassemblerElf32(const uint8_t* start, size_t length);
+
+  DisassemblerElf32(const DisassemblerElf32&) = delete;
+  DisassemblerElf32& operator=(const DisassemblerElf32&) = delete;
 
   ~DisassemblerElf32() override { }
 
@@ -240,9 +244,6 @@ class DisassemblerElf32 : public Disassembler {
   // Sorted rel32 RVAs. This is mutable because ParseFile() temporarily sorts
   // these by file offsets.
   mutable std::vector<std::unique_ptr<TypedRVA>> rel32_locations_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerElf32);
 };
 
 }  // namespace courgette

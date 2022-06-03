@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body></body>
+<script>
+'use strict';
+
+function createIframe(iframe) {
+  return new Promise(resolve => {
+    iframe.src = '';
+    iframe.onload = () => {
+      resolve(iframe.contentWindow.navigator.usb);
+    };
+    document.body.appendChild(iframe);
+  });
+}
+
+promise_test(async(t) => {
+  let iframe = document.createElement('iframe');
+  let iframeUsbObject = await createIframe(iframe);
+  let devices = await iframeUsbObject.getDevices();
+  assert_equals(devices.length, 0);
+  document.body.removeChild(iframe);
+  // Set iframe to null to ensure that the GC cleans up as much as possible.
+  iframe = null;
+  GCController.collect();
+  return iframeUsbObject.getDevices()
+      .catch(err => assert_equals(err.name, 'NotSupportedError'));
+  }, 'detaching from iframe invalidates reference to the iframe USB object');
+</script>

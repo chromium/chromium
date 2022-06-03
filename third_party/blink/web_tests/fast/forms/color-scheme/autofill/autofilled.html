@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+
+This tests the appearance of autofilled inputs, textareas, and select options.<br>
+<form>
+    <input type="text" value="Text field">
+    <input type="search" value="Search value">
+    <textarea>Textarea</textarea>
+    <select>
+        <option selected>Option 1</option>
+        <option >2</option>
+        <option>autofilled</option>
+    </select>
+    <select></select>
+</form>
+<style>
+  form > * {display: block;}
+</style>
+<script>
+  window.onload = () => {
+    if (window.internals) {
+      document.querySelectorAll('form > *').forEach(c => {
+        internals.setAutofilledValue(c, "autofilled");
+        internals.setAutofilled(c, true)
+      });
+    }
+  }
+</script>

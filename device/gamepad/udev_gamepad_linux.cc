@@ -19,11 +19,16 @@ bool DeviceIndexFromDevicePath(base::StringPiece path,
                                base::StringPiece prefix,
                                int* index) {
   DCHECK(index);
-  if (!path.starts_with(prefix))
+  if (!base::StartsWith(path, prefix))
     return false;
   base::StringPiece index_str = path;
   index_str.remove_prefix(prefix.length());
   return base::StringToInt(index_str, index);
+}
+
+// Small helper to avoid constructing a `StringPiece` from nullptr.
+base::StringPiece ToStringPiece(const char* str) {
+  return str ? base::StringPiece(str) : base::StringPiece();
 }
 
 }  // namespace
@@ -49,11 +54,11 @@ std::unique_ptr<UdevGamepadLinux> UdevGamepadLinux::Create(udev_device* dev) {
   if (!dev)
     return nullptr;
 
-  const base::StringPiece node_path = device::udev_device_get_devnode(dev);
+  const auto node_path = ToStringPiece(device::udev_device_get_devnode(dev));
   if (node_path.empty())
     return nullptr;
 
-  const base::StringPiece node_syspath = device::udev_device_get_syspath(dev);
+  const auto node_syspath = ToStringPiece(device::udev_device_get_syspath(dev));
   if (node_syspath.empty())
     return nullptr;
 
@@ -62,7 +67,7 @@ std::unique_ptr<UdevGamepadLinux> UdevGamepadLinux::Create(udev_device* dev) {
       device::udev_device_get_parent_with_subsystem_devtype(
           dev, kInputSubsystem, nullptr);
   if (parent_dev)
-    parent_syspath = device::udev_device_get_syspath(parent_dev);
+    parent_syspath = ToStringPiece(device::udev_device_get_syspath(parent_dev));
 
   for (const auto& entry : device_roots) {
     const Type node_type = entry.first;

@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="kk">
+<translation id="1113173431709655881">Камера режимі</translation>
+<translation id="1175958423215084756">Сілтеме анықталды. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Сағат тілімен 90 градус бұру</translation>
+<translation id="1276998909102132017">Галерея суреттері</translation>
+<translation id="1300209025925956156">Құжатты сканерлеу</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Пайдалану үшін Search + сол жаққа бағыттауыш перне тіркесімін пайдаланыңыз.</translation>
+<translation id="1430915738399379752">Басып шығару</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> ажыратылды.</translation>
+<translation id="1473110567575736769">3 секундтық таймер</translation>
+<translation id="1545749641540134597">QR кодын сканерлеу</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Қалыпты</translation>
+<translation id="1620510694547887537">Камера</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Ештеңе жазылмады.</translation>
+<translation id="1838104802459806957">Жоғары қарай еңкейту</translation>
+<translation id="1851169887664797861">Камераның қосымша басқару элементтері қолжетімді.</translation>
+<translation id="1851616744363735765">КІДІРТІЛДІ</translation>
+<translation id="1862930711583847113"><ph name="FILE" /> файлы экспортталмады.</translation>
+<translation id="1899697626337024495">Фотосурет ажыратымдылығы</translation>
+<translation id="2022953316617983419">QR коды</translation>
+<translation id="2036868001356139588">Таймер ұзақтығы</translation>
+<translation id="2050339315714019657">Портреттік</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> камерасы қосулы</translation>
+<translation id="2144806332417375165">Арнаулы бейне параметрлері</translation>
+<translation id="2175927920773552910">QR коды</translation>
+<translation id="229579744168541441">Дискіге экспорттау</translation>
+<translation id="2320741269052147773">Солға жылжыту</translation>
+<translation id="2501278716633472235">Артқа қайту</translation>
+<translation id="2501853267655415902">Бейнеге түсіру тоқтатылды</translation>
+<translation id="2501953888035679275">Камерамен фотосуретке және бейнеге түсіруге болады.</translation>
+<translation id="2517472476991765520">Іздеу</translation>
+<translation id="2549985041256363841">Бейнеге түсіруді бастау</translation>
+<translation id="2599796128805996109">Артқы камера</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> с</translation>
+<translation id="2761536921376153655">Сканерлеу түрі</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> жалғанды.</translation>
+<translation id="2968794441791257519">Камерамен түсірілген фотосуреттер мен бейнелер "Жүктеп алынғандар" қалтасына тасымалданады. Оларға "Файлдар" қалтасынан кіре аласыз.
+
+        Жадқа кіру рұқсаттары бар қолданбалар фотосуреттеріңіз бен бейнелеріңізді пайдалана алады.</translation>
+<translation id="3067436040345934772">Оңға жылжыту</translation>
+<translation id="3081586908890909590">Бейне жазуға ауысу</translation>
+<translation id="313467653172006084">30 кадр/сек</translation>
+<translation id="3183731565330012717">Тор түрі</translation>
+<translation id="3227137524299004712">Микрофон</translation>
+<translation id="3240426699337459095">Сілтеме көшірілді</translation>
+<translation id="3259149966178251584">Камера ажыратымдылығы</translation>
+<translation id="3260401663013584785">Құжат анықталмады</translation>
+<translation id="3305962767867348165">Түзету</translation>
+<translation id="3448774564454087943">Бейне сақталмады, себебі тым қысқа.</translation>
+<translation id="346539236881580388">Қайта түсіру</translation>
+<translation id="3517926952904427380">Портреттік суретке түсіру мүмкін болмады.</translation>
+<translation id="3569311554794739032"><ph name="FILE" /> файлын шынымен өшіргіңіз келе ме?</translation>
+<translation id="3573890771273113519">Сканерлеу режиміне ауысу</translation>
+<translation id="3789724198583203151">Сағат тіліне қарсы 90 градус бұру</translation>
+<translation id="3810838688059735925">Бейне</translation>
+<translation id="3838931309141338733">Сканерлеу штрих коды</translation>
+<translation id="3892148308691398805">Мәтінді көшіру</translation>
+<translation id="4118525110028899586">Жазуды кідірту</translation>
+<translation id="4121305183798804752">Құжат анықталды</translation>
+<translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
+<translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
+<translation id="4329152592498422850">Шаршы сурет түсіруге ауысу</translation>
+<translation id="4383571725254449280">Жұмысты тіркеу журналдарын басып шығару</translation>
+<translation id="4445542136948522167">Фотосуретке түсіруді тоқтату</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксел</translation>
+<translation id="4570032796877367747">Алдыңғы камера</translation>
+<translation id="4628948037717959914">Фотосурет</translation>
+<translation id="4649291346448517080">Файл сақталмады.</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Көп ағынды бейне жазу</translation>
+<translation id="5057360777601936059">Камераңыз әзірге қолжетімді емес.
+        Камераның дұрыс жалғанғанын тексеріңіз.</translation>
+<translation id="5152121255775685072">Галереяға өту</translation>
+<translation id="520537883758714667">Енді кұжатты сканерлеуге болады.</translation>
+<translation id="5317780077021120954">Сақтау</translation>
+<translation id="5444515100983837161">Құжатты жақтаудың ішіне орналастырыңыз. Сканерлеудің сапасы жақсы болуы үшін, құжат пен фонның түсі әртүрлі болуы керек.</translation>
+<translation id="5671277269877808209">Шаршы</translation>
+<translation id="5746169159649715125">PDF ретінде сақтау</translation>
+<translation id="5753488212459587150">Сарапшы режимін қосу</translation>
+<translation id="5759254179196327752">Құжатты сканерлеу</translation>
+<translation id="5775960006311140197">Сарапшы режимі</translation>
+<translation id="5869546221129391014">Тор</translation>
+<translation id="5975083100439434680">Кішірейту</translation>
+<translation id="6073451960410192870">Бейнеге түсіруді тоқтату</translation>
+<translation id="6197807149213783179">Метадеректі сақтау</translation>
+<translation id="6233780560267770709">3 x 3</translation>
+<translation id="6243827288366940320">Алтын қима</translation>
+<translation id="6248749904681914629">Сыртқы камера</translation>
+<translation id="6353688143752491039">Camera қолданбасында пікір бергеніңізге рақмет.
+
+Егер пікір сурет не бейне сапасы туралы болса, үлгі ретінде суретті не бейнені жіберіп, не дұрыс емес екенін (мысалы, фотосурет тым күңгірт немесе нысан фокусқа алынбаған) көрсетіңіз.</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксел</translation>
+<translation id="6527303717912515753">Бөлісу</translation>
+<translation id="667999046851023355">Құжат</translation>
+<translation id="6681668084120808868">Фотосуретке түсіру</translation>
+<translation id="6778482348691154169">Фотосуретке түсірілмеді.</translation>
+<translation id="695140971690006676">Барлығын бастапқы күйге қайтару</translation>
+<translation id="6965382102122355670">Жарайды</translation>
+<translation id="698156982839284926">3 секунд</translation>
+<translation id="712848772518857951"><ph name="COUNT" /> элементті шынымен өшіргіңіз келе ме?</translation>
+<translation id="7134221860976209830">10 секундтық таймер</translation>
+<translation id="7191890674911603392">Жазу түрі</translation>
+<translation id="7243947652761655814">Бейне ажыратымдылығы</translation>
+<translation id="7337660886763914220">Файл жүйесінің қателері.</translation>
+<translation id="7450541714075000668">Мәтін көшірмесі жасалды</translation>
+<translation id="7476762461674917065">GIF жазу опциясын көрсету</translation>
+<translation id="7488619942230388918">GIF бейнесін жазу</translation>
+<translation id="7557677699350329807">Келесі камераға ауысу</translation>
+<translation id="7607002721634913082">Кідіртілген</translation>
+<translation id="7608223098072244877">4 x 4</translation>
+<translation id="7649070708921625228">Анықтама</translation>
+<translation id="7658239707568436148">Бас тарту</translation>
+<translation id="7670511624014457267">60 кадр/сек</translation>
+<translation id="7726641833034062494">Қалыпты бейне түсіру</translation>
+<translation id="7983668134180549431">Мәтін анықталды.</translation>
+<translation id="8067883171444229417">Бейнені ойнату</translation>
+<translation id="8120146556401698679">Панорама, қисайту, масштабтау</translation>
+<translation id="8131740175452115882">Растау</translation>
+<translation id="8145038249676204903">Суретке түсіруге ауысу</translation>
+<translation id="8167081290930651932">Фотосурет ретінде сақтау</translation>
+<translation id="8239780215768881278">Бейненің снапшотын түсіру</translation>
+<translation id="8261506727792406068">Жою</translation>
+<translation id="8425673304802773841">Төмен қарай еңкейту</translation>
+<translation id="8428213095426709021">Параметрлер</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" /> пиксел (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Түсінікті</translation>
+<translation id="8730621377337864115">Дайын</translation>
+<translation id="8732462232047530626">Метадеректі алдын ала қарау</translation>
+<translation id="8815966864175525708">Портреттік сурет түсіруге ауысу</translation>
+<translation id="8828441885228359828">Жазуды жалғастыру</translation>
+<translation id="8870695351537079478">Бейнеге түсіру мүмкін емес.</translation>
+<translation id="8903921497873541725">Үлкейту</translation>
+<translation id="9045010116236796332">Құжатты жақтаудың ішіне орналастырыңыз.</translation>
+<translation id="9045155556724273246">10 секунд</translation>
+<translation id="906331135292332864">Кескін өңделуде…</translation>
+<translation id="945522503751344254">Пікір жіберу</translation>
+</translationbundle>

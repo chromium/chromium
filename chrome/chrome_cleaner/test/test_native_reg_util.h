@@ -5,9 +5,9 @@
 #ifndef CHROME_CHROME_CLEANER_TEST_TEST_NATIVE_REG_UTIL_H_
 #define CHROME_CHROME_CLEANER_TEST_TEST_NATIVE_REG_UTIL_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 
 namespace chrome_cleaner_sandbox {
@@ -22,14 +22,14 @@ class ScopedTempRegistryKey {
   HANDLE Get();
 
   // Returne the relative registry path.
-  const base::string16& Path() const;
+  const std::wstring& Path() const;
 
   // Returns a fully qualified native registry path.
-  const base::string16& FullyQualifiedPath() const;
+  const std::wstring& FullyQualifiedPath() const;
 
  private:
-  base::string16 key_path_;
-  base::string16 fully_qualified_key_path_;
+  std::wstring key_path_;
+  std::wstring fully_qualified_key_path_;
   base::win::RegKey reg_key_;
 };
 

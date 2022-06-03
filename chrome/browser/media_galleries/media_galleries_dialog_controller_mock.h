@@ -16,17 +16,17 @@ class MediaGalleriesDialogControllerMock
   MediaGalleriesDialogControllerMock();
   ~MediaGalleriesDialogControllerMock() override;
 
-  MOCK_CONST_METHOD0(GetHeader, base::string16());
-  MOCK_CONST_METHOD0(GetSubtext, base::string16());
+  MOCK_CONST_METHOD0(GetHeader, std::u16string());
+  MOCK_CONST_METHOD0(GetSubtext, std::u16string());
   MOCK_CONST_METHOD0(IsAcceptAllowed, bool());
-  MOCK_CONST_METHOD0(GetSectionHeaders, std::vector<base::string16>());
+  MOCK_CONST_METHOD0(GetSectionHeaders, std::vector<std::u16string>());
   MOCK_CONST_METHOD1(GetSectionEntries, Entries(size_t));
-  MOCK_CONST_METHOD0(GetAuxiliaryButtonText, base::string16());
+  MOCK_CONST_METHOD0(GetAuxiliaryButtonText, std::u16string());
   MOCK_METHOD0(DidClickAuxiliaryButton, void());
 
   MOCK_METHOD2(DidToggleEntry, void(MediaGalleryPrefId id, bool selected));
   MOCK_METHOD1(DidForgetEntry, void(MediaGalleryPrefId id));
-  MOCK_CONST_METHOD0(GetAcceptButtonText, base::string16());
+  MOCK_CONST_METHOD0(GetAcceptButtonText, std::u16string());
   MOCK_METHOD1(DialogFinished, void(bool));
   MOCK_METHOD1(GetContextMenu, ui::MenuModel*(MediaGalleryPrefId id));
   MOCK_METHOD0(WebContents, content::WebContents*());

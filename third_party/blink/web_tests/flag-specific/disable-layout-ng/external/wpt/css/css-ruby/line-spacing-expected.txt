@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Over ruby doesn't overflow the block
+PASS Over ruby + vertical-align doesn't overflow the block
+PASS Under ruby doesn't overflow the block
+PASS Under ruby + vertical-align doesn't overflow the block
+PASS Under ruby doesn't overwrap with the next block
+PASS Expand inter-lines spacing
+PASS Consume half-leading of the previous line
+FAIL Don't Consume half-leading of the previous line with text-emphasis assert_greater_than_equal: expected a number greater than or equal to 32 but got 24
+PASS Consume half-leading of the next line
+FAIL Don't Consume half-leading of the next line with text-emphasis assert_greater_than_equal: expected a number greater than or equal to 32 but got 24
+Harness: the test ran to completion.
+

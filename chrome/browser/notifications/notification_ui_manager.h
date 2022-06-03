@@ -10,10 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/notification_common.h"
-
-typedef void* ProfileID;
+#include "chrome/browser/notifications/profile_notification.h"
 
 class GURL;
 class Profile;
@@ -36,13 +34,8 @@ class Notification;
 // MessageCenter interface.
 class NotificationUIManager {
  public:
-  // Convert a profile pointer into an opaque profile id, which can be safely
-  // used by FindById() and CancelById() even after a profile may have been
-  // destroyed.
-  static ProfileID GetProfileID(Profile* profile) {
-    return static_cast<ProfileID>(profile);
-  }
-
+  NotificationUIManager(const NotificationUIManager&) = delete;
+  NotificationUIManager& operator=(const NotificationUIManager&) = delete;
   virtual ~NotificationUIManager() {}
 
   // Creates an initialized UI manager.
@@ -64,7 +57,7 @@ class NotificationUIManager {
   // function to turn a profile pointer into a profile id and pass that in.
   virtual const message_center::Notification* FindById(
       const std::string& delegate_id,
-      ProfileID profile_id) const = 0;
+      ProfileNotification::ProfileID profile_id) const = 0;
 
   // Removes any notifications matching the supplied ID, either currently
   // displayed or in the queue.  Returns true if anything was removed.
@@ -72,10 +65,11 @@ class NotificationUIManager {
   // may not be valid. Hence caller needs to call the static GetProfileID(...)
   // function to turn a profile pointer into a profile id and pass that in.
   virtual bool CancelById(const std::string& delegate_id,
-                          ProfileID profile_id) = 0;
+                          ProfileNotification::ProfileID profile_id) = 0;
 
   // Returns the set of all delegate IDs for notifications from |profile_id|.
-  virtual std::set<std::string> GetAllIdsByProfile(ProfileID profile_id) = 0;
+  virtual std::set<std::string> GetAllIdsByProfile(
+      ProfileNotification::ProfileID profile_id) = 0;
 
   // Removes notifications matching the |source_origin| (which could be an
   // extension ID). Returns true if anything was removed.
@@ -92,9 +86,6 @@ class NotificationUIManager {
 
  protected:
   NotificationUIManager() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationUIManager);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_UI_MANAGER_H_

@@ -3,15 +3,26 @@
 <head>
 <meta charset="utf-8">
 <title>Attribute mapping</title>
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#the-mathvariant-attribute">
-<link rel="help" href="https://mathml-refresh.github.io/mathml-core/#the-displaystyle-and-scriptlevel-attributes">
+<link rel="help" href="https://w3c.github.io/mathml-core/#the-mathvariant-attribute">
+<link rel="help" href="https://w3c.github.io/mathml-core/#the-displaystyle-and-scriptlevel-attributes">
 <meta name="assert" content="Verify that mathvariant, scriptlevel, displaystyle are mapped to CSS">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+  #container {
+      /* Ahem font does not have a MATH table so the font-size scale factor
+         is always 0.71^{computed - inherited math script level} */
+      font: 100px/1 Ahem;
+  }
+</style>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/mathml/support/mathml-fragments.js"></script>
 <script>
   setup({ explicit_done: true });
   window.addEventListener("load", runTests);
+  function fontSize(style) {
+      return parseFloat((/(.+)px/).exec(style.getPropertyValue("font-size"))[1]);
+  }
   function runTests() {
       var container = document.getElementById("container");
       for (tag in MathMLFragments) {
@@ -32,17 +43,59 @@
           }, `mathvariant on the ${tag} element is mapped to CSS text-transform`)
 
           test(function() {
-              assert_equals(style.getPropertyValue("math-script-level"), "0", "no attribute");
-              element.setAttribute("scriptlevel", "10");
-              assert_equals(style.getPropertyValue("math-script-level"), "10", "attribute specified");
-          }, `scriptlevel on the ${tag} element is mapped to CSS math-script-level`);
+              // none and mprescripts appear as scripts
+              assert_equals(style.getPropertyValue("math-depth"), tag === "none" || tag === "mprescripts" ? "1" : "0", "no attribute");
+
+              var absoluteScriptlevel = 2;
+              element.setAttribute("scriptlevel", absoluteScriptlevel);
+              assert_equals(style.getPropertyValue("math-depth"), "" + absoluteScriptlevel, "attribute specified <U>");
+
+              var positiveScriptlevelDelta = 1;
+              element.setAttribute("scriptlevel", `+${positiveScriptlevelDelta}`);
+              assert_equals(style.getPropertyValue("math-depth"), "" + positiveScriptlevelDelta, "attribute specified +<U>");
+
+              var negativeScriptlevelDelta = -3;
+              element.setAttribute("scriptlevel", `${negativeScriptlevelDelta}`);
+              assert_equals(style.getPropertyValue("math-depth"), "" + negativeScriptlevelDelta, "attribute specified -<U>");
+
+              element.setAttribute("scriptlevel", absoluteScriptlevel);
+              element.setAttribute("mathsize", "42px");
+              assert_approx_equals(fontSize(style), 42, 1, "mathsize wins over scriptlevel");
+
+          }, `scriptlevel on the ${tag} element is mapped to math-depth(...)`);
 
           test(function() {
-              assert_equals(style.getPropertyValue("math-style"), "inline", "no attribute");
+              // none and mprescripts appear as scripts
+              let expected = 0;
+              element.setAttribute("scriptlevel", "" + expected);
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "no attribute");
+
+              element.setAttribute("scriptlevel", " +1");
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
+
+              element.setAttribute("scriptlevel", " + 1");
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
+
+              element.setAttribute("scriptlevel", "2.0");
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
+
+              element.setAttribute("scriptlevel", "-3\"");
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
+
+              element.setAttribute("scriptlevel", "200px");
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
+
+              element.setAttribute("scriptlevel", "add(2)");
+              assert_equals(style.getPropertyValue("math-depth"), "" + expected, "invalid scriptlevel value");
+
+          }, `invalid scriptlevel values on the ${tag} element are not mapped to math-depth(...)`);
+
+          test(function() {
+              assert_equals(style.getPropertyValue("math-style"), "compact", "no attribute");
               element.setAttribute("displaystyle", "true");
-              assert_equals(style.getPropertyValue("math-style"), "display", "attribute specified");
+              assert_equals(style.getPropertyValue("math-style"), "normal", "attribute specified");
               element.setAttribute("displaystyle", "TrUe");
-              assert_equals(style.getPropertyValue("math-style"), "display", "case insensitive");
+              assert_equals(style.getPropertyValue("math-style"), "normal", "case insensitive");
           }, `displaystyle on the ${tag} element is mapped to CSS math-style`);
       });
 

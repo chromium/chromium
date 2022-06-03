@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<link rel="stylesheet" href="resources/simple-snap.css">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/scrollbar-util.js"></script>
+<script src="../../resources/blink-coordinates-util.js"></script>
+
+<div id='scroller'>
+  <div id="space"></div>
+  <div class="snap left top"></div>
+  <div class="snap right top"></div>
+  <div class="snap left bottom"></div>
+</div>
+
+<script>
+  if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+  window.onload = () => {
+    const scroller = document.getElementById("scroller");
+    const snapPoint = 400;
+    const clickDuration = 100;
+
+    function scrollTop() {
+      return scroller.scrollTop;
+    }
+
+    function scrollLeft() {
+      return scroller.scrollLeft;
+    }
+
+    // MacOS scrollbars do not have arrows. Tests are irrelevant.
+    const macPlatform = navigator.platform.indexOf('Mac') == 0;
+
+    promise_test (async () => {
+      if (macPlatform)
+        return;
+
+      scroller.scrollTo(0, 0);
+      const position = rightArrow(scroller);
+      await mousePressOn(position.x, position.y, clickDuration);
+      await waitForScrollEnd(scroller, scrollLeft, snapPoint);
+    }, "Snaps after clicking the forward arrow on the horizontal scrollbar.");
+
+    promise_test (async () => {
+      if (macPlatform)
+        return;
+
+      scroller.scrollTo(0, 0);
+      const position = downArrow(scroller);
+      await mousePressOn(position.x, position.y, clickDuration);
+      await waitForScrollEnd(scroller, scrollTop, snapPoint);
+    }, "Snaps after clicking the down arrow on the vertical scrollbar.");
+  };
+</script>
+

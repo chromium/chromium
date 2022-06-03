@@ -5,15 +5,16 @@
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
 
 #include "base/android/build_info.h"
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
@@ -29,55 +30,12 @@
 
 namespace {
 
+// Increment this suffix when changes are needed to the cache structure, e.g.
+// counting up after the dash "-1", "-2", etc.
+const char kFingerprintSuffixForceUpdateCache[] = "-1";
 const char kProtobufFilename[] = "font_unique_name_table.pb";
-static const char* const kAndroidFontPaths[] = {"/system/fonts",
-                                                "/vendor/fonts"};
-
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "FontScanningResult" in src/tools/metrics/histograms/enums.xml.
-enum class FontScanningResult {
-  kSuccess = 0,
-  kFtNewFaceFailed = 1,
-  kZeroNameTableEntries = 2,
-  kUnableToRetriveNameEntry = 3,
-  kNameInvalidUnicode = 4,
-  kMaxValue = kNameInvalidUnicode
-};
-
-void LogUMAFontScanningResult(FontScanningResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Fonts.AndroidFontScanningResult", result);
-}
-
-void LogUMAPersistSuccess(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Blink.Fonts.AndroidFontScanningPersistToFileSuccess",
-                        success);
-}
-
-void LogUMALoadFromFileSuccess(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Blink.Fonts.AndroidFontScanningLoadFromFileSuccess",
-                        success);
-}
-
-void LogUMAFontScanningUpdateNeeded(bool update_needed) {
-  UMA_HISTOGRAM_BOOLEAN("Blink.Fonts.AndroidFontScanningUpdateNeeded",
-                        update_needed);
-}
-
-void LogUMAFontScanningDuration(base::TimeDelta duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Fonts.AndroidFontScanningTableBuildTime",
-                             duration);
-}
-
-void LogUMALookupTableReadyDuration(base::TimeDelta duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Fonts.AndroidFontLookupTableReadyTime",
-                             duration);
-}
-
-void LogUMALookupTableLoadFromFileDuration(base::TimeDelta duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Fonts.AndroidFontLookupLoadFromFileTime",
-                             duration);
-}
+static const char* const kAndroidFontPaths[] = {
+    "/system/fonts", "/vendor/fonts", "/product/fonts"};
 
 bool IsRelevantNameRecord(const FT_SfntName& sfnt_name) {
   if (sfnt_name.name_id != TT_NAME_ID_FULL_NAME &&
@@ -156,15 +114,9 @@ void IndexFile(FT_Library ft_library,
                const std::string& font_file_path,
                uint32_t ttc_index) {
   ScopedFtFace face(ft_library, font_file_path.c_str(), ttc_index);
-  if (!face.IsValid()) {
-    LogUMAFontScanningResult(FontScanningResult::kFtNewFaceFailed);
-    return;
-  }
 
-  if (!FT_Get_Sfnt_Name_Count(face.get())) {
-    LogUMAFontScanningResult(FontScanningResult::kZeroNameTableEntries);
+  if (!face.IsValid() || !FT_Get_Sfnt_Name_Count(face.get()))
     return;
-  }
 
   blink::FontUniqueNameTable_UniqueFont* added_unique_font =
       font_table->add_fonts();
@@ -175,15 +127,13 @@ void IndexFile(FT_Library ft_library,
 
   for (size_t i = 0; i < FT_Get_Sfnt_Name_Count(face.get()); ++i) {
     FT_SfntName sfnt_name;
-    if (FT_Get_Sfnt_Name(face.get(), i, &sfnt_name) != 0) {
-      LogUMAFontScanningResult(FontScanningResult::kUnableToRetriveNameEntry);
+    if (FT_Get_Sfnt_Name(face.get(), i, &sfnt_name) != 0)
       return;
-    }
 
     if (!IsRelevantNameRecord(sfnt_name))
       continue;
 
-    std::string sfnt_name_string = "";
+    std::string sfnt_name_string;
     std::string codepage_name;
     // Codepage names from http://demo.icu-project.org/icu-bin/convexp
     if (sfnt_name.platform_id == TT_PLATFORM_MICROSOFT &&
@@ -196,10 +146,9 @@ void IndexFile(FT_Library ft_library,
     icu::UnicodeString sfnt_name_unicode(
         reinterpret_cast<char*>(sfnt_name.string), sfnt_name.string_len,
         codepage_name.c_str());
-    if (sfnt_name_unicode.isBogus()) {
-      LogUMAFontScanningResult(FontScanningResult::kNameInvalidUnicode);
+    if (sfnt_name_unicode.isBogus())
       return;
-    }
+
     // Firefox performs case insensitive matching for src: local().
     sfnt_name_unicode.foldCase();
     sfnt_name_unicode.toUTF8String(sfnt_name_string);
@@ -209,7 +158,6 @@ void IndexFile(FT_Library ft_library,
     name_mapping->set_font_name(blink::IcuFoldCase(sfnt_name_string));
     name_mapping->set_font_index(added_font_index);
   }
-  LogUMAFontScanningResult(FontScanningResult::kSuccess);
 }
 
 int32_t NumberOfFacesInFontFile(FT_Library ft_library,
@@ -286,7 +234,6 @@ bool FontUniqueNameLookup::UpdateTableIfNeeded() {
       font_table.stored_for_platform_version_identifier() !=
           GetAndroidBuildFingerprint();
 
-  LogUMAFontScanningUpdateNeeded(update_needed);
   if (update_needed)
     UpdateTable();
   return update_needed;
@@ -294,8 +241,6 @@ bool FontUniqueNameLookup::UpdateTableIfNeeded() {
 
 bool FontUniqueNameLookup::UpdateTable() {
   TRACE_EVENT0("fonts", "FontUniqueNameLookup::UpdateTable");
-
-  base::TimeTicks update_table_start_time = base::TimeTicks::Now();
 
   std::vector<std::string> font_files_to_index = GetFontFilePaths();
 
@@ -325,32 +270,25 @@ bool FontUniqueNameLookup::UpdateTable() {
     return false;
   }
 
-  base::TimeDelta duration = base::TimeTicks::Now() - update_table_start_time;
-  LogUMAFontScanningDuration(duration);
-
   return true;
 }
 
 bool FontUniqueNameLookup::LoadFromFile() {
   TRACE_EVENT0("fonts", "FontUniqueNameLookup::LoadFromFile");
-  bool load_success = blink::font_table_persistence::LoadFromFile(
-      TableCacheFilePath(), &proto_storage_);
-  LogUMALoadFromFileSuccess(load_success);
-  return load_success;
+  return blink::font_table_persistence::LoadFromFile(TableCacheFilePath(),
+                                                     &proto_storage_);
 }
 
 bool FontUniqueNameLookup::PersistToFile() {
   TRACE_EVENT0("fonts", "FontUniqueNameLookup::PersistToFile");
-  bool persist_success = blink::font_table_persistence::PersistToFile(
-      proto_storage_, TableCacheFilePath());
-  LogUMAPersistSuccess(persist_success);
-  return persist_success;
+  return blink::font_table_persistence::PersistToFile(proto_storage_,
+                                                      TableCacheFilePath());
 }
 
 void FontUniqueNameLookup::ScheduleLoadOrUpdateTable() {
-  base::PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           [](FontUniqueNameLookup* instance) {
@@ -362,17 +300,10 @@ void FontUniqueNameLookup::ScheduleLoadOrUpdateTable() {
             // size, which it doesn't if the LoadFromFile()
             // failed. If it doesn't have a size, the table
             // is rebuild by calling UpdateTable().
-            base::TimeTicks prepare_table_start_time = base::TimeTicks::Now();
-            bool loaded_from_file = instance->LoadFromFile();
-            if (loaded_from_file) {
-              LogUMALookupTableLoadFromFileDuration(base::TimeTicks::Now() -
-                                                    prepare_table_start_time);
-            }
+            instance->LoadFromFile();
             if (instance->UpdateTableIfNeeded()) {
               instance->PersistToFile();
             }
-            LogUMALookupTableReadyDuration(base::TimeTicks::Now() -
-                                           prepare_table_start_time);
             instance->proto_storage_ready_.Signal();
             instance->PostCallbacks();
           },
@@ -387,7 +318,9 @@ base::FilePath FontUniqueNameLookup::TableCacheFilePath() {
 std::string FontUniqueNameLookup::GetAndroidBuildFingerprint() const {
   return android_build_fingerprint_for_testing_.size()
              ? android_build_fingerprint_for_testing_
-             : base::android::BuildInfo::GetInstance()->android_build_fp();
+             : std::string(base::android::BuildInfo::GetInstance()
+                               ->android_build_fp()) +
+                   std::string(kFingerprintSuffixForceUpdateCache);
 }
 
 std::vector<std::string> FontUniqueNameLookup::GetFontFilePaths() const {

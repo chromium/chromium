@@ -11,11 +11,9 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -35,17 +33,15 @@ const char kTestURL[] = "http://example.com/hello.mhtml";
 const char kNonExistentURL[] = "http://example.com/non_existent.mhtml";
 // Size of chrome/test/data/offline_pages/hello.mhtml
 const int64_t kTestFileSize = 471LL;
-const base::string16 kTestTitle = base::UTF8ToUTF16("a title");
+const std::u16string kTestTitle = u"a title";
 // SHA256 Hash of chrome/test/data/offline_pages/hello.mhtml
 const std::string kTestDigest(
     "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"
     "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
     32);
 
-constexpr base::TimeDelta kTimeToSaveMhtml =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kTimeToComputeDigest =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kTimeToSaveMhtml = base::Milliseconds(1000);
+constexpr base::TimeDelta kTimeToComputeDigest = base::Milliseconds(10);
 
 class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
  public:
@@ -58,6 +54,10 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   TestMHTMLArchiver(const GURL& url,
                     const TestScenario test_scenario,
                     TestScopedOfflineClock* clock);
+
+  TestMHTMLArchiver(const TestMHTMLArchiver&) = delete;
+  TestMHTMLArchiver& operator=(const TestMHTMLArchiver&) = delete;
+
   ~TestMHTMLArchiver() override;
 
  private:
@@ -69,8 +69,6 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   const TestScenario test_scenario_;
   // Not owned.
   TestScopedOfflineClock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMHTMLArchiver);
 };
 
 TestMHTMLArchiver::TestMHTMLArchiver(const GURL& url,
@@ -125,6 +123,11 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
           "OfflinePages.SavePage.ComputeDigestTime");
 
   OfflinePageMHTMLArchiverTest();
+
+  OfflinePageMHTMLArchiverTest(const OfflinePageMHTMLArchiverTest&) = delete;
+  OfflinePageMHTMLArchiverTest& operator=(const OfflinePageMHTMLArchiverTest&) =
+      delete;
+
   ~OfflinePageMHTMLArchiverTest() override;
 
   void SetUp() override;
@@ -157,7 +160,7 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
   void OnCreateArchiveDone(OfflinePageArchiver::ArchiverResult result,
                            const GURL& url,
                            const base::FilePath& file_path,
-                           const base::string16& title,
+                           const std::u16string& title,
                            int64_t file_size,
                            const std::string& digest);
 
@@ -171,11 +174,9 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
   int64_t last_file_size_;
   std::string last_digest_;
   bool async_operation_completed_ = false;
-  base::Closure async_operation_completed_callback_;
+  base::OnceClosure async_operation_completed_callback_;
 
   TestScopedOfflineClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageMHTMLArchiverTest);
 };
 
 OfflinePageMHTMLArchiverTest::OfflinePageMHTMLArchiverTest()
@@ -211,7 +212,7 @@ void OfflinePageMHTMLArchiverTest::OnCreateArchiveDone(
     OfflinePageArchiver::ArchiverResult result,
     const GURL& url,
     const base::FilePath& file_path,
-    const base::string16& title,
+    const std::u16string& title,
     int64_t file_size,
     const std::string& digest) {
   DCHECK(!async_operation_completed_);
@@ -222,7 +223,7 @@ void OfflinePageMHTMLArchiverTest::OnCreateArchiveDone(
   last_file_size_ = file_size;
   last_digest_ = digest;
   if (!async_operation_completed_callback_.is_null())
-    async_operation_completed_callback_.Run();
+    std::move(async_operation_completed_callback_).Run();
 }
 
 void OfflinePageMHTMLArchiverTest::PumpLoop() {

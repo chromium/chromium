@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
-#include "components/autofill/core/browser/payments/strike_database_integrator_base.h"
+#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_base.h"
 
 namespace autofill {
 
@@ -17,13 +17,13 @@ namespace autofill {
 // local and upload).
 class CreditCardSaveStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  CreditCardSaveStrikeDatabase(StrikeDatabase* strike_database);
+  explicit CreditCardSaveStrikeDatabase(StrikeDatabase* strike_database);
   ~CreditCardSaveStrikeDatabase() override;
 
-  std::string GetProjectPrefix() override;
-  int GetMaxStrikesLimit() override;
-  int64_t GetExpiryTimeMicros() override;
-  bool UniqueIdsRequired() override;
+  std::string GetProjectPrefix() const override;
+  int GetMaxStrikesLimit() const override;
+  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+  bool UniqueIdsRequired() const override;
 };
 
 }  // namespace autofill

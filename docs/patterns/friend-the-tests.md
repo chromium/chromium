@@ -34,7 +34,7 @@ individual fields or methods.
 
 ## How to use this pattern:
 
-```
+```cpp
 class Foo {
  public:
   // ... public API ...

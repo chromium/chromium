@@ -6,25 +6,22 @@
   dp.Network.onRequestWillBeSent(e => {
     testRunner.log(`RequestWillBeSent ${testRunner.trimURL(e.params.request.url)}`);
   });
+  testRunner.log('Creating iframe "blank.html"');
   session.evaluate(`
     window.frame = document.createElement('iframe');
     frame.src = '${testRunner.url('../resources/blank.html')}';
     document.body.appendChild(frame);
   `);
-  await dp.Page.onceFrameAttached();
-  testRunner.log('Attached');
-  await dp.Page.onceFrameStartedLoading();
-  testRunner.log('Started loading');
-  await dp.Page.onceFrameNavigated();
-  testRunner.log('Navigated');
-  await dp.Page.onceFrameStoppedLoading();
+  testRunner.log(await dp.Page.onceFrameAttached(), '', ['params', 'sessionId']);
+  testRunner.log(await dp.Page.onceFrameStartedLoading());
+  testRunner.log(await dp.Page.onceFrameNavigated(), '', ['params', 'sessionId']);
+  testRunner.log(await dp.Page.onceFrameStoppedLoading());
+  testRunner.log('Navigating iframe to "about:blank"');
   session.evaluate('frame.src = "about:blank"');
-  await dp.Page.onceFrameStartedLoading();
-  testRunner.log('Started loading');
-  await dp.Page.onceFrameNavigated();
-  testRunner.log('Navigated');
+  testRunner.log(await dp.Page.onceFrameStartedLoading());
+  testRunner.log(await dp.Page.onceFrameNavigated(), '', ['params', 'sessionId']);
+  testRunner.log('Removing iframe');
   session.evaluate('document.body.removeChild(frame);');
-  await dp.Page.onceFrameDetached();
-  testRunner.log('Detached');
+  testRunner.log(await dp.Page.onceFrameDetached());
   testRunner.completeTest();
 })

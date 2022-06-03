@@ -2,6 +2,7 @@
 # low level Chrome OS system library that may be used by targets that need to
 # be kept as small as possible.
 include_rules = [
+  "+ash/constants",
   "+components/account_id/account_id.h",
   "+components/device_event_log",
   "+components/policy/proto",
@@ -15,7 +16,6 @@ include_rules = [
   "+net",
   "+services/device/public",
   "+services/network/public",
-  "+services/service_manager/public",
   "+third_party/cros_system_api",
   "+third_party/protobuf",
 
@@ -30,5 +30,9 @@ specific_include_rules = {
 
   ".*test\.cc": [
     "+services/network/test",
+  ],
+
+  ".*test_suite\.cc": [
+    "+ui/base",
   ],
 }

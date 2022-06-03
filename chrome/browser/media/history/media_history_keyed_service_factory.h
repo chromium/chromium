@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
+#include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class KeyedService;
@@ -25,11 +25,16 @@ class MediaHistoryKeyedServiceFactory
   static MediaHistoryKeyedService* GetForProfile(Profile* profile);
   static MediaHistoryKeyedServiceFactory* GetInstance();
 
+  MediaHistoryKeyedServiceFactory(const MediaHistoryKeyedServiceFactory&) =
+      delete;
+  MediaHistoryKeyedServiceFactory& operator=(
+      const MediaHistoryKeyedServiceFactory&) = delete;
+
  protected:
   bool ServiceIsCreatedWithBrowserContext() const override;
 
  private:
-  friend class base::NoDestructor<MediaHistoryKeyedServiceFactory>;
+  friend struct base::DefaultSingletonTraits<MediaHistoryKeyedServiceFactory>;
 
   MediaHistoryKeyedServiceFactory();
   ~MediaHistoryKeyedServiceFactory() override;
@@ -37,7 +42,8 @@ class MediaHistoryKeyedServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryKeyedServiceFactory);
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 };
 
 }  // namespace media_history

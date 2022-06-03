@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SAFE_BROWSING_PRIVATE_SAFE_BROWSING_PRIVATE_EVENT_ROUTER_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_SAFE_BROWSING_PRIVATE_SAFE_BROWSING_PRIVATE_EVENT_ROUTER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,6 +18,11 @@ class SafeBrowsingPrivateEventRouter;
 class SafeBrowsingPrivateEventRouterFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  SafeBrowsingPrivateEventRouterFactory(
+      const SafeBrowsingPrivateEventRouterFactory&) = delete;
+  SafeBrowsingPrivateEventRouterFactory& operator=(
+      const SafeBrowsingPrivateEventRouterFactory&) = delete;
+
   // Returns the SafeBrowsingPrivateEventRouter for |profile|, creating it if
   // it is not yet created.
   static SafeBrowsingPrivateEventRouter* GetForProfile(
@@ -44,8 +48,6 @@ class SafeBrowsingPrivateEventRouterFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateEventRouterFactory);
 };
 
 }  // namespace extensions

@@ -33,6 +33,7 @@ struct GPU_EXPORT SyncToken {
             uint64_t release_count);
 
   SyncToken(const SyncToken& other);
+  SyncToken& operator=(const SyncToken& other);
 
   void Set(CommandBufferNamespace namespace_id,
            CommandBufferId command_buffer_id,
@@ -82,6 +83,8 @@ struct GPU_EXPORT SyncToken {
   }
 
   bool operator!=(const SyncToken& other) const { return !(*this == other); }
+
+  std::string ToDebugString() const;
 
  private:
   bool verified_flush_;

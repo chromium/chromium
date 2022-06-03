@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,21 +21,25 @@ class WebMouseEvent;
 class DevToolsEyeDropper : public content::WebContentsObserver,
                            public viz::mojom::FrameSinkVideoConsumer {
  public:
-  typedef base::Callback<void(int, int, int, int)> EyeDropperCallback;
+  typedef base::RepeatingCallback<void(int, int, int, int)> EyeDropperCallback;
 
   DevToolsEyeDropper(content::WebContents* web_contents,
                      EyeDropperCallback callback);
+
+  DevToolsEyeDropper(const DevToolsEyeDropper&) = delete;
+  DevToolsEyeDropper& operator=(const DevToolsEyeDropper&) = delete;
+
   ~DevToolsEyeDropper() override;
 
  private:
-  void AttachToHost(content::RenderWidgetHost* host);
+  void AttachToHost(content::RenderFrameHost* host);
   void DetachFromHost();
 
   // content::WebContentsObserver.
-  void RenderViewCreated(content::RenderViewHost* host) override;
-  void RenderViewDeleted(content::RenderViewHost* host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* host) override;
+  void RenderFrameDeleted(content::RenderFrameHost* host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
 
   void ResetFrame();
   void FrameUpdated(const SkBitmap&);
@@ -51,17 +54,16 @@ class DevToolsEyeDropper : public content::WebContentsObserver,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) override;
   void OnStopped() override;
+  void OnLog(const std::string& /*message*/) override {}
 
   EyeDropperCallback callback_;
   SkBitmap frame_;
-  int last_cursor_x_;
-  int last_cursor_y_;
+  int last_cursor_x_ = -1;
+  int last_cursor_y_ = -1;
   content::RenderWidgetHost::MouseEventCallback mouse_event_callback_;
-  content::RenderWidgetHost* host_;
+  content::RenderWidgetHost* host_ = nullptr;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer_;
   base::WeakPtrFactory<DevToolsEyeDropper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsEyeDropper);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_EYE_DROPPER_H_

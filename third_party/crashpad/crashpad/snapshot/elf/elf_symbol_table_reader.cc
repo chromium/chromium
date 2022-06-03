@@ -16,7 +16,6 @@
 
 #include <elf.h>
 
-#include "base/logging.h"
 #include "snapshot/elf/elf_image_reader.h"
 
 namespace crashpad {

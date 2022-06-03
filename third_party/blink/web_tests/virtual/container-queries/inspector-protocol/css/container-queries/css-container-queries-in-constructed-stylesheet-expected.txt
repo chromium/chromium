@@ -1,0 +1,42 @@
+Test CSS.getMatchedStylesForNode and CSS.setContainerQueryText methods for container queries in a constructed stylesheet
+@container (min-width: 100px)
+    *.item* {    regular
+        font-size: 1px; @[2:10-2:25]
+        font-size: 1px; @[undefined-undefined]
+    }
+==== Style sheet text ====
+#parent { width: 200px; contain: size layout style; }
+@container (max-width: 300px) {
+  .item { font-size: 1px; }
+}
+#named-container { width: 300px; container: inline-size / container-1; }
+@container container-1 (max-width: 300px) {
+  .item { color: rgb(170, 187, 204); }
+}
+
+Dumping matched rules: 
+@container (max-width: 300px)
+    *.item* {    regular
+        font-size: 1px; @[2:10-2:25]
+        font-size: 1px; @[undefined-undefined]
+    }
+@container container-1 (max-width: 300px)
+    *.item* {    regular
+        color: rgb(170, 187, 204); @[6:10-6:36]
+        color: rgb(170, 187, 204); @[undefined-undefined]
+    }
+Dumping inherited rules: 
+*#parent* {    regular
+    width: 200px; @[0:10-0:23]
+    contain: size layout style; @[0:24-0:51]
+    width: 200px; @[undefined-undefined]
+    contain: size layout style; @[undefined-undefined]
+}
+*#named-container* {    regular
+    width: 300px; @[4:19-4:32]
+    container: inline-size / container-1; @[4:33-4:70]
+    width: 300px; @[undefined-undefined]
+    container-name: container-1; @[undefined-undefined]
+    container-type: inline-size; @[undefined-undefined]
+}
+

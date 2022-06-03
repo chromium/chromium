@@ -115,7 +115,15 @@ void MountPoint::Unmount(MountPoint::UnmountCallback callback) {
   // callback runs inline and deletes |this|.
   const std::string mount_path = mount_path_.value();
   mount_path_.clear();
-  disk_mount_manager_->UnmountPath(mount_path, std::move(callback));
+  disk_mount_manager_->UnmountPath(
+      mount_path,
+      base::BindOnce(&MountPoint::OnUmountDone, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void MountPoint::OnUmountDone(MountPoint::UnmountCallback callback,
+                              MountError unmount_error) {
+  std::move(callback).Run(unmount_error);
 }
 
 }  // namespace disks

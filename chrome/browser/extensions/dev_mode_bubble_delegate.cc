@@ -7,13 +7,13 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/base/buildflags.h"
@@ -35,8 +35,8 @@ DevModeBubbleDelegate::~DevModeBubbleDelegate() {
 }
 
 bool DevModeBubbleDelegate::ShouldIncludeExtension(const Extension* extension) {
-  return (extension->location() == Manifest::UNPACKED ||
-          extension->location() == Manifest::COMMAND_LINE);
+  return (extension->location() == mojom::ManifestLocation::kUnpacked ||
+          extension->location() == mojom::ManifestLocation::kCommandLine);
 }
 
 void DevModeBubbleDelegate::AcknowledgeExtension(
@@ -49,44 +49,40 @@ void DevModeBubbleDelegate::PerformAction(const ExtensionIdList& list) {
     service()->DisableExtension(list[i], disable_reason::DISABLE_USER_ACTION);
 }
 
-base::string16 DevModeBubbleDelegate::GetTitle() const {
+std::u16string DevModeBubbleDelegate::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSIONS_DISABLE_DEVELOPER_MODE_TITLE);
 }
 
-base::string16 DevModeBubbleDelegate::GetMessageBody(
+std::u16string DevModeBubbleDelegate::GetMessageBody(
     bool anchored_to_browser_action,
     int extension_count) const {
   return l10n_util::GetStringUTF16(IDS_EXTENSIONS_DISABLE_DEVELOPER_MODE_BODY);
 }
 
-base::string16 DevModeBubbleDelegate::GetOverflowText(
-    const base::string16& overflow_count) const {
+std::u16string DevModeBubbleDelegate::GetOverflowText(
+    const std::u16string& overflow_count) const {
   return l10n_util::GetStringFUTF16(
             IDS_EXTENSIONS_DISABLED_AND_N_MORE,
             overflow_count);
 }
 
-base::string16 DevModeBubbleDelegate::GetLearnMoreLabel() const {
-  return base::string16();
+std::u16string DevModeBubbleDelegate::GetLearnMoreLabel() const {
+  return std::u16string();
 }
 
 GURL DevModeBubbleDelegate::GetLearnMoreUrl() const {
   return GURL();
 }
 
-base::string16 DevModeBubbleDelegate::GetActionButtonLabel() const {
+std::u16string DevModeBubbleDelegate::GetActionButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_DISABLE);
 }
 
-base::string16 DevModeBubbleDelegate::GetDismissButtonLabel() const {
-  return base::string16();
+std::u16string DevModeBubbleDelegate::GetDismissButtonLabel() const {
+  return std::u16string();
 }
 
 bool DevModeBubbleDelegate::ShouldCloseOnDeactivate() const {
-  return false;
-}
-
-bool DevModeBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
   return false;
 }
 
@@ -112,24 +108,8 @@ bool DevModeBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool DevModeBubbleDelegate::ShouldHighlightExtensions() const {
-  return true;
-}
-
 bool DevModeBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
-}
-
-void DevModeBubbleDelegate::LogExtensionCount(size_t count) {
-  UMA_HISTOGRAM_COUNTS_100(
-      "ExtensionBubble.ExtensionsInDevModeCount", count);
-}
-
-void DevModeBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "ExtensionBubble.DevModeUserSelection",
-      action, ExtensionMessageBubbleController::ACTION_BOUNDARY);
 }
 
 bool DevModeBubbleDelegate::SupportsPolicyIndicator() {

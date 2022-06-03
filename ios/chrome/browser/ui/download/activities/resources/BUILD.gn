@@ -1,0 +1,14 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("activity_services_downloads") {
+  sources = [
+    "activity_services_downloads.imageset/Contents.json",
+    "activity_services_downloads.imageset/activity_services_downloads-60@2x.png",
+    "activity_services_downloads.imageset/activity_services_downloads-60@3x.png",
+    "activity_services_downloads.imageset/activity_services_downloads-76@2x.png",
+  ]
+}

@@ -9,8 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "chrome/browser/ui/android/infobars/confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 
 namespace autofill {
 class AutofillCreditCardFillingInfoBarDelegateMobile;
@@ -20,19 +19,24 @@ class AutofillCreditCardFillingInfoBarDelegateMobile;
 // proposes to autofill user data into the detected credit card form in the
 // page. Upon accepting the infobar, the form is filled automatically. If
 // the infobar is dismissed, nothing happens.
-class AutofillCreditCardFillingInfoBar : public ConfirmInfoBar {
+class AutofillCreditCardFillingInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit AutofillCreditCardFillingInfoBar(
       std::unique_ptr<autofill::AutofillCreditCardFillingInfoBarDelegateMobile>
           delegate);
+
+  AutofillCreditCardFillingInfoBar(const AutofillCreditCardFillingInfoBar&) =
+      delete;
+  AutofillCreditCardFillingInfoBar& operator=(
+      const AutofillCreditCardFillingInfoBar&) = delete;
+
   ~AutofillCreditCardFillingInfoBar() override;
 
  private:
   // ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardFillingInfoBar);
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_H_

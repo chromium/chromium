@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
     : public FileSystemFileUtil {
  public:
   LocalFileUtil();
+
+  LocalFileUtil(const LocalFileUtil&) = delete;
+  LocalFileUtil& operator=(const LocalFileUtil&) = delete;
+
   ~LocalFileUtil() override;
 
   base::File CreateOrOpen(FileSystemOperationContext* context,
@@ -65,7 +69,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
   base::File::Error CopyOrMoveFile(FileSystemOperationContext* context,
                                    const FileSystemURL& src_url,
                                    const FileSystemURL& dest_url,
-                                   CopyOrMoveOption option,
+                                   CopyOrMoveOptionSet options,
                                    bool copy) override;
   base::File::Error CopyInForeignFile(FileSystemOperationContext* context,
                                       const base::FilePath& src_file_path,
@@ -74,12 +78,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
                                const FileSystemURL& url) override;
   base::File::Error DeleteDirectory(FileSystemOperationContext* context,
                                     const FileSystemURL& url) override;
-  storage::ScopedFile CreateSnapshotFile(
-      FileSystemOperationContext* context,
-      const FileSystemURL& url,
-      base::File::Error* error,
-      base::File::Info* file_info,
-      base::FilePath* platform_path) override;
+  ScopedFile CreateSnapshotFile(FileSystemOperationContext* context,
+                                const FileSystemURL& url,
+                                base::File::Error* error,
+                                base::File::Info* file_info,
+                                base::FilePath* platform_path) override;
 
  protected:
   // Whether this item should not be accessed. For security reasons by default
@@ -90,8 +93,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
 
  private:
   class LocalFileEnumerator;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileUtil);
 };
 
 }  // namespace storage

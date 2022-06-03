@@ -31,22 +31,22 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SCROLL_ANCHOR_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SCROLL_ANCHOR_DATA_H_
 
-#include "third_party/blink/public/platform/web_float_point.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
 struct ScrollAnchorData {
   WebString selector_;
-  WebFloatPoint offset_;
+  gfx::PointF offset_;
   uint64_t simhash_;
 
   ScrollAnchorData(const WebString& selector,
-                   const WebFloatPoint& offset,
+                   const gfx::PointF& offset,
                    uint64_t simhash)
       : selector_(selector), offset_(offset), simhash_(simhash) {}
 
-  ScrollAnchorData() { ScrollAnchorData(WebString(), WebFloatPoint(0, 0), 0); }
+  ScrollAnchorData() { ScrollAnchorData(WebString(), gfx::PointF(), 0); }
 };
 
 }  // namespace blink

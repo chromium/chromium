@@ -7,11 +7,11 @@
 #include <Carbon/Carbon.h>
 #include <stdint.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "remoting/base/logging.h"
 
 namespace {
@@ -23,7 +23,9 @@ namespace remoting {
 
 class DesktopResizerMac : public DesktopResizer {
  public:
-  DesktopResizerMac();
+  DesktopResizerMac() = default;
+  DesktopResizerMac(const DesktopResizerMac&) = delete;
+  DesktopResizerMac& operator=(const DesktopResizerMac&) = delete;
 
   // DesktopResizer interface
   ScreenResolution GetCurrentResolution() override;
@@ -40,11 +42,7 @@ class DesktopResizerMac : public DesktopResizer {
   void GetSupportedModesAndResolutions(
       base::ScopedCFTypeRef<CFMutableArrayRef>* modes,
       std::list<ScreenResolution>* resolutions);
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopResizerMac);
 };
-
-DesktopResizerMac::DesktopResizerMac() {}
 
 ScreenResolution DesktopResizerMac::GetCurrentResolution() {
   CGDirectDisplayID display;

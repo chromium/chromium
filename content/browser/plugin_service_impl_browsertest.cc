@@ -9,16 +9,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/ppapi_plugin_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -60,7 +60,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
 
   void RegisterFakePlugin() {
     WebPluginInfo fake_info;
-    fake_info.name = base::ASCIIToUTF16("fake_plugin");
+    fake_info.name = u"fake_plugin";
     fake_info.path = plugin_path_;
     fake_info.type = WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
 
@@ -79,17 +79,15 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     run_loop.Run();
   }
 
-  void OpenChannelToFakePlugin(const base::Optional<url::Origin>& origin,
+  void OpenChannelToFakePlugin(const absl::optional<url::Origin>& origin,
                                TestPluginClient* client) {
     base::RunLoop run_loop;
     client->SetRunLoop(&run_loop);
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&PluginServiceImpl::OpenChannelToPpapiPlugin,
-                       base::Unretained(service), 0, plugin_path_, profile_dir_,
-                       origin, base::Unretained(client)));
+    service->OpenChannelToPpapiPlugin(
+        /*render_process_id=*/0, /*embedder_origin=*/url::Origin(),
+        plugin_path_, profile_dir_, origin, client);
     client->WaitForQuit();
     client->SetRunLoop(nullptr);
   }
@@ -123,11 +121,11 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, OriginLock) {
 
   // Empty origins all go to same pid.
   TestPluginClient client3a;
-  OpenChannelToFakePlugin(base::nullopt, &client3a);
+  OpenChannelToFakePlugin(absl::nullopt, &client3a);
   EXPECT_NE(base::kNullProcessId, client3a.plugin_pid());
 
   TestPluginClient client3b;
-  OpenChannelToFakePlugin(base::nullopt, &client3b);
+  OpenChannelToFakePlugin(absl::nullopt, &client3b);
   EXPECT_NE(base::kNullProcessId, client3b.plugin_pid());
 
   // Actual test: how empty origins got lumped into pids.
@@ -162,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, NoForkBombs) {
   }
 
   // But there's always room for the empty origin case.
-  OpenChannelToFakePlugin(base::nullopt, &client);
+  OpenChannelToFakePlugin(absl::nullopt, &client);
   EXPECT_NE(base::kNullProcessId, client.plugin_pid());
 
   // And re-using existing processes is always possible.

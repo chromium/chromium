@@ -1,9 +1,9 @@
-document
-++form
-++++group Name='Browser Engines:'
-++++++description IsControlElement=false
-++++++++description Name='Browser Engines:' IsControlElement=false
-++++++description Name='Browser: ' IsControlElement=false
-++++++textbox
-++++++description Name=' Rendering Engine: ' IsControlElement=false
-++++++textbox
+Document
+++Group
+++++Group Name='Browser Engines:'
+++++++Text IsControlElement=false
+++++++++Text Name='Browser Engines:' IsControlElement=false
+++++++Text Name='Browser: ' IsControlElement=false
+++++++Edit
+++++++Text Name=' Rendering Engine: ' IsControlElement=false
+++++++Edit

@@ -9,17 +9,13 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/shell/test/earl_grey/shell_earl_grey_app_interface.h"
 
-using base::test::ios::kWaitForPageLoadTimeout;
-using base::test::ios::kWaitForUIElementTimeout;
-using base::test::ios::WaitUntilConditionOrTimeout;
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
-#endif
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation ShellEarlGreyImpl
 
@@ -43,7 +39,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ShellEarlGreyAppInterface)
 
   // Ensure any UI elements handled by EarlGrey become idle for any subsequent
   // EarlGrey steps.
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  GREYWaitForAppToIdle(@"App failed to idle");
 }
 
 - (void)waitForWebStateContainingText:(NSString*)text {

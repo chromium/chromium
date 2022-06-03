@@ -5,14 +5,25 @@
 #include "ash/app_list/model/app_list_item.h"
 
 #include "ash/app_list/model/app_list_item_observer.h"
-#include "base/logging.h"
+#include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
+namespace {
+
+// The maximum number of children that a folder is allowed to have. The
+// restriction was a result of UI restrictions for paged folder views, with a
+// goal to reduce size taken by the page switcher within the folder UI. While
+// this is not relevant concern when the folder items grid is scrollabe, the
+// restriction is kept to reduce risk of creating overflown folders via sync on
+// devices that do not yet use scrollable folder UI.
+constexpr int kMaxFolderChildren = 48;
+
+}  // namespace
+
 AppListItem::AppListItem(const std::string& id)
-    : metadata_(std::make_unique<ash::AppListItemMetadata>()),
-      is_installing_(false),
-      percent_downloaded_(-1) {
+    : metadata_(std::make_unique<AppListItemMetadata>()) {
   metadata_->id = id;
 }
 
@@ -21,47 +32,64 @@ AppListItem::~AppListItem() {
     observer.ItemBeingDestroyed();
 }
 
-void AppListItem::SetIcon(ash::AppListConfigType config_type,
+void AppListItem::SetIcon(AppListConfigType config_type,
                           const gfx::ImageSkia& icon) {
-  if (config_type == ash::AppListConfigType::kShared) {
-    metadata_->icon = icon;
-  } else {
-    per_config_icons_[config_type] = icon;
-  }
-  icon.EnsureRepsForSupportedScales();
+  per_config_icons_[config_type] = icon;
 
   for (auto& observer : observers_)
     observer.ItemIconChanged(config_type);
 }
 
 const gfx::ImageSkia& AppListItem::GetIcon(
-    ash::AppListConfigType config_type) const {
-  if (config_type != ash::AppListConfigType::kShared) {
-    const auto& it = per_config_icons_.find(config_type);
-    if (it != per_config_icons_.end())
-      return it->second;
-    // If icon for requested config cannt be found, default to the shared config
-    // icon.
-  }
+    AppListConfigType config_type) const {
+  const auto& it = per_config_icons_.find(config_type);
+  if (it != per_config_icons_.end())
+    return it->second;
+
+  // If icon for requested config cannt be found, default to the shared config
+  // icon.
   return metadata_->icon;
 }
 
-void AppListItem::SetIsInstalling(bool is_installing) {
-  if (is_installing_ == is_installing)
-    return;
+void AppListItem::SetDefaultIcon(const gfx::ImageSkia& icon) {
+  metadata_->icon = icon;
 
-  is_installing_ = is_installing;
-  for (auto& observer : observers_)
-    observer.ItemIsInstallingChanged();
+  // If the item does not have a config specific icon, it will be represented by
+  // the (possibly scaled) default icon, which means that changing the default
+  // icon will also change item icons for configs that don't have a designated
+  // icon.
+  for (auto config_type :
+       AppListConfigProvider::Get().GetAvailableConfigTypes()) {
+    if (per_config_icons_.find(config_type) == per_config_icons_.end()) {
+      for (auto& observer : observers_)
+        observer.ItemIconChanged(config_type);
+    }
+  }
 }
 
-void AppListItem::SetPercentDownloaded(int percent_downloaded) {
-  if (percent_downloaded_ == percent_downloaded)
+const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
+  return metadata_->icon;
+}
+
+void AppListItem::SetIconVersion(int icon_version) {
+  if (metadata_->icon_version == icon_version)
     return;
 
-  percent_downloaded_ = percent_downloaded;
-  for (auto& observer : observers_)
-    observer.ItemPercentDownloadedChanged();
+  // Clears last set icon if any. AppIconLoadHelper use that to decide
+  // whether to trigger an icon load when it is created with UI.
+  metadata_->icon = gfx::ImageSkia();
+
+  metadata_->icon_version = icon_version;
+  for (auto& observer : observers_) {
+    observer.ItemIconVersionChanged();
+  }
+}
+
+void AppListItem::SetNotificationBadgeColor(const SkColor color) {
+  metadata_->badge_color = color;
+  for (auto& observer : observers_) {
+    observer.ItemBadgeColorChanged();
+  }
 }
 
 void AppListItem::AddObserver(AppListItemObserver* observer) {
@@ -85,9 +113,13 @@ size_t AppListItem::ChildItemCount() const {
   return 0;
 }
 
+bool AppListItem::IsFolderFull() const {
+  return is_folder() && ChildItemCount() >= kMaxFolderChildren;
+}
+
 std::string AppListItem::ToDebugString() const {
-  return id().substr(0, 8) + " '" + name() + "'" + " [" +
-         position().ToDebugString() + "]";
+  return id().substr(0, 8) + " '" + (is_page_break() ? "page_break" : name()) +
+         "'" + " [" + position().ToDebugString() + "]";
 }
 
 // Protected methods
@@ -109,6 +141,16 @@ void AppListItem::SetNameAndShortName(const std::string& name,
   short_name_ = short_name;
   for (auto& observer : observers_)
     observer.ItemNameChanged();
+}
+
+void AppListItem::UpdateNotificationBadge(bool has_badge) {
+  if (has_notification_badge_ == has_badge)
+    return;
+
+  has_notification_badge_ = has_badge;
+  for (auto& observer : observers_) {
+    observer.ItemBadgeVisibilityChanged();
+  }
 }
 
 }  // namespace ash

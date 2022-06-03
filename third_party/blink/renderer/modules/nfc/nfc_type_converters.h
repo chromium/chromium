@@ -13,8 +13,7 @@ namespace blink {
 
 class NDEFRecord;
 class NDEFMessage;
-class NDEFScanOptions;
-class NDEFPushOptions;
+class NDEFWriteOptions;
 
 }  // namespace blink
 
@@ -35,17 +34,10 @@ struct TypeConverter<device::mojom::blink::NDEFMessagePtr,
 };
 
 template <>
-struct TypeConverter<device::mojom::blink::NDEFPushOptionsPtr,
-                     const ::blink::NDEFPushOptions*> {
-  static device::mojom::blink::NDEFPushOptionsPtr Convert(
-      const ::blink::NDEFPushOptions* pushOptions);
-};
-
-template <>
-struct TypeConverter<device::mojom::blink::NDEFScanOptionsPtr,
-                     const ::blink::NDEFScanOptions*> {
-  static device::mojom::blink::NDEFScanOptionsPtr Convert(
-      const ::blink::NDEFScanOptions* scanOptions);
+struct TypeConverter<device::mojom::blink::NDEFWriteOptionsPtr,
+                     const ::blink::NDEFWriteOptions*> {
+  static device::mojom::blink::NDEFWriteOptionsPtr Convert(
+      const ::blink::NDEFWriteOptions* writeOptions);
 };
 
 }  // namespace mojo

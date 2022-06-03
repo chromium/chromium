@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ensureLazyLoaded} from 'chrome://history/history.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {createSession, createWindow, polymerSelectAll} from 'chrome://test/history/test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+
 suite('<history-synced-device-manager>', function() {
   let element;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
-    return history.ensureLazyLoaded().then(() => {
+    return ensureLazyLoaded().then(() => {
       element = document.createElement('history-synced-device-manager');
       element.signInState = true;
       element.searchTerm = '';
@@ -36,71 +41,71 @@ suite('<history-synced-device-manager>', function() {
       lastFocused = e.currentTarget;
     };
 
-    await test_util.flushTasks();
+    await flushTasks();
     cards = polymerSelectAll(element, 'history-synced-device-card');
 
     focused = cards[0].$['menu-button'];
     focused.focus();
 
     // Go to the collapse button.
-    MockInteractions.pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
+    pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
     focused = cards[0].$['collapse-button'];
     assertEquals(focused, lastFocused);
 
     // Go to the first url.
-    MockInteractions.pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = polymerSelectAll(cards[0], '.website-link')[0];
     assertEquals(focused, lastFocused);
 
     // Collapse the first card.
-    MockInteractions.pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
+    pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused = cards[0].$['collapse-button'];
     assertEquals(focused, lastFocused);
-    MockInteractions.tap(focused);
-    await test_util.flushTasks();
+    focused.click();
+    await flushTasks();
 
     // Pressing down goes to the next card.
-    MockInteractions.pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = cards[1].$['collapse-button'];
     assertEquals(focused, lastFocused);
 
     // Expand the first card.
-    MockInteractions.pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
+    pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused = cards[0].$['collapse-button'];
     assertEquals(focused, lastFocused);
-    MockInteractions.tap(focused);
-    await test_util.flushTasks();
+    focused.click();
+    await flushTasks();
 
     // First card's urls are focusable again.
-    MockInteractions.pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = polymerSelectAll(cards[0], '.website-link')[0];
     assertEquals(focused, lastFocused);
 
     // Remove the second URL from the first card.
     sessionList[0].windows[0].tabs.splice(1, 1);
     element.sessionList = sessionList.slice();
-    await test_util.flushTasks();
+    await flushTasks();
 
     cards = polymerSelectAll(element, 'history-synced-device-card');
 
     // Go to the next card's menu buttons.
-    MockInteractions.pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = cards[1].$['collapse-button'];
     assertEquals(focused, lastFocused);
 
-    MockInteractions.pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
+    pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused = polymerSelectAll(cards[0], '.website-link')[0];
     assertEquals(focused, lastFocused);
 
     // Remove the second card.
     sessionList.splice(1, 1);
     element.sessionList = sessionList.slice();
-    await test_util.flushTasks();
+    await flushTasks();
 
     cards = polymerSelectAll(element, 'history-synced-device-card');
 
     // Pressing down goes to the next card.
-    MockInteractions.pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
+    pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = cards[1].$['collapse-button'];
     assertEquals(focused, lastFocused);
   });

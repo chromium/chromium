@@ -62,16 +62,10 @@ UsageStatsBridge::UsageStatsBridge(
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service)
-    history_service->AddObserver(this);
+    scoped_history_service_observer_.Observe(history_service);
 }
 
-UsageStatsBridge::~UsageStatsBridge() {
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile_,
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  if (history_service)
-    history_service->RemoveObserver(this);
-}
+UsageStatsBridge::~UsageStatsBridge() = default;
 
 void UsageStatsBridge::Destroy(JNIEnv* env, const JavaRef<jobject>& j_this) {
   delete this;
@@ -325,7 +319,7 @@ void UsageStatsBridge::OnURLsDeleted(
 
   history::DeletionTimeRange time_range = deletion_info.time_range();
   if (time_range.IsValid()) {
-    const base::Optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
+    const absl::optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
     if (urls.has_value() && urls.value().size() > 0) {
       std::vector<std::string> domains;
       domains.reserve(urls.value().size());
@@ -344,6 +338,11 @@ void UsageStatsBridge::OnURLsDeleted(
 
     return;
   }
+}
+
+void UsageStatsBridge::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  scoped_history_service_observer_.Reset();
 }
 
 }  // namespace usage_stats

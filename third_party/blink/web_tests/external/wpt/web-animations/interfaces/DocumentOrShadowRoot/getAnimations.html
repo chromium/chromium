@@ -68,14 +68,7 @@ test(t => {
 
 promise_test(async t => {
   const iframe = document.createElement('iframe');
-
-  const eventWatcher = new EventWatcher(t, iframe, ['load']);
-  const event_promise = eventWatcher.wait_for('load');
-
-  document.body.appendChild(iframe);
-  t.add_cleanup(() => { document.body.removeChild(iframe); });
-
-  await event_promise;
+  await insertFrameAndAwaitLoad(t, iframe, document)
 
   const div = createDiv(t, iframe.contentDocument)
   const effect = new KeyframeEffect(div, null, 100 * MS_PER_SEC);
@@ -90,6 +83,52 @@ promise_test(async t => {
   anim.finish();
 }, 'Document.getAnimations() returns animations on elements inside same-origin'
    + ' iframes');
+
+promise_test(async t => {
+  const iframe1 = document.createElement('iframe');
+  const iframe2 = document.createElement('iframe');
+
+  await insertFrameAndAwaitLoad(t, iframe1, document);
+  await insertFrameAndAwaitLoad(t, iframe2, document);
+
+  const div_frame1 = createDiv(t, iframe1.contentDocument)
+  const div_main_frame = createDiv(t)
+  const effect1 = new KeyframeEffect(div_frame1, null, 100 * MS_PER_SEC);
+  const anim1 = new Animation(effect1, document.timeline);
+  anim1.play();
+  // Animation of div_frame1 is in iframe with main timeline.
+  // The animation's timeline is from the iframe, but the effect's target
+  // element is part of the iframe's document.
+  assert_equals(document.getAnimations().length, 0);
+  assert_equals(iframe1.contentDocument.getAnimations().length, 1);
+  anim1.finish();
+
+   // animation of div_frame1 in iframe1 with iframe timeline
+  const effect2 = new KeyframeEffect(div_frame1, null, 100 * MS_PER_SEC);
+  const anim2 = new Animation(effect2, iframe1.contentDocument.timeline);
+  anim2.play();
+  assert_equals(document.getAnimations().length, 0);
+  assert_equals(iframe1.contentDocument.getAnimations().length, 1);
+  anim2.finish();
+
+  //animation of div_main_frame in main frame with iframe timeline
+  const effect3 = new KeyframeEffect(div_main_frame, null, 100 * MS_PER_SEC);
+  const anim3 = new Animation(effect3, iframe1.contentDocument.timeline);
+  anim3.play();
+  assert_equals(document.getAnimations().length, 1);
+  assert_equals(iframe1.contentDocument.getAnimations().length, 0);
+  anim3.finish();
+
+  //animation of div_frame1 in iframe1 with another iframe's timeline
+  const effect4 = new KeyframeEffect(div_frame1, null, 100 * MS_PER_SEC);
+  const anim4 = new Animation(effect4, iframe2.contentDocument.timeline);
+  anim4.play();
+  assert_equals(document.getAnimations().length, 0);
+  assert_equals(iframe1.contentDocument.getAnimations().length, 1);
+  assert_equals(iframe2.contentDocument.getAnimations().length, 0);
+  anim4.finish();
+}, 'iframe.contentDocument.getAnimations() returns animations on elements '
+   + 'inside same-origin Document');
 
 test(t => {
   const div = createDiv(t);
@@ -148,6 +187,20 @@ test(t => {
     + ' trees'
   );
 }, 'Document.getAnimations() does NOT return animations in shadow trees');
+
+test(t => {
+  const div = createDiv(t);
+  const shadow = div.attachShadow({ mode: 'open' });
+
+  div.animate(gKeyFrames, 100 * MS_PER_SEC)
+
+  assert_array_equals(
+    div.shadowRoot.getAnimations(),
+    [],
+    'getAnimations() called on ShadowRoot does not return animations from'
+    + ' Document'
+  );
+}, 'ShadowRoot.getAnimations() does NOT return animations in parent document');
 
 promise_test(async t => {
   const div = createDiv(t);

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import {BrowserProxyImpl, Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, customClick, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, customClick, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-list>', function() {
   let list;
@@ -78,7 +80,9 @@ suite('<bookmarks-list>', function() {
   });
 
   test('selects all valid IDs on highlight-items', function() {
-    list.fire('highlight-items', ['10', '1', '3', '9']);
+    list.dispatchEvent(new CustomEvent(
+        'highlight-items',
+        {bubbles: true, composed: true, detail: ['10', '1', '3', '9']}));
     assertEquals('select-items', store.lastAction.name);
     assertEquals('1', store.lastAction.anchor);
     assertDeepEquals(['1', '3'], store.lastAction.items);
@@ -171,6 +175,7 @@ suite('<bookmarks-list> integration test', function() {
 suite('<bookmarks-list> command manager integration test', function() {
   let app;
   let store;
+  let proxy;
 
   setup(function() {
     store = new TestStore({
@@ -179,6 +184,9 @@ suite('<bookmarks-list> command manager integration test', function() {
     });
     store.replaceSingleton();
     store.setReducersEnabled(true);
+
+    proxy = new TestBookmarksBrowserProxy();
+    BrowserProxyImpl.setInstance(proxy);
 
     app = document.createElement('bookmarks-app');
     app.style.height = '100%';
@@ -191,16 +199,15 @@ suite('<bookmarks-list> command manager integration test', function() {
   });
 
   test('show context menu', async () => {
-    const commandManager = app.$$('bookmarks-command-manager');
-    commandManager.updateForPaste_ = function() {
-      this.canPaste_ = true;
-      return Promise.resolve();
-    };
+    const commandManager =
+        app.shadowRoot.querySelector('bookmarks-command-manager');
+    proxy.resetResolver('recordInHistogram');
+    const list = app.shadowRoot.querySelector('bookmarks-list');
+    list.dispatchEvent(new CustomEvent(
+        'contextmenu',
+        {bubbles: true, composed: true, detail: {clientX: 0, clientY: 0}}));
 
-    const list = app.$$('bookmarks-list');
-    list.fire('contextmenu', {clientX: 0, clientY: 0});
-
-    await flushTasks();
+    await proxy.whenCalled('recordInHistogram');
 
     assertEquals(MenuSource.LIST, commandManager.menuSource_);
     assertDeepEquals(

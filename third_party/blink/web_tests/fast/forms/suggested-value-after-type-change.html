@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<title>This test checks that setting the suggested value of an input element that cannot display a suggested value actually means to reset the suggested value (crbug/1174657)</title>
+<body>
+<input id="test" type="text">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+var input = document.getElementById('test');
+if (!window.internals) {
+  testFailed('This test requires internals object');
+} else {
+  test(() => {
+    internals.setSuggestedValue(input, 'suggested value');
+    assert_equals(input.value, '');
+    assert_equals(internals.suggestedValue(input), 'suggested value');
+
+    // Changing the type to "radio" won't change suggested value, despite
+    // radio buttons not being able to display any suggested value.
+    // So changing the type back to 'text' right away would keep the
+    // suggested value.
+    input.type = 'radio';
+    assert_equals(input.value, 'on');
+    assert_equals(internals.suggestedValue(input), 'suggested value');
+
+    // But changing the suggested value of a radio button clears the
+    // suggested value. Otherwise, selected SetSuggestedValue() calls
+    // could be turned into a no-op by changing the 'type' temporarily.
+    internals.setSuggestedValue(input, 'clear me');
+    assert_equals(input.value, 'on');
+    assert_equals(internals.suggestedValue(input), '');
+
+    // Changing the type back to "text" must not reinstate the old
+    // suggested value.
+    input.type = 'text';
+    assert_equals(input.value, '');
+    assert_equals(internals.suggestedValue(input), '');
+  }, 'Test that setting the suggested value of a radio button clears the old suggested value.');
+
+  // This loop tests several values for 'type'. Except for 'month' and
+  // 'text', they do not support suggested values and SetSuggestedValue()
+  // should hence clear the suggested value.
+  const testcases = [
+    // These do not support suggested values.
+    ['button', 'click-me', ''],
+    ['checkbox', 'check-me', ''],
+    ['color', '#996633', ''],
+    ['file', '/', ''],
+    ['image', 'nonsense', ''],
+    ['radio', 'select-me', ''],
+    ['range', '3', ''],
+    ['week', '2075-W33', ''],
+    ['date', '2075-05-01', ''],
+    ['datetime-local', '2075-05-01T19:30', ''],
+    // These do support suggested values.
+    ['month', '2075-02', '2075-02'],
+    ['text', 'blabla', 'blabla'],
+    ['tel', '3', '3'],
+  ];
+  for (const [type, suggestedValue, expectedValue] of testcases) {
+    test(() => {
+      input.type = 'text';
+      internals.setSuggestedValue(input, suggestedValue);
+      assert_equals(input.type, 'text');
+      assert_equals(internals.suggestedValue(input), suggestedValue);
+
+      input.type = type;
+      internals.setSuggestedValue(input, suggestedValue);
+      assert_equals(input.type, type);
+      assert_equals(internals.suggestedValue(input), expectedValue);
+
+      input.type = 'text';
+      assert_equals(input.type, 'text');
+      assert_equals(internals.suggestedValue(input), expectedValue);
+    }, 'Test for that setting the suggested value either clears or actually sets the suggested value for various types, here: "'+ type +'"');
+  }
+}
+</script>
+</body>
+</html>

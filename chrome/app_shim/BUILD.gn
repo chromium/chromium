@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/tweak_info_plist.gni")
 import("//build/config/mac/rules.gni")
-import("//build/mac/tweak_info_plist.gni")
 import("//build/util/branding.gni")
 
 # This is the part of the shim process compiled into Chrome. It runs only
@@ -20,12 +20,13 @@ source_set("app_shim") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome:strings",
     "//chrome/app:command_ids",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
-    "//components/crash/content/app",
+    "//components/crash/core/app",
     "//components/remote_cocoa/app_shim",
     "//content/public/browser",
     "//ipc",
@@ -57,30 +58,21 @@ mac_info_plist("app_mode_loader_plist") {
 bundle_data("app_mode_loader_plist_bundle_data") {
   sources = get_target_outputs(":app_mode_loader_plist")
 
-  outputs = [
-    "{{bundle_resources_dir}}/app_mode-Info.plist",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/app_mode-Info.plist" ]
 
-  public_deps = [
-    ":app_mode_loader_plist",
-  ]
+  public_deps = [ ":app_mode_loader_plist" ]
 }
 
 executable("app_mode_loader") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  sources = [
-    "app_mode_loader_mac.mm",
-  ]
+  sources = [ "app_mode_loader_mac.mm" ]
 
-  if (is_component_build) {
+  if (is_component_build || is_asan) {
     # Loaders are installed to ~/Applications. In a component build, include
     # the absolute path to the out dir in their library search path so that
     # their components are found at launch.
-    ldflags = [
-      "-rpath",
-      rebase_path(root_out_dir),
-    ]
+    ldflags = [ "-Wl,-rpath," + rebase_path(root_out_dir) ]
   }
 
   deps = [
@@ -90,7 +82,7 @@ executable("app_mode_loader") {
     "//chrome/common:non_code_constants",
   ]
 
-  libs = [
+  frameworks = [
     "AppKit.framework",
     "CoreFoundation.framework",
     "Foundation.framework",

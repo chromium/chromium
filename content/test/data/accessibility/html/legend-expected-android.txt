@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View
 ++++android.view.View name='Browser Engines:'
 ++++++android.view.View name='Browser Engines:'
-++++++android.view.View name='Browser: '
+++++++android.widget.TextView name='Browser: '
 ++++++android.widget.EditText clickable editable_text focusable input_type=1
-++++++android.view.View name=' Rendering Engine: '
+++++++android.widget.TextView name=' Rendering Engine: '
 ++++++android.widget.EditText clickable editable_text focusable input_type=1

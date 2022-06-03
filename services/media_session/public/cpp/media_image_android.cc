@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "services/media_session/public/cpp/android/media_session_jni_headers/MediaImage_jni.h"
+#include "url/android/gurl_android.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -32,9 +33,7 @@ ScopedJavaLocalRef<jobjectArray> MediaImage::ToJavaArray(
 }
 
 ScopedJavaLocalRef<jobject> MediaImage::CreateJavaObject(JNIEnv* env) const {
-  std::string src_spec = src.spec();
-  ScopedJavaLocalRef<jstring> j_src(
-      base::android::ConvertUTF8ToJavaString(env, src_spec));
+  ScopedJavaLocalRef<jobject> j_src(url::GURLAndroid::FromNativeGURL(env, src));
   ScopedJavaLocalRef<jstring> j_type(
       base::android::ConvertUTF16ToJavaString(env, type));
 

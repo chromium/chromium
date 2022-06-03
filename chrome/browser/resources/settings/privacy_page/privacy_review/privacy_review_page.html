@@ -1,0 +1,95 @@
+<style include="cr-shared-style settings-shared">
+  #header {
+    padding: 12px;
+  }
+
+  #headerLabel {
+    font-size: 123%;  /* Should be 16px when 100% is 13px. */
+  }
+
+  .footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 24px;
+  }
+
+  .visibility-hidden {
+    visibility: hidden;
+  }
+
+  .privacy-review-card {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    display: flex;
+    flex-flow: column;
+    min-height: 432px;
+  }
+</style>
+<div class="privacy-review-card">
+  <div id="header" hidden="[[!showHeader_(privacyReviewStep_)]]">
+    <div id="headerLabel">
+      [[computeHeaderString_(privacyReviewStep_)]]
+    </div>
+  </div>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
+    <privacy-review-welcome-fragment id="welcomeFragment" prefs="{{prefs}}"
+        on-start-button-click="onNextButtonClick_">
+    </privacy-review-welcome-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(privacyReviewStepEnum_.MSBB, privacyReviewStep_)]]">
+    <privacy-review-msbb-fragment id="msbbFragment" prefs="{{prefs}}">
+    </privacy-review-msbb-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.CLEAR_ON_EXIT, privacyReviewStep_)]]">
+    <privacy-review-clear-on-exit-fragment id="clearOnExitFragment"
+        prefs="{{prefs}}">
+    </privacy-review-clear-on-exit-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.HISTORY_SYNC, privacyReviewStep_)]]">
+    <privacy-review-history-sync-fragment id="historySyncFragment"
+        prefs="{{prefs}}">
+    </privacy-review-history-sync-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.SAFE_BROWSING, privacyReviewStep_)]]">
+    <privacy-review-safe-browsing-fragment id="safeBrowsingFragment"
+        prefs="{{prefs}}">
+    </privacy-review-safe-browsing-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.COOKIES, privacyReviewStep_)]]">
+    <privacy-review-cookies-fragment id="cookiesFragment" prefs="{{prefs}}">
+    </privacy-review-cookies-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.COMPLETION, privacyReviewStep_)]]">
+    <privacy-review-completion-fragment id="completionFragment"
+        on-leave-button-click="onNextButtonClick_">
+    </privacy-review-completion-fragment>
+  </template>
+  <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
+    <div id="settingFooter" class="footer hr">
+      <cr-button id="backButton" role="button" on-click="onBackButtonClick_"
+          class$="[[computeBackButtonClass_(privacyReviewStep_)]]">
+        $i18n{privacyReviewBackButton}
+      </cr-button>
+      <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>
+      <cr-button class="action-button" id="nextButton" role="button"
+          tabindex="0" on-click="onNextButtonClick_">
+        $i18n{privacyReviewNextButton}
+      </cr-button>
+    </div>
+  </template>
+</div>

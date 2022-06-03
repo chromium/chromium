@@ -14,7 +14,7 @@
 
 // While processing shell.c, rename main() to sqlite_shell_main().
 #define main sqlite_shell_main
-#include "third_party/sqlite/amalgamation/shell/shell.c"
+#include "third_party/sqlite/src/amalgamation/shell/shell.c"
 #undef main
 
 int main(int argc, char** argv) {

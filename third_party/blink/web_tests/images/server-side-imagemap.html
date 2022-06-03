@@ -31,9 +31,9 @@ async_test(function(t) {
             eventSender.mouseUp();
             assert_equals(location.hash, expectedHash);
         }
-        if (window.eventSender && window.internals) {
+        if (window.testRunner) {
             internals.setPageScaleFactor(1.25); // pinch scale
-            eventSender.setPageZoomFactor(1.5, 0, 0); // browser zoom
+            testRunner.setPageZoomFactor(1.5, 0, 0); // browser zoom
             testClick(402, 122, '#?0,0'); // top left border
             testClick(407, 204, '#?0,0'); // top left padding
             testClick(517, 562, '#?82,39'); // content area

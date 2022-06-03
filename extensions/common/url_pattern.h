@@ -11,6 +11,7 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -61,6 +62,8 @@ class URLPattern {
     SCHEME_WS = 1 << 7,
     SCHEME_WSS = 1 << 8,
     SCHEME_DATA = 1 << 9,
+    SCHEME_URN = 1 << 10,
+    SCHEME_UUID_IN_PACKAGE = 1 << 11,
 
     // IMPORTANT!
     // SCHEME_ALL will match every scheme, including chrome://, chrome-
@@ -98,6 +101,7 @@ class URLPattern {
 
   // Convenience to construct a URLPattern from a string. If the string is not
   // known ahead of time, use Parse() instead, which returns success or failure.
+  // This method will DCHECK if parsing fails.
   URLPattern(int valid_schemes, base::StringPiece pattern);
 
   URLPattern();
@@ -209,7 +213,7 @@ class URLPattern {
   bool Contains(const URLPattern& other) const;
 
   // Creates a new URLPattern that represents the intersection of this
-  // URLPattern with the |other|, or base::nullopt if no intersection exists.
+  // URLPattern with the |other|, or absl::nullopt if no intersection exists.
   // For instance, given the patterns http://*.google.com/* and
   // *://maps.google.com/*, the intersection is http://maps.google.com/*.
   // NOTES:
@@ -220,7 +224,7 @@ class URLPattern {
   //   contains another, it will be handled correctly, but this method does not
   //   deal with cases like /*a* and /*b* (where technically the intersection
   //   is /*a*b*|/*b*a*); the intersection returned for that case will be empty.
-  base::Optional<URLPattern> CreateIntersection(const URLPattern& other) const;
+  absl::optional<URLPattern> CreateIntersection(const URLPattern& other) const;
 
   // Converts this URLPattern into an equivalent set of URLPatterns that don't
   // use a wildcard in the scheme component. If this URLPattern doesn't use a

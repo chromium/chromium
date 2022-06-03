@@ -26,10 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class Clock;
@@ -49,12 +50,19 @@ class CORE_EXPORT DocumentLoadTiming final {
   explicit DocumentLoadTiming(DocumentLoader&);
 
   base::TimeDelta MonotonicTimeToZeroBasedDocumentTime(base::TimeTicks) const;
+  int64_t ZeroBasedDocumentTimeToMonotonicTime(double dom_event_time) const;
   base::TimeDelta MonotonicTimeToPseudoWallTime(base::TimeTicks) const;
 
   void MarkNavigationStart();
   void SetNavigationStart(base::TimeTicks);
+  void MarkBackForwardCacheRestoreNavigationStart(base::TimeTicks);
+  void MarkCommitNavigationEnd();
 
   void SetInputStart(base::TimeTicks);
+
+  void SetUserTimingMarkFullyLoaded(base::TimeDelta);
+  void SetUserTimingMarkFullyVisible(base::TimeDelta);
+  void SetUserTimingMarkInteractive(base::TimeDelta);
 
   void AddRedirect(const KURL& redirecting_url, const KURL& redirected_url);
   void SetRedirectStart(base::TimeTicks);
@@ -75,12 +83,28 @@ class CORE_EXPORT DocumentLoadTiming final {
   void MarkLoadEventStart();
   void MarkLoadEventEnd();
 
-  void SetHasSameOriginAsPreviousDocument(bool value) {
-    has_same_origin_as_previous_document_ = value;
+  void MarkActivationStart(base::TimeTicks);
+
+  void SetCanRequestFromPreviousDocument(bool value) {
+    can_request_from_previous_document_ = value;
   }
 
   base::TimeTicks InputStart() const { return input_start_; }
+  absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const {
+    return user_timing_mark_fully_loaded_;
+  }
+  absl::optional<base::TimeDelta> UserTimingMarkFullyVisible() const {
+    return user_timing_mark_fully_visible_;
+  }
+  absl::optional<base::TimeDelta> UserTimingMarkInteractive() const {
+    return user_timing_mark_interactive_;
+  }
   base::TimeTicks NavigationStart() const { return navigation_start_; }
+  const WTF::Vector<base::TimeTicks>& BackForwardCacheRestoreNavigationStarts()
+      const {
+    return bfcache_restore_navigation_starts_;
+  }
+  base::TimeTicks CommitNavigationEnd() const { return commit_navigation_end_; }
   base::TimeTicks UnloadEventStart() const { return unload_event_start_; }
   base::TimeTicks UnloadEventEnd() const { return unload_event_end_; }
   base::TimeTicks RedirectStart() const { return redirect_start_; }
@@ -90,16 +114,17 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks ResponseEnd() const { return response_end_; }
   base::TimeTicks LoadEventStart() const { return load_event_start_; }
   base::TimeTicks LoadEventEnd() const { return load_event_end_; }
+  base::TimeTicks ActivationStart() const { return activation_start_; }
   bool HasCrossOriginRedirect() const { return has_cross_origin_redirect_; }
-  bool HasSameOriginAsPreviousDocument() const {
-    return has_same_origin_as_previous_document_;
+  bool CanRequestFromPreviousDocument() const {
+    return can_request_from_previous_document_;
   }
 
   base::TimeTicks ReferenceMonotonicTime() const {
     return reference_monotonic_time_;
   }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
   void SetClockForTesting(const base::Clock* clock);
@@ -109,12 +134,18 @@ class CORE_EXPORT DocumentLoadTiming final {
   void NotifyDocumentTimingChanged();
   void EnsureReferenceTimesSet();
   LocalFrame* GetFrame() const;
-  std::unique_ptr<TracedValue> GetNavigationStartTracingData() const;
+  void WriteNavigationStartDataIntoTracedValue(
+      perfetto::TracedValue context) const;
 
   base::TimeTicks reference_monotonic_time_;
   base::TimeDelta reference_wall_time_;
   base::TimeTicks input_start_;
+  absl::optional<base::TimeDelta> user_timing_mark_fully_loaded_;
+  absl::optional<base::TimeDelta> user_timing_mark_fully_visible_;
+  absl::optional<base::TimeDelta> user_timing_mark_interactive_;
   base::TimeTicks navigation_start_;
+  base::TimeTicks commit_navigation_end_;
+  WTF::Vector<base::TimeTicks> bfcache_restore_navigation_starts_;
   base::TimeTicks unload_event_start_;
   base::TimeTicks unload_event_end_;
   base::TimeTicks redirect_start_;
@@ -124,8 +155,9 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks response_end_;
   base::TimeTicks load_event_start_;
   base::TimeTicks load_event_end_;
+  base::TimeTicks activation_start_;
   bool has_cross_origin_redirect_;
-  bool has_same_origin_as_previous_document_;
+  bool can_request_from_previous_document_;
 
   const base::Clock* clock_;
   const base::TickClock* tick_clock_;
@@ -135,4 +167,4 @@ class CORE_EXPORT DocumentLoadTiming final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_DOCUMENT_LOAD_TIMING_H_

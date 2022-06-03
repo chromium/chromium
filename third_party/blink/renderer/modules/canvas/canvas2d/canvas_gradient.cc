@@ -38,7 +38,12 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0, const FloatPoint& p1)
                                  p1,
                                  kSpreadMethodPad,
                                  Gradient::ColorInterpolation::kUnpremultiplied,
-                                 Gradient::DegenerateHandling::kDisallow)) {}
+                                 Gradient::DegenerateHandling::kDisallow)) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kCreateLinearGradient, p0.x(), p0.y(), p1.x(), p1.y());
+  }
+}
 
 CanvasGradient::CanvasGradient(const FloatPoint& p0,
                                float r0,
@@ -52,7 +57,25 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0,
                                  1,
                                  kSpreadMethodPad,
                                  Gradient::ColorInterpolation::kUnpremultiplied,
-                                 Gradient::DegenerateHandling::kDisallow)) {}
+                                 Gradient::DegenerateHandling::kDisallow)) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kCreateRadialGradient, p0.x(), p0.y(), r0, p1.x(), p1.y(),
+        r1);
+  }
+}
+
+// CanvasRenderingContext2D.createConicGradient only takes one angle argument
+// it makes sense to make that rotation here and always make the angles 0 -> 2pi
+CanvasGradient::CanvasGradient(float startAngle, const FloatPoint& center)
+    : gradient_(
+          Gradient::CreateConic(center,
+                                startAngle,
+                                0,
+                                360,
+                                kSpreadMethodPad,
+                                Gradient::ColorInterpolation::kUnpremultiplied,
+                                Gradient::DegenerateHandling::kDisallow)) {}
 
 void CanvasGradient::addColorStop(double value,
                                   const String& color_string,
@@ -72,8 +95,25 @@ void CanvasGradient::addColorStop(double value,
                                           "') could not be parsed as a color.");
     return;
   }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddColorStop, value,
+                                                color.Rgb());
+  }
 
   gradient_->AddColorStop(value, color);
+}
+
+IdentifiableToken CanvasGradient::GetIdentifiableToken() const {
+  return identifiability_study_helper_.GetToken();
+}
+
+void CanvasGradient::SetExecutionContext(ExecutionContext* context) {
+  identifiability_study_helper_.SetExecutionContext(context);
+}
+
+void CanvasGradient::Trace(Visitor* visitor) const {
+  visitor->Trace(identifiability_study_helper_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

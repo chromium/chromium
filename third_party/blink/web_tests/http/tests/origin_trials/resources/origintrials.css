@@ -1,0 +1,11 @@
+@supports(origin-trial-test-property: initial) {
+    html {
+        origin-trial-test-property: none;
+    }
+}
+
+@media (origin-trial-test) {
+    html {
+        opacity: 0.8;
+    }
+}

@@ -6,11 +6,17 @@
 
 #include <algorithm>
 
+#include "base/strings/string_util.h"
 #include "chromeos/printing/ppd_provider.h"
 
 namespace chromeos {
 
 bool CanUseEpsonGenericPPD(const PrinterSearchData& sd) {
+  // Only matches USB printers.
+  if (sd.discovery_type != PrinterSearchData::PrinterDiscoveryType::kUsb) {
+    return false;
+  }
+
   // Needed to check if its an Epson printer.
   if (sd.make_and_model.empty()) {
     return false;
@@ -26,34 +32,15 @@ bool CanUseEpsonGenericPPD(const PrinterSearchData& sd) {
     return false;
   }
 
-  switch (sd.discovery_type) {
-    case PrinterSearchData::PrinterDiscoveryType::kManual:
-      // For manually discovered printers, supported_document_formats is
-      // retrieved via an ippGetAttributes query to the printer.
-      return base::Contains(sd.supported_document_formats,
-                            "application/octet-stream");
-
-    case PrinterSearchData::PrinterDiscoveryType::kUsb: {
-      // For USB printers, the command set is retrieved from the 'CMD' field of
-      // the printer's IEEE 1284 Device ID.
-      for (base::StringPiece format : sd.printer_id.command_set()) {
-        if (format.starts_with("ESCPR")) {
-          return true;
-        }
-      }
-      return false;
+  // The command set is retrieved from the 'CMD' field of the printer's IEEE
+  // 1284 Device ID.
+  for (base::StringPiece format : sd.printer_id.command_set()) {
+    if (base::StartsWith(format, "ESCPR")) {
+      return true;
     }
-
-    case PrinterSearchData::PrinterDiscoveryType::kZeroconf:
-      // For printers found through mDNS/DNS-SD discovery,
-      // supported_document_formats is retrieved via the Printer Description TXT
-      // Record(from the key 'pdl').
-      return base::Contains(sd.supported_document_formats,
-                            "application/vnd.epson.escpr");
-
-    default:
-      return false;
   }
+
+  return false;
 }
 
 }  // namespace chromeos

@@ -19,8 +19,8 @@
   }, 'register succeeds when no minInterval is provided');
 
   periodicSyncTest(async (test, periodicSync) => {
-    await promise_rejects(
-        test, new TypeError(),
+    await promise_rejects_js(
+        test, TypeError,
         periodicSync.register('test', { minInterval: -1000 }),
         'register should have thrown an error');
   }, 'register fails when invalid minInterval is provided');

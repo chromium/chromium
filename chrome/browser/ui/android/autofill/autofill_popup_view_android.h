@@ -10,7 +10,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "ui/android/view_android.h"
 
@@ -21,6 +20,10 @@ class AutofillPopupController;
 class AutofillPopupViewAndroid : public AutofillPopupView {
  public:
   explicit AutofillPopupViewAndroid(AutofillPopupController* controller);
+
+  AutofillPopupViewAndroid(const AutofillPopupViewAndroid&) = delete;
+  AutofillPopupViewAndroid& operator=(const AutofillPopupViewAndroid&) = delete;
+
   ~AutofillPopupViewAndroid() override;
 
   // --------------------------------------------------------------------------
@@ -45,15 +48,15 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   // AutofillPopupView implementation.
   void Show() override;
   void Hide() override;
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
  private:
   friend class AutofillPopupView;
   // Creates the AutofillPopupBridge Java object.
-  void Init();
+  bool Init();
   // Returns whether the dropdown was suppressed (mainly due to not enough
   // screen space available).
   bool WasSuppressed();
@@ -69,8 +72,6 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
 
   // Popup view
   ui::ViewAndroid::ScopedAnchorView popup_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupViewAndroid);
 };
 
 }  // namespace autofill

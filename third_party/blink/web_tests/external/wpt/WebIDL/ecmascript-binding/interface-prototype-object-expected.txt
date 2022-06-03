@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL The class string of an interface prototype object is the concatenation of the interface's identifier and the string 'Prototype'. assert_class_string: expected "[object DocumentPrototype]" but got "[object Document]"
-PASS [Unscopable] extended attribute makes @@unscopables object on the prototype object, whose prototype is null.
-Harness: the test ran to completion.
-

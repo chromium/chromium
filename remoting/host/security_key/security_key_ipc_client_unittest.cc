@@ -34,6 +34,10 @@ namespace remoting {
 class SecurityKeyIpcClientTest : public testing::Test {
  public:
   SecurityKeyIpcClientTest();
+
+  SecurityKeyIpcClientTest(const SecurityKeyIpcClientTest&) = delete;
+  SecurityKeyIpcClientTest& operator=(const SecurityKeyIpcClientTest&) = delete;
+
   ~SecurityKeyIpcClientTest() override;
 
   // Passed to the object used for testing to be called back to signal
@@ -110,9 +114,6 @@ class SecurityKeyIpcClientTest : public testing::Test {
 
   // Stores the contents of the last IPC message received for validation.
   std::string last_message_received_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcClientTest);
 };
 
 SecurityKeyIpcClientTest::SecurityKeyIpcClientTest()
@@ -120,14 +121,14 @@ SecurityKeyIpcClientTest::SecurityKeyIpcClientTest()
       fake_ipc_server_(
           kTestConnectionId,
           /*client_session_details=*/nullptr,
-          /*initial_connect_timeout=*/base::TimeDelta::FromMilliseconds(500),
-          base::Bind(&SecurityKeyIpcClientTest::SendMessageToClient,
-                     base::Unretained(this)),
-          base::Bind(&SecurityKeyIpcClientTest::SendConnectionMessage,
-                     base::Unretained(this)),
-          base::Bind(&SecurityKeyIpcClientTest::OperationComplete,
-                     base::Unretained(this),
-                     /*failed=*/false)) {}
+          /*initial_connect_timeout=*/base::Milliseconds(500),
+          base::BindRepeating(&SecurityKeyIpcClientTest::SendMessageToClient,
+                              base::Unretained(this)),
+          base::BindOnce(&SecurityKeyIpcClientTest::SendConnectionMessage,
+                         base::Unretained(this)),
+          base::BindOnce(&SecurityKeyIpcClientTest::OperationComplete,
+                         base::Unretained(this),
+                         /*failed=*/false)) {}
 
 SecurityKeyIpcClientTest::~SecurityKeyIpcClientTest() = default;
 
@@ -162,7 +163,7 @@ void SecurityKeyIpcClientTest::SendConnectionMessage() {
 
 void SecurityKeyIpcClientTest::WaitForOperationComplete() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void SecurityKeyIpcClientTest::RunPendingTasks() {
@@ -199,17 +200,17 @@ void SecurityKeyIpcClientTest::EstablishConnection(bool expect_connected,
   security_key_ipc_client_.SetIpcChannelHandleForTest(server_name);
   ASSERT_TRUE(fake_ipc_server_.CreateChannel(
       server_name,
-      /*request_timeout=*/base::TimeDelta::FromMilliseconds(500)));
+      /*request_timeout=*/base::Milliseconds(500)));
 
   ASSERT_TRUE(security_key_ipc_client_.CheckForSecurityKeyIpcServerChannel());
 
   // Establish the IPC channel so we can begin sending and receiving security
   // key messages.
   security_key_ipc_client_.EstablishIpcConnection(
-      base::Bind(&SecurityKeyIpcClientTest::ConnectionStateHandler,
-                 base::Unretained(this)),
-      base::Bind(&SecurityKeyIpcClientTest::OperationComplete,
-                 base::Unretained(this), /*failed=*/true));
+      base::BindOnce(&SecurityKeyIpcClientTest::ConnectionStateHandler,
+                     base::Unretained(this)),
+      base::BindOnce(&SecurityKeyIpcClientTest::OperationComplete,
+                     base::Unretained(this), /*failed=*/true));
   WaitForOperationComplete();
   RunPendingTasks();
 
@@ -221,8 +222,9 @@ void SecurityKeyIpcClientTest::SendRequestAndResponse(
     const std::string& request_data,
     const std::string& response_data) {
   ASSERT_TRUE(security_key_ipc_client_.SendSecurityKeyRequest(
-      request_data, base::Bind(&SecurityKeyIpcClientTest::ClientMessageReceived,
-                               base::Unretained(this))));
+      request_data,
+      base::BindRepeating(&SecurityKeyIpcClientTest::ClientMessageReceived,
+                          base::Unretained(this))));
   WaitForOperationComplete();
   ASSERT_FALSE(operation_failed_);
   ASSERT_EQ(kTestConnectionId, last_connection_id_received_);
@@ -283,15 +285,15 @@ TEST_F(SecurityKeyIpcClientTest,
 
   ASSERT_TRUE(security_key_ipc_client_.SendSecurityKeyRequest(
       "First Request",
-      base::Bind(&SecurityKeyIpcClientTest::ClientMessageReceived,
-                 base::Unretained(this))));
+      base::BindRepeating(&SecurityKeyIpcClientTest::ClientMessageReceived,
+                          base::Unretained(this))));
   WaitForOperationComplete();
   ASSERT_FALSE(operation_failed_);
 
   ASSERT_FALSE(security_key_ipc_client_.SendSecurityKeyRequest(
       "Second Request",
-      base::Bind(&SecurityKeyIpcClientTest::ClientMessageReceived,
-                 base::Unretained(this))));
+      base::BindRepeating(&SecurityKeyIpcClientTest::ClientMessageReceived,
+                          base::Unretained(this))));
 }
 
 TEST_F(SecurityKeyIpcClientTest, ReceiveSecurityKeyResponseWithEmptyPayload) {
@@ -299,8 +301,8 @@ TEST_F(SecurityKeyIpcClientTest, ReceiveSecurityKeyResponseWithEmptyPayload) {
 
   ASSERT_TRUE(security_key_ipc_client_.SendSecurityKeyRequest(
       "Valid request",
-      base::Bind(&SecurityKeyIpcClientTest::ClientMessageReceived,
-                 base::Unretained(this))));
+      base::BindRepeating(&SecurityKeyIpcClientTest::ClientMessageReceived,
+                          base::Unretained(this))));
   WaitForOperationComplete();
   ASSERT_FALSE(operation_failed_);
 
@@ -313,8 +315,9 @@ TEST_F(SecurityKeyIpcClientTest, SendRequestBeforeEstablishingConnection) {
   // Sending a request will fail since the IPC connection has not been
   // established.
   ASSERT_FALSE(security_key_ipc_client_.SendSecurityKeyRequest(
-      "Too soon!!", base::Bind(&SecurityKeyIpcClientTest::ClientMessageReceived,
-                               base::Unretained(this))));
+      "Too soon!!",
+      base::BindRepeating(&SecurityKeyIpcClientTest::ClientMessageReceived,
+                          base::Unretained(this))));
 }
 
 TEST_F(SecurityKeyIpcClientTest, NonExistentIpcServerChannel) {
@@ -325,10 +328,10 @@ TEST_F(SecurityKeyIpcClientTest, NonExistentIpcServerChannel) {
   // Attempt to establish the conection (should fail since the IPC channel does
   // not exist).
   security_key_ipc_client_.EstablishIpcConnection(
-      base::Bind(&SecurityKeyIpcClientTest::ConnectionStateHandler,
-                 base::Unretained(this)),
-      base::Bind(&SecurityKeyIpcClientTest::OperationComplete,
-                 base::Unretained(this), /*failed=*/true));
+      base::BindOnce(&SecurityKeyIpcClientTest::ConnectionStateHandler,
+                     base::Unretained(this)),
+      base::BindOnce(&SecurityKeyIpcClientTest::OperationComplete,
+                     base::Unretained(this), /*failed=*/true));
   WaitForOperationComplete();
   ASSERT_TRUE(operation_failed_);
 }

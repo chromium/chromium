@@ -1,0 +1,137 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/inspector_protocol/inspector_protocol.gni")
+import("//v8/gni/v8.gni")
+
+inspector_protocol_generate("protocol_sources") {
+  visibility = [ "//content/services/auction_worklet" ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  inspector_protocol_dir = "//third_party/inspector_protocol"
+  out_dir = target_gen_dir
+  config_file = "devtools_protocol_config.json"
+  _blink_protocol_path =
+      "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
+  protocol_path = rebase_path(_blink_protocol_path, root_build_dir)
+  config_values = [ "protocol.path=$protocol_path" ]
+
+  inputs = [
+    _blink_protocol_path,
+    config_file,
+  ]
+
+  # These are relative to $target_gen_dir.
+  outputs = [
+    "protocol/event_breakpoints.cc",
+    "protocol/event_breakpoints.h",
+    "protocol/forward.h",
+    "protocol/protocol.cc",
+    "protocol/protocol.h",
+    "protocol/base_string_adapter.cc",
+    "protocol/base_string_adapter.h",
+  ]
+}
+
+source_set("auction_worklet") {
+  sources = [
+    "auction_downloader.cc",
+    "auction_downloader.h",
+    "auction_v8_devtools_agent.cc",
+    "auction_v8_devtools_agent.h",
+    "auction_v8_devtools_session.cc",
+    "auction_v8_devtools_session.h",
+    "auction_v8_helper.cc",
+    "auction_v8_helper.h",
+    "auction_v8_inspector_util.cc",
+    "auction_v8_inspector_util.h",
+    "auction_worklet_service_impl.cc",
+    "auction_worklet_service_impl.h",
+    "bidder_worklet.cc",
+    "bidder_worklet.h",
+    "console.cc",
+    "console.h",
+    "debug_command_queue.cc",
+    "debug_command_queue.h",
+    "report_bindings.cc",
+    "report_bindings.h",
+    "seller_worklet.cc",
+    "seller_worklet.h",
+    "trusted_bidding_signals.cc",
+    "trusted_bidding_signals.h",
+    "trusted_scoring_signals.cc",
+    "trusted_scoring_signals.h",
+    "worklet_loader.cc",
+    "worklet_loader.h",
+  ]
+
+  sources += get_target_outputs(":protocol_sources")
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//v8:external_startup_data",
+  ]
+
+  deps = [
+    ":protocol_sources",
+    "//base",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+    "//third_party/inspector_protocol:crdtp",
+    "//url",
+    "//v8",
+  ]
+
+  public_deps = [ "public/mojom" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [
+    "auction_downloader_unittest.cc",
+    "auction_v8_helper_unittest.cc",
+    "auction_v8_inspector_util_unittest.cc",
+    "bidder_worklet_unittest.cc",
+    "debug_command_queue_unittest.cc",
+    "seller_worklet_unittest.cc",
+    "trusted_bidding_signals_unittest.cc",
+    "trusted_scoring_signals_unittest.cc",
+    "worklet_devtools_debug_test_util.cc",
+    "worklet_devtools_debug_test_util.h",
+    "worklet_loader_unittest.cc",
+    "worklet_test_util.cc",
+    "worklet_test_util.h",
+    "worklet_v8_debug_test_util.cc",
+    "worklet_v8_debug_test_util.h",
+  ]
+
+  deps = [
+    ":auction_worklet",
+    "public/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//gin",
+    "//net",
+    "//services/network:test_support",
+    "//services/service_manager/public/cpp/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//third_party/inspector_protocol:crdtp",
+    "//v8",
+  ]
+
+  if (v8_use_external_startup_data) {
+    deps += [ "//gin" ]
+  }
+
+  if (is_android) {
+    deps += [ "//v8:v8_external_startup_data_assets" ]
+  }
+
+  configs += [ "//v8:external_startup_data" ]
+}

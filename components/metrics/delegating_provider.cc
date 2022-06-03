@@ -5,6 +5,7 @@
 #include "components/metrics/delegating_provider.h"
 
 #include "base/barrier_closure.h"
+#include "base/notreached.h"
 
 namespace metrics {
 
@@ -27,9 +28,9 @@ void DelegatingProvider::Init() {
     provider->Init();
 }
 
-void DelegatingProvider::AsyncInit(const base::Closure& done_callback) {
-  base::Closure barrier =
-      base::BarrierClosure(metrics_providers_.size(), done_callback);
+void DelegatingProvider::AsyncInit(base::OnceClosure done_callback) {
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(metrics_providers_.size(), std::move(done_callback));
   for (auto& provider : metrics_providers_) {
     provider->AsyncInit(barrier);
   }
@@ -48,6 +49,11 @@ void DelegatingProvider::OnRecordingEnabled() {
 void DelegatingProvider::OnRecordingDisabled() {
   for (auto& provider : metrics_providers_)
     provider->OnRecordingDisabled();
+}
+
+void DelegatingProvider::OnClientStateCleared() {
+  for (auto& provider : metrics_providers_)
+    provider->OnClientStateCleared();
 }
 
 void DelegatingProvider::OnAppEnterBackground() {
@@ -97,6 +103,11 @@ void DelegatingProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   for (const auto& provider : metrics_providers_)
     provider->ProvideCurrentSessionData(uma_proto);
+}
+
+void DelegatingProvider::ProvideCurrentSessionUKMData() {
+  for (const auto& provider : metrics_providers_)
+    provider->ProvideCurrentSessionUKMData();
 }
 
 void DelegatingProvider::ClearSavedStabilityMetrics() {

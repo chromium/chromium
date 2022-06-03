@@ -18,79 +18,60 @@ class WindowTreeHost;
 }  // namespace aura
 
 namespace chromecast {
-
-class CastWindowManagerAura;
-class FocusRingController;
-class MagnificationController;
-
 namespace shell {
 
 // Responsible for delegating chromecast browser process accessibility functions
 // to the responsible party.
 class AccessibilityManager : public MultipleTapDetectorDelegate {
  public:
-  explicit AccessibilityManager(CastWindowManagerAura* window_manager);
-  ~AccessibilityManager() override;
-
   // Sets the focus ring color.
-  void SetFocusRingColor(SkColor color);
+  virtual void SetFocusRingColor(SkColor color) = 0;
 
   // Resets the focus ring color back to the default.
-  void ResetFocusRingColor();
+  virtual void ResetFocusRingColor() = 0;
 
   // Draws a focus ring around the given set of rects in screen coordinates. Use
   // |focus_ring_behavior| to specify whether the focus ring should persist or
   // fade out.
-  void SetFocusRing(const std::vector<gfx::Rect>& rects_in_screen,
-                    FocusRingBehavior focus_ring_behavior);
+  virtual void SetFocusRing(const std::vector<gfx::Rect>& rects_in_screen,
+                            FocusRingBehavior focus_ring_behavior) = 0;
 
   // Hides focus ring on screen.
-  void HideFocusRing();
+  virtual void HideFocusRing() = 0;
 
   // Draws a highlight at the given rects in screen coordinates. Rects may be
   // overlapping and will be merged into one layer. This looks similar to
   // selecting a region with the cursor, except it is drawn in the foreground
   // rather than behind a text layer.
-  void SetHighlights(const std::vector<gfx::Rect>& rects_in_screen,
-                     SkColor color);
+  virtual void SetHighlights(const std::vector<gfx::Rect>& rects_in_screen,
+                             SkColor color) = 0;
 
   // Hides highlight on screen.
-  void HideHighlights();
+  virtual void HideHighlights() = 0;
 
   // Enable or disable screen reader support, including touch exploration.
-  void SetScreenReader(bool enable);
+  virtual void SetScreenReader(bool enable) = 0;
 
   // Update the touch exploration controller so that synthesized
   // touch events are anchored at this point.
-  void SetTouchAccessibilityAnchorPoint(const gfx::Point& anchor_point);
+  virtual void SetTouchAccessibilityAnchorPoint(
+      const gfx::Point& anchor_point) = 0;
+
+  // Sets the bounds for virtual keyboard.
+  virtual void SetVirtualKeyboardBounds(const gfx::Rect& rect) = 0;
 
   // Get the window tree host this AccessibilityManager was created with.
-  aura::WindowTreeHost* window_tree_host() const;
+  virtual aura::WindowTreeHost* window_tree_host() const = 0;
 
   // Enable or disable the triple-tap gesture to turn on magnification.
-  void SetMagnificationGestureEnabled(bool enabled);
+  virtual void SetMagnificationGestureEnabled(bool enabled) = 0;
 
   // Returns whether the magnification gesture is currently enabled.
-  bool IsMagnificationGestureEnabled() const;
-
-  // MultipleTapDetectorDelegate implementation
-  void OnTripleTap(const gfx::Point& tap_location) override;
+  virtual bool IsMagnificationGestureEnabled() const = 0;
 
   // Sets the player for earcons.
-  void SetAccessibilitySoundPlayer(
-      std::unique_ptr<AccessibilitySoundPlayer> player);
-
- private:
-  aura::WindowTreeHost* window_tree_host_;
-
-  std::unique_ptr<FocusRingController> focus_ring_controller_;
-  std::unique_ptr<AccessibilityFocusRingController>
-      accessibility_focus_ring_controller_;
-  std::unique_ptr<TouchExplorationManager> touch_exploration_manager_;
-  std::unique_ptr<MultipleTapDetector> magnify_gesture_detector_;
-  std::unique_ptr<MagnificationController> magnification_controller_;
-
-  AccessibilitySoundProxy accessibility_sound_proxy_;
+  virtual void SetAccessibilitySoundPlayer(
+      std::unique_ptr<AccessibilitySoundPlayer> player) {}
 };
 
 }  // namespace shell

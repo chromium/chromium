@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_PRINTING_COMMON_CLOUD_PRINT_CDD_CONVERSION_H_
 #define COMPONENTS_PRINTING_COMMON_CLOUD_PRINT_CDD_CONVERSION_H_
 
-#include <memory>
-#include <string>
-
 #include "base/values.h"
 
 namespace printing {

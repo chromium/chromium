@@ -5,7 +5,7 @@
 #include "content/public/renderer/video_encode_accelerator.h"
 
 #include "base/bind.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
@@ -23,7 +23,7 @@ void CreateVideoEncodeAccelerator(
     return;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner =
+  scoped_refptr<base::SequencedTaskRunner> encode_task_runner =
       gpu_factories->GetTaskRunner();
   base::PostTaskAndReplyWithResult(
       encode_task_runner.get(), FROM_HERE,
@@ -44,7 +44,8 @@ GetSupportedVideoEncodeAcceleratorProfiles() {
       RenderThreadImpl::current()->GetGpuFactories();
   if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
     return media::VideoEncodeAccelerator::SupportedProfiles();
-  return gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles();
+  return gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
+      media::VideoEncodeAccelerator::SupportedProfiles());
 #endif  // defined(OS_ANDROID)
 }
 

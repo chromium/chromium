@@ -5,9 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "subresource_filter_agent.mojom",
-  ]
+  sources = [ "subresource_filter_agent.mojom" ]
   deps = [
     "//components/subresource_filter/core/mojom",
     "//mojo/public/mojom/base",

@@ -1,0 +1,10 @@
+PASS links[0].offsetWidth is within 5 of 178
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Both links should render the same and not wrap.
+
+This shouldn't wrap
+This shouldn't wrap

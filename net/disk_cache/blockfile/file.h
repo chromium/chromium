@@ -44,6 +44,9 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
   // object.
   explicit File(base::File file);
 
+  File(const File&) = delete;
+  File& operator=(const File&) = delete;
+
   // Initializes the object to point to a given file. The file must aready exist
   // on disk, and allow shared read and write.
   bool Init(const base::FilePath& name);
@@ -68,9 +71,7 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
   size_t GetLength();
 
   // Blocks until |num_pending_io| IO operations complete.
-  // TODO(fdoray): Rename to WaitForPendingIOForTesting() since this should only
-  // be called in tests.
-  static void WaitForPendingIO(int* num_pending_io);
+  static void WaitForPendingIOForTesting(int* num_pending_io);
 
   // Drops current pending operations without waiting for them to complete.
   static void DropPendingIO();
@@ -96,8 +97,6 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
   bool mixed_;
   base::File base_file_;  // Regular, asynchronous IO handle.
   base::File sync_base_file_;  // Synchronous IO handle.
-
-  DISALLOW_COPY_AND_ASSIGN(File);
 };
 
 }  // namespace disk_cache

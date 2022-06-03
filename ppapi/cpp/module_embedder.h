@@ -22,19 +22,6 @@ class Module;
 /// failure. Upon failure, the module will be unloaded.
 pp::Module* CreateModule();
 
-/// Sets the get interface function in the broker process.
-///
-/// This function is only relevant when you're using the PPB_Broker interface
-/// in a trusted native plugin. In this case, you may need to implement
-/// PPP_GetInterface when the plugin is loaded in the unsandboxed process.
-/// Normally the C++ wrappers implement PPP_GetInterface for you but this
-/// doesn't work in the context of the broker process.
-//
-/// So if you need to implement PPP_* interfaces in the broker process, call
-/// this function in your PPP_InitializeBroker implementation which will set
-/// up the given function as implementing PPP_GetInterface.
-void SetBrokerGetInterfaceFunc(PP_GetInterface_Func broker_get_interface);
-
 }  // namespace pp
 
 #endif  // PPAPI_CPP_MODULE_EMBEDDER_H_

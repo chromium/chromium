@@ -9,16 +9,14 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +25,7 @@
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -47,14 +46,16 @@ void ShowPrompt() {
   // Show the default browser request prompt in the most recently active,
   // visible, tabbed browser. Do not show the prompt if no such browser exists.
   BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto browser_iterator = browser_list->begin_last_active();
-       browser_iterator != browser_list->end_last_active();
+  for (auto browser_iterator =
+           browser_list->begin_browsers_ordered_by_activation();
+       browser_iterator != browser_list->end_browsers_ordered_by_activation();
        ++browser_iterator) {
     Browser* browser = *browser_iterator;
 
     // |browser| may be null in UI tests. Also, don't show the prompt in an app
-    // window, which is not meant to be treated as a Chrome window.
-    if (!browser || browser->deprecated_is_app())
+    // window, which is not meant to be treated as a Chrome window. Only show in
+    // a normal, tabbed browser.
+    if (browser && !browser->is_type_normal())
       continue;
 
     // In ChromeBot tests, there might be a race. This line appears to get
@@ -75,7 +76,8 @@ void ShowPrompt() {
       continue;
 
     chrome::DefaultBrowserInfoBarDelegate::Create(
-        InfoBarService::FromWebContents(web_contents), browser->profile());
+        infobars::ContentInfoBarManager::FromWebContents(web_contents),
+        browser->profile());
     break;
   }
 }
@@ -83,8 +85,8 @@ void ShowPrompt() {
 // Returns true if the default browser prompt should be shown if Chrome is not
 // the user's default browser.
 bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
-  // Do not show the prompt if the "suppress_default_browser_prompt_for_version"
-  // master preference is set to the current version.
+  // Do not show the prompt if "suppress_default_browser_prompt_for_version" in
+  // the initial preferences is set to the current version.
   const std::string disable_version_string =
       g_browser_process->local_state()->GetString(
           prefs::kBrowserSuppressDefaultBrowserPrompt);
@@ -108,7 +110,7 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
       return false;  // Failed to parse a reasonable period.
     base::Time show_on_or_after =
         base::Time::FromInternalValue(last_dismissed_value) +
-        base::TimeDelta::FromDays(period_days);
+        base::Days(period_days);
     if (base::Time::Now() < show_on_or_after)
       return false;
   }
@@ -158,10 +160,10 @@ void ShowDefaultBrowserPrompt(Profile* profile) {
   }
 
   scoped_refptr<shell_integration::DefaultBrowserWorker>(
-      new shell_integration::DefaultBrowserWorker(
-          base::Bind(&OnCheckIsDefaultBrowserFinished, profile->GetPath(),
-                     ShouldShowDefaultBrowserPrompt(profile))))
-      ->StartCheckIsDefault();
+      new shell_integration::DefaultBrowserWorker())
+      ->StartCheckIsDefault(
+          base::BindOnce(&OnCheckIsDefaultBrowserFinished, profile->GetPath(),
+                         ShouldShowDefaultBrowserPrompt(profile)));
 }
 
 void DefaultBrowserPromptDeclined(Profile* profile) {

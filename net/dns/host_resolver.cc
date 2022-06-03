@@ -4,12 +4,16 @@
 
 #include "net/dns/host_resolver.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/immediate_crash.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
@@ -21,6 +25,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mapped_host_resolver.h"
+#include "net/dns/resolve_context.h"
 
 namespace net {
 
@@ -30,32 +35,38 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
                            public HostResolver::ProbeRequest {
  public:
   explicit FailingRequestImpl(int error) : error_(error) {}
+
+  FailingRequestImpl(const FailingRequestImpl&) = delete;
+  FailingRequestImpl& operator=(const FailingRequestImpl&) = delete;
+
   ~FailingRequestImpl() override = default;
 
   int Start(CompletionOnceCallback callback) override { return error_; }
   int Start() override { return error_; }
 
-  const base::Optional<AddressList>& GetAddressResults() const override {
-    static base::NoDestructor<base::Optional<AddressList>> nullopt_result;
+  const absl::optional<AddressList>& GetAddressResults() const override {
+    static base::NoDestructor<absl::optional<AddressList>> nullopt_result;
     return *nullopt_result;
   }
 
-  const base::Optional<std::vector<std::string>>& GetTextResults()
+  const absl::optional<std::vector<std::string>>& GetTextResults()
       const override {
-    static const base::NoDestructor<base::Optional<std::vector<std::string>>>
+    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
         nullopt_result;
     return *nullopt_result;
   }
 
-  const base::Optional<std::vector<HostPortPair>>& GetHostnameResults()
+  const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
       const override {
-    static const base::NoDestructor<base::Optional<std::vector<HostPortPair>>>
+    static const base::NoDestructor<absl::optional<std::vector<HostPortPair>>>
         nullopt_result;
     return *nullopt_result;
   }
 
-  const base::Optional<EsniContent>& GetEsniResults() const override {
-    static const base::NoDestructor<base::Optional<EsniContent>> nullopt_result;
+  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
+      const override {
+    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
+        nullopt_result;
     return *nullopt_result;
   }
 
@@ -63,20 +74,22 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return ResolveErrorInfo(error_);
   }
 
-  const base::Optional<HostCache::EntryStaleness>& GetStaleInfo()
+  const absl::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
-    static const base::NoDestructor<base::Optional<HostCache::EntryStaleness>>
-        nullopt_result;
-    return *nullopt_result;
+    static const absl::optional<HostCache::EntryStaleness> nullopt_result;
+    return nullopt_result;
   }
 
  private:
   const int error_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingRequestImpl);
 };
 
 }  // namespace
+
+const absl::optional<std::vector<bool>>&
+HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
+  IMMEDIATE_CRASH();
+}
 
 const size_t HostResolver::ManagerOptions::kDefaultRetryAttempts =
     static_cast<size_t>(-1);
@@ -105,14 +118,6 @@ HostResolver::ResolveHostParameters::ResolveHostParameters(
 
 HostResolver::~HostResolver() = default;
 
-std::unique_ptr<HostResolver::ResolveHostRequest> HostResolver::CreateRequest(
-    const HostPortPair& host,
-    const NetLogWithSource& net_log,
-    const base::Optional<ResolveHostParameters>& optional_parameters) {
-  return CreateRequest(host, NetworkIsolationKey(), net_log,
-                       optional_parameters);
-}
-
 std::unique_ptr<HostResolver::ProbeRequest>
 HostResolver::CreateDohProbeRequest() {
   // Should be overridden in any HostResolver implementation where this method
@@ -134,8 +139,8 @@ HostCache* HostResolver::GetHostCache() {
   return nullptr;
 }
 
-std::unique_ptr<base::Value> HostResolver::GetDnsConfigAsValue() const {
-  return nullptr;
+base::Value HostResolver::GetDnsConfigAsValue() const {
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 void HostResolver::SetRequestContext(URLRequestContext* request_context) {
@@ -165,9 +170,11 @@ std::unique_ptr<HostResolver> HostResolver::CreateResolver(
     bool enable_caching) {
   DCHECK(manager);
 
-  auto cache = enable_caching ? HostCache::CreateDefaultCache() : nullptr;
-  auto resolver =
-      std::make_unique<ContextHostResolver>(manager, std::move(cache));
+  auto resolve_context = std::make_unique<ResolveContext>(
+      nullptr /* url_request_context */, enable_caching);
+
+  auto resolver = std::make_unique<ContextHostResolver>(
+      manager, std::move(resolve_context));
 
   if (host_mapping_rules.empty())
     return resolver;
@@ -180,7 +187,7 @@ std::unique_ptr<HostResolver> HostResolver::CreateResolver(
 // static
 std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
     NetLog* net_log,
-    base::Optional<ManagerOptions> options,
+    absl::optional<ManagerOptions> options,
     base::StringPiece host_mapping_rules,
     bool enable_caching) {
   std::unique_ptr<ContextHostResolver> resolver =
@@ -199,15 +206,16 @@ std::unique_ptr<HostResolver> HostResolver::CreateStandaloneResolver(
 std::unique_ptr<ContextHostResolver>
 HostResolver::CreateStandaloneContextResolver(
     NetLog* net_log,
-    base::Optional<ManagerOptions> options,
+    absl::optional<ManagerOptions> options,
     bool enable_caching) {
-  auto cache = enable_caching ? HostCache::CreateDefaultCache() : nullptr;
+  auto resolve_context = std::make_unique<ResolveContext>(
+      nullptr /* url_request_context */, enable_caching);
 
   return std::make_unique<ContextHostResolver>(
       std::make_unique<HostResolverManager>(
           std::move(options).value_or(ManagerOptions()),
           NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log),
-      std::move(cache));
+      std::move(resolve_context));
 }
 
 // static
@@ -231,19 +239,21 @@ AddressFamily HostResolver::DnsQueryTypeToAddressFamily(
 HostResolverFlags HostResolver::ParametersToHostResolverFlags(
     const ResolveHostParameters& parameters) {
   HostResolverFlags flags = 0;
-  if (parameters.source == HostResolverSource::SYSTEM)
-    flags |= HOST_RESOLVER_SYSTEM_ONLY;
   if (parameters.include_canonical_name)
     flags |= HOST_RESOLVER_CANONNAME;
   if (parameters.loopback_only)
     flags |= HOST_RESOLVER_LOOPBACK_ONLY;
+  if (parameters.avoid_multicast_resolution)
+    flags |= HOST_RESOLVER_AVOID_MULTICAST;
   return flags;
 }
 
 // static
 int HostResolver::SquashErrorCode(int error) {
+  // TODO(crbug.com/1043281): Consider squashing ERR_INTERNET_DISCONNECTED.
   if (error == OK || error == ERR_IO_PENDING ||
-      error == ERR_NAME_NOT_RESOLVED) {
+      error == ERR_INTERNET_DISCONNECTED || error == ERR_NAME_NOT_RESOLVED ||
+      error == ERR_DNS_NAME_HTTPS_ONLY) {
     return error;
   } else {
     return ERR_NAME_NOT_RESOLVED;

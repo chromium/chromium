@@ -4,6 +4,8 @@
 
 """Checks protobuf files for illegal imports."""
 
+
+
 import codecs
 import os
 import re
@@ -28,7 +30,7 @@ class ProtoChecker(object):
   # This regular expression will be used to extract filenames from import
   # statements.
   _EXTRACT_IMPORT_PATH = re.compile(
-      '[ \t]*[ \t]*import[ \t]+"(.*)"')
+      r'[ \t]*[ \t]*import[ \t]+"(.*)"')
 
   def __init__(self, verbose, resolve_dotdot=False, root_dir=''):
     self._verbose = verbose
@@ -37,7 +39,7 @@ class ProtoChecker(object):
 
   def IsFullPath(self, import_path):
     """Checks if the given path is a valid path starting from |_root_dir|."""
-    match = re.match('(.*)/([^/]*\.proto)', import_path)
+    match = re.match(r'(.*)/([^/]*\.proto)', import_path)
     if not match:
       return False
     return os.path.isdir(self._root_dir + "/" + match.group(1))
@@ -67,7 +69,7 @@ class ProtoChecker(object):
       # Don't fail when no directory is specified. We may want to be more
       # strict about this in the future.
       if self._verbose:
-        print ' WARNING: import specified with no directory: ' + import_path
+        print(' WARNING: import specified with no directory: ' + import_path)
       return True, None
 
     if self._resolve_dotdot and '../' in import_path:
@@ -87,7 +89,7 @@ class ProtoChecker(object):
 
   def CheckFile(self, rules, filepath):
     if self._verbose:
-      print 'Checking: ' + filepath
+      print('Checking: ' + filepath)
 
     dependee_status = results.DependeeStatus(filepath)
     last_import = 0

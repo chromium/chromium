@@ -4,11 +4,14 @@
 
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
+#include "components/crash/content/browser/process_exit_reason_from_system_android.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crash_reporter {
 namespace {
@@ -82,6 +85,29 @@ void ReportLegacyCrashUma(const ChildExitObserver::TerminationInfo& info,
   }
 }
 
+void RecordSystemExitReason(
+    base::ProcessHandle pid,
+    const CrashMetricsReporter::ReportedCrashTypeSet& reported_counts) {
+  base::StringPiece suffix;
+  if (reported_counts.count(CrashMetricsReporter::ProcessedCrashCounts::
+                                kRendererForegroundVisibleSubframeOom) > 0) {
+    suffix = "VisibleSubframeOom";
+  } else if (reported_counts.count(CrashMetricsReporter::ProcessedCrashCounts::
+                                       kRendererForegroundVisibleOom) > 0) {
+    suffix = "VisibleMainFrameOom";
+  } else if (reported_counts.count(CrashMetricsReporter::ProcessedCrashCounts::
+                                       kGpuForegroundOom) > 0) {
+    suffix = "GpuForegroundOom";
+  } else if (reported_counts.count(CrashMetricsReporter::ProcessedCrashCounts::
+                                       kUtilityForegroundOom) > 0) {
+    suffix = "UtilityForegroundOom";
+  }
+  if (!suffix.empty()) {
+    ProcessExitReasonFromSystem::RecordExitReasonToUma(
+        pid, base::StrCat({"Stability.Android.SystemExitReason.", suffix}));
+  }
+}
+
 }  // namespace
 
 //  static
@@ -118,7 +144,8 @@ void CrashMetricsReporter::ChildProcessExited(
       info.app_state == base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES;
   const bool intentional_kill = info.was_killed_intentionally_by_browser;
   const bool android_oom_kill = !info.was_killed_intentionally_by_browser &&
-                                !crashed && !info.normal_termination;
+                                !crashed && !info.normal_termination &&
+                                !info.renderer_shutdown_requested;
   const bool renderer_visible = info.renderer_has_visible_clients;
   const bool renderer_subframe = info.renderer_was_subframe;
   const bool renderer_allocation_failed =
@@ -170,7 +197,7 @@ void CrashMetricsReporter::ChildProcessExited(
         ReportCrashCount(ProcessedCrashCounts::
                              kRendererForegroundVisibleNormalTermNoMinidump,
                          &reported_counts);
-      } else {
+      } else if (!info.renderer_shutdown_requested) {
         DCHECK(android_oom_kill);
         if (renderer_subframe) {
           ReportCrashCount(
@@ -261,30 +288,10 @@ void CrashMetricsReporter::ChildProcessExited(
     }
   }
 
-  if (app_foreground && android_oom_kill &&
-      info.binding_state == base::android::ChildBindingState::STRONG) {
-    const bool has_waived = info.remaining_process_with_waived_binding > 0;
-    const bool has_moderate = info.remaining_process_with_moderate_binding > 0;
-    const bool has_strong = info.remaining_process_with_strong_binding > 0;
-    BindingStateCombo combo;
-    if (has_waived && has_moderate) {
-      combo = has_strong ? BindingStateCombo::kHasWaivedHasModerateHasStrong
-                         : BindingStateCombo::kHasWaivedHasModerateNoStrong;
-    } else if (has_waived) {
-      combo = has_strong ? BindingStateCombo::kHasWaivedNoModerateHasStrong
-                         : BindingStateCombo::kHasWaivedNoModerateNoStrong;
-    } else if (has_moderate) {
-      combo = has_strong ? BindingStateCombo::kNoWaivedHasModerateHasStrong
-                         : BindingStateCombo::kNoWaivedHasModerateNoStrong;
-    } else {
-      combo = has_strong ? BindingStateCombo::kNoWaivedNoModerateHasStrong
-                         : BindingStateCombo::kNoWaivedNoModerateNoStrong;
-    }
-    UMA_HISTOGRAM_ENUMERATION(
-        "Stability.Android.StrongBindingOomRemainingBindingState", combo);
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "Stability.Android.StrongBindingOomRemainingStrongBindingCount",
-        info.remaining_process_with_strong_binding, 20);
+  if (!info.was_killed_intentionally_by_browser && !crashed &&
+      !info.normal_termination && info.renderer_shutdown_requested) {
+    ReportCrashCount(ProcessedCrashCounts::kRendererProcessHostShutdown,
+                     &reported_counts);
   }
 
   if (android_oom_kill) {
@@ -299,6 +306,7 @@ void CrashMetricsReporter::ChildProcessExited(
   }
 
   ReportLegacyCrashUma(info, crashed);
+  RecordSystemExitReason(info.pid, reported_counts);
   NotifyObservers(info.process_host_id, reported_counts);
 }
 

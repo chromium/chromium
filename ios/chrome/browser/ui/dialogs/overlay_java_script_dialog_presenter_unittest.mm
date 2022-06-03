@@ -8,10 +8,8 @@
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirmation_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_prompt_overlay.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -20,18 +18,20 @@
 #error "This file requires ARC support."
 #endif
 
+using java_script_dialog_overlays::JavaScriptDialogRequest;
+
 // Test fixture for OverlayJavaScriptDialogPresenter.
 class OverlayJavaScriptDialogPresenterTest : public PlatformTest {
  protected:
   OverlayJavaScriptDialogPresenterTest() : url_("http://chromium.test") {}
 
   const GURL url_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   OverlayJavaScriptDialogPresenter presenter_;
 };
 
 // Tests that the presenter adds an OverlayRequest configured with a
-// JavaScriptAlertOverlayRequestConfig.
+// JavaScriptAlertRequest.
 TEST_F(OverlayJavaScriptDialogPresenterTest, RunAlert) {
   web::DialogClosedCallback callback =
       base::BindOnce(^(bool success, NSString* user_input){
@@ -45,7 +45,10 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunAlert) {
                                 &web_state_, OverlayModality::kWebContentArea)
                                 ->front_request();
   ASSERT_TRUE(request);
-  EXPECT_TRUE(request->GetConfig<JavaScriptAlertOverlayRequestConfig>());
+  JavaScriptDialogRequest* dialog_request =
+      request->GetConfig<JavaScriptDialogRequest>();
+  ASSERT_TRUE(dialog_request);
+  EXPECT_EQ(web::JAVASCRIPT_DIALOG_TYPE_ALERT, dialog_request->type());
 }
 
 // Tests that the presenter adds an OverlayRequest configured with a
@@ -63,7 +66,10 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunConfirmation) {
                                 &web_state_, OverlayModality::kWebContentArea)
                                 ->front_request();
   ASSERT_TRUE(request);
-  EXPECT_TRUE(request->GetConfig<JavaScriptConfirmationOverlayRequestConfig>());
+  JavaScriptDialogRequest* dialog_request =
+      request->GetConfig<JavaScriptDialogRequest>();
+  ASSERT_TRUE(dialog_request);
+  EXPECT_EQ(web::JAVASCRIPT_DIALOG_TYPE_CONFIRM, dialog_request->type());
 }
 
 // Tests that the presenter adds an OverlayRequest configured with a
@@ -81,7 +87,10 @@ TEST_F(OverlayJavaScriptDialogPresenterTest, RunPrompt) {
                                 &web_state_, OverlayModality::kWebContentArea)
                                 ->front_request();
   ASSERT_TRUE(request);
-  EXPECT_TRUE(request->GetConfig<JavaScriptPromptOverlayRequestConfig>());
+  JavaScriptDialogRequest* dialog_request =
+      request->GetConfig<JavaScriptDialogRequest>();
+  ASSERT_TRUE(dialog_request);
+  EXPECT_EQ(web::JAVASCRIPT_DIALOG_TYPE_PROMPT, dialog_request->type());
 }
 
 // Tests that the presenter removes all requests from the queue when

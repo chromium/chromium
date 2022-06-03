@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +18,8 @@ namespace ntp_tiles {
 
 namespace {
 
-const char kTestTitle1[] = "Foo1";
-const char kTestTitle2[] = "Foo2";
+const char16_t kTestTitle1[] = u"Foo1";
+const char16_t kTestTitle2[] = u"Foo2";
 const char kTestUrl1[] = "http://foo1.com/";
 const char kTestUrl2[] = "http://foo2.com/";
 
@@ -33,16 +32,17 @@ class CustomLinksStoreTest : public testing::Test {
     CustomLinksStore::RegisterProfilePrefs(prefs_.registry());
   }
 
+  CustomLinksStoreTest(const CustomLinksStoreTest&) = delete;
+  CustomLinksStoreTest& operator=(const CustomLinksStoreTest&) = delete;
+
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<CustomLinksStore> custom_links_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksStoreTest);
 };
 
 TEST_F(CustomLinksStoreTest, StoreAndRetrieveLinks) {
-  std::vector<CustomLinksManager::Link> initial_links({CustomLinksManager::Link{
-      GURL(kTestUrl1), base::UTF8ToUTF16(kTestTitle1), true}});
+  std::vector<CustomLinksManager::Link> initial_links(
+      {CustomLinksManager::Link{GURL(kTestUrl1), kTestTitle1, true}});
 
   custom_links_store_->StoreLinks(initial_links);
   std::vector<CustomLinksManager::Link> retrieved_links =
@@ -52,10 +52,8 @@ TEST_F(CustomLinksStoreTest, StoreAndRetrieveLinks) {
 
 TEST_F(CustomLinksStoreTest, StoreEmptyList) {
   std::vector<CustomLinksManager::Link> populated_links(
-      {CustomLinksManager::Link{GURL(kTestUrl1), base::UTF8ToUTF16(kTestTitle1),
-                                false},
-       CustomLinksManager::Link{GURL(kTestUrl2), base::UTF8ToUTF16(kTestTitle2),
-                                true}});
+      {CustomLinksManager::Link{GURL(kTestUrl1), kTestTitle1, false},
+       CustomLinksManager::Link{GURL(kTestUrl2), kTestTitle2, true}});
 
   custom_links_store_->StoreLinks(populated_links);
   std::vector<CustomLinksManager::Link> retrieved_links =
@@ -68,8 +66,8 @@ TEST_F(CustomLinksStoreTest, StoreEmptyList) {
 }
 
 TEST_F(CustomLinksStoreTest, ClearLinks) {
-  std::vector<CustomLinksManager::Link> initial_links({CustomLinksManager::Link{
-      GURL(kTestUrl1), base::UTF8ToUTF16(kTestTitle1)}});
+  std::vector<CustomLinksManager::Link> initial_links(
+      {CustomLinksManager::Link{GURL(kTestUrl1), kTestTitle1}});
 
   custom_links_store_->StoreLinks(initial_links);
   std::vector<CustomLinksManager::Link> retrieved_links =
@@ -83,10 +81,8 @@ TEST_F(CustomLinksStoreTest, ClearLinks) {
 
 TEST_F(CustomLinksStoreTest, LinksSavedAfterShutdown) {
   std::vector<CustomLinksManager::Link> initial_links(
-      {CustomLinksManager::Link{GURL(kTestUrl1), base::UTF8ToUTF16(kTestTitle1),
-                                false},
-       CustomLinksManager::Link{GURL(kTestUrl2), base::UTF8ToUTF16(kTestTitle2),
-                                true}});
+      {CustomLinksManager::Link{GURL(kTestUrl1), kTestTitle1, false},
+       CustomLinksManager::Link{GURL(kTestUrl2), kTestTitle2, true}});
 
   custom_links_store_->StoreLinks(initial_links);
   std::vector<CustomLinksManager::Link> retrieved_links =

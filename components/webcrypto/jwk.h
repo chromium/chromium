@@ -99,7 +99,7 @@ class JwkReader {
   Status VerifyAlg(const std::string& expected_alg) const;
 
  private:
-  base::DictionaryValue dict_;
+  base::Value dict_;
 };
 
 // Helper class for building the JSON for a JWK.
@@ -124,7 +124,7 @@ class JwkWriter {
   void ToJson(std::vector<uint8_t>* utf8_bytes) const;
 
  private:
-  base::DictionaryValue dict_;
+  base::Value dict_;
 };
 
 // Converts a JWK "key_ops" array to the corresponding WebCrypto usages. Used by

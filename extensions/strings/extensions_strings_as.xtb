@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">ওহোঁ! অনিয়মীত RSA ব্যক্তিগত চাবি সৃষ্টি কৰিব পৰা নগ’ল।</translation>
 <translation id="1445572445564823378">এই এক্সটেনশ্বনৰ কাৰণে <ph name="PRODUCT_NAME" />এ লেহেমীয়া ধৰণে কাম কৰিছে৷ <ph name="PRODUCT_NAME" />এ ভালকৈ কাম কৰিবলৈ আপুনি ইয়াক অক্ষম কৰা উচিত৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নহয়।</translation>
-<translation id="149347756975725155">এক্সটেনশ্বন আইকন ’<ph name="ICON" />’ ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="1803557475693955505">নেপথ্যৰ পৃষ্ঠা ’<ph name="BACKGROUND_PAGE" />’ ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="2159915644201199628">ছবি ডিক’ড কৰিব পৰা নগ’ল: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ল’কেলাইজেশ্বন ব্যৱহাৰ কৰা হৈছে কিন্তু মেনিফেষ্টত default_locale নির্দিষ্ট কৰা হোৱা নাই।</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ব্যক্তিগত চাবিটো পঢ়িব পৰা নগ’ল।</translation>
 <translation id="6391538222494443604">ইনপুট ডাইৰেক্টৰী থাকিবই লাগিব৷</translation>
 <translation id="641087317769093025">এক্সটেনশ্বন আনজিপ কৰিব পৰা নগ'ল</translation>
-<translation id="6413453408918378296">আইকনটো পৰ্যাপ্ত পৰিমাণে দৃশ্যমান হোৱা নাই ‘<ph name="ICON" />’।</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />"এ আপোনাৰ ডিভাইচসমূহৰ মাজৰ এটা বা তাতকৈ বেছি ডিভাইচত এক্সেছৰ বাবে অনুৰোধ কৰি আছে:</translation>
 <translation id="657064425229075395">নেপথ্যৰ স্ক্ৰিপ্ট ‘<ph name="BACKGROUND_SCRIPT" />’ ল‘ড কৰিব পৰা নগ’ল।</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />ৰ <ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>

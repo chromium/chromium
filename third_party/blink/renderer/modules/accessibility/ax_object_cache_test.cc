@@ -7,10 +7,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 
 namespace blink {
-namespace test {
 
 // TODO(nektar): Break test up into multiple tests.
 TEST_F(AccessibilityTest, IsARIAWidget) {
@@ -56,5 +57,41 @@ TEST_F(AccessibilityTest, IsARIAWidget) {
       *root->getElementById("focusable-parent")));
 }
 
-}  // namespace test
+class MockAXObject : public AXObject {
+ public:
+  explicit MockAXObject(AXObjectCacheImpl& ax_object_cache)
+      : AXObject(ax_object_cache) {}
+  static unsigned num_children_changed_calls_;
+
+  void ChildrenChangedWithCleanLayout() final { num_children_changed_calls_++; }
+  Document* GetDocument() const final { return &AXObjectCache().GetDocument(); }
+  void AddChildren() final {}
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+};
+
+unsigned MockAXObject::num_children_changed_calls_ = 0;
+
+TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
+  auto& document = GetDocument();
+  auto* ax_object_cache =
+      To<AXObjectCacheImpl>(document.ExistingAXObjectCache());
+  DCHECK(ax_object_cache);
+
+  wtf_size_t max_updates = 10;
+  ax_object_cache->SetMaxPendingUpdatesForTesting(max_updates);
+
+  MockAXObject* ax_obj = MakeGarbageCollected<MockAXObject>(*ax_object_cache);
+  ax_object_cache->AssociateAXID(ax_obj);
+  for (unsigned i = 0; i < max_updates + 1; i++) {
+    ax_object_cache->DeferTreeUpdate(
+        &AXObjectCacheImpl::ChildrenChangedWithCleanLayout, ax_obj);
+  }
+  document.Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);
+  ax_object_cache->ProcessCleanLayoutCallbacks(document);
+
+  ASSERT_EQ(0u, MockAXObject::num_children_changed_calls_);
+}
+
 }  // namespace blink

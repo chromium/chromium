@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="6106989379647458772">Հնարավոր է, որ <ph name="PAGE" /> կայքէջը ժամանակավորապես անհասանելի է կամ մշտապես տեղափոխվել է նոր հասցե:</translation>
-<translation id="6312113039770857350">Կայքէջն անհասանելի է</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />-ի կայքէջը չհաջողվեց բեռնել, քանի որ՝</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Առաջարկներ.<ph name="MARKUP_2" />Համոզվեք, որ ունեք ինտերնետ կապ<ph name="MARKUP_3" />Մի փոքր ուշ վերաբեռնեք այս կայքէջը<ph name="MARKUP_4" />Ստուգեք ձեր մուտքագրած հասցեն<ph name="MARKUP_5" /></translation>
 </translationbundle>

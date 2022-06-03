@@ -45,7 +45,7 @@ class ClearButtonElement final : public HTMLDivElement {
 
   void RemoveClearButtonOwner() { clear_button_owner_ = nullptr; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DetachLayoutTree(bool performing_reattach) override;
@@ -55,12 +55,6 @@ class ClearButtonElement final : public HTMLDivElement {
 
   Member<ClearButtonOwner> clear_button_owner_;
 };
-
-DEFINE_TYPE_CASTS(ClearButtonElement,
-                  Element,
-                  element,
-                  element->IsClearButtonElement(),
-                  element.IsClearButtonElement());
 
 template <>
 struct DowncastTraits<ClearButtonElement> {

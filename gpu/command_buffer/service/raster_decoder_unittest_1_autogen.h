@@ -12,24 +12,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_1_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_1_AUTOGEN_H_
 
-TEST_P(RasterDecoderTest1, FinishValidArgs) {
-  EXPECT_CALL(*gl_, Finish());
-  SpecializedSetup<cmds::Finish, 0>(true);
-  cmds::Finish cmd;
-  cmd.Init();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_P(RasterDecoderTest1, FlushValidArgs) {
-  EXPECT_CALL(*gl_, Flush());
-  SpecializedSetup<cmds::Flush, 0>(true);
-  cmds::Flush cmd;
-  cmd.Init();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
 TEST_P(RasterDecoderTest1, GetErrorValidArgs) {
   EXPECT_CALL(*gl_, GetError());
   SpecializedSetup<cmds::GetError, 0>(true);

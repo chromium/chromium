@@ -10,16 +10,7 @@
 
 namespace gpu {
 
-namespace {
-
-uint64_t g_next_command_buffer_id = 1;
-
-}  // anonymous namespace
-
-CommandBufferDirect::CommandBufferDirect()
-    : service_(this, nullptr),
-      command_buffer_id_(
-          CommandBufferId::FromUnsafeValue(g_next_command_buffer_id++)) {}
+CommandBufferDirect::CommandBufferDirect() : service_(this, nullptr) {}
 
 CommandBufferDirect::~CommandBufferDirect() = default;
 
@@ -61,8 +52,10 @@ void CommandBufferDirect::SetGetBuffer(int32_t transfer_buffer_id) {
   service_.SetGetBuffer(transfer_buffer_id);
 }
 
-scoped_refptr<Buffer> CommandBufferDirect::CreateTransferBuffer(uint32_t size,
-                                                                int32_t* id) {
+scoped_refptr<Buffer> CommandBufferDirect::CreateTransferBuffer(
+    uint32_t size,
+    int32_t* id,
+    TransferBufferAllocationOption option) {
   return service_.CreateTransferBuffer(size, id);
 }
 

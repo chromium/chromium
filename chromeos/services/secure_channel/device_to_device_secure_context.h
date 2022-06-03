@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
@@ -34,13 +33,16 @@ class DeviceToDeviceSecureContext : public SecureContext {
       const std::string& responder_auth_message_,
       ProtocolVersion protocol_version);
 
+  DeviceToDeviceSecureContext(const DeviceToDeviceSecureContext&) = delete;
+  DeviceToDeviceSecureContext& operator=(const DeviceToDeviceSecureContext&) =
+      delete;
+
   ~DeviceToDeviceSecureContext() override;
 
   // SecureContext:
   void Decode(const std::string& encoded_message,
-              const MessageCallback& callback) override;
-  void Encode(const std::string& message,
-              const MessageCallback& callback) override;
+              MessageCallback callback) override;
+  void Encode(const std::string& message, MessageCallback callback) override;
   ProtocolVersion GetProtocolVersion() const override;
   std::string GetChannelBindingData() const override;
 
@@ -48,11 +50,10 @@ class DeviceToDeviceSecureContext : public SecureContext {
   // Callback for unwrapping a secure message. |callback| will be invoked with
   // the decrypted payload if the message is unwrapped successfully; otherwise
   // it will be invoked with an empty string.
-  void HandleUnwrapResult(
-      const DeviceToDeviceSecureContext::MessageCallback& callback,
-      bool verified,
-      const std::string& payload,
-      const securemessage::Header& header);
+  void HandleUnwrapResult(DeviceToDeviceSecureContext::MessageCallback callback,
+                          bool verified,
+                          const std::string& payload,
+                          const securemessage::Header& header);
 
   // Delegate for handling the creation and unwrapping of SecureMessages.
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;
@@ -77,8 +78,6 @@ class DeviceToDeviceSecureContext : public SecureContext {
   int last_decode_sequence_number_;
 
   base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceSecureContext);
 };
 
 }  // namespace secure_channel

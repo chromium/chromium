@@ -16,8 +16,8 @@
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "minidump/test/minidump_writable_test_util.h"

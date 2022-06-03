@@ -6,9 +6,7 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("gles2") {
   output_name = "ppapi_example_gles2"
-  sources = [
-    "gles2.cc",
-  ]
+  sources = [ "gles2.cc" ]
   deps = [
     "//ppapi/cpp",
     "//ppapi/lib/gl/gles2",

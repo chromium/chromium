@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/program_binding.h"
 
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/geometry_binding.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -164,11 +165,9 @@ void ProgramKey::SetColorTransform(const gfx::ColorTransform* transform) {
   color_transform_ = nullptr;
   if (transform->IsIdentity()) {
     color_conversion_mode_ = COLOR_CONVERSION_MODE_NONE;
-  } else if (transform->CanGetShaderSource()) {
+  } else {
     color_conversion_mode_ = COLOR_CONVERSION_MODE_SHADER;
     color_transform_ = transform;
-  } else {
-    color_conversion_mode_ = COLOR_CONVERSION_MODE_LUT;
   }
 }
 
@@ -248,7 +247,7 @@ unsigned ProgramBindingBase::LoadShader(GLES2Interface* context,
   int shader_length[] = {static_cast<int>(shader_source.length())};
   context->ShaderSource(shader, 1, shader_source_str, shader_length);
   context->CompileShader(shader);
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   int compiled = 0;
   context->GetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
   if (!compiled) {
@@ -258,7 +257,7 @@ unsigned ProgramBindingBase::LoadShader(GLES2Interface* context,
                 << "\n shader program: " << shader_source;
     return 0u;
   }
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   return shader;
 }
 

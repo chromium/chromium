@@ -1,0 +1,58 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sharing") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "sharing_coordinator.h",
+    "sharing_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/activity_services/requirements",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/qr_generator",
+    "//ios/third_party/material_components_ios",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "sharing_coordinator_unittest.mm" ]
+  deps = [
+    ":sharing",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/activity_services/requirements",
+    "//ios/chrome/browser/ui/bookmarks:bookmarks_ui",
+    "//ios/chrome/browser/ui/bookmarks:test_support",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+}

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_MOCK_DEVICE_OBSERVER_H_
 
 #include "chrome/browser/usb/usb_chooser_context.h"
-#include "services/device/public/mojom/usb_manager.mojom.h"
+#include "services/device/public/mojom/usb_manager.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockDeviceObserver : public UsbChooserContext::DeviceObserver {

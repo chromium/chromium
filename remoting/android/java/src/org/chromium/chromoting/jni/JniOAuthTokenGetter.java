@@ -26,8 +26,8 @@ public class JniOAuthTokenGetter {
     // a subset of Chromoting.java's TOKEN_SCOPE.) This is because the context passed to
     // OAuthTokenFetcher below is not an activity, and thus it will not be possible to show a
     // consent page requesting new scopes.
-    private static final String TOKEN_SCOPE = "oauth2:https://www.googleapis.com/auth/chromoting "
-            + "https://www.googleapis.com/auth/chromoting.directory "
+    private static final String TOKEN_SCOPE =
+            "oauth2:https://www.googleapis.com/auth/chromoting.directory "
             + "https://www.googleapis.com/auth/tachyon";
 
     private static String sAccount;

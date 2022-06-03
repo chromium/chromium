@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/text_edit_action.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
@@ -17,14 +16,15 @@ namespace vr {
 struct VR_BASE_EXPORT TextInputInfo {
  public:
   TextInputInfo();
-  explicit TextInputInfo(base::string16 t);
-  TextInputInfo(base::string16 t, int selection_start, int selection_end);
-  TextInputInfo(base::string16 t,
+  explicit TextInputInfo(std::u16string t);
+  TextInputInfo(std::u16string t, int selection_start, int selection_end);
+  TextInputInfo(std::u16string t,
                 int selection_start,
                 int selection_end,
                 int composition_start,
                 int compositon_end);
   TextInputInfo(const TextInputInfo& other);
+  TextInputInfo& operator=(const TextInputInfo& other);
 
   static const int kDefaultCompositionIndex = -1;
 
@@ -34,11 +34,11 @@ struct VR_BASE_EXPORT TextInputInfo {
   size_t SelectionSize() const;
   size_t CompositionSize() const;
 
-  base::string16 CommittedTextBeforeCursor() const;
-  base::string16 ComposingText() const;
+  std::u16string CommittedTextBeforeCursor() const;
+  std::u16string ComposingText() const;
 
   // The value of the input field.
-  base::string16 text;
+  std::u16string text;
 
   // The cursor position of the current selection start, or the caret position
   // if nothing is selected.
@@ -67,9 +67,10 @@ struct VR_BASE_EXPORT EditedText {
  public:
   EditedText();
   EditedText(const EditedText& other);
+  EditedText& operator=(const EditedText& other);
   explicit EditedText(const TextInputInfo& current);
   EditedText(const TextInputInfo& current, const TextInputInfo& previous);
-  explicit EditedText(base::string16 t);
+  explicit EditedText(std::u16string t);
 
   bool operator==(const EditedText& other) const;
   bool operator!=(const EditedText& other) const { return !(*this == other); }

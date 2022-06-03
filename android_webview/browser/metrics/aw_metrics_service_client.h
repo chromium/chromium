@@ -8,25 +8,26 @@
 #include <memory>
 #include <string>
 
+#include "android_webview/browser/lifecycle/webview_app_state_observer.h"
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
+#include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
-namespace metrics {
-class MetricsStateManager;
-}
-
 namespace android_webview {
+
+namespace prefs {
+extern const char kMetricsAppPackageNameLoggingRule[];
+}  // namespace prefs
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -93,115 +94,123 @@ enum class BackfillInstallDate {
 // the client ID (generating a new ID if there was none). If this client is in
 // the sample, it then calls MetricsService::Start(). If consent was not
 // granted, MaybeStartMetrics() instead clears the client ID, if any.
-class AwMetricsServiceClient : public metrics::MetricsServiceClient,
-                               public metrics::EnabledStateProvider,
-                               public content::NotificationObserver {
+//
+// Similarly, when
+// `android_webview::features::kWebViewAppsPackageNamesAllowlist` is enabled,
+// WebView will try to lookup the embedding app's package name in a list of apps
+// whose package names are allowed to be recorded. This operation takes place on
+// a background thread. The result of the lookup is then posted back on the UI
+// thread and SetAppPackageNameLoggingRule() will be called. Unlike user's
+// consent, the metrics service doesn't currently block on the allowlist lookup
+// result. If the result isn't present at the moment of creating a metrics log,
+// it assumes that the app package name isn't allowed to be logged.
+
+class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
+                               public WebViewAppStateObserver {
   friend class base::NoDestructor<AwMetricsServiceClient>;
 
  public:
-  static AwMetricsServiceClient* GetInstance();
+  // This interface define the tasks that depend on the
+  // android_webview/browser directory.
+  class Delegate {
+   public:
+    Delegate();
+    virtual ~Delegate();
 
-  AwMetricsServiceClient();
+    // Not copyable or movable
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    Delegate(Delegate&&) = delete;
+    Delegate& operator=(Delegate&&) = delete;
+
+    virtual void RegisterAdditionalMetricsProviders(
+        metrics::MetricsService* service) = 0;
+    virtual void AddWebViewAppStateObserver(
+        WebViewAppStateObserver* observer) = 0;
+    virtual bool HasAwContentsEverCreated() const = 0;
+  };
+
+  // An enum to track the status of AppPackageNameLoggingRule used in
+  // ShouldRecordPackageName. These values are persisted to logs. Entries should
+  // not be renumbered and numeric values should never be reused.
+  enum class AppPackageNameLoggingRuleStatus {
+    kNotLoadedNoCache = 0,
+    kNotLoadedUseCache = 1,
+    kNewVersionFailedNoCache = 2,
+    kNewVersionFailedUseCache = 3,
+    kNewVersionLoaded = 4,
+    kSameVersionAsCache = 5,
+    kMaxValue = kSameVersionAsCache,
+  };
+
+  static AwMetricsServiceClient* GetInstance();
+  static void SetInstance(
+      std::unique_ptr<AwMetricsServiceClient> aw_metrics_service_client);
+
+  static void RegisterMetricsPrefs(PrefRegistrySimple* registry);
+
+  AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
+
+  AwMetricsServiceClient(const AwMetricsServiceClient&) = delete;
+  AwMetricsServiceClient& operator=(const AwMetricsServiceClient&) = delete;
+
   ~AwMetricsServiceClient() override;
 
-  // Registers local state prefs used by this class.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
+  // Initializes, but does not necessarily start, the MetricsService.
   void Initialize(PrefService* pref_service);
-  void SetHaveMetricsConsent(bool user_consent, bool app_consent);
-  void SetFastStartupForTesting(bool fast_startup_for_testing);
-  void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider();
-
-  // metrics::EnabledStateProvider
-  bool IsConsentGiven() const override;
-  bool IsReportingEnabled() const override;
 
   // metrics::MetricsServiceClient
-  metrics::MetricsService* GetMetricsService() override;
-  void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
-  std::string GetApplicationLocale() override;
-  bool GetBrand(std::string* brand_code) override;
-  metrics::SystemProfileProto::Channel GetChannel() override;
-  std::string GetVersionString() override;
-  void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;
-  std::unique_ptr<metrics::MetricsLogUploader> CreateUploader(
-      const GURL& server_url,
-      const GURL& insecure_server_url,
-      base::StringPiece mime_type,
-      metrics::MetricsLogUploader::MetricServiceType service_type,
-      const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
-      override;
-  base::TimeDelta GetStandardUploadInterval() override;
-  bool ShouldStartUpFastForTesting() const override;
 
-  // Gets the embedding app's package name if it's OK to log. Otherwise, this
-  // returns the empty string.
-  std::string GetAppPackageName() override;
+  // WebViewAppStateObserver
+  void OnAppStateChanged(WebViewAppStateObserver::State state) override;
 
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // metrics::AndroidMetricsServiceClient:
+  void OnMetricsStart() override;
+  void OnMetricsNotStarted() override;
+  int GetSampleRatePerMille() const override;
+  int GetPackageNameLimitRatePerMille() override;
+  void RegisterAdditionalMetricsProviders(
+      metrics::MetricsService* service) override;
+
+  // If `android_webview::features::kWebViewAppsPackageNamesAllowlist` is
+  // enabled:
+  // - It returns `true` if the app is in the list of allowed apps.
+  // - It returns `false` if the app isn't in the allowlist or if the lookup
+  //   operation fails or hasn't finished yet.
+  //
+  // If the feature isn't enabled, the default sampling behaviour in
+  // `::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName` is used.
+  bool ShouldRecordPackageName() override;
+
+  // Sets that the embedding app's package name is allowed to be recorded in
+  // UMA logs. This is determened by looking up the app package name in a
+  // dynamically downloaded allowlist of apps see
+  // `AwAppsPackageNamesAllowlistComponentLoaderPolicy`.
+  //
+  // `record` If it has a null value, then it will be ignored and the cached
+  //          record will be used if any.
+  void SetAppPackageNameLoggingRule(
+      absl::optional<AppPackageNameLoggingRule> record);
+
+  // Get the cached record of the app package names allowlist set by
+  // `SetAppPackageNameLoggingRule` if any.
+  absl::optional<AppPackageNameLoggingRule>
+  GetCachedAppPackageNameLoggingRule();
 
  protected:
-  // Returns the metrics sampling rate, to be used by IsInSample(). This is a
-  // double in the non-inclusive range (0.00, 1.00). Virtual for testing.
-  virtual double GetSampleRate();
-
-  // Determines if the client is within the random sample of clients for which
-  // we log metrics. If this returns false, AwMetricsServiceClient should
-  // indicate reporting is disabled. Sampling is due to storage/bandwidth
-  // considerations. Virtual for testing.
-  virtual bool IsInSample();
-
-  // Prefer calling the IsInSample() which takes no arguments. Virtual for
-  // testing.
-  virtual bool IsInSample(uint32_t value);
-
-  // Determines if the embedder app is the type of app for which we may log the
-  // package name. If this returns false, GetAppPackageName() must return empty
-  // string. Virtual for testing.
-  virtual bool CanRecordPackageNameForAppType();
-
-  // Determines if this client falls within the group for which it's acceptable
-  // to include the embedding app's package name. If this returns false,
-  // GetAppPackageName() must return the empty string (for
-  // privacy/fingerprintability reasons). Virtual for testing.
-  virtual bool IsInPackageNameSample();
-
-  // Prefer calling the IsInPackageNameSample() which takes no arguments.
-  // Virtual for testing.
-  virtual bool IsInPackageNameSample(uint32_t value);
+  // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,
+  // RegisterMetricsPrefs should be used instead.
+  using AndroidMetricsServiceClient::RegisterPrefs;
 
  private:
-  void MaybeStartMetrics();
-  void RegisterForNotifications();
+  bool app_in_foreground_ = false;
+  base::Time time_created_;
+  std::unique_ptr<Delegate> delegate_;
 
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-  std::unique_ptr<metrics::MetricsService> metrics_service_;
-  content::NotificationRegistrar registrar_;
-  PrefService* pref_service_ = nullptr;
-  bool init_finished_ = false;
-  bool set_consent_finished_ = false;
-  bool user_consent_ = false;
-  bool app_consent_ = false;
-  bool is_in_sample_ = false;
-  bool is_in_package_name_sample_ = false;
-  bool fast_startup_for_testing_ = false;
-
-  // When non-zero, this overrides the default value in
-  // GetStandardUploadInterval().
-  base::TimeDelta overridden_upload_interval_;
-
-  // AwMetricsServiceClient may be created before the UI thread is promoted to
-  // BrowserThread::UI. Use |sequence_checker_| to enforce that the
-  // AwMetricsServiceClient is used on a single thread.
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);
+  absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
+  AppPackageNameLoggingRuleStatus package_name_record_status_ =
+      AppPackageNameLoggingRuleStatus::kNotLoadedNoCache;
 };
 
 }  // namespace android_webview

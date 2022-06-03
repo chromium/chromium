@@ -1,0 +1,3 @@
+exclude grit/test_suite_all.py
+exclude grit/tool/test.py
+global-exclude *_unittest.py

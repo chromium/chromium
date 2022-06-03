@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL history properties should throw SecurityError when not in a fully active Document assert_throws_dom: function "function() { cached_history.length; }" threw an exception from the wrong global
+Harness: the test ran to completion.
+

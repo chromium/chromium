@@ -7,8 +7,6 @@ source_set("public") {
   sources = [
     "translate_constants.h",
     "translate_constants.mm",
-    "translate_infobar_delegate_observer_bridge.h",
-    "translate_infobar_delegate_observer_bridge.mm",
     "translate_infobar_metrics_recorder.h",
     "translate_infobar_metrics_recorder.mm",
   ]
@@ -25,15 +23,9 @@ source_set("translate") {
     "chrome_ios_translate_client.mm",
     "language_selection_context.h",
     "language_selection_context.mm",
-    "language_selection_delegate.h",
-    "language_selection_handler.h",
     "translate_accept_languages_factory.cc",
     "translate_accept_languages_factory.h",
-    "translate_infobar_controller.h",
-    "translate_infobar_controller.mm",
     "translate_infobar_tags.h",
-    "translate_option_selection_delegate.h",
-    "translate_option_selection_handler.h",
     "translate_ranker_factory.cc",
     "translate_ranker_factory.h",
     "translate_ranker_metrics_provider.cc",
@@ -62,12 +54,8 @@ source_set("translate") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/language",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
-    "//ios/chrome/browser/ui/infobars/coordinators:translate",
-    "//ios/chrome/browser/ui/translate:translate_ui",
     "//ios/chrome/browser/ui/util",
-    "//ios/web/public/deprecated",
+    "//ios/components/webui:url_constants",
     "//third_party/metrics_proto",
     "//ui/base",
     "//ui/gfx",
@@ -81,8 +69,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "js_language_detection_manager_unittest.mm",
-    "translate_infobar_delegate_observer_bridge_unittest.mm",
+    "language_detection_javascript_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
   deps = [
@@ -95,10 +82,9 @@ source_set("unit_tests") {
     "//components/translate/ios/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser:test_support",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/test:util",
     "//skia",
     "//testing/gmock",
@@ -107,37 +93,61 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+source_set("test_support") {
   testonly = true
   sources = [
-    "translate_egtest.mm",
+    "fake_translate_infobar_delegate.h",
+    "fake_translate_infobar_delegate.mm",
   ]
   deps = [
-    ":translate",
-    "//base",
-    "//base/test:test_support",
-    "//components/language/ios/browser",
-    "//components/strings",
-    "//components/translate/core/browser",
-    "//components/translate/core/common",
-    "//components/translate/ios/browser",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/browser/ui/translate:legacy_translate",
-    "//ios/chrome/browser/ui/translate:translate_ui",
-    "//ios/chrome/browser/ui/util:util",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/chrome/test/fakes",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web:earl_grey_test_support",
-    "//ios/web/public/test",
-    "//ios/web/public/test/http_server",
-    "//net",
-    "//ui/base",
+    "//components/infobars/core",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser:browser",
+    "//components/translate/core/browser:test_support",
+    "//ios/chrome/test/fakes:fakes",
+    "//testing/gmock",
+    "//third_party/metrics_proto",
   ]
-  libs = [ "XCTest.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "translate_app_interface.h",
+    "translate_app_interface.mm",
+  ]
+  deps = [
+    "//base:base",
+    "//components/translate/core/browser:browser",
+    "//components/translate/core/common:common",
+    "//components/translate/ios/browser:browser",
+    "//ios/chrome/browser/browser_state:browser_state",
+    "//ios/chrome/browser/translate:translate",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/fakes:fakes",
+    "//ios/web/public/js_messaging",
+    "//net:net",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "translate_app_interface.h",
+    "translate_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }

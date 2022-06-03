@@ -11,14 +11,16 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace net {
 
@@ -30,8 +32,9 @@ class NET_EXPORT RecordRdata {
  public:
   virtual ~RecordRdata() {}
 
-  // Return true if |data| represents RDATA in the wire format with a valid size
-  // for the give |type|.
+  // Return true if `data` represents RDATA in the wire format with a valid size
+  // for the give `type`. Always returns true for unrecognized `type`s as the
+  // size is never known to be invalid.
   static bool HasValidSize(const base::StringPiece& data, uint16_t type);
 
   virtual bool IsEqual(const RecordRdata* other) const = 0;
@@ -46,6 +49,9 @@ class NET_EXPORT RecordRdata {
 class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeSRV;
+
+  SrvRecordRdata(const SrvRecordRdata&) = delete;
+  SrvRecordRdata& operator=(const SrvRecordRdata&) = delete;
 
   ~SrvRecordRdata() override;
   static std::unique_ptr<SrvRecordRdata> Create(const base::StringPiece& data,
@@ -68,8 +74,6 @@ class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
   uint16_t port_;
 
   std::string target_;
-
-  DISALLOW_COPY_AND_ASSIGN(SrvRecordRdata);
 };
 
 // A Record format (http://www.ietf.org/rfc/rfc1035.txt):
@@ -77,6 +81,9 @@ class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
 class NET_EXPORT ARecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeA;
+
+  ARecordRdata(const ARecordRdata&) = delete;
+  ARecordRdata& operator=(const ARecordRdata&) = delete;
 
   ~ARecordRdata() override;
   static std::unique_ptr<ARecordRdata> Create(const base::StringPiece& data,
@@ -90,8 +97,6 @@ class NET_EXPORT ARecordRdata : public RecordRdata {
   ARecordRdata();
 
   IPAddress address_;
-
-  DISALLOW_COPY_AND_ASSIGN(ARecordRdata);
 };
 
 // AAAA Record format (http://www.ietf.org/rfc/rfc1035.txt):
@@ -99,6 +104,9 @@ class NET_EXPORT ARecordRdata : public RecordRdata {
 class NET_EXPORT AAAARecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeAAAA;
+
+  AAAARecordRdata(const AAAARecordRdata&) = delete;
+  AAAARecordRdata& operator=(const AAAARecordRdata&) = delete;
 
   ~AAAARecordRdata() override;
   static std::unique_ptr<AAAARecordRdata> Create(const base::StringPiece& data,
@@ -112,8 +120,6 @@ class NET_EXPORT AAAARecordRdata : public RecordRdata {
   AAAARecordRdata();
 
   IPAddress address_;
-
-  DISALLOW_COPY_AND_ASSIGN(AAAARecordRdata);
 };
 
 // CNAME record format (http://www.ietf.org/rfc/rfc1035.txt):
@@ -122,6 +128,9 @@ class NET_EXPORT_PRIVATE CnameRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeCNAME;
 
+  CnameRecordRdata(const CnameRecordRdata&) = delete;
+  CnameRecordRdata& operator=(const CnameRecordRdata&) = delete;
+
   ~CnameRecordRdata() override;
   static std::unique_ptr<CnameRecordRdata> Create(
       const base::StringPiece& data,
@@ -129,14 +138,12 @@ class NET_EXPORT_PRIVATE CnameRecordRdata : public RecordRdata {
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
 
-  std::string cname() const { return cname_; }
+  const std::string& cname() const { return cname_; }
 
  private:
   CnameRecordRdata();
 
   std::string cname_;
-
-  DISALLOW_COPY_AND_ASSIGN(CnameRecordRdata);
 };
 
 // PTR record format (http://www.ietf.org/rfc/rfc1035.txt):
@@ -144,6 +151,9 @@ class NET_EXPORT_PRIVATE CnameRecordRdata : public RecordRdata {
 class NET_EXPORT_PRIVATE PtrRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypePTR;
+
+  PtrRecordRdata(const PtrRecordRdata&) = delete;
+  PtrRecordRdata& operator=(const PtrRecordRdata&) = delete;
 
   ~PtrRecordRdata() override;
   static std::unique_ptr<PtrRecordRdata> Create(const base::StringPiece& data,
@@ -157,8 +167,6 @@ class NET_EXPORT_PRIVATE PtrRecordRdata : public RecordRdata {
   PtrRecordRdata();
 
   std::string ptrdomain_;
-
-  DISALLOW_COPY_AND_ASSIGN(PtrRecordRdata);
 };
 
 // TXT record format (http://www.ietf.org/rfc/rfc1035.txt):
@@ -167,6 +175,9 @@ class NET_EXPORT_PRIVATE PtrRecordRdata : public RecordRdata {
 class NET_EXPORT_PRIVATE TxtRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeTXT;
+
+  TxtRecordRdata(const TxtRecordRdata&) = delete;
+  TxtRecordRdata& operator=(const TxtRecordRdata&) = delete;
 
   ~TxtRecordRdata() override;
   static std::unique_ptr<TxtRecordRdata> Create(const base::StringPiece& data,
@@ -180,8 +191,6 @@ class NET_EXPORT_PRIVATE TxtRecordRdata : public RecordRdata {
   TxtRecordRdata();
 
   std::vector<std::string> texts_;
-
-  DISALLOW_COPY_AND_ASSIGN(TxtRecordRdata);
 };
 
 // Only the subset of the NSEC record format required by mDNS is supported.
@@ -191,6 +200,9 @@ class NET_EXPORT_PRIVATE TxtRecordRdata : public RecordRdata {
 class NET_EXPORT_PRIVATE NsecRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeNSEC;
+
+  NsecRecordRdata(const NsecRecordRdata&) = delete;
+  NsecRecordRdata& operator=(const NsecRecordRdata&) = delete;
 
   ~NsecRecordRdata() override;
   static std::unique_ptr<NsecRecordRdata> Create(const base::StringPiece& data,
@@ -214,8 +226,6 @@ class NET_EXPORT_PRIVATE NsecRecordRdata : public RecordRdata {
   NsecRecordRdata();
 
   std::vector<uint8_t> bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(NsecRecordRdata);
 };
 
 // OPT record format (https://tools.ietf.org/html/rfc6891):
@@ -240,7 +250,12 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
   static const uint16_t kType = dns_protocol::kTypeOPT;
 
   OptRecordRdata();
+
+  OptRecordRdata(const OptRecordRdata&) = delete;
+  OptRecordRdata& operator=(const OptRecordRdata&) = delete;
+
   OptRecordRdata(OptRecordRdata&& other);
+
   ~OptRecordRdata() override;
 
   OptRecordRdata& operator=(OptRecordRdata&& other);
@@ -263,51 +278,81 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
  private:
   std::vector<Opt> opts_;
   std::vector<char> buf_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptRecordRdata);
 };
 
-// TLS 1.3 Encrypted Server Name Indication
-// record format (https://tools.ietf.org/id/draft-ietf-tls-esni-04.txt)
-// struct {
-//   ESNIKeys esni_keys;  // see spec
-//   Extension dns_extensions<0..2 ^ 16 - 1>;
-// } ESNIRecord;
-class NET_EXPORT EsniRecordRdata : public RecordRdata {
+// This class parses and serializes the INTEGRITY DNS record.
+//
+// This RR was invented for a preliminary HTTPSSVC experiment. See the public
+// design doc:
+// https://docs.google.com/document/d/14eCqVyT_3MSj7ydqNFl1Yl0yg1fs6g24qmYUUdi5V-k/edit?usp=sharing
+//
+// The wire format of INTEGRITY records consists of a U16-prefixed nonce
+// followed by |kDigestLen| bytes, which should be equal to the SHA256 hash of
+// the nonce contents.
+class NET_EXPORT IntegrityRecordRdata : public RecordRdata {
  public:
-  static constexpr uint16_t kType = dns_protocol::kExperimentalTypeEsniDraft4;
-  static constexpr uint16_t kAddressSetExtensionType = 0x1001u;
+  static constexpr uint16_t kType = dns_protocol::kExperimentalTypeIntegrity;
 
-  ~EsniRecordRdata() override;
+  static constexpr size_t kDigestLen = SHA256_DIGEST_LENGTH;
 
-  // Parsing an ESNIRecord Rdata succeeds when all of the following hold:
-  // 1. The esni_keys field is well-formed.
-  // 2. The dns_extensions field is well-formed and, additionally, valid
-  // in the sense that its enum members have values allowed by the spec.
-  // 3. The Rdata field contains no data beyond the ESNIKeys and, optionally,
-  // one DNS extension of type address_set.
-  static std::unique_ptr<EsniRecordRdata> Create(base::StringPiece data,
-                                                 const DnsRecordParser& parser);
+  using Nonce = std::vector<uint8_t>;
+  using Digest = std::array<uint8_t, kDigestLen>;
 
-  // Two EsniRecordRdatas compare equal if their ESNIKeys fields agree
-  // and their address sets contain the same addresses in the same order.
+  IntegrityRecordRdata() = delete;
+  // Constructs a new record, computing the digest value from |nonce|.
+  explicit IntegrityRecordRdata(Nonce nonce);
+  IntegrityRecordRdata(IntegrityRecordRdata&&);
+  IntegrityRecordRdata(const IntegrityRecordRdata&);
+  ~IntegrityRecordRdata() override;
+
+  IntegrityRecordRdata& operator=(const IntegrityRecordRdata&) = default;
+  IntegrityRecordRdata& operator=(IntegrityRecordRdata&&) = default;
+
+  // RecordRdata:
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
 
-  // Returns the ESNIKeys field of the record. This is an opaque bitstring
-  // passed to the SSL library.
-  base::StringPiece esni_keys() const { return esni_keys_; }
+  // Attempts to parse an INTEGRITY record from |data|. Never returns nullptr.
+  // The caller can check the intactness of the record with |IsIntact()|.
+  static std::unique_ptr<IntegrityRecordRdata> Create(
+      const base::StringPiece& data);
 
-  // Returns the IP addresses parsed from the address_set DNS extension, if any.
-  const std::vector<IPAddress>& addresses() const { return addresses_; }
+  // Generate an integrity record with a random nonce and corresponding digest.
+  // Postcondition: |IsIntact()| is true.
+  static IntegrityRecordRdata Random();
+
+  // Serialize |this| using the INTEGRITY wire format. Returns |absl::nullopt|
+  // when |!IsIntact()|.
+  absl::optional<std::vector<uint8_t>> Serialize() const;
+
+  // Precondition: |IsIntact()|.
+  const Nonce& nonce() const {
+    CHECK(is_intact_);
+    return nonce_;
+  }
+
+  // Precondition: |IsIntact()|.
+  const Digest& digest() const {
+    CHECK(is_intact_);
+    return digest_;
+  }
+
+  // To be considered intact, this record must have parsed successfully (if
+  // parsed by |Create()|) and the digest must match the hash of the nonce.
+  bool IsIntact() const { return is_intact_; }
 
  private:
-  EsniRecordRdata();
+  IntegrityRecordRdata(Nonce nonce_, Digest digest_, size_t rdata_len);
 
-  std::string esni_keys_;
-  std::vector<IPAddress> addresses_;
+  static Digest Hash(const Nonce& nonce);
 
-  DISALLOW_COPY_AND_ASSIGN(EsniRecordRdata);
+  // Returns the exact number of bytes a record constructed from |nonce| would
+  // occupy when serialized.
+  static size_t LengthForSerialization(const Nonce& nonce);
+
+  Nonce nonce_;
+  Digest digest_;
+  bool is_intact_;
 };
 
 }  // namespace net

@@ -10,12 +10,6 @@ blink_modules_sources("shapedetection") {
     "barcode_detector.h",
     "barcode_detector_statics.cc",
     "barcode_detector_statics.h",
-    "detected_barcode.cc",
-    "detected_barcode.h",
-    "detected_face.cc",
-    "detected_face.h",
-    "detected_text.cc",
-    "detected_text.h",
     "face_detector.cc",
     "face_detector.h",
     "shape_detection_type_converter.h",
@@ -29,4 +23,5 @@ blink_modules_sources("shapedetection") {
     "//services/shape_detection/public/mojom:mojom_blink",
     "//skia/public/mojom",
   ]
+  deps = [ "//third_party/blink/renderer/modules/canvas" ]
 }

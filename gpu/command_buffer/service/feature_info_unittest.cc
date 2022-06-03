@@ -1596,49 +1596,6 @@ TEST_P(FeatureInfoTest, BlendEquationAdvancedDisabled) {
   EXPECT_FALSE(info_->feature_flags().blend_equation_advanced_coherent);
 }
 
-TEST_P(FeatureInfoTest, InitializeCHROMIUM_path_rendering) {
-  SetupInitExpectationsWithGLVersion(
-      "GL_ARB_compatibility GL_NV_path_rendering GL_EXT_direct_state_access "
-      "GL_NV_framebuffer_mixed_samples",
-      "", "4.3");
-  EXPECT_TRUE(info_->feature_flags().chromium_path_rendering);
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_path_rendering"));
-}
-
-TEST_P(FeatureInfoTest, InitializeCHROMIUM_path_rendering2) {
-  SetupInitExpectationsWithGLVersion(
-      "GL_NV_path_rendering GL_NV_framebuffer_mixed_samples", "",
-      "OpenGL ES 3.1");
-  EXPECT_TRUE(info_->feature_flags().chromium_path_rendering);
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_path_rendering"));
-}
-
-TEST_P(FeatureInfoTest, InitializeNoCHROMIUM_path_rendering) {
-  SetupInitExpectationsWithGLVersion("GL_ARB_compatibility", "", "4.3");
-  EXPECT_FALSE(info_->feature_flags().chromium_path_rendering);
-  EXPECT_FALSE(
-      gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_path_rendering"));
-}
-
-TEST_P(FeatureInfoTest, InitializeNoCHROMIUM_path_rendering2) {
-  SetupInitExpectationsWithGLVersion(
-      "GL_ARB_compatibility GL_NV_path_rendering", "", "4.3");
-  EXPECT_FALSE(info_->feature_flags().chromium_path_rendering);
-  EXPECT_FALSE(
-      gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_path_rendering"));
-}
-
-TEST_P(FeatureInfoTest, InitializeNoCHROMIUM_path_rendering3) {
-  // Missing framebuffer mixed samples.
-  SetupInitExpectationsWithGLVersion("GL_NV_path_rendering", "",
-                                     "OpenGL ES 3.1");
-  EXPECT_FALSE(info_->feature_flags().chromium_path_rendering);
-  EXPECT_FALSE(
-      gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_path_rendering"));
-}
-
 TEST_P(FeatureInfoTest, InitializeNoKHR_blend_equation_advanced) {
   SetupInitExpectationsWithGLVersion("GL_ARB_compatibility", "", "4.3");
   EXPECT_FALSE(info_->feature_flags().blend_equation_advanced);
@@ -1706,13 +1663,38 @@ TEST_P(FeatureInfoTest, InitializeARB_texture_rgNoFloat) {
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_norm16) {
   SetupInitExpectations("GL_EXT_texture_norm16");
+
+  if (!info_->IsWebGL2OrES3OrHigherContext()) {
+    return;
+  }
+
   EXPECT_TRUE(info_->feature_flags().ext_texture_norm16);
 
   EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RED_EXT));
+  EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RG_EXT));
+  EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RGB));
+  EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RGBA));
   EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(GL_R16_EXT));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(GL_RED_EXT));
+  EXPECT_TRUE(
+      info_->validators()->texture_internal_format.IsValid(GL_RG16_EXT));
+  EXPECT_TRUE(
+      info_->validators()->texture_internal_format.IsValid(GL_RGB16_EXT));
+  EXPECT_TRUE(
+      info_->validators()->texture_internal_format.IsValid(GL_RGBA16_EXT));
+  EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(GL_R16_EXT));
+  EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(GL_RG16_EXT));
+  EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(GL_RGBA16_EXT));
+  EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_R16_EXT));
+  EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_RG16_EXT));
+  EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_RGBA16_EXT));
   EXPECT_TRUE(
       info_->validators()->texture_internal_format_storage.IsValid(GL_R16_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RGB16_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RGBA16_EXT));
 }
 
 TEST_P(FeatureInfoTest, InitializeCHROMIUM_unpremultiply_and_dither_copy) {

@@ -35,7 +35,7 @@
       {
         "id": "Gesture",
         "type": "string",
-        "enum": [ "click", "swipeLeft1", "swipeUp1", "swipeRight1", "swipeDown1", "swipeLeft2", "swipeUp2", "swipeRight2", "swipeDown2", "swipeLeft3", "swipeUp3", "swipeRight3", "swipeDown3", "swipeLeft4", "swipeUp4", "swipeRight4", "swipeDown4", "tap2", "tap3", "tap4" ],
+        "enum": [ "click", "swipeLeft1", "swipeUp1", "swipeRight1", "swipeDown1", "swipeLeft2", "swipeUp2", "swipeRight2", "swipeDown2", "swipeLeft3", "swipeUp3", "swipeRight3", "swipeDown3", "swipeLeft4", "swipeUp4", "swipeRight4", "swipeDown4", "tap2", "tap3", "tap4", "touchExplore" ],
         "description": "Accessibility gestures fired by the touch exploration controller."
       },
       {
@@ -90,12 +90,28 @@
         "enum": ["press", "release", "drag", "move", "enter", "exit"]
       },
       {
+        "id": "SyntheticMouseEventButton",
+        "type": "string",
+        "description": "The button to send event on",
+        "enum": ["left", "middle", "right", "back", "foward"]
+      },
+      {
         "id": "SyntheticMouseEvent",
         "type": "object",
         "properties": {
           "type": {"$ref": "SyntheticMouseEventType"},
           "x": {"type": "integer", "description": "X coordinate for mouse event in global screen coordinates"},
-          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"}
+          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"},
+	  "touchAccessibility": {
+            "type": "boolean",
+            "description": "True if the touch accessibility flag should be set.",
+            "optional": true
+          },
+          "mouseButton": {
+            "$ref": "SyntheticMouseEventButton",
+            "description": "The default mouse button is set to left if mouseButton is not specified.",
+            "optional": true
+          }
         }
       },
       {
@@ -138,13 +154,26 @@
             "optional": true
           }
         }
+      },
+      {
+        "id": "AcceleratorAction",
+        "type": "string",
+        "enum": [ "focusPreviousPane", "focusNextPane" ],
+        "description": "A subset of accelerator actions used by accessibility."
       }
     ],
+    "properties": {
+      "IS_DEFAULT_EVENT_SOURCE_TOUCH": {
+        "type": "integer",
+        "value": 1,
+        "description": "Property to indicate whether event source should default to touch."
+      }
+    },
     "functions": [
       {
         "name": "getBatteryDescription",
         "type": "function",
-        "description": "Called to request battery status from Chrome OS system.",
+        "description": "Called to request battery status from chromecast system.",
         "parameters": [
           {
             "name": "callback",
@@ -252,29 +281,6 @@
         "platforms": ["chromeos"]
       },
       {
-            "name": "setSwitchAccessMenuState",
-            "type": "function",
-            "description": "Shows or hides the Switch Access menu. If shown, it is at the indicated location.",
-            "parameters": [
-              {
-                "name": "show",
-                "type": "boolean",
-                "description": "If true, show the menu. If false, hide the menu."
-              },
-              {
-                "name": "element_bounds",
-                "$ref": "ScreenRect",
-                "description": "Position of an element, in global screen coordinates, to place the menu next to."
-              },
-              {
-                "name": "item_count",
-                "type": "integer",
-                "description": "The number of items that need to be shown in the menu."
-              }
-            ],
-            "platforms": ["chromeos"]
-      },
-      {
         "name": "forwardKeyEventsToSwitchAccess",
         "type": "function",
         "description": "When enabled, forwards key events to the Switch Access extension",
@@ -335,11 +341,10 @@
             "$ref": "SyntheticMouseEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
-        "name": "onSelectToSpeakStateChanged",
+        "name": "setSelectToSpeakState",
         "type": "function",
         "description": "Called by the Select-to-Speak extension when Select-to-Speak has changed states, between selecting with the mouse, speaking, and inactive.",
         "parameters": [
@@ -402,7 +407,7 @@
       {
         "name": "onSelectToSpeakStateChangeRequested",
         "type": "function",
-        "description": "Called when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
+        "description": "Called when chromecast wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
         "parameters": [],
         "platforms": ["chromeos"]
       },

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See https://webaudio.github.io/web-audio-api/#stereopannernode
+// https://webaudio.github.io/web-audio-api/#stereopannernode
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface StereoPannerNode : AudioNode {
-    [RaisesException] constructor(BaseAudioContext context, optional StereoPannerOptions options);
+    [RaisesException, Measure] constructor(BaseAudioContext context, optional StereoPannerOptions options = {});
 
     readonly attribute AudioParam pan;
 

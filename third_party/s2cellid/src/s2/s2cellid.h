@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "s2/_fpcontractoff.h"
 #include "s2/r2.h"
 #include "s2/r2rect.h"

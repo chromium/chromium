@@ -1,0 +1,8 @@
+rootWebArea focusable name='done'
+++genericContainer ignored
+++++genericContainer
+++++++image name='star1'
+++++++++link focusable name='Area2'
+++++++staticText name=' '
+++++++++inlineTextBox name=' '
+++++++image name='star2'

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#AD4883'>
+<script>
+'use strict';
+
+let t = async_test('Color picker: Manually entering an invalid value should not change the selected color.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const gValueContainer = popupDocument.getElementById('gValueContainer');
+    assert_equals(gValueContainer.value, '72');
+    const gValueContainerRect = gValueContainer.getBoundingClientRect();
+    eventSender.mouseMoveTo(gValueContainerRect.left + 1, gValueContainerRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.keyDown('ArrowLeft');
+    eventSender.keyDown('3');
+    assert_equals(gValueContainer.value, '372');
+    eventSender.keyDown('Tab');
+    assert_equals(gValueContainer.value, '72', 'Invalid value should be reset when the value container is blurred.');
+
+    const formatToggler = popupDocument.querySelector('format-toggler');
+    formatToggler.click();
+    const sValueContainer = popupDocument.getElementById('sValueContainer');
+    assert_equals(sValueContainer.value, '41%');
+    const sValueContainerRect = sValueContainer.getBoundingClientRect();
+    eventSender.mouseMoveTo(sValueContainerRect.right - 1, sValueContainerRect.top + (sValueContainerRect.height / 2));
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('Backspace');
+    assert_equals(sValueContainer.value, '41');
+    eventSender.keyDown('Tab');
+    assert_equals(sValueContainer.value, '41%', 'Invalid value should be reset when the value container is blurred.');
+
+    formatToggler.click();
+    const hexValueContainer = popupDocument.getElementById('hexValueContainer');
+    assert_equals(hexValueContainer.value, '#ad4883');
+    const hexValueContainerRect = hexValueContainer.getBoundingClientRect();
+    eventSender.mouseMoveTo(hexValueContainerRect.right - 1, hexValueContainerRect.top + (hexValueContainerRect.height / 2));
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.keyDown('ArrowRight');
+    const hexValueContainerLength = hexValueContainer.value.length;
+    for (let i = 0; i < hexValueContainerLength; i++) {
+      eventSender.keyDown('Backspace');
+    }
+    assert_equals(hexValueContainer.value, '');
+    eventSender.keyDown('Tab');
+    assert_equals(hexValueContainer.value, '#00000a', 'Invalid value should be reset when the value container is blurred.');
+  }));
+});
+</script>
+</body>
+</html>

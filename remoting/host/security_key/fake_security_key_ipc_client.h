@@ -31,17 +31,20 @@ namespace remoting {
 class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
  public:
   explicit FakeSecurityKeyIpcClient(
-      const base::Closure& channel_event_callback);
+      const base::RepeatingClosure& channel_event_callback);
+
+  FakeSecurityKeyIpcClient(const FakeSecurityKeyIpcClient&) = delete;
+  FakeSecurityKeyIpcClient& operator=(const FakeSecurityKeyIpcClient&) = delete;
+
   ~FakeSecurityKeyIpcClient() override;
 
   // SecurityKeyIpcClient interface.
   bool CheckForSecurityKeyIpcServerChannel() override;
   void EstablishIpcConnection(
-      const ConnectedCallback& connected_callback,
-      const base::Closure& connection_error_callback) override;
-  bool SendSecurityKeyRequest(
-      const std::string& request_payload,
-      const ResponseCallback& response_callback) override;
+      ConnectedCallback connected_callback,
+      base::OnceClosure connection_error_callback) override;
+  bool SendSecurityKeyRequest(const std::string& request_payload,
+                              ResponseCallback response_callback) override;
   void CloseIpcConnection() override;
 
   // Connects as a client to the |server_name| IPC Channel.
@@ -79,8 +82,8 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
     security_key_response_payload_ = response_payload;
   }
 
-  void set_on_channel_connected_callback(const base::Closure& callback) {
-    on_channel_connected_callback_ = callback;
+  void set_on_channel_connected_callback(base::OnceClosure callback) {
+    on_channel_connected_callback_ = std::move(callback);
   }
 
  private:
@@ -99,10 +102,10 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   void OnInvalidSession();
 
   // Called when a change in the IPC channel state has occurred.
-  base::Closure channel_event_callback_;
+  base::RepeatingClosure channel_event_callback_;
 
   // Called when the IPC Channel is connected.
-  base::Closure on_channel_connected_callback_;
+  base::OnceClosure on_channel_connected_callback_;
 
   // Used for sending/receiving security key messages between processes.
   std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
@@ -133,8 +136,6 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   std::string security_key_response_payload_;
 
   base::WeakPtrFactory<FakeSecurityKeyIpcClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcClient);
 };
 
 }  // namespace remoting

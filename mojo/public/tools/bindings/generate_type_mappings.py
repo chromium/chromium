@@ -63,8 +63,10 @@ import os
 import re
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                "pylib"))
+sys.path.insert(
+    0,
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "mojom"))
 
 from mojom.generate.generator import WriteFile
 
@@ -73,58 +75,25 @@ def ReadTypemap(path):
     return json.load(f)['c++']
 
 
-def ParseTypemapArgs(args):
-  typemaps = [s for s in '\n'.join(args).split('--start-typemap\n') if s]
-  result = {}
-  for typemap in typemaps:
-    result.update(ParseTypemap(typemap))
-  return result
-
-
-def ParseTypemap(typemap):
-  values = {'type_mappings': [], 'public_headers': [], 'traits_headers': []}
-  for line in typemap.split('\n'):
-    if not line:
-      continue
-    key, _, value = line.partition('=')
-    values[key].append(value.lstrip('/'))
-  result = {}
-  mapping_pattern = \
-      re.compile(r"""^([^=]+)           # mojom type
-                     =
-                     ([^[]+)            # native type
-                     (?:\[([^]]+)\])?$  # optional attribute in square brackets
-                 """, re.X)
-  for typename in values['type_mappings']:
-    match_result = mapping_pattern.match(typename)
-    assert match_result, (
-        "Cannot parse entry in the \"type_mappings\" section: %s" % typename)
-
-    mojom_type = match_result.group(1)
-    native_type = match_result.group(2)
-    attributes = []
-    if match_result.group(3):
-      attributes = match_result.group(3).split(',')
-
-    assert mojom_type not in result, (
-        "Cannot map multiple native types (%s, %s) to the same mojom type: %s" %
-        (result[mojom_type]['typename'], native_type, mojom_type))
-
-    result[mojom_type] = {
-        'public_headers': values['public_headers'],
-        'traits_headers': values['traits_headers'],
-        'typename': native_type,
-
-        # Attributes supported for individual mappings.
-        'copyable_pass_by_value': 'copyable_pass_by_value' in attributes,
-        'force_serialize': 'force_serialize' in attributes,
-        'hashable': 'hashable' in attributes,
-        'move_only': 'move_only' in attributes,
-        'non_copyable_non_movable': 'non_copyable_non_movable' in attributes,
-        'nullable_is_same_type': 'nullable_is_same_type' in attributes,
-    }
-  return result
-
+def LoadCppTypemapConfig(path):
+  configs = {}
+  with open(path) as f:
+    for config in json.load(f):
+      for entry in config['types']:
+        configs[entry['mojom']] = {
+            'typename': entry['cpp'],
+            'forward_declaration': entry.get('forward_declaration', None),
+            'public_headers': config.get('traits_headers', []),
+            'traits_headers': config.get('traits_private_headers', []),
+            'copyable_pass_by_value': entry.get('copyable_pass_by_value',
+                                                False),
+            'force_serialize': entry.get('force_serialize', False),
+            'hashable': entry.get('hashable', False),
+            'move_only': entry.get('move_only', False),
+            'nullable_is_same_type': entry.get('nullable_is_same_type', False),
+            'non_copyable_non_movable': False,
+        }
+  return configs
 
 def main():
   parser = argparse.ArgumentParser(
@@ -137,19 +106,28 @@ def main():
       default=[],
       help=('A path to another JSON typemap to merge into the output. '
             'This may be repeated to merge multiple typemaps.'))
+  parser.add_argument(
+      '--cpp-typemap-config',
+      type=str,
+      action='store',
+      dest='cpp_config_path',
+      help=('A path to a single JSON-formatted typemap config as emitted by'
+            'GN when processing a mojom_cpp_typemap build rule.'))
   parser.add_argument('--output',
                       type=str,
                       required=True,
                       help='The path to which to write the generated JSON.')
-  params, typemap_params = parser.parse_known_args()
-  typemaps = ParseTypemapArgs(typemap_params)
+  params, _ = parser.parse_known_args()
+  typemaps = {}
+  if params.cpp_config_path:
+    typemaps = LoadCppTypemapConfig(params.cpp_config_path)
   missing = [path for path in params.dependency if not os.path.exists(path)]
   if missing:
     raise IOError('Missing dependencies: %s' % ', '.join(missing))
   for path in params.dependency:
     typemaps.update(ReadTypemap(path))
 
-  WriteFile(json.dumps({'c++': typemaps}, indent=2).encode(), params.output)
+  WriteFile(json.dumps({'c++': typemaps}, indent=2), params.output)
 
 
 if __name__ == '__main__':

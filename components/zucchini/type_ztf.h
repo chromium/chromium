@@ -38,11 +38,13 @@ struct DeltaLineCol {
 };
 
 constexpr DeltaLineCol operator-(const LineCol& lhs, const LineCol& rhs) {
-  return DeltaLineCol{lhs.line - rhs.line, lhs.col - rhs.col};
+  return DeltaLineCol{static_cast<dim_t>(lhs.line - rhs.line),
+                      static_cast<dim_t>(lhs.col - rhs.col)};
 }
 
 constexpr LineCol operator+(const LineCol& lhs, const DeltaLineCol& rhs) {
-  return LineCol{lhs.line + rhs.line, lhs.col + rhs.col};
+  return LineCol{static_cast<dim_t>(lhs.line + rhs.line),
+                 static_cast<dim_t>(lhs.col + rhs.col)};
 }
 
 }  // namespace ztf

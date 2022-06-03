@@ -19,46 +19,52 @@
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
-#include "android_webview/browser/safe_browsing/aw_safe_browsing_whitelist_manager.h"
+#include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
 #include "android_webview/common/aw_features.h"
+#include "android_webview/common/aw_switches.h"
+#include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/base_paths_posix.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/download/public/common/in_progress_download_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
-#include "components/policy/core/browser/url_blacklist_manager.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/prefs/segregated_pref_store.h"
+#include "components/profile_metrics/browser_profile_type.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/cors_exempt_headers.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "services/preferences/tracked/segregated_pref_store.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 using base::FilePath;
 using content::BrowserThread;
@@ -71,6 +77,9 @@ const void* const kDownloadManagerDelegateKey = &kDownloadManagerDelegateKey;
 
 AwBrowserContext* g_browser_context = NULL;
 
+crash_reporter::CrashKeyString<1> g_web_view_compat_crash_key(
+    crash_keys::kWeblayerWebViewCompatMode);
+
 // Empty method to skip origin security check as DownloadManager will set its
 // own method.
 bool IgnoreOriginSecurityCheck(const GURL& url) {
@@ -79,6 +88,7 @@ bool IgnoreOriginSecurityCheck(const GURL& url) {
 
 void MigrateProfileData(base::FilePath cache_path,
                         base::FilePath context_storage_path) {
+  TRACE_EVENT0("startup", "MigrateProfileData");
   FilePath old_cache_path;
   base::PathService::Get(base::DIR_CACHE, &old_cache_path);
   old_cache_path = old_cache_path.DirName().Append(
@@ -142,6 +152,13 @@ AwBrowserContext::AwBrowserContext()
       simple_factory_key_(GetPath(), IsOffTheRecord()) {
   DCHECK(!g_browser_context);
 
+  TRACE_EVENT0("startup", "AwBrowserContext::AwBrowserContext");
+
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kRegular);
+
+  g_web_view_compat_crash_key.Set("0");
+
   if (IsDefaultBrowserContext()) {
     MigrateProfileData(GetCacheDir(), GetContextStoragePath());
   }
@@ -149,18 +166,16 @@ AwBrowserContext::AwBrowserContext()
   g_browser_context = this;
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
-  BrowserContext::Initialize(this, context_storage_path_);
-
   CreateUserPrefService();
 
-  visitedlink_writer_.reset(
-      new visitedlink::VisitedLinkWriter(this, this, false));
+  visitedlink_writer_ =
+      std::make_unique<visitedlink::VisitedLinkWriter>(this, this, false);
   visitedlink_writer_->Init();
 
-  form_database_service_.reset(
-      new AwFormDatabaseService(context_storage_path_));
+  form_database_service_ =
+      std::make_unique<AwFormDatabaseService>(context_storage_path_);
 
-  EnsureResourceContextInitialized(this);
+  EnsureResourceContextInitialized();
 
   // This constructor is entered during the creation of ContentBrowserClient,
   // before browser threads are created. Therefore any checks to enforce
@@ -169,7 +184,7 @@ AwBrowserContext::AwBrowserContext()
 
 AwBrowserContext::~AwBrowserContext() {
   DCHECK_EQ(this, g_browser_context);
-  BrowserContext::NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
   SimpleKeyMap::GetInstance()->Dissociate(this);
   ShutdownStoragePartitions();
 
@@ -253,6 +268,7 @@ void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void AwBrowserContext::CreateUserPrefService() {
+  TRACE_EVENT0("startup", "AwBrowserContext::CreateUserPrefService");
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
 
   RegisterPrefs(pref_registry.get());
@@ -266,10 +282,10 @@ void AwBrowserContext::CreateUserPrefService() {
 
   pref_service_factory.set_user_prefs(base::MakeRefCounted<SegregatedPrefStore>(
       base::MakeRefCounted<InMemoryPrefStore>(),
-      base::MakeRefCounted<JsonPrefStore>(GetPrefStorePath()), persistent_prefs,
-      mojo::Remote<::prefs::mojom::TrackedPreferenceValidationDelegate>()));
+      base::MakeRefCounted<JsonPrefStore>(GetPrefStorePath()),
+      std::move(persistent_prefs)));
 
-  policy::URLBlacklistManager::RegisterProfilePrefs(pref_registry.get());
+  policy::URLBlocklistManager::RegisterProfilePrefs(pref_registry.get());
   AwBrowserPolicyConnector* browser_policy_connector =
       AwBrowserProcess::GetInstance()->browser_policy_connector();
   pref_service_factory.set_managed_prefs(
@@ -320,6 +336,10 @@ AwQuotaManagerBridge* AwBrowserContext::GetQuotaManagerBridge() {
   return quota_manager_bridge_.get();
 }
 
+void AwBrowserContext::SetWebLayerRunningInSameProcess(JNIEnv* env) {
+  g_web_view_compat_crash_key.Set("1");
+}
+
 AwFormDatabaseService* AwBrowserContext::GetFormDatabaseService() {
   return form_database_service_.get();
 }
@@ -353,7 +373,7 @@ bool AwBrowserContext::IsOffTheRecord() {
 
 content::ResourceContext* AwBrowserContext::GetResourceContext() {
   if (!resource_context_) {
-    resource_context_.reset(new AwResourceContext);
+    resource_context_ = std::make_unique<AwResourceContext>();
   }
   return resource_context_.get();
 }
@@ -377,6 +397,11 @@ storage::SpecialStoragePolicy* AwBrowserContext::GetSpecialStoragePolicy() {
   return NULL;
 }
 
+content::PlatformNotificationService*
+AwBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService* AwBrowserContext::GetPushMessagingService() {
   // TODO(johnme): Support push messaging in WebView.
   return NULL;
@@ -389,7 +414,7 @@ AwBrowserContext::GetStorageNotificationService() {
 
 content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
   if (!ssl_host_state_delegate_.get()) {
-    ssl_host_state_delegate_.reset(new AwSSLHostStateDelegate());
+    ssl_host_state_delegate_ = std::make_unique<AwSSLHostStateDelegate>();
   }
   return ssl_host_state_delegate_.get();
 }
@@ -397,7 +422,7 @@ content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
 content::PermissionControllerDelegate*
 AwBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
-    permission_manager_.reset(new AwPermissionManager());
+    permission_manager_ = std::make_unique<AwPermissionManager>();
   return permission_manager_.get();
 }
 
@@ -430,6 +455,12 @@ AwBrowserContext::RetriveInProgressDownloadManager() {
       /*wake_lock_provider_binder*/ base::NullCallback());
 }
 
+std::unique_ptr<content::ZoomLevelDelegate>
+AwBrowserContext::CreateZoomLevelDelegate(
+    const base::FilePath& partition_path) {
+  return nullptr;
+}
+
 void AwBrowserContext::RebuildTable(
     const scoped_refptr<URLEnumerator>& enumerator) {
   // Android WebView rebuilds from WebChromeClient.getVisitedHistory. The client
@@ -443,14 +474,14 @@ void AwBrowserContext::SetExtendedReportingAllowed(bool allowed) {
       ::prefs::kSafeBrowsingExtendedReportingOptInAllowed, allowed);
 }
 
-// TODO(amalova): Make sure NetworkContext is configured correctly when
+// TODO(amalova): Make sure NetworkContextParams is configured correctly when
 // off-the-record
-network::mojom::NetworkContextParamsPtr
-AwBrowserContext::GetNetworkContextParams(
+void AwBrowserContext::ConfigureNetworkContextParams(
     bool in_memory,
-    const base::FilePath& relative_partition_path) {
-  network::mojom::NetworkContextParamsPtr context_params =
-      network::mojom::NetworkContextParams::New();
+    const base::FilePath& relative_partition_path,
+    network::mojom::NetworkContextParams* context_params,
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   context_params->user_agent = android_webview::GetUserAgent();
 
   // TODO(ntfschr): set this value to a proper value based on the user's
@@ -467,16 +498,21 @@ AwBrowserContext::GetNetworkContextParams(
 
   // WebView should persist and restore cookies between app sessions (including
   // session cookies).
-  context_params->cookie_path = AwBrowserContext::GetCookieStorePath();
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  base::FilePath cookie_path = AwBrowserContext::GetCookieStorePath();
+  context_params->file_paths->data_path = cookie_path.DirName();
+  context_params->file_paths->cookie_database_name = cookie_path.BaseName();
   context_params->restore_old_session_cookies = true;
   context_params->persist_session_cookies = true;
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
   context_params->cookie_manager_params->allow_file_scheme_cookies =
       GetCookieManager()->GetAllowFileSchemeCookies();
-  // Set all cookies to Legacy on Android WebView, for compatibility reasons.
   context_params->cookie_manager_params->cookie_access_delegate_type =
-      network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewEnableModernCookieSameSite)
+          ? network::mojom::CookieAccessDelegateType::ALWAYS_NONLEGACY
+          : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
 
   context_params->initial_ssl_config = network::mojom::SSLConfig::New();
   // Allow SHA-1 to be used for locally-installed trust anchors, as WebView
@@ -491,25 +527,15 @@ AwBrowserContext::GetNetworkContextParams(
   // (http://crbug.com/921750).
   context_params->enforce_chrome_ct_policy = false;
 
-  // WebView does not support ftp yet.
-  context_params->enable_ftp_url_support = false;
-
   context_params->enable_brotli = base::FeatureList::IsEnabled(
       android_webview::features::kWebViewBrotliSupport);
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
 
-  // Update the cors_exempt_header_list to include internally-added headers, to
-  // avoid triggering CORS checks.
-  content::UpdateCorsExemptHeader(context_params.get());
-  variations::UpdateCorsExemptHeaderForVariations(context_params.get());
-
   // Add proxy settings
   AwProxyConfigMonitor::GetInstance()->AddProxyToNetworkContextParams(
       context_params);
-
-  return context_params;
 }
 
 base::android::ScopedJavaLocalRef<jobject> JNI_AwBrowserContext_GetDefaultJava(

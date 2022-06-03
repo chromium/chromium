@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Forced colors mode - webkit-tap-highlight-color.</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties">
+<script src="../../../../../compositing/gestures/resources/link-highlight-helper.js"></script>
+<style>
+  a {
+    text-decoration: none;
+    -webkit-tap-highlight-color: red;
+  }
+</style>
+<body onload="runTest();">
+  <a href="https://www.wikipedia.org" id="link">
+    In forced colors mode, the used value for -webkit-tap-highlight-color
+    should be overridden to currentColor.
+  </a>
+  <script>
+    function runTest() {
+        useMockHighlight();
+
+        var clientRect = document.getElementById('link').getBoundingClientRect();
+        x = (clientRect.left + clientRect.right) / 2;
+        y = (clientRect.top + clientRect.bottom) / 2;
+        if (window.testRunner)
+            testRunner.waitUntilDone();
+
+        if (window.eventSender) {
+            eventSender.gestureShowPress(x, y);
+            requestAnimationFrame(function() { testRunner.notifyDone(); });
+        } else {
+            debug("This test requires DumpRenderTree.");
+        }
+      }
+    </script>
+</body>

@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> AutocompleteClassifierFactory::BuildInstanceFor(
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<AutocompleteClassifier>(
       std::make_unique<AutocompleteController>(
-          std::make_unique<ChromeAutocompleteProviderClient>(profile), nullptr,
+          std::make_unique<ChromeAutocompleteProviderClient>(profile),
           AutocompleteClassifier::DefaultOmniboxProviders()),
       std::make_unique<ChromeAutocompleteSchemeClassifier>(profile));
 }
@@ -56,8 +56,6 @@ AutocompleteClassifierFactory::AutocompleteClassifierFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
   DependsOn(TemplateURLServiceFactory::GetInstance());
-  // TODO(pkasting): Uncomment these once they exist.
-  //   DependsOn(PrefServiceFactory::GetInstance());
   DependsOn(ShortcutsBackendFactory::GetInstance());
   DependsOn(InMemoryURLIndexFactory::GetInstance());
   DependsOn(RemoteSuggestionsServiceFactory::GetInstance());

@@ -6,14 +6,13 @@
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_OBSERVER_H_
 
 #include "ash/app_list/model/app_list_model_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
-class APP_LIST_MODEL_EXPORT SearchBoxModelObserver {
+class APP_LIST_MODEL_EXPORT SearchBoxModelObserver
+    : public base::CheckedObserver {
  public:
-  // Invoked when hint text is changed.
-  virtual void HintTextChanged() = 0;
-
   // Invoked when text or voice search flag is changed.
   virtual void Update() = 0;
 
@@ -24,7 +23,7 @@ class APP_LIST_MODEL_EXPORT SearchBoxModelObserver {
   virtual void ShowAssistantChanged() = 0;
 
  protected:
-  virtual ~SearchBoxModelObserver() {}
+  ~SearchBoxModelObserver() override = default;
 };
 
 }  // namespace ash

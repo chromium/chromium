@@ -16,10 +16,11 @@ source_set("system_info") {
   ]
 
   deps = [
+    "//components/storage_monitor",
+    "//content/public/browser",
+    "//extensions/browser/api",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

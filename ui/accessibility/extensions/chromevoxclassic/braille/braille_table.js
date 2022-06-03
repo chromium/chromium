@@ -116,7 +116,9 @@ cvox.BrailleTable.getUncontracted = function(tables, table) {
  * @return {string} Localized display name.
  */
 cvox.BrailleTable.getDisplayName = function(table) {
-  var localeName = Msgs.getLocaleDisplayName(table.locale);
+  var localeName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+      table.locale /* locale to be displayed */,
+      chrome.i18n.getUILanguage().toLowerCase() /* locale to localize into */);
   if (!table.grade && !table.variant) {
     return localeName;
   } else if (table.grade && !table.variant) {

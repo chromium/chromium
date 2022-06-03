@@ -11,8 +11,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "model_type_state.proto";
-import "entity_metadata.proto";
+import "components/sync/protocol/model_type_state.proto";
+import "components/sync/protocol/entity_metadata.proto";
 
 // Corresponds to a single bookmark id/metadata pair.
 message BookmarkMetadata {
@@ -31,4 +31,23 @@ message BookmarkModelMetadata {
 
   // A set of all bookmarks metadata.
   repeated BookmarkMetadata bookmarks_metadata = 2;
+
+  reserved 3;
+
+  // The local timestamp corresponding to the last time remote updates were
+  // received, in milliseconds since Unix epoch. Introduced in M86.
+  // TODO(crbug.com/1032052): Remove this code once all local sync metadata
+  // is required to populate the client tag (and be considered invalid
+  // otherwise).
+  optional int64 last_sync_time = 4;
+
+  reserved 5;
+
+  // Indicates whether the reupload of bookmarks has been triggered such that
+  // they include fields like |type|, |unique_position| and |parent_guid|, which
+  // means that their sequence number has been increased (independently of
+  // whether the commit has succeeded or even started).
+  // TODO(crbug.com/1232951): remove this code when most of bookmarks are
+  // reuploaded.
+  optional bool bookmarks_hierarchy_fields_reuploaded = 6;
 }

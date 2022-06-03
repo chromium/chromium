@@ -59,7 +59,6 @@ import path_util
 sys.path.append(os.path.join(os.path.dirname(__file__), 'histograms'))
 import pretty_print
 
-
 SupportedTags = [
     "added",
     "expires",
@@ -142,12 +141,19 @@ def CreateNode(tree, tag, text):
 
 
 def main():
-  if len(sys.argv) != 2:
-    sys.stderr.write('Usage: %s <path-to-md-file>\n' % (sys.argv[0]))
+  """
+  argv[1]: The path to the md file.
+  argv[2]: The relative path of the xml file to be added.
+  """
+  if len(sys.argv) != 3:
+    sys.stderr.write('Usage: %s <path-to-md-file> <path-to-histograms-file>\n' %
+                     (sys.argv[0]))
     sys.exit(1)
 
+  rel_path = sys.argv[2]
   with Trace('Reading histograms.xml') as t:
-    xml_path = path_util.GetHistogramsFile()
+    xml_path = path_util.GetInputFile(
+        os.path.join('tools', 'metrics', 'histograms', rel_path))
     with open(xml_path, 'rb') as f:
       raw_xml = f.read()
 

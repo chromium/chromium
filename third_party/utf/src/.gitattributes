@@ -1,0 +1,2 @@
+*.h linguist-language=C
+share/man/* linguist-documentation

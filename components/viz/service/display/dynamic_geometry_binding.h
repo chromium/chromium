@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DYNAMIC_GEOMETRY_BINDING_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DYNAMIC_GEOMETRY_BINDING_H_
 
-#include "base/macros.h"
 #include "components/viz/service/display/geometry_binding.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -18,6 +17,10 @@ namespace viz {
 class VIZ_SERVICE_EXPORT DynamicGeometryBinding {
  public:
   explicit DynamicGeometryBinding(gpu::gles2::GLES2Interface* gl);
+
+  DynamicGeometryBinding(const DynamicGeometryBinding&) = delete;
+  DynamicGeometryBinding& operator=(const DynamicGeometryBinding&) = delete;
+
   ~DynamicGeometryBinding();
 
   void PrepareForDraw();
@@ -29,8 +32,6 @@ class VIZ_SERVICE_EXPORT DynamicGeometryBinding {
 
   GLuint quad_vertices_vbo_;
   GLuint quad_elements_vbo_;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicGeometryBinding);
 };
 
 }  // namespace viz

@@ -6,7 +6,7 @@ Importing the private key...
 Importing the public key...
 
 Deriving an AES key with no length...
-error is: TypeError: AesDerivedKeyParams: length: Missing required property
+error is: TypeError: Failed to execute 'deriveKey' on 'SubtleCrypto': AesDerivedKeyParams: length: Missing required property
 
 Deriving an AES key with bad length...
 error is: OperationError: AES key length must be 128 or 256 bits
@@ -45,16 +45,16 @@ Deriving a key using an AES key for public key...
 error is: InvalidAccessError: The public parameter for ECDH key derivation is not a public EC key
 
 Deriving a key without specifying the "public" parameter...
-error is: TypeError: EcdhKeyDeriveParams: public: Missing required property
+error is: TypeError: Failed to execute 'deriveKey' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Missing required property
 
 Deriving a key having specified a bogus "public" parameter...
-error is: TypeError: EcdhKeyDeriveParams: public: Must be a CryptoKey
+error is: TypeError: Failed to execute 'deriveKey' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Must be a CryptoKey
 
 Deriving an ECDH key using ECDH...
-error is: NotSupportedError: ECDH: Unsupported operation: get key length
+error is: NotSupportedError: Failed to execute 'deriveKey' on 'SubtleCrypto': ECDH: Unsupported operation: get key length
 
 Deriving an RSA-OAEP key using ECDH...
-error is: NotSupportedError: RSA-OAEP: Unsupported operation: get key length
+error is: NotSupportedError: Failed to execute 'deriveKey' on 'SubtleCrypto': RSA-OAEP: Unsupported operation: get key length
 
 
 PASS successfullyParsed is true

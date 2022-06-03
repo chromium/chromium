@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -33,18 +34,18 @@ UnpackedSerializedScriptValue::UnpackedSerializedScriptValue(
   auto& image_bitmap_contents = value_->image_bitmap_contents_array_;
   if (!image_bitmap_contents.IsEmpty()) {
     image_bitmaps_.Grow(image_bitmap_contents.size());
-    std::transform(image_bitmap_contents.begin(), image_bitmap_contents.end(),
-                   image_bitmaps_.begin(),
-                   [](scoped_refptr<StaticBitmapImage>& contents) {
-                     return ImageBitmap::Create(std::move(contents));
-                   });
+    std::transform(
+        image_bitmap_contents.begin(), image_bitmap_contents.end(),
+        image_bitmaps_.begin(), [](scoped_refptr<StaticBitmapImage>& contents) {
+          return MakeGarbageCollected<ImageBitmap>(std::move(contents));
+        });
     image_bitmap_contents.clear();
   }
 }
 
 UnpackedSerializedScriptValue::~UnpackedSerializedScriptValue() = default;
 
-void UnpackedSerializedScriptValue::Trace(blink::Visitor* visitor) {
+void UnpackedSerializedScriptValue::Trace(Visitor* visitor) const {
   visitor->Trace(array_buffers_);
   visitor->Trace(image_bitmaps_);
 }

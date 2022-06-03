@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2019 The Chromium Authors. All rights reserved.  Use of this
+  source code is governed by a BSD-style license that can be found in the
+  LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_crashes_list"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/crashes_summary_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <!-- horizontal divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+    <!-- child divider is transparent (hidden) -->
+    <ExpandableListView
+        android:id="@+id/crashes_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:childDivider="#00000000"/>
+
+</LinearLayout>

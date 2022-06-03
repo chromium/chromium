@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/isolation_info.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -14,18 +15,25 @@ struct OriginPolicy;
 // An interface for handling all origin policy related operations.
 // https://wicg.github.io/origin-policy/
 interface OriginPolicyManager {
-  // Attempts to retrieve the origin policy for an origin and
-  // `Sec-Origin-Policy` HTTP header value. Calls back with the result.
-  // The header_value needs to contain a proper policy version or be empty. If
-  // the header is not present, callers should call with an empty header_value.
-  // An invalid header_value will result in a returned empty policy with the
-  // state of `kCannotLoadPolicy` (unless a valid policy version has been
-  // previously cached).
-  // https://wicg.github.io/origin-policy/#origin-policy-header
-  RetrieveOriginPolicy(url.mojom.Origin origin, string header_value)
-      => (OriginPolicy origin_policy);
+  // Attempts to retrieve the origin policy for an origin and `Origin-Policy`
+  // |header_value| (if one exists). Calls back with the result.
+  // This will eventually correspond to
+  // https://wicg.github.io/origin-policy/#update-the-origin-policy-from-a-response
+  // although the implementation is currently being updated (crbug.com/751996)
+  // so it doesn't match yet.
+  //
+  // |isolation_info| is the IsolationInfo used to control caching and fetching
+  // of the origin policy, and must not be empty. OriginPolicy fetches are
+  // uncredentialed and don't follow redirects, so it should have a RedirectMode
+  // of kUpdateNothing and null SiteForCookies to be consistent with that
+  // behavior.
+  RetrieveOriginPolicy(url.mojom.Origin origin,
+                       IsolationInfo isolation_info,
+                       string? header_value) => (OriginPolicy origin_policy);
 
   // Adds an exception for the specified origin. This means that no policy will
-  // apply for the specified origin from this point forward.
+  // apply for the specified origin from this point forward. This is used to
+  // allow the user pressing "Continue" on the interstitial to override the
+  // header's demands for an origin policy.
   AddExceptionFor(url.mojom.Origin origin);
 };

@@ -8,16 +8,16 @@ This test checks to make sure that a prerendered page is loaded.
 <script>
 var pageWasPrerendered = false;
 
-function DidPrerenderPass() {
-  pageWasPrerendered = true;
-  return true;
-}
+// function DidPrerenderPass() {
+//   pageWasPrerendered = true;
+//   return true;
+// }
 
 // Make sure DidPrerenderPass() was called first.  Otherwise, the page was
 // most likely reloaded instead of using the prerendered page.
-function DidDisplayPass() {
-  return pageWasPrerendered;
-}
+// function DidDisplayPass() {
+//   return pageWasPrerendered;
+// }
 </script>
 
 </head>

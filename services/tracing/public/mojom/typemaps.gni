@@ -1,1 +1,0 @@
-typemaps = [ "//services/tracing/public/mojom/perfetto_service.typemap" ]

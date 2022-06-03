@@ -39,7 +39,6 @@ WhereToSignalFrom MainOrBackground(wchar_t* name) {
 
 DWORD WINAPI BackgroundThread(void* arg) {
   abort();
-  return 0;
 }
 
 int CrashySignalMain(int argc, wchar_t* argv[]) {

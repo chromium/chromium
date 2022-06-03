@@ -7,7 +7,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 #include "components/offline_pages/core/background/request_notifier.h"
 #include "components/offline_pages/core/offline_event_logger.h"
@@ -33,6 +32,10 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
                               content::BrowserContext* browser_context,
                               OfflinePageModel* offline_page_model,
                               RequestCoordinator* request_coordinator);
+
+  OfflinePageEvaluationBridge(const OfflinePageEvaluationBridge&) = delete;
+  OfflinePageEvaluationBridge& operator=(const OfflinePageEvaluationBridge&) =
+      delete;
 
   ~OfflinePageEvaluationBridge() override;
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -101,8 +104,6 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
   OfflinePageModel* offline_page_model_;
   // Not owned.
   RequestCoordinator* request_coordinator_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageEvaluationBridge);
 };
 
 }  // namespace android

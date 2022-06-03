@@ -5,9 +5,10 @@
 #include "extensions/browser/lazy_background_task_queue.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
@@ -16,12 +17,11 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_background_task_queue_factory.h"
 #include "extensions/browser/lazy_context_id.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace extensions {
 
@@ -43,14 +43,10 @@ bool CreateLazyBackgroundHost(ProcessManager* pm, const Extension* extension) {
 LazyBackgroundTaskQueue::LazyBackgroundTaskQueue(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
+  extension_host_registry_observation_.Observe(
+      ExtensionHostRegistry::Get(browser_context));
 }
 
 LazyBackgroundTaskQueue::~LazyBackgroundTaskQueue() {
@@ -164,40 +160,28 @@ void LazyBackgroundTaskQueue::NotifyTasksExtensionFailedToLoad(
   }
 }
 
-void LazyBackgroundTaskQueue::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD: {
-      // If an on-demand background page finished loading, dispatch queued up
-      // events for it.
-      ExtensionHost* host =
-          content::Details<ExtensionHost>(details).ptr();
-      if (host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
-        CHECK(host->has_loaded_once());
-        ProcessPendingTasks(host, host->browser_context(), host->extension());
-      }
-      break;
-    }
-    case extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED: {
-      // Notify consumers about the load failure when the background host dies.
-      // This can happen if the extension crashes. This is not strictly
-      // necessary, since we also unload the extension in that case (which
-      // dispatches the tasks below), but is a good extra precaution.
-      content::BrowserContext* browser_context =
-          content::Source<content::BrowserContext>(source).ptr();
-      ExtensionHost* host =
-           content::Details<ExtensionHost>(details).ptr();
-      if (host->extension() &&
-          host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
-        ProcessPendingTasks(NULL, browser_context, host->extension());
-      }
-      break;
-    }
-    default:
-      NOTREACHED();
-      break;
+void LazyBackgroundTaskQueue::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
+  // If an on-demand background page finished loading, dispatch queued up
+  // events for it.
+  if (host->extension_host_type() ==
+      mojom::ViewType::kExtensionBackgroundPage) {
+    CHECK(host->has_loaded_once());
+    ProcessPendingTasks(host, host->browser_context(), host->extension());
+  }
+}
+
+void LazyBackgroundTaskQueue::OnExtensionHostDestroyed(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
+  // Notify consumers about the load failure when the background host dies.
+  // This can happen if the extension crashes. This is not strictly
+  // necessary, since we also unload the extension in that case (which
+  // dispatches the tasks below), but is a good extra precaution.
+  if (host->extension() && host->extension_host_type() ==
+                               mojom::ViewType::kExtensionBackgroundPage) {
+    ProcessPendingTasks(nullptr, browser_context, host->extension());
   }
 }
 

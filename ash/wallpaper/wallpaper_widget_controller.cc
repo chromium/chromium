@@ -11,32 +11,29 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_view.h"
-#include "base/scoped_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 
-WallpaperWidgetController::WallpaperWidgetController(
-    aura::Window* root_window,
-    base::OnceClosure wallpaper_set_callback)
-    : root_window_(root_window),
-      wallpaper_set_callback_(std::move(wallpaper_set_callback)) {}
+WallpaperWidgetController::WallpaperWidgetController(aura::Window* root_window)
+    : root_window_(root_window) {}
 
 WallpaperWidgetController::~WallpaperWidgetController() {
   widget_->CloseNow();
 }
 
-void WallpaperWidgetController::Init(int container) {
-  widget_ = CreateWallpaperWidget(
-      root_window_, container, wallpaper_constants::kClear, &wallpaper_view_);
+void WallpaperWidgetController::Init(bool locked) {
+  widget_ = CreateWallpaperWidget(root_window_, wallpaper_constants::kClear,
+                                  locked, &wallpaper_view_);
 }
 
 views::Widget* WallpaperWidgetController::GetWidget() {
@@ -44,11 +41,11 @@ views::Widget* WallpaperWidgetController::GetWidget() {
 }
 
 bool WallpaperWidgetController::IsAnimating() const {
-  return wallpaper_view_->layer()->GetAnimator()->is_animating();
+  return old_layer_tree_owner_ &&
+         old_layer_tree_owner_->root()->GetAnimator()->is_animating();
 }
 
 void WallpaperWidgetController::StopAnimating() {
-  wallpaper_view_->layer()->GetAnimator()->StopAnimating();
   if (old_layer_tree_owner_) {
     old_layer_tree_owner_->root()->GetAnimator()->StopAnimating();
     old_layer_tree_owner_.reset();
@@ -71,13 +68,16 @@ bool WallpaperWidgetController::Reparent(int container) {
   return true;
 }
 
-bool WallpaperWidgetController::SetWallpaperProperty(
-    const WallpaperProperty& property,
+bool WallpaperWidgetController::SetWallpaperBlur(
+    float blur,
     const base::TimeDelta& animation_duration) {
-  StopAnimating();
-  bool property_changed = !(wallpaper_view_->property() == property);
+  if (!widget_->GetNativeWindow())
+    return false;
 
-  wallpaper_view_->set_wallpaper_property(property);
+  StopAnimating();
+  bool blur_changed = wallpaper_view_->blur_sigma() != blur;
+
+  wallpaper_view_->set_blur_sigma(blur);
   // Show the widget when we have something to show.
   if (!widget_->IsVisible())
     widget_->Show();
@@ -88,18 +88,17 @@ bool WallpaperWidgetController::SetWallpaperProperty(
     // Since there is no actual animation scheduled, just call completed method.
     OnImplicitAnimationsCompleted();
   }
-  return property_changed;
+  return blur_changed;
 }
 
-const WallpaperProperty& WallpaperWidgetController::GetWallpaperProperty()
-    const {
-  return wallpaper_view_->property();
+float WallpaperWidgetController::GetWallpaperBlur() const {
+  return wallpaper_view_->blur_sigma();
 }
 
 void WallpaperWidgetController::OnImplicitAnimationsCompleted() {
   StopAnimating();
   wallpaper_view_->SetLockShieldEnabled(
-      wallpaper_view_->GetWidget()->GetNativeWindow()->parent()->id() ==
+      wallpaper_view_->GetWidget()->GetNativeWindow()->parent()->GetId() ==
       kShellWindowId_LockScreenWallpaperContainer);
   RunAnimationEndCallbacks();
 }
@@ -116,25 +115,24 @@ void WallpaperWidgetController::ApplyCrossFadeAnimation(
   DCHECK(wallpaper_view_);
 
   old_layer_tree_owner_ = ::wm::RecreateLayers(wallpaper_view_);
-  old_layer_tree_owner_->root()->parent()->StackAbove(
-      old_layer_tree_owner_->root(), wallpaper_view_->layer());
 
   ui::Layer* old_layer = old_layer_tree_owner_->root();
   ui::Layer* new_layer = wallpaper_view_->layer();
+  DCHECK_EQ(old_layer->parent(), new_layer->parent());
+  old_layer->parent()->StackAbove(old_layer, new_layer);
+
   old_layer->SetOpacity(1.f);
-  new_layer->SetOpacity(0.f);
-
-  ui::ScopedLayerAnimationSettings original_settings(new_layer->GetAnimator());
-  ui::ScopedLayerAnimationSettings copy_settings(old_layer->GetAnimator());
-
-  original_settings.SetTransitionDuration(duration);
-  original_settings.SetTweenType(gfx::Tween::EASE_OUT);
-  original_settings.AddObserver(this);
-
-  copy_settings.SetTransitionDuration(duration);
-  copy_settings.SetTweenType(gfx::Tween::EASE_IN);
-
   new_layer->SetOpacity(1.f);
+
+  // Fade out the old layer. When clearing the blur, use the opposite tween so
+  // that the animations are mirrors of each other.
+  const bool clearing =
+      wallpaper_view_->blur_sigma() == wallpaper_constants::kClear;
+  ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
+  settings.SetTransitionDuration(duration);
+  settings.SetTweenType(clearing ? gfx::Tween::EASE_IN : gfx::Tween::EASE_OUT);
+  settings.AddObserver(this);
+
   old_layer->SetOpacity(0.f);
 }
 

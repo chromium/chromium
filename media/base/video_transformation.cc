@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace media {
 namespace {

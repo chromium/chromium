@@ -6,29 +6,31 @@
 #define CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/view.h"
 
 namespace views {
 class ImageButton;
 class ImageView;
 class Label;
 class Link;
-class LinkListener;
 class MenuRunner;
 }  // namespace views
 
 class InfoBarView : public infobars::InfoBar,
                     public views::View,
-                    public views::ButtonListener,
                     public views::ExternalFocusTracker {
  public:
+  METADATA_HEADER(InfoBarView);
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
+  InfoBarView(const InfoBarView&) = delete;
+  InfoBarView& operator=(const InfoBarView&) = delete;
   ~InfoBarView() override;
 
   // Requests that the infobar recompute its target height.
@@ -43,11 +45,6 @@ class InfoBarView : public infobars::InfoBar,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  // views::ButtonListener:
-  // NOTE: This must not be called if we're unowned.  (Subclasses should ignore
-  // calls to ButtonPressed() in this case.)
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   // views::ExternalFocusTracker:
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
 
@@ -55,12 +52,11 @@ class InfoBarView : public infobars::InfoBar,
   using Labels = std::vector<views::Label*>;
 
   // Creates a label with the appropriate font and color for an infobar.
-  views::Label* CreateLabel(const base::string16& text) const;
+  views::Label* CreateLabel(const std::u16string& text) const;
 
   // Creates a link with the appropriate font and color for an infobar.
   // NOTE: Subclasses must ignore link clicks if we're unowned.
-  views::Link* CreateLink(const base::string16& text,
-                          views::LinkListener* listener) const;
+  views::Link* CreateLink(const std::u16string& text);
 
   // Given |views| and the total |available_width| to display them in, sets
   // each view's size so that the longest view shrinks until it reaches the
@@ -71,12 +67,12 @@ class InfoBarView : public infobars::InfoBar,
   // Returns the minimum width the content (that is, everything between the icon
   // and the close button) can be shrunk to.  This is used to prevent the close
   // button from overlapping views that cannot be shrunk any further.
-  virtual int ContentMinimumWidth() const;
+  virtual int GetContentMinimumWidth() const;
 
   // These return x coordinates delimiting the usable area for subclasses to lay
   // out their controls.
-  int StartX() const;
-  int EndX() const;
+  int GetStartX() const;
+  int GetEndX() const;
 
   // Given a |view|, returns the centered y position, taking into account
   // animation so the control "slides in" (or out) as we animate open and
@@ -89,18 +85,11 @@ class InfoBarView : public infobars::InfoBar,
   void PlatformSpecificOnHeightRecalculated() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, ShouldDrawSeparator);
+  FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, GetDrawSeparator);
 
   // Does the actual work for AssignWidths().  Assumes |views| is sorted by
   // decreasing preferred width.
   static void AssignWidthsSorted(Views* views, int available_width);
-
-  // Returns whether this infobar should draw a 1 px separator at its top.
-  bool ShouldDrawSeparator() const;
-
-  // Returns how much space the container should reserve for a separator between
-  // infobars, in addition to the height of the infobars themselves.
-  int GetSeparatorHeight() const;
 
   // Returns the current color for the theme property |id|.  Will return the
   // wrong value if no theme provider is available.
@@ -110,6 +99,11 @@ class InfoBarView : public infobars::InfoBar,
   // labels.
   void SetLabelDetails(views::Label* label) const;
 
+  // Callback used by the link created by CreateLink().
+  void LinkClicked(const ui::Event& event);
+
+  void CloseButtonPressed();
+
   // The optional icon at the left edge of the InfoBar.
   views::ImageView* icon_ = nullptr;
 
@@ -118,8 +112,6 @@ class InfoBarView : public infobars::InfoBar,
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_

@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/core/xml/document_xml_tree_viewer.h"
 
 #include "third_party/blink/public/resources/grit/blink_resources.h"
-#include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
@@ -25,10 +24,10 @@ void TransformDocumentToXMLTreeView(Document& document) {
 
   v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
 
-  document.GetFrame()->GetScriptController().ExecuteScriptInIsolatedWorld(
-      IsolatedWorldId::kDocumentXMLTreeViewerWorldId,
-      ScriptSourceCode(script_string, ScriptSourceLocationType::kInternal),
-      KURL(), SanitizeScriptErrors::kSanitize);
+  ClassicScript::CreateUnspecifiedScript(
+      ScriptSourceCode(script_string, ScriptSourceLocationType::kInternal))
+      ->RunScriptInIsolatedWorldAndReturnValue(
+          document.domWindow(), IsolatedWorldId::kDocumentXMLTreeViewerWorldId);
 
   Element* element = document.getElementById("xml-viewer-style");
   if (element) {

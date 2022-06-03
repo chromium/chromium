@@ -22,7 +22,7 @@
 [
     Exposed=Window
 ] interface MouseEvent : UIEvent {
-    [CallWith=ScriptState] constructor(DOMString type, optional MouseEventInit eventInitDict);
+    [CallWith=ScriptState] constructor(DOMString type, optional MouseEventInit eventInitDict = {});
     [HighEntropy, MeasureAs=MouseEventScreenX] readonly attribute double screenX;
     [HighEntropy, MeasureAs=MouseEventScreenY] readonly attribute double screenY;
     readonly attribute double           clientX;
@@ -37,22 +37,21 @@
     boolean getModifierState(DOMString keyArg);
 
     // https://w3c.github.io/uievents/#idl-interface-MouseEvent-initializers
-    // TODO(foolip): None of the initMouseEvent() arguments should be optional.
-    [CallWith=ScriptState, Measure] void initMouseEvent([DefaultValue=Undefined] optional DOMString type,
-                                                        [DefaultValue=Undefined] optional boolean bubbles,
-                                                        [DefaultValue=Undefined] optional boolean cancelable,
-                                                        [DefaultValue=Undefined] optional Window? view,
-                                                        [DefaultValue=Undefined] optional long detail,
-                                                        [DefaultValue=Undefined] optional long screenX,
-                                                        [DefaultValue=Undefined] optional long screenY,
-                                                        [DefaultValue=Undefined] optional long clientX,
-                                                        [DefaultValue=Undefined] optional long clientY,
-                                                        [DefaultValue=Undefined] optional boolean ctrlKey,
-                                                        [DefaultValue=Undefined] optional boolean altKey,
-                                                        [DefaultValue=Undefined] optional boolean shiftKey,
-                                                        [DefaultValue=Undefined] optional boolean metaKey,
-                                                        [DefaultValue=Undefined] optional unsigned short button,
-                                                        [DefaultValue=Undefined] optional EventTarget? relatedTarget);
+    [CallWith=ScriptState, Measure] void initMouseEvent(DOMString type,
+                                                        optional boolean bubbles = false,
+                                                        optional boolean cancelable = false,
+                                                        optional Window? view = null,
+                                                        optional long detail = 0,
+                                                        optional long screenX = 0,
+                                                        optional long screenY = 0,
+                                                        optional long clientX = 0,
+                                                        optional long clientY = 0,
+                                                        optional boolean ctrlKey = false,
+                                                        optional boolean altKey = false,
+                                                        optional boolean shiftKey = false,
+                                                        optional boolean metaKey = false,
+                                                        optional unsigned short button = 0,
+                                                        optional EventTarget? relatedTarget = null);
 
     readonly attribute double pageX;
     readonly attribute double pageY;
@@ -65,10 +64,6 @@
     // https://w3c.github.io/pointerlock/#extensions-to-the-mouseevent-interface
     [MeasureAs=MouseEventMovementX] readonly attribute long movementX;
     [MeasureAs=MouseEventMovementY] readonly attribute long movementY;
-
-    // Canvas Hit Regions
-    // https://html.spec.whatwg.org/C/#MouseEvent-partial
-    [RuntimeEnabled=CanvasHitRegion] readonly attribute DOMString? region;
 
     // Non-standard
     [MeasureAs=MouseEventFromElement] readonly attribute Node fromElement;

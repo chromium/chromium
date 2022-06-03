@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -22,7 +22,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def _createTestFeatureCompiler(self, feature_class):
     return feature_compiler.FeatureCompiler('chrome_root', [], feature_class,
-        'provider_class', 'out_root', 'out_base_filename')
+        'provider_class', 'out_root', 'gen', 'out_base_filename')
 
   def _hasError(self, f, error):
     """Asserts that |error| is present somewhere in the given feature's
@@ -37,7 +37,7 @@ class FeatureCompilerTest(unittest.TestCase):
   def testFeature(self):
     # Test some basic feature parsing for a sanity check.
     f = self._parseFeature({
-      'blacklist': [
+      'blocklist': [
         'ABCDEF0123456789ABCDEF0123456789ABCDEF01',
         '10FEDCBA9876543210FEDCBA9876543210FEDCBA'
       ],
@@ -60,7 +60,7 @@ class FeatureCompilerTest(unittest.TestCase):
       'noparent': True,
       'platforms': ['mac', 'win'],
       'session_types': ['kiosk', 'regular'],
-      'whitelist': [
+      'allowlist': [
         '0123456789ABCDEF0123456789ABCDEF01234567',
         '76543210FEDCBA9876543210FEDCBA9876543210'
       ]
@@ -102,7 +102,7 @@ class FeatureCompilerTest(unittest.TestCase):
     self._hasError(f, 'Illegal value: "False"')
 
   def testEmptyList(self):
-    f = self._parseFeature({'contexts': []})
+    f = self._parseFeature({'extension_types': []})
     self._hasError(f, 'List must specify at least one element.')
 
   def testEmptyListWithAllowEmpty(self):
@@ -111,11 +111,17 @@ class FeatureCompilerTest(unittest.TestCase):
     self.assertFalse(f.GetErrors())
 
   def testApiFeaturesNeedContexts(self):
-    f = self._parseFeature({'dependencies': 'alpha',
-                            'extension_types': ['extension'],
+    f = self._parseFeature({'extension_types': ['extension'],
                             'channel': 'trunk'})
     f.Validate('APIFeature', {})
-    self._hasError(f, 'APIFeatures must specify at least one context')
+    self._hasError(f, 'APIFeatures must specify the contexts property')
+
+  def testAPIFeaturesCanSpecifyEmptyContexts(self):
+    f = self._parseFeature({'extension_types': ['extension'],
+                            'channel': 'trunk',
+                            'contexts': []})
+    f.Validate('APIFeature', {})
+    self.assertFalse(f.GetErrors())
 
   def testManifestFeaturesNeedExtensionTypes(self):
     f = self._parseFeature({'dependencies': 'alpha', 'channel': 'beta'})
@@ -349,7 +355,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testComplexParentWithoutDefaultParent(self):
     c = feature_compiler.FeatureCompiler(
-        None, None, 'APIFeature', None, None, None)
+        None, None, 'APIFeature', None, None, None, None)
     c._CompileFeature('bookmarks',
         [{
           'contexts': ['blessed_extension'],
@@ -360,17 +366,106 @@ class FeatureCompilerTest(unittest.TestCase):
 
     with self.assertRaisesRegexp(AssertionError,
                                  'No default parent found for bookmarks'):
-      c._CompileFeature('bookmarks.export', { "whitelist": ["asdf"] })
+      c._CompileFeature('bookmarks.export', { "allowlist": ["asdf"] })
 
-  def testRealIdsDisallowedInWhitelist(self):
+  def testRealIdsDisallowedInAllowlist(self):
     fake_id = 'a' * 32;
-    f = self._parseFeature({'whitelist': [fake_id],
+    f = self._parseFeature({'allowlist': [fake_id],
                             'extension_types': ['extension'],
                             'channel': 'beta'})
     f.Validate('PermissionFeature', {})
     self._hasError(
         f, 'list should only have hex-encoded SHA1 hashes of extension ids')
 
+  def testHostedAppsCantUseAllowlistedFeatures_SimpleFeature(self):
+    f = self._parseFeature({
+        'extension_types': ['extension', 'hosted_app'],
+        'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
+        'channel': 'beta',
+    })
+    f.Validate('PermissionFeature', {})
+    self._hasError(f, 'Hosted apps are not allowed to use restricted features')
+
+  def testHostedAppsCantUseAllowlistedFeatures_ComplexFeature(self):
+    c = feature_compiler.FeatureCompiler(
+        None, None, 'PermissionFeature', None, None, None, None)
+    c._CompileFeature('invalid_feature',
+        [{
+          'extension_types': ['extension'],
+          'channel': 'beta',
+        }, {
+          'channel': 'beta',
+          'extension_types': ['hosted_app'],
+          'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
+        }])
+    c._CompileFeature('valid_feature',
+        [{
+          'extension_types': ['extension'],
+          'channel': 'beta',
+          'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567'],
+        }, {
+          'channel': 'beta',
+          'extension_types': ['hosted_app'],
+        }])
+
+    valid_feature = c._features.get('valid_feature')
+    self.assertTrue(valid_feature)
+    self.assertFalse(valid_feature.GetErrors())
+
+    invalid_feature = c._features.get('invalid_feature')
+    self.assertTrue(invalid_feature)
+    self._hasError(invalid_feature,
+                   'Hosted apps are not allowed to use restricted features')
+
+
+  def testHostedAppsCantUseAllowlistedFeatures_ChildFeature(self):
+    c = feature_compiler.FeatureCompiler(
+        None, None, 'PermissionFeature', None, None, None, None)
+    c._CompileFeature('parent',
+        {
+          'extension_types': ['hosted_app'],
+          'channel': 'beta',
+        })
+
+    c._CompileFeature('parent.child',
+        {
+          'allowlist': ['0123456789ABCDEF0123456789ABCDEF01234567']
+        })
+    feature = c._features.get('parent.child')
+    self.assertTrue(feature)
+    self._hasError(feature,
+                   'Hosted apps are not allowed to use restricted features')
+
+  def testEmptyContextsDisallowed(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+    compiler._json = {
+      'feature_alpha': {
+        'channel': 'beta',
+        'contexts': [],
+        'extension_types': ['extension']
+      }
+    }
+    compiler.Compile()
+
+    feature = compiler._features.get('feature_alpha')
+    self.assertTrue(feature)
+    self._hasError(feature,
+        'An empty contexts list is not allowed for this feature.')
+
+  def testEmptyContextsAllowed(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+    compiler._json = {
+      'empty_contexts': {
+        'channel': 'beta',
+        'contexts': [],
+        'extension_types': ['extension']
+      }
+    }
+    compiler.Compile()
+
+    feature = compiler._features.get('empty_contexts')
+    self.assertTrue(feature)
+    self.assertFalse(feature.GetErrors())
 
 if __name__ == '__main__':
   unittest.main()

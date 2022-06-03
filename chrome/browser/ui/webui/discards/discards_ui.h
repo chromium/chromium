@@ -7,26 +7,31 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "chrome/browser/ui/webui/discards/discards.mojom.h"
+#include "chrome/browser/ui/webui/discards/discards.mojom-forward.h"
+#include "chrome/browser/ui/webui/discards/site_data.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
-namespace resource_coordinator {
-class LocalSiteCharacteristicsDataStoreInspector;
-}  // namespace resource_coordinator
 
 // Controller for chrome://discards. Corresponding resources are in
 // file://chrome/browser/resources/discards.
 class DiscardsUI : public ui::MojoWebUIController {
  public:
   explicit DiscardsUI(content::WebUI* web_ui);
+
+  DiscardsUI(const DiscardsUI&) = delete;
+  DiscardsUI& operator=(const DiscardsUI&) = delete;
+
   ~DiscardsUI() override;
 
   // Instantiates the implementor of the mojom::DetailsProvider mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver);
+
+  // Instantiates the implementor of the mojom::SiteDataProvider mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<discards::mojom::SiteDataProvider> receiver);
 
   // Instantiates the implementor of the mojom::GraphDump mojo
   // interface passing the pending receiver that will be internally bound.
@@ -35,12 +40,9 @@ class DiscardsUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<discards::mojom::DetailsProvider> ui_handler_;
-  resource_coordinator::LocalSiteCharacteristicsDataStoreInspector*
-      data_store_inspector_;
+  std::string profile_id_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardsUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DISCARDS_DISCARDS_UI_H_

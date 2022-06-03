@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 #include <hb.h>
 
@@ -53,15 +53,21 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
                                             uint64_t unique_id) {
     return base::AdoptRef(new HarfBuzzFace(platform_data, unique_id));
   }
+  HarfBuzzFace(const HarfBuzzFace&) = delete;
+  HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
   ~HarfBuzzFace();
 
-  enum VerticalLayoutCallbacks { PrepareForVerticalLayout, NoVerticalLayout };
+  enum VerticalLayoutCallbacks { kPrepareForVerticalLayout, kNoVerticalLayout };
 
   // In order to support the restricting effect of unicode-range optionally a
   // range restriction can be passed in, which will restrict which glyphs we
   // return in the harfBuzzGetGlyph function.
+  // Passing in specified_size in order to control selecting the right value
+  // from the trak table. If not set, the size of the internal FontPlatformData
+  // object will be used.
   hb_font_t* GetScaledFont(scoped_refptr<UnicodeRangeSet>,
-                           VerticalLayoutCallbacks) const;
+                           VerticalLayoutCallbacks,
+                           float specified_size = -1) const;
 
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures);
   unsigned UnitsPerEmFromHeadTable();
@@ -71,15 +77,13 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
  private:
   HarfBuzzFace(FontPlatformData*, uint64_t);
 
-  hb_face_t* CreateFace();
+  HbScoped<hb_face_t> CreateFace();
   void PrepareHarfBuzzFontData();
 
   FontPlatformData* platform_data_;
   uint64_t unique_id_;
   hb_font_t* unscaled_font_;
   HarfBuzzFontData* harfbuzz_font_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzFace);
 };
 
 }  // namespace blink

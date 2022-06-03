@@ -35,8 +35,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
@@ -95,7 +94,7 @@ SpellCheckRequest::SpellCheckRequest(Range* checking_range,
 
 SpellCheckRequest::~SpellCheckRequest() = default;
 
-void SpellCheckRequest::Trace(Visitor* visitor) {
+void SpellCheckRequest::Trace(Visitor* visitor) const {
   visitor->Trace(requester_);
   visitor->Trace(checking_range_);
   visitor->Trace(root_editable_element_);
@@ -165,22 +164,18 @@ void SpellCheckRequest::SetCheckerAndSequence(SpellCheckRequester* requester,
   sequence_ = sequence;
 }
 
-SpellCheckRequester::SpellCheckRequester(LocalFrame& frame)
-    : frame_(&frame),
+SpellCheckRequester::SpellCheckRequester(LocalDOMWindow& window)
+    : window_(&window),
       last_request_sequence_(0),
-      last_processed_sequence_(0),
-      timer_to_process_queued_request_(
-          frame.GetTaskRunner(TaskType::kInternalDefault),
-          this,
-          &SpellCheckRequester::TimerFiredToProcessQueuedRequest) {}
+      last_processed_sequence_(0) {}
 
 SpellCheckRequester::~SpellCheckRequester() = default;
 
 WebTextCheckClient* SpellCheckRequester::GetTextCheckerClient() const {
-  return GetFrame().GetSpellChecker().GetTextCheckerClient();
+  return window_->GetSpellChecker().GetTextCheckerClient();
 }
 
-void SpellCheckRequester::TimerFiredToProcessQueuedRequest(TimerBase*) {
+void SpellCheckRequester::TimerFiredToProcessQueuedRequest() {
   DCHECK(!request_queue_.IsEmpty());
   if (request_queue_.IsEmpty())
     return;
@@ -197,13 +192,6 @@ bool SpellCheckRequester::RequestCheckingFor(const EphemeralRange& range,
   SpellCheckRequest* request = SpellCheckRequest::Create(range, request_num);
   if (!request)
     return false;
-
-  const base::TimeTicks current_request_time = base::TimeTicks::Now();
-  if (request_num == 0 && last_request_time_ > base::TimeTicks()) {
-    UMA_HISTOGRAM_TIMES("WebCore.SpellChecker.RequestInterval",
-                        current_request_time - last_request_time_);
-  }
-  last_request_time_ = current_request_time;
 
   DCHECK_EQ(request->Sequence(),
             SpellCheckRequest::kUnrequestedTextCheckingSequence);
@@ -227,7 +215,7 @@ void SpellCheckRequester::CancelCheck() {
 }
 
 void SpellCheckRequester::Deactivate() {
-  timer_to_process_queued_request_.Stop();
+  timer_to_process_queued_request_.Cancel();
   // Empty all pending requests to prevent them from being a leak source, as the
   // requests may hold reference to a closed document.
   request_queue_.clear();
@@ -296,8 +284,12 @@ void SpellCheckRequester::DidCheck(int sequence) {
   last_processed_sequence_ = sequence;
 
   ClearProcessingRequest();
-  if (!request_queue_.IsEmpty())
-    timer_to_process_queued_request_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  if (!request_queue_.IsEmpty()) {
+    timer_to_process_queued_request_ = PostCancellableTask(
+        *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
+        WTF::Bind(&SpellCheckRequester::TimerFiredToProcessQueuedRequest,
+                  WrapPersistent(this)));
+  }
 }
 
 void SpellCheckRequester::DidCheckSucceed(
@@ -305,7 +297,7 @@ void SpellCheckRequester::DidCheckSucceed(
     const Vector<TextCheckingResult>& results) {
   if (!EnsureValidRequestQueueFor(sequence))
     return;
-  GetFrame().GetSpellChecker().MarkAndReplaceFor(processing_request_, results);
+  window_->GetSpellChecker().MarkAndReplaceFor(processing_request_, results);
   DidCheck(sequence);
 }
 
@@ -315,8 +307,8 @@ void SpellCheckRequester::DidCheckCancel(int sequence) {
   DidCheck(sequence);
 }
 
-void SpellCheckRequester::Trace(Visitor* visitor) {
-  visitor->Trace(frame_);
+void SpellCheckRequester::Trace(Visitor* visitor) const {
+  visitor->Trace(window_);
   visitor->Trace(processing_request_);
   visitor->Trace(request_queue_);
 }

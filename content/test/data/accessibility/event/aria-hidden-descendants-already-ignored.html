@@ -1,0 +1,29 @@
+<!--
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@UIA-WIN-DENY:AriaProperties*
+@UIA-WIN-DENY:StructureChanged/ChildrenReordered*
+-->
+<html>
+<body>
+<!-- Hide events only need to occur on the root of what's shown/hidden,
+     not for each descendant, with some descendants already ignored. -->
+<div role="toolbar">
+  <div id="heading-root" role="heading" aria-label="Heading" class="a">
+    <div> <!-- already ignored-->
+      <div> <!-- already ignored -->
+        <div id="heading-child">
+          <div id="heading-grandchild"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function go() {
+    document.querySelector('.a').setAttribute("aria-hidden", "true");
+  }
+</script>
+</body>
+</html>

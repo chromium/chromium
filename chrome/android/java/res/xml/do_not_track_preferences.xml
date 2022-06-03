@@ -7,12 +7,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.chrome.browser.settings.ChromeSwitchPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="do_not_track_switch"
         android:summaryOn="@string/text_on"
         android:summaryOff="@string/text_off" />
 
-    <org.chromium.chrome.browser.settings.TextMessagePreference
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:title="@string/do_not_track_description"
         app:allowDividerBelow="false" />
 

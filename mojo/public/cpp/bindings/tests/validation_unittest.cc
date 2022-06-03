@@ -37,7 +37,7 @@ namespace {
 
 Message CreateRawMessage(size_t size) {
   ScopedMessageHandle handle;
-  MojoResult rv = CreateMessage(&handle);
+  MojoResult rv = CreateMessage(&handle, MOJO_CREATE_MESSAGE_FLAG_NONE);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   DCHECK(handle.is_valid());
 

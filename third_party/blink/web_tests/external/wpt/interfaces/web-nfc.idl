@@ -1,9 +1,9 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Web NFC (https://w3c.github.io/web-nfc/)
 
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface NDEFMessage {
   constructor(NDEFMessageInit messageInit);
   readonly attribute FrozenArray<NDEFRecord> records;
@@ -13,9 +13,7 @@ dictionary NDEFMessageInit {
   required sequence<NDEFRecordInit> records;
 };
 
-typedef (DOMString or BufferSource or NDEFMessageInit) NDEFRecordDataSource;
-
-[Exposed=Window]
+[SecureContext, Exposed=Window]
 interface NDEFRecord {
   constructor(NDEFRecordInit recordInit);
 
@@ -27,7 +25,7 @@ interface NDEFRecord {
   readonly attribute USVString? encoding;
   readonly attribute USVString? lang;
 
-  sequence<NDEFRecord> toRecords();
+  sequence<NDEFRecord>? toRecords();
 };
 
 dictionary NDEFRecordInit {
@@ -38,26 +36,21 @@ dictionary NDEFRecordInit {
   USVString encoding;
   USVString lang;
 
-  NDEFRecordDataSource data;
+  any data; // DOMString or BufferSource or NDEFMessageInit
 };
 
 typedef (DOMString or BufferSource or NDEFMessageInit) NDEFMessageSource;
 
 [SecureContext, Exposed=Window]
-interface NDEFWriter {
-  constructor();
-
-  Promise<void> push(NDEFMessageSource message, optional NDEFPushOptions options={});
-};
-
-[SecureContext, Exposed=Window]
 interface NDEFReader : EventTarget {
   constructor();
 
-  attribute EventHandler onerror;
   attribute EventHandler onreading;
+  attribute EventHandler onreadingerror;
 
-  Promise<void> scan(optional NDEFScanOptions options={});
+  Promise<undefined> scan(optional NDEFScanOptions options={});
+  Promise<undefined> write(NDEFMessageSource message,
+                                 optional NDEFWriteOptions options={});
 };
 
 [SecureContext, Exposed=Window]
@@ -73,22 +66,11 @@ dictionary NDEFReadingEventInit : EventInit {
   required NDEFMessageInit message;
 };
 
-dictionary NDEFPushOptions {
-  NDEFPushTarget target = "any";
-  boolean ignoreRead = true;
+dictionary NDEFWriteOptions {
   boolean overwrite = true;
   AbortSignal? signal;
 };
 
-enum NDEFPushTarget {
-  "tag",
-  "peer",
-  "any"
-};
-
 dictionary NDEFScanOptions {
-  USVString id;
-  USVString recordType;
-  USVString mediaType = "";
-  AbortSignal? signal;
+  AbortSignal signal;
 };

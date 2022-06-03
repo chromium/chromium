@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that errors to load a resource cause error messages to be logged to console.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function performActions()
@@ -38,8 +38,8 @@
   await ConsoleTestRunner.waitForConsoleMessagesPromise(5);
   ConsoleTestRunner.expandConsoleMessages(onExpandedMessages);
 
-  function onExpandedMessages() {
-    ConsoleTestRunner.dumpConsoleMessagesWithClasses(true);
+  async function onExpandedMessages() {
+    await ConsoleTestRunner.dumpConsoleMessagesWithClasses(true);
     TestRunner.completeTest();
   }
 })();

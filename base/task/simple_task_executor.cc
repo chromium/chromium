@@ -4,16 +4,11 @@
 
 #include "base/task/simple_task_executor.h"
 
-#include "base/task/sequence_manager/sequence_manager.h"
-
 namespace base {
 
 SimpleTaskExecutor::SimpleTaskExecutor(
-    sequence_manager::SequenceManager* sequence_manager,
     scoped_refptr<SingleThreadTaskRunner> task_queue)
-    : sequence_manager_(sequence_manager),
-      sequenced_task_queue_(task_queue),
-      task_queue_(std::move(task_queue)),
+    : task_queue_(std::move(task_queue)),
       previous_task_executor_(GetTaskExecutorForCurrentThread()) {
   DCHECK(task_queue_);
   // The TaskExecutor API does not expect nesting, but this can happen in tests
@@ -43,7 +38,7 @@ scoped_refptr<TaskRunner> SimpleTaskExecutor::CreateTaskRunner(
 
 scoped_refptr<SequencedTaskRunner>
 SimpleTaskExecutor::CreateSequencedTaskRunner(const TaskTraits& traits) {
-  return sequenced_task_queue_;
+  return task_queue_;
 }
 
 scoped_refptr<SingleThreadTaskRunner>
@@ -63,12 +58,5 @@ SimpleTaskExecutor::CreateCOMSTATaskRunner(
   return task_queue_;
 }
 #endif  // defined(OS_WIN)
-
-const scoped_refptr<SequencedTaskRunner>&
-SimpleTaskExecutor::GetContinuationTaskRunner() {
-  if (sequence_manager_)
-    return sequence_manager_->GetTaskRunnerForCurrentTask();
-  return sequenced_task_queue_;
-}
 
 }  // namespace base

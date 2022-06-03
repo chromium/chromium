@@ -5,7 +5,6 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/events/event_switches.h"
 
@@ -14,6 +13,9 @@ namespace {
 
 class GestureConfigurationCast : public GestureConfiguration {
  public:
+  GestureConfigurationCast(const GestureConfigurationCast&) = delete;
+  GestureConfigurationCast& operator=(const GestureConfigurationCast&) = delete;
+
   ~GestureConfigurationCast() override {
   }
 
@@ -42,7 +44,6 @@ class GestureConfigurationCast : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationCast>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationCast);
 };
 
 }  // namespace

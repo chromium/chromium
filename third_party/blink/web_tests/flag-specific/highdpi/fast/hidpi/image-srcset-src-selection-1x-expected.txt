@@ -1,0 +1,6 @@
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+FAIL document.getElementById("foo").clientWidth==100 should be true. Was false.
+This test passes if the div below is a blue 100px square when the deviceScaleFactor is 1. It simply ensures that the src attribute is taken into account by the selection algorithm when this one is processing the images candidates

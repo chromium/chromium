@@ -4,12 +4,15 @@
 
 #include "content/public/test/content_browser_test.h"
 
+#include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -18,19 +21,20 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/common/shell_switches.h"
-#include "content/shell/renderer/web_test/web_test_content_renderer_client.h"
 #include "content/test/test_content_client.h"
 #include "ui/events/platform/platform_event_source.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/test/network_connection_change_simulator.h"
 #endif
 
@@ -41,7 +45,7 @@
 namespace content {
 
 ContentBrowserTest::ContentBrowserTest() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::mac::SetOverrideAmIBundled(true);
 
   // See comment in InProcessBrowserTest::InProcessBrowserTest().
@@ -53,6 +57,10 @@ ContentBrowserTest::ContentBrowserTest() {
   CHECK(base::PathService::Override(base::FILE_EXE, content_shell_path));
 #endif
   CreateTestServer(GetTestDataFilePath());
+
+  // Fail as quickly as possible during tests, rather than attempting to reset
+  // accessibility and continue when unserialization fails.
+  RenderFrameHostImpl::max_accessibility_resets_ = 0;
 }
 
 ContentBrowserTest::~ContentBrowserTest() {
@@ -62,7 +70,7 @@ void ContentBrowserTest::SetUp() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   SetUpCommandLine(command_line);
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // See InProcessBrowserTest::PrepareTestCommandLine().
   base::FilePath subprocess_path;
   base::PathService::Get(base::FILE_EXE, &subprocess_path);
@@ -75,7 +83,7 @@ void ContentBrowserTest::SetUp() {
                                  subprocess_path);
 #endif
 
-#if defined(USE_AURA) && defined(TOOLKIT_VIEWS)
+#if defined(USE_AURA) && defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMECAST)
   // https://crbug.com/695054: Ignore window activation/deactivation to make
   // the Chrome-internal focus unaffected by OS events caused by running tests
   // in parallel.
@@ -83,7 +91,9 @@ void ContentBrowserTest::SetUp() {
 #endif
 
   // LinuxInputMethodContextFactory has to be initialized.
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
   ui::InitializeInputMethodForTesting();
 #endif
 
@@ -96,24 +106,24 @@ void ContentBrowserTest::TearDown() {
   BrowserTestBase::TearDown();
 
   // LinuxInputMethodContextFactory has to be shutdown.
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
   ui::ShutdownInputMethodForTesting();
 #endif
 }
 
 void ContentBrowserTest::PreRunTestOnMainThread() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.InitializeChromeosConnectionType();
 #endif
 
-  if (!switches::IsRunWebTestsSwitchPresent()) {
-    CHECK_EQ(Shell::windows().size(), 1u);
-    shell_ = Shell::windows()[0];
-    SetInitialWebContents(shell_->web_contents());
-  }
+  CHECK_EQ(Shell::windows().size(), 1u);
+  shell_ = Shell::windows()[0];
+  SetInitialWebContents(shell_->web_contents());
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On Mac, without the following autorelease pool, code which is directly
   // executed (as opposed to executed inside a message loop) would autorelease
   // objects into a higher-level pool. This pool is not recycled in-sync with
@@ -125,10 +135,10 @@ void ContentBrowserTest::PreRunTestOnMainThread() {
 #endif
 
   // Pump startup related events.
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
   base::RunLoop().RunUntilIdle();
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   pool_->Recycle();
 #endif
 
@@ -141,7 +151,7 @@ void ContentBrowserTest::PostRunTestOnMainThread() {
   // This is a common error causing a crash on MAC.
   DCHECK(pre_run_test_executed_);
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   pool_->Recycle();
 #endif
 
@@ -150,7 +160,7 @@ void ContentBrowserTest::PostRunTestOnMainThread() {
     i.GetCurrentValue()->FastShutdownIfPossible();
   }
 
-  Shell::CloseAllWindows();
+  Shell::Shutdown();
 }
 
 Shell* ContentBrowserTest::CreateBrowser() {

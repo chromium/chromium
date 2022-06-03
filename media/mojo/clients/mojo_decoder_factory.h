@@ -5,8 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/decoder_factory.h"
 
 namespace media {
@@ -15,29 +14,33 @@ namespace mojom {
 class InterfaceFactory;
 }
 
-class MojoDecoderFactory : public DecoderFactory {
+class MojoDecoderFactory final : public DecoderFactory {
  public:
   explicit MojoDecoderFactory(
       media::mojom::InterfaceFactory* interface_factory);
+
+  MojoDecoderFactory(const MojoDecoderFactory&) = delete;
+  MojoDecoderFactory& operator=(const MojoDecoderFactory&) = delete;
+
   ~MojoDecoderFactory() final;
 
   void CreateAudioDecoders(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) final;
 
+  // TODO(crbug.com/1173503): Implement GetSupportedVideoDecoderConfigs.
+
   void CreateVideoDecoders(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       GpuVideoAcceleratorFactories* gpu_factories,
       MediaLog* media_log,
-      const RequestOverlayInfoCB& request_overlay_info_cb,
+      RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
       std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) final;
 
  private:
   media::mojom::InterfaceFactory* interface_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderFactory);
 };
 
 }  // namespace media

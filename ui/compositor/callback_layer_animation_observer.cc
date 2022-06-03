@@ -5,6 +5,7 @@
 #include "ui/compositor/callback_layer_animation_observer.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "ui/compositor/layer_animation_sequence.h"
 
 namespace ui {

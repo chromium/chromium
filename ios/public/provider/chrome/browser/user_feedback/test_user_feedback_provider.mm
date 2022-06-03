@@ -11,3 +11,15 @@
 TestUserFeedbackProvider::TestUserFeedbackProvider() {}
 
 TestUserFeedbackProvider::~TestUserFeedbackProvider() {}
+
+void TestUserFeedbackProvider::Synchronize() {
+  synchronize_called_ = true;
+}
+
+bool TestUserFeedbackProvider::SynchronizeCalled() const {
+  return synchronize_called_;
+}
+
+void TestUserFeedbackProvider::ResetSynchronizeCalled() {
+  synchronize_called_ = false;
+}

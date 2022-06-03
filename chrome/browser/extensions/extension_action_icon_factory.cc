@@ -5,9 +5,9 @@
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/extension_action.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest.h"
@@ -31,16 +31,15 @@ void ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(bool value) {
 ExtensionActionIconFactory::ExtensionActionIconFactory(
     Profile* profile,
     const Extension* extension,
-    ExtensionAction* action,
+    extensions::ExtensionAction* action,
     Observer* observer)
     : profile_(profile),
       action_(action),
       observer_(observer),
       should_check_icons_(extension->location() !=
-                          extensions::Manifest::UNPACKED),
-      icon_image_observer_(this) {
+                          extensions::mojom::ManifestLocation::kUnpacked) {
   if (action->default_icon_image())
-    icon_image_observer_.Add(action->default_icon_image());
+    icon_image_observation_.Observe(action->default_icon_image());
 }
 
 ExtensionActionIconFactory::~ExtensionActionIconFactory() {}
@@ -53,7 +52,7 @@ void ExtensionActionIconFactory::OnExtensionIconImageChanged(IconImage* image) {
 
 void ExtensionActionIconFactory::OnExtensionIconImageDestroyed(
     IconImage* image) {
-  icon_image_observer_.RemoveAll();
+  icon_image_observation_.Reset();
 }
 
 gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {

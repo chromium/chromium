@@ -1,0 +1,16 @@
+<style include="settings-shared cr-shared-style">
+  .line-clamp {
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+</style>
+<div id="textDiv" style$="-webkit-line-clamp: [[lineClamp]];"
+  class$="line-clamp [[textStyle]]">
+  [[text]]
+</div>
+<template is="dom-if" if="[[textOverflowing_]]">
+  <paper-tooltip for="textDiv" fit-to-visible-bounds>
+    [[text]]
+  </paper-tooltip>
+</template>

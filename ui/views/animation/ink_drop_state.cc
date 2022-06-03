@@ -4,9 +4,10 @@
 
 #include "ui/views/animation/ink_drop_state.h"
 
+#include <ostream>
 #include <string>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace views {
 

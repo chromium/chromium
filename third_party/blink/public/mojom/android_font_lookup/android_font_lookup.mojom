@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Interface for renderer to request Android downloaded fonts from font
+// providers on-device.
+interface AndroidFontLookup {
+  // Returns a list of ICU case folded full font names, sorted in ascending
+  // lexicographic order, which may be available to be fetched locally from
+  // on-device storage.
+  [Sync]
+  GetUniqueNameLookupTable()
+    => (array<string> unique_font_names);
+
+  // Returns an opened read-only File for a font with the given ICU case folded
+  // full font name or null if the font is not available. Although the
+  // implementation posts to a user-blocking background thread, this interface
+  // is synchronous for the renderer to avoid unnecessary re-layout jank.
+  [Sync]
+  MatchLocalFontByUniqueName(string font_unique_name)
+    => (mojo_base.mojom.ReadOnlyFile? font_file_handle);
+};

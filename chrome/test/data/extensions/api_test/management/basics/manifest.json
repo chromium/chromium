@@ -1,0 +1,10 @@
+{
+  "name": "Extension Management API Test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["basics.js"],
+    "persistent": true
+  },
+  "permissions": ["management"]
+}

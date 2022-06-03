@@ -13,14 +13,23 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
 namespace ui {
 
@@ -108,6 +117,30 @@ float GetRefreshRate(const drmModeModeInfo& mode) {
   return (clock * 1000.0f) / (htotal * vtotal);
 }
 
+display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
+  switch (connector->connector_type) {
+    case DRM_MODE_CONNECTOR_VGA:
+      return display::DISPLAY_CONNECTION_TYPE_VGA;
+    case DRM_MODE_CONNECTOR_DVII:
+    case DRM_MODE_CONNECTOR_DVID:
+    case DRM_MODE_CONNECTOR_DVIA:
+      return display::DISPLAY_CONNECTION_TYPE_DVI;
+    case DRM_MODE_CONNECTOR_VIRTUAL:
+      // A display on VM is treated as an internal display.
+    case DRM_MODE_CONNECTOR_LVDS:
+    case DRM_MODE_CONNECTOR_eDP:
+    case DRM_MODE_CONNECTOR_DSI:
+      return display::DISPLAY_CONNECTION_TYPE_INTERNAL;
+    case DRM_MODE_CONNECTOR_DisplayPort:
+      return display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
+    case DRM_MODE_CONNECTOR_HDMIA:
+    case DRM_MODE_CONNECTOR_HDMIB:
+      return display::DISPLAY_CONNECTION_TYPE_HDMI;
+    default:
+      return display::DISPLAY_CONNECTION_TYPE_UNKNOWN;
+  }
+}
+
 int GetDrmProperty(int fd,
                    drmModeConnector* connector,
                    const std::string& name,
@@ -151,6 +184,40 @@ ScopedDrmPropertyBlobPtr GetDrmPropertyBlob(int fd,
   return nullptr;
 }
 
+display::PrivacyScreenState GetPrivacyScreenState(int fd,
+                                                  drmModeConnector* connector) {
+  ScopedDrmPropertyPtr property;
+  int index = GetDrmProperty(fd, connector, "privacy-screen", &property);
+  if (index < 0)
+    return display::PrivacyScreenState::kNotSupported;
+
+  DCHECK_LT(connector->prop_values[index],
+            display::PrivacyScreenState::kPrivacyScreenStateLast);
+  if (connector->prop_values[index] >=
+      display::PrivacyScreenState::kPrivacyScreenStateLast) {
+    LOG(ERROR) << "Invalid privacy-screen property value: Expected < "
+               << display::PrivacyScreenState::kPrivacyScreenStateLast
+               << ", but got: " << connector->prop_values[index];
+  }
+
+  return static_cast<display::PrivacyScreenState>(
+      connector->prop_values[index]);
+}
+
+std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
+  ScopedDrmPropertyBlobPtr path_blob =
+      GetDrmPropertyBlob(fd, connector, "PATH");
+
+  if (!path_blob) {
+    DCHECK_GT(connector->connector_id, 0u);
+
+    // The topology is consisted solely of the connector id.
+    return {base::strict_cast<uint64_t>(connector->connector_id)};
+  }
+
+  return ParsePathBlob(*path_blob);
+}
+
 bool IsAspectPreserving(int fd, drmModeConnector* connector) {
   ScopedDrmPropertyPtr property;
   int index = GetDrmProperty(fd, connector, "scaling mode", &property);
@@ -167,14 +234,23 @@ display::PanelOrientation GetPanelOrientation(int fd,
   int index = GetDrmProperty(fd, connector, "panel orientation", &property);
   if (index < 0)
     return display::PanelOrientation::kNormal;
-  DCHECK_LT(connector->prop_values[index], display::PanelOrientation::kLast);
+  DCHECK_LE(connector->prop_values[index], display::PanelOrientation::kLast);
   return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
 
-int ConnectorIndex(int device_index, int display_index) {
+int ConnectorIndex8(int device_index, int display_index) {
   DCHECK_LT(device_index, 16);
   DCHECK_LT(display_index, 16);
   return ((device_index << 4) + display_index) & 0xFF;
+}
+
+// A connector's index is a combination of:
+// 1) |display_index| the display's index in DRM       bits 0-7
+// 2) |device_index| the display's DRM's index         bits 8-15
+// e.g. - A 3rd display in a 2nd DRM would produce a connector index == 0x0102
+//        (since display index == 2 and DRM index == 1)
+uint16_t ConnectorIndex16(uint8_t device_index, uint8_t display_index) {
+  return ((device_index << 8) + display_index) & 0xFFFF;
 }
 
 bool HasPerPlaneColorCorrectionMatrix(const int fd, drmModeCrtc* crtc) {
@@ -203,12 +279,6 @@ bool IsDrmModuleName(const int fd, const std::string& name) {
   return result;
 }
 
-bool AreDisplayModesEqual(const DisplayMode_Params& lhs,
-                          const DisplayMode_Params& rhs) {
-  return lhs.size == rhs.size && lhs.is_interlaced == rhs.is_interlaced &&
-         lhs.refresh_rate == rhs.refresh_rate;
-}
-
 }  // namespace
 
 ScopedDrmPropertyPtr FindDrmProperty(int fd,
@@ -226,20 +296,6 @@ bool HasColorCorrectionMatrix(int fd, drmModeCrtc* crtc) {
   ScopedDrmObjectPropertyPtr crtc_props(
       drmModeObjectGetProperties(fd, crtc->crtc_id, DRM_MODE_OBJECT_CRTC));
   return !!FindDrmProperty(fd, crtc_props.get(), "CTM");
-}
-
-DisplayMode_Params GetDisplayModeParams(const display::DisplayMode& mode) {
-  DisplayMode_Params params;
-  params.size = mode.size();
-  params.is_interlaced = mode.is_interlaced();
-  params.refresh_rate = mode.refresh_rate();
-  return params;
-}
-
-std::unique_ptr<display::DisplayMode> CreateDisplayModeFromParams(
-    const DisplayMode_Params& pmode) {
-  return std::make_unique<display::DisplayMode>(pmode.size, pmode.is_interlaced,
-                                                pmode.refresh_rate);
 }
 
 const gfx::Size ModeSize(const drmModeModeInfo& mode) {
@@ -268,7 +324,7 @@ gfx::Size GetMaximumCursorSize(int fd) {
 HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
     ScopedDrmConnectorPtr connector,
     ScopedDrmCrtcPtr crtc,
-    size_t index)
+    uint8_t index)
     : connector_(std::move(connector)), crtc_(std::move(crtc)), index_(index) {}
 
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
@@ -282,6 +338,14 @@ GetAvailableDisplayControllerInfos(int fd) {
   std::vector<ScopedDrmConnectorPtr> connectors;
   std::vector<drmModeConnector*> available_connectors;
   for (int i = 0; i < resources->count_connectors; ++i) {
+    if (i >= kMaxDrmConnectors) {
+      LOG(WARNING) << "Reached the current limit of " << kMaxDrmConnectors
+                   << " connectors per DRM. Ignoring the remaining "
+                   << resources->count_connectors - kMaxDrmConnectors
+                   << " connectors.";
+      break;
+    }
+
     ScopedDrmConnectorPtr connector(
         drmModeGetConnector(fd, resources->connectors[i]));
     if (!connector)
@@ -330,7 +394,8 @@ GetAvailableDisplayControllerInfos(int fd) {
                                return connector.get() == c;
                              });
     DCHECK(iter != connectors.end());
-    const size_t index = iter - connectors.begin();
+    // |connectors.size()| <= 256, so |index| should be between 0-255.
+    const uint8_t index = iter - connectors.begin();
     DCHECK_LT(index, connectors.size());
     displays.push_back(std::make_unique<HardwareDisplayControllerInfo>(
         std::move(*iter), std::move(crtc), index));
@@ -403,43 +468,30 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
   return modes;
 }
 
-display::DisplayConnectionType GetDisplayType(
-    const drmModeConnector* connector) {
-  switch (connector->connector_type) {
-    case DRM_MODE_CONNECTOR_VGA:
-      return display::DISPLAY_CONNECTION_TYPE_VGA;
-    case DRM_MODE_CONNECTOR_DVII:
-    case DRM_MODE_CONNECTOR_DVID:
-    case DRM_MODE_CONNECTOR_DVIA:
-      return display::DISPLAY_CONNECTION_TYPE_DVI;
-    case DRM_MODE_CONNECTOR_LVDS:
-    case DRM_MODE_CONNECTOR_eDP:
-    case DRM_MODE_CONNECTOR_DSI:
-      return display::DISPLAY_CONNECTION_TYPE_INTERNAL;
-    case DRM_MODE_CONNECTOR_DisplayPort:
-      return display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
-    case DRM_MODE_CONNECTOR_HDMIA:
-    case DRM_MODE_CONNECTOR_HDMIB:
-      return display::DISPLAY_CONNECTION_TYPE_HDMI;
-    default:
-      return display::DISPLAY_CONNECTION_TYPE_UNKNOWN;
-  }
-}
-
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    size_t device_index,
+    uint8_t device_index,
     const gfx::Point& origin) {
-  const uint8_t display_index = ConnectorIndex(device_index, info->index());
+  const uint8_t display_index = ConnectorIndex8(device_index, info->index());
+  const uint16_t connector_index =
+      ConnectorIndex16(device_index, info->index());
   const gfx::Size physical_size =
       gfx::Size(info->connector()->mmWidth, info->connector()->mmHeight);
   const display::DisplayConnectionType type = GetDisplayType(info->connector());
+  uint64_t base_connector_id = 0u;
+  std::vector<uint64_t> path_topology = GetPathTopology(fd, info->connector());
+  if (!path_topology.empty()) {
+    base_connector_id = path_topology.front();
+    path_topology.erase(path_topology.begin());
+  }
   const bool is_aspect_preserving_scaling =
       IsAspectPreserving(fd, info->connector());
   const display::PanelOrientation panel_orientation =
       GetPanelOrientation(fd, info->connector());
+  const display::PrivacyScreenState privacy_screen_state =
+      GetPrivacyScreenState(fd, info->connector());
   const bool has_color_correction_matrix =
       HasColorCorrectionMatrix(fd, info->crtc()) ||
       HasPerPlaneColorCorrectionMatrix(fd, info->crtc());
@@ -451,12 +503,15 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(fd);
 
   std::string display_name;
-  int64_t display_id = display_index;
+  // Make sure the ID contains non index part.
+  int64_t port_display_id = display_index | 0x100;
+  int64_t edid_display_id = display::kInvalidDisplayId;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
   gfx::ColorSpace display_color_space;
   uint32_t bits_per_channel = 8u;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata{};
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
 
@@ -466,14 +521,16 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
                             !!edid_blob);
   std::vector<uint8_t> edid;
   if (edid_blob) {
+    DCHECK(edid_blob->length);
     edid.assign(static_cast<uint8_t*>(edid_blob->data),
                 static_cast<uint8_t*>(edid_blob->data) + edid_blob->length);
-
-    display::EdidParser edid_parser(edid);
+    const bool is_external = type != display::DISPLAY_CONNECTION_TYPE_INTERNAL;
+    display::EdidParser edid_parser(edid, is_external);
     display_name = edid_parser.display_name();
     active_pixel_size = edid_parser.active_pixel_size();
     product_code = edid_parser.GetProductCode();
-    display_id = edid_parser.GetDisplayId(display_index);
+    port_display_id = edid_parser.GetIndexBasedDisplayId(display_index);
+    edid_display_id = edid_parser.GetEdidBasedDisplayId();
     year_of_manufacture = edid_parser.year_of_manufacture();
     has_overscan =
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
@@ -483,6 +540,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 bits_per_channel);
+    hdr_static_metadata = edid_parser.hdr_static_metadata();
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
             << info->connector()->connector_id;
@@ -494,81 +552,13 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       ExtractDisplayModes(info, active_pixel_size, &current_mode, &native_mode);
 
   return std::make_unique<display::DisplaySnapshot>(
-      display_id, origin, physical_size, type, is_aspect_preserving_scaling,
-      has_overscan, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      display_name, sys_path, std::move(modes), panel_orientation, edid,
-      current_mode, native_mode, product_code, year_of_manufacture,
-      maximum_cursor_size);
-}
-
-// TODO(rjkroege): Remove in a subsequent CL once Mojo IPC is used everywhere.
-std::vector<DisplaySnapshot_Params> CreateDisplaySnapshotParams(
-    const MovableDisplaySnapshots& displays) {
-  std::vector<DisplaySnapshot_Params> params;
-  for (auto& d : displays) {
-    DisplaySnapshot_Params p;
-
-    p.display_id = d->display_id();
-    p.origin = d->origin();
-    p.physical_size = d->physical_size();
-    p.type = d->type();
-    p.is_aspect_preserving_scaling = d->is_aspect_preserving_scaling();
-    p.has_overscan = d->has_overscan();
-    p.has_color_correction_matrix = d->has_color_correction_matrix();
-    p.color_correction_in_linear_space = d->color_correction_in_linear_space();
-    p.color_space = d->color_space();
-    p.bits_per_channel = d->bits_per_channel();
-    p.display_name = d->display_name();
-    p.sys_path = d->sys_path();
-
-    std::vector<DisplayMode_Params> mode_params;
-    for (const auto& m : d->modes()) {
-      mode_params.push_back(GetDisplayModeParams(*m));
-    }
-    p.modes = mode_params;
-    p.panel_orientation = d->panel_orientation();
-    p.edid = d->edid();
-
-    p.has_current_mode = d->current_mode();
-    if (d->current_mode())
-      p.current_mode = GetDisplayModeParams(*d->current_mode());
-
-    p.has_native_mode = d->native_mode();
-    if (d->native_mode())
-      p.native_mode = GetDisplayModeParams(*d->native_mode());
-
-    p.product_code = d->product_code();
-    p.year_of_manufacture = d->year_of_manufacture();
-    p.maximum_cursor_size = d->maximum_cursor_size();
-
-    params.push_back(p);
-  }
-  return params;
-}
-
-std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
-    const DisplaySnapshot_Params& params) {
-  display::DisplaySnapshot::DisplayModeList modes;
-  const display::DisplayMode* current_mode = nullptr;
-  const display::DisplayMode* native_mode = nullptr;
-  for (const auto& mode : params.modes) {
-    modes.push_back(CreateDisplayModeFromParams(mode));
-    if (AreDisplayModesEqual(params.current_mode, mode))
-      current_mode = modes.back().get();
-    if (AreDisplayModesEqual(params.native_mode, mode))
-      native_mode = modes.back().get();
-  }
-
-  return std::make_unique<display::DisplaySnapshot>(
-      params.display_id, params.origin, params.physical_size, params.type,
-      params.is_aspect_preserving_scaling, params.has_overscan,
-      params.has_color_correction_matrix,
-      params.color_correction_in_linear_space, params.color_space,
-      params.bits_per_channel, params.display_name, params.sys_path,
-      std::move(modes), params.panel_orientation, params.edid, current_mode,
-      native_mode, params.product_code, params.year_of_manufacture,
-      params.maximum_cursor_size);
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
+      is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
+      has_color_correction_matrix, color_correction_in_linear_space,
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), panel_orientation, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
@@ -582,7 +572,7 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
       return DRM_FORMAT_XRGB8888;
-    case gfx::BufferFormat::BGRX_1010102:
+    case gfx::BufferFormat::BGRA_1010102:
       return DRM_FORMAT_XRGB2101010;
     case gfx::BufferFormat::RGBA_1010102:
       return DRM_FORMAT_XBGR2101010;
@@ -592,10 +582,83 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
       return DRM_FORMAT_NV12;
     case gfx::BufferFormat::YVU_420:
       return DRM_FORMAT_YVU420;
+    case gfx::BufferFormat::P010:
+      return DRM_FORMAT_P010;
     default:
       NOTREACHED();
       return 0;
   }
+}
+
+uint64_t GetEnumValueForName(int fd, int property_id, const char* str) {
+  ScopedDrmPropertyPtr res(drmModeGetProperty(fd, property_id));
+  for (int i = 0; i < res->count_enums; ++i) {
+    if (strcmp(res->enums[i].name, str) == 0) {
+      return res->enums[i].value;
+    }
+  }
+  NOTREACHED();
+  return 0;
+}
+
+// Returns a vector that holds the path topology of the display. Returns an
+// empty vector upon failure.
+//
+// A path topology c-string is of the format:
+//    mst:{DRM_BASE_CONNECTOR_ID#}-{BRANCH_1_PORT#}-...-{BRANCH_N_PORT#}\0
+//
+// For example, the display configuration:
+//    Device <--conn6-- MST1 <--port2-- MST2 <--port1-- Display
+// may produce the following topology c-string:
+//     "mst:6-2-1"
+//
+// To see how this string is constructed in the DRM:
+// https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/gpu/drm/drm_dp_mst_topology.c?h=v5.10-rc3#n2229
+std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
+  if (!path_blob.length) {
+    LOG(ERROR) << "PATH property blob is empty.";
+    return {};
+  }
+
+  std::string path_str(
+      static_cast<char*>(path_blob.data),
+      base::strict_cast<std::string::size_type>(path_blob.length));
+  base::StringPiece path_string_piece(path_str);
+  path_string_piece = base::TrimString(path_string_piece, std::string("\0", 1u),
+                                       base::TRIM_TRAILING);
+
+  const std::string prefix("mst:");
+  if (!base::StartsWith(path_string_piece, prefix,
+                        base::CompareCase::SENSITIVE)) {
+    LOG(ERROR) << "Invalid PATH string prefix. Does not contain '" << prefix
+               << "'. Input: '" << path_str << "'";
+    return {};
+  }
+  path_string_piece.remove_prefix(prefix.length());
+
+  std::vector<uint64_t> path;
+  for (const auto& string_port :
+       base::SplitStringPiece(path_string_piece, "-", base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_ALL)) {
+    uint64_t int_port = 0;
+    if (base::StringToUint64(string_port, &int_port) && int_port > 0) {
+      path.push_back(int_port);
+    } else {
+      LOG(ERROR)
+          << "One or more port values in the PATH string are invalid. Input: '"
+          << path_str << "'";
+      return {};
+    }
+  }
+
+  if (path.size() < 2) {
+    LOG(ERROR)
+        << "Insufficient number of ports (should be at least 2 but found "
+        << path.size() << "). Input: '" << path_str << "'";
+    return {};
+  }
+
+  return path;
 }
 
 }  // namespace ui

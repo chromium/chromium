@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>Blob navigation in a new tab</title>
+<script>
+const openBlobPdfInNewTab = () => {
+  fetch('/pdf/test.pdf').then(response => response.blob()).then(blob => {
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+    URL.revokeObjectURL(url);
+  });
+};
+</script>

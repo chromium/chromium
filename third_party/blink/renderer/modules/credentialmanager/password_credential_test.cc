@@ -97,7 +97,10 @@ TEST_F(PasswordCredentialTest, CreateFromFormNoPassword) {
   EXPECT_EQ(nullptr, credential);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
-  EXPECT_EQ("'password' must not be empty.", exception_state.Message());
+  EXPECT_EQ(
+      "Either 'current-password' or 'new-password' must be specified in the "
+      "form's autocomplete attribute.",
+      exception_state.Message());
 }
 
 TEST_F(PasswordCredentialTest, CreateFromFormNoId) {
@@ -116,7 +119,32 @@ TEST_F(PasswordCredentialTest, CreateFromFormNoId) {
   EXPECT_EQ(nullptr, credential);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(ESErrorType::kTypeError, exception_state.CodeAs<ESErrorType>());
-  EXPECT_EQ("'id' must not be empty.", exception_state.Message());
+  EXPECT_EQ(
+      "'username' must be specified in the form's autocomplete attribute.",
+      exception_state.Message());
+}
+
+TEST_F(PasswordCredentialTest, CreateFromFormElementWithoutName) {
+  HTMLFormElement* form =
+      PopulateForm("multipart/form-data",
+                   "<input type='text' name='theId' value='musterman' "
+                   "autocomplete='username'>"
+                   "<input type='text' name='thePassword' value='sekrit' "
+                   "autocomplete='current-password'>"
+                   "<input type='text' "
+                   "value='https://example.com/photo' autocomplete='photo'>"
+                   "<input type='text' value='extra'>"
+                   "<input type='text' value='friendly name' "
+                   "autocomplete='name'>");
+  PasswordCredential* credential =
+      PasswordCredential::Create(form, ASSERT_NO_EXCEPTION);
+  ASSERT_NE(nullptr, credential);
+
+  EXPECT_EQ("musterman", credential->id());
+  EXPECT_EQ("sekrit", credential->password());
+  EXPECT_EQ(KURL(), credential->iconURL());
+  EXPECT_EQ(String(), credential->name());
+  EXPECT_EQ("password", credential->type());
 }
 
 }  // namespace blink

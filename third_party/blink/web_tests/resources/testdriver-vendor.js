@@ -85,29 +85,63 @@
       element.focus();
       if (!window.eventSender)
         reject(new Error("No eventSender"));
-      if (keys.length > 1)
-        reject(new Error("No support for a sequence of multiple keys"));
-      let eventSenderKeys = keys;
-      let charCode = keys.charCodeAt(0);
-      // See https://w3c.github.io/webdriver/#keyboard-actions and
-      // EventSender::KeyDown().
-      if (charCode == 0xE004) {
-        eventSenderKeys = "Tab";
-      } else if (charCode == 0xE050) {
-        eventSenderKeys = "ShiftRight";
-      } else if (charCode == 0xE012) {
-        eventSenderKeys = "ArrowLeft";
-      } else if (charCode == 0xE013) {
-        eventSenderKeys = "ArrowUp";
-      } else if (charCode == 0xE014) {
-        eventSenderKeys = "ArrowRight";
-      } else if (charCode == 0xE015) {
-        eventSenderKeys = "ArrowDown";
-      } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
-        reject(new Error("No support for this code: U+" + charCode.toString(16)));
+      if (element.localName === 'input' && element.type === 'file') {
+          element.addEventListener('drop', resolve);
+          eventSender.beginDragWithFiles([keys]);
+          const centerX = element.offsetLeft + element.offsetWidth / 2;
+          const centerY = element.offsetTop + element.offsetHeight / 2;
+          // Moving the mouse could interfere with the test, if it also tries to control
+          // mouse movements. This can cause differences between tests run with run_web_tests
+          // and tests run with wptrunner.
+          eventSender.mouseMoveTo(centerX * devicePixelRatio, centerY * devicePixelRatio);
+          eventSender.mouseUp();
+          return;
       }
       window.requestAnimationFrame(() => {
-        window.eventSender.keyDown(eventSenderKeys);
+        for(var i = 0; i < keys.length; ++i) {
+          let eventSenderKeys = keys[i];
+          let charCode = keys.charCodeAt(i);
+          let modifierValue;
+          // See https://w3c.github.io/webdriver/#keyboard-actions and
+          // EventSender::KeyDown().
+          if (charCode == 0xE004) {
+            eventSenderKeys = "Tab";
+          } else if (charCode == 0xE050) {
+            eventSenderKeys = "ShiftRight";
+          } else if (charCode == 0xE012) {
+            eventSenderKeys = "ArrowLeft";
+          } else if (charCode == 0xE013) {
+            eventSenderKeys = "ArrowUp";
+          } else if (charCode == 0xE014) {
+            eventSenderKeys = "ArrowRight";
+          } else if (charCode == 0xE015) {
+            eventSenderKeys = "ArrowDown";
+          } else if (charCode == 0xE00C) {
+            eventSenderKeys = "Escape";
+          } else if (charCode == 0xE003) {
+            eventSenderKeys = "Backspace";
+          } else if (charCode == 0xE009) {
+            eventSenderKeys = "ControlLeft";
+            modifierValue = "ctrlKey";
+          } else if (charCode == 0xE00A) {
+            eventSenderKeys = "AltLeft";
+            modifierValue = "altKey";
+          } else if (charCode == 0xE03D) {
+            eventSenderKeys = "MetaLeft";
+            modifierValue = "metaKey";
+          } else if (charCode == 0xE008) {
+            eventSenderKeys = "ShiftLeft";
+            modifierValue = "shiftKey";
+          } else if (charCode == 0xE006 || charCode == 0xE007) {
+            eventSenderKeys = "Enter";
+            modifierValue = "enter";
+          } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
+            reject(new Error("No support for this code: U+" + charCode.toString(16)));
+            return;
+          }
+
+          window.eventSender.keyDown(eventSenderKeys, modifierValue);
+        }
         resolve();
       });
     });
@@ -124,9 +158,20 @@
     });
   };
 
+  window.test_driver_internal.generate_test_report = function(message) {
+    return new Promise(function(resolve, reject) {
+      if (internals) {
+        internals.generateTestReport(message);
+        resolve();
+      } else {
+        reject(new Error("window.internals not enabled."));
+      }
+    });
+  };
+
   window.test_driver_internal.action_sequence = function(actions) {
     if (window.top !== window) {
-      return Promise.reject(new Error("can only send keys in top-level window"));
+      return Promise.reject(new Error("can only send actions in top-level window"));
     }
 
     var didScrollIntoView = false;
@@ -135,6 +180,12 @@
       var last_y_position = 0;
       var first_pointer_down = false;
       for (let j = 0; j < actions[i].actions.length; j++) {
+        if (actions[i].actions[j].type == "keyDown" ||
+            actions[i].actions[j].type == "keyUp") {
+          return Promise.reject(new Error("we do not support keydown and keyup actions, " +
+                                          "please use test_driver.send_keys"));
+        }
+
         if ('origin' in actions[i].actions[j]) {
           if (typeof(actions[i].actions[j].origin) === 'string') {
              if (actions[i].actions[j].origin == "viewport") {
@@ -180,7 +231,9 @@
           }
         }
 
-        if (actions[i].actions[j].type == "pointerDown" || actions[i].actions[j].type == "pointerMove") {
+        if (actions[i].actions[j].type == "pointerDown" ||
+            actions[i].actions[j].type == "pointerMove" ||
+            actions[i].actions[j].type == "scroll") {
           actions[i].actions[j].x = last_x_position;
           actions[i].actions[j].y = last_y_position;
         }
@@ -223,30 +276,13 @@
     return foundAuthenticator;
   }
 
-  function loadVirtualAuthenticatorManager() {
-    if (virtualAuthenticatorManager_) {
-      return Promise.resolve(virtualAuthenticatorManager_);
+  async function loadVirtualAuthenticatorManager() {
+    if (!virtualAuthenticatorManager_) {
+      const {VirtualAuthenticatorManager} = await import(
+          '/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.m.js');
+      virtualAuthenticatorManager_ = VirtualAuthenticatorManager.getRemote();
     }
-
-    return Promise.all([
-      "/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js",
-      "/gen/mojo/public/mojom/base/time.mojom-lite.js",
-      "/gen/url/mojom/url.mojom-lite.js",
-      "/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom-lite.js",
-      "/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-lite.js",
-    ].map(dependency => new Promise((resolve, reject) => {
-      let script = document.createElement("script");
-      script.src = dependency;
-      script.async = false;
-      script.onload = resolve;
-      document.head.appendChild(script);
-    }))).then(() => {
-      virtualAuthenticatorManager_ = new blink.test.mojom.VirtualAuthenticatorManagerRemote;
-      Mojo.bindInterface(
-        blink.test.mojom.VirtualAuthenticatorManager.$interfaceName,
-        virtualAuthenticatorManager_.$.bindNewPipeAndPassReceiver().handle, "context", true);
-      return virtualAuthenticatorManager_;
-    });
+    return virtualAuthenticatorManager_;
   }
 
   function urlSafeBase64ToUint8Array(base64url) {
@@ -271,47 +307,62 @@
   window.test_driver_internal.add_virtual_authenticator = async function(options) {
     let manager = await loadVirtualAuthenticatorManager();
 
+    const {AuthenticatorAttachment, AuthenticatorTransport} = await import(
+        '/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom.m.js');
+    const {ClientToAuthenticatorProtocol, Ctap2Version} = await import(
+        '/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.m.js');
+
     options = Object.assign({
       hasResidentKey: false,
       hasUserVerification: false,
       isUserConsenting: true,
       isUserVerified: false,
+      extensions: [],
     }, options);
     let mojoOptions = {};
     switch (options.protocol) {
       case "ctap1/u2f":
-        mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.U2F;
+        mojoOptions.protocol = ClientToAuthenticatorProtocol.U2F;
         break;
       case "ctap2":
-        mojoOptions.protocol = blink.test.mojom.ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.protocol = ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.ctap2Version = Ctap2Version.CTAP2_0;
+        break;
+      case "ctap2_1":
+        mojoOptions.protocol = ClientToAuthenticatorProtocol.CTAP2;
+        mojoOptions.ctap2Version = Ctap2Version.CTAP2_1;
         break;
       default:
         throw "Unknown protocol "  + options.protocol;
     }
     switch (options.transport) {
       case "usb":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.USB;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.USB;
+        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
         break;
       case "nfc":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.NFC;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.NFC;
+        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
         break;
       case "ble":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.BLE;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.CROSS_PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.BLE;
+        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
         break;
       case "internal":
-        mojoOptions.transport = blink.mojom.AuthenticatorTransport.INTERNAL;
-        mojoOptions.attachment = blink.mojom.AuthenticatorAttachment.PLATFORM;
+        mojoOptions.transport = AuthenticatorTransport.INTERNAL;
+        mojoOptions.attachment = AuthenticatorAttachment.PLATFORM;
         break;
       default:
         throw "Unknown transport "  + options.transport;
     }
     mojoOptions.hasResidentKey = options.hasResidentKey;
     mojoOptions.hasUserVerification = options.hasUserVerification;
+    mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
+    mojoOptions.hasCredBlob = options.extensions.indexOf("credBlob") !== -1;
+    mojoOptions.isUserPresent = options.isUserConsenting;
 
     let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;
+    await authenticator.setUserVerified(options.isUserVerified);
     return (await authenticator.getUniqueId()).id;
   };
 
@@ -376,6 +427,21 @@
     let response = await manager.removeAuthenticator(authenticatorId);
     if (!response.removed)
       throw "Could not remove authenticator";
+  }
+
+  window.test_driver_internal.set_permission = function(permission_params) {
+    // TODO(https://crbug.com/977612): Chromium currently lacks support for
+    // |permission_params.one_realm| and will always consider it is set to false.
+    return internals.setPermission(permission_params.descriptor,
+                                   permission_params.state);
+  }
+
+  window.test_driver_internal.set_storage_access = function(origin, embedding_origin, blocked) {
+    return internals.setStorageAccess(origin, embedding_origin, blocked);
+  }
+
+  window.test_driver_internal.delete_all_cookies = function() {
+    return internals.deleteAllCookies();
   }
 
   // Enable automation so we don't wait for user input on unimplemented APIs

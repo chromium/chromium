@@ -1,6 +1,7 @@
 Name: libpng
 URL: http://libpng.org/
 Version: 1.6.37
+CPEPrefix: cpe:/a:libpng:libpng:1.6.37
 Security Critical: yes
 License: libpng license
 License Android Compatible: yes

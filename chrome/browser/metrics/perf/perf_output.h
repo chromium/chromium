@@ -11,11 +11,11 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/pipe_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class DebugDaemonClient;
@@ -39,6 +39,10 @@ class PerfOutputCall {
                  base::TimeDelta duration,
                  const std::vector<std::string>& perf_args,
                  DoneCallback callback);
+
+  PerfOutputCall(const PerfOutputCall&) = delete;
+  PerfOutputCall& operator=(const PerfOutputCall&) = delete;
+
   virtual ~PerfOutputCall();
 
   // Stop() is made virtual for mocks in testing.
@@ -50,8 +54,8 @@ class PerfOutputCall {
 
  private:
   // Internal callbacks.
-  void OnIOComplete(base::Optional<std::string> data);
-  void OnGetPerfOutput(base::Optional<uint64_t> result);
+  void OnIOComplete(absl::optional<std::string> data);
+  void OnGetPerfOutput(absl::optional<uint64_t> result);
 
   void StopImpl();
 
@@ -71,14 +75,12 @@ class PerfOutputCall {
   // output), the stop request will be sent out after we have the session ID to
   // stop the perf session.
   bool pending_stop_;
-  base::Optional<uint64_t> perf_session_id_;
+  absl::optional<uint64_t> perf_session_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // To pass around the "this" pointer across threads safely.
   base::WeakPtrFactory<PerfOutputCall> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerfOutputCall);
 };
 
 }  // namespace metrics

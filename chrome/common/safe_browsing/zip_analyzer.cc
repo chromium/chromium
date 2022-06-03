@@ -11,17 +11,15 @@
 #include <set>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/common/safe_browsing/file_type_policies.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace safe_browsing {
@@ -66,7 +64,7 @@ void AnalyzeZipFile(base::File zip_file,
       continue;
     }
     if (base::Time::Now() - start_time >
-        base::TimeDelta::FromMilliseconds(kZipAnalysisTimeoutMs)) {
+        base::Milliseconds(kZipAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

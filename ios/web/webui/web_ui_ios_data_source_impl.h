@@ -23,12 +23,17 @@ namespace web {
 class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
                                public WebUIIOSDataSource {
  public:
+  WebUIIOSDataSourceImpl(const WebUIIOSDataSourceImpl&) = delete;
+  WebUIIOSDataSourceImpl& operator=(const WebUIIOSDataSourceImpl&) = delete;
+
   // WebUIIOSDataSource implementation:
-  void AddString(const std::string& name, const base::string16& value) override;
+  void AddString(const std::string& name, const std::u16string& value) override;
   void AddString(const std::string& name, const std::string& value) override;
   void AddLocalizedString(const std::string& name, int ids) override;
   void AddLocalizedStrings(
       const base::DictionaryValue& localized_strings) override;
+  void AddLocalizedStrings(
+      base::span<const webui::LocalizedString> strings) override;
   void AddBoolean(const std::string& name, bool value) override;
   void UseStringsJs() override;
   void AddResourcePath(const std::string& path, int resource_id) override;
@@ -79,8 +84,6 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
   bool deny_xframe_options_;
   bool load_time_data_defaults_added_;
   bool replace_existing_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIIOSDataSourceImpl);
 };
 
 }  // web

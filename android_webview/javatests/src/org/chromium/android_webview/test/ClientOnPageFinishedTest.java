@@ -4,10 +4,12 @@
 
 package org.chromium.android_webview.test;
 
-import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
+import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+import android.util.Pair;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +26,8 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -347,7 +351,7 @@ public class ClientOnPageFinishedTest {
                     "/about.html", CommonResources.ABOUT_HTML, null,
                     () -> {
                         try {
-                            Assert.assertTrue(latch.await(WAIT_TIMEOUT_MS,
+                            Assert.assertTrue(latch.await(SCALED_WAIT_TIMEOUT_MS,
                                     java.util.concurrent.TimeUnit.MILLISECONDS));
                         } catch (InterruptedException e) {
                             Assert.fail("Caught InterruptedException " + e);
@@ -489,8 +493,8 @@ public class ClientOnPageFinishedTest {
                         try {
                             // Delay the server response so that we guarantee stopLoading() comes
                             // before the server response.
-                            Assert.assertTrue(firstUrlLatch.await(
-                                    WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+                            Assert.assertTrue(firstUrlLatch.await(SCALED_WAIT_TIMEOUT_MS,
+                                    java.util.concurrent.TimeUnit.MILLISECONDS));
                         } catch (InterruptedException e) {
                             Assert.fail("Caught InterruptedException " + e);
                         }
@@ -537,7 +541,7 @@ public class ClientOnPageFinishedTest {
                     "/stallingImage.html", "", null /* headers */, () -> {
                         serverImageUrlLatch.countDown();
                         try {
-                            Assert.assertTrue(testDoneLatch.await(WAIT_TIMEOUT_MS,
+                            Assert.assertTrue(testDoneLatch.await(SCALED_WAIT_TIMEOUT_MS,
                                     java.util.concurrent.TimeUnit.MILLISECONDS));
                         } catch (InterruptedException e) {
                             Assert.fail("Caught InterruptedException " + e);
@@ -552,7 +556,7 @@ public class ClientOnPageFinishedTest {
             mActivityTestRule.loadUrlAsync(mAwContents, mainPageUrl);
 
             Assert.assertTrue(serverImageUrlLatch.await(
-                    WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+                    SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
             Assert.assertEquals(0, onPageFinishedHelper.getCallCount());
             // Our load isn't done since we haven't loaded the image - now cancel the load.
             mActivityTestRule.stopLoading(mAwContents);
@@ -560,6 +564,94 @@ public class ClientOnPageFinishedTest {
             Assert.assertEquals(1, onPageFinishedHelper.getCallCount());
         } finally {
             testDoneLatch.countDown();
+            webServer.shutdown();
+        }
+    }
+
+    /**
+     * Ensure the case when max number of redirects is reached using an SXG fallback
+     * url does not crash and results in an error page (due to net::ERR_TO_MANY_REDIRECTS).
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMaxRedirect_SXG() throws Throwable {
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+
+        TestWebServer webServer = TestWebServer.startSsl();
+        try {
+            List<Pair<String, String>> signedExchangeHeaders =
+                    new ArrayList<Pair<String, String>>();
+            signedExchangeHeaders.add(
+                    Pair.create("Content-Type", "application/signed-exchange;v=b3"));
+            signedExchangeHeaders.add(Pair.create("X-Content-Type-Options", "nosniff"));
+            final String fallbackUrl = webServer.setResponseWithNotFoundStatus("/404.html");
+            final String webpageNotAvailable = "Webpage not available";
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("sxg1-b3");
+            sb.append((char) 0);
+            sb.append((char) 0);
+            sb.append((char) fallbackUrl.length());
+            sb.append(fallbackUrl);
+            final String sxgContents = sb.toString();
+
+            final String emptyResp =
+                    webServer.setResponse("/foo.sxg", sxgContents, signedExchangeHeaders);
+            final String redirectUrl = webServer.setRedirect("/302.html", "/redirect_1");
+            for (int i = 1; i < 18; i++) {
+                String redirectUrlLoop =
+                        webServer.setRedirect("/redirect_" + i, "/redirect_" + (i + 1));
+            }
+
+            String finalRedirect = webServer.setRedirect("/redirect_18", "/foo.sxg");
+
+            // Note the current SXG redirect fallback implementation does not
+            // result in onPageFinished, onReceivedError callbacks, see crbug.com/1052242.
+            mActivityTestRule.loadUrlAsync(mAwContents, redirectUrl);
+            mActivityTestRule.waitForVisualStateCallback(mAwContents);
+            Assert.assertEquals(webpageNotAvailable, mAwContents.getTitle());
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    /**
+     * Fragment navigation triggered by history APIs can trigger onPageFinished.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testCalledForHistoryApiFragmentNavigation() throws Throwable {
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            final String testHtml = "<html><head>Header</head><body>Body</body></html>";
+            final String testPath = "/test.html";
+            final String fragmentPath = "/test.html#fragment";
+
+            final String testUrl = webServer.setResponse(testPath, testHtml, null);
+            final String fragmentUrl = webServer.getResponseUrl(fragmentPath);
+
+            int currentCallCount = onPageFinishedHelper.getCallCount();
+            mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, testUrl);
+            onPageFinishedHelper.waitForCallback(currentCallCount);
+            Assert.assertEquals(testUrl, onPageFinishedHelper.getUrl());
+            Assert.assertEquals(1, onPageFinishedHelper.getCallCount());
+
+            currentCallCount = onPageFinishedHelper.getCallCount();
+            // History APIs can trigger fragment navigation, and this fragment navigation will
+            // trigger onPageFinished, the parameter url carried by onPageFinished will be the
+            // parameter url carried by history API.
+            mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient,
+                    "history.pushState(null, null, '" + fragmentPath + "');");
+            onPageFinishedHelper.waitForCallback(currentCallCount);
+            Assert.assertEquals(fragmentUrl, onPageFinishedHelper.getUrl());
+            Assert.assertEquals(2, onPageFinishedHelper.getCallCount());
+        } finally {
             webServer.shutdown();
         }
     }

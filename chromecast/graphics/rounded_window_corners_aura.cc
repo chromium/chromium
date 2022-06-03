@@ -10,6 +10,8 @@
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/ui/mojom/ui_service.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
@@ -24,6 +26,7 @@ const int kCornerRadius = 10;
 // of the main view.
 class BlackCornerView : public views::View {
  public:
+  METADATA_HEADER(BlackCornerView);
   BlackCornerView(int radius, bool on_right, bool on_top)
       : radius_(radius), on_right_(on_right), on_top_(on_top) {}
 
@@ -32,8 +35,9 @@ class BlackCornerView : public views::View {
   void SetColorInversion(bool enable) {
     // In order to show as black we need to paint white when inversion is on.
     color_ = enable ? SK_ColorWHITE : SK_ColorBLACK;
-    SchedulePaint();
+    OnPropertyChanged(&color_, views::kPropertyEffectsPaint);
   }
+  bool GetColorInversion() const { return color_ == SK_ColorWHITE; }
 
  private:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -62,10 +66,18 @@ class BlackCornerView : public views::View {
   bool on_top_;
 };
 
+BEGIN_METADATA(BlackCornerView, views::View)
+ADD_PROPERTY_METADATA(bool, ColorInversion)
+END_METADATA
+
 // Aura based implementation of RoundedWindowCorners.
 class RoundedWindowCornersAura : public RoundedWindowCorners {
  public:
   explicit RoundedWindowCornersAura(CastWindowManager* window_manager);
+
+  RoundedWindowCornersAura(const RoundedWindowCornersAura&) = delete;
+  RoundedWindowCornersAura& operator=(const RoundedWindowCornersAura&) = delete;
+
   ~RoundedWindowCornersAura() override;
 
   void SetEnabled(bool enable) override;
@@ -79,8 +91,6 @@ class RoundedWindowCornersAura : public RoundedWindowCorners {
   std::vector<BlackCornerView*> corners_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedWindowCornersAura);
 };
 
 RoundedWindowCornersAura::RoundedWindowCornersAura(
@@ -104,7 +114,7 @@ RoundedWindowCornersAura::RoundedWindowCornersAura(
   params.bounds = window_manager->GetRootWindow()->GetBoundsInRootWindow();
   params.accept_events = false;
   widget_->Init(std::move(params));
-  widget_->SetContentsView(main_view.release());
+  widget_->SetContentsView(std::move(main_view));
   widget_->GetNativeWindow()->SetName("RoundCorners");
 
   window_manager->SetZOrder(widget_->GetNativeView(),

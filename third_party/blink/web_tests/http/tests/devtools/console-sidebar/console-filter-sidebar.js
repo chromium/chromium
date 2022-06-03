@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console sidebar behaves properly.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('resources/log-source.js');
   await TestRunner.evaluateInPagePromise(`
@@ -21,14 +21,14 @@
   `);
 
   var consoleView = Console.ConsoleView.instance();
-  var sidebar = consoleView._sidebar;
-  var messages = Console.ConsoleView.instance()._visibleViewMessages;
-  consoleView._setImmediatelyFilterMessagesForTest();
-  if (!consoleView._isSidebarOpen)
-    consoleView._splitWidget._showHideSidebarButton.element.click();
+  var sidebar = consoleView.sidebar;
+  var messages = Console.ConsoleView.instance().visibleViewMessages;
+  consoleView.setImmediatelyFilterMessagesForTest();
+  if (!consoleView.isSidebarOpen)
+    consoleView.splitWidget.showHideSidebarButton.element.click();
 
   function dumpSidebar() {
-    var treeElement = sidebar._tree.firstChild();
+    var treeElement = sidebar.tree.firstChild();
     var info = {};
     var depth = 1;
     TestRunner.addResult('SIDEBAR:');
@@ -57,21 +57,21 @@
       next();
     },
     async function selectingErrorGroup(next) {
-      sidebar._treeElements[2].select();
-      TestRunner.addResult('Selecting item: ' + sidebar._selectedTreeElement.title);
+      sidebar.treeElements[2].select();
+      TestRunner.addResult('Selecting item: ' + sidebar.selectedTreeElement.title);
       TestRunner.addResult('MESSAGES:');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       TestRunner.addResult('');
       dumpSidebar();
       next();
     },
     async function selectingFileGroup(next) {
-      sidebar._treeElements[0].expand();
-      sidebar._treeElements[0].select();
-      sidebar._tree.selectNext();
-      TestRunner.addResult('Selecting item: ' + sidebar._selectedTreeElement.title);
+      sidebar.treeElements[0].expand();
+      sidebar.treeElements[0].select();
+      sidebar.tree.selectNext();
+      TestRunner.addResult('Selecting item: ' + sidebar.selectedTreeElement.title);
       TestRunner.addResult('MESSAGES:');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       next();
     },
     async function clearConsole(next) {

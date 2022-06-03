@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "net/spdy/spdy_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,8 +33,7 @@ void EnqueueString(const std::string& data,
   size_t old_total_size = queue->GetTotalSize();
   for (size_t i = 0; i < data.size();) {
     size_t buffer_size = std::min(data.size() - i, max_buffer_size);
-    queue->Enqueue(std::unique_ptr<SpdyBuffer>(
-        new SpdyBuffer(data.data() + i, buffer_size)));
+    queue->Enqueue(std::make_unique<SpdyBuffer>(data.data() + i, buffer_size));
     i += buffer_size;
     EXPECT_FALSE(queue->IsEmpty());
     EXPECT_EQ(old_total_size + i, queue->GetTotalSize());
@@ -119,7 +119,7 @@ TEST_F(SpdyReadQueueTest, Clear) {
   bool discarded = false;
   size_t discarded_bytes = 0;
   buffer->AddConsumeCallback(
-      base::Bind(&OnBufferDiscarded, &discarded, &discarded_bytes));
+      base::BindRepeating(&OnBufferDiscarded, &discarded, &discarded_bytes));
 
   SpdyReadQueue read_queue;
   read_queue.Enqueue(std::move(buffer));

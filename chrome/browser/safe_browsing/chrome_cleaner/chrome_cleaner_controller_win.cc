@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/metrics/histogram_macros.h"
+#include "chrome/common/pref_names.h"
 
 namespace safe_browsing {
 
@@ -32,5 +33,12 @@ void RecordCleanupStartedHistogram(CleanupStartedHistogramValue value) {
 ChromeCleanerController::ChromeCleanerController() = default;
 
 ChromeCleanerController::~ChromeCleanerController() = default;
+
+// static
+void RegisterChromeCleanerScanCompletionTimePref(PrefRegistrySimple* registry) {
+  DCHECK(registry);
+  registry->RegisterTimePref(prefs::kChromeCleanerScanCompletionTime,
+                             base::Time());
+}
 
 }  // namespace safe_browsing

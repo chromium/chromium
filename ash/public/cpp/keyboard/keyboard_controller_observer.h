@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -32,6 +33,21 @@ struct KeyboardStateDescriptor {
   gfx::Rect displaced_bounds_in_screen;
 };
 
+struct KeyRepeatSettings {
+  // Whether keypresses will auto-repeat when a key is held.
+  bool enabled;
+
+  // Auto-repeat starts if a key is held for at least this long.
+  //
+  // Must be positive and non-zero. Typically ranges from ~150-2000ms.
+  base::TimeDelta delay;
+
+  // The time between successive keypress events while a key is held.
+  //
+  // Must be positive and non-zero. Typically ranges from ~20-2000ms.
+  base::TimeDelta interval;
+};
+
 class ASH_PUBLIC_EXPORT KeyboardControllerObserver {
  public:
   // Called when a keyboard enable flag changes.
@@ -47,6 +63,10 @@ class ASH_PUBLIC_EXPORT KeyboardControllerObserver {
   // Called when the virtual keyboard configuration changes.
   virtual void OnKeyboardConfigChanged(const keyboard::KeyboardConfig& config) {
   }
+
+  // Called when key repeat is enabled/disabled, or when the delay/interval
+  // are reconfigured.
+  virtual void OnKeyRepeatSettingsChanged(const KeyRepeatSettings& settings) {}
 
   // Called when the visibility of the virtual keyboard changes, e.g. an input
   // field is focused or blurred, or the user hides the keyboard.

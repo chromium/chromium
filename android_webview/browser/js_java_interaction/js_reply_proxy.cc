@@ -6,20 +6,20 @@
 
 #include "android_webview/browser_jni_headers/JsReplyProxy_jni.h"
 #include "base/android/jni_string.h"
+#include "components/js_injection/browser/web_message.h"
+#include "components/js_injection/browser/web_message_reply_proxy.h"
 
 namespace android_webview {
 
-JsReplyProxy::JsReplyProxy(
-    mojo::PendingAssociatedRemote<mojom::JavaToJsMessaging>
-        java_to_js_messaging)
-    : java_to_js_messaging_(std::move(java_to_js_messaging)) {
+JsReplyProxy::JsReplyProxy(js_injection::WebMessageReplyProxy* reply_proxy)
+    : reply_proxy_(reply_proxy) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_ref_.Reset(
       Java_JsReplyProxy_create(env, reinterpret_cast<intptr_t>(this)));
 }
 
 JsReplyProxy::~JsReplyProxy() {
-  if (java_ref_.is_null())
+  if (!java_ref_)
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -33,9 +33,10 @@ base::android::ScopedJavaLocalRef<jobject> JsReplyProxy::GetJavaPeer() {
 void JsReplyProxy::PostMessage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& message) {
-  DCHECK(java_to_js_messaging_);
-  java_to_js_messaging_->OnPostMessage(
-      base::android::ConvertJavaStringToUTF16(env, message));
+  std::unique_ptr<js_injection::WebMessage> web_message =
+      std::make_unique<js_injection::WebMessage>();
+  web_message->message = base::android::ConvertJavaStringToUTF16(env, message);
+  reply_proxy_->PostMessage(std::move(web_message));
 }
 
 }  // namespace android_webview

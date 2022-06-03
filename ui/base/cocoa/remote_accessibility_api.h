@@ -8,8 +8,8 @@
 #import <Cocoa/Cocoa.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
-#include "ui/base/ui_base_export.h"
 
 @interface NSAccessibilityRemoteUIElement : NSObject
 + (void)registerRemoteUIProcessIdentifier:(int)pid;
@@ -23,7 +23,7 @@ namespace ui {
 
 // Helper functions to implement the above functions using std::vectors intsead
 // of NSData.
-class UI_BASE_EXPORT RemoteAccessibility {
+class COMPONENT_EXPORT(UI_BASE) RemoteAccessibility {
  public:
   static std::vector<uint8_t> GetTokenForLocalElement(id element);
   static base::scoped_nsobject<NSAccessibilityRemoteUIElement>

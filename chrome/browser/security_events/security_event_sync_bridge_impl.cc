@@ -10,14 +10,15 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/security_event_specifics.pb.h"
 
 namespace {
 
@@ -88,7 +89,7 @@ SecurityEventSyncBridgeImpl::CreateMetadataChangeList() {
   return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-base::Optional<syncer::ModelError> SecurityEventSyncBridgeImpl::MergeSyncData(
+absl::optional<syncer::ModelError> SecurityEventSyncBridgeImpl::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
@@ -98,7 +99,7 @@ base::Optional<syncer::ModelError> SecurityEventSyncBridgeImpl::MergeSyncData(
                           std::move(entity_data));
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 SecurityEventSyncBridgeImpl::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -152,7 +153,7 @@ void SecurityEventSyncBridgeImpl::ApplyStopSyncChanges(
 }
 
 void SecurityEventSyncBridgeImpl::OnStoreCreated(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -167,7 +168,7 @@ void SecurityEventSyncBridgeImpl::OnStoreCreated(
 
 void SecurityEventSyncBridgeImpl::OnReadData(
     DataCallback callback,
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
     std::unique_ptr<syncer::ModelTypeStore::IdList> missing_id_list) {
   OnReadAllData(std::move(callback), error, std::move(data_records));
@@ -175,7 +176,7 @@ void SecurityEventSyncBridgeImpl::OnReadData(
 
 void SecurityEventSyncBridgeImpl::OnReadAllData(
     DataCallback callback,
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -199,7 +200,7 @@ void SecurityEventSyncBridgeImpl::OnReadAllData(
 }
 
 void SecurityEventSyncBridgeImpl::OnReadAllMetadata(
-    const base::Optional<syncer::ModelError>& error,
+    const absl::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
     change_processor()->ReportError(*error);
@@ -209,7 +210,7 @@ void SecurityEventSyncBridgeImpl::OnReadAllMetadata(
 }
 
 void SecurityEventSyncBridgeImpl::OnCommit(
-    const base::Optional<syncer::ModelError>& error) {
+    const absl::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

@@ -6,6 +6,7 @@
           width: 200px;
           height: 40px;
           overflow: hidden;
+          position: relative;
       }
       </style>
     </head>

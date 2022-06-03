@@ -4,130 +4,222 @@
 
 package org.chromium.chrome.browser.native_page;
 
-import android.net.Uri;
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Rect;
 
-import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.TabLoadStatus;
+import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.download.DownloadPage;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
-import org.chromium.chrome.browser.feed.FeedNewTabPage;
-import org.chromium.chrome.browser.gesturenav.HistoryNavigationDelegate;
-import org.chromium.chrome.browser.gesturenav.HistoryNavigationDelegateFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
+import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.webapps.launchpad.LaunchpadPage;
+import org.chromium.chrome.browser.webapps.launchpad.LaunchpadUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.util.ColorUtils;
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
  */
 public class NativePageFactory {
-    private static NativePageBuilder sNativePageBuilder = new NativePageBuilder();
+    private final Activity mActivity;
+    private final BottomSheetController mBottomSheetController;
+    private final BrowserControlsManager mBrowserControlsManager;
+    private final Supplier<Tab> mCurrentTabSupplier;
+    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final TabModelSelector mTabModelSelector;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final WindowAndroid mWindowAndroid;
+    private final Supplier<Long> mLastUserInteractionTimeSupplier;
+    private final BooleanSupplier mHadWarmStartSupplier;
+    private final JankTracker mJankTracker;
+    private final Supplier<Toolbar> mToolbarSupplier;
+    private NewTabPageUma mNewTabPageUma;
+
+    private NativePageBuilder mNativePageBuilder;
+
+    public NativePageFactory(@NonNull Activity activity,
+            @NonNull BottomSheetController sheetController,
+            @NonNull BrowserControlsManager browserControlsManager,
+            @NonNull Supplier<Tab> currentTabSupplier,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull Supplier<Long> lastUserInteractionTimeSupplier,
+            @NonNull BooleanSupplier hadWarmStartSupplier, @NonNull JankTracker jankTracker,
+            @NonNull Supplier<Toolbar> toolbarSupplier) {
+        mActivity = activity;
+        mBottomSheetController = sheetController;
+        mBrowserControlsManager = browserControlsManager;
+        mCurrentTabSupplier = currentTabSupplier;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mTabModelSelector = tabModelSelector;
+        mShareDelegateSupplier = shareDelegateSupplier;
+        mWindowAndroid = windowAndroid;
+        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
+        mHadWarmStartSupplier = hadWarmStartSupplier;
+        mJankTracker = jankTracker;
+        mToolbarSupplier = toolbarSupplier;
+    }
+
+    private NativePageBuilder getBuilder() {
+        if (mNativePageBuilder == null) {
+            mNativePageBuilder = new NativePageBuilder(mActivity, this::getNewTabPageUma,
+                    mBottomSheetController, mBrowserControlsManager, mCurrentTabSupplier,
+                    mSnackbarManagerSupplier, mLifecycleDispatcher, mTabModelSelector,
+                    mShareDelegateSupplier, mWindowAndroid, mJankTracker, mToolbarSupplier);
+        }
+        return mNativePageBuilder;
+    }
+
+    private NewTabPageUma getNewTabPageUma() {
+        if (mNewTabPageUma == null) {
+            mNewTabPageUma = new NewTabPageUma(mTabModelSelector, mLastUserInteractionTimeSupplier,
+                    mHadWarmStartSupplier.getAsBoolean(), mActivity::getIntent);
+            mNewTabPageUma.monitorNTPCreation();
+        }
+        return mNewTabPageUma;
+    }
 
     @VisibleForTesting
     static class NativePageBuilder {
-        protected NativePage buildNewTabPage(ChromeActivity activity, Tab tab,
-                TabModelSelector tabModelSelector) {
-            ActivityTabProvider activityTabProvider = activity.getActivityTabProvider();
-            ActivityLifecycleDispatcher activityLifecycleDispatcher =
-                    activity.getLifecycleDispatcher();
+        private final Activity mActivity;
+        private final BottomSheetController mBottomSheetController;
+        private final Supplier<NewTabPageUma> mUma;
+        private final BrowserControlsManager mBrowserControlsManager;
+        private final Supplier<Tab> mCurrentTabSupplier;
+        private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+        private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+        private final TabModelSelector mTabModelSelector;
+        private final Supplier<ShareDelegate> mShareDelegateSupplier;
+        private final WindowAndroid mWindowAndroid;
+        private final JankTracker mJankTracker;
+        private final Supplier<Toolbar> mToolbarSupplier;
 
-            if (tab.isIncognito()) {
-                return new IncognitoNewTabPage(activity, new TabShim(tab));
+        public NativePageBuilder(Activity activity, Supplier<NewTabPageUma> uma,
+                BottomSheetController sheetController,
+                BrowserControlsManager browserControlsManager, Supplier<Tab> currentTabSupplier,
+                Supplier<SnackbarManager> snackbarManagerSupplier,
+                ActivityLifecycleDispatcher lifecycleDispatcher, TabModelSelector tabModelSelector,
+                Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
+                JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier) {
+            mActivity = activity;
+            mUma = uma;
+            mBottomSheetController = sheetController;
+            mBrowserControlsManager = browserControlsManager;
+            mCurrentTabSupplier = currentTabSupplier;
+            mSnackbarManagerSupplier = snackbarManagerSupplier;
+            mLifecycleDispatcher = lifecycleDispatcher;
+            mTabModelSelector = tabModelSelector;
+            mShareDelegateSupplier = shareDelegateSupplier;
+            mWindowAndroid = windowAndroid;
+            mJankTracker = jankTracker;
+            mToolbarSupplier = toolbarSupplier;
+        }
+
+        protected NativePage buildNewTabPage(Tab tab, String url) {
+            NativePageHost nativePageHost =
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector);
+            if (tab.isIncognito()) return new IncognitoNewTabPage(mActivity, nativePageHost);
+
+            return new NewTabPage(mActivity, mBrowserControlsManager, mCurrentTabSupplier,
+                    mSnackbarManagerSupplier.get(), mLifecycleDispatcher, mTabModelSelector,
+                    DeviceFormFactor.isWindowOnTablet(mWindowAndroid), mUma.get(),
+                    ColorUtils.inNightMode(mActivity), nativePageHost, tab, url,
+                    mBottomSheetController, mShareDelegateSupplier, mWindowAndroid, mJankTracker,
+                    mToolbarSupplier);
+        }
+
+        protected NativePage buildBookmarksPage(Tab tab) {
+            return new BookmarkPage(mActivity.getComponentName(), mSnackbarManagerSupplier.get(),
+                    mTabModelSelector.isIncognitoSelected(),
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
+        }
+
+        protected NativePage buildDownloadsPage(Tab tab) {
+            // For preloaded tabs, the tab model might not be initialized yet. Use tab to figure
+            // out if it is a regular profile.
+            Profile profile = tab.isIncognito() ? mTabModelSelector.getCurrentModel().getProfile()
+                                                : Profile.getLastUsedRegularProfile();
+            return new DownloadPage(mActivity, mSnackbarManagerSupplier.get(),
+                    mWindowAndroid.getModalDialogManager(), profile.getOTRProfileID(),
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
+        }
+
+        protected NativePage buildExploreSitesPage(Tab tab) {
+            return new ExploreSitesPage(mActivity,
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab,
+                    mTabModelSelector);
+        }
+
+        protected NativePage buildHistoryPage(Tab tab) {
+            return new HistoryPage(mActivity,
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    mSnackbarManagerSupplier.get(), mTabModelSelector.isIncognitoSelected(),
+                    mCurrentTabSupplier);
+        }
+
+        protected NativePage buildRecentTabsPage(Tab tab) {
+            RecentTabsManager recentTabsManager = new RecentTabsManager(tab,
+                    Profile.fromWebContents(tab.getWebContents()), mActivity,
+                    ()
+                            -> HistoryManagerUtils.showHistoryManager(
+                                    mActivity, tab, mTabModelSelector.isIncognitoSelected()));
+            return new RecentTabsPage(mActivity, recentTabsManager,
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    mBrowserControlsManager);
+        }
+
+        protected NativePage buildLaunchpadPage(Tab tab) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LAUNCHPAD)) {
+                return new LaunchpadPage(mActivity,
+                        new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                        mWindowAndroid::getModalDialogManager, new SettingsLauncherImpl(),
+                        LaunchpadUtils.retrieveWebApks(mActivity));
+            } else {
+                return null;
             }
-
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)) {
-                return new FeedNewTabPage(activity, new TabShim(tab), tabModelSelector,
-                        activityTabProvider, activityLifecycleDispatcher);
-            }
-
-            return new NewTabPage(activity, new TabShim(tab), tabModelSelector, activityTabProvider,
-                    activityLifecycleDispatcher);
         }
 
-        protected NativePage buildBookmarksPage(ChromeActivity activity, Tab tab) {
-            return new BookmarkPage(activity, new TabShim(tab));
-        }
-
-        protected NativePage buildDownloadsPage(ChromeActivity activity, Tab tab) {
-            return new DownloadPage(activity, new TabShim(tab));
-        }
-
-        protected NativePage buildExploreSitesPage(ChromeActivity activity, Tab tab) {
-            return new ExploreSitesPage(activity, new TabShim(tab));
-        }
-
-        protected NativePage buildHistoryPage(ChromeActivity activity, Tab tab) {
-            return new HistoryPage(activity, new TabShim(tab));
-        }
-
-        protected NativePage buildRecentTabsPage(ChromeActivity activity, Tab tab) {
-            RecentTabsManager recentTabsManager =
-                    new RecentTabsManager(tab, ((TabImpl) tab).getProfile(), activity);
-            return new RecentTabsPage(activity, recentTabsManager, new TabShim(tab));
-        }
-    }
-
-    @IntDef({NativePageType.NONE, NativePageType.CANDIDATE, NativePageType.NTP,
-            NativePageType.BOOKMARKS, NativePageType.RECENT_TABS, NativePageType.DOWNLOADS,
-            NativePageType.HISTORY, NativePageType.EXPLORE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NativePageType {
-        int NONE = 0;
-        int CANDIDATE = 1;
-        int NTP = 2;
-        int BOOKMARKS = 3;
-        int RECENT_TABS = 4;
-        int DOWNLOADS = 5;
-        int HISTORY = 6;
-        int EXPLORE = 7;
-    }
-
-    private static @NativePageType int nativePageType(
-            String url, NativePage candidatePage, boolean isIncognito) {
-        if (url == null) return NativePageType.NONE;
-
-        Uri uri = Uri.parse(url);
-        if (!UrlConstants.CHROME_NATIVE_SCHEME.equals(uri.getScheme())) {
-            return NativePageType.NONE;
-        }
-
-        String host = uri.getHost();
-        if (candidatePage != null && candidatePage.getHost().equals(host)) {
-            return NativePageType.CANDIDATE;
-        }
-
-        if (UrlConstants.NTP_HOST.equals(host)) {
-            return NativePageType.NTP;
-        } else if (UrlConstants.BOOKMARKS_HOST.equals(host)) {
-            return NativePageType.BOOKMARKS;
-        } else if (UrlConstants.DOWNLOADS_HOST.equals(host)) {
-            return NativePageType.DOWNLOADS;
-        } else if (UrlConstants.HISTORY_HOST.equals(host)) {
-            return NativePageType.HISTORY;
-        } else if (UrlConstants.RECENT_TABS_HOST.equals(host) && !isIncognito) {
-            return NativePageType.RECENT_TABS;
-        } else if (ExploreSitesPage.isExploreSitesHost(host)) {
-            return NativePageType.EXPLORE;
-        } else {
-            return NativePageType.NONE;
+        protected NativePage buildManagementPage(Tab tab) {
+            return new ManagementPage(new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
+                    Profile.fromWebContents(tab.getWebContents()));
         }
     }
 
@@ -139,43 +231,50 @@ public class NativePageFactory {
      * @param url The URL to be handled.
      * @param candidatePage A NativePage to be reused if it matches the url, or null.
      * @param tab The Tab that will show the page.
-     * @param activity The activity used to create the views for the page.
      * @return A NativePage showing the specified url or null.
      */
-    public static NativePage createNativePageForURL(
-            String url, NativePage candidatePage, Tab tab, ChromeActivity activity) {
-        return createNativePageForURL(url, candidatePage, tab, activity, tab.isIncognito());
+    public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
+        return createNativePageForURL(url, candidatePage, tab, tab.isIncognito());
     }
 
     @VisibleForTesting
-    static NativePage createNativePageForURL(String url, NativePage candidatePage, Tab tab,
-            ChromeActivity activity, boolean isIncognito) {
+    NativePage createNativePageForURL(
+            String url, NativePage candidatePage, Tab tab, boolean isIncognito) {
         NativePage page;
 
-        switch (nativePageType(url, candidatePage, isIncognito)) {
+        switch (NativePage.nativePageType(url, candidatePage, isIncognito)) {
             case NativePageType.NONE:
                 return null;
             case NativePageType.CANDIDATE:
                 page = candidatePage;
                 break;
             case NativePageType.NTP:
-                page = sNativePageBuilder.buildNewTabPage(
-                        activity, tab, TabModelSelector.from(tab));
+                page = getBuilder().buildNewTabPage(tab, url);
                 break;
             case NativePageType.BOOKMARKS:
-                page = sNativePageBuilder.buildBookmarksPage(activity, tab);
+                page = getBuilder().buildBookmarksPage(tab);
                 break;
             case NativePageType.DOWNLOADS:
-                page = sNativePageBuilder.buildDownloadsPage(activity, tab);
+                page = getBuilder().buildDownloadsPage(tab);
                 break;
             case NativePageType.HISTORY:
-                page = sNativePageBuilder.buildHistoryPage(activity, tab);
+                page = getBuilder().buildHistoryPage(tab);
                 break;
             case NativePageType.RECENT_TABS:
-                page = sNativePageBuilder.buildRecentTabsPage(activity, tab);
+                page = getBuilder().buildRecentTabsPage(tab);
                 break;
             case NativePageType.EXPLORE:
-                page = sNativePageBuilder.buildExploreSitesPage(activity, tab);
+                page = getBuilder().buildExploreSitesPage(tab);
+                break;
+            case NativePageType.LAUNCHPAD:
+                page = getBuilder().buildLaunchpadPage(tab);
+                break;
+            case NativePageType.MANAGEMENT:
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_MANAGEMENT_PAGE)) {
+                    return null;
+                }
+
+                page = getBuilder().buildManagementPage(tab);
                 break;
             default:
                 assert false;
@@ -185,66 +284,58 @@ public class NativePageFactory {
         return page;
     }
 
-    /**
-     * Returns whether the URL would navigate to a native page.
-     *
-     * @param url The URL to be checked.
-     * @param isIncognito Whether the page will be displayed in incognito mode.
-     * @return Whether the host and the scheme of the passed in URL matches one of the supported
-     *         native pages.
-     */
-    public static boolean isNativePageUrl(String url, boolean isIncognito) {
-        return nativePageType(url, null, isIncognito) != NativePageType.NONE;
-    }
-
     @VisibleForTesting
-    static void setNativePageBuilderForTesting(NativePageBuilder builder) {
-        sNativePageBuilder = builder;
+    void setNativePageBuilderForTesting(NativePageBuilder builder) {
+        mNativePageBuilder = builder;
     }
 
     /** Simple implementation of NativePageHost backed by a {@link Tab} */
     private static class TabShim implements NativePageHost {
         private final Tab mTab;
+        private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+        private final TabModelSelector mTabModelSelector;
 
-        public TabShim(Tab mTab) {
-            this.mTab = mTab;
+        public TabShim(Tab tab, BrowserControlsStateProvider browserControlsStateProvider,
+                TabModelSelector tabModelSelector) {
+            mTab = tab;
+            mBrowserControlsStateProvider = browserControlsStateProvider;
+            mTabModelSelector = tabModelSelector;
         }
 
         @Override
-        public int loadUrl(LoadUrlParams urlParams, boolean incognito) {
+        public Context getContext() {
+            return mTab.getContext();
+        }
+
+        @Override
+        public void loadUrl(LoadUrlParams urlParams, boolean incognito) {
             if (incognito && !mTab.isIncognito()) {
-                TabModelSelector.from(mTab).openNewTab(urlParams,
-                        TabLaunchType.FROM_LONGPRESS_FOREGROUND, mTab,
-                        /* incognito = */ true);
-                return TabLoadStatus.DEFAULT_PAGE_LOAD;
+                mTabModelSelector.openNewTab(urlParams, TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                        mTab, /* incognito = */ true);
+                return;
             }
 
-            return mTab.loadUrl(urlParams);
-        }
-
-        @Override
-        public boolean isIncognito() {
-            return mTab.isIncognito();
+            mTab.loadUrl(urlParams);
         }
 
         @Override
         public int getParentId() {
-            return mTab.getParentId();
-        }
-
-        @Override
-        public Tab getActiveTab() {
-            return mTab;
+            return CriticalPersistedTabData.from(mTab).getParentId();
         }
 
         @Override
         public boolean isVisible() {
-            return mTab == TabModelSelector.from(mTab).getCurrentTab();
+            return mTab == mTabModelSelector.getCurrentTab();
         }
 
         @Override
-        public HistoryNavigationDelegate createHistoryNavigationDelegate() {
-            return HistoryNavigationDelegateFactory.create(mTab);
+        public DestroyableObservableSupplier<Rect> createDefaultMarginSupplier() {
+            return new BrowserControlsMarginSupplier(mBrowserControlsStateProvider);
         }
+    }
+
+    /** Destroy and unhook objects at destruction. */
+    public void destroy() {
+        if (mNewTabPageUma != null) mNewTabPageUma.destroy();
     }
 }

@@ -4,35 +4,35 @@
 <script>
 test(() => {
   const xhr = new XMLHttpRequest();
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('GET', '//[');
   });
 }, '//[');
 
 test(() => {
   const xhr = new XMLHttpRequest();
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('GET', 'ftp:');
   });
 }, 'Just ftp scheme');
 
 test(() => {
   const xhr = new XMLHttpRequest();
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('GET', 'http:////////////');
   });
 }, 'Lots of slashes');
 
 test(() => {
   const xhr = new XMLHttpRequest();
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('GET', 'http://u:p@/');
   });
 }, 'Credentials only authority');
 
 test(() => {
   const xhr = new XMLHttpRequest();
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('GET', 'http://localhost:1291x/');
   });
 }, 'Non digit in port');

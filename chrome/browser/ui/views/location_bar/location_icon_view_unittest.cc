@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -11,38 +16,40 @@
 
 namespace {
 
-class TestLocationIconDelegate : public LocationIconView::Delegate {
+class TestLocationIconDelegate : public IconLabelBubbleView::Delegate,
+                                 public LocationIconView::Delegate {
  public:
   explicit TestLocationIconDelegate(LocationBarModel* location_bar_model)
       : location_bar_model_(location_bar_model) {}
+  virtual ~TestLocationIconDelegate() = default;
 
-  content::WebContents* GetWebContents() override { return nullptr; }
-
-  bool IsEditingOrEmpty() const override { return is_editing_or_empty_; }
-  void set_is_editing_or_empty(bool is_editing_or_empty) {
-    is_editing_or_empty_ = is_editing_or_empty;
+  // IconLabelBubbleView::Delegate:
+  SkColor GetIconLabelBubbleSurroundingForegroundColor() const override {
+    return SK_ColorBLACK;
   }
-
-  SkColor GetSecurityChipColor(
-      security_state::SecurityLevel security_level) const override {
+  SkColor GetIconLabelBubbleBackgroundColor() const override {
     return SK_ColorWHITE;
   }
 
+  // LocationIconView::Delegate:
+  content::WebContents* GetWebContents() override { return nullptr; }
+  bool IsEditingOrEmpty() const override { return is_editing_or_empty_; }
+  SkColor GetSecurityChipColor(
+      security_state::SecurityLevel security_level) const override {
+    return GetIconLabelBubbleSurroundingForegroundColor();
+  }
   bool ShowPageInfoDialog() override { return false; }
-
-  // Gets the LocationBarModel.
   const LocationBarModel* GetLocationBarModel() const override {
     return location_bar_model_;
   }
-
-  // Gets an icon for the location bar icon chip.
-  gfx::ImageSkia GetLocationIcon(
+  ui::ImageModel GetLocationIcon(
       IconFetchedCallback on_icon_fetched) const override {
-    return gfx::ImageSkia();
+    return ui::ImageModel();
   }
 
-  // Gets the color to use for icon ink highlights.
-  SkColor GetLocationIconInkDropColor() const override { return SK_ColorBLACK; }
+  void set_is_editing_or_empty(bool is_editing_or_empty) {
+    is_editing_or_empty_ = is_editing_or_empty;
+  }
 
  private:
   LocationBarModel* location_bar_model_;
@@ -56,25 +63,27 @@ class LocationIconViewTest : public ChromeViewsTestBase {
   // ChromeViewsTestBase:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+
     gfx::FontList font_list;
 
-    CreateWidget();
+    widget_ = CreateTestWidget();
 
     location_bar_model_ = std::make_unique<TestLocationBarModel>();
     delegate_ =
         std::make_unique<TestLocationIconDelegate>(location_bar_model());
 
-    view_ = new LocationIconView(font_list, delegate());
-    view_->SetBoundsRect(gfx::Rect(0, 0, 24, 24));
-    widget_->SetContentsView(view_);
+    auto view = std::make_unique<LocationIconView>(font_list, delegate(),
+                                                   delegate(), profile_.get());
+    view->SetBoundsRect(gfx::Rect(0, 0, 24, 24));
+    view_ = widget_->SetContentsView(std::move(view));
 
     widget_->Show();
   }
 
   void TearDown() override {
-    if (widget_ && !widget_->IsClosed())
-      widget_->Close();
-
+    widget_.reset();
+    profile_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -85,10 +94,10 @@ class LocationIconViewTest : public ChromeViewsTestBase {
   void SetSecurityLevel(security_state::SecurityLevel level) {
     location_bar_model()->set_security_level(level);
 
-    base::string16 secure_display_text = base::string16();
+    std::u16string secure_display_text = std::u16string();
     if (level == security_state::SecurityLevel::DANGEROUS ||
         level == security_state::SecurityLevel::WARNING)
-      secure_display_text = base::ASCIIToUTF16("Insecure");
+      secure_display_text = u"Insecure";
 
     location_bar_model()->set_secure_display_text(secure_display_text);
   }
@@ -100,17 +109,8 @@ class LocationIconViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestLocationBarModel> location_bar_model_;
   std::unique_ptr<TestLocationIconDelegate> delegate_;
   LocationIconView* view_;
-  views::Widget* widget_ = nullptr;
-
-  void CreateWidget() {
-    DCHECK(!widget_);
-
-    widget_ = new views::Widget;
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.bounds = gfx::Rect(0, 0, 200, 200);
-    widget_->Init(std::move(params));
-  }
+  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(LocationIconViewTest, ShouldNotAnimateWhenSuppressingAnimations) {
@@ -152,40 +152,4 @@ TEST_F(LocationIconViewTest, ShouldNotAnimateWarningToDangerous) {
   SetSecurityLevel(security_state::SecurityLevel::DANGEROUS);
   view()->Update(/*suppress_animations=*/false);
   EXPECT_FALSE(view()->is_animating_label());
-}
-
-// Whenever InkDropMode is set a new InkDrop is created, which will reset any
-// animations on the drop, so we should only set the InkDropMode when it has
-// actually changed.
-TEST_F(LocationIconViewTest, ShouldNotRecreateInkDropNeedlessly) {
-  delegate()->set_is_editing_or_empty(false);
-  view()->Update(false);
-
-  const views::InkDrop* drop = view()->get_ink_drop_for_testing();
-  view()->Update(/*suppress_animations=*/false);
-
-  // The InkDropMode has not changed (is ON), so our InkDrop should remain the
-  // same.
-  EXPECT_EQ(drop, view()->get_ink_drop_for_testing());
-
-  delegate()->set_is_editing_or_empty(true);
-  view()->Update(/*suppress_animations=*/false);
-
-  // The InkDropMode has changed (ON --> OFF), so a new InkDrop will have been
-  // created.
-  EXPECT_NE(drop, view()->get_ink_drop_for_testing());
-
-  drop = view()->get_ink_drop_for_testing();
-  view()->Update(/*suppress_animations=*/false);
-
-  // The InkDropMode has not changed (is OFF), so the InkDrop should remain the
-  // same.
-  EXPECT_EQ(drop, view()->get_ink_drop_for_testing());
-
-  delegate()->set_is_editing_or_empty(false);
-  view()->Update(/*suppress_animations=*/false);
-
-  // The InkDrop mode has changed (OFF --> ON), so a new InkDrop will have been
-  // created.
-  EXPECT_NE(drop, view()->get_ink_drop_for_testing());
 }

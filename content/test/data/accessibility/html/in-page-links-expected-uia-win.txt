@@ -1,35 +1,35 @@
-document
-++link Name='Empty anchor'
-++++description Name='Empty anchor' IsControlElement=false
-++description Name=' '
-++link Name='Anchor with content'
-++++description Name='Anchor with content' IsControlElement=false
-++description Name=' '
-++link Name='Anchor with ID'
-++++description Name='Anchor with ID' IsControlElement=false
-++description Name=' '
-++link Name='Empty span'
-++++description Name='Empty span' IsControlElement=false
-++description Name=' '
-++link Name='Span with content'
-++++description Name='Span with content' IsControlElement=false
-++description Name=' '
-++link Name='Paragraph with content'
-++++description Name='Paragraph with content' IsControlElement=false
-++group IsControlElement=false
-++++link
-++++description Name='After empty anchor'
-++group IsControlElement=false
-++++link Name='Anchor with content'
-++++++description Name='Anchor with content'
-++group IsControlElement=false
-++++link Name='Anchor with ID'
-++++++description Name='Anchor with ID'
-++group IsControlElement=false
-++++group IsControlElement=false
-++++description Name='After empty span'
-++group IsControlElement=false
-++++group IsControlElement=false
-++++++description Name='Span with content'
-++group IsControlElement=false
-++++description Name='Paragraph with content'
+Document
+++Hyperlink Name='Empty anchor'
+++++Text Name='Empty anchor' IsControlElement=false
+++Text Name=' '
+++Hyperlink Name='Anchor with content'
+++++Text Name='Anchor with content' IsControlElement=false
+++Text Name=' '
+++Hyperlink Name='Anchor with ID'
+++++Text Name='Anchor with ID' IsControlElement=false
+++Text Name=' '
+++Hyperlink Name='Empty span'
+++++Text Name='Empty span' IsControlElement=false
+++Text Name=' '
+++Hyperlink Name='Span with content'
+++++Text Name='Span with content' IsControlElement=false
+++Text Name=' '
+++Hyperlink Name='Paragraph with content'
+++++Text Name='Paragraph with content' IsControlElement=false
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++Text Name='After empty anchor'
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='Anchor with content'
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='Anchor with ID'
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++Text Name='After empty span'
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='Span with content'
+++Group IsControlElement=false
+++++Text Name='Paragraph with content'

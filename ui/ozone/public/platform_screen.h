@@ -5,7 +5,18 @@
 #ifndef UI_OZONE_PUBLIC_PLATFORM_SCREEN_H_
 #define UI_OZONE_PUBLIC_PLATFORM_SCREEN_H_
 
+#include <set>
+#include <string>
+#include <vector>
+
+#include "base/component_export.h"
+#include "base/values.h"
+#include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace display {
 class Display;
@@ -22,6 +33,8 @@ namespace ui {
 // PlatformScreen is an abstract base class for an interface to an Ozone
 // platform's functionality exposed to Chrome via display::Screen.
 //
+// Additionally, may notify DisplayObservers with global workspace changes.
+//
 // Recall that in Chrome, a |Screen| is the union of all attached |Display|
 // instances. The |Screen|'s coordinate system is in DIP pixels (so that
 // it can reasonably support |Display|s of differing pixel densities.) The
@@ -29,10 +42,14 @@ namespace ui {
 // |Screen|. Coordinates increase down and to the right.
 //
 // TODO(rjkroege): Add ascii art?
-class PlatformScreen {
+class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
  public:
-  PlatformScreen() = default;
-  virtual ~PlatformScreen() = default;
+  PlatformScreen();
+
+  PlatformScreen(const PlatformScreen&) = delete;
+  PlatformScreen& operator=(const PlatformScreen&) = delete;
+
+  virtual ~PlatformScreen();
 
   // Provide a |display:;Display| for each physical display available to Chrome.
   virtual const std::vector<display::Display>& GetAllDisplays() const = 0;
@@ -54,6 +71,11 @@ class PlatformScreen {
   virtual gfx::AcceleratedWidget GetAcceleratedWidgetAtScreenPoint(
       const gfx::Point& point) const = 0;
 
+  // Returns top level accelerated widget at |point| ignoring |ignore|.
+  virtual gfx::AcceleratedWidget GetLocalProcessWidgetAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::AcceleratedWidget>& ignore) const;
+
   // Returns the |Display| nearest the specified point. |point| must be in DIPs.
   virtual display::Display GetDisplayNearestPoint(
       const gfx::Point& point) const = 0;
@@ -64,12 +86,38 @@ class PlatformScreen {
   virtual display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const = 0;
 
+  // Suspends the platform-specific screensaver, if applicable.
+  // Can be called more than once with the same value for |suspend|, but those
+  // states should not stack: the first alternating value should toggle the
+  // state of the suspend.
+  virtual void SetScreenSaverSuspended(bool suspend);
+
+  // Returns whether the screensaver is currently running.
+  virtual bool IsScreenSaverActive() const;
+
+  // Calculates idle time.
+  virtual base::TimeDelta CalculateIdleTime() const;
+
   // Adds/Removes display observers.
   virtual void AddObserver(display::DisplayObserver* observer) = 0;
   virtual void RemoveObserver(display::DisplayObserver* observer) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformScreen);
+  // Returns currently used workspace. If a platform does not support this, the
+  // empty string is returned.
+  virtual std::string GetCurrentWorkspace();
+
+  // Returns human readable description of the window manager, desktop, and
+  // other system properties related to the compositing.
+  virtual std::vector<base::Value> GetGpuExtraInfo(
+      const gfx::GpuExtraInfo& gpu_extra_info);
+
+  // Sets device scale factor received from external sources such as toolkits.
+  // Currently only used by Linux.
+  virtual void SetDeviceScaleFactor(float scale);
+
+ protected:
+  void StorePlatformNameIntoListOfValues(std::vector<base::Value>& values,
+                                         const std::string& platform_name);
 };
 
 }  // namespace ui

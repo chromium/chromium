@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//components/ui_devtools/devtools.gni")
 
 _inspector_protocol = "//third_party/inspector_protocol"
 import("$_inspector_protocol/inspector_protocol.gni")
@@ -29,14 +28,10 @@ _protocol_generated = [
 action("protocol_compatibility") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
   script = "$_inspector_protocol/check_protocol_compatibility.py"
-  inputs = [
-    "protocol.json",
-  ]
+  inputs = [ "protocol.json" ]
 
   _stamp = "$target_gen_dir/protocol.stamp"
-  outputs = [
-    _stamp,
-  ]
+  outputs = [ _stamp ]
 
   args = [
     "--stamp",
@@ -49,9 +44,7 @@ inspector_protocol_generate("protocol_generated_sources") {
   inspector_protocol_dir = _inspector_protocol
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
 
-  deps = [
-    ":protocol_compatibility",
-  ]
+  deps = [ ":protocol_compatibility" ]
 
   out_dir = target_gen_dir
   config_file = "inspector_protocol_config.json"
@@ -61,11 +54,6 @@ inspector_protocol_generate("protocol_generated_sources") {
   ]
 
   outputs = _protocol_generated
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "USE_VIZ_DEVTOOLS=$use_viz_devtools" ]
 }
 
 component("ui_devtools") {
@@ -101,11 +89,6 @@ component("ui_devtools") {
 
   defines = [ "UI_DEVTOOLS_IMPLEMENTATION" ]
 
-  cflags = []
-  if (is_win) {
-    cflags += [ "/wd4800" ]  # Value forced to bool.
-  }
-
   deps = [
     ":protocol_generated_sources",
     "//base",
@@ -113,17 +96,16 @@ component("ui_devtools") {
     "//mojo/public/cpp/system",
     "//net",
     "//third_party/inspector_protocol:crdtp",
+    "//ui/base:base",
     "//ui/gfx",
   ]
 
   public_deps = [
-    ":buildflags",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp",
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
-    "//third_party/perfetto/gn:default_deps",
   ]
 }
 
@@ -153,15 +135,14 @@ source_set("unit_tests") {
     "devtools_server_unittest.cc",
   ]
 
-  data = [
-    "//components/test/data/ui_devtools/test_file.cc",
-  ]
+  data = [ "//components/test/data/ui_devtools/test_file.cc" ]
 
   deps = [
     ":test_support",
     "//base/test:test_support",
     "//net:test_support",
     "//services/network:network_service",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 

@@ -1,33 +1,8 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="profile_info_browser_proxy.html">
-<link rel="import" href="sync_browser_proxy.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-sync-account-control">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared">
       :host {
         --shown-avatar-size: 40px;
         --sync-icon-border-size: 2px;
         --sync-icon-size: 16px;
-      }
-
-      setting-box.middle {
-        /* Per spec, middle text is indented 20px in this section. */
-        margin-inline-start: 20px;
       }
 
       .account-icon {
@@ -119,12 +94,11 @@
       }
 
       #sign-in {
-        margin: auto 8px;
         min-width: 100px;
       }
 
       #banner {
-        background: url(../images/sync_banner.svg) no-repeat;
+        background: url(chrome://settings/images/sync_banner.svg) no-repeat;
         background-size: 100% auto;
         display: none;
         padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
@@ -132,7 +106,7 @@
 
       @media (prefers-color-scheme: dark) {
         #banner {
-          background-image: url(../images/sync_banner_dark.svg);
+          background-image: url(chrome://settings/images/sync_banner_dark.svg);
         }
       }
 
@@ -140,18 +114,20 @@
         display: block;
       }
     </style>
+    <!-- TODO(jamescook): Show the promo on Chrome OS if the user is signed-in
+         but has sync disabled. -->
     <div id="banner" hidden="[[syncStatus.signedIn]]" part="banner"></div>
-    <div class$="settings-box first
-                 [[getPromoHeaderClass_(subLabel_)]]"
+    <div class="cr-row first"
         id="promo-header" hidden="[[syncStatus.signedIn]]">
-      <div class="start settings-box-text">
+      <div class="flex cr-padded-text">
         <div id="promo-title" part="title">
           [[getLabel_(promoLabelWithAccount,
               promoLabelWithNoAccount, shownAccount_)]]
         </div>
         <div class="secondary">[[subLabel_]]</div>
       </div>
-      <cr-button class="action-button" on-click="onSigninTap_" id="sign-in"
+      <cr-button class="action-button cr-button-gap" on-click="onSigninTap_"
+          id="sign-in"
           disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                   syncStatus.firstSetupInProgress,
                   prefs.signin.allowed_on_next_startup.value)]]"
@@ -160,7 +136,7 @@
       </cr-button>
     </div>
     <template is="dom-if" if="[[shouldShowAvatarRow_]]">
-      <div class="settings-box first two-line" id="avatar-row">
+      <div class="cr-row first two-line" id="avatar-row">
         <div id="avatar-container">
           <img class="account-icon" alt=""
               src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]">
@@ -173,30 +149,31 @@
                 syncStatus.disabled)]]"></iron-icon>
           </div>
         </div>
-        <div class="middle two-line no-min-width">
-          <div class="flex text-elide settings-box-text" id="user-info">
-            <span>
-              [[getAvatarRowTitle_(shownAccount_.fullName,
-                  '$i18nPolymer{syncNotWorking}',
-                  '$i18nPolymer{syncPasswordsNotWorking}',
-                  '$i18nPolymer{syncPaused}',
-                  '$i18nPolymer{syncDisabled}', syncStatus.hasError,
-                  syncStatus.statusAction, syncStatus.disabled)]]
-            </span>
-            <div class="secondary">
-              [[getAccountLabel_(
-                  '$i18nPolymer{syncingTo}', shownAccount_.email,
-                  syncStatus.hasError, syncStatus.signedIn,
-                  syncStatus.disabled, syncStatus.firstSetupInProgress)]]
-            </div>
+        <div class="cr-row-gap cr-padded-text flex no-min-width" id="user-info">
+          <div class="text-elide">
+            [[getAvatarRowTitle_(shownAccount_.fullName,
+                '$i18nPolymer{syncNotWorking}',
+                '$i18nPolymer{syncPasswordsNotWorking}',
+                '$i18nPolymer{syncPaused}',
+                '$i18nPolymer{syncDisabled}', syncStatus.hasError,
+                syncStatus.statusAction, syncStatus.disabled)]]
+          </div>
+          <div class="secondary text-elide">
+            [[getAccountLabel_(
+                '$i18nPolymer{syncingTo}', shownAccount_.email,
+                syncStatus.hasError, syncStatus.signedIn,
+                syncStatus.disabled, syncStatus.firstSetupInProgress)]]
           </div>
         </div>
-        <cr-icon-button class="icon-arrow-dropdown"
+<!-- Chrome OS does not allow switching users for sync. -->
+<if expr="not chromeos">
+        <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[syncStatus.signedIn]]" on-click="onMenuButtonTap_"
             id="dropdown-arrow" aria-label="$i18n{useAnotherAccount}">
         </cr-icon-button>
         <div class="separator" hidden="[[syncStatus.signedIn]]"></div>
-        <cr-button id="sync-button" class="action-button"
+</if>
+        <cr-button id="sync-button" class="action-button cr-button-gap"
             hidden="[[syncStatus.signedIn]]" on-click="onSyncButtonTap_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                     syncStatus.firstSetupInProgress,
@@ -204,26 +181,31 @@
           $i18n{peopleSignIn}
         </cr-button>
         <cr-button id="turn-off"
+            class="cr-button-gap"
             hidden="[[!shouldShowTurnOffButton_(syncStatus.signedIn,
-                showSetupButtons_)]]"
+                syncStatus.domain, showSetupButtons_)]]"
             on-click="onTurnOffButtonTap_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           $i18n{turnOffSync}
         </cr-button>
-        <cr-button id="sync-error-button" class="action-button"
+        <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
                 showSetupButtons_)]]"
             on-click="onErrorButtonTap_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
         </cr-button>
-        <div id="setup-buttons" hidden="[[!showSetupButtons_]]">
+        <div id="setup-buttons" hidden="[[!showSetupButtons_]]"
+            class="cr-button-gap">
           <cr-button on-click="onSetupCancel_">$i18n{cancel}</cr-button>
-          <cr-button class="action-button" on-click="onSetupConfirm_">
+          <cr-button class="action-button cr-button-gap"
+              on-click="onSetupConfirm_">
             $i18n{confirm}
           </cr-button>
         </div>
       </div>
+<!-- Chrome OS does not allow switching users for sync. -->
+<if expr="not chromeos">
       <template is="dom-if" if="[[!syncStatus.signedIn]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}">
@@ -247,7 +229,5 @@
           </button>
         </cr-action-menu>
       </template>
+</if>
     </template>
-  </template>
-  <script src="sync_account_control.js"></script>
-</dom-module>

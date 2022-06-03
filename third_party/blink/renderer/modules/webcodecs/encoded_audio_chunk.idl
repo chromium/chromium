@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum EncodedAudioChunkType {
+    "key",
+    "delta",
+};
+
+[
+    Exposed=(Window,DedicatedWorker),
+    RuntimeEnabled=WebCodecs
+] interface EncodedAudioChunk {
+  constructor(EncodedAudioChunkInit init);
+  readonly attribute EncodedAudioChunkType type;
+  readonly attribute long long timestamp;  // microseconds
+  readonly attribute unsigned long byteLength;
+  readonly attribute unsigned long long? duration;
+  [RaisesException]
+  void copyTo(AllowSharedBufferSource destination);
+};

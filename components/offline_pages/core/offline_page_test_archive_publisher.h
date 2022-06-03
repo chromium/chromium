@@ -6,11 +6,8 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_OFFLINE_PAGE_TEST_ARCHIVE_PUBLISHER_H_
 
 #include <cstdint>
-#include <string>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_types.h"

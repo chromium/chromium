@@ -12,10 +12,10 @@ description("Test for https://bugs.webkit.org/show_bug.cgi?id=92899. Dynamically
   </div>
 <script>
 var box = document.querySelector("#box");
-var oldestShadowRoot = box.createShadowRoot();
+var oldestShadowRoot = box.attachShadow({mode: 'open'});
 oldestShadowRoot.innerHTML = "<content></content>";
     
-var youngestShadowRoot = document.querySelector("#item").createShadowRoot();
+var youngestShadowRoot = document.querySelector("#item").attachShadow({mode: 'open'});
 youngestShadowRoot.innerHTML = "<style>" +
       ".selected {background: red;}" +
       "</style>" +

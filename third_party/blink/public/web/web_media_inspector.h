@@ -12,30 +12,47 @@
 namespace blink {
 
 // These types should look exactly like the types defined in
-// browser_protocol.pdl and should eventually replace the types in
-// //src/media/base
+// browser_protocol.pdl.
+struct InspectorPlayerMessage {
+  enum class Level { kError, kWarning, kInfo, kDebug };
+  Level level;
+  WebString message;
+};
+using InspectorPlayerMessages = WebVector<InspectorPlayerMessage>;
+
 struct InspectorPlayerProperty {
   WebString name;
-  base::Optional<WebString> value;
+  WebString value;
 };
 using InspectorPlayerProperties = WebVector<InspectorPlayerProperty>;
 
 struct InspectorPlayerEvent {
-  enum InspectorPlayerEventType { PLAYBACK_EVENT, SYSTEM_EVENT, MESSAGE_EVENT };
-  InspectorPlayerEventType type;
   base::TimeTicks timestamp;
-  WebString key;
   WebString value;
 };
 using InspectorPlayerEvents = WebVector<InspectorPlayerEvent>;
+
+struct InspectorPlayerError {
+  enum class Type { kPipelineError, kMediaStatus };
+  Type type;
+  WebString errorCode;
+};
+using InspectorPlayerErrors = WebVector<InspectorPlayerError>;
 
 class MediaInspectorContext {
  public:
   virtual WebString CreatePlayer() = 0;
 
-  // These methods DCHECK if the player id is invalid.
-  virtual void NotifyPlayerEvents(WebString, InspectorPlayerEvents) = 0;
-  virtual void SetPlayerProperties(WebString, InspectorPlayerProperties) = 0;
+  virtual void DestroyPlayer(const WebString& playerId) = 0;
+
+  virtual void NotifyPlayerEvents(WebString player_id,
+                                  const InspectorPlayerEvents&) = 0;
+  virtual void NotifyPlayerErrors(WebString player_id,
+                                  const InspectorPlayerErrors&) = 0;
+  virtual void NotifyPlayerMessages(WebString player_id,
+                                    const InspectorPlayerMessages&) = 0;
+  virtual void SetPlayerProperties(WebString player_id,
+                                   const InspectorPlayerProperties&) = 0;
 };
 
 }  // namespace blink

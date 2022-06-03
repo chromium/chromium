@@ -10,11 +10,14 @@ PASS Fetch with POST with Float32Array body
 PASS Fetch with POST with Float64Array body
 PASS Fetch with POST with DataView body
 PASS Fetch with POST with Blob body with mime type
-FAIL Fetch with POST with ReadableStream assert_equals: expected "Test" but got ""
-FAIL Fetch with POST with ReadableStream containing String Cannot read property 'then' of undefined
-FAIL Fetch with POST with ReadableStream containing null Cannot read property 'then' of undefined
-FAIL Fetch with POST with ReadableStream containing number Cannot read property 'then' of undefined
-FAIL Fetch with POST with ReadableStream containing ArrayBuffer Cannot read property 'then' of undefined
-FAIL Fetch with POST with ReadableStream containing Blob Cannot read property 'then' of undefined
+PASS Fetch with POST with ReadableStream containing String
+PASS Fetch with POST with ReadableStream containing null
+PASS Fetch with POST with ReadableStream containing number
+PASS Fetch with POST with ReadableStream containing ArrayBuffer
+PASS Fetch with POST with ReadableStream containing Blob
+PASS Fetch with POST with text body on 421 response should be retried once on new connection.
+FAIL Fetch with POST with ReadableStream on 421 response should return the response and not retry. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS Feature detect for POST with ReadableStream
+FAIL Feature detect for POST with ReadableStream, using request object promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'fetch' on 'Window': If request is made from ReadableStream, mode should be"same-origin" or "cors""
 Harness: the test ran to completion.
 

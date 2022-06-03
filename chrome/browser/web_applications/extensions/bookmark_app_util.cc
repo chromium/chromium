@@ -4,19 +4,23 @@
 
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 
+#include <map>
+#include <memory>
+#include <utility>
+
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_icon_set.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -29,14 +33,6 @@ namespace {
 const char kPrefLocallyInstalled[] = "locallyInstalled";
 
 }  // namespace
-
-void SetBookmarkAppIsLocallyInstalled(content::BrowserContext* context,
-                                      const Extension* extension,
-                                      bool is_locally_installed) {
-  ExtensionPrefs::Get(context)->UpdateExtensionPref(
-      extension->id(), kPrefLocallyInstalled,
-      std::make_unique<base::Value>(is_locally_installed));
-}
 
 bool BookmarkAppIsLocallyInstalled(content::BrowserContext* context,
                                    const Extension* extension) {
@@ -63,47 +59,27 @@ bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url) {
          base::StringPiece(url.spec()).substr(0, scope_str_length);
 }
 
-const Extension* GetInstalledShortcutForUrl(Profile* profile, const GURL& url) {
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
-  web_app::AppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
-  for (scoped_refptr<const Extension> app :
-       ExtensionRegistry::Get(profile)->enabled_extensions()) {
-    if (!app->from_bookmark())
-      continue;
-    if (!BookmarkAppIsLocallyInstalled(prefs, app.get()))
-      continue;
-    if (!registrar.IsShortcutApp(app->id()))
-      continue;
-
-    const GURL launch_url = AppLaunchInfo::GetLaunchWebURL(app.get());
-    if (IsInNavigationScopeForLaunchUrl(launch_url, url))
-      return app.get();
+LaunchContainerAndType GetLaunchContainerAndTypeFromDisplayMode(
+    web_app::DisplayMode display_mode) {
+  apps::mojom::LaunchContainer apps_launch_container =
+      web_app::ConvertDisplayModeToAppLaunchContainer(display_mode);
+  switch (apps_launch_container) {
+    case apps::mojom::LaunchContainer::kLaunchContainerNone:
+      return {extensions::LaunchContainer::kLaunchContainerNone,
+              extensions::LaunchType::LAUNCH_TYPE_DEFAULT};
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+      return {extensions::LaunchContainer::kLaunchContainerPanelDeprecated,
+              extensions::LaunchType::LAUNCH_TYPE_REGULAR};
+    case apps::mojom::LaunchContainer::kLaunchContainerTab:
+      return {extensions::LaunchContainer::kLaunchContainerTab,
+              extensions::LaunchType::LAUNCH_TYPE_REGULAR};
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
+      return {extensions::LaunchContainer::kLaunchContainerTab,
+              display_mode == web_app::DisplayMode::kFullscreen
+                  ? extensions::LaunchType::LAUNCH_TYPE_FULLSCREEN
+                  : extensions::LaunchType::LAUNCH_TYPE_WINDOW};
   }
-  return nullptr;
-}
-
-int CountUserInstalledBookmarkApps(content::BrowserContext* browser_context) {
-  // To avoid data races and inaccurate counting, ensure that ExtensionSystem is
-  // always ready at this point.
-  DCHECK(extensions::ExtensionSystem::Get(browser_context)
-             ->extension_service()
-             ->is_ready());
-
-  int num_user_installed = 0;
-
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  for (scoped_refptr<const Extension> app :
-       ExtensionRegistry::Get(browser_context)->enabled_extensions()) {
-    if (!app->from_bookmark())
-      continue;
-    if (!BookmarkAppIsLocallyInstalled(prefs, app.get()))
-      continue;
-    if (!app->was_installed_by_default())
-      ++num_user_installed;
-  }
-
-  return num_user_installed;
+  NOTREACHED();
 }
 
 }  // namespace extensions

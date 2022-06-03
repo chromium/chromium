@@ -37,5 +37,4 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//testing/gtest",
   ]
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }

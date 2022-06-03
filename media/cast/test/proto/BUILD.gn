@@ -5,15 +5,11 @@
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("proto") {
-  public_deps = [
-    ":cast_network_simulation_proto",
-  ]
+  public_deps = [ ":cast_network_simulation_proto" ]
   public_configs = [ "//third_party/protobuf:protobuf_config" ]
 }
 
 proto_library("cast_network_simulation_proto") {
   visibility = [ ":proto" ]
-  sources = [
-    "network_simulation_model.proto",
-  ]
+  sources = [ "network_simulation_model.proto" ]
 }

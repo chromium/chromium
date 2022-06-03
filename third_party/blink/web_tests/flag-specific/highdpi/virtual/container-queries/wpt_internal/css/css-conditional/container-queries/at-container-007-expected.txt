@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+PASS getComputedStyle when element is display:none
+PASS getComputedStyle when parent is display:none
+PASS getComputedStyle when ancestor is display:none
+PASS getComputedStyle when container is display:none
+PASS getComputedStyle when element in nested container is display:none
+PASS getComputedStyle when inner container is display:none
+PASS getComputedStyle when intermediate ancestor is display:none
+PASS getComputedStyle when outer container is display:none
+PASS getComputedStyle when element becomes display:none
+PASS getComputedStyle when parent becomes display:none
+PASS getComputedStyle when ancestor becomes display:none
+PASS getComputedStyle when container becomes display:none
+PASS getComputedStyle when intermediate container becomes display:none
+PASS getComputedStyle when ::before is display:none
+PASS getComputedStyle when originating element is display:none
+PASS getComputedStyle on ::before when ancestor element is display:none
+PASS getComputedStyle on ::before when container is display:none
+Harness: the test ran to completion.
+

@@ -1,0 +1,85 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<iframe id="iframeElement" style="width: 400px; height: 300px;" srcdoc="
+  <!doctype html>
+  <script>
+    var wheelEventDeltaX = 0;
+    var wheelEventDeltaY = 0;
+    document.scrollingElement.addEventListener('wheel',
+      function(e) {
+        console.log('firing wheel');
+        wheelEventDeltaX = e.deltaX;
+        wheelEventDeltaY = e.deltaY;
+      }
+    );
+  </script>
+  <div style='height:1000px; width:800px;'></div>
+"></iframe>
+</div>
+<script>
+"use strict";
+internals.settings.setHideScrollbars(true);
+
+function waitForLoad() {
+  return new Promise((resolve, reject) => {
+    window.addEventListener("load", resolve);
+  });
+}
+
+function isNear(actual, expected, tolerance) {
+  console.log(actual + " : " + expected);
+  return Math.abs(actual - expected) <= tolerance;
+}
+
+promise_test(async () => {
+  await waitForLoad();
+
+  const SCROLL_PERCENTAGE = 0.4;
+  await percentScroll(SCROLL_PERCENTAGE, SCROLL_PERCENTAGE, 200, 150,
+                     GestureSourceType.MOUSE_INPUT);
+
+  function isCorrectXOffset() {
+    return isNear(iframeElement.contentDocument.scrollingElement.scrollLeft,
+        iframeElement.clientWidth * SCROLL_PERCENTAGE, 0.5);
+  }
+  function isCorrectYOffset() {
+    return isNear(iframeElement.contentDocument.scrollingElement.scrollTop,
+        iframeElement.clientHeight * SCROLL_PERCENTAGE, 0.5);
+  }
+
+  await waitFor(isCorrectXOffset);
+  await waitFor(isCorrectYOffset);
+  await conditionHolds(isCorrectXOffset);
+  await conditionHolds(isCorrectYOffset);
+  assert_equals(iframeElement.contentWindow.wheelEventDeltaY,
+                WHEEL_DELTA,
+                "Wheel event deltaY must be a constant");
+  assert_equals(iframeElement.contentWindow.wheelEventDeltaX,
+                WHEEL_DELTA,
+                "Wheel event deltaY must be a constant");
+
+  // Scroll back to the top and ensure we scroll back to the origin and have
+  // negated wheel deltas. Scrolling upleft so use negative pixels
+  await percentScroll(-SCROLL_PERCENTAGE,
+                      -SCROLL_PERCENTAGE,
+                      200,
+                      150,
+                      GestureSourceType.MOUSE_INPUT);
+
+  await waitFor(() =>
+      iframeElement.contentDocument.scrollingElement.scrollTop === 0,
+      "Vertical scrolling must scroll back to origin");
+  await waitFor(() =>
+      iframeElement.contentDocument.scrollingElement.scrollLeft === 0,
+      "Horizontal scrolling must scroll back to origin")
+
+  assert_equals(iframeElement.contentWindow.wheelEventDeltaY,
+                -WHEEL_DELTA,
+                "Wheel event deltaY must be negative constant");
+  assert_equals(iframeElement.contentWindow.wheelEventDeltaX,
+                -WHEEL_DELTA,
+                "Wheel event deltaY must be negative constant");
+}, "Using the mousewheel to scroll by a percentage on an empty iframe.");
+</script>

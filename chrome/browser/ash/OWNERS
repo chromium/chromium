@@ -1,0 +1,2 @@
+# //chrome/browser/chromeos is moving to this directory, so share OWNERS.
+file://chrome/browser/chromeos/OWNERS

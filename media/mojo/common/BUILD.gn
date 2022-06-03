@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_source_set("common") {
+source_set("common") {
   sources = [
+    "audio_data_s16_converter.cc",
+    "audio_data_s16_converter.h",
+    "input_error_code_converter.cc",
+    "input_error_code_converter.h",
     "media_type_converters.cc",
     "media_type_converters.h",
     "mojo_data_pipe_read_write.cc",
@@ -19,7 +21,7 @@ jumbo_source_set("common") {
   deps = [
     ":mojo_shared_buffer_video_frame",
     "//base",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",

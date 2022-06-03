@@ -8,16 +8,15 @@ callback IntersectionObserverCallback = void (sequence<IntersectionObserverEntry
 
 [
     Exposed=Window,
-    ActiveScriptWrappable,
-    MeasureAs=IntersectionObserver_Constructor
+    ActiveScriptWrappable
 ] interface IntersectionObserver {
-    [CallWith=ScriptState, RaisesException] constructor(IntersectionObserverCallback callback, optional IntersectionObserverInit options);
-    readonly attribute Element? root;
+    [CallWith=ScriptState, RaisesException, MeasureAs=IntersectionObserver_Constructor] constructor(IntersectionObserverCallback callback, optional IntersectionObserverInit options = {});
+    readonly attribute Node? root;
     readonly attribute DOMString rootMargin;
     // https://github.com/WICG/IntersectionObserver/issues/114
     readonly attribute FrozenArray<double> thresholds;
-    [RuntimeEnabled=IntersectionObserverV2] readonly attribute DOMHighResTimeStamp delay;
-    [RuntimeEnabled=IntersectionObserverV2] readonly attribute boolean trackVisibility;
+    readonly attribute DOMHighResTimeStamp delay;
+    readonly attribute boolean trackVisibility;
     [RaisesException] void observe(Element target);
     [RaisesException] void unobserve(Element target);
     [RaisesException] void disconnect();

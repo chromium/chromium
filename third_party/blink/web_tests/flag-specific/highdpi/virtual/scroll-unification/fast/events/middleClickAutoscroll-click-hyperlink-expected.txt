@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Clicking link while in pan-mode is ignored
+Harness: the test ran to completion.
+

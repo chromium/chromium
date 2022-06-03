@@ -5,11 +5,11 @@
 // https://html.spec.whatwg.org/C/#the-messageevent-interfaces
 
 dictionary MessageEventInit : EventInit {
-    any data;
-    DOMString origin;
-    DOMString lastEventId;
+    any data = null;
+    DOMString origin = "";
+    DOMString lastEventId = "";
     // TODO(bashi): |source| should be (WindowProxy or MessagePort)?
-    EventTarget? source;
+    EventTarget? source = null;
     sequence<MessagePort> ports = [];
-    [RuntimeEnabled=UserActivationAPI] UserActivation? userActivation = null;
+    UserActivation? userActivation = null;
 };

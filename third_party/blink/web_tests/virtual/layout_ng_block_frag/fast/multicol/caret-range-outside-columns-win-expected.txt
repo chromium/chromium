@@ -1,0 +1,54 @@
+Test that hitting areas outside columns takes us to the right text content inside columns.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Above first column:
+PASS document.caretRangeFromPoint(50,0).startOffset is 0
+PASS document.caretRangeFromPoint(150,0).startOffset is 2
+PASS document.caretRangeFromPoint(189,0).startOffset is 3
+Above second column:
+PASS document.caretRangeFromPoint(190,0).startOffset is 12
+PASS document.caretRangeFromPoint(250,0).startOffset is 14
+PASS document.caretRangeFromPoint(289,0).startOffset is 15
+Above third column:
+PASS document.caretRangeFromPoint(290,0).startOffset is 24
+PASS document.caretRangeFromPoint(350,0).startOffset is 26
+PASS document.caretRangeFromPoint(450,0).startOffset is 27
+Below first column:
+PASS document.caretRangeFromPoint(50,100).startOffset is 8
+PASS document.caretRangeFromPoint(150,100).startOffset is 10
+PASS document.caretRangeFromPoint(189,100).startOffset is 11
+Below second column:
+PASS document.caretRangeFromPoint(190,100).startOffset is 20
+PASS document.caretRangeFromPoint(250,100).startOffset is 22
+PASS document.caretRangeFromPoint(289,100).startOffset is 23
+Below third column:
+PASS document.caretRangeFromPoint(290,100).startOffset is 32
+PASS document.caretRangeFromPoint(350,100).startOffset is 34
+PASS document.caretRangeFromPoint(389,100).startOffset is 35
+To the left of the first column:
+PASS document.caretRangeFromPoint(0,10).startOffset is 0
+PASS document.caretRangeFromPoint(0,30).startOffset is 0
+PASS document.caretRangeFromPoint(0,50).startOffset is 4
+PASS document.caretRangeFromPoint(0,70).startOffset is 8
+PASS document.caretRangeFromPoint(0,90).startOffset is 8
+To the right of the third column:
+PASS document.caretRangeFromPoint(400,10).startOffset is 27
+PASS document.caretRangeFromPoint(400,30).startOffset is 27
+PASS document.caretRangeFromPoint(400,50).startOffset is 31
+PASS document.caretRangeFromPoint(400,70).startOffset is 35
+In the gap between the first and second columns:
+PASS document.caretRangeFromPoint(180,20).startOffset is 3
+PASS document.caretRangeFromPoint(180,40).startOffset is 7
+PASS document.caretRangeFromPoint(180,60).startOffset is 11
+PASS document.caretRangeFromPoint(180,69).startOffset is 11
+In the gap between the second and third columns:
+PASS document.caretRangeFromPoint(280,20).startOffset is 15
+PASS document.caretRangeFromPoint(280,40).startOffset is 19
+PASS document.caretRangeFromPoint(280,60).startOffset is 23
+PASS document.caretRangeFromPoint(280,69).startOffset is 23
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+xxx xxx xxx xxx xxx xxx xxx xxx xxx

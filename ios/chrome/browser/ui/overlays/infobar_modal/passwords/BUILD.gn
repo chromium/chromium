@@ -1,0 +1,53 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  sources = [
+    "password_infobar_modal_overlay_coordinator.h",
+    "password_infobar_modal_overlay_coordinator.mm",
+    "password_infobar_modal_overlay_mediator.h",
+    "password_infobar_modal_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_infobar_modal_overlay_mediator_unittest.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":passwords",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/ui/infobars/modals/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

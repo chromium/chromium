@@ -1,0 +1,202 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "internal/search_result_extractor_client_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/continuous_search/browser",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    deps += [ "//chrome/test:test_support_ui" ]
+  }
+
+  data = [ "//chrome/test/data/continuous_search/" ]
+}
+
+source_set("public") {
+  sources = [ "page_category.h" ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("java") {
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchChipView.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerMediator.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerProperties.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerViewBinder.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListMediator.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListProperties.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListViewBinder.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchSceneLayer.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelper.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchViewResourceFrameLayout.java",
+    ]
+
+    deps = [
+      ":data_structures_java",
+      ":java_resources",
+      "//base:base_java",
+      "//chrome/browser/browser_controls/android:java",
+      "//chrome/browser/continuous_search/internal:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/ui/android/layouts:java",
+      "//chrome/browser/ui/android/theme:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/url_formatter/android:url_formatter_java",
+      "//content/public/android:content_java",
+      "//services/network/public/mojom:mojom_java",
+      "//services/network/public/mojom:url_loader_base_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      "//ui/android:ui_full_java",
+      "//url:gurl_java",
+    ]
+    resources_package = "org.chromium.chrome.browser.continuous_search"
+  }
+
+  java_cpp_enum("page_category_generated_enum") {
+    sources = [ "page_category.h" ]
+  }
+
+  android_library("data_structures_java") {
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationMetadata.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserData.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/PageGroup.java",
+      "android/java/src/org/chromium/chrome/browser/continuous_search/PageItem.java",
+    ]
+
+    srcjar_deps = [ ":page_category_generated_enum" ]
+
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//chrome/browser/tab:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:gurl_java",
+    ]
+  }
+
+  android_resources("java_resources") {
+    sources = [
+      "android/java/res/drawable/continuous_search_list_item_background.xml",
+      "android/java/res/layout/continuous_search_container.xml",
+      "android/java/res/layout/continuous_search_layout.xml",
+      "android/java/res/layout/continuous_search_list_ad.xml",
+      "android/java/res/layout/continuous_search_list_item.xml",
+      "android/java/res/layout/continuous_search_list_provider.xml",
+      "android/java/res/values/dimens.xml",
+      "android/java/res/values/styles.xml",
+    ]
+
+    deps = [ "//chrome/android:chrome_app_java_resources" ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchSceneLayer.java" ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+
+    sources = [
+      "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchChipViewTest.java",
+      "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelperTest.java",
+      "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchUiTest.java",
+    ]
+
+    deps = [
+      ":data_structures_java",
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/android:chrome_java",
+      "//chrome/browser/continuous_search/internal:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/tab:java",
+      "//chrome/test/android:chrome_java_test_support",
+      "//components/embedder_support/android:util_java",
+      "//components/url_formatter/android:url_formatter_java",
+      "//content/public/android:content_java",
+      "//content/public/test/android:content_java_test_support",
+      "//net/android:net_java",
+      "//net/android:net_java_test_support",
+      "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//url:gurl_java",
+      "//url:gurl_junit_test_support",
+    ]
+  }
+
+  android_library("junit") {
+    bypass_platform_checks = true
+    testonly = true
+
+    sources = [
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerCoordinatorTest.java",
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerMediatorTest.java",
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchContainerViewBinderTest.java",
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListMediatorTest.java",
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListViewBinderTest.java",
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchSceneLayerTest.java",
+      "android/junit/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelperJUnitTest.java",
+    ]
+
+    deps = [
+      ":data_structures_java",
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//chrome/browser/browser_controls/android:java",
+      "//chrome/browser/continuous_search/internal:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/ui/android/layouts:java",
+      "//chrome/browser/ui/android/theme:java",
+      "//chrome/test/android:chrome_java_test_support",
+      "//components/browser_ui/widget/android:java",
+      "//components/url_formatter/android:url_formatter_java",
+      "//content/public/android:content_java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+      "//url:gurl_junit_test_support",
+    ]
+  }
+}

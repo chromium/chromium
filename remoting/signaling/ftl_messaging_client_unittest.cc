@@ -11,19 +11,22 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "remoting/base/grpc_support/grpc_async_executor.h"
-#include "remoting/base/grpc_support/scoped_grpc_server_stream.h"
-#include "remoting/base/grpc_test_support/grpc_async_test_server.h"
-#include "remoting/base/grpc_test_support/grpc_test_util.h"
-#include "remoting/proto/ftl/v1/ftl_services.grpc.pb.h"
-#include "remoting/signaling/ftl_grpc_context.h"
+#include "remoting/base/fake_oauth_token_getter.h"
+#include "remoting/base/protobuf_http_client.h"
+#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/protobuf_http_test_responder.h"
+#include "remoting/base/scoped_protobuf_http_request.h"
+#include "remoting/proto/ftl/v1/ftl_messages.pb.h"
+#include "remoting/signaling/ftl_services_context.h"
 #include "remoting/signaling/message_reception_channel.h"
 #include "remoting/signaling/registration_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,11 +42,7 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::Truly;
 
-using PullMessagesResponder =
-    test::GrpcServerResponder<ftl::PullMessagesResponse>;
-using AckMessagesResponder =
-    test::GrpcServerResponder<ftl::AckMessagesResponse>;
-
+constexpr char kFakeServerEndpoint[] = "test.com";
 constexpr char kFakeSenderId[] = "fake_sender@gmail.com";
 constexpr char kFakeSenderRegId[] = "fake_sender_reg_id";
 constexpr char kFakeReceiverId[] = "fake_receiver@gmail.com";
@@ -78,10 +77,16 @@ ftl::InboxMessage CreateInboxMessage(const std::string& message_id,
   return message;
 }
 
-FtlMessagingClient::MessageCallback CreateNotReachedMessageCallback() {
-  return base::BindRepeating(
-      [](const ftl::Id& sender_id, const std::string& sender_registration_id,
-         const ftl::ChromotingMessage& message) { NOTREACHED(); });
+base::OnceCallback<void(const ProtobufHttpStatus&)>
+CheckStatusThenQuitRunLoopCallback(
+    const base::Location& from_here,
+    ProtobufHttpStatus::Code expected_status_code,
+    base::RunLoop* run_loop) {
+  return base::BindLambdaForTesting([=](const ProtobufHttpStatus& status) {
+    ASSERT_EQ(expected_status_code, status.error_code())
+        << "Incorrect status code. Location: " << from_here.ToString();
+    run_loop->QuitWhenIdle();
+  });
 }
 
 std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
@@ -95,6 +100,11 @@ std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
 class MockMessageReceptionChannel : public MessageReceptionChannel {
  public:
   MockMessageReceptionChannel() = default;
+
+  MockMessageReceptionChannel(const MockMessageReceptionChannel&) = delete;
+  MockMessageReceptionChannel& operator=(const MockMessageReceptionChannel&) =
+      delete;
+
   ~MockMessageReceptionChannel() override = default;
 
   // MessageReceptionChannel implementations.
@@ -115,8 +125,6 @@ class MockMessageReceptionChannel : public MessageReceptionChannel {
  private:
   StreamOpener stream_opener_;
   MessageCallback on_incoming_msg_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessageReceptionChannel);
 };
 
 class MockRegistrationManager : public RegistrationManager {
@@ -145,22 +153,8 @@ class FtlMessagingClientTest : public testing::Test {
   void TearDown() override;
 
  protected:
-  using Messaging =
-      google::internal::communications::instantmessaging::v1::Messaging;
-
-  // Calls are scheduled sequentially and handled on the server thread.
-  void ServerWaitAndRespondToPullMessagesRequest(
-      const ftl::PullMessagesResponse& response,
-      const grpc::Status& status);
-  void ServerWaitAndRespondToInboxSendRequest(
-      base::OnceCallback<grpc::Status(const ftl::InboxSendRequest&)> handler,
-      base::OnceClosure on_done);
-  void ServerWaitAndRespondToAckMessagesRequest(
-      base::OnceCallback<grpc::Status(const ftl::AckMessagesRequest&)> handler,
-      base::OnceClosure on_done);
-
-  std::unique_ptr<test::GrpcAsyncTestServer> server_;
-  scoped_refptr<base::SequencedTaskRunner> server_task_runner_;
+  ProtobufHttpTestResponder test_responder_;
+  FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS, "", ""};
   std::unique_ptr<FtlMessagingClient> messaging_client_;
   MockMessageReceptionChannel* mock_message_reception_channel_;
 
@@ -170,205 +164,29 @@ class FtlMessagingClientTest : public testing::Test {
 };
 
 void FtlMessagingClientTest::SetUp() {
-  server_task_runner_ =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
-  server_ = std::make_unique<test::GrpcAsyncTestServer>(
-      std::make_unique<Messaging::AsyncService>());
-  FtlGrpcContext::SetChannelForTesting(server_->CreateInProcessChannel());
   EXPECT_CALL(mock_registration_manager_, GetFtlAuthToken())
       .WillRepeatedly(Return("fake_auth_token"));
   auto channel = std::make_unique<MockMessageReceptionChannel>();
   mock_message_reception_channel_ = channel.get();
   messaging_client_ = std::unique_ptr<FtlMessagingClient>(
-      new FtlMessagingClient(std::make_unique<GrpcAsyncExecutor>(),
+      new FtlMessagingClient(std::make_unique<ProtobufHttpClient>(
+                                 kFakeServerEndpoint, &token_getter_,
+                                 test_responder_.GetUrlLoaderFactory()),
                              &mock_registration_manager_, std::move(channel)));
 }
 
 void FtlMessagingClientTest::TearDown() {
   messaging_client_.reset();
-  FtlGrpcContext::SetChannelForTesting(nullptr);
-  server_task_runner_->DeleteSoon(FROM_HERE, std::move(server_));
-}
-
-void FtlMessagingClientTest::ServerWaitAndRespondToPullMessagesRequest(
-    const ftl::PullMessagesResponse& response,
-    const grpc::Status& status) {
-  server_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const ftl::PullMessagesResponse& response,
-             const grpc::Status& status, test::GrpcAsyncTestServer* server) {
-            ftl::PullMessagesRequest request;
-            auto responder = server->HandleRequest(
-                &Messaging::AsyncService::RequestPullMessages, &request);
-            responder->Respond(response, status);
-          },
-          response, status, server_.get()));
-}
-
-void FtlMessagingClientTest::ServerWaitAndRespondToInboxSendRequest(
-    base::OnceCallback<grpc::Status(const ftl::InboxSendRequest&)> handler,
-    base::OnceClosure on_done) {
-  server_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::OnceCallback<grpc::Status(const ftl::InboxSendRequest&)>
-                 handler,
-             test::GrpcAsyncTestServer* server) {
-            ftl::InboxSendRequest request;
-            auto responder = server->HandleRequest(
-                &Messaging::AsyncService::RequestSendMessage, &request);
-            grpc::Status status = std::move(handler).Run(request);
-            responder->Respond(ftl::InboxSendResponse(), status);
-          },
-          std::move(handler), server_.get()),
-      std::move(on_done));
-}
-
-void FtlMessagingClientTest::ServerWaitAndRespondToAckMessagesRequest(
-    base::OnceCallback<grpc::Status(const ftl::AckMessagesRequest&)> handler,
-    base::OnceClosure on_done) {
-  server_task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::OnceCallback<grpc::Status(const ftl::AckMessagesRequest&)>
-                 handler,
-             test::GrpcAsyncTestServer* server) {
-            ftl::AckMessagesRequest request;
-            auto responder = server->HandleRequest(
-                &Messaging::AsyncService::RequestAckMessages, &request);
-            grpc::Status status = std::move(handler).Run(request);
-            responder->Respond(ftl::AckMessagesResponse(), status);
-          },
-          std::move(handler), server_.get()),
-      std::move(on_done));
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_ReturnsNoMessage) {
-  base::RunLoop run_loop;
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-  messaging_client_->PullMessages(test::CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, grpc::StatusCode::OK, &run_loop));
-  ServerWaitAndRespondToPullMessagesRequest(ftl::PullMessagesResponse(),
-                                            grpc::Status::OK);
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_Unauthenticated) {
-  base::RunLoop run_loop;
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-  messaging_client_->PullMessages(test::CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, grpc::StatusCode::UNAUTHENTICATED, &run_loop));
-  ServerWaitAndRespondToPullMessagesRequest(
-      ftl::PullMessagesResponse(),
-      grpc::Status(grpc::StatusCode::UNAUTHENTICATED, "Unauthenticated"));
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_IgnoresMessageWithoutRegId) {
-  base::RunLoop run_loop;
-
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-
-  messaging_client_->PullMessages(test::CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, grpc::StatusCode::OK, &run_loop));
-
-  ftl::PullMessagesResponse response;
-  ftl::InboxMessage* message = response.add_messages();
-  *message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  message->clear_sender_registration_id();
-  ServerWaitAndRespondToPullMessagesRequest(response, grpc::Status::OK);
-  ServerWaitAndRespondToAckMessagesRequest(
-      base::BindLambdaForTesting([&](const ftl::AckMessagesRequest& request) {
-        EXPECT_EQ(1, request.messages_size());
-        EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-        EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-        return grpc::Status::OK;
-      }),
-      base::DoNothing());
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_IgnoresUnknownMessageType) {
-  base::RunLoop run_loop;
-
-  auto subscription = messaging_client_->RegisterMessageCallback(
-      CreateNotReachedMessageCallback());
-
-  messaging_client_->PullMessages(test::CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, grpc::StatusCode::OK, &run_loop));
-
-  ftl::PullMessagesResponse response;
-  ftl::InboxMessage* message = response.add_messages();
-  *message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  message->set_message_type(ftl::InboxMessage_MessageType_UNKNOWN);
-  ServerWaitAndRespondToPullMessagesRequest(response, grpc::Status::OK);
-  ServerWaitAndRespondToAckMessagesRequest(
-      base::BindLambdaForTesting([&](const ftl::AckMessagesRequest& request) {
-        EXPECT_EQ(1, request.messages_size());
-        EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-        EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-        return grpc::Status::OK;
-      }),
-      base::DoNothing());
-  run_loop.Run();
-}
-
-TEST_F(FtlMessagingClientTest, TestPullMessages_ReturnsAndAcksTwoMessages) {
-  base::RunLoop run_loop;
-
-  base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage1Text)))
-      .WillOnce(Return());
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage2Text)))
-      .WillOnce(Return());
-
-  auto subscription =
-      messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
-
-  messaging_client_->PullMessages(test::CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, grpc::StatusCode::OK, &run_loop));
-
-  ftl::PullMessagesResponse pull_messages_response;
-  ftl::InboxMessage* message = pull_messages_response.add_messages();
-  *message = CreateInboxMessage(kMessage1Id, kMessage1Text);
-  message = pull_messages_response.add_messages();
-  *message = CreateInboxMessage(kMessage2Id, kMessage2Text);
-  ServerWaitAndRespondToPullMessagesRequest(pull_messages_response,
-                                            grpc::Status::OK);
-
-  ServerWaitAndRespondToAckMessagesRequest(
-      base::BindLambdaForTesting([&](const ftl::AckMessagesRequest& request) {
-        EXPECT_EQ(2, request.messages_size());
-        EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-        EXPECT_EQ(kFakeReceiverId, request.messages(1).receiver_id().id());
-        EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-        EXPECT_EQ(kMessage2Id, request.messages(1).message_id());
-        return grpc::Status::OK;
-      }),
-      base::DoNothing());
-
-  run_loop.Run();
 }
 
 TEST_F(FtlMessagingClientTest, TestSendMessage_Unauthenticated) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
       kFakeReceiverId, kFakeSenderRegId, CreateXmppMessage(kMessage1Text),
-      test::CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, grpc::StatusCode::UNAUTHENTICATED, &run_loop));
-  ServerWaitAndRespondToInboxSendRequest(
-      base::BindOnce([](const ftl::InboxSendRequest&) {
-        return grpc::Status(grpc::StatusCode::UNAUTHENTICATED,
-                            "Unauthenticated");
-      }),
-      base::DoNothing());
+      CheckStatusThenQuitRunLoopCallback(
+          FROM_HERE, ProtobufHttpStatus::Code::UNAUTHENTICATED, &run_loop));
+  test_responder_.AddErrorToMostRecentRequestUrl(ProtobufHttpStatus(
+      ProtobufHttpStatus::Code::UNAUTHENTICATED, "Unauthenticated"));
   run_loop.Run();
 }
 
@@ -376,18 +194,18 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
       kFakeReceiverId, "", CreateXmppMessage(kMessage1Text),
-      test::CheckStatusThenQuitRunLoopCallback(FROM_HERE, grpc::StatusCode::OK,
-                                               &run_loop));
-  ServerWaitAndRespondToInboxSendRequest(
-      base::BindOnce([](const ftl::InboxSendRequest& request) {
-        EXPECT_EQ(0, request.dest_registration_ids_size());
-        EXPECT_LT(0, request.time_to_live());
-        EXPECT_EQ(kFakeReceiverId, request.dest_id().id());
-        EXPECT_FALSE(request.message().message_id().empty());
-        EXPECT_EQ(kMessage1Text, GetChromotingMessageText(request.message()));
-        return grpc::Status::OK;
-      }),
-      base::DoNothing());
+      CheckStatusThenQuitRunLoopCallback(
+          FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+
+  ftl::InboxSendRequest request;
+  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
+  EXPECT_EQ(0, request.dest_registration_ids_size());
+  EXPECT_LT(0, request.time_to_live());
+  EXPECT_EQ(kFakeReceiverId, request.dest_id().id());
+  EXPECT_FALSE(request.message().message_id().empty());
+  EXPECT_EQ(kMessage1Text, GetChromotingMessageText(request.message()));
+
+  test_responder_.AddResponseToMostRecentRequestUrl(ftl::InboxSendResponse());
   run_loop.Run();
 }
 
@@ -395,19 +213,19 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
       kFakeReceiverId, kFakeSenderRegId, CreateXmppMessage(kMessage1Text),
-      test::CheckStatusThenQuitRunLoopCallback(FROM_HERE, grpc::StatusCode::OK,
-                                               &run_loop));
-  ServerWaitAndRespondToInboxSendRequest(
-      base::BindOnce([](const ftl::InboxSendRequest& request) {
-        EXPECT_EQ(1, request.dest_registration_ids_size());
-        EXPECT_EQ(kFakeSenderRegId, request.dest_registration_ids(0));
-        EXPECT_LT(0, request.time_to_live());
-        EXPECT_EQ(kFakeReceiverId, request.dest_id().id());
-        EXPECT_FALSE(request.message().message_id().empty());
-        EXPECT_EQ(kMessage1Text, GetChromotingMessageText(request.message()));
-        return grpc::Status::OK;
-      }),
-      base::DoNothing());
+      CheckStatusThenQuitRunLoopCallback(
+          FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+
+  ftl::InboxSendRequest request;
+  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
+  EXPECT_EQ(1, request.dest_registration_ids_size());
+  EXPECT_EQ(kFakeSenderRegId, request.dest_registration_ids(0));
+  EXPECT_LT(0, request.time_to_live());
+  EXPECT_EQ(kFakeReceiverId, request.dest_id().id());
+  EXPECT_FALSE(request.message().message_id().empty());
+  EXPECT_EQ(kMessage1Text, GetChromotingMessageText(request.message()));
+
+  test_responder_.AddResponseToMostRecentRequestUrl(ftl::InboxSendResponse());
   run_loop.Run();
 }
 
@@ -419,7 +237,7 @@ TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
                            FtlMessagingClient::DoneCallback on_closed) {
         std::move(on_ready).Run();
         std::move(on_closed).Run(
-            grpc::Status(grpc::StatusCode::UNAUTHENTICATED, ""));
+            ProtobufHttpStatus(ProtobufHttpStatus::Code::UNAUTHENTICATED, ""));
       }));
 
   base::MockCallback<base::OnceClosure> mock_on_ready_closure;
@@ -427,8 +245,9 @@ TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
 
   messaging_client_->StartReceivingMessages(
       mock_on_ready_closure.Get(),
-      base::BindLambdaForTesting([&](const grpc::Status& status) {
-        ASSERT_EQ(grpc::StatusCode::UNAUTHENTICATED, status.error_code());
+      base::BindLambdaForTesting([&](const ProtobufHttpStatus& status) {
+        ASSERT_EQ(ProtobufHttpStatus::Code::UNAUTHENTICATED,
+                  status.error_code());
         run_loop.Quit();
       }));
 
@@ -442,49 +261,25 @@ TEST_F(FtlMessagingClientTest, TestStopReceivingMessages_CallForwarded) {
 }
 
 TEST_F(FtlMessagingClientTest,
-       TestStreamOpener_StreamsTwoMessagesThenCloseByClient) {
+       TestStreamOpener_StreamsTwoMessagesThenCloseByServer) {
   base::RunLoop run_loop;
 
-  std::unique_ptr<ScopedGrpcServerStream> scoped_stream;
+  std::unique_ptr<ScopedProtobufHttpRequest> scoped_stream;
 
   ftl::ReceiveMessagesResponse response_1;
   response_1.mutable_inbox_message()->set_message_id(kMessage1Id);
   ftl::ReceiveMessagesResponse response_2;
   response_2.mutable_pong();
 
-  base::MockCallback<base::RepeatingClosure> exit_runloop_when_called_twice;
-  EXPECT_CALL(exit_runloop_when_called_twice, Run())
-      .WillOnce(Return())
-      .WillOnce([&]() {
-        // Whoever calls last quits the run loop.
-        run_loop.QuitWhenIdle();
-      });
-
-  server_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ftl::ReceiveMessagesRequest request;
-        // This blocks the server thread until the client opens the stream.
-        auto responder = server_->HandleStreamRequest(
-            &Messaging::AsyncService::RequestReceiveMessages, &request);
-        responder->SendMessage(response_1);
-        ASSERT_TRUE(responder->WaitForSendMessageResult());
-        responder->SendMessage(response_2);
-        ASSERT_TRUE(responder->WaitForSendMessageResult());
-      }),
-      exit_runloop_when_called_twice.Get());
-
-  base::MockCallback<
-      base::RepeatingCallback<void(const ftl::ReceiveMessagesResponse&)>>
+  base::MockCallback<base::RepeatingCallback<void(
+      std::unique_ptr<ftl::ReceiveMessagesResponse>)>>
       mock_on_incoming_msg;
   EXPECT_CALL(mock_on_incoming_msg, Run(_))
-      .WillOnce([&](const ftl::ReceiveMessagesResponse& response) {
-        ASSERT_EQ(kMessage1Id, response.inbox_message().message_id());
+      .WillOnce([&](std::unique_ptr<ftl::ReceiveMessagesResponse> response) {
+        ASSERT_EQ(kMessage1Id, response->inbox_message().message_id());
       })
-      .WillOnce([&](const ftl::ReceiveMessagesResponse& response) {
-        ASSERT_TRUE(response.has_pong());
-        DCHECK(scoped_stream);
-        scoped_stream.reset();
-        exit_runloop_when_called_twice.Get().Run();
+      .WillOnce([&](std::unique_ptr<ftl::ReceiveMessagesResponse> response) {
+        ASSERT_TRUE(response->has_pong());
       });
 
   base::MockCallback<base::OnceClosure> on_channel_ready;
@@ -492,7 +287,11 @@ TEST_F(FtlMessagingClientTest,
 
   scoped_stream = mock_message_reception_channel_->stream_opener()->Run(
       on_channel_ready.Get(), mock_on_incoming_msg.Get(),
-      base::BindOnce([](const grpc::Status&) { NOTREACHED(); }));
+      CheckStatusThenQuitRunLoopCallback(
+          FROM_HERE, ProtobufHttpStatus::Code::OK, &run_loop));
+
+  test_responder_.AddStreamResponseToMostRecentRequestUrl(
+      {&response_1, &response_2}, ProtobufHttpStatus::OK());
 
   run_loop.Run();
 }
@@ -500,18 +299,23 @@ TEST_F(FtlMessagingClientTest,
 TEST_F(FtlMessagingClientTest,
        TestOnMessageReceived_MessagePassedToSubscriberAndAcked) {
   base::RunLoop run_loop;
+  base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
+  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
+                                        StanzaTextMatches(kMessage1Text)))
+      .WillOnce([&](const ftl::Id&, const std::string&,
+                    const ftl::ChromotingMessage&) { run_loop.Quit(); });
 
+  auto subscription =
+      messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
   ftl::InboxMessage message = CreateInboxMessage(kMessage1Id, kMessage1Text);
   mock_message_reception_channel_->on_incoming_msg()->Run(message);
 
-  ServerWaitAndRespondToAckMessagesRequest(
-      base::BindLambdaForTesting([&](const ftl::AckMessagesRequest& request) {
-        EXPECT_EQ(1, request.messages_size());
-        EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-        EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-        return grpc::Status::OK;
-      }),
-      run_loop.QuitWhenIdleClosure());
+  ftl::BatchAckMessagesRequest request;
+  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
+  EXPECT_EQ(1, request.message_ids_size());
+  EXPECT_EQ(kMessage1Id, request.message_ids(0));
+  test_responder_.AddResponseToMostRecentRequestUrl(
+      ftl::BatchAckMessagesResponse());
 
   run_loop.Run();
 }
@@ -520,34 +324,47 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
   base::RunLoop run_loop;
 
   base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage1Text)))
-      .WillOnce(Return());
+  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId, _))
+      .WillOnce([](const ftl::Id&, const std::string&,
+                   const ftl::ChromotingMessage& message) {
+        EXPECT_EQ(kMessage1Text, message.xmpp().stanza());
+      })
+      .WillOnce([](const ftl::Id&, const std::string&,
+                   const ftl::ChromotingMessage& message) {
+        EXPECT_EQ(kMessage2Text, message.xmpp().stanza());
+      });
+
+  EXPECT_CALL(test_responder_.GetMockInterceptor(), Run(_))
+      .WillOnce([](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(kMessage1Id, message.message_ids(0));
+      })
+      .WillOnce([](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(kMessage1Id, message.message_ids(0));
+      })
+      .WillOnce([&](const network::ResourceRequest& request) {
+        ftl::BatchAckMessagesRequest message;
+        ProtobufHttpTestResponder::ParseRequestMessage(request, &message);
+        EXPECT_EQ(1, message.message_ids_size());
+        EXPECT_EQ(kMessage2Id, message.message_ids(0));
+        run_loop.Quit();
+      });
 
   auto subscription =
       messaging_client_->RegisterMessageCallback(mock_on_incoming_msg.Get());
+  ftl::InboxMessage message_1 = CreateInboxMessage(kMessage1Id, kMessage1Text);
+  mock_message_reception_channel_->on_incoming_msg()->Run(message_1);
 
-  messaging_client_->PullMessages(test::CheckStatusThenQuitRunLoopCallback(
-      FROM_HERE, grpc::StatusCode::OK, &run_loop));
+  ftl::InboxMessage message_2 = CreateInboxMessage(kMessage1Id, kMessage1Text);
+  mock_message_reception_channel_->on_incoming_msg()->Run(message_2);
 
-  ftl::PullMessagesResponse pull_messages_response;
-  *pull_messages_response.add_messages() =
-      CreateInboxMessage(kMessage1Id, kMessage1Text);
-  *pull_messages_response.add_messages() =
-      CreateInboxMessage(kMessage1Id, kMessage1Text);
-  ServerWaitAndRespondToPullMessagesRequest(pull_messages_response,
-                                            grpc::Status::OK);
-
-  ServerWaitAndRespondToAckMessagesRequest(
-      base::BindLambdaForTesting([&](const ftl::AckMessagesRequest& request) {
-        EXPECT_EQ(2, request.messages_size());
-        EXPECT_EQ(kFakeReceiverId, request.messages(0).receiver_id().id());
-        EXPECT_EQ(kFakeReceiverId, request.messages(1).receiver_id().id());
-        EXPECT_EQ(kMessage1Id, request.messages(0).message_id());
-        EXPECT_EQ(kMessage1Id, request.messages(1).message_id());
-        return grpc::Status::OK;
-      }),
-      base::DoNothing());
+  ftl::InboxMessage message_3 = CreateInboxMessage(kMessage2Id, kMessage2Text);
+  mock_message_reception_channel_->on_incoming_msg()->Run(message_3);
 
   run_loop.Run();
 }

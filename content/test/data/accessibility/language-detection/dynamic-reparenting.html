@@ -1,0 +1,41 @@
+<!--
+@BLINK-ALLOW:language=*
+@BLINK-DENY-NODE:internalRole=inlineTextBox
+@WIN-ALLOW:language:*
+@MAC-ALLOW:AXLanguage
+@WAIT-FOR:Dies ist ein
+-->
+<!DOCTYPE html>
+<html lang="fr-FR">
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <script>
+    // Test node re-parenting. Dynamic language detection is needed in order for
+    // re-parented nodes to get a language assignment, as re-parenting removes
+    // any previously detected language.
+    setTimeout(function() {
+      // Move all existing translations to new parent.
+      translations_to.append(...translations_from.childNodes);
+
+      // Add a new translation.
+      // This lets us use `WAIT-FOR`.
+      const de_text = "Dies ist ein mit Google Translate erstellter Text. Es ist unwahrscheinlich, dass er in der angegebenen Zielsprache idiomatisch ist. Dieser Text wird nur zum Testen der Spracherkennung verwendet.";
+      const li = document.createElement("li");
+      li.innerHTML = de_text;
+      translations_to.append(li);
+    }, 100);
+  </script>
+
+  <ul id="translations_from">
+    <li>This is text created using Google Translate, it is unlikely to be idiomatic in the given target language. This text is only used to test language detection</li>
+    <li>Ce texte a été créé avec Google Translate, il est peu probable qu'il soit idiomatique dans la langue cible indiquée Ce texte est uniquement utilisé pour tester la détection de la langue.</li>
+  </ul>
+
+  <ul id="translations_to">
+    <li>Placeholder listitem</li>
+  </ul>
+
+</body>
+</html>

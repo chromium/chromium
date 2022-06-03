@@ -11,9 +11,10 @@
 #include "base/containers/circular_deque.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/bitrate.h"
 #include "media/base/mac/videotoolbox_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -28,6 +29,10 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   VTVideoEncodeAccelerator();
+
+  VTVideoEncodeAccelerator(const VTVideoEncodeAccelerator&) = delete;
+  VTVideoEncodeAccelerator& operator=(const VTVideoEncodeAccelerator&) = delete;
+
   ~VTVideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -35,9 +40,11 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
+  void Flush(FlushCallback flush_callback) override;
+  bool IsFlushSupported() override;
 
  private:
   // Holds the associated data of a video frame being processed.
@@ -53,12 +60,13 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
   void UseOutputBitstreamBufferTask(
       std::unique_ptr<BitstreamBufferRef> buffer_ref);
-  void RequestEncodingParametersChangeTask(uint32_t bitrate,
+  void RequestEncodingParametersChangeTask(const Bitrate& bitrate,
                                            uint32_t framerate);
   void DestroyTask();
 
-  // Helper function to set bitrate.
-  void SetAdjustedBitrate(int32_t bitrate);
+  // Helper functions to set bitrate.
+  void SetAdjustedConstantBitrate(int32_t bitrate);
+  void SetVariableBitrate(const Bitrate& bitrate);
 
   // Helper function to notify the client of an error on |client_task_runner_|.
   void NotifyError(VideoEncodeAccelerator::Error error);
@@ -93,18 +101,34 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // encoding work).
   void DestroyCompressionSession();
 
+  // Flushes the encoder. The flush callback won't be run until all pending
+  // encodes have been completed.
+  void FlushTask(FlushCallback flush_callback);
+  void MaybeRunFlushCallback();
+
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;
-  size_t bitstream_buffer_size_;
-  int32_t frame_rate_;
-  int32_t initial_bitrate_;
-  int32_t target_bitrate_;
-  int32_t encoder_set_bitrate_;
+  size_t bitstream_buffer_size_ = 0;
+  int32_t frame_rate_ = 0;
   VideoCodecProfile h264_profile_;
 
+  media::Bitrate bitrate_;
+
+  // Bitrate adjuster is used only for constant bitrate mode. In variable
+  // bitrate mode no adjustments are needed.
   // Bitrate adjuster used to fix VideoToolbox's inconsistent bitrate issues.
   webrtc::BitrateAdjuster bitrate_adjuster_;
+  int32_t target_bitrate_ = 0;       // User for CBR only
+  int32_t encoder_set_bitrate_ = 0;  // User for CBR only
+
+  // If True, the encoder fails initialization if setting of session's property
+  // kVTCompressionPropertyKey_MaxFrameDelayCount returns an error.
+  // Encoder can work even after if MaxFrameDelayCount fails, but it'll
+  // have larger latency on low resolutions, and it's bad for RTC.
+  // Context: https://crbug.com/1195177 https://crbug.com/webrtc/7304
+  bool require_low_delay_ = true;
+
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
@@ -131,12 +155,15 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   base::Thread encoder_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> encoder_thread_task_runner_;
 
+  // Tracking information for ensuring flushes aren't completed until all
+  // pending encodes have been returned.
+  int pending_encodes_ = 0;
+  FlushCallback pending_flush_cb_;
+
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
   base::WeakPtr<VTVideoEncodeAccelerator> encoder_weak_ptr_;
   base::WeakPtrFactory<VTVideoEncodeAccelerator> encoder_task_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTVideoEncodeAccelerator);
 };
 
 }  // namespace media

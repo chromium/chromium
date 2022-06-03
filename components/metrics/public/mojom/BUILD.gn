@@ -5,27 +5,17 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("call_stack_mojo_bindings") {
-  sources = [
-    "call_stack_profile_collector.mojom",
-  ]
+  sources = [ "call_stack_profile_collector.mojom" ]
 
-  deps = [
-    "//mojo/public/mojom/base",
-  ]
+  deps = [ "//mojo/public/mojom/base" ]
 }
 
 mojom("call_stack_mojo_test_bindings") {
-  sources = [
-    "call_stack_profile_collector_test.mojom",
-  ]
+  sources = [ "call_stack_profile_collector_test.mojom" ]
 
-  deps = [
-    ":call_stack_mojo_bindings",
-  ]
+  deps = [ ":call_stack_mojo_bindings" ]
 }
 
 mojom("single_sample_metrics_mojo_bindings") {
-  sources = [
-    "single_sample_metrics.mojom",
-  ]
+  sources = [ "single_sample_metrics.mojom" ]
 }

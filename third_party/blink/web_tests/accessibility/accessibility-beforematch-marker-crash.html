@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+.hidden-matchable {
+  content-visibility: hidden-matchable;
+}
+</style>
+<li id=hiddenli class=hidden-matchable>
+  <a id><a><div id=hiddentext>hiddentext</div>
+</li>
+<script>
+const testCase = async_test('Regression test for crbug.com/1250959 should not crash');
+
+hiddentext.addEventListener('beforematch', testCase.step_func(() => {
+  setTimeout(testCase.step_func_done(() => {
+    hiddenli.classList.remove('hidden-matchable');
+  }));
+}));
+
+testCase.step(() => {
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
+  testRunner.findString('hiddentext', ['Async']);
+});
+</script>

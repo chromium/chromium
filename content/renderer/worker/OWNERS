@@ -1,6 +1,1 @@
-falken@chromium.org
-horo@chromium.org
-nhiroki@chromium.org
-
-# TEAM: worker-dev@chromium.org
-# COMPONENT: Blink>Workers
+file://content/browser/worker_host/OWNERS

@@ -13,8 +13,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/common/permissions/api_permission.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
 
 namespace extensions {
 
@@ -33,7 +33,7 @@ AppWebContentsHelper::AppWebContentsHelper(
 bool AppWebContentsHelper::ShouldSuppressGestureEvent(
     const blink::WebGestureEvent& event) {
   // Disable "smart zoom" (double-tap with two fingers on Mac trackpad).
-  if (event.GetType() == blink::WebInputEvent::kGestureDoubleTap)
+  if (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap)
     return true;
 
   // Disable pinch zooming in app windows.
@@ -88,9 +88,15 @@ void AppWebContentsHelper::RequestToLockMouse() const {
     return;
 
   bool has_permission = IsExtensionWithPermissionOrSuggestInConsole(
-      APIPermission::kPointerLock, extension, web_contents_->GetMainFrame());
+      mojom::APIPermissionID::kPointerLock, extension,
+      web_contents_->GetMainFrame());
 
-  web_contents_->GotResponseToLockMouseRequest(has_permission);
+  if (has_permission)
+    web_contents_->GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kSuccess);
+  else
+    web_contents_->GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kPermissionDenied);
 }
 
 void AppWebContentsHelper::RequestMediaAccessPermission(

@@ -1,6 +1,0 @@
-include_rules = [
-  "+mojo/public",
-  "+third_party/re2",
-  "+sandbox",
-  "+services/service_manager/sandbox",
-]

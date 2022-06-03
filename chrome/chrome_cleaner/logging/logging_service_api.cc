@@ -36,7 +36,7 @@ void LoggingServiceAPI::SetInstanceForTesting(
   logging_service_for_testing_ = logging_service;
 }
 
-void LoggingServiceAPI::MaybeSaveLogsToFile(const base::string16& tag) {
+void LoggingServiceAPI::MaybeSaveLogsToFile(const std::wstring& tag) {
 #if !defined(NDEBUG)
   // Always dump the raw logs in debug builds.
   const bool dump_raw_logs = true;

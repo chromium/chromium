@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
-  <g fill="none" transform="translate(2 2)">
-    <polygon fill="#000" fill-opacity=".3" points="0 17 17 17 17 0"/>
-    <polygon fill="#B2B2B2" points="5.917 .671 5.329 .083 3 2.413 .671 .083 .083 .671 2.413 3 .083 5.329 .671 5.917 3 3.587 5.329 5.917 5.917 5.329 3.587 3"/>
-  </g>
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M15.002 15.002V7.41622L7.41622 15.002H15.002ZM16.002 17.002C16.5543 17.002 17.002 16.5543 17.002 16.002V5.002C17.002 4.1111 15.9249 3.66493 15.2949 4.2949L4.2949 15.2949C3.66493 15.9249 4.1111 17.002 5.002 17.002H16.002Z" />
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.66667 6L8 4.66667L7.33333 4L6 5.33333L4.66667 4L4 4.66667L5.33333 6L4 7.33333L4.66667 8L6 6.66667L7.33333 8L8 7.33333L6.66667 6Z"/>
 </svg>

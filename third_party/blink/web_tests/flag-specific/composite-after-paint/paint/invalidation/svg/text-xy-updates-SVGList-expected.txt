@@ -5,17 +5,9 @@
       "bounds": [808, 621],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Passes, if text is at 200x20'",
-          "rect": [208, 13, 166, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'Passes, if text is at 200x20'",
-          "rect": [18, 193, 166, 19],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [208, 13, 166, 19],
+        [18, 193, 166, 19]
       ]
     },
     {
@@ -31,7 +23,8 @@
     {
       "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaque": true
     }
   ]
 }

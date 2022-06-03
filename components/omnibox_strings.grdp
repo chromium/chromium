@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
+  <!-- Note, referenced part .grdp files must be in the same directory as the
+       referencing .grdp file or translation console pipeline breaks. -->
+  <part file="omnibox_pedal_ui_strings.grdp" />
 
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
@@ -29,9 +32,6 @@
       Image you copied
     </message>
   </if>
-  <message name="IDS_COPIED_TEXT_FROM_CLIPBOARD" desc="The actual text the user copied, surrounded by quotation marks.">
-    &quot;<ph name="TEXT">$1<ex>search string</ex></ph>&quot;
-  </message>
   <message name="IDS_SECURE_CONNECTION_EV" desc="Short text shown in the location bar when the connection is secure with an EV cert.">
     <ph name="ORGANIZATION">$1<ex>Paypal Inc.</ex></ph> [<ph name="COUNTRY">$2<ex>US</ex></ph>]
   </message>
@@ -65,20 +65,11 @@
   <message name="IDS_OMNIBOX_TAB_SUGGEST_HINT" desc="The button text contents to say that this suggestion will switch to another tab.">
     Switch to this tab
   </message>
-  <message name="IDS_OMNIBOX_TAB_SUGGEST_SHORT_HINT" desc="A shortened, one word version of button text to say that this suggestion will switch to another tab.">
-    Switch
-  </message>
-  <message name="IDS_PHYSICAL_WEB_OVERFLOW_DESCRIPTION" desc="The description in the omnibox dropdown indicating that multiple nearby devices are broadcasting URLs.">
-    Physical Web suggestions
-  </message>
-  <message name="IDS_PHYSICAL_WEB_OVERFLOW" desc="A label in the omnibox dropdown indicating the number of additional nearby devices broadcasting URLs.">
-    {URL_count, plural, =1 {and 1 more web page} other {and # more web pages}}
-  </message>
-  <message name="IDS_PHYSICAL_WEB_OVERFLOW_EMPTY_TITLE" desc="A label in the omnibox dropdown indicating the number of additional nearby devices broadcasting URLs. This version is used when the title of the top result is empty.">
-    {URL_count, plural, =1 {1 web page nearby} other {# web pages nearby}}
-  </message>
   <message name="IDS_OMNIBOX_FILE" desc="Text shown in the omnibox to indicate a user is viewing a file.">
     File
+  </message>
+  <message name="IDS_OMNIBOX_READER_MODE" desc="Text shown in the omnibox to indicate a user is viewing the reader mode view of an article.">
+    Reader Mode
   </message>
   <message name="IDS_DRIVE_SUGGESTION_DOCUMENT" desc="Google Docs product name, for use in omnibox Docs result descriptions.">
     Google Docs
@@ -96,88 +87,52 @@
     Google Drive
   </message>
   <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE" desc="Product description for Google Drive omnibox results.">
+    <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_OWNER">$2<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$3<ex>Google Docs</ex></ph>
+  </message>
+  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_DATE" desc="Product description for Google Drive omnibox results when date is missing.">
+    <ph name="RESULT_OWNER">$1<ex>First Last</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
+  </message>
+  <message name="IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE_WITHOUT_OWNER" desc="Product description for Google Drive omnibox results when owner is missing.">
     <ph name="RESULT_MODIFIED_DATE">$1<ex>12/31/2018</ex></ph> - <ph name="RESULT_PRODUCT_SOURCE">$2<ex>Google Docs</ex></ph>
   </message>
+  <if expr="use_titlecase">
+    <then>
+      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" desc="Text for the Accuracy Check Omnibox Verbose state. Displayed when the current page is showing an accuracy tip.">
+        Accuracy Check
+      </message>
+    </then>
+    <else>
+      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" desc="Text for the Accuracy Check Omnibox Verbose state. Displayed when the current page is showing an accuracy tip.">
+        Accuracy check
+      </message>
+    </else>
+  </if>
 
-  <!-- Omnibox Pedals -->
-  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="The button text contents to suggest pedal action, clear browsing data.">
-    Clear Data
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, clear browsing data.">
-    Clear
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, clear browsing data.">
-    Clear Chrome's browsing history data
-  </message>
 
-  <message name="IDS_OMNIBOX_PEDAL_CHANGE_SEARCH_ENGINE_HINT" desc="The button text contents to suggest pedal action, change search engine.">
-    Change Search Engine
+  <!-- Omnibox Actions, which are a generalization of Omnibox Pedals. -->
+  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
+    Resume your journey
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_CHANGE_SEARCH_ENGINE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change search engine.">
-    Change
+  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS" desc="The button tooltip for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
+    Resume your journey to see relevant activity in your Chrome history
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_CHANGE_SEARCH_ENGINE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change search engine.">
-    Change Search Engine settings in Chrome
+  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX" desc="Suffix for spoken suggestion description with action button to explain keystroke used to Search History Clusters.">
+    <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>dog food</ex></ph>, press Tab, then Enter to resume your journey and see relevant activity in your Chrome history
   </message>
-
-  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT" desc="The button text contents to suggest pedal action, manage passwords.">
-    Manage Passwords
+  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH" desc="Announcement when the Search History Clusters action button is focused.">
+    Resume your journey button, press Enter to resume your journey and see relevant activity in your Chrome history
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change language.">
-    Manage
+  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT_ALTERNATE" desc="The button text for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
+    Resume your research
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change language.">
-    Manage passwords in Chrome settings
+  <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS_ALTERNATE" desc="The button tooltip for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
+    Resume your research to see relevant activity in your Chrome history
   </message>
-
-  <message name="IDS_OMNIBOX_PEDAL_CHANGE_HOME_PAGE_HINT" desc="The button text contents to suggest pedal action, change home page.">
-    Change Home Page
+  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX_ALTERNATE" desc="Suffix for spoken suggestion description with action button to explain keystroke used to Search History Clusters.">
+    <ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>dog food</ex></ph>, press Tab, then Enter to resume your research and see relevant activity in your Chrome history
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_CHANGE_HOME_PAGE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, change home page.">
-    Change
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_CHANGE_HOME_PAGE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, change home page.">
-    Change home page in Chrome settings
-  </message>
-
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT" desc="The button text contents to suggest pedal action, update credit card.">
-    Update Credit Card
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, update credit card.">
-    Update
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, update credit card.">
-    Update credit card autofill info in Chrome settings
-  </message>
-
-  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT" desc="The button text contents to suggest pedal action, launch incognito.">
-    Open Incognito Window
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, launch incognito.">
-    Open
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, launch incognito.">
-    Open new Chrome incognito window
-  </message>
-
-  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_HINT" desc="The button text contents to suggest pedal action, translate.">
-    Translate Page
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, translate.">
-    Translate
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, translate.">
-    Translate this page
-  </message>
-
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT" desc="The button text contents to suggest pedal action, update chrome.">
-    Relaunch to Update
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT_SHORT" desc="The short one-word button text contents to suggest pedal action, update chrome.">
-    Relaunch
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, update chrome.">
-    Relaunch
+  <message name="IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_ALTERNATE" desc="Announcement when the Search History Clusters action button is focused.">
+    Resume your research button, press Enter to resume your research and see relevant activity in your Chrome history
   </message>
 
   <!-- Accessibility labels for autocomplete match types.
@@ -231,7 +186,46 @@
   <message name="IDS_ACC_TAB_SWITCH_BUTTON" desc="Announcement when tab switch button focused.">
     Tab switch button, press Enter to switch to this tab
   </message>
-  <message name="IDS_ACC_EXIT_SEARCH_MODE" desc="Announcement when Omnibox exits keyword search mode.">
-    Exiting search mode
+
+  <message name="IDS_ACC_MULTIPLE_ACTIONS_SUFFIX" desc="Suffix for spoken suggestion description with multiple actions available (pedals, switch tab, keyword search) to indicate that this suggestion has multiple actions available.">
+    <ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, multiple actions are available, press Tab to cycle through them
+  </message>
+  <message name="IDS_ACC_KEYWORD_SUFFIX" desc="Suffix for spoken keyword suggestion description to explain keystroke used to search.">
+    <ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to search
+  </message>
+  <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
+    Search mode, press Enter to search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex></ph>
+  </message>
+
+  <!-- Accessibility suffix for suggestions when the remove button is focused. -->
+  <message name="IDS_ACC_REMOVE_SUGGESTION_SUFFIX" desc="Suffix for suggestions with remove suggestion button to explain keystroke used to remove suggestion.">
+    <ph name="REMOVE_SUGGESTION_SUFFIX">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Remove Suggestion.
+  </message>
+  <message name="IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when remove suggestion button is focused.">
+    Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
+  </message>
+  <message name="IDS_ACC_REMOVE_SUGGESTION_BUTTON" desc="Announcement when remove suggestion button is focused.">
+    Remove Suggestion button, press Enter to remove this suggestion
+  </message>
+  <!-- Tooltip labels for the omnibox popup header show/hide toggle button. -->
+  <message name="IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON" desc="Tooltip for the Show Suggestions button on section headers.">
+    Show suggestions
+  </message>
+  <message name="IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON" desc="Tooltip for the Hide Suggestions button on section headers.">
+    Hide suggestions
+  </message>
+  <!-- Accessibility labels for the omnibox popup header show/hide toggle button. -->
+  <message name="IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON" desc="Announcement for the Show Suggestions button on section headers.">
+    Show the &quot;<ph name="SECTION">$1<ex>related to recent searches</ex></ph>&quot; section
+  </message>
+  <message name="IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON" desc="Announcement for the Hide Suggestions button on section headers.">
+    Hide the &quot;<ph name="SECTION">$1<ex>related to recent searches</ex></ph>&quot; section
+  </message>
+  <!-- Accessibility announcements made when suggestion sections are shown or hidden. -->
+  <message name="IDS_ACC_HEADER_SECTION_SHOWN" desc="Announcement that lets the user know the suggestions section has been Shown.">
+    &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section shown
+  </message>
+  <message name="IDS_ACC_HEADER_SECTION_HIDDEN" desc="Announcement that lets the user know the suggestions section has been Hidden.">
+    &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section hidden
   </message>
 </grit-part>

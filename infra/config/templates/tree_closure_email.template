@@ -1,0 +1,35 @@
+[Chromium tree closure] Builder "{{ .Build.Builder | formatBuilderID }}"
+
+Builder "{{ .Build.Builder | formatBuilderID }}" failed at {{ .Build.EndTime | time }} on step(s) {{ stepNames .MatchingFailedSteps }}.
+
+<b>This failure is tree closing.</b>
+
+<table>
+  <tr>
+    <td>New status:</td>
+    <td><b>{{ .Build.Status }}</b></td>
+  </tr>
+  <tr>
+    <td>Previous status:</td>
+    <td>{{ .OldStatus }}</td>
+  </tr>
+  <tr>
+    <td>Builder:</td>
+    <td>{{ .Build.Builder | formatBuilderID }}</td>
+  </tr>
+  <tr>
+    <td>Failed steps:</td>
+    <td>{{ stepNames .MatchingFailedSteps }}</td>
+  </tr>
+  <tr>
+    <td>Created at:</td>
+    <td>{{ .Build.CreateTime | time }}</td>
+  </tr>
+  <tr>
+    <td>Finished at:</td>
+    <td>{{ .Build.EndTime | time }}</td>
+  </tr>
+</table>
+
+Build details: {{ buildUrl . }}
+<br/><br/>

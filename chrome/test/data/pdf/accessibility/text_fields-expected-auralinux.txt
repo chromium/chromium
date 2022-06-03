@@ -1,0 +1,16 @@
+[document frame] name='PDF document containing 1 page'
+++[landmark] name='Page 1'
+++++[paragraph]
+++++++[static] name='Test Form<newline>'
+++++[paragraph]
+++++++[static] name='Read Only:<newline>'
+++++[paragraph]
+++++++[static] name='Sample Text<newline>'
+++++[paragraph]
+++++++[static] name='*required field<newline>'
+++++[paragraph]
+++++++[static] name='Password:'
+++++++[entry] name='Text Box' selectable-text
+++++++[entry] name='ReadOnly' selectable-text
+++++++[entry] name='Required' selectable-text
+++++++[password text] name='Password' selectable-text

@@ -34,22 +34,20 @@ bool SyncBundle::IsSyncing() const {
   return sync_processor_ != nullptr;
 }
 
-void SyncBundle::PushSyncDataList(
-    const syncer::SyncDataList& sync_data_list) {
+void SyncBundle::PushSyncDataMap(
+    const std::map<ExtensionId, syncer::SyncData>& sync_data_per_extension) {
   syncer::SyncChangeList sync_change_list;
-  for (const syncer::SyncData& sync_data : sync_data_list) {
-    const syncer::SyncDataLocal sync_data_local(sync_data);
-    const std::string& extension_id = sync_data_local.GetTag();
+  for (const auto& extension_id_and_sync_data : sync_data_per_extension) {
+    sync_change_list.push_back(CreateSyncChange(
+        extension_id_and_sync_data.first, extension_id_and_sync_data.second));
 
-    sync_change_list.push_back(CreateSyncChange(extension_id, sync_data));
-
-    AddSyncedExtension(extension_id);
+    AddSyncedExtension(extension_id_and_sync_data.first);
   }
 
   PushSyncChanges(sync_change_list);
 }
 
-void SyncBundle::PushSyncDeletion(const std::string& extension_id,
+void SyncBundle::PushSyncDeletion(const ExtensionId& extension_id,
                                   const syncer::SyncData& sync_data) {
   if (!HasSyncedExtension(extension_id))
     return;
@@ -61,7 +59,7 @@ void SyncBundle::PushSyncDeletion(const std::string& extension_id,
                          sync_data)));
 }
 
-void SyncBundle::PushSyncAddOrUpdate(const std::string& extension_id,
+void SyncBundle::PushSyncAddOrUpdate(const ExtensionId& extension_id,
                                      const syncer::SyncData& sync_data) {
   PushSyncChanges(syncer::SyncChangeList(
       1, CreateSyncChange(extension_id, sync_data)));
@@ -78,7 +76,7 @@ void SyncBundle::ApplySyncData(const ExtensionSyncData& extension_sync_data) {
     AddSyncedExtension(extension_sync_data.id());
 }
 
-bool SyncBundle::HasPendingExtensionData(const std::string& id) const {
+bool SyncBundle::HasPendingExtensionData(const ExtensionId& id) const {
   return pending_sync_data_.find(id) != pending_sync_data_.end();
 }
 
@@ -97,7 +95,7 @@ std::vector<ExtensionSyncData> SyncBundle::GetPendingExtensionData() const {
 }
 
 syncer::SyncChange SyncBundle::CreateSyncChange(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const syncer::SyncData& sync_data) const {
   return syncer::SyncChange(
       FROM_HERE,
@@ -111,15 +109,15 @@ void SyncBundle::PushSyncChanges(
   sync_processor_->ProcessSyncChanges(FROM_HERE, sync_change_list);
 }
 
-void SyncBundle::AddSyncedExtension(const std::string& id) {
+void SyncBundle::AddSyncedExtension(const ExtensionId& id) {
   synced_extensions_.insert(id);
 }
 
-void SyncBundle::RemoveSyncedExtension(const std::string& id) {
+void SyncBundle::RemoveSyncedExtension(const ExtensionId& id) {
   synced_extensions_.erase(id);
 }
 
-bool SyncBundle::HasSyncedExtension(const std::string& id) const {
+bool SyncBundle::HasSyncedExtension(const ExtensionId& id) const {
   return synced_extensions_.find(id) != synced_extensions_.end();
 }
 

@@ -2,7 +2,7 @@
   metadata: {
     namespace: "MathML",
     namespaceURI: "http://www.w3.org/1998/Math/MathML",
-    fallbackInterfaceName: "MathMLElement",
+    fallbackInterfaceName: "MathMLRowElement",
     fallbackJSInterfaceName: "MathMLElement",
     export: "CORE_EXPORT",
   },
@@ -28,12 +28,44 @@
       interfaceName: "MathMLRowElement",
     },
     {
+      name: "mroot",
+      interfaceName: "MathMLRadicalElement",
+    },
+    {
+      name: "msqrt",
+      interfaceName: "MathMLRadicalElement",
+    },
+    {
       name: "merror",
       interfaceName: "MathMLRowElement",
     },
     {
+      name: "mfrac",
+      interfaceName: "MathMLFractionElement",
+    },
+    {
       name: "mglyph",
       interfaceName: "MathMLElement",
+    },
+    {
+      name: "msub",
+      interfaceName: "MathMLScriptsElement",
+    },
+    {
+      name: "msup",
+      interfaceName: "MathMLScriptsElement",
+    },
+    {
+      name: "msubsup",
+      interfaceName: "MathMLScriptsElement",
+    },
+    {
+      name: "mmultiscripts",
+      interfaceName: "MathMLScriptsElement",
+    },
+    {
+      name: "mprescripts",
+      interfaceName: "MathMLRowElement",
     },
     {
       name: "mi",
@@ -45,7 +77,11 @@
     },
     {
       name: "mo",
-      interfaceName: "MathMLElement",
+      interfaceName: "MathMLOperatorElement",
+    },
+    {
+      name: "mpadded",
+      interfaceName: "MathMLPaddedElement",
     },
     {
       name: "mphantom",
@@ -60,15 +96,47 @@
       interfaceName: "MathMLElement",
     },
     {
+      name: "mspace",
+      interfaceName: "MathMLSpaceElement",
+    },
+    {
       name: "mstyle",
       interfaceName: "MathMLRowElement",
+    },
+    {
+      name: "mtable",
+      interfaceName: "MathMLElement",
+    },
+    {
+      name: "mtd",
+      interfaceName: "MathMLElement",
+    },
+    {
+      name: "mtr",
+      interfaceName: "MathMLElement",
     },
     {
       name: "mtext",
       interfaceName: "MathMLElement",
     },
     {
+      name: "mover",
+      interfaceName: "MathMLUnderOverElement",
+    },
+    {
+      name: "munder",
+      interfaceName: "MathMLUnderOverElement",
+    },
+    {
+      name: "munderover",
+      interfaceName: "MathMLUnderOverElement",
+    },
+    {
       name: "semantics",
+      interfaceName: "MathMLRowElement",
+    },
+    {
+      name: "none",
       interfaceName: "MathMLRowElement",
     },
   ]

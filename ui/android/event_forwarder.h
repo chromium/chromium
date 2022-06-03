@@ -13,6 +13,9 @@ class ViewAndroid;
 
 class EventForwarder {
  public:
+  EventForwarder(const EventForwarder&) = delete;
+  EventForwarder& operator=(const EventForwarder&) = delete;
+
   ~EventForwarder();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaWindowAndroid(
@@ -46,6 +49,7 @@ class EventForwarder {
       jfloat raw_pos_y,
       jint android_tool_type_0,
       jint android_tool_type_1,
+      jint android_gesture_classification,
       jint android_button_state,
       jint android_meta_state,
       jboolean is_touch_handle_event);
@@ -135,8 +139,6 @@ class EventForwarder {
 
   ViewAndroid* const view_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventForwarder);
 };
 
 }  // namespace ui

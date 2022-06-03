@@ -12,9 +12,9 @@ source_set("formats") {
     "//media",
     "//media/base/android/",
     "//media/cdm",
+    "//media/ffmpeg",
     "//media/filters",
     "//media/muxers",
-    "//media/ffmpeg",
   ]
 
   sources = [
@@ -45,6 +45,8 @@ source_set("formats") {
     "mpeg/mpeg1_audio_stream_parser.h",
     "mpeg/mpeg_audio_stream_parser_base.cc",
     "mpeg/mpeg_audio_stream_parser_base.h",
+    "webcodecs/webcodecs_encoded_chunk_stream_parser.cc",
+    "webcodecs/webcodecs_encoded_chunk_stream_parser.h",
     "webm/webm_audio_client.cc",
     "webm/webm_audio_client.h",
     "webm/webm_cluster_parser.cc",
@@ -63,6 +65,8 @@ source_set("formats") {
     "webm/webm_info_parser.h",
     "webm/webm_parser.cc",
     "webm/webm_parser.h",
+    "webm/webm_projection_parser.cc",
+    "webm/webm_projection_parser.h",
     "webm/webm_stream_parser.cc",
     "webm/webm_stream_parser.h",
     "webm/webm_tracks_parser.cc",
@@ -82,9 +86,6 @@ source_set("formats") {
 
   configs += [
     "//media:subcomponent_config",
-
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   if (proprietary_codecs) {
@@ -94,13 +95,22 @@ source_set("formats") {
       "mp4/aac.h",
       "mp4/avc.cc",
       "mp4/avc.h",
+      "mp4/h264_annex_b_to_avc_bitstream_converter.cc",
+      "mp4/h264_annex_b_to_avc_bitstream_converter.h",
       "mpeg/adts_constants.cc",
       "mpeg/adts_constants.h",
       "mpeg/adts_stream_parser.cc",
       "mpeg/adts_stream_parser.h",
     ]
-  }
 
+    # We need this to make h264_annex_b_to_avc_bitstream_converter.h accessible
+    # from video_encode_accelerator_adapter.cc, unfortunately we can't move
+    # h264_annex_b_to_avc_bitstream_converter.h since it depends on
+    # box_definitions.h
+    # TODO(eugene): consider moving media/video/h264_parser.(h|cc) to
+    # media/formats. It might help to break this dependency cycle.
+    allow_circular_includes_from = [ "//media/video" ]
+  }
   if (proprietary_codecs && enable_platform_hevc) {
     sources += [
       "mp4/hevc.cc",
@@ -177,11 +187,6 @@ static_library("test_support") {
     "webm/tracks_builder.h",
   ]
 
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//base/test:test_support",
     "//media/base:test_support",
@@ -213,15 +218,11 @@ source_set("unit_tests") {
     "webm/webm_content_encodings_client_unittest.cc",
     "webm/webm_crypto_helpers_unittest.cc",
     "webm/webm_parser_unittest.cc",
+    "webm/webm_projection_parser_unittest.cc",
     "webm/webm_stream_parser_unittest.cc",
     "webm/webm_tracks_parser_unittest.cc",
     "webm/webm_video_client_unittest.cc",
     "webm/webm_webvtt_parser_unittest.cc",
-  ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   deps = [
@@ -237,6 +238,7 @@ source_set("unit_tests") {
       "mp4/avc_unittest.cc",
       "mp4/box_reader_unittest.cc",
       "mp4/es_descriptor_unittest.cc",
+      "mp4/h264_annex_b_to_avc_bitstream_converter_unittest.cc",
       "mp4/mp4_stream_parser_unittest.cc",
       "mp4/sample_to_group_iterator_unittest.cc",
       "mp4/track_run_iterator_unittest.cc",
@@ -263,5 +265,17 @@ source_set("unit_tests") {
     if (enable_platform_hevc) {
       sources += [ "mp4/hevc_unittest.cc" ]
     }
+  }
+}
+
+if (proprietary_codecs) {
+  fuzzer_test("h264_annex_b_converter_fuzzer") {
+    sources = [ "mp4/h264_annex_b_to_avc_bitstream_converter_fuzztest.cc" ]
+    seed_corpus = "mp4/h264_annex_b_fuzz_corpus"
+    deps = [
+      "//base",
+      "//media",
+      "//ui/gfx/geometry",
+    ]
   }
 }

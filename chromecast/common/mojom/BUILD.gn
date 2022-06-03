@@ -6,20 +6,54 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "accessibility.mojom",
+    "activity_url_filter.mojom",
+    "activity_window.mojom",
     "application_media_capabilities.mojom",
+    "assistant_messenger.mojom",
+    "audio_socket.mojom",
+    "cast_demo.mojom",
     "constants.mojom",
     "feature_manager.mojom",
+    "gesture.mojom",
+    "identification_settings.mojom",
     "js_channel.mojom",
     "media_caps.mojom",
-    "media_playback_options.mojom",
     "memory_pressure.mojom",
+    "metrics_helper.mojom",
     "multiroom.mojom",
-    "on_load_script_injector.mojom",
     "queryable_data_store.mojom",
     "service_connector.mojom",
+    "settings_ui.mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/events/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromecast.shell.mojom.BitstreamAudioCodecsInfo"
+          cpp = "::chromecast::BitstreamAudioCodecsInfo"
+        },
+      ]
+      traits_headers = [ "application_media_capabilities_traits.h" ]
+      traits_public_deps = [ "//chromecast/base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "chromecast.mojom.AudioChannel"
+          cpp = "::chromecast::media::AudioChannel"
+        },
+      ]
+      traits_headers = [ "multiroom_mojom_traits.h" ]
+      traits_public_deps = [ "//chromecast/public/media" ]
+    },
   ]
 }

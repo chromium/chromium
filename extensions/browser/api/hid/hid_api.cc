@@ -63,7 +63,7 @@ HidGetDevicesFunction::~HidGetDevicesFunction() {}
 
 ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
   std::unique_ptr<api::hid::GetDevices::Params> parameters =
-      hid::GetDevices::Params::Create(*args_);
+      hid::GetDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
@@ -87,13 +87,13 @@ ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
 
   device_manager->GetApiDevices(
       extension(), filters,
-      base::Bind(&HidGetDevicesFunction::OnEnumerationComplete, this));
+      base::BindOnce(&HidGetDevicesFunction::OnEnumerationComplete, this));
   return RespondLater();
 }
 
 void HidGetDevicesFunction::OnEnumerationComplete(
     std::unique_ptr<base::ListValue> devices) {
-  Respond(OneArgument(std::move(devices)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(devices))));
 }
 
 HidGetUserSelectedDevicesFunction::HidGetUserSelectedDevicesFunction() {
@@ -104,12 +104,12 @@ HidGetUserSelectedDevicesFunction::~HidGetUserSelectedDevicesFunction() {
 
 ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
   std::unique_ptr<api::hid::GetUserSelectedDevices::Params> parameters =
-      hid::GetUserSelectedDevices::Params::Create(*args_);
+      hid::GetUserSelectedDevices::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents || !user_gesture()) {
-    return RespondNow(OneArgument(std::make_unique<base::ListValue>()));
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
   }
 
   bool multiple = false;
@@ -130,7 +130,8 @@ ExtensionFunction::ResponseAction HidGetUserSelectedDevicesFunction::Run() {
   CHECK(prompt_);
   prompt_->AskForHidDevices(
       extension(), browser_context(), multiple, filters,
-      base::Bind(&HidGetUserSelectedDevicesFunction::OnDevicesChosen, this));
+      base::BindOnce(&HidGetUserSelectedDevicesFunction::OnDevicesChosen,
+                     this));
   return RespondLater();
 }
 
@@ -138,8 +139,8 @@ void HidGetUserSelectedDevicesFunction::OnDevicesChosen(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
   CHECK(device_manager);
-  Respond(
-      OneArgument(device_manager->GetApiDevicesFromList(std::move(devices))));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      device_manager->GetApiDevicesFromList(std::move(devices)))));
 }
 
 HidConnectFunction::HidConnectFunction() : connection_manager_(nullptr) {
@@ -149,7 +150,7 @@ HidConnectFunction::~HidConnectFunction() {}
 
 ExtensionFunction::ResponseAction HidConnectFunction::Run() {
   std::unique_ptr<api::hid::Connect::Params> parameters =
-      hid::Connect::Params::Create(*args_);
+      hid::Connect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
@@ -185,7 +186,8 @@ void HidConnectFunction::OnConnectComplete(
   DCHECK(connection_manager_);
   int connection_id = connection_manager_->Add(
       new HidConnectionResource(extension_id(), std::move(connection)));
-  Respond(OneArgument(PopulateHidConnection(connection_id)));
+  Respond(OneArgument(
+      base::Value::FromUniquePtrValue(PopulateHidConnection(connection_id))));
 }
 
 HidDisconnectFunction::HidDisconnectFunction() {}
@@ -194,7 +196,7 @@ HidDisconnectFunction::~HidDisconnectFunction() {}
 
 ExtensionFunction::ResponseAction HidDisconnectFunction::Run() {
   std::unique_ptr<api::hid::Disconnect::Params> parameters =
-      hid::Disconnect::Params::Create(*args_);
+      hid::Disconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   ApiResourceManager<HidConnectionResource>* connection_manager =
@@ -240,7 +242,7 @@ HidReceiveFunction::HidReceiveFunction() {}
 HidReceiveFunction::~HidReceiveFunction() {}
 
 bool HidReceiveFunction::ReadParameters() {
-  parameters_ = hid::Receive::Params::Create(*args_);
+  parameters_ = hid::Receive::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -250,19 +252,16 @@ bool HidReceiveFunction::ReadParameters() {
 void HidReceiveFunction::StartWork(device::mojom::HidConnection* connection) {
   connection->Read(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&HidReceiveFunction::OnFinished, this), false, 0,
-      base::nullopt));
+      absl::nullopt));
 }
 
 void HidReceiveFunction::OnFinished(
     bool success,
     uint8_t report_id,
-    const base::Optional<std::vector<uint8_t>>& buffer) {
+    const absl::optional<std::vector<uint8_t>>& buffer) {
   if (success) {
     DCHECK(buffer);
-    Respond(TwoArguments(
-        std::make_unique<base::Value>(report_id),
-        base::Value::CreateWithCopiedBuffer(
-            reinterpret_cast<const char*>(buffer->data()), buffer->size())));
+    Respond(TwoArguments(base::Value(report_id), base::Value(*buffer)));
   } else {
     Respond(Error(kErrorTransfer));
   }
@@ -273,7 +272,7 @@ HidSendFunction::HidSendFunction() {}
 HidSendFunction::~HidSendFunction() {}
 
 bool HidSendFunction::ReadParameters() {
-  parameters_ = hid::Send::Params::Create(*args_);
+  parameters_ = hid::Send::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -303,7 +302,7 @@ HidReceiveFeatureReportFunction::HidReceiveFeatureReportFunction() {}
 HidReceiveFeatureReportFunction::~HidReceiveFeatureReportFunction() {}
 
 bool HidReceiveFeatureReportFunction::ReadParameters() {
-  parameters_ = hid::ReceiveFeatureReport::Params::Create(*args_);
+  parameters_ = hid::ReceiveFeatureReport::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -316,16 +315,15 @@ void HidReceiveFeatureReportFunction::StartWork(
       static_cast<uint8_t>(parameters_->report_id),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&HidReceiveFeatureReportFunction::OnFinished, this),
-          false, base::nullopt));
+          false, absl::nullopt));
 }
 
 void HidReceiveFeatureReportFunction::OnFinished(
     bool success,
-    const base::Optional<std::vector<uint8_t>>& buffer) {
+    const absl::optional<std::vector<uint8_t>>& buffer) {
   if (success) {
     DCHECK(buffer);
-    Respond(OneArgument(base::Value::CreateWithCopiedBuffer(
-        reinterpret_cast<const char*>(buffer->data()), buffer->size())));
+    Respond(OneArgument(base::Value(*buffer)));
   } else {
     Respond(Error(kErrorTransfer));
   }
@@ -336,7 +334,7 @@ HidSendFeatureReportFunction::HidSendFeatureReportFunction() {}
 HidSendFeatureReportFunction::~HidSendFeatureReportFunction() {}
 
 bool HidSendFeatureReportFunction::ReadParameters() {
-  parameters_ = hid::SendFeatureReport::Params::Create(*args_);
+  parameters_ = hid::SendFeatureReport::Params::Create(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);

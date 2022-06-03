@@ -1,8 +1,0 @@
-CONSOLE ERROR: line 125: Uncaught TypeError: relatedTarget.createShadowRoot is not a function
-Tests to ensure that shadow DOM boundary is not crossed during event propagation. Can only run within DRT.
-
-See bug 46015 for details.
-
-Mutation events should not propagate out of the shadow DOM: PASS
-The selectstart event should not propagate out of the shadow DOM: PASS
-The mouseover/mouseout event between two elements inside the same shadow subtree should not propagate out of the shadow DOM: PASS

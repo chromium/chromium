@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
@@ -17,6 +16,12 @@ class ClientStatus {
   ClientStatus();
   explicit ClientStatus(ProcessedActionStatusProto status);
   ~ClientStatus();
+
+  ClientStatus(ProcessedActionStatusProto status,
+               const ProcessedActionStatusDetailsProto& details)
+      : ClientStatus(status) {
+    mutable_details()->MergeFrom(details);
+  }
 
   // Returns true if this is an OK status.
   bool ok() const { return status_ == ACTION_APPLIED; }
@@ -30,6 +35,10 @@ class ClientStatus {
   // Modifies the corresponding proto status.
   void set_proto_status(ProcessedActionStatusProto status) { status_ = status; }
 
+  // Returns a copy of the current ClientStatus instance with the status set to
+  // |new_status| and the original status saved in original_status.
+  ClientStatus WithStatusOverride(ProcessedActionStatusProto new_status) const;
+
   // Returns a mutable version of status details, creates one if necessary.
   ProcessedActionStatusDetailsProto* mutable_details() {
     has_details_ = true;
@@ -39,6 +48,12 @@ class ClientStatus {
   // Returns the status details associated with this status.
   const ProcessedActionStatusDetailsProto& details() const { return details_; }
 
+  SlowWarningStatus slow_warning_status() const { return slow_warning_status_; }
+
+  void set_slow_warning_status(SlowWarningStatus status) {
+    slow_warning_status_ = status;
+  }
+
   // The output operator, for logging.
   friend std::ostream& operator<<(std::ostream& out,
                                   const ClientStatus& status);
@@ -47,6 +62,7 @@ class ClientStatus {
   ProcessedActionStatusProto status_;
   bool has_details_ = false;
   ProcessedActionStatusDetailsProto details_;
+  SlowWarningStatus slow_warning_status_ = NO_WARNING;
 };
 
 // An OK status.

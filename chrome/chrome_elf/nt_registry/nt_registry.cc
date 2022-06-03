@@ -331,7 +331,7 @@ void ProcessRedirection(nt::ROOT_KEY root,
   static constexpr wchar_t kRedirectBefore[] = L"WOW6432Node\\";
   static constexpr wchar_t kRedirectAfter[] = L"\\WOW6432Node";
 
-  assert(subkey_path != nullptr);
+  assert(subkey_path);
   assert(subkey_path->empty() || subkey_path->front() != L'\\');
   assert(subkey_path->empty() || subkey_path->back() != L'\\');
   assert(root != nt::AUTO);
@@ -466,7 +466,7 @@ std::wstring ConvertRootKey(nt::ROOT_KEY root) {
 //   but any other printable character can be used.  Value names and data can
 //   include the backslash character."
 void SanitizeSubkeyPath(std::wstring* input) {
-  assert(input != nullptr);
+  assert(input);
 
   // Remove trailing backslashes.
   size_t last_valid_pos = input->find_last_not_of(L'\\');
@@ -629,7 +629,7 @@ bool CreateRegKey(ROOT_KEY root,
                   HANDLE* out_handle OPTIONAL) {
   // |key_path| can be null or empty, but it can't be longer than
   // |g_kRegMaxPathLen| at this point.
-  if (key_path != nullptr &&
+  if (key_path &&
       ::wcsnlen(key_path, g_kRegMaxPathLen + 1) == g_kRegMaxPathLen + 1)
     return false;
 
@@ -720,7 +720,7 @@ bool OpenRegKey(ROOT_KEY root,
                 NTSTATUS* error_code OPTIONAL) {
   // |key_path| can be null or empty, but it can't be longer than
   // |g_kRegMaxPathLen| at this point.
-  if (key_path != nullptr &&
+  if (key_path &&
       ::wcsnlen(key_path, g_kRegMaxPathLen + 1) == g_kRegMaxPathLen + 1)
     return false;
 

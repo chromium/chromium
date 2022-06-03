@@ -34,12 +34,15 @@ class GetOperationTask : public Task {
   GetOperationTask(PrefetchStore* store,
                    PrefetchNetworkRequestFactory* request_factory,
                    GetOperationFinishedCallback callback);
+
+  GetOperationTask(const GetOperationTask&) = delete;
+  GetOperationTask& operator=(const GetOperationTask&) = delete;
+
   ~GetOperationTask() override;
 
+ private:
   // Task implementation.
   void Run() override;
-
- private:
   void StartGetOperationRequests(OperationResultList list);
 
   PrefetchStore* prefetch_store_;
@@ -47,8 +50,6 @@ class GetOperationTask : public Task {
   GetOperationFinishedCallback callback_;
 
   base::WeakPtrFactory<GetOperationTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetOperationTask);
 };
 
 }  // namespace offline_pages

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS e.style['place-items'] = "normal" should set align-items
+PASS e.style['place-items'] = "normal" should set justify-items
+PASS e.style['place-items'] = "normal" should not set unrelated longhands
+PASS e.style['place-items'] = "first baseline" should set align-items
+PASS e.style['place-items'] = "first baseline" should set justify-items
+PASS e.style['place-items'] = "first baseline" should not set unrelated longhands
+FAIL e.style['place-items'] = "last baseline flex-start" should set align-items assert_equals: align-items should be canonical expected "last baseline" but got ""
+FAIL e.style['place-items'] = "last baseline flex-start" should set justify-items assert_equals: justify-items should be canonical expected "flex-start" but got ""
+FAIL e.style['place-items'] = "last baseline flex-start" should not set unrelated longhands assert_true: expected true got false
+PASS e.style['place-items'] = "stretch right legacy" should set align-items
+PASS e.style['place-items'] = "stretch right legacy" should set justify-items
+PASS e.style['place-items'] = "stretch right legacy" should not set unrelated longhands
+Harness: the test ran to completion.
+

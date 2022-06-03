@@ -6,39 +6,19 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-LogicalOffset PhysicalOffset::ConvertToLogical(WritingMode mode,
-                                               TextDirection direction,
-                                               PhysicalSize outer_size,
-                                               PhysicalSize inner_size) const {
-  switch (mode) {
-    case WritingMode::kHorizontalTb:
-      if (direction == TextDirection::kLtr)
-        return LogicalOffset(left, top);
-      return LogicalOffset(outer_size.width - left - inner_size.width, top);
-    case WritingMode::kVerticalRl:
-    case WritingMode::kSidewaysRl:
-      if (direction == TextDirection::kLtr)
-        return LogicalOffset(top, outer_size.width - left - inner_size.width);
-      return LogicalOffset(outer_size.height - top - inner_size.height,
-                           outer_size.width - left - inner_size.width);
-    case WritingMode::kVerticalLr:
-      if (direction == TextDirection::kLtr)
-        return LogicalOffset(top, left);
-      return LogicalOffset(outer_size.height - top - inner_size.height, left);
-    case WritingMode::kSidewaysLr:
-      if (direction == TextDirection::kLtr)
-        return LogicalOffset(outer_size.height - top - inner_size.height, left);
-      return LogicalOffset(top, left);
-    default:
-      NOTREACHED();
-      return LogicalOffset();
-  }
+LogicalOffset PhysicalOffset::ConvertToLogical(
+    WritingDirectionMode writing_direction,
+    PhysicalSize outer_size,
+    PhysicalSize inner_size) const {
+  return WritingModeConverter(writing_direction, outer_size)
+      .ToLogical(*this, inner_size);
 }
 
 String PhysicalOffset::ToString() const {

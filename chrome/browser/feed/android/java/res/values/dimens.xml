@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Main menu item dimens. -->
+    <dimen name="web_feed_icon_size">24dp</dimen>
+    <dimen name="web_feed_monogram_text_size">14dp</dimen>
+
+    <!-- Dialog dimens. -->
+    <dimen name="web_feed_dialog_illustration_margin_top">24dp</dimen>
+    <dimen name="web_feed_dialog_illustration_margin_start">14.5dp</dimen>
+    <dimen name="web_feed_dialog_illustration_height">113dp</dimen>
+    <dimen name="web_feed_dialog_title_padding_top">24dp</dimen>
+    <dimen name="web_feed_dialog_details_padding_top">16dp</dimen>
+    <dimen name="web_feed_dialog_details_padding_bottom">8dp</dimen>
+    <dimen name="web_feed_dialog_text_horizontal_padding">16dp</dimen>
+
+    <!-- Intro accelerator dimens. -->
+    <dimen name="web_feed_intro_y_inset">17dp</dimen>
+
+    <!-- Feed and Follow Management activity dimensions. -->
+    <dimen name="web_feed_management_icon_size">36dp</dimen>
+    <dimen name="follow_margin">16dp</dimen>
+    <dimen name="follow_item_margin">10dp</dimen>
+    <dimen name="follow_empty_margin">24dp</dimen>
+    <dimen name="follow_management_loading_spinner_size">36dp</dimen>
+
+    <!-- Back-to-top dimens. -->
+    <dimen name="back_to_top_bubble_offset_below_toolbar">16dp</dimen>
+    <dimen name="back_to_top_bubble_corner_radius">24dp</dimen>
+    <dimen name="back_to_top_bubble_horizontal_padding">16dp</dimen>
+    <dimen name="back_to_top_bubble_vertical_padding">10dp</dimen>
+    <dimen name="back_to_top_bubble_image_size">12dp</dimen>
+    <dimen name="back_to_top_bubble_image_margin_end">9dp</dimen>
+
+    <!-- No content dimensions. -->
+    <dimen name="no_content_padding">16dp</dimen>
+    <dimen name="no_content_text_padding">8dp</dimen>
+
+    <!-- NTP Feed dimensions -->
+    <dimen name="content_suggestions_card_modern_margin">0dp</dimen>
+    <dimen name="content_suggestions_card_modern_padding">16dp</dimen>
+    <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
+    <dimen name="feed_v2_header_disabled_padding">11dp</dimen>
+    <dimen name="feed_v2_header_menu_touch_size">48dp</dimen>
+    <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
+    <dimen name="feed_options_vertical_margins">6dp</dimen>
+    <dimen name="feed_options_chip_margin">8dp</dimen>
+</resources>

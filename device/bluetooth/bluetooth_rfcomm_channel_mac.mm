@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
@@ -18,13 +18,13 @@
   device::BluetoothRfcommChannelMac* _channel;  // weak
 }
 
-- (id)initWithChannel:(device::BluetoothRfcommChannelMac*)channel;
+- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel;
 
 @end
 
 @implementation BluetoothRfcommChannelDelegate
 
-- (id)initWithChannel:(device::BluetoothRfcommChannelMac*)channel {
+- (instancetype)initWithChannel:(device::BluetoothRfcommChannelMac*)channel {
   if ((self = [super init]))
     _channel = channel;
 

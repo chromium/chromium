@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:*ColumnCount*
+@BLINK-ALLOW:*ColumnIndex*
+@WAIT-FOR:done
+-->
+<style>
+  .hide-first-column td:first-child { display: none; }
+</style>
+<table border="1">  <!-- Border forces data table -->
+  <tbody>
+    <tr>
+      <td>AB</td>
+      <td>B</td>
+    </tr>
+    <tr>
+      <td>CD</td>
+      <td>D</td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+  setTimeout(() => {
+    document.body.className = "hide-first-column";
+    document.title="done";
+  }, 50);
+</script>

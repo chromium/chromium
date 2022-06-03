@@ -41,9 +41,9 @@
 #include <memory>
 #include "base/gtest_prod_util.h"
 #include "base/thread_annotations.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -98,12 +98,14 @@ class PLATFORM_EXPORT BlobData {
  public:
   static constexpr int64_t kToEndOfFile = -1;
   enum class FileCompositionStatus {
-    SINGLE_UNKNOWN_SIZE_FILE,
-    NO_UNKNOWN_SIZE_FILES
+    kSingleUnknownSizeFile,
+    kNoUnknownSizeFiles
   };
 
   explicit BlobData(
-      FileCompositionStatus = FileCompositionStatus::NO_UNKNOWN_SIZE_FILES);
+      FileCompositionStatus = FileCompositionStatus::kNoUnknownSizeFiles);
+  BlobData(const BlobData&) = delete;
+  BlobData& operator=(const BlobData&) = delete;
   ~BlobData();
 
   // Calling append* on objects returned by createFor___WithUnknownSize will
@@ -113,10 +115,10 @@ class PLATFORM_EXPORT BlobData {
       const String& path);
   static std::unique_ptr<BlobData> CreateForFileWithUnknownSize(
       const String& path,
-      const base::Optional<base::Time>& expected_modification_time);
+      const absl::optional<base::Time>& expected_modification_time);
   static std::unique_ptr<BlobData> CreateForFileSystemURLWithUnknownSize(
       const KURL& file_system_url,
-      const base::Optional<base::Time>& expected_modification_time);
+      const absl::optional<base::Time>& expected_modification_time);
 
   // Detaches from current thread so that it can be passed to another thread.
   void DetachFromCurrentThread();
@@ -134,7 +136,7 @@ class PLATFORM_EXPORT BlobData {
   void AppendFile(const String& path,
                   int64_t offset,
                   int64_t length,
-                  const base::Optional<base::Time>& expected_modification_time);
+                  const absl::optional<base::Time>& expected_modification_time);
 
   // The given blob must not be a file with unknown size. Please use the
   // File::appendTo instead.
@@ -145,7 +147,7 @@ class PLATFORM_EXPORT BlobData {
       const KURL&,
       int64_t offset,
       int64_t length,
-      const base::Optional<base::Time>& expected_modification_time);
+      const absl::optional<base::Time>& expected_modification_time);
   void AppendText(const String&, bool normalize_line_endings_to_native);
 
   // The value of the size property for a Blob who has this data.
@@ -154,7 +156,7 @@ class PLATFORM_EXPORT BlobData {
   uint64_t length() const;
 
   bool IsSingleUnknownSizeFile() const {
-    return file_composition_ == FileCompositionStatus::SINGLE_UNKNOWN_SIZE_FILE;
+    return file_composition_ == FileCompositionStatus::kSingleUnknownSizeFile;
   }
 
  private:
@@ -167,8 +169,6 @@ class PLATFORM_EXPORT BlobData {
   Vector<mojom::blink::DataElementPtr> elements_;
   size_t current_memory_population_ = 0;
   BlobBytesProvider* last_bytes_provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobData);
 };
 
 class PLATFORM_EXPORT BlobDataHandle
@@ -218,6 +218,16 @@ class PLATFORM_EXPORT BlobDataHandle
                  uint64_t length,
                  mojo::ScopedDataPipeProducerHandle,
                  mojo::PendingRemote<mojom::blink::BlobReaderClient>);
+
+  // This does synchronous IPC, and possibly synchronous file operations. Think
+  // twice before calling this function.
+  bool CaptureSnapshot(uint64_t* snapshot_size,
+                       absl::optional<base::Time>* snapshot_modification_time);
+
+  void SetBlobRemoteForTesting(mojo::PendingRemote<mojom::blink::Blob> remote) {
+    MutexLocker locker(blob_remote_mutex_);
+    blob_remote_ = std::move(remote);
+  }
 
   static mojom::blink::BlobRegistry* GetBlobRegistry();
   static void SetBlobRegistryForTesting(mojom::blink::BlobRegistry*);

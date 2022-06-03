@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -24,10 +25,25 @@ namespace update_client {
 namespace {
 
 // This is an ECDSA prime256v1 named-curve key.
-constexpr int kKeyVersion = 9;
-const char kKeyPubBytesBase64[] =
-    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEsVwVMmIJaWBjktSx9m1JrZWYBvMm"
-    "bsrGGQPhScDtao+DloD871YmEeunAaQvRMZgDh1nCaWkVG6wo75+yDbKDA==";
+constexpr int kKeyVersion = 11;
+constexpr char kKeyPubBytesBase64[] =
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgH30WRJf4g6I2C1FKsBQF3qHANLw"
+    "thwYsNt2PWTDQBS0ufSRE83piOPoJQcePzTkMfbghjnZerDjLJhBsDkfFg==";
+
+// The content type for all protocol requests.
+constexpr char kContentType[] = "application/json";
+
+// Returns the value of |response_cup_server_proof| or the value of
+// |response_etag|, if the former value is empty.
+const std::string& SelectCupServerProof(
+    const std::string& response_cup_server_proof,
+    const std::string& response_etag) {
+  if (response_cup_server_proof.empty()) {
+    DVLOG(3) << "Using etag as cup server proof.";
+    return response_etag;
+  }
+  return response_cup_server_proof;
+}
 
 }  // namespace
 
@@ -84,7 +100,7 @@ void RequestSender::SendInternal() {
     url = BuildUpdateUrl(url, request_query_string);
   }
 
-  DVLOG(2) << "Sending Omaha request: " << request_body_;
+  VLOG(2) << "Sending Omaha request: " << request_body_;
 
   network_fetcher_ = config_->GetNetworkFetcherFactory()->Create();
   if (!network_fetcher_) {
@@ -93,20 +109,24 @@ void RequestSender::SendInternal() {
         base::BindOnce(&RequestSender::SendInternalComplete,
                        base::Unretained(this),
                        static_cast<int>(ProtocolError::URL_FETCHER_FAILED),
-                       std::string(), std::string(), 0));
+                       std::string(), std::string(), std::string(), 0));
   }
   network_fetcher_->PostRequest(
-      url, request_body_, request_extra_headers_,
+      url, request_body_, kContentType, request_extra_headers_,
       base::BindOnce(&RequestSender::OnResponseStarted, base::Unretained(this)),
-      base::BindRepeating([](int64_t current) {}),
+      base::DoNothing(),
       base::BindOnce(&RequestSender::OnNetworkFetcherComplete,
                      base::Unretained(this), url));
 }
 
-void RequestSender::SendInternalComplete(int error,
-                                         const std::string& response_body,
-                                         const std::string& response_etag,
-                                         int retry_after_sec) {
+void RequestSender::SendInternalComplete(
+    int error,
+    const std::string& response_body,
+    const std::string& response_etag,
+    const std::string& response_cup_server_proof,
+    int retry_after_sec) {
+  VLOG(2) << "Omaha response received: " << response_body;
+
   if (!error) {
     if (!use_signing_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -117,7 +137,9 @@ void RequestSender::SendInternalComplete(int error,
 
     DCHECK(use_signing_);
     DCHECK(signer_);
-    if (signer_->ValidateResponse(response_body, response_etag)) {
+    if (signer_->ValidateResponse(
+            response_body,
+            SelectCupServerProof(response_cup_server_proof, response_etag))) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(request_sender_callback_), 0,
                                     response_body, retry_after_sec));
@@ -138,6 +160,7 @@ void RequestSender::SendInternalComplete(int error,
     return;
   }
 
+  VLOG(2) << "Omaha send error: " << response_body;
   HandleSendError(error, retry_after_sec);
 }
 
@@ -151,10 +174,11 @@ void RequestSender::OnNetworkFetcherComplete(
     std::unique_ptr<std::string> response_body,
     int net_error,
     const std::string& header_etag,
+    const std::string& xheader_cup_server_proof,
     int64_t xheader_retry_after_sec) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  VLOG(1) << "request completed from url: " << original_url.spec();
+  VLOG(1) << "Request completed from url: " << original_url.spec();
 
   int error = -1;
   if (!net_error && response_code_ == 200)
@@ -169,10 +193,11 @@ void RequestSender::OnNetworkFetcherComplete(
     retry_after_sec = base::saturated_cast<int>(xheader_retry_after_sec);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&RequestSender::SendInternalComplete,
-                                base::Unretained(this), error,
-                                response_body ? *response_body : std::string(),
-                                header_etag, retry_after_sec));
+      FROM_HERE,
+      base::BindOnce(&RequestSender::SendInternalComplete,
+                     base::Unretained(this), error,
+                     response_body ? *response_body : std::string(),
+                     header_etag, xheader_cup_server_proof, retry_after_sec));
 }
 
 void RequestSender::HandleSendError(int error, int retry_after_sec) {

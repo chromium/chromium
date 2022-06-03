@@ -8,7 +8,6 @@
 #include <set>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -23,6 +22,10 @@ class TrayBubbleBase;
 class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
  public:
   TrayEventFilter();
+
+  TrayEventFilter(const TrayEventFilter&) = delete;
+  TrayEventFilter& operator=(const TrayEventFilter&) = delete;
+
   ~TrayEventFilter() override;
 
   void AddBubble(TrayBubbleBase* bubble);
@@ -36,8 +39,6 @@ class ASH_EXPORT TrayEventFilter : public ui::EventHandler {
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
   std::set<TrayBubbleBase*> bubbles_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayEventFilter);
 };
 
 }  // namespace ash

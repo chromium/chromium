@@ -1,6 +1,7 @@
 include_rules = [
   "+net",
   "+components/metrics",
+  "+components/prefs",
   "+services/network/public/cpp",
   "+services/network/test",
 ]

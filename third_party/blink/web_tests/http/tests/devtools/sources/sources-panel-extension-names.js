@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`The test verifies that extension names are resolved properly in navigator view.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   var contentScriptsNavigatorView = new Sources.ContentScriptsNavigatorView();
@@ -16,7 +16,7 @@
 
   TestRunner.runTestSuite([
     async function testAddExecutionContextBeforeFile(next) {
-      TestRunner.runtimeModel._executionContextCreated(mockExecutionContext);
+      TestRunner.runtimeModel.executionContextCreated(mockExecutionContext);
       await SourcesTestRunner.addScriptUISourceCode(mockContentScriptURL, '', true, 1234567);
       SourcesTestRunner.dumpNavigatorView(contentScriptsNavigatorView);
       next();

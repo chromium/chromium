@@ -10,12 +10,11 @@
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "services/service_manager/sandbox/sandbox_delegate.h"
-#include "services/service_manager/sandbox/sandbox_type.h"
-#include "services/service_manager/zygote/common/zygote_buildflags.h"
+#include "content/public/common/zygote/zygote_buildflags.h"
+#include "sandbox/policy/sandbox_delegate.h"
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
-#include "services/service_manager/zygote/common/zygote_handle.h"  // nogncheck
+#include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
 namespace content {
@@ -25,7 +24,7 @@ namespace content {
 // i.e. to loosen it if needed.
 // The methods below will be called on the PROCESS_LAUNCHER thread.
 class CONTENT_EXPORT SandboxedProcessLauncherDelegate
-    : public service_manager::SandboxDelegate {
+    : public sandbox::policy::SandboxDelegate {
  public:
   ~SandboxedProcessLauncherDelegate() override {}
 
@@ -35,6 +34,8 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   bool GetAppContainerId(std::string* appcontainer_id) override;
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   void PostSpawnTarget(base::ProcessHandle process) override;
+  bool ShouldUnsandboxedRunInJob() override;
+  bool CetCompatible() override;
 
   // Override to return true if the process should be launched as an elevated
   // process (which implies no sandbox).
@@ -43,9 +44,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // Returns the zygote used to launch the process.
-  // NOTE: For now Chrome always uses the same zygote for performance reasons.
-  // http://crbug.com/569191
-  virtual service_manager::ZygoteHandle GetZygote();
+  virtual ZygoteHandle GetZygote();
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
 #if defined(OS_POSIX)
@@ -53,11 +52,15 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   virtual base::EnvironmentMap GetEnvironment();
 #endif  // defined(OS_POSIX)
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Whether or not to disclaim TCC responsibility for the process, defaults to
   // false. See base::LaunchOptions::disclaim_responsibility.
   virtual bool DisclaimResponsibility();
-#endif
+
+  // Whether or not to enable CPU security mitigations against side-channel
+  // attacks. See base::LaunchOptions::enable_cpu_security_mitigations.
+  virtual bool EnableCpuSecurityMitigations();
+#endif  // OS_MAC
 };
 
 }  // namespace content

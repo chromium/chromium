@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/client_cert_util.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -63,23 +65,28 @@ class NetworkCertMigrator::MigrationTask
 
       ShillServiceClient::Get()->GetProperties(
           dbus::ObjectPath(service_path),
-          base::Bind(&network_handler::GetPropertiesCallback,
-                     base::Bind(&MigrationTask::MigrateNetwork, this),
-                     network_handler::ErrorCallback(), service_path));
+          base::BindOnce(&MigrationTask::MigrateNetwork, this, service_path));
     }
   }
 
   void MigrateNetwork(const std::string& service_path,
-                      const base::DictionaryValue& properties) {
+                      absl::optional<base::Value> properties) {
     if (!cert_migrator_) {
       VLOG(2) << "NetworkCertMigrator already destroyed. Aborting migration.";
       return;
     }
 
-    base::DictionaryValue new_properties;
-    MigrateClientCertProperties(service_path, properties, &new_properties);
+    if (!properties) {
+      NET_LOG(ERROR) << "GetProperties failed: " << NetworkPathId(service_path);
+      return;
+    }
 
-    if (new_properties.empty())
+    base::DictionaryValue new_properties;
+    MigrateClientCertProperties(service_path,
+                                base::Value::AsDictionaryValue(*properties),
+                                &new_properties);
+
+    if (new_properties.DictEmpty())
       return;
     SendPropertiesToShill(service_path, new_properties);
   }
@@ -145,7 +152,7 @@ class NetworkCertMigrator::MigrationTask
                              const base::DictionaryValue& properties) {
     ShillServiceClient::Get()->SetProperties(
         dbus::ObjectPath(service_path), properties, base::DoNothing(),
-        base::Bind(&LogError, service_path));
+        base::BindOnce(&LogError, service_path));
   }
 
   static void LogError(const std::string& service_path,

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 
 namespace media {
 
@@ -27,6 +28,8 @@ void AudioPushFifo::Reset(int frames_per_buffer) {
 }
 
 void AudioPushFifo::Push(const AudioBus& input_bus) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioPushFifo::Push");
+
   DCHECK_GT(frames_per_buffer_, 0);
 
   // Fast path: No buffering required.

@@ -20,21 +20,6 @@
 
 namespace net {
 
-namespace {
-
-// Intended for use as SetterCallbacks in Accept() helper methods.
-void SetStreamSocket(std::unique_ptr<StreamSocket>* socket,
-                     std::unique_ptr<SocketPosix> accepted_socket) {
-  socket->reset(new UnixDomainClientSocket(std::move(accepted_socket)));
-}
-
-void SetSocketDescriptor(SocketDescriptor* socket,
-                         std::unique_ptr<SocketPosix> accepted_socket) {
-  *socket = accepted_socket->ReleaseConnectedSocket();
-}
-
-}  // anonymous namespace
-
 UnixDomainServerSocket::UnixDomainServerSocket(
     const AuthCallback& auth_callback,
     bool use_abstract_namespace)
@@ -48,7 +33,8 @@ UnixDomainServerSocket::~UnixDomainServerSocket() = default;
 // static
 bool UnixDomainServerSocket::GetPeerCredentials(SocketDescriptor socket,
                                                 Credentials* credentials) {
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    defined(OS_FUCHSIA)
   struct ucred user_cred;
   socklen_t len = sizeof(user_cred);
   if (getsockopt(socket, SOL_SOCKET, SO_PEERCRED, &user_cred, &len) < 0)
@@ -123,12 +109,14 @@ int UnixDomainServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
                                    CompletionOnceCallback callback) {
   DCHECK(socket);
   DCHECK(callback);
-  DCHECK(!callback_);
+  DCHECK(!callback_ && !out_socket_.stream && !out_socket_.descriptor);
 
-  SetterCallback setter_callback = base::Bind(&SetStreamSocket, socket);
-  int rv = DoAccept(setter_callback);
+  out_socket_ = {socket, nullptr};
+  int rv = DoAccept();
   if (rv == ERR_IO_PENDING)
     callback_ = std::move(callback);
+  else
+    CancelCallback();
   return rv;
 }
 
@@ -137,17 +125,18 @@ int UnixDomainServerSocket::AcceptSocketDescriptor(
     CompletionOnceCallback callback) {
   DCHECK(socket);
   DCHECK(callback);
-  DCHECK(!callback_);
+  DCHECK(!callback_ && !out_socket_.stream && !out_socket_.descriptor);
 
-  SetterCallback setter_callback = base::Bind(&SetSocketDescriptor, socket);
-  int rv = DoAccept(setter_callback);
+  out_socket_ = {nullptr, socket};
+  int rv = DoAccept();
   if (rv == ERR_IO_PENDING)
     callback_ = std::move(callback);
+  else
+    CancelCallback();
   return rv;
 }
 
-int UnixDomainServerSocket::DoAccept(const SetterCallback& setter_callback) {
-  DCHECK(!setter_callback.is_null());
+int UnixDomainServerSocket::DoAccept() {
   DCHECK(listen_socket_);
   DCHECK(!accept_socket_);
 
@@ -155,40 +144,37 @@ int UnixDomainServerSocket::DoAccept(const SetterCallback& setter_callback) {
     int rv = listen_socket_->Accept(
         &accept_socket_,
         base::BindOnce(&UnixDomainServerSocket::AcceptCompleted,
-                       base::Unretained(this), setter_callback));
+                       base::Unretained(this)));
     if (rv != OK)
       return rv;
-    if (AuthenticateAndGetStreamSocket(setter_callback))
+    if (AuthenticateAndGetStreamSocket())
       return OK;
     // Accept another socket because authentication error should be transparent
     // to the caller.
   }
 }
 
-void UnixDomainServerSocket::AcceptCompleted(
-    const SetterCallback& setter_callback,
-    int rv) {
+void UnixDomainServerSocket::AcceptCompleted(int rv) {
   DCHECK(!callback_.is_null());
 
   if (rv != OK) {
-    std::move(callback_).Run(rv);
+    RunCallback(rv);
     return;
   }
 
-  if (AuthenticateAndGetStreamSocket(setter_callback)) {
-    std::move(callback_).Run(OK);
+  if (AuthenticateAndGetStreamSocket()) {
+    RunCallback(OK);
     return;
   }
 
   // Accept another socket because authentication error should be transparent
   // to the caller.
-  rv = DoAccept(setter_callback);
+  rv = DoAccept();
   if (rv != ERR_IO_PENDING)
-    std::move(callback_).Run(rv);
+    RunCallback(rv);
 }
 
-bool UnixDomainServerSocket::AuthenticateAndGetStreamSocket(
-    const SetterCallback& setter_callback) {
+bool UnixDomainServerSocket::AuthenticateAndGetStreamSocket() {
   DCHECK(accept_socket_);
 
   Credentials credentials;
@@ -198,8 +184,32 @@ bool UnixDomainServerSocket::AuthenticateAndGetStreamSocket(
     return false;
   }
 
-  setter_callback.Run(std::move(accept_socket_));
+  SetSocketResult(std::move(accept_socket_));
   return true;
+}
+
+void UnixDomainServerSocket::SetSocketResult(
+    std::unique_ptr<SocketPosix> accepted_socket) {
+  // Exactly one of the output pointers should be set.
+  DCHECK_NE(!!out_socket_.stream, !!out_socket_.descriptor);
+
+  // Pass ownership of |accepted_socket|.
+  if (out_socket_.descriptor) {
+    *out_socket_.descriptor = accepted_socket->ReleaseConnectedSocket();
+    return;
+  }
+  *out_socket_.stream =
+      std::make_unique<UnixDomainClientSocket>(std::move(accepted_socket));
+}
+
+void UnixDomainServerSocket::RunCallback(int rv) {
+  out_socket_ = SocketDestination();
+  std::move(callback_).Run(rv);
+}
+
+void UnixDomainServerSocket::CancelCallback() {
+  out_socket_ = SocketDestination();
+  callback_.Reset();
 }
 
 }  // namespace net

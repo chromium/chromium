@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/common/url_constants.h"
@@ -21,6 +21,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/constants.h"
 #include "url/gurl.h"
 
@@ -63,7 +64,7 @@ class ExtensionURLRewriteBrowserTest : public extensions::ExtensionBrowserTest {
   // correspond to |url|, while the real URL of the navigation entry uses the
   // chrome-extension:// scheme.
   void TestExtensionURLOverride(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(url, GetLocationBarTextAsURL());
     EXPECT_EQ(url, GetNavigationEntry()->GetVirtualURL());
     EXPECT_TRUE(
@@ -73,7 +74,7 @@ class ExtensionURLRewriteBrowserTest : public extensions::ExtensionBrowserTest {
   // Navigates to |url| and tests that the location bar is empty while the
   // |virtual_url| is the same as |url|.
   void TestURLNotShown(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ("", GetLocationBarText());
     EXPECT_EQ(url, GetNavigationEntry()->GetVirtualURL());
   }
@@ -84,10 +85,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionURLRewriteBrowserTest, NewTabPageURL) {
   // We do not use TestURLNotShown here because the virtual URL may be
   // updated to the local NTP since we do not have a network connection to
   // reach the remote NTP.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ("", GetLocationBarText());
   // Check that the actual and virtual URL corresponds to the new tab URL.
-  EXPECT_EQ(local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+  EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
             GetNavigationEntry()->GetVirtualURL());
   EXPECT_TRUE(
       search::IsNTPOrRelatedURL(GetNavigationEntry()->GetURL(), profile()));

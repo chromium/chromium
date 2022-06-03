@@ -17,17 +17,21 @@ import path_utils
 
 import diff_util
 
-def DoPresubmit(argv, original_filename, backup_filename, script_name,
-                prettyFn):
+
+def DoPresubmit(argv,
+                original_filename,
+                backup_filename,
+                prettyFn,
+                script_name='git cl format'):
   """Execute presubmit/pretty printing for the target file.
 
   Args:
     argv: command line arguments
-    original_filename: The filename to read from.
+    original_filename: The path to the file to read from.
     backup_filename: When pretty printing, move the old file contents here.
-    script_name: The name of the script to run for pretty printing.
     prettyFn: A function which takes the original xml content and produces
         pretty printed xml.
+    script_name: The name of the script to run for pretty printing.
 
   Returns:
     An exit status.  Non-zero indicates errors.
@@ -58,10 +62,12 @@ def DoPresubmit(argv, original_filename, backup_filename, script_name,
     original_xml = f.read()
 
   # Check there are no CR ('\r') characters in the file.
-  if '\r' in original_xml:
+  if b'\r' in original_xml:
     logging.error('DOS-style line endings (CR characters) detected - these are '
                   'not allowed. Please run dos2unix %s', original_filename)
     return 1
+
+  original_xml = original_xml.decode('utf-8')
 
   try:
     pretty = prettyFn(original_xml)
@@ -74,8 +80,9 @@ def DoPresubmit(argv, original_filename, backup_filename, script_name,
     return 0
 
   if presubmit:
-    logging.error('%s is not formatted correctly; run %s to fix.',
-                  original_filename, script_name)
+    if interactive:
+      logging.error('%s is not formatted correctly; run %s to fix.',
+                    original_filename, script_name)
     return 1
 
   # Prompt user to consent on the change.
@@ -93,6 +100,7 @@ def DoPresubmit(argv, original_filename, backup_filename, script_name,
   logging.info('Creating backup file: %s', backup_filename)
   shutil.move(xml_path, os.path.join(xml_dir, backup_filename))
 
+  pretty = pretty.encode('utf-8')
   with open(xml_path, 'wb') as f:
     f.write(pretty)
   logging.info('Updated %s. Don\'t forget to add it to your changelist',

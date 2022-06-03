@@ -1,0 +1,74 @@
+<!--
+Tests that AR hit test returns results when a plane is present.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      setup({single_test: true});
+
+      const TestState = Object.freeze({
+        "Initial":  0,
+        "HitTestSourceRequested": 1,
+        "HitTestSourceAvailable": 2,  // hitTestSource variable is guaranteed to be non-null in this state
+        "SessionEndRequested": 3,
+        "Done": 4,
+      });
+
+      let testState = TestState.Initial;
+
+      let hitTestSource = null;
+
+      function stepStartHitTesting(isTransientTest) {
+        const sessionInfo = sessionInfos[sessionTypes.AR];
+        const referenceSpace = sessionInfo.currentRefSpace;
+        const currentSession = sessionInfo.currentSession;
+
+        if(isTransientTest) {
+          currentSession.requestHitTestSourceForTransientInput({
+            profile: "generic-touchscreen",
+            offsetRay: new XRRay()
+          }).then((hts) => {
+            hitTestSource = hts;
+            testState = TestState.HitTestSourceAvailable;
+          });
+        } else {
+          currentSession.requestHitTestSource({
+            space: referenceSpace,
+            offsetRay: new XRRay()
+          }).then((hts) => {
+            hitTestSource = hts;
+            testState = TestState.HitTestSourceAvailable;
+          });
+        }
+
+        testState = TestState.HitTestSourceRequested;
+
+        onARFrameCallback = (session, frame) => {
+          switch(testState) {
+            case TestState.HitTestSourceAvailable: {
+              session.end().then(() => {
+                hitTestSource.cancel();
+                testState = TestState.Done;
+                done();
+              });
+
+              testState = TestState.SessionEndRequested;
+
+              return;
+            }
+            default:
+              return;
+          }
+        };
+      }
+    </script>
+  </body>
+</html>

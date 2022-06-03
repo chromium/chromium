@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -45,7 +45,11 @@ def build(out_dir, build_target, extra_options=None):
 
 def install(out_dir):
   cmd = ['build/android/adb_install_apk.py']
-  env = {'BUILDTYPE': out_dir[4:]}
+  # Propagate PATH to avoid issues with missing tools http://crbug/1217979
+  env = {
+      'BUILDTYPE': out_dir[4:],
+      'PATH': os.environ.get('PATH', '')
+  }
   return run(cmd + ['CronetTestInstrumentation.apk'], env=env) or \
       run(cmd + ['ChromiumNetTestSupport.apk'], env=env)
 
@@ -85,10 +89,10 @@ def stack(out_dir):
 
 
 def use_goma():
-  home_goma = os.path.expanduser("~/goma")
-  if os.path.exists(home_goma) or os.environ.get("GOMA_DIR") or \
-     os.environ.get("GOMADIR"):
-    return 'use_goma=true '
+  goma_dir = subprocess.check_output(['goma_ctl', 'goma_dir']).strip()
+  result = run(['goma_ctl', 'ensure_start'])
+  if not result:
+    return 'use_goma=true goma_dir="' + goma_dir + '" '
   return ''
 
 
@@ -99,13 +103,13 @@ def get_ninja_jobs_options():
 
 
 def get_default_gn_args(target_os, is_release):
-  gn_args = 'target_os="' + target_os + '" enable_websockets=false '+ \
-      'disable_file_support=true disable_ftp_support=true '+ \
-      'disable_brotli_filter=false ' + \
-      'is_component_build=false ' + \
-      'use_crash_key_stubs=true ' + \
-      'ignore_elf32_limitations=true use_partition_alloc=false ' + \
-      'include_transport_security_state_preload_list=false ' + use_goma()
+  gn_args = 'target_os="' + target_os + ('" enable_websockets=false '
+      'disable_file_support=true disable_ftp_support=true '
+      'disable_brotli_filter=false '
+      'is_component_build=false '
+      'use_crash_key_stubs=true '
+      'use_partition_alloc=false '
+      'include_transport_security_state_preload_list=false ') + use_goma()
   if (is_release):
     gn_args += 'is_debug=false is_official_build=true '
   return gn_args
@@ -116,13 +120,16 @@ def get_mobile_gn_args(target_os, is_release):
       'use_platform_icu_alternatives=true '
 
 
-def get_ios_gn_args(is_release, target_cpu):
+def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
+  print is_release, bundle_id_prefix, target_cpu
   return get_mobile_gn_args('ios', is_release) + \
-      'is_cronet_build=true  ' + \
-      'use_xcode_clang=false ' + \
-      'ios_deployment_target="9.0" ' + \
-      'enable_dsyms=true ' + \
-      'target_cpu="%s" ' % target_cpu
+      ('is_cronet_build=true  '
+      'enable_remoting=false '
+      'ios_app_bundle_id_prefix="%s" '
+      'ios_deployment_target="10.0" '
+      'enable_dsyms=true '
+      'ios_stack_profiler_enabled=false '
+      'target_cpu="%s" ') % (bundle_id_prefix, target_cpu)
 
 
 def get_mac_gn_args(is_release):
@@ -132,6 +139,7 @@ def get_mac_gn_args(is_release):
 
 
 def main():
+  is_ios = (sys.platform == 'darwin')
   parser = argparse.ArgumentParser()
   parser.add_argument('command',
                       choices=['gn',
@@ -148,29 +156,34 @@ def main():
                                'build-debug'])
   parser.add_argument('-d', '--out_dir', action='store',
                       help='name of the build directory')
-  parser.add_argument('-i', '--iphoneos', action='store_true',
-                      help='build for physical iphone')
   parser.add_argument('-x', '--x86', action='store_true',
                       help='build for Intel x86 architecture')
   parser.add_argument('-r', '--release', action='store_true',
                       help='use release configuration')
   parser.add_argument('-a', '--asan', action='store_true',
                       help='use address sanitizer')
+  if is_ios:
+    parser.add_argument('-i', '--iphoneos', action='store_true',
+                      help='build for physical iphone')
+    parser.add_argument('-b', '--bundle-id-prefix', action='store',
+                      dest='bundle_id_prefix', default='org.chromium',
+                      help='configure bundle id prefix')
 
   options, extra_options = parser.parse_known_args()
   print options
   print extra_options
 
-  is_ios = (sys.platform == 'darwin')
   if is_ios:
     test_target = 'cronet_test'
     unit_target = 'cronet_unittests_ios'
-    gn_extra = ['--ide=xcode']
+    gn_extra = ['--ide=xcode', '--filters=//components/cronet/*']
     if options.iphoneos:
-      gn_args = get_ios_gn_args(options.release, 'arm64')
+      gn_args = get_ios_gn_args(options.release, options.bundle_id_prefix,
+                                'arm64')
       out_dir_suffix = '-iphoneos'
     else:
-      gn_args = get_ios_gn_args(options.release, 'x64')
+      gn_args = get_ios_gn_args(options.release, options.bundle_id_prefix,
+                                'x64')
       out_dir_suffix = '-iphonesimulator'
       if options.asan:
         gn_args += 'is_asan=true '

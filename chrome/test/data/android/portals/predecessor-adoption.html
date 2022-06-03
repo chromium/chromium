@@ -24,7 +24,7 @@
         await portal.activate();
         window.portalHost.addEventListener('message', (e) => {
           if (e.data == 'ping')
-            e.source.postMessage('ping reply', '*');
+            e.source.postMessage('ping reply');
         });
         document.body.removeChild(portal);
         portal = null;

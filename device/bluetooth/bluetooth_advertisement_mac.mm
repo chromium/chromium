@@ -11,26 +11,25 @@ namespace device {
 
 BluetoothAdvertisementMac::BluetoothAdvertisementMac(
     std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids,
-    const BluetoothAdapter::CreateAdvertisementCallback& success_callback,
-    const BluetoothAdapter::AdvertisementErrorCallback& error_callback,
+    BluetoothAdapter::CreateAdvertisementCallback success_callback,
+    BluetoothAdapter::AdvertisementErrorCallback error_callback,
     BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager)
     : service_uuids_(std::move(service_uuids)),
-      success_callback_(success_callback),
-      error_callback_(error_callback),
+      success_callback_(std::move(success_callback)),
+      error_callback_(std::move(error_callback)),
       advertisement_manager_(advertisement_manager),
       status_(BluetoothAdvertisementMac::WAITING_FOR_ADAPTER) {}
 
-void BluetoothAdvertisementMac::Unregister(
-    const SuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+void BluetoothAdvertisementMac::Unregister(SuccessCallback success_callback,
+                                           ErrorCallback error_callback) {
   if (status_ == Status::UNREGISTERED) {
-    success_callback.Run();
+    std::move(success_callback).Run();
     return;
   }
 
   status_ = Status::UNREGISTERED;
-  advertisement_manager_->UnregisterAdvertisement(this, success_callback,
-                                                  error_callback);
+  advertisement_manager_->UnregisterAdvertisement(
+      this, std::move(success_callback), std::move(error_callback));
 }
 
 BluetoothAdvertisementMac::~BluetoothAdvertisementMac() {
@@ -63,7 +62,7 @@ void BluetoothAdvertisementMac::OnAdapterReset() {
 }
 
 void BluetoothAdvertisementMac::InvokeSuccessCallback() {
-  success_callback_.Run(this);
+  std::move(success_callback_).Run(this);
 }
 
 }  // namespace device

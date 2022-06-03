@@ -1,0 +1,66 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests that inherited block properties do not propigate to the editing
+// style span.
+const kStyle = [
+    'font-weight: bold;',
+    'margin: 0 0 0 50px;',
+    'text-align: center;',
+    'text-indent: -50px;',
+].join('');
+
+const kStyle2 = [
+    'font-weight: 700;',
+    'text-align: center;',
+    'text-indent: -50px;',
+].join(' ');
+
+const kSample = [
+    `<div contenteditable style="${kStyle}>">ab ^XY|</div>`,
+    '<div contenteditable id="paste">cd</div>',
+];
+
+const kSteps = [
+    {
+        title: 'Copy and paste text with block inline style',
+        action: selection => {
+            selection.document.execCommand('Copy');
+            const paste = selection.document.getElementById('paste');
+            selection.collapse(paste, 1);
+            selection.document.execCommand('Paste');
+        },
+        expcted: [
+            `<div contenteditable style="${kStyle}>">ab XY</div>`,
+            '<div contenteditable id="paste">',
+                `cd<span style="${kStyle2}">XY|</span>`,
+            '</div>',
+        ],
+    },
+    {
+        title: 'Insert text',
+        action: selection => {
+            selection.document.execCommand('insertText', false, 'AB');
+        },
+        expcted: [
+            `<div contenteditable style="${kStyle}>">ab XY</div>`,
+            '<div contenteditable id="paste">',
+                `cd<span style="${kStyle2}">XYAB|</span>`,
+            '</div>',
+        ],
+    },
+];
+
+for (let index = 0; index < kSteps.length; ++index) {
+    selection_test(
+        kSample,
+        selection => {
+            for (const step of kSteps.slice(0, index + 1))
+                step.action(selection);
+        },
+        kSteps[index].expcted,
+        kSteps[index].title);
+}
+</script>

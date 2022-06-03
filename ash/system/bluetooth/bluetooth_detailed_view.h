@@ -1,98 +1,102 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
 
-#include <map>
+#include <memory>
 
-#include "ash/login_status.h"
-#include "ash/system/bluetooth/tray_bluetooth_helper.h"
-#include "ash/system/tray/tray_detailed_view.h"
-#include "base/optional.h"
+#include "ash/ash_export.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace views {
-class ToggleButton;
+class View;
 }  // namespace views
 
 namespace ash {
+
+class BluetoothDeviceListItemView;
+class DetailedViewDelegate;
+class TriView;
+
 namespace tray {
 
-class BluetoothDetailedView : public TrayDetailedView {
+// This class defines both the interface used to interact with the detailed
+// Bluetooth page within the quick settings, including the view responsible for
+// containing the device list. This class includes the declaration for the
+// delegate interface it uses to propagate user interactions, and defines the
+// factory used to create instances of implementations of this class.
+class ASH_EXPORT BluetoothDetailedView {
  public:
-  BluetoothDetailedView(DetailedViewDelegate* delegate, LoginStatus login);
+  // This class defines the interface that BluetoothDetailedView will use to
+  // propagate user interactions.
+  class Delegate {
+   public:
+    Delegate() = default;
+    virtual ~Delegate() = default;
 
-  ~BluetoothDetailedView() override;
+    virtual void OnToggleClicked(bool new_state) = 0;
+    virtual void OnPairNewDeviceRequested() = 0;
+    virtual void OnDeviceListItemSelected(
+        const chromeos::bluetooth_config::mojom::
+            PairedBluetoothDevicePropertiesPtr& device) = 0;
+  };
 
-  // Shows/hides the loading indicator below the header.
-  void ShowLoadingIndicator();
-  void HideLoadingIndicator();
+  class Factory {
+   public:
+    Factory(const Factory&) = delete;
+    const Factory& operator=(const Factory&) = delete;
+    virtual ~Factory() = default;
 
-  // Shows/hides the container of the message "Bluetooth is disabled". It should
-  // be shown instead of the device list when Bluetooth is disabled.
-  void ShowBluetoothDisabledPanel();
-  void HideBluetoothDisabledPanel();
+    static std::unique_ptr<BluetoothDetailedView> Create(
+        DetailedViewDelegate* detailed_view_delegate,
+        Delegate* delegate);
+    static void SetFactoryForTesting(Factory* test_factory);
 
-  // Returns true if the device list has any devices, false otherwise.
-  bool IsDeviceScrollListEmpty() const;
+   protected:
+    Factory() = default;
 
-  // Updates the device list.
-  void UpdateDeviceScrollList(
-      const BluetoothDeviceList& connected_devices,
-      const BluetoothDeviceList& connecting_devices,
-      const BluetoothDeviceList& paired_not_connected_devices,
-      const BluetoothDeviceList& discovered_not_paired_devices);
+    virtual std::unique_ptr<BluetoothDetailedView> CreateForTesting(
+        Delegate* delegate) = 0;
+  };
 
-  // Sets the state of the toggle in the header.
-  void SetToggleIsOn(bool is_on);
+  BluetoothDetailedView(const BluetoothDetailedView&) = delete;
+  BluetoothDetailedView& operator=(const BluetoothDetailedView&) = delete;
+  virtual ~BluetoothDetailedView() = default;
 
-  // views::View:
-  const char* GetClassName() const override;
+  // Returns the implementation casted to views::View*. This may be |nullptr|
+  // when testing, where the implementation might not inherit from views::View.
+  virtual views::View* GetAsView() = 0;
+
+  // Updates the detailed view to reflect a Bluetooth state of |enabled|.
+  virtual void UpdateBluetoothEnabledState(bool enabled) = 0;
+
+  // Creates a targetable row for a single device within the device list. The
+  // client is expected to configure the returned view themselves, and to use
+  // the returned pointer for removing and rearranging the row.
+  virtual BluetoothDeviceListItemView* AddDeviceListItem() = 0;
+
+  // Adds a sticky sub-header to the end of the device list containing |icon|
+  // and text represented by the |text_id| resource ID. The client is expected
+  // to use the returned pointer for removing and rearranging the sub-header.
+  virtual ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
+                                               int text_id) = 0;
+
+  // Notifies that the device list has changed and the layout is invalid.
+  virtual void NotifyDeviceListChanged() = 0;
+
+  // Returns the device list.
+  virtual views::View* device_list() = 0;
+
+ protected:
+  explicit BluetoothDetailedView(Delegate* delegate);
+
+  Delegate* delegate() { return delegate_; }
 
  private:
-  void CreateItems();
-
-  void AppendSameTypeDevicesToScrollList(const BluetoothDeviceList& list,
-                                         bool highlight,
-                                         bool checked);
-
-  // Returns true if the device with |device_id| is found in |device_list|.
-  bool FoundDevice(const BluetoothAddress& device_id,
-                   const BluetoothDeviceList& device_list) const;
-
-  // Updates UI of the clicked bluetooth device to show it is being connected
-  // or disconnected if such an operation is going to be performed underway.
-  void UpdateClickedDevice(const BluetoothAddress& device_id,
-                           views::View* item_container);
-
-  void ShowSettings();
-
-  base::Optional<BluetoothAddress> GetFocusedDeviceAddress() const;
-  void FocusDeviceByAddress(const BluetoothAddress& address) const;
-
-  // TrayDetailedView:
-  void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
-  void CreateExtraTitleRowButtons() override;
-
-  // TODO(jamescook): Don't cache this.
-  LoginStatus login_;
-
-  std::map<views::View*, BluetoothAddress> device_map_;
-
-  BluetoothDeviceList connecting_devices_;
-  BluetoothDeviceList paired_not_connected_devices_;
-
-  views::ToggleButton* toggle_;
-  views::Button* settings_;
-
-  // The container of the message "Bluetooth is disabled" and an icon. It should
-  // be shown instead of Bluetooth device list when Bluetooth is disabled.
-  views::View* disabled_panel_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDetailedView);
+  Delegate* delegate_;
 };
 
 }  // namespace tray

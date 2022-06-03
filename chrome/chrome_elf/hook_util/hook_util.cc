@@ -245,7 +245,7 @@ IATHook::IATHook()
       iat_thunk_(nullptr) {}
 
 IATHook::~IATHook() {
-  if (intercept_function_ != nullptr) {
+  if (intercept_function_) {
     if (Unhook() != NO_ERROR) {
 #ifdef _DEBUG
       assert(false);
@@ -264,8 +264,7 @@ DWORD IATHook::Hook(HMODULE module,
     return ERROR_INVALID_PARAMETER;
 
   // Only hook once per object, to ensure unhook.
-  if (intercept_function_ != nullptr || original_function_ != nullptr ||
-      iat_thunk_ != nullptr)
+  if (intercept_function_ || original_function_ || iat_thunk_)
     return ERROR_SHARING_VIOLATION;
 
   DWORD winerror = ApplyIATHook(module, imported_from_module, function_name,

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/background/background_mode_manager.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 // No background jobs for aura for now.
 
@@ -13,7 +13,7 @@ void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 }
 
 void BackgroundModeManager::DisplayClientInstalledNotification(
-    const base::string16& name) {
+    const std::u16string& name) {
   NOTIMPLEMENTED();
 }
 

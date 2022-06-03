@@ -31,7 +31,6 @@
 
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/web/web_text_direction.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -68,9 +67,8 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   current_anchor_ = &anchor;
   message_ = message;
   page_->GetChromeClient().RegisterPopupOpeningObserver(this);
-  constexpr auto kMinimumTimeToShowValidationMessage =
-      base::TimeDelta::FromSeconds(5);
-  constexpr auto kTimePerCharacter = base::TimeDelta::FromMilliseconds(50);
+  constexpr auto kMinimumTimeToShowValidationMessage = base::Seconds(5);
+  constexpr auto kTimePerCharacter = base::Milliseconds(50);
   finish_time_ =
       base::TimeTicks::Now() +
       std::max(kMinimumTimeToShowValidationMessage,
@@ -84,10 +82,12 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   auto delegate = std::make_unique<ValidationMessageOverlayDelegate>(
       *page_, anchor, message_, message_dir, sub_message, sub_message_dir);
   overlay_delegate_ = delegate.get();
-  overlay_ = std::make_unique<FrameOverlay>(target_frame, std::move(delegate));
+  DCHECK(!overlay_);
+  overlay_ =
+      MakeGarbageCollected<FrameOverlay>(target_frame, std::move(delegate));
   overlay_delegate_->CreatePage(*overlay_);
-  bool success =
-      target_frame->View()->UpdateLifecycleToCompositingCleanPlusScrolling();
+  bool success = target_frame->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kOverlay);
   ValidationMessageVisibilityChanged(anchor);
 
   // The lifecycle update should always succeed, because this is not inside
@@ -109,14 +109,14 @@ void ValidationMessageClientImpl::HideValidationMessage(const Element& anchor) {
   }
   DCHECK(overlay_);
   overlay_delegate_->StartToHide();
-  timer_ = std::make_unique<TaskRunnerTimer<ValidationMessageClientImpl>>(
+  timer_ = MakeGarbageCollected<
+      DisallowNewWrapper<HeapTaskRunnerTimer<ValidationMessageClientImpl>>>(
       anchor.GetDocument().GetTaskRunner(TaskType::kInternalDefault), this,
       &ValidationMessageClientImpl::Reset);
   // This should be equal to or larger than transition duration of
   // #container.hiding in validation_bubble.css.
-  const base::TimeDelta kHidingAnimationDuration =
-      base::TimeDelta::FromSecondsD(0.13333);
-  timer_->StartOneShot(kHidingAnimationDuration, FROM_HERE);
+  const base::TimeDelta kHidingAnimationDuration = base::Seconds(0.13333);
+  timer_->Value().StartOneShot(kHidingAnimationDuration, FROM_HERE);
 }
 
 void ValidationMessageClientImpl::HideValidationMessageImmediately(
@@ -129,11 +129,15 @@ void ValidationMessageClientImpl::HideValidationMessageImmediately(
 void ValidationMessageClientImpl::Reset(TimerBase*) {
   const Element& anchor = *current_anchor_;
 
+  // Clearing out the pointer does not stop the timer.
+  if (timer_)
+    timer_->Value().Stop();
   timer_ = nullptr;
   current_anchor_ = nullptr;
   message_ = String();
   finish_time_ = base::TimeTicks();
-  overlay_ = nullptr;
+  if (overlay_)
+    overlay_.Release()->Destroy();
   overlay_delegate_ = nullptr;
   page_->GetChromeClient().UnregisterPopupOpeningObserver(this);
   ValidationMessageVisibilityChanged(anchor);
@@ -217,9 +221,11 @@ void ValidationMessageClientImpl::PaintOverlay(GraphicsContext& context) {
     overlay_->Paint(context);
 }
 
-void ValidationMessageClientImpl::Trace(blink::Visitor* visitor) {
+void ValidationMessageClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
   visitor->Trace(current_anchor_);
+  visitor->Trace(timer_);
+  visitor->Trace(overlay_);
   ValidationMessageClient::Trace(visitor);
 }
 

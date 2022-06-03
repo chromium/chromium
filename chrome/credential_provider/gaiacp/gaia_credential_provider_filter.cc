@@ -4,7 +4,8 @@
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_filter.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "build/branding_buildflags.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
@@ -33,12 +34,12 @@ CGaiaCredentialProviderFilter::CGaiaCredentialProviderFilter() = default;
 CGaiaCredentialProviderFilter::~CGaiaCredentialProviderFilter() = default;
 
 HRESULT CGaiaCredentialProviderFilter::FinalConstruct() {
-  LOGFN(INFO);
+  LOGFN(VERBOSE);
   return S_OK;
 }
 
 void CGaiaCredentialProviderFilter::FinalRelease() {
-  LOGFN(INFO);
+  LOGFN(VERBOSE);
 }
 
 HRESULT CGaiaCredentialProviderFilter::Filter(
@@ -68,10 +69,10 @@ HRESULT CGaiaCredentialProviderFilter::Filter(
     return S_OK;
   }
 
-  // Check to see if any users need to have their access to this system
-  // using the normal credential providers revoked.
-  AssociatedUserValidator::Get()->DenySigninForUsersWithInvalidTokenHandles(
-      cpus);
+  // Update sid mapping at least once before invoking any other  methods in the
+  // later stages.
+  AssociatedUserValidator::Get()->UpdateAssociatedSids(nullptr);
+
   return S_OK;
 }
 
@@ -98,14 +99,14 @@ HRESULT CGaiaCredentialProviderFilter::UpdateRemoteCredential(
 
   // If serialziation data is set, try to extract the sid for the user
   // referenced in the serialization data.
-  base::string16 serialization_sid;
+  std::wstring serialization_sid;
   hr = DetermineUserSidFromAuthenticationBuffer(pcpcs_in, &serialization_sid);
   if (FAILED(hr))
     return E_NOTIMPL;
 
   // Check if this user needs a reauth, if not, just pass the serialization
   // to the default handler.
-  if (AssociatedUserValidator::Get()->IsTokenHandleValidForUser(
+  if (!AssociatedUserValidator::Get()->IsAuthEnforcedForUser(
           serialization_sid)) {
     return E_NOTIMPL;
   }

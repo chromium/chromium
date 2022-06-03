@@ -9,7 +9,6 @@ from blinkpy.w3c.gerrit import GerritCL, GerritError, QUERY_OPTIONS
 
 
 class MockGerritAPI(object):
-
     def __init__(self, raise_error=False):
         self.exportable_open_cls = []
         self.request_posted = []
@@ -38,7 +37,6 @@ class MockGerritAPI(object):
 
 
 class MockGerritCL(GerritCL):
-
     def __init__(self, data, api=None, chromium_commit=None):
         api = api or MockGerritAPI()
         self.chromium_commit = chromium_commit

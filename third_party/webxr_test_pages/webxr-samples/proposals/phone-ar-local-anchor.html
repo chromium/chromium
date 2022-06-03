@@ -1,0 +1,406 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <!-- Origin Trial Token, feature = WebXR Device API, origin = https://immersive-web.github.io, expires = 2018-08-28 -->
+<meta http-equiv="origin-trial" data-feature="WebXR Device API" data-expires="2018-08-28" content="AnNpu7ceXvLew05ccD8Zr1OZsdZiB2hLQKK82kTTMDwF7oRKtP3QEJ4RzkeHrmB8Sq0vSV6ZNmszpBCZ0I8p9gAAAABceyJvcmlnaW4iOiJodHRwczovL2ltbWVyc2l2ZS13ZWIuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZSIsImV4cGlyeSI6MTUzNTQxNDQwMH0=">
+
+    <title>AR Local Space and Anchor test</title>
+
+    <link href='../css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>AR Local Space and Anchor test</summary>
+        This sample places an anchor at local origin at session creation
+        to help visualise local space drift compared to an anchor.
+        <p>
+          <input id="useDomOverlay" type="checkbox" checked style="visibility: hidden;">
+          <!-- <label for="useDomOverlay">Enable DOM Overlay</label><br/> -->
+
+          <a class="back" href="./index.html">Back</a>
+        </p>
+        <p>
+          Viewer pose emulated? <span id="viewer_pose">No viewer pose yet.</span><br/>
+          Anchor position=<span id="anchor_pose">No anchor placed yet.</span><br/>
+          Anchor drift=<span id="anchor_drift">No anchor placed yet.</span>
+        </p>
+      </details>
+    </header>
+    <script type="module">
+      import {Scene} from '../js/cottontail/src/scenes/scene.js';
+      import {Renderer, createWebGLContext} from '../js/cottontail/src/core/renderer.js';
+      import {Gltf2Node} from '../js/cottontail/src/nodes/gltf2.js';
+      import {RayNode} from '../js/cottontail/src/nodes/ray-node.js';
+      import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
+      import {FallbackHelper} from '../js/cottontail/src/util/fallback-helper.js';
+      import {Node} from '../js/cottontail/src/core/node.js';
+      import {vec3, vec4, quat} from '../js/cottontail/src/math/gl-matrix.js';
+      import {DebugSources} from '../js/debug-sources.js';
+
+      // If requested, initialize the WebXR polyfill
+      if (QueryArgs.getBool('allowPolyfill', false)) {
+        var polyfill = new WebXRPolyfill();
+      }
+
+      let debugSources;
+      if (QueryArgs.getBool('debugSources', false)) {
+        debugSources = new DebugSources();
+      }
+
+      const useDomOverlay = document.getElementById('useDomOverlay');
+
+      const viewerPoseEmulatedElement = document.getElementById('viewer_pose');
+      const anchorPoseElement = document.getElementById('anchor_pose');
+      const anchorDriftElement = document.getElementById('anchor_drift');
+
+      // Debugging constants:
+      const visualizeObjectSpace = true;
+
+      // Suppress XR events for interactions with the DOM overlay
+      document.querySelector('header').addEventListener('beforexrselect', (ev) => {
+        console.log(ev.type);
+        ev.preventDefault();
+      });
+
+      // XR globals.
+      let xrButton = null;
+      let xrRefSpace = null;
+      let xrViewerSpace = null;
+      let xrViewerOffsetSpace = null;
+      let xrAnchor = null;
+
+      // WebGL scene globals.
+      let gl = null;
+      let renderer = null;
+      let scene = new Scene();
+      scene.enableStats(false);
+
+      // Visualise the origin.
+      {
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        scene.addNode(xRay);
+        scene.addNode(yRay);
+        scene.addNode(zRay);
+      }
+
+      // Add node with flower object (no shadow):
+      let arObject = new Node();
+      arObject.visible = false;
+      scene.addNode(arObject);
+
+      let flower = new Gltf2Node({url: '../../media/gltf/sunflower/sunflower.gltf'});
+      arObject.addNode(flower);
+
+      const MAX_FLOWERS = 30;
+      let flowers = [];
+
+      // Ensure the background is transparent for AR.
+      scene.clear = false;
+
+      function initXR() {
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+          supportedSessionTypes: ['immersive-ar'],
+          height: 36,
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
+      }
+
+      function onRequestSession() {
+        let sessionInit = {
+          requiredFeatures: ['anchors'],
+          optionalFeatures: [],
+        };
+        if (useDomOverlay.checked) {
+          sessionInit.optionalFeatures.push('dom-overlay');
+          sessionInit.domOverlay = {root: document.body};
+        }
+        navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
+          session.mode = 'immersive-ar';
+          xrButton.setSession(session);
+          onSessionStarted(session);
+        });
+      }
+
+      function onSessionStarted(session) {
+        useDomOverlay.disabled = true;
+        session.addEventListener('end', onSessionEnded);
+        session.addEventListener('select', onSelect);
+
+        if (debugSources) debugSources.startSession(session);
+
+        if (!gl) {
+          gl = createWebGLContext({
+            xrCompatible: true,
+            alpha : true,
+          });
+
+          renderer = new Renderer(gl);
+          gl.lineWidth(5);
+
+          scene.setRenderer(renderer);
+        }
+
+        session.updateRenderState({
+            baseLayer: new XRWebGLLayer(session, gl)
+        });
+
+        Promise.all([
+          session.requestReferenceSpace('local'),
+          session.requestReferenceSpace('viewer')
+        ]).then(([localSpace, viewerSpace]) => {
+          xrRefSpace = localSpace;
+          xrViewerSpace = viewerSpace;
+
+          xrViewerOffsetSpace = xrViewerSpace.getOffsetReferenceSpace(new XRRigidTransform(
+            {z: -1}
+          ));
+
+          session.requestAnimationFrame(onXRFrame);
+        });
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        useDomOverlay.disabled = false;
+        xrButton.setSession(null);
+      }
+
+      // Attaches a scene node at anchor location. The scene node will not have any associated
+      // models with it, just the 3 axes to visualize the anchor's coordinate system.
+      function onCreateAnchor(anchor) {
+        console.debug("Anchor created");
+
+        anchor.context = {};
+
+        let sceneObject = new Node();
+        sceneObject.visible = false;
+
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 1, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 1, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [1, 0, 1, 1]});
+
+        sceneObject.addNode(xRay);
+        sceneObject.addNode(yRay);
+        sceneObject.addNode(zRay);
+
+        scene.addNode(sceneObject);
+
+        anchor.context.sceneObject = sceneObject;
+        sceneObject.anchor = anchor;
+      }
+
+      // Attaches a scene node at anchor location. The placed scene node will have a flower
+      // model associated with it. Optionally, depending on the value of |visualizeObjectSpace|,
+      // the scene node will also have 3 axes attached to visualize the coordinate system.
+      function onCreateAnchorWithFlower(anchor) {
+        console.debug("Anchor created, placing flower.");
+
+        anchor.context = {};
+
+        let sceneObject = arObject.clone();
+        sceneObject.visible = false;
+
+        if (visualizeObjectSpace) {
+          let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+          let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+          let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+          sceneObject.addNode(xRay);
+          sceneObject.addNode(yRay);
+          sceneObject.addNode(zRay);
+        }
+
+        scene.addNode(sceneObject);
+        flowers.push(sceneObject);
+
+        anchor.context.sceneObject = sceneObject;
+        sceneObject.anchor = anchor;
+
+        // For performance reasons if we add too many objects start
+        // removing the oldest ones to keep the scene complexity
+        // from growing too much.
+        if (flowers.length > MAX_FLOWERS) {
+          let oldFlower = flowers.shift();
+          oldFlower.anchor.delete();
+          scene.removeNode(oldFlower);
+        }
+      }
+
+      let anchorRequesed = false;
+      let anchorRemoved = false;
+
+      function onSelect(event) {
+        const frame = event.frame;
+
+        frame.createAnchor(new XRRigidTransform(), xrViewerOffsetSpace)
+              .then(onCreateAnchorWithFlower);
+      }
+
+      function getAngle(a, b) {
+        let dotproduct = quat.dot(a, b);
+        return Math.acos(2 * dotproduct * dotproduct - 1);
+      }
+
+      // Set with all anchors tracked in a previous frame.
+      let all_previous_anchors = new Set();
+
+      // Called every time a XRSession requests that a new frame be drawn.
+      async function onXRFrame(t, frame) {
+        let session = frame.session;
+        session.requestAnimationFrame(onXRFrame);
+
+        if (debugSources) debugSources.update(frame, xrRefSpace);
+
+        let pose = frame.getViewerPose(xrRefSpace);
+        if(pose) {
+          viewerPoseEmulatedElement.innerText = pose.emulatedPosition.toString();
+        } else {
+          viewerPoseEmulatedElement.innerText = "Viewer pose is null.";
+        }
+
+        let offsetSpacePose = frame.getPose(xrViewerOffsetSpace, xrRefSpace);
+        if(offsetSpacePose) {
+          arObject.visible = true;
+          arObject.matrix = offsetSpacePose.transform.matrix;
+        } else {
+          arObject.visible = false;
+        }
+
+        if(!anchorRequesed) {
+          // Initial anchor creation.
+          frame.createAnchor(new XRRigidTransform(), xrRefSpace)
+               .then((anchor) => {
+                  console.debug("Anchor created.");
+                  xrAnchor = anchor;
+                  onCreateAnchor(anchor);
+               })
+               .catch((error) => {
+                  console.error("Anchor failed to create.");
+                  anchorRequesed = false;
+               });
+
+          anchorRequesed = true;
+        }
+
+        const tracked_anchors = frame.trackedAnchors;
+
+        if(tracked_anchors){
+          all_previous_anchors.forEach(anchor => {
+            if(!tracked_anchors.has(anchor)){
+              scene.removeNode(anchor.context.sceneObject);
+              if(anchor === xrAnchor) {
+                anchorRemoved = true;
+                console.debug("Anchor removed.");
+              }
+            }
+          });
+
+          tracked_anchors.forEach(anchor => {
+            const anchorPose = frame.getPose(anchor.anchorSpace, xrRefSpace);
+            if(anchorPose) {
+              anchor.context.sceneObject.matrix = anchorPose.transform.matrix;
+              anchor.context.sceneObject.visible = true;
+            } else {
+              anchor.context.sceneObject.visible = false;
+            }
+          });
+
+          all_previous_anchors = tracked_anchors;
+        } else {
+          all_previous_anchors.forEach(anchor => {
+            scene.removeNode(anchor.sceneObject);
+          });
+
+          all_previous_anchors = new Set();
+        }
+
+        if (xrAnchor) {
+          const anchorPose = frame.getPose(xrAnchor.anchorSpace, xrRefSpace);
+          if (anchorPose) {
+            const pos = anchorPose.transform.position;
+            const rot = anchorPose.transform.orientation;
+
+            const degs = getAngle(
+              quat.fromValues(rot.x, rot.y, rot.z, rot.w),
+              quat.create()
+            ) * 180 / Math.PI;
+
+            anchorPoseElement.innerText = pos.x.toFixed(3) + "m,"
+                                        + pos.y.toFixed(3) + "m,"
+                                        + pos.z.toFixed(3) + "m,"
+                                        + degs.toFixed(3) + "deg";
+
+            const drift = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+            anchorDriftElement.innerText = drift.toFixed(3) + "m";
+
+            console.debug(pos, rot, drift);
+          } else {
+            anchorPoseElement.innerText = "Anchor pose null.";
+            anchorDriftElement.innerText  = "Anchor pose null.";
+          }
+        } else if(anchorRemoved) {
+          anchorPoseElement.innerText = "Anchor already gone.";
+          anchorDriftElement.innerText  = "Anchor already gone.";
+        }
+        else {
+          anchorPoseElement.innerText = "Anchor not created yet.";
+          anchorDriftElement.innerText  = "Anchor not created yet.";
+        }
+
+        await scene.waitForComplete();
+
+        scene.startFrame();
+        scene.drawXRFrame(frame, pose);
+        scene.endFrame();
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "third_party/icu/source/common/unicode/errorcode.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -30,6 +30,10 @@ class ChromeStringCanonicalizer : public StringCanonicalizer {
     collator_->setStrength(icu::Collator::PRIMARY);
     DCHECK(U_SUCCESS(error_code_));
   }
+
+  ChromeStringCanonicalizer(const ChromeStringCanonicalizer&) = delete;
+  ChromeStringCanonicalizer& operator=(const ChromeStringCanonicalizer&) =
+      delete;
 
   virtual ~ChromeStringCanonicalizer() {}
 
@@ -57,8 +61,6 @@ class ChromeStringCanonicalizer : public StringCanonicalizer {
  private:
   UErrorCode error_code_;
   scoped_ptr<icu::Collator> collator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeStringCanonicalizer);
 };
 
 }  // namespace

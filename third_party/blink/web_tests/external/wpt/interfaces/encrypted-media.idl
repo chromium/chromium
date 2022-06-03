@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Encrypted Media Extensions (https://w3c.github.io/encrypted-media/)
 
 [Exposed=Window]
@@ -38,8 +38,7 @@ dictionary MediaKeySystemMediaCapability {
 
 enum MediaKeySessionType {
     "temporary",
-    "persistent-license",
-    "persistent-usage-record"
+    "persistent-license"
 };
 
 [Exposed=Window, SecureContext] interface MediaKeys {
@@ -47,25 +46,33 @@ enum MediaKeySessionType {
     Promise<boolean> setServerCertificate (BufferSource serverCertificate);
 };
 
+enum MediaKeySessionClosedReason {
+    "internal-error",
+    "closed-by-application",
+    "release-acknowledged",
+    "hardware-context-reset",
+    "resource-evicted"
+};
+
 [Exposed=Window, SecureContext] interface MediaKeySession : EventTarget {
-    readonly        attribute DOMString           sessionId;
-    readonly        attribute unrestricted double expiration;
-    readonly        attribute Promise<void>       closed;
-    readonly        attribute MediaKeyStatusMap   keyStatuses;
-                    attribute EventHandler        onkeystatuseschange;
-                    attribute EventHandler        onmessage;
-    Promise<void>    generateRequest (DOMString initDataType, BufferSource initData);
+    readonly        attribute DOMString                            sessionId;
+    readonly        attribute unrestricted double                  expiration;
+    readonly        attribute Promise<MediaKeySessionClosedReason> closed;
+    readonly        attribute MediaKeyStatusMap                    keyStatuses;
+                    attribute EventHandler                         onkeystatuseschange;
+                    attribute EventHandler                         onmessage;
+    Promise<undefined>    generateRequest (DOMString initDataType, BufferSource initData);
     Promise<boolean> load (DOMString sessionId);
-    Promise<void>    update (BufferSource response);
-    Promise<void>    close ();
-    Promise<void>    remove ();
+    Promise<undefined>    update (BufferSource response);
+    Promise<undefined>    close ();
+    Promise<undefined>    remove ();
 };
 
 [Exposed=Window, SecureContext] interface MediaKeyStatusMap {
     iterable<BufferSource,MediaKeyStatus>;
     readonly        attribute unsigned long size;
     boolean has (BufferSource keyId);
-    any     get (BufferSource keyId);
+    (MediaKeyStatus or undefined)     get (BufferSource keyId);
 };
 
 enum MediaKeyStatus {
@@ -74,6 +81,7 @@ enum MediaKeyStatus {
     "released",
     "output-restricted",
     "output-downscaled",
+    "usable-in-future",
     "status-pending",
     "internal-error"
 };
@@ -101,7 +109,7 @@ dictionary MediaKeyMessageEventInit : EventInit {
     [SecureContext] readonly        attribute MediaKeys?   mediaKeys;
                                     attribute EventHandler onencrypted;
                                     attribute EventHandler onwaitingforkey;
-    [SecureContext] Promise<void> setMediaKeys (MediaKeys? mediaKeys);
+    [SecureContext] Promise<undefined> setMediaKeys (MediaKeys? mediaKeys);
 };
 
 [Exposed=Window]

@@ -32,7 +32,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -381,6 +381,14 @@ TEST(IDBKeyFromValue, DeepArray) {
 TEST(IDBKeyFromValue, SparseArray) {
   V8TestingScope scope;
   auto key = ScriptToKey(scope, "[,1]");
+  EXPECT_FALSE(key->IsValid());
+
+  // Ridiculously large sparse array - ensure we check before allocating.
+  key = ScriptToKey(scope, "Object.assign([], {length: 2e9})");
+  EXPECT_FALSE(key->IsValid());
+
+  // Large sparse arrays as subkeys - ensure we check while recursing.
+  key = ScriptToKey(scope, "[Object.assign([], {length: 2e9})]");
   EXPECT_FALSE(key->IsValid());
 }
 

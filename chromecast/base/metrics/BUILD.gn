@@ -13,9 +13,7 @@ cast_source_set("metrics") {
     "grouped_histogram.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 cast_source_set("test_support") {
@@ -26,9 +24,7 @@ cast_source_set("test_support") {
     "mock_cast_metrics_helper.h",
   ]
 
-  public_deps = [
-    ":metrics",
-  ]
+  public_deps = [ ":metrics" ]
 
   deps = [
     "//base",

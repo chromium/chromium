@@ -1,0 +1,7 @@
+Checks that breakpoint set inside a portalactivate event handler is hit on activation
+error: Item to refresh is not present
+Script execution paused.
+Call stack:
+    0) window.onportalactivate (append-predecessor.html:5)
+Script execution resumed.
+

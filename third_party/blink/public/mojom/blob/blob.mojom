@@ -5,8 +5,10 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
+import "services/network/public/mojom/url_loader.mojom";
 
 // Interface that can be implemented to be informed of certain information while
 // reading the data for a blob.
@@ -48,10 +50,23 @@ interface Blob {
   ReadRange(uint64 offset, uint64 length, handle<data_pipe_producer> pipe,
             pending_remote<BlobReaderClient>? client);
 
+  // Provides a response to a request for a blob: URL to a URLLoaderClient.
+  // This takes into account optional Range request headers, but otherwise
+  // ignores the headers. Also verifies the |request_method| is a supported
+  // http request method for blob: URLs, and replies with an error if not.
+  Load(pending_receiver<network.mojom.URLLoader> loader,
+       string request_method,
+       network.mojom.HttpRequestHeaders headers,
+       pending_remote<network.mojom.URLLoaderClient> client);
+
   // Reads the side-data (if any) associated with this blob. This is the same
   // data that would be passed to OnReceivedCachedMetadata if you were reading
   // this blob through a blob URL.
   ReadSideData() => (mojo_base.mojom.BigBuffer? data);
+
+  // If this blob represents a single file on disk, this will capture the
+  // current snapshot state of that file.
+  [Sync] CaptureSnapshot() => (uint64 length, mojo_base.mojom.Time? modification_time);
 
   // This method is an implementation detail of the blob system. You should not
   // ever need to call it directly.

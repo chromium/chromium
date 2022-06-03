@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("text_zoom_zoom_in") {
+  sources = [
+    "text_zoom_zoom_in.imageset/Contents.json",
+    "text_zoom_zoom_in.imageset/text_zoom_zoom_in@2x.png",
+    "text_zoom_zoom_in.imageset/text_zoom_zoom_in@3x.png",
+  ]
+}
+
+imageset("text_zoom_zoom_out") {
+  sources = [
+    "text_zoom_zoom_out.imageset/Contents.json",
+    "text_zoom_zoom_out.imageset/text_zoom_zoom_out@2x.png",
+    "text_zoom_zoom_out.imageset/text_zoom_zoom_out@3x.png",
+  ]
+}

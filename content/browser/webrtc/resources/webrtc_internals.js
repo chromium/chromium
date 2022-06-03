@@ -2,32 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var USER_MEDIA_TAB_ID = 'user-media-tab-id';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
+import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
+import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
+import {SsrcInfoManager} from './ssrc_info_manager.js';
+import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
+import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
+import {StatsTable} from './stats_table.js';
+import {TabView} from './tab_view.js';
+
+const USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
 const OPTION_GETSTATS_STANDARD = 'Standardized (promise-based) getStats() API';
 const OPTION_GETSTATS_LEGACY =
     'Legacy Non-Standard (callback-based) getStats() API';
 let currentGetStatsMethod = OPTION_GETSTATS_STANDARD;
 
-var tabView = null;
-var ssrcInfoManager = null;
-var peerConnectionUpdateTable = null;
-var statsTable = null;
-var dumpCreator = null;
-/** A map from peer connection id to the PeerConnectionRecord. */
-var peerConnectionDataStore = {};
-/** A list of getUserMedia requests. */
-var userMediaRequests = [];
+let tabView = null;
+let ssrcInfoManager = null;
+let peerConnectionUpdateTable = null;
+let statsTable = null;
+let dumpCreator = null;
+
+// Exporting these on window since they are directly accessed by tests.
+window.setCurrentGetStatsMethod = function(method) {
+  currentGetStatsMethod = method;
+};
+window.OPTION_GETSTATS_LEGACY = OPTION_GETSTATS_LEGACY;
 
 /** Maps from id (see getPeerConnectionId) to StatsRatesCalculator. */
-statsRatesCalculatorById = new Map();
+const statsRatesCalculatorById = new Map();
 
 /** A simple class to store the updates and stats data for a peer connection. */
-var PeerConnectionRecord = (function() {
   /** @constructor */
-  function PeerConnectionRecord() {
+class PeerConnectionRecord {
+  constructor() {
     /** @private */
     this.record_ = {
+      pid: -1,
       constraints: {},
       rtcConfiguration: [],
       stats: {},
@@ -36,84 +51,96 @@ var PeerConnectionRecord = (function() {
     };
   }
 
-  PeerConnectionRecord.prototype = {
-    /** @override */
-    toJSON: function() {
-      return this.record_;
-    },
+  /** @override */
+  toJSON() {
+    return this.record_;
+  }
 
-    /**
-     * Adds the initilization info of the peer connection.
-     * @param {string} url The URL of the web page owning the peer connection.
-     * @param {Array} rtcConfiguration
-     * @param {!Object} constraints Media constraints.
-     */
-    initialize: function(url, rtcConfiguration, constraints) {
-      this.record_.url = url;
-      this.record_.rtcConfiguration = rtcConfiguration;
-      this.record_.constraints = constraints;
-    },
+  /**
+   * Adds the initialization info of the peer connection.
+   * @param {number} pid The pid of the process hosting the peer connection.
+   * @param {string} url The URL of the web page owning the peer connection.
+   * @param {Array} rtcConfiguration
+   * @param {!Object} constraints Media constraints.
+   */
+  initialize(pid, url, rtcConfiguration, constraints) {
+    this.record_.pid = pid;
+    this.record_.url = url;
+    this.record_.rtcConfiguration = rtcConfiguration;
+    this.record_.constraints = constraints;
+  }
 
-    resetStats: function() {
-      this.record_.stats = {};
-    },
+  resetStats() {
+    this.record_.stats = {};
+  }
 
-    /**
-     * @param {string} dataSeriesId The TimelineDataSeries identifier.
-     * @return {!TimelineDataSeries}
-     */
-    getDataSeries: function(dataSeriesId) {
-      return this.record_.stats[dataSeriesId];
-    },
+  /**
+   * @param {string} dataSeriesId The TimelineDataSeries identifier.
+   * @return {!TimelineDataSeries}
+   */
+  getDataSeries(dataSeriesId) {
+    return this.record_.stats[dataSeriesId];
+  }
 
-    /**
-     * @param {string} dataSeriesId The TimelineDataSeries identifier.
-     * @param {!TimelineDataSeries} dataSeries The TimelineDataSeries to set to.
-     */
-    setDataSeries: function(dataSeriesId, dataSeries) {
-      this.record_.stats[dataSeriesId] = dataSeries;
-    },
+  /**
+   * @param {string} dataSeriesId The TimelineDataSeries identifier.
+   * @param {!TimelineDataSeries} dataSeries The TimelineDataSeries to set to.
+   */
+  setDataSeries(dataSeriesId, dataSeries) {
+    this.record_.stats[dataSeriesId] = dataSeries;
+  }
 
-    /**
-     * @param {!Object} update The object contains keys "time", "type", and
-     *   "value".
-     */
-    addUpdate: function(update) {
-      var time = new Date(parseFloat(update.time));
-      this.record_.updateLog.push({
-        time: time.toLocaleString(),
-        type: update.type,
-        value: update.value,
-      });
-    },
-  };
-
-  return PeerConnectionRecord;
-})();
-
-// The maximum number of data points bufferred for each stats. Old data points
-// will be shifted out when the buffer is full.
-var MAX_STATS_DATA_POINT_BUFFER_SIZE = 1000;
-
-// <include src="../../resources/media/tab_view.js">
-// <include src="../../resources/media/data_series.js">
-// <include src="../../resources/media/ssrc_info_manager.js">
-// <include src="../../resources/media/stats_graph_helper.js">
-// <include src="../../resources/media/stats_rates_calculator.js">
-// <include src="../../resources/media/stats_table.js">
-// <include src="../../resources/media/peer_connection_update_table.js">
-// <include src="../../resources/media/dump_creator.js">
-
+  /**
+   * @param {!Object} update The object contains keys "time", "type", and
+   *   "value".
+   */
+  addUpdate(update) {
+    const time = new Date(parseFloat(update.time));
+    this.record_.updateLog.push({
+      time: time.toLocaleString(),
+      type: update.type,
+      value: update.value,
+    });
+  }
+}
 
 function initialize() {
   dumpCreator = new DumpCreator($('content-root'));
   $('content-root').appendChild(createStatsSelectionOptionElements());
   tabView = new TabView($('content-root'));
   ssrcInfoManager = new SsrcInfoManager();
+  window.ssrcInfoManager = ssrcInfoManager;
   peerConnectionUpdateTable = new PeerConnectionUpdateTable();
   statsTable = new StatsTable(ssrcInfoManager);
 
-  chrome.send('finishedDOMLoad');
+  // Add listeners for all the updates that get sent from webrtc_internals.cc.
+  addWebUIListener('add-peer-connection', addPeerConnection);
+  addWebUIListener('update-peer-connection', updatePeerConnection);
+  addWebUIListener('update-all-peer-connections', updateAllPeerConnections);
+  addWebUIListener('remove-peer-connection', removePeerConnection);
+  addWebUIListener('add-standard-stats', addStandardStats);
+  addWebUIListener('add-legacy-stats', addLegacyStats);
+  addWebUIListener('add-get-user-media', addGetUserMedia);
+  addWebUIListener(
+      'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
+  addWebUIListener(
+      'event-log-recordings-file-selection-cancelled',
+      eventLogRecordingsFileSelectionCancelled);
+  addWebUIListener(
+      'audio-debug-recordings-file-selection-cancelled',
+      audioDebugRecordingsFileSelectionCancelled);
+
+  // Request initial startup parameters.
+  sendWithPromise('finishedDOMLoad').then(params => {
+    if (params.audioDebugRecordingsEnabled) {
+      dumpCreator.setAudioDebugRecordingsCheckbox();
+    }
+    if (params.eventLogRecordingsEnabled) {
+      dumpCreator.setEventLogRecordingsCheckbox();
+    }
+    dumpCreator.setEventLogRecordingsCheckboxMutability(
+        params.eventLogRecordingsToggleable);
+  });
 
   // Requests stats from all peer connections every second.
   window.setInterval(requestStats, 1000);
@@ -146,13 +173,20 @@ function createStatsSelectionOptionElements() {
 
   p.appendChild(document.createTextNode('Read Stats From: '));
   p.appendChild(selectElement);
+
+  const statsDocumentation = document.createElement('p');
+  statsDocumentation.appendChild(
+    document.createTextNode('Note: computed stats are in []. ' +
+      'Experimental stats are marked with an * at the end.'));
+  p.appendChild(statsDocumentation);
+
   return p;
 }
 
 function requestStats() {
-  if (currentGetStatsMethod == OPTION_GETSTATS_STANDARD) {
+  if (currentGetStatsMethod === OPTION_GETSTATS_STANDARD) {
     requestStandardStats();
-  } else if (currentGetStatsMethod == OPTION_GETSTATS_LEGACY) {
+  } else if (currentGetStatsMethod === OPTION_GETSTATS_LEGACY) {
     requestLegacyStats();
   }
 }
@@ -188,16 +222,17 @@ function changeToLegacyGetStats() {
   selectElement.value = currentGetStatsMethod;
   requestStats();
 }
+window.changeToLegacyGetStats = changeToLegacyGetStats;
 
 /**
  * A helper function for getting a peer connection element id.
  *
- * @param {!Object<number>} data The object containing the pid and lid of the
+ * @param {!Object<number>} data The object containing the rid and lid of the
  *     peer connection.
  * @return {string} The peer connection element id.
  */
 function getPeerConnectionId(data) {
-  return data.pid + '-' + data.lid;
+  return data.rid + '-' + data.lid;
 }
 
 
@@ -207,8 +242,8 @@ function getPeerConnectionId(data) {
  * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
  */
 function extractSsrcInfo(data) {
-  if (data.type == 'setLocalDescription' ||
-      data.type == 'setRemoteDescription') {
+  if (data.type === 'setLocalDescription' ||
+      data.type === 'setRemoteDescription') {
     ssrcInfoManager.addSsrcStreamInfo(data.value);
   }
 }
@@ -223,7 +258,7 @@ function extractSsrcInfo(data) {
  * @return {!Element} the new DIV element.
  */
 function appendChildWithText(parent, tag, text) {
-  var child = document.createElement(tag);
+  const child = document.createElement(tag);
   child.textContent = text;
   parent.appendChild(child);
   return child;
@@ -249,11 +284,11 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
 /**
  * Removes all information about a peer connection.
  *
- * @param {!Object<number>} data The object containing the pid and lid of a peer
+ * @param {!Object<number>} data The object containing the rid and lid of a peer
  *     connection.
  */
 function removePeerConnection(data) {
-  var element = $(getPeerConnectionId(data));
+  const element = $(getPeerConnectionId(data));
   if (element) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
@@ -264,27 +299,101 @@ function removePeerConnection(data) {
 /**
  * Adds a peer connection.
  *
- * @param {!Object} data The object containing the pid, lid, url,
+ * @param {!Object} data The object containing the rid, lid, pid, url,
  *     rtcConfiguration, and constraints of a peer connection.
  */
 function addPeerConnection(data) {
-  var id = getPeerConnectionId(data);
+  const id = getPeerConnectionId(data);
 
   if (!peerConnectionDataStore[id]) {
     peerConnectionDataStore[id] = new PeerConnectionRecord();
   }
   peerConnectionDataStore[id].initialize(
-      data.url, data.rtcConfiguration, data.constraints);
+      data.pid, data.url, data.rtcConfiguration, data.constraints);
 
-  var peerConnectionElement = $(id);
+  let peerConnectionElement = $(id);
   if (!peerConnectionElement) {
-    peerConnectionElement = tabView.addTab(id, data.url + ' [' + id + ']');
+    const details = `[ rid: ${data.rid}, lid: ${data.lid}, pid: ${data.pid} ]`;
+    peerConnectionElement = tabView.addTab(id, data.url + " " + details);
   }
 
-  var p = document.createElement('p');
-  p.textContent =
-      data.url + ', ' + data.rtcConfiguration + ', ' + data.constraints;
+  const p = document.createElement('p');
+  appendChildWithText(p, 'span', data.url);
+  appendChildWithText(p, 'span', ', ');
+  appendChildWithText(p, 'span', data.rtcConfiguration);
+  if (data.constraints !== '') {
+    appendChildWithText(p, 'span', ', ');
+    appendChildWithText(p, 'span', data.constraints);
+  }
   peerConnectionElement.appendChild(p);
+
+  // Show deprecation notices as a list.
+  // Note: data.rtcConfiguration is not in JSON format and may
+  // not be defined in tests.
+  const deprecationNotices = document.createElement('ul');
+  if (data.rtcConfiguration) {
+    deprecationNotices.className = 'peerconnection-deprecations';
+    if (data.rtcConfiguration.indexOf('extmapAllowMixed: false') !== -1) {
+      // Hard deprecation, setting "false" will no longer work.
+      appendChildWithText(deprecationNotices, 'li',
+        'Note: The RTCPeerConnection offerAllowExtmapMixed ' +
+        'option is a non-standard feature. This feature will be removed ' +
+        'in M93 (Canary: July 15, 2021; Stable: August 24, 2021). For ' +
+        'interoperability with legacy WebRTC versions that throw errors ' +
+        'when attempting to parse the a=extmap-allow-mixed line in the ' +
+        'SDP remove the line from the SDP during signalling.');
+    }
+    if (data.rtcConfiguration.indexOf('sdpSemantics: "plan-b"') !== -1) {
+      appendChildWithText(deprecationNotices, 'li',
+        'Plan B SDP semantics, which is used when constructing an ' +
+        'RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy ' +
+        'version of the Session Description Protocol that has severe ' +
+        'compatibility issues on modern browsers. The standardized SDP ' +
+        'format, \"unified-plan\", has been used by default since M72 ' +
+        '(January, 2019). Dropping support for Plan B is targeted for ' +
+        'M93. See https://www.chromestatus.com/feature/5823036655665152 ' +
+        'for more details.');
+    }
+  }
+  if (data.constraints) {
+    if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
+      if (data.constraints.indexOf('enableDtlsSrtp: {exact: false}') !== -1) {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "false" value for this constraint, which is ' +
+          'interpreted as an attempt to use the deprecated "SDES" key ' +
+          'negotiation method. This functionality will be removed; use a ' +
+          'service that supports DTLS key negotiation instead.');
+      } else {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "true" value for this constraint, which has no ' +
+          'effect, but you can remove this constraint for tidiness.');
+      }
+    }
+  }
+  peerConnectionElement.appendChild(deprecationNotices);
+
+  const iceConnectionStates = document.createElement('div');
+  iceConnectionStates.textContent = 'ICE connection state: new';
+  iceConnectionStates.className = 'iceconnectionstate';
+  peerConnectionElement.appendChild(iceConnectionStates);
+
+  const connectionStates = document.createElement('div');
+  connectionStates.textContent = 'Connection state: new';
+  connectionStates.className = 'connectionstate';
+  peerConnectionElement.appendChild(connectionStates);
+
+  const signalingStates = document.createElement('div');
+  signalingStates.textContent = 'Signaling state: new';
+  signalingStates.className = 'signalingstate';
+  peerConnectionElement.appendChild(signalingStates);
+
+  const candidatePair = document.createElement('div');
+  candidatePair.textContent = 'ICE Candidate pair: ';
+  candidatePair.className = 'candidatepair';
+  candidatePair.appendChild(document.createElement('span'));
+  peerConnectionElement.appendChild(candidatePair);
 
   return peerConnectionElement;
 }
@@ -296,7 +405,7 @@ function addPeerConnection(data) {
  * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
  */
 function updatePeerConnection(data) {
-  var peerConnectionElement = $(getPeerConnectionId(data));
+  const peerConnectionElement = $(getPeerConnectionId(data));
   addPeerConnectionUpdate(peerConnectionElement, data);
 }
 
@@ -305,18 +414,18 @@ function updatePeerConnection(data) {
  * Adds the information of all peer connections created so far.
  *
  * @param {Array<!Object>} data An array of the information of all peer
- *     connections. Each array item contains pid, lid, url, rtcConfiguration,
- *     constraints, and an array of updates as the log.
+ *     connections. Each array item contains rid, lid, pid, url,
+ *     rtcConfiguration, constraints, and an array of updates as the log.
  */
 function updateAllPeerConnections(data) {
-  for (var i = 0; i < data.length; ++i) {
-    var peerConnection = addPeerConnection(data[i]);
+  for (let i = 0; i < data.length; ++i) {
+    const peerConnection = addPeerConnection(data[i]);
 
-    var log = data[i].log;
+    const log = data[i].log;
     if (!log) {
       continue;
     }
-    for (var j = 0; j < log.length; ++j) {
+    for (let j = 0; j < log.length; ++j) {
       addPeerConnectionUpdate(peerConnection, log[j]);
     }
   }
@@ -326,7 +435,7 @@ function updateAllPeerConnections(data) {
 /**
  * Handles the report of stats originating from the standard getStats() API.
  *
- * @param {!Object} data The object containing pid, lid, and reports, where
+ * @param {!Object} data The object containing rid, lid, and reports, where
  *     reports is an array of stats reports. Each report contains id, type,
  *     and stats, where stats is the object containing timestamp and values,
  *     which is an array of strings, whose even index entry is the name of the
@@ -336,7 +445,7 @@ function addStandardStats(data) {
   if (currentGetStatsMethod != OPTION_GETSTATS_STANDARD) {
     return;  // Obsolete!
   }
-  var peerConnectionElement = $(getPeerConnectionId(data));
+  const peerConnectionElement = $(getPeerConnectionId(data));
   if (!peerConnectionElement) {
     return;
   }
@@ -349,17 +458,72 @@ function addStandardStats(data) {
   const r = StatsReport.fromInternalsReportList(data.reports);
   statsRatesCalculator.addStatsReport(r);
   data.reports = statsRatesCalculator.currentReport.toInternalsReportList();
-  for (var i = 0; i < data.reports.length; ++i) {
-    var report = data.reports[i];
+  for (let i = 0; i < data.reports.length; ++i) {
+    const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, false);
+  }
+  // Determine currently connected candidate pair.
+  const stats = r.statsById;
+
+  let activeCandidatePair = null;
+  let remoteCandidate = null;
+  let localCandidate = null;
+
+  // Get the first active candidate pair. This ignores the rare case of
+  // non-bundled connections.
+  stats.forEach(report => {
+    if (report.type === 'transport' && !activeCandidatePair) {
+      activeCandidatePair = stats.get(report.selectedCandidatePairId);
+    }
+  });
+
+  const candidateElement = peerConnectionElement
+    .getElementsByClassName('candidatepair')[0].firstElementChild;
+  if (activeCandidatePair) {
+    if (activeCandidatePair.remoteCandidateId) {
+      remoteCandidate = stats.get(activeCandidatePair.remoteCandidateId);
+    }
+    if (activeCandidatePair.localCandidateId) {
+      localCandidate = stats.get(activeCandidatePair.localCandidateId);
+    }
+    if (localCandidate && localCandidate.address &&
+        localCandidate.address.indexOf(':') !== -1) {
+      // Show IPv6 in []
+      candidateElement.innerText =
+          '[' + localCandidate.address + ']:' + localCandidate.port
+          + ' <=> [' + remoteCandidate.address + ']:' + remoteCandidate.port;
+    } else {
+      candidateElement.innerText =
+          localCandidate.address + ':' + localCandidate.port
+          + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
+    }
+
+    const statsContainer =
+        document.getElementById(peerConnectionElement.id + '-table-container');
+    const activeConnectionClass = 'stats-table-active-connection';
+    statsContainer.childNodes.forEach(node => {
+      if (node.nodeName !== 'DETAILS') {
+        return;
+      }
+      const innerText = node.firstElementChild.innerText;
+      if (innerText.startsWith(activeCandidatePair.id)
+          || innerText.startsWith(localCandidate.id)
+          || innerText.startsWith(remoteCandidate.id)) {
+        node.classList.add(activeConnectionClass);
+      } else {
+        node.classList.remove(activeConnectionClass);
+      }
+    });
+  } else {
+    candidateElement.innerText = '(not connected)';
   }
 }
 
 /**
  * Handles the report of stats originating from the legacy getStats() API.
  *
- * @param {!Object} data The object containing pid, lid, and reports, where
+ * @param {!Object} data The object containing rid, lid, and reports, where
  *     reports is an array of stats reports. Each report contains id, type,
  *     and stats, where stats is the object containing timestamp and values,
  *     which is an array of strings, whose even index entry is the name of the
@@ -369,13 +533,13 @@ function addLegacyStats(data) {
   if (currentGetStatsMethod != OPTION_GETSTATS_LEGACY) {
     return;  // Obsolete!
   }
-  var peerConnectionElement = $(getPeerConnectionId(data));
+  const peerConnectionElement = $(getPeerConnectionId(data));
   if (!peerConnectionElement) {
     return;
   }
 
-  for (var i = 0; i < data.reports.length; ++i) {
-    var report = data.reports[i];
+  for (let i = 0; i < data.reports.length; ++i) {
+    const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, true);
   }
@@ -395,7 +559,7 @@ function addGetUserMedia(data) {
     tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
   }
 
-  var requestDiv = document.createElement('div');
+  const requestDiv = document.createElement('div');
   requestDiv.className = 'user-media-request-div-class';
   requestDiv.rid = data.rid;
   $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
@@ -419,19 +583,19 @@ function addGetUserMedia(data) {
  * @param {!Object} data The object containing rid {number}, the render id.
  */
 function removeGetUserMediaForRenderer(data) {
-  for (var i = userMediaRequests.length - 1; i >= 0; --i) {
-    if (userMediaRequests[i].rid == data.rid) {
+  for (let i = userMediaRequests.length - 1; i >= 0; --i) {
+    if (userMediaRequests[i].rid === data.rid) {
       userMediaRequests.splice(i, 1);
     }
   }
 
-  var requests = $(USER_MEDIA_TAB_ID).childNodes;
-  for (var i = 0; i < requests.length; ++i) {
-    if (requests[i].rid == data.rid) {
+  const requests = $(USER_MEDIA_TAB_ID).childNodes;
+  for (let i = 0; i < requests.length; ++i) {
+    if (requests[i].rid === data.rid) {
       $(USER_MEDIA_TAB_ID).removeChild(requests[i]);
     }
   }
-  if ($(USER_MEDIA_TAB_ID).childNodes.length == 0) {
+  if ($(USER_MEDIA_TAB_ID).childNodes.length === 0) {
     tabView.removeTab(USER_MEDIA_TAB_ID);
   }
 }
@@ -452,32 +616,4 @@ function audioDebugRecordingsFileSelectionCancelled() {
  */
 function eventLogRecordingsFileSelectionCancelled() {
   dumpCreator.clearEventLogRecordingsCheckbox();
-}
-
-
-/**
- * Notification that audio debug recordings are enabled. Used e.g. on page load
- * to update the UI to reflect the recording state.
- */
-function setAudioDebugRecordingsEnabled() {
-  dumpCreator.setAudioDebugRecordingsCheckbox();
-}
-
-
-/**
- * Notification that event log recordings are enabled. Used e.g. on page load
- * to update the UI to reflect the recording state.
- */
-function setEventLogRecordingsEnabled() {
-  dumpCreator.setEventLogRecordingsCheckbox();
-}
-
-
-/**
- * Notification that event log recordings may be turned off/on by the user.
- * Used e.g. on page load to update the UI to reflect the recording state's
- * mutability.
- */
-function setEventLogRecordingsToggleability(isToggleable) {
-  dumpCreator.setEventLogRecordingsCheckboxMutability(isToggleable);
 }

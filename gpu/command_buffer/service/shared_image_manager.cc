@@ -20,6 +20,15 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/trace_util.h"
 
+#if defined(OS_ANDROID)
+#include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
+#endif
+
+#if defined(OS_WIN)
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "ui/gl/gl_angle_util_win.h"
+#endif
+
 #if DCHECK_IS_ON()
 #define CALLED_ON_VALID_THREAD()                      \
   do {                                                \
@@ -47,33 +56,47 @@ bool operator<(const std::unique_ptr<SharedImageBacking>& lhs,
   return lhs->mailbox() < rhs;
 }
 
-class SharedImageManager::AutoLock {
+class SCOPED_LOCKABLE SharedImageManager::AutoLock {
  public:
   explicit AutoLock(SharedImageManager* manager)
+      EXCLUSIVE_LOCK_FUNCTION(manager->lock_)
       : start_time_(base::TimeTicks::Now()),
         auto_lock_(manager->is_thread_safe() ? &manager->lock_.value()
                                              : nullptr) {
     if (manager->is_thread_safe()) {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "GPU.SharedImageManager.TimeToAcquireLock",
-          base::TimeTicks::Now() - start_time_,
-          base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(1),
-          50);
+          base::TimeTicks::Now() - start_time_, base::Microseconds(1),
+          base::Seconds(1), 50);
     }
   }
 
-  ~AutoLock() = default;
+  AutoLock(const AutoLock&) = delete;
+  AutoLock& operator=(const AutoLock&) = delete;
+
+  ~AutoLock() UNLOCK_FUNCTION() = default;
 
  private:
   base::TimeTicks start_time_;
   base::AutoLockMaybe auto_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLock);
 };
 
-SharedImageManager::SharedImageManager(bool thread_safe) {
+SharedImageManager::SharedImageManager(bool thread_safe,
+                                       bool display_context_on_another_thread)
+    : display_context_on_another_thread_(display_context_on_another_thread) {
+  DCHECK(!display_context_on_another_thread || thread_safe);
   if (thread_safe)
     lock_.emplace();
+#if defined(OS_ANDROID)
+  batch_access_manager_ = std::make_unique<SharedImageBatchAccessManager>();
+#endif
+#if defined(OS_WIN)
+  auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+  if (d3d11_device) {
+    dxgi_shared_handle_manager_ =
+        base::MakeRefCounted<DXGISharedHandleManager>(std::move(d3d11_device));
+  }
+#endif
   CALLED_ON_VALID_THREAD();
 }
 
@@ -92,17 +115,19 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   DCHECK(backing->mailbox().IsSharedImage());
 
   AutoLock autolock(this);
-  const auto lower_bound = images_.lower_bound(backing->mailbox());
-  if (lower_bound != images_.end() &&
-      (*lower_bound)->mailbox() == backing->mailbox()) {
+  if (images_.find(backing->mailbox()) != images_.end()) {
     LOG(ERROR) << "SharedImageManager::Register: Trying to register an "
                   "already registered mailbox.";
     return nullptr;
   }
 
+  // TODO(jonross): Determine how the direct destruction of a
+  // SharedImageRepresentationFactoryRef leads to ref-counting issues as
+  // well as thread-checking failures in tests.
   auto factory_ref = std::make_unique<SharedImageRepresentationFactoryRef>(
       this, backing.get(), tracker);
-  images_.emplace_hint(lower_bound, std::move(backing));
+  images_.emplace(std::move(backing));
+
   return factory_ref;
 }
 
@@ -216,7 +241,8 @@ std::unique_ptr<SharedImageRepresentationSkia> SharedImageManager::ProduceSkia(
 std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
-    WGPUDevice device) {
+    WGPUDevice device,
+    WGPUBackendType backend_type) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -227,7 +253,8 @@ std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceDawn(this, tracker, device);
+  auto representation =
+      (*found)->ProduceDawn(this, tracker, device, backend_type);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
                   "Dawn representation from an incompatible mailbox.";
@@ -260,27 +287,98 @@ SharedImageManager::ProduceOverlay(const gpu::Mailbox& mailbox,
   return representation;
 }
 
+std::unique_ptr<SharedImageRepresentationVaapi>
+SharedImageManager::ProduceVASurface(const Mailbox& mailbox,
+                                     MemoryTypeTracker* tracker,
+                                     VaapiDependenciesFactory* dep_factory) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceVASurface: Trying to produce a "
+                  "VA-API representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  auto representation = (*found)->ProduceVASurface(this, tracker, dep_factory);
+
+  if (!representation) {
+    LOG(ERROR) << "SharedImageManager::ProduceVASurface: Trying to produce a "
+                  "VA-API representation from an incompatible mailbox.";
+    return nullptr;
+  }
+  return representation;
+}
+
+std::unique_ptr<SharedImageRepresentationMemory>
+SharedImageManager::ProduceMemory(const Mailbox& mailbox,
+                                  MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceMemory: Trying to Produce a "
+                  "Memory representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  // This is expected to fail based on the SharedImageBacking type, so don't log
+  // error here. Caller is expected to handle nullptr.
+  return (*found)->ProduceMemory(this, tracker);
+}
+
+std::unique_ptr<SharedImageRepresentationRaster>
+SharedImageManager::ProduceRaster(const Mailbox& mailbox,
+                                  MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceRaster: Trying to Produce a "
+                  "Raster representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  // This is expected to fail based on the SharedImageBacking type, so don't log
+  // error here. Caller is expected to handle nullptr.
+  return (*found)->ProduceRaster(this, tracker);
+}
+
 void SharedImageManager::OnRepresentationDestroyed(
     const Mailbox& mailbox,
     SharedImageRepresentation* representation) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
-    LOG(ERROR) << "SharedImageManager::OnRepresentationDestroyed: Trying to "
-                  "destroy a non existent mailbox.";
-    return;
+
+  {
+    auto found = images_.find(mailbox);
+    if (found == images_.end()) {
+      LOG(ERROR) << "SharedImageManager::OnRepresentationDestroyed: Trying to "
+                    "destroy a non existent mailbox.";
+      return;
+    }
+
+    // TODO(piman): When the original (factory) representation is destroyed, we
+    // should treat the backing as pending destruction and prevent additional
+    // representations from being created. This will help avoid races due to a
+    // consumer getting lucky with timing due to a representation inadvertently
+    // extending a backing's lifetime.
+    (*found)->ReleaseRef(representation);
   }
 
-  // TODO(piman): When the original (factory) representation is destroyed, we
-  // should treat the backing as pending destruction and prevent additional
-  // representations from being created. This will help avoid races due to a
-  // consumer getting lucky with timing due to a representation inadvertently
-  // extending a backing's lifetime.
-  (*found)->ReleaseRef(representation);
-  if (!(*found)->HasAnyRefs())
-    images_.erase(found);
+  {
+    // TODO(jonross): Once the pending destruction TODO above is addressed then
+    // this block can be removed, and the deletion can occur directly. Currently
+    // SharedImageManager::OnRepresentationDestroyed can be nested, so we need
+    // to get the iterator again.
+    auto found = images_.find(mailbox);
+    if (found != images_.end() && (!(*found)->HasAnyRefs()))
+      images_.erase(found);
+  }
 }
 
 void SharedImageManager::OnMemoryDump(const Mailbox& mailbox,
@@ -322,6 +420,31 @@ void SharedImageManager::OnMemoryDump(const Mailbox& mailbox,
   // Allow the SharedImageBacking to attach additional data to the dump
   // or dump additional sub-paths.
   backing->OnMemoryDump(dump_name, dump, pmd, client_tracing_id);
+}
+
+scoped_refptr<gfx::NativePixmap> SharedImageManager::GetNativePixmap(
+    const gpu::Mailbox& mailbox) {
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end())
+    return nullptr;
+  return (*found)->GetNativePixmap();
+}
+
+bool SharedImageManager::BeginBatchReadAccess() {
+#if defined(OS_ANDROID)
+  return batch_access_manager_->BeginBatchReadAccess();
+#else
+  return true;
+#endif
+}
+
+bool SharedImageManager::EndBatchReadAccess() {
+#if defined(OS_ANDROID)
+  return batch_access_manager_->EndBatchReadAccess();
+#else
+  return true;
+#endif
 }
 
 }  // namespace gpu

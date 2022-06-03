@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.omaha;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
-import android.support.test.espresso.intent.Intents;
-import android.support.test.espresso.intent.matcher.IntentMatchers;
-import android.support.test.filters.MediumTest;
+import android.os.Build;
+
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -20,20 +22,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.ui.appmenu.TestAppMenuObserver;
-import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -141,15 +143,11 @@ public class UpdateMenuItemHelperTest {
     }
 
     private void versionNumbersQueried() {
-        CriteriaHelper.pollInstrumentationThread(
-                new Criteria() {
-                    @Override
-                    public boolean isSatisfied() {
-                        return mMockVersionNumberGetter.askedForCurrentVersion()
-                                && mMockVersionNumberGetter.askedForLatestVersion();
-                    }
-                },
-                MS_TIMEOUT, MS_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    mMockVersionNumberGetter.askedForCurrentVersion(), Matchers.is(true));
+            Criteria.checkThat(mMockVersionNumberGetter.askedForLatestVersion(), Matchers.is(true));
+        }, MS_TIMEOUT, MS_INTERVAL);
     }
 
     /**
@@ -159,8 +157,9 @@ public class UpdateMenuItemHelperTest {
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertTrue("Update menu item is not showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNotNull("Update menu item is not showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     /**
@@ -170,14 +169,14 @@ public class UpdateMenuItemHelperTest {
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertFalse("Update menu item is showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNull("Update menu item is showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @RetryOnFailure
     // TODO(https://crbug.com/965106): Fix tests when InlineUpdateFlow is enabled.
     @DisableFeatures("InlineUpdateFlow")
     public void testCurrentVersionIsOlder() throws Exception {
@@ -187,7 +186,8 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @RetryOnFailure
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1256725")
     public void testCurrentVersionIsSame() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "1.2.3.4");
     }
@@ -195,6 +195,8 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1256725")
     public void testCurrentVersionIsNewer() throws Exception {
         checkUpdateMenuItemIsNotShowing("27.0.1453.42", "26.0.1410.49");
     }
@@ -202,7 +204,8 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
-    @RetryOnFailure
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1256725")
     public void testNoVersionKnown() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "0");
     }
@@ -211,7 +214,6 @@ public class UpdateMenuItemHelperTest {
     @MediumTest
     @Feature({"Omaha"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @RetryOnFailure
     // TODO(https://crbug.com/965106): Fix tests when InlineUpdateFlow is enabled.
     @DisableFeatures("InlineUpdateFlow")
     public void testMenuItemNotShownInOverview() throws Exception {
@@ -229,8 +231,9 @@ public class UpdateMenuItemHelperTest {
 
         // Make sure the item is not shown in tab switcher app menu.
         showAppMenuAndAssertMenuShown();
-        Assert.assertFalse("Update menu item is showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNull("Update menu item is showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     @Test
@@ -296,8 +299,7 @@ public class UpdateMenuItemHelperTest {
     private void showAppMenuAndAssertMenuShown() throws TimeoutException {
         int currentCallCount = mMenuObserver.menuShownCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(
-                    mActivityTestRule.getAppMenuCoordinator(), null, false, false);
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
         mMenuObserver.menuShownCallback.waitForCallback(currentCallCount);
     }
@@ -327,13 +329,8 @@ public class UpdateMenuItemHelperTest {
     }
 
     private void waitForAppMenuDimissedRunnable() {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return UpdateMenuItemHelper.getInstance()
-                        .getMenuDismissedRunnableExecutedForTests();
-            }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            return UpdateMenuItemHelper.getInstance().getMenuDismissedRunnableExecutedForTests();
         });
     }
 }
-

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
@@ -27,6 +26,12 @@ constexpr const ConnectionPriority kTestConnectionPriority =
     ConnectionPriority::kLow;
 
 class SecureChannelBleInitiatorOperationTest : public testing::Test {
+ public:
+  SecureChannelBleInitiatorOperationTest(
+      const SecureChannelBleInitiatorOperationTest&) = delete;
+  SecureChannelBleInitiatorOperationTest& operator=(
+      const SecureChannelBleInitiatorOperationTest&) = delete;
+
  protected:
   SecureChannelBleInitiatorOperationTest()
       : device_id_pair_(kTestRemoteDeviceId, kTestLocalDeviceId) {}
@@ -38,7 +43,7 @@ class SecureChannelBleInitiatorOperationTest : public testing::Test {
     fake_ble_connection_manager_ = std::make_unique<FakeBleConnectionManager>();
 
     auto test_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    operation_ = BleInitiatorOperation::Factory::Get()->BuildInstance(
+    operation_ = BleInitiatorOperation::Factory::Create(
         fake_ble_connection_manager_.get(),
         base::BindOnce(&SecureChannelBleInitiatorOperationTest::
                            OnSuccessfulConnectionAttempt,
@@ -103,11 +108,9 @@ class SecureChannelBleInitiatorOperationTest : public testing::Test {
   DeviceIdPair device_id_pair_;
 
   std::unique_ptr<AuthenticatedChannel> channel_from_callback_;
-  base::Optional<BleInitiatorFailureType> failure_type_from_callback_;
+  absl::optional<BleInitiatorFailureType> failure_type_from_callback_;
 
   std::unique_ptr<ConnectToDeviceOperation<BleInitiatorFailureType>> operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleInitiatorOperationTest);
 };
 
 TEST_F(SecureChannelBleInitiatorOperationTest, UpdateThenFail) {

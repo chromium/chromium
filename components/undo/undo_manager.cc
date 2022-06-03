@@ -4,10 +4,11 @@
 
 #include "components/undo/undo_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/undo/undo_manager_observer.h"
@@ -68,13 +69,13 @@ void UndoManager::Redo() {
   Undo(&performing_redo_, &redo_actions_);
 }
 
-base::string16 UndoManager::GetUndoLabel() const {
+std::u16string UndoManager::GetUndoLabel() const {
   return l10n_util::GetStringUTF16(
       undo_actions_.empty() ? IDS_BOOKMARK_BAR_UNDO
                             : undo_actions_.back()->get_undo_label_id());
 }
 
-base::string16 UndoManager::GetRedoLabel() const {
+std::u16string UndoManager::GetRedoLabel() const {
   return l10n_util::GetStringUTF16(
       redo_actions_.empty() ? IDS_BOOKMARK_BAR_REDO
                             : redo_actions_.back()->get_redo_label_id());
@@ -98,7 +99,7 @@ void UndoManager::AddUndoOperation(std::unique_ptr<UndoOperation> operation) {
 
 void UndoManager::StartGroupingActions() {
   if (!group_actions_count_)
-    pending_grouped_action_.reset(new UndoGroup());
+    pending_grouped_action_ = std::make_unique<UndoGroup>();
   ++group_actions_count_;
 }
 

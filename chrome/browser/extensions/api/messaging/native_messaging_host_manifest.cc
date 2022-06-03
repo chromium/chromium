@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/check.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
@@ -51,19 +51,19 @@ std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
   std::unique_ptr<base::Value> parsed =
       deserializer.Deserialize(NULL, error_message);
   if (!parsed) {
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
   base::DictionaryValue* dictionary;
   if (!parsed->GetAsDictionary(&dictionary)) {
     *error_message = "Invalid manifest file.";
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
   std::unique_ptr<NativeMessagingHostManifest> result(
       new NativeMessagingHostManifest());
   if (!result->Parse(dictionary, error_message)) {
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
   return result;
@@ -110,14 +110,12 @@ bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
     return false;
   }
   allowed_origins_.ClearPatterns();
-  for (auto it = allowed_origins_list->begin();
-       it != allowed_origins_list->end(); ++it) {
-    std::string pattern_string;
-    if (!it->GetAsString(&pattern_string)) {
+  for (const auto& entry : allowed_origins_list->GetList()) {
+    if (!entry.is_string()) {
       *error_message = "allowed_origins must be list of strings.";
       return false;
     }
-
+    std::string pattern_string = entry.GetString();
     URLPattern pattern(URLPattern::SCHEME_EXTENSION);
     URLPattern::ParseResult result = pattern.Parse(pattern_string);
     if (result != URLPattern::ParseResult::kSuccess) {

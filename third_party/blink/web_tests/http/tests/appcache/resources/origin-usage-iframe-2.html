@@ -1,8 +1,0 @@
-<html manifest="origin-usage-iframe-2.manifest">
-<script>
-// iframe-2 is expected to fail due to exceeding the origin quota.
-applicationCache.oncached = function() { parent.postMessage("PASS - cached iframe-2", "*"); };
-applicationCache.onerror = function() { parent.postMessage("FAIL - error caching iframe-2", "*"); };
-applicationCache.onnoupdate = function() { parent.postMessage("FAIL - no update iframe-2, all caches should have been deleted before this test", "*"); };
-</script>
-</html>

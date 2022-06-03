@@ -46,6 +46,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
       const base::android::JavaRef<
           jobject>& /* ChromeBluetoothDevice */ chrome_bluetooth_device);
 
+  BluetoothRemoteGattCharacteristicAndroid(
+      const BluetoothRemoteGattCharacteristicAndroid&) = delete;
+  BluetoothRemoteGattCharacteristicAndroid& operator=(
+      const BluetoothRemoteGattCharacteristicAndroid&) = delete;
+
   ~BluetoothRemoteGattCharacteristicAndroid() override;
 
   // Returns the associated ChromeBluetoothRemoteGattCharacteristic Java object.
@@ -63,11 +68,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
       const std::string& identifier) const override;
   std::vector<BluetoothRemoteGattDescriptor*> GetDescriptorsByUUID(
       const BluetoothUUID& uuid) const override;
-  void ReadRemoteCharacteristic(ValueCallback callback,
-                                ErrorCallback error_callback) override;
+  void ReadRemoteCharacteristic(ValueCallback callback) override;
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+                                 WriteType write_type,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) override;
+  void DeprecatedWriteRemoteCharacteristic(
+      const std::vector<uint8_t>& value,
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override;
 
   // Called when value changed event occurs.
   void OnChanged(JNIEnv* env,
@@ -108,6 +117,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
       ErrorCallback error_callback) override;
 
  private:
+  // Android API characteristic write type flags.
+  // https://developer.android.com/reference/android/bluetooth/BluetoothGattCharacteristic.html
+  enum class AndroidWriteType {
+    kNone = 0,
+    kNoResponse = 1 << 0,
+    kDefault = 1 << 1,
+    kSigned = 1 << 2,
+  };
+
   BluetoothRemoteGattCharacteristicAndroid(
       BluetoothAdapterAndroid* adapter,
       BluetoothRemoteGattServiceAndroid* service,
@@ -128,10 +146,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
   // Adapter unique instance ID.
   std::string instance_id_;
 
-  // ReadRemoteCharacteristic callbacks and pending state.
+  // ReadRemoteCharacteristic callback and pending state.
   bool read_pending_ = false;
   ValueCallback read_callback_;
-  ErrorCallback read_error_callback_;
 
   // WriteRemoteCharacteristic callbacks and pending state.
   bool write_pending_ = false;
@@ -139,8 +156,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
   ErrorCallback write_error_callback_;
 
   std::vector<uint8_t> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicAndroid);
 };
 
 }  // namespace device

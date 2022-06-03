@@ -11,13 +11,13 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -87,7 +87,7 @@ void CertificateImporterImpl::RunTaskOnIOTaskRunnerAndCallDoneCallback(
 void CertificateImporterImpl::RunDoneCallback(DoneCallback callback,
                                               bool success) {
   if (!success)
-    NET_LOG_ERROR("ONC Certificate Import Error", "");
+    NET_LOG(ERROR) << "ONC Certificate Import Error";
   std::move(callback).Run(success);
 }
 
@@ -143,7 +143,7 @@ bool CertificateImporterImpl::StoreServerOrCaCertificateUserInitiated(
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           certificate.certificate().get());
   if (!x509_cert.get()) {
-    LOG(ERROR) << "Unable to create certificate: " << certificate.guid();
+    NET_LOG(ERROR) << "Unable to create certificate: " << certificate.guid();
     return false;
   }
 
@@ -172,9 +172,9 @@ bool CertificateImporterImpl::StoreServerOrCaCertificateUserInitiated(
         success = nssdb->SetCertTrust(x509_cert.get(), net_cert_type, trust);
       }
       if (!success) {
-        LOG(ERROR) << "Certificate " << certificate.guid()
-                   << " was already present, but trust couldn't be set."
-                   << error_reason;
+        NET_LOG(ERROR) << "Certificate id: " << certificate.guid()
+                       << " was already present, but trust couldn't be set: "
+                       << error_reason;
       }
     }
   } else {
@@ -190,14 +190,14 @@ bool CertificateImporterImpl::StoreServerOrCaCertificateUserInitiated(
 
     if (!failures.empty()) {
       std::string error_string = net::ErrorToString(failures[0].net_error);
-      LOG(ERROR) << "Error ( " << error_string << " ) importing certificate "
-                 << certificate.guid();
+      NET_LOG(ERROR) << "Error ( " << error_string
+                     << " ) importing certificate: " << certificate.guid();
       return false;
     }
 
     if (!success) {
-      LOG(ERROR) << "Unknown error importing certificate "
-                 << certificate.guid();
+      NET_LOG(ERROR) << "Unknown error importing certificate: "
+                     << certificate.guid();
       return false;
     }
   }
@@ -218,24 +218,25 @@ bool CertificateImporterImpl::StoreClientCertificate(
 
   int import_result =
       nssdb->ImportFromPKCS12(private_slot.get(), certificate.pkcs12_data(),
-                              base::string16(), false, &imported_certs);
+                              std::u16string(), false, &imported_certs);
   if (import_result != net::OK) {
     std::string error_string = net::ErrorToString(import_result);
-    LOG(ERROR) << "Unable to import client certificate with guid "
-               << certificate.guid() << ", error: " << error_string;
+    NET_LOG(ERROR) << "Unable to import client certificate with guid: "
+                   << certificate.guid() << ", error: " << error_string;
     return false;
   }
 
   if (imported_certs.size() == 0) {
-    LOG(WARNING) << "PKCS12 data contains no importable certificates for guid "
-                 << certificate.guid();
+    NET_LOG(ERROR)
+        << "PKCS12 data contains no importable certificates for guid: "
+        << certificate.guid();
     return true;
   }
 
   if (imported_certs.size() != 1) {
-    LOG(WARNING) << "PKCS12 data for guid " << certificate.guid()
-                 << " contains more than one certificate. "
-                    "Only the first one will be imported.";
+    NET_LOG(ERROR) << "PKCS12 data for guid: " << certificate.guid()
+                   << " contains more than one certificate."
+                   << " Only the first one will be imported.";
   }
 
   CERTCertificate* cert_result = imported_certs[0].get();
@@ -250,8 +251,8 @@ bool CertificateImporterImpl::StoreClientCertificate(
                                const_cast<char*>(certificate.guid().c_str()));
     SECKEY_DestroyPrivateKey(private_key);
   } else {
-    LOG(WARNING) << "Unable to find private key for certificate "
-                 << certificate.guid();
+    NET_LOG(ERROR) << "Unable to find private key for certificate: "
+                   << certificate.guid();
   }
   return true;
 }

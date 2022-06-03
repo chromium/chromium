@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_INTERNAL_NOOP_NOTIFICATION_SCHEDULE_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/user_action_handler.h"
@@ -19,6 +18,10 @@ class NoopNotificationScheduleService
       public UserActionHandler {
  public:
   NoopNotificationScheduleService();
+  NoopNotificationScheduleService(const NoopNotificationScheduleService&) =
+      delete;
+  NoopNotificationScheduleService& operator=(
+      const NoopNotificationScheduleService&) = delete;
   ~NoopNotificationScheduleService() override;
 
  private:
@@ -39,8 +42,6 @@ class NoopNotificationScheduleService
 
   // UserActionHandler implementation.
   void OnUserAction(const UserActionData& action_data) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NoopNotificationScheduleService);
 };
 
 }  // namespace notifications

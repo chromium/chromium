@@ -1,0 +1,7 @@
+This test verifies the touch event target rects are updated correctly when an element transfroms without causing layout.
+
+[object HTMLDivElement]: layer(1200x900) has hit test rect (150,150 75x75)
+
+[object HTMLDivElement]: layer(1200x900) has hit test rect (225,150 75x75)
+
+

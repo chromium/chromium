@@ -25,7 +25,6 @@ namespace test {
 //
 //   FakeFidoDiscoveryFactory factory;
 //   auto* fake_hid_discovery = factory.ForgeNextHidDiscovery();
-//   auto* fake_ble_discovery = factory.ForgeNextBleDiscovery();
 //
 //   // Pass the factory to the client or replace it globally:
 //   content::AuthenticatorEnvironment::GetInstance()
@@ -36,20 +35,15 @@ namespace test {
 //   // fido_device_discovery_->Create(
 //   //     FidoTransportProtocol::kUsbHumanInterfaceDevice)
 //   // hid_instance->Start();
-//   // fido_device_discovery_->Create(
-//   //     FidoTransportProtocol::kBluetoothLowEnergy)
-//   // ble_instance->Start();
 //
 //   // Wait, i.e. spin the message loop until the fake discoveries are started.
 //   fake_hid_discovery->WaitForCallToStart();
-//   fake_ble_discovery->WaitForCallToStart();
 //
 //   // Add devices to be discovered immediately.
 //   fake_hid_discovery->AddDevice(std::make_unique<MockFidoDevice>(...));
 //
-//   // Start discoveries (HID succeeds, BLE fails).
+//   // Start discoveries (HID succeeds).
 //   fake_hid_discovery->SimulateStart(true /* success */);
-//   fake_ble_discovery->SimulateStart(false /* success */);
 //
 //   // Add devices discovered after doing some heavy lifting.
 //   fake_hid_discovery->AddDevice(std::make_unique<MockFidoDevice>(...));
@@ -70,7 +64,9 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
 
   explicit FakeFidoDiscovery(FidoTransportProtocol transport,
                              StartMode mode = StartMode::kManual);
-  ~FakeFidoDiscovery() override;
+
+  FakeFidoDiscovery(const FakeFidoDiscovery&) = delete;
+  FakeFidoDiscovery& operator=(const FakeFidoDiscovery&) = delete;
 
   // Blocks until start is requested.
   void WaitForCallToStart();
@@ -92,8 +88,6 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
 
   const StartMode mode_;
   base::RunLoop wait_for_start_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscovery);
 };
 
 // Overrides FidoDeviceDiscovery::Create* to construct FakeFidoDiscoveries.
@@ -102,6 +96,10 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   using StartMode = FakeFidoDiscovery::StartMode;
 
   FakeFidoDiscoveryFactory();
+
+  FakeFidoDiscoveryFactory(const FakeFidoDiscoveryFactory&) = delete;
+  FakeFidoDiscoveryFactory& operator=(const FakeFidoDiscoveryFactory&) = delete;
+
   ~FakeFidoDiscoveryFactory() override;
 
   // Constructs a fake discovery to be returned from the next call to
@@ -112,24 +110,20 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   // FidoDeviceDiscovery::Create with the respective transport.
   FakeFidoDiscovery* ForgeNextHidDiscovery(StartMode mode = StartMode::kManual);
   FakeFidoDiscovery* ForgeNextNfcDiscovery(StartMode mode = StartMode::kManual);
-  FakeFidoDiscovery* ForgeNextBleDiscovery(StartMode mode = StartMode::kManual);
   FakeFidoDiscovery* ForgeNextCableDiscovery(
       StartMode mode = StartMode::kManual);
   FakeFidoDiscovery* ForgeNextPlatformDiscovery(
       StartMode mode = StartMode::kManual);
 
   // device::FidoDiscoveryFactory:
-  std::unique_ptr<FidoDiscoveryBase> Create(
+  std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport) override;
 
  private:
   std::unique_ptr<FakeFidoDiscovery> next_hid_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_nfc_discovery_;
-  std::unique_ptr<FakeFidoDiscovery> next_ble_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_cable_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_platform_discovery_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscoveryFactory);
 };
 
 }  // namespace test

@@ -1,7 +1,7 @@
 include_rules = [
     "+base/containers/queue.h",
     "+base/strings/string_piece.h",
-    "+base/task_runner_util.h",
+    "+base/task/task_runner_util.h",
     "+base/threading/thread_task_runner_handle.h",
     "+cc/paint",
     "+media",

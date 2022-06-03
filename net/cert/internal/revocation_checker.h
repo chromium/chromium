@@ -6,6 +6,7 @@
 #define NET_CERT_INTERNAL_REVOCATION_CHECKER_H_
 
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/parsed_certificate.h"
@@ -30,8 +31,7 @@ struct OCSPVerifyResult;
 //
 // Use 7 days as the max allowable leaf revocation status age, which is
 // sufficient for both CRL and OCSP, and which aligns with Microsoft policies.
-constexpr base::TimeDelta kMaxRevocationLeafUpdateAge =
-    base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMaxRevocationLeafUpdateAge = base::Days(7);
 
 // Baseline Requirements 1.6.5, section 4.9.7:
 //     For the status of Subordinate CA Certificates: The CA SHALL update and
@@ -48,8 +48,7 @@ constexpr base::TimeDelta kMaxRevocationLeafUpdateAge =
 //
 // Use 366 days to allow for leap years, though it is overly permissive in
 // other years.
-constexpr base::TimeDelta kMaxRevocationIntermediateUpdateAge =
-    base::TimeDelta::FromDays(366);
+constexpr base::TimeDelta kMaxRevocationIntermediateUpdateAge = base::Days(366);
 
 // RevocationPolicy describes how revocation should be carried out for a
 // particular chain.

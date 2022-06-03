@@ -61,6 +61,8 @@
 ">="
 "!"
 "~"
+"#"
+".#"
 
 # Keywords, contextual keywords, literals, reserved words.
 "__proto__"

@@ -9,13 +9,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
+#include "base/callback_helpers.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
+
 namespace settings {
 
 PluginVmHandler::PluginVmHandler(Profile* profile) : profile_(profile) {}
@@ -23,49 +24,38 @@ PluginVmHandler::PluginVmHandler(Profile* profile) : profile_(profile) {}
 PluginVmHandler::~PluginVmHandler() = default;
 
 void PluginVmHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "getPluginVmSharedPathsDisplayText",
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "isRelaunchNeededForNewPermissions",
       base::BindRepeating(
-          &PluginVmHandler::HandleGetPluginVmSharedPathsDisplayText,
-          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "removePluginVmSharedPath",
-      base::BindRepeating(&PluginVmHandler::HandleRemovePluginVmSharedPath,
-                          weak_ptr_factory_.GetWeakPtr()));
+          &PluginVmHandler::HandleIsRelaunchNeededForNewPermissions,
+          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "relaunchPluginVm",
+      base::BindRepeating(&PluginVmHandler::HandleRelaunchPluginVm,
+                          base::Unretained(this)));
 }
 
-void PluginVmHandler::HandleGetPluginVmSharedPathsDisplayText(
+void PluginVmHandler::OnJavascriptAllowed() {}
+
+void PluginVmHandler::OnJavascriptDisallowed() {}
+
+void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
-  std::string callback_id = args->GetList()[0].GetString();
 
-  base::ListValue texts;
-  for (const auto& path : args->GetList()[1].GetList()) {
-    texts.AppendString(file_manager::util::GetPathDisplayTextForSettings(
-        profile_, path.GetString()));
-  }
-  ResolveJavascriptCallback(base::Value(callback_id), texts);
+  CHECK_EQ(1U, args->GetList().size());
+  bool requires_relaunch =
+      plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
+          ->IsRelaunchNeededForNewPermissions();
+  ResolveJavascriptCallback(
+      /*callback_id=*/base::Value(args->GetList()[0].GetString()),
+      base::Value(requires_relaunch));
 }
 
-void PluginVmHandler::HandleRemovePluginVmSharedPath(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  std::string vm_name = args->GetList()[0].GetString();
-  std::string path = args->GetList()[1].GetString();
-
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnsharePath(
-      vm_name, base::FilePath(path),
-      /*unpersist=*/true,
-      base::BindOnce(
-          [](const std::string& path, bool result,
-             const std::string& failure_reason) {
-            if (!result) {
-              LOG(ERROR) << "Error unsharing " << path << ": "
-                         << failure_reason;
-            }
-          },
-          path));
+void PluginVmHandler::HandleRelaunchPluginVm(const base::ListValue* args) {
+  CHECK_EQ(0U, args->GetList().size());
+  plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
+      ->RelaunchPluginVm();
 }
 
 }  // namespace settings

@@ -1,9 +1,0 @@
-Tests throwing an exception during registration of constructor
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL document.registerElement("x-a", {prototype: proto}) should throw Exception thrown from getter. Threw exception TypeError: document.registerElement is not a function.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

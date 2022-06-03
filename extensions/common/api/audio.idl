@@ -4,7 +4,8 @@
 
 // The <code>chrome.audio</code> API is provided to allow users to
 // get information about and control the audio devices attached to the
-// system. This API is currently only implemented for ChromeOS.
+// system.
+// This API is currently only available in kiosk mode for ChromeOS.
 namespace audio {
 
   // Type of stream an audio device provides.
@@ -29,6 +30,7 @@ namespace audio {
     LINEOUT,
     POST_MIX_LOOPBACK,
     POST_DSP_LOOPBACK,
+    ALSA_LOOPBACK,
     OTHER
   };
 

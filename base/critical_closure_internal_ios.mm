@@ -13,8 +13,8 @@ bool IsMultiTaskingSupported() {
   return [[UIDevice currentDevice] isMultitaskingSupported];
 }
 
-CriticalClosure::CriticalClosure(OnceClosure closure)
-    : closure_(std::move(closure)) {}
+CriticalClosure::CriticalClosure(StringPiece task_name, OnceClosure closure)
+    : critical_action_(task_name), closure_(std::move(closure)) {}
 
 CriticalClosure::~CriticalClosure() {}
 

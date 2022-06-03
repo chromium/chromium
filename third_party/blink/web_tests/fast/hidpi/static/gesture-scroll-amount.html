@@ -1,5 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<script src="../../../resources/js-test.js"></script>
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../resources/gesture-util.js'></script>
 <style type="text/css">
     body {
         height: 2000px;
@@ -8,77 +10,21 @@
 </style>
 <script>
 
-var expectedScrollsTotal = 2;
-var scrollsOccurred = 0;
-var scrollAmountX = ['1', '3'];
-var scrollAmountY = ['1', '3'];
+promise_test(async () => {
+  await smoothScrollWithXY(1, 1, 50, 50, GestureSourceType.MOUSE_INPUT, SPEED_INSTANT);
 
-function checkScrollOffset()
-{
-    if (window.eventSender) {
-        shouldBe('document.scrollingElement.scrollTop', scrollAmountY[scrollsOccurred]);
-        shouldBe('document.scrollingElement.scrollLeft', scrollAmountX[scrollsOccurred]);
-        scrollsOccurred++;
-    }
+  await waitFor( () => {
+    return document.scrollingElement.scrollTop == 1;
+  });
+  assert_equals(document.scrollingElement.scrollTop, 1);
+  assert_equals(document.scrollingElement.scrollLeft, 1);
 
-    if (scrollsOccurred == expectedScrollsTotal) {
-        // If we've got here, we've passed.
-        isSuccessfullyParsed();
-        if (window.testRunner)
-            testRunner.notifyDone();
-    } else {
-        secondGestureScrollSequence();
-    }
-}
+  await smoothScrollWithXY(2, 2, 50, 50, GestureSourceType.MOUSE_INPUT, SPEED_INSTANT);
 
-function firstGestureScrollSequence()
-{
-    debug("first gesture");
-
-    eventSender.gestureScrollBegin(50, 50);
-    eventSender.gestureScrollUpdate(-1, -1);
-    eventSender.gestureScrollEnd(0, 0);
-
-    // Wait for layout.
-    checkScrollOffset();
-}
-
-function secondGestureScrollSequence()
-{
-    debug("second gesture");
-
-    eventSender.gestureScrollBegin(50, 50);
-    eventSender.gestureScrollUpdate(-2, -2);
-    eventSender.gestureScrollEnd(0, 0);
-
-    // Wait for layout.
-    checkScrollOffset();
-}
-
-function exitIfNecessary()
-{
-    debug('Gesture events not implemented on this platform or broken');
-    isSuccessfullyParsed();
-    if (window.testRunner)
-        testRunner.notifyDone();
-}
-
-if (window.testRunner)
-    testRunner.waitUntilDone();
-
-function runTest()
-{
-    if (window.eventSender) {
-        description('This test ensures that touch gesture scrolls ' +
-            'the right amount pixels in high dpi mode.');
-
-        if (eventSender.clearTouchPoints)
-            firstGestureScrollSequence();
-        else
-            exitIfNecessary();
-    } else {
-        debug("This test requires eventSender.");
-    }
-}
+  await waitFor( () => {
+    return document.scrollingElement.scrollTop == 3;
+  });
+  assert_equals(document.scrollingElement.scrollTop, 3);
+  assert_equals(document.scrollingElement.scrollLeft, 3);
+}, "Scrolling in a high dpi settings yeilds in the correct offset");
 </script>
-<body onload="runTest()"></body>

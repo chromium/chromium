@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
@@ -36,9 +37,9 @@ namespace {
 // GNOME/KDE is a non-scalable one. The name should be listed in the
 // IsFallbackFontAllowed function in skia/ext/SkFontHost_fontconfig_direct.cpp.
 #if defined(OS_ANDROID)
-const char* kFallbackFontFamilyName = "serif";
+const char kFallbackFontFamilyName[] = "serif";
 #else
-const char* kFallbackFontFamilyName = "sans";
+const char kFallbackFontFamilyName[] = "sans";
 #endif
 
 constexpr SkGlyphID kUnsupportedGlyph = 0;
@@ -111,7 +112,7 @@ PlatformFontSkia::PlatformFontSkia(const std::string& font_name,
 PlatformFontSkia::PlatformFontSkia(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const base::Optional<FontRenderParams>& params) {
+    const absl::optional<FontRenderParams>& params) {
   DCHECK(typeface);
 
   SkString family_name;
@@ -171,7 +172,7 @@ bool PlatformFontSkia::InitDefaultFont() {
     delegate->GetDefaultFontDescription(&family, &size_pixels, &style, &weight,
                                         &params);
   } else if (default_font_description_) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // On ChromeOS, a FontList font description string is stored as a
     // translatable resource and passed in via SetDefaultFontDescription().
     FontRenderParamsQuery query;
@@ -304,7 +305,8 @@ const FontRenderParams& PlatformFontSkia::GetFontRenderParams() {
   return font_render_params_;
 }
 
-sk_sp<SkTypeface> PlatformFontSkia::GetNativeSkTypefaceIfAvailable() const {
+sk_sp<SkTypeface> PlatformFontSkia::GetNativeSkTypeface() const {
+  DCHECK(typeface_);
   return sk_sp<SkTypeface>(typeface_);
 }
 
@@ -459,7 +461,7 @@ PlatformFont* PlatformFont::CreateFromNameAndSize(const std::string& font_name,
 PlatformFont* PlatformFont::CreateFromSkTypeface(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const base::Optional<FontRenderParams>& params) {
+    const absl::optional<FontRenderParams>& params) {
   TRACE_EVENT0("fonts", "PlatformFont::CreateFromSkTypeface");
   return new PlatformFontSkia(typeface, font_size_pixels, params);
 }

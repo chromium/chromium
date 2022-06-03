@@ -1,0 +1,14 @@
+{
+  "name": "Extension with action and command",
+  "manifest_version": 2,
+  "version": "0.1",
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "mac": "MacCtrl+Shift+F",
+        "default": "Ctrl+Shift+F"
+      }
+    }
+  },
+  "browser_action": {}
+}

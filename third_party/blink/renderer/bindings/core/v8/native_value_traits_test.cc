@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 
 #include <type_traits>
+
 #include "third_party/blink/renderer/bindings/core/v8/idl_types_base.h"
 
 // No gtest tests; only static_assert checks.

@@ -33,15 +33,15 @@
             }
 
             // Verifies that calling navigator.requestMediaKeySystemAccess()
-            // with |configuration| throws a TypeError.
-            function expectTypeError(configuration, testName) {
+            // with |configuration| fails (due to no encryptionScheme being
+            // supported).
+            function expectFailure(configuration, testName) {
                 promise_test(async test => {
                     try {
                         await navigator.requestMediaKeySystemAccess('org.w3.clearkey', configuration);
                         assert_unreached('Unexpected requestMediaKeySystemAccess() success.');
                     } catch(error) {
-                        // Error must be a TypeError.
-                        assert_equals(error.name, 'TypeError', 'unexpected error');
+                        // Error is what we want to happen.
                     }
                 }, testName);
             }
@@ -102,17 +102,27 @@
             expectSupport([buildConfiguration({audio: 'cbcs'}, {video: 'cbcs'})],
                 'cbcs', 'cbcs', 'Audio and Video supports cbcs');
 
+            // Test "cbcs-1-9".
+            expectSupport([buildConfiguration({audio: 'cbcs-1-9'})],
+                'cbcs-1-9', undefined, 'Audio supports cbcs-1-9');
+            expectSupport([buildConfiguration({video: 'cbcs-1-9'})],
+                undefined, 'cbcs-1-9', 'Video supports cbcs-1-9');
+            expectSupport([buildConfiguration({audio: 'cbcs-1-9'}, {video: 'cbcs-1-9'})],
+                'cbcs-1-9', 'cbcs-1-9', 'Audio and Video supports cbcs-1-9');
+
             // Test "invalid", which should fail.
-            expectTypeError([buildConfiguration({audio: 'invalid'})],
+            expectFailure([buildConfiguration({audio: 'invalid'})],
                 'Audio fails with invalid scheme');
-            expectTypeError([buildConfiguration({video: 'invalid'})],
+            expectFailure([buildConfiguration({video: 'invalid'})],
                 'Video fails with invalid scheme');
-            expectTypeError([buildConfiguration({audio: 'invalid'}, {video: 'invalid'})],
+            expectFailure([buildConfiguration({audio: 'invalid'}, {video: 'invalid'})],
                 'Audio and Video fails with invalid scheme');
-            expectTypeError([buildConfiguration({audio: 'cenc'}, {video: 'invalid'})],
+            expectFailure([buildConfiguration({audio: 'cenc'}, {video: 'invalid'})],
                 'Audio valid, Video invalid scheme');
-            expectTypeError([buildConfiguration({audio: 'invalid'}, {video: 'cbcs'})],
-                'Audio invalid scheme, Video valid');
+            expectFailure([buildConfiguration({audio: 'invalid'}, {video: 'cbcs'})],
+                'Audio invalid scheme, Video valid with cbcs');
+            expectFailure([buildConfiguration({audio: 'invalid'}, {video: 'cbcs-1-9'})],
+                'Audio invalid scheme, Video valid with cbcs-1-9');
 
             // Test without encryptionScheme.
             expectSupport([buildConfiguration({audio: null})],
@@ -127,22 +137,30 @@
                 null, 'cbcs', 'Audio missing and Video valid');
 
             // Test with "", which is invalid.
-            expectTypeError([buildConfiguration({audio: ''})],
+            expectFailure([buildConfiguration({audio: ''})],
                 'Audio handles empty encryptionScheme');
-            expectTypeError([buildConfiguration({video: ''})],
+            expectFailure([buildConfiguration({video: ''})],
                 'Video handles empty encryptionScheme');
-            expectTypeError([buildConfiguration({audio: ''}, {video: ''})],
+            expectFailure([buildConfiguration({audio: ''}, {video: ''})],
                 'Audio and Video handles empty encryptionScheme');
-            expectTypeError([buildConfiguration({audio: 'cbcs'}, {video: ''})],
+            expectFailure([buildConfiguration({audio: 'cbcs'}, {video: ''})],
                 'Audio valid and Video empty');
-            expectTypeError([buildConfiguration({audio: ''}, {video: 'cbcs'})],
+            expectFailure([buildConfiguration({audio: ''}, {video: 'cbcs'})],
                 'Audio empty and Video valid');
 
             // Test mixed combinations.
-            expectSupport([buildConfiguration({audio: 'cbcs'}, {video: 'cenc'})],
-                'cbcs', 'cenc', 'Audio supports cbcs and Video supports cenc');
             expectSupport([buildConfiguration({audio: 'cenc'}, {video: 'cbcs'})],
                 'cenc', 'cbcs', 'Audio supports cenc and Video supports cbcs');
+            expectSupport([buildConfiguration({audio: 'cenc'}, {video: 'cbcs-1-9'})],
+                'cenc', 'cbcs-1-9', 'Audio supports cenc and Video supports cbcs-1-9');
+            expectSupport([buildConfiguration({audio: 'cbcs'}, {video: 'cenc'})],
+                'cbcs', 'cenc', 'Audio supports cbcs and Video supports cenc');
+            expectSupport([buildConfiguration({audio: 'cbcs'}, {video: 'cbcs-1-9'})],
+                'cbcs', 'cbcs-1-9', 'Audio supports cbcs and Video supports cbcs-1-9');
+            expectSupport([buildConfiguration({audio: 'cbcs-1-9'}, {video: 'cenc'})],
+                'cbcs-1-9', 'cenc', 'Audio supports cbcs-1-9 and Video supports cenc');
+            expectSupport([buildConfiguration({audio: 'cbcs-1-9'}, {video: 'cbcs'})],
+                'cbcs-1-9', 'cbcs', 'Audio supports cbcs-1-9 and Video supports cbcs');
 
             // Test multiple configurations.
             expectSupport([buildConfiguration({audio: 'cenc'}),
@@ -167,11 +185,11 @@
                 undefined, 'cbcs', 'Mixed entries supports cbcs');
 
             // Test invalid values.
-            expectTypeError([buildConfiguration({audio: 3})],
+            expectFailure([buildConfiguration({audio: 3})],
                 'Audio fails with numeric scheme');
-            expectTypeError([buildConfiguration({audio: [1, 2, 3]})],
+            expectFailure([buildConfiguration({audio: [1, 2, 3]})],
                 'Audio fails with array scheme');
-            expectTypeError([buildConfiguration({audio: {test: 'test'}})],
+            expectFailure([buildConfiguration({audio: {test: 'test'}})],
                 'Audio fails with object scheme');
         </script>
     </body>

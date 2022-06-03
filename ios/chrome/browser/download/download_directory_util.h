@@ -5,16 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_DIRECTORY_UTIL_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_DIRECTORY_UTIL_H_
 
+#import <Foundation/Foundation.h>
+
 namespace base {
 class FilePath;
 }
 
-// Fills |directory_path| with the FilePath to the downloads directory. Returns
-// true if this is successful. This method does not create the directory, it
-// just returns the path.
-bool GetDownloadsDirectory(base::FilePath* directory_path);
+// Fills |directory_path| with the FilePath to the temporary downloads
+// directory. Returns true if this is successful. This method does not create
+// the directory, it just returns the path.
+bool GetTempDownloadsDirectory(base::FilePath* directory_path);
+
+// Fills |directory_path| with the FilePath to the downloads directory. This
+// method does not create the directory, it just updates the path.
+void GetDownloadsDirectory(base::FilePath* directory_path);
 
 // Asynchronously deletes downloads directory.
-void DeleteDownloadsDirectory();
+void DeleteTempDownloadsDirectory();
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_DIRECTORY_UTIL_H_

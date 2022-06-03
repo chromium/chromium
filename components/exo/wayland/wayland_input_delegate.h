@@ -22,6 +22,9 @@ class WaylandInputDelegate {
     virtual ~Observer() = default;
   };
 
+  WaylandInputDelegate(const WaylandInputDelegate&) = delete;
+  WaylandInputDelegate& operator=(const WaylandInputDelegate&) = delete;
+
   void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer);
@@ -34,8 +37,6 @@ class WaylandInputDelegate {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandInputDelegate);
 };
 
 }  // namespace wayland

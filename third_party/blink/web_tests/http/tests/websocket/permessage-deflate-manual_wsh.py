@@ -26,9 +26,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import urlparse
+from six.moves.urllib import parse
 import zlib
-from mod_pywebsocket import common, util
+from mod_pywebsocket import common
+from mod_pywebsocket import util
 from mod_pywebsocket.extensions import PerMessageDeflateExtensionProcessor
 from mod_pywebsocket.extensions import ExtensionProcessorInterface
 from mod_pywebsocket.common import ExtensionParameter
@@ -59,7 +60,7 @@ def web_socket_do_extra_handshake(request):
     r = request.ws_resource.split('?', 1)
     if len(r) == 1:
         return
-    parameters = urlparse.parse_qs(r[1], keep_blank_values=True)
+    parameters = parse.parse_qs(r[1], keep_blank_values=True)
     if 'client_max_window_bits' in parameters:
         window_bits = int(parameters['client_max_window_bits'][0])
         processor.set_client_max_window_bits(window_bits)

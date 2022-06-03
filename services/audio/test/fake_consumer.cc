@@ -9,8 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/files/file.h"
-#include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"

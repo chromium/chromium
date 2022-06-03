@@ -24,13 +24,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RUN_LIST_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
 template <class Run>
 class BidiRunList final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   BidiRunList()
@@ -38,6 +37,8 @@ class BidiRunList final {
         last_run_(nullptr),
         logically_last_run_(nullptr),
         run_count_(0) {}
+  BidiRunList(const BidiRunList&) = delete;
+  BidiRunList& operator=(const BidiRunList&) = delete;
 
   // FIXME: Once BidiResolver no longer owns the BidiRunList,
   // then ~BidiRunList should call deleteRuns() automatically.
@@ -68,8 +69,6 @@ class BidiRunList final {
   Run* last_run_;
   Run* logically_last_run_;
   unsigned run_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidiRunList);
 };
 
 template <class Run>
@@ -245,4 +244,4 @@ void BidiRunList<Run>::ReverseRuns(unsigned start, unsigned end) {
 
 }  // namespace blink
 
-#endif  // BidiRunList
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RUN_LIST_H_

@@ -1,0 +1,66 @@
+<ukm-configuration>
+
+<event name="AbusiveExperienceHeuristic.TestEvent1">
+  <owner>owner1@chromium.org</owner>
+  <metric name="Metric">
+    <summary>
+      A summary of AbusiveExperienceHeuristic.TestEvent1
+    </summary>
+  </metric>
+</event>
+
+<event name="AbusiveExperienceHeuristic.TestEvent2">
+  <owner>owner3@chromium.org</owner>
+  <obsolete>
+    Deprecated 2/2019
+  </obsolete>
+  <metric name="Metric">
+    <summary>
+      A summary of the metric.
+    </summary>
+  </metric>
+</event>
+
+<event name="Autofill.TestEvent3">
+  <owner>owner3@chromium.org</owner>
+  <summary>
+    A summary of Autofill.TestEvent3.
+  </summary>
+  <metric name="MetricVersion1">
+    <summary>
+      MetricVersion1 summary.
+    </summary>
+    <obsolete>
+      Deprecated and replaced by MetricVersion2.
+    </obsolete>
+  </metric>
+  <metric name="MetricVersion2">
+    <summary>
+      MetricVersion2 summary.
+    </summary>
+  </metric>
+</event>
+
+<event name="FullyObsolete.TestEvent4">
+  <owner>owner4@chromium.org</owner>
+  <summary>
+    All metrics of this event are marked as obsolete.
+  </summary>
+  <metric name="MetricVersion1">
+    <summary>
+      MetricVersion1 summary.
+    </summary>
+    <obsolete>
+      Deprecated and replaced by MetricVersion2.
+    </obsolete>
+  </metric>
+  <metric name="MetricVersion2">
+    <summary>
+      MetricVersion2 summary.
+    </summary>
+    <obsolete/>
+  </metric>
+</event>
+
+
+</ukm-configuration>

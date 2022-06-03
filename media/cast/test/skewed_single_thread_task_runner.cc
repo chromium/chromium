@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/logging.h"
 #include "base/time/tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,7 +31,7 @@ bool SkewedSingleThreadTaskRunner::PostDelayedTask(
     base::TimeDelta delay) {
   return task_runner_->PostDelayedTask(
       from_here, std::move(task),
-      base::TimeDelta::FromMicroseconds(delay.InMicroseconds() * skew_));
+      base::Microseconds(delay.InMicroseconds() * skew_));
 }
 
 bool SkewedSingleThreadTaskRunner::RunsTasksInCurrentSequence() const {
@@ -45,7 +44,7 @@ bool SkewedSingleThreadTaskRunner::PostNonNestableDelayedTask(
     base::TimeDelta delay) {
   return task_runner_->PostNonNestableDelayedTask(
       from_here, std::move(task),
-      base::TimeDelta::FromMicroseconds(delay.InMicroseconds() * skew_));
+      base::Microseconds(delay.InMicroseconds() * skew_));
 }
 
 }  // namespace test

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    document.body.createShadowRoot().appendChild(template.content.cloneNode(true));
+    document.body.attachShadow({mode: 'open'}).appendChild(template.content.cloneNode(true));
 
     onload = function() {
         if (window.eventSender) {

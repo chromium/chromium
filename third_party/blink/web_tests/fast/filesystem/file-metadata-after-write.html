@@ -35,8 +35,10 @@ function onWrittenFile(entry, file) {
     // Write into this file again.
     writeTextToFile(entry, testText2, function() {
         log('Write succeeded.');
-        entry.file(function() {
-            // The file size should be updated.
+        entry.file(function(newFile) {
+            // The file size should be updated only for the new file.
+            shouldBe('testFile.size', 'testText1.length');
+            testFile = newFile;
             shouldBe('testFile.size', 'testText2.length');
             cleanup();
         }, onError);

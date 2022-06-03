@@ -26,7 +26,10 @@ class CORE_EXPORT TextDecorationOffset : public TextDecorationOffsetBase {
         decorating_box_(decorating_box) {}
   ~TextDecorationOffset() = default;
 
-  int ComputeUnderlineOffsetForUnder(float text_decoration_thickness,
+  int ComputeUnderlineOffsetForUnder(const Length& style_underline_offset,
+                                     float computed_font_size,
+                                     const SimpleFontData* font_data,
+                                     float text_decoration_thickness,
                                      FontVerticalPositionType) const override;
 
  private:

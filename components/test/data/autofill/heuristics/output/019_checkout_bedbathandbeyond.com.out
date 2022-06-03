@@ -21,19 +21,19 @@ EMAIL_ADDRESS | retype_email_addr | *Re-type email |  | first_nm_1-default
 UNKNOWN_TYPE | promo_email_flag | Receive information on special offers and new arrivals at Bed Bath & Beyond. | Y | first_nm_1-default
 UNKNOWN_TYPE | mobile_offers_opt_in | Bed Bath & Beyond may deliver mobile offers and promotions via text message in the future. Check the box if you would like to receive these mobile offers and promotions on your mobile phone. View our Privacy policy. Message & data rates may apply. | Y | first_nm_1-default
 UNKNOWN_TYPE | shipping_options | Same as billing information | B | first_nm_1-default
-NAME_FIRST | ship_first_nm | *First name |  | ship_first_nm_1-default
-NAME_MIDDLE | ship_mid_nm | Middle name |  | ship_first_nm_1-default
-NAME_LAST | ship_last_nm | *Last name |  | ship_first_nm_1-default
-COMPANY_NAME | ship_company | Company name |  | ship_first_nm_1-default
-ADDRESS_HOME_LINE1 | ship_addr1 | *Address 1 (No P.O. Boxes) |  | ship_first_nm_1-default
-ADDRESS_HOME_LINE2 | ship_addr2 | Address 2 |  | ship_first_nm_1-default
-ADDRESS_HOME_CITY | ship_city | *City |  | ship_first_nm_1-default
-ADDRESS_HOME_STATE | ship_addr_state | *State |  | ship_first_nm_1-default
-ADDRESS_HOME_ZIP | ship_zip | *Zip Code |  | ship_first_nm_1-default
-PHONE_HOME_CITY_CODE | ship_day_phone_part1 | *Day phone |  | ship_first_nm_1-default
-PHONE_HOME_NUMBER | ship_day_phone_part2 | *Day phone |  | ship_first_nm_1-default
-PHONE_HOME_NUMBER | ship_day_phone_part3 | *Day phone |  | ship_first_nm_1-default
-PHONE_HOME_CITY_CODE | ship_eve_phone_part1 | Evening phone |  | ship_first_nm_1-default
-PHONE_HOME_NUMBER | ship_eve_phone_part2 | Evening phone |  | ship_first_nm_1-default
-PHONE_HOME_NUMBER | ship_eve_phone_part3 | Evening phone |  | ship_first_nm_1-default
-EMAIL_ADDRESS | email | Privacy policy - Your Privacy Rights | enter your email address | email_1-default
+NAME_FIRST | ship_first_nm | *First name |  | ship_first_nm_2-default
+NAME_MIDDLE | ship_mid_nm | Middle name |  | ship_first_nm_2-default
+NAME_LAST | ship_last_nm | *Last name |  | ship_first_nm_2-default
+COMPANY_NAME | ship_company | Company name |  | ship_first_nm_2-default
+ADDRESS_HOME_LINE1 | ship_addr1 | *Address 1 (No P.O. Boxes) |  | ship_first_nm_2-default
+ADDRESS_HOME_LINE2 | ship_addr2 | Address 2 |  | ship_first_nm_2-default
+ADDRESS_HOME_CITY | ship_city | *City |  | ship_first_nm_2-default
+ADDRESS_HOME_STATE | ship_addr_state | *State |  | ship_first_nm_2-default
+ADDRESS_HOME_ZIP | ship_zip | *Zip Code |  | ship_first_nm_2-default
+PHONE_HOME_CITY_CODE | ship_day_phone_part1 | *Day phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER | ship_day_phone_part2 | *Day phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER | ship_day_phone_part3 | *Day phone |  | ship_first_nm_2-default
+PHONE_HOME_CITY_CODE | ship_eve_phone_part1 | Evening phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER | ship_eve_phone_part2 | Evening phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER | ship_eve_phone_part3 | Evening phone |  | ship_first_nm_2-default
+UNKNOWN_TYPE | email | Privacy policy - Your Privacy Rights | enter your email address | email_1-default

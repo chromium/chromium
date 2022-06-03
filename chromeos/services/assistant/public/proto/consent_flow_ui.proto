@@ -93,6 +93,19 @@ message ConsentFlowUi {
       //
       // Required.
       repeated string footer_paragraph = 9;
+
+      message LearnMoreDialog {
+        // Title heading of the dialog.
+        optional string title = 1;
+        message HtmlProto { optional string value = 2; }
+        // May contain HTML tags for like bold and hyperlinks.
+        repeated HtmlProto paragraph = 2;
+        // Bottom button that closes dialog.
+        optional string dismiss_button = 3;
+      }
+      // Learn more dialog that can be opened from the Learn More CTA within
+      // setting_zippy.
+      optional LearnMoreDialog learn_more_dialog = 13;
     }
     optional ActivityControlUi activity_control_ui = 1;
 
@@ -136,6 +149,14 @@ message ConsentFlowUi {
     optional string reject_button_text = 5;
   }
   optional ConsentUi consent_ui = 2;
+
+  // One or multiple consent UIs required for rendering. This serves as a
+  // replacement for the non-repeated field. If present, prefer to use this over
+  // consent_ui, otherwise fallback to using consent_ui. In the case that
+  // neither exists, the user does not need to (or cannot) perform any UDC
+  // consents. It is REQUIRED to present the consents in the order provided in
+  // this field.
+  repeated ConsentUi multi_consent_ui = 8;
 }
 
 // Represents an update to consent flow opt-ins. This occurs when the user

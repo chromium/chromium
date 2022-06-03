@@ -1,0 +1,28 @@
+{
+  "Linux - Future": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true,
+      "v8_enable_future": true
+    }
+  },
+  "Linux - Future (dbg)": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true,
+      "v8_enable_future": true
+    }
+  },
+  "Linux V8 API Stability": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  }
+}

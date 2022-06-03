@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Read from deleted file test</title>
+<script>
+  let test_file;
+
+  async function writeToFile() {
+    if (storageFoundation) {
+      test_file = await storageFoundation.open('test_file');
+      const writeBuffer = new Uint8Array(4);
+      writeBuffer.set([64, 65, 66, 67]);
+
+      await storageFoundation.requestCapacity(4);
+
+      const {writtenBytes} = await test_file.write(writeBuffer, 0);
+      document.location.hash = '#ready';
+      return writtenBytes == 4;
+    } else {
+      return false;
+    }
+  }
+  async function readFromFile() {
+    const readBuffer = new Uint8Array(4);
+    const {readBytes} =  await test_file.read(readBuffer, 0);
+    return readBytes == 4;
+  }
+</script>

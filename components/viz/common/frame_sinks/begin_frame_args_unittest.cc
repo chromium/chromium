@@ -12,9 +12,9 @@
 namespace viz {
 namespace {
 
-constexpr base::TimeDelta k1Usec = base::TimeDelta::FromMicroseconds(1);
-constexpr base::TimeDelta k2Usec = base::TimeDelta::FromMicroseconds(2);
-constexpr base::TimeDelta k3Usec = base::TimeDelta::FromMicroseconds(3);
+constexpr base::TimeDelta k1Usec = base::Microseconds(1);
+constexpr base::TimeDelta k2Usec = base::Microseconds(2);
+constexpr base::TimeDelta k3Usec = base::Microseconds(3);
 
 TEST(BeginFrameArgsTest, Helpers) {
   // Quick create methods work
@@ -35,6 +35,7 @@ TEST(BeginFrameArgsTest, Helpers) {
   EXPECT_EQ(k2Usec, args2.deadline.since_origin());
   EXPECT_EQ(k3Usec, args2.interval);
   EXPECT_EQ(BeginFrameArgs::NORMAL, args2.type);
+  EXPECT_EQ(0u, args2.frames_throttled_since_last);
 
   BeginFrameArgs args4 = CreateBeginFrameArgsForTesting(
       BEGINFRAME_FROM_HERE, 234, 20, 1, 2, 3, BeginFrameArgs::MISSED);
@@ -45,6 +46,7 @@ TEST(BeginFrameArgsTest, Helpers) {
   EXPECT_EQ(k2Usec, args4.deadline.since_origin());
   EXPECT_EQ(k3Usec, args4.interval);
   EXPECT_EQ(BeginFrameArgs::MISSED, args4.type);
+  EXPECT_EQ(0u, args4.frames_throttled_since_last);
 
   // operator==
   EXPECT_EQ(
@@ -82,15 +84,15 @@ TEST(BeginFrameArgsTest, Helpers) {
   // operator<<
   std::stringstream out1;
   out1 << args1;
-  EXPECT_EQ("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us)", out1.str());
+  EXPECT_EQ("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us, 0)", out1.str());
   std::stringstream out2;
   out2 << args2;
-  EXPECT_EQ("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us)", out2.str());
+  EXPECT_EQ("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us, 0)", out2.str());
 
   // PrintTo
-  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us)"),
+  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us, 0)"),
             ::testing::PrintToString(args1));
-  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us)"),
+  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us, 0)"),
             ::testing::PrintToString(args2));
 }
 
@@ -113,6 +115,7 @@ TEST(BeginFrameArgsTest, Create) {
   EXPECT_EQ(k2Usec, args2.deadline.since_origin()) << args2;
   EXPECT_EQ(k3Usec, args2.interval) << args2;
   EXPECT_EQ(BeginFrameArgs::NORMAL, args2.type) << args2;
+  EXPECT_EQ(0u, args2.frames_throttled_since_last) << args2;
 }
 
 #ifndef NDEBUG

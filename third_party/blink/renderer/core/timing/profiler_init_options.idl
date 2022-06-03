@@ -5,5 +5,5 @@
 // https://wicg.github.io/js-self-profiling/#dom-profilerinitoptions
 dictionary ProfilerInitOptions {
   required DOMHighResTimeStamp sampleInterval;
-  unsigned long maxBufferSize;
+  required unsigned long maxBufferSize;
 };

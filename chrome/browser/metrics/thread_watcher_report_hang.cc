@@ -4,17 +4,30 @@
 
 #include "chrome/browser/metrics/thread_watcher_report_hang.h"
 
+#include "base/debug/activity_tracker.h"
 #include "base/debug/debugger.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/time/time.h"
 
 namespace metrics {
 
 // The following are unique function names for forcing the crash when a thread
 // is unresponsive. This makes it possible to tell from the callstack alone what
-// thread was unresponsive.
-NOINLINE void ReportThreadHang() {
+// thread was unresponsive. Inhibiting tail calls to this function ensures that
+// the caller will appear on the call stack.
+NOINLINE NOT_TAIL_CALLED void ReportThreadHang() {
   volatile const char* inhibit_comdat = __func__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
+
+  // The first 8 characters of sha1 of "ReportThreadHang".
+  // echo -n "ReportThreadHang" | sha1sum
+  static constexpr uint32_t kActivityTrackerId = 0xceec103d;
+
+  base::debug::ScopedActivity scoped_activity(0, kActivityTrackerId, 0);
+  auto& user_data = scoped_activity.user_data();
+  const base::TimeTicks now = base::TimeTicks::Now();
+  user_data.SetUint("timestamp_us", now.since_origin().InMicroseconds());
+
 #if defined(NDEBUG)
   base::debug::DumpWithoutCrashing();
 #else
@@ -25,35 +38,29 @@ NOINLINE void ReportThreadHang() {
 #if !defined(OS_ANDROID)
 
 NOINLINE void StartupHang() {
-  volatile int inhibit_comdat = __LINE__;
-  ALLOW_UNUSED_LOCAL(inhibit_comdat);
   // TODO(rtenneti): http://crbug.com/440885 enable crashing after fixing false
   // positive startup hang data.
   // ReportThreadHang();
+  volatile int inhibit_comdat = __LINE__;
+  ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }
 
 NOINLINE void ShutdownHang() {
+  ReportThreadHang();
   volatile int inhibit_comdat = __LINE__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
-  ReportThreadHang();
 }
 
 #endif  // !defined(OS_ANDROID)
 
 NOINLINE void ThreadUnresponsive_UI() {
   ReportThreadHang();
-  // Defining |inhibit_comdat| *after* calling ReportThreadHang() prevents tail
-  // call optimization from not putting this function's address on the stack.
-  // https://crbug.com/905288#c10
   volatile int inhibit_comdat = __LINE__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }
 
 NOINLINE void ThreadUnresponsive_IO() {
   ReportThreadHang();
-  // Defining |inhibit_comdat| *after* calling ReportThreadHang() prevents tail
-  // call optimization from not putting this function's address on the stack.
-  // https://crbug.com/905288#c10
   volatile int inhibit_comdat = __LINE__;
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }

@@ -1,28 +1,28 @@
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'http:/'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'http:/'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src http:/". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'http://'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'http://'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src http://". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'http:/127.0.0.1'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'http:/127.0.0.1'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src http:/127.0.0.1". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'http:///127.0.0.1'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'http:///127.0.0.1'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src http:///127.0.0.1". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'http://127.0.0.1:/'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'http://127.0.0.1:/'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src http://127.0.0.1:/". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'https://127.?.0.1:*'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'https://127.?.0.1:*'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src https://127.?.0.1:*". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'https://127.0.0.1:'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'https://127.0.0.1:'. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src https://127.0.0.1:". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: ''slef''. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: ''slef''. It will be ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 'slef'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: 'https://127.0.0.1:'. It will be ignored.
+CONSOLE ERROR: The source list for the Content Security Policy directive 'script-src' contains an invalid source: 'https://127.0.0.1:'. It will be ignored.
 Invalid source expressions should log a console warning, and be ignored.
 
 --------

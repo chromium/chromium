@@ -1,0 +1,6 @@
+PASS document.getElementById('cell-contents').offsetHeight is 78
+FAIL document.getElementById('cell-contents').offsetWidth should be 88. Was 98.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -35,7 +35,7 @@
 namespace blink {
 
 void SVGRootInlineBox::Paint(const PaintInfo& paint_info,
-                             const LayoutPoint& paint_offset,
+                             const PhysicalOffset& paint_offset,
                              LayoutUnit,
                              LayoutUnit) const {
   SVGRootInlineBoxPainter(*this).Paint(paint_info, paint_offset);
@@ -48,10 +48,10 @@ void SVGRootInlineBox::MarkDirty() {
 }
 
 void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
-  LayoutSVGText& text_root =
-      ToLayoutSVGText(*LineLayoutAPIShim::LayoutObjectFrom(Block()));
+  auto& text_root =
+      To<LayoutSVGText>(*LineLayoutAPIShim::LayoutObjectFrom(Block()));
 
-  const Vector<LayoutSVGInlineText*>& descendant_text_nodes =
+  const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes =
       text_root.DescendantTextNodes();
   if (descendant_text_nodes.IsEmpty())
     return;
@@ -84,14 +84,14 @@ void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
                             LogicalBottom());
 }
 
-FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
-  FloatRect rect;
-  if (box.IsSVGInlineTextBox()) {
-    rect = ToSVGInlineTextBox(box).CalculateBoundaries();
+gfx::RectF SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
+  gfx::RectF rect;
+  if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(box)) {
+    rect = svg_inline_text_box->CalculateBoundaries();
   } else {
-    for (InlineBox* child = ToInlineFlowBox(box).FirstChild(); child;
+    for (InlineBox* child = To<InlineFlowBox>(box).FirstChild(); child;
          child = child->NextOnLine())
-      rect.Unite(LayoutInlineBoxes(*child));
+      rect.Union(LayoutInlineBoxes(*child));
   }
 
   LayoutRect logical_rect(EnclosingLayoutRect(rect));
@@ -101,12 +101,12 @@ FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
   box.SetX(logical_rect.X());
   box.SetY(logical_rect.Y());
   box.SetLogicalWidth(logical_rect.Width());
-  if (box.IsSVGInlineTextBox())
-    ToSVGInlineTextBox(box).SetLogicalHeight(logical_rect.Height());
-  else if (box.IsSVGInlineFlowBox())
-    ToSVGInlineFlowBox(box).SetLogicalHeight(logical_rect.Height());
+  if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(box))
+    svg_inline_text_box->SetLogicalHeight(logical_rect.Height());
+  else if (auto* svg_inline_flow_box = DynamicTo<SVGInlineFlowBox>(box))
+    svg_inline_flow_box->SetLogicalHeight(logical_rect.Height());
   else
-    ToSVGRootInlineBox(box).SetLogicalHeight(logical_rect.Height());
+    To<SVGRootInlineBox>(box).SetLogicalHeight(logical_rect.Height());
 
   return rect;
 }
@@ -161,8 +161,8 @@ static inline void SwapPositioningValuesInTextBoxes(
 }
 
 static inline void ReverseInlineBoxRangeAndValueListsIfNeeded(
-    Vector<InlineBox*>::iterator first,
-    Vector<InlineBox*>::iterator last) {
+    HeapVector<Member<InlineBox>>::iterator first,
+    HeapVector<Member<InlineBox>>::iterator last) {
   // This is a copy of std::reverse(first, last). It additionally assures
   // that the metrics map within the layoutObjects belonging to the
   // InlineBoxes are reordered as well.
@@ -170,10 +170,9 @@ static inline void ReverseInlineBoxRangeAndValueListsIfNeeded(
     if (first == last || first == --last)
       return;
 
-    if ((*last)->IsSVGInlineTextBox() && (*first)->IsSVGInlineTextBox()) {
-      SVGInlineTextBox* first_text_box = ToSVGInlineTextBox(*first);
-      SVGInlineTextBox* last_text_box = ToSVGInlineTextBox(*last);
-
+    auto* first_text_box = DynamicTo<SVGInlineTextBox>(first->Get());
+    auto* last_text_box = DynamicTo<SVGInlineTextBox>(last->Get());
+    if (last_text_box && first_text_box) {
       // Reordering is only necessary for BiDi text that is _absolutely_
       // positioned.
       if (first_text_box->Len() == 1 &&
@@ -189,7 +188,9 @@ static inline void ReverseInlineBoxRangeAndValueListsIfNeeded(
 }
 
 void SVGRootInlineBox::ReorderValueLists() {
-  Vector<InlineBox*> leaf_boxes_in_logical_order;
+  HeapVector<Member<InlineBox>> leaf_boxes_in_logical_order;
+  ClearCollectionScope<HeapVector<Member<InlineBox>>> scope(
+      &leaf_boxes_in_logical_order);
   CollectLeafBoxesInLogicalOrder(leaf_boxes_in_logical_order,
                                  ReverseInlineBoxRangeAndValueListsIfNeeded);
 }

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_XML_PARSER_SCRIPT_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_XML_PARSER_SCRIPT_RUNNER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
@@ -21,10 +20,10 @@ class XMLParserScriptRunnerHost;
 class XMLParserScriptRunner final
     : public GarbageCollected<XMLParserScriptRunner>,
       public PendingScriptClient {
-  USING_GARBAGE_COLLECTED_MIXIN(XMLParserScriptRunner);
-
  public:
   explicit XMLParserScriptRunner(XMLParserScriptRunnerHost*);
+  XMLParserScriptRunner(const XMLParserScriptRunner&) = delete;
+  XMLParserScriptRunner& operator=(const XMLParserScriptRunner&) = delete;
   ~XMLParserScriptRunner() override;
 
   bool HasParserBlockingScript() const { return parser_blocking_script_; }
@@ -32,7 +31,7 @@ class XMLParserScriptRunner final
   void ProcessScriptElement(Document&, Element*, TextPosition);
   void Detach();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // from PendingScriptClient
@@ -47,9 +46,8 @@ class XMLParserScriptRunner final
 
   // TODO(crbug/717643): Implement
   // https://html.spec.whatwg.org/C/#list-of-scripts-that-will-execute-when-the-document-has-finished-parsing
-  DISALLOW_COPY_AND_ASSIGN(XMLParserScriptRunner);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_XML_PARSER_SCRIPT_RUNNER_H_

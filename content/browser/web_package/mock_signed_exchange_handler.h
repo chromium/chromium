@@ -27,8 +27,8 @@ class MockSignedExchangeHandlerParams {
       net::Error error,
       const GURL& inner_url,
       const std::string& mime_type,
-      std::vector<std::string> response_headers,
-      base::Optional<net::SHA256HashValue> header_integrity,
+      std::vector<std::pair<std::string, std::string>> response_headers,
+      const net::SHA256HashValue& header_integrity,
       const base::Time& signature_expire_time = base::Time());
   MockSignedExchangeHandlerParams(const MockSignedExchangeHandlerParams& other);
   ~MockSignedExchangeHandlerParams();
@@ -37,8 +37,8 @@ class MockSignedExchangeHandlerParams {
   const net::Error error;
   const GURL inner_url;
   const std::string mime_type;
-  const std::vector<std::string> response_headers;
-  const base::Optional<net::SHA256HashValue> header_integrity;
+  const std::vector<std::pair<std::string, std::string>> response_headers;
+  const net::SHA256HashValue header_integrity;
   const base::Time signature_expire_time;
 };
 
@@ -47,15 +47,20 @@ class MockSignedExchangeHandler final : public SignedExchangeHandler {
   MockSignedExchangeHandler(const MockSignedExchangeHandlerParams& params,
                             std::unique_ptr<net::SourceStream> body,
                             ExchangeHeadersCallback headers_callback);
+
+  MockSignedExchangeHandler(const MockSignedExchangeHandler&) = delete;
+  MockSignedExchangeHandler& operator=(const MockSignedExchangeHandler&) =
+      delete;
+
   ~MockSignedExchangeHandler() override;
-  base::Optional<net::SHA256HashValue> ComputeHeaderIntegrity() const override;
-  base::Time GetSignatureExpireTime() const override;
+  bool GetSignedExchangeInfoForPrefetchCache(
+      PrefetchedSignedExchangeCacheEntry& entry) const override;
 
  private:
-  const base::Optional<net::SHA256HashValue> header_integrity_;
+  const net::SHA256HashValue header_integrity_;
   const base::Time signature_expire_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSignedExchangeHandler);
+  const GURL cert_url_;
+  const net::IPAddress cert_server_ip_address_;
 };
 
 class MockSignedExchangeHandlerFactory final
@@ -68,6 +73,12 @@ class MockSignedExchangeHandlerFactory final
   // a headers callback with the matching MockSignedExchangeHandlerParams.
   MockSignedExchangeHandlerFactory(
       std::vector<MockSignedExchangeHandlerParams> params_list);
+
+  MockSignedExchangeHandlerFactory(const MockSignedExchangeHandlerFactory&) =
+      delete;
+  MockSignedExchangeHandlerFactory& operator=(
+      const MockSignedExchangeHandlerFactory&) = delete;
+
   ~MockSignedExchangeHandlerFactory() override;
 
   std::unique_ptr<SignedExchangeHandler> Create(
@@ -79,8 +90,6 @@ class MockSignedExchangeHandlerFactory final
 
  private:
   const std::vector<MockSignedExchangeHandlerParams> params_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSignedExchangeHandlerFactory);
 };
 
 }  // namespace content

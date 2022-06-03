@@ -14,11 +14,12 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_simple_task_runner.h"
@@ -26,6 +27,7 @@
 #include "base/version.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "chrome/browser/google/switches.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -35,8 +37,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/win/atl_module.h"
 
+using ::testing::_;
+using ::testing::AllOfArray;
 using ::testing::DoAll;
-using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Return;
@@ -45,29 +48,36 @@ using ::testing::SetArgPointee;
 using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::Values;
-using ::testing::_;
 
 namespace {
+
+// GMock's HasSubstr does not support std::u16string. Hence redefine it as a
+// generic matcher.
+MATCHER_P(HasSubstr, str, "") {
+  return arg.find(str) != arg.npos;
+}
 
 class MockUpdateCheckDelegate : public UpdateCheckDelegate {
  public:
   MockUpdateCheckDelegate() : weak_ptr_factory_(this) {}
 
+  MockUpdateCheckDelegate(const MockUpdateCheckDelegate&) = delete;
+  MockUpdateCheckDelegate& operator=(const MockUpdateCheckDelegate&) = delete;
+
   base::WeakPtr<UpdateCheckDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD1(OnUpdateCheckComplete, void(const base::string16&));
-  MOCK_METHOD2(OnUpgradeProgress, void(int, const base::string16&));
-  MOCK_METHOD1(OnUpgradeComplete, void(const base::string16&));
-  MOCK_METHOD3(OnError, void(GoogleUpdateErrorCode,
-                             const base::string16&,
-                             const base::string16&));
+  MOCK_METHOD1(OnUpdateCheckComplete, void(const std::u16string&));
+  MOCK_METHOD2(OnUpgradeProgress, void(int, const std::u16string&));
+  MOCK_METHOD1(OnUpgradeComplete, void(const std::u16string&));
+  MOCK_METHOD3(OnError,
+               void(GoogleUpdateErrorCode,
+                    const std::u16string&,
+                    const std::u16string&));
 
  private:
   base::WeakPtrFactory<UpdateCheckDelegate> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUpdateCheckDelegate);
 };
 
 // An interface that exposes a factory method for creating an IGoogleUpdate3Web
@@ -88,9 +98,12 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
 
   MockCurrentState() {}
 
+  MockCurrentState(const MockCurrentState&) = delete;
+  MockCurrentState& operator=(const MockCurrentState&) = delete;
+
   // Adds an expectation for get_completionMessage that will return the given
   // message any number of times.
-  void ExpectCompletionMessage(const base::string16& completion_message) {
+  void ExpectCompletionMessage(const std::u16string& completion_message) {
     completion_message_ = completion_message;
     EXPECT_CALL(*this, get_completionMessage(_))
         .WillRepeatedly(
@@ -98,13 +111,13 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
   }
 
   HRESULT GetCompletionMessage(BSTR* completion_message) {
-    *completion_message = SysAllocString(completion_message_.c_str());
+    *completion_message = SysAllocString(base::as_wcstr(completion_message_));
     return S_OK;
   }
 
   // Adds an expectation for get_availableVersion that will return the given
   // version any number of times.
-  void ExpectAvailableVersion(const base::string16& available_version) {
+  void ExpectAvailableVersion(const std::u16string& available_version) {
     available_version_ = available_version;
     EXPECT_CALL(*this, get_availableVersion(_))
         .WillRepeatedly(
@@ -112,7 +125,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
   }
 
   HRESULT GetAvailableVersion(BSTR* available_version) {
-    *available_version = SysAllocString(available_version_.c_str());
+    *available_version = SysAllocString(base::as_wcstr(available_version_));
     return S_OK;
   }
 
@@ -185,10 +198,8 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
                                      VARIANT *, EXCEPINFO *, UINT *));
 
  private:
-  base::string16 completion_message_;
-  base::string16 available_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCurrentState);
+  std::u16string completion_message_;
+  std::u16string available_version_;
 };
 
 // A mock IAppWeb that can run callers of get_currentState through a sequence of
@@ -204,6 +215,9 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
     ON_CALL(*this, get_currentState(_))
         .WillByDefault(::testing::Invoke(this, &MockApp::GetNextState));
   }
+
+  MockApp(const MockApp&) = delete;
+  MockApp& operator=(const MockApp&) = delete;
 
   // IAppWeb:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
@@ -259,7 +273,7 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   // Adds a MockCurrentState to the back of the sequence to be returned by the
   // mock IAppWeb for an ERROR state.
   void PushErrorState(LONG error_code,
-                      const base::string16& completion_message,
+                      const std::u16string& completion_message,
                       LONG installer_result_code) {
     CComObject<MockCurrentState>* mock_state = MakeNextState(STATE_ERROR);
     EXPECT_CALL(*mock_state, get_errorCode(_))
@@ -274,7 +288,7 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
 
   // Adds a MockCurrentState to the back of the sequence to be returned by the
   // mock IAppWeb for an UPDATE_AVAILABLE state.
-  void PushUpdateAvailableState(const base::string16& new_version) {
+  void PushUpdateAvailableState(const std::u16string& new_version) {
     MakeNextState(STATE_UPDATE_AVAILABLE)->ExpectAvailableVersion(new_version);
   }
 
@@ -330,8 +344,6 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   // A gmock sequence under which a series of get_CurrentState expectations are
   // evaluated.
   Sequence state_sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockApp);
 };
 
 // A mock IAppBundleWeb that can handle a single call to createInstalledApp
@@ -344,6 +356,9 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
   END_COM_MAP()
 
   MockAppBundle() {}
+
+  MockAppBundle(const MockAppBundle&) = delete;
+  MockAppBundle& operator=(const MockAppBundle&) = delete;
 
   // IAppBundleWeb:
   MOCK_METHOD4_WITH_CALLTYPE(STDMETHODCALLTYPE,
@@ -417,7 +432,7 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
   // instance's get_appWeb method. The returned instance is only valid for use
   // in setting up expectations until a consumer obtains it via get_appWeb, at
   // which time it is owned by the consumer.
-  CComObject<MockApp>* MakeApp(const base::char16* app_guid) {
+  CComObject<MockApp>* MakeApp(const wchar_t* app_guid) {
     // The bundle will be called on to create the installed app.
     EXPECT_CALL(*this, createInstalledApp(StrEq(app_guid)))
         .WillOnce(Return(S_OK));
@@ -435,9 +450,6 @@ class MockAppBundle : public CComObjectRootEx<CComSingleThreadModel>,
 
     return mock_app;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAppBundle);
 };
 
 // A mock IGoogleUpdate3Web that can handle a call to initialize and
@@ -450,6 +462,9 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
   END_COM_MAP()
 
   MockGoogleUpdate() {}
+
+  MockGoogleUpdate(const MockGoogleUpdate&) = delete;
+  MockGoogleUpdate& operator=(const MockGoogleUpdate&) = delete;
 
   // IGoogleUpdate3Web:
   MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
@@ -487,15 +502,16 @@ class MockGoogleUpdate : public CComObjectRootEx<CComSingleThreadModel>,
         .WillOnce(DoAll(SetArgPointee<0>(mock_app_bundle), Return(S_OK)));
     return mock_app_bundle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGoogleUpdate);
 };
 
 // A mock factory for creating an IGoogleUpdate3Web instance.
 class MockGoogleUpdateFactory : public GoogleUpdateFactory {
  public:
   MockGoogleUpdateFactory() {}
+
+  MockGoogleUpdateFactory(const MockGoogleUpdateFactory&) = delete;
+  MockGoogleUpdateFactory& operator=(const MockGoogleUpdateFactory&) = delete;
+
   MOCK_METHOD1(Create, HRESULT(Microsoft::WRL::ComPtr<IGoogleUpdate3Web>*));
 
   // Returns a mock IGoogleUpdate3Web object that will be returned by the
@@ -514,8 +530,6 @@ class MockGoogleUpdateFactory : public GoogleUpdateFactory {
 
  private:
   Sequence sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockGoogleUpdateFactory);
 };
 
 }  // namespace
@@ -526,6 +540,9 @@ class MockGoogleUpdateFactory : public GoogleUpdateFactory {
 // configure the set of states to be simulated.
 class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
  public:
+  GoogleUpdateWinTest(const GoogleUpdateWinTest&) = delete;
+  GoogleUpdateWinTest& operator=(const GoogleUpdateWinTest&) = delete;
+
   static void SetUpTestCase() {
     ui::win::CreateATLModuleIfNeeded();
     // Configure all mock functions that return HRESULT to return failure.
@@ -580,8 +597,8 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     ASSERT_EQ(ERROR_SUCCESS,
               key.CreateKey(kChromeGuid, KEY_WRITE | KEY_WOW64_32KEY));
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(
-                  L"pv", base::ASCIIToUTF16(CHROME_VERSION_STRING).c_str()));
+              key.WriteValue(L"pv",
+                             base::ASCIIToWide(CHROME_VERSION_STRING).c_str()));
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(root, kClientState, KEY_WRITE | KEY_WOW64_32KEY));
     ASSERT_EQ(ERROR_SUCCESS,
@@ -592,16 +609,15 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     // Provide an IGoogleUpdate3Web class factory so that this test can provide
     // a mocked-out instance.
     SetGoogleUpdateFactoryForTesting(
-        base::Bind(&GoogleUpdateFactory::Create,
-                   base::Unretained(&mock_google_update_factory_)));
+        base::BindRepeating(&GoogleUpdateFactory::Create,
+                            base::Unretained(&mock_google_update_factory_)));
 
     // Compute a newer version.
     base::Version current_version(CHROME_VERSION_STRING);
-    new_version_ = base::StringPrintf(L"%u.%u.%u.%u",
-                                      current_version.components()[0],
-                                      current_version.components()[1],
-                                      current_version.components()[2] + 1,
-                                      current_version.components()[3]);
+    new_version_ = base::StringPrintf(
+        u"%u.%u.%u.%u", current_version.components()[0],
+        current_version.components()[1], current_version.components()[2] + 1,
+        current_version.components()[3]);
 
     SetUpdateDriverTaskRunnerForTesting(task_runner_.get());
   }
@@ -628,9 +644,9 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
     ::testing::TestWithParam<bool>::TearDown();
   }
 
-  static const base::char16 kClients[];
-  static const base::char16 kClientState[];
-  static const base::char16 kChromeGuid[];
+  static const wchar_t kClients[];
+  static const wchar_t kClientState[];
+  static const wchar_t kChromeGuid[];
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
@@ -652,18 +668,15 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
   StrictMock<MockGoogleUpdateFactory> mock_google_update_factory_;
 
   // The new version that the fixture will pretend is available.
-  base::string16 new_version_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GoogleUpdateWinTest);
+  std::u16string new_version_;
 };
 
 //  static
-const base::char16 GoogleUpdateWinTest::kClients[] =
+const wchar_t GoogleUpdateWinTest::kClients[] =
     L"Software\\Google\\Update\\Clients";
-const base::char16 GoogleUpdateWinTest::kClientState[] =
+const wchar_t GoogleUpdateWinTest::kClientState[] =
     L"Software\\Google\\Update\\ClientState";
-const base::char16 GoogleUpdateWinTest::kChromeGuid[] =
+const wchar_t GoogleUpdateWinTest::kChromeGuid[] =
     L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
 
 // Test that an update check fails with the proper error code if Chrome isn't in
@@ -760,7 +773,7 @@ TEST_P(GoogleUpdateWinTest, UpdatesDisabledByPolicy) {
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
   mock_app->PushErrorState(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY,
-                           L"disabled by policy", -1);
+                           u"disabled by policy", -1);
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_DISABLED_BY_POLICY, _, _));
@@ -788,7 +801,7 @@ TEST_P(GoogleUpdateWinTest, ManualUpdatesDisabledByPolicy) {
   mock_app->PushState(STATE_INIT);
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
   mock_app->PushErrorState(GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
-                           L"manual updates disabled by policy", -1);
+                           u"manual updates disabled by policy", -1);
 
   EXPECT_CALL(mock_update_check_delegate_,
               OnError(GOOGLE_UPDATE_DISABLED_BY_POLICY_AUTO_ONLY, _, _));
@@ -821,7 +834,7 @@ TEST_P(GoogleUpdateWinTest, UpdateCheckNoUpdate) {
   task_runner_->RunUntilIdle();
   ASSERT_TRUE(GetLastUpdateState());
   EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_NO_ERROR);
-  EXPECT_EQ(GetLastUpdateState()->new_version, STRING16_LITERAL(""));
+  EXPECT_EQ(GetLastUpdateState()->new_version, u"");
 }
 
 // Test an update check where an update is available.
@@ -838,8 +851,7 @@ TEST_P(GoogleUpdateWinTest, UpdateCheckUpdateAvailable) {
   mock_app->PushState(STATE_CHECKING_FOR_UPDATE);
   mock_app->PushUpdateAvailableState(new_version_);
 
-  EXPECT_CALL(mock_update_check_delegate_,
-              OnUpdateCheckComplete(StrEq(new_version_)));
+  EXPECT_CALL(mock_update_check_delegate_, OnUpdateCheckComplete(new_version_));
   BeginUpdateCheck(std::string(), false, 0,
                    mock_update_check_delegate_.AsWeakPtr());
   task_runner_->RunUntilIdle();
@@ -876,17 +888,16 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
   {
     InSequence callback_sequence;
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(75, StrEq(new_version_)));
-    EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeComplete(StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
+    EXPECT_CALL(mock_update_check_delegate_, OnUpgradeComplete(new_version_));
   }
   BeginUpdateCheck(std::string(), true, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -898,7 +909,7 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
 
 // Test a failed upgrade where Google Update reports that the installer failed.
 TEST_P(GoogleUpdateWinTest, UpdateFailed) {
-  const base::string16 error(L"It didn't work.");
+  const std::u16string error(u"It didn't work.");
   static const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
   static const int kInstallerError = 12;
 
@@ -929,18 +940,18 @@ TEST_P(GoogleUpdateWinTest, UpdateFailed) {
   {
     InSequence callback_sequence;
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(75, StrEq(new_version_)));
-    EXPECT_CALL(mock_update_check_delegate_,
-                OnError(GOOGLE_UPDATE_ERROR_UPDATING, HasSubstr(error),
-                        StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
+    EXPECT_CALL(
+        mock_update_check_delegate_,
+        OnError(GOOGLE_UPDATE_ERROR_UPDATING, HasSubstr(error), new_version_));
   }
   BeginUpdateCheck(std::string(), true, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -994,7 +1005,7 @@ TEST_P(GoogleUpdateWinTest, RetryAfterExternalUpdaterError) {
   task_runner_->RunUntilIdle();
   ASSERT_TRUE(GetLastUpdateState());
   EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_NO_ERROR);
-  EXPECT_EQ(GetLastUpdateState()->new_version, STRING16_LITERAL(""));
+  EXPECT_EQ(GetLastUpdateState()->new_version, u"");
 }
 
 TEST_P(GoogleUpdateWinTest, UpdateInstalledMultipleDelegates) {
@@ -1023,34 +1034,32 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalledMultipleDelegates) {
   {
     InSequence callback_sequence;
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(0, StrEq(new_version_)));
+                OnUpgradeProgress(0, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(12, StrEq(new_version_)));
+                OnUpgradeProgress(12, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(37, StrEq(new_version_)));
+                OnUpgradeProgress(37, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(50, StrEq(new_version_)));
+                OnUpgradeProgress(50, new_version_));
 
     EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeProgress(75, StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
     EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeProgress(75, StrEq(new_version_)));
+                OnUpgradeProgress(75, new_version_));
 
-    EXPECT_CALL(mock_update_check_delegate_,
-                OnUpgradeComplete(StrEq(new_version_)));
-    EXPECT_CALL(mock_update_check_delegate_2,
-                OnUpgradeComplete(StrEq(new_version_)));
+    EXPECT_CALL(mock_update_check_delegate_, OnUpgradeComplete(new_version_));
+    EXPECT_CALL(mock_update_check_delegate_2, OnUpgradeComplete(new_version_));
   }
   BeginUpdateCheck(std::string(), true, 0,
                    mock_update_check_delegate_.AsWeakPtr());
@@ -1060,6 +1069,72 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalledMultipleDelegates) {
   ASSERT_TRUE(GetLastUpdateState());
   EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_NO_ERROR);
   EXPECT_EQ(GetLastUpdateState()->new_version, new_version_);
+}
+
+// Test the case where the GoogleUpdate class responds with error provided
+// via the command line with specified hresult and GoogleUpdateErrorCode.
+TEST_P(GoogleUpdateWinTest, SimulateHresultWithErrorCode) {
+  base::test::ScopedCommandLine commandline;
+  // Simulate GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND (3).
+  commandline.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kSimulateUpdateErrorCode, "3");
+  // Simulate WININET_E_INCORRECT_HANDLE_TYPE (0x80072ef2).
+  commandline.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kSimulateUpdateHresult, "0x80072ef2");
+
+  // Expect the appropriate error when the on-demand class cannot be created.
+  EXPECT_CALL(mock_update_check_delegate_,
+              OnError(GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND,
+                      AllOfArray({HasSubstr(u"error code 3:"),
+                                  HasSubstr(u"0x80072EF2")}),
+                      _));
+  BeginUpdateCheck(std::string(), false, 0,
+                   mock_update_check_delegate_.AsWeakPtr());
+  task_runner_->RunUntilIdle();
+  ASSERT_TRUE(GetLastUpdateState());
+  EXPECT_EQ(GetLastUpdateState()->error_code,
+            GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND);
+}
+
+// Test the case where the GoogleUpdate class responds with error provided
+// via the command line with a specific hresult.
+TEST_P(GoogleUpdateWinTest, SimulateHresultOnly) {
+  base::test::ScopedCommandLine commandline;
+  // Simulate WININET_E_INCORRECT_HANDLE_TYPE (0x80072ef2).
+  commandline.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kSimulateUpdateHresult, "0x80072ef2");
+
+  // Expect the appropriate error when the on-demand class cannot be created.
+  EXPECT_CALL(mock_update_check_delegate_,
+              OnError(GOOGLE_UPDATE_ERROR_UPDATING,
+                      AllOfArray({HasSubstr(u"error code 7:"),
+                                  HasSubstr(u"0x80072EF2")}),
+                      _));
+  BeginUpdateCheck(std::string(), false, 0,
+                   mock_update_check_delegate_.AsWeakPtr());
+  task_runner_->RunUntilIdle();
+  ASSERT_TRUE(GetLastUpdateState());
+  EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_ERROR_UPDATING);
+}
+
+// Test the case where the GoogleUpdate class responds with error provided
+// via the command line without specific hresult.
+TEST_P(GoogleUpdateWinTest, SimulateHresultDefault) {
+  base::test::ScopedCommandLine commandline;
+  commandline.GetProcessCommandLine()->AppendSwitch(
+      switches::kSimulateUpdateHresult);
+
+  // Expect the appropriate error when the on-demand class cannot be created.
+  EXPECT_CALL(mock_update_check_delegate_,
+              OnError(GOOGLE_UPDATE_ERROR_UPDATING,
+                      AllOfArray({HasSubstr(u"error code 7:"),
+                                  HasSubstr(u"0x80004005")}),
+                      _));
+  BeginUpdateCheck(std::string(), false, 0,
+                   mock_update_check_delegate_.AsWeakPtr());
+  task_runner_->RunUntilIdle();
+  ASSERT_TRUE(GetLastUpdateState());
+  EXPECT_EQ(GetLastUpdateState()->error_code, GOOGLE_UPDATE_ERROR_UPDATING);
 }
 
 INSTANTIATE_TEST_SUITE_P(UserLevel, GoogleUpdateWinTest, Values(false));

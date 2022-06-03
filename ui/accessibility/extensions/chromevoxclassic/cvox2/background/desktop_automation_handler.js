@@ -42,7 +42,8 @@ DesktopAutomationHandler = function(node) {
   this.lastValueChanged_ = new Date(0);
 
   var e = EventType;
-  this.addListener_(e.ACTIVEDESCENDANTCHANGED, this.onActiveDescendantChanged);
+  this.addListener_(
+      e.ACTIVE_DESCENDANT_CHANGED, this.onActiveDescendantChanged);
   this.addListener_(e.ALERT, this.onAlert);
   this.addListener_(e.ARIA_ATTRIBUTE_CHANGED, this.onEventIfInRange);
   this.addListener_(e.CHECKED_STATE_CHANGED, this.onEventIfInRange);
@@ -205,7 +206,8 @@ DesktopAutomationHandler.prototype = {
     var node = evt.target;
 
     // Discard focus events on embeddedObject and client nodes.
-    if (node.role == RoleType.EMBEDDED_OBJECT || node.role == RoleType.CLIENT)
+    if (node.role == RoleType.EMBEDDED_OBJECT || node.role == RoleType.CLIENT ||
+        node.role == RoleType.PLUGIN_OBJECT)
       return;
 
     this.createTextEditHandlerIfNeeded_(evt.target);

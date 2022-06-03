@@ -10,12 +10,10 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/public/window_move_client.h"
@@ -32,7 +30,6 @@ class GestureEvent;
 }  // namespace ui
 
 namespace ash {
-class BackGestureAffordance;
 namespace mojom {
 enum class WindowStateType;
 }
@@ -44,18 +41,8 @@ class ASH_EXPORT ToplevelWindowEventHandler
       public aura::WindowObserver,
       public display::DisplayObserver,
       public ui::EventHandler,
-      public ui::GestureConsumer,
-      public ui::GestureProviderAuraClient,
       public ::wm::WindowMoveClient {
  public:
-  // The threshold of the fling velocity while fling from left edge to go
-  // previous page.
-  static constexpr int kFlingVelocityForGoingBack = 1000;
-
-  // How many dips are reserved for gesture events to start swiping to previous
-  // page from the left edge of the screen in tablet mode.
-  static constexpr int kStartGoingBackLeftEdgeInset = 16;
-
   // Describes what triggered ending the drag.
   enum class DragResult {
     // The drag successfully completed.
@@ -69,6 +56,11 @@ class ASH_EXPORT ToplevelWindowEventHandler
   using EndClosure = base::OnceCallback<void(DragResult)>;
 
   ToplevelWindowEventHandler();
+
+  ToplevelWindowEventHandler(const ToplevelWindowEventHandler&) = delete;
+  ToplevelWindowEventHandler& operator=(const ToplevelWindowEventHandler&) =
+      delete;
+
   ~ToplevelWindowEventHandler() override;
 
   // display::DisplayObserver:
@@ -79,33 +71,33 @@ class ASH_EXPORT ToplevelWindowEventHandler
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // ui::GestureProviderAuraClient:
-  void OnGestureEvent(GestureConsumer* consumer,
-                      ui::GestureEvent* event) override;
+  // wm::WindowMoveClient:
+  wm::WindowMoveResult RunMoveLoop(aura::Window* source,
+                                   const gfx::Vector2d& drag_offset,
+                                   ::wm::WindowMoveSource move_source) override;
+  void EndMoveLoop() override;
 
   // Attempts to start a drag if one is not already in progress. Returns true if
   // successful. |end_closure| is run when the drag completes, including if the
   // drag is not started. If |update_gesture_target| is true, the gesture
   // target is forcefully updated and gesture events are transferred to
-  // new target if any. In general, prefer the first version.
+  // new target if any. If |grab_capture| is true, capture is set to |window|,
+  // if it is not set yet. In general, prefer the first version.
   bool AttemptToStartDrag(aura::Window* window,
-                          const gfx::Point& point_in_parent,
+                          const gfx::PointF& point_in_parent,
                           int window_component,
                           ToplevelWindowEventHandler::EndClosure end_closure);
   bool AttemptToStartDrag(aura::Window* window,
-                          const gfx::Point& point_in_parent,
+                          const gfx::PointF& point_in_parent,
                           int window_component,
                           ::wm::WindowMoveSource source,
                           EndClosure end_closure,
-                          bool update_gesture_target);
+                          bool update_gesture_target,
+                          bool grab_capture = true);
 
   // If there is a drag in progress it is reverted, otherwise does nothing.
   void RevertDrag();
-
-  // Returns true if there is a drag in progress.
-  bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
 
   // Returns the toplevel window that should be dragged for a gesture event that
   // occurs in the HTCLIENT area of a window. Returns null if there shouldn't be
@@ -118,16 +110,12 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // Returns the window that is currently handling gesture events and its
   // location.
   aura::Window* gesture_target() { return gesture_target_; }
-  const gfx::Point& event_location_in_gesture_target() {
+  const gfx::PointF& event_location_in_gesture_target() {
     return event_location_in_gesture_target_;
   }
 
-  // Overridden from wm::WindowMoveClient:
-  ::wm::WindowMoveResult RunMoveLoop(
-      aura::Window* source,
-      const gfx::Vector2d& drag_offset,
-      ::wm::WindowMoveSource move_source) override;
-  void EndMoveLoop() override;
+  // Returns true if there is a drag in progress.
+  bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
 
  private:
   class ScopedWindowResizer;
@@ -136,9 +124,10 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // true on success, false if there is something preventing the resize from
   // starting.
   bool PrepareForDrag(aura::Window* window,
-                      const gfx::Point& point_in_parent,
+                      const gfx::PointF& point_in_parent,
                       int window_component,
-                      ::wm::WindowMoveSource source);
+                      ::wm::WindowMoveSource source,
+                      bool grab_capture);
 
   // Completes or reverts the drag if one is in progress. Returns true if a
   // drag was completed or reverted.
@@ -173,18 +162,7 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   // Update the gesture target and event location.
   void UpdateGestureTarget(aura::Window* window,
-                           const gfx::Point& location = gfx::Point());
-
-  // Returns true if |event| was handled as a go-back gesture. |event| is
-  // generated by |gesture_provider_| from touch event, its target will be
-  // nullptr. Gets |target| from corresponding touch event instead.
-  bool MaybeHandleBackGesture(ui::GestureEvent* event, aura::Window* target);
-
-  // True if we can start swiping from left edge of the display or splitview
-  // divider to go back.
-  bool CanStartGoingBack(ui::GestureEvent* event,
-                         aura::Window* window,
-                         const gfx::Point& screen_location);
+                           const gfx::PointF& location = gfx::PointF());
 
   // The hittest result for the first finger at the time that it initially
   // touched the screen. |first_finger_hittest_| is one of ui/base/hit_test.h
@@ -192,61 +170,24 @@ class ASH_EXPORT ToplevelWindowEventHandler
 
   // The point for the first finger at the time that it initially touched the
   // screen.
-  gfx::Point first_finger_touch_point_;
+  gfx::PointF first_finger_touch_point_;
 
   // Is a window move/resize in progress because of gesture events?
   bool in_gesture_drag_ = false;
 
   aura::Window* gesture_target_ = nullptr;
-  gfx::Point event_location_in_gesture_target_;
+  gfx::PointF event_location_in_gesture_target_;
 
   std::unique_ptr<ScopedWindowResizer> window_resizer_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   EndClosure end_closure_;
 
   // Are we running a nested run loop from RunMoveLoop().
   bool in_move_loop_ = false;
 
-  // True if swiping from left edge to go to previous page is in progress.
-  bool going_back_started_ = false;
-
-  // Tracks the x-axis and y-axis drag amount through touch events. Used for
-  // back gesture affordance in tablet mode. The gesture movement of back
-  // gesture can't be recognized by GestureRecognizer, which leads to wrong
-  // gesture locations of back gesture. See crbug.com/1015464 for the details.
-  int x_drag_amount_ = 0;
-  int y_drag_amount_ = 0;
-
-  // True if back gesture dragging on the negative direction of x-axis.
-  bool during_reverse_dragging_ = false;
-
-  // Position of last touch event. Used to calculate |y_drag_amount_|. Note,
-  // only touch events from |first_touch_id_| will be recorded.
-  gfx::Point last_touch_point_;
-  ui::PointerId first_touch_id_ = ui::kPointerIdUnknown;
-
-  // Used to show the affordance while swiping from left edge to go to the
-  // previout page.
-  std::unique_ptr<BackGestureAffordance> back_gesture_affordance_;
-
-  // True if back gesture dragged from splitview divider.
-  bool dragged_from_splitview_divider_ = false;
-
-  // Start location of the back gesture in screen coordinate. Used by
-  // ActivateUnderneathWindowInSplitViewMode() to determine the snapped window
-  // that should be activated for going back.
-  gfx::Point back_start_location_;
-
-  // A GestureProvider that is created for back gesture. Used to handle tap down
-  // and the possibly following gesture scroll sequence for back gesture in
-  // OnTouchEvent session. This is done to avoid tap down event be used by the
-  // window that is underneath to do other things (e.g, highlight a menu item)
-  // instead of going back.
-  ui::GestureProviderAura gesture_provider_;
-
   base::WeakPtrFactory<ToplevelWindowEventHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ToplevelWindowEventHandler);
 };
 
 }  // namespace ash

@@ -4,85 +4,101 @@
 /**
  * @fileoverview A lightweight toast.
  */
-Polymer({
-  is: 'cr-toast',
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../shared_vars_css.m.js';
 
-  properties: {
-    duration: {
-      type: Number,
-      value: 0,
-    },
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    open: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
+/** @polymer */
+export class CrToastElement extends PolymerElement {
+  static get is() {
+    return 'cr-toast';
+  }
 
-  hostAttributes: {
-    'role': 'alert',
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  observers: ['resetAutoHide_(duration, open)'],
+  static get properties() {
+    return {
+      duration: {
+        type: Number,
+        value: 0,
+      },
 
-  /** @private {number|null} */
-  hideTimeoutId_: null,
+      open: {
+        readOnly: true,
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  static get observers() {
+    return ['resetAutoHide_(duration, open)'];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?number} */
+    this.hideTimeoutId_ = null;
+  }
 
   /**
    * Cancels existing auto-hide, and sets up new auto-hide.
    * @private
    */
-  resetAutoHide_: function() {
-    if (this.hideTimeoutId_ != null) {
+  resetAutoHide_() {
+    if (this.hideTimeoutId_ !== null) {
       window.clearTimeout(this.hideTimeoutId_);
       this.hideTimeoutId_ = null;
     }
 
-    if (this.open && this.duration != 0) {
+    if (this.open && this.duration !== 0) {
       this.hideTimeoutId_ = window.setTimeout(() => {
-        this.open = false;
+        this.hide();
       }, this.duration);
     }
-  },
+  }
 
   /**
    * Shows the toast and auto-hides after |this.duration| milliseconds has
    * passed. If the toast is currently being shown, any preexisting auto-hide
    * is cancelled and replaced with a new auto-hide.
-   *
-   * If |this.duration| is set to 0, the toast will remain open indefinitely.
-   * The caller is responsible for hiding the toast.
-   *
-   * When |duration| is passed in the non-negative number, |this.duration|
-   * is updated to that value.
-   * @param {number=} duration
    */
-  show: function(duration) {
-    // |this.resetAutoHide_| is called whenever |this.duration| or |this.open|
-    // is changed. If neither is changed, we will still need to reset auto-hide.
-    let shouldResetAutoHide = true;
+  show() {
+    // Force autohide to reset if calling show on an already shown toast.
+    const shouldResetAutohide = this.open;
 
-    if (typeof(duration) != 'undefined' && duration >= 0 &&
-        this.duration != duration) {
-      this.duration = duration;
-      shouldResetAutoHide = false;
-    }
+    // The role attribute is removed first so that screen readers to better
+    // ensure that screen readers will read out the content inside the toast.
+    // If the role is not removed and re-added back in, certain screen readers
+    // do not read out the contents, especially if the text remains exactly
+    // the same as a previous toast.
+    this.removeAttribute('role');
 
-    if (!this.open) {
-      this.open = true;
-      shouldResetAutoHide = false;
-    }
+    // Reset the aria-hidden attribute as screen readers need to access the
+    // contents of an opened toast.
+    this.removeAttribute('aria-hidden');
 
-    if (shouldResetAutoHide) {
+    this._setOpen(true);
+    this.setAttribute('role', 'alert');
+
+    if (shouldResetAutohide) {
       this.resetAutoHide_();
     }
-  },
+  }
 
   /**
-   * Hides the toast.
+   * Hides the toast and ensures that screen readers cannot its contents while
+   * hidden.
    */
-  hide: function() {
-    this.open = false;
-  },
-});
+  hide() {
+    this.setAttribute('aria-hidden', 'true');
+    this._setOpen(false);
+  }
+}
+
+customElements.define(CrToastElement.is, CrToastElement);

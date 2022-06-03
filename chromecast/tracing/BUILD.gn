@@ -13,9 +13,7 @@ cast_source_set("system_tracing_common") {
     "system_tracing_common.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 cast_executable("traced") {

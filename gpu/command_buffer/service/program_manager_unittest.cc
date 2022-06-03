@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
@@ -60,9 +60,9 @@ uint32_t ComputeOffset(const void* start, const void* position) {
 class ProgramManagerTestBase : public GpuServiceTest, public DecoderClient {
  protected:
   virtual void SetupProgramManager() {
-    manager_.reset(new ProgramManager(
+    manager_ = std::make_unique<ProgramManager>(
         nullptr, kMaxVaryingVectors, kMaxDrawBuffers, kMaxDualSourceDrawBuffers,
-        kMaxVertexAttribs, gpu_preferences_, feature_info_.get(), nullptr));
+        kMaxVertexAttribs, gpu_preferences_, feature_info_.get(), nullptr);
   }
   void SetUpBase(const char* gl_version,
                  const char* gl_extensions,
@@ -2172,10 +2172,10 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
 
  protected:
   void SetupProgramManager() override {
-    manager_.reset(
-        new ProgramManager(cache_.get(), kMaxVaryingVectors, kMaxDrawBuffers,
-                           kMaxDualSourceDrawBuffers, kMaxVertexAttribs,
-                           gpu_preferences_, feature_info_.get(), nullptr));
+    manager_ = std::make_unique<ProgramManager>(
+        cache_.get(), kMaxVaryingVectors, kMaxDrawBuffers,
+        kMaxDualSourceDrawBuffers, kMaxVertexAttribs, gpu_preferences_,
+        feature_info_.get(), nullptr);
   }
 
   void SetUp() override {
@@ -2402,140 +2402,6 @@ TEST_F(ProgramManagerWithCacheTest, RelinkOnChangedCompileOptions) {
   EXPECT_TRUE(program_->Link(nullptr, Program::kCountOnlyStaticallyUsed, this));
 }
 
-class ProgramManagerWithPathRenderingTest
-    : public ProgramManagerWithShaderTest,
-      public testing::WithParamInterface<
-          testing::tuple<const char*, const char*>> {
- protected:
-  void SetUp() override {
-    SetUpBase(testing::get<0>(GetParam()), testing::get<1>(GetParam()));
-  }
-  static const char* kFragmentInput1Name;
-  static const char* kFragmentInput2Name;
-  // Name that GL reports for input 2. Needed because input 2 is an
-  // array.
-  static const char* kFragmentInput2GLName;
-  static const char* kFragmentInput3Name;
-  static const char* kFragmentInput3GLName;
-  static const GLint kFragmentInput1Size = 1;
-  static const GLint kFragmentInput2Size = 3;
-  static const GLint kFragmentInput3Size = 2;
-  static const int kFragmentInput1Precision = GL_LOW_FLOAT;
-  static const int kFragmentInput2Precision = GL_MEDIUM_INT;
-  static const int kFragmentInput3Precision = GL_HIGH_FLOAT;
-  static const int kFragmentInput1StaticUse = 1;
-  static const int kFragmentInput2StaticUse = 1;
-  static const int kFragmentInput3StaticUse = 1;
-  static const GLint kFragmentInput1FakeLocation = 0;
-  static const GLint kFragmentInput2FakeLocation = 1;
-  static const GLint kFragmentInput3FakeLocation = 2;
-  static const GLint kFragmentInput1RealLocation = 11;
-  static const GLint kFragmentInput2RealLocation = 22;
-  static const GLint kFragmentInput3RealLocation = 33;
-  static const GLenum kFragmentInput1Type = GL_FLOAT_VEC4;
-  static const GLenum kFragmentInput2Type = GL_INT_VEC2;
-  static const GLenum kFragmentInput3Type = GL_FLOAT_VEC3;
-};
-#ifndef COMPILER_MSVC
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput1Size;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput2Size;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput3Size;
-const int ProgramManagerWithPathRenderingTest::kFragmentInput1Precision;
-const int ProgramManagerWithPathRenderingTest::kFragmentInput2Precision;
-const int ProgramManagerWithPathRenderingTest::kFragmentInput3Precision;
-const int ProgramManagerWithPathRenderingTest::kFragmentInput1StaticUse;
-const int ProgramManagerWithPathRenderingTest::kFragmentInput2StaticUse;
-const int ProgramManagerWithPathRenderingTest::kFragmentInput3StaticUse;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput1FakeLocation;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput2FakeLocation;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput3FakeLocation;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput1RealLocation;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput2RealLocation;
-const GLint ProgramManagerWithPathRenderingTest::kFragmentInput3RealLocation;
-const GLenum ProgramManagerWithPathRenderingTest::kFragmentInput1Type;
-const GLenum ProgramManagerWithPathRenderingTest::kFragmentInput2Type;
-const GLenum ProgramManagerWithPathRenderingTest::kFragmentInput3Type;
-#endif
-
-const char* ProgramManagerWithPathRenderingTest::kFragmentInput1Name = "color1";
-const char* ProgramManagerWithPathRenderingTest::kFragmentInput2Name = "color2";
-const char* ProgramManagerWithPathRenderingTest::kFragmentInput2GLName =
-    "color2[0]";
-const char* ProgramManagerWithPathRenderingTest::kFragmentInput3Name = "color3";
-const char* ProgramManagerWithPathRenderingTest::kFragmentInput3GLName =
-    "color3[0]";
-
-TEST_P(ProgramManagerWithPathRenderingTest, BindFragmentInputLocation) {
-  const GLint kFragmentInput1DesiredLocation = 10;
-  const GLint kFragmentInput2DesiredLocation = -1;
-  const GLint kFragmentInput3DesiredLocation = 5;
-
-  Shader* vshader = shader_manager_.CreateShader(
-      kVertexShaderClientId, kVertexShaderServiceId, GL_VERTEX_SHADER);
-  ASSERT_TRUE(vshader != nullptr);
-  Shader* fshader = shader_manager_.CreateShader(
-      kFragmentShaderClientId, kFragmentShaderServiceId, GL_FRAGMENT_SHADER);
-  ASSERT_TRUE(fshader != nullptr);
-  VaryingMap varying_map;
-  varying_map[kFragmentInput1Name] = TestHelper::ConstructVarying(
-      kFragmentInput1Type, kFragmentInput1Size, kFragmentInput1Precision,
-      kFragmentInput1StaticUse, kFragmentInput1Name);
-  varying_map[kFragmentInput2Name] = TestHelper::ConstructVarying(
-      kFragmentInput2Type, kFragmentInput2Size, kFragmentInput2Precision,
-      kFragmentInput2StaticUse, kFragmentInput2Name);
-  varying_map[kFragmentInput3Name] = TestHelper::ConstructVarying(
-      kFragmentInput3Type, kFragmentInput3Size, kFragmentInput3Precision,
-      kFragmentInput3StaticUse, kFragmentInput3Name);
-  TestHelper::SetShaderStates(gl_.get(), vshader, true, nullptr, nullptr,
-                              nullptr, nullptr, nullptr, &varying_map, nullptr,
-                              nullptr, nullptr);
-  TestHelper::SetShaderStates(gl_.get(), fshader, true, nullptr, nullptr,
-                              nullptr, nullptr, nullptr, &varying_map, nullptr,
-                              nullptr, nullptr);
-  Program* program =
-      manager_->CreateProgram(kClientProgramId, kServiceProgramId);
-  ASSERT_TRUE(program != nullptr);
-  EXPECT_TRUE(program->AttachShader(&shader_manager_, vshader));
-  EXPECT_TRUE(program->AttachShader(&shader_manager_, fshader));
-  program->SetFragmentInputLocationBinding(kFragmentInput1Name,
-                                           kFragmentInput1DesiredLocation);
-  program->SetFragmentInputLocationBinding(kFragmentInput3Name,
-                                           kFragmentInput3DesiredLocation);
-  TestHelper::VaryingInfo kFragmentInputExpectationInfos[] = {
-      {
-          kFragmentInput1Name, kFragmentInput1Size, kFragmentInput1Type,
-          kFragmentInput1FakeLocation, kFragmentInput1RealLocation,
-          kFragmentInput1DesiredLocation,
-      },
-      {
-          kFragmentInput2GLName, kFragmentInput2Size, kFragmentInput2Type,
-          kFragmentInput2FakeLocation, kFragmentInput2RealLocation,
-          kFragmentInput2DesiredLocation,
-      },
-      {
-          kFragmentInput3GLName, kFragmentInput3Size, kFragmentInput3Type,
-          kFragmentInput3FakeLocation, kFragmentInput3RealLocation,
-          kFragmentInput3DesiredLocation,
-      },
-  };
-  TestHelper::SetupShaderExpectationsWithVaryings(
-      gl_.get(), feature_info_.get(), nullptr, 0, nullptr, 0,
-      kFragmentInputExpectationInfos,
-      base::size(kFragmentInputExpectationInfos), nullptr, 0,
-      kServiceProgramId);
-  program->Link(nullptr, Program::kCountOnlyStaticallyUsed, this);
-  const Program::FragmentInputInfo* info1 =
-      program->GetFragmentInputInfoByFakeLocation(
-          kFragmentInput1DesiredLocation);
-  ASSERT_NE(info1, nullptr);
-  EXPECT_EQ(kFragmentInput1RealLocation, static_cast<GLint>(info1->location));
-  const Program::FragmentInputInfo* info3 =
-      program->GetFragmentInputInfoByFakeLocation(
-          kFragmentInput3DesiredLocation);
-  ASSERT_NE(info3, nullptr);
-  EXPECT_EQ(kFragmentInput3RealLocation, static_cast<GLint>(info3->location));
-}
-
 // For some compilers, using make_tuple("a", "bb") would end up
 // instantiating make_tuple<char[1], char[2]>. This does not work.
 namespace {
@@ -2545,21 +2411,6 @@ testing::tuple<const char*, const char*> make_gl_ext_tuple(
   return testing::make_tuple(gl_version, gl_extensions);
 }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    SupportedContexts,
-    ProgramManagerWithPathRenderingTest,
-    testing::Values(
-        make_gl_ext_tuple("3.2",
-                          "GL_ARB_program_interface_query "
-                          "GL_EXT_direct_state_access GL_NV_path_rendering "
-                          "GL_NV_framebuffer_mixed_samples"),
-        make_gl_ext_tuple("4.5",
-                          "GL_NV_path_rendering "
-                          "GL_NV_framebuffer_mixed_samples"),
-        make_gl_ext_tuple("OpenGL ES 3.1",
-                          "GL_NV_path_rendering "
-                          "GL_NV_framebuffer_mixed_samples")));
 
 class ProgramManagerDualSourceBlendingTest
     : public ProgramManagerWithShaderTest,

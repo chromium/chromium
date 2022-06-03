@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/test_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/test_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/test_resources_map.h"
+            type="resource_map_header" />
+    <output filename="test_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_TEST_TEST_HTML" file="${root_gen_dir}/preprocessed/test.html" resource_path="test.html" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_TEST_ROLLUP_JS" file="${root_gen_dir}/preprocessed/test.rollup.js" resource_path="test.rollup.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_SHARED_ROLLUP_JS" file="${root_gen_dir}/preprocessed/shared.rollup.js" resource_path="shared.rollup.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_DIR_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/element_in_dir.js" resource_path="dir/element_in_dir.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_DIR_TEST_SVG_SVG" file="${root_gen_dir}/preprocessed/dir/test_svg.svg" resource_path="dir/test_svg.svg" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_TEST_TEST_UI_JS" file="${root_gen_dir}/preprocessed/test_ui.js" resource_path="test_ui.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_TEST_PROXY_JS" file="${root_gen_dir}/preprocessed/test_proxy.js" resource_path="test_proxy.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_FILE_WITH_DASHES_JS" file="${root_gen_dir}/preprocessed/file-with-dashes.js" resource_path="file-with-dashes.js" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_TEST_DIR_ANOTHER_ELEMENT_IN_DIR_JS" file="${root_gen_dir}/preprocessed/dir/another_element_in_dir.js" resource_path="dir/another_element_in_dir.js" use_base_dir="false" type="chrome_html" />
+    </includes>
+  </release>
+</grit>

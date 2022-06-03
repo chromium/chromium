@@ -7,8 +7,10 @@
 #include <memory>
 
 #include <sddl.h>
+#include <stdlib.h>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/rand_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -104,11 +106,11 @@ Sid Sid::FromNamedCapability(const wchar_t* capability_name) {
 }
 
 Sid Sid::FromSddlString(const wchar_t* sddl_sid) {
-  PSID converted_sid;
-  if (!::ConvertStringSidToSid(sddl_sid, &converted_sid))
+  PSID psid = nullptr;
+  if (!::ConvertStringSidToSid(sddl_sid, &psid))
     return Sid();
-
-  return Sid(converted_sid);
+  std::unique_ptr<void, sandbox::LocalFreeDeleter> converted_sid(psid);
+  return Sid(converted_sid.get());
 }
 
 Sid Sid::FromSubAuthorities(PSID_IDENTIFIER_AUTHORITY identifier_authority,
@@ -130,6 +132,14 @@ Sid Sid::AllRestrictedApplicationPackages() {
   DWORD sub_authorities[] = {SECURITY_APP_PACKAGE_BASE_RID,
                              SECURITY_BUILTIN_PACKAGE_ANY_RESTRICTED_PACKAGE};
   return FromSubAuthorities(&package_authority, 2, sub_authorities);
+}
+
+Sid Sid::GenerateRandomSid() {
+  SID_IDENTIFIER_AUTHORITY package_authority = {SECURITY_NULL_SID_AUTHORITY};
+  DWORD sub_authorities[4] = {};
+  base::RandBytes(&sub_authorities, sizeof(sub_authorities));
+  return FromSubAuthorities(&package_authority, _countof(sub_authorities),
+                            sub_authorities);
 }
 
 PSID Sid::GetPSID() const {

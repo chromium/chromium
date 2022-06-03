@@ -8,11 +8,12 @@
 #include <utility>
 
 #include "base/base_paths.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #include "ios/web/public/browsing_data/system_cookie_store_util.h"
 #import "ios/web/public/web_client.h"
@@ -20,7 +21,6 @@
 #include "net/base/network_delegate_impl.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
@@ -29,15 +29,15 @@
 #include "net/http/transport_security_persister.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service_ios.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -80,8 +80,9 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
         std::make_unique<net::StaticHttpUserAgentSettings>("en-us,en",
                                                            user_agent));
     storage_->set_proxy_resolution_service(
-        net::ProxyResolutionService::CreateUsingSystemProxyResolver(
-            std::move(proxy_config_service_), url_request_context_->net_log()));
+        net::ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+            std::move(proxy_config_service_), url_request_context_->net_log(),
+            /*quick_check_enabled=*/true));
     storage_->set_ssl_config_service(
         std::make_unique<net::SSLConfigServiceDefaults>());
     storage_->set_cert_verifier(
@@ -89,17 +90,17 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
 
     storage_->set_transport_security_state(
         std::make_unique<net::TransportSecurityState>());
-    storage_->set_cert_transparency_verifier(
-        base::WrapUnique(new net::MultiLogCTVerifier));
     storage_->set_ct_policy_enforcer(
         base::WrapUnique(new net::DefaultCTPolicyEnforcer));
     storage_->set_quic_context(std::make_unique<net::QuicContext>());
+    base::FilePath transport_security_state_file_path =
+        base_path_.Append(FILE_PATH_LITERAL("TransportSecurity"));
     transport_security_persister_ =
         std::make_unique<net::TransportSecurityPersister>(
-            url_request_context_->transport_security_state(), base_path_,
-            base::CreateSequencedTaskRunner({base::ThreadPool(),
-                                             base::MayBlock(),
-                                             base::TaskPriority::BEST_EFFORT}));
+            url_request_context_->transport_security_state(),
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            transport_security_state_file_path);
     storage_->set_http_server_properties(
         std::make_unique<net::HttpServerProperties>());
 
@@ -110,13 +111,11 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
         net::HttpAuthHandlerFactory::CreateDefault());
     storage_->set_host_resolver(std::move(host_resolver));
 
-    net::HttpNetworkSession::Context network_session_context;
+    net::HttpNetworkSessionContext network_session_context;
     network_session_context.cert_verifier =
         url_request_context_->cert_verifier();
     network_session_context.transport_security_state =
         url_request_context_->transport_security_state();
-    network_session_context.cert_transparency_verifier =
-        url_request_context_->cert_transparency_verifier();
     network_session_context.ct_policy_enforcer =
         url_request_context_->ct_policy_enforcer();
     network_session_context.net_log = url_request_context_->net_log();
@@ -135,18 +134,17 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
     base::FilePath cache_path = base_path_.Append(FILE_PATH_LITERAL("Cache"));
     std::unique_ptr<net::HttpCache::DefaultBackend> main_backend(
         new net::HttpCache::DefaultBackend(
-            net::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, cache_path, 0));
+            net::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, cache_path,
+            /*max_bytes=*/0, /*hard_reset=*/false));
 
     storage_->set_http_network_session(
         std::make_unique<net::HttpNetworkSession>(
-            net::HttpNetworkSession::Params(), network_session_context));
+            net::HttpNetworkSessionParams(), network_session_context));
     storage_->set_http_transaction_factory(std::make_unique<net::HttpCache>(
         storage_->http_network_session(), std::move(main_backend),
         true /* set_up_quic_server_info */));
 
-    std::unique_ptr<net::URLRequestJobFactoryImpl> job_factory(
-        new net::URLRequestJobFactoryImpl());
-    storage_->set_job_factory(std::move(job_factory));
+    storage_->set_job_factory(std::make_unique<net::URLRequestJobFactory>());
   }
 
   return url_request_context_.get();

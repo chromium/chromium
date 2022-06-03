@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/message_box_view.h"
@@ -23,34 +24,28 @@ class CancelCastingDialog : public views::DialogDelegateView {
  public:
   CancelCastingDialog(base::OnceCallback<void(bool)> callback)
       : callback_(std::move(callback)) {
-    AddChildView(new views::MessageBoxView(views::MessageBoxView::InitParams(
-        l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_MESSAGE))));
+    AddChildView(new views::MessageBoxView(
+        l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_MESSAGE)));
     SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetTitle(l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_TITLE));
+    SetShowCloseButton(false);
+    SetButtonLabel(
+        ui::DIALOG_BUTTON_OK,
+        l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_CONTINUE));
+    SetAcceptCallback(base::BindOnce(&CancelCastingDialog::OnDialogAccepted,
+                                     base::Unretained(this)));
+    SetCancelCallback(base::BindOnce(&CancelCastingDialog::OnDialogCancelled,
+                                     base::Unretained(this)));
   }
+
+  CancelCastingDialog(const CancelCastingDialog&) = delete;
+  CancelCastingDialog& operator=(const CancelCastingDialog&) = delete;
+
   ~CancelCastingDialog() override = default;
 
-  base::string16 GetWindowTitle() const override {
-    return l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_TITLE);
-  }
+  void OnDialogCancelled() { std::move(callback_).Run(false); }
 
-  int GetDialogButtons() const override {
-    return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
-  }
-
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override {
-    if (button == ui::DIALOG_BUTTON_OK)
-      return l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_CONTINUE);
-    if (button == ui::DIALOG_BUTTON_CANCEL)
-      return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
-    return base::string16();
-  }
-
-  bool Cancel() override {
-    std::move(callback_).Run(false);
-    return true;
-  }
-
-  bool Accept() override {
+  void OnDialogAccepted() {
     // Stop screen sharing and capturing. When notified, all capture sessions or
     // all share sessions will be stopped.
     // Currently, the logic is in ScreenSecurityNotificationController.
@@ -58,15 +53,10 @@ class CancelCastingDialog : public views::DialogDelegateView {
     Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
 
     std::move(callback_).Run(true);
-    return true;
   }
-
-  bool ShouldShowCloseButton() const override { return false; }
 
  private:
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancelCastingDialog);
 };
 
 }  // namespace
@@ -99,7 +89,7 @@ void ScreenSwitchCheckController::CanSwitchAwayFromActiveUser(
 void ScreenSwitchCheckController::OnScreenCaptureStart(
     const base::RepeatingClosure& stop_callback,
     const base::RepeatingClosure& source_callback,
-    const base::string16& screen_capture_status) {
+    const std::u16string& screen_capture_status) {
   has_capture_ = true;
 }
 
@@ -111,7 +101,7 @@ void ScreenSwitchCheckController::OnScreenCaptureStop() {
 
 void ScreenSwitchCheckController::OnScreenShareStart(
     const base::RepeatingClosure& stop_callback,
-    const base::string16& helper_name) {
+    const std::u16string& helper_name) {
   has_share_ = true;
 }
 

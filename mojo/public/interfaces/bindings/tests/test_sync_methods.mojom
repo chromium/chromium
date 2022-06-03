@@ -29,7 +29,7 @@ interface TestSync {
 };
 
 // Test sync method support with associated interfaces.
-interface TestSyncMaster {
+interface TestSyncPrimary {
   [Sync]
   Ping() => ();
 

@@ -43,7 +43,7 @@ function testOtherDocument()
 function testOtherDocumentFragments()
 {
     var shadowHost = document.createElement('div');
-    var shadowRoot = shadowHost.createShadowRoot();
+    var shadowRoot = shadowHost.attachShadow({mode: 'open'});
     document.body.appendChild(shadowHost);
 
     var range = new Range();

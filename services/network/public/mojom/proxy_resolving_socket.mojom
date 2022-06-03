@@ -6,6 +6,7 @@ module network.mojom;
 
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
@@ -52,19 +53,25 @@ struct ProxyResolvingSocketOptions {
 // factory instance.
 interface ProxyResolvingSocketFactory {
   // Creates a socket connected to |url|. This connection might be done through
-  // proxies if any is set in system's proxy settings. On success, |result| is
-  // net::OK. Caller is to use |send_stream| to send data and
-  // |receive_stream| to receive data over the connection. On failure, |result|
-  // is a network error code. |local_addr| contains the local address of the
-  // socket. |peer_addr| contains the peer address. If socket is connected to a
-  // proxy, |peer_addr| will be null.
+  // proxies if any is set in system's proxy settings.
+  //
+  // |network_isolation_key| indicates the network storage shard to use for
+  // shared resources, such as the DNS cache and shared proxy connections.
+  //
+  // On success, |result| is net::OK. Caller is to use |send_stream| to send
+  // data and |receive_stream| to receive data over the connection. On failure,
+  // |result| is a network error code. |local_addr| contains the local address
+  // of the socket. |peer_addr| contains the peer address. If socket is
+  // connected to a proxy, |peer_addr| will be null.
   //
   // If socket is closed before the callback can be completed, the callback will
   // be invoked with net::ERR_ABORTED.
   //
   // Any sockets that are created but are yet to be destroyed will be destroyed
   // when the implementation of this factory goes away.
-  CreateProxyResolvingSocket(url.mojom.Url url,
+  CreateProxyResolvingSocket(
+      url.mojom.Url url,
+      NetworkIsolationKey network_isolation_key,
       ProxyResolvingSocketOptions? options,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       pending_receiver<ProxyResolvingSocket> socket,

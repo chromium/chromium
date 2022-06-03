@@ -1,0 +1,260 @@
+This is a testharness.js-based test.
+Found 256 tests; 247 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Setup
+PASS isolation (type: discrete) has testAddition function
+PASS isolation: "isolate" onto "auto"
+PASS isolation: "auto" onto "isolate"
+PASS justify-content (type: discrete) has testAddition function
+PASS justify-content: "end" onto "start"
+PASS justify-content: "start" onto "end"
+PASS justify-items (type: discrete) has testAddition function
+PASS justify-items: "end" onto "start"
+PASS justify-items: "start" onto "end"
+PASS justify-self (type: discrete) has testAddition function
+PASS justify-self: "end" onto "start"
+PASS justify-self: "start" onto "end"
+PASS letter-spacing (type: length) has testAddition function
+PASS letter-spacing: length
+PASS letter-spacing: length of rem
+PASS lighting-color (type: color) has testAddition function
+PASS lighting-color supports animating as color of rgb() with overflowed  from and to values
+PASS lighting-color supports animating as color of #RGB
+PASS lighting-color supports animating as color of hsl()
+PASS lighting-color supports animating as color of #RGBa
+PASS lighting-color supports animating as color of rgba()
+PASS lighting-color supports animating as color of hsla()
+PASS list-style-image (type: discrete) has testAddition function
+PASS list-style-image: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+PASS list-style-image: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+PASS list-style-position (type: discrete) has testAddition function
+PASS list-style-position: "outside" onto "inside"
+PASS list-style-position: "inside" onto "outside"
+PASS list-style-type (type: discrete) has testAddition function
+PASS list-style-type: "square" onto "circle"
+PASS list-style-type: "circle" onto "square"
+PASS marker-end (type: discrete) has testAddition function
+PASS marker-end: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+PASS marker-end: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+PASS marker-mid (type: discrete) has testAddition function
+PASS marker-mid: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+PASS marker-mid: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+PASS marker-start (type: discrete) has testAddition function
+PASS marker-start: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+PASS marker-start: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+PASS mask (type: discrete) has testAddition function
+PASS mask: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+PASS mask: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+PASS mask-type (type: discrete) has testAddition function
+PASS mask-type: "luminance" onto "alpha"
+PASS mask-type: "alpha" onto "luminance"
+PASS mix-blend-mode (type: discrete) has testAddition function
+PASS mix-blend-mode: "screen" onto "multiply"
+PASS mix-blend-mode: "multiply" onto "screen"
+PASS object-fit (type: discrete) has testAddition function
+PASS object-fit: "contain" onto "fill"
+PASS object-fit: "fill" onto "contain"
+PASS offset-distance (type: lengthPercentageOrCalc) has testAddition function
+PASS offset-distance: length
+PASS offset-distance: length of rem
+PASS offset-distance: percentage
+PASS offset-distance: units "%" onto "px"
+PASS offset-distance: units "px" onto "%"
+PASS offset-distance: units "rem" onto "%"
+PASS offset-distance: units "%" onto "rem"
+PASS offset-distance: units "rem" onto "em"
+PASS offset-distance: units "em" onto "rem"
+PASS offset-distance: units "calc" onto "px"
+PASS offset-distance: calc
+PASS order (type: integer) has testAddition function
+PASS order: integer
+PASS outline-color (type: color) has testAddition function
+PASS outline-color supports animating as color of rgb() with overflowed  from and to values
+PASS outline-color supports animating as color of #RGB
+PASS outline-color supports animating as color of hsl()
+PASS outline-color supports animating as color of #RGBa
+PASS outline-color supports animating as color of rgba()
+PASS outline-color supports animating as color of hsla()
+PASS outline-offset (type: length) has testAddition function
+PASS outline-offset: length
+PASS outline-offset: length of rem
+PASS outline-style (type: discrete) has testAddition function
+PASS outline-style: "dotted" onto "none"
+PASS outline-style: "none" onto "dotted"
+PASS outline-width (type: length) has testAddition function
+PASS outline-width: length
+PASS outline-width: length of rem
+PASS overflow-wrap (type: discrete) has testAddition function
+PASS overflow-wrap: "break-word" onto "normal"
+PASS overflow-wrap: "normal" onto "break-word"
+PASS overflow-x (type: discrete) has testAddition function
+PASS overflow-x: "hidden" onto "visible"
+PASS overflow-x: "visible" onto "hidden"
+PASS overflow-y (type: discrete) has testAddition function
+PASS overflow-y: "hidden" onto "visible"
+PASS overflow-y: "visible" onto "hidden"
+PASS page-break-after (type: discrete) has testAddition function
+PASS page-break-after: "auto" onto "always"
+PASS page-break-after: "always" onto "auto"
+PASS page-break-before (type: discrete) has testAddition function
+PASS page-break-before: "auto" onto "always"
+PASS page-break-before: "always" onto "auto"
+PASS page-break-inside (type: discrete) has testAddition function
+PASS page-break-inside: "avoid" onto "auto"
+PASS page-break-inside: "auto" onto "avoid"
+PASS paint-order (type: discrete) has testAddition function
+PASS paint-order: "stroke" onto "fill"
+PASS paint-order: "fill" onto "stroke"
+PASS perspective (type: length) has testAddition function
+PASS perspective: length
+PASS perspective: length of rem
+PASS perspective-origin (type: position) has testAddition function
+PASS perspective-origin: length pair
+PASS perspective-origin: length pair of rem
+PASS perspective-origin: position of percentage
+PASS pointer-events (type: discrete) has testAddition function
+PASS pointer-events: "none" onto "fill"
+PASS pointer-events: "fill" onto "none"
+PASS position (type: discrete) has testAddition function
+PASS position: "fixed" onto "absolute"
+PASS position: "absolute" onto "fixed"
+PASS quotes (type: discrete) has testAddition function
+PASS quotes: ""‘" "’" "“" "”"" onto ""“" "”" "‘" "’""
+PASS quotes: ""“" "”" "‘" "’"" onto ""‘" "’" "“" "”""
+PASS resize (type: discrete) has testAddition function
+PASS resize: "horizontal" onto "both"
+PASS resize: "both" onto "horizontal"
+PASS ruby-position (type: discrete) has testAddition function
+PASS ruby-position: "over" onto "under"
+PASS ruby-position: "under" onto "over"
+PASS scroll-behavior (type: discrete) has testAddition function
+PASS scroll-behavior: "smooth" onto "auto"
+PASS scroll-behavior: "auto" onto "smooth"
+PASS shape-outside (type: discrete) has testAddition function
+PASS shape-outside: "url("http://localhost/test-2")" onto "url("http://localhost/test-1")"
+PASS shape-outside: "url("http://localhost/test-1")" onto "url("http://localhost/test-2")"
+PASS shape-rendering (type: discrete) has testAddition function
+PASS shape-rendering: "crispEdges" onto "optimizeSpeed"
+PASS shape-rendering: "optimizeSpeed" onto "crispEdges"
+PASS stop-color (type: color) has testAddition function
+PASS stop-color supports animating as color of rgb() with overflowed  from and to values
+PASS stop-color supports animating as color of #RGB
+PASS stop-color supports animating as color of hsl()
+PASS stop-color supports animating as color of #RGBa
+PASS stop-color supports animating as color of rgba()
+PASS stop-color supports animating as color of hsla()
+PASS stop-opacity (type: opacity) has testAddition function
+PASS stop-opacity: [0, 1] number
+PASS stop-opacity: [0, 1] number (clamped)
+PASS stroke-dasharray (type: dasharray) has testAddition function
+FAIL stroke-dasharray: dasharray assert_equals: The value should be 1px, 2px, 3px, 4px, 5px at 0ms expected "1px, 2px, 3px, 4px, 5px" but got "7px, calc(30% + 2px), 5px, 10px, calc(30% + 5px), 3px, 8px, calc(30% + 3px), 6px, 11px, calc(30% + 1px), 4px, 9px, calc(30% + 4px), 7px"
+PASS stroke-dasharray (type: discrete) has testAddition function
+PASS stroke-dasharray: "10px, 20px" onto "none"
+PASS stroke-dasharray: "none" onto "10px, 20px"
+PASS stroke-linecap (type: discrete) has testAddition function
+PASS stroke-linecap: "square" onto "round"
+PASS stroke-linecap: "round" onto "square"
+PASS stroke-linejoin (type: discrete) has testAddition function
+PASS stroke-linejoin: "miter" onto "round"
+PASS stroke-linejoin: "round" onto "miter"
+PASS stroke-miterlimit (type: positiveNumber) has testAddition function
+PASS stroke-miterlimit: positive number
+PASS stroke-opacity (type: opacity) has testAddition function
+PASS stroke-opacity: [0, 1] number
+PASS stroke-opacity: [0, 1] number (clamped)
+PASS table-layout (type: discrete) has testAddition function
+PASS table-layout: "fixed" onto "auto"
+PASS table-layout: "auto" onto "fixed"
+PASS text-align (type: discrete) has testAddition function
+PASS text-align: "end" onto "start"
+PASS text-align: "start" onto "end"
+PASS text-align-last (type: discrete) has testAddition function
+PASS text-align-last: "end" onto "start"
+PASS text-align-last: "start" onto "end"
+PASS text-anchor (type: discrete) has testAddition function
+PASS text-anchor: "end" onto "middle"
+PASS text-anchor: "middle" onto "end"
+PASS text-decoration-color (type: color) has testAddition function
+PASS text-decoration-color supports animating as color of rgb() with overflowed  from and to values
+PASS text-decoration-color supports animating as color of #RGB
+PASS text-decoration-color supports animating as color of hsl()
+PASS text-decoration-color supports animating as color of #RGBa
+PASS text-decoration-color supports animating as color of rgba()
+PASS text-decoration-color supports animating as color of hsla()
+PASS text-decoration-line (type: discrete) has testAddition function
+PASS text-decoration-line: "overline" onto "underline"
+PASS text-decoration-line: "underline" onto "overline"
+PASS text-decoration-style (type: discrete) has testAddition function
+PASS text-decoration-style: "dotted" onto "solid"
+PASS text-decoration-style: "solid" onto "dotted"
+PASS text-overflow (type: discrete) has testAddition function
+PASS text-overflow: "ellipsis" onto "clip"
+PASS text-overflow: "clip" onto "ellipsis"
+PASS text-rendering (type: discrete) has testAddition function
+PASS text-rendering: "optimizeLegibility" onto "optimizeSpeed"
+PASS text-rendering: "optimizeSpeed" onto "optimizeLegibility"
+PASS text-shadow (type: textShadowList) has testAddition function
+PASS text-shadow: shadow
+PASS text-transform (type: discrete) has testAddition function
+PASS text-transform: "uppercase" onto "capitalize"
+PASS text-transform: "capitalize" onto "uppercase"
+PASS touch-action (type: discrete) has testAddition function
+PASS touch-action: "none" onto "auto"
+PASS touch-action: "auto" onto "none"
+PASS transform (type: transformList) has testAddition function
+PASS transform: translate
+PASS transform: rotate
+PASS transform: scale
+PASS transform: skew
+PASS transform: rotate on translate
+PASS transform: translate on rotate
+PASS transform: rotate on rotate and translate
+PASS transform: matrix
+PASS transform: rotate3d
+PASS transform: matrix3d
+PASS transform: non-invertible matrices
+PASS transform: non-invertible matrices in matched transform lists
+PASS transform: non-invertible matrices in mismatched transform lists
+PASS transform-box (type: discrete) has testAddition function
+FAIL transform-box: "border-box" onto "fill-box" assert_equals: The value should be border-box at 0ms expected "border-box" but got "fill-box"
+PASS transform-box: "fill-box" onto "border-box"
+PASS transform-style (type: discrete) has testAddition function
+PASS transform-style: "preserve-3d" onto "flat"
+PASS transform-style: "flat" onto "preserve-3d"
+PASS rotate (type: rotateList) has testAddition function
+PASS rotate without rotation axes
+PASS rotate with underlying transform
+PASS rotate with different rotation axes
+PASS translate (type: translateList) has testAddition function
+PASS translate
+PASS translate with underlying transform
+PASS translate with underlying percentage value
+PASS scale (type: scaleList) has testAddition function
+PASS scale with two unspecified values
+PASS scale with one unspecified value
+PASS scale
+PASS vector-effect (type: discrete) has testAddition function
+PASS vector-effect: "non-scaling-stroke" onto "none"
+PASS vector-effect: "none" onto "non-scaling-stroke"
+PASS visibility (type: visibility) has testAddition function
+PASS visibility: onto "visible"
+PASS visibility: onto "hidden"
+PASS white-space (type: discrete) has testAddition function
+PASS white-space: "nowrap" onto "pre"
+PASS white-space: "pre" onto "nowrap"
+PASS word-break (type: discrete) has testAddition function
+PASS word-break: "break-all" onto "keep-all"
+PASS word-break: "keep-all" onto "break-all"
+PASS word-spacing (type: lengthPercentageOrCalc) has testAddition function
+PASS word-spacing: length
+PASS word-spacing: length of rem
+FAIL word-spacing: percentage assert_equals: The value should be 130% at 0ms expected "130%" but got "0px"
+FAIL word-spacing: units "%" onto "px" assert_equals: The value should be calc(10% + 10px) at 0ms expected "calc(10% + 10px)" but got "10px"
+FAIL word-spacing: units "px" onto "%" assert_equals: The value should be calc(10% + 10px) at 0ms expected "calc(10% + 10px)" but got "10px"
+FAIL word-spacing: units "rem" onto "%" assert_equals: The value should be calc(10% + 20px) at 0ms expected "calc(10% + 20px)" but got "20px"
+FAIL word-spacing: units "%" onto "rem" assert_equals: The value should be calc(10% + 20px) at 0ms expected "calc(10% + 20px)" but got "20px"
+PASS word-spacing: units "rem" onto "em"
+PASS word-spacing: units "em" onto "rem"
+FAIL word-spacing: units "calc" onto "px" assert_equals: The value should be calc(20% + 30px) at 0ms expected "calc(20% + 30px)" but got "10px"
+FAIL word-spacing: calc assert_equals: The value should be calc(30% + 30px) at 0ms expected "calc(30% + 30px)" but got "0px"
+Harness: the test ran to completion.
+

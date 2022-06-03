@@ -10,12 +10,15 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
+
+using blink::mojom::MediaDeviceType;
 
 namespace content {
 
@@ -45,17 +48,20 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
  protected:
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
-  void RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature feature,
-                                     bool enabled) {
-    NavigateAndCommit(origin_.GetURL());
+  void RefreshPageAndSetHeaderPolicy(
+      blink::mojom::PermissionsPolicyFeature feature,
+      bool enabled) {
+    auto navigation = NavigationSimulator::CreateBrowserInitiated(
+        origin_.GetURL(), web_contents());
     std::vector<url::Origin> allowlist;
     if (enabled)
       allowlist.push_back(origin_);
-    RenderFrameHostTester::For(main_rfh())
-        ->SimulateFeaturePolicyHeader(feature, allowlist);
+    navigation->SetPermissionsPolicyHeader(
+        {{feature, allowlist, false, false}});
+    navigation->Commit();
   }
 
-  bool CheckPermission(blink::MediaDeviceType device_type) {
+  bool CheckPermission(MediaDeviceType device_type) {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     checker_.CheckPermission(
@@ -85,26 +91,28 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
   TestWebContentsDelegate delegate_;
 };
 
-// Basic tests for feature policy checks through the
+// Basic tests for permissions policy checks through the
 // MediaDevicesPermissionChecker.  These tests are not meant to cover every edge
-// case as the FeaturePolicy class itself is tested thoroughly in
-// feature_policy_unittest.cc and in
-// render_frame_host_feature_policy_unittest.cc.
-TEST_F(MediaDevicesPermissionCheckerTest, CheckPermissionWithFeaturePolicy) {
+// case as the PermissionsPolicy class itself is tested thoroughly in
+// permissions_policy_unittest.cc and in
+// render_frame_host_permissions_policy_unittest.cc.
+TEST_F(MediaDevicesPermissionCheckerTest,
+       CheckPermissionWithPermissionsPolicy) {
   // Mic and Camera should be enabled by default for a frame (if permission is
   // granted).
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT));
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
 
-  RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature::kMicrophone,
-                                /*enabled=*/false);
-  EXPECT_FALSE(CheckPermission(blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT));
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT));
+  RefreshPageAndSetHeaderPolicy(
+      blink::mojom::PermissionsPolicyFeature::kMicrophone,
+      /*enabled=*/false);
+  EXPECT_FALSE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
 
-  RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature::kCamera,
+  RefreshPageAndSetHeaderPolicy(blink::mojom::PermissionsPolicyFeature::kCamera,
                                 /*enabled=*/false);
-  EXPECT_TRUE(CheckPermission(blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT));
-  EXPECT_FALSE(CheckPermission(blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
+  EXPECT_FALSE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
 }
 
 }  // namespace

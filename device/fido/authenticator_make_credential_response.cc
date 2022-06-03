@@ -11,28 +11,29 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/ec_public_key.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/p256_public_key.h"
+#include "device/fido/public_key.h"
 
 namespace device {
 
 // static
-base::Optional<AuthenticatorMakeCredentialResponse>
+absl::optional<AuthenticatorMakeCredentialResponse>
 AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
-    base::Optional<FidoTransportProtocol> transport_used,
+    absl::optional<FidoTransportProtocol> transport_used,
     base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
     base::span<const uint8_t> u2f_data) {
-  auto public_key = ECPublicKey::ExtractFromU2fRegistrationResponse(
-      fido_parsing_utils::kEs256, u2f_data);
+  auto public_key = P256PublicKey::ExtractFromU2fRegistrationResponse(
+      static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256), u2f_data);
   if (!public_key)
-    return base::nullopt;
+    return absl::nullopt;
 
   auto attested_credential_data =
       AttestedCredentialData::CreateFromU2fRegisterResponse(
           u2f_data, std::move(public_key));
 
   if (!attested_credential_data)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Extract the credential_id for packing into the response data.
   std::vector<uint8_t> credential_id =
@@ -51,25 +52,27 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
       FidoAttestationStatement::CreateFromU2fRegisterResponse(u2f_data);
 
   if (!fido_attestation_statement)
-    return base::nullopt;
+    return absl::nullopt;
 
-  return AuthenticatorMakeCredentialResponse(
+  AuthenticatorMakeCredentialResponse response(
       transport_used, AttestationObject(std::move(authenticator_data),
                                         std::move(fido_attestation_statement)));
+  response.is_resident_key = false;
+  return response;
 }
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
-    base::Optional<FidoTransportProtocol> transport_used,
+    absl::optional<FidoTransportProtocol> transport_used,
     AttestationObject attestation_object)
-    : ResponseData(attestation_object.GetCredentialId()),
-      attestation_object_(std::move(attestation_object)),
+    : attestation_object_(std::move(attestation_object)),
       transport_used_(transport_used) {}
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
     AuthenticatorMakeCredentialResponse&& that) = default;
 
-AuthenticatorMakeCredentialResponse& AuthenticatorMakeCredentialResponse::
-operator=(AuthenticatorMakeCredentialResponse&& other) = default;
+AuthenticatorMakeCredentialResponse&
+AuthenticatorMakeCredentialResponse::operator=(
+    AuthenticatorMakeCredentialResponse&& other) = default;
 
 AuthenticatorMakeCredentialResponse::~AuthenticatorMakeCredentialResponse() =
     default;
@@ -100,6 +103,11 @@ AuthenticatorMakeCredentialResponse::GetRpIdHash() const {
   return attestation_object_.rp_id_hash();
 }
 
+void AuthenticatorMakeCredentialResponse::set_large_blob_key(
+    const base::span<const uint8_t, kLargeBlobKeyLength> large_blob_key) {
+  large_blob_key_ = fido_parsing_utils::Materialize(large_blob_key);
+}
+
 std::vector<uint8_t> AsCTAPStyleCBORBytes(
     const AuthenticatorMakeCredentialResponse& response) {
   const AttestationObject& object = response.attestation_object();
@@ -107,6 +115,12 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
   map.emplace(1, object.attestation_statement().format_name());
   map.emplace(2, object.authenticator_data().SerializeToByteArray());
   map.emplace(3, AsCBOR(object.attestation_statement()));
+  if (response.enterprise_attestation_returned) {
+    map.emplace(4, true);
+  }
+  if (response.large_blob_key()) {
+    map.emplace(5, cbor::Value(*response.large_blob_key()));
+  }
   auto encoded_bytes = cbor::Writer::Write(cbor::Value(std::move(map)));
   DCHECK(encoded_bytes);
   return std::move(*encoded_bytes);

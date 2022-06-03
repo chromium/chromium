@@ -1,24 +1,26 @@
-<script src="../../resources/dump-as-markup.js"></script>
-<div id="description">This test uses FormatBlock to apply the dl tag to a range of paragraphs with different block tags.</div>
-<br>
-<div id="test" style="border:1px solid black" contenteditable="true">
-<pre id="start">Foo</pre>
-<div>bar<br><span>baz</span><br>raz</div>
-dar
-<br>
-<address id="end">yar</address>
-</div>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-var s = window.getSelection();
-var start = document.getElementById("start").firstChild;
-var end = document.getElementById("end").firstChild;
-s.setBaseAndExtent(start, 2, end, 2);
-
-Markup.description('This test uses FormatBlock to apply the dl tag to a range of paragraphs with different block tags.');
-Markup.dump('test', 'before FormatBlock');
-
-document.execCommand("FormatBlock", false, "dl");
-
-Markup.dump('test', 'after FormatBlock');
+// This test uses FormatBlock to apply the dl tag to a range of paragraphs with
+// different block tags.
+selection_test(
+    [
+        '<div contenteditable>',
+          '<pre>AB^C</pre>',
+          '<div>bar<br><span>baz</span><br>raz</div>',
+          'dar<br>',
+          '<address>XY|Z</address>',
+        '</div>',
+    ],
+    "formatBlock dl",
+    [
+        '<div contenteditable><dl>',
+          'AB^C<br>',
+          'bar<br><span>baz<br></span>raz<br>',
+          'dar<br>',
+          'XY|Z',
+        '</dl></div>',
+    ]);
 </script>

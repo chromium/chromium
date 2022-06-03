@@ -4,7 +4,7 @@
 
 #import "ui/base/cocoa/underlay_opengl_hosting_window.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 @implementation UnderlayOpenGLHostingWindow
 

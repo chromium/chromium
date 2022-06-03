@@ -1,5 +1,6 @@
 include_rules = [
   "+components/prefs",
+  "+components/user_prefs",
   "+content/public/browser",
   "+media/cdm",
   "+media/media_buildflags.h",

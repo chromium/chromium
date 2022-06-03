@@ -6,6 +6,8 @@ package org.chromium.components.module_installer.builder;
 
 import android.app.Activity;
 
+import org.chromium.base.BundleUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.module_installer.engine.EngineFactory;
 import org.chromium.components.module_installer.engine.InstallEngine;
@@ -38,10 +40,16 @@ class ModuleEngine implements InstallEngine {
 
     @Override
     public boolean isInstalled(String moduleName) {
+        // If the module is in an installed isolated split, it is installed.
+        if (BundleUtils.isIsolatedSplitInstalled(
+                    ContextUtils.getApplicationContext(), moduleName)) {
+            return true;
+        }
+
         // Accessing classes in the module may cause its DEX file to be loaded. And on some
         // devices that causes a read mode violation.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            Class.forName(mImplClassName);
+            ContextUtils.getApplicationContext().getClassLoader().loadClass(mImplClassName);
             return true;
         } catch (ClassNotFoundException e) {
             return false;

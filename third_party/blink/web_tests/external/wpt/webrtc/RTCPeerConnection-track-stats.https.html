@@ -11,7 +11,7 @@
   'use strict';
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
-  //   doSignalingHandshake
+  //   exchangeOfferAnswer
   //   getUserMediaTracksAndStreams
   //   waitForRtpAndRtcpStats
 
@@ -23,7 +23,7 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
     let track;
-    return getUserMediaTracksAndStreams(1)
+    getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       track = tracks[0];
@@ -48,31 +48,9 @@
   async_test(t => {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
-    let stream;
-    return getUserMediaTracksAndStreams(1)
-    .then(t.step_func(([tracks, streams]) => {
-      t.add_cleanup(() => tracks.forEach(track => track.stop()));
-      let track = tracks[0];
-      stream = streams[0];
-      pc.addTrack(track, stream);
-      return pc.getStats();
-    }))
-    .then(t.step_func(report => {
-      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
-      assert_true(streamStats != null, 'Has stats for stream');
-      validateRtcStats(report, streamStats);
-      t.done();
-    }))
-    .catch(t.step_func(reason => {
-      assert_unreached(reason);
-    }));
-  }, 'addTrack() without setLocalDescription() yields media stream stats');
 
-  async_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
     let track;
-    return getUserMediaTracksAndStreams(1)
+    getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       track = tracks[0];
@@ -97,118 +75,17 @@
   }, 'addTrack() with setLocalDescription() yields track stats');
 
   async_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
-    let stream;
-    return getUserMediaTracksAndStreams(1)
-    .then(t.step_func(([tracks, streams]) => {
-      t.add_cleanup(() => tracks.forEach(track => track.stop()));
-      let track = tracks[0];
-      stream = streams[0];
-      pc.addTrack(track, stream);
-      return pc.createOffer();
-    }))
-    .then(t.step_func(offer => {
-      return pc.setLocalDescription(offer);
-    }))
-    .then(t.step_func(() => {
-      return pc.getStats();
-    }))
-    .then(t.step_func(report => {
-      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
-      assert_true(streamStats != null, 'Has stats for stream');
-      validateRtcStats(report, streamStats);
-      t.done();
-    }))
-    .catch(t.step_func(reason => {
-      assert_unreached(reason);
-    }));
-  }, 'addTrack() with setLocalDescription() yields media stream stats');
-
-  async_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
-    let track;
-    let stream;
-    return getUserMediaTracksAndStreams(1)
-    .then(t.step_func(([tracks, streams]) => {
-      t.add_cleanup(() => tracks.forEach(track => track.stop()));
-      track = tracks[0];
-      stream = streams[0];
-      pc.addTrack(track, stream);
-      return pc.createOffer();
-    }))
-    .then(t.step_func(offer => {
-      return pc.setLocalDescription(offer);
-    }))
-    .then(t.step_func(() => {
-      return pc.getStats();
-    }))
-    .then(t.step_func(report => {
-      let trackStats = findStatsByTypeAndId(report, 'track', track.id);
-      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
-      assert_true(trackStats != null && streamStats != null,
-                  'Has stats for track and stream');
-      assert_array_equals(streamStats.trackIds, [ trackStats.id ],
-                          'streamStats.trackIds == [ trackStats.id ]');
-      validateRtcStats(report, trackStats);
-      validateRtcStats(report, streamStats);
-      t.done();
-    }))
-    .catch(t.step_func(reason => {
-      assert_unreached(reason);
-    }));
-  }, 'addTrack(): Media stream stats references track stats');
-
-  async_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
-    let track;
-    let stream;
-    return getUserMediaTracksAndStreams(1)
-    .then(t.step_func(([tracks, streams]) => {
-      t.add_cleanup(() => tracks.forEach(track => track.stop()));
-      track = tracks[0];
-      stream = streams[0];
-      stream.addTrack(track);
-      for (const track of stream.getTracks())
-        pc.addTrack(track, stream);
-      return pc.createOffer();
-    }))
-    .then(t.step_func(offer => {
-      return pc.setLocalDescription(offer);
-    }))
-    .then(t.step_func(() => {
-      return pc.getStats();
-    }))
-    .then(t.step_func(report => {
-      let trackStats = findStatsByTypeAndId(report, 'track', track.id);
-      let streamStats = findStatsByTypeAndId(report, 'stream', stream.id);
-      assert_true(trackStats != null && streamStats != null,
-                  'Has stats for track and stream');
-      assert_array_equals(streamStats.trackIds, [ trackStats.id ],
-                          'streamStats.trackIds == [ trackStats.id ]');
-      validateRtcStats(report, trackStats);
-      validateRtcStats(report, streamStats);
-      t.done();
-    }))
-    .catch(t.step_func(reason => {
-      assert_unreached(reason);
-    }));
-  }, 'Media stream stats references track stats');
-
-  async_test(t => {
     const caller = new RTCPeerConnection();
     t.add_cleanup(() => caller.close());
     const callee = new RTCPeerConnection();
     t.add_cleanup(() => callee.close());
     let sendingTrack;
-    return getUserMediaTracksAndStreams(1)
+    getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       sendingTrack = tracks[0];
       caller.addTrack(sendingTrack, streams[0]);
-      return doSignalingHandshake(caller, callee);
+      return exchangeOfferAnswer(caller, callee);
     }))
     .then(t.step_func(() => {
       return caller.getStats();
@@ -235,14 +112,14 @@
     t.add_cleanup(() => callee.close());
     let receivingTrack;
     callee.ontrack = trackEvent => {
-      assert_true(receivingTrack == undefined, 'ontrack has not fired before');
+      assert_equals(receivingTrack, undefined, 'ontrack has not fired before');
       receivingTrack = trackEvent.track;
     };
-    return getUserMediaTracksAndStreams(1)
+    getUserMediaTracksAndStreams(1)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       caller.addTrack(tracks[0], streams[0]);
-      return doSignalingHandshake(caller, callee);
+      return exchangeOfferAnswer(caller, callee);
     }))
     .then(t.step_func(() => {
       return callee.getStats();
@@ -271,7 +148,7 @@
     let sendingTrack1;
     let sendingTrack2;
     let sender;
-    return getUserMediaTracksAndStreams(2)
+    getUserMediaTracksAndStreams(2)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       sendingTrack1 = tracks[0];
@@ -301,7 +178,7 @@
     let sendingTrack1;
     let sendingTrack2;
     let sender;
-    return getUserMediaTracksAndStreams(2)
+    getUserMediaTracksAndStreams(2)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       sendingTrack1 = tracks[0];
@@ -339,13 +216,13 @@
     let sendingTrack1;
     let sendingTrack2;
     let sender;
-    return getUserMediaTracksAndStreams(2)
+    getUserMediaTracksAndStreams(2)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
       sender = caller.addTrack(sendingTrack1, streams[0]);
-      return doSignalingHandshake(caller, callee);
+      return exchangeOfferAnswer(caller, callee);
     }))
     .then(t.step_func(() => {
       return sender.replaceTrack(sendingTrack2);
@@ -376,13 +253,13 @@
     let sendingTrack1;
     let sendingTrack2;
     let sender;
-    return getUserMediaTracksAndStreams(2)
+    getUserMediaTracksAndStreams(2)
     .then(t.step_func(([tracks, streams]) => {
       t.add_cleanup(() => tracks.forEach(track => track.stop()));
       sendingTrack1 = tracks[0];
       sendingTrack2 = tracks[1];
       sender = caller.addTrack(sendingTrack1, streams[0]);
-      return doSignalingHandshake(caller, callee);
+      return exchangeOfferAnswer(caller, callee);
     }))
     .then(t.step_func(() => {
       return sender.replaceTrack(sendingTrack2);
@@ -396,7 +273,7 @@
       assert_true(trackStats.objectDeleted);
       let outboundStats = findStatsByTypeAndMember(report, 'outbound-rtp',
                                                    'trackId', trackStats.id);
-      assert_true(outboundStats == null,
+      assert_equals(outboundStats, null,
                   'The outbound RTP stream should no longer reference the ' +
                   'original attachment');
       t.done();
@@ -416,7 +293,7 @@
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
     exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     await listenToConnected(caller);
     let receiver = caller.getReceivers()[0];
 
@@ -465,7 +342,7 @@
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
     exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     await listenToConnected(caller);
     let receiver = caller.getReceivers()[0];
 
@@ -514,7 +391,7 @@
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
     exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     await listenToIceConnected(caller);
 
     // Wait until RTCP has arrived so that it can not arrive between
@@ -546,7 +423,7 @@
     let sender = caller.addTrack(tracks[0], streams[0]);
     callee.addTrack(tracks[1], streams[1]);
     exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
     await listenToIceConnected(caller);
     let receiver = caller.getReceivers()[0];
 
@@ -574,7 +451,7 @@
     t.add_cleanup(() => pc.close());
     let [tracks, streams] = await getUserMediaTracksAndStreams(1);
     t.add_cleanup(() => tracks.forEach(track => track.stop()));
-    await promise_rejects(t, 'InvalidAccessError', pc.getStats(tracks[0]));
+    await promise_rejects_dom(t, 'InvalidAccessError', pc.getStats(tracks[0]));
   }, 'RTCPeerConnection.getStats(track) throws InvalidAccessError when there ' +
      'are zero senders or receivers for the track');
 
@@ -586,7 +463,7 @@
     let sender1 = pc.addTrack(tracks[0], streams[0]);
     let sender2 = pc.addTrack(tracks[1], streams[1]);
     await sender2.replaceTrack(sender1.track);
-    await promise_rejects(t, 'InvalidAccessError', pc.getStats(sender1.track));
+    await promise_rejects_dom(t, 'InvalidAccessError', pc.getStats(sender1.track));
   }, 'RTCPeerConnection.getStats(track) throws InvalidAccessError when there ' +
      'are multiple senders for the track');
 
@@ -648,15 +525,4 @@
       }
     }
   }
-
-  async function async_assert_throws(exceptionName, promise, description) {
-    try {
-      await promise;
-    } catch (e) {
-      assert_equals(e.name, exceptionName);
-      return;
-    }
-    assert_unreached('No exception was thrown.');
-  }
-
 </script>

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Property inset-after value 'auto' assert_true: inset-after doesn't seem to be supported in the computed style expected true got false
-FAIL Property inset-after value 'calc(10px + 0.5em)' assert_true: inset-after doesn't seem to be supported in the computed style expected true got false
-FAIL Property inset-after value 'calc(10px - 0.5em)' assert_true: inset-after doesn't seem to be supported in the computed style expected true got false
-FAIL Property inset-after value '-40%' assert_true: inset-after doesn't seem to be supported in the computed style expected true got false
-FAIL Property inset-after value 'calc(50% + 60px)' assert_true: inset-after doesn't seem to be supported in the computed style expected true got false
-Harness: the test ran to completion.
-

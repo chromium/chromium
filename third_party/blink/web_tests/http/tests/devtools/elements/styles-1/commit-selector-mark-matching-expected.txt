@@ -14,11 +14,6 @@ foo, [$#inspected, $].bar, [$#inspected$] { (inspector-stylesheet:1 -> inspector
 [$div$] { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-[$html$] { (user agent stylesheet)
-    color: -internal-root-color;
-
 
 Running: changeSelector
 [expanded] 
@@ -30,10 +25,5 @@ element.style { ()
 [expanded] 
 [$div$] { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-[$html$] { (user agent stylesheet)
-    color: -internal-root-color;
 
 

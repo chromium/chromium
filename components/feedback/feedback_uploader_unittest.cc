@@ -8,16 +8,16 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/feedback/feedback_report.h"
-#include "components/feedback/feedback_uploader_factory.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -33,19 +33,18 @@ constexpr char kReportThree[] = "three";
 constexpr char kReportFour[] = "four";
 constexpr char kReportFive[] = "five";
 
-constexpr base::TimeDelta kRetryDelayForTest =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kRetryDelayForTest = base::Milliseconds(100);
 
 class MockFeedbackUploader : public FeedbackUploader {
  public:
   MockFeedbackUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      content::BrowserContext* context)
-      : FeedbackUploader(context,
-                         FeedbackUploaderFactory::CreateUploaderTaskRunner()) {
-    set_url_loader_factory_for_test(url_loader_factory);
-  }
-  ~MockFeedbackUploader() override {}
+      bool is_off_the_record,
+      const base::FilePath& state_path,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : FeedbackUploader(is_off_the_record, state_path, url_loader_factory) {}
+
+  MockFeedbackUploader(const MockFeedbackUploader&) = delete;
+  MockFeedbackUploader& operator=(const MockFeedbackUploader&) = delete;
 
   void RunMessageLoop() {
     if (ProcessingComplete())
@@ -109,8 +108,6 @@ class MockFeedbackUploader : public FeedbackUploader {
   size_t dispatched_reports_count_ = 0;
   size_t expected_reports_ = 0;
   bool simulate_failure_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFeedbackUploader);
 };
 
 }  // namespace
@@ -122,18 +119,23 @@ class FeedbackUploaderTest : public testing::Test {
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
+    EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     RecreateUploader();
   }
+
+  FeedbackUploaderTest(const FeedbackUploaderTest&) = delete;
+  FeedbackUploaderTest& operator=(const FeedbackUploaderTest&) = delete;
 
   ~FeedbackUploaderTest() override = default;
 
   void RecreateUploader() {
     uploader_ = std::make_unique<MockFeedbackUploader>(
-        test_shared_loader_factory_, &context_);
+        /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
+        test_shared_loader_factory_);
   }
 
-  void QueueReport(const std::string& data) {
-    uploader_->QueueReport(std::make_unique<std::string>(data));
+  void QueueReport(const std::string& data, bool has_email = true) {
+    uploader_->QueueReport(std::make_unique<std::string>(data), has_email);
   }
 
   MockFeedbackUploader* uploader() const { return uploader_.get(); }
@@ -141,11 +143,9 @@ class FeedbackUploaderTest : public testing::Test {
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  content::BrowserTaskEnvironment task_environment_;
-  content::TestBrowserContext context_;
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<MockFeedbackUploader> uploader_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderTest);
 };
 
 TEST_F(FeedbackUploaderTest, QueueMultiple) {
@@ -192,7 +192,13 @@ TEST_F(FeedbackUploaderTest, QueueMultipleWithFailures) {
   EXPECT_EQ(uploader()->dispatched_reports().at(kReportFive), 1u);
 }
 
-TEST_F(FeedbackUploaderTest, SimulateOfflineReports) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222877
+#define MAYBE_SimulateOfflineReports DISABLED_SimulateOfflineReports
+#else
+#define MAYBE_SimulateOfflineReports SimulateOfflineReports
+#endif
+TEST_F(FeedbackUploaderTest, MAYBE_SimulateOfflineReports) {
   // Simulate offline reports by failing to upload three reports.
   uploader()->set_simulate_failure(true);
   QueueReport(kReportOne);

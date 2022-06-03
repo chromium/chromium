@@ -8,16 +8,16 @@
 #include <limits>
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "content/common/pepper_file_util.h"
-#include "content/common/view_messages.h"
 #include "content/renderer/render_thread_impl.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/thunk/thunk.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -36,10 +36,10 @@ PPB_ImageData_Impl::PPB_ImageData_Impl(PP_Instance instance,
       height_(0) {
   switch (type) {
     case PPB_ImageData_Shared::PLATFORM:
-      backend_.reset(new ImageDataPlatformBackend());
+      backend_ = std::make_unique<ImageDataPlatformBackend>();
       return;
     case PPB_ImageData_Shared::SIMPLE:
-      backend_.reset(new ImageDataSimpleBackend);
+      backend_ = std::make_unique<ImageDataSimpleBackend>();
       return;
       // No default: so that we get a compiler warning if any types are added.
   }
@@ -51,7 +51,7 @@ PPB_ImageData_Impl::PPB_ImageData_Impl(PP_Instance instance, ForTest)
       format_(PP_IMAGEDATAFORMAT_BGRA_PREMUL),
       width_(0),
       height_(0) {
-  backend_.reset(new ImageDataPlatformBackend());
+  backend_ = std::make_unique<ImageDataPlatformBackend>();
 }
 
 PPB_ImageData_Impl::~PPB_ImageData_Impl() {}
@@ -141,7 +141,7 @@ bool ImageDataPlatformBackend::Init(PPB_ImageData_Impl* impl,
   height_ = height;
   uint32_t buffer_size = width_ * height_ * 4;
   base::UnsafeSharedMemoryRegion region =
-      mojo::CreateUnsafeSharedMemoryRegion(buffer_size);
+      base::UnsafeSharedMemoryRegion::Create(buffer_size);
   if (!region.IsValid())
     return false;
 
@@ -216,7 +216,7 @@ bool ImageDataSimpleBackend::Init(PPB_ImageData_Impl* impl,
   skia_bitmap_.setInfo(
       SkImageInfo::MakeN32Premul(impl->width(), impl->height()));
   shm_region_ =
-      mojo::CreateUnsafeSharedMemoryRegion(skia_bitmap_.computeByteSize());
+      base::UnsafeSharedMemoryRegion::Create(skia_bitmap_.computeByteSize());
   return shm_region_.IsValid();
 }
 
@@ -238,7 +238,8 @@ void* ImageDataSimpleBackend::Map() {
     skia_bitmap_.setPixels(shm_mapping_.memory());
     // Our platform bitmaps are set to opaque by default, which we don't want.
     skia_bitmap_.setAlphaType(kPremul_SkAlphaType);
-    skia_canvas_ = std::make_unique<SkCanvas>(skia_bitmap_);
+    skia_canvas_ = std::make_unique<SkCanvas>(
+        skia_bitmap_, skia::LegacyDisplayGlobals::GetSkSurfaceProps());
   }
   return skia_bitmap_.isNull() ? nullptr : skia_bitmap_.getAddr32(0, 0);
 }

@@ -30,7 +30,7 @@ struct HttpRequest;
 //   foo.html.mock-http-headers
 // When the test server serves foo.html, if it finds foo.html.mock-http-headers
 // it will use the contents of that file for the headers.
-extern const char kMockHttpHeadersExtension[];
+extern const base::FilePath::CharType kMockHttpHeadersExtension[];
 
 // Returns the Content-Type header value for a path based on its extension.
 std::string GetContentType(const base::FilePath& path);

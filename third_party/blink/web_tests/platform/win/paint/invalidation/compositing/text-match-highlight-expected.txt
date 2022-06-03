@@ -1,51 +1,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Can you findme in this boring text?'",
-          "rect": [10, 135, 208, 19],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "InlineTextBox 'Findme on a path! Did you findme?'",
-          "rect": [20, 224, 202, 72],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "InlineTextBox 'Findme in a typewriter!'",
-          "rect": [10, 191, 138, 12],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'findme'",
-          "rect": [259, 40, 40, 19],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'findme'",
-          "rect": [244, 60, 40, 19],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'findme'",
-          "rect": [204, 60, 40, 19],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'findme'",
-          "rect": [83, 60, 40, 19],
-          "reason": "DocumentMarker change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'findme'",
-          "rect": [47, 80, 40, 19],
-          "reason": "DocumentMarker change"
-        }
+      "invalidations": [
+        [10, 135, 208, 19],
+        [20, 224, 202, 72],
+        [10, 191, 138, 12],
+        [259, 40, 40, 19],
+        [244, 60, 40, 19],
+        [204, 60, 40, 19],
+        [83, 60, 40, 19],
+        [47, 80, 40, 19]
       ]
     }
   ]

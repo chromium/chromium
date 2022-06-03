@@ -37,6 +37,14 @@ _JAVA_SRC_DIR = os.path.join('java', 'src', 'org', 'chromium', 'example',
 _REBASELINE_ENV = 'REBASELINE'
 
 
+def _RemoveHashedNames(natives):
+  ret = []
+  for n in natives:
+    ret.append(jni_generator.NativeMethod(**n.__dict__))
+    ret[-1].hashed_proxy_name = None
+  return ret
+
+
 class TestOptions(object):
   """The mock options object which is passed to the jni_generator.py script."""
 
@@ -52,6 +60,7 @@ class TestOptions(object):
     self.enable_tracing = False
     self.use_proxy_hash = False
     self.always_mangle = False
+    self.split_name = None
 
 
 class BaseTest(unittest.TestCase):
@@ -1264,6 +1273,15 @@ class Foo {
                                                     TestOptions())
     self.AssertGoldenTextEquals(jni_from_java.GetContent())
 
+  def testSplitNameExample(self):
+    opts = TestOptions()
+    opts.split_name = "sample"
+    generated_text = self._CreateJniHeaderFromFile(
+        os.path.join(_JAVA_SRC_DIR, 'SampleForTests.java'),
+        'org/chromium/example/jni_generator/SampleForTests', opts)
+    self.AssertGoldenTextEquals(
+        generated_text, golden_file='SampleForTestsWithSplit_jni.golden')
+
 
 class ProxyTestGenerator(BaseTest):
 
@@ -1340,7 +1358,7 @@ class ProxyTestGenerator(BaseTest):
             proxy_name='org_chromium_example_SampleProxyJni_foo_1_1bar'),
     ]
 
-    self.AssertListEquals(natives, golden_natives)
+    self.AssertListEquals(_RemoveHashedNames(natives), golden_natives)
 
   def testProxyNativesMainDex(self):
     test_data = """
@@ -1382,7 +1400,7 @@ class ProxyTestGenerator(BaseTest):
             proxy_name='test_foo_Foo_thisismaindex'),
     ]
 
-    self.AssertListEquals(natives, golden_natives)
+    self.AssertListEquals(_RemoveHashedNames(natives), golden_natives)
 
     jni_params = jni_generator.JniParams(qualified_clazz)
     main_dex_header = jni_registration_generator.HeaderGenerator(
@@ -1492,8 +1510,9 @@ class ProxyTestGenerator(BaseTest):
             is_proxy=True,
             proxy_name='org_chromium_example_SampleProxyJni_foobar'),
     ]
-    self.AssertListEquals(golden_natives, natives)
-    self.AssertListEquals(golden_natives, bad_spacing_natives)
+    self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
+    self.AssertListEquals(golden_natives,
+                          _RemoveHashedNames(bad_spacing_natives))
 
     jni_params = jni_generator.JniParams(qualified_clazz)
     h1 = jni_generator.InlHeaderFileGenerator('', qualified_clazz, natives, [],
@@ -1525,14 +1544,18 @@ class ProxyTestGenerator(BaseTest):
         golden_file='HashedSampleForAnnotationProcessor_jni.golden')
 
     reg_dict = jni_registration_generator._DictForPath(
-        self._JoinScriptDir(path))
+        self._JoinScriptDir(path), use_proxy_hash=True)
     reg_dict = self._MergeRegistrationForTests([reg_dict])
 
-    proxy_opts = jni_registration_generator.ProxyOptions()
+    proxy_opts = jni_registration_generator.ProxyOptions(use_hash=True)
     self.AssertGoldenTextEquals(
         jni_registration_generator.CreateProxyJavaFromDict(
             reg_dict, proxy_opts),
         golden_file='HashedSampleForAnnotationProcessorGenJni.golden')
+    self.AssertGoldenTextEquals(
+        jni_registration_generator.CreateProxyJavaFromDict(
+            reg_dict, proxy_opts, forwarding=True),
+        golden_file='HashedSampleForAnnotationProcessorGenJni.2.golden')
 
   def testProxyJniExample(self):
     generated_text = self._CreateJniHeaderFromFile(
@@ -1621,7 +1644,7 @@ class ProxyTestGenerator(BaseTest):
             proxy_name='org_chromium_foo_FooJni_bazProxy',
             ptr_type='long')
     ]
-    self.AssertListEquals(golden_natives, natives)
+    self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
 
 
 def TouchStamp(stamp_path):

@@ -5,19 +5,34 @@
 #ifndef UI_VIEWS_COREWM_TOOLTIP_H_
 #define UI_VIEWS_COREWM_TOOLTIP_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 
 namespace aura {
 class Window;
 }
 
-namespace gfx {
-class Point;
-}
-
 namespace views {
 namespace corewm {
+
+enum class TooltipPositionBehavior {
+  // A centered tooltip will have its horizontal center aligned with the anchor
+  // point x value. The top of the tooltip will be aligned with the anchor point
+  // y value.
+  kCentered,
+  // A tooltip positioned relatively to the cursor will have its top-left corner
+  // aligned with the anchor point. It will have an additional offset the size
+  // of the cursor, resulting in the tooltip being positioned at the
+  // bottom-right of the cursor.
+  kRelativeToCursor,
+};
+
+struct VIEWS_EXPORT TooltipPosition {
+  gfx::Point anchor_point;
+  TooltipPositionBehavior behavior = TooltipPositionBehavior::kRelativeToCursor;
+};
 
 // Tooltip is responsible for showing the tooltip in an appropriate manner.
 // Tooltip is used by TooltipController.
@@ -29,9 +44,9 @@ class VIEWS_EXPORT Tooltip {
   virtual int GetMaxWidth(const gfx::Point& location) const = 0;
 
   // Updates the text on the tooltip and resizes to fit.
-  virtual void SetText(aura::Window* window,
-                       const base::string16& tooltip_text,
-                       const gfx::Point& location) = 0;
+  virtual void Update(aura::Window* window,
+                      const std::u16string& tooltip_text,
+                      const TooltipPosition& position) = 0;
 
   // Shows the tooltip at the specified location (in screen coordinates).
   virtual void Show() = 0;

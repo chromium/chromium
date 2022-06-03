@@ -1,0 +1,53 @@
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  let iframe = document.createElement("iframe");
+  document.body.appendChild( iframe );
+  let iframe_pc = new iframe.contentWindow.RTCPeerConnection();
+  let iframe_exception_constructor = iframe.contentWindow.DOMException;
+  iframe.remove();
+  assert_equals(iframe_pc.signalingState, 'closed');
+  // Calling functions on the RTCPeerConnection should have no effect.
+  await promise_rejects_dom(t, 'InvalidStateError', iframe_exception_constructor,
+                      iframe_pc.setLocalDescription({type:"answer", sdp:"v0"}));
+  await promise_rejects_dom(t, 'InvalidStateError', iframe_exception_constructor, iframe_pc.setRemoteDescription({type:"answer", sdp:"v0"}));
+  await promise_rejects_dom(t, 'InvalidStateError', iframe_exception_constructor, iframe_pc.createOffer());
+  await promise_rejects_dom(t, 'InvalidStateError', iframe_exception_constructor, iframe_pc.createAnswer());
+  // Verify equivalent (that error callback is called) for callback-based APIs.
+  await promise_rejects_dom(t, 'InvalidStateError',
+                            new Promise((resolve, reject) => {
+                              iframe_pc.setLocalDescription(
+                                {type:"answer", sdp:"v0"},
+                                () => { assert_unreached(); },
+                                e => { reject(e); });
+                            }));
+  await promise_rejects_dom(t, 'InvalidStateError',
+                            new Promise((resolve, reject) => {
+                              iframe_pc.setRemoteDescription(
+                                {type:"answer", sdp:"v0"},
+                                () => { assert_unreached(); },
+                                e => { reject(e); });
+                            }));
+  await promise_rejects_dom(t, 'InvalidStateError',
+                            new Promise((resolve, reject) => {
+                              iframe_pc.createOffer(
+                                () => { assert_unreached(); },
+                                e => { reject(e); });
+                            }));
+
+  await promise_rejects_dom(t, 'InvalidStateError',
+                            new Promise((resolve, reject) => {
+                              iframe_pc.createAnswer(
+                                () => { assert_unreached(); },
+                                e => { reject(e); });
+                            }));
+}, 'PeerConnection in iframe closes properly when context is destroyed');
+</script>
+</body>
+</html>

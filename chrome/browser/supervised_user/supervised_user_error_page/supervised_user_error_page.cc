@@ -4,11 +4,14 @@
 
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/avatar_icon_util.h"
@@ -26,7 +29,7 @@ static const int kAvatarSize1x = 36;
 static const int kAvatarSize2x = 72;
 
 bool ReasonIsAutomatic(FilteringBehaviorReason reason) {
-  return reason == ASYNC_CHECKER || reason == BLACKLIST;
+  return reason == ASYNC_CHECKER || reason == DENYLIST;
 }
 
 std::string BuildAvatarImageUrl(const std::string& url, int size) {
@@ -41,28 +44,20 @@ std::string BuildAvatarImageUrl(const std::string& url, int size) {
 
 }  //  namespace
 
-int GetBlockMessageID(FilteringBehaviorReason reason,
-                      bool is_child_account,
-                      bool single_parent) {
+int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
   switch (reason) {
     case DEFAULT:
-      if (!is_child_account)
-        return IDS_SUPERVISED_USER_BLOCK_MESSAGE_DEFAULT;
-      if (single_parent)
-        return IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT;
-      return IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT;
-    case BLACKLIST:
+      return single_parent ? IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT
+                           : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT;
+    case DENYLIST:
     case ASYNC_CHECKER:
       return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
-    case WHITELIST:
+    case ALLOWLIST:
       NOTREACHED();
       break;
     case MANUAL:
-      if (!is_child_account)
-        return IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL;
-      if (single_parent)
-        return IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT;
-      return IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT;
+      return single_parent ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT
+                           : IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT;
     case NOT_SIGNED_IN:
       return IDS_SUPERVISED_USER_NOT_SIGNED_IN;
   }
@@ -77,10 +72,10 @@ std::string BuildHtml(bool allow_access_requests,
                       const std::string& custodian_email,
                       const std::string& second_custodian,
                       const std::string& second_custodian_email,
-                      bool is_child_account,
-                      bool is_deprecated,
                       FilteringBehaviorReason reason,
-                      const std::string& app_locale) {
+                      const std::string& app_locale,
+                      bool already_sent_remote_request,
+                      bool is_main_frame) {
   base::DictionaryValue strings;
   strings.SetString("blockPageTitle",
                     l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
@@ -97,78 +92,94 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetString("custodianEmail", custodian_email);
   strings.SetString("secondCustodianName", second_custodian);
   strings.SetString("secondCustodianEmail", second_custodian_email);
+  strings.SetBoolean("alreadySentRemoteRequest", already_sent_remote_request);
+  strings.SetBoolean("isMainFrame", is_main_frame);
+  bool web_filter_interstitial_refresh_enabled =
+      supervised_users::IsWebFilterInterstitialRefreshEnabled();
+  bool local_web_approvals_enabled =
+      supervised_users::IsLocalWebApprovalsEnabled();
+  strings.SetBoolean("isWebFilterInterstitialRefreshEnabled",
+                     web_filter_interstitial_refresh_enabled);
+  strings.SetBoolean("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
+  bool is_automatically_blocked = ReasonIsAutomatic(reason);
 
-  base::string16 custodian16 = base::UTF8ToUTF16(custodian);
-  base::string16 block_header;
-  base::string16 block_message;
+  std::u16string custodian16 = base::UTF8ToUTF16(custodian);
+  std::u16string block_header;
+  std::u16string block_message;
   if (reason == FilteringBehaviorReason::NOT_SIGNED_IN) {
     block_header =
         l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN);
   } else if (allow_access_requests) {
-    if (is_child_account) {
-      block_header =
-          l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-      block_message =
-          l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
-    } else {
-      block_header = l10n_util::GetStringFUTF16(IDS_BLOCK_INTERSTITIAL_HEADER,
-                                                custodian16);
-      // For non-child accounts, the block message is empty.
-    }
+    block_header =
+        l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
+    block_message = l10n_util::GetStringUTF16(
+        web_filter_interstitial_refresh_enabled && is_automatically_blocked
+            ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED
+            : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
   } else {
     block_header = l10n_util::GetStringUTF16(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
-
-    if (is_deprecated) {
-      DCHECK(!is_child_account);
-      block_message = l10n_util::GetStringUTF16(
-          IDS_BLOCK_INTERSTITIAL_MESSAGE_SUPERVISED_USERS_DEPRECATED);
-    }
   }
   strings.SetString("blockPageHeader", block_header);
   strings.SetString("blockPageMessage", block_message);
   strings.SetString("blockReasonMessage",
-                    l10n_util::GetStringUTF16(GetBlockMessageID(
-                        reason, is_child_account, second_custodian.empty())));
+                    l10n_util::GetStringUTF16(
+                        GetBlockMessageID(reason, second_custodian.empty())));
   strings.SetString("blockReasonHeader", l10n_util::GetStringUTF16(
                                              IDS_SUPERVISED_USER_BLOCK_HEADER));
-  bool show_feedback = ReasonIsAutomatic(reason);
-  DCHECK(is_child_account || !show_feedback);
 
-  strings.SetBoolean("showFeedbackLink", show_feedback);
+  strings.SetBoolean("showFeedbackLink", is_automatically_blocked);
   strings.SetString("feedbackLink", l10n_util::GetStringUTF16(
                                         IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
-  strings.SetString("backButton", l10n_util::GetStringUTF16(IDS_BACK_BUTTON));
+  if (web_filter_interstitial_refresh_enabled) {
+    strings.SetString(
+        "remoteApprovalsButton",
+        l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
+    strings.SetString("backButton",
+                      l10n_util::GetStringUTF16(IDS_REQUEST_SENT_OK));
+  } else {
+    strings.SetString("remoteApprovalsButton",
+                      l10n_util::GetStringUTF16(
+                          IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
+    strings.SetString("backButton", l10n_util::GetStringUTF16(IDS_BACK_BUTTON));
+  }
+
   strings.SetString(
-      "requestAccessButton",
-      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
+      "localApprovalsButton",
+      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
   strings.SetString(
       "showDetailsLink",
       l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
   strings.SetString(
       "hideDetailsLink",
       l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
-  base::string16 request_sent_message;
-  base::string16 request_failed_message;
-  if (is_child_account) {
-    if (second_custodian.empty()) {
-      request_sent_message = l10n_util::GetStringUTF16(
-          IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT);
-      request_failed_message = l10n_util::GetStringUTF16(
-          IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT);
-    } else {
-      request_sent_message = l10n_util::GetStringUTF16(
-          IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT);
-      request_failed_message = l10n_util::GetStringUTF16(
-          IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
-    }
+  std::u16string request_sent_message;
+  std::u16string request_failed_message;
+  std::u16string request_sent_description;
+  if (web_filter_interstitial_refresh_enabled) {
+    request_sent_message = l10n_util::GetStringUTF16(
+        IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
+    request_sent_description = l10n_util::GetStringUTF16(
+        second_custodian.empty()
+            ? IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT
+            : IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT);
+    request_failed_message = l10n_util::GetStringUTF16(
+        second_custodian.empty()
+            ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
+            : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
+  } else if (second_custodian.empty()) {
+    request_sent_message = l10n_util::GetStringUTF16(
+        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT);
+    request_failed_message = l10n_util::GetStringUTF16(
+        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT);
   } else {
-    request_sent_message = l10n_util::GetStringFUTF16(
-        IDS_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE, custodian16);
-    request_failed_message = l10n_util::GetStringFUTF16(
-        IDS_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE, custodian16);
+    request_sent_message = l10n_util::GetStringUTF16(
+        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT);
+    request_failed_message = l10n_util::GetStringUTF16(
+        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
   }
   strings.SetString("requestSentMessage", request_sent_message);
+  strings.SetString("requestSentDescription", request_sent_description);
   strings.SetString("requestFailedMessage", request_failed_message);
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =

@@ -35,7 +35,6 @@
 // This file defines macros for working with LeakSanitizer, allowing memory
 // and allocations to be registered as exempted from LSan consideration.
 
-#include "base/macros.h"
 #if defined(LEAK_SANITIZER)
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -47,10 +46,10 @@ namespace WTF {
 class LeakSanitizerDisabler {
  public:
   LeakSanitizerDisabler() { __lsan_disable(); }
+  LeakSanitizerDisabler(const LeakSanitizerDisabler&) = delete;
+  LeakSanitizerDisabler& operator=(const LeakSanitizerDisabler&) = delete;
 
   ~LeakSanitizerDisabler() { __lsan_enable(); }
-
-  DISALLOW_COPY_AND_ASSIGN(LeakSanitizerDisabler);
 };
 
 // WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE: all allocations made in the
@@ -73,68 +72,9 @@ class LeakSanitizerDisabler {
 // those embedded pointers be reachable by some other path, they will be
 // reported as leaking.
 #define LEAK_SANITIZER_IGNORE_OBJECT(X) __lsan_ignore_object(X)
-
-// If the object pointed to by the static local is on the Oilpan heap, a strong
-// Persistent<> is created to keep the pointed-to heap object alive. This makes
-// both the Persistent<> and the heap object _reachable_ by LeakSanitizer's leak
-// detection pass. We do not want these intentional leaks to be reported by
-// LSan, hence the static local is registered with Oilpan
-// (see RegisterStaticLocalReference<> below.)
-//
-// Upon Blink shutdown, all the registered statics are released and a final
-// round of GCs are performed to sweep out their now-unreachable object graphs.
-// The end result being a tidied heap that the LeakSanitizer can then scan to
-// report real leaks.
-//
-// The CanRegisterStaticLocalReference<> and RegisterStaticLocalReference<>
-// templates arrange for this -- for a class type T, a registerStatic()
-// implementation is provided if "T* T::registerAsStaticReference(T*)" is a
-// method on T (inherited or otherwise.)
-//
-// An empty, trivial registerStatic() method is provided for all other class
-// types T.
-template <typename T>
-class CanRegisterStaticLocalReference {
-  typedef char YesType;
-  typedef struct NoType { char padding[8]; } NoType;
-
-  // Check if class T has public method "T* registerAsStaticReference()".
-  template <typename V>
-  static YesType checkHasRegisterAsStaticReferenceMethod(
-      V* p,
-      typename std::enable_if<IsSubclass<
-          V,
-          typename std::remove_pointer<decltype(
-              p->registerAsStaticReference())>::type>::value>::type* = 0);
-  template <typename V>
-  static NoType checkHasRegisterAsStaticReferenceMethod(...);
-
- public:
-  static const bool value =
-      sizeof(YesType) + sizeof(T) ==
-      sizeof(checkHasRegisterAsStaticReferenceMethod<T>(nullptr)) + sizeof(T);
-};
-
-template <typename T, bool = CanRegisterStaticLocalReference<T>::value>
-class RegisterStaticLocalReference {
- public:
-  static T* registerStatic(T* ptr) { return ptr; }
-};
-
-template <typename T>
-class RegisterStaticLocalReference<T, true> {
- public:
-  static T* registerStatic(T* ptr) {
-    return static_cast<T*>(ptr->registerAsStaticReference());
-  }
-};
-
-#define LEAK_SANITIZER_REGISTER_STATIC_LOCAL(Type, Object) \
-  WTF::RegisterStaticLocalReference<Type>::registerStatic(Object)
 #else
 #define WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE
 #define LEAK_SANITIZER_IGNORE_OBJECT(X) ((void)0)
-#define LEAK_SANITIZER_REGISTER_STATIC_LOCAL(Type, Object) Object
 #endif  // defined(LEAK_SANITIZER)
 
 }  // namespace WTF

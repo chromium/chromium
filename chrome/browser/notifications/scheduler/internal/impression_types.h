@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace notifications {
 
@@ -67,9 +67,8 @@ struct Impression {
   // the user interacts with the notification.
   CustomData custom_data;
 
-  // Custom suppresion duration in days. It will override |suppression_duration|
-  // in config.
-  base::Optional<base::TimeDelta> custom_suppression_duration;
+  // Duration to mark a notification without feedback as ignored.
+  absl::optional<base::TimeDelta> ignore_timeout_duration;
 };
 
 // Contains details about supression and recovery after suppression expired.
@@ -116,7 +115,18 @@ struct ClientState {
   Impressions impressions;
 
   // Suppression details, no value if there is currently no suppression.
-  base::Optional<SuppressionInfo> suppression_info;
+  absl::optional<SuppressionInfo> suppression_info;
+
+  // The number of negative events caused by concecutive dismiss or not helpful
+  // button clicking in all time. Persisted in protodb.
+  size_t negative_events_count;
+
+  // Timestamp of last negative event occurred. Persisted in protodb.
+  absl::optional<base::Time> last_negative_event_ts;
+
+  // Timestamp of last shown notification.
+  // Persisted in protodb.
+  absl::optional<base::Time> last_shown_ts;
 };
 
 }  // namespace notifications

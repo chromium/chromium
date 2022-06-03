@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GESTURE_CURVE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GESTURE_CURVE_H_
 
-#include "third_party/blink/public/platform/web_float_size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -50,4 +49,4 @@ class WebGestureCurve {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GESTURE_CURVE_H_

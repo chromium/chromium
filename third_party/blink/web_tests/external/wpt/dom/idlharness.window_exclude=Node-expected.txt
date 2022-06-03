@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1241 tests; 1215 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1286 tests; 1283 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -8,21 +8,21 @@ PASS Partial interface Document: member names are unique
 PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Window[2]: member names are unique
 PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
-PASS Document includes GlobalEventHandlers: member names are unique
-PASS Document includes DocumentAndElementEventHandlers: member names are unique
 PASS DocumentFragment includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
 PASS DocumentFragment includes ParentNode: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slotable: member names are unique
 PASS CharacterData includes NonDocumentTypeChildNode: member names are unique
-PASS CharacterData includes ChildNode: member names are unique
 PASS DocumentType includes ChildNode: member names are unique
-PASS Text includes Slotable: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS CharacterData includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Text includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
 PASS XPathEvaluator includes XPathEvaluatorBase: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
 PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
@@ -63,7 +63,7 @@ PASS Event interface: operation preventDefault()
 PASS Event interface: attribute defaultPrevented
 PASS Event interface: attribute composed
 PASS Event interface: attribute timeStamp
-PASS Event interface: operation initEvent(DOMString, boolean, boolean)
+PASS Event interface: operation initEvent(DOMString, optional boolean, optional boolean)
 PASS Event must be primary interface of document.createEvent("Event")
 PASS Stringification of document.createEvent("Event")
 PASS Event interface: document.createEvent("Event") must inherit property "type" with the proper type
@@ -87,8 +87,8 @@ PASS Event interface: document.createEvent("Event") must inherit property "defau
 PASS Event interface: document.createEvent("Event") must inherit property "composed" with the proper type
 PASS Event interface: document.createEvent("Event") must have own property "isTrusted"
 PASS Event interface: document.createEvent("Event") must inherit property "timeStamp" with the proper type
-PASS Event interface: document.createEvent("Event") must inherit property "initEvent(DOMString, boolean, boolean)" with the proper type
-PASS Event interface: calling initEvent(DOMString, boolean, boolean) on document.createEvent("Event") with too few arguments must throw TypeError
+PASS Event interface: document.createEvent("Event") must inherit property "initEvent(DOMString, optional boolean, optional boolean)" with the proper type
+PASS Event interface: calling initEvent(DOMString, optional boolean, optional boolean) on document.createEvent("Event") with too few arguments must throw TypeError
 PASS Event must be primary interface of new Event("foo")
 PASS Stringification of new Event("foo")
 PASS Event interface: new Event("foo") must inherit property "type" with the proper type
@@ -112,8 +112,8 @@ PASS Event interface: new Event("foo") must inherit property "defaultPrevented" 
 PASS Event interface: new Event("foo") must inherit property "composed" with the proper type
 PASS Event interface: new Event("foo") must have own property "isTrusted"
 PASS Event interface: new Event("foo") must inherit property "timeStamp" with the proper type
-PASS Event interface: new Event("foo") must inherit property "initEvent(DOMString, boolean, boolean)" with the proper type
-PASS Event interface: calling initEvent(DOMString, boolean, boolean) on new Event("foo") with too few arguments must throw TypeError
+PASS Event interface: new Event("foo") must inherit property "initEvent(DOMString, optional boolean, optional boolean)" with the proper type
+PASS Event interface: calling initEvent(DOMString, optional boolean, optional boolean) on new Event("foo") with too few arguments must throw TypeError
 PASS CustomEvent interface: existence and properties of interface object
 PASS CustomEvent interface object length
 PASS CustomEvent interface object name
@@ -121,12 +121,12 @@ PASS CustomEvent interface: existence and properties of interface prototype obje
 PASS CustomEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS CustomEvent interface: existence and properties of interface prototype object's @@unscopables property
 PASS CustomEvent interface: attribute detail
-PASS CustomEvent interface: operation initCustomEvent(DOMString, boolean, boolean, any)
+PASS CustomEvent interface: operation initCustomEvent(DOMString, optional boolean, optional boolean, optional any)
 PASS CustomEvent must be primary interface of new CustomEvent("foo")
 PASS Stringification of new CustomEvent("foo")
 PASS CustomEvent interface: new CustomEvent("foo") must inherit property "detail" with the proper type
-PASS CustomEvent interface: new CustomEvent("foo") must inherit property "initCustomEvent(DOMString, boolean, boolean, any)" with the proper type
-PASS CustomEvent interface: calling initCustomEvent(DOMString, boolean, boolean, any) on new CustomEvent("foo") with too few arguments must throw TypeError
+PASS CustomEvent interface: new CustomEvent("foo") must inherit property "initCustomEvent(DOMString, optional boolean, optional boolean, optional any)" with the proper type
+PASS CustomEvent interface: calling initCustomEvent(DOMString, optional boolean, optional boolean, optional any) on new CustomEvent("foo") with too few arguments must throw TypeError
 PASS Event interface: new CustomEvent("foo") must inherit property "type" with the proper type
 PASS Event interface: new CustomEvent("foo") must inherit property "target" with the proper type
 PASS Event interface: new CustomEvent("foo") must inherit property "srcElement" with the proper type
@@ -148,23 +148,23 @@ PASS Event interface: new CustomEvent("foo") must inherit property "defaultPreve
 PASS Event interface: new CustomEvent("foo") must inherit property "composed" with the proper type
 PASS Event interface: new CustomEvent("foo") must have own property "isTrusted"
 PASS Event interface: new CustomEvent("foo") must inherit property "timeStamp" with the proper type
-PASS Event interface: new CustomEvent("foo") must inherit property "initEvent(DOMString, boolean, boolean)" with the proper type
-PASS Event interface: calling initEvent(DOMString, boolean, boolean) on new CustomEvent("foo") with too few arguments must throw TypeError
+PASS Event interface: new CustomEvent("foo") must inherit property "initEvent(DOMString, optional boolean, optional boolean)" with the proper type
+PASS Event interface: calling initEvent(DOMString, optional boolean, optional boolean) on new CustomEvent("foo") with too few arguments must throw TypeError
 PASS EventTarget interface: existence and properties of interface object
 PASS EventTarget interface object length
 PASS EventTarget interface object name
 PASS EventTarget interface: existence and properties of interface prototype object
 PASS EventTarget interface: existence and properties of interface prototype object's "constructor" property
 PASS EventTarget interface: existence and properties of interface prototype object's @@unscopables property
-PASS EventTarget interface: operation addEventListener(DOMString, EventListener, [object Object],[object Object])
-PASS EventTarget interface: operation removeEventListener(DOMString, EventListener, [object Object],[object Object])
+PASS EventTarget interface: operation addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))
+PASS EventTarget interface: operation removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))
 PASS EventTarget interface: operation dispatchEvent(Event)
 PASS EventTarget must be primary interface of new EventTarget()
 PASS Stringification of new EventTarget()
-PASS EventTarget interface: new EventTarget() must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on new EventTarget() with too few arguments must throw TypeError
-PASS EventTarget interface: new EventTarget() must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on new EventTarget() with too few arguments must throw TypeError
+PASS EventTarget interface: new EventTarget() must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on new EventTarget() with too few arguments must throw TypeError
+PASS EventTarget interface: new EventTarget() must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on new EventTarget() with too few arguments must throw TypeError
 PASS EventTarget interface: new EventTarget() must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on new EventTarget() with too few arguments must throw TypeError
 PASS EventListener interface: existence and properties of interface object
@@ -190,16 +190,18 @@ PASS AbortSignal interface object name
 PASS AbortSignal interface: existence and properties of interface prototype object
 PASS AbortSignal interface: existence and properties of interface prototype object's "constructor" property
 PASS AbortSignal interface: existence and properties of interface prototype object's @@unscopables property
+PASS AbortSignal interface: operation abort()
 PASS AbortSignal interface: attribute aborted
 PASS AbortSignal interface: attribute onabort
 PASS AbortSignal must be primary interface of new AbortController().signal
 PASS Stringification of new AbortController().signal
+PASS AbortSignal interface: new AbortController().signal must inherit property "abort()" with the proper type
 PASS AbortSignal interface: new AbortController().signal must inherit property "aborted" with the proper type
 PASS AbortSignal interface: new AbortController().signal must inherit property "onabort" with the proper type
-PASS EventTarget interface: new AbortController().signal must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on new AbortController().signal with too few arguments must throw TypeError
-PASS EventTarget interface: new AbortController().signal must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on new AbortController().signal with too few arguments must throw TypeError
+PASS EventTarget interface: new AbortController().signal must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on new AbortController().signal with too few arguments must throw TypeError
+PASS EventTarget interface: new AbortController().signal must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on new AbortController().signal with too few arguments must throw TypeError
 PASS EventTarget interface: new AbortController().signal must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on new AbortController().signal with too few arguments must throw TypeError
 PASS NodeList interface: existence and properties of interface object
@@ -238,7 +240,7 @@ PASS MutationObserver interface object name
 PASS MutationObserver interface: existence and properties of interface prototype object
 PASS MutationObserver interface: existence and properties of interface prototype object's "constructor" property
 PASS MutationObserver interface: existence and properties of interface prototype object's @@unscopables property
-PASS MutationObserver interface: operation observe(Node, MutationObserverInit)
+PASS MutationObserver interface: operation observe(Node, optional MutationObserverInit)
 PASS MutationObserver interface: operation disconnect()
 PASS MutationObserver interface: operation takeRecords()
 PASS MutationRecord interface: existence and properties of interface object
@@ -261,11 +263,10 @@ PASS Document interface object length
 PASS Document interface object name
 PASS Document interface: existence and properties of interface prototype object
 PASS Document interface: existence and properties of interface prototype object's "constructor" property
-FAIL Document interface: existence and properties of interface prototype object's @@unscopables property assert_false: Document.prototype[Symbol.unscopables] should not be writable expected false got true
+FAIL Document interface: existence and properties of interface prototype object's @@unscopables property assert_not_equals: Document.prototype[Symbol.unscopables] has unexpected property "fullscreen" got disallowed value -1
 PASS Document interface: attribute implementation
 PASS Document interface: attribute URL
 PASS Document interface: attribute documentURI
-FAIL Document interface: attribute origin assert_true: The prototype object must have a property "origin" expected true got false
 PASS Document interface: attribute compatMode
 PASS Document interface: attribute characterSet
 PASS Document interface: attribute charset
@@ -274,41 +275,41 @@ PASS Document interface: attribute contentType
 PASS Document interface: attribute doctype
 PASS Document interface: attribute documentElement
 PASS Document interface: operation getElementsByTagName(DOMString)
-PASS Document interface: operation getElementsByTagNameNS(DOMString, DOMString)
+PASS Document interface: operation getElementsByTagNameNS(DOMString?, DOMString)
 PASS Document interface: operation getElementsByClassName(DOMString)
-PASS Document interface: operation createElement(DOMString, [object Object],[object Object])
-PASS Document interface: operation createElementNS(DOMString, DOMString, [object Object],[object Object])
+PASS Document interface: operation createElement(DOMString, optional (DOMString or ElementCreationOptions))
+PASS Document interface: operation createElementNS(DOMString?, DOMString, optional (DOMString or ElementCreationOptions))
 PASS Document interface: operation createDocumentFragment()
 PASS Document interface: operation createTextNode(DOMString)
 PASS Document interface: operation createCDATASection(DOMString)
 PASS Document interface: operation createComment(DOMString)
 PASS Document interface: operation createProcessingInstruction(DOMString, DOMString)
-PASS Document interface: operation importNode(Node, boolean)
+PASS Document interface: operation importNode(Node, optional boolean)
 PASS Document interface: operation adoptNode(Node)
 PASS Document interface: operation createAttribute(DOMString)
-PASS Document interface: operation createAttributeNS(DOMString, DOMString)
+PASS Document interface: operation createAttributeNS(DOMString?, DOMString)
 PASS Document interface: operation createEvent(DOMString)
 PASS Document interface: operation createRange()
-PASS Document interface: operation createNodeIterator(Node, unsigned long, NodeFilter)
-PASS Document interface: operation createTreeWalker(Node, unsigned long, NodeFilter)
+PASS Document interface: operation createNodeIterator(Node, optional unsigned long, optional NodeFilter?)
+PASS Document interface: operation createTreeWalker(Node, optional unsigned long, optional NodeFilter?)
 PASS Document interface: operation getElementById(DOMString)
 PASS Document interface: attribute children
 PASS Document interface: attribute firstElementChild
 PASS Document interface: attribute lastElementChild
 PASS Document interface: attribute childElementCount
-PASS Document interface: operation prepend([object Object],[object Object])
-PASS Document interface: operation append([object Object],[object Object])
+PASS Document interface: operation prepend((Node or DOMString)...)
+PASS Document interface: operation append((Node or DOMString)...)
+PASS Document interface: operation replaceChildren((Node or DOMString)...)
 PASS Document interface: operation querySelector(DOMString)
 PASS Document interface: operation querySelectorAll(DOMString)
-PASS Document interface: operation createExpression(DOMString, XPathNSResolver)
+PASS Document interface: operation createExpression(DOMString, optional XPathNSResolver?)
 PASS Document interface: operation createNSResolver(Node)
-PASS Document interface: operation evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult)
+PASS Document interface: operation evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?)
 PASS Document must be primary interface of new Document()
 PASS Stringification of new Document()
 PASS Document interface: new Document() must inherit property "implementation" with the proper type
 PASS Document interface: new Document() must inherit property "URL" with the proper type
 PASS Document interface: new Document() must inherit property "documentURI" with the proper type
-FAIL Document interface: new Document() must inherit property "origin" with the proper type assert_inherits: property "origin" not found in prototype chain
 PASS Document interface: new Document() must inherit property "compatMode" with the proper type
 PASS Document interface: new Document() must inherit property "characterSet" with the proper type
 PASS Document interface: new Document() must inherit property "charset" with the proper type
@@ -318,14 +319,14 @@ PASS Document interface: new Document() must inherit property "doctype" with the
 PASS Document interface: new Document() must inherit property "documentElement" with the proper type
 PASS Document interface: new Document() must inherit property "getElementsByTagName(DOMString)" with the proper type
 PASS Document interface: calling getElementsByTagName(DOMString) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "getElementsByTagNameNS(DOMString, DOMString)" with the proper type
-PASS Document interface: calling getElementsByTagNameNS(DOMString, DOMString) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "getElementsByTagNameNS(DOMString?, DOMString)" with the proper type
+PASS Document interface: calling getElementsByTagNameNS(DOMString?, DOMString) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "getElementsByClassName(DOMString)" with the proper type
 PASS Document interface: calling getElementsByClassName(DOMString) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "createElement(DOMString, [object Object],[object Object])" with the proper type
-PASS Document interface: calling createElement(DOMString, [object Object],[object Object]) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "createElementNS(DOMString, DOMString, [object Object],[object Object])" with the proper type
-PASS Document interface: calling createElementNS(DOMString, DOMString, [object Object],[object Object]) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "createElement(DOMString, optional (DOMString or ElementCreationOptions))" with the proper type
+PASS Document interface: calling createElement(DOMString, optional (DOMString or ElementCreationOptions)) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "createElementNS(DOMString?, DOMString, optional (DOMString or ElementCreationOptions))" with the proper type
+PASS Document interface: calling createElementNS(DOMString?, DOMString, optional (DOMString or ElementCreationOptions)) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "createDocumentFragment()" with the proper type
 PASS Document interface: new Document() must inherit property "createTextNode(DOMString)" with the proper type
 PASS Document interface: calling createTextNode(DOMString) on new Document() with too few arguments must throw TypeError
@@ -335,45 +336,47 @@ PASS Document interface: new Document() must inherit property "createComment(DOM
 PASS Document interface: calling createComment(DOMString) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "createProcessingInstruction(DOMString, DOMString)" with the proper type
 PASS Document interface: calling createProcessingInstruction(DOMString, DOMString) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "importNode(Node, boolean)" with the proper type
-PASS Document interface: calling importNode(Node, boolean) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "importNode(Node, optional boolean)" with the proper type
+PASS Document interface: calling importNode(Node, optional boolean) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "adoptNode(Node)" with the proper type
 PASS Document interface: calling adoptNode(Node) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "createAttribute(DOMString)" with the proper type
 PASS Document interface: calling createAttribute(DOMString) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "createAttributeNS(DOMString, DOMString)" with the proper type
-PASS Document interface: calling createAttributeNS(DOMString, DOMString) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "createAttributeNS(DOMString?, DOMString)" with the proper type
+PASS Document interface: calling createAttributeNS(DOMString?, DOMString) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "createEvent(DOMString)" with the proper type
 PASS Document interface: calling createEvent(DOMString) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "createRange()" with the proper type
-PASS Document interface: new Document() must inherit property "createNodeIterator(Node, unsigned long, NodeFilter)" with the proper type
-PASS Document interface: calling createNodeIterator(Node, unsigned long, NodeFilter) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "createTreeWalker(Node, unsigned long, NodeFilter)" with the proper type
-PASS Document interface: calling createTreeWalker(Node, unsigned long, NodeFilter) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "createNodeIterator(Node, optional unsigned long, optional NodeFilter?)" with the proper type
+PASS Document interface: calling createNodeIterator(Node, optional unsigned long, optional NodeFilter?) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "createTreeWalker(Node, optional unsigned long, optional NodeFilter?)" with the proper type
+PASS Document interface: calling createTreeWalker(Node, optional unsigned long, optional NodeFilter?) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "getElementById(DOMString)" with the proper type
 PASS Document interface: calling getElementById(DOMString) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "children" with the proper type
 PASS Document interface: new Document() must inherit property "firstElementChild" with the proper type
 PASS Document interface: new Document() must inherit property "lastElementChild" with the proper type
 PASS Document interface: new Document() must inherit property "childElementCount" with the proper type
-PASS Document interface: new Document() must inherit property "prepend([object Object],[object Object])" with the proper type
-PASS Document interface: calling prepend([object Object],[object Object]) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "append([object Object],[object Object])" with the proper type
-PASS Document interface: calling append([object Object],[object Object]) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "prepend((Node or DOMString)...)" with the proper type
+PASS Document interface: calling prepend((Node or DOMString)...) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "append((Node or DOMString)...)" with the proper type
+PASS Document interface: calling append((Node or DOMString)...) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "replaceChildren((Node or DOMString)...)" with the proper type
+PASS Document interface: calling replaceChildren((Node or DOMString)...) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "querySelector(DOMString)" with the proper type
 PASS Document interface: calling querySelector(DOMString) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "querySelectorAll(DOMString)" with the proper type
 PASS Document interface: calling querySelectorAll(DOMString) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "createExpression(DOMString, XPathNSResolver)" with the proper type
-PASS Document interface: calling createExpression(DOMString, XPathNSResolver) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "createExpression(DOMString, optional XPathNSResolver?)" with the proper type
+PASS Document interface: calling createExpression(DOMString, optional XPathNSResolver?) on new Document() with too few arguments must throw TypeError
 PASS Document interface: new Document() must inherit property "createNSResolver(Node)" with the proper type
 PASS Document interface: calling createNSResolver(Node) on new Document() with too few arguments must throw TypeError
-PASS Document interface: new Document() must inherit property "evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult)" with the proper type
-PASS Document interface: calling evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult) on new Document() with too few arguments must throw TypeError
-PASS EventTarget interface: new Document() must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on new Document() with too few arguments must throw TypeError
-PASS EventTarget interface: new Document() must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on new Document() with too few arguments must throw TypeError
+PASS Document interface: new Document() must inherit property "evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?)" with the proper type
+PASS Document interface: calling evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?) on new Document() with too few arguments must throw TypeError
+PASS EventTarget interface: new Document() must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on new Document() with too few arguments must throw TypeError
+PASS EventTarget interface: new Document() must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on new Document() with too few arguments must throw TypeError
 PASS EventTarget interface: new Document() must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on new Document() with too few arguments must throw TypeError
 PASS XMLDocument interface: existence and properties of interface object
@@ -387,7 +390,6 @@ PASS Stringification of xmlDoc
 PASS Document interface: xmlDoc must inherit property "implementation" with the proper type
 PASS Document interface: xmlDoc must inherit property "URL" with the proper type
 PASS Document interface: xmlDoc must inherit property "documentURI" with the proper type
-FAIL Document interface: xmlDoc must inherit property "origin" with the proper type assert_inherits: property "origin" not found in prototype chain
 PASS Document interface: xmlDoc must inherit property "compatMode" with the proper type
 PASS Document interface: xmlDoc must inherit property "characterSet" with the proper type
 PASS Document interface: xmlDoc must inherit property "charset" with the proper type
@@ -397,14 +399,14 @@ PASS Document interface: xmlDoc must inherit property "doctype" with the proper 
 PASS Document interface: xmlDoc must inherit property "documentElement" with the proper type
 PASS Document interface: xmlDoc must inherit property "getElementsByTagName(DOMString)" with the proper type
 PASS Document interface: calling getElementsByTagName(DOMString) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "getElementsByTagNameNS(DOMString, DOMString)" with the proper type
-PASS Document interface: calling getElementsByTagNameNS(DOMString, DOMString) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "getElementsByTagNameNS(DOMString?, DOMString)" with the proper type
+PASS Document interface: calling getElementsByTagNameNS(DOMString?, DOMString) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "getElementsByClassName(DOMString)" with the proper type
 PASS Document interface: calling getElementsByClassName(DOMString) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "createElement(DOMString, [object Object],[object Object])" with the proper type
-PASS Document interface: calling createElement(DOMString, [object Object],[object Object]) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "createElementNS(DOMString, DOMString, [object Object],[object Object])" with the proper type
-PASS Document interface: calling createElementNS(DOMString, DOMString, [object Object],[object Object]) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "createElement(DOMString, optional (DOMString or ElementCreationOptions))" with the proper type
+PASS Document interface: calling createElement(DOMString, optional (DOMString or ElementCreationOptions)) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "createElementNS(DOMString?, DOMString, optional (DOMString or ElementCreationOptions))" with the proper type
+PASS Document interface: calling createElementNS(DOMString?, DOMString, optional (DOMString or ElementCreationOptions)) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "createDocumentFragment()" with the proper type
 PASS Document interface: xmlDoc must inherit property "createTextNode(DOMString)" with the proper type
 PASS Document interface: calling createTextNode(DOMString) on xmlDoc with too few arguments must throw TypeError
@@ -414,45 +416,47 @@ PASS Document interface: xmlDoc must inherit property "createComment(DOMString)"
 PASS Document interface: calling createComment(DOMString) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "createProcessingInstruction(DOMString, DOMString)" with the proper type
 PASS Document interface: calling createProcessingInstruction(DOMString, DOMString) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "importNode(Node, boolean)" with the proper type
-PASS Document interface: calling importNode(Node, boolean) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "importNode(Node, optional boolean)" with the proper type
+PASS Document interface: calling importNode(Node, optional boolean) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "adoptNode(Node)" with the proper type
 PASS Document interface: calling adoptNode(Node) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "createAttribute(DOMString)" with the proper type
 PASS Document interface: calling createAttribute(DOMString) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "createAttributeNS(DOMString, DOMString)" with the proper type
-PASS Document interface: calling createAttributeNS(DOMString, DOMString) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "createAttributeNS(DOMString?, DOMString)" with the proper type
+PASS Document interface: calling createAttributeNS(DOMString?, DOMString) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "createEvent(DOMString)" with the proper type
 PASS Document interface: calling createEvent(DOMString) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "createRange()" with the proper type
-PASS Document interface: xmlDoc must inherit property "createNodeIterator(Node, unsigned long, NodeFilter)" with the proper type
-PASS Document interface: calling createNodeIterator(Node, unsigned long, NodeFilter) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "createTreeWalker(Node, unsigned long, NodeFilter)" with the proper type
-PASS Document interface: calling createTreeWalker(Node, unsigned long, NodeFilter) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "createNodeIterator(Node, optional unsigned long, optional NodeFilter?)" with the proper type
+PASS Document interface: calling createNodeIterator(Node, optional unsigned long, optional NodeFilter?) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "createTreeWalker(Node, optional unsigned long, optional NodeFilter?)" with the proper type
+PASS Document interface: calling createTreeWalker(Node, optional unsigned long, optional NodeFilter?) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "getElementById(DOMString)" with the proper type
 PASS Document interface: calling getElementById(DOMString) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "children" with the proper type
 PASS Document interface: xmlDoc must inherit property "firstElementChild" with the proper type
 PASS Document interface: xmlDoc must inherit property "lastElementChild" with the proper type
 PASS Document interface: xmlDoc must inherit property "childElementCount" with the proper type
-PASS Document interface: xmlDoc must inherit property "prepend([object Object],[object Object])" with the proper type
-PASS Document interface: calling prepend([object Object],[object Object]) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "append([object Object],[object Object])" with the proper type
-PASS Document interface: calling append([object Object],[object Object]) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "prepend((Node or DOMString)...)" with the proper type
+PASS Document interface: calling prepend((Node or DOMString)...) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "append((Node or DOMString)...)" with the proper type
+PASS Document interface: calling append((Node or DOMString)...) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "replaceChildren((Node or DOMString)...)" with the proper type
+PASS Document interface: calling replaceChildren((Node or DOMString)...) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "querySelector(DOMString)" with the proper type
 PASS Document interface: calling querySelector(DOMString) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "querySelectorAll(DOMString)" with the proper type
 PASS Document interface: calling querySelectorAll(DOMString) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "createExpression(DOMString, XPathNSResolver)" with the proper type
-PASS Document interface: calling createExpression(DOMString, XPathNSResolver) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "createExpression(DOMString, optional XPathNSResolver?)" with the proper type
+PASS Document interface: calling createExpression(DOMString, optional XPathNSResolver?) on xmlDoc with too few arguments must throw TypeError
 PASS Document interface: xmlDoc must inherit property "createNSResolver(Node)" with the proper type
 PASS Document interface: calling createNSResolver(Node) on xmlDoc with too few arguments must throw TypeError
-PASS Document interface: xmlDoc must inherit property "evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult)" with the proper type
-PASS Document interface: calling evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult) on xmlDoc with too few arguments must throw TypeError
-PASS EventTarget interface: xmlDoc must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on xmlDoc with too few arguments must throw TypeError
-PASS EventTarget interface: xmlDoc must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on xmlDoc with too few arguments must throw TypeError
+PASS Document interface: xmlDoc must inherit property "evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?)" with the proper type
+PASS Document interface: calling evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?) on xmlDoc with too few arguments must throw TypeError
+PASS EventTarget interface: xmlDoc must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on xmlDoc with too few arguments must throw TypeError
+PASS EventTarget interface: xmlDoc must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on xmlDoc with too few arguments must throw TypeError
 PASS EventTarget interface: xmlDoc must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on xmlDoc with too few arguments must throw TypeError
 PASS DOMImplementation interface: existence and properties of interface object
@@ -462,47 +466,47 @@ PASS DOMImplementation interface: existence and properties of interface prototyp
 PASS DOMImplementation interface: existence and properties of interface prototype object's "constructor" property
 PASS DOMImplementation interface: existence and properties of interface prototype object's @@unscopables property
 PASS DOMImplementation interface: operation createDocumentType(DOMString, DOMString, DOMString)
-PASS DOMImplementation interface: operation createDocument(DOMString, DOMString, DocumentType)
-PASS DOMImplementation interface: operation createHTMLDocument(DOMString)
+PASS DOMImplementation interface: operation createDocument(DOMString?, DOMString, optional DocumentType?)
+PASS DOMImplementation interface: operation createHTMLDocument(optional DOMString)
 PASS DOMImplementation interface: operation hasFeature()
 PASS DOMImplementation must be primary interface of document.implementation
 PASS Stringification of document.implementation
 PASS DOMImplementation interface: document.implementation must inherit property "createDocumentType(DOMString, DOMString, DOMString)" with the proper type
 PASS DOMImplementation interface: calling createDocumentType(DOMString, DOMString, DOMString) on document.implementation with too few arguments must throw TypeError
-PASS DOMImplementation interface: document.implementation must inherit property "createDocument(DOMString, DOMString, DocumentType)" with the proper type
-PASS DOMImplementation interface: calling createDocument(DOMString, DOMString, DocumentType) on document.implementation with too few arguments must throw TypeError
-PASS DOMImplementation interface: document.implementation must inherit property "createHTMLDocument(DOMString)" with the proper type
-PASS DOMImplementation interface: calling createHTMLDocument(DOMString) on document.implementation with too few arguments must throw TypeError
+PASS DOMImplementation interface: document.implementation must inherit property "createDocument(DOMString?, DOMString, optional DocumentType?)" with the proper type
+PASS DOMImplementation interface: calling createDocument(DOMString?, DOMString, optional DocumentType?) on document.implementation with too few arguments must throw TypeError
+PASS DOMImplementation interface: document.implementation must inherit property "createHTMLDocument(optional DOMString)" with the proper type
+PASS DOMImplementation interface: calling createHTMLDocument(optional DOMString) on document.implementation with too few arguments must throw TypeError
 PASS DOMImplementation interface: document.implementation must inherit property "hasFeature()" with the proper type
 PASS DocumentType interface: existence and properties of interface object
 PASS DocumentType interface object length
 PASS DocumentType interface object name
 PASS DocumentType interface: existence and properties of interface prototype object
 PASS DocumentType interface: existence and properties of interface prototype object's "constructor" property
-FAIL DocumentType interface: existence and properties of interface prototype object's @@unscopables property assert_false: DocumentType.prototype[Symbol.unscopables] should not be writable expected false got true
+PASS DocumentType interface: existence and properties of interface prototype object's @@unscopables property
 PASS DocumentType interface: attribute name
 PASS DocumentType interface: attribute publicId
 PASS DocumentType interface: attribute systemId
-PASS DocumentType interface: operation before([object Object],[object Object])
-PASS DocumentType interface: operation after([object Object],[object Object])
-PASS DocumentType interface: operation replaceWith([object Object],[object Object])
+PASS DocumentType interface: operation before((Node or DOMString)...)
+PASS DocumentType interface: operation after((Node or DOMString)...)
+PASS DocumentType interface: operation replaceWith((Node or DOMString)...)
 PASS DocumentType interface: operation remove()
 PASS DocumentType must be primary interface of document.doctype
 PASS Stringification of document.doctype
 PASS DocumentType interface: document.doctype must inherit property "name" with the proper type
 PASS DocumentType interface: document.doctype must inherit property "publicId" with the proper type
 PASS DocumentType interface: document.doctype must inherit property "systemId" with the proper type
-PASS DocumentType interface: document.doctype must inherit property "before([object Object],[object Object])" with the proper type
-PASS DocumentType interface: calling before([object Object],[object Object]) on document.doctype with too few arguments must throw TypeError
-PASS DocumentType interface: document.doctype must inherit property "after([object Object],[object Object])" with the proper type
-PASS DocumentType interface: calling after([object Object],[object Object]) on document.doctype with too few arguments must throw TypeError
-PASS DocumentType interface: document.doctype must inherit property "replaceWith([object Object],[object Object])" with the proper type
-PASS DocumentType interface: calling replaceWith([object Object],[object Object]) on document.doctype with too few arguments must throw TypeError
+PASS DocumentType interface: document.doctype must inherit property "before((Node or DOMString)...)" with the proper type
+PASS DocumentType interface: calling before((Node or DOMString)...) on document.doctype with too few arguments must throw TypeError
+PASS DocumentType interface: document.doctype must inherit property "after((Node or DOMString)...)" with the proper type
+PASS DocumentType interface: calling after((Node or DOMString)...) on document.doctype with too few arguments must throw TypeError
+PASS DocumentType interface: document.doctype must inherit property "replaceWith((Node or DOMString)...)" with the proper type
+PASS DocumentType interface: calling replaceWith((Node or DOMString)...) on document.doctype with too few arguments must throw TypeError
 PASS DocumentType interface: document.doctype must inherit property "remove()" with the proper type
-PASS EventTarget interface: document.doctype must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on document.doctype with too few arguments must throw TypeError
-PASS EventTarget interface: document.doctype must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on document.doctype with too few arguments must throw TypeError
+PASS EventTarget interface: document.doctype must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on document.doctype with too few arguments must throw TypeError
+PASS EventTarget interface: document.doctype must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on document.doctype with too few arguments must throw TypeError
 PASS EventTarget interface: document.doctype must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on document.doctype with too few arguments must throw TypeError
 PASS DocumentFragment interface: existence and properties of interface object
@@ -510,14 +514,15 @@ PASS DocumentFragment interface object length
 PASS DocumentFragment interface object name
 PASS DocumentFragment interface: existence and properties of interface prototype object
 PASS DocumentFragment interface: existence and properties of interface prototype object's "constructor" property
-FAIL DocumentFragment interface: existence and properties of interface prototype object's @@unscopables property assert_false: DocumentFragment.prototype[Symbol.unscopables] should not be writable expected false got true
+PASS DocumentFragment interface: existence and properties of interface prototype object's @@unscopables property
 PASS DocumentFragment interface: operation getElementById(DOMString)
 PASS DocumentFragment interface: attribute children
 PASS DocumentFragment interface: attribute firstElementChild
 PASS DocumentFragment interface: attribute lastElementChild
 PASS DocumentFragment interface: attribute childElementCount
-PASS DocumentFragment interface: operation prepend([object Object],[object Object])
-PASS DocumentFragment interface: operation append([object Object],[object Object])
+PASS DocumentFragment interface: operation prepend((Node or DOMString)...)
+PASS DocumentFragment interface: operation append((Node or DOMString)...)
+PASS DocumentFragment interface: operation replaceChildren((Node or DOMString)...)
 PASS DocumentFragment interface: operation querySelector(DOMString)
 PASS DocumentFragment interface: operation querySelectorAll(DOMString)
 PASS DocumentFragment must be primary interface of document.createDocumentFragment()
@@ -528,18 +533,20 @@ PASS DocumentFragment interface: document.createDocumentFragment() must inherit 
 PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "firstElementChild" with the proper type
 PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "lastElementChild" with the proper type
 PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "childElementCount" with the proper type
-PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "prepend([object Object],[object Object])" with the proper type
-PASS DocumentFragment interface: calling prepend([object Object],[object Object]) on document.createDocumentFragment() with too few arguments must throw TypeError
-PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "append([object Object],[object Object])" with the proper type
-PASS DocumentFragment interface: calling append([object Object],[object Object]) on document.createDocumentFragment() with too few arguments must throw TypeError
+PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "prepend((Node or DOMString)...)" with the proper type
+PASS DocumentFragment interface: calling prepend((Node or DOMString)...) on document.createDocumentFragment() with too few arguments must throw TypeError
+PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "append((Node or DOMString)...)" with the proper type
+PASS DocumentFragment interface: calling append((Node or DOMString)...) on document.createDocumentFragment() with too few arguments must throw TypeError
+PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "replaceChildren((Node or DOMString)...)" with the proper type
+PASS DocumentFragment interface: calling replaceChildren((Node or DOMString)...) on document.createDocumentFragment() with too few arguments must throw TypeError
 PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "querySelector(DOMString)" with the proper type
 PASS DocumentFragment interface: calling querySelector(DOMString) on document.createDocumentFragment() with too few arguments must throw TypeError
 PASS DocumentFragment interface: document.createDocumentFragment() must inherit property "querySelectorAll(DOMString)" with the proper type
 PASS DocumentFragment interface: calling querySelectorAll(DOMString) on document.createDocumentFragment() with too few arguments must throw TypeError
-PASS EventTarget interface: document.createDocumentFragment() must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on document.createDocumentFragment() with too few arguments must throw TypeError
-PASS EventTarget interface: document.createDocumentFragment() must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on document.createDocumentFragment() with too few arguments must throw TypeError
+PASS EventTarget interface: document.createDocumentFragment() must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on document.createDocumentFragment() with too few arguments must throw TypeError
+PASS EventTarget interface: document.createDocumentFragment() must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on document.createDocumentFragment() with too few arguments must throw TypeError
 PASS EventTarget interface: document.createDocumentFragment() must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on document.createDocumentFragment() with too few arguments must throw TypeError
 PASS ShadowRoot interface: existence and properties of interface object
@@ -549,14 +556,16 @@ PASS ShadowRoot interface: existence and properties of interface prototype objec
 PASS ShadowRoot interface: existence and properties of interface prototype object's "constructor" property
 PASS ShadowRoot interface: existence and properties of interface prototype object's @@unscopables property
 PASS ShadowRoot interface: attribute mode
+PASS ShadowRoot interface: attribute delegatesFocus
+PASS ShadowRoot interface: attribute slotAssignment
 PASS ShadowRoot interface: attribute host
-FAIL ShadowRoot interface: attribute onslotchange assert_true: The prototype object must have a property "onslotchange" expected true got false
+PASS ShadowRoot interface: attribute onslotchange
 PASS Element interface: existence and properties of interface object
 PASS Element interface object length
 PASS Element interface object name
 PASS Element interface: existence and properties of interface prototype object
 PASS Element interface: existence and properties of interface prototype object's "constructor" property
-FAIL Element interface: existence and properties of interface prototype object's @@unscopables property assert_false: Element.prototype[Symbol.unscopables] should not be writable expected false got true
+PASS Element interface: existence and properties of interface prototype object's @@unscopables property
 PASS Element interface: attribute namespaceURI
 PASS Element interface: attribute prefix
 PASS Element interface: attribute localName
@@ -569,16 +578,16 @@ PASS Element interface: operation hasAttributes()
 PASS Element interface: attribute attributes
 PASS Element interface: operation getAttributeNames()
 PASS Element interface: operation getAttribute(DOMString)
-PASS Element interface: operation getAttributeNS(DOMString, DOMString)
+PASS Element interface: operation getAttributeNS(DOMString?, DOMString)
 PASS Element interface: operation setAttribute(DOMString, DOMString)
-PASS Element interface: operation setAttributeNS(DOMString, DOMString, DOMString)
+PASS Element interface: operation setAttributeNS(DOMString?, DOMString, DOMString)
 PASS Element interface: operation removeAttribute(DOMString)
-PASS Element interface: operation removeAttributeNS(DOMString, DOMString)
-PASS Element interface: operation toggleAttribute(DOMString, boolean)
+PASS Element interface: operation removeAttributeNS(DOMString?, DOMString)
+PASS Element interface: operation toggleAttribute(DOMString, optional boolean)
 PASS Element interface: operation hasAttribute(DOMString)
-PASS Element interface: operation hasAttributeNS(DOMString, DOMString)
+PASS Element interface: operation hasAttributeNS(DOMString?, DOMString)
 PASS Element interface: operation getAttributeNode(DOMString)
-PASS Element interface: operation getAttributeNodeNS(DOMString, DOMString)
+PASS Element interface: operation getAttributeNodeNS(DOMString?, DOMString)
 PASS Element interface: operation setAttributeNode(Attr)
 PASS Element interface: operation setAttributeNodeNS(Attr)
 PASS Element interface: operation removeAttributeNode(Attr)
@@ -588,7 +597,7 @@ PASS Element interface: operation closest(DOMString)
 PASS Element interface: operation matches(DOMString)
 PASS Element interface: operation webkitMatchesSelector(DOMString)
 PASS Element interface: operation getElementsByTagName(DOMString)
-PASS Element interface: operation getElementsByTagNameNS(DOMString, DOMString)
+PASS Element interface: operation getElementsByTagNameNS(DOMString?, DOMString)
 PASS Element interface: operation getElementsByClassName(DOMString)
 PASS Element interface: operation insertAdjacentElement(DOMString, Element)
 PASS Element interface: operation insertAdjacentText(DOMString, DOMString)
@@ -596,15 +605,16 @@ PASS Element interface: attribute children
 PASS Element interface: attribute firstElementChild
 PASS Element interface: attribute lastElementChild
 PASS Element interface: attribute childElementCount
-PASS Element interface: operation prepend([object Object],[object Object])
-PASS Element interface: operation append([object Object],[object Object])
+PASS Element interface: operation prepend((Node or DOMString)...)
+PASS Element interface: operation append((Node or DOMString)...)
+PASS Element interface: operation replaceChildren((Node or DOMString)...)
 PASS Element interface: operation querySelector(DOMString)
 PASS Element interface: operation querySelectorAll(DOMString)
 PASS Element interface: attribute previousElementSibling
 PASS Element interface: attribute nextElementSibling
-PASS Element interface: operation before([object Object],[object Object])
-PASS Element interface: operation after([object Object],[object Object])
-PASS Element interface: operation replaceWith([object Object],[object Object])
+PASS Element interface: operation before((Node or DOMString)...)
+PASS Element interface: operation after((Node or DOMString)...)
+PASS Element interface: operation replaceWith((Node or DOMString)...)
 PASS Element interface: operation remove()
 PASS Element interface: attribute assignedSlot
 PASS Element must be primary interface of element
@@ -622,26 +632,26 @@ PASS Element interface: element must inherit property "attributes" with the prop
 PASS Element interface: element must inherit property "getAttributeNames()" with the proper type
 PASS Element interface: element must inherit property "getAttribute(DOMString)" with the proper type
 PASS Element interface: calling getAttribute(DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "getAttributeNS(DOMString, DOMString)" with the proper type
-PASS Element interface: calling getAttributeNS(DOMString, DOMString) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "getAttributeNS(DOMString?, DOMString)" with the proper type
+PASS Element interface: calling getAttributeNS(DOMString?, DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "setAttribute(DOMString, DOMString)" with the proper type
 PASS Element interface: calling setAttribute(DOMString, DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "setAttributeNS(DOMString, DOMString, DOMString)" with the proper type
-PASS Element interface: calling setAttributeNS(DOMString, DOMString, DOMString) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "setAttributeNS(DOMString?, DOMString, DOMString)" with the proper type
+PASS Element interface: calling setAttributeNS(DOMString?, DOMString, DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "removeAttribute(DOMString)" with the proper type
 PASS Element interface: calling removeAttribute(DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "removeAttributeNS(DOMString, DOMString)" with the proper type
-PASS Element interface: calling removeAttributeNS(DOMString, DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "toggleAttribute(DOMString, boolean)" with the proper type
-PASS Element interface: calling toggleAttribute(DOMString, boolean) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "removeAttributeNS(DOMString?, DOMString)" with the proper type
+PASS Element interface: calling removeAttributeNS(DOMString?, DOMString) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "toggleAttribute(DOMString, optional boolean)" with the proper type
+PASS Element interface: calling toggleAttribute(DOMString, optional boolean) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "hasAttribute(DOMString)" with the proper type
 PASS Element interface: calling hasAttribute(DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "hasAttributeNS(DOMString, DOMString)" with the proper type
-PASS Element interface: calling hasAttributeNS(DOMString, DOMString) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "hasAttributeNS(DOMString?, DOMString)" with the proper type
+PASS Element interface: calling hasAttributeNS(DOMString?, DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "getAttributeNode(DOMString)" with the proper type
 PASS Element interface: calling getAttributeNode(DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "getAttributeNodeNS(DOMString, DOMString)" with the proper type
-PASS Element interface: calling getAttributeNodeNS(DOMString, DOMString) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "getAttributeNodeNS(DOMString?, DOMString)" with the proper type
+PASS Element interface: calling getAttributeNodeNS(DOMString?, DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "setAttributeNode(Attr)" with the proper type
 PASS Element interface: calling setAttributeNode(Attr) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "setAttributeNodeNS(Attr)" with the proper type
@@ -659,8 +669,8 @@ PASS Element interface: element must inherit property "webkitMatchesSelector(DOM
 PASS Element interface: calling webkitMatchesSelector(DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "getElementsByTagName(DOMString)" with the proper type
 PASS Element interface: calling getElementsByTagName(DOMString) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "getElementsByTagNameNS(DOMString, DOMString)" with the proper type
-PASS Element interface: calling getElementsByTagNameNS(DOMString, DOMString) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "getElementsByTagNameNS(DOMString?, DOMString)" with the proper type
+PASS Element interface: calling getElementsByTagNameNS(DOMString?, DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "getElementsByClassName(DOMString)" with the proper type
 PASS Element interface: calling getElementsByClassName(DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "insertAdjacentElement(DOMString, Element)" with the proper type
@@ -671,28 +681,30 @@ PASS Element interface: element must inherit property "children" with the proper
 PASS Element interface: element must inherit property "firstElementChild" with the proper type
 PASS Element interface: element must inherit property "lastElementChild" with the proper type
 PASS Element interface: element must inherit property "childElementCount" with the proper type
-PASS Element interface: element must inherit property "prepend([object Object],[object Object])" with the proper type
-PASS Element interface: calling prepend([object Object],[object Object]) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "append([object Object],[object Object])" with the proper type
-PASS Element interface: calling append([object Object],[object Object]) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "prepend((Node or DOMString)...)" with the proper type
+PASS Element interface: calling prepend((Node or DOMString)...) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "append((Node or DOMString)...)" with the proper type
+PASS Element interface: calling append((Node or DOMString)...) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "replaceChildren((Node or DOMString)...)" with the proper type
+PASS Element interface: calling replaceChildren((Node or DOMString)...) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "querySelector(DOMString)" with the proper type
 PASS Element interface: calling querySelector(DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "querySelectorAll(DOMString)" with the proper type
 PASS Element interface: calling querySelectorAll(DOMString) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "previousElementSibling" with the proper type
 PASS Element interface: element must inherit property "nextElementSibling" with the proper type
-PASS Element interface: element must inherit property "before([object Object],[object Object])" with the proper type
-PASS Element interface: calling before([object Object],[object Object]) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "after([object Object],[object Object])" with the proper type
-PASS Element interface: calling after([object Object],[object Object]) on element with too few arguments must throw TypeError
-PASS Element interface: element must inherit property "replaceWith([object Object],[object Object])" with the proper type
-PASS Element interface: calling replaceWith([object Object],[object Object]) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "before((Node or DOMString)...)" with the proper type
+PASS Element interface: calling before((Node or DOMString)...) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "after((Node or DOMString)...)" with the proper type
+PASS Element interface: calling after((Node or DOMString)...) on element with too few arguments must throw TypeError
+PASS Element interface: element must inherit property "replaceWith((Node or DOMString)...)" with the proper type
+PASS Element interface: calling replaceWith((Node or DOMString)...) on element with too few arguments must throw TypeError
 PASS Element interface: element must inherit property "remove()" with the proper type
 PASS Element interface: element must inherit property "assignedSlot" with the proper type
-PASS EventTarget interface: element must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on element with too few arguments must throw TypeError
-PASS EventTarget interface: element must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on element with too few arguments must throw TypeError
+PASS EventTarget interface: element must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on element with too few arguments must throw TypeError
+PASS EventTarget interface: element must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on element with too few arguments must throw TypeError
 PASS EventTarget interface: element must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on element with too few arguments must throw TypeError
 PASS NamedNodeMap interface: existence and properties of interface object
@@ -704,11 +716,11 @@ PASS NamedNodeMap interface: existence and properties of interface prototype obj
 PASS NamedNodeMap interface: attribute length
 PASS NamedNodeMap interface: operation item(unsigned long)
 PASS NamedNodeMap interface: operation getNamedItem(DOMString)
-PASS NamedNodeMap interface: operation getNamedItemNS(DOMString, DOMString)
+PASS NamedNodeMap interface: operation getNamedItemNS(DOMString?, DOMString)
 PASS NamedNodeMap interface: operation setNamedItem(Attr)
 PASS NamedNodeMap interface: operation setNamedItemNS(Attr)
 PASS NamedNodeMap interface: operation removeNamedItem(DOMString)
-PASS NamedNodeMap interface: operation removeNamedItemNS(DOMString, DOMString)
+PASS NamedNodeMap interface: operation removeNamedItemNS(DOMString?, DOMString)
 PASS Attr interface: existence and properties of interface object
 PASS Attr interface object length
 PASS Attr interface object name
@@ -731,10 +743,10 @@ PASS Attr interface: document.querySelector("[id]").attributes[0] must inherit p
 PASS Attr interface: document.querySelector("[id]").attributes[0] must inherit property "value" with the proper type
 PASS Attr interface: document.querySelector("[id]").attributes[0] must inherit property "ownerElement" with the proper type
 PASS Attr interface: document.querySelector("[id]").attributes[0] must inherit property "specified" with the proper type
-PASS EventTarget interface: document.querySelector("[id]").attributes[0] must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on document.querySelector("[id]").attributes[0] with too few arguments must throw TypeError
-PASS EventTarget interface: document.querySelector("[id]").attributes[0] must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on document.querySelector("[id]").attributes[0] with too few arguments must throw TypeError
+PASS EventTarget interface: document.querySelector("[id]").attributes[0] must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on document.querySelector("[id]").attributes[0] with too few arguments must throw TypeError
+PASS EventTarget interface: document.querySelector("[id]").attributes[0] must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on document.querySelector("[id]").attributes[0] with too few arguments must throw TypeError
 PASS EventTarget interface: document.querySelector("[id]").attributes[0] must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on document.querySelector("[id]").attributes[0] with too few arguments must throw TypeError
 PASS CharacterData interface: existence and properties of interface object
@@ -742,7 +754,7 @@ PASS CharacterData interface object length
 PASS CharacterData interface object name
 PASS CharacterData interface: existence and properties of interface prototype object
 PASS CharacterData interface: existence and properties of interface prototype object's "constructor" property
-FAIL CharacterData interface: existence and properties of interface prototype object's @@unscopables property assert_false: CharacterData.prototype[Symbol.unscopables] should not be writable expected false got true
+PASS CharacterData interface: existence and properties of interface prototype object's @@unscopables property
 PASS CharacterData interface: attribute data
 PASS CharacterData interface: attribute length
 PASS CharacterData interface: operation substringData(unsigned long, unsigned long)
@@ -752,9 +764,9 @@ PASS CharacterData interface: operation deleteData(unsigned long, unsigned long)
 PASS CharacterData interface: operation replaceData(unsigned long, unsigned long, DOMString)
 PASS CharacterData interface: attribute previousElementSibling
 PASS CharacterData interface: attribute nextElementSibling
-PASS CharacterData interface: operation before([object Object],[object Object])
-PASS CharacterData interface: operation after([object Object],[object Object])
-PASS CharacterData interface: operation replaceWith([object Object],[object Object])
+PASS CharacterData interface: operation before((Node or DOMString)...)
+PASS CharacterData interface: operation after((Node or DOMString)...)
+PASS CharacterData interface: operation replaceWith((Node or DOMString)...)
 PASS CharacterData interface: operation remove()
 PASS Text interface: existence and properties of interface object
 PASS Text interface object length
@@ -785,17 +797,17 @@ PASS CharacterData interface: document.createTextNode("abc") must inherit proper
 PASS CharacterData interface: calling replaceData(unsigned long, unsigned long, DOMString) on document.createTextNode("abc") with too few arguments must throw TypeError
 PASS CharacterData interface: document.createTextNode("abc") must inherit property "previousElementSibling" with the proper type
 PASS CharacterData interface: document.createTextNode("abc") must inherit property "nextElementSibling" with the proper type
-PASS CharacterData interface: document.createTextNode("abc") must inherit property "before([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling before([object Object],[object Object]) on document.createTextNode("abc") with too few arguments must throw TypeError
-PASS CharacterData interface: document.createTextNode("abc") must inherit property "after([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling after([object Object],[object Object]) on document.createTextNode("abc") with too few arguments must throw TypeError
-PASS CharacterData interface: document.createTextNode("abc") must inherit property "replaceWith([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling replaceWith([object Object],[object Object]) on document.createTextNode("abc") with too few arguments must throw TypeError
+PASS CharacterData interface: document.createTextNode("abc") must inherit property "before((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling before((Node or DOMString)...) on document.createTextNode("abc") with too few arguments must throw TypeError
+PASS CharacterData interface: document.createTextNode("abc") must inherit property "after((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling after((Node or DOMString)...) on document.createTextNode("abc") with too few arguments must throw TypeError
+PASS CharacterData interface: document.createTextNode("abc") must inherit property "replaceWith((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling replaceWith((Node or DOMString)...) on document.createTextNode("abc") with too few arguments must throw TypeError
 PASS CharacterData interface: document.createTextNode("abc") must inherit property "remove()" with the proper type
-PASS EventTarget interface: document.createTextNode("abc") must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on document.createTextNode("abc") with too few arguments must throw TypeError
-PASS EventTarget interface: document.createTextNode("abc") must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on document.createTextNode("abc") with too few arguments must throw TypeError
+PASS EventTarget interface: document.createTextNode("abc") must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on document.createTextNode("abc") with too few arguments must throw TypeError
+PASS EventTarget interface: document.createTextNode("abc") must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on document.createTextNode("abc") with too few arguments must throw TypeError
 PASS EventTarget interface: document.createTextNode("abc") must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on document.createTextNode("abc") with too few arguments must throw TypeError
 PASS CDATASection interface: existence and properties of interface object
@@ -828,17 +840,17 @@ PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") m
 PASS CharacterData interface: calling replaceData(unsigned long, unsigned long, DOMString) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
 PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "previousElementSibling" with the proper type
 PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "nextElementSibling" with the proper type
-PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "before([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling before([object Object],[object Object]) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
-PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "after([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling after([object Object],[object Object]) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
-PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "replaceWith([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling replaceWith([object Object],[object Object]) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
+PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "before((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling before((Node or DOMString)...) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
+PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "after((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling after((Node or DOMString)...) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
+PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "replaceWith((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling replaceWith((Node or DOMString)...) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
 PASS CharacterData interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "remove()" with the proper type
-PASS EventTarget interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
-PASS EventTarget interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
+PASS EventTarget interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
+PASS EventTarget interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
 PASS EventTarget interface: xmlDoc.createProcessingInstruction("abc", "def") must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on xmlDoc.createProcessingInstruction("abc", "def") with too few arguments must throw TypeError
 PASS Comment interface: existence and properties of interface object
@@ -863,40 +875,40 @@ PASS CharacterData interface: document.createComment("abc") must inherit propert
 PASS CharacterData interface: calling replaceData(unsigned long, unsigned long, DOMString) on document.createComment("abc") with too few arguments must throw TypeError
 PASS CharacterData interface: document.createComment("abc") must inherit property "previousElementSibling" with the proper type
 PASS CharacterData interface: document.createComment("abc") must inherit property "nextElementSibling" with the proper type
-PASS CharacterData interface: document.createComment("abc") must inherit property "before([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling before([object Object],[object Object]) on document.createComment("abc") with too few arguments must throw TypeError
-PASS CharacterData interface: document.createComment("abc") must inherit property "after([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling after([object Object],[object Object]) on document.createComment("abc") with too few arguments must throw TypeError
-PASS CharacterData interface: document.createComment("abc") must inherit property "replaceWith([object Object],[object Object])" with the proper type
-PASS CharacterData interface: calling replaceWith([object Object],[object Object]) on document.createComment("abc") with too few arguments must throw TypeError
+PASS CharacterData interface: document.createComment("abc") must inherit property "before((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling before((Node or DOMString)...) on document.createComment("abc") with too few arguments must throw TypeError
+PASS CharacterData interface: document.createComment("abc") must inherit property "after((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling after((Node or DOMString)...) on document.createComment("abc") with too few arguments must throw TypeError
+PASS CharacterData interface: document.createComment("abc") must inherit property "replaceWith((Node or DOMString)...)" with the proper type
+PASS CharacterData interface: calling replaceWith((Node or DOMString)...) on document.createComment("abc") with too few arguments must throw TypeError
 PASS CharacterData interface: document.createComment("abc") must inherit property "remove()" with the proper type
-PASS EventTarget interface: document.createComment("abc") must inherit property "addEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling addEventListener(DOMString, EventListener, [object Object],[object Object]) on document.createComment("abc") with too few arguments must throw TypeError
-PASS EventTarget interface: document.createComment("abc") must inherit property "removeEventListener(DOMString, EventListener, [object Object],[object Object])" with the proper type
-PASS EventTarget interface: calling removeEventListener(DOMString, EventListener, [object Object],[object Object]) on document.createComment("abc") with too few arguments must throw TypeError
+PASS EventTarget interface: document.createComment("abc") must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on document.createComment("abc") with too few arguments must throw TypeError
+PASS EventTarget interface: document.createComment("abc") must inherit property "removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean))" with the proper type
+PASS EventTarget interface: calling removeEventListener(DOMString, EventListener?, optional (EventListenerOptions or boolean)) on document.createComment("abc") with too few arguments must throw TypeError
 PASS EventTarget interface: document.createComment("abc") must inherit property "dispatchEvent(Event)" with the proper type
 PASS EventTarget interface: calling dispatchEvent(Event) on document.createComment("abc") with too few arguments must throw TypeError
-FAIL AbstractRange interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface object length assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface object name assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute startContainer assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute startOffset assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute endContainer assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute endOffset assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL AbstractRange interface: attribute collapsed assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL StaticRange interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
-FAIL StaticRange interface object length assert_equals: wrong value for StaticRange.length expected 1 but got 0
+PASS AbstractRange interface: existence and properties of interface object
+PASS AbstractRange interface object length
+PASS AbstractRange interface object name
+PASS AbstractRange interface: existence and properties of interface prototype object
+PASS AbstractRange interface: existence and properties of interface prototype object's "constructor" property
+PASS AbstractRange interface: existence and properties of interface prototype object's @@unscopables property
+PASS AbstractRange interface: attribute startContainer
+PASS AbstractRange interface: attribute startOffset
+PASS AbstractRange interface: attribute endContainer
+PASS AbstractRange interface: attribute endOffset
+PASS AbstractRange interface: attribute collapsed
+PASS StaticRange interface: existence and properties of interface object
+PASS StaticRange interface object length
 PASS StaticRange interface object name
-FAIL StaticRange interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS StaticRange interface: existence and properties of interface prototype object
 PASS StaticRange interface: existence and properties of interface prototype object's "constructor" property
 PASS StaticRange interface: existence and properties of interface prototype object's @@unscopables property
-FAIL Range interface: existence and properties of interface object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS Range interface: existence and properties of interface object
 PASS Range interface object length
 PASS Range interface object name
-FAIL Range interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AbstractRange" expected property "AbstractRange" missing
+PASS Range interface: existence and properties of interface prototype object
 PASS Range interface: existence and properties of interface prototype object's "constructor" property
 PASS Range interface: existence and properties of interface prototype object's @@unscopables property
 PASS Range interface: attribute commonAncestorContainer
@@ -906,7 +918,7 @@ PASS Range interface: operation setStartBefore(Node)
 PASS Range interface: operation setStartAfter(Node)
 PASS Range interface: operation setEndBefore(Node)
 PASS Range interface: operation setEndAfter(Node)
-PASS Range interface: operation collapse(boolean)
+PASS Range interface: operation collapse(optional boolean)
 PASS Range interface: operation selectNode(Node)
 PASS Range interface: operation selectNodeContents(Node)
 PASS Range interface: constant START_TO_START on interface object
@@ -944,8 +956,8 @@ PASS Range interface: document.createRange() must inherit property "setEndBefore
 PASS Range interface: calling setEndBefore(Node) on document.createRange() with too few arguments must throw TypeError
 PASS Range interface: document.createRange() must inherit property "setEndAfter(Node)" with the proper type
 PASS Range interface: calling setEndAfter(Node) on document.createRange() with too few arguments must throw TypeError
-PASS Range interface: document.createRange() must inherit property "collapse(boolean)" with the proper type
-PASS Range interface: calling collapse(boolean) on document.createRange() with too few arguments must throw TypeError
+PASS Range interface: document.createRange() must inherit property "collapse(optional boolean)" with the proper type
+PASS Range interface: calling collapse(optional boolean) on document.createRange() with too few arguments must throw TypeError
 PASS Range interface: document.createRange() must inherit property "selectNode(Node)" with the proper type
 PASS Range interface: calling selectNode(Node) on document.createRange() with too few arguments must throw TypeError
 PASS Range interface: document.createRange() must inherit property "selectNodeContents(Node)" with the proper type
@@ -991,8 +1003,8 @@ PASS Range interface: detachedRange must inherit property "setEndBefore(Node)" w
 PASS Range interface: calling setEndBefore(Node) on detachedRange with too few arguments must throw TypeError
 PASS Range interface: detachedRange must inherit property "setEndAfter(Node)" with the proper type
 PASS Range interface: calling setEndAfter(Node) on detachedRange with too few arguments must throw TypeError
-PASS Range interface: detachedRange must inherit property "collapse(boolean)" with the proper type
-PASS Range interface: calling collapse(boolean) on detachedRange with too few arguments must throw TypeError
+PASS Range interface: detachedRange must inherit property "collapse(optional boolean)" with the proper type
+PASS Range interface: calling collapse(optional boolean) on detachedRange with too few arguments must throw TypeError
 PASS Range interface: detachedRange must inherit property "selectNode(Node)" with the proper type
 PASS Range interface: calling selectNode(Node) on detachedRange with too few arguments must throw TypeError
 PASS Range interface: detachedRange must inherit property "selectNodeContents(Node)" with the proper type
@@ -1124,9 +1136,9 @@ PASS DOMTokenList interface: existence and properties of interface prototype obj
 PASS DOMTokenList interface: attribute length
 PASS DOMTokenList interface: operation item(unsigned long)
 PASS DOMTokenList interface: operation contains(DOMString)
-PASS DOMTokenList interface: operation add(DOMString)
-PASS DOMTokenList interface: operation remove(DOMString)
-PASS DOMTokenList interface: operation toggle(DOMString, boolean)
+PASS DOMTokenList interface: operation add(DOMString...)
+PASS DOMTokenList interface: operation remove(DOMString...)
+PASS DOMTokenList interface: operation toggle(DOMString, optional boolean)
 PASS DOMTokenList interface: operation replace(DOMString, DOMString)
 PASS DOMTokenList interface: operation supports(DOMString)
 PASS DOMTokenList interface: attribute value
@@ -1139,12 +1151,12 @@ PASS DOMTokenList interface: document.body.classList must inherit property "item
 PASS DOMTokenList interface: calling item(unsigned long) on document.body.classList with too few arguments must throw TypeError
 PASS DOMTokenList interface: document.body.classList must inherit property "contains(DOMString)" with the proper type
 PASS DOMTokenList interface: calling contains(DOMString) on document.body.classList with too few arguments must throw TypeError
-PASS DOMTokenList interface: document.body.classList must inherit property "add(DOMString)" with the proper type
-PASS DOMTokenList interface: calling add(DOMString) on document.body.classList with too few arguments must throw TypeError
-PASS DOMTokenList interface: document.body.classList must inherit property "remove(DOMString)" with the proper type
-PASS DOMTokenList interface: calling remove(DOMString) on document.body.classList with too few arguments must throw TypeError
-PASS DOMTokenList interface: document.body.classList must inherit property "toggle(DOMString, boolean)" with the proper type
-PASS DOMTokenList interface: calling toggle(DOMString, boolean) on document.body.classList with too few arguments must throw TypeError
+PASS DOMTokenList interface: document.body.classList must inherit property "add(DOMString...)" with the proper type
+PASS DOMTokenList interface: calling add(DOMString...) on document.body.classList with too few arguments must throw TypeError
+PASS DOMTokenList interface: document.body.classList must inherit property "remove(DOMString...)" with the proper type
+PASS DOMTokenList interface: calling remove(DOMString...) on document.body.classList with too few arguments must throw TypeError
+PASS DOMTokenList interface: document.body.classList must inherit property "toggle(DOMString, optional boolean)" with the proper type
+PASS DOMTokenList interface: calling toggle(DOMString, optional boolean) on document.body.classList with too few arguments must throw TypeError
 PASS DOMTokenList interface: document.body.classList must inherit property "replace(DOMString, DOMString)" with the proper type
 PASS DOMTokenList interface: calling replace(DOMString, DOMString) on document.body.classList with too few arguments must throw TypeError
 PASS DOMTokenList interface: document.body.classList must inherit property "supports(DOMString)" with the proper type
@@ -1213,33 +1225,68 @@ PASS XPathExpression interface object name
 PASS XPathExpression interface: existence and properties of interface prototype object
 PASS XPathExpression interface: existence and properties of interface prototype object's "constructor" property
 PASS XPathExpression interface: existence and properties of interface prototype object's @@unscopables property
-PASS XPathExpression interface: operation evaluate(Node, unsigned short, XPathResult)
+PASS XPathExpression interface: operation evaluate(Node, optional unsigned short, optional XPathResult?)
 PASS XPathExpression must be primary interface of document.createExpression("//*")
 PASS Stringification of document.createExpression("//*")
-PASS XPathExpression interface: document.createExpression("//*") must inherit property "evaluate(Node, unsigned short, XPathResult)" with the proper type
-PASS XPathExpression interface: calling evaluate(Node, unsigned short, XPathResult) on document.createExpression("//*") with too few arguments must throw TypeError
+PASS XPathExpression interface: document.createExpression("//*") must inherit property "evaluate(Node, optional unsigned short, optional XPathResult?)" with the proper type
+PASS XPathExpression interface: calling evaluate(Node, optional unsigned short, optional XPathResult?) on document.createExpression("//*") with too few arguments must throw TypeError
 PASS XPathNSResolver interface: existence and properties of interface object
 PASS XPathNSResolver interface: existence and properties of interface prototype object
 PASS XPathNSResolver interface: existence and properties of interface prototype object's "constructor" property
 PASS XPathNSResolver interface: existence and properties of interface prototype object's @@unscopables property
-PASS XPathNSResolver interface: operation lookupNamespaceURI(DOMString)
+PASS XPathNSResolver interface: operation lookupNamespaceURI(DOMString?)
+PASS Stringification of document.createNSResolver(document.body)
+PASS XPathNSResolver interface: document.createNSResolver(document.body) must inherit property "lookupNamespaceURI(DOMString?)" with the proper type
+FAIL XPathNSResolver interface: calling lookupNamespaceURI(DOMString?) on document.createNSResolver(document.body) with too few arguments must throw TypeError assert_throws_js: Called with 0 arguments function "function() {
+            fn.apply(obj, args);
+        }" did not throw
 PASS XPathEvaluator interface: existence and properties of interface object
 PASS XPathEvaluator interface object length
 PASS XPathEvaluator interface object name
 PASS XPathEvaluator interface: existence and properties of interface prototype object
 PASS XPathEvaluator interface: existence and properties of interface prototype object's "constructor" property
 PASS XPathEvaluator interface: existence and properties of interface prototype object's @@unscopables property
-PASS XPathEvaluator interface: operation createExpression(DOMString, XPathNSResolver)
+PASS XPathEvaluator interface: operation createExpression(DOMString, optional XPathNSResolver?)
 PASS XPathEvaluator interface: operation createNSResolver(Node)
-PASS XPathEvaluator interface: operation evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult)
+PASS XPathEvaluator interface: operation evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?)
 PASS XPathEvaluator must be primary interface of new XPathEvaluator()
 PASS Stringification of new XPathEvaluator()
-PASS XPathEvaluator interface: new XPathEvaluator() must inherit property "createExpression(DOMString, XPathNSResolver)" with the proper type
-PASS XPathEvaluator interface: calling createExpression(DOMString, XPathNSResolver) on new XPathEvaluator() with too few arguments must throw TypeError
+PASS XPathEvaluator interface: new XPathEvaluator() must inherit property "createExpression(DOMString, optional XPathNSResolver?)" with the proper type
+PASS XPathEvaluator interface: calling createExpression(DOMString, optional XPathNSResolver?) on new XPathEvaluator() with too few arguments must throw TypeError
 PASS XPathEvaluator interface: new XPathEvaluator() must inherit property "createNSResolver(Node)" with the proper type
 PASS XPathEvaluator interface: calling createNSResolver(Node) on new XPathEvaluator() with too few arguments must throw TypeError
-PASS XPathEvaluator interface: new XPathEvaluator() must inherit property "evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult)" with the proper type
-PASS XPathEvaluator interface: calling evaluate(DOMString, Node, XPathNSResolver, unsigned short, XPathResult) on new XPathEvaluator() with too few arguments must throw TypeError
+PASS XPathEvaluator interface: new XPathEvaluator() must inherit property "evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?)" with the proper type
+PASS XPathEvaluator interface: calling evaluate(DOMString, Node, optional XPathNSResolver?, optional unsigned short, optional XPathResult?) on new XPathEvaluator() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: existence and properties of interface object
+PASS XSLTProcessor interface object length
+PASS XSLTProcessor interface object name
+PASS XSLTProcessor interface: existence and properties of interface prototype object
+PASS XSLTProcessor interface: existence and properties of interface prototype object's "constructor" property
+PASS XSLTProcessor interface: existence and properties of interface prototype object's @@unscopables property
+PASS XSLTProcessor interface: operation importStylesheet(Node)
+PASS XSLTProcessor interface: operation transformToFragment(Node, Document)
+PASS XSLTProcessor interface: operation transformToDocument(Node)
+PASS XSLTProcessor interface: operation setParameter(DOMString, DOMString, any)
+PASS XSLTProcessor interface: operation getParameter(DOMString, DOMString)
+PASS XSLTProcessor interface: operation removeParameter(DOMString, DOMString)
+PASS XSLTProcessor interface: operation clearParameters()
+PASS XSLTProcessor interface: operation reset()
+PASS XSLTProcessor must be primary interface of new XSLTProcessor()
+PASS Stringification of new XSLTProcessor()
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "importStylesheet(Node)" with the proper type
+PASS XSLTProcessor interface: calling importStylesheet(Node) on new XSLTProcessor() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "transformToFragment(Node, Document)" with the proper type
+PASS XSLTProcessor interface: calling transformToFragment(Node, Document) on new XSLTProcessor() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "transformToDocument(Node)" with the proper type
+PASS XSLTProcessor interface: calling transformToDocument(Node) on new XSLTProcessor() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "setParameter(DOMString, DOMString, any)" with the proper type
+PASS XSLTProcessor interface: calling setParameter(DOMString, DOMString, any) on new XSLTProcessor() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "getParameter(DOMString, DOMString)" with the proper type
+PASS XSLTProcessor interface: calling getParameter(DOMString, DOMString) on new XSLTProcessor() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "removeParameter(DOMString, DOMString)" with the proper type
+PASS XSLTProcessor interface: calling removeParameter(DOMString, DOMString) on new XSLTProcessor() with too few arguments must throw TypeError
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "clearParameters()" with the proper type
+PASS XSLTProcessor interface: new XSLTProcessor() must inherit property "reset()" with the proper type
 FAIL Window interface: attribute event assert_true: property should be enumerable expected true got false
 Harness: the test ran to completion.
 

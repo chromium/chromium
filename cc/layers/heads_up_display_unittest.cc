@@ -97,5 +97,25 @@ class HeadsUpDisplaySizeWithFPS : public LayerTreeTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithFPS);
 
+class HeadsUpDisplaySizeWithMetrics : public LayerTreeTest {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->initial_debug_state.show_web_vital_metrics = true;
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommit() override {
+    // The metrics should be shown on the right, so the width of the HUD layer
+    // should be the saem as the root layer bounds.
+    ASSERT_TRUE(layer_tree_host()->hud_layer());
+    EXPECT_EQ(gfx::Size(layer_tree_host()->root_layer()->bounds().width(), 512),
+              layer_tree_host()->hud_layer()->bounds());
+    EndTest();
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithMetrics);
+
 }  // namespace
 }  // namespace cc

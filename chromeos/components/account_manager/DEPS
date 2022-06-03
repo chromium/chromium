@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "account_manager_unittest.cc": [
-    "+services/network/test/test_url_loader_factory.h",
-  ]
-}

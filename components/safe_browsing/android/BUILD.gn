@@ -8,11 +8,10 @@ import("//build/config/android/rules.gni")
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  java_files = [
+  sources = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandler.java",
   ]
@@ -30,7 +29,7 @@ group("safe_browsing_mobile") {
     ":remote_database_manager",
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
-    "//components/safe_browsing/db:safe_browsing_db_shared",
+    "//components/safe_browsing/core/browser/db:safe_browsing_db_shared",
   ]
 }
 
@@ -42,13 +41,13 @@ static_library("remote_database_manager") {
   deps = [
     ":safe_browsing_api_handler",
     "//base:base",
-    "//components/safe_browsing/db:database_manager",
-    "//components/safe_browsing/db:v4_get_hash_protocol_manager",
-    "//components/safe_browsing/db:v4_protocol_manager_util",
-    "//components/safe_browsing/realtime:url_lookup_service",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/variations",
     "//content/public/browser",
     "//net",
+    "//services/network/public/mojom",
     "//url",
   ]
 }
@@ -60,8 +59,8 @@ static_library("safe_browsing_api_handler_util") {
   ]
   deps = [
     "//base",
-    "//components/safe_browsing/db:metadata_proto",
-    "//components/safe_browsing/db:util",
+    "//components/safe_browsing/core/browser/db:metadata_proto",
+    "//components/safe_browsing/core/browser/db:util",
   ]
 }
 
@@ -73,8 +72,8 @@ source_set("safe_browsing_api_handler") {
   deps = [
     ":safe_browsing_api_handler_util",
     "//base",
-    "//components/safe_browsing:features",
-    "//components/safe_browsing/db:util",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/common",
     "//content/public/browser:browser",
     "//url",
   ]
@@ -99,12 +98,13 @@ source_set("unit_tests_mobile") {
     ":safe_browsing_api_handler",
     ":safe_browsing_api_handler_util",
     "//base",
-    "//components/safe_browsing/db:metadata_proto",
-    "//components/safe_browsing/db:unit_tests_shared",
-    "//components/safe_browsing/db:util",
-    "//components/safe_browsing/db:v4_test_util",
+    "//components/safe_browsing/core/browser/db:metadata_proto",
+    "//components/safe_browsing/core/browser/db:unit_tests_shared",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/variations",
     "//content/test:test_support",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//url",
   ]

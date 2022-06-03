@@ -11,7 +11,8 @@ body {
   height: 100px;
 }
 #scroller {
-  background-color: gray;
+  /* translucent to prevent compositing */
+  background-color: rgba(128, 128, 128, 0.5);
   flex: 1 1;
   overflow: auto;
 }

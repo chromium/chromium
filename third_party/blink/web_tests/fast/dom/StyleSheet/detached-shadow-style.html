@@ -9,7 +9,7 @@
 <script>
 var sandbox = document.getElementById('sandbox');
 var host = document.createElement('div');
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = '<style>* { }</style><div>Shadow</div>';
 sandbox.appendChild(host);
 

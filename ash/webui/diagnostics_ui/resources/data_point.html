@@ -1,0 +1,71 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  :host([orientation=horizontal]) {
+    --diagnostics-data-point-subtitle-color: var(--cros-text-color-primary);
+    --diagnostics-data-point-subtitle-font-size: 12px;
+    --diagnostics-data-point-title-color: var(--cros-text-color-secondary);
+    --diagnostics-data-point-title-font-size: 12px;
+    line-height: 18px;
+  }
+  .data-point {
+    display: flex;
+  }
+
+  :host([orientation=vertical]) .data-point {
+    flex-direction: column;
+    height: 40px;
+    justify-content: space-between;
+    margin: 12px 0;
+    width: max-content;
+  }
+
+  .header {
+    @apply --diagnostics-data-point-title-font;
+  }
+
+  :host([orientation=horizontal]) .header {
+    margin-right: 16px;
+    min-width: 90px;
+    max-width: 96px;
+  }
+
+  :host([orientation=horizontal]) #headerText::after {
+    content: ':';
+  }
+
+  #infoIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    bottom: 1px;
+    fill: var(--google-grey-700);
+    left: 4px;
+  }
+
+  .value {
+    @apply --diagnostics-data-point-subtitle-font;
+    word-wrap: break-word;
+  }
+
+  :host([orientation=horizontal]) .value {
+    min-width: 108px;
+    max-width: 150px;
+  }
+
+  .text-red {
+    color: var(--google-red-600);
+  }
+</style>
+<div class="data-point" tabindex="0" aria-labelledby="headerText value"
+    aria-describedby="tooltipText">
+  <div class="header">
+    <span id="headerText" aria-hidden="true">[[header]]</span>
+    <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
+        hidden$="[[!tooltipText]]">
+    </iron-icon>
+    <paper-tooltip for="infoIcon" aria-hidden="true">
+      <span id="tooltipText">[[tooltipText]]</span>
+    </paper-tooltip>
+  </div>
+  <div class$="[[getValueClass_(warningState)]]" id="value" aria-hidden="true">
+    [[value]]
+  </div>
+</div>

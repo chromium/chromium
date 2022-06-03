@@ -2,15 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See build/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
-jumbo_component("webview") {
+component("webview") {
   sources = [
     "unhandled_keyboard_event_handler.cc",
     "unhandled_keyboard_event_handler.h",
@@ -34,7 +26,7 @@ jumbo_component("webview") {
   defines = [ "WEBVIEW_IMPLEMENTATION" ]
 
   if (is_mac) {
-    libs = [ "CoreFoundation.framework" ]
+    frameworks = [ "CoreFoundation.framework" ]
   }
 
   deps = [
@@ -59,7 +51,7 @@ jumbo_component("webview") {
     "//ui/views",
   ]
 
-  if (is_linux || is_android) {
+  if (is_linux || is_chromeos || is_android || is_fuchsia) {
     sources += [ "unhandled_keyboard_event_handler_default.cc" ]
   }
 }
@@ -71,9 +63,7 @@ static_library("test_support") {
     "../../test/webview_test_helper.h",
   ]
 
-  public_deps = [
-    ":webview",
-  ]
+  public_deps = [ ":webview" ]
   deps = [
     "//base",
     "//content",

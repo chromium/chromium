@@ -4,14 +4,18 @@
 
 static_library("send_tab_to_self") {
   sources = [
+    "fake_send_tab_to_self_model.cc",
+    "fake_send_tab_to_self_model.h",
     "features.cc",
     "features.h",
+    "metrics_util.cc",
+    "metrics_util.h",
+    "pref_names.cc",
+    "pref_names.h",
     "send_tab_to_self_bridge.cc",
     "send_tab_to_self_bridge.h",
     "send_tab_to_self_entry.cc",
     "send_tab_to_self_entry.h",
-    "send_tab_to_self_metrics.cc",
-    "send_tab_to_self_metrics.h",
     "send_tab_to_self_model.cc",
     "send_tab_to_self_model.h",
     "send_tab_to_self_model_observer.h",
@@ -35,9 +39,7 @@ static_library("send_tab_to_self") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [
-    "//components/send_tab_to_self/proto:send_tab_to_self_proto",
-  ]
+  public_deps = [ "//components/send_tab_to_self/proto:send_tab_to_self_proto" ]
   if (is_android) {
     sources += [
       "send_tab_to_self_infobar_delegate.cc",

@@ -1,0 +1,36 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='inner'",
+      "bounds": [300, 15],
+      "contentsOpaque": true,
+      "backgroundColor": "#F5F5F5",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='hoverable'",
+      "position": [12, 0],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#90EE90"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    }
+  ]
+}
+

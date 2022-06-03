@@ -30,23 +30,22 @@ enum AudioContextLatencyCategory {
     "playback"
 };
 
-// See https://webaudio.github.io/web-audio-api/#AudioContext
+// https://webaudio.github.io/web-audio-api/#AudioContext
 [
     Exposed=Window,
-    ActiveScriptWrappable,
-    Measure
+    ActiveScriptWrappable
 ] interface AudioContext : BaseAudioContext {
-    [CallWith=Document, RaisesException] constructor(optional AudioContextOptions contextOptions);
+    [CallWith=Document, RaisesException, Measure] constructor(optional AudioContextOptions contextOptions = {});
     [MeasureAs=AudioContextSuspend, CallWith=ScriptState, ImplementedAs=suspendContext] Promise<void> suspend();
-    [MeasureAs=AudioContextClose, CallWith=ScriptState, ImplementedAs=closeContext] Promise<void> close();
-    [MeasureAs=AudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<void> resume();
+    [MeasureAs=AudioContextClose, RaisesException, CallWith=ScriptState, ImplementedAs=closeContext] Promise<void> close();
+    [MeasureAs=AudioContextResume, RaisesException, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<void> resume();
 
     // Output timestamp
     [MeasureAs=AudioContextGetOutputTimestamp, CallWith=ScriptState] AudioTimestamp getOutputTimestamp();
 
     // Number of seconds of processing latency incurred by the AudioContext
     // passing the audio from the AudioDestinationNode to the audio subsystem
-    readonly attribute double baseLatency;
+    [HighEntropy=Direct, MeasureAs=AudioContextBaseLatency] readonly attribute double baseLatency;
 
     [RaisesException, MeasureAs=AudioContextCreateMediaElementSource] MediaElementAudioSourceNode createMediaElementSource(HTMLMediaElement mediaElement);
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamSource] MediaStreamAudioSourceNode createMediaStreamSource(MediaStream mediaStream);

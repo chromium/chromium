@@ -1,0 +1,6 @@
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Expectations for EnableThreadedCompositing
+[ Debug Linux ] virtual/threaded/external/wpt/web-animations/timing-model/animations/update-playback-rate-zero.html [ Failure ]

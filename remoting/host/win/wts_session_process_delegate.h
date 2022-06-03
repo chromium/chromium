@@ -35,6 +35,11 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
       std::unique_ptr<base::CommandLine> target,
       bool launch_elevated,
       const std::string& channel_security);
+
+  WtsSessionProcessDelegate(const WtsSessionProcessDelegate&) = delete;
+  WtsSessionProcessDelegate& operator=(const WtsSessionProcessDelegate&) =
+      delete;
+
   ~WtsSessionProcessDelegate() override;
 
   // Initializes the object returning true on success.
@@ -43,6 +48,8 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
   // WorkerProcessLauncher::Delegate implementation.
   void LaunchProcess(WorkerProcessLauncher* event_handler) override;
   void Send(IPC::Message* message) override;
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver) override;
   void CloseChannel() override;
   void KillProcess() override;
 
@@ -52,8 +59,6 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WtsSessionProcessDelegate);
 };
 
 }  // namespace remoting

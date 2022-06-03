@@ -30,13 +30,14 @@ class AX_EXPORT AXPlatformNodeTextChildProviderWin
   // control pattern. If the element does not have an ancestor which supports
   // the Text control pattern, nullptr is returned. Note, an element which
   // supports the Text control pattern is not an ancestor of itself.
-  STDMETHOD(get_TextContainer)(IRawElementProviderSimple** pRetVal) override;
+  IFACEMETHODIMP get_TextContainer(
+      IRawElementProviderSimple** pRetVal) override;
 
   // Retrieves a text range that encloses this child element. If the element
   // does not have an ancestor which supports the Text control pattern, nullptr
   // is returned. Note, an element which supports the Text control pattern is
   // not an ancestor of itself.
-  STDMETHOD(get_TextRange)(ITextRangeProvider** pRetVal) override;
+  IFACEMETHODIMP get_TextRange(ITextRangeProvider** pRetVal) override;
 
   // Helper function to get_TextContainer().
   static AXPlatformNodeWin* GetTextContainer(AXPlatformNodeWin* descendant);

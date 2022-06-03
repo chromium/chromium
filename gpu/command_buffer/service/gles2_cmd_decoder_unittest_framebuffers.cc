@@ -11,8 +11,7 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -624,8 +623,8 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
   // is requesting a larger size.
   GLint read_x = std::max(0, in_read_x);
   GLint read_y = std::max(0, in_read_y);
-  GLint read_end_x = base::ClampToRange(in_read_x + in_read_width, 0, kWidth);
-  GLint read_end_y = base::ClampToRange(in_read_y + in_read_height, 0, kHeight);
+  GLint read_end_x = base::clamp(in_read_x + in_read_width, 0, kWidth);
+  GLint read_end_y = base::clamp(in_read_y + in_read_height, 0, kHeight);
   GLint read_width = read_end_x - read_x;
   GLint read_height = read_end_y - read_y;
   if (read_width > 0 && read_height > 0) {
@@ -3310,7 +3309,7 @@ TEST_P(GLES2DecoderTest, ClearBackbufferBitsOnFlipSwap) {
 
   EXPECT_CALL(*gl_, Finish()).Times(AnyNumber());
   auto& resize_cmd = *GetImmediateAs<cmds::ResizeCHROMIUM>();
-  resize_cmd.Init(1, 1, 1.0f, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, GL_TRUE);
+  resize_cmd.Init(1, 1, 1.0f, GL_TRUE, 0, 0, 0);
   EXPECT_EQ(error::kNoError, ExecuteCmd(resize_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(static_cast<uint32_t>(GL_COLOR_BUFFER_BIT),

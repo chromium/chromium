@@ -15,36 +15,34 @@ class SafetyTipInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   SafetyTipInfoBarDelegate(
       security_state::SafetyTipStatus safety_tip_status,
-      const GURL& url,
       const GURL& suggested_url,
       content::WebContents* web_contents,
       base::OnceCallback<void(SafetyTipInteraction)> close_callback);
   ~SafetyTipInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
   // infobars::InfoBarDelegate
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;
   void InfoBarDismissed() override;
+  std::u16string GetLinkText() const override;
+  bool LinkClicked(WindowOpenDisposition disposition) override;
 
   // This function is the equivalent of GetMessageText(), but for the portion of
   // the infobar below the 'message' title.
-  base::string16 GetDescriptionText() const;
+  std::u16string GetDescriptionText() const;
 
  private:
   security_state::SafetyTipStatus safety_tip_status_;
 
-  // The URL of the page on which the Safety Tip was triggered.
-  GURL url_;
-
   // The URL of the page the Safety Tip suggests you intended to go to, when
   // applicable (for SafetyTipStatus::kLookalike).
-  GURL suggested_url_;
+  const GURL suggested_url_;
 
   SafetyTipInteraction action_taken_ = SafetyTipInteraction::kNoAction;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;

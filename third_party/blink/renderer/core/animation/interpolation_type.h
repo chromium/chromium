@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
@@ -33,6 +32,8 @@ class CORE_EXPORT InterpolationType {
   USING_FAST_MALLOC(InterpolationType);
 
  public:
+  InterpolationType(const InterpolationType&) = delete;
+  InterpolationType& operator=(const InterpolationType&) = delete;
   virtual ~InterpolationType() = default;
 
   PropertyHandle GetProperty() const { return property_; }
@@ -45,6 +46,8 @@ class CORE_EXPORT InterpolationType {
     USING_FAST_MALLOC(ConversionChecker);
 
    public:
+    ConversionChecker(const ConversionChecker&) = delete;
+    ConversionChecker& operator=(const ConversionChecker&) = delete;
     virtual ~ConversionChecker() = default;
     void SetType(const InterpolationType& type) { type_ = &type; }
     const InterpolationType& GetType() const { return *type_; }
@@ -54,7 +57,6 @@ class CORE_EXPORT InterpolationType {
    protected:
     ConversionChecker() : type_(nullptr) {}
     const InterpolationType* type_;
-    DISALLOW_COPY_AND_ASSIGN(ConversionChecker);
   };
   using ConversionCheckers = Vector<std::unique_ptr<ConversionChecker>>;
 
@@ -121,7 +123,6 @@ class CORE_EXPORT InterpolationType {
   explicit InterpolationType(PropertyHandle property) : property_(property) {}
 
   const PropertyHandle property_;
-  DISALLOW_COPY_AND_ASSIGN(InterpolationType);
 };
 
 }  // namespace blink

@@ -10,7 +10,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/cast/common/mod_util.h"
@@ -36,9 +35,15 @@ const size_t kClockDriftSpeed = 500;
 // There is a causal relationship between these events in that these events
 // must happen in order. This class obtains the lower and upper bounds for
 // the offset by taking the difference of timestamps.
-class ReceiverTimeOffsetEstimatorImpl : public ReceiverTimeOffsetEstimator {
+class ReceiverTimeOffsetEstimatorImpl final
+    : public ReceiverTimeOffsetEstimator {
  public:
   ReceiverTimeOffsetEstimatorImpl();
+
+  ReceiverTimeOffsetEstimatorImpl(const ReceiverTimeOffsetEstimatorImpl&) =
+      delete;
+  ReceiverTimeOffsetEstimatorImpl& operator=(
+      const ReceiverTimeOffsetEstimatorImpl&) = delete;
 
   ~ReceiverTimeOffsetEstimatorImpl() final;
 
@@ -94,7 +99,6 @@ class ReceiverTimeOffsetEstimatorImpl : public ReceiverTimeOffsetEstimator {
   BoundCalculator lower_bound_;
 
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(ReceiverTimeOffsetEstimatorImpl);
 };
 
 }  // namespace cast

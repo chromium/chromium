@@ -8,6 +8,7 @@ component("cros_healthd") {
   defines = [ "IS_CROS_HEALTHD_IMPL" ]
 
   deps = [
+    "//ash/services/network_health/public/mojom",
     "//base",
     "//chromeos/services/cros_healthd/public/mojom",
     "//dbus",

@@ -15,8 +15,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 
 class Profile;
 
@@ -25,30 +25,28 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 // Contains map of default pre-installed apps and packages.
-class ArcDefaultAppList {
+class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
  public:
   struct AppInfo {
     AppInfo(const std::string& name,
-            const std::string& package_name,
-            const std::string& activity,
-            bool oem,
-            bool system,
-            const base::FilePath app_path);
+                   const std::string& package_name,
+                   const std::string& activity,
+                   bool oem,
+                   const base::FilePath app_path);
     ~AppInfo();
 
     std::string name;
     std::string package_name;
     std::string activity;
     bool oem;
-    bool system;
     base::FilePath app_path;  // App folder that contains pre-installed icons.
   };
 
   enum class FilterLevel {
     // Filter nothing.
     NOTHING,
-    // Filter out only optional apps, leaving system apps available, Play Store
-    // is also system app.
+    // Filter out only optional apps, excluding Play Store for example. Used in
+    // case when Play Store is managed and enabled.
     OPTIONAL_APPS,
     // Filter out everything. Used in case when Play Store is managed and
     // disabled.
@@ -59,10 +57,14 @@ class ArcDefaultAppList {
   using AppInfoMap = std::map<std::string, std::unique_ptr<AppInfo>>;
 
   ArcDefaultAppList(Profile* profile, base::OnceClosure ready_callback);
-  ~ArcDefaultAppList();
+  ArcDefaultAppList(const ArcDefaultAppList&) = delete;
+  ArcDefaultAppList& operator=(const ArcDefaultAppList&) = delete;
+  ~ArcDefaultAppList() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static void UseTestAppsDirectory();
+  static std::string GetBoardNameForTesting(
+      const base::FilePath& build_prop_path);
 
   // Returns default app info if it is found in defaults and its package is not
   // marked as uninstalled.
@@ -90,6 +92,18 @@ class ArcDefaultAppList {
   }
 
  private:
+  // arc::ArcSessionManagerObserver:
+  void OnPropertyFilesExpanded(bool result) override;
+
+  // Loads default apps from two sources:
+  //
+  // /usr/share/google-chrome/extensions/arc - contains default apps for all
+  //     boards that share the same image.
+  // /usr/share/google-chrome/extensions/arc/<BOARD_NAME> - contains default
+  //     apps for particular current board.
+  //
+  void LoadDefaultApps(std::string board_name);
+
   // Called when default apps are read from the provided source.
   void OnAppsRead(std::unique_ptr<AppInfoMap> apps);
   // Called when default apps from all sources are read.
@@ -110,8 +124,6 @@ class ArcDefaultAppList {
   base::RepeatingClosure barrier_closure_;
 
   base::WeakPtrFactory<ArcDefaultAppList> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDefaultAppList);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_DEFAULT_APP_LIST_H_

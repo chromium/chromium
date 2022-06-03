@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "remoting/client/client_context.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace remoting {
 

@@ -23,9 +23,7 @@ if (!is_ios) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [
-      "page_annotator_unittest.cc",
-    ]
+    sources = [ "page_annotator_unittest.cc" ]
 
     deps = [
       ":core",

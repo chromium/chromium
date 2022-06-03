@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Make sure that relList based feature detection is working Cannot read properties of undefined (reading 'contains')
+Harness: the test ran to completion.
+

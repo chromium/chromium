@@ -22,6 +22,9 @@ class StreamEventEmitter : public EventEmitter {
  public:
   StreamEventEmitter();
 
+  StreamEventEmitter(const StreamEventEmitter&) = delete;
+  StreamEventEmitter& operator=(const StreamEventEmitter&) = delete;
+
   void AttachStream(StreamNode* stream);
   void DetachStream();
 
@@ -34,7 +37,6 @@ class StreamEventEmitter : public EventEmitter {
 
  protected:
   StreamNode* stream_;
-  DISALLOW_COPY_AND_ASSIGN(StreamEventEmitter);
 };
 
 }  // namespace nacl_io

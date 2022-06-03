@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -33,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest, TestShutdown) {
         NOTIFICATION_CRX_INSTALLER_DONE,
         content::NotificationService::AllSources());
     auto provider = std::make_unique<MockExternalProvider>(
-        extension_service(), Manifest::EXTERNAL_PREF);
+        extension_service(), mojom::ManifestLocation::kExternalPref);
     provider->UpdateOrAddExtension(kId, "1.0.0.0",
                                    test_data_dir_.AppendASCII("good.crx"));
     extension_service()->AddProviderForTesting(std::move(provider));

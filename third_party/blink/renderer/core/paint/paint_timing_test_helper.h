@@ -5,28 +5,26 @@
 namespace blink {
 
 // |MockPaintTimingCallbackManager| is used to mock
-// |ChromeClient::NotifySwapTime()|'s swap-time queueing and invoking for
-// unit-tests. Find more details in |PaintTimingCallbackManager|.
+// |ChromeClient::NotifyPresentationTime()|'s presentation-time queueing and
+// invoking for unit-tests. Find more details in |PaintTimingCallbackManager|.
 class MockPaintTimingCallbackManager final
     : public GarbageCollected<MockPaintTimingCallbackManager>,
       public PaintTimingCallbackManager {
-  USING_GARBAGE_COLLECTED_MIXIN(MockPaintTimingCallbackManager);
-
  public:
   ~MockPaintTimingCallbackManager() {}
   void RegisterCallback(
       PaintTimingCallbackManager::LocalThreadCallback callback) override {
     callback_queue_.push(std::move(callback));
   }
-  void InvokeSwapTimeCallback(base::TimeTicks swap_time) {
+  void InvokePresentationTimeCallback(base::TimeTicks presentation_time) {
     DCHECK_GT(callback_queue_.size(), 0UL);
-    std::move(callback_queue_.front()).Run(swap_time);
+    std::move(callback_queue_.front()).Run(presentation_time);
     callback_queue_.pop();
   }
 
   size_t CountCallbacks() { return callback_queue_.size(); }
 
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
  private:
   PaintTimingCallbackManager::CallbackQueue callback_queue_;

@@ -14,23 +14,32 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
+#include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_export.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "ui/base/l10n/l10n_util_mac.h"
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
 namespace l10n_util {
 
 // Takes normalized locale as |locale|. Returns language part (before '-').
-UI_BASE_EXPORT std::string GetLanguage(const std::string& locale);
+COMPONENT_EXPORT(UI_BASE) std::string GetLanguage(const std::string& locale);
 
 // This method translates a generic locale name to one of the locally defined
 // ones. This method returns true if it succeeds.
-UI_BASE_EXPORT bool CheckAndResolveLocale(const std::string& locale,
-                                          std::string* resolved_locale);
+// If |perform_io| is false, this will not perform any I/O but may return false
+// positives on Android and iOS. See the |kPlatformLocales| documentation in
+// l10n_util.cc for more information.
+COMPONENT_EXPORT(UI_BASE)
+bool CheckAndResolveLocale(const std::string& locale,
+                           std::string* resolved_locale,
+                           const bool perform_io);
+
+// Convenience wrapper for the above (with |perform_io| set to true).
+COMPONENT_EXPORT(UI_BASE)
+bool CheckAndResolveLocale(const std::string& locale,
+                           std::string* resolved_locale);
 
 // This method is responsible for determining the locale as defined below. In
 // nearly all cases you shouldn't call this, rather use GetApplicationLocale
@@ -42,22 +51,20 @@ UI_BASE_EXPORT bool CheckAndResolveLocale(const std::string& locale,
 // a value if there's a corresponding resource DLL for the locale.  Otherwise,
 // we fall back to en-us. |set_icu_locale| determines whether the resulting
 // locale is set as the default ICU locale before returning it.
-UI_BASE_EXPORT std::string GetApplicationLocale(const std::string& pref_locale,
-                                                bool set_icu_locale);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetApplicationLocale(const std::string& pref_locale,
+                                 bool set_icu_locale);
 
 // Convenience version of GetApplicationLocale() that sets the resulting locale
 // as the default ICU locale before returning it.
-UI_BASE_EXPORT std::string GetApplicationLocale(const std::string& pref_locale);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetApplicationLocale(const std::string& pref_locale);
 
 // Returns true if a display name for |locale| is available in the locale
 // |display_locale|.
-UI_BASE_EXPORT bool IsLocaleNameTranslated(const char* locale,
-                                           const std::string& display_locale);
-
-// Given a locale code, return true if the OS is capable of supporting it.
-// For instance, Oriya is not well supported on Windows XP and we return
-// false for "or".
-bool IsLocaleSupportedByOS(const std::string& locale);
+COMPONENT_EXPORT(UI_BASE)
+bool IsLocaleNameTranslated(const char* locale,
+                            const std::string& display_locale);
 
 // This method returns the display name of the locale code in |display_locale|.
 
@@ -68,24 +75,27 @@ bool IsLocaleSupportedByOS(const std::string& locale);
 // in the UI thread.
 // If |is_for_ui| is true, U+200F is appended so that it can be
 // rendered properly in a RTL Chrome.
-UI_BASE_EXPORT base::string16 GetDisplayNameForLocale(
-    const std::string& locale,
-    const std::string& display_locale,
-    bool is_for_ui);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetDisplayNameForLocale(const std::string& locale,
+                                       const std::string& display_locale,
+                                       bool is_for_ui,
+                                       bool disallow_default = false);
 
 // Returns the display name of the |country_code| in |display_locale|.
-UI_BASE_EXPORT base::string16 GetDisplayNameForCountry(
-    const std::string& country_code,
-    const std::string& display_locale);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetDisplayNameForCountry(const std::string& country_code,
+                                        const std::string& display_locale);
 
 // Converts all - into _, to be consistent with ICU and file system names.
-UI_BASE_EXPORT std::string NormalizeLocale(const std::string& locale);
+COMPONENT_EXPORT(UI_BASE)
+std::string NormalizeLocale(const std::string& locale);
 
 // Produce a vector of parent locales for given locale.
 // It includes the current locale in the result.
 // sr_Cyrl_RS generates sr_Cyrl_RS, sr_Cyrl and sr.
-UI_BASE_EXPORT void GetParentLocales(const std::string& current_locale,
-                                     std::vector<std::string>* parent_locales);
+COMPONENT_EXPORT(UI_BASE)
+void GetParentLocales(const std::string& current_locale,
+                      std::vector<std::string>* parent_locales);
 
 // Checks if a string is plausibly a syntactically-valid locale string,
 // for cases where we want the valid input to be a locale string such as
@@ -95,72 +105,90 @@ UI_BASE_EXPORT void GetParentLocales(const std::string& current_locale,
 // accepted, but 'z', 'German', 'en-$1', or 'abcd-1234' should not.
 // Case-insensitive. Based on BCP 47, see:
 //   http://unicode.org/reports/tr35/#Unicode_Language_and_Locale_Identifiers
-UI_BASE_EXPORT bool IsValidLocaleSyntax(const std::string& locale);
+COMPONENT_EXPORT(UI_BASE) bool IsValidLocaleSyntax(const std::string& locale);
 
 //
 // Mac Note: See l10n_util_mac.h for some NSString versions and other support.
 //
 
 // Pulls resource string from the string bundle and returns it.
-UI_BASE_EXPORT std::string GetStringUTF8(int message_id);
-UI_BASE_EXPORT base::string16 GetStringUTF16(int message_id);
+COMPONENT_EXPORT(UI_BASE) std::string GetStringUTF8(int message_id);
+COMPONENT_EXPORT(UI_BASE) std::u16string GetStringUTF16(int message_id);
+
+// Given a format string, replace $i with replacements[i] for all
+// i < replacements.size(). Additionally, $$ is replaced by $.
+// If non-NULL |offsets| will be replaced with the start points of the replaced
+// strings.
+COMPONENT_EXPORT(UI_BASE)
+std::u16string FormatString(const std::u16string& format_string,
+                            const std::vector<std::u16string>& replacements,
+                            std::vector<size_t>* offsets);
 
 // Get a resource string and replace $i with replacements[i] for all
 // i < replacements.size(). Additionally, $$ is replaced by $.
 // If non-NULL |offsets| will be replaced with the start points of the replaced
 // strings.
-UI_BASE_EXPORT base::string16 GetStringFUTF16(
-    int message_id,
-    const std::vector<base::string16>& replacements,
-    std::vector<size_t>* offsets);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::vector<std::u16string>& replacements,
+                               std::vector<size_t>* offsets);
 
 // Convenience wrappers for the above.
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a);
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a,
-                                              const base::string16& b);
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a,
-                                              const base::string16& b,
-                                              const base::string16& c);
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a,
-                                              const base::string16& b,
-                                              const base::string16& c,
-                                              const base::string16& d);
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a,
-                                              const base::string16& b,
-                                              const base::string16& c,
-                                              const base::string16& d,
-                                              const base::string16& e);
-UI_BASE_EXPORT std::string GetStringFUTF8(int message_id,
-                                          const base::string16& a);
-UI_BASE_EXPORT std::string GetStringFUTF8(int message_id,
-                                          const base::string16& a,
-                                          const base::string16& b);
-UI_BASE_EXPORT std::string GetStringFUTF8(int message_id,
-                                          const base::string16& a,
-                                          const base::string16& b,
-                                          const base::string16& c);
-UI_BASE_EXPORT std::string GetStringFUTF8(int message_id,
-                                          const base::string16& a,
-                                          const base::string16& b,
-                                          const base::string16& c,
-                                          const base::string16& d);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id, const std::u16string& a);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::u16string& a,
+                               const std::u16string& b);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::u16string& a,
+                               const std::u16string& b,
+                               const std::u16string& c);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::u16string& a,
+                               const std::u16string& b,
+                               const std::u16string& c,
+                               const std::u16string& d);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::u16string& a,
+                               const std::u16string& b,
+                               const std::u16string& c,
+                               const std::u16string& d,
+                               const std::u16string& e);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetStringFUTF8(int message_id, const std::u16string& a);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetStringFUTF8(int message_id,
+                           const std::u16string& a,
+                           const std::u16string& b);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetStringFUTF8(int message_id,
+                           const std::u16string& a,
+                           const std::u16string& b,
+                           const std::u16string& c);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetStringFUTF8(int message_id,
+                           const std::u16string& a,
+                           const std::u16string& b,
+                           const std::u16string& c,
+                           const std::u16string& d);
 
 // Variants that return the offset(s) of the replaced parameters. The
 // vector based version returns offsets ordered by parameter. For example if
 // invoked with a and b offsets[0] gives the offset for a and offsets[1] the
 // offset of b regardless of where the parameters end up in the string.
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a,
-                                              size_t* offset);
-UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
-                                              const base::string16& a,
-                                              const base::string16& b,
-                                              std::vector<size_t>* offsets);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::u16string& a,
+                               size_t* offset);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16(int message_id,
+                               const std::u16string& a,
+                               const std::u16string& b,
+                               std::vector<size_t>* offsets);
 
 // Convenience functions to get a string with a single integer as a parameter.
 // The result will use non-ASCII(native) digits if required by a locale
@@ -173,8 +201,9 @@ UI_BASE_EXPORT base::string16 GetStringFUTF16(int message_id,
 // // Note that native digits have to be used in UI in general.
 // base::{Int*,Double}ToString convert a number to a string with
 // ASCII digits in non-UI strings.
-UI_BASE_EXPORT base::string16 GetStringFUTF16Int(int message_id, int a);
-base::string16 GetStringFUTF16Int(int message_id, int64_t a);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetStringFUTF16Int(int message_id, int a);
+std::u16string GetStringFUTF16Int(int message_id, int64_t a);
 
 // Convenience functions to format a string with a single number that requires
 // plural formatting. Note that a simple 2-way rule (singular vs plural)
@@ -187,42 +216,68 @@ base::string16 GetStringFUTF16Int(int message_id, int64_t a);
 // double, time, string; e.g. "At 3:45 on Feb 3, 2016, 5 files are downloaded
 // at 3 MB/s."), use base::i18n::MessageFormatter.
 // message_format_unittests.cc also has more examples of plural formatting.
-UI_BASE_EXPORT base::string16 GetPluralStringFUTF16(int message_id, int number);
-UI_BASE_EXPORT std::string GetPluralStringFUTF8(int message_id, int number);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetPluralStringFUTF16(int message_id, int number);
+COMPONENT_EXPORT(UI_BASE)
+std::string GetPluralStringFUTF8(int message_id, int number);
 
 // Get a string when you only care about 'single vs multiple' distinction.
 // The message pointed to by |message_id| should be in ICU syntax
 // (see the references above for Plural) with 'single', 'multiple', and
 // 'other' (fallback) instead of 'male', 'female', and 'other' (fallback).
-UI_BASE_EXPORT base::string16 GetSingleOrMultipleStringUTF16(int message_id,
-                                                             bool is_multiple);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetSingleOrMultipleStringUTF16(int message_id, bool is_multiple);
 
-// In place sorting of base::string16 strings using collation rules for
+// In place sorting of std::u16string strings using collation rules for
 // |locale|.
-UI_BASE_EXPORT void SortStrings16(const std::string& locale,
-                                  std::vector<base::string16>* strings);
+COMPONENT_EXPORT(UI_BASE)
+void SortStrings16(const std::string& locale,
+                   std::vector<std::u16string>* strings);
 
-// Returns a vector of available locale codes. E.g., a vector containing
-// en-US, es, fr, fi, pt-PT, pt-BR, etc.
-UI_BASE_EXPORT const std::vector<std::string>& GetAvailableLocales();
+// Returns a vector of available locale codes from ICU. E.g., a vector
+// containing en-US, es, fr, fi, pt-PT, pt-BR, etc.
+COMPONENT_EXPORT(UI_BASE)
+const std::vector<std::string>& GetAvailableICULocales();
+
+// Returns whether we should show a locale to the user as a supported UI locale.
+// This is similar to CheckAndResolveLocale, except that it excludes some
+// languages from being shown.
+COMPONENT_EXPORT(UI_BASE)
+bool IsUserFacingUILocale(const std::string& locale);
+
+// Returns the subset of locales from GetAcceptLanguages which we should show
+// to the user as a supported UI locale.
+// E.g., a vector containing en-US, en-CA, en-GB, es, fr, pt-PT, pt-BR, etc.
+COMPONENT_EXPORT(UI_BASE)
+const std::vector<std::string>& GetUserFacingUILocaleList();
 
 // Returns a vector of locale codes usable for accept-languages.
-UI_BASE_EXPORT void GetAcceptLanguagesForLocale(
-    const std::string& display_locale,
-    std::vector<std::string>* locale_codes);
+COMPONENT_EXPORT(UI_BASE)
+void GetAcceptLanguagesForLocale(const std::string& display_locale,
+                                 std::vector<std::string>* locale_codes);
+
+// Returns a vector of untranslated locale codes usable for accept-languages.
+COMPONENT_EXPORT(UI_BASE)
+void GetAcceptLanguages(std::vector<std::string>* locale_codes);
 
 // Returns true if |locale| is in a predefined AcceptLanguageList and
 // a display name for the |locale| is available in the locale |display_locale|.
-UI_BASE_EXPORT bool IsLanguageAccepted(const std::string& display_locale,
-                                       const std::string& locale);
+COMPONENT_EXPORT(UI_BASE)
+bool IsLanguageAccepted(const std::string& display_locale,
+                        const std::string& locale);
 
 // Returns the preferred size of the contents view of a window based on
 // designer given constraints which might dependent on the language used.
-UI_BASE_EXPORT int GetLocalizedContentsWidthInPixels(int pixel_resource_id);
+COMPONENT_EXPORT(UI_BASE)
+int GetLocalizedContentsWidthInPixels(int pixel_resource_id);
 
-UI_BASE_EXPORT const char* const* GetAcceptLanguageListForTesting();
+COMPONENT_EXPORT(UI_BASE) const char* const* GetAcceptLanguageListForTesting();
 
-UI_BASE_EXPORT size_t GetAcceptLanguageListSizeForTesting();
+COMPONENT_EXPORT(UI_BASE) size_t GetAcceptLanguageListSizeForTesting();
+
+COMPONENT_EXPORT(UI_BASE) const char* const* GetPlatformLocalesForTesting();
+
+COMPONENT_EXPORT(UI_BASE) size_t GetPlatformLocalesSizeForTesting();
 
 }  // namespace l10n_util
 

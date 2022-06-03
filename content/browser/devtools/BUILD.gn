@@ -2,69 +2,86 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/devtools.gni")
+import("//components/viz/common/debugger/viz_debugger.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 
-group("resources") {
-  if (!is_android) {
-    public_deps = [
-      ":devtools_resources",
+# Android does not support DevTools front-end.
+if (!is_android) {
+  grit("devtools_resources") {
+    source = "$root_gen_dir/$devtools_grd_location"
+
+    # Required because the .grd is generated.
+    enable_input_discovery_for_gn_analyze = false
+    use_brotli = true
+
+    outputs = [
+      "grit/devtools_resources.h",
+      "devtools_resources.pak",
+      "grit/devtools_resources_map.cc",
+      "grit/devtools_resources_map.h",
+    ]
+
+    grit_flags = [
+      "-E",
+      "protocol_file=" + rebase_path(
+              "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+              root_build_dir),
+    ]
+
+    deps = [
+      "//third_party/blink/public/devtools_protocol:protocol_version",
+
+      # This is the action that generates out .grd input file.
+      "//third_party/blink/public:blink_generate_devtools_grd",
     ]
   }
 }
 
-grit("devtools_resources") {
-  source = "$root_gen_dir/devtools/devtools_resources.grd"
-  source_is_generated = true
-  use_brotli = true
+# Here we concatenate the viz_debugger.pdl into our browser protocol.
+# This technique is nearly identical to what is done for cros_protocol.pdl in chrome/browser/devtools
+_concatenated_protocol_path =
+    "$root_gen_dir/content/browser/devtools/protocol.json"
+action("concatenate_protocols") {
+  script = "//third_party/inspector_protocol/concatenate_protocols.py"
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
 
-  outputs = [
-    "grit/devtools_resources.h",
-    "devtools_resources.pak",
-    "grit/devtools_resources_map.cc",
-    "grit/devtools_resources_map.h",
-  ]
+  _blink_protocol_path =
+      "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
+  inputs = [ _blink_protocol_path ]
+  output_file = _concatenated_protocol_path
+  outputs = [ output_file ]
 
-  grit_flags = [
-    "-E",
-    "protocol_file=" + rebase_path(
-            "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
-            root_build_dir),
-  ]
+  args = [ rebase_path(_blink_protocol_path, root_build_dir) ]
+  if (use_viz_debugger) {
+    _visual_debugger_pdl = "//components/viz/common/debugger/viz_debugger.pdl"
+    inputs += [ _visual_debugger_pdl ]
+    args += [ rebase_path(_visual_debugger_pdl, root_build_dir) ]
+  }
 
-  defines =
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-
-  deps = [
-    "//third_party/blink/public/devtools_protocol:protocol_version",
-
-    # This is the action that generates out .grd input file.
-    "//third_party/blink/public:blink_generate_devtools_grd",
-  ]
+  args += [ rebase_path(output_file, root_build_dir) ]
 }
 
 inspector_protocol_generate("protocol_sources") {
   visibility = [ "//content/browser" ]
-  deps = [
-    "//third_party/blink/public/devtools_protocol:protocol_version",
-  ]
-  _blink_protocol_path = rebase_path(
-          "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
-          root_build_dir)
-
+  deps = [ ":concatenate_protocols" ]
   inspector_protocol_dir = "//third_party/inspector_protocol"
   out_dir = target_gen_dir
   config_file = "protocol_config.json"
-  config_values = [ "protocol.path=$_blink_protocol_path" ]
+  protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
+  config_values = [ "protocol.path=$protocol_path" ]
 
   inputs = [
-    "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+    _concatenated_protocol_path,
     config_file,
   ]
 
   # These are relative to $target_gen_dir.
   outputs = [
+    "protocol/audits.cc",
+    "protocol/audits.h",
     "protocol/background_service.cc",
     "protocol/background_service.h",
     "protocol/base_string_adapter.cc",
@@ -84,6 +101,8 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/inspector.h",
     "protocol/io.cc",
     "protocol/io.h",
+    "protocol/log.cc",
+    "protocol/log.h",
     "protocol/memory.cc",
     "protocol/memory.h",
     "protocol/network.cc",
@@ -115,10 +134,15 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/web_authn.cc",
     "protocol/web_authn.h",
   ]
+
+  if (use_viz_debugger) {
+    outputs += [
+      "protocol/visual_debugger.cc",
+      "protocol/visual_debugger.h",
+    ]
+  }
 }
 
 proto_library("devtools_background_services_proto") {
-  sources = [
-    "devtools_background_services.proto",
-  ]
+  sources = [ "devtools_background_services.proto" ]
 }

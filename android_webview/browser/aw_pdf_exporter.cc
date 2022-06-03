@@ -44,7 +44,7 @@ AwPdfExporter::AwPdfExporter(JNIEnv* env,
                              const JavaRef<jobject>& obj,
                              content::WebContents* web_contents)
     : java_ref_(env, obj), web_contents_(web_contents) {
-  DCHECK(!obj.is_null());
+  DCHECK(obj);
   Java_AwPdfExporter_setNativeAwPdfExporter(env, obj,
                                             reinterpret_cast<intptr_t>(this));
 }
@@ -52,7 +52,7 @@ AwPdfExporter::AwPdfExporter(JNIEnv* env,
 AwPdfExporter::~AwPdfExporter() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (!obj)
     return;
   // Clear the Java peer's weak pointer to |this| object.
   Java_AwPdfExporter_setNativeAwPdfExporter(env, obj, 0);
@@ -66,10 +66,18 @@ void AwPdfExporter::ExportToPdf(JNIEnv* env,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   printing::PageRanges page_ranges;
   JNI_AwPdfExporter_GetPageRanges(env, pages, &page_ranges);
-  AwPrintManager* print_manager = AwPrintManager::CreateForWebContents(
-      web_contents_, CreatePdfSettings(env, obj, page_ranges), fd,
-      base::BindRepeating(&AwPdfExporter::DidExportPdf,
-                          base::Unretained(this)));
+
+  // Create an AwPrintManager for the provided WebContents if the
+  // AwPrintManager doesn't exist.
+  if (!AwPrintManager::FromWebContents(web_contents_))
+    AwPrintManager::CreateForWebContents(web_contents_);
+
+  // Update the parameters of the current print manager.
+  AwPrintManager* print_manager =
+      AwPrintManager::FromWebContents(web_contents_);
+  print_manager->UpdateParam(CreatePdfSettings(env, obj, page_ranges), fd,
+                             base::BindRepeating(&AwPdfExporter::DidExportPdf,
+                                                 base::Unretained(this)));
 
   if (!print_manager->PrintNow())
     DidExportPdf(0);
@@ -122,7 +130,7 @@ std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
 void AwPdfExporter::DidExportPdf(int page_count) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (!obj)
     return;
   Java_AwPdfExporter_didExportPdf(env, obj, page_count);
 }

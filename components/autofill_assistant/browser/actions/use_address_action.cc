@@ -9,54 +9,27 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/actions/required_fields_fallback_handler.h"
-#include "components/autofill_assistant/browser/client_memory.h"
+#include "components/autofill_assistant/browser/actions/fallback_handler/required_field.h"
+#include "components/autofill_assistant/browser/actions/fallback_handler/required_fields_fallback_handler.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/user_model.h"
+#include "components/autofill_assistant/browser/value_util.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
-using RequiredField = RequiredFieldsFallbackHandler::RequiredField;
-using FallbackData = RequiredFieldsFallbackHandler::FallbackData;
 
 UseAddressAction::UseAddressAction(ActionDelegate* delegate,
                                    const ActionProto& proto)
     : Action(delegate, proto) {
   DCHECK(proto.has_use_address());
-  prompt_ = proto.use_address().prompt();
-  name_ = proto.use_address().name();
-  std::vector<RequiredField> required_fields;
-  for (const auto& required_field_proto :
-       proto_.use_address().required_fields()) {
-    if (required_field_proto.address_field() ==
-        UseAddressProto::RequiredField::UNDEFINED) {
-      DVLOG(1) << "address_field enum not set, skipping required field";
-      continue;
-    }
-
-    required_fields.emplace_back();
-    RequiredField& required_field = required_fields.back();
-    required_field.fallback_key = (int)required_field_proto.address_field();
-    required_field.selector = Selector(required_field_proto.element());
-    required_field.simulate_key_presses =
-        required_field_proto.simulate_key_presses();
-    required_field.delay_in_millisecond =
-        required_field_proto.delay_in_millisecond();
-    required_field.forced = required_field_proto.forced();
-  }
-
-  required_fields_fallback_handler_ =
-      std::make_unique<RequiredFieldsFallbackHandler>(required_fields,
-                                                      delegate);
   selector_ = Selector(proto.use_address().form_field_element());
-  selector_.MustBeVisible();
-  DCHECK(!selector_.empty());
 }
 
 UseAddressAction::~UseAddressAction() = default;
@@ -65,117 +38,160 @@ void UseAddressAction::InternalProcessAction(
     ProcessActionCallback action_callback) {
   process_action_callback_ = std::move(action_callback);
 
-  // Ensure data already selected in a previous action.
-  auto* client_memory = delegate_->GetClientMemory();
-  if (!client_memory->has_selected_address(name_)) {
-    auto* error_info = processed_action_proto_->mutable_status_details()
-                           ->mutable_autofill_error_info();
-    error_info->set_address_key_requested(name_);
-    error_info->set_client_memory_address_key_names(
-        client_memory->GetAllAddressKeyNames());
-    error_info->set_address_pointee_was_null(
-        !client_memory->has_selected_address(name_) ||
-        !client_memory->selected_address(name_));
-    EndAction(ClientStatus(PRECONDITION_FAILED));
+  if (selector_.empty() && !proto_.use_address().skip_autofill()) {
+    VLOG(1) << "UseAddress failed: |selector| empty";
+    EndAction(ClientStatus(INVALID_ACTION));
     return;
   }
+  if (proto_.use_address().skip_autofill() &&
+      proto_.use_address().required_fields().empty()) {
+    VLOG(1) << "UseAddress failed: |skip_autofill| without required fields";
+    EndAction(ClientStatus(INVALID_ACTION));
+    return;
+  }
+
+  // Ensure data already selected in a previous action.
+  switch (proto_.use_address().address_source_case()) {
+    case UseAddressProto::kName: {
+      if (proto_.use_address().name().empty()) {
+        VLOG(1) << "UseAddress failed: |name| specified but empty";
+        EndAction(ClientStatus(INVALID_ACTION));
+        return;
+      }
+      auto* profile = delegate_->GetUserData()->selected_address(
+          proto_.use_address().name());
+      if (profile == nullptr) {
+        auto* error_info = processed_action_proto_->mutable_status_details()
+                               ->mutable_autofill_error_info();
+        error_info->set_address_key_requested(proto_.use_address().name());
+        error_info->set_client_memory_address_key_names(
+            delegate_->GetUserData()->GetAllAddressKeyNames());
+        error_info->set_address_pointee_was_null(true);
+        VLOG(1) << "UseAddress failed: no profile found under "
+                << proto_.use_address().name();
+        EndAction(ClientStatus(PRECONDITION_FAILED));
+        return;
+      }
+      profile_ = user_data::MakeUniqueFromProfile(*profile);
+      break;
+    }
+    case UseAddressProto::kModelIdentifier: {
+      if (proto_.use_address().model_identifier().empty()) {
+        VLOG(1) << "UseAddress failed: |model_identifier| set but empty";
+        EndAction(ClientStatus(INVALID_ACTION));
+        return;
+      }
+      auto profile_value = delegate_->GetUserModel()->GetValue(
+          proto_.use_address().model_identifier());
+      if (!profile_value.has_value()) {
+        VLOG(1) << "UseAddress failed: "
+                << proto_.use_address().model_identifier()
+                << " not found in user model";
+        EndAction(ClientStatus(PRECONDITION_FAILED));
+        return;
+      }
+      if (profile_value->profiles().values().size() != 1) {
+        VLOG(1) << "UseAddress failed: expected single profile for "
+                << proto_.use_address().model_identifier() << ", but got "
+                << *profile_value;
+        EndAction(ClientStatus(PRECONDITION_FAILED));
+        return;
+      }
+      auto* profile = delegate_->GetUserModel()->GetProfile(
+          profile_value->profiles().values(0));
+      if (profile == nullptr) {
+        VLOG(1) << "UseAddress failed: profile not found for: "
+                << *profile_value;
+        EndAction(ClientStatus(PRECONDITION_FAILED));
+        return;
+      }
+      profile_ = user_data::MakeUniqueFromProfile(*profile);
+      break;
+    }
+    case UseAddressProto::ADDRESS_SOURCE_NOT_SET:
+      EndAction(ClientStatus(INVALID_ACTION));
+      return;
+  }
+  DCHECK(profile_ != nullptr);
 
   FillFormWithData();
 }
 
-void UseAddressAction::EndAction(
-    const ClientStatus& final_status,
-    const base::Optional<ClientStatus>& optional_details_status) {
-  UpdateProcessedAction(final_status);
-  if (optional_details_status.has_value() && !optional_details_status->ok()) {
-    processed_action_proto_->mutable_status_details()->MergeFrom(
-        optional_details_status->details());
-  }
+void UseAddressAction::EndAction(const ClientStatus& status) {
+  if (fallback_handler_)
+    action_stopwatch_.TransferToWaitTime(fallback_handler_->TotalWaitTime());
+
+  UpdateProcessedAction(status);
   std::move(process_action_callback_).Run(std::move(processed_action_proto_));
 }
 
 void UseAddressAction::FillFormWithData() {
-  delegate_->ShortWaitForElement(
-      selector_, base::BindOnce(&UseAddressAction::OnWaitForElement,
-                                weak_ptr_factory_.GetWeakPtr()));
+  if (selector_.empty()) {
+    DCHECK(proto_.use_address().skip_autofill());
+    OnWaitForElement(OkClientStatus());
+    return;
+  }
+
+  delegate_->ShortWaitForElementWithSlowWarning(
+      selector_,
+      base::BindOnce(&UseAddressAction::OnWaitForElementTimed,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::BindOnce(&UseAddressAction::OnWaitForElement,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
 void UseAddressAction::OnWaitForElement(const ClientStatus& element_status) {
   if (!element_status.ok()) {
-    EndAction(ClientStatus(element_status.proto_status()));
+    EndAction(element_status);
+    return;
+  }
+
+  DCHECK(profile_);
+  InitFallbackHandler(*profile_);
+
+  if (proto_.use_address().skip_autofill()) {
+    ExecuteFallback(OkClientStatus());
     return;
   }
 
   DCHECK(!selector_.empty());
-  DVLOG(3) << "Retrieving address from client memory under '" << name_ << "'.";
-  const autofill::AutofillProfile* profile =
-      delegate_->GetClientMemory()->selected_address(name_);
-  DCHECK(profile);
-  auto fallback_data = CreateFallbackData(*profile);
-  delegate_->FillAddressForm(
-      profile, selector_,
-      base::BindOnce(&UseAddressAction::OnFormFilled,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(fallback_data)));
+  delegate_->FindElement(
+      selector_,
+      base::BindOnce(&element_action_util::TakeElementAndPerform,
+                     base::BindOnce(&WebController::FillAddressForm,
+                                    delegate_->GetWebController()->GetWeakPtr(),
+                                    std::move(profile_)),
+                     base::BindOnce(&UseAddressAction::ExecuteFallback,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
-void UseAddressAction::OnFormFilled(std::unique_ptr<FallbackData> fallback_data,
-                                    const ClientStatus& status) {
-  required_fields_fallback_handler_->CheckAndFallbackRequiredFields(
-      status, std::move(fallback_data),
-      base::BindOnce(&UseAddressAction::EndAction,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-// This logic is from NameInfo::FullName.
-base::string16 FullName(const autofill::AutofillProfile& profile) {
-  return autofill::data_util::JoinNameParts(
-      profile.GetRawInfo(autofill::NAME_FIRST),
-      profile.GetRawInfo(autofill::NAME_MIDDLE),
-      profile.GetRawInfo(autofill::NAME_LAST));
-}
-
-std::unique_ptr<FallbackData> UseAddressAction::CreateFallbackData(
+void UseAddressAction::InitFallbackHandler(
     const autofill::AutofillProfile& profile) {
-  auto fallback_data = std::make_unique<FallbackData>();
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::FIRST_NAME,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::NAME_FIRST)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::LAST_NAME,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::NAME_LAST)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::FULL_NAME,
-      base::UTF16ToUTF8(FullName(profile)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::PHONE_NUMBER,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::EMAIL,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::EMAIL_ADDRESS)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::ORGANIZATION,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::COMPANY_NAME)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::COUNTRY_CODE,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::REGION,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_STATE)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::STREET_ADDRESS,
-      base::UTF16ToUTF8(
-          profile.GetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::LOCALITY,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_CITY)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::DEPENDANT_LOCALITY,
-      base::UTF16ToUTF8(
-          profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY)));
-  fallback_data->field_values.emplace(
-      (int)UseAddressProto::RequiredField::POSTAL_CODE,
-      base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_ZIP)));
+  std::vector<RequiredField> required_fields;
+  for (const auto& required_field_proto :
+       proto_.use_address().required_fields()) {
+    if (!required_field_proto.has_value_expression()) {
+      continue;
+    }
 
-  return fallback_data;
+    RequiredField required_field;
+    required_field.FromProto(required_field_proto);
+    required_fields.emplace_back(required_field);
+  }
+
+  DCHECK(fallback_handler_ == nullptr);
+  fallback_handler_ = std::make_unique<RequiredFieldsFallbackHandler>(
+      required_fields,
+      field_formatter::CreateAutofillMappings(profile,
+                                              /* locale = */ "en-US"),
+      delegate_);
 }
+
+void UseAddressAction::ExecuteFallback(const ClientStatus& status) {
+  DCHECK(fallback_handler_ != nullptr);
+  fallback_handler_->CheckAndFallbackRequiredFields(
+      status, base::BindOnce(&UseAddressAction::EndAction,
+                             weak_ptr_factory_.GetWeakPtr()));
+}
+
 }  // namespace autofill_assistant

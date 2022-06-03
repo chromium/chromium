@@ -7,10 +7,11 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -167,7 +168,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
   if (codec_context_->sample_fmt == AV_SAMPLE_FMT_S16P)
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_S16;
 
-  AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
@@ -182,11 +183,11 @@ bool FFmpegCdmAudioDecoder::Initialize(
   }
 
   // Success!
-  decoding_loop_.reset(new FFmpegDecodingLoop(codec_context_.get()));
+  decoding_loop_ = std::make_unique<FFmpegDecodingLoop>(codec_context_.get());
   samples_per_second_ = config.samples_per_second;
   bytes_per_frame_ = codec_context_->channels * config.bits_per_channel / 8;
-  output_timestamp_helper_.reset(
-      new AudioTimestampHelper(config.samples_per_second));
+  output_timestamp_helper_ =
+      std::make_unique<AudioTimestampHelper>(config.samples_per_second);
   is_initialized_ = true;
 
   // Store initial values to guard against midstream configuration changes.
@@ -216,8 +217,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
     cdm::AudioFrames* decoded_frames) {
   DVLOG(1) << "DecodeBuffer()";
   const bool is_end_of_stream = !compressed_buffer;
-  base::TimeDelta timestamp =
-      base::TimeDelta::FromMicroseconds(input_timestamp);
+  base::TimeDelta timestamp = base::Microseconds(input_timestamp);
 
   if (!is_end_of_stream && timestamp != kNoTimestamp) {
     if (last_input_timestamp_ != kNoTimestamp &&
@@ -234,15 +234,16 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   size_t total_size = 0u;
   std::vector<std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame>> audio_frames;
 
-  AVPacket packet;
-  av_init_packet(&packet);
-  packet.data = const_cast<uint8_t*>(compressed_buffer);
-  packet.size = compressed_buffer_size;
+  AVPacket* packet = av_packet_alloc();
+  packet->data = const_cast<uint8_t*>(compressed_buffer);
+  packet->size = compressed_buffer_size;
 
-  switch (decoding_loop_->DecodePacket(
-      &packet, base::BindRepeating(&FFmpegCdmAudioDecoder::OnNewFrame,
-                                   base::Unretained(this), &total_size,
-                                   &audio_frames))) {
+  FFmpegDecodingLoop::DecodeStatus decode_status = decoding_loop_->DecodePacket(
+      packet,
+      base::BindRepeating(&FFmpegCdmAudioDecoder::OnNewFrame,
+                          base::Unretained(this), &total_size, &audio_frames));
+  av_packet_free(&packet);
+  switch (decode_status) {
     case FFmpegDecodingLoop::DecodeStatus::kSendPacketFailed:
       return cdm::kDecodeError;
     case FFmpegDecodingLoop::DecodeStatus::kFrameProcessingFailed:

@@ -31,13 +31,12 @@ class PageLoadStrategy {
       const BrowserInfo* browser_info,
       const JavaScriptDialogManager* dialog_manager);
 
-  virtual Status IsPendingNavigation(const std::string& frame_id,
-                                     const Timeout* timeout,
+  virtual Status IsPendingNavigation(const Timeout* timeout,
                                      bool* is_pending) = 0;
 
   virtual void set_timed_out(bool timed_out) = 0;
 
-  virtual void ClearState(const std::string& new_frame_id) = 0;
+  virtual void SetFrame(const std::string& new_frame_id) = 0;
 
   virtual bool IsNonBlocking() const = 0;
 

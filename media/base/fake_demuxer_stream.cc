@@ -11,10 +11,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
@@ -30,10 +31,10 @@ namespace media {
 
 const int kStartTimestampMs = 0;
 const int kDurationMs = 30;
-const int kStartWidth = 320;
-const int kStartHeight = 240;
-const int kWidthDelta = 4;
-const int kHeightDelta = 3;
+const int kDefaultStartWidth = 320;
+const int kDefaultStartHeight = 240;
+const int kDefaultWidthDelta = 4;
+const int kDefaultHeightDelta = 3;
 const uint8_t kKeyId[] = {0x00, 0x01, 0x02, 0x03};
 const uint8_t kIv[] = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -41,11 +42,25 @@ const uint8_t kIv[] = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
 FakeDemuxerStream::FakeDemuxerStream(int num_configs,
                                      int num_buffers_in_one_config,
                                      bool is_encrypted)
+    : FakeDemuxerStream(
+          num_configs,
+          num_buffers_in_one_config,
+          is_encrypted,
+          gfx::Size(kDefaultStartWidth, kDefaultStartHeight),
+          gfx::Vector2dF(kDefaultWidthDelta, kDefaultHeightDelta)) {}
+
+FakeDemuxerStream::FakeDemuxerStream(int num_configs,
+                                     int num_buffers_in_one_config,
+                                     bool is_encrypted,
+                                     gfx::Size start_coded_size,
+                                     gfx::Vector2dF coded_size_delta)
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       num_configs_(num_configs),
       num_buffers_in_one_config_(num_buffers_in_one_config),
       config_changes_(num_configs > 1),
       is_encrypted_(is_encrypted),
+      start_coded_size_(start_coded_size),
+      coded_size_delta_(coded_size_delta),
       read_to_hold_(-1) {
   DCHECK_GT(num_configs, 0);
   DCHECK_GT(num_buffers_in_one_config, 0);
@@ -60,9 +75,9 @@ void FakeDemuxerStream::Initialize() {
   num_configs_left_ = num_configs_;
   num_buffers_left_in_current_config_ = num_buffers_in_one_config_;
   num_buffers_returned_ = 0;
-  current_timestamp_ = base::TimeDelta::FromMilliseconds(kStartTimestampMs);
-  duration_ = base::TimeDelta::FromMilliseconds(kDurationMs);
-  next_coded_size_ = gfx::Size(kStartWidth, kStartHeight);
+  current_timestamp_ = base::Milliseconds(kStartTimestampMs);
+  duration_ = base::Milliseconds(kDurationMs);
+  next_size_ = start_coded_size_;
   next_read_num_ = 0;
 }
 
@@ -77,10 +92,6 @@ void FakeDemuxerStream::Read(ReadCB read_cb) {
 
   DCHECK(read_to_hold_ == -1 || read_to_hold_ > next_read_num_);
   DoRead();
-}
-
-bool FakeDemuxerStream::IsReadPending() const {
-  return !read_cb_.is_null();
 }
 
 AudioDecoderConfig FakeDemuxerStream::audio_decoder_config() {
@@ -159,14 +170,14 @@ void FakeDemuxerStream::SeekToEndOfStream() {
 }
 
 void FakeDemuxerStream::UpdateVideoDecoderConfig() {
-  const gfx::Rect kVisibleRect(kStartWidth, kStartHeight);
+  const gfx::Rect kVisibleRect(next_size_.width(), next_size_.height());
   video_decoder_config_.Initialize(
-      kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+      VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
-      kNoTransformation, next_coded_size_, kVisibleRect, next_coded_size_,
-      EmptyExtraData(),
+      kNoTransformation, next_size_, kVisibleRect, next_size_, EmptyExtraData(),
       is_encrypted_ ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted);
-  next_coded_size_.Enlarge(kWidthDelta, kHeightDelta);
+  next_size_.set_width(next_size_.width() + coded_size_delta_.x());
+  next_size_.set_height(next_size_.height() + coded_size_delta_.y());
 }
 
 void FakeDemuxerStream::DoRead() {

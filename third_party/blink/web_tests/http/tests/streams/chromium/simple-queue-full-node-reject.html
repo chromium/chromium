@@ -10,8 +10,8 @@ promise_test(t => {
   const rejections = [];
   for (let i = 0; i < QUEUE_MAX_ARRAY_SIZE; ++i) {
     rejections.push(
-        promise_rejects(t, new Error(), writer.write(i),
-                        'write() promise should reject'));
+        promise_rejects_js(t, Error, writer.write(i),
+                           'write() promise should reject'));
   }
   return writer.abort(new Error()).then(() => Promise.all(rejections));
 }, 'rejecting exactly 16K writes should work');

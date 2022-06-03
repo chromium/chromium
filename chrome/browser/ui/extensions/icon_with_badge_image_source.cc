@@ -11,9 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/grit/theme_resources.h"
+#include "extensions/browser/extension_action.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -28,6 +27,8 @@
 #include "ui/gfx/skia_paint_util.h"
 
 namespace {
+
+constexpr gfx::Size kDefaultIconAreaSize(28, 28);
 
 gfx::ImageSkiaRep ScaleImageSkiaRep(const gfx::ImageSkiaRep& rep,
                                     int target_width_dp,
@@ -77,7 +78,7 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font = rb->GetFontList(ui::ResourceBundle::BaseFont)
                                 .DeriveWithHeightUpperBound(kBadgeHeight);
-  base::string16 utf16_text = base::UTF8ToUTF16(badge_->text);
+  std::u16string utf16_text = base::UTF8ToUTF16(badge_->text);
 
   // See if we can squeeze a slightly larger font into the badge given the
   // actual string that is to be displayed.
@@ -145,23 +146,21 @@ void IconWithBadgeImageSource::Draw(gfx::Canvas* canvas) {
   gfx::ImageSkia skia = icon_.AsImageSkia();
   gfx::ImageSkiaRep rep = skia.GetRepresentation(canvas->image_scale());
   if (rep.scale() != canvas->image_scale()) {
-    skia.AddRepresentation(ScaleImageSkiaRep(
-        rep, ExtensionAction::ActionIconSize(), canvas->image_scale()));
+    skia.AddRepresentation(
+        ScaleImageSkiaRep(rep, extensions::ExtensionAction::ActionIconSize(),
+                          canvas->image_scale()));
   }
   if (grayscale_)
     skia = gfx::ImageSkiaOperations::CreateHSLShiftedImage(skia, {-1, 0, 0.6});
 
-  int x_offset =
-      std::floor((size().width() - ExtensionAction::ActionIconSize()) / 2.0);
-  int y_offset =
-      std::floor((size().height() - ExtensionAction::ActionIconSize()) / 2.0);
+  int x_offset = std::floor(
+      (size().width() - extensions::ExtensionAction::ActionIconSize()) / 2.0);
+  int y_offset = std::floor(
+      (size().height() - extensions::ExtensionAction::ActionIconSize()) / 2.0);
   canvas->DrawImageInt(skia, x_offset, y_offset);
 
   // Draw a badge on the provided browser action icon's canvas.
   PaintBadge(canvas);
-
-  if (paint_page_action_decoration_)
-    PaintPageActionDecoration(canvas);
 }
 
 // Paints badge with specified parameters to |canvas|.
@@ -193,24 +192,6 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
 
   // Paint the text.
   badge_text_->Draw(canvas);
-}
-
-void IconWithBadgeImageSource::PaintPageActionDecoration(gfx::Canvas* canvas) {
-  const gfx::Rect icon_area = GetIconAreaRect();
-  constexpr float kMajorRadius = 4.5;
-  constexpr float kMinorRadius = 3;
-  // This decoration is positioned at the bottom left corner of the icon area.
-  gfx::PointF center_point = gfx::PointF(icon_area.bottom_left());
-  center_point.Offset(kMajorRadius + 1, -kMajorRadius - 1);
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorTRANSPARENT);
-  flags.setBlendMode(SkBlendMode::kSrc);
-  canvas->DrawCircle(center_point, kMajorRadius, flags);
-  constexpr SkColor decoration_color = SkColorSetARGB(255, 70, 142, 226);
-  flags.setColor(decoration_color);
-  canvas->DrawCircle(center_point, kMinorRadius, flags);
 }
 
 void IconWithBadgeImageSource::PaintBlockedActionDecoration(
@@ -250,6 +231,6 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
 
 gfx::Rect IconWithBadgeImageSource::GetIconAreaRect() const {
   gfx::Rect icon_area(size());
-  icon_area.ClampToCenteredSize(ToolbarActionsBar::GetIconAreaSize());
+  icon_area.ClampToCenteredSize(kDefaultIconAreaSize);
   return icon_area;
 }

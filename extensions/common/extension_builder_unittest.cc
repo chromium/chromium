@@ -13,7 +13,6 @@
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -73,6 +72,7 @@ TEST(ExtensionBuilderTest, Actions) {
             .Build();
     EXPECT_TRUE(extension->manifest()->HasKey(manifest_keys::kPageAction));
     EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
+    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kAction));
   }
   {
     scoped_refptr<const Extension> extension =
@@ -81,6 +81,16 @@ TEST(ExtensionBuilderTest, Actions) {
             .Build();
     EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kPageAction));
     EXPECT_TRUE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
+    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kAction));
+  }
+  {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("action")
+            .SetAction(ExtensionBuilder::ActionType::ACTION)
+            .Build();
+    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kPageAction));
+    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
+    EXPECT_TRUE(extension->manifest()->HasKey(manifest_keys::kAction));
   }
 }
 
@@ -111,9 +121,6 @@ TEST(ExtensionBuilderTest, Background) {
     EXPECT_FALSE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
   }
   {
-    // TODO(crbug.com/853378): Remove this when we open up support for
-    // service workers.
-    ScopedWorkerBasedExtensionsChannel current_channel_override;
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("service worker")
             .SetBackgroundContext(

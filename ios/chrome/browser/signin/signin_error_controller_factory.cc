@@ -18,7 +18,7 @@ namespace ios {
 
 // static
 SigninErrorController* SigninErrorControllerFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<SigninErrorController*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_DBUS_UPSTART_FAKE_UPSTART_CLIENT_H_
 #define CHROMEOS_DBUS_UPSTART_FAKE_UPSTART_CLIENT_H_
 
+#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 
 namespace chromeos {
@@ -14,12 +14,16 @@ namespace chromeos {
 class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
     : public UpstartClient {
  public:
-  FakeUpstartClient();
-  ~FakeUpstartClient() override;
+  using StartStopJobCallback = base::RepeatingCallback<bool(
+      const std::string& job,
+      const std::vector<std::string>& upstart_env)>;
 
-  // Adds or removes an observer.
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  FakeUpstartClient();
+
+  FakeUpstartClient(const FakeUpstartClient&) = delete;
+  FakeUpstartClient& operator=(const FakeUpstartClient&) = delete;
+
+  ~FakeUpstartClient() override;
 
   // Returns the fake global instance if initialized. May return null.
   static FakeUpstartClient* Get();
@@ -33,6 +37,7 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
                VoidDBusMethodCallback callback) override;
   void StartAuthPolicyService() override;
   void RestartAuthPolicyService() override;
+  void StartLacrosChrome(const std::vector<std::string>& upstart_env) override;
   void StartMediaAnalytics(const std::vector<std::string>& upstart_env,
                            VoidDBusMethodCallback callback) override;
   void RestartMediaAnalytics(VoidDBusMethodCallback callback) override;
@@ -40,17 +45,25 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   void StopMediaAnalytics(VoidDBusMethodCallback callback) override;
   void StartWilcoDtcService(VoidDBusMethodCallback callback) override;
   void StopWilcoDtcService(VoidDBusMethodCallback callback) override;
+  void StartArcDataSnapshotd(const std::vector<std::string>& upstart_env,
+                             VoidDBusMethodCallback callback) override;
+  void StopArcDataSnapshotd(VoidDBusMethodCallback callback) override;
 
-  void set_start_job_result(bool result) { start_job_result_ = result; }
-  void set_stop_job_result(bool result) { stop_job_result_ = result; }
+  void set_start_job_cb(const StartStopJobCallback& cb) { start_job_cb_ = cb; }
+  void set_stop_job_cb(const StartStopJobCallback& cb) { stop_job_cb_ = cb; }
 
  private:
-  bool start_job_result_ = true;
-  bool stop_job_result_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpstartClient);
+  // Callbacks that are called in StartJob() and StopJob() respectively. These
+  // callbacks decide the result StartJob() or StopJob() returns.
+  StartStopJobCallback start_job_cb_;
+  StartStopJobCallback stop_job_cb_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::FakeUpstartClient;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_UPSTART_FAKE_UPSTART_CLIENT_H_

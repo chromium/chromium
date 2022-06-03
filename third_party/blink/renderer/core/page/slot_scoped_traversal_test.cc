@@ -52,7 +52,7 @@ void SlotScopedTraversalTest::SetupSampleHTML(const char* main_html,
                                               const char* shadow_html,
                                               unsigned index) {
   Element* body = GetDocument().body();
-  body->SetInnerHTMLFromString(String::FromUTF8(main_html));
+  body->setInnerHTML(String::FromUTF8(main_html));
   if (shadow_html) {
     auto* shadow_host = To<Element>(NodeTraversal::ChildAt(*body, index));
     AttachOpenShadowRoot(*shadow_host, shadow_html);
@@ -64,8 +64,7 @@ void SlotScopedTraversalTest::AttachOpenShadowRoot(
     const char* shadow_inner_html) {
   ShadowRoot& shadow_root =
       shadow_host.AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.SetInnerHTMLFromString(String::FromUTF8(shadow_inner_html));
-  GetDocument().body()->UpdateDistributionForFlatTreeTraversal();
+  shadow_root.setInnerHTML(String::FromUTF8(shadow_inner_html));
 }
 
 TEST_F(SlotScopedTraversalTest, emptySlot) {

@@ -1,0 +1,52 @@
+An example app for partner customizations. When this APK is installed, Chrome
+will show a homepage button and partner bookmarks, disable incognito mode, and
+disable bookmark editing.
+
+* Remount /system/ as read-write.
+  * < MNC instructions
+    adb root && adb wait-for-device
+    adb shell mount -o rw,remount /system
+  * >= MNC instructions
+    adb root
+    adb disable-verity
+    adb reboot
+    adb root
+    adb remount
+
+* Build an example customizations content provider APK.
+  * autoninja -C $CHROMIUM_OUTPUT_DIR partner_browser_customizations_example_apk
+
+* [LEGACY non-GN] Build an example customizations content provider APK.
+  * Rollback the SDK version before 25.3.0
+    cd src/third_party/android_tools
+    git checkout b65c4776d
+  * Buid the APK
+    android update project --path . --name PartnerCustomizationProviderExample --target 1
+    ant debug
+  * Restore the SDK version after this
+
+* Install the compiled APK.
+
+adb shell mkdir -p /system/app
+adb push $CHROMIUM_OUTPUT_DIR/apks/PartnerCustomizationProviderExample.apk /system/app/ChromeCustomizations.apk
+
+[LEGACY non-GN]
+adb push bin/PartnerCustomizationProviderExample-debug.apk /system/app/ChromeCustomizations.apk
+
+* If you want partner bookmarks to work, delete or rename the preinstalled
+  partner bookmarks provider (which typically provides zero bookmarks).
+
+adb shell rm -r /system/app/PartnerBookmarksProvider
+
+* To get partner bookmarks even when Chrome isn't preinstalled, add command line
+  argument "--allow-partner-customization" to bypass the checking.
+
+  https://sites.google.com/a/google.com/clank/engineering/feature-areas/command-line-flags
+
+* Restart Java services to ensure dex caching.
+
+adb shell stop && adb shell start
+
+* Start Chrome.
+
+adb shell am start -S -n com.android.chrome/.Main

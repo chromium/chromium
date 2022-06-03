@@ -90,7 +90,7 @@ class MockFaviconService : public FaviconService {
   MOCK_METHOD1(SetImportedFavicons,
                void(const favicon_base::FaviconUsageDataList& favicon_usage));
   MOCK_METHOD2(AddPageNoVisitForBookmark,
-               void(const GURL& url, const base::string16& title));
+               void(const GURL& url, const std::u16string& title));
   MOCK_METHOD5(MergeFavicon,
                void(const GURL& page_url,
                     const GURL& icon_url,

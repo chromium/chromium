@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<!-- Dialog to display required OMA information to the user and confirm that
+    the user want to proceed with the download. -->
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/confirm_oma_download"
+    android:stretchColumns="1"
+    style="@style/AlertDialogContent">
+
+    <TableRow>
+        <TextView
+            android:text="@string/oma_download_name_label"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+            android:id="@+id/oma_download_name"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:text="@string/oma_download_vendor_label"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+            android:id="@+id/oma_download_vendor"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:text="@string/oma_download_size_label"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+            android:id="@+id/oma_download_size"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+    </TableRow>
+
+
+    <TableRow>
+        <TextView
+            android:text="@string/oma_download_type_label"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+            android:id="@+id/oma_download_type"
+            android:gravity="start"
+            android:padding="3dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:text="@string/oma_download_description_label"
+            android:gravity="start"
+            android:padding="3dip"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+            android:id="@+id/oma_download_description"
+            android:gravity="start"
+            android:padding="3dip"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+    </TableRow>
+</TableLayout>

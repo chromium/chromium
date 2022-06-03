@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -30,6 +29,10 @@ class CronetURLRequestContext;
 class Cronet_EngineImpl : public Cronet_Engine {
  public:
   Cronet_EngineImpl();
+
+  Cronet_EngineImpl(const Cronet_EngineImpl&) = delete;
+  Cronet_EngineImpl& operator=(const Cronet_EngineImpl&) = delete;
+
   ~Cronet_EngineImpl() override;
 
   // Cronet_Engine implementation:
@@ -107,8 +110,6 @@ class Cronet_EngineImpl : public Cronet_Engine {
   // Executors.
   base::flat_map<Cronet_RequestFinishedInfoListenerPtr, Cronet_ExecutorPtr>
       request_finished_registrations_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_EngineImpl);
 };
 
 }  // namespace cronet

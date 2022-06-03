@@ -19,7 +19,9 @@ source_set("utils") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/util",
   ]
 }
 
@@ -30,9 +32,7 @@ source_set("test_support") {
     "fake_observable_boolean.h",
     "fake_observable_boolean.mm",
   ]
-  deps = [
-    ":utils",
-  ]
+  deps = [ ":utils" ]
 }
 
 source_set("unit_tests") {

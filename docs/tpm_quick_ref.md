@@ -17,7 +17,7 @@ be up to date at any given point, but it's a wiki so you know what to do.
     (no active use elsewhere):
 *   [NVRAM use for OS rollback attack protection](http://git.chromium.org/gitweb/?p=chromiumos/platform/vboot_reference.git;a=blob;f=firmware/lib/rollback_index.c)
 *   [Tamper evident storage](http://git.chromium.org/gitweb/?p=chromiumos/platform/cryptohome.git;a=blob;f=README.lockbox)
-*   [Tamper-evident storage for avoiding runtime device management mode changes](http://git.chromium.org/gitweb/?p=chromium/chromium.git;a=blob;f=chrome/browser/chromeos/login/enrollment/enterprise_enrollment_screen.cc)
+*   [Tamper-evident storage for avoiding runtime device management mode changes](http://git.chromium.org/gitweb/?p=chromium/chromium.git;a=blob;f=chrome/browser/ash/login/enrollment/enterprise_enrollment_screen.cc)
 *   [User key/passphrase and cached data protection](http://git.chromium.org/gitweb/?p=chromiumos/platform/cryptohome.git;a=blob;f=README.homedirs)
 *   A TPM in a Chrome device has an EK certificate that is signed by an
     intermediate certificate authority that is dedicated to the specific TPMs

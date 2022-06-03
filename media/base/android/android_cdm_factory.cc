@@ -28,37 +28,32 @@ void ReportMediaDrmBridgeKeySystemSupport(bool supported) {
 
 }  // namespace
 
-AndroidCdmFactory::AndroidCdmFactory(const CreateFetcherCB& create_fetcher_cb,
-                                     const CreateStorageCB& create_storage_cb)
-    : create_fetcher_cb_(create_fetcher_cb),
-      create_storage_cb_(create_storage_cb) {}
+AndroidCdmFactory::AndroidCdmFactory(CreateFetcherCB create_fetcher_cb,
+                                     CreateStorageCB create_storage_cb)
+    : create_fetcher_cb_(std::move(create_fetcher_cb)),
+      create_storage_cb_(std::move(create_storage_cb)) {}
 
 AndroidCdmFactory::~AndroidCdmFactory() {
   weak_factory_.InvalidateWeakPtrs();
   for (auto& pending_creation : pending_creations_) {
-    auto& cdm_created_cb = pending_creation.second.second;
-    cdm_created_cb.Run(nullptr, "CDM creation aborted");
+    CdmCreatedCB cdm_created_cb = std::move(pending_creation.second.second);
+    std::move(cdm_created_cb).Run(nullptr, "CDM creation aborted");
   }
 }
 
 void AndroidCdmFactory::Create(
     const std::string& key_system,
-    const url::Origin& security_origin,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
-    const CdmCreatedCB& cdm_created_cb) {
+    CdmCreatedCB cdm_created_cb) {
   DVLOG(1) << __func__;
 
   // Bound |cdm_created_cb| so we always fire it asynchronously.
-  CdmCreatedCB bound_cdm_created_cb = BindToCurrentLoop(cdm_created_cb);
-
-  if (security_origin.opaque()) {
-    bound_cdm_created_cb.Run(nullptr, "Invalid origin.");
-    return;
-  }
+  CdmCreatedCB bound_cdm_created_cb =
+      BindToCurrentLoop(std::move(cdm_created_cb));
 
   // Create AesDecryptor here to support External Clear Key key system.
   // This is used for testing.
@@ -67,7 +62,7 @@ void AndroidCdmFactory::Create(
     scoped_refptr<ContentDecryptionModule> cdm(
         new AesDecryptor(session_message_cb, session_closed_cb,
                          session_keys_change_cb, session_expiration_update_cb));
-    bound_cdm_created_cb.Run(cdm, "");
+    std::move(bound_cdm_created_cb).Run(cdm, "");
     return;
   }
 
@@ -75,8 +70,8 @@ void AndroidCdmFactory::Create(
 
   if (!MediaDrmBridge::IsKeySystemSupported(key_system)) {
     ReportMediaDrmBridgeKeySystemSupport(false);
-    bound_cdm_created_cb.Run(
-        nullptr, "Key system not supported unexpectedly: " + key_system);
+    std::move(bound_cdm_created_cb)
+        .Run(nullptr, "Key system not supported unexpectedly: " + key_system);
     return;
   }
 
@@ -87,14 +82,16 @@ void AndroidCdmFactory::Create(
   auto* raw_factory = factory.get();
 
   creation_id_++;
-  pending_creations_.emplace(
-      creation_id_, PendingCreation(std::move(factory), bound_cdm_created_cb));
+  auto result = pending_creations_.emplace(
+      creation_id_,
+      PendingCreation(std::move(factory), std::move(bound_cdm_created_cb)));
+  CHECK(result.second);
 
-  raw_factory->Create(
-      key_system, security_origin, cdm_config, session_message_cb,
-      session_closed_cb, session_keys_change_cb, session_expiration_update_cb,
-      base::BindRepeating(&AndroidCdmFactory::OnCdmCreated,
-                          weak_factory_.GetWeakPtr(), creation_id_));
+  raw_factory->Create(key_system, cdm_config, session_message_cb,
+                      session_closed_cb, session_keys_change_cb,
+                      session_expiration_update_cb,
+                      base::BindOnce(&AndroidCdmFactory::OnCdmCreated,
+                                     weak_factory_.GetWeakPtr(), creation_id_));
 }
 
 void AndroidCdmFactory::OnCdmCreated(
@@ -104,11 +101,12 @@ void AndroidCdmFactory::OnCdmCreated(
   DVLOG(1) << __func__ << ": creation_id = " << creation_id;
 
   DCHECK(pending_creations_.count(creation_id));
-  auto cdm_created_cb = pending_creations_[creation_id].second;
+  CdmCreatedCB cdm_created_cb =
+      std::move(pending_creations_[creation_id].second);
   pending_creations_.erase(creation_id);
 
   LOG_IF(ERROR, !cdm) << error_message;
-  cdm_created_cb.Run(cdm, error_message);
+  std::move(cdm_created_cb).Run(cdm, error_message);
 }
 
 }  // namespace media

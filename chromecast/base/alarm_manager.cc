@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -50,23 +50,22 @@ void AlarmManager::AlarmInfo::PostTask() {
 }
 
 AlarmManager::AlarmManager(
-    std::unique_ptr<base::Clock> clock,
+    const base::Clock* clock,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : clock_(std::move(clock)),
+    : clock_(clock),
       task_runner_(std::move(task_runner)),
       weak_factory_(this) {
   DCHECK(clock_);
   DCHECK(task_runner_);
   clock_tick_timer_.SetTaskRunner(task_runner_);
-  base::TimeDelta polling_frequency =
-      base::TimeDelta::FromSeconds(kClockPollInterval);
+  base::TimeDelta polling_frequency = base::Seconds(kClockPollInterval);
   clock_tick_timer_.Start(FROM_HERE, polling_frequency,
                           base::BindRepeating(&AlarmManager::CheckAlarm,
                                               weak_factory_.GetWeakPtr()));
 }
 
 AlarmManager::AlarmManager()
-    : AlarmManager(std::make_unique<base::DefaultClock>(),
+    : AlarmManager(base::DefaultClock::GetInstance(),
                    base::ThreadTaskRunnerHandle::Get()) {}
 
 AlarmManager::~AlarmManager() {}

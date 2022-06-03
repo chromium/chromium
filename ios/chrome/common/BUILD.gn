@@ -26,26 +26,18 @@ source_set("common") {
     "//url",
   ]
 
-  public_deps = [
-    ":timing",
-  ]
+  public_deps = [ ":timing" ]
 
-  libs = [ "QuartzCore.framework" ]
+  frameworks = [ "QuartzCore.framework" ]
 }
 
-source_set("common_extension") {
-  sources = [
-    "highlight_button.h",
-    "highlight_button.mm",
-  ]
-
-  libs = [ "UIKit.framework" ]
-
-  public_deps = [
-    ":timing",
-  ]
-
+source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("timing") {
@@ -54,7 +46,7 @@ source_set("timing") {
     "material_timing.mm",
   ]
 
-  libs = [ "QuartzCore.framework" ]
+  frameworks = [ "QuartzCore.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -71,13 +63,11 @@ source_set("unit_tests") {
     ":common",
     ":noarc_unit_tests",
     "//base",
+    "//base/test:test_support",
+    "//ios/chrome/common/ui/colors",
     "//testing/gtest",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  if (use_xcode_clang) {
-    # TODO(crbug.com/939749): Remove once Xcode's Clang has Clang r355012.
-    defines = [ "XCODE_CLANG" ]
-  }
 }
 
 # The block_unittest.mm has been duplicated during the migration of iOS code
@@ -88,9 +78,7 @@ source_set("unit_tests") {
 source_set("noarc_unit_tests") {
   visibility = [ ":unit_tests" ]
   testonly = true
-  sources = [
-    "noarc_block_unittest.mm",
-  ]
+  sources = [ "noarc_block_unittest.mm" ]
   deps = [
     ":common",
     "//base",

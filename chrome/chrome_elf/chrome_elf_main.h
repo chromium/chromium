@@ -28,6 +28,10 @@ void SignalChromeElf();
 // Sets the metrics client ID in crash keys.
 void SetMetricsClientId(const char* client_id);
 
+// Returns true if invoked in a Chrome process other than the main browser
+// process. False otherwise.
+bool IsBrowserProcess();
+
 }  // extern "C"
 
 #endif  // CHROME_CHROME_ELF_CHROME_ELF_MAIN_H_

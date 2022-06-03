@@ -3,6 +3,5 @@ include_rules = [
   "+chromeos/services/multidevice_setup/public/mojom",
   "+content/public/browser",
   "+device/bluetooth",
-  "+services/service_manager/public/cpp",
   "+ui/webui",
 ]

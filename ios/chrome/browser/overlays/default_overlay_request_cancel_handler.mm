@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/default_overlay_request_cancel_handler.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,10 +28,10 @@ void DefaultOverlayRequestCancelHandler::Cancel() {
 DefaultOverlayRequestCancelHandler::NavigationHelper::NavigationHelper(
     DefaultOverlayRequestCancelHandler* cancel_handler,
     web::WebState* web_state)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
+    : cancel_handler_(cancel_handler) {
   DCHECK(cancel_handler);
   DCHECK(web_state);
-  scoped_observer_.Add(web_state);
+  scoped_observation_.Observe(web_state);
 }
 
 DefaultOverlayRequestCancelHandler::NavigationHelper::~NavigationHelper() =
@@ -43,16 +43,22 @@ void DefaultOverlayRequestCancelHandler::NavigationHelper::DidFinishNavigation(
   if (navigation_context->HasCommitted() &&
       !navigation_context->IsSameDocument()) {
     cancel_handler_->Cancel();
+    // The cancel handler is destroyed after Cancel(), so no code can be added
+    // after this call.
   }
 }
 
 void DefaultOverlayRequestCancelHandler::NavigationHelper::RenderProcessGone(
     web::WebState* web_state) {
   cancel_handler_->Cancel();
+  // The cancel handler is destroyed after Cancel(), so no code can be added
+  // after this call.
 }
 
 void DefaultOverlayRequestCancelHandler::NavigationHelper::WebStateDestroyed(
     web::WebState* web_state) {
+  scoped_observation_.Reset();
   cancel_handler_->Cancel();
-  scoped_observer_.RemoveAll();
+  // The cancel handler is destroyed after Cancel(), so no code can be added
+  // after this call.
 }

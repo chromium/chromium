@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/logging.h"
 #include "components/payments/content/utility/fingerprint_parser.h"
 #include "components/payments/core/error_logger.h"
 

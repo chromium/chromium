@@ -22,7 +22,9 @@ namespace web {
 class BrowserState;
 }  // namespace web
 
+@class AppState;
 class Browser;
+@class SceneState;
 class TestChromeBrowserState;
 @class UINavigationController;
 @class UIViewController;
@@ -58,6 +60,11 @@ class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
   // Only valid when SetUpNavigationController has been called.
   UIViewController* dummy_controller_;
   UINavigationController* nav_controller_;
+
+  // Dummy scene state.
+  SceneState* scene_state_;
+  // Dummy app state.
+  AppState* app_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_

@@ -1,0 +1,105 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/overlays/overlay_presentation_context_fullscreen_disabler.h"
+
+#import <WebKit/WebKit.h>
+
+#import "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/common/crw_web_view_content_view.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+// The modality used in tests.
+const OverlayModality kModality = OverlayModality::kWebContentArea;
+// Request config used in tests.
+DEFINE_TEST_OVERLAY_REQUEST_CONFIG(kConfig);
+}  // namespace
+
+// Test fixture for OverlayPresentationContextFullscreenDisabler.
+class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
+ public:
+  OverlayPresentationContextFullscreenDisablerTest()
+      : disabler_(&browser_, kModality),
+        web_view_([[WKWebView alloc]
+            initWithFrame:scoped_window_.Get().bounds
+            configuration:[[WKWebViewConfiguration alloc] init]]),
+        content_view_([[CRWWebViewContentView alloc]
+            initWithWebView:web_view_
+                 scrollView:web_view_.scrollView]) {
+    // Set up the fake presentation context so OverlayPresenterObserver
+    // callbacks are sent.
+    overlay_presenter()->SetPresentationContext(&presentation_context_);
+
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetView(content_view_);
+    CRWWebViewScrollViewProxy* scroll_view_proxy =
+        [[CRWWebViewScrollViewProxy alloc] init];
+    UIScrollView* scroll_view = [[UIScrollView alloc] init];
+    [scroll_view_proxy setScrollView:scroll_view];
+    id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+    [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+    web_state->SetWebViewProxy(web_view_proxy_mock);
+    // Insert and activate a WebState.
+    browser_.GetWebStateList()->InsertWebState(0, std::move(web_state),
+                                               WebStateList::INSERT_ACTIVATE,
+                                               WebStateOpener());
+  }
+  ~OverlayPresentationContextFullscreenDisablerTest() override {
+    overlay_presenter()->SetPresentationContext(nullptr);
+  }
+
+  bool fullscreen_enabled() {
+      return FullscreenController::FromBrowser(&browser_)->IsEnabled();
+  }
+  OverlayPresenter* overlay_presenter() {
+    return OverlayPresenter::FromBrowser(&browser_, kModality);
+  }
+  OverlayRequestQueue* queue() {
+    return OverlayRequestQueue::FromWebState(
+        browser_.GetWebStateList()->GetActiveWebState(), kModality);
+  }
+
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  TestBrowser browser_;
+  OverlayContainerFullscreenDisabler disabler_;
+  FakeOverlayPresentationContext presentation_context_;
+  ScopedKeyWindow scoped_window_;
+  WKWebView* web_view_ = nil;
+  CRWWebViewContentView* content_view_ = nil;
+};
+
+// Tests that OverlayPresentationContextFullscreenDisabler disables fullscreen
+// when overlays are displayed.
+TEST_F(OverlayPresentationContextFullscreenDisablerTest,
+       DisableForPresentedOverlays) {
+  ASSERT_TRUE(fullscreen_enabled());
+
+  // Add an OverlayRequest to the active WebState's queue and verify that
+  // fullscreen is disabled.
+  queue()->AddRequest(OverlayRequest::CreateWithConfig<kConfig>());
+  EXPECT_FALSE(fullscreen_enabled());
+
+  // Cancel the request and verify that fullscreen is re-enabled.
+  queue()->CancelAllRequests();
+  EXPECT_TRUE(fullscreen_enabled());
+}

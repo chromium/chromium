@@ -4,8 +4,8 @@
 
 #include "components/ui_devtools/css_agent.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/dom_agent.h"
@@ -109,7 +109,7 @@ class CSSAgentTest : public testing::Test {
     edits->emplace_back(std::move(edit));
     std::unique_ptr<StyleArray> output;
     auto response = css_agent_->setStyleTexts(std::move(edits), &output);
-    return {response.isSuccess(), std::move(output)};
+    return {response.IsSuccess(), std::move(output)};
   }
 
   std::string GetValueForProperty(protocol::CSS::CSSStyle* style,
@@ -133,7 +133,7 @@ class CSSAgentTest : public testing::Test {
     std::string output;
     auto response = css_agent_->getStyleSheetText(
         BuildStylesheetUId(element()->node_id(), 0), &output);
-    return {response.isSuccess(), output};
+    return {response.IsSuccess(), output};
   }
 
   CSSAgent* css_agent() { return css_agent_.get(); }

@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PROPERTY_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PROPERTY_PARSER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -36,6 +35,7 @@ namespace blink {
 
 class CSSPropertyValue;
 class CSSValue;
+class ExecutionContext;
 
 // Inputs: PropertyID, isImportant bool, CSSParserTokenRange.
 // Outputs: Vector of CSSProperties
@@ -44,6 +44,9 @@ class CORE_EXPORT CSSPropertyParser {
   STACK_ALLOCATED();
 
  public:
+  CSSPropertyParser(const CSSPropertyParser&) = delete;
+  CSSPropertyParser& operator=(const CSSPropertyParser&) = delete;
+
   static bool ParseValue(CSSPropertyID,
                          bool important,
                          const CSSParserTokenRange&,
@@ -71,13 +74,13 @@ class CORE_EXPORT CSSPropertyParser {
  private:
   // Inputs:
   CSSParserTokenRange range_;
-  Member<const CSSParserContext> context_;
+  const CSSParserContext* context_;
   // Outputs:
   HeapVector<CSSPropertyValue, 256>* parsed_properties_;
-  DISALLOW_COPY_AND_ASSIGN(CSSPropertyParser);
 };
 
-CSSPropertyID UnresolvedCSSPropertyID(StringView,
+CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext*,
+                                      StringView,
                                       CSSParserMode mode = kHTMLStandardMode);
 CSSValueID CssValueKeywordID(StringView);
 

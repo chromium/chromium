@@ -77,26 +77,30 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   LayoutTableRow* NextRow() const;
 
   LayoutTableSection* Section() const {
+    NOT_DESTROYED();
     return To<LayoutTableSection>(Parent());
   }
   LayoutTable* Table() const final {
+    NOT_DESTROYED();
     return To<LayoutTable>(Parent()->Parent());
   }
 
   static LayoutTableRow* CreateAnonymous(Document*);
-  static LayoutTableRow* CreateAnonymousWithParent(const LayoutObject*);
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
-      const LayoutObject* parent) const override {
-    return CreateAnonymousWithParent(parent);
-  }
+      const LayoutObject* parent) const override;
 
   void SetRowIndex(unsigned row_index) {
+    NOT_DESTROYED();
     CHECK_LE(row_index, kMaxRowIndex);
     row_index_ = row_index;
   }
 
-  bool RowIndexWasSet() const { return row_index_ != kUnsetRowIndex; }
+  bool RowIndexWasSet() const {
+    NOT_DESTROYED();
+    return row_index_ != kUnsetRowIndex;
+  }
   unsigned RowIndex() const final {
+    NOT_DESTROYED();
     DCHECK(RowIndexWasSet());
     DCHECK(
         !Section() ||
@@ -110,41 +114,61 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
-  PaginationBreakability GetPaginationBreakability() const final;
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final;
 
   void ComputeLayoutOverflow();
 
   void RecalcVisualOverflow() override;
 
-  const char* GetName() const override { return "LayoutTableRow"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutTableRow";
+  }
 
   // Whether a row has opaque background depends on many factors, e.g. border
   // spacing, border collapsing, missing cells, etc.
   // For simplicity, just conservatively assume all table rows are not opaque.
   bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
                                          unsigned) const override {
+    NOT_DESTROYED();
     return false;
   }
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
+    NOT_DESTROYED();
     return false;
   }
-  bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override;
+
+  void InvalidatePaint(const PaintInvalidatorContext&) const final;
 
   // LayoutNGTableRowInterface methods start.
 
   const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const final {
+    NOT_DESTROYED();
     return this;
   }
-  const LayoutObject* ToLayoutObject() const final { return this; }
-  const LayoutTableRow* ToLayoutTableRow() const final { return this; }
-  LayoutNGTableInterface* TableInterface() const final { return Table(); }
+  const LayoutObject* ToLayoutObject() const final {
+    NOT_DESTROYED();
+    return this;
+  }
+  const LayoutTableRow* ToLayoutTableRow() const final {
+    NOT_DESTROYED();
+    return this;
+  }
+  LayoutNGTableInterface* TableInterface() const final {
+    NOT_DESTROYED();
+    return Table();
+  }
   LayoutNGTableSectionInterface* SectionInterface() const final {
+    NOT_DESTROYED();
     return Section();
   }
   LayoutNGTableRowInterface* NextRowInterface() const final {
+    NOT_DESTROYED();
     return NextRow();
   }
   LayoutNGTableRowInterface* PreviousRowInterface() const final {
+    NOT_DESTROYED();
     return PreviousRow();
   }
   LayoutNGTableCellInterface* FirstCellInterface() const final;
@@ -153,11 +177,18 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   // LayoutNGTableRowInterface methods end.
 
  private:
+  MinMaxSizes ComputeIntrinsicLogicalWidths() const final {
+    NOT_DESTROYED();
+    NOTREACHED();
+    return MinMaxSizes();
+  }
+
   void ComputeVisualOverflow();
   void AddLayoutOverflowFromCell(const LayoutTableCell*);
   void AddVisualOverflowFromCell(const LayoutTableCell*);
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectTableRow ||
            LayoutTableBoxComponent::IsOfType(type);
   }
@@ -169,12 +200,13 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
   void UpdateLayout() override;
 
   PaintLayerType LayerTypeRequired() const override {
+    NOT_DESTROYED();
     if (HasTransformRelatedProperty() || HasHiddenBackface() ||
         CreatesGroup() || StyleRef().ShouldCompositeForCurrentAnimations() ||
         IsStickyPositioned())
       return kNormalPaintLayer;
 
-    if (HasOverflowClip())
+    if (HasNonVisibleOverflow())
       return kOverflowClipPaintLayer;
 
     return kNoPaintLayer;
@@ -196,7 +228,7 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
 template <>
 struct DowncastTraits<LayoutTableRow> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTableRow();
+    return object.IsTableRow() && !object.IsLayoutNGObject();
   }
 };
 

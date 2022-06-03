@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 /* Autocorrelations for a warped frequency axis */
+#ifndef OVERRIDE_silk_warped_autocorrelation_FIX_c
 void silk_warped_autocorrelation_FIX_c(
           opus_int32                *corr,                                  /* O    Result [order + 1]                                                          */
           opus_int                  *scale,                                 /* O    Scaling of the correlation vector                                           */
@@ -52,7 +53,7 @@ void silk_warped_autocorrelation_FIX_c(
     opus_int64 corr_QC[  MAX_SHAPE_LPC_ORDER + 1 ] = { 0 };
 
     /* Order must be even */
-    silk_assert( ( order & 1 ) == 0 );
+    celt_assert( ( order & 1 ) == 0 );
     silk_assert( 2 * QS - QC >= 0 );
 
     /* Loop over samples */
@@ -88,3 +89,4 @@ void silk_warped_autocorrelation_FIX_c(
     }
     silk_assert( corr_QC[ 0 ] >= 0 ); /* If breaking, decrease QC*/
 }
+#endif /* OVERRIDE_silk_warped_autocorrelation_FIX_c */

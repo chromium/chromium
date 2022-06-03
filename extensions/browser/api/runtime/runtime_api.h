@@ -9,9 +9,10 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
@@ -72,16 +73,28 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
     SUCCESS_RESTART_SCHEDULED,
   };
 
+  // After this many suspiciously fast consecutive reloads, an extension will
+  // get disabled.
+  static constexpr int kFastReloadCount = 5;
+
+  // Same as above, but we increase the fast reload count for unpacked
+  // extensions.
+  static constexpr int kUnpackedFastReloadCount = 30;
+
   static BrowserContextKeyedAPIFactory<RuntimeAPI>* GetFactoryInstance();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   explicit RuntimeAPI(content::BrowserContext* context);
+
+  RuntimeAPI(const RuntimeAPI&) = delete;
+  RuntimeAPI& operator=(const RuntimeAPI&) = delete;
+
   ~RuntimeAPI() override;
 
   void ReloadExtension(const std::string& extension_id);
   bool CheckForUpdates(const std::string& extension_id,
-                       const RuntimeAPIDelegate::UpdateCheckCallback& callback);
+                       RuntimeAPIDelegate::UpdateCheckCallback callback);
   void OpenURL(const GURL& uninstall_url);
   bool GetPlatformInfo(api::runtime::PlatformInfo* info);
   bool RestartDevice(std::string* error_message);
@@ -149,10 +162,10 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   content::NotificationRegistrar registrar_;
 
   // Listen to extension notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-  ScopedObserver<ProcessManager, ProcessManagerObserver>
-      process_manager_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
 
   // The ID of the first extension to call the restartAfterDelay API. Any other
   // extensions to call this API after that will fail.
@@ -177,8 +190,6 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   bool was_last_restart_due_to_delayed_restart_api_;
 
   base::WeakPtrFactory<RuntimeAPI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeAPI);
 };
 
 template <>

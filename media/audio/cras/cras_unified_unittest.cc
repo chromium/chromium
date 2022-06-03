@@ -7,17 +7,16 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_message_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/cras/audio_manager_cras.h"
+#include "media/audio/cras/audio_manager_chromeos.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
@@ -39,11 +38,11 @@ using testing::StrictMock;
 
 namespace media {
 
-class MockAudioManagerCras : public AudioManagerCras {
+class MockAudioManagerCras : public AudioManagerChromeOS {
  public:
   MockAudioManagerCras()
-      : AudioManagerCras(std::make_unique<TestAudioThread>(),
-                         &fake_audio_log_factory_) {}
+      : AudioManagerChromeOS(std::make_unique<TestAudioThread>(),
+                             &fake_audio_log_factory_) {}
 
   // We need to override this function in order to skip the checking the number
   // of active output streams. It is because the number of active streams
@@ -59,17 +58,21 @@ class MockAudioManagerCras : public AudioManagerCras {
 };
 
 class CrasUnifiedStreamTest : public testing::Test {
+ public:
+  CrasUnifiedStreamTest(const CrasUnifiedStreamTest&) = delete;
+  CrasUnifiedStreamTest& operator=(const CrasUnifiedStreamTest&) = delete;
+
  protected:
   CrasUnifiedStreamTest() {
     chromeos::CrasAudioClient::InitializeFake();
-    chromeos::CrasAudioHandler::InitializeForTesting();
+    ash::CrasAudioHandler::InitializeForTesting();
     mock_manager_.reset(new StrictMock<MockAudioManagerCras>());
     base::RunLoop().RunUntilIdle();
   }
 
   ~CrasUnifiedStreamTest() override {
     mock_manager_->Shutdown();
-    chromeos::CrasAudioHandler::Shutdown();
+    ash::CrasAudioHandler::Shutdown();
     chromeos::CrasAudioClient::Shutdown();
   }
 
@@ -96,9 +99,6 @@ class CrasUnifiedStreamTest : public testing::Test {
 
   base::TestMessageLoop message_loop_;
   std::unique_ptr<StrictMock<MockAudioManagerCras>> mock_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasUnifiedStreamTest);
 };
 
 const ChannelLayout CrasUnifiedStreamTest::kTestChannelLayout =

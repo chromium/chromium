@@ -1,0 +1,1 @@
+ usb:/dev/usb/lp0

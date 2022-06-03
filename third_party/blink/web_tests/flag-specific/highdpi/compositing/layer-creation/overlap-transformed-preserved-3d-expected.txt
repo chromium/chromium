@@ -1,0 +1,436 @@
+1
+2
+3
+4
+5
+6
+Before:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='center box-container'",
+      "position": [162, 162],
+      "contentsOpaque": true,
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='camera' class='rotate-3d-start'",
+      "contentsOpaque": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-1'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 5
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-2'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 7
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-3'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 9
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-4'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 11
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-5'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 13
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-6'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 15
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, -0.00333333333333333],
+        [0, 0, 0, 1]
+      ],
+      "origin": [237, 237]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [162, 162, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.353553390593274, 0.25, -0.5, 0],
+        [0, 0.353553390593274, 0.707106781186548, 0],
+        [0.353553390593274, -0.25, 0.5, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 75, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 6,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "transform": [
+        [0, 0, -1, 0],
+        [0, 1, 0, 0],
+        [1, 0, 0, 0],
+        [75, 0, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 8,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 9,
+      "parent": 8,
+      "transform": [
+        [-1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, -1, 0],
+        [0, 0, -75, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 10,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 11,
+      "parent": 10,
+      "transform": [
+        [0, 0, 1, 0],
+        [0, 1, 0, 0],
+        [-1, 0, 0, 0],
+        [-75, 0, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 12,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 13,
+      "parent": 12,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 0, 1, 0],
+        [0, -1, 0, 0],
+        [0, -75, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 14,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 15,
+      "parent": 14,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 0, -1, 0],
+        [0, 1, 0, 0],
+        [0, 75, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    }
+  ]
+}
+
+After:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='green-box' class='center box-container'",
+      "position": [162, 162],
+      "contentsOpaque": true,
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='camera' class='rotate-3d-start rotate-3d-end'",
+      "contentsOpaque": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-1'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 5
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-2'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 7
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-3'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 9
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-4'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 11
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-5'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 13
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-6'",
+      "bounds": [150, 150],
+      "backgroundColor": "#00FF00CC",
+      "transform": 15
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box top left'",
+      "position": [12, 12],
+      "bounds": [150, 225],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top right')",
+      "position": [12, 12],
+      "bounds": [450, 450]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, -0.00333333333333333],
+        [0, 0, 0, 1]
+      ],
+      "origin": [237, 237]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [162, 162, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.707106781186548, 0.5, -0.5, 0],
+        [0, 0.707106781186548, 0.707106781186548, 0],
+        [0.707106781186548, -0.5, 0.5, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 75, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 6,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "transform": [
+        [0, 0, -1, 0],
+        [0, 1, 0, 0],
+        [1, 0, 0, 0],
+        [75, 0, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 8,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 9,
+      "parent": 8,
+      "transform": [
+        [-1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, -1, 0],
+        [0, 0, -75, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 10,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 11,
+      "parent": 10,
+      "transform": [
+        [0, 0, 1, 0],
+        [0, 1, 0, 0],
+        [-1, 0, 0, 0],
+        [-75, 0, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 12,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 13,
+      "parent": 12,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 0, 1, 0],
+        [0, -1, 0, 0],
+        [0, -75, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 14,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 15,
+      "parent": 14,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 0, -1, 0],
+        [0, 1, 0, 0],
+        [0, 75, 0, 1]
+      ],
+      "origin": [75, 75],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    }
+  ]
+}
+

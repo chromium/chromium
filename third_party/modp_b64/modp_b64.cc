@@ -229,7 +229,6 @@ size_t modp_b64_decode(char* dest, const char* src, size_t len)
         *p++ =  ((uint8_t*)(&x))[1];
         *p =    ((uint8_t*)(&x))[2];
         return (chunks+1)*3;
-        break;
     case 1:  /* with padding this is an impossible case */
         x = d0[y[0]];
         *p = *((uint8_t*)(&x)); // i.e. first char/byte in int

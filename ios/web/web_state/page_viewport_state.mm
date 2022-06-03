@@ -4,7 +4,6 @@
 
 #import "ios/web/web_state/page_viewport_state.h"
 
-#include "base/logging.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

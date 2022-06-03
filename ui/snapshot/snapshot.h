@@ -5,7 +5,6 @@
 #ifndef UI_SNAPSHOT_SNAPSHOT_H_
 #define UI_SNAPSHOT_SNAPSHOT_H_
 
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"

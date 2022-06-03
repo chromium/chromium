@@ -1,5 +1,6 @@
 include_rules = [
   "+components/crash/core/common/crash_key.h",
+  "+components/crash/core/common/crash_keys.h",
   "+components/pwg_encoder",
   "+pdf/pdf.h",
 ]

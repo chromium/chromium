@@ -91,14 +91,14 @@ test(function() {
 
 test(function() {
     // Note that we do not care about the exception code - it's pass through.
-    assert_throws(new SyntaxError, () => createPushMessageData('\\o/').json());
+    assert_throws_js(SyntaxError, () => createPushMessageData('\\o/').json());
 
 }, 'PushMessageData handling of invalid JSON content.');
 
 test(function() {
-    assert_throws(new TypeError, () => new PushMessageData());
-    assert_throws(new TypeError, () => new PushMessageData('Hello, world!'));
-    assert_throws(new TypeError, () => new PushMessageData(new ArrayBuffer(8)));
+    assert_throws_js(TypeError, () => new PushMessageData());
+    assert_throws_js(TypeError, () => new PushMessageData('Hello, world!'));
+    assert_throws_js(TypeError, () => new PushMessageData(new ArrayBuffer(8)));
 
 }, 'PushMessageData should not be constructable.');
 
@@ -111,7 +111,7 @@ test(function() {
 
 if (self.SharedArrayBuffer) {
     test(function() {
-        assert_throws(new TypeError, () => {
+        assert_throws_js(TypeError, () => {
             createPushMessageData(new Uint8Array(new SharedArrayBuffer(16)));
         });
     }, 'PushMessageData throws when passed SharedArrayBuffer view.');

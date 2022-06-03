@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace base {
@@ -35,6 +37,8 @@ struct LayerAnimationSequenceParams {
   // True if the animation sequence should loop endlessly, false otherwise.
   bool is_cyclic = false;
 };
+
+using AnimationSmoothnessCallback = base::RepeatingCallback<void(int)>;
 
 // Creates a LayerAnimationSequence containing the specified
 // LayerAnimationElements with the given |params|. The method caller assumes
@@ -91,21 +95,27 @@ std::unique_ptr<::ui::LayerAnimationElement> CreateTransformElement(
 
 // Starts the specified |layer_animation_sequence| on the given
 // |layer_animator|. If an optional |observer| is supplied, it will be added to
-// the sequence.
+// the sequence. If an optional |smoothness_callback| is supplied, it
+// will be attached to the animation to measure performance.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
 void StartLayerAnimationSequence(
     ::ui::LayerAnimator* layer_animator,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
-    ::ui::LayerAnimationObserver* observer = nullptr);
+    ::ui::LayerAnimationObserver* observer = nullptr,
+    absl::optional<AnimationSmoothnessCallback> smoothness_callback =
+        absl::nullopt);
 
 // Starts the specified |layer_animation_sequence| on the layer of the given
 // |view|. If an optional |observer| is supplied, it will be added to the
-// sequence.
+// sequence. If an optional |smoothness_callback| is supplied, it will be
+// attached to the animation to measure performance.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
 void StartLayerAnimationSequence(
     views::View* view,
     ::ui::LayerAnimationSequence* layer_animation_sequence,
-    ::ui::LayerAnimationObserver* observer = nullptr);
+    ::ui::LayerAnimationObserver* observer = nullptr,
+    absl::optional<AnimationSmoothnessCallback> animation_smoothness_callback =
+        absl::nullopt);
 
 // Starts the specified |layer_animation_sequences| together on the given
 // |layer_animator|. If an optional |observer| is supplied, it will be added

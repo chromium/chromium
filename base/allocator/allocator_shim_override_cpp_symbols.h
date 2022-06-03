@@ -37,7 +37,7 @@
 #else
 #define ALIGN_VAL_T size_t
 #define ALIGN_LINKAGE extern "C"
-#if defined(OS_MACOSX) || defined(OS_WIN)
+#if defined(OS_WIN)
 #error "Mangling is different on these platforms."
 #else
 #define ALIGN_NEW _ZnwmSt11align_val_t
@@ -71,12 +71,12 @@ SHIM_ALWAYS_EXPORT void operator delete[](void* p) __THROW {
 
 SHIM_ALWAYS_EXPORT void* operator new(size_t size,
                                       const std::nothrow_t&) __THROW {
-  return ShimCppNew(size);
+  return ShimCppNewNoThrow(size);
 }
 
 SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
                                         const std::nothrow_t&) __THROW {
-  return ShimCppNew(size);
+  return ShimCppNewNoThrow(size);
 }
 
 SHIM_ALWAYS_EXPORT void operator delete(void* p, const std::nothrow_t&) __THROW {

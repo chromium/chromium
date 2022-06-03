@@ -1,14 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Version Information
+#ifndef CHROME_UPDATER_UPDATER_VERSION_H_
+#define CHROME_UPDATER_UPDATER_VERSION_H_
 
-#define UPDATER_VERSION @MAJOR@,@MINOR@,@BUILD@,@PATCH@
-#define UPDATER_VERSION_STRING "@MAJOR@.@MINOR@.@BUILD@.@PATCH@"
+const char kUpdaterVersion[] = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@";
+const wchar_t kUpdaterVersionUtf16[] = L"@MAJOR@.@MINOR@.@BUILD@.@PATCH@";
 
-// Branding Information
-#define COMPANY_FULLNAME_STRING "@COMPANY_FULLNAME@"
-#define COMPANY_SHORTNAME_STRING "@COMPANY_SHORTNAME@"
-#define PRODUCT_FULLNAME_STRING "@PRODUCT_FULLNAME@"
-#define OFFICIAL_BUILD_STRING "@OFFICIAL_BUILD@"
+#endif  // CHROME_UPDATER_UPDATER_VERSION_H_

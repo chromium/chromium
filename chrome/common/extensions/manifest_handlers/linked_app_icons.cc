@@ -24,19 +24,17 @@ static base::LazyInstance<LinkedAppIcons>::DestructorAtExit
 
 }  // namespace
 
-LinkedAppIcons::IconInfo::IconInfo() {
-}
+constexpr int LinkedAppIcons::kAnySize;
 
-LinkedAppIcons::IconInfo::~IconInfo() {
-}
+LinkedAppIcons::IconInfo::IconInfo() = default;
 
-LinkedAppIcons::LinkedAppIcons() {
-}
+LinkedAppIcons::IconInfo::~IconInfo() = default;
+
+LinkedAppIcons::LinkedAppIcons() = default;
 
 LinkedAppIcons::LinkedAppIcons(const LinkedAppIcons& other) = default;
 
-LinkedAppIcons::~LinkedAppIcons() {
-}
+LinkedAppIcons::~LinkedAppIcons() = default;
 
 // static
 const LinkedAppIcons& LinkedAppIcons::GetLinkedAppIcons(
@@ -52,7 +50,7 @@ LinkedAppIconsHandler::LinkedAppIconsHandler() {
 LinkedAppIconsHandler::~LinkedAppIconsHandler() {
 }
 
-bool LinkedAppIconsHandler::Parse(Extension* extension, base::string16* error) {
+bool LinkedAppIconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LinkedAppIcons> linked_app_icons(new LinkedAppIcons);
 
   const base::Value* icons_value = nullptr;
@@ -64,7 +62,7 @@ bool LinkedAppIconsHandler::Parse(Extension* extension, base::string16* error) {
       return false;
     }
 
-    for (const auto& icon_value : *icons_list) {
+    for (const auto& icon_value : icons_list->GetList()) {
       const base::DictionaryValue* icon_dict = nullptr;
       if (!icon_value.GetAsDictionary(&icon_dict)) {
         *error = base::UTF8ToUTF16(

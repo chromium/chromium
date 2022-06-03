@@ -19,7 +19,7 @@ class WorkspaceExtensionDelegate;
 // owned by a PlatformWindow owner. To avoid casts from the PlatformWindow to
 // the WorkspaceExtension, a pointer to this interface must be set through
 // "SetWorkspaceExtension".
-class COMPONENT_EXPORT(EXTENSIONS) WorkspaceExtension {
+class COMPONENT_EXPORT(PLATFORM_WINDOW) WorkspaceExtension {
  public:
   // Returns the workspace the PlatformWindow is located in.
   virtual std::string GetWorkspace() const = 0;
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(EXTENSIONS) WorkspaceExtension {
                              WorkspaceExtension* workspace_extension);
 };
 
-COMPONENT_EXPORT(EXTENSIONS)
+COMPONENT_EXPORT(PLATFORM_WINDOW)
 WorkspaceExtension* GetWorkspaceExtension(
     const PlatformWindow& platform_window);
 

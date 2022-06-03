@@ -5,9 +5,11 @@
 #ifndef CC_RESOURCES_UI_RESOURCE_MANAGER_H_
 #define CC_RESOURCES_UI_RESOURCE_MANAGER_H_
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_request.h"
 
@@ -33,7 +35,7 @@ class CC_EXPORT UIResourceManager {
   // Deletes a UI resource.  May safely be called more than once.
   virtual void DeleteUIResource(UIResourceId id);
 
-  virtual gfx::Size GetUIResourceSize(UIResourceId id) const;
+  base::flat_map<UIResourceId, gfx::Size> GetUIResourceSizes() const;
 
   // Methods meant to be used only internally in cc ------------
 

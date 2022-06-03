@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
 
-#include "base/macros.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -23,42 +24,40 @@ namespace views {
 class MessageBoxView;
 }
 
-class ExternalProtocolDialog : public views::DialogDelegateView,
-                               public content::WebContentsObserver {
+class ExternalProtocolDialog : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(ExternalProtocolDialog);
   // Show by calling ExternalProtocolHandler::RunExternalProtocolDialog().
   ExternalProtocolDialog(content::WebContents* web_contents,
                          const GURL& url,
-                         const base::string16& program_name,
-                         const base::Optional<url::Origin>& initiating_origin);
-
+                         const std::u16string& program_name,
+                         const absl::optional<url::Origin>& initiating_origin);
+  ExternalProtocolDialog(const ExternalProtocolDialog&) = delete;
+  ExternalProtocolDialog& operator=(const ExternalProtocolDialog&) = delete;
   ~ExternalProtocolDialog() override;
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
-  bool Cancel() override;
-  bool Accept() override;
+  std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
-  ui::ModalType GetModalType() const override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
  private:
   friend class test::ExternalProtocolDialogTestApi;
 
-  void ShowRememberSelectionCheckbox();
   void SetRememberSelectionCheckboxCheckedForTesting(bool checked);
+  void OnDialogAccepted();
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   const GURL url_;
-  const base::string16 program_name_;
-  const base::Optional<url::Origin> initiating_origin_;
+  const std::u16string program_name_;
+  const absl::optional<url::Origin> initiating_origin_;
 
   // The message box whose commands we handle.
-  views::MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialog);
+  views::MessageBoxView* message_box_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_

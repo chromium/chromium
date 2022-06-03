@@ -9,8 +9,9 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "cc/base/list_container_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -127,12 +128,21 @@ class ListContainer {
   // Insert |count| new elements of |DerivedElementType| before |at|. This will
   // invalidate all outstanding pointers and iterators. Return a valid iterator
   // for the beginning of the newly inserted segment.
+  // If provided, insert copies of |source|. Otherwise new elements are default
+  // initialized.
   template <typename DerivedElementType>
-  Iterator InsertBeforeAndInvalidateAllPointers(Iterator at, size_t count) {
+  Iterator InsertBeforeAndInvalidateAllPointers(
+      Iterator at,
+      size_t count,
+      const absl::optional<DerivedElementType> source = absl::nullopt) {
     helper_.InsertBeforeAndInvalidateAllPointers(&at, count);
     Iterator result = at;
     for (size_t i = 0; i < count; ++i) {
-      new (at.item_iterator) DerivedElementType();
+      if (source) {
+        new (at.item_iterator) DerivedElementType(source.value());
+      } else {
+        new (at.item_iterator) DerivedElementType();
+      }
       ++at;
     }
     return result;

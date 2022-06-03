@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Declarative Shadow DOM Errors</title>
+
+<script src="../resources/js-test.js"></script>
+
+<!--
+1. If shadow host’s namespace is not the HTML namespace, then throw a
+"NotSupportedError" DOMException.
+2. If shadow host’s local name is not a valid custom element name,
+"article", "aside", "blockquote", "body", "div", "footer", "h1", "h2",
+"h3", "h4", "h5", "h6", "header", "main", "nav", "p", "section", or "span",
+then throw a "NotSupportedError" DOMException.
+-->
+<video>
+   <template shadowroot=open>
+   </template>
+</video>
+
+<!--
+3. If shadow host’s local name is a valid custom element name, or shadow
+host’s is value is not null, then:
+3.1 Let definition be the result of looking up a custom element
+definition given shadow host’s node document, its namespace, its local
+name, and its is value.
+3.2 If definition is not null and definition’s
+disable shadow is true, then throw a "NotSupportedError" DOMException.
+-->
+<script>
+class ShadowDisabledElement extends HTMLElement {
+  static get disabledFeatures() { return ['shadow']; }
+}
+customElements.define('shadow-disabled-element', ShadowDisabledElement);
+</script>
+<shadow-disabled-element>
+  <template shadowroot=open>
+  </template>
+</shadow-disabled-element>
+
+<!--
+4. If shadow host has a non-null shadow root whose "is declarative shadow
+root" property is false, then throw an "NotSupportedError" DOMException.
+-->
+<div id=host>
+  <span></span>
+  <script>
+  host.attachShadow({mode:'open'});
+  </script>
+  <template shadowroot=open>
+  </template>
+</div>
+

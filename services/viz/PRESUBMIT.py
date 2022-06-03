@@ -4,6 +4,9 @@
 
 """Top-level presubmit script for services/viz."""
 
+USE_PYTHON3 = True
+
+
 def CheckChangeOnUpload(input_api, output_api):
   import sys
   original_sys_path = sys.path
@@ -12,5 +15,5 @@ def CheckChangeOnUpload(input_api, output_api):
       'components', 'viz')]
 
   import presubmit_checks as ps
-  white_list=(r'^services[\\/]viz[\\/].*\.(cc|h)$',)
-  return ps.RunAllChecks(input_api, output_api, white_list)
+  allowlist=(r'^services[\\/]viz[\\/].*\.(cc|h)$',)
+  return ps.RunAllChecks(input_api, output_api, allowlist)

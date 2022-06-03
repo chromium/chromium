@@ -1,0 +1,4 @@
+monorail: {
+  component: "Platform>Apps>Foundation>AppService"
+}
+team_email: "chromeos-apps-foundation-team@google.com"

@@ -2,43 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-  'use strict';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
-  Polymer({
-    is: 'track-info-panel',
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    properties: {
-      track: {
-        type: Object,
-        value: null,
-      },
 
-      expanded: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        reflectToAttribute: true,
-        observer: 'onExpandedChanged_',
-      },
+Polymer({
+  _template: html`{__html_template__}`,
 
-      artworkAvailable: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
+  is: 'track-info-panel',
 
-      ariaExpandArtworkLabel: String,
+  properties: {
+    track: {
+      type: Object,
+      value: null,
     },
 
-    /** @private */
-    onExpandClick_: function() {
-      this.expanded = !this.expanded;
+    expanded: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      reflectToAttribute: true,
+      observer: 'onExpandedChanged_',
     },
 
-    /** @private */
-    onExpandedChanged_: function() {
-      this.$.expand.setAttribute('aria-expanded', Boolean(this.expanded));
+    artworkAvailable: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
     },
-  });
-})();  // Anonymous closure
+
+    ariaExpandArtworkLabel: String,
+  },
+
+  /** @private */
+  onExpandClick_: function() {
+    this.expanded = !this.expanded;
+  },
+
+  /** @private */
+  onExpandedChanged_: function() {
+    this.$.expand.setAttribute('aria-expanded', Boolean(this.expanded));
+  },
+});

@@ -83,7 +83,7 @@ GeolocationImpl::~GeolocationImpl() {
 }
 
 void GeolocationImpl::PauseUpdates() {
-  geolocation_subscription_.reset();
+  geolocation_subscription_ = {};
 }
 
 void GeolocationImpl::ResumeUpdates() {
@@ -104,9 +104,6 @@ void GeolocationImpl::StartListeningForUpdates() {
 }
 
 void GeolocationImpl::SetHighAccuracy(bool high_accuracy) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Geolocation.GeolocationDispatcherHostImpl.EnableHighAccuracy",
-      high_accuracy);
   high_accuracy_ = high_accuracy;
 
   if (ValidateGeoposition(position_override_)) {
@@ -137,7 +134,7 @@ void GeolocationImpl::SetOverride(const mojom::Geoposition& position) {
   if (!ValidateGeoposition(position_override_))
     ResumeUpdates();
 
-  geolocation_subscription_.reset();
+  geolocation_subscription_ = {};
 
   OnLocationUpdate(position_override_);
 }

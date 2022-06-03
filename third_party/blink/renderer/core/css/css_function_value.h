@@ -23,7 +23,7 @@ class CSSFunctionValue : public CSSValueList {
   }
   CSSValueID FunctionType() const { return value_id_; }
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);
   }
 
@@ -40,4 +40,4 @@ struct DowncastTraits<CSSFunctionValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FUNCTION_VALUE_H_

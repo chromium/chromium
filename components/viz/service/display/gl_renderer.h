@@ -7,21 +7,24 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/containers/queue.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
-#include "components/viz/service/display/color_lut_cache.h"
 #include "components/viz/service/display/direct_renderer.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/gl_renderer_copier.h"
 #include "components/viz/service/display/gl_renderer_draw_cache.h"
 #include "components/viz/service/display/program_binding.h"
@@ -30,9 +33,10 @@
 #include "components/viz/service/display/texture_deleter.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
@@ -70,16 +74,23 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   class ScopedUseGrContext;
 
   GLRenderer(const RendererSettings* settings,
+             const DebugRendererSettings* debug_settings,
              OutputSurface* output_surface,
-             DisplayResourceProvider* resource_provider,
+             DisplayResourceProviderGL* resource_provider,
+             OverlayProcessorInterface* overlay_processor,
              scoped_refptr<base::SingleThreadTaskRunner> current_task_runner);
+
+  GLRenderer(const GLRenderer&) = delete;
+  GLRenderer& operator=(const GLRenderer&) = delete;
+
   ~GLRenderer() override;
 
   bool use_swap_with_bounds() const { return use_swap_with_bounds_; }
 
   void SwapBuffers(SwapFrameData swap_frame_data) override;
   void SwapBuffersSkipped() override;
-  void SwapBuffersComplete() override;
+  void SwapBuffersComplete(gfx::GpuFenceHandle release_fence) override;
+  void BuffersPresented() override;
 
   void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) override;
@@ -93,18 +104,19 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   bool CanPartialSwap() override;
   void UpdateRenderPassTextures(
-      const RenderPassList& render_passes_in_draw_order,
-      const base::flat_map<RenderPassId, RenderPassRequirements>&
+      const AggregatedRenderPassList& render_passes_in_draw_order,
+      const base::flat_map<AggregatedRenderPassId, RenderPassRequirements>&
           render_passes_in_frame) override;
   void AllocateRenderPassResourceIfNeeded(
-      const RenderPassId& render_pass_id,
+      const AggregatedRenderPassId& render_pass_id,
       const RenderPassRequirements& requirements) override;
   bool IsRenderPassResourceAllocated(
-      const RenderPassId& render_pass_id) const override;
+      const AggregatedRenderPassId& render_pass_id) const override;
   gfx::Size GetRenderPassBackingPixelSize(
-      const RenderPassId& render_pass_id) override;
+      const AggregatedRenderPassId& render_pass_id) override;
   void BindFramebufferToOutputSurface() override;
-  void BindFramebufferToTexture(const RenderPassId render_pass_id) override;
+  void BindFramebufferToTexture(
+      const AggregatedRenderPassId render_pass_id) override;
   void SetScissorTestRect(const gfx::Rect& scissor_rect) override;
   void PrepareSurfaceForPass(SurfaceInitializationMode initialization_mode,
                              const gfx::Rect& render_pass_scissor) override;
@@ -119,9 +131,6 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   void EnsureScissorTestDisabled() override;
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
-#if defined(OS_WIN)
-  void SetEnableDCLayers(bool enable) override;
-#endif
   void FinishDrawingQuadList() override;
   void GenerateMipmap() override;
 
@@ -142,7 +151,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
       float edge[24]);
   static void SetupRenderPassQuadForClippingAndAntialiasing(
       const gfx::Transform& device_transform,
-      const RenderPassDrawQuad* quad,
+      const AggregatedRenderPassDrawQuad* quad,
       const gfx::QuadF* device_layer_quad,
       const gfx::QuadF* clip_region,
       gfx::QuadF* local_quad,
@@ -155,7 +164,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   friend class GLRendererTest;
 
   using OverlayResourceLock =
-      std::unique_ptr<DisplayResourceProvider::ScopedReadLockGL>;
+      std::unique_ptr<DisplayResourceProviderGL::ScopedOverlayLockGL>;
   using OverlayResourceLockList = std::vector<OverlayResourceLock>;
 
   // If a RenderPass is used as an overlay, we render the RenderPass with any
@@ -163,7 +172,10 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // the execution of SwapBuffers, and such textures are more expensive to make
   // so we want to reuse them.
   struct OverlayTexture {
-    RenderPassId render_pass_id;
+    OverlayTexture();
+    ~OverlayTexture();
+
+    AggregatedRenderPassId render_pass_id;
     ScopedGpuMemoryBufferTexture texture;
     int frames_waiting_for_reuse = 0;
   };
@@ -217,12 +229,13 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   gfx::Rect GetBackdropBoundingBoxForRenderPassQuad(
       DrawRenderPassDrawQuadParams* params,
       gfx::Transform* backdrop_filter_bounds_transform,
-      base::Optional<gfx::RRectF>* backdrop_filter_bounds,
+      absl::optional<gfx::RRectF>* backdrop_filter_bounds,
       gfx::Rect* unclipped_rect) const;
 
   // Allocates and returns a texture id that contains a copy of the contents
   // of the current RenderPass being drawn.
   uint32_t GetBackdropTexture(const gfx::Rect& window_rect,
+                              float scale,
                               GLenum* internal_format);
 
   static bool ShouldApplyBackdropFilters(
@@ -239,13 +252,14 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   sk_sp<SkImage> ApplyBackdropFilters(
       DrawRenderPassDrawQuadParams* params,
       const gfx::Rect& unclipped_rect,
-      const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
+      const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
       const gfx::Transform& backdrop_filter_bounds_transform);
 
   // gl_renderer can bypass TileDrawQuads that fill the RenderPass
-  const DrawQuad* CanPassBeDrawnDirectly(const RenderPass* pass) override;
+  const DrawQuad* CanPassBeDrawnDirectly(
+      const AggregatedRenderPass* pass) override;
 
-  void DrawRenderPassQuad(const RenderPassDrawQuad* quadi,
+  void DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quadi,
                           const gfx::QuadF* clip_region);
   void DrawRenderPassQuadInternal(DrawRenderPassDrawQuadParams* params);
   void DrawSolidColorQuad(const SolidColorDrawQuad* quad,
@@ -292,13 +306,19 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
     return shared_geometry_.get();
   }
 
-  // If |dst_color_space| is invalid, then no color conversion (apart from
-  // YUV to RGB conversion) is performed. This explicit argument is available
-  // so that video color conversion can be enabled separately from general color
-  // conversion.
-  void SetUseProgram(const ProgramKey& program_key,
-                     const gfx::ColorSpace& src_color_space,
-                     const gfx::ColorSpace& dst_color_space);
+  // If |dst_color_space| is invalid, then no color conversion (apart from YUV
+  // to RGB conversion) is performed. This explicit argument is available so
+  // that video color conversion can be enabled separately from general color
+  // conversion. If |adjust_src_white_level| is true, then the |src_color_space|
+  // white levels are adjusted to the display SDR white level so that no white
+  // level scaling happens. |src_hdr_metadata|, if available, is the mastering
+  // metadata associated to the source quad.
+  void SetUseProgram(
+      const ProgramKey& program_key,
+      const gfx::ColorSpace& src_color_space,
+      const gfx::ColorSpace& dst_color_space,
+      bool adjust_src_white_level = false,
+      absl::optional<gfx::HDRMetadata> src_hdr_metadata = absl::nullopt);
 
   bool MakeContextCurrent();
 
@@ -318,25 +338,25 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // Schedule overlays sends overlay candidate to the GPU.
 #if defined(OS_ANDROID) || defined(USE_OZONE)
   void ScheduleOverlays();
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   void ScheduleCALayers();
 
   // Schedules the |ca_layer_overlay|, which is guaranteed to have a non-null
   // |rpdq| parameter. Returns ownership of a GL texture that contains the
-  // output of the RenderPassDrawQuad.
+  // output of the CompositorRenderPassDrawQuad.
   std::unique_ptr<OverlayTexture> ScheduleRenderPassDrawQuad(
       const CALayerOverlay* ca_layer_overlay);
 
   // Copies the contents of the render pass draw quad, including filter effects,
   // to a GL texture, returned in |overlay_texture|. The resulting texture may
-  // be larger than the RenderPassDrawQuad's output, in order to reuse existing
-  // textures. The new size and position is placed in |new_bounds|.
+  // be larger than the CompositorRenderPassDrawQuad's output, in order to reuse
+  // existing textures. The new size and position is placed in |new_bounds|.
   void CopyRenderPassDrawQuadToOverlayResource(
       const CALayerOverlay* ca_layer_overlay,
       std::unique_ptr<OverlayTexture>* overlay_texture,
       gfx::RectF* new_bounds);
   std::unique_ptr<OverlayTexture> FindOrCreateOverlayTexture(
-      const RenderPassId& render_pass_id,
+      const AggregatedRenderPassId& render_pass_id,
       int width,
       int height,
       const gfx::ColorSpace& color_space);
@@ -350,16 +370,32 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   void SetupOverdrawFeedback();
 
   // Process overdraw feedback from query.
-  void ProcessOverdrawFeedback(std::vector<int>* overdraw,
-                               size_t num_expected_results,
-                               int max_result,
-                               unsigned query,
-                               int multiplier);
+  void ProcessOverdrawFeedback(base::CheckedNumeric<int> surface_area,
+                               unsigned query);
+  bool OverdrawTracingEnabled();
 
-  ResourceFormat BackbufferFormat() const;
+  bool CompositeTimeTracingEnabled() override;
+  void AddCompositeTimeTraces(base::TimeTicks ready_timestamp) override;
+
+  ResourceFormat CurrentRenderPassResourceFormat() const;
+
+  bool HasOutputColorMatrix() const;
+
+  // Returns true if the given solid color draw quad can be safely drawn using
+  // the glClear function call.
+  bool CanUseFastSolidColorDraw(const SolidColorDrawQuad* quad) const;
+
+  DisplayResourceProviderGL* resource_provider() {
+    return static_cast<DisplayResourceProviderGL*>(resource_provider_);
+  }
 
   // A map from RenderPass id to the texture used to draw the RenderPass from.
-  base::flat_map<RenderPassId, ScopedRenderPassTexture> render_pass_textures_;
+  base::flat_map<AggregatedRenderPassId, ScopedRenderPassTexture>
+      render_pass_textures_;
+
+  // A map from RenderPass id to backdrop filter cache texture.
+  base::flat_map<AggregatedRenderPassId, sk_sp<SkImage>>
+      render_pass_backdrop_textures_;
 
   // OverlayTextures that are free to be used in the next frame.
   std::vector<std::unique_ptr<OverlayTexture>> available_overlay_textures_;
@@ -380,9 +416,18 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   OverlayResourceLockList pending_overlay_resources_;
   // Resources that should be shortly swapped by the GPU process.
   base::circular_deque<OverlayResourceLockList> swapping_overlay_resources_;
+
+  // Locks for overlays that have release fences and read lock fences.
+  base::circular_deque<OverlayResourceLockList>
+      read_lock_release_fence_overlay_locks_;
+
   // Resources that the GPU process has finished swapping. The key is the
   // texture id of the resource.
   std::map<unsigned, OverlayResourceLock> swapped_and_acked_overlay_resources_;
+
+  // Query object, used to determine the number of sample drawn during a render
+  // pass.
+  unsigned occlusion_query_ = 0u;
 
   unsigned offscreen_framebuffer_id_ = 0u;
 
@@ -428,21 +473,24 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   bool use_sync_query_ = false;
   bool use_blend_equation_advanced_ = false;
   bool use_blend_equation_advanced_coherent_ = false;
+  bool use_timer_query_ = false;
   bool use_occlusion_query_ = false;
   bool use_swap_with_bounds_ = false;
+  bool use_fast_path_solid_color_quad_ = false;
 
   // If true, tints all the composited content to red.
   bool tint_gl_composited_content_ = true;
 
+#if defined(OS_APPLE)
   // The method FlippedFramebuffer determines whether the framebuffer associated
   // with a DrawingFrame is flipped. It makes the assumption that the
   // DrawingFrame is being used as part of a render pass. If a DrawingFrame is
   // not being used as part of a render pass, setting it here forces
   // FlippedFramebuffer to return |true|.
   bool force_drawing_frame_framebuffer_unflipped_ = false;
+#endif
 
   BoundGeometry bound_geometry_;
-  ColorLUTCache color_lut_cache_;
 
   unsigned offscreen_stencil_renderbuffer_id_ = 0;
   gfx::Size offscreen_stencil_renderbuffer_size_;
@@ -450,12 +498,17 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   unsigned num_triangles_drawn_ = 0;
   bool prefer_draw_to_copy_ = false;
 
+  // A circular queue of to keep track of timer queries and their associated
+  // quad type as string.
+  base::queue<std::pair<unsigned, std::string>> timer_queries_;
+
+  // Keeps track of areas that have been drawn to in the current render pass.
+  std::vector<gfx::Rect> drawn_rects_;
+
   // This may be null if the compositor is run on a thread without a
   // MessageLoop.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;
   base::WeakPtrFactory<GLRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLRenderer);
 };
 
 }  // namespace viz

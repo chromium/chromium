@@ -50,17 +50,21 @@ int          p
 #endif
 
    OPUS_CLEAR(lpc, p);
+#ifdef FIXED_POINT
    if (ac[0] != 0)
+#else
+   if (ac[0] > 1e-10f)
+#endif
    {
       for (i = 0; i < p; i++) {
          /* Sum up this iteration's reflection coefficient */
          opus_val32 rr = 0;
          for (j = 0; j < i; j++)
             rr += MULT32_32_Q31(lpc[j],ac[i - j]);
-         rr += SHR32(ac[i + 1],3);
-         r = -frac_div32(SHL32(rr,3), error);
+         rr += SHR32(ac[i + 1],6);
+         r = -frac_div32(SHL32(rr,6), error);
          /*  Update LPC coefficients and total error */
-         lpc[i] = SHR32(r,3);
+         lpc[i] = SHR32(r,6);
          for (j = 0; j < (i+1)>>1; j++)
          {
             opus_val32 tmp1, tmp2;
@@ -73,17 +77,61 @@ int          p
          error = error - MULT32_32_Q31(MULT32_32_Q31(r,r),error);
          /* Bail out once we get 30 dB gain */
 #ifdef FIXED_POINT
-         if (error<SHR32(ac[0],10))
+         if (error<=SHR32(ac[0],10))
             break;
 #else
-         if (error<.001f*ac[0])
+         if (error<=.001f*ac[0])
             break;
 #endif
       }
    }
 #ifdef FIXED_POINT
-   for (i=0;i<p;i++)
-      _lpc[i] = ROUND16(lpc[i],16);
+   {
+      /* Convert the int32 lpcs to int16 and ensure there are no wrap-arounds.
+         This reuses the logic in silk_LPC_fit() and silk_bwexpander_32(). Any bug
+         fixes should also be applied there. */
+      int iter, idx = 0;
+      opus_val32 maxabs, absval, chirp_Q16, chirp_minus_one_Q16;
+
+      for (iter = 0; iter < 10; iter++) {
+         maxabs = 0;
+         for (i = 0; i < p; i++) {
+            absval = ABS32(lpc[i]);
+            if (absval > maxabs) {
+               maxabs = absval;
+               idx = i;
+            }
+         }
+         maxabs = PSHR32(maxabs, 13);  /* Q25->Q12 */
+
+         if (maxabs > 32767) {
+            maxabs = MIN32(maxabs, 163838);
+            chirp_Q16 = QCONST32(0.999, 16) - DIV32(SHL32(maxabs - 32767, 14),
+                                                    SHR32(MULT32_32_32(maxabs, idx + 1), 2));
+            chirp_minus_one_Q16 = chirp_Q16 - 65536;
+
+            /* Apply bandwidth expansion. */
+            for (i = 0; i < p - 1; i++) {
+               lpc[i] = MULT32_32_Q16(chirp_Q16, lpc[i]);
+               chirp_Q16 += PSHR32(MULT32_32_32(chirp_Q16, chirp_minus_one_Q16), 16);
+            }
+            lpc[p - 1] = MULT32_32_Q16(chirp_Q16, lpc[p - 1]);
+         } else {
+            break;
+         }
+      }
+
+      if (iter == 10) {
+         /* If the coeffs still do not fit into the 16 bit range after 10 iterations,
+            fall back to the A(z)=1 filter. */
+         OPUS_CLEAR(lpc, p);
+         _lpc[0] = 4096;  /* Q12 */
+      } else {
+         for (i = 0; i < p; i++) {
+            _lpc[i] = EXTRACT16(PSHR32(lpc[i], 13));  /* Q25->Q12 */
+         }
+      }
+   }
 #endif
 }
 
@@ -99,7 +147,7 @@ void celt_fir_c(
    int i,j;
    VARDECL(opus_val16, rnum);
    SAVE_STACK;
-
+   celt_assert(x != y);
    ALLOC(rnum, ord, opus_val16);
    for(i=0;i<ord;i++)
       rnum[i] = num[ord-i-1];
@@ -107,7 +155,7 @@ void celt_fir_c(
    {
       opus_val32 sum[4];
       sum[0] = SHL32(EXTEND32(x[i  ]), SIG_SHIFT);
-      sum[1] = SHL32(EXTEND32(x[i+1]), SIG_SHIFT),
+      sum[1] = SHL32(EXTEND32(x[i+1]), SIG_SHIFT);
       sum[2] = SHL32(EXTEND32(x[i+2]), SIG_SHIFT);
       sum[3] = SHL32(EXTEND32(x[i+3]), SIG_SHIFT);
       xcorr_kernel(rnum, x+i-ord, sum, ord, arch);

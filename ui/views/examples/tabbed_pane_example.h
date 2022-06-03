@@ -7,48 +7,46 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
-class TabbedPane;
+class Button;
 
 namespace examples {
 
 // A TabbedPane example tests adding and selecting tabs.
 class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
-                                                public ButtonListener,
                                                 public TabbedPaneListener {
  public:
   TabbedPaneExample();
+  TabbedPaneExample(const TabbedPaneExample&) = delete;
+  TabbedPaneExample& operator=(const TabbedPaneExample&) = delete;
   ~TabbedPaneExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
 
  private:
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
-
   // TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
-  // Print the status of the tab in the status area.
-  void PrintStatus();
-
-  void AddButton(const std::string& label);
+  void CreateTabbedPane(View* container,
+                        TabbedPane::Orientation orientation,
+                        TabbedPane::TabStripStyle style);
+  void PrintCurrentStatus();
+  void SwapLayout();
+  void ToggleHighlighted();
+  void AddTab(const std::u16string& label);
+  void AddAt();
+  void SelectAt();
 
   // The tabbed pane to be tested.
   TabbedPane* tabbed_pane_;
 
-  // Control buttons to add and select tabs.
-  Button* add_;
-  Button* add_at_;
-  Button* select_at_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabbedPaneExample);
+  // The button that toggles highlighted style.
+  Button* toggle_highlighted_;
 };
 
 }  // namespace examples

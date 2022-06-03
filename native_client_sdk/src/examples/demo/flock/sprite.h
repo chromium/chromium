@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SPRITE_H_
-#define SPRITE_H_
+#ifndef EXAMPLES_DEMO_FLOCK_SPRITE_H_
+#define EXAMPLES_DEMO_FLOCK_SPRITE_H_
 
 #include <vector>
 #include "ppapi/cpp/point.h"
@@ -54,4 +54,4 @@ class Sprite {
   int32_t row_bytes_;
 };
 
-#endif  // SPRITE_H_
+#endif  // EXAMPLES_DEMO_FLOCK_SPRITE_H_

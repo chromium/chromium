@@ -4,44 +4,38 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/jumbo.gni")
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
+import("//third_party/angle/gni/angle.gni")
+import("//third_party/dawn/scripts/dawn_features.gni")
 import("//ui/gl/features.gni")
-import("//ui/ozone/ozone.gni")
 
 declare_args() {
-  enable_swiftshader = (is_win || is_linux || (is_mac && use_egl) ||
-                        is_chromeos || is_fuchsia) &&
-                       (target_cpu == "x86" || target_cpu == "x64" ||
-                        target_cpu == "arm" || target_cpu == "arm64" ||
-                        target_cpu == "mipsel" || target_cpu == "mips64el")
-
   # Whether service side logging (actual calls into the GL driver) is enabled
   # or not.
   enable_gpu_service_logging = false
 }
 
-use_glx = use_x11 || ozone_platform_x11
+use_glx = ozone_platform_x11
 
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See build/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "DAWN_ENABLE_BACKEND_OPENGLES=$dawn_enable_opengles",
     "ENABLE_SWIFTSHADER=$enable_swiftshader",
     "USE_DAWN=$use_dawn",
     "USE_STATIC_ANGLE=$use_static_angle",
+    "USE_OPENGL_APITRACE=$enable_opengl_apitrace",
   ]
 }
 
@@ -58,7 +52,7 @@ config("gl_config") {
   }
 }
 
-jumbo_component("gl") {
+component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
   sources = [
@@ -66,8 +60,6 @@ jumbo_component("gl") {
     "buffer_format_utils.h",
     "ca_renderer_layer_params.cc",
     "ca_renderer_layer_params.h",
-    "color_space_utils.cc",
-    "color_space_utils.h",
     "dc_renderer_layer_params.cc",
     "dc_renderer_layer_params.h",
     "dual_gpu_state.cc",
@@ -155,8 +147,6 @@ jumbo_component("gl") {
 
   if (is_android) {
     sources += [
-      "android/android_surface_control_compat.cc",
-      "android/android_surface_control_compat.h",
       "android/scoped_java_surface.cc",
       "android/scoped_java_surface.h",
       "android/surface_texture.cc",
@@ -181,9 +171,12 @@ jumbo_component("gl") {
   deps = [
     ":buildflags",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
+    "//mojo/public/cpp/bindings",
 
     # ANGLE includes are used cross-platform.
     "//third_party/angle:includes",
+    "//ui/gfx/mojom",
   ]
   public_deps = [
     "//base",
@@ -207,6 +200,8 @@ jumbo_component("gl") {
       "gl_bindings_autogen_egl.h",
       "gl_context_egl.cc",
       "gl_context_egl.h",
+      "gl_display_egl_util.cc",
+      "gl_display_egl_util.h",
       "gl_egl_api_implementation.cc",
       "gl_egl_api_implementation.h",
       "gl_fence_egl.cc",
@@ -215,9 +210,18 @@ jumbo_component("gl") {
       "gl_image_egl.h",
       "gl_surface_egl.cc",
       "gl_surface_egl.h",
+      "shared_gl_fence_egl.cc",
+      "shared_gl_fence_egl.h",
     ]
 
-    if (is_linux || use_ozone) {
+    if (enable_vulkan) {
+      sources += [
+        "gl_angle_util_vulkan.cc",
+        "gl_angle_util_vulkan.h",
+      ]
+    }
+
+    if (is_linux || is_chromeos || use_ozone) {
       sources += [
         "gl_image_native_pixmap.cc",
         "gl_image_native_pixmap.h",
@@ -254,21 +258,46 @@ jumbo_component("gl") {
     ]
   }
 
-  if (use_x11) {
+  if (use_ozone) {
+    deps += [ "//ui/ozone:buildflags" ]
+    if (use_egl && !is_fuchsia) {
+      data_deps += [
+        "//third_party/angle:libEGL",
+        "//third_party/angle:libGLESv2",
+      ]
+      if (angle_shared_libvulkan && !is_chromeos) {
+        data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+      }
+    }
+  }
+
+  if (ozone_platform_x11) {
     sources += [
+      "gl_image_egl_pixmap.cc",
+      "gl_image_egl_pixmap.h",
       "gl_surface_egl_x11.cc",
       "gl_surface_egl_x11.h",
+      "gl_surface_egl_x11_gles2.cc",
+      "gl_surface_egl_x11_gles2.h",
       "gl_surface_glx_x11.cc",
       "gl_surface_glx_x11.h",
     ]
 
-    deps += [ "//ui/base/x" ]
+    deps += [
+      "//ui/base:features",
+      "//ui/base/x",
+      "//ui/events/platform/x11:x11",
+      "//ui/gfx/linux:gpu_memory_buffer_support_x11",
+    ]
 
     assert(use_egl)
     data_deps += [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
     ]
+    if (angle_shared_libvulkan && !is_chromeos) {
+      data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    }
   }
   if (use_glx) {
     sources += [
@@ -280,17 +309,12 @@ jumbo_component("gl") {
       "gl_glx_api_implementation.h",
       "gl_image_glx.cc",
       "gl_image_glx.h",
+      "gl_image_glx_native_pixmap.cc",
+      "gl_image_glx_native_pixmap.h",
       "gl_surface_glx.cc",
       "gl_surface_glx.h",
-      "gl_visual_picker_glx.cc",
-      "gl_visual_picker_glx.h",
-    ]
-
-    configs += [
-      "//build/config/linux:x11",
-      "//build/config/linux:xcomposite",
-      "//build/config/linux:xext",
-      "//build/config/linux:xrandr",
+      "glx_util.cc",
+      "glx_util.h",
     ]
 
     deps += [
@@ -298,30 +322,32 @@ jumbo_component("gl") {
       "//ui/gfx/x",
     ]
   }
+
   if (is_win) {
     sources += [
       "child_window_win.cc",
       "child_window_win.h",
       "dc_layer_tree.cc",
       "dc_layer_tree.h",
+      "dcomp_surface_registry.cc",
+      "dcomp_surface_registry.h",
+      "delegated_ink_point_renderer_gpu.h",
       "direct_composition_child_surface_win.cc",
       "direct_composition_child_surface_win.h",
       "direct_composition_surface_win.cc",
       "direct_composition_surface_win.h",
       "gl_angle_util_win.cc",
       "gl_angle_util_win.h",
-      "gl_bindings_autogen_wgl.cc",
-      "gl_bindings_autogen_wgl.h",
-      "gl_context_wgl.cc",
-      "gl_context_wgl.h",
+      "gl_fence_win.cc",
+      "gl_fence_win.h",
       "gl_image_d3d.cc",
       "gl_image_d3d.h",
+      "gl_image_dcomp_surface.cc",
+      "gl_image_dcomp_surface.h",
       "gl_image_dxgi.cc",
       "gl_image_dxgi.h",
-      "gl_surface_wgl.cc",
-      "gl_surface_wgl.h",
-      "gl_wgl_api_implementation.cc",
-      "gl_wgl_api_implementation.h",
+      "hdr_metadata_helper_win.cc",
+      "hdr_metadata_helper_win.h",
       "swap_chain_presenter.cc",
       "swap_chain_presenter.h",
       "vsync_observer.h",
@@ -339,6 +365,7 @@ jumbo_component("gl") {
       "/DELAYLOAD:dwmapi.dll",
       "/DELAYLOAD:dxgi.dll",
     ]
+    deps += [ "//media/base/win:media_foundation_util" ]
 
     assert(use_egl)
     data_deps += [
@@ -346,6 +373,9 @@ jumbo_component("gl") {
       "//third_party/angle:libGLESv2",
       "//third_party/swiftshader",
     ]
+    if (angle_shared_libvulkan && !is_chromeos) {
+      data_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+    }
   }
   if (is_mac) {
     sources += [
@@ -361,7 +391,7 @@ jumbo_component("gl") {
       "scoped_cgl.h",
     ]
 
-    libs = [
+    frameworks = [
       "CoreFoundation.framework",
       "IOSurface.framework",
       "OpenGL.framework",
@@ -385,11 +415,6 @@ jumbo_component("gl") {
     }
   }
   if (is_android) {
-    sources += [
-      "gl_image_surface_texture.cc",
-      "gl_image_surface_texture.h",
-    ]
-
     defines += [
       "GL_GLEXT_PROTOTYPES",
       "EGL_EGLEXT_PROTOTYPES",
@@ -398,6 +423,10 @@ jumbo_component("gl") {
     libs = [ "android" ]
 
     deps += [ ":gl_jni_headers" ]
+  }
+
+  if (is_chromecast) {
+    defines += [ "CHROMECAST_BUILD" ]
   }
 }
 
@@ -412,9 +441,7 @@ if (is_mac && use_egl) {
       "$root_out_dir/libEGL.dylib",
       "$root_out_dir/libGLESv2.dylib",
     ]
-    outputs = [
-      "$root_out_dir/egl_intermediates/{{source_file_part}}",
-    ]
+    outputs = [ "$root_out_dir/egl_intermediates/{{source_file_part}}" ]
     deps = [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
@@ -422,23 +449,32 @@ if (is_mac && use_egl) {
   }
 
   if (enable_swiftshader) {
-    copy("swiftshader_library_copy") {
+    copy("swiftshader_egl_library_copy") {
       sources = [
         "$root_out_dir/libswiftshader_libEGL.dylib",
         "$root_out_dir/libswiftshader_libGLESv2.dylib",
       ]
-      outputs = [
-        "$root_out_dir/egl_intermediates/{{source_file_part}}",
-      ]
+      outputs = [ "$root_out_dir/egl_intermediates/{{source_file_part}}" ]
       deps = [
         "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL",
         "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2",
       ]
     }
+    copy("swiftshader_vk_library_copy") {
+      sources = [
+        "$root_out_dir/libvk_swiftshader.dylib",
+        "$root_out_dir/vk_swiftshader_icd.json",
+      ]
+      outputs = [ "$root_out_dir/vk_intermediates/{{source_file_part}}" ]
+      deps = [
+        "//third_party/swiftshader/src/Vulkan:icd_file",
+        "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
+      ]
+    }
   }
 }
 
-jumbo_static_library("gl_unittest_utils") {
+static_library("gl_unittest_utils") {
   testonly = true
   sources = [
     "egl_bindings_autogen_mock.cc",
@@ -464,13 +500,15 @@ jumbo_static_library("gl_unittest_utils") {
   ]
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
+    "test/gl_image_bind_test_template.h",
     "test/gl_image_test_support.cc",
     "test/gl_image_test_support.h",
     "test/gl_image_test_template.cc",
     "test/gl_image_test_template.h",
+    "test/gl_image_zero_initialize_test_template.h",
     "test/gl_surface_test_support.cc",
     "test/gl_surface_test_support.h",
     "test/gl_test_helper.cc",
@@ -489,34 +527,34 @@ jumbo_static_library("test_support") {
     "//ui/base",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//ui/platform_window/common" ]
-  }
-
-  if (use_x11) {
-    configs += [ "//build/config/linux:x11" ]
-    deps += [ "//ui/platform_window/x11" ]
   }
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+
+  # If the run-time search path isn't set properly when we use ANGLE with its
+  # Vulkan backend, it may end up finding the system libvulkan.so rather than
+  # the one built in the output directory
+  if ((is_linux || is_chromeos) && !is_component_build) {
+    all_dependent_configs =
+        [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
   }
 }
 
 source_set("run_all_unittests") {
   testonly = true
 
-  sources = [
-    "test/run_all_unittests.cc",
-  ]
+  sources = [ "test/run_all_unittests.cc" ]
 
   deps = [
     "//base",
+    "//ui/base:features",
   ]
 
-  public_deps = [
-    "//base/test:test_support",
-  ]
+  public_deps = [ "//base/test:test_support" ]
 
   if (use_ozone) {
     deps += [
@@ -528,6 +566,8 @@ source_set("run_all_unittests") {
 }
 
 test("gl_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "gl_api_unittest.cc",
     "gl_image_ref_counted_memory_unittest.cc",
@@ -554,15 +594,17 @@ test("gl_unittests") {
 
   if (is_mac) {
     sources += [ "gl_image_io_surface_unittest.cc" ]
-    libs = [ "IOSurface.framework" ]
+    frameworks = [ "IOSurface.framework" ]
   }
 
   if (is_win) {
     sources += [
+      "delegated_ink_point_renderer_gpu_unittest.cc",
       "direct_composition_surface_win_unittest.cc",
+      "gl_fence_win_unittest.cc",
       "gl_image_d3d_unittest.cc",
       "gl_image_dxgi_unittest.cc",
-      "wgl_api_unittest.cc",
+      "hdr_metadata_helper_win_unittest.cc",
     ]
   }
 
@@ -570,7 +612,7 @@ test("gl_unittests") {
     sources += [ "gl_image_ahardwarebuffer_unittest.cc" ]
   }
 
-  if (is_desktop_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [ "gl_image_native_pixmap_unittest.cc" ]
   }
 
@@ -593,23 +635,24 @@ test("gl_unittests") {
     "//ui/platform_window:platform_impls",
   ]
 
-  data_deps = [
-    "//third_party/mesa_headers",
-  ]
+  data_deps = [ "//third_party/mesa_headers" ]
 
-  if (use_x11) {
+  # TODO(https://crbug.com/789065): this must be moved to Ozone.
+  if (ozone_platform_x11) {
     sources += [ "gl_context_glx_unittest.cc" ]
     deps += [ "//ui/gfx/x" ]
-    configs += [ "//build/config/linux:x11" ]
+  }
+
+  if (is_win) {
+    deps += [ "//media/base/win:test_support" ]
+    libs = [ "dxguid.lib" ]
   }
 }
 
 # We can't run this test on real Chrome OS hardware for Ozone, so new target.
 group("gl_unittests_ozone") {
   testonly = true
-  data_deps = [
-    ":gl_unittests",
-  ]
+  data_deps = [ ":gl_unittests" ]
 }
 
 if (is_android) {
@@ -623,8 +666,6 @@ if (is_android) {
       "../android/java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
       "../android/java/src/org/chromium/ui/gl/SurfaceTexturePlatformWrapper.java",
     ]
-    public_deps = [
-      ":surface_jni_headers",
-    ]
+    public_deps = [ ":surface_jni_headers" ]
   }
 }

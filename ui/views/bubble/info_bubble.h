@@ -5,55 +5,59 @@
 #ifndef UI_VIEWS_BUBBLE_INFO_BUBBLE_H_
 #define UI_VIEWS_BUBBLE_INFO_BUBBLE_H_
 
+#include <memory>
+#include <string>
+
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
 
 class InfoBubbleFrame;
+class Label;
 
 // Class to create and manage an information bubble for errors or tooltips.
-class InfoBubble : public BubbleDialogDelegateView {
+class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
  public:
   METADATA_HEADER(InfoBubble);
 
-  InfoBubble(View* anchor, const base::string16& message);
+  InfoBubble(View* anchor,
+             BubbleBorder::Arrow arrow,
+             const std::u16string& message);
+
+  InfoBubble(const InfoBubble&) = delete;
+  InfoBubble& operator=(const InfoBubble&) = delete;
+
   ~InfoBubble() override;
 
-  // Shows the bubble. |widget_| will be NULL until this is called.
+  // Shows the bubble.
   void Show();
 
   // Hides and closes the bubble.
   void Hide();
 
   // BubbleDialogDelegateView:
-  NonClientFrameView* CreateNonClientFrameView(Widget* widget) override;
+  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
+      Widget* widget) override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnWidgetDestroyed(Widget* widget) override;
   void OnWidgetBoundsChanged(Widget* widget,
                              const gfx::Rect& new_bounds) override;
-
-  View* anchor() { return anchor_; }
-  const View* anchor() const { return anchor_; }
 
   void set_preferred_width(int preferred_width) {
     preferred_width_ = preferred_width;
   }
 
+  const Label* label_for_testing() const { return label_; }
+
  private:
   // Updates the position of the bubble.
   void UpdatePosition();
 
-  Widget* widget_;          // Weak, may be NULL.
-  View* const anchor_;      // Weak.
-  InfoBubbleFrame* frame_;  // Weak, owned by widget.
+  InfoBubbleFrame* frame_ = nullptr;
+  Label* label_ = nullptr;
 
   // The width this bubble prefers to be. Default is 0 (no preference).
-  int preferred_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBubble);
+  int preferred_width_ = 0;
 };
 
 }  // namespace views

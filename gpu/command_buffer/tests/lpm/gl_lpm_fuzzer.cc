@@ -17,6 +17,7 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
@@ -31,6 +32,10 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 // Enable this to log and crash on unexpected errors during shader compilation.
 #define CHECK_FOR_UNKNOWN_ERRORS false
@@ -48,6 +53,9 @@ struct Env {
                                     gl::kANGLEImplementationNullName);
     base::FeatureList::InitializeInstance(std::string(), std::string());
     base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
+#if defined(USE_OZONE)
+    ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+#endif
     gpu::GLTestHelper::InitializeGLDefault();
     ::gles2::Initialize();
   }
@@ -115,8 +123,8 @@ const char* acceptable_errors[] = {
     // Uniform, const, input can't be modified
     "can't modify a",
     "global variable initializers must be constant expressions",
-    "must explicitly specify all locations when using multiple fragment "
-    "outputs",
+    ("must explicitly specify all locations when using multiple fragment "
+     "outputs"),
 };
 
 // Filter errors which we don't think interfere with fuzzing everything.

@@ -6,11 +6,10 @@
 
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
 
-namespace syncer {
+namespace invalidation {
 
 using ::testing::MakeMatcher;
 using ::testing::MatchResultListener;
@@ -24,15 +23,13 @@ class AckHandleEqMatcher : public MatcherInterface<const AckHandle&> {
  public:
   explicit AckHandleEqMatcher(const AckHandle& expected);
 
-  virtual bool MatchAndExplain(const AckHandle& actual,
-                               MatchResultListener* listener) const;
-  virtual void DescribeTo(::std::ostream* os) const;
-  virtual void DescribeNegationTo(::std::ostream* os) const;
+  bool MatchAndExplain(const AckHandle& actual,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(::std::ostream* os) const override;
+  void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
   const AckHandle expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(AckHandleEqMatcher);
 };
 
 AckHandleEqMatcher::AckHandleEqMatcher(const AckHandle& expected)
@@ -56,15 +53,13 @@ class InvalidationEqMatcher : public MatcherInterface<const Invalidation&> {
  public:
   explicit InvalidationEqMatcher(const Invalidation& expected);
 
-  virtual bool MatchAndExplain(const Invalidation& actual,
-                               MatchResultListener* listener) const;
-  virtual void DescribeTo(::std::ostream* os) const;
-  virtual void DescribeNegationTo(::std::ostream* os) const;
+  bool MatchAndExplain(const Invalidation& actual,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(::std::ostream* os) const override;
+  void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
   const Invalidation expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidationEqMatcher);
 };
 
 InvalidationEqMatcher::InvalidationEqMatcher(const Invalidation& expected)
@@ -74,7 +69,7 @@ InvalidationEqMatcher::InvalidationEqMatcher(const Invalidation& expected)
 bool InvalidationEqMatcher::MatchAndExplain(
     const Invalidation& actual,
     MatchResultListener* listener) const {
-  if (!(expected_.object_id() == actual.object_id()))
+  if (expected_.topic() != actual.topic())
     return false;
   if (expected_.is_unknown_version() && actual.is_unknown_version())
     return true;
@@ -113,4 +108,4 @@ Matcher<const Invalidation&> Eq(const Invalidation& expected) {
   return MakeMatcher(new InvalidationEqMatcher(expected));
 }
 
-}  // namespace syncer
+}  // namespace invalidation

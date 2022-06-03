@@ -4,7 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,6 +23,11 @@
 }
 
 - (NSString*)userFullName {
+  NOTREACHED();
+  return nil;
+}
+
+- (NSString*)userGivenName {
   NOTREACHED();
   return nil;
 }

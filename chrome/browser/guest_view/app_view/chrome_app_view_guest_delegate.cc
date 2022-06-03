@@ -19,20 +19,24 @@ ChromeAppViewGuestDelegate::~ChromeAppViewGuestDelegate() {
 }
 
 bool ChromeAppViewGuestDelegate::HandleContextMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  ContextMenuDelegate* menu_delegate =
-      ContextMenuDelegate::FromWebContents(web_contents);
+  ContextMenuDelegate* menu_delegate = ContextMenuDelegate::FromWebContents(
+      content::WebContents::FromRenderFrameHost(&render_frame_host));
   DCHECK(menu_delegate);
 
   std::unique_ptr<RenderViewContextMenuBase> menu =
-      menu_delegate->BuildMenu(web_contents, params);
+      menu_delegate->BuildMenu(render_frame_host, params);
   menu_delegate->ShowMenu(std::move(menu));
   return true;
 }
 
-AppDelegate* ChromeAppViewGuestDelegate::CreateAppDelegate() {
-  return new ChromeAppDelegate(true);
+AppDelegate* ChromeAppViewGuestDelegate::CreateAppDelegate(
+    content::WebContents* web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  DCHECK(profile);
+  return new ChromeAppDelegate(profile, true);
 }
 
 }  // namespace extensions

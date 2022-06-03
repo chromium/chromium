@@ -11,21 +11,21 @@ void InterceptingCanvasBase::UnrollDrawPicture(
     const SkMatrix* matrix,
     const SkPaint* paint,
     SkPicture::AbortCallback* abort_callback) {
-  int save_count = this->getSaveCount();
+  int save_count = getSaveCount();
   if (paint) {
     SkRect new_bounds = picture->cullRect();
     if (matrix)
       matrix->mapRect(&new_bounds);
-    this->saveLayer(&new_bounds, paint);
+    saveLayer(&new_bounds, paint);
   } else if (matrix) {
-    this->save();
+    save();
   }
   if (matrix)
-    this->concat(*matrix);
+    concat(*matrix);
 
   picture->playback(this, abort_callback);
 
-  this->restoreToCount(save_count);
+  restoreToCount(save_count);
 }
 
 }  // namespace blink

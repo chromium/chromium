@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -18,20 +17,24 @@ namespace ui {
 class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
  public:
   explicit HeadlessSurfaceFactory(base::FilePath base_path);
+
+  HeadlessSurfaceFactory(const HeadlessSurfaceFactory&) = delete;
+  HeadlessSurfaceFactory& operator=(const HeadlessSurfaceFactory&) = delete;
+
   ~HeadlessSurfaceFactory() override;
 
   // SurfaceFactoryOzone:
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
-  GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
+  GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
-      gfx::AcceleratedWidget widget,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
+      gfx::AcceleratedWidget widget) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
       VkDevice vk_device,
       gfx::Size size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage) override;
+      gfx::BufferUsage usage,
+      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
 
  private:
   void CheckBasePath() const;
@@ -40,8 +43,6 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
   base::FilePath base_path_;
 
   std::unique_ptr<GLOzone> swiftshader_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessSurfaceFactory);
 };
 
 }  // namespace ui

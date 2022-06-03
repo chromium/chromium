@@ -1,0 +1,17 @@
+The height of a horizontal marquee is computed as normal for inline-blocks. The 'auto' height of a vertical marquee defaults to 200px.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS getComputedStyle(horiz).height is "10px"
+FAIL getComputedStyle(vertAuto).height should be 380px. Was 378px.
+PASS getComputedStyle(vertFixed).height is "100px"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Test passes if all silver blocks are the same size as the green blocks next to them.
+
+ foo 
+ Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+ Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. 

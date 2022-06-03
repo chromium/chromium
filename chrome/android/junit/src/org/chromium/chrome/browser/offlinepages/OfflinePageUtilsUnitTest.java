@@ -30,7 +30,9 @@ import org.robolectric.shadows.multidex.ShadowMultiDex;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.SadTabRule;
@@ -47,6 +49,11 @@ import java.io.File;
 @Config(manifest = Config.NONE,
         shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class, ShadowMultiDex.class})
 public class OfflinePageUtilsUnitTest {
+    @Rule
+    public JniMocker mocker = new JniMocker();
+    @Mock
+    public Profile.Natives mMockProfileNatives;
+
     @Mock
     private File mMockDataDirectory;
     @Mock
@@ -64,6 +71,7 @@ public class OfflinePageUtilsUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
         WrappedEnvironment.setDataDirectoryForTest(mMockDataDirectory);
 
         // Setting up a mock tab. These are the values common to most tests, but individual

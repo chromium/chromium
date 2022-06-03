@@ -4,17 +4,19 @@
 
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
+#include "content/public/test/browser_test.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #endif
@@ -24,18 +26,21 @@ namespace browsing_data_counter_utils {
 class BrowsingDataCounterUtilsBrowserTest : public SyncTest {
  public:
   BrowsingDataCounterUtilsBrowserTest() : SyncTest(SINGLE_CLIENT) {}
-  ~BrowsingDataCounterUtilsBrowserTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataCounterUtilsBrowserTest);
+  BrowsingDataCounterUtilsBrowserTest(
+      const BrowsingDataCounterUtilsBrowserTest&) = delete;
+  BrowsingDataCounterUtilsBrowserTest& operator=(
+      const BrowsingDataCounterUtilsBrowserTest&) = delete;
+
+  ~BrowsingDataCounterUtilsBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
                        ShouldShowCookieException) {
   Profile* profile = browser()->profile();
 
-  syncer::ProfileSyncService* sync_service =
-      ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile);
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
 
   sync_service->OverrideNetworkForTest(
       fake_server::CreateFakeServerHttpPostProviderFactory(
@@ -46,10 +51,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   if (username.empty())
     username = "user@gmail.com";
 
-  std::unique_ptr<ProfileSyncServiceHarness> harness =
-      ProfileSyncServiceHarness::Create(
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      SyncServiceImplHarness::Create(
           profile, username, "unused" /* password */,
-          ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+          SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 
   // By default, a fresh profile is not signed in, nor syncing, so no cookie
   // exception should be shown.

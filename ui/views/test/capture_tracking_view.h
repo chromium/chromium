@@ -6,7 +6,6 @@
 #define UI_VIEWS_TEST_CAPTURE_TRACKING_VIEW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -16,6 +15,10 @@ namespace test {
 class CaptureTrackingView : public views::View {
  public:
   CaptureTrackingView();
+
+  CaptureTrackingView(const CaptureTrackingView&) = delete;
+  CaptureTrackingView& operator=(const CaptureTrackingView&) = delete;
+
   ~CaptureTrackingView() override;
 
   // Returns true if OnMousePressed() has been invoked.
@@ -34,8 +37,6 @@ class CaptureTrackingView : public views::View {
   // See description above getters.
   bool got_press_ = false;
   bool got_capture_lost_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureTrackingView);
 };
 
 }  // namespace test

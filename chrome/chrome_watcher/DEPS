@@ -1,6 +1,0 @@
-include_rules = [
-  "+chrome/install_static",
-  "+components/browser_watcher",
-  "+components/crash",
-  "+testing/gtest",
-]

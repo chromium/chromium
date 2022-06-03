@@ -5,7 +5,7 @@
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 
 #include <cmath>
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace device {
 

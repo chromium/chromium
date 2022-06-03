@@ -8,66 +8,47 @@
 #include <string>
 
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 
-class AssistantController;
+class AssistantControllerImpl;
 
 class AssistantViewDelegateImpl : public AssistantViewDelegate {
  public:
-  AssistantViewDelegateImpl(AssistantController* assistant_controller);
+  explicit AssistantViewDelegateImpl(
+      AssistantControllerImpl* assistant_controller);
+
+  AssistantViewDelegateImpl(const AssistantViewDelegateImpl&) = delete;
+  AssistantViewDelegateImpl& operator=(const AssistantViewDelegateImpl&) =
+      delete;
+
   ~AssistantViewDelegateImpl() override;
 
   // AssistantViewDelegate:
-  const AssistantInteractionModel* GetInteractionModel() const override;
   const AssistantNotificationModel* GetNotificationModel() const override;
-  const AssistantSuggestionsModel* GetSuggestionsModel() const override;
-  const AssistantUiModel* GetUiModel() const override;
   void AddObserver(AssistantViewDelegateObserver* observer) override;
   void RemoveObserver(AssistantViewDelegateObserver* observer) override;
-  void AddInteractionModelObserver(
-      AssistantInteractionModelObserver* observer) override;
-  void RemoveInteractionModelObserver(
-      AssistantInteractionModelObserver* observer) override;
-  void AddNotificationModelObserver(
-      AssistantNotificationModelObserver* observer) override;
-  void RemoveNotificationModelObserver(
-      AssistantNotificationModelObserver* observer) override;
-  void AddSuggestionsModelObserver(
-      AssistantSuggestionsModelObserver* observer) override;
-  void RemoveSuggestionsModelObserver(
-      AssistantSuggestionsModelObserver* observer) override;
-  void AddUiModelObserver(AssistantUiModelObserver* observer) override;
-  void RemoveUiModelObserver(AssistantUiModelObserver* observer) override;
-  CaptionBarDelegate* GetCaptionBarDelegate() override;
-  void DownloadImage(
-      const GURL& url,
-      AssistantImageDownloader::DownloadCallback callback) override;
+  void DownloadImage(const GURL& url,
+                     ImageDownloader::DownloadCallback callback) override;
   ::wm::CursorManager* GetCursorManager() override;
-  void GetNavigableContentsFactoryForView(
-      mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver)
-      override;
+  std::string GetPrimaryUserGivenName() const override;
   aura::Window* GetRootWindowForDisplayId(int64_t display_id) override;
   aura::Window* GetRootWindowForNewWindows() override;
   bool IsTabletMode() const override;
   void OnDialogPlateButtonPressed(AssistantButtonId id) override;
   void OnDialogPlateContentsCommitted(const std::string& text) override;
-  void OnMiniViewPressed() override;
+  void OnHostViewVisibilityChanged(bool visible) override;
   void OnNotificationButtonPressed(const std::string& notification_id,
                                    int notification_button_index) override;
+  void OnOnboardingShown() override;
   void OnOptInButtonPressed() override;
-  void OnProactiveSuggestionsCloseButtonPressed() override;
-  void OnProactiveSuggestionsViewHoverChanged(bool is_hovering) override;
-  void OnProactiveSuggestionsViewPressed() override;
-  void OnSuggestionChipPressed(const AssistantSuggestion* suggestion) override;
-  void OpenUrlFromView(const GURL& url) override;
+  void OnSuggestionPressed(
+      const base::UnguessableToken& suggestion_id) override;
+  bool ShouldShowOnboarding() const override;
 
  private:
-  AssistantController* const assistant_controller_;
+  AssistantControllerImpl* const assistant_controller_;
   base::ObserverList<AssistantViewDelegateObserver> view_delegate_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantViewDelegateImpl);
 };
 
 }  // namespace ash

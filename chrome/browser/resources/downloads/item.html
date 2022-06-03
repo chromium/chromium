@@ -42,12 +42,11 @@
     flex: none;
     margin: 6px auto;
     min-height: 103px;
-    position: relative;
     width: var(--downloads-card-width);
   }
 
   #content.is-active {
-    @apply --cr-card-elevation;
+    box-shadow: var(--cr-card-shadow);
   }
 
   @media (prefers-color-scheme: light) {
@@ -135,24 +134,31 @@
     opacity: .5;
   }
 
-  #file-icon-wrapper iron-icon[icon='cr:insert-drive-file'] {
+  #file-icon-wrapper iron-icon[icon-color='paper-grey'] {
     color: var(--paper-grey-400);
   }
 
-  #file-icon-wrapper iron-icon[icon='cr:warning'],
-  .dangerous #description {
+  #file-icon-wrapper iron-icon[icon-color='red'] {
     color: var(--google-red-700);
   }
 
-  #file-icon-wrapper iron-icon[icon='cr:error'],
-  .dangerous #description {
+  #file-icon-wrapper iron-icon[icon-color='yellow'] {
     color: var(--google-yellow-500);
   }
 
   @media (prefers-color-scheme: dark) {
-    #file-icon-wrapper iron-icon[icon='cr:warning'],
-    .dangerous #description {
+    #file-icon-wrapper iron-icon[icon-color='red'] {
       color: var(--google-red-refresh-300);
+    }
+  }
+
+  #file-icon-wrapper iron-icon[icon-color='grey'] {
+    color: var(--google-grey-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #file-icon-wrapper iron-icon[icon-color='grey'] {
+      color: var(--google-grey-500);
     }
   }
 
@@ -160,10 +166,6 @@
   #file-link,
   #url {
     max-width: 100%;
-  }
-
-  div[role='gridcell'] {
-    display: inline;
   }
 
   #name,
@@ -246,6 +248,10 @@
     color: var(--controlled-by-active-link-color);
   }
 
+  .more-options {
+    display: flex;
+    flex-direction: column;
+  }
 
   cr-icon-button {
     --cr-icon-button-icon-size: 16px;
@@ -255,11 +261,12 @@
 
   #incognito {
     -webkit-mask-image: url(images/incognito_marker.svg);
+    align-self: flex-end;
     background-color: var(--cr-secondary-text-color);
-    bottom: 20px;
     height: 16px;
-    position: absolute;
-    right: 16px;
+    margin-block-end: 20px;
+    margin-block-start: auto;
+    margin-inline-end: 16px;
     width: 16px;
   }
 
@@ -269,7 +276,9 @@
   }
 
   #pauseOrResume,
-  #dangerous .action-button {
+  #dangerous .action-button,
+  #incognito-warning .action-button,
+  #openNow {
     margin-inline-end: 8px;
   }
 </style>
@@ -286,10 +295,13 @@
     attribute and remove aria-hidden="true" from #file-icon-wrapper
   -->
   <div id="file-icon-wrapper" class="icon-wrapper" aria-hidden="true">
-    <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]">
+    <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
+    icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
+    useFileIcon_)]]">
     <iron-icon class="icon" icon$="[[computeIcon_(
         isDangerous_, data.dangerType, useFileIcon_)]]"
-        hidden="[[useFileIcon_]]"></iron-icon>
+        hidden="[[useFileIcon_]]" icon-color$="[[computeIconColor_(isDangerous_,
+        data.dangerType, useFileIcon_)]]"></iron-icon>
   </div>
 
   <div id="details">
@@ -329,35 +341,43 @@
       </div>
     </template>
 
-    <div id="safe" class="controls" hidden="[[isDangerous_]]">
-      <div role="gridcell">
+    <div id="safe" class="controls" hidden="[[!isDownloadItemSafe_]]">
+      <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
         <a is="action-link" id="show" on-click="onShowTap_"
-            hidden="[[!completelyOnDisk_]]" focus-row-control
-            focus-type="show">$i18n{controlShowInFolder}</a>
-      </div>
+            focus-row-control
+            focus-type="show">[[data.showInFolderText]]</a>
+      </span>
       <template is="dom-if" if="[[data.retry]]">
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button class="action-button" on-click="onRetryTap_"
               focus-row-control focus-type="retry">
             $i18n{controlRetry}
           </cr-button>
-        </div>
+        </span>
       </template>
       <template is="dom-if" if="[[pauseOrResumeText_]]">
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button on-click="onPauseOrResumeTap_" id="pauseOrResume"
               focus-row-control focus-type="pauseOrResume">
             [[pauseOrResumeText_]]
           </cr-button>
-        </div>
+        </span>
+      </template>
+      <template is="dom-if" if="[[showOpenNow_]]" restamp>
+        <span role="gridcell">
+          <cr-button on-click="onOpenNowTap_" id="openNow" class="action-button"
+                     focus-row-control focus-type="open">
+            $i18n{controlOpenNow}
+          </cr-button>
+        </span>
       </template>
       <template is="dom-if" if="[[showCancel_]]">
-        <div role="gridcell">
+        <span role="gridcell">
           <cr-button on-click="onCancelTap_" focus-row-control
               focus-type="cancel">
             $i18n{controlCancel}
           </cr-button>
-        </div>
+        </span>
       </template>
       <span id="controlled-by"><!-- Text populated dynamically. --></span>
     </div>
@@ -366,43 +386,59 @@
       <div id="dangerous" class="controls">
         <!-- Dangerous file types (e.g. .exe, .jar). -->
         <template is="dom-if" if="[[!isMalware_]]">
-          <div role="gridcell">
+          <span role="gridcell">
             <cr-button on-click="onDiscardDangerousTap_"
                 class="action-button" focus-row-control
                 focus-type="discard">$i18n{dangerDiscard}</cr-button>
-          </div>
-          <div role="gridcell">
+          </span>
+          <span role="gridcell">
             <cr-button on-click="onSaveDangerousTap_" focus-row-control
                 focus-type="save">
               $i18n{dangerSave}</cr-button>
-          </div>
+          </span>
         </template>
 
         <!-- Things that safe browsing has determined to be dangerous. -->
         <template is="dom-if" if="[[isMalware_]]">
-          <div role="gridcell">
+          <span role="gridcell">
             <cr-button on-click="onDiscardDangerousTap_"
                 class="action-button"
                 focus-row-control focus-type="discard">
               $i18n{controlRemoveFromList}</cr-button>
-          </div>
-          <div role="gridcell">
+          </span>
+          <span role="gridcell">
             <cr-button on-click="onSaveDangerousTap_" focus-row-control
                 focus-type="save">
               $i18n{dangerRestore}</cr-button>
-          </div>
+          </span>
         </template>
       </div>
     </template>
+
+    <template is="dom-if" if="[[shouldShowIncognitoWarning_]]">
+      <div id="incognito-warning" class="controls">
+        <span role="gridcell">
+          <cr-button on-click="onIncognitoWarningAccepted_"
+              class="action-button" focus-row-control
+              focus-type="save">$i18n{downloadAnyway}</cr-button>
+        </span>
+        <span role="gridcell">
+          <cr-button on-click="onCancelTap_" focus-row-control
+              focus-type="cancel">
+            $i18n{controlCancel}</cr-button>
+        </span>
+      </div>
+    </template>
   </div>
-  <div role="gridcell">
-    <cr-icon-button class="icon-clear"
-        style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
-        id="remove" title="$i18n{controlRemoveFromList}"
-        aria-label$="[[controlRemoveFromListAriaLabel_]]"
-        on-click="onRemoveTap_" focus-row-control focus-type="remove">
-    </cr-icon-button>
-  </div>
-  <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]">
+  <div class="more-options">
+    <div role="gridcell">
+      <cr-icon-button class="icon-clear"
+          style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
+          id="remove" title="$i18n{controlRemoveFromList}"
+          aria-label$="[[controlRemoveFromListAriaLabel_]]"
+          on-click="onRemoveTap_" focus-row-control focus-type="remove">
+      </cr-icon-button>
+    </div>
+    <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]"></div>
   </div>
 </div>

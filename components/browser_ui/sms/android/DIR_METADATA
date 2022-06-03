@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>SMS"
+}
+
+team_email: "fugu-dev@chromium.org"

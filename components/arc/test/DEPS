@@ -1,6 +1,3 @@
-specific_include_rules = {
-  "test_browser_context.h": [
-    "+content/public/test/test_browser_context.h",
-  ]
+include_rules = {
+  "+content/public/test",
 }
-

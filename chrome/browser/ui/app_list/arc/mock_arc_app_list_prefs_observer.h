@@ -29,15 +29,18 @@ class MockArcAppListPrefsObserver : public ArcAppListPrefs::Observer {
   MOCK_METHOD2(OnAppNameUpdated,
                void(const std::string& id, const std::string& name));
   MOCK_METHOD1(OnAppLastLaunchTimeUpdated, void(const std::string& app_id));
-  MOCK_METHOD4(OnTaskCreated,
+  MOCK_METHOD5(OnTaskCreated,
                void(int32_t task_id,
                     const std::string& package_name,
                     const std::string& activity,
-                    const std::string& intent));
-  MOCK_METHOD3(OnTaskDescriptionUpdated,
+                    const std::string& intent,
+                    int32_t session_id));
+  MOCK_METHOD5(OnTaskDescriptionChanged,
                void(int32_t task_id,
                     const std::string& label,
-                    const std::vector<uint8_t>& icon_png_data));
+                    const arc::mojom::RawIconPngData& icon,
+                    uint32_t primary_color,
+                    uint32_t status_bar_color));
   MOCK_METHOD1(OnTaskDestroyed, void(int32_t task_id));
   MOCK_METHOD1(OnTaskSetActive, void(int32_t task_id));
   MOCK_METHOD2(OnNotificationsEnabledChanged,

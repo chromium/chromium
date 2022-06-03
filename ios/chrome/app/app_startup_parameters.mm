@@ -4,9 +4,7 @@
 
 #import "ios/chrome/app/app_startup_parameters.h"
 
-#include "base/stl_util.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/payments/payment_request_constants.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -18,11 +16,13 @@
 @implementation AppStartupParameters {
   GURL _externalURL;
   GURL _completeURL;
+  std::vector<GURL> _URLs;
 }
 
 @synthesize externalURLParams = _externalURLParams;
 @synthesize postOpeningAction = _postOpeningAction;
 @synthesize launchInIncognito = _launchInIncognito;
+// TODO(crbug.com/1021752): Remove this stub.
 @synthesize completePaymentRequest = _completePaymentRequest;
 @synthesize textQuery = _textQuery;
 
@@ -44,32 +44,20 @@
   return self;
 }
 
-- (instancetype)initWithUniversalLink:(const GURL&)universalLink {
-  // If a new tab with |_externalURL| needs to be opened after the App
-  // was launched as the result of a Universal Link navigation, the only
-  // supported possibility at this time is the New Tab Page.
-  self = [self initWithExternalURL:GURL(kChromeUINewTabURL)
-                       completeURL:GURL(kChromeUINewTabURL)];
-
-  if (self) {
-    std::map<std::string, std::string> parameters;
-    net::QueryIterator query_iterator(universalLink);
-    while (!query_iterator.IsAtEnd()) {
-      parameters.insert(std::make_pair(query_iterator.GetKey(),
-                                       query_iterator.GetUnescapedValue()));
-      query_iterator.Advance();
-    }
-
-    // Currently only Payment Request parameters are supported.
-    if (base::Contains(parameters, payments::kPaymentRequestIDExternal) &&
-        base::Contains(parameters, payments::kPaymentRequestDataExternal)) {
-      _externalURLParams = parameters;
-      _completePaymentRequest = YES;
-    }
+- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs {
+  if (URLs.empty()) {
+    self = [self initWithExternalURL:GURL(kChromeUINewTabURL)
+                         completeURL:GURL(kChromeUINewTabURL)];
+  } else {
+    self = [self initWithExternalURL:URLs.front() completeURL:URLs.front()];
   }
 
+  if (self) {
+    _URLs = URLs;
+  }
   return self;
 }
+
 
 - (NSString*)description {
   NSMutableString* description =
@@ -98,6 +86,11 @@
   }
 
   return description;
+}
+
+- (ApplicationModeForTabOpening)applicationMode {
+  return self.launchInIncognito ? ApplicationModeForTabOpening::INCOGNITO
+                                : ApplicationModeForTabOpening::NORMAL;
 }
 
 @end

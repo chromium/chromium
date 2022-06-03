@@ -1,0 +1,79 @@
+{
+  "layers": [
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [1200, 900]
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
+      "position": [12, 12],
+      "contentsOpaque": true,
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
+      "position": [12, 12],
+      "bounds": [240, 135],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [240, 135],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context' (foreground) Layer",
+      "position": [12, 12],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='accelerated stacking-context'",
+      "contentsOpaque": true,
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
+      "bounds": [240, 135],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [240, 135],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='accelerated stacking-context' (foreground) Layer",
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML (foreground) Layer",
+      "bounds": [1200, 900]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -12,10 +12,8 @@ namespace ui {
 bool DeviceUsesKeyboardLayout2() {
   for (const InputDevice& keyboard :
        DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    EventRewriterChromeOS::KeyboardTopRowLayout layout;
-    if (EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard.sys_path,
-                                                       &layout) &&
-        layout == EventRewriterChromeOS::kKbdTopRowLayout2) {
+    if (EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard) ==
+        EventRewriterChromeOS::kKbdTopRowLayout2) {
       return true;
     }
   }
@@ -27,7 +25,7 @@ bool DeviceKeyboardHasAssistantKey() {
   for (const InputDevice& keyboard :
        DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     bool has_assistant_key = false;
-    if (EventRewriterChromeOS::HasAssistantKeyOnKeyboard(keyboard.sys_path,
+    if (EventRewriterChromeOS::HasAssistantKeyOnKeyboard(keyboard,
                                                          &has_assistant_key) &&
         has_assistant_key) {
       return true;

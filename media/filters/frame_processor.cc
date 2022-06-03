@@ -9,7 +9,6 @@
 
 #include <cstdlib>
 
-#include "base/macros.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
@@ -32,7 +31,11 @@ class MseTrackBuffer {
  public:
   MseTrackBuffer(ChunkDemuxerStream* stream,
                  MediaLog* media_log,
-                 const SourceBufferParseWarningCB& parse_warning_cb);
+                 SourceBufferParseWarningCB parse_warning_cb);
+
+  MseTrackBuffer(const MseTrackBuffer&) = delete;
+  MseTrackBuffer& operator=(const MseTrackBuffer&) = delete;
+
   ~MseTrackBuffer();
 
   // Get/set |last_decode_timestamp_|.
@@ -186,14 +189,11 @@ class MseTrackBuffer {
 
   // Counter that limits spam to |media_log_| for MseTrackBuffer warnings.
   int num_keyframe_time_greater_than_dependant_warnings_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MseTrackBuffer);
 };
 
-MseTrackBuffer::MseTrackBuffer(
-    ChunkDemuxerStream* stream,
-    MediaLog* media_log,
-    const SourceBufferParseWarningCB& parse_warning_cb)
+MseTrackBuffer::MseTrackBuffer(ChunkDemuxerStream* stream,
+                               MediaLog* media_log,
+                               SourceBufferParseWarningCB parse_warning_cb)
     : last_decode_timestamp_(kNoDecodeTimestamp()),
       last_processed_decode_timestamp_(DecodeTimestamp()),
       pending_group_start_pts_(kNoTimestamp),
@@ -205,7 +205,7 @@ MseTrackBuffer::MseTrackBuffer(
       needs_random_access_point_(true),
       stream_(stream),
       media_log_(media_log),
-      parse_warning_cb_(parse_warning_cb) {
+      parse_warning_cb_(std::move(parse_warning_cb)) {
   DCHECK(stream_);
   DCHECK(parse_warning_cb_);
 }
@@ -336,13 +336,13 @@ void MseTrackBuffer::NotifyStartOfCodedFrameGroup(DecodeTimestamp start_dts,
   stream_->OnStartOfCodedFrameGroup(start_dts, start_pts);
 }
 
-FrameProcessor::FrameProcessor(const UpdateDurationCB& update_duration_cb,
+FrameProcessor::FrameProcessor(UpdateDurationCB update_duration_cb,
                                MediaLog* media_log)
     : group_start_timestamp_(kNoTimestamp),
-      update_duration_cb_(update_duration_cb),
+      update_duration_cb_(std::move(update_duration_cb)),
       media_log_(media_log) {
   DVLOG(2) << __func__ << "()";
-  DCHECK(update_duration_cb);
+  DCHECK(update_duration_cb_);
 }
 
 FrameProcessor::~FrameProcessor() {
@@ -350,10 +350,10 @@ FrameProcessor::~FrameProcessor() {
 }
 
 void FrameProcessor::SetParseWarningCallback(
-    const SourceBufferParseWarningCB& parse_warning_cb) {
+    SourceBufferParseWarningCB parse_warning_cb) {
   DCHECK(!parse_warning_cb_);
   DCHECK(parse_warning_cb);
-  parse_warning_cb_ = parse_warning_cb;
+  parse_warning_cb_ = std::move(parse_warning_cb);
 }
 
 void FrameProcessor::SetSequenceMode(bool sequence_mode) {
@@ -563,8 +563,11 @@ void FrameProcessor::OnPossibleAudioConfigUpdate(
     return;
 
   current_audio_config_ = config;
-  sample_duration_ = base::TimeDelta::FromSecondsD(
-      1.0 / current_audio_config_.samples_per_second());
+  sample_duration_ =
+      base::Seconds(1.0 / current_audio_config_.samples_per_second());
+  has_dependent_audio_frames_ =
+      current_audio_config_.profile() == AudioCodecProfile::kXHE_AAC;
+  last_audio_pts_for_nonkeyframe_monotonicity_check_ = kNoTimestamp;
 }
 
 MseTrackBuffer* FrameProcessor::FindTrack(StreamParser::TrackId id) {
@@ -603,7 +606,7 @@ bool FrameProcessor::HandlePartialAppendWindowTrimming(
     scoped_refptr<StreamParserBuffer> buffer) {
   DCHECK(buffer->duration() >= base::TimeDelta());
   DCHECK_EQ(DemuxerStream::AUDIO, buffer->type());
-  DCHECK(buffer->is_key_frame());
+  DCHECK(has_dependent_audio_frames_ || buffer->is_key_frame());
 
   const base::TimeDelta frame_end_timestamp =
       buffer->timestamp() + buffer->duration();
@@ -612,7 +615,13 @@ bool FrameProcessor::HandlePartialAppendWindowTrimming(
   // for the first buffer which overlaps |append_window_start|.
   if (buffer->timestamp() < append_window_start &&
       frame_end_timestamp <= append_window_start) {
-    audio_preroll_buffer_ = std::move(buffer);
+    // But if the buffer is not a keyframe, do not use it for preroll, nor use
+    // any previous preroll buffer for simplicity here.
+    if (has_dependent_audio_frames_ && !buffer->is_key_frame()) {
+      audio_preroll_buffer_.reset();
+    } else {
+      audio_preroll_buffer_ = std::move(buffer);
+    }
     return false;
   }
 
@@ -709,6 +718,37 @@ bool FrameProcessor::HandlePartialAppendWindowTrimming(
   return processed_buffer;
 }
 
+bool FrameProcessor::CheckAudioPresentationOrder(
+    const StreamParserBuffer& frame,
+    bool track_buffer_needs_random_access_point) {
+  DCHECK_EQ(DemuxerStream::AUDIO, frame.type());
+  DCHECK(has_dependent_audio_frames_);
+  if (frame.is_key_frame()) {
+    // Audio keyframes trivially succeed here. They start a new PTS baseline for
+    // the purpose of the checks in this method.
+    last_audio_pts_for_nonkeyframe_monotonicity_check_ = frame.timestamp();
+    return true;
+  }
+  if (track_buffer_needs_random_access_point) {
+    // This nonkeyframe trivially succeeds here, though it will not be buffered
+    // later in the caller since a keyframe is required first.
+    last_audio_pts_for_nonkeyframe_monotonicity_check_ = kNoTimestamp;
+    return true;
+  }
+
+  // We're not waiting for a random access point, so we must have a valid PTS
+  // baseline.
+  DCHECK_NE(kNoTimestamp, last_audio_pts_for_nonkeyframe_monotonicity_check_);
+
+  if (frame.timestamp() >= last_audio_pts_for_nonkeyframe_monotonicity_check_) {
+    last_audio_pts_for_nonkeyframe_monotonicity_check_ = frame.timestamp();
+    return true;
+  }
+
+  last_audio_pts_for_nonkeyframe_monotonicity_check_ = kNoTimestamp;
+  return false;  // Caller should fail parse in this case.
+}
+
 bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
                                   base::TimeDelta append_window_start,
                                   base::TimeDelta append_window_end,
@@ -745,14 +785,16 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     // assumption that all audio coded frames are key frames. Metadata in the
     // bytestream may not indicate that, so we need to enforce that assumption
     // here with a warning log.
-    if (frame->type() == DemuxerStream::AUDIO && !frame->is_key_frame()) {
+    if (frame->type() == DemuxerStream::AUDIO && !has_dependent_audio_frames_ &&
+        !frame->is_key_frame()) {
       LIMITED_MEDIA_LOG(DEBUG, media_log_, num_audio_non_keyframe_warnings_,
                         kMaxAudioNonKeyframeWarnings)
           << "Bytestream with audio frame PTS "
           << presentation_timestamp.InMicroseconds() << "us and DTS "
           << decode_timestamp.InMicroseconds()
           << "us indicated the frame is not a random access point (key frame). "
-             "All audio frames are expected to be key frames.";
+             "All audio frames are expected to be key frames for the current "
+             "audio codec.";
       frame->set_is_key_frame(true);
     }
 
@@ -858,7 +900,7 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     if (track_last_decode_timestamp != kNoDecodeTimestamp()) {
       base::TimeDelta track_dts_delta =
           decode_timestamp - track_last_decode_timestamp;
-      if (track_dts_delta < base::TimeDelta() ||
+      if (track_dts_delta.is_negative() ||
           track_dts_delta > 2 * track_buffer->last_frame_duration()) {
         // 6.1. If mode equals "segments": Set group end timestamp to
         //      presentation timestamp.
@@ -907,8 +949,18 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     frame->set_timestamp(presentation_timestamp);
     frame->SetDecodeTimestamp(decode_timestamp);
 
+    if (has_dependent_audio_frames_ && frame->type() == DemuxerStream::AUDIO &&
+        !CheckAudioPresentationOrder(
+            *frame, track_buffer->needs_random_access_point())) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Dependent audio frame with invalid decreasing presentation "
+             "timestamp detected.";
+      return false;
+    }
+
     // Attempt to trim audio exactly to fit the append window.
     if (frame->type() == DemuxerStream::AUDIO &&
+        (frame->is_key_frame() || !track_buffer->needs_random_access_point()) &&
         HandlePartialAppendWindowTrimming(append_window_start,
                                           append_window_end, frame)) {
       // |frame| has been partially trimmed or had preroll added.  Though

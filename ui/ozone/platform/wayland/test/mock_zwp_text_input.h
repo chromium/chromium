@@ -7,8 +7,8 @@
 
 #include <text-input-unstable-v1-server-protocol.h>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
@@ -21,6 +21,10 @@ extern const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl;
 class MockZwpTextInput : public ServerObject {
  public:
   MockZwpTextInput(wl_resource* resource);
+
+  MockZwpTextInput(const MockZwpTextInput&) = delete;
+  MockZwpTextInput& operator=(const MockZwpTextInput&) = delete;
+
   ~MockZwpTextInput() override;
 
   MOCK_METHOD0(Reset, void());
@@ -30,9 +34,8 @@ class MockZwpTextInput : public ServerObject {
   MOCK_METHOD0(HideInputPanel, void());
   MOCK_METHOD4(SetCursorRect,
                void(int32_t x, int32_t y, int32_t width, int32_t height));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockZwpTextInput);
+  MOCK_METHOD2(SetSurroundingText,
+               void(std::string text, gfx::Range selection_range));
 };
 
 }  // namespace wl

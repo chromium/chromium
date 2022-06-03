@@ -1,0 +1,5 @@
+include_rules = [
+  "+device/base",
+  "+device/vr/orientation",
+  "+device/vr/test",
+]

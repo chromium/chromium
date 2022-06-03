@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 
@@ -21,6 +20,10 @@ namespace secure_channel {
 // until the stop callback is invoked.
 class ErrorTolerantBleAdvertisement {
  public:
+  ErrorTolerantBleAdvertisement(const ErrorTolerantBleAdvertisement&) = delete;
+  ErrorTolerantBleAdvertisement& operator=(
+      const ErrorTolerantBleAdvertisement&) = delete;
+
   virtual ~ErrorTolerantBleAdvertisement();
 
   // Stops advertising. Because BLE advertisements start and stop
@@ -28,7 +31,7 @@ class ErrorTolerantBleAdvertisement {
   // of simply deleting an ErrorTolerantBleAdvertisement object. Clients should
   // not assume that advertising has actually stopped until |callback| has been
   // invoked.
-  virtual void Stop(const base::Closure& callback) = 0;
+  virtual void Stop(base::OnceClosure callback) = 0;
 
   // Returns whether Stop() has been called.
   virtual bool HasBeenStopped() = 0;
@@ -40,8 +43,6 @@ class ErrorTolerantBleAdvertisement {
 
  private:
   const DeviceIdPair device_id_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorTolerantBleAdvertisement);
 };
 
 }  // namespace secure_channel

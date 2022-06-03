@@ -1,0 +1,62 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
+import "components/services/storage/public/mojom/storage_usage_info.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+
+enum CacheStorageOwner {
+  // Caches that can be accessed by the JS CacheStorage API (developer facing).
+  kCacheAPI,
+
+  // Private cache to store background fetch downloads.
+  kBackgroundFetch,
+};
+
+// Observer interface for receiving callbacks after cache storage changes.
+interface CacheStorageObserver {
+  // Called when caches are created or deleted.
+  OnCacheListChanged(blink.mojom.StorageKey storage_key);
+
+  // Called when the content of a cache has been modified.
+  OnCacheContentChanged(blink.mojom.StorageKey storage_key,
+                        string cache_name);
+};
+
+// Controls the state of CacheStorage within a partition. This is a privileged
+// interface and must not be brokered to untrusted clients.
+//
+// Currently this is consumed and implemented in the browser process, but the
+// implementation will eventually live in the storage service which may run
+// out-of-process.
+interface CacheStorageControl {
+  // Binds a CacheStorage receiver to the CacheStorageControl to access
+  // the cache storage for a particular storage key and owner.
+  AddReceiver(
+      network.mojom.CrossOriginEmbedderPolicy policy,
+      pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
+          coep_reporter,
+      blink.mojom.StorageKey storage_key,
+      CacheStorageOwner owner,
+      pending_receiver<blink.mojom.CacheStorage> receiver);
+
+  // Deletes the data for a given storage key.
+  DeleteForStorageKey(blink.mojom.StorageKey storage_key);
+
+  // Used in response to browsing data and quota manager requests to get
+  // the per-StorageKey size and last time used data.
+  GetAllStorageKeysInfo() => (array<StorageUsageInfo> usage_info);
+
+  // Adds an observer that will receive cache change callbacks.
+  AddObserver(pending_remote<CacheStorageObserver> observer);
+
+  // Applies changes to data retention policy which are relevant at shutdown.
+  // See StoragePolicyUpdate.
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
+};

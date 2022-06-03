@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.autofill_assistant;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 /**
  * Common accessibility utilities used by autofill assistant.

@@ -13,6 +13,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -39,18 +40,15 @@ constexpr gfx::Size kSpacerPreferredSize = gfx::Size(5, 5);
 }  // namespace
 
 MediaControlsHeaderView::MediaControlsHeaderView(
-    base::OnceClosure close_button_cb)
-    : close_button_cb_(std::move(close_button_cb)) {
+    views::Button::PressedCallback close_button_cb) {
   const views::FlexSpecification kAppNameFlex =
-      views::FlexSpecification::ForSizeRule(
-          views::MinimumFlexSizeRule::kScaleToZero,
-          views::MaximumFlexSizeRule::kPreferred)
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1);
 
   const views::FlexSpecification kSpacerFlex =
-      views::FlexSpecification::ForSizeRule(
-          views::MinimumFlexSizeRule::kScaleToMinimum,
-          views::MaximumFlexSizeRule::kUnbounded)
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -74,8 +72,7 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   app_name_view->SetFontList(font_list);
   app_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   app_name_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextSecondary,
-      AshColorProvider::AshColorMode::kDark));
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
   app_name_view->SetAutoColorReadabilityEnabled(false);
   app_name_view->SetBorder(views::CreateEmptyBorder(kAppNamePadding));
   app_name_view->SetPreferredSize(kAppNamePreferredSize);
@@ -89,14 +86,14 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
   AddChildView(std::move(spacer));
 
-  auto close_button = CreateVectorImageButton(this);
+  auto close_button = CreateVectorImageButton(std::move(close_button_cb));
   close_button->SetPreferredSize(kCloseButtonSize);
   close_button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  base::string16 close_button_label(
+  std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_CLOSE));
   close_button->SetAccessibleName(close_button_label);
-  close_button->set_ink_drop_base_color(
-      color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700));
+  views::InkDrop::Get(close_button.get())
+      ->SetBaseColor(color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700));
   close_button_ = AddChildView(std::move(close_button));
 }
 
@@ -106,7 +103,7 @@ void MediaControlsHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
   app_icon_view_->SetImage(img);
 }
 
-void MediaControlsHeaderView::SetAppName(const base::string16& name) {
+void MediaControlsHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
 }
 
@@ -123,12 +120,7 @@ void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(app_name_view_->GetText());
 }
 
-void MediaControlsHeaderView::ButtonPressed(views::Button* sender,
-                                            const ui::Event& event) {
-  std::move(close_button_cb_).Run();
-}
-
-const base::string16& MediaControlsHeaderView::app_name_for_testing() const {
+const std::u16string& MediaControlsHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
 

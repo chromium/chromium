@@ -1,0 +1,6 @@
+source_set("common") {
+  sources = [
+    "common_enums.cc",
+    "common_enums.h",
+  ]
+}

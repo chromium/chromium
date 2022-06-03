@@ -5,14 +5,15 @@
 #include "components/viz/service/gl/gpu_service_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/service/display_context.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
@@ -43,6 +44,10 @@ class GpuServiceTest : public testing::Test {
       : io_thread_("TestIOThread"),
         wait_(base::WaitableEvent::ResetPolicy::MANUAL,
               base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+  GpuServiceTest(const GpuServiceTest&) = delete;
+  GpuServiceTest& operator=(const GpuServiceTest&) = delete;
+
   ~GpuServiceTest() override {}
 
   GpuServiceImpl* gpu_service() { return gpu_service_.get(); }
@@ -72,7 +77,7 @@ class GpuServiceTest : public testing::Test {
     gpu_service_ = std::make_unique<GpuServiceImpl>(
         gpu_info, /*watchdog_thread=*/nullptr, io_thread_.task_runner(),
         gpu::GpuFeatureInfo(), gpu::GpuPreferences(), gpu::GPUInfo(),
-        gpu::GpuFeatureInfo(), gpu::GpuExtraInfo(),
+        gpu::GpuFeatureInfo(), gfx::GpuExtraInfo(),
         /*vulkan_implementation=*/nullptr,
         /*exit_callback=*/base::DoNothing());
   }
@@ -84,12 +89,12 @@ class GpuServiceTest : public testing::Test {
     io_thread_.Stop();
   }
 
+  absl::optional<bool> visible_;
+
  private:
   base::Thread io_thread_;
   std::unique_ptr<GpuServiceImpl> gpu_service_;
   base::WaitableEvent wait_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceTest);
 };
 
 // Tests that GpuServiceImpl can be destroyed before Bind() succeeds on the IO
@@ -150,6 +155,38 @@ TEST_F(GpuServiceTest, LoseAllContexts) {
   testing::Mock::VerifyAndClearExpectations(&display_context);
 
   gpu_service()->UnregisterDisplayContext(&display_context);
+}
+
+// Tests that the visibility callback gets called when visibility changes.
+TEST_F(GpuServiceTest, VisibilityCallbackCalled) {
+  mojo::Remote<mojom::GpuService> gpu_service_remote;
+  gpu_service()->Bind(gpu_service_remote.BindNewPipeAndPassReceiver());
+
+  mojo::PendingRemote<mojom::GpuHost> gpu_host_proxy;
+  ignore_result(gpu_host_proxy.InitWithNewPipeAndPassReceiver());
+  gpu_service()->InitializeWithHost(
+      std::move(gpu_host_proxy), gpu::GpuProcessActivityFlags(),
+      gl::init::CreateOffscreenGLSurface(gfx::Size()),
+      /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
+      /*shutdown_event=*/nullptr);
+  gpu_service_remote.FlushForTesting();
+
+  gpu_service()->SetVisibilityChangedCallback(base::BindRepeating(
+      [](GpuServiceTest* test, bool visible) { test->visible_ = visible; },
+      base::Unretained(this)));
+  EXPECT_FALSE(visible_.has_value());
+
+  gpu_service_remote->OnForegrounded();
+  gpu_service_remote.FlushForTesting();
+
+  EXPECT_TRUE(visible_.has_value());
+  EXPECT_TRUE(*visible_);
+
+  gpu_service_remote->OnBackgrounded();
+  gpu_service_remote.FlushForTesting();
+
+  EXPECT_TRUE(visible_.has_value());
+  EXPECT_FALSE(*visible_);
 }
 
 }  // namespace viz

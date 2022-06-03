@@ -7,14 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/demo/renderer_base.h"
 
 namespace gfx {
-class GpuFence;
 struct PresentationFeedback;
 }  // namespace gfx
 
@@ -32,6 +30,10 @@ class GlRenderer : public RendererBase {
              std::unique_ptr<PlatformWindowSurface> platform_window_surface,
              const scoped_refptr<gl::GLSurface>& surface,
              const gfx::Size& size);
+
+  GlRenderer(const GlRenderer&) = delete;
+  GlRenderer& operator=(const GlRenderer&) = delete;
+
   ~GlRenderer() override;
 
   // Renderer:
@@ -39,8 +41,7 @@ class GlRenderer : public RendererBase {
 
  private:
   void RenderFrame();
-  void PostRenderFrameTask(gfx::SwapResult result,
-                           std::unique_ptr<gfx::GpuFence> gpu_fence);
+  void PostRenderFrameTask(gfx::SwapCompletionResult result);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
   std::unique_ptr<PlatformWindowSurface> window_surface_;
@@ -49,8 +50,6 @@ class GlRenderer : public RendererBase {
   scoped_refptr<gl::GLContext> context_;
 
   base::WeakPtrFactory<GlRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlRenderer);
 };
 
 }  // namespace ui

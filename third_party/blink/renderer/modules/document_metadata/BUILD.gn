@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors.All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,11 +6,11 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("document_metadata") {
   sources = [
-    "copyless_paste_extractor.cc",
-    "copyless_paste_extractor.h",
-    "copyless_paste_server.cc",
-    "copyless_paste_server.h",
+    "document_metadata_extractor.cc",
+    "document_metadata_extractor.h",
+    "document_metadata_server.cc",
+    "document_metadata_server.h",
   ]
 
-  deps = []
+  deps = [ "//components/schema_org/common:mojom_blink" ]
 }

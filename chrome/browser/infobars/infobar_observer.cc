@@ -5,10 +5,10 @@
 #include "chrome/browser/infobars/infobar_observer.h"
 
 InfoBarObserver::InfoBarObserver(infobars::InfoBarManager* manager, Type type)
-    : type_(type), infobar_observer_(this) {
+    : type_(type) {
   // There may be no |manager| if the browser window is currently closing.
   if (manager)
-    infobar_observer_.Add(manager);
+    infobar_observation_.Observe(manager);
 }
 
 InfoBarObserver::~InfoBarObserver() {}
@@ -16,7 +16,7 @@ InfoBarObserver::~InfoBarObserver() {}
 void InfoBarObserver::Wait() {
   // When there is no manager being observed, there is nothing to wait on, so
   // return immediately.
-  if (infobar_observer_.IsObservingSources())
+  if (infobar_observation_.IsObserving())
     run_loop_.Run();
 }
 
@@ -35,7 +35,8 @@ void InfoBarObserver::OnInfoBarReplaced(infobars::InfoBar* old_infobar,
 void InfoBarObserver::OnManagerShuttingDown(infobars::InfoBarManager* manager) {
   if (run_loop_.running())
     run_loop_.Quit();
-  infobar_observer_.Remove(manager);
+  DCHECK(infobar_observation_.IsObservingSource(manager));
+  infobar_observation_.Reset();
 }
 
 void InfoBarObserver::OnNotified(Type type) {

@@ -6,6 +6,7 @@
 #define MEDIA_BASE_ENCRYPTION_SCHEME_H_
 
 #include <iosfwd>
+#include <string>
 
 #include "media/base/media_export.h"
 
@@ -19,6 +20,10 @@ enum class EncryptionScheme {
   kCbcs,  // 'cbcs' pattern encryption using AES-CBC mode.
   kMaxValue = kCbcs
 };
+
+// For logging use only.
+MEDIA_EXPORT std::string GetEncryptionSchemeName(
+    EncryptionScheme encryption_scheme);
 
 // For logging use only.
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,

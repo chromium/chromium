@@ -90,6 +90,10 @@ class GaiaAuthFetcher {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  GaiaAuthFetcher(const GaiaAuthFetcher&) = delete;
+  GaiaAuthFetcher& operator=(const GaiaAuthFetcher&) = delete;
+
   virtual ~GaiaAuthFetcher();
 
   // Start a request to revoke |auth_token|.
@@ -169,6 +173,9 @@ class GaiaAuthFetcher {
   void StartListAccounts();
 
   // Starts a request to log out the accounts in the GAIA cookie.
+  // Note: this only clears the Gaia cookies. Other cookies such as the SAML
+  // provider cookies are not cleared. To cleanly remove an account from the
+  // web, the Gaia logout page should be loaded as a navigation.
   void StartLogOut();
 
   // Given a child account's OAuth2 refresh token, the parent account's
@@ -402,8 +409,6 @@ class GaiaAuthFetcher {
   FRIEND_TEST_ALL_PREFIXES(GaiaAuthFetcherTest, ClientOAuthWithQuote);
   FRIEND_TEST_ALL_PREFIXES(GaiaAuthFetcherTest, ClientOAuthChallengeSuccess);
   FRIEND_TEST_ALL_PREFIXES(GaiaAuthFetcherTest, ClientOAuthChallengeQuote);
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcher);
 };
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_AUTH_FETCHER_H_

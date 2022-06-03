@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
+#include "base/callback_helpers.h"
+#include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,16 +43,19 @@ GLbyte SyncTokenMatcher(const gpu::SyncToken& token) {
 
 gpu::SyncToken GenTestSyncToken(GLbyte id) {
   gpu::SyncToken token;
-  // Store id in the first byte
-  reinterpret_cast<GLbyte*>(&token)[0] = id;
+  token.Set(gpu::CommandBufferNamespace::GPU_IO,
+            gpu::CommandBufferId::FromUnsafeValue(64), id);
   return token;
 }
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  return AcceleratedStaticBitmapImage::CreateFromWebGLContextImage(
-      mailbox, GenTestSyncToken(100), 0,
-      SharedGpuContext::ContextProviderWrapper(), IntSize(100, 100), true);
+
+  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+      mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
+      GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
+      base::PlatformThread::CurrentRef(),
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {
@@ -71,18 +77,12 @@ class AcceleratedStaticBitmapImageTest : public Test {
   scoped_refptr<viz::TestContextProvider> context_provider_;
 };
 
-TEST_F(AcceleratedStaticBitmapImageTest, NoTextureHolderThrashing) {
+TEST_F(AcceleratedStaticBitmapImageTest, SkImageCached) {
   auto bitmap = CreateBitmap();
 
-  sk_sp<SkImage> stored_image =
-      bitmap->PaintImageForCurrentFrame().GetSkImage();
-  bitmap->EnsureMailbox(kUnverifiedSyncToken, GL_LINEAR);
-
-  // Verify that calling PaintImageForCurrentFrame does not swap out of mailbox
-  // mode. It should use the cached original image instead.
-  auto stored_image2 = bitmap->PaintImageForCurrentFrame().GetSkImage();
-
-  EXPECT_EQ(stored_image.get(), stored_image2.get());
+  cc::PaintImage stored_image = bitmap->PaintImageForCurrentFrame();
+  auto stored_image2 = bitmap->PaintImageForCurrentFrame();
+  EXPECT_EQ(stored_image, stored_image2);
 }
 
 TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
@@ -97,9 +97,8 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
 
   // Anterior synchronization. Wait on the sync token for the mailbox on the
   // dest context.
-  EXPECT_CALL(
-      destination_gl,
-      WaitSyncTokenCHROMIUM(Pointee(SyncTokenMatcher(bitmap->GetSyncToken()))));
+  EXPECT_CALL(destination_gl, WaitSyncTokenCHROMIUM(Pointee(SyncTokenMatcher(
+                                  bitmap->GetMailboxHolder().sync_token))));
 
   // Posterior synchronization. Generate a sync token on the destination context
   // to ensure mailbox is destroyed after the copy.
@@ -109,7 +108,7 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
           sync_token2.GetConstData(),
           sync_token2.GetConstData() + sizeof(gpu::SyncToken)));
 
-  IntPoint dest_point(0, 0);
+  gfx::Point dest_point(0, 0);
   IntRect source_sub_rectangle(0, 0, 10, 10);
   ASSERT_TRUE(bitmap->CopyToTexture(
       &destination_gl, GL_TEXTURE_2D, 1 /*dest_texture_id*/,
@@ -120,7 +119,7 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
   testing::Mock::VerifyAndClearExpectations(&destination_gl);
 
   // Final wait is postponed until destruction.
-  EXPECT_EQ(bitmap->GetSyncToken(), sync_token2);
+  EXPECT_EQ(bitmap->GetMailboxHolder().sync_token, sync_token2);
 }
 
 }  // namespace

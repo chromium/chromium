@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 
+#include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/core/editing/inline_box_traversal.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
@@ -68,7 +68,7 @@ InlineTextBox* SearchAheadForBetterMatch(const LayoutText* layout_object) {
     if (next->IsText()) {
       InlineTextBox* match = nullptr;
       int min_offset = INT_MAX;
-      for (InlineTextBox* box : ToLayoutText(next)->TextBoxes()) {
+      for (InlineTextBox* box : To<LayoutText>(next)->TextBoxes()) {
         int caret_min_offset = box->CaretMinOffset();
         if (caret_min_offset < min_offset) {
           match = box;
@@ -83,23 +83,25 @@ InlineTextBox* SearchAheadForBetterMatch(const LayoutText* layout_object) {
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> DownstreamIgnoringEditingBoundaries(
-    PositionTemplate<Strategy> position) {
+PositionTemplate<Strategy> DownstreamVisuallyEquivalent(
+    PositionTemplate<Strategy> position,
+    EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary) {
   PositionTemplate<Strategy> last_position;
   while (!position.IsEquivalent(last_position)) {
     last_position = position;
-    position = MostForwardCaretPosition(position, kCanCrossEditingBoundary);
+    position = MostForwardCaretPosition(position, rule);
   }
   return position;
 }
 
 template <typename Strategy>
-PositionTemplate<Strategy> UpstreamIgnoringEditingBoundaries(
-    PositionTemplate<Strategy> position) {
+PositionTemplate<Strategy> UpstreamVisuallyEquivalent(
+    PositionTemplate<Strategy> position,
+    EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary) {
   PositionTemplate<Strategy> last_position;
   while (!position.IsEquivalent(last_position)) {
     last_position = position;
-    position = MostBackwardCaretPosition(position, kCanCrossEditingBoundary);
+    position = MostBackwardCaretPosition(position, rule);
   }
   return position;
 }
@@ -178,8 +180,8 @@ InlineBoxPosition ComputeInlineBoxPositionForAtomicInline(
     int caret_offset) {
   // TODO(editing-dev): Add the following DCHECK when ready.
   // DCHECK(CanUseInlineBox(*layout_object);
-  DCHECK(layout_object->IsBox());
-  InlineBox* const inline_box = ToLayoutBox(layout_object)->InlineBoxWrapper();
+  InlineBox* const inline_box =
+      To<LayoutBox>(layout_object)->InlineBoxWrapper();
   if (!inline_box)
     return InlineBoxPosition();
   if ((caret_offset > inline_box->CaretMinOffset() &&
@@ -191,12 +193,15 @@ InlineBoxPosition ComputeInlineBoxPositionForAtomicInline(
 template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
     const PositionWithAffinityTemplate<Strategy>&,
-    int recursion_depth);
+    int recursion_depth,
+    EditingBoundaryCrossingRule rule);
 
 template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
     const PositionTemplate<Strategy>& position,
-    int recursion_depth) {
+    int recursion_depth,
+    EditingBoundaryCrossingRule rule) {
+  DCHECK(position.IsNotNull());
   if (recursion_depth >= kBlockFlowAdjustmentMaxRecursionDepth) {
     // TODO(editing-dev): This function enters infinite recursion in some cases.
     // Find the root cause and fix it. See https://crbug.com/857266
@@ -208,30 +213,36 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
   // non-editable positions. It acts to negate the logic at the beginning of
   // |LayoutObject::CreatePositionWithAffinity()|.
   const PositionTemplate<Strategy>& downstream_equivalent =
-      DownstreamIgnoringEditingBoundaries(position);
-  if (downstream_equivalent != position) {
+      DownstreamVisuallyEquivalent(position);
+  DCHECK(downstream_equivalent.IsNotNull());
+  if (downstream_equivalent != position &&
+      downstream_equivalent.AnchorNode()->GetLayoutObject()) {
     return ComputeInlineAdjustedPositionAlgorithm(
         PositionWithAffinityTemplate<Strategy>(downstream_equivalent,
                                                TextAffinity::kUpstream),
-        recursion_depth + 1);
+        recursion_depth + 1, rule);
   }
   const PositionTemplate<Strategy>& upstream_equivalent =
-      UpstreamIgnoringEditingBoundaries(position);
-  if (upstream_equivalent == position)
+      UpstreamVisuallyEquivalent(position);
+  DCHECK(upstream_equivalent.IsNotNull());
+  if (upstream_equivalent == position ||
+      !upstream_equivalent.AnchorNode()->GetLayoutObject())
     return PositionWithAffinityTemplate<Strategy>();
 
   return ComputeInlineAdjustedPositionAlgorithm(
       PositionWithAffinityTemplate<Strategy>(upstream_equivalent,
                                              TextAffinity::kUpstream),
-      recursion_depth + 1);
+      recursion_depth + 1, rule);
 }
 
 template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
-    int recursion_depth) {
+    int recursion_depth,
+    EditingBoundaryCrossingRule rule) {
   // TODO(yoichio): We don't assume |position| is canonicalized no longer and
   // there are few cases failing to compute. Fix it: crbug.com/812535.
+  DCHECK(position.IsNotNull());
   DCHECK(!position.AnchorNode()->IsShadowRoot()) << position;
   DCHECK(position.GetPosition().AnchorNode()->GetLayoutObject()) << position;
   const LayoutObject& layout_object =
@@ -247,7 +258,7 @@ PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
       CanHaveChildrenForEditing(position.AnchorNode()) &&
       HasRenderedNonAnonymousDescendantsWithHeight(&layout_object)) {
     return AdjustBlockFlowPositionToInline(position.GetPosition(),
-                                           recursion_depth);
+                                           recursion_depth, rule);
   }
 
   // TODO(crbug.com/567964): Change the second operand to DCHECK once fixed.
@@ -264,7 +275,7 @@ bool NeedsLineEndAdjustment(
   const LayoutObject& layout_object = *position.AnchorNode()->GetLayoutObject();
   if (!layout_object.IsText())
     return false;
-  const LayoutText& layout_text = ToLayoutText(layout_object);
+  const auto& layout_text = To<LayoutText>(layout_object);
   if (layout_text.IsBR())
     return position.IsAfterAnchor();
   // For normal text nodes.
@@ -303,8 +314,8 @@ InlineBoxPosition NextLinePositionOf(const LayoutText& layout_text) {
 template <typename Strategy>
 InlineBoxPosition ComputeInlineBoxPositionForLineEnd(
     const PositionWithAffinityTemplate<Strategy>& adjusted) {
-  const LayoutText& layout_text = ToLayoutText(
-      *adjusted.GetPosition().AnchorNode()->GetLayoutObject());
+  const auto& layout_text =
+      To<LayoutText>(*adjusted.GetPosition().AnchorNode()->GetLayoutObject());
   const InlineBoxPosition next_line_position = NextLinePositionOf(layout_text);
   if (next_line_position.inline_box)
     return next_line_position;
@@ -324,20 +335,23 @@ InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPositionAlgorithm(
   const PositionTemplate<Strategy>& position = adjusted.GetPosition();
   DCHECK(!position.AnchorNode()->IsShadowRoot()) << adjusted;
   DCHECK(position.AnchorNode()->GetLayoutObject()) << adjusted;
-  const LayoutObject& layout_object = *position.AnchorNode()->GetLayoutObject();
+  LayoutObject& layout_object = *position.AnchorNode()->GetLayoutObject();
   const int caret_offset = position.ComputeEditingOffset();
-  const int round_offset =
-      std::min(caret_offset, layout_object.CaretMaxOffset());
 
   if (layout_object.IsText()) {
     // TODO(yoichio): Consider |ToLayoutText(layout_object)->TextStartOffset()|
     // for first-letter tested with LocalCaretRectTest::FloatFirstLetter.
-    return ComputeInlineBoxPositionForTextNode(
-        &ToLayoutText(layout_object), round_offset, adjusted.Affinity());
+    const LayoutText& layout_text = To<LayoutText>(layout_object);
+    const int round_offset =
+        std::min(caret_offset, layout_text.CaretMaxOffset());
+    return ComputeInlineBoxPositionForTextNode(&layout_text, round_offset,
+                                               adjusted.Affinity());
   }
 
   DCHECK(layout_object.IsAtomicInlineLevel());
   DCHECK(layout_object.IsInline());
+  const int round_offset =
+      std::min(caret_offset, LineLayoutItem(&layout_object).CaretMaxOffset());
   return ComputeInlineBoxPositionForAtomicInline(&layout_object, round_offset);
 }
 
@@ -366,26 +380,16 @@ InlineBoxPosition ComputeInlineBoxPosition(
   return ComputeInlineBoxPositionTemplate<EditingInFlatTreeStrategy>(position);
 }
 
-InlineBoxPosition ComputeInlineBoxPosition(const VisiblePosition& position) {
-  DCHECK(position.IsValid()) << position;
-  return ComputeInlineBoxPosition(position.ToPositionWithAffinity());
-}
-
 PositionWithAffinity ComputeInlineAdjustedPosition(
-    const PositionWithAffinity& position) {
-  return ComputeInlineAdjustedPositionAlgorithm(position, 0);
+    const PositionWithAffinity& position,
+    EditingBoundaryCrossingRule rule) {
+  return ComputeInlineAdjustedPositionAlgorithm(position, 0, rule);
 }
 
 PositionInFlatTreeWithAffinity ComputeInlineAdjustedPosition(
-    const PositionInFlatTreeWithAffinity& position) {
-  return ComputeInlineAdjustedPositionAlgorithm(position, 0);
-}
-
-PositionWithAffinity ComputeInlineAdjustedPosition(
-    const VisiblePosition& position) {
-  DCHECK(position.IsValid()) << position;
-  return ComputeInlineAdjustedPositionAlgorithm(
-      position.ToPositionWithAffinity(), 0);
+    const PositionInFlatTreeWithAffinity& position,
+    EditingBoundaryCrossingRule rule) {
+  return ComputeInlineAdjustedPositionAlgorithm(position, 0, rule);
 }
 
 InlineBoxPosition ComputeInlineBoxPositionForInlineAdjustedPosition(

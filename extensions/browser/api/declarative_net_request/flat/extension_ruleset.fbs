@@ -10,9 +10,23 @@ include "components/url_pattern_index/flat/url_pattern_index.fbs";
 
 namespace extensions.declarative_net_request.flat;
 
+/// The type of an action. Corresponds to
+/// extensions::api::declarative_net_request::RuleActionType.
+enum ActionType : ubyte {
+  block,
+  allow,
+  redirect,
+  upgrade_scheme,
+  modify_headers,
+  allow_all_requests,
+  /// Number of actions. Must be the last entry.
+  count
+}
+
 table QueryKeyValue {
   key : string (required);
   value : string (required);
+  replace_only: bool = false;
 }
 
 table UrlTransform {
@@ -52,46 +66,68 @@ table UrlRuleMetadata {
   /// ID of the UrlRule for which this metadata is stored.
   id : uint (key);
 
+  /// Action type for this rule.
+  action : ActionType;
+
   /// Redirect url for this rule. Should represent a valid GURL. At most one of
   /// |redirect_url| and |transform| should be specified for redirect rules.
   redirect_url : string;
 
   /// UrlTransform for this rule.
   transform : UrlTransform;
+
+  /// A list of ModifyHeaderInfo, for both request and response headers. Valid
+  /// for "modifyHeaders" rules.
+  request_headers: [ModifyHeaderInfo];
+  response_headers: [ModifyHeaderInfo];
 }
 
-/// This provides a mapping from an action to its index within the |index_list|
-/// vector.
-/// TODO(crbug.com/1017868): This should be unified with ActionType once generic
-/// priorities are implemented.
-enum ActionIndex : ubyte {
-  block = 0,
-  allow,
-  redirect,
-  upgrade_scheme,
-  remove_cookie_header,
-  remove_referer_header,
-  remove_set_cookie_header,
-  /// Number of actions. Must be the last entry.
+// Extension embedder conditions for a flat::UrlRule. This is stored as a nested
+// flatbuffer in `flat::UrlRule::embedder_conditions`. The constructed
+// flatbuffer must use `kEmbedderConditionsBufferIdentifier` as the file
+// identifier.
+table EmbedderConditions {
+  // Sorted list of tab IDs to include/exclude.
+  tab_ids_included : [int];
+  tab_ids_excluded : [int];
+}
+
+/// This provides a mapping from an index type to its index within
+/// the |index_list| vector.
+enum IndexType : ubyte {
+  /// Index for rules that are evaluated during the onBeforeRequest stage of a
+  /// request, excluding allowAllRequests rules.
+  before_request_except_allow_all_requests = 0,
+
+  /// Index for allowAllRequests rule. We have a separate index for these rules
+  /// since they need to be evaluated separately when a navigation commits.
+  allow_all_requests,
+
+  modify_headers,
+
+  /// Number of indices. Must be the last entry.
   count
 }
 
-/// The type of an action. Corresponds to
-/// extensions::api::declarative_net_request::RuleActionType.
-enum ActionType : ubyte {
-  block,
-  allow,
-  redirect,
-  upgrade_scheme,
-  remove_headers
+/// The type of header operation for modifyHeaders rules. Corresponds to
+/// extensions::api::declarative_net_request::HeaderOperation.
+enum HeaderOperation : ubyte {
+  append,
+  set,
+  remove
 }
 
-/// The type of header to remove. Corresponds to
-/// extensions::api::declarative_net_request::RemoveHeaderType.
-enum RemoveHeaderType : ubyte (bit_flags) {
-  cookie,
-  referer,
-  set_cookie
+/// Describes the header to be modified and operation to be performed on it.
+/// Corresponds to extensions::api::declarative_net_request::ModifyHeaderInfo.
+table ModifyHeaderInfo {
+  operation: HeaderOperation;
+  /// The name the header to be modified. Since header names are
+  /// case-insensitive, the header name is normalized by converting it to
+  /// lowercase.
+  header: string;
+  /// The value of the header to be set/appended. Should be specified only if
+  /// |operation| is append or set.
+  value: string;
 }
 
 /// Completely represents a rule with a regex filter.
@@ -100,10 +136,10 @@ table RegexRule {
   url_rule: url_pattern_index.flat.UrlRule;
 
   /// The action to take.
+  // TODO(tbodt): this is duplicated in the UrlRuleMetadata. We should either
+  // use the action type in the metadata or not use UrlRuleMetadata at all for
+  // regex rules.
   action_type: ActionType;
-
-  /// The headers to be removed. Mask of RemoveHeaderType.
-  remove_headers_mask: ubyte;
 
   /// The regex substitution pattern for this rule if specified.
   regex_substitution: string;
@@ -112,8 +148,8 @@ table RegexRule {
 /// The top-level data structure used to store extensions URL rules for the
 /// Declarative Net Request API.
 table ExtensionIndexedRuleset {
-  /// Vector of UrlPatternIndex for different action types. This will consist
-  /// of ActionIndex_count indices.
+  /// Vector of UrlPatternIndex. This will consist of IndexType_count
+  /// indices.
   index_list : [url_pattern_index.flat.UrlPatternIndex];
 
   // Regex rules are not matched by UrlPatternIndex and so we don't build an
@@ -121,7 +157,6 @@ table ExtensionIndexedRuleset {
   regex_rules: [RegexRule];
 
   /// Extension related metadata. Sorted by id, to support fast lookup.
-  /// Currently this is only used for redirect rules.
   extension_metadata : [UrlRuleMetadata];
 }
 

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests co-existence of multiple DevTools extensions\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
 
   const tests = [
     function extension_testCreatePanel(nextTest) {

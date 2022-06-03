@@ -26,6 +26,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,48 +55,48 @@ const char kStartupUrl2[] = "http://awesome-start-page.com";
 
 // Extension manifests to override settings.
 const char kManifestNoOverride[] =
-    "{"
-    "  'name': 'Safe Extension',"
-    "  'version': '1',"
-    "  'manifest_version': 2"
-    "}";
+    R"({
+         "name": "Safe Extension",
+         "version": "1",
+         "manifest_version": 2
+       })";
 
 const char kManifestToOverrideHomepage[] =
-    "{"
-    "  'name': 'Homepage Extension',"
-    "  'version': '1',"
-    "  'manifest_version': 2,"
-    "  'chrome_settings_overrides' : {"
-    "    'homepage': '%s'"
-    "  }"
-    "}";
+    R"({
+         "name": "Homepage Extension",
+         "version": "1",
+         "manifest_version": 2,
+         "chrome_settings_overrides" : {
+           "homepage": "%s"
+         }
+       })";
 
 const char kManifestToOverrideSearch[] =
-    "{"
-    "  'name': 'Search Extension',"
-    "  'version': '0.1',"
-    "  'manifest_version': 2,"
-    "  'chrome_settings_overrides': {"
-    "    'search_provider': {"
-    "        'name': 'name',"
-    "        'keyword': 'keyword',"
-    "        'search_url': '%s',"
-    "        'favicon_url': 'http://someplace.com/favicon.ico',"
-    "        'encoding': 'UTF-8',"
-    "        'is_default': true"
-    "    }"
-    "  }"
-    "}";
+    R"({
+         "name": "Search Extension",
+         "version": "0.1",
+         "manifest_version": 2,
+         "chrome_settings_overrides": {
+           "search_provider": {
+              "name": "name",
+              "keyword": "keyword",
+              "search_url": "%s",
+              "favicon_url": "http://someplace.com/favicon.ico",
+              "encoding": "UTF-8",
+              "is_default": true
+           }
+         }
+       })";
 
 const char kManifestToOverrideStartupUrls[] =
-    "{"
-    "  'name': 'Startup URLs Extension',"
-    "  'version': '1',"
-    "  'manifest_version': 2,"
-    "  'chrome_settings_overrides' : {"
-    "    'startup_pages': ['%s']"
-    "  }"
-    "}";
+    R"({
+         "name": "Startup URLs Extension",
+         "version": "1",
+         "manifest_version": 2,
+         "chrome_settings_overrides" : {
+           "startup_pages": ["%s"]
+         }
+       })";
 
 class SettingsResetPromptModelBrowserTest
     : public extensions::ExtensionBrowserTest {
@@ -124,8 +125,8 @@ class SettingsResetPromptModelBrowserTest
     ASSERT_TRUE(template_url_service);
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("default"));
-    data.SetKeyword(base::ASCIIToUTF16("default"));
+    data.SetShortName(u"default");
+    data.SetKeyword(u"default");
     data.SetURL(kDefaultSearchUrl);
 
     TemplateURL* template_url =
@@ -174,7 +175,7 @@ class SettingsResetPromptModelBrowserTest
     // Ensure that the startup url seen in the prefs is same as |startup_url|.
     const base::ListValue* url_list =
         GetPrefs()->GetList(prefs::kURLsToRestoreOnStartup);
-    ASSERT_EQ(url_list->GetSize(), 1U);
+    ASSERT_EQ(url_list->GetList().size(), 1U);
     std::string url_text;
     ASSERT_TRUE(url_list->GetString(0, &url_text));
     ASSERT_EQ(GURL(url_text), GURL(startup_url));
@@ -183,7 +184,7 @@ class SettingsResetPromptModelBrowserTest
   void LoadManifest(const std::string& manifest,
                     const Extension** out_extension) {
     extensions::TestExtensionDir extension_dir;
-    extension_dir.WriteManifestWithSingleQuotes(manifest);
+    extension_dir.WriteManifest(manifest);
     *out_extension = LoadExtension(extension_dir.UnpackedPath());
     ASSERT_TRUE(*out_extension);
   }

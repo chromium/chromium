@@ -1,9 +1,0 @@
-Tests that breadcrumbs are updated upon involved element's attribute changes in the Elements panel.
-
-Original breadcrumb:
-html > body > div.firstClass > div#target
-After class change:
-html > body > div.anotherClass > div#target
-After class removal:
-html > body > div > div#target
-

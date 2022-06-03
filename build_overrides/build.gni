@@ -12,51 +12,76 @@ import("//build/config/gclient_args.gni")
 # Some non-Chromium builds don't support building java targets.
 enable_java_templates = true
 
-# Some non-Chromium builds don't use Chromium's third_party/binutils.
-linux_use_bundled_binutils_override = true
-
-# Allows different projects to specify their own suppressions and blacklist
-# files for sanitizer tools.
-# asan_suppressions_file = "path/to/asan_suppressions.cc"
-# asan_blacklist_path = "path/to/asan/blacklist.txt"
-# asan_win_blacklist_path = "path/to/asan/blacklist_win.txt"
-# lsan_suppressions_file = "path/to/lsan_suppressions.cc"
-# tsan_suppressions_file = "path/to/tsan_suppressions.cc"
-# tsan_blacklist_path = "path/to/tsan/ignores.txt"
-# msan_blacklist_path = "path/to/msan/blacklist.txt"
-# ubsan_blacklist_path = "path/to/ubsan/blacklist.txt"
-# ubsan_vptr_blacklist_path = "path/to/ubsan/vptr_blacklist.txt"
-# ubsan_security_blacklist_path = "path/to/ubsan/security_blacklist.txt"
-# cfi_blacklist_path = "path/to/cfi/blacklist.txt"
-
-# Uncomment these to specify a different lint suppressions file for android
-# lint_suppressions_file = path/to/your/suppressions/file/suppressions.xml
-
+# Features used by //base/trace_event and //services/tracing.
 declare_args() {
-  # Android 32-bit non-component, non-clang builds cannot have symbol_level=2
-  # due to 4GiB file size limit, see https://crbug.com/648948.
-  # Set this flag to true to skip the assertion.
-  ignore_elf32_limitations = false
+  # Tracing support requires //third_party/perfetto, which is not available in
+  # libchrome (CrOS's version of //base). This flag can disable tracing support
+  # altogether, in which case all tracing instrumentation in //base becomes a
+  # no-op.
+  # TODO(crbug/1065905): Add dependency on perfetto to support typed events.
+  enable_base_tracing = true
 
-  # Use the system install of Xcode for tools like ibtool, libtool, etc.
-  # This does not affect the compiler. When this variable is false, targets will
-  # instead use a hermetic install of Xcode. [The hermetic install can be
-  # obtained with gclient sync after setting the environment variable
-  # FORCE_MAC_TOOLCHAIN for target_os mac only].
-  use_system_xcode = ""
+  # Switches the TRACE_EVENT instrumentation from base's TraceLog implementation
+  # to //third_party/perfetto's client library. Not implemented yet, currently a
+  # no-op to set up trybot infrastructure.
+  # TODO(crbug/1006769): Switch to perfetto's client library.
+  use_perfetto_client_library = false
+
+  # Limits the defined //third_party/android_deps targets to only "buildCompile"
+  # and "buildCompileNoDeps" targets. This is useful for third-party
+  # repositories which do not use JUnit tests. For instance,
+  # limit_android_deps == true removes "gn gen" requirement for
+  # //third_party/robolectric .
+  limit_android_deps = false
+
+  # Allows googletest to pretty-print various absl types.  Disabled for nacl due
+  # to lack of toolchain support.
+  gtest_enable_absl_printers = !is_nacl
 }
 
-if (host_os == "mac" && use_system_xcode == "") {
-  _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
-                        [ target_os ],
-                        "value")
+# Allows different projects to specify their own suppression/ignore lists for
+# sanitizer tools.
+# asan_suppressions_file = "path/to/asan_suppressions.cc"
+# asan_win_ignorelist_path = "path/to/asan/blocklist_win.txt"
+# lsan_suppressions_file = "path/to/lsan_suppressions.cc"
+# tsan_suppressions_file = "path/to/tsan_suppressions.cc"
+# tsan_ignorelist_path = "path/to/tsan/ignores.txt"
+# msan_ignorelist_path = "path/to/msan/ignorelist.txt"
+# ubsan_ignorelist_path = "path/to/ubsan/ignorelist.txt"
+# ubsan_vptr_ignorelist_path = "path/to/ubsan/vptr_ignorelist.txt"
+# ubsan_security_ignorelist_path = "path/to/ubsan/security_ignorelist.txt"
+# cfi_ignorelist_path = "path/to/cfi/ignores.txt"
 
-  assert(_result != 2,
-         "Do not allow building targets with the default" +
-             "hermetic toolchain if the minimum OS version is not met.")
-  assert(_result != 3,
-         "iOS does not support building with a hermetic toolchain. " +
-             "Please install Xcode.")
+if (host_os == "mac" || is_apple) {
+  # Needed for is_apple when targeting macOS or iOS, independent of host.
+  # Needed for host_os=="mac" for running host tool such as gperf in blink
+  # even when targeting e.g. Windows.
+  # TODO(thakis): See TODO in scripts.gni -- this should really only be needed
+  # if is_apple, independent of host_os.
+  declare_args() {
+    # Use the system install of Xcode for tools like ibtool, libtool, etc.
+    # This does not affect the compiler. When this variable is false, targets
+    # will instead use a hermetic install of Xcode. [The hermetic install can
+    # be obtained with gclient sync after setting the environment variable
+    # FORCE_MAC_TOOLCHAIN for target_os mac only].
+    use_system_xcode = ""
+  }
 
-  use_system_xcode = _result != 1
+  if (use_system_xcode == "") {
+    _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
+                          [ current_os ],
+                          "value")
+
+    assert(_result != 2,
+           "Do not allow building targets with the default" +
+               "hermetic toolchain if the minimum OS version is not met.")
+    assert(_result != 3,
+           "iOS does not support building with a hermetic toolchain. " +
+               "Please install Xcode.")
+
+    use_system_xcode = _result != 1
+  }
+
+  assert(current_os != "ios" || use_system_xcode)
+  assert(host_os == "mac" || !use_system_xcode)
 }

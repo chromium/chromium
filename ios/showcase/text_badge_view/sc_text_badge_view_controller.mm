@@ -16,6 +16,7 @@
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor whiteColor];
   TextBadgeView* textBadge = [[TextBadgeView alloc] initWithText:@"TEXT"];
+  textBadge.accessibilityIdentifier = @"TEXT";
   [textBadge setTranslatesAutoresizingMaskIntoConstraints:NO];
   [self.view addSubview:textBadge];
   // Center badge on screen.

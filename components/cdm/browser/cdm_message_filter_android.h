@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CDM_BROWSER_CDM_MESSAGE_FILTER_ANDROID_H_
 #define COMPONENTS_CDM_BROWSER_CDM_MESSAGE_FILTER_ANDROID_H_
 
-#include "base/macros.h"
 #include "content/public/browser/browser_message_filter.h"
 
 struct SupportedKeySystemRequest;
@@ -25,6 +24,9 @@ class CdmMessageFilterAndroid : public content::BrowserMessageFilter {
  public:
   CdmMessageFilterAndroid(bool can_persist_data,
                           bool force_to_support_secure_codecs);
+
+  CdmMessageFilterAndroid(const CdmMessageFilterAndroid&) = delete;
+  CdmMessageFilterAndroid& operator=(const CdmMessageFilterAndroid&) = delete;
 
  private:
   ~CdmMessageFilterAndroid() override;
@@ -52,8 +54,6 @@ class CdmMessageFilterAndroid : public content::BrowserMessageFilter {
   // platforms.
   // TODO(yucliu): Remove this and completely switch to the Clank model.
   const bool force_to_support_secure_codecs_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmMessageFilterAndroid);
 };
 
 }  // namespace cdm

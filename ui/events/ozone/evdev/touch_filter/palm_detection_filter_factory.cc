@@ -7,10 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/heuristic_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
@@ -40,14 +44,38 @@ std::vector<float> ParseRadiusPolynomial(const std::string& radius_string) {
   return return_value;
 }
 
-}  // namespace internal
-
-namespace {
 std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
                                             const std::string param_string) {
   if (!param_string.empty()) {
     return param_string;
   }
+
+  // look at the command line.
+  absl::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kOzoneNNPalmSwitchName));
+  if (ozone_switch_value != absl::nullopt && ozone_switch_value->is_dict()) {
+    std::string* switch_string_value =
+        ozone_switch_value->FindStringKey(kOzoneNNPalmRadiusPolynomialProperty);
+    if (switch_string_value != nullptr) {
+      return *switch_string_value;
+    }
+  }
+
+  // TODO(robsc): Remove this when comfortable.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // We should really only be running in chromeos anyway; We do a check here
+  // temporarily for hatch and reef.  These numbers should live in config on
+  // chromeos side but for now during experiment are hard-coded here.
+  // TODO(robsc): Investigate a better way of doing this configuration.
+  std::string release_board = base::SysInfo::GetLsbReleaseBoard();
+  if ("hatch" == release_board) {
+    return "0.1010944, 3.51837568";
+  } else if ("reef" == release_board) {
+    return "0.17889799, 4.22584412";
+  }
+#endif
+
   // Basking. Does not report vendor_id / product_id
   if (devinfo.name() == "Elan Touchscreen") {
     return "0.17889799,4.22584412";
@@ -56,7 +84,7 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   // By default, return the original.
   return param_string;
 }
-}  // namespace
+}  // namespace internal
 
 std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
     const EventDeviceInfo& devinfo,
@@ -64,10 +92,12 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
   if (base::FeatureList::IsEnabled(kEnableNeuralPalmDetectionFilter) &&
       NeuralStylusPalmDetectionFilter::
           CompatibleWithNeuralStylusPalmDetectionFilter(devinfo)) {
+    std::string polynomial_string = internal::FetchNeuralPalmRadiusPolynomial(
+        devinfo, kNeuralPalmRadiusPolynomial.Get());
+    VLOG(1) << "Will attempt to use radius polynomial: " << polynomial_string;
     std::vector<float> radius_polynomial =
-        internal::ParseRadiusPolynomial(FetchNeuralPalmRadiusPolynomial(
-            devinfo, kNeuralPalmRadiusPolynomial.Get()));
-    // Theres only one model right now.
+        internal::ParseRadiusPolynomial(polynomial_string);
+    // There's only one model right now.
     std::unique_ptr<NeuralStylusPalmDetectionFilterModel> model =
         std::make_unique<OneDeviceTrainNeuralStylusPalmDetectionFilterModel>(
             radius_polynomial);
@@ -75,11 +105,13 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
         devinfo, std::move(model), shared_palm_state);
   }
 
-  if (base::FeatureList::IsEnabled(kEnableHeuristicPalmDetectionFilter)) {
+  if (base::FeatureList::IsEnabled(kEnableHeuristicPalmDetectionFilter) &&
+      HeuristicStylusPalmDetectionFilter::
+          CompatibleWithHeuristicStylusPalmDetectionFilter(devinfo)) {
     const base::TimeDelta hold_time =
-        base::TimeDelta::FromSecondsD(kHeuristicHoldThresholdSeconds.Get());
+        base::Seconds(kHeuristicHoldThresholdSeconds.Get());
     const base::TimeDelta cancel_time =
-        base::TimeDelta::FromSecondsD(kHeuristicCancelThresholdSeconds.Get());
+        base::Seconds(kHeuristicCancelThresholdSeconds.Get());
     const int stroke_count = kHeuristicStrokeCount.Get();
     return std::make_unique<HeuristicStylusPalmDetectionFilter>(
         shared_palm_state, stroke_count, hold_time, cancel_time);

@@ -30,6 +30,7 @@ window.onload = () => {
 
     await mouseMoveTo(x, y);
     assert_equals(window.scrollY, 0, "Vertical thumb drag beyond the track and back should not cause a scroll.");
+    await mouseUpAt(x, y);
   }, "Test thumb drags beyond scrollbar track.");
 }
 </script>

@@ -626,61 +626,6 @@ _STATE_INFO = {
       },
     ],
   },
-  'MatrixValuesCHROMIUM': {
-    'type': 'NamedParameter',
-    'func': 'MatrixLoadfEXT',
-    'states': [
-      { 'enum': 'GL_PATH_MODELVIEW_MATRIX_CHROMIUM',
-        'enum_set': 'GL_PATH_MODELVIEW_CHROMIUM',
-        'name': 'modelview_matrix',
-        'type': 'GLfloat',
-        'default': [
-          '1.0f', '0.0f','0.0f','0.0f',
-          '0.0f', '1.0f','0.0f','0.0f',
-          '0.0f', '0.0f','1.0f','0.0f',
-          '0.0f', '0.0f','0.0f','1.0f',
-        ],
-        'extension_flag': 'chromium_path_rendering',
-      },
-      { 'enum': 'GL_PATH_PROJECTION_MATRIX_CHROMIUM',
-        'enum_set': 'GL_PATH_PROJECTION_CHROMIUM',
-        'name': 'projection_matrix',
-        'type': 'GLfloat',
-        'default': [
-          '1.0f', '0.0f','0.0f','0.0f',
-          '0.0f', '1.0f','0.0f','0.0f',
-          '0.0f', '0.0f','1.0f','0.0f',
-          '0.0f', '0.0f','0.0f','1.0f',
-        ],
-        'extension_flag': 'chromium_path_rendering',
-      },
-    ],
-  },
-  'PathStencilFuncCHROMIUM': {
-    'type': 'Normal',
-    'func': 'PathStencilFuncNV',
-    'extension_flag': 'chromium_path_rendering',
-    'states': [
-      {
-        'name': 'stencil_path_func',
-        'type': 'GLenum',
-        'enum': 'GL_PATH_STENCIL_FUNC_CHROMIUM',
-        'default': 'GL_ALWAYS',
-       },
-      {
-        'name': 'stencil_path_ref',
-        'type': 'GLint',
-        'enum': 'GL_PATH_STENCIL_REF_CHROMIUM',
-        'default': '0',
-       },
-      {
-        'name': 'stencil_path_mask',
-        'type': 'GLuint',
-        'enum': 'GL_PATH_STENCIL_VALUE_MASK_CHROMIUM',
-        'default': '0xFFFFFFFFU',
-      },
-    ],
-  },
   'WindowRectanglesEXT': {
     'type': 'Normal',
     'func': 'WindowRectanglesEXT',
@@ -1182,7 +1127,7 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
           return error::kUnknownCommand;
         """)
     if func.IsES31():
-      f.write("""if (!feature_info_->IsWebGL2ComputeContext())
+      f.write("""if (!feature_info_->IsES31ForTestingContext())
           return error::kUnknownCommand;
         """)
     if func.GetCmdArgs():

@@ -1,0 +1,1 @@
+checkBox name='Flash the screen 1 times.' nameFrom=relatedElement

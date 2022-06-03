@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/ntp_snippets/remote/proto/ntp_snippets.pb.h"
 
@@ -31,9 +32,8 @@ RemoteSuggestionsDatabase::RemoteSuggestionsDatabase(
     : RemoteSuggestionsDatabase(
           proto_database_provider,
           database_dir,
-          base::CreateSequencedTaskRunner(
-              {base::ThreadPool(), base::MayBlock(),
-               base::TaskPriority::BEST_EFFORT,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
 
 RemoteSuggestionsDatabase::RemoteSuggestionsDatabase(
@@ -82,7 +82,7 @@ bool RemoteSuggestionsDatabase::IsErrorState() const {
 }
 
 void RemoteSuggestionsDatabase::SetErrorCallback(
-    const base::Closure& error_callback) {
+    const base::RepeatingClosure& error_callback) {
   error_callback_ = error_callback;
 }
 

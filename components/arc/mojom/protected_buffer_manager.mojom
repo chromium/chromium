@@ -6,6 +6,7 @@
 // src/components/arc/mojom/protected_buffer_manager.mojom
 
 module arc.mojom;
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // This interface is exposed by the GPU process for translating dummy handles
 // for secure buffers into a usable shared memory buffer handle. The output of
@@ -15,6 +16,8 @@ module arc.mojom;
 // because of incompatibilities between Chrome and Chrome OS mojo versions
 // regarding the structure used for sending shared memory handles.
 // Next Method ID: 1
+[Stable, Uuid="560fada2-b6b8-4b06-a337-188381028495",
+ ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface ProtectedBufferManager {
   GetProtectedSharedMemoryFromHandle@0(handle dummy_handle)
       => (handle shared_memory_handle);

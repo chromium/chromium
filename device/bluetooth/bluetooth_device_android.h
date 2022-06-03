@@ -15,8 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+
+class BluetoothUUID;
 
 // BluetoothDeviceAndroid along with its owned Java class
 // org.chromium.device.bluetooth.ChromeBluetoothDevice implement
@@ -34,6 +37,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
       const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper);  // Java Type: bluetoothDeviceWrapper
 
+  BluetoothDeviceAndroid(const BluetoothDeviceAndroid&) = delete;
+  BluetoothDeviceAndroid& operator=(const BluetoothDeviceAndroid&) = delete;
+
   ~BluetoothDeviceAndroid() override;
 
   // Returns the associated ChromeBluetoothDevice Java object.
@@ -47,12 +53,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   // BluetoothDevice:
   uint32_t GetBluetoothClass() const override;
   std::string GetAddress() const override;
+  AddressType GetAddressType() const override;
   VendorIDSource GetVendorIDSource() const override;
   uint16_t GetVendorID() const override;
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
@@ -61,30 +68,28 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
-  void GetConnectionInfo(const ConnectionInfoCallback& callback) override;
+  void GetConnectionInfo(ConnectionInfoCallback callback) override;
   void SetConnectionLatency(ConnectionLatency connection_latency,
-                            const base::Closure& callback,
-                            const ErrorCallback& error_callback) override;
-  void Connect(device::BluetoothDevice::PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               ConnectErrorCallback error_callback) override;
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) override;
+  void Connect(PairingDelegate* pairing_delegate,
+               ConnectCallback callback) override;
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
   void RejectPairing() override;
   void CancelPairing() override;
-  void Disconnect(const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
-  void Forget(const base::Closure& callback,
-              const ErrorCallback& error_callback) override;
-  void ConnectToService(
-      const device::BluetoothUUID& uuid,
-      const ConnectToServiceCallback& callback,
-      const ConnectToServiceErrorCallback& error_callback) override;
+  void Disconnect(base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
+  void Forget(base::OnceClosure callback,
+              ErrorCallback error_callback) override;
+  void ConnectToService(const device::BluetoothUUID& uuid,
+                        ConnectToServiceCallback callback,
+                        ConnectToServiceErrorCallback error_callback) override;
   void ConnectToServiceInsecurely(
       const device::BluetoothUUID& uuid,
-      const ConnectToServiceCallback& callback,
-      const ConnectToServiceErrorCallback& error_callback) override;
+      ConnectToServiceCallback callback,
+      ConnectToServiceErrorCallback error_callback) override;
 
   // Callback indicating when GATT client has connected/disconnected.
   // See android.bluetooth.BluetoothGattCallback.onConnectionStateChange.
@@ -113,15 +118,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter);
 
   // BluetoothDevice:
-  void CreateGattConnectionImpl() override;
+  void CreateGattConnectionImpl(
+      absl::optional<device::BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
   // Java object org.chromium.device.bluetooth.ChromeBluetoothDevice.
   base::android::ScopedJavaGlobalRef<jobject> j_device_;
 
   bool gatt_connected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceAndroid);
 };
 
 }  // namespace device

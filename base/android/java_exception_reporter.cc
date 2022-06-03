@@ -9,7 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/base_jni_headers/JavaExceptionReporter_jni.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 
@@ -32,6 +32,11 @@ LazyInstance<JavaExceptionFilter>::Leaky g_java_exception_filter;
 
 void InitJavaExceptionReporter() {
   JNIEnv* env = base::android::AttachCurrentThread();
+  // Since JavaExceptionReporter#installHandler will chain through to the
+  // default handler, the default handler should cause a crash as if it's a
+  // normal java exception. Prefer to crash the browser process in java rather
+  // than native since for webview, the embedding app may have installed its
+  // own JavaExceptionReporter handler and would expect it to be called.
   constexpr bool crash_after_report = false;
   SetJavaExceptionFilter(
       base::BindRepeating([](const JavaRef<jthrowable>&) { return true; }));
@@ -56,8 +61,11 @@ void SetJavaExceptionCallback(void (*callback)(const char*)) {
 }
 
 void SetJavaException(const char* exception) {
-  DCHECK(g_java_exception_callback);
-  g_java_exception_callback(exception);
+  // No need to print exception because they are already logged via
+  // env->ExceptionDescribe() within jni_android.cc.
+  if (g_java_exception_callback) {
+    g_java_exception_callback(exception);
+  }
 }
 
 void JNI_JavaExceptionReporter_ReportJavaException(

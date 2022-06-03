@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -12,9 +12,9 @@
 namespace extensions {
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
-  autofill::PasswordForm html_form;
-  html_form.origin = GURL("http://example.com/LoginAuth");
-  html_form.signon_realm = html_form.origin.GetOrigin().spec();
+  password_manager::PasswordForm html_form;
+  html_form.url = GURL("http://example.com/LoginAuth");
+  html_form.signon_realm = html_form.url.DeprecatedGetOriginAsURL().spec();
 
   api::passwords_private::UrlCollection html_urls =
       CreateUrlCollectionFromForm(html_form);
@@ -24,9 +24,9 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
 }
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromFederatedForm) {
-  autofill::PasswordForm federated_form;
+  password_manager::PasswordForm federated_form;
   federated_form.signon_realm = "federation://example.com/google.com";
-  federated_form.origin = GURL("https://example.com/");
+  federated_form.url = GURL("https://example.com/");
   federated_form.federation_origin =
       url::Origin::Create(GURL("https://google.com/"));
 
@@ -38,7 +38,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromFederatedForm) {
 }
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithoutDisplayName) {
-  autofill::PasswordForm android_form;
+  password_manager::PasswordForm android_form;
   android_form.signon_realm = "android://example@com.example.android";
   android_form.app_display_name.clear();
 
@@ -51,7 +51,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithoutDisplayName) {
 }
 
 TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
-  autofill::PasswordForm android_form;
+  password_manager::PasswordForm android_form;
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name = "Example Android App";
 
@@ -63,19 +63,28 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
             android_urls.link);
 }
 
-TEST(SortKeyIdGeneratorTest, GenerateIds) {
+TEST(CreateUrlCollectionFromGURLTest, UrlsFromGURL) {
+  GURL url = GURL("https://example.com/login");
+  api::passwords_private::UrlCollection urls = CreateUrlCollectionFromGURL(url);
+
+  EXPECT_EQ(urls.shown, "example.com");
+  EXPECT_EQ(urls.origin, "https://example.com/");
+  EXPECT_EQ(urls.link, "https://example.com/login");
+}
+
+TEST(IdGeneratorTest, GenerateIds) {
   using ::testing::Pointee;
   using ::testing::Eq;
 
-  SortKeyIdGenerator id_generator;
+  IdGenerator<std::string> id_generator;
   int foo_id = id_generator.GenerateId("foo");
 
   // Check idempotence.
   EXPECT_EQ(foo_id, id_generator.GenerateId("foo"));
 
-  // Check TryGetSortKey(id) == s iff id == GenerateId(*s).
-  EXPECT_THAT(id_generator.TryGetSortKey(foo_id), Pointee(Eq("foo")));
-  EXPECT_EQ(nullptr, id_generator.TryGetSortKey(foo_id + 1));
+  // Check TryGetKey(id) == s iff id == GenerateId(*s).
+  EXPECT_THAT(id_generator.TryGetKey(foo_id), Pointee(Eq("foo")));
+  EXPECT_EQ(nullptr, id_generator.TryGetKey(foo_id + 1));
 
   // Check that different sort keys result in different ids.
   int bar_id = id_generator.GenerateId("bar");
@@ -83,8 +92,8 @@ TEST(SortKeyIdGeneratorTest, GenerateIds) {
   EXPECT_NE(foo_id, bar_id);
   EXPECT_NE(bar_id, baz_id);
 
-  EXPECT_THAT(id_generator.TryGetSortKey(bar_id), Pointee(Eq("bar")));
-  EXPECT_THAT(id_generator.TryGetSortKey(baz_id), Pointee(Eq("baz")));
+  EXPECT_THAT(id_generator.TryGetKey(bar_id), Pointee(Eq("bar")));
+  EXPECT_THAT(id_generator.TryGetKey(baz_id), Pointee(Eq("baz")));
 }
 
 }  // namespace extensions

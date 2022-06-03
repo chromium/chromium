@@ -21,6 +21,9 @@
 				<string>IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT</string>
 				<string>IDS_IOS_SAFE_MODE_RELOAD_CHROME</string>
 				<string>IDS_IOS_SAFE_MODE_AW_SNAP</string>
+				<string>IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE</string>
+				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION</string>
+				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION</string>
 			</array>
 		</dict>
 		<dict>
@@ -28,6 +31,24 @@
 			<string>Intents.strings</string>
 			<key>strings</key>
 			<array>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_INCOGNITO_TITLE</string>
+					<key>output</key>
+					<string>LHJwpy</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_INCOGNITO_DESCRIPTION</string>
+					<key>output</key>
+					<string>dYRltF</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_INCOGNITO_PARAMETER_COMBINATION_TITLE</string>
+					<key>output</key>
+					<string>6TwrYB</string>
+				</dict>
 				<dict>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_SEARCH_IN_CHROME_DESCRIPTION</string>
@@ -45,6 +66,36 @@
 					<string>IDS_IOS_INTENTS_SEARCH_IN_CHROME_TITLE</string>
 					<key>output</key>
 					<string>Z6KvRw</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SEARCH_IN_CHROME_SUGGEST_TITLE</string>
+					<key>output</key>
+					<string>1Ukwhx</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SEARCH_IN_CHROME_PARAMETER_COMBINATION_TITLE</string>
+					<key>output</key>
+					<string>TqBLdA</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_PARAMETER_COMBINATION_TITLE</string>
+					<key>output</key>
+					<string>H6reDO</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_TITLE</string>
+					<key>output</key>
+					<string>ZVOUc7</string>
+				</dict>
+				<dict>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_IN_CHROME_DESCRIPTION</string>
+					<key>output</key>
+					<string>MpiRFx</string>
 				</dict>
 			</array>
 		</dict>
@@ -76,12 +127,6 @@
 					<string>IDS_IOS_MICROPHONE_USAGE_DESCRIPTION</string>
 					<key>output</key>
 					<string>NSMicrophoneUsageDescription</string>
-				</dict>
-				<dict>
-					<key>input</key>
-					<string>IDS_IOS_PHOTO_LIBRARY_USAGE_DESCRIPTION</string>
-					<key>output</key>
-					<string>NSPhotoLibraryUsageDescription</string>
 				</dict>
 				<dict>
 					<key>input</key>

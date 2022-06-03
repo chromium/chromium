@@ -1,9 +1,6 @@
 {
    "GUID": "guid",
-   "L2TPIPsec.ClientCertID": "",
-   "L2TPIPsec.ClientCertSlot": "",
    "L2TPIPsec.LCPEchoDisabled": "true",
-   "L2TPIPsec.PIN": "",
    "L2TPIPsec.Password": "some password",
    "L2TPIPsec.User": "some username",
    "L2TPIPsec.XauthPassword": "some xauth password",

@@ -4,7 +4,8 @@
 
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "ui/events/gesture_detection/motion_event.h"
 
 namespace ui {
@@ -112,12 +113,12 @@ GestureEventDataPacket GestureEventDataPacket::FromTouchTimeout(
 }
 
 void GestureEventDataPacket::Ack(bool event_consumed,
-                                 bool is_source_touch_event_set_non_blocking) {
+                                 bool is_source_touch_event_set_blocking) {
   DCHECK_EQ(static_cast<int>(ack_state_), static_cast<int>(AckState::PENDING));
   ack_state_ = event_consumed ? AckState::CONSUMED : AckState::UNCONSUMED;
   for (auto& gesture : gestures_.container()) {
-    gesture.details.set_is_source_touch_event_set_non_blocking(
-        is_source_touch_event_set_non_blocking);
+    gesture.details.set_is_source_touch_event_set_blocking(
+        is_source_touch_event_set_blocking);
   }
 }
 

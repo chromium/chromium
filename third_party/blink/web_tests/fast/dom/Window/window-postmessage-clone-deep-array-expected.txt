@@ -1,5 +1,4 @@
-CONSOLE ERROR: line 11: Uncaught RangeError: Maximum call stack size exceeded
 Tests that we support cloning deep(ish) arrays.
-
+FAIL: 'postMessage(deepArray)' should not throw but threw RangeError: Maximum call stack size exceeded
 PASS: eventData is done of type string
 

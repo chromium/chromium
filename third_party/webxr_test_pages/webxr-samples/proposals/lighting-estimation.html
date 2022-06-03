@@ -1,0 +1,244 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <meta http-equiv="origin-trial" data-expires="2021-02-16" content="AsJ99WEM5bgoOEDTva9eWNnhIwCkDnYPf2Mu0y/TGocIZSFVDzr6CLe4uqQajojLFmxFhfvyexBYUGVW5hWalwsAAABkeyJvcmlnaW4iOiJodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb206NDQzIiwiZmVhdHVyZSI6IldlYlhSTGlnaHRFc3RpbWF0aW9uIiwiZXhwaXJ5IjoxNjEzNDk4MzgwfQ==">
+    <link href='../css/common.css' rel='stylesheet'>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+    <script src="https://willcassella.github.io/three.js/build/three.min.js"></script>
+
+    <title>Lighting estimation</title>
+
+    <style>
+      body { margin: 0; }
+      canvas { width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Lighting Estimation</summary>
+        <p>
+          This sample demonstrates use of a non-exclusive XRSession to present
+          Augmented Reality content.
+          <a class="back" href="./index.html">Back</a>
+          <hr/>
+          <input id="useRGBA" type="checkbox">
+          <label for="useRGBA">Use RGBA Half Float Texture Format</label><br/>
+        </p>
+      </details>
+    </header>
+
+    <script>
+      function init() {
+        const ctx = {};
+
+        // Create an xrCompatible rendering context
+        const canvas = document.createElement('canvas');
+        ctx.gl = canvas.getContext('webgl2', { xrCompatible: true });
+        if (!ctx.gl) {
+          console.error('This browser does not support WebGL2');
+          return;
+        }
+        ctx.gl.getExtension('EXT_sRGB');
+        ctx.gl.getExtension('OES_texture_half_float');
+
+        // Create a Three.js renderer
+        ctx.renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          context: ctx.gl,
+        });
+
+        // Construct a Three.JS scene
+        ctx.scene = new THREE.Scene();
+
+        // Set up the lighting estimation environment map, and then setup THREE
+        // to accept a webgl texture.
+        ctx.cubeTarget = new THREE.WebGLCubeRenderTarget(16);
+        ctx.threeEnvMap = ctx.cubeTarget.texture;
+        ctx.scene.environment = ctx.threeEnvMap;
+        let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
+        rendererProps.__webglInit = true;
+
+        // Set up the camera
+        ctx.camera = new THREE.Camera(); // WebXR gives us the projection matrix to use, so don't bother with PerspectiveCamera
+        ctx.scene.add(ctx.camera);
+
+        // Add a sphere
+        ctx.geometry = new THREE.SphereGeometry(0.2, 32, 32);
+        ctx.material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, metalness: 1.0, roughness: 0.0 });
+        ctx.sphere = new THREE.Mesh(ctx.geometry, ctx.material);
+        ctx.scene.add(ctx.sphere);
+        ctx.sphere.position.z = -1;
+        ctx.sphere.updateMatrix();
+
+        // Set up light source
+        ctx.light_probe = new THREE.LightProbe();
+        ctx.light_probe.intensity = 0;
+        ctx.scene.add(ctx.light_probe);
+
+        ctx.directional_light = new THREE.DirectionalLight();
+        ctx.directional_light.intensity = 0;
+        ctx.scene.add(ctx.directional_light);
+
+        ctx.xrButton = new XRDeviceButton({
+          onRequestSession: () => onRequestSession(ctx),
+          onEndSession: session => session.end(),
+          textEnterXRTitle: "START AR",
+          textXrNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT AR",
+          supportedSessionTypes: ['immersive-ar'],
+        });
+        document.querySelector('header').appendChild(ctx.xrButton.domElement);
+      }
+
+      function onRequestSession(ctx) {
+        navigator.xr.requestSession('immersive-ar', {requiredFeatures: ['local', 'light-estimation']}).then(session => {
+          session.addEventListener('end', () => onSessionEnded(ctx));
+
+          ctx.session = session;
+          ctx.xrButton.setSession(session);
+          ctx.glBinding = new XRWebGLBinding(session, ctx.gl);
+
+          session.updateRenderState({ baseLayer: new XRWebGLLayer(session, ctx.gl) });
+          session.requestReferenceSpace('local').then(refSpace => onReceivedReferenceSpace(ctx, refSpace));
+
+          if (document.getElementById('useRGBA').checked) {
+            session.requestLightProbe({reflectionFormat: "rgba16f"}).then((lightProbe) => {
+              onReceivedLightProbe(ctx, lightProbe);
+            }).catch(err => console.error(err));
+          } else {
+            session.requestLightProbe().then((lightProbe) => {
+              onReceivedLightProbe(ctx, lightProbe);
+            }).catch(err => console.error(err));
+          }
+
+          ctx.reflectionChanged = true;
+
+          session.requestAnimationFrame((t, frame) => update(ctx, t, frame));
+        });
+      }
+
+      function onReceivedLightProbe(ctx, lightProbe) {
+        ctx.xrLightProbe = lightProbe;
+        ctx.xrLightProbe.addEventListener('reflectionchange', () => onReflectionChanged(ctx));
+      }
+
+      function onReflectionChanged(ctx) {
+        ctx.reflectionChanged = true;
+      }
+
+      function onReceivedReferenceSpace(ctx, refSpace) {
+        ctx.referenceSpace = refSpace;
+      }
+
+      function onSessionEnded(ctx) {
+        ctx.renderer.setAnimationLoop(null);
+        ctx.xrButton.setSession(null);
+      }
+
+      function update(ctx, t, frame) {
+        // Loop
+        ctx.session.requestAnimationFrame((t, frame) => update(ctx, t, frame));
+
+        // Reset renderer state
+        ctx.renderer.state.reset();
+
+        // Update rendering parameters
+        const baseLayer = ctx.session.renderState.baseLayer;
+
+        ctx.renderer.setFramebuffer(baseLayer.framebuffer);
+        ctx.renderer.setSize(baseLayer.framebufferWidth, baseLayer.framebufferHeight);
+
+        // Update camera pose from reference space
+        if (ctx.referenceSpace) {
+          const pose = frame.getViewerPose(ctx.referenceSpace);
+          if (pose && pose.views.length > 0) {
+            const view = pose.views[0];
+
+            ctx.camera.matrix.fromArray(view.transform.matrix);
+            ctx.camera.updateTransforms();
+            ctx.camera.projectionMatrix.fromArray(view.projectionMatrix);
+          }
+        }
+
+        // Get ambient lighting estimation
+        if (ctx.xrLightProbe) {
+          const estimate = frame.getLightEstimate(ctx.xrLightProbe);
+
+          if (estimate) {
+            ctx.light_probe.sh.fromArray(estimate.sphericalHarmonicsCoefficients);
+            ctx.light_probe.intensity = 1;
+
+            const intensityScalar =
+              Math.max(1.0,
+              Math.max(estimate.primaryLightIntensity.x,
+              Math.max(estimate.primaryLightIntensity.y,
+                       estimate.primaryLightIntensity.z)));
+
+            ctx.directional_light.color.setRGB(
+              estimate.primaryLightIntensity.x / intensityScalar,
+              estimate.primaryLightIntensity.y / intensityScalar,
+              estimate.primaryLightIntensity.z / intensityScalar);
+
+            ctx.directional_light.intensity = intensityScalar;
+            ctx.directional_light.position.copy(estimate.primaryLightDirection);
+
+          } else {
+            console.log("light estimate not available");
+          }
+
+          if (ctx.reflectionChanged) {
+            const cubeMap = ctx.glBinding.getReflectionCubeMap(ctx.xrLightProbe);
+            if (cubeMap) {
+              let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
+              rendererProps.__webglTexture = cubeMap;
+            } else {
+              console.log("Cube map not available");
+            }
+            ctx.reflectionChanged = false;
+          }
+        } else {
+          console.log("Session light estimation not available");
+        }
+
+        // Render the scene
+        ctx.renderer.render(ctx.scene, ctx.camera);
+      }
+
+      init();
+    </script>
+  </body>
+</html>

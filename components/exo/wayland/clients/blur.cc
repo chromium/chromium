@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace exo {
@@ -71,9 +71,11 @@ void DrawContents(SkImage* background_grid_image,
                   base::TimeDelta elapsed_time,
                   SkCanvas* canvas) {
   // Draw background grid.
-  SkPaint paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImage(background_grid_image, 0, 0, &paint);
+  {
+    SkPaint paint;
+    paint.setBlendMode(SkBlendMode::kSrc);
+    canvas->drawImage(background_grid_image, 0, 0, SkSamplingOptions(), &paint);
+  }
 
   // Draw rotated rectangles.
   SkScalar rect_size =
@@ -131,8 +133,8 @@ void Blur::Run(double sigma_x,
   if (sigma_x > 0.0 || sigma_y > 0.0) {
     sigma_x = AdjustSigma(sigma_x, max_sigma, &blur_scale_factor_x);
     sigma_y = AdjustSigma(sigma_y, max_sigma, &blur_scale_factor_y);
-    blur_filter = SkBlurImageFilter::Make(sigma_x, sigma_y, nullptr, nullptr,
-                                          SkBlurImageFilter::kClamp_TileMode);
+    blur_filter = SkImageFilters::Blur(sigma_x, sigma_y, SkTileMode::kClamp,
+                                       nullptr, nullptr);
     auto size = SkISize::Make(size_.width() / blur_scale_factor_x,
                               size_.height() / blur_scale_factor_y);
     do {
@@ -172,8 +174,8 @@ void Blur::Run(double sigma_x,
                         size.height() / content_surfaces.back()->height());
           SkPaint paint;
           paint.setBlendMode(SkBlendMode::kSrc);
-          paint.setFilterQuality(SkFilterQuality::kLow_SkFilterQuality);
-          content_surfaces.back()->draw(canvas, 0, 0, &paint);
+          content_surfaces.back()->draw(
+              canvas, 0, 0, SkSamplingOptions(SkFilterMode::kLinear), &paint);
         }
 
         canvas->restore();
@@ -184,9 +186,9 @@ void Blur::Run(double sigma_x,
       SkIRect subset;
       SkIPoint offset;
       sk_sp<SkImage> blur_image = content_surfaces.back()->makeImageSnapshot();
-      sk_sp<SkImage> blurred_image =
-          blur_image->makeWithFilter(blur_filter.get(), blur_image->bounds(),
-                                     blur_image->bounds(), &subset, &offset);
+      sk_sp<SkImage> blurred_image = blur_image->makeWithFilter(
+          gr_context_.get(), blur_filter.get(), blur_image->bounds(),
+          blur_image->bounds(), &subset, &offset);
       SkCanvas* canvas = buffer->sk_surface->getCanvas();
       canvas->save();
       SkSize size = SkSize::Make(size_.width(), size_.height());
@@ -194,12 +196,12 @@ void Blur::Run(double sigma_x,
                     size.height() / blur_image->height());
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
-      paint.setFilterQuality(SkFilterQuality::kLow_SkFilterQuality);
+      SkSamplingOptions sampling(SkFilterMode::kLinear);
       // Simulate multi-texturing by adding foreground opacity.
       int alpha = (1.0 - kForegroundOpacity) * 255.0 + 0.5;
       paint.setColor(SkColorSetA(SK_ColorBLACK, alpha));
       canvas->drawImage(blurred_image, offset.x() - subset.x(),
-                        offset.y() - subset.y(), &paint);
+                        offset.y() - subset.y(), sampling, &paint);
       canvas->restore();
 
       // Restore blur surfaces for next frame.
@@ -215,7 +217,7 @@ void Blur::Run(double sigma_x,
     }
 
     if (gr_context_) {
-      gr_context_->flush();
+      gr_context_->flushAndSubmit();
       glFinish();
     }
 

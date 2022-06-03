@@ -50,39 +50,48 @@
 
             <org.chromium.ui.widget.ChromeImageView
                 android:id="@+id/close"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="6dp"
                 android:src="@drawable/btn_close"
                 android:contentDescription="@string/close"
-                app:tint="@color/default_icon_color" />
+                app:tint="?attr/default_icon_color" />
 
             <org.chromium.ui.widget.ChromeImageView
                 android:id="@+id/open_in_new_tab"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:layout_toStartOf="@+id/close"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="14dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="6dp"
                 android:src="@drawable/open_in_new_tab"
                 android:contentDescription="@string/contextmenu_open_in_new_tab"
                 android:visibility="gone"
-                app:tint="@color/default_icon_color" />
+                app:tint="?attr/default_icon_color" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_toStartOf="@id/open_in_new_tab"
                 android:layout_toEndOf="@id/favicon"
                 android:textAlignment="viewStart"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.BlackBodyDefault" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
             <org.chromium.ui.widget.ChromeImageView
                 android:id="@+id/security_icon"
@@ -91,7 +100,7 @@
                 android:layout_alignStart="@id/title"
                 android:layout_below="@id/title"
                 android:layout_marginTop="3dp"
-                app:tint="@color/default_icon_color" />
+                app:tint="?attr/default_icon_color" />
 
             <TextView
                 android:id="@+id/origin"
@@ -100,11 +109,11 @@
                 android:layout_toStartOf="@id/open_in_new_tab"
                 android:layout_toEndOf="@id/security_icon"
                 android:layout_below="@id/title"
-                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
                 android:textAlignment="viewStart"
                 android:ellipsize="start"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.BlackHint2" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         </RelativeLayout>
 
@@ -117,12 +126,10 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:max="100"
-            android:progressBackgroundTint="@color/modern_blue_300"
-            android:progressTint="@color/modern_blue_600" />
+            android:max="100" />
     </LinearLayout>
 
-    <org.chromium.chrome.browser.ui.widget.FadingShadowView
+    <org.chromium.components.browser_ui.widget.FadingShadowView
         android:id="@+id/shadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_shadow_height"

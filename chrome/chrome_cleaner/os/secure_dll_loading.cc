@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/os/secure_dll_loading.h"
 

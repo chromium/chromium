@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that CSSOM-modified shorthands are reporting their "important" bits.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -20,8 +20,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', dump);
 
-  function dump() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function dump() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

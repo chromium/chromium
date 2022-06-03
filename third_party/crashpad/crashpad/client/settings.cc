@@ -85,8 +85,8 @@ void ScopedLockedFileHandleTraits::Free(FileHandle handle) {
 #endif  // OS_FUCHSIA
 
 struct Settings::Data {
-  static const uint32_t kSettingsMagic = 'CPds';
-  static const uint32_t kSettingsVersion = 1;
+  static constexpr uint32_t kSettingsMagic = 'CPds';
+  static constexpr uint32_t kSettingsVersion = 1;
 
   enum Options : uint32_t {
     kUploadsEnabled = 1 << 0,
@@ -207,8 +207,11 @@ Settings::ScopedLockedFileHandle Settings::MakeScopedLockedFileHandle(
   return ScopedLockedFileHandle(scoped.release(), base::FilePath());
 #else
   if (scoped.is_valid()) {
-    if (!LoggingLockFile(scoped.get(), locking))
+    if (LoggingLockFile(
+            scoped.get(), locking, FileLockingBlocking::kBlocking) !=
+        FileLockingResult::kSuccess) {
       scoped.reset();
+    }
   }
   return ScopedLockedFileHandle(scoped.release());
 #endif

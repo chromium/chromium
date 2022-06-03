@@ -4,30 +4,40 @@
 
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 
+#include <algorithm>
 #include <memory>
 
+#include "base/metrics/histogram_macros.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
+#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_window_post_message_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/coop_access_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
+#include "third_party/blink/renderer/core/frame/report.h"
+#include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/frame/window_post_message_options.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -44,10 +54,19 @@ DOMWindow::~DOMWindow() {
   DCHECK(!frame_);
 }
 
-v8::Local<v8::Object> DOMWindow::Wrap(v8::Isolate* isolate,
-                                      v8::Local<v8::Object> creation_context) {
-  NOTREACHED();
-  return v8::Local<v8::Object>();
+v8::MaybeLocal<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
+  // TODO(yukishiino): Get understanding of why it's possible to initialize
+  // the context after the frame is detached.  And then, remove the following
+  // lines.  See also https://crbug.com/712638 .
+  Frame* frame = GetFrame();
+  if (!frame)
+    return v8::Null(script_state->GetIsolate());
+
+  // TODO(yukishiino): Make this function always return the non-empty handle
+  // even if the frame is detached because the global proxy must always exist
+  // per spec.
+  return frame->GetWindowProxy(script_state->World())
+      ->GlobalProxyIfNotDetached();
 }
 
 v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
@@ -96,7 +115,7 @@ DOMWindow* DOMWindow::opener() const {
   if (!GetFrame() || !GetFrame()->Client())
     return nullptr;
 
-  Frame* opener = GetFrame()->Client()->Opener();
+  Frame* opener = GetFrame()->Opener();
   return opener ? opener->DomWindow() : nullptr;
 }
 
@@ -104,7 +123,7 @@ DOMWindow* DOMWindow::parent() const {
   if (!GetFrame())
     return nullptr;
 
-  Frame* parent = GetFrame()->Tree().Parent();
+  Frame* parent = GetFrame()->Tree().Parent(FrameTreeBoundary::kFenced);
   return parent ? parent->DomWindow() : GetFrame()->DomWindow();
 }
 
@@ -112,7 +131,7 @@ DOMWindow* DOMWindow::top() const {
   if (!GetFrame())
     return nullptr;
 
-  return GetFrame()->Tree().Top().DomWindow();
+  return GetFrame()->Tree().Top(FrameTreeBoundary::kFenced).DomWindow();
 }
 
 void DOMWindow::postMessage(v8::Isolate* isolate,
@@ -146,7 +165,9 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
                 options, incumbent_window, exception_state);
 }
 
-DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) const {
+DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
+  ReportCoopAccess("indexed");
+
   if (!GetFrame())
     return nullptr;
 
@@ -169,15 +190,14 @@ bool DOMWindow::IsCurrentlyDisplayedInFrame() const {
 String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
     const LocalDOMWindow* accessing_window,
     CrossDocumentAccessPolicy cross_document_access) const {
-  if (!accessing_window || !accessing_window->document() || !GetFrame())
+  if (!accessing_window || !GetFrame())
     return String();
 
-  const KURL& accessing_window_url = accessing_window->document()->Url();
+  const KURL& accessing_window_url = accessing_window->Url();
   if (accessing_window_url.IsNull())
     return String();
 
-  const SecurityOrigin* active_origin =
-      accessing_window->document()->GetSecurityOrigin();
+  const SecurityOrigin* active_origin = accessing_window->GetSecurityOrigin();
   String message;
   if (cross_document_access == CrossDocumentAccessPolicy::kDisallowed) {
     message = "Blocked a restricted frame with origin \"" +
@@ -196,17 +216,14 @@ String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
 String DOMWindow::CrossDomainAccessErrorMessage(
     const LocalDOMWindow* accessing_window,
     CrossDocumentAccessPolicy cross_document_access) const {
-  if (!accessing_window || !accessing_window->document() || !GetFrame())
+  if (!accessing_window || !GetFrame())
     return String();
 
-  const KURL& accessing_window_url = accessing_window->document()->Url();
+  const KURL& accessing_window_url = accessing_window->Url();
   if (accessing_window_url.IsNull())
     return String();
 
-  // FIXME: This message, and other console messages, have extra newlines.
-  // Should remove them.
-  const SecurityOrigin* active_origin =
-      accessing_window->document()->GetSecurityOrigin();
+  const SecurityOrigin* active_origin = accessing_window->GetSecurityOrigin();
   const SecurityOrigin* target_origin =
       GetFrame()->GetSecurityContext()->GetSecurityOrigin();
   auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
@@ -215,8 +232,8 @@ String DOMWindow::CrossDomainAccessErrorMessage(
   // access. See https://crbug.com/601629.
   DCHECK(GetFrame()->IsRemoteFrame() ||
          !active_origin->CanAccess(target_origin) ||
-         (local_dom_window && accessing_window->document()->GetAgent() !=
-                                  local_dom_window->document()->GetAgent()));
+         (local_dom_window &&
+          accessing_window->GetAgent() != local_dom_window->GetAgent()));
 
   String message = "Blocked a frame with origin \"" +
                    active_origin->ToString() +
@@ -225,30 +242,35 @@ String DOMWindow::CrossDomainAccessErrorMessage(
 
   // Sandbox errors: Use the origin of the frames' location, rather than their
   // actual origin (since we know that at least one will be "null").
-  KURL active_url = accessing_window->document()->Url();
+  KURL active_url = accessing_window->Url();
   // TODO(alexmos): RemoteFrames do not have a document, and their URLs
   // aren't replicated.  For now, construct the URL using the replicated
   // origin for RemoteFrames. If the target frame is remote and sandboxed,
   // there isn't anything else to show other than "null" for its origin.
   KURL target_url = local_dom_window
-                        ? local_dom_window->document()->Url()
+                        ? local_dom_window->Url()
                         : KURL(NullURL(), target_origin->ToString());
-  if (GetFrame()->GetSecurityContext()->IsSandboxed(WebSandboxFlags::kOrigin) ||
-      accessing_window->document()->IsSandboxed(WebSandboxFlags::kOrigin)) {
+  using SandboxFlags = network::mojom::blink::WebSandboxFlags;
+  if (GetFrame()->GetSecurityContext()->IsSandboxed(SandboxFlags::kOrigin) ||
+      accessing_window->IsSandboxed(SandboxFlags::kOrigin)) {
     message = "Blocked a frame at \"" +
               SecurityOrigin::Create(active_url)->ToString() +
               "\" from accessing a frame at \"" +
               SecurityOrigin::Create(target_url)->ToString() + "\". ";
-    if (GetFrame()->GetSecurityContext()->IsSandboxed(
-            WebSandboxFlags::kOrigin) &&
-        accessing_window->document()->IsSandboxed(WebSandboxFlags::kOrigin))
+
+    if (GetFrame()->GetSecurityContext()->IsSandboxed(SandboxFlags::kOrigin) &&
+        accessing_window->IsSandboxed(SandboxFlags::kOrigin)) {
       return "Sandbox access violation: " + message +
              " Both frames are sandboxed and lack the \"allow-same-origin\" "
              "flag.";
-    if (GetFrame()->GetSecurityContext()->IsSandboxed(WebSandboxFlags::kOrigin))
+    }
+
+    if (GetFrame()->GetSecurityContext()->IsSandboxed(SandboxFlags::kOrigin)) {
       return "Sandbox access violation: " + message +
              " The frame being accessed is sandboxed and lacks the "
              "\"allow-same-origin\" flag.";
+    }
+
     return "Sandbox access violation: " + message +
            " The frame requesting access is sandboxed and lacks the "
            "\"allow-same-origin\" flag.";
@@ -260,7 +282,7 @@ String DOMWindow::CrossDomainAccessErrorMessage(
     return message + " The frame requesting access has a protocol of \"" +
            active_url.Protocol() +
            "\", the frame being accessed has a protocol of \"" +
-           target_url.Protocol() + "\". Protocols must match.\n";
+           target_url.Protocol() + "\". Protocols must match.";
 
   // 'document.domain' errors.
   if (target_origin->DomainWasSetInDOM() && active_origin->DomainWasSetInDOM())
@@ -304,6 +326,9 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
   if (!page)
     return;
 
+  if (page->InsidePortal())
+    return;
+
   Document* active_document = incumbent_window->document();
   if (!(active_document && active_document->GetFrame() &&
         active_document->GetFrame()->CanNavigate(*GetFrame()))) {
@@ -317,10 +342,10 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
   if (!page->OpenedByDOM() && GetFrame()->Client()->BackForwardLength() > 1 &&
       !allow_scripts_to_close_windows) {
     active_document->domWindow()->GetFrameConsole()->AddMessage(
-        ConsoleMessage::Create(
+        MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
             mojom::ConsoleMessageLevel::kWarning,
-            "Scripts may close only the windows that were opened by it."));
+            "Scripts may close only the windows that were opened by them."));
     return;
   }
 
@@ -343,10 +368,11 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
 }
 
 void DOMWindow::focus(v8::Isolate* isolate) {
-  if (!GetFrame())
+  Frame* frame = GetFrame();
+  if (!frame)
     return;
 
-  Page* page = GetFrame()->GetPage();
+  Page* page = frame->GetPage();
   if (!page)
     return;
 
@@ -358,25 +384,21 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   // https://html.spec.whatwg.org/C/#dom-window-focus
   // https://html.spec.whatwg.org/C/#focusing-steps
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
-  ExecutionContext* incumbent_execution_context =
-      incumbent_window->GetExecutionContext();
 
   // TODO(mustaq): Use of |allow_focus| and consuming the activation here seems
   // suspicious (https://crbug.com/959815).
-  bool allow_focus = incumbent_execution_context->IsWindowInteractionAllowed();
+  bool allow_focus = incumbent_window->IsWindowInteractionAllowed();
   if (allow_focus) {
-    incumbent_execution_context->ConsumeWindowInteraction();
+    incumbent_window->ConsumeWindowInteraction();
   } else {
     DCHECK(IsMainThread());
-    allow_focus =
-        opener() && (opener() != this) &&
-        (To<Document>(incumbent_execution_context)->domWindow() == opener());
+    allow_focus = opener() && opener() != this && incumbent_window == opener();
   }
 
   // If we're a top level window, bring the window to the front.
-  if (GetFrame()->IsMainFrame() && allow_focus) {
-    page->GetChromeClient().Focus(incumbent_window->GetFrame());
-  } else if (auto* local_frame = DynamicTo<LocalFrame>(GetFrame())) {
+  if (frame->IsMainFrame() && allow_focus) {
+    frame->FocusPage(incumbent_window->GetFrame());
+  } else if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     // We are depending on user activation twice since IsFocusAllowed() will
     // check for activation. This should be addressed in
     // https://crbug.com/959815.
@@ -409,120 +431,316 @@ void DOMWindow::PostMessageForTesting(
   DoPostMessage(std::move(message), ports, options, source, exception_state);
 }
 
+void DOMWindow::InstallCoopAccessMonitor(
+    LocalFrame* accessing_frame,
+    network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
+        coop_reporter_params) {
+  CoopAccessMonitor monitor;
+
+  DCHECK(accessing_frame->IsMainFrame());
+  monitor.report_type = coop_reporter_params->report_type;
+  monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
+  monitor.endpoint_defined = coop_reporter_params->endpoint_defined;
+  monitor.reported_window_url =
+      std::move(coop_reporter_params->reported_window_url);
+
+  monitor.reporter.Bind(std::move(coop_reporter_params->reporter));
+  // CoopAccessMonitor are cleared when their reporter are gone. This avoids
+  // accumulation. However it would have been interesting continuing reporting
+  // accesses past this point, at least for the ReportingObserver and Devtool.
+  // TODO(arthursonzogni): Consider observing |accessing_main_frame| deletion
+  // instead.
+  monitor.reporter.set_disconnect_handler(
+      WTF::Bind(&DOMWindow::DisconnectCoopAccessMonitor,
+                WrapWeakPersistent(this), monitor.accessing_main_frame));
+
+  // As long as RenderDocument isn't shipped, it can exist a CoopAccessMonitor
+  // for the same |accessing_main_frame|, because it might now host a different
+  // Document. Same is true for |this| DOMWindow, it might refer to a window
+  // hosting a different document.
+  // The new documents will still be part of a different virtual browsing
+  // context group, however the new COOPAccessMonitor might now contain updated
+  // URLs.
+  //
+  // There are up to 2 CoopAccessMonitor for the same access, because it can be
+  // reported to the accessing and the accessed window at the same time.
+  for (CoopAccessMonitor& old : coop_access_monitor_) {
+    if (old.accessing_main_frame == monitor.accessing_main_frame &&
+        network::IsAccessFromCoopPage(old.report_type) ==
+            network::IsAccessFromCoopPage(monitor.report_type)) {
+      old = std::move(monitor);
+      return;
+    }
+  }
+  coop_access_monitor_.push_back(std::move(monitor));
+  // Any attempts to access |this| window from |accessing_main_frame| will now
+  // trigger reports (network, ReportingObserver, Devtool).
+}
+
+// Check if the accessing context would be able to access this window if COOP
+// was enforced. If this isn't a report is sent.
+void DOMWindow::ReportCoopAccess(const char* property_name) {
+  if (coop_access_monitor_.IsEmpty())  // Fast early return. Very likely true.
+    return;
+
+  v8::Isolate* isolate = window_proxy_manager_->GetIsolate();
+  LocalDOMWindow* accessing_window = IncumbentDOMWindow(isolate);
+  LocalFrame* accessing_frame = accessing_window->GetFrame();
+
+  // A frame might be destroyed, but its context can still be able to execute
+  // some code. Those accesses are ignored. See https://crbug.com/1108256.
+  if (!accessing_frame)
+    return;
+
+  // Iframes are allowed to trigger reports, only when they are same-origin with
+  // their top-level document.
+  if (accessing_frame->IsCrossOriginToMainFrame())
+    return;
+
+  // See https://crbug.com/1183571
+  // We assumed accessing_frame->IsCrossOriginToMainFrame() implies
+  // accessing_frame->Tree().Top() to be a LocalFrame. This might not be the
+  // case after all, some crashes are reported. This block speculatively returns
+  // early to avoid crashing.
+  // TODO(https://crbug.com/1183571): Check if crashes are still happening and
+  // remove this block.
+  if (!accessing_frame->Tree().Top().IsLocalFrame()) {
+    NOTREACHED();
+    return;
+  }
+
+  LocalFrame& accessing_main_frame =
+      To<LocalFrame>(accessing_frame->Tree().Top());
+  const LocalFrameToken accessing_main_frame_token =
+      accessing_main_frame.GetLocalFrameToken();
+
+  auto* it = coop_access_monitor_.begin();
+  while (it != coop_access_monitor_.end()) {
+    if (it->accessing_main_frame != accessing_main_frame_token) {
+      ++it;
+      continue;
+    }
+
+    // TODO(arthursonzogni): Send the blocked-window-url.
+
+    auto location = SourceLocation::Capture(
+        ExecutionContext::From(isolate->GetCurrentContext()));
+    // TODO(arthursonzogni): Once implemented, use the SourceLocation typemap
+    // https://chromium-review.googlesource.com/c/chromium/src/+/2041657
+    auto source_location = network::mojom::blink::SourceLocation::New(
+        location->Url() ? location->Url() : "", location->LineNumber(),
+        location->ColumnNumber());
+
+    // TODO(https://crbug.com/1124251): Notify Devtool about the access attempt.
+
+    // If the reporting document hasn't specified any network report
+    // endpoint(s), then it is likely not interested in receiving
+    // ReportingObserver's reports.
+    //
+    // TODO(arthursonzogni): Reconsider this decision later, developers might be
+    // interested.
+    if (it->endpoint_defined) {
+      it->reporter->QueueAccessReport(it->report_type, property_name,
+                                      std::move(source_location),
+                                      std::move(it->reported_window_url));
+      // Send a coop-access-violation report.
+      if (network::IsAccessFromCoopPage(it->report_type)) {
+        ReportingContext::From(accessing_main_frame.DomWindow())
+            ->QueueReport(MakeGarbageCollected<Report>(
+                ReportType::kCoopAccessViolation,
+                accessing_main_frame.GetDocument()->Url().GetString(),
+                MakeGarbageCollected<CoopAccessViolationReportBody>(
+                    std::move(location), it->report_type, String(property_name),
+                    it->reported_window_url)));
+      }
+    }
+
+    // CoopAccessMonitor are used once and destroyed. This avoids sending
+    // multiple reports for the same access.
+    it = coop_access_monitor_.erase(it);
+  }
+}
+
 void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
                               const MessagePortArray& ports,
                               const WindowPostMessageOptions* options,
                               LocalDOMWindow* source,
                               ExceptionState& exception_state) {
+  TRACE_EVENT0("blink", "DOMWindow::DoPostMessage");
+  auto* source_frame = source->GetFrame();
+  bool unload_event_in_progress =
+      source_frame && source_frame->GetDocument() &&
+      source_frame->GetDocument()->UnloadEventInProgress();
+  if (!unload_event_in_progress && source_frame && source_frame->GetPage() &&
+      source_frame->GetPage()->DispatchedPagehideAndStillHidden()) {
+    // The postMessage call is done after the pagehide event got dispatched
+    // and the page is still hidden, which is not normally possible (this
+    // might happen if we're doing a same-site cross-RenderFrame navigation
+    // where we dispatch pagehide during the new RenderFrame's commit but
+    // won't unload/freeze the page after the new RenderFrame finished
+    // committing). We should track this case to measure how often this is
+    // happening, except for when the unload event is currently in progress,
+    // which means the page is not actually stored in the back-forward cache and
+    // this behavior is ok.
+    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
+                              ActionAfterPagehide::kSentPostMessage);
+  }
   if (!IsCurrentlyDisplayedInFrame())
-    return;
-
-  Document* source_document = source->document();
-
-  // Capture the source of the message.  We need to do this synchronously
-  // in order to capture the source of the message correctly.
-  if (!source_document)
     return;
 
   // Compute the target origin.  We need to do this synchronously in order
   // to generate the SyntaxError exception correctly.
   scoped_refptr<const SecurityOrigin> target =
-      PostMessageHelper::GetTargetOrigin(options, *source_document,
-                                         exception_state);
+      PostMessageHelper::GetTargetOrigin(options, *source, exception_state);
   if (exception_state.HadException())
     return;
+  if (!target) {
+    UseCounter::Count(source, WebFeature::kUnspecifiedTargetOriginPostMessage);
+  }
 
   auto channels = MessagePort::DisentanglePorts(GetExecutionContext(), ports,
                                                 exception_state);
   if (exception_state.HadException())
     return;
 
-  const SecurityOrigin* security_origin = source_document->GetSecurityOrigin();
-
-  String source_origin = security_origin->ToString();
-
-  auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
-  KURL target_url = local_dom_window
-                        ? local_dom_window->document()->Url()
-                        : KURL(NullURL(), GetFrame()
-                                              ->GetSecurityContext()
-                                              ->GetSecurityOrigin()
-                                              ->ToString());
-  if (MixedContentChecker::IsMixedContent(source_document->GetSecurityOrigin(),
-                                          target_url)) {
-    UseCounter::Count(source_document,
-                      WebFeature::kPostMessageFromSecureToInsecure);
-  } else if (MixedContentChecker::IsMixedContent(
-                 GetFrame()->GetSecurityContext()->GetSecurityOrigin(),
-                 source_document->Url())) {
-    UseCounter::Count(source_document,
-                      WebFeature::kPostMessageFromInsecureToSecure);
-    if (MixedContentChecker::IsMixedContent(
-            GetFrame()->Tree().Top().GetSecurityContext()->GetSecurityOrigin(),
-            source_document->Url())) {
-      UseCounter::Count(source_document,
-                        WebFeature::kPostMessageFromInsecureToSecureToplevel);
+  const SecurityOrigin* target_security_origin =
+      GetFrame()->GetSecurityContext()->GetSecurityOrigin();
+  const SecurityOrigin* source_security_origin = source->GetSecurityOrigin();
+  bool is_source_secure = source_security_origin->IsPotentiallyTrustworthy();
+  bool is_target_secure = target_security_origin->IsPotentiallyTrustworthy();
+  if (is_target_secure) {
+    if (is_source_secure) {
+      UseCounter::Count(source, WebFeature::kPostMessageFromSecureToSecure);
+    } else {
+      UseCounter::Count(source, WebFeature::kPostMessageFromInsecureToSecure);
+      if (!GetFrame()
+               ->Tree()
+               .Top()
+               .GetSecurityContext()
+               ->GetSecurityOrigin()
+               ->IsPotentiallyTrustworthy()) {
+        UseCounter::Count(source,
+                          WebFeature::kPostMessageFromInsecureToSecureToplevel);
+      }
+    }
+  } else {
+    if (is_source_secure) {
+      UseCounter::Count(source, WebFeature::kPostMessageFromSecureToInsecure);
+    } else {
+      UseCounter::Count(source, WebFeature::kPostMessageFromInsecureToInsecure);
     }
   }
 
-  if (!source_document->GetContentSecurityPolicy()->AllowConnectToSource(
-          target_url, RedirectStatus::kNoRedirect,
-          SecurityViolationReportingPolicy::kSuppressReporting)) {
+  if (source->GetFrame() &&
+      source->GetFrame()->Tree().Top() != GetFrame()->Tree().Top()) {
+    if ((!target_security_origin->RegistrableDomain() &&
+         target_security_origin->Host() == source_security_origin->Host()) ||
+        (target_security_origin->RegistrableDomain() &&
+         target_security_origin->RegistrableDomain() ==
+             source_security_origin->RegistrableDomain())) {
+      if (target_security_origin->Protocol() ==
+          source_security_origin->Protocol()) {
+        UseCounter::Count(source, WebFeature::kSchemefulSameSitePostMessage);
+      } else {
+        UseCounter::Count(source, WebFeature::kSchemelesslySameSitePostMessage);
+        if (is_source_secure && !is_target_secure) {
+          UseCounter::Count(
+              source,
+              WebFeature::kSchemelesslySameSitePostMessageSecureToInsecure);
+        } else if (!is_source_secure && is_target_secure) {
+          UseCounter::Count(
+              source,
+              WebFeature::kSchemelesslySameSitePostMessageInsecureToSecure);
+        }
+      }
+    } else {
+      UseCounter::Count(source, WebFeature::kCrossSitePostMessage);
+    }
+  }
+  auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
+  KURL target_url = local_dom_window
+                        ? local_dom_window->Url()
+                        : KURL(NullURL(), target_security_origin->ToString());
+  if (!source->GetContentSecurityPolicy()->AllowConnectToSource(
+          target_url, target_url, RedirectStatus::kNoRedirect,
+          ReportingDisposition::kSuppressReporting)) {
     UseCounter::Count(
-        source_document,
-        WebFeature::kPostMessageOutgoingWouldBeBlockedByConnectSrc);
+        source, WebFeature::kPostMessageOutgoingWouldBeBlockedByConnectSrc);
   }
   UserActivation* user_activation = nullptr;
   if (options->includeUserActivation())
     user_activation = UserActivation::CreateSnapshot(source);
 
-  LocalFrame* source_frame = source->GetFrame();
-
-  bool allow_autoplay = false;
-  if (RuntimeEnabledFeatures::ExperimentalAutoplayDynamicDelegationEnabled(
-          GetExecutionContext()) &&
-      LocalFrame::HasTransientUserActivation(source_frame) &&
-      options->hasAllow()) {
-    Vector<String> policy_entry_list;
-    options->allow().Split(' ', policy_entry_list);
-    allow_autoplay = policy_entry_list.Contains("autoplay");
+  // TODO(mustaq): This is an ad-hoc mechanism to support delegating a single
+  // capability.  We need to add a structure to support passing other
+  // capabilities.  An explainer for the general delegation API is here:
+  // https://github.com/mustaqahmed/capability-delegation
+  bool delegate_payment_request = false;
+  if (LocalFrame::HasTransientUserActivation(source_frame) &&
+      options->hasDelegate()) {
+    Vector<String> capability_list;
+    options->delegate().Split(' ', capability_list);
+    delegate_payment_request = capability_list.Contains("paymentrequest");
   }
 
-  MessageEvent* event = MessageEvent::Create(
-      std::move(channels), std::move(message), source_origin, String(), source,
-      user_activation, options->transferUserActivation(), allow_autoplay);
-
-  // Transfer user activation state in the source's renderer when
-  // |transferUserActivation| is true. We are making an expriment with
-  // dynamic delegation of "autoplay" capability using this post message
-  // approach to transfer user activation.
-  // TODO(lanwei): we should execute the below code after the post task fires
-  // (for both local and remote posting messages).
-  bool should_transfer_user_activation =
-      RuntimeEnabledFeatures::UserActivationPostMessageTransferEnabled() &&
-      options->transferUserActivation();
-  should_transfer_user_activation =
-      should_transfer_user_activation || allow_autoplay;
-  if (should_transfer_user_activation &&
-      LocalFrame::HasTransientUserActivation(source_frame)) {
-    GetFrame()->TransferUserActivationFrom(source_frame);
-
-    // When the source and target frames are in the same process, we need to
-    // update the user activation state in the browser process. For the cross
-    // process case, it is handled in RemoteDOMWindow.
-    if (IsLocalDOMWindow())
-      GetFrame()->Client()->TransferUserActivationFrom(source->GetFrame());
-  }
-
-  SchedulePostMessage(event, std::move(target), source_document);
+  PostedMessage* posted_message = MakeGarbageCollected<PostedMessage>();
+  posted_message->source_origin = source->GetSecurityOrigin();
+  posted_message->target_origin = std::move(target);
+  posted_message->data = std::move(message);
+  posted_message->channels = std::move(channels);
+  posted_message->source = source;
+  posted_message->user_activation = user_activation;
+  posted_message->delegate_payment_request = delegate_payment_request;
+  SchedulePostMessage(posted_message);
 }
 
-void DOMWindow::Trace(blink::Visitor* visitor) {
+void DOMWindow::PostedMessage::Trace(Visitor* visitor) const {
+  visitor->Trace(source);
+  visitor->Trace(user_activation);
+}
+
+BlinkTransferableMessage
+DOMWindow::PostedMessage::ToBlinkTransferableMessage() && {
+  BlinkTransferableMessage result;
+
+  // Message data and cluster ID (optional).
+  result.message = std::move(data);
+  if (result.message->IsLockedToAgentCluster())
+    result.locked_agent_cluster_id = source->GetAgentClusterID();
+
+  // Ports
+  result.ports = std::move(channels);
+
+  // User activation
+  if (user_activation) {
+    result.user_activation = mojom::blink::UserActivationSnapshot::New(
+        user_activation->hasBeenActive(), user_activation->isActive());
+  }
+
+  // Capability delegation
+  result.delegate_payment_request = delegate_payment_request;
+
+  return result;
+}
+
+void DOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(window_proxy_manager_);
   visitor->Trace(input_capabilities_);
   visitor->Trace(location_);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+void DOMWindow::DisconnectCoopAccessMonitor(
+    const LocalFrameToken& accessing_main_frame) {
+  auto* it = coop_access_monitor_.begin();
+  while (it != coop_access_monitor_.end()) {
+    if (it->accessing_main_frame == accessing_main_frame) {
+      it = coop_access_monitor_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 }  // namespace blink

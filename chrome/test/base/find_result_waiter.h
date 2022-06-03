@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/ui/find_bar/find_result_observer.h"
-#include "chrome/browser/ui/find_bar/find_tab_helper.h"
+#include "base/scoped_observation.h"
+#include "components/find_in_page/find_result_observer.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace base {
@@ -29,12 +28,18 @@ namespace ui_test_utils {
 //   FindInPageWchar();
 //   FindResultWaiter observer(tab);
 //   observer.Wait();
-//
-// Always construct FindResultWaiter AFTER initiating the search. It captures
-// the current search ID in the constructor and waits for it only.
-class FindResultWaiter : public FindResultObserver {
+class FindResultWaiter : public find_in_page::FindResultObserver {
  public:
-  explicit FindResultWaiter(content::WebContents* parent_tab);
+  // |request_offset| will be added to the current find request ID; the
+  // resulting ID will be the only one waited on. Typically, FindResultWaiter
+  // is constructed AFTER initiating a search, with request_offset set to 0. In
+  // such cases you must be sure the find-result callback won't already have
+  // been called. Otherwise, you can construct FindResultWaiter BEFORE starting
+  // a search and set request_offset to 1 (or whatever offset is appropriate).
+  explicit FindResultWaiter(content::WebContents* parent_tab,
+                            int request_offset = 0);
+  FindResultWaiter(const FindResultWaiter&) = delete;
+  FindResultWaiter& operator=(const FindResultWaiter&) = delete;
   ~FindResultWaiter() override;
 
   void Wait();
@@ -44,11 +49,13 @@ class FindResultWaiter : public FindResultObserver {
   gfx::Rect selection_rect() const { return selection_rect_; }
 
  private:
-  // FindResultObserver:
+  // find_in_page::FindResultObserver:
   void OnFindResultAvailable(content::WebContents* web_contents) override;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  ScopedObserver<FindTabHelper, FindResultObserver> observer_{this};
+  base::ScopedObservation<find_in_page::FindTabHelper,
+                          find_in_page::FindResultObserver>
+      observation_{this};
 
   // We will at some point (before final update) be notified of the ordinal and
   // we need to preserve it so we can send it later.
@@ -60,8 +67,6 @@ class FindResultWaiter : public FindResultObserver {
   int current_find_request_id_ = 0;
 
   bool seen_ = false;  // true after transition to expected state has been seen
-
-  DISALLOW_COPY_AND_ASSIGN(FindResultWaiter);
 };
 
 }  // namespace ui_test_utils

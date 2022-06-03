@@ -55,8 +55,4 @@ bool LanguageSettingsPrivateDelegateFactory::
   return true;
 }
 
-bool LanguageSettingsPrivateDelegateFactory::ServiceIsNULLWhileTesting() const {
-  return false;
-}
-
 }  // namespace extensions

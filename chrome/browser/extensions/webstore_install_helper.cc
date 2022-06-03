@@ -4,13 +4,16 @@
 
 #include "chrome/browser/extensions/webstore_install_helper.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request.h"
+#include "net/url_request/referrer_policy.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using content::BrowserThread;
 
@@ -77,10 +80,11 @@ void WebstoreInstallHelper::Start(
               "Not implemented, considered not useful."
           })");
 
-    icon_fetcher_.reset(new BitmapFetcher(icon_url_, this, traffic_annotation));
+    icon_fetcher_ =
+        std::make_unique<BitmapFetcher>(icon_url_, this, traffic_annotation);
     icon_fetcher_->Init(
         std::string(),
-        net::URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
+        net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
         network::mojom::CredentialsMode::kOmit);
     icon_fetcher_->Start(loader_factory);
   }

@@ -10,12 +10,14 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -39,10 +41,10 @@ const char
 const int SubresourceFilterComponentInstallerPolicy::kCurrentRulesetFormat = 1;
 
 SubresourceFilterComponentInstallerPolicy::
-    SubresourceFilterComponentInstallerPolicy() {}
+    SubresourceFilterComponentInstallerPolicy() = default;
 
 SubresourceFilterComponentInstallerPolicy::
-    ~SubresourceFilterComponentInstallerPolicy() {}
+    ~SubresourceFilterComponentInstallerPolicy() = default;
 
 bool SubresourceFilterComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -57,7 +59,7 @@ bool SubresourceFilterComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 SubresourceFilterComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -67,13 +69,13 @@ void SubresourceFilterComponentInstallerPolicy::OnCustomUninstall() {}
 void SubresourceFilterComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DCHECK(!install_dir.empty());
   DVLOG(1) << "Subresource Filter Version Ready: " << install_dir.value();
-  int ruleset_format = 0;
-  if (!manifest->GetInteger(kManifestRulesetFormatKey, &ruleset_format) ||
-      ruleset_format != kCurrentRulesetFormat) {
-    DVLOG(1) << "Bailing out. Future ruleset version: " << ruleset_format;
+  absl::optional<int> ruleset_format =
+      manifest.FindIntKey(kManifestRulesetFormatKey);
+  if (!ruleset_format || *ruleset_format != kCurrentRulesetFormat) {
+    DVLOG(1) << "Bailing out. Future ruleset version: " << *ruleset_format;
     return;
   }
   subresource_filter::UnindexedRulesetInfo ruleset_info;
@@ -91,7 +93,7 @@ void SubresourceFilterComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool SubresourceFilterComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir);
 }
@@ -114,10 +116,9 @@ std::string SubresourceFilterComponentInstallerPolicy::GetName() const {
 
 // static
 std::string SubresourceFilterComponentInstallerPolicy::GetInstallerTag() {
-  const std::string ruleset_flavor =
+  const std::string ruleset_flavor(
       subresource_filter::GetEnabledConfigurations()
-          ->lexicographically_greatest_ruleset_flavor()
-          .as_string();
+          ->lexicographically_greatest_ruleset_flavor());
 
   // Allow the empty, and 4 non-empty ruleset flavor identifiers: a, b, c, d.
   if (ruleset_flavor.empty())
@@ -141,11 +142,6 @@ SubresourceFilterComponentInstallerPolicy::GetInstallerAttributes() const {
   if (!installer_tag.empty())
     attributes["tag"] = installer_tag;
   return attributes;
-}
-
-std::vector<std::string>
-SubresourceFilterComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
 }
 
 void RegisterSubresourceFilterComponent(ComponentUpdateService* cus) {

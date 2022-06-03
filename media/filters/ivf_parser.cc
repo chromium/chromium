@@ -4,6 +4,10 @@
 
 #include "media/filters/ivf_parser.h"
 
+#include <cstring>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"

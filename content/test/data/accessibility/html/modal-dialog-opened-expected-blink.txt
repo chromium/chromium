@@ -1,14 +1,15 @@
 rootWebArea
-++genericContainer ignored invisible
-++++section ignored invisible
-++++++popUpButton collapsed ignored invisible value='This should be pruned out of the tree.'
-++++button ignored invisible name='Choose File' value='No file chosen'
-++genericContainer ignored invisible
-++dialog ignored invisible
-++genericContainer
-++dialog
-++++staticText name='The dialog subtree should be the only text content in the accessibility tree. '
-++++++inlineTextBox name='The dialog subtree should be the only text content in the accessibility tree. '
-++++link name='Link inside the dialog.'
-++++++staticText name='Link inside the dialog.'
-++++++++inlineTextBox name='Link inside the dialog.'
+++genericContainer ignored
+++++genericContainer ignored invisible
+++++++section ignored invisible
+++++++++dialog
+++++++++++staticText name='The dialog subtree should be the only text content in the accessibility tree. '
+++++++++++++inlineTextBox name='The dialog subtree should be the only text content in the accessibility tree. '
+++++++++++link name='Link inside the dialog.'
+++++++++++++staticText name='Link inside the dialog.'
+++++++++++++++inlineTextBox name='Link inside the dialog.'
+++++++++menuListPopup ignored invisible
+++++++++++menuListOption ignored
+++++++genericContainer ignored invisible
+++++++++staticText ignored invisible name='No file chosen'
+++++++dialog ignored invisible

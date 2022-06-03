@@ -1,1 +1,0 @@
-CONSOLE WARNING: line 26: Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.

@@ -15,17 +15,21 @@
 
 #include "absl/flags/internal/usage.h"
 
+#include <stdint.h>
+
 #include <sstream>
+#include <string>
 
 #include "gtest/gtest.h"
 #include "absl/flags/flag.h"
+#include "absl/flags/internal/parse.h"
 #include "absl/flags/internal/path_util.h"
 #include "absl/flags/internal/program_name.h"
-#include "absl/flags/parse.h"
+#include "absl/flags/reflection.h"
 #include "absl/flags/usage.h"
 #include "absl/flags/usage_config.h"
-#include "absl/memory/memory.h"
 #include "absl/strings/match.h"
+#include "absl/strings/string_view.h"
 
 ABSL_FLAG(int, usage_reporting_test_flag_01, 101,
           "usage_reporting_test_flag_01 help message");
@@ -41,6 +45,7 @@ static const char kTestUsageMessage[] = "Custom usage message";
 struct UDT {
   UDT() = default;
   UDT(const UDT&) = default;
+  UDT& operator=(const UDT&) = default;
 };
 bool AbslParseFlag(absl::string_view, UDT*, std::string*) { return true; }
 std::string AbslUnparseFlag(const UDT&) { return "UDT{}"; }
@@ -67,9 +72,9 @@ static std::string NormalizeFileName(absl::string_view fname) {
   fname = normalized;
 #endif
 
-  auto absl_pos = fname.find("/absl/");
+  auto absl_pos = fname.rfind("absl/");
   if (absl_pos != absl::string_view::npos) {
-    fname = fname.substr(absl_pos + 1);
+    fname = fname.substr(absl_pos);
   }
   return std::string(fname);
 }
@@ -83,9 +88,14 @@ class UsageReportingTest : public testing::Test {
     default_config.normalize_filename = &NormalizeFileName;
     absl::SetFlagsUsageConfig(default_config);
   }
+  ~UsageReportingTest() override {
+    flags::SetFlagsHelpMode(flags::HelpMode::kNone);
+    flags::SetFlagsHelpMatchSubstr("");
+    flags::SetFlagsHelpFormat(flags::HelpFormat::kHumanReadable);
+  }
 
  private:
-  flags::FlagSaver flag_saver_;
+  absl::FlagSaver flag_saver_;
 };
 
 // --------------------------------------------------------------------
@@ -97,69 +107,70 @@ TEST_F(UsageReportingDeathTest, TestSetProgramUsageMessage) {
 
 #ifndef _WIN32
   // TODO(rogeeff): figure out why this does not work on Windows.
-  EXPECT_DEATH(absl::SetProgramUsageMessage("custom usage message"),
-               ".*SetProgramUsageMessage\\(\\) called twice.*");
+  EXPECT_DEATH_IF_SUPPORTED(
+      absl::SetProgramUsageMessage("custom usage message"),
+      ".*SetProgramUsageMessage\\(\\) called twice.*");
 #endif
 }
 
 // --------------------------------------------------------------------
 
 TEST_F(UsageReportingTest, TestFlagHelpHRF_on_flag_01) {
-  const auto* flag = flags::FindCommandLineFlag("usage_reporting_test_flag_01");
+  const auto* flag = absl::FindCommandLineFlag("usage_reporting_test_flag_01");
   std::stringstream test_buf;
 
   flags::FlagHelp(test_buf, *flag, flags::HelpFormat::kHumanReadable);
   EXPECT_EQ(
       test_buf.str(),
-      R"(    -usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+      R"(    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
       default: 101;
 )");
 }
 
 TEST_F(UsageReportingTest, TestFlagHelpHRF_on_flag_02) {
-  const auto* flag = flags::FindCommandLineFlag("usage_reporting_test_flag_02");
+  const auto* flag = absl::FindCommandLineFlag("usage_reporting_test_flag_02");
   std::stringstream test_buf;
 
   flags::FlagHelp(test_buf, *flag, flags::HelpFormat::kHumanReadable);
   EXPECT_EQ(
       test_buf.str(),
-      R"(    -usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+      R"(    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
       default: false;
 )");
 }
 
 TEST_F(UsageReportingTest, TestFlagHelpHRF_on_flag_03) {
-  const auto* flag = flags::FindCommandLineFlag("usage_reporting_test_flag_03");
+  const auto* flag = absl::FindCommandLineFlag("usage_reporting_test_flag_03");
   std::stringstream test_buf;
 
   flags::FlagHelp(test_buf, *flag, flags::HelpFormat::kHumanReadable);
   EXPECT_EQ(
       test_buf.str(),
-      R"(    -usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+      R"(    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
       default: 1.03;
 )");
 }
 
 TEST_F(UsageReportingTest, TestFlagHelpHRF_on_flag_04) {
-  const auto* flag = flags::FindCommandLineFlag("usage_reporting_test_flag_04");
+  const auto* flag = absl::FindCommandLineFlag("usage_reporting_test_flag_04");
   std::stringstream test_buf;
 
   flags::FlagHelp(test_buf, *flag, flags::HelpFormat::kHumanReadable);
   EXPECT_EQ(
       test_buf.str(),
-      R"(    -usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+      R"(    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
       default: 1000000000000004;
 )");
 }
 
 TEST_F(UsageReportingTest, TestFlagHelpHRF_on_flag_05) {
-  const auto* flag = flags::FindCommandLineFlag("usage_reporting_test_flag_05");
+  const auto* flag = absl::FindCommandLineFlag("usage_reporting_test_flag_05");
   std::stringstream test_buf;
 
   flags::FlagHelp(test_buf, *flag, flags::HelpFormat::kHumanReadable);
   EXPECT_EQ(
       test_buf.str(),
-      R"(    -usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+      R"(    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
       default: UDT{};
 )");
 }
@@ -171,21 +182,25 @@ TEST_F(UsageReportingTest, TestFlagsHelpHRF) {
       R"(usage_test: Custom usage message
 
   Flags from absl/flags/internal/usage_test.cc:
-    -usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
       default: 101;
-    -usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
       default: false;
-    -usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
       default: 1.03;
-    -usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
       default: 1000000000000004;
-    -usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
       default: UDT{};
-    -usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
 
       Some more help.
       Even more long long long long long long long long long long long long help
       message.); default: "";
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )";
 
   std::stringstream test_buf_01;
@@ -209,7 +224,11 @@ TEST_F(UsageReportingTest, TestFlagsHelpHRF) {
   EXPECT_EQ(test_buf_04.str(),
             R"(usage_test: Custom usage message
 
-  No modules matched: use -helpfull
+No flags matched.
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )");
 
   std::stringstream test_buf_05;
@@ -221,12 +240,8 @@ TEST_F(UsageReportingTest, TestFlagsHelpHRF) {
       absl::StartsWith(test_out_str, "usage_test: Custom usage message"));
   EXPECT_TRUE(absl::StrContains(
       test_out_str, "Flags from absl/flags/internal/usage_test.cc:"));
-  EXPECT_TRUE(absl::StrContains(test_out_str,
-                                "Flags from absl/flags/internal/usage.cc:"));
   EXPECT_TRUE(
       absl::StrContains(test_out_str, "-usage_reporting_test_flag_01 "));
-  EXPECT_TRUE(absl::StrContains(test_out_str, "-help (show help"))
-      << test_out_str;
 }
 
 // --------------------------------------------------------------------
@@ -239,7 +254,7 @@ TEST_F(UsageReportingTest, TestNoUsageFlags) {
 // --------------------------------------------------------------------
 
 TEST_F(UsageReportingTest, TestUsageFlag_helpshort) {
-  absl::SetFlag(&FLAGS_helpshort, true);
+  flags::SetFlagsHelpMode(flags::HelpMode::kShort);
 
   std::stringstream test_buf;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 1);
@@ -247,28 +262,32 @@ TEST_F(UsageReportingTest, TestUsageFlag_helpshort) {
             R"(usage_test: Custom usage message
 
   Flags from absl/flags/internal/usage_test.cc:
-    -usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
       default: 101;
-    -usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
       default: false;
-    -usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
       default: 1.03;
-    -usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
       default: 1000000000000004;
-    -usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
       default: UDT{};
-    -usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
 
       Some more help.
       Even more long long long long long long long long long long long long help
       message.); default: "";
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )");
 }
 
 // --------------------------------------------------------------------
 
-TEST_F(UsageReportingTest, TestUsageFlag_help) {
-  absl::SetFlag(&FLAGS_help, true);
+TEST_F(UsageReportingTest, TestUsageFlag_help_simple) {
+  flags::SetFlagsHelpMode(flags::HelpMode::kImportant);
 
   std::stringstream test_buf;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 1);
@@ -276,30 +295,90 @@ TEST_F(UsageReportingTest, TestUsageFlag_help) {
             R"(usage_test: Custom usage message
 
   Flags from absl/flags/internal/usage_test.cc:
-    -usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
       default: 101;
-    -usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
       default: false;
-    -usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
       default: 1.03;
-    -usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
       default: 1000000000000004;
-    -usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
       default: UDT{};
-    -usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
 
       Some more help.
       Even more long long long long long long long long long long long long help
       message.); default: "";
 
-Try --helpfull to get a list of all flags.
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
+)");
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(UsageReportingTest, TestUsageFlag_help_one_flag) {
+  flags::SetFlagsHelpMode(flags::HelpMode::kMatch);
+  flags::SetFlagsHelpMatchSubstr("usage_reporting_test_flag_06");
+
+  std::stringstream test_buf;
+  EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 1);
+  EXPECT_EQ(test_buf.str(),
+            R"(usage_test: Custom usage message
+
+  Flags from absl/flags/internal/usage_test.cc:
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+
+      Some more help.
+      Even more long long long long long long long long long long long long help
+      message.); default: "";
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
+)");
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(UsageReportingTest, TestUsageFlag_help_multiple_flag) {
+  flags::SetFlagsHelpMode(flags::HelpMode::kMatch);
+  flags::SetFlagsHelpMatchSubstr("test_flag");
+
+  std::stringstream test_buf;
+  EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 1);
+  EXPECT_EQ(test_buf.str(),
+            R"(usage_test: Custom usage message
+
+  Flags from absl/flags/internal/usage_test.cc:
+    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+      default: 101;
+    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+      default: false;
+    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+      default: 1.03;
+    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+      default: 1000000000000004;
+    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+      default: UDT{};
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+
+      Some more help.
+      Even more long long long long long long long long long long long long help
+      message.); default: "";
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )");
 }
 
 // --------------------------------------------------------------------
 
 TEST_F(UsageReportingTest, TestUsageFlag_helppackage) {
-  absl::SetFlag(&FLAGS_helppackage, true);
+  flags::SetFlagsHelpMode(flags::HelpMode::kPackage);
 
   std::stringstream test_buf;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 1);
@@ -307,30 +386,32 @@ TEST_F(UsageReportingTest, TestUsageFlag_helppackage) {
             R"(usage_test: Custom usage message
 
   Flags from absl/flags/internal/usage_test.cc:
-    -usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
       default: 101;
-    -usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
       default: false;
-    -usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
       default: 1.03;
-    -usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
       default: 1000000000000004;
-    -usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
       default: UDT{};
-    -usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
 
       Some more help.
       Even more long long long long long long long long long long long long help
       message.); default: "";
 
-Try --helpfull to get a list of all flags.
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )");
 }
 
 // --------------------------------------------------------------------
 
 TEST_F(UsageReportingTest, TestUsageFlag_version) {
-  absl::SetFlag(&FLAGS_version, true);
+  flags::SetFlagsHelpMode(flags::HelpMode::kVersion);
 
   std::stringstream test_buf;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 0);
@@ -344,7 +425,7 @@ TEST_F(UsageReportingTest, TestUsageFlag_version) {
 // --------------------------------------------------------------------
 
 TEST_F(UsageReportingTest, TestUsageFlag_only_check_args) {
-  absl::SetFlag(&FLAGS_only_check_args, true);
+  flags::SetFlagsHelpMode(flags::HelpMode::kOnlyCheckArgs);
 
   std::stringstream test_buf;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf, kTestUsageMessage), 0);
@@ -354,17 +435,22 @@ TEST_F(UsageReportingTest, TestUsageFlag_only_check_args) {
 // --------------------------------------------------------------------
 
 TEST_F(UsageReportingTest, TestUsageFlag_helpon) {
-  absl::SetFlag(&FLAGS_helpon, "bla-bla");
+  flags::SetFlagsHelpMode(flags::HelpMode::kMatch);
+  flags::SetFlagsHelpMatchSubstr("/bla-bla.");
 
   std::stringstream test_buf_01;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf_01, kTestUsageMessage), 1);
   EXPECT_EQ(test_buf_01.str(),
             R"(usage_test: Custom usage message
 
-  No modules matched: use -helpfull
+No flags matched.
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )");
 
-  absl::SetFlag(&FLAGS_helpon, "usage_test");
+  flags::SetFlagsHelpMatchSubstr("/usage_test.");
 
   std::stringstream test_buf_02;
   EXPECT_EQ(flags::HandleUsageFlags(test_buf_02, kTestUsageMessage), 1);
@@ -372,21 +458,25 @@ TEST_F(UsageReportingTest, TestUsageFlag_helpon) {
             R"(usage_test: Custom usage message
 
   Flags from absl/flags/internal/usage_test.cc:
-    -usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
+    --usage_reporting_test_flag_01 (usage_reporting_test_flag_01 help message);
       default: 101;
-    -usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
+    --usage_reporting_test_flag_02 (usage_reporting_test_flag_02 help message);
       default: false;
-    -usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
+    --usage_reporting_test_flag_03 (usage_reporting_test_flag_03 help message);
       default: 1.03;
-    -usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
+    --usage_reporting_test_flag_04 (usage_reporting_test_flag_04 help message);
       default: 1000000000000004;
-    -usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
+    --usage_reporting_test_flag_05 (usage_reporting_test_flag_05 help message);
       default: UDT{};
-    -usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
+    --usage_reporting_test_flag_06 (usage_reporting_test_flag_06 help message.
 
       Some more help.
       Even more long long long long long long long long long long long long help
       message.); default: "";
+
+Try --helpfull to get a list of all flags or --help=substring shows help for
+flags which include specified substring in either in the name, or description or
+path.
 )");
 }
 
@@ -395,7 +485,7 @@ TEST_F(UsageReportingTest, TestUsageFlag_helpon) {
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  absl::GetFlag(FLAGS_undefok);  // Force linking of parse.cc
+  (void)absl::GetFlag(FLAGS_undefok);  // Force linking of parse.cc
   flags::SetProgramInvocationName("usage_test");
   absl::SetProgramUsageMessage(kTestUsageMessage);
   ::testing::InitGoogleTest(&argc, argv);

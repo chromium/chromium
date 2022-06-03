@@ -1,0 +1,25 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "injected-services": {
+        "fuchsia.fonts.Provider": "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx",
+        "fuchsia.memorypressure.Provider": "fuchsia-pkg://fuchsia.com/memory_monitor#meta/memory_monitor.cmx",
+        "fuchsia.web.ContextProvider": "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx",
+      },
+      "system-services": [
+        "fuchsia.device.NameProvider",
+        "fuchsia.scheduler.ProfileProvider",
+        "fuchsia.sysmem.Allocator"
+      ]
+    }
+  },
+  "sandbox": {
+    "services": [
+      "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",
+      "fuchsia.memorypressure.Provider",
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.web.ContextProvider"
+    ]
+  }
+}

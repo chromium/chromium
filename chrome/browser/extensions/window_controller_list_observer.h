@@ -19,6 +19,9 @@ class WindowControllerListObserver {
   // Called immediately after a window controller is removed from the list
   virtual void OnWindowControllerRemoved(WindowController* window_controller) {}
 
+  // Called when new bounds are committed.
+  virtual void OnWindowBoundsChanged(WindowController* window_controller) {}
+
  protected:
   virtual ~WindowControllerListObserver() {}
 };

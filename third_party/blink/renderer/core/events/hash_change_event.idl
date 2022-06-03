@@ -23,7 +23,7 @@
     // TODO(foolip): Exposed=(Window,Worker)
     Exposed=Window
 ] interface HashChangeEvent : Event {
-    constructor(DOMString type, optional HashChangeEventInit eventInitDict);
+    constructor(DOMString type, optional HashChangeEventInit eventInitDict = {});
     readonly attribute DOMString oldURL;
     readonly attribute DOMString newURL;
 };

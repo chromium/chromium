@@ -5,7 +5,7 @@
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/helper.sub.js"></script>
 
-  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
+  <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
 </head>
 <body>
 <div id="container"></div>
@@ -30,7 +30,7 @@
   test(t => {
     var d = document.createElement('div');
     container.appendChild(d);
-    assert_throws(new TypeError(), _ => {
+    assert_throws_js(TypeError, _ => {
       d.outerHTML = "Fail.";
     });
     assert_equals(container.innerText, "");
@@ -42,7 +42,7 @@
   test(t => {
     var d = document.createElement('div');
     container.appendChild(d);
-    assert_throws(new TypeError(), _ => {
+    assert_throws_js(TypeError, _ => {
       d.outerHTML = null;
     });
     assert_equals(container.innerText, "");
@@ -68,7 +68,7 @@
     var d = document.createElement('div');
     container.appendChild(d);
     d.outerHTML = null;
-    assert_equals(container.innerText, "null");
+    assert_equals(container.innerText, "");
 
     while (container.firstChild)
       container.firstChild.remove();

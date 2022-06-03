@@ -111,6 +111,6 @@ td.indexeddb-transaction-scope {
 }
 
 .controls a {
-    -webkit-margin-end: 16px;
+    margin-block-end: 16px;
     color: #777;
 }

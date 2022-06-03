@@ -7,6 +7,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 component("gcm") {
   sources = [
+    "base/gcm_constants.cc",
+    "base/gcm_constants.h",
+    "base/gcm_features.cc",
+    "base/gcm_features.h",
     "base/gcm_util.cc",
     "base/gcm_util.h",
     "base/mcs_message.cc",
@@ -67,6 +71,7 @@ component("gcm") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/system:system",
     "//net",
     "//services/network/public/cpp",
@@ -104,9 +109,7 @@ static_library("test_support") {
     "monitoring/fake_gcm_stats_recorder.h",
   ]
 
-  public_deps = [
-    ":gcm",
-  ]
+  public_deps = [ ":gcm" ]
   deps = [
     "//base",
     "//mojo/public/cpp/system:system",
@@ -120,9 +123,7 @@ static_library("test_support") {
 if (!is_ios) {
   executable("mcs_probe") {
     testonly = true
-    sources = [
-      "tools/mcs_probe.cc",
-    ]
+    sources = [ "tools/mcs_probe.cc" ]
 
     deps = [
       ":gcm",
@@ -166,6 +167,7 @@ test("gcm_unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//google_apis",
     "//google_apis:run_all_unittests",
     "//google_apis:test_support",

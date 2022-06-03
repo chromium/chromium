@@ -5,12 +5,15 @@
 import("//build/config/android/rules.gni")
 
 android_resources("customtabs_benchmark_apk_resources") {
-  resource_dirs = [ "res/" ]
-  custom_package = "org.chromium.customtabs.test"
+  sources = [
+    "res/layout/activity_web_view.xml",
+    "res/layout/main.xml",
+    "res/values/strings.xml",
+  ]
 }
 
 android_apk("customtabs_benchmark_apk") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/customtabs/test/MainActivity.java",
     "java/src/org/chromium/customtabs/test/WebViewActivity.java",
   ]
@@ -21,6 +24,7 @@ android_apk("customtabs_benchmark_apk") {
   deps = [
     ":customtabs_benchmark_apk_resources",
     "//third_party/android_deps:android_support_v4_java",
-    "//third_party/android_sdk/androidx_browser:androidx_browser_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
   ]
 }

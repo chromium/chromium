@@ -1,5 +1,3 @@
-label
-
 This tests that a label element without a corresponding control will perform a press action on itself instead of nothing.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -8,3 +6,4 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 
+label

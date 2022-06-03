@@ -1,0 +1,10 @@
+[document web]
+++[heading] name='Start of test: striped should have selected state'
+++++[static] name='Start of test: striped should have selected state'
+++[list box]
+++++[list item] name='Orange'
+++++[list item] name='Striped' selected
+++++[list item] name='Calico'
+++++[list item] name='Black'
+++[paragraph]
+++++[static] name='End of test'

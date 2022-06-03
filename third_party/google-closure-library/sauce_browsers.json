@@ -1,0 +1,33 @@
+[
+  {
+    "browserName" : "firefox",
+    "platform" : "Linux",
+    "version": "40.0"
+  },
+  {
+    "browserName" : "chrome",
+    "platform" : "Windows 10",
+    "timeZone": "Pacific",
+    "version" : "51.0"
+  },
+  {
+    "browserName" : "internet explorer",
+    "version" : "11.0",
+    "platform" : "Windows 7",
+    "timeZone": "Pacific",
+    "prerun": {
+      "executable": "https://raw.githubusercontent.com/google/closure-library/master/scripts/ci/ie_setup.bat",
+      "background": true
+    }
+  },
+  {
+    "browserName" : "internet explorer",
+    "version" : "9.0",
+    "platform" : "Windows 7",
+    "timeZone": "Pacific",
+    "prerun": {
+      "executable": "https://raw.githubusercontent.com/google/closure-library/master/scripts/ci/ie_setup.bat",
+      "background": true
+    }
+  }
+]

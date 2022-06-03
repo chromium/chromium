@@ -1,0 +1,56 @@
+[
+  {
+    "namespace": "returns_async",
+    "description": "The returns async API",
+    "types": [
+      {
+        "id": "Enumeration",
+        "type": "string",
+        "enum": ["foo", "bar", "baz"]
+      }
+    ],
+    "functions": [
+      {
+        "name": "supportsPromises",
+        "description": "Returns an object.",
+        "type": "function",
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "someObject",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "Enumeration"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "doesNotSupportPromises",
+        "description": "Returns an object via callback.",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "parameters": [
+              {
+                "name": "someObject",
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "$ref": "Enumeration"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

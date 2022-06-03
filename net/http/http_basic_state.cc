@@ -6,8 +6,9 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 #include "net/base/io_buffer.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
@@ -72,6 +73,13 @@ std::string HttpBasicState::GenerateRequestLine() const {
 bool HttpBasicState::IsConnectionReused() const {
   return connection_->is_reused() ||
          connection_->reuse_type() == ClientSocketHandle::UNUSED_IDLE;
+}
+
+const std::vector<std::string>& HttpBasicState::GetDnsAliases() const {
+  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  return (connection_ && connection_->socket())
+             ? connection_->socket()->GetDnsAliases()
+             : *emptyvector_result;
 }
 
 }  // namespace net

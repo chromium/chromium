@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_SUPPORTED_DELEGATIONS_H_
 
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace content {
 
@@ -18,6 +19,9 @@ struct CONTENT_EXPORT SupportedDelegations {
   bool payer_name = false;
   bool payer_phone = false;
   bool payer_email = false;
+
+  bool ProvidesAll(
+      const payments::mojom::PaymentOptionsPtr& payment_options) const;
 };
 
 }  // namespace content

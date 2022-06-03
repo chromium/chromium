@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Tests restoring window geometry of the Files app.
@@ -12,13 +15,15 @@ testcase.restoreGeometry = async () => {
   let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Resize the window to minimal dimensions.
-  await remoteCall.callRemoteTestUtil('resizeWindow', appId, [640, 480]);
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('resizeWindow', appId, [640, 480]));
 
   // Check the current window's size.
   await remoteCall.waitForWindowGeometry(appId, 640, 480);
 
   // Enlarge the window by 10 pixels.
-  await remoteCall.callRemoteTestUtil('resizeWindow', appId, [650, 490]);
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('resizeWindow', appId, [650, 490]));
 
   // Check the current window's size.
   await remoteCall.waitForWindowGeometry(appId, 650, 490);
@@ -40,7 +45,8 @@ testcase.restoreGeometryMaximized = async () => {
   let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Maximize the window
-  await remoteCall.callRemoteTestUtil('maximizeWindow', appId, []);
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('maximizeWindow', appId, []));
 
   // Check that the first window is maximized.
   await repeatUntil(async () => {

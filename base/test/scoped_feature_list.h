@@ -41,7 +41,15 @@ namespace test {
 // initialization in the test harness's constructor.
 class ScopedFeatureList final {
  public:
+  // Constructs the instance in a non-initialized state.
   ScopedFeatureList();
+
+  // Shorthand for immediately initializing with InitAndEnableFeature().
+  explicit ScopedFeatureList(const Feature& enable_feature);
+
+  ScopedFeatureList(const ScopedFeatureList&) = delete;
+  ScopedFeatureList& operator=(const ScopedFeatureList&) = delete;
+
   ~ScopedFeatureList();
 
   struct FeatureAndParams {
@@ -72,7 +80,9 @@ class ScopedFeatureList final {
   // default values, which can hide feature interaction bugs. Please use
   // sparingly.  https://crbug.com/713390
   // Initializes and registers a FeatureList instance with only the given
-  // enabled and disabled features (comma-separated names).
+  // enabled and disabled features (comma-separated names). If feature params
+  // are provided in the |enable_features|, this also associates features to
+  // their params.
   void InitFromCommandLine(const std::string& enable_features,
                            const std::string& disable_features);
 
@@ -130,20 +140,11 @@ class ScopedFeatureList final {
       const std::vector<FeatureAndParams>& enabled_features_and_params,
       const std::vector<Feature>& disabled_features);
 
-  // Initializes and registers a FeatureList instance based on present
-  // FeatureList and overridden with single enabled feature and associated field
-  // trial override.
-  // |trial| is expected to outlive the ScopedFeatureList.
-  void InitAndEnableFeatureWithFieldTrialOverride(const Feature& feature,
-                                                  FieldTrial* trial);
-
   bool init_called_ = false;
   std::unique_ptr<FeatureList> original_feature_list_;
-  base::FieldTrialList* original_field_trial_list_;
+  base::FieldTrialList* original_field_trial_list_ = nullptr;
   std::string original_params_;
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFeatureList);
 };
 
 }  // namespace test

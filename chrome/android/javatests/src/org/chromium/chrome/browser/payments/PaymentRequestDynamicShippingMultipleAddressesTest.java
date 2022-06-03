@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -15,12 +15,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -47,43 +47,46 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // Incomplete profile_0 (missing phone number)
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Bart Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "US", "", "bart@simpson.com", ""),
+                    "" /* honorific prefix */, "Bart Simpson", "Acme Inc.", "123 Main",
+                    "California", "Los Angeles", "", "90210", "", "US", "", "bart@simpson.com", ""),
 
             // Incomplete profile_1 (missing street address).
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Homer Simpson", "Acme Inc.", "", "California", "Los Angeles", "", "90210", "",
-                    "US", "555 123-4567", "homer@simpson.com", ""),
+                    "" /* honorific prefix */, "Homer Simpson", "Acme Inc.", "", "California",
+                    "Los Angeles", "", "90210", "", "US", "555 123-4567", "homer@simpson.com", ""),
 
             // Complete profile_2.
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Lisa Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
+                    "" /* honorific prefix */, "Lisa Simpson", "Acme Inc.", "123 Main",
+                    "California", "Los Angeles", "", "90210", "", "US", "555 123-4567",
+                    "lisa@simpson.com", ""),
 
             // Complete profile_3 in another country.
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Maggie Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                    "90210", "", "Uzbekistan", "555 123-4567", "maggie@simpson.com", ""),
+                    "" /* honorific prefix */, "Maggie Simpson", "Acme Inc.", "123 Main",
+                    "California", "Los Angeles", "", "90210", "", "Uzbekistan", "555 123-4567",
+                    "maggie@simpson.com", ""),
 
             // Incomplete profile_4 (invalid address, missing city name).
             new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
-                    "Marge Simpson", "Acme Inc.", "123 Main", "California", "", "", "90210", "",
-                    "US", "555 123-4567", "marge@simpson.com", ""),
+                    "" /* honorific prefix */, "Marge Simpson", "Acme Inc.", "123 Main",
+                    "California", "", "", "90210", "", "US", "555 123-4567", "marge@simpson.com",
+                    ""),
 
             // Incomplete profile_5 (missing recipient name).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */, "",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+                    "" /* honorific prefix */, "", "Acme Inc.", "123 Main", "California",
+                    "Los Angeles", "", "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
 
             // Incomplete profile_6 (need more information: name and address both missing/invalid).
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */, "",
-                    "Acme Inc.", "123 Main", "California", "", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+                    "" /* honorific prefix */, "", "Acme Inc.", "123 Main", "California", "", "",
+                    "90210", "", "US", "555 123-4567", "lisa@simpson.com", ""),
 
             // Incomplete profile_7 (missing phone number, different from AutofillProfile[0])
-            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */, "John Smith",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US", "",
-                    "bart@simpson.com", ""),
+            new AutofillProfile("" /* guid */, "https://www.example.com" /* origin */,
+                    "" /* honorific prefix */, "John Smith", "Acme Inc.", "123 Main", "California",
+                    "Los Angeles", "", "90210", "", "US", "", "bart@simpson.com", ""),
     };
 
     private AutofillProfile[] mProfilesToAdd;
@@ -102,7 +105,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
             guids.add(billingAddressId);
             helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                     "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                    CardType.UNKNOWN, billingAddressId, "" /* serverId */));
+                    billingAddressId, "" /* serverId */));
         }
 
         // Set up the profile use stats.
@@ -118,6 +121,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestionOrdering() throws TimeoutException {
         // Create two complete and two incomplete profiles. Values are set so that complete profiles
@@ -156,6 +160,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEquallyIncompleteSuggestionsOrdering() throws TimeoutException {
         // Create two profiles both with missing phone numbers.
@@ -180,6 +185,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestionLimit() throws TimeoutException {
         // Create five profiles that can be suggested to the user.
@@ -220,6 +226,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestion_OnlyIncludeProfilesWithStreetAddress()
             throws TimeoutException {
@@ -252,6 +259,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddresNotAcceptedByMerchant() throws TimeoutException {
         // Add a profile that is not accepted by the website.
@@ -280,6 +288,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressEditRequiredMessage() throws TimeoutException {
         // Create four incomplete profiles with different missing information. Profiles will be
@@ -318,6 +327,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingShippingAddressFieldRecorded() throws TimeoutException {
         // Add a profile with invalid shipping address, and another one with both missing name and
@@ -344,6 +354,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingNameFieldRecorded() throws TimeoutException {
         // Add a profile with invalid shipping address, and another one with missing name.
@@ -368,8 +379,8 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testAllMissingFieldsRecorded() throws TimeoutException {
         // Don't add any profiles
         mProfilesToAdd = new AutofillProfile[] {};

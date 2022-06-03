@@ -4,43 +4,42 @@
 
 #include "chrome/browser/nacl_host/nacl_infobar_delegate.h"
 
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-
 // static
-void NaClInfoBarDelegate::Create(InfoBarService* infobar_service) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+void NaClInfoBarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager) {
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new NaClInfoBarDelegate())));
 }
 
-NaClInfoBarDelegate::NaClInfoBarDelegate() : ConfirmInfoBarDelegate() {
-}
+NaClInfoBarDelegate::NaClInfoBarDelegate() = default;
 
-NaClInfoBarDelegate::~NaClInfoBarDelegate() {
-}
+NaClInfoBarDelegate::~NaClInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 NaClInfoBarDelegate::GetIdentifier() const {
   return NACL_INFOBAR_DELEGATE;
 }
 
-base::string16 NaClInfoBarDelegate::GetMessageText() const {
-  return l10n_util::GetStringUTF16(IDS_NACL_APP_MISSING_ARCH_MESSAGE);
-}
-
-int NaClInfoBarDelegate::GetButtons() const {
-  return BUTTON_NONE;
-}
-
-base::string16 NaClInfoBarDelegate::GetLinkText() const {
+std::u16string NaClInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
 GURL NaClInfoBarDelegate::GetLinkURL() const {
   return GURL("https://support.google.com/chrome/?p=ib_nacl");
+}
+
+std::u16string NaClInfoBarDelegate::GetMessageText() const {
+  return l10n_util::GetStringUTF16(IDS_NACL_APP_MISSING_ARCH_MESSAGE);
+}
+
+int NaClInfoBarDelegate::GetButtons() const {
+  return BUTTON_NONE;
 }

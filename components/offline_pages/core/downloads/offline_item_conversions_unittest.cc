@@ -5,7 +5,6 @@
 #include "components/offline_pages/core/downloads/offline_item_conversions.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item.h"
@@ -20,12 +19,6 @@ using OfflineItemProgressUnit =
 
 namespace offline_pages {
 
-namespace {
-const GURL kTestUrl("http://www.example.com");
-const GURL kTestOriginalUrl("http://www.exampleoriginalurl.com");
-
-}  // namespace
-
 TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
   std::string name_space = "test_namespace";
   std::string guid = "test_guid";
@@ -37,6 +30,8 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
   base::Time last_access_time = base::Time::Now();
   std::string title = "test title";
 
+  const GURL kTestUrl("http://www.example.com");
+  const GURL kTestOriginalUrl("http://www.exampleoriginalurl.com");
   OfflinePageItem offline_page_item(kTestUrl, offline_id, client_id, file_path,
                                     file_size, creation_time);
   offline_page_item.original_url_if_different = kTestOriginalUrl;
@@ -48,7 +43,7 @@ TEST(OfflineItemConversionsTest, OfflinePageItemConversion) {
       OfflineItemConversions::CreateOfflineItem(offline_page_item, true);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
-  EXPECT_EQ(kTestUrl, offline_item.page_url);
+  EXPECT_EQ(kTestUrl, offline_item.url);
   EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
   EXPECT_EQ(title, offline_item.title);
   EXPECT_EQ(file_path, offline_item.file_path);
@@ -88,6 +83,8 @@ TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
   int64_t request_id = 5;
   base::Time creation_time = base::Time::Now();
 
+  const GURL kTestUrl("http://www.example.com");
+  const GURL kTestOriginalUrl("http://www.exampleoriginalurl.com");
   SavePageRequest save_page_request(request_id, kTestUrl, client_id,
                                     creation_time, false);
   save_page_request.set_original_url(kTestOriginalUrl);
@@ -99,7 +96,7 @@ TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
       OfflineItemConversions::CreateOfflineItem(save_page_request);
 
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
-  EXPECT_EQ(kTestUrl, offline_item.page_url);
+  EXPECT_EQ(kTestUrl, offline_item.url);
   EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
   EXPECT_EQ(kTestUrl.host(), offline_item.title);
   EXPECT_EQ(base::FilePath(), offline_item.file_path);

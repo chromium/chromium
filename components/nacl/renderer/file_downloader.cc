@@ -22,13 +22,13 @@ FileDownloader::FileDownloader(
     ProgressCallback progress_cb)
     : url_loader_(std::move(url_loader)),
       file_(std::move(file)),
-      status_cb_(status_cb),
-      progress_cb_(progress_cb),
+      status_cb_(std::move(status_cb)),
+      progress_cb_(std::move(progress_cb)),
       http_status_code_(-1),
       total_bytes_received_(0),
       total_bytes_to_be_received_(-1),
       status_(SUCCESS) {
-  CHECK(!status_cb.is_null());
+  CHECK(!status_cb_.is_null());
 }
 
 FileDownloader::~FileDownloader() {
@@ -68,7 +68,7 @@ void FileDownloader::DidFinishLoading() {
     if (file_.Seek(base::File::FROM_BEGIN, 0) != 0)
       status_ = FAILED;
   }
-  status_cb_.Run(status_, std::move(file_), http_status_code_);
+  std::move(status_cb_).Run(status_, std::move(file_), http_status_code_);
   delete this;
 }
 
@@ -88,7 +88,7 @@ void FileDownloader::DidFail(const blink::WebURLError& error) {
   // some implementations of blink::WebURLLoader will do after calling didFail.
   url_loader_.reset();
 
-  status_cb_.Run(status_, std::move(file_), http_status_code_);
+  std::move(status_cb_).Run(status_, std::move(file_), http_status_code_);
   delete this;
 }
 

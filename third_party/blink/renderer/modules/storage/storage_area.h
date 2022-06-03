@@ -28,7 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -37,28 +37,27 @@
 namespace blink {
 
 class ExceptionState;
-class LocalFrame;
+class LocalDOMWindow;
 
 class StorageArea final : public ScriptWrappable,
-                          public ContextClient,
+                          public ExecutionContextClient,
                           public CachedStorageArea::Source {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(StorageArea);
 
  public:
   enum class StorageType { kLocalStorage, kSessionStorage };
 
-  static StorageArea* Create(LocalFrame*,
+  static StorageArea* Create(LocalDOMWindow*,
                              scoped_refptr<CachedStorageArea>,
                              StorageType);
 
   // This storage area doesn't enqueue any events. This avoids duplicate event
   // dispatch when an inspector agent is present.
-  static StorageArea* CreateForInspectorAgent(LocalFrame*,
+  static StorageArea* CreateForInspectorAgent(LocalDOMWindow*,
                                               scoped_refptr<CachedStorageArea>,
                                               StorageType);
 
-  StorageArea(LocalFrame*,
+  StorageArea(LocalDOMWindow*,
               scoped_refptr<CachedStorageArea>,
               StorageType,
               bool should_enqueue_events);
@@ -66,8 +65,10 @@ class StorageArea final : public ScriptWrappable,
   unsigned length(ExceptionState&) const;
   String key(unsigned index, ExceptionState&) const;
   String getItem(const String& key, ExceptionState&) const;
-  bool setItem(const String& key, const String& value, ExceptionState&);
-  DeleteResult removeItem(const String& key, ExceptionState&);
+  NamedPropertySetterResult setItem(const String& key,
+                                    const String& value,
+                                    ExceptionState&);
+  NamedPropertyDeleterResult removeItem(const String& key, ExceptionState&);
   void clear(ExceptionState&);
   bool Contains(const String& key, ExceptionState& ec) const;
 
@@ -76,7 +77,7 @@ class StorageArea final : public ScriptWrappable,
 
   bool CanAccessStorage() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // CachedStorageArea::Source:
   KURL GetPageUrl() const override;
@@ -89,8 +90,14 @@ class StorageArea final : public ScriptWrappable,
       const char* name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
 
+  const LocalDOMWindow* GetDOMWindow() override;
+
  private:
-  const scoped_refptr<CachedStorageArea> cached_area_;
+  void RecordModificationInMetrics();
+
+  void OnDocumentActivatedForPrerendering();
+
+  scoped_refptr<CachedStorageArea> cached_area_;
   StorageType storage_type_;
   const bool should_enqueue_events_;
 

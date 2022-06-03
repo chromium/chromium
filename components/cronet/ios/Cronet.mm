@@ -10,7 +10,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
-#include "base/mac/scoped_block.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "components/cronet/cronet_global_state.h"
@@ -98,7 +97,7 @@ class CronetHttpProtocolHandlerDelegate
 
   void SetRequestFilterBlock(RequestFilterBlock filter) {
     base::AutoLock auto_lock(lock_);
-    filter_.reset(filter);
+    filter_ = filter;
   }
 
  private:
@@ -107,10 +106,8 @@ class CronetHttpProtocolHandlerDelegate
     base::AutoLock auto_lock(lock_);
     if (!IsRequestSupported(request))
       return false;
-    if (filter_) {
-      RequestFilterBlock block = filter_.get();
-      return block(request);
-    }
+    if (filter_)
+      return filter_(request);
     return true;
   }
 
@@ -127,7 +124,7 @@ class CronetHttpProtocolHandlerDelegate
   }
 
   scoped_refptr<net::URLRequestContextGetter> getter_;
-  base::mac::ScopedBlock<RequestFilterBlock> filter_;
+  __strong RequestFilterBlock filter_;
   base::Lock lock_;
 };
 

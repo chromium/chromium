@@ -1,16 +1,17 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/linux/pkg_config.gni")
 
-assert(is_linux)
+assert(is_linux || is_chromeos)
 
 declare_args() {
   # Controls whether the build should use the version of libdrm library shipped
   # with the system. In release builds of desktop Linux and Chrome OS we use the
-  # system version. Chromecast will use this as well.
-  use_system_libdrm = is_chromeos_device || is_desktop_linux
+  # system version. Some Chromecast devices use this as well.
+  use_system_libdrm = is_chromeos_device || (is_linux && !is_chromecast)
 }
 
 if (use_system_libdrm) {
@@ -22,9 +23,7 @@ if (use_system_libdrm) {
   }
 } else {
   group("libdrm") {
-    public_deps = [
-      "//third_party/libdrm",
-    ]
+    public_deps = [ "//third_party/libdrm" ]
   }
   config("libdrm_exynos_include_config") {
     include_dirs = [ "//third_party/libdrm/src/exynos" ]

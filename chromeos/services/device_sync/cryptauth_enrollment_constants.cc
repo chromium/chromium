@@ -9,7 +9,7 @@ namespace chromeos {
 namespace device_sync {
 
 const char kCryptAuthUserKeyPairName[] = "PublicKey";
-const char kCryptAuthLegacyMasterKeyName[] = "authzen";
+const char kCryptAuthLegacyAuthzenKeyName[] = "authzen";
 const char kCryptAuthDeviceSyncBetterTogetherKeyName[] =
     "DeviceSync:BetterTogether";
 const char kCryptAuthFixedUserKeyPairHandle[] = "device_key";

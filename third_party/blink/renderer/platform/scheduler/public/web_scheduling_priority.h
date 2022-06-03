@@ -10,16 +10,13 @@
 
 namespace blink {
 
-// Priorities for the experimental scheduling API (see
-// https://github.com/WICG/main-thread-scheduling).
+// https://wicg.github.io/scheduling-apis/#sec-task-priorities
 enum class WebSchedulingPriority {
-  kImmediatePriority = 0,
-  kHighPriority = 1,
-  kDefaultPriority = 2,
-  kLowPriority = 3,
-  kIdlePriority = 4,
+  kUserBlockingPriority = 0,
+  kUserVisiblePriority = 1,
+  kBackgroundPriority = 2,
 
-  kLastPriority = kIdlePriority
+  kLastPriority = kBackgroundPriority
 };
 
 PLATFORM_EXPORT AtomicString

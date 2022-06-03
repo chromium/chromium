@@ -13,12 +13,30 @@
 
 namespace url_formatter {
 
+// The |SkeletonType| and |TopDomainEntry| are mirrored in trie_entry.h. These
+// are used to insert and read nodes from the Trie.
+// The type of skeleton in the trie node. This type is encoded by 2 bits in the
+// trie.
+enum SkeletonType {
+  // The skeleton represents the full domain (e.g. google.corn).
+  kFull = 0,
+  // The skeleton represents the domain with '.'s and '-'s removed (e.g.
+  // googlecorn).
+  kSeparatorsRemoved = 1,
+  // Max value used to determine the number of different types. Update this and
+  // |kSkeletonTypeBitLength| when new SkeletonTypes are added.
+  kMaxValue = kSeparatorsRemoved
+};
+
+const uint8_t kSkeletonTypeBitLength = 1;
+
 namespace top_domains {
 
 struct TopDomainEntry {
   std::string skeleton;
   std::string top_domain;
   bool is_top_500;
+  SkeletonType skeleton_type;
 };
 
 class TopDomainTrieEntry : public net::huffman_trie::TrieEntry {

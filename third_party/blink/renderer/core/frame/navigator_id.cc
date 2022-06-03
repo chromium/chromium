@@ -34,8 +34,9 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#if !defined(OS_MACOSX) && !defined(OS_WIN)
+#if !defined(OS_MAC) && !defined(OS_WIN)
 #include <sys/utsname.h>
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -58,20 +59,7 @@ String NavigatorID::appVersion() {
 }
 
 String NavigatorID::platform() const {
-  // If the User-Agent string is frozen, platform should be a value
-  // matching the frozen string per https://github.com/WICG/ua-client-hints. See
-  // content::frozen_user_agent_strings.
-  if (base::FeatureList::IsEnabled(features::kFreezeUserAgent)) {
-#if defined(OS_ANDROID)
-    // Matches the frozen mobile User-Agent string (arbitrary Android device).
-    return "Linux armv8l";
-#else
-    // Matches the frozen desktop User-Agent string (Windows).
-    return "Win32";
-#endif
-  }
-
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Match Safari and Mozilla on Mac x86.
   return "MacIntel";
 #elif defined(OS_WIN)
@@ -81,10 +69,15 @@ String NavigatorID::platform() const {
   struct utsname osname;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<String>, platform_name, ());
   if (platform_name->IsNull()) {
-    *platform_name =
-        String(uname(&osname) >= 0 ? String(osname.sysname) + String(" ") +
-                                         String(osname.machine)
-                                   : g_empty_string);
+    StringBuilder result;
+    if (uname(&osname) >= 0) {
+      result.Append(osname.sysname);
+      if (strlen(osname.machine) != 0) {
+        result.Append(" ");
+        result.Append(osname.machine);
+      }
+    }
+    *platform_name = result.ToString();
   }
   return *platform_name;
 #endif

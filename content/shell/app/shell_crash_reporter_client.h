@@ -6,28 +6,31 @@
 #define CONTENT_SHELL_APP_SHELL_CRASH_REPORTER_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "components/crash/content/app/crash_reporter_client.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 
 namespace content {
 
 class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   ShellCrashReporterClient();
+
+  ShellCrashReporterClient(const ShellCrashReporterClient&) = delete;
+  ShellCrashReporterClient& operator=(const ShellCrashReporterClient&) = delete;
+
   ~ShellCrashReporterClient() override;
 
 #if defined(OS_WIN)
   // Returns a textual description of the product type and version to include
   // in the crash report.
-  void GetProductNameAndVersion(const base::string16& exe_path,
-                                base::string16* product_name,
-                                base::string16* version,
-                                base::string16* special_build,
-                                base::string16* channel_name) override;
+  void GetProductNameAndVersion(const std::wstring& exe_path,
+                                std::wstring* product_name,
+                                std::wstring* version,
+                                std::wstring* special_build,
+                                std::wstring* channel_name) override;
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_MAC)
   // Returns a textual description of the product type and version to include
   // in the crash report.
   void GetProductNameAndVersion(const char** product_name,
@@ -41,7 +44,7 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
   // The location where minidump files should be written. Returns true if
   // |crash_dir| was set.
 #if defined(OS_WIN)
-  bool GetCrashDumpLocation(base::string16* crash_dir) override;
+  bool GetCrashDumpLocation(std::wstring* crash_dir) override;
 #else
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 #endif
@@ -52,9 +55,6 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellCrashReporterClient);
 };
 
 }  // namespace content

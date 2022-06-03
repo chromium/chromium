@@ -81,8 +81,8 @@ static constexpr uint8_t kExpectedConversionToBase64Tag =
 
 // Writes the bytes for |v| to |out|, starting with the most significant byte.
 // See also: https://commandcenter.blogspot.com/2012/04/byte-order-fallacy.html
-template <typename T, class C>
-void WriteBytesMostSignificantByteFirst(T v, C* out) {
+template <typename T>
+void WriteBytesMostSignificantByteFirst(T v, std::vector<uint8_t>* out) {
   for (int shift_bytes = sizeof(T) - 1; shift_bytes >= 0; --shift_bytes)
     out->push_back(0xff & (v >> (shift_bytes * 8)));
 }
@@ -152,8 +152,9 @@ size_t ReadTokenStart(span<uint8_t> bytes, MajorType* type, uint64_t* value) {
 
 // Writes the start of a token with |type|. The |value| may indicate the size,
 // or it may be the payload if the value is an unsigned integer.
-template <typename C>
-void WriteTokenStartTmpl(MajorType type, uint64_t value, C* encoded) {
+void WriteTokenStart(MajorType type,
+                     uint64_t value,
+                     std::vector<uint8_t>* encoded) {
   if (value < 24) {
     // Values 0-23 are encoded directly into the additional info of the
     // initial byte.
@@ -183,16 +184,6 @@ void WriteTokenStartTmpl(MajorType type, uint64_t value, C* encoded) {
   encoded->push_back(EncodeInitialByte(type, kAdditionalInformation8Bytes));
   WriteBytesMostSignificantByteFirst<uint64_t>(value, encoded);
 }
-
-void WriteTokenStart(MajorType type,
-                     uint64_t value,
-                     std::vector<uint8_t>* encoded) {
-  WriteTokenStartTmpl(type, value, encoded);
-}
-
-void WriteTokenStart(MajorType type, uint64_t value, std::string* encoded) {
-  WriteTokenStartTmpl(type, value, encoded);
-}
 }  // namespace internals
 
 // =============================================================================
@@ -210,6 +201,20 @@ uint8_t InitialByteFor32BitLengthByteString() {
 bool IsCBORMessage(span<uint8_t> msg) {
   return msg.size() >= 6 && msg[0] == InitialByteForEnvelope() &&
          msg[1] == InitialByteFor32BitLengthByteString();
+}
+
+Status CheckCBORMessage(span<uint8_t> msg) {
+  if (msg.empty())
+    return Status(Error::CBOR_NO_INPUT, 0);
+  if (msg[0] != InitialByteForEnvelope())
+    return Status(Error::CBOR_INVALID_START_BYTE, 0);
+  if (msg.size() < 6 || msg[1] != InitialByteFor32BitLengthByteString())
+    return Status(Error::CBOR_INVALID_ENVELOPE, 1);
+  if (msg[2] == 0 && msg[3] == 0 && msg[4] == 0 && msg[5] == 0)
+    return Status(Error::CBOR_INVALID_ENVELOPE, 1);
+  if (msg.size() < 7 || msg[6] != EncodeIndefiniteLengthMapStart())
+    return Status(Error::CBOR_MAP_START_EXPECTED, 6);
+  return Status();
 }
 
 // =============================================================================
@@ -240,8 +245,7 @@ uint8_t EncodeStop() {
   return kStopByte;
 }
 
-template <typename C>
-void EncodeInt32Tmpl(int32_t value, C* out) {
+void EncodeInt32(int32_t value, std::vector<uint8_t>* out) {
   if (value >= 0) {
     internals::WriteTokenStart(MajorType::UNSIGNED, value, out);
   } else {
@@ -250,16 +254,7 @@ void EncodeInt32Tmpl(int32_t value, C* out) {
   }
 }
 
-void EncodeInt32(int32_t value, std::vector<uint8_t>* out) {
-  EncodeInt32Tmpl(value, out);
-}
-
-void EncodeInt32(int32_t value, std::string* out) {
-  EncodeInt32Tmpl(value, out);
-}
-
-template <typename C>
-void EncodeString16Tmpl(span<uint16_t> in, C* out) {
+void EncodeString16(span<uint16_t> in, std::vector<uint8_t>* out) {
   uint64_t byte_length = static_cast<uint64_t>(in.size_bytes());
   internals::WriteTokenStart(MajorType::BYTE_STRING, byte_length, out);
   // When emitting UTF16 characters, we always write the least significant byte
@@ -277,31 +272,13 @@ void EncodeString16Tmpl(span<uint16_t> in, C* out) {
   }
 }
 
-void EncodeString16(span<uint16_t> in, std::vector<uint8_t>* out) {
-  EncodeString16Tmpl(in, out);
-}
-
-void EncodeString16(span<uint16_t> in, std::string* out) {
-  EncodeString16Tmpl(in, out);
-}
-
-template <typename C>
-void EncodeString8Tmpl(span<uint8_t> in, C* out) {
+void EncodeString8(span<uint8_t> in, std::vector<uint8_t>* out) {
   internals::WriteTokenStart(MajorType::STRING,
                              static_cast<uint64_t>(in.size_bytes()), out);
   out->insert(out->end(), in.begin(), in.end());
 }
 
-void EncodeString8(span<uint8_t> in, std::vector<uint8_t>* out) {
-  EncodeString8Tmpl(in, out);
-}
-
-void EncodeString8(span<uint8_t> in, std::string* out) {
-  EncodeString8Tmpl(in, out);
-}
-
-template <typename C>
-void EncodeFromLatin1Tmpl(span<uint8_t> latin1, C* out) {
+void EncodeFromLatin1(span<uint8_t> latin1, std::vector<uint8_t>* out) {
   for (size_t ii = 0; ii < latin1.size(); ++ii) {
     if (latin1[ii] <= 127)
       continue;
@@ -322,16 +299,7 @@ void EncodeFromLatin1Tmpl(span<uint8_t> latin1, C* out) {
   EncodeString8(latin1, out);
 }
 
-void EncodeFromLatin1(span<uint8_t> latin1, std::vector<uint8_t>* out) {
-  EncodeFromLatin1Tmpl(latin1, out);
-}
-
-void EncodeFromLatin1(span<uint8_t> latin1, std::string* out) {
-  EncodeFromLatin1Tmpl(latin1, out);
-}
-
-template <typename C>
-void EncodeFromUTF16Tmpl(span<uint16_t> utf16, C* out) {
+void EncodeFromUTF16(span<uint16_t> utf16, std::vector<uint8_t>* out) {
   // If there's at least one non-ASCII char, encode as STRING16 (UTF16).
   for (uint16_t ch : utf16) {
     if (ch <= 127)
@@ -345,28 +313,11 @@ void EncodeFromUTF16Tmpl(span<uint16_t> utf16, C* out) {
   out->insert(out->end(), utf16.begin(), utf16.end());
 }
 
-void EncodeFromUTF16(span<uint16_t> utf16, std::vector<uint8_t>* out) {
-  EncodeFromUTF16Tmpl(utf16, out);
-}
-
-void EncodeFromUTF16(span<uint16_t> utf16, std::string* out) {
-  EncodeFromUTF16Tmpl(utf16, out);
-}
-
-template <typename C>
-void EncodeBinaryTmpl(span<uint8_t> in, C* out) {
+void EncodeBinary(span<uint8_t> in, std::vector<uint8_t>* out) {
   out->push_back(kExpectedConversionToBase64Tag);
   uint64_t byte_length = static_cast<uint64_t>(in.size_bytes());
   internals::WriteTokenStart(MajorType::BYTE_STRING, byte_length, out);
   out->insert(out->end(), in.begin(), in.end());
-}
-
-void EncodeBinary(span<uint8_t> in, std::vector<uint8_t>* out) {
-  EncodeBinaryTmpl(in, out);
-}
-
-void EncodeBinary(span<uint8_t> in, std::string* out) {
-  EncodeBinaryTmpl(in, out);
 }
 
 // A double is encoded with a specific initial byte
@@ -378,8 +329,7 @@ constexpr size_t kEncodedDoubleSize = 1 + sizeof(uint64_t);
 // bit wide length, plus a 32 bit length for that string.
 constexpr size_t kEncodedEnvelopeHeaderSize = 1 + 1 + sizeof(uint32_t);
 
-template <typename C>
-void EncodeDoubleTmpl(double value, C* out) {
+void EncodeDouble(double value, std::vector<uint8_t>* out) {
   // The additional_info=27 indicates 64 bits for the double follow.
   // See RFC 7049 Section 2.3, Table 1.
   out->push_back(kInitialByteForDouble);
@@ -391,58 +341,32 @@ void EncodeDoubleTmpl(double value, C* out) {
   WriteBytesMostSignificantByteFirst<uint64_t>(reinterpret.to_uint64, out);
 }
 
-void EncodeDouble(double value, std::vector<uint8_t>* out) {
-  EncodeDoubleTmpl(value, out);
-}
-
-void EncodeDouble(double value, std::string* out) {
-  EncodeDoubleTmpl(value, out);
-}
-
 // =============================================================================
 // cbor::EnvelopeEncoder - for wrapping submessages
 // =============================================================================
 
-template <typename C>
-void EncodeStartTmpl(C* out, size_t* byte_size_pos) {
-  assert(*byte_size_pos == 0);
+void EnvelopeEncoder::EncodeStart(std::vector<uint8_t>* out) {
+  assert(byte_size_pos_ == 0);
   out->push_back(kInitialByteForEnvelope);
   out->push_back(kInitialByteFor32BitLengthByteString);
-  *byte_size_pos = out->size();
+  byte_size_pos_ = out->size();
   out->resize(out->size() + sizeof(uint32_t));
 }
 
-void EnvelopeEncoder::EncodeStart(std::vector<uint8_t>* out) {
-  EncodeStartTmpl<std::vector<uint8_t>>(out, &byte_size_pos_);
-}
-
-void EnvelopeEncoder::EncodeStart(std::string* out) {
-  EncodeStartTmpl<std::string>(out, &byte_size_pos_);
-}
-
-template <typename C>
-bool EncodeStopTmpl(C* out, size_t* byte_size_pos) {
-  assert(*byte_size_pos != 0);
+bool EnvelopeEncoder::EncodeStop(std::vector<uint8_t>* out) {
+  assert(byte_size_pos_ != 0);
   // The byte size is the size of the payload, that is, all the
   // bytes that were written past the byte size position itself.
-  uint64_t byte_size = out->size() - (*byte_size_pos + sizeof(uint32_t));
+  uint64_t byte_size = out->size() - (byte_size_pos_ + sizeof(uint32_t));
   // We store exactly 4 bytes, so at most INT32MAX, with most significant
   // byte first.
   if (byte_size > std::numeric_limits<uint32_t>::max())
     return false;
   for (int shift_bytes = sizeof(uint32_t) - 1; shift_bytes >= 0;
        --shift_bytes) {
-    (*out)[(*byte_size_pos)++] = 0xff & (byte_size >> (shift_bytes * 8));
+    (*out)[byte_size_pos_++] = 0xff & (byte_size >> (shift_bytes * 8));
   }
   return true;
-}
-
-bool EnvelopeEncoder::EncodeStop(std::vector<uint8_t>* out) {
-  return EncodeStopTmpl(out, &byte_size_pos_);
-}
-
-bool EnvelopeEncoder::EncodeStop(std::string* out) {
-  return EncodeStopTmpl(out, &byte_size_pos_);
 }
 
 // =============================================================================
@@ -450,10 +374,10 @@ bool EnvelopeEncoder::EncodeStop(std::string* out) {
 // =============================================================================
 
 namespace {
-template <typename C>
 class CBOREncoder : public ParserHandler {
  public:
-  CBOREncoder(C* out, Status* status) : out_(out), status_(status) {
+  CBOREncoder(std::vector<uint8_t>* out, Status* status)
+      : out_(out), status_(status) {
     *status_ = Status();
   }
 
@@ -551,7 +475,7 @@ class CBOREncoder : public ParserHandler {
   }
 
  private:
-  C* out_;
+  std::vector<uint8_t>* out_;
   std::vector<EnvelopeEncoder> envelopes_;
   Status* status_;
 };
@@ -559,13 +483,7 @@ class CBOREncoder : public ParserHandler {
 
 std::unique_ptr<ParserHandler> NewCBOREncoder(std::vector<uint8_t>* out,
                                               Status* status) {
-  return std::unique_ptr<ParserHandler>(
-      new CBOREncoder<std::vector<uint8_t>>(out, status));
-}
-std::unique_ptr<ParserHandler> NewCBOREncoder(std::string* out,
-                                              Status* status) {
-  return std::unique_ptr<ParserHandler>(
-      new CBOREncoder<std::string>(out, status));
+  return std::unique_ptr<ParserHandler>(new CBOREncoder(out, status));
 }
 
 // =============================================================================
@@ -777,8 +695,9 @@ void CBORTokenizer::ReadNextToken(bool enter_envelope) {
           // inspector protocol, it's not a CBOR limitation), so we check
           // against the signed max, so that the allowable values are
           // 0, 1, 2, ... 2^31 - 1.
-          if (!bytes_read || std::numeric_limits<int32_t>::max() <
-                                 token_start_internal_value_) {
+          if (!bytes_read ||
+              static_cast<uint64_t>(std::numeric_limits<int32_t>::max()) <
+                  static_cast<uint64_t>(token_start_internal_value_)) {
             SetError(Error::CBOR_INVALID_INT32);
             return;
           }
@@ -795,8 +714,9 @@ void CBORTokenizer::ReadNextToken(bool enter_envelope) {
           // We check the payload in token_start_internal_value_ against
           // that range (2^31-1 is also known as
           // std::numeric_limits<int32_t>::max()).
-          if (!bytes_read || token_start_internal_value_ >
-                                 std::numeric_limits<int32_t>::max()) {
+          if (!bytes_read ||
+              static_cast<uint64_t>(token_start_internal_value_) >
+                  static_cast<uint64_t>(std::numeric_limits<int32_t>::max())) {
             SetError(Error::CBOR_INVALID_INT32);
             return;
           }
@@ -916,19 +836,12 @@ bool ParseEnvelope(int32_t stack_depth,
         return false;
       break;  // Continue to check pos_past_envelope below.
     case CBORTokenTag::ARRAY_START:
-      if (stack_depth == 0) {  // Not allowed at the top level.
-        out->HandleError(
-            Status{Error::CBOR_MAP_START_EXPECTED, tokenizer->Status().pos});
-        return false;
-      }
       if (!ParseArray(stack_depth + 1, tokenizer, out))
         return false;
       break;  // Continue to check pos_past_envelope below.
     default:
-      out->HandleError(Status{
-          stack_depth == 0 ? Error::CBOR_MAP_START_EXPECTED
-                           : Error::CBOR_MAP_OR_ARRAY_EXPECTED_IN_ENVELOPE,
-          tokenizer->Status().pos});
+      out->HandleError(Status{Error::CBOR_MAP_OR_ARRAY_EXPECTED_IN_ENVELOPE,
+                              tokenizer->Status().pos});
       return false;
   }
   // The contents of the envelope parsed OK, now check that we're at
@@ -1073,19 +986,12 @@ void ParseCBOR(span<uint8_t> bytes, ParserHandler* out) {
     out->HandleError(Status{Error::CBOR_NO_INPUT, 0});
     return;
   }
-  if (bytes[0] != kInitialByteForEnvelope) {
-    out->HandleError(Status{Error::CBOR_INVALID_START_BYTE, 0});
-    return;
-  }
   CBORTokenizer tokenizer(bytes);
   if (tokenizer.TokenTag() == CBORTokenTag::ERROR_VALUE) {
     out->HandleError(tokenizer.Status());
     return;
   }
-  // We checked for the envelope start byte above, so the tokenizer
-  // must agree here, since it's not an error.
-  assert(tokenizer.TokenTag() == CBORTokenTag::ENVELOPE);
-  if (!ParseEnvelope(/*stack_depth=*/0, &tokenizer, out))
+  if (!ParseValue(/*stack_depth=*/0, &tokenizer, out))
     return;
   if (tokenizer.TokenTag() == CBORTokenTag::DONE)
     return;
@@ -1100,10 +1006,9 @@ void ParseCBOR(span<uint8_t> bytes, ParserHandler* out) {
 // cbor::AppendString8EntryToMap - for limited in-place editing of messages
 // =============================================================================
 
-template <typename C>
-Status AppendString8EntryToCBORMapTmpl(span<uint8_t> string8_key,
-                                       span<uint8_t> string8_value,
-                                       C* cbor) {
+Status AppendString8EntryToCBORMap(span<uint8_t> string8_key,
+                                   span<uint8_t> string8_value,
+                                   std::vector<uint8_t>* cbor) {
   // Careful below: Don't compare (*cbor)[idx] with a uint8_t, since
   // it could be a char (signed!). Instead, use bytes.
   span<uint8_t> bytes(reinterpret_cast<const uint8_t*>(cbor->data()),
@@ -1136,18 +1041,6 @@ Status AppendString8EntryToCBORMapTmpl(span<uint8_t> string8_key,
   *(out++) = (new_envelope_size >> 8) & 0xff;
   *(out) = new_envelope_size & 0xff;
   return Status();
-}
-
-Status AppendString8EntryToCBORMap(span<uint8_t> string8_key,
-                                   span<uint8_t> string8_value,
-                                   std::vector<uint8_t>* cbor) {
-  return AppendString8EntryToCBORMapTmpl(string8_key, string8_value, cbor);
-}
-
-Status AppendString8EntryToCBORMap(span<uint8_t> string8_key,
-                                   span<uint8_t> string8_value,
-                                   std::string* cbor) {
-  return AppendString8EntryToCBORMapTmpl(string8_key, string8_value, cbor);
 }
 }  // namespace cbor
 }  // namespace crdtp

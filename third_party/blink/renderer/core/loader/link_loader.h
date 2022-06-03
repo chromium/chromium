@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/prerender_client.h"
 
 namespace blink {
 
@@ -48,19 +47,10 @@ class ResourceClient;
 
 // The LinkLoader can load link rel types icon, dns-prefetch, prefetch, and
 // prerender.
-class CORE_EXPORT LinkLoader final : public SingleModuleClient,
-                                     public PrerenderClient {
-  USING_GARBAGE_COLLECTED_MIXIN(LinkLoader);
-
+class CORE_EXPORT LinkLoader final : public SingleModuleClient {
  public:
   LinkLoader(LinkLoaderClient*, scoped_refptr<base::SingleThreadTaskRunner>);
   ~LinkLoader() override;
-
-  // from PrerenderClient
-  void DidStartPrerender() override;
-  void DidStopPrerender() override;
-  void DidSendLoadForPrerender() override;
-  void DidSendDOMContentLoadedForPrerender() override;
 
   void Abort();
   bool LoadLink(const LinkLoadParameters&, Document&);
@@ -69,11 +59,12 @@ class CORE_EXPORT LinkLoader final : public SingleModuleClient,
                       const WTF::TextEncoding&,
                       FetchParameters::DeferOption,
                       Document&,
-                      ResourceClient*);
+                      ResourceClient*,
+                      RenderBlockingBehavior);
 
   Resource* GetResourceForTesting();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   class FinishObserver;
@@ -90,4 +81,4 @@ class CORE_EXPORT LinkLoader final : public SingleModuleClient,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOADER_H_

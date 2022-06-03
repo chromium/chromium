@@ -8,7 +8,6 @@ from blinkpy.common.unified_diff import unified_diff
 
 
 class TestUnifiedDiff(unittest.TestCase):
-
     def test_unified_diff(self):
         self.assertEqual(
             unified_diff('foo\n', 'bar\n', 'exp.txt', 'act.txt'),
@@ -16,8 +15,10 @@ class TestUnifiedDiff(unittest.TestCase):
 
     def test_unified_diff_missing_newline(self):
         self.assertEqual(
-            unified_diff('Hello\n\nWorld', 'Hello\n\nWorld\n\n\n', 'exp.txt', 'act.txt'),
-            '--- exp.txt\n+++ act.txt\n@@ -1,3 +1,5 @@\n Hello\n \n-World\n\\ No newline at end of file\n+World\n+\n+\n')
+            unified_diff('Hello\n\nWorld', 'Hello\n\nWorld\n\n\n', 'exp.txt',
+                         'act.txt'),
+            '--- exp.txt\n+++ act.txt\n@@ -1,3 +1,5 @@\n Hello\n \n-World\n\\ No newline at end of file\n+World\n+\n+\n'
+        )
 
     def test_unified_diff_handles_unicode_file_names(self):
         # Make sure that we don't run into decoding exceptions when the
@@ -36,4 +37,5 @@ class TestUnifiedDiff(unittest.TestCase):
         # encoding (and be stored as str objects), test unicode inputs just to
         # be safe.
         unified_diff(u'exp', 'act', 'exp.txt', 'act.txt')
-        unified_diff(u'a\xac\u1234\u20ac\U00008000', 'act', 'exp.txt', 'act.txt')
+        unified_diff(u'a\xac\u1234\u20ac\U00008000', 'act', 'exp.txt',
+                     'act.txt')

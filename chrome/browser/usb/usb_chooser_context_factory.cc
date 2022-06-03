@@ -32,10 +32,24 @@ UsbChooserContextFactory* UsbChooserContextFactory::GetInstance() {
 // static
 UsbChooserContext* UsbChooserContextFactory::GetForProfile(Profile* profile) {
   return static_cast<UsbChooserContext*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+UsbChooserContext* UsbChooserContextFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<UsbChooserContext*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 content::BrowserContext* UsbChooserContextFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}
+
+void UsbChooserContextFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  auto* usb_chooser_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (usb_chooser_context)
+    usb_chooser_context->FlushScheduledSaveSettingsCalls();
 }

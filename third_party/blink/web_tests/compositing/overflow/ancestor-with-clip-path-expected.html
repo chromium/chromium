@@ -1,6 +1,13 @@
 <!DOCTYPE HTML>
 <style>
+body {
+    margin: 0
+}
+
 #scroller {
+    position: relative;
+    top: -150px;
+    left: -50px;
     overflow: scroll;
     height: 300px;
     width: 300px;
@@ -8,10 +15,13 @@
 }
 
 #outer {
-    height: 800px;
+    position: absolute;
+    top: 150px;
+    left: 50px;
     width: 250px;
+    height: 300px;
+    overflow: hidden;
     background-color: blue;
-    clip-path: polygon(40px 550px,432px 302px,409px 237px,46px 156px);
 }
 
 #scrolled {
@@ -21,17 +31,17 @@
 }
 
 #fixed {
-    position: fixed;
+    position: absolute;
     height: 100px;
     width: 100px;
     background-color: green;
-    top: 400px;
-    left: 100px;
+    top: 250px;
+    left: 50px;
 }
 </style>
 <div id="outer">
     <div id="scroller">
         <div id="scrolled"></div>
-        <div id="fixed"></div>
     </div>
+    <div id="fixed"></div>
 </div>

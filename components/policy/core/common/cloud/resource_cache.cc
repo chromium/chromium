@@ -11,9 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace policy {
 
@@ -45,7 +44,7 @@ bool Base64UrlEncode(const std::set<std::string>& input,
 ResourceCache::ResourceCache(
     const base::FilePath& cache_dir,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::Optional<int64_t> max_cache_size)
+    absl::optional<int64_t> max_cache_size)
     : cache_dir_(cache_dir),
       task_runner_(task_runner),
       max_cache_size_(max_cache_size) {
@@ -72,7 +71,6 @@ base::FilePath ResourceCache::Store(const std::string& key,
                                     const std::string& subkey,
                                     const std::string& data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.Store");
   base::FilePath subkey_path;
   if (!VerifyKeyPathAndGetSubkeyPath(key, true, subkey, &subkey_path))
     return base::FilePath();
@@ -94,7 +92,6 @@ base::FilePath ResourceCache::Load(const std::string& key,
                                    const std::string& subkey,
                                    std::string* data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.Load");
   base::FilePath subkey_path;
   // Only read from |subkey_path| if it is not a symlink.
   if (!VerifyKeyPathAndGetSubkeyPath(key, false, subkey, &subkey_path) ||
@@ -111,7 +108,6 @@ void ResourceCache::LoadAllSubkeys(
     const std::string& key,
     std::map<std::string, std::string>* contents) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.LoadAllSubkeys");
   contents->clear();
   base::FilePath key_path;
   if (!VerifyKeyPath(key, false, &key_path))
@@ -137,7 +133,6 @@ void ResourceCache::LoadAllSubkeys(
 
 void ResourceCache::Delete(const std::string& key, const std::string& subkey) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.Delete");
   base::FilePath subkey_path;
   if (VerifyKeyPathAndGetSubkeyPath(key, false, subkey, &subkey_path))
     DeleteCacheFile(subkey_path, false);
@@ -151,7 +146,6 @@ void ResourceCache::Delete(const std::string& key, const std::string& subkey) {
 
 void ResourceCache::Clear(const std::string& key) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.Clear");
   base::FilePath key_path;
   if (VerifyKeyPath(key, false, &key_path))
     DeleteCacheFile(key_path, true);
@@ -160,7 +154,6 @@ void ResourceCache::Clear(const std::string& key) {
 void ResourceCache::FilterSubkeys(const std::string& key,
                                   const SubkeyFilter& test) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.FilterSubkeys");
 
   base::FilePath key_path;
   if (!VerifyKeyPath(key, false, &key_path))
@@ -188,7 +181,6 @@ void ResourceCache::FilterSubkeys(const std::string& key,
 
 void ResourceCache::PurgeOtherKeys(const std::set<std::string>& keys_to_keep) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.PurgeOtherKeys");
   std::set<std::string> encoded_keys_to_keep;
   if (!Base64UrlEncode(keys_to_keep, &encoded_keys_to_keep))
     return;
@@ -207,8 +199,6 @@ void ResourceCache::PurgeOtherSubkeys(
     const std::string& key,
     const std::set<std::string>& subkeys_to_keep) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Enterprise.ResourceCacheTiming.PurgeOtherSubkeys");
   base::FilePath key_path;
   if (!VerifyKeyPath(key, false, &key_path))
     return;
@@ -270,7 +260,6 @@ bool ResourceCache::VerifyKeyPathAndGetSubkeyPath(const std::string& key,
 
 void ResourceCache::InitCurrentCacheSize() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Enterprise.ResourceCacheTiming.Init");
   current_cache_size_ = GetCacheDirectoryOrFileSize(cache_dir_);
 }
 
@@ -291,7 +280,11 @@ bool ResourceCache::DeleteCacheFile(const base::FilePath& path,
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(cache_dir_.IsParent(path));
   int64_t size = GetCacheDirectoryOrFileSize(path);
-  bool success = base::DeleteFile(path, recursive);
+  bool success;
+  if (recursive)
+    success = base::DeletePathRecursively(path);
+  else
+    success = base::DeleteFile(path);
   if (success && max_cache_size_.has_value())
     current_cache_size_ -= size;
   return success;
@@ -309,9 +302,9 @@ int64_t ResourceCache::GetCacheDirectoryOrFileSize(
   if (base::DirectoryExists(path)) {
     int types = base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES;
     base::FileEnumerator enumerator(path, /* recursive */ false, types);
-    for (base::FilePath path = enumerator.Next(); !path.empty();
-         path = enumerator.Next()) {
-      path_size += GetCacheDirectoryOrFileSize(path);
+    for (base::FilePath child_path = enumerator.Next(); !child_path.empty();
+         child_path = enumerator.Next()) {
+      path_size += GetCacheDirectoryOrFileSize(child_path);
     }
   } else if (!base::GetFileSize(path, &path_size)) {
     path_size = 0;

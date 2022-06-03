@@ -10,28 +10,13 @@
 @protocol LocationBarConsumer;
 class TemplateURLService;
 class WebStateList;
-class OverlayPresenter;
-class LocationBarModel;
 
-// A mediator object that updates the mediator when the web state changes.
+// A mediator object that updates location bar state not relating to the
+// LocationBarSteadyView. In practice, this is any state not relating to the
+// WebState.
 @interface LocationBarMediator : NSObject
 
-- (instancetype)initWithLocationBarModel:(LocationBarModel*)locationBarModel
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
-// The WebStateList that this mediator listens for any changes on the active web
-// state.
-@property(nonatomic, assign) WebStateList* webStateList;
-
-// The overlay presenter for OverlayModality::kWebContentArea.  This mediator
-// listens for overlay presentation events to determine whether the share button
-// should be enabled.
-@property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
-
-// The location bar model used by this mediator to extract the current URL and
-// the security state.
-@property(nonatomic, assign, readonly) LocationBarModel* locationBarModel;
+- (instancetype)init;
 
 // The templateURLService used by this mediator to extract whether the default
 // search engine supports search-by-image.
@@ -40,6 +25,10 @@ class LocationBarModel;
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
 @property(nonatomic, weak) id<LocationBarConsumer> consumer;
+
+// The WebStateList that this mediator listens for any changes on the active web
+// state.
+@property(nonatomic, assign) WebStateList* webStateList;
 
 // Stops observing all objects.
 - (void)disconnect;

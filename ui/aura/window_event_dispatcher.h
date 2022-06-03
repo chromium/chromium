@@ -11,10 +11,9 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/capture_delegate.h"
 #include "ui/aura/env_observer.h"
@@ -27,6 +26,7 @@
 #include "ui/events/fraction_of_time_without_user_input_recorder.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/gestures/gesture_types.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -58,6 +58,10 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
                                           public EnvObserver {
  public:
   explicit WindowEventDispatcher(WindowTreeHost* host);
+
+  WindowEventDispatcher(const WindowEventDispatcher&) = delete;
+  WindowEventDispatcher& operator=(const WindowEventDispatcher&) = delete;
+
   ~WindowEventDispatcher() override;
 
   // Stops dispatching/synthesizing mouse events.
@@ -105,7 +109,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   virtual void ProcessedTouchEvent(uint32_t unique_event_id,
                                    Window* window,
                                    ui::EventResult result,
-                                   bool is_source_touch_event_set_non_blocking);
+                                   bool is_source_touch_event_set_blocking);
 
   // These methods are used to defer the processing of mouse/touch events
   // related to resize. A client (typically a RenderWidgetHostViewAura) can call
@@ -152,12 +156,14 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   class ObserverNotifier {
    public:
     ObserverNotifier(WindowEventDispatcher* dispatcher, const ui::Event& event);
+
+    ObserverNotifier(const ObserverNotifier&) = delete;
+    ObserverNotifier& operator=(const ObserverNotifier&) = delete;
+
     ~ObserverNotifier();
 
    private:
     WindowEventDispatcher* dispatcher_;
-
-    DISALLOW_COPY_AND_ASSIGN(ObserverNotifier);
   };
 
   // The parameter for OnWindowHidden() to specify why window is hidden.
@@ -280,7 +286,8 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
                                                  ui::GestureEvent* event);
   ui::EventDispatchDetails PreDispatchTouchEvent(Window* target,
                                                  ui::TouchEvent* event);
-  ui::EventDispatchDetails PreDispatchKeyEvent(ui::KeyEvent* event);
+  ui::EventDispatchDetails PreDispatchKeyEvent(Window* target,
+                                               ui::KeyEvent* event);
 
   WindowTreeHost* host_;
 
@@ -311,7 +318,8 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Set when dispatching a held event.
   ui::LocatedEvent* dispatching_held_event_ = nullptr;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observation_manager_{this};
 
   // The default EventTargeter for WindowEventDispatcher generated events.
   std::unique_ptr<WindowTargeter> event_targeter_;
@@ -333,8 +341,6 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   // Used to schedule DispatchHeldEvents() when |move_hold_count_| goes to 0.
   base::WeakPtrFactory<WindowEventDispatcher> held_event_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventDispatcher);
 };
 
 }  // namespace aura

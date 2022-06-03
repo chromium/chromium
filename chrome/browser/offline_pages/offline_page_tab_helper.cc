@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/guid.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
@@ -38,7 +39,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "ui/base/page_transition_types.h"
 
 namespace offline_pages {
@@ -77,6 +77,20 @@ OfflinePageTabHelper::LoadedOfflinePageInfo::~LoadedOfflinePageInfo() = default;
 OfflinePageTabHelper::LoadedOfflinePageInfo&
 OfflinePageTabHelper::LoadedOfflinePageInfo::operator=(
     OfflinePageTabHelper::LoadedOfflinePageInfo&& other) = default;
+
+// static
+void OfflinePageTabHelper::BindHtmlPageNotifier(
+    mojo::PendingAssociatedReceiver<offline_pages::mojom::MhtmlPageNotifier>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = OfflinePageTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->mhtml_page_notifier_receivers_.Bind(rfh, std::move(receiver));
+}
 
 // static
 OfflinePageTabHelper::LoadedOfflinePageInfo
@@ -192,7 +206,9 @@ void OfflinePageTabHelper::DidFinishNavigation(
     // full page on back navigation. If not, offline page is fast to load,
     // so back-forward cache is not going to be useful here.
     content::BackForwardCache::DisableForRenderFrameHost(
-        navigation_handle->GetPreviousRenderFrameHostId(), "OfflinePage");
+        navigation_handle->GetPreviousRenderFrameHostId(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kOfflinePage));
   }
 
   // This is a new navigation so we can invalidate any previously scheduled
@@ -419,9 +435,10 @@ void OfflinePageTabHelper::ScheduleDownloadHelper(
     const std::string& request_origin) {
   OfflinePageUtils::CheckDuplicateDownloads(
       web_contents->GetBrowserContext(), url,
-      base::Bind(&OfflinePageTabHelper::DuplicateCheckDoneForScheduleDownload,
-                 weak_ptr_factory_.GetWeakPtr(), web_contents, name_space, url,
-                 ui_action, request_origin));
+      base::BindOnce(
+          &OfflinePageTabHelper::DuplicateCheckDoneForScheduleDownload,
+          weak_ptr_factory_.GetWeakPtr(), web_contents, name_space, url,
+          ui_action, request_origin));
 }
 
 void OfflinePageTabHelper::DuplicateCheckDoneForScheduleDownload(
@@ -436,9 +453,9 @@ void OfflinePageTabHelper::DuplicateCheckDoneForScheduleDownload(
         static_cast<int>(
             OfflinePageUtils::DownloadUIActionFlags::PROMPT_DUPLICATE)) {
       OfflinePageUtils::ShowDuplicatePrompt(
-          base::Bind(&OfflinePageTabHelper::DoDownloadPageLater,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents, name_space,
-                     url, ui_action, request_origin),
+          base::BindOnce(&OfflinePageTabHelper::DoDownloadPageLater,
+                         weak_ptr_factory_.GetWeakPtr(), web_contents,
+                         name_space, url, ui_action, request_origin),
           url,
           result ==
               OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND,
@@ -475,6 +492,6 @@ void OfflinePageTabHelper::DoDownloadPageLater(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinePageTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinePageTabHelper);
 
 }  // namespace offline_pages

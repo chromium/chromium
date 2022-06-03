@@ -1,0 +1,9 @@
+This directory contains the Desktop implementations of the browser
+commands located at:
+//ui/webui/resources/js/browser_command/browser_command.mojom
+
+Add unit tests for every new handled command.
+
+All changes to this directory should be run by //ipc/SECURITY_OWNERS in addition
+to the NTP owners in order to ensure the implementations of the promo browser
+commands are side-effect-free.

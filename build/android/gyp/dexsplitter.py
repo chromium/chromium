@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -48,11 +48,10 @@ def _ParseOptions(args):
 
 
 def _RunDexsplitter(options, output_dir):
-  cmd = [
-      build_utils.JAVA_PATH,
-      '-jar',
+  cmd = build_utils.JavaCmd() + [
+      '-cp',
       options.r8_path,
-      'dexsplitter',
+      'com.android.tools.r8.dexsplitter.DexSplitter',
       '--output',
       output_dir,
       '--proguard-map',
@@ -82,7 +81,7 @@ def main(args):
   options = _ParseOptions(args)
 
   input_paths = [options.input_dex_zip]
-  for feature_jars in options.features.itervalues():
+  for feature_jars in options.features.values():
     for feature_jar in feature_jars:
       input_paths.append(feature_jar)
 
@@ -101,15 +100,15 @@ def main(args):
         if os.path.exists(module_dex_file):
           curr_location_to_dest.append((module_dex_file, dest))
         else:
-          module_dex_file += '.zip'
+          module_dex_file += '.jar'
           assert os.path.exists(
               module_dex_file), 'Dexsplitter tool output not found.'
-          curr_location_to_dest.append((module_dex_file + '.zip', dest))
+          curr_location_to_dest.append((module_dex_file + '.jar', dest))
 
     for curr_location, dest in curr_location_to_dest:
       with build_utils.AtomicOutput(dest) as f:
-        if curr_location.endswith('.zip'):
-          if dest.endswith('.zip'):
+        if curr_location.endswith('.jar'):
+          if dest.endswith('.jar'):
             shutil.copy(curr_location, f.name)
           else:
             with zipfile.ZipFile(curr_location, 'r') as z:
@@ -119,7 +118,7 @@ def main(args):
                   options.input_dex_zip)
               z.extract(namelist[0], f.name)
         else:
-          if dest.endswith('.zip'):
+          if dest.endswith('.jar'):
             build_utils.ZipDir(
                 f.name, os.path.abspath(os.path.join(curr_location, os.pardir)))
           else:

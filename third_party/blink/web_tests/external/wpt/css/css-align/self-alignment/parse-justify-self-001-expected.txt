@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Checking justify-self: auto
+PASS Checking justify-self: normal
+PASS Checking justify-self: stretch
+PASS Checking justify-self: left
+PASS Checking justify-self: right
+PASS Checking justify-self: start
+PASS Checking justify-self: end
+PASS Checking justify-self: self-start
+PASS Checking justify-self: self-end
+PASS Checking justify-self: center
+PASS Checking justify-self: flex-start
+PASS Checking justify-self: flex-end
+PASS Checking justify-self: baseline
+PASS Checking justify-self: first baseline
+FAIL Checking justify-self: last baseline assert_equals: justify-self computed style is not what is should. expected "last baseline" but got "auto"
+PASS Checking justify-self: safe flex-end
+PASS Checking justify-self: unsafe end
+PASS Checking justify-self: safe end
+PASS Checking justify-self: unsafe flex-start
+PASS Checking justify-self: safe center
+Harness: the test ran to completion.
+

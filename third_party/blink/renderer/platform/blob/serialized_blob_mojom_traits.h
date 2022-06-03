@@ -8,16 +8,15 @@
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
-#include "third_party/blink/public/mojom/blob/serialized_blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom-shared.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace mojo {
 
 template <>
-struct PLATFORM_EXPORT
-    StructTraits<blink::mojom::blink::SerializedBlob::DataView,
-                 scoped_refptr<blink::BlobDataHandle>> {
+struct PLATFORM_EXPORT StructTraits<blink::mojom::SerializedBlobDataView,
+                                    scoped_refptr<blink::BlobDataHandle>> {
   static bool IsNull(const scoped_refptr<blink::BlobDataHandle>& input) {
     return !input;
   }
@@ -44,7 +43,7 @@ struct PLATFORM_EXPORT
     return input->CloneBlobRemote();
   }
 
-  static bool Read(blink::mojom::blink::SerializedBlob::DataView,
+  static bool Read(blink::mojom::SerializedBlobDataView,
                    scoped_refptr<blink::BlobDataHandle>* out);
 };
 

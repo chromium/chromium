@@ -22,8 +22,7 @@
 #include <unistd.h>
 
 #include "base/bit_cast.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_architecture.h"
@@ -333,6 +332,9 @@ class ScopedSigactionRestore {
  public:
   ScopedSigactionRestore() : old_action_(), signo_(-1), valid_(false) {}
 
+  ScopedSigactionRestore(const ScopedSigactionRestore&) = delete;
+  ScopedSigactionRestore& operator=(const ScopedSigactionRestore&) = delete;
+
   ~ScopedSigactionRestore() { Reset(); }
 
   bool Reset() {
@@ -361,12 +363,14 @@ class ScopedSigactionRestore {
   struct sigaction old_action_;
   int signo_;
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSigactionRestore);
 };
 
 class RaiseTest {
  public:
+  RaiseTest() = delete;
+  RaiseTest(const RaiseTest&) = delete;
+  RaiseTest& operator=(const RaiseTest&) = delete;
+
   static void Run() {
     test_complete_ = false;
 
@@ -406,8 +410,6 @@ class RaiseTest {
 
   static constexpr uint32_t kSigno = SIGUSR1;
   static bool test_complete_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RaiseTest);
 };
 bool RaiseTest::test_complete_ = false;
 
@@ -417,7 +419,11 @@ TEST(ExceptionSnapshotLinux, Raise) {
 
 class TimerTest {
  public:
-  TimerTest() : event_(), timer_(-1), test_complete_(0) { test_ = this; }
+  TimerTest() : event_(), timer_(-1), test_complete_(false) { test_ = this; }
+
+  TimerTest(const TimerTest&) = delete;
+  TimerTest& operator=(const TimerTest&) = delete;
+
   ~TimerTest() { test_ = nullptr; }
 
   void Run() {
@@ -437,7 +443,13 @@ class TimerTest {
     ASSERT_EQ(syscall(SYS_timer_settime, timer_, TIMER_ABSTIME, &spec, nullptr),
               0);
 
-    ASSERT_TRUE(test_complete_.TimedWait(5));
+    for (size_t attempt = 0; attempt < 3; ++attempt) {
+      SleepNanoseconds(1);
+      if (test_complete_) {
+        return;
+      }
+    }
+    ADD_FAILURE() << "signal not received";
   }
 
  private:
@@ -464,17 +476,15 @@ class TimerTest {
     EXPECT_EQ(exception.Codes()[2],
               static_cast<uint64_t>(test_->event_.sigev_value.sival_int));
 
-    test_->test_complete_.Signal();
+    test_->test_complete_ = true;
   }
 
   sigevent event_;
   __kernel_timer_t timer_;
-  Semaphore test_complete_;
+  volatile bool test_complete_;
 
   static constexpr uint32_t kSigno = SIGALRM;
   static TimerTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerTest);
 };
 TimerTest* TimerTest::test_;
 

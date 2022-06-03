@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests the matching of groups in AnimationModel.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('animation');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('animation');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -57,7 +57,7 @@
     var group = event.data;
     if (!firstGroup)
       firstGroup = group;
-    TestRunner.addResult('Matches first group: ' + firstGroup._matches(group));
+    TestRunner.addResult('Matches first group: ' + firstGroup.matches(group));
     i++;
     if (i < 5)
       TestRunner.evaluateInPage('startCSSTransition()');

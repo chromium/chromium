@@ -11,10 +11,10 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "ipc/ipc_test_base.h"
@@ -28,6 +28,7 @@
 
 #define IPC_MESSAGE_IMPL
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 #define IPC_MESSAGE_START TestMsgStart
 
@@ -57,8 +58,10 @@ const size_t kHelloStringLength = base::size(kHelloString);
 // messages from the client.
 class SyncSocketServerListener : public IPC::Listener {
  public:
-  SyncSocketServerListener() : chan_(NULL) {
-  }
+  SyncSocketServerListener() : chan_(nullptr) {}
+
+  SyncSocketServerListener(const SyncSocketServerListener&) = delete;
+  SyncSocketServerListener& operator=(const SyncSocketServerListener&) = delete;
 
   void Init(IPC::Channel* chan) {
     chan_ = chan;
@@ -103,8 +106,6 @@ class SyncSocketServerListener : public IPC::Listener {
   void OnMsgClassShutdown() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
 
   IPC::Channel* chan_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSocketServerListener);
 };
 
 // Runs the fuzzing server child mode. Returns when the preset number of
@@ -122,6 +123,9 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(SyncSocketServerClient) {
 class SyncSocketClientListener : public IPC::Listener {
  public:
   SyncSocketClientListener() = default;
+
+  SyncSocketClientListener(const SyncSocketClientListener&) = delete;
+  SyncSocketClientListener& operator=(const SyncSocketClientListener&) = delete;
 
   void Init(base::SyncSocket* socket, IPC::Channel* chan) {
     socket_ = socket;
@@ -157,8 +161,6 @@ class SyncSocketClientListener : public IPC::Listener {
 
   base::SyncSocket* socket_;
   IPC::Channel* chan_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSocketClientListener);
 };
 
 using SyncSocketTest = IPCChannelMojoTestBase;

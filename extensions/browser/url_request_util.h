@@ -7,12 +7,14 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "content/public/common/resource_type.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
-class GURL;
+namespace network {
+struct ResourceRequest;
+}
 
 namespace extensions {
 class Extension;
@@ -26,15 +28,16 @@ namespace url_request_util {
 // Sets allowed=true to allow a chrome-extension:// resource request coming from
 // renderer A to access a resource in an extension running in renderer B.
 // Returns false when it couldn't determine if the resource is allowed or not
-bool AllowCrossRendererResourceLoad(const GURL& url,
-                                    content::ResourceType resource_type,
-                                    ui::PageTransition page_transition,
-                                    int child_id,
-                                    bool is_incognito,
-                                    const Extension* extension,
-                                    const ExtensionSet& extensions,
-                                    const ProcessMap& process_map,
-                                    bool* allowed);
+bool AllowCrossRendererResourceLoad(
+    const network::ResourceRequest& request,
+    network::mojom::RequestDestination destination,
+    ui::PageTransition page_transition,
+    int child_id,
+    bool is_incognito,
+    const Extension* extension,
+    const ExtensionSet& extensions,
+    const ProcessMap& process_map,
+    bool* allowed);
 
 // Helper method that is called by both AllowCrossRendererResourceLoad and
 // ExtensionNavigationThrottle to share logic.
@@ -52,14 +55,14 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
 // Checks whether the given |extension| and |resource_path| are part of a
 // special case where an extension URL is permitted to load in any guest
 // process, rather than only in guests of a given platform app. If
-// |resource_path| is base::nullopt, then the check is based solely on which
+// |resource_path| is absl::nullopt, then the check is based solely on which
 // extension is passed in, allowing this to be used for origin checks as well as
 // URL checks.
 // TODO(creis): Remove this method when the special cases (listed by bug number
 // in the definition of this method) are gone.
 bool AllowSpecialCaseExtensionURLInGuest(
     const Extension* extension,
-    base::Optional<base::StringPiece> resource_path);
+    absl::optional<base::StringPiece> resource_path);
 
 }  // namespace url_request_util
 }  // namespace extensions

@@ -5,19 +5,21 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/token.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/fake_video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
-
-static const int kMaxBufferCount = 3;
 
 class FakeLaunchedVideoCaptureDevice
     : public content::LaunchedVideoCaptureDevice {
@@ -41,13 +43,19 @@ class FakeLaunchedVideoCaptureDevice
   }
   void MaybeSuspendDevice() override { device_->MaybeSuspend(); }
   void ResumeDevice() override { device_->Resume(); }
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override {
+    device_->Crop(crop_id, std::move(callback));
+  }
   void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
                                       base::OnceClosure done_cb) override {
     // Do nothing.
   }
-  void OnUtilizationReport(int frame_feedback_id, double utilization) override {
-    device_->OnUtilizationReport(frame_feedback_id, utilization);
+  void OnUtilizationReport(int frame_feedback_id,
+                           media::VideoCaptureFeedback feedback) override {
+    device_->OnUtilizationReport(frame_feedback_id, feedback);
   }
 
  private:
@@ -77,9 +85,8 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device = system_->CreateDevice(device_id);
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
-          media::VideoCaptureBufferType::kSharedMemory, kMaxBufferCount));
-#if defined(OS_CHROMEOS)
+          media::VideoCaptureBufferType::kSharedMemory));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       media::VideoCaptureBufferType::kSharedMemory,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
@@ -93,7 +100,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::ThreadTaskRunnerHandle::Get()),
       std::move(buffer_pool));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   device->AllocateAndStart(params, std::move(device_client));
   auto launched_device =
       std::make_unique<FakeLaunchedVideoCaptureDevice>(std::move(device));

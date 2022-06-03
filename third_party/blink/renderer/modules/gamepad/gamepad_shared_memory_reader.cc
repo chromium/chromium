@@ -10,31 +10,36 @@
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/platform/interface_provider.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_listener.h"
 
 namespace blink {
 
-GamepadSharedMemoryReader::GamepadSharedMemoryReader(LocalFrame& frame) {
-  frame.GetBrowserInterfaceBroker().GetInterface(
-      gamepad_monitor_remote_.BindNewPipeAndPassReceiver());
+GamepadSharedMemoryReader::GamepadSharedMemoryReader(LocalDOMWindow& window)
+    : receiver_(this, &window), gamepad_monitor_remote_(&window) {
   // See https://bit.ly/2S0zRAS for task types
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      frame.GetTaskRunner(TaskType::kMiscPlatformAPI);
+      window.GetTaskRunner(TaskType::kMiscPlatformAPI);
+  window.GetBrowserInterfaceBroker().GetInterface(
+      gamepad_monitor_remote_.BindNewPipeAndPassReceiver(task_runner));
   gamepad_monitor_remote_->SetObserver(
       receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
+void GamepadSharedMemoryReader::Trace(Visitor* visitor) const {
+  visitor->Trace(receiver_);
+  visitor->Trace(gamepad_monitor_remote_);
+}
+
 void GamepadSharedMemoryReader::SendStartMessage() {
-  if (gamepad_monitor_remote_) {
+  if (gamepad_monitor_remote_.is_bound()) {
     gamepad_monitor_remote_->GamepadStartPolling(
         &renderer_shared_buffer_region_);
   }
 }
 
 void GamepadSharedMemoryReader::SendStopMessage() {
-  if (gamepad_monitor_remote_) {
+  if (gamepad_monitor_remote_.is_bound()) {
     gamepad_monitor_remote_->GamepadStopPolling();
   }
 }
@@ -71,7 +76,7 @@ void GamepadSharedMemoryReader::Stop() {
   SendStopMessage();
 }
 
-void GamepadSharedMemoryReader::SampleGamepads(device::Gamepads& gamepads) {
+void GamepadSharedMemoryReader::SampleGamepads(device::Gamepads* gamepads) {
   // Blink should have started observing at this point.
   CHECK(listener_);
 
@@ -111,15 +116,16 @@ void GamepadSharedMemoryReader::SampleGamepads(device::Gamepads& gamepads) {
   }
 
   // New data was read successfully, copy it into the output buffer.
-  memcpy(&gamepads, &read_into, sizeof(gamepads));
+  memcpy(gamepads, &read_into, sizeof(*gamepads));
 
   if (!ever_interacted_with_) {
     // Clear the connected flag if the user hasn't interacted with any of the
     // gamepads to prevent fingerprinting. The actual data is not cleared.
     // WebKit will only copy out data into the JS buffers for connected
     // gamepads so this is sufficient.
-    for (size_t i = 0; i < device::Gamepads::kItemsLengthCap; i++)
-      gamepads.items[i].connected = false;
+    for (auto& item : gamepads->items) {
+      item.connected = false;
+    }
   }
 }
 
@@ -145,11 +151,9 @@ void GamepadSharedMemoryReader::GamepadDisconnected(
     listener_->DidDisconnectGamepad(index, gamepad);
 }
 
-void GamepadSharedMemoryReader::GamepadButtonOrAxisChanged(
-    uint32_t index,
-    const device::Gamepad& gamepad) {
-  if (listener_)
-    listener_->ButtonOrAxisDidChange(index, gamepad);
+void GamepadSharedMemoryReader::GamepadChanged(
+    device::mojom::blink::GamepadChangesPtr change) {
+  // TODO(crbug.com/856290): use these calls to Generate Button Event.
 }
 
 }  // namespace blink

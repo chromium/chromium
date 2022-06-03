@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Spacing around ≠
+PASS Spacing around =⃒
+FAIL Spacing around |̸ assert_approx_equals: expected 66.65625 +/- 1 but got 26.65625
+PASS Spacing around |⃒
+Harness: the test ran to completion.
+

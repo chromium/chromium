@@ -10,8 +10,8 @@
 #if INSIDE_BLINK
 #include "third_party/blink/renderer/platform/geometry/double_size.h"  // nogncheck
 #else
-#include <ui/gfx/geometry/size_f.h>
-#include <ui/gfx/geometry/vector2d_f.h>
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #endif
 
 namespace blink {
@@ -73,4 +73,4 @@ inline bool operator!=(const WebDoubleSize& a, const WebDoubleSize& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DOUBLE_SIZE_H_

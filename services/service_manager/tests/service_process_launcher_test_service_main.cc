@@ -4,4 +4,7 @@
 
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {}
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {}

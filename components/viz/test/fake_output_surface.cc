@@ -6,12 +6,14 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/gl/color_space_utils.h"
+#include "ui/gfx/swap_result.h"
 
 namespace viz {
 
@@ -32,12 +34,12 @@ FakeOutputSurface::~FakeOutputSurface() = default;
 void FakeOutputSurface::Reshape(const gfx::Size& size,
                                 float device_scale_factor,
                                 const gfx::ColorSpace& color_space,
-                                bool has_alpha,
+                                gfx::BufferFormat format,
                                 bool use_stencil) {
   if (context_provider()) {
     context_provider()->ContextGL()->ResizeCHROMIUM(
         size.width(), size.height(), device_scale_factor,
-        gl::ColorSpaceUtils::GetGLColorSpace(color_space), has_alpha);
+        color_space.AsGLColorSpace(), gfx::AlphaBitsForBufferFormat(format));
   } else {
     software_device()->Resize(size, device_scale_factor);
   }
@@ -55,7 +57,8 @@ void FakeOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
 
 void FakeOutputSurface::SwapBuffersAck() {
   base::TimeTicks now = base::TimeTicks::Now();
-  client_->DidReceiveSwapBuffersAck({now, now});
+  client_->DidReceiveSwapBuffersAck({now, now},
+                                    /*release_fence=*/gfx::GpuFenceHandle());
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
 }
 
@@ -65,6 +68,10 @@ void FakeOutputSurface::BindFramebuffer() {
 
 void FakeOutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
   last_set_draw_rectangle_ = rect;
+}
+
+void FakeOutputSurface::SetEnableDCLayers(bool enabled) {
+  context_provider_->ContextGL()->SetEnableDCLayersCHROMIUM(enabled);
 }
 
 uint32_t FakeOutputSurface::GetFramebufferCopyTextureFormat() {
@@ -82,10 +89,6 @@ void FakeOutputSurface::BindToClient(OutputSurfaceClient* client) {
 
 bool FakeOutputSurface::HasExternalStencilTest() const {
   return has_external_stencil_test_;
-}
-
-gfx::BufferFormat FakeOutputSurface::GetOverlayBufferFormat() const {
-  return gfx::BufferFormat::RGBX_8888;
 }
 
 bool FakeOutputSurface::IsDisplayedAsOverlayPlane() const {
@@ -114,7 +117,9 @@ gfx::OverlayTransform FakeOutputSurface::GetDisplayTransform() {
                                          : gfx::OVERLAY_TRANSFORM_NONE;
 }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void FakeOutputSurface::SetNeedsSwapSizeNotifications(
     bool needs_swap_size_notifications) {}
 #endif

@@ -17,14 +17,18 @@ namespace media {
 
 namespace {
 
-class SimpleCdmVideoFrame : public VideoFrameImpl {
+class SimpleCdmVideoFrame final : public VideoFrameImpl {
  public:
   SimpleCdmVideoFrame() = default;
-  ~SimpleCdmVideoFrame() final = default;
+
+  SimpleCdmVideoFrame(const SimpleCdmVideoFrame&) = delete;
+  SimpleCdmVideoFrame& operator=(const SimpleCdmVideoFrame&) = delete;
+
+  ~SimpleCdmVideoFrame() override = default;
 
   // VideoFrameImpl implementation.
   scoped_refptr<media::VideoFrame> TransformToVideoFrame(
-      gfx::Size natural_size) final {
+      gfx::Size natural_size) override {
     DCHECK(FrameBuffer());
 
     cdm::Buffer* buffer = FrameBuffer();
@@ -36,22 +40,19 @@ class SimpleCdmVideoFrame : public VideoFrameImpl {
             buffer->Data() + PlaneOffset(cdm::kYPlane),
             buffer->Data() + PlaneOffset(cdm::kUPlane),
             buffer->Data() + PlaneOffset(cdm::kVPlane),
-            base::TimeDelta::FromMicroseconds(Timestamp()));
+            base::Microseconds(Timestamp()));
 
     frame->set_color_space(MediaColorSpace().ToGfxColorSpace());
 
     // The FrameBuffer needs to remain around until |frame| is destroyed.
     frame->AddDestructionObserver(
-        base::Bind(&cdm::Buffer::Destroy, base::Unretained(buffer)));
+        base::BindOnce(&cdm::Buffer::Destroy, base::Unretained(buffer)));
 
     // Clear FrameBuffer so that SimpleCdmVideoFrame no longer has a reference
     // to it.
     SetFrameBuffer(nullptr);
     return frame;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleCdmVideoFrame);
 };
 
 }  // namespace

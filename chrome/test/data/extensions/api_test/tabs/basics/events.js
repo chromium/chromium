@@ -48,7 +48,7 @@ chrome.test.runTests([
         // Test that |tabid| matches this id.
         assertEq(tabid, tab.id);
 
-        // If |changeInfo| has a status property, than
+        // If |changeInfo| has a status property, then
         // it should match the status of the tab in |tab|.
         if (changeInfo.status) {
           assertEq(changeInfo.status, tab.status);

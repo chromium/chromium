@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 
@@ -60,12 +59,15 @@ class Multiprocess {
     //! \brief The child terminated by signal.
     //!
     //! Signal termination happens as a result of a crash, a call to `abort()`,
-    //! assertion failure (including gtest assertions), etc.
+    //! assertion failure (including Google Test assertions), etc.
     kTerminationSignal,
 #endif  // !defined(OS_FUCHSIA)
   };
 
   Multiprocess();
+
+  Multiprocess(const Multiprocess&) = delete;
+  Multiprocess& operator=(const Multiprocess&) = delete;
 
   //! \brief Runs the test.
   //!
@@ -73,12 +75,13 @@ class Multiprocess {
   //! PreFork(), then calls `fork()`. In the parent process, it calls
   //! RunParent(), and in the child process, it calls RunChild().
   //!
-  //! This method uses gtest assertions to validate the testing environment. If
-  //! the testing environment cannot be set up properly, it is possible that
-  //! MultiprocessParent() or MultiprocessChild() will not be called. In the
-  //! parent process, this method also waits for the child process to exit after
-  //! MultiprocessParent() returns, and verifies that it exited in accordance
-  //! with the expectations set by SetExpectedChildTermination().
+  //! This method uses Google Test assertions to validate the testing
+  //! environment. If the testing environment cannot be set up properly, it is
+  //! possible that MultiprocessParent() or MultiprocessChild() will not be
+  //! called. In the parent process, this method also waits for the child
+  //! process to exit after MultiprocessParent() returns, and verifies that it
+  //! exited in accordance with the expectations set by
+  //! SetExpectedChildTermination().
   void Run();
 
   //! \brief Sets the expected termination reason and code.
@@ -126,7 +129,7 @@ class Multiprocess {
   //! \endcode
   //!
   //! Subclass implementations may signal failure by raising their own fatal
-  //! gtest assertions.
+  //! Google Test assertions.
   virtual void PreFork()
 #if defined(OS_WIN) || defined(OS_FUCHSIA)
       = 0
@@ -190,14 +193,14 @@ class Multiprocess {
   //!
   //! This method establishes the child’s environment, calls
   //! MultiprocessChild(), and exits cleanly by calling `_exit(0)`. However, if
-  //! any failure (via fatal or nonfatal gtest assertion) is detected, the child
-  //! will exit with a failure status.
+  //! any failure (via fatal or nonfatal Google Test assertion) is detected, the
+  //! child will exit with a failure status.
   void RunChild();
 
   //! \brief The subclass-provided parent routine.
   //!
-  //! Test failures should be reported via gtest: `EXPECT_*()`, `ASSERT_*()`,
-  //! `FAIL()`, etc.
+  //! Test failures should be reported via Google Test: `EXPECT_*()`,
+  //! `ASSERT_*()`, `FAIL()`, etc.
   //!
   //! This method must not use a `wait()`-family system call to wait for the
   //! child process to exit, as this is handled by this class.
@@ -207,8 +210,8 @@ class Multiprocess {
 
   //! \brief The subclass-provided child routine.
   //!
-  //! Test failures should be reported via gtest: `EXPECT_*()`, `ASSERT_*()`,
-  //! `FAIL()`, etc.
+  //! Test failures should be reported via Google Test: `EXPECT_*()`,
+  //! `ASSERT_*()`, `FAIL()`, etc.
   //!
   //! Subclasses must implement this method to define how the child operates.
   //! Subclasses may exit with a failure status by using `LOG(FATAL)`,
@@ -221,8 +224,6 @@ class Multiprocess {
   internal::MultiprocessInfo* info_;
   ReturnCodeType code_;
   TerminationReason reason_;
-
-  DISALLOW_COPY_AND_ASSIGN(Multiprocess);
 };
 
 }  // namespace test

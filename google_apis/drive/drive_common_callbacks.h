@@ -8,22 +8,24 @@
 #ifndef GOOGLE_APIS_DRIVE_DRIVE_COMMON_CALLBACKS_H_
 #define GOOGLE_APIS_DRIVE_DRIVE_COMMON_CALLBACKS_H_
 
-#include "google_apis/drive/base_requests.h"
+#include "base/callback.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace google_apis {
 
 class AboutResource;
 
 // Callback used for getting AboutResource.
-typedef base::Callback<void(DriveApiErrorCode error,
-                            std::unique_ptr<AboutResource> about_resource)>
+typedef base::OnceCallback<void(ApiErrorCode error,
+                                std::unique_ptr<AboutResource> about_resource)>
     AboutResourceCallback;
 
 // Closure for canceling a certain request. Each request-issuing method returns
 // this type of closure. If it is called during the request is in-flight, the
-// callback passed with the request is invoked with DRIVE_CANCELLED. If the
+// callback passed with the request is invoked with CANCELLED. If the
 // request is already finished, nothing happens.
-typedef base::Closure CancelCallback;
+typedef base::OnceClosure CancelCallbackOnce;
+typedef base::RepeatingClosure CancelCallbackRepeating;
 
 }  // namespace google_apis
 

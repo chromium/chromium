@@ -13,9 +13,7 @@ source_set("scoped_timed_task_logger") {
     "scoped_timed_task_logger.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("common") {
@@ -39,7 +37,6 @@ source_set("common") {
   deps = [
     ":logging_definitions",
     ":scoped_timed_task_logger",
-    "//base",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/constants:version_header",
     "//chrome/chrome_cleaner/http",  # For safe_browsing_reporter
@@ -56,6 +53,7 @@ source_set("common") {
   ]
 
   public_deps = [
+    "//base",
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
     "//net/traffic_annotation:traffic_annotation",
   ]
@@ -67,17 +65,13 @@ source_set("common") {
 }
 
 source_set("logging_definitions") {
-  sources = [
-    "logging_definitions.h",
-  ]
+  sources = [ "logging_definitions.h" ]
 }
 
 # Logging definitions that must only by linked into the cleaner executable.
 # This is separate from cleaner_logging, which is also linked with unit tests.
 source_set("cleaner_logging_definitions") {
-  sources = [
-    "cleaner_logging_definitions.cc",
-  ]
+  sources = [ "cleaner_logging_definitions.cc" ]
 
   deps = [
     ":cleaner_logging",
@@ -88,9 +82,7 @@ source_set("cleaner_logging_definitions") {
 # Logging definitions that must only by linked into the reporter executable.
 # This is separate from reporter_logging, which is also linked with unit tests.
 source_set("reporter_logging_definitions") {
-  sources = [
-    "reporter_logging_definitions.cc",
-  ]
+  sources = [ "reporter_logging_definitions.cc" ]
 
   deps = [
     ":logging_definitions",
@@ -102,9 +94,7 @@ source_set("reporter_logging_definitions") {
 
 # Logging definitions that are linked into all other executables.
 source_set("other_logging_definitions") {
-  sources = [
-    "other_logging_definitions.cc",
-  ]
+  sources = [ "other_logging_definitions.cc" ]
 
   deps = [
     ":logging_definitions",
@@ -113,30 +103,20 @@ source_set("other_logging_definitions") {
 }
 
 source_set("api_keys_header") {
-  sources = [
-    "api_keys.h",
-  ]
+  sources = [ "api_keys.h" ]
 }
 
 source_set("dummy_api_keys") {
-  sources = [
-    "dummy_api_keys.cc",
-  ]
+  sources = [ "dummy_api_keys.cc" ]
 
-  deps = [
-    ":api_keys_header",
-  ]
+  deps = [ ":api_keys_header" ]
 }
 
 group("api_keys") {
   if (is_internal_chrome_cleaner_build) {
-    deps = [
-      "${chrome_cleaner_internal_root}/logging:api_keys",
-    ]
+    deps = [ "${chrome_cleaner_internal_root}/logging:api_keys" ]
   } else {
-    deps = [
-      ":dummy_api_keys",
-    ]
+    deps = [ ":dummy_api_keys" ]
   }
 }
 
@@ -154,7 +134,6 @@ static_library("cleaner_logging") {
     ":api_keys",
     ":api_keys_header",
     ":common",
-    "//base",
     "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
     "//chrome/chrome_cleaner/constants:chrome_cleanup_tool_branding_header",
     "//chrome/chrome_cleaner/constants:common_strings",
@@ -169,6 +148,8 @@ static_library("cleaner_logging") {
     "//chrome/chrome_cleaner/strings",
     "//components/chrome_cleaner/public/constants:constants",
   ]
+
+  public_deps = [ "//base" ]
 }
 
 static_library("reporter_logging") {
@@ -203,12 +184,13 @@ static_library("noop_logging") {
 
   deps = [
     ":common",
-    "//base",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
     "//chrome/chrome_cleaner/pup_data:pup_data_base",
     "//components/chrome_cleaner/public/constants:constants",
   ]
+
+  public_deps = [ "//base" ]
 }
 
 source_set("mock_logging_service") {

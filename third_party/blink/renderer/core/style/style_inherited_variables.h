@@ -33,14 +33,12 @@ class CORE_EXPORT StyleInheritedVariables
   }
 
   void SetData(const AtomicString& name, scoped_refptr<CSSVariableData> value) {
-    needs_resolution_ =
-        needs_resolution_ || (value && value->NeedsVariableResolution());
+    DCHECK(!value || !value->NeedsVariableResolution());
     variables_.SetData(name, std::move(value));
   }
   StyleVariables::OptionalData GetData(const AtomicString&) const;
 
   void SetValue(const AtomicString& name, const CSSValue* value) {
-    needs_resolution_ = true;
     variables_.SetValue(name, value);
   }
   StyleVariables::OptionalValue GetValue(const AtomicString&) const;
@@ -48,13 +46,10 @@ class CORE_EXPORT StyleInheritedVariables
   // Note that not all custom property names returned here necessarily have
   // valid values, due to cycles or references to invalid variables without
   // using a fallback.
-  HashSet<AtomicString> GetCustomPropertyNames() const;
+  void CollectNames(HashSet<AtomicString>&) const;
 
   const StyleVariables::DataMap& Data() const { return variables_.Data(); }
   const StyleVariables::ValueMap& Values() const { return variables_.Values(); }
-
-  bool NeedsResolution() const { return needs_resolution_; }
-  void ClearNeedsResolution() { needs_resolution_ = false; }
 
  private:
   StyleInheritedVariables();
@@ -62,7 +57,6 @@ class CORE_EXPORT StyleInheritedVariables
 
   StyleVariables variables_;
   scoped_refptr<StyleInheritedVariables> root_;
-  bool needs_resolution_;
 };
 
 }  // namespace blink

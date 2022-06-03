@@ -1,0 +1,46 @@
+<style>
+  :host {
+    padding: 3px;
+  }
+
+  :host(.warning-log) {
+    background-color: rgb(255, 252, 239);
+  }
+
+  :host(.error-log) {
+    background-color: rgb(255, 241, 241);
+  }
+
+  :host(.verbose-log) {
+    background-color: rgb(235, 235, 235);
+  }
+
+  :host(.default-log) {
+    background-color: rgb(255, 255, 255);
+  }
+
+  #log-container {
+    color: #888;
+    display: flex;
+    font-size: 10px;
+    padding: 6px;
+  }
+
+  #flex {
+    flex: 1;
+  }
+
+  #text {
+    display: inline-block;
+    text-align: start;
+    width: 100%;
+  }
+</style>
+<div>
+  <p id="text">[[logMessage.text]]</p>
+  <div id="log-container">
+    <span>[[logMessage.time]]</span>
+    <div id="flex"></div>
+    <span>[[getFilenameWithLine_(logMessage.file, logMessage.line)]]</span>
+  </div>
+</div>

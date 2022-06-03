@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
@@ -39,6 +41,11 @@ class ReadingListDownloadService
       std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
       std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
           distiller_page_factory);
+
+  ReadingListDownloadService(const ReadingListDownloadService&) = delete;
+  ReadingListDownloadService& operator=(const ReadingListDownloadService&) =
+      delete;
+
   ~ReadingListDownloadService() override;
 
   // Initializes the reading list download service.
@@ -109,8 +116,6 @@ class ReadingListDownloadService
   std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory_;
 
   base::WeakPtrFactory<ReadingListDownloadService> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListDownloadService);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_

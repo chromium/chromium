@@ -17,7 +17,7 @@
 // static
 SigninBrowserStateInfoUpdater*
 SigninBrowserStateInfoUpdaterFactory::GetForBrowserState(
-    ios::ChromeBrowserState* chrome_browser_state) {
+    ChromeBrowserState* chrome_browser_state) {
   return static_cast<SigninBrowserStateInfoUpdater*>(
       GetInstance()->GetServiceForBrowserState(chrome_browser_state, true));
 }
@@ -42,8 +42,8 @@ SigninBrowserStateInfoUpdaterFactory::~SigninBrowserStateInfoUpdaterFactory() {}
 std::unique_ptr<KeyedService>
 SigninBrowserStateInfoUpdaterFactory::BuildServiceInstanceFor(
     web::BrowserState* state) const {
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(state);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(state);
   return std::make_unique<SigninBrowserStateInfoUpdater>(
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       ios::SigninErrorControllerFactory::GetForBrowserState(

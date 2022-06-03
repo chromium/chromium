@@ -4,31 +4,26 @@
 
 """Module containing base test results classes."""
 
+
+import functools
+import sys
 import threading
+
+from lib.results import result_types  # pylint: disable=import-error
 
 
 class ResultType(object):
-  """Class enumerating test types."""
-  # The test passed.
-  PASS = 'SUCCESS'
+  """Class enumerating test types.
 
-  # The test was intentionally skipped.
-  SKIP = 'SKIPPED'
-
-  # The test failed.
-  FAIL = 'FAILURE'
-
-  # The test caused the containing process to crash.
-  CRASH = 'CRASH'
-
-  # The test timed out.
-  TIMEOUT = 'TIMEOUT'
-
-  # The test ran, but we couldn't determine what happened.
-  UNKNOWN = 'UNKNOWN'
-
-  # The test did not run.
-  NOTRUN = 'NOTRUN'
+  Wraps the results defined in //build/util/lib/results/.
+  """
+  PASS = result_types.PASS
+  SKIP = result_types.SKIP
+  FAIL = result_types.FAIL
+  CRASH = result_types.CRASH
+  TIMEOUT = result_types.TIMEOUT
+  UNKNOWN = result_types.UNKNOWN
+  NOTRUN = result_types.NOTRUN
 
   @staticmethod
   def GetTypes():
@@ -38,10 +33,11 @@ class ResultType(object):
             ResultType.NOTRUN]
 
 
+@functools.total_ordering
 class BaseTestResult(object):
   """Base class for a single test result."""
 
-  def __init__(self, name, test_type, duration=0, log=''):
+  def __init__(self, name, test_type, duration=0, log='', failure_reason=None):
     """Construct a BaseTestResult.
 
     Args:
@@ -56,6 +52,7 @@ class BaseTestResult(object):
     self._test_type = test_type
     self._duration = duration
     self._log = log
+    self._failure_reason = failure_reason
     self._links = {}
 
   def __str__(self):
@@ -64,9 +61,11 @@ class BaseTestResult(object):
   def __repr__(self):
     return self._name
 
-  def __cmp__(self, other):
-    # pylint: disable=W0212
-    return cmp(self._name, other._name)
+  def __eq__(self, other):
+    return self.GetName() == other.GetName()
+
+  def __lt__(self, other):
+    return self.GetName() == other.GetName()
 
   def __hash__(self):
     return hash(self._name)
@@ -104,6 +103,22 @@ class BaseTestResult(object):
     """Get the test log."""
     return self._log
 
+  def SetFailureReason(self, failure_reason):
+    """Set the reason the test failed.
+
+    This should be the first failure the test encounters and exclude any stack
+    trace.
+    """
+    self._failure_reason = failure_reason
+
+  def GetFailureReason(self):
+    """Get the reason the test failed.
+
+    Returns None if the test did not fail or if the reason the test failed is
+    unknown.
+    """
+    return self._failure_reason
+
   def SetLink(self, name, link_url):
     """Set link with test result data."""
     self._links[name] = link_url
@@ -140,6 +155,9 @@ class TestRunResults(object):
             if log:
               s.append('[%s] %s:' % (test_type, t))
               s.append(log)
+      if sys.version_info.major == 2:
+        decoded = [u.decode(encoding='utf-8', errors='ignore') for u in s]
+        return '\n'.join(decoded)
       return '\n'.join(s)
 
   def GetGtestForm(self):

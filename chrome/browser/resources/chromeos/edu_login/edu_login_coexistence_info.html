@@ -1,0 +1,19 @@
+<style include="edu-login-css">
+</style>
+
+<edu-login-template>
+  <span slot="main">
+    <div class="main-padding">
+      <if expr="_google_chrome">
+        <img class="google-full-logo"
+            src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
+      </if>
+      <h1>$i18n{coexistenceTitle}</h1>
+      <p class="secondary">$i18nRaw{coexistenceBody}</p>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-login-button button-type="next">
+    </edu-login-button>
+  </span>
+</edu-login-template>

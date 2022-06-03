@@ -1,0 +1,27 @@
+Verifies that making requests which set nonsecure SameParty cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Javascript initiated subresource blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyConflictsWithOtherAttributes
+        ]
+        cookieLine : name=value; SameSite=None; SameParty
+    }
+]
+Javascript initiated navigation blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyConflictsWithOtherAttributes
+        ]
+        cookieLine : name=value; SameSite=None; SameParty
+    }
+]
+Browser initiated navigation blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyConflictsWithOtherAttributes
+        ]
+        cookieLine : name=value; SameSite=None; SameParty
+    }
+]
+

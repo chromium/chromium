@@ -4,8 +4,8 @@
 
 #include "chrome/install_static/user_data_dir.h"
 
-#include <windows.h>
 #include <assert.h>
+#include <windows.h>
 
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
@@ -42,7 +42,7 @@ void GetUserDataDirFromRegistryPolicyIfSet(const InstallConstants& mode,
 
   // Second, try HKCU.
   if (nt::QueryRegValueSZ(nt::HKCU, nt::NONE, policies_path.c_str(),
-                             kUserDataDirRegistryKeyName, &value)) {
+                          kUserDataDirRegistryKeyName, &value)) {
     *user_data_dir = ExpandPathVariables(value);
     return;
   }
@@ -76,7 +76,7 @@ bool GetDefaultUserDataDirectory(const InstallConstants& mode,
                                  std::wstring* result) {
   // This environment variable should be set on Windows Vista and later
   // (https://msdn.microsoft.com/library/windows/desktop/dd378457.aspx).
-  std::wstring user_data_dir = GetEnvironmentString16(L"LOCALAPPDATA");
+  std::wstring user_data_dir = GetEnvironmentString(L"LOCALAPPDATA");
 
   if (user_data_dir.empty()) {
     // LOCALAPPDATA was not set; fallback to the temporary files path.

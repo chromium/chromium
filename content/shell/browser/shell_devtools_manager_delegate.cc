@@ -12,13 +12,12 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
@@ -28,7 +27,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell.h"
-#include "content/shell/browser/web_test/secondary_test_window_observer.h"
 #include "content/shell/common/shell_content_client.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/shell/grit/shell_resources.h"
@@ -60,6 +58,10 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
       : socket_name_(socket_name) {}
 
+  UnixDomainServerSocketFactory(const UnixDomainServerSocketFactory&) = delete;
+  UnixDomainServerSocketFactory& operator=(
+      const UnixDomainServerSocketFactory&) = delete;
+
  private:
   // content::DevToolsSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -68,7 +70,7 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
             base::BindRepeating(&CanUserConnectToDevTools),
             true /* use_abstract_namespace */));
     if (socket->BindAndListen(socket_name_, kBackLog) != net::OK)
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
 
     return std::move(socket);
   }
@@ -79,8 +81,6 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   std::string socket_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocketFactory);
 };
 #else
 class TCPServerSocketFactory : public content::DevToolsSocketFactory {
@@ -88,13 +88,16 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
   TCPServerSocketFactory(const std::string& address, uint16_t port)
       : address_(address), port_(port) {}
 
+  TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
+  TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
+
  private:
   // content::DevToolsSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
     std::unique_ptr<net::ServerSocket> socket(
         new net::TCPServerSocket(nullptr, net::NetLogSource()));
     if (socket->ListenWithAddressAndPort(address_, port_, kBackLog) != net::OK)
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
 
     net::IPEndPoint endpoint;
     if (socket->GetLocalAddress(&endpoint) == net::OK)
@@ -110,8 +113,6 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
 
   std::string address_;
   uint16_t port_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocketFactory);
 };
 #endif
 
@@ -165,7 +166,7 @@ void ShellDevToolsManagerDelegate::StartHttpHandler(
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe))
-    DevToolsAgentHost::StartRemoteDebuggingPipeHandler();
+    DevToolsAgentHost::StartRemoteDebuggingPipeHandler(base::OnceClosure());
 }
 
 // static
@@ -186,27 +187,21 @@ BrowserContext* ShellDevToolsManagerDelegate::GetDefaultBrowserContext() {
 }
 
 void ShellDevToolsManagerDelegate::ClientAttached(
-    content::DevToolsAgentHost* agent_host,
-    content::DevToolsAgentHostClient* client) {
+    content::DevToolsAgentHostClientChannel* channel) {
   // Make sure we don't receive notifications twice for the same client.
-  CHECK(clients_.find(client) == clients_.end());
-  clients_.insert(client);
+  CHECK(clients_.find(channel->GetClient()) == clients_.end());
+  clients_.insert(channel->GetClient());
 }
 
 void ShellDevToolsManagerDelegate::ClientDetached(
-    content::DevToolsAgentHost* agent_host,
-    content::DevToolsAgentHostClient* client) {
-  clients_.erase(client);
+    content::DevToolsAgentHostClientChannel* channel) {
+  clients_.erase(channel->GetClient());
 }
 
 scoped_refptr<DevToolsAgentHost>
 ShellDevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
-  Shell* shell = Shell::CreateNewWindow(browser_context_,
-                                        url,
-                                        nullptr,
-                                        gfx::Size());
-  if (switches::IsRunWebTestsSwitchPresent())
-    SecondaryTestWindowObserver::CreateForWebContents(shell->web_contents());
+  Shell* shell = Shell::CreateNewWindow(browser_context_, url, nullptr,
+                                        Shell::GetShellDefaultSize());
   return DevToolsAgentHost::GetOrCreateFor(shell->web_contents());
 }
 
@@ -214,17 +209,17 @@ std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {
 #if defined(OS_ANDROID)
   return std::string();
 #else
-  return ui::ResourceBundle::GetSharedInstance()
-      .GetRawDataResource(IDR_CONTENT_SHELL_DEVTOOLS_DISCOVERY_PAGE)
-      .as_string();
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      IDR_CONTENT_SHELL_DEVTOOLS_DISCOVERY_PAGE);
 #endif
 }
 
 bool ShellDevToolsManagerDelegate::HasBundledFrontendResources() {
 #if defined(OS_ANDROID)
   return false;
-#endif
+#else
   return true;
+#endif
 }
 
 }  // namespace content

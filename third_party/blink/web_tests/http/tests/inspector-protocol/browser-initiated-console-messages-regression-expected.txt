@@ -1,0 +1,7 @@
+Check that multiple attached sessions don't crash the Log domain.
+Log in session 1 enabled
+Log in session 2 enabled
+Trigger browser originating log message by instantiating WebTransport.
+Log.onEntryAdded: log message received
+Log.onEntryAdded: log message received
+

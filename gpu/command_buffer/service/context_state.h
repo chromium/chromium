@@ -10,7 +10,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
 #include "gpu/command_buffer/service/shader_manager.h"
@@ -364,7 +365,6 @@ struct GPU_GLES2_EXPORT ContextState {
 
   // Which samplers are bound to each texture unit;
   std::vector<scoped_refptr<Sampler>> sampler_units;
-  mutable bool sampler_units_in_ground_state = true;
 
   // We create a transform feedback as the default one per ES3 enabled context
   // instead of using GL's default one to make context switching easier.

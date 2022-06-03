@@ -5,20 +5,26 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_
 #define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_
 
+#include <memory>
+#include <string>
+
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
-#include "chromeos/services/assistant/public/mojom/settings.mojom.h"
+#include "chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // AssistantSetup is the class responsible for start Assistant OptIn flow.
 class AssistantSetup : public ash::AssistantSetup,
-                       public ash::AssistantStateObserver {
+                       public ash::AssistantStateObserver,
+                       public SearchAndAssistantEnabledChecker::Delegate {
  public:
-  explicit AssistantSetup(
-      chromeos::assistant::mojom::AssistantService* service);
+  AssistantSetup();
+
+  AssistantSetup(const AssistantSetup&) = delete;
+  AssistantSetup& operator=(const AssistantSetup&) = delete;
+
   ~AssistantSetup() override;
 
   // ash::AssistantSetup:
@@ -31,20 +37,22 @@ class AssistantSetup : public ash::AssistantSetup,
   // pref is not set by user. Therefore we need to start OOBE.
   void MaybeStartAssistantOptInFlow();
 
+  // SearchAndAssistantEnabledChecker::Delegate:
+  void OnError() override;
+  void OnSearchAndAssistantStateReceived(bool is_disabled) override;
+
  private:
   // ash::AssistantStateObserver:
-  void OnAssistantStatusChanged(ash::mojom::AssistantState state) override;
+  void OnAssistantStatusChanged(
+      chromeos::assistant::AssistantStatus status) override;
 
   void SyncSettingsState();
   void OnGetSettingsResponse(const std::string& settings);
 
-  chromeos::assistant::mojom::AssistantService* const service_;
-  mojo::Remote<chromeos::assistant::mojom::AssistantSettingsManager>
-      settings_manager_;
+  std::unique_ptr<SearchAndAssistantEnabledChecker>
+      search_and_assistant_enabled_checker_;
 
   base::WeakPtrFactory<AssistantSetup> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSetup);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_

@@ -8,9 +8,12 @@
 #include <mach/thread_act.h>
 #include <pthread.h>
 
-#include "base/logging.h"
+#include <vector>
+
+#include "base/check.h"
 #include "base/mac/mach_logging.h"
 #include "base/profiler/profile_builder.h"
+#include "build/build_config.h"
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
 // the target thread is suspended so it must not do any allocation from the
@@ -23,10 +26,18 @@ namespace base {
 
 namespace {
 
+#if defined(ARCH_CPU_X86_64)
+constexpr mach_msg_type_number_t kThreadStateCount = x86_THREAD_STATE64_COUNT;
+constexpr thread_state_flavor_t kThreadStateFlavor = x86_THREAD_STATE64;
+#elif defined(ARCH_CPU_ARM64)
+constexpr mach_msg_type_number_t kThreadStateCount = ARM_THREAD_STATE64_COUNT;
+constexpr thread_state_flavor_t kThreadStateFlavor = ARM_THREAD_STATE64;
+#endif
+
 // Fills |state| with |target_thread|'s context. NO HEAP ALLOCATIONS.
-bool GetThreadState(thread_act_t target_thread, x86_thread_state64_t* state) {
-  auto count = static_cast<mach_msg_type_number_t>(x86_THREAD_STATE64_COUNT);
-  return thread_get_state(target_thread, x86_THREAD_STATE64,
+bool GetThreadContextImpl(thread_act_t target_thread, RegisterContext* state) {
+  auto count = kThreadStateCount;
+  return thread_get_state(target_thread, kThreadStateFlavor,
                           reinterpret_cast<thread_state_t>(state),
                           &count) == KERN_SUCCESS;
 }
@@ -68,8 +79,8 @@ SuspendableThreadDelegateMac::SuspendableThreadDelegateMac(
   // Therefore, for all the system functions that might be linked in dynamically
   // that are used while threads are suspended, make calls to them to make sure
   // that they are linked up.
-  x86_thread_state64_t thread_state;
-  GetThreadState(thread_port_, &thread_state);
+  RegisterContext thread_context;
+  GetThreadContextImpl(thread_port_, &thread_context);
 }
 
 SuspendableThreadDelegateMac::~SuspendableThreadDelegateMac() = default;
@@ -85,8 +96,8 @@ PlatformThreadId SuspendableThreadDelegateMac::GetThreadId() const {
 
 // NO HEAP ALLOCATIONS.
 bool SuspendableThreadDelegateMac::GetThreadContext(
-    x86_thread_state64_t* thread_context) {
-  return GetThreadState(thread_port_, thread_context);
+    RegisterContext* thread_context) {
+  return GetThreadContextImpl(thread_port_, thread_context);
 }
 
 // NO HEAP ALLOCATIONS.
@@ -100,12 +111,29 @@ bool SuspendableThreadDelegateMac::CanCopyStack(uintptr_t stack_pointer) {
 }
 
 std::vector<uintptr_t*> SuspendableThreadDelegateMac::GetRegistersToRewrite(
-    x86_thread_state64_t* thread_context) {
+    RegisterContext* thread_context) {
+#if defined(ARCH_CPU_X86_64)
   return {
       &AsUintPtr(&thread_context->__rbx), &AsUintPtr(&thread_context->__rbp),
       &AsUintPtr(&thread_context->__rsp), &AsUintPtr(&thread_context->__r12),
       &AsUintPtr(&thread_context->__r13), &AsUintPtr(&thread_context->__r14),
       &AsUintPtr(&thread_context->__r15)};
+#elif defined(ARCH_CPU_ARM64)  // defined(ARCH_CPU_X86_64)
+  return {
+      &AsUintPtr(&thread_context->__fp),
+      &AsUintPtr(&thread_context->__sp),
+      &AsUintPtr(&thread_context->__x[19]),
+      &AsUintPtr(&thread_context->__x[20]),
+      &AsUintPtr(&thread_context->__x[21]),
+      &AsUintPtr(&thread_context->__x[22]),
+      &AsUintPtr(&thread_context->__x[23]),
+      &AsUintPtr(&thread_context->__x[24]),
+      &AsUintPtr(&thread_context->__x[25]),
+      &AsUintPtr(&thread_context->__x[26]),
+      &AsUintPtr(&thread_context->__x[27]),
+      &AsUintPtr(&thread_context->__x[28]),
+  };
+#endif                         // defined(ARCH_CPU_ARM64)
 }
 
 }  // namespace base

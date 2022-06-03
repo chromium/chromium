@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 
@@ -31,6 +30,10 @@ class CryptAuthDeviceActivityGetter {
   using GetDeviceActivityStatusAttemptErrorCallback =
       base::OnceCallback<void(NetworkRequestError)>;
 
+  CryptAuthDeviceActivityGetter(const CryptAuthDeviceActivityGetter&) = delete;
+  CryptAuthDeviceActivityGetter& operator=(
+      const CryptAuthDeviceActivityGetter&) = delete;
+
   virtual ~CryptAuthDeviceActivityGetter();
 
   // Starts the GetDevicesActivityStatus portion of the CryptAuth v2 DeviceSync
@@ -52,8 +55,6 @@ class CryptAuthDeviceActivityGetter {
   GetDeviceActivityStatusAttemptFinishedCallback success_callback_;
   GetDeviceActivityStatusAttemptErrorCallback error_callback_;
   bool was_get_device_activity_getter_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceActivityGetter);
 };
 
 }  // namespace device_sync

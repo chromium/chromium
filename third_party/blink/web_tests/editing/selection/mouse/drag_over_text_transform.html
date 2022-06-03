@@ -1,46 +1,31 @@
 <!DOCTYPE html>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-
-<style>
-#target { text-transform: uppercase; }
-</style>
-
-<p id="target">&#xDF;abc</p>
-
+<script src="../../assert_selection.js"></script>
 <script>
 // Drag through text with 'text-transform'. Shouldn't crash.
+const kStyle = '#target { text-transform: uppercase; }';
 
-function dragThrough(x1, x2, y) {
-  return new Promise((resolve, reject) => {
-    assert_own_property(window, 'chrome');
-    assert_own_property(window.chrome, 'gpuBenchmarking');
+selection_test(
+    '<p id="target">&#xDF;xyz</p>', // "SSxyz"
+    async function(selection) {
+        const target = selection.document.getElementById('target');
+        const x1 = selection.computeLeft(target);
+        const x2 = x1 + target.offsetWidth;
+        const y = selection.computeLeft(target) + target.offsetHeight / 2;
 
-    chrome.gpuBenchmarking.pointerActionSequence([{
-      source: 'mouse',
-      actions: [
-        {name: 'pointerDown', x: x1, y: y},
-        {name: 'pointerMove', x: x2, y:y},
-        {name: 'pointerUp'}
-      ]}], resolve);
-  });
-}
+        if (!window.chrome || !chrome.gpuBenchmarking)
+          throw 'This test requires chrome.gpuBenchmarking';
 
-promise_test(async () => {
-  const target = document.getElementById('target');
-  const x1 = target.offsetLeft;
-  const x2 = x1 + target.offsetWidth;
-  const y = target.offsetTop + target.offsetHeight;
+        return new Promise(resolve =>
+            chrome.gpuBenchmarking.pointerActionSequence([{
+              source: 'mouse',
+              actions: [
+                {name: 'pointerDown', x: x1, y: y},
+                {name: 'pointerMove', x: x2, y: y},
+                {name: 'pointerUp'}
+              ]}], resolve));
 
-  await dragThrough(x1, x2, y);
-
-  const selection = getSelection();
-  const text = target.firstChild;
-  assert_false(selection.isCollapsed);
-  assert_equals(selection.anchorNode, text);
-  assert_equals(selection.anchorOffset, 0);
-  assert_equals(selection.focusNode, text);
-  assert_equals(selection.focusOffset, 4);
-});
-
+    },
+    '<p id="target">^\u00DFxyz|</p>');
 </script>

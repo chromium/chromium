@@ -1,26 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'PASS'",
-          "rect": [10, 10, 35, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'FAIL'",
-          "rect": [10, 10, 26, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='div'",
-          "rect": [8, 288, 10, 20],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [12, 11, 35, 16],
+        [8, 288, 10, 20]
       ]
     }
   ]

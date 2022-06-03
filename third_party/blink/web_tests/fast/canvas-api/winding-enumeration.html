@@ -11,14 +11,14 @@ test(function() {
 
     context.fill();
     context.fill('nonzero');
-    assert_throws(new TypeError(), function() { context.fill('randomstring'); });
+    assert_throws_js(TypeError, function() { context.fill('randomstring'); });
 
     context.clip();
     context.clip('nonzero');
-    assert_throws(new TypeError(), function() { context.clip('randomstring'); });
+    assert_throws_js(TypeError, function() { context.clip('randomstring'); });
 
     context.isPointInPath(0, 0);
     context.isPointInPath(0, 0, 'nonzero');
-    assert_throws(new TypeError(), function() { context.isPointInPath(0, 0, 'randomstring'); });
+    assert_throws_js(TypeError, function() { context.isPointInPath(0, 0, 'randomstring'); });
 });
 </script>

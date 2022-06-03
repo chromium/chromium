@@ -291,13 +291,17 @@ function testMonth() {
 
     debug('Test Month.middleDay');
 
-    shouldBeEqualToString('new pw.Month(2000, 1).middleDay().toString()', '2000-02-15');
+    shouldBeEqualToString('new pw.Month(2000, 0).middleDay().toString()', '2000-01-15');
+    shouldBeEqualToString('new pw.Month(2000, 1).middleDay().toString()', '2000-02-14');
+    shouldBeEqualToString('new pw.Month(2000, 2).middleDay().toString()', '2000-03-15');
     shouldBeEqualToString('new pw.Month(2000, 11).middleDay().toString()', '2000-12-15');
     shouldBeEqualToString('new pw.Month(1, 0).middleDay().toString()', '0001-01-15');
-    shouldBeEqualToString('new pw.Month(1, 1).middleDay().toString()', '0001-02-15');
+    shouldBeEqualToString('new pw.Month(1, 1).middleDay().toString()', '0001-02-14');
+    shouldBeEqualToString('new pw.Month(1, 2).middleDay().toString()', '0001-03-15');
     shouldBeEqualToString('new pw.Month(1, 11).middleDay().toString()', '0001-12-15');
     shouldBeEqualToString('new pw.Month(20000, 0).middleDay().toString()', '20000-01-15');
-    shouldBeEqualToString('new pw.Month(20000, 1).middleDay().toString()', '20000-02-15');
+    shouldBeEqualToString('new pw.Month(20000, 1).middleDay().toString()', '20000-02-14');
+    shouldBeEqualToString('new pw.Month(20000, 2).middleDay().toString()', '20000-03-15');
     shouldBeEqualToString('new pw.Month(20000, 11).middleDay().toString()', '20000-12-15');
 
 

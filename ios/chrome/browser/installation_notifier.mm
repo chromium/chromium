@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/backoff_entry.h"
@@ -152,6 +152,13 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
   [self pollForTheInstallationOfApps];
 }
 
+- (void)stopPolling {
+  // Increment the queued block ID, making it higher than the block ID of any
+  // currently queued block, which will prevent them from running (and from
+  // queueing any new blocks).
+  ++_lastCreatedBlockId;
+}
+
 - (void)dispatchInstallationNotifierBlock {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   int blockId = ++_lastCreatedBlockId;
@@ -161,7 +168,6 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
   __weak InstallationNotifier* weakSelf = self;
   [_dispatcher dispatchAfter:delayInNSec
                    withBlock:^{
-                     DCHECK_CURRENTLY_ON(web::WebThread::UI);
                      InstallationNotifier* strongSelf = weakSelf;
                      if (blockId == [strongSelf lastCreatedBlockId]) {
                        [strongSelf pollForTheInstallationOfApps];

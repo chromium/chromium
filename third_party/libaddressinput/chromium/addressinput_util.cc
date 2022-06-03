@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
@@ -26,49 +26,69 @@ using ::i18n::addressinput::IsFieldRequired;
 
 using ::i18n::addressinput::MISSING_REQUIRED_FIELD;
 
+// Returns true if the |problem| should be reported for the |field| because
+// the |filter| is either null, empty or contains it.
+bool FilterContains(const std::multimap<AddressField, AddressProblem>* filter,
+                    AddressField field,
+                    AddressProblem problem) {
+  return filter == nullptr || filter->empty() ||
+         std::find(filter->begin(), filter->end(),
+                   std::multimap<AddressField, AddressProblem>::value_type(
+                       field, problem)) != filter->end();
+}
+
 // Returns true if the |problem| should not be reported for the |field| because
-// the |filter| excludes it.
+// the |filter| is not null or empty and contains it.
 bool FilterExcludes(const std::multimap<AddressField, AddressProblem>* filter,
                     AddressField field,
                     AddressProblem problem) {
-  return filter != NULL && !filter->empty() &&
-         std::find(filter->begin(),
-                   filter->end(),
+  return filter != nullptr && !filter->empty() &&
+         std::find(filter->begin(), filter->end(),
                    std::multimap<AddressField, AddressProblem>::value_type(
-                       field, problem)) == filter->end();
+                       field, problem)) != filter->end();
 }
+
+static const AddressField kFields[] = {
+    ::i18n::addressinput::COUNTRY, ::i18n::addressinput::ADMIN_AREA,
+    ::i18n::addressinput::LOCALITY, ::i18n::addressinput::DEPENDENT_LOCALITY,
+    ::i18n::addressinput::SORTING_CODE, ::i18n::addressinput::POSTAL_CODE,
+    ::i18n::addressinput::STREET_ADDRESS,
+    // ORGANIZATION is never required.
+    ::i18n::addressinput::RECIPIENT};
 
 }  // namespace
 
 bool HasAllRequiredFields(const AddressData& address_to_check) {
   std::multimap<AddressField, AddressProblem> problems;
-  ValidateRequiredFields(address_to_check, NULL, &problems);
+  ValidateRequiredFields(address_to_check, nullptr, &problems);
   return problems.empty();
 }
 
 void ValidateRequiredFields(
     const AddressData& address_to_check,
-    const std::multimap<AddressField, AddressProblem>* filter,
+    const std::multimap<AddressField, AddressProblem>* inclusion_filter,
     std::multimap<AddressField, AddressProblem>* problems) {
   DCHECK(problems);
 
-  static const AddressField kFields[] = {
-      ::i18n::addressinput::COUNTRY,
-      ::i18n::addressinput::ADMIN_AREA,
-      ::i18n::addressinput::LOCALITY,
-      ::i18n::addressinput::DEPENDENT_LOCALITY,
-      ::i18n::addressinput::SORTING_CODE,
-      ::i18n::addressinput::POSTAL_CODE,
-      ::i18n::addressinput::STREET_ADDRESS,
-      // ORGANIZATION is never required.
-      ::i18n::addressinput::RECIPIENT
-  };
-
-  for (size_t i = 0; i < base::size(kFields); ++i) {
-    AddressField field = kFields[i];
+  for (auto field : kFields) {
     if (address_to_check.IsFieldEmpty(field) &&
         IsFieldRequired(field, address_to_check.region_code) &&
-        !FilterExcludes(filter, field, MISSING_REQUIRED_FIELD)) {
+        FilterContains(inclusion_filter, field, MISSING_REQUIRED_FIELD)) {
+      problems->insert(std::make_pair(field, MISSING_REQUIRED_FIELD));
+    }
+  }
+}
+
+void ValidateRequiredFieldsExceptFilteredOut(
+    const AddressData& address_to_check,
+    const std::multimap<AddressField, AddressProblem>* exclusion_filter,
+    std::multimap<AddressField, AddressProblem>* problems) {
+  DCHECK(problems);
+
+  for (auto field : kFields) {
+    if (address_to_check.IsFieldEmpty(field) &&
+        IsFieldRequired(field, address_to_check.region_code) &&
+        !FilterExcludes(exclusion_filter, field, MISSING_REQUIRED_FIELD)) {
       problems->insert(std::make_pair(field, MISSING_REQUIRED_FIELD));
     }
   }

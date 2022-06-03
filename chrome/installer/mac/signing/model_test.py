@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os.path
 import unittest
 
 from . import model
@@ -94,7 +95,10 @@ class TestDistribution(unittest.TestCase):
     def test_channel_customize(self):
         base_config = TestConfig()
         config = model.Distribution(
-            channel='beta', app_name_fragment='Beta',
+            channel='beta',
+            app_name_fragment='Beta',
+            product_dirname='beta',
+            creator_code='beta',
             channel_customize=True).to_config(base_config)
         self.assertEqual('App Product Beta', config.app_product)
         self.assertEqual(base_config.product, config.product)
@@ -121,6 +125,8 @@ class TestDistribution(unittest.TestCase):
             channel='dev',
             app_name_fragment='Dev',
             packaging_name_fragment='Dev',
+            product_dirname='dev',
+            creator_code='dev ',
             channel_customize=True)
         config = dist.to_config(TestConfig())
         self.assertEqual('App Product Dev', config.app_product)
@@ -135,19 +141,19 @@ class TestDistribution(unittest.TestCase):
 class TestPaths(unittest.TestCase):
 
     def test_construct(self):
-        paths = model.Paths('[INPUT]', '[OUTPUT]', '[WORK]')
-        self.assertEqual('[INPUT]', paths.input)
-        self.assertEqual('[OUTPUT]', paths.output)
-        self.assertEqual('[WORK]', paths.work)
+        paths = model.Paths('[INPUT]', '/[OUTPUT]', '[WORK]')
+        self.assertEqual(os.path.abspath('[INPUT]'), paths.input)
+        self.assertEqual('/[OUTPUT]', paths.output)
+        self.assertEqual(os.path.abspath('[WORK]'), paths.work)
 
     def test_packaging_dir(self):
-        paths = model.Paths('[INPUT]', '[OUTPUT]', '[WORK]')
+        paths = model.Paths('/[INPUT]', '/[OUTPUT]', '/[WORK]')
         packaging_dir = paths.packaging_dir(TestConfig())
-        self.assertEqual('[INPUT]/Product Packaging', packaging_dir)
+        self.assertEqual('/[INPUT]/Product Packaging', packaging_dir)
 
     def test_replace_work(self):
-        paths = model.Paths('[INPUT]', '[OUTPUT]', '[WORK]')
-        self.assertEqual('[WORK]', paths.work)
+        paths = model.Paths('/[INPUT]', '/[OUTPUT]', '/[WORK]')
+        self.assertEqual('/[WORK]', paths.work)
         paths2 = paths.replace_work('{WORK2}')
-        self.assertEqual('[WORK]', paths.work)
-        self.assertEqual('{WORK2}', paths2.work)
+        self.assertEqual('/[WORK]', paths.work)
+        self.assertEqual(os.path.abspath('{WORK2}'), paths2.work)

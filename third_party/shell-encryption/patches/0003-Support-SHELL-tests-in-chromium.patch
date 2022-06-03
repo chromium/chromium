@@ -1,0 +1,1243 @@
+diff --git a/context_test.cc b/context_test.cc
+index 73436a9..9f35334 100644
+--- a/context_test.cc
++++ b/context_test.cc
+@@ -33,7 +33,7 @@ TYPED_TEST_SUITE(ContextTest, rlwe::testing::ModularIntTypes);
+ 
+ TYPED_TEST(ContextTest, CreateWorks) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+   }
+@@ -41,7 +41,7 @@ TYPED_TEST(ContextTest, CreateWorks) {
+ 
+ TYPED_TEST(ContextTest, ParametersMatch) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+diff --git a/error_params_test.cc b/error_params_test.cc
+index fe1fd55..7cc3c8b 100644
+--- a/error_params_test.cc
++++ b/error_params_test.cc
+@@ -120,7 +120,7 @@ TYPED_TEST_SUITE(ErrorParamsTest, rlwe::testing::ModularIntTypes);
+ 
+ TYPED_TEST(ErrorParamsTest, CreateError) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+@@ -140,7 +140,7 @@ TYPED_TEST(ErrorParamsTest, CreateError) {
+ 
+ TYPED_TEST(ErrorParamsTest, PlaintextError) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+@@ -161,7 +161,7 @@ TYPED_TEST(ErrorParamsTest, PlaintextError) {
+ 
+ TYPED_TEST(ErrorParamsTest, EncryptionError) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+@@ -186,7 +186,7 @@ TYPED_TEST(ErrorParamsTest, EncryptionError) {
+ 
+ TYPED_TEST(ErrorParamsTest, RelinearizationErrorScalesWithT) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     // Error scales by (T / logT) when all other constants are fixed.
+diff --git a/galois_key_test.cc b/galois_key_test.cc
+index 022ddd5..b73a4d4 100644
+--- a/galois_key_test.cc
++++ b/galois_key_test.cc
+@@ -17,6 +17,7 @@
+ 
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
++#include <google/protobuf/util/message_differencer.h>
+ #include "constants.h"
+ #include "montgomery.h"
+ #include "ntt_parameters.h"
+@@ -408,7 +409,7 @@ TEST_F(GaloisKeyTest, SerializationsOfIdentialKeysEqual) {
+   ASSERT_OK_AND_ASSIGN(auto serialized_copy, galois_key_copy.Serialize());
+ 
+   // Check that two serializations of the same matrix are equal.
+-  EXPECT_THAT(serialized_copy, EqualsProto(serialized));
++  EXPECT_EQ(serialized_copy.SerializeAsString(), serialized.SerializeAsString());
+ }
+ 
+ }  //  namespace
+diff --git a/int256.cc b/int256.cc
+index 1096c98..f9a40fc 100644
+--- a/int256.cc
++++ b/int256.cc
+@@ -40,7 +40,7 @@ const uint256_pod kuint256max = {absl::kuint128max, absl::kuint128max};
+     }                                         \
+   } while (0)
+ static inline int Fls64(Uint64 n) {
+-  DCHECK_NE(0, n);
++  //DCHECK_NE(0, n);
+   int pos = 0;
+   STEP(Uint64, n, pos, 0x20);
+   Uint32 n32 = n;
+diff --git a/montgomery_test.cc b/montgomery_test.cc
+index 7fe438f..7caf459 100644
+--- a/montgomery_test.cc
++++ b/montgomery_test.cc
+@@ -102,7 +102,7 @@ TYPED_TEST(MontgomeryTest, ParamsInvModulus) {
+   using Int = typename TypeParam::Int;
+   using BigInt = typename internal::BigInt<Int>::value_type;
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     EXPECT_EQ(modulus_params->r * modulus_params->inv_r -
+@@ -118,7 +118,7 @@ TYPED_TEST(MontgomeryTest, ImportExportInt) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -140,7 +140,7 @@ TYPED_TEST(MontgomeryTest, AddSub) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -173,7 +173,7 @@ TYPED_TEST(MontgomeryTest, InlineAddSub) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -209,7 +209,7 @@ TYPED_TEST(MontgomeryTest, Equality) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -251,7 +251,7 @@ TYPED_TEST(MontgomeryTest, Negate) {
+   using Int = typename TypeParam::Int;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (Int i = 0; i < 4 * kNewhopeModulus; i++) {
+@@ -271,7 +271,7 @@ TYPED_TEST(MontgomeryTest, AddRepeatedly) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -307,7 +307,7 @@ TYPED_TEST(MontgomeryTest, Multiply) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     // Test over many random values.
+@@ -346,7 +346,7 @@ TYPED_TEST(MontgomeryTest, MulInPlace) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     // Test over many random values.
+@@ -375,7 +375,7 @@ TYPED_TEST(MontgomeryTest, MulConstantInPlace) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     // Test over many random values.
+@@ -387,7 +387,9 @@ TYPED_TEST(MontgomeryTest, MulConstantInPlace) {
+       auto ma_clone = ma;
+       ASSERT_OK_AND_ASSIGN(auto mb,
+                            TypeParam::ImportInt(b, modulus_params.get()));
+-      auto [constant, constant_barrett] = mb.GetConstant(modulus_params.get());
++      auto constants_tuple = mb.GetConstant(modulus_params.get());
++      auto constant = std::get<0>(constants_tuple);
++      auto constant_barrett = std::get<1>(constants_tuple);
+       ma.MulInPlace(mb, modulus_params.get());
+       ma_clone.MulConstantInPlace(constant, constant_barrett,
+                                   modulus_params.get());
+@@ -407,7 +409,7 @@ TYPED_TEST(MontgomeryTest, MultiplyRepeatedly) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -436,7 +438,7 @@ TYPED_TEST(MontgomeryTest, SmallModulus) {
+   using BigInt = typename internal::BigInt<Int>::value_type;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     const BigInt modulus = static_cast<BigInt>(modulus_params->modulus);
+@@ -501,7 +503,7 @@ TYPED_TEST(MontgomeryTest, ModExpModulus) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     const BigInt modulus = static_cast<BigInt>(modulus_params->modulus);
+@@ -529,7 +531,7 @@ TYPED_TEST(MontgomeryTest, InverseModulus) {
+   unsigned int seed = 0;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -548,7 +550,7 @@ TYPED_TEST(MontgomeryTest, Serialization) {
+   using Int = typename TypeParam::Int;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (Int i = 0; i < kExhaustiveTest; i++) {
+@@ -587,7 +589,7 @@ TYPED_TEST(MontgomeryTest, ExceedMaxNumCoeffVectorSerialization) {
+   int num_coeffs = kMaxNumCoeffs + 1;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -605,7 +607,7 @@ TYPED_TEST(MontgomeryTest, ExceedMaxNumCoeffVectorSerialization) {
+ 
+ TYPED_TEST(MontgomeryTest, EmptyVectorSerialization) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     std::vector<TypeParam> coeffs;
+@@ -620,7 +622,7 @@ TYPED_TEST(MontgomeryTest, VectorSerialization) {
+   auto prng = absl::make_unique<rlwe::testing::TestingPrng>(0);
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -653,7 +655,7 @@ TYPED_TEST(MontgomeryTest, ExceedMaxNumCoeffVectorDeserialization) {
+   int num_coeffs = kMaxNumCoeffs + 1;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -670,7 +672,7 @@ TYPED_TEST(MontgomeryTest, NegativeVectorDeserialization) {
+   int num_coeffs = -1;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     EXPECT_THAT(
+@@ -686,7 +688,7 @@ TYPED_TEST(MontgomeryTest, ImportRandomWithPrngWithSameKeys) {
+   unsigned int seed_prng = GenerateRandom<unsigned int>(&seed);
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -707,7 +709,7 @@ TYPED_TEST(MontgomeryTest, ImportRandomWithPrngWithDifferentKeys) {
+   unsigned int seed_prng2 = seed_prng1 + 1;  // Different seed
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -727,7 +729,7 @@ TYPED_TEST(MontgomeryTest, VerifyBarrett) {
+   using BigInt = typename internal::BigInt<Int>::value_type;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -754,7 +756,7 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
+   auto prng = absl::make_unique<rlwe::testing::TestingPrng>(seed_prng);
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+ 
+@@ -765,8 +767,9 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
+       TypeParam scalar =
+           TypeParam::ImportRandom(prng.get(), modulus_params.get())
+               .ValueOrDie();
+-      auto [scalar_constant, scalar_constant_barrett] =
+-          scalar.GetConstant(modulus_params.get());
++      auto scalar_constants_tuple = scalar.GetConstant(modulus_params.get());
++      auto scalar_constant = std::get<0>(scalar_constants_tuple);
++      auto scalar_constant_barrett = std::get<1>(scalar_constants_tuple);
+       std::vector<TypeParam> expected_add_scalar, expected_sub_scalar,
+           expected_mul_scalar;
+       for (size_t i = 0; i < length; i++) {
+@@ -774,8 +777,9 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
+                         .ValueOrDie());
+         b.push_back(TypeParam::ImportRandom(prng.get(), modulus_params.get())
+                         .ValueOrDie());
+-        auto [constant, constant_barrett] =
+-            b[i].GetConstant(modulus_params.get());
++        auto constants_tuple = b[i].GetConstant(modulus_params.get());
++        auto constant = std::get<0>(constants_tuple);
++        auto constant_barrett = std::get<1>(constants_tuple); 
+         b_constant.push_back(constant);
+         b_constant_barrett.push_back(constant_barrett);
+         expected_add.push_back(a[i].Add(b[i], modulus_params.get()));
+@@ -844,7 +848,7 @@ TYPED_TEST(MontgomeryTest, BatchOperationsFailsWithVectorsOfDifferentSize) {
+   using Int = typename TypeParam::Int;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     for (size_t length_a : {1, 2, 7, 32, 500, 1024}) {
+@@ -911,7 +915,7 @@ class FakePrng {
+ 
+ TYPED_TEST(MontgomeryTest, PrngTemplateParameterizationWorks) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+                          TypeParam::Params::Create(params.modulus));
+     FakePrng prng;
+diff --git a/ntt_parameters_test.cc b/ntt_parameters_test.cc
+index 189c096..5425de7 100644
+--- a/ntt_parameters_test.cc
++++ b/ntt_parameters_test.cc
+@@ -39,7 +39,7 @@ TYPED_TEST_SUITE(NttParametersTest, rlwe::testing::ModularIntTypes);
+ 
+ TYPED_TEST(NttParametersTest, LogNumCoeffsTooLarge) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+@@ -71,7 +71,7 @@ TYPED_TEST(NttParametersTest, PrimitiveNthRootOfUnity) {
+   unsigned int len = 5;
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+@@ -97,7 +97,7 @@ TYPED_TEST(NttParametersTest, PrimitiveNthRootOfUnity) {
+ 
+ TYPED_TEST(NttParametersTest, NttPsis) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+@@ -131,7 +131,7 @@ TYPED_TEST(NttParametersTest, NttPsis) {
+ 
+ TYPED_TEST(NttParametersTest, NttPsisBitrev) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+@@ -159,7 +159,7 @@ TYPED_TEST(NttParametersTest, NttPsisBitrev) {
+ 
+ TYPED_TEST(NttParametersTest, NttPsisInvBitrev) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+@@ -208,7 +208,7 @@ TEST(NttParametersRegularTest, Bitrev) {
+ 
+ TYPED_TEST(NttParametersTest, IncorrectNTTParams) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     // modulus + 2, will no longer be 1 mod 2*n
+@@ -227,7 +227,7 @@ TYPED_TEST(NttParametersTest, IncorrectNTTParams) {
+ // Test all the NTT Parameter fields.
+ TYPED_TEST(NttParametersTest, Initialize) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     // Do not create a context, since it creates NttParameters already. Instead,
+     // create the modulus parameters manually.
+     ASSERT_OK_AND_ASSIGN(auto modulus_params,
+diff --git a/prng/chacha_prng_util.cc b/prng/chacha_prng_util.cc
+index c49c82d..e63bb61 100644
+--- a/prng/chacha_prng_util.cc
++++ b/prng/chacha_prng_util.cc
+@@ -31,16 +31,27 @@ absl::Status ChaChaPrngResalt(absl::string_view key, int buffer_size,
+                               int* salt_counter, int* position_in_buffer,
+                               std::vector<Uint8>* buffer) {
+   buffer->assign(buffer_size, 0);
+-  std::string salt = "salt";
+-  if (salt.size() > kChaChaNonceSize) {
+-    return absl::InternalError("The salt length is too large.");
++
++  // Following https://tools.ietf.org/html/rfc7539, Sec 2.3, we create the
++  // nonce as a kChaChaNonceSize (=12) bytes string, where the 4 first
++  // bytes are fixed, and the next 8 bytes correspond to the counter.
++  std::string nonce = "salt00000000";
++  if (nonce.size() != kChaChaNonceSize) {
++    return absl::InternalError("The salt length is incorrect.");
++  }
++  Uint64 counter = static_cast<Uint64>(*salt_counter);
++  for (int i = 0; i < 8; i++) {
++    nonce[4 + i] = counter & 0xFF;
++    counter >>= 8;
+   }
+-  salt.resize(kChaChaNonceSize, 0);
+ 
++  // We call the CRYPTO_chacha_20() function from OpenSSL. Note that the last
++  // parameter is a *block* counter. The salt counter needs instead to be
++  // included in the nonce.
+   CRYPTO_chacha_20(buffer->data(), buffer->data(), buffer->size(),
+                    reinterpret_cast<const Uint8*>(key.data()),
+-                   reinterpret_cast<const Uint8*>(salt.data()),
+-                   static_cast<uint32_t>(*salt_counter));
++                   reinterpret_cast<const Uint8*>(nonce.data()),
++                   /* counter = */ 0);
+ 
+   ++(*salt_counter);
+   *position_in_buffer = 0;
+diff --git a/prng/prng_test.cc b/prng/prng_test.cc
+index de7eacc..f98d98e 100644
+--- a/prng/prng_test.cc
++++ b/prng/prng_test.cc
+@@ -142,5 +142,29 @@ TYPED_TEST(PrngTest, ReplayDifferentInKeyTest) {
+   EXPECT_NE(r64, other_r64);
+ }
+ 
++TYPED_TEST(PrngTest, GeneratesUniqueRandomStrings) {
++  const int kKeySize = 20;
++  const int kIterations = 10000;
++  const char charset[] = "abcdefghijklmnopqrstuvwxyz0123456789";
++
++  std::vector<std::string> keys;
++  for (int i = 0; i < kIterations; i++) {
++    // Create a random key
++    std::string key(kKeySize, 0);
++    for (int j = 0; j < kKeySize; j++) {
++      ASSERT_OK_AND_ASSIGN(auto v, this->prng_->Rand8());
++      key[j] = charset[static_cast<int>(v) % sizeof(charset)];
++    }
++
++    // With very high probability (~(1/36)^20), a key will only appear once.
++    int count = 0;
++    for (auto k : keys) {
++      if (k == key) count++;
++    }
++    ASSERT_EQ(count, 0);
++    keys.push_back(key);
++  }
++}
++
+ }  // namespace
+ }  // namespace rlwe
+diff --git a/sample_error_test.cc b/sample_error_test.cc
+index 49bb495..41071c0 100644
+--- a/sample_error_test.cc
++++ b/sample_error_test.cc
+@@ -46,7 +46,7 @@ TYPED_TEST(SampleErrorTest, CheckUpperBoundOnNoise) {
+   auto prng = absl::make_unique<rlwe::testing::TestingPrng>(0);
+ 
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+@@ -73,7 +73,7 @@ TYPED_TEST(SampleErrorTest, CheckUpperBoundOnNoise) {
+ TYPED_TEST(SampleErrorTest, FailOnTooLargeVariance) {
+   auto prng = absl::make_unique<rlwe::testing::TestingPrng>(0);
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+diff --git a/serialization.proto b/serialization.proto
+index 6d02b74..b7fefcf 100644
+--- a/serialization.proto
++++ b/serialization.proto
+@@ -15,6 +15,8 @@
+ 
+ syntax = "proto2";
+ 
++option optimize_for = LITE_RUNTIME;
++
+ package rlwe;
+ 
+ // NTT Polynomial
+diff --git a/symmetric_encryption_test.cc b/symmetric_encryption_test.cc
+index 6e58422..6c05be2 100644
+--- a/symmetric_encryption_test.cc
++++ b/symmetric_encryption_test.cc
+@@ -91,7 +91,7 @@ TYPED_TEST_SUITE(SymmetricRlweEncryptionTest, rlwe::testing::ModularIntTypes);
+ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorNegative) {
+   unsigned int seed = 0;
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+@@ -136,7 +136,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorNegative) {
+ // different values of t.
+ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorPositive) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     unsigned int seed = 0;
+@@ -167,7 +167,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, RemoveErrorPositive) {
+ // Ensure that the encryption scheme can decrypt its own ciphertexts.
+ TYPED_TEST(SymmetricRlweEncryptionTest, CanDecrypt) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; i++) {
+@@ -187,7 +187,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, CanDecrypt) {
+ // Accessing out of bounds raises errors
+ TYPED_TEST(SymmetricRlweEncryptionTest, OutOfBoundsIndex) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+@@ -208,7 +208,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, OutOfBoundsIndex) {
+ // Check that the HE scheme is additively homomorphic.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AdditivelyHomomorphic) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; i++) {
+@@ -252,7 +252,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AdditivelyHomomorphic) {
+ // Check that homomorphic addition can be performed in place.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AddHomomorphicallyInPlace) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; i++) {
+@@ -302,7 +302,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AddHomomorphicallyInPlace) {
+ // plaintext.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AddToZero) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; i++) {
+@@ -329,7 +329,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AddToZero) {
+ // Check that homomorphic absorption works.
+ TYPED_TEST(SymmetricRlweEncryptionTest, Absorb) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; i++) {
+@@ -388,7 +388,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, Absorb) {
+ // Check that homomorphic absorption in place works.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbInPlace) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; i++) {
+@@ -447,7 +447,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbInPlace) {
+ // Check that homomorphic absorption of a scalar works.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalar) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     unsigned int seed = 0;
+@@ -500,7 +500,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalar) {
+ // Check that homomorphic absorption of a scalar in place works.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalarInPlace) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     unsigned int seed = 0;
+@@ -553,7 +553,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AbsorbScalarInPlace) {
+ // Check that we cannot multiply with an empty ciphertext.
+ TYPED_TEST(SymmetricRlweEncryptionTest, EmptyCipherMultiplication) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+@@ -601,7 +601,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, MultiplicativelyHomomorphic) {
+   if (sizeof(TypeParam) > 2) {  // No multiplicative homomorphism possible when
+                                 // TypeParam = Uint16
+     for (const auto& params :
+-         rlwe::testing::ContextParameters<TypeParam>::value) {
++         rlwe::testing::ContextParameters<TypeParam>::Value()) {
+       ASSERT_OK_AND_ASSIGN(auto context,
+                            rlwe::RlweContext<TypeParam>::Create(params));
+       for (int i = 0; i < kTestingRounds; i++) {
+@@ -658,7 +658,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, MultiplicativelyHomomorphic) {
+ // Check that many homomorphic additions can be performed.
+ TYPED_TEST(SymmetricRlweEncryptionTest, ManyHomomorphicAdds) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     // Sample a starting plaintext and ciphertext and create aggregators;
+@@ -705,7 +705,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, ManyHomomorphicAdds) {
+ TYPED_TEST(SymmetricRlweEncryptionTest,
+            ExceedMaxNumCoeffDeserializeCiphertext) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+ 
+@@ -733,7 +733,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest,
+ // Check that ciphertext serialization works.
+ TYPED_TEST(SymmetricRlweEncryptionTest, SerializeCiphertext) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -768,7 +768,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, SerializeCiphertext) {
+ // Check that key serialization works.
+ TYPED_TEST(SymmetricRlweEncryptionTest, SerializeKey) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (int i = 0; i < kTestingRounds; i++) {
+@@ -809,7 +809,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, SerializeKey) {
+ // Try an ill-formed key modulus switching
+ TYPED_TEST(SymmetricRlweEncryptionTest, FailingKeyModulusReduction) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     // p is the original modulus and q is the new modulus we want to switch to
+@@ -836,7 +836,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, FailingKeyModulusReduction) {
+ // Try an ill-formed ciphertext modulus switching
+ TYPED_TEST(SymmetricRlweEncryptionTest, FailingCiphertextModulusReduction) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     // p is the original modulus and q is the new modulus we want to switch to
+@@ -871,8 +871,9 @@ TYPED_TEST(SymmetricRlweEncryptionTest, FailingCiphertextModulusReduction) {
+ 
+ // Test modulus switching.
+ TYPED_TEST(SymmetricRlweEncryptionTest, ModulusReduction) {
+-  for (const auto& [params1, params2] :
+-       rlwe::testing::ContextParametersModulusSwitching<TypeParam>::value) {
++  for (const auto& params :
++       rlwe::testing::ContextParametersModulusSwitching<TypeParam>::Value()) {
++    auto params1 = std::get<0>(params), params2 = std::get<1>(params);
+     ASSERT_OK_AND_ASSIGN(auto context1,
+                          rlwe::RlweContext<TypeParam>::Create(params1));
+     ASSERT_OK_AND_ASSIGN(auto context2,
+@@ -913,8 +914,9 @@ TYPED_TEST(SymmetricRlweEncryptionTest, ModulusReduction) {
+ 
+ // Check that modulus switching reduces the error.
+ TYPED_TEST(SymmetricRlweEncryptionTest, ModulusSwitchingReducesLargeError) {
+-  for (const auto& [params1, params2] :
+-       rlwe::testing::ContextParametersModulusSwitching<TypeParam>::value) {
++  for (const auto& params :
++       rlwe::testing::ContextParametersModulusSwitching<TypeParam>::Value()) {
++    auto params1 = std::get<0>(params), params2 = std::get<1>(params);
+     ASSERT_OK_AND_ASSIGN(auto context1,
+                          rlwe::RlweContext<TypeParam>::Create(params1));
+     ASSERT_OK_AND_ASSIGN(auto context2,
+@@ -968,7 +970,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, ModulusSwitchingReducesLargeError) {
+ // different powers of s.
+ TYPED_TEST(SymmetricRlweEncryptionTest, OperationsFailOnMismatchedPowersOfS) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+@@ -1002,7 +1004,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, OperationsFailOnMismatchedPowersOfS) {
+ // Verifies that the power of S changes as expected in adds / mults.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AddsAndMultPreservePowerOfS) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+@@ -1037,7 +1039,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AddsAndMultPreservePowerOfS) {
+ // Check that substitutions of the form 2^k + 1 work.
+ TYPED_TEST(SymmetricRlweEncryptionTest, Substitutes) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (int k = 1; k < context->GetLogN(); k++) {
+@@ -1083,7 +1085,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, Substitutes) {
+ // Check that substitution of 2 does not work.
+ TYPED_TEST(SymmetricRlweEncryptionTest, SubstitutionFailsOnEvenPower) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key, this->SampleKey(context.get()));
+@@ -1102,7 +1104,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, SubstitutionFailsOnEvenPower) {
+ // Check that the power of s updates after several substitutions.
+ TYPED_TEST(SymmetricRlweEncryptionTest, PowerOfSUpdatedAfterRepeatedSubs) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     int substitution_power = 5;
+@@ -1127,7 +1129,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, PowerOfSUpdatedAfterRepeatedSubs) {
+ // Check that operations can only be performed when powers of s match.
+ TYPED_TEST(SymmetricRlweEncryptionTest, PowersOfSMustMatchOnOperations) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     int substitution_power = 5;
+@@ -1160,7 +1162,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, PowersOfSMustMatchOnOperations) {
+ // Check that the null key has value 0.
+ TYPED_TEST(SymmetricRlweEncryptionTest, NullKeyHasValueZero) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     rlwe::Polynomial<TypeParam> zero(context->GetN(),
+@@ -1179,7 +1181,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, NullKeyHasValueZero) {
+ // Check the addition and subtraction of keys.
+ TYPED_TEST(SymmetricRlweEncryptionTest, AddAndSubKeys) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key_1, this->SampleKey(context.get()));
+@@ -1203,7 +1205,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, AddAndSubKeys) {
+ // Check that decryption works with added and subtracted keys.
+ TYPED_TEST(SymmetricRlweEncryptionTest, EncryptAndDecryptWithAddAndSubKeys) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto key_1, this->SampleKey(context.get()));
+@@ -1231,7 +1233,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, EncryptAndDecryptWithAddAndSubKeys) {
+ // Check that the scheme is key homomorphic.
+ TYPED_TEST(SymmetricRlweEncryptionTest, IsKeyHomomorphic) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto prng_seed,
+@@ -1319,7 +1321,7 @@ TYPED_TEST(SymmetricRlweEncryptionTest, IsKeyHomomorphic) {
+ // Check that incompatible key cannot be added or subtracted.
+ TYPED_TEST(SymmetricRlweEncryptionTest, CannotAddOrSubIncompatibleKeys) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     ASSERT_OK_AND_ASSIGN(auto context_different_variance,
+diff --git a/symmetric_encryption_with_prng_test.cc b/symmetric_encryption_with_prng_test.cc
+index 88e86e3..beb1324 100644
+--- a/symmetric_encryption_with_prng_test.cc
++++ b/symmetric_encryption_with_prng_test.cc
+@@ -110,7 +110,7 @@ TYPED_TEST_SUITE(SymmetricEncryptionWithPrngTest,
+ // ciphertext.
+ TYPED_TEST(SymmetricEncryptionWithPrngTest, EncryptDecryptSingleCompressed) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; ++i) {
+@@ -126,7 +126,7 @@ TYPED_TEST(SymmetricEncryptionWithPrngTest, EncryptDecryptSingleCompressed) {
+ // ciphertexts.
+ TYPED_TEST(SymmetricEncryptionWithPrngTest, EncryptDecryptMultipleCompressed) {
+   for (const auto& params :
+-       rlwe::testing::ContextParameters<TypeParam>::value) {
++       rlwe::testing::ContextParameters<TypeParam>::Value()) {
+     ASSERT_OK_AND_ASSIGN(auto context,
+                          rlwe::RlweContext<TypeParam>::Create(params));
+     for (unsigned int i = 0; i < kTestingRounds; ++i) {
+diff --git a/testing/coefficient_polynomial.h b/testing/coefficient_polynomial.h
+index 4f32f18..fcff1a2 100644
+--- a/testing/coefficient_polynomial.h
++++ b/testing/coefficient_polynomial.h
+@@ -29,7 +29,8 @@
+ #include "statusor.h"
+ #include "testing/coefficient_polynomial.pb.h"
+ 
+-namespace rlwe::testing {
++namespace rlwe {
++namespace testing {
+ 
+ // A polynomial with ModularInt coefficients that is automatically reduced
+ // modulo <x^n + 1>, where n is the number of coefficients provided in the
+@@ -264,6 +265,7 @@ class CoefficientPolynomial {
+   const ModularIntParams* modulus_params_;
+ };
+ 
+-}  // namespace rlwe::testing
++}  // namespace testing
++}  // namespace rlwe
+ 
+ #endif  // RLWE_TESTING_COEFFICIENT_POLYNOMIAL_H_
+diff --git a/testing/coefficient_polynomial.proto b/testing/coefficient_polynomial.proto
+index b378557..35f02ef 100644
+--- a/testing/coefficient_polynomial.proto
++++ b/testing/coefficient_polynomial.proto
+@@ -15,6 +15,8 @@
+ 
+ syntax = "proto2";
+ 
++option optimize_for = LITE_RUNTIME;
++
+ package rlwe;
+ 
+ // Polynomial in coefficient representation
+diff --git a/testing/coefficient_polynomial_ciphertext.h b/testing/coefficient_polynomial_ciphertext.h
+index 0ed2caa..a8a78de 100644
+--- a/testing/coefficient_polynomial_ciphertext.h
++++ b/testing/coefficient_polynomial_ciphertext.h
+@@ -27,7 +27,8 @@
+ #include "symmetric_encryption.h"
+ #include "testing/coefficient_polynomial.h"
+ 
+-namespace rlwe::testing {
++namespace rlwe {
++namespace testing {
+ 
+ // Container for a vector of polynomials in coefficient representation. This
+ // class is the analogue of SymmetricRlweCiphertext with component polynomials
+@@ -52,8 +53,8 @@ class CoefficientPolynomialCiphertext {
+       const ErrorParams<ModularInt>* error_params)
+       : p_(std::move(p)),
+         modulus_params_(p_[0].ModulusParams()),
+-        power_of_s_(power_of_s),
+-        error_params_(error_params) {}
++        error_params_(error_params), 
++        power_of_s_(power_of_s){}
+ 
+   // Static method that creates a CoefficientPolynomialCiphertext from a
+   // SymmetricRlweCiphertext by performing InverseNtt on each ciphertext
+@@ -163,13 +164,14 @@ class CoefficientPolynomialCiphertext {
+   // ErrorParams.
+   const rlwe::ErrorParams<ModularInt>* error_params_;
+ 
+-  // A heuristic on the amount of error in the ciphertext.
+-  double error_;
+-
+   // The power a in s(x^a) that the ciphertext can be decrypted with.
+   int power_of_s_;
++
++  // A heuristic on the amount of error in the ciphertext.
++  double error_;
+ };
+ 
+-}  //  namespace rlwe::testing
++}  //  namespace testing
++}  //  namespace rlwe
+ 
+ #endif  // RLWE_TESTING_COEFFICIENT_POLYNOMIAL_CIPHERTEXT_H_
+diff --git a/testing/coefficient_polynomial_test.cc b/testing/coefficient_polynomial_test.cc
+index db3e184..bf43ee6 100644
+--- a/testing/coefficient_polynomial_test.cc
++++ b/testing/coefficient_polynomial_test.cc
+@@ -18,6 +18,7 @@
+ #include <random>
+ #include <vector>
+ 
++#include <google/protobuf/message_lite.h>
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ #include "constants.h"
+@@ -415,7 +416,7 @@ TEST_F(PolynomialTest, Serialize) {
+                          p.Serialize());
+     ASSERT_OK_AND_ASSIGN(rlwe::SerializedCoefficientPolynomial serialized_q,
+                          q.Serialize());
+-    EXPECT_THAT(serialized_p, EqualsProto(serialized_q));
++    EXPECT_EQ(serialized_p.SerializeAsString(), serialized_q.SerializeAsString());
+ 
+     // Ensure that a serialized polynomial can be deserialized.
+     ASSERT_OK_AND_ASSIGN(
+diff --git a/testing/parameters.h b/testing/parameters.h
+index 05864f0..6f7a08c 100644
+--- a/testing/parameters.h
++++ b/testing/parameters.h
+@@ -26,7 +26,8 @@
+ #include "integral_types.h"
+ #include "montgomery.h"
+ 
+-namespace rlwe::testing {
++namespace rlwe {
++namespace testing {
+ 
+ // ModularInt types for typed tests. A typed test can be defined as follows in
+ // test files.
+@@ -54,50 +55,54 @@ typedef ::testing::Types<
+ // }
+ template <typename ModularInt>
+ struct ContextParameters {
+-  constexpr static std::array<typename RlweContext<ModularInt>::Parameters, 0>
+-      value = {};
++  static std::vector<typename RlweContext<ModularInt>::Parameters> Value() {
++    return {};
++  }
+ };
+ 
+ template <>
+ struct ContextParameters<MontgomeryInt<Uint16>> {
+-  constexpr static std::array<RlweContext<MontgomeryInt<Uint16>>::Parameters, 1>
+-      value = {
++  static std::vector<RlweContext<MontgomeryInt<Uint16>>::Parameters> Value() {
++      return {
+           RlweContext<MontgomeryInt<Uint16>>::Parameters{
+               .modulus = kNewhopeModulus,
+               .log_n = 10,
+               .log_t = 1,
+               .variance = 8},
+       };
++  }
+ };
+ 
+ template <>
+ struct ContextParameters<MontgomeryInt<Uint32>> {
+-  constexpr static std::array<RlweContext<MontgomeryInt<Uint32>>::Parameters, 2>
+-      value = {
++  static std::vector<RlweContext<MontgomeryInt<Uint32>>::Parameters> Value() {
++      return {
+           RlweContext<MontgomeryInt<Uint32>>::Parameters{
+               .modulus = kModulus25, .log_n = 10, .log_t = 1, .variance = 8},
+           RlweContext<MontgomeryInt<Uint32>>::Parameters{
+               .modulus = kModulus29, .log_n = 11, .log_t = 5, .variance = 8},
+       };
++  }
+ };
+ 
+ template <>
+ struct ContextParameters<MontgomeryInt<Uint64>> {
+-  constexpr static std::array<RlweContext<MontgomeryInt<Uint64>>::Parameters, 1>
+-      value = {
++  static std::vector<RlweContext<MontgomeryInt<Uint64>>::Parameters> Value() {
++      return {
+           RlweContext<MontgomeryInt<Uint64>>::Parameters{
+               .modulus = kModulus59, .log_n = 11, .log_t = 10, .variance = 8},
+       };
++  }
+ };
+ 
+ template <>
+ struct ContextParameters<MontgomeryInt<absl::uint128>> {
+-  constexpr static std::array<
+-      RlweContext<MontgomeryInt<absl::uint128>>::Parameters, 1>
+-      value = {
++  static std::vector<RlweContext<MontgomeryInt<absl::uint128>>::Parameters> Value() {
++      return {
+           RlweContext<MontgomeryInt<absl::uint128>>::Parameters{
+               .modulus = kModulus80, .log_n = 11, .log_t = 11, .variance = 8},
+       };
++  }
+ };
+ 
+ // Parameters for testing of modulus switching. These parameters must be
+@@ -120,13 +125,16 @@ struct ContextParameters<MontgomeryInt<absl::uint128>> {
+ template <typename ModularInt>
+ struct ContextParametersModulusSwitching {
+   using Params = typename RlweContext<ModularInt>::Parameters;
+-  constexpr static std::array<std::tuple<Params, Params>, 0> value = {};
++  static std::vector<std::tuple<Params, Params>> Value() {
++    return {};
++  }
+ };
+ 
+ template <>
+ struct ContextParametersModulusSwitching<MontgomeryInt<Uint64>> {
+   using Params = typename RlweContext<MontgomeryInt<Uint64>>::Parameters;
+-  constexpr static std::array<std::tuple<Params, Params>, 1> value = {
++  static std::vector<std::tuple<Params, Params>> Value() {
++    return {
+       std::make_tuple(
+           Params{.modulus = 17592186028033ULL,
+                  .log_n = 10,
+@@ -134,12 +142,14 @@ struct ContextParametersModulusSwitching<MontgomeryInt<Uint64>> {
+                  .variance = 8},
+           Params{
+               .modulus = 1589249ULL, .log_n = 10, .log_t = 4, .variance = 8})};
++  }
+ };
+ 
+ template <>
+ struct ContextParametersModulusSwitching<MontgomeryInt<absl::uint128>> {
+   using Params = typename RlweContext<MontgomeryInt<absl::uint128>>::Parameters;
+-  constexpr static std::array<std::tuple<Params, Params>, 1> value = {
++  static std::vector<std::tuple<Params, Params>> Value() {
++    return {
+       std::make_tuple(
+           Params{.modulus = absl::MakeUint128(4611686018427387903ULL,
+                                               18446744073709355009ULL),
+@@ -150,8 +160,10 @@ struct ContextParametersModulusSwitching<MontgomeryInt<absl::uint128>> {
+                  .log_n = 10,
+                  .log_t = 2,
+                  .variance = 8})};
++  }
+ };
+ 
+-}  // namespace rlwe::testing
++}  // namespace testing
++}  // namespace rlwe
+ 
+ #endif  // RLWE_TESTING_INSTANCES_H_
+diff --git a/testing/protobuf_matchers.h b/testing/protobuf_matchers.h
+index 504ef78..0c7df16 100644
+--- a/testing/protobuf_matchers.h
++++ b/testing/protobuf_matchers.h
+@@ -18,6 +18,7 @@
+ #define RLWE_TESTING_PROTOBUF_MATCHERS_H_
+ 
+ #include <google/protobuf/message.h>
++#include <google/protobuf/message_lite.h>
+ #include <google/protobuf/util/message_differencer.h>
+ #include <gmock/gmock.h>
+ 
+@@ -29,7 +30,7 @@ class EqualsProtoImpl
+  public:
+   EqualsProtoImpl(const google::protobuf::Message& other) : other_(&other) {}
+ 
+-  bool MatchAndExplain(
++  inline bool MatchAndExplain(
+       const google::protobuf::Message& message,
+       ::testing::MatchResultListener* listener) const override {
+     if (!google::protobuf::util::MessageDifferencer::Equals(message, *other_)) {
+@@ -39,11 +40,11 @@ class EqualsProtoImpl
+     return true;
+   }
+ 
+-  void DescribeTo(std::ostream* os) const override {
++  inline void DescribeTo(std::ostream* os) const override {
+     *os << "is equal to another protocol buffer";
+   }
+ 
+-  void DescribeNegationTo(std::ostream* os) const override {
++  inline void DescribeNegationTo(std::ostream* os) const override {
+     *os << "is not equal to another protocol buffer";
+   }
+ 
+@@ -51,11 +52,45 @@ class EqualsProtoImpl
+   const google::protobuf::Message* other_;  // not owned
+ };
+ 
+-::testing::Matcher<const google::protobuf::Message&> EqualsProto(
++inline ::testing::Matcher<const google::protobuf::Message&> EqualsProto(
+     const google::protobuf::Message& other) {
+   return ::testing::Matcher<const google::protobuf::Message&>(new EqualsProtoImpl(other));
+ }
+ 
++class EqualsProtoLiteImpl
++    : public ::testing::MatcherInterface<const google::protobuf::MessageLite&> {
++ public:
++  EqualsProtoLiteImpl(const google::protobuf::MessageLite& other) : other_(&other) {}
++
++  bool MatchAndExplain(
++      const google::protobuf::MessageLite& message,
++      ::testing::MatchResultListener* listener) const override {
++    // TODO(b/159369884): Implement robust equality checks.
++    if (message.SerializeAsString() != other_->SerializeAsString()) {
++      *listener << "protobufs were not equal";
++      return false;
++    }
++    return true;
++  }
++
++  void DescribeTo(std::ostream* os) const override {
++    *os << "is equal to another protocol buffer";
++  }
++
++  void DescribeNegationTo(std::ostream* os) const override {
++    *os << "is not equal to another protocol buffer";
++  }
++
++ private:
++  const google::protobuf::MessageLite* other_;  // not owned
++};
++
++inline ::testing::Matcher<const google::protobuf::MessageLite&> EqualsProto(
++    const google::protobuf::MessageLite& other) {
++  return ::testing::Matcher<const google::protobuf::MessageLite&>(
++      new EqualsProtoLiteImpl(other));
++}
++
+ }  // namespace testing
+ }  // namespace rlwe
+ 
+diff --git a/testing/protobuf_matchers_test.cc b/testing/protobuf_matchers_test.cc
+index 48865f7..7ef759a 100644
+--- a/testing/protobuf_matchers_test.cc
++++ b/testing/protobuf_matchers_test.cc
+@@ -24,11 +24,11 @@ namespace {
+ TEST(EqualsProtoTest, EqualsProtoWorks) {
+   rlwe::SerializedCoefficientPolynomial coeffs;
+   coeffs.set_num_coeffs(10);
+-  EXPECT_THAT(coeffs, rlwe::testing::EqualsProto(coeffs));
++  EXPECT_EQ(coeffs.SerializeAsString(), coeffs.SerializeAsString());
+ 
+   rlwe::SerializedCoefficientPolynomial coeffs_other;
+   coeffs_other.set_num_coeffs(20);
+-  EXPECT_THAT(coeffs, ::testing::Not(rlwe::testing::EqualsProto(coeffs_other)));
++  EXPECT_NE(coeffs.SerializeAsString(), coeffs_other.SerializeAsString());
+ }
+ 
+ }  // namespace
+diff --git a/testing/status_matchers.h b/testing/status_matchers.h
+index 52f9b0a..c482dae 100644
+--- a/testing/status_matchers.h
++++ b/testing/status_matchers.h
+@@ -28,10 +28,10 @@ namespace internal {
+ 
+ // This function and its overload allow the same matcher to be used for Status
+ // and StatusOr tests.
+-absl::Status GetStatus(const absl::Status& status) { return status; }
++inline absl::Status GetStatus(const absl::Status& status) { return status; }
+ 
+ template <typename T>
+-absl::Status GetStatus(const rlwe::StatusOr<T>& statusor) {
++inline absl::Status GetStatus(const rlwe::StatusOr<T>& statusor) {
+   return statusor.status();
+ }
+ 
+@@ -42,7 +42,7 @@ class StatusIsImpl : public ::testing::MatcherInterface<StatusType> {
+                const ::testing::Matcher<const std::string&>& message)
+       : code_(code), message_(message) {}
+ 
+-  bool MatchAndExplain(StatusType status,
++  inline bool MatchAndExplain(StatusType status,
+                        ::testing::MatchResultListener* listener) const {
+     ::testing::StringMatchResultListener str_listener;
+     absl::Status real_status = GetStatus(status);
+@@ -58,14 +58,14 @@ class StatusIsImpl : public ::testing::MatcherInterface<StatusType> {
+     return true;
+   }
+ 
+-  void DescribeTo(std::ostream* os) const {
++  inline void DescribeTo(std::ostream* os) const {
+     *os << "has a status code that ";
+     code_.DescribeTo(os);
+     *os << " and a message that ";
+     message_.DescribeTo(os);
+   }
+ 
+-  void DescribeNegationto(std::ostream* os) const {
++  inline void DescribeNegationto(std::ostream* os) const {
+     *os << "has a status code that ";
+     code_.DescribeNegationTo(os);
+     *os << " and a message that ";
+@@ -99,7 +99,7 @@ class StatusIsPoly {
+ 
+ // This function allows us to avoid a template parameter when writing tests, so
+ // that we can transparently test both Status and StatusOr returns.
+-internal::StatusIsPoly StatusIs(
++inline internal::StatusIsPoly StatusIs(
+     ::testing::Matcher<absl::StatusCode>&& code,
+     ::testing::Matcher<const std::string&>&& message) {
+   return internal::StatusIsPoly(

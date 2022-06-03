@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MSE Player</title>
+  </head>
+  <body onload="runTest();">
+    <video controls></video>
+    <script src='eme_player_js/app_loader.js' type='text/javascript'></script>
+    <script type="text/javascript">
+      var video = document.querySelector('video');
+
+      // The test completes after media finishes playing all the segments.
+      // The test stops when an error occurs unexpectedly.
+      function runTest() {
+        var testConfig = new TestConfig();
+        testConfig.loadQueryParams();
+        if (typeof(testConfig.mediaFile) == "string") {
+          // Multiple media segments can be passed down separated by ';'
+          testConfig.mediaFile = testConfig.mediaFile.split(';')
+        }
+
+        Utils.installTitleEventHandler(video, 'error');
+        Utils.installTitleEventHandler(video, 'ended');
+        MSEPlayerUtils.loadMediaSegmentsFromTestConfig(testConfig);
+        video.play();
+        
+        // Configure the iframe to be an MSE video that plays the same file and params. 
+        var loc = window.location.toString();
+        var params = loc.split('?')[1];
+        document.getElementById("subframe-mse").src = "mse_player.html?" + params;
+      }
+    </script>
+    <iframe id="subframe-mse" title="Subframe with MSE Player">
+    </iframe>
+  </body>
+</html>

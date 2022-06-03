@@ -4,7 +4,6 @@
 
 #include "cc/trees/property_animation_state.h"
 
-#include "base/logging.h"
 
 namespace cc {
 
@@ -60,7 +59,7 @@ PropertyAnimationState operator^(const PropertyAnimationState& lhs,
 bool PropertyAnimationState::IsValid() const {
   // currently_running must be a subset for potentially_animating.
   // currently <= potentially i.e. potentially || !currently.
-  TargetProperties result = potentially_animating | ~currently_running;
+  gfx::TargetProperties result = potentially_animating | ~currently_running;
   return result.all();
 }
 

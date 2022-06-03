@@ -1,0 +1,94 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+
+<link rel="import" href="../behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../common_styles/common_styles.html">
+
+<!--
+  Element for list of tasks with tri-state icon (pending, active, completed)
+
+  Example:
+    <progress-list-item text-key="thirdItemKey"
+        active="[[equal_(step, 3)]]"
+        completed="[[greater_(step, 3)]]">
+    </progress-list-item>
+
+  Attributes and properties:
+    'textKey' - localization key for the item text
+    'activeKey' - if specified, overrides textKey for active state
+    'completedKey' - if specified, overrides textKey for completed state
+    'active' - if set, the item is considered to be in active state.
+    'completed' - if active is not set, and completed is set, the item is
+                  considered to be in completed state.
+-->
+<dom-module id="progress-list-item">
+  <template>
+    <style include="oobe-common-styles">
+      #container {
+        height: 56px;
+      }
+
+      #icon {
+        min-width: 48px;
+      }
+
+      #icon-pending {
+        background-color: var(--google-grey-500);
+        border-radius: 50%;
+        height: 8px;
+        margin-inline-start: 8px;
+        width: 8px;
+      }
+
+      #icon-active {
+        height: 24px;
+        width: 24px;
+      }
+
+      #icon-completed {
+        color: var(--google-blue-600);
+      }
+
+      #text {
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: 15px;
+        line-height: 16px;
+      }
+
+      #text-active {
+        color: black;
+      }
+    </style>
+
+    <div class="flex layout horizontal center" id="container" role="listitem">
+      <div id="icon">
+        <div id="icon-pending" class="dot"
+            hidden="[[hidePending_(active, completed)]]"></div>
+        <paper-spinner-lite id="icon-active" hidden="[[!active]]" active>
+        </paper-spinner-lite>
+        <iron-icon id="icon-completed" icon="cr:check"
+              hidden="[[hideCompleted_(active, completed)]]"></iron-icon>
+      </div>
+      <div id="text" class="content">
+        <div id="text-pending" hidden="[[hidePending_(active, completed)]]">
+          [[i18nDynamic(locale, textKey)]]
+        </div>
+        <div id="text-active" hidden="[[!active]]">
+          [[fallbackText(locale, activeKey, textKey)]]
+        </div>
+        <div id="text-completed"
+              hidden="[[hideCompleted_(active, completed)]]">
+          [[fallbackText(locale, completedKey, textKey)]]
+        </div>
+      </div>
+    </div>
+  </template>
+  <script src="progress_list_item.js"></script>
+</dom-module>

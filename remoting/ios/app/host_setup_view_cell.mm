@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "remoting/ios/app/host_setup_view_cell.h"
+
+#import <MaterialComponents/MaterialTypography.h>
+
+#import "remoting/ios/app/remoting_theme.h"
+#import "remoting/ios/app/view_utils.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#import "remoting/ios/app/host_setup_view_cell.h"
-
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
-#import "remoting/ios/app/remoting_theme.h"
-#import "remoting/ios/app/view_utils.h"
 
 static const CGFloat kNumberIconPadding = 16.f;
 static const CGFloat kNumberIconSize = 45.f;

@@ -16,11 +16,16 @@
 @protocol PasswordListNavigator;
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }  // namespace password_manager
+
+namespace web {
+class WebState;
+}  // namespace web
 
 class FaviconLoader;
 class GURL;
+class SyncSetupService;
 
 namespace manual_fill {
 
@@ -59,17 +64,21 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
 
 // The designated initializer. |passwordStore| must not be nil.
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
                         faviconLoader:(FaviconLoader*)faviconLoader
+                             webState:(web::WebState*)webState
+                          syncService:(SyncSetupService*)syncService
+                                  URL:(const GURL&)URL
+               invokedOnPasswordField:(BOOL)invokedOnPasswordField
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use |initWithPasswordStore:faviconLoader:|.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Fetches passwords using |origin| as the filter. If origin is empty (invalid)
-// it will fetch all the passwords.
-- (void)fetchPasswordsForURL:(const GURL&)URL;
+// Fetches passwords using the URL provided at initialisation as the filter.
+// If the URL is empty (invalid) it will fetch all the passwords.
+- (void)fetchPasswords;
 
 @end
 

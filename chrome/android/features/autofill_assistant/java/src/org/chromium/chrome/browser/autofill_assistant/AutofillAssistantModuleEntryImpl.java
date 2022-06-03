@@ -5,20 +5,18 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.widget.ScrimView;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
-
-import java.util.Map;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 /**
  * Implementation of {@link AutofillAssistantModuleEntry}. This is the entry point into the
@@ -27,33 +25,25 @@ import java.util.Map;
 @UsedByReflection("AutofillAssistantModuleEntryProvider.java")
 public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModuleEntry {
     @Override
-    public void start(@NonNull Tab tab, @NonNull WebContents webContents, boolean skipOnboarding,
-            String initialUrl, Map<String, String> parameters, String experimentIds,
-            Bundle intentExtras) {
-        if (skipOnboarding) {
-            AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN);
-            AutofillAssistantClient.fromWebContents(tab.getWebContents())
-                    .start(initialUrl, parameters, experimentIds, intentExtras, null);
-            return;
-        }
-
-        ChromeActivity activity = ((TabImpl) tab).getActivity();
-        AssistantOnboardingCoordinator onboardingCoordinator = new AssistantOnboardingCoordinator(
-                experimentIds, activity, activity.getBottomSheetController(), tab);
-        onboardingCoordinator.show(accepted -> {
-            if (!accepted) return;
-
-            AutofillAssistantClient.fromWebContents(tab.getWebContents())
-                    .start(initialUrl, parameters, experimentIds, intentExtras,
-                            onboardingCoordinator);
-        });
+    public AssistantDependencies createDependencies(BottomSheetController bottomSheetController,
+            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            Context context, @NonNull WebContents webContents,
+            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            ApplicationViewportInsetSupplier bottomInsetProvider,
+            ActivityTabProvider activityTabProvider) {
+        return new AssistantDependenciesImpl(bottomSheetController, browserControls,
+                compositorViewHolder, context, webContents, keyboardVisibilityDelegate,
+                bottomInsetProvider, activityTabProvider);
     }
 
     @Override
     public AutofillAssistantActionHandler createActionHandler(Context context,
-            BottomSheetController bottomSheetController, ScrimView scrimView,
-            GetCurrentTab getCurrentTab) {
+            BottomSheetController bottomSheetController,
+            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            ActivityTabProvider activityTabProvider) {
         return new AutofillAssistantActionHandlerImpl(
-                context, bottomSheetController, scrimView, getCurrentTab);
+                new OnboardingCoordinatorFactory(
+                        context, bottomSheetController, browserControls, compositorViewHolder),
+                activityTabProvider);
     }
 }

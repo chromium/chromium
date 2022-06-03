@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -16,23 +17,18 @@ namespace blink {
 
 class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
  public:
-  CSSCustomPropertyDeclaration(const AtomicString& name, CSSValueID id)
+  explicit CSSCustomPropertyDeclaration(CSSValueID id)
       : CSSValue(kCustomPropertyDeclarationClass),
-        name_(name),
         value_(nullptr),
         value_id_(id) {
-    DCHECK(id == CSSValueID::kInherit || id == CSSValueID::kInitial ||
-           id == CSSValueID::kUnset);
+    DCHECK(css_parsing_utils::IsCSSWideKeyword(id));
   }
 
-  CSSCustomPropertyDeclaration(const AtomicString& name,
-                               scoped_refptr<CSSVariableData> value)
+  explicit CSSCustomPropertyDeclaration(scoped_refptr<CSSVariableData> value)
       : CSSValue(kCustomPropertyDeclarationClass),
-        name_(name),
         value_(std::move(value)),
         value_id_(CSSValueID::kInvalid) {}
 
-  const AtomicString& GetName() const { return name_; }
   CSSVariableData* Value() const { return value_.get(); }
 
   bool IsInherit(bool is_inherited_property) const {
@@ -43,6 +39,8 @@ class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
     return value_id_ == CSSValueID::kInitial ||
            (!is_inherited_property && value_id_ == CSSValueID::kUnset);
   }
+  bool IsRevert() const { return value_id_ == CSSValueID::kRevert; }
+  bool IsRevertLayer() const { return value_id_ == CSSValueID::kRevertLayer; }
 
   String CustomCSSText() const;
 
@@ -50,10 +48,9 @@ class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
     return this == &other;
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  const AtomicString name_;
   scoped_refptr<CSSVariableData> value_;
   CSSValueID value_id_;
 };

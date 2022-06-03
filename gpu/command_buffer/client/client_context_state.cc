@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/client/client_context_state.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace gpu {
 namespace gles2 {

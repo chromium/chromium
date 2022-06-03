@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -16,9 +16,9 @@ enum CookieMatchType {
 
 // A single cookie change subscription.
 message CookieChangeSubscriptionProto {
-  required string url = 1;
-  optional string name = 2;
-  optional CookieMatchType match_type = 3;
+  string url = 1;
+  string name = 2;
+  CookieMatchType match_type = 3;
 }
 
 // All cookie change subscriptions belonging to a service worker registration.

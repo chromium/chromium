@@ -13,7 +13,11 @@ namespace ash {
 // ink drop.
 class CustomShapeButton : public views::ImageButton {
  public:
-  explicit CustomShapeButton(views::ButtonListener* listener);
+  explicit CustomShapeButton(PressedCallback callback);
+
+  CustomShapeButton(const CustomShapeButton&) = delete;
+  CustomShapeButton& operator=(const CustomShapeButton&) = delete;
+
   ~CustomShapeButton() override;
 
   // Return the custom shape for the button in SkPath.
@@ -21,17 +25,11 @@ class CustomShapeButton : public views::ImageButton {
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  protected:
   void PaintCustomShapePath(gfx::Canvas* canvas);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomShapeButton);
 };
 
 }  // namespace ash

@@ -26,16 +26,20 @@ void NavigateAction::InternalProcessAction(ProcessActionCallback callback) {
   // We know to expect navigation to happen, since we're about to cause it. This
   // allows scripts to put wait_for_navigation just after navigate, if needed,
   // without having to add an expect_navigation first.
-  delegate_->ExpectNavigation();
+  // The navigations are not declared as renderer initiated, they can cause
+  // failures. Setting the navigation to expected will prevent this from
+  // happening.
 
   auto& proto = proto_.navigate();
   if (!proto.url().empty()) {
+    delegate_->ExpectNavigation();
     GURL url(proto_.navigate().url());
     delegate_->LoadURL(url);
     UpdateProcessedAction(ACTION_APPLIED);
   } else if (proto.go_backward()) {
     auto& controller = delegate_->GetWebContents()->GetController();
     if (controller.CanGoBack()) {
+      delegate_->ExpectNavigation();
       controller.GoBack();
       UpdateProcessedAction(ACTION_APPLIED);
     } else {
@@ -44,6 +48,7 @@ void NavigateAction::InternalProcessAction(ProcessActionCallback callback) {
   } else if (proto.go_forward()) {
     auto& controller = delegate_->GetWebContents()->GetController();
     if (controller.CanGoForward()) {
+      delegate_->ExpectNavigation();
       controller.GoForward();
       UpdateProcessedAction(ACTION_APPLIED);
     } else {

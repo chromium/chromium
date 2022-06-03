@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import optparse
 
 from blinkpy.tool.commands.command import Command
@@ -58,15 +60,22 @@ class HelpCommand(Command):
             relevant_commands = self._tool.commands[:]
         else:
             epilog = 'Common %prog commands:\n'
-            relevant_commands = filter(self._tool.should_show_in_main_help, self._tool.commands)
-        longest_name_length = max(len(command.name) for command in relevant_commands)
-        relevant_commands.sort(lambda a, b: cmp(a.name, b.name))
-        command_help_texts = ['   %s   %s\n' % (command.name.ljust(longest_name_length), command.help_text)
-                              for command in relevant_commands]
+            relevant_commands = list(
+                filter(self._tool.should_show_in_main_help,
+                       self._tool.commands))
+        longest_name_length = max(
+            len(command.name) for command in relevant_commands)
+        relevant_commands.sort(key=lambda a: a.name)
+        command_help_texts = [
+            '   %s   %s\n' % (command.name.ljust(longest_name_length),
+                              command.help_text)
+            for command in relevant_commands
+        ]
         epilog += '%s\n' % ''.join(command_help_texts)
         epilog += "See '%prog help --all-commands' to list all commands.\n"
         epilog += "See '%prog help COMMAND' for more information on a specific command.\n"
-        return epilog.replace('%prog', self._tool.name())  # Use of %prog here mimics OptionParser.expand_prog_name().
+        # Use of %prog here mimics OptionParser.expand_prog_name().
+        return epilog.replace('%prog', self._tool.name())
 
     # FIXME: This is a hack so that we don't show --all-commands as a global option:
     def _remove_help_options(self):
@@ -77,7 +86,7 @@ class HelpCommand(Command):
         if args:
             command = self._tool.command_by_name(args[0])
             if command:
-                print command.standalone_help()
+                print(command.standalone_help())
                 return 0
 
         self.show_all_commands = options.show_all_commands

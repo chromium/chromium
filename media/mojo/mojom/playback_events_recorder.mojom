@@ -1,0 +1,45 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// PlaybackEventsRecorder allows to observe and record events occurring in the
+// media pipeline. The interface is called by the renderer process (in
+// blink::WebMediaPlayerImpl), while the implementation normally runs in the
+// browser.
+interface PlaybackEventsRecorder {
+  // Called when player has been started or resumed.
+  OnPlaying();
+
+  // Called when player has been paused.
+  OnPaused();
+
+  // Called when player position is being changed.
+  OnSeeking();
+
+  // Called when the player has reached the end of the current file.
+  OnEnded();
+
+  // Called when playback has failed due to the specified error.
+  OnError(PipelineStatus status);
+
+  // Called when playback has been suspended while buffering the media.
+  OnBuffering();
+
+  // Called after media buffering has completed. The player is in buffering
+  // state after the following events until this method is called:
+  //  1. Player initialized (i.e. after PlaybackEventsRecorder is created).
+  //  2. Seek operation, see OnSeeking().
+  //  3. Buffering started, see OnBuffering().
+  OnBufferingComplete();
+
+  // Called when video playback starts and every time video resolution changes.
+  OnNaturalSizeChanged(gfx.mojom.Size size);
+
+  // Called periodically (e.g. every second) while playback is active.
+  OnPipelineStatistics(PipelineStatistics stats);
+};

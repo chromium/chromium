@@ -1,0 +1,13 @@
+AXWebArea
+++AXGroup
+++AXGroup
+++++AXStaticText AXValue='<newline>    '
+++++AXGroup
+++++++AXStaticText AXValue='child'
+++++AXStaticText AXValue='<newline>    '
+++++AXGroup
+++++++AXStaticText AXValue='nested locked element!'
+++++AXStaticText AXValue='<newline>    '
+++++AXGroup
+++++++AXStaticText AXValue='nested non activatable locked element'
+++++AXStaticText AXValue='<newline>  '

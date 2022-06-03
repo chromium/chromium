@@ -8,5 +8,6 @@
     ImplementedAs=HTMLMediaElementAudioOutputDevice
 ] partial interface HTMLMediaElement {
     [RuntimeEnabled=AudioOutputDevices] readonly attribute DOMString sinkId;
-    [RuntimeEnabled=AudioOutputDevices, CallWith=ScriptState] Promise<void> setSinkId(DOMString sinkId);
+    [RuntimeEnabled=AudioOutputDevices, CallWith=ScriptState, MeasureAs=HTMLMediaElementSetSinkId]
+    Promise<void> setSinkId(DOMString sinkId);
 };

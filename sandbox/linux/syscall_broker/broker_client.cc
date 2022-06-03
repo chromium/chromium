@@ -8,12 +8,13 @@
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/posix/unix_domain_socket.h"
 #include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
@@ -28,13 +29,11 @@
 namespace sandbox {
 namespace syscall_broker {
 
-BrokerClient::BrokerClient(const BrokerPermissionList& broker_permission_list,
+BrokerClient::BrokerClient(const BrokerSandboxConfig& policy,
                            BrokerChannel::EndPoint ipc_channel,
-                           const BrokerCommandSet& allowed_command_set,
                            bool fast_check_in_client)
-    : broker_permission_list_(broker_permission_list),
+    : policy_(policy),
       ipc_channel_(std::move(ipc_channel)),
-      allowed_command_set_(allowed_command_set),
       fast_check_in_client_(fast_check_in_client) {}
 
 BrokerClient::~BrokerClient() {}
@@ -43,10 +42,10 @@ int BrokerClient::Access(const char* pathname, int mode) const {
   if (!pathname)
     return -EFAULT;
 
-  if (fast_check_in_client_ &&
-      !CommandAccessIsSafe(allowed_command_set_, broker_permission_list_,
-                           pathname, mode, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+  if (fast_check_in_client_ && !CommandAccessIsSafe(policy_.allowed_command_set,
+                                                    *policy_.file_permissions,
+                                                    pathname, mode, nullptr)) {
+    return -policy_.file_permissions->denied_errno();
   }
   return PathAndFlagsSyscall(COMMAND_ACCESS, pathname, mode);
 }
@@ -56,9 +55,9 @@ int BrokerClient::Mkdir(const char* pathname, int mode) const {
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandMkdirIsSafe(allowed_command_set_, broker_permission_list_,
-                          pathname, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+      !CommandMkdirIsSafe(policy_.allowed_command_set,
+                          *policy_.file_permissions, pathname, nullptr)) {
+    return -policy_.file_permissions->denied_errno();
   }
   return PathAndFlagsSyscall(COMMAND_MKDIR, pathname, mode);
 }
@@ -68,9 +67,9 @@ int BrokerClient::Open(const char* pathname, int flags) const {
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandOpenIsSafe(allowed_command_set_, broker_permission_list_,
+      !CommandOpenIsSafe(policy_.allowed_command_set, *policy_.file_permissions,
                          pathname, flags, nullptr, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+    return -policy_.file_permissions->denied_errno();
   }
   return PathAndFlagsSyscallReturningFD(COMMAND_OPEN, pathname, flags);
 }
@@ -80,9 +79,9 @@ int BrokerClient::Readlink(const char* path, char* buf, size_t bufsize) const {
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandReadlinkIsSafe(allowed_command_set_, broker_permission_list_,
-                             path, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+      !CommandReadlinkIsSafe(policy_.allowed_command_set,
+                             *policy_.file_permissions, path, nullptr)) {
+    return -policy_.file_permissions->denied_errno();
   }
 
   // Message structure:
@@ -92,7 +91,7 @@ int BrokerClient::Readlink(const char* path, char* buf, size_t bufsize) const {
   RAW_CHECK(message.AddIntToMessage(COMMAND_READLINK));
   RAW_CHECK(message.AddStringToMessage(path));
 
-  int returned_fd = -1;
+  base::ScopedFD returned_fd;
   BrokerSimpleMessage reply;
   ssize_t msg_len =
       message.SendRecvMsgWithFlags(ipc_channel_.get(), 0, &returned_fd, &reply);
@@ -111,11 +110,14 @@ int BrokerClient::Readlink(const char* path, char* buf, size_t bufsize) const {
     return -ENOMEM;
   if (return_length < 0)
     return -ENOMEM;
+  // Sanity check that our broker is behaving correctly.
+  RAW_CHECK(return_length == static_cast<size_t>(return_value));
 
-  if (static_cast<size_t>(return_length) > bufsize)
-    return -ENAMETOOLONG;
+  if (return_length > bufsize) {
+    return_length = bufsize;
+  }
   memcpy(buf, return_data, return_length);
-  return return_value;
+  return return_length;
 }
 
 int BrokerClient::Rename(const char* oldpath, const char* newpath) const {
@@ -123,9 +125,10 @@ int BrokerClient::Rename(const char* oldpath, const char* newpath) const {
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandRenameIsSafe(allowed_command_set_, broker_permission_list_,
-                           oldpath, newpath, nullptr, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+      !CommandRenameIsSafe(policy_.allowed_command_set,
+                           *policy_.file_permissions, oldpath, newpath, nullptr,
+                           nullptr)) {
+    return -policy_.file_permissions->denied_errno();
   }
 
   BrokerSimpleMessage message;
@@ -133,7 +136,7 @@ int BrokerClient::Rename(const char* oldpath, const char* newpath) const {
   RAW_CHECK(message.AddStringToMessage(oldpath));
   RAW_CHECK(message.AddStringToMessage(newpath));
 
-  int returned_fd = -1;
+  base::ScopedFD returned_fd;
   BrokerSimpleMessage reply;
   ssize_t msg_len =
       message.SendRecvMsgWithFlags(ipc_channel_.get(), 0, &returned_fd, &reply);
@@ -153,23 +156,23 @@ int BrokerClient::Rmdir(const char* path) const {
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandRmdirIsSafe(allowed_command_set_, broker_permission_list_, path,
-                          nullptr)) {
-    return -broker_permission_list_.denied_errno();
+      !CommandRmdirIsSafe(policy_.allowed_command_set,
+                          *policy_.file_permissions, path, nullptr)) {
+    return -policy_.file_permissions->denied_errno();
   }
   return PathOnlySyscall(COMMAND_RMDIR, path);
 }
 
 int BrokerClient::Stat(const char* pathname,
                        bool follow_links,
-                       struct stat* sb) const {
+                       struct kernel_stat* sb) const {
   if (!pathname || !sb)
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandStatIsSafe(allowed_command_set_, broker_permission_list_,
+      !CommandStatIsSafe(policy_.allowed_command_set, *policy_.file_permissions,
                          pathname, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+    return -policy_.file_permissions->denied_errno();
   }
   return StatFamilySyscall(COMMAND_STAT, pathname, follow_links, sb,
                            sizeof(*sb));
@@ -177,14 +180,14 @@ int BrokerClient::Stat(const char* pathname,
 
 int BrokerClient::Stat64(const char* pathname,
                          bool follow_links,
-                         struct stat64* sb) const {
+                         struct kernel_stat64* sb) const {
   if (!pathname || !sb)
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandStatIsSafe(allowed_command_set_, broker_permission_list_,
+      !CommandStatIsSafe(policy_.allowed_command_set, *policy_.file_permissions,
                          pathname, nullptr)) {
-    return -broker_permission_list_.denied_errno();
+    return -policy_.file_permissions->denied_errno();
   }
   return StatFamilySyscall(COMMAND_STAT64, pathname, follow_links, sb,
                            sizeof(*sb));
@@ -195,9 +198,9 @@ int BrokerClient::Unlink(const char* path) const {
     return -EFAULT;
 
   if (fast_check_in_client_ &&
-      !CommandUnlinkIsSafe(allowed_command_set_, broker_permission_list_, path,
-                           nullptr)) {
-    return -broker_permission_list_.denied_errno();
+      !CommandUnlinkIsSafe(policy_.allowed_command_set,
+                           *policy_.file_permissions, path, nullptr)) {
+    return -policy_.file_permissions->denied_errno();
   }
   return PathOnlySyscall(COMMAND_UNLINK, path);
 }
@@ -208,7 +211,7 @@ int BrokerClient::PathOnlySyscall(BrokerCommand syscall_type,
   RAW_CHECK(message.AddIntToMessage(syscall_type));
   RAW_CHECK(message.AddStringToMessage(pathname));
 
-  int returned_fd = -1;
+  base::ScopedFD returned_fd;
   BrokerSimpleMessage reply;
   ssize_t msg_len =
       message.SendRecvMsgWithFlags(ipc_channel_.get(), 0, &returned_fd, &reply);
@@ -235,7 +238,7 @@ int BrokerClient::PathAndFlagsSyscall(BrokerCommand syscall_type,
   RAW_CHECK(message.AddStringToMessage(pathname));
   RAW_CHECK(message.AddIntToMessage(flags));
 
-  int returned_fd = -1;
+  base::ScopedFD returned_fd;
   BrokerSimpleMessage reply;
   ssize_t msg_len =
       message.SendRecvMsgWithFlags(ipc_channel_.get(), 0, &returned_fd, &reply);
@@ -276,7 +279,7 @@ int BrokerClient::PathAndFlagsSyscallReturningFD(BrokerCommand syscall_type,
   RAW_CHECK(message.AddStringToMessage(pathname));
   RAW_CHECK(message.AddIntToMessage(flags));
 
-  int returned_fd = -1;
+  base::ScopedFD returned_fd;
   BrokerSimpleMessage reply;
   ssize_t msg_len = message.SendRecvMsgWithFlags(
       ipc_channel_.get(), recvmsg_flags, &returned_fd, &reply);
@@ -291,8 +294,8 @@ int BrokerClient::PathAndFlagsSyscallReturningFD(BrokerCommand syscall_type,
     return return_value;
 
   // We have a real file descriptor to return.
-  RAW_CHECK(returned_fd >= 0);
-  return returned_fd;
+  RAW_CHECK(returned_fd.is_valid());
+  return returned_fd.release();
 }
 
 // Make a remote system call over IPC for syscalls that take a path
@@ -309,7 +312,7 @@ int BrokerClient::StatFamilySyscall(BrokerCommand syscall_type,
   RAW_CHECK(message.AddStringToMessage(pathname));
   RAW_CHECK(message.AddIntToMessage(static_cast<int>(follow_links)));
 
-  int returned_fd = -1;
+  base::ScopedFD returned_fd;
   BrokerSimpleMessage reply;
   ssize_t msg_len =
       message.SendRecvMsgWithFlags(ipc_channel_.get(), 0, &returned_fd, &reply);
@@ -331,6 +334,14 @@ int BrokerClient::StatFamilySyscall(BrokerCommand syscall_type,
     return -ENOMEM;
   memcpy(result_ptr, return_data, expected_result_size);
   return return_value;
+}
+
+// static
+intptr_t BrokerClient::SIGSYS_Handler(const arch_seccomp_data& args,
+                                      void* aux_broker_client) {
+  RAW_CHECK(aux_broker_client);
+  auto* broker_client = static_cast<BrokerClient*>(aux_broker_client);
+  return broker_client->DispatchSyscall(args);
 }
 
 }  // namespace syscall_broker

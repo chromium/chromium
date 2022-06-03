@@ -11,9 +11,7 @@ source_set("list_model") {
     "list_model.h",
     "list_model.mm",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

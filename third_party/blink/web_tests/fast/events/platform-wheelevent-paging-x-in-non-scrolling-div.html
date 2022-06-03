@@ -1,60 +1,34 @@
-<html>
-    <head>
-        <script src="../../resources/js-test.js"></script>
-        <script>
-            var givenScrollTop = 0;
-            var givenScrollLeft = 2;
-            var expectedScrollTop = 0;
-            var expectedScrollLeft = 0;
-            var event;
-            var div;
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="overflow" style="border:2px solid black;overflow:auto;height:200px;width:200px;">
+  <div style="border:0px;background-color:red;height:300px;width:185px;"></div>
+  <div style="border:0px;background-color:green;height:300px;width:185px;"></div>
+</div>
 
-            if (window.testRunner)
-                testRunner.waitUntilDone();
+<script>
+var givenScrollLeft = 2;
+var expectedScrollLeft = 0;
+var last_event = null;
+var source = GestureSourceType.MOUSE_INPUT;
+const numTicksX = givenScrollLeft / pixelsPerTick();
+const expectedWheelDeltaX = numTicksX * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
 
-            function dispatchWheelEvent()
-            {
-                var overflowElement = document.getElementById("overflow");
-                if (overflowElement)
-                    overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
+function mousewheelHandler(e)
+{
+    last_event = e;
+}
 
-                if (window.eventSender) {
-                    eventSender.mouseMoveTo(100, 110);
-                    eventSender.continuousMouseScrollBy(-window.givenScrollLeft, -window.givenScrollTop, true);
-                }
+promise_test(async () => {
+    var overflowElement = document.getElementById("overflow");
+    overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
 
-                setTimeout('checkOffsets();', 100);
-            }
-
-            function checkOffsets()
-            {
-                div = document.getElementById("overflow");
-                shouldBe("div.scrollTop", "window.expectedScrollTop");
-                shouldBe("div.scrollLeft", "window.expectedScrollLeft");
-
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }
-
-            function mousewheelHandler(e)
-            {
-                event = e;
-                shouldBe("event.wheelDeltaY", "0");
-                shouldBe("event.wheelDeltaX", "window.givenScrollLeft*-3");
-
-                if (e.wheelDeltaY)
-                    shouldBe("event.wheelDelta", "0");
-                else
-                    shouldBe("event.wheelDelta", "window.givenScrollLeft*-3");
-            }
-        </script>
-    </head>
-
-    <body style="margin:0" onload="setTimeout('dispatchWheelEvent();', 100)">
-        <div id="overflow" style="border:2px solid black;overflow:auto;height:200px;width:200px;">
-          <div style="border:0px;background-color:red;height:300px;width:185px;"></div>
-          <div style="border:0px;background-color:green;height:300px;width:185px;"></div>
-        </div>
-        <div id="console"></div>
-    </body>
-</html>
+    await smoothScroll(givenScrollLeft, 100, 110, source, 'right', SPEED_INSTANT, false /* precise_scrolling_deltas */, true /* scroll_by_page */);
+    await conditionHolds( () => {
+        return overflowElement.scrollLeft == window.expectedScrollLeft;
+    });
+    assert_equals(last_event.wheelDeltaX, -Math.floor(expectedWheelDeltaX));
+    assert_equals(last_event.wheelDelta, -Math.floor(expectedWheelDeltaX));
+}, 'one page of scroll on div moves the content by 0 pixels.');
+</script>

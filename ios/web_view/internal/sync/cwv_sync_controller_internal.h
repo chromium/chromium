@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace autofill {
-class PersonalDataManager;
-}  // autofill
-
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -21,21 +17,14 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace password_manager {
-class PasswordStore;
-}  // password_manager
-
-class SigninErrorController;
+class PrefService;
 
 @interface CWVSyncController ()
 
 // All dependencies must out live this class.
-- (instancetype)
-      initWithSyncService:(syncer::SyncService*)syncService
-          identityManager:(signin::IdentityManager*)identityManager
-    signinErrorController:(SigninErrorController*)signinErrorController
-      personalDataManager:(autofill::PersonalDataManager*)personalDataManager
-            passwordStore:(password_manager::PasswordStore*)passwordStore
+- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
+                    identityManager:(signin::IdentityManager*)identityManager
+                        prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -2,12 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-executable("infoplist_strings_tool") {
+executable("infoplist_strings_util") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  sources = [
-    "infoplist_strings_util.mm",
-  ]
+  sources = [ "infoplist_strings_util.cc" ]
 
   deps = [
     "//base",
@@ -16,6 +14,4 @@ executable("infoplist_strings_tool") {
     "//third_party/icu",
     "//ui/base:ui_data_pack",
   ]
-
-  libs = [ "Foundation.framework" ]
 }

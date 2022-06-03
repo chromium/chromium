@@ -1,53 +1,59 @@
-{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_define %}
 {{license()}}
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 
+#include <algorithm>
+#include <array>
+#include <iterator>
+#include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
-using TrialToFeaturesMap = HashMap<String, Vector<OriginTrialFeature>>;
-
 namespace {
 
-const TrialToFeaturesMap& GetTrialToFeaturesMap() {
-  // The object needs to be thread-safe because service workers can call this
-  // function as well.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(TrialToFeaturesMap, trial_to_features_map, ());
-  if (trial_to_features_map.IsEmpty()) {
+static constexpr size_t kMaxFeaturesPerTrial = {{max_features_per_trial}};
+static constexpr struct {
+  const char* trial_name;
+  unsigned feature_count;
+  std::array<OriginTrialFeature, kMaxFeaturesPerTrial> features;
+} kTrialToFeaturesMap[] = {
     {% for trial_name, features_list in trial_to_features_map.items() %}
-    trial_to_features_map.Set("{{trial_name}}",
-                              Vector<OriginTrialFeature>({
-      {%- for trial_feature in features_list %}
-OriginTrialFeature::k{{trial_feature.name}},
-      {%- endfor %}
-  }));
+    { "{{trial_name}}", {{features_list|length}}, { {%- for trial_feature in features_list %}OriginTrialFeature::k{{trial_feature.name}}, {%- endfor %} } },
     {% endfor %}
     // For testing
-    trial_to_features_map.Set("This trial does not exist",
-                              Vector<OriginTrialFeature>({OriginTrialFeature::kNonExisting}));
-  }
-  return trial_to_features_map;
-}
+    { "This trial does not exist", 1, { OriginTrialFeature::kNonExisting } },
+};
 
 } // namespace
 
-bool origin_trials::IsTrialValid(const String& trial_name) {
-  return GetTrialToFeaturesMap().Contains(trial_name);
+bool origin_trials::IsTrialValid(const StringView& trial_name) {
+  return std::any_of(
+      std::begin(kTrialToFeaturesMap), std::end(kTrialToFeaturesMap),
+      [&](const auto& entry) { return entry.trial_name == trial_name; });
 }
 
-bool origin_trials::IsTrialEnabledForInsecureContext(const String& trial_name) {
-  {% for feature in origin_trial_features if feature.origin_trial_allows_insecure %}
-  if (trial_name == "{{feature.origin_trial_feature_name}}") {
-    return true;
-  }
+bool origin_trials::IsTrialEnabledForInsecureContext(const StringView& trial_name) {
+  static const char* const kEnabledForInsecureContext[] = {
+  {% for trial in origin_trial_features|selectattr('origin_trial_allows_insecure')|map(attribute='origin_trial_feature_name')|unique %}
+      "{{trial}}",
   {% endfor %}
-  return false;
+  };
+  return base::Contains(kEnabledForInsecureContext, trial_name);
+}
+
+bool origin_trials::IsTrialEnabledForThirdPartyOrigins(const StringView& trial_name) {
+  static const char* const kEnabledForThirdPartyOrigins[] = {
+  {% for trial in origin_trial_features|selectattr('origin_trial_allows_third_party')|map(attribute='origin_trial_feature_name')|unique %}
+      "{{trial}}",
+  {% endfor %}
+  };
+  return base::Contains(kEnabledForThirdPartyOrigins, trial_name);
 }
 
 OriginTrialType origin_trials::GetTrialType(OriginTrialFeature feature) {
@@ -61,23 +67,29 @@ OriginTrialType origin_trials::GetTrialType(OriginTrialFeature feature) {
   }
 }
 
-const Vector<OriginTrialFeature>& origin_trials::FeaturesForTrial(const String& trial_name) {
-  DCHECK(IsTrialValid(trial_name));
-  return GetTrialToFeaturesMap().find(trial_name)->value;
+
+base::span<const OriginTrialFeature> origin_trials::FeaturesForTrial(
+    const StringView& trial_name) {
+  auto it = std::find_if(
+      std::begin(kTrialToFeaturesMap), std::end(kTrialToFeaturesMap),
+      [&](const auto& entry) { return entry.trial_name == trial_name; });
+  DCHECK(it != std::end(kTrialToFeaturesMap));
+  return {it->features.begin(), it->feature_count};
 }
 
-Vector<OriginTrialFeature> origin_trials::GetImpliedFeatures(OriginTrialFeature feature) {
-{% for implied_by_name, implied_list in implied_origin_trial_features.items() %}
+base::span<const OriginTrialFeature> origin_trials::GetImpliedFeatures(
+    OriginTrialFeature feature) {
+{% for implied_by_name, implied_set in implied_origin_trial_features.items() %}
   if (feature == OriginTrialFeature::k{{implied_by_name}}) {
-    Vector<OriginTrialFeature> implied_features = {
-{%- for implied_name in implied_list %}
+    static constexpr OriginTrialFeature implied_features[] = {
+{%- for implied_name in implied_set|sort %}
 OriginTrialFeature::k{{implied_name}},
 {%- endfor %}
 };
     return implied_features;
   }
 {% endfor %}
-  return Vector<OriginTrialFeature>();
+  return {};
 }
 
 bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
@@ -89,7 +101,7 @@ bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
 #if
   {%- for os in feature.origin_trial_os %}
   {%- if not loop.first %} ||{% endif %}
- defined(OS_{{os | upper}})
+ {{platform_define(os)}}
   {%- endfor %}
 
       return true;

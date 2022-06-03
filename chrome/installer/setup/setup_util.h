@@ -15,26 +15,31 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "base/win/windows_types.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class GURL;
+class WorkItemList;
 
 namespace base {
 class CommandLine;
 class FilePath;
 class Version;
-}
+}  // namespace base
+
+namespace enterprise_connectors {
+class KeyRotationManager;
+}  // namespace enterprise_connectors
 
 namespace installer {
 
 class InstallationState;
 class InstallerState;
-class MasterPreferences;
+class InitialPreferences;
 
-extern const char kUnPackNTSTATUSMetricsName[];
-extern const char kUnPackResultMetricsName[];
 extern const char kUnPackStatusMetricsName[];
 
 // The name of consumers of UnPackArchive which is used to publish metrics.
@@ -69,7 +74,7 @@ int ZucchiniPatchFiles(const base::FilePath& src,
 
 // Find the version of Chrome from an install source directory.
 // Chrome_path should contain at least one version folder.
-// Returns the maximum version found or NULL if no version is found.
+// Returns the maximum version found or nullptr if no version is found.
 base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path);
 
 // Returns the uncompressed archive of the installed version that serves as the
@@ -91,7 +96,7 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
 
 // Drops the process down to background processing mode on supported OSes if it
 // was launched below the normal process priority. Returns true when background
-// procesing mode is entered.
+// processing mode is entered.
 bool AdjustProcessPriority();
 
 // Returns true if |install_status| represents a successful uninstall code.
@@ -104,28 +109,25 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line);
 bool IsProcessorSupported();
 
 // Returns the "...\\Commands\\|name|" registry key for a product's |reg_data|.
-base::string16 GetCommandKey(const wchar_t* name);
+std::wstring GetCommandKey(const wchar_t* name);
 
 // Deletes all values and subkeys of the key |path| under |root|, preserving
 // the keys named in |keys_to_preserve| (each of which must be an ASCII string).
 // The key itself is deleted if no subkeys are preserved.
 void DeleteRegistryKeyPartial(
     HKEY root,
-    const base::string16& path,
-    const std::vector<base::string16>& keys_to_preserve);
+    const std::wstring& path,
+    const std::vector<std::wstring>& keys_to_preserve);
 
 // Returns true if downgrade is allowed by installer data.
-bool IsDowngradeAllowed(const MasterPreferences& prefs);
+bool IsDowngradeAllowed(const InitialPreferences& prefs);
 
 // Returns the age (in days) of the installation based on the creation time of
 // its installation directory, or -1 in case of error.
 int GetInstallAge(const InstallerState& installer_state);
 
 // Records UMA metrics for unpack result.
-void RecordUnPackMetrics(UnPackStatus unpack_status,
-                         base::Optional<int32_t> ntstatus,
-                         base::Optional<DWORD> error_code,
-                         UnPackConsumer consumer);
+void RecordUnPackMetrics(UnPackStatus unpack_status, UnPackConsumer consumer);
 
 // Register Chrome's EventLog message provider dll.
 void RegisterEventLogProvider(const base::FilePath& install_directory,
@@ -133,10 +135,6 @@ void RegisterEventLogProvider(const base::FilePath& install_directory,
 
 // De-register Chrome's EventLog message provider dll.
 void DeRegisterEventLogProvider();
-
-// Returns true if the now-deprecated multi-install binaries are registered as
-// an installed product with Google Update.
-bool AreBinariesInstalled(const InstallerState& installer_state);
 
 // Removes leftover bits from features that have been removed from the product.
 void DoLegacyCleanups(const InstallerState& installer_state,
@@ -146,15 +144,31 @@ void DoLegacyCleanups(const InstallerState& installer_state,
 // a null time in case of error.
 base::Time GetConsoleSessionStartTime();
 
-// Returns a DM token decoded from the base-64 |encoded_token|, or null in case
+// Returns a DM token decoded from the base-64 `encoded_token`, or null in case
 // of a decoding error.  The returned DM token is an opaque binary blob and
 // should not be treated as an ASCII or UTF-8 string.
-base::Optional<std::string> DecodeDMTokenSwitchValue(
-    const base::string16& encoded_token);
+absl::optional<std::string> DecodeDMTokenSwitchValue(
+    const std::wstring& encoded_token);
+
+// Returns a nonce decoded from the base-64 `encoded_nonce`, or null in case
+// of a decoding error.  The returned nonce is an opaque binary blob and
+// should not be treated as an ASCII or UTF-8 string.
+absl::optional<std::string> DecodeNonceSwitchValue(
+    const std::string& encoded_nonce);
 
 // Saves a DM token to a global location on the machine accessible to all
 // install modes of the browser (i.e., stable and all three side-by-side modes).
 bool StoreDMToken(const std::string& token);
+
+// Rotates the device trust signing key and saves it to a global location on
+// the machine accessible to all install modes of the browser (i.e., stable and
+// all three side-by-side modes).
+bool RotateDeviceTrustKey(
+    std::unique_ptr<enterprise_connectors::KeyRotationManager>
+        key_rotation_manager,
+    const GURL& dm_server_url,
+    const std::string& dm_token,
+    const std::string& nonce);
 
 // Returns the file path to notification_helper.exe (in |version| directory).
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
@@ -164,15 +178,11 @@ base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version);
 
-// Returns the Elevation Service GUID prefixed with |prefix|.
-base::string16 GetElevationServiceGuid(base::StringPiece16 prefix);
-
-// Return the elevation service registry paths.
-base::string16 GetElevationServiceClsidRegistryPath();
-base::string16 GetElevationServiceAppidRegistryPath();
-base::string16 GetElevationServiceIid(base::StringPiece16 prefix);
-base::string16 GetElevationServiceIidRegistryPath();
-base::string16 GetElevationServiceTypeLibRegistryPath();
+// Adds or removes downgrade version registry value.
+void AddUpdateDowngradeVersionItem(HKEY root,
+                                   const base::Version& current_version,
+                                   const base::Version& new_version,
+                                   WorkItemList* list);
 
 }  // namespace installer
 

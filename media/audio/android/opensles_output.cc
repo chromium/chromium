@@ -5,9 +5,9 @@
 #include "media/audio/android/opensles_output.h"
 
 #include "base/android/build_info.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -47,9 +47,9 @@ OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
                                            SLint32 stream_type)
     : audio_manager_(manager),
       stream_type_(stream_type),
-      callback_(NULL),
-      player_(NULL),
-      simple_buffer_queue_(NULL),
+      callback_(nullptr),
+      player_(nullptr),
+      simple_buffer_queue_(nullptr),
       audio_data_(),
       active_buffer_index_(0),
       started_(false),
@@ -161,8 +161,7 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   // we're continuing on from this previous position.
   uint32_t position_in_ms = 0;
   LOG_ON_FAILURE_AND_RETURN((*player_)->GetPosition(player_, &position_in_ms));
-  delay_calculator_.SetBaseTimestamp(
-      base::TimeDelta::FromMilliseconds(position_in_ms));
+  delay_calculator_.SetBaseTimestamp(base::Milliseconds(position_in_ms));
   delay_calculator_.AddFrames(audio_bus_->frames());
 
   started_ = true;
@@ -194,7 +193,7 @@ void OpenSLESOutputStream::Stop() {
   DCHECK_EQ(0u, buffer_queue_state.index);
 #endif
 
-  callback_ = NULL;
+  callback_ = nullptr;
   started_ = false;
 }
 
@@ -208,8 +207,8 @@ void OpenSLESOutputStream::Close() {
     // Destroy the buffer queue player object and invalidate all associated
     // interfaces.
     player_object_.Reset();
-    simple_buffer_queue_ = NULL;
-    player_ = NULL;
+    simple_buffer_queue_ = nullptr;
+    player_ = nullptr;
 
     // Destroy the mixer object. We don't store any associated interface for
     // this object.
@@ -268,7 +267,7 @@ bool OpenSLESOutputStream::CreatePlayer() {
   SLEngineOption option[] = {
       {SL_ENGINEOPTION_THREADSAFE, static_cast<SLuint32>(SL_BOOLEAN_TRUE)}};
   LOG_ON_FAILURE_AND_RETURN(
-      slCreateEngine(engine_object_.Receive(), 1, option, 0, NULL, NULL),
+      slCreateEngine(engine_object_.Receive(), 1, option, 0, nullptr, nullptr),
       false);
 
   // Realize the SL engine object in synchronous mode.
@@ -281,10 +280,11 @@ bool OpenSLESOutputStream::CreatePlayer() {
                                 engine_object_.Get(), SL_IID_ENGINE, &engine),
                             false);
 
-  // Create ouput mixer object to be used by the player.
-  LOG_ON_FAILURE_AND_RETURN((*engine)->CreateOutputMix(
-                                engine, output_mixer_.Receive(), 0, NULL, NULL),
-                            false);
+  // Create output mixer object to be used by the player.
+  LOG_ON_FAILURE_AND_RETURN(
+      (*engine)->CreateOutputMix(engine, output_mixer_.Receive(), 0, nullptr,
+                                 nullptr),
+      false);
 
   // Realizing the output mix object in synchronous mode.
   LOG_ON_FAILURE_AND_RETURN(
@@ -303,7 +303,7 @@ bool OpenSLESOutputStream::CreatePlayer() {
   // Audio sink configuration.
   SLDataLocator_OutputMix locator_output_mix = {SL_DATALOCATOR_OUTPUTMIX,
                                                 output_mixer_.Get()};
-  SLDataSink audio_sink = {&locator_output_mix, NULL};
+  SLDataSink audio_sink = {&locator_output_mix, nullptr};
 
   // Create an audio player.
   const SLInterfaceID interface_id[] = {SL_IID_BUFFERQUEUE, SL_IID_VOLUME,
@@ -474,7 +474,7 @@ void OpenSLESOutputStream::ReleaseAudioBuffer() {
   if (audio_data_[0]) {
     for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i) {
       delete[] audio_data_[i];
-      audio_data_[i] = NULL;
+      audio_data_[i] = nullptr;
     }
   }
 }
@@ -497,10 +497,10 @@ void OpenSLESOutputStream::CacheHardwareLatencyIfNeeded() {
 
 base::TimeDelta OpenSLESOutputStream::AdjustPositionForHardwareLatency(
     uint32_t position_in_ms) {
-  base::TimeDelta position = base::TimeDelta::FromMilliseconds(position_in_ms);
+  base::TimeDelta position = base::Milliseconds(position_in_ms);
 
   if (position <= hardware_latency_)
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
 
   return position - hardware_latency_;
 }

@@ -4,17 +4,17 @@
 
 (async function() {
   TestRunner.addResult(`Tests doamin filter.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function checkSubdomains(domain) {
     TestRunner.addResult('');
     TestRunner.addResult('Domain: ' + domain);
-    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView._subdomains(domain)));
+    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView.subdomains(domain)));
   }
 
   function checkFilter(value, domains) {
-    var filter = Network.NetworkLogView._createRequestDomainFilter(value);
+    var filter = Network.NetworkLogView.createRequestDomainFilter(value);
     TestRunner.addResult('');
     TestRunner.addResult('Filter: ' + value);
     for (var i = 0; i < domains.length; ++i)

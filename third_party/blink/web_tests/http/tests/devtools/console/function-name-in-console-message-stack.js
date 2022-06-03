@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests exception message contains stack with correct function name.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     var foo = function ()
@@ -38,8 +38,8 @@
     ConsoleTestRunner.expandConsoleMessages(step2);
   }
 
-  function step2() {
-    ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+  async function step2() {
+    await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
     TestRunner.completeTest();
   }
 })();

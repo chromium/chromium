@@ -99,17 +99,6 @@ GURL GetFileSystemRootURI(const GURL& origin_url, FileSystemType type);
 COMPONENT_EXPORT(STORAGE_COMMON)
 std::string GetFileSystemName(const GURL& origin_url, FileSystemType type);
 
-// Converts FileSystemType |type| to/from the StorageType |storage_type| that
-// is used for the unified quota system.
-// (Basically this naively maps TEMPORARY storage type to TEMPORARY filesystem
-// type, PERSISTENT storage type to PERSISTENT filesystem type and vice versa.)
-COMPONENT_EXPORT(STORAGE_COMMON)
-FileSystemType QuotaStorageTypeToFileSystemType(
-    blink::mojom::StorageType storage_type);
-
-COMPONENT_EXPORT(STORAGE_COMMON)
-blink::mojom::StorageType FileSystemTypeToQuotaStorageType(FileSystemType type);
-
 // Returns the string representation of the given filesystem |type|.
 // Returns an empty string if the |type| is invalid.
 COMPONENT_EXPORT(STORAGE_COMMON)

@@ -14,17 +14,19 @@
 #include <winioctl.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "components/storage_monitor/media_storage_util.h"
@@ -53,7 +55,7 @@ enum DeviceType {
 // on either floppy or removable volumes. The DRIVE_CDROM type is handled
 // as a floppy, as are DRIVE_UNKNOWN and DRIVE_NO_ROOT_DIR, as there are
 // reports that some floppy drives don't report as DRIVE_REMOVABLE.
-DeviceType GetDeviceType(const base::string16& mount_point) {
+DeviceType GetDeviceType(const std::wstring& mount_point) {
   UINT drive_type = GetDriveType(mount_point.c_str());
   if (drive_type == DRIVE_FIXED || drive_type == DRIVE_REMOTE ||
       drive_type == DRIVE_RAMDISK) {
@@ -64,23 +66,23 @@ DeviceType GetDeviceType(const base::string16& mount_point) {
 
   // Check device strings of the form "X:" and "\\.\X:"
   // For floppy drives, these will return strings like "/Device/Floppy0"
-  base::string16 device = mount_point;
+  std::wstring device = mount_point;
   if (base::EndsWith(mount_point, L"\\", base::CompareCase::INSENSITIVE_ASCII))
     device = mount_point.substr(0, mount_point.length() - 1);
-  base::string16 device_path;
-  base::string16 device_path_slash;
+  std::wstring device_path;
+  std::wstring device_path_slash;
   DWORD dos_device = QueryDosDevice(
       device.c_str(), base::WriteInto(&device_path, kMaxPathBufLen),
       kMaxPathBufLen);
-  base::string16 device_slash = base::string16(L"\\\\.\\");
+  std::wstring device_slash = std::wstring(L"\\\\.\\");
   device_slash += device;
   DWORD dos_device_slash = QueryDosDevice(
       device_slash.c_str(), base::WriteInto(&device_path_slash, kMaxPathBufLen),
       kMaxPathBufLen);
   if (dos_device == 0 && dos_device_slash == 0)
     return FLOPPY;
-  if (device_path.find(L"Floppy") != base::string16::npos ||
-      device_path_slash.find(L"Floppy") != base::string16::npos) {
+  if (device_path.find(L"Floppy") != std::wstring::npos ||
+      device_path_slash.find(L"Floppy") != std::wstring::npos) {
     return FLOPPY;
   }
 
@@ -117,7 +119,7 @@ uint64_t GetVolumeSize(const base::FilePath& mount_point) {
 bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
   DCHECK(info);
 
-  base::string16 mount_point;
+  std::wstring mount_point;
   if (!GetVolumePathName(device_path.value().c_str(),
                          base::WriteInto(&mount_point, kMaxPathBufLen),
                          kMaxPathBufLen)) {
@@ -127,7 +129,7 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
 
   // Note: experimentally this code does not spin a floppy drive. It
   // returns a GUID associated with the device, not the volume.
-  base::string16 guid;
+  std::wstring guid;
   if (!GetVolumeNameForVolumeMountPoint(mount_point.c_str(),
                                         base::WriteInto(&guid, kMaxPathBufLen),
                                         kMaxPathBufLen)) {
@@ -146,7 +148,7 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
   DeviceType device_type = GetDeviceType(mount_point);
   if (device_type == FLOPPY) {
     info->set_device_id(StorageInfo::MakeDeviceId(
-        StorageInfo::FIXED_MASS_STORAGE, base::UTF16ToUTF8(guid)));
+        StorageInfo::FIXED_MASS_STORAGE, base::WideToUTF8(guid)));
     return true;
   }
 
@@ -160,19 +162,19 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
 
   // NOTE: experimentally, this function returns false if there is no volume
   // name set.
-  base::string16 volume_label;
+  std::wstring volume_label;
   GetVolumeInformationW(device_path.value().c_str(),
                         base::WriteInto(&volume_label, kMaxPathBufLen),
                         kMaxPathBufLen, nullptr, nullptr, nullptr, nullptr, 0);
 
   uint64_t total_size_in_bytes = GetVolumeSize(mount_path);
   std::string device_id =
-      StorageInfo::MakeDeviceId(type, base::UTF16ToUTF8(guid));
+      StorageInfo::MakeDeviceId(type, base::WideToUTF8(guid));
 
   // TODO(gbillock): if volume_label.empty(), get the vendor/model information
   // for the volume.
-  *info = StorageInfo(device_id, mount_point, volume_label, base::string16(),
-                      base::string16(), total_size_in_bytes);
+  *info = StorageInfo(device_id, mount_point, base::WideToUTF16(volume_label),
+                      std::u16string(), std::u16string(), total_size_in_bytes);
   return true;
 }
 
@@ -180,14 +182,14 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
 // connected.
 std::vector<base::FilePath> GetAttachedDevices() {
   std::vector<base::FilePath> result;
-  base::string16 volume_name;
+  std::wstring volume_name;
   HANDLE find_handle = FindFirstVolume(
       base::WriteInto(&volume_name, kMaxPathBufLen), kMaxPathBufLen);
   if (find_handle == INVALID_HANDLE_VALUE)
     return result;
 
   while (true) {
-    base::string16 volume_path;
+    std::wstring volume_path;
     DWORD return_count;
     if (GetVolumePathNamesForVolumeName(
             volume_name.c_str(), base::WriteInto(&volume_path, kMaxPathBufLen),
@@ -225,8 +227,8 @@ void EjectDeviceInThreadPool(
   // at not-just-drive-letter paths.
   if (drive_letter < L'A' || drive_letter > L'Z' ||
       device != device.DirName()) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));
     return;
   }
@@ -237,8 +239,8 @@ void EjectDeviceInThreadPool(
       nullptr, OPEN_EXISTING, 0, nullptr));
 
   if (!volume_handle.IsValid()) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));
     return;
   }
@@ -253,8 +255,7 @@ void EjectDeviceInThreadPool(
                                 0, nullptr, 0, &bytes_returned, nullptr);
   if (!locked) {
     const int kNumLockRetries = 1;
-    const base::TimeDelta kLockRetryInterval =
-        base::TimeDelta::FromMilliseconds(500);
+    const base::TimeDelta kLockRetryInterval = base::Milliseconds(500);
     if (iteration < kNumLockRetries) {
       // Try again -- the lock may have been a transient one. This happens on
       // things like AV disk lock for some reason, or another process
@@ -267,8 +268,8 @@ void EjectDeviceInThreadPool(
       return;
     }
 
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_IN_USE));
     return;
   }
@@ -285,8 +286,8 @@ void EjectDeviceInThreadPool(
   if (!dismounted) {
     DeviceIoControl(volume_handle.Get(), FSCTL_UNLOCK_VOLUME, nullptr, 0,
                     nullptr, 0, &bytes_returned, nullptr);
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_OK));
     return;
   }
@@ -297,8 +298,8 @@ void EjectDeviceInThreadPool(
   if (!DeviceIoControl(volume_handle.Get(), IOCTL_STORAGE_MEDIA_REMOVAL,
                        &pmr_buffer, sizeof(PREVENT_MEDIA_REMOVAL), nullptr, 0,
                        &bytes_returned, nullptr)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));
     return;
   }
@@ -306,22 +307,21 @@ void EjectDeviceInThreadPool(
   // Physically eject or soft-eject the device.
   if (!DeviceIoControl(volume_handle.Get(), IOCTL_STORAGE_EJECT_MEDIA, nullptr,
                        0, nullptr, 0, &bytes_returned, nullptr)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));
     return;
   }
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(std::move(callback), StorageMonitor::EJECT_OK));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), StorageMonitor::EJECT_OK));
 }
 
 }  // namespace
 
 VolumeMountWatcherWin::VolumeMountWatcherWin()
-    : device_info_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+    : device_info_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       notifications_(nullptr) {}
 
@@ -329,8 +329,8 @@ VolumeMountWatcherWin::VolumeMountWatcherWin()
 base::FilePath VolumeMountWatcherWin::DriveNumberToFilePath(int drive_number) {
   if (drive_number < 0 || drive_number > 25)
     return base::FilePath();
-  base::string16 path(L"_:\\");
-  path[0] = static_cast<base::char16>('A' + drive_number);
+  std::wstring path(L"A:\\");
+  path[0] += drive_number;
   return base::FilePath(path);
 }
 
@@ -376,14 +376,14 @@ void VolumeMountWatcherWin::RetrieveInfoForDeviceAndAdd(
     base::WeakPtr<VolumeMountWatcherWin> volume_watcher) {
   StorageInfo info;
   if (!std::move(get_device_details_callback).Run(device_path, &info)) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&VolumeMountWatcherWin::DeviceCheckComplete,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&VolumeMountWatcherWin::DeviceCheckComplete,
                                   volume_watcher, device_path));
     return;
   }
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&VolumeMountWatcherWin::HandleDeviceAttachEventOnUIThread,
                      volume_watcher, device_path, info));
 }
@@ -505,7 +505,7 @@ void VolumeMountWatcherWin::HandleDeviceAttachEventOnUIThread(
 }
 
 void VolumeMountWatcherWin::HandleDeviceDetachEventOnUIThread(
-    const base::string16& device_location) {
+    const std::wstring& device_location) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   MountPointDeviceMetadataMap::const_iterator device_info =

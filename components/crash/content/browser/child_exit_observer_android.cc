@@ -7,13 +7,14 @@
 #include <unistd.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "components/crash/content/browser/crash_memory_metrics_collector_android.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 
 using content::BrowserThread;
 
@@ -21,40 +22,16 @@ namespace crash_reporter {
 
 namespace {
 
-void PopulateTerminationInfoForRenderProcessHost(
-    content::RenderProcessHost* rph,
-    ChildExitObserver::TerminationInfo* info) {
-  info->process_host_id = rph->GetID();
-  info->pid = rph->GetProcess().Handle();
-  info->process_type = content::PROCESS_TYPE_RENDERER;
-  info->app_state = base::android::APPLICATION_STATE_UNKNOWN;
-  info->renderer_has_visible_clients = rph->VisibleClientCount() > 0;
-  info->renderer_was_subframe = rph->GetFrameDepth() > 0u;
-  CrashMemoryMetricsCollector* collector =
-      CrashMemoryMetricsCollector::GetFromRenderProcessHost(rph);
-
-  // CrashMemoryMetircsCollector is created in chrome_content_browser_client,
-  // and does not exist in non-chrome platforms such as android webview /
-  // chromecast.
-  if (collector) {
-    // SharedMemory creation / Map() might fail.
-    DCHECK(collector->MemoryMetrics());
-    info->blink_oom_metrics = *collector->MemoryMetrics();
-  }
-}
+base::LazyInstance<ChildExitObserver>::DestructorAtExit g_instance =
+    LAZY_INSTANCE_INITIALIZER;
 
 void PopulateTerminationInfo(
     const content::ChildProcessTerminationInfo& content_info,
     ChildExitObserver::TerminationInfo* info) {
   info->binding_state = content_info.binding_state;
+  info->threw_exception_during_init = content_info.threw_exception_during_init;
   info->was_killed_intentionally_by_browser =
       content_info.was_killed_intentionally_by_browser;
-  info->remaining_process_with_strong_binding =
-      content_info.remaining_process_with_strong_binding;
-  info->remaining_process_with_moderate_binding =
-      content_info.remaining_process_with_moderate_binding;
-  info->remaining_process_with_waived_binding =
-      content_info.remaining_process_with_waived_binding;
   info->best_effort_reverse_rank = content_info.best_effort_reverse_rank;
   info->was_oom_protected_status =
       content_info.status == base::TERMINATION_STATUS_OOM_PROTECTED;
@@ -62,13 +39,6 @@ void PopulateTerminationInfo(
       content_info.renderer_has_visible_clients;
   info->renderer_was_subframe = content_info.renderer_was_subframe;
 }
-
-ChildExitObserver* CreateSingletonInstance() {
-  static base::NoDestructor<ChildExitObserver> s_instance;
-  return s_instance.get();
-}
-
-ChildExitObserver* g_instance = nullptr;
 
 }  // namespace
 
@@ -84,19 +54,28 @@ void ChildExitObserver::Create() {
   // If this DCHECK fails in a unit test then a previously executing
   // test that makes use of ChildExitObserver forgot to create a
   // ShadowingAtExitManager.
-  DCHECK(!g_instance);
-  g_instance = CreateSingletonInstance();
+  DCHECK(!g_instance.IsCreated());
+  g_instance.Get();
 }
 
 // static
 ChildExitObserver* ChildExitObserver::GetInstance() {
-  DCHECK(g_instance);
-  return g_instance;
+  DCHECK(g_instance.IsCreated());
+  return g_instance.Pointer();
 }
 
 ChildExitObserver::ChildExitObserver() {
+  notification_registrar_.Add(this,
+                              content::NOTIFICATION_RENDERER_PROCESS_CREATED,
+                              content::NotificationService::AllSources());
+  notification_registrar_.Add(this,
+                              content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
+                              content::NotificationService::AllSources());
+  notification_registrar_.Add(this,
+                              content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+                              content::NotificationService::AllSources());
   BrowserChildProcessObserver::Add(this);
-  scoped_observer_.Add(crashpad::CrashHandlerHost::Get());
+  scoped_observation_.Observe(crashpad::CrashHandlerHost::Get());
 }
 
 ChildExitObserver::~ChildExitObserver() {
@@ -175,48 +154,72 @@ void ChildExitObserver::BrowserChildProcessKilled(
   // Subsequent BrowserChildProcessHostDisconnected will call OnChildExit.
 }
 
-void ChildExitObserver::OnRenderProcessHostCreated(
-    content::RenderProcessHost* rph) {
-  process_host_id_to_pid_[rph->GetID()] = rph->GetProcess().Handle();
-  rph_observers_.Add(rph);
-}
+void ChildExitObserver::Observe(int type,
+                                const content::NotificationSource& source,
+                                const content::NotificationDetails& details) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content::RenderProcessHost* rph =
+      content::Source<content::RenderProcessHost>(source).ptr();
+  TerminationInfo info;
+  info.process_host_id = rph->GetID();
+  info.pid = rph->GetProcess().Handle();
+  info.process_type = content::PROCESS_TYPE_RENDERER;
+  info.app_state = base::android::APPLICATION_STATE_UNKNOWN;
+  info.renderer_has_visible_clients = rph->VisibleClientCount() > 0;
+  info.renderer_was_subframe = rph->GetFrameDepth() > 0u;
+  CrashMemoryMetricsCollector* collector =
+      CrashMemoryMetricsCollector::GetFromRenderProcessHost(rph);
 
-void ChildExitObserver::RenderProcessExited(
-    content::RenderProcessHost* host,
-    const content::ChildProcessTerminationInfo& termination_info) {
-  OnRenderProcessHostGone(host, termination_info);
-}
-
-void ChildExitObserver::RenderProcessHostDestroyed(
-    content::RenderProcessHost* host) {
-  OnRenderProcessHostGone(host, base::nullopt);
-}
-
-void ChildExitObserver::OnRenderProcessHostGone(
-    content::RenderProcessHost* host,
-    base::Optional<content::ChildProcessTerminationInfo> termination_info) {
-  const auto& iter = process_host_id_to_pid_.find(host->GetID());
+  // CrashMemoryMetircsCollector is created in chrome_content_browser_client,
+  // and does not exist in non-chrome platforms such as android webview /
+  // chromecast.
+  if (collector) {
+    // SharedMemory creation / Map() might fail.
+    DCHECK(collector->MemoryMetrics());
+    info.blink_oom_metrics = *collector->MemoryMetrics();
+  }
+  switch (type) {
+    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
+      // NOTIFICATION_RENDERER_PROCESS_TERMINATED is sent when the renderer
+      // process is cleanly shutdown.
+      info.normal_termination = true;
+      info.renderer_shutdown_requested = rph->ShutdownRequested();
+      break;
+    }
+    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED: {
+      // We do not care about android fast shutdowns as it is a known case where
+      // the renderer is intentionally killed when we are done with it.
+      info.normal_termination = rph->FastShutdownStarted();
+      info.renderer_shutdown_requested = rph->ShutdownRequested();
+      info.app_state = base::android::ApplicationStatusListener::GetState();
+      const auto& content_info =
+          *content::Details<content::ChildProcessTerminationInfo>(details)
+               .ptr();
+      PopulateTerminationInfo(content_info, &info);
+      break;
+    }
+    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
+      // The child process pid isn't available when process is gone, keep a
+      // mapping between process_host_id and pid, so we can find it later.
+      process_host_id_to_pid_[rph->GetID()] = rph->GetProcess().Handle();
+      return;
+    }
+    default:
+      NOTREACHED();
+      return;
+  }
+  const auto& iter = process_host_id_to_pid_.find(rph->GetID());
+  // NOTIFICATION_RENDERER_PROCESS_CLOSED corresponds to death of an underlying
+  // RenderProcess. NOTIFICATION_RENDERER_PROCESS_TERMINATED corresponds to when
+  // the RenderProcessHost's lifetime is ending. Ideally, we'd only listen to
+  // the former, but if the RenderProcessHost is destroyed before the
+  // RenderProcess, then the former is never sent.
   if (iter == process_host_id_to_pid_.end()) {
     return;
   }
-
-  rph_observers_.Remove(host);
-  TerminationInfo info;
-  PopulateTerminationInfoForRenderProcessHost(host, &info);
   if (info.pid == base::kNullProcessHandle) {
     info.pid = iter->second;
   }
-
-  if (termination_info.has_value()) {
-    // We do not care about android fast shutdowns as it is a known case where
-    // the renderer is intentionally killed when we are done with it.
-    info.normal_termination = host->FastShutdownStarted();
-    info.app_state = base::android::ApplicationStatusListener::GetState();
-    PopulateTerminationInfo(*termination_info, &info);
-  } else {
-    info.normal_termination = true;
-  }
-
   process_host_id_to_pid_.erase(iter);
   OnChildExit(&info);
 }

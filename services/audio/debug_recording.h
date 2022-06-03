@@ -5,9 +5,6 @@
 #ifndef SERVICES_AUDIO_DEBUG_RECORDING_H_
 #define SERVICES_AUDIO_DEBUG_RECORDING_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,6 +23,9 @@ class DebugRecording : public mojom::DebugRecording {
  public:
   DebugRecording(mojo::PendingReceiver<mojom::DebugRecording> receiver,
                  media::AudioManager* audio_manager);
+
+  DebugRecording(const DebugRecording&) = delete;
+  DebugRecording& operator=(const DebugRecording&) = delete;
 
   // Disables audio debug recording if Enable() was called before.
   ~DebugRecording() override;
@@ -51,7 +51,6 @@ class DebugRecording : public mojom::DebugRecording {
   mojo::Remote<mojom::DebugRecordingFileProvider> file_provider_;
 
   base::WeakPtrFactory<DebugRecording> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DebugRecording);
 };
 
 }  // namespace audio

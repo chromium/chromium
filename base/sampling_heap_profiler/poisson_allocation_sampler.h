@@ -10,14 +10,12 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
 namespace base {
-
-template <typename T>
-class NoDestructor;
 
 // This singleton class implements Poisson sampling of the incoming allocations
 // stream. It hooks onto base::allocator and base::PartitionAlloc.
@@ -33,7 +31,7 @@ class NoDestructor;
 //
 class BASE_EXPORT PoissonAllocationSampler {
  public:
-  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc, kBlinkGC };
+  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc };
 
   class SamplesObserver {
    public:
@@ -94,6 +92,9 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   static PoissonAllocationSampler* Get();
 
+  PoissonAllocationSampler(const PoissonAllocationSampler&) = delete;
+  PoissonAllocationSampler& operator=(const PoissonAllocationSampler&) = delete;
+
  private:
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
@@ -125,8 +126,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class SamplingHeapProfilerTest;
   friend class ScopedMuteThreadSamples;
-
-  DISALLOW_COPY_AND_ASSIGN(PoissonAllocationSampler);
 };
 
 // static

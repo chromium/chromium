@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
@@ -22,24 +23,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
-
 namespace {
+
 // Data for request 1.
 const int64_t kRequestId1 = 17;
-const GURL kUrl1("https://google.com");
 const ClientId kClientId1("bookmark", "1234");
 // Data for request 2.
 const int64_t kRequestId2 = 42;
-const GURL kUrl2("http://nytimes.com");
+
 const ClientId kClientId2("bookmark", "5678");
 const bool kUserRequested = true;
 
 // Default request
-const SavePageRequest kEmptyRequest(0UL,
-                                    GURL(""),
-                                    ClientId("", ""),
-                                    base::Time(),
-                                    true);
+SavePageRequest EmptyRequest() {
+  return SavePageRequest(0UL, GURL(""), ClientId("", ""), base::Time(), true);
+}
 
 // TODO: Refactor this stub class into its own file, use in Pick Request Task
 // Test too.
@@ -47,7 +45,7 @@ const SavePageRequest kEmptyRequest(0UL,
 class RequestNotifierStub : public RequestNotifier {
  public:
   RequestNotifierStub()
-      : last_expired_request_(kEmptyRequest), total_expired_requests_(0) {}
+      : last_expired_request_(EmptyRequest()), total_expired_requests_(0) {}
 
   void NotifyAdded(const SavePageRequest& request) override {}
   void NotifyChanged(const SavePageRequest& request) override {}
@@ -122,8 +120,8 @@ class CleanupTaskTest : public RequestQueueTaskTestBase {
 
 void CleanupTaskTest::SetUp() {
   DeviceConditions conditions;
-  policy_.reset(new OfflinerPolicy());
-  notifier_.reset(new RequestNotifierStub());
+  policy_ = std::make_unique<OfflinerPolicy>();
+  notifier_ = std::make_unique<RequestNotifierStub>();
   MakeFactoryAndTask();
 
   InitializeStore();
@@ -151,8 +149,8 @@ void CleanupTaskTest::QueueRequests(const SavePageRequest& request1,
 }
 
 void CleanupTaskTest::MakeFactoryAndTask() {
-  factory_.reset(
-      new CleanupTaskFactory(policy_.get(), notifier_.get(), &event_logger_));
+  factory_ = std::make_unique<CleanupTaskFactory>(
+      policy_.get(), notifier_.get(), &event_logger_);
   DeviceConditions conditions;
   task_ = factory_->CreateCleanupTask(&store_);
 }
@@ -160,17 +158,17 @@ void CleanupTaskTest::MakeFactoryAndTask() {
 TEST_F(CleanupTaskTest, CleanupExpiredRequest) {
   base::Time creation_time = OfflineTimeNow();
   base::Time expired_time =
-      creation_time - base::TimeDelta::FromSeconds(
-                          policy()->GetRequestExpirationTimeInSeconds() + 10);
+      creation_time -
+      base::Seconds(policy()->GetRequestExpirationTimeInSeconds() + 10);
   // Request2 will be expired, request1 will be current.
-  SavePageRequest request1(kRequestId1, kUrl1, kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, kUrl2, kClientId2, expired_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           expired_time, kUserRequested);
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
-  task()->Run();
+  task()->Execute(base::DoNothing());
   PumpLoop();
 
   // See what is left in the queue, should be just the other request.
@@ -184,15 +182,15 @@ TEST_F(CleanupTaskTest, CleanupExpiredRequest) {
 TEST_F(CleanupTaskTest, CleanupStartCountExceededRequest) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will have an exceeded start count.
-  SavePageRequest request1(kRequestId1, kUrl1, kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, kUrl2, kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_started_attempt_count(policy()->GetMaxStartedTries());
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
-  task()->Run();
+  task()->Execute(base::DoNothing());
   PumpLoop();
 
   // See what is left in the queue, should be just the other request.
@@ -206,15 +204,15 @@ TEST_F(CleanupTaskTest, CleanupStartCountExceededRequest) {
 TEST_F(CleanupTaskTest, CleanupCompletionCountExceededRequest) {
   base::Time creation_time = OfflineTimeNow();
   // Request2 will have an exceeded completion count.
-  SavePageRequest request1(kRequestId1, kUrl1, kClientId1, creation_time,
-                           kUserRequested);
-  SavePageRequest request2(kRequestId2, kUrl2, kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(policy()->GetMaxCompletedTries());
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
-  task()->Run();
+  task()->Execute(base::DoNothing());
   PumpLoop();
 
   // See what is left in the queue, should be just the other request.
@@ -229,17 +227,17 @@ TEST_F(CleanupTaskTest, IgnoreRequestInProgress) {
   base::Time creation_time = OfflineTimeNow();
   // Both requests will have an exceeded completion count.
   // The first request will be marked as started.
-  SavePageRequest request1(kRequestId1, kUrl1, kClientId1, creation_time,
-                           kUserRequested);
+  SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
+                           creation_time, kUserRequested);
   request1.set_completed_attempt_count(policy()->GetMaxCompletedTries());
   request1.MarkAttemptStarted(creation_time);
-  SavePageRequest request2(kRequestId2, kUrl2, kClientId2, creation_time,
-                           kUserRequested);
+  SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
+                           creation_time, kUserRequested);
   request2.set_completed_attempt_count(policy()->GetMaxCompletedTries());
   QueueRequests(request1, request2);
 
   // Initiate cleanup.
-  task()->Run();
+  task()->Execute(base::DoNothing());
   PumpLoop();
 
   // See what is left in the queue, request1 should be left in the queue even

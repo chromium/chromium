@@ -1,3 +1,0 @@
-include_rules = {
-  "+chrome/lib/lifecycle/public/android/java/src/org/chromium/chrome/browser/lifecycle",
-}

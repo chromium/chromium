@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" value="2021-07-15">
+<input type="week" value="2021-W01">
+<input type="datetime-local" value="2021-07-15T00:00" />
+<script>
+
+for (const inputType of ["date", "week", "datetime-local"]) {
+  promise_test(() => {
+    let element = document.querySelector(`input[type="${inputType}"]`);
+    return openPickerWithPromise(element)
+    .then(() => {
+      // Make the picker dismiss synchronously so we don't need to insert
+      // an artificial delay in the test
+      internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+      clickClearButton();
+
+      assert_equals(element.value, "", "Clear button should have updated in-page control to empty string.");
+      assert_equals(internals.pagePopupWindow, null, "Click on Clear button should close popup.");
+    });
+  }, `Calendar picker: Clear button for input[type="${inputType}"] should clear date`);
+}
+
+</script>
+</body>
+</html>

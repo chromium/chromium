@@ -1,0 +1,4 @@
+Check that WebAuthn credBlob operations work
+Create credential result: OK
+credBlob result: true
+

@@ -5,9 +5,7 @@
 source_set("test_name_helper") {
   testonly = true
 
-  sources = [
-    "test_name_helper.h",
-  ]
+  sources = [ "test_name_helper.h" ]
 
   public_deps = [
     "//base:base",

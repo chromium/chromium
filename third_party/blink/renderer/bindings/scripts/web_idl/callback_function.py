@@ -15,7 +15,7 @@ from .user_defined_type import UserDefinedType
 
 class CallbackFunction(UserDefinedType, FunctionLike, WithExtendedAttributes,
                        WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-callback-functions"""
+    """https://webidl.spec.whatwg.org/#idl-callback-functions"""
 
     class IR(IRMap.IR, FunctionLike.IR, WithExtendedAttributes,
              WithCodeGeneratorInfo, WithComponent, WithDebugInfo):

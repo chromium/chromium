@@ -13,7 +13,7 @@ namespace syncer {
 // static
 std::unique_ptr<EntityChange> EntityChange::CreateAdd(
     const std::string& storage_key,
-    std::unique_ptr<EntityData> data) {
+    EntityData data) {
   return base::WrapUnique(
       new EntityChange(storage_key, ACTION_ADD, std::move(data)));
 }
@@ -21,7 +21,7 @@ std::unique_ptr<EntityChange> EntityChange::CreateAdd(
 // static
 std::unique_ptr<EntityChange> EntityChange::CreateUpdate(
     const std::string& storage_key,
-    std::unique_ptr<EntityData> data) {
+    EntityData data) {
   return base::WrapUnique(
       new EntityChange(storage_key, ACTION_UPDATE, std::move(data)));
 }
@@ -30,14 +30,14 @@ std::unique_ptr<EntityChange> EntityChange::CreateUpdate(
 std::unique_ptr<EntityChange> EntityChange::CreateDelete(
     const std::string& storage_key) {
   return base::WrapUnique(
-      new EntityChange(storage_key, ACTION_DELETE, nullptr));
+      new EntityChange(storage_key, ACTION_DELETE, EntityData()));
 }
 
 EntityChange::EntityChange(const std::string& storage_key,
                            ChangeType type,
-                           std::unique_ptr<EntityData> data)
+                           EntityData data)
     : storage_key_(storage_key), type_(type), data_(std::move(data)) {}
 
-EntityChange::~EntityChange() {}
+EntityChange::~EntityChange() = default;
 
 }  // namespace syncer

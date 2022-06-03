@@ -7,7 +7,7 @@ package org.chromium.base.task;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +33,10 @@ public class SequencedTaskRunnerImplTest {
     public void testPreNativeTasksRunInOrder() {
         TaskRunner taskQueue = new SequencedTaskRunnerImpl(TaskTraits.USER_BLOCKING);
         List<Integer> orderList = new ArrayList<>();
-        try {
-            SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 1);
-            SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 2);
-            SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 3);
-            SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
-        } finally {
-            taskQueue.destroy();
-        }
+        SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 1);
+        SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 2);
+        SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 3);
+        SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
         assertThat(orderList, contains(1, 2, 3));
     }
 }

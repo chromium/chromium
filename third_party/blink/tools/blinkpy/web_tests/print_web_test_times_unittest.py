@@ -33,7 +33,6 @@ from blinkpy.web_tests.print_web_test_times import main
 
 
 class PrintWebTestTimesTest(unittest.TestCase):
-
     def check(self, args, expected_output, files=None):
         host = MockHost()
         fs = host.filesystem
@@ -41,7 +40,8 @@ class PrintWebTestTimesTest(unittest.TestCase):
         if files:
             fs.files = files
         else:
-            fs.write_text_file(fs.join(artifacts_directory, 'times_ms.json'), """
+            fs.write_text_file(
+                fs.join(artifacts_directory, 'times_ms.json'), """
                 {"foo": {"foo1": {"fast1.html": 10,
                                   "fast2.html": 10,
                                   "slow1.html": 80},
@@ -57,29 +57,25 @@ class PrintWebTestTimesTest(unittest.TestCase):
 
     def test_fastest_overall(self):
         # This is the fastest 10% of the tests overall (ignoring dir structure, equivalent to -f 0).
-        self.check(['--fastest', '10'],
-                   'bar/bar1/fast5.html 10\n'
+        self.check(['--fastest', '10'], 'bar/bar1/fast5.html 10\n'
                    'bar/bar1/fast6.html 10\n'
                    'foo/foo1/fast1.html 10\n')
 
     def test_fastest_forward_1(self):
         # Note that we don't get anything from foo/foo2, as foo/foo1 used up the budget for foo.
-        self.check(['-f', '1', '--fastest', '10'],
-                   'bar/bar1/fast5.html 10\n'
+        self.check(['-f', '1', '--fastest', '10'], 'bar/bar1/fast5.html 10\n'
                    'foo/foo1/fast1.html 10\n'
                    'foo/foo1/fast2.html 10\n')
 
     def test_fastest_back_1(self):
         # Here we get one test from each dir, showing that we are going properly breadth-first.
-        self.check(['-b', '1', '--fastest', '10'],
-                   'bar/bar1/fast5.html 10\n'
+        self.check(['-b', '1', '--fastest', '10'], 'bar/bar1/fast5.html 10\n'
                    'foo/foo1/fast1.html 10\n'
                    'foo/foo2/fast3.html 10\n')
 
     def test_no_args(self):
         # This should be every test, sorted lexicographically.
-        self.check([],
-                   'bar/bar1/fast5.html 10\n'
+        self.check([], 'bar/bar1/fast5.html 10\n'
                    'bar/bar1/fast6.html 10\n'
                    'bar/bar1/slow3.html 80\n'
                    'foo/foo1/fast1.html 10\n'
@@ -93,17 +89,15 @@ class PrintWebTestTimesTest(unittest.TestCase):
         self.check(['-f', '0'], '300\n')
 
     def test_forward_one(self):
-        self.check(['-f', '1'],
-                   'bar 100\n'
-                   'foo 200\n')
+        self.check(['-f', '1'], 'bar 100\n' 'foo 200\n')
 
     def test_backward_one(self):
-        self.check(['-b', '1'],
-                   'bar/bar1 100\n'
+        self.check(['-b', '1'], 'bar/bar1 100\n'
                    'foo/foo1 100\n'
                    'foo/foo2 100\n')
 
     def test_path_to_file(self):
         # Tests that we can use a custom file rather than the port's default.
-        self.check(['/tmp/times_ms.json'], 'foo/bar.html 1\n',
+        self.check(['/tmp/times_ms.json'],
+                   'foo/bar.html 1\n',
                    files={'/tmp/times_ms.json': '{"foo":{"bar.html": 1}}'})

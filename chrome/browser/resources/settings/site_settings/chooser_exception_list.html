@@ -1,28 +1,13 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="chooser_exception_list_entry.html">
-<link rel="import" href="site_settings_behavior.html">
-<link rel="import" href="site_settings_prefs_browser_proxy.html">
-
-<dom-module id="chooser-exception-list">
-  <template>
-    <style include="settings-shared">
-      paper-tooltip {
-        --paper-tooltip: var(--cr-tooltip);
+    <style include="cr-shared-style settings-shared">
+      #empty-list-message {
+        padding: 0 var(--cr-section-padding);
+        padding-top: 30px;
       }
     </style>
 
-    <div class="list-frame" id="empty-list-message"
+    <div id="empty-list-message"
         hidden$="[[hasExceptions_(chooserExceptions.*)]]">
-      <div class="list-item secondary">[[emptyListMessage_]]</div>
+      <div class="secondary">[[emptyListMessage_]]</div>
     </div>
 
     <template is="dom-repeat" items="[[chooserExceptions]]">
@@ -34,6 +19,3 @@
     <paper-tooltip id="tooltip" manual-mode position="top">
       [[tooltipText_]]
     </paper-tooltip>
-  </template>
-  <script src="chooser_exception_list.js"></script>
-</dom-module>

@@ -14,9 +14,12 @@ namespace {
 class LayoutTableSectionTest : public RenderingTest {
  protected:
   LayoutTableSection* GetSectionByElementId(const char* id) {
-    // TODO(958381) Needs to TableNG compatible with
-    // LayoutNGTableSectionInterface.
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGTableEnabled());
     return To<LayoutTableSection>(GetLayoutObjectByElementId(id));
+  }
+
+  LayoutBox* GetSectionByElementIdAsBox(const char* id) {
+    return To<LayoutBox>(GetLayoutObjectByElementId(id));
   }
 
   LayoutTableSection* CreateSection(unsigned rows, unsigned columns) {
@@ -27,7 +30,7 @@ class LayoutTableSectionTest : public RenderingTest {
     for (unsigned i = 0; i < rows; ++i) {
       auto* row = GetDocument().CreateRawElement(html_names::kTrTag);
       section->appendChild(row);
-      for (unsigned i = 0; i < columns; ++i)
+      for (unsigned column = 0; column < columns; ++column)
         row->appendChild(GetDocument().CreateRawElement(html_names::kTdTag));
     }
     UpdateAllLifecyclePhasesForTest();
@@ -48,7 +51,7 @@ TEST_F(LayoutTableSectionTest,
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
   EXPECT_TRUE(section);
   EXPECT_FALSE(
       section->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
@@ -63,7 +66,7 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithBorderSpacing) {
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
   EXPECT_TRUE(section);
   EXPECT_FALSE(
       section->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
@@ -79,13 +82,17 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
   EXPECT_TRUE(section);
   EXPECT_FALSE(
       section->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
 }
 
 TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <table style='border: 100px solid red'>
       <thead id='section'></thead>
@@ -107,6 +114,9 @@ TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
 }
 
 TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <table>
       <tbody id='section'>
@@ -142,6 +152,9 @@ TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
 }
 
 TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <style>
       td { width: 100px; height: 100px; padding: 0 }
@@ -230,6 +243,9 @@ TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
 
 TEST_F(LayoutTableSectionTest,
        DirtiedRowsAndEffectiveColumnsWithCollapsedBorders) {
+  // TablesNG does not support DirtiedRowsAndEffectiveColumns.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <style>
       td { width: 100px; height: 100px; padding: 0; border: 2px solid; }
@@ -303,7 +319,7 @@ TEST_F(LayoutTableSectionTest, VisualOverflowWithCollapsedBorders) {
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
 
   // The section's self visual overflow doesn't cover the collapsed borders.
   EXPECT_EQ(section->BorderBoxRect(), section->SelfVisualOverflowRect());
@@ -324,6 +340,9 @@ static void SetCellsOverflowInRow(LayoutTableRow* row) {
 }
 
 TEST_F(LayoutTableSectionTest, OverflowingCells) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <style>
       td { width: 10px; height: 10px }

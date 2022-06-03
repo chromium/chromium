@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -21,6 +21,11 @@ constexpr char kSimpleWithKeyExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
 class ExtensionsDisabledBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionsDisabledBrowserTest() = default;
+
+  ExtensionsDisabledBrowserTest(const ExtensionsDisabledBrowserTest&) = delete;
+  ExtensionsDisabledBrowserTest& operator=(
+      const ExtensionsDisabledBrowserTest&) = delete;
+
   ~ExtensionsDisabledBrowserTest() override = default;
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // A little tricky: we disable extensions (via the commandline) on the
@@ -33,9 +38,6 @@ class ExtensionsDisabledBrowserTest : public ExtensionBrowserTest {
       command_line->AppendSwitch(::switches::kDisableExtensions);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsDisabledBrowserTest);
 };
 
 // Tests installing a number of extensions, and then restarting Chrome with the
@@ -45,12 +47,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsDisabledBrowserTest,
   const Extension* unpacked_extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_key"));
   ASSERT_TRUE(unpacked_extension);
-  EXPECT_EQ(Manifest::UNPACKED, unpacked_extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kUnpacked, unpacked_extension->location());
 
   const Extension* internal_extension =
       LoadExtension(test_data_dir_.AppendASCII("good.crx"));
   ASSERT_TRUE(internal_extension);
-  EXPECT_EQ(Manifest::INTERNAL, internal_extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kInternal, internal_extension->location());
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kGoodExtensionId));

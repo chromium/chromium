@@ -152,13 +152,12 @@ int OnDemandServiceToolMain(int argc, char* argv[]) {
               dictionaryWithCapacity:options.mach_services.size()];
           for (std::string mach_service : options.mach_services) {
             NSString* mach_service_ns = base::SysUTF8ToNSString(mach_service);
-            [mach_services setObject:@YES forKey:mach_service_ns];
+            mach_services[mach_service_ns] = @YES;
           }
 
           NSMutableDictionary* mutable_job_dictionary =
               [[job_dictionary mutableCopy] autorelease];
-          [mutable_job_dictionary setObject:mach_services
-                                     forKey:@LAUNCH_JOBKEY_MACHSERVICES];
+          mutable_job_dictionary[@LAUNCH_JOBKEY_MACHSERVICES] = mach_services;
           job_dictionary = mutable_job_dictionary;
         }
 

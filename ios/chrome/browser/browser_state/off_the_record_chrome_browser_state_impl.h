@@ -16,21 +16,26 @@ class PrefServiceSyncable;
 // The implementation of ChromeBrowserState that is used for incognito browsing.
 // Each OffTheRecordChromeBrowserStateImpl instance is associated with and owned
 // by a non-incognito ChromeBrowserState instance.
-class OffTheRecordChromeBrowserStateImpl : public ios::ChromeBrowserState {
+class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
  public:
+  OffTheRecordChromeBrowserStateImpl(
+      const OffTheRecordChromeBrowserStateImpl&) = delete;
+  OffTheRecordChromeBrowserStateImpl& operator=(
+      const OffTheRecordChromeBrowserStateImpl&) = delete;
+
   ~OffTheRecordChromeBrowserStateImpl() override;
 
   // ChromeBrowserState:
-  ios::ChromeBrowserState* GetOriginalChromeBrowserState() override;
+  ChromeBrowserState* GetOriginalChromeBrowserState() override;
   bool HasOffTheRecordChromeBrowserState() const override;
-  ios::ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
+  ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
   void DestroyOffTheRecordChromeBrowserState() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
+  BrowserStatePolicyConnector* GetPolicyConnector() override;
   PrefService* GetPrefs() override;
-  PrefService* GetOffTheRecordPrefs() override;
   ChromeBrowserStateIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
-                                   const base::Closure& completion) override;
+                                   base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
 
@@ -45,19 +50,19 @@ class OffTheRecordChromeBrowserStateImpl : public ios::ChromeBrowserState {
   // ChromeBrowserState instance that owns this instance.
   OffTheRecordChromeBrowserStateImpl(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      ios::ChromeBrowserState* original_chrome_browser_state,
+      ChromeBrowserState* original_chrome_browser_state,
       const base::FilePath& otr_path);
 
   base::FilePath otr_state_path_;
-  ios::ChromeBrowserState* original_chrome_browser_state_;  // weak
+  ChromeBrowserState* original_chrome_browser_state_;  // weak
 
-  // Weak pointer owned by |original_chrome_browser_state_|.
-  sync_preferences::PrefServiceSyncable* prefs_;
+  // Creation time of the off-the-record BrowserState.
+  const base::Time start_time_;
+
+  std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 
   std::unique_ptr<OffTheRecordChromeBrowserStateIOData::Handle> io_data_;
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(OffTheRecordChromeBrowserStateImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_OFF_THE_RECORD_CHROME_BROWSER_STATE_IMPL_H_

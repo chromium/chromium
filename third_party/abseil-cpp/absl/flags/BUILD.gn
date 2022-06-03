@@ -2,247 +2,217 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/build.gni")
-import("//third_party/abseil-cpp/abseil_clients.gni")
+import("//third_party/abseil-cpp/absl.gni")
 
-# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
-# adding projects to this list please reach out to cxx@chromium.org and CC:
-# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
-#
-# More information can be found at:
-# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
-if (build_with_chromium) {
-  visibility = absl_visibility
-} else {
-  visibility = [ "*" ]
-}
-
-# Build targets in this module are marked as "testonly" because it is not clear
-# how ABSL_FLAG will interact with //base/command_line.h.
-# If this is a problem, feel free to remove "testonly" and use "assert_no_deps"
-# on the main Chrome binary.
-
-source_set("internal") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "internal/program_name.cc",
-  ]
-  public = [
-    "internal/path_util.h",
-    "internal/program_name.h",
-  ]
+absl_source_set("path_util") {
+  public = [ "internal/path_util.h" ]
   deps = [
-    "../strings",
-    "../synchronization",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
   ]
-  visibility = []
-  visibility += [ ":*" ]
+  visibility = [ ":*" ]
 }
 
-source_set("config") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
+absl_source_set("program_name") {
+  sources = [ "internal/program_name.cc" ]
+  public = [ "internal/program_name.h" ]
+  deps = [
+    ":path_util",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
   ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "usage_config.cc",
-  ]
+  visibility = [ ":*" ]
+}
+
+# Since absl/flags are only used by some test binaries (e.g. in WebRTC),
+# there is no need to strip flags from mobile platforms binaries.
+# This does not affect Chromium.
+config("absl_flags_config") {
+  defines = [ "ABSL_FLAGS_STRIP_NAMES=0" ]
+}
+
+absl_source_set("config") {
+  sources = [ "usage_config.cc" ]
+  public_configs = [ ":absl_flags_config" ]
   public = [
     "config.h",
     "usage_config.h",
   ]
   deps = [
-    ":internal",
-    "../base:core_headers",
-    "../strings",
-    "../synchronization",
+    ":path_util",
+    ":program_name",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
   ]
 }
 
-source_set("marshalling") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "marshalling.cc",
-  ]
-  public = [
-    "marshalling.h",
-  ]
+absl_source_set("marshalling") {
+  sources = [ "marshalling.cc" ]
+  public = [ "marshalling.h" ]
   deps = [
-    "../base:core_headers",
-    "../strings",
-    "../strings:str_format",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:str_format",
   ]
 }
 
-source_set("handle") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "internal/commandlineflag.cc",
-  ]
-  public = [
-    "internal/commandlineflag.h",
-  ]
+absl_source_set("commandlineflag_internal") {
+  public = [ "internal/commandlineflag.h" ]
+  sources = [ "internal/commandlineflag.cc" ]
   deps = [
-    ":config",
-    ":marshalling",
-    "../base",
-    "../base:core_headers",
-    "../strings",
-    "../synchronization",
-    "../types:optional",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:fast_type_id",
   ]
-  visibility = []
-  visibility += [ ":*" ]
 }
 
-source_set("registry") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
+absl_source_set("commandlineflag") {
+  sources = [ "commandlineflag.cc" ]
+  public = [ "commandlineflag.h" ]
+  deps = [
+    ":commandlineflag_internal",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:fast_type_id",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "internal/registry.cc",
-    "internal/type_erased.cc",
+}
+
+absl_source_set("private_handle_accessor") {
+  sources = [ "internal/private_handle_accessor.cc" ]
+  public = [ "internal/private_handle_accessor.h" ]
+  deps = [
+    ":commandlineflag",
+    ":commandlineflag_internal",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings",
   ]
+  visibility = [ ":*" ]
+}
+
+absl_source_set("reflection") {
+  sources = [ "reflection.cc" ]
   public = [
     "internal/registry.h",
-    "internal/type_erased.h",
+    "reflection.h",
   ]
   deps = [
+    ":commandlineflag",
+    ":commandlineflag_internal",
     ":config",
-    ":handle",
-    "../base",
-    "../base:core_headers",
-    "../base:dynamic_annotations",
-    "../strings",
-    "../synchronization",
+    ":private_handle_accessor",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
   ]
-  visibility = []
-  visibility += [ ":*" ]
 }
 
-source_set("flag") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
+absl_source_set("flag_internal") {
+  sources = [ "internal/flag.cc" ]
+  public = [
+    "internal/flag.h",
+    "internal/sequence_lock.h",
   ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  deps = [
+    ":commandlineflag",
+    ":commandlineflag_internal",
+    ":config",
+    ":marshalling",
+    ":reflection",
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
+    "//third_party/abseil-cpp/absl/utility",
+  ]
+  visibility = [
+    ":*",
+    "//third_party/abseil-cpp/absl/base/*",
+  ]
+}
+
+absl_source_set("flag") {
   sources = [
     "flag.cc",
+    "internal/flag_msvc.inc",
   ]
   public = [
     "declare.h",
     "flag.h",
-    "internal/flag.h",
   ]
   deps = [
     ":config",
-    ":handle",
-    ":marshalling",
-    ":registry",
-    "../base",
-    "../base:core_headers",
-    "../strings",
+    ":flag_internal",
+    ":reflection",
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
   ]
 }
 
-source_set("usage_internal") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "internal/usage.cc",
-  ]
-  public = [
-    "internal/usage.h",
-  ]
+absl_source_set("usage_internal") {
+  sources = [ "internal/usage.cc" ]
+  public = [ "internal/usage.h" ]
   deps = [
+    ":commandlineflag",
     ":config",
     ":flag",
-    ":handle",
-    ":internal",
-    "../strings",
-    "../synchronization",
+    ":flag_internal",
+    ":path_util",
+    ":private_handle_accessor",
+    ":program_name",
+    ":reflection",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
+    "//third_party/abseil-cpp/absl/strings",
   ]
-  visibility = []
-  visibility += [ ":*" ]
+  visibility = [ ":*" ]
 }
 
-source_set("usage") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "usage.cc",
-  ]
-  public = [
-    "usage.h",
-  ]
+absl_source_set("usage") {
+  sources = [ "usage.cc" ]
+  public = [ "usage.h" ]
   deps = [
     ":usage_internal",
-    "../strings",
-    "../synchronization",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
   ]
 }
 
-source_set("parse") {
-  testonly = true
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "parse.cc",
-  ]
+absl_source_set("parse") {
+  sources = [ "parse.cc" ]
   public = [
     "internal/parse.h",
     "parse.h",
   ]
   deps = [
+    ":commandlineflag",
+    ":commandlineflag_internal",
     ":config",
     ":flag",
-    ":handle",
-    ":internal",
-    ":registry",
+    ":flag_internal",
+    ":private_handle_accessor",
+    ":program_name",
+    ":reflection",
     ":usage",
     ":usage_internal",
-    "../strings",
-    "../synchronization",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/synchronization",
   ]
 }

@@ -6,13 +6,18 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
+import org.chromium.base.annotations.DoNotInline;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Manages clients and settings for Service Workers.
  */
 public class AwServiceWorkerController {
     private AwServiceWorkerClient mServiceWorkerClient;
+    @DoNotInline // Native stores this as a weak reference.
     private AwContentsIoThreadClient mServiceWorkerIoThreadClient;
     private AwContentsBackgroundThreadClient mServiceWorkerBackgroundThreadClient;
     private AwServiceWorkerSettings mServiceWorkerSettings;
@@ -33,18 +38,17 @@ public class AwServiceWorkerController {
     /**
      * Set custom client to receive callbacks from Service Workers. Can be null.
      */
-    public void setServiceWorkerClient(AwServiceWorkerClient client) {
+    public void setServiceWorkerClient(@Nullable AwServiceWorkerClient client) {
         mServiceWorkerClient = client;
         if (client != null) {
             mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
             mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
-            AwContentsStatics.setServiceWorkerIoThreadClient(
-                    mServiceWorkerIoThreadClient, mBrowserContext);
         } else {
             mServiceWorkerBackgroundThreadClient = null;
             mServiceWorkerIoThreadClient = null;
-            AwContentsStatics.setServiceWorkerIoThreadClient(null, mBrowserContext);
         }
+        AwContentsStatics.setServiceWorkerIoThreadClient(
+                mServiceWorkerIoThreadClient, mBrowserContext);
     }
 
     // Helper classes implementations
@@ -94,12 +98,14 @@ public class AwServiceWorkerController {
             extends AwContentsBackgroundThreadClient {
         // All methods are called on the background thread.
         @Override
-        public AwWebResourceResponse shouldInterceptRequest(
+        public WebResourceResponseInfo shouldInterceptRequest(
                 AwContentsClient.AwWebResourceRequest request) {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?
-            return mServiceWorkerClient.shouldInterceptRequest(request);
+            return mServiceWorkerClient != null
+                    ? mServiceWorkerClient.shouldInterceptRequest(request)
+                    : null;
         }
     }
 }

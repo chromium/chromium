@@ -10,23 +10,6 @@
 <body>
 <script>
 
-function iceGatheringCompleteWaiter(pc) {
-  const waiter = new Promise((resolve) => {
-    const eventHandler = () => {
-      if (pc.iceGatheringState == 'complete') {
-        pc.removeEventListener('icegatheringstatechange', eventHandler, false);
-        resolve();
-      }
-    };
-    if (pc.iceGatheringState == 'complete') {
-      resolve();
-    } else {
-      pc.addEventListener('icegatheringstatechange', eventHandler, false);
-    }
-  });
-  return waiter;
-}
-
 class StateLogger {
   constructor(source, eventname, field) {
     source.addEventListener(eventname, event => {
@@ -50,8 +33,8 @@ promise_test(async t => {
   pc1.createDataChannel('datachannel');
   pc1IceStates = new IceStateLogger(pc1);
   pc2IceStates = new IceStateLogger(pc1);
-  coupleIceCandidates(pc1, pc2);
-  await doSignalingHandshake(pc1, pc2);
+  exchangeIceCandidates(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   // Note - it's been claimed that this state sometimes jumps straight
   // to "completed". If so, this test should be flaky.
   await waitForIceStateChange(pc1, ['connected']);
@@ -73,8 +56,8 @@ promise_test(async t => {
   }
   // Candidates from PC2 are not delivered to pc1, so pc1 will use
   // peer-reflexive candidates.
-  await doSignalingHandshake(pc1, pc2);
-  const waiter = iceGatheringCompleteWaiter(pc1);
+  await exchangeOfferAnswer(pc1, pc2);
+  const waiter = waitForIceGatheringState(pc1, ['complete']);
   await waiter;
   for (const candidate of candidates) {
     if (candidate) {
@@ -104,8 +87,8 @@ promise_test(async t => {
   }
   // Candidates from pc1 are not delivered to pc2.  so pc2 will use
   // peer-reflexive candidates.
-  await doSignalingHandshake(pc1, pc2);
-  const waiter = iceGatheringCompleteWaiter(pc2);
+  await exchangeOfferAnswer(pc1, pc2);
+  const waiter = waitForIceGatheringState(pc2, ['complete']);
   await waiter;
   for (const candidate of candidates) {
     if (candidate) {
@@ -144,7 +127,7 @@ promise_test(async t => {
   }
   // Candidates from |pc1| are not delivered to |pc2|. |pc2| will use
   // peer-reflexive candidates.
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   await Promise.all([waitForIceStateChange(pc1, ['connected', 'completed']),
                      waitForIceStateChange(pc2, ['connected', 'completed'])]);
   const candidate_pair = pc2.sctp.transport.iceTransport.getSelectedCandidatePair();
@@ -174,7 +157,7 @@ promise_test(async t => {
   await Promise.all([pc1.setLocalDescription(offer),
                      pc2.setRemoteDescription(offer)]);
   const answer = await pc2.createAnswer();
-  await iceGatheringCompleteWaiter(pc1);
+  await waitForIceGatheringState(pc1, ['complete']);
   await pc2.setLocalDescription(answer).then(() => {
     for (const candidate of pc1ToPc2Candidates) {
       if (candidate) {
@@ -182,7 +165,7 @@ promise_test(async t => {
       }
     }
   });
-  await iceGatheringCompleteWaiter(pc2);
+  await waitForIceGatheringState(pc2, ['complete']);
   pc1.setRemoteDescription(answer).then(async () => {
     for (const candidate of pc2ToPc1Candidates) {
       if (candidate) {
@@ -202,6 +185,33 @@ promise_test(async t => {
   assert_array_equals(pc1IceStates.events, ['new', 'checking', 'connected']);
   assert_array_equals(pc2IceStates.events, ['new', 'checking', 'connected']);
 }, 'Explicit offer/answer exchange gives a connection');
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  pc1.createDataChannel('datachannel');
+  pc1.onicecandidate = assert_unreached;
+  const offer = await pc1.createOffer();
+  await pc1.setLocalDescription(offer);
+  await new Promise(resolve => {
+    pc1.onicecandidate = resolve;
+  });
+}, 'Candidates always arrive after setLocalDescription(offer) resolves');
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+  pc1.createDataChannel('datachannel');
+  pc2.onicecandidate = assert_unreached;
+  const offer = await pc1.createOffer();
+  await pc2.setRemoteDescription(offer);
+  await pc2.setLocalDescription(await pc2.createAnswer());
+  await new Promise(resolve => {
+    pc2.onicecandidate = resolve;
+  });
+}, 'Candidates always arrive after setLocalDescription(answer) resolves');
 
 </script>
 </body>

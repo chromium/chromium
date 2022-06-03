@@ -1,9 +1,10 @@
 rootWebArea
-++genericContainer ignored
-++++form
-++++++labelText
-++++++++staticText name='Pet name:'
-++++++++++inlineTextBox name='Pet name:'
-++++++textField required name='Pet name:' errormessageId=alert invalidState=true
-++++++++genericContainer
 ++alert containerLiveRelevant='additions' containerLiveStatus='assertive' name='Please enter pet name' liveRelevant='additions' liveStatus='assertive' containerLiveAtomic=true containerLiveBusy=false liveAtomic=true
+++genericContainer ignored
+++++genericContainer ignored
+++++++section
+++++++++labelText
+++++++++++staticText name='Pet name:'
+++++++++++++inlineTextBox name='Pet name:'
+++++++++textField required name='Pet name:' errormessageId=alert invalidState=true
+++++++++++genericContainer

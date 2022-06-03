@@ -5,8 +5,10 @@
 // https://w3c.github.io/webrtc-pc/#rtcpeerconnectioniceerrorevent
 
 dictionary RTCPeerConnectionIceErrorEventInit : EventInit {
+  DOMString? address;
+  unsigned short? port;
   DOMString hostCandidate;
   DOMString url;
   required unsigned short errorCode;
-  USVString statusText;
+  USVString errorText;
 };

@@ -1,0 +1,13 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<!--
+Temporary test DOM file that pulls in transpile.js to get Map and Set polyfills. This file is not
+marked as ES6 in deps.js since it does not use ES6 syntax. However it does use ES6 libraries (Map +
+Set), so it needs polyfills. We need to fix deps.js generation to mark this as ES6, or as some new
+ES6-library language level.
+-->
+<script src="../transpile.js"></script>

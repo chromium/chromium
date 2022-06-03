@@ -17,8 +17,11 @@ see .cc files in green and get confused.
   shebang, add it to IGNORED_FILENAMES.
 
 Any file not matching the above will be opened and looked if it has a shebang
-or an ELF header. If this does not match the executable bit on the file, the
-file will be flagged.
+or an ELF or Mach-O header. If this does not match the executable bit on the
+file, the file will be flagged. Mach-O files are allowed to exist with or
+without an executable bit set, as there are many examples of it appearing as
+test data, and as Mach-O types such as dSYM that canonically do not have their
+executable bits set.
 
 Note that all directory separators must be slashes (Unix-style) and not
 backslashes. All directories should be relative to the source root and all
@@ -175,7 +178,7 @@ IGNORED_PATHS = (
   'native_client_sdk/src/build_tools/sdk_tools/third_party/fancy_urllib/'
       '__init__.py',
   'out/',
-  'third_party/blink/web_tests/external/wpt/tools/third_party/',
+  'third_party/wpt_tools/wpt/tools/third_party/',
   # TODO(maruel): Fix these.
   'third_party/devscripts/licensecheck.pl.vanilla',
   'third_party/libxml/linux/xml2-config',
@@ -195,6 +198,8 @@ VALID_CHARS = set(string.ascii_lowercase + string.digits + '/-_.')
 for paths in (EXECUTABLE_PATHS, NON_EXECUTABLE_PATHS, IGNORED_PATHS):
   assert all([set(path).issubset(VALID_CHARS) for path in paths])
 
+git_name = 'git.bat' if sys.platform.startswith('win') else 'git'
+
 
 def capture(cmd, cwd):
   """Returns the output of a command.
@@ -206,12 +211,12 @@ def capture(cmd, cwd):
   env['LANGUAGE'] = 'en_US.UTF-8'
   p = subprocess.Popen(
       cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
-  return p.communicate()[0]
+  return p.communicate()[0].decode('utf-8', 'ignore')
 
 
 def get_git_root(dir_path):
   """Returns the git checkout root or None."""
-  root = capture(['git', 'rev-parse', '--show-toplevel'], dir_path).strip()
+  root = capture([git_name, 'rev-parse', '--show-toplevel'], dir_path).strip()
   if root:
     return root
 
@@ -233,10 +238,10 @@ def must_be_executable(rel_path):
 
 
 def ignored_extension(rel_path):
-    """The file name represents a file type that may or may not have the
-    executable set.
-    """
-    return os.path.splitext(rel_path)[1][1:] in IGNORED_EXTENSIONS
+  """The file name represents a file type that may or may not have the
+  executable set.
+  """
+  return os.path.splitext(rel_path)[1][1:] in IGNORED_EXTENSIONS
 
 
 def must_not_be_executable(rel_path):
@@ -249,18 +254,35 @@ def must_not_be_executable(rel_path):
 
 def has_executable_bit(full_path):
   """Returns if any executable bit is set."""
+  if sys.platform.startswith('win'):
+    # Using stat doesn't work on Windows, we have to ask git what the
+    # permissions are.
+    dir_part, file_part = os.path.split(full_path)
+    bits = capture([git_name, 'ls-files', '-s', file_part], dir_part).strip()
+    return bits.decode().startswith('100755')
   permission = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
   return bool(permission & os.stat(full_path).st_mode)
 
 
-def has_shebang_or_is_elf(full_path):
-  """Returns if the file starts with #!/ or is an ELF binary.
+def has_shebang_or_is_elf_or_mach_o(full_path):
+  """Returns if the file starts with #!/ or is an ELF or Mach-O binary.
 
   full_path is the absolute path to the file.
   """
   with open(full_path, 'rb') as f:
     data = f.read(4)
-    return (data[:3] == '#!/' or data == '#! /', data == '\x7fELF')
+    return (
+        data[:3] == b'#!/' or data == b'#! /',
+        data == '\x7fELF',  # ELFMAG
+        data in (
+            '\xfe\xed\xfa\xce',  # MH_MAGIC
+            '\xce\xfa\xed\xfe',  # MH_CIGAM
+            '\xfe\xed\xfa\xcf',  # MH_MAGIC_64
+            '\xcf\xfa\xed\xfe',  # MH_CIGAM_64
+            '\xca\xfe\xba\xbe',  # FAT_MAGIC
+            '\xbe\xba\xfe\xca',  # FAT_CIGAM
+            '\xca\xfe\xba\xbf',  # FAT_MAGIC_64
+            '\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
 
 
 def check_file(root_path, rel_path):
@@ -272,7 +294,8 @@ def check_file(root_path, rel_path):
   If the file name is matched with must_be_executable() or
   must_not_be_executable(), only its executable bit is checked.
   Otherwise, the first few bytes of the file are read to verify if it has a
-  shebang or ELF header and compares this with the executable bit on the file.
+  shebang or ELF or Mach-O header and compares this with the executable bit on
+  the file.
   """
   full_path = os.path.join(root_path, rel_path)
   def result_dict(error):
@@ -288,25 +311,31 @@ def check_file(root_path, rel_path):
     # tree may have invalid symlinks.
     return None
 
+  exec_add = 'git add --chmod=+x %s' % rel_path
+  exec_remove = 'git add --chmod=-x %s' % rel_path
   if must_be_executable(rel_path):
     if not bit:
-      return result_dict('Must have executable bit set')
+      return result_dict('Must have executable bit set: %s' % exec_add)
     return
   if must_not_be_executable(rel_path):
     if bit:
-      return result_dict('Must not have executable bit set')
+      return result_dict('Must not have executable bit set: %s' % exec_remove)
     return
   if ignored_extension(rel_path):
     return
 
   # For the others, it depends on the file header.
-  (shebang, elf) = has_shebang_or_is_elf(full_path)
-  if bit != (shebang or elf):
+  (shebang, elf, mach_o) = has_shebang_or_is_elf_or_mach_o(full_path)
+  if bit != (shebang or elf or mach_o):
     if bit:
-      return result_dict('Has executable bit but not shebang or ELF header')
+      return result_dict(
+          'Has executable bit but not shebang or ELF or Mach-O header: %s' %
+          exec_remove)
     if shebang:
-      return result_dict('Has shebang but not executable bit')
-    return result_dict('Has ELF header but not executable bit')
+      return result_dict('Has shebang but not executable bit: %s' % exec_add)
+    if elf:
+      return result_dict('Has ELF header but not executable bit: %s' % exec_add)
+    # Mach-O is allowed to exist in the tree with or without an executable bit.
 
 
 def check_files(root, files):
@@ -383,7 +412,7 @@ class ApiAllFilesAtOnceBase(ApiBase):
 
 class ApiGit(ApiAllFilesAtOnceBase):
   def _get_all_files(self):
-    return capture(['git', 'ls-files'], cwd=self.root_dir).splitlines()
+    return capture([git_name, 'ls-files'], cwd=self.root_dir).splitlines()
 
 
 def get_scm(dir_path, bare):
@@ -442,11 +471,19 @@ Examples:
   if options.files and options.file_list:
     parser.error('--file and --file-list are mutually exclusive options')
 
+  if sys.platform.startswith(
+      'win') and not options.files and not options.file_list:
+    # checkperms of the entire tree on Windows takes many hours so is not
+    # supported. Instead just check this script.
+    options.files = [sys.argv[0]]
+    options.root = '.'
+    print('Full-tree checkperms not supported on Windows.')
+
   if options.root:
     options.root = os.path.abspath(options.root)
 
   if options.files:
-    errors = check_files(options.root, options.files)
+    errors = list(check_files(options.root, options.files))
   elif options.file_list:
     with open(options.file_list) as file_list:
       files = file_list.read().splitlines()
@@ -457,7 +494,7 @@ Examples:
     errors = api.check(start_dir)
 
     if not options.bare:
-      print('Processed %s files, %d files where tested for shebang/ELF '
+      print('Processed %s files, %d files where tested for shebang/ELF/Mach-O '
             'header' % (api.count, api.count_read_header))
 
   if options.json:

@@ -8,10 +8,11 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -51,6 +52,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #else
@@ -62,6 +67,7 @@ namespace em = enterprise_management;
 using testing::_;
 using testing::AnyNumber;
 using testing::Mock;
+using testing::SaveArg;
 
 namespace policy {
 
@@ -121,7 +127,7 @@ class UserPolicySigninServiceTest : public testing::Test {
     UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
         &device_management_service_);
 
-    local_state_.reset(new TestingPrefServiceSimple);
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterLocalState(local_state_->registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(local_state_.get());
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
@@ -178,7 +184,8 @@ class UserPolicySigninServiceTest : public testing::Test {
 
   virtual void AddProfile() {
     // For this test, the user should not be signed in yet.
-    DCHECK(!identity_test_env()->identity_manager()->HasPrimaryAccount());
+    DCHECK(!identity_test_env()->identity_manager()->HasPrimaryAccount(
+        signin::ConsentLevel::kSignin));
 
     // Initializing UserPolicySigninService while the user is not signed in
     // should result in the store being cleared to remove any lingering policy.
@@ -225,7 +232,8 @@ class UserPolicySigninServiceTest : public testing::Test {
     RegisterPolicyClientWithCallback(signin_service);
 
     // Sign in to Chrome.
-    identity_test_env()->SetPrimaryAccount(kTestUser);
+    identity_test_env()->SetPrimaryAccount(kTestUser,
+                                           signin::ConsentLevel::kSync);
 
     // Mimic successful oauth token fetch.
     MakeOAuthTokenFetchSucceed();
@@ -234,11 +242,10 @@ class UserPolicySigninServiceTest : public testing::Test {
     // registration.
     DeviceManagementService::JobConfiguration::JobType job_type =
         DeviceManagementService::JobConfiguration::TYPE_INVALID;
-    DeviceManagementService::JobControl* job_control = nullptr;
-    EXPECT_CALL(device_management_service_, StartJob(_))
-        .WillOnce(DoAll(
-            device_management_service_.CaptureJobType(&job_type),
-            device_management_service_.StartJobFullControl(&job_control)));
+    DeviceManagementService::JobForTesting job;
+    EXPECT_CALL(job_creation_handler_, OnJobCreation)
+        .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                        SaveArg<0>(&job)));
 
     // Now mimic the user being a hosted domain - this should cause a Register()
     // call.
@@ -247,7 +254,7 @@ class UserPolicySigninServiceTest : public testing::Test {
     // Should have no more outstanding requests.
     ASSERT_FALSE(IsRequestActive());
     Mock::VerifyAndClearExpectations(this);
-    ASSERT_NE(nullptr, job_control);
+    ASSERT_TRUE(job.IsActive());
     EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
               job_type);
 
@@ -257,9 +264,7 @@ class UserPolicySigninServiceTest : public testing::Test {
         ->set_device_management_token(expected_dm_token);
     registration_response.mutable_register_response()->set_enrollment_type(
         em::DeviceRegisterResponse::ENTERPRISE);
-    device_management_service_.DoURLCompletion(
-        &job_control, net::OK, DeviceManagementService::kSuccess,
-        registration_response);
+    device_management_service_.SendJobOKNow(&job, registration_response);
 
     EXPECT_TRUE(register_completed_);
     EXPECT_EQ(dm_token_, expected_dm_token);
@@ -292,10 +297,15 @@ class UserPolicySigninServiceTest : public testing::Test {
   // True if OnRegisterCompleted() was called.
   bool register_completed_;
 
-  MockDeviceManagementService device_management_service_;
+  testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService device_management_service_{
+      &job_creation_handler_};
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper test_helper;
+#endif
 };
 
 class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {
@@ -305,7 +315,8 @@ class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {
     ASSERT_FALSE(manager_->core()->service());
 
     // Set the user as signed in.
-    identity_test_env()->SetPrimaryAccount(kTestUser);
+    identity_test_env()->SetPrimaryAccount(kTestUser,
+                                           signin::ConsentLevel::kSync);
 
     // Let the SigninService know that the profile has been created.
     content::NotificationService::current()->Notify(
@@ -317,7 +328,8 @@ class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {
 
 TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   // Make sure user is not signed in.
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
 
   // UserCloudPolicyManager should not be initialized.
   ASSERT_FALSE(manager_->core()->service());
@@ -326,7 +338,8 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
 #if !defined(OS_ANDROID)
 TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   // Make sure user is not signed in.
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
 
   // No oauth access token yet, so client registration should be deferred.
   ASSERT_FALSE(IsRequestActive());
@@ -338,7 +351,8 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   ASSERT_FALSE(IsRequestActive());
 
   // Sign in to Chrome.
-  identity_test_env()->SetPrimaryAccount(kTestUser);
+  identity_test_env()->SetPrimaryAccount(kTestUser,
+                                         signin::ConsentLevel::kSync);
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -403,7 +417,8 @@ TEST_F(UserPolicySigninServiceTest, SignInAfterInit) {
   ASSERT_FALSE(manager_->core()->service());
 
   // Now sign in the user.
-  identity_test_env()->SetPrimaryAccount(kTestUser);
+  identity_test_env()->SetPrimaryAccount(kTestUser,
+                                         signin::ConsentLevel::kSync);
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -424,8 +439,9 @@ TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
   // signed-in user.
   ASSERT_FALSE(manager_->core()->service());
 
-  // Now sign in a non-enterprise user (blacklisted gmail.com domain).
-  identity_test_env()->SetPrimaryAccount("non_enterprise_user@gmail.com");
+  // Now sign in a non-enterprise user (gmail.com domain).
+  identity_test_env()->SetPrimaryAccount("non_enterprise_user@gmail.com",
+                                         signin::ConsentLevel::kSync);
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -445,7 +461,8 @@ TEST_F(UserPolicySigninServiceTest, UnregisteredClient) {
   ASSERT_FALSE(manager_->core()->service());
 
   // Now sign in the user.
-  identity_test_env()->SetPrimaryAccount(kTestUser);
+  identity_test_env()->SetPrimaryAccount(kTestUser,
+                                         signin::ConsentLevel::kSync);
 
   // Make oauth token available.
   identity_test_env()->SetRefreshTokenForPrimaryAccount();
@@ -471,7 +488,8 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   ASSERT_FALSE(manager_->core()->service());
 
   // Now sign in the user.
-  identity_test_env()->SetPrimaryAccount(kTestUser);
+  identity_test_env()->SetPrimaryAccount(kTestUser,
+                                         signin::ConsentLevel::kSync);
 
   // Make oauth token available.
   identity_test_env()->SetRefreshTokenForPrimaryAccount();
@@ -485,9 +503,10 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   ASSERT_FALSE(manager_->IsClientRegistered());
   ASSERT_FALSE(IsRequestActive());
 
-  mock_store_->policy_.reset(new enterprise_management::PolicyData());
-  mock_store_->policy_->set_request_token("fake token");
-  mock_store_->policy_->set_device_id("fake client id");
+  auto data = std::make_unique<enterprise_management::PolicyData>();
+  data->set_request_token("fake token");
+  data->set_device_id("fake client id");
+  mock_store_->set_policy_data_for_testing(std::move(data));
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();
@@ -496,11 +515,10 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   // refresh the policy for the user.
   DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&job_control)));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
 
   // Client registration should not be in progress since the client should be
   // already registered.
@@ -591,11 +609,10 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientFailedRegistration) {
   // registration.
   DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&job_control)));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
 
   // Now mimic the user being a hosted domain - this should cause a Register()
   // call.
@@ -604,15 +621,14 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientFailedRegistration) {
   // Should have no more outstanding requests.
   ASSERT_FALSE(IsRequestActive());
   Mock::VerifyAndClearExpectations(this);
-  ASSERT_NE(nullptr, job_control);
+  ASSERT_TRUE(job.IsActive());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type);
   EXPECT_FALSE(register_completed_);
 
   // Make client registration fail (hosted domain user that is not managed).
-  device_management_service_.DoURLCompletion(
-      &job_control, net::OK,
-      DeviceManagementService::kDeviceManagementNotAllowed,
+  device_management_service_.SendJobResponseNow(
+      &job, net::OK, DeviceManagementService::kDeviceManagementNotAllowed,
       em::DeviceManagementResponse());
 
   EXPECT_TRUE(register_completed_);
@@ -634,11 +650,10 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
   // registration.
   DeviceManagementService::JobConfiguration::JobType job_type =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  DeviceManagementService::JobControl* job_control = nullptr;
-  EXPECT_CALL(device_management_service_, StartJob(_))
-      .WillOnce(
-          DoAll(device_management_service_.CaptureJobType(&job_type),
-                device_management_service_.StartJobFullControl(&job_control)));
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&job)));
 
   // Now mimic the user being a hosted domain - this should cause a Register()
   // call.
@@ -647,7 +662,7 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
   // Should have no more outstanding requests.
   ASSERT_FALSE(IsRequestActive());
   Mock::VerifyAndClearExpectations(this);
-  ASSERT_NE(nullptr, job_control);
+  ASSERT_TRUE(job.IsActive());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type);
   EXPECT_FALSE(register_completed_);
@@ -658,9 +673,7 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
       ->set_device_management_token(expected_dm_token);
   registration_response.mutable_register_response()->set_enrollment_type(
       em::DeviceRegisterResponse::ENTERPRISE);
-  device_management_service_.DoURLCompletion(&job_control, net::OK,
-                                             DeviceManagementService::kSuccess,
-                                             registration_response);
+  device_management_service_.SendJobOKNow(&job, registration_response);
 
   EXPECT_TRUE(register_completed_);
   EXPECT_EQ(dm_token_, expected_dm_token);

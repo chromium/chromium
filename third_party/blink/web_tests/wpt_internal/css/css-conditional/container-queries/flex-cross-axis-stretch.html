@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
+<style>
+  #target { height:10px; background:red; }
+  @container (min-height: 100px) {
+      #target { height:100%; background:green; }
+  }
+</style>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="display:flex;">
+  <div>
+    <div style="contain:layout block-size style; width:100px; height:100%; background:red;">
+      <div id="target"></div>
+    </div>
+  </div>
+  <div style="width:50px; height:100px;"></div>
+</div>

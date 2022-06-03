@@ -39,7 +39,7 @@ bool CrossesExtensionProcessBoundary(const ExtensionSet& extensions,
   if (!old_url_extension && !new_url_extension) {
     // Hypothetically, we could also do an origin check here to make sure that
     // the two urls point two different extensions, but it's not really
-    // necesary since we know there wasn't an associated extension with the old
+    // necessary since we know there wasn't an associated extension with the old
     // url.
     return new_url.SchemeIs(kExtensionScheme);
   }

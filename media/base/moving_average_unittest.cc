@@ -11,25 +11,23 @@ namespace media {
 TEST(MovingAverageTest, AverageAndDeviation) {
   const int kSamples = 5;
   MovingAverage moving_average(kSamples);
-  moving_average.AddSample(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), moving_average.Average());
+  moving_average.AddSample(base::Seconds(1));
+  EXPECT_EQ(base::Seconds(1), moving_average.Average());
   EXPECT_EQ(base::TimeDelta(), moving_average.Deviation());
 
   for (int i = 0; i < kSamples - 1; ++i)
-    moving_average.AddSample(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), moving_average.Average());
+    moving_average.AddSample(base::Seconds(1));
+  EXPECT_EQ(base::Seconds(1), moving_average.Average());
   EXPECT_EQ(base::TimeDelta(), moving_average.Deviation());
 
   base::TimeDelta expect_deviation[] = {
-      base::TimeDelta::FromMicroseconds(200000),
-      base::TimeDelta::FromMicroseconds(244948),
-      base::TimeDelta::FromMicroseconds(244948),
-      base::TimeDelta::FromMicroseconds(200000),
-      base::TimeDelta::FromMilliseconds(0),
+      base::Microseconds(200000), base::Microseconds(244948),
+      base::Microseconds(244948), base::Microseconds(200000),
+      base::Milliseconds(0),
   };
   for (int i = 0; i < kSamples; ++i) {
-    moving_average.AddSample(base::TimeDelta::FromMilliseconds(500));
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000 - (i + 1) * 100),
+    moving_average.AddSample(base::Milliseconds(500));
+    EXPECT_EQ(base::Milliseconds(1000 - (i + 1) * 100),
               moving_average.Average());
     EXPECT_EQ(expect_deviation[i], moving_average.Deviation());
   }
@@ -37,12 +35,27 @@ TEST(MovingAverageTest, AverageAndDeviation) {
 
 TEST(MovingAverageTest, Reset) {
   MovingAverage moving_average(2);
-  moving_average.AddSample(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1), moving_average.Average());
+  moving_average.AddSample(base::Seconds(1));
+  EXPECT_EQ(base::Seconds(1), moving_average.Average());
   moving_average.Reset();
   moving_average.AddSample(base::TimeDelta());
   EXPECT_EQ(base::TimeDelta(), moving_average.Average());
   EXPECT_EQ(base::TimeDelta(), moving_average.Deviation());
+}
+
+TEST(MovingAverageTest, MinAndMax) {
+  MovingAverage moving_average(5);
+  base::TimeDelta min = base::Seconds(1);
+  base::TimeDelta med = base::Seconds(50);
+  base::TimeDelta max = base::Seconds(100);
+  moving_average.AddSample(min);
+  moving_average.AddSample(med);
+  moving_average.AddSample(med);
+  moving_average.AddSample(med);
+  moving_average.AddSample(max);
+  auto extremes = moving_average.GetMinAndMax();
+  EXPECT_EQ(extremes.first, min);
+  EXPECT_EQ(extremes.second, max);
 }
 
 }  // namespace media

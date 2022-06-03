@@ -35,6 +35,6 @@
 
 int main(int argc, char** argv) {
   WTF::Partitions::Initialize();
-  WTF::Initialize(nullptr);
+  WTF::Initialize();
   return base::RunUnitTestsUsingBaseTestSuite(argc, argv);
 }

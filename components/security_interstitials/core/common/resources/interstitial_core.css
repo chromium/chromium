@@ -64,11 +64,7 @@ html {
 }
 
 @media (prefers-color-scheme: dark) {
-  body.captive-portal,
-  body.dark-mode-available,
-  body.neterror,
-  body.supervised-user-block,
-  .offline body {
+  body {
     --background-color: var(--google-gray-900);
     --error-code-color: var(--google-gray-500);
     --heading-color: var(--google-gray-500);

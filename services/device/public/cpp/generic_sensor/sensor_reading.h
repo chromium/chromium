@@ -107,6 +107,17 @@ struct SensorReadingQuat : public SensorReadingXYZ {
 // (m/s^2) units. It corresponds to LinearAccelerationSensor.z in the W3C
 // Accelerometer Specification.
 //
+// GRAVITY:
+// accel.x: acceleration on the x-axis in SI meters per second squared
+// (m/s^2) units. It corresponds to GravitySensor.x in the W3C
+// Accelerometer Specification.
+// accel.y: acceleration on the y-axis in SI meters per second squared
+// (m/s^2) units. It corresponds to GravitySensor.y in the W3C
+// Accelerometer Specification.
+// accel.z: acceleration on the z-axis in SI meters per second squared
+// (m/s^2) units. It corresponds to GravitySensor.z in the W3C
+// Accelerometer Specification.
+//
 // GYROSCOPE:
 // gyro.x: angular speed around the x-axis in radians/second. It corresponds to
 // Gyroscope.x in the W3C Gyroscope Specification.
@@ -174,7 +185,7 @@ union SensorReading {
   SensorReadingSingle als;             // AMBIENT_LIGHT
   SensorReadingSingle proximity;       // PROXIMITY
   SensorReadingSingle pressure;        // PRESSURE
-  SensorReadingXYZ accel;              // ACCELEROMETER, LINEAR_ACCELERATION
+  SensorReadingXYZ accel;  // ACCELEROMETER, LINEAR_ACCELERATION, GRAVITY
   SensorReadingXYZ gyro;               // GYROSCOPE
   SensorReadingXYZ magn;               // MAGNETOMETER
   SensorReadingQuat orientation_quat;  // ABSOLUTE_ORIENTATION_QUATERNION,

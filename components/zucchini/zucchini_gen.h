@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/zucchini.h"

@@ -5,10 +5,15 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_FCM_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_BINARY_FCM_SERVICE_H_
 
+#include <deque>
+
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
-#include "components/safe_browsing/proto/webprotect.pb.h"
 
 class Profile;
 
@@ -41,13 +46,25 @@ class BinaryFCMService : public gcm::GCMAppHandler {
 
   using GetInstanceIDCallback =
       base::OnceCallback<void(const std::string& token)>;
-  using OnMessageCallback =
-      base::RepeatingCallback<void(DeepScanningClientResponse)>;
+  using OnMessageCallback = base::RepeatingCallback<void(
+      enterprise_connectors::ContentAnalysisResponse)>;
+  using UnregisterInstanceIDCallback = base::OnceCallback<void(bool)>;
 
+  // Get an InstanceID for use.
   virtual void GetInstanceID(GetInstanceIDCallback callback);
+
+  // Called to indicate the caller is done with the InstanceID. This may
+  // invalidate the InstanceID, once all callers using the same InstanceID call
+  // this method.
+  virtual void UnregisterInstanceID(const std::string& token,
+                                    UnregisterInstanceIDCallback callback);
+
   void SetCallbackForToken(const std::string& token,
                            OnMessageCallback callback);
   void ClearCallbackForToken(const std::string& token);
+
+  // Performs cleanup needed at shutdown.
+  void Shutdown();
 
   // GCMAppHandler implementation
   void ShutdownHandler() override;
@@ -62,7 +79,13 @@ class BinaryFCMService : public gcm::GCMAppHandler {
                           const std::string& message_id) override;
   bool CanHandle(const std::string& app_id) const override;
 
+  // Indicates if the underlying implementation is in a state allowing messages
+  // to be received and propagated to `message_token_map_` callbacks.
+  virtual bool Connected();
+
   static const char kInvalidId[];
+
+  void SetQueuedOperationDelayForTesting(base::TimeDelta delay);
 
  protected:
   // Constructor used by mock implementation
@@ -73,12 +96,40 @@ class BinaryFCMService : public gcm::GCMAppHandler {
                        const std::string& instance_id,
                        instance_id::InstanceID::Result result);
 
+  void QueueGetInstanceIDCallback(GetInstanceIDCallback callback);
+
+  // Run the next queued operation, and post a task for another operation if
+  // necessary.
+  void MaybeRunNextQueuedOperation();
+
+  // Helper function that performs the actual unregistration.
+  void UnregisterInstanceIDImpl(const std::string& instance_id,
+                                UnregisterInstanceIDCallback callback);
+
+  void OnInstanceIDUnregistered(const std::string& token,
+                                UnregisterInstanceIDCallback callback,
+                                instance_id::InstanceID::Result result);
+
   // References to the profile's GCMDriver and InstanceIDDriver. Both are
   // unowned.
   gcm::GCMDriver* gcm_driver_;
   instance_id::InstanceIDDriver* instance_id_driver_;
 
-  std::unordered_map<std::string, OnMessageCallback> message_token_map_;
+  // Queue of pending GetToken calls.
+  std::deque<base::OnceClosure> pending_token_calls_;
+
+  // Count of unregistrations currently happening asynchronously.
+  size_t pending_unregistrations_count_ = 0;
+
+  // Delay between attempts to dequeue pending operations. Not constant so we
+  // can override it in tests.
+  base::TimeDelta delay_between_pending_attempts_ = base::Seconds(1);
+
+  base::flat_map<std::string, OnMessageCallback> message_token_map_;
+
+  // Map from an InstanceID to the number of callers to GetInstanceID using that
+  // InstanceID.
+  base::flat_map<std::string, unsigned int> instance_id_caller_counts_;
 
   base::WeakPtrFactory<BinaryFCMService> weakptr_factory_{this};
 };

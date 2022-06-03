@@ -17,6 +17,14 @@ namespace base {
 class Time;
 }
 
+namespace sync_pb {
+class EntityMetadata;
+}
+
+namespace syncer {
+class MetadataBatch;
+}
+
 namespace typed_urls_helper {
 
 // Gets the typed URLs from a specific sync profile.
@@ -36,6 +44,11 @@ history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url);
 
 // Removes the passed |visits| from a specific sync profile.
 void RemoveVisitsFromClient(int index, const history::VisitVector& visits);
+
+// Writes metadata for one entity into a specific sync profile.
+void WriteMetadataToClient(int index,
+                           const std::string& storage_key,
+                           const sync_pb::EntityMetadata& metadata);
 
 // Adds a URL to the history DB for a specific sync profile (just registers a
 // new visit if the URL already exists) using a TYPED PageTransition.
@@ -87,6 +100,9 @@ bool CheckSyncHasURLMetadata(int index, const GURL& url);
 // Return true if there is sync metadata for typed url with |url_id| in the
 // given sync profile.
 bool CheckSyncHasMetadataForURLID(int index, history::URLID url_id);
+
+// Return all sync metadata for the given profile.
+syncer::MetadataBatch GetAllSyncMetadata(int index);
 
 // Checks that the two vectors contain the same set of URLRows (possibly in
 // a different order) w.r.t. typed URL sync.

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/base/media_export.h"
@@ -17,7 +16,7 @@ namespace media {
 
 class AudioDebugRecorder;
 
-// This class wraps an AudioInputStream to be able to intercerpt the data for
+// This class wraps an AudioInputStream to be able to intercept the data for
 // debug recording purposes.
 class MEDIA_EXPORT AudioInputStreamDataInterceptor
     : public AudioInputStream,
@@ -33,10 +32,15 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
       CreateDebugRecorderCB create_debug_recorder_cb,
       AudioInputStream* stream);
 
+  AudioInputStreamDataInterceptor(const AudioInputStreamDataInterceptor&) =
+      delete;
+  AudioInputStreamDataInterceptor& operator=(
+      const AudioInputStreamDataInterceptor&) = delete;
+
   ~AudioInputStreamDataInterceptor() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  OpenOutcome Open() override;
   void Start(AudioInputStream::AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -61,8 +65,6 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
   AudioInputStream* const stream_;
   AudioInputStream::AudioInputCallback* callback_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamDataInterceptor);
 };
 
 }  // namespace media

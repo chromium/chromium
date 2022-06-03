@@ -28,7 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-interface SourceBufferList : EventTarget {
+[
+    Exposed(Window MediaSourceStable, DedicatedWorker MediaSourceInWorkers)
+] interface SourceBufferList : EventTarget {
     readonly attribute unsigned long length;
     attribute EventHandler onaddsourcebuffer;
     attribute EventHandler onremovesourcebuffer;

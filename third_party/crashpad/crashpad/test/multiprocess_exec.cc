@@ -16,11 +16,11 @@
 
 #include <map>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "test/main_arguments.h"
-#include "util/stdlib/map_insert.h"
 #include "test/test_paths.h"
+#include "util/stdlib/map_insert.h"
 
 namespace crashpad {
 namespace test {

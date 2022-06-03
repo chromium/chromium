@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -16,6 +15,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_vary_data.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Pickle;
@@ -24,7 +24,6 @@ class Pickle;
 namespace net {
 
 class HttpResponseHeaders;
-class IOBufferWithSize;
 class SSLCertRequestInfo;
 
 class NET_EXPORT HttpResponseInfo {
@@ -71,6 +70,12 @@ class NET_EXPORT HttpResponseInfo {
     CONNECTION_INFO_QUIC_T049 = 32,
     CONNECTION_INFO_QUIC_T050 = 33,
     CONNECTION_INFO_QUIC_T099 = 34,
+    CONNECTION_INFO_QUIC_DRAFT_25 = 35,
+    CONNECTION_INFO_QUIC_DRAFT_27 = 36,
+    CONNECTION_INFO_QUIC_DRAFT_28 = 37,
+    CONNECTION_INFO_QUIC_DRAFT_29 = 38,
+    CONNECTION_INFO_QUIC_T051 = 39,
+    CONNECTION_INFO_QUIC_RFC_V1 = 40,
     NUM_OF_CONNECTION_INFOS,
   };
 
@@ -218,7 +223,7 @@ class NET_EXPORT HttpResponseInfo {
 
   // If the response headers indicate a 401 or 407 failure, then this structure
   // will contain additional information about the authentication challenge.
-  base::Optional<AuthChallengeInfo> auth_challenge;
+  absl::optional<AuthChallengeInfo> auth_challenge;
 
   // The SSL client certificate request info.
   // TODO(wtc): does this really belong in HttpResponseInfo?  I put it here
@@ -237,8 +242,10 @@ class NET_EXPORT HttpResponseInfo {
   // The "Vary" header data for this response.
   HttpVaryData vary_data;
 
-  // Any metadata associated with this resource's cached data.
-  scoped_refptr<IOBufferWithSize> metadata;
+  // Any DNS aliases for the remote endpoint. The alias chain order is
+  // preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  std::vector<std::string> dns_aliases;
 
   static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };

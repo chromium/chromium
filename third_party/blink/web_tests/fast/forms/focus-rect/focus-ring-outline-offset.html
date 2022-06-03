@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../resources/common.js"></script>
+<body style="background-color: red">
+<!-- no style for reference -->
+<input type="button" id="focusTarget" value="button" />
+<br>
+<br>
+<input type="checkbox" checked id="focusTarget" />
+<br>
+<br>
+<input type="radio" id="focusTarget" />
+<br>
+<br>
+<input type="text" value="example text" id="focusTarget" />
+<br>
+<br>
+<a href="#" id="focusTarget" >Test</a>
+<br>
+<br>
+<!-- outline-offset: 4px -->
+<input type="button" style="outline-offset: 4px" value="button" id="focusTarget" />
+<br>
+<br>
+<input type="checkbox" style="outline-offset: 4px" checked id="focusTarget" />
+<br>
+<br>
+<input type="radio" style="outline-offset: 4px" id="focusTarget" />
+<br>
+<br>
+<input type="text" style="outline-offset: 4px" value="example text" id="focusTarget" />
+<br>
+<br>
+<a href="#" style="outline-offset: 4px" id="focusTarget">Test</a>
+<br>
+<script>
+  runAfterLayoutAndPaint(function() {
+    document.querySelectorAll("#focusTarget").forEach(node => {
+      internals.setPseudoClassState(node, ":focus", true);
+      // console.log(node);
+    });
+  }, true);
+</script>
+</body>

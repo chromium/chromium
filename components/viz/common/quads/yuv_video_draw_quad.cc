@@ -4,10 +4,11 @@
 
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace viz {
 
@@ -21,68 +22,70 @@ void YUVVideoDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                               const gfx::Rect& rect,
                               const gfx::Rect& visible_rect,
                               bool needs_blending,
-                              const gfx::RectF& ya_tex_coord_rect,
-                              const gfx::RectF& uv_tex_coord_rect,
-                              const gfx::Size& ya_tex_size,
-                              const gfx::Size& uv_tex_size,
-                              unsigned y_plane_resource_id,
-                              unsigned u_plane_resource_id,
-                              unsigned v_plane_resource_id,
-                              unsigned a_plane_resource_id,
-                              const gfx::ColorSpace& video_color_space,
+                              const gfx::RectF& ya_rect,
+                              const gfx::RectF& uv_rect,
+                              const gfx::Size& ya_size,
+                              const gfx::Size& uv_size,
+                              ResourceId y_plane_resource_id,
+                              ResourceId u_plane_resource_id,
+                              ResourceId v_plane_resource_id,
+                              ResourceId a_plane_resource_id,
+                              const gfx::ColorSpace& color_space,
                               float offset,
                               float multiplier,
-                              uint32_t bits_per_channel) {
+                              uint32_t bits) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kYuvVideoContent,
                    rect, visible_rect, needs_blending);
-  this->ya_tex_coord_rect = ya_tex_coord_rect;
-  this->uv_tex_coord_rect = uv_tex_coord_rect;
-  this->ya_tex_size = ya_tex_size;
-  this->uv_tex_size = uv_tex_size;
+  ya_tex_coord_rect = ya_rect;
+  uv_tex_coord_rect = uv_rect;
+  ya_tex_size = ya_size;
+  uv_tex_size = uv_size;
   resources.ids[kYPlaneResourceIdIndex] = y_plane_resource_id;
   resources.ids[kUPlaneResourceIdIndex] = u_plane_resource_id;
   resources.ids[kVPlaneResourceIdIndex] = v_plane_resource_id;
   resources.ids[kAPlaneResourceIdIndex] = a_plane_resource_id;
   resources.count = a_plane_resource_id ? 4 : 3;
-  this->video_color_space = video_color_space;
-  this->resource_offset = offset;
-  this->resource_multiplier = multiplier;
-  this->bits_per_channel = bits_per_channel;
+  video_color_space = color_space;
+  resource_offset = offset;
+  resource_multiplier = multiplier;
+  bits_per_channel = bits;
 }
 
 void YUVVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                               const gfx::Rect& rect,
                               const gfx::Rect& visible_rect,
                               bool needs_blending,
-                              const gfx::RectF& ya_tex_coord_rect,
-                              const gfx::RectF& uv_tex_coord_rect,
-                              const gfx::Size& ya_tex_size,
-                              const gfx::Size& uv_tex_size,
-                              unsigned y_plane_resource_id,
-                              unsigned u_plane_resource_id,
-                              unsigned v_plane_resource_id,
-                              unsigned a_plane_resource_id,
-                              const gfx::ColorSpace& video_color_space,
+                              const gfx::RectF& ya_rect,
+                              const gfx::RectF& uv_rect,
+                              const gfx::Size& ya_size,
+                              const gfx::Size& uv_size,
+                              ResourceId y_plane_resource_id,
+                              ResourceId u_plane_resource_id,
+                              ResourceId v_plane_resource_id,
+                              ResourceId a_plane_resource_id,
+                              const gfx::ColorSpace& color_space,
                               float offset,
                               float multiplier,
-                              uint32_t bits_per_channel,
-                              gfx::ProtectedVideoType protected_video_type) {
+                              uint32_t bits,
+                              gfx::ProtectedVideoType video_type,
+                              gfx::HDRMetadata metadata) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kYuvVideoContent,
                    rect, visible_rect, needs_blending);
-  this->ya_tex_coord_rect = ya_tex_coord_rect;
-  this->uv_tex_coord_rect = uv_tex_coord_rect;
-  this->ya_tex_size = ya_tex_size;
-  this->uv_tex_size = uv_tex_size;
+  ya_tex_coord_rect = ya_rect;
+  uv_tex_coord_rect = uv_rect;
+  ya_tex_size = ya_size;
+  uv_tex_size = uv_size;
   resources.ids[kYPlaneResourceIdIndex] = y_plane_resource_id;
   resources.ids[kUPlaneResourceIdIndex] = u_plane_resource_id;
   resources.ids[kVPlaneResourceIdIndex] = v_plane_resource_id;
   resources.ids[kAPlaneResourceIdIndex] = a_plane_resource_id;
   resources.count = resources.ids[kAPlaneResourceIdIndex] ? 4 : 3;
-  this->video_color_space = video_color_space;
-  this->resource_offset = offset;
-  this->resource_multiplier = multiplier;
-  this->bits_per_channel = bits_per_channel;
-  this->protected_video_type = protected_video_type;
+  video_color_space = color_space;
+  resource_offset = offset;
+  resource_multiplier = multiplier;
+  bits_per_channel = bits;
+  protected_video_type = video_type;
+  hdr_metadata = metadata;
 }
 
 const YUVVideoDrawQuad* YUVVideoDrawQuad::MaterialCast(const DrawQuad* quad) {
@@ -97,13 +100,13 @@ void YUVVideoDrawQuad::ExtendValue(
   cc::MathUtil::AddToTracedValue("ya_tex_size", ya_tex_size, value);
   cc::MathUtil::AddToTracedValue("uv_tex_size", uv_tex_size, value);
   value->SetInteger("y_plane_resource_id",
-                    resources.ids[kYPlaneResourceIdIndex]);
+                    resources.ids[kYPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("u_plane_resource_id",
-                    resources.ids[kUPlaneResourceIdIndex]);
+                    resources.ids[kUPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("v_plane_resource_id",
-                    resources.ids[kVPlaneResourceIdIndex]);
+                    resources.ids[kVPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("a_plane_resource_id",
-                    resources.ids[kAPlaneResourceIdIndex]);
+                    resources.ids[kAPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("protected_video_type",
                     static_cast<int>(protected_video_type));
 }

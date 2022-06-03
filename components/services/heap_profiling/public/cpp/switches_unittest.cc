@@ -68,83 +68,6 @@ TEST(HeapProfilingSwitches, GetModeForStartup_Commandline) {
   }
 }
 
-TEST(HeapProfilingSwitches, GetModeForStartup_Finch) {
-  EXPECT_EQ(Mode::kNone, GetModeForStartup());
-  std::map<std::string, std::string> parameters;
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = "";
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-
-    EXPECT_EQ(Mode::kNone, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = "invalid";
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-    EXPECT_EQ(Mode::kNone, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeAll;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-    EXPECT_EQ(Mode::kAll, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeBrowser;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-    EXPECT_EQ(Mode::kBrowser, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeMinimal;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-    EXPECT_EQ(Mode::kMinimal, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeGpu;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-    EXPECT_EQ(Mode::kGpu, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeRendererSampling;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
-    EXPECT_EQ(Mode::kRendererSampling, GetModeForStartup());
-  }
-}
-
-// Ensure the commandline overrides any given field trial.
-TEST(HeapProfilingSwitches, GetModeForStartup_CommandLinePrecedence) {
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kMemlogMode,
-                                                            kMemlogModeAll);
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::map<std::string, std::string> parameters;
-  parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeMinimal;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kOOPHeapProfilingFeature, parameters);
-
-  EXPECT_EQ(Mode::kAll, GetModeForStartup());
-}
-
 #else
 
 TEST(HeapProfilingSwitches, GetModeForStartup_NoModeWithoutShim) {
@@ -152,15 +75,6 @@ TEST(HeapProfilingSwitches, GetModeForStartup_NoModeWithoutShim) {
     base::test::ScopedCommandLine scoped_command_line;
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kMemlogMode,
                                                               kMemlogModeAll);
-    EXPECT_EQ(Mode::kNone, GetModeForStartup());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    std::map<std::string, std::string> parameters;
-    parameters[kOOPHeapProfilingFeatureMode] = kMemlogModeMinimal;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kOOPHeapProfilingFeature, parameters);
     EXPECT_EQ(Mode::kNone, GetModeForStartup());
   }
 }

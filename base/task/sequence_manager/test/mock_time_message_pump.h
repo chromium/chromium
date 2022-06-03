@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/message_loop/message_pump.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 
@@ -40,10 +39,10 @@ class MockTimeMessagePump : public MessagePump {
   // work.
   TimeTicks next_wake_up_time() const { return next_wake_up_time_; }
 
-  // Quits after the first call to Delegate::DoSomeWork(). Useful
-  // for tests that want to make sure certain things happen during a DoSomeWork
+  // Quits after the first call to Delegate::DoWork(). Useful
+  // for tests that want to make sure certain things happen during a DoWork
   // call.
-  void SetQuitAfterDoSomeWork(bool quit_after_do_some_work) {
+  void SetQuitAfterDoWork(bool quit_after_do_some_work) {
     quit_after_do_some_work_ = quit_after_do_some_work;
   }
 
@@ -65,7 +64,7 @@ class MockTimeMessagePump : public MessagePump {
 
  private:
   // Returns true if the clock was indeed advanced and thus we should attempt
-  // another iteration of the DoSomeWork-DoIdleWork-loop.
+  // another iteration of the DoWork-DoIdleWork-loop.
   bool MaybeAdvanceTime(TimeTicks target_time);
 
   SimpleTestTickClock* const clock_;

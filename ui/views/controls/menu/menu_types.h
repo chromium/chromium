@@ -8,16 +8,18 @@
 namespace views {
 
 // Where a popup menu should be anchored to for non-RTL languages. The opposite
-// position will be used if base::i18n:IsRTL() is true. The BUBBLE flags are
-// used when the menu should get enclosed by a bubble. The Fixed flags are
-// used for the menus that have a fixed anchor position.
+// position will be used if base::i18n:IsRTL() is true. The Bubble flags are
+// used when the menu should get enclosed by a bubble.
 enum class MenuAnchorPosition {
   kTopLeft,
   kTopRight,
   kBottomCenter,
-  kBubbleAbove,
+  kBubbleTopLeft,
+  kBubbleTopRight,
   kBubbleLeft,
   kBubbleRight,
+  kBubbleBottomLeft,
+  kBubbleBottomRight,
 };
 
 }  // namespace views

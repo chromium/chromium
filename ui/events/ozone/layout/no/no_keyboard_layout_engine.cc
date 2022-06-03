@@ -35,4 +35,8 @@ bool NoKeyboardLayoutEngine::Lookup(DomCode dom_code,
   return false;
 }
 
+void NoKeyboardLayoutEngine::SetInitCallbackForTest(base::OnceClosure closure) {
+  std::move(closure).Run();
+}
+
 }  // namespace ui

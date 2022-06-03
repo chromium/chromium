@@ -14,10 +14,5 @@ namespace media {
   return nullptr;
 }
 
-int CastCdmContext::GetCdmId() const {
-  // This is a local CDM module.
-  return ::media::CdmContext::kInvalidCdmId;
-}
-
 }  // namespace media
 }  // namespace chromecast

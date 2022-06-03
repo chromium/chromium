@@ -19,6 +19,11 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
     : public VulkanImplementation {
  public:
   VulkanImplementationAndroid();
+
+  VulkanImplementationAndroid(const VulkanImplementationAndroid&) = delete;
+  VulkanImplementationAndroid& operator=(const VulkanImplementationAndroid&) =
+      delete;
+
   ~VulkanImplementationAndroid() override;
 
   // VulkanImplementation:
@@ -31,6 +36,7 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
       const std::vector<VkQueueFamilyProperties>& queue_family_properties,
       uint32_t queue_family_index) override;
   std::vector<const char*> GetRequiredDeviceExtensions() override;
+  std::vector<const char*> GetOptionalDeviceExtensions() override;
   VkFence CreateVkFenceForGpuFence(VkDevice vk_device) override;
   std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
       VkDevice vk_device,
@@ -43,25 +49,11 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
       gfx::GpuMemoryBufferType memory_buffer_type) override;
-  bool CreateImageFromGpuMemoryHandle(
-      VkDevice vk_device,
+  std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
+      VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkImage* vk_image,
-      VkImageCreateInfo* vk_image_info,
-      VkDeviceMemory* vk_device_memory,
-      VkDeviceSize* mem_allocation_size,
-      base::Optional<VulkanYCbCrInfo>* ycbcr_info) override;
-  bool CreateVkImageAndImportAHB(
-      const VkDevice& vk_device,
-      const VkPhysicalDevice& vk_physical_device,
-      const gfx::Size& size,
-      base::android::ScopedHardwareBufferHandle ahb_handle,
-      VkImage* vk_image,
-      VkImageCreateInfo* vk_image_info,
-      VkDeviceMemory* vk_device_memory,
-      VkDeviceSize* mem_allocation_size,
-      VulkanYCbCrInfo* ycbcr_info) override;
+      VkFormat vk_formae) override;
   bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
       base::android::ScopedHardwareBufferHandle ahb_handle,
@@ -69,8 +61,6 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
 
  private:
   VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationAndroid);
 };
 
 }  // namespace gpu

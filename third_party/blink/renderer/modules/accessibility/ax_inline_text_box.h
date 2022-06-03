@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_INLINE_TEXT_BOX_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
@@ -38,44 +39,56 @@ namespace blink {
 class Node;
 class AXObjectCacheImpl;
 
+// Encapsulates an AbstractInlineTextBox and adapts it for use in Blink's
+// accessibility tree.
 class AXInlineTextBox final : public AXObject {
  public:
   AXInlineTextBox(scoped_refptr<AbstractInlineTextBox>, AXObjectCacheImpl&);
 
- protected:
-  void Init() override;
-  void Detach() override;
-  bool IsDetached() const override { return !inline_text_box_; }
-  bool IsAXInlineTextBox() const override { return true; }
+  AXInlineTextBox(const AXInlineTextBox&) = delete;
+  AXInlineTextBox& operator=(const AXInlineTextBox&) = delete;
 
-  bool IsLineBreakingObject() const override;
-
- public:
-  ax::mojom::Role RoleValue() const override {
-    return ax::mojom::Role::kInlineTextBox;
-  }
-  String GetName(ax::mojom::NameFrom&,
+  // AXObject overrides.
+  RGBA32 GetColor() const override { return Color::kTransparent; }
+  String GetName(ax::mojom::blink::NameFrom&,
                  AXObject::AXObjectVector* name_objects) const override;
   void TextCharacterOffsets(Vector<int>&) const override;
   void GetWordBoundaries(Vector<int>& word_starts,
                          Vector<int>& word_ends) const override;
-  unsigned TextOffsetInContainer(unsigned offset) const override;
+  int TextOffsetInFormattingContext(int offset) const override;
+  int TextOffsetInContainer(int offset) const override;
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
-                         SkMatrix44& out_container_transform,
+                         skia::Matrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
-  AXObject* ComputeParent() const override;
-  ax::mojom::TextDirection GetTextDirection() const override;
+  ax::mojom::blink::WritingDirection GetTextDirection() const override;
   Node* GetNode() const override;
+  Document* GetDocument() const override;
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
+  void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override {
+    // role_ is set manually in Init(), but must implement pure virtual method.
+    NOTREACHED();
+    return ax::mojom::blink::Role::kInlineTextBox;
+  }
+  void ClearChildren() const override;
+
+ protected:
+  void Init(AXObject* parent) override;
+  void Detach() override;
+  bool IsAXInlineTextBox() const override;
+  bool IsLineBreakingObject() const override;
+  int TextLength() const override;
+
+  // Always a leaf.
+  bool CanHaveChildren() const override { return false; }
+  void AddChildren() override {}
 
  private:
-  scoped_refptr<AbstractInlineTextBox> inline_text_box_;
-
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
-  DISALLOW_COPY_AND_ASSIGN(AXInlineTextBox);
+  scoped_refptr<AbstractInlineTextBox> inline_text_box_;
 };
 
 }  // namespace blink

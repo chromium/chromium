@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,6 +20,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -34,7 +35,6 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
   // OnReadComplete.
   TestURLRequestTestJobBackedByFile(
       URLRequest* request,
-      NetworkDelegate* network_delegate,
       const base::FilePath& file_path,
       const scoped_refptr<base::TaskRunner>& file_task_runner,
       int* open_result,
@@ -42,7 +42,6 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
       bool* done_reading,
       std::string* observed_content)
       : URLRequestTestJobBackedByFile(request,
-                                      network_delegate,
                                       file_path,
                                       file_task_runner),
         open_result_(open_result),
@@ -84,64 +83,6 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
   int64_t* const seek_position_;
   bool* done_reading_;
   std::string* const observed_content_;
-};
-
-// A URLRequestJobFactory that will return TestURLRequestTestJobBackedByFile
-// instances for file:// scheme URLs.  Can only be used to create a single job.
-class TestJobFactory : public URLRequestJobFactory {
- public:
-  TestJobFactory(const base::FilePath& path,
-                 int* open_result,
-                 int64_t* seek_position,
-                 bool* done_reading,
-                 std::string* observed_content)
-      : path_(path),
-        open_result_(open_result),
-        seek_position_(seek_position),
-        done_reading_(done_reading),
-        observed_content_(observed_content) {
-    CHECK(open_result_);
-    CHECK(seek_position_);
-    CHECK(done_reading_);
-    CHECK(observed_content_);
-  }
-
-  ~TestJobFactory() override = default;
-
-  URLRequestJob* MaybeCreateJobWithProtocolHandler(
-      const std::string& scheme,
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    CHECK(open_result_);
-    CHECK(seek_position_);
-    CHECK(done_reading_);
-    CHECK(observed_content_);
-    URLRequestJob* job = new TestURLRequestTestJobBackedByFile(
-        request, network_delegate, path_, base::ThreadTaskRunnerHandle::Get(),
-        open_result_, seek_position_, done_reading_, observed_content_);
-    open_result_ = nullptr;
-    seek_position_ = nullptr;
-    done_reading_ = nullptr;
-    observed_content_ = nullptr;
-    return job;
-  }
-
-  bool IsHandledProtocol(const std::string& scheme) const override {
-    return scheme == "file";
-  }
-
-  bool IsSafeRedirectTarget(const GURL& location) const override {
-    return false;
-  }
-
- private:
-  const base::FilePath path_;
-
-  // These are mutable because MaybeCreateJobWithProtocolHandler is const.
-  mutable int* open_result_;
-  mutable int64_t* seek_position_;
-  mutable bool* done_reading_;
-  mutable std::string* observed_content_;
 };
 
 // Helper function to create a file at |path| filled with |content|.
@@ -283,13 +224,14 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
     int64_t* seek_position,
     bool* done_reading,
     std::string* observed_content) {
-  TestJobFactory factory(path, open_result, seek_position, done_reading,
-                         observed_content);
-  context_.set_job_factory(&factory);
+  const GURL kUrl("http://intercepted-url/");
 
-  std::unique_ptr<URLRequest> request(
-      context_.CreateRequest(FilePathToFileURL(path), DEFAULT_PRIORITY,
-                             &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::unique_ptr<URLRequest> request(context_.CreateRequest(
+      kUrl, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
+  TestScopedURLInterceptor interceptor(
+      kUrl, std::make_unique<TestURLRequestTestJobBackedByFile>(
+                request.get(), path, base::ThreadTaskRunnerHandle::Get(),
+                open_result, seek_position, done_reading, observed_content));
   if (!range.empty()) {
     request->SetExtraRequestHeaderByName(HttpRequestHeaders::kRange, range,
                                          true /*overwrite*/);

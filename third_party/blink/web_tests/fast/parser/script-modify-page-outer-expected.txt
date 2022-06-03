@@ -1,3 +1,2 @@
-ALERT: should be outer: parser/script-modify-page-outer.html
 ALERT: should be inner: parser/resources/script-modify-page-inner.html
 DONE

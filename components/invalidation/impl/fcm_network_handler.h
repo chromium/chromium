@@ -23,7 +23,7 @@ namespace instance_id {
 class InstanceIDDriver;
 }
 
-namespace syncer {
+namespace invalidation {
 
 /*
  * The class responsible for communication via GCM channel:
@@ -40,11 +40,12 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
                     instance_id::InstanceIDDriver* instance_id_driver,
                     const std::string& sender_id,
                     const std::string& app_id);
-
+  FCMNetworkHandler(const FCMNetworkHandler& other) = delete;
+  FCMNetworkHandler& operator=(const FCMNetworkHandler& other) = delete;
   ~FCMNetworkHandler() override;
 
   // Just calls std::make_unique. For ease of base::Bind'ing.
-  static std::unique_ptr<syncer::FCMNetworkHandler> Create(
+  static std::unique_ptr<FCMNetworkHandler> Create(
       gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       const std::string& sender_id,
@@ -120,9 +121,8 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
 
   FCMNetworkHandlerDiagnostic diagnostic_info_;
   base::WeakPtrFactory<FCMNetworkHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FCMNetworkHandler);
 };
-}  // namespace syncer
+
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_FCM_NETWORK_HANDLER_H_

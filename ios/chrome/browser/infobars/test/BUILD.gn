@@ -5,10 +5,14 @@
 source_set("test") {
   testonly = true
   sources = [
+    "fake_infobar_badge_tab_helper_delegate.h",
+    "fake_infobar_badge_tab_helper_delegate.mm",
     "fake_infobar_delegate.cc",
     "fake_infobar_delegate.h",
     "fake_infobar_ios.h",
     "fake_infobar_ios.mm",
+    "mock_infobar_delegate.cc",
+    "mock_infobar_delegate.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -17,6 +21,10 @@ source_set("test") {
     "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars/test",
+    "//testing/gmock",
   ]
 }

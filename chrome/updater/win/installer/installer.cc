@@ -24,23 +24,30 @@
 #include <shellapi.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <initializer_list>
+#include <string>
 
-// TODO(sorin): remove the dependecies on //base/ to reduce the code size.
+// TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
+// code size.
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/sys_string_conversions.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
-#include "chrome/updater/win/installer/regkey.h"
+#include "chrome/updater/win/tag_extractor.h"
 
 namespace updater {
+
+using PathString = StackString<MAX_PATH>;
 
 namespace {
 
@@ -71,9 +78,20 @@ bool CreateTemporaryAndUnpackDirectories(
   return true;
 }
 
-}  // namespace
+// Returns the tag if the tag can be extracted. The tag is read from the
+// program file image used to create this process. Google is using UTF8 tags but
+// other embedders could use UTF16. The UTF16 tag not only uses a different
+// character width, but the tag is inserted in a different way.]
+// The implementation of this function only handles UTF8 tags.
+std::string ExtractTag() {
+  PathString path;
+  return (::GetModuleFileName(nullptr, path.get(), path.capacity()) > 0 &&
+          ::GetLastError() == ERROR_SUCCESS)
+             ? ExtractTagFromFile(path.get(), TagEncoding::kUtf8)
+             : std::string();
+}
 
-using PathString = StackString<MAX_PATH>;
+}  // namespace
 
 // This structure passes data back and forth for the processing
 // of resource callbacks.
@@ -208,9 +226,46 @@ ProcessExitResult RunSetup(const Configuration& configuration,
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 
+  // Append the command line arguments this program has been invoked with.
+  int num_args = 0;
+  wchar_t** const arg_list =
+      ::CommandLineToArgvW(::GetCommandLineW(), &num_args);
+  for (int i = 1; i != num_args; ++i) {
+    if (!cmd_line.append(L" ") || !cmd_line.append(arg_list[i])) {
+      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+    }
+  }
+
+  // Handle the tag. Use the tag from the --tag command line argument if such
+  // argument exists. If --tag is present in the arg_list, then it is going
+  // to be handed over to the updater, along with the other arguments.
+  // Otherwise, try extracting a tag embedded in the program image of the meta
+  // installer.
+  if (![arg_list, num_args]() {
+        // Returns true if the --tag argument is present on the command line.
+        constexpr wchar_t kTagSwitch[] = L"--tag=";
+        for (int i = 1; i != num_args; ++i) {
+          if (memcmp(arg_list[i], kTagSwitch, sizeof(kTagSwitch)) == 0)
+            return true;
+        }
+        return false;
+      }()) {
+    const std::string tag = ExtractTag();
+    if (!tag.empty()) {
+      if (!cmd_line.append(L" --tag=") ||
+          !cmd_line.append(base::SysUTF8ToWide(tag).c_str())) {
+        return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+      }
+    }
+  }
+
+  // Append logging-related arguments for debugging purposes, at least for
+  // now.
   if (!cmd_line.append(
-          L" --install --enable-logging --vmodule=*/chrome/updater/*=2"))
+          L" --enable-logging "
+          L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2")) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+  }
 
   return RunProcessAndWait(setup_exe.get(), cmd_line.get());
 }
@@ -426,15 +481,15 @@ ProcessExitResult WMain(HMODULE module) {
   // Unpack the compressed archive to extract the uncompressed archive file.
   UnPackStatus unpack_status =
       UnPackArchive(base::FilePath(compressed_archive.get()), unpack_path,
-                    nullptr, nullptr, nullptr);
+                    /*output_file=*/nullptr);
   if (unpack_status != UNPACK_NO_ERROR)
     return ProcessExitResult(static_cast<DWORD>(installer::UNPACKING_FAILED));
 
   // Unpack the uncompressed archive to extract the updater files.
   base::FilePath uncompressed_archive =
       unpack_path.Append(FILE_PATH_LITERAL("updater.7z"));
-  unpack_status = UnPackArchive(uncompressed_archive, unpack_path, nullptr,
-                                nullptr, nullptr);
+  unpack_status =
+      UnPackArchive(uncompressed_archive, unpack_path, /*output_file=*/nullptr);
   if (unpack_status != UNPACK_NO_ERROR)
     return ProcessExitResult(static_cast<DWORD>(installer::UNPACKING_FAILED));
 

@@ -55,14 +55,14 @@ namespace blink {
 class RawResourceTest : public testing::Test {
  public:
   RawResourceTest() = default;
+  RawResourceTest(const RawResourceTest&) = delete;
+  RawResourceTest& operator=(const RawResourceTest&) = delete;
   ~RawResourceTest() override = default;
 
  protected:
   class NoopResponseBodyLoaderClient
       : public GarbageCollected<NoopResponseBodyLoaderClient>,
         public ResponseBodyLoaderClient {
-    USING_GARBAGE_COLLECTED_MIXIN(NoopResponseBodyLoaderClient);
-
    public:
     ~NoopResponseBodyLoaderClient() override {}
     void DidReceiveData(base::span<const char>) override {}
@@ -73,9 +73,6 @@ class RawResourceTest : public testing::Test {
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RawResourceTest);
 };
 
 TEST_F(RawResourceTest, DontIgnoreAcceptForCacheReuse) {
@@ -92,14 +89,13 @@ TEST_F(RawResourceTest, DontIgnoreAcceptForCacheReuse) {
   ResourceRequest png_request;
   png_request.SetHTTPAccept("image/png");
   png_request.SetRequestorOrigin(source_origin);
-  EXPECT_NE(jpeg_resource->CanReuse(FetchParameters(png_request)),
+  EXPECT_NE(jpeg_resource->CanReuse(
+                FetchParameters::CreateForTest(std::move(png_request))),
             Resource::MatchStatus::kOk);
 }
 
 class DummyClient final : public GarbageCollected<DummyClient>,
                           public RawResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(DummyClient);
-
  public:
   DummyClient() : called_(false), number_of_redirects_received_(0) {}
   ~DummyClient() override = default;
@@ -124,7 +120,7 @@ class DummyClient final : public GarbageCollected<DummyClient>,
     return number_of_redirects_received_;
   }
   const Vector<char>& Data() { return data_; }
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     RawResourceClient::Trace(visitor);
   }
 
@@ -137,8 +133,6 @@ class DummyClient final : public GarbageCollected<DummyClient>,
 // This client adds another client when notified.
 class AddingClient final : public GarbageCollected<AddingClient>,
                            public RawResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(AddingClient);
-
  public:
   AddingClient(DummyClient* client, Resource* resource)
       : dummy_client_(client), resource_(resource) {}
@@ -162,7 +156,7 @@ class AddingClient final : public GarbageCollected<AddingClient>,
 
   void RemoveClient() { resource_->RemoveClient(dummy_client_); }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(dummy_client_);
     visitor->Trace(resource_);
     RawResourceClient::Trace(visitor);
@@ -194,8 +188,6 @@ TEST_F(RawResourceTest, AddClientDuringCallback) {
 // This client removes another client when notified.
 class RemovingClient : public GarbageCollected<RemovingClient>,
                        public RawResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(RemovingClient);
-
  public:
   explicit RemovingClient(DummyClient* client) : dummy_client_(client) {}
 
@@ -207,7 +199,7 @@ class RemovingClient : public GarbageCollected<RemovingClient>,
     resource->RemoveClient(this);
   }
   String DebugName() const override { return "RemovingClient"; }
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(dummy_client_);
     RawResourceClient::Trace(visitor);
   }
@@ -249,15 +241,16 @@ TEST_F(RawResourceTest, PreloadWithAsynchronousAddClient) {
       ReplayingBytesConsumer::Command(ReplayingBytesConsumer::Command::kDone));
   ResponseBodyLoader* body_loader = MakeGarbageCollected<ResponseBodyLoader>(
       *bytes_consumer, *MakeGarbageCollected<NoopResponseBodyLoaderClient>(),
-      platform_->test_task_runner().get());
+      platform_->test_task_runner().get(), nullptr);
   Persistent<DummyClient> dummy_client = MakeGarbageCollected<DummyClient>();
 
   // Set the response first to make ResourceClient addition asynchronous.
   raw->SetResponse(ResourceResponse(KURL("http://600.613/")));
 
-  FetchParameters params(request);
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
   params.MutableResourceRequest().SetUseStreamOnResponse(false);
-  raw->MatchPreload(params, platform_->test_task_runner().get());
+  raw->MatchPreload(params);
+  EXPECT_FALSE(raw->IsUnusedPreload());
   raw->AddClient(dummy_client, platform_->test_task_runner().get());
 
   raw->ResponseBodyReceived(*body_loader, platform_->test_task_runner());

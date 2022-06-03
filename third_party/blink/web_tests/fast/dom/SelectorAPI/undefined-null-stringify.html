@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<title>This tests that the querySelector, querySelectorAll and matchesSelector (webkitMatchesSelector) correctly stringify null and undefined to "null" and "undefined".</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-description(
-"This tests that the querySelector, querySelectorAll and matchesSelector (webkitMatchesSelector) correctly stringify null and undefined to \"null\" and \"undefined\"."
-);
+setup({ single_test: true });
 
 var root = document.createElement('div');
 var nullNode = document.createElement('null');
@@ -16,16 +16,17 @@ var undefinedNode = document.createElement('undefined');
 root.appendChild(undefinedNode);
 document.body.appendChild(root);
 
-shouldBe("document.querySelector(null)", "nullNode");
-shouldBe("document.querySelector(undefined)", "undefinedNode");
+assert_equals(document.querySelector(null), nullNode);
+assert_equals(document.querySelector(undefined), undefinedNode);
 
-shouldBe("document.querySelectorAll(null).length", "1");
-shouldBe("document.querySelectorAll(null).item(0)", "nullNode");
-shouldBe("document.querySelectorAll(undefined).length", "1");
-shouldBe("document.querySelectorAll(undefined).item(0)", "undefinedNode");
+assert_equals(document.querySelectorAll(null).length, 1);
+assert_equals(document.querySelectorAll(null).item(0), nullNode);
+assert_equals(document.querySelectorAll(undefined).length, 1);
+assert_equals(document.querySelectorAll(undefined).item(0), undefinedNode);
 
-shouldBeTrue("nullNode.webkitMatchesSelector(null)");
-shouldBeTrue("undefinedNode.webkitMatchesSelector(undefined)");
+assert_true(nullNode.webkitMatchesSelector(null));
+assert_true(undefinedNode.webkitMatchesSelector(undefined));
+done();
 </script>
 </body>
 </html>

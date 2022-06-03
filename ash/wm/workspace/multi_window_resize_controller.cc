@@ -4,18 +4,22 @@
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 
+#include <memory>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
-#include "ash/wm/window_state.h"
+#include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -36,9 +40,9 @@ const int kHideDelayMS = 500;
 // Padding from the bottom/right edge the resize widget is shown at.
 const int kResizeWidgetPadding = 15;
 
-gfx::Point ConvertPointFromScreen(aura::Window* window,
-                                  const gfx::Point& point) {
-  gfx::Point result(point);
+gfx::PointF ConvertPointFromScreen(aura::Window* window,
+                                   const gfx::PointF& point) {
+  gfx::PointF result(point);
   ::wm::ConvertPointFromScreen(window, &result);
   return result;
 }
@@ -62,8 +66,8 @@ bool ContainsX(aura::Window* window, int x) {
 }
 
 bool ContainsScreenX(aura::Window* window, int x_in_screen) {
-  gfx::Point window_loc =
-      ConvertPointFromScreen(window, gfx::Point(x_in_screen, 0));
+  gfx::PointF window_loc =
+      ConvertPointFromScreen(window, gfx::PointF(x_in_screen, 0));
   return ContainsX(window, window_loc.x());
 }
 
@@ -72,8 +76,8 @@ bool ContainsY(aura::Window* window, int y) {
 }
 
 bool ContainsScreenY(aura::Window* window, int y_in_screen) {
-  gfx::Point window_loc =
-      ConvertPointFromScreen(window, gfx::Point(0, y_in_screen));
+  gfx::PointF window_loc =
+      ConvertPointFromScreen(window, gfx::PointF(0, y_in_screen));
   return ContainsY(window, window_loc.y());
 }
 
@@ -106,13 +110,15 @@ bool Intersects(int x1, int max_1, int x2, int max_2) {
 // MultiWindowResizeController so that it can start/stop the resize loop.
 class MultiWindowResizeController::ResizeView : public views::View {
  public:
-  explicit ResizeView(MultiWindowResizeController* controller,
-                      Direction direction)
+  ResizeView(MultiWindowResizeController* controller, Direction direction)
       : controller_(controller), direction_(direction) {}
+
+  ResizeView(const ResizeView&) = delete;
+  ResizeView& operator=(const ResizeView&) = delete;
 
   // views::View overrides:
   gfx::Size CalculatePreferredSize() const override {
-    const bool vert = direction_ == LEFT_RIGHT;
+    const bool vert = direction_ == Direction::kLeftRight;
     return gfx::Size(vert ? kShortSide : kLongSide,
                      vert ? kLongSide : kShortSide);
   }
@@ -136,7 +142,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
     path.addPath(path, flip);
 
     // The arrows are drawn for the vertical orientation; rotate if need be.
-    if (direction_ == TOP_BOTTOM) {
+    if (direction_ == Direction::kTopBottom) {
       SkMatrix transform;
       constexpr int kHalfShort = kShortSide / 2;
       constexpr int kHalfLong = kLongSide / 2;
@@ -152,14 +158,14 @@ class MultiWindowResizeController::ResizeView : public views::View {
   bool OnMousePressed(const ui::MouseEvent& event) override {
     gfx::Point location(event.location());
     views::View::ConvertPointToScreen(this, &location);
-    controller_->StartResize(location);
+    controller_->StartResize(gfx::PointF(location));
     return true;
   }
 
   bool OnMouseDragged(const ui::MouseEvent& event) override {
     gfx::Point location(event.location());
     views::View::ConvertPointToScreen(this, &location);
-    controller_->Resize(location, event.flags());
+    controller_->Resize(gfx::PointF(location), event.flags());
     return true;
   }
 
@@ -170,7 +176,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
   void OnMouseCaptureLost() override { controller_->CancelResize(); }
 
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
-    int component = (direction_ == LEFT_RIGHT) ? HTRIGHT : HTBOTTOM;
+    int component = (direction_ == Direction::kLeftRight) ? HTRIGHT : HTBOTTOM;
     return ::wm::CompoundEventFilter::CursorForWindowComponent(component);
   }
 
@@ -180,8 +186,6 @@ class MultiWindowResizeController::ResizeView : public views::View {
 
   MultiWindowResizeController* controller_;
   const Direction direction_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeView);
 };
 
 // MouseWatcherHost implementation for MultiWindowResizeController. Forwards
@@ -190,6 +194,9 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
     : public views::MouseWatcherHost {
  public:
   ResizeMouseWatcherHost(MultiWindowResizeController* host) : host_(host) {}
+
+  ResizeMouseWatcherHost(const ResizeMouseWatcherHost&) = delete;
+  ResizeMouseWatcherHost& operator=(const ResizeMouseWatcherHost&) = delete;
 
   // MouseWatcherHost overrides:
   bool Contains(const gfx::Point& point_in_screen, EventType type) override {
@@ -200,12 +207,10 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
 
  private:
   MultiWindowResizeController* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeMouseWatcherHost);
 };
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows()
-    : window1(nullptr), window2(nullptr), direction(TOP_BOTTOM) {}
+    : direction(Direction::kTopBottom) {}
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows(
     const ResizeWindows& other) = default;
@@ -218,9 +223,13 @@ bool MultiWindowResizeController::ResizeWindows::Equals(
          direction == other.direction;
 }
 
-MultiWindowResizeController::MultiWindowResizeController() = default;
+MultiWindowResizeController::MultiWindowResizeController() {
+  Shell::Get()->overview_controller()->AddObserver(this);
+}
 
 MultiWindowResizeController::~MultiWindowResizeController() {
+  if (Shell::Get()->overview_controller())
+    Shell::Get()->overview_controller()->RemoveObserver(this);
   ResetResizer();
 }
 
@@ -249,8 +258,7 @@ void MultiWindowResizeController::Show(aura::Window* window,
   StartObserving(windows_.window2);
   show_location_in_parent_ =
       ConvertPointToTarget(window, window->parent(), point_in_window);
-  show_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kShowDelayMS),
-                    this,
+  show_timer_.Start(FROM_HERE, base::Milliseconds(kShowDelayMS), this,
                     &MultiWindowResizeController::ShowIfValidMouseLocation);
 }
 
@@ -270,6 +278,13 @@ void MultiWindowResizeController::OnWindowPropertyChanged(aura::Window* window,
 void MultiWindowResizeController::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
+  // OnWindowVisibilityChanged() is fired not only for observed windows but
+  // also its descendants (and ancestors), but multi-window resizing should keep
+  // running even if the resized window’s child window gets hidden. So here, we
+  // only handles events for windows being resized (i.e. observed windows).
+  if (!IsObserving(window))
+    return;
+
   if (!visible)
     ResetResizer();
 }
@@ -280,11 +295,25 @@ void MultiWindowResizeController::OnWindowDestroying(aura::Window* window) {
 
 void MultiWindowResizeController::OnPostWindowStateTypeChange(
     WindowState* window_state,
-    WindowStateType old_type) {
+    chromeos::WindowStateType old_type) {
   if (window_state->IsMaximized() || window_state->IsFullscreen() ||
       window_state->IsMinimized()) {
     ResetResizer();
   }
+}
+
+void MultiWindowResizeController::OnOverviewModeStarting() {
+  // Hide resizing UI when entering overview.
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+  ResetResizer();
+}
+
+void MultiWindowResizeController::OnOverviewModeEndingAnimationComplete(
+    bool canceled) {
+  if (canceled)
+    return;
+  // Show resize-lock shadow UI after exiting overview.
+  Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
 }
 
 MultiWindowResizeController::ResizeWindows
@@ -292,7 +321,7 @@ MultiWindowResizeController::DetermineWindowsFromScreenPoint(
     aura::Window* window) const {
   gfx::Point mouse_location(
       display::Screen::GetScreen()->GetCursorScreenPoint());
-  mouse_location = ConvertPointFromScreen(window, mouse_location);
+  wm::ConvertPointFromScreen(window, &mouse_location);
   const int component =
       window_util::GetNonClientComponent(window, mouse_location);
   return DetermineWindows(window, component, mouse_location);
@@ -301,8 +330,7 @@ MultiWindowResizeController::DetermineWindowsFromScreenPoint(
 void MultiWindowResizeController::CreateMouseWatcher() {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<ResizeMouseWatcherHost>(this), this);
-  mouse_watcher_->set_notify_on_exit_time(
-      base::TimeDelta::FromMilliseconds(kHideDelayMS));
+  mouse_watcher_->set_notify_on_exit_time(base::Milliseconds(kHideDelayMS));
   DCHECK(resize_widget_);
   mouse_watcher_->Start(resize_widget_->GetNativeWindow());
 }
@@ -315,32 +343,33 @@ MultiWindowResizeController::DetermineWindows(aura::Window* window,
 
   // Check if the window is non-resizeable.
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
-       aura::client::kResizeBehaviorCanResize) == 0)
+       aura::client::kResizeBehaviorCanResize) == 0) {
     return result;
+  }
 
   gfx::Point point_in_parent =
       ConvertPointToTarget(window, window->parent(), point);
   switch (window_component) {
     case HTRIGHT:
-      result.direction = LEFT_RIGHT;
+      result.direction = Direction::kLeftRight;
       result.window1 = window;
       result.window2 = FindWindowByEdge(
           window, HTLEFT, window->bounds().right(), point_in_parent.y());
       break;
     case HTLEFT:
-      result.direction = LEFT_RIGHT;
+      result.direction = Direction::kLeftRight;
       result.window1 = FindWindowByEdge(window, HTRIGHT, window->bounds().x(),
                                         point_in_parent.y());
       result.window2 = window;
       break;
     case HTTOP:
-      result.direction = TOP_BOTTOM;
+      result.direction = Direction::kTopBottom;
       result.window1 = FindWindowByEdge(window, HTBOTTOM, point_in_parent.x(),
                                         window->bounds().y());
       result.window2 = window;
       break;
     case HTBOTTOM:
-      result.direction = TOP_BOTTOM;
+      result.direction = Direction::kTopBottom;
       result.window1 = window;
       result.window2 = FindWindowByEdge(window, HTTOP, point_in_parent.x(),
                                         window->bounds().bottom());
@@ -381,9 +410,9 @@ aura::Window* MultiWindowResizeController::FindWindowByEdge(
     // contains the point, then it is obscuring that point on any remaining
     // window that also contains the point.
     if (window->bounds().Contains(x_in_parent, y_in_parent))
-      return NULL;
+      return nullptr;
   }
-  return NULL;
+  return nullptr;
 }
 
 aura::Window* MultiWindowResizeController::FindWindowTouching(
@@ -398,14 +427,14 @@ aura::Window* MultiWindowResizeController::FindWindowTouching(
     if (other == window || !other->IsVisible())
       continue;
     switch (direction) {
-      case TOP_BOTTOM:
+      case Direction::kTopBottom:
         if (other->bounds().y() == bottom &&
             Intersects(other->bounds().x(), other->bounds().right(),
                        window->bounds().x(), window->bounds().right())) {
           return other;
         }
         break;
-      case LEFT_RIGHT:
+      case Direction::kLeftRight:
         if (other->bounds().x() == right &&
             Intersects(other->bounds().y(), other->bounds().bottom(),
                        window->bounds().y(), window->bounds().bottom())) {
@@ -431,13 +460,17 @@ void MultiWindowResizeController::FindWindowsTouching(
 }
 
 void MultiWindowResizeController::StartObserving(aura::Window* window) {
-  window->AddObserver(this);
-  WindowState::Get(window)->AddObserver(this);
+  window_observations_.AddObservation(window);
+  window_state_observations_.AddObservation(WindowState::Get(window));
 }
 
 void MultiWindowResizeController::StopObserving(aura::Window* window) {
-  window->RemoveObserver(this);
-  WindowState::Get(window)->RemoveObserver(this);
+  window_observations_.RemoveObservation(window);
+  window_state_observations_.RemoveObservation(WindowState::Get(window));
+}
+
+bool MultiWindowResizeController::IsObserving(aura::Window* window) const {
+  return window_observations_.IsObservingSource(window);
 }
 
 void MultiWindowResizeController::ShowIfValidMouseLocation() {
@@ -453,23 +486,23 @@ void MultiWindowResizeController::ShowNow() {
   DCHECK(!resize_widget_.get());
   DCHECK(windows_.is_valid());
   show_timer_.Stop();
-  resize_widget_.reset(new views::Widget);
+  resize_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.name = "MultiWindowResizeController";
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = windows_.window1->GetRootWindow()->GetChildById(
       kShellWindowId_AlwaysOnTopContainer);
-  ResizeView* view = new ResizeView(this, windows_.direction);
   resize_widget_->set_focus_on_creation(false);
   resize_widget_->Init(std::move(params));
   ::wm::SetWindowVisibilityAnimationType(
       resize_widget_->GetNativeWindow(),
       ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
-  resize_widget_->SetContentsView(view);
+  resize_widget_->SetContentsView(
+      std::make_unique<ResizeView>(this, windows_.direction));
   show_bounds_in_screen_ = ConvertRectToScreen(
       windows_.window1->parent(),
-      CalculateResizeWidgetBounds(show_location_in_parent_));
+      CalculateResizeWidgetBounds(gfx::PointF(show_location_in_parent_)));
   resize_widget_->SetBounds(show_bounds_in_screen_);
   resize_widget_->Show();
   CreateMouseWatcher();
@@ -511,10 +544,10 @@ void MultiWindowResizeController::ResetResizer() {
 }
 
 void MultiWindowResizeController::StartResize(
-    const gfx::Point& location_in_screen) {
+    const gfx::PointF& location_in_screen) {
   DCHECK(!window_resizer_.get());
   DCHECK(windows_.is_valid());
-  gfx::Point location_in_parent =
+  gfx::PointF location_in_parent =
       ConvertPointFromScreen(windows_.window2->parent(), location_in_screen);
   aura::Window::Windows windows;
   windows.push_back(windows_.window2);
@@ -525,26 +558,27 @@ void MultiWindowResizeController::StartResize(
     StartObserving(windows_.other_windows[i]);
     windows.push_back(windows_.other_windows[i]);
   }
-  int component = windows_.direction == LEFT_RIGHT ? HTRIGHT : HTBOTTOM;
+  int component =
+      windows_.direction == Direction::kLeftRight ? HTRIGHT : HTBOTTOM;
   WindowState* window_state = WindowState::Get(windows_.window1);
   window_state->CreateDragDetails(location_in_parent, component,
                                   ::wm::WINDOW_MOVE_SOURCE_MOUSE);
-  window_resizer_.reset(WorkspaceWindowResizer::Create(window_state, windows));
+  window_resizer_ = WorkspaceWindowResizer::Create(window_state, windows);
 
   // Do not hide the resize widget while a drag is active.
   mouse_watcher_.reset();
 }
 
-void MultiWindowResizeController::Resize(const gfx::Point& location_in_screen,
+void MultiWindowResizeController::Resize(const gfx::PointF& location_in_screen,
                                          int event_flags) {
-  gfx::Point location_in_parent =
+  gfx::PointF location_in_parent =
       ConvertPointFromScreen(windows_.window1->parent(), location_in_screen);
   window_resizer_->Drag(location_in_parent, event_flags);
   gfx::Rect bounds =
       ConvertRectToScreen(windows_.window1->parent(),
                           CalculateResizeWidgetBounds(location_in_parent));
 
-  if (windows_.direction == LEFT_RIGHT)
+  if (windows_.direction == Direction::kLeftRight)
     bounds.set_y(show_bounds_in_screen_.y());
   else
     bounds.set_x(show_bounds_in_screen_.x());
@@ -581,10 +615,10 @@ void MultiWindowResizeController::CancelResize() {
 }
 
 gfx::Rect MultiWindowResizeController::CalculateResizeWidgetBounds(
-    const gfx::Point& location_in_parent) const {
+    const gfx::PointF& location_in_parent) const {
   gfx::Size pref = resize_widget_->GetContentsView()->GetPreferredSize();
   int x = 0, y = 0;
-  if (windows_.direction == LEFT_RIGHT) {
+  if (windows_.direction == Direction::kLeftRight) {
     x = windows_.window1->bounds().right() - pref.width() / 2;
     y = location_in_parent.y() + kResizeWidgetPadding;
     if (y + pref.height() / 2 > windows_.window1->bounds().bottom() &&
@@ -612,7 +646,7 @@ bool MultiWindowResizeController::IsOverWindows(
   if (IsOverResizeWidget(location_in_screen))
     return true;
 
-  if (windows_.direction == TOP_BOTTOM) {
+  if (windows_.direction == Direction::kTopBottom) {
     if (!ContainsScreenX(windows_.window1, location_in_screen.x()) ||
         !ContainsScreenX(windows_.window2, location_in_screen.x())) {
       return false;
@@ -632,11 +666,12 @@ bool MultiWindowResizeController::IsOverWindows(
   if (target == windows_.window1) {
     return IsOverComponent(
         windows_.window1, location_in_screen,
-        windows_.direction == TOP_BOTTOM ? HTBOTTOM : HTRIGHT);
+        windows_.direction == Direction::kTopBottom ? HTBOTTOM : HTRIGHT);
   }
   if (target == windows_.window2) {
-    return IsOverComponent(windows_.window2, location_in_screen,
-                           windows_.direction == TOP_BOTTOM ? HTTOP : HTLEFT);
+    return IsOverComponent(
+        windows_.window2, location_in_screen,
+        windows_.direction == Direction::kTopBottom ? HTTOP : HTLEFT);
   }
   return false;
 }
@@ -645,7 +680,8 @@ bool MultiWindowResizeController::IsOverComponent(
     aura::Window* window,
     const gfx::Point& location_in_screen,
     int component) const {
-  gfx::Point window_loc = ConvertPointFromScreen(window, location_in_screen);
+  gfx::Point window_loc(location_in_screen);
+  ::wm::ConvertPointFromScreen(window, &window_loc);
   return window_util::GetNonClientComponent(window, window_loc) == component;
 }
 

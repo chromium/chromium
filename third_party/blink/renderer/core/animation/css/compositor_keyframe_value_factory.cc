@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_filter_operations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_transform.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -34,7 +34,8 @@ static CompositorKeyframeValue* CreateFromTransformProperties(
 
 CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
     const PropertyHandle& property,
-    const ComputedStyle& style) {
+    const ComputedStyle& style,
+    double offset) {
   const CSSProperty& css_property = property.GetCSSProperty();
 #if DCHECK_IS_ON()
   // Variables are conditionally interpolable and compositable.
@@ -67,6 +68,10 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       return CreateFromTransformProperties(style.Scale(), style.EffectiveZoom(),
                                            nullptr);
     }
+    case CSSPropertyID::kBackgroundColor:
+    case CSSPropertyID::kClipPath: {
+      return MakeGarbageCollected<CompositorKeyframeDouble>(offset);
+    }
     case CSSPropertyID::kVariable: {
       if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
         return nullptr;
@@ -82,7 +87,7 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
 
       // TODO: Add supported for interpolable color values from
       // CSSIdentifierValue when given a value of currentcolor
-      if (const auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value)) {
+      if (const auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
         Color color = color_value->Value();
         return MakeGarbageCollected<CompositorKeyframeColor>(SkColorSetARGB(
             color.Alpha(), color.Red(), color.Green(), color.Blue()));

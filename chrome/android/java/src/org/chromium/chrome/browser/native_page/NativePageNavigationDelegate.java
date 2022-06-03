@@ -19,11 +19,15 @@ public interface NativePageNavigationDelegate {
         return IncognitoUtils.isIncognitoModeEnabled();
     }
 
+    /**
+     * Returns whether context menus should allow the option to open a link in a new tab in group.
+     */
+    default boolean isOpenInNewTabInGroupEnabled() {
+        return true;
+    };
+
     /** @return Whether context menus should allow the option to open a link in a new window. */
     boolean isOpenInNewWindowEnabled();
-
-    /** Opens the help page in the current tab. */
-    default void navigateToHelpPage() {} // Does nothing.
 
     /**
      * Opens an URL with the desired disposition.
@@ -32,4 +36,11 @@ public interface NativePageNavigationDelegate {
      */
     @Nullable
     Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams);
+
+    /**
+     * Opens an URL with the desired disposition in a tab in group.
+     * @return The tab where the URL is being loaded.
+     */
+    @Nullable
+    Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams);
 }

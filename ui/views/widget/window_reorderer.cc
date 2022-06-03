@@ -8,11 +8,13 @@
 
 #include <algorithm>
 #include <map>
+#include <set>
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_occlusion_tracker.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_constants_aura.h"
 
@@ -53,7 +55,7 @@ void GetOrderOfViewsWithLayers(
     order->push_back(view);
   }
 
-  for (views::View* child : view->children())
+  for (views::View* child : view->GetChildrenInZOrder())
     GetOrderOfViewsWithLayers(child, parent_layer, hosts, order);
 }
 
@@ -64,6 +66,10 @@ void GetOrderOfViewsWithLayers(
 class WindowReorderer::AssociationObserver : public aura::WindowObserver {
  public:
   explicit AssociationObserver(WindowReorderer* reorderer);
+
+  AssociationObserver(const AssociationObserver&) = delete;
+  AssociationObserver& operator=(const AssociationObserver&) = delete;
+
   ~AssociationObserver() override;
 
   // Start/stop observing changes in the kHostViewKey property on |window|.
@@ -81,14 +87,11 @@ class WindowReorderer::AssociationObserver : public aura::WindowObserver {
   WindowReorderer* reorderer_;
 
   std::set<aura::Window*> windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociationObserver);
 };
 
 WindowReorderer::AssociationObserver::AssociationObserver(
     WindowReorderer* reorderer)
-    : reorderer_(reorderer) {
-}
+    : reorderer_(reorderer) {}
 
 WindowReorderer::AssociationObserver::~AssociationObserver() {
   while (!windows_.empty())
@@ -101,8 +104,7 @@ void WindowReorderer::AssociationObserver::StartObserving(
   window->AddObserver(this);
 }
 
-void WindowReorderer::AssociationObserver::StopObserving(
-    aura::Window* window) {
+void WindowReorderer::AssociationObserver::StopObserving(aura::Window* window) {
   windows_.erase(window);
   window->RemoveObserver(this);
 }
@@ -121,8 +123,7 @@ void WindowReorderer::AssociationObserver::OnWindowDestroying(
   window->RemoveObserver(this);
 }
 
-WindowReorderer::WindowReorderer(aura::Window* parent_window,
-                                 View* root_view)
+WindowReorderer::WindowReorderer(aura::Window* parent_window, View* root_view)
     : parent_window_(parent_window),
       root_view_(root_view),
       association_observer_(new AssociationObserver(this)) {
@@ -158,9 +159,11 @@ void WindowReorderer::ReorderChildWindows() {
   // with layers and views with associated windows in the view tree.
   std::vector<View*> view_with_layer_order;
   GetOrderOfViewsWithLayers(root_view_, parent_window_->layer(), hosted_windows,
-      &view_with_layer_order);
+                            &view_with_layer_order);
 
   std::vector<ui::Layer*> children_layer_order;
+
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   // For the sake of simplicity, reorder both the layers owned by views and the
   // layers of windows associated with a view. Iterate through

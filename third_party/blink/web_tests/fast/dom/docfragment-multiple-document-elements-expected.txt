@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 11: Uncaught HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
+CONSOLE ERROR: Uncaught HierarchyRequestError: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
 

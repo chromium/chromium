@@ -4,10 +4,10 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("empty_history") {
+imageset("history_empty") {
   sources = [
-    "empty_history.imageset/Contents.json",
-    "empty_history.imageset/empty_history@2x.png",
-    "empty_history.imageset/empty_history@3x.png",
+    "history_empty.imageset/Contents.json",
+    "history_empty.imageset/history_empty.pdf",
+    "history_empty.imageset/history_empty_dark.pdf",
   ]
 }

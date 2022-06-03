@@ -1,0 +1,3 @@
+file://content/browser/file_system_access/OWNERS
+
+per-file *permission*=file://components/permissions/PERMISSIONS_OWNERS

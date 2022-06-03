@@ -7,11 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/value_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/gaia_info_update_service.h"
@@ -24,12 +23,15 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,58 +53,74 @@ ManageProfileHandler::ManageProfileHandler(Profile* profile)
 ManageProfileHandler::~ManageProfileHandler() {}
 
 void ManageProfileHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAvailableIcons",
       base::BindRepeating(&ManageProfileHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileIconToGaiaAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToGaiaAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileIconToDefaultAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToDefaultAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProfileName",
       base::BindRepeating(&ManageProfileHandler::HandleSetProfileName,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestProfileShortcutStatus",
       base::BindRepeating(
           &ManageProfileHandler::HandleRequestProfileShortcutStatus,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "addProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleAddProfileShortcut,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleRemoveProfileShortcut,
                           base::Unretained(this)));
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<ThemeSource>(profile_));
 }
 
 void ManageProfileHandler::OnJavascriptAllowed() {
-  observer_.Add(
+  observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 }
 
 void ManageProfileHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void ManageProfileHandler::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
+  if (profile_path != profile_->GetPath())
+    return;
+
   // GAIA image is loaded asynchronously.
-  FireWebUIListener("available-icons-changed", *GetAvailableIcons());
+  FireWebUIListener("available-icons-changed",
+                    base::Value(GetAvailableIcons()));
 }
 
 void ManageProfileHandler::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
+  if (profile_path != profile_->GetPath())
+    return;
+
   // This is necessary to send the potentially updated GAIA photo.
-  FireWebUIListener("available-icons-changed", *GetAvailableIcons());
+  FireWebUIListener("available-icons-changed",
+                    base::Value(GetAvailableIcons()));
+}
+
+void ManageProfileHandler::OnProfileThemeColorsChanged(
+    const base::FilePath& profile_path) {
+  // This is necessary to send the potentially updated Generic colored avatar.
+  OnProfileAvatarChanged(profile_path);
 }
 
 void ManageProfileHandler::HandleGetAvailableIcons(
@@ -111,41 +129,52 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 
   profiles::UpdateGaiaProfileInfoIfNeeded(profile_);
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *GetAvailableIcons());
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
+
+  ResolveJavascriptCallback(callback_id, base::Value(GetAvailableIcons()));
 }
 
-std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
-  PrefService* pref_service = profile_->GetPrefs();
-  bool using_gaia = pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar);
-  size_t selected_avatar_idx =
-      using_gaia ? SIZE_MAX
-                 : pref_service->GetInteger(prefs::kProfileAvatarIndex);
+std::vector<base::Value> ManageProfileHandler::GetAvailableIcons() {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
+  // TODO(msalama): Convert to a DCHECK.
+  if (!entry) {
+    LOG(ERROR) << "No profile attributes entry found for profile with path: "
+               << profile_->GetPath();
+    return std::vector<base::Value>();
+  }
 
-  // Obtain a list of the default avatar icons.
-  std::unique_ptr<base::ListValue> avatars(
-      profiles::GetDefaultProfileAvatarIconsAndLabels(selected_avatar_idx));
+  bool using_gaia = entry->IsUsingGAIAPicture();
+  size_t selected_avatar_idx =
+      using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
+
+  // Obtain a list of the modern avatar icons.
+  std::vector<base::Value> avatars(
+      profiles::GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
+
+  if (entry->GetSigninState() == SigninState::kNotSignedIn) {
+    ProfileThemeColors colors = entry->GetProfileThemeColors();
+    auto generic_avatar_info = profiles::GetDefaultProfileAvatarIconAndLabel(
+        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+        selected_avatar_idx == profiles::GetPlaceholderAvatarIndex());
+    avatars.insert(avatars.begin(),
+                   base::Value(std::move(generic_avatar_info)));
+    return avatars;
+  }
 
   // Add the GAIA picture to the beginning of the list if it is available.
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_->GetPath(), &entry)) {
-    const gfx::Image* icon = entry->GetGAIAPicture();
-    if (icon) {
-      auto gaia_picture_info = std::make_unique<base::DictionaryValue>();
-      gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon, true);
-      gaia_picture_info->SetString(
-          "url", webui::GetBitmapDataUrl(avatar_icon.AsBitmap()));
-      gaia_picture_info->SetString(
-          "label",
-          l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO));
-      gaia_picture_info->SetBoolean("isGaiaAvatar", true);
-      if (using_gaia)
-        gaia_picture_info->SetBoolean("selected", true);
-      avatars->Insert(0, std::move(gaia_picture_info));
-    }
+  const gfx::Image* icon = entry->GetGAIAPicture();
+  if (icon) {
+    gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon, true);
+    auto gaia_picture_info = profiles::GetAvatarIconAndLabelDict(
+        /*url=*/webui::GetBitmapDataUrl(avatar_icon.AsBitmap()),
+        /*label=*/
+        l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO),
+        /*index=*/0, using_gaia, /*is_gaia_avatar=*/true);
+    avatars.insert(avatars.begin(), base::Value(std::move(gaia_picture_info)));
   }
 
   return avatars;
@@ -174,18 +203,18 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(args);
-  DCHECK_EQ(1u, args->GetSize());
+  CHECK(args);
+  CHECK_EQ(1u, args->GetList().size());
+  CHECK(args->GetList()[0].is_int());
 
-  std::string icon_url;
-  CHECK(args->GetString(0, &icon_url));
-
-  size_t new_icon_index = 0;
-  CHECK(profiles::IsDefaultAvatarIconUrl(icon_url, &new_icon_index));
+  size_t new_icon_index = args->GetList()[0].GetInt();
+  CHECK(profiles::IsDefaultAvatarIconIndex(new_icon_index));
 
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetInteger(prefs::kProfileAvatarIndex, new_icon_index);
-  pref_service->SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  pref_service->SetBoolean(
+      prefs::kProfileUsingDefaultAvatar,
+      new_icon_index == profiles::GetPlaceholderAvatarIndex());
   pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
 
   ProfileMetrics::LogProfileAvatarSelection(new_icon_index);
@@ -194,14 +223,11 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
 
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(args);
-  DCHECK_EQ(1u, args->GetSize());
+  CHECK(args);
+  CHECK_EQ(1u, args->GetList().size());
 
-  if (profile_->IsLegacySupervised())
-    return;
-
-  base::string16 new_profile_name;
-  CHECK(args->GetString(0, &new_profile_name));
+  std::u16string new_profile_name =
+      base::UTF8ToUTF16(args->GetList()[0].GetString());
 
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
   CHECK(!new_profile_name.empty());
@@ -216,9 +242,8 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
 
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   // Don't show the add/remove desktop shortcut button in the single user case.
   ProfileAttributesStorage& storage =
@@ -234,8 +259,8 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK(shortcut_manager);
   shortcut_manager->HasProfileShortcuts(
       profile_->GetPath(),
-      base::Bind(&ManageProfileHandler::OnHasProfileShortcuts,
-                 weak_factory_.GetWeakPtr(), callback_id));
+      base::BindOnce(&ManageProfileHandler::OnHasProfileShortcuts,
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void ManageProfileHandler::OnHasProfileShortcuts(

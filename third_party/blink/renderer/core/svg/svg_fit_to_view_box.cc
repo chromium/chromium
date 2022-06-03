@@ -22,8 +22,12 @@
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
 
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
+#include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -60,23 +64,18 @@ SVGFitToViewBox::SVGFitToViewBox(SVGElement* element)
   element->AddToPropertyMap(preserve_aspect_ratio_);
 }
 
-void SVGFitToViewBox::Trace(blink::Visitor* visitor) {
+void SVGFitToViewBox::Trace(Visitor* visitor) const {
   visitor->Trace(view_box_);
   visitor->Trace(preserve_aspect_ratio_);
 }
 
 AffineTransform SVGFitToViewBox::ViewBoxToViewTransform(
-    const FloatRect& view_box_rect,
+    const gfx::RectF& view_box_rect,
     const SVGPreserveAspectRatio* preserve_aspect_ratio,
-    float view_width,
-    float view_height) {
-  if (!view_box_rect.Width() || !view_box_rect.Height() || !view_width ||
-      !view_height)
+    const gfx::SizeF& viewport_size) {
+  if (view_box_rect.IsEmpty() || viewport_size.IsEmpty())
     return AffineTransform();
-
-  return preserve_aspect_ratio->ComputeTransform(
-      view_box_rect.X(), view_box_rect.Y(), view_box_rect.Width(),
-      view_box_rect.Height(), view_width, view_height);
+  return preserve_aspect_ratio->ComputeTransform(view_box_rect, viewport_size);
 }
 
 bool SVGFitToViewBox::IsKnownAttribute(const QualifiedName& attr_name) {

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests XHR network resource payload is not corrupted by transcoding.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   var payload = '\u201AFoo\u201B';

@@ -11,12 +11,11 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -24,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/component_updater/component_updater_service_internal.h"
+#include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
@@ -48,12 +48,14 @@ namespace component_updater {
 
 ComponentInfo::ComponentInfo(const std::string& id,
                              const std::string& fingerprint,
-                             const base::string16& name,
+                             const std::u16string& name,
                              const base::Version& version)
     : id(id), fingerprint(fingerprint), name(name), version(version) {}
 ComponentInfo::ComponentInfo(const ComponentInfo& other) = default;
+ComponentInfo& ComponentInfo::operator=(const ComponentInfo& other) = default;
 ComponentInfo::ComponentInfo(ComponentInfo&& other) = default;
-ComponentInfo::~ComponentInfo() {}
+ComponentInfo& ComponentInfo::operator=(ComponentInfo&& other) = default;
+ComponentInfo::~ComponentInfo() = default;
 
 CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
                                    std::unique_ptr<UpdateScheduler> scheduler,
@@ -95,10 +97,11 @@ void CrxUpdateService::Start() {
           << config_->NextCheckDelay() << " seconds. ";
 
   scheduler_->Schedule(
-      base::TimeDelta::FromSeconds(config_->InitialDelay()),
-      base::TimeDelta::FromSeconds(config_->NextCheckDelay()),
-      base::Bind(base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
-                 base::Unretained(this)),
+      base::Seconds(config_->InitialDelay()),
+      base::Seconds(config_->NextCheckDelay()),
+      base::BindRepeating(
+          base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
+          base::Unretained(this)),
       base::DoNothing());
 }
 
@@ -128,8 +131,6 @@ bool CrxUpdateService::RegisterComponent(const CrxComponent& component) {
 
   components_.insert(std::make_pair(component.app_id, component));
   components_order_.push_back(component.app_id);
-  for (const auto& mime_type : component.handled_mime_types)
-    component_ids_by_mime_type_[mime_type] = component.app_id;
 
   // Create an initial state for this component. The state is mutated in
   // response to events from the UpdateClient instance.
@@ -194,20 +195,6 @@ std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
   return ids;
 }
 
-std::unique_ptr<ComponentInfo> CrxUpdateService::GetComponentForMimeType(
-    const std::string& mime_type) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  const auto it = component_ids_by_mime_type_.find(mime_type);
-  if (it == component_ids_by_mime_type_.end())
-    return nullptr;
-  const auto component = GetComponent(it->second);
-  if (!component)
-    return nullptr;
-  return std::make_unique<ComponentInfo>(
-      GetCrxComponentID(*component), component->fingerprint,
-      base::UTF8ToUTF16(component->name), component->version);
-}
-
 std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   std::vector<ComponentInfo> result;
@@ -224,13 +211,10 @@ OnDemandUpdater& CrxUpdateService::GetOnDemandUpdater() {
   return *this;
 }
 
-base::Optional<CrxComponent> CrxUpdateService::GetComponent(
+absl::optional<CrxComponent> CrxUpdateService::GetComponent(
     const std::string& id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const auto it = components_.find(id);
-  if (it != components_.end())
-    return it->second;
-  return base::nullopt;
+  return component_updater::GetComponent(components_, id);
 }
 
 const CrxUpdateItem* CrxUpdateService::GetComponentState(
@@ -283,7 +267,7 @@ bool CrxUpdateService::OnDemandUpdateWithCooldown(const std::string& id) {
   if (component_state && !component_state->last_check.is_null()) {
     base::TimeDelta delta =
         base::TimeTicks::Now() - component_state->last_check;
-    if (delta < base::TimeDelta::FromSeconds(config_->OnDemandDelay()))
+    if (delta < base::Seconds(config_->OnDemandDelay()))
       return false;
   }
 
@@ -306,10 +290,10 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
       std::move(callback), base::TimeTicks::Now());
 
   if (priority == Priority::FOREGROUND)
-    update_client_->Install(id, std::move(crx_data_callback),
+    update_client_->Install(id, std::move(crx_data_callback), {},
                             std::move(update_complete_callback));
   else if (priority == Priority::BACKGROUND)
-    update_client_->Update({id}, std::move(crx_data_callback), false,
+    update_client_->Update({id}, std::move(crx_data_callback), {}, false,
                            std::move(update_complete_callback));
   else
     NOTREACHED();
@@ -319,15 +303,12 @@ bool CrxUpdateService::CheckForUpdates(
     UpdateScheduler::OnFinishedCallback on_finished) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // TODO(xiaochu): remove this log after https://crbug.com/851151 is fixed.
-  VLOG(1) << "CheckForUpdates: automatic updatecheck for components.";
-
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_AUTOMATIC,
                             UPDATE_TYPE_COUNT);
 
   std::vector<std::string> secure_ids;    // Requires HTTPS for update checks.
   std::vector<std::string> unsecure_ids;  // Can fallback to HTTP.
-  for (const auto id : components_order_) {
+  for (const auto& id : components_order_) {
     DCHECK(components_.find(id) != components_.end());
 
     const auto component = GetComponent(id);
@@ -353,7 +334,7 @@ bool CrxUpdateService::CheckForUpdates(
         unsecure_ids,
         base::BindOnce(&CrxUpdateService::GetCrxComponents,
                        base::Unretained(this)),
-        false,
+        {}, false,
         base::BindOnce(
             &CrxUpdateService::OnUpdateComplete, base::Unretained(this),
             secure_ids.empty() ? std::move(on_finished_callback) : Callback(),
@@ -365,7 +346,7 @@ bool CrxUpdateService::CheckForUpdates(
         secure_ids,
         base::BindOnce(&CrxUpdateService::GetCrxComponents,
                        base::Unretained(this)),
-        false,
+        {}, false,
         base::BindOnce(&CrxUpdateService::OnUpdateComplete,
                        base::Unretained(this), std::move(on_finished_callback),
                        base::TimeTicks::Now()));
@@ -394,13 +375,10 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
   return false;
 }
 
-std::vector<base::Optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
+std::vector<absl::optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::vector<base::Optional<CrxComponent>> components;
-  for (const auto& id : ids)
-    components.push_back(GetComponent(id));
-  return components;
+  return component_updater::GetCrxComponents(components_, ids);
 }
 
 void CrxUpdateService::OnUpdateComplete(Callback callback,
@@ -416,7 +394,7 @@ void CrxUpdateService::OnUpdateComplete(Callback callback,
   UMA_HISTOGRAM_LONG_TIMES_100("ComponentUpdater.UpdateCompleteTime",
                                base::TimeTicks::Now() - start_time);
 
-  for (const auto id : components_pending_unregistration_) {
+  for (const auto& id : components_pending_unregistration_) {
     if (!update_client_->IsUpdating(id)) {
       const auto component = GetComponent(id);
       if (component)
@@ -449,16 +427,16 @@ void CrxUpdateService::OnEvent(Events event, const std::string& id) {
     return;
 
   // Update the state of the item.
-  const auto it = component_states_.find(id);
-  if (it != component_states_.end())
-    it->second = update_item;
+  const auto state_it = component_states_.find(id);
+  if (state_it != component_states_.end())
+    state_it->second = update_item;
 
   // Update the component registration with the new version.
   if (event == Observer::Events::COMPONENT_UPDATED) {
-    const auto it = components_.find(id);
-    if (it != components_.end()) {
-      it->second.version = update_item.next_version;
-      it->second.fingerprint = update_item.next_fp;
+    const auto component_it = components_.find(id);
+    if (component_it != components_.end()) {
+      component_it->second.version = update_item.next_version;
+      component_it->second.fingerprint = update_item.next_fp;
     }
   }
 }

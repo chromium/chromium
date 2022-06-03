@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/content_description.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -34,8 +35,6 @@ const char kControlTag[] = "control";
 const char kEventTag[] = "event";
 const char kVideoTag[] = "video";
 const char kAudioTag[] = "audio";
-const char kVp9ExperimentTag[] = "vp9-experiment";
-const char kH264ExperimentTag[] = "h264-experiment";
 
 const char kTransportAttr[] = "transport";
 const char kVersionAttr[] = "version";
@@ -168,11 +167,6 @@ XmlElement* ContentDescription::ToXml() const {
     root->AddElement(new XmlElement(*authenticator_message_));
   }
 
-  if (config()->vp9_experiment_enabled()) {
-    root->AddElement(
-        new XmlElement(QName(kChromotingXmlNamespace, kVp9ExperimentTag)));
-  }
-
   return root;
 }
 
@@ -229,20 +223,10 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
     }
   }
 
-  // Check if VP9 experiment is enabled.
-  if (element->FirstNamed(QName(kChromotingXmlNamespace, kVp9ExperimentTag))) {
-    config->set_vp9_experiment_enabled(true);
-  }
-
-  // Check if H264 experiment is enabled.
-  if (element->FirstNamed(QName(kChromotingXmlNamespace, kH264ExperimentTag))) {
-    config->set_h264_experiment_enabled(true);
-  }
-
   std::unique_ptr<XmlElement> authenticator_message;
   const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
   if (child)
-    authenticator_message.reset(new XmlElement(*child));
+    authenticator_message = std::make_unique<XmlElement>(*child);
 
   return base::WrapUnique(new ContentDescription(
       std::move(config), std::move(authenticator_message)));

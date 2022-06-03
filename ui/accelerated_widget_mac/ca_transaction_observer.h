@@ -5,24 +5,21 @@
 #ifndef UI_ACCELERATED_WIDGET_MAC_CA_TRANSACTION_OBSERVER_H_
 #define UI_ACCELERATED_WIDGET_MAC_CA_TRANSACTION_OBSERVER_H_
 
+#include <set>
+
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace ui {
 
 // CATransactionCoordinator is an interface to undocumented macOS APIs which
 // run callbacks at different stages of committing a CATransaction to the
 // window server. There is no guarantee that it will call registered observers
-// at all: it does nothing on macOS older than 10.11.
+// at all.
 //
 // - Pre-commit: After all outstanding CATransactions have committed and after
 //   layout, but before the new layer tree has been sent to the window server.
@@ -70,6 +67,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
 
   static CATransactionCoordinator& Get();
 
+  CATransactionCoordinator(const CATransactionCoordinator&) = delete;
+  CATransactionCoordinator& operator=(const CATransactionCoordinator&) = delete;
+
   void Synchronize();
   void DisableForTesting() { disabled_for_testing_ = true; }
 
@@ -84,7 +84,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
   CATransactionCoordinator();
   ~CATransactionCoordinator();
 
-  API_AVAILABLE(macos(10.11))
   void SynchronizeImpl();
   void PreCommitHandler();
   void PostCommitHandler();
@@ -93,8 +92,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
   bool disabled_for_testing_ = false;
   base::ObserverList<PreCommitObserver>::Unchecked pre_commit_observers_;
   std::set<scoped_refptr<PostCommitObserver>> post_commit_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CATransactionCoordinator);
 };
 
 }  // namespace ui

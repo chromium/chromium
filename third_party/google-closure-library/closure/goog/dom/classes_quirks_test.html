@@ -1,0 +1,64 @@
+<html>
+<!--
+Copyright 2006 The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<!--
+This is a copy of classes_test.html but without a doctype. Make sure these two
+are in sync.
+-->
+<head>
+<meta charset="UTF-8" />
+<title>Closure Unit Tests - goog.dom.classes</title>=
+<script src="../base.js"></script>
+<style type="text/css">
+#styleTest1 {
+  width:120px;font-weight:bold;
+}
+</style>
+</head>
+<body>
+  <div id="testEl">
+    <span>Test Element</span>
+  </div>
+
+  <div><div><div id="testEl2"></div></div></div>
+
+  <span id="span1" class="TEST1"></span>
+  <span id="span2" class="TEST1"></span>
+  <span id="span3" class="TEST2"></span>
+  <span id="span4" class="TEST3"></span>
+  <span id="span5" class="TEST1"></span>
+  <span id="span6"></span>
+
+  <p id="p1"></p>
+
+  <div id="styleTest1"></div>
+  <div id="styleTest2" style="width:100px;font-weight:bold"></div>
+  <div id="styleTest3"></div>
+
+  <!-- Paragraph to test element child and sibling -->
+  <p id="p2">
+    <!-- Comment -->
+    a
+    <b id="b1">c</b>
+    d
+    <!-- Comment -->
+    e
+    <b id="b2">f</b>
+    g
+    <!-- Comment -->
+  </p>
+  <p id="p3" class="SOMECLASS
+                    OTHERCLASS">
+    h
+  </p>
+  <iframe name="frame" src="../math/math_test.html"></iframe>
+
+<script>
+  goog.require('goog.dom.classes_test');
+</script>
+</body>
+</html>

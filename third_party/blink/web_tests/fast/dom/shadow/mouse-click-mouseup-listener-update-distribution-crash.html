@@ -8,7 +8,7 @@ if (window.testRunner)
 var clickme = document.querySelector('#clickme');
 
 clickme.addEventListener('mouseup', function() {
-    clickme.createShadowRoot();
+    clickme.attachShadow({mode: 'open'});
 }, false);
 
 if (window.eventSender) {

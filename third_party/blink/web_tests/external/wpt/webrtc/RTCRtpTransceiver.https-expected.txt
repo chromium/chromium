@@ -1,4 +1,42 @@
 This is a testharness.js-based test.
-FAIL RTCRtpTransceiver Uncaught ReferenceError: checkAddIceCandidateToStoppedTransceiver is not defined
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_equals: RTCRtpTransceiver.stop() with closed PC throws InvalidStateError expected "InvalidStateError" but got "Error"
+PASS checkAddTransceiverNoTrack
+PASS checkAddTransceiverWithTrack
+PASS checkAddTransceiverWithAddTrack
+PASS checkAddTransceiverWithDirection
+FAIL checkMsidNoTrackId promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to parse SessionDescription. a=msid:fake-stream-id Expects 2 fields."
+PASS checkAddTransceiverWithSetRemoteOfferSending
+PASS checkAddTransceiverWithSetRemoteOfferNoSend
+PASS checkAddTransceiverBadKind
+PASS checkNoMidOffer
+PASS checkNoMidAnswer
+PASS checkSetDirection
+PASS checkCurrentDirection
+PASS checkSendrecvWithNoSendTrack
+PASS checkSendrecvWithTracklessStream
+PASS checkAddTransceiverNoTrackDoesntPair
+PASS checkAddTransceiverWithTrackDoesntPair
+PASS checkAddTransceiverThenReplaceTrackDoesntPair
+FAIL checkAddTransceiverThenAddTrackPairs assert_equals: expected "[{sender:{track:{}}}]" but got "[{sender:{track:{}}},{}]"
+PASS checkAddTrackPairs
+PASS checkReplaceTrackNullDoesntPreventPairing
+PASS checkRemoveAndReadd
+PASS checkAddTrackExistingTransceiverThenRemove
+FAIL checkRemoveTrackNegotiation assert_equals: pc2.setRemoteDescription(offer) should've added 2 tracks to receive stream expected 2 but got 0
+FAIL checkMute assert_true: expected true got false
+PASS checkStop
+PASS checkStopAfterCreateOffer
+PASS checkStopAfterSetLocalOffer
+PASS checkStopAfterSetRemoteOffer
+PASS checkStopAfterCreateAnswer
+PASS checkStopAfterSetLocalAnswer
+PASS checkStopAfterClose
+PASS checkLocalRollback
+PASS checkRollbackAndSetRemoteOfferWithDifferentType
+FAIL checkRemoteRollback assert_equals: track event from remote rollback expected 1 but got 0
+FAIL checkMsectionReuse assert_equals: expected "[{currentDirection:null,mid:null}]" but got "[{currentDirection:\"inactive\",mid:\"0\"}]"
+PASS checkStopAfterCreateOfferWithReusedMsection
+PASS checkAddIceCandidateToStoppedTransceiver
+PASS checkBundleTagRejected
 Harness: the test ran to completion.
 

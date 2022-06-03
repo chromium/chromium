@@ -4,12 +4,20 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 
-#include "base/logging.h"
+#include "ash/constants/ash_switches.h"
+#include "base/check_op.h"
+#include "base/command_line.h"
 
 namespace ash {
 
 namespace {
 TabletMode* g_instance = nullptr;
+}
+
+// static
+bool TabletMode::IsBoardTypeMarkedAsTabletCapable() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAshEnableTabletMode);
 }
 
 TabletMode* TabletMode::Get() {
@@ -50,6 +58,11 @@ void TabletMode::Waiter::OnTabletModeStarted() {
 void TabletMode::Waiter::OnTabletModeEnded() {
   if (!enable_)
     run_loop_.QuitWhenIdle();
+}
+
+bool TabletMode::IsInTabletMode() {
+  const TabletMode* singleton = TabletMode::Get();
+  return singleton && singleton->InTabletMode();
 }
 
 }  // namespace ash

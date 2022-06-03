@@ -1,0 +1,11 @@
+{
+  "name": "No embed request listener",
+  "description": "An app that does not listen for onEmbedRequested",
+  "manifest_version": 2,
+  "version": "1.0",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}

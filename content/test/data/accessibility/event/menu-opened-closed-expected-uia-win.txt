@@ -1,10 +1,12 @@
+#<skip -- crbug.com/1062697>
 AriaProperties changed on role=menu, name=menu
+AriaProperties changed on role=menuitem, name=submenu1
+AriaProperties changed on role=menuitem, name=submenu2
 MenuOpened on role=menu, name=menu
-MenuOpened on role=region
 === Start Continuation ===
 AriaProperties changed on role=menu
+AriaProperties changed on role=menuitem, name=option
 MenuOpened on role=menu
-MenuOpened on role=region
 === Start Continuation ===
 MenuClosed 
 MenuClosed 

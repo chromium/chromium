@@ -5,7 +5,8 @@
 package org.chromium.android_webview.test;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -14,7 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
-import org.chromium.android_webview.ErrorCodeConversionHelper;
+import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -94,8 +95,8 @@ public class AwContentsStaticsTest {
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
             Assert.assertEquals("onReceivedError should be called.", errorCount + 1,
                     errorHelper.getCallCount());
-            Assert.assertEquals("Incorrect network error code.",
-                    ErrorCodeConversionHelper.ERROR_UNKNOWN, errorHelper.getError().errorCode);
+            Assert.assertEquals("Incorrect network error code.", WebviewErrorCode.ERROR_UNKNOWN,
+                    errorHelper.getError().errorCode);
             Assert.assertEquals("onReceivedError was called for the wrong URL.", url,
                     errorHelper.getRequest().url);
         } finally {

@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/dom_distiller/content/browser/distillability_driver.h"
@@ -26,20 +26,21 @@ namespace dom_distiller {
 namespace {
 
 void OnExtractFeaturesJsResult(const DistillablePageDetector* detector,
-                               base::Callback<void(bool)> callback,
+                               base::OnceCallback<void(bool)> callback,
                                base::Value result) {
-  callback.Run(detector->Classify(CalculateDerivedFeaturesFromJSON(&result)));
+  std::move(callback).Run(
+      detector->Classify(CalculateDerivedFeaturesFromJSON(&result)));
 }
 
 }  // namespace
 
 void IsDistillablePageForDetector(content::WebContents* web_contents,
                                   const DistillablePageDetector* detector,
-                                  base::Callback<void(bool)> callback) {
+                                  base::OnceCallback<void(bool)> callback) {
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   if (!main_frame) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, false));
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
   std::string extract_features_js =
@@ -47,7 +48,14 @@ void IsDistillablePageForDetector(content::WebContents* web_contents,
           IDR_EXTRACT_PAGE_FEATURES_JS);
   RunIsolatedJavaScript(
       main_frame, extract_features_js,
-      base::BindOnce(OnExtractFeaturesJsResult, detector, callback));
+      base::BindOnce(OnExtractFeaturesJsResult, detector, std::move(callback)));
+}
+
+bool operator==(const DistillabilityResult& first,
+                const DistillabilityResult& second) {
+  return first.is_distillable == second.is_distillable &&
+         first.is_last == second.is_last &&
+         first.is_mobile_friendly == second.is_mobile_friendly;
 }
 
 std::ostream& operator<<(std::ostream& os, const DistillabilityResult& result) {
@@ -89,7 +97,7 @@ void RemoveObserver(content::WebContents* web_contents,
   }
 }
 
-base::Optional<DistillabilityResult> GetLatestResult(
+absl::optional<DistillabilityResult> GetLatestResult(
     content::WebContents* web_contents) {
   CHECK(web_contents);
   DistillabilityDriver::CreateForWebContents(web_contents);

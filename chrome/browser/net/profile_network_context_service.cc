@@ -7,20 +7,24 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,43 +32,47 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
+#include "components/embedder_support/pref_names.h"
+#include "components/embedder_support/switches.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
 #include "net/ssl/client_cert_store.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
-#include "chrome/browser/chromeos/policy/policy_cert_service.h"
-#include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/net/client_cert_store_ash.h"
+#include "chrome/browser/ash/policy/networking/policy_cert_service.h"
+#include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -78,9 +86,9 @@
 #include "net/ssl/client_cert_store_win.h"
 #endif  // defined(OS_WIN)
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "net/ssl/client_cert_store_mac.h"
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 #include "chrome/browser/net/trial_comparison_cert_verifier_controller.h"
@@ -90,13 +98,21 @@
 #include "extensions/common/constants.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/client_cert_store_lacros.h"
+#endif
+
 namespace {
 
 bool* g_discard_domain_reliability_uploads_for_testing = nullptr;
 
+const char kHttpCacheFinchExperimentGroups[] =
+    "profile_network_context_service.http_cache_finch_experiment_groups";
+
 std::vector<std::string> TranslateStringArray(const base::ListValue* list) {
   std::vector<std::string> strings;
-  for (const base::Value& value : *list) {
+  for (const base::Value& value : list->GetList()) {
     DCHECK(value.is_string());
     strings.push_back(value.GetString());
   }
@@ -105,33 +121,11 @@ std::vector<std::string> TranslateStringArray(const base::ListValue* list) {
 
 std::string ComputeAcceptLanguageFromPref(const std::string& language_pref) {
   std::string accept_languages_str =
-      base::FeatureList::IsEnabled(features::kUseNewAcceptLanguageHeader)
-          ? net::HttpUtil::ExpandLanguageList(language_pref)
-          : language_pref;
+      net::HttpUtil::ExpandLanguageList(language_pref);
   return net::HttpUtil::GenerateAcceptLanguageHeader(accept_languages_str);
 }
 
-#if defined(OS_CHROMEOS)
-bool ShouldUseBuiltinCertVerifier(Profile* profile) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kForceCertVerifierBuiltin))
-    return true;
-
-  if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::Get()->IsLockScreenAppProfile(profile)) {
-    return true;
-  }
-
-  const PrefService::Preference* builtin_cert_verifier_enabled_pref =
-      g_browser_process->local_state()->FindPreference(
-          prefs::kBuiltinCertificateVerifierEnabled);
-  if (builtin_cert_verifier_enabled_pref->IsManaged())
-    return builtin_cert_verifier_enabled_pref->GetValue()->GetBool();
-
-  return base::FeatureList::IsEnabled(
-      net::features::kCertVerifierBuiltinFeature);
-}
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
     const policy::PolicyCertService* policy_cert_service,
     const base::FilePath& storage_partition_path) {
@@ -141,46 +135,21 @@ network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
       &(additional_certificates->trust_anchors));
   return additional_certificates;
 }
-
 #endif  // defined (OS_CHROMEOS)
-
-void InitializeCorsExtraSafelistedRequestHeaderNamesForProfile(
-    Profile* profile,
-    std::vector<std::string>* extra_safelisted_request_header_names) {
-  PrefService* pref = profile->GetPrefs();
-  bool has_managed_mitigation_list =
-      pref->IsManagedPreference(prefs::kCorsMitigationList);
-
-  // Set default mitigation parameters managed by the server for normal users
-  // and enterprise users separately.
-  const char* const feature_param_name =
-      has_managed_mitigation_list
-          ? "extra-safelisted-request-headers-for-enterprise"
-          : "extra-safelisted-request-headers";
-  *extra_safelisted_request_header_names =
-      SplitString(base::GetFieldTrialParamValueByFeature(
-                      features::kExtraSafelistedRequestHeadersForOutOfBlinkCors,
-                      feature_param_name),
-                  ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  // We trust and append |pref|'s values only when they are set by the managed
-  // policy. Chrome does not have any interface to set this preference manually.
-  if (has_managed_mitigation_list) {
-    for (const auto& header_name_value :
-         *pref->GetList(prefs::kCorsMitigationList)) {
-      extra_safelisted_request_header_names->push_back(
-          header_name_value.GetString());
-    }
-  }
-}
 
 // Tests allowing ambient authentication with default credentials based on the
 // profile type.
-// TODO(https://crbug.com/458508): Currently, this is determined by OR of the
-// feature flag and policy. Next steps would be changing the feature value to
-// false after enough heads up and then removing the feature.
-bool IsAmbientAuthAllowedForProfile(const Profile* profile) {
-  if (profile->IsRegularProfile())
+bool IsAmbientAuthAllowedForProfile(Profile* profile) {
+  // Ambient authentication is always enabled for regular and system profiles.
+  // System profiles (used in profile picker) may require authentication to let
+  // user login.
+  if (profile->IsRegularProfile() || profile->IsSystemProfile())
+    return true;
+
+  // Non-primary OTR profiles are not used to create browser windows and are
+  // only technical means for a task that does not need to leave state after
+  // it's completed.
+  if (profile->IsOffTheRecord() && !profile->IsPrimaryOTRProfile())
     return true;
 
   PrefService* local_state = g_browser_process->local_state();
@@ -193,14 +162,10 @@ bool IsAmbientAuthAllowedForProfile(const Profile* profile) {
           prefs::kAmbientAuthenticationInPrivateModesEnabled));
 
   if (profile->IsGuestSession()) {
-    return base::FeatureList::IsEnabled(
-               features::kEnableAmbientAuthenticationInGuestSession) ||
-           type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
+    return type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
            type == net::AmbientAuthAllowedProfileTypes::ALL;
   } else if (profile->IsIncognitoProfile()) {
-    return base::FeatureList::IsEnabled(
-               features::kEnableAmbientAuthenticationInIncognito) ||
-           type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
+    return type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
            type == net::AmbientAuthAllowedProfileTypes::ALL;
   }
 
@@ -210,15 +175,57 @@ bool IsAmbientAuthAllowedForProfile(const Profile* profile) {
   return false;
 }
 
+void UpdateCookieSettings(Profile* profile) {
+  ContentSettingsForOneType settings;
+  HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
+      ContentSettingsType::COOKIES, &settings);
+  profile->ForEachStoragePartition(base::BindRepeating(
+      [](ContentSettingsForOneType settings,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetContentSettings(settings);
+      },
+      settings));
+}
+
+void UpdateLegacyCookieSettings(Profile* profile) {
+  ContentSettingsForOneType settings;
+  HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
+      ContentSettingsType::LEGACY_COOKIE_ACCESS, &settings);
+  profile->ForEachStoragePartition(base::BindRepeating(
+      [](ContentSettingsForOneType settings,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetContentSettingsForLegacyCookieAccess(settings);
+      },
+      settings));
+}
+
+void UpdateStorageAccessSettings(Profile* profile) {
+  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+    ContentSettingsForOneType settings;
+    HostContentSettingsMapFactory::GetForProfile(profile)
+        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS, &settings);
+
+    profile->ForEachStoragePartition(base::BindRepeating(
+        [](ContentSettingsForOneType settings,
+           content::StoragePartition* storage_partition) {
+          storage_partition->GetCookieManagerForBrowserProcess()
+              ->SetStorageAccessGrantSettings(settings, base::DoNothing());
+        },
+        settings));
+  }
+}
+
 }  // namespace
 
 ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
     : profile_(profile), proxy_config_monitor_(profile) {
   PrefService* profile_prefs = profile->GetPrefs();
-  quic_allowed_.Init(
-      prefs::kQuicAllowed, profile_prefs,
-      base::Bind(&ProfileNetworkContextService::DisableQuicIfNotAllowed,
-                 base::Unretained(this)));
+  quic_allowed_.Init(prefs::kQuicAllowed, profile_prefs,
+                     base::BindRepeating(
+                         &ProfileNetworkContextService::DisableQuicIfNotAllowed,
+                         base::Unretained(this)));
   pref_accept_language_.Init(
       language::prefs::kAcceptLanguages, profile_prefs,
       base::BindRepeating(&ProfileNetworkContextService::UpdateAcceptLanguage,
@@ -228,7 +235,7 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::UpdateReferrersEnabled,
                           base::Unretained(this)));
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
-  cookie_settings_observer_.Add(cookie_settings_.get());
+  cookie_settings_observation_.Observe(cookie_settings_.get());
 
   DisableQuicIfNotAllowed();
 
@@ -236,12 +243,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
   pref_change_registrar_.Init(profile_prefs);
-
-#if defined(OS_CHROMEOS)
-  using_builtin_cert_verifier_ = ShouldUseBuiltinCertVerifier(profile_);
-  VLOG(0) << "Using " << (using_builtin_cert_verifier_ ? "built-in" : "legacy")
-          << " cert verifier.";
-#endif  // OS_CHROMEOS
 
   // When any of the following CT preferences change, we schedule an update
   // to aggregate the actual update using a |ct_policy_update_timer_|.
@@ -262,76 +263,70 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::ScheduleUpdateCTPolicy,
                           base::Unretained(this)));
 
-  // Reflects CORS mitigation list policy updates dynamically.
-  pref_change_registrar_.Add(
-      prefs::kCorsMitigationList,
-      base::BindRepeating(
-          &ProfileNetworkContextService::UpdateCorsMitigationList,
-          base::Unretained(this)));
-
   pref_change_registrar_.Add(
       prefs::kGloballyScopeHTTPAuthCacheEnabled,
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateSplitAuthCacheByNetworkIsolationKey,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCorsNonWildcardRequestHeadersSupport,
+      base::BindRepeating(&ProfileNetworkContextService::
+                              UpdateCorsNonWildcardRequestHeadersSupport,
+                          base::Unretained(this)));
 }
 
-ProfileNetworkContextService::~ProfileNetworkContextService() {}
+ProfileNetworkContextService::~ProfileNetworkContextService() = default;
 
-mojo::Remote<network::mojom::NetworkContext>
-ProfileNetworkContextService::CreateNetworkContext(
+void ProfileNetworkContextService::ConfigureNetworkContextParams(
     bool in_memory,
-    const base::FilePath& relative_partition_path) {
-  mojo::Remote<network::mojom::NetworkContext> network_context;
-
-  content::GetNetworkService()->CreateNetworkContext(
-      network_context.BindNewPipeAndPassReceiver(),
-      CreateNetworkContextParams(in_memory, relative_partition_path));
-
-  network_context->SetSplitAuthCacheByNetworkIsolationKey(
-      ShouldSplitAuthCacheByNetworkIsolationKey());
+    const base::FilePath& relative_partition_path,
+    network::mojom::NetworkContextParams* network_context_params,
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
+  ConfigureNetworkContextParamsInternal(in_memory, relative_partition_path,
+                                        network_context_params,
+                                        cert_verifier_creation_params);
 
   if ((!in_memory && !profile_->IsOffTheRecord())) {
     // TODO(jam): delete this code 1 year after Network Service shipped to all
     // stable users, which would be after M83 branches.
-    base::FilePath media_cache_path = GetPartitionPath(relative_partition_path)
-                                          .Append(chrome::kMediaCacheDirname);
-    base::PostTask(
+    base::FilePath base_cache_path;
+    chrome::GetUserCacheDirectory(GetPartitionPath(relative_partition_path),
+                                  &base_cache_path);
+    base::FilePath media_cache_path =
+        base_cache_path.Append(chrome::kMediaCacheDirname);
+    base::ThreadPool::PostTask(
         FROM_HERE,
-        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(base::IgnoreResult(&base::DeleteFile), media_cache_path,
-                       true /* recursive */));
+        base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                       media_cache_path));
   }
-
-  std::vector<network::mojom::NetworkContext*> contexts{network_context.get()};
-  UpdateCTPolicyForContexts(contexts);
-
-  return network_context;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileNetworkContextService::UpdateAdditionalCertificates() {
   const policy::PolicyCertService* policy_cert_service =
       policy::PolicyCertServiceFactory::GetForProfile(profile_);
   if (!policy_cert_service)
     return;
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](const policy::PolicyCertService* policy_cert_service,
-                       content::StoragePartition* storage_partition) {
-                      auto additional_certificates = GetAdditionalCertificates(
-                          policy_cert_service, storage_partition->GetPath());
-                      storage_partition->GetNetworkContext()
-                          ->UpdateAdditionalCertificates(
-                              std::move(additional_certificates));
-                    },
-                    policy_cert_service));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](const policy::PolicyCertService* policy_cert_service,
+         content::StoragePartition* storage_partition) {
+        auto additional_certificates = GetAdditionalCertificates(
+            policy_cert_service, storage_partition->GetPath());
+        storage_partition->GetNetworkContext()->UpdateAdditionalCertificates(
+            std::move(additional_certificates));
+      },
+      policy_cert_service));
 }
 #endif
 
 void ProfileNetworkContextService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      embedder_support::kAlternateErrorPagesEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kQuicAllowed, true);
   registry->RegisterBooleanPref(prefs::kGloballyScopeHTTPAuthCacheEnabled,
                                 false);
@@ -344,6 +339,10 @@ void ProfileNetworkContextService::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(
       prefs::kAmbientAuthenticationInPrivateModesEnabled,
       static_cast<int>(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY));
+
+  // For information about whether to reset the HTTP Cache or not, defaults
+  // to the empty string, which does not prompt a reset.
+  registry->RegisterStringPref(kHttpCacheFinchExperimentGroups, "");
 }
 
 void ProfileNetworkContextService::DisableQuicIfNotAllowed() {
@@ -358,46 +357,45 @@ void ProfileNetworkContextService::DisableQuicIfNotAllowed() {
 }
 
 void ProfileNetworkContextService::UpdateAcceptLanguage() {
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](const std::string& accept_language,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetNetworkContext()->SetAcceptLanguage(
-                          accept_language);
-                    },
-                    ComputeAcceptLanguage()));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](const std::string& accept_language,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetAcceptLanguage(
+            accept_language);
+      },
+      ComputeAcceptLanguage()));
 }
 
 void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
     bool block_third_party_cookies) {
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](bool block_third_party_cookies,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetCookieManagerForBrowserProcess()
-                          ->BlockThirdPartyCookies(block_third_party_cookies);
-                    },
-                    block_third_party_cookies));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool block_third_party_cookies,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->BlockThirdPartyCookies(block_third_party_cookies);
+      },
+      block_third_party_cookies));
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
+  if (profile_->IsOffTheRecord()) {
+    // In incognito mode return only the first language.
+    return ComputeAcceptLanguageFromPref(
+        language::GetFirstLanguage(pref_accept_language_.GetValue()));
+  }
   return ComputeAcceptLanguageFromPref(pref_accept_language_.GetValue());
 }
 
 void ProfileNetworkContextService::UpdateReferrersEnabled() {
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
-      base::BindRepeating(
-          [](bool enable_referrers,
-             content::StoragePartition* storage_partition) {
-            storage_partition->GetNetworkContext()->SetEnableReferrers(
-                enable_referrers);
-          },
-          enable_referrers_.GetValue()));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool enable_referrers, content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetEnableReferrers(
+            enable_referrers);
+      },
+      enable_referrers_.GetValue()));
 }
 
-void ProfileNetworkContextService::UpdateCTPolicyForContexts(
-    const std::vector<network::mojom::NetworkContext*>& contexts) {
+network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
   auto* prefs = profile_->GetPrefs();
   const base::ListValue* ct_required =
       prefs->GetList(certificate_transparency::prefs::kCTRequiredHosts);
@@ -415,47 +413,33 @@ void ProfileNetworkContextService::UpdateCTPolicyForContexts(
   std::vector<std::string> excluded_legacy_spkis(
       TranslateStringArray(ct_excluded_legacy_spkis));
 
+  return network::mojom::CTPolicy::New(std::move(required), std::move(excluded),
+                                       std::move(excluded_spkis),
+                                       std::move(excluded_legacy_spkis));
+}
+
+void ProfileNetworkContextService::UpdateCTPolicyForContexts(
+    const std::vector<network::mojom::NetworkContext*>& contexts) {
   for (auto* context : contexts) {
-    context->SetCTPolicy(required, excluded, excluded_spkis,
-                         excluded_legacy_spkis);
+    context->SetCTPolicy(GetCTPolicy());
   }
 }
 
 void ProfileNetworkContextService::UpdateCTPolicy() {
   std::vector<network::mojom::NetworkContext*> contexts;
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
-      base::BindRepeating(
-          [](std::vector<network::mojom::NetworkContext*>* contexts_ptr,
-             content::StoragePartition* storage_partition) {
-            contexts_ptr->push_back(storage_partition->GetNetworkContext());
-          },
-          &contexts));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](std::vector<network::mojom::NetworkContext*>* contexts_ptr,
+         content::StoragePartition* storage_partition) {
+        contexts_ptr->push_back(storage_partition->GetNetworkContext());
+      },
+      &contexts));
 
   UpdateCTPolicyForContexts(contexts);
 }
 
 void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
-  ct_policy_update_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(0),
-                                this,
+  ct_policy_update_timer_.Start(FROM_HERE, base::Seconds(0), this,
                                 &ProfileNetworkContextService::UpdateCTPolicy);
-}
-
-void ProfileNetworkContextService::UpdateCorsMitigationList() {
-  std::vector<std::string> cors_extra_safelisted_request_header_names;
-  InitializeCorsExtraSafelistedRequestHeaderNamesForProfile(
-      profile_, &cors_extra_safelisted_request_header_names);
-
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](std::vector<std::string>*
-                           cors_extra_safelisted_request_header_names,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetNetworkContext()
-                          ->SetCorsExtraSafelistedRequestHeaderNames(
-                              *cors_extra_safelisted_request_header_names);
-                    },
-                    &cors_extra_safelisted_request_header_names));
 }
 
 bool ProfileNetworkContextService::ShouldSplitAuthCacheByNetworkIsolationKey()
@@ -471,15 +455,27 @@ void ProfileNetworkContextService::UpdateSplitAuthCacheByNetworkIsolationKey() {
   bool split_auth_cache_by_network_isolation_key =
       ShouldSplitAuthCacheByNetworkIsolationKey();
 
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](bool split_auth_cache_by_network_isolation_key,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetNetworkContext()
-                          ->SetSplitAuthCacheByNetworkIsolationKey(
-                              split_auth_cache_by_network_isolation_key);
-                    },
-                    split_auth_cache_by_network_isolation_key));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool split_auth_cache_by_network_isolation_key,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()
+            ->SetSplitAuthCacheByNetworkIsolationKey(
+                split_auth_cache_by_network_isolation_key);
+      },
+      split_auth_cache_by_network_isolation_key));
+}
+
+void ProfileNetworkContextService::
+    UpdateCorsNonWildcardRequestHeadersSupport() {
+  const bool value = profile_->GetPrefs()->GetBoolean(
+      prefs::kCorsNonWildcardRequestHeadersSupport);
+
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool value, content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()
+            ->SetCorsNonWildcardRequestHeadersSupport(value);
+      },
+      value));
 }
 
 // static
@@ -490,6 +486,11 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   auto out = network::mojom::CookieManagerParams::New();
   out->block_third_party_cookies =
       cookie_settings.ShouldBlockThirdPartyCookies();
+  // This allows cookies to be sent on https requests from chrome:// pages,
+  // ignoring SameSite attribute rules. For example, this is needed for browser
+  // UI to interact with SameSite cookies on accounts.google.com, which are used
+  // for logging into Cloud Print from chrome://print, for displaying a list
+  // of available accounts on the NTP (chrome://new-tab-page), etc.
   out->secure_origin_cookies_allowed_schemes.push_back(
       content::kChromeUIScheme);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -504,15 +505,23 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   host_content_settings_map->GetSettingsForOneType(ContentSettingsType::COOKIES,
-                                                   std::string(), &settings);
+                                                   &settings);
   out->settings = std::move(settings);
 
   ContentSettingsForOneType settings_for_legacy_cookie_access;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, std::string(),
+      ContentSettingsType::LEGACY_COOKIE_ACCESS,
       &settings_for_legacy_cookie_access);
   out->settings_for_legacy_cookie_access =
       std::move(settings_for_legacy_cookie_access);
+
+  ContentSettingsForOneType settings_for_storage_access;
+  if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
+    host_content_settings_map->GetSettingsForOneType(
+        ContentSettingsType::STORAGE_ACCESS, &settings_for_storage_access);
+  }
+  out->settings_for_storage_access = std::move(settings_for_storage_access);
+
   out->cookie_access_delegate_type =
       network::mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS;
   return out;
@@ -532,15 +541,16 @@ ProfileNetworkContextService::CreateClientCertStore() {
   if (!client_cert_store_factory_.is_null())
     return client_cert_store_factory_.Run();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool use_system_key_slot = false;
   // Enable client certificates for the Chrome OS sign-in frame, if this feature
   // is not disabled by a flag.
-  // Note that while this applies to the whole sign-in profile, client
-  // certificates will only be selected for the StoragePartition currently used
-  // in the sign-in frame (see SigninPartitionManager).
+  // Note that while this applies to the whole sign-in profile / lock screen
+  // profile, client certificates will only be selected for the StoragePartition
+  // currently used in the sign-in frame (see SigninPartitionManager).
   if (chromeos::switches::IsSigninFrameClientCertsEnabled() &&
-      chromeos::ProfileHelper::IsSigninProfile(profile_)) {
+      (chromeos::ProfileHelper::IsSigninProfile(profile_) ||
+       chromeos::ProfileHelper::IsLockScreenProfile(profile_))) {
     use_system_key_slot = true;
   }
 
@@ -565,63 +575,104 @@ ProfileNetworkContextService::CreateClientCertStore() {
     certificate_provider = cert_provider_service->CreateCertificateProvider();
   }
 
-  // ClientCertStoreChromeOS internally depends on NSS initialization that
-  // happens when the ResourceContext is created. Call GetResourceContext() so
-  // the dependency is explicit. See https://crbug.com/1018972.
+  // `ClientCertStoreAsh` internally depends on NSS initialization that happens
+  // when the `ResourceContext` is created. Call `GetResourceContext()` so the
+  // dependency is explicit. See https://crbug.com/1018972.
   profile_->GetResourceContext();
 
-  return std::make_unique<chromeos::ClientCertStoreChromeOS>(
+  return std::make_unique<ash::ClientCertStoreAsh>(
       std::move(certificate_provider), use_system_key_slot, username_hash,
-      base::Bind(&CreateCryptoModuleBlockingPasswordDelegate,
-                 kCryptoModulePasswordClientAuth));
+      base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
+                          kCryptoModulePasswordClientAuth));
 #elif defined(USE_NSS_CERTS)
-  return std::make_unique<net::ClientCertStoreNSS>(
-      base::Bind(&CreateCryptoModuleBlockingPasswordDelegate,
-                 kCryptoModulePasswordClientAuth));
+  std::unique_ptr<net::ClientCertStore> store =
+      std::make_unique<net::ClientCertStoreNSS>(
+          base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
+                              kCryptoModulePasswordClientAuth));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile_->IsMainProfile()) {
+    // TODO(crbug.com/1148298): return some cert store for secondary profiles in
+    // Lacros-Chrome.
+    return nullptr;
+  }
+
+  CertDbInitializer* cert_db_initializer =
+      CertDbInitializerFactory::GetForBrowserContext(profile_);
+  store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
+                                                  std::move(store));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return store;
 #elif defined(OS_WIN)
   return std::make_unique<net::ClientCertStoreWin>();
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return std::make_unique<net::ClientCertStoreMac>();
 #elif defined(OS_ANDROID)
   // Android does not use the ClientCertStore infrastructure. On Android client
   // cert matching is done by the OS as part of the call to show the cert
   // selection dialog.
   return nullptr;
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
 #else
 #error Unknown platform.
 #endif
 }
 
-network::mojom::NetworkContextParamsPtr
-ProfileNetworkContextService::CreateNetworkContextParams(
+bool GetHttpCacheBackendResetParam(PrefService* local_state) {
+  // Get the field trial groups.  If the server cannot be reached, then
+  // this corresponds to "None" for each experiment.
+  base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kSplitCacheByNetworkIsolationKey);
+  std::string current_field_trial_status =
+      (field_trial ? field_trial->group_name() : "None");
+  // This used to be used for keying on main frame only vs main frame +
+  // innermost frame, but the feature was removed, and now it's always keyed on
+  // both.
+  current_field_trial_status += " None";
+  // This used to be for keying on scheme + eTLD+1 vs origin, but the trial was
+  // removed, and now it's always keyed on eTLD+1. Still keeping a third "None"
+  // to avoid resetting the disk cache.
+  current_field_trial_status += " None ";
+
+  field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kSplitCacheByIncludeCredentials);
+  current_field_trial_status +=
+      (field_trial ? field_trial->group_name() : "None");
+
+  std::string previous_field_trial_status =
+      local_state->GetString(kHttpCacheFinchExperimentGroups);
+  local_state->SetString(kHttpCacheFinchExperimentGroups,
+                         current_field_trial_status);
+
+  return !previous_field_trial_status.empty() &&
+         current_field_trial_status != previous_field_trial_status;
+}
+
+void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     bool in_memory,
-    const base::FilePath& relative_partition_path) {
+    const base::FilePath& relative_partition_path,
+    network::mojom::NetworkContextParams* network_context_params,
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   if (profile_->IsOffTheRecord())
     in_memory = true;
   base::FilePath path(GetPartitionPath(relative_partition_path));
 
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-
-  network_context_params->context_name = std::string("main");
+  g_browser_process->system_network_context_manager()
+      ->ConfigureDefaultNetworkContextParams(network_context_params,
+                                             cert_verifier_creation_params);
 
   network_context_params->accept_language = ComputeAcceptLanguage();
   network_context_params->enable_referrers = enable_referrers_.GetValue();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kShortReportingDelay)) {
+  if (command_line->HasSwitch(embedder_support::kShortReportingDelay)) {
     network_context_params->reporting_delivery_interval =
-        base::TimeDelta::FromMilliseconds(100);
+        base::Milliseconds(100);
   }
-
-  InitializeCorsExtraSafelistedRequestHeaderNamesForProfile(
-      profile_,
-      &network_context_params->cors_extra_safelisted_request_header_names);
-  network_context_params->cors_mode =
-      profile_->ShouldEnableOutOfBlinkCors()
-          ? network::mojom::NetworkContextParams::CorsMode::kEnable
-          : network::mojom::NetworkContextParams::CorsMode::kDisable;
 
   // Always enable the HTTP cache.
   network_context_params->http_cache_enabled = true;
@@ -658,21 +709,26 @@ ProfileNetworkContextService::CreateNetworkContextParams(
     network_context_params->http_cache_max_size =
         local_state->GetInteger(prefs::kDiskCacheSize);
 
+    network_context_params->file_paths =
+        ::network::mojom::NetworkContextFilePaths::New();
+
+    network_context_params->file_paths->data_path =
+        path.Append(chrome::kNetworkDataDirname);
+    network_context_params->file_paths->unsandboxed_data_path = path;
+    network_context_params->file_paths->trigger_migration =
+        features::ShouldTriggerNetworkDataMigration();
     // Currently this just contains HttpServerProperties, but that will likely
     // change.
-    network_context_params->http_server_properties_path =
-        path.Append(chrome::kNetworkPersistentStateFilename);
-
-    base::FilePath cookie_path = path;
-    cookie_path = cookie_path.Append(chrome::kCookieFilename);
-    network_context_params->cookie_path = cookie_path;
+    network_context_params->file_paths->http_server_properties_file_name =
+        base::FilePath(chrome::kNetworkPersistentStateFilename);
+    network_context_params->file_paths->cookie_database_name =
+        base::FilePath(chrome::kCookieFilename);
+    network_context_params->file_paths->trust_token_database_name =
+        base::FilePath(chrome::kTrustTokenFilename);
 
 #if BUILDFLAG(ENABLE_REPORTING)
-    base::FilePath reporting_and_nel_store_path = path;
-    reporting_and_nel_store_path = reporting_and_nel_store_path.Append(
-        chrome::kReportingAndNelStoreFilename);
-    network_context_params->reporting_and_nel_store_path =
-        reporting_and_nel_store_path;
+    network_context_params->file_paths->reporting_and_nel_store_database_name =
+        base::FilePath(chrome::kReportingAndNelStoreFilename);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
     if (relative_partition_path.empty()) {  // This is the main partition.
@@ -686,42 +742,79 @@ ProfileNetworkContextService::CreateNetworkContextParams(
       network_context_params->persist_session_cookies = false;
     }
 
-    network_context_params->transport_security_persister_path = path;
+    network_context_params->file_paths->transport_security_persister_file_name =
+        base::FilePath(chrome::kTransportSecurityPersisterFilename);
   }
   const base::ListValue* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
-  for (const auto& value : *hsts_policy_bypass_list) {
-    std::string string_value;
-    if (!value.GetAsString(&string_value)) {
+  for (const auto& value : hsts_policy_bypass_list->GetList()) {
+    const std::string* string_value = value.GetIfString();
+    if (!string_value)
       continue;
-    }
-    network_context_params->hsts_policy_bypass_list.push_back(string_value);
+    network_context_params->hsts_policy_bypass_list.push_back(*string_value);
   }
 
-  // NOTE(mmenke): Keep these protocol handlers and
-  // ProfileIOData::SetUpJobFactoryDefaultsForBuilder in sync with
-  // ProfileIOData::IsHandledProtocol().
-  // TODO(mmenke): Find a better way of handling tracking supported schemes.
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  network_context_params->enable_ftp_url_support =
-      base::FeatureList::IsEnabled(features::kFtpProtocol);
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
-
-  proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());
+  proxy_config_monitor_.AddToNetworkContextParams(network_context_params);
 
   network_context_params->enable_certificate_reporting = true;
   network_context_params->enable_expect_ct_reporting = true;
 
+  // Initialize the network context to do SCT auditing only if the current
+  // profile is opted in to Safe Browsing Extended Reporting.
+  if (!profile_->IsOffTheRecord() &&
+      safe_browsing::IsExtendedReportingEnabled(*profile_->GetPrefs())) {
+    network_context_params->enable_sct_auditing = true;
+  }
+
+  network_context_params->ct_policy = GetCTPolicy();
+
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  if (!in_memory && !network_context_params->use_builtin_cert_verifier &&
+  // In order for the TrialComparisonCertVerifier to be useful, it needs to
+  // provide comparisons between two well-defined verifier configurations; this
+  // means the currently launched cert verifier (and root store) and the
+  // prospective cert verifier (and root store).
+  //
+  // It's possible that, due to user configuration, such as enterprise policies,
+  // the user may be requesting a non-standard configuration from the current
+  // default. In these cases, the trial verifier is also disabled,
+  // because all users in the trial should be running in the same configuration.
+  //
+  // To avoid any potential ambiguities between different layers of the network
+  // stack, running the trial requires the `cert_verifier_creation_params` be
+  // explicitly initialized, rather than using `kDefault` / `kRootDefault`, to
+  // guarantee that the primary verifier is initialized as requested and
+  // expected.  These checks here simply ensure that the caller explicitly
+  // provided the expected default value.
+  DCHECK(cert_verifier_creation_params);
+  bool is_trial_comparison_supported = !in_memory;
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+  DCHECK_NE(cert_verifier_creation_params->use_builtin_cert_verifier,
+            cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+                kDefault);
+  is_trial_comparison_supported &=
+      cert_verifier_creation_params->use_builtin_cert_verifier ==
+      cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          kSystem;
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  DCHECK_NE(cert_verifier_creation_params->use_chrome_root_store,
+            cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                kRootDefault);
+  is_trial_comparison_supported &=
+      cert_verifier_creation_params->use_chrome_root_store ==
+      cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+          kRootSystem;
+#endif
+  if (is_trial_comparison_supported &&
       TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
-    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+    mojo::PendingRemote<
+        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
         config_client;
     auto config_client_receiver =
         config_client.InitWithNewPipeAndPassReceiver();
 
-    network_context_params->trial_comparison_cert_verifier_params =
-        network::mojom::TrialComparisonCertVerifierParams::New();
+    cert_verifier_creation_params->trial_comparison_cert_verifier_params =
+        cert_verifier::mojom::TrialComparisonCertVerifierParams::New();
 
     if (!trial_comparison_cert_verifier_controller_) {
       trial_comparison_cert_verifier_controller_ =
@@ -729,12 +822,12 @@ ProfileNetworkContextService::CreateNetworkContextParams(
     }
     trial_comparison_cert_verifier_controller_->AddClient(
         std::move(config_client),
-        network_context_params->trial_comparison_cert_verifier_params
+        cert_verifier_creation_params->trial_comparison_cert_verifier_params
             ->report_client.InitWithNewPipeAndPassReceiver());
-    network_context_params->trial_comparison_cert_verifier_params
+    cert_verifier_creation_params->trial_comparison_cert_verifier_params
         ->initial_allowed =
         trial_comparison_cert_verifier_controller_->IsAllowed();
-    network_context_params->trial_comparison_cert_verifier_params
+    cert_verifier_creation_params->trial_comparison_cert_verifier_params
         ->config_client_receiver = std::move(config_client_receiver);
   }
 #endif
@@ -752,23 +845,7 @@ ProfileNetworkContextService::CreateNetworkContextParams(
                   metrics::prefs::kMetricsReportingEnabled);
   }
 
-  if (data_reduction_proxy::params::IsEnabledWithNetworkService()) {
-    auto* drp_settings =
-        DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile_);
-    if (drp_settings) {
-      mojo::Remote<network::mojom::CustomProxyConfigClient> config_client;
-      network_context_params->custom_proxy_config_client_receiver =
-          config_client.BindNewPipeAndPassReceiver();
-      drp_settings->AddCustomProxyConfigClient(std::move(config_client));
-    }
-  }
-
-#if defined(OS_CHROMEOS)
-  // Note: On non-ChromeOS platforms, the |use_builtin_cert_verifier| param
-  // value is inherited from CreateDefaultNetworkContextParams.
-  network_context_params->use_builtin_cert_verifier =
-      using_builtin_cert_verifier_;
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool profile_supports_policy_certs = false;
   if (chromeos::ProfileHelper::IsSigninProfile(profile_))
     profile_supports_policy_certs = true;
@@ -781,8 +858,8 @@ ProfileNetworkContextService::CreateNetworkContextParams(
     // username hash is empty, even when the NSS is not initialized for the
     // user.
     if (user && !user->username_hash().empty()) {
-      network_context_params->username_hash = user->username_hash();
-      network_context_params->nss_path = profile_->GetPath();
+      cert_verifier_creation_params->username_hash = user->username_hash();
+      cert_verifier_creation_params->nss_path = profile_->GetPath();
       profile_supports_policy_certs = true;
     }
   }
@@ -795,6 +872,13 @@ ProfileNetworkContextService::CreateNetworkContextParams(
         GetAdditionalCertificates(policy_cert_service,
                                   GetPartitionPath(relative_partition_path));
   }
+  // Disable idle sockets close on memory pressure if configured by finch or
+  // about://flags.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kDisableIdleSocketsCloseOnMemoryPressure)) {
+    network_context_params->disable_idle_sockets_close_on_memory_pressure =
+        true;
+  }
 #endif
 
   // Should be initialized with existing per-profile CORS access lists.
@@ -803,7 +887,15 @@ ProfileNetworkContextService::CreateNetworkContextParams(
           ->GetOriginAccessList()
           .CreateCorsOriginAccessPatternsList();
 
-  return network_context_params;
+  network_context_params->reset_http_cache_backend =
+      GetHttpCacheBackendResetParam(g_browser_process->local_state());
+
+  network_context_params->split_auth_cache_by_network_isolation_key =
+      ShouldSplitAuthCacheByNetworkIsolationKey();
+
+  // All consumers of the main NetworkContext must provide NetworkIsolationKeys
+  // / IsolationInfos, so storage can be isolated on a per-site basis.
+  network_context_params->require_network_isolation_key = true;
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(
@@ -817,43 +909,23 @@ base::FilePath ProfileNetworkContextService::GetPartitionPath(
 void ProfileNetworkContextService::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
-  if (content_type != ContentSettingsType::COOKIES &&
-      content_type != ContentSettingsType::LEGACY_COOKIE_ACCESS &&
-      content_type != ContentSettingsType::DEFAULT) {
-    return;
-  }
-
-  if (content_type == ContentSettingsType::COOKIES ||
-      content_type == ContentSettingsType::DEFAULT) {
-    ContentSettingsForOneType cookies_settings;
-    HostContentSettingsMapFactory::GetForProfile(profile_)
-        ->GetSettingsForOneType(ContentSettingsType::COOKIES, std::string(),
-                                &cookies_settings);
-    content::BrowserContext::ForEachStoragePartition(
-        profile_, base::BindRepeating(
-                      [](ContentSettingsForOneType settings,
-                         content::StoragePartition* storage_partition) {
-                        storage_partition->GetCookieManagerForBrowserProcess()
-                            ->SetContentSettings(settings);
-                      },
-                      cookies_settings));
-  }
-
-  if (content_type == ContentSettingsType::LEGACY_COOKIE_ACCESS ||
-      content_type == ContentSettingsType::DEFAULT) {
-    ContentSettingsForOneType legacy_cookie_access_settings;
-    HostContentSettingsMapFactory::GetForProfile(profile_)
-        ->GetSettingsForOneType(ContentSettingsType::LEGACY_COOKIE_ACCESS,
-                                std::string(), &legacy_cookie_access_settings);
-    content::BrowserContext::ForEachStoragePartition(
-        profile_, base::BindRepeating(
-                      [](ContentSettingsForOneType settings,
-                         content::StoragePartition* storage_partition) {
-                        storage_partition->GetCookieManagerForBrowserProcess()
-                            ->SetContentSettingsForLegacyCookieAccess(settings);
-                      },
-                      legacy_cookie_access_settings));
+    ContentSettingsType content_type) {
+  switch (content_type) {
+    case ContentSettingsType::COOKIES:
+      UpdateCookieSettings(profile_);
+      break;
+    case ContentSettingsType::LEGACY_COOKIE_ACCESS:
+      UpdateLegacyCookieSettings(profile_);
+      break;
+    case ContentSettingsType::STORAGE_ACCESS:
+      UpdateStorageAccessSettings(profile_);
+      break;
+    case ContentSettingsType::DEFAULT:
+      UpdateCookieSettings(profile_);
+      UpdateLegacyCookieSettings(profile_);
+      UpdateStorageAccessSettings(profile_);
+      break;
+    default:
+      return;
   }
 }

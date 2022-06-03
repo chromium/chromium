@@ -49,7 +49,7 @@ class MODULES_EXPORT SpeechRecognitionResult final : public ScriptWrappable {
   SpeechRecognitionAlternative* item(unsigned index);
   bool isFinal() { return final_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool final_;

@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: arcAppsPrivate */
 
-/**
- * @const
- */
+/** @const */
 chrome.arcAppsPrivate = {};
 
 /**
@@ -26,7 +24,7 @@ chrome.arcAppsPrivate.AppInfo;
 /**
  * Returns info of the installed ARC apps that are launchable, including ready
  * and non-ready apps.
- * @param {function(!Array<!chrome.arcAppsPrivate.AppInfo>):void} callback
+ * @param {function(!Array<!chrome.arcAppsPrivate.AppInfo>): void} callback
  */
 chrome.arcAppsPrivate.getLaunchableApps = function(callback) {};
 
@@ -35,7 +33,7 @@ chrome.arcAppsPrivate.getLaunchableApps = function(callback) {};
  * if it's ready, otherwise it will be launched when it becomes ready. The
  * callback is called as soon as the launch is scheduled.
  * @param {string} packageName
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  */
 chrome.arcAppsPrivate.launchApp = function(packageName, callback) {};
 

@@ -4,8 +4,8 @@ vertical scroll: : Success
 continuously call window.scrollY : Success
 zoom in and out preserve scroll position: Success
 resize preserves scroll position: Success
-PASS window.scrollY == -3425 became true
-PASS window.scrollY == 0 became true
+Home key scrolls to top: Success
+End key scrolls to bottom: Success
 selectAll selects all document: Success
 PASS successfullyParsed is true
 

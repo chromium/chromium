@@ -26,7 +26,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit tests for manager.py."""
 
 import optparse
@@ -40,18 +39,22 @@ from blinkpy.web_tests.models.test_run_results import TestRunResults
 
 
 class FakePrinter(object):
-
     def write_update(self, s):
         pass
 
 
 class ManagerTest(unittest.TestCase):
-
     def test_needs_servers(self):
         def get_manager():
             host = MockHost()
             port = host.port_factory.get('test-mac-mac10.10')
-            manager = Manager(port, options=optparse.Values({'http': True, 'max_locked_shards': 1}), printer=FakePrinter())
+            manager = Manager(
+                port,
+                options=optparse.Values({
+                    'http': True,
+                    'max_locked_shards': 1
+                }),
+                printer=FakePrinter())
             return manager
 
         manager = get_manager()
@@ -62,7 +65,13 @@ class ManagerTest(unittest.TestCase):
 
     def test_servers_started(self):
         def get_manager(port):
-            manager = Manager(port, options=optparse.Values({'http': True, 'max_locked_shards': 1}), printer=FakePrinter())
+            manager = Manager(
+                port,
+                options=optparse.Values({
+                    'http': True,
+                    'max_locked_shards': 1
+                }),
+                printer=FakePrinter())
             return manager
 
         def start_http_server(additional_dirs, number_of_drivers):
@@ -115,36 +124,53 @@ class ManagerTest(unittest.TestCase):
             port = host.port_factory.get('test-mac-mac10.10')
             manager = Manager(
                 port,
-                options=optparse.Values({'test_list': None, 'http': True, 'max_locked_shards': 1}),
+                options=optparse.Values({
+                    'test_list': None,
+                    'http': True,
+                    'max_locked_shards': 1
+                }),
                 printer=FakePrinter())
             return manager
+
         host = MockHost()
         port = host.port_factory.get('test-mac-mac10.10')
         tests = ['failures/expected/crash.html']
-        expectations = test_expectations.TestExpectations(port, tests)
-        run_results = TestRunResults(expectations, len(tests))
+        expectations = test_expectations.TestExpectations(port)
+        run_results = TestRunResults(expectations, len(tests), None)
         manager = get_manager()
         manager._look_for_new_crash_logs(run_results, time.time())
 
     def _make_fake_test_result(self, host, results_directory):
         host.filesystem.maybe_make_directory(results_directory)
-        host.filesystem.write_binary_file(results_directory + '/results.html', 'This is a test results file')
+        host.filesystem.write_binary_file(results_directory + '/results.html',
+                                          'This is a test results file')
 
     def test_rename_results_folder(self):
         host = MockHost()
         port = host.port_factory.get('test-mac-mac10.10')
 
         def get_manager():
-            manager = Manager(port, options=optparse.Values({'max_locked_shards': 1}), printer=FakePrinter())
+            manager = Manager(
+                port,
+                options=optparse.Values({
+                    'max_locked_shards': 1
+                }),
+                printer=FakePrinter())
             return manager
+
         self._make_fake_test_result(port.host, '/tmp/layout-test-results')
-        self.assertTrue(port.host.filesystem.exists('/tmp/layout-test-results'))
+        self.assertTrue(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
         timestamp = time.strftime(
-            '%Y-%m-%d-%H-%M-%S', time.localtime(port.host.filesystem.mtime('/tmp/layout-test-results/results.html')))
+            '%Y-%m-%d-%H-%M-%S',
+            time.localtime(
+                port.host.filesystem.mtime(
+                    '/tmp/layout-test-results/results.html')))
         archived_file_name = '/tmp/layout-test-results' + '_' + timestamp
         manager = get_manager()
         manager._rename_results_folder()
-        self.assertFalse(port.host.filesystem.exists('/tmp/layout-test-results'))
+        self.assertFalse(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
         self.assertTrue(port.host.filesystem.exists(archived_file_name))
 
     def test_clobber_old_results(self):
@@ -152,21 +178,35 @@ class ManagerTest(unittest.TestCase):
         port = host.port_factory.get('test-mac-mac10.10')
 
         def get_manager():
-            manager = Manager(port, options=optparse.Values({'max_locked_shards': 1}), printer=FakePrinter())
+            manager = Manager(
+                port,
+                options=optparse.Values({
+                    'max_locked_shards': 1
+                }),
+                printer=FakePrinter())
             return manager
+
         self._make_fake_test_result(port.host, '/tmp/layout-test-results')
-        self.assertTrue(port.host.filesystem.exists('/tmp/layout-test-results'))
+        self.assertTrue(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
         manager = get_manager()
         manager._clobber_old_results()
-        self.assertFalse(port.host.filesystem.exists('/tmp/layout-test-results'))
+        self.assertFalse(
+            port.host.filesystem.exists('/tmp/layout-test-results'))
 
     def test_limit_archived_results_count(self):
         host = MockHost()
         port = host.port_factory.get('test-mac-mac10.10')
 
         def get_manager():
-            manager = Manager(port, options=optparse.Values({'max_locked_shards': 1}), printer=FakePrinter())
+            manager = Manager(
+                port,
+                options=optparse.Values({
+                    'max_locked_shards': 1
+                }),
+                printer=FakePrinter())
             return manager
+
         for x in range(1, 31):
             dir_name = '/tmp/layout-test-results' + '_' + str(x)
             self._make_fake_test_result(port.host, dir_name)
@@ -178,3 +218,36 @@ class ManagerTest(unittest.TestCase):
             if not port.host.filesystem.exists(dir_name):
                 deleted_dir_count = deleted_dir_count + 1
         self.assertEqual(deleted_dir_count, 5)
+
+    def test_restore_order(self):
+        host = MockHost()
+        port = host.port_factory.get('test-mac-mac10.10')
+
+        def get_manager():
+            manager = Manager(port,
+                              options=optparse.Values({'max_locked_shards':
+                                                       1}),
+                              printer=FakePrinter())
+            return manager
+
+        manager = get_manager()
+        paths = [
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
+            "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
+            "fast/backgrounds/size/backgroundSize-*"
+        ]
+        # As returned by base.tests()
+        test_names = [
+            "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
+            "fast/backgrounds/size/backgroundSize-in-background-shorthand.html",
+            "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html",
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html"
+        ]
+        expected_order = [
+            "external/wpt/css/css-backgrounds/animations/background-size-interpolation.html",
+            "virtual/gpu/fast/canvas/CanvasFillTextWithMinimalSize.html",
+            "fast/backgrounds/size/backgroundSize-in-background-shorthand.html",
+            "fast/backgrounds/size/backgroundSize-viewportPercentage-width.html"
+        ]
+        test_names_restored = manager._restore_order(paths, test_names)
+        self.assertEqual(expected_order, test_names_restored)

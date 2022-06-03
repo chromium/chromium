@@ -4,7 +4,7 @@
 
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

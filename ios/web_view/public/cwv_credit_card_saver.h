@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVCreditCard;
 
-// Helps with saving a credit card locally or uploading to the cloud.
+// Helps with saving a credit card to the user's Google Pay account.
 // To make a decision, there are 3 options:
-// 1. Call |acceptWithRiskData:completionHandler:| to accept the save.
+// 1. Call |accept...| to accept the save.
 // 2. Call |decline| to decline the save.
 // 3. Do nothing and let this instance be deallocated. This is the same as
 //    declining, but logs that the user ignored the request.
@@ -30,22 +30,28 @@ CWV_EXPORT
 // Contains |NSLinkAttributeName| to indicate links wherever applicable.
 @property(nonatomic, readonly) NSArray<NSAttributedString*>* legalMessages;
 
-// Whether or not this card will be saved to Google Pay or local disk. i.e.,
-// |YES| means the card is uploaded to Google Pay but NOT stored on local disk.
-// |NO| means the card is stored on local disk and NOT uploaded to Google Pay.
-// If Chrome Sync is enabled, this value will be |YES|.
-@property(nonatomic, readonly) BOOL willUploadToCloud;
-
 - (instancetype)init NS_UNAVAILABLE;
 
-// Saves |creditCard| to device or cloud according to |willUploadToCloud|.
+// Saves |creditCard| to the user's Google Pay account.
+//
+// The following parameters can be different from the similarly named
+// properties of |creditCard|, for example to correct the name or update the
+// expiration to a valid date in the future.
+// |cardHolderFullName| The full name of the card holder.
+// |expirationMonth| The month MM of the expiration date. e.g. 08.
+// |expirationYear| The year YYYY of the expiration date. e.g. 2021.
+//
 // |riskData| Needed for 1st party integration with the internal payments API.
-// Only required if |willUploadToCloud|. See go/risk-eng.g3doc for more details.
+// See go/risk-eng.g3doc for more details.
 // |completionHandler| to be called with BOOL indicating if the card was saved
 // or if it wasn't saved due to invalid card or network errors.
+//
 // This method should only be called once.
-- (void)acceptWithRiskData:(nullable NSString*)riskData
-         completionHandler:(void (^_Nullable)(BOOL))completionHandler;
+- (void)acceptWithCardHolderFullName:(NSString*)cardHolderFullName
+                     expirationMonth:(NSString*)expirationMonth
+                      expirationYear:(NSString*)expirationYear
+                            riskData:(NSString*)riskData
+                   completionHandler:(void (^)(BOOL))completionHandler;
 
 // Rejects saving |creditCard|.
 // This method should only be called once.

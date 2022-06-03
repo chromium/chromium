@@ -1,0 +1,5 @@
+AXWebArea AXLanguage='en-GB'
+++AXGroup AXLanguage='fr'
+++++AXStaticText AXLanguage='en' AXValue='%E2%80%9CThe famous pipe. How people reproached me for it! And yet, could you stuff my pipe? No, it%E2%80%99s just a representation, is it not? So if I had written on my picture %E2%80%98This is a pipe,%E2%80%99 I%E2%80%99d have been lying!"'
+++AXGroup AXLanguage='en'
+++++AXStaticText AXLanguage='fr' AXValue='%C2%AB La fameuse pipe, me l%E2%80%99a-t-on assez reproch%C3%A9e ! Et pourtant, pouvez-vous la bourrer ma pipe ? Non, n%E2%80%99est-ce pas, elle n%E2%80%99est qu%E2%80%99une repr%C3%A9sentation. Donc si j%E2%80%99avais %C3%A9crit sous mon tableau %C2%AB ceci est une pipe %C2%BB, j%E2%80%99aurais menti ! %C2%BB'

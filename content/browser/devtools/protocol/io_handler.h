@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_IO_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_IO_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/io.h"
@@ -21,6 +20,10 @@ class IOHandler : public DevToolsDomainHandler,
                   public IO::Backend {
  public:
   explicit IOHandler(DevToolsIOContext* io_context);
+
+  IOHandler(const IOHandler&) = delete;
+  IOHandler& operator=(const IOHandler&) = delete;
+
   ~IOHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -46,8 +49,6 @@ class IOHandler : public DevToolsDomainHandler,
   BrowserContext* browser_context_;
   StoragePartition* storage_partition_;
   base::WeakPtrFactory<IOHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOHandler);
 };
 
 }  // namespace protocol

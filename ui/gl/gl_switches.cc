@@ -4,7 +4,12 @@
 
 #include "ui/gl/gl_switches.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 namespace gl {
 
@@ -23,20 +28,31 @@ const char kANGLEImplementationD3D9Name[]     = "d3d9";
 const char kANGLEImplementationD3D11Name[]    = "d3d11";
 const char kANGLEImplementationD3D11on12Name[] = "d3d11on12";
 const char kANGLEImplementationOpenGLName[]   = "gl";
+const char kANGLEImplementationOpenGLEGLName[] = "gl-egl";
 const char kANGLEImplementationOpenGLESName[] = "gles";
+const char kANGLEImplementationOpenGLESEGLName[] = "gles-egl";
 const char kANGLEImplementationNullName[] = "null";
 const char kANGLEImplementationVulkanName[] = "vulkan";
 const char kANGLEImplementationSwiftShaderName[] = "swiftshader";
+const char kANGLEImplementationSwiftShaderForWebGLName[] = "swiftshader-webgl";
+const char kANGLEImplementationMetalName[] = "metal";
+const char kANGLEImplementationNoneName[] = "";
 
 // Special switches for "NULL"/stub driver implementations.
 const char kANGLEImplementationD3D11NULLName[] = "d3d11-null";
 const char kANGLEImplementationOpenGLNULLName[] = "gl-null";
 const char kANGLEImplementationOpenGLESNULLName[] = "gles-null";
 const char kANGLEImplementationVulkanNULLName[] = "vulkan-null";
+const char kANGLEImplementationMetalNULLName[] = "metal-null";
 
 // The command decoder names that can be passed to --use-cmd-decoder.
 const char kCmdDecoderValidatingName[] = "validating";
 const char kCmdDecoderPassthroughName[] = "passthrough";
+
+// Swap chain formats for direct composition SDR video overlays.
+const char kSwapChainFormatNV12[] = "nv12";
+const char kSwapChainFormatYUY2[] = "yuy2";
+const char kSwapChainFormatBGRA[] = "bgra";
 
 }  // namespace gl
 
@@ -116,9 +132,13 @@ const char kEnableSgiVideoSync[] = "enable-sgi-video-sync";
 // the GL output will not be correct but tests will run faster.
 const char kDisableGLDrawingForTests[] = "disable-gl-drawing-for-tests";
 
-// Forces the use of software GL instead of hardware gpu.
+// Forces the use of software GL instead of hardware gpu for tests.
 const char kOverrideUseSoftwareGLForTests[] =
     "override-use-software-gl-for-tests";
+
+// Forces the use of software GL instead of hardware gpu for headless.
+const char kOverrideUseSoftwareGLForHeadless[] =
+    "override-use-software-gl-for-headless";
 
 // Disables specified comma separated GL Extensions if found.
 const char kDisableGLExtensions[] = "disable-gl-extensions";
@@ -138,6 +158,20 @@ const char kEnableDirectCompositionVideoOverlays[] =
 // are supported.
 const char kDisableDirectCompositionVideoOverlays[] =
     "disable-direct-composition-video-overlays";
+
+// Initialize the GPU process using the adapter with the specified LUID. This is
+// only used on Windows, as LUID is a Windows specific structure.
+const char kUseAdapterLuid[] = "use-adapter-luid";
+
+// Enable kDirectCompositionForceFullDamage feature regardless of overlay
+// support.
+const char kDirectCompositionForceFullDamageForTesting[] =
+    "direct-composition-force-full-damage-for-testing";
+
+// Used for overriding the swap chain format for direct composition SDR video
+// overlays.
+const char kDirectCompositionVideoSwapChainFormat[] =
+    "direct-composition-video-swap-chain-format";
 
 // This is the list of switches passed from this file that are passed from the
 // GpuProcessHost to the GPU Process. Add your switch to this list if you need
@@ -159,6 +193,8 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kDisableDirectComposition,
     kEnableDirectCompositionVideoOverlays,
     kDisableDirectCompositionVideoOverlays,
+    kDirectCompositionForceFullDamageForTesting,
+    kDirectCompositionVideoSwapChainFormat,
 };
 const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
     base::size(kGLSwitchesCopiedFromGpuProcessHost);
@@ -167,40 +203,40 @@ const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
 
 namespace features {
 
-// Allow putting content with complex transforms (e.g. rotations) into an
-// overlay.
-const base::Feature kDirectCompositionComplexOverlays{
-    "DirectCompositionComplexOverlays", base::FEATURE_DISABLED_BY_DEFAULT};
+// Use BufferCount of 3 for the direct composition root swap chain.
+const base::Feature kDCompTripleBufferRootSwapChain{
+    "DCompTripleBufferRootSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use IDXGIOutput::WaitForVBlank() to drive begin frames.
-const base::Feature kDirectCompositionGpuVSync{
-    "DirectCompositionGpuVSync", base::FEATURE_ENABLED_BY_DEFAULT};
+// Use BufferCount of 3 for direct composition video swap chains.
+const base::Feature kDCompTripleBufferVideoSwapChain{
+    "DCompTripleBufferVideoSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Forces Chrome's main backbuffer to full damage if the actual damage
+// is large enough and allows DWM to consider the main backbuffer as an
+// an overlay candidate.
+const base::Feature kDirectCompositionForceFullDamage{
+    "DirectCompositionForceFullDamage", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use presentation feedback event queries (must be enabled) to limit latency.
 const base::Feature kDirectCompositionLowLatencyPresentation{
     "DirectCompositionLowLatencyPresentation",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allow using overlays for non-root render passes.
-const base::Feature kDirectCompositionNonrootOverlays{
-    "DirectCompositionNonrootOverlays", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Overrides preferred overlay format to NV12 instead of YUY2.
-const base::Feature kDirectCompositionPreferNV12Overlays{
-    "DirectCompositionPreferNV12Overlays", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Use per-present event queries to issue presentation feedback to clients.
-// Also needs DirectCompositionGpuVSync.
-const base::Feature kDirectCompositionPresentationFeedback{
-    "DirectCompositionPresentationFeedback", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Use decode swap chain created from compatible video decoder buffers.
-const base::Feature kDirectCompositionUseNV12DecodeSwapChain{
-    "DirectCompositionUseNV12DecodeSwapChain",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+// Allow overlay swapchain to present on all GPUs even if they only support
+// software overlays. GPU deny lists limit it to NVIDIA only at the moment.
+const base::Feature kDirectCompositionSoftwareOverlays{
+    "DirectCompositionSoftwareOverlays", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Default to using ANGLE's OpenGL backend
 const base::Feature kDefaultANGLEOpenGL{"DefaultANGLEOpenGL",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Default to using ANGLE's Metal backend.
+const base::Feature kDefaultANGLEMetal{"DefaultANGLEMetal",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Default to using ANGLE's Vulkan backend.
+const base::Feature kDefaultANGLEVulkan{"DefaultANGLEVulkan",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Track current program's shaders at glUseProgram() call for crash report
@@ -208,5 +244,20 @@ const base::Feature kDefaultANGLEOpenGL{"DefaultANGLEOpenGL",
 // be reliably retrieved with ANGLE backend.
 const base::Feature kTrackCurrentShaders{"TrackCurrentShaders",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable sharing Vulkan device queue with ANGLE's Vulkan backend.
+const base::Feature kVulkanFromANGLE{"VulkanFromANGLE",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsDefaultANGLEVulkan() {
+#if defined(OS_ANDROID)
+  // No support for devices before Q -- exit before checking feature flags
+  // so that devices are not counted in finch trials.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_Q)
+    return false;
+#endif  // defined(OS_ANDROID)
+  return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
+}
 
 }  // namespace features

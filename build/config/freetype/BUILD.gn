@@ -9,8 +9,6 @@ group("freetype") {
   if (use_system_freetype) {
     public_configs = [ "//build/linux:freetype_from_pkgconfig" ]
   } else {
-    public_deps = [
-      "//third_party:freetype_harfbuzz",
-    ]
+    public_deps = [ "//third_party:freetype_harfbuzz" ]
   }
 }

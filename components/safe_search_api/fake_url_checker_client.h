@@ -16,6 +16,10 @@ namespace safe_search_api {
 class FakeURLCheckerClient : public URLCheckerClient {
  public:
   FakeURLCheckerClient();
+
+  FakeURLCheckerClient(const FakeURLCheckerClient&) = delete;
+  FakeURLCheckerClient& operator=(const FakeURLCheckerClient&) = delete;
+
   ~FakeURLCheckerClient() override;
 
   // Fake override that simply holds references of |url| and |callback|.
@@ -23,15 +27,16 @@ class FakeURLCheckerClient : public URLCheckerClient {
   // See RunCallback() method documentation below on how to run the callback.
   void CheckURL(const GURL& url, ClientCheckCallback callback) override;
 
-  // Run the callback function input by the last call of CheckURL() with the
+  // Runs the callback function input by the last call of CheckURL() with the
   // result input with the last call of SetResult().
   void RunCallback(ClientClassification classification);
+
+  // Asynchronous version of RunCallback().
+  void RunCallbackAsync(ClientClassification classification);
 
  private:
   ClientCheckCallback callback_;
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeURLCheckerClient);
 };
 
 }  // namespace safe_search_api

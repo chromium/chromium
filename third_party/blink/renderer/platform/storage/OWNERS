@@ -1,0 +1,4 @@
+file://third_party/blink/public/common/storage_key/OWNERS
+
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS

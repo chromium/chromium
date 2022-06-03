@@ -46,6 +46,7 @@
 
 - (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
   [super touchesCancelled:touches withEvent:event];
+  self.state = UIGestureRecognizerStateCancelled;
   [self.touchTrackingDelegate touched:NO];
 }
 

@@ -1,8 +1,0 @@
-CACHE MANIFEST
-
-# iframe-3 should succeed. The origin quota should have been
-# raised to 40kb, with ~13kb already cached. Caching abe.png
-# and this manifest will be ~13kb, bringing us up to 26kb.
-
-CACHE:
-abe.png

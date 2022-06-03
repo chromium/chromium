@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS nextHopProtocol reports H1 correctly when routed via a service worker.
+FAIL nextHopProtocol reports H2 correctly when routed via a service worker. assert_equals: nextHopProtocol is set on fallback expected "h2" but got "http/1.1"
+Harness: the test ran to completion.
+

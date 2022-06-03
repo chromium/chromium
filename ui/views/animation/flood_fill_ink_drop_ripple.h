@@ -5,10 +5,7 @@
 #ifndef UI_VIEWS_ANIMATION_FLOOD_FILL_INK_DROP_RIPPLE_H_
 #define UI_VIEWS_ANIMATION_FLOOD_FILL_INK_DROP_RIPPLE_H_
 
-#include <memory>
-#include <string>
-
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
@@ -17,7 +14,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -63,6 +60,8 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
                          const gfx::Point& center_point,
                          SkColor color,
                          float visible_opacity);
+  FloodFillInkDropRipple(const FloodFillInkDropRipple&) = delete;
+  FloodFillInkDropRipple& operator=(const FloodFillInkDropRipple&) = delete;
   ~FloodFillInkDropRipple() override;
 
   // InkDropRipple:
@@ -82,48 +81,13 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
 
   // InkDropRipple:
   void AnimateStateChange(InkDropState old_ink_drop_state,
-                          InkDropState new_ink_drop_state,
-                          ui::LayerAnimationObserver* observer) override;
+                          InkDropState new_ink_drop_state) override;
   void SetStateToHidden() override;
   void AbortAllAnimations() override;
-
-  // Animates the |painted_layer_| to the specified |transform|. The animation
-  // will be configured with the given |duration|, |tween|, and
-  // |preemption_strategy| values. The |observer| will be added to all
-  // LayerAnimationSequences if not null.
-  void AnimateToTransform(
-      const gfx::Transform& transform,
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween,
-      ui::LayerAnimationObserver* observer);
-
-  // Creates a pause animation for transform property.
-  void PauseTransformAnimation(
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      ui::LayerAnimationObserver* observer);
 
   // Sets the opacity of the ink drop. Note that this does not perform any
   // animation.
   void SetOpacity(float opacity);
-
-  // Animates the |painted_layer_| to the specified |opacity|. The animation
-  // will be configured with the given |duration|, |tween|, and
-  // |preemption_strategy| values. The |observer| will be added to all
-  // LayerAnimationSequences if not null.
-  void AnimateToOpacity(
-      float opacity,
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween,
-      ui::LayerAnimationObserver* observer);
-
-  // Creates a pause animation for opacity property.
-  void PauseOpacityAnimation(
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      ui::LayerAnimationObserver* observer);
 
   // Returns the Transform to be applied to the |painted_layer_| for the given
   // |target_radius|.
@@ -138,6 +102,10 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
 
   // Returns the InkDropState sub animation duration for the given |state|.
   base::TimeDelta GetAnimationDuration(int state);
+
+  // Called from LayerAnimator when a new LayerAnimationSequence is scheduled
+  // which allows for assigning the observer to the sequence.
+  void OnLayerAnimationSequenceScheduled(ui::LayerAnimationSequence* sequence);
 
   // Insets of the clip area relative to the host bounds.
   gfx::Insets clip_insets_;
@@ -160,6 +128,9 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   // the different shape of the ink drop.
   ui::Layer root_layer_;
 
+  // Sequence scheduled callback subscription for the root layer.
+  base::CallbackListSubscription root_callback_subscription_;
+
   // ui::LayerDelegate to paint the |painted_layer_|.
   CircleLayerDelegate circle_layer_delegate_;
 
@@ -167,10 +138,11 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   // and shape of the ink drop.
   ui::Layer painted_layer_;
 
-  // The current ink drop state.
-  InkDropState ink_drop_state_;
+  // Sequence scheduled callback subscriptions for the painted layer.
+  base::CallbackListSubscription painted_layer_callback_subscription_;
 
-  DISALLOW_COPY_AND_ASSIGN(FloodFillInkDropRipple);
+  // The current ink drop state.
+  InkDropState ink_drop_state_ = InkDropState::HIDDEN;
 };
 
 }  // namespace views

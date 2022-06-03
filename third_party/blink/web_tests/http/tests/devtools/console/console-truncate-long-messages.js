@@ -5,15 +5,15 @@
 (async function() {
   TestRunner.addResult('Tests that console logging large messages will be truncated.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
-  var consoleView = Console.ConsoleView.instance();
-
-  var maxLength = 40;
-  Console.ConsoleViewMessage._MaxTokenizableStringLength = maxLength;
+  const consoleView = Console.ConsoleView.instance();
+  const maxLength = 40;
+  Console.ConsoleViewMessage.setMaxTokenizableStringLength(maxLength);
   ObjectUI.ObjectPropertiesSection._maxRenderableStringLength = maxLength;
-  var visibleLength = Console.ConsoleViewMessage._LongStringVisibleLength = 20;
-  var overMaxLength = maxLength * 2;
+  const visibleLength = 20;
+  Console.ConsoleViewMessage.setLongStringVisibleLength(visibleLength);
+  const overMaxLength = maxLength * 2;
   TestRunner.addResult(`Setting max length to: ${maxLength}`);
   TestRunner.addResult(`Setting long string visible length to: ${visibleLength}`);
 
@@ -35,7 +35,7 @@
   dumpMessageLengths();
 
   TestRunner.addResult('\nExpanding hidden texts');
-  consoleView._visibleViewMessages.forEach(message => {
+  consoleView.visibleViewMessages.forEach(message => {
     message.element().querySelectorAll('.expandable-inline-button').forEach(button => button.click());
   });
 
@@ -43,18 +43,18 @@
   TestRunner.completeTest();
 
   function dumpMessageLengths() {
-    consoleView._visibleViewMessages.forEach((message, index) => {
-      var text = consoleMessageText(index);
+    consoleView.visibleViewMessages.forEach((message, index) => {
+      const text = consoleMessageText(index);
       TestRunner.addResult(`Message: ${index}, length: ${text.length}, ${text}`);
     });
 
     function consoleMessageText(index) {
-      var messageElement = consoleView._visibleViewMessages[index].element();
-      var anchor = messageElement.querySelector('.console-message-anchor');
+      const messageElement = consoleView.visibleViewMessages[index].element();
+      const anchor = messageElement.querySelector('.console-message-anchor');
       if (anchor)
         anchor.remove();
-      var links = messageElement.querySelectorAll('.devtools-link');
-      for (var link of links)
+      const links = messageElement.querySelectorAll('.devtools-link');
+      for (const link of links)
         TestRunner.addResult(`Link: ${link.textContent}`);
       return messageElement.deepTextContent();
     }

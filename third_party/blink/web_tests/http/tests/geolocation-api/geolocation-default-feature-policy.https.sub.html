@@ -3,8 +3,17 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=../resources/feature-policy-permissions-test.js></script>
-<script>
-'use strict';
+
+<script type="module">
+import {GeolocationMock} from '/wpt_internal/geolocation-api/resources/geolocation-mock.js';
+
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100.0;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
 
 run_permission_default_header_policy_tests(
   location.protocol + '//localhost:' + location.port,

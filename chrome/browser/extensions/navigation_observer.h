@@ -9,9 +9,8 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -34,6 +33,10 @@ class NavigationObserver : public content::NotificationObserver,
                            public ExtensionRegistryObserver {
  public:
   explicit NavigationObserver(Profile* profile);
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override;
 
   // content::NotificationObserver
@@ -55,7 +58,7 @@ class NavigationObserver : public content::NotificationObserver,
   void PromptToEnableExtensionIfNecessary(
       content::NavigationController* nav_controller);
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
@@ -76,12 +79,10 @@ class NavigationObserver : public content::NotificationObserver,
   // The extension ids we've already prompted the user about.
   std::set<std::string> prompted_extensions_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<NavigationObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 }  // namespace extensions

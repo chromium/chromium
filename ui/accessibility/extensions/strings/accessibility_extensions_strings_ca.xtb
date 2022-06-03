@@ -7,18 +7,18 @@
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591070050619849194">Desactiveu totes les animacions d'imatge.</translation>
-<translation id="1703735871906654364">Navegació amb cursor</translation>
+<translation id="1703735871906654364">Navegació amb cursor de text</translation>
 <translation id="1791496371305830581">Permeteu totes les imatges animades.</translation>
 <translation id="1996252509865389616">Activa</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2179565792157161713">Obre la descripció llarga en una pestanya nova</translation>
 <translation id="2223143012868735942">Un filtre de color personalitzable que s'aplica en pàgines web per millorar la percepció del color.</translation>
-<translation id="2394933097471027016">Proveu-ho ara. La navegació amb cursor està sempre activada en aquesta pàgina.</translation>
+<translation id="2394933097471027016">Proveu-ho ara. La navegació amb cursor de text està sempre activada en aquesta pàgina.</translation>
 <translation id="2471847333270902538">Paleta de colors per a <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">Manteniu premuda la tecla d'&lt;span class='key'&gt;opció&lt;/span&gt; per desplaçar-vos per les paraules.</translation>
 <translation id="2795227192542594043">Aquesta extensió proporciona un cursor mòbil a la pàgina web que permet seleccionar el text amb el teclat.</translation>
 <translation id="2808027189040546825">Pas 1: seleccioneu la fila amb les estrelles més tènues</translation>
-<translation id="2965611304828530558">&lt;p&gt;Quan aneu a un enllaç o control, se centra automàticament.   Premeu &lt;span class='key'&gt;Retorn&lt;/span&gt; per fer clic en un enllaç o botó. &lt;/p&gt; &lt;p&gt;   Quan un control enfocat (com un quadre de text o un quadre de llista) capti les tecles de fletxa, premeu la tecla &lt;span class='key'&gt;Esc&lt;/span&gt; seguida de la fletxa esquerra o dreta per continuar amb la navegació amb cursor. &lt;/p&gt; &lt;p&gt;   També podeu prémer la tecla &lt;span class='key'&gt;Tab&lt;/span&gt; per anar al control següent que es pugui enfocar. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Quan aneu a un enllaç o control, se centra automàticament.   Premeu &lt;span class='key'&gt;Retorn&lt;/span&gt; per fer clic en un enllaç o botó. &lt;/p&gt; &lt;p&gt;   Quan un control enfocat (com un quadre de text o un quadre de llista) capti les tecles de fletxa, premeu la tecla &lt;span class='key'&gt;Esc&lt;/span&gt; seguida de la fletxa esquerra o dreta per continuar amb la navegació amb cursor de text. &lt;/p&gt; &lt;p&gt;   També podeu prémer la tecla &lt;span class='key'&gt;Tab&lt;/span&gt; per anar al control següent que es pugui enfocar. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Configuració</translation>
 <translation id="3410969471888629217">Oblida les personalitzacions del lloc</translation>
 <translation id="3435896845095436175">Activa</translation>
@@ -31,8 +31,8 @@
 <translation id="4769065380738716500">Les imatges s'han substituït pel seu text alternatiu.</translation>
 <translation id="4896660567607030658">Sense suggeriments, només mostra el cursor</translation>
 <translation id="4937901943818762779">Permeteu les imatges animades, però només una vegada.</translation>
-<translation id="4949131196216960195">Prem &lt;span class='key'&gt;Cerca&lt;/span&gt;+&lt;img src='increase_brightness.png'&gt; (la tecla per augmentar la brillantor o F7) per activar la navegació amb cursor. Per desactivar-la, torna a prémer les mateixes tecles.</translation>
-<translation id="4954450790315188152">Quan la navegació amb cursor està activada:</translation>
+<translation id="4949131196216960195">Prem &lt;span class='key'&gt;Cerca&lt;/span&gt;+&lt;img src='increase_brightness.png'&gt; (la tecla per augmentar la brillantor o F7) per activar la navegació amb cursor de text. Per desactivar-la, torna a prémer les mateixes tecles.</translation>
+<translation id="4954450790315188152">Quan la navegació amb cursor de text està activada:</translation>
 <translation id="5041932793799765940">Ajust del color</translation>
 <translation id="5094574508723441140">Contrast augmentat</translation>
 <translation id="5173942593318174089">Destaqueu la posició del cursor amb una animació.</translation>
@@ -61,9 +61,9 @@
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="786423340267544509">Afegeix una vora als elements amb atributs "aria-describedat" o "longdesc".</translation>
 <translation id="7942349550061667556">Vermell</translation>
-<translation id="8260673944985561857">Opcions de navegació amb cursor</translation>
+<translation id="8260673944985561857">Opcions de navegació amb cursor de text</translation>
 <translation id="8321034316479930120">Política d'animació</translation>
 <translation id="8480209185614411573">Contrast alt</translation>
-<translation id="8609925175482059018">Premeu &lt;span class='key'&gt;F7&lt;/span&gt; per activar la navegació amb cursor. Torneu a prémer F7 per desactivar-la.</translation>
+<translation id="8609925175482059018">Premeu &lt;span class='key'&gt;F7&lt;/span&gt; per activar la navegació amb cursor de text. Torneu a prémer F7 per desactivar-la.</translation>
 <translation id="894241283505723656">Descripcions llargues al menú contextual</translation>
 </translationbundle>

@@ -4,17 +4,20 @@
 
 #include "third_party/blink/renderer/core/animation/timing_input.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_animation_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_effect_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
-#include "third_party/blink/renderer/core/animation/effect_timing.h"
-#include "third_party/blink/renderer/core/animation/keyframe_effect_options.h"
-#include "third_party/blink/renderer/core/animation/optional_effect_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 namespace {
+
 Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
   if (direction == "reverse")
     return Timing::PlaybackDirection::REVERSE;
@@ -26,13 +29,13 @@ Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
   return Timing::PlaybackDirection::NORMAL;
 }
 
-base::Optional<AnimationTimeDelta> ConvertIterationDuration(
-    const UnrestrictedDoubleOrString& duration) {
-  if (duration.IsUnrestrictedDouble()) {
-    return AnimationTimeDelta::FromMillisecondsD(
-        duration.GetAsUnrestrictedDouble());
+absl::optional<AnimationTimeDelta> ConvertIterationDuration(
+    const V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration) {
+  if (duration->IsUnrestrictedDouble()) {
+    return ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
+        duration->GetAsUnrestrictedDouble());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 Timing ConvertEffectTiming(const EffectTiming* timing_input,
@@ -58,52 +61,65 @@ bool UpdateValueIfChanged(V& lhs, const V& rhs) {
 }  // namespace
 
 Timing TimingInput::Convert(
-    const UnrestrictedDoubleOrKeyframeEffectOptions& options,
+    const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
     Document* document,
     ExceptionState& exception_state) {
-  if (options.IsNull()) {
+  if (!options) {
     return Timing();
   }
 
-  if (options.IsKeyframeEffectOptions()) {
-    return ConvertEffectTiming(options.GetAsKeyframeEffectOptions(), document,
-                               exception_state);
+  switch (options->GetContentType()) {
+    case V8UnionKeyframeEffectOptionsOrUnrestrictedDouble::ContentType::
+        kKeyframeEffectOptions:
+      return ConvertEffectTiming(options->GetAsKeyframeEffectOptions(),
+                                 document, exception_state);
+    case V8UnionKeyframeEffectOptionsOrUnrestrictedDouble::ContentType::
+        kUnrestrictedDouble: {
+      // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
+      // If options is a double,
+      //   Let timing input be a new EffectTiming object with all members set to
+      //   their default values and duration set to options.
+      EffectTiming* timing_input = EffectTiming::Create();
+      timing_input->setDuration(
+          MakeGarbageCollected<
+              V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
+              options->GetAsUnrestrictedDouble()));
+      return ConvertEffectTiming(timing_input, document, exception_state);
+    }
   }
-
-  DCHECK(options.IsUnrestrictedDouble());
-
-  // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
-  // If options is a double,
-  //   Let timing input be a new EffectTiming object with all members set to
-  //   their default values and duration set to options.
-  EffectTiming* timing_input = EffectTiming::Create();
-  timing_input->setDuration(UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-      options.GetAsUnrestrictedDouble()));
-  return ConvertEffectTiming(timing_input, document, exception_state);
+  NOTREACHED();
+  return Timing();
 }
 
 Timing TimingInput::Convert(
-    const UnrestrictedDoubleOrKeyframeAnimationOptions& options,
+    const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
     Document* document,
     ExceptionState& exception_state) {
-  if (options.IsNull())
+  if (!options) {
     return Timing();
-
-  if (options.IsKeyframeAnimationOptions()) {
-    return ConvertEffectTiming(options.GetAsKeyframeAnimationOptions(),
-                               document, exception_state);
   }
 
-  DCHECK(options.IsUnrestrictedDouble());
-
-  // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
-  // If options is a double,
-  //   Let timing input be a new EffectTiming object with all members set to
-  //   their default values and duration set to options.
-  EffectTiming* timing_input = EffectTiming::Create();
-  timing_input->setDuration(UnrestrictedDoubleOrString::FromUnrestrictedDouble(
-      options.GetAsUnrestrictedDouble()));
-  return ConvertEffectTiming(timing_input, document, exception_state);
+  switch (options->GetContentType()) {
+    case V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble::ContentType::
+        kKeyframeAnimationOptions:
+      return ConvertEffectTiming(options->GetAsKeyframeAnimationOptions(),
+                                 document, exception_state);
+    case V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble::ContentType::
+        kUnrestrictedDouble: {
+      // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
+      // If options is a double,
+      //   Let timing input be a new EffectTiming object with all members set to
+      //   their default values and duration set to options.
+      EffectTiming* timing_input = EffectTiming::Create();
+      timing_input->setDuration(
+          MakeGarbageCollected<
+              V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
+              options->GetAsUnrestrictedDouble()));
+      return ConvertEffectTiming(timing_input, document, exception_state);
+    }
+  }
+  NOTREACHED();
+  return Timing();
 }
 
 template <class InputTiming>
@@ -133,15 +149,28 @@ bool TimingInput::Update(Timing& timing,
   // https://github.com/w3c/csswg-drafts/issues/247 .
   if (input->hasDuration()) {
     const char* error_message = "duration must be non-negative or auto";
-    if (input->duration().IsUnrestrictedDouble()) {
-      double duration = input->duration().GetAsUnrestrictedDouble();
-      if (std::isnan(duration) || duration < 0) {
-        exception_state.ThrowTypeError(error_message);
+    switch (input->duration()->GetContentType()) {
+      case V8UnionCSSNumericValueOrStringOrUnrestrictedDouble::ContentType::
+          kCSSNumericValue:
+        exception_state.ThrowTypeError(
+            "Setting duration using CSSNumericValue is not supported.");
         return false;
+      case V8UnionCSSNumericValueOrStringOrUnrestrictedDouble::ContentType::
+          kString:
+        if (input->duration()->GetAsString() != "auto") {
+          exception_state.ThrowTypeError(error_message);
+          return false;
+        }
+        break;
+      case V8UnionCSSNumericValueOrStringOrUnrestrictedDouble::ContentType::
+          kUnrestrictedDouble: {
+        double duration = input->duration()->GetAsUnrestrictedDouble();
+        if (std::isnan(duration) || duration < 0) {
+          exception_state.ThrowTypeError(error_message);
+          return false;
+        }
+        break;
       }
-    } else if (input->duration().GetAsString() != "auto") {
-      exception_state.ThrowTypeError(error_message);
-      return false;
     }
   }
 
@@ -163,31 +192,42 @@ bool TimingInput::Update(Timing& timing,
   bool changed = false;
   if (input->hasDelay()) {
     DCHECK(std::isfinite(input->delay()));
-    changed |= UpdateValueIfChanged(timing.start_delay, input->delay() / 1000);
+    changed |= UpdateValueIfChanged(
+        timing.start_delay,
+        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(input->delay()));
+    timing.SetTimingOverride(Timing::kOverrideStartDelay);
   }
   if (input->hasEndDelay()) {
     DCHECK(std::isfinite(input->endDelay()));
-    changed |= UpdateValueIfChanged(timing.end_delay, input->endDelay() / 1000);
+    changed |= UpdateValueIfChanged(
+        timing.end_delay,
+        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(input->endDelay()));
+    timing.SetTimingOverride(Timing::kOverrideEndDelay);
   }
   if (input->hasFill()) {
     changed |= UpdateValueIfChanged(timing.fill_mode,
                                     Timing::StringToFillMode(input->fill()));
+    timing.SetTimingOverride(Timing::kOverideFillMode);
   }
   if (input->hasIterationStart()) {
     changed |=
         UpdateValueIfChanged(timing.iteration_start, input->iterationStart());
+    timing.SetTimingOverride(Timing::kOverrideIterationStart);
   }
   if (input->hasIterations()) {
     changed |=
         UpdateValueIfChanged(timing.iteration_count, input->iterations());
+    timing.SetTimingOverride(Timing::kOverrideIterationCount);
   }
   if (input->hasDuration()) {
     changed |= UpdateValueIfChanged(
         timing.iteration_duration, ConvertIterationDuration(input->duration()));
+    timing.SetTimingOverride(Timing::kOverrideDuration);
   }
   if (input->hasDirection()) {
     changed |= UpdateValueIfChanged(
         timing.direction, ConvertPlaybackDirection(input->direction()));
+    timing.SetTimingOverride(Timing::kOverrideDirection);
   }
   if (timing_function) {
     // We need to compare the timing functions by underlying value to see if
@@ -195,8 +235,8 @@ bool TimingInput::Update(Timing& timing,
     // UpdateValueIfChanged.
     changed |= (*timing.timing_function != *timing_function);
     timing.timing_function = timing_function;
+    timing.SetTimingOverride(Timing::kOverrideTimingFunction);
   }
-
   return changed;
 }
 

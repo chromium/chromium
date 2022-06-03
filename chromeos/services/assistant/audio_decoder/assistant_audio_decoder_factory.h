@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_AUDIO_DECODER_ASSISTANT_AUDIO_DECODER_FACTORY_H_
 #define CHROMEOS_SERVICES_ASSISTANT_AUDIO_DECODER_ASSISTANT_AUDIO_DECODER_FACTORY_H_
 
-#include <memory>
-
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,6 +18,11 @@ class AssistantAudioDecoderFactory
  public:
   explicit AssistantAudioDecoderFactory(
       mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver);
+
+  AssistantAudioDecoderFactory(const AssistantAudioDecoderFactory&) = delete;
+  AssistantAudioDecoderFactory& operator=(const AssistantAudioDecoderFactory&) =
+      delete;
+
   ~AssistantAudioDecoderFactory() override;
 
  private:
@@ -31,8 +34,6 @@ class AssistantAudioDecoderFactory
       override;
 
   mojo::Receiver<mojom::AssistantAudioDecoderFactory> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDecoderFactory);
 };
 
 }  // namespace assistant

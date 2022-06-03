@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
+import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
@@ -15,15 +15,6 @@ import("//ios/web_view/repack.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
 
-buildflag_header("web_view_buildflags") {
-  header = "cwv_web_view_buildflags.h"
-
-  flags = [
-    "IOS_WEB_VIEW_ENABLE_SYNC=$ios_web_view_enable_sync",
-    "IOS_WEB_VIEW_ENABLE_AUTOFILL=$ios_web_view_enable_autofill",
-  ]
-}
-
 group("all_tests") {
   testonly = true
   deps = [
@@ -34,7 +25,7 @@ group("all_tests") {
 
 config("config") {
   defines = [ "CWV_IMPLEMENTATION" ]
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "Foundation.framework",
     "MobileCoreServices.framework",
@@ -44,200 +35,62 @@ config("config") {
 
 # These are defined as vars so they can be shared with different targets below.
 ios_web_view_public_headers = [
+  "public/cwv_autofill_controller.h",
+  "public/cwv_autofill_controller_delegate.h",
+  "public/cwv_autofill_data_manager.h",
+  "public/cwv_autofill_data_manager_observer.h",
+  "public/cwv_autofill_form.h",
+  "public/cwv_autofill_profile.h",
+  "public/cwv_autofill_suggestion.h",
   "public/cwv_back_forward_list.h",
   "public/cwv_back_forward_list_item.h",
+  "public/cwv_cert_status.h",
+  "public/cwv_credential_provider_extension_utils.h",
+  "public/cwv_credit_card.h",
+  "public/cwv_credit_card_saver.h",
+  "public/cwv_credit_card_verifier.h",
   "public/cwv_download_task.h",
+  "public/cwv_defines.h",
   "public/cwv_export.h",
   "public/cwv_favicon.h",
   "public/cwv_flags.h",
   "public/cwv_html_element.h",
+  "public/cwv_identity.h",
+  "public/cwv_metrics_provider.h",
   "public/cwv_navigation_action.h",
   "public/cwv_navigation_delegate.h",
   "public/cwv_navigation_type.h",
+  "public/cwv_password.h",
   "public/cwv_preferences.h",
   "public/cwv_preview_element_info.h",
   "public/cwv_script_command.h",
-  "public/cwv_scroll_view.h",
-  "public/cwv_scroll_view_delegate.h",
+  "public/cwv_ssl_error_handler.h",
   "public/cwv_ssl_status.h",
+  "public/cwv_sync_controller.h",
+  "public/cwv_sync_controller_data_source.h",
+  "public/cwv_sync_controller_delegate.h",
+  "public/cwv_sync_errors.h",
   "public/cwv_translation_controller.h",
   "public/cwv_translation_controller_delegate.h",
   "public/cwv_translation_language.h",
   "public/cwv_translation_policy.h",
+  "public/cwv_trusted_vault_observer.h",
+  "public/cwv_trusted_vault_provider.h",
+  "public/cwv_trusted_vault_utils.h",
   "public/cwv_ui_delegate.h",
   "public/cwv_user_content_controller.h",
   "public/cwv_user_script.h",
   "public/cwv_web_view.h",
   "public/cwv_web_view_configuration.h",
 ]
-if (ios_web_view_enable_sync) {
-  ios_web_view_public_headers += [
-    "public/cwv_identity.h",
-    "public/cwv_sync_controller.h",
-    "public/cwv_sync_controller_data_source.h",
-    "public/cwv_sync_controller_delegate.h",
-    "public/cwv_web_view_configuration_sync.h",
-  ]
-}
-if (ios_web_view_enable_autofill) {
-  ios_web_view_public_headers += [
-    "public/cwv_autofill_controller.h",
-    "public/cwv_autofill_controller_delegate.h",
-    "public/cwv_autofill_data_manager.h",
-    "public/cwv_autofill_data_manager_observer.h",
-    "public/cwv_autofill_form.h",
-    "public/cwv_autofill_profile.h",
-    "public/cwv_autofill_suggestion.h",
-    "public/cwv_credit_card.h",
-    "public/cwv_credit_card_saver.h",
-    "public/cwv_credit_card_verifier.h",
-    "public/cwv_password.h",
-    "public/cwv_preferences_autofill.h",
-    "public/cwv_web_view_autofill.h",
-    "public/cwv_web_view_configuration_autofill.h",
-  ]
-}
 
-ios_web_view_sources = [
-  "internal/app/application_context.h",
-  "internal/app/application_context.mm",
-  "internal/app/web_view_io_thread.h",
-  "internal/app/web_view_io_thread.mm",
-  "internal/autofill/web_view_autocomplete_history_manager_factory.h",
-  "internal/autofill/web_view_autocomplete_history_manager_factory.mm",
-  "internal/autofill/web_view_autofill_client_ios.h",
-  "internal/autofill/web_view_autofill_client_ios.mm",
-  "internal/autofill/web_view_autofill_log_router_factory.h",
-  "internal/autofill/web_view_autofill_log_router_factory.mm",
-  "internal/autofill/web_view_personal_data_manager_factory.h",
-  "internal/autofill/web_view_personal_data_manager_factory.mm",
-  "internal/autofill/web_view_strike_database_factory.h",
-  "internal/autofill/web_view_strike_database_factory.mm",
-  "internal/content_settings/web_view_cookie_settings_factory.h",
-  "internal/content_settings/web_view_cookie_settings_factory.mm",
-  "internal/content_settings/web_view_host_content_settings_map_factory.h",
-  "internal/content_settings/web_view_host_content_settings_map_factory.mm",
-  "internal/cwv_back_forward_list.mm",
-  "internal/cwv_back_forward_list_internal.h",
-  "internal/cwv_back_forward_list_item.mm",
-  "internal/cwv_back_forward_list_item_internal.h",
-  "internal/cwv_download_task.mm",
-  "internal/cwv_download_task_internal.h",
-  "internal/cwv_favicon.mm",
-  "internal/cwv_favicon_internal.h",
-  "internal/cwv_flags.mm",
-  "internal/cwv_flags_internal.h",
-  "internal/cwv_html_element.mm",
-  "internal/cwv_html_element_internal.h",
-  "internal/cwv_navigation_action.mm",
-  "internal/cwv_navigation_action_internal.h",
-  "internal/cwv_navigation_delegate.mm",
-  "internal/cwv_navigation_type.mm",
-  "internal/cwv_navigation_type_internal.h",
-  "internal/cwv_preferences.mm",
-  "internal/cwv_preferences_internal.h",
-  "internal/cwv_preview_element_info.mm",
-  "internal/cwv_preview_element_info_internal.h",
-  "internal/cwv_script_command.mm",
-  "internal/cwv_script_command_internal.h",
-  "internal/cwv_scroll_view.mm",
-  "internal/cwv_scroll_view_internal.h",
-  "internal/cwv_ssl_status.mm",
-  "internal/cwv_ssl_status_internal.h",
-  "internal/cwv_user_content_controller.mm",
-  "internal/cwv_user_content_controller_internal.h",
-  "internal/cwv_user_script.mm",
-  "internal/cwv_web_view.mm",
-  "internal/cwv_web_view_configuration.mm",
-  "internal/cwv_web_view_configuration_internal.h",
-  "internal/cwv_web_view_internal.h",
-  "internal/ios_global_state_web_view_configuration.mm",
-  "internal/language/web_view_language_model_manager_factory.h",
-  "internal/language/web_view_language_model_manager_factory.mm",
-  "internal/language/web_view_url_language_histogram_factory.h",
-  "internal/language/web_view_url_language_histogram_factory.mm",
-  "internal/passwords/web_view_password_feature_manager.h",
-  "internal/passwords/web_view_password_feature_manager.mm",
-  "internal/passwords/web_view_password_manager_client.h",
-  "internal/passwords/web_view_password_manager_client.mm",
-  "internal/passwords/web_view_password_manager_driver.h",
-  "internal/passwords/web_view_password_manager_driver.mm",
-  "internal/passwords/web_view_password_manager_log_router_factory.h",
-  "internal/passwords/web_view_password_manager_log_router_factory.mm",
-  "internal/passwords/web_view_password_store_factory.h",
-  "internal/passwords/web_view_password_store_factory.mm",
-  "internal/pref_names.h",
-  "internal/pref_names.mm",
-  "internal/signin/ios_web_view_signin_client.h",
-  "internal/signin/ios_web_view_signin_client.mm",
-  "internal/signin/web_view_device_accounts_provider_impl.h",
-  "internal/signin/web_view_device_accounts_provider_impl.mm",
-  "internal/signin/web_view_identity_manager_factory.h",
-  "internal/signin/web_view_identity_manager_factory.mm",
-  "internal/signin/web_view_signin_client_factory.h",
-  "internal/signin/web_view_signin_client_factory.mm",
-  "internal/signin/web_view_signin_error_controller_factory.h",
-  "internal/signin/web_view_signin_error_controller_factory.mm",
-  "internal/sync/web_view_device_info_sync_service_factory.h",
-  "internal/sync/web_view_device_info_sync_service_factory.mm",
-  "internal/sync/web_view_gcm_profile_service_factory.h",
-  "internal/sync/web_view_gcm_profile_service_factory.mm",
-  "internal/sync/web_view_model_type_store_service_factory.h",
-  "internal/sync/web_view_model_type_store_service_factory.mm",
-  "internal/sync/web_view_profile_invalidation_provider_factory.h",
-  "internal/sync/web_view_profile_invalidation_provider_factory.mm",
-  "internal/sync/web_view_profile_sync_service_factory.h",
-  "internal/sync/web_view_profile_sync_service_factory.mm",
-  "internal/sync/web_view_sync_client.h",
-  "internal/sync/web_view_sync_client.mm",
-  "internal/translate/cwv_translation_controller.mm",
-  "internal/translate/cwv_translation_controller_internal.h",
-  "internal/translate/cwv_translation_language.mm",
-  "internal/translate/cwv_translation_language_internal.h",
-  "internal/translate/cwv_translation_policy.mm",
-  "internal/translate/web_view_translate_accept_languages_factory.h",
-  "internal/translate/web_view_translate_accept_languages_factory.mm",
-  "internal/translate/web_view_translate_client.h",
-  "internal/translate/web_view_translate_client.mm",
-  "internal/translate/web_view_translate_ranker_factory.h",
-  "internal/translate/web_view_translate_ranker_factory.mm",
-  "internal/translate/web_view_translate_service.h",
-  "internal/translate/web_view_translate_service.mm",
-  "internal/utils/nsobject_description_utils.h",
-  "internal/utils/nsobject_description_utils.mm",
-  "internal/web_view_browser_state.h",
-  "internal/web_view_browser_state.mm",
-  "internal/web_view_download_manager.h",
-  "internal/web_view_download_manager.mm",
-  "internal/web_view_early_page_script_provider.h",
-  "internal/web_view_early_page_script_provider.mm",
-  "internal/web_view_global_state_util.h",
-  "internal/web_view_global_state_util.mm",
-  "internal/web_view_java_script_dialog_presenter.h",
-  "internal/web_view_java_script_dialog_presenter.mm",
-  "internal/web_view_url_request_context_getter.h",
-  "internal/web_view_url_request_context_getter.mm",
-  "internal/web_view_web_client.h",
-  "internal/web_view_web_client.mm",
-  "internal/web_view_web_main_delegate.h",
-  "internal/web_view_web_main_delegate.mm",
-  "internal/web_view_web_main_parts.h",
-  "internal/web_view_web_main_parts.mm",
-  "internal/web_view_web_state_policy_decider.h",
-  "internal/web_view_web_state_policy_decider.mm",
-  "internal/webdata_services/web_view_web_data_service_wrapper_factory.h",
-  "internal/webdata_services/web_view_web_data_service_wrapper_factory.mm",
-]
-ios_web_view_sources += ios_web_view_public_headers
-if (ios_web_view_enable_sync) {
-  ios_web_view_sources += [
-    "internal/signin/cwv_identity.mm",
-    "internal/sync/cwv_sync_controller.mm",
-    "internal/sync/cwv_sync_controller_internal.h",
-  ]
-}
-if (ios_web_view_enable_autofill) {
-  ios_web_view_sources += [
+source_set("web_view_sources") {
+  sources = ios_web_view_public_headers
+  sources += [
+    "internal/app/application_context.h",
+    "internal/app/application_context.mm",
+    "internal/app/web_view_io_thread.h",
+    "internal/app/web_view_io_thread.mm",
     "internal/autofill/cwv_autofill_client_ios_bridge.h",
     "internal/autofill/cwv_autofill_controller.mm",
     "internal/autofill/cwv_autofill_controller_internal.h",
@@ -255,99 +108,253 @@ if (ios_web_view_enable_autofill) {
     "internal/autofill/cwv_credit_card_saver_internal.h",
     "internal/autofill/cwv_credit_card_verifier.mm",
     "internal/autofill/cwv_credit_card_verifier_internal.h",
+    "internal/autofill/web_view_autocomplete_history_manager_factory.h",
+    "internal/autofill/web_view_autocomplete_history_manager_factory.mm",
+    "internal/autofill/web_view_autofill_client_ios.h",
+    "internal/autofill/web_view_autofill_client_ios.mm",
+    "internal/autofill/web_view_autofill_log_router_factory.h",
+    "internal/autofill/web_view_autofill_log_router_factory.mm",
+    "internal/autofill/web_view_personal_data_manager_factory.h",
+    "internal/autofill/web_view_personal_data_manager_factory.mm",
+    "internal/autofill/web_view_strike_database_factory.h",
+    "internal/autofill/web_view_strike_database_factory.mm",
+    "internal/cwv_back_forward_list.mm",
+    "internal/cwv_back_forward_list_internal.h",
+    "internal/cwv_back_forward_list_item.mm",
+    "internal/cwv_back_forward_list_item_internal.h",
+    "internal/cwv_download_task.mm",
+    "internal/cwv_download_task_internal.h",
+    "internal/cwv_favicon.mm",
+    "internal/cwv_favicon_internal.h",
+    "internal/cwv_flags.mm",
+    "internal/cwv_flags_internal.h",
+    "internal/cwv_html_element.mm",
+    "internal/cwv_html_element_internal.h",
+    "internal/cwv_navigation_action.mm",
+    "internal/cwv_navigation_action_internal.h",
+    "internal/cwv_navigation_type.mm",
+    "internal/cwv_navigation_type_internal.h",
+    "internal/cwv_preferences.mm",
+    "internal/cwv_preferences_internal.h",
+    "internal/cwv_preview_element_info.mm",
+    "internal/cwv_preview_element_info_internal.h",
+    "internal/cwv_script_command.mm",
+    "internal/cwv_script_command_internal.h",
+    "internal/cwv_ssl_error_handler.mm",
+    "internal/cwv_ssl_error_handler_internal.h",
+    "internal/cwv_ssl_status.mm",
+    "internal/cwv_ssl_status_internal.h",
+    "internal/cwv_ssl_util.h",
+    "internal/cwv_ssl_util.mm",
+    "internal/cwv_user_content_controller.mm",
+    "internal/cwv_user_content_controller_internal.h",
+    "internal/cwv_user_script.mm",
+    "internal/cwv_web_view.mm",
+    "internal/cwv_web_view_configuration.mm",
+    "internal/cwv_web_view_configuration_internal.h",
+    "internal/cwv_web_view_internal.h",
+    "internal/ios_global_state_web_view_configuration.mm",
+    "internal/language/web_view_language_model_manager_factory.h",
+    "internal/language/web_view_language_model_manager_factory.mm",
+    "internal/language/web_view_url_language_histogram_factory.h",
+    "internal/language/web_view_url_language_histogram_factory.mm",
+    "internal/metrics/cwv_metrics_provider.mm",
+    "internal/metrics/cwv_metrics_provider_internal.h",
+    "internal/passwords/cwv_credential_provider_extension_utils.mm",
     "internal/passwords/cwv_password.mm",
-    "internal/passwords/cwv_password_controller.h",
-    "internal/passwords/cwv_password_controller.mm",
     "internal/passwords/cwv_password_internal.h",
+    "internal/passwords/web_view_account_password_store_factory.h",
+    "internal/passwords/web_view_account_password_store_factory.mm",
+    "internal/passwords/web_view_password_feature_manager.h",
+    "internal/passwords/web_view_password_feature_manager.mm",
+    "internal/passwords/web_view_password_manager_client.h",
+    "internal/passwords/web_view_password_manager_client.mm",
+    "internal/passwords/web_view_password_manager_driver.h",
+    "internal/passwords/web_view_password_manager_driver.mm",
+    "internal/passwords/web_view_password_manager_log_router_factory.h",
+    "internal/passwords/web_view_password_manager_log_router_factory.mm",
+    "internal/passwords/web_view_password_requirements_service_factory.h",
+    "internal/passwords/web_view_password_requirements_service_factory.mm",
+    "internal/passwords/web_view_password_reuse_manager_factory.h",
+    "internal/passwords/web_view_password_reuse_manager_factory.mm",
+    "internal/passwords/web_view_password_store_factory.h",
+    "internal/passwords/web_view_password_store_factory.mm",
+    "internal/signin/cwv_identity.mm",
+    "internal/signin/ios_web_view_signin_client.h",
+    "internal/signin/ios_web_view_signin_client.mm",
+    "internal/signin/web_view_device_accounts_provider_impl.h",
+    "internal/signin/web_view_device_accounts_provider_impl.mm",
+    "internal/signin/web_view_gaia_auth_fetcher.h",
+    "internal/signin/web_view_gaia_auth_fetcher.mm",
+    "internal/signin/web_view_identity_manager_factory.h",
+    "internal/signin/web_view_identity_manager_factory.mm",
+    "internal/signin/web_view_signin_client_factory.h",
+    "internal/signin/web_view_signin_client_factory.mm",
+    "internal/sync/cwv_sync_controller.mm",
+    "internal/sync/cwv_sync_controller_internal.h",
+    "internal/sync/cwv_trusted_vault_observer.mm",
+    "internal/sync/cwv_trusted_vault_observer_internal.h",
+    "internal/sync/cwv_trusted_vault_utils.mm",
+    "internal/sync/web_view_device_info_sync_service_factory.h",
+    "internal/sync/web_view_device_info_sync_service_factory.mm",
+    "internal/sync/web_view_gcm_profile_service_factory.h",
+    "internal/sync/web_view_gcm_profile_service_factory.mm",
+    "internal/sync/web_view_instance_id_profile_service_factory.h",
+    "internal/sync/web_view_instance_id_profile_service_factory.mm",
+    "internal/sync/web_view_model_type_store_service_factory.h",
+    "internal/sync/web_view_model_type_store_service_factory.mm",
+    "internal/sync/web_view_profile_invalidation_provider_factory.h",
+    "internal/sync/web_view_profile_invalidation_provider_factory.mm",
+    "internal/sync/web_view_sync_client.h",
+    "internal/sync/web_view_sync_client.mm",
+    "internal/sync/web_view_sync_invalidations_service_factory.h",
+    "internal/sync/web_view_sync_invalidations_service_factory.mm",
+    "internal/sync/web_view_sync_service_factory.h",
+    "internal/sync/web_view_sync_service_factory.mm",
+    "internal/sync/web_view_trusted_vault_client.h",
+    "internal/sync/web_view_trusted_vault_client.mm",
+    "internal/translate/cwv_translation_controller.mm",
+    "internal/translate/cwv_translation_controller_internal.h",
+    "internal/translate/cwv_translation_language.mm",
+    "internal/translate/cwv_translation_language_internal.h",
+    "internal/translate/cwv_translation_policy.mm",
+    "internal/translate/web_view_translate_accept_languages_factory.h",
+    "internal/translate/web_view_translate_accept_languages_factory.mm",
+    "internal/translate/web_view_translate_client.h",
+    "internal/translate/web_view_translate_client.mm",
+    "internal/translate/web_view_translate_ranker_factory.h",
+    "internal/translate/web_view_translate_ranker_factory.mm",
+    "internal/translate/web_view_translate_service.h",
+    "internal/translate/web_view_translate_service.mm",
+    "internal/utils/nsobject_description_utils.h",
+    "internal/utils/nsobject_description_utils.mm",
+    "internal/web_view_browser_state.h",
+    "internal/web_view_browser_state.mm",
+    "internal/web_view_download_manager.h",
+    "internal/web_view_download_manager.mm",
+    "internal/web_view_early_page_script_provider.h",
+    "internal/web_view_early_page_script_provider.mm",
+    "internal/web_view_global_state_util.h",
+    "internal/web_view_java_script_dialog_presenter.h",
+    "internal/web_view_java_script_dialog_presenter.mm",
+    "internal/web_view_url_request_context_getter.h",
+    "internal/web_view_url_request_context_getter.mm",
+    "internal/web_view_web_client.h",
+    "internal/web_view_web_client.mm",
+    "internal/web_view_web_main_delegate.h",
+    "internal/web_view_web_main_delegate.mm",
+    "internal/web_view_web_main_parts.h",
+    "internal/web_view_web_main_parts.mm",
+    "internal/web_view_web_state_policy_decider.h",
+    "internal/web_view_web_state_policy_decider.mm",
+    "internal/webdata_services/web_view_web_data_service_wrapper_factory.h",
+    "internal/webdata_services/web_view_web_data_service_wrapper_factory.mm",
+    "internal/webui/web_view_sync_internals_ui.h",
+    "internal/webui/web_view_sync_internals_ui.mm",
+    "internal/webui/web_view_web_ui_ios_controller_factory.h",
+    "internal/webui/web_view_web_ui_ios_controller_factory.mm",
+    "internal/webui/web_view_web_ui_provider.mm",
+  ]
+
+  public_deps = [
+    ":web_view_main_frame",
+    ":web_view_resources",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_handler_feature",
+    "//components/browser_sync",
+    "//components/flags_ui",
+    "//components/flags_ui:switches",
+    "//components/gcm_driver",
+    "//components/history/core/common",
+    "//components/image_fetcher/ios",
+    "//components/infobars/core",
+    "//components/invalidation/impl",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/language/core/language_model",
+    "//components/language/ios/browser",
+    "//components/leveldb_proto",
+    "//components/metrics:library_support",
+    "//components/metrics/demographics",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:affiliation",
+    "//components/password_manager/core/browser:password_generator",
+    "//components/password_manager/core/common",
+    "//components/password_manager/ios",
+    "//components/password_manager/ios:password_manager_feature",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/proxy_config",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/security_state/ios",
+    "//components/signin/core/browser",
+    "//components/signin/ios/browser",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/ios",
+    "//components/signin/public/webdata",
+    "//components/ssl_errors",
+    "//components/strings:components_strings_grit",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//components/translate/ios/browser",
+    "//components/unified_consent",
+    "//components/url_formatter",
+    "//components/variations",
+    "//components/variations/net",
+    "//components/version_info",
+    "//components/version_info:version_string",
+    "//components/web_resource",
+    "//components/webdata_services",
+    "//google_apis",
+    "//ios/components/credential_provider_extension:password_spec_fetcher",
+    "//ios/components/credential_provider_extension:password_util",
+    "//ios/components/io_thread",
+    "//ios/components/webui:provider",
+    "//ios/components/webui:url_constants",
+    "//ios/components/webui/sync_internals",
+    "//ios/net",
+    "//ios/third_party/webkit",
+    "//ios/web",
+    "//ios/web/common",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/init",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
+    "//ios/web/public/session:session",
+    "//ios/web/public/web_view_only",
+    "//ios/web/public/webui",
+    "//net",
+    "//net:extras",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network:network_service",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//url",
+  ]
+
+  configs += [
+    ":config",
+    "//build/config/compiler:enable_arc",
   ]
 }
 
-ios_web_view_deps = [
-  ":web_view_all_frames",
-  ":web_view_buildflags",
-  ":web_view_main_frame",
-  ":web_view_resources",
-  "//base",
-  "//components/autofill/core/browser",
-  "//components/autofill/core/common",
-  "//components/autofill/ios/browser",
-  "//components/autofill/ios/form_util",
-  "//components/browser_sync",
-  "//components/content_settings/core/browser",
-  "//components/flags_ui",
-  "//components/flags_ui:switches",
-  "//components/gcm_driver",
-  "//components/history/core/common",
-  "//components/image_fetcher/ios",
-  "//components/infobars/core",
-  "//components/invalidation/impl",
-  "//components/keyed_service/core",
-  "//components/keyed_service/ios",
-  "//components/language/core/browser",
-  "//components/language/core/common",
-  "//components/language/ios/browser",
-  "//components/leveldb_proto",
-  "//components/password_manager/core/browser",
-  "//components/password_manager/core/browser:affiliation",
-  "//components/password_manager/core/common",
-  "//components/password_manager/ios",
-  "//components/pref_registry",
-  "//components/prefs",
-  "//components/proxy_config",
-  "//components/signin/core/browser",
-  "//components/signin/ios/browser",
-  "//components/signin/ios/browser:active_state_manager",
-  "//components/signin/public/identity_manager",
-  "//components/signin/public/identity_manager/ios",
-  "//components/signin/public/webdata",
-  "//components/ssl_errors",
-  "//components/strings:components_strings_grit",
-  "//components/sync",
-  "//components/sync_device_info",
-  "//components/sync_sessions",
-  "//components/sync_user_events",
-  "//components/translate/core/browser",
-  "//components/translate/core/common",
-  "//components/translate/ios/browser",
-  "//components/url_formatter",
-  "//components/variations/net",
-  "//components/version_info",
-  "//components/version_info:version_string",
-  "//components/web_resource",
-  "//components/webdata_services",
-  "//google_apis",
-  "//ios/components/io_thread",
-  "//ios/net",
-  "//ios/web",
-  "//ios/web/common",
-  "//ios/web/common:user_agent",
-  "//ios/web/public",
-  "//ios/web/public/deprecated",
-  "//ios/web/public/init",
-  "//ios/web/public/js_messaging",
-  "//ios/web/public/security",
-  "//ios/web/public/web_view_only",
-  "//net",
-  "//net:extras",
-  "//services/metrics/public/cpp:metrics_cpp",
-  "//services/network:network_service",
-  "//ui/base",
-  "//url",
-]
-
-# Generate the umbrella header to exclude headers for disabled features.
-# This is preferable to guarding header imports using flags defined in
-# :web_view_buildflags because:
-# 1. Confusing to see headers for unsupported features in umbrella header.
-# 2. A need to include cwv_web_view_buildflags.h as part of public headers and
-#    any headers it itself includes, despite not being part of the public API.
 action("web_view_umbrella_header") {
   script = "//build/config/ios/generate_umbrella_header.py"
 
-  full_header_path = target_gen_dir + "/ChromeWebView.h"
-  outputs = [
-    full_header_path,
-  ]
+  full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
+  outputs = [ full_header_path ]
 
   args = [
     "--output-path",
@@ -357,24 +364,34 @@ action("web_view_umbrella_header") {
   args += rebase_path(ios_web_view_public_headers, root_build_dir)
 }
 
+tweak_info_plist("info_plist") {
+  info_plists = [ "Info.plist" ]
+}
+
 ios_framework_bundle("web_view") {
   output_name = ios_web_view_output_name
-  info_plist = "Info.plist"
+  info_plist_target = ":info_plist"
 
-  public_headers = ios_web_view_public_headers
-  public_headers += get_target_outputs(":web_view_umbrella_header")
+  public_headers = get_target_outputs(":web_view_umbrella_header")
+  public_headers += ios_web_view_public_headers
   if (ios_web_view_include_cronet) {
     public_headers += [ "//components/cronet/ios/Cronet.h" ]
     public_headers += grpc_public_headers
     public_headers += cronet_native_public_headers
   }
 
-  sources = ios_web_view_sources
+  sources = ios_web_view_public_headers
+  sources += [ "internal/web_view_global_state_util.mm" ]
   if (ios_web_view_include_cronet) {
     sources += [ "//components/cronet/ios/Cronet.h" ]
   }
 
-  deps = ios_web_view_deps
+  deps = [
+    ":web_view_sources",
+    "//ios/third_party/webkit",
+    "//ios/web/public/init",
+    "//testing/gtest:ios_coverage_utils",
+  ]
   deps += [ ":web_view_umbrella_header" ]
   if (ios_web_view_include_cronet) {
     deps += [ "//components/cronet/ios:cronet_sources" ]
@@ -390,16 +407,9 @@ ios_framework_bundle("web_view") {
   }
 }
 
-ios_web_view_test_sources = [
-  "internal/translate/fake_web_view_translate_client.h",
-  "internal/translate/fake_web_view_translate_client.mm",
-]
-
 source_set("run_all_unittests") {
   testonly = true
-  sources = [
-    "test/run_all_unittests.cc",
-  ]
+  sources = [ "test/run_all_unittests.cc" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -424,33 +434,44 @@ test("ios_web_view_unittests") {
     "internal/cwv_html_element_unittest.mm",
     "internal/cwv_preferences_unittest.mm",
     "internal/cwv_preview_element_info_unittest.mm",
-    "internal/cwv_scroll_view_unittest.mm",
+    "internal/cwv_ssl_error_handler_unittest.mm",
     "internal/cwv_ssl_status_unittest.mm",
     "internal/cwv_web_view_configuration_unittest.mm",
+    "internal/cwv_web_view_unittest.mm",
+    "internal/metrics/cwv_metrics_provider_unittest.mm",
+    "internal/passwords/cwv_credential_provider_extension_utils_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
+    "internal/passwords/web_view_password_manager_client_unittest.mm",
     "internal/signin/cwv_identity_unittest.mm",
+    "internal/signin/web_view_device_accounts_provider_impl_unittest.mm",
+    "internal/signin/web_view_gaia_auth_fetcher_unittest.mm",
     "internal/sync/cwv_sync_controller_unittest.mm",
+    "internal/sync/cwv_trusted_vault_observer_unittest.mm",
+    "internal/sync/web_view_sync_client_unittest.mm",
     "internal/translate/cwv_translation_controller_unittest.mm",
     "internal/translate/cwv_translation_language_unittest.mm",
     "internal/translate/cwv_translation_policy_unittest.mm",
+    "internal/web_view_early_page_script_provider_unittest.mm",
+    "internal/web_view_global_state_util_stub.mm",
     "internal/web_view_web_client_unittest.mm",
   ]
-  sources += ios_web_view_sources
-  sources += ios_web_view_test_sources
 
   deps = [
     ":run_all_unittests",
+    ":web_view_sources",
     "test:test_support",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util:test_support",
-    "//components/browser_sync:test_support",
+    "//components/invalidation/impl:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
+    "//components/sync_device_info:test_support",
+    "//components/translate/core/browser:test_support",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/js_messaging",
@@ -459,7 +480,6 @@ test("ios_web_view_unittests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-  deps += ios_web_view_deps
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -469,9 +489,7 @@ test("ios_web_view_unittests") {
 test("ios_web_view_inttests") {
   testonly = true
 
-  deps = [
-    "//ios/web_view/test:inttests",
-  ]
+  deps = [ "//ios/web_view/test:inttests" ]
 
   bundle_deps = [ ":web_view+bundle" ]
 
@@ -480,22 +498,10 @@ test("ios_web_view_inttests") {
   assert_no_deps = ios_assert_no_deps
 }
 
-js_compile_bundle("web_view_all_frames") {
-  closure_entry_point = "__crWeb.webViewAllFrames"
-  sources = [
-    "//components/autofill/ios/browser/resources/autofill_controller.js",
-    "//components/autofill/ios/browser/resources/suggestion_controller.js",
-    "//components/autofill/ios/form_util/resources/fill.js",
-    "//components/autofill/ios/form_util/resources/form.js",
-    "//components/autofill/ios/form_util/resources/form_handlers.js",
-    "resources/web_view_all_frames.js",
-  ]
-}
-
 js_compile_bundle("web_view_main_frame") {
   closure_entry_point = "__crWeb.webViewMainFrame"
   sources = [
-    "//components/password_manager/ios/resources/password_controller.js",
+    "//components/translate/ios/browser/resources/language_detection.js",
     "resources/web_view_main_frame.js",
   ]
 }
@@ -505,11 +511,15 @@ repack_locales("repack_locales") {
   source_patterns = [
     "${root_gen_dir}/components/strings/components_strings_",
     "${root_gen_dir}/components/strings/components_locale_settings_",
+    "${root_gen_dir}/ui/strings/app_locale_settings_",
+    "${root_gen_dir}/ui/strings/ui_strings_",
   ]
 
   deps = [
     "//components/strings:components_locale_settings",
     "//components/strings:components_strings",
+    "//ui/strings:app_locale_settings",
+    "//ui/strings:ui_strings",
   ]
   input_locales = ios_packed_locales
   output_locales = ios_packed_locales_as_mac_outputs
@@ -520,11 +530,16 @@ repack("repack_resources") {
   visibility = [ ":web_view_resources" ]
   deps = [
     "//components/resources:components_resources",
+    "//components/sync/driver/resources",
     "//ios/web:resources",
+    "//ui/resources",
   ]
   sources = [
     "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
+    "$root_gen_dir/ui/resources/webui_generated_resources.pak",
+    "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   output = "$target_gen_dir/web_view_resources.pak"
   copy_data_to_bundle = true
@@ -544,25 +559,19 @@ group("web_view_resources") {
   deps = [
     ":repack_locales",
     ":repack_resources",
+    ":repack_scalable_resources",
   ]
-  if (ios_web_view_enable_autofill) {
-    deps += [ ":repack_scalable_resources" ]
-  }
 }
 
-if (additional_toolchains == [] || current_toolchain == default_toolchain) {
+if (!is_fat_secondary_toolchain) {
   _package_dir = "$root_out_dir/ios_web_view"
 
   action("ios_web_view_generate_license") {
     _license_path = "$_package_dir/LICENSE"
 
     script = "//tools/licenses.py"
-    inputs = [
-      "//buildtools/$host_os/gn",
-    ]
-    outputs = [
-      _license_path,
-    ]
+    inputs = [ "//buildtools/$host_os/gn" ]
+    outputs = [ _license_path ]
     args = [
       "license_file",
       rebase_path(_license_path, root_build_dir),
@@ -570,6 +579,8 @@ if (additional_toolchains == [] || current_toolchain == default_toolchain) {
       "//ios/web_view",
       "--gn-out-dir",
       ".",
+      "--target-os",
+      "ios",
     ]
   }
 
@@ -579,13 +590,9 @@ if (additional_toolchains == [] || current_toolchain == default_toolchain) {
       "//AUTHORS",
       "//chrome/VERSION",
     ]
-    outputs = [
-      "$_package_dir/{{source_file_part}}",
-    ]
+    outputs = [ "$_package_dir/{{source_file_part}}" ]
 
-    deps = [
-      ":web_view",
-    ]
+    deps = [ ":web_view" ]
   }
 
   if (enable_dsyms) {
@@ -598,22 +605,16 @@ if (additional_toolchains == [] || current_toolchain == default_toolchain) {
       # generate both the dSYM and binary image are listed in deps.
       _dsyms = [ "$root_out_dir/$ios_web_view_output_name.dSYM" ]
 
-      sources = [
-        "$root_out_dir/$ios_web_view_output_name.framework",
-      ]
+      sources = [ "$root_out_dir/$ios_web_view_output_name.framework" ]
 
       _output = "$_package_dir/$ios_web_view_output_name.dSYM.tar.bz2"
 
-      outputs = [
-        _output,
-      ]
+      outputs = [ _output ]
 
-      args = [ rebase_path(_output, root_out_dir) ] +
-             rebase_path(_dsyms, root_out_dir)
+      args = [ rebase_path(_output, root_build_dir) ] +
+             rebase_path(_dsyms, root_build_dir)
 
-      deps = [
-        ":web_view",
-      ]
+      deps = [ ":web_view" ]
     }
   } else {
     group("ios_web_view_dsym_archive") {

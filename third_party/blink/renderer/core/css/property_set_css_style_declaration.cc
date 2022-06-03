@@ -27,7 +27,7 @@
 
 namespace blink {
 
-void PropertySetCSSStyleDeclaration::Trace(blink::Visitor* visitor) {
+void PropertySetCSSStyleDeclaration::Trace(Visitor* visitor) const {
   visitor->Trace(property_set_);
   AbstractPropertySetCSSStyleDeclaration::Trace(visitor);
 }

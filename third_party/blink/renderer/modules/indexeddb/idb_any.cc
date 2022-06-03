@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 
 #include <memory>
+#include <utility>
 
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
@@ -34,14 +35,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 
 namespace blink {
-
-IDBAny* IDBAny::CreateUndefined() {
-  return MakeGarbageCollected<IDBAny>(kUndefinedType);
-}
-
-IDBAny* IDBAny::CreateNull() {
-  return MakeGarbageCollected<IDBAny>(kNullType);
-}
 
 IDBAny::IDBAny(Type type) : type_(type) {
   DCHECK(type == kUndefinedType || type == kNullType);
@@ -54,11 +47,6 @@ void IDBAny::ContextWillBeDestroyed() {
     idb_cursor_->ContextWillBeDestroyed();
 }
 
-DOMStringList* IDBAny::DomStringList() const {
-  DCHECK_EQ(type_, kDOMStringListType);
-  return dom_string_list_.Get();
-}
-
 IDBCursor* IDBAny::IdbCursor() const {
   DCHECK_EQ(type_, kIDBCursorType);
   SECURITY_DCHECK(idb_cursor_->IsKeyCursor());
@@ -67,8 +55,8 @@ IDBCursor* IDBAny::IdbCursor() const {
 
 IDBCursorWithValue* IDBAny::IdbCursorWithValue() const {
   DCHECK_EQ(type_, kIDBCursorWithValueType);
-  SECURITY_DCHECK(idb_cursor_->IsCursorWithValue());
-  return ToIDBCursorWithValue(idb_cursor_.Get());
+  SECURITY_DCHECK(IsA<IDBCursorWithValue>(idb_cursor_.Get()));
+  return To<IDBCursorWithValue>(idb_cursor_.Get());
 }
 
 IDBDatabase* IDBAny::IdbDatabase() const {
@@ -97,12 +85,9 @@ int64_t IDBAny::Integer() const {
   return integer_;
 }
 
-IDBAny::IDBAny(DOMStringList* value)
-    : type_(kDOMStringListType), dom_string_list_(value) {}
-
 IDBAny::IDBAny(IDBCursor* value)
-    : type_(value->IsCursorWithValue() ? kIDBCursorWithValueType
-                                       : kIDBCursorType),
+    : type_(IsA<IDBCursorWithValue>(value) ? kIDBCursorWithValueType
+                                           : kIDBCursorType),
       idb_cursor_(value) {}
 
 IDBAny::IDBAny(IDBDatabase* value)
@@ -119,8 +104,7 @@ IDBAny::IDBAny(std::unique_ptr<IDBKey> key)
 
 IDBAny::IDBAny(int64_t value) : type_(kIntegerType), integer_(value) {}
 
-void IDBAny::Trace(blink::Visitor* visitor) {
-  visitor->Trace(dom_string_list_);
+void IDBAny::Trace(Visitor* visitor) const {
   visitor->Trace(idb_cursor_);
   visitor->Trace(idb_database_);
 }

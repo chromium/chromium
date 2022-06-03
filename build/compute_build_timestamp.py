@@ -8,9 +8,8 @@ build_type impacts the timestamp generated, both relative to the date of the
 last recent commit:
 - default: the build date is set to the most recent first Sunday of a month at
   5:00am. The reason is that it is a time where invalidating the build cache
-  shouldn't have major reprecussions (due to lower load).
-- official: the build date is set to the current date at 5:00am, or the day
-  before if the current time is before 5:00am.
+  shouldn't have major repercussions (due to lower load).
+- official: the build date is set to the time of the most recent commit.
 Either way, it is guaranteed to be in the past and always in UTC.
 """
 

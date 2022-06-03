@@ -15,10 +15,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutProperties.TABS;
 
-import android.support.design.widget.TabLayout;
+import com.google.android.material.tabs.TabLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,14 +29,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
-
-import java.util.HashMap;
 
 /**
  * Controller tests for the keyboard accessory tab layout component.
@@ -42,7 +43,11 @@ import java.util.HashMap;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class KeyboardAccessoryTabLayoutControllerTest {
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
     @Mock
     private PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock
@@ -63,9 +68,6 @@ public class KeyboardAccessoryTabLayoutControllerTest {
     public void setUp() {
         ShadowRecordHistogram.reset();
         MockitoAnnotations.initMocks(this);
-        HashMap<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, true);
-        ChromeFeatureList.setTestFeatures(features);
 
         mCoordinator = new KeyboardAccessoryTabLayoutCoordinator();
         mMediator = mCoordinator.getMediatorForTesting();
@@ -148,5 +150,28 @@ public class KeyboardAccessoryTabLayoutControllerTest {
         mCoordinator.getTabSwitchingDelegate().closeActiveTab();
         verifyNoMoreInteractions(
                 mMockPropertyObserver, mMockTabListObserver, mMockAccessoryTabObserver);
+    }
+
+    @Test
+    public void testSetActiveTab() {
+        mModel.addObserver(mMockPropertyObserver);
+        assertThat(mModel.get(ACTIVE_TAB), is(nullValue()));
+        mCoordinator.getTabSwitchingDelegate().addTab(mTestTab);
+
+        // Set the active tab type to 0 which is the recording_type of |mTestTab|.
+        mCoordinator.getTabSwitchingDelegate().setActiveTab(0);
+
+        verify(mMockPropertyObserver).onPropertyChanged(mModel, ACTIVE_TAB);
+        assertThat(mModel.get(ACTIVE_TAB), is(0));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testSetActiveTab_tabTypeNotFound_throwsException() {
+        mModel.addObserver(mMockPropertyObserver);
+        assertThat(mModel.get(ACTIVE_TAB), is(nullValue()));
+        mCoordinator.getTabSwitchingDelegate().addTab(mTestTab);
+
+        // Set the active tab type to 1 which is different from the recording_type of |mTestTab|.
+        mCoordinator.getTabSwitchingDelegate().setActiveTab(1);
     }
 }

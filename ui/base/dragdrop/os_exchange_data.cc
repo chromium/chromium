@@ -9,27 +9,19 @@
 
 #include "base/callback.h"
 #include "base/pickle.h"
-#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "url/gurl.h"
 
 namespace ui {
 
-OSExchangeData::DownloadFileInfo::DownloadFileInfo(
-    const base::FilePath& filename,
-    std::unique_ptr<DownloadFileProvider> downloader)
-    : filename(filename), downloader(std::move(downloader)) {}
-
-OSExchangeData::DownloadFileInfo::~DownloadFileInfo() = default;
-
 OSExchangeData::OSExchangeData()
     : provider_(OSExchangeDataProviderFactory::CreateProvider()) {
 }
 
-OSExchangeData::OSExchangeData(std::unique_ptr<Provider> provider)
-    : provider_(std::move(provider)) {
-}
+OSExchangeData::OSExchangeData(std::unique_ptr<OSExchangeDataProvider> provider)
+    : provider_(std::move(provider)) {}
 
 OSExchangeData::~OSExchangeData() {
 }
@@ -42,11 +34,11 @@ bool OSExchangeData::DidOriginateFromRenderer() const {
   return provider_->DidOriginateFromRenderer();
 }
 
-void OSExchangeData::SetString(const base::string16& data) {
+void OSExchangeData::SetString(const std::u16string& data) {
   provider_->SetString(data);
 }
 
-void OSExchangeData::SetURL(const GURL& url, const base::string16& title) {
+void OSExchangeData::SetURL(const GURL& url, const std::u16string& title) {
   provider_->SetURL(url, title);
 }
 
@@ -64,13 +56,13 @@ void OSExchangeData::SetPickledData(const ClipboardFormatType& format,
   provider_->SetPickledData(format, data);
 }
 
-bool OSExchangeData::GetString(base::string16* data) const {
+bool OSExchangeData::GetString(std::u16string* data) const {
   return provider_->GetString(data);
 }
 
 bool OSExchangeData::GetURLAndTitle(FilenameToURLPolicy policy,
                                     GURL* url,
-                                    base::string16* title) const {
+                                    std::u16string* title) const {
   return provider_->GetURLAndTitle(policy, url, title);
 }
 
@@ -99,6 +91,10 @@ bool OSExchangeData::HasFile() const {
   return provider_->HasFile();
 }
 
+bool OSExchangeData::HasFileContents() const {
+  return provider_->HasFileContents();
+}
+
 bool OSExchangeData::HasCustomFormat(const ClipboardFormatType& format) const {
   return provider_->HasCustomFormat(format);
 }
@@ -108,12 +104,10 @@ bool OSExchangeData::HasAnyFormat(
     const std::set<ClipboardFormatType>& format_types) const {
   if ((formats & STRING) != 0 && HasString())
     return true;
-  if ((formats & URL) != 0 && HasURL(CONVERT_FILENAMES))
+  if ((formats & URL) != 0 && HasURL(FilenameToURLPolicy::CONVERT_FILENAMES))
     return true;
-#if defined(OS_WIN)
   if ((formats & FILE_CONTENTS) != 0 && provider_->HasFileContents())
     return true;
-#endif
 #if defined(USE_AURA)
   if ((formats & HTML) != 0 && provider_->HasHtml())
     return true;
@@ -127,7 +121,6 @@ bool OSExchangeData::HasAnyFormat(
   return false;
 }
 
-#if defined(OS_WIN)
 void OSExchangeData::SetFileContents(const base::FilePath& filename,
                                      const std::string& file_contents) {
   provider_->SetFileContents(filename, file_contents);
@@ -138,6 +131,7 @@ bool OSExchangeData::GetFileContents(base::FilePath* filename,
   return provider_->GetFileContents(filename, file_contents);
 }
 
+#if defined(OS_WIN)
 bool OSExchangeData::HasVirtualFilenames() const {
   return provider_->HasVirtualFilenames();
 }
@@ -153,10 +147,6 @@ bool OSExchangeData::GetVirtualFilesAsTempFiles(
         callback) const {
   return provider_->GetVirtualFilesAsTempFiles(std::move(callback));
 }
-
-void OSExchangeData::SetDownloadFileInfo(DownloadFileInfo* download) {
-  provider_->SetDownloadFileInfo(download);
-}
 #endif
 
 #if defined(USE_AURA)
@@ -164,13 +154,22 @@ bool OSExchangeData::HasHtml() const {
   return provider_->HasHtml();
 }
 
-void OSExchangeData::SetHtml(const base::string16& html, const GURL& base_url) {
+void OSExchangeData::SetHtml(const std::u16string& html, const GURL& base_url) {
   provider_->SetHtml(html, base_url);
 }
 
-bool OSExchangeData::GetHtml(base::string16* html, GURL* base_url) const {
+bool OSExchangeData::GetHtml(std::u16string* html, GURL* base_url) const {
   return provider_->GetHtml(html, base_url);
 }
 #endif
+
+void OSExchangeData::SetSource(
+    std::unique_ptr<DataTransferEndpoint> data_source) {
+  provider_->SetSource(std::move(data_source));
+}
+
+DataTransferEndpoint* OSExchangeData::GetSource() const {
+  return provider_->GetSource();
+}
 
 }  // namespace ui

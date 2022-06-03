@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/offline_item_filter.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_items_collection/core/pending_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -40,6 +40,25 @@ struct ContentId {
   bool operator==(const ContentId& content_id) const;
 
   bool operator<(const ContentId& content_id) const;
+};
+
+// Contains all the information to schedule the download of the offline item.
+struct OfflineItemSchedule {
+ public:
+  OfflineItemSchedule(bool only_on_wifi, absl::optional<base::Time> start_time);
+
+  OfflineItemSchedule(const OfflineItemSchedule& other);
+  OfflineItemSchedule& operator=(const OfflineItemSchedule& other);
+  ~OfflineItemSchedule();
+
+  bool operator==(const OfflineItemSchedule& other) const;
+
+  // Whether the download should only happen on WIFI.
+  bool only_on_wifi;
+
+  // Time to start downloading the offline item. Will be ignored if
+  // |only_on_wifi_| is true.
+  absl::optional<base::Time> start_time;
 };
 
 // A Java counterpart will be generated for this enum.
@@ -72,7 +91,7 @@ struct OfflineItem {
 
     // The maximum value of the download progress. Absence of the value implies
     // indeterminate progress.
-    base::Optional<int64_t> max;
+    absl::optional<int64_t> max;
 
     // The unit of progress to be displayed in the UI.
     OfflineItemProgressUnit unit;
@@ -80,6 +99,8 @@ struct OfflineItem {
 
   OfflineItem();
   OfflineItem(const OfflineItem& other);
+  OfflineItem& operator=(const OfflineItem& other);
+
   explicit OfflineItem(const ContentId& id);
 
   ~OfflineItem();
@@ -164,14 +185,17 @@ struct OfflineItem {
 
   // Request Metadata.
   // ---------------------------------------------------------------------------
-  // The URL of the top level frame at the time the content was offlined.
-  GURL page_url;
+  // The URL of the offline item, after all redirections.
+  GURL url;
 
   // The URL that represents the original request (before any redirection).
   GURL original_url;
 
   // Whether or not this item is off the record.
   bool is_off_the_record;
+
+  // The OTRProfileID of the profile, null if the profile is regular.
+  std::string otr_profile_id;
 
   // Identifies the item's publisher.
   std::string attribution;
@@ -211,6 +235,9 @@ struct OfflineItem {
   // Whether the download might be dangerous and will require additional
   // validation from user.
   bool is_dangerous;
+
+  // The criteria for when the offline item is likely to download.
+  absl::optional<OfflineItemSchedule> schedule;
 };
 
 // Implemented for test-only. See test_support/offline_item_test_support.cc.
@@ -261,4 +288,4 @@ struct OfflineItemShareInfo {
 
 }  // namespace offline_items_collection
 
-#endif  // COMPONENTS_OFFLINE_ITEMS_COLLECTION_OFFLINE_ITEM_H_
+#endif  // COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_OFFLINE_ITEM_H_

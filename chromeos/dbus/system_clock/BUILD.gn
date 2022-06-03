@@ -17,5 +17,19 @@ component("system_clock") {
     "fake_system_clock_client.h",
     "system_clock_client.cc",
     "system_clock_client.h",
+    "system_clock_sync_observation.cc",
+    "system_clock_sync_observation.h",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":system_clock",
+    "//base/test:test_support",
+    "//dbus",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "system_clock_sync_observation_unittest.cc" ]
 }

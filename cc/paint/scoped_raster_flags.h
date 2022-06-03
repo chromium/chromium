@@ -9,6 +9,7 @@
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -50,8 +51,8 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   }
 
   const PaintFlags* original_flags_;
-  base::Optional<PaintFlags> modified_flags_;
-  base::Optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
+  absl::optional<PaintFlags> modified_flags_;
+  absl::optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;
 };
 

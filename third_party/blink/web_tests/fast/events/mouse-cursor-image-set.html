@@ -25,13 +25,12 @@
 <br/>
 <div id="console"></div>
 <script>
-var imagesLeftToLoad = 0;
 var testContainer = document.getElementById('test-container');
 
 function checkCursors() {
-    debug('Checking cursors with device pixel ratio of ' + window.devicePixelRatio);  
+    debug('Checking cursors with device pixel ratio of ' + window.devicePixelRatio);
     debug('----------------------------------------------');
-	
+
     var nodesToTest = document.querySelectorAll('#test-container > div');
     for (var i = 0; i < nodesToTest.length; i++) {
         var node = nodesToTest[i];
@@ -54,13 +53,21 @@ function runTests() {
         checkCursors();
         // Repeat in high-dpi mode
         testRunner.setBackingScaleFactor(2, function() {
-            // Failed images are apparently reset on scale factor change. 
-            loadImages([{ url: 'doesntexist.png', error: true }], function() {
+            // Flush style (and layout) to ensure that requests for the (cursor) resources
+            // referenced by style has been issued. This means that the ordering request performed
+            // below will be able to re-use the same (internal) resource if it is still pending.
+            // If the actual cursor request has already completed before the ordering request is
+            // issued then the ordering request will not re-use the same resource, but ordering is
+            // still guaranteed in that case.
+            testContainer.offsetTop;
+            // Failed images are apparently reset on scale factor change.
+            loadImages([{ url: 'doesntexist.png', error: true }],
+                        function() {
                 checkCursors();
                 testContainer.style.display = 'none';
                 finishJSTest();
             });
-    	});	
+      });
     } else {
         finishJSTest();
     }

@@ -1,0 +1,16 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cpp") {
+  sources = [
+    "language_detection_service.cc",
+    "language_detection_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/services/language_detection/public/mojom",
+    "//content/public/browser",
+  ]
+}

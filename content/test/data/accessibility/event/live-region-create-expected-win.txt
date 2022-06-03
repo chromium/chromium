@@ -1,3 +1,3 @@
-EVENT_OBJECT_REORDER on <div#container> role=DIV
-EVENT_OBJECT_SHOW on <div> role=DIV
-IA2_EVENT_TEXT_INSERTED on <div#container> role=DIV new_text={'<obj>' start=1 end=2}
+EVENT_OBJECT_REORDER on <div#container> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_SHOW on <div> role=ROLE_SYSTEM_GROUPING
+IA2_EVENT_TEXT_INSERTED on <div#container> role=ROLE_SYSTEM_GROUPING new_text={'<obj>' start=1 end=2}

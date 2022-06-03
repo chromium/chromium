@@ -4,7 +4,9 @@
 
 #include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 #include "net/tools/huffman_trie/bit_writer.h"
 
 namespace net {

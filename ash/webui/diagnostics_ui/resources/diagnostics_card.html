@@ -1,0 +1,83 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  ::slotted([slot=chip]) {
+    background-color: var(--google-grey-100);
+    border-radius: 16px;
+  }
+
+  ::slotted([slot=icon]) {
+    @apply --diagnostics-card-icon;
+    margin: 0 20px;
+    position: relative;
+  }
+
+  ::slotted([slot=title]) {
+    @apply --diagnostics-card-title-font;
+  }
+
+  ::slotted([slot=left-panel]) {
+    flex: 1;
+    margin-bottom: 16px;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    margin: 12px 0 12px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    height: 20px;
+    padding-top: 10px;
+  }
+
+  .card-wrapper {
+    border-radius: 4px;
+    box-shadow: var(--diagnostics-box-shadow);
+    margin: 10px 0;
+  }
+
+  .data-points {
+    border-bottom: 1px solid var(--google-grey-200);
+    display: grid;
+    grid-template-columns: 1fr 0fr 1fr 0fr 1fr;
+    padding-inline: var(--data-point-container-padding);
+  }
+
+  .data-points-column {
+    border-bottom: 1px solid var(--google-grey-200);
+    padding-inline: 24px;
+  }
+
+  .routine-container {
+    @apply --diagnostics-default-font;
+  }
+
+  .top-section {
+    border-bottom: 1px solid var(--google-grey-200);
+    display: flex;
+    margin-top: 16px;
+  }
+
+  .top-section-networking {
+    margin-top: 0;
+  }
+</style>
+<diagnostics-card-frame>
+  <slot name="title" slot="title"></slot>
+  <slot name="chip" slot="chip"></slot>
+  <div slot="contents">
+    <div class$="[[getTopSectionClassName_(isNetworkingCard)]]">
+      <slot name="icon"></slot>
+      <slot name="left-panel"></slot>
+    </div>
+    <div id="body" class$="[[getBodyClassName_(isNetworkingCard)]]"
+        hidden$="[[hideDataPoints]]">
+      <slot name="body"></slot>
+    </div>
+    <div id="routines" class="routine-container">
+      <slot name="routines"></slot>
+    </div>
+  </div>
+</diagnostics-card-frame>

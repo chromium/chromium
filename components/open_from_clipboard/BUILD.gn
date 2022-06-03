@@ -6,12 +6,9 @@ static_library("open_from_clipboard") {
   sources = [
     "clipboard_recent_content.cc",
     "clipboard_recent_content.h",
-    "clipboard_recent_content_ios.h",
-    "clipboard_recent_content_ios.mm",
   ]
 
   deps = [
-    ":feature_flags",
     ":open_from_clipboard_impl",
     "//base",
     "//components/variations",
@@ -26,34 +23,28 @@ static_library("open_from_clipboard") {
       "clipboard_recent_content_generic.h",
     ]
     deps += [ "//ui/base/clipboard" ]
+  } else {
+    sources += [
+      "clipboard_recent_content_ios.h",
+      "clipboard_recent_content_ios.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
-}
-
-source_set("feature_flags") {
-  sources = [
-    "clipboard_recent_content_features.cc",
-    "clipboard_recent_content_features.h",
-  ]
-  deps = [
-    "//base",
-  ]
 }
 
 # Helper classes used by "open_from_clipboard" target. These classes must have
 # no dependencies on "//base:i18n".
 source_set("open_from_clipboard_impl") {
-  sources = [
-    "clipboard_recent_content_impl_ios.h",
-    "clipboard_recent_content_impl_ios.mm",
-  ]
-  deps = [
-    "//base",
-  ]
+  sources = []
+  deps = [ "//base" ]
   assert_no_deps = [ "//base:i18n" ]
   if (is_ios) {
+    sources += [
+      "clipboard_recent_content_impl_ios.h",
+      "clipboard_recent_content_impl_ios.mm",
+    ]
     configs += [ "//build/config/compiler:enable_arc" ]
-
-    libs = [ "MobileCoreServices.framework" ]
+    frameworks = [ "MobileCoreServices.framework" ]
   }
 }
 
@@ -74,14 +65,13 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "clipboard_recent_content_ios_unittest.mm",
-  ]
+  sources = []
 
   deps = [
     ":open_from_clipboard",
     ":open_from_clipboard_impl",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
     "//url",
@@ -89,6 +79,12 @@ source_set("unit_tests") {
 
   if (!is_ios) {
     sources += [ "clipboard_recent_content_generic_unittest.cc" ]
-    deps += [ "//ui/base/clipboard:clipboard_test_support" ]
+    deps += [
+      "//base/test:test_support",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
+  } else {
+    sources += [ "clipboard_recent_content_ios_unittest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }

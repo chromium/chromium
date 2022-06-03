@@ -1,68 +1,31 @@
-<html> 
-<head>
-<style>
-.editing { 
-    border: 2px solid red; 
-    font-size: 24px; 
-}
-.explanation { 
-    border: 2px solid blue; 
-    padding: 12px; 
-    font-size: 24px; 
-    margin-bottom: 24px;
-}
-.scenario { margin-bottom: 16px;}
-.scenario:first-line { font-weight: bold; margin-bottom: 16px;}
-.expected-results:first-line { font-weight: bold }
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-<script src="../../resources/dump-as-markup.js"></script>
-<title>Editing Test</title> 
-</head> 
-<body>
-
-<div id="expected" class="expected-results">
-<ul style="text-align:right;"><li>A</li></ul>
-<div>
-    <ul>
-        <li>
-            <a href="">B</a>
-            <br>
-            C 
-        </li>
-    </ul>
-</div>
-</div>
-
-<div contenteditable id="root" style="word-wrap: break-word; -khtml-nbsp-mode: space; -khtml-line-break: after-white-space;">
-<div id="test" class="editing">
-<ul style="text-align:right;"><li>A</li></ul>
-<div>
-    <ul>
-        <li>
-            <a href="">B</a>
-            <br>
-            C 
-        </li>
-    </ul>
-</div>
-</div>
-</div>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    for (i = 0; i < 3; i++)
-        extendSelectionForwardByLineCommand();
-    copyCommand();
-    pasteCommand();
-    Markup.description('Bug fix for <a href="rdar://problem/4039777">&lt;rdar://problem/4039777&gt;</a> Pasting particular snippet of HTML containing list items and a link creates too many list items');
-    Markup.dump('expected', 'Expected result');
-    Markup.dump('test', 'Actual result');
-}
-
-runDumpAsTextEditingTest(true);
-
+// Pasting particular snippet of HTML containing list items and a link creates
+// too many list items.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul style="text-align:right;"><li>^A</li></ul>',
+            '<div><ul>',
+            '<li><a>B</a><br>C</li>|',
+            '</ul></div>',
+        '</div>',
+    ],
+    selection => {
+        selection.document.execCommand('copy');
+        selection.document.execCommand('paste');
+    },
+    [
+        '<div contenteditable>',
+            '<ul style="text-align:right;">',
+              '<li>A</li>',
+              '<div style="text-align: start;"><ul>',
+              '<li><a>B</a><br>C|</li>',
+              '</ul></div>',
+            '</ul>',
+        '</div>',
+    ]);
 </script>
-
-</body>
-</html>

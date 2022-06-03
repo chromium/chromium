@@ -14,11 +14,12 @@ namespace base {
 enum {
   PATH_POSIX_START = 400,
 
-  DIR_CACHE,    // Directory where to put cache data.  Note this is
-                // *not* where the browser cache lives, but the
-                // browser cache can be a subdirectory.
-                // This is $XDG_CACHE_HOME on Linux and
-                // ~/Library/Caches on Mac.
+  DIR_CACHE,  // Directory for the system users where applications store cache
+              // data in subdirectories.  Note this is *not* where the browser
+              // cache lives, but the browser cache can be a subdirectory. This
+              // is $XDG_CACHE_HOME on Linux and
+              // ~/Library/Caches on Mac.
+
   PATH_POSIX_END
 };
 

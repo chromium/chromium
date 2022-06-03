@@ -32,6 +32,9 @@ input.removeAttribute("required");
 debug('Type mismatch');
 shouldBeEqualToString('testIt("foo", "", "")', '');
 
+debug('Range invalid')
+shouldBeEqualToString('testIt("1990-05-29", "1990-05-30", "1990-05-28")', 'Minimum date (05/30/1990) must come before Maximum date (05/28/1990).');
+
 debug('Range overflow')
 shouldBeEqualToString('testIt("1982-11-02", "", "1970-12-31")', 'Value must be 12/31/1970 or earlier.');
 

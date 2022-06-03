@@ -11,17 +11,17 @@ namespace blink {
 
 class Base : public GarbageCollected<Base> {
  public:
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 };
 
 class Derived : public Base {
  public:
-  void Trace(Visitor* visitor) override { Base::Trace(visitor); }
+  void Trace(Visitor* visitor) const override { Base::Trace(visitor); }
 };
 
 class Mixin : public GarbageCollectedMixin {
  public:
-  void Trace(Visitor*) {}
+  void Trace(Visitor*) const {}
 };
 
 }  // namespace blink

@@ -22,6 +22,7 @@
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "tools/android/forwarder2/common.h"
 #include "tools/android/forwarder2/daemon.h"
 #include "tools/android/forwarder2/host_controllers_manager.h"
@@ -70,6 +71,9 @@ class ServerDelegate : public Daemon::ServerDelegate {
       : adb_path_(adb_path),
         has_failed_(false),
         controllers_manager_(base::BindRepeating(&GetExitNotifierFD)) {}
+
+  ServerDelegate(const ServerDelegate&) = delete;
+  ServerDelegate& operator=(const ServerDelegate&) = delete;
 
   bool has_failed() const {
     return has_failed_ || controllers_manager_.has_failed();
@@ -122,8 +126,6 @@ class ServerDelegate : public Daemon::ServerDelegate {
   std::string adb_path_;
   bool has_failed_;
   HostControllersManager controllers_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerDelegate);
 };
 
 class ClientDelegate : public Daemon::ClientDelegate {
@@ -146,7 +148,7 @@ class ClientDelegate : public Daemon::ClientDelegate {
     DCHECK(static_cast<size_t>(bytes_read) < sizeof(buf));
     buf[bytes_read] = 0;
     base::StringPiece msg(buf, bytes_read);
-    if (msg.starts_with("ERROR")) {
+    if (base::StartsWith(msg, "ERROR")) {
       LOG(ERROR) << msg;
       has_failed_ = true;
       return;

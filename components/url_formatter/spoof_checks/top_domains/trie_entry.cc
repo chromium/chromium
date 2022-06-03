@@ -9,6 +9,15 @@
 
 namespace url_formatter {
 
+uint8_t BitLength(uint32_t input) {
+  uint8_t number_of_bits = 0;
+  while (input != 0) {
+    number_of_bits++;
+    input >>= 1;
+  }
+  return number_of_bits;
+}
+
 namespace top_domains {
 
 TopDomainTrieEntry::TopDomainTrieEntry(
@@ -27,13 +36,20 @@ std::string TopDomainTrieEntry::name() const {
 
 bool TopDomainTrieEntry::WriteEntry(
     net::huffman_trie::TrieBitBuffer* writer) const {
+  // Make sure the assigned bit length is enough to encode all SkeletonType
+  // values.
+  DCHECK_EQ(kSkeletonTypeBitLength,
+            BitLength(url_formatter::SkeletonType::kMaxValue));
+
   if (entry_->skeleton == entry_->top_domain) {
     writer->WriteBit(1);
     writer->WriteBit(entry_->is_top_500 ? 1 : 0);
+    writer->WriteBits(entry_->skeleton_type, kSkeletonTypeBitLength);
     return true;
   }
   writer->WriteBit(0);
   writer->WriteBit(entry_->is_top_500 ? 1 : 0);
+  writer->WriteBits(entry_->skeleton_type, kSkeletonTypeBitLength);
 
   std::string top_domain = entry_->top_domain;
   // With the current top 10,000 domains, this optimization reduces the

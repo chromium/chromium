@@ -4,11 +4,16 @@
 
 #include "net/android/network_library.h"
 
+#include <string>
+#include <vector>
+
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/strings/string_split.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
 #include "net/net_jni_headers/DnsStatus_jni.h"
@@ -96,12 +101,6 @@ std::string GetTelephonyNetworkOperator() {
           base::android::AttachCurrentThread()));
 }
 
-std::string GetTelephonySimOperator() {
-  return base::android::ConvertJavaStringToUTF8(
-      Java_AndroidNetworkLibrary_getSimOperator(
-          base::android::AttachCurrentThread()));
-}
-
 bool GetIsRoaming() {
   return Java_AndroidNetworkLibrary_getIsRoaming(
       base::android::AttachCurrentThread());
@@ -118,37 +117,38 @@ std::string GetWifiSSID() {
           base::android::AttachCurrentThread()));
 }
 
-base::Optional<int32_t> GetWifiSignalLevel() {
+absl::optional<int32_t> GetWifiSignalLevel() {
   const int count_buckets = 5;
   int signal_strength = Java_AndroidNetworkLibrary_getWifiSignalLevel(
       base::android::AttachCurrentThread(), count_buckets);
   if (signal_strength < 0)
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK_LE(0, signal_strength);
   DCHECK_GE(count_buckets - 1, signal_strength);
 
   return signal_strength;
 }
 
-internal::ConfigParsePosixResult GetDnsServers(
-    std::vector<IPEndPoint>* dns_servers,
-    bool* dns_over_tls_active,
-    std::string* dns_over_tls_hostname) {
+bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
+                   bool* dns_over_tls_active,
+                   std::string* dns_over_tls_hostname,
+                   std::vector<std::string>* search_suffixes) {
+  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
+            base::android::SDK_VERSION_MARSHMALLOW);
+
   JNIEnv* env = AttachCurrentThread();
   // Get the DNS status for the active network.
   ScopedJavaLocalRef<jobject> result =
       Java_AndroidNetworkLibrary_getDnsStatus(env, nullptr /* network */);
   if (result.is_null())
-    return internal::CONFIG_PARSE_POSIX_NO_NAMESERVERS;
+    return false;
 
   // Parse the DNS servers.
-  std::vector<std::string> dns_servers_strings;
-  base::android::JavaArrayOfByteArrayToStringVector(
-      env, Java_DnsStatus_getDnsServers(env, result), &dns_servers_strings);
-  for (const std::string& dns_address_string : dns_servers_strings) {
-    IPAddress dns_address(
-        reinterpret_cast<const uint8_t*>(dns_address_string.c_str()),
-        dns_address_string.size());
+  std::vector<std::vector<uint8_t>> dns_servers_data;
+  base::android::JavaArrayOfByteArrayToBytesVector(
+      env, Java_DnsStatus_getDnsServers(env, result), &dns_servers_data);
+  for (const std::vector<uint8_t>& dns_address_data : dns_servers_data) {
+    IPAddress dns_address(dns_address_data.data(), dns_address_data.size());
     IPEndPoint dns_server(dns_address, dns_protocol::kDefaultPort);
     dns_servers->push_back(dns_server);
   }
@@ -157,8 +157,18 @@ internal::ConfigParsePosixResult GetDnsServers(
   *dns_over_tls_hostname = base::android::ConvertJavaStringToUTF8(
       Java_DnsStatus_getPrivateDnsServerName(env, result));
 
-  return dns_servers->size() ? internal::CONFIG_PARSE_POSIX_OK
-                             : internal::CONFIG_PARSE_POSIX_NO_NAMESERVERS;
+  std::string search_suffixes_str = base::android::ConvertJavaStringToUTF8(
+      Java_DnsStatus_getSearchDomains(env, result));
+  *search_suffixes =
+      base::SplitString(search_suffixes_str, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  return !dns_servers->empty();
+}
+
+bool ReportBadDefaultNetwork() {
+  return Java_AndroidNetworkLibrary_reportBadDefaultNetwork(
+      AttachCurrentThread());
 }
 
 void TagSocket(SocketDescriptor socket, uid_t uid, int32_t tag) {

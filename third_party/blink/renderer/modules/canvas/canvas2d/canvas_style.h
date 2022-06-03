@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -45,7 +44,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   explicit CanvasStyle(CanvasGradient*);
   explicit CanvasStyle(CanvasPattern*);
 
-  String GetColor() const {
+  String GetColorAsString() const {
     DCHECK_EQ(type_, kColorRGBA);
     return Color(rgba_).Serialized();
   }
@@ -59,7 +58,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
     return type_ == kColorRGBA && rgba_ == rgba;
   }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   enum Type { kColorRGBA, kGradient, kImagePattern };
@@ -77,4 +76,4 @@ bool ParseColorOrCurrentColor(Color& parsed_color,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_

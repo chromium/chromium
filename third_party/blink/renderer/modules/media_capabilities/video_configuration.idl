@@ -4,10 +4,18 @@
 
 // https://wicg.github.io/media-capabilities/#dictdef-videoconfiguration
 
+enum HdrMetadataType { "smpteSt2086", "smpteSt2094-10", "smpteSt2094-40" };
+enum ColorGamut { "srgb", "p3", "rec2020" };
+enum TransferFunction { "srgb", "pq", "hlg" };
+
 dictionary VideoConfiguration {
     required DOMString contentType;
     required unsigned long width;
     required unsigned long height;
     required unsigned long bitrate;
     required double framerate;
+    [RuntimeEnabled=MediaCapabilitiesDynamicRange] HdrMetadataType hdrMetadataType;
+    [RuntimeEnabled=MediaCapabilitiesDynamicRange] ColorGamut colorGamut;
+    [RuntimeEnabled=MediaCapabilitiesDynamicRange] TransferFunction transferFunction;
+    [RuntimeEnabled=MediaCapabilitiesWebRtc] DOMString scalabilityMode;
 };

@@ -13,24 +13,23 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
-import org.chromium.chrome.browser.notifications.ChromeNotification;
-import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
-import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
-import org.chromium.chrome.browser.notifications.NotificationManagerProxyImpl;
-import org.chromium.chrome.browser.notifications.NotificationMetadata;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
-import org.chromium.chrome.browser.notifications.PendingIntentProvider;
-import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -162,7 +161,7 @@ public class DisplayAgent {
             };
 
             // Try to load native.
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
             ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
         }
     }
@@ -179,20 +178,20 @@ public class DisplayAgent {
             case NotificationIntentInterceptor.IntentType.UNKNOWN:
                 break;
             case NotificationIntentInterceptor.IntentType.CONTENT_INTENT:
-                DisplayAgentJni.get().onUserAction(Profile.getLastUsedProfile(), clientType,
-                        UserActionType.CLICK, guid, ActionButtonType.UNKNOWN_ACTION, null);
+                DisplayAgentJni.get().onUserAction(clientType, UserActionType.CLICK, guid,
+                        ActionButtonType.UNKNOWN_ACTION, null);
                 closeNotification(guid);
                 break;
             case NotificationIntentInterceptor.IntentType.DELETE_INTENT:
-                DisplayAgentJni.get().onUserAction(Profile.getLastUsedProfile(), clientType,
-                        UserActionType.DISMISS, guid, ActionButtonType.UNKNOWN_ACTION, null);
+                DisplayAgentJni.get().onUserAction(clientType, UserActionType.DISMISS, guid,
+                        ActionButtonType.UNKNOWN_ACTION, null);
                 break;
             case NotificationIntentInterceptor.IntentType.ACTION_INTENT:
                 int actionButtonType = IntentUtils.safeGetIntExtra(
                         intent, EXTRA_ACTION_BUTTON_TYPE, ActionButtonType.UNKNOWN_ACTION);
                 String buttonId = IntentUtils.safeGetStringExtra(intent, EXTRA_ACTION_BUTTON_ID);
-                DisplayAgentJni.get().onUserAction(Profile.getLastUsedProfile(), clientType,
-                        UserActionType.BUTTON_CLICK, guid, actionButtonType, buttonId);
+                DisplayAgentJni.get().onUserAction(
+                        clientType, UserActionType.BUTTON_CLICK, guid, actionButtonType, buttonId);
                 closeNotification(guid);
                 break;
         }
@@ -235,9 +234,9 @@ public class DisplayAgent {
         // mode and provide correct notification id. Support buttons.
         Context context = ContextUtils.getApplicationContext();
 
-        ChromeNotificationBuilder builder =
-                NotificationBuilderFactory.createChromeNotificationBuilder(true /* preferCompat */,
-                        platformData.channel, null /* remoteAppPackageName */,
+        NotificationWrapperBuilder builder =
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        platformData.channel,
                         new NotificationMetadata(platformData.systemNotificationType,
                                 DISPLAY_AGENT_TAG, systemData.guid.hashCode()));
         builder.setContentTitle(notificationData.title);
@@ -298,7 +297,7 @@ public class DisplayAgent {
                     NotificationUmaTracker.ActionType.UNKNOWN);
         }
 
-        ChromeNotification notification = builder.buildChromeNotification();
+        NotificationWrapper notification = builder.buildNotificationWrapper();
         new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()).notify(notification);
         NotificationUmaTracker.getInstance().onNotificationShown(
                 platformData.systemNotificationType, notification.getNotification());
@@ -319,8 +318,7 @@ public class DisplayAgent {
 
     @NativeMethods
     interface Natives {
-        void onUserAction(Profile profile, @SchedulerClientType int clientType,
-                @UserActionType int actionType, String guid, @ActionButtonType int type,
-                String buttonId);
+        void onUserAction(@SchedulerClientType int clientType, @UserActionType int actionType,
+                String guid, @ActionButtonType int type, String buttonId);
     }
 }

@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lite_video.mojom;
+
+// This per-frame interface is implemented in the browser process and is used by the
+// renderer to notify the state of litevideo.
+interface LiteVideoService {
+  // Report the response size of a resource load that was throttled by
+  // LiteVideo. The stats will be aggregated per tab and used to estimate
+  // the amount of data saved.
+  NotifyThrottledDataUse(uint64 response_bytes);
+};
+

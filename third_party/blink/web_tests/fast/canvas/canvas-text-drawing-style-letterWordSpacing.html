@@ -1,0 +1,21 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+test(function(t) {
+    var ctx = document.createElement('canvas').getContext('2d');
+
+    // Verify initial values:
+    assert_equals(ctx.letterSpacing, 0);
+    assert_equals(ctx.wordSpacing, 0);
+
+    ctx.letterSpacing = 3;
+    assert_equals(ctx.letterSpacing, 3);
+    assert_equals(ctx.wordSpacing, 0);
+    ctx.wordSpacing = 5;
+    assert_equals(ctx.letterSpacing, 3);
+    assert_equals(ctx.wordSpacing, 5);
+
+}, "Test basic functionality of letterSpacing and wordSpacing.");
+</script>
+</body>

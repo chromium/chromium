@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include "content/common/input/synthetic_web_input_event_builders.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 using blink::WebInputEvent;
 using blink::WebTouchEvent;
@@ -18,7 +18,7 @@ namespace content {
 
 TEST(TouchEventStreamValidator, ValidTouchStream) {
   TouchEventStreamValidator validator;
-  SyntheticWebTouchEvent event;
+  blink::SyntheticWebTouchEvent event;
   std::string error_msg;
 
   event.PressPoint(0, 1);
@@ -58,7 +58,7 @@ TEST(TouchEventStreamValidator, ValidTouchStream) {
 
 TEST(TouchEventStreamValidator, ResetOnNewTouchStream) {
   TouchEventStreamValidator validator;
-  SyntheticWebTouchEvent event;
+  blink::SyntheticWebTouchEvent event;
   std::string error_msg;
 
   event.PressPoint(0, 1);
@@ -75,7 +75,7 @@ TEST(TouchEventStreamValidator, ResetOnNewTouchStream) {
 
 TEST(TouchEventStreamValidator, MissedTouchStart) {
   TouchEventStreamValidator validator;
-  SyntheticWebTouchEvent event;
+  blink::SyntheticWebTouchEvent event;
   std::string error_msg;
 
   event.PressPoint(0, 1);
@@ -91,7 +91,7 @@ TEST(TouchEventStreamValidator, MissedTouchStart) {
 
 TEST(TouchEventStreamValidator, MissedTouchEnd) {
   TouchEventStreamValidator validator;
-  SyntheticWebTouchEvent event;
+  blink::SyntheticWebTouchEvent event;
   std::string error_msg;
 
   event.PressPoint(0, 1);
@@ -122,13 +122,13 @@ TEST(TouchEventStreamValidator, EmptyEvent) {
 
 TEST(TouchEventStreamValidator, InvalidEventType) {
   TouchEventStreamValidator validator;
-  WebTouchEvent event(WebInputEvent::kGestureScrollBegin,
+  WebTouchEvent event(WebInputEvent::Type::kGestureScrollBegin,
                       WebInputEvent::kNoModifiers,
                       WebInputEvent::GetStaticTimeStampForTests());
   std::string error_msg;
 
   event.touches_length = 1;
-  event.touches[0].state = WebTouchPoint::kStatePressed;
+  event.touches[0].state = WebTouchPoint::State::kStatePressed;
 
   EXPECT_FALSE(validator.Validate(event, &error_msg));
   EXPECT_FALSE(error_msg.empty());
@@ -139,16 +139,20 @@ TEST(TouchEventStreamValidator, InvalidPointStates) {
   std::string error_msg;
 
   WebInputEvent::Type kTouchTypes[4] = {
-      WebInputEvent::kTouchStart, WebInputEvent::kTouchMove,
-      WebInputEvent::kTouchEnd, WebInputEvent::kTouchCancel,
+      WebInputEvent::Type::kTouchStart,
+      WebInputEvent::Type::kTouchMove,
+      WebInputEvent::Type::kTouchEnd,
+      WebInputEvent::Type::kTouchCancel,
   };
 
   WebTouchPoint::State kValidTouchPointStatesForType[4] = {
-      WebTouchPoint::kStatePressed, WebTouchPoint::kStateMoved,
-      WebTouchPoint::kStateReleased, WebTouchPoint::kStateCancelled,
+      WebTouchPoint::State::kStatePressed,
+      WebTouchPoint::State::kStateMoved,
+      WebTouchPoint::State::kStateReleased,
+      WebTouchPoint::State::kStateCancelled,
   };
 
-  SyntheticWebTouchEvent start;
+  blink::SyntheticWebTouchEvent start;
   start.PressPoint(0, 0);
   for (size_t i = 0; i < 4; ++i) {
     // Always start with a touchstart to reset the stream validation.
@@ -158,8 +162,8 @@ TEST(TouchEventStreamValidator, InvalidPointStates) {
     WebTouchEvent event(kTouchTypes[i], WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests());
     event.touches_length = 1;
-    for (size_t j = WebTouchPoint::kStateUndefined;
-         j <= WebTouchPoint::kStateCancelled; ++j) {
+    for (size_t j = static_cast<size_t>(WebTouchPoint::State::kStateUndefined);
+         j <= static_cast<size_t>(WebTouchPoint::State::kStateCancelled); ++j) {
       event.touches[0].state = static_cast<WebTouchPoint::State>(j);
       if (event.touches[0].state == kValidTouchPointStatesForType[i]) {
         EXPECT_TRUE(validator.Validate(event, &error_msg));

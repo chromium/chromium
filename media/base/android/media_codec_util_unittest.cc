@@ -4,7 +4,6 @@
 
 #include "media/base/android/media_codec_util.h"
 #include "base/android/build_info.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -20,32 +19,24 @@ using base::android::SDK_VERSION_NOUGAT_MR1;
 class MediaCodecUtilTest : public testing::Test {
  public:
   MediaCodecUtilTest() {}
+
+  MediaCodecUtilTest(const MediaCodecUtilTest&) = delete;
+  MediaCodecUtilTest& operator=(const MediaCodecUtilTest&) = delete;
+
   ~MediaCodecUtilTest() override {}
 
  public:
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecUtilTest);
 };
 
 TEST_F(MediaCodecUtilTest, TestCodecAvailableIfNewerVersion) {
-  // Test models that should be available above some sdk level.
-  // We probably don't need to test them all; we're more concerned that the
-  // blacklist code is doing the right thing with the entries it has rather than
-  // the map contents are right.
+  // Test models that should be available above some sdk level.  We probably
+  // don't need to test them all; we're more concerned that the blocklist code
+  // is doing the right thing with the entries it has rather than the map
+  // contents are right.
   struct {
     const char* model;
     int last_bad_sdk;
   } devices[] = {{"LGMS330", SDK_VERSION_LOLLIPOP_MR1},
-
-                 {"GT-I9100", SDK_VERSION_KITKAT},
-                 {"GT-I9300", SDK_VERSION_KITKAT},
-                 {"GT-N7000", SDK_VERSION_KITKAT},
-                 {"GT-N7100", SDK_VERSION_KITKAT},
-                 {"A6600", SDK_VERSION_KITKAT},
-                 {"A6800", SDK_VERSION_KITKAT},
-                 {"GT-S7262", SDK_VERSION_KITKAT},
-                 {"GT-S5282", SDK_VERSION_KITKAT},
-                 {"GT-I8552", SDK_VERSION_KITKAT},
-
                  {"always_works", 0},  // Some codec that works everywhere.
                  {nullptr, 0}};
 

@@ -23,10 +23,15 @@ class NavigationItem;
 class NewTabPageTabHelper : public web::WebStateObserver,
                             public web::WebStateUserData<NewTabPageTabHelper> {
  public:
+  NewTabPageTabHelper(const NewTabPageTabHelper&) = delete;
+  NewTabPageTabHelper& operator=(const NewTabPageTabHelper&) = delete;
+
   ~NewTabPageTabHelper() override;
 
-  static void CreateForWebState(web::WebState* web_state,
-                                id<NewTabPageTabHelperDelegate> delegate);
+  static void CreateForWebState(web::WebState* web_state);
+
+  // Sets the delegate. The delegate is not owned by the tab helper.
+  void SetDelegate(id<NewTabPageTabHelperDelegate> delegate);
 
   // Returns true when the current web_state is an NTP and the underlying
   // controllers have been created.
@@ -44,11 +49,14 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // state.
   bool IgnoreLoadRequests() const;
 
+  // Sets the NTP's NavigationItem title and virtualURL to the appropriate
+  // string and chrome://newtab respectively.
+  static void UpdateItem(web::NavigationItem* item);
+
  private:
   friend class web::WebStateUserData<NewTabPageTabHelper>;
 
-  NewTabPageTabHelper(web::WebState* web_state,
-                      id<NewTabPageTabHelperDelegate> delegate);
+  explicit NewTabPageTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver overrides:
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -56,13 +64,11 @@ class NewTabPageTabHelper : public web::WebStateObserver,
                           web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
+  void DidStopLoading(web::WebState* web_state) override;
+  void DidStartLoading(web::WebState* web_state) override;
 
   // Enable or disable the tab helper.
   void SetActive(bool active);
-
-  // Sets the NTP's NavigationItem title and virtualURL to the appropriate
-  // string and chrome://newtab respectively.
-  void UpdateItem(web::NavigationItem* item);
 
   // Returns true if an |url| is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);
@@ -82,18 +88,16 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   web::WebState* web_state_ = nullptr;
 
   // |YES| if the current tab helper is active.
-  BOOL active_;
+  BOOL active_ = NO;
 
   // |YES| if the NTP's underlying ios/web page is still loading.
   BOOL ignore_load_requests_ = NO;
 
   // Ensure the ignore_load_requests_ flag is never set to NO for more than
   // |kMaximumIgnoreLoadRequestsTime| seconds.
-  std::unique_ptr<base::OneShotTimer> ignore_load_requests_timer_ = nullptr;
+  std::unique_ptr<base::OneShotTimer> ignore_load_requests_timer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_H_

@@ -32,11 +32,15 @@ class MockTextureOwner : public TextureOwner {
   MOCK_CONST_METHOD0(GetSurface, gl::GLSurface*());
   MOCK_CONST_METHOD0(CreateJavaSurface, gl::ScopedJavaSurface());
   MOCK_METHOD0(UpdateTexImage, void());
-  MOCK_METHOD0(EnsureTexImageBound, void());
-  MOCK_METHOD1(GetTransformMatrix, void(float mtx[16]));
+  MOCK_METHOD1(EnsureTexImageBound, void(GLuint));
   MOCK_METHOD0(ReleaseBackBuffers, void());
-  MOCK_METHOD1(OnTextureDestroyed, void(gpu::gles2::AbstractTexture*));
+  MOCK_METHOD0(ReleaseResources, void());
   MOCK_METHOD1(SetFrameAvailableCallback, void(const base::RepeatingClosure&));
+  MOCK_METHOD3(GetCodedSizeAndVisibleRect,
+               bool(gfx::Size rotated_visible_size,
+                    gfx::Size* coded_size,
+                    gfx::Rect* visible_rect));
+  MOCK_METHOD1(RunWhenBufferIsAvailable, void(base::OnceClosure));
 
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override {
@@ -44,16 +48,9 @@ class MockTextureOwner : public TextureOwner {
     return nullptr;
   }
 
-  gfx::Rect GetCropRect() override {
-    ++get_crop_rect_count;
-    return gfx::Rect();
-  }
-
   gl::GLContext* fake_context;
   gl::GLSurface* fake_surface;
   int get_a_hardware_buffer_count = 0;
-  int get_crop_rect_count = 0;
-  bool expect_update_tex_image;
 
  protected:
   ~MockTextureOwner();

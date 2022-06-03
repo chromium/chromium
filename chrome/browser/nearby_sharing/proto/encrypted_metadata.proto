@@ -1,0 +1,30 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/location/nearby/sharing/proto/contact_certificates.proto.
+// Messages not used in Chrome have been omitted. Last copied at cl/310853364.
+
+syntax = "proto2";
+
+package nearbyshare.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+message EncryptedMetadata {
+  // The name of the local device when certificate is created.
+  optional string device_name = 1;
+
+  // The name of the user whose device created the certificate.
+  optional string full_name = 2;
+
+  // The icon url of the user whose device created the certificate.
+  optional string icon_url = 3;
+
+  // The Bluetooth MAC address of the device which created the certificate.
+  optional bytes bluetooth_mac_address = 4;
+
+  // The obfuscated Gaia ID of the account which created the certificate.
+  optional string obfuscated_gaia_id = 5;
+}

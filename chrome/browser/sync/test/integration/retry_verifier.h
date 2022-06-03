@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace syncer {
@@ -18,8 +17,8 @@ class SyncCycleSnapshot;
 // place somewhere in this range. The algorithm that calculates the retry wait
 // time uses rand functions.
 struct DelayInfo {
-  int64_t min_delay;
-  int64_t max_delay;
+  base::TimeDelta min_delay;
+  base::TimeDelta max_delay;
 };
 
 // Class to verify retries take place using the exponential backoff algorithm.
@@ -27,6 +26,10 @@ class RetryVerifier {
  public:
   static const int kMaxRetry = 3;
   RetryVerifier();
+
+  RetryVerifier(const RetryVerifier&) = delete;
+  RetryVerifier& operator=(const RetryVerifier&) = delete;
+
   ~RetryVerifier();
   int retry_count() const { return retry_count_; }
 
@@ -43,7 +46,6 @@ class RetryVerifier {
   DelayInfo delay_table_[kMaxRetry];
   bool success_;
   bool done_;
-  DISALLOW_COPY_AND_ASSIGN(RetryVerifier);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_RETRY_VERIFIER_H_

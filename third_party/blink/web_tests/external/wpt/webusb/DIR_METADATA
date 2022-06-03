@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>USB"
+}
+team_email: "webusb@chromium.org"
+

@@ -1,0 +1,5 @@
+Test CSS.forcePseudoStates method for :target
+Color without forced :target: rgb(255, 0, 0)
+Color with forced :target: rgb(0, 128, 0)
+Didn’t fail after disabling the CSS agent (https://crbug.com/1123526).
+

@@ -1,0 +1,193 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='outer A'",
+      "position": [-31, -31],
+      "bounds": [528, 441],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroller'",
+      "position": [-45, -45],
+      "bounds": [435, 345],
+      "transform": 2
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [7, 7],
+      "bounds": [330, 354],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [328, 7],
+      "bounds": [10, 240],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='outer B'",
+      "position": [-31, -31],
+      "bounds": [528, 441],
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "position": [-45, -45],
+      "bounds": [435, 345],
+      "transform": 4
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [7, 7],
+      "bounds": [330, 354],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [328, 7],
+      "bounds": [10, 240],
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='outer C'",
+      "position": [-31, -31],
+      "bounds": [528, 441],
+      "transform": 5
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "position": [-45, -45],
+      "bounds": [435, 345],
+      "transform": 6
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [8, 8],
+      "bounds": [330, 354],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 6
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [328, 7],
+      "bounds": [10, 240],
+      "transform": 6
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='outer D'",
+      "position": [-31, -31],
+      "bounds": [528, 441],
+      "transform": 7
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "position": [-45, -45],
+      "bounds": [435, 345],
+      "transform": 8
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [8, 8],
+      "bounds": [330, 354],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 8
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [328, 7],
+      "bounds": [10, 240],
+      "transform": 8
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [32, 32, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [62, 62, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [555, 32, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [62, 62, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [32, 468, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [555, 468, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+

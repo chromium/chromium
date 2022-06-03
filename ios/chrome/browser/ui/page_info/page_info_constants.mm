@@ -10,3 +10,9 @@
 
 NSString* const kPageInfoViewAccessibilityIdentifier =
     @"PageInfoViewAccessibilityIdentifier";
+
+NSString* const kPageInfoWillShowNotification =
+    @"kPageInfoWillShowNotification";
+
+NSString* const kPageInfoWillHideNotification =
+    @"kPageInfoWillHideNotification";

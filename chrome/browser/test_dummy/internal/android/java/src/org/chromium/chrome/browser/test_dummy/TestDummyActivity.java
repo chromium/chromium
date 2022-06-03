@@ -1,0 +1,37 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.test_dummy;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.chromium.base.CommandLine;
+import org.chromium.base.StrictModeContext;
+import org.chromium.chrome.modules.test_dummy.TestDummyModuleProvider;
+
+/** Helper activity to launch test dummy module.  */
+public class TestDummyActivity extends AppCompatActivity {
+    private static final String ENABLE_TEST_DUMMY_MODULE = "enable-test-dummy-module";
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!CommandLine.getInstance().hasSwitch(ENABLE_TEST_DUMMY_MODULE)) {
+            finish();
+            return;
+        }
+        if (TestDummyModuleProvider.isModuleInstalled()) {
+            onModuleInstalled(true);
+        } else {
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+                TestDummyModuleProvider.installModule(this::onModuleInstalled);
+            }
+        }
+    }
+
+    private void onModuleInstalled(boolean success) {
+        if (!success) throw new RuntimeException("Failed to install module");
+        TestDummyModuleProvider.getTestDummyProvider().getTestDummy().launch(getIntent(), this);
+    }
+}

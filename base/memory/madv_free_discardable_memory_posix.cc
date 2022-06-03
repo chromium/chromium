@@ -13,13 +13,18 @@
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_manager.h"
+#include "base/tracing_buildflags.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "base/trace_event/memory_allocator_dump.h"  // no-presubmit-check
+#include "base/trace_event/memory_dump_manager.h"    // no-presubmit-check
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
@@ -43,7 +48,7 @@ base::MadvFreeSupport ProbePlatformMadvFreeSupport() {
   // the MADV_FREE define will not exist and the probe will default to
   // unsupported, regardless of whether the target system actually supports
   // MADV_FREE.
-#if !defined(OS_MACOSX) && defined(MADV_FREE)
+#if !defined(OS_APPLE) && defined(MADV_FREE)
   uint8_t* dummy_page = static_cast<uint8_t*>(AllocatePages(1));
   dummy_page[0] = 1;
 
@@ -60,9 +65,9 @@ base::MadvFreeSupport ProbePlatformMadvFreeSupport() {
   }
   PCHECK(!munmap(dummy_page, base::GetPageSize()));
   return support;
-#endif
-
+#else
   return base::MadvFreeSupport::kUnsupported;
+#endif
 }
 
 }  // namespace
@@ -223,6 +228,7 @@ trace_event::MemoryAllocatorDump*
 MadvFreeDiscardableMemoryPosix::CreateMemoryAllocatorDump(
     const char* name,
     trace_event::ProcessMemoryDump* pmd) const {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
   DFAKE_SCOPED_LOCK(thread_collision_warner_);
 
   using base::trace_event::MemoryAllocatorDump;
@@ -267,6 +273,10 @@ MadvFreeDiscardableMemoryPosix::CreateMemoryAllocatorDump(
 
   pmd->AddSuballocation(dump->guid(), allocator_dump_name);
   return dump;
+#else   // BUILDFLAG(ENABLE_BASE_TRACING)
+  NOTREACHED();
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 bool MadvFreeDiscardableMemoryPosix::IsValid() const {
@@ -282,7 +292,7 @@ void MadvFreeDiscardableMemoryPosix::SetKeepMemoryForTesting(bool keep_memory) {
 
 bool MadvFreeDiscardableMemoryPosix::IsResident() const {
   DFAKE_SCOPED_RECURSIVE_LOCK(thread_collision_warner_);
-#ifdef OS_MACOSX
+#if defined(OS_APPLE)
   std::vector<char> vec(allocated_pages_);
 #else
   std::vector<unsigned char> vec(allocated_pages_);

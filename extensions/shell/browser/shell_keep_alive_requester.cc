@@ -13,8 +13,9 @@ namespace extensions {
 
 ShellKeepAliveRequester::ShellKeepAliveRequester(
     content::BrowserContext* browser_context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
-  app_lifetime_monitor_observer_.Add(
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
+  app_lifetime_monitor_observation_.Observe(
       apps::AppLifetimeMonitorFactory::GetForBrowserContext(browser_context));
 }
 

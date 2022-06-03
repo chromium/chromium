@@ -21,6 +21,10 @@ namespace base {
 class BASE_EXPORT PortProvider {
  public:
   PortProvider();
+
+  PortProvider(const PortProvider&) = delete;
+  PortProvider& operator=(const PortProvider&) = delete;
+
   virtual ~PortProvider();
 
   class Observer {
@@ -52,8 +56,6 @@ class BASE_EXPORT PortProvider {
   // |observer_list_|.
   base::Lock lock_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortProvider);
 };
 
 }  // namespace base

@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -23,10 +24,8 @@ IN_PROC_BROWSER_TEST_F(ResourceLoadingBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kResourceLoadingNonMobilePage);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  int data = -1;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractInt(shell(), "getResourceNumber()", &data));
-  EXPECT_EQ(9, data);
+  EXPECT_EQ(9, EvalJs(shell(), "getResourceNumber()",
+                      EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 } // namespace content

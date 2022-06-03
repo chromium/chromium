@@ -19,10 +19,6 @@ class DocumentAnimation {
   static DocumentTimeline* timeline(Document& document) {
     return &document.Timeline();
   }
-
-  static HeapVector<Member<Animation>> getAnimations(Document& document) {
-    return document.GetDocumentAnimations().getAnimations();
-  }
 };
 
 }  // namespace blink

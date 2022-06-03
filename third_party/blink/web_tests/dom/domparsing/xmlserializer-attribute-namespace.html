@@ -3,6 +3,8 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
+
 window.doc = (new DOMParser()).parseFromString('<outer attr1="value1" xmlns="http://www.example.com"/>', 'text/xml');
 // XML-namespaced attributes should get the "xml" prefix.
 doc.documentElement.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'id', 'outer');

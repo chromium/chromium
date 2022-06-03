@@ -7,8 +7,9 @@ package org.chromium.android_webview.test;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.view.View;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,9 +20,9 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -63,11 +64,16 @@ public class AwContentsRenderTest {
 
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        Assert.assertEquals(
-                Color.CYAN, GraphicsTestUtils.sampleBackgroundColorOnUiThread(mAwContents));
+        GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.CYAN);
 
         setBackgroundColorOnUiThread(Color.YELLOW);
         GraphicsTestUtils.pollForBackgroundColor(mAwContents, Color.YELLOW);
+
+        final String html_meta = "<html><head><meta name=color-scheme content=dark></head></html>";
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                "data:text/html," + html_meta);
+        final int dark_scheme_color = 0xFF121212;
+        GraphicsTestUtils.pollForBackgroundColor(mAwContents, dark_scheme_color);
 
         final String html = "<html><head><style>body {background-color:#227788}</style></head>"
                 + "<body></body></html>";
@@ -122,7 +128,8 @@ public class AwContentsRenderTest {
                 }
             });
         });
-        Assert.assertTrue(latch.await(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                latch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         final int width =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> mContainerView.getWidth());

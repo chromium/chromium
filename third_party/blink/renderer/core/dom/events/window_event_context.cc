@@ -61,7 +61,7 @@ bool WindowEventContext::HandleLocalEvents(Event& event) {
   return true;
 }
 
-void WindowEventContext::Trace(Visitor* visitor) {
+void WindowEventContext::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(target_);
   visitor->Trace(related_target_);

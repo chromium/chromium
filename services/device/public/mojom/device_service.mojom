@@ -10,7 +10,6 @@ import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
-import "services/device/public/mojom/nfc_provider.mojom";
 import "services/device/public/mojom/power_monitor.mojom";
 import "services/device/public/mojom/public_ip_address_geolocation_provider.mojom";
 import "services/device/public/mojom/screen_orientation.mojom";
@@ -22,10 +21,16 @@ import "services/device/public/mojom/usb_manager_test.mojom";
 import "services/device/public/mojom/vibration_manager.mojom";
 import "services/device/public/mojom/wake_lock_provider.mojom";
 
-[EnableIf=is_chromeos]
+[EnableIf=is_android]
+import "services/device/public/mojom/nfc_provider.mojom";
+
+[EnableIf=enable_device_posture]
+import "services/device/public/mojom/device_posture_provider.mojom";
+
+[EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/bluetooth_system.mojom";
 
-[EnableIf=is_chromeos]
+[EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/mtp_manager.mojom";
 
 [EnableIf=enable_hid]
@@ -37,6 +42,11 @@ import "services/device/public/mojom/input_service.mojom";
 // The main interface to the Device Service. This is bound only by the browser
 // process and is used to broker connections to more specific device APIs.
 interface DeviceService {
+
+  // Binds a DevicePostureProvider endpoint.
+  [EnableIf=enable_device_posture]
+  BindDevicePostureProvider(pending_receiver<DevicePostureProvider> receiver);
+
   // Binds a Fingerprint endpoint.
   BindFingerprint(pending_receiver<Fingerprint> receiver);
 
@@ -57,6 +67,7 @@ interface DeviceService {
   BindBatteryMonitor(pending_receiver<BatteryMonitor> receiver);
 
   // Binds a NFCProvider endpoint.
+  [EnableIf=is_android]
   BindNFCProvider(pending_receiver<NFCProvider> receiver);
 
   // Binds a VibrationManager endpoint.
@@ -67,11 +78,11 @@ interface DeviceService {
   BindHidManager(pending_receiver<HidManager> receiver);
 
   // Binds a BluetoothSystemFactory endpoint.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   BindBluetoothSystemFactory(pending_receiver<BluetoothSystemFactory> receiver);
 
   // Binds a MtpManager endpoint.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   BindMtpManager(pending_receiver<MtpManager> receiver);
 
   // Binds a PowerMonitor endpoint.

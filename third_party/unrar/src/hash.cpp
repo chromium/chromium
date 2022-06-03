@@ -53,7 +53,7 @@ DataHash::DataHash()
 DataHash::~DataHash()
 {
 #ifdef RAR_SMP
-  DestroyThreadPool(ThPool);
+  delete ThPool;
 #endif
   cleandata(&CurCRC32, sizeof(CurCRC32));
   if (blake2ctx!=NULL)
@@ -94,7 +94,7 @@ void DataHash::Update(const void *Data,size_t DataSize)
   {
 #ifdef RAR_SMP
     if (MaxThreads>1 && ThPool==NULL)
-      ThPool=CreateThreadPool();
+      ThPool=new ThreadPool(BLAKE2_THREADS_NUMBER);
     blake2ctx->ThPool=ThPool;
     blake2ctx->MaxThreads=MaxThreads;
 #endif

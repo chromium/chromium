@@ -12,15 +12,11 @@ cast_source_set("component") {
     "component_internal.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 test("cast_component_unittests") {
-  sources = [
-    "component_unittest.cc",
-  ]
+  sources = [ "component_unittest.cc" ]
 
   deps = [
     ":component",

@@ -13,14 +13,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -66,10 +66,10 @@ static const base::FilePath kTestFilePath =
     base::FilePath(FILE_PATH_LITERAL("foo/bar.mhtml"));
 static const int kFileSize = 1000;
 static const base::Time kTestCreationTime = base::Time::Now();
-static const base::string16 kTestTitle = base::ASCIIToUTF16("test title");
+static const std::u16string kTestTitle = u"test title";
 
-void GetItemAndVerify(const base::Optional<OfflineItem>& expected,
-                      const base::Optional<OfflineItem>& actual) {
+void GetItemAndVerify(const absl::optional<OfflineItem>& expected,
+                      const absl::optional<OfflineItem>& actual) {
   EXPECT_EQ(expected.has_value(), actual.has_value());
   if (!expected.has_value() || !actual.has_value())
     return;
@@ -89,16 +89,11 @@ class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
   void SetUIAdapter(DownloadUIAdapter* ui_adapter) override {}
   void OpenItem(const OfflineItem& item,
                 int64_t offline_id,
-                LaunchLocation launch_location) override {}
-  bool MaybeSuppressNotification(const std::string& origin,
-                                 const ClientId& item) override {
-    return maybe_suppress_notification_;
-  }
+                const OpenParams& open_params) override {}
   MOCK_METHOD2(GetShareInfoForItem,
                void(const ContentId&, OfflineContentProvider::ShareCallback));
 
   bool is_visible = true;
-  bool maybe_suppress_notification_ = false;
 };
 
 class MockVisualsDecoder : public VisualsDecoder {
@@ -117,6 +112,9 @@ class MockOfflinePageModel : public StubOfflinePageModel {
  public:
   explicit MockOfflinePageModel(base::TestMockTimeTaskRunner* task_runner)
       : observer_(nullptr), task_runner_(task_runner) {}
+
+  MockOfflinePageModel(const MockOfflinePageModel&) = delete;
+  MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
 
   ~MockOfflinePageModel() override {}
 
@@ -212,8 +210,6 @@ class MockOfflinePageModel : public StubOfflinePageModel {
  private:
   OfflinePageModel::Observer* observer_;
   base::TestMockTimeTaskRunner* task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockOfflinePageModel);
 };
 
 // Creates mock versions for OfflinePageModel, RequestCoordinator and their
@@ -238,8 +234,9 @@ class DownloadUIAdapterTest : public testing::Test,
   // DownloadUIAdapter::Observer
   void OnItemsAdded(const std::vector<OfflineItem>& items) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
   void OnItemRemoved(const ContentId& id) override;
+  void OnContentProviderGoingDown() override;
 
   // Runs until all of the tasks that are not delayed are gone from the task
   // queue.
@@ -305,7 +302,7 @@ void DownloadUIAdapterTest::OnItemsAdded(
 
 void DownloadUIAdapterTest::OnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   updated_guids.push_back(item.id.id);
   download_progress_bytes += item.received_bytes;
 }
@@ -313,6 +310,8 @@ void DownloadUIAdapterTest::OnItemUpdated(
 void DownloadUIAdapterTest::OnItemRemoved(const ContentId& id) {
   deleted_guids.push_back(id.id);
 }
+
+void DownloadUIAdapterTest::OnContentProviderGoingDown() {}
 
 void DownloadUIAdapterTest::PumpLoop() {
   task_runner_->RunUntilIdle();
@@ -349,9 +348,9 @@ TEST_F(DownloadUIAdapterTest, InitialItemConversion) {
 
   bool called = false;
   auto callback =
-      base::BindLambdaForTesting([&](const base::Optional<OfflineItem>& item) {
+      base::BindLambdaForTesting([&](const absl::optional<OfflineItem>& item) {
         EXPECT_EQ(kTestGuid1, item.value().id.id);
-        EXPECT_EQ(kTestUrl, item.value().page_url.spec());
+        EXPECT_EQ(kTestUrl, item.value().url.spec());
         EXPECT_EQ(OfflineItemState::COMPLETE, item.value().state);
         EXPECT_EQ(kFileSize, item.value().received_bytes);
         EXPECT_EQ(kTestFilePath, item.value().file_path);
@@ -474,7 +473,7 @@ TEST_F(DownloadUIAdapterTest, RemoveRequest) {
   EXPECT_EQ(1UL, deleted_guids.size());
   EXPECT_EQ(kTestClientId1.id, deleted_guids[0]);
   adapter->GetItemById(kTestContentId1,
-                       base::BindOnce(&GetItemAndVerify, base::nullopt));
+                       base::BindOnce(&GetItemAndVerify, absl::nullopt));
   PumpLoop();
 }
 

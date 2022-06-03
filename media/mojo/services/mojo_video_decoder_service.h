@@ -8,10 +8,10 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "media/base/cdm_context.h"
 #include "media/base/decode_status.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder.h"
@@ -21,11 +21,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
-class CdmContextRef;
 class DecoderBuffer;
 class MojoCdmServiceContext;
 class MojoDecoderBufferReader;
@@ -41,22 +40,25 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   explicit MojoVideoDecoderService(
       MojoMediaClient* mojo_media_client,
       MojoCdmServiceContext* mojo_cdm_service_context);
+
+  MojoVideoDecoderService(const MojoVideoDecoderService&) = delete;
+  MojoVideoDecoderService& operator=(const MojoVideoDecoderService&) = delete;
+
   ~MojoVideoDecoderService() final;
 
   // mojom::VideoDecoder implementation
   void GetSupportedConfigs(GetSupportedConfigsCallback callback) final;
   void Construct(
       mojo::PendingAssociatedRemote<mojom::VideoDecoderClient> client,
-      mojo::PendingAssociatedRemote<mojom::MediaLog> media_log,
+      mojo::PendingRemote<mojom::MediaLog> media_log,
       mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
           video_frame_handle_receiver,
       mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
       mojom::CommandBufferIdPtr command_buffer_id,
-      VideoDecoderImplementation implementation,
       const gfx::ColorSpace& target_color_space) final;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
-                  int32_t cdm_id,
+                  const absl::optional<base::UnguessableToken>& cdm_id,
                   InitializeCallback callback) final;
   void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
@@ -67,13 +69,13 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // running mojom::VideoDecoder callbacks after connection error happens and
   // |this| is deleted. It's not safe to run the callbacks after a connection
   // error.
-  void OnDecoderInitialized(bool success);
+  void OnDecoderInitialized(Status status);
   void OnReaderRead(DecodeCallback callback,
                     std::unique_ptr<ScopedDecodeTrace> trace_event,
                     scoped_refptr<DecoderBuffer> buffer);
   void OnDecoderDecoded(DecodeCallback callback,
                         std::unique_ptr<ScopedDecodeTrace> trace_event,
-                        DecodeStatus status);
+                        media::Status status);
 
   // Called by |mojo_decoder_buffer_reader_| when reset is finished.
   void OnReaderFlushed();
@@ -85,10 +87,13 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
 
   void OnDecoderRequestedOverlayInfo(
       bool restart_for_transitions,
-      const ProvideOverlayInfoCB& provide_overlay_info_cb);
+      ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Whether this instance is active (Decode() was called at least once).
   bool is_active_instance_ = false;
+
+  // Codec information stored via crash key.
+  std::string codec_string_;
 
   // Decoder factory.
   MojoMediaClient* mojo_media_client_;
@@ -110,8 +115,9 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // Helper for reading DecoderBuffer data from the DataPipe.
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 
-  // Holds the CdmContextRef to keep the CdmContext alive for the lifetime of
-  // the |decoder_|.
+  // The CDM ID and the corresponding CdmContextRef, which must be held to keep
+  // the CdmContext alive for the lifetime of the |decoder_|.
+  absl::optional<base::UnguessableToken> cdm_id_;
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
 
   std::unique_ptr<media::VideoDecoder> decoder_;
@@ -123,8 +129,6 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
 
   base::WeakPtr<MojoVideoDecoderService> weak_this_;
   base::WeakPtrFactory<MojoVideoDecoderService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoDecoderService);
 };
 
 }  // namespace media

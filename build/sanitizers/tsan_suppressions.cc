@@ -15,10 +15,11 @@
 // See http://dev.chromium.org/developers/testing/threadsanitizer-tsan-v2
 // for the instructions on writing suppressions.
 char kTSanDefaultSuppressions[] =
-    // False positives in libdconfsettings.so, libflashplayer.so, libgio.so,
-    // libglib.so and libgobject.so.
+    // False positives in libdbus.so, libdconfsettings.so, libflashplayer.so,
+    // libgio.so, libglib.so and libgobject.so.
     // Since we don't instrument them, we cannot reason about the
     // synchronization in them.
+    "race:libdbus*.so\n"
     "race:libdconfsettings*.so\n"
     "race:libflashplayer.so\n"
     "race:libgio*.so\n"
@@ -44,9 +45,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/244856
     "race:libpulsecommon*.so\n"
 
-    // http://crbug.com/246968
-    "race:webrtc::VideoCodingModuleImpl::RegisterPacketRequestCallback\n"
-
     // http://crbug.com/258479
     "race:g_trace_state\n"
 
@@ -67,15 +65,10 @@ char kTSanDefaultSuppressions[] =
     "deadlock:cc::VideoLayerImpl::WillDraw\n"
 
     // http://crbug.com/328826
-    "race:gLCDOrder\n"
-    "race:gLCDOrientation\n"
+    "race:skia::(anonymous namespace)::g_pixel_geometry\n"
 
     // http://crbug.com/328868
     "race:PR_Lock\n"
-
-    // http://crbug.com/348982
-    "race:cricket::P2PTransportChannel::OnConnectionDestroyed\n"
-    "race:cricket::P2PTransportChannel::AddConnection\n"
 
     // http://crbug.com/348984
     "race:sctp_express_handle_sack\n"
@@ -128,11 +121,16 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/927330
     "race:net::(anonymous namespace)::g_network_change_notifier\n"
 
-    // https://crbug.com/965722
-    "race:content::(anonymous namespace)::CorruptDBRequestHandler\n"
-
     // https://crbug.com/977085
     "race:vp3_update_thread_context\n"
+
+    // Benign data race in libjpeg-turbo, won't fix
+    // (https://github.com/libjpeg-turbo/libjpeg-turbo/issues/87).
+    // https://crbug.com/1056011
+    "race:third_party/libjpeg_turbo/simd/x86_64/jsimd.c\n"
+
+    // https://crbug.com/1158622
+    "race:absl::synchronization_internal::Waiter::Post\n"
 
     // End of suppressions.
     ;  // Please keep this semicolon.

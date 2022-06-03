@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
+#include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace url_formatter {
@@ -12,10 +13,10 @@ namespace top_domains {
 namespace {
 
 // Minimum length of the e2LD (the registered domain name without the registry)
-// to be considered for an edit distance comparison, including a trailing dot.
-// Thus: 'google.com' has of length 7 ("google.") and is long enough, while
-//       'abc.co.uk' has a length of 4 ("abc."), and will not be considered.
-const size_t kMinLengthForEditDistance = 6u;
+// to be considered for an edit distance comparison.
+// Thus: 'google.com' has of length 6 ("google") and is long enough, while
+//       'abc.co.uk' has a length of 3 ("abc"), and will not be considered.
+const size_t kMinLengthForEditDistance = 5u;
 
 }  // namespace
 
@@ -31,7 +32,9 @@ std::string HostnameWithoutRegistry(const std::string& hostname) {
           hostname.c_str(),
           net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  return hostname.substr(0, hostname.size() - registry_size);
+  std::string out = hostname.substr(0, hostname.size() - registry_size);
+  base::TrimString(out, ".", &out);
+  return out;
 }
 
 }  // namespace top_domains

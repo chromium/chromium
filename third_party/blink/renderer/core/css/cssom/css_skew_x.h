@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_X_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_X_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
 
@@ -31,6 +30,8 @@ class CORE_EXPORT CSSSkewX final : public CSSTransformComponent {
   static CSSSkewX* FromCSSValue(const CSSFunctionValue&);
 
   CSSSkewX(CSSNumericValue* ax);
+  CSSSkewX(const CSSSkewX&) = delete;
+  CSSSkewX& operator=(const CSSSkewX&) = delete;
 
   // Getters and setters for the ax attributes defined in the IDL.
   CSSNumericValue* ax() { return ax_.Get(); }
@@ -47,16 +48,15 @@ class CORE_EXPORT CSSSkewX final : public CSSTransformComponent {
   TransformComponentType GetType() const override { return kSkewXType; }
   const CSSFunctionValue* ToCSSValue() const override;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(ax_);
     CSSTransformComponent::Trace(visitor);
   }
 
  private:
   Member<CSSNumericValue> ax_;
-  DISALLOW_COPY_AND_ASSIGN(CSSSkewX);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_X_H_

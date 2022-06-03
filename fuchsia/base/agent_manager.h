@@ -10,7 +10,7 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/containers/flat_map.h"
-#include "base/fuchsia/default_context.h"
+#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace cr_fuchsia {
@@ -20,6 +20,10 @@ namespace cr_fuchsia {
 class AgentManager {
  public:
   explicit AgentManager(const sys::ServiceDirectory* incoming);
+
+  AgentManager(const AgentManager&) = delete;
+  AgentManager& operator=(const AgentManager&) = delete;
+
   ~AgentManager();
 
   // Connects to |agent| so satisfying the specified |request|.
@@ -59,8 +63,6 @@ class AgentManager {
   // Cache of resources for Agents which we're actively using. All |agents_|
   // are kept alive until the AgentManager is torn down, for now.
   base::flat_map<std::string, AgentConnection> agents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AgentManager);
 };
 
 }  // namespace cr_fuchsia

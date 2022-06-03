@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -76,7 +77,7 @@ void CheckJSONIsStillTheSame(const Value& value) {
 }
 
 void ValidateJsonList(const std::string& json) {
-  Optional<Value> list = JSONReader::Read(json);
+  absl::optional<Value> list = JSONReader::Read(json);
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
   ASSERT_EQ(1U, list->GetList().size());
@@ -133,12 +134,15 @@ TEST(JSONValueDeserializerTest, ReadJSONWithTrailingCommasFromString) {
   ASSERT_FALSE(value);
   ASSERT_NE(0, error_code);
   ASSERT_FALSE(error_message.empty());
-  // Repeat with commas allowed.
+  // Repeat with commas allowed. The Deserialize call shouldn't change the
+  // value of error_code. To test that, we first set it to a nonsense value
+  // (-789) and ASSERT_EQ that it remains that nonsense value.
+  error_code = -789;
   JSONStringValueDeserializer str_deserializer2(kProperJSONWithCommas,
                                                 JSON_ALLOW_TRAILING_COMMAS);
   value = str_deserializer2.Deserialize(&error_code, &error_message);
   ASSERT_TRUE(value);
-  ASSERT_EQ(JSONReader::JSON_TRAILING_COMMA, error_code);
+  ASSERT_EQ(-789, error_code);
   // Verify if the same JSON is still there.
   CheckJSONIsStillTheSame(*value);
 }
@@ -149,8 +153,7 @@ TEST(JSONValueDeserializerTest, ReadProperJSONFromFile) {
   ASSERT_TRUE(tempdir.CreateUniqueTempDir());
   // Write it down in the file.
   FilePath temp_file(tempdir.GetPath().AppendASCII("test.json"));
-  ASSERT_EQ(static_cast<int>(strlen(kProperJSON)),
-            WriteFile(temp_file, kProperJSON, strlen(kProperJSON)));
+  ASSERT_TRUE(WriteFile(temp_file, kProperJSON));
 
   // Try to deserialize it through the serializer.
   JSONFileValueDeserializer file_deserializer(temp_file);
@@ -173,9 +176,7 @@ TEST(JSONValueDeserializerTest, ReadJSONWithCommasFromFile) {
   ASSERT_TRUE(tempdir.CreateUniqueTempDir());
   // Write it down in the file.
   FilePath temp_file(tempdir.GetPath().AppendASCII("test.json"));
-  ASSERT_EQ(static_cast<int>(strlen(kProperJSONWithCommas)),
-            WriteFile(temp_file, kProperJSONWithCommas,
-                      strlen(kProperJSONWithCommas)));
+  ASSERT_TRUE(WriteFile(temp_file, kProperJSONWithCommas));
 
   // Try to deserialize it through the serializer.
   JSONFileValueDeserializer file_deserializer(temp_file);
@@ -187,12 +188,15 @@ TEST(JSONValueDeserializerTest, ReadJSONWithCommasFromFile) {
   ASSERT_FALSE(value);
   ASSERT_NE(0, error_code);
   ASSERT_FALSE(error_message.empty());
-  // Repeat with commas allowed.
+  // Repeat with commas allowed. The Deserialize call shouldn't change the
+  // value of error_code. To test that, we first set it to a nonsense value
+  // (-789) and ASSERT_EQ that it remains that nonsense value.
+  error_code = -789;
   JSONFileValueDeserializer file_deserializer2(temp_file,
                                                JSON_ALLOW_TRAILING_COMMAS);
   value = file_deserializer2.Deserialize(&error_code, &error_message);
   ASSERT_TRUE(value);
-  ASSERT_EQ(JSONReader::JSON_TRAILING_COMMA, error_code);
+  ASSERT_EQ(-789, error_code);
   // Verify if the same JSON is still there.
   CheckJSONIsStillTheSame(*value);
 }
@@ -255,9 +259,9 @@ TEST(JSONValueSerializerTest, Roundtrip) {
 }
 
 TEST(JSONValueSerializerTest, StringEscape) {
-  string16 all_chars;
+  std::u16string all_chars;
   for (int i = 1; i < 256; ++i) {
-    all_chars += static_cast<char16>(i);
+    all_chars += static_cast<char16_t>(i);
   }
   // Generated in in Firefox using the following js (with an extra backslash for
   // double quote):
@@ -303,7 +307,7 @@ TEST(JSONValueSerializerTest, StringEscape) {
 TEST(JSONValueSerializerTest, UnicodeStrings) {
   // unicode string json -> escaped ascii text
   Value root(Value::Type::DICTIONARY);
-  string16 test(WideToUTF16(L"\x7F51\x9875"));
+  std::u16string test(u"\x7F51\x9875");
   root.SetStringKey("web", test);
 
   static const char kExpected[] = "{\"web\":\"\xE7\xBD\x91\xE9\xA1\xB5\"}";
@@ -326,7 +330,7 @@ TEST(JSONValueSerializerTest, UnicodeStrings) {
 TEST(JSONValueSerializerTest, HexStrings) {
   // hex string json -> escaped ascii text
   Value root(Value::Type::DICTIONARY);
-  string16 test(WideToUTF16(L"\x01\x02"));
+  std::u16string test(u"\x01\x02");
   root.SetStringKey("test", test);
 
   static const char kExpected[] = "{\"test\":\"\\u0001\\u0002\"}";
@@ -364,7 +368,7 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   ValidateJsonList("[ 1 //// ,2\r\n ]");
 
   // It's ok to have a comment in a string.
-  Optional<Value> list = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
+  absl::optional<Value> list = JSONReader::Read("[\"// ok\\n /* foo */ \"]");
   ASSERT_TRUE(list);
   ASSERT_TRUE(list->is_list());
   ASSERT_EQ(1U, list->GetList().size());
@@ -420,7 +424,7 @@ TEST_F(JSONFileValueSerializerTest, Roundtrip) {
 
   // Now compare file contents.
   EXPECT_TRUE(TextContentsEqual(original_file_path, written_file_path));
-  EXPECT_TRUE(DeleteFile(written_file_path, false));
+  EXPECT_TRUE(DeleteFile(written_file_path));
 }
 
 TEST_F(JSONFileValueSerializerTest, RoundtripNested) {
@@ -446,7 +450,7 @@ TEST_F(JSONFileValueSerializerTest, RoundtripNested) {
 
   // Now compare file contents.
   EXPECT_TRUE(TextContentsEqual(original_file_path, written_file_path));
-  EXPECT_TRUE(DeleteFile(written_file_path, false));
+  EXPECT_TRUE(DeleteFile(written_file_path));
 }
 
 TEST_F(JSONFileValueSerializerTest, NoWhitespace) {

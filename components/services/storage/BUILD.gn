@@ -12,16 +12,18 @@ source_set("storage") {
     "dom_storage/dom_storage_constants.h",
     "dom_storage/dom_storage_database.cc",
     "dom_storage/dom_storage_database.h",
-    "dom_storage/legacy_dom_storage_database.cc",
-    "dom_storage/legacy_dom_storage_database.h",
     "dom_storage/local_storage_impl.cc",
     "dom_storage/local_storage_impl.h",
     "dom_storage/session_storage_area_impl.cc",
     "dom_storage/session_storage_area_impl.h",
     "dom_storage/session_storage_data_map.cc",
     "dom_storage/session_storage_data_map.h",
+    "dom_storage/session_storage_impl.cc",
+    "dom_storage/session_storage_impl.h",
     "dom_storage/session_storage_metadata.cc",
     "dom_storage/session_storage_metadata.h",
+    "dom_storage/session_storage_namespace_impl.cc",
+    "dom_storage/session_storage_namespace_impl.h",
     "dom_storage/storage_area_impl.cc",
     "dom_storage/storage_area_impl.h",
     "indexed_db/leveldb/leveldb_factory.cc",
@@ -63,27 +65,75 @@ source_set("storage") {
     "origin_context_impl.h",
     "partition_impl.cc",
     "partition_impl.h",
+    "sandboxed_vfs_delegate.cc",
+    "sandboxed_vfs_delegate.h",
+    "service_worker/service_worker_database.cc",
+    "service_worker/service_worker_database.h",
+    "service_worker/service_worker_disk_cache.cc",
+    "service_worker/service_worker_disk_cache.h",
+    "service_worker/service_worker_resource_ops.cc",
+    "service_worker/service_worker_resource_ops.h",
+    "service_worker/service_worker_storage.cc",
+    "service_worker/service_worker_storage.h",
+    "service_worker/service_worker_storage_control_impl.cc",
+    "service_worker/service_worker_storage_control_impl.h",
     "storage_service_impl.cc",
     "storage_service_impl.h",
   ]
 
   public_deps = [
+    ":test_api_stubs",
     "//base",
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/indexed_db/scopes:scopes_metadata_proto",
     "//components/services/storage/public/mojom",
+    "//components/services/storage/service_worker:service_worker_proto",
     "//mojo/public/cpp/bindings",
     "//sql",
     "//third_party/blink/public/common",
     "//third_party/leveldatabase",
-    "//third_party/sqlite",
     "//url",
   ]
 
   deps = [
+    ":filesystem_proxy_factory",
     "//components/services/storage/public/cpp",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//storage/common",
   ]
+}
+
+# This is its own component target because it exposes global state to multiple
+# independent libraries in component builds.
+component("filesystem_proxy_factory") {
+  sources = [
+    "filesystem_proxy_factory.cc",
+    "filesystem_proxy_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/services/storage/public/cpp/filesystem",
+  ]
+  defines = [ "IS_FILESYSTEM_PROXY_FACTORY_IMPL" ]
+}
+
+# A separate component target which merely defines storage for a global testing
+# API binder implementations to be injected. No actual testing logic should be
+# included in this target.
+component("test_api_stubs") {
+  sources = [
+    "test_api_stubs.cc",
+    "test_api_stubs.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/system",
+  ]
+
+  defines = [ "IS_STORAGE_SERVICE_TEST_API_STUBS_IMPL" ]
 }
 
 source_set("tests") {
@@ -91,11 +141,12 @@ source_set("tests") {
 
   sources = [
     "dom_storage/dom_storage_database_unittest.cc",
-    "dom_storage/legacy_dom_storage_database_unittest.cc",
     "dom_storage/local_storage_impl_unittest.cc",
     "dom_storage/session_storage_area_impl_unittest.cc",
     "dom_storage/session_storage_data_map_unittest.cc",
+    "dom_storage/session_storage_impl_unittest.cc",
     "dom_storage/session_storage_metadata_unittest.cc",
+    "dom_storage/session_storage_namespace_impl_unittest.cc",
     "dom_storage/storage_area_impl_unittest.cc",
     "indexed_db/scopes/disjoint_range_lock_manager_unittest.cc",
     "indexed_db/scopes/leveldb_scope_unittest.cc",
@@ -107,6 +158,12 @@ source_set("tests") {
     "indexed_db/transactional_leveldb/transactional_leveldb_transaction_unittest.cc",
     "indexed_db/transactional_leveldb/transactional_leveldb_unittest.cc",
     "partition_impl_unittest.cc",
+    "service_worker/service_worker_database_unittest.cc",
+    "service_worker/service_worker_disk_cache_unittest.cc",
+    "service_worker/service_worker_storage_control_impl_unittest.cc",
+    "service_worker/service_worker_storage_test_utils.cc",
+    "service_worker/service_worker_storage_test_utils.h",
+    "service_worker/service_worker_storage_unittest.cc",
     "storage_service_impl_unittest.cc",
   ]
 
@@ -116,14 +173,18 @@ source_set("tests") {
     "//base",
     "//base/test:test_support",
     "//components/services/storage/public/cpp",
-    "//sql:test_support",
+    "//components/services/storage/public/cpp/filesystem:tests",
+    "//components/services/storage/public/mojom",
+    "//components/services/storage/public/mojom:tests",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
-  data = [
-    "//components/services/storage/test_data/",
-  ]
+  data = [ "//components/services/storage/test_data/" ]
 }
 
 source_set("test_support") {
@@ -154,6 +215,5 @@ source_set("test_support") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
-    "//third_party/blink/public/mojom/dom_storage",
   ]
 }

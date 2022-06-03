@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -30,13 +29,17 @@ class FilterTool {
   FilterTool(
       scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset,
       std::ostream* output);
+
+  FilterTool(const FilterTool&) = delete;
+  FilterTool& operator=(const FilterTool&) = delete;
+
   ~FilterTool();
 
   // Checks the ruleset for a request with document origin |document_origin|,
-  // sub-resource request |url|, and |type|. If a blacklist rule matches the
-  // request, it is considered the match. If multiple blacklist rules match,
-  // one is arbitrarily chosen as the match. If a blacklist rule matches and a
-  // whitelist rule matches, a whitelist rule is the match. The output is
+  // sub-resource request |url|, and |type|. If a blocklist rule matches the
+  // request, it is considered the match. If multiple blocklist rules match,
+  // one is arbitrarily chosen as the match. If a blocklist rule matches and a
+  // allowlist rule matches, an allowlist rule is the match. The output is
   // written to |output_| in a space- delimited line. The first column is
   // either BLOCKED or ALLOWED. The second is any matching rule. The following
   // columns are the input arguments.
@@ -73,8 +76,6 @@ class FilterTool {
 
   scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset_;
   std::ostream* output_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterTool);
 };
 
 }  // namespace subresource_filter

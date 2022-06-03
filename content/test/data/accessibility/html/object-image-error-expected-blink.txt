@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++pluginObject
+++++++++++genericContainer ignored htmlTag='slot'
+++++++++++++staticText name='Fallback'
+++++++++++++++inlineTextBox name='Fallback'

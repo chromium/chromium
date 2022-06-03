@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
@@ -10,7 +11,6 @@ mojom("mojom") {
     "device_factory.mojom",
     "devices_changed_observer.mojom",
     "producer.mojom",
-    "scoped_access_permission.mojom",
     "testing_controls.mojom",
     "video_capture_service.mojom",
     "video_frame_handler.mojom",
@@ -26,7 +26,9 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  if (is_chromeos) {
+  public_deps = [ "//sandbox/policy/mojom" ]
+
+  if (is_chromeos_ash) {
     deps += [
       "//components/chromeos_camera/common",
       "//media/capture/video/chromeos/mojom:cros_camera",
@@ -35,7 +37,5 @@ mojom("mojom") {
 }
 
 mojom("constants") {
-  sources = [
-    "constants.mojom",
-  ]
+  sources = [ "constants.mojom" ]
 }

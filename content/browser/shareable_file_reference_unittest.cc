@@ -7,7 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +29,8 @@ TEST(ShareableFileReferenceTest, TestReferences) {
   EXPECT_TRUE(base::PathExists(file));
 
   // Create a first reference to that file.
-  scoped_refptr<ShareableFileReference> reference1;
-  reference1 = ShareableFileReference::Get(file);
+  scoped_refptr<ShareableFileReference> reference1 =
+      ShareableFileReference::Get(file);
   EXPECT_FALSE(reference1.get());
   reference1 = ShareableFileReference::GetOrCreate(
       file, ShareableFileReference::DELETE_ON_FINAL_RELEASE, task_runner.get());
@@ -38,8 +38,8 @@ TEST(ShareableFileReferenceTest, TestReferences) {
   EXPECT_TRUE(file == reference1->path());
 
   // Get a second reference to that file.
-  scoped_refptr<ShareableFileReference> reference2;
-  reference2 = ShareableFileReference::Get(file);
+  scoped_refptr<ShareableFileReference> reference2 =
+      ShareableFileReference::Get(file);
   EXPECT_EQ(reference1.get(), reference2.get());
   reference2 = ShareableFileReference::GetOrCreate(
       file, ShareableFileReference::DELETE_ON_FINAL_RELEASE, task_runner.get());

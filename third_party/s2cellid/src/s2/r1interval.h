@@ -23,7 +23,7 @@
 #include <iosfwd>
 #include <iostream>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "s2/_fpcontractoff.h"
 #include "s2/util/math/vector.h"  // IWYU pragma: export
 

@@ -136,7 +136,7 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
   return EInsideLink::kInsideUnvisitedLink;
 }
 
-void VisitedLinkState::Trace(Visitor* visitor) {
+void VisitedLinkState::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
 }
 

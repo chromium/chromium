@@ -1,0 +1,33 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors. All rights reserved.
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- This script navigates to a Meet meeting (id: |meeting_id|) and clicks the
+-- join button.
+
+set myURL to "https://meet.google.com/{{ meeting_id }}"
+
+tell application "{{ browser }}"
+    -- If {{ browser }} is already started then just bring
+    -- it to the forefront otherwise open it.
+    if it is running then
+      reopen
+    else
+      activate
+    end if
+
+    set bounds of front window to {0, 0, 1920, 1080}
+
+    open location {myURL}
+    tell tab 1 of window 1
+        repeat while (loading)
+            delay 1
+        end repeat
+
+        execute javascript "b=document.getElementsByClassName('uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt')[0];b.click();"
+        delay 1800
+    end tell
+end tell

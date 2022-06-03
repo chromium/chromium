@@ -4,14 +4,12 @@
 
 #include <cerrno>
 #include <memory>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
@@ -22,6 +20,7 @@
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 using base::StringPiece;
@@ -35,7 +34,8 @@ namespace {
 
 TEST(IndexedDBIOErrorTest, CleanUpTest) {
   base::test::TaskEnvironment task_env;
-  const url::Origin origin = url::Origin::Create(GURL("http://localhost:81"));
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   const base::FilePath path = temp_directory.GetPath();
@@ -45,15 +45,17 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
   std::unique_ptr<IndexedDBBackingStore> backing_store = std::make_unique<
       IndexedDBBackingStore>(
       IndexedDBBackingStore::Mode::kInMemory, &transactional_leveldb_factory,
-      origin, path,
+      storage_key, path,
       transactional_leveldb_factory.CreateLevelDBDatabase(
           FakeLevelDBFactory::GetBrokenLevelDB(
               leveldb::Status::IOError("It's broken!"), path),
           nullptr, task_runner.get(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
+      /*blob_storage_context=*/nullptr,
+      /*file_system_access_context=*/nullptr,
+      /*filesystem_proxy=*/nullptr,
       IndexedDBBackingStore::BlobFilesCleanedCallback(),
-      IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner,
-      task_runner);
+      IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
   leveldb::Status s = backing_store->Initialize(false);
   EXPECT_FALSE(s.ok());
   ASSERT_TRUE(temp_directory.Delete());
@@ -61,12 +63,12 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
 
 TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
   base::test::TaskEnvironment task_env;
-  const url::Origin origin = url::Origin::Create(GURL("http://localhost:81"));
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   base::ScopedTempDir temp_directory;
   ASSERT_TRUE(temp_directory.CreateUniqueTempDir());
   const base::FilePath path = temp_directory.GetPath();
   auto task_runner = base::SequencedTaskRunnerHandle::Get();
-  leveldb::Status s;
 
   DefaultTransactionalLevelDBFactory transactional_leveldb_factory;
   std::array<leveldb::Status, 4> errors = {
@@ -82,14 +84,16 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
     std::unique_ptr<IndexedDBBackingStore> backing_store = std::make_unique<
         IndexedDBBackingStore>(
         IndexedDBBackingStore::Mode::kInMemory, &transactional_leveldb_factory,
-        origin, path,
+        storage_key, path,
         transactional_leveldb_factory.CreateLevelDBDatabase(
             FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
             task_runner.get(),
             TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
+        /*blob_storage_context=*/nullptr,
+        /*file_system_access_context=*/nullptr,
+        /*filesystem_proxy=*/nullptr,
         IndexedDBBackingStore::BlobFilesCleanedCallback(),
-        IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner,
-        task_runner);
+        IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
     leveldb::Status s = backing_store->Initialize(false);
     ASSERT_TRUE(s.IsIOError());
   }

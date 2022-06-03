@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/nacl/renderer/plugin/nacl_subprocess.h"
 #include "components/nacl/renderer/plugin/plugin_error.h"
 #include "components/nacl/renderer/plugin/service_runtime.h"

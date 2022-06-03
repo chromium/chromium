@@ -14,6 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/platform/web_string.h"
 
@@ -33,22 +35,24 @@ class UserScriptSet {
  public:
   class Observer {
    public:
-    // Called when the set of user scripts is updated. |changed_hosts| contains
-    // the hosts whose scripts have been altered. Note that *all* script objects
-    // are invalidated, even if they aren't in |changed_hosts|.
-    virtual void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts,
-                                      const UserScriptList& scripts) = 0;
+    // Called when the set of user scripts is updated, which invalidates all
+    // previous script objects from this UserScriptSet.
+    virtual void OnUserScriptsUpdated() = 0;
+
+    // Called when this UserScriptSet is destroyed.
+    virtual void OnUserScriptSetDestroyed() = 0;
   };
 
-  UserScriptSet();
+  explicit UserScriptSet(mojom::HostID host_id);
+
+  UserScriptSet(const UserScriptSet&) = delete;
+  UserScriptSet& operator=(const UserScriptSet&) = delete;
+
   ~UserScriptSet();
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // Appends the ids of the extensions that have user scripts to |ids|.
-  void GetActiveExtensionIds(std::set<std::string>* ids) const;
 
   // Append any ScriptInjections that should run on the given |render_frame| and
   // |tab_id|, at the given |run_location|, to |injections|.
@@ -57,22 +61,25 @@ class UserScriptSet {
   void GetInjections(std::vector<std::unique_ptr<ScriptInjection>>* injections,
                      content::RenderFrame* render_frame,
                      int tab_id,
-                     UserScript::RunLocation run_location,
+                     mojom::RunLocation run_location,
                      bool log_activity);
 
   std::unique_ptr<ScriptInjection> GetDeclarativeScriptInjection(
-      int script_id,
+      const std::string& script_id,
       content::RenderFrame* render_frame,
       int tab_id,
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const GURL& document_url,
       bool log_activity);
 
   // Updates scripts given the shared memory region containing user scripts.
   // Returns true if the scripts were successfully updated.
-  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                         const std::set<HostID>& changed_hosts,
-                         bool whitelisted_only);
+  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory);
+
+  bool HasScripts() const { return !scripts_.empty(); }
+
+  // Clears all user scripts managed by this set and notifies observers.
+  void ClearUserScripts();
 
   // Returns the contents of a script file.
   // Note that copying is cheap as this uses WebString.
@@ -87,7 +94,7 @@ class UserScriptSet {
       const UserScript* script,
       content::RenderFrame* render_frame,
       int tab_id,
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const GURL& document_url,
       bool is_declarative,
       bool log_activity);
@@ -101,10 +108,11 @@ class UserScriptSet {
   // Map of user script file url -> source.
   std::map<GURL, blink::WebString> script_sources_;
 
+  // The HostID which |scripts_| is associated with.
+  mojom::HostID host_id_;
+
   // The associated observers.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptSet);
 };
 
 }  // namespace extensions

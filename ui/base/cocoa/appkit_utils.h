@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_COCOA_APPKIT_UTILS_H
-#define UI_BASE_COCOA_APPKIT_UTILS_H
+#ifndef UI_BASE_COCOA_APPKIT_UTILS_H_
+#define UI_BASE_COCOA_APPKIT_UTILS_H_
 
 #import <Cocoa/Cocoa.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // Whether a force-click event on the touchpad should invoke Quick Look.
-UI_BASE_EXPORT bool ForceClickInvokesQuickLook();
+COMPONENT_EXPORT(UI_BASE) bool ForceClickInvokesQuickLook();
 
 // Returns true if both CGFloat values are equal.
-UI_BASE_EXPORT bool IsCGFloatEqual(CGFloat a, CGFloat b);
+COMPONENT_EXPORT(UI_BASE) bool IsCGFloatEqual(CGFloat a, CGFloat b);
 
 }  // namespace ui
 
-#endif  // UI_BASE_COCOA_APPKIT_UTILS_H
+#endif  // UI_BASE_COCOA_APPKIT_UTILS_H_

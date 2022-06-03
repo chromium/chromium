@@ -12,6 +12,6 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/showcase/common",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
+#include "services/device/generic_sensor/platform_sensor_util.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 
@@ -18,7 +21,7 @@ namespace device {
 PlatformSensor::PlatformSensor(mojom::SensorType type,
                                SensorReadingSharedBuffer* reading_buffer,
                                PlatformSensorProvider* provider)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       reading_buffer_(reading_buffer),
       type_(type),
       provider_(provider) {}
@@ -38,6 +41,10 @@ double PlatformSensor::GetMaximumSupportedFrequency() {
 
 double PlatformSensor::GetMinimumSupportedFrequency() {
   return 1.0 / (60 * 60);
+}
+
+void PlatformSensor::SensorReplaced() {
+  ResetReadingBuffer();
 }
 
 bool PlatformSensor::StartListening(Client* client,
@@ -65,23 +72,16 @@ bool PlatformSensor::StopListening(Client* client,
     return false;
 
   auto& config_list = client_entry->second;
-  auto config_entry = std::find(config_list.begin(), config_list.end(), config);
-  if (config_entry == config_list.end())
+  if (base::Erase(config_list, config) == 0)
     return false;
-
-  config_list.erase(config_entry);
 
   return UpdateSensorInternal(config_map_);
 }
 
 bool PlatformSensor::StopListening(Client* client) {
   DCHECK(client);
-  auto client_entry = config_map_.find(client);
-  if (client_entry == config_map_.end())
+  if (config_map_.erase(client) == 0)
     return false;
-
-  config_map_.erase(client_entry);
-
   return UpdateSensorInternal(config_map_);
 }
 
@@ -101,22 +101,47 @@ void PlatformSensor::RemoveClient(Client* client) {
 }
 
 bool PlatformSensor::GetLatestReading(SensorReading* result) {
+  if (!reading_buffer_)
+    return false;
+
   return SensorReadingSharedBufferReader::GetReading(reading_buffer_, result);
+}
+
+bool PlatformSensor::GetLatestRawReading(SensorReading* result) const {
+  base::AutoLock auto_lock(lock_);
+  if (!last_raw_reading_.has_value())
+    return false;
+  *result = last_raw_reading_.value();
+  return true;
 }
 
 void PlatformSensor::UpdateSharedBufferAndNotifyClients(
     const SensorReading& reading) {
   UpdateSharedBuffer(reading);
-  task_runner_->PostTask(
+  main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&PlatformSensor::NotifySensorReadingChanged,
                                 weak_factory_.GetWeakPtr()));
 }
 
 void PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
+  if (!reading_buffer_)
+    return;
+
   ReadingBuffer* buffer = reading_buffer_;
   auto& seqlock = buffer->seqlock.value();
+
+  // Save the raw (non-rounded) reading for fusion sensors.
+  {
+    base::AutoLock auto_lock(lock_);
+    last_raw_reading_ = reading;
+  }
+
+  // Round the reading to guard user privacy. See https://crbug.com/1018180.
+  SensorReading rounded_reading = reading;
+  RoundSensorReading(&rounded_reading, type_);
+
   seqlock.WriteBegin();
-  buffer->reading = reading;
+  buffer->reading = rounded_reading;
   seqlock.WriteEnd();
 }
 
@@ -130,6 +155,10 @@ void PlatformSensor::NotifySensorReadingChanged() {
 void PlatformSensor::NotifySensorError() {
   for (auto& client : clients_)
     client.OnSensorError();
+}
+
+void PlatformSensor::ResetReadingBuffer() {
+  reading_buffer_ = nullptr;
 }
 
 bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
@@ -162,6 +191,11 @@ bool PlatformSensor::IsActiveForTesting() const {
 
 auto PlatformSensor::GetConfigMapForTesting() const -> const ConfigMap& {
   return config_map_;
+}
+
+void PlatformSensor::PostTaskToMainSequence(const base::Location& location,
+                                            base::OnceClosure task) {
+  main_task_runner()->PostTask(location, std::move(task));
 }
 
 }  // namespace device

@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_C_SYSTEM_MACROS_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #if !defined(__cplusplus)
 #include <assert.h>    // Defines static_assert() in C11.
@@ -28,6 +29,18 @@
 
 // Like the C++11 |alignof| operator.
 #define MOJO_ALIGNOF(type) alignof(type)
+
+// Provides a convenient test for the presence of a field in a user-provided
+// structure from a potentially older version of the ABI. Presence is determined
+// by comparing the struct's provided |struct_size| value against the known
+// offset and size of the field in this version of the ABI. Because fields are
+// never reordered or removed, this is a sufficient test for the field's
+// presence within whatever version of the ABI the client is programmed against.
+#define MOJO_IS_STRUCT_FIELD_PRESENT(struct_pointer, field)    \
+  ((size_t)(uintptr_t)((const char*)&(struct_pointer)->field - \
+                       (const char*)(struct_pointer)) +        \
+       sizeof((struct_pointer)->field) <=                      \
+   (struct_pointer)->struct_size)
 
 // Specify the alignment of a |struct|, etc.
 // Use like:

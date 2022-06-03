@@ -8,14 +8,15 @@
 #include <string>
 
 #include "base/linux_util.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/constants/devicetype.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/devicetype.h"
 #endif
 
 namespace syncer {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetChromeOSDeviceNameFromType() {
   switch (chromeos::GetDeviceType()) {
     case chromeos::DeviceType::kChromebase:
@@ -34,7 +35,7 @@ std::string GetChromeOSDeviceNameFromType() {
 #endif
 
 std::string GetPersonalizableDeviceNameInternal() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return GetChromeOSDeviceNameFromType();
 #else
   char hostname[HOST_NAME_MAX];

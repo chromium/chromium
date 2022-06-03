@@ -25,7 +25,7 @@ SelectToSpeakEventHandler::~SelectToSpeakEventHandler() {
 }
 
 bool SelectToSpeakEventHandler::IsSelectToSpeakEnabled() {
-  return Shell::Get()->accessibility_controller()->select_to_speak_enabled();
+  return Shell::Get()->accessibility_controller()->select_to_speak().enabled();
 }
 
 void SelectToSpeakEventHandler::SetSelectToSpeakStateSelecting(
@@ -43,7 +43,7 @@ void SelectToSpeakEventHandler::SetSelectToSpeakStateSelecting(
     if (state_ != MOUSE_RELEASED)
       state_ = INACTIVE;
     touch_id_ = ui::kPointerIdUnknown;
-    touch_type_ = ui::EventPointerType::POINTER_TYPE_UNKNOWN;
+    touch_type_ = ui::EventPointerType::kUnknown;
   }
 }
 
@@ -178,7 +178,7 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       state_ == CAPTURING_TOUCH_ONLY) {
     state_ = INACTIVE;
     touch_id_ = ui::kPointerIdUnknown;
-    touch_type_ = ui::EventPointerType::POINTER_TYPE_UNKNOWN;
+    touch_type_ = ui::EventPointerType::kUnknown;
   }
 
   // Create a mouse event to send to the extension, describing the touch.
@@ -200,7 +200,12 @@ void SelectToSpeakEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       return;
   }
   int flags = ui::EF_LEFT_MOUSE_BUTTON;
-  ui::MouseEvent event_to_send(type, event->location(), event->root_location(),
+
+  // Get screen coordinates if available.
+  gfx::Point root_location = event->target()
+                                 ? event->target()->GetScreenLocation(*event)
+                                 : event->root_location();
+  ui::MouseEvent event_to_send(type, event->location(), root_location,
                                event->time_stamp(), flags, flags);
 
   delegate_->DispatchMouseEvent(event_to_send);

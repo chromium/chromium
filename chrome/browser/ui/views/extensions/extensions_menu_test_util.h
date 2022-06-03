@@ -6,58 +6,61 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
-#include "chrome/browser/ui/extensions/browser_action_test_util.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class Browser;
 class ExtensionsMenuItemView;
 class ExtensionsMenuView;
 class ExtensionsToolbarContainer;
 
-// An implementation of BrowserActionTestUtil that works with the ExtensionsMenu
-// (i.e., when features::kExtensionsToolbarMenu is enabled).
-class ExtensionsMenuTestUtil : public BrowserActionTestUtil {
+// An implementation of ExtensionActionTestHelper that works with the
+// ExtensionsMenu.
+class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
  public:
   ExtensionsMenuTestUtil(Browser* browser, bool is_real_window);
-
+  ExtensionsMenuTestUtil(const ExtensionsMenuTestUtil&) = delete;
+  ExtensionsMenuTestUtil& operator=(const ExtensionsMenuTestUtil&) = delete;
   ~ExtensionsMenuTestUtil() override;
 
-  // BrowserActionTestUtil:
+  // ExtensionActionTestHelper:
   int NumberOfBrowserActions() override;
   int VisibleBrowserActions() override;
-  void InspectPopup(int index) override;
-  bool HasIcon(int index) override;
-  gfx::Image GetIcon(int index) override;
-  void Press(int index) override;
-  std::string GetExtensionId(int index) override;
-  std::string GetTooltip(int index) override;
+  bool HasAction(const extensions::ExtensionId& id) override;
+  void InspectPopup(const extensions::ExtensionId& id) override;
+  bool HasIcon(const extensions::ExtensionId& id) override;
+  gfx::Image GetIcon(const extensions::ExtensionId& id) override;
+  void Press(const extensions::ExtensionId& id) override;
+  std::string GetTooltip(const extensions::ExtensionId& id) override;
   gfx::NativeView GetPopupNativeView() override;
   bool HasPopup() override;
-  gfx::Size GetPopupSize() override;
   bool HidePopup() override;
-  bool ActionButtonWantsToRun(size_t index) override;
   void SetWidth(int width) override;
-  ToolbarActionsBar* GetToolbarActionsBar() override;
   ExtensionsContainer* GetExtensionsContainer() override;
-  std::unique_ptr<BrowserActionTestUtil> CreateOverflowBar(
+  void WaitForExtensionsContainerLayout() override;
+  std::unique_ptr<ExtensionActionTestHelper> CreateOverflowBar(
       Browser* browser) override;
+  void LayoutForOverflowBar() override;
   // TODO(devlin): Some of these popup methods have a common implementation
-  // between this and BrowserActionTestUtilViews. It would make sense to
+  // between this and ExtensionActionTestHelperViews. It would make sense to
   // extract them (since they aren't dependent on the extension action UI
   // implementation).
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
   gfx::Size GetToolbarActionSize() override;
-  bool CanBeResized() override;
+  gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
+      const extensions::ExtensionId& id) override;
 
  private:
+  class MenuViewObserver;
   class Wrapper;
 
-  // Returns the ExtensionsMenuItemView at the given |index| from the
-  // |menu_view|.
-  ExtensionsMenuItemView* GetMenuItemViewAtIndex(int index);
+  // Returns the ExtensionsMenuItemView for the given `id` from the
+  // `menu_view`.
+  ExtensionsMenuItemView* GetMenuItemViewForId(
+      const extensions::ExtensionId& id);
 
   // An override to allow test instances of the ExtensionsMenuView.
   // This has to be defined before |menu_view_| below.
@@ -66,10 +69,18 @@ class ExtensionsMenuTestUtil : public BrowserActionTestUtil {
   std::unique_ptr<Wrapper> wrapper_;
 
   Browser* const browser_;
-  ExtensionsToolbarContainer* extensions_container_;
-  std::unique_ptr<ExtensionsMenuView> menu_view_;
+  ExtensionsToolbarContainer* extensions_container_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsMenuTestUtil);
+  // Helps make sure that |menu_view_| set to null when destroyed by the widget
+  // or via manual means.
+  std::unique_ptr<MenuViewObserver> menu_view_observer_;
+
+  // The owned version of |menu_view_|. Strongly prefer using |menu_view_|. May
+  // be null when ownership is conditionally transferred to the bubble.
+  std::unique_ptr<ExtensionsMenuView> owned_menu_view_;
+
+  // The actual pointer to an ExtensionsMenuView, non-null if alive.
+  ExtensionsMenuView* menu_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_

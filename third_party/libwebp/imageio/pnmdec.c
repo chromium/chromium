@@ -26,15 +26,15 @@ typedef enum {
   DEPTH_FLAG      = 1 << 2,
   MAXVAL_FLAG     = 1 << 3,
   TUPLE_FLAG      = 1 << 4,
-  ALL_NEEDED_FLAGS = 0x1f
+  ALL_NEEDED_FLAGS = WIDTH_FLAG | HEIGHT_FLAG | DEPTH_FLAG | MAXVAL_FLAG
 } PNMFlags;
 
 typedef struct {
   const uint8_t* data;
   size_t data_size;
   int width, height;
-  int bytes_per_px;   // 1, 3, 4
-  int depth;
+  int bytes_per_px;
+  int depth;          // 1 (grayscale), 2 (grayscale + alpha), 3 (rgb), 4 (rgba)
   int max_value;
   int type;           // 5, 6 or 7
   int seen_flags;
@@ -74,6 +74,7 @@ static size_t ReadPAMFields(PNMInfo* const info, size_t off) {
   char out[MAX_LINE_SIZE + 1];
   size_t out_size;
   int tmp;
+  int expected_depth = -1;
   assert(info != NULL);
   while (1) {
     off = ReadLine(info->data, off, info->data_size, out, &out_size);
@@ -95,13 +96,16 @@ static size_t ReadPAMFields(PNMInfo* const info, size_t off) {
       info->seen_flags |= MAXVAL_FLAG;
       info->max_value = tmp;
     } else if (!strcmp(out, "TUPLTYPE RGB_ALPHA")) {
-      info->bytes_per_px = 4;
+      expected_depth = 4;
       info->seen_flags |= TUPLE_FLAG;
     } else if (!strcmp(out, "TUPLTYPE RGB")) {
-      info->bytes_per_px = 3;
+      expected_depth = 3;
+      info->seen_flags |= TUPLE_FLAG;
+    } else if (!strcmp(out, "TUPLTYPE GRAYSCALE_ALPHA")) {
+      expected_depth = 2;
       info->seen_flags |= TUPLE_FLAG;
     } else if (!strcmp(out, "TUPLTYPE GRAYSCALE")) {
-      info->bytes_per_px = 1;
+      expected_depth = 1;
       info->seen_flags |= TUPLE_FLAG;
     } else if (!strcmp(out, "ENDHDR")) {
       break;
@@ -110,23 +114,24 @@ static size_t ReadPAMFields(PNMInfo* const info, size_t off) {
       int i;
       if (out_size > 20) sprintf(out + 20 - strlen(kEllipsis), kEllipsis);
       for (i = 0; i < (int)strlen(out); ++i) {
-        if (!isprint(out[i])) out[i] = ' ';
+        // isprint() might trigger a "char-subscripts" warning if given a char.
+        if (!isprint((int)out[i])) out[i] = ' ';
       }
       fprintf(stderr, "PAM header error: unrecognized entry [%s]\n", out);
       return 0;
     }
   }
-  if (!(info->seen_flags & TUPLE_FLAG)) {
-    if (info->depth > 0 && info->depth <= 4 && info->depth != 2) {
-      info->seen_flags |= TUPLE_FLAG;
-      info->bytes_per_px = info->depth * (info->max_value > 255 ? 2 : 1);
-    } else {
-      fprintf(stderr, "PAM: invalid bitdepth (%d).\n", info->depth);
-      return 0;
-    }
+  if (!(info->seen_flags & ALL_NEEDED_FLAGS)) {
+    fprintf(stderr, "PAM header error: missing tags%s%s%s%s\n",
+            (info->seen_flags & WIDTH_FLAG) ? "" : " WIDTH",
+            (info->seen_flags & HEIGHT_FLAG) ? "" : " HEIGHT",
+            (info->seen_flags & DEPTH_FLAG) ? "" : " DEPTH",
+            (info->seen_flags & MAXVAL_FLAG) ? "" : " MAXVAL");
+    return 0;
   }
-  if (info->seen_flags != ALL_NEEDED_FLAGS) {
-    fprintf(stderr, "PAM: incomplete header.\n");
+  if (expected_depth != -1 && info->depth != expected_depth) {
+    fprintf(stderr, "PAM header error: expected DEPTH %d but got DEPTH %d\n",
+            expected_depth, info->depth);
     return 0;
   }
   return off;
@@ -160,16 +165,15 @@ static size_t ReadHeader(PNMInfo* const info) {
 
     // finish initializing missing fields
     info->depth = (info->type == 5) ? 1 : 3;
-    info->bytes_per_px = info->depth * (info->max_value > 255 ? 2 : 1);
   }
   // perform some basic numerical validation
   if (info->width <= 0 || info->height <= 0 ||
       info->type <= 0 || info->type >= 9 ||
-      info->depth <= 0 || info->depth == 2 || info->depth > 4 ||
-      info->bytes_per_px < info->depth ||
+      info->depth <= 0 || info->depth > 4 ||
       info->max_value <= 0 || info->max_value >= 65536) {
     return 0;
   }
+  info->bytes_per_px = info->depth * (info->max_value > 255 ? 2 : 1);
   return off;
 }
 
@@ -178,7 +182,7 @@ int ReadPNM(const uint8_t* const data, size_t data_size,
             struct Metadata* const metadata) {
   int ok = 0;
   int i, j;
-  uint64_t stride, pixel_bytes;
+  uint64_t stride, pixel_bytes, sample_size, depth;
   uint8_t* rgb = NULL, *tmp_rgb;
   size_t offset;
   PNMInfo info;
@@ -209,8 +213,10 @@ int ReadPNM(const uint8_t* const data, size_t data_size,
     fprintf(stderr, "Truncated PNM file (P%d).\n", info.type);
     goto End;
   }
-  stride =
-      (uint64_t)(info.bytes_per_px < 3 ? 3 : info.bytes_per_px) * info.width;
+  sample_size = (info.max_value > 255) ? 2 : 1;
+  // final depth
+  depth = (info.depth == 1 || info.depth == 3 || !keep_alpha) ? 3 : 4;
+  stride = depth * info.width;
   if (stride != (size_t)stride ||
       !ImgIoUtilCheckSizeArgumentsOverflow(stride, info.height)) {
     goto End;
@@ -219,30 +225,63 @@ int ReadPNM(const uint8_t* const data, size_t data_size,
   rgb = (uint8_t*)malloc((size_t)stride * info.height);
   if (rgb == NULL) goto End;
 
-  // Convert input
+  // Convert input.
+  // We only optimize for the sample_size=1, max_value=255, depth=1 case.
   tmp_rgb = rgb;
   for (j = 0; j < info.height; ++j) {
-    assert(offset + info.bytes_per_px * info.width <= data_size);
-    if (info.depth == 1) {
-      // convert grayscale -> RGB
-      for (i = 0; i < info.width; ++i) {
-        const uint8_t v = data[offset + i];
-        tmp_rgb[3 * i + 0] = tmp_rgb[3 * i + 1] = tmp_rgb[3 * i + 2] = v;
-      }
-    } else if (info.depth == 3) {   // RGB
-      memcpy(tmp_rgb, data + offset, 3 * info.width * sizeof(*data));
-    } else if (info.depth == 4) {   // RGBA
-      memcpy(tmp_rgb, data + offset, 4 * info.width * sizeof(*data));
-    }
+    const uint8_t* in = data + offset;
     offset += info.bytes_per_px * info.width;
+    assert(offset <= data_size);
+    if (info.max_value == 255 && info.depth >= 3) {
+      // RGB or RGBA
+      if (info.depth == 3 || keep_alpha) {
+        memcpy(tmp_rgb, in, info.depth * info.width * sizeof(*in));
+      } else {
+        assert(info.depth == 4 && !keep_alpha);
+        for (i = 0; i < info.width; ++i) {
+          tmp_rgb[3 * i + 0] = in[4 * i + 0];
+          tmp_rgb[3 * i + 1] = in[4 * i + 1];
+          tmp_rgb[3 * i + 2] = in[4 * i + 2];
+        }
+      }
+    } else {
+      // Unoptimized case, we need to handle non-trivial operations:
+      //   * convert 16b to 8b (if max_value > 255)
+      //   * rescale to [0..255] range (if max_value != 255)
+      //   * drop the alpha channel (if keep_alpha is false)
+      const uint32_t round = info.max_value / 2;
+      int k = 0;
+      for (i = 0; i < info.width * info.depth; ++i) {
+        uint32_t v = (sample_size == 2) ? 256u * in[2 * i + 0] + in[2 * i + 1]
+                   : in[i];
+        if (info.max_value != 255) v = (v * 255u + round) / info.max_value;
+        if (v > 255u) v = 255u;
+        if (info.depth > 2) {
+          if (!keep_alpha && info.depth == 4 && (i % 4) == 3) {
+            // skip alpha
+          } else {
+            tmp_rgb[k] = v;
+            k += 1;
+          }
+        } else if (info.depth == 1 || (i % 2) == 0) {
+          tmp_rgb[k + 0] = tmp_rgb[k + 1] = tmp_rgb[k + 2] = v;
+          k += 3;
+        } else if (keep_alpha && info.depth == 2) {
+          tmp_rgb[k] = v;
+          k += 1;
+        } else {
+          // skip alpha
+        }
+      }
+    }
     tmp_rgb += stride;
   }
 
   // WebP conversion.
   pic->width = info.width;
   pic->height = info.height;
-  ok = (info.depth == 4) ? WebPPictureImportRGBA(pic, rgb, (int)stride)
-                         : WebPPictureImportRGB(pic, rgb, (int)stride);
+  ok = (depth == 4) ? WebPPictureImportRGBA(pic, rgb, (int)stride)
+                    : WebPPictureImportRGB(pic, rgb, (int)stride);
   if (!ok) goto End;
 
   ok = 1;

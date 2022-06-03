@@ -7,7 +7,6 @@
 #include "base/pickle.h"
 #include "base/values.h"
 #include "extensions/common/permissions/mock_manifest_permission.h"
-#include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {

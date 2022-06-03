@@ -1,0 +1,15 @@
+<!--
+@BLINK-DENY:descri*
+-->
+<!doctype html>
+<html>
+<body>
+<style type="text/css">
+  label:before { content: "foo"; }
+  label:after { content: "baz"; }
+</style>
+<label for="test" title="bar">
+<input id="test" type="text" name="test" title="buz">
+</label>
+</body>
+</html>

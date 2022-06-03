@@ -12,16 +12,12 @@
         function loaded()
         {
             document.getElementsByTagName('h4')[0].innerHTML = document.domain;
-            var iframe = document.getElementById("i");
-            // The iframe uses eventSender to emulate a user navigatation, which requires absolute coordinates.
-            // Because the iframe is cross-origin, it can't get the offsets itself, so leak them.
-            frames[0].postMessage({x: iframe.offsetLeft, y: iframe.offsetTop}, "*");
         }
     </script>
 </head>
 <body onload="loaded();">
-    <p>This tests that documents can navigate the location of any of it's parent-frames regardless of domain, if a
-       user gesture is present.</p>
+    <p>This tests that documents can navigate the location of any of it's
+       parent-frames regardless of domain, if a user gesture is present.</p>
     <h4>DOMAIN</h4>
     <iframe id="i" src="http://localhost:8000/security/frameNavigation/resources/iframe-that-performs-parent-navigation-async.html"></iframe>
 </body>

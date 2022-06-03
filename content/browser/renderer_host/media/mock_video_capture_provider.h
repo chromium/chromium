@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_MOCK_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MOCK_VIDEO_CAPTURE_PROVIDER_H_
 
+#include "base/callback_forward.h"
+#include "base/token.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -16,16 +19,11 @@ class MockVideoCaptureProvider : public VideoCaptureProvider {
   MockVideoCaptureProvider();
   ~MockVideoCaptureProvider() override;
 
-  void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override {
-    DoGetDeviceInfosAsync(result_callback);
-  }
-
-  MOCK_METHOD0(Uninitialize, void());
-  MOCK_METHOD1(DoGetDeviceInfosAsync,
-               void(GetDeviceInfosCallback& result_callback));
-
-  MOCK_METHOD0(CreateDeviceLauncher,
-               std::unique_ptr<VideoCaptureDeviceLauncher>());
+  MOCK_METHOD(void, GetDeviceInfosAsync, (GetDeviceInfosCallback), (override));
+  MOCK_METHOD(std::unique_ptr<VideoCaptureDeviceLauncher>,
+              CreateDeviceLauncher,
+              (),
+              (override));
 };
 
 class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
@@ -72,11 +70,14 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
                void(media::VideoCaptureDevice::TakePhotoCallback* callback));
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
+  MOCK_METHOD2(Crop,
+               void(const base::Token& crop_id,
+                    base::OnceCallback<void(media::mojom::CropRequestResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(DoSetDesktopCaptureWindowId,
                void(gfx::NativeViewId window_id, base::OnceClosure* done_cb));
   MOCK_METHOD2(OnUtilizationReport,
-               void(int frame_feedback_id, double utilization));
+               void(int frame_feedback_id, media::VideoCaptureFeedback));
 
   void GetPhotoState(
       media::VideoCaptureDevice::GetPhotoStateCallback callback) override {

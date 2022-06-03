@@ -23,6 +23,7 @@
 #include <fstream>
 
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/debugging/symbolize.h"
@@ -30,6 +31,8 @@
 #include "absl/strings/str_cat.h"
 
 namespace {
+
+using testing::StartsWith;
 
 #if GTEST_HAS_DEATH_TEST
 
@@ -52,7 +55,7 @@ TEST_P(FailureSignalHandlerDeathTest, AbslFailureSignal) {
               exit_regex);
 #else
   // Windows doesn't have testing::KilledBySignal().
-  EXPECT_DEATH(InstallHandlerAndRaise(signo), exit_regex);
+  EXPECT_DEATH_IF_SUPPORTED(InstallHandlerAndRaise(signo), exit_regex);
 #endif
 }
 
@@ -104,8 +107,8 @@ TEST_P(FailureSignalHandlerDeathTest, AbslFatalSignalsWithWriterFn) {
               testing::KilledBySignal(signo), exit_regex);
 #else
   // Windows doesn't have testing::KilledBySignal().
-  EXPECT_DEATH(InstallHandlerWithWriteToFileAndRaise(file.c_str(), signo),
-               exit_regex);
+  EXPECT_DEATH_IF_SUPPORTED(
+      InstallHandlerWithWriteToFileAndRaise(file.c_str(), signo), exit_regex);
 #endif
 
   // Open the file in this process and check its contents.
@@ -113,15 +116,21 @@ TEST_P(FailureSignalHandlerDeathTest, AbslFatalSignalsWithWriterFn) {
   ASSERT_TRUE(error_output.is_open()) << file;
   std::string error_line;
   std::getline(error_output, error_line);
-  EXPECT_TRUE(absl::StartsWith(
+  EXPECT_THAT(
       error_line,
-      absl::StrCat("*** ",
-                   absl::debugging_internal::FailureSignalToString(signo),
-                   " received at ")));
+      StartsWith(absl::StrCat(
+          "*** ", absl::debugging_internal::FailureSignalToString(signo),
+          " received at ")));
+
+  // On platforms where it is possible to get the current CPU, the
+  // CPU number is also logged. Check that it is present in output.
+#if defined(__linux__)
+  EXPECT_THAT(error_line, testing::HasSubstr(" on cpu "));
+#endif
 
   if (absl::debugging_internal::StackTraceWorksForTest()) {
     std::getline(error_output, error_line);
-    EXPECT_TRUE(absl::StartsWith(error_line, "PC: "));
+    EXPECT_THAT(error_line, StartsWith("PC: "));
   }
 }
 

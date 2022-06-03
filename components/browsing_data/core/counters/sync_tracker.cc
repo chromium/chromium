@@ -41,4 +41,11 @@ void SyncTracker::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
+void SyncTracker::OnSyncShutdown(syncer::SyncService* sync) {
+  DCHECK_EQ(sync_service_, sync);
+  sync_service_->RemoveObserver(this);
+  sync_service_ = nullptr;
+  sync_enabled_ = false;
+}
+
 }  // namespace browsing_data

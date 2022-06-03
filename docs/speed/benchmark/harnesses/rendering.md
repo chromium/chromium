@@ -27,16 +27,16 @@ These benchmarks are run on the [Chromium Perf Waterfall](https://ci.chromium.or
 
 ## What are the  rendering metrics
 
-Rendering metrics are [written in Javascript](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering). The list of all metrics and their meanings should be documented in the files they are defined in.
+Rendering metrics are [written in Javascript](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/). The list of all metrics and their meanings should be documented in the files they are defined in.
 
 -   [cpu\_utilization.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/cpu_utilization.html): `cpu_time_per_frame` and `tasks_per_frame`
--   [frame\_time.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/frame_time.html): `frame_times`, `percentage_smooth`, `frame_lengths`, `avg_surface_fps`, `jank_count`, and `ui_frame_times`
+-   [frame\_time.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/frame_time.html): `frame_times`, `avg_surface_fps`, `jank_count`, and `ui_frame_times`
 -   [pixels.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/pixels.html): `mean_pixels_approximated` and `mean_pixels_checkerboarded`
 -   [queueing\_duration.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/rendering/queueing_duration.html): `queueing_durations`
 
 ## How to run rendering benchmarks on local devices
 
-First, set up your device by following the instructions [here](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/telemetry_device_setup.md). You can then run telemetry benchmarks locally using:
+First, set up your device by following the instructions [here](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/telemetry_device_setup.md). You can then run telemetry benchmarks locally using:
 
 `./tools/perf/run_benchmark <benchmark_name> --browser=<browser>`
 
@@ -56,14 +56,16 @@ Other useful options for the command are:
 
 ## How to run rendering benchmarks on try bots
 
-For more consistent results and to identify whether your change has resulted in a rendering regression, you can run the rendering benchmarks using a [perf try job](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/perf_trybots.md). In order to do this, you need to first upload a CL, which allows results to be generated with and without your patch.
+For more consistent results and to identify whether your change has resulted in a rendering regression, you can run the rendering benchmarks using a [perf try job](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/perf_trybots.md). In order to do this, you need to first upload a CL, which allows results to be generated with and without your patch.
 
 ## How to handle regressions
 
-If your changes have resulted in a regression in a metric that is monitored by [perf alerts](https://chromeperf.appspot.com/alerts?sortby=end_revision&sortdirection=down), you will be assigned to a bug. This will contain information about the specific metric and how much it was regressed, as well as a Pinpoint link that will help you investigate further. For instance, you will be able to obtain traces from the try bot runs. This [link](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/addressing_performance_regressions.md) contains detailed steps on how to deal with regressions. Rendering metrics use trace events logged under the benchmark and toplevel trace categories.
+If your changes have resulted in a regression in a metric that is monitored by [perf alerts](https://chromeperf.appspot.com/alerts?sortby=end_revision&sortdirection=down), you will be assigned to a bug. This will contain information about the specific metric and how much it was regressed, as well as a Pinpoint link that will help you investigate further. For instance, you will be able to obtain traces from the try bot runs. This [link](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/addressing_performance_regressions.md) contains detailed steps on how to deal with regressions. Rendering metrics use trace events logged under the benchmark and toplevel trace categories.
 
 If you already have a trace and want to debug the metric computation part, you can just run the metric:
 `tracing/bin/run_metric <path-to-trace-file> renderingMetric`
+
+If you are specifically investigating a regression related to janks, [this document](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/debug-janks.md) may be useful.
 
 ## How to add more pages
 

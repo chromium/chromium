@@ -39,8 +39,8 @@ TetherDisconnectorImpl::~TetherDisconnectorImpl() = default;
 
 void TetherDisconnectorImpl::DisconnectFromNetwork(
     const std::string& tether_network_guid,
-    const base::Closure& success_callback,
-    const network_handler::StringResultCallback& error_callback,
+    base::OnceClosure success_callback,
+    StringErrorCallback error_callback,
     const TetherSessionCompletionLogger::SessionCompletionReason&
         session_completion_reason) {
   DCHECK(!tether_network_guid.empty());
@@ -52,7 +52,7 @@ void TetherDisconnectorImpl::DisconnectFromNetwork(
   if (status == ActiveHost::ActiveHostStatus::DISCONNECTED) {
     PA_LOG(ERROR) << "Disconnect requested for Tether network with GUID "
                   << tether_network_guid << ", but no device is connected.";
-    error_callback.Run(NetworkConnectionHandler::kErrorNotConnected);
+    std::move(error_callback).Run(NetworkConnectionHandler::kErrorNotConnected);
     return;
   }
 
@@ -60,7 +60,7 @@ void TetherDisconnectorImpl::DisconnectFromNetwork(
     PA_LOG(ERROR) << "Disconnect requested for Tether network with GUID "
                   << tether_network_guid << ", but that device is not the "
                   << "active host.";
-    error_callback.Run(NetworkConnectionHandler::kErrorNotConnected);
+    std::move(error_callback).Run(NetworkConnectionHandler::kErrorNotConnected);
     return;
   }
 
@@ -71,20 +71,22 @@ void TetherDisconnectorImpl::DisconnectFromNetwork(
                       << tether_network_guid
                       << ", which had not yet connected. "
                       << "Canceled in-progress connection attempt.";
-      success_callback.Run();
+      std::move(success_callback).Run();
       return;
     }
 
     PA_LOG(ERROR) << "Disconnect requested for Tether network with GUID "
                   << tether_network_guid << " (not yet connected), but "
                   << "canceling connection attempt failed.";
-    error_callback.Run(NetworkConnectionHandler::kErrorDisconnectFailed);
+    std::move(error_callback)
+        .Run(NetworkConnectionHandler::kErrorDisconnectFailed);
     return;
   }
 
   DCHECK(!active_wifi_network_guid.empty());
   DisconnectActiveWifiConnection(tether_network_guid, active_wifi_network_guid,
-                                 success_callback, error_callback);
+                                 std::move(success_callback),
+                                 std::move(error_callback));
 
   tether_session_completion_logger_->RecordTetherSessionCompletion(
       session_completion_reason);
@@ -93,8 +95,8 @@ void TetherDisconnectorImpl::DisconnectFromNetwork(
 void TetherDisconnectorImpl::DisconnectActiveWifiConnection(
     const std::string& tether_network_guid,
     const std::string& wifi_network_guid,
-    const base::Closure& success_callback,
-    const network_handler::StringResultCallback& error_callback) {
+    base::OnceClosure success_callback,
+    StringErrorCallback error_callback) {
   // First, disconnect the active host so that the user gets visual indication
   // that the disconnection is in progress as quickly as possible.
   active_host_->SetActiveHostDisconnected();
@@ -102,7 +104,8 @@ void TetherDisconnectorImpl::DisconnectActiveWifiConnection(
   // Disconnect from the Wi-Fi hotspot. This transfers responsibility for
   // invoking the success or error callbacks to |wifi_hotspot_disconnector_|.
   wifi_hotspot_disconnector_->DisconnectFromWifiHotspot(
-      wifi_network_guid, success_callback, error_callback);
+      wifi_network_guid, std::move(success_callback),
+      std::move(error_callback));
 
   // In addition to disconnecting from the Wi-Fi network, this device must also
   // send a DisconnectTetheringRequest to the tether host so that it can shut

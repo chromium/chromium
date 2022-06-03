@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,12 +33,12 @@ const char kCrossSitePageUrl[] = "/cross-site/a.com/iframe_cross_site.html";
 // URL of a test page on a.com that has no cross-site iframes.
 const char kSimplePageUrl[] = "/cross-site/a.com/title2.html";
 
-base::string16 GetExpectedSubframeTitlePrefix() {
+std::u16string GetExpectedSubframeTitlePrefix() {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_SUBFRAME_PREFIX,
-                                    base::string16());
+                                    std::u16string());
 }
 
-base::string16 PrefixExpectedTabTitle(const std::string& title) {
+std::u16string PrefixExpectedTabTitle(const std::string& title) {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
                                     base::UTF8ToUTF16(title));
 }
@@ -49,8 +49,10 @@ base::string16 PrefixExpectedTabTitle(const std::string& title) {
 // SubframeTasks.
 class SubframeTaskBrowserTest : public InProcessBrowserTest {
  public:
-  SubframeTaskBrowserTest() {}
-  ~SubframeTaskBrowserTest() override {}
+  SubframeTaskBrowserTest() = default;
+  SubframeTaskBrowserTest(const SubframeTaskBrowserTest&) = delete;
+  SubframeTaskBrowserTest& operator=(const SubframeTaskBrowserTest&) = delete;
+  ~SubframeTaskBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
@@ -64,12 +66,9 @@ class SubframeTaskBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateTo(const char* page_url) const {
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(page_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(page_url)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubframeTaskBrowserTest);
 };
 
 // Makes sure that, if sites are isolated, the task manager will show the
@@ -124,10 +123,15 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   }
 
   // If we navigate to the simple page on a.com which doesn't have cross-site
-  // iframes, we expect not to have any SubframeTasks.
+  // iframes, we expect not to have any SubframeTasks, except if the previous
+  // page is saved in the back-forward cache.
   NavigateTo(kSimplePageUrl);
 
-  ASSERT_EQ(1U, task_manager.tasks().size());
+  ASSERT_EQ(
+      content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+          ? 4U
+          : 1U,
+      task_manager.tasks().size());
   const Task* simple_page_task = task_manager.tasks().front();
   EXPECT_EQ(Task::RENDERER, simple_page_task->GetType());
   EXPECT_EQ(PrefixExpectedTabTitle("Title Of Awesomeness"),
@@ -180,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   // Simulate a hang in one of the subframe processes.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::vector<content::RenderFrameHost*> frames = web_contents->GetAllFrames();
-  content::RenderFrameHost* subframe1 = frames[1];
+  content::RenderFrameHost* subframe1 = ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(subframe1);
   SimulateUnresponsiveRenderer(web_contents,
                                subframe1->GetView()->GetRenderWidgetHost());
 

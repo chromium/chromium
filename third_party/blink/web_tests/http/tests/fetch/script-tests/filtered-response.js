@@ -5,6 +5,7 @@ if (self.importScripts) {
 
 // Spec: https://fetch.spec.whatwg.org/#concept-filtered-response
 
+var {OTHER_ORIGIN} = get_fetch_test_options();
 var base_url = '../resources/filtered-response.php';
 var other_url = OTHER_ORIGIN + '/fetch/resources/filtered-response.php';
 

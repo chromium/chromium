@@ -20,15 +20,12 @@ namespace local_discovery {
 ServicePrinter::ServicePrinter(ServiceDiscoveryClient* client,
                                const std::string& service_name)
     : changed_(false) {
-  service_resolver_ =
-      client->CreateServiceResolver(
-          service_name,
-          base::Bind(&ServicePrinter::OnServiceResolved,
-                     base::Unretained(this)));
+  service_resolver_ = client->CreateServiceResolver(
+      service_name, base::BindOnce(&ServicePrinter::OnServiceResolved,
+                                   base::Unretained(this)));
 }
 
-ServicePrinter::~ServicePrinter() {
-}
+ServicePrinter::~ServicePrinter() = default;
 
 void ServicePrinter::Added() {
   changed_ = false;
@@ -69,8 +66,8 @@ ServiceTypePrinter::ServiceTypePrinter(ServiceDiscoveryClient* client,
                                        const std::string& service_type)
     : client_(client)  {
   watcher_ = client_->CreateServiceWatcher(
-      service_type, base::Bind(&ServiceTypePrinter::OnServiceUpdated,
-                               base::Unretained(this)));
+      service_type, base::BindRepeating(&ServiceTypePrinter::OnServiceUpdated,
+                                        base::Unretained(this)));
 }
 
 void ServiceTypePrinter::Start() {

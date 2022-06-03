@@ -31,8 +31,16 @@ function loadFrame(iframe, src) {
         resolve(e.data);
       }, { once: true });
     }).then(function(data) {
-      assert_true(data.enabled, 'Document.fullscreenEnabled:');
-      assert_equals(data.type, 'change', 'Document.requestFullscreen():');
+      // fullscreen is enabled if:
+      //     a. same origin; or
+      //     b. enabled by allowfullscreen.
+      if (src === srcs[0] || allowfullscreen) {
+        assert_true(data.enabled, 'Document.fullscreenEnabled:');
+        assert_equals(data.type, 'change', 'Document.requestFullscreen():');
+      } else {
+        assert_false(data.enabled, 'Document.fullscreenEnabled:');
+        assert_equals(data.type, 'error', 'Document.requestFullscreen():');
+      }
     });
   }, 'Fullscreen enabled for all on URL: ' + src + ' with allowfullscreen = ' +
     allowfullscreen);

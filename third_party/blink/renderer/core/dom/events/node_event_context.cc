@@ -38,7 +38,7 @@ namespace blink {
 NodeEventContext::NodeEventContext(Node& node, EventTarget& current_target)
     : node_(node), current_target_(current_target) {}
 
-void NodeEventContext::Trace(Visitor* visitor) {
+void NodeEventContext::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   visitor->Trace(current_target_);
   visitor->Trace(tree_scope_event_context_);

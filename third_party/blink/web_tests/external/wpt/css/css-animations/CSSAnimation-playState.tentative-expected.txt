@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS A new CSS animation is initially play-pending
-PASS Animation returns correct playState when paused
-PASS Animation.playState updates when paused by script
-FAIL Animation.playState updates when resumed by setting style assert_equals: Animation.playState reports running after updating animation-play-state (got: paused) expected "running" but got "paused"
-PASS Animation returns correct playState when canceled
-Harness: the test ran to completion.
-

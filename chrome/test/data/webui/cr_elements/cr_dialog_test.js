@@ -3,16 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+
+import {keyDownOn, keyEventOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../chai_assert.js';
 //
-// #import {eventToPromise, flushTasks} from '../test_util.m.js';
-// #import {keyDownOn, keyEventOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, flushTasks} from '../test_util.js';
+
 // clang-format on
 
 suite('cr-dialog', function() {
+  /** @type {!HTMLElement} element */
   function pressEnter(element) {
-    MockInteractions.keyEventOn(element, 'keypress', 13, undefined, 'Enter');
+    keyEventOn(element, 'keypress', 13, undefined, 'Enter');
   }
 
   /**
@@ -43,7 +48,7 @@ suite('cr-dialog', function() {
   }
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     // Ensure svg, which is referred to by a relative URL, is loaded from
     // chrome://resources and not chrome://test
     const base = document.createElement('base');
@@ -58,8 +63,9 @@ suite('cr-dialog', function() {
         <div slot="body">body</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
-    const whenFired = test_util.eventToPromise('cr-dialog-open', dialog);
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
+    const whenFired = eventToPromise('cr-dialog-open', dialog);
     dialog.showModal();
     return whenFired;
   });
@@ -71,9 +77,10 @@ suite('cr-dialog', function() {
         <div slot="body">body</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
-    const whenFired = test_util.eventToPromise('close', dialog);
+    const whenFired = eventToPromise('close', dialog);
     dialog.close();
     return whenFired.then(() => {
       assertEquals('success', dialog.getNative().returnValue);
@@ -88,14 +95,14 @@ suite('cr-dialog', function() {
     const outer = dialogs[0];
     const inner = dialogs[1];
 
-    let whenFired = test_util.eventToPromise('close', window);
+    let whenFired = eventToPromise('close', window);
     inner.close();
 
     return whenFired
         .then(e => {
           // Check that the event's target is the inner dialog.
           assertEquals(inner, e.target);
-          whenFired = test_util.eventToPromise('close', window);
+          whenFired = eventToPromise('close', window);
           outer.close();
           return whenFired;
         })
@@ -112,10 +119,11 @@ suite('cr-dialog', function() {
         <div slot="body">body</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
-    const whenCancelFired = test_util.eventToPromise('cancel', dialog);
-    const whenCloseFired = test_util.eventToPromise('close', dialog);
+    const whenCancelFired = eventToPromise('cancel', dialog);
+    const whenCloseFired = eventToPromise('close', dialog);
     dialog.cancel();
     return Promise.all([whenCancelFired, whenCloseFired]).then(() => {
       assertEquals('', dialog.getNative().returnValue);
@@ -130,14 +138,14 @@ suite('cr-dialog', function() {
     const outer = dialogs[0];
     const inner = dialogs[1];
 
-    let whenFired = test_util.eventToPromise('cancel', window);
+    let whenFired = eventToPromise('cancel', window);
     inner.cancel();
 
     return whenFired
         .then(e => {
           // Check that the event's target is the inner dialog.
           assertEquals(inner, e.target);
-          whenFired = test_util.eventToPromise('cancel', window);
+          whenFired = eventToPromise('cancel', window);
           outer.cancel();
           return whenFired;
         })
@@ -154,7 +162,8 @@ suite('cr-dialog', function() {
         <div slot="body"><button>button</button></div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     const button = document.body.querySelector('button');
 
     assertNotEquals(dialog, document.activeElement);
@@ -162,8 +171,8 @@ suite('cr-dialog', function() {
 
     dialog.showModal();
 
-    expectEquals(dialog, document.activeElement);
-    expectNotEquals(button, document.activeElement);
+    assertEquals(dialog, document.activeElement);
+    assertNotEquals(button, document.activeElement);
   });
 
   test('enter keys should trigger action buttons once', function() {
@@ -176,8 +185,10 @@ suite('cr-dialog', function() {
         </div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
-    const actionButton = document.body.querySelector('.action-button');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
+    const actionButton = /** @type {!HTMLButtonElement} */ (
+        document.body.querySelector('.action-button'));
 
     dialog.showModal();
 
@@ -187,15 +198,23 @@ suite('cr-dialog', function() {
       clickedCounter++;
     });
 
+    /** @param {!HTMLButtonElement}  button */
+    function simulateEnterOnButton(button) {
+      pressEnter(button);
+      // Also call manually click() since normally this is done by the browser.
+      button.click();
+    }
+
     // Enter key on the action button should only fire the click handler once.
-    MockInteractions.tap(actionButton, 'keypress', 13, undefined, 'Enter');
+    simulateEnterOnButton(actionButton);
     assertEquals(1, clickedCounter);
 
     // Enter keys on other buttons should be ignored.
     clickedCounter = 0;
-    const otherButton = document.body.querySelector('#other-button');
+    const otherButton = /** @type {!HTMLButtonElement} */ (
+        document.body.querySelector('#other-button'));
     assertTrue(!!otherButton);
-    pressEnter(otherButton);
+    simulateEnterOnButton(otherButton);
     assertEquals(0, clickedCounter);
 
     // Enter keys on the close icon in the top-right corner should be ignored.
@@ -215,7 +234,8 @@ suite('cr-dialog', function() {
         </div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     const hiddenButton = document.body.querySelector('#hidden');
     const actionButton = document.body.querySelector('#active');
     dialog.showModal();
@@ -250,7 +270,8 @@ suite('cr-dialog', function() {
         </div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
 
     const otherElement = document.body.querySelector('foobar');
     const inputCheckboxElement =
@@ -310,7 +331,8 @@ suite('cr-dialog', function() {
         <div slot="body"><button autofocus>button</button></div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     const button = document.body.querySelector('button');
 
     assertNotEquals(dialog, document.activeElement);
@@ -318,8 +340,8 @@ suite('cr-dialog', function() {
 
     dialog.showModal();
 
-    expectNotEquals(dialog, document.activeElement);
-    expectEquals(button, document.activeElement);
+    assertNotEquals(dialog, document.activeElement);
+    assertEquals(button, document.activeElement);
   });
 
   // Ensuring that intersectionObserver does not fire any callbacks before the
@@ -331,7 +353,8 @@ suite('cr-dialog', function() {
         <div slot="body">body</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     assertFalse(dialog.open);
     const bodyContainer = dialog.$$('.body-container');
     assertTrue(!!bodyContainer);
@@ -340,7 +363,7 @@ suite('cr-dialog', function() {
     const bottomShadow = dialog.$$('#cr-container-shadow-bottom');
     assertTrue(!!bottomShadow);
 
-    return test_util.flushTasks().then(() => {
+    return flushTasks().then(() => {
       assertFalse(topShadow.classList.contains('has-shadow'));
       assertFalse(bottomShadow.classList.contains('has-shadow'));
     });
@@ -355,7 +378,8 @@ suite('cr-dialog', function() {
         </div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     const bodyContainer = dialog.$$('.body-container');
     assertTrue(!!bodyContainer);
     const topShadow = dialog.$$('#cr-container-shadow-top');
@@ -371,7 +395,7 @@ suite('cr-dialog', function() {
     // calls callback before MutationObserver does.
     const observer = new MutationObserver(function(changes) {
       // Only care about class mutations.
-      if (changes[0].attributeName != 'class') {
+      if (changes[0].attributeName !== 'class') {
         return;
       }
 
@@ -409,7 +433,8 @@ suite('cr-dialog', function() {
         <div slot="title">title</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
 
     assertTrue(dialog.open);
@@ -428,7 +453,8 @@ suite('cr-dialog', function() {
         <div slot="title">title</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
 
     assertTrue(dialog.$.close.hidden);
@@ -452,7 +478,8 @@ suite('cr-dialog', function() {
         <div slot="title">title</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
     assertTrue(dialog.open);
 
@@ -468,7 +495,8 @@ suite('cr-dialog', function() {
         <div slot="title">title</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
 
     assertTrue(dialog.$.close.hidden);
@@ -481,7 +509,8 @@ suite('cr-dialog', function() {
         <div slot="title">title</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
     assertTrue(dialog.open);
     assertTrue(dialog.consumeKeydownEvent);
@@ -491,9 +520,9 @@ suite('cr-dialog', function() {
     }
     document.addEventListener('keydown', assertKeydownNotReached);
 
-    return test_util.flushTasks().then(() => {
-      MockInteractions.keyDownOn(dialog, 65, undefined, 'a');
-      MockInteractions.keyDownOn(document.body, 65, undefined, 'a');
+    return flushTasks().then(() => {
+      keyDownOn(dialog, 65, undefined, 'a');
+      keyDownOn(document.body, 65, undefined, 'a');
       document.removeEventListener('keydown', assertKeydownNotReached);
     });
   });
@@ -504,7 +533,8 @@ suite('cr-dialog', function() {
         <div slot="title">title</div>
       </cr-dialog>`;
 
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     dialog.showModal();
     assertTrue(dialog.open);
     assertFalse(dialog.consumeKeydownEvent);
@@ -515,8 +545,8 @@ suite('cr-dialog', function() {
     }
     document.addEventListener('keydown', assertKeydownCount);
 
-    return test_util.flushTasks().then(() => {
-      MockInteractions.keyDownOn(dialog, 65, undefined, 'a');
+    return flushTasks().then(() => {
+      keyDownOn(dialog, 65, undefined, 'a');
       assertEquals(1, keydownCounter);
       document.removeEventListener('keydown', assertKeydownCount);
     });
@@ -527,7 +557,8 @@ suite('cr-dialog', function() {
       <cr-dialog show-on-attach>
         <div slot="title">title</div>
       </cr-dialog>`;
-    const dialog = document.body.querySelector('cr-dialog');
+    const dialog = /** @type {!CrDialogElement} */ (
+        document.body.querySelector('cr-dialog'));
     assertTrue(dialog.open);
   });
 });

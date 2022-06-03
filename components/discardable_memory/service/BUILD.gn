@@ -26,9 +26,7 @@ component("service") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "discardable_shared_memory_manager_unittest.cc",
-  ]
+  sources = [ "discardable_shared_memory_manager_unittest.cc" ]
 
   deps = [
     ":service",

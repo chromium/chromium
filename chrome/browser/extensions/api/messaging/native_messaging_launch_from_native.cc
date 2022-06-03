@@ -8,10 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +29,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -39,8 +39,7 @@ namespace {
 ScopedAllowNativeAppConnectionForTest* g_allow_native_app_connection_for_test =
     nullptr;
 
-constexpr base::TimeDelta kNativeMessagingHostErrorTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kNativeMessagingHostErrorTimeout = base::Seconds(10);
 
 ScopedNativeMessagingErrorTimeoutOverrideForTest*
     g_native_messaging_host_timeout_override = nullptr;
@@ -56,6 +55,11 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   using MovableScopedKeepAlive =
       std::unique_ptr<ScopedKeepAlive,
                       content::BrowserThread::DeleteOnUIThread>;
+
+  NativeMessagingHostErrorReporter(const NativeMessagingHostErrorReporter&) =
+      delete;
+  NativeMessagingHostErrorReporter& operator=(
+      const NativeMessagingHostErrorReporter&) = delete;
 
   static void Report(const std::string& extension_id,
                      const std::string& host_id,
@@ -75,8 +79,8 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
     MovableScopedKeepAlive keep_alive(
         new ScopedKeepAlive(KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT,
                             KeepAliveRestartOption::DISABLED));
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&NativeMessagingHostErrorReporter::ReportOnIoThread,
                        std::move(host), std::move(keep_alive)));
   }
@@ -117,8 +121,6 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   MovableScopedKeepAlive keep_alive_;
   std::unique_ptr<NativeMessageHost> process_;
   base::OneShotTimer timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingHostErrorReporter);
 };
 
 }  // namespace
@@ -227,7 +229,8 @@ void LaunchNativeMessageHostFromNativeApp(const std::string& extension_id,
     return;
   }
   const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */);
+                                   1 /* port_number */, true /* is_opener */,
+                                   extensions::SerializationFormat::kJson);
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
   // TODO(crbug.com/967262): Apply policy for allow_user_level.

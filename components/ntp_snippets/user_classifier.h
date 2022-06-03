@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 class PrefRegistrySimple;
 class PrefService;
 
@@ -57,6 +55,8 @@ class UserClassifier {
 
   // The provided |pref_service| may be nullptr in unit-tests.
   UserClassifier(PrefService* pref_service, base::Clock* clock);
+  UserClassifier(const UserClassifier&) = delete;
+  UserClassifier& operator=(const UserClassifier&) = delete;
   ~UserClassifier();
 
   // Registers profile prefs for all metrics. Called from browser_prefs.cc.
@@ -107,8 +107,6 @@ class UserClassifier {
   // Params of the classification.
   const double active_consumer_clicks_at_least_once_per_hours_;
   const double rare_user_opens_ntp_at_most_once_per_hours_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserClassifier);
 };
 
 }  // namespace ntp_snippets

@@ -7,7 +7,7 @@
 
 #import <objc/objc.h>
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -73,6 +73,9 @@ class ViewsHostableView {
   // Set the WebContentsView's parent accessibility element.
   virtual void ViewsHostableSetParentAccessible(
       gfx::NativeViewAccessible parent_accessibility_element) = 0;
+
+  // Get the WebContentsView's parent accessibility element.
+  virtual gfx::NativeViewAccessible ViewsHostableGetParentAccessible() = 0;
 
   // Retrieve the WebContentsView's accessibility element.
   virtual gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() = 0;

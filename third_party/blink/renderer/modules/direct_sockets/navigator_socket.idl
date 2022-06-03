@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md#tcp
+// https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md#udp
+
+[
+  ImplementedAs=NavigatorSocket,
+  RuntimeEnabled=DirectSockets,
+  DirectSocketEnabled
+] partial interface Navigator {
+  [SecureContext, RaisesException, CallWith=ScriptState, Measure]
+  Promise<TCPSocket> openTCPSocket(optional SocketOptions options = {});
+
+  [SecureContext, RaisesException, CallWith=ScriptState, Measure]
+  Promise<UDPSocket> openUDPSocket(optional SocketOptions options = {});
+};

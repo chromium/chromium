@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 class GURL;
@@ -25,11 +26,12 @@ class PrefRegistrySyncable;
 namespace signin {
 
 extern const char kSignInPromoQueryKeyAccessPoint[];
+// TODO(https://crbug.com/1205147): Auto close is unused. Remove it.
 extern const char kSignInPromoQueryKeyAutoClose[];
 extern const char kSignInPromoQueryKeyForceKeepData[];
 extern const char kSignInPromoQueryKeyReason[];
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // These functions are only used to unlock the profile from the desktop user
 // manager and the windows credential provider.
 
@@ -47,7 +49,7 @@ GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
 GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
                                    signin_metrics::Reason reason,
                                    const std::string& email);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns the URL to be used to signin and turn on Sync when DICE is enabled.
 // If email is not empty, then it will pass email as hint to the page so that it
@@ -72,9 +74,6 @@ signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url);
 
 // Gets the sign in reason from the query portion of the sign in promo URL.
 signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url);
-
-// Returns true if the auto_close parameter in the given URL is set to true.
-bool IsAutoCloseEnabledInEmbeddedURL(const GURL& url);
 
 // Registers the preferences the Sign In Promo needs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

@@ -32,6 +32,7 @@ base::Value NetLogCookieMonsterCookieAdded(const CanonicalCookie* cookie,
   dict.SetStringKey("same_site", CookieSameSiteToString(cookie->SameSite()));
   dict.SetBoolKey("is_persistent", cookie->IsPersistent());
   dict.SetBoolKey("sync_requested", sync_requested);
+  dict.SetBoolKey("same_party", cookie->IsSameParty());
   return dict;
 }
 

@@ -7,33 +7,22 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 
-// This class is used by OnDeviceHeadSuggestComponentInstaller to notify
-// OnDeviceHeadProvider when on device model update is finished.
+// This class is used by OnDeviceHeadSuggestComponentInstaller to hold the
+// directory & filename for the on device model downloaded by Component Updater.
 class OnDeviceModelUpdateListener {
  public:
-  using ModelUpdateCallback =
-      base::RepeatingCallback<void(const std::string& new_model_filename)>;
-  using UpdateCallbacks = base::CallbackList<void(const std::string&)>;
-  using UpdateSubscription = UpdateCallbacks::Subscription;
 
   static OnDeviceModelUpdateListener* GetInstance();
 
-  // Adds a callback which will be run on model update. This method will also
-  // notify the provider immediately if a model is available.
-  std::unique_ptr<UpdateSubscription> AddModelUpdateCallback(
-      ModelUpdateCallback callback);
-
-  // Called by Component Updater when model update is completed to notify the
-  // on device head provider to reload the model.
+  // Called by Component Updater when model update is completed to update
+  // |model_dir_| and |model_filename_|.
   void OnModelUpdate(const base::FilePath& model_dir);
 
-  std::string model_filename() const { return model_filename_; }
+  std::string model_filename() const;
 
  private:
   friend class base::NoDestructor<OnDeviceModelUpdateListener>;
@@ -43,6 +32,9 @@ class OnDeviceModelUpdateListener {
 
   OnDeviceModelUpdateListener();
   ~OnDeviceModelUpdateListener();
+  OnDeviceModelUpdateListener(const OnDeviceModelUpdateListener&) = delete;
+  OnDeviceModelUpdateListener& operator=(const OnDeviceModelUpdateListener&) =
+      delete;
 
   // The directory where the on device model resides.
   base::FilePath model_dir_;
@@ -50,16 +42,7 @@ class OnDeviceModelUpdateListener {
   // The filename of the model.
   std::string model_filename_;
 
-  // A list of callbacks which will be run on model update.
-  UpdateCallbacks model_update_callbacks_;
-
-  // The task runner which will be used to run file operations and
-  // |model_update_callbacks_|.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OnDeviceModelUpdateListener);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_MODEL_UPDATE_LISTENER_H_

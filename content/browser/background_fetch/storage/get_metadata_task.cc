@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -16,12 +17,12 @@ namespace background_fetch {
 
 GetMetadataTask::GetMetadataTask(DatabaseTaskHost* host,
                                  int64_t service_worker_registration_id,
-                                 const url::Origin& origin,
+                                 const blink::StorageKey& storage_key,
                                  const std::string& developer_id,
                                  GetMetadataCallback callback)
     : DatabaseTask(host),
       service_worker_registration_id_(service_worker_registration_id),
-      origin_(origin),
+      storage_key_(storage_key),
       developer_id_(developer_id),
       callback_(std::move(callback)) {}
 
@@ -80,8 +81,10 @@ void GetMetadataTask::ProcessMetadata(const std::string& metadata) {
   }
 
   const auto& registration_proto = metadata_proto_->registration();
+  // TODO(https://crbug.com/1199077): Check that the storage key matches once we
+  // can get it from `metadata_proto_`.
   if (registration_proto.developer_id() != developer_id_ ||
-      !origin_.IsSameOriginWith(
+      !storage_key_.origin().IsSameOriginWith(
           url::Origin::Create(GURL(metadata_proto_->origin())))) {
     FinishWithError(blink::mojom::BackgroundFetchError::STORAGE_ERROR);
     return;

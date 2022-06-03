@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/impl/model.h"
 
 namespace media {
@@ -20,6 +19,10 @@ namespace learning {
 class COMPONENT_EXPORT(LEARNING_IMPL) VotingEnsemble : public Model {
  public:
   VotingEnsemble(std::vector<std::unique_ptr<Model>> models);
+
+  VotingEnsemble(const VotingEnsemble&) = delete;
+  VotingEnsemble& operator=(const VotingEnsemble&) = delete;
+
   ~VotingEnsemble() override;
 
   // Model
@@ -27,8 +30,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) VotingEnsemble : public Model {
 
  private:
   std::vector<std::unique_ptr<Model>> models_;
-
-  DISALLOW_COPY_AND_ASSIGN(VotingEnsemble);
 };
 
 }  // namespace learning

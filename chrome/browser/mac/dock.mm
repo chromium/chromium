@@ -163,7 +163,7 @@ NSArray* PersistentAppsFromDockPlist(NSDictionary* dock_plist) {
   if (!dock_plist) {
     return nil;
   }
-  NSArray* persistent_apps = [dock_plist objectForKey:kDockPersistentAppsKey];
+  NSArray* persistent_apps = dock_plist[kDockPersistentAppsKey];
   if (![persistent_apps isKindOfClass:[NSArray class]]) {
     LOG(ERROR) << "persistent_apps is not an NSArray";
     return nil;
@@ -218,7 +218,7 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
   NSUInteger already_installed_app_index = NSNotFound;
   NSUInteger app_index = NSNotFound;
   for (NSUInteger index = 0; index < [persistent_apps count]; ++index) {
-    NSString* app_path = [persistent_app_paths objectAtIndex:index];
+    NSString* app_path = persistent_app_paths[index];
     if ([app_path isEqualToString:installed_path]) {
       // If the Dock already contains a reference to the newly installed
       // application, don't add another one.
@@ -255,7 +255,7 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
       // one right before it.
       for (NSUInteger index = 0; index < [persistent_apps count]; ++index) {
         NSString* dock_app_name =
-            [[persistent_app_paths objectAtIndex:index] lastPathComponent];
+            [persistent_app_paths[index] lastPathComponent];
         if ([dock_app_name isEqualToString:app_name]) {
           app_index = index;
           break;
@@ -310,7 +310,7 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
                        nil];
       for (NSUInteger index = 0; index < [persistent_apps count]; ++index) {
         NSString* dock_app_name =
-            [[persistent_app_paths objectAtIndex:index] lastPathComponent];
+            [persistent_app_paths[index] lastPathComponent];
         if ([other_browser_app_names containsObject:dock_app_name]) {
           app_index = index + 1;
         }
@@ -330,12 +330,8 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
       return IconAddFailure;
     }
 
-    NSDictionary* new_tile_data =
-        [NSDictionary dictionaryWithObject:url_dict
-                                    forKey:kDockFileDataKey];
-    NSDictionary* new_tile =
-        [NSDictionary dictionaryWithObject:new_tile_data
-                                    forKey:kDockTileDataKey];
+    NSDictionary* new_tile_data = @{kDockFileDataKey : url_dict};
+    NSDictionary* new_tile = @{kDockTileDataKey : new_tile_data};
 
     // Add the new tile to the Dock.
     [persistent_apps insertObject:new_tile atIndex:app_index];
@@ -353,7 +349,7 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
   }
 
   // Rewrite the plist.
-  [dock_plist setObject:persistent_apps forKey:kDockPersistentAppsKey];
+  dock_plist[kDockPersistentAppsKey] = persistent_apps;
   [[NSUserDefaults standardUserDefaults] setPersistentDomain:dock_plist
                                                      forName:kDockDomain];
 

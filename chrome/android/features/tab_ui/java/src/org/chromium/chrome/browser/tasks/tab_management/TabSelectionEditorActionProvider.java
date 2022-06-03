@@ -96,6 +96,7 @@ class TabSelectionEditorActionProvider {
                     filter.moveTabOutOfGroup(tab.getId());
                 }
                 mTabSelectionEditorController.hide();
+                RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
                 break;
             case TabSelectionEditorAction.CLOSE:
                 tabModelSelector.getCurrentModel().closeMultipleTabs(selectedTabs, true);

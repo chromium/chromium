@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -17,10 +16,10 @@
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
 
@@ -165,7 +164,7 @@ bool ClearSiteDataHandler::HandleHeaderAndOutputConsoleMessages() {
 
 bool ClearSiteDataHandler::Run() {
   // Only accept the header on secure non-unique origins.
-  if (!IsOriginSecure(url_)) {
+  if (!network::IsUrlPotentiallyTrustworthy(url_)) {
     delegate_->AddMessage(url_, "Not supported for insecure origins.",
                           blink::mojom::ConsoleMessageLevel::kError);
     return false;
@@ -182,7 +181,7 @@ bool ClearSiteDataHandler::Run() {
   // modification to cookies. Clear-Site-Data applies this restriction to other
   // data types as well.
   // TODO(msramek): Consider showing a blocked icon via
-  // TabSpecificContentSettings and reporting the action in the "Blocked"
+  // PageSpecificContentSettings and reporting the action in the "Blocked"
   // section of the cookies dialog in OIB.
   if (load_flags_ & net::LOAD_DO_NOT_SAVE_COOKIES) {
     delegate_->AddMessage(
@@ -313,8 +312,7 @@ void ClearSiteDataHandler::TaskFinished(
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Navigation.ClearSiteData.Duration",
                              base::TimeTicks::Now() - clearing_started,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(1), 50);
+                             base::Milliseconds(1), base::Seconds(1), 50);
 
   // TODO(crbug.com/876931): Delay output until next frame for navigations.
   delegate->OutputMessages(web_contents_getter);

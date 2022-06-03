@@ -4,8 +4,8 @@
 
 #include "components/error_page/common/net_error_info.h"
 
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 
 namespace error_page {
 
@@ -25,6 +25,8 @@ const char* DnsProbeStatusToString(int status) {
       return "DNS_PROBE_FINISHED_BAD_CONFIG";
     case DNS_PROBE_FINISHED_NXDOMAIN:
       return "DNS_PROBE_FINISHED_NXDOMAIN";
+    case DNS_PROBE_FINISHED_BAD_SECURE_CONFIG:
+      return "DNS_PROBE_FINISHED_BAD_SECURE_CONFIG";
     default:
       NOTREACHED();
       return "";

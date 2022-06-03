@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that simple evaluations may be performed in the console on global object.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -21,8 +21,8 @@
     ConsoleTestRunner.evaluateInConsole('bar', step2);
   }
 
-  function step2() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step2() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

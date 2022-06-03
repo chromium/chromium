@@ -35,9 +35,9 @@ from .profiler import ProfilerFactory, GooglePProf
 
 
 class ProfilerFactoryTest(unittest.TestCase):
-
     def _assert_default_profiler_name(self, os_name, expected_profiler_name):
-        profiler_name = ProfilerFactory.default_profiler_name(MockPlatformInfo(os_name))
+        profiler_name = ProfilerFactory.default_profiler_name(
+            MockPlatformInfo(os_name))
         self.assertEqual(profiler_name, expected_profiler_name)
 
     def test_default_profilers(self):
@@ -51,18 +51,19 @@ class ProfilerFactoryTest(unittest.TestCase):
         self.assertFalse(host.filesystem.exists("/tmp/output"))
 
         # Default mocks are Mac, so iprofile should be default.
-        profiler = ProfilerFactory.create_profiler(host, '/bin/executable', '/tmp/output')
+        profiler = ProfilerFactory.create_profiler(host, '/bin/executable',
+                                                   '/tmp/output')
         self.assertTrue(host.filesystem.exists("/tmp/output"))
         self.assertEqual(profiler._output_path, "/tmp/output/test.dtps")
 
         # Linux defaults to perf.
         host.platform.os_name = 'linux'
-        profiler = ProfilerFactory.create_profiler(host, '/bin/executable', '/tmp/output')
+        profiler = ProfilerFactory.create_profiler(host, '/bin/executable',
+                                                   '/tmp/output')
         self.assertEqual(profiler._output_path, "/tmp/output/test.data")
 
 
 class GooglePProfTest(unittest.TestCase):
-
     def test_pprof_output_regexp(self):
         pprof_output = """
 sometimes
@@ -102,4 +103,6 @@ Total: 3770 samples
 """
         host = MockSystemHost()
         profiler = GooglePProf(host, '/bin/executable', '/tmp/output')
-        self.assertEqual(profiler._first_ten_lines_of_profile(pprof_output), expected_first_ten_lines)
+        self.assertEqual(
+            profiler._first_ten_lines_of_profile(pprof_output),
+            expected_first_ten_lines)

@@ -30,16 +30,16 @@ bool LogEventProvider::LogMessage(logging::LogSeverity severity,
   // Convert the log severity to the most appropriate ETW trace level.
   if (severity >= 0) {
     switch (severity) {
-      case LOG_INFO:
+      case LOGGING_INFO:
         level = TRACE_LEVEL_INFORMATION;
         break;
-      case LOG_WARNING:
+      case LOGGING_WARNING:
         level = TRACE_LEVEL_WARNING;
         break;
-      case LOG_ERROR:
+      case LOGGING_ERROR:
         level = TRACE_LEVEL_ERROR;
         break;
-      case LOG_FATAL:
+      case LOGGING_FATAL:
         level = TRACE_LEVEL_FATAL;
         break;
     }
@@ -117,13 +117,13 @@ void LogEventProvider::OnEventsEnabled() {
   // and enable logging at that level.
   EtwEventLevel level = enable_level();
   if (level == TRACE_LEVEL_NONE || level == TRACE_LEVEL_FATAL) {
-    SetMinLogLevel(LOG_FATAL);
+    SetMinLogLevel(LOGGING_FATAL);
   } else if (level == TRACE_LEVEL_ERROR) {
-    SetMinLogLevel(LOG_ERROR);
+    SetMinLogLevel(LOGGING_ERROR);
   } else if (level == TRACE_LEVEL_WARNING) {
-    SetMinLogLevel(LOG_WARNING);
+    SetMinLogLevel(LOGGING_WARNING);
   } else if (level == TRACE_LEVEL_INFORMATION) {
-    SetMinLogLevel(LOG_INFO);
+    SetMinLogLevel(LOGGING_INFO);
   } else if (level >= TRACE_LEVEL_VERBOSE) {
     // Above INFO, we enable verbose levels with negative severities.
     SetMinLogLevel(TRACE_LEVEL_INFORMATION - level);

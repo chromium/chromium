@@ -6,12 +6,10 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/stl_util.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
@@ -21,7 +19,6 @@
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/pending_connection_request.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace chromeos {
 
@@ -47,6 +44,10 @@ class AuthenticatedChannel;
 // connection.
 template <typename FailureDetailType>
 class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
+ public:
+  ConnectionAttemptBase(const ConnectionAttemptBase&) = delete;
+  ConnectionAttemptBase& operator=(const ConnectionAttemptBase&) = delete;
+
  protected:
   ConnectionAttemptBase(
       ConnectionAttemptDelegate* delegate,
@@ -176,8 +177,6 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
 
   base::WeakPtrFactory<ConnectionAttemptBase<FailureDetailType>>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttemptBase);
 };
 
 }  // namespace secure_channel

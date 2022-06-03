@@ -41,7 +41,7 @@ scoped_refptr<ExtensionFunction> ExtensionFunctionRegistry::NewFunction(
     return nullptr;
   }
   scoped_refptr<ExtensionFunction> function = iter->second.factory_();
-  function->set_name(iter->second.function_name_);
+  function->SetName(iter->second.function_name_);
   function->set_histogram_value(iter->second.histogram_value_);
   return function;
 }

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_SCHEDULER_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_SCHEDULER_H_
 
-#include "base/macros.h"
-
 namespace ntp_snippets {
 
 class RemoteSuggestionsProvider;

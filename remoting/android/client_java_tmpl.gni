@@ -7,8 +7,8 @@ import("//remoting/remoting_options.gni")
 
 template("remoting_android_client_java_tmpl") {
   android_library(target_name) {
-    _java_file_prefix = "//remoting/android/java/src/org/chromium/chromoting"
-    _java_files = [
+    _sources_prefix = "//remoting/android/java/src/org/chromium/chromoting"
+    _sources = [
       "ActivityLifecycleListener.java",
       "AnimationJob.java",
       "Capabilities.java",
@@ -46,6 +46,7 @@ template("remoting_android_client_java_tmpl") {
       "SizeChangedEventParameter.java",
       "SwipePinchDetector.java",
       "SystemUiVisibilityChangedEventParameter.java",
+      "TapEventParameter.java",
       "TapGestureDetector.java",
       "TermsOfServiceActivity.java",
       "ThirdPartyTokenFetcher.java",
@@ -53,7 +54,6 @@ template("remoting_android_client_java_tmpl") {
       "TouchInputHandler.java",
       "TouchInputStrategy.java",
       "TrackpadInputStrategy.java",
-      "TapEventParameter.java",
       "TwoPointsEventParameter.java",
       "WebViewActivity.java",
       "accountswitcher/AccountManagerCompat.java",
@@ -71,15 +71,15 @@ template("remoting_android_client_java_tmpl") {
       "help/HelpSingleton.java",
       "jni/Client.java",
       "jni/ConnectionListener.java",
-      "jni/GlDisplay.java",
       "jni/DirectoryService.java",
+      "jni/GlDisplay.java",
       "jni/JniInterface.java",
       "jni/JniOAuthTokenGetter.java",
       "jni/NotificationPresenter.java",
       "jni/TouchEventData.java",
     ]
 
-    java_files = rebase_path(_java_files, ".", _java_file_prefix)
+    sources = rebase_path(_sources, ".", _sources_prefix)
 
     deps = [
       "//base:base_java",
@@ -87,14 +87,16 @@ template("remoting_android_client_java_tmpl") {
       "//remoting/android:remoting_android_client_java_resources",
       "//remoting/android:remoting_apk_manifest",
       "//remoting/proto/remoting/v1:directory_proto_java",
-      "//third_party/android_deps:android_arch_lifecycle_common_java",
       "//third_party/android_deps:android_support_v7_appcompat_java",
-      "//third_party/android_deps:com_android_support_drawerlayout_java",
-      "//third_party/android_deps:com_android_support_mediarouter_v7_java",
-      "//third_party/android_deps:com_android_support_support_annotations_java",
-      "//third_party/android_deps:com_google_protobuf_protobuf_lite_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+      "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+      "//third_party/androidx:androidx_mediarouter_mediarouter_java",
       "//ui/android:ui_utils_java",
     ]
+
+    resources_package = "org.chromium.chromoting"
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
@@ -112,8 +114,5 @@ template("remoting_android_client_java_tmpl") {
     if (defined(invoker.remoting_google_play_services_library)) {
       deps += [ invoker.remoting_google_play_services_library ]
     }
-
-    android_manifest_for_lint =
-        "$root_gen_dir/remoting/android/AndroidManifest.xml"
   }
 }

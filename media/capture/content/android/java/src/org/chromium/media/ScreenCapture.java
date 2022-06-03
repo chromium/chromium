@@ -4,7 +4,6 @@
 
 package org.chromium.media;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -19,13 +18,11 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Surface;
-import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 
@@ -46,7 +43,7 @@ import java.nio.ByteBuffer;
  * download takes place in another thread used by ImageReader.
  **/
 @JNINamespace("media")
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@SuppressWarnings("ValidFragment") // This fragment is created by native.
 public class ScreenCapture extends Fragment {
     private static final String TAG = "ScreenCapture";
 
@@ -100,10 +97,7 @@ public class ScreenCapture extends Fragment {
     // Factory method.
     @CalledByNative
     static ScreenCapture createScreenCaptureMachine(long nativeScreenCaptureMachineAndroid) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return new ScreenCapture(nativeScreenCaptureMachineAndroid);
-        }
-        return null;
+        return new ScreenCapture(nativeScreenCaptureMachineAndroid);
     }
 
     // Internal class implementing the ImageReader listener. Gets pinged when a
@@ -238,10 +232,10 @@ public class ScreenCapture extends Fragment {
             return false;
         }
 
-        WindowManager windowManager =
-                (WindowManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.WINDOW_SERVICE);
-        mDisplay = windowManager.getDefaultDisplay();
+        DisplayManager displayManager =
+                (DisplayManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.DISPLAY_SERVICE);
+        mDisplay = displayManager.getDisplay(Display.DEFAULT_DISPLAY);
 
         DisplayMetrics metrics = new DisplayMetrics();
         mDisplay.getMetrics(metrics);

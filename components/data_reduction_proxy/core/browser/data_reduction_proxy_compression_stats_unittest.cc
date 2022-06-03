@@ -123,26 +123,22 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void SetUp() override {
     drp_test_context_ = DataReductionProxyTestContext::Builder().Build();
 
-    compression_stats_.reset(new DataReductionProxyCompressionStats(
-        data_reduction_proxy_service(), pref_service(), base::TimeDelta()));
+    compression_stats_ = std::make_unique<DataReductionProxyCompressionStats>(
+        data_reduction_proxy_service(), pref_service(), base::TimeDelta());
   }
 
   void ResetCompressionStatsWithDelay(const base::TimeDelta& delay) {
-    compression_stats_.reset(new DataReductionProxyCompressionStats(
-        data_reduction_proxy_service(), pref_service(), delay));
+    compression_stats_ = std::make_unique<DataReductionProxyCompressionStats>(
+        data_reduction_proxy_service(), pref_service(), delay);
   }
 
   base::Time FakeNow() const {
     return now_ + now_delta_;
   }
 
-  void SetFakeTimeDeltaInHours(int hours) {
-    now_delta_ = base::TimeDelta::FromHours(hours);
-  }
+  void SetFakeTimeDeltaInHours(int hours) { now_delta_ = base::Hours(hours); }
 
-  void AddFakeTimeDeltaInHours(int hours) {
-    now_delta_ += base::TimeDelta::FromHours(hours);
-  }
+  void AddFakeTimeDeltaInHours(int hours) { now_delta_ += base::Hours(hours); }
 
   void SetUpPrefs() {
     CreatePrefList(prefs::kDailyHttpOriginalContentLength);
@@ -166,18 +162,18 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
           i, std::make_unique<base::Value>(base::NumberToString(i)));
     }
 
-    received_daily_content_length_list->Clear();
+    received_daily_content_length_list->ClearList();
     for (size_t i = 0; i < kNumDaysInHistory / 2; ++i) {
-      received_daily_content_length_list->AppendString(base::NumberToString(i));
+      received_daily_content_length_list->Append(base::NumberToString(i));
     }
   }
 
   // Create daily pref list of |kNumDaysInHistory| zero values.
   void CreatePrefList(const char* pref) {
-    base::ListValue* update = compression_stats_->GetList(pref);
-    update->Clear();
+    base::Value* update = compression_stats_->GetList(pref);
+    update->ClearList();
     for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-      update->Insert(0, std::make_unique<base::Value>(base::NumberToString(0)));
+      update->Append(base::Value(base::NumberToString(0)));
     }
   }
 
@@ -186,8 +182,8 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void VerifyPrefListWasWritten(const char* pref) {
     const base::ListValue* delayed_list = compression_stats_->GetList(pref);
     const base::ListValue* written_list = pref_service()->GetList(pref);
-    ASSERT_EQ(delayed_list->GetSize(), written_list->GetSize());
-    size_t count = delayed_list->GetSize();
+    ASSERT_EQ(delayed_list->GetList().size(), written_list->GetList().size());
+    size_t count = delayed_list->GetList().size();
 
     for (size_t i = 0; i < count; ++i) {
       EXPECT_EQ(GetListPrefInt64Value(*delayed_list, i),
@@ -205,7 +201,7 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
 
   // Verify the pref values in |dict| are equal to that in |compression_stats_|.
   void VerifyPrefs(base::DictionaryValue* dict) {
-    base::string16 dict_pref_string;
+    std::u16string dict_pref_string;
     int64_t dict_pref;
     int64_t service_pref;
 
@@ -231,7 +227,8 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
                       size_t num_days_in_history) {
     ASSERT_GE(num_days_in_history, count);
     base::ListValue* update = compression_stats_->GetList(pref);
-    ASSERT_EQ(num_days_in_history, update->GetSize()) << "Pref: " << pref;
+    ASSERT_EQ(num_days_in_history, update->GetList().size())
+        << "Pref: " << pref;
 
     for (size_t i = 0; i < count; ++i) {
       EXPECT_EQ(values[i],
@@ -276,21 +273,19 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void RecordContentLengthPrefs(int64_t received_content_length,
                                 int64_t original_content_length,
                                 bool with_data_reduction_proxy_enabled,
-                                DataReductionProxyRequestType request_type,
                                 const std::string& mime_type,
                                 base::Time now) {
     compression_stats_->RecordRequestSizePrefs(
         received_content_length, original_content_length,
-        with_data_reduction_proxy_enabled, request_type, mime_type, now);
+        with_data_reduction_proxy_enabled, mime_type, now);
   }
 
   void RecordContentLengthPrefs(int64_t received_content_length,
                                 int64_t original_content_length,
                                 bool with_data_reduction_proxy_enabled,
-                                DataReductionProxyRequestType request_type,
                                 base::Time now) {
     RecordContentLengthPrefs(received_content_length, original_content_length,
-                             with_data_reduction_proxy_enabled, request_type,
+                             with_data_reduction_proxy_enabled,
                              "application/octet-stream", now);
   }
 
@@ -302,15 +297,15 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
                                             original_size, time);
   }
 
-  void GetHistoricalDataUsage(
-      const HistoricalDataUsageCallback& onLoadDataUsage,
-      const base::Time& now) {
-    compression_stats_->GetHistoricalDataUsageImpl(onLoadDataUsage, now);
+  void GetHistoricalDataUsage(HistoricalDataUsageCallback on_load_data_usage,
+                              const base::Time& now) {
+    compression_stats_->GetHistoricalDataUsageImpl(
+        std::move(on_load_data_usage), now);
   }
 
-  void LoadHistoricalDataUsage(
-      const HistoricalDataUsageCallback& onLoadDataUsage) {
-    compression_stats_->service_->LoadHistoricalDataUsage(onLoadDataUsage);
+  void LoadHistoricalDataUsage(HistoricalDataUsageCallback on_load_data_usage) {
+    compression_stats_->service_->LoadHistoricalDataUsage(
+        std::move(on_load_data_usage));
   }
 
   void DeleteHistoricalDataUsage() {
@@ -401,8 +396,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDirect) {
 }
 
 TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDelayed) {
-  ResetCompressionStatsWithDelay(
-      base::TimeDelta::FromMinutes(kWriteDelayMinutes));
+  ResetCompressionStatsWithDelay(base::Minutes(kWriteDelayMinutes));
 
   EXPECT_EQ(0, pref_service()->GetInt64(prefs::kHttpOriginalContentLength));
   EXPECT_EQ(0, pref_service()->GetInt64(prefs::kHttpReceivedContentLength));
@@ -419,19 +413,16 @@ TEST_F(DataReductionProxyCompressionStatsTest, WritePrefsDelayed) {
 }
 
 TEST_F(DataReductionProxyCompressionStatsTest, StatsRestoredOnOnRestart) {
-  base::ListValue list_value;
-  list_value.Insert(0,
-                    std::make_unique<base::Value>(base::NumberToString(1234)));
+  base::Value list_value(base::Value::Type::LIST);
+  list_value.Append(base::Value(base::NumberToString(1234)));
   pref_service()->Set(prefs::kDailyHttpOriginalContentLength, list_value);
 
-  ResetCompressionStatsWithDelay(
-      base::TimeDelta::FromMinutes(kWriteDelayMinutes));
+  ResetCompressionStatsWithDelay(base::Minutes(kWriteDelayMinutes));
 
-  const base::ListValue* value = pref_service()->GetList(
-      prefs::kDailyHttpOriginalContentLength);
-  std::string string_value;
-  value->GetString(0, &string_value);
-  EXPECT_EQ("1234", string_value);
+  const base::Value* value =
+      pref_service()->GetList(prefs::kDailyHttpOriginalContentLength);
+  const std::string* string_value = value->GetList()[0].GetIfString();
+  EXPECT_EQ("1234", *string_value);
 }
 
 TEST_F(DataReductionProxyCompressionStatsTest, TotalLengths) {
@@ -440,8 +431,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, TotalLengths) {
 
   compression_stats()->RecordDataUseWithMimeType(
       kReceivedLength, kOriginalLength, IsDataReductionProxyEnabled(),
-      UNKNOWN_TYPE, std::string(), true,
-      data_use_measurement::DataUseUserData::OTHER, 0);
+      std::string(), true, data_use_measurement::DataUseUserData::OTHER, 0);
 
   EXPECT_EQ(kReceivedLength,
             GetInt64(data_reduction_proxy::prefs::kHttpReceivedContentLength));
@@ -452,8 +442,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, TotalLengths) {
   // Record the same numbers again, and total lengths should be doubled.
   compression_stats()->RecordDataUseWithMimeType(
       kReceivedLength, kOriginalLength, IsDataReductionProxyEnabled(),
-      UNKNOWN_TYPE, std::string(), true,
-      data_use_measurement::DataUseUserData::OTHER, 0);
+      std::string(), true, data_use_measurement::DataUseUserData::OTHER, 0);
 
   EXPECT_EQ(kReceivedLength * 2,
             GetInt64(data_reduction_proxy::prefs::kHttpReceivedContentLength));
@@ -468,9 +457,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, OneResponse) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
@@ -481,35 +468,29 @@ TEST_F(DataReductionProxyCompressionStatsTest, MultipleResponses) {
   const int64_t kReceivedLength = 100;
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, false, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, false, FakeNow());
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, false, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, false, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
@@ -520,16 +501,13 @@ TEST_F(DataReductionProxyCompressionStatsTest, ForwardOneDay) {
   const int64_t kOriginalLength = 200;
   const int64_t kReceivedLength = 100;
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   // Forward one day.
   SetFakeTimeDeltaInHours(24);
 
   // Proxy not enabled. Not via proxy.
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, false, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, false, FakeNow());
 
   int64_t original[] = {kOriginalLength, kOriginalLength};
   int64_t received[] = {kReceivedLength, kReceivedLength};
@@ -537,17 +515,14 @@ TEST_F(DataReductionProxyCompressionStatsTest, ForwardOneDay) {
                                               kNumDaysInHistory);
 
   // Proxy enabled. Not via proxy.
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, UNKNOWN_TYPE, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[1] += kOriginalLength;
   received[1] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
                                               kNumDaysInHistory);
 
   // Proxy enabled and via proxy.
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[1] += kOriginalLength;
   received[1] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
@@ -557,7 +532,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ForwardOneDay) {
   const int64_t kBigOriginalLength = 0x300000000LL;  // 12G.
   const int64_t kBigReceivedLength = 0x200000000LL;  // 8G.
   RecordContentLengthPrefs(kBigReceivedLength, kBigOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+                           FakeNow());
   original[1] += kBigOriginalLength;
   received[1] += kBigReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
@@ -570,18 +545,14 @@ TEST_F(DataReductionProxyCompressionStatsTest, PartialDayTimeChange) {
   int64_t original[] = {0, kOriginalLength};
   int64_t received[] = {0, kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
                                               kNumDaysInHistory);
 
   // Forward 10 hours, stay in the same day.
   // See kLastUpdateTime: "Now" in test is 03:45am.
   SetFakeTimeDeltaInHours(10);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[1] += kOriginalLength;
   received[1] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 2, received, 2,
@@ -589,9 +560,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, PartialDayTimeChange) {
 
   // Forward 11 more hours, comes to tomorrow.
   AddFakeTimeDeltaInHours(11);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   int64_t original2[] = {kOriginalLength * 2, kOriginalLength};
   int64_t received2[] = {kReceivedLength * 2, kReceivedLength};
   VerifyDailyDataSavingContentLengthPrefLists(original2, 2, received2, 2,
@@ -605,15 +574,11 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardAndForwardOneDay) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   // Backward one day, expect no count.
   SetFakeTimeDeltaInHours(-24);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   original[0] += kOriginalLength;
   received[0] += kReceivedLength;
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
@@ -623,9 +588,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardAndForwardOneDay) {
 
   // Then forward one day, expect no count.
   AddFakeTimeDeltaInHours(24);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   int64_t original2[] = {kOriginalLength * 2, kOriginalLength};
   int64_t received2[] = {kReceivedLength * 2, kReceivedLength};
   VerifyDailyDataSavingContentLengthPrefLists(original2, 2, received2, 2,
@@ -641,15 +604,11 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardTwoDays) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   // Backward two days, expect SYSTEM_CLOCK_MOVED_BACK.
   SetFakeTimeDeltaInHours(-2 * 24);
-  RecordContentLengthPrefs(
-      kReceivedLength, kOriginalLength, true, VIA_DATA_REDUCTION_PROXY,
-      FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
   histogram_tester.ExpectUniqueSample(
@@ -658,16 +617,14 @@ TEST_F(DataReductionProxyCompressionStatsTest, BackwardTwoDays) {
 
   // Backward another two days, expect SYSTEM_CLOCK_MOVED_BACK.
   SetFakeTimeDeltaInHours(-4 * 24);
-  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   histogram_tester.ExpectUniqueSample(
       "DataReductionProxy.SavingsCleared.Reason",
       DataReductionProxySavingsClearedReason::SYSTEM_CLOCK_MOVED_BACK, 2);
 
   // Forward 2 days, expect no change.
   AddFakeTimeDeltaInHours(2 * 24);
-  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
   histogram_tester.ExpectUniqueSample(
       "DataReductionProxy.SavingsCleared.Reason",
       DataReductionProxySavingsClearedReason::SYSTEM_CLOCK_MOVED_BACK, 2);
@@ -700,8 +657,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, RecordDataUsageSingleSite) {
 
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
   base::RunLoop().RunUntilIdle();
 }
@@ -722,15 +679,15 @@ TEST_F(DataReductionProxyCompressionStatsTest, DisableDataUsageRecording) {
       std::make_unique<std::vector<data_reduction_proxy::DataUsageBucket>>(
           kNumExpectedBuckets);
   DataUsageLoadVerifier verifier1(std::move(expected_data_usage1));
-  LoadHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                     base::Unretained(&verifier1)));
+  LoadHistoricalDataUsage(base::BindOnce(
+      &DataUsageLoadVerifier::OnLoadDataUsage, base::Unretained(&verifier1)));
 
   // Public API must return an empty array.
   auto expected_data_usage2 =
       std::make_unique<std::vector<data_reduction_proxy::DataUsageBucket>>();
   DataUsageLoadVerifier verifier2(std::move(expected_data_usage2));
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier2)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier2)),
                          now);
 #else
   // For Android don't delete data usage.
@@ -747,8 +704,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, DisableDataUsageRecording) {
 
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
 #endif
 
@@ -787,8 +744,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, RecordDataUsageMultipleSites) {
 
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
   base::RunLoop().RunUntilIdle();
 }
@@ -799,7 +756,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
 
   RecordDataUsage("https://www.foo.com", 1000, 1250, fifteen_mins_ago);
 
@@ -825,8 +782,8 @@ TEST_F(DataReductionProxyCompressionStatsTest,
 
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
   base::RunLoop().RunUntilIdle();
 }
@@ -839,7 +796,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
 
   RecordDataUsage("https://www.foo.com", 1000, 1250, fifteen_mins_ago);
 
@@ -856,8 +813,8 @@ TEST_F(DataReductionProxyCompressionStatsTest,
 
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
   base::RunLoop().RunUntilIdle();
 }
@@ -867,7 +824,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteHistoricalDataUsage) {
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
   // Fake record to be from 15 minutes ago so that it is flushed to storage.
   RecordDataUsage("https://www.bar.com", 900, 1100, fifteen_mins_ago);
 
@@ -881,8 +838,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteHistoricalDataUsage) {
           kNumExpectedBuckets);
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
   base::RunLoop().RunUntilIdle();
 }
@@ -892,7 +849,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteBrowsingHistory) {
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
 
   // Fake record to be from 15 minutes ago so that it is flushed to storage.
   RecordDataUsage("https://www.bar.com", 900, 1100, fifteen_mins_ago);
@@ -918,8 +875,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteBrowsingHistory) {
   site_usage->set_original_size(1100);
   DataUsageLoadVerifier verifier1(std::move(expected_data_usage));
 
-  LoadHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                     base::Unretained(&verifier1)));
+  LoadHistoricalDataUsage(base::BindOnce(
+      &DataUsageLoadVerifier::OnLoadDataUsage, base::Unretained(&verifier1)));
   base::RunLoop().RunUntilIdle();
 
   // This should delete in-storage usage as well.
@@ -930,8 +887,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, DeleteBrowsingHistory) {
       std::make_unique<std::vector<data_reduction_proxy::DataUsageBucket>>(
           kNumExpectedBuckets);
   DataUsageLoadVerifier verifier2(std::move(expected_data_usage));
-  LoadHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                     base::Unretained(&verifier2)));
+  LoadHistoricalDataUsage(base::BindOnce(
+      &DataUsageLoadVerifier::OnLoadDataUsage, base::Unretained(&verifier2)));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -940,7 +897,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ClearDataSavingStatistics) {
   base::RunLoop().RunUntilIdle();
 
   base::Time now = base::Time::Now();
-  base::Time fifteen_mins_ago = now - base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_ago = now - base::Minutes(15);
   // Fake record to be from 15 minutes ago so that it is flushed to storage.
   RecordDataUsage("https://www.bar.com", 900, 1100, fifteen_mins_ago);
 
@@ -951,8 +908,7 @@ TEST_F(DataReductionProxyCompressionStatsTest, ClearDataSavingStatistics) {
   int64_t original[] = {kOriginalLength};
   int64_t received[] = {kReceivedLength};
 
-  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true,
-                           VIA_DATA_REDUCTION_PROXY, FakeNow());
+  RecordContentLengthPrefs(kReceivedLength, kOriginalLength, true, FakeNow());
 
   VerifyDailyDataSavingContentLengthPrefLists(original, 1, received, 1,
                                               kNumDaysInHistory);
@@ -965,8 +921,8 @@ TEST_F(DataReductionProxyCompressionStatsTest, ClearDataSavingStatistics) {
           kNumExpectedBuckets);
   DataUsageLoadVerifier verifier(std::move(expected_data_usage));
 
-  GetHistoricalDataUsage(base::Bind(&DataUsageLoadVerifier::OnLoadDataUsage,
-                                    base::Unretained(&verifier)),
+  GetHistoricalDataUsage(base::BindOnce(&DataUsageLoadVerifier::OnLoadDataUsage,
+                                        base::Unretained(&verifier)),
                          now);
   base::RunLoop().RunUntilIdle();
 
@@ -1067,7 +1023,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
       kNonMainFrameKB);
 
   // Fast forward 7 days, and verify that the last week histograms are recorded.
-  fake_time_now += base::TimeDelta::FromDays(7);
+  fake_time_now += base::Days(7);
   InitializeWeeklyAggregateDataUse(fake_time_now);
   VerifyDictionaryPref(prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
                        data_use_measurement::DataUseUserData::MAIN_FRAME_HTML,
@@ -1100,7 +1056,7 @@ TEST_F(DataReductionProxyCompressionStatsTest,
                        kMainFrameKB);
 
   // Fast forward by more than two weeks, and the prefs will be cleared.
-  fake_time_now += base::TimeDelta::FromDays(15);
+  fake_time_now += base::Days(15);
   InitializeWeeklyAggregateDataUse(fake_time_now);
   VerifyDictionaryPref(prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
                        data_use_measurement::DataUseUserData::MAIN_FRAME_HTML,

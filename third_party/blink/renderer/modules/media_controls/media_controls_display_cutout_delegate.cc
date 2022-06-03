@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_display_cutout_delegate.h"
 
-#include "third_party/blink/public/platform/web_point.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -18,13 +17,13 @@ namespace blink {
 
 namespace {
 
-WebPoint ExtractWebPoint(Touch* touch) {
-  return WebPoint(touch->pageX(), touch->pageY());
+gfx::Point ExtractTouchPoint(Touch* touch) {
+  return gfx::Point(touch->pageX(), touch->pageY());
 }
 
-double CalculateDistance(WebPoint first, WebPoint second) {
-  double dx = first.x - second.x;
-  double dy = first.y - second.y;
+double CalculateDistance(gfx::Point first, gfx::Point second) {
+  double dx = first.x() - second.x();
+  double dy = first.y() - second.y();
   return sqrt(dx * dx + dy * dy);
 }
 
@@ -58,12 +57,15 @@ void MediaControlsDisplayCutoutDelegate::Detach() {
                                     this, true);
 }
 
-void MediaControlsDisplayCutoutDelegate::Trace(blink::Visitor* visitor) {
+void MediaControlsDisplayCutoutDelegate::Trace(Visitor* visitor) const {
   NativeEventListener::Trace(visitor);
   visitor->Trace(video_element_);
 }
 
 void MediaControlsDisplayCutoutDelegate::DidEnterFullscreen() {
+  if (RuntimeEnabledFeatures::MediaControlsUseCutOutByDefaultEnabled())
+    GetDocument().GetViewportData().SetExpandIntoDisplayCutout(true);
+
   video_element_->addEventListener(event_type_names::kTouchstart, this, true);
   video_element_->addEventListener(event_type_names::kTouchend, this, true);
   video_element_->addEventListener(event_type_names::kTouchmove, this, true);
@@ -84,8 +86,8 @@ void MediaControlsDisplayCutoutDelegate::DidExitFullscreen() {
 void MediaControlsDisplayCutoutDelegate::Invoke(
     ExecutionContext* execution_context,
     Event* event) {
-  if (event->IsTouchEvent()) {
-    HandleTouchEvent(ToTouchEvent(event));
+  if (auto* touch_event = DynamicTo<TouchEvent>(event)) {
+    HandleTouchEvent(touch_event);
     return;
   }
   if (event->type() == event_type_names::kFullscreenchange ||
@@ -120,8 +122,8 @@ void MediaControlsDisplayCutoutDelegate::HandleTouchEvent(TouchEvent* event) {
     previous_.reset();
 
   // Extract the two touch points and calculate the distance.
-  WebPoint first = ExtractWebPoint(event->touches()->item(0));
-  WebPoint second = ExtractWebPoint(event->touches()->item(1));
+  gfx::Point first = ExtractTouchPoint(event->touches()->item(0));
+  gfx::Point second = ExtractTouchPoint(event->touches()->item(1));
   double distance = CalculateDistance(first, second);
   Direction direction = Direction::kUnknown;
 

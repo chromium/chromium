@@ -5,7 +5,8 @@
 package org.chromium.base;
 
 import android.os.StrictMode;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;

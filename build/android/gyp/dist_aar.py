@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-from filter_zip import CreatePathTransform
+import filter_zip
 from util import build_utils
 
 
@@ -117,8 +117,8 @@ def main(args):
         build_utils.AddToZipHermetic(
             z, 'AndroidManifest.xml', src_path=options.android_manifest)
 
-        path_transform = CreatePathTransform(options.jar_excluded_globs,
-                                             options.jar_included_globs, [])
+        path_transform = filter_zip.CreatePathTransform(
+            options.jar_excluded_globs, options.jar_included_globs)
         with tempfile.NamedTemporaryFile() as jar_file:
           build_utils.MergeZips(
               jar_file.name, options.jars, path_transform=path_transform)
@@ -152,8 +152,7 @@ def main(args):
   if options.depfile:
     all_inputs = (options.jars + options.dependencies_res_zips +
                   options.r_text_files + options.proguard_configs)
-    build_utils.WriteDepfile(options.depfile, options.output, all_inputs,
-                             add_pydeps=False)
+    build_utils.WriteDepfile(options.depfile, options.output, all_inputs)
 
 
 if __name__ == '__main__':

@@ -4,13 +4,16 @@
 
 #include "components/performance_manager/public/web_contents_proxy.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
-#include "components/performance_manager/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -19,18 +22,19 @@ namespace performance_manager {
 class WebContentsProxyTest : public PerformanceManagerTestHarness {
  public:
   WebContentsProxyTest() {}
+
+  WebContentsProxyTest(const WebContentsProxyTest&) = delete;
+  WebContentsProxyTest& operator=(const WebContentsProxyTest&) = delete;
+
   ~WebContentsProxyTest() override {}
 
   void GetContentsViaProxy(bool delete_before_deref);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsProxyTest);
 };
 
 TEST_F(WebContentsProxyTest, EndToEnd) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = PerformanceManagerTabHelper::FromWebContents(contents.get());
-  auto* page_node = helper->page_node();
+  auto* page_node = helper->primary_page_node();
   content::WebContents* proxy_contents = nullptr;
 
   auto deref_proxy = base::BindLambdaForTesting(
@@ -48,13 +52,12 @@ TEST_F(WebContentsProxyTest, EndToEnd) {
   // would happen with a policy message being posted from the graph.
   {
     base::RunLoop run_loop;
-    PerformanceManagerImpl::GetInstance()->CallOnGraphImpl(
+    PerformanceManagerImpl::CallOnGraphImpl(
         FROM_HERE,
         base::BindLambdaForTesting(
-            [&deref_proxy, page_node,
-             quit_loop = run_loop.QuitClosure()](GraphImpl* graph) {
-              base::PostTask(
-                  FROM_HERE, {content::BrowserThread::UI},
+            [&deref_proxy, page_node, quit_loop = run_loop.QuitClosure()]() {
+              content::GetUIThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
                   base::BindOnce(deref_proxy, page_node->contents_proxy(),
                                  std::move(quit_loop)));
             }));
@@ -67,16 +70,15 @@ TEST_F(WebContentsProxyTest, EndToEnd) {
   // dereferencing the proxy.
   {
     base::RunLoop run_loop;
-    PerformanceManagerImpl::GetInstance()->CallOnGraphImpl(
+    PerformanceManagerImpl::CallOnGraphImpl(
         FROM_HERE,
         base::BindLambdaForTesting([&contents, &deref_proxy, page_node,
-                                    quit_loop = run_loop.QuitClosure()](
-                                       GraphImpl* graph) {
-          base::PostTask(
-              FROM_HERE, {content::BrowserThread::UI},
+                                    quit_loop = run_loop.QuitClosure()]() {
+          content::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
               base::BindLambdaForTesting([&contents]() { contents.reset(); }));
-          base::PostTask(
-              FROM_HERE, {content::BrowserThread::UI},
+          content::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
               base::BindOnce(deref_proxy, page_node->contents_proxy(),
                              std::move(quit_loop)));
         }));

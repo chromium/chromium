@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -26,11 +27,14 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
-std::unique_ptr<WebURLLoaderMockFactory> WebURLLoaderMockFactory::Create() {
-  return base::WrapUnique(new WebURLLoaderMockFactoryImpl(nullptr));
+// static
+WebURLLoaderMockFactory* WebURLLoaderMockFactory::GetSingletonInstance() {
+  DEFINE_STATIC_LOCAL(WebURLLoaderMockFactoryImpl, s_singleton, (nullptr));
+  return &s_singleton;
 }
 
 WebURLLoaderMockFactoryImpl::WebURLLoaderMockFactoryImpl(
@@ -118,17 +122,18 @@ void WebURLLoaderMockFactoryImpl::ServeAsynchronousRequests() {
   while (!pending_loaders_.IsEmpty()) {
     LoaderToRequestMap::iterator iter = pending_loaders_.begin();
     base::WeakPtr<WebURLLoaderMock> loader(iter->key->GetWeakPtr());
-    const WebURLRequest request = iter->value;
+    std::unique_ptr<network::ResourceRequest> request = std::move(iter->value);
     pending_loaders_.erase(loader.get());
 
     WebURLResponse response;
-    base::Optional<WebURLError> error;
+    absl::optional<WebURLError> error;
     WebData data;
-    LoadRequest(request.Url(), &response, &error, &data);
+    LoadRequest(WebURL(KURL(request->url)), &response, &error, &data);
     // Follow any redirects while the loader is still active.
     while (response.HttpStatusCode() >= 300 &&
            response.HttpStatusCode() < 400) {
-      WebURL new_url = loader->ServeRedirect(request, response);
+      WebURL new_url = loader->ServeRedirect(
+          WebString::FromLatin1(request->method), response);
       RunUntilIdle();
       if (!loader || loader->is_cancelled() || loader->is_deferred())
         break;
@@ -165,7 +170,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
   if (delegate_ && delegate_->FillNavigationParamsResponse(params))
     return;
 
-  base::Optional<WebURLError> error;
+  absl::optional<WebURLError> error;
   WebData data;
 
   size_t redirects = 0;
@@ -194,7 +199,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
 }
 
 bool WebURLLoaderMockFactoryImpl::IsMockedURL(const blink::WebURL& url) {
-  base::Optional<WebURLError> error;
+  absl::optional<WebURLError> error;
   ResponseInfo response_info;
   return LookupURL(url, &error, &response_info);
 }
@@ -204,20 +209,20 @@ void WebURLLoaderMockFactoryImpl::CancelLoad(WebURLLoaderMock* loader) {
 }
 
 void WebURLLoaderMockFactoryImpl::LoadSynchronously(
-    const WebURLRequest& request,
+    std::unique_ptr<network::ResourceRequest> request,
     WebURLResponse* response,
-    base::Optional<WebURLError>* error,
+    absl::optional<WebURLError>* error,
     WebData* data,
     int64_t* encoded_data_length) {
-  LoadRequest(request.Url(), response, error, data);
+  LoadRequest(WebURL(KURL(request->url)), response, error, data);
   *encoded_data_length = data->size();
 }
 
 void WebURLLoaderMockFactoryImpl::LoadAsynchronouly(
-    const WebURLRequest& request,
+    std::unique_ptr<network::ResourceRequest> request,
     WebURLLoaderMock* loader) {
   DCHECK(!pending_loaders_.Contains(loader));
-  pending_loaders_.Set(loader, request);
+  pending_loaders_.Set(loader, std::move(request));
 }
 
 void WebURLLoaderMockFactoryImpl::RunUntilIdle() {
@@ -231,7 +236,7 @@ void WebURLLoaderMockFactoryImpl::RunUntilIdle() {
 void WebURLLoaderMockFactoryImpl::LoadRequest(
     const WebURL& url,
     WebURLResponse* response,
-    base::Optional<WebURLError>* error,
+    absl::optional<WebURLError>* error,
     WebData* data) {
   ResponseInfo response_info;
   if (!LookupURL(url, error, &response_info)) {
@@ -249,7 +254,7 @@ void WebURLLoaderMockFactoryImpl::LoadRequest(
 }
 
 bool WebURLLoaderMockFactoryImpl::LookupURL(const WebURL& url,
-                                            base::Optional<WebURLError>* error,
+                                            absl::optional<WebURLError>* error,
                                             ResponseInfo* response_info) {
   URLToErrorMap::const_iterator error_iter = url_to_error_info_.find(url);
   if (error_iter != url_to_error_info_.end())

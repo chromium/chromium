@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80d9ff'>
+<script>
+'use strict';
+
+let t = async_test('Color picker: Mouse and touch events should produce the same values.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWell = popupDocument.querySelector('color-well');
+    const colorWellRect = colorWell.getBoundingClientRect();
+    const xPosition = colorWellRect.left + (colorWellRect.width * 4 / 10) + 0.6243;
+    const yPosition = colorWellRect.top + (colorWellRect.height * 6 / 10) + 0.31245;
+
+    eventSender.clearTouchPoints();
+    eventSender.addTouchPoint(colorWellRect.left, colorWellRect.top);
+    eventSender.touchStart();
+    eventSender.updateTouchPoint(0, xPosition, yPosition);
+    eventSender.touchMove();
+    eventSender.releaseTouchPoint(0);
+    eventSender.touchEnd();
+    const touchValue = color.value;
+
+    eventSender.mouseMoveTo(colorWellRect.left, colorWellRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(Math.round(xPosition), Math.round(yPosition));
+    eventSender.mouseUp();
+    const mouseValue = color.value;
+
+    assert_equals(touchValue, mouseValue, "values should be the same for both touch and mouse events");
+  }));
+});
+</script>
+</body>
+</html>

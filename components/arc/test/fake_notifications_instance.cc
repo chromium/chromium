@@ -5,7 +5,7 @@
 #include "components/arc/test/fake_notifications_instance.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace arc {
 
@@ -38,12 +38,13 @@ void FakeNotificationsInstance::SetDoNotDisturbStatusOnAndroid(
 void FakeNotificationsInstance::CancelPress(const std::string& key) {}
 
 void FakeNotificationsInstance::InitDeprecated(
-    mojom::NotificationsHostPtr host_ptr) {
-  Init(std::move(host_ptr), base::DoNothing());
+    mojo::PendingRemote<mojom::NotificationsHost> host_remote) {
+  Init(std::move(host_remote), base::DoNothing());
 }
 
-void FakeNotificationsInstance::Init(mojom::NotificationsHostPtr host_ptr,
-                                     InitCallback callback) {
+void FakeNotificationsInstance::Init(
+    mojo::PendingRemote<mojom::NotificationsHost> host_remote,
+    InitCallback callback) {
   std::move(callback).Run();
 }
 
@@ -63,5 +64,7 @@ void FakeNotificationsInstance::SetLockScreenSettingOnAndroid(
     mojom::ArcLockScreenNotificationSettingPtr setting) {}
 void FakeNotificationsInstance::SetNotificationConfiguration(
     mojom::NotificationConfigurationPtr configuration) {}
+void FakeNotificationsInstance::OnMessageCenterVisibilityChanged(
+    mojom::MessageCenterVisibility visibility) {}
 
 }  // namespace arc

@@ -47,7 +47,7 @@ class AppWindowClient {
 
   // Opens DevTools window and runs the callback.
   virtual void OpenDevToolsWindow(content::WebContents* web_contents,
-                                  const base::Closure& callback) = 0;
+                                  base::OnceClosure callback) = 0;
 
   // Returns true if the current channel is older than dev.
   virtual bool IsCurrentChannelOlderThanDev() = 0;

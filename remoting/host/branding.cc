@@ -23,7 +23,7 @@ const base::FilePath::CharType kConfigDir[] =
 const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL("Chromoting");
 #endif
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 const base::FilePath::CharType kConfigDir[] =
     FILE_PATH_LITERAL("Chrome Remote Desktop");
 #else
@@ -44,7 +44,7 @@ base::FilePath GetConfigDir() {
 
 #if defined(OS_WIN)
   base::PathService::Get(base::DIR_COMMON_APP_DATA, &app_data_dir);
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   base::PathService::Get(base::DIR_APP_DATA, &app_data_dir);
 #else
   base::PathService::Get(base::DIR_HOME, &app_data_dir);

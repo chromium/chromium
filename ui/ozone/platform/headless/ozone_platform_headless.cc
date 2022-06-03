@@ -8,8 +8,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/ime/input_method_minimal.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -21,7 +21,6 @@
 #include "ui/ozone/platform/headless/headless_surface_factory.h"
 #include "ui/ozone/platform/headless/headless_window.h"
 #include "ui/ozone/platform/headless/headless_window_manager.h"
-#include "ui/ozone/public/cursor_factory_ozone.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -43,10 +42,12 @@ namespace {
 class HeadlessPlatformEventSource : public PlatformEventSource {
  public:
   HeadlessPlatformEventSource() = default;
-  ~HeadlessPlatformEventSource() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPlatformEventSource);
+  HeadlessPlatformEventSource(const HeadlessPlatformEventSource&) = delete;
+  HeadlessPlatformEventSource& operator=(const HeadlessPlatformEventSource&) =
+      delete;
+
+  ~HeadlessPlatformEventSource() override = default;
 };
 
 // OzonePlatform for headless mode
@@ -54,6 +55,10 @@ class OzonePlatformHeadless : public OzonePlatform {
  public:
   explicit OzonePlatformHeadless(const base::FilePath& dump_file)
       : file_path_(dump_file) {}
+
+  OzonePlatformHeadless(const OzonePlatformHeadless&) = delete;
+  OzonePlatformHeadless& operator=(const OzonePlatformHeadless&) = delete;
+
   ~OzonePlatformHeadless() override = default;
 
   // OzonePlatform:
@@ -63,9 +68,7 @@ class OzonePlatformHeadless : public OzonePlatform {
   OverlayManagerOzone* GetOverlayManager() override {
     return overlay_manager_.get();
   }
-  CursorFactoryOzone* GetCursorFactoryOzone() override {
-    return cursor_factory_ozone_.get();
-  }
+  CursorFactory* GetCursorFactory() override { return cursor_factory_.get(); }
   InputController* GetInputController() override {
     return input_controller_.get();
   }
@@ -88,13 +91,11 @@ class OzonePlatformHeadless : public OzonePlatform {
   std::unique_ptr<PlatformScreen> CreateScreen() override {
     return std::make_unique<HeadlessScreen>();
   }
+  void InitScreen(PlatformScreen* screen) override {}
   std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate) override {
-#if defined(OS_FUCHSIA)
-    return std::make_unique<InputMethodFuchsia>(delegate);
-#else
+      internal::InputMethodDelegate* delegate,
+      gfx::AcceleratedWidget widget) override {
     return std::make_unique<InputMethodMinimal>(delegate);
-#endif
   }
 
   void InitializeUI(const InitParams& params) override {
@@ -109,7 +110,7 @@ class OzonePlatformHeadless : public OzonePlatform {
 
     overlay_manager_ = std::make_unique<StubOverlayManager>();
     input_controller_ = CreateStubInputController();
-    cursor_factory_ozone_ = std::make_unique<BitmapCursorFactoryOzone>();
+    cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
   }
 
@@ -123,13 +124,11 @@ class OzonePlatformHeadless : public OzonePlatform {
   std::unique_ptr<HeadlessWindowManager> window_manager_;
   std::unique_ptr<HeadlessSurfaceFactory> surface_factory_;
   std::unique_ptr<PlatformEventSource> platform_event_source_;
-  std::unique_ptr<CursorFactoryOzone> cursor_factory_ozone_;
+  std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformHeadless);
 };
 
 }  // namespace
@@ -139,6 +138,8 @@ OzonePlatform* CreateOzonePlatformHeadless() {
   base::FilePath location;
   if (cmd->HasSwitch(switches::kOzoneDumpFile))
     location = cmd->GetSwitchValuePath(switches::kOzoneDumpFile);
+  cmd->AppendSwitch(switches::kDisableRunningAsSystemCompositor);
+
   return new OzonePlatformHeadless(location);
 }
 

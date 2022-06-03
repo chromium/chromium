@@ -13,16 +13,20 @@ class StyleRule;
 
 class StyleRuleUsageTracker : public GarbageCollected<StyleRuleUsageTracker> {
  public:
-  using RuleListByStyleSheet = HeapHashMap<Member<const CSSStyleSheet>,
-                                           HeapVector<Member<const StyleRule>>>;
+  using RuleListByStyleSheet =
+      HeapHashMap<Member<const CSSStyleSheet>,
+                  Member<HeapVector<Member<const StyleRule>>>>;
 
   void Track(const CSSStyleSheet*, const StyleRule*);
   RuleListByStyleSheet TakeDelta();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
-  HeapHashSet<std::pair<Member<const CSSStyleSheet>, Member<const StyleRule>>>
+  bool InsertToUsedRulesMap(const CSSStyleSheet*, const StyleRule*);
+
+  HeapHashMap<Member<const CSSStyleSheet>,
+              Member<HeapHashSet<Member<const StyleRule>>>>
       used_rules_;
   RuleListByStyleSheet used_rules_delta_;
 };

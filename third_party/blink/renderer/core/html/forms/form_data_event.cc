@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/forms/form_data_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_form_data_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
-#include "third_party/blink/renderer/core/html/forms/form_data_event_init.h"
 
 namespace blink {
 
@@ -32,7 +33,7 @@ FormDataEvent* FormDataEvent::Create(const AtomicString& type,
   return MakeGarbageCollected<FormDataEvent>(type, event_init);
 }
 
-void FormDataEvent::Trace(Visitor* visitor) {
+void FormDataEvent::Trace(Visitor* visitor) const {
   visitor->Trace(form_data_);
   Event::Trace(visitor);
 }

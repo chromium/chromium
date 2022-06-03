@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_difference_tracker.h"
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -15,7 +16,7 @@
 
 namespace autofill {
 
-using base::Optional;
+using absl::optional;
 using syncer::ModelError;
 
 AutofillProfileSyncDifferenceTracker::AutofillProfileSyncDifferenceTracker(
@@ -24,7 +25,7 @@ AutofillProfileSyncDifferenceTracker::AutofillProfileSyncDifferenceTracker(
 
 AutofillProfileSyncDifferenceTracker::~AutofillProfileSyncDifferenceTracker() {}
 
-Optional<ModelError>
+optional<ModelError>
 AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     std::unique_ptr<AutofillProfile> remote) {
   const std::string remote_storage_key =
@@ -34,7 +35,7 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
   }
 
-  Optional<AutofillProfile> local_with_same_storage_key =
+  optional<AutofillProfile> local_with_same_storage_key =
       ReadEntry(remote_storage_key);
 
   if (local_with_same_storage_key) {
@@ -45,25 +46,42 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     // We ignore remote updates to a verified profile because we want to keep
     // the exact version that the user edited by hand.
     if (local_with_same_storage_key->IsVerified() && !remote->IsVerified()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     updated->OverwriteDataFrom(*remote);
-    // TODO(jkrcal): if |updated| deviates from |remote|, we should sync it back
-    // up. The only way |updated| can differ is having some extra fields
-    // compared to |remote|. Thus, this cannot lead to an infinite loop of
-    // commits from two clients as each commit decreases the set of empty
+    // TODO(crbug.com/1117022l): if |updated| deviates from |remote|, we should
+    // sync it back up. The only way |updated| can differ is having some extra
+    // fields compared to |remote|. Thus, this cannot lead to an infinite loop
+    // of commits from two clients as each commit decreases the set of empty
     // fields. This invariant depends on the implementation of
     // OverwriteDataFrom() and thus should be enforced by a DCHECK.
+    //
+    // With structured names the situation changes a bit,
+    // but maintains its character.
+    // If the name stored in |remote| is mergeable with the local |name|, the
+    // merge operation is performed. Otherwise the name structure of |local| is
+    // maintained iff |remote| contains an empty name.
+    // A merge operations manipulates the name towards a better total
+    // verification status of the stored tokens. Consequently, it is not
+    // possible to get into a merging loop of two competing clients.
+    // As in the legacy implementation, |OverwriteDataForm()| can change the
+    // profile in a deterministic way and a direct sync-back would be
+    // reasonable.
 
     if (!updated->EqualsForSyncPurposes(*local_with_same_storage_key)) {
       // We need to write back locally new changes in this entry.
       update_to_local_.push_back(std::move(updated));
     }
     GetLocalOnlyEntries()->erase(remote_storage_key);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Check if profile appears under a different storage key to be de-duplicated.
+  // TODO(crbug.com/1043683): Deal with rare cases when an remote update
+  // contains several exact duplicates (with different guids). We should not
+  // only search in local only entries but also in |update_to_local_| and
+  // |add_to_local_|. Likely needs a bit of refactoring to make the resulting
+  // code easy to understand.
   for (const auto& pair : *GetLocalOnlyEntries()) {
     const std::string& local_storage_key = pair.first;
     const AutofillProfile& local = *pair.second;
@@ -71,43 +89,89 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     // Look for exact duplicates, compare only profile contents (and
     // ignore origin and language code in comparison).
     if (local.Compare(*remote) == 0) {
-      // We found a duplicate, we keep the new (remote) one and delete the
-      // local one.
+      // A duplicate found: keep the version with the bigger storage key.
       DVLOG(2)
           << "[AUTOFILL SYNC] The profile "
           << base::UTF16ToUTF8(local.GetRawInfo(NAME_FIRST))
           << base::UTF16ToUTF8(local.GetRawInfo(NAME_LAST))
-          << " already exists with a different storage key; keep the remote key"
-          << remote_storage_key << " and delete the local key "
-          << local_storage_key;
-
-      // Ensure that a verified profile can never revert back to an unverified
-      // one. In such a case, take over the local origin for the new (remote)
-      // entry.
-      if (local.IsVerified() && !remote->IsVerified()) {
-        remote->set_origin(local.origin());
-        // Save a copy of the remote profile also to sync.
-        save_to_sync_.push_back(std::make_unique<AutofillProfile>(*remote));
+          << " already exists with a different storage key; keep the bigger "
+          << (remote_storage_key > local_storage_key ? "remote" : "local")
+          << " key " << std::max(remote_storage_key, local_storage_key)
+          << " and delete the smaller key "
+          << std::min(remote_storage_key, local_storage_key);
+      if (remote_storage_key > local_storage_key) {
+        // We keep the remote entity and delete the local one.
+        // Ensure that a verified profile can never revert back to an unverified
+        // one. In such a case, take over the old origin for the new entry.
+        if (local.IsVerified() && !remote->IsVerified()) {
+          remote->set_origin(local.origin());
+          // Save a copy of the remote profile also to sync.
+          save_to_sync_.push_back(std::make_unique<AutofillProfile>(*remote));
+        }
+        add_to_local_.push_back(std::move(remote));
+        // Deleting from sync is a no-op if it is local-only so far.
+        // There are a few ways how a synced local entry A could theoretically
+        // receive a remote duplicate B with a larger GUID:
+        //  1) Remote entity B got uploaded by another client through initial
+        //     sync. That client thus also knew about A and issued a deletion of
+        //     A at the same time. This client (if receiving creation of B
+        //     first) resolves the conflict in the same way and re-issues the
+        //     deletion of A. In most cases the redundant deletion does not even
+        //     get sent as the processor already knows A got deleted remotely.
+        //  2) Remote entity B got uploaded by another client through race
+        //     condition (i.e. not knowing about A, yet). In practice, this only
+        //     happens when two clients simultaneously convert a server profile
+        //     into local profiles. If the other client goes offline before
+        //     receiving A, this client is responsible for deleting A from the
+        //     server and thus must issue a deletion. (In most cases, the other
+        //     client does not go offline and thus both clients issue a deletion
+        //     of A independently).
+        //  3) (a paranoid case) Remote entity B got uploaded by another client
+        //     by an error, i.e. already as a duplicate given their local state.
+        //     Through standard flows, it should be impossible (duplicates are
+        //     cought early in PDM code so such a change attempt does not even
+        //     propagate to the sync bridge). Still, it's good to treat this
+        //     case here for robustness.
+        delete_from_sync_.insert(local_storage_key);
+        DeleteFromLocal(local_storage_key);
+      } else {
+        // We keep the local entity and delete the remote one.
+        // Ensure that a verified profile can never revert back to an unverified
+        // one. In such a case, modify the origin and re-upload. Otherwise,
+        // there's no need to upload it: either is was already uploaded before
+        // (if this is incremental sync) or we'll upload it with all the
+        // remaining data in GetLocalOnlyEntries (if this is an initial sync).
+        if (remote->IsVerified() && !local.IsVerified()) {
+          auto modified_local = std::make_unique<AutofillProfile>(local);
+          modified_local->set_origin(remote->origin());
+          update_to_local_.push_back(
+              std::make_unique<AutofillProfile>(*modified_local));
+          save_to_sync_.push_back(std::move(modified_local));
+          // The local entity is already marked for upload so it is not local
+          // only anymore (we do not want to upload it once again while flushing
+          // if this is initial sync).
+          GetLocalOnlyEntries()->erase(local_storage_key);
+        }
+        delete_from_sync_.insert(remote_storage_key);
       }
-      // Delete the local profile that gets replaced by |remote|.
-      DeleteFromLocal(local_storage_key);
-      break;
+      return absl::nullopt;
     }
   }
 
+  // If no duplicate was found, just add the remote profile.
   add_to_local_.push_back(std::move(remote));
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<ModelError>
+optional<ModelError>
 AutofillProfileSyncDifferenceTracker::IncorporateRemoteDelete(
     const std::string& storage_key) {
   DCHECK(!storage_key.empty());
   DeleteFromLocal(storage_key);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
+optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
     base::OnceClosure autofill_changes_callback) {
   for (const std::string& storage_key : delete_from_local_) {
     if (!table_->RemoveAutofillProfile(storage_key)) {
@@ -128,25 +192,29 @@ Optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
       !update_to_local_.empty()) {
     std::move(autofill_changes_callback).Run();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToSync(
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync) {
+optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToSync(
+    std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
+    std::vector<std::string>* profiles_to_delete_from_sync) {
   for (std::unique_ptr<AutofillProfile>& entry : save_to_sync_) {
     profiles_to_upload_to_sync->push_back(std::move(entry));
   }
-  return base::nullopt;
+  for (const std::string& entry : delete_from_sync_) {
+    profiles_to_delete_from_sync->push_back(std::move(entry));
+  }
+  return absl::nullopt;
 }
 
-Optional<AutofillProfile> AutofillProfileSyncDifferenceTracker::ReadEntry(
+optional<AutofillProfile> AutofillProfileSyncDifferenceTracker::ReadEntry(
     const std::string& storage_key) {
   DCHECK(GetLocalOnlyEntries());
   auto iter = GetLocalOnlyEntries()->find(storage_key);
   if (iter != GetLocalOnlyEntries()->end()) {
     return *iter->second;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AutofillProfileSyncDifferenceTracker::DeleteFromLocal(
@@ -191,18 +259,20 @@ AutofillProfileInitialSyncDifferenceTracker::
 AutofillProfileInitialSyncDifferenceTracker::
     ~AutofillProfileInitialSyncDifferenceTracker() {}
 
-Optional<ModelError>
+optional<ModelError>
 AutofillProfileInitialSyncDifferenceTracker::IncorporateRemoteDelete(
     const std::string& storage_key) {
   // Remote delete is not allowed in initial sync.
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync) {
+optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
+    std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
+    std::vector<std::string>* profiles_to_delete_from_sync) {
   // First, flush standard updates to sync.
-  AutofillProfileSyncDifferenceTracker::FlushToSync(profiles_to_upload_to_sync);
+  AutofillProfileSyncDifferenceTracker::FlushToSync(
+      profiles_to_upload_to_sync, profiles_to_delete_from_sync);
 
   // For initial sync, we additionally need to upload all local only entries.
   if (!GetLocalOnlyEntries()) {
@@ -214,10 +284,10 @@ Optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
     DCHECK(delete_from_local_.count(storage_key) == 0);
     profiles_to_upload_to_sync->push_back(std::move(pair.second));
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<ModelError>
+optional<ModelError>
 AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
     const std::string& app_locale) {
   if (!GetLocalOnlyEntries()) {
@@ -238,7 +308,7 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
   // non-const reference because we want to update |remote| in place if
   // needed.
   for (std::unique_ptr<AutofillProfile>& remote : add_to_local_) {
-    Optional<AutofillProfile> local =
+    optional<AutofillProfile> local =
         FindMergeableLocalEntry(*remote, comparator);
     if (!local) {
       continue;
@@ -267,10 +337,10 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
     DeleteFromLocal(GetStorageKeyFromAutofillProfile(*local));
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-Optional<AutofillProfile>
+optional<AutofillProfile>
 AutofillProfileInitialSyncDifferenceTracker::FindMergeableLocalEntry(
     const AutofillProfile& remote,
     const AutofillProfileComparator& comparator) {
@@ -279,7 +349,7 @@ AutofillProfileInitialSyncDifferenceTracker::FindMergeableLocalEntry(
   // Both the remote and the local entry need to be non-verified to be
   // mergeable.
   if (remote.IsVerified()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Check if there is a mergeable local profile.
@@ -290,7 +360,7 @@ AutofillProfileInitialSyncDifferenceTracker::FindMergeableLocalEntry(
       return local_candidate;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace autofill

@@ -11,19 +11,20 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
+class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 struct ServiceWorkerRegistrationInfo;
 
@@ -32,8 +33,7 @@ struct ServiceWorkerRegistrationInfo;
 // to this class. This is refcounted via ServiceWorkerRegistrationObjectHost to
 // facilitate multiple controllees being associated with the same registration.
 class CONTENT_EXPORT ServiceWorkerRegistration
-    : public base::RefCounted<ServiceWorkerRegistration>,
-      public ServiceWorkerVersion::Observer {
+    : public base::RefCounted<ServiceWorkerRegistration> {
  public:
   using StatusCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
@@ -42,8 +42,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
    public:
     virtual void OnVersionAttributesChanged(
         ServiceWorkerRegistration* registration,
-        blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask,
-        const ServiceWorkerRegistrationInfo& info) {}
+        blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {}
     virtual void OnUpdateViaCacheChanged(
         ServiceWorkerRegistration* registation) {}
     virtual void OnRegistrationFailed(
@@ -52,8 +51,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
         ServiceWorkerRegistration* registration) {}
     virtual void OnRegistrationDeleted(
         ServiceWorkerRegistration* registration) {}
-    virtual void OnUpdateFound(
-        ServiceWorkerRegistration* registration) {}
+    virtual void OnUpdateFound(ServiceWorkerRegistration* registration) {}
     virtual void OnSkippedWaiting(ServiceWorkerRegistration* registation) {}
   };
 
@@ -71,13 +69,21 @@ class CONTENT_EXPORT ServiceWorkerRegistration
     kUninstalled,
   };
 
+  // The constructor should be called only from ServiceWorkerRegistry other than
+  // tests.
   ServiceWorkerRegistration(
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
+      const blink::StorageKey& key,
       int64_t registration_id,
       base::WeakPtr<ServiceWorkerContextCore> context);
 
+  ServiceWorkerRegistration(const ServiceWorkerRegistration&) = delete;
+  ServiceWorkerRegistration& operator=(const ServiceWorkerRegistration&) =
+      delete;
+
   int64_t id() const { return registration_id_; }
   const GURL& scope() const { return scope_; }
+  const blink::StorageKey& key() const { return key_; }
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache() const {
     return update_via_cache_;
   }
@@ -87,6 +93,13 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   bool is_uninstalled() const { return status_ == Status::kUninstalled; }
   Status status() const { return status_; }
   void SetStatus(Status status);
+
+  // Returns true when this registration is stored in storage and corresponding
+  // ServiceWorkerContextCore is valid. The context becomes invalid when
+  // ServiceWorkerContextCore::DeleteAndStartOver() is called.
+  bool IsStored() const;
+  void SetStored();
+  void UnsetStored();
 
   int64_t resources_total_size_bytes() const {
     return resources_total_size_bytes_;
@@ -159,10 +172,14 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // controlled by other registrations.
   void ClaimClients();
 
-  // Triggers the [[ClearRegistration]] algorithm when the currently
-  // active version has no controllees. Deletes this registration
-  // from storage immediately.
-  void ClearWhenReady();
+  // Deletes this registration from storage immediately. Triggers the
+  // [[ClearRegistration]] algorithm when the currently active version has no
+  // controllees.
+  void DeleteAndClearWhenReady();
+
+  // Deletes this registration from storage immediately and then triggers the
+  // [[ClearRegistration]] algorithm.
+  void DeleteAndClearImmediately();
 
   // Restores this registration in storage and cancels the pending
   // [[ClearRegistration]] algorithm.
@@ -194,8 +211,14 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   void EnableNavigationPreload(bool enable);
   void SetNavigationPreloadHeader(const std::string& value);
 
+  // Called when all controllees are removed from |version|.
+  void OnNoControllees(ServiceWorkerVersion* version);
+
+  // Called when there is no work in |version|.
+  void OnNoWork(ServiceWorkerVersion* version);
+
  protected:
-  ~ServiceWorkerRegistration() override;
+  virtual ~ServiceWorkerRegistration();
 
  private:
   friend class base::RefCounted<ServiceWorkerRegistration>;
@@ -204,10 +227,6 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   void UnsetVersionInternal(
       ServiceWorkerVersion* version,
       blink::mojom::ChangedServiceWorkerObjectsMask* mask);
-
-  // ServiceWorkerVersion::Observer override.
-  void OnNoControllees(ServiceWorkerVersion* version) override;
-  void OnNoWork(ServiceWorkerVersion* version) override;
 
   bool IsReadyToActivate() const;
   bool IsLameDuckActiveVersion() const;
@@ -236,10 +255,19 @@ class CONTENT_EXPORT ServiceWorkerRegistration
                          scoped_refptr<ServiceWorkerVersion> version,
                          blink::ServiceWorkerStatusCode status);
 
+  enum class StoreState {
+    // This registration is not stored yet in storage.
+    kNotStored,
+    // This registration is stored in storage.
+    kStored,
+  };
+
   const GURL scope_;
+  const blink::StorageKey key_;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const int64_t registration_id_;
   Status status_;
+  StoreState store_state_;
   bool should_activate_when_ready_;
   blink::mojom::NavigationPreloadState navigation_preload_state_;
   base::Time last_update_check_;
@@ -264,7 +292,8 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // longer considered a lame duck.
   base::RepeatingTimer lame_duck_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistration);
+  // TODO(crbug.com/1159778): Remove once the bug is fixed.
+  bool in_activate_waiting_version_ = false;
 };
 
 }  // namespace content

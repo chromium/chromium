@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:visibility="gone" >
+
+    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <EditText
+        tools:ignore="Autofill,LabelFor"
+        android:id="@+id/search_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@null"
+        android:imeOptions="flagNoExtractUi|actionSearch"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textColorHint="@color/search_box_hint"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/clear_text_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingStart="16dp"
+        android:paddingEnd="@dimen/clear_text_button_end_padding"
+        android:src="@drawable/btn_delete_24dp"
+        android:background="@null"
+        android:scaleType="center"
+        android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
+        android:visibility="invisible"
+        app:tint="@color/default_icon_color_tint_list" />
+</LinearLayout>

@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.autofill_assistant.carousel;
 
+import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.RECYCLER_VIEW_TAG;
+
 import android.content.Context;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.ui.modelutil.RecyclerViewAdapter;
-import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
 /**
  * A coordinator responsible for suggesting chips to the user. If there is one chip to display, it
@@ -36,11 +37,14 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
  * |[6][5][4][3][2]|       (after horizontal scrolling from left to right)
  * |               |
  */
-public class AssistantActionsCarouselCoordinator implements AssistantCarouselCoordinator {
+public class AssistantActionsCarouselCoordinator {
     private final RecyclerView mView;
 
     public AssistantActionsCarouselCoordinator(Context context, AssistantCarouselModel model) {
         mView = new RecyclerView(context);
+        mView.setTag(RECYCLER_VIEW_TAG);
+        AssistantChipAdapter chipAdapter = new AssistantChipAdapter();
+        mView.setAdapter(chipAdapter);
 
         CustomLayoutManager layoutManager = new CustomLayoutManager();
         // Workaround for b/128679161.
@@ -61,17 +65,17 @@ public class AssistantActionsCarouselCoordinator implements AssistantCarouselCoo
                                 * context.getResources().getDimensionPixelSize(
                                         R.dimen.autofill_assistant_button_bg_vertical_inset)));
 
-        mView.setAdapter(new RecyclerViewAdapter<>(
-                new SimpleRecyclerViewMcp<>(model.getChipsModel(),
-                        AssistantChipViewHolder::getViewType, AssistantChipViewHolder::bind),
-                AssistantChipViewHolder::create));
-
-        // Disabling change animations to avoid chips that blink when setting the same, unchanged,
-        // set of chips.
-        ((DefaultItemAnimator) mView.getItemAnimator()).setSupportsChangeAnimations(false);
+        model.addObserver((source, propertyKey) -> {
+            if (propertyKey == AssistantCarouselModel.CHIPS) {
+                chipAdapter.setChips(model.get(AssistantCarouselModel.CHIPS));
+            } else if (propertyKey == AssistantCarouselModel.DISABLE_CHANGE_ANIMATIONS) {
+                ((DefaultItemAnimator) mView.getItemAnimator())
+                        .setSupportsChangeAnimations(
+                                !model.get(AssistantCarouselModel.DISABLE_CHANGE_ANIMATIONS));
+            }
+        });
     }
 
-    @Override
     public RecyclerView getView() {
         return mView;
     }

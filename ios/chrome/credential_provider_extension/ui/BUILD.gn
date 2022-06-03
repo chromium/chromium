@@ -1,0 +1,121 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "consent_coordinator.h",
+    "consent_coordinator.mm",
+    "consent_legacy_coordinator.h",
+    "consent_legacy_coordinator.mm",
+    "consent_legacy_view_controller.h",
+    "consent_legacy_view_controller.mm",
+    "consent_view_controller.h",
+    "consent_view_controller.mm",
+    "credential_details_consumer.h",
+    "credential_details_view_controller.h",
+    "credential_details_view_controller.mm",
+    "credential_list_consumer.h",
+    "credential_list_coordinator.h",
+    "credential_list_coordinator.mm",
+    "credential_list_header_view.h",
+    "credential_list_header_view.mm",
+    "credential_list_mediator.h",
+    "credential_list_mediator.mm",
+    "credential_list_ui_handler.h",
+    "credential_list_view_controller.h",
+    "credential_list_view_controller.mm",
+    "empty_credentials_view_controller.h",
+    "empty_credentials_view_controller.mm",
+    "new_password_coordinator.h",
+    "new_password_coordinator.mm",
+    "new_password_footer_view.h",
+    "new_password_footer_view.mm",
+    "new_password_mediator.h",
+    "new_password_mediator.mm",
+    "new_password_table_cell.h",
+    "new_password_table_cell.mm",
+    "new_password_ui_handler.h",
+    "new_password_view_controller.h",
+    "new_password_view_controller.mm",
+    "stale_credentials_view_controller.h",
+    "stale_credentials_view_controller.mm",
+    "ui_util.h",
+    "ui_util.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    ":utils",
+    "//base",
+    "//components/password_manager/core/browser:password_generator",
+    "//ios/chrome/common:constants",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/app_group:client",
+    "//ios/chrome/common/credential_provider",
+    "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/resources:default_world_favicon",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/chrome/credential_provider_extension:password_spec_fetcher_buildflags",
+    "//ios/chrome/credential_provider_extension:password_util",
+    "//ios/chrome/credential_provider_extension:reauthentication_handler",
+    "//ios/chrome/credential_provider_extension/ui/resources",
+    "//ios/components/credential_provider_extension:password_spec_fetcher",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "AuthenticationServices.framework",
+    "MobileCoreServices.framework",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("feature_flags") {
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/app_group:app_group",
+    "//ios/chrome/common/credential_provider",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("utils") {
+  sources = [
+    "tooltip_view.h",
+    "tooltip_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "QuartzCore.framework",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "new_password_mediator_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/credential_provider",
+    "//ios/chrome/credential_provider_extension:password_util",
+    "//testing/gtest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

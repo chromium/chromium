@@ -7,32 +7,13 @@
 #import <CoreWLAN/CoreWLAN.h>
 #import <Foundation/Foundation.h>
 
-// This file uses the deprecated CWInterface API, but CWWiFiClient appears to be
-// different in ways that are relevant to this code, so for now ignore the
-// deprecation. See <https://crbug.com/841631>.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
+#include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
-
-#if !defined(MAC_OS_X_VERSION_10_15)
-// This API is so deprecated that this symbol is no longer present at all in the
-// 10.15 SDK. For the moment, hack this functionality out entirely when building
-// with the 10.15 SDK.
-// https://crbug.com/1022821
-extern "C" NSString* const kCWScanKeyMerge;
-#endif
-
-@interface CWInterface (Private)
-- (NSArray*)scanForNetworksWithParameters:(NSDictionary*)params
-                                    error:(NSError**)error;
-@end
 
 namespace device {
 
@@ -40,59 +21,41 @@ namespace {
 
 class CoreWlanApi : public WifiDataProviderCommon::WlanApiInterface {
  public:
-  CoreWlanApi() {}
+  CoreWlanApi() {
+    wifi_client_.reset([CWWiFiClient sharedWiFiClient],
+                       base::scoped_policy::RETAIN);
+  }
+
+  CoreWlanApi(const CoreWlanApi&) = delete;
+  CoreWlanApi& operator=(const CoreWlanApi&) = delete;
 
   // WlanApiInterface:
   bool GetAccessPointData(WifiData::AccessPointDataSet* data) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(CoreWlanApi);
+  base::scoped_nsobject<CWWiFiClient> wifi_client_;
 };
 
 bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
-  @autoreleasepool {  // Initialize the scan parameters with scan key merging
-                      // disabled, so we get
-    // every AP listed in the scan without any SSID de-duping logic.
-#if defined(MAC_OS_X_VERSION_10_15)
-    NSDictionary* params = @{};
-#else
-    NSDictionary* params = @{kCWScanKeyMerge : @NO};
-#endif
-
-    NSSet* supported_interfaces = [CWInterface interfaceNames];
+  @autoreleasepool {
+    NSArray<CWInterface*>* interfaces = [wifi_client_ interfaces];
     NSUInteger interface_error_count = 0;
-    for (NSString* interface_name in supported_interfaces) {
-      CWInterface* corewlan_interface =
-          [CWInterface interfaceWithName:interface_name];
-      if (!corewlan_interface) {
-        DLOG(WARNING) << interface_name << ": initWithName failed";
-        ++interface_error_count;
-        continue;
-      }
-
-      const base::TimeTicks start_time = base::TimeTicks::Now();
-
+    for (CWInterface* interface in interfaces) {
       NSError* err = nil;
-      NSArray* scan = [corewlan_interface scanForNetworksWithParameters:params
-                                                                  error:&err];
+      NSSet<CWNetwork*>* scan = [interface scanForNetworksWithName:nil
+                                                             error:&err];
       const int error_code = [err code];
       const int count = [scan count];
       // We could get an error code but count != 0 if the scan was interrupted,
       // for example. For our purposes this is not fatal, so process as normal.
       if (error_code && count == 0) {
-        DLOG(WARNING) << interface_name << ": CoreWLAN scan failed with error "
-                      << error_code;
+        DLOG(WARNING) << interface.interfaceName
+                      << ": CoreWLAN scan failed with error " << error_code;
         ++interface_error_count;
         continue;
       }
 
-      const base::TimeDelta duration = base::TimeTicks::Now() - start_time;
-
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.Wifi.ScanLatency", duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(1), 100);
-
-      DVLOG(1) << interface_name << ": found " << count << " wifi APs";
+      DVLOG(1) << interface.interfaceName << ": found " << count << " wifi APs";
 
       for (CWNetwork* network in scan) {
         DCHECK(network);
@@ -112,14 +75,10 @@ bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
       }
     }
 
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Net.Wifi.InterfaceCount",
-        [supported_interfaces count] - interface_error_count, 1, 5, 6);
-
     // Return true even if some interfaces failed to scan, so long as at least
     // one interface did not fail.
     return interface_error_count == 0 ||
-           [supported_interfaces count] > interface_error_count;
+           [interfaces count] > interface_error_count;
   }
 }
 
@@ -152,5 +111,3 @@ std::unique_ptr<WifiPollingPolicy> WifiDataProviderMac::CreatePollingPolicy() {
 }
 
 }  // namespace device
-
-#pragma clang diagnostic pop

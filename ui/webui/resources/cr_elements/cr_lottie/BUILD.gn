@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  uses_legacy_modules = true
+  deps = [ ":cr_lottie" ]
+}
+
+js_library("cr_lottie") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/pending.js" ]
+}
+
+polymer_modulizer("cr_lottie") {
+  js_file = "cr_lottie.js"
+  html_file = "cr_lottie.html"
+  html_type = "dom-module"
+  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [ ":cr_lottie.m" ]
+}
+
+js_library("cr_lottie.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_lottie/cr_lottie.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":cr_lottie_module" ]
+  externs_list = [ "$externs_path/pending.js" ]
+}

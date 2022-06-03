@@ -7,6 +7,7 @@
 #include <android/bitmap.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -15,14 +16,15 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
+#include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
 #include "chrome/android/chrome_jni_headers/TabContentManager_jni.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/thumbnail/thumbnail.h"
-#include "content/public/browser/interstitial_page.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -34,12 +36,15 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace {
+
+const double kDefaultThumbnailAspectRatio = 0.85;
 
 using TabReadbackCallback = base::OnceCallback<void(float, const SkBitmap&)>;
 
@@ -51,7 +56,7 @@ class TabContentManager::TabReadbackRequest {
  public:
   TabReadbackRequest(content::RenderWidgetHostView* rwhv,
                      float thumbnail_scale,
-                     bool crop_to_square,
+                     bool crop_to_match_aspect_ratio,
                      TabReadbackCallback end_callback)
       : thumbnail_scale_(thumbnail_scale),
         end_callback_(std::move(end_callback)),
@@ -67,9 +72,14 @@ class TabContentManager::TabReadbackRequest {
       std::move(result_callback).Run(SkBitmap());
       return;
     }
-    if (crop_to_square) {
-      view_size_in_pixels.set_height(
-          std::min(view_size_in_pixels.height(), view_size_in_pixels.width()));
+    if (crop_to_match_aspect_ratio) {
+      double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
+          chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+          kDefaultThumbnailAspectRatio);
+      aspect_ratio = base::clamp(aspect_ratio, 0.5, 2.0);
+      int height = std::min(view_size_in_pixels.height(),
+                            (int)(view_size_in_pixels.width() / aspect_ratio));
+      view_size_in_pixels.set_height(height);
     }
     gfx::Rect source_rect = gfx::Rect(view_size_in_pixels);
     gfx::Size thumbnail_size(
@@ -77,6 +87,9 @@ class TabContentManager::TabReadbackRequest {
     rwhv->CopyFromSurface(source_rect, thumbnail_size,
                           std::move(result_callback));
   }
+
+  TabReadbackRequest(const TabReadbackRequest&) = delete;
+  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
 
   virtual ~TabReadbackRequest() {}
 
@@ -99,8 +112,6 @@ class TabContentManager::TabReadbackRequest {
   bool drop_after_readback_;
 
   base::WeakPtrFactory<TabReadbackRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabReadbackRequest);
 };
 
 // static
@@ -122,12 +133,15 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jboolean use_approximation_thumbnail,
                                      jboolean save_jpeg_thumbnails)
     : weak_java_tab_content_manager_(env, obj) {
+  double jpeg_aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
+      chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+      kDefaultThumbnailAspectRatio);
   thumbnail_cache_ = std::make_unique<ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
       static_cast<size_t>(approximation_cache_size),
       static_cast<size_t>(compression_queue_max_size),
       static_cast<size_t>(write_queue_max_size), use_approximation_thumbnail,
-      save_jpeg_thumbnails);
+      save_jpeg_thumbnails, jpeg_aspect_ratio);
   thumbnail_cache_->AddThumbnailCacheObserver(this);
 }
 
@@ -232,14 +246,6 @@ content::RenderWidgetHostView* TabContentManager::GetRwhvForTab(
   DCHECK(web_contents);
 
   content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
-  if (web_contents->ShowingInterstitialPage()) {
-    if (!web_contents->GetInterstitialPage()->GetMainFrame())
-      return nullptr;
-
-    rvh = web_contents->GetInterstitialPage()
-              ->GetMainFrame()
-              ->GetRenderViewHost();
-  }
   if (!rvh)
     return nullptr;
 
@@ -301,9 +307,9 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
 void TabContentManager::InvalidateIfChanged(JNIEnv* env,
                                             const JavaParamRef<jobject>& obj,
                                             jint tab_id,
-                                            const JavaParamRef<jstring>& jurl) {
-  thumbnail_cache_->InvalidateThumbnailIfChanged(
-      tab_id, GURL(base::android::ConvertJavaStringToUTF8(env, jurl)));
+                                            const JavaParamRef<jobject>& jurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  thumbnail_cache_->InvalidateThumbnailIfChanged(tab_id, *url);
 }
 
 void TabContentManager::UpdateVisibleIds(
@@ -342,10 +348,10 @@ void TabContentManager::GetEtc1TabThumbnail(
     const base::android::JavaParamRef<jobject>& j_callback) {
   thumbnail_cache_->DecompressThumbnailFromFile(
       tab_id,
-      base::BindRepeating(
-          &TabContentManager::SendThumbnailToJava, weak_factory_.GetWeakPtr(),
-          base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-          /* need_downsampling */ true));
+      base::BindOnce(&TabContentManager::SendThumbnailToJava,
+                     weak_factory_.GetWeakPtr(),
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback),
+                     /* need_downsampling */ true));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {
@@ -382,22 +388,32 @@ void TabContentManager::SendThumbnailToJava(
     base::android::ScopedJavaGlobalRef<jobject> j_callback,
     bool need_downsampling,
     bool result,
-    SkBitmap bitmap) {
+    const SkBitmap& bitmap) {
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!bitmap.isNull() && result) {
-    // In portrait mode, we want to show thumbnails in squares.
-    // Therefore, the thumbnail saved in portrait mode needs to be cropped to
-    // a square, or it would be vertically center-aligned, and the top would
-    // be hidden.
-    // It's fine to horizontally center-align thumbnail saved in landscape
-    // mode.
+    // We want to show thumbnails in a specific aspect ratio. Therefore, the
+    // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
+    // it would be vertically center-aligned and the top would be hidden in
+    // portrait mode, or it would be shown in the wrong aspect ratio in
+    // landscape mode.
     int scale = need_downsampling ? 2 : 1;
-    SkIRect dest_subset = {0, 0, bitmap.width() / scale,
-                           std::min(bitmap.width(), bitmap.height()) / scale};
-    SkBitmap result_bitmap = skia::ImageOperations::Resize(
+    double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
+        chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+        kDefaultThumbnailAspectRatio);
+    aspect_ratio = base::clamp(aspect_ratio, 0.5, 2.0);
+
+    int width = std::min(bitmap.width() / scale,
+                         (int)(bitmap.height() * aspect_ratio / scale));
+    int height = std::min(bitmap.height() / scale,
+                          (int)(bitmap.width() / aspect_ratio / scale));
+    // When cropping the thumbnails, we want to keep the top center portion.
+    int begin_x = (bitmap.width() / scale - width) / 2;
+    int end_x = begin_x + width;
+    SkIRect dest_subset = {begin_x, 0, end_x, height};
+
+    j_bitmap = gfx::ConvertToJavaBitmap(skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / scale,
-        bitmap.height() / scale, dest_subset);
-    j_bitmap = gfx::ConvertToJavaBitmap(&result_bitmap);
+        bitmap.height() / scale, dest_subset));
   }
   RunObjectCallbackAndroid(j_callback, j_bitmap);
 }

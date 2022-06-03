@@ -5,10 +5,8 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/export/csv_writer.h"
-
-using autofill::PasswordForm;
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -44,10 +42,10 @@ std::string PasswordCSVWriter::SerializePasswords(
 std::map<std::string, std::string> PasswordCSVWriter::PasswordFormToRecord(
     const PasswordForm& form) {
   std::map<std::string, std::string> record;
-  record[kUrlColumnName] = form.origin.spec();
+  record[kUrlColumnName] = form.url.spec();
   record[kUsernameColumnName] = base::UTF16ToUTF8(form.username_value);
   record[kPasswordColumnName] = base::UTF16ToUTF8(form.password_value);
-  record[kTitleColumnName] = form.origin.host();
+  record[kTitleColumnName] = form.url.host();
   return record;
 }
 

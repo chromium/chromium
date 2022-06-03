@@ -6,15 +6,20 @@
 
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
 #if defined(OS_WIN)
@@ -22,8 +27,16 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
+using ContextType = extensions::ExtensionBrowserTest::ContextType;
+
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
+  explicit ExtensionApiTabTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~ExtensionApiTabTest() override = default;
+  ExtensionApiTabTest(const ExtensionApiTabTest&) = delete;
+  ExtensionApiTabTest& operator=(const ExtensionApiTabTest&) = delete;
+
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -31,14 +44,20 @@ class ExtensionApiTabTest : public extensions::ExtensionApiTest {
   }
 };
 
-#if defined(USE_AURA) || defined(OS_MACOSX)
-// Maximizing/fullscreen popup window doesn't work on aura's managed mode.
-// See bug crbug.com/116305.
-// Mac: http://crbug.com/103912
-#define MAYBE_UpdateWindowShowState DISABLED_UpdateWindowShowState
-#else
-#define MAYBE_UpdateWindowShowState UpdateWindowShowState
-#endif  // defined(USE_AURA) || defined(OS_MACOSX)
+class ExtensionApiTabBackForwardCacheTest : public ExtensionApiTabTest {
+ public:
+  ExtensionApiTabBackForwardCacheTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"content_injection_supported", "true"},
+           {"all_extensions_allowed", "true"}}}},
+        {features::kBackForwardCacheMemoryControls});
+  }
+  ~ExtensionApiTabBackForwardCacheTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 class ExtensionApiNewTabTest : public ExtensionApiTabTest {
  public:
@@ -52,106 +71,114 @@ class ExtensionApiNewTabTest : public ExtensionApiTabTest {
   }
 };
 
-// Flaky on chromeos: http://crbug.com/870322
-#if defined(OS_CHROMEOS)
-#define MAYBE_Tabs DISABLED_Tabs
-#else
-#define MAYBE_Tabs Tabs
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, MAYBE_Tabs) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiNewTabTest, Tabs) {
   // The test creates a tab and checks that the URL of the new tab
   // is that of the new tab page.  Make sure the pref that controls
   // this is set.
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kHomePageIsNewTabPage, true);
 
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "crud.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "crud.html"}))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "audible.html")) << message_;
+// TODO(crbug.com/1177118) Re-enable test
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabAudible) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "audible.html"}))
+      << message_;
 }
 
 // http://crbug.com/521410
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabMuted) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "muted.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "muted.html"}))
+      << message_;
 }
 
-// Flaky on windows: http://crbug.com/238667
-#if defined(OS_WIN)
-#define MAYBE_Tabs2 DISABLED_Tabs2
-#else
-#define MAYBE_Tabs2 Tabs2
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Tabs2) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "crud2.html")) << message_;
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Tabs2) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "crud2.html"}))
+      << message_;
 }
 
 // crbug.com/149924
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabDuplicate) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "duplicate.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "duplicate.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabSize) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "tab_size.html")) << message_;
+  // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
+  // and becomes smaller because of that.  Investigate this and remove the line
+  // below if possible.
+  ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
+
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "tab_size.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabUpdate) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "update.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "update.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabPinned) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "pinned.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "pinned.html"}))
+      << message_;
 }
 
-// Flaky on windows: http://crbug.com/238667
-#if defined(OS_WIN)
+// TODO(crbug.com/1227134): Flaky on ASAN builds.
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_TabMove DISABLED_TabMove
 #else
 #define MAYBE_TabMove TabMove
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_TabMove) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "move.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "move.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabEvents) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "events.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "events.html"}))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabRelativeURLs) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "relative_urls.html"))
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRelativeURLs) {
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "relative_urls.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabQuery) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "query.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "query.html"}))
+      << message_;
 }
 
-// Flaky on windows: http://crbug.com/239022
-#if defined(OS_WIN)
-#define MAYBE_TabHighlight DISABLED_TabHighlight
-#else
-#define MAYBE_TabHighlight TabHighlight
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_TabHighlight) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "highlight.html")) << message_;
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabHighlight) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "highlight.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabCrashBrowser) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "crash.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "crash.html"}))
+      << message_;
 }
 
-// Flaky on windows: http://crbug.com/238667
-#if defined(OS_WIN)
-#define MAYBE_TabOpener DISABLED_TabOpener
-#else
-#define MAYBE_TabOpener TabOpener
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_TabOpener) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "opener.html")) << message_;
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpener) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "opener.html"}))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabGetCurrent) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemove) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "remove.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemoveMultiple) {
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "remove-multiple.html"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabGetCurrent) {
   ASSERT_TRUE(RunExtensionTest("tabs/get_current")) << message_;
 }
 
@@ -159,60 +186,82 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabConnect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
 
-// Possible race in ChromeURLDataManager. http://crbug.com/59198
+// TODO(crbug.com/1222122): Flaky
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabOnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabReload) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabReload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
 
-class ExtensionApiCaptureTest : public ExtensionApiTabTest {
+class ExtensionApiCaptureTest
+    : public ExtensionApiTabTest,
+      public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionApiCaptureTest() {}
+  ExtensionApiCaptureTest() : ExtensionApiTabTest(GetParam()) {}
+  ~ExtensionApiCaptureTest() override = default;
+  ExtensionApiCaptureTest(const ExtensionApiCaptureTest&) = delete;
+  ExtensionApiCaptureTest& operator=(const ExtensionApiCaptureTest&) = delete;
 
   void SetUp() override {
+    extensions::TabsCaptureVisibleTabFunction::set_disable_throttling_for_tests(
+        true);
     EnablePixelOutput();
     ExtensionApiTabTest::SetUp();
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
-                       DISABLED_CaptureVisibleTabJpeg) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_jpeg.html")) << message_;
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionApiCaptureTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionApiCaptureTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleTabJpeg) {
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_jpeg"))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, DISABLED_CaptureVisibleTabPng) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_png.html")) << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleTabPng) {
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_png"))
+      << message_;
 }
 
-// Times out on non-Windows.
-// See http://crbug.com/80212
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
+// TODO(crbug.com/1177118) Re-enable test
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
                        DISABLED_CaptureVisibleTabRace) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_race.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_race"))
+      << message_;
 }
 
-
-// Disabled for being flaky, see http://crbug/367695.
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
-                       DISABLED_CaptureVisibleFile) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_file.html")) << message_;
+// https://crbug.com/1107934 Flaky on Windows, Linux, ChromeOS.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#define MAYBE_CaptureVisibleFile DISABLED_CaptureVisibleFile
+#else
+#define MAYBE_CaptureVisibleFile CaptureVisibleFile
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_file", {},
+                               {.allow_file_access = true}))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureVisibleDisabled) {
+// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
+#else
+#define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots,
                                                true);
-  ASSERT_TRUE(RunExtensionSubtest("tabs/capture_visible_tab",
-                                  "test_disabled.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
+      << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureNullWindow) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureNullWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab_null_window"))
       << message_;
 }
@@ -229,8 +278,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsOnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabBackForwardCacheTest, TabsOnUpdated) {
+  ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
+}
+
 // Flaky on Linux. http://crbug.com/657376.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_TabsNoPermissions DISABLED_TabsNoPermissions
 #else
 #define MAYBE_TabsNoPermissions TabsNoPermissions
@@ -244,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, HostPermission) {
 }
 
 // Flaky on Windows, Mac and Linux. http://crbug.com/820110.
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
 #define MAYBE_UpdateWindowResize DISABLED_UpdateWindowResize
 #else
 #define MAYBE_UpdateWindowResize UpdateWindowResize
@@ -263,30 +317,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
 }
 #endif  // OS_WIN
 
+#if defined(USE_AURA) || defined(OS_MAC)
+// Maximizing/fullscreen popup window doesn't work on aura's managed mode.
+// See bug crbug.com/116305.
+// Mac: http://crbug.com/103912
+#define MAYBE_UpdateWindowShowState DISABLED_UpdateWindowShowState
+#else
+#define MAYBE_UpdateWindowShowState UpdateWindowShowState
+#endif  // defined(USE_AURA) || defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowShowState) {
   ASSERT_TRUE(RunExtensionTest("window_update/show_state")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
-  IncognitoModePrefs::SetAvailability(browser()->profile()->GetPrefs(),
-                                      IncognitoModePrefs::DISABLED);
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      IncognitoModePrefs::Availability::kDisabled);
 
   // This makes sure that creating an incognito window fails due to pref
   // (policy) being set.
   ASSERT_TRUE(RunExtensionTest("tabs/incognito_disabled")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_GetViewsOfCreatedPopup) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "get_views_popup.html"))
+// Failed run on ChromeOS CI builder. https://crbug.com/1245240
+#if defined(OS_CHROMEOS)
+#define MAYBE_GetViewsOfCreatedPopup DISABLED_GetViewsOfCreatedPopup
+#else
+#define MAYBE_GetViewsOfCreatedPopup GetViewsOfCreatedPopup
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedPopup) {
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "get_views_popup.html"}))
       << message_;
 }
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_GetViewsOfCreatedWindow) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "get_views_window.html"))
+
+// Failed run on ChromeOS CI builder. https://crbug.com/1245240
+#if defined(OS_CHROMEOS)
+#define MAYBE_GetViewsOfCreatedWindow DISABLED_GetViewsOfCreatedWindow
+#else
+#define MAYBE_GetViewsOfCreatedWindow GetViewsOfCreatedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedWindow) {
+  ASSERT_TRUE(
+      RunExtensionTest("tabs/basics", {.page_url = "get_views_window.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, OnUpdatedDiscardedState) {
-  ASSERT_TRUE(RunExtensionSubtest("tabs/basics", "discarded.html")) << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.page_url = "discarded.html"}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOpenerCraziness) {
@@ -306,10 +385,9 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
       is_incognito_enabled ? "true" : "false",
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
-  EXPECT_TRUE(RunExtensionSubtestWithArgAndFlags(
-      "tabs/basics", "incognito.html", args.data(),
-      is_incognito_enabled ? extensions::ExtensionApiTest::kFlagEnableIncognito
-                           : extensions::ExtensionApiTest::kFlagNone))
+  EXPECT_TRUE(RunExtensionTest(
+      "tabs/basics", {.page_url = "incognito.html", .custom_arg = args.c_str()},
+      {.allow_in_incognito = is_incognito_enabled}))
       << message_;
 }
 

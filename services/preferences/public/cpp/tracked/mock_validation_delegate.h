@@ -12,10 +12,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MockValidationDelegate;
 
@@ -47,6 +47,10 @@ class MockValidationDelegateRecord
   };
 
   MockValidationDelegateRecord();
+
+  MockValidationDelegateRecord(const MockValidationDelegateRecord&) = delete;
+  MockValidationDelegateRecord& operator=(const MockValidationDelegateRecord&) =
+      delete;
 
   // Returns the number of recorded validations.
   size_t recorded_validations_count() const { return validations_.size(); }
@@ -80,8 +84,6 @@ class MockValidationDelegateRecord
       prefs::mojom::TrackedPreferenceMetadata::PrefTrackingStrategy strategy);
 
   std::vector<ValidationEvent> validations_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockValidationDelegateRecord);
 };
 
 class MockValidationDelegate
@@ -89,12 +91,16 @@ class MockValidationDelegate
  public:
   explicit MockValidationDelegate(
       scoped_refptr<MockValidationDelegateRecord> record);
+
+  MockValidationDelegate(const MockValidationDelegate&) = delete;
+  MockValidationDelegate& operator=(const MockValidationDelegate&) = delete;
+
   ~MockValidationDelegate() override;
 
   // TrackedPreferenceValidationDelegate implementation.
   void OnAtomicPreferenceValidation(
       const std::string& pref_path,
-      base::Optional<base::Value> value,
+      absl::optional<base::Value> value,
       prefs::mojom::TrackedPreferenceValidationDelegate::ValueState value_state,
       prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
           external_validation_value_state,
@@ -119,8 +125,6 @@ class MockValidationDelegate
       prefs::mojom::TrackedPreferenceMetadata::PrefTrackingStrategy strategy);
 
   scoped_refptr<MockValidationDelegateRecord> record_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockValidationDelegate);
 };
 
 #endif  // SERVICES_PREFERENCES_PUBLIC_CPP_TRACKED_MOCK_VALIDATION_DELEGATE_H_

@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -21,6 +22,11 @@ SupervisedUserService* SupervisedUserServiceFactory::GetForProfile(
     Profile* profile) {
   return static_cast<SupervisedUserService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+SupervisedUserService* SupervisedUserServiceFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return GetForProfile(Profile::FromBrowserContext(context));
 }
 
 // static

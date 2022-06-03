@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 
 #include "base/metrics/user_metrics.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -157,7 +157,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   NSMutableArray<UIView*>* icons = [[NSMutableArray alloc] init];
 
-  if (!IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     self.keyboardButton = [self
         manualFillButtonWithAction:@selector(keyboardButtonPressed)
                         ImageNamed:@"mf_keyboard"
@@ -182,37 +182,44 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   self.passwordButton.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
   [icons addObject:self.passwordButton];
 
-    self.cardsButton =
-        [self manualFillButtonWithAction:@selector(cardButtonPressed:)
-                              ImageNamed:@"ic_credit_card"
-                 accessibilityIdentifier:
-                     manual_fill::AccessoryCreditCardAccessibilityIdentifier
-                      accessibilityLabel:
-                          l10n_util::GetNSString(
-                              IDS_IOS_MANUAL_FALLBACK_SHOW_CREDIT_CARDS)];
-    self.cardsButton.hidden = self.isCreditCardButtonHidden;
-    [icons addObject:self.cardsButton];
+  self.cardsButton =
+      [self manualFillButtonWithAction:@selector(cardButtonPressed:)
+                            ImageNamed:@"ic_credit_card"
+               accessibilityIdentifier:
+                   manual_fill::AccessoryCreditCardAccessibilityIdentifier
+                    accessibilityLabel:
+                        l10n_util::GetNSString(
+                            IDS_IOS_MANUAL_FALLBACK_SHOW_CREDIT_CARDS)];
+  self.cardsButton.hidden = self.isCreditCardButtonHidden;
+  [icons addObject:self.cardsButton];
 
-    self.accountButton = [self
-        manualFillButtonWithAction:@selector(accountButtonPressed:)
-                        ImageNamed:@"ic_place"
-           accessibilityIdentifier:manual_fill::
-                                       AccessoryAddressAccessibilityIdentifier
-                accessibilityLabel:l10n_util::GetNSString(
-                                       IDS_IOS_MANUAL_FALLBACK_SHOW_ADDRESSES)];
+  self.accountButton = [self
+      manualFillButtonWithAction:@selector(accountButtonPressed:)
+                      ImageNamed:@"ic_place"
+         accessibilityIdentifier:manual_fill::
+                                     AccessoryAddressAccessibilityIdentifier
+              accessibilityLabel:l10n_util::GetNSString(
+                                     IDS_IOS_MANUAL_FALLBACK_SHOW_ADDRESSES)];
 
-    self.accountButton.hidden = self.isAddressButtonHidden;
-    [icons addObject:self.accountButton];
+  self.accountButton.hidden = self.isAddressButtonHidden;
+  [icons addObject:self.accountButton];
+
+  for (UIButton* button in icons)
+    button.pointerInteractionEnabled = YES;
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:icons];
   stackView.spacing =
-      IsIPadIdiom() ? ManualFillIconsIPadSpacing : ManualFillIconsSpacing;
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? ManualFillIconsIPadSpacing
+          : ManualFillIconsSpacing;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:stackView];
 
-  CGFloat trailingInset = IsIPadIdiom() ? ManualFillIconsIPadTrailingInset
-                                        : ManualFillIconsTrailingInset;
+  CGFloat trailingInset =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? ManualFillIconsIPadTrailingInset
+          : ManualFillIconsTrailingInset;
   id<LayoutGuideProvider> safeAreaLayoutGuide = self.view.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     // Vertical constraints.

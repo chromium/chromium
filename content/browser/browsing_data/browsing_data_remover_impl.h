@@ -12,7 +12,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -34,38 +33,36 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
       public base::SupportsUserData::Data {
  public:
   explicit BrowsingDataRemoverImpl(BrowserContext* browser_context);
+
+  BrowsingDataRemoverImpl(const BrowsingDataRemoverImpl&) = delete;
+  BrowsingDataRemoverImpl& operator=(const BrowsingDataRemoverImpl&) = delete;
+
   ~BrowsingDataRemoverImpl() override;
 
   // Is the BrowsingDataRemoverImpl currently in the process of removing data?
-  bool is_removing() { return is_removing_; }
+  bool IsRemovingForTesting() { return is_removing_; }
 
   // BrowsingDataRemover implementation:
   void SetEmbedderDelegate(
       BrowsingDataRemoverDelegate* embedder_delegate) override;
-  bool DoesOriginMatchMask(
-      int origin_type_mask,
+  bool DoesOriginMatchMaskForTesting(
+      uint64_t origin_type_mask,
       const url::Origin& origin,
       storage::SpecialStoragePolicy* special_storage_policy) override;
   void Remove(const base::Time& delete_begin,
               const base::Time& delete_end,
-              int remove_mask,
-              int origin_type_mask) override;
+              uint64_t remove_mask,
+              uint64_t origin_type_mask) override;
   void RemoveAndReply(const base::Time& delete_begin,
                       const base::Time& delete_end,
-                      int remove_mask,
-                      int origin_type_mask,
+                      uint64_t remove_mask,
+                      uint64_t origin_type_mask,
                       Observer* observer) override;
-  void RemoveWithFilter(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      int remove_mask,
-      int origin_type_mask,
-      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) override;
   void RemoveWithFilterAndReply(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      int remove_mask,
-      int origin_type_mask,
+      uint64_t remove_mask,
+      uint64_t origin_type_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder,
       Observer* observer) override;
 
@@ -76,10 +73,9 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
       const base::RepeatingCallback<
           void(base::OnceClosure continue_to_completion)>& callback) override;
 
-  const base::Time& GetLastUsedBeginTime() override;
-  const base::Time& GetLastUsedEndTime() override;
-  int GetLastUsedRemovalMask() override;
-  int GetLastUsedOriginTypeMask() override;
+  const base::Time& GetLastUsedBeginTimeForTesting() override;
+  uint64_t GetLastUsedRemovalMaskForTesting() override;
+  uint64_t GetLastUsedOriginTypeMaskForTesting() override;
 
   // Used for testing.
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);
@@ -89,14 +85,15 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   virtual void RemoveInternal(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      int remove_mask,
-      int origin_type_mask,
+      uint64_t remove_mask,
+      uint64_t origin_type_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder,
       Observer* observer);
 
  private:
   // Testing the private RemovalTask.
   FRIEND_TEST_ALL_PREFIXES(BrowsingDataRemoverImplTest, MultipleTasks);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingDataRemoverImplTest, MultipleIdenticalTasks);
 
   // For debugging purposes. Please add new deletion tasks at the end.
   // This enum is recorded in a histogram, so don't change or reuse ids.
@@ -113,7 +110,10 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kAuthCache = 9,
     kCodeCaches = 10,
     kNetworkErrorLogging = 11,
-    kMaxValue = kNetworkErrorLogging,
+    kTrustTokens = 12,
+    kConversions = 13,
+    kDeferredCookies = 14,
+    kMaxValue = kDeferredCookies,
   };
 
   // Represents a single removal task. Contains all parameters needed to execute
@@ -122,20 +122,24 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   struct CONTENT_EXPORT RemovalTask {
     RemovalTask(const base::Time& delete_begin,
                 const base::Time& delete_end,
-                int remove_mask,
-                int origin_type_mask,
+                uint64_t remove_mask,
+                uint64_t origin_type_mask,
                 std::unique_ptr<BrowsingDataFilterBuilder> filter_builder,
                 Observer* observer);
     RemovalTask(RemovalTask&& other) noexcept;
     ~RemovalTask();
 
+    // Returns true if the deletion parameters are equal.
+    // Does not compare |observer| and |task_started|.
+    bool IsSameDeletion(const RemovalTask& other);
+
     base::Time delete_begin;
     base::Time delete_end;
-    int remove_mask;
-    int origin_type_mask;
+    uint64_t remove_mask;
+    uint64_t origin_type_mask;
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder;
-    Observer* observer;
-    base::Time task_started;
+    std::vector<Observer*> observers;
+    base::TimeTicks task_started;
   };
 
   // Setter for |is_removing_|; DCHECKs that we can only start removing if we're
@@ -156,9 +160,12 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // TODO(crbug.com/589586): Support all backends w/ origin filter.
   void RemoveImpl(const base::Time& delete_begin,
                   const base::Time& delete_end,
-                  int remove_mask,
+                  uint64_t remove_mask,
                   BrowsingDataFilterBuilder* filter_builder,
-                  int origin_type_mask);
+                  uint64_t origin_type_mask);
+
+  void OnDelegateDone(base::OnceClosure completion_closure,
+                      uint64_t failed_data_types);
 
   // Notifies observers and transitions to the idle state.
   void Notify();
@@ -181,6 +188,8 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // Records unfinished tasks from |pending_sub_tasks_| after a delay.
   void RecordUnfinishedSubTasks();
 
+  StoragePartition* GetStoragePartition();
+
   // Like GetWeakPtr(), but returns a weak pointer to BrowsingDataRemoverImpl
   // for internal purposes.
   base::WeakPtr<BrowsingDataRemoverImpl> GetWeakPtr();
@@ -198,16 +207,18 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   base::Time delete_end_;
 
   // The removal mask for the current removal operation.
-  int remove_mask_ = 0;
+  uint64_t remove_mask_ = 0;
 
   // From which types of origins should we remove data?
-  int origin_type_mask_ = 0;
+  uint64_t origin_type_mask_ = 0;
+
+  std::vector<std::string> domains_for_deferred_cookie_deletion_;
 
   // True if Remove has been invoked.
   bool is_removing_;
 
   // Removal tasks to be processed.
-  base::queue<RemovalTask> task_queue_;
+  std::deque<RemovalTask> task_queue_;
 
   // If non-null, the |would_complete_callback_| is called each time an instance
   // is about to complete a browsing data removal process, and has the ability
@@ -218,9 +229,11 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // Records which tasks of a deletion are currently active.
   std::set<TracingDataType> pending_sub_tasks_;
 
+  uint64_t failed_data_types_ = 0;
+
   // Fires after some time to track slow tasks. Cancelled when all tasks
   // are finished.
-  base::CancelableClosure slow_pending_tasks_closure_;
+  base::CancelableOnceClosure slow_pending_tasks_closure_;
 
   // Observers of the global state and individual tasks.
   base::ObserverList<Observer, true>::Unchecked observer_list_;
@@ -229,8 +242,6 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   StoragePartition* storage_partition_for_testing_;
 
   base::WeakPtrFactory<BrowsingDataRemoverImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverImpl);
 };
 
 }  // namespace content

@@ -6,8 +6,9 @@
 #define UI_PLATFORM_WINDOW_WIN_WIN_WINDOW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -16,11 +17,16 @@
 #include <windows.h>
 
 namespace ui {
+class WinCursor;
 
 class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
                                     public gfx::WindowImpl {
  public:
   WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
+
+  WinWindow(const WinWindow&) = delete;
+  WinWindow& operator=(const WinWindow&) = delete;
+
   ~WinWindow() override;
 
  private:
@@ -33,8 +39,8 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   bool IsVisible() const override;
   void PrepareForShutdown() override;
   void SetBounds(const gfx::Rect& bounds) override;
-  gfx::Rect GetBounds() override;
-  void SetTitle(const base::string16& title) override;
+  gfx::Rect GetBounds() const override;
+  void SetTitle(const std::u16string& title) override;
   void SetCapture() override;
   void ReleaseCapture() override;
   bool HasCapture() const override;
@@ -47,7 +53,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   void Deactivate() override;
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
-  void SetCursor(PlatformCursor cursor) override;
+  void SetCursor(scoped_refptr<PlatformCursor> cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
   void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
@@ -104,9 +110,11 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
 
   PlatformWindowDelegate* delegate_;
 
-  CR_MSG_MAP_CLASS_DECLARATIONS(WinWindow)
+  // Keep a reference to the current cursor to make sure the wrapped HCURSOR
+  // isn't destroyed after the call to SetCursor().
+  scoped_refptr<WinCursor> cursor_;
 
-  DISALLOW_COPY_AND_ASSIGN(WinWindow);
+  CR_MSG_MAP_CLASS_DECLARATIONS(WinWindow)
 };
 
 namespace test {

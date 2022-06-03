@@ -18,7 +18,7 @@ constexpr base::FilePath::CharType kDefaultUserPolicyKeysDir[] =
     FILE_PATH_LITERAL("/run/user_policy");
 
 constexpr base::FilePath::CharType kOwnerKeyFileName[] =
-    FILE_PATH_LITERAL("/var/lib/whitelist/owner.key");
+    FILE_PATH_LITERAL("/var/lib/devicesettings/owner.key");
 
 constexpr base::FilePath::CharType kInstallAttributesFileName[] =
     FILE_PATH_LITERAL("/run/lockbox/install_attributes.pb");

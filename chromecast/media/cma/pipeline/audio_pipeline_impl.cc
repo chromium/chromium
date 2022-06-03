@@ -28,8 +28,8 @@ const size_t kMaxAudioFrameSize = 32 * 1024;
 }
 
 AudioPipelineImpl::AudioPipelineImpl(CmaBackend::AudioDecoder* decoder,
-                                     const AvPipelineClient& client)
-    : AvPipelineImpl(decoder, client), audio_decoder_(decoder) {
+                                     AvPipelineClient client)
+    : AvPipelineImpl(decoder, std::move(client)), audio_decoder_(decoder) {
   DCHECK(audio_decoder_);
 }
 

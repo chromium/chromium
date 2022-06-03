@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_message_support_export.h"
@@ -52,7 +51,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
     REPLY_BIT         = 0x08,
     REPLY_ERROR_BIT   = 0x10,
     UNBLOCK_BIT       = 0x20,
-    PUMPING_MSGS_BIT  = 0x40,
+    PUMPING_MSGS_BIT  = 0x40,  // Deprecated.
     HAS_SENT_TIME_BIT = 0x80,
   };
 
@@ -118,12 +117,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
 
   bool should_unblock() const {
     return (header()->flags & UNBLOCK_BIT) != 0;
-  }
-
-  // Tells the receiver that the caller is pumping messages while waiting
-  // for the result.
-  bool is_caller_pumping_messages() const {
-    return (header()->flags & PUMPING_MSGS_BIT) != 0;
   }
 
   void set_dispatch_error() const {

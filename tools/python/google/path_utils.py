@@ -78,7 +78,7 @@ def MaybeMakeDirectory(*path):
   file_path = os.path.join(*path)
   try:
     os.makedirs(file_path)
-  except OSError, e:
+  except OSError as e:
     # errno.EEXIST is "File exists".  If we see another error, re-raise.
     if e.errno != errno.EEXIST:
       raise

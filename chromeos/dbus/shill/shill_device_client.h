@@ -10,10 +10,11 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class TimeDelta;
 class Value;
 }  // namespace base
 
@@ -21,10 +22,6 @@ namespace dbus {
 class Bus;
 class ObjectPath;
 }  // namespace dbus
-
-namespace net {
-class IPEndPoint;
-}  // namespace net
 
 namespace chromeos {
 
@@ -35,7 +32,6 @@ class ShillPropertyChangedObserver;
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
  public:
-  typedef ShillClientHelper::DictionaryValueCallback DictionaryValueCallback;
   typedef ShillClientHelper::StringCallback StringCallback;
   typedef ShillClientHelper::ErrorCallback ErrorCallback;
 
@@ -53,8 +49,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
                                    const base::Value& value,
                                    bool notify_changed) = 0;
     virtual std::string GetDevicePathForType(const std::string& type) = 0;
-    virtual void SetTDLSBusyCount(int count) = 0;
-    virtual void SetTDLSState(const std::string& state) = 0;
     // If |lock_type| is true, sets Cellular.SIMLockStatus.LockType to sim-pin,
     // otherwise clears LockType. (This will unblock a PUK locked SIM).
     // Sets RetriesLeft to the PIN retry default. LockEnabled is unaffected.
@@ -66,6 +60,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
     virtual void SetUsbEthernetMacAddressSourceError(
         const std::string& device_path,
         const std::string& error_name) = 0;
+    // Determines whether or not to simulate the Scanning property changing when
+    // an Inhibit property is updated.
+    virtual void SetSimulateInhibitScanning(bool simulate_inhibit_scanning) = 0;
+    // Adds a delay before a SetProperty call will result in property value
+    // change.
+    virtual void SetPropertyChangeDelay(
+        absl::optional<base::TimeDelta> time_delay) = 0;
 
    protected:
     virtual ~TestInterface() {}
@@ -83,6 +84,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // Returns the global instance if initialized. May return null.
   static ShillDeviceClient* Get();
 
+  ShillDeviceClient(const ShillDeviceClient&) = delete;
+  ShillDeviceClient& operator=(const ShillDeviceClient&) = delete;
+
   // Adds a property changed |observer| for the device at |device_path|.
   virtual void AddPropertyChangedObserver(
       const dbus::ObjectPath& device_path,
@@ -93,10 +97,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
       const dbus::ObjectPath& device_path,
       ShillPropertyChangedObserver* observer) = 0;
 
-  // Calls GetProperties method.
-  // |callback| is called after the method call finishes.
+  // Calls the GetProperties DBus method and invokes |callback| when complete.
+  // |callback| receives a dictionary Value containing the Device properties on
+  // success or nullopt on failure.
   virtual void GetProperties(const dbus::ObjectPath& device_path,
-                             DictionaryValueCallback callback) = 0;
+                             DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call finishes.
@@ -156,53 +161,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
                      base::OnceClosure callback,
                      ErrorCallback error_callback) = 0;
 
-  // Calls the PerformTDLSOperation method.
-  // |callback| is called after the method call finishes.
-  virtual void PerformTDLSOperation(const dbus::ObjectPath& device_path,
-                                    const std::string& operation,
-                                    const std::string& peer,
-                                    StringCallback callback,
-                                    ErrorCallback error_callback) = 0;
-
-  // Adds |ip_endpoint| to the list of tcp connections that the device should
-  // monitor to wake the system from suspend.
-  virtual void AddWakeOnPacketConnection(const dbus::ObjectPath& device_path,
-                                         const net::IPEndPoint& ip_endpoint,
-                                         base::OnceClosure callback,
-                                         ErrorCallback error_callback) = 0;
-
-  // Adds |types| to the list of packet types that the device should monitor to
-  // wake the system from suspend. |types| corresponds to "Wake on WiFi Packet
-  // Type Constants." in
-  // third_party/cros_system_api/dbus/shill/dbus-constants.h.
-  virtual void AddWakeOnPacketOfTypes(const dbus::ObjectPath& device_path,
-                                      const std::vector<std::string>& types,
-                                      base::OnceClosure callback,
-                                      ErrorCallback error_callback) = 0;
-
-  // Removes |ip_endpoint| from the list of tcp connections that the device
-  // should monitor to wake the system from suspend.
-  virtual void RemoveWakeOnPacketConnection(const dbus::ObjectPath& device_path,
-                                            const net::IPEndPoint& ip_endpoint,
-                                            base::OnceClosure callback,
-                                            ErrorCallback error_callback) = 0;
-
-  // Removes |types| from the list of packet types that the device should
-  // monitor to wake the system from suspend. |types| corresponds to "Wake on
-  // WiFi Packet Type Constants." in
-  // third_party/cros_system_api/dbus/shill/dbus-constants.h.
-  virtual void RemoveWakeOnPacketOfTypes(const dbus::ObjectPath& device_path,
-                                         const std::vector<std::string>& types,
-                                         base::OnceClosure callback,
-                                         ErrorCallback error_callback) = 0;
-
-  // Clears the list of tcp connections that the device should monitor to wake
-  // the system from suspend.
-  virtual void RemoveAllWakeOnPacketConnections(
-      const dbus::ObjectPath& device_path,
-      base::OnceClosure callback,
-      ErrorCallback error_callback) = 0;
-
   // Set MAC address source for USB Ethernet adapter. |source| corresponds to
   // "USB Ethernet MAC address sources." in
   // third_party/cros_system_api/dbus/shill/dbus-constants.h.
@@ -221,11 +179,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // Initialize/Shutdown should be used instead.
   ShillDeviceClient();
   virtual ~ShillDeviceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillDeviceClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ShillDeviceClient;
+}
 
 #endif  // CHROMEOS_DBUS_SHILL_SHILL_DEVICE_CLIENT_H_

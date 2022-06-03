@@ -29,7 +29,7 @@ class CONTENT_EXPORT AXActionTargetFactory {
   static std::unique_ptr<ui::AXActionTarget> CreateFromNodeId(
       const blink::WebDocument& document,
       content::PluginAXTreeSource* plugin_tree_source,
-      ui::AXNode::AXID node_id);
+      ui::AXNodeID node_id);
 };
 
 }  // namespace content

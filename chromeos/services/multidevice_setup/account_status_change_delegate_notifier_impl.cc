@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/host_device_timestamp_manager.h"
@@ -32,13 +31,21 @@ AccountStatusChangeDelegateNotifierImpl::Factory*
     AccountStatusChangeDelegateNotifierImpl::Factory::test_factory_ = nullptr;
 
 // static
-AccountStatusChangeDelegateNotifierImpl::Factory*
-AccountStatusChangeDelegateNotifierImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
-
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+std::unique_ptr<AccountStatusChangeDelegateNotifier>
+AccountStatusChangeDelegateNotifierImpl::Factory::Create(
+    HostStatusProvider* host_status_provider,
+    PrefService* pref_service,
+    HostDeviceTimestampManager* host_device_timestamp_manager,
+    OobeCompletionTracker* oobe_completion_tracker,
+    base::Clock* clock) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(host_status_provider, pref_service,
+                                         host_device_timestamp_manager,
+                                         oobe_completion_tracker, clock);
+  }
+  return base::WrapUnique(new AccountStatusChangeDelegateNotifierImpl(
+      host_status_provider, pref_service, host_device_timestamp_manager,
+      oobe_completion_tracker, clock));
 }
 
 // static
@@ -48,18 +55,6 @@ void AccountStatusChangeDelegateNotifierImpl::Factory::SetFactoryForTesting(
 }
 
 AccountStatusChangeDelegateNotifierImpl::Factory::~Factory() = default;
-
-std::unique_ptr<AccountStatusChangeDelegateNotifier>
-AccountStatusChangeDelegateNotifierImpl::Factory::BuildInstance(
-    HostStatusProvider* host_status_provider,
-    PrefService* pref_service,
-    HostDeviceTimestampManager* host_device_timestamp_manager,
-    OobeCompletionTracker* oobe_completion_tracker,
-    base::Clock* clock) {
-  return base::WrapUnique(new AccountStatusChangeDelegateNotifierImpl(
-      host_status_provider, pref_service, host_device_timestamp_manager,
-      oobe_completion_tracker, clock));
-}
 
 // static
 void AccountStatusChangeDelegateNotifierImpl::RegisterPrefs(
@@ -162,12 +157,12 @@ void AccountStatusChangeDelegateNotifierImpl::CheckForMultiDeviceEvents(
   }
 
   // Track and update host status.
-  base::Optional<mojom::HostStatus> host_status_before_update =
+  absl::optional<mojom::HostStatus> host_status_before_update =
       host_status_from_most_recent_update_;
   host_status_from_most_recent_update_ = host_status_with_device.host_status();
 
   // Track and update verified host info.
-  base::Optional<std::string> verified_host_device_id_before_update =
+  absl::optional<std::string> verified_host_device_id_before_update =
       verified_host_device_id_from_most_recent_update_;
 
   // Check if a host has been verified.
@@ -232,7 +227,7 @@ void AccountStatusChangeDelegateNotifierImpl::
 
 void AccountStatusChangeDelegateNotifierImpl::CheckForNoLongerNewUserEvent(
     const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-    const base::Optional<mojom::HostStatus> host_status_before_update) {
+    const absl::optional<mojom::HostStatus> host_status_before_update) {
   // We are only looking for the case when the host status switched from
   // kEligibleHostExistsButNoHostSet to something else.
   if (host_status_with_device.host_status() ==
@@ -255,7 +250,7 @@ void AccountStatusChangeDelegateNotifierImpl::CheckForNoLongerNewUserEvent(
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForExistingUserHostSwitchedEvent(
         const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-        const base::Optional<std::string>&
+        const absl::optional<std::string>&
             verified_host_device_id_before_update) {
   // The host switched event requires both a pre-update and a post-update
   // verified host.
@@ -279,7 +274,7 @@ void AccountStatusChangeDelegateNotifierImpl::
 void AccountStatusChangeDelegateNotifierImpl::
     CheckForExistingUserChromebookAddedEvent(
         const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-        const base::Optional<std::string>&
+        const absl::optional<std::string>&
             verified_host_device_id_before_update) {
   // The Chromebook added event requires that a verified host was found by the
   // update, i.e. there was no verified host before the host status update but
@@ -299,13 +294,13 @@ void AccountStatusChangeDelegateNotifierImpl::
                           clock_->Now().ToJavaTime());
 }
 
-base::Optional<std::string> AccountStatusChangeDelegateNotifierImpl::
+absl::optional<std::string> AccountStatusChangeDelegateNotifierImpl::
     LoadHostDeviceIdFromEndOfPreviousSession() {
   std::string verified_host_device_id_from_most_recent_update =
       pref_service_->GetString(
           kVerifiedHostDeviceIdFromMostRecentHostStatusUpdatePrefName);
   if (verified_host_device_id_from_most_recent_update.empty())
-    return base::nullopt;
+    return absl::nullopt;
   return verified_host_device_id_from_most_recent_update;
 }
 

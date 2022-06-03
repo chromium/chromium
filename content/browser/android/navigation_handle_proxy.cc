@@ -7,8 +7,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/navigation/impression_mojom_traits.h"
+#include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
+#include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -21,30 +27,45 @@ NavigationHandleProxy::NavigationHandleProxy(
     NavigationHandle* cpp_navigation_handle)
     : cpp_navigation_handle_(cpp_navigation_handle) {
   JNIEnv* env = AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> impression_byte_buffer = nullptr;
+
+  // Scoped to out-live the java call as this uses a DirectByteBuffer.
+  std::vector<uint8_t> byte_vector;
+  if (cpp_navigation_handle_->GetImpression()) {
+    blink::mojom::ImpressionPtr impression =
+        AttributionHost::MojoImpressionFromImpression(
+            *cpp_navigation_handle_->GetImpression());
+    byte_vector = blink::mojom::Impression::Serialize(&impression);
+    impression_byte_buffer = base::android::ScopedJavaLocalRef<jobject>(
+        env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
+    base::android::CheckException(env);
+  }
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
       env, reinterpret_cast<jlong>(this),
-      ConvertUTF8ToJavaString(env, cpp_navigation_handle_->GetURL().spec()),
-      cpp_navigation_handle_->IsInMainFrame(),
+      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      cpp_navigation_handle_->IsInPrimaryMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
-      cpp_navigation_handle_->IsRendererInitiated());
+      cpp_navigation_handle_->IsRendererInitiated(),
+      cpp_navigation_handle_->GetInitiatorOrigin()
+          ? cpp_navigation_handle_->GetInitiatorOrigin()->CreateJavaObject()
+          : nullptr,
+      impression_byte_buffer);
 }
 
 void NavigationHandleProxy::DidRedirect() {
   JNIEnv* env = AttachCurrentThread();
   Java_NavigationHandle_didRedirect(
       env, java_navigation_handle_,
-      ConvertUTF8ToJavaString(env, cpp_navigation_handle_->GetURL().spec()));
+      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()));
 }
 
 void NavigationHandleProxy::DidFinish() {
   JNIEnv* env = AttachCurrentThread();
   // Matches logic in
   // components/navigation_interception/navigation_params_android.cc
-  ScopedJavaLocalRef<jstring> jstring_url(ConvertUTF8ToJavaString(
-      env, cpp_navigation_handle_->GetBaseURLForDataURL().is_empty()
-               ? cpp_navigation_handle_->GetURL().spec()
-               : cpp_navigation_handle_->GetBaseURLForDataURL()
-                     .possibly_invalid_spec()));
+  const GURL& gurl = cpp_navigation_handle_->GetBaseURLForDataURL().is_empty()
+                         ? cpp_navigation_handle_->GetURL()
+                         : cpp_navigation_handle_->GetBaseURLForDataURL();
 
   bool is_fragment_navigation = cpp_navigation_handle_->IsSameDocument();
 
@@ -54,18 +75,18 @@ void NavigationHandleProxy::DidFinish() {
     replacements.ClearRef();
     bool urls_same_ignoring_fragment =
         cpp_navigation_handle_->GetURL().ReplaceComponents(replacements) ==
-        cpp_navigation_handle_->GetPreviousURL().ReplaceComponents(
+        cpp_navigation_handle_->GetPreviousMainFrameURL().ReplaceComponents(
             replacements);
     is_fragment_navigation &= urls_same_ignoring_fragment;
   }
 
   bool is_valid_search_form_url =
-      cpp_navigation_handle_->GetSearchableFormURL() != nullptr
+      cpp_navigation_handle_->GetSearchableFormURL() != ""
           ? cpp_navigation_handle_->GetSearchableFormURL().is_valid()
           : false;
 
   Java_NavigationHandle_didFinish(
-      env, java_navigation_handle_, jstring_url,
+      env, java_navigation_handle_, url::GURLAndroid::FromNativeGURL(env, gurl),
       cpp_navigation_handle_->IsErrorPage(),
       cpp_navigation_handle_->HasCommitted(), is_fragment_navigation,
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,

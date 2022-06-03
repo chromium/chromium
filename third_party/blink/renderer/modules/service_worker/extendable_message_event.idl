@@ -7,12 +7,8 @@
 [
     Exposed=ServiceWorker
 ] interface ExtendableMessageEvent : ExtendableEvent {
-    // TODO(bashi): Stop using custom constructor once we solve reference
-    // circulation between Blink and V8. https://crbug.com/501866
-    // Constructor should be:
-    // constructor(DOMString type, optional ExtendableMessageEventInit eventInitDict = {}),
-    [Custom] constructor();
-    [Custom=Getter] readonly attribute any data;
+    constructor(DOMString type, optional ExtendableMessageEventInit eventInitDict = {});
+    [CallWith=ScriptState, CachedAttribute=isDataDirty] readonly attribute any data;
     readonly attribute DOMString origin;
     readonly attribute DOMString lastEventId;
     [SameObject] readonly attribute (Client or ServiceWorker or MessagePort)? source;

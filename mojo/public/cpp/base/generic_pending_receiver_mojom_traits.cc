@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/base/generic_pending_receiver_mojom_traits.h"
 
+#include "base/strings/string_piece.h"
+
 namespace mojo {
 
 // static
@@ -28,8 +30,7 @@ bool StructTraits<mojo_base::mojom::GenericPendingReceiverDataView,
   base::StringPiece interface_name;
   if (!data.ReadInterfaceName(&interface_name))
     return false;
-  *out = GenericPendingReceiver(interface_name.as_string(),
-                                data.TakeReceivingPipe());
+  *out = GenericPendingReceiver(interface_name, data.TakeReceivingPipe());
   return true;
 }
 

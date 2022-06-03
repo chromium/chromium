@@ -1,6 +1,6 @@
-document
-++list
-++++listitem IsControlElement=false
-++++++description Name='Coffee'
-++++description IsControlElement=false
-++++++description Name='Black hot drink'
+Document
+++List
+++++ListItem IsControlElement=false
+++++++Text Name='Coffee'
+++++Text IsControlElement=false
+++++++Text Name='Black hot drink'

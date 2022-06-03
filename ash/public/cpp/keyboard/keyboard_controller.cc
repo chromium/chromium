@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 
+#include "base/check_op.h"
+
 namespace ash {
 
 // static

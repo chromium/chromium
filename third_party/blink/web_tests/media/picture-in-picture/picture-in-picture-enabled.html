@@ -14,7 +14,7 @@ promise_test(async t => {
   assert_false(document.pictureInPictureEnabled);
 
   const video = await loadVideo(document, '../content/test.ogv');
-  return promise_rejects(t, 'NotSupportedError',
+  return promise_rejects_dom(t, 'NotSupportedError',
     requestPictureInPictureWithTrustedClick(video));
 });
 </script>

@@ -10,12 +10,10 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/demuxer_stream.h"
@@ -110,6 +108,10 @@ class MEDIA_EXPORT StreamParser {
       EncryptedMediaInitDataCB;
 
   StreamParser();
+
+  StreamParser(const StreamParser&) = delete;
+  StreamParser& operator=(const StreamParser&) = delete;
+
   virtual ~StreamParser();
 
   // Initializes the parser with necessary callbacks. Must be called before any
@@ -140,10 +142,12 @@ class MEDIA_EXPORT StreamParser {
   // Called when there is new data to parse.
   //
   // Returns true if the parse succeeds.
+  //
+  // Regular "bytestream-formatted" StreamParsers should fully implement
+  // Parse(), but WebCodecsEncodedChunkStreamParsers should instead fully
+  // implement ProcessChunks().
   virtual bool Parse(const uint8_t* buf, int size) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StreamParser);
+  virtual bool ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue);
 };
 
 // Appends to |merged_buffers| the provided buffers in decode-timestamp order.

@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/sync/driver/sync_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -13,14 +13,13 @@
 
 SyncObserverBridge::SyncObserverBridge(id<SyncObserverModelBridge> delegate,
                                        syncer::SyncService* sync_service)
-    : delegate_(delegate), scoped_observer_(this) {
+    : delegate_(delegate) {
   DCHECK(delegate);
   if (sync_service)
-    scoped_observer_.Add(sync_service);
+    scoped_observation_.Observe(sync_service);
 }
 
-SyncObserverBridge::~SyncObserverBridge() {
-}
+SyncObserverBridge::~SyncObserverBridge() {}
 
 void SyncObserverBridge::OnStateChanged(syncer::SyncService* sync) {
   [delegate_ onSyncStateChanged];

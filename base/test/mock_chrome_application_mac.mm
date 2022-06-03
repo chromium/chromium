@@ -5,7 +5,7 @@
 #include "base/test/mock_chrome_application_mac.h"
 
 #include "base/auto_reset.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 @implementation MockCrApp
 

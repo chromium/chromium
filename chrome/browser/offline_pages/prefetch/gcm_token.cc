@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -47,7 +48,8 @@ void GetGCMToken(content::BrowserContext* context,
     return;
   }
 
-  instance_id->GetToken(kProdSenderId, kScopeGCM, /*options=*/{},
+  instance_id->GetToken(kProdSenderId, kScopeGCM,
+                        /*time_to_live=*/base::TimeDelta(),
                         /*flags=*/{}, std::move(callback));
 }
 

@@ -24,6 +24,7 @@ namespace net {
 class ClientSocketFactory;
 class SSLClientContext;
 class SSLClientSocket;
+struct SSLConfig;
 class StreamSocket;
 }  // namespace net
 
@@ -35,6 +36,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSClientSocket
  public:
   TLSClientSocket(mojo::PendingRemote<mojom::SocketObserver> observer,
                   const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TLSClientSocket(const TLSClientSocket&) = delete;
+  TLSClientSocket& operator=(const TLSClientSocket&) = delete;
+
   ~TLSClientSocket() override;
 
   void Connect(const net::HostPortPair& host_port_pair,
@@ -59,8 +64,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSClientSocket
   mojom::TCPConnectedSocket::UpgradeToTLSCallback connect_callback_;
   bool send_ssl_info_ = false;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocket);
 };
 
 }  // namespace network

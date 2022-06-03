@@ -8,16 +8,17 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,6 +31,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -45,6 +47,10 @@ const char kSecondaryChannelHandleSwitch[] = "test-secondary-channel-handle";
 class InvitationTest : public test::MojoTestBase {
  public:
   InvitationTest() = default;
+
+  InvitationTest(const InvitationTest&) = delete;
+  InvitationTest& operator=(const InvitationTest&) = delete;
+
   ~InvitationTest() override = default;
 
  protected:
@@ -72,8 +78,6 @@ class InvitationTest : public test::MojoTestBase {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvitationTest);
 };
 
 void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
@@ -83,7 +87,7 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
   std::string value;
 #if defined(OS_FUCHSIA)
   channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   channel->PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
                                        &value);
 #elif defined(OS_POSIX)
@@ -96,7 +100,7 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
 
   if (switch_name.empty())
     switch_name = PlatformChannel::kHandleSwitch;
-  command_line->AppendSwitchASCII(switch_name.as_string(), value);
+  command_line->AppendSwitchASCII(std::string(switch_name), value);
 }
 
 TEST_F(InvitationTest, Create) {
@@ -308,9 +312,9 @@ base::Process InvitationTest::LaunchChildTestClient(
 #endif
 
 #if !defined(OS_FUCHSIA)
-  base::Optional<NamedPlatformChannel> named_channel;
+  absl::optional<NamedPlatformChannel> named_channel;
 #endif
-  base::Optional<PlatformChannel> channel;
+  absl::optional<PlatformChannel> channel;
   PlatformHandle local_endpoint_handle;
   if (transport_type == TransportType::kChannel) {
     channel.emplace();
@@ -402,6 +406,9 @@ void InvitationTest::SendInvitationToClient(
 
 class TestClientBase : public InvitationTest {
  public:
+  TestClientBase(const TestClientBase&) = delete;
+  TestClientBase& operator=(const TestClientBase&) = delete;
+
   static MojoHandle AcceptInvitation(MojoAcceptInvitationFlags flags,
                                      base::StringPiece switch_name = {}) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -437,9 +444,6 @@ class TestClientBase : public InvitationTest {
              MojoAcceptInvitation(&transport_endpoint, &options, &invitation));
     return invitation;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestClientBase);
 };
 
 #define DEFINE_TEST_CLIENT(name)             \
@@ -585,6 +589,10 @@ class RemoteProcessState {
  public:
   RemoteProcessState()
       : callback_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  RemoteProcessState(const RemoteProcessState&) = delete;
+  RemoteProcessState& operator=(const RemoteProcessState&) = delete;
+
   ~RemoteProcessState() = default;
 
   bool disconnected() {
@@ -618,8 +626,6 @@ class RemoteProcessState {
   bool disconnected_ = false;
   std::string expected_error_message_;
   base::RepeatingClosure error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteProcessState);
 };
 
 void TestProcessErrorHandler(uintptr_t context,

@@ -30,12 +30,14 @@
 
 #include "third_party/blink/public/web/web_form_control_element.h"
 
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 
@@ -81,7 +83,18 @@ bool WebFormControlElement::UserHasEditedTheField() const {
     return input->UserHasEditedTheField();
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*private_))
     return select_element->UserHasEditedTheField();
+  if (auto* select_menu_element = DynamicTo<HTMLSelectMenuElement>(*private_))
+    return select_menu_element->UserHasEditedTheField();
   return true;
+}
+
+void WebFormControlElement::SetUserHasEditedTheField(bool value) {
+  if (auto* input = DynamicTo<HTMLInputElement>(*private_))
+    input->SetUserHasEditedTheField(value);
+  if (auto* select_element = DynamicTo<HTMLSelectElement>(*private_))
+    select_element->SetUserHasEditedTheField(value);
+  if (auto* select_menu_element = DynamicTo<HTMLSelectMenuElement>(*private_))
+    select_menu_element->SetUserHasEditedTheField(value);
 }
 
 void WebFormControlElement::SetUserHasEditedTheFieldForTest() {
@@ -93,12 +106,33 @@ void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   Unwrap<HTMLFormControlElement>()->SetAutofillState(autofill_state);
 }
 
+void WebFormControlElement::SetPreventHighlightingOfAutofilledFields(
+    bool prevent_highlighting) {
+  Unwrap<HTMLFormControlElement>()->SetPreventHighlightingOfAutofilledFields(
+      prevent_highlighting);
+}
+
+bool WebFormControlElement::PreventHighlightingOfAutofilledFields() const {
+  return ConstUnwrap<HTMLFormControlElement>()
+      ->PreventHighlightingOfAutofilledFields();
+}
+
 WebString WebFormControlElement::AutofillSection() const {
   return ConstUnwrap<HTMLFormControlElement>()->AutofillSection();
 }
 
 void WebFormControlElement::SetAutofillSection(const WebString& section) {
   Unwrap<HTMLFormControlElement>()->SetAutofillSection(section);
+}
+
+FormElementPiiType WebFormControlElement::GetFormElementPiiType() const {
+  return ConstUnwrap<HTMLFormControlElement>()->GetFormElementPiiType();
+}
+
+void WebFormControlElement::SetFormElementPiiType(
+    FormElementPiiType form_element_pii_type) {
+  Unwrap<HTMLFormControlElement>()->SetFormElementPiiType(
+      form_element_pii_type);
 }
 
 WebString WebFormControlElement::NameForAutofill() const {
@@ -131,32 +165,34 @@ void WebFormControlElement::SetValue(const WebString& value, bool send_events) {
   }
 }
 
+void WebFormControlElement::DispatchFocusEvent() {
+  Unwrap<Element>()->DispatchFocusEvent(
+      nullptr, mojom::blink::FocusType::kForward, nullptr);
+}
+
+void WebFormControlElement::DispatchBlurEvent() {
+  Unwrap<Element>()->DispatchBlurEvent(
+      nullptr, mojom::blink::FocusType::kForward, nullptr);
+}
+
 void WebFormControlElement::SetAutofillValue(const WebString& value) {
   // The input and change events will be sent in setValue.
   if (IsA<HTMLInputElement>(*private_) || IsA<HTMLTextAreaElement>(*private_)) {
-    if (!Focused()) {
-      Unwrap<Element>()->DispatchFocusEvent(nullptr, kWebFocusTypeForward,
-                                            nullptr);
-    }
+    if (!Focused())
+      DispatchFocusEvent();
     Unwrap<Element>()->DispatchScopedEvent(
         *Event::CreateBubble(event_type_names::kKeydown));
     Unwrap<TextControlElement>()->SetAutofillValue(value);
     Unwrap<Element>()->DispatchScopedEvent(
         *Event::CreateBubble(event_type_names::kKeyup));
-    if (!Focused()) {
-      Unwrap<Element>()->DispatchBlurEvent(nullptr, kWebFocusTypeForward,
-                                           nullptr);
-    }
+    if (!Focused())
+      DispatchBlurEvent();
   } else if (auto* select = DynamicTo<HTMLSelectElement>(*private_)) {
-    if (!Focused()) {
-      Unwrap<Element>()->DispatchFocusEvent(nullptr, kWebFocusTypeForward,
-                                            nullptr);
-    }
+    if (!Focused())
+      DispatchFocusEvent();
     select->setValue(value, true);
-    if (!Focused()) {
-      Unwrap<Element>()->DispatchBlurEvent(nullptr, kWebFocusTypeForward,
-                                           nullptr);
-    }
+    if (!Focused())
+      DispatchBlurEvent();
   }
 }
 
@@ -175,8 +211,9 @@ void WebFormControlElement::SetSuggestedValue(const WebString& value) {
     input->SetSuggestedValue(value);
   } else if (auto* textarea = DynamicTo<HTMLTextAreaElement>(*private_)) {
     textarea->SetSuggestedValue(value);
-  } else if (auto* select = DynamicTo<HTMLSelectElement>(*private_))
+  } else if (auto* select = DynamicTo<HTMLSelectElement>(*private_)) {
     select->SetSuggestedValue(value);
+  }
 }
 
 WebString WebFormControlElement::SuggestedValue() const {
@@ -244,7 +281,7 @@ WebFormElement WebFormControlElement::Form() const {
   return WebFormElement(ConstUnwrap<HTMLFormControlElement>()->Form());
 }
 
-unsigned WebFormControlElement::UniqueRendererFormControlId() const {
+uint64_t WebFormControlElement::UniqueRendererFormControlId() const {
   return ConstUnwrap<HTMLFormControlElement>()->UniqueRendererFormControlId();
 }
 

@@ -14,12 +14,13 @@ proto_library("proto") {
     "cryptauth_devicesync.proto",
     "cryptauth_directive.proto",
     "cryptauth_enrollment.proto",
-    "securemessage.proto",
   ]
 }
 
 static_library("util") {
   sources = [
+    "cryptauth_logging.cc",
+    "cryptauth_logging.h",
     "cryptauth_proto_to_query_parameters_util.cc",
     "cryptauth_proto_to_query_parameters_util.h",
     "device_classifier_util.cc",
@@ -30,10 +31,12 @@ static_library("util") {
 
   public_deps = [
     ":proto",
+    "//third_party/ukey2:proto",
   ]
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/version_info",
   ]
 }
@@ -46,9 +49,7 @@ static_library("test_support") {
     "cryptauth_v2_test_util.h",
   ]
 
-  public_deps = [
-    ":proto",
-  ]
+  public_deps = [ ":proto" ]
 
   deps = [
     "//base",

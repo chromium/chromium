@@ -10,9 +10,7 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "components/proxy_config/proxy_prefs.h"
 
@@ -29,6 +27,10 @@ class EventRouterForwarder;
 class ProxyPrefTransformer : public PrefTransformerInterface {
  public:
   ProxyPrefTransformer();
+
+  ProxyPrefTransformer(const ProxyPrefTransformer&) = delete;
+  ProxyPrefTransformer& operator=(const ProxyPrefTransformer&) = delete;
+
   ~ProxyPrefTransformer() override;
 
   // Implementation of PrefTransformerInterface.
@@ -37,10 +39,8 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
       std::string* error,
       bool* bad_message) override;
   std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyPrefTransformer);
+      const base::Value* browser_pref,
+      bool is_incognito_profile) override;
 };
 
 // This class observes proxy error events and routes them to the appropriate
@@ -48,6 +48,9 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
 // thread unless otherwise specified.
 class ProxyEventRouter {
  public:
+  ProxyEventRouter(const ProxyEventRouter&) = delete;
+  ProxyEventRouter& operator=(const ProxyEventRouter&) = delete;
+
   static ProxyEventRouter* GetInstance();
 
   void OnProxyError(EventRouterForwarder* event_router,
@@ -57,15 +60,13 @@ class ProxyEventRouter {
   void OnPACScriptError(EventRouterForwarder* event_router,
                         void* profile,
                         int line_number,
-                        const base::string16& error);
+                        const std::u16string& error);
 
  private:
   friend struct base::DefaultSingletonTraits<ProxyEventRouter>;
 
   ProxyEventRouter();
   ~ProxyEventRouter();
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyEventRouter);
 };
 
 }  // namespace extensions

@@ -7,18 +7,18 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#include "ios/chrome/browser/download/pass_kit_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
-#include "ios/chrome/browser/download/usdz_mime_type.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -28,8 +28,9 @@
 #endif
 
 namespace {
-char kUrl[] = "https://test.test/";
-char kUsdzFileName[] = "important_file.usdz";
+const char kUrl[] = "https://test.test/";
+const char16_t kUsdzFileName[] = u"important_file.usdz";
+const char16_t kRealityFileName[] = u"important_file.reality";
 
 // Substitutes real TabHelper for testing.
 template <class TabHelper>
@@ -39,6 +40,9 @@ class StubTabHelper : public TabHelper {
     web_state->SetUserData(TabHelper::UserDataKey(),
                            base::WrapUnique(new StubTabHelper(web_state)));
   }
+
+  StubTabHelper(const StubTabHelper&) = delete;
+  StubTabHelper& operator=(const StubTabHelper&) = delete;
 
   // Adds the given task to tasks() lists.
   void Download(std::unique_ptr<web::DownloadTask> task) override {
@@ -54,8 +58,6 @@ class StubTabHelper : public TabHelper {
       : TabHelper(web_state, /*delegate=*/nil) {}
 
   DownloadTasks tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubTabHelper);
 };
 
 // Substitutes ARQuickLookTabHelper for testing.
@@ -66,6 +68,9 @@ class TestARQuickLookTabHelper : public ARQuickLookTabHelper {
         ARQuickLookTabHelper::UserDataKey(),
         base::WrapUnique(new TestARQuickLookTabHelper(web_state)));
   }
+
+  TestARQuickLookTabHelper(const TestARQuickLookTabHelper&) = delete;
+  TestARQuickLookTabHelper& operator=(const TestARQuickLookTabHelper&) = delete;
 
   // Adds the given task to tasks() lists.
   void Download(std::unique_ptr<web::DownloadTask> task) override {
@@ -81,8 +86,6 @@ class TestARQuickLookTabHelper : public ARQuickLookTabHelper {
       : ARQuickLookTabHelper(web_state) {}
 
   DownloadTasks tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestARQuickLookTabHelper);
 };
 
 }  // namespace
@@ -136,7 +139,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
   TestChromeBrowserState::Builder browser_state_builder_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<BrowserDownloadService> service_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -163,7 +166,7 @@ TEST_F(BrowserDownloadServiceTest, PkPassMimeType) {
 TEST_F(BrowserDownloadServiceTest, UsdzExtension) {
   ASSERT_TRUE(download_controller()->GetDelegate());
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
-  task->SetSuggestedFilename(base::UTF8ToUTF16(kUsdzFileName));
+  task->SetSuggestedFilename(kUsdzFileName);
   web::DownloadTask* task_ptr = task.get();
   download_controller()->GetDelegate()->OnDownloadCreated(
       download_controller(), &web_state_, std::move(task));
@@ -176,6 +179,23 @@ TEST_F(BrowserDownloadServiceTest, UsdzExtension) {
       1);
 }
 
+// Tests that BrowserDownloadService uses ARQuickLookTabHelper for .REALITY
+// extension.
+TEST_F(BrowserDownloadServiceTest, RealityExtension) {
+  ASSERT_TRUE(download_controller()->GetDelegate());
+  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
+  task->SetSuggestedFilename(kRealityFileName);
+  web::DownloadTask* task_ptr = task.get();
+  download_controller()->GetDelegate()->OnDownloadCreated(
+      download_controller(), &web_state_, std::move(task));
+  ASSERT_EQ(1U, ar_quick_look_tab_helper()->tasks().size());
+  EXPECT_EQ(task_ptr, ar_quick_look_tab_helper()->tasks()[0].get());
+  ASSERT_TRUE(download_manager_tab_helper()->tasks().empty());
+  histogram_tester_.ExpectUniqueSample(
+      "Download.IOSDownloadMimeType",
+      static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::Other),
+      1);
+}
 // Tests that BrowserDownloadService uses ARQuickLookTabHelper for USDZ Mime
 // type.
 TEST_F(BrowserDownloadServiceTest, UsdzMimeType) {
@@ -248,25 +268,6 @@ TEST_F(BrowserDownloadServiceTest, PdfMimeType) {
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadMimeType",
       static_cast<base::HistogramBase::Sample>(DownloadMimeTypeResult::Other),
-      1);
-}
-
-// Tests that BrowserDownloadService uses DownloadManagerTabHelper for Mobile
-// Config Mime Type.
-TEST_F(BrowserDownloadServiceTest, iOSMobileConfigMimeType) {
-  ASSERT_TRUE(download_controller()->GetDelegate());
-  auto task = std::make_unique<web::FakeDownloadTask>(
-      GURL(kUrl), "application/x-apple-aspen-config");
-  web::DownloadTask* task_ptr = task.get();
-  download_controller()->GetDelegate()->OnDownloadCreated(
-      download_controller(), &web_state_, std::move(task));
-  ASSERT_TRUE(pass_kit_tab_helper()->tasks().empty());
-  ASSERT_EQ(1U, download_manager_tab_helper()->tasks().size());
-  EXPECT_EQ(task_ptr, download_manager_tab_helper()->tasks()[0].get());
-  histogram_tester_.ExpectUniqueSample(
-      "Download.IOSDownloadMimeType",
-      static_cast<base::HistogramBase::Sample>(
-          DownloadMimeTypeResult::iOSMobileConfig),
       1);
 }
 

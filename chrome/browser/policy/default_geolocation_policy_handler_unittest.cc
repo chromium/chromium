@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "components/arc/arc_prefs.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -33,7 +32,7 @@ TEST_F(DefaultGeolocationPolicyHandlerTest, AllowGeolocation) {
   PolicyMap policy;
   policy.Set(key::kDefaultGeolocationSetting, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(CONTENT_SETTING_ALLOW)), nullptr);
+             base::Value(CONTENT_SETTING_ALLOW), nullptr);
   UpdateProviderPolicy(policy);
   EXPECT_FALSE(
       store_->GetValue(arc::prefs::kArcLocationServiceEnabled, nullptr));
@@ -47,7 +46,7 @@ TEST_F(DefaultGeolocationPolicyHandlerTest, BlockGeolocation) {
   PolicyMap policy;
   policy.Set(key::kDefaultGeolocationSetting, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(CONTENT_SETTING_BLOCK)), nullptr);
+             base::Value(CONTENT_SETTING_BLOCK), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(arc::prefs::kArcLocationServiceEnabled, &value));
@@ -62,7 +61,7 @@ TEST_F(DefaultGeolocationPolicyHandlerTest, AskGeolocation) {
   PolicyMap policy;
   policy.Set(key::kDefaultGeolocationSetting, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(CONTENT_SETTING_ASK)), nullptr);
+             base::Value(CONTENT_SETTING_ASK), nullptr);
   UpdateProviderPolicy(policy);
   EXPECT_FALSE(
       store_->GetValue(arc::prefs::kArcLocationServiceEnabled, nullptr));

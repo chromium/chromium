@@ -8,7 +8,5 @@ source_set("public") {
     "cros_features.h",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }

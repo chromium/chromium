@@ -6,25 +6,31 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
-import android.support.test.filters.SmallTest;
+import android.util.Pair;
 
+import androidx.test.filters.SmallTest;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
-import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.net.test.util.TestWebServer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,65 +38,54 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsClientOnRenderProcessGoneTest {
+    private static final String TAG = "AwRendererGone";
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private static final String TAG = "AwRendererGone";
-    private static class GetRenderProcessGoneHelper extends CallbackHelper {
-        private AwRenderProcessGoneDetail mDetail;
+    private TestWebServer mWebServer;
+    private TestAwContentsClient mContentsClient;
+    private AwTestContainerView mTestView;
+    private AwContents mAwContents;
 
-        public AwRenderProcessGoneDetail getAwRenderProcessGoneDetail() {
-            assert getCallCount() > 0;
-            return mDetail;
-        }
-
-        public void notifyCalled(AwRenderProcessGoneDetail detail) {
-            mDetail = detail;
-            notifyCalled();
-        }
+    @Before
+    public void setUp() throws Exception {
+        mWebServer = TestWebServer.start();
+        mContentsClient = new TestAwContentsClient();
+        mTestView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        mAwContents = mTestView.getAwContents();
     }
 
-    private static class RenderProcessGoneTestAwContentsClient extends TestAwContentsClient {
+    @After
+    public void tearDown() {
+        mWebServer.shutdown();
+    }
 
-        private GetRenderProcessGoneHelper mGetRenderProcessGoneHelper;
-
-        public RenderProcessGoneTestAwContentsClient() {
-            mGetRenderProcessGoneHelper = new GetRenderProcessGoneHelper();
-        }
-
-        public GetRenderProcessGoneHelper getGetRenderProcessGoneHelper() {
-            return mGetRenderProcessGoneHelper;
-        }
-
-        @Override
-        public boolean onRenderProcessGone(AwRenderProcessGoneDetail detail) {
-            mGetRenderProcessGoneHelper.notifyCalled(detail);
-            return true;
-        }
+    private String addPageToTestServer(String httpPath, String html) {
+        List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+        headers.add(Pair.create("Content-Type", "text/html"));
+        headers.add(Pair.create("Cache-Control", "no-store"));
+        return mWebServer.setResponse(httpPath, html, headers);
     }
 
     interface Terminator {
-        void terminate(AwContents awContents);
+        void terminate();
     }
 
     private AwRenderProcess createAndTerminateRenderProcess(
             Terminator terminator, boolean expectCrash) throws Throwable {
-        RenderProcessGoneTestAwContentsClient contentsClient =
-                new RenderProcessGoneTestAwContentsClient();
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
-        final AwContents awContents = testView.getAwContents();
-        GetRenderProcessGoneHelper helper = contentsClient.getGetRenderProcessGoneHelper();
+        TestAwContentsClient.RenderProcessGoneHelper helper =
+                mContentsClient.getRenderProcessGoneHelper();
+        helper.setResponse(true); // Don't automatically kill the browser process.
 
         final AwRenderProcess renderProcess =
-                TestThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
 
         // Ensure that the renderer has started.
-        mActivityTestRule.loadUrlSync(awContents, contentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Terminate the renderer.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> terminator.terminate(awContents));
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> terminator.terminate());
 
         // Assert that onRenderProcessGone is called once.
         int callCount = helper.getCallCount();
@@ -105,13 +100,11 @@ public class AwContentsClientOnRenderProcessGoneTest {
     }
 
     @Test
-    @DisabledTest // http://crbug.com/689292
     @Feature({"AndroidWebView"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testOnRenderProcessCrash() throws Throwable {
-        createAndTerminateRenderProcess(
-                (AwContents awContents) -> { awContents.loadUrl("chrome://crash"); }, true);
+        createAndTerminateRenderProcess(() -> { mAwContents.loadUrl("chrome://crash"); }, true);
     }
 
     @Test
@@ -119,8 +112,7 @@ public class AwContentsClientOnRenderProcessGoneTest {
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testOnRenderProcessKill() throws Throwable {
-        createAndTerminateRenderProcess(
-                (AwContents awContents) -> { awContents.loadUrl("chrome://kill"); }, false);
+        createAndTerminateRenderProcess(() -> { mAwContents.loadUrl("chrome://kill"); }, false);
     }
 
     @Test
@@ -129,7 +121,7 @@ public class AwContentsClientOnRenderProcessGoneTest {
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessTermination() throws Throwable {
         createAndTerminateRenderProcess(
-                (AwContents awContents) -> { awContents.getRenderProcess().terminate(); }, false);
+                () -> { mAwContents.getRenderProcess().terminate(); }, false);
     }
 
     @Test
@@ -138,9 +130,9 @@ public class AwContentsClientOnRenderProcessGoneTest {
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessDifferentAfterRestart() throws Throwable {
         AwRenderProcess renderProcess1 = createAndTerminateRenderProcess(
-                (AwContents awContents) -> { awContents.getRenderProcess().terminate(); }, false);
+                () -> { mAwContents.getRenderProcess().terminate(); }, false);
         AwRenderProcess renderProcess2 = createAndTerminateRenderProcess(
-                (AwContents awContents) -> { awContents.getRenderProcess().terminate(); }, false);
+                () -> { mAwContents.getRenderProcess().terminate(); }, false);
         Assert.assertNotEquals(renderProcess1, renderProcess2);
     }
 
@@ -149,14 +141,8 @@ public class AwContentsClientOnRenderProcessGoneTest {
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessCanNotTerminateBeforeStart() throws Throwable {
-        RenderProcessGoneTestAwContentsClient contentsClient =
-                new RenderProcessGoneTestAwContentsClient();
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
-        final AwContents awContents = testView.getAwContents();
-
         Assert.assertFalse(TestThreadUtils.runOnUiThreadBlocking(
-                () -> awContents.getRenderProcess().terminate()));
+                () -> mAwContents.getRenderProcess().terminate()));
     }
 
     @Test
@@ -164,22 +150,52 @@ public class AwContentsClientOnRenderProcessGoneTest {
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
     public void testRenderProcessSameBeforeAndAfterStart() throws Throwable {
-        RenderProcessGoneTestAwContentsClient contentsClient =
-                new RenderProcessGoneTestAwContentsClient();
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
-        final AwContents awContents = testView.getAwContents();
-
         AwRenderProcess renderProcessBeforeStart =
-                TestThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
 
         // Ensure that the renderer has started.
-        mActivityTestRule.loadUrlSync(awContents, contentsClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         AwRenderProcess renderProcessAfterStart =
-                TestThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
 
         Assert.assertEquals(renderProcessBeforeStart, renderProcessAfterStart);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @OnlyRunIn(MULTI_PROCESS)
+    // The RenderDocument feature has a "level" parameter. This enables the feature and sets the
+    // default level to "crashed-frame" to enable replacing the render frame host of crashed frames
+    // with a new render frame host (instead of resuing the old one). See
+    // https://go/force-field-trials-docs for the syntax of these flags.
+    @CommandLineFlags.Add({
+            "enable-features=RenderDocument<RenderDocument",
+            "force-fieldtrials=RenderDocument/Group1",
+            "force-fieldtrial-params=RenderDocument.Group1:level/crashed-frame",
+    })
+    public void
+    testNavigationAfterCrashAndJavaScript() throws Throwable {
+        // In https://crbug.com/1006814, a crashed frame, reinitialized by running JS fails to
+        // navigate.
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
+        // Crash the frame.
+        AwRenderProcess renderProcess1 = createAndTerminateRenderProcess(
+                () -> { mAwContents.getRenderProcess().terminate(); }, false);
+        // Run JS in the frame.
+        Assert.assertEquals("3",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "1+2"));
+        // Navigate to somewhere else. This should not crash the frame.
+        final String content = "some content";
+        final String httpPathOnServer = addPageToTestServer("/page.html", content);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), httpPathOnServer);
+        // Result is a string, so needs "".
+        Assert.assertEquals("\"" + content + "\"",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "document.body.textContent"));
     }
 }

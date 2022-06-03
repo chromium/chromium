@@ -19,7 +19,7 @@
 
 // static
 ExternalFileRemover* ExternalFileRemoverFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<ExternalFileRemover*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -42,8 +42,8 @@ ExternalFileRemoverFactory::~ExternalFileRemoverFactory() {}
 std::unique_ptr<KeyedService>
 ExternalFileRemoverFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<ExternalFileRemoverImpl>(
       browser_state,
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));

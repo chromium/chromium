@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
+#include "components/variations/proto/study.pb.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 
 namespace network {
@@ -29,11 +29,8 @@ class VariationsServiceClient {
  public:
   virtual ~VariationsServiceClient() {}
 
-  // Returns a callback that when run returns the base::Version to use for
-  // variations seed simulation. VariationsService guarantees that the callback
-  // will be run on a background thread that permits blocking.
-  using VersionCallback = base::OnceCallback<base::Version(void)>;
-  virtual VersionCallback GetVersionForSimulationCallback() = 0;
+  // Returns the version to use for variations seed simulation.
+  virtual base::Version GetVersionForSimulation() = 0;
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
@@ -49,6 +46,9 @@ class VariationsServiceClient {
   // If that switch is not set, it will return the embedder-provided channel,
   // (which could be UNKNOWN).
   version_info::Channel GetChannelForVariations();
+
+  // Returns the current form factor of the device.
+  virtual Study::FormFactor GetCurrentFormFactor();
 
   // Returns whether the client is enterprise.
   // TODO(manukh): crbug.com/1003025. This is inconsistent with UMA which

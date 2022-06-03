@@ -37,26 +37,27 @@
 namespace blink {
 
 struct WebServiceWorkerError {
+  enum class Mode { kNone, kShownInConsole };
+
   WebServiceWorkerError(mojom::ServiceWorkerErrorType error_type,
                         const WebString& message)
-      : WebServiceWorkerError(error_type, message, WebString()) {}
+      : WebServiceWorkerError(error_type,
+                              message,
+                              WebServiceWorkerError::Mode::kNone) {}
 
   WebServiceWorkerError(mojom::ServiceWorkerErrorType error_type,
                         const WebString& message,
-                        const WebString& unsanitized_message)
-      : error_type(error_type),
-        message(message),
-        unsanitized_message(unsanitized_message) {}
+                        WebServiceWorkerError::Mode mode)
+      : error_type(error_type), message(message), mode(mode) {}
 
   mojom::ServiceWorkerErrorType error_type;
-  // |message| can be used to populate an error that's exposed to JavaScript.
+  // `message` can be used to populate an error that's exposed to JavaScript.
   // For service worker APIs, typically a promise will reject with this error.
   WebString message;
-  // |unsanitized_message| can be used to add a more detailed error to
-  // console or other logging that shouldn't be exposed to JavaScript.
-  WebString unsanitized_message;
+  // Show `message` to the console directly if the `mode` is kShownInConsole.
+  WebServiceWorkerError::Mode mode;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_ERROR_H_

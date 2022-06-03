@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/wifi_hotspot_connector.h"
 
 namespace chromeos {
@@ -18,6 +17,10 @@ namespace tether {
 class FakeWifiHotspotConnector : public WifiHotspotConnector {
  public:
   FakeWifiHotspotConnector(NetworkStateHandler* network_state_handler);
+
+  FakeWifiHotspotConnector(const FakeWifiHotspotConnector&) = delete;
+  FakeWifiHotspotConnector& operator=(const FakeWifiHotspotConnector&) = delete;
+
   ~FakeWifiHotspotConnector() override;
 
   // Pass an empty string for |wifi_guid| to signify a failed connection.
@@ -36,15 +39,13 @@ class FakeWifiHotspotConnector : public WifiHotspotConnector {
       const std::string& ssid,
       const std::string& password,
       const std::string& tether_network_guid,
-      const WifiHotspotConnector::WifiConnectionCallback& callback) override;
+      WifiHotspotConnector::WifiConnectionCallback callback) override;
 
  private:
   std::string most_recent_ssid_;
   std::string most_recent_password_;
   std::string most_recent_tether_network_guid_;
   WifiHotspotConnector::WifiConnectionCallback most_recent_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWifiHotspotConnector);
 };
 
 }  // namespace tether

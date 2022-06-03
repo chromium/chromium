@@ -70,7 +70,7 @@ constexpr bool kDefaultScroll = false;
 constexpr float kLineHeight = 5.33;
 
 // Default scrolling animation time period (s).
-constexpr base::TimeDelta kScrollTime = base::TimeDelta::FromMilliseconds(433);
+constexpr base::TimeDelta kScrollTime = base::Milliseconds(433);
 
 bool IsNonPercentage(double value,
                      const char* method,
@@ -419,9 +419,10 @@ void VTTRegion::ScrollTimerFired(TimerBase*) {
   DisplayLastVTTCueBox();
 }
 
-void VTTRegion::Trace(Visitor* visitor) {
+void VTTRegion::Trace(Visitor* visitor) const {
   visitor->Trace(cue_container_);
   visitor->Trace(region_display_tree_);
+  visitor->Trace(scroll_timer_);
   ScriptWrappable::Trace(visitor);
 }
 

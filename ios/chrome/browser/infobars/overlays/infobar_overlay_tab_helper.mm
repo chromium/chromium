@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
@@ -21,22 +23,8 @@ using infobars::InfoBarManager;
 
 WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayTabHelper)
 
-// static
-void InfobarOverlayTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    std::unique_ptr<InfobarOverlayRequestFactory> request_factory) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new InfobarOverlayTabHelper(
-                               web_state, std::move(request_factory))));
-  }
-}
-
-InfobarOverlayTabHelper::InfobarOverlayTabHelper(
-    web::WebState* web_state,
-    std::unique_ptr<InfobarOverlayRequestFactory> request_factory)
-    : request_inserter_(web_state, std::move(request_factory)),
+InfobarOverlayTabHelper::InfobarOverlayTabHelper(web::WebState* web_state)
+    : request_inserter_(InfobarOverlayRequestInserter::FromWebState(web_state)),
       request_scheduler_(web_state, this) {}
 
 InfobarOverlayTabHelper::~InfobarOverlayTabHelper() = default;
@@ -46,11 +34,11 @@ InfobarOverlayTabHelper::~InfobarOverlayTabHelper() = default;
 InfobarOverlayTabHelper::OverlayRequestScheduler::OverlayRequestScheduler(
     web::WebState* web_state,
     InfobarOverlayTabHelper* tab_helper)
-    : tab_helper_(tab_helper), scoped_observer_(this) {
+    : tab_helper_(tab_helper), web_state_(web_state) {
   DCHECK(tab_helper_);
   InfoBarManager* manager = InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(manager);
-  scoped_observer_.Add(manager);
+  scoped_observation_.Observe(manager);
 }
 
 InfobarOverlayTabHelper::OverlayRequestScheduler::~OverlayRequestScheduler() =
@@ -58,11 +46,27 @@ InfobarOverlayTabHelper::OverlayRequestScheduler::~OverlayRequestScheduler() =
 
 void InfobarOverlayTabHelper::OverlayRequestScheduler::OnInfoBarAdded(
     InfoBar* infobar) {
-  tab_helper_->request_inserter()->AddOverlayRequest(
-      infobar, InfobarOverlayType::kBanner);
+  InfoBarIOS* ios_infobar = static_cast<InfoBarIOS*>(infobar);
+  // Skip showing banner if it was requested. Badge and modals will keep
+  // showing.
+  if (ios_infobar->skip_banner())
+    return;
+  InsertParams params(ios_infobar);
+  params.overlay_type = InfobarOverlayType::kBanner;
+  // If the Infobar high priority, then insert it into the front of the banner
+  // queue.
+  params.insertion_index =
+      ios_infobar->high_priority()
+          ? 0
+          : OverlayRequestQueue::FromWebState(web_state_,
+                                              OverlayModality::kInfobarBanner)
+                ->size();
+  params.source = InfobarOverlayInsertionSource::kInfoBarManager;
+  tab_helper_->request_inserter()->InsertOverlayRequest(params);
 }
 
 void InfobarOverlayTabHelper::OverlayRequestScheduler::OnManagerShuttingDown(
     InfoBarManager* manager) {
-  scoped_observer_.Remove(manager);
+  DCHECK(scoped_observation_.IsObservingSource(manager));
+  scoped_observation_.Reset();
 }

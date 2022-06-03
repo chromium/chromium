@@ -5,12 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_DEVICE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_DEVICE_OBSERVER_H_
 
-#include <list>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -23,15 +17,19 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
+class LocalFrame;
 class UserMediaProcessor;
-class WebLocalFrame;
 
 // This class implements a Mojo object that receives device stopped
 // notifications and forwards them to UserMediaProcessor.
 class MODULES_EXPORT MediaStreamDeviceObserver
     : public mojom::blink::MediaStreamDeviceObserver {
  public:
-  explicit MediaStreamDeviceObserver(WebLocalFrame* frame);
+  explicit MediaStreamDeviceObserver(LocalFrame* frame);
+
+  MediaStreamDeviceObserver(const MediaStreamDeviceObserver&) = delete;
+  MediaStreamDeviceObserver& operator=(const MediaStreamDeviceObserver&) =
+      delete;
 
   ~MediaStreamDeviceObserver() override;
 
@@ -45,7 +43,11 @@ class MODULES_EXPORT MediaStreamDeviceObserver
       const blink::MediaStreamDevices& audio_devices,
       const blink::MediaStreamDevices& video_devices,
       WebMediaStreamDeviceObserver::OnDeviceStoppedCb on_device_stopped_cb,
-      WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb);
+      WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb,
+      WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
+          on_device_request_state_change_cb,
+      WebMediaStreamDeviceObserver::OnDeviceCaptureHandleChangeCb
+          on_device_capture_handle_change_cb);
   void AddStream(const String& label, const blink::MediaStreamDevice& device);
   bool RemoveStream(const String& label);
   void RemoveStreamDevice(const blink::MediaStreamDevice& device);
@@ -64,10 +66,23 @@ class MODULES_EXPORT MediaStreamDeviceObserver
                            GetNonScreenCaptureDevices);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamDeviceObserverTest, OnDeviceStopped);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamDeviceObserverTest, OnDeviceChanged);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamDeviceObserverTest,
+                           OnDeviceChangedChangesDeviceAfterRebind);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamDeviceObserverTest,
+                           OnDeviceRequestStateChange);
 
   // Private class for keeping track of opened devices and who have
   // opened it.
-  struct Stream;
+  struct Stream {
+    WebMediaStreamDeviceObserver::OnDeviceStoppedCb on_device_stopped_cb;
+    WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb;
+    WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
+        on_device_request_state_change_cb;
+    WebMediaStreamDeviceObserver::OnDeviceCaptureHandleChangeCb
+        on_device_capture_handle_change_cb;
+    MediaStreamDevices audio_devices;
+    MediaStreamDevices video_devices;
+  };
 
   // mojom::MediaStreamDeviceObserver implementation.
   void OnDeviceStopped(const String& label,
@@ -75,6 +90,12 @@ class MODULES_EXPORT MediaStreamDeviceObserver
   void OnDeviceChanged(const String& label,
                        const MediaStreamDevice& old_device,
                        const MediaStreamDevice& new_device) override;
+  void OnDeviceRequestStateChange(
+      const String& label,
+      const MediaStreamDevice& device,
+      const mojom::blink::MediaStreamStateChange new_state) override;
+  void OnDeviceCaptureHandleChange(const String& label,
+                                   const MediaStreamDevice& device) override;
 
   void BindMediaStreamDeviceObserverReceiver(
       mojo::PendingReceiver<mojom::blink::MediaStreamDeviceObserver> receiver);
@@ -86,8 +107,6 @@ class MODULES_EXPORT MediaStreamDeviceObserver
 
   using LabelStreamMap = HashMap<String, Stream>;
   LabelStreamMap label_stream_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDeviceObserver);
 };
 
 }  // namespace blink

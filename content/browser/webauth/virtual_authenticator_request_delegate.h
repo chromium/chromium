@@ -10,29 +10,26 @@
 
 namespace content {
 
-class FrameTreeNode;
-
 // An implementation of AuthenticatorRequestClientDelegate that allows
 // automating webauthn requests through a virtual environment.
 class VirtualAuthenticatorRequestDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
   // The |frame_tree_node| must outlive this instance.
-  explicit VirtualAuthenticatorRequestDelegate(FrameTreeNode* frame_tree_node);
+  VirtualAuthenticatorRequestDelegate();
+
+  VirtualAuthenticatorRequestDelegate(
+      const VirtualAuthenticatorRequestDelegate&) = delete;
+  VirtualAuthenticatorRequestDelegate& operator=(
+      const VirtualAuthenticatorRequestDelegate&) = delete;
+
   ~VirtualAuthenticatorRequestDelegate() override;
 
   // AuthenticatorRequestClientDelegate:
-  bool SupportsResidentKeys() override;
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-  bool IsUserVerifyingPlatformAuthenticatorAvailable() override;
-
- private:
-  FrameTreeNode* const frame_tree_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualAuthenticatorRequestDelegate);
 };
 
 }  // namespace content

@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_H_
 
-#include <memory>
-#include <string>
-
+#include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -37,7 +36,9 @@ class DeviceInfoSyncService : public KeyedService {
   // Interface to refresh local copy of device info in memory, and informs sync
   // of the change. Used when the caller knows a property of local device info
   // has changed (e.g. SharingInfo), and must be sync-ed to other devices as
-  // soon as possible, without waiting for the periodic commits.
+  // soon as possible, without waiting for the periodic commits. The device info
+  // will be compared to the local copy. If the device info has been actually
+  // changed, then it will be committed. Otherwise nothing happens.
   virtual void RefreshLocalDeviceInfo() = 0;
 };
 

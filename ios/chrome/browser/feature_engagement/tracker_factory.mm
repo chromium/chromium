@@ -25,7 +25,7 @@ TrackerFactory* TrackerFactory::GetInstance() {
 
 // static
 feature_engagement::Tracker* TrackerFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<feature_engagement::Tracker*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

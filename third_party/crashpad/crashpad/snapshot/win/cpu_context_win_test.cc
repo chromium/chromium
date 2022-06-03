@@ -16,7 +16,7 @@
 
 #include <windows.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_context.h"

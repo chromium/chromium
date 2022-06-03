@@ -6,7 +6,7 @@ package org.chromium.chrome.features.start_surface;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.BOTTOM_BAR_HEIGHT;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_BAR_HEIGHT;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.animation.ObjectAnimator;
 import android.view.View;
@@ -26,29 +26,36 @@ class TasksSurfaceViewBinder {
     public static class ViewHolder {
         public final ViewGroup parentView;
         public final View tasksSurfaceView;
+        public final View topToolbarPlaceholderView;
 
-        ViewHolder(ViewGroup parentView, View tasksSurfaceView) {
+        ViewHolder(ViewGroup parentView, View tasksSurfaceView, View topToolbarPlaceholderView) {
             this.parentView = parentView;
             this.tasksSurfaceView = tasksSurfaceView;
+            this.topToolbarPlaceholderView = topToolbarPlaceholderView;
         }
     }
 
     public static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
         if (IS_SHOWING_OVERVIEW == propertyKey) {
-            updateLayoutAndVisibility(viewHolder, model, model.get(IS_SHOWING_OVERVIEW));
+            updateLayoutAndVisibility(viewHolder, model);
         } else if (BOTTOM_BAR_HEIGHT == propertyKey) {
             setBottomBarHeight(viewHolder, model.get(BOTTOM_BAR_HEIGHT));
+        } else if (TOP_MARGIN == propertyKey) {
+            setTopBarHeight(viewHolder, model.get(TOP_MARGIN));
         }
     }
 
-    private static void updateLayoutAndVisibility(
-            ViewHolder viewHolder, PropertyModel model, boolean isShowing) {
+    private static void updateLayoutAndVisibility(ViewHolder viewHolder, PropertyModel model) {
+        boolean isShowing = model.get(IS_SHOWING_OVERVIEW);
         if (isShowing && viewHolder.tasksSurfaceView.getParent() == null) {
-            viewHolder.parentView.addView(viewHolder.tasksSurfaceView);
+            // Insert right above compositor view if present.
+            // TODO(crbug.com/1216949): Look into enforcing the z-order of the views.
+            int pos = viewHolder.parentView.getChildCount() > 0 ? 1 : 0;
+            viewHolder.parentView.addView(viewHolder.tasksSurfaceView, pos);
             MarginLayoutParams layoutParams =
                     (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
             layoutParams.bottomMargin = model.get(BOTTOM_BAR_HEIGHT);
-            layoutParams.topMargin = model.get(TOP_BAR_HEIGHT);
+            setTopBarHeight(viewHolder, model.get(TOP_MARGIN));
         }
 
         View taskSurfaceView = viewHolder.tasksSurfaceView;
@@ -69,6 +76,17 @@ class TasksSurfaceViewBinder {
     private static void setBottomBarHeight(ViewHolder viewHolder, int height) {
         MarginLayoutParams layoutParams =
                 (MarginLayoutParams) viewHolder.tasksSurfaceView.getLayoutParams();
-        if (layoutParams != null) layoutParams.bottomMargin = height;
+        if (layoutParams != null) {
+            layoutParams.bottomMargin = height;
+            viewHolder.tasksSurfaceView.setLayoutParams(layoutParams);
+        }
+    }
+
+    private static void setTopBarHeight(ViewHolder viewHolder, int height) {
+        ViewGroup.LayoutParams lp = viewHolder.topToolbarPlaceholderView.getLayoutParams();
+        if (lp == null) return;
+
+        lp.height = height;
+        viewHolder.topToolbarPlaceholderView.setLayoutParams(lp);
     }
 }

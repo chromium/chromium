@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_ANDROID_HISTORY_REPORT_HISTORY_REPORT_JNI_BRIDGE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -26,6 +24,10 @@ class UsageReportsBufferService;
 class HistoryReportJniBridge {
  public:
   HistoryReportJniBridge(JNIEnv* env, jobject obj);
+
+  HistoryReportJniBridge(const HistoryReportJniBridge&) = delete;
+  HistoryReportJniBridge& operator=(const HistoryReportJniBridge&) = delete;
+
   ~HistoryReportJniBridge();
 
   // Removes entries with seqno <= seq_no_lower_bound from delta file.
@@ -75,8 +77,6 @@ class HistoryReportJniBridge {
   std::unique_ptr<DeltaFileService> delta_file_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<UsageReportsBufferService> usage_reports_buffer_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryReportJniBridge);
 };
 
 }  // namespace history_report

@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "incognito",
+    "description": "Dummy namepsace for the incognito manifest key.",
+    "types": [
+      {
+        "id": "IncognitoMode",
+        "type": "string",
+        "enum": ["split", "spanning", "not_allowed"]
+      }
+    ],
+    "manifest_keys": {
+      "incognito": {
+        "description": "Configures whether and how the extension runs in incognito mode. Default mode is <code>spanning</code>.",
+        "$ref": "IncognitoMode",
+        "optional": true
+      }
+    }
+  }
+]

@@ -39,7 +39,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 template <class Reference, class Policy>
@@ -83,6 +86,7 @@ struct node_hash_policy {
 };
 
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_NODE_HASH_POLICY_H_

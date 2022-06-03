@@ -1,0 +1,37 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_HUD_DISPLAY_HUD_HEADER_VIEW_H_
+#define ASH_HUD_DISPLAY_HUD_HEADER_VIEW_H_
+
+#include "ui/views/view.h"
+
+namespace ash {
+namespace hud_display {
+
+class HUDDisplayView;
+class HUDTabStrip;
+
+// HUDHeaderView renders header (with buttons and tabs) of the HUD.
+class HUDHeaderView : public views::View {
+ public:
+  METADATA_HEADER(HUDHeaderView);
+
+  explicit HUDHeaderView(HUDDisplayView* hud);
+
+  HUDHeaderView(const HUDHeaderView&) = delete;
+  HUDHeaderView& operator=(const HUDHeaderView&) = delete;
+
+  ~HUDHeaderView() override;
+
+  HUDTabStrip* tab_strip() { return tab_strip_; }
+
+ private:
+  HUDTabStrip* tab_strip_ = nullptr;  // not owned
+};
+
+}  // namespace hud_display
+}  // namespace ash
+
+#endif  // ASH_HUD_DISPLAY_HUD_HEADER_VIEW_H_

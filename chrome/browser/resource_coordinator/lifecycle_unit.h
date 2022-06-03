@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_H_
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/decision_details.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
@@ -45,6 +44,7 @@ class LifecycleUnit {
     explicit SortKey(base::TimeTicks last_focused_time);
 
     SortKey(const SortKey& other);
+    SortKey& operator=(const SortKey& other);
 
     bool operator<(const SortKey& other) const;
     bool operator>(const SortKey& other) const;
@@ -68,7 +68,7 @@ class LifecycleUnit {
 
   // Returns a title describing this LifecycleUnit, or an empty string if no
   // title is available.
-  virtual base::string16 GetTitle() const = 0;
+  virtual std::u16string GetTitle() const = 0;
 
   // Returns the last time at which the LifecycleUnit was focused, or
   // base::TimeTicks::Max() if the LifecycleUnit is currently focused.
@@ -125,13 +125,6 @@ class LifecycleUnit {
   // than for individual LifecycleUnits. https://crbug.com/775644
   virtual int GetEstimatedMemoryFreedOnDiscardKB() const = 0;
 
-  // Returns true if this LifecycleUnit can be frozen. Full details regarding
-  // the policy decision are recorded in |decision_details|, for logging.
-  // Returning false but with an empty |decision_details| means the transition
-  // is not possible for a trivial reason that doesn't need to be reported (ie,
-  // the page is already frozen).
-  virtual bool CanFreeze(DecisionDetails* decision_details) const = 0;
-
   // Returns true if this LifecycleUnit can be discarded. Full details regarding
   // the policy decision are recorded in the |decision_details|, for logging.
   // Returning false but with an empty |decision_details| means the transition
@@ -139,13 +132,6 @@ class LifecycleUnit {
   // (ie, the page is already discarded).
   virtual bool CanDiscard(LifecycleUnitDiscardReason reason,
                           DecisionDetails* decision_details) const = 0;
-
-  // Request that the LifecycleUnit be frozen, return true if the request is
-  // successfully sent.
-  virtual bool Freeze() = 0;
-
-  // Unfreezes this LifecycleUnit. Returns true on success.
-  virtual bool Unfreeze() = 0;
 
   // Discards this LifecycleUnit.
   //

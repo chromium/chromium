@@ -4,7 +4,7 @@
 
 #import "base/mac/scoped_sending_event.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace base {
 namespace mac {

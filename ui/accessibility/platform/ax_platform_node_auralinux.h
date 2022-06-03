@@ -7,19 +7,14 @@
 
 #include <atk/atk.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_offset_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_position.h"
-#include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
 // This deleter is used in order to ensure that we properly always free memory
@@ -43,8 +38,6 @@ using AtkAttributes = std::unique_ptr<AtkAttributeSet, AtkAttributeSetDeleter>;
   }
 
 namespace ui {
-
-enum class AXTextBoundaryDirection;
 
 struct FindInPageResultInfo {
   AtkObject* node;
@@ -86,7 +79,7 @@ struct AX_EXPORT AtkTableCellInterface {
 // interfaces that an AXPlatformNodeAuraLinux's ATKObject implements.
 class ImplementedAtkInterfaces {
  public:
-  enum Value {
+  enum class Value {
     kDefault = 1 << 1,
     kDocument = 1 << 1,
     kHyperlink = 1 << 2,
@@ -100,25 +93,30 @@ class ImplementedAtkInterfaces {
     kWindow = 1 << 10,
   };
 
-  bool Implements(Value interface) { return value_ & interface; }
+  bool Implements(Value interface) const {
+    return value_ & static_cast<int>(interface);
+  }
 
-  void Add(Value other) { value_ |= other; }
+  void Add(Value other) { value_ |= static_cast<int>(other); }
 
   bool operator!=(const ImplementedAtkInterfaces& other) {
     return value_ != other.value_;
   }
 
-  int value() { return value_; }
+  int value() const { return value_; }
 
  private:
-  int value_ = kDefault;
+  int value_ = static_cast<int>(Value::kDefault);
 };
 
 // Implements accessibility on Aura Linux using ATK.
 class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
  public:
-  AXPlatformNodeAuraLinux();
   ~AXPlatformNodeAuraLinux() override;
+  AXPlatformNodeAuraLinux(const AXPlatformNodeAuraLinux&) = delete;
+  AXPlatformNodeAuraLinux& operator=(const AXPlatformNodeAuraLinux&) = delete;
+
+  static AXPlatformNodeAuraLinux* FromAtkObject(const AtkObject*);
 
   // Set or get the root-level Application object that's the parent of all
   // top-level windows.
@@ -129,6 +127,10 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
 
   // Do asynchronous static initialization.
   static void StaticInitialize();
+
+  // Enables AXMode calling AXPlatformNode::NotifyAddAXModeFlags. It's used
+  // when ATK APIs are called.
+  static void EnableAXMode();
 
   // EnsureAtkObjectIsValid will destroy and recreate |atk_object_| if the
   // interface mask is different. This partially relies on looking at the tree's
@@ -175,7 +177,7 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
 #endif  // defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 30, 0)
 
 #if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 32, 0)
-  base::Optional<gfx::Rect> GetUnclippedHypertextRangeBoundsRect(
+  absl::optional<gfx::Rect> GetUnclippedHypertextRangeBoundsRect(
       int start_offset,
       int end_offset);
   bool ScrollSubstringIntoView(AtkScrollType atk_scroll_type,
@@ -194,26 +196,34 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   // Event helpers
   void OnActiveDescendantChanged();
   void OnCheckedStateChanged();
+  void OnEnabledChanged();
   void OnExpandedStateChanged(bool is_expanded);
+  void OnShowingStateChanged(bool is_showing);
   void OnFocused();
   void OnWindowActivated();
   void OnWindowDeactivated();
   void OnMenuPopupStart();
-  void OnMenuPopupHide();
   void OnMenuPopupEnd();
+  void OnAllMenusEnded();
   void OnSelected();
   void OnSelectedChildrenChanged();
+  void OnTextAttributesChanged();
   void OnTextSelectionChanged();
   void OnValueChanged();
   void OnNameChanged();
   void OnDescriptionChanged();
+  void OnSortDirectionChanged();
   void OnInvalidStatusChanged();
+  void OnAriaCurrentChanged();
   void OnDocumentTitleChanged();
   void OnSubtreeCreated();
   void OnSubtreeWillBeDeleted();
   void OnParentChanged();
+  void OnReadonlyChanged();
   void OnWindowVisibilityChanged();
   void OnScrolledToAnchor();
+  void OnAlertShown();
+  void RunPostponedEvents();
 
   void ResendFocusSignalsForCurrentlyFocusedNode();
   bool SupportsSelectionWithAtkSelection();
@@ -227,17 +237,17 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
   // AXPlatformNodeBase overrides.
-  void Init(AXPlatformNodeDelegate* delegate) override;
-  int GetIndexInParent() override;
-  base::string16 GetHypertext() const override;
+  bool IsPlatformCheckable() const override;
+  absl::optional<int> GetIndexInParent() override;
 
   bool IsNameExposed();
 
   void UpdateHypertext();
-  const AXHypertext& GetAXHypertext();
+  const AXLegacyHypertext& GetAXHypertext();
   const base::OffsetAdjuster::Adjustments& GetHypertextAdjustments();
   size_t UTF16ToUnicodeOffsetInText(size_t utf16_offset);
   size_t UnicodeToUTF16OffsetInText(int unicode_offset);
+  int GetTextOffsetAtPoint(int x, int y, AtkCoordType atk_coord_type);
 
   // Called on a toplevel frame to set the document parent, which is the parent
   // of the toplevel document. This is used to properly express the ATK embeds
@@ -271,51 +281,57 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void TerminateFindInPage();
 
   // If there is a find in page result for the toplevel document of this node,
-  // return it, otherwise return base::nullopt;
-  base::Optional<FindInPageResultInfo> GetSelectionOffsetsFromFindInPage();
+  // return it, otherwise return absl::nullopt;
+  absl::optional<FindInPageResultInfo> GetSelectionOffsetsFromFindInPage();
 
   std::pair<int, int> GetSelectionOffsetsForAtk();
 
   // Get the embedded object ("hyperlink") indices for this object in the
   // parent. If this object doesn't have a parent or isn't embedded, return
   // nullopt.
-  base::Optional<std::pair<int, int>> GetEmbeddedObjectIndices();
+  absl::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
+
+  std::vector<ax::mojom::Action> GetSupportedActions() const;
+  bool HasDefaultActionVerb() const;
 
   std::string accessible_name_;
 
  protected:
+  AXPlatformNodeAuraLinux();
+
+  // AXPlatformNode overrides.
+  void Init(AXPlatformNodeDelegate* delegate) override;
+
   // Offsets for the AtkText API are calculated in UTF-16 code point offsets,
   // but the ATK APIs want all offsets to be in "characters," which we
   // understand to be Unicode character offsets. We keep a lazily generated set
   // of Adjustments to convert between UTF-16 and Unicode character offsets.
-  base::Optional<base::OffsetAdjuster::Adjustments> text_unicode_adjustments_ =
-      base::nullopt;
+  absl::optional<base::OffsetAdjuster::Adjustments> text_unicode_adjustments_ =
+      absl::nullopt;
 
   void AddAttributeToList(const char* name,
                           const char* value,
                           PlatformAttributeList* attributes) override;
 
  private:
-  using AXPositionInstance = AXNodePosition::AXPositionInstance;
-  using AXPositionInstanceType = typename AXPositionInstance::element_type;
-  using AXNodeRange = AXRange<AXPositionInstanceType>;
-
   // This is static to ensure that we aren't trying to access the rest of the
   // accessibility tree during node initialization.
   static ImplementedAtkInterfaces GetGTypeInterfaceMask(const AXNodeData& data);
 
   GType GetAccessibilityGType();
   AtkObject* CreateAtkObject();
+  // Get or Create AtkObject. Note that it could return nullptr except
+  // ax::mojom::Role::kApplication when the mode is not enabled.
   gfx::NativeViewAccessible GetOrCreateAtkObject();
   void DestroyAtkObjects();
   void AddRelationToSet(AtkRelationSet*,
                         AtkRelationType,
                         AXPlatformNode* target);
   bool IsInLiveRegion();
-  base::Optional<std::pair<int, int>> GetEmbeddedObjectIndicesForId(int id);
+  absl::optional<std::pair<int, int>> GetEmbeddedObjectIndicesForId(int id);
 
   void ComputeStylesIfNeeded();
-  int FindStartOfStyle(int start_offset, ui::AXTextBoundaryDirection direction);
+  int FindStartOfStyle(int start_offset, ax::mojom::MoveDirection direction);
 
   // Reset any find in page operations for the toplevel document of this node.
   void ForgetCurrentFindInPageResult();
@@ -327,8 +343,11 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   // the toplevel frame which contains the node.
   void SetDocumentParentOnFrameIfNecessary();
 
-  // Find the first child which is a document containing web content.
-  AtkObject* FindFirstWebContentDocument();
+  // Find the child which is a document containing the primary web content.
+  AtkObject* FindPrimaryWebContentDocument();
+
+  // Returns true if it is a web content for the relations.
+  bool IsWebDocumentForRelations();
 
   // If a selection that intersects this node get the full selection
   // including start and end node ids.
@@ -366,8 +385,8 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   std::pair<int32_t, int> GetCurrentCaret() const { return current_caret_; }
 
   // If the given argument can be found as a child of this node, return its
-  // hypertext extents, otherwise return base::nullopt;
-  base::Optional<std::pair<int, int>> GetHypertextExtentsOfChild(
+  // hypertext extents, otherwise return absl::nullopt;
+  absl::optional<std::pair<int, int>> GetHypertextExtentsOfChild(
       AXPlatformNodeAuraLinux* child);
 
   // The AtkStateType for a checkable node can vary depending on the role.
@@ -410,7 +429,10 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   // The default ATK text attributes for this node.
   TextAttributeList default_text_attributes_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeAuraLinux);
+  bool window_activate_event_postponed_ = false;
+
+  friend AXPlatformNode* AXPlatformNode::Create(
+      AXPlatformNodeDelegate* delegate);
 };
 
 }  // namespace ui

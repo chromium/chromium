@@ -6,24 +6,29 @@
 #define CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_SERVICE_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
 }
 
+namespace heavy_ad_intervention {
 class HeavyAdService;
+}
 
 // LazyInstance that owns all HeavyAdServices and associates them with
 // Profiles.
 class HeavyAdServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   // Gets the HeavyAdService instance for |context|.
-  static HeavyAdService* GetForBrowserContext(content::BrowserContext* context);
+  static heavy_ad_intervention::HeavyAdService* GetForBrowserContext(
+      content::BrowserContext* context);
 
   // Gets the LazyInstance that owns all HeavyAdServices.
   static HeavyAdServiceFactory* GetInstance();
+
+  HeavyAdServiceFactory(const HeavyAdServiceFactory&) = delete;
+  HeavyAdServiceFactory& operator=(const HeavyAdServiceFactory&) = delete;
 
  private:
   friend struct base::LazyInstanceTraitsBase<HeavyAdServiceFactory>;
@@ -36,8 +41,6 @@ class HeavyAdServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_SERVICE_FACTORY_H_

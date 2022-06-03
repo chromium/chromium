@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_SHELL_DIALOGS_ANDROID_SELECT_FILE_DIALOG_ANDROID_H_
-#define UI_SHELL_DIALOGS_ANDROID_SELECT_FILE_DIALOG_ANDROID_H_
+#ifndef UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_ANDROID_H_
+#define UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_ANDROID_H_
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace ui {
@@ -18,6 +17,9 @@ class SelectFileDialogImpl : public SelectFileDialog {
  public:
   static SelectFileDialogImpl* Create(Listener* listener,
                                       std::unique_ptr<SelectFilePolicy> policy);
+
+  SelectFileDialogImpl(const SelectFileDialogImpl&) = delete;
+  SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
 
   void OnFileSelected(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& java_object,
@@ -47,7 +49,7 @@ class SelectFileDialogImpl : public SelectFileDialog {
   // params is expected to be a vector<string16> with accept_types first and
   // the capture value as the last element of the vector.
   void SelectFileImpl(SelectFileDialog::Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const SelectFileDialog::FileTypeInfo* file_types,
                       int file_type_index,
@@ -65,11 +67,8 @@ class SelectFileDialogImpl : public SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImpl);
 };
 
 }  // namespace ui
 
-#endif  // UI_SHELL_DIALOGS_ANDROID_SELECT_FILE_DIALOG_ANDROID_H_
-
+#endif  // UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_ANDROID_H_

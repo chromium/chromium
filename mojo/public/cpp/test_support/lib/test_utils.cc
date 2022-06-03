@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "mojo/core/embedder/embedder.h"
+#include "base/callback_helpers.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/public/cpp/test_support/test_support.h"
@@ -80,13 +80,12 @@ void IterateAndReportPerf(const char* test_name,
 }
 
 BadMessageObserver::BadMessageObserver() : got_bad_message_(false) {
-  mojo::core::SetDefaultProcessErrorCallback(base::BindRepeating(
+  mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
       &BadMessageObserver::OnReportBadMessage, base::Unretained(this)));
 }
 
 BadMessageObserver::~BadMessageObserver() {
-  mojo::core::SetDefaultProcessErrorCallback(
-      mojo::core::ProcessErrorCallback());
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 std::string BadMessageObserver::WaitForBadMessage() {

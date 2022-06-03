@@ -1,0 +1,10 @@
+diff -rupN gtk+3.0-3.18.9/gdk/gdkglobals.c gtk+3.0-3.18.9.new/gdk/gdkglobals.c
+--- gtk+3.0-3.18.9/gdk/gdkglobals.c	2021-09-21 19:47:52.578347112 +0000
++++ gtk+3.0-3.18.9.new/gdk/gdkglobals.c	2021-09-21 19:48:31.938662992 +0000
+@@ -34,5 +34,5 @@ GList              *_gdk_default_filters
+ gchar              *_gdk_display_name = NULL;
+ gchar              *_gdk_display_arg_name = NULL;
+ gboolean            _gdk_disable_multidevice = FALSE;
+-guint               _gdk_gl_flags = 0;
++guint               _gdk_gl_flags = GDK_GL_DISABLE;
+ GdkRenderingMode    _gdk_rendering_mode = GDK_RENDERING_MODE_SIMILAR;

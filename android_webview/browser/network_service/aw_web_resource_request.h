@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -35,6 +35,7 @@ struct AwWebResourceRequest final {
 
   // Add default copy/move/assign operators. Adding explicit destructor
   // prevents generating move operator.
+  AwWebResourceRequest(const AwWebResourceRequest& other);
   AwWebResourceRequest(AwWebResourceRequest&& other);
   AwWebResourceRequest& operator=(AwWebResourceRequest&& other);
   ~AwWebResourceRequest();
@@ -61,7 +62,7 @@ struct AwWebResourceRequest final {
   bool has_user_gesture;
   std::vector<std::string> header_names;
   std::vector<std::string> header_values;
-  base::Optional<bool> is_renderer_initiated;
+  absl::optional<bool> is_renderer_initiated;
 };
 
 }  // namespace android_webview

@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Caret",
-          "rect": [791, 8, 1, 19],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [791, 8, 1, 19]
       ]
     }
   ]

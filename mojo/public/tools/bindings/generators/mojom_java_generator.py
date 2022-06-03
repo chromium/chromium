@@ -20,11 +20,18 @@ import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 from mojom.generate.template_expander import UseJinja
 
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir,
-                             os.pardir, os.pardir, os.pardir, os.pardir,
-                             'build', 'android', 'gyp'))
+# Item 0 of sys.path is the directory of the main file; item 1 is PYTHONPATH
+# (if set); item 2 is system libraries.
+sys.path.insert(
+    1,
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
+                 os.pardir, os.pardir, 'build', 'android', 'gyp'))
 from util import build_utils
 
+# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+if sys.version_info.major != 2:
+  basestring = str
+  long = int
 
 GENERATOR_PREFIX = 'java'
 
@@ -40,12 +47,14 @@ _spec_to_java_type = {
   mojom.INT64.spec: 'long',
   mojom.INT8.spec: 'byte',
   mojom.MSGPIPE.spec: 'org.chromium.mojo.system.MessagePipeHandle',
+  mojom.PLATFORMHANDLE.spec: 'org.chromium.mojo.system.UntypedHandle',
   mojom.NULLABLE_DCPIPE.spec:
       'org.chromium.mojo.system.DataPipe.ConsumerHandle',
   mojom.NULLABLE_DPPIPE.spec:
       'org.chromium.mojo.system.DataPipe.ProducerHandle',
   mojom.NULLABLE_HANDLE.spec: 'org.chromium.mojo.system.UntypedHandle',
   mojom.NULLABLE_MSGPIPE.spec: 'org.chromium.mojo.system.MessagePipeHandle',
+  mojom.NULLABLE_PLATFORMHANDLE.spec: 'org.chromium.mojo.system.UntypedHandle',
   mojom.NULLABLE_SHAREDBUFFER.spec:
       'org.chromium.mojo.system.SharedBufferHandle',
   mojom.NULLABLE_STRING.spec: 'String',
@@ -69,10 +78,12 @@ _spec_to_decode_method = {
   mojom.INT64.spec:                 'readLong',
   mojom.INT8.spec:                  'readByte',
   mojom.MSGPIPE.spec:               'readMessagePipeHandle',
+  mojom.PLATFORMHANDLE.spec:        'readUntypedHandle',
   mojom.NULLABLE_DCPIPE.spec:       'readConsumerHandle',
   mojom.NULLABLE_DPPIPE.spec:       'readProducerHandle',
   mojom.NULLABLE_HANDLE.spec:       'readUntypedHandle',
   mojom.NULLABLE_MSGPIPE.spec:      'readMessagePipeHandle',
+  mojom.NULLABLE_PLATFORMHANDLE.spec: 'readUntypedHandle',
   mojom.NULLABLE_SHAREDBUFFER.spec: 'readSharedBufferHandle',
   mojom.NULLABLE_STRING.spec:       'readString',
   mojom.SHAREDBUFFER.spec:          'readSharedBufferHandle',
@@ -107,7 +118,8 @@ def CamelCase(name):
   return uccc[0].lower() + uccc[1:]
 
 def ConstantStyle(name):
-  return generator.ToConstantCase(name)
+  return generator.ToUpperSnakeCase(name)
+
 
 def GetNameForElement(element):
   if (mojom.IsEnumKind(element) or mojom.IsInterfaceKind(element) or
@@ -134,6 +146,11 @@ def GetNameForElement(element):
   raise Exception('Unexpected element: %s' % element)
 
 def GetInterfaceResponseName(method):
+  return UpperCamelCase(method.name) + '_Response'
+
+
+# TODO(crbug.com/1093146): remove after migrating downstream references.
+def GetInterfaceResponseNameOld(method):
   return UpperCamelCase(method.name + '_Response')
 
 def ParseStringAttribute(attribute):
@@ -144,29 +161,29 @@ def GetJavaTrueFalse(value):
   return 'true' if value else 'false'
 
 def GetArrayNullabilityFlags(kind):
-    """Returns nullability flags for an array type, see Decoder.java.
+  """Returns nullability flags for an array type, see Decoder.java.
 
     As we have dedicated decoding functions for arrays, we have to pass
     nullability information about both the array itself, as well as the array
     element type there.
     """
-    assert mojom.IsArrayKind(kind)
-    ARRAY_NULLABLE   = \
-        'org.chromium.mojo.bindings.BindingsHelper.ARRAY_NULLABLE'
-    ELEMENT_NULLABLE = \
-        'org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE'
-    NOTHING_NULLABLE = \
-        'org.chromium.mojo.bindings.BindingsHelper.NOTHING_NULLABLE'
+  assert mojom.IsArrayKind(kind)
+  ARRAY_NULLABLE   = \
+      'org.chromium.mojo.bindings.BindingsHelper.ARRAY_NULLABLE'
+  ELEMENT_NULLABLE = \
+      'org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE'
+  NOTHING_NULLABLE = \
+      'org.chromium.mojo.bindings.BindingsHelper.NOTHING_NULLABLE'
 
-    flags_to_set = []
-    if mojom.IsNullableKind(kind):
-        flags_to_set.append(ARRAY_NULLABLE)
-    if mojom.IsNullableKind(kind.kind):
-        flags_to_set.append(ELEMENT_NULLABLE)
+  flags_to_set = []
+  if mojom.IsNullableKind(kind):
+    flags_to_set.append(ARRAY_NULLABLE)
+  if mojom.IsNullableKind(kind.kind):
+    flags_to_set.append(ELEMENT_NULLABLE)
 
-    if not flags_to_set:
-        flags_to_set = [NOTHING_NULLABLE]
-    return ' | '.join(flags_to_set)
+  if not flags_to_set:
+    flags_to_set = [NOTHING_NULLABLE]
+  return ' | '.join(flags_to_set)
 
 
 def AppendEncodeDecodeParams(initial_params, context, kind, bit):
@@ -429,35 +446,36 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     java_filters = {
-      'array_expected_length': GetArrayExpectedLength,
-      'array': GetArrayKind,
-      'constant_value': ConstantValue,
-      'covers_continuous_range': EnumCoversContinuousRange,
-      'decode_method': DecodeMethod,
-      'default_value': DefaultValue,
-      'encode_method': EncodeMethod,
-      'expression_to_text': ExpressionToText,
-      'has_method_without_response': HasMethodWithoutResponse,
-      'has_method_with_response': HasMethodWithResponse,
-      'interface_response_name': GetInterfaceResponseName,
-      'is_array_kind': mojom.IsArrayKind,
-      'is_any_handle_kind': mojom.IsAnyHandleKind,
-      "is_enum_kind": mojom.IsEnumKind,
-      'is_interface_request_kind': mojom.IsInterfaceRequestKind,
-      'is_map_kind': mojom.IsMapKind,
-      'is_nullable_kind': mojom.IsNullableKind,
-      'is_pointer_array_kind': IsPointerArrayKind,
-      'is_reference_kind': mojom.IsReferenceKind,
-      'is_struct_kind': mojom.IsStructKind,
-      'is_union_array_kind': IsUnionArrayKind,
-      'is_union_kind': mojom.IsUnionKind,
-      'java_class_for_enum': GetJavaClassForEnum,
-      'java_true_false': GetJavaTrueFalse,
-      'java_type': GetJavaType,
-      'method_ordinal_name': GetMethodOrdinalName,
-      'name': GetNameForElement,
-      'new_array': NewArray,
-      'ucc': lambda x: UpperCamelCase(x.name),
+        'array_expected_length': GetArrayExpectedLength,
+        'array': GetArrayKind,
+        'constant_value': ConstantValue,
+        'covers_continuous_range': EnumCoversContinuousRange,
+        'decode_method': DecodeMethod,
+        'default_value': DefaultValue,
+        'encode_method': EncodeMethod,
+        'expression_to_text': ExpressionToText,
+        'has_method_without_response': HasMethodWithoutResponse,
+        'has_method_with_response': HasMethodWithResponse,
+        'interface_response_name': GetInterfaceResponseName,
+        'interface_response_name_old': GetInterfaceResponseNameOld,
+        'is_array_kind': mojom.IsArrayKind,
+        'is_any_handle_kind': mojom.IsAnyHandleKind,
+        "is_enum_kind": mojom.IsEnumKind,
+        'is_interface_request_kind': mojom.IsInterfaceRequestKind,
+        'is_map_kind': mojom.IsMapKind,
+        'is_nullable_kind': mojom.IsNullableKind,
+        'is_pointer_array_kind': IsPointerArrayKind,
+        'is_reference_kind': mojom.IsReferenceKind,
+        'is_struct_kind': mojom.IsStructKind,
+        'is_union_array_kind': IsUnionArrayKind,
+        'is_union_kind': mojom.IsUnionKind,
+        'java_class_for_enum': GetJavaClassForEnum,
+        'java_true_false': GetJavaTrueFalse,
+        'java_type': GetJavaType,
+        'method_ordinal_name': GetMethodOrdinalName,
+        'name': GetNameForElement,
+        'new_array': NewArray,
+        'ucc': lambda x: UpperCamelCase(x.name),
     }
     return java_filters
 

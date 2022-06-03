@@ -13,11 +13,33 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {!cellular_setup.CellularSetupDelegate} */
+    delegate: Object,
+
     /**
      * Whether error state should be shown.
      * @type {boolean}
      */
     showError: Boolean,
+
+    /** @type {string} */
+    message: String,
+
+    /** @type {string} */
+    errorMessage: String,
+  },
+
+  /**
+   * @param {boolean} showError
+   * @return {?string}
+   * @private
+   */
+  getTitle_(showError) {
+    if (this.delegate.shouldShowPageTitle()) {
+      return showError ? this.i18n('finalPageErrorTitle') :
+                         this.i18n('finalPageTitle');
+    }
+    return null;
   },
 
   /**
@@ -25,9 +47,8 @@ Polymer({
    * @return {string}
    * @private
    */
-  getTitle_: function(showError) {
-    return showError ? this.i18n('finalPageErrorTitle') :
-                       this.i18n('finalPageTitle');
+  getMessage_(showError) {
+    return showError ? this.errorMessage : this.message;
   },
 
   /**
@@ -35,17 +56,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getMessage_: function(showError) {
-    return showError ? this.i18n('finalPageErrorMessage') :
-                       this.i18n('finalPageMessage');
-  },
-
-  /**
-   * @param {boolean} showError
-   * @return {string}
-   * @private
-   */
-  getPageBodyClass_: function(showError) {
+  getPageBodyClass_(showError) {
     return showError ? 'error' : '';
   },
 });

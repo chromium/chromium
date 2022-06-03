@@ -14,11 +14,10 @@ source_set("print") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/alert_coordinator:alert_coordinator_internal",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/print",
     "//ios/web",
     "//net",
     "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

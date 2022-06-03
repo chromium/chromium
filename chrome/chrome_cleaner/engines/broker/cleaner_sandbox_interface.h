@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 #include "chrome/chrome_cleaner/os/file_remover_api.h"
-#include "chrome/chrome_cleaner/strings/string16_embedded_nulls.h"
+#include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 
 namespace chrome_cleaner_sandbox {
 
@@ -23,30 +23,30 @@ enum class TerminateProcessResult {
 };
 
 bool SandboxNtDeleteRegistryKey(
-    const chrome_cleaner::String16EmbeddedNulls& key);
+    const chrome_cleaner::WStringEmbeddedNulls& key);
 
 bool SandboxNtDeleteRegistryValue(
-    const chrome_cleaner::String16EmbeddedNulls& key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name);
+    const chrome_cleaner::WStringEmbeddedNulls& key,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name);
 
 typedef base::RepeatingCallback<bool(
-    const chrome_cleaner::String16EmbeddedNulls& key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name)>
+    const chrome_cleaner::WStringEmbeddedNulls& key,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name)>
     ShouldNormalizeRegistryValue;
 
 bool DefaultShouldValueBeNormalized(
-    const chrome_cleaner::String16EmbeddedNulls& key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name);
+    const chrome_cleaner::WStringEmbeddedNulls& key,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name);
 
 bool SandboxNtChangeRegistryValue(
-    const chrome_cleaner::String16EmbeddedNulls& key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name,
-    const chrome_cleaner::String16EmbeddedNulls& new_value,
+    const chrome_cleaner::WStringEmbeddedNulls& key,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name,
+    const chrome_cleaner::WStringEmbeddedNulls& new_value,
     const ShouldNormalizeRegistryValue& should_normalize_callback);
 
-bool SandboxDeleteService(const base::string16& name);
+bool SandboxDeleteService(const std::wstring& name);
 
-bool SandboxDeleteTask(const base::string16& name);
+bool SandboxDeleteTask(const std::wstring& name);
 
 TerminateProcessResult SandboxTerminateProcess(uint32_t process_id);
 

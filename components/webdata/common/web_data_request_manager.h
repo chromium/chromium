@@ -13,10 +13,10 @@
 #include <memory>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -34,6 +34,9 @@ class WebDataRequestManager;
 //////////////////////////////////////////////////////////////////////////////
 class WebDataRequest {
  public:
+  WebDataRequest(const WebDataRequest&) = delete;
+  WebDataRequest& operator=(const WebDataRequest&) = delete;
+
   virtual ~WebDataRequest();
 
   // Returns the identifier for this request.
@@ -77,12 +80,10 @@ class WebDataRequest {
   base::subtle::AtomicWord atomic_manager_;
 
   // The originator of the service request.
-  WebDataServiceConsumer* const consumer_;
+  base::WeakPtr<WebDataServiceConsumer> consumer_;
 
   // Identifier for this request.
   const WebDataServiceBase::Handle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataRequest);
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -98,7 +99,12 @@ class WebDataRequestManager
  public:
   WebDataRequestManager();
 
+  WebDataRequestManager(const WebDataRequestManager&) = delete;
+  WebDataRequestManager& operator=(const WebDataRequestManager&) = delete;
+
   // Factory function to create a new WebDataRequest.
+  // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
+  // outlive the WebDataRequestManager.
   std::unique_ptr<WebDataRequest> NewRequest(WebDataServiceConsumer* consumer);
 
   // Cancel any pending request.
@@ -125,8 +131,6 @@ class WebDataRequestManager
   WebDataServiceBase::Handle next_request_handle_;
 
   std::map<WebDataServiceBase::Handle, WebDataRequest*> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataRequestManager);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATA_REQUEST_MANAGER_H__

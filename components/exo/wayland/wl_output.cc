@@ -28,15 +28,18 @@ void output_release(wl_client* client, wl_resource* resource) {
 
 const struct wl_output_interface output_implementation = {output_release};
 
-void bind_output(wl_client* client, void* data, uint32_t version, uint32_t id) {
+void bind_output(wl_client* client,
+                 void* data,
+                 uint32_t version,
+                 uint32_t output_id) {
   WaylandDisplayOutput* output = static_cast<WaylandDisplayOutput*>(data);
 
-  wl_resource* resource = wl_resource_create(
-      client, &wl_output_interface, std::min(version, kWlOutputVersion), id);
-
-  SetImplementation(
-      resource, &output_implementation,
-      std::make_unique<WaylandDisplayObserver>(output->id(), resource));
+  wl_resource* resource =
+      wl_resource_create(client, &wl_output_interface,
+                         std::min(version, kWlOutputVersion), output_id);
+  auto handler = std::make_unique<WaylandDisplayHandler>(output, resource);
+  handler->Initialize();
+  SetImplementation(resource, &output_implementation, std::move(handler));
 }
 
 }  // namespace wayland

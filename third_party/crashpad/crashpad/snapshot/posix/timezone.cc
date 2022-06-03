@@ -17,8 +17,9 @@
 #include <stddef.h>
 #include <time.h>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 
 namespace crashpad {

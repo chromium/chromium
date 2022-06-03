@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests Comparison view of detailed heap snapshots. Shown node count must be preserved after sorting.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 24;
@@ -47,7 +47,7 @@
       var row = HeapProfilerTestRunner.findRow('B');
       TestRunner.assertEquals(true, !!row, '"B" row');
       function deletedNodeMatcher(data) {
-        return data._isDeletedNode && data._name.charAt(0) === 'B';
+        return data.isDeletedNode && data.name.charAt(0) === 'B';
       }
       var bInstanceRow = HeapProfilerTestRunner.findMatchingRow(deletedNodeMatcher, row);
       TestRunner.assertEquals(true, !!bInstanceRow, '"B" instance row');

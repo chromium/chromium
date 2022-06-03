@@ -6,7 +6,7 @@
 #define MOJO_PUBLIC_CPP_BASE_FILE_ERROR_MOJOM_TRAITS_H_
 
 #include "base/files/file.h"
-#include "mojo/public/mojom/base/file_error.mojom.h"
+#include "mojo/public/mojom/base/file_error.mojom-shared.h"
 
 namespace mojo {
 

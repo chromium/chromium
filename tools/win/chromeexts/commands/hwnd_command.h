@@ -14,13 +14,14 @@ namespace chromeexts {
 class HwndCommand : public ChromeExtsCommand {
  public:
   HwndCommand();
+
+  HwndCommand(const HwndCommand&) = delete;
+  HwndCommand& operator=(const HwndCommand&) = delete;
+
   ~HwndCommand() override;
 
  protected:
   HRESULT Execute() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HwndCommand);
 };
 
 }  // namespace chromeexts

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<script src="./resources/test-runner-paint-worklet.js"></script>
+<style>
+html, body { margin: 0; padding: 0; }
+.container {
+  width: 100px;
+  height: 100px;
+}
+
+#canvas-geometry {
+  background-image: paint(geometry);
+}
+</style>
+<body>
+<div id="canvas-geometry" class="container"></div>
+
+<script id="code" type="text/worklet">
+registerPaint('geometry', class {
+    paint(ctx, geom) {
+        ctx.rotate(45 * Math.PI / 180);
+        ctx.translate(20, 30);
+        var epsilon = 0.000001;
+        if (Math.abs(ctx.getTransform().a - 0.7071067811865476) < epsilon &&
+            Math.abs(ctx.getTransform().b - 0.7071067811865476) < epsilon &&
+            Math.abs(ctx.getTransform().c + 0.7071067811865476) < epsilon &&
+            Math.abs(ctx.getTransform().d - 0.7071067811865476) < epsilon &&
+            Math.abs(ctx.getTransform().e + 7.071067811865476) < epsilon &&
+            Math.abs(ctx.getTransform().f - 35.35533905932738) < epsilon)
+            ctx.fillStyle = 'green';
+        else
+            ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, geom.width, geom.height);
+    }
+});
+</script>
+
+<script>
+    document.body.style.zoom = "200%";
+    importPaintWorkletThenEndTest(document.getElementById('code').textContent);
+</script>
+</body>
+</html>

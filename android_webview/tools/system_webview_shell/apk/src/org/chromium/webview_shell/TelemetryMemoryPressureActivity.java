@@ -9,7 +9,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
+import androidx.webkit.WebViewClientCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
@@ -32,7 +33,7 @@ public class TelemetryMemoryPressureActivity extends Activity {
         CookieManager.setAcceptFileSchemeCookies(true);
         webview.getSettings().setJavaScriptEnabled(true);
 
-        webview.setWebViewClient(new WebViewClient() {
+        webview.setWebViewClient(new WebViewClientCompat() {
             @SuppressWarnings("deprecation") // because we support api level 19 and up.
             @Override
             public boolean shouldOverrideUrlLoading(WebView webView, String url) {

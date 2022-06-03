@@ -6,18 +6,24 @@
 #define UI_BASE_CLIPBOARD_CLIPBOARD_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
-// Observer that receives the notifications of clipboard change events.
-class COMPONENT_EXPORT(BASE_CLIPBOARD) ClipboardObserver {
+// Observer that receives the notifications of clipboard events.
+class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardObserver {
  public:
-  // Called when clipboard data is changed.
-  virtual void OnClipboardDataChanged() = 0;
+  // Override notified when clipboard data is changed.
+  virtual void OnClipboardDataChanged();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Override notified when clipboard data is read.
+  virtual void OnClipboardDataRead();
+#endif
 
  protected:
-  virtual ~ClipboardObserver() = default;
+  virtual ~ClipboardObserver();
 };
 
 }  // namespace ui

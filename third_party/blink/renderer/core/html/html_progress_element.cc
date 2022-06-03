@@ -58,9 +58,7 @@ LayoutObject* HTMLProgressElement::CreateLayoutObject(
 }
 
 LayoutProgress* HTMLProgressElement::GetLayoutProgress() const {
-  if (GetLayoutObject() && GetLayoutObject()->IsProgress())
-    return ToLayoutProgress(GetLayoutObject());
-  return nullptr;
+  return DynamicTo<LayoutProgress>(GetLayoutObject());
 }
 
 void HTMLProgressElement::ParseAttribute(
@@ -147,7 +145,7 @@ bool HTMLProgressElement::ShouldAppearIndeterminate() const {
   return !IsDeterminate();
 }
 
-void HTMLProgressElement::Trace(Visitor* visitor) {
+void HTMLProgressElement::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
   HTMLElement::Trace(visitor);
 }

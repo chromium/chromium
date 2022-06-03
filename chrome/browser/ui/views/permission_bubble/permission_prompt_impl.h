@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_
 
-#include "base/macros.h"
-#include "chrome/browser/ui/permission_bubble/permission_prompt.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "components/permissions/permission_prompt.h"
 
 class Browser;
-class PermissionPromptBubbleView;
 
 namespace content {
 class WebContents;
@@ -18,22 +20,42 @@ class WebContents;
 // This object will create or trigger UI to reflect that a website is requesting
 // a permission. The UI is usually a popup bubble, but may instead be a location
 // bar icon (the "quiet" prompt).
-class PermissionPromptImpl : public PermissionPrompt {
+class PermissionPromptImpl : public permissions::PermissionPrompt,
+                             public views::WidgetObserver {
  public:
   PermissionPromptImpl(Browser* browser,
                        content::WebContents* web_contents,
                        Delegate* delegate);
+
+  PermissionPromptImpl(const PermissionPromptImpl&) = delete;
+  PermissionPromptImpl& operator=(const PermissionPromptImpl&) = delete;
+
   ~PermissionPromptImpl() override;
 
-  // PermissionPrompt:
-  void UpdateAnchorPosition() override;
+  // permissions::PermissionPrompt:
+  void UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
+  permissions::PermissionPromptDisposition GetPromptDisposition()
+      const override;
 
-  PermissionPromptBubbleView* prompt_bubble_for_testing() {
-    return prompt_bubble_;
-  }
+  views::Widget* GetPromptBubbleWidgetForTesting();
+
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
 
  private:
+  bool IsLocationBarDisplayed();
+  void SelectPwaPrompt();
+  void SelectNormalPrompt();
+  void SelectQuietPrompt();
+  LocationBarView* GetLocationBarView();
+  void ShowQuietIcon();
+  void ShowBubble();
+  void ShowChip();
+  bool ShouldCurrentRequestUseChip();
+  bool ShouldCurrentRequestUseQuietChip();
+  void FinalizeChip();
+
   // The popup bubble. Not owned by this class; it will delete itself when a
   // decision is made.
   PermissionPromptBubbleView* prompt_bubble_;
@@ -41,9 +63,15 @@ class PermissionPromptImpl : public PermissionPrompt {
   // The web contents whose location bar should show the quiet prompt.
   content::WebContents* web_contents_;
 
-  bool showing_quiet_prompt_;
+  PermissionPromptStyle prompt_style_;
 
-  DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
+  PermissionChip* chip_ = nullptr;
+
+  permissions::PermissionPrompt::Delegate* const delegate_;
+
+  Browser* browser_;
+
+  base::TimeTicks permission_requested_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_

@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface MostVisitedSites {
          *
          * @param siteUrl URL of site with newly-cached icon.
          */
-        void onIconMadeAvailable(String siteUrl);
+        void onIconMadeAvailable(GURL siteUrl);
     }
 
     /**
@@ -64,14 +65,14 @@ public interface MostVisitedSites {
     void setObserver(Observer observer, int numSites);
 
     /**
-     * Blacklists a URL from the most visited URLs list.
+     * Blocklists a URL from the most visited URLs list.
      */
-    void addBlacklistedUrl(String url);
+    void addBlocklistedUrl(GURL url);
 
     /**
-     * Removes a URL from the most visited URLs blacklist.
+     * Removes a URL from the most visited URLs blocklist.
      */
-    void removeBlacklistedUrl(String url);
+    void removeBlocklistedUrl(GURL url);
 
     /**
      * Records metrics about an impression of the surface with tiles.

@@ -10,6 +10,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -39,7 +41,7 @@ class ChromotingHostContext {
   static std::unique_ptr<ChromotingHostContext> Create(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Attaches task runners to the relevant browser threads for the chromoting
   // host.  Must be called on the UI thread of the browser process.
   // remoting::UrlRequestContextGetter returns ContainerURLRequestContext under
@@ -53,7 +55,10 @@ class ChromotingHostContext {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  ChromotingHostContext(const ChromotingHostContext&) = delete;
+  ChromotingHostContext& operator=(const ChromotingHostContext&) = delete;
 
   ~ChromotingHostContext();
 
@@ -93,6 +98,8 @@ class ChromotingHostContext {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory();
 
+  policy::ManagementService* management_service();
+
  private:
   ChromotingHostContext(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
@@ -128,11 +135,11 @@ class ChromotingHostContext {
   // Serves URLRequestContexts that use the network and UI task runners.
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
 
+  policy::PlatformManagementService platform_management_service_;
+
   // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingHostContext);
 };
 
 }  // namespace remoting

@@ -27,7 +27,7 @@ cr.define('cr.ui', function() {
      * @return {boolean} True if |child| is a descendant of |parent|.
      * @private
      */
-    isDescendantOf_: function(parent, child) {
+    isDescendantOf_(parent, child) {
       return !!parent && !(parent === child) && parent.contains(child);
     },
 
@@ -36,7 +36,7 @@ cr.define('cr.ui', function() {
      * allowed to receive focus.
      * @return {Element} The element containing focusable elements.
      */
-    getFocusParent: function() {
+    getFocusParent() {
       return document.body;
     },
 
@@ -44,7 +44,7 @@ cr.define('cr.ui', function() {
      * Returns the elements on the page capable of receiving focus.
      * @return {Array<Element>} The focusable elements.
      */
-    getFocusableElements_: function() {
+    getFocusableElements_() {
       const focusableDiv = this.getFocusParent();
 
       // Create a TreeWalker object to traverse the DOM from |focusableDiv|.
@@ -52,13 +52,13 @@ cr.define('cr.ui', function() {
           focusableDiv, NodeFilter.SHOW_ELEMENT,
           /** @type {NodeFilter} */
           ({
-            acceptNode: function(node) {
+            acceptNode(node) {
               const style = window.getComputedStyle(node);
               // Reject all hidden nodes. FILTER_REJECT also rejects these
               // nodes' children, so non-hidden elements that are descendants of
               // hidden <div>s will correctly be rejected.
-              if (node.hidden || style.display == 'none' ||
-                  style.visibility == 'hidden') {
+              if (node.hidden || style.display === 'none' ||
+                  style.visibility === 'hidden') {
                 return NodeFilter.FILTER_REJECT;
               }
 
@@ -92,7 +92,7 @@ cr.define('cr.ui', function() {
      * @param {EventTarget} element The element that has received focus.
      * @private
      */
-    dispatchFocusEvent_: function(element) {
+    dispatchFocusEvent_(element) {
       cr.dispatchSimpleEvent(element, 'elementFocused', true, false);
     },
 
@@ -100,7 +100,7 @@ cr.define('cr.ui', function() {
      * Attempts to focus the appropriate element in the current dialog.
      * @private
      */
-    setFocus_: function() {
+    setFocus_() {
       const element = this.selectFocusableElement_();
       if (element) {
         element.focus();
@@ -114,7 +114,7 @@ cr.define('cr.ui', function() {
      * checked one is selected from the group.
      * @private
      */
-    selectFocusableElement_: function() {
+    selectFocusableElement_() {
       // If |this.focusDirBackwards_| is true, the user has pressed "Shift+Tab"
       // and has caused the focus to be transferred backward, outside of the
       // current dialog. In this case, loop around and try to focus the last
@@ -126,15 +126,15 @@ cr.define('cr.ui', function() {
       if (!element) {
         return null;
       }
-      if (element.tagName != 'INPUT' || element.type != 'radio' ||
-          element.name == '') {
+      if (element.tagName !== 'INPUT' || element.type !== 'radio' ||
+          element.name === '') {
         return element;
       }
       if (!element.checked) {
         for (let i = 0; i < focusableElements.length; i++) {
           const e = focusableElements[i];
-          if (e && e.tagName == 'INPUT' && e.type == 'radio' &&
-              e.name == element.name && e.checked) {
+          if (e && e.tagName === 'INPUT' && e.type === 'radio' &&
+              e.name === element.name && e.checked) {
             element = e;
             break;
           }
@@ -148,7 +148,7 @@ cr.define('cr.ui', function() {
      * @param {Event} event The focus event.
      * @private
      */
-    onDocumentFocus_: function(event) {
+    onDocumentFocus_(event) {
       // If the element being focused is a descendant of the currently visible
       // page, focus is valid.
       const targetNode = /** @type {Node} */ (event.target);
@@ -174,10 +174,10 @@ cr.define('cr.ui', function() {
      * @param {Event} event The keydown event.
      * @private
      */
-    onDocumentKeyDown_: function(event) {
+    onDocumentKeyDown_(event) {
       /** @const */ const tabKeyCode = 9;
 
-      if (event.keyCode == tabKeyCode) {
+      if (event.keyCode === tabKeyCode) {
         // If the "Shift" key is held, focus is being transferred backward in
         // the page.
         this.focusDirBackwards_ = event.shiftKey ? true : false;
@@ -187,7 +187,7 @@ cr.define('cr.ui', function() {
     /**
      * Initializes the FocusManager by listening for events in the document.
      */
-    initialize: function() {
+    initialize() {
       document.addEventListener(
           'focus', this.onDocumentFocus_.bind(this), true);
       document.addEventListener(

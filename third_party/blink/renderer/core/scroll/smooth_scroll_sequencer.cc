@@ -9,13 +9,14 @@
 
 namespace blink {
 
-void SequencedScroll::Trace(blink::Visitor* visitor) {
+void SequencedScroll::Trace(Visitor* visitor) const {
   visitor->Trace(scrollable_area);
 }
 
-void SmoothScrollSequencer::QueueAnimation(ScrollableArea* scrollable,
-                                           ScrollOffset offset,
-                                           ScrollBehavior behavior) {
+void SmoothScrollSequencer::QueueAnimation(
+    ScrollableArea* scrollable,
+    ScrollOffset offset,
+    mojom::blink::ScrollBehavior behavior) {
   if (scrollable->ClampScrollOffset(offset) != scrollable->GetScrollOffset()) {
     queue_.push_back(
         MakeGarbageCollected<SequencedScroll>(scrollable, offset, behavior));
@@ -25,14 +26,14 @@ void SmoothScrollSequencer::QueueAnimation(ScrollableArea* scrollable,
 void SmoothScrollSequencer::RunQueuedAnimations() {
   if (queue_.IsEmpty()) {
     current_scrollable_ = nullptr;
-    scroll_type_ = kProgrammaticScroll;
+    scroll_type_ = mojom::blink::ScrollType::kProgrammatic;
     return;
   }
   SequencedScroll* sequenced_scroll = queue_.back();
   queue_.pop_back();
   current_scrollable_ = sequenced_scroll->scrollable_area;
   current_scrollable_->SetScrollOffset(sequenced_scroll->scroll_offset,
-                                       kSequencedScroll,
+                                       mojom::blink::ScrollType::kSequenced,
                                        sequenced_scroll->scroll_behavior);
 }
 
@@ -42,20 +43,22 @@ void SmoothScrollSequencer::AbortAnimations() {
     current_scrollable_ = nullptr;
   }
   queue_.clear();
-  scroll_type_ = kProgrammaticScroll;
+  scroll_type_ = mojom::blink::ScrollType::kProgrammatic;
 }
 
 bool SmoothScrollSequencer::FilterNewScrollOrAbortCurrent(
-    ScrollType incoming_type) {
+    mojom::blink::ScrollType incoming_type) {
   // Allow the incoming scroll to co-exist if its scroll type is
-  // kSequencedScroll, kClampingScroll, or kAnchoringScroll
-  if (incoming_type == kSequencedScroll || incoming_type == kClampingScroll ||
-      incoming_type == kAnchoringScroll)
+  // kSequenced, kClamping, or kAnchoring
+  if (incoming_type == mojom::blink::ScrollType::kSequenced ||
+      incoming_type == mojom::blink::ScrollType::kClamping ||
+      incoming_type == mojom::blink::ScrollType::kAnchoring)
     return false;
 
   // If the current sequenced scroll is UserScroll, but the incoming scroll is
   // not, filter the incoming scroll. See crbug.com/913009 for more details.
-  if (scroll_type_ == kUserScroll && incoming_type != kUserScroll)
+  if (scroll_type_ == mojom::blink::ScrollType::kUser &&
+      incoming_type != mojom::blink::ScrollType::kUser)
     return true;
 
   // Otherwise, abort the current sequenced scroll.
@@ -73,7 +76,7 @@ void SmoothScrollSequencer::DidDisposeScrollableArea(
   }
 }
 
-void SmoothScrollSequencer::Trace(blink::Visitor* visitor) {
+void SmoothScrollSequencer::Trace(Visitor* visitor) const {
   visitor->Trace(queue_);
   visitor->Trace(current_scrollable_);
 }

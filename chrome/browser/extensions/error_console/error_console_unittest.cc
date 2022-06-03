@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,9 +20,9 @@
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_error_test_util.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,11 +39,7 @@ class ErrorConsoleUnitTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    // Errors are only kept if we have the FeatureSwitch and have Developer Mode
-    // enabled.
-    FeatureSwitch::error_console()->SetOverrideValue(
-        FeatureSwitch::OVERRIDE_ENABLED);
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     profile_->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
     error_console_ = ErrorConsole::Get(profile_.get());
   }
@@ -206,7 +201,7 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
                            .Set("version", "0.0.1")
                            .Set("manifest_version", 2)
                            .Build())
-          .SetLocation(Manifest::UNPACKED)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
           .SetID(crx_file::id_util::GenerateId("unpacked"))
           .Build();
   scoped_refptr<const Extension> packed_extension =
@@ -216,7 +211,7 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
                            .Set("version", "0.0.1")
                            .Set("manifest_version", 2)
                            .Build())
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(crx_file::id_util::GenerateId("packed"))
           .Build();
 

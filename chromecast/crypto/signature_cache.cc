@@ -4,7 +4,6 @@
 
 #include "chromecast/crypto/signature_cache.h"
 
-#include "base/logging.h"
 
 namespace chromecast {
 

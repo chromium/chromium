@@ -9,7 +9,13 @@
 #include <vector>
 
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
+#include "ash/assistant/model/assistant_response_observer.h"
 #include "ash/assistant/ui/base/assistant_scroll_view.h"
+#include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/scoped_observation.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
 class CallbackLayerAnimationObserver;
@@ -17,67 +23,74 @@ class CallbackLayerAnimationObserver;
 
 namespace ash {
 
-class AssistantViewDelegate;
 class AssistantResponse;
+class AssistantUiElement;
+class AssistantViewDelegate;
 class ElementAnimator;
 
-// A view that will observe the |AssistantResponse| and which will use
-// |ElementAnimator| to animate each child view.
+// A view that will observe the AssistantResponse and which will use
+// ElementAnimator to animate each child view.
 //
-// To use this you must implement |HandleResponse| and in there
-//    - Add the new child views for the given |AssistantResponse|.
-//    - Add animators for the new view by calling |AddElementAnimator|.
+// To use this you should implement HandleUiElement() and/or HandleSuggestion()
+// to:
+//    - Add new child views as appropriate.
+//    - Return animators for any newly created views.
 //
 // More in detail, this is what will happen:
-//    1) When |AssistantInteractionModelObserver::OnCommittedQueryChanged| is
-//       observed, |FadeOut| is called on all |ElementAnimator| instances.
+//    1) When AssistantInteractionModelObserver::OnCommittedQueryChanged() is
+//       observed, FadeOut() is called on all ElementAnimator instances.
 //       Furthermore all views will stop processing events (like click).
-//    2) When |AssistantInteractionModelObserver::OnResponseChanged| is
-//       observed, we wait until the |FadeOut| animations are complete.
-//    3) Next |AnimateOut| is invoked on all |ElementAnimator| instances.
+//    2) When AssistantInteractionModelObserver::OnResponseChanged() is
+//       observed, we wait until the FadeOut() animations are complete.
+//    3) Next AnimateOut() is invoked on all ElementAnimator instances.
 //    4) When these animations are complete, all child views are removed.
-//    5) |AnimatedContainerView::OnAllViewsRemoved| is invoked to inform
-//       the derived class all child views are removed.
-//    6) Next |AnimatedContainerView::HandleResponse| is called with the new
-//       |AssistantResponse|.
-//       In here the derived class should add the child views for the new
-//       response, as well as adding |ElementAnimator| instances by calling
-//       |AnimatedContainerView::AddElementAnimator|.
-//    7) When all new child views have been added, |AnimateIn| is invoked on
-//       all |ElementAnimator| instances.
+//    5) OnAllViewsRemoved() is invoked to inform the derived class all child
+//       views are removed.
+//    6) Next HandleSuggestion() and HandleUiElement() is called for the new
+//       AssistantResponse. In those methods, the derived class should add the
+//       child views for the new response, as well as return ElementAnimator
+//       instances.
+//    7) When all new child views have been added, AnimateIn() is invoked on
+//       all ElementAnimator instances.
 //    8) Finally when this animation is complete the derived class is informed
-//       through |AnimatedContainerView::OnAllViewsAnimatedIn|.
+//       through OnAllViewsAnimatedIn().
 class COMPONENT_EXPORT(ASSISTANT_UI) AnimatedContainerView
     : public AssistantScrollView,
-      public AssistantInteractionModelObserver {
+      public AssistantScrollView::Observer,
+      public AssistantControllerObserver,
+      public AssistantInteractionModelObserver,
+      public AssistantResponseObserver {
  public:
-  explicit AnimatedContainerView(AssistantViewDelegate* delegate);
-  ~AnimatedContainerView() override;
+  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
 
-  // Add an animator for a view that is displayed in this content view.
-  // Should be called for each view that needs to be animated, and is usually
-  // called from inside the |HandleResponse| callback.
-  void AddElementAnimator(std::unique_ptr<ElementAnimator> view_animator);
+  METADATA_HEADER(AnimatedContainerView);
+
+  explicit AnimatedContainerView(AssistantViewDelegate* delegate);
+  AnimatedContainerView(const AnimatedContainerView&) = delete;
+  AnimatedContainerView& operator=(const AnimatedContainerView&) = delete;
+  ~AnimatedContainerView() override;
 
   // AssistantScrollView:
   void PreferredSizeChanged() override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
 
+  // AssistantControllerObserver:
+  void OnAssistantControllerDestroying() override;
+
   // AssistantInteractionModelObserver:
   void OnCommittedQueryChanged(const AssistantQuery& query) override;
-  void OnResponseChanged(
-      const scoped_refptr<AssistantResponse>& response) override;
+  void OnResponseChanged(const scoped_refptr<AssistantResponse>&) override;
   void OnResponseCleared() override;
+
+  // AssistantResponseObserver:
+  void OnUiElementAdded(const AssistantUiElement* ui_element) override;
+  void OnSuggestionsAdded(
+      const std::vector<AssistantSuggestion>& suggestions) override;
 
   // Remove all current responses/views.
   // This will abort all in progress animations, and remove all the child views
   // and their animators.
   void RemoveAllViews();
-
-  // Manually trigger the animate-in animation.
-  // Should only be used if you call |AddElementAnimator| outside of the
-  // |HandleResponse| callback.
-  void AnimateIn();
 
  protected:
   // Callback called when all (new) views have been added.
@@ -88,21 +101,38 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AnimatedContainerView
   // This is called when the exit animations are done.
   virtual void OnAllViewsRemoved() {}
 
-  // Callback called to create the new views.
-  // For each new views it should
-  //    - Create and add the |views::View|.
-  //    - Call |AddElementAnimator| and pass it the |ElementAnimator| to
-  //      animate the view.
-  virtual void HandleResponse(const AssistantResponse& response) = 0;
+  // Callback called to create a view for a UI element.
+  // The implementer should:
+  //    - Create and add the appropriate views::View.
+  //    - Return an ElementAnimator to animate the view. Note that it is
+  //      permissible to return |nullptr| if no managed animation is desired.
+  virtual std::unique_ptr<ElementAnimator> HandleUiElement(
+      const AssistantUiElement* ui_element);
+
+  // Callback called to create a view for a suggestion.
+  // The implementer should:
+  //    - Create and add the appropriate views::View.
+  //    - Return an ElementAnimator to animate the view. Note that it is
+  //      permissible to return |nullptr| if no managed animation is desired.
+  virtual std::unique_ptr<ElementAnimator> HandleSuggestion(
+      const AssistantSuggestion& suggestion);
 
   AssistantViewDelegate* delegate() { return delegate_; }
 
  private:
+  class ScopedDisablePreferredSizeChanged;
   void SetPropagatePreferredSizeChanged(bool propagate);
 
-  void FadeOutViews();
   void ChangeResponse(const scoped_refptr<const AssistantResponse>& response);
   void AddResponse(scoped_refptr<const AssistantResponse> response);
+
+  bool IsAnimatingViews() const;
+  void AddElementAnimatorAndAnimateInView(std::unique_ptr<ElementAnimator>);
+  void FadeOutViews();
+
+  void EnableInteractions() { SetInteractionsEnabled(true); }
+  void DisableInteractions() { SetInteractionsEnabled(false); }
+  void SetInteractionsEnabled(bool enabled);
 
   static bool AnimateInObserverCallback(
       const base::WeakPtr<AnimatedContainerView>& weak_ptr,
@@ -126,19 +156,23 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AnimatedContainerView
   // reduces layout passes.
   bool propagate_preferred_size_changed_ = true;
 
+  // Whether the animate-out animation is in progress.
+  bool animate_out_in_progress_ = false;
+
   // Whether the fade-out animation is in progress.
   bool fade_out_in_progress_ = false;
 
   // Shared pointers to the response that is currently on stage as well as the
-  // pending response to be presented following the former's animated exit. We
+  // queued response to be presented following the former's animated exit. We
   // use shared pointers to ensure that underlying views are not destroyed
   // before we have an opportunity to remove their associated views.
   scoped_refptr<const AssistantResponse> response_;
-  scoped_refptr<const AssistantResponse> pending_response_;
+  scoped_refptr<const AssistantResponse> queued_response_;
+
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
   base::WeakPtrFactory<AnimatedContainerView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AnimatedContainerView);
 };
 
 }  // namespace ash

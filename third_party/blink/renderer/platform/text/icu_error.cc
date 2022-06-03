@@ -11,7 +11,7 @@ namespace blink {
 // Distinguish memory allocation failures from other errors.
 // https://groups.google.com/a/chromium.org/d/msg/platform-architecture-dev/MP0k9WGnCjA/zIBiJtilBwAJ
 static NOINLINE void ICUOutOfMemory() {
-  OOM_CRASH();
+  OOM_CRASH(0);
 }
 
 void ICUError::HandleFailure() {

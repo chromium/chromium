@@ -1,0 +1,14 @@
+<head>
+<link rel="stylesheet" type="text/css" href="does-not-exist.css">
+</head>
+<body>
+<iframe id=i></iframe>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.dumpChildFrames();
+}
+document.body.appendChild(document.head);
+i.contentDocument.body.appendChild(document.body);
+console.log("PASS if no crash.");
+</script>

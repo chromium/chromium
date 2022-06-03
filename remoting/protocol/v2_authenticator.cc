@@ -84,9 +84,9 @@ Authenticator::RejectionReason V2Authenticator::rejection_reason() const {
 }
 
 void V2Authenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,
-                                     const base::Closure& resume_callback) {
+                                     base::OnceClosure resume_callback) {
   ProcessMessageInternal(message);
-  resume_callback.Run();
+  std::move(resume_callback).Run();
 }
 
 void V2Authenticator::ProcessMessageInternal(const jingle_xmpp::XmlElement* message) {

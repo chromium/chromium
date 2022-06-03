@@ -5,37 +5,11 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 import("//media/gpu/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/libaom/options.gni")
-
-# Do not expand this list without double-checking with OWNERS, this is a list of
-# all targets which roll up into the //media component. It controls visibility
-# of subcomponent targets and public_deps for //media.
-media_subcomponent_deps = [
-  "//media/audio",
-  "//media/base",
-
-  # TODO(crbug.com/583067): These files should not be in //media/base.
-  "//media/base/android",
-  "//media/capabilities",
-  "//media/cdm",
-  "//media/device_monitors",
-  "//media/filters",
-  "//media/formats",
-  "//media/muxers",
-  "//media/renderers",
-  "//media/video",
-]
-
-if (is_fuchsia) {
-  media_subcomponent_deps += [
-    "//media/fuchsia/cdm",
-    "//media/fuchsia/common",
-  ]
-}
+import("//third_party/libgav1/options.gni")
 
 declare_args() {
   # Allows distributions to link pulseaudio directly (DT_NEEDED) instead of
@@ -58,6 +32,13 @@ declare_args() {
     media_use_libvpx = false
   }
 
+  # Enable usage of OpenH264 within the media library. Used for software based
+  # encoding of H264 content.
+  media_use_openh264 = true
+  if (is_ios || is_android || !proprietary_codecs) {
+    media_use_openh264 = false
+  }
+
   # Override to dynamically link the cras (ChromeOS audio) library.
   use_cras = is_chromeos_device
 
@@ -71,9 +52,9 @@ declare_args() {
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
 
-  # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
-  # platform. Enabled by default for Chromecast.
-  enable_platform_hevc = proprietary_codecs && is_chromecast
+  enable_platform_encrypted_hevc =
+      proprietary_codecs &&
+      (use_chromeos_protected_media || (is_win && is_chrome_branded))
 
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
@@ -83,29 +64,53 @@ declare_args() {
   # Enable HLS with SAMPLE-AES decryption.
   enable_hls_sample_aes = proprietary_codecs && (is_chromecast || is_fuchsia)
 
-  # Enable logging override, e.g. enable DVLOGs at build time. Must not be
-  # enabled when |use_jumbo_build| is true, in which case multiple .cc files
-  # are combined and we could override more logging than expected.
-  # TODO(1021274): Disable this for Fuchsia once we're confident on the media
-  # playback quality.
-  enable_logging_override = !use_jumbo_build && (is_chromecast || is_fuchsia)
+  # Enable logging override, e.g. enable DVLOGs through level 2 at build time.
+  # On Chromecast, these are logged as INFO.
+  # On Fuchsia, these are logged as VLOGs.
+  enable_logging_override = is_chromecast || is_fuchsia
 
-  enable_dav1d_decoder = !is_android && !is_ios
+  enable_dav1d_decoder = !is_ios
+
+  # Enable browser managed persistent metadata storage for EME persistent
+  # session and persistent usage record session.
+  enable_media_drm_storage = is_android || is_chromecast
+
+  # Enable HLS manifest parser and demuxer.
+  enable_hls_demuxer = false
 }
 
 declare_args() {
-  enable_av1_decoder = enable_dav1d_decoder || enable_libaom_decoder
+  enable_av1_decoder = enable_dav1d_decoder || enable_libgav1_decoder
+
+  # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
+  # platform. Enabled by default for Chromecast, fuzzer builds and protected
+  # video on ChromeOS and Windows.
+  enable_platform_hevc =
+      proprietary_codecs &&
+      (is_chromecast || use_fuzzing_engine || enable_platform_encrypted_hevc)
+
+  # Enable HEVC/H265 decoding with hardware acceleration assist. Enabled by
+  # default for fuzzer builds and protected video on ChromeOS. It is also
+  # enabled for Chromecast by default so the unit tests get run in Chrome CQ.
+  enable_platform_hevc_decoding =
+      proprietary_codecs &&
+      (is_chromecast || use_fuzzing_engine || use_chromeos_protected_media)
 }
 
-# enable_hls_sample_aes can only be true if enable_mse_mpeg2ts_stream_parser is.
-assert(enable_mse_mpeg2ts_stream_parser || !enable_hls_sample_aes)
+assert(
+    !enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
+    "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_sample_aes=true.")
 
-# Logging override must not be enabled in jumbo builds.
-assert(!use_jumbo_build || !enable_logging_override)
+assert(
+    !enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
+    "enable_mse_mpeg2ts_stream_parser=true is required for enable_hls_demuxer=true.")
 
-if (media_use_ffmpeg) {
-  media_subcomponent_deps += [ "//media/ffmpeg" ]
-}
+assert(!enable_platform_hevc || proprietary_codecs,
+       "proprietary_codecs=true is required for enable_platform_hevc=true.")
+
+assert(
+    !enable_platform_encrypted_hevc || enable_platform_hevc,
+    "enable_platform_hevc=true is required for enable_platform_encrypted_hevc=true.")
 
 # Use a second declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
@@ -122,14 +127,21 @@ declare_args() {
     use_alsa = true
 
     # Pulse is not supported on Chromecast platforms.
-    if (!use_cras && !is_chromecast) {
+    #
+    # ASAN and TSAN will occasionally hang during pa_context_connect(), so we
+    # disable PulseAudio when these configurations are enabled.
+    #
+    # TODO(crbug.com/986021): We shouldn't have to do this, but it's unclear why
+    # our test bots are hanging and all of the ones that don't hang just fall
+    # back to ALSA after a connection error anyways.
+    if (!use_cras && !is_chromecast && !is_asan && !is_tsan) {
       use_pulseaudio = true
     }
   }
 }
 
-# Use another declare_args() to pick up possible overrides of media_use_ffmpeg
-# from --args command line flags. See "gn help declare_args".
+# Use another declare_args() to include possible overrides of media_use_ffmpeg
+# from --args command line flags in the evaluation. See "gn help declare_args".
 declare_args() {
   # On Android, FFMpeg is built without video decoders by default.
   # This flag gives the option to override that decision in case there are no
@@ -138,29 +150,15 @@ declare_args() {
   enable_ffmpeg_video_decoders = media_use_ffmpeg && !is_android
 }
 
-# Enables the use of library CDMs that implements the interface defined at
-# media/cdm/api/content_decryption_module.h. If true, the actually library CDM
-# will be hosted in the mojo CDM service running in the CDM (utility) process.
-# On Fuchsia, this is only enabled to build libclearkeycdm.so, the mojo CDM
-# service is not used.
-enable_library_cdms =
-    (is_linux && !is_chromecast) || is_mac || is_win || is_fuchsia
+declare_args() {
+  # Enables the use of library CDMs that implements the interface defined at
+  # media/cdm/api/content_decryption_module.h. If true, the actually library CDM
+  # will be hosted in the mojo CDM service running in the CDM (utility) process.
+  enable_library_cdms = (is_linux && !is_chromecast) || is_chromeos_lacros ||
+                        is_chromeos_ash || is_mac || is_win
+}
 
 declare_args() {
-  # Experiment to enable mojo media services (e.g. "renderer", "cdm", see
-  # |mojo_media_services|). When enabled, selected mojo paths will be enabled in
-  # the media pipeline and corresponding services will hosted in the selected
-  # remote process (e.g. "utility" process, see |mojo_media_host|).
-  # This is explicitly disabled for Fuchsia.
-  enable_mojo_media =
-      !is_fuchsia &&
-      (is_android || is_chromeos || is_mac || is_win || enable_library_cdms ||
-       (is_desktop_linux && use_vaapi) || is_chromecast)
-
-  # Enable the TestMojoMediaClient to be used in mojo MediaService. This is for
-  # testing only and will override the default platform MojoMediaClient, if any.
-  enable_test_mojo_media_client = false
-
   # When enabled, this feature allows developers to use a runtime flag to
   # choose the implementation of the renderer that is used. On a build which
   # enables the mojo renderer, if --disable-mojo-renderer is passed at start-up,
@@ -184,65 +182,42 @@ declare_args() {
   # (which takes precedence), or by setting |alternate_cdm_storage_id_key|.
   # The key must be a string of at least 32 characters.
   alternate_cdm_storage_id_key = ""
-
-  # This feature is still under development. See crbug.com/641132.
-  enable_cdm_proxy = false
 }
-
-# This feature can only be enabled when using Mojo media. Furthermore, the
-# "renderer" service must be enabled, which is asserted in
-# //media/mojo/services/BUILD.gn
-assert(
-    !enable_runtime_media_renderer_selection || enable_mojo_media,
-    "Runtime media renderer selection only applies when mojo media is enabled.")
 
 assert(!enable_cdm_host_verification || is_mac || is_win,
        "CDM host verification is only supported on Mac and Windows.")
 
-assert(enable_library_cdms || !enable_cdm_proxy,
-       "CDM Proxy should only be enabled when library CDM is enabled.")
-
+# Default |mojo_media_services| and |mojo_media_host| on various platforms. See
+# comments below for valid values. Can be overridden by gn build arguments from
+# the --args command line flag.
 _default_mojo_media_services = []
-_default_mojo_media_host = "none"
+_default_mojo_media_host = ""
 
-# Default mojo_media_services and mojo_media_host on various platforms.
-# Can be overridden by gn build arguments from the --args command line flag
-# for local testing.
-if (enable_mojo_media) {
-  if (is_chromecast) {
-    _default_mojo_media_services = cast_mojo_media_services
-    _default_mojo_media_host = cast_mojo_media_host
-  } else if (is_android) {
-    _default_mojo_media_services = [
-      "cdm",
-      "audio_decoder",
-      "video_decoder",
-    ]
-    _default_mojo_media_host = "gpu"
-  } else if (is_chromeos || is_mac || is_win ||
-             (is_desktop_linux && use_vaapi)) {
-    _default_mojo_media_services = [ "video_decoder" ]
-    _default_mojo_media_host = "gpu"
-  }
-
-  if (enable_library_cdms) {
-    _default_mojo_media_services += [ "cdm" ]
-
-    # Having a CDM running means it could require a CdmProxy running in the GPU
-    # process.
-    assert(
-        _default_mojo_media_host == "none" || _default_mojo_media_host == "gpu",
-        "For now, mojo_media_host should not overwrite it with a different " +
-            "value if it has been set.")
-    _default_mojo_media_host = "gpu"
-  }
+if (is_chromecast) {
+  _default_mojo_media_services = cast_mojo_media_services
+  _default_mojo_media_host = cast_mojo_media_host
+} else if (is_android) {
+  _default_mojo_media_services = [
+    "cdm",
+    "audio_decoder",
+    "video_decoder",
+  ]
+  _default_mojo_media_host = "gpu"
+} else if (is_chromeos_ash || is_mac || is_win ||
+           ((is_linux || is_chromeos_lacros) && use_vaapi)) {
+  _default_mojo_media_services = [ "video_decoder" ]
+  _default_mojo_media_host = "gpu"
 }
 
-# Use another declare_args() to pick up possible overrides of enable_mojo_media
-# from --args command line flags. See "gn help declare_args".
+# When |enable_library_cdms| is true, the "cdm" service will run in a separate
+# CdmService in the CDM (utility) process. Therefore there's no need to specify
+# |_default_mojo_media_host| which controls where the MediaService runs in.
+if (enable_library_cdms) {
+  _default_mojo_media_services += [ "cdm" ]
+}
+
 declare_args() {
   # A list of mojo media services that should be used in the media pipeline.
-  # Must not be empty if |enable_mojo_media| is true.
   # Valid entries in the list are:
   # - "renderer": Use mojo-based media Renderer service.
   # - "cdm": Use mojo-based Content Decryption Module.
@@ -259,10 +234,9 @@ declare_args() {
   # |mojo_media_services| still run in the MediaService in the process specified
   # by "mojo_media_host".
   # Valid options are:
-  # - "none": Do not use mojo media service.
   # - "browser": Use mojo media service hosted in the browser process.
   # - "gpu": Use mojo media service hosted in the gpu process.
-  # - "utility": Use mojo media service hosted in the utility process.
+  # - "": Do not use mojo media service.
   mojo_media_host = _default_mojo_media_host
 }
 
@@ -277,4 +251,48 @@ declare_args() {
   # Media Remoting RPC is disabled on Android since it's unused but increases
   # the native binary size by ~70Kb.
   enable_media_remoting_rpc = enable_media_remoting && !is_android
+}
+
+declare_args() {
+  # Enable use of libcast (//third_party/openscreen/src/cast) for cast mirroring
+  # and linked into the resulting binary.
+  enable_cast_streaming_renderer = false
+}
+
+assert(!enable_cast_streaming_renderer || is_chromecast,
+       "Currently, libcast mirroring is only supported for chromecast.")
+
+# Do not expand this list without double-checking with OWNERS, this is a list of
+# all targets which roll up into the //media component. It controls visibility
+# of subcomponent targets and public_deps for //media.
+media_subcomponent_deps = [
+  "//media/audio",
+  "//media/base",
+
+  # TODO(crbug.com/583067): These files should not be in //media/base.
+  "//media/base/android",
+  "//media/capabilities",
+  "//media/cdm",
+  "//media/device_monitors",
+  "//media/filters",
+  "//media/formats",
+  "//media/muxers",
+  "//media/renderers",
+  "//media/video",
+]
+
+if (is_fuchsia) {
+  media_subcomponent_deps += [
+    "//media/fuchsia/audio",
+    "//media/fuchsia/cdm",
+    "//media/fuchsia/common",
+  ]
+}
+
+if (media_use_ffmpeg) {
+  media_subcomponent_deps += [ "//media/ffmpeg" ]
+}
+
+if (enable_library_cdms || is_win) {
+  media_subcomponent_deps += [ "//media/cdm:cdm_type_conversion" ]
 }

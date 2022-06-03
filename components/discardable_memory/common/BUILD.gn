@@ -15,21 +15,19 @@ component("common") {
     "discardable_shared_memory_heap.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "discardable_shared_memory_heap_unittest.cc",
-  ]
+  sources = [ "discardable_shared_memory_heap_unittest.cc" ]
 
   deps = [
     ":common",
     "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

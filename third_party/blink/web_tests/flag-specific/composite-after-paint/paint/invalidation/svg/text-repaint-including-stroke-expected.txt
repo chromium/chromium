@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGText text id='bounce'",
-          "rect": [80, 0, 553, 117],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [30, 0, 404, 59],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [80, 0, 553, 117],
+        [30, 0, 404, 59]
       ]
     }
   ]

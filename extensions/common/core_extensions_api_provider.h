@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_COMMON_CORE_EXTENSIONS_API_PROVIDER_H_
 #define EXTENSIONS_COMMON_CORE_EXTENSIONS_API_PROVIDER_H_
 
-#include "base/macros.h"
 #include "extensions/common/extensions_api_provider.h"
 
 namespace extensions {
@@ -13,6 +12,9 @@ namespace extensions {
 class CoreExtensionsAPIProvider : public ExtensionsAPIProvider {
  public:
   CoreExtensionsAPIProvider();
+  CoreExtensionsAPIProvider(const CoreExtensionsAPIProvider&) = delete;
+  CoreExtensionsAPIProvider& operator=(const CoreExtensionsAPIProvider&) =
+      delete;
   ~CoreExtensionsAPIProvider() override;
 
   // ExtensionsAPIProvider:
@@ -25,9 +27,6 @@ class CoreExtensionsAPIProvider : public ExtensionsAPIProvider {
   base::StringPiece GetAPISchema(const std::string& name) override;
   void RegisterPermissions(PermissionsInfo* permissions_info) override;
   void RegisterManifestHandlers() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CoreExtensionsAPIProvider);
 };
 
 }  // namespace extensions

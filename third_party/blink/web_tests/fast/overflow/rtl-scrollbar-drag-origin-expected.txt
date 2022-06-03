@@ -1,8 +1,0 @@
-PASS container.scrollLeft is -715
-PASS container.scrollLeft is -365
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-This test verifies scroll position restores correctly when a thumb drag has been cancelled in RTL mode.
-This test is expected to fail on Mac and Linux because those platforms don't cancel scrolling when mouse cursor is out of a certain range. It is Windows-specific behavior.

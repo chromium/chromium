@@ -1,0 +1,20 @@
+<!--
+@AURALINUX-DENY:STATE-CHANGE:DEFUNCT*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div>
+	<div id="unclosed-div">
+	<div tabindex="0"></div>
+</div>
+<select></select>
+<div aria-hidden="true"><div id="empty"></div></div>
+<script>
+  function go() {
+	document.getElementById("empty").appendChild(document.getElementById("unclosed-div"));
+	document.execCommand("selectAll", false);
+  }
+</script>
+</body>
+</html>

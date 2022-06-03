@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/blocklist",
+  "+components/grit",
+  "+components/keyed_service/core",
+  "+components/strings/grit",
+  "+components/variations",
+  "+components/security_interstitials/core",
+  "+content/public/browser",
+  "+third_party/zlib",
+  "+ui/base",
+]

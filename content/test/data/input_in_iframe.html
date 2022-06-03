@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body, html, iframe {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    iframe {
+      border: 0;
+    }
+
+    #space {
+      width: 200px;
+      height: 200px;
+    }
+
+  </style>
+  <script>
+    loaded = false;
+    notifyBrowser = false;
+    function notifyWhenLoaded() {
+      if (loaded)
+        window.domAutomationController.send("OUTER_LOADED");
+      else
+        window.notifyBrowser = true;
+    }
+    window.addEventListener('load', () => {
+      window.loaded = true;
+      if (window.notifyBrowser)
+        notifyWhenLoaded();
+    });
+  </script>
+</head>
+<body>
+  <div id="space"></div>
+  <iframe src="input_box.html" >
+
+ </body>
+</html>

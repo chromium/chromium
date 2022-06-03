@@ -7,110 +7,18 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 namespace scheduler {
 
-const base::Feature kHighPriorityInputOnCompositorThread{
-    "BlinkSchedulerHighPriorityInputOnCompositorThread",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDedicatedWorkerThrottling{
     "BlinkSchedulerWorkerThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// COMPOSITING PRIORITY EXPERIMENT CONTROLS
-
-// Enables experiment to increase priority of the compositing tasks during
-// input handling. Other features in this section do not have any effect
-// when this feature is disabled.
-const base::Feature kPrioritizeCompositingAfterInput{
-    "BlinkSchedulerPrioritizeCompositingAfterInput",
+const base::Feature kBestEffortPriorityForFindInPage{
+    "BlinkSchedulerBestEffortPriorityForFindInPage",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Use kHighestPriority for compositing tasks during the experiment.
-// kHighPriority is used otherwise.
-const base::Feature kHighestPriorityForCompositingAfterInput{
-    "BlinkSchedulerHighestPriorityForCompostingAfterInput",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, MainFrameSchedulerImpl::OnRequestMainFrameForInput is used as
-// triggering signal for the experiment. If disabled, the presence of an input
-// task is used as trigger.
-const base::Feature kUseExplicitSignalForTriggeringCompositingPrioritization{
-    "BlinkSchedulerUseExplicitSignalForTriggeringCompositingPrioritization",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, the increased priority continues until we get the appropriate
-// number of WillBeginMainFrame signals. If disabled, the priority is increased
-// for the fixed number of compositing tasks.
-const base::Feature kUseWillBeginMainFrameForCompositingPrioritization{
-    "BlinkSchedulerUseWillBeginMainFrameForCompositingPrioritization",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, the compositor will always be set to kVeryHighPriority if it
-// is not already set to kHighestPriority.
-const base::Feature kVeryHighPriorityForCompositingAlways{
-    "BlinkSchedulerVeryHighPriorityForCompositingAlways",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, compositor priority will be set to kVeryHighPriority if it will
-// be fast and is not already set to kHighestPriority.
-const base::Feature kVeryHighPriorityForCompositingWhenFast{
-    "BlinkSchedulerVeryHighPriorityForCompositingWhenFast",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, compositor priority will be set to kVeryHighPriority if the last
-// task completed was not a compositor task, and kNormalPriority if the last
-// task completed was a compositor task.
-const base::Feature kVeryHighPriorityForCompositingAlternating{
-    "BlinkSchedulerVeryHighPriorityForCompositingAlternating",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, compositor priority will be set to kVeryHighPriority if no
-// compositor task has run for some time determined by the finch parameter
-// kCompositingDelayLength. Once a compositor task runs, it will be reset
-// to kNormalPriority.
-const base::Feature kVeryHighPriorityForCompositingAfterDelay{
-    "BlinkSchedulerVeryHighPriorityForCompositingAfterDelay",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Param for kVeryHighPriorityForCompositingAfterDelay experiment. How long
-// in ms the compositor will wait to be prioritized if no compositor tasks run.
-constexpr base::FeatureParam<int> kCompositingDelayLength{
-    &kVeryHighPriorityForCompositingAfterDelay, "CompositingDelayLength", 100};
-
-// If enabled, compositor priority will be set to kVeryHighPriority until
-// a budget has been exhausted. Once the budget runs out, the priority will
-// be set to kNormalPriority until there is enough budget to reprioritize.
-const base::Feature kVeryHighPriorityForCompositingBudget{
-    "BlinkSchedulerVeryHighPriorityForCompositingBudget",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Param for kVeryHighPriorityForCompositingBudget experiment. This param
-// controls how much CPU time the compositor will be prioritized for, its
-// budget. Measured in ms.
-constexpr base::FeatureParam<int> kInitialCompositorBudgetInMilliseconds{
-    &kVeryHighPriorityForCompositingBudget,
-    "InitialCompositorBudgetInMilliseconds", 250};
-
-// Param for kVeryHighPriorityForCompositingBudget experiment. This param
-// controls the rate at which the budget is recovered.
-constexpr base::FeatureParam<double> kCompositorBudgetRecoveryRate{
-    &kVeryHighPriorityForCompositingBudget, "CompositorBudgetRecoveryRate",
-    0.25};
-
-// This feature functions as an experiment parameter for the
-// VeryHighPriorityForCompositing alternating, delay, and budget experiments.
-// When enabled, it does nothing unless one of these experiments is also
-// enabled. If one of these experiments is enabled it will change the behavior
-// of that experiment such that the stop signal for prioritzation of the
-// compositor is a BeginMainFrame task instead of any compositor task.
-const base::Feature kPrioritizeCompositingUntilBeginMainFrame{
-    "BlinkSchedulerPrioritizeCompositingUntilBeginMainFrame",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// LOAD PRIORITY EXPERIMENT CONTROLS
 
 // Enables setting the priority of background (with no audio) pages'
 // task queues to low priority.
@@ -194,23 +102,90 @@ const base::Feature kLowPriorityForCrossOriginOnlyWhenLoading{
     "BlinkSchedulerLowPriorityForCrossOriginOnlyWhenLoading",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable setting throttleable and freezable task types from field trial
-// parameters.
-const base::Feature kThrottleAndFreezeTaskTypes{
-    "ThrottleAndFreezeTaskTypes", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Prioritizes loading and compositing tasks while loading.
 const base::Feature kPrioritizeCompositingAndLoadingDuringEarlyLoading{
     "PrioritizeCompositingAndLoadingDuringEarlyLoading",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Parameters for |kThrottleAndFreezeTaskTypes|.
-extern const char PLATFORM_EXPORT kThrottleableTaskTypesListParam[];
-extern const char PLATFORM_EXPORT kFreezableTaskTypesListParam[];
+// Prioritizes one BeginMainFrame after input.
+const base::Feature kPrioritizeCompositingAfterInput{
+    "PrioritizeCompositingAfterInput", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable setting high priority database task type from field trial parameters.
 const base::Feature kHighPriorityDatabaseTaskType{
     "HighPriorityDatabaseTaskType", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When features::kIntensiveWakeUpThrottling is enabled, wake ups from timers
+// with a high nesting level are limited to 1 per minute on a page that has been
+// backgrounded for GetIntensiveWakeUpThrottlingGracePeriod().
+//
+// Intensive wake up throttling is enforced in addition to other throttling
+// mechanisms:
+//  - 1 wake up per second in a background page or hidden cross-origin frame
+//  - 1% CPU time in a page that has been backgrounded for 10 seconds
+//
+// Feature tracking bug: https://crbug.com/1075553
+//
+// Note that features::kIntensiveWakeUpThrottling should not be read from;
+// rather the provided accessors should be used, which also take into account
+// the managed policy override of the feature.
+//
+// Parameter name and default values, exposed for testing.
+constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Default = 5 * 60;
+
+// Exposed so that multiple tests can tinker with the policy override.
+PLATFORM_EXPORT void
+ClearIntensiveWakeUpThrottlingPolicyOverrideCacheForTesting();
+// Determines if the feature is enabled, taking into account base::Feature
+// settings and policy overrides.
+PLATFORM_EXPORT bool IsIntensiveWakeUpThrottlingEnabled();
+// Grace period after hiding a page during which there is no intensive wake up
+// throttling for the kIntensiveWakeUpThrottling feature.
+PLATFORM_EXPORT base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod();
+
+// If enabled, base::ThreadTaskRunnerHandle::Get() and
+// base::SequencedTaskRunnerHandle::Get() returns the current active
+// per-ASG task runner instead of the per-thread task runner.
+const base::Feature kMbiOverrideTaskRunnerHandle{
+    "MbiOverrideTaskRunnerHandle", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, per-AgentGroupScheduler CompositorTaskRunner will be used instead
+// of per-MainThreadScheduler CompositorTaskRunner.
+const base::Feature kMbiCompositorTaskRunnerPerAgentSchedulingGroup{
+    "MbiCompositorTaskRunnerPerAgentSchedulingGroup",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, Javascript timers are throttled to 1 wake up per
+// GetForegroundTimersThrottledWakeUpInterval() on foreground pages.
+PLATFORM_EXPORT extern const base::Feature kThrottleForegroundTimers;
+PLATFORM_EXPORT base::TimeDelta GetForegroundTimersThrottledWakeUpInterval();
+
+// Deprioritizes JS timer tasks during a particular phase of page loading.
+PLATFORM_EXPORT extern const base::Feature
+    kDeprioritizeDOMTimersDuringPageLoading;
+
+// The phase in which we deprioritize JS timer tasks.
+enum class DeprioritizeDOMTimersPhase {
+  // Until the DOMContentLoaded event is fired.
+  kOnDOMContentLoaded,
+  // Until First Contentful Paint is reached.
+  kFirstContentfulPaint,
+  // Until the load event is fired.
+  kOnLoad,
+};
+
+PLATFORM_EXPORT extern const base::FeatureParam<
+    DeprioritizeDOMTimersPhase>::Option kDeprioritizeDOMTimersPhaseOptions[];
+
+PLATFORM_EXPORT extern const base::FeatureParam<DeprioritizeDOMTimersPhase>
+    kDeprioritizeDOMTimersPhase;
+
+// Killswitch for prioritizing cross-process postMessage forwarding.
+//
+// TODO(crbug.com/1212894): Remove after M95.
+const base::Feature kDisablePrioritizedPostMessageForwarding{
+    "DisablePrioritizedPostMessageForwarding",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace scheduler
 }  // namespace blink

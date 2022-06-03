@@ -123,6 +123,10 @@ class MessageCounter {
   MessageCounter(const char* name, const char* unit);
   explicit MessageCounter(const char* name);
 
+  // Copy or assign the start_time_ of a MessageCounter is senseless.
+  MessageCounter(const MessageCounter&) = delete;
+  MessageCounter& operator=(const MessageCounter&) = delete;
+
   int message_count() const { return *count_; }
   int64_t message_size() const { return *size_; }
   int last_message_size() const { return last_size_; }
@@ -141,9 +145,6 @@ class MessageCounter {
   NoBarrierAtomicInt64 size_;
   int last_size_ = 0;
   base::Time start_time_;
-
-  // Copy or assign the start_time_ of a MessageCounter is senseless.
-  DISALLOW_COPY_AND_ASSIGN(MessageCounter);
 };
 
 MessageCounter::MessageCounter(const char* name, const char* unit)
@@ -206,6 +207,8 @@ class FakeConnectionEventLogger::CounterClientStub
   void SetKeyboardLayout(const protocol::KeyboardLayout& layout) override {}
   void SetPairingResponse(const protocol::PairingResponse& response) override {}
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override {}
+  void SetTransportInfo(
+      const protocol::TransportInfo& transport_info) override {}
 };
 
 FakeConnectionEventLogger::CounterClientStub::CounterClientStub()
@@ -225,6 +228,8 @@ class FakeConnectionEventLogger::CounterHostStub
  private:
   void ControlAudio(const protocol::AudioControl& audio_control) override {}
   void ControlVideo(const protocol::VideoControl& video_control) override {}
+  void ControlPeerConnection(
+      const protocol::PeerConnectionParameters& parameters) override {}
   void DeliverClientMessage(const protocol::ExtensionMessage& message) override;
   void NotifyClientResolution(
       const protocol::ClientResolution& resolution) override {}

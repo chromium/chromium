@@ -25,6 +25,12 @@ class NetworkDownloadPendingURLLoaderFactory
           proxy_factory_remote,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           proxy_factory_receiver);
+
+  NetworkDownloadPendingURLLoaderFactory(
+      const NetworkDownloadPendingURLLoaderFactory&) = delete;
+  NetworkDownloadPendingURLLoaderFactory& operator=(
+      const NetworkDownloadPendingURLLoaderFactory&) = delete;
+
   ~NetworkDownloadPendingURLLoaderFactory() override;
 
  protected:
@@ -37,8 +43,6 @@ class NetworkDownloadPendingURLLoaderFactory
   mojo::PendingRemote<network::mojom::URLLoaderFactory> proxy_factory_remote_;
   mojo::PendingReceiver<network::mojom::URLLoaderFactory>
       proxy_factory_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkDownloadPendingURLLoaderFactory);
 };
 
 }  // namespace content

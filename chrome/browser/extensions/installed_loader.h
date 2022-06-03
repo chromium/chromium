@@ -16,6 +16,22 @@ class ExtensionRegistry;
 class ExtensionService;
 struct ExtensionInfo;
 
+// Used in histogram Extensions.HostPermissions.GrantedAccess,
+// Extensions.HostPermissions.GrantedAccessForBroadRequests and
+// Extensions.HostPermissions.GrantedAccessForTargetedRequests.
+// Entries should not be renumbered and numeric values should never be reused.
+// If you are adding to this enum, update HostPermissionAccess enum in
+// tools/metrics/histograms/enums.xml.
+enum class HostPermissionsAccess {
+  kCannotAffect = 0,
+  kNotRequested = 1,
+  kOnClick = 2,
+  kOnSpecificSites = 3,
+  kOnAllRequestedSites = 4,
+  kOnActiveTabOnly = 5,
+  kMaxValue = kOnActiveTabOnly,
+};
+
 // Loads installed extensions from the prefs.
 class InstalledLoader {
  public:

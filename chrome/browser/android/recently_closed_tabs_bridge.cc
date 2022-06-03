@@ -15,6 +15,7 @@
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -34,7 +35,7 @@ void JNI_RecentlyClosedBridge_AddTabToList(
   Java_RecentlyClosedBridge_pushTab(
       env, jtabs_list, tab.id.id(),
       ConvertUTF16ToJavaString(env, current_navigation.title()),
-      ConvertUTF8ToJavaString(env, current_navigation.virtual_url().spec()));
+      url::GURLAndroid::FromNativeGURL(env, current_navigation.virtual_url()));
 }
 
 void JNI_RecentlyClosedBridge_AddTabsToList(
@@ -128,7 +129,7 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedTab(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) {
   EnsureTabRestoreService();
-  if (!tab_restore_service_ || TabModelList::empty() ||
+  if (!tab_restore_service_ || TabModelList::models().empty() ||
       tab_restore_service_->entries().empty())
     return false;
 
@@ -156,7 +157,7 @@ void RecentlyClosedTabsBridge::TabRestoreServiceChanged(
 
 void RecentlyClosedTabsBridge::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
-  tab_restore_service_ = NULL;
+  tab_restore_service_ = nullptr;
 }
 
 void RecentlyClosedTabsBridge::EnsureTabRestoreService() {
@@ -165,7 +166,7 @@ void RecentlyClosedTabsBridge::EnsureTabRestoreService() {
 
   tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
 
-  // TabRestoreServiceFactory::GetForProfile() can return NULL (e.g. in
+  // TabRestoreServiceFactory::GetForProfile() can return nullptr (e.g. in
   // incognito mode).
   if (tab_restore_service_) {
     // This does nothing if the tabs have already been loaded or they

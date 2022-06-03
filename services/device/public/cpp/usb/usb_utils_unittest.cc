@@ -156,7 +156,7 @@ TEST_F(UsbUtilsTest, MatchInterfaceProtocolNegative) {
 
 TEST_F(UsbUtilsTest, MatchSerialNumber) {
   auto filter = mojom::UsbDeviceFilter::New();
-  filter->serial_number = base::ASCIIToUTF16("ABC123");
+  filter->serial_number = u"ABC123";
   EXPECT_TRUE(UsbDeviceFilterMatches(*filter, GetPhoneInfo()));
   filter->has_vendor_id = true;
   filter->vendor_id = 0x18d1;
@@ -164,8 +164,69 @@ TEST_F(UsbUtilsTest, MatchSerialNumber) {
   filter->vendor_id = 0x18d2;
   EXPECT_FALSE(UsbDeviceFilterMatches(*filter, GetPhoneInfo()));
   filter->vendor_id = 0x18d1;
-  filter->serial_number = base::ASCIIToUTF16("DIFFERENT");
+  filter->serial_number = u"DIFFERENT";
   EXPECT_FALSE(UsbDeviceFilterMatches(*filter, GetPhoneInfo()));
+}
+
+TEST_F(UsbUtilsTest, MatchDeviceClass) {
+  auto device_info = mojom::UsbDeviceInfo::New();
+  device_info->class_code = 1;
+  device_info->subclass_code = 2;
+  device_info->protocol_code = 3;
+
+  auto matching_class_filter = mojom::UsbDeviceFilter::New();
+  matching_class_filter->has_class_code = true;
+  matching_class_filter->class_code = 1;
+  EXPECT_TRUE(UsbDeviceFilterMatches(*matching_class_filter, *device_info));
+
+  auto nonmatching_class_filter = mojom::UsbDeviceFilter::New();
+  nonmatching_class_filter->has_class_code = true;
+  nonmatching_class_filter->class_code = 2;
+  EXPECT_FALSE(UsbDeviceFilterMatches(*nonmatching_class_filter, *device_info));
+
+  auto matching_subclass_filter = mojom::UsbDeviceFilter::New();
+  matching_subclass_filter->has_class_code = true;
+  matching_subclass_filter->class_code = 1;
+  matching_subclass_filter->has_subclass_code = true;
+  matching_subclass_filter->subclass_code = 2;
+  EXPECT_TRUE(UsbDeviceFilterMatches(*matching_subclass_filter, *device_info));
+
+  auto nonmatching_subclass_filter = mojom::UsbDeviceFilter::New();
+  nonmatching_subclass_filter->has_class_code = true;
+  nonmatching_subclass_filter->class_code = 1;
+  nonmatching_subclass_filter->has_subclass_code = true;
+  nonmatching_subclass_filter->subclass_code = 3;
+  EXPECT_FALSE(
+      UsbDeviceFilterMatches(*nonmatching_subclass_filter, *device_info));
+
+  auto matching_protocol_filter = mojom::UsbDeviceFilter::New();
+  matching_protocol_filter->has_class_code = true;
+  matching_protocol_filter->class_code = 1;
+  matching_protocol_filter->has_subclass_code = true;
+  matching_protocol_filter->subclass_code = 2;
+  matching_protocol_filter->has_protocol_code = true;
+  matching_protocol_filter->protocol_code = 3;
+  EXPECT_TRUE(UsbDeviceFilterMatches(*matching_protocol_filter, *device_info));
+
+  auto nonmatching_protocol_filter = mojom::UsbDeviceFilter::New();
+  nonmatching_protocol_filter->has_class_code = true;
+  nonmatching_protocol_filter->class_code = 1;
+  nonmatching_protocol_filter->has_subclass_code = true;
+  nonmatching_protocol_filter->subclass_code = 2;
+  nonmatching_protocol_filter->has_protocol_code = true;
+  nonmatching_protocol_filter->protocol_code = 1;
+  EXPECT_FALSE(
+      UsbDeviceFilterMatches(*nonmatching_protocol_filter, *device_info));
+
+  // Without |has_subclass_code| set the |protocol_code| filter should be
+  // ignored.
+  auto invalid_matching_protocol_filter = mojom::UsbDeviceFilter::New();
+  invalid_matching_protocol_filter->has_class_code = true;
+  invalid_matching_protocol_filter->class_code = 1;
+  invalid_matching_protocol_filter->has_protocol_code = true;
+  invalid_matching_protocol_filter->protocol_code = 2;
+  EXPECT_TRUE(
+      UsbDeviceFilterMatches(*invalid_matching_protocol_filter, *device_info));
 }
 
 TEST_F(UsbUtilsTest, MatchAnyEmptyList) {

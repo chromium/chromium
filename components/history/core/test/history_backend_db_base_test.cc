@@ -7,8 +7,8 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
@@ -50,7 +50,7 @@ class BackendDelegate : public HistoryBackend::Delegate {
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {}
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
-                                      const base::string16& term) override {}
+                                      const std::u16string& term) override {}
   void NotifyKeywordSearchTermDeleted(URLID url_id) override {}
   void DBLoaded() override {}
 
@@ -146,6 +146,7 @@ bool HistoryBackendDBBaseTest::AddDownload(uint32_t id,
   download.transient = true;
   download.by_ext_id = "by_ext_id";
   download.by_ext_name = "by_ext_name";
+  download.reroute_info_serialized = "";
   return db_->CreateDownload(download);
 }
 

@@ -8,7 +8,6 @@
 #include <fuchsia/modular/cpp/fidl.h>
 
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/macros.h"
 
 namespace sys {
 class OutgoingDirectory;
@@ -19,22 +18,22 @@ namespace cr_fuchsia {
 // Implements the fuchsia.modular.Lifecycle protocol, by invoking the supplied
 // graceful teardown Callback when Terminate() is called, or when the Lifecycle
 // client drops the channel.
-class LifecycleImpl : public ::fuchsia::modular::Lifecycle {
+class LifecycleImpl final : public ::fuchsia::modular::Lifecycle {
  public:
   LifecycleImpl(sys::OutgoingDirectory* outgoing_directory,
                 base::OnceClosure on_terminate);
   ~LifecycleImpl() override;
 
+  LifecycleImpl(const LifecycleImpl&) = delete;
+  LifecycleImpl& operator=(const LifecycleImpl&) = delete;
+
   // fuchsia::modular::Lifecycle implementation.
   void Terminate() override;
 
  private:
-  const base::fuchsia::ScopedServiceBinding<::fuchsia::modular::Lifecycle>
-      binding_;
+  const base::ScopedServiceBinding<::fuchsia::modular::Lifecycle> binding_;
 
   base::OnceClosure on_terminate_;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleImpl);
 };
 
 }  // namespace cr_fuchsia

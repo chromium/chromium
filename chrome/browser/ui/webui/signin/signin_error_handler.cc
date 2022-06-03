@@ -10,7 +10,7 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -18,7 +18,7 @@
 SigninErrorHandler::SigninErrorHandler(Browser* browser, bool is_system_profile)
     : browser_(browser), is_system_profile_(is_system_profile) {
   // |browser_| must not be null when this dialog is presented from the
-  // user manager.
+  // profile picker.
   DCHECK(browser_ || is_system_profile_);
   BrowserList::AddObserver(this);
 }
@@ -33,19 +33,19 @@ void SigninErrorHandler::OnBrowserRemoved(Browser* browser) {
 }
 
 void SigninErrorHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "confirm", base::BindRepeating(&SigninErrorHandler::HandleConfirm,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "switchToExistingProfile",
       base::BindRepeating(&SigninErrorHandler::HandleSwitchToExistingProfile,
                           base::Unretained(this)));
   if (!is_system_profile_) {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "learnMore", base::BindRepeating(&SigninErrorHandler::HandleLearnMore,
                                          base::Unretained(this)));
   }
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializedWithSize",
       base::BindRepeating(&SigninErrorHandler::HandleInitializedWithSize,
                           base::Unretained(this)));
@@ -66,8 +66,7 @@ void SigninErrorHandler::HandleSwitchToExistingProfile(
   // Switch to the existing duplicate profile. Do not create a new window when
   // any existing ones can be reused.
   profiles::SwitchToProfile(path_switching_to, false,
-                            ProfileManager::CreateCallback(),
-                            ProfileMetrics::SWITCH_PROFILE_DUPLICATE);
+                            ProfileManager::CreateCallback());
 }
 
 void SigninErrorHandler::HandleConfirm(const base::ListValue* args) {
@@ -87,21 +86,14 @@ void SigninErrorHandler::HandleInitializedWithSize(
     const base::ListValue* args) {
   AllowJavascript();
   if (duplicate_profile_path_.empty())
-    CallJavascriptFunction("signin.error.removeSwitchButton");
+    FireWebUIListener("switch-button-unavailable");
 
   signin::SetInitializedModalHeight(browser_, web_ui(), args);
-
-  // After the dialog is shown, some platforms might have an element focused.
-  // To be consistent, clear the focused element on all platforms.
-  // TODO(anthonyvd): Figure out why this is needed on Mac and not other
-  // platforms and if there's a way to start unfocused while avoiding this
-  // workaround.
-  CallJavascriptFunction("signin.error.clearFocus");
 }
 
 void SigninErrorHandler::CloseDialog() {
   if (is_system_profile_) {
-    CloseUserManagerProfileDialog();
+    CloseProfilePickerForceSigninDialog();
   } else if (browser_){
     CloseBrowserModalSigninDialog();
   }
@@ -111,6 +103,6 @@ void SigninErrorHandler::CloseBrowserModalSigninDialog() {
   browser_->signin_view_controller()->CloseModalSignin();
 }
 
-void SigninErrorHandler::CloseUserManagerProfileDialog() {
-  UserManagerProfileDialog::HideDialog();
+void SigninErrorHandler::CloseProfilePickerForceSigninDialog() {
+  ProfilePickerForceSigninDialog::HideDialog();
 }

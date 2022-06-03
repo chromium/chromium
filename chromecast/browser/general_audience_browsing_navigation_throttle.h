@@ -23,6 +23,12 @@ class GeneralAudienceBrowsingNavigationThrottle
   GeneralAudienceBrowsingNavigationThrottle(
       content::NavigationHandle* navigation_handle,
       GeneralAudienceBrowsingService* general_audience_browsing_service);
+
+  GeneralAudienceBrowsingNavigationThrottle(
+      const GeneralAudienceBrowsingNavigationThrottle&) = delete;
+  GeneralAudienceBrowsingNavigationThrottle& operator=(
+      const GeneralAudienceBrowsingNavigationThrottle&) = delete;
+
   ~GeneralAudienceBrowsingNavigationThrottle() override;
 
   // NavigationThrottle overrides.
@@ -48,8 +54,6 @@ class GeneralAudienceBrowsingNavigationThrottle
 
   base::WeakPtrFactory<GeneralAudienceBrowsingNavigationThrottle>
       weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneralAudienceBrowsingNavigationThrottle);
 };
 
 }  // namespace chromecast

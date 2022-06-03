@@ -7,13 +7,9 @@
 
 #include <atk/atk.h>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/accessibility/ax_export.h"
-
-#if defined(USE_X11)
-#include "ui/gfx/x/x11.h"
-#endif
+#include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 namespace ui {
 
@@ -43,8 +39,20 @@ class AX_EXPORT AtkUtilAuraLinux {
 
   AtkUtilAuraLinux() = default;
 
+  AtkUtilAuraLinux(const AtkUtilAuraLinux&) = delete;
+  AtkUtilAuraLinux& operator=(const AtkUtilAuraLinux&) = delete;
+
   void InitializeAsync();
   void InitializeForTesting();
+
+  bool IsAtSpiReady();
+  void SetAtSpiReady(bool ready);
+
+  // Nodes with postponed events will get the function RunPostponedEvents()
+  // called as soon as AT-SPI is detected to be ready
+  void PostponeEventsFor(AXPlatformNodeAuraLinux* node);
+
+  void CancelPostponedEventsFor(AXPlatformNodeAuraLinux* node);
 
   static DiscardAtkKeyEvent HandleAtkKeyEvent(AtkKeyEventStruct* key_event);
 
@@ -55,7 +63,7 @@ class AX_EXPORT AtkUtilAuraLinux {
 
   void PlatformInitializeAsync();
 
-  DISALLOW_COPY_AND_ASSIGN(AtkUtilAuraLinux);
+  bool at_spi_ready_ = false;
 };
 
 }  // namespace ui

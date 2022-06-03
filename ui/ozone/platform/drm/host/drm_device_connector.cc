@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/ozone/platform/drm/host/host_drm_device.h"
@@ -21,14 +21,6 @@ DrmDeviceConnector::DrmDeviceConnector(
 
 DrmDeviceConnector::~DrmDeviceConnector() = default;
 
-void DrmDeviceConnector::OnGpuProcessLaunched(
-    int host_id,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> send_runner,
-    base::RepeatingCallback<void(IPC::Message*)> send_callback) {
-  NOTREACHED();
-}
-
 void DrmDeviceConnector::OnChannelDestroyed(int host_id) {
   if (host_id != host_id_)
     return;
@@ -37,15 +29,8 @@ void DrmDeviceConnector::OnChannelDestroyed(int host_id) {
 
 void DrmDeviceConnector::OnGpuServiceLaunched(
     int host_id,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
     GpuHostBindInterfaceCallback binder,
     GpuHostTerminateCallback terminate_callback) {
-  // We can get into this state if a new instance of GpuProcessHost is created
-  // before the old one is destroyed.
-  if (host_drm_device_->IsConnected())
-    host_drm_device_->OnGpuServiceLost();
-
   // We need to preserve |binder| to let us bind interfaces later.
   binder_callback_ = std::move(binder);
   host_id_ = host_id;
@@ -53,13 +38,14 @@ void DrmDeviceConnector::OnGpuServiceLaunched(
   mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device;
   BindInterfaceDrmDevice(&drm_device);
 
-  host_drm_device_->OnGpuServiceLaunchedOnIOThread(std::move(drm_device),
-                                                   ui_runner);
-}
-
-void DrmDeviceConnector::OnMessageReceived(const IPC::Message& message) {
-  NOTREACHED() << "This class should only be used with mojo transport but here "
-                  "we're wrongly getting invoked to handle IPC communication.";
+  // This method is called before ash::Shell::Init which breaks assumptions
+  // since the displays won't be marked as dummy but we don't have the active
+  // list yet from the GPU process.
+  // TODO(rjkroege): simplify this code path once GpuProcessHost always lives
+  // on the UI thread.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&HostDrmDevice::OnGpuServiceLaunched,
+                                host_drm_device_, std::move(drm_device)));
 }
 
 void DrmDeviceConnector::BindInterfaceDrmDevice(
@@ -70,8 +56,7 @@ void DrmDeviceConnector::BindInterfaceDrmDevice(
 
 void DrmDeviceConnector::ConnectSingleThreaded(
     mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device) {
-  host_drm_device_->OnGpuServiceLaunchedOnIOThread(
-      std::move(drm_device), base::ThreadTaskRunnerHandle::Get());
+  host_drm_device_->OnGpuServiceLaunched(std::move(drm_device));
 }
 
 }  // namespace ui

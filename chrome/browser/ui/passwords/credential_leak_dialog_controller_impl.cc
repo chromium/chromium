@@ -16,9 +16,8 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
-    CredentialLeakType leak_type,
-    const GURL& origin)
-    : delegate_(delegate), leak_type_(leak_type), origin_(origin) {}
+    CredentialLeakType leak_type)
+    : delegate_(delegate), leak_type_(leak_type) {}
 
 CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
   ResetDialog();
@@ -47,7 +46,8 @@ void CredentialLeakDialogControllerImpl::OnAcceptDialog() {
     LogLeakDialogTypeAndDismissalReason(
         password_manager::GetLeakDialogType(leak_type_),
         LeakDialogDismissalReason::kClickedCheckPasswords);
-    delegate_->NavigateToPasswordCheckup();
+    delegate_->NavigateToPasswordCheckup(
+        password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
   } else {
     LogLeakDialogTypeAndDismissalReason(
         password_manager::GetLeakDialogType(leak_type_),
@@ -63,21 +63,21 @@ void CredentialLeakDialogControllerImpl::OnCloseDialog() {
   delegate_->OnLeakDialogHidden();
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
+std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
     const {
   return password_manager::GetAcceptButtonLabel(leak_type_);
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
+std::u16string CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
     const {
   return password_manager::GetCancelButtonLabel();
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetDescription() const {
-  return password_manager::GetDescription(leak_type_, origin_);
+std::u16string CredentialLeakDialogControllerImpl::GetDescription() const {
+  return password_manager::GetDescription(leak_type_);
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetTitle() const {
+std::u16string CredentialLeakDialogControllerImpl::GetTitle() const {
   return password_manager::GetTitle(leak_type_);
 }
 

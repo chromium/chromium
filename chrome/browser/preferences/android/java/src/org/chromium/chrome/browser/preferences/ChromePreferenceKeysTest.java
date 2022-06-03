@@ -5,16 +5,18 @@
 package org.chromium.chrome.browser.preferences;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,14 +40,33 @@ public class ChromePreferenceKeysTest {
     @Test
     @SmallTest
     public void testKeysAreNotReused() {
-        doTestKeysAreNotReused(ChromePreferenceKeys.createKeysInUse(),
-                ChromePreferenceKeys.createDeprecatedKeysForTesting());
+        doTestKeysAreNotReused(ChromePreferenceKeys.getKeysInUse(),
+                LegacyChromePreferenceKeys.getKeysInUse(),
+                DeprecatedChromePreferenceKeys.getKeysForTesting(),
+                LegacyChromePreferenceKeys.getPrefixesInUse(),
+                DeprecatedChromePreferenceKeys.getPrefixesForTesting());
     }
 
-    private void doTestKeysAreNotReused(List<String> usedList, List<String> deprecatedList) {
+    private void doTestKeysAreNotReused(List<String> usedList, List<String> legacyUsedList,
+            List<String> deprecatedList, List<KeyPrefix> usedLegacyPrefixList,
+            List<KeyPrefix> deprecatedLegacyPrefixList) {
         // Check for duplicate keys in [keys in use].
         Set<String> usedSet = new HashSet<>(usedList);
         assertEquals(usedList.size(), usedSet.size());
+
+        Set<String> legacyUsedSet = new HashSet<>(legacyUsedList);
+        assertEquals(legacyUsedList.size(), legacyUsedSet.size());
+
+        Set<String> intersection = new HashSet<>(usedSet);
+        intersection.retainAll(legacyUsedSet);
+        if (!intersection.isEmpty()) {
+            fail("\"" + intersection.iterator().next()
+                    + "\" is both in ChromePreferenceKeys' regular and legacy "
+                    + "[keys in use]");
+        }
+
+        Set<String> allKeysInUse = new HashSet<>(usedSet);
+        allKeysInUse.addAll(legacyUsedSet);
 
         // Check for duplicate keys in [deprecated keys].
         Set<String> deprecatedSet = new HashSet<>(deprecatedList);
@@ -53,12 +74,22 @@ public class ChromePreferenceKeysTest {
 
         // Check for keys in [deprecated keys] that are now also [keys in use]. This ensures no
         // deprecated keys are reused.
-        Set<String> intersection = new HashSet<>(usedSet);
+        intersection = new HashSet<>(allKeysInUse);
         intersection.retainAll(deprecatedSet);
         if (!intersection.isEmpty()) {
             fail("\"" + intersection.iterator().next()
                     + "\" is both in ChromePreferenceKeys' [keys in use] and in "
                     + "[deprecated keys]");
+        }
+
+        // Check for keys that match a legacy prefix, deprecated or not.
+        List<KeyPrefix> legacyPrefixes = new ArrayList<>(usedLegacyPrefixList);
+        legacyPrefixes.addAll(deprecatedLegacyPrefixList);
+
+        for (String usedKey : usedSet) {
+            for (KeyPrefix legacyPrefix : legacyPrefixes) {
+                assertFalse(legacyPrefix.hasGenerated(usedKey));
+            }
         }
     }
 
@@ -67,69 +98,130 @@ public class ChromePreferenceKeysTest {
     @Test
     @SmallTest
     public void testReuseCheck_emptyLists() {
-        doTestKeysAreNotReused(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        doTestKeysAreNotReused(Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testReuseCheck_duplicateKey_used() {
-        doTestKeysAreNotReused(Arrays.asList("UsedKey1", "UsedKey1"),
-                Arrays.asList("DeprecatedKey1", "DeprecatedKey2"));
+        doTestKeysAreNotReused(Arrays.asList("UsedKey1", "UsedKey1"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testReuseCheck_duplicateKey_legacy() {
+        doTestKeysAreNotReused(Collections.EMPTY_LIST, Arrays.asList("LegacyKey1", "LegacyKey1"),
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testReuseCheck_duplicateKey_deprecated() {
-        doTestKeysAreNotReused(Arrays.asList("UsedKey1", "UsedKey2"),
-                Arrays.asList("DeprecatedKey1", "DeprecatedKey1"));
+        doTestKeysAreNotReused(Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+                Arrays.asList("DeprecatedKey1", "DeprecatedKey1"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST);
     }
 
     @Test
     @SmallTest
     public void testReuseCheck_noIntersection() {
         doTestKeysAreNotReused(Arrays.asList("UsedKey1", "UsedKey2"),
-                Arrays.asList("DeprecatedKey1", "DeprecatedKey2"));
+                Arrays.asList("LegacyKey1", "LegacyKey2"),
+                Arrays.asList("DeprecatedKey1", "DeprecatedKey2"),
+                Arrays.asList(
+                        new KeyPrefix("UsedLegacyFormat1*"), new KeyPrefix("UsedLegacyFormat2*")),
+                Arrays.asList(
+                        new KeyPrefix("DeprecatedFormat1*"), new KeyPrefix("DeprecatedFormat2*")));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
-    public void testReuseCheck_intersection() {
-        doTestKeysAreNotReused(Arrays.asList("UsedKey1", "ReusedKey"),
-                Arrays.asList("ReusedKey", "DeprecatedKey1"));
+    public void testReuseCheck_intersectionUsedAndLegacy() {
+        doTestKeysAreNotReused(Arrays.asList("ReusedKey", "UsedKey1"),
+                Arrays.asList("LegacyKey1", "ReusedKey"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testReuseCheck_intersectionUsedAndDeprecated() {
+        doTestKeysAreNotReused(Arrays.asList("UsedKey1", "ReusedKey"), Collections.EMPTY_LIST,
+                Arrays.asList("ReusedKey", "DeprecatedKey1"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST);
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testReuseCheck_intersectionLegacyAndDeprecated() {
+        doTestKeysAreNotReused(Collections.EMPTY_LIST, Arrays.asList("LegacyKey1", "ReusedKey"),
+                Arrays.asList("ReusedKey", "DeprecatedKey1"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST);
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testReuseCheck_intersectionUsedLegacyFormat_prefix() {
+        doTestKeysAreNotReused(Arrays.asList("UsedKey1"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST, Arrays.asList(new KeyPrefix("UsedKey*")),
+                Collections.EMPTY_LIST);
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testReuseCheck_intersectionDeprecatedLegacyFormat_prefix() {
+        doTestKeysAreNotReused(Arrays.asList("UsedKey1"), Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+                Arrays.asList(new KeyPrefix("Used*")));
     }
 
     /**
-     * Test that the keys in use conform to the format:
+     * Test that the keys in use (not legacy) conform to the format:
      * "Chrome.[Feature].[Key]"
-     *
-     * Old constants are grandfathered in.
      */
     @Test
     @SmallTest
     public void testKeysConformToFormat() {
-        doTestKeysConformToFormat(ChromePreferenceKeys.createKeysInUse(),
-                ChromePreferenceKeys.createGrandfatheredFormatKeys());
+        doTestKeysConformToFormat(ChromePreferenceKeys.getKeysInUse());
     }
 
-    private void doTestKeysConformToFormat(List<String> usedList, List<String> grandfathered) {
-        Set<String> grandfatheredSet = new HashSet<>(grandfathered);
-        String term = "([A-Z][a-z0-9]*)+";
-        Pattern regex = Pattern.compile("Chrome\\." + term + "\\." + term + "(\\.\\*)?");
+    /**
+     * Old legacy constants are checked to see if they shouldn't be in
+     * {@link ChromePreferenceKeys#getKeysInUse()}.
+     */
+    @Test
+    @SmallTest
+    public void testLegacyKeysDoNotConformToFormat() {
+        doTestKeysDoNotConformToFormat(LegacyChromePreferenceKeys.getKeysInUse());
+    }
 
+    private void doTestKeysConformToFormat(List<String> usedList) {
+        Pattern regex = buildValidKeyFormatPattern();
         for (String keyInUse : usedList) {
-            if (grandfatheredSet.contains(keyInUse)) {
-                continue;
-            }
-
             assertTrue("\"" + keyInUse + "\" does not conform to format \"Chrome.[Feature].[Key]\"",
                     regex.matcher(keyInUse).matches());
         }
     }
 
+    private void doTestKeysDoNotConformToFormat(List<String> legacyList) {
+        Pattern regex = buildValidKeyFormatPattern();
+        for (String keyInUse : legacyList) {
+            assertFalse("\"" + keyInUse
+                            + "\" conforms to format \"Chrome.[Feature].[Key]\", move it to ChromePreferenceKeys.createKeysInUse()",
+                    regex.matcher(keyInUse).matches());
+        }
+    }
+
+    private static Pattern buildValidKeyFormatPattern() {
+        String term = "([A-Z][a-z0-9]*)+";
+        return Pattern.compile("Chrome\\." + term + "\\." + term + "(\\.\\*)?");
+    }
+
     // Below are tests to ensure that doTestKeysConformToFormat() works.
 
     private static class TestFormatConstantsClass {
-        static final String GRANDFATHERED_IN = "grandfathered_in";
+        static final String LEGACY_IN = "legacy_in";
         static final String NEW1 = "Chrome.FeatureOne.Key1";
         static final String NEW2 = "Chrome.Foo.Key";
         static final String BROKEN_PREFIX = "Chrom.Foo.Key";
@@ -146,67 +238,54 @@ public class ChromePreferenceKeysTest {
     @SmallTest
     public void testFormatCheck_correct() {
         doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN,
-                        TestFormatConstantsClass.NEW1, TestFormatConstantsClass.NEW2),
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN));
+                Arrays.asList(TestFormatConstantsClass.NEW1, TestFormatConstantsClass.NEW2));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testFormatCheck_invalidFormat() {
-        doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN,
-                        TestFormatConstantsClass.NEW1, TestFormatConstantsClass.NEW2),
-                Collections.emptyList());
+        doTestKeysConformToFormat(Arrays.asList(TestFormatConstantsClass.LEGACY_IN,
+                TestFormatConstantsClass.NEW1, TestFormatConstantsClass.NEW2));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testFormatCheck_brokenPrefix() {
-        doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN,
-                        TestFormatConstantsClass.NEW1, TestFormatConstantsClass.BROKEN_PREFIX),
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN));
+        doTestKeysConformToFormat(Arrays.asList(
+                TestFormatConstantsClass.NEW1, TestFormatConstantsClass.BROKEN_PREFIX));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
-    public void testFormatCheck_MissingFeature() {
-        doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN,
-                        TestFormatConstantsClass.NEW1, TestFormatConstantsClass.MISSING_FEATURE),
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN));
+    public void testFormatCheck_missingFeature() {
+        doTestKeysConformToFormat(Arrays.asList(
+                TestFormatConstantsClass.NEW1, TestFormatConstantsClass.MISSING_FEATURE));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
-    public void testFormatCheck_LowercaseKey() {
-        doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN,
-                        TestFormatConstantsClass.NEW1, TestFormatConstantsClass.LOWERCASE_KEY),
-                Arrays.asList(TestFormatConstantsClass.GRANDFATHERED_IN));
+    public void testFormatCheck_lowercaseKey() {
+        doTestKeysConformToFormat(Arrays.asList(
+                TestFormatConstantsClass.NEW1, TestFormatConstantsClass.LOWERCASE_KEY));
     }
 
     @Test
     @SmallTest
     public void testFormatCheck_prefixCorrect() {
-        doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.PREFIX.pattern()), Collections.emptyList());
+        doTestKeysConformToFormat(Arrays.asList(TestFormatConstantsClass.PREFIX.pattern()));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
-    public void testFormatCheck_prefixExtralevel() {
+    public void testFormatCheck_prefixExtraLevel() {
         doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.PREFIX_EXTRA_LEVEL.pattern()),
-                Collections.emptyList());
+                Arrays.asList(TestFormatConstantsClass.PREFIX_EXTRA_LEVEL.pattern()));
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testFormatCheck_prefixMissingLevel() {
         doTestKeysConformToFormat(
-                Arrays.asList(TestFormatConstantsClass.PREFIX_MISSING_LEVEL.pattern()),
-                Collections.emptyList());
+                Arrays.asList(TestFormatConstantsClass.PREFIX_MISSING_LEVEL.pattern()));
     }
 }

@@ -7,12 +7,13 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/image_cursors.h"
+#include "ui/base/cursor/cursor_loader.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/layout.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
@@ -54,7 +55,7 @@ void NotifyMouseEventsEnableStateChange(bool enabled) {
 }  // namespace
 
 NativeCursorManagerAsh::NativeCursorManagerAsh()
-    : native_cursor_enabled_(true), image_cursors_(new ui::ImageCursors) {}
+    : native_cursor_enabled_(true) {}
 
 NativeCursorManagerAsh::~NativeCursorManagerAsh() = default;
 
@@ -65,32 +66,21 @@ void NativeCursorManagerAsh::SetNativeCursorEnabled(bool enabled) {
   SetCursor(cursor_manager->GetCursor(), cursor_manager);
 }
 
-float NativeCursorManagerAsh::GetScale() const {
-  return image_cursors_->GetScale();
-}
-
 display::Display::Rotation NativeCursorManagerAsh::GetRotation() const {
-  return image_cursors_->GetRotation();
+  return cursor_loader_.rotation();
 }
 
 void NativeCursorManagerAsh::SetDisplay(
     const display::Display& display,
     ::wm::NativeCursorManagerDelegate* delegate) {
   DCHECK(display.is_valid());
-  auto managed_display_info =
-      Shell::Get()->display_manager()->GetDisplayInfo(display.id());
 
-  // Use the platform's device scale factor instead of the display's, which
-  // might have been adjusted for the UI scale.
-  const float original_scale = managed_display_info.device_scale_factor();
+  const float original_scale = display.device_scale_factor();
   // And use the nearest resource scale factor.
-  const float cursor_scale =
-      ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(original_scale));
+  const float cursor_scale = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactor(original_scale));
 
-  display::Display panel_adjusted(display);
-  panel_adjusted.set_rotation(managed_display_info.GetLogicalActiveRotation());
-
-  if (image_cursors_->SetDisplay(panel_adjusted, cursor_scale))
+  if (cursor_loader_.SetDisplayData(display.panel_rotation(), cursor_scale))
     SetCursor(delegate->GetCursor(), delegate);
 
   Shell::Get()
@@ -103,13 +93,14 @@ void NativeCursorManagerAsh::SetCursor(
     gfx::NativeCursor cursor,
     ::wm::NativeCursorManagerDelegate* delegate) {
   if (native_cursor_enabled_) {
-    image_cursors_->SetPlatformCursor(&cursor);
+    cursor_loader_.SetPlatformCursor(&cursor);
   } else {
-    gfx::NativeCursor invisible_cursor(ui::CursorType::kNone);
-    image_cursors_->SetPlatformCursor(&invisible_cursor);
+    gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
+    cursor_loader_.SetPlatformCursor(&invisible_cursor);
     cursor.SetPlatformCursor(invisible_cursor.platform());
+    if (cursor.type() != ui::mojom::CursorType::kCustom)
+      cursor.set_image_scale_factor(cursor_loader_.scale());
   }
-  cursor.set_device_scale_factor(image_cursors_->GetScale());
 
   delegate->CommitCursor(cursor);
 
@@ -120,7 +111,7 @@ void NativeCursorManagerAsh::SetCursor(
 void NativeCursorManagerAsh::SetCursorSize(
     ui::CursorSize cursor_size,
     ::wm::NativeCursorManagerDelegate* delegate) {
-  image_cursors_->SetCursorSize(cursor_size);
+  cursor_loader_.SetSize(cursor_size);
   delegate->CommitCursorSize(cursor_size);
 
   // Sets the cursor to reflect the scale change immediately.
@@ -141,8 +132,8 @@ void NativeCursorManagerAsh::SetVisibility(
   if (visible) {
     SetCursor(delegate->GetCursor(), delegate);
   } else {
-    gfx::NativeCursor invisible_cursor(ui::CursorType::kNone);
-    image_cursors_->SetPlatformCursor(&invisible_cursor);
+    gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
+    cursor_loader_.SetPlatformCursor(&invisible_cursor);
     SetCursorOnAllRootWindows(invisible_cursor);
   }
 

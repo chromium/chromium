@@ -7,7 +7,7 @@
 <script>
 function makeOrphanShadow() {
     var host = document.createElement("div");
-    var shadow = host.createShadowRoot();
+    var shadow = host.attachShadow({mode: 'open'});
     return shadow;
 };
 

@@ -4,7 +4,10 @@
 
 #include "ash/accessibility/test_accessibility_controller_client.h"
 
+#include <utility>
+
 #include "ash/public/cpp/accessibility_controller.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
 
@@ -25,9 +28,11 @@ void TestAccessibilityControllerClient::TriggerAccessibilityAlert(
 }
 
 void TestAccessibilityControllerClient::TriggerAccessibilityAlertWithMessage(
-    const std::string& message) {}
+    const std::string& message) {
+  last_alert_message_ = message;
+}
 
-void TestAccessibilityControllerClient::PlayEarcon(int32_t sound_key) {
+void TestAccessibilityControllerClient::PlayEarcon(Sound sound_key) {
   sound_key_ = sound_key;
 }
 
@@ -36,7 +41,8 @@ base::TimeDelta TestAccessibilityControllerClient::PlayShutdownSound() {
 }
 
 void TestAccessibilityControllerClient::HandleAccessibilityGesture(
-    ax::mojom::Gesture gesture) {
+    ax::mojom::Gesture gesture,
+    gfx::PointF location) {
   last_a11y_gesture_ = gesture;
 }
 
@@ -66,10 +72,24 @@ void TestAccessibilityControllerClient::RequestSelectToSpeakStateChange() {
 void TestAccessibilityControllerClient::
     RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen) {}
 
-int32_t TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
-  int32_t tmp = sound_key_;
-  sound_key_ = -1;
-  return tmp;
+void TestAccessibilityControllerClient::MagnifierBoundsChanged(
+    const gfx::Rect& bounds_in_screen) {}
+
+void TestAccessibilityControllerClient::OnSwitchAccessDisabled() {}
+
+void TestAccessibilityControllerClient::OnSelectToSpeakPanelAction(
+    SelectToSpeakPanelAction action,
+    double value) {
+  last_select_to_speak_panel_action_ = action;
+  last_select_to_speak_panel_action_value_ = value;
+}
+
+void TestAccessibilityControllerClient::SetA11yOverrideWindow(
+    aura::Window* a11y_override_window) {}
+
+absl::optional<Sound>
+TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
+  return std::exchange(sound_key_, absl::nullopt);
 }
 
 }  // namespace ash

@@ -15,13 +15,13 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
@@ -70,14 +70,14 @@ class DummyServerSocketFactory : public DevToolsSocketFactory {
         shutdown_callback_(std::move(shutdown_callback)) {}
 
   ~DummyServerSocketFactory() override {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   std::move(shutdown_callback_));
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                        std::move(shutdown_callback_));
   }
 
  protected:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   std::move(create_socket_callback_));
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                        std::move(create_socket_callback_));
     return std::make_unique<DummyServerSocket>();
   }
 
@@ -99,8 +99,8 @@ class FailingServerSocketFactory : public DummyServerSocketFactory {
 
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   std::move(create_socket_callback_));
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                        std::move(create_socket_callback_));
     return nullptr;
   }
 };
@@ -109,8 +109,9 @@ class BrowserClient : public ContentBrowserClient {
  public:
   BrowserClient() {}
   ~BrowserClient() override {}
-  DevToolsManagerDelegate* GetDevToolsManagerDelegate() override {
-    return new DevToolsManagerDelegate();
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override {
+    return std::make_unique<DevToolsManagerDelegate>();
   }
 };
 

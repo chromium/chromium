@@ -7,7 +7,8 @@ package org.chromium.android_webview.test.services;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.os.ParcelFileDescriptor;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.json.JSONException;
 import org.junit.Assert;
@@ -21,6 +22,7 @@ import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.services.CrashReceiverService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
+import org.chromium.base.test.util.Batch;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,10 +31,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Instrumentation tests for CrashReceiverService.
+ * Instrumentation tests for CrashReceiverService. These tests are batched as UNIT_TESTS because
+ * they don't actually launch any services or other components.
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.UNIT_TESTS)
 public class CrashReceiverServiceTest {
     private static final String TEST_CRASH_LOCAL_ID = "abc1234";
     private static final String TEST_CRASH_FILE_NAME =
@@ -95,7 +99,8 @@ public class CrashReceiverServiceTest {
         // Asserting some fields just to make sure that contents are valid.
         Assert.assertEquals(TEST_CRASH_LOCAL_ID, crashInfo.localId);
         Assert.assertEquals(testCrashFile.lastModified(), crashInfo.captureTime);
-        Assert.assertEquals(TEST_CRASH_PACKAGE, crashInfo.packageName);
+        Assert.assertEquals(
+                TEST_CRASH_PACKAGE, crashInfo.getCrashKey(CrashInfo.APP_PACKAGE_NAME_KEY));
     }
 
     private static String readEntireFile(File file) throws IOException {

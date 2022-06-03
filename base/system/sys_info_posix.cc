@@ -5,6 +5,7 @@
 #include "base/system/sys_info.h"
 
 #include <errno.h>
+#include <sched.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -15,11 +16,12 @@
 
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info_internal.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_ANDROID)
 #include <sys/vfs.h>
@@ -28,7 +30,7 @@
 #include <sys/statvfs.h>
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <linux/magic.h>
 #include <sys/vfs.h>
 #endif
@@ -56,7 +58,21 @@ int NumberOfProcessors() {
     return 1;
   }
 
-  return static_cast<int>(res);
+  int num_cpus = static_cast<int>(res);
+
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  // Restrict the CPU count based on the process's CPU affinity mask, if
+  // available.
+  cpu_set_t* cpu_set = CPU_ALLOC(num_cpus);
+  size_t cpu_set_size = CPU_ALLOC_SIZE(num_cpus);
+  int ret = sched_getaffinity(0, cpu_set_size, cpu_set);
+  if (ret == 0) {
+    num_cpus = CPU_COUNT_S(cpu_set_size, cpu_set);
+  }
+  CPU_FREE(cpu_set);
+#endif // defined(OS_LINUX) && !defined(OS_CHROMEOS
+
+  return num_cpus;
 }
 
 base::LazyInstance<base::internal::LazySysInfoValue<int, NumberOfProcessors>>::
@@ -77,7 +93,7 @@ base::LazyInstance<
     base::internal::LazySysInfoValue<int64_t, AmountOfVirtualMemory>>::Leaky
     g_lazy_virtual_memory = LAZY_INSTANCE_INITIALIZER;
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
   struct statfs stats;
 
@@ -86,13 +102,13 @@ bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
 
   switch (stats.f_type) {
     case TMPFS_MAGIC:
-    case HUGETLBFS_MAGIC:
-    case RAMFS_MAGIC:
+    case static_cast<int>(HUGETLBFS_MAGIC):
+    case static_cast<int>(RAMFS_MAGIC):
       return true;
   }
   return false;
 }
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 bool GetDiskSpaceInfo(const base::FilePath& path,
                       int64_t* available_bytes,
@@ -101,7 +117,7 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
   if (HANDLE_EINTR(statvfs(path.value().c_str(), &stats)) != 0)
     return false;
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const bool zero_size_means_unlimited =
       stats.f_blocks == 0 && IsStatsZeroIfUnlimited(path);
 #else
@@ -160,7 +176,7 @@ int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
   return total;
 }
 
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID)
 // static
 std::string SysInfo::OperatingSystemName() {
   struct utsname info;
@@ -170,9 +186,10 @@ std::string SysInfo::OperatingSystemName() {
   }
   return std::string(info.sysname);
 }
-#endif  //! defined(OS_MACOSX) && !defined(OS_ANDROID)
+#endif  //! defined(OS_APPLE) && !defined(OS_ANDROID)
 
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 std::string SysInfo::OperatingSystemVersion() {
   struct utsname info;
@@ -184,7 +201,8 @@ std::string SysInfo::OperatingSystemVersion() {
 }
 #endif
 
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID) && \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
@@ -208,6 +226,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 }
 #endif
 
+#if !defined(OS_MAC) && !defined(OS_IOS)
 // static
 std::string SysInfo::OperatingSystemArchitecture() {
   struct utsname info;
@@ -225,6 +244,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
   }
   return arch;
 }
+#endif  // !defined(OS_MAC) && !defined(OS_IOS)
 
 // static
 size_t SysInfo::VMAllocationGranularity() {

@@ -6,13 +6,12 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_LANGUAGE_LIST_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 class GURL;
@@ -27,25 +26,29 @@ class TranslateURLFetcher;
 class TranslateLanguageList {
  public:
   TranslateLanguageList();
+
+  TranslateLanguageList(const TranslateLanguageList&) = delete;
+  TranslateLanguageList& operator=(const TranslateLanguageList&) = delete;
+
   virtual ~TranslateLanguageList();
 
   // Returns the last-updated time when the language list is fetched from the
   // Translate server. Returns null time if the list is yet to be fetched.
   base::Time last_updated() { return last_updated_; }
 
-  // Fills |languages| with the list of languages that the translate server can
-  // translate to and from. May attempt a language list request unless
-  // |translate_allowed| is false.
+  // Fills |languages| with the alphabetically sorted list of languages that the
+  // translate server can translate to and from. May attempt a language list
+  // request unless |translate_allowed| is false.
   void GetSupportedLanguages(bool translate_allowed,
                              std::vector<std::string>* languages);
 
   // Returns the language code that can be used with the Translate method for a
   // specified |language|. (ex. GetLanguageCode("en-US") will return "en", and
   // GetLanguageCode("zh-CN") returns "zh-CN")
-  std::string GetLanguageCode(const std::string& language);
+  std::string GetLanguageCode(base::StringPiece language);
 
   // Returns true if |language| is supported by the translation server.
-  bool IsSupportedLanguage(const std::string& language);
+  bool IsSupportedLanguage(base::StringPiece language);
 
   // Fetches the language list from the translate server if resource requests
   // are allowed, and otherwise keeps the request as pending until allowed.
@@ -55,14 +58,13 @@ class TranslateLanguageList {
   // pending request.
   void SetResourceRequestsAllowed(bool allowed);
 
-  typedef base::RepeatingCallback<void(const TranslateEventDetails&)>
-      EventCallback;
-  typedef base::CallbackList<void(const TranslateEventDetails&)>
-      EventCallbackList;
+  using EventCallbackList =
+      base::RepeatingCallbackList<void(const TranslateEventDetails&)>;
+  using EventCallback = EventCallbackList::CallbackType;
 
   // Registers a callback for translate events related to the language list,
   // such as updates and download errors.
-  std::unique_ptr<EventCallbackList::Subscription> RegisterEventCallback(
+  base::CallbackListSubscription RegisterEventCallback(
       const EventCallback& callback);
 
   // Helper methods used by specific unit tests.
@@ -86,15 +88,15 @@ class TranslateLanguageList {
   void OnLanguageListFetchComplete(bool success, const std::string& data);
 
   // Notifies the callback list of a translate event.
-  void NotifyEvent(int line, const std::string& message);
+  void NotifyEvent(int line, std::string message);
 
   // Parses |language_list| containing the list of languages that the translate
   // server can translate to and from. Returns true iff the list is parsed
   // without syntax errors.
-  bool SetSupportedLanguages(const std::string& language_list);
+  bool SetSupportedLanguages(base::StringPiece language_list);
 
   // Returns the url from which to load the list of languages.
-  GURL TranslateLanguageUrl();
+  static GURL TranslateLanguageUrl();
 
   // Callbacks called on translate events.
   EventCallbackList callback_list_;
@@ -105,8 +107,8 @@ class TranslateLanguageList {
   // True if the list has to be fetched when resource requests are allowed.
   bool request_pending_;
 
-  // The languages supported by the translation server.
-  std::set<std::string> supported_languages_;
+  // The languages supported by the translation server, sorted alphabetically.
+  std::vector<std::string> supported_languages_;
 
   // A LanguageListFetcher instance to fetch a server providing supported
   // language list.
@@ -114,8 +116,6 @@ class TranslateLanguageList {
 
   // The last-updated time when the language list is sent.
   base::Time last_updated_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateLanguageList);
 };
 
 }  // namespace translate

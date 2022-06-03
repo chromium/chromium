@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2016 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Indeterminate spinny used to show that things are being loaded in the PaymentRequestUi.
+     Margins in this file are assigned so that it can be either included or inflated and have
+     the correct margins for the situation.  When included in the main bottom sheet, the
+     FrameLayout's margins are applied, but they are ignored when this is inflated without
+     a parent.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MergeRootFrame"
+    android:id="@+id/payment_request_spinny"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/editor_dialog_section_large_spacing" >
+
+    <!-- Indeterminate spinny to show that things are processing. -->
+    <ProgressBar
+        android:id="@+id/waiting_progress"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="28dp"
+        android:layout_gravity="center_horizontal|top" />
+
+    <!-- Message displayed to the user.
+         The top margin is computed assuming there's a 28dp margin above and below the progress bar,
+         which is itself 24dp tall (28 + 28 + 24 = 80).
+    -->
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="@dimen/editor_dialog_section_large_spacing"
+        android:layout_marginEnd="@dimen/editor_dialog_section_large_spacing"
+        android:layout_marginBottom="@dimen/editor_dialog_section_large_spacing"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
+
+</FrameLayout>

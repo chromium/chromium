@@ -15,27 +15,38 @@ class X11ExtensionDelegate;
 
 // Linux extensions that linux platforms can use to extend the platform windows
 // APIs. Please refer to README for more details.
-class COMPONENT_EXPORT(EXTENSIONS) X11Extension {
+//
+// The extension mustn't be called until PlatformWindow is initialized.
+class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
  public:
-  // X11-specific.  Returns whether an XSync extension is available at the
-  // current platform.
+  // Returns whether an XSync extension is available at the current platform.
   virtual bool IsSyncExtensionAvailable() const = 0;
 
-  // X11-specific.  Handles CompleteSwapAfterResize event coming from the
-  // compositor observer.
+  // Returns a best-effort guess as to whether the WM is tiling (true) or
+  // stacking (false).
+  virtual bool IsWmTiling() const = 0;
+
+  // Handles CompleteSwapAfterResize event coming from the compositor observer.
   virtual void OnCompleteSwapAfterResize() = 0;
 
-  // X11-specific.  Returns the current bounds in terms of the X11 Root Window
-  // including the borders provided by the window manager (if any).
+  // Returns the current bounds in terms of the X11 Root Window including the
+  // borders provided by the window manager (if any).
   virtual gfx::Rect GetXRootWindowOuterBounds() const = 0;
 
-  // X11-specific.  Says if the X11 Root Window contains the point within its
-  // set shape. If shape is not set, returns true.
+  // Says if the X11 Root Window contains the point within its set shape. If
+  // shape is not set, returns true.
   virtual bool ContainsPointInXRegion(const gfx::Point& point) const = 0;
 
-  // X11-specific.  Asks X11 to lower the Xwindow down the stack so that it does
-  // not obscure any sibling windows.
+  // Asks X11 to lower the Xwindow down the stack so that it does not obscure
+  // any sibling windows.
   virtual void LowerXWindow() = 0;
+
+  // Forces this window to be unmanaged by the window manager if
+  // |override_redirect| is true.
+  virtual void SetOverrideRedirect(bool override_redirect) = 0;
+
+  // Returns true if SetOverrideRedirect() would be compatible with the WM.
+  virtual bool CanResetOverrideRedirect() const = 0;
 
   virtual void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) = 0;
 
@@ -47,7 +58,7 @@ class COMPONENT_EXPORT(EXTENSIONS) X11Extension {
                        X11Extension* x11_extensions);
 };
 
-COMPONENT_EXPORT(EXTENSIONS)
+COMPONENT_EXPORT(PLATFORM_WINDOW)
 X11Extension* GetX11Extension(const PlatformWindow& platform_window);
 
 }  // namespace ui

@@ -7,15 +7,16 @@
 
 #include <windows.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 class Size;
 
 // A version of the GetClassNameW API that returns the class name in an
-// base::string16. An empty result indicates a failure to get the class name.
-GFX_EXPORT base::string16 GetClassName(HWND hwnd);
+// std::wstring. An empty result indicates a failure to get the class name.
+GFX_EXPORT std::wstring GetClassName(HWND hwnd);
 
 // Useful for subclassing a HWND.  Returns the previous window procedure.
 GFX_EXPORT WNDPROC SetWindowProc(HWND hwnd, WNDPROC wndproc);
@@ -35,9 +36,9 @@ GFX_EXPORT void CenterAndSizeWindow(HWND parent,
                                     HWND window,
                                     const gfx::Size& pref);
 
-// If |hwnd| is NULL logs various thing and CHECKs. Invoke right after calling
-// CreateWindow.
-GFX_EXPORT void CheckWindowCreated(HWND hwnd);
+// If |hwnd| is nullptr logs various thing and CHECKs. |last_error| must contain
+// the result of ::GetLastError(), called immediately after CreateWindow().
+GFX_EXPORT void CheckWindowCreated(HWND hwnd, DWORD last_error);
 
 // Returns the window you can use to parent a top level window.
 // Note that in some cases we create child windows not parented to its final

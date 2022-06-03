@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,6 +20,10 @@
 #include "ui/ozone/public/swap_completion_callback.h"
 
 class SkBitmap;
+
+namespace base {
+class TimeDelta;
+}
 
 namespace gfx {
 class Point;
@@ -49,6 +52,9 @@ class DrmWindow {
             DrmDeviceManager* device_manager,
             ScreenManager* screen_manager);
 
+  DrmWindow(const DrmWindow&) = delete;
+  DrmWindow& operator=(const DrmWindow&) = delete;
+
   ~DrmWindow();
 
   gfx::Rect bounds() const { return bounds_; }
@@ -73,7 +79,7 @@ class DrmWindow {
   // the bitmap is empty, the cursor is hidden.
   void SetCursor(const std::vector<SkBitmap>& bitmaps,
                  const gfx::Point& location,
-                 int frame_delay_ms);
+                 base::TimeDelta frame_delay);
 
   // Move the HW cursor to the specified location.
   void MoveCursor(const gfx::Point& location);
@@ -84,8 +90,9 @@ class DrmWindow {
   OverlayStatusList TestPageFlip(
       const OverlaySurfaceCandidateList& overlay_params);
 
-  // Returns the last buffer associated with this window.
-  const DrmOverlayPlane* GetLastModesetBuffer() const;
+  const DrmOverlayPlaneList& last_submitted_planes() const {
+    return last_submitted_planes_;
+  }
 
  private:
   // Draw next frame in an animated cursor.
@@ -114,13 +121,10 @@ class DrmWindow {
   std::vector<SkBitmap> cursor_bitmaps_;
   gfx::Point cursor_location_;
   int cursor_frame_ = 0;
-  int cursor_frame_delay_ms_ = 0;
 
   DrmOverlayPlaneList last_submitted_planes_;
 
   bool force_buffer_reallocation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindow);
 };
 
 }  // namespace ui

@@ -5,11 +5,7 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [
-    "app_management.mojom",
-  ]
+  sources = [ "app_management.mojom" ]
 
-  public_deps = [
-    "//chrome/services/app_service/public/mojom",
-  ]
+  public_deps = [ "//components/services/app_service/public/mojom" ]
 }

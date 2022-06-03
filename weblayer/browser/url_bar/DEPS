@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/browsing_data/content",
+  "+components/page_info",
+]

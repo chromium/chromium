@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Test Sample API when trial is disabled (no token)</title>
+<link rel="stylesheet" href="resources/origintrials.css">
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="resources/origintrials.js"></script>
@@ -10,5 +11,6 @@
 expect_failure();
 expect_failure_bindings();
 expect_failure_implied();
+expect_failure_css(document.documentElement);
 
 </script>

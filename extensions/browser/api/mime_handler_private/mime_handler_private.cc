@@ -4,13 +4,15 @@
 
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
 
+#include <cmath>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
-#include "content/public/common/content_constants.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
@@ -71,6 +73,25 @@ void MimeHandlerServiceImpl::GetStreamInfo(GetStreamInfoCallback callback) {
       mojo::ConvertTo<mime_handler::StreamInfoPtr>(*stream_));
 }
 
+void MimeHandlerServiceImpl::SetPdfPluginAttributes(
+    mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes) {
+  if (!stream_)
+    return;
+
+  // Check the `background_color` is an integer.
+  double whole = 0.0;
+  if (std::modf(pdf_plugin_attributes->background_color, &whole) != 0.0)
+    return;
+
+  // Check the `background_color` is within the range of a uint32_t.
+  if (!base::IsValueInRangeForNumericType<uint32_t>(
+          pdf_plugin_attributes->background_color)) {
+    return;
+  }
+
+  stream_->set_pdf_plugin_attributes(std::move(pdf_plugin_attributes));
+}
+
 }  // namespace extensions
 
 namespace mojo {
@@ -86,18 +107,7 @@ extensions::mime_handler::StreamInfoPtr TypeConverter<
   result->embedded = stream.embedded();
   result->tab_id = stream.tab_id();
   result->mime_type = stream.mime_type();
-
-  // If the URL is too long, mojo will give up on sending the URL. In these
-  // cases truncate it. Only data: URLs should ever really suffer this problem
-  // so only worry about those for now.
-  // TODO(raymes): This appears to be a bug in mojo somewhere. crbug.com/480099.
-  if (stream.original_url().SchemeIs(url::kDataScheme) &&
-      stream.original_url().spec().size() > content::kMaxURLDisplayChars) {
-    result->original_url = stream.original_url().scheme() + ":";
-  } else {
-    result->original_url = stream.original_url().spec();
-  }
-
+  result->original_url = stream.original_url().spec();
   result->stream_url = stream.stream_url().spec();
   result->response_headers =
       extensions::CreateResponseHeadersMap(stream.response_headers());

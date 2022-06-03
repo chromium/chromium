@@ -4,7 +4,7 @@
 
 #include "chromeos/components/tether/device_status_util.h"
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 
 namespace chromeos {
 
@@ -31,7 +31,7 @@ void NormalizeDeviceStatus(const DeviceStatus& status,
   if (battery_percentage_out) {
     *battery_percentage_out =
         status.has_battery_percentage()
-            ? base::ClampToRange(status.battery_percentage(), 0, 100)
+            ? base::clamp(status.battery_percentage(), 0, 100)
             : 100;
   }
   if (signal_strength_out) {
@@ -42,8 +42,8 @@ void NormalizeDeviceStatus(const DeviceStatus& status,
     constexpr int32_t kConversionFactor = 100 / 4;
     *signal_strength_out =
         status.has_connection_strength()
-            ? base::ClampToRange(
-                  kConversionFactor * status.connection_strength(), 0, 100)
+            ? base::clamp(kConversionFactor * status.connection_strength(), 0,
+                          100)
             : 100;
   }
 }

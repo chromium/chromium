@@ -7,10 +7,8 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -25,8 +23,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
@@ -41,6 +41,10 @@ using browsertest_util::WaitForTaskManagerRows;
 class TaskManagerMacTest : public InProcessBrowserTest {
  public:
   TaskManagerMacTest() {}
+
+  TaskManagerMacTest(const TaskManagerMacTest&) = delete;
+  TaskManagerMacTest& operator=(const TaskManagerMacTest&) = delete;
+
   ~TaskManagerMacTest() override {}
 
   void SetUpOnMainThread() override {
@@ -93,7 +97,7 @@ class TaskManagerMacTest : public InProcessBrowserTest {
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
     auto tab_id_matches = [tab_id](content::WebContents* web_contents) {
-      return SessionTabHelper::IdForTab(web_contents) == tab_id;
+      return sessions::SessionTabHelper::IdForTab(web_contents) == tab_id;
     };
     auto it = std::find_if(all_tabs.begin(), all_tabs.end(), tab_id_matches);
 
@@ -103,18 +107,15 @@ class TaskManagerMacTest : public InProcessBrowserTest {
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
   int FindRowForTab(content::WebContents* tab) {
-    SessionID tab_id = SessionTabHelper::IdForTab(tab);
+    SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
-        TaskManagerTester::Create(base::Closure());
+        TaskManagerTester::Create(base::RepeatingClosure());
     for (int i = 0; i < tester->GetRowCount(); ++i) {
       if (tester->GetTabId(i) == tab_id)
         return i;
     }
     return -1;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerMacTest);
 };
 
 // Tests that all defined columns have a corresponding string IDs for keying
@@ -137,10 +138,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, TableStartsWithDefaultColumns) {
   EXPECT_EQ(0u, [[table sortDescriptors] count]);
   NSArray* tableColumns = [table tableColumns];
   for (size_t i = 0; i < kColumnsSize; ++i) {
-    EXPECT_EQ(kColumns[i].id,
-              [[[tableColumns objectAtIndex:i] identifier] intValue]);
-    EXPECT_EQ(kColumns[i].default_visibility,
-              ![[tableColumns objectAtIndex:i] isHidden]);
+    EXPECT_EQ(kColumns[i].id, [[tableColumns[i] identifier] intValue]);
+    EXPECT_EQ(kColumns[i].default_visibility, ![tableColumns[i] isHidden]);
   }
 }
 
@@ -159,10 +158,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   EXPECT_EQ(0u, [[table sortDescriptors] count]);
   NSArray* tableColumns = [table tableColumns];
   for (size_t i = 0; i < kColumnsSize; ++i) {
-    EXPECT_EQ(kColumns[i].id,
-              [[[tableColumns objectAtIndex:i] identifier] intValue]);
-    EXPECT_EQ(kColumns[i].default_visibility,
-              ![[tableColumns objectAtIndex:i] isHidden]);
+    EXPECT_EQ(kColumns[i].id, [[tableColumns[i] identifier] intValue]);
+    EXPECT_EQ(kColumns[i].default_visibility, ![tableColumns[i] isHidden]);
     ToggleColumnVisibility(task_manager, kColumns[i].id);
   }
 
@@ -170,7 +167,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   // be nice to fake a click with -performClick: but that doesn't work (see
   // http://www.cocoabuilder.com/archive/cocoa/177610-programmatically-click-column-header-in-nstableview.html).
   bool is_sorted = false;
-  int sorted_col_id = -1;
   for (NSTableColumn* column in tableColumns) {
     if ([column isHidden])
       continue;
@@ -180,7 +176,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
           [[column sortDescriptorPrototype] reversedSortDescriptor];
       [table setSortDescriptors:@[ newSortDescriptor ]];
       is_sorted = true;
-      sorted_col_id = [[column identifier] intValue];
       break;
     }
   }
@@ -209,16 +204,16 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   chrome::ShowTaskManager(browser());
 
   // Set up a total of three tabs in different processes.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("c.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Wait for their titles to appear in the TaskManager. There should be three
   // rows.
@@ -229,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   // Find the three tabs we set up, in TaskManager model order. Because we have
   // not sorted the table yet, this should also be their UI display order.
   std::unique_ptr<TaskManagerTester> tester =
-      TaskManagerTester::Create(base::Closure());
+      TaskManagerTester::Create(base::RepeatingClosure());
   std::vector<content::WebContents*> tabs;
   for (int i = 0; i < tester->GetRowCount(); ++i) {
     // Filter based on our title.

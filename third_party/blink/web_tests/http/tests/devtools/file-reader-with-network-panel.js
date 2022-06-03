@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that FileReader's Blob request isn't shown in network panel.\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function readBlob()
       {
@@ -20,11 +20,11 @@
   ConsoleTestRunner.addConsoleSniffer(messageAdded);
   TestRunner.evaluateInPage('readBlob();');
 
-  function messageAdded(payload) {
+  async function messageAdded(payload) {
     var requests = NetworkTestRunner.networkRequests();
     TestRunner.addResult('requests in the network panel: ' + requests.length);
     TestRunner.assertTrue(requests.length == 0, 'Blob load request to the browser is shown in the network panel.');
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

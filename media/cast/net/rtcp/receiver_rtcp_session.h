@@ -9,7 +9,6 @@
 #include "media/cast/common/clock_drift_smoother.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
-#include "media/cast/net/rtcp/receiver_rtcp_session.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/net/rtcp/rtcp_session.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
@@ -25,6 +24,9 @@ class ReceiverRtcpSession : public RtcpSession {
   ReceiverRtcpSession(const base::TickClock* clock,  // Not owned.
                       uint32_t local_ssrc,
                       uint32_t remote_ssrc);
+
+  ReceiverRtcpSession(const ReceiverRtcpSession&) = delete;
+  ReceiverRtcpSession& operator=(const ReceiverRtcpSession&) = delete;
 
   ~ReceiverRtcpSession() override;
 
@@ -89,8 +91,6 @@ class ReceiverRtcpSession : public RtcpSession {
   // remembers state about prior RTP timestamps and other sequence values to
   // re-construct "expanded" values.
   RtcpParser parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverRtcpSession);
 };
 
 }  // namespace cast

@@ -50,15 +50,17 @@ class SVGBoolean final : public SVGPropertyHelper<SVGBoolean> {
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   bool Value() const { return value_; }
   void SetValue(bool value) { value_ = value; }
@@ -68,8 +70,6 @@ class SVGBoolean final : public SVGPropertyHelper<SVGBoolean> {
  private:
   bool value_;
 };
-
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGBoolean);
 
 }  // namespace blink
 

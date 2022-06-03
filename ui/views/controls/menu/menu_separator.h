@@ -6,7 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_SEPARATOR_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -17,17 +17,25 @@ class VIEWS_EXPORT MenuSeparator : public View {
  public:
   METADATA_HEADER(MenuSeparator);
 
-  explicit MenuSeparator(ui::MenuSeparatorType type) : type_(type) {}
+  explicit MenuSeparator(
+      ui::MenuSeparatorType type = ui::MenuSeparatorType::NORMAL_SEPARATOR)
+      : type_(type) {}
+
+  MenuSeparator(const MenuSeparator&) = delete;
+  MenuSeparator& operator=(const MenuSeparator&) = delete;
 
   // View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
 
+  ui::MenuSeparatorType GetType() const;
+  void SetType(ui::MenuSeparatorType type);
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
   // The type of the separator.
-  const ui::MenuSeparatorType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuSeparator);
+  ui::MenuSeparatorType type_;
 };
 
 }  // namespace views

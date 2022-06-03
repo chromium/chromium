@@ -21,12 +21,15 @@ implementation is [LocalFrame].
 ### [origins](https://html.spec.whatwg.org/C/#concept-origin)
 
 An origin corresponds to the [SecurityOrigin]. You can test for [same-origin]
-using `SecurityOrigin::canAccess` and for [same-origin domain] using
-`SecurityOrigin::isSameSchemeHostPort`.
+using `SecurityOrigin::IsSameOriginWith` and for [same-origin domain] using
+`SecurityOrigin::IsSameOriginDomainWith`. You can check for [same-site] using
+`SecurityOrigin::IsSameSiteWith`, though "origin" should generally be used in
+favor of "site" for any security decisions.
 
 [SecurityOrigin]: https://cs.chromium.org/src/third_party/blink/renderer/platform/weborigin/security_origin.h
 [same-origin]: https://html.spec.whatwg.org/C/#same-origin
 [same-origin domain]: https://html.spec.whatwg.org/C/#same-origin-domain
+[same-site]: https://html.spec.whatwg.org/C/#same-site
 
 
 ### [Window object](https://html.spec.whatwg.org/C/#window)

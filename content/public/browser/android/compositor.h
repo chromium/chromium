@@ -5,8 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_H_
 #define CONTENT_PUBLIC_BROWSER_ANDROID_COMPOSITOR_H_
 
+#include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "cc/resources/ui_resource_bitmap.h"
+#include "cc/trees/layer_tree_host_client.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -67,8 +69,11 @@ class CONTENT_EXPORT Compositor {
   // Set the output surface bounds.
   virtual void SetWindowBounds(const gfx::Size& size) = 0;
 
+  // Return the last size set with |SetWindowBounds|.
+  virtual const gfx::Size& GetWindowBounds() = 0;
+
   // Set the output surface which the compositor renders into.
-  virtual void SetSurface(jobject surface,
+  virtual void SetSurface(const base::android::JavaRef<jobject>& surface,
                           bool can_be_used_with_surface_control) = 0;
 
   // Set the background color used by the layer tree host.
@@ -99,6 +104,25 @@ class CONTENT_EXPORT Compositor {
 
   // Evicts the cache entry created from the cached call above.
   virtual void EvictCachedBackBuffer() = 0;
+
+  // Notifies associated Display to not detach child surface controls during
+  // destruction.
+  virtual void PreserveChildSurfaceControls() = 0;
+
+  // Registers a callback that is run when the next frame successfully makes it
+  // to the screen (it's entirely possible some frames may be dropped between
+  // the time this is called and the callback is run).
+  using PresentationTimeCallback =
+      base::OnceCallback<void(const gfx::PresentationFeedback&)>;
+  virtual void RequestPresentationTimeForNextFrame(
+      PresentationTimeCallback callback) = 0;
+
+  // Control whether `CompositorClient::DidSwapBuffers` should be called. The
+  // default is false. Note this is asynchronous. Any pending callbacks may
+  // immediately after enabling may still be missed; best way to avoid this is
+  // to call this before calling `SetNeedsComposite` or `SetNeedsRedraw`. Also
+  // there may be trailing calls to `DidSwapBuffers` after unsetting this.
+  virtual void SetDidSwapBuffersCallbackEnabled(bool enable) = 0;
 
  protected:
   Compositor() {}

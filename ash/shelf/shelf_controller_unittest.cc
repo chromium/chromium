@@ -6,9 +6,11 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -22,34 +24,16 @@
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
-namespace {
 
 Shelf* GetShelfForDisplay(int64_t display_id) {
   return Shell::GetRootWindowControllerWithDisplayId(display_id)->shelf();
-}
-
-void BuildAndSendNotification(message_center::MessageCenter* message_center,
-                              const std::string& app_id,
-                              const std::string& notification_id) {
-  const message_center::NotifierId notifier_id(
-      message_center::NotifierType::APPLICATION, app_id);
-  std::unique_ptr<message_center::Notification> notification =
-      std::make_unique<message_center::Notification>(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          base::ASCIIToUTF16("Test Web Notification"),
-          base::ASCIIToUTF16("Notification message body."), gfx::Image(),
-          base::ASCIIToUTF16("www.test.org"), GURL(), notifier_id,
-          message_center::RichNotificationData(), nullptr /* delegate */);
-  message_center->AddNotification(std::move(notification));
 }
 
 using ShelfControllerTest = AshTestBase;
@@ -87,46 +71,58 @@ TEST_F(ShelfControllerTest, ShelfIDUpdate) {
 class ShelfControllerNotificationIndicatorTest : public AshTestBase {
  public:
   ShelfControllerNotificationIndicatorTest() = default;
+
+  ShelfControllerNotificationIndicatorTest(
+      const ShelfControllerNotificationIndicatorTest&) = delete;
+  ShelfControllerNotificationIndicatorTest& operator=(
+      const ShelfControllerNotificationIndicatorTest&) = delete;
+
   ~ShelfControllerNotificationIndicatorTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kNotificationIndicator},
-                                          {});
     AshTestBase::SetUp();
+
+    account_id_ = AccountId::FromUserEmail("test@gmail.com");
+  }
+
+  void SendAppUpdate(bool app_has_badge) {
+    ShelfController* controller = Shell::Get()->shelf_controller();
+
+    apps::mojom::App test_app;
+    test_app.app_id = "app_id";
+    if (app_has_badge)
+      test_app.has_badge = apps::mojom::OptionalBool::kTrue;
+    else
+      test_app.has_badge = apps::mojom::OptionalBool::kFalse;
+
+    apps::AppUpdate test_update(nullptr, &test_app /* delta */, account_id_);
+    static_cast<apps::AppRegistryCache::Observer*>(controller)
+        ->OnAppUpdate(test_update);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfControllerNotificationIndicatorTest);
+  AccountId account_id_;
 };
 
-// Tests that the ShelfController keeps the ShelfModel updated on new
-// notifications.
+// Tests that the ShelfController keeps the ShelfModel updated on calls to
+// OnAppUpdate().
 TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
   ShelfController* controller = Shell::Get()->shelf_controller();
   const std::string app_id("app_id");
   ShelfItem item;
   item.type = TYPE_APP;
   item.id = ShelfID(app_id);
-  const int index = controller->model()->Add(item);
+  const int index = controller->model()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
   EXPECT_FALSE(controller->model()->items()[index].has_notification);
 
-  // Add a notification for |item|.
-  message_center::MessageCenter* message_center =
-      message_center::MessageCenter::Get();
-  const std::string notification_id("notification_id");
-  BuildAndSendNotification(message_center, app_id, notification_id);
+  // Send an app update to ShelfController for adding a notification badge.
+  SendAppUpdate(true /* app_has_badge */);
 
   EXPECT_TRUE(controller->model()->items()[index].has_notification);
 
-  // Remove the app and pin it, the notification should persist.
-  controller->model()->RemoveItemAt(index);
-  controller->model()->PinAppWithID(app_id);
-
-  EXPECT_TRUE(controller->model()->items()[index].has_notification);
-
-  message_center->RemoveNotification(notification_id, true);
+  // Send an app update to ShelfController for removing a notification badge.
+  SendAppUpdate(false /* app_has_badge */);
 
   EXPECT_FALSE(controller->model()->items()[index].has_notification);
 }
@@ -134,10 +130,11 @@ TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
 class ShelfControllerPrefsTest : public AshTestBase {
  public:
   ShelfControllerPrefsTest() = default;
-  ~ShelfControllerPrefsTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfControllerPrefsTest);
+  ShelfControllerPrefsTest(const ShelfControllerPrefsTest&) = delete;
+  ShelfControllerPrefsTest& operator=(const ShelfControllerPrefsTest&) = delete;
+
+  ~ShelfControllerPrefsTest() override = default;
 };
 
 // Ensure shelf settings are updated on preference changes.
@@ -386,5 +383,4 @@ TEST_F(ShelfControllerAppModeTest, AutoHideBehavior) {
   EXPECT_EQ(ShelfAutoHideBehavior::kAlwaysHidden, shelf->auto_hide_behavior());
 }
 
-}  // namespace
 }  // namespace ash

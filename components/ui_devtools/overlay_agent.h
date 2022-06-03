@@ -14,6 +14,10 @@ class UI_DEVTOOLS_EXPORT OverlayAgent
     : public UiDevToolsBaseAgent<protocol::Overlay::Metainfo> {
  public:
   explicit OverlayAgent(DOMAgent* dom_agent);
+
+  OverlayAgent(const OverlayAgent&) = delete;
+  OverlayAgent& operator=(const OverlayAgent&) = delete;
+
   ~OverlayAgent() override;
 
   // Overlay::Backend:
@@ -31,8 +35,6 @@ class UI_DEVTOOLS_EXPORT OverlayAgent
 
  private:
   DOMAgent* const dom_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayAgent);
 };
 
 }  // namespace ui_devtools

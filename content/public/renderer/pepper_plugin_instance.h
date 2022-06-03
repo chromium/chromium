@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/pp_var.h"
@@ -34,7 +33,6 @@ class Rect;
 namespace ppapi {
 class PpapiPermissions;
 class VarTracker;
-struct URLRequestInfoData;
 }
 
 namespace IPC {
@@ -93,20 +91,7 @@ class PepperPluginInstance {
   // or embedded in a page).
   virtual bool IsFullPagePlugin() = 0;
 
-  // Switches between fullscreen and normal mode. If |delay_report| is set to
-  // false, it may report the new state through DidChangeView immediately. If
-  // true, it will delay it. When called from the plugin, delay_report should
-  // be true to avoid re-entrancy. Returns true if the switch will be carried
-  // out, because of this call or because a switch was pending already anyway.
-  // Returns false if the switch will not be carried out because fullscreen mode
-  // is disallowed by a preference.
-  virtual bool FlashSetFullscreen(bool fullscreen, bool delay_report) = 0;
-
   virtual bool IsRectTopmost(const gfx::Rect& rect) = 0;
-
-  virtual int32_t Navigate(const ppapi::URLRequestInfoData& request,
-                           const char* target,
-                           bool from_user_action) = 0;
 
   // Creates a pending PepperFileRefRendererHost. Returns 0 on failure.
   virtual int MakePendingFileRefRendererHost(const base::FilePath& path) = 0;
@@ -115,7 +100,7 @@ class PepperPluginInstance {
   virtual void SetEmbedProperty(PP_Var key, PP_Var value) = 0;
 
   // Sets the selected text for this plugin.
-  virtual void SetSelectedText(const base::string16& selected_text) = 0;
+  virtual void SetSelectedText(const std::u16string& selected_text) = 0;
 
   // Sets the link currently under the cursor.
   virtual void SetLinkUnderCursor(const std::string& url) = 0;

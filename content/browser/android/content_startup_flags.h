@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_ANDROID_CONTENT_STARTUP_FLAGS_H_
 #define CONTENT_BROWSER_ANDROID_CONTENT_STARTUP_FLAGS_H_
 
-#include <string>
-
 namespace content {
 
 // Force-appends flags to the command line turning on Android-specific

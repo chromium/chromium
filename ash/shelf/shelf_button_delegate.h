@@ -24,11 +24,19 @@ class ShelfButton;
 // TODO(mohsen): A better approach would be to return a value indicating the
 // type of action performed such that the button can animate the ink drop.
 // Currently, it is not possible because showing menu is synchronous and blocks
-// the call. Fix this after menu is converted to asynchronous.  Long-term, the
-// return value can be merged into ButtonListener.
+// the call. Fix this after menu is converted to asynchronous.
 class ShelfButtonDelegate {
  public:
+  class ScopedActiveInkDropCount {
+   public:
+    virtual ~ScopedActiveInkDropCount() = default;
+  };
+
   ShelfButtonDelegate() {}
+
+  ShelfButtonDelegate(const ShelfButtonDelegate&) = delete;
+  ShelfButtonDelegate& operator=(const ShelfButtonDelegate&) = delete;
+
   ~ShelfButtonDelegate() = default;
 
   // Used to let the host view redirect focus.
@@ -47,8 +55,12 @@ class ShelfButtonDelegate {
   // focus.
   virtual void HandleAccessibleActionScrollToMakeVisible(ShelfButton* button) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfButtonDelegate);
+  // Returns a scoped count that indicates whether |button| has an active ink
+  // drop. |button| calls this to get the scoped count when its ink drop is
+  // activated. It holds on to the scoped count until the ink drop is no longer
+  // active.
+  virtual std::unique_ptr<ScopedActiveInkDropCount>
+  CreateScopedActiveInkDropCount(const ShelfButton* button);
 };
 
 }  // namespace ash

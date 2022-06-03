@@ -13,15 +13,19 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
+#include "remoting/host/desktop_and_cursor_composer_notifier.h"
+#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/protocol/clipboard_echo_filter.h"
@@ -39,6 +43,8 @@
 #include "remoting/protocol/video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/event.h"
 
 namespace remoting {
@@ -49,6 +55,7 @@ class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
 class MouseShapePump;
+class RemoteWebAuthnMessageHandler;
 class ScreenControls;
 
 namespace protocol {
@@ -61,7 +68,9 @@ class ClientSession : public protocol::HostStub,
                       public protocol::ConnectionToClient::EventHandler,
                       public protocol::VideoStream::Observer,
                       public ClientSessionControl,
-                      public ClientSessionDetails {
+                      public ClientSessionDetails,
+                      public DesktopAndCursorComposerNotifier::EventHandler,
+                      public webrtc::MouseCursorMonitor::Callback {
  public:
   // Callback interface for passing events to the ChromotingHost.
   class EventHandler {
@@ -104,6 +113,10 @@ class ClientSession : public protocol::HostStub,
       const base::TimeDelta& max_duration,
       scoped_refptr<protocol::PairingRegistry> pairing_registry,
       const std::vector<HostExtension*>& extensions);
+
+  ClientSession(const ClientSession&) = delete;
+  ClientSession& operator=(const ClientSession&) = delete;
+
   ~ClientSession() override;
 
   // Returns the set of capabilities negotiated between client and host.
@@ -120,6 +133,8 @@ class ClientSession : public protocol::HostStub,
   void DeliverClientMessage(const protocol::ExtensionMessage& message) override;
   void SelectDesktopDisplay(
       const protocol::SelectDesktopDisplayRequest& select_display) override;
+  void ControlPeerConnection(
+      const protocol::PeerConnectionParameters& parameters) override;
 
   // protocol::ConnectionToClient::EventHandler interface.
   void OnConnectionAuthenticating() override;
@@ -127,6 +142,7 @@ class ClientSession : public protocol::HostStub,
   void CreateMediaStreams() override;
   void OnConnectionChannelsConnected() override;
   void OnConnectionClosed(protocol::ErrorCode error) override;
+  void OnTransportProtocolChange(const std::string& protocol) override;
   void OnRouteChange(const std::string& channel_name,
                      const protocol::TransportRoute& route) override;
   void OnIncomingDataChannel(
@@ -147,9 +163,20 @@ class ClientSession : public protocol::HostStub,
   uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
 
+  // DesktopAndCursorComposerNotifier::EventHandler interface
+  void SetComposeEnabled(bool enabled) override;
+
+  // webrtc::MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
+  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
+
+  void BindWebAuthnProxy(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
+
   protocol::ConnectionToClient* connection() const { return connection_.get(); }
 
-  bool is_authenticated() { return is_authenticated_; }
+  bool is_authenticated() const { return is_authenticated_; }
+
+  bool channels_connected() const { return channels_connected_; }
 
   const std::string* client_capabilities() const {
     return client_capabilities_.get();
@@ -187,6 +214,22 @@ class ClientSession : public protocol::HostStub,
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe);
 
+  void CreateRtcLogTransferMessageHandler(
+      const std::string& channel_name,
+      std::unique_ptr<protocol::MessagePipe> pipe);
+
+  void CreateRemoteOpenUrlMessageHandler(
+      const std::string& channel_name,
+      std::unique_ptr<protocol::MessagePipe> pipe);
+
+  void CreateUrlForwarderControlMessageHandler(
+      const std::string& channel_name,
+      std::unique_ptr<protocol::MessagePipe> pipe);
+
+  void CreateRemoteWebAuthnMessageHandler(
+      const std::string& channel_name,
+      std::unique_ptr<protocol::MessagePipe> pipe);
+
   EventHandler* event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
@@ -210,14 +253,22 @@ class ClientSession : public protocol::HostStub,
   // Filter used to clamp mouse events to the current display dimensions.
   protocol::MouseInputFilter mouse_clamping_filter_;
 
+  // Filter used to detect transitions into and out of client-side pointer lock,
+  // and to monitor local input to determine whether or not to include the mouse
+  // cursor in the desktop image.
+  DesktopAndCursorComposerNotifier desktop_and_cursor_composer_notifier_;
+
   // Filter to used to stop clipboard items sent from the client being echoed
   // back to it.  It is the final element in the clipboard (client -> host)
   // pipeline.
   protocol::ClipboardEchoFilter clipboard_echo_filter_;
 
-  // Filters used to manage enabling & disabling of input & clipboard.
+  // Filters used to manage enabling & disabling of input.
   protocol::InputFilter disable_input_filter_;
-  protocol::ClipboardFilter disable_clipboard_filter_;
+
+  // Used to enable/disable clipboard sync and to restrict payload size.
+  protocol::ClipboardFilter host_clipboard_filter_;
+  protocol::ClipboardFilter client_clipboard_filter_;
 
   // Factory for weak pointers to the client clipboard stub.
   // This must appear after |clipboard_echo_filter_|, so that it won't outlive
@@ -259,8 +310,24 @@ class ClientSession : public protocol::HostStub,
   int default_y_dpi_;
 
   // The id of the desktop display to show to the user.
-  // Default is webrtc::kFullDesktopScreenId which shows all displays.
-  webrtc::ScreenId show_display_id_ = webrtc::kFullDesktopScreenId;
+  // Default is webrtc::kInvalidScreenScreenId because we need to perform
+  // an initial capture to determine if the current setup support capturing
+  // the entire desktop or if it is restricted to a single display.
+  webrtc::ScreenId show_display_id_ = webrtc::kInvalidScreenId;
+
+  // The initial video size captured by WebRTC.
+  // This will be the full desktop unless webrtc cannot capture the entire
+  // desktop (e.g., because the DPIs don't match). In that case, it will
+  // be equal to the dimensions of the default display.
+  DisplaySize default_webrtc_desktop_size_;
+
+  // The current size of the area being captured by webrtc. This will be
+  // equal to the size of the entire desktop, or to a single display.
+  DisplaySize webrtc_capture_size_;
+
+  // Set to true if the current display configuration supports capturing the
+  // entire desktop.
+  bool can_capture_full_desktop_ = true;
 
   // The pairing registry for PIN-less authentication.
   scoped_refptr<protocol::PairingRegistry> pairing_registry_;
@@ -300,13 +367,16 @@ class ClientSession : public protocol::HostStub,
   std::unique_ptr<MouseShapePump> mouse_shape_pump_;
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
 
+  base::WeakPtr<DesktopAndCursorConditionalComposer>
+      desktop_and_cursor_composer_;
+
+  base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to disable callbacks to |this| once DisconnectSession() has been
   // called.
   base::WeakPtrFactory<ClientSessionControl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSession);
 };
 
 }  // namespace remoting

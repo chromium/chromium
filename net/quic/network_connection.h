@@ -18,6 +18,10 @@ class NET_EXPORT NetworkConnection
       public NetworkChangeNotifier::ConnectionTypeObserver {
  public:
   NetworkConnection();
+
+  NetworkConnection(const NetworkConnection&) = delete;
+  NetworkConnection& operator=(const NetworkConnection&) = delete;
+
   ~NetworkConnection() override;
 
   // Returns the underlying connection type.
@@ -50,8 +54,6 @@ class NET_EXPORT NetworkConnection
   // Cache the connection description string to avoid calling the expensive
   // GetWifiPHYLayerProtocol() function.
   const char* connection_description_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnection);
 };
 
 }  // namespace net

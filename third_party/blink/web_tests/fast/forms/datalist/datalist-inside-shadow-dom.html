@@ -9,11 +9,11 @@
 </template>
 
 <div>This test passes if datalist picker element is shown.</div>
-<host></host>
+<div id=host></div>
 
 <script>
-var host = document.createElement('host');
-host.createShadowRoot().appendChild(document.querySelector('template').content.cloneNode(true));
-document.body.appendChild(host);
-document.querySelector('host::shadow input').focus();
+let host = document.getElementById('host');
+let shadowRoot = host.attachShadow({mode: 'open'});
+shadowRoot.appendChild(document.querySelector('template').content.cloneNode(true));
+shadowRoot.querySelector('input').focus();
 </script>

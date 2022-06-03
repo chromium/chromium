@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 42: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 Test the case where a clickable target contains a shadow-DOM element. The adjusted point should snap to the location of the shadow-DOM element if close enough to the original touch position.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

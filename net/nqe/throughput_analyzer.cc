@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_activity_monitor.h"
@@ -278,10 +278,9 @@ bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
   // Scale the |duration| to one HTTP RTT, and compute the number of bits that
   // would be received over a duration of one HTTP RTT.
   size_t bits_received_over_one_http_rtt =
-      bits_received * (network_quality_estimator_->GetHttpRTT()
-                           .value_or(base::TimeDelta::FromSeconds(10))
-                           .InMillisecondsF() /
-                       duration.InMillisecondsF());
+      bits_received *
+      (network_quality_estimator_->GetHttpRTT().value_or(base::Seconds(10)) /
+       duration);
 
   // If |is_hanging| is true, it implies that less than
   // kCwndSizeKilobytes were received over a period of 1 HTTP RTT. For a network
@@ -294,11 +293,11 @@ bool ThroughputAnalyzer::IsHangingWindow(int64_t bits_received,
 
   // Record kbps as function of |is_hanging|.
   if (is_hanging) {
-    UMA_HISTOGRAM_COUNTS_1M("NQE.ThroughputObservation.Hanging",
-                            downstream_kbps_double);
+    LOCAL_HISTOGRAM_COUNTS_1000000("NQE.ThroughputObservation.Hanging",
+                                   downstream_kbps_double);
   } else {
-    UMA_HISTOGRAM_COUNTS_1M("NQE.ThroughputObservation.NotHanging",
-                            downstream_kbps_double);
+    LOCAL_HISTOGRAM_COUNTS_1000000("NQE.ThroughputObservation.NotHanging",
+                                   downstream_kbps_double);
   }
   return is_hanging;
 }
@@ -334,8 +333,7 @@ bool ThroughputAnalyzer::MaybeGetThroughputObservation(
     return false;
   }
 
-  double downstream_kbps_double =
-      (bits_received * 1.0f) / duration.InMillisecondsF();
+  double downstream_kbps_double = bits_received * duration.ToHz() / 1000;
 
   if (IsHangingWindow(bits_received, duration, downstream_kbps_double)) {
     requests_.clear();
@@ -382,7 +380,7 @@ void ThroughputAnalyzer::SetUseLocalHostRequestsForTesting(
 
 int64_t ThroughputAnalyzer::GetBitsReceived() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return NetworkActivityMonitor::GetInstance()->GetBytesReceived() * 8;
+  return activity_monitor::GetBytesReceived() * 8;
 }
 
 size_t ThroughputAnalyzer::CountActiveInFlightRequests() const {
@@ -405,7 +403,7 @@ bool ThroughputAnalyzer::DegradesAccuracy(const URLRequest& request) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool private_network_request =
-      nqe::internal::IsRequestForPrivateHost(request);
+      nqe::internal::IsRequestForPrivateHost(request, net_log_);
 
   return !(use_localhost_requests_for_tests_ || !private_network_request) ||
          request.creation_time() < last_connection_change_;
@@ -449,8 +447,7 @@ void ThroughputAnalyzer::EraseHangingRequests(const URLRequest& request) {
   const base::TimeTicks now = tick_clock_->NowTicks();
 
   const base::TimeDelta http_rtt =
-      network_quality_estimator_->GetHttpRTT().value_or(
-          base::TimeDelta::FromSeconds(60));
+      network_quality_estimator_->GetHttpRTT().value_or(base::Seconds(60));
 
   size_t count_request_erased = 0;
   auto request_it = requests_.find(&request);
@@ -466,7 +463,7 @@ void ThroughputAnalyzer::EraseHangingRequests(const URLRequest& request) {
     }
   }
 
-  if (now - last_hanging_request_check_ >= base::TimeDelta::FromSeconds(1)) {
+  if (now - last_hanging_request_check_ >= base::Seconds(1)) {
     // Hanging request check is done at most once per second.
     last_hanging_request_check_ = now;
 

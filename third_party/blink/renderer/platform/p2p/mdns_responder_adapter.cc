@@ -11,8 +11,9 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/mdns_responder.mojom-blink.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/rtc_base/ip_address.h"
@@ -40,14 +41,13 @@ void OnNameRemovedForAddress(
 
 }  // namespace
 
-MdnsResponderAdapter::MdnsResponderAdapter() {
+MdnsResponderAdapter::MdnsResponderAdapter(MojoBindingContext& context) {
   mojo::PendingRemote<network::mojom::blink::MdnsResponder> client;
   auto receiver = client.InitWithNewPipeAndPassReceiver();
   shared_remote_client_ =
       mojo::SharedRemote<network::mojom::blink::MdnsResponder>(
           std::move(client));
-  blink::Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      std::move(receiver));
+  context.GetBrowserInterfaceBroker().GetInterface(std::move(receiver));
 }
 
 MdnsResponderAdapter::~MdnsResponderAdapter() = default;

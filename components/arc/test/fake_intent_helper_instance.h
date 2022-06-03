@@ -11,6 +11,8 @@
 
 #include "base/callback.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
@@ -62,6 +64,9 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   void SetIntentHandlers(const std::string& action,
                          std::vector<mojom::IntentHandlerInfoPtr> handlers);
 
+  FakeIntentHelperInstance(const FakeIntentHelperInstance&) = delete;
+  FakeIntentHelperInstance& operator=(const FakeIntentHelperInstance&) = delete;
+
   // mojom::IntentHelperInstance:
   ~FakeIntentHelperInstance() override;
 
@@ -71,27 +76,21 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
                        IntentFilter intent_filter,
                        mojom::IntentInfoPtr intent) override;
 
-  void GetFileSizeDeprecated(const std::string& url,
-                             GetFileSizeDeprecatedCallback callback) override;
+  void SetVerifiedLinks(const std::vector<std::string>& package_names,
+                        bool always_open) override;
 
   void HandleIntent(mojom::IntentInfoPtr intent,
                     mojom::ActivityNamePtr activity) override;
 
+  void HandleIntentWithWindowInfo(mojom::IntentInfoPtr intent,
+                                  mojom::ActivityNamePtr activity,
+                                  mojom::WindowInfoPtr window_info) override;
+
   void HandleUrl(const std::string& url,
                  const std::string& package_name) override;
 
-  void HandleUrlListDeprecated(std::vector<mojom::UrlWithMimeTypePtr> urls,
-                               mojom::ActivityNamePtr activity,
-                               mojom::ActionType action) override;
-
-  void InitDeprecated(mojom::IntentHelperHostPtr host_ptr) override;
-
-  void Init(mojom::IntentHelperHostPtr host_ptr,
+  void Init(mojo::PendingRemote<mojom::IntentHelperHost> host_remote,
             InitCallback callback) override;
-
-  void OpenFileToReadDeprecated(
-      const std::string& url,
-      OpenFileToReadDeprecatedCallback callback) override;
 
   void RequestActivityIcons(std::vector<mojom::ActivityNamePtr> activities,
                             ::arc::mojom::ScaleFactor scale_factor,
@@ -113,11 +112,6 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
                      const std::string& cls,
                      const std::string& extras) override;
 
-  void ClassifySelectionDeprecated(
-      const std::string& text,
-      ::arc::mojom::ScaleFactor scale_factor,
-      ClassifySelectionDeprecatedCallback callback) override;
-
   void RequestTextSelectionActions(
       const std::string& text,
       ::arc::mojom::ScaleFactor scale_factor,
@@ -127,6 +121,8 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
                           arc::mojom::CameraIntentAction action,
                           const std::vector<uint8_t>& data,
                           HandleCameraResultCallback callback) override;
+
+  void RequestDomainVerificationStatusUpdate() override;
 
  private:
   std::vector<Broadcast> broadcasts_;
@@ -141,9 +137,7 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
 
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
-  mojom::IntentHelperHostPtr host_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIntentHelperInstance);
+  mojo::Remote<mojom::IntentHelperHost> host_remote_;
 };
 
 }  // namespace arc

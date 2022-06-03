@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "headless/lib/renderer/headless_print_render_frame_helper_delegate.h"
-
 #include "third_party/blink/public/web/web_element.h"
 
 namespace headless {
@@ -21,6 +20,11 @@ blink::WebElement HeadlessPrintRenderFrameHelperDelegate::GetPdfElement(
 
 bool HeadlessPrintRenderFrameHelperDelegate::IsPrintPreviewEnabled() {
   return false;
+}
+
+bool HeadlessPrintRenderFrameHelperDelegate::ShouldGenerateTaggedPDF() {
+  // Always generate tagged PDF, see: https://crbug.com/607777
+  return true;
 }
 
 bool HeadlessPrintRenderFrameHelperDelegate::OverridePrint(

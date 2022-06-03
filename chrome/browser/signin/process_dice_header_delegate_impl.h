@@ -11,44 +11,48 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
 }
 
-namespace signin {
-class IdentityManager;
-}
+class Profile;
+class SigninUIError;
 
 class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
                                       public content::WebContentsObserver {
  public:
   // Callback starting Sync.
   using EnableSyncCallback =
-      base::OnceCallback<void(content::WebContents*,
-                              const CoreAccountId& /* account_id */)>;
+      base::OnceCallback<void(Profile*,
+                              signin_metrics::AccessPoint,
+                              signin_metrics::PromoAction,
+                              signin_metrics::Reason,
+                              content::WebContents*,
+                              const CoreAccountId&)>;
 
   // Callback showing a signin error UI.
-  using ShowSigninErrorCallback =
-      base::OnceCallback<void(content::WebContents*,
-                              const std::string& /* error_message */,
-                              const std::string& /* email */)>;
+  using ShowSigninErrorCallback = base::OnceCallback<
+      void(Profile*, content::WebContents*, const SigninUIError&)>;
 
   // |is_sync_signin_tab| is true if a sync signin flow has been started in that
   // tab.
   ProcessDiceHeaderDelegateImpl(
       content::WebContents* web_contents,
-      signin::IdentityManager* identity_manager,
-      bool is_sync_signin_tab,
       EnableSyncCallback enable_sync_callback,
-      ShowSigninErrorCallback show_signin_error_callback,
-      const GURL& redirect_url = GURL::EmptyGURL());
+      ShowSigninErrorCallback show_signin_error_callback);
+
+  ProcessDiceHeaderDelegateImpl(const ProcessDiceHeaderDelegateImpl&) = delete;
+  ProcessDiceHeaderDelegateImpl& operator=(
+      const ProcessDiceHeaderDelegateImpl&) = delete;
+
   ~ProcessDiceHeaderDelegateImpl() override;
 
   // ProcessDiceHeaderDelegate:
+  void HandleTokenExchangeSuccess(CoreAccountId account_id,
+                                  bool is_new_account) override;
   void EnableSync(const CoreAccountId& account_id) override;
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
@@ -57,12 +61,16 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   // Returns true if sync should be enabled after the user signs in.
   bool ShouldEnableSync();
 
-  signin::IdentityManager* identity_manager_;
+  Profile* profile_;
   EnableSyncCallback enable_sync_callback_;
   ShowSigninErrorCallback show_signin_error_callback_;
-  bool is_sync_signin_tab_;
+  bool is_sync_signin_tab_ = false;
+  signin_metrics::AccessPoint access_point_ =
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+  signin_metrics::PromoAction promo_action_ =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  signin_metrics::Reason reason_ = signin_metrics::Reason::kUnknownReason;
   GURL redirect_url_;
-  DISALLOW_COPY_AND_ASSIGN(ProcessDiceHeaderDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_

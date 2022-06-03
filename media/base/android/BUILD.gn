@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
 
@@ -14,11 +13,12 @@ if (is_android) {
   # This is bundled into //media, so all dependencies should be on //media.
   # APK targets that depend on this indirectly, should also
   # depend on :media_java to get the corresponding Java classes.
-  jumbo_source_set("android") {
+  source_set("android") {
     visibility = [
       "//media",
       "//media/filters",
     ]
+
     sources = [
       "android_cdm_factory.cc",
       "android_cdm_factory.h",
@@ -47,9 +47,6 @@ if (is_android) {
       "media_drm_bridge_delegate.h",
       "media_drm_bridge_factory.cc",
       "media_drm_bridge_factory.h",
-      "media_drm_key_type.h",
-      "media_drm_storage.cc",
-      "media_drm_storage.h",
       "media_drm_storage_bridge.cc",
       "media_drm_storage_bridge.h",
       "media_player_bridge.cc",
@@ -66,14 +63,13 @@ if (is_android) {
       "stream_texture_wrapper.h",
     ]
     configs += [ "//media:subcomponent_config" ]
-    public_deps = [
-      ":media_jni_headers",
-    ]
+    public_deps = [ ":media_jni_headers" ]
     deps = [
       "//media/audio",
       "//media/base",
       "//media/cdm",
       "//media/formats",
+      "//net",
       "//third_party/widevine/cdm:headers",
       "//ui/gl",
       "//url",
@@ -100,6 +96,7 @@ if (is_android) {
     deps = [
       "//base/test:test_support",
       "//media:test_support",
+      "//net",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/libyuv",
@@ -154,23 +151,20 @@ if (is_android) {
   }
 
   java_cpp_strings("java_switches") {
-    sources = [
-      "//media/base/media_switches.cc",
-    ]
+    sources = [ "//media/base/media_switches.cc" ]
     template = "//media/base/android/java_templates/MediaSwitches.java.tmpl"
   }
 
   android_resources("media_java_resources") {
-    custom_package = "org.chromium.media"
-    resource_dirs = [ "java/res" ]
+    sources = [ "java/res/raw/empty.wav" ]
   }
 
   android_library("media_java") {
     deps = [
+      ":display_java",
       ":media_java_resources",
       "//base:base_java",
-      "//base:jni_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     srcjar_deps = [
@@ -178,16 +172,18 @@ if (is_android) {
       ":java_switches",
       "//media/base:java_enums",
     ]
-    java_files = [
+    resources_package = "org.chromium.media"
+    sources = [
       "java/src/org/chromium/media/AudioManagerAndroid.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/BitrateAdjuster.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
       "java/src/org/chromium/media/HdrMetadata.java",
+      "java/src/org/chromium/media/MaxAnticipatedResolutionEstimator.java",
       "java/src/org/chromium/media/MediaCodecBridge.java",
       "java/src/org/chromium/media/MediaCodecBridgeBuilder.java",
-      "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaCodecEncoder.java",
+      "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaDrmBridge.java",
       "java/src/org/chromium/media/MediaDrmSessionManager.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
@@ -195,11 +191,19 @@ if (is_android) {
       "java/src/org/chromium/media/MediaPlayerBridge.java",
       "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
+      "java/src/org/chromium/media/ScreenResolutionUtil.java",
     ]
   }
 
+  # TODO (b/146418831): Replace with androidx version
+  android_library("display_java") {
+    sources = [ "java/src/org/chromium/media/DisplayCompat.java" ]
+
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
   junit_binary("media_base_junit_tests") {
-    java_files = [
+    sources = [
       "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java",
       "java/src/test/org/chromium/media/BitrateAdjusterTest.java",
       "java/src/test/org/chromium/media/MediaFormatBuilderTest.java",
@@ -208,6 +212,7 @@ if (is_android) {
       ":media_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
     ]
   }

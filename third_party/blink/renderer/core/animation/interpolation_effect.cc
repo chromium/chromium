@@ -44,7 +44,7 @@ void InterpolationEffect::AddInterpolationsFromKeyframes(
                    keyframe_b.Offset(), apply_from, apply_to);
 }
 
-void InterpolationEffect::Trace(Visitor* visitor) {
+void InterpolationEffect::Trace(Visitor* visitor) const {
   visitor->Trace(interpolations_);
 }
 

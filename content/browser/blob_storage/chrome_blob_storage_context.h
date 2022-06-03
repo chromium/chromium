@@ -13,7 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,6 +35,7 @@ class BlobStorageContext;
 namespace content {
 class BlobHandle;
 class BrowserContext;
+class StoragePartition;
 
 // A context class that keeps track of BlobStorageController used by the chrome.
 // There is an instance associated with each BrowserContext. There could be
@@ -57,7 +58,8 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   static mojo::PendingRemote<storage::mojom::BlobStorageContext> GetRemoteFor(
       BrowserContext* browser_context);
 
-  void InitializeOnIOThread(base::FilePath blob_storage_dir,
+  void InitializeOnIOThread(const base::FilePath& profile_dir,
+                            const base::FilePath& blob_storage_dir,
                             scoped_refptr<base::TaskRunner> file_task_runner);
 
   storage::BlobStorageContext* context() const;
@@ -79,7 +81,7 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   // Must be called on the UI thread.
   static scoped_refptr<network::SharedURLLoaderFactory>
   URLLoaderFactoryForToken(
-      BrowserContext* browser_context,
+      StoragePartition* storage_partition,
       mojo::PendingRemote<blink::mojom::BlobURLToken> token);
 
   // Similar to the above method this also returns a factory capable of loading
@@ -92,7 +94,7 @@ class CONTENT_EXPORT ChromeBlobStorageContext
   // holding on to the URL has no such guarantees.
   // Must be called on the UI thread.
   static scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactoryForUrl(
-      BrowserContext* browser_context,
+      StoragePartition* storage_partition,
       const GURL& url);
 
   // Must be called on the UI thread.

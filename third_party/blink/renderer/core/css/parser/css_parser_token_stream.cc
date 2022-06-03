@@ -6,6 +6,11 @@
 
 namespace blink {
 
+StringView CSSParserTokenStream::StringRangeAt(wtf_size_t start,
+                                               wtf_size_t length) const {
+  return tokenizer_.StringRangeAt(start, length);
+}
+
 void CSSParserTokenStream::ConsumeWhitespace() {
   while (Peek().GetType() == kWhitespaceToken)
     UncheckedConsume();

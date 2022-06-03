@@ -7,9 +7,12 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // Hide this function on platforms where the dialog does not exist.
-#if defined(OS_MACOSX) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 class Profile;
 
@@ -20,12 +23,18 @@ namespace first_run {
 // Invokes ChangeMetricsReportingState() if consent is given to enable crash
 // reporting, and may initiate the flow to set the default browser.
 void ShowFirstRunDialog(Profile* profile);
+void ShowFirstRunDialogViews(Profile* profile);
+// Maintain Cocoa-based first run dialog until we are confident that views'
+// implementation works well on macOS.
+#if defined(OS_MAC)
+void ShowFirstRunDialogCocoa(Profile* profile);
+#endif
 
 // Returns a Closure invoked before calling ShowFirstRunDialog(). For testing.
 base::OnceClosure& GetBeforeShowFirstRunDialogHookForTesting();
 
 }  // namespace first_run
 
-#endif  // OS_MACOSX || DESKTOP_LINUX
+#endif  // OS_MAC || DESKTOP_LINUX
 
 #endif  // CHROME_BROWSER_FIRST_RUN_FIRST_RUN_DIALOG_H_

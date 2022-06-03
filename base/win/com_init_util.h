@@ -6,7 +6,7 @@
 #define BASE_WIN_COM_INIT_UTIL_H_
 
 #include "base/base_export.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 namespace win {
@@ -19,6 +19,9 @@ enum class ComApartmentType {
   // Multi-threaded Apartment.
   MTA,
 };
+
+// Get the current apartment type.
+BASE_EXPORT ComApartmentType GetComApartmentTypeForThread();
 
 #if DCHECK_IS_ON()
 

@@ -4,7 +4,7 @@
 
 #include "google_apis/gaia/core_account_id.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace {
 // Returns whether the string looks like an email (the test is

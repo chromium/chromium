@@ -21,16 +21,21 @@ class LastRequestResultCache;
 class AwPermissionManager : public content::PermissionControllerDelegate {
  public:
   AwPermissionManager();
+
+  AwPermissionManager(const AwPermissionManager&) = delete;
+  AwPermissionManager& operator=(const AwPermissionManager&) = delete;
+
   ~AwPermissionManager() override;
 
   // PermissionControllerDelegate implementation.
-  int RequestPermission(content::PermissionType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<content::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -49,13 +54,14 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
-  int SubscribePermissionStatusChange(
+  SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
-  void UnsubscribePermissionStatusChange(int subscription_id) override;
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 
  protected:
   void CancelPermissionRequest(int request_id);
@@ -85,8 +91,6 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
   std::unique_ptr<LastRequestResultCache> result_cache_;
 
   base::WeakPtrFactory<AwPermissionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwPermissionManager);
 };
 
 } // namespace android_webview

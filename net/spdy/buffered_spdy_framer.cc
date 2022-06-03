@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
@@ -49,7 +50,8 @@ void BufferedSpdyFramer::set_debug_visitor(
 }
 
 void BufferedSpdyFramer::OnError(
-    http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error) {
+    http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error,
+    std::string /*detailed_error*/) {
   visitor_->OnError(spdy_framer_error);
 }
 
@@ -208,9 +210,10 @@ void BufferedSpdyFramer::OnPushPromise(spdy::SpdyStreamId stream_id,
 
 void BufferedSpdyFramer::OnAltSvc(
     spdy::SpdyStreamId stream_id,
-    base::StringPiece origin,
+    absl::string_view origin,
     const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector& altsvc_vector) {
-  visitor_->OnAltSvc(stream_id, origin, altsvc_vector);
+  visitor_->OnAltSvc(stream_id, base::StringViewToStringPiece(origin),
+                     altsvc_vector);
 }
 
 void BufferedSpdyFramer::OnContinuation(spdy::SpdyStreamId stream_id,
@@ -298,7 +301,7 @@ std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreateDataFrame(
     const char* data,
     uint32_t len,
     spdy::SpdyDataFlags flags) {
-  spdy::SpdyDataIR data_ir(stream_id, base::StringPiece(data, len));
+  spdy::SpdyDataIR data_ir(stream_id, absl::string_view(data, len));
   data_ir.set_fin((flags & spdy::DATA_FLAG_FIN) != 0);
   return std::make_unique<spdy::SpdySerializedFrame>(
       spdy_framer_.SerializeData(data_ir));
@@ -316,18 +319,14 @@ std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreatePriority(
       spdy_framer_.SerializePriority(priority_ir));
 }
 
-size_t BufferedSpdyFramer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(spdy_framer_) +
-         base::trace_event::EstimateMemoryUsage(deframer_) +
-         base::trace_event::EstimateMemoryUsage(coalescer_) +
-         base::trace_event::EstimateMemoryUsage(control_frame_fields_) +
-         base::trace_event::EstimateMemoryUsage(goaway_fields_);
+void BufferedSpdyFramer::UpdateHeaderEncoderTableSize(uint32_t value) {
+  spdy_framer_.UpdateHeaderEncoderTableSize(value);
+}
+
+uint32_t BufferedSpdyFramer::header_encoder_table_size() const {
+  return spdy_framer_.header_encoder_table_size();
 }
 
 BufferedSpdyFramer::ControlFrameFields::ControlFrameFields() = default;
-
-size_t BufferedSpdyFramer::GoAwayFields::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(debug_data);
-}
 
 }  // namespace net

@@ -9,10 +9,14 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
-#include "ash/public/cpp/app_types.h"
+#include "ash/animation/animation_change_type.h"
+#include "ash/components/audio/sounds.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/always_on_top_controller.h"
@@ -23,9 +27,12 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
-#include "chromeos/audio/chromeos_sounds.h"
+#include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -34,21 +41,16 @@ namespace ash {
 
 namespace {
 
-constexpr SkColor kSemiOpaqueBackdropColor =
-    SkColorSetARGB(0x99, 0x20, 0x21, 0x24);
-
-SkColor GetBackdropColorByMode(BackdropWindowMode mode) {
-  if (mode == BackdropWindowMode::kAutoSemiOpaque)
-    return kSemiOpaqueBackdropColor;
-
-  DCHECK(mode == BackdropWindowMode::kAutoOpaque ||
-         mode == BackdropWindowMode::kEnabled);
-  return SK_ColorBLACK;
-}
+// -----------------------------------------------------------------------------
+// BackdropEventHandler:
 
 class BackdropEventHandler : public ui::EventHandler {
  public:
   BackdropEventHandler() = default;
+
+  BackdropEventHandler(const BackdropEventHandler&) = delete;
+  BackdropEventHandler& operator=(const BackdropEventHandler&) = delete;
+
   ~BackdropEventHandler() override = default;
 
   // ui::EventHandler:
@@ -66,7 +68,7 @@ class BackdropEventHandler : public ui::EventHandler {
         case ui::ET_SCROLL:
         case ui::ET_SCROLL_FLING_START:
           Shell::Get()->accessibility_controller()->PlayEarcon(
-              chromeos::SOUND_VOLUME_ADJUST);
+              Sound::kVolumeAdjust);
           break;
         default:
           break;
@@ -74,10 +76,46 @@ class BackdropEventHandler : public ui::EventHandler {
       event->SetHandled();
     }
   }
+};
+
+// -----------------------------------------------------------------------------
+// ScopedWindowVisibilityAnimationTypeResetter:
+
+// Sets |window|'s visibility animation type to |new_type| and resets it back to
+// WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT when it goes out of scope.
+class ScopedWindowVisibilityAnimationTypeResetter {
+ public:
+  ScopedWindowVisibilityAnimationTypeResetter(aura::Window* window,
+                                              int new_type)
+      : window_(window) {
+    DCHECK(window);
+
+    if (::wm::GetWindowVisibilityAnimationType(window) == new_type) {
+      // Clear so as not to do anything when we go out of scope.
+      window_ = nullptr;
+      return;
+    }
+
+    ::wm::SetWindowVisibilityAnimationType(window_, new_type);
+  }
+
+  ~ScopedWindowVisibilityAnimationTypeResetter() {
+    if (window_) {
+      ::wm::SetWindowVisibilityAnimationType(
+          window_, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
+    }
+  }
+
+  ScopedWindowVisibilityAnimationTypeResetter(
+      const ScopedWindowVisibilityAnimationTypeResetter&) = delete;
+  ScopedWindowVisibilityAnimationTypeResetter& operator=(
+      const ScopedWindowVisibilityAnimationTypeResetter&) = delete;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(BackdropEventHandler);
+  aura::Window* window_;
 };
+
+// -----------------------------------------------------------------------------
 
 bool InOverviewSession() {
   OverviewController* overview_controller = Shell::Get()->overview_controller();
@@ -121,6 +159,51 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
 
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// BackdropController::WindowAnimationWaiter:
+
+// Observers an ongoing animation of |animating_window| and updates the backdrop
+// once that animation completes.
+class BackdropController::WindowAnimationWaiter
+    : public ui::ImplicitAnimationObserver {
+ public:
+  WindowAnimationWaiter(BackdropController* owner,
+                        aura::Window* animating_window)
+      : owner_(owner), animating_window_(animating_window) {
+    auto* animator = animating_window_->layer()->GetAnimator();
+    DCHECK(animator->is_animating());
+    const auto original_transition_duration = animator->GetTransitionDuration();
+    // Don't let |settings| overwrite the existing animation's duration.
+    ui::ScopedLayerAnimationSettings settings{animator};
+    settings.SetTransitionDuration(original_transition_duration);
+    settings.AddObserver(this);
+  }
+
+  ~WindowAnimationWaiter() override { StopObservingImplicitAnimations(); }
+
+  WindowAnimationWaiter(const WindowAnimationWaiter&) = delete;
+  WindowAnimationWaiter& operator=(const WindowAnimationWaiter&) = delete;
+
+  aura::Window* animating_window() { return animating_window_; }
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override {
+    // We keep this object alive until we update the backdrop, since we use the
+    // member `owner_` below. This is not necessary, since we can cache it as
+    // a local before we reset `window_animation_waiter_`, but this way things
+    // are more deterministic, just in case.
+    auto to_destroy = std::move(owner_->window_animation_waiter_);
+    DCHECK_EQ(this, to_destroy.get());
+    owner_->UpdateBackdrop();
+  }
+
+ private:
+  BackdropController* owner_;
+  aura::Window* animating_window_;
+};
+
+// -----------------------------------------------------------------------------
+
 BackdropController::BackdropController(aura::Window* container)
     : root_window_(container->GetRootWindow()), container_(container) {
   DCHECK(container_);
@@ -133,6 +216,7 @@ BackdropController::BackdropController(aura::Window* container)
 }
 
 BackdropController::~BackdropController() {
+  window_backdrop_observations_.RemoveAllObservations();
   auto* shell = Shell::Get();
   // Shell destroys the TabletModeController before destroying all root windows.
   if (shell->tablet_mode_controller())
@@ -147,33 +231,51 @@ BackdropController::~BackdropController() {
   Hide(/*destroy=*/true);
 }
 
-void BackdropController::OnWindowAddedToLayout() {
-  UpdateBackdrop();
+void BackdropController::OnWindowAddedToLayout(aura::Window* window) {
+  if (DoesWindowCauseBackdropUpdates(window)) {
+    window_backdrop_observations_.AddObservation(WindowBackdrop::Get(window));
+    UpdateBackdrop();
+  }
 }
 
-void BackdropController::OnWindowRemovedFromLayout() {
-  UpdateBackdrop();
+void BackdropController::OnWindowRemovedFromLayout(aura::Window* window) {
+  WindowBackdrop* window_backdrop = WindowBackdrop::Get(window);
+  if (window_backdrop_observations_.IsObservingSource(window_backdrop))
+    window_backdrop_observations_.RemoveObservation(window_backdrop);
+
+  if (DoesWindowCauseBackdropUpdates(window))
+    UpdateBackdrop();
 }
 
-void BackdropController::OnChildWindowVisibilityChanged() {
-  UpdateBackdrop();
+void BackdropController::OnChildWindowVisibilityChanged(aura::Window* window) {
+  if (DoesWindowCauseBackdropUpdates(window))
+    UpdateBackdrop();
 }
 
-void BackdropController::OnWindowStackingChanged() {
-  UpdateBackdrop();
+void BackdropController::OnWindowStackingChanged(aura::Window* window) {
+  if (DoesWindowCauseBackdropUpdates(window))
+    UpdateBackdrop();
 }
 
 void BackdropController::OnDisplayMetricsChanged() {
-  UpdateBackdrop();
+  // Display changes such as rotation, device scale factor, ... etc. don't
+  // affect the visibility or availability of the backdrop. They may however
+  // affect its bounds. So just layout.
+  MaybeUpdateLayout();
 }
 
-void BackdropController::OnPostWindowStateTypeChange() {
-  UpdateBackdrop();
+void BackdropController::OnPostWindowStateTypeChange(aura::Window* window) {
+  if (DoesWindowCauseBackdropUpdates(window))
+    UpdateBackdrop();
 }
 
 void BackdropController::OnDeskContentChanged() {
-  // Desk content changes may result in the need to update the backdrop even
-  // when overview is active, since the mini_view should show updated content.
+  // This should *only* be called while overview is active. Otherwise, the
+  // WorkspaceLayoutManager should take care of updating the backdrop.
+  DCHECK(InOverviewSession());
+
+  // Desk content changes may result in the need to update the backdrop when
+  // overview is active, since the mini_view should show updated content.
   // Example: when the last window needing backdrop is moved to another desk,
   // the backdrop should be destroyed from the source desk, while created for
   // the target desk, and the mini_views of both desks should be updated.
@@ -196,7 +298,7 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
     if (window == backdrop_window_)
       continue;
 
-    if (window->type() != aura::client::WINDOW_TYPE_NORMAL)
+    if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL)
       continue;
 
     auto* window_state = WindowState::Get(window);
@@ -215,6 +317,9 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
     }
 
     if (!WindowShouldHaveBackdrop(window))
+      continue;
+
+    if (!window_util::ShouldShowForCurrentUser(window))
       continue;
 
     return window;
@@ -248,7 +353,7 @@ void BackdropController::OnOverviewModeEndingAnimationComplete(bool canceled) {
 }
 
 void BackdropController::OnAccessibilityStatusChanged() {
-  UpdateBackdrop();
+  UpdateAccessibilityMode();
 }
 
 void BackdropController::OnSplitViewStateChanged(
@@ -260,16 +365,15 @@ void BackdropController::OnSplitViewStateChanged(
 }
 
 void BackdropController::OnSplitViewDividerPositionChanged() {
-  UpdateBackdrop();
+  MaybeUpdateLayout();
 }
 
 void BackdropController::OnWallpaperPreviewStarted() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (active_window) {
-    active_window->SetProperty(kBackdropWindowMode,
-                               BackdropWindowMode::kDisabled);
+    WindowBackdrop::Get(active_window)
+        ->SetBackdropMode(WindowBackdrop::BackdropMode::kDisabled);
   }
-  UpdateBackdrop();
 }
 
 void BackdropController::OnTabletModeStarted() {
@@ -278,6 +382,11 @@ void BackdropController::OnTabletModeStarted() {
 
 void BackdropController::OnTabletModeEnded() {
   UpdateBackdrop();
+}
+
+void BackdropController::OnWindowBackdropPropertyChanged(aura::Window* window) {
+  if (DoesWindowCauseBackdropUpdates(window))
+    UpdateBackdrop();
 }
 
 void BackdropController::RestoreUpdates() {
@@ -290,47 +399,40 @@ void BackdropController::UpdateBackdropInternal() {
   if (pause_update_)
     return;
 
+  // Updating the back drop widget should not affect the shelf's auto hide
+  // state.
+  Shelf::ScopedAutoHideLock auto_hide_lock(ash::Shelf::ForWindow(container_));
+
   // We are either destroying the backdrop widget or changing the order of
   // windows which will cause recursion.
   base::AutoReset<bool> lock(&pause_update_, true);
   aura::Window* window = GetTopmostWindowWithBackdrop();
-  if (!window) {
+
+  if (window == window_having_backdrop_) {
+    if (window)
+      Show();
+    return;
+  }
+
+  window_having_backdrop_ = window;
+
+  if (!window_having_backdrop_) {
     // Destroy the backdrop since no suitable window was found.
     Hide(/*destroy=*/true);
     return;
   }
 
-  EnsureBackdropWidget(window->GetProperty(kBackdropWindowMode));
-  UpdateAccessibilityMode();
+  DCHECK_EQ(window_having_backdrop_->GetRootWindow(), root_window_);
+  DCHECK_NE(window_having_backdrop_, backdrop_window_);
 
-  if (window == backdrop_window_ && backdrop_->IsVisible()) {
-    Layout();
-    return;
-  }
-  if (window->GetRootWindow() != backdrop_window_->GetRootWindow())
-    return;
-
-  // Update the animation type of |backdrop_window_| based on current top most
-  // window with backdrop.
-  SetBackdropAnimationType(WindowState::Get(window)->CanMaximize()
-                               ? WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END
-                               : ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
-
+  EnsureBackdropWidget();
   Show();
-
-  SetBackdropAnimationType(::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
-
-  // Backdrop needs to be immediately behind the window.
-  container_->StackChildBelow(backdrop_window_, window);
 }
 
-void BackdropController::EnsureBackdropWidget(BackdropWindowMode mode) {
-  if (backdrop_) {
-    SkColor backdrop_color = GetBackdropColorByMode(mode);
-    if (backdrop_window_->layer()->GetTargetColor() != backdrop_color)
-      backdrop_window_->layer()->SetColor(backdrop_color);
+void BackdropController::EnsureBackdropWidget() {
+  DCHECK(window_having_backdrop_);
+  if (backdrop_)
     return;
-  }
 
   backdrop_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
@@ -341,26 +443,30 @@ void BackdropController::EnsureBackdropWidget(BackdropWindowMode mode) {
   params.name = "Backdrop";
   // To disallow the MRU list from picking this window up it should not be
   // activateable.
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
-  DCHECK_NE(kShellWindowId_Invalid, container_->id());
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  DCHECK_NE(kShellWindowId_Invalid, container_->GetId());
   params.parent = container_;
+  params.init_properties_container.SetProperty(kHideInOverviewKey, true);
+  params.init_properties_container.SetProperty(kForceVisibleInMiniViewKey,
+                                               true);
   backdrop_->Init(std::move(params));
   backdrop_window_ = backdrop_->GetNativeWindow();
-  backdrop_window_->SetProperty(kHideInOverviewKey, true);
   // The backdrop window in always on top container can be reparented without
   // this when the window is set to fullscreen.
   AlwaysOnTopController::SetDisallowReparent(backdrop_window_);
-  backdrop_window_->layer()->SetColor(GetBackdropColorByMode(mode));
+  backdrop_window_->layer()->SetColor(
+      WindowBackdrop::Get(window_having_backdrop_)->GetBackdropColor());
 
   WindowState::Get(backdrop_window_)->set_allow_set_bounds_direct(true);
+  UpdateAccessibilityMode();
 }
 
 void BackdropController::UpdateAccessibilityMode() {
   if (!backdrop_)
     return;
 
-  bool enabled =
-      Shell::Get()->accessibility_controller()->spoken_feedback_enabled();
+  const bool enabled =
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
   if (enabled) {
     if (!backdrop_event_handler_) {
       backdrop_event_handler_ = std::make_unique<BackdropEventHandler>();
@@ -374,20 +480,22 @@ void BackdropController::UpdateAccessibilityMode() {
 }
 
 bool BackdropController::WindowShouldHaveBackdrop(aura::Window* window) {
-  if (window->GetAllPropertyKeys().count(kBackdropWindowMode)) {
-    BackdropWindowMode backdrop_mode = window->GetProperty(kBackdropWindowMode);
-    if (backdrop_mode == BackdropWindowMode::kEnabled)
-      return true;
-    if (backdrop_mode == BackdropWindowMode::kDisabled)
-      return false;
-  }
+  WindowBackdrop* window_backdrop = WindowBackdrop::Get(window);
+  if (window_backdrop->temporarily_disabled())
+    return false;
+
+  WindowBackdrop::BackdropMode backdrop_mode = window_backdrop->mode();
+  if (backdrop_mode == WindowBackdrop::BackdropMode::kEnabled)
+    return true;
+  if (backdrop_mode == WindowBackdrop::BackdropMode::kDisabled)
+    return false;
 
   // If |window| is the current active window and is an ARC app window, |window|
   // should have a backdrop when spoken feedback is enabled.
   if (window->GetProperty(aura::client::kAppType) ==
           static_cast<int>(AppType::ARC_APP) &&
       wm::IsActiveWindow(window) &&
-      Shell::Get()->accessibility_controller()->spoken_feedback_enabled()) {
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return true;
   }
 
@@ -413,12 +521,40 @@ bool BackdropController::WindowShouldHaveBackdrop(aura::Window* window) {
 }
 
 void BackdropController::Show() {
+  DCHECK(backdrop_);
+  DCHECK(backdrop_window_);
+  DCHECK(window_having_backdrop_);
+
+  // No need to wait for window animations while in overview, since the backdrop
+  // will be hidden anyways, but we still have to update its stacking and
+  // layout.
+  const bool in_overview = InOverviewSession();
+  if (!in_overview && MaybeWaitForWindowAnimation())
+    return;
+
   Layout();
+
+  // Update backdrop color.
+  const SkColor backdrop_color =
+      WindowBackdrop::Get(window_having_backdrop_)->GetBackdropColor();
+  if (backdrop_window_->layer()->GetTargetColor() != backdrop_color)
+    backdrop_window_->layer()->SetColor(backdrop_color);
+
+  // Update the stcking, only after we determine we can show the backdrop. The
+  // backdrop needs to be immediately behind the window that needs a backdrop.
+  container_->StackChildBelow(backdrop_window_, window_having_backdrop_);
 
   // When overview is active, the backdrop should never be shown. However, it
   // must be laid out, since it should show up properly in the mini_views.
-  if (!InOverviewSession())
-    backdrop_->Show();
+  if (backdrop_->IsVisible() || in_overview)
+    return;
+
+  ScopedWindowVisibilityAnimationTypeResetter resetter{
+      backdrop_window_,
+      WindowState::Get(window_having_backdrop_)->CanMaximize()
+          ? static_cast<int>(WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END)
+          : static_cast<int>(::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE)};
+  backdrop_->Show();
 }
 
 void BackdropController::Hide(bool destroy, bool animate) {
@@ -456,14 +592,13 @@ void BackdropController::Hide(bool destroy, bool animate) {
 bool BackdropController::BackdropShouldFullscreen() {
   // TODO(afakhry): Define the correct behavior and revise this in a follow-up
   // CL.
-  aura::Window* window = GetTopmostWindowWithBackdrop();
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   SplitViewController::State state = split_view_controller->state();
   if ((state == SplitViewController::State::kLeftSnapped &&
-       window == split_view_controller->left_window()) ||
+       window_having_backdrop_ == split_view_controller->left_window()) ||
       (state == SplitViewController::State::kRightSnapped &&
-       window == split_view_controller->right_window())) {
+       window_having_backdrop_ == split_view_controller->right_window())) {
     return false;
   }
 
@@ -487,6 +622,8 @@ gfx::Rect BackdropController::GetBackdropBounds() {
 }
 
 void BackdropController::Layout() {
+  DCHECK(backdrop_);
+
   // Makes sure that the backdrop has the correct bounds if it should not be
   // fullscreen size.
   backdrop_->SetFullscreen(BackdropShouldFullscreen());
@@ -494,22 +631,54 @@ void BackdropController::Layout() {
     // TODO(oshima): The size of solid color layer can be smaller than texture's
     // layer with fractional scale (crbug.com/9000220). Use adjusted bounds so
     // that it can cover texture layer. Fix the bug and remove this.
-    auto* window = backdrop_window_;
-    gfx::Rect bounds = screen_util::GetDisplayBoundsInParent(window);
+    const gfx::Rect bounds =
+        screen_util::GetDisplayBoundsInParent(backdrop_window_);
     backdrop_window_->SetBounds(
-        screen_util::SnapBoundsToDisplayEdge(bounds, window));
+        screen_util::SnapBoundsToDisplayEdge(bounds, backdrop_window_));
   } else {
     backdrop_->SetBounds(GetBackdropBounds());
   }
 }
 
-void BackdropController::SetBackdropAnimationType(int type) {
-  if (!backdrop_window_ ||
-      ::wm::GetWindowVisibilityAnimationType(backdrop_window_) == type) {
-    return;
+bool BackdropController::MaybeWaitForWindowAnimation() {
+  DCHECK(window_having_backdrop_);
+
+  auto* animator = window_having_backdrop_->layer()->GetAnimator();
+  if (!animator->is_animating())
+    return false;
+
+  if (window_animation_waiter_ &&
+      window_animation_waiter_->animating_window() == window_having_backdrop_) {
+    return true;
   }
 
-  ::wm::SetWindowVisibilityAnimationType(backdrop_window_, type);
+  window_animation_waiter_.reset();
+
+  constexpr int kCheckedAnimations = ui::LayerAnimationElement::BOUNDS |
+                                     ui::LayerAnimationElement::TRANSFORM |
+                                     ui::LayerAnimationElement::OPACITY |
+                                     ui::LayerAnimationElement::VISIBILITY;
+  if (!animator->IsAnimatingOnePropertyOf(kCheckedAnimations))
+    return false;
+
+  window_animation_waiter_ =
+      std::make_unique<WindowAnimationWaiter>(this, window_having_backdrop_);
+  return true;
+}
+
+void BackdropController::MaybeUpdateLayout() {
+  if (backdrop_ && backdrop_->IsVisible())
+    Layout();
+}
+
+bool BackdropController::DoesWindowCauseBackdropUpdates(
+    aura::Window* window) const {
+  // Popups should not result in any backdrop updates. We also avoid unnecessary
+  // recursive calls to UpdateBackdrop() from the WorkspaceLayoutManager caused
+  // by the backdrop itself, even though we avoid recursion here via
+  // |pause_update_|.
+  return window->GetType() != aura::client::WINDOW_TYPE_POPUP &&
+         (!backdrop_ || window != backdrop_->GetNativeWindow());
 }
 
 }  // namespace ash

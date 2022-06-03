@@ -4,74 +4,91 @@
 
 #include "ui/views/test/views_test_helper_aura.h"
 
-#include "ui/aura/client/screen_position_client.h"
-#include "ui/aura/test/aura_test_helper.h"
-#include "ui/views/test/platform_test_helper.h"
-#include "ui/wm/core/capture_controller.h"
-#include "ui/wm/core/default_activation_client.h"
-#include "ui/wm/core/default_screen_position_client.h"
+#include "base/check_op.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "ui/aura/window.h"
+#include "ui/views/test/test_views_delegate.h"
 
 namespace views {
 
+namespace {
+
+ViewsTestHelperAura::AuraTestHelperFactory g_helper_factory = nullptr;
+ViewsTestHelperAura::TestViewsDelegateFactory g_delegate_factory = nullptr;
+
+}  // namespace
+
 // static
-ViewsTestHelper* ViewsTestHelper::Create(
-    ui::ContextFactory* context_factory,
-    ui::ContextFactoryPrivate* context_factory_private) {
-  return new ViewsTestHelperAura(context_factory, context_factory_private);
+std::unique_ptr<ViewsTestHelper> ViewsTestHelper::Create() {
+  return std::make_unique<ViewsTestHelperAura>();
 }
 
-ViewsTestHelperAura::ViewsTestHelperAura(
-    ui::ContextFactory* context_factory,
-    ui::ContextFactoryPrivate* context_factory_private)
-    : context_factory_(context_factory),
-      context_factory_private_(context_factory_private) {
-  aura_test_helper_ = std::make_unique<aura::test::AuraTestHelper>();
+ViewsTestHelperAura::ViewsTestHelperAura() {
+  aura_test_helper_ = g_helper_factory
+                          ? (*g_helper_factory)()
+                          : std::make_unique<aura::test::AuraTestHelper>();
 }
 
-ViewsTestHelperAura::~ViewsTestHelperAura() = default;
+ViewsTestHelperAura::~ViewsTestHelperAura() {
+  // Ensure all Widgets (and Windows) are closed in unit tests.
+  //
+  // Most tests do not try to create desktop Aura Widgets, and on most platforms
+  // will thus create Widgets that are owned by the RootWindow.  These will
+  // automatically be destroyed when the RootWindow is torn down (during
+  // destruction of the AuraTestHelper).  However, on Mac there are only desktop
+  // widgets, so any unclosed widgets will remain unowned, holding a Compositor,
+  // and will cause UAFs if closed (e.g. by the test freeing a
+  // unique_ptr<Widget> with WIDGET_OWNS_NATIVE_WIDGET) after the ContextFactory
+  // is destroyed by our owner.
+  //
+  // So, although it shouldn't matter for this helper, check for unclosed
+  // windows to complain about faulty tests early.
+  //
+  // This is not done on ChromeOS, where depending on the AuraTestHelper
+  // subclass, the root window may be owned by the Shell and contain various
+  // automatically-created container Windows that are never destroyed until
+  // Shell deletion.  In theory we could attempt to check whether remaining
+  // children were these sorts of things and not warn, but doing so while
+  // avoiding layering violations is challenging, and since this is just a
+  // convenience check anyway, skip it.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+  gfx::NativeWindow root_window = GetContext();
+  if (root_window) {
+    DCHECK(root_window->children().empty())
+        << "Not all windows were closed:\n"
+        << root_window->GetWindowHierarchy(0);
+  }
+#endif
+}
+
+std::unique_ptr<TestViewsDelegate>
+ViewsTestHelperAura::GetFallbackTestViewsDelegate() {
+  // The factory delegate takes priority over the parent default.
+  return g_delegate_factory ? (*g_delegate_factory)()
+                            : ViewsTestHelper::GetFallbackTestViewsDelegate();
+}
 
 void ViewsTestHelperAura::SetUp() {
-  aura_test_helper_->SetUp(context_factory_, context_factory_private_);
-
-  // GetContext() may return null. See comment in GetContext().
-  gfx::NativeWindow root_window = GetContext();
-  if (!root_window)
-    return;
-
-  new wm::DefaultActivationClient(root_window);
-
-  if (!aura::client::GetScreenPositionClient(root_window)) {
-    screen_position_client_ =
-        std::make_unique<wm::DefaultScreenPositionClient>();
-    aura::client::SetScreenPositionClient(root_window,
-                                          screen_position_client_.get());
-  }
-}
-
-void ViewsTestHelperAura::TearDown() {
-  // GetContext() may return null. See comment in GetContext().
-  if (GetContext()) {
-    // Ensure all Widgets (and windows) are closed in unit tests. This is done
-    // automatically when the RootWindow is torn down, but is an error on
-    // platforms that must ensure no Compositors are alive when the
-    // ContextFactory is torn down.
-    // So, although it's optional, check the root window to detect failures
-    // before they hit the CQ on other platforms.
-    DCHECK(aura_test_helper_->root_window()->children().empty())
-        << "Not all windows were closed.";
-
-    if (screen_position_client_.get() ==
-        aura::client::GetScreenPositionClient(GetContext()))
-      aura::client::SetScreenPositionClient(GetContext(), nullptr);
-  }
-
-  aura_test_helper_->TearDown();
-  CHECK(!wm::CaptureController::Get() ||
-        !wm::CaptureController::Get()->is_active());
+  aura_test_helper_->SetUp();
 }
 
 gfx::NativeWindow ViewsTestHelperAura::GetContext() {
-  return aura_test_helper_->root_window();
+  return aura_test_helper_->GetContext();
+}
+
+// static
+void ViewsTestHelperAura::SetAuraTestHelperFactory(
+    AuraTestHelperFactory factory) {
+  DCHECK_NE(g_helper_factory == nullptr, factory == nullptr);
+  g_helper_factory = factory;
+}
+
+// static
+void ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
+    TestViewsDelegateFactory factory) {
+  DCHECK_NE(g_delegate_factory == nullptr, factory == nullptr);
+  g_delegate_factory = factory;
 }
 
 }  // namespace views

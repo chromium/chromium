@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -30,6 +29,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -124,18 +124,12 @@ const char kImageUrl[] = "http://image/image.png";
 
 const char kSuggestionUrl2[] = "http://foo.com/bar";
 
-const char kTestJsonDefaultCategoryTitle[] = "Some title";
+const char16_t kTestJsonDefaultCategoryTitle[] = u"Some title";
 
 const int kOtherCategoryId = 2;
 const int kUnknownRemoteCategoryId = 1234;
 
 const int kTimeoutForRefetchWhileDisplayingSeconds = 5;
-
-// Different from default values to confirm that variation param values are
-// used.
-const int kMaxAdditionalPrefetchedSuggestions = 7;
-const base::TimeDelta kMaxAgeForAdditionalPrefetchedSuggestion =
-    base::TimeDelta::FromHours(48);
 
 base::Time GetDefaultCreationTime() {
   base::Time out_time;
@@ -144,7 +138,7 @@ base::Time GetDefaultCreationTime() {
 }
 
 base::Time GetDefaultExpirationTime() {
-  return base::Time::Now() + base::TimeDelta::FromHours(1);
+  return base::Time::Now() + base::Hours(1);
 }
 
 // TODO(vitaliii): Remove this and use RemoteSuggestionBuilder instead.
@@ -210,19 +204,6 @@ class MockRemoteSuggestionsFetcher : public RemoteSuggestionsFetcher {
   MOCK_CONST_METHOD0(GetFetchUrlForDebugging, const GURL&());
 };
 
-class MockPrefetchedPagesTracker : public PrefetchedPagesTracker {
- public:
-  MOCK_CONST_METHOD0(IsInitialized, bool());
-
-  // GMock does not support movable-only types (e.g. OnceCallback), therefore,
-  // the call is redirected to a mock method with a pointer to the callback.
-  void Initialize(base::OnceCallback<void()> callback) override {
-    Initialize(&callback);
-  }
-  MOCK_METHOD1(Initialize, void(base::OnceCallback<void()>* callback));
-  MOCK_CONST_METHOD1(PrefetchedOfflinePageExists, bool(const GURL& url));
-};
-
 class MockRemoteSuggestionsStatusService
     : public RemoteSuggestionsStatusService {
  public:
@@ -260,9 +241,15 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
                                         base::TimeTicks::Now()))) {
     RemoteSuggestionsProviderImpl::RegisterProfilePrefs(
         utils_.pref_service()->registry());
+    feed::prefs::RegisterFeedSharedProfilePrefs(
+        utils_.pref_service()->registry());
     RequestThrottler::RegisterProfilePrefs(utils_.pref_service()->registry());
   }
 
+  RemoteSuggestionsProviderImplTest(const RemoteSuggestionsProviderImplTest&) =
+      delete;
+  RemoteSuggestionsProviderImplTest& operator=(
+      const RemoteSuggestionsProviderImplTest&) = delete;
   ~RemoteSuggestionsProviderImplTest() override {
     provider_.reset();
     observer_.reset();
@@ -273,30 +260,17 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   }
 
   void MakeSuggestionsProvider(
-      bool use_mock_prefetched_pages_tracker,
-
       bool use_mock_remote_suggestions_status_service) {
     MakeSuggestionsProviderWithoutInitialization(
-        use_mock_prefetched_pages_tracker,
         use_mock_remote_suggestions_status_service);
     WaitForSuggestionsProviderInitialization();
   }
 
   void MakeSuggestionsProviderWithoutInitialization(
-      bool use_mock_prefetched_pages_tracker,
-
       bool use_mock_remote_suggestions_status_service) {
     auto mock_suggestions_fetcher =
         std::make_unique<StrictMock<MockRemoteSuggestionsFetcher>>();
     mock_suggestions_fetcher_ = mock_suggestions_fetcher.get();
-
-    std::unique_ptr<StrictMock<MockPrefetchedPagesTracker>>
-        mock_prefetched_pages_tracker;
-    if (use_mock_prefetched_pages_tracker) {
-      mock_prefetched_pages_tracker =
-          std::make_unique<StrictMock<MockPrefetchedPagesTracker>>();
-    }
-    mock_prefetched_pages_tracker_ = mock_prefetched_pages_tracker.get();
 
     std::unique_ptr<RemoteSuggestionsStatusService>
         remote_suggestions_status_service;
@@ -310,7 +284,8 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
     } else {
       remote_suggestions_status_service =
           std::make_unique<RemoteSuggestionsStatusServiceImpl>(
-              /*has_signed_in=*/false, utils_.pref_service(), std::string());
+              /*has_signed_in=*/false, utils_.pref_service(),
+              std::vector<std::string>());
     }
     remote_suggestions_status_service_ =
         remote_suggestions_status_service.get();
@@ -345,14 +320,12 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
         scheduler_.get(), std::move(mock_suggestions_fetcher),
         std::move(image_fetcher), std::move(database),
         std::move(remote_suggestions_status_service),
-        std::move(mock_prefetched_pages_tracker),
         std::move(fetch_timeout_timer));
   }
 
   void MakeSuggestionsProviderWithoutInitializationWithStrictScheduler() {
     scheduler_ = std::make_unique<StrictMock<MockScheduler>>();
     MakeSuggestionsProviderWithoutInitialization(
-        /*use_mock_prefetched_pages_tracker=*/false,
         /*use_mock_remote_suggestions_status_service=*/false);
   }
 
@@ -364,24 +337,17 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   }
 
   void ResetSuggestionsProvider(
-      bool use_mock_prefetched_pages_tracker,
-
       bool use_mock_remote_suggestions_status_service) {
     provider_.reset();
     observer_.reset();
-    MakeSuggestionsProvider(use_mock_prefetched_pages_tracker,
-
-                            use_mock_remote_suggestions_status_service);
+    MakeSuggestionsProvider(use_mock_remote_suggestions_status_service);
   }
 
   void ResetSuggestionsProviderWithoutInitialization(
-      bool use_mock_prefetched_pages_tracker,
-
       bool use_mock_remote_suggestions_status_service) {
     provider_.reset();
     observer_.reset();
     MakeSuggestionsProviderWithoutInitialization(
-        use_mock_prefetched_pages_tracker,
         use_mock_remote_suggestions_status_service);
   }
 
@@ -419,9 +385,6 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   StrictMock<MockRemoteSuggestionsFetcher>* mock_suggestions_fetcher() {
     return mock_suggestions_fetcher_;
   }
-  StrictMock<MockPrefetchedPagesTracker>* mock_prefetched_pages_tracker() {
-    return mock_prefetched_pages_tracker_;
-  }
   // TODO(tschumann): Make this a strict-mock. We want to avoid unneccesary
   // network requests.
   NiceMock<MockImageFetcher>* image_fetcher() { return image_fetcher_; }
@@ -433,7 +396,7 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   void FetchTheseSuggestions(
       bool interactive_request,
       Status status,
-      base::Optional<std::vector<FetchedCategory>> fetched_categories) {
+      absl::optional<std::vector<FetchedCategory>> fetched_categories) {
     RemoteSuggestionsFetcher::SnippetsAvailableCallback snippets_callback;
     EXPECT_CALL(*mock_suggestions_fetcher(), FetchSnippets(_, _))
         .WillOnce(MoveSecondArgumentPointeeTo(&snippets_callback))
@@ -448,7 +411,7 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
       const std::set<std::string>& known_suggestion_ids,
       FetchDoneCallback fetch_done_callback,
       Status status,
-      base::Optional<std::vector<FetchedCategory>> fetched_categories) {
+      absl::optional<std::vector<FetchedCategory>> fetched_categories) {
     RemoteSuggestionsFetcher::SnippetsAvailableCallback snippets_callback;
     EXPECT_CALL(*mock_suggestions_fetcher(), FetchSnippets(_, _))
         .WillOnce(MoveSecondArgumentPointeeTo(&snippets_callback))
@@ -509,21 +472,6 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
         kArticleSuggestionsFeature,
         {{"order_new_remote_categories_based_on_articles_category",
           value ? "true" : "false"}});
-  }
-
-  void EnableKeepingPrefetchedContentSuggestions(
-      int max_additional_prefetched_suggestions,
-      const base::TimeDelta& max_age_for_additional_prefetched_suggestion) {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kKeepPrefetchedContentSuggestions,
-        {
-            {"max_additional_prefetched_suggestions",
-             base::NumberToString(max_additional_prefetched_suggestions)},
-            {"max_age_for_additional_prefetched_suggestion_minutes",
-             base::NumberToString(
-                 max_age_for_additional_prefetched_suggestion.InMinutes())},
-        });
   }
 
   void SetTriggeringNotificationsAndSubscriptionParams(
@@ -588,7 +536,6 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   UserClassifier user_classifier_;
   std::unique_ptr<FakeContentSuggestionsProviderObserver> observer_;
   StrictMock<MockRemoteSuggestionsFetcher>* mock_suggestions_fetcher_;
-  StrictMock<MockPrefetchedPagesTracker>* mock_prefetched_pages_tracker_;
   NiceMock<MockImageFetcher>* image_fetcher_;
   image_fetcher::FakeImageDecoder image_decoder_;
   std::unique_ptr<MockScheduler> scheduler_;
@@ -606,13 +553,10 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   FakeDB<SnippetImageProto>* image_db_;
 
   scoped_refptr<TestMockTimeTaskRunner> timer_mock_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsProviderImplTest);
 };
 
 TEST_F(RemoteSuggestionsProviderImplTest, Full) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -648,13 +592,11 @@ TEST_F(RemoteSuggestionsProviderImplTest, Full) {
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest, CategoryTitle) {
-  const base::string16 test_default_title =
-      base::UTF8ToUTF16(kTestJsonDefaultCategoryTitle);
+  const std::u16string test_default_title = kTestJsonDefaultCategoryTitle;
 
   // Don't send an initial response -- we want to test what happens without any
   // server status.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // The articles category should be there by default, and have a title.
@@ -693,7 +635,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, CategoryTitle) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, MultipleCategories) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -770,7 +711,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, MultipleCategories) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, ArticleCategoryInfo) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   CategoryInfo article_info = provider()->GetCategoryInfo(articles_category());
   EXPECT_THAT(article_info.additional_action(),
@@ -780,7 +720,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ArticleCategoryInfo) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, ExperimentalCategoryInfo) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -807,7 +746,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, ExperimentalCategoryInfo) {
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest, AddRemoteCategoriesToCategoryRanker) {
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   std::vector<FetchedCategory> fetched_categories;
@@ -838,7 +777,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, AddRemoteCategoriesToCategoryRanker) {
                 AppendCategoryIfNecessary(Category::FromRemoteCategory(12)));
   }
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
                         std::move(fetched_categories));
@@ -847,7 +785,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, AddRemoteCategoriesToCategoryRanker) {
 TEST_F(RemoteSuggestionsProviderImplTest,
        AddRemoteCategoriesToCategoryRankerRelativeToArticles) {
   SetOrderNewRemoteCategoriesBasedOnArticlesCategoryParam(true);
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   std::vector<FetchedCategory> fetched_categories;
@@ -892,7 +830,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
                                                articles_category()));
   }
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
                         std::move(fetched_categories));
@@ -902,7 +839,7 @@ TEST_F(
     RemoteSuggestionsProviderImplTest,
     AddRemoteCategoriesToCategoryRankerRelativeToArticlesWithArticlesAbsent) {
   SetOrderNewRemoteCategoriesBasedOnArticlesCategoryParam(true);
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   std::vector<FetchedCategory> fetched_categories;
@@ -916,7 +853,6 @@ TEST_F(
   EXPECT_CALL(*raw_mock_ranker,
               AppendCategoryIfNecessary(Category::FromRemoteCategory(11)));
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
                         std::move(fetched_categories));
@@ -924,7 +860,6 @@ TEST_F(
 
 TEST_F(RemoteSuggestionsProviderImplTest, PersistCategoryInfos) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -954,7 +889,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistCategoryInfos) {
   base::i18n::SetICUDefaultLocale("de");
   // Recreate the provider to simulate a Chrome restart.
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // The categories should have been restored.
@@ -987,7 +921,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistCategoryInfos) {
 TEST_F(RemoteSuggestionsProviderImplTest, PersistRemoteCategoryOrder) {
   // We create a provider with a normal ranker to store the order.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -1010,7 +943,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistRemoteCategoryOrder) {
 
   // We manually recreate the provider to simulate Chrome restart and enforce a
   // mock ranker.
-  auto mock_ranker = std::make_unique<MockCategoryRanker>();
+  auto mock_ranker = std::make_unique<NiceMock<MockCategoryRanker>>();
   MockCategoryRanker* raw_mock_ranker = mock_ranker.get();
   SetCategoryRanker(std::move(mock_ranker));
   // Ensure that the order is not fetched.
@@ -1031,13 +964,11 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistRemoteCategoryOrder) {
                 AppendCategoryIfNecessary(Category::FromRemoteCategory(12)));
   }
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest, PersistSuggestions) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -1063,7 +994,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistSuggestions) {
 
   // Recreate the provider to simulate a Chrome restart.
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // The suggestions in both categories should have been restored.
@@ -1077,7 +1007,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, PersistSuggestions) {
 TEST_F(RemoteSuggestionsProviderImplTest, ClearSuggestionsOnInit) {
   // Add suggestions.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -1103,7 +1032,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ClearSuggestionsOnInit) {
 
   // Reset the provider and clear the suggestions before it is inited.
   ResetSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   provider()->ClearCachedSuggestions();
 
@@ -1119,7 +1047,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ClearSuggestionsOnInit) {
 TEST_F(RemoteSuggestionsProviderImplTest, DontNotifyIfNotAvailable) {
   // Get some suggestions into the database.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -1142,11 +1069,10 @@ TEST_F(RemoteSuggestionsProviderImplTest, DontNotifyIfNotAvailable) {
               SizeIs(1));
 
   // Set the pref that disables remote suggestions.
-  pref_service()->SetBoolean(prefs::kEnableSnippets, false);
+  pref_service()->SetBoolean(feed::prefs::kEnableSnippets, false);
 
   // Recreate the provider to simulate a Chrome start.
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   ASSERT_THAT(RemoteSuggestionsProviderImpl::State::DISABLED,
@@ -1162,7 +1088,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, DontNotifyIfNotAvailable) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, Clear) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1184,7 +1109,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, Clear) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, ReplaceSuggestions) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::string first("http://first");
@@ -1216,7 +1140,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ReplaceSuggestions) {
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldResolveFetchedSuggestionThumbnail) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1242,7 +1165,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
 TEST_F(RemoteSuggestionsProviderImplTest, ShouldFetchMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1256,8 +1178,8 @@ TEST_F(RemoteSuggestionsProviderImplTest, ShouldFetchMore) {
   ASSERT_THAT(provider()->GetSuggestionsForTesting(articles_category()),
               ElementsAre(Pointee(Property(&RemoteSuggestion::id, "first"))));
 
-  auto expect_only_second_suggestion_received =
-      base::Bind([](Status status, std::vector<ContentSuggestion> suggestions) {
+  auto expect_only_second_suggestion_received = base::BindOnce(
+      [](Status status, std::vector<ContentSuggestion> suggestions) {
         EXPECT_THAT(suggestions, SizeIs(1));
         EXPECT_THAT(suggestions[0].id().id_within_category(), Eq("second"));
       });
@@ -1270,14 +1192,13 @@ TEST_F(RemoteSuggestionsProviderImplTest, ShouldFetchMore) {
   FetchMoreTheseSuggestions(
       articles_category(),
       /*known_suggestion_ids=*/std::set<std::string>(),
-      /*fetch_done_callback=*/expect_only_second_suggestion_received,
+      /*fetch_done_callback=*/std::move(expect_only_second_suggestion_received),
       Status::Success(), std::move(fetched_categories));
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldResolveFetchedMoreSuggestionThumbnail) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1287,15 +1208,15 @@ TEST_F(RemoteSuggestionsProviderImplTest,
           .AddSuggestionViaBuilder(RemoteSuggestionBuilder().AddId("id"))
           .Build());
 
-  auto assert_only_first_suggestion_received =
-      base::Bind([](Status status, std::vector<ContentSuggestion> suggestions) {
+  auto assert_only_first_suggestion_received = base::BindOnce(
+      [](Status status, std::vector<ContentSuggestion> suggestions) {
         ASSERT_THAT(suggestions, SizeIs(1));
         ASSERT_THAT(suggestions[0].id().id_within_category(), Eq("id"));
       });
   FetchMoreTheseSuggestions(
       articles_category(),
       /*known_suggestion_ids=*/std::set<std::string>(),
-      /*fetch_done_callback=*/assert_only_first_suggestion_received,
+      /*fetch_done_callback=*/std::move(assert_only_first_suggestion_received),
       Status::Success(), std::move(fetched_categories));
 
   image_decoder()->SetDecodedImage(gfx::test::CreateImage(1, 1));
@@ -1312,7 +1233,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldNotChangeSuggestionsInOtherSurfacesWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Fetch a suggestion.
@@ -1340,8 +1260,8 @@ TEST_F(RemoteSuggestionsProviderImplTest,
           .Build());
 
   // The surface issuing the fetch more gets response via callback.
-  auto assert_receiving_one_new_suggestion =
-      base::Bind([](Status status, std::vector<ContentSuggestion> suggestions) {
+  auto assert_receiving_one_new_suggestion = base::BindOnce(
+      [](Status status, std::vector<ContentSuggestion> suggestions) {
         ASSERT_THAT(suggestions, SizeIs(1));
         ASSERT_THAT(suggestions[0].id().id_within_category(),
                     Eq("http://fetched-more.com/"));
@@ -1349,7 +1269,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   FetchMoreTheseSuggestions(
       articles_category(),
       /*known_suggestion_ids=*/{"http://old.com/"},
-      /*fetch_done_callback=*/assert_receiving_one_new_suggestion,
+      /*fetch_done_callback=*/std::move(assert_receiving_one_new_suggestion),
       Status::Success(), std::move(fetched_categories));
 
   // Other surfaces should remain the same.
@@ -1365,20 +1285,19 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldNotAffectFetchMoreInOtherSurfacesWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Fetch more on the surface A.
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(FetchedCategory(
       articles_category(),
-      BuildRemoteCategoryInfo(base::UTF8ToUTF16("title"),
+      BuildRemoteCategoryInfo(u"title",
                               /*allow_fetching_more_results=*/true)));
   fetched_categories[0].suggestions.push_back(
       CreateTestRemoteSuggestion("http://fetched-more.com/"));
 
-  auto assert_receiving_one_new_suggestion =
-      base::Bind([](Status status, std::vector<ContentSuggestion> suggestions) {
+  auto assert_receiving_one_new_suggestion = base::BindOnce(
+      [](Status status, std::vector<ContentSuggestion> suggestions) {
         ASSERT_THAT(suggestions, SizeIs(1));
         ASSERT_THAT(suggestions[0].id().id_within_category(),
                     Eq("http://fetched-more.com/"));
@@ -1392,7 +1311,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
       .RetiresOnSaturation();
   provider()->Fetch(articles_category(),
                     /*known_suggestion_ids=*/std::set<std::string>(),
-                    assert_receiving_one_new_suggestion);
+                    std::move(assert_receiving_one_new_suggestion));
   std::move(snippets_callback)
       .Run(Status::Success(), std::move(fetched_categories));
 
@@ -1400,14 +1319,14 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   fetched_categories.clear();
   fetched_categories.push_back(FetchedCategory(
       articles_category(),
-      BuildRemoteCategoryInfo(base::UTF8ToUTF16("title"),
+      BuildRemoteCategoryInfo(u"title",
                               /*allow_fetching_more_results=*/true)));
   fetched_categories[0].suggestions.push_back(
       CreateTestRemoteSuggestion("http://fetched-more.com/"));
 
   // B should receive the same suggestion as was fetched more on A.
-  auto expect_receiving_same_suggestion =
-      base::Bind([](Status status, std::vector<ContentSuggestion> suggestions) {
+  auto expect_receiving_same_suggestion = base::BindOnce(
+      [](Status status, std::vector<ContentSuggestion> suggestions) {
         ASSERT_THAT(suggestions, SizeIs(1));
         EXPECT_THAT(suggestions[0].id().id_within_category(),
                     Eq("http://fetched-more.com/"));
@@ -1425,7 +1344,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
       .RetiresOnSaturation();
   provider()->Fetch(articles_category(),
                     /*known_suggestion_ids=*/std::set<std::string>(),
-                    expect_receiving_same_suggestion);
+                    std::move(expect_receiving_same_suggestion));
   std::move(snippets_callback)
       .Run(Status::Success(), std::move(fetched_categories));
 }
@@ -1433,7 +1352,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ClearHistoryShouldDeleteArchivedSuggestions) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   // First get suggestions into the archived state which happens through
   // subsequent fetches. Then we verify the entries are gone from the 'archived'
@@ -1475,7 +1393,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   ASSERT_EQ(1, image.Width());
 
   provider()->ClearHistory(base::Time::UnixEpoch(), base::Time::Max(),
-                           base::Callback<bool(const GURL& url)>());
+                           base::RepeatingCallback<bool(const GURL& url)>());
 
   // Make sure images of both batches are gone.
   // Verify we cannot resolve the image of the new suggestions.
@@ -1507,7 +1425,6 @@ void SuggestionsLoaded(
 
 TEST_F(RemoteSuggestionsProviderImplTest, ReturnFetchRequestEmptyBeforeInit) {
   MakeSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   EXPECT_CALL(*mock_suggestions_fetcher(), FetchSnippets(_, _)).Times(0);
   MockFunction<void(Status, const std::vector<ContentSuggestion>&)> loaded;
@@ -1520,7 +1437,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ReturnFetchRequestEmptyBeforeInit) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, ReturnRefetchRequestEmptyBeforeInit) {
   MakeSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   EXPECT_CALL(*mock_suggestions_fetcher(), FetchSnippets(_, _)).Times(0);
   MockFunction<void(Status)> loaded;
@@ -1532,7 +1448,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ReturnRefetchRequestEmptyBeforeInit) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, IgnoreRefetchRequestEmptyBeforeInit) {
   MakeSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   EXPECT_CALL(*mock_suggestions_fetcher(), FetchSnippets(_, _)).Times(0);
   provider()->RefetchInTheBackground(
@@ -1543,7 +1458,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, IgnoreRefetchRequestEmptyBeforeInit) {
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldForwardTemporaryErrorFromFetcher) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   RemoteSuggestionsFetcher::SnippetsAvailableCallback snippets_callback;
@@ -1562,19 +1476,18 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   ASSERT_FALSE(snippets_callback.is_null());
   std::move(snippets_callback)
       .Run(Status(StatusCode::TEMPORARY_ERROR, "Received invalid JSON"),
-           base::nullopt);
+           absl::nullopt);
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldNotAddNewSuggestionsAfterFetchError) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   FetchTheseSuggestions(
       /*interactive_request=*/false,
       Status(StatusCode::TEMPORARY_ERROR, "Received invalid JSON"),
-      base::nullopt);
+      absl::nullopt);
   EXPECT_THAT(provider()->GetSuggestionsForTesting(articles_category()),
               IsEmpty());
 }
@@ -1582,13 +1495,12 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldNotClearOldSuggestionsAfterFetchError) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(FetchedCategory(
       articles_category(),
-      BuildRemoteCategoryInfo(base::UTF8ToUTF16("title"),
+      BuildRemoteCategoryInfo(u"title",
                               /*allow_fetching_more_results=*/true)));
   fetched_categories[0].suggestions.push_back(
       CreateTestRemoteSuggestion(base::StringPrintf("http://abc.com/")));
@@ -1602,7 +1514,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   FetchTheseSuggestions(
       /*interactive_request=*/false,
       Status(StatusCode::TEMPORARY_ERROR, "Received invalid JSON"),
-      base::nullopt);
+      absl::nullopt);
   // This should not have changed the existing suggestions.
   EXPECT_THAT(
       provider()->GetSuggestionsForTesting(articles_category()),
@@ -1611,7 +1523,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
 TEST_F(RemoteSuggestionsProviderImplTest, Dismiss) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1662,7 +1573,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, Dismiss) {
 
   // The suggestion should stay dismissed even after re-creating the provider.
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   fetched_categories.clear();
   fetched_categories.push_back(category_builder.Build());
@@ -1685,7 +1595,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, Dismiss) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, GetDismissed) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1731,7 +1640,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, GetDismissed) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, RemoveExpiredDismissedContent) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1783,7 +1691,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, RemoveExpiredDismissedContent) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, ExpiredContentNotRemoved) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1802,7 +1709,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ExpiredContentNotRemoved) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, TestSingleSource) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1830,7 +1736,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, TestSingleSource) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, TestSingleSourceWithMissingData) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -1849,14 +1754,13 @@ TEST_F(RemoteSuggestionsProviderImplTest, TestSingleSourceWithMissingData) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, LogNumArticlesHistogram) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   base::HistogramTester tester;
 
   FetchTheseSuggestions(/*interactive_request=*/true,
                         Status(StatusCode::TEMPORARY_ERROR, "message"),
-                        base::nullopt);
+                        absl::nullopt);
   // Error responses don't update the list of suggestions and shouldn't
   // influence these metrics.
   EXPECT_THAT(tester.GetAllSamples("NewTabPage.Snippets.NumArticles"),
@@ -1941,7 +1845,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, LogNumArticlesHistogram) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, DismissShouldRespectAllKnownUrls) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   const std::vector<std::string> source_urls = {
@@ -1993,7 +1896,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, DismissShouldRespectAllKnownUrls) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, ImageReturnedWithTheSameId) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2017,7 +1919,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ImageReturnedWithTheSameId) {
 
 TEST_F(RemoteSuggestionsProviderImplTest, EmptyImageReturnedForNonExistentId) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Create a non-empty image so that we can test the image gets updated.
@@ -2040,7 +1941,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // Therefore, we simply put in some data making sure that if the provider asks
   // the database, it will get a wrong answer.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   ContentSuggestion::ID unknown_id = MakeArticleID(kSuggestionUrl2);
@@ -2064,7 +1964,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
 TEST_F(RemoteSuggestionsProviderImplTest, ClearHistoryRemovesAllSuggestions) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2090,7 +1989,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, ClearHistoryRemovesAllSuggestions) {
 
   base::Time begin = base::Time::FromTimeT(123),
              end = base::Time::FromTimeT(456);
-  base::Callback<bool(const GURL& url)> filter;
+  base::RepeatingCallback<bool(const GURL& url)> filter;
   provider()->ClearHistory(begin, end, filter);
 
   // Verify that the observer received the update with the empty data as well.
@@ -2106,13 +2005,12 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // If the provider marks that category as NOT_PROVIDED, then it won't be shown
   // at all in the UI and the user cannot load new data :-/.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   ASSERT_THAT(observer().StatusForCategory(articles_category()),
               Eq(CategoryStatus::AVAILABLE));
   provider()->ClearHistory(base::Time::UnixEpoch(), base::Time::Max(),
-                           base::Callback<bool(const GURL& url)>());
+                           base::RepeatingCallback<bool(const GURL& url)>());
 
   EXPECT_THAT(observer().StatusForCategory(articles_category()),
               Eq(CategoryStatus::AVAILABLE));
@@ -2120,7 +2018,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
 TEST_F(RemoteSuggestionsProviderImplTest, ShouldClearOrphanedImagesOnRestart) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2156,7 +2053,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ShouldClearOrphanedImagesOnRestart) {
   // The image should still be available until a restart happens.
   EXPECT_FALSE(FetchImage(MakeArticleID(kSuggestionUrl)).IsEmpty());
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   // After the restart, the image should be garbage collected.
   EXPECT_CALL(*this, OnImageFetched(Property(&gfx::Image::IsEmpty, Eq(true))));
@@ -2169,7 +2065,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ShouldClearOrphanedImagesOnRestart) {
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldHandleMoreThanMaxSuggestionsInResponse) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2196,7 +2091,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // is triggered since the suggestions DB is empty. Therefore the provider must
   // not be initialized until the test clock is set.
   MakeSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   base::SimpleTestClock simple_test_clock;
@@ -2213,7 +2107,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
   // Advance the time and check whether the time was updated correctly after the
   // background fetch.
-  simple_test_clock.Advance(base::TimeDelta::FromHours(1));
+  simple_test_clock.Advance(base::Hours(1));
 
   RemoteSuggestionsFetcher::SnippetsAvailableCallback snippets_callback;
   EXPECT_CALL(*mock_suggestions_fetcher(), FetchSnippets(_, _))
@@ -2222,7 +2116,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   provider()->RefetchInTheBackground(
       RemoteSuggestionsProvider::FetchStatusCallback());
   RunUntilIdle();
-  std::move(snippets_callback).Run(Status::Success(), base::nullopt);
+  std::move(snippets_callback).Run(Status::Success(), absl::nullopt);
   // TODO(jkrcal): Move together with the pref storage into the scheduler.
   EXPECT_EQ(
       SerializeTime(simple_test_clock.Now()),
@@ -2270,7 +2164,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, CallsSchedulerWhenHistoryCleared) {
   // The scheduler should be notified of clearing the history.
   EXPECT_CALL(*scheduler(), OnHistoryCleared());
   provider()->ClearHistory(GetDefaultCreationTime(), GetDefaultExpirationTime(),
-                           base::Callback<bool(const GURL& url)>());
+                           base::RepeatingCallback<bool(const GURL& url)>());
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest, CallsSchedulerWhenSignedIn) {
@@ -2357,7 +2251,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldExcludeKnownSuggestionsWithoutTruncatingWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::set<std::string> known_ids;
@@ -2379,7 +2272,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldExcludeDismissedSuggestionsWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2412,7 +2304,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldTruncateExcludedDismissedSuggestionsWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2449,7 +2340,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldPreferLatestExcludedDismissedSuggestionsWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -2496,7 +2386,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // (i.e., an article that has been fetched via fetch-more) will be excluded in
   // future fetches.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   FetchedCategoryBuilder category_builder;
@@ -2543,7 +2432,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
 TEST_F(RemoteSuggestionsProviderImplTest, ClearDismissedAfterFetchMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   FetchedCategoryBuilder category_builder;
   category_builder.SetCategory(articles_category());
@@ -2591,7 +2479,6 @@ TEST_F(RemoteSuggestionsProviderImplTest, ClearDismissedAfterFetchMore) {
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldExcludeDismissedSuggestionsFromAllCategoriesWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Add article suggestions.
@@ -2648,14 +2535,13 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldPreferTargetCategoryExcludedDismissedSuggestionsWhenFetchingMore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Add article suggestions.
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(FetchedCategory(
       articles_category(),
-      BuildRemoteCategoryInfo(base::UTF8ToUTF16("title"),
+      BuildRemoteCategoryInfo(u"title",
                               /*allow_fetching_more_results=*/true)));
 
   for (int i = 0; i < kMaxExcludedDismissedIds; ++i) {
@@ -2665,7 +2551,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // Add other category suggestion.
   fetched_categories.push_back(FetchedCategory(
       Category::FromRemoteCategory(kOtherCategoryId),
-      BuildRemoteCategoryInfo(base::UTF8ToUTF16("title"),
+      BuildRemoteCategoryInfo(u"title",
                               /*allow_fetching_more_results=*/true)));
   fetched_categories[1].suggestions.push_back(
       CreateTestRemoteSuggestion("http://other.com/"));
@@ -2699,434 +2585,8 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldFetchNormallyWithoutPrefetchedPagesTracker) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder())
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-  EXPECT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(1));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldKeepPrefetchedSuggestionsAfterFetchWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://prefetched.com")
-                                       .SetUrl("http://prefetched.com")
-                                       .SetAmpUrl("http://amp.prefetched.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(1));
-
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_tracker,
-              PrefetchedOfflinePageExists(GURL("http://amp.prefetched.com")))
-      .WillOnce(Return(true));
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://other.com")
-                                       .SetUrl("http://other.com")
-                                       .SetAmpUrl("http://amp.other.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  EXPECT_THAT(
-      observer().SuggestionsForCategory(articles_category()),
-      UnorderedElementsAre(
-          Property(&ContentSuggestion::id,
-                   MakeArticleID("http://prefetched.com")),
-          Property(&ContentSuggestion::id, MakeArticleID("http://other.com"))));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldIgnoreNotPrefetchedSuggestionsAfterFetchWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(
-              RemoteSuggestionBuilder()
-                  .AddId("http://not_prefetched.com")
-                  .SetUrl("http://not_prefetched.com")
-                  .SetAmpUrl("http://amp.not_prefetched.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(1));
-
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_tracker, PrefetchedOfflinePageExists(
-                                 GURL("http://amp.not_prefetched.com")))
-      .WillOnce(Return(false));
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://other.com")
-                                       .SetUrl("http://other.com")
-                                       .SetAmpUrl("http://amp.other.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  EXPECT_THAT(observer().SuggestionsForCategory(articles_category()),
-              UnorderedElementsAre(Property(
-                  &ContentSuggestion::id, MakeArticleID("http://other.com"))));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldLimitKeptPrefetchedSuggestionsAfterFetchWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-  WaitForSuggestionsProviderInitialization();
-
-  const int prefetched_suggestions_count =
-      2 * kMaxAdditionalPrefetchedSuggestions + 1;
-  std::vector<FetchedCategory> fetched_categories;
-  FetchedCategoryBuilder category_builder;
-  category_builder.SetCategory(articles_category());
-  for (int i = 0; i < prefetched_suggestions_count; ++i) {
-    const std::string url = base::StringPrintf("http://prefetched.com/%d", i);
-    category_builder.AddSuggestionViaBuilder(
-        RemoteSuggestionBuilder().AddId(url).SetUrl(url).SetAmpUrl(
-            base::StringPrintf("http://amp.prefetched.com/%d", i)));
-  }
-  fetched_categories.push_back(category_builder.Build());
-
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(prefetched_suggestions_count));
-
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  for (int i = 0; i < prefetched_suggestions_count; ++i) {
-    EXPECT_CALL(*mock_tracker,
-                PrefetchedOfflinePageExists(GURL(
-                    base::StringPrintf("http://amp.prefetched.com/%d", i))))
-        .WillOnce(Return(true));
-  }
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(
-              RemoteSuggestionBuilder()
-                  .AddId("http://not_prefetched.com")
-                  .SetUrl("http://not_prefetched.com")
-                  .SetAmpUrl("http://amp.not_prefetched.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(kMaxAdditionalPrefetchedSuggestions + 1));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldMixInPrefetchedSuggestionsByScoreAfterFetchWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://prefetched.com/1")
-                                       .SetUrl("http://prefetched.com/1")
-                                       .SetAmpUrl("http://amp.prefetched.com/1")
-                                       .SetScore(1))
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://prefetched.com/3")
-                                       .SetUrl("http://prefetched.com/3")
-                                       .SetAmpUrl("http://amp.prefetched.com/3")
-                                       .SetScore(3))
-          .Build());
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(2));
-
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://new.com/2")
-                                       .SetUrl("http://new.com/2")
-                                       .SetAmpUrl("http://amp.new.com/2")
-                                       .SetScore(2))
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://new.com/4")
-                                       .SetUrl("http://new.com/4")
-                                       .SetAmpUrl("http://amp.new.com/4")
-                                       .SetScore(4))
-          .Build());
-
-  EXPECT_CALL(*mock_tracker,
-              PrefetchedOfflinePageExists(GURL("http://amp.prefetched.com/1")))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_tracker,
-              PrefetchedOfflinePageExists(GURL("http://amp.prefetched.com/3")))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  EXPECT_THAT(
-      observer().SuggestionsForCategory(articles_category()),
-      ElementsAre(
-          Property(&ContentSuggestion::id, MakeArticleID("http://new.com/4")),
-          Property(&ContentSuggestion::id,
-                   MakeArticleID("http://prefetched.com/3")),
-          Property(&ContentSuggestion::id, MakeArticleID("http://new.com/2")),
-          Property(&ContentSuggestion::id,
-                   MakeArticleID("http://prefetched.com/1"))));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       KeepMostRecentlyFetchedPrefetchedSuggestionsFirstAfterFetchWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-
-  std::vector<FetchedCategory> fetched_categories;
-  const int prefetched_suggestions_count =
-      2 * kMaxAdditionalPrefetchedSuggestions + 1;
-  for (int i = 0; i < prefetched_suggestions_count; ++i) {
-    const std::string url = base::StringPrintf("http://prefetched.com/%d", i);
-    fetched_categories.push_back(
-        FetchedCategoryBuilder()
-            .SetCategory(articles_category())
-            .AddSuggestionViaBuilder(
-                RemoteSuggestionBuilder().AddId(url).SetUrl(url).SetAmpUrl(
-                    base::StringPrintf("http://amp.prefetched.com/%d", i)))
-            .Build());
-    EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-    if (i != 0) {
-      EXPECT_CALL(*mock_tracker,
-                  PrefetchedOfflinePageExists(GURL(base::StringPrintf(
-                      "http://amp.prefetched.com/%d", i - 1))))
-          .WillRepeatedly(Return(true));
-    }
-
-    FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                          std::move(fetched_categories));
-  }
-
-  const std::vector<ContentSuggestion>& actual_suggestions =
-      observer().SuggestionsForCategory(articles_category());
-
-  ASSERT_THAT(actual_suggestions,
-              SizeIs(kMaxAdditionalPrefetchedSuggestions + 1));
-
-  int matched = 0;
-  for (int i = prefetched_suggestions_count - 1; i >= 0; --i) {
-    EXPECT_THAT(actual_suggestions,
-                Contains(Property(&ContentSuggestion::id,
-                                  MakeArticleID(base::StringPrintf(
-                                      "http://prefetched.com/%d", i)))));
-    ++matched;
-    if (matched == kMaxAdditionalPrefetchedSuggestions + 1) {
-      break;
-    }
-  }
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldNotKeepStalePrefetchedSuggestionsAfterFetchWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProviderWithoutInitialization(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-
-  base::SimpleTestClock provider_clock;
-  provider()->SetClockForTesting(&provider_clock);
-
-  provider_clock.SetNow(GetDefaultCreationTime() +
-                        base::TimeDelta::FromHours(10));
-
-  WaitForSuggestionsProviderInitialization();
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(
-              RemoteSuggestionBuilder()
-                  .AddId("http://prefetched.com")
-                  .SetUrl("http://prefetched.com")
-                  .SetAmpUrl("http://amp.prefetched.com")
-                  .SetFetchDate(provider_clock.Now())
-                  .SetPublishDate(GetDefaultCreationTime()))
-          .Build());
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(1));
-
-  provider_clock.Advance(kMaxAgeForAdditionalPrefetchedSuggestion -
-                         base::TimeDelta::FromSeconds(1));
-
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(
-              RemoteSuggestionBuilder()
-                  .AddId("http://other.com")
-                  .SetUrl("http://other.com")
-                  .SetAmpUrl("http://amp.other.com")
-                  .SetFetchDate(provider_clock.Now())
-                  .SetPublishDate(GetDefaultCreationTime()))
-          .Build());
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_tracker,
-              PrefetchedOfflinePageExists(GURL("http://amp.prefetched.com")))
-      .WillOnce(Return(true));
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(2));
-
-  provider_clock.Advance(base::TimeDelta::FromSeconds(2));
-
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(
-              RemoteSuggestionBuilder()
-                  .AddId("http://other.com")
-                  .SetUrl("http://other.com")
-                  .SetAmpUrl("http://amp.other.com")
-                  .SetFetchDate(provider_clock.Now())
-                  .SetPublishDate(GetDefaultCreationTime()))
-          .Build());
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_tracker,
-              PrefetchedOfflinePageExists(GURL("http://amp.prefetched.com")))
-      .WillOnce(Return(true));
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-  EXPECT_THAT(observer().SuggestionsForCategory(articles_category()),
-              ElementsAre(Property(&ContentSuggestion::id,
-                                   MakeArticleID("http://other.com"))));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldWaitForPrefetchedPagesTrackerInitialization) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-
-  base::OnceCallback<void()> initialization_completed_callback;
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*mock_tracker, Initialize(_))
-      .WillOnce(MoveFirstArgumentPointeeTo(&initialization_completed_callback));
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://prefetched.com")
-                                       .SetUrl("http://prefetched.com")
-                                       .SetAmpUrl("http://amp.prefetched.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-  EXPECT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(0));
-
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  std::move(initialization_completed_callback).Run();
-  EXPECT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(1));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldRestoreSuggestionsFromDatabaseInSameOrderAsFetched) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   std::vector<FetchedCategory> fetched_categories;
@@ -3156,7 +2616,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
           Property(&ContentSuggestion::id, MakeArticleID("http://2.com"))));
 
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   EXPECT_THAT(
       observer().SuggestionsForCategory(articles_category()),
@@ -3170,7 +2629,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldSortSuggestionsWithoutRanksByScore) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Write suggestions without ranks (i.e. with default values) directly to
@@ -3198,7 +2656,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   database()->SaveSnippets(suggestions);
 
   ResetSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   EXPECT_THAT(
       observer().SuggestionsForCategory(articles_category()),
@@ -3217,7 +2674,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
       /*subscribe_signed_out=*/true);
 
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Fetch a suggestion triggering a notification.
@@ -3251,7 +2707,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
       /*subscribe_signed_out=*/true);
 
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Fetch a suggestion triggering a notification.
@@ -3284,7 +2739,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // Initialize the provider with two article suggestions - one with a
   // notification and one - without.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -3319,7 +2773,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
   // Initialize the provider with an article suggestions without a notification.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -3345,7 +2798,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldDeleteNotFetchedCategoryWhenDeletionEnabled) {
   // Initialize the provider with two categories.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3385,7 +2837,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldKeepFetchedCategoryWhenDeletionEnabled) {
   // Initialize the provider with two categories.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3425,7 +2876,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldKeepArticleCategoryEvenWhenNotFetchedAndDeletionEnabled) {
   // Initialize the provider with two categories.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   fetched_categories.push_back(
@@ -3464,7 +2914,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
        EmptySectionResponseShouldClearSection) {
   // Initialize the provider with two categories.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Set up state with present suggestions.
@@ -3511,7 +2960,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
   // Initialize the provider with two categories.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Set up state with present suggestions.
@@ -3553,7 +3001,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
        FetchErrorShouldLeaveSuggestionsUnchangedNullResponse) {
   // Initialize the provider with two categories.
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   // Set up state with present suggestions.
@@ -3577,7 +3024,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // Next fetch returns an error (with an empty section).
   FetchTheseSuggestions(/*interactive_request=*/true,
                         Status(StatusCode::TEMPORARY_ERROR, "some error"),
-                        base::nullopt);
+                        absl::nullopt);
 
   // Articles category should stay unchanged.
   EXPECT_EQ(CategoryStatus::AVAILABLE,
@@ -3591,7 +3038,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldNotSetExclusiveCategoryWhenFetchingSuggestions) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   RequestParams params;
@@ -3610,7 +3056,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   SetFetchMoreSuggestionsCount(35);
 
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   RequestParams params;
@@ -3634,7 +3079,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldToggleStatusIfRefetchWhileDisplayingSucceeds) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3653,9 +3097,8 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   auto response_callback = RefetchWhileDisplayingAndGetResponseCallback();
 
   // The timeout does not fire earlier than it should.
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(kTimeoutForRefetchWhileDisplayingSeconds) -
-      base::TimeDelta::FromMilliseconds(1));
+  FastForwardBy(base::Seconds(kTimeoutForRefetchWhileDisplayingSeconds) -
+                base::Milliseconds(1));
 
   // Before the results come, the status is AVAILABLE_LOADING.
   ASSERT_EQ(CategoryStatus::AVAILABLE_LOADING,
@@ -3673,7 +3116,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldToggleStatusIfRefetchWhileDisplayingFails) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3697,7 +3139,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
   // After the results come, the status is flipped back to AVAILABLE.
   std::move(response_callback)
-      .Run(Status(StatusCode::TEMPORARY_ERROR, "some error"), base::nullopt);
+      .Run(Status(StatusCode::TEMPORARY_ERROR, "some error"), absl::nullopt);
   // The category is available with the previous suggestion.
   EXPECT_EQ(CategoryStatus::AVAILABLE,
             observer().StatusForCategory(articles_category()));
@@ -3708,7 +3150,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldToggleStatusIfRefetchWhileDisplayingTimeouts) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3727,15 +3168,14 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // No need to finish the fetch, we ignore the response callback.
   RefetchWhileDisplayingAndGetResponseCallback();
 
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(kTimeoutForRefetchWhileDisplayingSeconds) -
-      base::TimeDelta::FromMilliseconds(1));
+  FastForwardBy(base::Seconds(kTimeoutForRefetchWhileDisplayingSeconds) -
+                base::Milliseconds(1));
 
   // Before the timeout, the status is flipped to AVAILABLE_LOADING.
   ASSERT_EQ(CategoryStatus::AVAILABLE_LOADING,
             observer().StatusForCategory(articles_category()));
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  FastForwardBy(base::Milliseconds(2));
 
   // After the timeout, the status is flipped back to AVAILABLE, with the
   // previous suggestion.
@@ -3748,7 +3188,6 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldHandleCategoryDisabledBeforeTimeout) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3767,9 +3206,8 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // No need to finish the fetch, we ignore the response callback.
   RefetchWhileDisplayingAndGetResponseCallback();
 
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(kTimeoutForRefetchWhileDisplayingSeconds) -
-      base::TimeDelta::FromMilliseconds(1));
+  FastForwardBy(base::Seconds(kTimeoutForRefetchWhileDisplayingSeconds) -
+                base::Milliseconds(1));
 
   // Before the timeout, the status is flipped to AVAILABLE_LOADING.
   ASSERT_EQ(CategoryStatus::AVAILABLE_LOADING,
@@ -3783,13 +3221,12 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
   // Trigger the timeout. The provider should gracefully handle(i.e. not crash
   // because of) the category being disabled in the interim.
-  FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  FastForwardBy(base::Milliseconds(2));
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldNotUpdateTimeoutIfRefetchWhileDisplayingCalledAgain) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
   std::vector<FetchedCategory> fetched_categories;
   const FetchedCategoryBuilder articles_category_builder =
@@ -3808,14 +3245,13 @@ TEST_F(RemoteSuggestionsProviderImplTest,
   // No need to finish the fetch, we ignore the response callback.
   RefetchWhileDisplayingAndGetResponseCallback();
 
-  FastForwardBy(
-      base::TimeDelta::FromSeconds(kTimeoutForRefetchWhileDisplayingSeconds) -
-      base::TimeDelta::FromMilliseconds(1));
+  FastForwardBy(base::Seconds(kTimeoutForRefetchWhileDisplayingSeconds) -
+                base::Milliseconds(1));
 
   // Another fetch does nothing to the deadline.
   RefetchWhileDisplayingAndGetResponseCallback();
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  FastForwardBy(base::Milliseconds(2));
 
   // After the timeout, the status is flipped back to AVAILABLE, with the
   // previous suggestion.
@@ -3826,60 +3262,8 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest,
-       ShouldKeepPrefetchedSuggestionsAfterRefetchWhileDisplayingWhenEnabled) {
-  EnableKeepingPrefetchedContentSuggestions(
-      kMaxAdditionalPrefetchedSuggestions,
-      kMaxAgeForAdditionalPrefetchedSuggestion);
-
-  MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/true,
-      /*use_mock_remote_suggestions_status_service=*/false);
-  StrictMock<MockPrefetchedPagesTracker>* mock_tracker =
-      mock_prefetched_pages_tracker();
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  std::vector<FetchedCategory> fetched_categories;
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://prefetched.com")
-                                       .SetUrl("http://prefetched.com")
-                                       .SetAmpUrl("http://amp.prefetched.com"))
-          .Build());
-  FetchTheseSuggestions(/*interactive_request=*/true, Status::Success(),
-                        std::move(fetched_categories));
-
-  ASSERT_THAT(observer().SuggestionsForCategory(articles_category()),
-              SizeIs(1));
-
-  EXPECT_CALL(*mock_tracker, IsInitialized()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_tracker,
-              PrefetchedOfflinePageExists(GURL("http://amp.prefetched.com")))
-      .WillOnce(Return(true));
-  fetched_categories.clear();
-  fetched_categories.push_back(
-      FetchedCategoryBuilder()
-          .SetCategory(articles_category())
-          .AddSuggestionViaBuilder(RemoteSuggestionBuilder()
-                                       .AddId("http://other.com")
-                                       .SetUrl("http://other.com")
-                                       .SetAmpUrl("http://amp.other.com"))
-          .Build());
-  RefetchWhileDisplayingAndGetResponseCallback().Run(
-      Status::Success(), std::move(fetched_categories));
-
-  EXPECT_THAT(
-      observer().SuggestionsForCategory(articles_category()),
-      UnorderedElementsAre(
-          Property(&ContentSuggestion::id,
-                   MakeArticleID("http://prefetched.com")),
-          Property(&ContentSuggestion::id, MakeArticleID("http://other.com"))));
-}
-
-TEST_F(RemoteSuggestionsProviderImplTest,
        ShouldToggleStatusIfReloadSuggestionsFails) {
   MakeSuggestionsProvider(
-      /*use_mock_prefetched_pages_tracker=*/false,
       /*use_mock_remote_suggestions_status_service=*/false);
 
   ASSERT_EQ(CategoryStatus::AVAILABLE,
@@ -3893,7 +3277,7 @@ TEST_F(RemoteSuggestionsProviderImplTest,
 
   // After the results come, the status is flipped back to AVAILABLE.
   std::move(response_callback)
-      .Run(Status(StatusCode::TEMPORARY_ERROR, "some error"), base::nullopt);
+      .Run(Status(StatusCode::TEMPORARY_ERROR, "some error"), absl::nullopt);
   // The category is available, with no suggestions.
   EXPECT_EQ(CategoryStatus::AVAILABLE,
             observer().StatusForCategory(articles_category()));

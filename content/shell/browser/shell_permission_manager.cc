@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +18,7 @@ namespace content {
 
 namespace {
 
-bool IsWhitelistedPermissionType(PermissionType permission) {
+bool IsAllowlistedPermissionType(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
     case PermissionType::MIDI:
@@ -33,14 +34,18 @@ bool IsWhitelistedPermissionType(PermissionType permission) {
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
 
     case PermissionType::IDLE_DETECTION:
+
+    // Storage Access API web platform tests require permission to be granted by
+    // default.
+    case PermissionType::STORAGE_ACCESS_GRANT:
       return true;
+
     case PermissionType::MIDI_SYSEX:
     case PermissionType::NOTIFICATIONS:
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
     case PermissionType::DURABLE_STORAGE:
     case PermissionType::AUDIO_CAPTURE:
     case PermissionType::VIDEO_CAPTURE:
-    case PermissionType::FLASH:
     case PermissionType::CLIPBOARD_READ_WRITE:
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:
     case PermissionType::NUM:
@@ -48,6 +53,11 @@ bool IsWhitelistedPermissionType(PermissionType permission) {
     case PermissionType::NFC:
     case PermissionType::VR:
     case PermissionType::AR:
+    case PermissionType::CAMERA_PAN_TILT_ZOOM:
+    case PermissionType::WINDOW_PLACEMENT:
+    case PermissionType::FONT_ACCESS:
+    case PermissionType::DISPLAY_CAPTURE:
+    case PermissionType::FILE_HANDLING:
       return false;
   }
 
@@ -62,19 +72,18 @@ ShellPermissionManager::ShellPermissionManager() = default;
 ShellPermissionManager::~ShellPermissionManager() {
 }
 
-int ShellPermissionManager::RequestPermission(
+void ShellPermissionManager::RequestPermission(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  std::move(callback).Run(IsWhitelistedPermissionType(permission)
+  std::move(callback).Run(IsAllowlistedPermissionType(permission)
                               ? blink::mojom::PermissionStatus::GRANTED
                               : blink::mojom::PermissionStatus::DENIED);
-  return PermissionController::kNoPendingOperation;
 }
 
-int ShellPermissionManager::RequestPermissions(
+void ShellPermissionManager::RequestPermissions(
     const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -83,12 +92,11 @@ int ShellPermissionManager::RequestPermissions(
         callback) {
   std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : permissions) {
-    result.push_back(IsWhitelistedPermissionType(permission)
+    result.push_back(IsAllowlistedPermissionType(permission)
                          ? blink::mojom::PermissionStatus::GRANTED
                          : blink::mojom::PermissionStatus::DENIED);
   }
   std::move(callback).Run(result);
-  return PermissionController::kNoPendingOperation;
 }
 
 void ShellPermissionManager::ResetPermission(
@@ -109,7 +117,7 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
     return blink::mojom::PermissionStatus::GRANTED;
   }
 
-  return IsWhitelistedPermissionType(permission)
+  return IsAllowlistedPermissionType(permission)
              ? blink::mojom::PermissionStatus::GRANTED
              : blink::mojom::PermissionStatus::DENIED;
 }
@@ -121,21 +129,20 @@ ShellPermissionManager::GetPermissionStatusForFrame(
     const GURL& requesting_origin) {
   return GetPermissionStatus(
       permission, requesting_origin,
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetLastCommittedURL()
-          .GetOrigin());
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          content::WebContents::FromRenderFrameHost(render_frame_host)));
 }
 
-int ShellPermissionManager::SubscribePermissionStatusChange(
+ShellPermissionManager::SubscriptionId
+ShellPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return PermissionController::kNoPendingOperation;
+  return SubscriptionId();
 }
 
 void ShellPermissionManager::UnsubscribePermissionStatusChange(
-    int subscription_id) {
-}
+    SubscriptionId subscription_id) {}
 
 }  // namespace content

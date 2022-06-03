@@ -47,8 +47,8 @@ promise_test(function(t) {
             assert_equals(dsl.item(1), 'b', 'item method');
             assert_equals(dsl.item(2), 'c', 'item method');
             assert_equals(dsl.item(3), null, 'item method out of range');
-            assert_throws(
-                {name: 'TypeError'}, function() { dsl.item(); },
+            assert_throws_js(
+                TypeError, function() { dsl.item(); },
                 'item method should throw if called without enough args');
 
             assert_equals(dsl[0], 'a', 'indexed getter');
@@ -66,8 +66,8 @@ promise_test(function(t) {
                          'contains method unmatched');
             assert_false(dsl.contains('d'),
                          'contains method unmatched');
-            assert_throws(
-                {name: 'TypeError'}, function(){ dsl.contains(); },
+            assert_throws_js(
+                TypeError, function(){ dsl.contains(); },
                 'contains method should throw if called without enough args');
         });
 }, 'DOMStringList interface');

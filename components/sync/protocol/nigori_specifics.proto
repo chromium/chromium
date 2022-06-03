@@ -16,7 +16,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "encryption.proto";
+import "components/sync/protocol/encryption.proto";
 
 message NigoriKey {
   // Note that M78 and before rely on the name being populated, at least for
@@ -42,16 +42,26 @@ message NigoriSpecifics {
 
   // Obsolete encryption fields. These were deprecated due to legacy versions
   // that understand their usage but did not perform encryption properly.
-  // optional bool deprecated_encrypt_bookmarks = 3;
-  // optional bool deprecated_encrypt_preferences = 4;
-  // optional bool deprecated_encrypt_autofill_profile = 5;
-  // optional bool deprecated_encrypt_autofill = 6;
-  // optional bool deprecated_encrypt_themes = 7;
-  // optional bool deprecated_encrypt_typed_urls = 8;
-  // optional bool deprecated_encrypt_extensions = 9;
-  // optional bool deprecated_encrypt_sessions = 10;
-  // optional bool deprecated_encrypt_apps = 11;
-  // optional bool deprecated_encrypt_search_engines = 12;
+  reserved 3;
+  reserved "deprecated_encrypt_bookmarks";
+  reserved 4;
+  reserved "deprecated_encrypt_preferences";
+  reserved 5;
+  reserved "deprecated_encrypt_autofill_profile";
+  reserved 6;
+  reserved "deprecated_encrypt_autofill";
+  reserved 7;
+  reserved "deprecated_encrypt_themes";
+  reserved 8;
+  reserved "deprecated_encrypt_typed_urls";
+  reserved 9;
+  reserved "deprecated_encrypt_extensions";
+  reserved 10;
+  reserved "deprecated_encrypt_sessions";
+  reserved 11;
+  reserved "deprecated_encrypt_apps";
+  reserved 12;
+  reserved "deprecated_encrypt_search_engines";
 
   // Booleans corresponding to whether a datatype should be encrypted.
   // Passwords and Wi-Fi configurations are always encrypted, so we don't need
@@ -69,7 +79,8 @@ message NigoriSpecifics {
   optional bool encrypt_search_engines = 22;
 
   // Deprecated on clients where tab sync is enabled by default.
-  // optional bool sync_tabs = 23;
+  reserved 23;
+  reserved "sync_tabs";
 
   // If true, all current and future datatypes will be encrypted.
   optional bool encrypt_everything = 24;
@@ -83,7 +94,8 @@ message NigoriSpecifics {
   // User device information. Contains information about each device that has a
   // sync-enabled Chrome browser connected to the user account.
   // This has been moved to the DeviceInfo message.
-  // repeated DeviceInformation deprecated_device_information = 28;
+  reserved 28;
+  reserved "deprecated_device_information";
 
   // Enable syncing favicons as part of tab sync.
   optional bool sync_tab_favicons = 29;
@@ -93,7 +105,7 @@ message NigoriSpecifics {
     // Proto enums should begin with an 'unknown' value for switch statements,
     // unknown fields, etc.
     UNKNOWN = 0;
-    // Gaia-based encryption passphrase. Deprecated.
+    // Gaia-based encryption passphrase. Legacy.
     IMPLICIT_PASSPHRASE = 1;
     // Keystore key encryption passphrase. Uses |keystore_bootstrap| to
     // decrypt |encryption_keybag|.
@@ -117,22 +129,21 @@ message NigoriSpecifics {
   // Only set if passphrase_state == KEYSTORE_PASSPHRASE.
   optional EncryptedData keystore_decryptor_token = 31;
 
-  // The time (in epoch milliseconds) at which the keystore migration was
-  // performed.
+  // The time (in milliseconds since Unix epoch) at which the keystore migration
+  // was performed.
   optional int64 keystore_migration_time = 32;
 
-  // The time (in epoch milliseconds) at which a custom passphrase was set.
-  // Note: this field may not be set if the custom passphrase was applied before
-  // this field was introduced.
+  // The time (in milliseconds since Unix epoch) at which a custom passphrase
+  // was set. Note: this field may not be set if the custom passphrase was
+  // applied before this field was introduced.
   optional int64 custom_passphrase_time = 33;
 
   // Boolean corresponding to whether custom spelling dictionary should be
   // encrypted.
   optional bool encrypt_dictionary = 34;
 
-  // Boolean corresponding to Whether to encrypt favicons data or not.
-  optional bool encrypt_favicon_images = 35;
-  optional bool encrypt_favicon_tracking = 36;
+  reserved 35;
+  reserved 36;
 
   reserved 37;
   reserved "encrypt_articles";
@@ -195,4 +206,19 @@ message NigoriSpecifics {
 
   // Boolean corresponding to whether OS preferences should be encrypted.
   optional bool encrypt_os_preferences = 49;
+
+  // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
+  message TrustedVaultDebugInfo {
+    // The time (in milliseconds since Unix epoch) at which the trusted vault
+    // migration was performed.
+    optional int64 migration_time = 1;
+
+    // The version (aka key epoch) corresponding to the Nigori keybag.
+    optional int32 key_version = 2;
+  }
+
+  optional TrustedVaultDebugInfo trusted_vault_debug_info = 50;
+
+  // Boolean corresponding to whether workspace desk should be encrypted.
+  optional bool encrypt_workspace_desk = 51;
 }

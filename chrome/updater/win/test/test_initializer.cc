@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
-#include "chrome/updater/updater_constants.h"
+#include "chrome/updater/constants.h"
 
 namespace updater {
 
@@ -51,7 +51,7 @@ void NotifyInitializationDoneForTesting() {
   // it's ready using the same event before continuing. If the test takes
   // longer than that stop waiting to prevent hangs.
   if (notifier_event)
-    notifier_event->TimedWait(base::TimeDelta::FromSeconds(5));
+    notifier_event->TimedWait(base::Seconds(5));
 }
 
 }  // namespace updater

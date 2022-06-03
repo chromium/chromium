@@ -1,0 +1,48 @@
+<style include="network-shared"></style>
+<h2>[[i18n('TrafficCountersTrafficCounters')]]</h2>
+<div class="button-group">
+  <cr-button id="requestButton" on-click="onRequestTrafficCountersClick_">
+    [[i18n('TrafficCountersRequestTrafficCounters')]]
+  </cr-button>
+</div>
+<template is="dom-repeat" items="[[networks_]]" as="network">
+  <network-health-container
+      label="[[getNetworkTypeString_(network.type)]]"
+      expanded="[[getTypeExpanded_(network.type, typeExpanded_.*)]]"
+      on-toggle-expanded="onToggleExpanded_">
+    <span slot="header">
+      <img class="type-icon" src="[[getNetworkTypeIcon_(network.type)]]">
+    </span>
+    <div id="name" class="network-attribute-container">
+      <div class="network-attribute-label">[[i18n('OncName')]]</div>
+      <span class="network-attribute-value">[[network.name]]</span>
+    </div>
+    <div id="guid" class="network-attribute-container">
+      <div class="network-attribute-label">[[i18n('TrafficCountersGuid')]]</div>
+      <span class="network-attribute-value">[[network.guid]]</span>
+    </div>
+    <div id="counters" class="network-attribute-container">
+      <div class="network-attribute-label">
+        [[i18n('TrafficCountersTrafficCounters')]]
+      </div>
+      <span class="network-attribute-value">
+        [[countersToString_(network.counters)]]
+      </span>
+    </div>
+    <div id="time" class="network-attribute-container">
+      <div class="network-attribute-label">
+        [[i18n('TrafficCountersLastResetTime')]]
+      </div>
+      <span class="network-attribute-value">
+        [[lastResetTimeString_(network)]]
+      </span>
+    </div>
+    <div id="reset" class="network-attribute-container">
+      <div class="button-group">
+        <cr-button id="resetButton" on-click="onResetTrafficCountersClick_">
+          [[i18n('TrafficCountersResetTrafficCounters')]]
+        </cr-button>
+      </div>
+    </div>
+  </network-health-container>
+</template>

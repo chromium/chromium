@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -12,8 +13,11 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 
 using ui::mojom::ImeTextSpanThickness;
+using ui::mojom::ImeTextSpanUnderlineStyle;
 
 namespace blink {
 
@@ -23,7 +27,7 @@ class TextSuggestionControllerTest : public EditingTestBase {
     return bool(GetDocument()
                     .GetFrame()
                     ->GetTextSuggestionController()
-                    .text_suggestion_host_);
+                    .text_suggestion_host_.is_bound());
   }
 
   void ShowSuggestionMenu(
@@ -56,7 +60,8 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
 
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 0), Position(text, 8)), Color::kBlack,
-      ImeTextSpanThickness::kThin, Color::kBlack);
+      ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
+      Color::kBlack, Color::kBlack);
   // Select immediately before misspelling
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -78,7 +83,13 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
   EXPECT_EQ(10, selection.End().ComputeOffsetInContainerNode());
 }
 
-TEST_F(TextSuggestionControllerTest, ApplyTextSuggestion) {
+// Flaky on Android: http://crbug.com/1104700
+#if defined(OS_ANDROID)
+#define MAYBE_ApplyTextSuggestion DISABLED_ApplyTextSuggestion
+#else
+#define MAYBE_ApplyTextSuggestion ApplyTextSuggestion
+#endif
+TEST_F(TextSuggestionControllerTest, MAYBE_ApplyTextSuggestion) {
   SetBodyContent(
       "<div contenteditable>"
       "word1 word2 word3 word4"
@@ -237,7 +248,8 @@ TEST_F(TextSuggestionControllerTest, DeleteActiveSuggestionRange_DeleteAtEnd) {
   // Mark "word2" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 6), Position(text, 11)),
-      Color::kTransparent, ImeTextSpanThickness::kThin, Color::kBlack);
+      Color::kTransparent, ImeTextSpanThickness::kThin,
+      ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -263,7 +275,8 @@ TEST_F(TextSuggestionControllerTest,
   // Mark "word2" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 6), Position(text, 11)),
-      Color::kTransparent, ImeTextSpanThickness::kThin, Color::kBlack);
+      Color::kTransparent, ImeTextSpanThickness::kThin,
+      ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -290,7 +303,8 @@ TEST_F(TextSuggestionControllerTest,
   // Mark "word1" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 0), Position(text, 5)), Color::kTransparent,
-      ImeTextSpanThickness::kThin, Color::kBlack);
+      ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
+      Color::kBlack, Color::kBlack);
   // Select immediately before word1
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -318,7 +332,8 @@ TEST_F(TextSuggestionControllerTest,
   // Mark "word1" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 0), Position(text, 5)), Color::kTransparent,
-      ImeTextSpanThickness::kThin, Color::kBlack);
+      ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
+      Color::kBlack, Color::kBlack);
   // Select immediately before word1
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -349,7 +364,8 @@ TEST_F(TextSuggestionControllerTest,
   // Mark "word2" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 5), Position(text, 10)),
-      Color::kTransparent, ImeTextSpanThickness::kThin, Color::kBlack);
+      Color::kTransparent, ImeTextSpanThickness::kThin,
+      ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -375,7 +391,8 @@ TEST_F(TextSuggestionControllerTest,
   // Mark "word2" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 6), Position(text, 11)),
-      Color::kTransparent, ImeTextSpanThickness::kThin, Color::kBlack);
+      Color::kTransparent, ImeTextSpanThickness::kThin,
+      ImeTextSpanUnderlineStyle::kSolid, Color::kBlack, Color::kBlack);
   // Select immediately before word2
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -401,7 +418,8 @@ TEST_F(TextSuggestionControllerTest,
   // Mark "word1" as the active suggestion range
   GetDocument().Markers().AddActiveSuggestionMarker(
       EphemeralRange(Position(text, 0), Position(text, 5)), Color::kTransparent,
-      ImeTextSpanThickness::kThin, Color::kBlack);
+      ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid,
+      Color::kBlack, Color::kBlack);
   // Select immediately before word1
   GetDocument().GetFrame()->Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -442,8 +460,7 @@ TEST_F(TextSuggestionControllerTest,
   EXPECT_NE(nullptr, GetDocument()
                          .GetFrame()
                          ->GetSpellChecker()
-                         .GetSpellCheckMarkerUnderSelection()
-                         .first);
+                         .GetSpellCheckMarkerGroupUnderSelection());
 
   // Add "embiggen" to the dictionary
   GetDocument()
@@ -454,13 +471,12 @@ TEST_F(TextSuggestionControllerTest,
   EXPECT_EQ(nullptr, GetDocument()
                          .GetFrame()
                          ->GetSpellChecker()
-                         .GetSpellCheckMarkerUnderSelection()
-                         .first);
+                         .GetSpellCheckMarkerGroupUnderSelection());
 }
 
 TEST_F(TextSuggestionControllerTest, CallbackHappensAfterDocumentDestroyed) {
   LocalFrame& frame = *GetDocument().GetFrame();
-  GetDocument().Shutdown();
+  frame.DomWindow()->FrameDestroyed();
 
   // Shouldn't crash
   frame.GetTextSuggestionController().SuggestionMenuTimeoutCallback(0);

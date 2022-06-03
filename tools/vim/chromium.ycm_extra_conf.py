@@ -238,7 +238,7 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
 
   # Parse flags that are important for YCM's purposes.
   clang_tokens = shlex.split(clang_commandline)
-  include_pattern = re.compile(r'^(-I|-isystem)(.+)$')
+  include_pattern = re.compile(r'^(-I|-isystem|-F)(.+)$')
   for flag_index, flag in enumerate(clang_tokens):
     include_match = include_pattern.match(flag)
     if include_match:
@@ -252,7 +252,7 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
       # Value armv7-a of this flag causes a parsing error with a message
       # "ClangParseError: Failed to parse the translation unit."
       continue
-    elif flag.startswith('-') and flag[1] in 'DWFfmO':
+    elif flag.startswith('-') and flag[1] in 'DWfmO':
       if flag == '-Wno-deprecated-register' or flag == '-Wno-header-guard':
         # These flags causes libclang (3.3) to crash. Remove it until things
         # are fixed.
@@ -337,8 +337,10 @@ def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
   return GetClangOptionsFromCommandLine(clang_line, out_dir, additional_flags)
 
 
+# FlagsForFile entrypoint is deprecated in YCM and has replaced by
+# Settings.
 def FlagsForFile(filename):
-  """This is the main entry point for YCM. Its interface is fixed.
+  """This is the old entry point for YCM. Its interface is fixed.
 
   Args:
     filename: (String) Path to source file being edited.
@@ -348,6 +350,11 @@ def FlagsForFile(filename):
       'flags': (List of Strings) Command line flags.
       'do_cache': (Boolean) True if the result should be cached.
   """
+  return Settings(filename=filename)
+
+
+def Settings(**kwargs):
+  filename = kwargs['filename']
   abs_filename = os.path.abspath(filename)
   chrome_root = FindChromeSrcFromFilename(abs_filename)
   clang_flags = GetClangOptionsFromNinjaForFilename(chrome_root, abs_filename)

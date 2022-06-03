@@ -21,7 +21,8 @@ use_opus_x86_optimization =
 # If OPUS Run Time CPU Detections (RTCD) shall be used.
 # Based on the conditions in celt/arm/armcpu.c:
 # defined(_MSC_VER) || defined(__linux__).
-use_opus_arm_rtcd = current_cpu == "arm" && (is_win || is_android || is_linux)
+use_opus_arm_rtcd =
+    current_cpu == "arm" && (is_win || is_android || is_linux || is_chromeos)
 
 config("opus_config") {
   include_dirs = [ "src/include" ]
@@ -35,6 +36,7 @@ config("opus_private_config") {
   defines = [
     "OPUS_BUILD",
     "OPUS_EXPORT=",
+    "ENABLE_HARDENING",
 
     # Prefer alloca() over variable length arrays which are often inefficient;
     # the opus code will automatically handle this correctly per-platform.
@@ -62,6 +64,11 @@ config("opus_private_config") {
       "HAVE_LRINT",
       "HAVE_LRINTF",
     ]
+  }
+
+  if (is_official_build) {
+    # Disable assertion messages from ENABLE_HARDENING, saving 16.4 kb.
+    defines += [ "CHROMIUM_NO_LOGGING" ]
   }
 
   if (is_debug) {
@@ -148,12 +155,23 @@ config("opus_test_config") {
   }
 }
 
+# GN orders flags on a target before flags from configs. The default config
+# adds -Wall, and this flag has to be after -Wall -- so they need to
+# come from a config and can't be on the target directly.
+config("opus_test_no_nonnull_config") {
+  # tests may pass a null pointer to functions for an argument marked as
+  # requiring a non-null value by the nonnull function attribute, and expects
+  # the function call to fail. Disable the -Wnonnull option to avoid a
+  # compilation error if -Werror is specified.
+  if (is_clang) {
+    cflags = [ "-Wno-nonnull" ]
+  }
+}
+
 if (use_opus_arm_rtcd) {
   action("convert_rtcd_assembler") {
     script = "convert_rtcd_assembler.py"
-    outputs = [
-      "$target_gen_dir/celt_pitch_xcorr_arm_gnu.S",
-    ]
+    outputs = [ "$target_gen_dir/celt_pitch_xcorr_arm_gnu.S" ]
     args = [
       rebase_path("//third_party/opus/src/celt/arm/arm2gnu.pl", root_build_dir),
       rebase_path("//third_party/opus/src/celt/arm/celt_pitch_xcorr_arm.s",
@@ -167,9 +185,10 @@ if (use_opus_x86_optimization) {
   source_set("opus_sse41") {
     sources = [
       "src/celt/x86/pitch_sse4_1.c",
-      "src/silk/x86/NSQ_del_dec_sse.c",
-      "src/silk/x86/NSQ_sse.c",
-      "src/silk/x86/VAD_sse.c",
+      "src/silk/x86/NSQ_del_dec_sse4_1.c",
+      "src/silk/x86/NSQ_sse4_1.c",
+      "src/silk/x86/VAD_sse4_1.c",
+      "src/silk/x86/VQ_WMat_EC_sse4_1.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -240,6 +259,7 @@ static_library("opus") {
     "src/include/opus_custom.h",
     "src/include/opus_defines.h",
     "src/include/opus_multistream.h",
+    "src/include/opus_projection.h",
     "src/include/opus_types.h",
     "src/silk/A2NLSF.c",
     "src/silk/API.h",
@@ -341,6 +361,8 @@ static_library("opus") {
     "src/silk/typedef.h",
     "src/src/analysis.c",
     "src/src/analysis.h",
+    "src/src/mapping_matrix.c",
+    "src/src/mapping_matrix.h",
     "src/src/mlp.c",
     "src/src/mlp.h",
     "src/src/mlp_data.c",
@@ -350,6 +372,9 @@ static_library("opus") {
     "src/src/opus_multistream.c",
     "src/src/opus_multistream_decoder.c",
     "src/src/opus_multistream_encoder.c",
+    "src/src/opus_private.h",
+    "src/src/opus_projection_decoder.c",
+    "src/src/opus_projection_encoder.c",
     "src/src/repacketizer.c",
     "src/src/tansig_table.h",
   ]
@@ -361,7 +386,7 @@ static_library("opus") {
   ]
   public_configs = [ ":opus_config" ]
 
-  if (!is_debug && (current_cpu == "arm" || current_cpu == "arm64")) {
+  if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
 
     # TODO(crbug.com/621335) Rework this so that we don't have the confusion
@@ -374,6 +399,7 @@ static_library("opus") {
   if (use_opus_x86_optimization) {
     sources += [
       "src/celt/x86/celt_lpc_sse.h",
+      "src/celt/x86/celt_lpc_sse4_1.c",
       "src/celt/x86/pitch_sse.c",
       "src/celt/x86/pitch_sse.h",
       "src/celt/x86/pitch_sse2.c",
@@ -502,9 +528,7 @@ static_library("opus") {
 }
 
 executable("opus_compare") {
-  sources = [
-    "src/src/opus_compare.c",
-  ]
+  sources = [ "src/src/opus_compare.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -519,9 +543,7 @@ executable("opus_compare") {
 }
 
 executable("opus_demo") {
-  sources = [
-    "src/src/opus_demo.c",
-  ]
+  sources = [ "src/src/opus_demo.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -536,19 +558,16 @@ executable("opus_demo") {
 }
 
 test("test_opus_api") {
-  sources = [
-    "src/tests/test_opus_api.c",
-  ]
+  sources = [ "src/tests/test_opus_api.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
     ":opus_test_config",
+    ":opus_test_no_nonnull_config",
   ]
 
-  deps = [
-    ":opus",
-  ]
+  deps = [ ":opus" ]
 }
 
 test("test_opus_encode") {
@@ -563,45 +582,24 @@ test("test_opus_encode") {
     ":opus_test_config",
   ]
 
-  deps = [
-    ":opus",
-  ]
-}
-
-# GN orders flags on a target before flags from configs. The default config
-# adds -Wall, and this flag have to be after -Wall -- so they need to
-# come from a config and can't be on the target directly.
-config("test_opus_decode_config") {
-  # test_opus_decode passes a null pointer to opus_decode() for an argument
-  # marked as requiring a non-null value by the nonnull function attribute,
-  # and expects opus_decode() to fail. Disable the -Wnonnull option to avoid
-  # a compilation error if -Werror is specified.
-  if (is_clang) {
-    cflags = [ "-Wno-nonnull" ]
-  }
+  deps = [ ":opus" ]
 }
 
 test("test_opus_decode") {
-  sources = [
-    "src/tests/test_opus_decode.c",
-  ]
+  sources = [ "src/tests/test_opus_decode.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
     ":opus_test_config",
-    ":test_opus_decode_config",
+    ":opus_test_no_nonnull_config",
   ]
 
-  deps = [
-    ":opus",
-  ]
+  deps = [ ":opus" ]
 }
 
 test("test_opus_padding") {
-  sources = [
-    "src/tests/test_opus_padding.c",
-  ]
+  sources = [ "src/tests/test_opus_padding.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -609,23 +607,17 @@ test("test_opus_padding") {
     ":opus_test_config",
   ]
 
-  deps = [
-    ":opus",
-  ]
+  deps = [ ":opus" ]
 }
 
 # Compilation fails on windows due to wstring/string mistmatch.
 # This is not worth looking at it since the benchmark is tailored for android.
 # It is ok to run it on linux though, for experimentation purpose.
-if (!is_win) {
+if (is_android || is_linux || is_chromeos) {
   test("opus_tests") {
-    sources = [
-      "tests/opus_benchmark.cc",
-    ]
+    sources = [ "tests/opus_benchmark.cc" ]
 
-    data = [
-      "tests/resources/speech_mono_32_48kHz.pcm",
-    ]
+    data = [ "tests/resources/speech_mono_32_48kHz.pcm" ]
 
     deps = [
       ":opus",

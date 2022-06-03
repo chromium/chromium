@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
 
@@ -28,31 +28,36 @@ void PasswordTabHelper::SetBaseViewController(
   controller_.baseViewController = baseViewController;
 }
 
-void PasswordTabHelper::SetDispatcher(
-    id<ApplicationCommands, PasswordBreachCommands> dispatcher) {
-  controller_.dispatcher = dispatcher;
-}
-
 void PasswordTabHelper::SetPasswordControllerDelegate(
     id<PasswordControllerDelegate> delegate) {
   controller_.delegate = delegate;
+}
+
+void PasswordTabHelper::SetDispatcher(CommandDispatcher* dispatcher) {
+  controller_.dispatcher = dispatcher;
 }
 
 id<FormSuggestionProvider> PasswordTabHelper::GetSuggestionProvider() {
   return controller_.suggestionProvider;
 }
 
-id<PasswordFormFiller> PasswordTabHelper::GetPasswordFormFiller() {
-  return controller_.passwordFormFiller;
-}
-
 password_manager::PasswordGenerationFrameHelper*
 PasswordTabHelper::GetGenerationHelper() {
-  return controller_.passwordGenerationHelper;
+  return controller_.passwordManagerDriver->GetPasswordGenerationHelper();
 }
 
 password_manager::PasswordManager* PasswordTabHelper::GetPasswordManager() {
   return controller_.passwordManager;
+}
+
+password_manager::PasswordManagerClient*
+PasswordTabHelper::GetPasswordManagerClient() {
+  return controller_.passwordManagerClient;
+}
+
+id<PasswordGenerationProvider>
+PasswordTabHelper::GetPasswordGenerationProvider() {
+  return controller_.generationProvider;
 }
 
 PasswordTabHelper::PasswordTabHelper(web::WebState* web_state)

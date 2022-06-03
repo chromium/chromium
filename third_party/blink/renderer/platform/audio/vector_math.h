@@ -60,9 +60,19 @@ PLATFORM_EXPORT void PrepareFilterForConv(const float* filter_p,
 // Vector scalar multiply and then add.
 //
 // dest[k*dest_stride] += scale * source[k*source_stride]
+//
+// Note: Mac has a different implementation, and it may produce slightly
+// different results from what linux and windows would do.
 PLATFORM_EXPORT void Vsma(const float* source_p,
                           int source_stride,
                           const float* scale,
+                          float* dest_p,
+                          int dest_stride,
+                          uint32_t frames_to_process);
+
+PLATFORM_EXPORT void Vsma(const float* source_p,
+                          int source_stride,
+                          float scale,
                           float* dest_p,
                           int dest_stride,
                           uint32_t frames_to_process);
@@ -77,10 +87,41 @@ PLATFORM_EXPORT void Vsmul(const float* source_p,
                            int dest_stride,
                            uint32_t frames_to_process);
 
+PLATFORM_EXPORT void Vsmul(const float* source_p,
+                           int source_stride,
+                           float scale,
+                           float* dest_p,
+                           int dest_stride,
+                           uint32_t frames_to_process);
+
+PLATFORM_EXPORT void Vsadd(const float* source_p,
+                           int source_stride,
+                           const float* addend,
+                           float* dest_p,
+                           int dest_stride,
+                           uint32_t frames_to_process);
+
+PLATFORM_EXPORT void Vsadd(const float* source_p,
+                           int source_stride,
+                           float addend,
+                           float* dest_p,
+                           int dest_stride,
+                           uint32_t frames_to_process);
 // Vector add:
 //
 // dest[k*dest_stride] = source1[k*source_stride1] + source2[k*source_stride2]
 PLATFORM_EXPORT void Vadd(const float* source1p,
+                          int source_stride1,
+                          const float* source2p,
+                          int source_stride2,
+                          float* dest_p,
+                          int dest_stride,
+                          uint32_t frames_to_process);
+
+// Vector subtract:
+//
+// dest[k*dest_stride] = source1[k*source_stride1] - source2[k*source_stride2]
+PLATFORM_EXPORT void Vsub(const float* source1p,
                           int source_stride1,
                           const float* source2p,
                           int source_stride2,
@@ -137,6 +178,14 @@ PLATFORM_EXPORT void Vclip(const float* source_p,
                            int source_stride,
                            const float* low_threshold_p,
                            const float* high_threshold_p,
+                           float* dest_p,
+                           int dest_stride,
+                           uint32_t frames_to_process);
+
+PLATFORM_EXPORT void Vclip(const float* source_p,
+                           int source_stride,
+                           float low_threshold_p,
+                           float high_threshold_p,
                            float* dest_p,
                            int dest_stride,
                            uint32_t frames_to_process);

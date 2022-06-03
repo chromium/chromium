@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGPath polygon id='target'",
-          "rect": [18, 18, 30, 20],
-          "reason": "full"
-        },
-        {
-          "object": "LayoutSVGPath polygon id='target'",
-          "rect": [18, 18, 20, 20],
-          "reason": "full"
-        }
+      "invalidations": [
+        [18, 18, 30, 20]
       ]
     }
   ]

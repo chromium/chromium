@@ -11,15 +11,16 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/one_shot_event.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
@@ -44,13 +45,11 @@ namespace extensions {
 namespace {
 
 // Wait this long before trying to garbage collect extensions again.
-constexpr base::TimeDelta kGarbageCollectRetryDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kGarbageCollectRetryDelay = base::Seconds(30);
 
 // Wait this long after startup to see if there are any extensions which can be
 // garbage collected.
-constexpr base::TimeDelta kGarbageCollectStartupDelay =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kGarbageCollectStartupDelay = base::Seconds(30);
 
 typedef std::multimap<std::string, base::FilePath> ExtensionPathsMultimap;
 
@@ -60,7 +59,7 @@ void CheckExtensionDirectory(const base::FilePath& path,
   // Clean up temporary files left if Chrome crashed or quit in the middle
   // of an extension install.
   if (basename.value() == file_util::kTempDirectoryName) {
-    base::DeleteFileRecursively(path);
+    base::DeletePathRecursively(path);
     return;
   }
 
@@ -74,7 +73,7 @@ void CheckExtensionDirectory(const base::FilePath& path,
 
   // Delete directories that aren't valid IDs.
   if (extension_id.empty()) {
-    base::DeleteFileRecursively(path);
+    base::DeletePathRecursively(path);
     return;
   }
 
@@ -85,7 +84,7 @@ void CheckExtensionDirectory(const base::FilePath& path,
   // move on. This can legitimately happen when an uninstall does not
   // complete, for example, when a plugin is in use at uninstall time.
   if (iter_pair.first == iter_pair.second) {
-    base::DeleteFileRecursively(path);
+    base::DeletePathRecursively(path);
     return;
   }
 
@@ -103,7 +102,7 @@ void CheckExtensionDirectory(const base::FilePath& path,
       }
     }
     if (!known_version)
-      base::DeleteFileRecursively(version_dir);
+      base::DeletePathRecursively(version_dir);
   }
 }
 
@@ -237,9 +236,9 @@ void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
 
   DCHECK(!installs_delayed_for_gc_);
   installs_delayed_for_gc_ = true;
-  content::BrowserContext::GarbageCollectStoragePartitions(
-      context_, std::move(active_paths),
-      base::Bind(
+  context_->GarbageCollectStoragePartitions(
+      std::move(active_paths),
+      base::BindOnce(
           &ExtensionGarbageCollector::OnGarbageCollectIsolatedStorageFinished,
           weak_factory_.GetWeakPtr()));
 }

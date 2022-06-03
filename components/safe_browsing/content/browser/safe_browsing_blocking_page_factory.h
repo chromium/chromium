@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
+
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
+
+class GURL;
+
+namespace content {
+class WebContents;
+}
+
+namespace safe_browsing {
+
+class BaseUIManager;
+
+// Factory for creating SafeBrowsingBlockingPage.
+class SafeBrowsingBlockingPageFactory {
+ public:
+  virtual ~SafeBrowsingBlockingPageFactory() = default;
+
+  virtual SafeBrowsingBlockingPage* CreateSafeBrowsingPage(
+      BaseUIManager* ui_manager,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
+      bool should_trigger_reporting) = 0;
+};
+
+}  // namespace safe_browsing
+
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_

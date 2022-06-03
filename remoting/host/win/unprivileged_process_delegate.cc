@@ -12,18 +12,18 @@
 
 #include <sddl.h>
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -100,8 +100,8 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
   // "SeChangeNotifyPrivilege" also allows it to open and manipulate objects
   // owned by the same user. This risk is only mitigated by setting the
   // process integrity level to Low.
-  std::vector<base::string16> exceptions;
-  exceptions.push_back(base::string16(L"SeChangeNotifyPrivilege"));
+  std::vector<std::wstring> exceptions;
+  exceptions.push_back(L"SeChangeNotifyPrivilege");
 
   // Remove privileges in the token.
   if (restricted_token.DeleteAllPrivileges(&exceptions) != ERROR_SUCCESS)
@@ -176,7 +176,7 @@ bool CreateWindowStationAndDesktop(ScopedSid logon_sid,
 
   WindowStationAndDesktop handles;
   handles.SetWindowStation(CreateWindowStation(
-      base::UTF8ToUTF16(window_station_name).c_str(), window_station_flags,
+      base::UTF8ToWide(window_station_name).c_str(), window_station_flags,
       desired_access, &security_attributes));
   if (!handles.window_station()) {
     PLOG(ERROR) << "CreateWindowStation() failed";
@@ -331,6 +331,11 @@ void UnprivilegedProcessDelegate::Send(IPC::Message* message) {
   }
 }
 
+void UnprivilegedProcessDelegate::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  channel_->GetRemoteAssociatedInterface(std::move(receiver));
+}
+
 void UnprivilegedProcessDelegate::CloseChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   channel_.reset();
@@ -374,6 +379,15 @@ void UnprivilegedProcessDelegate::OnChannelError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   event_handler_->OnChannelError();
+}
+
+void UnprivilegedProcessDelegate::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  event_handler_->OnAssociatedInterfaceRequest(interface_name,
+                                               std::move(handle));
 }
 
 void UnprivilegedProcessDelegate::ReportFatalError() {

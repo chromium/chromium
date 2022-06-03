@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SINC_RESAMPLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_SINC_RESAMPLER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -51,11 +50,14 @@ class PLATFORM_EXPORT SincResampler {
                 unsigned kernel_size = 32,
                 unsigned number_of_kernel_offsets = 32);
 
+  SincResampler(const SincResampler&) = delete;
+  SincResampler& operator=(const SincResampler&) = delete;
+
   // Processes numberOfSourceFrames from source to produce numberOfSourceFrames
   // / scaleFactor frames in destination.
   void Process(const float* source,
                float* destination,
-               unsigned number_of_source_frames);
+               int number_of_source_frames);
 
   // Process with input source callback function for streaming applications.
   void Process(AudioSourceProvider*,
@@ -95,9 +97,6 @@ class PLATFORM_EXPORT SincResampler {
 
   // The buffer is primed once at the very beginning of processing.
   bool is_buffer_primed_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SincResampler);
 };
 
 }  // namespace blink

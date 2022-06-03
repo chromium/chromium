@@ -27,17 +27,17 @@ TEST_F(AccessibilityCheckerTest, VerifyAccessibilityCheckerFailAndPass) {
   widget.Show();
 
   // Add the button.
-  views::ImageButton* button = new views::ImageButton(nullptr);
-  widget.GetContentsView()->AddChildView(button);
+  auto* button = widget.GetContentsView()->AddChildView(
+      std::make_unique<views::ImageButton>());
 
   // Accessibility test should pass as it is focusable but has a name.
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  button->SetAccessibleName(base::ASCIIToUTF16("Some name"));
+  button->SetAccessibleName(u"Some name");
   AddFailureOnWidgetAccessibilityError(&widget);
 
   // Accessibility test should pass as it has no name but is not focusable.
   button->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  button->SetAccessibleName(base::ASCIIToUTF16(""));
+  button->SetAccessibleName(u"");
   AddFailureOnWidgetAccessibilityError(&widget);
 
   // Accessibility test should fail as it has no name and is focusable.

@@ -112,13 +112,13 @@ function test() {
     shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(60,10,30,10)');
 
     popupWindow.global.params.anchorRectInScreen = makeRect(80, 0, 20, 10);
-    shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(80,10,30,10)');
+    shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(70,10,30,10)');
 
     popupWindow.global.params.anchorRectInScreen = makeRect(90, 0, 20, 10);
-    shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(90,10,30,10)');
+    shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(80,10,30,10)');
 
     popupWindow.global.params.anchorRectInScreen = makeRect(100, 0, 20, 10);
-    shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(100,10,30,10)');
+    shouldBeEqualToString('popupWindow.adjustWindowRect(30, 10, 30, 10).toString()', 'Rectangle(90,10,30,10)');
 
     debug("Move anchor element along the vertical axis. Open popup that is too tall.");
 

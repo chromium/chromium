@@ -1,0 +1,57 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/scroll/scroll_enums.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This struct contains the required information for propagating some stages
+// of scrolling process to cross process frames. Specifically for various types
+// of programmatic scrolling such as scrolling an element into view, recursive
+// scrolling across multiple processes is accommodated through passing the state
+// using this struct to the browser and then to the target (parent) process.
+
+// The default value matches ScrollAlignment::CenterIfNeeded().
+struct ScrollAlignment {
+  enum Behavior {
+    kNoScroll = 0,
+    kCenter,
+    kTop,
+    kBottom,
+    kLeft,
+    kRight,
+    kClosestEdge,
+  };
+
+  Behavior rect_visible = kNoScroll;
+  Behavior rect_hidden = kCenter;
+  Behavior rect_partial = kClosestEdge;
+};
+
+struct ScrollIntoViewParams {
+  ScrollAlignment align_x;
+  ScrollAlignment align_y;
+  ScrollType type = ScrollType.kProgrammatic;
+  bool make_visible_in_visual_viewport = true;
+  ScrollBehavior behavior = ScrollBehavior.kAuto;
+  bool is_for_scroll_sequence = false;
+
+  // If true, once the root frame scrolls into view it will zoom into the scroll
+  // rect.
+  bool zoom_into_rect = false;
+
+  // The following bounds are normalized to the scrolling rect, i.e., to
+  // retrieve the approximate bounds in root layer's document, the relative
+  // bounds should be scaled by the width and height of the scrolling rect in x
+  // and y coordinates respectively (and then offset by the rect's location).
+  gfx.mojom.RectF relative_element_bounds;
+  gfx.mojom.RectF relative_caret_bounds;
+
+  // If true, avoid recursing the ScrollIntoView into the layout viewport of
+  // the main frame. This is so that we can then do a smooth page scale
+  // animation that zooms both layout and visual viewport into a focused
+  // editable element.
+  bool stop_at_main_frame_layout_viewport = false;
+};

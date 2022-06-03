@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/reading_list/core/offline_url_utils.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -54,7 +55,7 @@ void CleanUpFiles(base::FilePath root,
        !sub_directory.empty(); sub_directory = file_enumerator.Next()) {
     std::string directory_name = sub_directory.BaseName().value();
     if (!processed_directories.count(directory_name)) {
-      base::DeleteFileRecursively(sub_directory);
+      base::DeletePathRecursively(sub_directory);
     }
   }
 }
@@ -80,10 +81,10 @@ ReadingListDownloadService::ReadingListDownloadService(
   url_downloader_ = std::make_unique<URLDownloader>(
       distiller_factory_.get(), distiller_page_factory_.get(), prefs,
       chrome_profile_path, url_loader_factory,
-      base::Bind(&ReadingListDownloadService::OnDownloadEnd,
-                 base::Unretained(this)),
-      base::Bind(&ReadingListDownloadService::OnDeleteEnd,
-                 base::Unretained(this)));
+      base::BindRepeating(&ReadingListDownloadService::OnDownloadEnd,
+                          base::Unretained(this)),
+      base::BindRepeating(&ReadingListDownloadService::OnDeleteEnd,
+                          base::Unretained(this)));
 
   GetApplicationContext()
       ->GetNetworkConnectionTracker()
@@ -169,13 +170,13 @@ void ReadingListDownloadService::SyncWithModel() {
         break;
     }
   }
-  base::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::Bind(&::CleanUpFiles, OfflineRoot(), processed_directories),
-      base::Bind(&ReadingListDownloadService::DownloadUnprocessedEntries,
-                 base::Unretained(this), unprocessed_entries));
+      base::BindOnce(&::CleanUpFiles, OfflineRoot(), processed_directories),
+      base::BindOnce(&ReadingListDownloadService::DownloadUnprocessedEntries,
+                     base::Unretained(this), unprocessed_entries));
 }
 
 void ReadingListDownloadService::DownloadUnprocessedEntries(
@@ -284,10 +285,11 @@ void ReadingListDownloadService::OnDownloadEnd(
                                 STATUS_MAX);
       break;
     }
-    case URLDownloader::ERROR: {
+    case URLDownloader::ERROR:
+    case URLDownloader::PERMANENT_ERROR: {
       const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
       // Add this failure to the total failure count.
-      if (entry &&
+      if (entry && real_success_value == URLDownloader::ERROR &&
           entry->FailedDownloadCounter() + 1 < kNumberOfFailsBeforeStop) {
         reading_list_model_->SetEntryDistilledState(
             url, ReadingListEntry::WILL_RETRY);

@@ -21,7 +21,7 @@
 namespace app_list {
 namespace {
 
-using base::Optional;
+using absl::optional;
 using base::Value;
 
 using FakePredictorConfig = RecurrencePredictorConfigProto::FakePredictorConfig;
@@ -42,40 +42,40 @@ using ExponentialWeightsEnsembleConfig =
 // Conversion utilities
 //---------------------
 
-base::Optional<const Value*> GetNestedField(const Value* value,
+absl::optional<const Value*> GetNestedField(const Value* value,
                                             const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_dict())
-    return base::nullopt;
-  return base::Optional<const Value*>(field);
+    return absl::nullopt;
+  return absl::optional<const Value*>(field);
 }
 
-Optional<const Value*> GetList(const Value* value, const std::string& key) {
+optional<const Value*> GetList(const Value* value, const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_list())
-    return base::nullopt;
-  return base::Optional<const Value*>(field);
+    return absl::nullopt;
+  return absl::optional<const Value*>(field);
 }
 
-Optional<int> GetInt(const Value* value, const std::string& key) {
+optional<int> GetInt(const Value* value, const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_int())
-    return base::nullopt;
+    return absl::nullopt;
   return field->GetInt();
 }
 
-base::Optional<double> GetDouble(const Value* value, const std::string& key) {
+absl::optional<double> GetDouble(const Value* value, const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_double())
-    return base::nullopt;
+    return absl::nullopt;
   return field->GetDouble();
 }
 
-base::Optional<std::string> GetString(const Value* value,
+absl::optional<std::string> GetString(const Value* value,
                                       const std::string& key) {
   const Value* field = value->FindKey(key);
   if (!field || !field->is_string())
-    return base::nullopt;
+    return absl::nullopt;
   return field->GetString();
 }
 
@@ -222,8 +222,6 @@ std::unique_ptr<RecurrencePredictor> MakePredictor(
     return std::make_unique<ExponentialWeightsEnsemble>(
         config.exponential_weights_ensemble(), model_identifier);
 
-  LogInitializationStatus(model_identifier,
-                          InitializationStatus::kInvalidConfigPredictor);
   NOTREACHED();
   return nullptr;
 }
@@ -257,13 +255,9 @@ void JsonConfigConverter::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   RecurrenceRankerConfigProto proto;
   if (result.value && ConvertRecurrenceRanker(&result.value.value(), &proto)) {
-    LogJsonConfigConversionStatus(model_identifier,
-                                  JsonConfigConversionStatus::kSuccess);
     std::move(callback).Run(std::move(proto));
   } else {
-    LogJsonConfigConversionStatus(model_identifier,
-                                  JsonConfigConversionStatus::kFailure);
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
 

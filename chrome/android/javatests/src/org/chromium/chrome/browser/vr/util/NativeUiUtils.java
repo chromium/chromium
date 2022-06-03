@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.vr.util;
 
-import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,28 +14,25 @@ import androidx.annotation.IntDef;
 import org.junit.Assert;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.vr.KeyboardTestAction;
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
 import org.chromium.chrome.browser.vr.UiTestOperationResult;
 import org.chromium.chrome.browser.vr.UiTestOperationType;
 import org.chromium.chrome.browser.vr.UserFriendlyElementName;
-import org.chromium.chrome.browser.vr.VrBrowserTestFramework;
 import org.chromium.chrome.browser.vr.VrControllerTestAction;
 import org.chromium.chrome.browser.vr.VrDialog;
 import org.chromium.chrome.browser.vr.VrShell;
 import org.chromium.chrome.browser.vr.VrViewContainer;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Class containing utility functions for interacting with the VR browser native UI, e.g. the
@@ -182,71 +176,6 @@ public class NativeUiUtils {
     public static void releaseAppButton(int elementName, PointF position) {
         TestVrShellDelegate.getInstance().performControllerActionForTesting(
                 elementName, VrControllerTestAction.APP_UP, position);
-    }
-
-    /**
-     * Clicks on a DOM element/node as if done via a controller.
-     *
-     * @param nodeId The ID of the node to click on.
-     * @param position A PointF specifying where on the node to send the click relative to a unit
-     *        square centered at (0, 0).
-     * @param numClicks The number of times to click the element.
-     * @param testFramework The VrBrowserTestFramework to use to interact with the page.
-     */
-    public static void clickContentNode(String nodeId, PointF position, final int numClicks,
-            VrBrowserTestFramework testFramework) throws InterruptedException, TimeoutException {
-        Rect nodeBounds = DOMUtils.getNodeBounds(testFramework.getCurrentWebContents(), nodeId);
-        int contentWidth = Integer.valueOf(
-                testFramework.runJavaScriptOrFail("window.innerWidth", POLL_TIMEOUT_SHORT_MS));
-        int contentHeight = Integer.valueOf(
-                testFramework.runJavaScriptOrFail("window.innerHeight", POLL_TIMEOUT_SHORT_MS));
-        // Convert the given PointF (native UI-style coordinates) into absolute content coordinates
-        // for the node.
-        // The coordinate systems are different (content has the origin in the top left, click
-        // coordinates have the "origin" in the bottom left), so be sure to account for that.
-        float nodeCoordX = (nodeBounds.right - nodeBounds.left) * (0.5f + position.x);
-        float nodeCoordY = (nodeBounds.bottom - nodeBounds.top) * (0.5f - position.y);
-        // Offset the click position within the node by the node's location to get the click
-        // position within the content.
-        PointF absClickCoord =
-                new PointF(nodeCoordX + nodeBounds.left, nodeCoordY + nodeBounds.top);
-
-        // Scale the coordinates between 0 and 1.
-        float contentCoordX = absClickCoord.x / contentWidth;
-        float contentCoordY = absClickCoord.y / contentHeight;
-        // Now convert back to the native UI-style coordinates.
-        final PointF clickCoordinates = new PointF(contentCoordX - 0.5f, 0.5f - contentCoordY);
-        performActionAndWaitForUiQuiescence(() -> {
-            for (int i = 0; i < numClicks; ++i) {
-                clickElement(UserFriendlyElementName.CONTENT_QUAD, clickCoordinates);
-                // Rarely, sending clicks back to back can cause the web contents to miss a click.
-                // So, if we're going to be sending more, introduce a few input-less frames to avoid
-                // this issue. 5 appears to currently be the magic number that lets the web contents
-                // reliably pick up all clicks.
-                if (i < numClicks - 1) {
-                    for (int j = 0; j < 5; ++j) {
-                        hoverElement(UserFriendlyElementName.CONTENT_QUAD, clickCoordinates);
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * Helper function to click the reposition bar to select it.
-     */
-    public static void selectRepositionBar() {
-        // We need to ensure that the reposition bar is at least partially visible before trying
-        // to click it, so hover it for a frame.
-        hoverElement(UserFriendlyElementName.CONTENT_QUAD, REPOSITION_BAR_COORDINATES);
-        clickElement(UserFriendlyElementName.CONTENT_QUAD, REPOSITION_BAR_COORDINATES);
-    }
-
-    /**
-     * An alias to click in place in order to deslect the reposition bar.
-     */
-    public static void deselectRepositionBar() {
-        clickElement(UserFriendlyElementName.CURRENT_POSITION, new PointF());
     }
 
     /**

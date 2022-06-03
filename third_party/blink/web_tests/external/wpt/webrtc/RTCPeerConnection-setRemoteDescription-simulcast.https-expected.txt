@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL createAnswer() attaches to an existing transceiver with a remote simulcast offer assert_equals: Expected exactly one transceiver expected 1 but got 2
+Harness: the test ran to completion.
+

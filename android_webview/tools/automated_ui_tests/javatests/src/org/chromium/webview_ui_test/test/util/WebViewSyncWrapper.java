@@ -145,6 +145,7 @@ public class WebViewSyncWrapper {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                mWebView.getSettings().setAllowFileAccess(true);
                 mWebView.loadUrl(FILE_URL_BASE + html);
             }
         });

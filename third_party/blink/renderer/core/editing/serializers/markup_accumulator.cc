@@ -1,7 +1,6 @@
 /*
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2012 Apple Inc. All rights
- * reserved.
- * Copyright (C) 2009, 2010 Google Inc. All rights reserved.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2012 Apple Inc. All
+ * rights reserved. Copyright (C) 2009, 2010 Google Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,7 +23,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 #include "third_party/blink/renderer/core/editing/serializers/markup_accumulator.h"
 
 #include "third_party/blink/renderer/core/dom/attr.h"
@@ -36,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -89,7 +88,8 @@ class MarkupAccumulator::NamespaceContext final {
   }
 
   AtomicString LookupNamespaceURI(const AtomicString& prefix) const {
-    return prefix_ns_map_.at(prefix ? prefix : g_empty_atom);
+    auto it = prefix_ns_map_.find(prefix ? prefix : g_empty_atom);
+    return it != prefix_ns_map_.end() ? it->value : g_null_atom;
   }
 
   const AtomicString& ContextNamespace() const { return context_namespace_; }
@@ -107,7 +107,8 @@ class MarkupAccumulator::NamespaceContext final {
   }
 
   const Vector<AtomicString> PrefixList(const AtomicString& ns) const {
-    return ns_prefixes_map_.at(ns ? ns : g_empty_atom);
+    auto it = ns_prefixes_map_.find(ns ? ns : g_empty_atom);
+    return it != ns_prefixes_map_.end() ? it->value : Vector<AtomicString>();
   }
 
  private:
@@ -136,8 +137,12 @@ class MarkupAccumulator::ElementSerializationData final {
 };
 
 MarkupAccumulator::MarkupAccumulator(AbsoluteURLs resolve_urls_method,
-                                     SerializationType serialization_type)
-    : formatter_(resolve_urls_method, serialization_type) {}
+                                     SerializationType serialization_type,
+                                     IncludeShadowRoots include_shadow_roots,
+                                     ClosedRootsSet include_closed_roots)
+    : formatter_(resolve_urls_method, serialization_type),
+      include_shadow_roots_(include_shadow_roots),
+      include_closed_roots_(include_closed_roots) {}
 
 MarkupAccumulator::~MarkupAccumulator() = default;
 
@@ -296,7 +301,8 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     // 12.5.1. If the local prefixes map contains a key matching prefix, then
     // let prefix be the result of generating a prefix providing as input map,
     // ns, and prefix index
-    if (element.hasAttribute(WTF::g_xmlns_with_colon + prefix)) {
+    if (element.hasAttribute(
+            AtomicString(String(WTF::g_xmlns_with_colon + prefix)))) {
       prefix = GeneratePrefix(ns);
     } else {
       // 12.5.2. Add prefix to map given namespace ns.
@@ -492,8 +498,8 @@ AtomicString MarkupAccumulator::RetrievePreferredPrefixString(
   for (auto it = candidate_list.rbegin(); it != candidate_list.rend(); ++it) {
     AtomicString candidate_prefix = *it;
     DCHECK(!candidate_prefix.IsEmpty());
-    AtomicString ns_for_candaite = LookupNamespaceURI(candidate_prefix);
-    if (EqualIgnoringNullity(ns_for_candaite, ns))
+    AtomicString ns_for_candidate = LookupNamespaceURI(candidate_prefix);
+    if (EqualIgnoringNullity(ns_for_candidate, ns))
       return candidate_prefix;
   }
 
@@ -538,7 +544,36 @@ bool MarkupAccumulator::SerializeAsHTML() const {
 
 std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
     const Element& element) const {
-  return std::pair<Node*, Element*>();
+  ShadowRoot* shadow_root = element.GetShadowRoot();
+  if (!shadow_root || include_shadow_roots_ != kIncludeShadowRoots)
+    return std::pair<Node*, Element*>();
+  AtomicString shadowroot_type;
+  switch (shadow_root->GetType()) {
+    case ShadowRootType::kUserAgent:
+      // Don't serialize user agent shadow roots, only explicit shadow roots.
+      return std::pair<Node*, Element*>();
+    case ShadowRootType::kOpen:
+      shadowroot_type = "open";
+      break;
+    case ShadowRootType::kClosed:
+      shadowroot_type = "closed";
+      break;
+  }
+  if (shadow_root->GetType() == ShadowRootType::kClosed &&
+      !include_closed_roots_.Contains(shadow_root)) {
+    return std::pair<Node*, Element*>();
+  }
+
+  // Wrap the shadowroot into a declarative Shadow DOM <template shadowroot>
+  // element.
+  auto* template_element = MakeGarbageCollected<Element>(
+      html_names::kTemplateTag, &(element.GetDocument()));
+  template_element->setAttribute(html_names::kShadowrootAttr, shadowroot_type);
+  if (shadow_root->delegatesFocus()) {
+    template_element->SetBooleanAttribute(
+        html_names::kShadowrootdelegatesfocusAttr, true);
+  }
+  return std::pair<Node*, Element*>(shadow_root, template_element);
 }
 
 template <typename Strategy>
@@ -567,10 +602,16 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
       !(SerializeAsHTML() && ElementCannotHaveEndTag(target_element));
   if (has_end_tag) {
     const Node* parent = &target_element;
-    if (auto* template_element = DynamicTo<HTMLTemplateElement>(target_element))
+    if (auto* template_element =
+            DynamicTo<HTMLTemplateElement>(target_element)) {
+      // Declarative shadow roots that are currently being parsed will have a
+      // null content() - don't serialize contents in this case.
       parent = template_element->content();
-    for (const Node& child : Strategy::ChildrenOf(*parent))
-      SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+    }
+    if (parent) {
+      for (const Node& child : Strategy::ChildrenOf(*parent))
+        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+    }
 
     // Traverses other DOM tree, i.e., shadow tree.
     std::pair<Node*, Element*> auxiliary_pair =

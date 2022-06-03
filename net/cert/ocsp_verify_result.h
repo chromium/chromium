@@ -5,8 +5,6 @@
 #ifndef NET_CERT_OCSP_VERIFY_RESULT_H_
 #define NET_CERT_OCSP_VERIFY_RESULT_H_
 
-#include <string>
-
 #include "net/base/net_export.h"
 #include "net/cert/ocsp_revocation_status.h"
 

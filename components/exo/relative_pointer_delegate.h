@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_RELATIVE_POINTER_DELEGATE_H_
 
 #include "base/time/time.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace exo {
 class Pointer;
@@ -17,8 +18,12 @@ class RelativePointerDelegate {
   // chance to remove themselves.
   virtual void OnPointerDestroying(Pointer* pointer) = 0;
 
-  virtual void OnPointerRelativeMotion(base::TimeTicks time_stamp,
-                                       const gfx::PointF& relativeMotion) = 0;
+  // Called to indicate motion. |relative_motion| is given in screen-terms,
+  // whereas |ordinal_motion| comes from hardware and e.g. is not accelerated.
+  virtual void OnPointerRelativeMotion(
+      base::TimeTicks time_stamp,
+      const gfx::Vector2dF& relative_motion,
+      const gfx::Vector2dF& ordinal_motion) = 0;
 
  protected:
   virtual ~RelativePointerDelegate() {}

@@ -15,7 +15,7 @@
 namespace chrome_cleaner {
 
 bool GetLoadedModuleFileNames(HANDLE process,
-                              std::set<base::string16>* module_names) {
+                              std::set<std::wstring>* module_names) {
   std::vector<HMODULE> module_handles;
   size_t modules_count = 128;
   // Adjust array size for all modules to fit into it.
@@ -44,12 +44,12 @@ bool GetLoadedModuleFileNames(HANDLE process,
       PLOG(ERROR) << "Failed to get module filename";
       continue;
     }
-    module_names->insert(base::string16(module_name, module_name_length));
+    module_names->insert(std::wstring(module_name, module_name_length));
   }
   return true;
 }
 
-bool GetProcessExecutablePath(HANDLE process, base::string16* path) {
+bool GetProcessExecutablePath(HANDLE process, std::wstring* path) {
   DCHECK(path);
 
   std::vector<wchar_t> image_path(MAX_PATH);

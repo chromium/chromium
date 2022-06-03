@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#define CELT_C
 #include "entcode.h"
 #include "entenc.h"
 #include "entdec.h"

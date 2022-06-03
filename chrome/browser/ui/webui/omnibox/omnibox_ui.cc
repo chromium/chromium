@@ -7,15 +7,25 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_page_handler.h"
-#include "chrome/browser/ui/webui/version_handler.h"
-#include "chrome/browser/ui/webui/version_ui.h"
+#include "chrome/browser/ui/webui/version/version_handler.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/omnibox_resources.h"
+#include "chrome/grit/omnibox_resources_map.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/web_ui_util.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
+#endif
 
 OmniboxUI::OmniboxUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
@@ -23,24 +33,23 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIOmniboxHost);
 
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types parse-html-subset;");
+
   // Expose version information to client because it is useful in output.
   VersionUI::AddVersionDetailStrings(source);
   source->UseStringsJs();
 
-  source->AddResourcePath("omnibox.css", IDR_OMNIBOX_CSS);
-  source->AddResourcePath("omnibox_input.css", IDR_OMNIBOX_INPUT_CSS);
-  source->AddResourcePath("output_results_group.css",
-                          IDR_OUTPUT_RESULTS_GROUP_CSS);
-  source->AddResourcePath("omnibox_output_column_widths.css",
-                          IDR_OMNIBOX_OUTPUT_COLUMN_WIDTHS_CSS);
-  source->AddResourcePath("omnibox_element.js", IDR_OMNIBOX_ELEMENT_JS);
-  source->AddResourcePath("omnibox_input.js", IDR_OMNIBOX_INPUT_JS);
-  source->AddResourcePath("omnibox_output.js", IDR_OMNIBOX_OUTPUT_JS);
-  source->AddResourcePath("omnibox.js", IDR_OMNIBOX_JS);
-  source->AddResourcePath(
-      "chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js",
-      IDR_OMNIBOX_MOJO_JS);
-  source->SetDefaultResource(IDR_OMNIBOX_HTML);
+  source->AddResourcePaths(
+      base::make_span(kOmniboxResources, kOmniboxResourcesSize));
+  source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
+
+#if !defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+    popup_handler_ = std::make_unique<OmniboxPopupHandler>();
+  }
+#endif
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
   web_ui->AddMessageHandler(std::make_unique<VersionHandler>());

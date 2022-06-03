@@ -33,6 +33,10 @@ class FakeDesktopDelegate : public RootWindowController::DesktopDelegate {
  public:
   explicit FakeDesktopDelegate(content::BrowserContext* browser_context)
       : browser_context_(browser_context) {}
+
+  FakeDesktopDelegate(const FakeDesktopDelegate&) = delete;
+  FakeDesktopDelegate& operator=(const FakeDesktopDelegate&) = delete;
+
   ~FakeDesktopDelegate() override = default;
 
   RootWindowController* CreateRootWindowController() {
@@ -61,8 +65,6 @@ class FakeDesktopDelegate : public RootWindowController::DesktopDelegate {
  private:
   content::BrowserContext* browser_context_;
   std::list<std::unique_ptr<RootWindowController>> root_window_controllers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopDelegate);
 };
 
 // An AppWindowClient for use without a DesktopController.
@@ -83,6 +85,10 @@ class TestAppWindowClient : public ShellAppWindowClient {
 class RootWindowControllerTest : public ShellTestBaseAura {
  public:
   RootWindowControllerTest() = default;
+
+  RootWindowControllerTest(const RootWindowControllerTest&) = delete;
+  RootWindowControllerTest& operator=(const RootWindowControllerTest&) = delete;
+
   ~RootWindowControllerTest() override = default;
 
   void SetUp() override {
@@ -130,8 +136,6 @@ class RootWindowControllerTest : public ShellTestBaseAura {
 
   scoped_refptr<const Extension> extension_;
   std::unique_ptr<FakeDesktopDelegate> desktop_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowControllerTest);
 };
 
 // Tests RootWindowController's basic setup and teardown.

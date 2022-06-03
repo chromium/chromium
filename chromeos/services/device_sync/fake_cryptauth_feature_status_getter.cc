@@ -37,7 +37,7 @@ FakeCryptAuthFeatureStatusGetterFactory::
     ~FakeCryptAuthFeatureStatusGetterFactory() = default;
 
 std::unique_ptr<CryptAuthFeatureStatusGetter>
-FakeCryptAuthFeatureStatusGetterFactory::BuildInstance(
+FakeCryptAuthFeatureStatusGetterFactory::CreateInstance(
     CryptAuthClientFactory* client_factory,
     std::unique_ptr<base::OneShotTimer> timer) {
   last_client_factory_ = client_factory;

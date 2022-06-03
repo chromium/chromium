@@ -36,10 +36,12 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "build/os_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <malloc.h>
 #include <sched.h>
 #include <sys/syscall.h>
@@ -63,7 +65,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <mach/vm_param.h>
 #include <malloc/malloc.h>
 #endif
@@ -71,11 +73,11 @@
 #include "third_party/lss/linux_syscall_support.h"
 #endif
 #if defined(OS_FUCHSIA)
+#include <lib/fdio/fdio.h>
 #include <lib/fdio/limits.h>
 #include <zircon/process.h>
 #include <zircon/processargs.h>
 #include <zircon/syscalls.h>
-#include "base/base_paths_fuchsia.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -111,7 +113,7 @@ const int kExpectedStillRunningExitCode = 0;
 void WaitToDie(const char* filename) {
   FILE* fp;
   do {
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+    PlatformThread::Sleep(Milliseconds(10));
     fp = fopen(filename, "r");
   } while (!fp);
   fclose(fp);
@@ -132,7 +134,7 @@ TerminationStatus WaitForChildTermination(ProcessHandle handle,
                                           int* exit_code) {
   // Now we wait until the result is something other than STILL_RUNNING.
   TerminationStatus status = TERMINATION_STATUS_STILL_RUNNING;
-  const TimeDelta kInterval = TimeDelta::FromMilliseconds(20);
+  const TimeDelta kInterval = Milliseconds(20);
   TimeDelta waited;
   do {
     status = GetTerminationStatus(handle, exit_code);
@@ -151,7 +153,7 @@ const int kSuccess = 0;
 class ProcessUtilTest : public MultiProcessTest {
  public:
   void SetUp() override {
-    ASSERT_TRUE(PathService::Get(DIR_ASSETS, &test_helper_path_));
+    ASSERT_TRUE(PathService::Get(DIR_GEN_TEST_DATA_ROOT, &test_helper_path_));
     test_helper_path_ = test_helper_path_.AppendASCII(kTestHelper);
   }
 
@@ -265,12 +267,11 @@ TEST_F(ProcessUtilTest, HandleTransfersOverrideClones) {
   // Attach the tempdir to "data", but also try to duplicate the existing "data"
   // directory.
   options.paths_to_clone.push_back(
-      base::FilePath(base::fuchsia::kPersistedDataDirectoryPath));
+      base::FilePath(base::kPersistedDataDirectoryPath));
   options.paths_to_clone.push_back(base::FilePath("/tmp"));
   options.paths_to_transfer.push_back(
-      {FilePath(base::fuchsia::kPersistedDataDirectoryPath),
-       base::fuchsia::OpenDirectory(
-           base::FilePath(tmpdir_with_staged.GetPath()))
+      {FilePath(base::kPersistedDataDirectoryPath),
+       base::OpenDirectoryHandle(base::FilePath(tmpdir_with_staged.GetPath()))
            .TakeChannel()
            .release()});
 
@@ -309,7 +310,7 @@ TEST_F(ProcessUtilTest, TransferHandleToPath) {
 
   // Mount the tempdir to "/foo".
   zx::channel tmp_channel =
-      base::fuchsia::OpenDirectory(new_tmpdir.GetPath()).TakeChannel();
+      base::OpenDirectoryHandle(new_tmpdir.GetPath()).TakeChannel();
 
   ASSERT_TRUE(tmp_channel.is_valid());
   LaunchOptions options;
@@ -536,8 +537,7 @@ MULTIPROCESS_TEST_MAIN(CheckCwdProcess) {
   event.Wait();
 
   // Get a new cwd for the process.
-  FilePath home_dir;
-  CHECK(PathService::Get(DIR_HOME, &home_dir));
+  const FilePath home_dir = PathService::CheckedGet(DIR_HOME);
 
   // Change the cwd on the secondary thread. IgnoreResult is used when setting
   // because it is checked immediately after.
@@ -603,7 +603,7 @@ TEST_F(ProcessUtilTest, GetProcId) {
 }
 #endif  // defined(OS_WIN)
 
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID)
 // This test is disabled on Mac, since it's flaky due to ReportCrash
 // taking a variable amount of time to parse and load the debug and
 // symbol data for this unit test's executable before firing the
@@ -641,7 +641,7 @@ MULTIPROCESS_TEST_MAIN(CrashingChildProcess) {
 #endif
 TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
   const std::string signal_file =
-    ProcessUtilTest::GetSignalFilePath(kSignalFileCrash);
+      ProcessUtilTest::GetSignalFilePath(kSignalFileCrash);
   remove(signal_file.c_str());
   Process process = SpawnChild("CrashingChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -670,7 +670,7 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusCrash) {
   debug::EnableInProcessStackDumping();
   remove(signal_file.c_str());
 }
-#endif  // !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#endif  // !defined(OS_APPLE) && !defined(OS_ANDROID)
 
 MULTIPROCESS_TEST_MAIN(KilledChildProcess) {
   WaitToDie(ProcessUtilTest::GetSignalFilePath(kSignalFileKill).c_str());
@@ -705,7 +705,7 @@ MULTIPROCESS_TEST_MAIN(TerminatedChildProcess) {
 #endif
 TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
   const std::string signal_file =
-    ProcessUtilTest::GetSignalFilePath(kSignalFileKill);
+      ProcessUtilTest::GetSignalFilePath(kSignalFileKill);
   remove(signal_file.c_str());
   Process process = SpawnChild("KilledChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -719,7 +719,7 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
   exit_code = 42;
   TerminationStatus status =
       WaitForChildTermination(process.Handle(), &exit_code);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM, status);
 #else
   EXPECT_EQ(TERMINATION_STATUS_PROCESS_WAS_KILLED, status);
@@ -742,7 +742,7 @@ TEST_F(ProcessUtilTest, MAYBE_GetTerminationStatusSigKill) {
 // test might not be relevant anyway.
 TEST_F(ProcessUtilTest, GetTerminationStatusSigTerm) {
   const std::string signal_file =
-    ProcessUtilTest::GetSignalFilePath(kSignalFileTerm);
+      ProcessUtilTest::GetSignalFilePath(kSignalFileTerm);
   remove(signal_file.c_str());
   Process process = SpawnChild("TerminatedChildProcess");
   ASSERT_TRUE(process.IsValid());
@@ -794,9 +794,8 @@ TEST_F(ProcessUtilTest, EnsureTerminationUndying) {
 
 MULTIPROCESS_TEST_MAIN(process_util_test_never_die) {
   while (1) {
-    PlatformThread::Sleep(TimeDelta::FromSeconds(500));
+    PlatformThread::Sleep(Seconds(500));
   }
-  return kSuccess;
 }
 
 TEST_F(ProcessUtilTest, EnsureTerminationGracefulExit) {
@@ -829,6 +828,35 @@ TEST_F(ProcessUtilTest, LaunchAsUser) {
   options.as_user = token;
   EXPECT_TRUE(
       LaunchProcess(MakeCmdLine("SimpleChildProcess"), options).IsValid());
+}
+
+MULTIPROCESS_TEST_MAIN(ChildVerifiesCetDisabled) {
+  auto get_process_mitigation_policy =
+      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
+          ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
+
+  // Not available for Win7 but this process should still work.
+  if (!get_process_mitigation_policy)
+    return kSuccess;
+
+  // Policy not defined for Win < Win10 20H1 but that's also ok.
+  PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {};
+  if (get_process_mitigation_policy(GetCurrentProcess(),
+                                    ProcessUserShadowStackPolicy, &policy,
+                                    sizeof(policy))) {
+    if (policy.EnableUserShadowStack)
+      return 1;
+  }
+  return kSuccess;
+}
+
+TEST_F(ProcessUtilTest, LaunchDisablingCetCompat) {
+  LaunchOptions options;
+  // This only has an effect on Windows > 20H2 with CET hardware but
+  // is safe on every platform.
+  options.disable_cetcompat = true;
+  EXPECT_TRUE(LaunchProcess(MakeCmdLine("ChildVerifiesCetDisabled"), options)
+                  .IsValid());
 }
 
 static const char kEventToTriggerHandleSwitch[] = "event-to-trigger-handle";
@@ -950,7 +978,7 @@ int GetMaxFilesOpenInProcess() {
 
 const int kChildPipe = 20;  // FD # for write end of pipe in child process.
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 
 // <http://opensource.apple.com/source/xnu/xnu-2422.1.72/bsd/sys/guarded.h>
 #if !defined(_GUARDID_T)
@@ -972,11 +1000,13 @@ typedef __uint64_t guardid_t;
 //
 // Atomically replaces |guard|/|guardflags| with |nguard|/|nguardflags| on |fd|.
 int change_fdguard_np(int fd,
-                      const guardid_t *guard, u_int guardflags,
-                      const guardid_t *nguard, u_int nguardflags,
-                      int *fdflagsp) {
-  return syscall(SYS_change_fdguard_np, fd, guard, guardflags,
-                 nguard, nguardflags, fdflagsp);
+                      const guardid_t* guard,
+                      u_int guardflags,
+                      const guardid_t* nguard,
+                      u_int nguardflags,
+                      int* fdflagsp) {
+  return syscall(SYS_change_fdguard_np, fd, guard, guardflags, nguard,
+                 nguardflags, fdflagsp);
 }
 
 // Attempt to set a file-descriptor guard on |fd|.  In case of success, remove
@@ -1010,7 +1040,7 @@ bool CanGuardFd(int fd) {
 
   return true;
 }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
 }  // namespace
 
@@ -1021,7 +1051,7 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
   int write_pipe = kChildPipe;
   int max_files = GetMaxFilesOpenInProcess();
   for (int i = STDERR_FILENO + 1; i < max_files; i++) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     // Ignore guarded or invalid file descriptors.
     if (!CanGuardFd(i))
       continue;
@@ -1036,8 +1066,8 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
     }
   }
 
-  int written = HANDLE_EINTR(write(write_pipe, &num_open_files,
-                                   sizeof(num_open_files)));
+  int written =
+      HANDLE_EINTR(write(write_pipe, &num_open_files, sizeof(num_open_files)));
   DCHECK_EQ(static_cast<size_t>(written), sizeof(num_open_files));
   int ret = IGNORE_EINTR(close(write_pipe));
   DPCHECK(ret == 0);
@@ -1066,9 +1096,9 @@ int ProcessUtilTest::CountOpenFDsInChild() {
 
 #if defined(THREAD_SANITIZER)
   // Compiler-based ThreadSanitizer makes this test slow.
-  TimeDelta timeout = TimeDelta::FromSeconds(3);
+  TimeDelta timeout = Seconds(3);
 #else
-  TimeDelta timeout = TimeDelta::FromSeconds(1);
+  TimeDelta timeout = Seconds(1);
 #endif
   int exit_code;
   CHECK(process.WaitForExitWithTimeout(timeout, &exit_code));
@@ -1089,10 +1119,15 @@ int ProcessUtilTest::CountOpenFDsInChild() {
 TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
   int fds_before = CountOpenFDsInChild();
 
-  // open some dummy fds to make sure they don't propagate over to the
+  // Open some dummy fds to make sure they don't propagate over to the
   // child process.
-  int dev_null = open("/dev/null", O_RDONLY);
-  DPCHECK(dev_null != -1);
+#if defined(OS_FUCHSIA)
+  base::ScopedFD dev_null(fdio_fd_create_null());
+#else
+  base::ScopedFD dev_null(open("/dev/null", O_RDONLY));
+#endif  // defined(OS_FUCHSIA)
+
+  DPCHECK(dev_null.get() > 0);
   int sockets[2];
   int ret = socketpair(AF_UNIX, SOCK_STREAM, 0, sockets);
   DPCHECK(ret == 0);
@@ -1104,8 +1139,6 @@ TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
   ret = IGNORE_EINTR(close(sockets[0]));
   DPCHECK(ret == 0);
   ret = IGNORE_EINTR(close(sockets[1]));
-  DPCHECK(ret == 0);
-  ret = IGNORE_EINTR(close(dev_null));
   DPCHECK(ret == 0);
 }
 
@@ -1122,8 +1155,21 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsVerifyStdio) {
 }
 
 TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
-  int dev_null = open("/dev/null", O_RDONLY);
-  ASSERT_LT(2, dev_null);
+#if BUILDFLAG(IS_FUCHSIA)
+  // The fd obtained from fdio_fd_create_null cannot be cloned while spawning a
+  // child proc, so open a true file in a transient temp dir.
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath temp_file_path;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &temp_file_path));
+  File temp_file(temp_file_path,
+                 File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE);
+  ASSERT_TRUE(temp_file.IsValid());
+  ScopedFD some_fd(temp_file.TakePlatformFile());
+#else   // BUILDFLAG(IS_FUCHSIA)
+  ScopedFD some_fd(open("/dev/null", O_RDONLY));
+#endif  // BUILDFLAG(IS_FUCHSIA)
+  ASSERT_LT(2, some_fd.get());
 
   // Backup stdio and replace it with the write end of a pipe, for our
   // child process to inherit.
@@ -1137,7 +1183,7 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
 
   // Launch the test process, which should inherit our pipe stdio.
   LaunchOptions options;
-  options.fds_to_remap.emplace_back(dev_null, dev_null);
+  options.fds_to_remap.emplace_back(some_fd.get(), some_fd.get());
   Process process = SpawnChildWithOptions("ProcessUtilsVerifyStdio", options);
   ASSERT_TRUE(process.IsValid());
 
@@ -1152,8 +1198,8 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
 
   result = IGNORE_EINTR(close(backup_stdio));
   ASSERT_EQ(0, result);
-  result = IGNORE_EINTR(close(dev_null));
-  ASSERT_EQ(0, result);
+  // Also close the remapped descriptor.
+  some_fd.reset();
 
   // Read from the pipe to verify that it is connected to the child
   // process' stdio.
@@ -1165,8 +1211,7 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
   ASSERT_EQ(0, result);
 
   int exit_code;
-  ASSERT_TRUE(
-      process.WaitForExitWithTimeout(TimeDelta::FromSeconds(5), &exit_code));
+  ASSERT_TRUE(process.WaitForExitWithTimeout(Seconds(5), &exit_code));
   EXPECT_EQ(0, exit_code);
 }
 
@@ -1237,10 +1282,14 @@ TEST_F(ProcessUtilTest, GetParentProcessId) {
 }
 #endif  // !defined(OS_FUCHSIA)
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA) && !defined(OS_MACOSX)
+#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA) && !defined(OS_APPLE)
 class WriteToPipeDelegate : public LaunchOptions::PreExecDelegate {
  public:
   explicit WriteToPipeDelegate(int fd) : fd_(fd) {}
+
+  WriteToPipeDelegate(const WriteToPipeDelegate&) = delete;
+  WriteToPipeDelegate& operator=(const WriteToPipeDelegate&) = delete;
+
   ~WriteToPipeDelegate() override = default;
   void RunAsyncSafe() override {
     RAW_CHECK(HANDLE_EINTR(write(fd_, &kPipeValue, 1)) == 1);
@@ -1249,7 +1298,6 @@ class WriteToPipeDelegate : public LaunchOptions::PreExecDelegate {
 
  private:
   int fd_;
-  DISALLOW_COPY_AND_ASSIGN(WriteToPipeDelegate);
 };
 
 TEST_F(ProcessUtilTest, PreExecHook) {
@@ -1307,11 +1355,11 @@ std::string TestLaunchProcess(const CommandLine& cmdline,
   options.fds_to_remap.emplace_back(fds[1], STDOUT_FILENO);
 #endif  // defined(OS_WIN)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   options.clone_flags = clone_flags;
 #else
   CHECK_EQ(0, clone_flags);
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   EXPECT_TRUE(LaunchProcess(cmdline, options).IsValid());
   write_pipe.Close();
@@ -1377,11 +1425,11 @@ TEST_F(ProcessUtilTest, LaunchProcess) {
   EXPECT_EQ("wibble", TestLaunchProcess(kPrintEnvCommand, env_changes,
                                         no_clear_environ, no_clone_flags));
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Test a non-trival value for clone_flags.
   EXPECT_EQ("wibble", TestLaunchProcess(kPrintEnvCommand, env_changes,
                                         no_clear_environ, CLONE_FS));
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   EXPECT_EQ("wibble",
             TestLaunchProcess(kPrintEnvCommand, env_changes,
@@ -1391,7 +1439,7 @@ TEST_F(ProcessUtilTest, LaunchProcess) {
                                   true /* clear_environ */, no_clone_flags));
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 MULTIPROCESS_TEST_MAIN(CheckPidProcess) {
   const pid_t kInitPid = 1;
   const pid_t pid = syscall(__NR_getpid);
@@ -1452,6 +1500,6 @@ TEST_F(ProcessUtilTest, InvalidCurrentDirectory) {
   EXPECT_TRUE(process.WaitForExit(&exit_code));
   EXPECT_NE(kSuccess, exit_code);
 }
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace base

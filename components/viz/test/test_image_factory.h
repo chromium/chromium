@@ -22,6 +22,7 @@ class TestImageFactory : public gpu::ImageFactory {
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       int client_id,
       gpu::SurfaceHandle surface_handle) override;
 };

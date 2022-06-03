@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+enum SubAppsProviderResult {
+  kSuccess,
+  kFailure,
+};
+
+// Sub Apps APIs allow installed PWAs to install shortcuts to their various
+// sub-parts by means of installing the sub-component.  Example: main app hosted
+// at https://office.org/ which provides a full set of office productivity tools
+// creates a new shortcut to itself with `spreadsheet` as the install_path
+// effectively adding the Spreadsheet app to the launcher surface.
+// NOTE: This Mojo interface is per-frame, there is one logical instance per
+// frame, and it's main-frame only. It is only valid for already-installed apps,
+// and has an origin associated with it.
+interface SubAppsProvider {
+  // Installs a sub-app of an already-installed app corresponding to this
+  // instance of SubAppsProvider. `install_path` is the absolute path which will
+  // be attached to the origin of the already-installed app (effectively
+  // limiting the API to same-origin apps).
+  Add(string install_path) => (SubAppsProviderResult result);
+};

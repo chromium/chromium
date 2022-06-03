@@ -1,0 +1,18 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "text_zoom_zoom_in@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "text_zoom_zoom_in@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

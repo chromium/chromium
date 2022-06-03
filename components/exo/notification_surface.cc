@@ -8,8 +8,11 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace exo {
@@ -22,7 +25,6 @@ NotificationSurface::NotificationSurface(NotificationSurfaceManager* manager,
       notification_key_(notification_key) {
   surface->AddSurfaceObserver(this);
   SetRootSurface(surface);
-  SetArcAppType(host_window());
   host_window()->Show();
   host_window()->AddObserver(this);
 }
@@ -41,7 +43,7 @@ const gfx::Size& NotificationSurface::GetContentSize() const {
 }
 
 void NotificationSurface::SetApplicationId(const char* application_id) {
-  SetShellApplicationId(host_window(), base::make_optional(application_id));
+  SetShellApplicationId(host_window(), absl::make_optional(application_id));
 }
 
 void NotificationSurface::OnSurfaceCommit() {
@@ -72,6 +74,15 @@ void NotificationSurface::OnWindowDestroying(aura::Window* window) {
   window->RemoveObserver(this);
 }
 
+void NotificationSurface::OnWindowPropertyChanged(aura::Window* window,
+                                                  const void* key,
+                                                  intptr_t old_value) {
+  if (key == aura::client::kSkipImeProcessing) {
+    SetSkipImeProcessingToDescendentSurfaces(
+        window, window->GetProperty(aura::client::kSkipImeProcessing));
+  }
+}
+
 void NotificationSurface::OnWindowAddedToRootWindow(aura::Window* window) {
   SubmitCompositorFrame();
   is_embedded_ = true;
@@ -95,7 +106,7 @@ void NotificationSurface::OnWindowRemovingFromRootWindow(
     // compositor frame when showing the message center. This is to prevent
     // flashes when opening the message center.
     aura::Env::GetInstance()
-        ->context_factory_private()
+        ->context_factory()
         ->GetHostFrameSinkManager()
         ->EvictSurfaces({host_window()->GetSurfaceId()});
 

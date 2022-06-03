@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,9 +59,11 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 // The handler for Javascript messages for the about:flags page.
 class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  public:
-  FlagsDOMHandler()
-      : access_(flags_ui::kGeneralAccessFlagsOnly),
-        experimental_features_requested_(false) {}
+  FlagsDOMHandler() : access_(flags_ui::kGeneralAccessFlagsOnly) {}
+
+  FlagsDOMHandler(const FlagsDOMHandler&) = delete;
+  FlagsDOMHandler& operator=(const FlagsDOMHandler&) = delete;
+
   ~FlagsDOMHandler() override {}
 
   // Initializes the DOM handler with the provided flags storage and flags
@@ -88,26 +90,23 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
-  bool experimental_features_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsDOMHandler);
 };
 
 void FlagsDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kRequestExperimentalFeatures,
       base::BindRepeating(&FlagsDOMHandler::HandleRequestExperimentalFeatures,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kEnableExperimentalFeature,
       base::BindRepeating(
           &FlagsDOMHandler::HandleEnableExperimentalFeatureMessage,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kRestartBrowser,
       base::BindRepeating(&FlagsDOMHandler::HandleRestartBrowser,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsDOMHandler::HandleResetAllFlags,
                           base::Unretained(this)));
@@ -118,45 +117,41 @@ void FlagsDOMHandler::Init(
     flags_ui::FlagAccess access) {
   flags_storage_ = std::move(flags_storage);
   access_ = access;
-
-  if (experimental_features_requested_)
-    HandleRequestExperimentalFeatures(NULL);
 }
 
 void FlagsDOMHandler::HandleRequestExperimentalFeatures(
     const base::ListValue* args) {
-  experimental_features_requested_ = true;
-  // Bail out if the handler hasn't been initialized yet. The request will be
-  // handled after the initialization.
-  if (!flags_storage_)
-    return;
+  DCHECK(flags_storage_);
+  DCHECK(!args->GetList().empty());
+  const base::Value& callback_id = args->GetList()[0];
 
-  base::DictionaryValue results;
+  std::vector<base::Value> supported_features;
+  std::vector<base::Value> unsupported_features;
+  GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features,
+                        unsupported_features);
 
-  auto supported_features = std::make_unique<base::ListValue>();
-  auto unsupported_features = std::make_unique<base::ListValue>();
-  GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features.get(),
-                        unsupported_features.get());
-  results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
-  results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
+  base::Value results(base::Value::Type::DICTIONARY);
+  results.SetKey(flags_ui::kSupportedFeatures,
+                 base::Value(std::move(supported_features)));
+  results.SetKey(flags_ui::kUnsupportedFeatures,
+                 base::Value(std::move(unsupported_features)));
+
   // Cannot restart the browser on iOS.
-  results.SetBoolean(flags_ui::kNeedsRestart, false);
-  results.SetBoolean(flags_ui::kShowOwnerWarning,
+  results.SetBoolKey(flags_ui::kNeedsRestart, false);
+  results.SetBoolKey(flags_ui::kShowOwnerWarning,
                      access_ == flags_ui::kGeneralAccessFlagsOnly);
 
-  results.SetBoolean(flags_ui::kShowBetaChannelPromotion, false);
-  results.SetBoolean(flags_ui::kShowDevChannelPromotion, false);
+  results.SetBoolKey(flags_ui::kShowBetaChannelPromotion, false);
+  results.SetBoolKey(flags_ui::kShowDevChannelPromotion, false);
 
-  std::vector<const base::Value*> params{&results};
-  web_ui()->CallJavascriptFunction(flags_ui::kReturnExperimentalFeatures,
-                                   params);
+  web_ui()->ResolveJavascriptCallback(callback_id, results);
 }
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetSize());
-  if (args->GetSize() != 2)
+  DCHECK_EQ(2u, args->GetList().size());
+  if (args->GetList().size() != 2)
     return;
 
   std::string entry_internal_name;
@@ -190,8 +185,8 @@ void FlagsDOMHandler::HandleResetAllFlags(const base::ListValue* args) {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-FlagsUI::FlagsUI(web::WebUIIOS* web_ui)
-    : web::WebUIIOSController(web_ui), weak_factory_(this) {
+FlagsUI::FlagsUI(web::WebUIIOS* web_ui, const std::string& host)
+    : web::WebUIIOSController(web_ui, host), weak_factory_(this) {
   FlagsDOMHandler* handler = new FlagsDOMHandler();
   web_ui->AddMessageHandler(base::WrapUnique(handler));
 
@@ -201,7 +196,7 @@ FlagsUI::FlagsUI(web::WebUIIOS* web_ui)
                 flag_access);
 
   // Set up the about:flags source.
-  web::WebUIIOSDataSource::Add(ios::ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
                                CreateFlagsUIHTMLSource());
 }
 
@@ -230,6 +225,7 @@ void FlagsUI::AddFlagsIOSStrings(web::WebUIIOSDataSource* source) {
   source->AddLocalizedString("reset", IDS_FLAGS_UI_PAGE_RESET);
   source->AddLocalizedString("reset-acknowledged",
                              IDS_FLAGS_UI_RESET_ACKNOWLEDGED);
+  source->AddLocalizedString("search-label", IDS_FLAGS_UI_SEARCH_LABEL);
   source->AddLocalizedString("search-placeholder",
                              IDS_FLAGS_UI_SEARCH_PLACEHOLDER);
   source->AddLocalizedString("title", IDS_FLAGS_UI_TITLE);

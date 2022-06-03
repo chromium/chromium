@@ -1,0 +1,41 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [ 0 0 200 200 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Filter /Standard
+  /Length 40
+  /P -4
+  /R 2
+  /V 1
+
+  % Owner password: "ownerpass"
+  /O <f86213eb0ced81f097947f3b343e34cac8ca92ce8f6fee2556fa31ec1fe968af>
+
+  % User password: "userpass"
+  /U <42d5dec3556574de62408780cc4b137ad56ce9edcbe92cf2b5fc12322eb028e5>
+>>
+endobj
+{{xref}}
+trailer <<
+  /ID [<e4c50f3e9b4ba1da3c3b7ae7d381221b><e4c50f3e9b4ba1da3c3b7ae7d381221b>]
+  /Encrypt 4 0 R
+  /Root 1 0 R
+  {{trailersize}}
+>>
+{{startxref}}
+%%EOF

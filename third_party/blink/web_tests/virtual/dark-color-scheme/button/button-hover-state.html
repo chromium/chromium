@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="dark">
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+<body>
+<input type="button" value="button" id="pressTarget"  style="color-scheme: dark"/>
+<script>
+function hoverElement(element) {
+  eventSender.mouseMoveTo(element.offsetLeft + 1, element.offsetTop + 1);
+}
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('pressTarget');
+  hoverElement(target)
+}, true);
+</script>
+</body>

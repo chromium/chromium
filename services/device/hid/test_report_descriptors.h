@@ -5,76 +5,66 @@
 #ifndef SERVICES_DEVICE_HID_TEST_REPORT_DESCRIPTORS_H_
 #define SERVICES_DEVICE_HID_TEST_REPORT_DESCRIPTORS_H_
 
-#include <stddef.h>
 #include <stdint.h>
+
+#include "base/containers/span.h"
 
 namespace device {
 
-// Digitizer descriptor from HID descriptor tool
-// http://www.usb.org/developers/hidpage/dt2_4.zip
-extern const uint8_t kDigitizer[];
-extern const size_t kDigitizerSize;
+class TestReportDescriptors {
+ public:
+  // Descriptors from the HID descriptor tool.
+  // http://www.usb.org/developers/hidpage/dt2_4.zip
+  static base::span<const uint8_t> Digitizer();
+  static base::span<const uint8_t> Keyboard();
+  static base::span<const uint8_t> Monitor();
+  static base::span<const uint8_t> Mouse();
 
-// Keyboard descriptor from HID descriptor tool
-// http://www.usb.org/developers/hidpage/dt2_4.zip
-extern const uint8_t kKeyboard[];
-extern const size_t kKeyboardSize;
+  // The report descriptor from a Logitech Unifying receiver.
+  static base::span<const uint8_t> LogitechUnifyingReceiver();
 
-// Monitor descriptor from HID descriptor tool
-// http://www.usb.org/developers/hidpage/dt2_4.zip
-extern const uint8_t kMonitor[];
-extern const size_t kMonitorSize;
+  // The report descriptor from a Sony Dualshock 3 connected over USB.
+  static base::span<const uint8_t> SonyDualshock3Usb();
 
-// Mouse descriptor from HID descriptor tool
-// http://www.usb.org/developers/hidpage/dt2_4.zip
-extern const uint8_t kMouse[];
-extern const size_t kMouseSize;
+  // The report descriptor from a Sony Dualshock 4 connected over USB.
+  static base::span<const uint8_t> SonyDualshock4Usb();
 
-// Logitech Unifying receiver descriptor
-extern const uint8_t kLogitechUnifyingReceiver[];
-extern const size_t kLogitechUnifyingReceiverSize;
+  // The report descriptor from a Microsoft Xbox Wireless Controller connected
+  // over Bluetooth.
+  static base::span<const uint8_t> MicrosoftXboxWirelessControllerBluetooth();
 
-// Sony Dualshock 3 USB descriptor
-extern const uint8_t kSonyDualshock3[];
-extern const size_t kSonyDualshock3Size;
+  // The report descriptor from a Nintendo Switch Pro Controller connected over
+  // USB.
+  static base::span<const uint8_t> NintendoSwitchProControllerUsb();
 
-// Sony Dualshock 4 USB descriptor
-extern const uint8_t kSonyDualshock4[];
-extern const size_t kSonyDualshock4Size;
+  // The report descriptor from a Microsoft Xbox Adaptive Controller connected
+  // over Bluetooth.
+  static base::span<const uint8_t> MicrosoftXboxAdaptiveControllerBluetooth();
 
-// Microsoft Xbox Wireless Controller Bluetooth descriptor
-extern const uint8_t kMicrosoftXboxWirelessController[];
-extern const size_t kMicrosoftXboxWirelessControllerSize;
+  // The report descriptor from a Nexus Player Controller.
+  static base::span<const uint8_t> NexusPlayerController();
 
-// Nintendo Switch Pro Controller USB descriptor
-extern const uint8_t kNintendoSwitchProController[];
-extern const size_t kNintendoSwitchProControllerSize;
+  // The report descriptors from a Steam Controller. Steam Controller exposes
+  // three HID interfaces.
+  static base::span<const uint8_t> SteamControllerKeyboard();
+  static base::span<const uint8_t> SteamControllerMouse();
+  static base::span<const uint8_t> SteamControllerVendor();
 
-// Microsoft Xbox Adaptive Controller Bluetooth descriptor
-extern const uint8_t kMicrosoftXboxAdaptiveController[];
-extern const size_t kMicrosoftXboxAdaptiveControllerSize;
+  // The report descriptor from an XSkills Gamecube USB controller adapter.
+  static base::span<const uint8_t> XSkillsUsbAdapter();
 
-// Nexus Player Controller descriptor
-extern const uint8_t kNexusPlayerController[];
-extern const size_t kNexusPlayerControllerSize;
+  // The report descriptors from a Belkin Nostromo SpeedPad. The Nostromo
+  // SpeedPad exposes two HID interfaces.
+  static base::span<const uint8_t> BelkinNostromoKeyboard();
+  static base::span<const uint8_t> BelkinNostromoMouseAndExtra();
 
-// Steam Controller descriptors
-extern const uint8_t kSteamControllerKeyboard[];
-extern const size_t kSteamControllerKeyboardSize;
-extern const uint8_t kSteamControllerMouse[];
-extern const size_t kSteamControllerMouseSize;
-extern const uint8_t kSteamControllerVendor[];
-extern const size_t kSteamControllerVendorSize;
+  // The report descriptor from a Jabra Link 380c USB-C receiver.
+  static base::span<const uint8_t> JabraLink380c();
 
-// XSkills Gamecube USB controller adapter descriptor
-extern const uint8_t kXSkillsUsbAdapter[];
-extern const size_t kXSkillsUsbAdapterSize;
-
-// Belkin Nostromo SpeedPad descriptors
-extern const uint8_t kBelkinNostromoKeyboard[];
-extern const size_t kBelkinNostromoKeyboardSize;
-extern const uint8_t kBelkinNostromoMouseAndExtra[];
-extern const size_t kBelkinNostromoMouseAndExtraSize;
+  // The report descriptor for a FIDO U2F HID device.
+  // https://fidoalliance.org/specs/fido-u2f-v1.0-ps-20141009/fido-u2f-hid-protocol-ps-20141009.html
+  static base::span<const uint8_t> FidoU2fHid();
+};
 
 }  // namespace device
 

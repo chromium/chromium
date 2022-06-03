@@ -12,38 +12,67 @@ cast_source_set("app") {
     "cast_main_delegate.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":cast_crash_client",
-    "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/browser",
     "//chromecast/common",
+    "//chromecast/common:resource_delegate",
     "//chromecast/gpu",
     "//chromecast/renderer",
     "//chromecast/utility",
     "//components/crash/core/common:crash_key",
-    "//content/public/app:both",
+    "//content/public/app",
     "//content/public/browser",
     "//content/public/common",
     "//ui/base",
   ]
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
-    deps += [ "//components/crash/content/app" ]
+    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+    deps += [ "//components/crash/core/app" ]
+  }
+}
+
+if (enable_cast_media_runtime) {
+  cast_source_set("app_core") {
+    sources = [
+      "cast_main_delegate.cc",
+      "cast_main_delegate.h",
+    ]
+
+    public_deps = [ "//base" ]
+
+    deps = [
+      ":cast_crash_client",
+      "//chromecast:chromecast_buildflags",
+      "//chromecast/base",
+      "//chromecast/browser",
+      "//chromecast/cast_core:cast_runtime_content_client_factories",
+      "//chromecast/common",
+      "//chromecast/common:resource_delegate",
+      "//chromecast/gpu",
+      "//chromecast/renderer:renderer_base",
+      "//chromecast/utility",
+      "//components/crash/core/common:crash_key",
+      "//content/public/app",
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/base",
+    ]
+
+    if (!is_fuchsia) {
+      # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+      deps += [ "//components/crash/core/app" ]
+    }
   }
 }
 
 cast_source_set("cast_crash_client") {
-  sources = [
-    "android/cast_crash_reporter_client_android.cc",
-    "android/cast_crash_reporter_client_android.h",
-    "android/crash_handler.cc",
-    "android/crash_handler.h",
-    "linux/cast_crash_reporter_client.cc",
-    "linux/cast_crash_reporter_client.h",
-  ]
+  sources = []
 
   deps = [
     "//base",
@@ -53,14 +82,26 @@ cast_source_set("cast_crash_client") {
   ]
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
     deps += [
       "//chromecast/crash",
-      "//components/crash/content/app",
+      "//components/crash/core/app",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "linux/cast_crash_reporter_client.cc",
+      "linux/cast_crash_reporter_client.h",
     ]
   }
 
   if (is_android) {
+    sources += [
+      "android/cast_crash_reporter_client_android.cc",
+      "android/cast_crash_reporter_client_android.h",
+      "android/crash_handler.cc",
+      "android/crash_handler.h",
+    ]
     deps += [
       "//chromecast/base:android_create_sys_info",
       "//chromecast/base:cast_version",
@@ -71,9 +112,7 @@ cast_source_set("cast_crash_client") {
 
 cast_source_set("test_support") {
   testonly = true
-  sources = [
-    "cast_test_launcher.cc",
-  ]
+  sources = [ "cast_test_launcher.cc" ]
 
   deps = [
     ":app",
@@ -88,9 +127,11 @@ cast_source_set("test_support") {
 
 cast_source_set("unittests") {
   testonly = true
-  sources = [
-    "linux/cast_crash_reporter_client_unittest.cc",
-  ]
+  sources = []
+
+  if (is_linux || is_chromeos) {
+    sources += [ "linux/cast_crash_reporter_client_unittest.cc" ]
+  }
 
   deps = [
     "//base",
@@ -101,7 +142,6 @@ cast_source_set("unittests") {
 
   if (!is_fuchsia) {
     deps += [
-      # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
       ":cast_crash_client",
       "//chromecast/crash",
       "//chromecast/crash:test_support",
@@ -112,8 +152,6 @@ cast_source_set("unittests") {
 grit("resources") {
   source = "//chromecast/app/resources/shell_resources.grd"
 
-  resource_ids = "//chromecast/app/resources/resource_ids"
-
   outputs = [
     "grit/shell_resources.h",
     "shell_resources.pak",
@@ -122,18 +160,13 @@ grit("resources") {
 
 grit("chromecast_settings") {
   source = "//chromecast/app/resources/chromecast_settings.grd"
-  resource_ids = "//chromecast/app/resources/resource_ids"
 
-  outputs = [
-    "grit/chromecast_settings.h",
-  ]
+  outputs = [ "grit/chromecast_settings.h" ]
   foreach(locale, cast_locales) {
     outputs += [ "chromecast_settings_${locale}.pak" ]
   }
 
-  deps = [
-    ":verify_cast_locales",
-  ]
+  deps = [ ":verify_cast_locales" ]
 }
 
 # This target ensures that Chromecast developers are notified when locales
@@ -153,7 +186,5 @@ action("verify_cast_locales") {
 
   args += cast_locales
 
-  outputs = [
-    stamp_file,
-  ]
+  outputs = [ stamp_file ]
 }

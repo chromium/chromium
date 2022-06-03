@@ -3,7 +3,8 @@
     "manifest_version": 2,
     "version": "1",
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["background.js"],
+        "persistent": true
     },
     "content_scripts": [{
         "run_at": "document_start",

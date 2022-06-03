@@ -33,7 +33,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_info.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -62,10 +64,15 @@ DeprecatedStorageInfo* DOMWindowQuota::webkitStorageInfo(
 DeprecatedStorageInfo* DOMWindowQuota::webkitStorageInfo() const {
   if (!storage_info_)
     storage_info_ = MakeGarbageCollected<DeprecatedStorageInfo>();
+
+  // Record metrics for usage in third-party contexts.
+  GetSupplementable()->CountUseOnlyInCrossSiteIframe(
+      WebFeature::kPrefixedStorageInfoThirdPartyContext);
+
   return storage_info_.Get();
 }
 
-void DOMWindowQuota::Trace(blink::Visitor* visitor) {
+void DOMWindowQuota::Trace(Visitor* visitor) const {
   visitor->Trace(storage_info_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }

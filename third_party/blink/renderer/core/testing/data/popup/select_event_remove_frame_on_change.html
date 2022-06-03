@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+<iframe srcdoc="<select><option>1</option><option>2></option></select>"></iframe>
+<script>
+const frame = document.querySelector('iframe');
+onload = function() {
+  frame.contentDocument.querySelector('select').onchange = () => { frame.remove(); };
+};
+</script>
+</body>
+</html>

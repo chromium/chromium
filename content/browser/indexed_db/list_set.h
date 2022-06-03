@@ -13,7 +13,7 @@
 #include <memory>
 #include <set>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 //
 // A container class that provides fast containment test (like a set)

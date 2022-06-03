@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS Cannot construct without new
+PASS inherits from Error: prototype-side
+PASS does not inherit from Error: class-side
+PASS message property descriptor
+PASS message getter performs brand checks (i.e. is not [LegacyLenientThis])
+PASS name property descriptor
+PASS name getter performs brand checks (i.e. is not [LegacyLenientThis])
+PASS code property descriptor
+PASS code getter performs brand checks (i.e. is not [LegacyLenientThis])
+PASS code property is not affected by shadowing the name property
+PASS Object.prototype.toString behavior is like other interfaces
+PASS Inherits its toString() from Error.prototype
+PASS toString() behavior from Error.prototype applies as expected
+PASS DOMException.prototype.toString() applied to DOMException.prototype throws because of name/message brand checks
+FAIL If the implementation has a stack property on normal errors, it also does on DOMExceptions assert_equals: The typeof values must match expected "string" but got "undefined"
+Harness: the test ran to completion.
+

@@ -30,7 +30,7 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
      * Notify observers that multi-window mode has changed.
      * @param inMultiWindowMode Whether the activity is currently in multi-window mode.
      */
-    public void dipatchMultiWindowModeChanged(boolean inMultiWindowMode) {
+    public void dispatchMultiWindowModeChanged(boolean inMultiWindowMode) {
         for (MultiWindowModeObserver observer : mObservers) {
             observer.onMultiWindowModeChanged(inMultiWindowMode);
         }
@@ -57,8 +57,23 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     }
 
     @Override
+    public boolean isMultiInstanceRunning() {
+        return MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(mActivity);
+    }
+
+    @Override
+    public boolean isChromeRunningInAdjacentWindow() {
+        return MultiWindowUtils.getInstance().isChromeRunningInAdjacentWindow(mActivity);
+    }
+
+    @Override
     public boolean isOpenInOtherWindowSupported() {
         return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(mActivity);
+    }
+
+    @Override
+    public boolean canEnterMultiWindowMode() {
+        return MultiWindowUtils.getInstance().canEnterMultiWindowMode(mActivity);
     }
 
     @Override
@@ -80,5 +95,10 @@ public class MultiWindowModeStateDispatcherImpl implements MultiWindowModeStateD
     @Override
     public Bundle getOpenInOtherWindowActivityOptions() {
         return MultiWindowUtils.getOpenInOtherWindowActivityOptions(mActivity);
+    }
+
+    @Override
+    public int getInstanceCount() {
+        return MultiWindowUtils.getInstanceCount();
     }
 }

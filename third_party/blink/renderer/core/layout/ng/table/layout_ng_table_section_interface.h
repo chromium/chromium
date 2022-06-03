@@ -10,7 +10,6 @@
 namespace blink {
 
 class LayoutNGTableRowInterface;
-class LayoutNGTableCellInterface;
 class LayoutTableSection;
 class LayoutObject;
 
@@ -22,17 +21,18 @@ class LayoutNGTableSectionInterface {
   virtual const LayoutObject* ToLayoutObject() const = 0;
   virtual LayoutObject* ToMutableLayoutObject() = 0;
   virtual LayoutNGTableInterface* TableInterface() const = 0;
+  // TODO(crbug.com/1081425) Existing methods can be used by NG, should be
+  // removed. Single caller is MarkBoxForRelayoutAfterSplit.
   virtual void SetNeedsCellRecalc() = 0;
+  // TODO(crbug.com/1081425) Method not used by NG, should be removed.
   virtual bool IsRepeatingHeaderGroup() const = 0;
+  // TODO(crbug.com/1081425) Method not used by NG, should be removed.
   virtual bool IsRepeatingFooterGroup() const = 0;
   virtual unsigned NumRows() const = 0;
   virtual unsigned NumCols(unsigned row) const = 0;
   virtual unsigned NumEffectiveColumns() const = 0;
   virtual LayoutNGTableRowInterface* FirstRowInterface() const = 0;
   virtual LayoutNGTableRowInterface* LastRowInterface() const = 0;
-  virtual const LayoutNGTableCellInterface* PrimaryCellInterfaceAt(
-      unsigned row,
-      unsigned effective_column) const = 0;
 };
 
 template <>

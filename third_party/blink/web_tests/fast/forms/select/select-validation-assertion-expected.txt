@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 8: PASS if no assertion failure
+CONSOLE MESSAGE: PASS if no assertion failure
 

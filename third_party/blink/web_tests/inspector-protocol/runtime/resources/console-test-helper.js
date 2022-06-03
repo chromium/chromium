@@ -159,7 +159,7 @@
 
   }
   async test$0to$4() {
-    const docResultNode = await this._dp.DOM.getDocument(3);
+    const docResultNode = await this._dp.DOM.getDocument({depth: 3});
     const rootNode = docResultNode.result.root;
     let nodeIds = [];
     let result;

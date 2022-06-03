@@ -25,11 +25,16 @@ AccessibilityControllerTestApiImpl::~AccessibilityControllerTestApiImpl() =
     default;
 
 void AccessibilityControllerTestApiImpl::SetLargeCursorEnabled(bool enabled) {
-  GetController()->SetLargeCursorEnabled(enabled);
+  GetController()->large_cursor().SetEnabled(enabled);
 }
 
 bool AccessibilityControllerTestApiImpl::IsLargeCursorEnabled() const {
-  return GetController()->large_cursor_enabled();
+  return GetController()->large_cursor().enabled();
+}
+
+int AccessibilityControllerTestApiImpl::GetDictationSodaDownloadProgress()
+    const {
+  return GetController()->dictation_soda_download_progress();
 }
 
 // static

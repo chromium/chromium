@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS loading css <link>
+PASS loading image <img src>
+FAIL loading image <embed src> assert_equals: expected substring %E5 got default intrinsic width expected 1 but got 300
+FAIL loading image <object data> assert_equals: expected substring %E5 got default intrinsic width expected 1 but got 300
+PASS loading image <input src>
+PASS loading image <video poster>
+FAIL loading video <video> assert_equals: expected substring %E5 got Infinity expected 3 but got Infinity
+FAIL loading video <video><source> assert_equals: expected substring %E5 got Infinity expected 3 but got Infinity
+FAIL loading video <audio> assert_equals: expected substring %E5 got Infinity expected 3 but got Infinity
+FAIL loading video <audio><source> assert_equals: expected substring %E5 got Infinity expected 3 but got Infinity
+PASS loading webvtt <track>
+Harness: the test ran to completion.
+

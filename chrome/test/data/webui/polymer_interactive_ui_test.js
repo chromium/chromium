@@ -20,3 +20,18 @@ PolymerInteractiveUITest.prototype = {
     GEN('  browser()->tab_strip_model()->GetActiveWebContents()->Focus();');
   },
 };
+
+// TODO(crbug.com/965770): Delete once all remaining Polymer2 UIs have been
+// migrated.
+function Polymer2DeprecatedInteractiveUITest() {}
+
+Polymer2DeprecatedInteractiveUITest.prototype = {
+  __proto__: Polymer2DeprecatedTest.prototype,
+
+  /** @override */
+  testGenPreamble: function() {
+    // Must explicitly focus the web contents before running the test on Mac.
+    // See: https://crbug.com/642467.
+    GEN('  browser()->tab_strip_model()->GetActiveWebContents()->Focus();');
+  },
+};

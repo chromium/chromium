@@ -4,6 +4,7 @@
 
 #include "net/cert/x509_util_win.h"
 
+#include "base/logging.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/sha2.h"
 #include "net/cert/x509_certificate.h"
@@ -13,14 +14,6 @@
 namespace net {
 
 namespace x509_util {
-
-namespace {
-
-using ScopedHCERTSTORE = crypto::ScopedCAPIHandle<
-    HCERTSTORE,
-    crypto::CAPIDestroyerWithFlags<HCERTSTORE, CertCloseStore, 0>>;
-
-}  // namespace
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
     PCCERT_CONTEXT os_cert,
@@ -36,8 +29,7 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
     return nullptr;
   bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
       X509Certificate::CreateCertBufferFromBytes(
-          reinterpret_cast<const char*>(os_cert->pbCertEncoded),
-          os_cert->cbCertEncoded));
+          base::make_span(os_cert->pbCertEncoded, os_cert->cbCertEncoded)));
   if (!cert_handle)
     return nullptr;
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -46,9 +38,8 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
         !os_intermediate->cbCertEncoded)
       return nullptr;
     bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-        X509Certificate::CreateCertBufferFromBytes(
-            reinterpret_cast<const char*>(os_intermediate->pbCertEncoded),
-            os_intermediate->cbCertEncoded));
+        X509Certificate::CreateCertBufferFromBytes(base::make_span(
+            os_intermediate->pbCertEncoded, os_intermediate->cbCertEncoded)));
     if (!intermediate_cert_handle)
       return nullptr;
     intermediates.push_back(std::move(intermediate_cert_handle));
@@ -59,20 +50,21 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
   return result;
 }
 
-ScopedPCCERT_CONTEXT CreateCertContextWithChain(const X509Certificate* cert) {
+crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+    const X509Certificate* cert) {
   return CreateCertContextWithChain(cert, InvalidIntermediateBehavior::kFail);
 }
 
-ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
     const X509Certificate* cert,
     InvalidIntermediateBehavior invalid_intermediate_behavior) {
   // Create an in-memory certificate store to hold the certificate and its
   // intermediate certificates. The store will be referenced in the returned
   // PCCERT_CONTEXT, and will not be freed until the PCCERT_CONTEXT is freed.
-  ScopedHCERTSTORE store(
+  crypto::ScopedHCERTSTORE store(
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL,
                     CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, nullptr));
-  if (!store.get())
+  if (!store.is_valid())
     return nullptr;
 
   PCCERT_CONTEXT primary_cert = nullptr;
@@ -83,7 +75,7 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
       CERT_STORE_ADD_ALWAYS, &primary_cert);
   if (!ok || !primary_cert)
     return nullptr;
-  ScopedPCCERT_CONTEXT scoped_primary_cert(primary_cert);
+  crypto::ScopedPCCERT_CONTEXT scoped_primary_cert(primary_cert);
 
   for (const auto& intermediate : cert->intermediate_buffers()) {
     ok = CertAddEncodedCertificateToStore(

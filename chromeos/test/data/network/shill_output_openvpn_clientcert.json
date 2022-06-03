@@ -7,7 +7,6 @@
      "OpenVPN.User": "hans",
      "OpenVPN.Pkcs11.ID": "123456abcdef",
      "OpenVPN.Pkcs11.PIN": "111111",
-     "OpenVPN.Pkcs11.Slot": "1",
      "Type": "openvpn",
    },
    "SaveCredentials": true,

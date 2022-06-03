@@ -4,7 +4,7 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/animation/animation_test_helper.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
@@ -32,7 +32,7 @@ class AnimationInterpolableValueTest : public testing::Test {
     std::unique_ptr<TypedInterpolationValue> interpolated_value =
         i->GetInterpolatedValue();
     EXPECT_TRUE(interpolated_value);
-    return ToInterpolableNumber(interpolated_value->GetInterpolableValue())
+    return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())
         .Value();
   }
 
@@ -74,11 +74,11 @@ TEST_F(AnimationInterpolableValueTest, SimpleList) {
 
   std::unique_ptr<InterpolableValue> interpolated_value =
       InterpolateLists(std::move(list_a), std::move(list_b), 0.3);
-  const InterpolableList& out_list = ToInterpolableList(*interpolated_value);
+  const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  EXPECT_FLOAT_EQ(30, ToInterpolableNumber(out_list.Get(0))->Value());
-  EXPECT_FLOAT_EQ(-30.6f, ToInterpolableNumber(out_list.Get(1))->Value());
-  EXPECT_FLOAT_EQ(104.35f, ToInterpolableNumber(out_list.Get(2))->Value());
+  EXPECT_FLOAT_EQ(30, To<InterpolableNumber>(out_list.Get(0))->Value());
+  EXPECT_FLOAT_EQ(-30.6f, To<InterpolableNumber>(out_list.Get(1))->Value());
+  EXPECT_FLOAT_EQ(104.35f, To<InterpolableNumber>(out_list.Get(2))->Value());
 }
 
 TEST_F(AnimationInterpolableValueTest, NestedList) {
@@ -98,13 +98,13 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
 
   std::unique_ptr<InterpolableValue> interpolated_value =
       InterpolateLists(std::move(list_a), std::move(list_b), 0.5);
-  const InterpolableList& out_list = ToInterpolableList(*interpolated_value);
+  const auto& out_list = To<InterpolableList>(*interpolated_value);
 
-  EXPECT_FLOAT_EQ(50, ToInterpolableNumber(out_list.Get(0))->Value());
+  EXPECT_FLOAT_EQ(50, To<InterpolableNumber>(out_list.Get(0))->Value());
   EXPECT_FLOAT_EQ(
-      75, ToInterpolableNumber(ToInterpolableList(out_list.Get(1))->Get(0))
+      75, To<InterpolableNumber>(To<InterpolableList>(out_list.Get(1))->Get(0))
               ->Value());
-  EXPECT_FLOAT_EQ(0.5, ToInterpolableNumber(out_list.Get(2))->Value());
+  EXPECT_FLOAT_EQ(0.5, To<InterpolableNumber>(out_list.Get(2))->Value());
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
@@ -132,9 +132,9 @@ TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
   add_list->Set(1, std::make_unique<InterpolableNumber>(2));
   add_list->Set(2, std::make_unique<InterpolableNumber>(3));
   ScaleAndAdd(*base_list, 2, *add_list);
-  EXPECT_FLOAT_EQ(11, ToInterpolableNumber(base_list->Get(0))->Value());
-  EXPECT_FLOAT_EQ(22, ToInterpolableNumber(base_list->Get(1))->Value());
-  EXPECT_FLOAT_EQ(33, ToInterpolableNumber(base_list->Get(2))->Value());
+  EXPECT_FLOAT_EQ(11, To<InterpolableNumber>(base_list->Get(0))->Value());
+  EXPECT_FLOAT_EQ(22, To<InterpolableNumber>(base_list->Get(1))->Value());
+  EXPECT_FLOAT_EQ(33, To<InterpolableNumber>(base_list->Get(2))->Value());
 }
 
 }  // namespace blink

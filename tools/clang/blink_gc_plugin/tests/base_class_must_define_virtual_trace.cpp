@@ -6,14 +6,9 @@
 
 namespace blink {
 
-void PartDerived::Trace(Visitor* visitor)
-{
+void PartDerived::Trace(Visitor* visitor) const {}
+
+void HeapDerived::Trace(Visitor* visitor) const {
+  visitor->Trace(m_part);
 }
-
-void HeapDerived::Trace(Visitor* visitor)
-{
-    visitor->Trace(m_part);
-}
-
-
 }

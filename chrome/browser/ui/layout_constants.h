@@ -18,7 +18,7 @@ enum LayoutConstant {
   // The height of a button within the Bookmarks Bar.
   BOOKMARK_BAR_BUTTON_HEIGHT,
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // This is a little smaller than the bookmarkbar height because of the visual
   // overlap with the main toolbar. This height should not be used when
   // computing the height of the toolbar.
@@ -28,17 +28,11 @@ enum LayoutConstant {
   // The height of Bookmarks Bar, when visible in "New Tab Page" mode.
   BOOKMARK_BAR_NTP_HEIGHT,
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // The amount of space between the inner bookmark bar and the outer toolbar on
   // new tab pages.
   BOOKMARK_BAR_NTP_PADDING,
 #endif
-
-  // The size of the app menu button in a web app browser window.
-  WEB_APP_MENU_BUTTON_SIZE,
-
-  // The size of page action icons in a web app title bar.
-  WEB_APP_PAGE_ACTION_ICON_SIZE,
 
   // The vertical padding between the edge of a location bar bubble and its
   // contained text.
@@ -61,6 +55,9 @@ enum LayoutConstant {
 
   // The size of the icons used inside the LocationBar.
   LOCATION_BAR_ICON_SIZE,
+
+  // The size of icons used in PageInfo bubbles.
+  PAGE_INFO_ICON_SIZE,
 
   // Padding after the tab title.
   TAB_AFTER_TITLE_PADDING,
@@ -91,6 +88,10 @@ enum LayoutConstant {
   // non-pixel-aligned drawing goes in.  See https://crbug.com/765723.
   TABSTRIP_TOOLBAR_OVERLAP,
 
+  // The horizontal padding between any right aligned controls and the end of
+  // the TabStripRegionView.
+  TABSTRIP_REGION_VIEW_CONTROL_PADDING,
+
   // The total height, including icons and insets, of buttons in the toolbar.
   TOOLBAR_BUTTON_HEIGHT,
 
@@ -99,6 +100,12 @@ enum LayoutConstant {
 
   // The horizontal space between most items in the toolbar.
   TOOLBAR_STANDARD_SPACING,
+
+  // The size of the app menu button in a web app browser window.
+  WEB_APP_MENU_BUTTON_SIZE,
+
+  // The size of page action icons in a web app title bar.
+  WEB_APP_PAGE_ACTION_ICON_SIZE,
 };
 
 enum LayoutInset {
@@ -121,7 +128,7 @@ enum LayoutInset {
 };
 
 int GetLayoutConstant(LayoutConstant constant);
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Use this function instead of GetLayoutConstant() for Cocoa browser.
 // This will handle Cocoa specific layout constants. For non Cocoa specific
 // constants, it will call GetLayoutConstant() anyway.

@@ -5,18 +5,16 @@
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
 #include "base/bind.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/stl_util.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
-
-using gfx::CocoaScrollbarPainter;
 
 namespace views {
 
@@ -38,6 +36,10 @@ constexpr float kOverlayOpacity = 0.8f;
 class CocoaScrollBarThumb : public BaseScrollBarThumb {
  public:
   explicit CocoaScrollBarThumb(CocoaScrollBar* scroll_bar);
+
+  CocoaScrollBarThumb(const CocoaScrollBarThumb&) = delete;
+  CocoaScrollBarThumb& operator=(const CocoaScrollBarThumb&) = delete;
+
   ~CocoaScrollBarThumb() override;
 
   // Returns true if the thumb is in hovered state.
@@ -60,8 +62,6 @@ class CocoaScrollBarThumb : public BaseScrollBarThumb {
  private:
   // The CocoaScrollBar that owns us.
   CocoaScrollBar* cocoa_scroll_bar_;  // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaScrollBarThumb);
 };
 
 CocoaScrollBarThumb::CocoaScrollBarThumb(CocoaScrollBar* scroll_bar)
@@ -101,9 +101,14 @@ gfx::Size CocoaScrollBarThumb::CalculatePreferredSize() const {
 void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   auto params = cocoa_scroll_bar_->GetPainterParams();
   // Set the hover state based only on the thumb.
-  params.hovered = IsStateHovered() || IsStatePressed();
-  CocoaScrollbarPainter::PaintThumb(
-      canvas->sk_canvas(), gfx::RectToSkIRect(GetLocalBounds()), params);
+  params.scrollbar_extra.is_hovering = IsStateHovered() || IsStatePressed();
+  ui::NativeTheme::Part thumb_part =
+      params.scrollbar_extra.orientation ==
+              ui::NativeTheme::ScrollbarOrientation::kHorizontal
+          ? ui::NativeTheme::kScrollbarHorizontalThumb
+          : ui::NativeTheme::kScrollbarVerticalThumb;
+  GetNativeTheme()->Paint(canvas->sk_canvas(), thumb_part,
+                          ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }
 
 bool CocoaScrollBarThumb::OnMousePressed(const ui::MouseEvent& event) {
@@ -138,7 +143,7 @@ void CocoaScrollBarThumb::OnMouseExited(const ui::MouseEvent& event) {
 CocoaScrollBar::CocoaScrollBar(bool horizontal)
     : ScrollBar(horizontal),
       hide_scrollbar_timer_(FROM_HERE,
-                            base::TimeDelta::FromMilliseconds(500),
+                            base::Milliseconds(500),
                             base::BindRepeating(&CocoaScrollBar::HideScrollbar,
                                                 base::Unretained(this))),
       thickness_animation_(this),
@@ -149,7 +154,7 @@ CocoaScrollBar::CocoaScrollBar(bool horizontal)
   bridge_.reset([[ViewsScrollbarBridge alloc] initWithDelegate:this]);
   scroller_style_ = [ViewsScrollbarBridge getPreferredScrollerStyle];
 
-  thickness_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(240));
+  thickness_animation_.SetSlideDuration(base::Milliseconds(240));
 
   SetPaintToLayer();
   has_scrolltrack_ = scroller_style_ == NSScrollerStyleLegacy;
@@ -209,9 +214,21 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
   auto params = GetPainterParams();
   // Transparency of the track is handled by the View opacity, so always draw
   // using the non-overlay path.
-  params.overlay = false;
-  CocoaScrollbarPainter::PaintTrack(
-      canvas->sk_canvas(), gfx::RectToSkIRect(GetLocalBounds()), params);
+  params.scrollbar_extra.is_overlay = false;
+  ui::NativeTheme::Part track_part =
+      params.scrollbar_extra.orientation ==
+              ui::NativeTheme::ScrollbarOrientation::kHorizontal
+          ? ui::NativeTheme::kScrollbarHorizontalTrack
+          : ui::NativeTheme::kScrollbarVerticalTrack;
+  GetNativeTheme()->Paint(canvas->sk_canvas(), track_part,
+                          ui::NativeTheme::kNormal, GetLocalBounds(), params);
+}
+
+bool CocoaScrollBar::GetCanProcessEventsWithinSubtree() const {
+  // If using overlay scrollbars, do not process events when fully hidden.
+  return scroller_style_ == NSScrollerStyleOverlay
+             ? !IsScrollbarFullyHidden()
+             : ScrollBar::GetCanProcessEventsWithinSubtree();
 }
 
 bool CocoaScrollBar::OnMousePressed(const ui::MouseEvent& event) {
@@ -394,16 +411,21 @@ bool CocoaScrollBar::IsScrollbarFullyHidden() const {
   return layer()->opacity() == 0.0f;
 }
 
-CocoaScrollbarPainter::Params CocoaScrollBar::GetPainterParams() const {
-  CocoaScrollbarPainter::Params params;
-  if (IsHorizontal())
-    params.orientation = CocoaScrollbarPainter::Orientation::kHorizontal;
-  else if (base::i18n::IsRTL())
-    params.orientation = CocoaScrollbarPainter::Orientation::kVerticalOnLeft;
-  else
-    params.orientation = CocoaScrollbarPainter::Orientation::kVerticalOnRight;
-  params.overlay = GetScrollerStyle() == NSScrollerStyleOverlay;
-  params.dark_mode = GetNativeTheme()->ShouldUseDarkColors();
+ui::NativeTheme::ExtraParams CocoaScrollBar::GetPainterParams() const {
+  ui::NativeTheme::ExtraParams params;
+  if (IsHorizontal()) {
+    params.scrollbar_extra.orientation =
+        ui::NativeTheme::ScrollbarOrientation::kHorizontal;
+  } else if (base::i18n::IsRTL()) {
+    params.scrollbar_extra.orientation =
+        ui::NativeTheme::ScrollbarOrientation::kVerticalOnLeft;
+  } else {
+    params.scrollbar_extra.orientation =
+        ui::NativeTheme::ScrollbarOrientation::kVerticalOnRight;
+  }
+  params.scrollbar_extra.is_overlay =
+      GetScrollerStyle() == NSScrollerStyleOverlay;
+  params.scrollbar_extra.scale_from_dip = 1.0f;
   return params;
 }
 
@@ -426,7 +448,7 @@ void CocoaScrollBar::HideScrollbar() {
   did_start_dragging_ = false;
 
   ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(240));
+  animation.SetTransitionDuration(base::Milliseconds(240));
   animation.AddObserver(this);
   layer()->SetOpacity(0.0f);
 }
@@ -490,8 +512,7 @@ base::RetainingOneShotTimer* ScrollBar::GetHideTimerForTesting(
   return &static_cast<CocoaScrollBar*>(scroll_bar)->hide_scrollbar_timer_;
 }
 
-BEGIN_METADATA(CocoaScrollBar)
-METADATA_PARENT_CLASS(ScrollBar)
-END_METADATA()
+BEGIN_METADATA(CocoaScrollBar, ScrollBar)
+END_METADATA
 
 }  // namespace views

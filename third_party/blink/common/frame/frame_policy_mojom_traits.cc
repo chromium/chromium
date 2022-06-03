@@ -9,8 +9,10 @@ namespace mojo {
 bool StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy>::Read(
     blink::mojom::FramePolicyDataView in,
     blink::FramePolicy* out) {
-  out->allowed_to_download = in.allowed_to_download();
+  out->is_fenced = in.is_fenced();
 
+  // TODO(chenleihu): Add sanity check on enum values in
+  // required_document_policy.
   return in.ReadSandboxFlags(&out->sandbox_flags) &&
          in.ReadContainerPolicy(&out->container_policy) &&
          in.ReadRequiredDocumentPolicy(&out->required_document_policy);

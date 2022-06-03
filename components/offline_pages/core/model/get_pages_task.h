@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/offline_page_item.h"
@@ -35,10 +34,10 @@ class GetPagesTask : public Task {
                const PageCriteria& criteria,
                MultipleOfflinePageItemCallback callback);
 
-  ~GetPagesTask() override;
+  GetPagesTask(const GetPagesTask&) = delete;
+  GetPagesTask& operator=(const GetPagesTask&) = delete;
 
-  // Task implementation:
-  void Run() override;
+  ~GetPagesTask() override;
 
   // Reads and returns all pages matching |criteria|. This function reads
   // from the database and should be called from within an
@@ -48,6 +47,9 @@ class GetPagesTask : public Task {
       sql::Database* db);
 
  private:
+  // Task implementation:
+  void Run() override;
+
   void CompleteWithResult(ReadResult result);
 
   OfflinePageMetadataStore* store_;
@@ -55,7 +57,6 @@ class GetPagesTask : public Task {
   MultipleOfflinePageItemCallback callback_;
 
   base::WeakPtrFactory<GetPagesTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GetPagesTask);
 };
 
 }  // namespace offline_pages

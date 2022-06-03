@@ -8,12 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/render_process_host.h"
@@ -30,12 +31,13 @@ RenderProcessUserData::RenderProcessUserData(
     content::RenderProcessHost* render_process_host)
     : host_(render_process_host) {
   host_->AddObserver(this);
-  process_node_ = PerformanceManagerImpl::GetInstance()->CreateProcessNode(
-      RenderProcessHostProxy(host_->GetID()));
+  process_node_ = PerformanceManagerImpl::CreateProcessNode(
+      content::PROCESS_TYPE_RENDERER,
+      RenderProcessHostProxy(RenderProcessHostId(host_->GetID())));
 }
 
 RenderProcessUserData::~RenderProcessUserData() {
-  PerformanceManagerImpl::GetInstance()->DeleteNode(std::move(process_node_));
+  PerformanceManagerImpl::DeleteNode(std::move(process_node_));
   host_->RemoveObserver(this);
 
   if (destruction_observer_) {
@@ -84,7 +86,7 @@ void RenderProcessUserData::RenderProcessReady(
       host->GetProcess().CreationTime();
 #endif
 
-  PerformanceManagerImpl::GetTaskRunner()->PostTask(
+  PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
                                 base::Unretained(process_node_.get()),
                                 host->GetProcess().Duplicate(), launch_time));
@@ -93,7 +95,7 @@ void RenderProcessUserData::RenderProcessReady(
 void RenderProcessUserData::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  PerformanceManagerImpl::GetTaskRunner()->PostTask(
+  PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&ProcessNodeImpl::SetProcessExitStatus,
                      base::Unretained(process_node_.get()), info.exit_code));

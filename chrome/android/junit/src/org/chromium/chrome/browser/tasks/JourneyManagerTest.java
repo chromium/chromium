@@ -429,7 +429,7 @@ public final class JourneyManagerTest {
 
     @Test
     public void destroy_unregistersLifecycleObserver() {
-        mJourneyManager.destroy();
+        mJourneyManager.onDestroy();
         verify(mDispatcher).unregister(mJourneyManager);
         verify(mOverviewModeBehavior).removeOverviewModeObserver(mOverviewModeObserver);
     }

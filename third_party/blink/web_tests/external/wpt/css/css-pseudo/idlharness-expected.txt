@@ -6,7 +6,7 @@ PASS Partial interface Element: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
-PASS Element includes Slotable: member names are unique
+PASS Element includes Slottable: member names are unique
 FAIL CSSPseudoElement interface: existence and properties of interface object assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface object length assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface object name assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing

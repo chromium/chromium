@@ -4,17 +4,25 @@
 
 #include "chrome/browser/sharing/features.h"
 
-const base::Feature kSharingUseDeviceInfo{"SharingUseDeviceInfo",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#include "build/build_config.h"
 
-const base::Feature kSharingQRCodeGenerator{"SharingQRCodeGenerator",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSharingMatchPulseInterval{
+    "SharingMatchPulseInterval", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSharingDeriveVapidKey{"SharingDeriveVapidKey",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kSharingPulseDeltaDesktopHours = {
+    &kSharingMatchPulseInterval, "SharingPulseDeltaDesktopHours", 24};
 
-const base::Feature kSharingDeviceExpiration{"SharingDeviceExpiration",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kSharingPulseDeltaAndroidHours = {
+    &kSharingMatchPulseInterval, "SharingPulseDeltaAndroidHours", 24};
 
-const base::FeatureParam<int> kSharingDeviceExpirationHours = {
-    &kSharingDeviceExpiration, "SharingDeviceExpirationHours", 48};
+const base::Feature kSharingMessageBridgeTimeout{
+    "SharingMessageBridgeTimeout", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kSharingMessageBridgeTimeoutSeconds = {
+    &kSharingMessageBridgeTimeout, "SharingMessageBridgeTimeoutSeconds", 8};
+
+const base::Feature kSharingSendViaSync{"SharingSendViaSync",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSharingPreferVapid {
+  "SharingPreferVapid", base::FEATURE_DISABLED_BY_DEFAULT};

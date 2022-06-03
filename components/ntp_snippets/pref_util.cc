@@ -16,12 +16,11 @@ std::set<std::string> ReadDismissedIDsFromPrefs(const PrefService& pref_service,
                                                 const std::string& pref_name) {
   std::set<std::string> dismissed_ids;
   const base::ListValue* list = pref_service.GetList(pref_name);
-  for (const base::Value& value : *list) {
-    std::string dismissed_id;
-    bool success = value.GetAsString(&dismissed_id);
-    DCHECK(success) << "Failed to parse dismissed id from prefs param "
-                    << pref_name << " into string.";
-    dismissed_ids.insert(dismissed_id);
+  for (const base::Value& value : list->GetList()) {
+    DCHECK(value.is_string())
+        << "Failed to parse dismissed id from prefs param " << pref_name
+        << " into string.";
+    dismissed_ids.insert(value.GetString());
   }
   return dismissed_ids;
 }
@@ -31,7 +30,7 @@ void StoreDismissedIDsToPrefs(PrefService* pref_service,
                               const std::set<std::string>& dismissed_ids) {
   base::ListValue list;
   for (const std::string& dismissed_id : dismissed_ids) {
-    list.AppendString(dismissed_id);
+    list.Append(dismissed_id);
   }
   pref_service->Set(pref_name, list);
 }

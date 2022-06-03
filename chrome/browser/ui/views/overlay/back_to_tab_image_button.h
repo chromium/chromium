@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_BACK_TO_TAB_IMAGE_BUTTON_H_
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -13,11 +14,12 @@ namespace views {
 // An image button representing a back-to-tab button.
 class BackToTabImageButton : public views::ImageButton {
  public:
-  explicit BackToTabImageButton(ButtonListener*);
-  ~BackToTabImageButton() override = default;
+  METADATA_HEADER(BackToTabImageButton);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackToTabImageButton);
+  explicit BackToTabImageButton(PressedCallback callback);
+  BackToTabImageButton(const BackToTabImageButton&) = delete;
+  BackToTabImageButton& operator=(const BackToTabImageButton&) = delete;
+  ~BackToTabImageButton() override = default;
 };
 
 }  // namespace views

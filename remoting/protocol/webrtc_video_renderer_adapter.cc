@@ -11,15 +11,18 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/client_video_stats_dispatcher.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/video_renderer.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -91,7 +94,8 @@ void WebrtcVideoRendererAdapter::SetMediaStream(
 void WebrtcVideoRendererAdapter::SetVideoStatsChannel(
     std::unique_ptr<MessagePipe> message_pipe) {
   // Expect that the host also creates video_stats data channel.
-  video_stats_dispatcher_.reset(new ClientVideoStatsDispatcher(label_, this));
+  video_stats_dispatcher_ =
+      std::make_unique<ClientVideoStatsDispatcher>(label_, this);
   video_stats_dispatcher_->Init(std::move(message_pipe), this);
 }
 
@@ -175,14 +179,12 @@ void WebrtcVideoRendererAdapter::HandleFrameOnMainThread(
       video_renderer_->GetFrameConsumer()->AllocateFrame(
           webrtc::DesktopSize(frame->width(), frame->height()));
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::Bind(&ConvertYuvToRgb, base::Passed(&frame),
-                 base::Passed(&rgb_frame),
-                 video_renderer_->GetFrameConsumer()->GetPixelFormat()),
-      base::Bind(&WebrtcVideoRendererAdapter::DrawFrame,
-                 weak_factory_.GetWeakPtr(), frame_id, base::Passed(&stats)));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ConvertYuvToRgb, std::move(frame), std::move(rgb_frame),
+                     video_renderer_->GetFrameConsumer()->GetPixelFormat()),
+      base::BindOnce(&WebrtcVideoRendererAdapter::DrawFrame,
+                     weak_factory_.GetWeakPtr(), frame_id, std::move(stats)));
 }
 
 void WebrtcVideoRendererAdapter::DrawFrame(
@@ -193,8 +195,8 @@ void WebrtcVideoRendererAdapter::DrawFrame(
   stats->time_decoded = base::TimeTicks::Now();
   video_renderer_->GetFrameConsumer()->DrawFrame(
       std::move(frame),
-      base::Bind(&WebrtcVideoRendererAdapter::FrameRendered,
-                 weak_factory_.GetWeakPtr(), frame_id, base::Passed(&stats)));
+      base::BindOnce(&WebrtcVideoRendererAdapter::FrameRendered,
+                     weak_factory_.GetWeakPtr(), frame_id, std::move(stats)));
 }
 
 void WebrtcVideoRendererAdapter::FrameRendered(

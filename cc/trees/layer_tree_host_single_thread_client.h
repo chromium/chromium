@@ -5,15 +5,16 @@
 #ifndef CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_CLIENT_H_
 #define CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_CLIENT_H_
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 
 namespace cc {
 
 class LayerTreeHostSingleThreadClient {
  public:
-  // Request that the client schedule a composite. For tests using single thread
-  // without a scheduler.
-  virtual void RequestScheduleComposite() {}
+  // Tells single-threaded web tests that a new commit needs to be scheduled.
+  virtual void ScheduleAnimationForWebTests() {}
 
   // Called whenever the begin frame interval changes. This interval can be used
   // for animations.
@@ -30,6 +31,12 @@ class LayerTreeHostSingleThreadClient {
   // replaced. This allows the embedder to schedule a composite which will
   // run the machinery to acquire a new LayerTreeFrameSink.
   virtual void DidLoseLayerTreeFrameSink() = 0;
+
+  // When compositing-based throttling is enabled, this function is called every
+  // time when a frame composition change has updated the frame sinks to
+  // throttle.
+  virtual void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) {}
 
  protected:
   virtual ~LayerTreeHostSingleThreadClient() {}

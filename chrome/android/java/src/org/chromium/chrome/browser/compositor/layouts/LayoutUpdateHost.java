@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -19,6 +19,15 @@ public interface LayoutUpdateHost {
      * {@link LayoutRenderHost#requestRender()}).
      */
     void requestUpdate();
+
+    /**
+     * Requests a next update to refresh the transforms and changing properties. The update occurs
+     * once a frame. This is requesting a new frame to be updated and rendered (no need to call
+     * {@link LayoutRenderHost#requestRender()}).
+     * @param onUpdateEffective Callback that will be called when there is a buffer swap for the
+     *                          updated frame.
+     */
+    default void requestUpdate(Runnable onUpdateEffective) {}
 
     /**
      * Tells its host {@link android.view.View} that the hide will be an animation away.

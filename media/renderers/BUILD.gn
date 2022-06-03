@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/libaom/options.gni")
-
 source_set("renderers") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -26,6 +24,12 @@ source_set("renderers") {
     "remote_playback_client_wrapper.h",
     "renderer_impl.cc",
     "renderer_impl.h",
+    "video_frame_rgba_to_yuva_converter.cc",
+    "video_frame_rgba_to_yuva_converter.h",
+    "video_frame_yuv_converter.cc",
+    "video_frame_yuv_converter.h",
+    "video_frame_yuv_mailboxes_holder.cc",
+    "video_frame_yuv_mailboxes_holder.h",
     "video_overlay_factory.cc",
     "video_overlay_factory.h",
     "video_renderer_impl.cc",
@@ -41,29 +45,71 @@ source_set("renderers") {
     "//components/viz/client",
     "//components/viz/common",
     "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//media:media_buildflags",
     "//media/audio",
     "//media/base",
     "//media/filters",
     "//media/video",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/libyuv",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl",
   ]
 
-  if (is_fuchsia) {
-    deps += [ "//fuchsia/engine:switches" ]
+  if (is_win) {
+    sources += [
+      "win/media_engine_extension.cc",
+      "win/media_engine_extension.h",
+      "win/media_engine_notify_impl.cc",
+      "win/media_engine_notify_impl.h",
+      "win/media_foundation_audio_stream.cc",
+      "win/media_foundation_audio_stream.h",
+      "win/media_foundation_protection_manager.cc",
+      "win/media_foundation_protection_manager.h",
+      "win/media_foundation_renderer.cc",
+      "win/media_foundation_renderer.h",
+      "win/media_foundation_renderer_extension.h",
+      "win/media_foundation_source_wrapper.cc",
+      "win/media_foundation_source_wrapper.h",
+      "win/media_foundation_stream_wrapper.cc",
+      "win/media_foundation_stream_wrapper.h",
+      "win/media_foundation_video_stream.cc",
+      "win/media_foundation_video_stream.h",
+    ]
+
+    deps += [ "//media/base/win:media_foundation_util" ]
+
+    # media_foundation_renderer uses Windows D3D and Media Foundation APIs.
+    libs = [
+      "d3d11.lib",
+      "mfplat.lib",
+    ]
   }
 
-  configs += [
-    "//media:subcomponent_config",
+  configs += [ "//media:subcomponent_config" ]
+}
 
-    # TODO(crbug.com/167187): Fix size_t to int trunctaions.
-    "//build/config/compiler:no_size_t_to_int_warning",
+# Note: This is a roll-up only target; do not expand the visibility. DEPS should
+# depend on the //media:test_support target instead.
+static_library("test_support") {
+  visibility = [ "//media:test_support" ]
+  testonly = true
+  sources = [
+    "shared_image_video_frame_test_utils.cc",
+    "shared_image_video_frame_test_utils.h",
+  ]
+  configs += [ "//media:media_config" ]
+  deps = [
+    "//base",
+    "//components/viz/common",
+    "//gpu:test_support",
+    "//gpu/command_buffer/client:gles2_interface",
+    "//gpu/command_buffer/common",
+    "//media/base:test_support",
+    "//ui/gfx",
   ]
 }
 
@@ -95,4 +141,15 @@ source_set("unit_tests") {
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+
+  if (is_win) {
+    sources += [
+      "win/media_foundation_renderer_integration_test.cc",
+      "win/media_foundation_renderer_unittest.cc",
+    ]
+    deps += [ "//media/test:pipeline_integration_test_base" ]
+    libs = [
+      "mfuuid.lib",  # For MFMediaType_Video etc
+    ]
+  }
 }

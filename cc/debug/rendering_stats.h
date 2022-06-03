@@ -12,7 +12,6 @@
 
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
-#include "base/values.h"
 #include "cc/debug/debug_export.h"
 
 namespace cc {

@@ -37,31 +37,23 @@ DeviceToDeviceAuthenticator::Factory*
     DeviceToDeviceAuthenticator::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<Authenticator>
-DeviceToDeviceAuthenticator::Factory::NewInstance(
+std::unique_ptr<Authenticator> DeviceToDeviceAuthenticator::Factory::Create(
     Connection* connection,
     std::unique_ptr<multidevice::SecureMessageDelegate>
         secure_message_delegate) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        connection, std::move(secure_message_delegate));
   }
-  return factory_instance_->BuildInstance(connection,
-                                          std::move(secure_message_delegate));
+
+  return base::WrapUnique(new DeviceToDeviceAuthenticator(
+      connection, std::move(secure_message_delegate)));
 }
 
 // static
-void DeviceToDeviceAuthenticator::Factory::SetInstanceForTesting(
+void DeviceToDeviceAuthenticator::Factory::SetFactoryForTesting(
     Factory* factory) {
   factory_instance_ = factory;
-}
-
-std::unique_ptr<Authenticator>
-DeviceToDeviceAuthenticator::Factory::BuildInstance(
-    Connection* connection,
-    std::unique_ptr<multidevice::SecureMessageDelegate>
-        secure_message_delegate) {
-  return base::WrapUnique(new DeviceToDeviceAuthenticator(
-      connection, std::move(secure_message_delegate)));
 }
 
 DeviceToDeviceAuthenticator::DeviceToDeviceAuthenticator(
@@ -79,15 +71,15 @@ DeviceToDeviceAuthenticator::~DeviceToDeviceAuthenticator() {
 }
 
 void DeviceToDeviceAuthenticator::Authenticate(
-    const AuthenticationCallback& callback) {
+    AuthenticationCallback callback) {
   if (state_ != State::NOT_STARTED) {
     PA_LOG(ERROR)
         << "Authenticator was already used. Do not reuse this instance!";
-    callback.Run(Result::FAILURE, nullptr);
+    std::move(callback).Run(Result::FAILURE, nullptr);
     return;
   }
 
-  callback_ = callback;
+  callback_ = std::move(callback);
   if (!connection_->IsConnected()) {
     Fail("Not connected to remote device", Result::DISCONNECTED);
     return;
@@ -98,8 +90,8 @@ void DeviceToDeviceAuthenticator::Authenticate(
   // Generate a key-pair for this individual session.
   state_ = State::GENERATING_SESSION_KEYS;
   secure_message_delegate_->GenerateKeyPair(
-      base::Bind(&DeviceToDeviceAuthenticator::OnKeyPairGenerated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DeviceToDeviceAuthenticator::OnKeyPairGenerated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DeviceToDeviceAuthenticator::OnKeyPairGenerated(
@@ -117,8 +109,8 @@ void DeviceToDeviceAuthenticator::OnKeyPairGenerated(
   helper_->CreateHelloMessage(
       public_key, connection_->remote_device().persistent_symmetric_key(),
       secure_message_delegate_.get(),
-      base::Bind(&DeviceToDeviceAuthenticator::OnHelloMessageCreated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DeviceToDeviceAuthenticator::OnHelloMessageCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<base::OneShotTimer> DeviceToDeviceAuthenticator::CreateTimer() {
@@ -138,7 +130,7 @@ void DeviceToDeviceAuthenticator::OnHelloMessageCreated(
   // Add a timeout for receiving the [Responder Auth] message as a guard.
   timer_ = CreateTimer();
   timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kResponderAuthTimeoutSeconds),
+      FROM_HERE, base::Seconds(kResponderAuthTimeoutSeconds),
       base::BindOnce(&DeviceToDeviceAuthenticator::OnResponderAuthTimedOut,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -171,8 +163,8 @@ void DeviceToDeviceAuthenticator::OnResponderAuthValidated(
   helper_->CreateInitiatorAuthMessage(
       session_keys_, connection_->remote_device().persistent_symmetric_key(),
       responder_auth_message_, secure_message_delegate_.get(),
-      base::Bind(&DeviceToDeviceAuthenticator::OnInitiatorAuthCreated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DeviceToDeviceAuthenticator::OnInitiatorAuthCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DeviceToDeviceAuthenticator::OnInitiatorAuthCreated(
@@ -200,7 +192,7 @@ void DeviceToDeviceAuthenticator::Fail(const std::string& error_message,
   weak_ptr_factory_.InvalidateWeakPtrs();
   connection_->RemoveObserver(this);
   timer_.reset();
-  callback_.Run(result, nullptr);
+  std::move(callback_).Run(result, nullptr);
 }
 
 void DeviceToDeviceAuthenticator::Succeed() {
@@ -211,7 +203,7 @@ void DeviceToDeviceAuthenticator::Succeed() {
 
   state_ = State::AUTHENTICATION_SUCCESS;
   connection_->RemoveObserver(this);
-  callback_.Run(
+  std::move(callback_).Run(
       Result::SUCCESS,
       std::make_unique<DeviceToDeviceSecureContext>(
           std::move(secure_message_delegate_), session_keys_,
@@ -248,8 +240,8 @@ void DeviceToDeviceAuthenticator::OnMessageReceived(
         connection_->remote_device().persistent_symmetric_key(),
         local_session_private_key_, hello_message_,
         secure_message_delegate_.get(),
-        base::Bind(&DeviceToDeviceAuthenticator::OnResponderAuthValidated,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&DeviceToDeviceAuthenticator::OnResponderAuthValidated,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     Fail("Unexpected message received");
   }

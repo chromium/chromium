@@ -1,0 +1,45 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module subresource_redirect.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/origin.mojom";
+
+// Image loading hints passed by the browser to renderers. Send at most once
+// per page load from browser to renderer. The hints are provided to the
+// renderer and aid in redirecting these public images to compressed versions.
+struct CompressPublicImagesHints {
+  array<string> image_urls;
+};
+
+// This service is implemented in the browser process and is used by the
+// renderer to notify the state of https image compression. This interface is
+// associated with a frame.
+interface SubresourceRedirectService {
+  // Notifies an image fetch from the compression server had failed. When
+  // Retry-After response header is present |retry_after| indicates the time
+  // after which subsequent image fetches should be initiated, otherwise
+  // |retry_after| is zero.
+  NotifyCompressedImageFetchFailed(mojo_base.mojom.TimeDelta retry_after);
+
+  // Requests robots rules for the |origin|. The reply result
+  // |robots_rules_proto| will be empty when the rules fetch failed. The proto
+  // format will be subresource_redirect::proto::RobotsRules from
+  // robots_rules.proto
+  GetRobotsRules(url.mojom.Origin origin) => (string? robots_rules_proto);
+};
+
+// Render process implemented interface that receives hints from the browser
+// about https image compression.
+interface SubresourceRedirectHintsReceiver {
+  // Sends the public image URL hints from the browser to renderers.
+  SetCompressPublicImagesHints(CompressPublicImagesHints images_hints);
+
+
+  // Sets whether the current page is determined to be logged in. This guides
+  // whether subresource redirect based compression will be enabled. Sent from
+  // the browser to renderers on navigation commit.
+  SetLoggedInState(bool is_logged_in);
+};

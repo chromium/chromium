@@ -8,20 +8,19 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/frame_messages.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -34,8 +33,6 @@
 #include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_status.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
 
@@ -47,13 +44,15 @@ class NoTransferRequestDelegate : public WebContentsDelegate {
  public:
   NoTransferRequestDelegate() {}
 
-  bool ShouldTransferNavigation(bool is_main_frame_navigation) override {
+  NoTransferRequestDelegate(const NoTransferRequestDelegate&) = delete;
+  NoTransferRequestDelegate& operator=(const NoTransferRequestDelegate&) =
+      delete;
+
+  bool ShouldAllowRendererInitiatedCrossProcessNavigation(
+      bool is_main_frame_navigation) override {
     // Intentionally cancel the transfer.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoTransferRequestDelegate);
 };
 
 class CrossSiteTransferTest : public ContentBrowserTest {
@@ -73,17 +72,15 @@ class CrossSiteTransferTest : public ContentBrowserTest {
                                      bool should_replace_current_entry,
                                      bool should_wait_for_navigation) {
     std::unique_ptr<TestNavigationManager> navigation_manager =
-        should_wait_for_navigation
-            ? std::unique_ptr<TestNavigationManager>(
-                  new TestNavigationManager(window->web_contents(), url))
-            : nullptr;
+        should_wait_for_navigation ? std::make_unique<TestNavigationManager>(
+                                         window->web_contents(), url)
+                                   : nullptr;
     std::string script;
     if (should_replace_current_entry)
-      script = base::StringPrintf("location.replace('%s')", url.spec().c_str());
+      script = JsReplace("location.replace($1)", url);
     else
-      script = base::StringPrintf("location.href = '%s'", url.spec().c_str());
-    bool result = ExecuteScript(window, script);
-    EXPECT_TRUE(result);
+      script = JsReplace("location.href = $1", url);
+    EXPECT_TRUE(ExecJs(window, script));
     if (should_wait_for_navigation) {
       EXPECT_TRUE(navigation_manager->WaitForRequestStart());
       EXPECT_TRUE(navigation_manager->WaitForResponse());
@@ -287,16 +284,15 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
   std::string file_content("test-file-content");
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
-  ASSERT_LT(
-      0, base::WriteFile(file_path, file_content.data(), file_content.size()));
+  ASSERT_TRUE(base::WriteFile(file_path, file_content));
 
   base::RunLoop run_loop;
   // Fill out the form to refer to the test file.
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file_path, run_loop.QuitClosure()));
   shell()->web_contents()->SetDelegate(delegate.get());
-  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
-                            "document.getElementById('file').click();"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "document.getElementById('file').click();"));
   run_loop.Run();
 
   // Remember the old process id for a sanity check below.
@@ -306,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
   // Submit the form.
   TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
   EXPECT_TRUE(
-      ExecuteScript(shell(), "document.getElementById('file-form').submit();"));
+      ExecJs(shell(), "document.getElementById('file-form').submit();"));
   form_post_observer.Wait();
 
   // Verify that we arrived at the expected, redirected location.
@@ -325,12 +321,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
 
   // Verify that POST body got preserved by 307 redirect.  This expectation
   // comes from: https://tools.ietf.org/html/rfc7231#section-6.4.7
-  std::string actual_page_body;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell()->web_contents(),
-      "window.domAutomationController.send("
-      "document.getElementsByTagName('pre')[0].innerText);",
-      &actual_page_body));
+  std::string actual_page_body =
+      EvalJs(shell()->web_contents(),
+             "document.getElementsByTagName('pre')[0].innerText;")
+          .ExtractString();
   EXPECT_THAT(actual_page_body, ::testing::HasSubstr(file_content));
   EXPECT_THAT(actual_page_body,
               ::testing::HasSubstr(file_path.BaseName().AsUTF8Unsafe()));
@@ -356,16 +350,16 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
       embedded_test_server()->GetURL("initial-target.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), initial_target_url));
   WebContents* target_contents = shell()->web_contents();
-  EXPECT_TRUE(ExecuteScript(target_contents, "window.name = 'form-target';"));
+  EXPECT_TRUE(ExecJs(target_contents, "window.name = 'form-target';"));
 
   // Create a new window containing a form targeting |target_contents|.
   GURL form_url(embedded_test_server()->GetURL(
       "main.com", "/form_that_posts_cross_site.html"));
   Shell* other_window = OpenPopup(target_contents, form_url, "form-window");
   WebContents* form_contents = other_window->web_contents();
-  EXPECT_TRUE(ExecuteScript(
-      form_contents,
-      "document.getElementById('file-form').target = 'form-target';"));
+  EXPECT_TRUE(
+      ExecJs(form_contents,
+             "document.getElementById('file-form').target = 'form-target';"));
 
   // Verify the current locations and process placement of |target_contents|
   // and |form_contents|.
@@ -381,8 +375,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   std::string file_content("test-file-content");
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
-  ASSERT_LT(
-      0, base::WriteFile(file_path, file_content.data(), file_content.size()));
+  ASSERT_TRUE(base::WriteFile(file_path, file_content));
 
   base::RunLoop run_loop;
   // Fill out the form to refer to the test file.
@@ -391,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   form_contents->Focus();
   form_contents->SetDelegate(delegate.get());
   EXPECT_TRUE(
-      ExecuteScript(form_contents, "document.getElementById('file').click();"));
+      ExecJs(form_contents, "document.getElementById('file').click();"));
   run_loop.Run();
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -408,9 +401,9 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
       target_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
 
   // Submit the form and wait until the malicious renderer gets killed.
-  RenderProcessHostKillWaiter kill_waiter(
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(
       form_contents->GetMainFrame()->GetProcess());
-  EXPECT_TRUE(ExecuteScript(
+  EXPECT_TRUE(ExecJs(
       form_contents,
       "setTimeout(\n"
       "  function() { document.getElementById('file-form').submit(); },\n"
@@ -436,10 +429,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
   EXPECT_TRUE(NavigateToURL(shell(), attacker_page));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
-  RenderFrameHost* child_frame = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = root->child_at(0)->current_frame_host();
 
   // Attacker initiates a navigation to a cross-site document. Under --site-per-
   // process, these bytes must not be sent to the attacker process.
@@ -447,20 +440,19 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
       embedded_test_server()->GetURL("a.com", "/title1.html");
   TestNavigationManager target_navigation(shell()->web_contents(),
                                           target_resource);
-  EXPECT_TRUE(ExecuteScript(
-      shell()->web_contents()->GetMainFrame(),
-      base::StringPrintf("document.getElementById('child-0').src='%s'",
-                         target_resource.spec().c_str())));
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents()->GetMainFrame(),
+             base::StringPrintf("document.getElementById('child-0').src='%s'",
+                                target_resource.spec().c_str())));
 
   // Wait for the navigation to start.
   EXPECT_TRUE(target_navigation.WaitForRequestStart());
   target_navigation.ResumeNavigation();
 
-  // Inject a frame detach message. An attacker-controlled renderer could do
-  // this without also cancelling the pending navigation (as blink would, if you
-  // removed the iframe from the document via js).
-  child_frame->OnMessageReceived(
-      FrameHostMsg_Detach(child_frame->GetRoutingID()));
+  // Call a frame detach. An attacker-controlled renderer could do this without
+  // also cancelling the pending navigation (as blink would, if you removed the
+  // iframe from the document via js).
+  child_frame->DetachForTesting();
 
   // This should cancel the navigation.
   EXPECT_FALSE(target_navigation.WaitForResponse())

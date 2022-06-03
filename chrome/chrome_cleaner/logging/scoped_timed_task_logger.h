@@ -5,8 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_LOGGING_SCOPED_TIMED_TASK_LOGGER_H_
 #define CHROME_CHROME_CLEANER_LOGGING_SCOPED_TIMED_TASK_LOGGER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/time/time.h"
 

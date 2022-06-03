@@ -1,0 +1,21 @@
+Sanskrit hyphenation patterns (v0.6, 2011/09/14)
+
+(more info about the licence to be added later)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% File name: hyph-sa.tex
+%
+% Unicode hyphenation patterns for Sanskrit and Prakrit in transliteration,
+% and in Devanagari, Bengali, Kannada, Malayalam and Telugu scripts.
+%
+% Created:        April 1st, 2005
+% First release:  June 8th, 2006
+% Revised:        September 14th, 2011
+% Version:        0.6
+%
+% Created by Yves Codet. Special thanks to Jonathan Kew and Benjamin Varghese who provided very useful informations.
+%
+% Copyright 2006-2011 Yves Codet.
+% You may freely use, copy, modify and/or distribute this file.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

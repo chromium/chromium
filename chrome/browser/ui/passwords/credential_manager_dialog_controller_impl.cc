@@ -5,14 +5,14 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,7 +34,7 @@ CredentialManagerDialogControllerImpl::
 
 void CredentialManagerDialogControllerImpl::ShowAccountChooser(
     AccountChooserPrompt* dialog,
-    std::vector<std::unique_ptr<autofill::PasswordForm>> locals) {
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> locals) {
   DCHECK(!account_chooser_dialog_);
   DCHECK(!autosignin_dialog_);
   DCHECK(dialog);
@@ -61,7 +61,7 @@ CredentialManagerDialogControllerImpl::GetLocalForms() const {
   return local_credentials_;
 }
 
-base::string16 CredentialManagerDialogControllerImpl::GetAccoutChooserTitle()
+std::u16string CredentialManagerDialogControllerImpl::GetAccoutChooserTitle()
     const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE);
 }
@@ -70,7 +70,7 @@ bool CredentialManagerDialogControllerImpl::ShouldShowSignInButton() const {
   return local_credentials_.size() == 1;
 }
 
-base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninPromoTitle()
+std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninPromoTitle()
     const {
   int message_id = IsSyncingAutosignSetting(profile_)
                        ? IDS_AUTO_SIGNIN_FIRST_RUN_TITLE_MANY_DEVICES
@@ -78,7 +78,7 @@ base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninPromoTitle()
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninText()
+std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
     const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTO_SIGNIN_FIRST_RUN_TEXT,
@@ -87,12 +87,12 @@ base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninText()
 
 bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   return password_bubble_experiment::IsSmartLockUser(sync_service);
 }
 
 void CredentialManagerDialogControllerImpl::OnChooseCredentials(
-    const autofill::PasswordForm& password_form,
+    const password_manager::PasswordForm& password_form,
     password_manager::CredentialType credential_type) {
   if (local_credentials_.size() == 1) {
     password_manager::metrics_util::LogAccountChooserUserActionOneAccount(

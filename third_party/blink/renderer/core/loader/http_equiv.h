@@ -11,6 +11,7 @@
 namespace blink {
 
 class Document;
+class LocalDOMWindow;
 class Element;
 
 /**
@@ -34,21 +35,21 @@ class HttpEquiv {
  private:
   static void ProcessHttpEquivDefaultStyle(Document&,
                                            const AtomicString& content);
-  static void ProcessHttpEquivRefresh(Document&,
+  static void ProcessHttpEquivOriginTrial(LocalDOMWindow*,
+                                          const AtomicString& content);
+  static void ProcessHttpEquivRefresh(LocalDOMWindow*,
                                       const AtomicString& content,
                                       Element*);
   static void ProcessHttpEquivSetCookie(Document&,
                                         const AtomicString& content,
                                         Element*);
   static void ProcessHttpEquivContentSecurityPolicy(
-      Document&,
+      LocalDOMWindow*,
       const AtomicString& equiv,
       const AtomicString& content);
   static void ProcessHttpEquivAcceptCH(Document&, const AtomicString& content);
-  static void ProcessHttpEquivAcceptCHLifetime(Document&,
-                                               const AtomicString& content);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_HTTP_EQUIV_H_

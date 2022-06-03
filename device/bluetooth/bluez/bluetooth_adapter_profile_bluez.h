@@ -35,9 +35,8 @@ namespace bluez {
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
     : public bluez::BluetoothProfileServiceProvider::Delegate {
  public:
-  typedef base::Callback<void(
-      std::unique_ptr<BluetoothAdapterProfileBlueZ> profile)>
-      ProfileRegisteredCallback;
+  using ProfileRegisteredCallback = base::OnceCallback<void(
+      std::unique_ptr<BluetoothAdapterProfileBlueZ> profile)>;
 
   // Registers a profile with the BlueZ server for |uuid| with the
   // options |options|.  |success_callback| is provided with a newly
@@ -46,9 +45,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   static void Register(
       const device::BluetoothUUID& uuid,
       const bluez::BluetoothProfileManagerClient::Options& options,
-      const ProfileRegisteredCallback& success_callback,
-      const bluez::BluetoothProfileManagerClient::ErrorCallback&
-          error_callback);
+      ProfileRegisteredCallback success_callback,
+      bluez::BluetoothProfileManagerClient::ErrorCallback error_callback);
+
+  BluetoothAdapterProfileBlueZ(const BluetoothAdapterProfileBlueZ&) = delete;
+  BluetoothAdapterProfileBlueZ& operator=(const BluetoothAdapterProfileBlueZ&) =
+      delete;
 
   ~BluetoothAdapterProfileBlueZ() override;
 
@@ -68,7 +70,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   // Remove the delegate for a device. |unregistered_callback| will be called
   // if this unregisters the profile.
   void RemoveDelegate(const dbus::ObjectPath& device_path,
-                      const base::Closure& unregistered_callback);
+                      base::OnceClosure unregistered_callback);
 
   // Returns the number of delegates for this profile.
   size_t DelegateCount() const { return delegates_.size(); }
@@ -88,7 +90,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   void Cancel() override;
 
   // Called by dbus:: on completion of the D-Bus method to unregister a profile.
-  void OnUnregisterProfileError(const base::Closure& unregistered_callback,
+  void OnUnregisterProfileError(base::OnceClosure unregistered_callback,
                                 const std::string& error_name,
                                 const std::string& error_message);
 
@@ -108,8 +110,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterProfileBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterProfileBlueZ);
 };
 
 }  // namespace bluez

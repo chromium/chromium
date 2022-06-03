@@ -20,7 +20,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   float scale = 2.f;
   gfx::Size scaled_layer_size(20, 2000);
   gfx::Size viewport_size(1000, 1000);
-  float thumb_opacity = 0.2f;
+  float painted_opacity_ = 0.2f;
 
   LayerTreeImplTestBase impl;
 
@@ -38,7 +38,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   UIResourceBitmap track_bitmap(track_sk_bitmap);
   impl.host_impl()->CreateUIResource(track_uid, track_bitmap);
 
-  ScrollbarOrientation orientation = VERTICAL;
+  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
@@ -55,7 +55,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   scrollbar_layer_impl->SetScrollLayerLength(200.f);
   scrollbar_layer_impl->set_track_ui_resource_id(track_uid);
   scrollbar_layer_impl->set_thumb_ui_resource_id(thumb_uid);
-  scrollbar_layer_impl->set_thumb_opacity(thumb_opacity);
+  scrollbar_layer_impl->SetScrollbarPaintedOpacity(painted_opacity_);
   CopyProperties(impl.root_layer(), scrollbar_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -106,7 +106,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     EXPECT_EQ(scrollbar_layer_impl->contents_opaque(),
               thumb_quad->shared_quad_state->are_contents_opaque);
     for (size_t i = 0; i < 4; ++i) {
-      EXPECT_EQ(thumb_opacity, thumb_quad->vertex_opacity[i]);
+      EXPECT_EQ(painted_opacity_, thumb_quad->vertex_opacity[i]);
       EXPECT_EQ(1.f, track_quad->vertex_opacity[i]);
     }
   }
@@ -132,6 +132,17 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     EXPECT_EQ(2u, impl.quad_list().size());
     EXPECT_EQ(2u, partially_occluded_count);
   }
+}
+
+TEST(PaintedScrollbarLayerImplTest, PaintedOpacityChangesInvalidate) {
+  LayerTreeImplTestBase impl;
+  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
+  PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+      impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
+  EXPECT_FALSE(
+      scrollbar_layer_impl->LayerPropertyChangedNotFromPropertyTrees());
+  scrollbar_layer_impl->SetScrollbarPaintedOpacity(0.3f);
+  EXPECT_TRUE(scrollbar_layer_impl->LayerPropertyChangedNotFromPropertyTrees());
 }
 
 }  // namespace

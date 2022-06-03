@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/skia/sktypeface_factory.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
@@ -15,7 +15,7 @@ namespace blink {
 sk_sp<SkTypeface> SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
     int config_id,
     int ttc_index) {
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !defined(OS_WIN) && \
+#if !defined(OS_MAC) && !defined(OS_ANDROID) && !defined(OS_WIN) && \
     !defined(OS_FUCHSIA)
   sk_sp<SkFontConfigInterface> fci(SkFontConfigInterface::RefGlobal());
   SkFontConfigInterface::FontIdentity font_identity;
@@ -33,7 +33,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFilenameAndTtcIndex(
     const std::string& filename,
     int ttc_index) {
 #if !defined(OS_WIN) && !defined(OS_ANDROID) && !defined(OS_FUCHSIA) && \
-    !defined(OS_MACOSX)
+    !defined(OS_MAC)
   return SkTypeface::MakeFromFile(filename.c_str(), ttc_index);
 #else
   NOTREACHED();
@@ -45,7 +45,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFilenameAndTtcIndex(
 sk_sp<SkTypeface> SkTypeface_Factory::FromFamilyNameAndFontStyle(
     const std::string& family_name,
     const SkFontStyle& font_style) {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   auto fm(SkFontMgr::RefDefault());
   return fm->legacyMakeTypeface(family_name.c_str(), font_style);
 #else

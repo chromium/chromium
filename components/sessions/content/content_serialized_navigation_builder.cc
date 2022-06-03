@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/sessions/content/content_serialized_navigation_driver.h"
 #include "components/sessions/content/extended_info_handler.h"
@@ -16,18 +16,20 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_entry_restore_context.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
-#include "content/public/common/page_state.h"
 #include "content/public/common/referrer.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 
 namespace sessions {
 namespace {
 
-base::Optional<SerializedNavigationEntry::ReplacedNavigationEntryData>
+absl::optional<SerializedNavigationEntry::ReplacedNavigationEntryData>
 ConvertReplacedEntryData(
-    const base::Optional<content::ReplacedNavigationEntryData>& input_data) {
+    const absl::optional<content::ReplacedNavigationEntryData>& input_data) {
   if (!input_data.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   SerializedNavigationEntry::ReplacedNavigationEntryData output_data;
   output_data.first_committed_url = input_data->first_committed_url;
@@ -70,7 +72,6 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
   navigation.task_id_ = NavigationTaskId::Get(entry)->id();
   navigation.parent_task_id_ = NavigationTaskId::Get(entry)->parent_id();
   navigation.root_task_id_ = NavigationTaskId::Get(entry)->root_id();
-  navigation.children_task_ids_ = NavigationTaskId::Get(entry)->children_ids();
 
   for (const auto& handler_entry :
        ContentSerializedNavigationDriver::GetInstance()
@@ -89,9 +90,11 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
 std::unique_ptr<content::NavigationEntry>
 ContentSerializedNavigationBuilder::ToNavigationEntry(
     const SerializedNavigationEntry* navigation,
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    content::NavigationEntryRestoreContext* restore_context) {
   DCHECK(navigation);
   DCHECK(browser_context);
+  DCHECK(restore_context);
 
   // The initial values of the NavigationEntry are only temporary - they
   // will get cloberred by one of the SetPageState calls below.
@@ -100,7 +103,7 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   // in favor of using the data stored in |navigation->encoded_page_state|.
   GURL temporary_url;
   content::Referrer temporary_referrer;
-  base::Optional<url::Origin> temporary_initiator_origin;
+  absl::optional<url::Origin> temporary_initiator_origin;
 
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
@@ -122,7 +125,8 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
     // Ensure that the deserialized/restored content::NavigationEntry (and
     // the content::FrameNavigationEntry underneath) has a valid PageState.
     entry->SetPageState(
-        content::PageState::CreateFromURL(navigation->virtual_url_));
+        blink::PageState::CreateFromURL(navigation->virtual_url_),
+        restore_context);
 
     // The |navigation|-based referrer set below might be inconsistent with the
     // referrer embedded inside the PageState set above.  Nevertheless, to
@@ -141,8 +145,9 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
     // Note that PageState covers some of the values inside |navigation| (e.g.
     // URL, Referrer).  Calling SetPageState will clobber these values in
     // content::NavigationEntry (and FrameNavigationEntry(s) below).
-    entry->SetPageState(content::PageState::CreateFromEncodedData(
-        navigation->encoded_page_state_));
+    entry->SetPageState(blink::PageState::CreateFromEncodedData(
+                            navigation->encoded_page_state_),
+                        restore_context);
 
     // |navigation|-level referrer information is redundant wrt PageState, but
     // they should be consistent / in-sync.
@@ -180,12 +185,9 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
                                                entry.get());
   }
 
-  entry->InitRestoredEntry(browser_context);
-
-  // These fields should have default values.
+  // This field should have the default value.
   DCHECK_EQ(SerializedNavigationEntry::STATE_INVALID,
             navigation->blocked_state_);
-  DCHECK_EQ(0u, navigation->content_pack_categories_.size());
 
   return entry;
 }
@@ -195,10 +197,14 @@ std::vector<std::unique_ptr<content::NavigationEntry>>
 ContentSerializedNavigationBuilder::ToNavigationEntries(
     const std::vector<SerializedNavigationEntry>& navigations,
     content::BrowserContext* browser_context) {
+  std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
+      content::NavigationEntryRestoreContext::Create();
   std::vector<std::unique_ptr<content::NavigationEntry>> entries;
   entries.reserve(navigations.size());
-  for (const auto& navigation : navigations)
-    entries.push_back(ToNavigationEntry(&navigation, browser_context));
+  for (const auto& navigation : navigations) {
+    entries.push_back(
+        ToNavigationEntry(&navigation, browser_context, restore_context.get()));
+  }
   return entries;
 }
 

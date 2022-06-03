@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -23,7 +23,7 @@ namespace {
 
 // SCDynamicStore API does not exist on iOS.
 #if !defined(OS_IOS)
-const base::TimeDelta kRetryInterval = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kRetryInterval = base::Seconds(1);
 const int kMaxRetry = 5;
 
 // Maps SCError to an enum for UMA logging. These values are persisted to logs,
@@ -119,7 +119,11 @@ void DynamicStoreCallback(SCDynamicStoreRef /* store */,
 
 class NetworkConfigWatcherMacThread : public base::Thread {
  public:
-  NetworkConfigWatcherMacThread(NetworkConfigWatcherMac::Delegate* delegate);
+  explicit NetworkConfigWatcherMacThread(
+      NetworkConfigWatcherMac::Delegate* delegate);
+  NetworkConfigWatcherMacThread(const NetworkConfigWatcherMacThread&) = delete;
+  NetworkConfigWatcherMacThread& operator=(
+      const NetworkConfigWatcherMacThread&) = delete;
   ~NetworkConfigWatcherMacThread() override;
 
  protected:
@@ -141,8 +145,6 @@ class NetworkConfigWatcherMacThread : public base::Thread {
   int num_retry_;
 #endif  // !defined(OS_IOS)
   base::WeakPtrFactory<NetworkConfigWatcherMacThread> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigWatcherMacThread);
 };
 
 NetworkConfigWatcherMacThread::NetworkConfigWatcherMacThread(
@@ -162,12 +164,11 @@ NetworkConfigWatcherMacThread::~NetworkConfigWatcherMacThread() {
 }
 
 void NetworkConfigWatcherMacThread::Init() {
-  base::ThreadRestrictions::SetIOAllowed(true);
   delegate_->Init();
 
   // TODO(willchan): Look to see if there's a better signal for when it's ok to
   // initialize this, rather than just delaying it by a fixed time.
-  const base::TimeDelta kInitializationDelay = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kInitializationDelay = base::Seconds(1);
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NetworkConfigWatcherMacThread::InitNotifications,
@@ -264,9 +265,9 @@ NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
     : notifier_thread_(new NetworkConfigWatcherMacThread(delegate)) {
   // We create this notifier thread because the notification implementation
   // needs a thread with a CFRunLoop, and there's no guarantee that
-  // MessageLoopCurrent::Get() meets that criterion.
+  // CurrentThread::Get() meets that criterion.
   base::Thread::Options thread_options(base::MessagePumpType::UI, 0);
-  notifier_thread_->StartWithOptions(thread_options);
+  notifier_thread_->StartWithOptions(std::move(thread_options));
 }
 
 NetworkConfigWatcherMac::~NetworkConfigWatcherMac() {}

@@ -11,10 +11,10 @@
 @protocol GoogleServicesSettingsServiceDelegate <NSObject>
 
 // Called when the UISwitch from a TableViewItem is toggled.
-- (void)toggleSwitchItem:(TableViewItem*)switchItem withValue:(BOOL)value;
-
-// Called when cell is tapped.
-- (void)didSelectItem:(TableViewItem*)item;
+// |targetRect| UISwitch rect in table view system coordinate.
+- (void)toggleSwitchItem:(TableViewItem*)switchItem
+               withValue:(BOOL)value
+              targetRect:(CGRect)targetRect;
 
 @end
 

@@ -1,0 +1,44 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++list setSize=1
+++++++++listItem hierarchicalLevel=1 setSize=-1 posInSet=1
+++++++++++staticText name='Level 1, item 1 of set size unknown'
+++++++++++++inlineTextBox name='Level 1, item 1 of set size unknown'
+++++++list setSize=1
+++++++++listItem hierarchicalLevel=2 setSize=-1 posInSet=1
+++++++++++staticText name='++Level 2, item 1 of set size unknown'
+++++++++++++inlineTextBox name='++Level 2, item 1 of set size unknown'
+++++++list setSize=2
+++++++++listItem hierarchicalLevel=2 setSize=-1 posInSet=2
+++++++++++staticText name='++Level 2, item 2 of set size unknown'
+++++++++++++inlineTextBox name='++Level 2, item 2 of set size unknown'
+++++++list setSize=3
+++++++++listItem hierarchicalLevel=2 setSize=-1 posInSet=3
+++++++++++staticText name='++Level 2, item 3 of set size unknown'
+++++++++++++inlineTextBox name='++Level 2, item 3 of set size unknown'
+++++++list setSize=1
+++++++++listItem hierarchicalLevel=3 setSize=-1 posInSet=1
+++++++++++staticText name='++++Level 3, item 1 of set size unknown'
+++++++++++++inlineTextBox name='++++Level 3, item 1 of set size unknown'
+++++++list setSize=2
+++++++++listItem hierarchicalLevel=3 setSize=-1 posInSet=2
+++++++++++staticText name='++++Level 3, item 2 of set size unknown'
+++++++++++++inlineTextBox name='++++Level 3, item 2 of set size unknown'
+++++++list setSize=2
+++++++++listItem hierarchicalLevel=1 setSize=-1 posInSet=2
+++++++++++staticText name='Level 1, item 2 of set size unknown'
+++++++++++++inlineTextBox name='Level 1, item 2 of set size unknown'
+++++++list setSize=3
+++++++++listItem hierarchicalLevel=1 setSize=-1 posInSet=3
+++++++++++staticText name='Level 1, item 3 of set size unknown'
+++++++++++++inlineTextBox name='Level 1, item 3 of set size unknown'
+++++++list setSize=0
+++++++++list setSize=4
+++++++++++listItem hierarchicalLevel=2 setSize=4 posInSet=4
+++++++++++++staticText name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++++++++++++inlineTextBox name='Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4'
+++++++++list setSize=5
+++++++++++listItem hierarchicalLevel=2 setSize=5 posInSet=5
+++++++++++++staticText name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'
+++++++++++++++inlineTextBox name='Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5'

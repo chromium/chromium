@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 18: SUCCESS: pasting singleNestedNodeToCopy DID NOT keep the newline within the blockquote.
+CONSOLE MESSAGE: SUCCESS: pasting singleNestedNodeToCopy DID NOT keep the newline within the blockquote.
 This tests pasting a singly nested blockquote before, and outside of, another blockquote. This test does not work outside of DRT.
 
 line 2

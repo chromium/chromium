@@ -26,8 +26,6 @@ class FontSelector;
 // synchronously and a relayout is triggered.
 class LocalFontFaceSource final : public CSSFontFaceSource,
                                   public GarbageCollectedMixin {
-  USING_GARBAGE_COLLECTED_MIXIN(LocalFontFaceSource);
-
  public:
   LocalFontFaceSource(CSSFontFace*, FontSelector*, const String& font_name);
   ~LocalFontFaceSource() override;
@@ -44,7 +42,7 @@ class LocalFontFaceSource final : public CSSFontFaceSource,
 
   void BeginLoadIfNeeded() override;
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
   void NotifyFontUniqueNameLookupReady();
 
@@ -56,6 +54,10 @@ class LocalFontFaceSource final : public CSSFontFaceSource,
   scoped_refptr<SimpleFontData> CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) override;
+
+  void ReportFontLookup(const FontDescription& font_description,
+                        SimpleFontData* font_data,
+                        bool is_loading_fallback = false) override;
 
   class LocalFontHistograms {
     DISALLOW_NEW();
@@ -77,4 +79,4 @@ class LocalFontFaceSource final : public CSSFontFaceSource,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_LOCAL_FONT_FACE_SOURCE_H_

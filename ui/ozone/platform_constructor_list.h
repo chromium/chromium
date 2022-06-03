@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_CONSTRUCTOR_LIST_H_
 #define UI_OZONE_PLATFORM_CONSTRUCTOR_LIST_H_
 
-#include <memory>
 
 #include "ui/ozone/platform_list.h"
 

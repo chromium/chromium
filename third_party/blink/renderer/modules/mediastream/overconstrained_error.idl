@@ -6,7 +6,9 @@
 
 // TODO(guidou): OverconstrainedError should be an Error subclass and not an
 // interface. http://crbug.com/769726
-interface OverconstrainedError {
+[
+    Exposed=Window
+] interface OverconstrainedError {
     constructor(DOMString constraint, DOMString message);
     readonly attribute DOMString name;
     readonly attribute DOMString? message;

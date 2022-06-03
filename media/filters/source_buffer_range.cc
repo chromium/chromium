@@ -17,15 +17,15 @@ SourceBufferRange::SourceBufferRange(
     GapPolicy gap_policy,
     const BufferQueue& new_buffers,
     base::TimeDelta range_start_pts,
-    const InterbufferDistanceCB& interbuffer_distance_cb)
+    InterbufferDistanceCB interbuffer_distance_cb)
     : gap_policy_(gap_policy),
       next_buffer_index_(-1),
-      interbuffer_distance_cb_(interbuffer_distance_cb),
+      interbuffer_distance_cb_(std::move(interbuffer_distance_cb)),
       size_in_bytes_(0),
       range_start_pts_(range_start_pts),
       keyframe_map_index_base_(0) {
   DVLOG(3) << __func__;
-  DCHECK(interbuffer_distance_cb);
+  DCHECK(interbuffer_distance_cb_);
   CHECK(!new_buffers.empty());
   DCHECK(new_buffers.front()->is_key_frame());
   AppendBuffersToEnd(new_buffers, range_start_pts_);
@@ -537,7 +537,7 @@ base::TimeDelta SourceBufferRange::GetBufferedEndTimestamp() const {
   // report 1 microsecond for the last buffer's duration if it is a 0 duration
   // buffer.
   if (duration.is_zero())
-    duration = base::TimeDelta::FromMicroseconds(1);
+    duration = base::Microseconds(1);
 
   return GetEndTimestamp() + duration;
 }
@@ -665,7 +665,6 @@ bool SourceBufferRange::GetBuffersInRange(base::TimeDelta start,
     if (buffer->timestamp() + buffer->duration() <= start)
       continue;
 
-    DCHECK(buffer->is_key_frame());
     buffers->emplace_back(std::move(buffer));
   }
   return previous_size < buffers->size();

@@ -5,5 +5,15 @@
 #include "third_party/blink/renderer/platform/scheduler/test/web_fake_widget_scheduler.h"
 
 namespace blink {
-namespace scheduler {}  // namespace scheduler
+namespace scheduler {
+
+WebFakeWidgetScheduler::~WebFakeWidgetScheduler() {
+  // Delete the pending tasks because it may cause a leak.
+  // TODO(altimin): This will not prevent all leaks if someone holds a reference
+  // to the |input_task_runner_| and continues to post tasks after this class is
+  // destroyed.
+  input_task_runner_->TakePendingTasksForTesting();
+}
+
+}  // namespace scheduler
 }  // namespace blink

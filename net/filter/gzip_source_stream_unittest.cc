@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bit_cast.h"
 #include "base/callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"

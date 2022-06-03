@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/client/client_resource_provider.h"
@@ -251,7 +251,7 @@ TEST_F(ResourcePoolTest, LostResource) {
       viz::TransferableResource::ReturnResources(transferable_resources);
   ASSERT_EQ(1u, returned_resources.size());
   returned_resources[0].lost = true;
-  resource_provider_->ReceiveReturnsFromParent(returned_resources);
+  resource_provider_->ReceiveReturnsFromParent(std::move(returned_resources));
 
   EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
   resource_pool_->ReleaseResource(std::move(resource));
@@ -361,7 +361,8 @@ TEST_F(ResourcePoolTest, UpdateContentId) {
   gfx::Rect invalidated_rect;
   ResourcePool::InUsePoolResource reacquired_resource =
       resource_pool_->TryAcquireResourceForPartialRaster(
-          new_content_id, new_invalidated_rect, content_id, &invalidated_rect);
+          new_content_id, new_invalidated_rect, content_id, &invalidated_rect,
+          color_space);
   EXPECT_EQ(original_id, reacquired_resource.unique_id_for_testing());
   EXPECT_EQ(new_invalidated_rect, invalidated_rect);
   resource_pool_->ReleaseResource(std::move(reacquired_resource));
@@ -388,7 +389,7 @@ TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
   ResourcePool::InUsePoolResource reacquired_resource =
       resource_pool_->TryAcquireResourceForPartialRaster(
           content_ids[1], invalidated_rect, content_ids[0],
-          &new_invalidated_rect);
+          &new_invalidated_rect, color_space);
   EXPECT_FALSE(!!reacquired_resource);
   EXPECT_EQ(gfx::Rect(), new_invalidated_rect);
 
@@ -397,7 +398,8 @@ TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
 
   // Ensure that we cannot retrieve a resource based on the original content id.
   reacquired_resource = resource_pool_->TryAcquireResourceForPartialRaster(
-      content_ids[1], invalidated_rect, content_ids[0], &new_invalidated_rect);
+      content_ids[1], invalidated_rect, content_ids[0], &new_invalidated_rect,
+      color_space);
   EXPECT_FALSE(!!reacquired_resource);
   EXPECT_EQ(gfx::Rect(), new_invalidated_rect);
 
@@ -406,7 +408,7 @@ TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
   gfx::Rect total_invalidated_rect;
   reacquired_resource = resource_pool_->TryAcquireResourceForPartialRaster(
       content_ids[2], second_invalidated_rect, content_ids[1],
-      &total_invalidated_rect);
+      &total_invalidated_rect, color_space);
   EXPECT_EQ(original_id, reacquired_resource.unique_id_for_testing());
   EXPECT_EQ(expected_total_invalidated_rect, total_invalidated_rect);
   resource_pool_->ReleaseResource(std::move(reacquired_resource));
@@ -431,7 +433,7 @@ TEST_F(ResourcePoolTest, LargeInvalidatedRect) {
   ResourcePool::InUsePoolResource reacquired_resource =
       resource_pool_->TryAcquireResourceForPartialRaster(
           content_ids[1], large_invalidated_rect, content_ids[0],
-          &new_invalidated_rect);
+          &new_invalidated_rect, color_space);
   EXPECT_FALSE(!!reacquired_resource);
 
   // Release the original resource, returning it to the unused pool.
@@ -441,7 +443,7 @@ TEST_F(ResourcePoolTest, LargeInvalidatedRect) {
   // too large to compute the area for.
   resource = resource_pool_->TryAcquireResourceForPartialRaster(
       content_ids[2], large_invalidated_rect, content_ids[1],
-      &new_invalidated_rect);
+      &new_invalidated_rect, color_space);
   EXPECT_TRUE(!!resource);
   resource_pool_->ReleaseResource(std::move(resource));
 }

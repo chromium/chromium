@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl, SmartLockSignInEnabledState, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// clang-format on
+
 suite('Multidevice', function() {
   let smartLockSubPage = null;
   let browserProxy = null;
@@ -66,6 +78,7 @@ suite('Multidevice', function() {
     smartLockSubPage.remove();
 
     browserProxy.reset();
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test('Smart Lock enabled', function() {
@@ -175,12 +188,31 @@ suite('Multidevice', function() {
     });
   });
 
+  test('Deep link to smart lock on/off', async () => {
+    smartLockSubPage = createSmartLockSubPage();
+    setSuiteState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    setSmartLockFeatureState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+
+    const params = new URLSearchParams;
+    params.append('settingId', '203');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SMART_LOCK, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = getSmartLockFeatureToggleControl();
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Smart lock on/off toggle should be focused for settingId=203.');
+  });
+
   test('Smart Lock signin disabled by default', function() {
     smartLockSubPage = createSmartLockSubPage();
 
     const smartLockSignInRadio = getSmartLockSignInRadio();
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
   });
 
   test('Smart Lock signin enabled', function() {
@@ -191,11 +223,11 @@ suite('Multidevice', function() {
 
     const smartLockSignInRadio = getSmartLockSignInRadio();
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     return whenSignInEnabledSet.then(() => {
       assertEquals(
-          settings.SignInEnabledState.ENABLED, smartLockSignInRadio.selected);
+          settings.SmartLockSignInEnabledState.ENABLED, smartLockSignInRadio.selected);
     });
   });
 
@@ -204,13 +236,13 @@ suite('Multidevice', function() {
 
     const smartLockSignInRadio = getSmartLockSignInRadio();
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     cr.webUIListenerCallback('smart-lock-signin-enabled-changed', true);
     Polymer.dom.flush();
 
     assertEquals(
-        settings.SignInEnabledState.ENABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.ENABLED, smartLockSignInRadio.selected);
   });
 
   test('Smart Lock sign in successful authentication', function() {
@@ -218,7 +250,7 @@ suite('Multidevice', function() {
 
     const smartLockSignInRadio = getSmartLockSignInRadio();
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     // The password dialog is not visible.
     let passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
@@ -238,7 +270,7 @@ suite('Multidevice', function() {
     // Sign in radio is still disabled because the user has not authenticated
     // using the password dialog.
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     // Simulate the user entering a valid password into the dialog.
     passwordDialog.authToken = 'validAuthToken';
@@ -247,7 +279,7 @@ suite('Multidevice', function() {
 
     return browserProxy.whenCalled('getSmartLockSignInEnabled').then(params => {
       assertEquals(
-          settings.SignInEnabledState.ENABLED, smartLockSignInRadio.selected);
+          settings.SmartLockSignInEnabledState.ENABLED, smartLockSignInRadio.selected);
     });
   });
 
@@ -256,7 +288,7 @@ suite('Multidevice', function() {
 
     const smartLockSignInRadio = getSmartLockSignInRadio();
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     // The password dialog is not visible.
     let passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
@@ -276,7 +308,7 @@ suite('Multidevice', function() {
     // Sign in radio is still disabled because the user has not authenticated
     // using the password dialog.
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
 
     // Simulate the user closing the password dialog.
     passwordDialog.dispatchEvent(new CustomEvent('close'));
@@ -289,7 +321,7 @@ suite('Multidevice', function() {
     // The password dialog is closed and unauthenticated, so sign in is still
     // disabled.
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
   });
 
   test('Smart Lock disable sign in does not show password dialog', function() {
@@ -301,7 +333,7 @@ suite('Multidevice', function() {
 
     const smartLockSignInRadio = getSmartLockSignInRadio();
     assertEquals(
-        settings.SignInEnabledState.ENABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.ENABLED, smartLockSignInRadio.selected);
 
     // The password dialog is not visible.
     let passwordDialog = smartLockSubPage.$$('settings-password-prompt-dialog');
@@ -320,7 +352,7 @@ suite('Multidevice', function() {
 
     // Sign in radio is now disabled.
     assertEquals(
-        settings.SignInEnabledState.DISABLED, smartLockSignInRadio.selected);
+        settings.SmartLockSignInEnabledState.DISABLED, smartLockSignInRadio.selected);
   });
 
   test('Smart Lock sign in control enabled by default', function() {

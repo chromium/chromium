@@ -10,7 +10,6 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
 #include "base/macros.h"
 
 namespace remoting {
@@ -25,17 +24,20 @@ class TypedBuffer {
   TypedBuffer() : TypedBuffer(0) {}
 
   // Creates an instance of the object allocating a buffer of the given size.
-  explicit TypedBuffer(uint32_t length) : buffer_(NULL), length_(length) {
+  explicit TypedBuffer(uint32_t length) : buffer_(nullptr), length_(length) {
     if (length_ > 0)
       buffer_ = reinterpret_cast<T*>(new uint8_t[length_]);
   }
 
   TypedBuffer(TypedBuffer&& rvalue) : TypedBuffer() { Swap(rvalue); }
 
+  TypedBuffer(const TypedBuffer&) = delete;
+  TypedBuffer& operator=(const TypedBuffer&) = delete;
+
   ~TypedBuffer() {
     if (buffer_) {
       delete[] reinterpret_cast<uint8_t*>(buffer_);
-      buffer_ = NULL;
+      buffer_ = nullptr;
     }
   }
 
@@ -47,11 +49,11 @@ class TypedBuffer {
   // Accessors to get the owned buffer.
   // operator* and operator-> will assert() if there is no current buffer.
   T& operator*() const {
-    assert(buffer_ != NULL);
+    assert(buffer_);
     return *buffer_;
   }
   T* operator->() const  {
-    assert(buffer_ != NULL);
+    assert(buffer_);
     return buffer_;
   }
   T* get() const { return buffer_; }
@@ -79,8 +81,6 @@ class TypedBuffer {
 
   // Length of the owned buffer in bytes.
   uint32_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedBuffer);
 };
 
 }  // namespace remoting

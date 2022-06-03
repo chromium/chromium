@@ -24,34 +24,25 @@ CrashRecoveryManagerImpl::Factory*
     CrashRecoveryManagerImpl::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<CrashRecoveryManager>
-CrashRecoveryManagerImpl::Factory::NewInstance(
+std::unique_ptr<CrashRecoveryManager> CrashRecoveryManagerImpl::Factory::Create(
     NetworkStateHandler* network_state_handler,
     ActiveHost* active_host,
     HostScanCache* host_scan_cache) {
-  if (!factory_instance_)
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(network_state_handler, active_host,
+                                             host_scan_cache);
+  }
 
-  return factory_instance_->BuildInstance(network_state_handler, active_host,
-                                          host_scan_cache);
+  return base::WrapUnique(new CrashRecoveryManagerImpl(
+      network_state_handler, active_host, host_scan_cache));
 }
 
 // static
-void CrashRecoveryManagerImpl::Factory::SetInstanceForTesting(
-    Factory* factory) {
+void CrashRecoveryManagerImpl::Factory::SetFactoryForTesting(Factory* factory) {
   factory_instance_ = factory;
 }
 
 CrashRecoveryManagerImpl::Factory::~Factory() = default;
-
-std::unique_ptr<CrashRecoveryManager>
-CrashRecoveryManagerImpl::Factory::BuildInstance(
-    NetworkStateHandler* network_state_handler,
-    ActiveHost* active_host,
-    HostScanCache* host_scan_cache) {
-  return base::WrapUnique(new CrashRecoveryManagerImpl(
-      network_state_handler, active_host, host_scan_cache));
-}
 
 CrashRecoveryManagerImpl::CrashRecoveryManagerImpl(
     NetworkStateHandler* network_state_handler,
@@ -64,7 +55,7 @@ CrashRecoveryManagerImpl::CrashRecoveryManagerImpl(
 CrashRecoveryManagerImpl::~CrashRecoveryManagerImpl() = default;
 
 void CrashRecoveryManagerImpl::RestorePreCrashStateIfNecessary(
-    const base::Closure& on_restoration_finished) {
+    base::OnceClosure on_restoration_finished) {
   ActiveHost::ActiveHostStatus status = active_host_->GetActiveHostStatus();
   std::string active_host_device_id = active_host_->GetActiveHostDeviceId();
   std::string wifi_network_guid = active_host_->GetWifiNetworkGuid();
@@ -74,7 +65,7 @@ void CrashRecoveryManagerImpl::RestorePreCrashStateIfNecessary(
     // There was no active Tether session, so either the last TetherComponent
     // shutdown occurred normally (i.e., without a crash), or it occurred due
     // to a crash and there was no active host at the time of the crash.
-    on_restoration_finished.Run();
+    std::move(on_restoration_finished).Run();
     return;
   }
 
@@ -88,16 +79,17 @@ void CrashRecoveryManagerImpl::RestorePreCrashStateIfNecessary(
     PA_LOG(WARNING) << "Browser crashed while Tether connection attempt was in "
                     << "progress. Abandoning connection attempt.";
     active_host_->SetActiveHostDisconnected();
-    on_restoration_finished.Run();
+    std::move(on_restoration_finished).Run();
     return;
   }
 
-  RestoreConnectedState(on_restoration_finished, active_host_device_id,
-                        tether_network_guid, wifi_network_guid);
+  RestoreConnectedState(std::move(on_restoration_finished),
+                        active_host_device_id, tether_network_guid,
+                        wifi_network_guid);
 }
 
 void CrashRecoveryManagerImpl::RestoreConnectedState(
-    const base::Closure& on_restoration_finished,
+    base::OnceClosure on_restoration_finished,
     const std::string& active_host_device_id,
     const std::string& tether_network_guid,
     const std::string& wifi_network_guid) {
@@ -115,7 +107,7 @@ void CrashRecoveryManagerImpl::RestoreConnectedState(
         << "but the scan result for the active host was lost. Setting "
         << "the active host to DISCONNECTED.";
     active_host_->SetActiveHostDisconnected();
-    on_restoration_finished.Run();
+    std::move(on_restoration_finished).Run();
     return;
   }
 
@@ -136,7 +128,7 @@ void CrashRecoveryManagerImpl::RestoreConnectedState(
                   << "connection is no longer present. Setting the active host "
                   << "to DISCONNECTED.";
     active_host_->SetActiveHostDisconnected();
-    on_restoration_finished.Run();
+    std::move(on_restoration_finished).Run();
     return;
   }
 
@@ -147,15 +139,15 @@ void CrashRecoveryManagerImpl::RestoreConnectedState(
   network_state_handler_->AssociateTetherNetworkStateWithWifiNetwork(
       tether_network_guid, wifi_network_guid);
 
-  active_host_->GetActiveHost(
-      base::Bind(&CrashRecoveryManagerImpl::OnActiveHostFetched,
-                 weak_ptr_factory_.GetWeakPtr(), on_restoration_finished));
+  active_host_->GetActiveHost(base::BindOnce(
+      &CrashRecoveryManagerImpl::OnActiveHostFetched,
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_restoration_finished)));
 }
 
 void CrashRecoveryManagerImpl::OnActiveHostFetched(
-    const base::Closure& on_restoration_finished,
+    base::OnceClosure on_restoration_finished,
     ActiveHost::ActiveHostStatus active_host_status,
-    base::Optional<multidevice::RemoteDeviceRef> active_host,
+    absl::optional<multidevice::RemoteDeviceRef> active_host,
     const std::string& tether_network_guid,
     const std::string& wifi_network_guid) {
   DCHECK(ActiveHost::ActiveHostStatus::CONNECTED == active_host_status);
@@ -181,7 +173,7 @@ void CrashRecoveryManagerImpl::OnActiveHostFetched(
       active_host /* new_active_host */,
       tether_network_guid /* new_tether_network_guid */,
       wifi_network_guid /* new_wifi_network_guid */);
-  on_restoration_finished.Run();
+  std::move(on_restoration_finished).Run();
 }
 
 }  // namespace tether

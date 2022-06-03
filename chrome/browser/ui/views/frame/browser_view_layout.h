@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -21,6 +20,7 @@ class BrowserViewLayoutDelegate;
 class ImmersiveModeController;
 class InfoBarContainerView;
 class TabStrip;
+class TabStripRegionView;
 
 namespace gfx {
 class Point;
@@ -38,13 +38,14 @@ class WebContentsModalDialogHost;
 // The layout manager used in chrome browser.
 class BrowserViewLayout : public views::LayoutManager {
  public:
-  // The minimum width for the normal (tabbed) browser window's contents area.
-  // This should be wide enough that WebUI pages (e.g. chrome://settings) and
-  // the various associated WebUI dialogs (e.g. Import Bookmarks) can still be
-  // functional. This value provides a trade-off between browser usability and
-  // privacy - specifically, the ability to browse in a very small window, even
-  // on large monitors (which is why a minimum height is not specified). This
-  // value is used for the main browser window only, not for popups.
+  // The minimum width for the normal (tabbed or web app) browser window's
+  // contents area. This should be wide enough that WebUI pages (e.g.
+  // chrome://settings) and the various associated WebUI dialogs (e.g. Import
+  // Bookmarks) can still be functional. This value provides a trade-off between
+  // browser usability and privacy - specifically, the ability to browse in a
+  // very small window, even on large monitors (which is why a minimum height is
+  // not specified). This value is used for the main browser window only, not
+  // for popups.
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
 
   // |browser_view| may be null in tests.
@@ -52,14 +53,22 @@ class BrowserViewLayout : public views::LayoutManager {
                     gfx::NativeView host_view,
                     BrowserView* browser_view,
                     views::View* top_container,
-                    views::View* tab_strip_region_view,
+                    TabStripRegionView* tab_strip_region_view,
                     TabStrip* tab_strip,
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
+                    views::View* left_aligned_side_panel,
+                    views::View* left_aligned_side_panel_separator,
+                    views::View* right_aligned_side_panel,
+                    views::View* right_aligned_side_panel_separator,
+                    views::View* lens_side_panel,
                     ImmersiveModeController* immersive_mode_controller,
-                    views::View* web_footer_experiment,
                     views::View* contents_separator);
+
+  BrowserViewLayout(const BrowserViewLayout&) = delete;
+  BrowserViewLayout& operator=(const BrowserViewLayout&) = delete;
+
   ~BrowserViewLayout() override;
 
   // Sets or updates views that are not available when |this| is initialized.
@@ -67,6 +76,7 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_webui_tab_strip(views::View* webui_tab_strip) {
     webui_tab_strip_ = webui_tab_strip;
   }
+  void set_loading_bar(views::View* loading_bar) { loading_bar_ = loading_bar; }
   void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
     bookmark_bar_ = bookmark_bar;
   }
@@ -117,6 +127,11 @@ class BrowserViewLayout : public views::LayoutManager {
   // |contents_container_| and other views.
   void LayoutContentsContainerView(int top, int bottom);
 
+  // Layout the `side_panel`. This updates the passed in
+  // `contents_container_bounds` to accommodate the side panel.
+  void LayoutSidePanelView(views::View* side_panel,
+                           gfx::Rect& contents_container_bounds);
+
   // Updates |top_container_|'s bounds. The new bounds depend on the size of
   // the bookmark bar and the toolbar.
   void UpdateTopContainerBounds();
@@ -127,10 +142,6 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // Returns the y coordinate of the client area.
   int GetClientAreaTop();
-
-  // Layout the web-footer experiment if enabled, returns the top of the
-  // control. See https://crbug.com/993502.
-  int LayoutWebFooterExperiment(int bottom);
 
   // The delegate interface. May be a mock in tests.
   const std::unique_ptr<BrowserViewLayoutDelegate> delegate_;
@@ -145,15 +156,20 @@ class BrowserViewLayout : public views::LayoutManager {
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
   views::View* const top_container_;
-  views::View* const tab_strip_region_view_;
+  TabStripRegionView* const tab_strip_region_view_;
   views::View* const toolbar_;
   InfoBarContainerView* const infobar_container_;
   views::View* const contents_container_;
+  views::View* const left_aligned_side_panel_;
+  views::View* const left_aligned_side_panel_separator_;
+  views::View* const right_aligned_side_panel_;
+  views::View* const right_aligned_side_panel_separator_;
+  views::View* const lens_side_panel_;
   ImmersiveModeController* const immersive_mode_controller_;
-  views::View* const web_footer_experiment_;
   views::View* const contents_separator_;
 
   views::View* webui_tab_strip_ = nullptr;
+  views::View* loading_bar_ = nullptr;
   TabStrip* tab_strip_ = nullptr;
   BookmarkBarView* bookmark_bar_ = nullptr;
   views::View* download_shelf_ = nullptr;
@@ -174,11 +190,13 @@ class BrowserViewLayout : public views::LayoutManager {
   // The latest dialog bounds applied during a layout pass.
   gfx::Rect latest_dialog_bounds_;
 
+  // The latest contents bounds applied during a layout pass, in screen
+  // coordinates.
+  gfx::Rect latest_contents_bounds_;
+
   // The distance the web contents modal dialog is from the top of the window,
   // in pixels.
   int web_contents_modal_dialog_top_y_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewLayout);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_

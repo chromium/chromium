@@ -1,0 +1,55 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":metrics_utils_test",
+    ":test_support",
+    "modules:info_dialog_test",
+    "modules:module_descriptor_test",
+    "modules:module_header_test",
+    "modules:module_registry_test",
+    "modules:module_wrapper_test",
+    "modules:modules_test",
+    "modules/cart:module_test",
+    "modules/cart_v2:module_test",
+    "modules/drive:module_test",
+    "modules/drive_v2:module_test",
+    "modules/recipes_v2:module_test",
+    "modules/task_module:module_test",
+  ]
+  if (!is_official_build) {
+    deps += [
+      "modules/dummy:module_test",
+      "modules/photos:module_test",
+    ]
+  }
+}
+
+js_library("metrics_test_support") {
+}
+
+js_library("metrics_utils_test") {
+  deps = [
+    ":metrics_test_support",
+    "//chrome/browser/resources/new_tab_page",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("test_support") {
+  deps = [
+    "//chrome/browser/resources/new_tab_page",
+    "//chrome/test/data/webui:test_browser_proxy",
+  ]
+}

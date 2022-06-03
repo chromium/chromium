@@ -12,6 +12,7 @@ h1: [user-agent] {
 html #inspected.bar, b: [regular, 2:31-3:31; 4:16-5:16] {
     ['text-decoration':'none'] @[6:10-6:32] 
     ['text-decoration-line':'none'] @[undefined-undefined] 
+    ['text-decoration-thickness':'initial'] @[undefined-undefined] 
     ['text-decoration-style':'initial'] @[undefined-undefined] 
     ['text-decoration-color':'initial'] @[undefined-undefined] 
 }

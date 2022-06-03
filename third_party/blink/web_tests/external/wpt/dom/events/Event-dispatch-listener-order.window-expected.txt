@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Event-dispatch-listener-order assert_array_equals: property 4, expected "capturing SPAN" but got "bubbling SPAN"
-Harness: the test ran to completion.
-

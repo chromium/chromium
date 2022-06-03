@@ -1,0 +1,5 @@
+mixins: "//third_party/blink/renderer/modules/webgpu/COMMON_METADATA"
+wpt {
+  notify: YES
+}
+

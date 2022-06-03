@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/sync_sessions/tab_node_pool.h"
@@ -45,7 +45,7 @@ void TestSyncedTabDelegate::Navigate(const std::string& url,
                                                                    entry.get());
 
   entries_.push_back(std::move(entry));
-  page_language_per_index_.push_back(std::string());
+  page_language_per_index_.emplace_back();
   set_current_entry_index(GetCurrentEntryIndex() + 1);
   notify_cb_.Run(this);
 }

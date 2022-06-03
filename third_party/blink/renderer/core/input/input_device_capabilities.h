@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_INPUT_DEVICE_CAPABILITIES_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/input/input_device_capabilities_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
+
+class InputDeviceCapabilitiesInit;
 
 class CORE_EXPORT InputDeviceCapabilities final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -50,7 +51,7 @@ class InputDeviceCapabilitiesConstants final
   // |firesTouchEvents| set to value of |firesTouch|.
   InputDeviceCapabilities* FiresTouchEvents(bool fires_touch);
 
-  void Trace(blink::Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(fires_touch_events_);
     visitor->Trace(doesnt_fire_touch_events_);
   }

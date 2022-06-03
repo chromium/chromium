@@ -4,6 +4,11 @@
 
 #include "ui/gfx/win/hwnd_util.h"
 
+#include <windows.h>
+
+#include "base/debug/gdi_debug_util_win.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/win/win_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -49,22 +54,18 @@ void AdjustWindowToFit(HWND hwnd, const RECT& bounds, bool fit_to_monitor) {
 
 // Don't inline these functions so they show up in crash reports.
 
-NOINLINE void CrashOutOfMemory() {
-  PLOG(FATAL);
-}
-
-NOINLINE void CrashAccessDenied() {
-  PLOG(FATAL);
+NOINLINE void CrashAccessDenied(DWORD last_error) {
+  LOG(FATAL) << last_error;
 }
 
 // Crash isn't one of the ones we commonly see.
-NOINLINE void CrashOther() {
-  PLOG(FATAL);
+NOINLINE void CrashOther(DWORD last_error) {
+  LOG(FATAL) << last_error;
 }
 
 }  // namespace
 
-base::string16 GetClassName(HWND window) {
+std::wstring GetClassName(HWND window) {
   // GetClassNameW will return a truncated result (properly null terminated) if
   // the given buffer is not large enough.  So, it is not possible to determine
   // that we got the entire class name if the result is exactly equal to the
@@ -181,20 +182,20 @@ void CenterAndSizeWindow(HWND parent,
   AdjustWindowToFit(window, window_bounds, !parent);
 }
 
-void CheckWindowCreated(HWND hwnd) {
+void CheckWindowCreated(HWND hwnd, DWORD last_error) {
   if (!hwnd) {
-    switch (GetLastError()) {
+    switch (last_error) {
       case ERROR_NOT_ENOUGH_MEMORY:
-        CrashOutOfMemory();
+        base::debug::CollectGDIUsageAndDie();
         break;
       case ERROR_ACCESS_DENIED:
-        CrashAccessDenied();
+        CrashAccessDenied(last_error);
         break;
       default:
-        CrashOther();
+        CrashOther(last_error);
         break;
     }
-    PLOG(FATAL);
+    LOG(FATAL) << last_error;
   }
 }
 

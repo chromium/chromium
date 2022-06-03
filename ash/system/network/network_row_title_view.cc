@@ -4,9 +4,10 @@
 
 #include "ash/system/network/network_row_title_view.h"
 
-#include "ash/system/tray/tray_popup_item_style.h"
+#include <string>
+
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -25,8 +26,10 @@ NetworkRowTitleView::NetworkRowTitleView(int title_message_id)
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  TrayPopupItemStyle title_style(TrayPopupItemStyle::FontStyle::SUB_HEADER);
-  title_style.SetupLabel(title_);
+  title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(title_,
+                                   TrayPopupUtils::FontStyle::kSubHeader);
   title_->SetLineHeight(kLineHeight);
   title_->SetText(l10n_util::GetStringUTF16(title_message_id));
   AddChildView(title_);

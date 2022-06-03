@@ -1,0 +1,2 @@
+Test that the profiler can record a profile with cpu throttling enabled.
+

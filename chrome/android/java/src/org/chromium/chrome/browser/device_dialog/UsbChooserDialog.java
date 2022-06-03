@@ -13,13 +13,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.omnibox.OmniboxUrlEmphasizer;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
+import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * A dialog for showing available USB devices. This dialog is shown when a website requests to
@@ -37,11 +39,17 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
     long mNativeUsbChooserDialogPtr;
 
     /**
+     * The current profile when the dialog is created.
+     */
+    private final Profile mProfile;
+
+    /**
      * Creates the UsbChooserDialog.
      */
     @VisibleForTesting
-    UsbChooserDialog(long nativeUsbChooserDialogPtr) {
+    UsbChooserDialog(long nativeUsbChooserDialogPtr, Profile profile) {
         mNativeUsbChooserDialogPtr = nativeUsbChooserDialogPtr;
+        mProfile = profile;
     }
 
     /**
@@ -55,17 +63,16 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
     @VisibleForTesting
     void show(Activity activity, String origin, int securityLevel) {
         // Emphasize the origin.
-        Profile profile = Profile.getLastUsedProfile();
         SpannableString originSpannableString = new SpannableString(origin);
 
-        assert activity instanceof ChromeBaseAppCompatActivity;
-        final boolean useDarkColors = !((ChromeBaseAppCompatActivity) activity)
-                                               .getNightModeStateProvider()
-                                               .isInNightMode();
+        final boolean useDarkColors = !ColorUtils.inNightMode(activity);
 
-        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, activity.getResources(), profile,
-                securityLevel, false /* isInternalPage */, useDarkColors,
-                true /* emphasizeHttpsScheme */);
+        ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
+                new ChromeAutocompleteSchemeClassifier(mProfile);
+        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, activity.getResources(),
+                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
+                useDarkColors, true /* emphasizeHttpsScheme */);
+        chromeAutocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
                 new SpannableString(activity.getString(R.string.usb_chooser_dialog_prompt, origin));
@@ -94,7 +101,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
         ItemChooserDialog.ItemChooserLabels labels =
                 new ItemChooserDialog.ItemChooserLabels(title, searching, noneFound, statusActive,
                         statusIdleNoneFound, statusIdleSomeFound, positiveButton);
-        mItemChooserDialog = new ItemChooserDialog(activity, this, labels);
+        mItemChooserDialog = new ItemChooserDialog(activity, activity.getWindow(), this, labels);
     }
 
     @Override
@@ -111,11 +118,11 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
 
     @CalledByNative
     private static UsbChooserDialog create(WindowAndroid windowAndroid, String origin,
-            int securityLevel, long nativeUsbChooserDialogPtr) {
+            int securityLevel, Profile profile, long nativeUsbChooserDialogPtr) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
 
-        UsbChooserDialog dialog = new UsbChooserDialog(nativeUsbChooserDialogPtr);
+        UsbChooserDialog dialog = new UsbChooserDialog(nativeUsbChooserDialogPtr, profile);
         dialog.show(activity, origin, securityLevel);
         return dialog;
     }

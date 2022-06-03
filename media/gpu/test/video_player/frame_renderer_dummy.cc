@@ -94,7 +94,7 @@ void FrameRendererDummy::RenderFrame(scoped_refptr<VideoFrame> video_frame) {
   // immediately released for reuse. Only frames dropped due to slow decoding
   // will be counted as dropped frames.
   base::AutoLock auto_lock(renderer_lock_);
-  if (!video_frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM)) {
+  if (!video_frame->metadata().end_of_stream) {
     if (frames_to_drop_rendering_slow_ > 0) {
       frames_to_drop_rendering_slow_--;
       return;
@@ -133,11 +133,12 @@ scoped_refptr<VideoFrame> FrameRendererDummy::CreateVideoFrame(
   // Create a dummy video frame. No actual rendering will be done but the video
   // frame's properties such as timestamp will be used.
   // TODO(dstaessens): Remove this function when allocate mode is deprecated.
-  base::Optional<VideoFrameLayout> layout =
+  absl::optional<VideoFrameLayout> layout =
       CreateVideoFrameLayout(pixel_format, size);
   DCHECK(layout);
-  return VideoFrame::WrapExternalDataWithLayout(*layout, gfx::Rect(size), size,
-                                                nullptr, 0, base::TimeDelta());
+  return VideoFrame::CreateFrameWithLayout(*layout, gfx::Rect(size), size,
+                                           base::TimeDelta(),
+                                           /*zero_initialize_memory=*/true);
 }
 
 uint64_t FrameRendererDummy::FramesDropped() const {
@@ -174,7 +175,7 @@ void FrameRendererDummy::RenderFrameTask() {
     frames_to_drop_decoding_slow_++;
   }
 
-  if (!active_frame_->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM)) {
+  if (!active_frame_->metadata().end_of_stream) {
     ScheduleNextRenderFrameTask();
   } else {
     next_frame_time_ = base::TimeTicks();
@@ -213,10 +214,8 @@ void FrameRendererDummy::ScheduleNextRenderFrameTask() {
     //   Vsync. This might result in one or more frames getting dropped.
     next_render_time =
         std::max(now + vsync_interval_duration_, next_frame_time_);
-    int64_t num_intervals_timebase =
-        (next_render_time - vsync_timebase_) / vsync_interval_duration_;
-    next_render_time =
-        vsync_timebase_ + (num_intervals_timebase * vsync_interval_duration_);
+    next_render_time -=
+        (next_render_time - vsync_timebase_) % vsync_interval_duration_;
   }
 
   // The time at which the next frame will be rendered might be later then the

@@ -5,24 +5,31 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
-#include "third_party/blink/renderer/modules/imagecapture/point_2d.h"
-#include "third_party/blink/renderer/modules/native_file_system/native_file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/native_file_system/native_file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
-#include "third_party/blink/renderer/modules/shapedetection/detected_barcode.h"
-#include "third_party/blink/renderer/modules/shapedetection/detected_face.h"
-#include "third_party/blink/renderer/modules/shapedetection/detected_text.h"
-#include "third_party/blink/renderer/modules/shapedetection/landmark.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/decoder_buffer_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 
 namespace blink {
 
@@ -51,9 +58,9 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           ExecutionContext::From(GetScriptState()), name,
           static_cast<mojom::blink::FileSystemType>(raw_type), KURL(root_url));
     }
-    case kNativeFileSystemFileHandleTag:
-    case kNativeFileSystemDirectoryHandleTag:
-      return ReadNativeFileSystemHandle(tag);
+    case kFileSystemFileHandleTag:
+    case kFileSystemDirectoryHandleTag:
+      return ReadFileSystemHandle(tag);
     case kRTCCertificateTag: {
       String pem_private_key;
       String pem_certificate;
@@ -70,65 +77,18 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
         return nullptr;
       return MakeGarbageCollected<RTCCertificate>(std::move(certificate));
     }
-    case kDetectedBarcodeTag: {
-      String raw_value;
-      if (!ReadUTF8String(&raw_value))
-        return nullptr;
-      DOMRectReadOnly* bounding_box = ReadDOMRectReadOnly();
-      if (!bounding_box)
-        return nullptr;
-      // TODO(crbug.com/938663): add deserialization for |format|.
-      shape_detection::mojom::BarcodeFormat format =
-          shape_detection::mojom::BarcodeFormat::UNKNOWN;
-      uint32_t corner_points_length;
-      if (!ReadUint32(&corner_points_length))
-        return nullptr;
-      HeapVector<Member<Point2D>> corner_points;
-      for (uint32_t i = 0; i < corner_points_length; i++) {
-        Point2D* point = Point2D::Create();
-        if (!ReadPoint2D(point))
-          return nullptr;
-        corner_points.push_back(point);
-      }
-      return MakeGarbageCollected<DetectedBarcode>(raw_value, bounding_box,
-                                                   format, corner_points);
-    }
-    case kDetectedFaceTag: {
-      DOMRectReadOnly* bounding_box = ReadDOMRectReadOnly();
-      if (!bounding_box)
-        return nullptr;
-      uint32_t landmarks_length;
-      if (!ReadUint32(&landmarks_length))
-        return nullptr;
-      HeapVector<Member<Landmark>> landmarks;
-      for (uint32_t i = 0; i < landmarks_length; i++) {
-        Landmark* landmark = Landmark::Create();
-        if (!ReadLandmark(landmark))
-          return nullptr;
-        landmarks.push_back(landmark);
-      }
-      return MakeGarbageCollected<DetectedFace>(bounding_box, landmarks);
-    }
-    case kDetectedTextTag: {
-      String raw_value;
-      if (!ReadUTF8String(&raw_value))
-        return nullptr;
-      DOMRectReadOnly* bounding_box = ReadDOMRectReadOnly();
-      if (!bounding_box)
-        return nullptr;
-      uint32_t corner_points_length;
-      if (!ReadUint32(&corner_points_length))
-        return nullptr;
-      HeapVector<Member<Point2D>> corner_points;
-      for (uint32_t i = 0; i < corner_points_length; i++) {
-        Point2D* point = Point2D::Create();
-        if (!ReadPoint2D(point))
-          return nullptr;
-        corner_points.push_back(point);
-      }
-      return MakeGarbageCollected<DetectedText>(raw_value, bounding_box,
-                                                corner_points);
-    }
+    case kRTCEncodedAudioFrameTag:
+      return ReadRTCEncodedAudioFrame();
+    case kRTCEncodedVideoFrameTag:
+      return ReadRTCEncodedVideoFrame();
+    case kAudioDataTag:
+      return ReadAudioData();
+    case kVideoFrameTag:
+      return ReadVideoFrame();
+    case kEncodedAudioChunkTag:
+      return ReadEncodedAudioChunk();
+    case kEncodedVideoChunkTag:
+      return ReadEncodedVideoChunk();
     default:
       break;
   }
@@ -258,12 +218,12 @@ bool KeyUsagesFromWireFormat(uint32_t raw_usages,
 
 CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
   // Read params.
-  uint8_t raw_key_type;
-  if (!ReadOneByte(&raw_key_type))
+  uint8_t raw_key_byte;
+  if (!ReadOneByte(&raw_key_byte))
     return nullptr;
   WebCryptoKeyAlgorithm algorithm;
   WebCryptoKeyType key_type = kWebCryptoKeyTypeSecret;
-  switch (raw_key_type) {
+  switch (raw_key_byte) {
     case kAesKeyTag: {
       uint32_t raw_id;
       WebCryptoAlgorithmId id;
@@ -363,38 +323,10 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
   return MakeGarbageCollected<CryptoKey>(key);
 }
 
-bool V8ScriptValueDeserializerForModules::ReadLandmark(Landmark* landmark) {
-  String type;
-  if (!ReadUTF8String(&type))
-    return false;
-  uint32_t locations_length;
-  if (!ReadUint32(&locations_length))
-    return false;
-  HeapVector<Member<Point2D>> locations;
-  for (uint32_t i = 0; i < locations_length; i++) {
-    Point2D* location = Point2D::Create();
-    if (!ReadPoint2D(location))
-      return false;
-    locations.push_back(location);
-  }
-  landmark->setType(type);
-  landmark->setLocations(locations);
-  return true;
-}
-
-bool V8ScriptValueDeserializerForModules::ReadPoint2D(Point2D* point) {
-  double x = 0, y = 0;
-  if (!ReadDouble(&x) || !ReadDouble(&y))
-    return false;
-  point->setX(x);
-  point->setY(y);
-  return true;
-}
-
-NativeFileSystemHandle*
-V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
+FileSystemHandle* V8ScriptValueDeserializerForModules::ReadFileSystemHandle(
     SerializationTag tag) {
-  if (!RuntimeEnabledFeatures::CloneableNativeFileSystemHandlesEnabled()) {
+  if (!RuntimeEnabledFeatures::FileSystemAccessEnabled(
+          ExecutionContext::From(GetScriptState()))) {
     return nullptr;
   }
 
@@ -405,45 +337,52 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
   }
 
   // Find the FileSystemHandle's token.
-  SerializedScriptValue::NativeFileSystemTokensArray& tokens_array =
-      GetSerializedScriptValue()->NativeFileSystemTokens();
+  SerializedScriptValue::FileSystemAccessTokensArray& tokens_array =
+      GetSerializedScriptValue()->FileSystemAccessTokens();
   if (token_index >= tokens_array.size()) {
     return nullptr;
   }
-  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> token(
+
+  // IndexedDB code assumes that deserializing a SSV is non-destructive. So
+  // rather than consuming the token here instead we clone it.
+  mojo::Remote<mojom::blink::FileSystemAccessTransferToken> token(
       std::move(tokens_array[token_index]));
   if (!token) {
     return nullptr;
   }
 
-  // Use the NativeFileSystemManager to redeem the token to clone the
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token_clone;
+  token->Clone(token_clone.InitWithNewPipeAndPassReceiver());
+  tokens_array[token_index] = std::move(token_clone);
+
+  // Use the FileSystemAccessManager to redeem the token to clone the
   // FileSystemHandle.
   ExecutionContext* execution_context =
       ExecutionContext::From(GetScriptState());
-  mojo::Remote<mojom::blink::NativeFileSystemManager>
-      native_file_system_manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager>
+      file_system_access_manager;
   execution_context->GetBrowserInterfaceBroker().GetInterface(
-      native_file_system_manager.BindNewPipeAndPassReceiver());
+      file_system_access_manager.BindNewPipeAndPassReceiver());
 
   // Clone the FileSystemHandle object.
   switch (tag) {
-    case kNativeFileSystemFileHandleTag: {
-      mojo::PendingRemote<mojom::blink::NativeFileSystemFileHandle> file_handle;
+    case kFileSystemFileHandleTag: {
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle> file_handle;
 
-      native_file_system_manager->GetFileHandleFromToken(
-          std::move(token), file_handle.InitWithNewPipeAndPassReceiver());
+      file_system_access_manager->GetFileHandleFromToken(
+          token.Unbind(), file_handle.InitWithNewPipeAndPassReceiver());
 
-      return MakeGarbageCollected<NativeFileSystemFileHandle>(
-          execution_context, name, std::move(file_handle));
+      return MakeGarbageCollected<FileSystemFileHandle>(execution_context, name,
+                                                        std::move(file_handle));
     }
-    case kNativeFileSystemDirectoryHandleTag: {
-      mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>
+    case kFileSystemDirectoryHandleTag: {
+      mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
           directory_handle;
 
-      native_file_system_manager->GetDirectoryHandleFromToken(
-          std::move(token), directory_handle.InitWithNewPipeAndPassReceiver());
+      file_system_access_manager->GetDirectoryHandleFromToken(
+          token.Unbind(), directory_handle.InitWithNewPipeAndPassReceiver());
 
-      return MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
+      return MakeGarbageCollected<FileSystemDirectoryHandle>(
           execution_context, name, std::move(directory_handle));
     }
     default: {
@@ -451,6 +390,136 @@ V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
       return nullptr;
     }
   }
+}
+
+RTCEncodedAudioFrame*
+V8ScriptValueDeserializerForModules::ReadRTCEncodedAudioFrame() {
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<RTCEncodedAudioFramesAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& frames = attachment->EncodedAudioFrames();
+  if (index >= frames.size())
+    return nullptr;
+
+  return MakeGarbageCollected<RTCEncodedAudioFrame>(frames[index]);
+}
+
+RTCEncodedVideoFrame*
+V8ScriptValueDeserializerForModules::ReadRTCEncodedVideoFrame() {
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<RTCEncodedVideoFramesAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& frames = attachment->EncodedVideoFrames();
+  if (index >= frames.size())
+    return nullptr;
+
+  return MakeGarbageCollected<RTCEncodedVideoFrame>(frames[index]);
+}
+
+AudioData* V8ScriptValueDeserializerForModules::ReadAudioData() {
+  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()->GetAttachmentIfExists<AudioDataAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& audio_buffers = attachment->AudioBuffers();
+  if (index >= attachment->size())
+    return nullptr;
+
+  return MakeGarbageCollected<AudioData>(audio_buffers[index]);
+}
+
+VideoFrame* V8ScriptValueDeserializerForModules::ReadVideoFrame() {
+  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()->GetAttachmentIfExists<VideoFrameAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& handles = attachment->Handles();
+  if (index >= attachment->size())
+    return nullptr;
+
+  return MakeGarbageCollected<VideoFrame>(handles[index]);
+}
+
+EncodedAudioChunk*
+V8ScriptValueDeserializerForModules::ReadEncodedAudioChunk() {
+  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<DecoderBufferAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& buffers = attachment->Buffers();
+  if (index >= attachment->size())
+    return nullptr;
+
+  return MakeGarbageCollected<EncodedAudioChunk>(buffers[index]);
+}
+
+EncodedVideoChunk*
+V8ScriptValueDeserializerForModules::ReadEncodedVideoChunk() {
+  if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index))
+    return nullptr;
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<DecoderBufferAttachment>();
+  if (!attachment)
+    return nullptr;
+
+  const auto& buffers = attachment->Buffers();
+  if (index >= attachment->size())
+    return nullptr;
+
+  return MakeGarbageCollected<EncodedVideoChunk>(buffers[index]);
 }
 
 }  // namespace blink

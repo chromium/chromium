@@ -18,6 +18,11 @@ namespace remoting {
 class SecurityKeyMessageWriterImpl : public SecurityKeyMessageWriter {
  public:
   explicit SecurityKeyMessageWriterImpl(base::File output_file);
+
+  SecurityKeyMessageWriterImpl(const SecurityKeyMessageWriterImpl&) = delete;
+  SecurityKeyMessageWriterImpl& operator=(const SecurityKeyMessageWriterImpl&) =
+      delete;
+
   ~SecurityKeyMessageWriterImpl() override;
 
  private:
@@ -31,8 +36,6 @@ class SecurityKeyMessageWriterImpl : public SecurityKeyMessageWriter {
 
   base::File output_stream_;
   bool write_failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageWriterImpl);
 };
 
 }  // namespace remoting

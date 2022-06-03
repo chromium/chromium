@@ -15,11 +15,6 @@
 
 namespace blink {
 
-void BlockPaintInvalidator::ClearPreviousVisualRects() {
-  block_.GetFrame()->Selection().ClearPreviousCaretVisualRect(block_);
-  block_.GetFrame()->GetPage()->GetDragCaret().ClearPreviousVisualRect(block_);
-}
-
 void BlockPaintInvalidator::InvalidatePaint(
     const PaintInvalidatorContext& context) {
   BoxPaintInvalidator(block_, context).InvalidatePaint();

@@ -13,8 +13,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -37,6 +39,10 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
   // initialize it correctly.
   HttpBasicStream(std::unique_ptr<ClientSocketHandle> connection,
                   bool using_proxy);
+
+  HttpBasicStream(const HttpBasicStream&) = delete;
+  HttpBasicStream& operator=(const HttpBasicStream&) = delete;
+
   ~HttpBasicStream() override;
 
   // HttpStream methods:
@@ -91,6 +97,10 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
 
+  const std::vector<std::string>& GetDnsAliases() const override;
+
+  base::StringPiece GetAcceptChViaAlps() const override;
+
  private:
   HttpStreamParser* parser() const { return state_.parser(); }
 
@@ -99,8 +109,6 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
   HttpBasicState state_;
   base::TimeTicks confirm_handshake_end_;
   RequestHeadersCallback request_headers_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpBasicStream);
 };
 
 }  // namespace net

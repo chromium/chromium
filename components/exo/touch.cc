@@ -4,6 +4,7 @@
 
 #include "components/exo/touch.h"
 
+#include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
@@ -12,25 +13,13 @@
 #include "components/exo/touch_stylus_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
 namespace {
-
-// Helper function that returns an iterator to the first item in |vector|
-// with |value|.
-template <typename T, typename U>
-typename T::iterator FindVectorItem(T& vector, U value) {
-  return std::find(vector.begin(), vector.end(), value);
-}
-
-// Helper function that returns true if |vector| contains an item with |value|.
-template <typename T, typename U>
-bool VectorContainsItem(T& vector, U value) {
-  return FindVectorItem(vector, value) != vector.end();
-}
 
 gfx::PointF EventLocationInWindow(ui::TouchEvent* event, aura::Window* window) {
   ui::Layer* root = window->GetRootWindow()->layer();
@@ -54,12 +43,11 @@ Touch::Touch(TouchDelegate* delegate, Seat* seat)
 }
 
 Touch::~Touch() {
+  WMHelper::GetInstance()->RemovePreTargetHandler(this);
   delegate_->OnTouchDestroying(this);
   if (HasStylusDelegate())
     stylus_delegate_->OnTouchDestroying(this);
-  if (focus_)
-    focus_->RemoveSurfaceObserver(this);
-  WMHelper::GetInstance()->RemovePreTargetHandler(this);
+  CancelAllTouches();
 }
 
 void Touch::SetStylusDelegate(TouchStylusDelegate* delegate) {
@@ -74,90 +62,98 @@ bool Touch::HasStylusDelegate() const {
 // ui::EventHandler overrides:
 
 void Touch::OnTouchEvent(ui::TouchEvent* event) {
+  if (seat_->was_shutdown())
+    return;
+
+  seat_->SetLastPointerLocation(event->root_location_f());
+
   bool send_details = false;
 
   const int touch_pointer_id = event->pointer_details().id;
   switch (event->type()) {
     case ui::ET_TOUCH_PRESSED: {
       // Early out if event doesn't contain a valid target for touch device.
+      // TODO(b/147848270): Verify GetEffectiveTargetForEvent gets the correct
+      // surface when input is captured.
       Surface* target = GetEffectiveTargetForEvent(event);
       if (!target)
         return;
 
       TRACE_EXO_INPUT_EVENT(event);
+      DCHECK(touch_points_surface_map_.find(touch_pointer_id) ==
+             touch_points_surface_map_.end());
 
-      // If this is the first touch point then target becomes the focus surface
-      // until all touch points have been released.
-      if (touch_points_.empty()) {
-        DCHECK(!focus_);
-        focus_ = target;
-        focus_->AddSurfaceObserver(this);
+      touch_points_surface_map_.emplace(touch_pointer_id, target);
+
+      // Update the count of pointers on the target surface.
+      auto it = surface_touch_count_map_.find(target);
+      if (it == surface_touch_count_map_.end()) {
+        target->AddSurfaceObserver(this);
+        surface_touch_count_map_.emplace(target, 1);
+      } else {
+        it->second++;
       }
 
-      DCHECK(!VectorContainsItem(touch_points_, touch_pointer_id));
-      touch_points_.push_back(touch_pointer_id);
+      // Convert location to target surface coordinate space.
+      const gfx::PointF location =
+          EventLocationInWindow(event, target->window());
 
-      // Convert location to focus surface coordinate space.
-      DCHECK(focus_);
-      gfx::PointF location = EventLocationInWindow(event, focus_->window());
-
-      // Generate a touch down event for the focus surface. Note that this can
-      // be different from the target surface.
-      delegate_->OnTouchDown(focus_, event->time_stamp(), touch_pointer_id,
+      // Generate a touch down event for the target surface.
+      delegate_->OnTouchDown(target, event->time_stamp(), touch_pointer_id,
                              location);
       if (stylus_delegate_ && event->pointer_details().pointer_type !=
-                                  ui::EventPointerType::POINTER_TYPE_TOUCH) {
+                                  ui::EventPointerType::kTouch) {
         stylus_delegate_->OnTouchTool(touch_pointer_id,
                                       event->pointer_details().pointer_type);
       }
       send_details = true;
     } break;
     case ui::ET_TOUCH_RELEASED: {
-      auto it = FindVectorItem(touch_points_, touch_pointer_id);
-      if (it == touch_points_.end())
+      auto it = touch_points_surface_map_.find(touch_pointer_id);
+      if (it == touch_points_surface_map_.end())
         return;
+
+      Surface* target = it->second;
+      DCHECK(target);
 
       TRACE_EXO_INPUT_EVENT(event);
 
-      touch_points_.erase(it);
+      touch_points_surface_map_.erase(it);
 
-      // Reset focus surface if this is the last touch point.
-      if (touch_points_.empty()) {
-        DCHECK(focus_);
-        focus_->RemoveSurfaceObserver(this);
-        focus_ = nullptr;
+      // Update the count of pointers on the target surface.
+      auto count_it = surface_touch_count_map_.find(target);
+      if (count_it == surface_touch_count_map_.end())
+        return;
+      if ((--count_it->second) <= 0) {
+        surface_touch_count_map_.erase(target);
+        target->RemoveSurfaceObserver(this);
       }
 
       delegate_->OnTouchUp(event->time_stamp(), touch_pointer_id);
       seat_->AbortPendingDragOperation();
     } break;
     case ui::ET_TOUCH_MOVED: {
-      auto it = FindVectorItem(touch_points_, touch_pointer_id);
-      if (it == touch_points_.end())
+      auto it = touch_points_surface_map_.find(touch_pointer_id);
+      if (it == touch_points_surface_map_.end())
         return;
+
+      Surface* target = it->second;
+      DCHECK(target);
 
       TRACE_EXO_INPUT_EVENT(event);
 
-      DCHECK(focus_);
       // Convert location to focus surface coordinate space.
-      gfx::PointF location = EventLocationInWindow(event, focus_->window());
+      gfx::PointF location = EventLocationInWindow(event, target->window());
       delegate_->OnTouchMotion(event->time_stamp(), touch_pointer_id, location);
       send_details = true;
     } break;
     case ui::ET_TOUCH_CANCELLED: {
-      auto it = FindVectorItem(touch_points_, touch_pointer_id);
-      if (it == touch_points_.end())
-        return;
-
       TRACE_EXO_INPUT_EVENT(event);
 
-      DCHECK(focus_);
-      focus_->RemoveSurfaceObserver(this);
-      focus_ = nullptr;
-
       // Cancel the full set of touch sequences as soon as one is canceled.
-      touch_points_.clear();
+      CancelAllTouches();
       delegate_->OnTouchCancel();
+
       seat_->AbortPendingDragOperation();
     } break;
     default:
@@ -173,8 +169,8 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       minor = major;
     delegate_->OnTouchShape(touch_pointer_id, major, minor);
 
-    if (stylus_delegate_ && event->pointer_details().pointer_type !=
-                                ui::EventPointerType::POINTER_TYPE_TOUCH) {
+    if (stylus_delegate_ &&
+        event->pointer_details().pointer_type != ui::EventPointerType::kTouch) {
       if (!std::isnan(event->pointer_details().force)) {
         stylus_delegate_->OnTouchForce(event->time_stamp(), touch_pointer_id,
                                        event->pointer_details().force);
@@ -194,13 +190,9 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
 // SurfaceObserver overrides:
 
 void Touch::OnSurfaceDestroying(Surface* surface) {
-  DCHECK(surface == focus_);
-  focus_ = nullptr;
-  surface->RemoveSurfaceObserver(this);
-
-  // Cancel touch sequences.
-  DCHECK_NE(touch_points_.size(), 0u);
-  touch_points_.clear();
+  // TODO(b/147848407): Do not cancel touches on surfaces of different clients
+  // when this surface dies.
+  CancelAllTouches();
   delegate_->OnTouchCancel();
 }
 
@@ -214,6 +206,14 @@ Surface* Touch::GetEffectiveTargetForEvent(ui::LocatedEvent* event) const {
     return nullptr;
 
   return delegate_->CanAcceptTouchEventsForSurface(target) ? target : nullptr;
+}
+
+void Touch::CancelAllTouches() {
+  std::for_each(surface_touch_count_map_.begin(),
+                surface_touch_count_map_.end(),
+                [this](auto& it) { it.first->RemoveSurfaceObserver(this); });
+  touch_points_surface_map_.clear();
+  surface_touch_count_map_.clear();
 }
 
 }  // namespace exo

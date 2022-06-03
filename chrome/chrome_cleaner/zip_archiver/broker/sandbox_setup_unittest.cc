@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
@@ -18,7 +18,6 @@
 #include "chrome/chrome_cleaner/zip_archiver/target/sandbox_setup.h"
 #include "chrome/chrome_cleaner/zip_archiver/test_zip_archiver_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,15 +57,15 @@ class ZipArchiverSandboxSetupTest : public base::MultiProcessTest {
     mojo_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(RunArchive, base::Unretained(zip_archiver_.get()),
-                       mojo::WrapPlatformFile(src_file_handle.Take()),
-                       mojo::WrapPlatformFile(zip_file_handle.Take()),
+                       mojo::PlatformHandle(std::move(src_file_handle)),
+                       mojo::PlatformHandle(std::move(zip_file_handle)),
                        filename_in_zip, password, std::move(callback)));
   }
 
  private:
   static void RunArchive(mojo::Remote<mojom::ZipArchiver>* zip_archiver,
-                         mojo::ScopedHandle mojo_src_handle,
-                         mojo::ScopedHandle mojo_zip_handle,
+                         mojo::PlatformHandle mojo_src_handle,
+                         mojo::PlatformHandle mojo_zip_handle,
                          const std::string& filename_in_zip,
                          const std::string& password,
                          mojom::ZipArchiver::ArchiveCallback callback) {

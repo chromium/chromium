@@ -3,12 +3,13 @@
 <body>
 <div>
 <script>
-if (parent.document.adoptNode)
-  parent.document.body.appendChild(parent.document.adoptNode(document.getElementsByTagName("div")[0]));
-else
-  parent.document.body.appendChild(document.getElementsByTagName("div")[0]);
+parent.document.body.appendChild(document.querySelector("div"));
 </script>
 <script>
+// By the time #prepare-a-script is called, this script will be inserted into
+// the outer document. At this time, the script's parser document and
+// preparation-time document are different, and as per #prepare-a-script step
+// 12, the script will not be executed.
 alert('should be outer: ' + document.URL.match(/parser.*/));
 </script>
 </div>

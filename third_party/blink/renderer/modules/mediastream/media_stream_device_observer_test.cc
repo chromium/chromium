@@ -11,8 +11,10 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 
 namespace blink {
@@ -155,6 +157,80 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChanged) {
 
   // Verify that the request have been completed.
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
+}
+
+TEST_F(MediaStreamDeviceObserverTest, OnDeviceChangedChangesDeviceAfterRebind) {
+  const String kStreamLabel = "stream_label";
+  const std::string kDeviceName = "Video Device";
+  const blink::mojom::MediaStreamType kDeviceType =
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
+
+  // Add a device to the |observer_|, to be changed using OnChangedDevice().
+  blink::MediaStreamDevice initial_device(kDeviceType, "initial_device",
+                                          kDeviceName);
+  observer_->AddStream(kStreamLabel, initial_device);
+
+  // Call the |observer_|'s bind callback and check that its internal
+  // |receiver_| is bound.
+  mojo::Remote<mojom::blink::MediaStreamDeviceObserver> remote_observer;
+  EXPECT_FALSE(observer_->receiver_.is_bound());
+  observer_->BindMediaStreamDeviceObserverReceiver(
+      remote_observer.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(observer_->receiver_.is_bound());
+
+  // Send an OnDeviceChanged() message using the remote mojo pipe, and verify
+  // that the device is changed.
+  blink::MediaStreamDevice changed_device =
+      blink::MediaStreamDevice(kDeviceType, "video_device-123", kDeviceName);
+  remote_observer->OnDeviceChanged(kStreamLabel, initial_device,
+                                   changed_device);
+  base::RunLoop().RunUntilIdle();
+  blink::MediaStreamDevices video_devices =
+      observer_->GetNonScreenCaptureDevices();
+  ASSERT_EQ(video_devices.size(), 1u);
+  EXPECT_EQ(video_devices[0].id, "video_device-123");
+
+  // Reset the remote end of the mojo pipe, then rebind it, and verify that
+  // OnDeviceChanged() changes the device after rebind.
+  remote_observer.reset();
+  observer_->BindMediaStreamDeviceObserverReceiver(
+      remote_observer.BindNewPipeAndPassReceiver());
+  remote_observer->OnDeviceChanged(
+      kStreamLabel, changed_device,
+      blink::MediaStreamDevice(kDeviceType, "video_device-456", kDeviceName));
+  base::RunLoop().RunUntilIdle();
+  video_devices = observer_->GetNonScreenCaptureDevices();
+  ASSERT_EQ(video_devices.size(), 1u);
+  EXPECT_EQ(video_devices[0].id, "video_device-456");
+}
+
+TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {
+  const int kRequestId = 5;
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
+
+  // OpenDevice request.
+  base::RunLoop run_loop1;
+  mock_dispatcher_host_.OpenDevice(
+      kRequestId, "device_path",
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      base::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                     base::Unretained(this), run_loop1.QuitClosure()));
+  run_loop1.Run();
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
+
+  observer_->OnDeviceRequestStateChange(
+      stream_label_, current_device_,
+      mojom::blink::MediaStreamStateChange::PAUSE);
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
+
+  observer_->OnDeviceRequestStateChange(
+      stream_label_, current_device_,
+      mojom::blink::MediaStreamStateChange::PLAY);
+
+  EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
 }
 
 }  // namespace blink

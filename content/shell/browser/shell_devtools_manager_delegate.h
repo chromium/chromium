@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -21,6 +20,11 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
   static int GetHttpHandlerPort();
 
   explicit ShellDevToolsManagerDelegate(BrowserContext* browser_context);
+
+  ShellDevToolsManagerDelegate(const ShellDevToolsManagerDelegate&) = delete;
+  ShellDevToolsManagerDelegate& operator=(const ShellDevToolsManagerDelegate&) =
+      delete;
+
   ~ShellDevToolsManagerDelegate() override;
 
   // DevToolsManagerDelegate implementation.
@@ -28,15 +32,14 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
   scoped_refptr<DevToolsAgentHost> CreateNewTarget(const GURL& url) override;
   std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
-  void ClientAttached(content::DevToolsAgentHost* agent_host,
-                      content::DevToolsAgentHostClient* client) override;
-  void ClientDetached(content::DevToolsAgentHost* agent_host,
-                      content::DevToolsAgentHostClient* client) override;
+  void ClientAttached(
+      content::DevToolsAgentHostClientChannel* channel) override;
+  void ClientDetached(
+      content::DevToolsAgentHostClientChannel* channel) override;
 
  private:
   BrowserContext* browser_context_;
   base::flat_set<content::DevToolsAgentHostClient*> clients_;
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsManagerDelegate);
 };
 
 }  // namespace content

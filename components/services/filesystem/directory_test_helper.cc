@@ -9,9 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "components/services/filesystem/directory_impl.h"
 #include "components/services/filesystem/lock_table.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
@@ -23,6 +23,10 @@ namespace filesystem {
 class DirectoryTestHelper::BlockingState {
  public:
   BlockingState() : lock_table_(base::MakeRefCounted<LockTable>()) {}
+
+  BlockingState(const BlockingState&) = delete;
+  BlockingState& operator=(const BlockingState&) = delete;
+
   ~BlockingState() = default;
 
   void BindNewTempDirectory(mojo::PendingReceiver<mojom::Directory> receiver) {
@@ -39,20 +43,18 @@ class DirectoryTestHelper::BlockingState {
  private:
   const scoped_refptr<LockTable> lock_table_;
   mojo::UniqueReceiverSet<mojom::Directory> directories_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingState);
 };
 
 DirectoryTestHelper::DirectoryTestHelper()
-    : blocking_state_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock()})) {}
+    : blocking_state_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
 DirectoryTestHelper::~DirectoryTestHelper() = default;
 
 mojo::Remote<mojom::Directory> DirectoryTestHelper::CreateTempDir() {
   mojo::Remote<mojom::Directory> remote;
-  blocking_state_.Post(FROM_HERE, &BlockingState::BindNewTempDirectory,
-                       remote.BindNewPipeAndPassReceiver());
+  blocking_state_.AsyncCall(&BlockingState::BindNewTempDirectory)
+      .WithArgs(remote.BindNewPipeAndPassReceiver());
   return remote;
 }
 

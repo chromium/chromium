@@ -42,6 +42,9 @@ LLVMFuzzerInitialize(int* argc, char*** argv) {
   // Intentionally leaked during fuzzing.
   v8::Platform* platform = v8::platform::NewDefaultPlatform().release();
   v8::V8::InitializePlatform(platform);
+#ifdef V8_VIRTUAL_MEMORY_CAGE
+  v8::V8::InitializeVirtualMemoryCage();
+#endif
   v8::V8::Initialize();
 
   v8::Isolate::CreateParams create_params;
@@ -78,11 +81,8 @@ DEFINE_BINARY_PROTO_FUZZER(
                                   v8::NewStringType::kNormal)
               .ToLocalChecked();
 
-      v8::ScriptOrigin origin(
-          name, v8::Local<v8::Integer>(), v8::Local<v8::Integer>(),
-          v8::Local<v8::Boolean>(), v8::Local<v8::Integer>(),
-          v8::Local<v8::Value>(), v8::Local<v8::Boolean>(),
-          v8::Local<v8::Boolean>(), v8::True(isolate));
+      v8::ScriptOrigin origin(isolate, name, 0, 0, false, -1,
+                              v8::Local<v8::Value>(), false, false, true);
       v8::ScriptCompiler::Source source(source_v8_string, origin);
       v8::MaybeLocal<v8::Module> module =
           v8::ScriptCompiler::CompileModule(isolate, &source);

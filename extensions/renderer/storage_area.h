@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class ListValue;
@@ -34,6 +34,10 @@ class StorageArea {
               const APITypeReferenceMap* type_refs,
               const std::string& name,
               const BindingAccessChecker* access_checker);
+
+  StorageArea(const StorageArea&) = delete;
+  StorageArea& operator=(const StorageArea&) = delete;
+
   ~StorageArea();
 
   // Creates a StorageArea object for the given context and property name.
@@ -63,8 +67,6 @@ class StorageArea {
   std::string name_;
 
   const BindingAccessChecker* const access_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageArea);
 };
 
 }  // namespace extensions

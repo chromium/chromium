@@ -9,14 +9,16 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/animation/linear_animation.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -29,9 +31,9 @@ namespace {
 constexpr char kWidgetName[] = "TouchCalibratorOverlay";
 
 constexpr int kAnimationFrameRate = 100;
-constexpr auto kFadeDuration = base::TimeDelta::FromMilliseconds(150);
-constexpr auto kPointMoveDuration = base::TimeDelta::FromMilliseconds(400);
-constexpr auto kPointMoveDurationLong = base::TimeDelta::FromMilliseconds(500);
+constexpr auto kFadeDuration = base::Milliseconds(150);
+constexpr auto kPointMoveDuration = base::Milliseconds(400);
+constexpr auto kPointMoveDurationLong = base::Milliseconds(500);
 
 const SkColor kExitLabelColor = SkColorSetARGB(255, 138, 138, 138);
 constexpr int kExitLabelWidth = 300;
@@ -47,8 +49,7 @@ constexpr int kHintBoxSublabelTextSize = 3;
 constexpr int kThrobberCircleViewWidth = 64;
 constexpr float kThrobberCircleRadiusFactor = 3.f / 8.f;
 
-constexpr auto kFinalMessageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr auto kFinalMessageTransitionDuration = base::Milliseconds(200);
 constexpr int kCompleteMessageViewWidth = 427;
 constexpr int kCompleteMessageViewHeight = kThrobberCircleViewWidth;
 constexpr int kCompleteMessageTextSize = 16;
@@ -64,8 +65,7 @@ const SkColor kHintSublabelTextColor = SkColorSetARGB(255, 161, 161, 161);
 const SkColor kInnerCircleColor = SK_ColorWHITE;
 const SkColor kOuterCircleColor = SkColorSetA(kInnerCircleColor, 255 * 0.2);
 
-constexpr auto kCircleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(900);
+constexpr auto kCircleAnimationDuration = base::Milliseconds(900);
 
 constexpr int kHintRectBorderRadius = 4;
 
@@ -90,8 +90,7 @@ views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
   params.name = kWidgetName;
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.accept_events = true;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer);
@@ -99,23 +98,11 @@ views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
 }
 
 // Returns the size of bounding box required for |text| of given |font_list|.
-gfx::Size GetSizeForString(const base::string16& text,
+gfx::Size GetSizeForString(const std::u16string& text,
                            const gfx::FontList& font_list) {
   int height = 0, width = 0;
   gfx::Canvas::SizeStringInt(text, font_list, &width, &height, 0, 0);
   return gfx::Size(width, height);
-}
-
-void AnimateLayerToPosition(views::View* view,
-                            base::TimeDelta duration,
-                            gfx::Point end_position,
-                            float opacity = 1.f) {
-  ui::ScopedLayerAnimationSettings slide_settings(view->layer()->GetAnimator());
-  slide_settings.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  slide_settings.SetTransitionDuration(duration);
-  view->SetBoundsRect(gfx::Rect(end_position, view->size()));
-  view->layer()->SetOpacity(opacity);
 }
 
 }  // namespace
@@ -132,6 +119,8 @@ class CircularThrobberView : public views::View,
                        const SkColor& inner_circle_color,
                        const SkColor& outer_circle_color,
                        base::TimeDelta animation_duration);
+  CircularThrobberView(const CircularThrobberView&) = delete;
+  CircularThrobberView& operator=(const CircularThrobberView&) = delete;
   ~CircularThrobberView() override;
 
   // views::View:
@@ -160,8 +149,6 @@ class CircularThrobberView : public views::View,
 
   // Center of the concentric circles.
   const gfx::Point center_;
-
-  DISALLOW_COPY_AND_ASSIGN(CircularThrobberView);
 };
 
 CircularThrobberView::CircularThrobberView(int width,
@@ -184,7 +171,7 @@ CircularThrobberView::CircularThrobberView(int width,
   outer_circle_flags_.setAntiAlias(true);
   outer_circle_flags_.setStyle(cc::PaintFlags::kFill_Style);
 
-  animation_.reset(new gfx::ThrobAnimation(this));
+  animation_ = std::make_unique<gfx::ThrobAnimation>(this);
   animation_->SetThrobDuration(animation_duration);
   animation_->StartThrobbing(-1);
 
@@ -214,6 +201,8 @@ class TouchTargetThrobberView : public CircularThrobberView {
                           const SkColor& outer_circle_color,
                           const SkColor& hand_icon_color,
                           base::TimeDelta animation_duration);
+  TouchTargetThrobberView(const TouchTargetThrobberView&) = delete;
+  TouchTargetThrobberView& operator=(const TouchTargetThrobberView&) = delete;
   ~TouchTargetThrobberView() override;
 
   // views::View:
@@ -225,8 +214,6 @@ class TouchTargetThrobberView : public CircularThrobberView {
   const int icon_width_;
 
   gfx::ImageSkia hand_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTargetThrobberView);
 };
 
 TouchTargetThrobberView::TouchTargetThrobberView(
@@ -272,19 +259,21 @@ void TouchTargetThrobberView::OnPaint(gfx::Canvas* canvas) {
 class HintBox : public views::View {
  public:
   HintBox(const gfx::Rect& bounds, int border_radius);
+  HintBox(const HintBox&) = delete;
+  HintBox& operator=(const HintBox&) = delete;
   ~HintBox() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  void SetLabel(const base::string16& text, const SkColor& color);
-  void SetSubLabel(const base::string16& text, const SkColor& color);
+  void SetLabel(const std::u16string& text, const SkColor& color);
+  void SetSubLabel(const std::u16string& text, const SkColor& color);
 
  private:
   void UpdateWidth(int updated_width);
 
-  base::string16 label_text_;
-  base::string16 sublabel_text_;
+  std::u16string label_text_;
+  std::u16string sublabel_text_;
 
   SkColor label_color_;
   SkColor sublabel_color_;
@@ -306,8 +295,6 @@ class HintBox : public views::View {
   gfx::Rect sublabel_text_bounds_;
 
   cc::PaintFlags flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintBox);
 };
 
 HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
@@ -315,7 +302,7 @@ HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
   SetBorder(std::make_unique<views::BubbleBorder>(
       base::i18n::IsRTL() ? views::BubbleBorder::RIGHT_CENTER
                           : views::BubbleBorder::LEFT_CENTER,
-      views::BubbleBorder::NO_SHADOW_OPAQUE_BORDER, SK_ColorWHITE));
+      views::BubbleBorder::NO_SHADOW, SK_ColorWHITE));
 
   arrow_width_ = (GetInsets().right() - GetInsets().left()) *
                  (base::i18n::IsRTL() ? 1 : -1);
@@ -355,14 +342,13 @@ void HintBox::UpdateWidth(int updated_width) {
   rounded_rect_bounds_ = GetContentsBounds();
 }
 
-void HintBox::SetLabel(const base::string16& text, const SkColor& color) {
+void HintBox::SetLabel(const std::u16string& text, const SkColor& color) {
   label_text_ = text;
   label_color_ = color;
 
   label_font_list_ =
       ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kHintBoxLabelTextSize, gfx::Font::FontStyle::NORMAL,
-          gfx::Font::Weight::NORMAL);
+          kHintBoxLabelTextSize);
 
   // Adjust size of label bounds based on text and font.
   gfx::Size size = GetSizeForString(label_text_, label_font_list_);
@@ -376,14 +362,13 @@ void HintBox::SetLabel(const base::string16& text, const SkColor& color) {
     UpdateWidth(minimum_expected_width);
 }
 
-void HintBox::SetSubLabel(const base::string16& text, const SkColor& color) {
+void HintBox::SetSubLabel(const std::u16string& text, const SkColor& color) {
   sublabel_text_ = text;
   sublabel_color_ = color;
 
   sublabel_font_list_ =
       ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-          kHintBoxSublabelTextSize, gfx::Font::FontStyle::NORMAL,
-          gfx::Font::Weight::NORMAL);
+          kHintBoxSublabelTextSize);
 
   // Adjust size of sublabel label bounds based on text and font.
   gfx::Size size = GetSizeForString(sublabel_text_, sublabel_font_list_);
@@ -409,14 +394,16 @@ void HintBox::OnPaint(gfx::Canvas* canvas) {
 
 class CompletionMessageView : public views::View {
  public:
-  CompletionMessageView(const gfx::Rect& bounds, const base::string16& message);
+  CompletionMessageView(const gfx::Rect& bounds, const std::u16string& message);
+  CompletionMessageView(const CompletionMessageView&) = delete;
+  CompletionMessageView& operator=(const CompletionMessageView&) = delete;
   ~CompletionMessageView() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  const base::string16 message_;
+  const std::u16string message_;
   gfx::FontList font_list_;
 
   gfx::Rect text_bounds_;
@@ -424,12 +411,10 @@ class CompletionMessageView : public views::View {
   gfx::ImageSkia check_icon_;
 
   cc::PaintFlags flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompletionMessageView);
 };
 
 CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
-                                             const base::string16& message)
+                                             const std::u16string& message)
     : message_(message) {
   SetBoundsRect(bounds);
 
@@ -437,8 +422,7 @@ CompletionMessageView::CompletionMessageView(const gfx::Rect& bounds,
   text_bounds_.SetRect(x_offset, 0, width() - x_offset, height());
 
   font_list_ = ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-      kCompleteMessageTextSize, gfx::Font::FontStyle::NORMAL,
-      gfx::Font::Weight::NORMAL);
+      kCompleteMessageTextSize);
 
   // crbug/676513 moves this file to src/ash which will require an ash icon
   // file.
@@ -461,34 +445,34 @@ void CompletionMessageView::OnPaint(gfx::Canvas* canvas) {
       gfx::Canvas::TEXT_ALIGN_LEFT | gfx::Canvas::NO_SUBPIXEL_RENDERING);
 }
 
+// static
+views::UniqueWidgetPtr TouchCalibratorView::Create(
+    const display::Display& target_display,
+    bool is_primary_view) {
+  aura::Window* root = Shell::GetRootWindowForDisplayId(target_display.id());
+  views::UniqueWidgetPtr widget(
+      std::make_unique<views::Widget>(GetWidgetParams(root)));
+  widget->SetContentsView(base::WrapUnique(
+      new TouchCalibratorView(target_display, is_primary_view)));
+  widget->SetBounds(target_display.bounds());
+  widget->Show();
+  return widget;
+}
+
 TouchCalibratorView::TouchCalibratorView(const display::Display& target_display,
                                          bool is_primary_view)
     : views::AnimationDelegateViews(this),
       display_(target_display),
       is_primary_view_(is_primary_view),
-      exit_label_(nullptr),
-      tap_label_(nullptr),
-      throbber_circle_(nullptr),
-      hint_box_view_(nullptr),
-      touch_point_view_(nullptr) {
-  aura::Window* root = Shell::GetRootWindowForDisplayId(display_.id());
-  widget_.reset(new views::Widget);
-  widget_->Init(GetWidgetParams(root));
-  widget_->SetContentsView(this);
-  widget_->SetBounds(display_.bounds());
-  widget_->Show();
-  set_owned_by_client();
-
-  animator_.reset(
-      new gfx::LinearAnimation(kFadeDuration, kAnimationFrameRate, this));
-
+      animator_(std::make_unique<gfx::LinearAnimation>(kFadeDuration,
+                                                       kAnimationFrameRate,
+                                                       this)) {
   InitViewContents();
   AdvanceToNextState();
 }
 
 TouchCalibratorView::~TouchCalibratorView() {
   state_ = UNKNOWN;
-  widget_->Hide();
   animator_->End();
 }
 
@@ -500,10 +484,9 @@ void TouchCalibratorView::InitViewContents() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   // Initialize exit label that informs the user how to exit the touch
   // calibration setup.
-  exit_label_ = new views::Label(
+  exit_label_ = AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL),
-      {rb.GetFontListWithDelta(8, gfx::Font::FontStyle::NORMAL,
-                               gfx::Font::Weight::NORMAL)});
+      views::Label::CustomFont{rb.GetFontListWithDelta(8)}));
   exit_label_->SetBounds((display_.bounds().width() - kExitLabelWidth) / 2,
                          display_.bounds().height() * 3.f / 4, kExitLabelWidth,
                          kExitLabelHeight);
@@ -512,8 +495,6 @@ void TouchCalibratorView::InitViewContents() {
   exit_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   exit_label_->SetSubpixelRenderingEnabled(false);
   exit_label_->SetVisible(false);
-
-  AddChildView(exit_label_);
 
   // If this is not the screen that is being calibrated, then this is all we
   // need to display.
@@ -526,17 +507,26 @@ void TouchCalibratorView::InitViewContents() {
   const int kThrobberCircleViewHorizontalOffset =
       (kTapLabelWidth - kThrobberCircleViewWidth) / 2;
 
+  touch_point_view_ = AddChildView(std::make_unique<views::View>());
+  touch_point_view_->SetBounds(kTouchPointViewOffset, kTouchPointViewOffset,
+                               kTapLabelWidth, kTouchPointViewHeight);
+  touch_point_view_->SetVisible(false);
+  touch_point_view_->SetPaintToLayer();
+  touch_point_view_->layer()->SetFillsBoundsOpaquely(false);
+  touch_point_view_->SetBackground(
+      views::CreateSolidBackground(SK_ColorTRANSPARENT));
+
   throbber_circle_ =
-      new CircularThrobberView(kThrobberCircleViewWidth, kInnerCircleColor,
-                               kOuterCircleColor, kCircleAnimationDuration);
+      touch_point_view_->AddChildView(std::make_unique<CircularThrobberView>(
+          kThrobberCircleViewWidth, kInnerCircleColor, kOuterCircleColor,
+          kCircleAnimationDuration));
   throbber_circle_->SetPosition(
       gfx::Point(kThrobberCircleViewHorizontalOffset, 0));
 
   // Initialize the tap label.
-  tap_label_ = new views::Label(
+  tap_label_ = touch_point_view_->AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL),
-      {rb.GetFontListWithDelta(6, gfx::Font::FontStyle::NORMAL,
-                               gfx::Font::Weight::NORMAL)});
+      views::Label::CustomFont{rb.GetFontListWithDelta(6)}));
   tap_label_->SetBounds(0, kThrobberCircleViewWidth, kTapLabelWidth,
                         kTapLabelHeight);
   tap_label_->SetEnabledColor(kTapHereLabelColor);
@@ -545,25 +535,10 @@ void TouchCalibratorView::InitViewContents() {
   tap_label_->SetSubpixelRenderingEnabled(false);
   tap_label_->SetVisible(false);
 
-  touch_point_view_ = new views::View;
-  touch_point_view_->SetBounds(kTouchPointViewOffset, kTouchPointViewOffset,
-                               kTapLabelWidth, kTouchPointViewHeight);
-  touch_point_view_->SetVisible(false);
-  touch_point_view_->SetPaintToLayer();
-  touch_point_view_->layer()->SetFillsBoundsOpaquely(false);
-  touch_point_view_->layer()->GetAnimator()->AddObserver(this);
-  touch_point_view_->SetBackground(
-      views::CreateSolidBackground(SK_ColorTRANSPARENT));
-
-  touch_point_view_->AddChildView(throbber_circle_);
-  touch_point_view_->AddChildView(tap_label_);
-
-  AddChildView(touch_point_view_);
-
   // Initialize the Hint Box view.
-  base::string16 hint_label_text =
+  std::u16string hint_label_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_HINT_LABEL_TEXT);
-  base::string16 hint_sublabel_text =
+  std::u16string hint_sublabel_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_HINT_SUBLABEL_TEXT);
 
   int tpv_width = touch_point_view_->width();
@@ -575,29 +550,25 @@ void TouchCalibratorView::InitViewContents() {
                           (kThrobberCircleViewWidth / 2.f) -
                           (size.height() / 2.f));
 
-  HintBox* hint_box =
-      new HintBox(gfx::Rect(position, size), kHintRectBorderRadius);
-  hint_box->SetVisible(false);
-  hint_box->SetLabel(hint_label_text, kHintLabelTextColor);
-  hint_box->SetSubLabel(hint_sublabel_text, kHintSublabelTextColor);
-  hint_box_view_ = hint_box;
-
-  AddChildView(hint_box_view_);
+  hint_box_view_ = AddChildView(std::make_unique<HintBox>(
+      gfx::Rect(position, size), kHintRectBorderRadius));
+  hint_box_view_->SetVisible(false);
+  hint_box_view_->SetLabel(hint_label_text, kHintLabelTextColor);
+  hint_box_view_->SetSubLabel(hint_sublabel_text, kHintSublabelTextColor);
 
   // Initialize the animated hint box throbber view.
-  TouchTargetThrobberView* target_view = new TouchTargetThrobberView(
-      gfx::Rect((hint_box->width() - kTouchTargetWidth) / 2,
-                hint_box->height() * kTouchTargetVerticalOffsetFactor,
-                kTouchTargetWidth, kTouchTargetHeight),
-      kTouchTargetInnerCircleColor, kTouchTargetOuterCircleColor,
-      kHandIconColor, kCircleAnimationDuration);
+  auto* target_view =
+      hint_box_view_->AddChildView(std::make_unique<TouchTargetThrobberView>(
+          gfx::Rect((hint_box_view_->width() - kTouchTargetWidth) / 2,
+                    hint_box_view_->height() * kTouchTargetVerticalOffsetFactor,
+                    kTouchTargetWidth, kTouchTargetHeight),
+          kTouchTargetInnerCircleColor, kTouchTargetOuterCircleColor,
+          kHandIconColor, kCircleAnimationDuration));
   target_view->SetVisible(true);
-
-  hint_box_view_->AddChildView(target_view);
 
   // Initialize the view that contains the calibration complete message which
   // will be displayed at the end.
-  base::string16 finish_msg_text =
+  std::u16string finish_msg_text =
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_FINISH_LABEL);
 
   gfx::Rect msg_view_bounds(
@@ -605,15 +576,13 @@ void TouchCalibratorView::InitViewContents() {
       display_.bounds().height() / 3, kCompleteMessageViewWidth,
       kCompleteMessageViewHeight);
   completion_message_view_ =
-      new CompletionMessageView(msg_view_bounds, finish_msg_text);
+      AddChildView(std::make_unique<CompletionMessageView>(msg_view_bounds,
+                                                           finish_msg_text));
   completion_message_view_->SetVisible(false);
   completion_message_view_->SetPaintToLayer();
   completion_message_view_->layer()->SetFillsBoundsOpaquely(false);
-  completion_message_view_->layer()->GetAnimator()->AddObserver(this);
   completion_message_view_->SetBackground(
       views::CreateSolidBackground(SK_ColorTRANSPARENT));
-
-  AddChildView(completion_message_view_);
 }
 
 void TouchCalibratorView::OnPaint(gfx::Canvas* canvas) {
@@ -630,7 +599,7 @@ void TouchCalibratorView::OnPaintBackground(gfx::Canvas* canvas) {
     opacity = static_cast<float>(animator_->CurrentValueBetween(
         start_opacity_value_, end_opacity_value_));
   } else {
-    opacity = state_ == BACKGROUND_FADING_OUT ? 0.f : kBackgroundFinalOpacity;
+    opacity = state_ == BACKGROUND_FADING_OUT ? 0.0f : kBackgroundFinalOpacity;
   }
 
   flags_.setColor(SkColorSetA(SK_ColorBLACK,
@@ -663,44 +632,12 @@ void TouchCalibratorView::AnimationEnded(const gfx::Animation* animation) {
       exit_label_->SetVisible(false);
       if (is_primary_view_)
         completion_message_view_->SetVisible(false);
-      widget_->Hide();
+      GetWidget()->Hide();
       break;
     default:
       break;
   }
 }
-
-void TouchCalibratorView::OnLayerAnimationStarted(
-    ui::LayerAnimationSequence* sequence) {}
-
-void TouchCalibratorView::OnLayerAnimationEnded(
-    ui::LayerAnimationSequence* sequence) {
-  switch (state_) {
-    case ANIMATING_1_TO_2:
-      state_ = DISPLAY_POINT_2;
-      tap_label_->SetVisible(true);
-      break;
-    case ANIMATING_2_TO_3:
-      state_ = DISPLAY_POINT_3;
-      break;
-    case ANIMATING_3_TO_4:
-      state_ = DISPLAY_POINT_4;
-      break;
-    case ANIMATING_FINAL_MESSAGE:
-      state_ = CALIBRATION_COMPLETE;
-      break;
-    default:
-      break;
-  }
-}
-
-void TouchCalibratorView::OnLayerAnimationAborted(
-    ui::LayerAnimationSequence* sequence) {
-  OnLayerAnimationEnded(sequence);
-}
-
-void TouchCalibratorView::OnLayerAnimationScheduled(
-    ui::LayerAnimationSequence* sequence) {}
 
 void TouchCalibratorView::AdvanceToNextState() {
   // Stop any previous animations and skip them to the end.
@@ -710,7 +647,7 @@ void TouchCalibratorView::AdvanceToNextState() {
     case UNKNOWN:
     case BACKGROUND_FADING_IN:
       state_ = BACKGROUND_FADING_IN;
-      start_opacity_value_ = 0.f;
+      start_opacity_value_ = 0.0f;
       end_opacity_value_ = kBackgroundFinalOpacity;
 
       flags_.setStyle(cc::PaintFlags::kFill_Style);
@@ -753,7 +690,7 @@ void TouchCalibratorView::AdvanceToNextState() {
       return;
     case DISPLAY_POINT_4:
       state_ = ANIMATING_FINAL_MESSAGE;
-      completion_message_view_->layer()->SetOpacity(0.f);
+      completion_message_view_->layer()->SetOpacity(0.0f);
       completion_message_view_->SetVisible(true);
 
       touch_point_view_->SetVisible(false);
@@ -773,11 +710,11 @@ void TouchCalibratorView::AdvanceToNextState() {
             gfx::Point(completion_message_view_->x(),
                        completion_message_view_->y() +
                            2 * completion_message_view_->height()),
-            0.f);
+            0.0f);
       }
 
       start_opacity_value_ = kBackgroundFinalOpacity;
-      end_opacity_value_ = 0.f;
+      end_opacity_value_ = 0.0f;
 
       flags_.setStyle(cc::PaintFlags::kFill_Style);
       animator_->SetDuration(kFadeDuration);
@@ -826,6 +763,45 @@ void TouchCalibratorView::SkipCurrentAnimation() {
       touch_point_view_->layer()->GetAnimator()->is_animating()) {
     touch_point_view_->layer()->GetAnimator()->StopAnimating();
   }
+}
+
+void TouchCalibratorView::OnStateAnimationEnded() {
+  switch (state_) {
+    case ANIMATING_1_TO_2:
+      state_ = DISPLAY_POINT_2;
+      tap_label_->SetVisible(true);
+      break;
+    case ANIMATING_2_TO_3:
+      state_ = DISPLAY_POINT_3;
+      break;
+    case ANIMATING_3_TO_4:
+      state_ = DISPLAY_POINT_4;
+      break;
+    case ANIMATING_FINAL_MESSAGE:
+      state_ = CALIBRATION_COMPLETE;
+      break;
+    default:
+      break;
+  }
+}
+
+void TouchCalibratorView::AnimateLayerToPosition(views::View* view,
+                                                 base::TimeDelta duration,
+                                                 gfx::Point end_position,
+                                                 float opacity) {
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      // base::Unretained is safe here since the lifetime of the animated views
+      // is tied to the TouchCalibratorView itself.
+      .OnEnded(base::BindOnce(&TouchCalibratorView::OnStateAnimationEnded,
+                              base::Unretained(this)))
+      .OnAborted(base::BindOnce(&TouchCalibratorView::OnStateAnimationEnded,
+                                base::Unretained(this)))
+      .Once()
+      .SetDuration(duration)
+      .SetBounds(view, gfx::Rect(end_position, view->size()))
+      .SetOpacity(view, opacity);
 }
 
 }  // namespace ash

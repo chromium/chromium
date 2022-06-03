@@ -466,8 +466,8 @@ std::string TestPostMessage::TestSendingArrayBuffer() {
     // we get the _same_ buffer back when it's transferred.
     if (sizes[i] > 0)
       ASSERT_NE(buff, received_buff);
-    for (size_t i = 0; i < test_data.ByteLength(); ++i)
-      ASSERT_EQ(buff[i], received_buff[i]);
+    for (size_t byte = 0; byte < test_data.ByteLength(); ++byte)
+      ASSERT_EQ(buff[byte], received_buff[byte]);
 
     message_data_.clear();
     ASSERT_TRUE(ClearListeners());
@@ -607,10 +607,7 @@ std::string TestPostMessage::TestSendingResource() {
   // properties of the file system.
   pp::Var file_system_var(file_system);
   std::vector<std::string> properties_to_check;
-  properties_to_check.push_back(
-      "message_event.data.constructor.name === 'DOMFileSystem'");
-  properties_to_check.push_back(
-      "message_event.data.root.constructor.name === 'DirectoryEntry'");
+  properties_to_check.push_back("message_event.data.root.isDirectory");
   properties_to_check.push_back(
       "message_event.data.name.indexOf("
       "    ':Temporary',"

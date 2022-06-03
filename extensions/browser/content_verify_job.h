@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/common/extension_id.h"
@@ -47,6 +48,10 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
     // been fetched yet).
     MISSING_ALL_HASHES,
 
+    // Failed because hashes files exist, but are unreadabale or damaged, and
+    // content verifier was not able to compute new hashes.
+    CORRUPTED_HASHES,
+
     // Failed because this file wasn't found in the list of expected hashes.
     NO_HASHES_FOR_FILE,
 
@@ -64,6 +69,9 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
                    const base::FilePath& relative_path,
                    FailureCallback failure_callback);
 
+  ContentVerifyJob(const ContentVerifyJob&) = delete;
+  ContentVerifyJob& operator=(const ContentVerifyJob&) = delete;
+
   // This begins the process of getting expected hashes, so it should be called
   // as early as possible.
   void Start(ContentVerifier* verifier);
@@ -80,7 +88,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // is not so appropriate.
   void Done();
 
-  class TestObserver {
+  class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
    public:
     virtual void JobStarted(const ExtensionId& extension_id,
                             const base::FilePath& relative_path) = 0;
@@ -91,13 +99,17 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
     virtual void OnHashesReady(const ExtensionId& extension_id,
                                const base::FilePath& relative_path,
-                               bool success) = 0;
+                               const ContentHashReader& hash_reader) = 0;
+
+   protected:
+    virtual ~TestObserver() = default;
+    friend class base::RefCountedThreadSafe<TestObserver>;
   };
 
   static void SetIgnoreVerificationForTests(bool value);
 
   // Note: having interleaved observer is not supported.
-  static void SetObserverForTests(TestObserver* observer);
+  static void SetObserverForTests(scoped_refptr<TestObserver> observer);
 
  private:
   virtual ~ContentVerifyJob();
@@ -165,8 +177,6 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // Used to synchronize all public methods.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJob);
 };
 
 }  // namespace extensions

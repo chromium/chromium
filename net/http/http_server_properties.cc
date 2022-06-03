@@ -5,19 +5,20 @@
 #include "net/http/http_server_properties.h"
 
 #include "base/bind.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/url_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/socket/ssl_client_socket.h"
@@ -30,7 +31,7 @@ namespace {
 // Time to wait before starting an update the preferences from the
 // http_server_properties_impl_ cache. Scheduling another update during this
 // period will be a no-op.
-constexpr base::TimeDelta kUpdatePrefsDelay = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kUpdatePrefsDelay = base::Seconds(60);
 
 url::SchemeHostPort NormalizeSchemeHostPort(
     const url::SchemeHostPort& scheme_host_port) {
@@ -113,7 +114,7 @@ bool HttpServerProperties::QuicServerInfoMapKey::operator==(
 }
 
 HttpServerProperties::ServerInfoMap::ServerInfoMap()
-    : base::MRUCache<ServerInfoMapKey, ServerInfo>(kMaxServerInfoEntries) {}
+    : base::LRUCache<ServerInfoMapKey, ServerInfo>(kMaxServerInfoEntries) {}
 
 HttpServerProperties::ServerInfoMap::iterator
 HttpServerProperties::ServerInfoMap::GetOrPut(const ServerInfoMapKey& key) {
@@ -156,7 +157,7 @@ HttpServerProperties::HttpServerProperties(
                                    this,
                                    tick_clock_),
       canonical_suffixes_({".ggpht.com", ".c.youtube.com", ".googlevideo.com",
-                           ".googleusercontent.com"}),
+                           ".googleusercontent.com", ".gvt1.com"}),
       quic_server_info_map_(kDefaultMaxQuicServerEntries),
       max_server_configs_stored_in_properties_(kDefaultMaxQuicServerEntries) {}
 
@@ -374,16 +375,14 @@ void HttpServerProperties::OnDefaultNetworkChanged() {
     MaybeQueueWriteProperties();
 }
 
-std::unique_ptr<base::Value>
-HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
+base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
   const base::Time now = clock_->Now();
   const base::TimeTicks now_ticks = tick_clock_->NowTicks();
-  std::unique_ptr<base::ListValue> dict_list(new base::ListValue);
+  base::Value dict_list(base::Value::Type::LIST);
   for (const auto& server_info : server_info_map_) {
     if (!server_info.second.alternative_services.has_value())
       continue;
-    std::unique_ptr<base::ListValue> alternative_service_list(
-        new base::ListValue);
+    base::Value alternative_service_list(base::Value::Type::LIST);
     const ServerInfoMapKey& key = server_info.first;
     for (const AlternativeServiceInfo& alternative_service_info :
          server_info.second.alternative_services.value()) {
@@ -414,19 +413,18 @@ HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
             ")";
         alternative_service_string.append(broken_info_string);
       }
-      alternative_service_list->AppendString(alternative_service_string);
+      alternative_service_list.Append(std::move(alternative_service_string));
     }
-    if (alternative_service_list->empty())
+    if (alternative_service_list.GetList().empty())
       continue;
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetString("server", key.server.Serialize());
-    dict->SetString("network_isolation_key",
-                    key.network_isolation_key.ToDebugString());
-    dict->Set("alternative_service", std::unique_ptr<base::Value>(
-                                         std::move(alternative_service_list)));
-    dict_list->Append(std::move(dict));
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetStringKey("server", key.server.Serialize());
+    dict.SetStringKey("network_isolation_key",
+                      key.network_isolation_key.ToDebugString());
+    dict.SetKey("alternative_service", std::move(alternative_service_list));
+    dict_list.Append(std::move(dict));
   }
-  return std::move(dict_list);
+  return dict_list;
 }
 
 bool HttpServerProperties::WasLastLocalAddressWhenQuicWorked(
@@ -546,7 +544,7 @@ void HttpServerProperties::SetMaxServerConfigsStoredInProperties(
   max_server_configs_stored_in_properties_ =
       max_server_configs_stored_in_properties;
 
-  // MRUCache doesn't allow the capacity of the cache to be changed. Thus create
+  // LRUCache doesn't allow the capacity of the cache to be changed. Thus create
   // a new map with the new size and add current elements and swap the new map.
   quic_server_info_map_.ShrinkToSize(max_server_configs_stored_in_properties_);
   QuicServerInfoMap temp_map(max_server_configs_stored_in_properties_);
@@ -871,7 +869,7 @@ void HttpServerProperties::SetAlternativeServicesInternal(
     // before the first completes. In this case, only one of the jobs
     // would reach this code, whereas all of them should should have.
     HistogramAlternateProtocolUsage(ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING,
-                                    false);
+                                    IsGoogleHost(origin.host()));
   }
 
   // If this host ends with a canonical suffix, then set it as the
@@ -1163,9 +1161,9 @@ void HttpServerProperties::OnServerInfoLoaded(
         it->first.network_isolation_key);
     // If we already have a valid canonical server, we're done.
     if (base::Contains(canonical_alt_svc_map_, key)) {
-      auto it = server_info_map_.Peek(key);
-      if (it != server_info_map_.end() &&
-          it->second.alternative_services.has_value()) {
+      auto key_it = server_info_map_.Peek(key);
+      if (key_it != server_info_map_.end() &&
+          key_it->second.alternative_services.has_value()) {
         continue;
       }
     }

@@ -9,8 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "chrome/common/extensions/api/settings_private.h"
 
@@ -29,14 +29,14 @@ class PrefsUtil {
   explicit PrefsUtil(Profile* profile);
   virtual ~PrefsUtil();
 
-  // Gets the list of whitelisted pref keys -- that is, those which correspond
+  // Gets the list of allowlisted pref keys -- that is, those which correspond
   // to prefs that clients of the settingsPrivate API may retrieve and
   // manipulate.
-  const TypedPrefMap& GetWhitelistedKeys();
+  const TypedPrefMap& GetAllowlistedKeys();
 
   // Returns the pref type for |pref_name| or PREF_TYPE_NONE if not in the
-  // whitelist.
-  api::settings_private::PrefType GetWhitelistedPrefType(
+  // allowlist.
+  api::settings_private::PrefType GetAllowlistedPrefType(
       const std::string& pref_name);
 
   // Gets the value of the pref with the given |name|. Returns a pointer to an
@@ -69,7 +69,7 @@ class PrefsUtil {
   // Returns whether |pref_name| corresponds to a pref whose type is URL.
   bool IsPrefTypeURL(const std::string& pref_name);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns whether |pref_name| corresponds to a pref that is enterprise
   // managed.
   bool IsPrefEnterpriseManaged(const std::string& pref_name);
@@ -81,6 +81,10 @@ class PrefsUtil {
   // Returns whether |pref_name| corresponds to a pref that is controlled by
   // the primary user, and |profile_| is not the primary profile.
   bool IsPrefPrimaryUserControlled(const std::string& pref_name);
+
+  // Returns whether |pref_name| corresponds to the hotword enabled pref, if the
+  // pref is disabled, and if |profile_| is a child user.
+  bool IsHotwordDisabledForChildUser(const std::string& pref_name);
 #endif
 
   // Returns whether |pref_name| corresponds to a pref that is controlled by

@@ -2,18 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":settings_menu",
-  ]
-}
-
-js_library("settings_menu") {
-  deps = [
-    "..:page_visibility",
-    "..:route",
-    "//third_party/polymer/v1_0/components-chromium/paper-ripple:paper-ripple-extracted",
-  ]
+html_to_js("web_components") {
+  js_files = [ "settings_menu.ts" ]
 }

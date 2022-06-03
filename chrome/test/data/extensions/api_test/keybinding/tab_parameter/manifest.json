@@ -1,0 +1,21 @@
+{
+  "name": "Extension Action Tab Parameter Test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["activeTab"],
+  "commands": {
+    "toggle-feature": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+Y",
+        "mac": "MacCtrl+Shift+Y",
+        "linux": "Ctrl+Shift+Y",
+        "chromeos": "Ctrl+Shift+Y",
+        "default": "Ctrl+Shift+Y"
+      },
+      "description": "Toggle feature foo"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="515" height="375">
+  <g>
+    <!-- crbug.com/1246807 -->
+    <text x="71" y="98"><tspan>	d@@FP00:00</tspan></text>
+  </g>
+  <!-- crbug.com/1250929 -->
+  <text x="5" y="40" font-family="Arial" font-size="40" style="border-inline-end: 2147483467px solid lime;">
+  Foo bar baz</text>
+</svg>
+<style>
+tspan {
+  margin-inline: 30px;
+  margin-block: 16px;
+}
+text {
+  white-space: pre-wrap;
+}
+</style>
+<script>
+test(() => {
+  // Pass if no DCHECK failures.
+}, 'Margin and white-space:pre-wrap should not cause DCHECK failures.');
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+Verifies that the AffectedRequest is included in an mixed content issue created when a HTTPS url redirects to a HTTP script (crbug.com/1190808)
+
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/inspector-protocol/resources/empty.js
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/empty.html
+                resolutionStatus : MixedContentBlocked
+                resourceType : Script
+            }
+        }
+    }
+}
+

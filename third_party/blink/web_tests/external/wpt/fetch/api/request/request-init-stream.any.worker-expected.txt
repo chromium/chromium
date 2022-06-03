@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL Constructing a Request with a stream on which getReader() is called assert_throws: new Request() function "() => new Request(input, init)" did not throw
-FAIL Constructing a Request with a stream on which read() is called assert_throws: new Request() function "() => new Request(input, init)" did not throw
-FAIL Constructing a Request with a stream on which read() and releaseLock() are called assert_throws: new Request() function "() => new Request(input, init)" did not throw
-FAIL Constructing a Request with a Request on which body.getReader() is called promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getReader' of undefined"
-FAIL Constructing a Request with a Request on which body.getReader().read() is called promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getReader' of undefined"
-FAIL Constructing a Request with a Request on which read() and releaseLock() are called promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getReader' of undefined"
-Harness: the test ran to completion.
-

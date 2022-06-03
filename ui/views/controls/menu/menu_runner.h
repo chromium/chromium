@@ -11,9 +11,8 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/views_export.h"
 
@@ -113,8 +112,6 @@ class VIEWS_EXPORT MenuRunner {
   // Creates a new MenuRunner, which may use a native menu if available.
   // |run_types| is a bitmask of RunTypes. If provided,
   // |on_menu_closed_callback| is invoked when the menu is closed.
-  // Note that with a native menu (e.g. on Mac), the ASYNC flag in |run_types|
-  // may be ignored. See http://crbug.com/682544.
   // The MenuModelDelegate of |menu_model| will be overwritten by this call.
   MenuRunner(ui::MenuModel* menu_model,
              int32_t run_types,
@@ -123,16 +120,28 @@ class VIEWS_EXPORT MenuRunner {
 
   // Creates a runner for a custom-created toolkit-views menu.
   MenuRunner(MenuItemView* menu, int32_t run_types);
+
+  MenuRunner(const MenuRunner&) = delete;
+  MenuRunner& operator=(const MenuRunner&) = delete;
+
   ~MenuRunner();
 
   // Runs the menu. MenuDelegate::OnMenuClosed will be notified of the results.
   // If |anchor| uses a |BUBBLE_..| type, the bounds will get determined by
   // using |bounds| as the thing to point at in screen coordinates.
+  // `native_view_for_gestures` is a NativeView that is used for cases where the
+  // surface hosting the menu has a different gfx::NativeView than the `parent`.
+  // This is required to correctly route gesture events to the correct
+  // NativeView in the cases where the surface hosting the menu is a
+  // WebContents.
+  // Note that this is a blocking call for a native menu on Mac.
+  // See http://crbug.com/682544.
   void RunMenuAt(Widget* parent,
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
-                 ui::MenuSourceType source_type);
+                 ui::MenuSourceType source_type,
+                 gfx::NativeView native_view_for_gestures = nullptr);
 
   // Returns true if we're in a nested run loop running the menu.
   bool IsRunning() const;
@@ -157,8 +166,6 @@ class VIEWS_EXPORT MenuRunner {
   // An implementation of RunMenuAt. This is usually NULL and ignored. If this
   // is not NULL, this implementation will be used.
   std::unique_ptr<MenuRunnerHandler> runner_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunner);
 };
 
 }  // namespace views

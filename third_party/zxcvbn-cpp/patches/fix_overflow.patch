@@ -1,0 +1,15 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+index fe2a2ec8cb8b..a4e341935ffb 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+@@ -220,8 +220,8 @@ ScoringResult most_guessable_match_sequence(const std::string & password,
+     std::vector<std::reference_wrapper<Match>> optimal_match_sequence;
+     if (!n) return optimal_match_sequence;
+     auto k = n - 1;
+-    idx_t l;
+-    auto g = std::numeric_limits<guesses_t>::max();
++    idx_t l = optimal.g[k].begin()->first;
++    guesses_t g = optimal.g[k].begin()->second;
+     for (const auto & item : optimal.g[k]) {
+       auto & candidate_l = item.first;
+       auto & candidate_g = item.second;

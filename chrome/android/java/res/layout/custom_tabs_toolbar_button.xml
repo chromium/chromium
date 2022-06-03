@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/ToolbarButton"
     android:layout_width="wrap_content"
+    android:minWidth="48dp"
     android:maxWidth="@dimen/custom_tabs_toolbar_maxWidth"
     android:paddingTop="@dimen/custom_tabs_toolbar_vertical_padding"
     android:paddingBottom="@dimen/custom_tabs_toolbar_vertical_padding"

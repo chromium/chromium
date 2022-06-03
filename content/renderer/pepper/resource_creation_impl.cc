@@ -7,9 +7,7 @@
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
 #include "content/renderer/pepper/ppb_audio_impl.h"
-#include "content/renderer/pepper/ppb_broker_impl.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
-#include "content/renderer/pepper/ppb_flash_message_loop_impl.h"
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
 #include "content/renderer/pepper/ppb_video_decoder_impl.h"
@@ -21,7 +19,6 @@
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
 #include "ppapi/shared_impl/ppb_input_event_shared.h"
 #include "ppapi/shared_impl/var.h"
-#include "services/service_manager/sandbox/switches.h"
 
 #if defined(OS_WIN)
 #include "base/command_line.h"
@@ -66,20 +63,12 @@ PP_Resource ResourceCreationImpl::CreateAudioTrusted(PP_Instance instance) {
   return (new PPB_Audio_Impl(instance))->GetReference();
 }
 
-PP_Resource ResourceCreationImpl::CreateAudioEncoder(PP_Instance instance) {
-  return 0;  // Not supported in-process.
-}
-
 PP_Resource ResourceCreationImpl::CreateAudioInput(PP_Instance instance) {
   return 0;  // Not supported in-process.
 }
 
 PP_Resource ResourceCreationImpl::CreateAudioOutput(PP_Instance instance) {
   return 0;  // Not supported in-process.
-}
-
-PP_Resource ResourceCreationImpl::CreateBroker(PP_Instance instance) {
-  return (new PPB_Broker_Impl(instance))->GetReference();
 }
 
 PP_Resource ResourceCreationImpl::CreateBuffer(PP_Instance instance,
@@ -92,25 +81,11 @@ PP_Resource ResourceCreationImpl::CreateCameraDevicePrivate(
   return 0;  // Not supported in-process.
 }
 
-PP_Resource ResourceCreationImpl::CreateFlashDRM(PP_Instance instance) {
-  return 0;  // Not supported in-process.
-}
-
 PP_Resource ResourceCreationImpl::CreateFlashFontFile(
     PP_Instance instance,
     const PP_BrowserFont_Trusted_Description* description,
     PP_PrivateFontCharset charset) {
   return 0;  // Not supported in-process.
-}
-
-PP_Resource ResourceCreationImpl::CreateFlashMenu(
-    PP_Instance instance,
-    const PP_Flash_Menu* menu_data) {
-  return 0;  // Not supported in-process.
-}
-
-PP_Resource ResourceCreationImpl::CreateFlashMessageLoop(PP_Instance instance) {
-  return PPB_Flash_MessageLoop_Impl::Create(instance);
 }
 
 PP_Resource ResourceCreationImpl::CreateGraphics3D(PP_Instance instance,
@@ -149,10 +124,7 @@ PP_Resource ResourceCreationImpl::CreateImageData(PP_Instance instance,
   // we use the SIMPLE image data type as the PLATFORM image data type
   // calls GDI functions to create DIB sections etc which fail in Win32K
   // lockdown mode.
-  // TODO(ananta)
-  // Look into whether this causes a loss of functionality. From cursory
-  // testing things seem to work well.
-  if (service_manager::IsWin32kLockdownEnabled())
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
     return CreateImageDataSimple(instance, format, size, init_to_zero);
 #endif
   return PPB_ImageData_Impl::Create(instance,

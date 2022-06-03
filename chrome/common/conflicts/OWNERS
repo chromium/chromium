@@ -3,6 +3,3 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 chrisha@chromium.org
 pmonette@chromium.org
-
-# COMPONENT: Internals>PlatformIntegration
-# TEAM: windows-third-party@chromium.org

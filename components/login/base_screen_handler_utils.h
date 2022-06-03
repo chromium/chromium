@@ -7,13 +7,11 @@
 
 #include <stddef.h>
 
-#include <cstddef>
 #include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/login/login_export.h"
@@ -21,7 +19,7 @@
 namespace login {
 
 typedef std::vector<std::string> StringList;
-typedef std::vector<base::string16> String16List;
+typedef std::vector<std::u16string> String16List;
 
 template <typename T>
 struct LOGIN_EXPORT UnwrapConstRef {
@@ -37,8 +35,8 @@ bool LOGIN_EXPORT ParseValue(const base::Value* value, bool* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, int* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, double* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, std::string* out_value);
-bool LOGIN_EXPORT
-    ParseValue(const base::Value* value, base::string16* out_value);
+bool LOGIN_EXPORT ParseValue(const base::Value* value,
+                             std::u16string* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value,
                              const base::DictionaryValue** out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, StringList* out_value);
@@ -57,7 +55,7 @@ base::Value LOGIN_EXPORT MakeValue(bool v);
 base::Value LOGIN_EXPORT MakeValue(int v);
 base::Value LOGIN_EXPORT MakeValue(double v);
 base::Value LOGIN_EXPORT MakeValue(const std::string& v);
-base::Value LOGIN_EXPORT MakeValue(const base::string16& v);
+base::Value LOGIN_EXPORT MakeValue(const std::u16string& v);
 base::Value LOGIN_EXPORT MakeValue(const AccountId& v);
 
 template <typename T>
@@ -84,21 +82,21 @@ typename UnwrapConstRef<Arg>::Type ParseArg(const base::ListValue* args) {
 }
 
 template <typename... Args, size_t... Ns>
-inline void DispatchToCallback(const base::Callback<void(Args...)>& callback,
-                               const base::ListValue* args,
-                               std::index_sequence<Ns...> indexes) {
+inline void DispatchToCallback(
+    const base::RepeatingCallback<void(Args...)>& callback,
+    const base::ListValue* args,
+    std::index_sequence<Ns...> indexes) {
   DCHECK(args);
-  DCHECK_EQ(sizeof...(Args), args->GetSize());
+  DCHECK_EQ(sizeof...(Args), args->GetList().size());
 
   callback.Run(ParseArg<Args, Ns>(args)...);
 }
 
 template <typename... Args>
-void CallbackWrapper(const base::Callback<void(Args...)>& callback,
+void CallbackWrapper(const base::RepeatingCallback<void(Args...)>& callback,
                      const base::ListValue* args) {
   DispatchToCallback(callback, args, std::index_sequence_for<Args...>());
 }
-
 
 }  // namespace login
 

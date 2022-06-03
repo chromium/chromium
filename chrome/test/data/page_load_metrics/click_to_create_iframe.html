@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function createIframe() {
+      const iframe = document.createElement('iframe');
+      iframe.src = `data:text/html,
+<!DOCTYPE html>
+<html>
+<body>
+<style>
+p {
+  font-size: 40px;
+}
+</style>
+<p>
+This is bigger text than main frame content!!!!
+</p>
+</body>
+</html>`;
+      document.body.appendChild(iframe);
+    }
+  </script>
+  <button id='button' onclick="createIframe()">A</button>
+</body>
+</html>

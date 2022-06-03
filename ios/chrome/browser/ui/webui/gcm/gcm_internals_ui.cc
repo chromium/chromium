@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -17,7 +17,7 @@
 #include "components/gcm_driver/gcm_internals_constants.h"
 #include "components/gcm_driver/gcm_internals_helper.h"
 #include "components/gcm_driver/gcm_profile_service.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/dev_ui_components_resources.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
@@ -31,6 +31,11 @@ namespace {
 class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
  public:
   GcmInternalsUIMessageHandler();
+
+  GcmInternalsUIMessageHandler(const GcmInternalsUIMessageHandler&) = delete;
+  GcmInternalsUIMessageHandler& operator=(const GcmInternalsUIMessageHandler&) =
+      delete;
+
   ~GcmInternalsUIMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -55,8 +60,6 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<GcmInternalsUIMessageHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GcmInternalsUIMessageHandler);
 };
 
 GcmInternalsUIMessageHandler::GcmInternalsUIMessageHandler()
@@ -71,26 +74,24 @@ void GcmInternalsUIMessageHandler::ReturnResults(
   base::DictionaryValue results;
   gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs, &results);
 
-  std::vector<const base::Value*> args{&results};
-  web_ui()->CallJavascriptFunction(gcm_driver::kSetGcmInternalsInfo, args);
+  base::Value event_name(gcm_driver::kSetGcmInternalsInfo);
+  std::vector<const base::Value*> args{&event_name, &results};
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  auto args_list = args->GetList();
+  if (args_list.size() != 1 || !args_list[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = false;
-  if (!args->GetBoolean(0, &clear_logs)) {
-    NOTREACHED();
-    return;
-  }
+  bool clear_logs = args_list[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromWebUIIOS(web_ui());
   gcm::GCMProfileService* profile_service =
       IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
 
@@ -98,25 +99,23 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
     ReturnResults(browser_state->GetPrefs(), nullptr, nullptr);
   } else {
     profile_service->driver()->GetGCMStatistics(
-        base::Bind(&GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
-                   weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
+            weak_ptr_factory_.GetWeakPtr()),
         clear_activity_logs);
   }
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+  auto args_list = args->GetList();
+  if (args_list.size() != 1 || !args_list[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool recording = false;
-  if (!args->GetBoolean(0, &recording)) {
-    NOTREACHED();
-    return;
-  }
+  bool recording = args_list[0].GetBool();
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromWebUIIOS(web_ui());
   gcm::GCMProfileService* profile_service =
       IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
 
@@ -126,15 +125,16 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
   }
   // Get fresh stats after changing recording setting.
   profile_service->driver()->SetGCMRecording(
-      base::Bind(&GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished,
+          weak_ptr_factory_.GetWeakPtr()),
       recording);
 }
 
 void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
     const gcm::GCMClient::GCMStatistics& stats) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromWebUIIOS(web_ui());
   DCHECK(browser_state);
   gcm::GCMProfileService* profile_service =
       IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
@@ -144,11 +144,11 @@ void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       gcm_driver::kGetGcmInternalsInfo,
       base::BindRepeating(&GcmInternalsUIMessageHandler::RequestAllInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       gcm_driver::kSetGcmInternalsRecording,
       base::BindRepeating(&GcmInternalsUIMessageHandler::SetRecording,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -156,8 +156,8 @@ void GcmInternalsUIMessageHandler::RegisterMessages() {
 
 }  // namespace
 
-GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui)
-    : web::WebUIIOSController(web_ui) {
+GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui, const std::string& host)
+    : web::WebUIIOSController(web_ui, host) {
   // Set up the chrome://gcm-internals source.
   web::WebUIIOSDataSource* html_source =
       web::WebUIIOSDataSource::Create(kChromeUIGCMInternalsHost);
@@ -171,7 +171,7 @@ GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui)
                                IDR_GCM_DRIVER_GCM_INTERNALS_JS);
   html_source->SetDefaultResource(IDR_GCM_DRIVER_GCM_INTERNALS_HTML);
 
-  web::WebUIIOSDataSource::Add(ios::ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
                                html_source);
 
   web_ui->AddMessageHandler(std::make_unique<GcmInternalsUIMessageHandler>());

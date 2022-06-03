@@ -6,22 +6,30 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_
 
 #include "base/callback.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmldivelement_htmliframeelement.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
+class CaptureHandleConfig;
+class ExceptionState;
 class LocalFrame;
+class Navigator;
 class MediaStreamConstraints;
 class MediaTrackSupportedConstraints;
 class ScriptPromise;
@@ -31,29 +39,38 @@ class ScriptState;
 class MODULES_EXPORT MediaDevices final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<MediaDevices>,
-      public ContextLifecycleObserver,
+      public Supplement<Navigator>,
+      public ExecutionContextLifecycleObserver,
       public mojom::blink::MediaDevicesListener {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaDevices);
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(MediaDevices, Dispose);
 
  public:
-  explicit MediaDevices(ExecutionContext*);
+  static const char kSupplementName[];
+  static MediaDevices* mediaDevices(Navigator&);
+  explicit MediaDevices(Navigator&);
   ~MediaDevices() override;
 
-  ScriptPromise enumerateDevices(ScriptState*);
+  ScriptPromise enumerateDevices(ScriptState*, ExceptionState&);
   MediaTrackSupportedConstraints* getSupportedConstraints() const;
   ScriptPromise getUserMedia(ScriptState*,
                              const MediaStreamConstraints*,
                              ExceptionState&);
   ScriptPromise SendUserMediaRequest(ScriptState*,
-                                     WebUserMediaRequest::MediaType,
+                                     UserMediaRequest::MediaType,
                                      const MediaStreamConstraints*,
                                      ExceptionState&);
 
   ScriptPromise getDisplayMedia(ScriptState*,
                                 const MediaStreamConstraints*,
                                 ExceptionState&);
+
+  void setCaptureHandleConfig(ScriptState*,
+                              const CaptureHandleConfig*,
+                              ExceptionState&);
+
+  ScriptPromise produceCropId(ScriptState*,
+                              V8UnionHTMLDivElementOrHTMLIFrameElement*,
+                              ExceptionState&);
 
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;
@@ -63,12 +80,12 @@ class MODULES_EXPORT MediaDevices final
   // ScriptWrappable
   bool HasPendingActivity() const override;
 
-  // ContextLifecycleObserver overrides.
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver overrides.
+  void ContextDestroyed() override;
 
   // mojom::blink::MediaDevicesListener implementation.
   void OnDevicesChanged(mojom::blink::MediaDeviceType,
-                        Vector<mojom::blink::MediaDeviceInfoPtr>) override;
+                        const Vector<WebMediaDeviceInfo>&) override;
 
   // Callback for testing only.
   using EnumerateDevicesTestCallback =
@@ -90,7 +107,7 @@ class MODULES_EXPORT MediaDevices final
     device_change_test_callback_ = std::move(test_callback);
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(devicechange, kDevicechange)
 
@@ -107,14 +124,24 @@ class MODULES_EXPORT MediaDevices final
   void DispatchScheduledEvents();
   void StartObserving();
   void StopObserving();
-  void Dispose();
   void DevicesEnumerated(ScriptPromiseResolver*,
-                         Vector<Vector<mojom::blink::MediaDeviceInfoPtr>>,
+                         const Vector<Vector<WebMediaDeviceInfo>>&,
                          Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
   const mojo::Remote<mojom::blink::MediaDevicesDispatcherHost>&
   GetDispatcherHost(LocalFrame*);
+
+#if !defined(OS_ANDROID)
+  // Manage the window of opportunity that occurs immediately after
+  // display-capture starts. The application can call MediaStreamTrack.focus()
+  // on the microtask where the Promise<MediaStream> was resolved; later calls
+  // raise an exception.
+  // |id| identifies the source, and therefore the track, on the browser-side.
+  void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(const String&,
+                                                       MediaStreamTrack*);
+  void CloseFocusWindowOfOpportunity(const String&, MediaStreamTrack*);
+#endif
 
   bool stopped_;
   // Async runner may be null when there is no valid execution context.
@@ -122,7 +149,7 @@ class MODULES_EXPORT MediaDevices final
   TaskHandle dispatch_scheduled_events_task_handle_;
   HeapVector<Member<Event>> scheduled_events_;
   mojo::Remote<mojom::blink::MediaDevicesDispatcherHost> dispatcher_host_;
-  mojo::Receiver<mojom::blink::MediaDevicesListener> receiver_{this};
+  HeapMojoReceiver<mojom::blink::MediaDevicesListener, MediaDevices> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
 
   EnumerateDevicesTestCallback enumerate_devices_test_callback_;
@@ -132,4 +159,4 @@ class MODULES_EXPORT MediaDevices final
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_DEVICES_H_

@@ -15,8 +15,5 @@ bool MockBlobRegistryDelegate::CanReadFileSystemFile(const FileSystemURL& url) {
 bool MockBlobRegistryDelegate::CanCommitURL(const GURL& url) {
   return can_commit_url_result;
 }
-bool MockBlobRegistryDelegate::IsProcessValid() {
-  return is_process_valid_result;
-}
 
 }  // namespace storage

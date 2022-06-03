@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "test/multiprocess.h"
 
 namespace crashpad {
@@ -42,6 +41,9 @@ struct MachMultiprocessInfo;
 class MachMultiprocess : public Multiprocess {
  public:
   MachMultiprocess();
+
+  MachMultiprocess(const MachMultiprocess&) = delete;
+  MachMultiprocess& operator=(const MachMultiprocess&) = delete;
 
   void Run();
 
@@ -84,7 +86,7 @@ class MachMultiprocess : public Multiprocess {
   //! \brief Runs the child side of the test.
   //!
   //! This method establishes the child’s environment and calls
-  //! MachMultiprocessChild(). If any failure (via fatal or nonfatal gtest
+  //! MachMultiprocessChild(). If any failure (via fatal or nonfatal Google Test
   //! assertion) is detected, the child will exit with a failure status.
   //!
   //! Subclasses must override MachMultiprocessChild() instead of this method.
@@ -92,8 +94,8 @@ class MachMultiprocess : public Multiprocess {
 
   //! \brief The subclass-provided parent routine.
   //!
-  //! Test failures should be reported via gtest: `EXPECT_*()`, `ASSERT_*()`,
-  //! `FAIL()`, etc.
+  //! Test failures should be reported via Google Test: `EXPECT_*()`,
+  //! `ASSERT_*()`, `FAIL()`, etc.
   //!
   //! This method must not use a `wait()`-family system call to wait for the
   //! child process to exit, as this is handled by the superclass.
@@ -103,15 +105,13 @@ class MachMultiprocess : public Multiprocess {
 
   //! \brief The subclass-provided child routine.
   //!
-  //! Test failures should be reported via gtest: `EXPECT_*()`, `ASSERT_*()`,
-  //! `FAIL()`, etc.
+  //! Test failures should be reported via Google Test: `EXPECT_*()`,
+  //! `ASSERT_*()`, `FAIL()`, etc.
   //!
   //! Subclasses must implement this method to define how the child operates.
   virtual void MachMultiprocessChild() = 0;
 
   internal::MachMultiprocessInfo* info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachMultiprocess);
 };
 
 }  // namespace test

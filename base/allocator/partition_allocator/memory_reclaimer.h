@@ -8,23 +8,12 @@
 #include <memory>
 #include <set>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/location.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
-#include "base/timer/timer.h"
 
 namespace base {
-
-namespace internal {
-
-struct PartitionRootBase;
-
-}  // namespace internal
 
 // Posts and handles memory reclaim tasks for PartitionAlloc.
 //
@@ -39,39 +28,49 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
  public:
   static PartitionAllocMemoryReclaimer* Instance();
 
+  PartitionAllocMemoryReclaimer(const PartitionAllocMemoryReclaimer&) = delete;
+  PartitionAllocMemoryReclaimer& operator=(
+      const PartitionAllocMemoryReclaimer&) = delete;
+
   // Internal. Do not use.
   // Registers a partition to be tracked by the reclaimer.
-  void RegisterPartition(internal::PartitionRootBase* partition);
+  void RegisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
+  void RegisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
   // Internal. Do not use.
   // Unregisters a partition to be tracked by the reclaimer.
-  void UnregisterPartition(internal::PartitionRootBase* partition);
-  // Starts the periodic reclaim. Should be called once.
-  void Start(scoped_refptr<SequencedTaskRunner> task_runner);
-  // Triggers an explicit reclaim now.
-  void Reclaim();
+  void UnregisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
+  void UnregisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
 
-  static constexpr TimeDelta kStatsRecordingTimeDelta =
-      TimeDelta::FromMinutes(5);
+  // Triggers an explicit reclaim now to reclaim as much free memory as
+  // possible. The API callers need to invoke this method periodically
+  // if they want to use memory reclaimer.
+  // c.f. See also GetRecommendedReclaimInterval()'s comment.
+  void ReclaimNormal();
+
+  // Returns a recommended interval to invoke ReclaimNormal.
+  static constexpr base::TimeDelta GetRecommendedReclaimInterval() {
+    return Seconds(4);
+  }
+
+  // Triggers an explicit reclaim now reclaiming all free memory
+  void ReclaimAll();
 
  private:
   PartitionAllocMemoryReclaimer();
   ~PartitionAllocMemoryReclaimer();
+  // |flags| is an OR of base::PartitionPurgeFlags
+  void Reclaim(int flags);
   void ReclaimAndReschedule();
-  void RecordStatistics();
   void ResetForTesting();
 
-  // Total time spent in |Reclaim()|.
-  bool has_called_reclaim_ = false;
-  TimeDelta total_reclaim_thread_time_;
-  // Schedules periodic |Reclaim()|.
-  std::unique_ptr<RepeatingTimer> timer_;
-
-  Lock lock_;
-  std::set<internal::PartitionRootBase*> partitions_ GUARDED_BY(lock_);
+  internal::PartitionLock lock_;
+  std::set<PartitionRoot<internal::ThreadSafe>*> thread_safe_partitions_
+      GUARDED_BY(lock_);
+  std::set<PartitionRoot<internal::NotThreadSafe>*> thread_unsafe_partitions_
+      GUARDED_BY(lock_);
 
   friend class NoDestructor<PartitionAllocMemoryReclaimer>;
   friend class PartitionAllocMemoryReclaimerTest;
-  DISALLOW_COPY_AND_ASSIGN(PartitionAllocMemoryReclaimer);
 };
 
 }  // namespace base

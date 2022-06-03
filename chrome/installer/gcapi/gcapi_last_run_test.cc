@@ -18,9 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::win::RegKey;
-
 
 class GCAPILastRunTest : public ::testing::Test {
  protected:
@@ -33,8 +31,7 @@ class GCAPILastRunTest : public ::testing::Test {
     std::wstring reg_path(google_update::kRegPathClientState);
     reg_path += L"\\";
     reg_path += google_update::kChromeUpgradeCode;
-    RegKey client_state(HKEY_CURRENT_USER,
-                        reg_path.c_str(),
+    RegKey client_state(HKEY_CURRENT_USER, reg_path.c_str(),
                         KEY_CREATE_SUB_KEY | KEY_WOW64_32KEY);
     ASSERT_TRUE(client_state.Valid());
 
@@ -43,29 +40,28 @@ class GCAPILastRunTest : public ::testing::Test {
     std::wstring clients_path(google_update::kRegPathClients);
     clients_path += L"\\";
     clients_path += google_update::kChromeUpgradeCode;
-    RegKey client_key(HKEY_CURRENT_USER,
-                      clients_path.c_str(),
+    RegKey client_key(HKEY_CURRENT_USER, clients_path.c_str(),
                       KEY_CREATE_SUB_KEY | KEY_SET_VALUE | KEY_WOW64_32KEY);
     ASSERT_TRUE(client_key.Valid());
     client_key.WriteValue(L"pv", L"1.2.3.4");
   }
 
   bool SetLastRunTime(int64_t last_run_time) {
-    return SetLastRunTimeString(base::NumberToString16(last_run_time));
+    return SetLastRunTimeString(base::NumberToWString(last_run_time));
   }
 
-  bool SetLastRunTimeString(const base::string16& last_run_time_string) {
+  bool SetLastRunTimeString(const std::wstring& last_run_time_string) {
     const wchar_t* base_path = google_update::kRegPathClientState;
     std::wstring path(base_path);
     path += L"\\";
     path += google_update::kChromeUpgradeCode;
 
-    RegKey client_state(
-        HKEY_CURRENT_USER, path.c_str(), KEY_SET_VALUE | KEY_WOW64_32KEY);
+    RegKey client_state(HKEY_CURRENT_USER, path.c_str(),
+                        KEY_SET_VALUE | KEY_WOW64_32KEY);
     return (client_state.Valid() &&
-            client_state.WriteValue(
-                google_update::kRegLastRunTimeField,
-                last_run_time_string.c_str()) == ERROR_SUCCESS);
+            client_state.WriteValue(google_update::kRegLastRunTimeField,
+                                    last_run_time_string.c_str()) ==
+                ERROR_SUCCESS);
   }
 
  private:
@@ -73,7 +69,7 @@ class GCAPILastRunTest : public ::testing::Test {
 };
 
 TEST_F(GCAPILastRunTest, Basic) {
-  Time last_run = Time::NowFromSystemTime() - TimeDelta::FromDays(10);
+  Time last_run = Time::NowFromSystemTime() - base::Days(10);
   EXPECT_TRUE(SetLastRunTime(last_run.ToInternalValue()));
 
   int days_since_last_run = GoogleChromeDaysSinceLastRun();
@@ -92,7 +88,7 @@ TEST_F(GCAPILastRunTest, InvalidLastRun) {
 }
 
 TEST_F(GCAPILastRunTest, OutOfRangeLastRun) {
-  Time last_run = Time::NowFromSystemTime() - TimeDelta::FromDays(-42);
+  Time last_run = Time::NowFromSystemTime() - base::Days(-42);
   EXPECT_TRUE(SetLastRunTime(last_run.ToInternalValue()));
 
   int days_since_last_run = GoogleChromeDaysSinceLastRun();

@@ -5,23 +5,21 @@
 #include "components/history/core/browser/in_memory_database.h"
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace history {
 
-InMemoryDatabase::InMemoryDatabase() {}
+InMemoryDatabase::InMemoryDatabase()
+    : db_({.exclusive_locking = true, .page_size = 4096, .cache_size = 500}) {}
 
-InMemoryDatabase::~InMemoryDatabase() {
-}
+InMemoryDatabase::~InMemoryDatabase() = default;
 
 bool InMemoryDatabase::InitDB() {
-  // Set the database page size to 4K for better performance.
-  db_.set_page_size(4096);
-
   if (!db_.OpenInMemory()) {
     NOTREACHED() << "Cannot open databse " << GetDB().GetErrorMessage();
     return false;
@@ -73,7 +71,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     return false;
 
   // Copy URL data to memory.
-  base::TimeTicks begin_load = base::TimeTicks::Now();
 
   // Need to explicitly specify the column names here since databases on disk
   // may or may not have a favicon_id column, but the in-memory one will never
@@ -94,14 +91,10 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     // Unable to get data from the history database. This is OK, the file may
     // just not exist yet.
   }
-  base::TimeTicks end_load = base::TimeTicks::Now();
-  UMA_HISTOGRAM_MEDIUM_TIMES("History.InMemoryDBPopulate",
-                             end_load - begin_load);
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBItemCount",
                           db_.GetLastChangeCount());
 
   // Insert keyword search related URLs.
-  begin_load = base::TimeTicks::Now();
   if (!db_.Execute("INSERT OR IGNORE INTO urls SELECT u.id, u.url, u.title, "
                    "u.visit_count, u.typed_count, u.last_visit_time, u.hidden "
                    "FROM history.urls u JOIN history.keyword_search_terms kst "
@@ -109,23 +102,16 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     // Unable to get data from the history database. This is OK, the file may
     // just not exist yet.
   }
-  end_load = base::TimeTicks::Now();
-  UMA_HISTOGRAM_MEDIUM_TIMES("History.InMemoryDBKeywordURLPopulate",
-                             end_load - begin_load);
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBKeywordURLItemCount",
                           db_.GetLastChangeCount());
 
   // Copy search terms to memory.
-  begin_load = base::TimeTicks::Now();
   if (!db_.Execute(
       "INSERT INTO keyword_search_terms SELECT * FROM "
       "history.keyword_search_terms")) {
     // Unable to get data from the history database. This is OK, the file may
     // just not exist yet.
   }
-  end_load = base::TimeTicks::Now();
-  UMA_HISTOGRAM_MEDIUM_TIMES("History.InMemoryDBKeywordTermsPopulate",
-                             end_load - begin_load);
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBKeywordTermsCount",
                           db_.GetLastChangeCount());
 

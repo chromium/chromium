@@ -79,6 +79,12 @@
                 android:layout_height="wrap_content"
                 style="@style/InputChip" />
 
+            <org.chromium.ui.widget.ChipView
+                android:id="@+id/cvc"
+                android:gravity="center_vertical|start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/InputChip" />
         </LinearLayout>
 
         <ImageView

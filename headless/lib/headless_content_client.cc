@@ -4,6 +4,7 @@
 
 #include "headless/lib/headless_content_client.h"
 
+#include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -13,13 +14,13 @@ HeadlessContentClient::HeadlessContentClient() = default;
 
 HeadlessContentClient::~HeadlessContentClient() = default;
 
-base::string16 HeadlessContentClient::GetLocalizedString(int message_id) {
+std::u16string HeadlessContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
 base::StringPiece HeadlessContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
@@ -33,6 +34,17 @@ base::RefCountedMemory* HeadlessContentClient::GetDataResourceBytes(
 gfx::Image& HeadlessContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
+}
+
+blink::OriginTrialPolicy* HeadlessContentClient::GetOriginTrialPolicy() {
+  // Prevent initialization race (see crbug.com/721144). There may be a
+  // race when the policy is needed for worker startup (which happens on a
+  // separate worker thread).
+  base::AutoLock auto_lock(origin_trial_policy_lock_);
+  if (!origin_trial_policy_)
+    origin_trial_policy_ =
+        std::make_unique<embedder_support::OriginTrialPolicyImpl>();
+  return origin_trial_policy_.get();
 }
 
 }  // namespace headless

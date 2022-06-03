@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -27,6 +26,10 @@ class CONTENT_EXPORT SharedWorkerDevToolsManager {
   // Returns the SharedWorkerDevToolsManager singleton.
   static SharedWorkerDevToolsManager* GetInstance();
 
+  SharedWorkerDevToolsManager(const SharedWorkerDevToolsManager&) = delete;
+  SharedWorkerDevToolsManager& operator=(const SharedWorkerDevToolsManager&) =
+      delete;
+
   void AddAllAgentHosts(
       std::vector<scoped_refptr<SharedWorkerDevToolsAgentHost>>* result);
   void AgentHostDestroyed(SharedWorkerDevToolsAgentHost* agent_host);
@@ -41,6 +44,8 @@ class CONTENT_EXPORT SharedWorkerDevToolsManager {
           agent_host_receiver);
   void WorkerDestroyed(SharedWorkerHost* worker_host);
 
+  SharedWorkerDevToolsAgentHost* GetDevToolsHost(SharedWorkerHost* host);
+
  private:
   friend struct base::DefaultSingletonTraits<SharedWorkerDevToolsManager>;
 
@@ -53,8 +58,6 @@ class CONTENT_EXPORT SharedWorkerDevToolsManager {
   // Clients may retain agent host for the terminated shared worker,
   // and we reconnect them when shared worker is restarted.
   base::flat_set<SharedWorkerDevToolsAgentHost*> terminated_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerDevToolsManager);
 };
 
 }  // namespace content

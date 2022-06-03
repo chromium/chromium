@@ -1,0 +1,30 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("lens") {
+  sources = [
+    "lens_entrypoints.cc",
+    "lens_entrypoints.h",
+    "lens_features.cc",
+    "lens_features.h",
+  ]
+  deps = [
+    "//base:base",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "lens_entrypoints_unittest.cc" ]
+
+  deps = [
+    ":lens",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

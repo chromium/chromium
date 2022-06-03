@@ -4,13 +4,20 @@
 
 #include "device/bluetooth/dbus/bluetooth_dbus_client_bundle.h"
 
+#include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
+#include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_manager_client.h"
+#include "device/bluetooth/dbus/bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_client.h"
@@ -19,11 +26,12 @@
 #include "device/bluetooth/dbus/bluetooth_gatt_service_client.h"
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
 #include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
-#include "device/bluetooth/dbus/bluetooth_media_client.h"
-#include "device/bluetooth/dbus/bluetooth_media_transport_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_admin_policy_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_gatt_characteristic_client.h"
@@ -32,8 +40,6 @@
 #include "device/bluetooth/dbus/fake_bluetooth_gatt_service_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_input_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
-#include "device/bluetooth/dbus/fake_bluetooth_media_client.h"
-#include "device/bluetooth/dbus/fake_bluetooth_media_transport_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_profile_manager_client.h"
 
 namespace bluez {
@@ -42,17 +48,22 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     : use_fakes_(use_fakes) {
   if (!use_fakes_) {
     bluetooth_adapter_client_.reset(BluetoothAdapterClient::Create());
+    bluetooth_admin_policy_client_ = BluetoothAdminPolicyClient::Create();
     bluetooth_le_advertising_manager_client_.reset(
         BluetoothLEAdvertisingManagerClient::Create());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+      bluetooth_advertisement_monitor_manager_client_ =
+          BluetoothAdvertisementMonitorManagerClient::Create();
+    }
+#endif
     bluetooth_agent_manager_client_.reset(
         BluetoothAgentManagerClient::Create());
+    bluetooth_battery_client_.reset(BluetoothBatteryClient::Create());
     bluetooth_debug_manager_client_.reset(
         BluetoothDebugManagerClient::Create());
     bluetooth_device_client_.reset(BluetoothDeviceClient::Create());
     bluetooth_input_client_.reset(BluetoothInputClient::Create());
-    bluetooth_media_client_.reset(BluetoothMediaClient::Create());
-    bluetooth_media_transport_client_.reset(
-        BluetoothMediaTransportClient::Create());
     bluetooth_profile_manager_client_.reset(
         BluetoothProfileManagerClient::Create());
     bluetooth_gatt_characteristic_client_.reset(
@@ -65,27 +76,43 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     alternate_bluetooth_adapter_client_.reset(BluetoothAdapterClient::Create());
     alternate_bluetooth_device_client_.reset(BluetoothDeviceClient::Create());
   } else {
-    bluetooth_adapter_client_.reset(new FakeBluetoothAdapterClient);
-    bluetooth_le_advertising_manager_client_.reset(
-        new FakeBluetoothLEAdvertisingManagerClient);
-    bluetooth_agent_manager_client_.reset(new FakeBluetoothAgentManagerClient);
-    bluetooth_debug_manager_client_.reset(new FakeBluetoothDebugManagerClient);
-    bluetooth_device_client_.reset(new FakeBluetoothDeviceClient);
-    bluetooth_input_client_.reset(new FakeBluetoothInputClient);
-    bluetooth_media_client_.reset(new FakeBluetoothMediaClient);
-    bluetooth_media_transport_client_.reset(
-        new FakeBluetoothMediaTransportClient);
-    bluetooth_profile_manager_client_.reset(
-        new FakeBluetoothProfileManagerClient);
-    bluetooth_gatt_characteristic_client_.reset(
-        new FakeBluetoothGattCharacteristicClient);
-    bluetooth_gatt_descriptor_client_.reset(
-        new FakeBluetoothGattDescriptorClient);
-    bluetooth_gatt_manager_client_.reset(new FakeBluetoothGattManagerClient);
-    bluetooth_gatt_service_client_.reset(new FakeBluetoothGattServiceClient);
+#if defined(USE_REAL_DBUS_CLIENTS)
+    LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
+#else
+    bluetooth_adapter_client_ = std::make_unique<FakeBluetoothAdapterClient>();
+    bluetooth_admin_policy_client_ =
+        std::make_unique<FakeBluetoothAdminPolicyClient>();
+    bluetooth_le_advertising_manager_client_ =
+        std::make_unique<FakeBluetoothLEAdvertisingManagerClient>();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
+      bluetooth_advertisement_monitor_manager_client_ =
+          std::make_unique<FakeBluetoothAdvertisementMonitorManagerClient>();
+    }
+#endif
+    bluetooth_agent_manager_client_ =
+        std::make_unique<FakeBluetoothAgentManagerClient>();
+    bluetooth_battery_client_ = std::make_unique<FakeBluetoothBatteryClient>();
+    bluetooth_debug_manager_client_ =
+        std::make_unique<FakeBluetoothDebugManagerClient>();
+    bluetooth_device_client_ = std::make_unique<FakeBluetoothDeviceClient>();
+    bluetooth_input_client_ = std::make_unique<FakeBluetoothInputClient>();
+    bluetooth_profile_manager_client_ =
+        std::make_unique<FakeBluetoothProfileManagerClient>();
+    bluetooth_gatt_characteristic_client_ =
+        std::make_unique<FakeBluetoothGattCharacteristicClient>();
+    bluetooth_gatt_descriptor_client_ =
+        std::make_unique<FakeBluetoothGattDescriptorClient>();
+    bluetooth_gatt_manager_client_ =
+        std::make_unique<FakeBluetoothGattManagerClient>();
+    bluetooth_gatt_service_client_ =
+        std::make_unique<FakeBluetoothGattServiceClient>();
 
-    alternate_bluetooth_adapter_client_.reset(new FakeBluetoothAdapterClient);
-    alternate_bluetooth_device_client_.reset(new FakeBluetoothDeviceClient);
+    alternate_bluetooth_adapter_client_ =
+        std::make_unique<FakeBluetoothAdapterClient>();
+    alternate_bluetooth_device_client_ =
+        std::make_unique<FakeBluetoothDeviceClient>();
+#endif  // defined(USE_REAL_DBUS_CLIENTS)
   }
 }
 

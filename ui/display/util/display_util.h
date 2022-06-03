@@ -30,10 +30,9 @@ enum class EdidColorSpaceChecksOutcome {
   kMaxValue = kErrorBadGamma
 };
 
-// Returns true if a given size is in the list of bogus sizes in mm that should
-// be ignored.
-DISPLAY_UTIL_EXPORT bool IsDisplaySizeBlackListed(
-    const gfx::Size& physical_size);
+// Returns true if a given size is allowed. Will return false for certain bogus
+// sizes in mm that should be ignored.
+DISPLAY_UTIL_EXPORT bool IsDisplaySizeValid(const gfx::Size& physical_size);
 
 // Returns 64-bit persistent ID for the specified manufacturer's ID and
 // product_code_hash, and the index of the output it is connected to.

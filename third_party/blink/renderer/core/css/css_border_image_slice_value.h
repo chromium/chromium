@@ -46,7 +46,7 @@ class CSSBorderImageSliceValue : public CSSValue {
 
   bool Equals(const CSSBorderImageSliceValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   // These four values are used to make "cuts" in the border image. They can be

@@ -38,7 +38,6 @@ namespace disk_cache {
 
 NET_EXPORT_PRIVATE extern const base::Feature kSimpleCachePrefetchExperiment;
 NET_EXPORT_PRIVATE extern const char kSimpleCacheFullPrefetchBytesParam[];
-NET_EXPORT_PRIVATE extern const char kSimpleCacheTrailerPrefetchHintParam[];
 NET_EXPORT_PRIVATE extern const char
     kSimpleCacheTrailerPrefetchSpeculativeBytesParam[];
 
@@ -47,6 +46,7 @@ NET_EXPORT_PRIVATE extern const char
 NET_EXPORT_PRIVATE int GetSimpleCachePrefetchSize();
 
 class SimpleSynchronousEntry;
+struct RangeResult;
 
 // This class handles the passing of data about the entry between
 // SimpleEntryImplementation and SimpleSynchronousEntry and the computation of
@@ -143,15 +143,10 @@ class SimpleSynchronousEntry {
   };
 
   struct ReadResult {
-    ReadResult()
-        : crc_updated(false),
-          crc_performed_verify(false),
-          crc_verify_ok(false) {}
+    ReadResult() : crc_updated(false) {}
     int result;
     uint32_t updated_crc32;  // only relevant if crc_updated set
     bool crc_updated;
-    bool crc_performed_verify;  // only relevant if crc_updated set
-    bool crc_verify_ok;         // only relevant if crc_updated set
   };
 
   struct WriteRequest {
@@ -191,13 +186,10 @@ class SimpleSynchronousEntry {
 
   // Opens a disk cache entry on disk. The |key| parameter is optional, if empty
   // the operation may be slower. The |entry_hash| parameter is required.
-  // |time_enqueued| is when this operation was added to the I/O thread pool,
-  //  and is provided only for histograms.
   static void OpenEntry(net::CacheType cache_type,
                         const base::FilePath& path,
                         const std::string& key,
                         uint64_t entry_hash,
-                        const base::TimeTicks& time_enqueued,
                         SimpleFileTracker* file_tracker,
                         int32_t trailer_prefetch_size,
                         SimpleEntryCreationResults* out_results);
@@ -206,7 +198,6 @@ class SimpleSynchronousEntry {
                           const base::FilePath& path,
                           const std::string& key,
                           uint64_t entry_hash,
-                          const base::TimeTicks& time_enqueued,
                           SimpleFileTracker* file_tracker,
                           SimpleEntryCreationResults* out_results);
 
@@ -216,7 +207,6 @@ class SimpleSynchronousEntry {
                                 uint64_t entry_hash,
                                 OpenEntryIndexEnum index_state,
                                 bool optimistic_create,
-                                const base::TimeTicks& time_enqueued,
                                 SimpleFileTracker* file_tracker,
                                 int32_t trailer_prefetch_size,
                                 SimpleEntryCreationResults* out_results);
@@ -275,8 +265,7 @@ class SimpleSynchronousEntry {
                        SimpleEntryStat* out_entry_stat,
                        int* out_result);
   void GetAvailableRange(const SparseRequest& in_entry_op,
-                         int64_t* out_start,
-                         int* out_result);
+                         RangeResult* out_result);
 
   // Close all streams, and add write EOF records to streams indicated by the
   // CRCRecord entries in |crc32s_to_write|.
@@ -303,14 +292,6 @@ class SimpleSynchronousEntry {
                            SimpleCacheEnumerationLongKeys);
   friend class SimpleFileTrackerTest;
   class PrefetchData;
-
-  enum CreateEntryResult {
-    CREATE_ENTRY_SUCCESS = 0,
-    CREATE_ENTRY_PLATFORM_FILE_ERROR = 1,
-    CREATE_ENTRY_CANT_WRITE_HEADER = 2,
-    CREATE_ENTRY_CANT_WRITE_KEY = 3,
-    CREATE_ENTRY_MAX = 4,
-  };
 
   enum FileRequired {
     FILE_NOT_REQUIRED,
@@ -368,9 +349,8 @@ class SimpleSynchronousEntry {
                         SimpleStreamPrefetchData stream_prefetch_data[2]);
 
   // Writes the header and key to a newly-created stream file. |index| is the
-  // index of the stream. Returns true on success; returns false and sets
-  // |*out_result| on failure.
-  bool InitializeCreatedFile(int index, CreateEntryResult* out_result);
+  // index of the stream. Returns true on success; returns false and failure.
+  bool InitializeCreatedFile(int index);
 
   // Returns a net error, including net::OK on success and net::FILE_EXISTS
   // when the entry already exists.
@@ -468,8 +448,6 @@ class SimpleSynchronousEntry {
                                       uint64_t entry_hash);
   static bool TruncateFilesForEntryHash(const base::FilePath& path,
                                         uint64_t entry_hash);
-
-  void RecordSyncCreateResult(CreateEntryResult result);
 
   base::FilePath GetFilenameFromFileIndex(int file_index) const;
 

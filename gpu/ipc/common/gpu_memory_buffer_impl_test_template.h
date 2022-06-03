@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/mojom/buffer_types_mojom_traits.h"
+#include "ui/gfx/mojom/buffer_types.mojom.h"
 
 #if defined(OS_WIN) || defined(USE_OZONE)
 #include "ui/gl/init/gl_factory.h"
@@ -98,12 +98,15 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
         gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
-      if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-              TypeParam::kBufferType, format, usage)) {
+      if (!TestFixture::gpu_memory_buffer_support()
+               ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
+                                                 usage)) {
         continue;
       }
 
@@ -138,12 +141,15 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
         gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
-      if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-              TypeParam::kBufferType, format, usage)) {
+      if (!TestFixture::gpu_memory_buffer_support()
+               ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
+                                                 usage)) {
         continue;
       }
 
@@ -177,9 +183,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
   const gfx::Size kBufferSize(4, 4);
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-            TypeParam::kBufferType, format,
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+    if (!TestFixture::gpu_memory_buffer_support()
+             ->IsConfigurationSupportedForTest(
+                 TypeParam::kBufferType, format,
+                 gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -200,6 +207,12 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
 
     // Map buffer into user space.
     ASSERT_TRUE(buffer->Map());
+
+    // Map the buffer a second time. This should be a noop and simply allow
+    // multiple clients concurrent read access. Likewise a subsequent Unmap()
+    // shouldn't invalidate the first's Map().
+    ASSERT_TRUE(buffer->Map());
+    buffer->Unmap();
 
     // Copy and compare mapped buffers.
     for (size_t plane = 0; plane < num_planes; ++plane) {
@@ -231,9 +244,10 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
   const gfx::Size kBufferSize(4, 4);
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-            TypeParam::kBufferType, format,
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+    if (!TestFixture::gpu_memory_buffer_support()
+             ->IsConfigurationSupportedForTest(
+                 TypeParam::kBufferType, format,
+                 gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -312,12 +326,15 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
         gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
     for (auto usage : usages) {
-      if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-              TypeParam::kBufferType, format, usage))
+      if (!TestFixture::gpu_memory_buffer_support()
+               ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
+                                                 usage))
         continue;
 
       bool destroyed = false;
@@ -328,7 +345,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
 
       gfx::GpuMemoryBufferHandle output_handle;
       mojo::test::SerializeAndDeserialize<gfx::mojom::GpuMemoryBufferHandle>(
-          &handle, &output_handle);
+          handle, output_handle);
       EXPECT_EQ(output_handle.type, kBufferType);
 
       std::unique_ptr<GpuMemoryBufferImpl> buffer(
@@ -363,8 +380,9 @@ TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
   gfx::BufferUsage usage = gfx::BufferUsage::GPU_READ;
 
   for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-            TypeParam::kBufferType, format, usage))
+    if (!TestFixture::gpu_memory_buffer_support()
+             ->IsConfigurationSupportedForTest(TypeParam::kBufferType, format,
+                                               usage))
       continue;
     bool destroyed = false;
     std::unique_ptr<TypeParam> buffer(TypeParam::Create(

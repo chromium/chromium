@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "extensions/common/extension.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
@@ -28,7 +29,7 @@ class UsbPrinterManifestData : public Extension::ManifestData {
   // scoped_ptr on failure.
   static std::unique_ptr<UsbPrinterManifestData> FromValue(
       const base::Value& value,
-      base::string16* error);
+      std::u16string* error);
 
   bool SupportsDevice(const device::mojom::UsbDeviceInfo& device) const;
 

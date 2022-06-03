@@ -77,10 +77,10 @@ class PositionIteratorAlgorithm {
            dom_tree_version_ == anchor_node_->GetDocument().DomTreeVersion();
   }
 
-  Member<Node> anchor_node_;
+  Node* anchor_node_ = nullptr;
   // If this is non-null, Strategy::Parent(*node_after_position_in_anchor_) ==
   // anchor_node_;
-  Member<Node> node_after_position_in_anchor_;
+  Node* node_after_position_in_anchor_ = nullptr;
   int offset_in_anchor_;
   wtf_size_t depth_to_anchor_node_;
   // If |node_after_position_in_anchor_| is not null,

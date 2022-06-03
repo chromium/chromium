@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_STREAM_H_
 
+#include <string>
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -55,6 +55,7 @@ class WTF_EXPORT TextStream final {
   TextStream& operator<<(const char*);
   TextStream& operator<<(const void*);
   TextStream& operator<<(const String&);
+  TextStream& operator<<(const std::string&);
   TextStream& operator<<(const FormatNumberRespectingIntegers&);
 
   String Release();
@@ -82,4 +83,4 @@ TextStream& operator<<(TextStream& ts, const Vector<Item>& vector) {
 
 }  // namespace WTF
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_STREAM_H_

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="surface_augmenter">
+
+  <copyright>
+    Copyright 2021 The Chromium Authors.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="surface_augmenter" version="1">
+    <description summary="surface composition delegation">
+      The global interface exposing surface delegated composition
+      capabilities is used to instantiate an interface extension for a
+      wl_surface object. This extended interface will then allow
+      delegated compostion of the surface contents, effectively
+      disconnecting the direct relationship between the buffer and the
+      surface content (adding support for solid quads and rounded corner
+      for instance).
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="Destroy the surface augmenter.">
+        Informs the server that the client will not be using this
+        protocol object anymore. This does not affect any other objects,
+        augmenter objects included.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="augmented_surface_exists" value="0"
+             summary="the surface already has a augmenter object
+             associated"/>
+    </enum>
+
+    <request name="create_solid_color_buffer">
+      <description summary="creates a solid color buffer">
+	Instantiate a buffer of the given size for the purpose of a solid color
+  quad of a given color.
+      </description>
+      <arg name="id" type="new_id" interface="wl_buffer"/>
+      <arg name="color" type="array" summary="quad color represented by a SkColor4f"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
+
+    <request name="get_augmented_surface">
+      <description summary="extend surface interface for delegation">
+	Instantiate an interface extension for the given wl_surface to
+	extend composition of its content. If the given wl_surface already has
+	a augmentation object associated, the delegate_exists protocol error is
+  raised.
+      </description>
+      <arg name="id" type="new_id" interface="augmented_surface"
+           summary="the new augmenter interface id"/>
+      <arg name="surface" type="object" interface="wl_surface"
+           summary="the surface"/>
+    </request>
+  </interface>
+
+  <interface name="augmented_surface" version="1">
+    <description summary="delegate composition of a wl_surface">
+      An additional interface to a wl_surface object, which allows the
+      client to specify the delegated composition of the surface
+      contents.
+    </description>
+     <request name="destroy" type="destructor">
+      <description summary="remove delegated composition of the surface">
+	The associated wl_surface's augmenter is removed.
+	The change is applied on the next wl_surface.commit.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="bad_value" value="0"
+	     summary="negative values in radius or size"/>
+      <entry name="no_surface" value="1"
+	     summary="the wl_surface was destroyed"/>
+    </enum>
+
+    <request name="set_rounded_corners">
+    <!-- Note that this might be moved to a different protocol if there is
+      usage for it outside of Chrome OS -->
+      <description summary="set the surface rounded corners">
+      </description>
+      <arg name="top_left" type="fixed" summary="top left corner"/>
+      <arg name="top_right" type="fixed" summary="top right corner"/>
+      <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
+      <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
+    </request>
+
+  </interface>
+
+</protocol>

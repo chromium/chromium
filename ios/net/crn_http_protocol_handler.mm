@@ -11,16 +11,16 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ios/net/chunked_data_stream_uploader.h"
 #import "ios/net/clients/crn_network_client_protocol.h"
 #import "ios/net/crn_http_protocol_handler_proxy_with_client_thread.h"
@@ -148,6 +148,10 @@ class HttpProtocolHandlerCore
  public:
   explicit HttpProtocolHandlerCore(NSURLRequest* request);
   explicit HttpProtocolHandlerCore(NSURLSessionTask* task);
+
+  HttpProtocolHandlerCore(const HttpProtocolHandlerCore&) = delete;
+  HttpProtocolHandlerCore& operator=(const HttpProtocolHandlerCore&) = delete;
+
   // Starts the network request, and forwards the data downloaded from the
   // network to |base_client|.
   void Start(id<CRNNetworkClientProtocol> base_client);
@@ -216,8 +220,6 @@ class HttpProtocolHandlerCore
 
   // It is a weak pointer because the owner of the uploader is the URLRequest.
   base::WeakPtr<ChunkedDataStreamUploader> chunked_uploader_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpProtocolHandlerCore);
 };
 
 HttpProtocolHandlerCore::HttpProtocolHandlerCore(NSURLRequest* request) {
@@ -476,9 +478,7 @@ void HttpProtocolHandlerCore::OnReadCompleted(URLRequest* request,
   DCHECK_EQ(net_request_, request);
 
   // Read data from the socket until no bytes left to read.
-  uint64_t total_bytes_read = 0;
   while (bytes_read > 0) {
-    total_bytes_read += bytes_read;
     // The NSData will take the ownership of |read_buffer_|.
     NSData* data =
         [NSData dataWithBytesNoCopy:read_buffer_.release() length:bytes_read];
@@ -840,9 +840,7 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
 
 @interface CRNHTTPProtocolHandler (Private)
 
-- (id<CRNHTTPProtocolHandlerProxy>)getProtocolHandlerProxy;
-- (scoped_refptr<net::HttpProtocolHandlerCore>)getCore;
-- (NSThread*)getClientThread;
+- (void)ensureProtocolHandlerProxyCreated;
 - (void)cancelRequest;
 
 @end
@@ -932,10 +930,10 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
   }
 
   // The closure passed to PostTask must to retain the _protocolProxy
-  // scoped_nsobject. A call to getProtocolHandlerProxy before passing
+  // scoped_nsobject. A call to ensureProtocolHandlerProxyCreated before passing
   // _protocolProxy ensure that _protocolProxy is instanciated before passing
   // it.
-  [self getProtocolHandlerProxy];
+  [self ensureProtocolHandlerProxyCreated];
   DCHECK(_protocolProxy);
   g_protocol_handler_delegate->GetDefaultURLRequestContext()
       ->GetNetworkTaskRunner()
@@ -943,7 +941,7 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
                                            _core, _protocolProxy));
 }
 
-- (id<CRNHTTPProtocolHandlerProxy>)getProtocolHandlerProxy {
+- (void)ensureProtocolHandlerProxyCreated {
   DCHECK_EQ([NSThread currentThread], _clientThread);
   if (!_protocolProxy) {
     _protocolProxy = [[CRNHTTPProtocolHandlerProxyWithClientThread alloc]
@@ -951,15 +949,6 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
             clientThread:_clientThread
              runLoopMode:[[NSRunLoop currentRunLoop] currentMode]];
   }
-  return _protocolProxy;
-}
-
-- (scoped_refptr<net::HttpProtocolHandlerCore>)getCore {
-  return _core;
-}
-
-- (NSThread*)getClientThread {
-  return _clientThread;
 }
 
 - (void)cancelRequest {

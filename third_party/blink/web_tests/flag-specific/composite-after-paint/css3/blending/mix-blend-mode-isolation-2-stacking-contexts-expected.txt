@@ -16,6 +16,7 @@
     {
       "name": "LayoutImage IMG class='accelerated blended'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -28,12 +29,13 @@
     {
       "name": "LayoutImage IMG class='accelerated blended'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow HTML",
       "position": [8, 8],
-      "bounds": [272, 16]
+      "bounds": [784, 579]
     }
   ],
   "transforms": [

@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {PermissionType, TriState, FakePageHandler, AppManagementStore, updateSelectedAppId, createTriStatePermission} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {flushTasks} from 'chrome://test/test_util.js';
+// #import {setupFakeHandler, replaceStore, replaceBody, getPermissionToggleByType } from './test_util.m.js';
+// clang-format on
+
 'use strict';
 
 suite('<app-management-managed-apps>', () => {
@@ -15,25 +23,21 @@ suite('<app-management-managed-apps>', () => {
     // Create a Web app which is installed and pinned by policy
     // and has location set to on and camera set to off by policy.
     const permissionOptions = {};
-    permissionOptions[PwaPermissionType.GEOLOCATION] = {
-      permissionValue: TriState.kAllow,
-      isManaged: true,
-    };
-    permissionOptions[PwaPermissionType.MEDIASTREAM_CAMERA] = {
-      permissionValue: TriState.kBlock,
-      isManaged: true
-    };
+    permissionOptions[PermissionType.kLocation] = createTriStatePermission(
+        PermissionType.kLocation, TriState.kAllow, /*isManaged*/ true);
+    permissionOptions[PermissionType.kCamera] = createTriStatePermission(
+        PermissionType.kCamera, TriState.kBlock, /*isManaged*/ true);
     const policyAppOptions = {
       type: apps.mojom.AppType.kWeb,
       isPinned: apps.mojom.OptionalBool.kTrue,
       isPolicyPinned: apps.mojom.OptionalBool.kTrue,
-      installSource: apps.mojom.InstallSource.kPolicy,
+      installReason: apps.mojom.InstallReason.kPolicy,
       permissions: app_management.FakePageHandler.createWebPermissions(
           permissionOptions),
     };
     const app = await fakeHandler.addApp(null, policyAppOptions);
     // Select created app.
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateSelectedAppId(app.id));
     appDetailView = document.createElement('app-management-pwa-detail-view');
     replaceBody(appDetailView);
@@ -57,10 +61,10 @@ suite('<app-management-managed-apps>', () => {
           !!permissionToggle.root.querySelector('#policyIndicator') ===
           policyAffected);
     }
-    checkToggle('NOTIFICATIONS', false);
-    checkToggle('GEOLOCATION', true);
-    checkToggle('MEDIASTREAM_CAMERA', true);
-    checkToggle('MEDIASTREAM_MIC', false);
+    checkToggle('kNotifications', false);
+    checkToggle('kLocation', true);
+    checkToggle('kCamera', true);
+    checkToggle('kMicrophone', false);
   });
 
   test('Pin to shelf toggle effected by policy', () => {

@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/session/session_observer.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
@@ -38,6 +37,10 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
              chromeos::PowerManagerClient* power_manager_client,
              PrefService* local_state);
+
+  PowerPrefs(const PowerPrefs&) = delete;
+  PowerPrefs& operator=(const PowerPrefs&) = delete;
+
   ~PowerPrefs() override;
 
   // Registers power prefs with default values applicable to the local state
@@ -75,9 +78,9 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   chromeos::PowerPolicyController* const
       power_policy_controller_;  // Not owned.
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_;
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   std::unique_ptr<PrefChangeRegistrar> profile_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_registrar_;
@@ -92,8 +95,6 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   base::TimeTicks screen_idle_off_time_;
 
   PrefService* local_state_ = nullptr;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(PowerPrefs);
 };
 
 }  // namespace ash

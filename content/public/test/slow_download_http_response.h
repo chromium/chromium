@@ -5,42 +5,38 @@
 #ifndef CONTENT_PUBLIC_TEST_SLOW_DOWNLOAD_HTTP_RESPONSE_H_
 #define CONTENT_PUBLIC_TEST_SLOW_DOWNLOAD_HTTP_RESPONSE_H_
 
-#include <set>
-#include <string>
-
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
+#include "base/strings/string_split.h"
+#include "content/public/test/slow_http_response.h"
 
 namespace content {
 
-/*
- * Download response that won't complete until |kFinishDownloadUrl| request is
- * received.
- */
-class SlowDownloadHttpResponse : public net::test_server::HttpResponse {
+// A subclass of SlowHttpResponse that serves a download.
+class SlowDownloadHttpResponse : public SlowHttpResponse {
  public:
   // Test URLs.
-  static const char kSlowDownloadHostName[];
+  static const char kSlowResponseHostName[];
   static const char kUnknownSizeUrl[];
   static const char kKnownSizeUrl[];
-  static const char kFinishDownloadUrl[];
-  static const int kFirstDownloadSize;
-  static const int kSecondDownloadSize;
 
+  // Helper to handle requests that should reply with SlowDownloadHttpResponse.
+  // NOTE: This helper makes use of a global so only one such request/response
+  // in flight at a time will be able to be finished by navigating to
+  // `kFinishSlowResponseUrl`.
   static std::unique_ptr<net::test_server::HttpResponse>
   HandleSlowDownloadRequest(const net::test_server::HttpRequest& request);
 
-  SlowDownloadHttpResponse(const std::string& url);
+  SlowDownloadHttpResponse(const std::string& url,
+                           GotRequestCallback got_request);
   ~SlowDownloadHttpResponse() override;
 
-  // net::test_server::HttpResponse implementations.
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override;
+  SlowDownloadHttpResponse(const SlowDownloadHttpResponse&) = delete;
+  SlowDownloadHttpResponse& operator=(const SlowDownloadHttpResponse&) = delete;
+
+  // SlowHttpResponse:
+  base::StringPairs ResponseHeaders() override;
 
  private:
   std::string url_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowDownloadHttpResponse);
 };
 
 }  // namespace content

@@ -1,64 +1,60 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-cr.define('app_management.apiListener', function() {
-  let initialized = false;
 
-  async function init() {
-    assert(!initialized);
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
-    const {apps: initialApps} =
-        await app_management.BrowserProxy.getInstance().handler.getApps();
-    const initialState = app_management.util.createInitialState(initialApps);
-    app_management.Store.getInstance().init(initialState);
+import {addApp, changeApp, removeApp} from './actions.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementStore} from './store.js';
+import {createInitialState} from './util.js';
 
-    const callbackRouter =
-        app_management.BrowserProxy.getInstance().callbackRouter;
+let initialized = false;
 
-    callbackRouter.onAppAdded.addListener(onAppAdded);
-    callbackRouter.onAppChanged.addListener(onAppChanged);
-    callbackRouter.onAppRemoved.addListener(onAppRemoved);
-    callbackRouter.onArcSupportChanged.addListener(onArcSupportChanged);
+async function init() {
+  assert(!initialized);
 
-    initialized = true;
-  }
+  const {apps: initialApps} =
+      await BrowserProxy.getInstance().handler.getApps();
+  const initialState = createInitialState(initialApps);
+  AppManagementStore.getInstance().init(initialState);
 
-  /**
-   * @param {cr.ui.Action} action
-   */
-  function dispatch(action) {
-    app_management.Store.getInstance().dispatch(action);
-  }
+  const callbackRouter = BrowserProxy.getInstance().callbackRouter;
 
-  /**
-   * @param {App} app
-   */
-  function onAppAdded(app) {
-    dispatch(app_management.actions.addApp(app));
-  }
+  callbackRouter.onAppAdded.addListener(onAppAdded);
+  callbackRouter.onAppChanged.addListener(onAppChanged);
+  callbackRouter.onAppRemoved.addListener(onAppRemoved);
 
-  /**
-   * @param {App} app
-   */
-  function onAppChanged(app) {
-    dispatch(app_management.actions.changeApp(app));
-  }
+  initialized = true;
+}
 
-  /**
-   * @param {string} appId
-   */
-  function onAppRemoved(appId) {
-    dispatch(app_management.actions.removeApp(appId));
-  }
+/**
+ * @param {Action} action
+ */
+function dispatch(action) {
+  AppManagementStore.getInstance().dispatch(action);
+}
 
-  /**
-   * @param {boolean} isSupported
-   */
-  function onArcSupportChanged(isSupported) {
-    dispatch(app_management.actions.updateArcSupported(isSupported));
-  }
+/**
+ * @param {App} app
+ */
+function onAppAdded(app) {
+  dispatch(addApp(app));
+}
 
-  init();
+/**
+ * @param {App} app
+ */
+function onAppChanged(app) {
+  dispatch(changeApp(app));
+}
 
-  return {};
-});
+/**
+ * @param {string} appId
+ */
+function onAppRemoved(appId) {
+  dispatch(removeApp(appId));
+}
+
+init();

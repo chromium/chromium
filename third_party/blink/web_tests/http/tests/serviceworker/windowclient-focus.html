@@ -60,13 +60,6 @@ t.step(function() {
         'focused clients: 1',
     ];
 
-    // On Mac, focusing and LayoutTests are no friend. This is amending the
-    // above |expected| array to match Mac's expectations.
-    var isMac = navigator.platform.indexOf('Mac') == 0;
-    if (isMac) {
-        expected[29] = 'focused clients: 3';
-    }
-
     function onMessage(e) {
         var message = e.data;
 

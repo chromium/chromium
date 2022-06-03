@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
@@ -25,7 +25,8 @@ static const int kAllSchemes =
     URLPattern::SCHEME_FILE | URLPattern::SCHEME_FTP |
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_EXTENSION |
     URLPattern::SCHEME_FILESYSTEM | URLPattern::SCHEME_WS |
-    URLPattern::SCHEME_WSS | URLPattern::SCHEME_DATA;
+    URLPattern::SCHEME_WSS | URLPattern::SCHEME_DATA | URLPattern::SCHEME_URN |
+    URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 TEST(ExtensionURLPatternTest, ParseInvalid) {
   const struct {
@@ -202,7 +203,9 @@ TEST(URLPatternTest, Match3) {
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/foo*bar", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://google.com/foobar")));
+  EXPECT_TRUE(pattern.MatchesURL(GURL("http://www.google.com/foobar")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://www.google.com/foo?bar")));
+  EXPECT_FALSE(pattern.MatchesURL(GURL("http://wwwgoogle.com/foobar")));
   EXPECT_TRUE(pattern.MatchesURL(
       GURL("http://monkey.images.google.com/foooobar")));
   EXPECT_FALSE(pattern.MatchesURL(GURL("http://yahoo.com/foobar")));
@@ -638,7 +641,7 @@ TEST(ExtensionURLPatternTest, ConvertToExplicitSchemes) {
       URLPattern::SCHEME_FTP,
       "http://google.com/monkey").ConvertToExplicitSchemes());
 
-  ASSERT_EQ(10u, all_urls.size());
+  ASSERT_EQ(12u, all_urls.size());
   ASSERT_EQ(2u, all_schemes.size());
   ASSERT_EQ(1u, monkey.size());
 
@@ -652,6 +655,8 @@ TEST(ExtensionURLPatternTest, ConvertToExplicitSchemes) {
   EXPECT_EQ("ws://*/*", all_urls[7].GetAsString());
   EXPECT_EQ("wss://*/*", all_urls[8].GetAsString());
   EXPECT_EQ("data:/*", all_urls[9].GetAsString());
+  EXPECT_EQ("urn:/*", all_urls[10].GetAsString());
+  EXPECT_EQ("uuid-in-package:/*", all_urls[11].GetAsString());
 
   EXPECT_EQ("http://google.com/foo", all_schemes[0].GetAsString());
   EXPECT_EQ("https://google.com/foo", all_schemes[1].GetAsString());
@@ -1156,7 +1161,7 @@ TEST(ExtensionURLPatternTest, Intersection) {
       "    Pattern1:        %s\n"
       "    Pattern2:        %s\n"
       "    Expected Result: %s";
-  for (const auto test_case : test_cases) {
+  for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf(
         kTestCaseDescriptionTemplate, test_case.pattern1.c_str(),
         test_case.pattern2.c_str(), test_case.expected_intersection.c_str()));
@@ -1172,14 +1177,14 @@ TEST(ExtensionURLPatternTest, Intersection) {
 
     // Intersection of two URLPatterns should be identical regardless of which
     // is the "first".
-    base::Optional<URLPattern> intersection1 =
+    absl::optional<URLPattern> intersection1 =
         pattern1.CreateIntersection(pattern2);
-    base::Optional<URLPattern> intersection2 =
+    absl::optional<URLPattern> intersection2 =
         pattern2.CreateIntersection(pattern1);
 
     if (test_case.expected_intersection.empty()) {
-      EXPECT_EQ(base::nullopt, intersection1) << intersection1->GetAsString();
-      EXPECT_EQ(base::nullopt, intersection2) << intersection2->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection1) << intersection1->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection2) << intersection2->GetAsString();
     } else {
       ASSERT_TRUE(intersection1);
       EXPECT_EQ(test_case.expected_intersection, intersection1->GetAsString());
@@ -1217,14 +1222,14 @@ TEST(ExtensionURLPatternTest, ValidSchemeIntersection) {
     URLPattern pattern2(test_case.scheme2);
     ASSERT_EQ(URLPattern::ParseResult::kSuccess,
               pattern2.Parse(URLPattern::kAllUrlsPattern));
-    base::Optional<URLPattern> intersection1 =
+    absl::optional<URLPattern> intersection1 =
         pattern1.CreateIntersection(pattern2);
-    base::Optional<URLPattern> intersection2 =
+    absl::optional<URLPattern> intersection2 =
         pattern2.CreateIntersection(pattern1);
 
     if (test_case.expected_scheme == URLPattern::SCHEME_NONE) {
-      EXPECT_EQ(base::nullopt, intersection1) << intersection1->GetAsString();
-      EXPECT_EQ(base::nullopt, intersection2) << intersection2->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection1) << intersection1->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection2) << intersection2->GetAsString();
     } else {
       ASSERT_TRUE(intersection1);
       EXPECT_EQ(test_case.expected_scheme, intersection1->valid_schemes());

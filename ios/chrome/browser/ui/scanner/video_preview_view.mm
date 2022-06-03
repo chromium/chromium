@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/scanner/video_preview_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 
@@ -52,7 +52,6 @@
 }
 
 - (CGRect)viewportRectOfInterest {
-  DCHECK(CGPointEqualToPoint(self.frame.origin, CGPointZero));
   CGRect viewportRect =
       CGRectMakeCenteredRectInFrame(self.frame.size, _viewportSize);
   AVCaptureVideoPreviewLayer* layer = [self previewLayer];

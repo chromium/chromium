@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_view.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -13,14 +14,16 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -32,12 +35,16 @@ namespace {
 // transformed to fit to the virtual screen size when laid-out. This is to avoid
 // scaling the image at painting time, then scaling it back to the screen size
 // in the compositor.
-class LayerControlView : public views::View {
+class WallpaperWidgetDelegate : public views::WidgetDelegateView {
  public:
-  explicit LayerControlView(views::View* view) {
+  explicit WallpaperWidgetDelegate(views::View* view) {
+    SetCanMaximize(true);
     AddChildView(view);
     view->SetPaintToLayer();
   }
+
+  WallpaperWidgetDelegate(const WallpaperWidgetDelegate&) = delete;
+  WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
 
   // Overrides views::View.
   void Layout() override {
@@ -59,9 +66,6 @@ class LayerControlView : public views::View {
       child->SetTransform(transform);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LayerControlView);
 };
 
 }  // namespace
@@ -69,8 +73,7 @@ class LayerControlView : public views::View {
 ////////////////////////////////////////////////////////////////////////////////
 // WallpaperView, public:
 
-WallpaperView::WallpaperView(const WallpaperProperty& property)
-    : property_(property) {
+WallpaperView::WallpaperView(float blur_sigma) : blur_sigma_(blur_sigma) {
   set_context_menu_controller(this);
 }
 
@@ -91,9 +94,10 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
+    shield_view_->SetBoundsRect(parent()->GetLocalBounds());
   } else {
     DCHECK(shield_view_);
-    parent()->RemoveChildView(shield_view_);
+    parent()->RemoveChildViewT(shield_view_);
     shield_view_ = nullptr;
   }
 }
@@ -104,6 +108,11 @@ const char* WallpaperView::GetClassName() const {
 
 bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
+}
+
+void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  if (shield_view_)
+    shield_view_->SetBoundsRect(parent()->GetLocalBounds());
 }
 
 void WallpaperView::ShowContextMenuForViewImpl(views::View* source,
@@ -130,11 +139,11 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
     small_canvas.DrawImageInt(wallpaper, src.x(), src.y(), src.width(),
                               src.height(), 0, 0, quality_adjusted_rect.width(),
                               quality_adjusted_rect.height(), true);
-    small_image_ = base::make_optional(
+    small_image_ = absl::make_optional(
         gfx::ImageSkia::CreateFrom1xBitmap(small_canvas.GetBitmap()));
   }
 
-  if (property_ == wallpaper_constants::kClear) {
+  if (blur_sigma_ == wallpaper_constants::kClear) {
     canvas->DrawImageInt(wallpaper, src.x(), src.y(), src.width(), src.height(),
                          dst.x(), dst.y(), dst.width(), dst.height(),
                          /*filter=*/true, flags);
@@ -143,22 +152,12 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
   bool will_not_fill = width() > dst.width() || height() > dst.height();
   // When not filling the view, we paint the small_image_ directly to the
   // canvas.
-  float blur =
-      will_not_fill ? property_.blur_sigma : property_.blur_sigma * quality;
+  float blur = will_not_fill ? blur_sigma_ : blur_sigma_ * quality;
 
   // Create the blur and brightness filter to apply to the downsampled image.
   cc::FilterOperations operations;
-  // In tablet mode, the wallpaper already has a color filter applied in
-  // |OnPaint| so we don't need to darken here.
-  // TODO(crbug.com/944152): Merge this with the color filter in
-  // WallpaperBaseView.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    operations.Append(
-        cc::FilterOperation::CreateBrightnessFilter(property_.opacity));
-  }
-
-  operations.Append(cc::FilterOperation::CreateBlurFilter(
-      blur, SkBlurImageFilter::kClamp_TileMode));
+  operations.Append(
+      cc::FilterOperation::CreateBlurFilter(blur, SkTileMode::kClamp));
   sk_sp<cc::PaintFilter> filter = cc::RenderSurfaceFilters::BuildImageFilter(
       operations, gfx::SizeF(dst.size()), gfx::Vector2dF());
 
@@ -200,9 +199,11 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
 
 std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
-    int container_id,
-    const WallpaperProperty& property,
+    float blur_sigma,
+    bool locked,
     WallpaperView** out_wallpaper_view) {
+  int container_id = locked ? kShellWindowId_LockScreenWallpaperContainer
+                            : kShellWindowId_WallpaperContainer;
   auto* controller = Shell::Get()->wallpaper_controller();
 
   auto wallpaper_widget = std::make_unique<views::Widget>();
@@ -211,18 +212,18 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
   params.name = "WallpaperViewWidget";
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  if (controller->GetWallpaper().isNull())
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = root_window->GetChildById(container_id);
+  WallpaperView* wallpaper_view = new WallpaperView(blur_sigma);
+  params.delegate = new WallpaperWidgetDelegate(wallpaper_view);
+
   wallpaper_widget->Init(std::move(params));
   // Owned by views.
-  WallpaperView* wallpaper_view = new WallpaperView(property);
-  wallpaper_widget->SetContentsView(new LayerControlView(wallpaper_view));
   *out_wallpaper_view = wallpaper_view;
   int animation_type =
       controller->ShouldShowInitialAnimation()
-          ? WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE
-          : wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE;
+          ? static_cast<int>(
+                WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE)
+          : static_cast<int>(wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
   aura::Window* wallpaper_window = wallpaper_widget->GetNativeWindow();
   ::wm::SetWindowVisibilityAnimationType(wallpaper_window, animation_type);
 
@@ -231,11 +232,13 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
   // 2. Wallpaper fades in from a non empty background.
   // 3. From an empty background, chrome transit to a logged in user session.
   // 4. From an empty background, guest user logged in.
-  if (controller->ShouldShowInitialAnimation() ||
-      RootWindowController::ForWindow(root_window)
-          ->wallpaper_widget_controller()
-          ->IsAnimating() ||
-      Shell::Get()->session_controller()->NumberOfLoggedInUsers()) {
+  // except for the lock state.
+  if (!locked &&
+      (controller->ShouldShowInitialAnimation() ||
+       RootWindowController::ForWindow(root_window)
+           ->wallpaper_widget_controller()
+           ->IsAnimating() ||
+       Shell::Get()->session_controller()->NumberOfLoggedInUsers())) {
     ::wm::SetWindowVisibilityAnimationTransition(wallpaper_window,
                                                  ::wm::ANIMATE_SHOW);
     base::TimeDelta animation_duration = controller->animation_duration();
@@ -248,9 +251,6 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     ::wm::SetWindowVisibilityAnimationTransition(wallpaper_window,
                                                  ::wm::ANIMATE_NONE);
   }
-
-  aura::Window* container = root_window->GetChildById(container_id);
-  wallpaper_widget->SetBounds(container->bounds());
 
   return wallpaper_widget;
 }

@@ -11,16 +11,15 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/mru_cache.h"
-#include "base/hash/hash.h"
+#include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skia_font_delegate.h"
@@ -89,7 +88,7 @@ struct QueryResult {
 
 // Keyed by hashes of FontRenderParamQuery structs from
 // HashFontRenderParamsQuery().
-typedef base::MRUCache<uint32_t, QueryResult> Cache;
+typedef base::HashingLRUCache<std::string, QueryResult> Cache;
 
 // A cache and the lock that must be held while accessing it.
 // GetFontRenderParams() is called by both the UI thread and the sandbox IPC
@@ -172,14 +171,12 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   return true;
 }
 
-// Serialize |query| into a string and hash it to a value suitable for use as a
-// cache key.
-uint32_t HashFontRenderParamsQuery(const FontRenderParamsQuery& query) {
-  return base::Hash(base::StringPrintf(
+// Serialize |query| into a string value suitable for use as a cache key.
+std::string GetFontRenderParamsQueryKey(const FontRenderParamsQuery& query) {
+  return base::StringPrintf(
       "%d|%d|%d|%d|%s|%f", query.pixel_size, query.point_size, query.style,
       static_cast<int>(query.weight),
-      base::JoinString(query.families, ",").c_str(),
-      query.device_scale_factor));
+      base::JoinString(query.families, ",").c_str(), query.device_scale_factor);
 }
 
 }  // namespace
@@ -192,15 +189,15 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   if (actual_query.device_scale_factor == 0)
     actual_query.device_scale_factor = device_scale_factor_;
 
-  const uint32_t hash = HashFontRenderParamsQuery(actual_query);
+  std::string query_key = GetFontRenderParamsQueryKey(actual_query);
   SynchronizedCache* synchronized_cache = g_synchronized_cache.Pointer();
 
   {
     // Try to find a cached result so Fontconfig doesn't need to be queried.
     base::AutoLock lock(synchronized_cache->lock);
-    Cache::const_iterator it = synchronized_cache->cache.Get(hash);
+    Cache::const_iterator it = synchronized_cache->cache.Get(query_key);
     if (it != synchronized_cache->cache.end()) {
-      DVLOG(1) << "Returning cached params for " << hash;
+      DVLOG(1) << "Returning cached params for " << query_key;
       const QueryResult& result = it->second;
       if (family_out)
         *family_out = result.family;
@@ -208,7 +205,7 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     }
   }
 
-  DVLOG(1) << "Computing params for " << hash;
+  DVLOG(1) << "Computing params for " << query_key;
   if (family_out)
     family_out->clear();
 
@@ -227,7 +224,7 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     params.subpixel_positioning = false;
   } else if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kDisableFontSubpixelPositioning)) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
 #else
     // We want to enable subpixel positioning for fractional dsf.
@@ -235,7 +232,7 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
         std::abs(std::round(actual_query.device_scale_factor) -
                  actual_query.device_scale_factor) >
         std::numeric_limits<float>::epsilon();
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
     // To enable subpixel positioning, we need to disable hinting.
     if (params.subpixel_positioning)
@@ -250,7 +247,8 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     // Store the result. It's fine if this overwrites a result that was cached
     // by a different thread in the meantime; the values should be identical.
     base::AutoLock lock(synchronized_cache->lock);
-    synchronized_cache->cache.Put(hash,
+    synchronized_cache->cache.Put(
+        query_key,
         QueryResult(params, family_out ? *family_out : std::string()));
   }
 

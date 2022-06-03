@@ -142,38 +142,6 @@ selection_test(
 selection_test(
     [
         '<div id="host">',
-            '<b id="abc">abc</b>',
-            '<b id="def">def</b>',
-        '</div>',
-    ],
-    selection => {
-      const document = selection.document;
-      const host = document.getElementById('host');
-      const shadowRoot = host.createShadowRoot();
-      shadowRoot.innerHTML = [
-        '<span id="ghi">ghi</span>',
-        '<content select="#def"></content>',
-        '<span id="jkl">jkl</span>',
-        '<content select="#abc"></content>',
-        '<span id="mno">mno</span>',
-      ].join('');
-      selection.collapse(document.getElementById('abc'), 0);
-      selection.extend(document.getElementById('def'), 0);
-    },
-    [
-        '<div id="host">',
-            '<span id="ghi">ghi</span>',
-            '<b id="def">|def</b>',
-            '<span id="jkl">jkl</span>',
-            '<b id="abc">^abc</b>',
-            '<span id="mno">mno</span>',
-        '</div>',
-    ],
-    {dumpAs: 'flattree'}, 'dump flat tree for shadow DOM V0');
-
-selection_test(
-    [
-        '<div id="host">',
             '<b id="abc" slot="abc">abc</b>',
             '<b id="def" slot="def">def</b>',
         '</div>',
@@ -427,4 +395,8 @@ test(() => {
       '<div id="second">four |<span id="end"></span>five six</div>',
     ].join(''));
 }, 'computeLeft() and computeTop()');
+
+// When |selection_test()| revives AsyncFunction as tester, |selection_test()|
+// uses |promise_test()| API instead of |test()| API.
+selection_test('abc', async () => 1, 'abc', 'use promise_test()');
 </script>

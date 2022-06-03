@@ -4,6 +4,10 @@
 
 #include "components/signin/public/base/signin_switches.h"
 
+#include "base/feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
 namespace switches {
 
 // Clears the token service before using it. This allows simulating the
@@ -13,25 +17,17 @@ const char kClearTokenService[] = "clear-token-service";
 // Disables sending signin scoped device id to LSO with refresh token request.
 const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
-#if !BUILDFLAG(ENABLE_MIRROR)
-// Command line flag for enabling account consistency. Default mode is disabled.
-// Mirror is a legacy mode in which Google accounts are always addded to Chrome,
-// and Chrome then adds them to the Google authentication cookies.
-// Dice is a new experiment in which Chrome is aware of the accounts in the
-// Google authentication cookies.
-const char kAccountConsistency[] = "account-consistency";
-
-// Values for the kAccountConsistency flag.
-const char kAccountConsistencyMirror[] = "mirror";
-const char kAccountConsistencyDice[] = "dice";
-#endif
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kAccountIdMigration{"AccountIdMigration",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-const base::Feature kOAuthRemoteConsent{"OAuthRemoteConsent",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_ANDROID) || defined(OS_IOS)
+const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+const base::Feature kForceDisableExtendedSyncPromos{
+    "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace switches

@@ -40,13 +40,13 @@ assertAttributeInterpolation({
   from: '0%',
   to: '100'
 }, [
-  {at: -0.25, is: 'calc(0% + -25)'},
+  {at: -0.25, is: 'calc(0% + -25px)'},
   {at: 0, is: '0%'},
-  {at: 0.25, is: 'calc(0% + 25)'},
-  {at: 0.5, is: 'calc(0% + 50)'},
-  {at: 0.75, is: 'calc(0% + 75)'},
+  {at: 0.25, is: 'calc(0% + 25px)'},
+  {at: 0.5, is: 'calc(0% + 50px)'},
+  {at: 0.75, is: 'calc(0% + 75px)'},
   {at: 1, is: '100px'},
-  {at: 1.25, is: 'calc(0% + 125)'}
+  {at: 1.25, is: 'calc(0% + 125px)'}
 ]);
 assertAttributeInterpolation({
   property: 'cy',

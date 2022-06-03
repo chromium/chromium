@@ -9,15 +9,14 @@
 #include <limits>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace storage {
 
 const FileSystemTestCaseRecord kRegularFileSystemTestCases[] = {
     {true, FILE_PATH_LITERAL("dir a"), 0},
@@ -68,4 +67,4 @@ void SetUpRegularFileSystemTestCases(const base::FilePath& root_path) {
   }
 }
 
-}  // namespace content
+}  // namespace storage

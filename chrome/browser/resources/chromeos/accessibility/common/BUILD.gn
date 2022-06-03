@@ -1,0 +1,190 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
+import("//chrome/common/features.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//testing/test.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/closure_compiler/js_unit_tests.gni")
+
+assert(is_chromeos_ash || is_chromecast)
+
+accessibility_common_out_dir =
+    "$root_out_dir/resources/chromeos/accessibility/common"
+
+group("build") {
+  deps = [
+    ":accessibility_common_copied_files",
+    "tutorial:build",
+  ]
+}
+
+run_jsbundler("accessibility_common_copied_files") {
+  mode = "copy"
+  dest_dir = accessibility_common_out_dir
+  sources = [
+    "array_util.js",
+    "automation_predicate.js",
+    "automation_util.js",
+    "chrome_event_handler.js",
+    "closure_shim.js",
+    "constants.js",
+    "cursors/cursor.js",
+    "cursors/range.js",
+    "cursors/recovery_strategy.js",
+    "event_generator.js",
+    "event_handler.js",
+    "gdocs_script.js",
+    "instance_checker.js",
+    "key_code.js",
+    "rect_util.js",
+    "repeated_event_handler.js",
+    "repeated_tree_change_handler.js",
+    "string_util.js",
+    "tree_walker.js",
+  ]
+  rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
+}
+
+js_library("tree_walker") {
+  sources = [ "tree_walker.js" ]
+  deps = [
+    ":automation_predicate",
+    ":constants",
+  ]
+  externs_list = [
+    "$externs_path/automation.js",
+    "$externs_path/chrome_extensions.js",
+  ]
+}
+
+js_library("array_util") {
+  sources = [ "array_util.js" ]
+}
+
+js_library("automation_predicate") {
+  sources = [ "automation_predicate.js" ]
+  deps = [ ":constants" ]
+  externs_list = [
+    "$externs_path/automation.js",
+    "$externs_path/chrome_extensions.js",
+  ]
+}
+
+js_library("constants") {
+  sources = [ "constants.js" ]
+}
+
+js_library("closure_shim") {
+}
+
+js_library("automation_util") {
+  deps = [
+    ":automation_predicate",
+    ":constants",
+    ":tree_walker",
+  ]
+  externs_list = [
+    "$externs_path/automation.js",
+    "$externs_path/chrome_extensions.js",
+  ]
+}
+
+js_library("chrome_event_handler") {
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("event_generator") {
+  deps = [ ":key_code" ]
+  externs_list = [ "$externs_path/accessibility_private.js" ]
+}
+
+js_library("event_handler") {
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("key_code") {
+}
+
+js_library("instance_checker") {
+  deps = [ ":closure_shim" ]
+}
+
+js_library("rect_util") {
+  externs_list = [ "$externs_path/accessibility_private.js" ]
+}
+
+js_library("repeated_event_handler") {
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("repeated_tree_change_handler") {
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  assert(enable_extensions)
+
+  deps = [ ":accessibility_tests" ]
+
+  # TODO(jamescook): Figure out which of these are really necessary.
+  data = [
+    "$root_out_dir/chrome_100_percent.pak",
+    "$root_out_dir/chrome_200_percent.pak",
+    "$root_out_dir/locales/en-US.pak",
+    "$root_out_dir/locales/fr.pak",
+    "$root_out_dir/resources.pak",
+    "$root_out_dir/resources/chromeos/accessibility/chromevox/",
+    "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/chromevox/",
+
+    # The test uses data from the original location.
+    "//chrome/browser/resources/chromeos/accessibility/chromevox/",
+    "//chrome/browser/resources/chromeos/accessibility/common/",
+    "//third_party/chromevox/",
+  ]
+  data += js2gtest_js_libraries
+}
+
+# Note that this suite of tests still uses ChromeVox's background page as a runtime environment. There should not be anything specific to ChromeVox within the tests themselves though.
+js2gtest("accessibility_tests") {
+  test_type = "extension"
+  sources = [
+    "array_util_test.js",
+    "automation_predicate_test.js",
+    "automation_util_test.js",
+    "cursors/cursors_test.js",
+    "cursors/recovery_strategy_test.js",
+    "event_generator_test.js",
+    "repeated_event_handler_test.js",
+    "repeated_tree_change_handler_test.js",
+    "tree_walker_test.js",
+  ]
+  gen_include_files = [
+    "../chromevox/testing/chromevox_e2e_test_base.js",
+    "../chromevox/testing/chromevox_next_e2e_test_base.js",
+    "../chromevox/testing/mock_feedback.js",
+    "array_util.js",
+    "automation_predicate.js",
+    "testing/assert_additions.js",
+    "testing/callback_helper.js",
+    "testing/doc_utils.js",
+    "testing/e2e_test_base.js",
+  ]
+
+  if (is_chromeos_ash) {
+    # The test base classes generate C++ code with these deps.
+    deps = [
+      "//ash",
+      "//base",
+      "//chrome/browser/chromeos",
+      "//chrome/common",
+    ]
+  }
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}

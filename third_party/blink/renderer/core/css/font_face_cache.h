@@ -42,9 +42,7 @@ namespace blink {
 
 class FontDescription;
 
-class CORE_EXPORT FontFaceCache final {
-  DISALLOW_NEW();
-
+class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
  public:
   FontFaceCache();
 
@@ -69,10 +67,10 @@ class CORE_EXPORT FontFaceCache final {
   unsigned Version() const { return version_; }
   void IncrementVersion();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
-  // Two lookup accelerating cashes are needed: For the font selection
+  // Two lookup accelerating caches are needed: For the font selection
   // algorithm to work and not perform font fallback across
   // FontSelectionCapabilities, we need to bin the incoming @font-faces by same
   // FontSelectionCapabilities, then run the font selection algorithm only by
@@ -119,4 +117,4 @@ class CORE_EXPORT FontFaceCache final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_FACE_CACHE_H_

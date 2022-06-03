@@ -9,11 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/values_test_util.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/extensions/api/declarative_content/declarative_content_condition_tracker_test.h"
@@ -54,9 +52,7 @@ std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> CreatePredicate(
   std::string error;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
       DeclarativeContentIsBookmarkedPredicate::Create(
-          evaluator, extension,
-          *base::test::ParseJsonDeprecated(is_bookmarked ? "true" : "false"),
-          &error);
+          evaluator, extension, base::Value(is_bookmarked), &error);
   EXPECT_EQ("", error);
   EXPECT_TRUE(predicate);
   EXPECT_EQ(is_bookmarked, predicate->is_bookmarked());
@@ -71,10 +67,19 @@ using testing::UnorderedElementsAreArray;
 
 class DeclarativeContentIsBookmarkedConditionTrackerTest
     : public DeclarativeContentConditionTrackerTest {
+ public:
+  DeclarativeContentIsBookmarkedConditionTrackerTest(
+      const DeclarativeContentIsBookmarkedConditionTrackerTest&) = delete;
+  DeclarativeContentIsBookmarkedConditionTrackerTest& operator=(
+      const DeclarativeContentIsBookmarkedConditionTrackerTest&) = delete;
+
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     std::set<content::WebContents*>& evaluation_requests() {
       return evaluation_requests_;
@@ -93,18 +98,17 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
 
    private:
     std::set<content::WebContents*> evaluation_requests_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DeclarativeContentIsBookmarkedConditionTrackerTest() {
-    profile()->CreateBookmarkModel(true);
+    profile_builder()->AddTestingFactory(
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory());
     bookmarks::test::WaitForBookmarkModelToLoad(
         BookmarkModelFactory::GetForBrowserContext(profile()));
     bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile());
-    tracker_.reset(new DeclarativeContentIsBookmarkedConditionTracker(
-        profile(),
-        &delegate_));
+    tracker_ = std::make_unique<DeclarativeContentIsBookmarkedConditionTracker>(
+        profile(), &delegate_);
     extension_ = CreateExtensionWithBookmarksPermission(true);
     is_bookmarked_predicate_ = CreatePredicate(tracker_.get(), extension_.get(),
                                                true);
@@ -155,9 +159,6 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
       is_bookmarked_predicate_;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>
       is_not_bookmarked_predicate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentIsBookmarkedConditionTrackerTest);
 };
 
 
@@ -169,8 +170,7 @@ TEST(DeclarativeContentIsBookmarkedPredicateTest,
   std::string error;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
       DeclarativeContentIsBookmarkedPredicate::Create(
-          nullptr, extension.get(), *base::test::ParseJsonDeprecated("true"),
-          &error);
+          nullptr, extension.get(), base::Value(true), &error);
   EXPECT_THAT(error, HasSubstr("requires 'bookmarks' permission"));
   EXPECT_FALSE(predicate);
 }
@@ -183,7 +183,7 @@ TEST(DeclarativeContentIsBookmarkedPredicateTest,
   std::string error;
   std::unique_ptr<DeclarativeContentIsBookmarkedPredicate> predicate =
       DeclarativeContentIsBookmarkedPredicate::Create(
-          nullptr, extension.get(), *base::test::ParseJsonDeprecated("[]"),
+          nullptr, extension.get(), base::Value(base::Value::Type::LIST),
           &error);
   EXPECT_THAT(error, HasSubstr("invalid type"));
   EXPECT_FALSE(predicate);
@@ -213,8 +213,7 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest,
   LoadURL(tab.get(), GURL("http://bookmarked/"));
   EXPECT_TRUE(delegate_.evaluation_requests().empty());
 
-  bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                          base::ASCIIToUTF16("title"),
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                           GURL("http://bookmarked/"));
 
   tracker_->TrackForWebContents(tab.get());
@@ -248,10 +247,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest,
 
   // Bookmark the first tab's URL.
   delegate_.evaluation_requests().clear();
-  const bookmarks::BookmarkNode* node =
-      bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                              base::ASCIIToUTF16("title"),
-                              GURL("http://bookmarked/"));
+  const bookmarks::BookmarkNode* node = bookmark_model_->AddURL(
+      bookmark_model_->other_node(), 0, u"title", GURL("http://bookmarked/"));
   EXPECT_THAT(delegate_.evaluation_requests(),
               UnorderedElementsAre(tabs[0].get()));
   EXPECT_TRUE(CheckPredicates(tabs[0].get(), true));
@@ -294,10 +291,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
     // added nodes.
     delegate_.evaluation_requests().clear();
     bookmark_model_->BeginExtensiveChanges();
-    const bookmarks::BookmarkNode* node =
-        bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                                base::ASCIIToUTF16("title"),
-                                GURL("http://bookmarked/"));
+    const bookmarks::BookmarkNode* node = bookmark_model_->AddURL(
+        bookmark_model_->other_node(), 0, u"title", GURL("http://bookmarked/"));
     EXPECT_TRUE(delegate_.evaluation_requests().empty());
     EXPECT_TRUE(CheckPredicates(tabs[0].get(), false));
     EXPECT_TRUE(CheckPredicates(tabs[1].get(), false));
@@ -329,8 +324,7 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
     const bookmarks::BookmarkNode* node = nullptr;
     {
       bookmarks::ScopedGroupBookmarkActions scoped_group(bookmark_model_);
-      node = bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                                     base::ASCIIToUTF16("title"),
+      node = bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                                      GURL("http://bookmarked/"));
       EXPECT_TRUE(delegate_.evaluation_requests().empty());
       EXPECT_TRUE(CheckPredicates(tabs[0].get(), false));
@@ -363,11 +357,9 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
 TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, Navigation) {
   // Bookmark two URLs.
   delegate_.evaluation_requests().clear();
-  bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                          base::ASCIIToUTF16("title"),
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                           GURL("http://bookmarked1/"));
-  bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                          base::ASCIIToUTF16("title"),
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                           GURL("http://bookmarked2/"));
 
   // Create two tabs.

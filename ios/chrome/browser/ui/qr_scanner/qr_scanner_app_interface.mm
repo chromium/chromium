@@ -7,23 +7,25 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
 #import "ios/chrome/app/main_controller.h"
 #include "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #include "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
 #include "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"
 #include "ios/chrome/browser/ui/scanner/camera_controller.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/url_loading/url_loading_service.h"
-#import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/base/mac/url_conversions.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -57,24 +59,31 @@ using scanner::CameraState;
   return swizzleCameraControllerBlock;
 }
 
-+ (id)locationBarCoordinatorLoadGURLFromLocationBarSwizzleBlockForSearchURL:
-    (NSURL*)searchURL {
-  GURL searchGURL = net::GURLWithNSURL(searchURL);
-  void (^loadGURLFromLocationBarBlock)(LocationBarCoordinator*,
-                                       TemplateURLRef::PostContent*,
-                                       const GURL&, ui::PageTransition) =
-      ^void(LocationBarCoordinator* self,
-            TemplateURLRef::PostContent* postContent, const GURL& url,
-            ui::PageTransition transition) {
-        web::NavigationManager::WebLoadParams params(searchGURL);
-        params.transition_type = transition;
-        UrlLoadingServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState())
-            ->Load(UrlLoadParams::InCurrentTab(params));
-        [self cancelOmniboxEdit];
-      };
+#pragma mark Search engine override
 
-  return loadGURLFromLocationBarBlock;
++ (void)overrideSearchEngine:(NSString*)templateURL {
+  TemplateURLData data;
+  data.SetShortName(u"testSearchEngine");
+  data.SetKeyword(u"testSearchEngine");
+  GURL searchableURL(base::SysNSStringToUTF8(templateURL));
+  data.SetURL(searchableURL.possibly_invalid_spec());
+  data.favicon_url = TemplateURL::GenerateFaviconURL(searchableURL);
+  data.last_visited = base::Time::Now();
+
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  TemplateURL* url = service->Add(std::make_unique<TemplateURL>(data));
+  service->SetUserSelectedDefaultSearchProvider(url);
+}
+
++ (void)resetSearchEngine {
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+
+  TemplateURL* templateURL = service->GetTemplateURLForHost("google.com");
+  service->SetUserSelectedDefaultSearchProvider(templateURL);
 }
 
 #pragma mark Mocking and Expectations
@@ -83,7 +92,7 @@ using scanner::CameraState;
     (AVAuthorizationStatus)authorizationStatus {
   id mock = [OCMockObject mockForClass:[QRScannerCameraController class]];
   [[[mock stub] andReturnValue:OCMOCK_VALUE(authorizationStatus)]
-      getAuthorizationStatus];
+      authorizationStatus];
   return mock;
 }
 
@@ -176,7 +185,7 @@ using scanner::CameraState;
 
 // Returns the expected title for the dialog which is presented for |state|.
 + (NSString*)dialogTitleForState:(CameraState)state {
-  base::string16 appName = base::UTF8ToUTF16(version_info::GetProductName());
+  std::u16string appName = base::UTF8ToUTF16(version_info::GetProductName());
   switch (state) {
     case scanner::CAMERA_AVAILABLE:
     case scanner::CAMERA_NOT_LOADED:

@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +20,23 @@
 using ::testing::ElementsAre;
 
 namespace base {
+
+namespace {
+
+struct Unsortable {
+  int value;
+};
+
+bool operator==(const Unsortable& lhs, const Unsortable& rhs) {
+  return lhs.value == rhs.value;
+}
+
+bool operator<(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator<=(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator>(const Unsortable& lhs, const Unsortable& rhs) = delete;
+bool operator>=(const Unsortable& lhs, const Unsortable& rhs) = delete;
+
+}  // namespace
 
 TEST(FlatMap, IncompleteType) {
   struct A {
@@ -76,6 +93,42 @@ TEST(FlatMap, InitializerListConstructor) {
                                 std::make_pair(3, 3), std::make_pair(4, 4),
                                 std::make_pair(5, 5), std::make_pair(8, 8),
                                 std::make_pair(10, 10)));
+}
+
+TEST(FlatMap, SortedRangeConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  using MapType = flat_map<int, Unsortable>;
+  MapType::value_type input_vals[] = {{1, {1}}, {2, {1}}, {3, {1}}};
+  MapType map(sorted_unique, std::begin(input_vals), std::end(input_vals));
+  EXPECT_THAT(
+      map, ElementsAre(PairType(1, {1}), PairType(2, {1}), PairType(3, {1})));
+}
+
+TEST(FlatMap, SortedCopyFromVectorConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  using MapType = flat_map<int, Unsortable>;
+  std::vector<PairType> vect{{1, {1}}, {2, {1}}};
+  MapType map(sorted_unique, vect);
+  EXPECT_THAT(map, ElementsAre(PairType(1, {1}), PairType(2, {1})));
+}
+
+TEST(FlatMap, SortedMoveFromVectorConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  using MapType = flat_map<int, Unsortable>;
+  std::vector<PairType> vect{{1, {1}}, {2, {1}}};
+  MapType map(sorted_unique, std::move(vect));
+  EXPECT_THAT(map, ElementsAre(PairType(1, {1}), PairType(2, {1})));
+}
+
+TEST(FlatMap, SortedInitializerListConstructor) {
+  using PairType = std::pair<int, Unsortable>;
+  flat_map<int, Unsortable> map(
+      sorted_unique,
+      {{1, {1}}, {2, {2}}, {3, {3}}, {4, {4}}, {5, {5}}, {8, {8}}, {10, {10}}});
+  EXPECT_THAT(map,
+              ElementsAre(PairType(1, {1}), PairType(2, {2}), PairType(3, {3}),
+                          PairType(4, {4}), PairType(5, {5}), PairType(8, {8}),
+                          PairType(10, {10})));
 }
 
 TEST(FlatMap, InitializerListAssignment) {
@@ -214,7 +267,7 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKey) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.insert_or_assign(MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 
@@ -249,7 +302,7 @@ TEST(FlatMap, InsertOrAssignMoveOnlyKeyWithHint) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.insert_or_assign(map.end(), MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 
@@ -294,7 +347,7 @@ TEST(FlatMap, TryEmplaceMoveOnlyKey) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.try_emplace(MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 
@@ -340,7 +393,7 @@ TEST(FlatMap, TryEmplaceMoveOnlyKeyWithHint) {
   base::flat_map<MoveOnlyInt, int> map;
   for (int i : {3, 1, 5, 6, 8, 7, 0, 9, 4, 2}) {
     map.try_emplace(map.end(), MoveOnlyInt(i), i);
-    EXPECT_TRUE(std::is_sorted(map.begin(), map.end()));
+    EXPECT_TRUE(ranges::is_sorted(map));
   }
 }
 

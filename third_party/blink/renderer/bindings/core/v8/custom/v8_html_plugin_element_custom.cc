@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_embed_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_object_element.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -74,6 +75,8 @@ void GetScriptableObjectProperty(
     return;
   }
 
+  UseCounter::Count(CurrentExecutionContext(info.GetIsolate()),
+                    WebFeature::kPluginInstanceAccessSuccessful);
   V8SetReturnValue(info, value);
 }
 

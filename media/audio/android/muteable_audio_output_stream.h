@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MUTEABLE_AUDIO_OUTPUT_STREAM_H_
-#define MEDIA_MUTEABLE_AUDIO_OUTPUT_STREAM_H_
+#ifndef MEDIA_AUDIO_ANDROID_MUTEABLE_AUDIO_OUTPUT_STREAM_H_
+#define MEDIA_AUDIO_ANDROID_MUTEABLE_AUDIO_OUTPUT_STREAM_H_
 
 #include "media/audio/audio_io.h"
 
@@ -20,4 +20,4 @@ class MEDIA_EXPORT MuteableAudioOutputStream : public AudioOutputStream {
 
 }  // namespace media
 
-#endif  // MEDIA_MUTEABLE_AUDIO_OUTPUT_STREAM_H_
+#endif  // MEDIA_AUDIO_ANDROID_MUTEABLE_AUDIO_OUTPUT_STREAM_H_

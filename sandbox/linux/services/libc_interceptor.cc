@@ -22,11 +22,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace sandbox {
 
@@ -37,7 +41,6 @@ namespace {
 // they fork. (This means that it'll be incorrect for global constructor
 // functions and before ZygoteMain is called - beware).
 bool g_am_zygote_or_renderer = false;
-bool g_use_localtime_override = true;
 int g_backchannel_fd = -1;
 
 base::LazyInstance<std::set<std::string>>::Leaky g_timezones =
@@ -114,11 +117,13 @@ void WriteTimeStruct(base::Pickle* pickle, const struct tm& time) {
 }
 
 // See
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux_zygote.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/zygote.md
 void ProxyLocaltimeCallToBrowser(time_t input,
                                  struct tm* output,
                                  char* timezone_out,
                                  size_t timezone_out_len) {
+  base::ElapsedTimer timer;
+
   base::Pickle request;
   request.WriteInt(METHOD_LOCALTIME);
   request.WriteString(
@@ -137,6 +142,11 @@ void ProxyLocaltimeCallToBrowser(time_t input,
   if (!ReadTimeStruct(&iter, output, timezone_out, timezone_out_len)) {
     memset(output, 0, sizeof(struct tm));
   }
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Linux.ProxyLocaltimeCallToBrowserUs", timer.Elapsed(),
+      base::Microseconds(1), base::Seconds(1),
+      /*buckets=*/50);
 }
 
 // The other side of this call is ProxyLocaltimeCallToBrowser().
@@ -222,7 +232,7 @@ __attribute__((__visibility__("default"))) struct tm* localtime_override(
 NO_SANITIZE("cfi-icall")
 __attribute__((__visibility__("default"))) struct tm* localtime_override(
     const time_t* timep) {
-  if (g_am_zygote_or_renderer && g_use_localtime_override) {
+  if (g_am_zygote_or_renderer) {
     static struct tm time_struct;
     static char timezone_string[64];
     ProxyLocaltimeCallToBrowser(*timep, &time_struct, timezone_string,
@@ -248,7 +258,7 @@ __attribute__((__visibility__("default"))) struct tm* localtime64_override(
 NO_SANITIZE("cfi-icall")
 __attribute__((__visibility__("default"))) struct tm* localtime64_override(
     const time_t* timep) {
-  if (g_am_zygote_or_renderer && g_use_localtime_override) {
+  if (g_am_zygote_or_renderer) {
     static struct tm time_struct;
     static char timezone_string[64];
     ProxyLocaltimeCallToBrowser(*timep, &time_struct, timezone_string,
@@ -275,7 +285,7 @@ NO_SANITIZE("cfi-icall")
 __attribute__((__visibility__("default"))) struct tm* localtime_r_override(
     const time_t* timep,
     struct tm* result) {
-  if (g_am_zygote_or_renderer && g_use_localtime_override) {
+  if (g_am_zygote_or_renderer) {
     ProxyLocaltimeCallToBrowser(*timep, result, nullptr, 0);
     return result;
   }
@@ -299,7 +309,7 @@ NO_SANITIZE("cfi-icall")
 __attribute__((__visibility__("default"))) struct tm* localtime64_r_override(
     const time_t* timep,
     struct tm* result) {
-  if (g_am_zygote_or_renderer && g_use_localtime_override) {
+  if (g_am_zygote_or_renderer) {
     ProxyLocaltimeCallToBrowser(*timep, result, nullptr, 0);
     return result;
   }
@@ -313,10 +323,6 @@ __attribute__((__visibility__("default"))) struct tm* localtime64_r_override(
     __msan_unpoison_string(res->tm_zone);
 #endif
   return res;
-}
-
-void SetUseLocaltimeOverride(bool enable) {
-  g_use_localtime_override = enable;
 }
 
 void SetAmZygoteOrRenderer(bool enable, int backchannel_fd) {

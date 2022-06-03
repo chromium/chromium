@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -47,7 +47,7 @@ class CORE_EXPORT InspectorAgent : public GarbageCollected<InspectorAgent> {
  public:
   InspectorAgent() = default;
   virtual ~InspectorAgent() = default;
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
   virtual void Restore() {}
   virtual void DidCommitLoadForLocalFrame(LocalFrame*) {}
@@ -76,7 +76,9 @@ class InspectorBaseAgent : public InspectorAgent,
     agent_state_.InitFrom(session_state);
   }
 
-  protocol::Response disable() override { return protocol::Response::OK(); }
+  protocol::Response disable() override {
+    return protocol::Response::Success();
+  }
 
   void Dispose() override {
     disable();
@@ -84,7 +86,7 @@ class InspectorBaseAgent : public InspectorAgent,
     instrumenting_agents_ = nullptr;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(instrumenting_agents_);
     InspectorAgent::Trace(visitor);
   }

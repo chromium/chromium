@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFESpotLightElement
 
-interface SVGFESpotLightElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFESpotLightElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber x;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber y;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber z;

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_COCOA_TEXT_INPUT_HOST_H_
 #define UI_VIEWS_COCOA_TEXT_INPUT_HOST_H_
 
-#include "base/macros.h"
 #include "components/remote_cocoa/common/text_input_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -22,6 +21,10 @@ class NativeWidgetMacNSWindowHost;
 class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
  public:
   explicit TextInputHost(NativeWidgetMacNSWindowHost* host_impl);
+
+  TextInputHost(const TextInputHost&) = delete;
+  TextInputHost& operator=(const TextInputHost&) = delete;
+
   ~TextInputHost() override;
   void BindReceiver(
       mojo::PendingAssociatedReceiver<remote_cocoa::mojom::TextInputHost>
@@ -40,17 +43,17 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
   bool HasInputContext(bool* out_has_input_context) override;
   bool IsRTL(bool* out_is_rtl) override;
   bool GetSelectionRange(gfx::Range* out_range) override;
-  bool GetSelectionText(bool* out_result, base::string16* out_text) override;
-  void InsertText(const base::string16& text, bool as_character) override;
+  bool GetSelectionText(bool* out_result, std::u16string* out_text) override;
+  void InsertText(const std::u16string& text, bool as_character) override;
   void DeleteRange(const gfx::Range& range) override;
-  void SetCompositionText(const base::string16& text,
+  void SetCompositionText(const std::u16string& text,
                           const gfx::Range& selected_range,
                           const gfx::Range& replacement_range) override;
   void ConfirmCompositionText() override;
   bool HasCompositionText(bool* out_has_composition_text) override;
   bool GetCompositionTextRange(gfx::Range* out_composition_range) override;
   bool GetAttributedSubstringForRange(const gfx::Range& requested_range,
-                                      base::string16* out_text,
+                                      std::u16string* out_text,
                                       gfx::Range* out_actual_range) override;
   bool GetFirstRectForRange(const gfx::Range& requested_range,
                             gfx::Rect* out_rect,
@@ -85,7 +88,6 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::TextInputHost> mojo_receiver_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(TextInputHost);
 };
 
 }  // namespace views

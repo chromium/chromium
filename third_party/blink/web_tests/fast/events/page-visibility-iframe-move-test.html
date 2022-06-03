@@ -24,7 +24,7 @@ function window2Loaded() {
     // Change the visibility of the current page to invisible.
     if (window.testRunner) {
         numVisibilityChanges++;
-        testRunner.setPageVisibility("hidden");
+        testRunner.setMainWindowHidden(true);
     }
 }
 
@@ -49,7 +49,7 @@ function onVisibilityChange() {
 function startTest() {
     if (window.testRunner) {
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
     }
 
     debug("Window 1 Loaded");

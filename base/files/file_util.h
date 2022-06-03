@@ -15,24 +15,21 @@
 #include <limits>
 #include <set>
 #include <string>
-#include <vector>
-
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
 
 #include "base/base_export.h"
+#include "base/callback_forward.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
+#include "base/files/scoped_file.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <sys/stat.h>
+#include <unistd.h>
 #include "base/file_descriptor_posix.h"
-#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #endif
 
@@ -57,21 +54,15 @@ BASE_EXPORT FilePath MakeAbsoluteFilePath(const FilePath& input);
 BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 
 // Deletes the given path, whether it's a file or a directory.
-// If it's a directory, it's perfectly happy to delete all of the
-// directory's contents.  Passing true to recursive deletes
-// subdirectories and their contents as well.
-// Returns true if successful, false otherwise. It is considered successful
-// to attempt to delete a file that does not exist.
+// If it's a directory, it's perfectly happy to delete all of the directory's
+// contents, but it will not recursively delete subdirectories and their
+// contents.
+// Returns true if successful, false otherwise. It is considered successful to
+// attempt to delete a file that does not exist.
 //
 // In POSIX environment and if |path| is a symbolic link, this deletes only
 // the symlink. (even if the symlink points to a non-existent file)
-//
-// WARNING: USING THIS WITH recursive==true IS EQUIVALENT
-//          TO "rm -rf", SO USE WITH CAUTION.
-//
-// Note: The |recursive| parameter is in the process of being removed. Use
-// DeleteFileRecursively() instead. See https://crbug.com/1009837
-BASE_EXPORT bool DeleteFile(const FilePath& path, bool recursive);
+BASE_EXPORT bool DeleteFile(const FilePath& path);
 
 // Deletes the given path, whether it's a file or a directory.
 // If it's a directory, it's perfectly happy to delete all of the
@@ -83,7 +74,17 @@ BASE_EXPORT bool DeleteFile(const FilePath& path, bool recursive);
 // the symlink. (even if the symlink points to a non-existent file)
 //
 // WARNING: USING THIS EQUIVALENT TO "rm -rf", SO USE WITH CAUTION.
-BASE_EXPORT bool DeleteFileRecursively(const FilePath& path);
+BASE_EXPORT bool DeletePathRecursively(const FilePath& path);
+
+// Simplified way to get a callback to do DeleteFile(path) and ignore the
+// DeleteFile() result. On Windows, this will retry the delete via delayed tasks
+// for up to 2 seconds before giving up, to deal with AV S/W locking the file.
+BASE_EXPORT OnceCallback<void(const FilePath&)> GetDeleteFileCallback();
+
+// Simplified way to get a callback to do DeletePathRecursively(path) and ignore
+// the DeletePathRecursively() result.
+BASE_EXPORT OnceCallback<void(const FilePath&)>
+GetDeletePathRecursivelyCallback();
 
 #if defined(OS_WIN)
 // Schedules to delete the given path, whether it's a file or a directory, until
@@ -133,6 +134,12 @@ BASE_EXPORT bool ReplaceFile(const FilePath& from_path,
 //   read permissions. i.e. Always 0644.
 BASE_EXPORT bool CopyFile(const FilePath& from_path, const FilePath& to_path);
 
+// Copies the contents of one file into another.
+// The files are taken as is: the copy is done starting from the current offset
+// of |infile| until the end of |infile| is reached, into the current offset of
+// |outfile|.
+BASE_EXPORT bool CopyFileContents(File& infile, File& outfile);
+
 // Copies the given path, and optionally all subdirectories and their contents
 // as well.
 //
@@ -155,6 +162,9 @@ BASE_EXPORT bool CopyDirectoryExcl(const FilePath& from_path,
 // Returns true if the given path exists on the local filesystem,
 // false otherwise.
 BASE_EXPORT bool PathExists(const FilePath& path);
+
+// Returns true if the given path is readable by the user, false otherwise.
+BASE_EXPORT bool PathIsReadable(const FilePath& path);
 
 // Returns true if the given path is writable by the user, false otherwise.
 BASE_EXPORT bool PathIsWritable(const FilePath& path);
@@ -194,6 +204,16 @@ BASE_EXPORT bool ReadFileToStringWithMaxSize(const FilePath& path,
                                              std::string* contents,
                                              size_t max_size);
 
+// As ReadFileToString, but reading from an open stream after seeking to its
+// start (if supported by the stream).
+BASE_EXPORT bool ReadStreamToString(FILE* stream, std::string* contents);
+
+// As ReadFileToStringWithMaxSize, but reading from an open stream after seeking
+// to its start (if supported by the stream).
+BASE_EXPORT bool ReadStreamToStringWithMaxSize(FILE* stream,
+                                               size_t max_size,
+                                               std::string* contents);
+
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 // Read exactly |bytes| bytes from file descriptor |fd|, storing the result
@@ -201,14 +221,24 @@ BASE_EXPORT bool ReadFileToStringWithMaxSize(const FilePath& path,
 // Returns true iff |bytes| bytes have been successfully read from |fd|.
 BASE_EXPORT bool ReadFromFD(int fd, char* buffer, size_t bytes);
 
-// Performs the same function as CreateAndOpenTemporaryFileInDir(), but returns
-// the file-descriptor wrapped in a ScopedFD, rather than wrapped in a FILE.
+// Performs the same function as CreateAndOpenTemporaryStreamInDir(), but
+// returns the file-descriptor wrapped in a ScopedFD, rather than the stream
+// wrapped in a ScopedFILE.
 BASE_EXPORT ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& dir,
                                                           FilePath* path);
 
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 #if defined(OS_POSIX)
+
+// ReadFileToStringNonBlocking is identical to ReadFileToString except it
+// guarantees that it will not block. This guarantee is provided on POSIX by
+// opening the file as O_NONBLOCK. This variant should only be used on files
+// which are guaranteed not to block (such as kernel files). Or in situations
+// where a partial read would be acceptable because the backing store returned
+// EWOULDBLOCK.
+BASE_EXPORT bool ReadFileToStringNonBlocking(const base::FilePath& file,
+                                             std::string* ret);
 
 // Creates a symbolic link at |symlink| pointing to |target|.  Returns
 // false on failure.
@@ -250,14 +280,14 @@ BASE_EXPORT bool SetPosixFilePermissions(const FilePath& path, int mode);
 BASE_EXPORT bool ExecutableExistsInPath(Environment* env,
                                         const FilePath::StringType& executable);
 
-#if defined(OS_LINUX) || defined(OS_AIX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 // Determine if files under a given |path| can be mapped and then mprotect'd
 // PROT_EXEC. This depends on the mount options used for |path|, which vary
 // among different Linux distributions and possibly local configuration. It also
 // depends on details of kernel--ChromeOS uses the noexec option for /dev/shm
 // but its kernel allows mprotect with PROT_EXEC anyway.
 BASE_EXPORT bool IsPathExecutable(const FilePath& path);
-#endif  // OS_LINUX || OS_AIX
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 
 #endif  // OS_POSIX
 
@@ -280,6 +310,13 @@ BASE_EXPORT bool GetTempDir(FilePath* path);
 // Path service may also override DIR_HOME.
 BASE_EXPORT FilePath GetHomeDir();
 
+// Returns a new temporary file in |dir| with a unique name. The file is opened
+// for exclusive read, write, and delete access (note: exclusivity is unique to
+// Windows). On Windows, the returned file supports File::DeleteOnClose.
+// On success, |temp_file| is populated with the full path to the created file.
+BASE_EXPORT File CreateAndOpenTemporaryFileInDir(const FilePath& dir,
+                                                 FilePath* temp_file);
+
 // Creates a temporary file. The full path is placed in |path|, and the
 // function returns true if was successful in creating the file. The file will
 // be empty and all handles closed after this function returns.
@@ -289,15 +326,24 @@ BASE_EXPORT bool CreateTemporaryFile(FilePath* path);
 BASE_EXPORT bool CreateTemporaryFileInDir(const FilePath& dir,
                                           FilePath* temp_file);
 
-// Create and open a temporary file.  File is opened for read/write.
-// The full path is placed in |path|.
-// Returns a handle to the opened file or NULL if an error occurred.
-BASE_EXPORT FILE* CreateAndOpenTemporaryFile(FilePath* path);
+// Returns the file name for a temporary file by using a platform-specific
+// naming scheme that incorporates |identifier|.
+BASE_EXPORT FilePath
+FormatTemporaryFileName(FilePath::StringPieceType identifier);
 
-// Similar to CreateAndOpenTemporaryFile, but the file is created in |dir|.
-BASE_EXPORT FILE* CreateAndOpenTemporaryFileInDir(const FilePath& dir,
-                                                  FilePath* path);
+// Create and open a temporary file stream for exclusive read, write, and delete
+// access (note: exclusivity is unique to Windows). The full path is placed in
+// |path|. Returns the opened file stream, or null in case of error.
+BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStream(FilePath* path);
 
+// Similar to CreateAndOpenTemporaryStream, but the file is created in |dir|.
+BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
+                                                         FilePath* path);
+
+// Do NOT USE in new code. Use ScopedTempDir instead.
+// TODO(crbug.com/561597) Remove existing usage and make this an implementation
+// detail inside ScopedTempDir.
+//
 // Create a new directory. If prefix is provided, the new directory name is in
 // the format of prefixyyyy.
 // NOTE: prefix is ignored in the POSIX implementation.
@@ -380,6 +426,9 @@ BASE_EXPORT bool CloseFile(FILE* file);
 // functions take ownership of the existing File.
 BASE_EXPORT FILE* FileToFILE(File file, const char* mode);
 
+// Returns a new handle to the file underlying |file_stream|.
+BASE_EXPORT File FILEToFile(FILE* file_stream);
+
 // Truncates an open file to end at the location of the current file pointer.
 // This is a cross-platform analog to Windows' SetEndOfFile() function.
 BASE_EXPORT bool TruncateFile(FILE* file);
@@ -391,13 +440,27 @@ BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 // Writes the given buffer into the file, overwriting any data that was
 // previously there.  Returns the number of bytes written, or -1 on error.
 // If file doesn't exist, it gets created with read/write permissions for all.
+// Note that the other variants of WriteFile() below may be easier to use.
 BASE_EXPORT int WriteFile(const FilePath& filename, const char* data,
                           int size);
 
+// Writes |data| into the file, overwriting any data that was previously there.
+// Returns true if and only if all of |data| was written. If the file does not
+// exist, it gets created with read/write permissions for all.
+BASE_EXPORT bool WriteFile(const FilePath& filename, span<const uint8_t> data);
+
+// Another WriteFile() variant that takes a StringPiece so callers don't have to
+// do manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool WriteFile(const FilePath& filename, StringPiece data);
+
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
-// Appends |data| to |fd|. Does not close |fd| when done.  Returns true iff
-// |size| bytes of |data| were written to |fd|.
-BASE_EXPORT bool WriteFileDescriptor(const int fd, const char* data, int size);
+// Appends |data| to |fd|. Does not close |fd| when done.  Returns true iff all
+// of |data| were written to |fd|.
+BASE_EXPORT bool WriteFileDescriptor(int fd, span<const uint8_t> data);
+
+// WriteFileDescriptor() variant that takes a StringPiece so callers don't have
+// to do manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool WriteFileDescriptor(int fd, StringPiece data);
 
 // Allocates disk space for the file referred to by |fd| for the byte range
 // starting at |offset| and continuing for |size| bytes. The file size will be
@@ -408,11 +471,14 @@ BASE_EXPORT bool WriteFileDescriptor(const int fd, const char* data, int size);
 BASE_EXPORT bool AllocateFileRegion(File* file, int64_t offset, size_t size);
 #endif
 
-// Appends |data| to |filename|.  Returns true iff |size| bytes of |data| were
-// written to |filename|.
+// Appends |data| to |filename|.  Returns true iff |data| were written to
+// |filename|.
 BASE_EXPORT bool AppendToFile(const FilePath& filename,
-                              const char* data,
-                              int size);
+                              span<const uint8_t> data);
+
+// AppendToFile() variant that takes a StringPiece so callers don't have to do
+// manual conversions from a char span to a uint8_t span.
+BASE_EXPORT bool AppendToFile(const FilePath& filename, StringPiece data);
 
 // Gets the current working directory for the process.
 BASE_EXPORT bool GetCurrentDirectory(FilePath* path);
@@ -440,6 +506,30 @@ BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
 // false.
 BASE_EXPORT bool SetNonBlocking(int fd);
 
+// Possible results of PreReadFile().
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrefetchResultCode {
+  kSuccess = 0,
+  kInvalidFile = 1,
+  kSlowSuccess = 2,
+  kSlowFailed = 3,
+  kMemoryMapFailedSlowUsed = 4,
+  kMemoryMapFailedSlowFailed = 5,
+  kFastFailed = 6,
+  kFastFailedSlowUsed = 7,
+  kFastFailedSlowFailed = 8,
+  kMaxValue = kFastFailedSlowFailed
+};
+
+struct PrefetchResult {
+  bool succeeded() const {
+    return code_ == PrefetchResultCode::kSuccess ||
+           code_ == PrefetchResultCode::kSlowSuccess;
+  }
+  const PrefetchResultCode code_;
+};
+
 // Hints the OS to prefetch the first |max_bytes| of |file_path| into its cache.
 //
 // If called at the appropriate time, this can reduce the latency incurred by
@@ -453,17 +543,18 @@ BASE_EXPORT bool SetNonBlocking(int fd);
 // executable code or as data. Windows treats the file backed pages in RAM
 // differently, and specifying the wrong value results in two copies in RAM.
 //
-// Returns false if prefetching definitely failed. A return value of true does
-// not guarantee that the entire desired range was prefetched.
+// Returns a PrefetchResult indicating whether prefetch succeeded, and the type
+// of failure if it did not. A return value of kSuccess does not guarantee that
+// the entire desired range was prefetched.
 //
 // Calling this before using ::LoadLibrary() on Windows is more efficient memory
 // wise, but we must be sure no other threads try to LoadLibrary() the file
 // while we are doing the mapping and prefetching, or the process will get a
 // private copy of the DLL via COW.
-BASE_EXPORT bool PreReadFile(
-    const FilePath& file_path,
-    bool is_executable,
-    int64_t max_bytes = std::numeric_limits<int64_t>::max());
+BASE_EXPORT PrefetchResult
+PreReadFile(const FilePath& file_path,
+            bool is_executable,
+            int64_t max_bytes = std::numeric_limits<int64_t>::max());
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 
@@ -504,7 +595,7 @@ BASE_EXPORT bool VerifyPathControlledByUser(const base::FilePath& base,
                                             const std::set<gid_t>& group_gids);
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 // Is |path| writable only by a user with administrator privileges?
 // This function uses Mac OS conventions.  The super user is assumed to have
 // uid 0, and the administrator group is assumed to be named "admin".
@@ -513,13 +604,13 @@ BASE_EXPORT bool VerifyPathControlledByUser(const base::FilePath& base,
 // "admin", are not writable by all users, and contain no symbolic links.
 // Will return false if |path| does not exist.
 BASE_EXPORT bool VerifyPathControlledByAdmin(const base::FilePath& path);
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
 // Returns the maximum length of path component on the volume containing
 // the directory |path|, in the number of FilePath::CharType, or -1 on failure.
 BASE_EXPORT int GetMaximumPathComponentLength(const base::FilePath& path);
 
-#if defined(OS_LINUX) || defined(OS_AIX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 // Broad categories of file systems as returned by statfs() on Linux.
 enum FileSystemType {
   FILE_SYSTEM_UNKNOWN,  // statfs failed.
@@ -565,6 +656,20 @@ BASE_EXPORT bool MoveUnsafe(const FilePath& from_path,
 BASE_EXPORT bool CopyAndDeleteDirectory(const FilePath& from_path,
                                         const FilePath& to_path);
 #endif  // defined(OS_WIN)
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+// CopyFileContentsWithSendfile will use the sendfile(2) syscall to perform a
+// file copy without moving the data between kernel and userspace. This is much
+// more efficient than sequences of read(2)/write(2) calls. The |retry_slow|
+// parameter instructs the caller that it should try to fall back to a normal
+// sequences of read(2)/write(2) syscalls.
+//
+// The input file |infile| must be opened for reading and the output file
+// |outfile| must be opened for writing.
+BASE_EXPORT bool CopyFileContentsWithSendfile(File& infile,
+                                              File& outfile,
+                                              bool& retry_slow);
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 // Used by PreReadFile() when no kernel support for prefetching is available.
 bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes);

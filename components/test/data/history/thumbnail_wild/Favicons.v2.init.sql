@@ -1,4 +1,4 @@
--- unit_tests --gtest_filter=ThumbnailDatabaseTest.WildSchema
+-- unit_tests --gtest_filter=FaviconDatabaseTest.WildSchema
 --
 -- Based on version 2 schema found in the wild by error diagnostics.
 -- The schema was failing to migrate because the current-version

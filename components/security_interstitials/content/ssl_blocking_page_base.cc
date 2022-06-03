@@ -16,6 +16,7 @@ SSLBlockingPageBase::SSLBlockingPageBase(
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     bool overridable,
     const base::Time& time_triggered,
+    bool can_show_enhanced_protection_message,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -23,27 +24,21 @@ SSLBlockingPageBase::SSLBlockingPageBase(
           web_contents,
           request_url,
           std::move(controller_client)),
-      cert_report_helper_(
-          std::make_unique<CertReportHelper>(std::move(ssl_cert_reporter),
-                                             web_contents,
-                                             request_url,
-                                             ssl_info,
-                                             interstitial_reason,
-                                             overridable,
-                                             time_triggered,
-                                             controller()->metrics_helper())) {}
+      cert_report_helper_(std::make_unique<CertReportHelper>(
+          std::move(ssl_cert_reporter),
+          web_contents,
+          request_url,
+          ssl_info,
+          interstitial_reason,
+          overridable,
+          time_triggered,
+          can_show_enhanced_protection_message,
+          controller()->metrics_helper())) {}
 
 SSLBlockingPageBase::~SSLBlockingPageBase() = default;
 
 void SSLBlockingPageBase::OnInterstitialClosing() {
-  UpdateMetricsAfterSecurityInterstitial();
   cert_report_helper_->FinishCertCollection();
-}
-
-void SSLBlockingPageBase::OverrideRendererPrefs(
-    blink::mojom::RendererPreferences* prefs) {
-  if (renderer_pref_callback_)
-    renderer_pref_callback_.Run(web_contents(), prefs);
 }
 
 void SSLBlockingPageBase::SetSSLCertReporterForTesting(

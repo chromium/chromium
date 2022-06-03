@@ -11,7 +11,7 @@
 #include <unicode/ucptrie.h>
 #include <unicode/umutablecptrie.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 
 namespace blink {

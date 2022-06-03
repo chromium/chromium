@@ -7,6 +7,7 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "base/threading/platform_thread.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -116,8 +117,7 @@ TEST_F(QueryTest, DISABLED_LatencyQueryBasic) {
   glBeginQueryEXT(GL_LATENCY_QUERY_CHROMIUM, query);
   // Usually, we want to measure gpu-side latency, but we fake it by
   // adding client side latency for our test because it's easier.
-  base::PlatformThread::Sleep(
-      base::TimeDelta::FromMicroseconds(kExpectedLatencyMicroseconds));
+  base::PlatformThread::Sleep(base::Microseconds(kExpectedLatencyMicroseconds));
   glEndQueryEXT(GL_LATENCY_QUERY_CHROMIUM);
 
   glFinish();

@@ -43,10 +43,10 @@ class CORE_EXPORT SurroundingText {
   // Initializes the object with the current selection in a given frame.
   // The maximum length of the contents retrieved is defined by max_length.
   // It does not include the text inside the range.
-  SurroundingText(LocalFrame*, size_t max_length);
+  SurroundingText(LocalFrame*, wtf_size_t max_length);
 
 #if INSIDE_BLINK
-  SurroundingText(const EphemeralRange&, size_t max_length);
+  SurroundingText(const EphemeralRange&, wtf_size_t max_length);
 #endif
 
   bool IsEmpty() const;
@@ -55,15 +55,15 @@ class CORE_EXPORT SurroundingText {
   String TextContent() const;
 
   // Start offset of the initial text in the text content.
-  size_t StartOffsetInTextContent() const;
+  wtf_size_t StartOffsetInTextContent() const;
 
   // End offset of the initial text in the text content.
-  size_t EndOffsetInTextContent() const;
+  wtf_size_t EndOffsetInTextContent() const;
 
  private:
   String text_content_;
-  size_t start_offset_in_text_content_;
-  size_t end_offset_in_text_content_;
+  wtf_size_t start_offset_in_text_content_;
+  wtf_size_t end_offset_in_text_content_;
 };
 
 }  // namespace blink

@@ -7,11 +7,10 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 
@@ -38,12 +37,16 @@ class RefCountedDeleteOnSequence : public subtle::RefCountedThreadSafeBase {
 
   // A SequencedTaskRunner for the current sequence can be acquired by calling
   // SequencedTaskRunnerHandle::Get().
-  RefCountedDeleteOnSequence(
+  explicit RefCountedDeleteOnSequence(
       scoped_refptr<SequencedTaskRunner> owning_task_runner)
       : subtle::RefCountedThreadSafeBase(T::kRefCountPreference),
         owning_task_runner_(std::move(owning_task_runner)) {
     DCHECK(owning_task_runner_);
   }
+
+  RefCountedDeleteOnSequence(const RefCountedDeleteOnSequence&) = delete;
+  RefCountedDeleteOnSequence& operator=(const RefCountedDeleteOnSequence&) =
+      delete;
 
   void AddRef() const { AddRefImpl(T::kRefCountPreference); }
 
@@ -81,8 +84,6 @@ class RefCountedDeleteOnSequence : public subtle::RefCountedThreadSafeBase {
   }
 
   const scoped_refptr<SequencedTaskRunner> owning_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedDeleteOnSequence);
 };
 
 }  // namespace base

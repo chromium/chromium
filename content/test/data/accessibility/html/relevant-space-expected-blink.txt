@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='A('
+++++++++++inlineTextBox name='A('
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++staticText name=')B'
+++++++++++inlineTextBox name=')B'
+++++++paragraph
+++++++++staticText name='C('
+++++++++++inlineTextBox name='C('
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++staticText name=')D'
+++++++++++inlineTextBox name=')D'
+++++++paragraph
+++++++++staticText name='E('
+++++++++++inlineTextBox name='E('
+++++++++staticText name=' '
+++++++++staticText name=')F'
+++++++++++inlineTextBox name=')F'

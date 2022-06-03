@@ -3,6 +3,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
 <style>
 .appearance {
@@ -15,9 +16,6 @@
   position: absolute;
   top: 100px;
   left: 100px;
-}
-.fast {
-  will-change: transform;
 }
 .space {
   height: 2000px;
@@ -32,13 +30,13 @@
 }
 </style>
 
-<!-- Composited non-custom fast scroller -->
+<!-- Composited non-custom scroller -->
 <div id="scroller" class="appearance location">
   <div id="divContent" class="space"></div>
 </div>
 
 <!-- Add a div that partially occludes the composited scrollbar. -->
-<div id="occlusion_div" class="occlude appearance fast">
+<div id="occlusion_div" class="occlude appearance">
 </div>
 
 <script>
@@ -51,7 +49,6 @@
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
-  const PRESS_DURATION = 500;
   const onMacPlatform =  navigator.userAgent.search(/\bMac OS X\b/) != -1;
 
   // This tests that interacting with a composited scrollbar that is
@@ -62,7 +59,7 @@
     // Click on the down arrow (which should now be occluded by the div).
     const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
     const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
-    await mousePressOn(down_arrow_x, down_arrow_y, PRESS_DURATION);
+    await mouseClickOn(down_arrow_x, down_arrow_y);
 
     // Expect that the scrolling doesn't happen.
     assert_equals(scroller.scrollTop, 0, "Clicking on an occluded scrollbar shouldn't scroll");
@@ -70,8 +67,10 @@
     // Remove the div and verify that scrolling takes place as expected.
     document.body.removeChild(occlusion_div);
     await mouseClickOn(down_arrow_x, down_arrow_y);
-    const expected = onMacPlatform ? 74 : 40;
+    const EXPECTED_BUTTON_SCROLL_AMOUNT = getScrollbarButtonScrollDelta(scroller).y;
+    const expected = onMacPlatform ? 74 : EXPECTED_BUTTON_SCROLL_AMOUNT;
     const pressedPart = onMacPlatform ? "track" : "down arrow";
-    assert_equals(scroller.scrollTop, expected, "Pressing the " + pressedPart + " didn't scroll.");
+    await waitForAnimationEndTimeBased(() => {return scroller.scrollTop;});
+    assert_approx_equals(scroller.scrollTop, expected, 1, "Pressing the " + pressedPart + " didn't scroll.");
   },"Test hit-testing when scrollbar is occluded.");
 </script>

@@ -6,13 +6,13 @@
 
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/banners/app_banner_manager.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -23,11 +23,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -36,17 +36,19 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 namespace extensions {
@@ -75,13 +77,13 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
 
 }  // namespace
 
-bool SiteHasIsolatedStorage(const GURL& extension_site_url,
-                            content::BrowserContext* context) {
-  const Extension* extension = ExtensionRegistry::Get(context)
-                                   ->enabled_extensions()
-                                   .GetExtensionOrAppByURL(extension_site_url);
+bool HasIsolatedStorage(const std::string& extension_id,
+                        content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_policy_extension =
       extension && Manifest::IsPolicyLocation(extension->location());
   Profile* profile = Profile::FromBrowserContext(context);
@@ -92,12 +94,6 @@ bool SiteHasIsolatedStorage(const GURL& extension_site_url,
 #endif
 
   return extension && AppIsolationInfo::HasIsolatedStorage(extension);
-}
-
-bool HasIsolatedStorage(const std::string& extension_id,
-                        content::BrowserContext* context) {
-  const GURL extension_site_url = GetSiteForExtensionId(extension_id, context);
-  return SiteHasIsolatedStorage(extension_site_url, context);
 }
 
 void SetIsIncognitoEnabled(const std::string& extension_id,
@@ -112,13 +108,13 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
       return;
 
     // TODO(treib,kalman): Should this be Manifest::IsComponentLocation(..)?
-    // (which also checks for EXTERNAL_COMPONENT).
-    if (extension->location() == Manifest::COMPONENT) {
+    // (which also checks for kExternalComponent).
+    if (extension->location() == mojom::ManifestLocation::kComponent) {
       // This shouldn't be called for component extensions unless it is called
       // by sync, for syncable component extensions.
       // See http://crbug.com/112290 and associated CLs for the sordid history.
       bool syncable = sync_helper::IsSyncableComponentExtension(extension);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       // For some users, the file manager app somehow ended up being synced even
       // though it's supposed to be unsyncable; see crbug.com/576964. If the bad
       // data ever gets cleaned up, this hack should be removed.
@@ -198,6 +194,17 @@ bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
 
 bool ShouldSync(const Extension* extension,
                 content::BrowserContext* context) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(context);
+  // Update URL is overridden only for non webstore extensions and offstore
+  // extensions should not be synced.
+  if (extension_management->IsUpdateUrlOverridden(extension->id())) {
+    const GURL update_url =
+        extension_management->GetEffectiveUpdateURL(*extension);
+    DCHECK(!extension_urls::IsWebstoreUpdateUrl(update_url))
+        << "Update URL cannot be overridden to be the webstore URL!";
+    return false;
+  }
   return sync_helper::IsSyncable(extension) &&
          !ExtensionPrefs::Get(context)->DoNotSync(extension->id());
 }
@@ -273,25 +280,48 @@ const gfx::ImageSkia& GetDefaultExtensionIcon() {
       IDR_EXTENSION_DEFAULT_ICON);
 }
 
-const Extension* GetInstalledPwaForUrl(
-    content::BrowserContext* context,
-    const GURL& url,
-    base::Optional<LaunchContainer> launch_container_filter) {
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
-  for (scoped_refptr<const Extension> app :
-       ExtensionRegistry::Get(context)->enabled_extensions()) {
-    if (!app->from_bookmark())
-      continue;
-    if (!BookmarkAppIsLocallyInstalled(prefs, app.get()))
-      continue;
-    if (launch_container_filter &&
-        GetLaunchContainer(prefs, app.get()) != *launch_container_filter) {
-      continue;
-    }
-    if (UrlHandlers::CanBookmarkAppHandleUrl(app.get(), url))
-      return app.get();
+std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
+    const Extension* extension,
+    Profile* profile,
+    bool include_optional_permissions) {
+  // Initialize permissions if they have not already been set so that
+  // any transformations are correctly reflected in the install prompt.
+  PermissionsUpdater(profile, PermissionsUpdater::INIT_FLAG_TRANSIENT)
+      .InitializePermissions(extension);
+
+  std::unique_ptr<const PermissionSet> permissions_to_display =
+      extension->permissions_data()->active_permissions().Clone();
+
+  if (include_optional_permissions) {
+    const PermissionSet& optional_permissions =
+        PermissionsParser::GetOptionalPermissions(extension);
+    permissions_to_display = PermissionSet::CreateUnion(*permissions_to_display,
+                                                        optional_permissions);
   }
-  return nullptr;
+  return permissions_to_display;
+}
+
+std::vector<content::BrowserContext*> GetAllRelatedProfiles(
+    Profile* profile,
+    const Extension& extension) {
+  std::vector<content::BrowserContext*> related_contexts;
+  related_contexts.push_back(profile->GetOriginalProfile());
+
+  // The returned `related_contexts` should include all the related incognito
+  // profiles if the extension is globally allowed in incognito (this is a
+  // global, rather than per-profile toggle - this is why we it can be checked
+  // globally here, rather than once for every incognito profile looped over
+  // below).
+  if (IsIncognitoEnabled(extension.id(), profile)) {
+    std::vector<Profile*> off_the_record_profiles =
+        profile->GetAllOffTheRecordProfiles();
+    related_contexts.reserve(related_contexts.size() +
+                             off_the_record_profiles.size());
+    for (Profile* off_the_record_profile : off_the_record_profiles)
+      related_contexts.push_back(off_the_record_profile);
+  }
+
+  return related_contexts;
 }
 
 }  // namespace util

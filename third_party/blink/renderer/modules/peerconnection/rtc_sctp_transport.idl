@@ -12,8 +12,7 @@ enum RTCSctpTransportState {
 // http://w3c.github.io/webrtc-pc/#rtcdtlstransport-interface
 
 [
-    Exposed=Window,
-    RuntimeEnabled=RTCSctpTransport
+    Exposed=Window
 ] interface RTCSctpTransport : EventTarget {
     readonly        attribute RTCDtlsTransport transport;
     readonly        attribute RTCSctpTransportState state;

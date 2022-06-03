@@ -84,6 +84,6 @@ tests](https://crbug.com/580403).
 
 Bluetooth controller system tests generating radio signals are run and managed
 by the Chrome OS team. See:
-https://chromium.googlesource.com/chromiumos/third_party/autotest/+/master/server/site_tests/
-https://chromium.googlesource.com/chromiumos/third_party/autotest/+/master/server/cros/bluetooth/
-https://chromium.googlesource.com/chromiumos/third_party/autotest/+/master/client/cros/bluetooth/
+https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/server/site_tests/
+https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/server/cros/bluetooth/
+https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/client/cros/bluetooth/

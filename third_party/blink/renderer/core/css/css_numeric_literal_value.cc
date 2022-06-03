@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -17,13 +18,14 @@ struct SameSizeAsCSSNumericLiteralValue : CSSPrimitiveValue {
 };
 ASSERT_SIZE(CSSNumericLiteralValue, SameSizeAsCSSNumericLiteralValue);
 
-void CSSNumericLiteralValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSNumericLiteralValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSPrimitiveValue::TraceAfterDispatch(visitor);
 }
 
 CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
     : CSSPrimitiveValue(kNumericLiteralClass), num_(num) {
-  DCHECK(std::isfinite(num));
+  DCHECK(RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() ||
+         std::isfinite(num));
   DCHECK_NE(UnitType::kUnknown, type);
   numeric_literal_unit_type_ = static_cast<unsigned>(type);
 }
@@ -31,14 +33,20 @@ CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
 // static
 CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
                                                        UnitType type) {
-  // TODO(timloh): This looks wrong.
-  if (std::isinf(value))
-    value = 0;
-
   if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
-  int int_value = clampTo<int>(value);
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    // Value can be NaN.
+    if (std::isnan(value))
+      return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
+  } else {
+    // TODO(timloh): This looks wrong.
+    if (std::isinf(value))
+      value = 0;
+  }
+
+  int int_value = ClampTo<int>(value);
   if (value != int_value)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
@@ -93,11 +101,11 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kDegrees:
       return num_;
     case UnitType::kRadians:
-      return rad2deg(num_);
+      return Rad2deg(num_);
     case UnitType::kGradians:
-      return grad2deg(num_);
+      return Grad2deg(num_);
     case UnitType::kTurns:
-      return turn2deg(num_);
+      return Turn2deg(num_);
     default:
       NOTREACHED();
       return 0;
@@ -155,6 +163,24 @@ static String FormatNumber(double number, const char* suffix) {
   return result;
 }
 
+static String FormatInfinityOrNaN(double number, const char* suffix) {
+  String result;
+  if (std::isinf(number)) {
+    if (number > 0)
+      result = "infinity";
+    else
+      result = "-infinity";
+
+  } else {
+    DCHECK(std::isnan(number));
+    result = "NaN";
+  }
+
+  if (strlen(suffix) > 0)
+    result = result + String::Format(" * 1%s", suffix);
+  return result;
+}
+
 String CSSNumericLiteralValue::CustomCSSText() const {
   String text;
   switch (GetType()) {
@@ -194,7 +220,13 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
     case UnitType::kViewportMin:
-    case UnitType::kViewportMax: {
+    case UnitType::kViewportMax:
+    case UnitType::kContainerWidth:
+    case UnitType::kContainerHeight:
+    case UnitType::kContainerInlineSize:
+    case UnitType::kContainerBlockSize:
+    case UnitType::kContainerMin:
+    case UnitType::kContainerMax: {
       // The following integers are minimal and maximum integers which can
       // be represented in non-exponential format with 6 digit precision.
       constexpr int kMinInteger = -999999;
@@ -203,14 +235,20 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
-        text = FormatNumber(value, UnitTypeToString(GetType()));
+        if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
+            (std::isinf(value) || std::isnan(value))) {
+          text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
+        } else {
+          text = FormatNumber(value, UnitTypeToString(GetType()));
+        }
+
       } else {
         StringBuilder builder;
         int int_value = value;
         const char* unit_type = UnitTypeToString(GetType());
         builder.AppendNumber(int_value);
-        builder.Append(unit_type, strlen(unit_type));
-        text = builder.ToString();
+        builder.Append(unit_type, static_cast<unsigned>(strlen(unit_type)));
+        text = builder.ReleaseString();
       }
     } break;
     default:

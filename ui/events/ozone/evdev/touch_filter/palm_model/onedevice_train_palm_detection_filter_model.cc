@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.h"
 #define USE_EIGEN 0
 
@@ -54,9 +55,10 @@ OneDeviceTrainNeuralStylusPalmDetectionFilterModel::
   config_.max_neighbor_distance_in_mm = 100.0f;
   config_.min_sample_count = 6;
   config_.max_sample_count = 12;
-  config_.max_dead_neighbor_time = base::TimeDelta::FromMillisecondsD(100.0f);
+  config_.max_dead_neighbor_time = base::Milliseconds(100.0f);
   config_.heuristic_palm_touch_limit = 20.0f;
   config_.heuristic_palm_area_limit = 400.0f;
+  config_.max_blank_time = base::Milliseconds(100.0f);
 }
 
 OneDeviceTrainNeuralStylusPalmDetectionFilterModel::

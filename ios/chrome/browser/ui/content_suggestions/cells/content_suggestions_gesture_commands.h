@@ -7,26 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-@class ContentSuggestionsItem;
 @class ContentSuggestionsMostVisitedItem;
 
 // Command protocol for the interactions based on a gesture, handling the
 // callbacks from the alerts and the accessibility custom actions.
 @protocol ContentSuggestionsGestureCommands
-
-// Opens the URL corresponding to the |item| in a new tab, |incognito| or not.
-// The item has to be a suggestion item.
-- (void)openNewTabWithSuggestionsItem:(nonnull ContentSuggestionsItem*)item
-                            incognito:(BOOL)incognito;
-
-// Adds the |item| to the reading list. The item has to be a suggestion item.
-- (void)addItemToReadingList:(nonnull ContentSuggestionsItem*)item;
-
-// Dismiss the |item| at |indexPath|. The item has to be a suggestion item.
-// If |indexPath| is nil, the commands handler will find the index path
-// associated with the |item|.
-- (void)dismissSuggestion:(nonnull ContentSuggestionsItem*)item
-              atIndexPath:(nullable NSIndexPath*)indexPath;
 
 // Open the URL corresponding to the |item| in a new tab, |incognito| or not.
 // The item has to be a Most Visited item.

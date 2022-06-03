@@ -55,6 +55,16 @@ String CSSImportRule::cssText() const {
   result.Append(import_rule_->Href());
   result.Append("\")");
 
+  if (import_rule_->IsLayered()) {
+    result.Append(" layer");
+    String layer_name = import_rule_->GetLayerNameAsString();
+    if (layer_name.length()) {
+      result.Append("(");
+      result.Append(layer_name);
+      result.Append(")");
+    }
+  }
+
   if (import_rule_->MediaQueries()) {
     String media_text = import_rule_->MediaQueries()->MediaText();
     if (!media_text.IsEmpty()) {
@@ -64,7 +74,7 @@ String CSSImportRule::cssText() const {
   }
   result.Append(';');
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 CSSStyleSheet* CSSImportRule::styleSheet() const {
@@ -84,7 +94,7 @@ void CSSImportRule::Reattach(StyleRuleBase*) {
   NOTREACHED();
 }
 
-void CSSImportRule::Trace(blink::Visitor* visitor) {
+void CSSImportRule::Trace(Visitor* visitor) const {
   visitor->Trace(import_rule_);
   visitor->Trace(media_cssom_wrapper_);
   visitor->Trace(style_sheet_cssom_wrapper_);

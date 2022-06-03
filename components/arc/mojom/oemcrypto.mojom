@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 5
 
 // The original version of this file lives in the Chromium repository at:
 // src/components/arc/mojom/oemcrypto.mojom
@@ -12,12 +12,16 @@
 // This file matches what's in Widevine's OEMCryptoCENC.h file closely and all
 // methods are documented there.
 
-// Version 1 of this interface supported OEMCrypto v11. Version 2 maintains
-// backwards compatibility and supports OEMCrypto v14 as the current version.
+// Version 1 of this interface supported OEMCrypto v11 and is now deprecated.
+// Version 2 supports OEMCrypto v14.
+// Version 3 maintains backwards compatibility with version 2 and supports
+// OEMCrypto v15.
+// Version 4 maintains backwards compatibility and supports OEMCrypto v16.
+// Version 5 adds the v16 CopyBuffer variant.
 
 module arc.mojom;
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoResult {
   SUCCESS = 0,
   ERROR_INIT_FAILED = 1,
@@ -72,8 +76,22 @@ enum OemCryptoResult {
   [MinVersion=2] ERROR_USAGE_TABLE_UNRECOVERABLE = 50,  // Reserved. Do not use.
   [MinVersion=2] KEY_NOT_LOADED = 51,
   [MinVersion=2] KEY_NOT_ENTITLED = 52,
+  [MinVersion=3] ERROR_BAD_HASH = 53,
+  [MinVersion=3] ERROR_OUTPUT_TOO_LARGE = 54,
+  [MinVersion=3] ERROR_SESSION_LOST_STATE = 55,
+  [MinVersion=3] ERROR_SYSTEM_INVALIDATED = 56,
+  [MinVersion=4] ERROR_LICENSE_RELOAD = 57,
+  [MinVersion=4] ERROR_MULTIPLE_USAGE_ENTRIES = 58,
+  [MinVersion=4] WARNING_MIXED_OUTPUT_PROTECTION = 59,
+  [MinVersion=4] ODK_ERROR_CORE_MESSAGE = 1000,
+  [MinVersion=4] ODK_SET_TIMER = 1001,
+  [MinVersion=4] ODK_DISABLE_TIMER = 1002,
+  [MinVersion=4] ODK_TIMER_EXPIRED = 1003,
+  [MinVersion=4] ODK_UNSUPPORTED_API = 1004,
+  [MinVersion=4] ODK_STALE_RENEWAL = 1005,
 };
 
+[Stable]
 struct OemCryptoSecureBuffer {
   // buffer_handle should be passed to the ProtectedBufferManager service in
   // the GPU in order to retrieve the shared memory handle that corresponds
@@ -84,19 +102,26 @@ struct OemCryptoSecureBuffer {
   uint32 offset;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoCipherMode {
   CIPHER_MODE_CTR = 0,
   CIPHER_MODE_CBC = 1,
 };
 
-[Extensible, MinVersion=2]
+[Stable, Extensible, MinVersion=2]
 enum OemCryptoLicenseType {
   CONTENT_LICENSE = 0,
   ENTITLEMENT_LICENSE = 1,
 };
 
-struct OemCryptoKeyObject {
+[Stable, MinVersion=3]
+struct OemCryptoSubstring {
+  uint32 offset;
+  uint32 length;
+};
+
+[Stable]
+struct OemCryptoKeyObjectV14 {
   uint32 key_id_offset;
   uint32 key_id_length;
   uint32 key_data_iv_offset;
@@ -107,15 +132,33 @@ struct OemCryptoKeyObject {
   OemCryptoCipherMode cipher_mode;
 };
 
-[MinVersion=2]
-struct OemCryptoEntitledContentKeyObject {
+[Stable, MinVersion=3]
+struct OemCryptoKeyObject {
+  OemCryptoSubstring key_id;
+  OemCryptoSubstring key_data_iv;
+  OemCryptoSubstring key_data;
+  OemCryptoSubstring key_control_iv;
+  OemCryptoSubstring key_control;
+};
+
+[Stable, MinVersion=2]
+struct OemCryptoEntitledContentKeyObjectV14 {
   array<uint8> entitlement_key_id;
   array<uint8> content_key_id;
   array<uint8, 16> content_key_data_iv;
   array<uint8> content_key_data;
 };
 
-struct OemCryptoKeyRefreshObject {
+[Stable, MinVersion=3]
+struct OemCryptoEntitledContentKeyObject {
+  OemCryptoSubstring entitlement_key_id;
+  OemCryptoSubstring content_key_id;
+  OemCryptoSubstring content_key_data_iv;
+  OemCryptoSubstring content_key_data;
+};
+
+[Stable]
+struct OemCryptoKeyRefreshObjectV14 {
   uint32 key_id_offset;
   uint32 key_id_length;
   bool has_key_control_iv;
@@ -123,19 +166,27 @@ struct OemCryptoKeyRefreshObject {
   uint32 key_control_offset;
 };
 
-[Extensible]
+[Stable, MinVersion=3]
+struct OemCryptoKeyRefreshObject {
+  OemCryptoSubstring key_id;
+  OemCryptoSubstring key_control_iv;
+  OemCryptoSubstring key_control;
+};
+
+[Stable, Extensible]
 enum OemCryptoAlgorithm {
   AES_CBC_128_NO_PADDING = 0,
   HMAC_SHA265 = 1,
 };
 
+[Stable]
 struct OemCryptoCencEncryptPatternDesc {
   uint32 encrypt;
   uint32 skip;
   uint32 offset;
 };
 
-[Extensible, MinVersion=2]
+[Stable, Extensible, MinVersion=2]
 enum OemCryptoUsageEntryStatus {
   UNUSED = 0,
   ACTIVE = 1,
@@ -144,6 +195,7 @@ enum OemCryptoUsageEntryStatus {
   INACTIVE_UNUSED = 4,
 };
 
+[Stable]
 struct OemCryptoPstReport {
   array<uint8, 20> signature;
   uint8 status;
@@ -153,23 +205,24 @@ struct OemCryptoPstReport {
   uint64 seconds_since_last_decrypt;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoRsaPaddingScheme {
   SIGN_RSASSA_PSS = 1,
   SIGN_PKCS1_BLOCK1 = 2,
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoHdcpCapability {
   HDCP_NONE = 0,
   HDCP_V1   = 1,
   HDCP_V2   = 2,
   HDCP_V2_1 = 3,
   HDCP_V2_2 = 4,
+  HDCP_V2_3 = 5,
   HDCP_NO_DIGITAL_OUTPUT = 0xFF,
 };
 
-[Extensible, MinVersion=2]
+[Stable, Extensible, MinVersion=2]
 enum OemCryptoProvisioningMethod {
   PROVISIONING_ERROR = 0,
   DRM_CERTIFICATE = 1,
@@ -177,9 +230,24 @@ enum OemCryptoProvisioningMethod {
   OEM_CERTIFICATE = 3,
 };
 
+[Stable, Extensible, MinVersion=4]
+enum OemCryptoPrivateKey {
+  RSA_PRIVATE_KEY = 0,
+  ECC_PRIVATE_KEY = 1,
+};
+
+[Stable, MinVersion=4]
+struct SubSampleDescription {
+  uint32 num_bytes_clear;
+  uint32 num_bytes_encrypted;
+  uint8 subsample_flags;
+  uint32 block_offset;
+};
+
 // This is the interface that implements all the calls that map to the
 // OEMCrypto API itself.
-// Next method ID: 58
+// Next method ID: 77
+[Stable, Uuid="ed3807bc-7bce-472d-be4f-68774e613ace"]
 interface OemCryptoService {
   InitializeDeprecated@0() => (OemCryptoResult result);
   [MinVersion=2] Initialize@36(uint32 oemcrypto_version)
@@ -200,23 +268,21 @@ interface OemCryptoService {
                      array<uint8> signature, bool has_enc_mac_keys,
                      uint32 enc_mac_keys_iv_offset,
                      uint32 enc_mac_keys_offset,
-                     array<OemCryptoKeyObject> key_array,
+                     array<OemCryptoKeyObjectV14> key_array,
                      uint32 pst_offset, uint32 pst_length)
       => (OemCryptoResult result);
-  RefreshKeys@8(uint32 session, array<uint8> message, array<uint8> signature,
-                array<OemCryptoKeyRefreshObject> key_array)
+  RefreshKeysV14@8(uint32 session, array<uint8> message,
+                   array<uint8> signature,
+                   array<OemCryptoKeyRefreshObjectV14> key_array)
       => (OemCryptoResult result);
   QueryKeyControl@9(uint32 session, array<uint8> key_id)
       => (OemCryptoResult result, array<uint8>? key_control_block);
   SelectKeyV13@10(uint32 session, array<uint8> key_id)
       => (OemCryptoResult result);
-  // For decrypting to a secure buffer, pass in the secure_buffer parameter,
-  // otherwise it will return the contents decrypted into a clear buffer in the
-  // returned array. It will only do that if the drm policy allows it.
-  DecryptCenc@11(uint32 session, array<uint8> data, bool is_encrypted,
-              array<uint8, 16> iv, uint32 block_offset,
-              OemCryptoSecureBuffer? secure_buffer,
-              OemCryptoCencEncryptPatternDesc pattern)
+  DecryptCencV15@11(uint32 session, array<uint8> data, bool is_encrypted,
+                    array<uint8, 16> iv, uint32 block_offset,
+                    OemCryptoSecureBuffer? secure_buffer,
+                    OemCryptoCencEncryptPatternDesc pattern)
       => (OemCryptoResult result, array<uint8>? decrypted_data);
   GenericEncrypt@12(uint32 session, array<uint8> data, array<uint8, 16> iv,
                     OemCryptoAlgorithm algorithm) =>
@@ -230,7 +296,7 @@ interface OemCryptoService {
   GenericVerify@15(uint32 session, array<uint8> data,
                    OemCryptoAlgorithm algorithm, array<uint8> signature) =>
                   (OemCryptoResult result);
-  CopyBuffer@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
+  CopyBufferV14@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
       => (OemCryptoResult result);
   LoadTestKeyboxV13@17() => (OemCryptoResult result);
   IsRootKeyCertificateValid@18() => (OemCryptoResult result);
@@ -319,21 +385,95 @@ interface OemCryptoService {
   [MinVersion=2] LoadTestKeybox@54(array<uint8> buffer) =>
                                    (OemCryptoResult result);
   [MinVersion=2]
-  LoadEntitledContentKeys@55(uint32 session,
-                             array<OemCryptoEntitledContentKeyObject> key_array)
+  LoadEntitledContentKeysV14@55(
+      uint32 session, array<OemCryptoEntitledContentKeyObjectV14> key_array)
       => (OemCryptoResult result);
   [MinVersion=2] SelectKey@56(uint32 session, array<uint8> content_key_id,
                               OemCryptoCipherMode cipher_mode) =>
                               (OemCryptoResult result);
-  [MinVersion=2] LoadKeys@57(uint32 session, array<uint8> message,
-                             array<uint8> signature, bool has_enc_mac_keys,
-                             uint32 enc_mac_keys_iv_offset,
-                             uint32 enc_mac_keys_offset,
-                             array<OemCryptoKeyObject> key_array,
-                             uint32 pst_offset, uint32 pst_length,
-                             array<uint8> srm_requirement,
-                             OemCryptoLicenseType license_type) =>
+  [MinVersion=2] LoadKeysV14@57(uint32 session, array<uint8> message,
+                                 array<uint8> signature, bool has_enc_mac_keys,
+                                 uint32 enc_mac_keys_iv_offset,
+                                 uint32 enc_mac_keys_offset,
+                                 array<OemCryptoKeyObjectV14> key_array,
+                                 uint32 pst_offset, uint32 pst_length,
+                                 array<uint8> srm_requirement,
+                                 OemCryptoLicenseType license_type) =>
                              (OemCryptoResult result);
+  [MinVersion=3] LoadKeys@58(uint32 session, array<uint8> message,
+                             array<uint8> signature,
+                             OemCryptoSubstring enc_mac_keys_iv,
+                             OemCryptoSubstring enc_mac_keys,
+                             array<OemCryptoKeyObject> key_array,
+                             OemCryptoSubstring pst,
+                             OemCryptoSubstring srm_restriction_data,
+                             OemCryptoLicenseType license_type) =>
+                         (OemCryptoResult result);
+  [MinVersion=3] ResourceRatingTier@59() => (uint32 rating_tier);
+  [MinVersion=3] BuildInformation@60() => (string build_information);
+  [MinVersion=3] RefreshKeys@61(uint32 session, array<uint8> message,
+                                array<uint8> signature,
+                                array<OemCryptoKeyRefreshObject> key_array)
+                         => (OemCryptoResult result);
+  [MinVersion=3] LoadEntitledContentKeys@62(
+      uint32 session, array<uint8> message,
+      array<OemCryptoEntitledContentKeyObject> key_array)
+      => (OemCryptoResult result);
+  [MinVersion=4] GetOemPublicCertificate@63()
+      => (OemCryptoResult result, array<uint8>? public_cert);
+  [MinVersion=4] MaximumUsageTableHeaderSize@64() => (uint32 size);
+  [MinVersion=4] IsAntiRollbackHwPresent@65() => (bool result);
+  [MinVersion=4] MinorApiVersion@66() => (uint32 version);
+  [MinVersion=4] PrepAndSignLicenseRequest@67(uint32 session,
+                                              array<uint8> message,
+                                              uint32 core_message_size,
+                                              uint32 avail_signature_size)
+      => (OemCryptoResult result, uint32 core_message_size,
+          array<uint8>? message, array<uint8>? signature);
+  [MinVersion=4] PrepAndSignRenewalRequest@68(uint32 session,
+                                              array<uint8> message,
+                                              uint32 core_message_size,
+                                              uint32 avail_signature_size)
+      => (OemCryptoResult result, uint32 core_message_size,
+          array<uint8>? message, array<uint8>? signature);
+  [MinVersion=4] PrepAndSignProvisioningRequest@69(uint32 session,
+                                                   array<uint8> message,
+                                                   uint32 core_message_size,
+                                                   uint32 avail_signature_size)
+      => (OemCryptoResult result, uint32 core_message_size,
+          array<uint8>? message, array<uint8>? signature);
+  [MinVersion=4] LoadLicense@70(uint32 session, array<uint8> message,
+                                uint32 core_message_length,
+                                array<uint8> signature)
+      => (OemCryptoResult result);
+  [MinVersion=4] LoadRenewal@71(uint32 session, array<uint8> message,
+                                uint32 core_message_length,
+                                array<uint8> signature)
+      => (OemCryptoResult result);
+  [MinVersion=4] LoadProvisioning@72(uint32 session, array<uint8> message,
+                                     uint32 core_message_length,
+                                     array<uint8> signature,
+                                     uint32 avail_wrapped_private_key_size)
+      => (OemCryptoResult result, array<uint8>? wrapped_private_key);
+  [MinVersion=4] LoadOemPrivateKey@73(uint32 session)
+      => (OemCryptoResult result);
+  [MinVersion=4] LoadDrmPrivateKey@74(uint32 session,
+                                      OemCryptoPrivateKey key_type,
+                                      array<uint8> wrapped_private_key)
+      => (OemCryptoResult result);
+  // For decrypting to a secure buffer, pass in the secure_buffer parameter,
+  // otherwise it will return the contents decrypted into a clear buffer in the
+  // returned array. It will only do that if the drm policy allows it.
+  [MinVersion=4] DecryptCenc@75(uint32 session, array<uint8> data,
+                                array<uint8, 16> iv,
+                                array<SubSampleDescription> sub_samples,
+                                OemCryptoCencEncryptPatternDesc pattern,
+                                OemCryptoSecureBuffer? secure_buffer)
+      => (OemCryptoResult result, array<uint8>? decrypted_data);
+  [MinVersion=5] CopyBuffer@76(uint32 session, array<uint8> data,
+                               OemCryptoSecureBuffer out_buffer,
+                               uint8 subsample_flags)
+      => (OemCryptoResult result);
 };
 
 // OemCryptoService is implemented as another service outside of the Browser
@@ -342,7 +482,7 @@ interface OemCryptoService {
 // that runs in Chrome OS.
 // Next Method ID: 1
 interface OemCryptoHost {
-  Connect@0(OemCryptoService& oemcryptor);
+  Connect@0(pending_receiver<OemCryptoService> oemcryptor);
 };
 
 // OemCryptoInstance is implemented in the liboemcrypto.so library that runs in
@@ -350,8 +490,8 @@ interface OemCryptoHost {
 // Next Method ID: 2
 interface OemCryptoInstance {
   // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(OemCryptoHost host_ptr);
+  InitDeprecated@0(pending_remote<OemCryptoHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@1(OemCryptoHost host_ptr) => ();
+  [MinVersion=1] Init@1(pending_remote<OemCryptoHost> host_remote) => ();
 };

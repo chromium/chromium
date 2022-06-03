@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -24,13 +26,8 @@ class BookmarkletTest : public ContentBrowserTest {
     EXPECT_EQ("start page", GetBodyText());
   }
 
-  std::string GetBodyText() {
-    std::string body_text;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        shell(),
-        "window.domAutomationController.send(document.body.innerText);",
-        &body_text));
-    return body_text;
+  content::EvalJsResult GetBodyText() {
+    return EvalJs(shell(), "document.body.innerText");
   }
 };
 

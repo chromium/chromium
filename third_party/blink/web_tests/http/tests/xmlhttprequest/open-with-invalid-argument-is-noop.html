@@ -10,7 +10,7 @@ async_test(t => {
     t.done();
   });
 
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('FOO BAR', 'nonexistent');
   }, 'open() should throw for a SyntaxError for an invalid method');
 
@@ -25,7 +25,7 @@ async_test(t => {
     t.done();
   });
 
-  assert_throws('SecurityError', () => {
+  assert_throws_dom('SecurityError', () => {
     xhr.open('CONNECT', 'nonexistent');
   }, 'open() should throw for a SecurityError for a forbidden method');
 
@@ -40,7 +40,7 @@ async_test(t => {
     t.done();
   });
 
-  assert_throws('SyntaxError', () => {
+  assert_throws_dom('SyntaxError', () => {
     xhr.open('GET', 'http://localhost:foobar/');
   }, 'open() should throw for a SyntaxError for an invalid URL');
 

@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import mimetypes
-import urllib2
+import six.moves.urllib
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
 
@@ -64,7 +64,8 @@ def _encode_multipart_form_data(fields, files):
 
     for key, filename, value in files:
         lines.append('--' + BOUNDARY)
-        lines.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+        lines.append('Content-Disposition: form-data; name="%s"; filename="%s"'
+                     % (key, filename))
         lines.append('Content-Type: %s' % get_mime_type(filename))
         lines.append('')
         if isinstance(value, unicode):
@@ -79,18 +80,19 @@ def _encode_multipart_form_data(fields, files):
 
 
 class FileUploader(object):
-
     def __init__(self, url, timeout_seconds):
         self._url = url
         self._timeout_seconds = timeout_seconds
 
     def upload_single_text_file(self, filesystem, content_type, filename):
-        return self._upload_data(content_type, filesystem.read_text_file(filename))
+        return self._upload_data(content_type,
+                                 filesystem.read_text_file(filename))
 
     def upload_as_multipart_form_data(self, filesystem, files, attrs):
         file_objs = []
         for filename, path in files:
-            file_objs.append(('file', filename, filesystem.read_binary_file(path)))
+            file_objs.append(('file', filename,
+                              filesystem.read_binary_file(path)))
 
         # FIXME: We should use the same variable names for the formal and actual parameters.
         content_type, data = _encode_multipart_form_data(attrs, file_objs)
@@ -101,7 +103,9 @@ class FileUploader(object):
             # FIXME: Setting a timeout, either globally using socket.setdefaulttimeout()
             # or in urlopen(), doesn't appear to work on Mac 10.5 with Python 2.7.
             # For now we will ignore the timeout value and hope for the best.
-            request = urllib2.Request(self._url, data, {'Content-Type': content_type})
-            return urllib2.urlopen(request)
+            request = urllib.Request(self._url, data,
+                                     {'Content-Type': content_type})
+            return urllib.urlopen(request)
 
-        return NetworkTransaction(timeout_seconds=self._timeout_seconds).run(callback)
+        return NetworkTransaction(
+            timeout_seconds=self._timeout_seconds).run(callback)

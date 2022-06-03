@@ -1,8 +1,5 @@
 A minimal platform app that requests no additional permissions and has only a
 trivial event page.
 
-The app must be packed to ./app.crx using the private key ./app.pem. For the
-instructions, refer to: <https://developer.chrome.com/apps/packaging#creating>.
-
 The app ID that corresponds to the ./app.pem private key is
 "mockapnacjbcdncmpkjngjalkhphojek".

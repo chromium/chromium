@@ -23,7 +23,8 @@ enum class SessionState {
 
   // A transient state between LOGIN_PRIMARY/LOGIN_SECONDARY and ACTIVE to
   // prepare user desktop environment (e.g. launching browser windows) while the
-  // login screen is still visible.
+  // login screen is still visible. Should only be set from OOBE,
+  // LOGIN_PRIMARY, or LOGIN_SECONDARY.
   LOGGED_IN_NOT_ACTIVE,
 
   // A user(s) has logged in *and* login UI is hidden i.e. user session is
@@ -33,8 +34,8 @@ enum class SessionState {
   // The session screen is locked.
   LOCKED,
 
-  // Same as SESSION_STATE_LOGIN_PRIMARY but for multi-profiles sign in i.e.
-  // when there's at least one user already active in the session.
+  // Same as LOGIN_PRIMARY but for multi-profiles sign in i.e. when there's at
+  // least one user already active in the session.
   LOGIN_SECONDARY,
 };
 

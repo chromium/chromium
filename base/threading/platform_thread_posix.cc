@@ -15,20 +15,22 @@
 
 #include <memory>
 
+#include "base/allocator/buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
+#include "base/macros.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
-#if !defined(OS_MACOSX) && !defined(OS_FUCHSIA) && !defined(OS_NACL)
+#if !defined(OS_APPLE) && !defined(OS_FUCHSIA) && !defined(OS_NACL)
 #include "base/posix/can_lower_nice_to.h"
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <sys/syscall.h>
 #endif
 
@@ -36,6 +38,11 @@
 #include <zircon/process.h>
 #else
 #include <sys/resource.h>
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
 
 namespace base {
@@ -64,9 +71,18 @@ void* ThreadFunc(void* params) {
 
     delegate = thread_params->delegate;
     if (!thread_params->joinable)
-      base::ThreadRestrictions::SetSingletonAllowed(false);
+      base::DisallowSingleton();
 
 #if !defined(OS_NACL)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    internal::PCScan::NotifyThreadCreated(internal::GetStackPointer());
+#endif
+
+#if defined(OS_APPLE)
+    PlatformThread::SetCurrentThreadRealtimePeriodValue(
+        PlatformThread::GetRealtimePeriod(delegate));
+#endif
+
     // Threads on linux/android may inherit their priority from the thread
     // where they were created. This explicitly sets the priority of all new
     // threads.
@@ -83,6 +99,10 @@ void* ThreadFunc(void* params) {
   ThreadIdNameManager::GetInstance()->RemoveName(
       PlatformThread::CurrentHandle().platform_handle(),
       PlatformThread::CurrentId());
+
+#if !defined(OS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::PCScan::NotifyThreadDestroyed();
+#endif
 
   base::TerminateOnThread();
   return nullptr;
@@ -135,9 +155,9 @@ bool CreateThread(size_t stack_size,
   return success;
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-// Store the thread ids in local storage since calling the SWI can
+// Store the thread ids in local storage since calling the SWI can be
 // expensive and PlatformThread::CurrentId is used liberally. Clear
 // the stored value after a fork() because forking changes the thread
 // id. Forking without going through fork() (e.g. clone()) is not
@@ -153,11 +173,11 @@ class InitAtFork {
   InitAtFork() { pthread_atfork(nullptr, nullptr, internal::ClearTidCache); }
 };
 
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 namespace internal {
 
@@ -167,16 +187,16 @@ void ClearTidCache() {
 
 }  // namespace internal
 
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // static
 PlatformThreadId PlatformThread::CurrentId() {
   // Pthreads doesn't have the concept of a thread ID, so we have to reach down
   // into the kernel.
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   return pthread_mach_thread_np(pthread_self());
-#elif defined(OS_LINUX)
-  static NoDestructor<InitAtFork> init_at_fork;
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+  static InitAtFork init_at_fork;
   if (g_thread_id == -1) {
     g_thread_id = syscall(__NR_gettid);
   } else {
@@ -187,6 +207,11 @@ PlatformThreadId PlatformThread::CurrentId() {
   }
   return g_thread_id;
 #elif defined(OS_ANDROID)
+  // Note: do not cache the return value inside a thread_local variable on
+  // Android (as above). The reasons are:
+  // - thread_local is slow on Android (goes through emutls)
+  // - gettid() is fast, since its return value is cached in pthread (in the
+  //   thread control block of pthread). See gettid.c in bionic.
   return gettid();
 #elif defined(OS_FUCHSIA)
   return zx_thread_self();
@@ -227,7 +252,7 @@ void PlatformThread::Sleep(TimeDelta duration) {
   // NOTE: TimeDelta's microseconds are int64s while timespec's
   // nanoseconds are longs, so this unpacking must prevent overflow.
   sleep_time.tv_sec = duration.InSeconds();
-  duration -= TimeDelta::FromSeconds(sleep_time.tv_sec);
+  duration -= Seconds(sleep_time.tv_sec);
   sleep_time.tv_nsec = duration.InMicroseconds() * 1000;  // nanoseconds
 
   while (nanosleep(&sleep_time, &remaining) == -1 && errno == EINTR)
@@ -284,20 +309,23 @@ void PlatformThread::Detach(PlatformThreadHandle thread_handle) {
 
 // Mac and Fuchsia have their own Set/GetCurrentThreadPriority()
 // implementations.
-#if !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
+#if !defined(OS_APPLE) && !defined(OS_FUCHSIA)
 
 // static
-bool PlatformThread::CanIncreaseThreadPriority(ThreadPriority priority) {
+bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
+                                             ThreadPriority to) {
 #if defined(OS_NACL)
   return false;
 #else
-  auto platform_specific_ability =
-      internal::CanIncreaseCurrentThreadPriorityForPlatform(priority);
-  if (platform_specific_ability)
-    return platform_specific_ability.value();
+  if (from >= to) {
+    // Decreasing thread priority on POSIX is always allowed.
+    return true;
+  }
+  if (to == ThreadPriority::REALTIME_AUDIO) {
+    return internal::CanSetThreadPriorityToRealtimeAudio();
+  }
 
-  return internal::CanLowerNiceTo(
-      internal::ThreadPriorityToNiceValue(priority));
+  return internal::CanLowerNiceTo(internal::ThreadPriorityToNiceValue(to));
 #endif  // defined(OS_NACL)
 }
 
@@ -349,7 +377,7 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
 #endif  // !defined(OS_NACL)
 }
 
-#endif  // !defined(OS_MACOSX) && !defined(OS_FUCHSIA)
+#endif  // !defined(OS_APPLE) && !defined(OS_FUCHSIA)
 
 // static
 size_t PlatformThread::GetDefaultThreadStackSize() {

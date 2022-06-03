@@ -6,13 +6,15 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "services/service_manager/public/cpp/service_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 
 namespace service_manager {
 namespace test {
 
-AppClient::AppClient(service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)) {
+AppClient::AppClient(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver)
+    : service_receiver_(this, std::move(receiver)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &AppClient::LifecycleControlBindingLost, base::Unretained(this)));
 
@@ -29,8 +31,8 @@ void AppClient::OnBindInterface(const BindSourceInfo& source_info,
 }
 
 void AppClient::OnDisconnected() {
-  DCHECK(service_binding_.is_bound());
-  service_binding_.Close();
+  DCHECK(service_receiver_.is_bound());
+  service_receiver_.Close();
   Terminate();
 }
 
@@ -44,8 +46,8 @@ void AppClient::Ping(PingCallback callback) {
 }
 
 void AppClient::GracefulQuit() {
-  if (service_binding_.is_bound())
-    service_binding_.RequestClose();
+  if (service_receiver_.is_bound())
+    service_receiver_.RequestClose();
   else
     Terminate();
 }
@@ -58,12 +60,12 @@ void AppClient::Crash() {
 }
 
 void AppClient::CloseServiceManagerConnection() {
-  if (service_binding_.is_bound())
-    service_binding_.Close();
+  if (service_receiver_.is_bound())
+    service_receiver_.Close();
 }
 
 void AppClient::LifecycleControlBindingLost() {
-  if (!service_binding_.is_bound() && receivers_.empty())
+  if (!service_receiver_.is_bound() && receivers_.empty())
     Terminate();
 }
 

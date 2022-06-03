@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"

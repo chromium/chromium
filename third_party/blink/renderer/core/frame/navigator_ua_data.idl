@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/ua-client-hints
+
+[
+    RuntimeEnabled=UserAgentClientHint,
+    Exposed=(Window,Worker)
+] interface NavigatorUAData {
+  readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
+  readonly attribute boolean mobile;
+  readonly attribute DOMString platform;
+  [CallWith=ScriptState] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  [CallWith=ScriptState] object toJSON();
+};

@@ -1,8 +1,0 @@
-{"name": "Download Filename Controller",
- "description": "Download Filename Controller",
- "version": "0.1",
- "background": {"scripts": ["bg.js"], "persistent": false},
- "options_page": "options.html",
- "permissions": ["downloads"],
- "content_security_policy": "script-src 'self'; default-src 'self'",
- "manifest_version": 2}

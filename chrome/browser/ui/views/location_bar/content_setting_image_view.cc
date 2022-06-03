@@ -6,15 +6,23 @@
 
 #include <utility>
 
-#include "base/optional.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/token.h"
+#include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/feature_promos/feature_promo_bubble_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/grit/generated_resources.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -28,7 +36,7 @@
 
 namespace {
 
-base::Optional<ViewID> GetViewID(
+absl::optional<ViewID> GetViewID(
     ContentSettingImageModel::ImageType image_type) {
   using ImageType = ContentSettingImageModel::ImageType;
   switch (image_type) {
@@ -40,8 +48,6 @@ base::Optional<ViewID> GetViewID(
 
     case ImageType::COOKIES:
     case ImageType::IMAGES:
-    case ImageType::PPAPI_BROKER:
-    case ImageType::PLUGINS:
     case ImageType::GEOLOCATION:
     case ImageType::MIXEDSCRIPT:
     case ImageType::PROTOCOL_HANDLERS:
@@ -54,51 +60,50 @@ base::Optional<ViewID> GetViewID(
     case ImageType::CLIPBOARD_READ_WRITE:
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS_QUIET_PROMPT:
-      return base::nullopt;
+      return absl::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
-
-// The preferred max width for the promo to be shown.
-const unsigned int promo_width = 240;
 
 }  // namespace
 
 ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
+    IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate,
     const gfx::FontList& font_list)
-    : IconLabelBubbleView(font_list),
+    : IconLabelBubbleView(font_list, parent_delegate),
       delegate_(delegate),
       content_setting_image_model_(std::move(image_model)),
       bubble_view_(nullptr) {
   DCHECK(delegate_);
   SetUpForInOutAnimation();
-  image()->EnableCanvasFlippingForRTLUI(true);
+  image()->SetFlipCanvasOnPaintForRTLUI(true);
 
-  base::Optional<ViewID> view_id =
+  absl::optional<ViewID> view_id =
       GetViewID(content_setting_image_model_->image_type());
   if (view_id)
     SetID(*view_id);
 }
 
-ContentSettingImageView::~ContentSettingImageView() {
-}
+ContentSettingImageView::~ContentSettingImageView() {}
 
 void ContentSettingImageView::Update() {
   content::WebContents* web_contents =
       delegate_->GetContentSettingWebContents();
-  // Note: We explicitly want to call this even if |web_contents| is NULL, so we
-  // get hidden properly while the user is editing the omnibox.
-  content_setting_image_model_->Update(web_contents);
+
+  // Calling Update() with a nullptr WebContents will hide the image.
+  content_setting_image_model_->Update(
+      delegate_->ShouldHideContentSettingImage() ? nullptr : web_contents);
   SetTooltipText(content_setting_image_model_->get_tooltip());
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
+    current_iph_id_for_testing_.reset();
     return;
   }
   DCHECK(web_contents);
@@ -128,31 +133,36 @@ void ContentSettingImageView::Update() {
   // the user.  If this becomes a problem, we could design some sort of queueing
   // mechanism to show one after the other, but it doesn't seem important now.
   int string_id = content_setting_image_model_->explanatory_string_id();
-  if (string_id)
-    AnimateIn(string_id);
+  if (string_id) {
+    // If this is part of the mac location permissions experiment, show a
+    // persistent label.
+    if (content_setting_image_model_
+            ->IsMacRestoreLocationPermissionExperimentActive()) {
+      SetLabel(l10n_util::GetStringUTF16(string_id));
+      // Reset the slide animation so that the label is persistent and won't
+      // animate out.
+      ResetSlideAnimation(true);
+    } else {
+      // Reset the slide animation so that the label's show/hide animation runs.
+      ResetSlideAnimation(false);
+      AnimateIn(string_id);
+    }
+  }
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);
 }
 
-void ContentSettingImageView::SetIconColor(SkColor color) {
+void ContentSettingImageView::SetIconColor(absl::optional<SkColor> color) {
+  if (icon_color_ == color)
+    return;
   icon_color_ = color;
   if (content_setting_image_model_->is_visible())
     UpdateImage();
+  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
 }
 
-const char* ContentSettingImageView::GetClassName() const {
-  return "ContentSettingsImageView";
-}
-
-void ContentSettingImageView::OnBoundsChanged(
-    const gfx::Rect& previous_bounds) {
-  if (indicator_promo_)
-    indicator_promo_->OnAnchorBoundsChanged();
-
-  if (bubble_view_)
-    bubble_view_->OnAnchorBoundsChanged();
-
-  IconLabelBubbleView::OnBoundsChanged(previous_bounds);
+absl::optional<SkColor> ContentSettingImageView::GetIconColor() const {
+  return icon_color_;
 }
 
 bool ContentSettingImageView::OnMousePressed(const ui::MouseEvent& event) {
@@ -176,11 +186,6 @@ void ContentSettingImageView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
 }
 
-SkColor ContentSettingImageView::GetTextColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldDefaultColor);
-}
-
 bool ContentSettingImageView::ShouldShowSeparator() const {
   return false;
 }
@@ -202,7 +207,7 @@ bool ContentSettingImageView::ShowBubbleImpl() {
     bubble_view_->SetHighlightedButton(this);
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
-    observer_.Add(bubble_widget);
+    observation_.Observe(bubble_widget);
     bubble_widget->Show();
     delegate_->OnContentSettingImageBubbleShown(
         content_setting_image_model_->image_type());
@@ -215,35 +220,36 @@ bool ContentSettingImageView::IsBubbleShowing() const {
   return bubble_view_ != nullptr;
 }
 
-SkColor ContentSettingImageView::GetInkDropBaseColor() const {
-  return delegate_->GetContentSettingInkDropColor();
-}
-
 ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
     const {
   return content_setting_image_model_->image_type();
 }
 
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
-  if (indicator_promo_ && indicator_promo_->GetWidget() == widget) {
-    SetHighlighted(false);
-    observer_.Remove(widget);
-    indicator_promo_ = nullptr;
-    // The highlighted icon needs to be recolored.
-    SchedulePaint();
-  } else if (bubble_view_ && bubble_view_->GetWidget() == widget) {
-    observer_.Remove(widget);
-    bubble_view_ = nullptr;
-    UnpauseAnimation();
+  if (!bubble_view_ || bubble_view_->GetWidget() != widget)
+    return;
+
+#if defined(OS_MAC)
+  if (content_setting_image_model_->image_type() ==
+          ContentSettingImageModel::ImageType::GEOLOCATION &&
+      content_setting_image_model_->explanatory_string_id() ==
+          IDS_GEOLOCATION_TURNED_OFF) {
+    base::RecordAction(
+        base::UserMetricsAction("ContentSettings.GeolocationDialog.Closed"));
   }
+#endif  // defined(OS_MAC)
+
+  DCHECK(observation_.IsObservingSource(widget));
+  observation_.Reset();
+  bubble_view_ = nullptr;
+  UnpauseAnimation();
 }
 
 void ContentSettingImageView::UpdateImage() {
-  SetImage(content_setting_image_model_
-               ->GetIcon(icon_color_ ? icon_color_.value()
-                                     : color_utils::DeriveDefaultIconColor(
-                                           GetTextColor()))
-               .AsImageSkia());
+  gfx::Image icon = content_setting_image_model_->GetIcon(icon_color_.value_or(
+      color_utils::DeriveDefaultIconColor(GetForegroundColor())));
+  if (!icon.IsEmpty())
+    SetImageModel(ui::ImageModel::FromImage(icon));
 }
 
 void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
@@ -254,17 +260,21 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
 
   // The promo currently is only used for Notifications, and it is only shown
   // directly after the animation is shown.
-  if (content_setting_image_model_->ShouldShowPromo(web_contents)) {
-    // Owned by its native widget. Will be destroyed as its widget is destroyed.
-    indicator_promo_ = FeaturePromoBubbleView::CreateOwned(
-        this, views::BubbleBorder::TOP_RIGHT,
-        FeaturePromoBubbleView::ActivationAction::ACTIVATE,
-        IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO, promo_width,
-        base::nullopt, base::nullopt);
-
-    SetHighlighted(true);
-    observer_.Add(indicator_promo_->GetWidget());
-    SchedulePaint();
+  if (web_contents &&
+      content_setting_image_model_->ShouldShowPromo(web_contents)) {
+    current_iph_id_for_testing_ =
+        FeaturePromoControllerViews::GetForView(this)->ShowCriticalPromo(
+            FeaturePromoSpecification::CreateForLegacyPromo(
+                /* feature =*/nullptr, ui::ElementIdentifier(),
+                IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
+            this);
     content_setting_image_model_->SetPromoWasShown(web_contents);
+  } else {
+    // Set a token that is is_zero() to make it not empty for testing.
+    current_iph_id_for_testing_.emplace(0, 0);
   }
 }
+
+BEGIN_METADATA(ContentSettingImageView, IconLabelBubbleView)
+ADD_PROPERTY_METADATA(absl::optional<SkColor>, IconColor)
+END_METADATA

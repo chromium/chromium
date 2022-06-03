@@ -33,14 +33,6 @@ using ::testing::StrictMock;
 
 namespace chromecast {
 
-namespace {
-
-const GURL kUrl1("https://www.one.com");
-const GURL kUrl2("https://www.two.com");
-const GURL kUrl3("https://www.three.com");
-
-}  // namespace
-
 class MockPrelauncher : public RendererPrelauncher {
  public:
   MockPrelauncher(content::BrowserContext* browser_context,
@@ -77,6 +69,8 @@ class LRURendererCacheTest : public testing::Test {
 };
 
 TEST_F(LRURendererCacheTest, SimpleTakeAndRelease) {
+  const GURL kUrl("https://www.one.com");
+
   lru_cache_ = std::make_unique<LRURendererCache>(&browser_context_, 1);
   SetFactory();
   MockPrelauncher* p1;
@@ -84,34 +78,36 @@ TEST_F(LRURendererCacheTest, SimpleTakeAndRelease) {
 
   // Don't return a prelauncher the first time, since the cache is empty.
   EXPECT_CALL(factory_, Create(_, _)).Times(0);
-  taken = lru_cache_->TakeRendererPrelauncher(kUrl1);
+  taken = lru_cache_->TakeRendererPrelauncher(kUrl);
   ASSERT_FALSE(taken);
   // Cache: []
   // In-use: [ 1 ]
 
   // Releasing the prelauncher will cache it and prelaunch for later use.
-  EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
-  lru_cache_->ReleaseRendererPrelauncher(kUrl1);
+  EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl);
+  lru_cache_->ReleaseRendererPrelauncher(kUrl);
   task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 
   // Get the cached prelauncher.
-  taken = lru_cache_->TakeRendererPrelauncher(kUrl1);
+  taken = lru_cache_->TakeRendererPrelauncher(kUrl);
   ASSERT_TRUE(taken);
-  ASSERT_TRUE(taken->IsForURL(kUrl1));
+  ASSERT_TRUE(taken->IsForURL(kUrl));
   // Cache: [ ]
   // In-use: [ 1 ]
 
   // Return the prelauncher again, it should be cached the same as before.
-  EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
-  lru_cache_->ReleaseRendererPrelauncher(kUrl1);
+  EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl);
+  lru_cache_->ReleaseRendererPrelauncher(kUrl);
   task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 }
 
 TEST_F(LRURendererCacheTest, SimpleCacheEviction) {
+  const GURL kUrl("https://www.one.com");
+
   lru_cache_ = std::make_unique<LRURendererCache>(&browser_context_, 1);
   SetFactory();
   MockPrelauncher* p1;
@@ -119,10 +115,10 @@ TEST_F(LRURendererCacheTest, SimpleCacheEviction) {
 
   // Fill the cache.
   EXPECT_CALL(factory_, Create(_, _)).Times(0);
-  taken = lru_cache_->TakeRendererPrelauncher(kUrl1);
+  taken = lru_cache_->TakeRendererPrelauncher(kUrl);
   ASSERT_FALSE(taken);
-  EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
-  lru_cache_->ReleaseRendererPrelauncher(kUrl1);
+  EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl);
+  lru_cache_->ReleaseRendererPrelauncher(kUrl);
   task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
@@ -130,13 +126,16 @@ TEST_F(LRURendererCacheTest, SimpleCacheEviction) {
   // Taking a different prelauncher destroys the cached one.
   EXPECT_CALL(factory_, Create(_, _)).Times(0);
   EXPECT_EVICTION(p1);
-  taken = lru_cache_->TakeRendererPrelauncher(kUrl2);
+  taken = lru_cache_->TakeRendererPrelauncher(GURL("https://www.two.com"));
   ASSERT_FALSE(taken);
   // Cache: [ ]
   // In-use: [ 2 ]
 }
 
 TEST_F(LRURendererCacheTest, CapacityOne) {
+  const GURL kUrl1("https://www.one.com");
+  const GURL kUrl2("https://www.two.com");
+
   lru_cache_ = std::make_unique<LRURendererCache>(&browser_context_, 1);
   SetFactory();
   MockPrelauncher* p1;
@@ -224,6 +223,10 @@ TEST_F(LRURendererCacheTest, CapacityOne) {
 }
 
 TEST_F(LRURendererCacheTest, CapacityTwo) {
+  const GURL kUrl1("https://www.one.com");
+  const GURL kUrl2("https://www.two.com");
+  const GURL kUrl3("https://www.three.com");
+
   lru_cache_ = std::make_unique<LRURendererCache>(&browser_context_, 2);
   SetFactory();
   MockPrelauncher* p1;

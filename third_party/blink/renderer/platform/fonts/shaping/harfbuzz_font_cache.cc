@@ -8,7 +8,7 @@
 namespace blink {
 
 HbFontCacheEntry::HbFontCacheEntry(hb_font_t* font)
-    : hb_font_(HbFontUniquePtr(font)),
+    : hb_font_(HbScoped<hb_font_t>(font)),
       hb_font_data_(std::make_unique<HarfBuzzFontData>()) {}
 
 HbFontCacheEntry::~HbFontCacheEntry() = default;

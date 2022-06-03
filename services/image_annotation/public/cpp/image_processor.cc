@@ -6,10 +6,11 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace image_annotation {
@@ -26,9 +27,9 @@ SkBitmap ScaleImage(const SkBitmap& source, const float scale) {
   dest.eraseColor(0);
 
   // Use a canvas to scale the source image onto the new bitmap.
-  SkCanvas canvas(dest);
+  SkCanvas canvas(dest, SkSurfaceProps{});
   canvas.scale(scale, scale);
-  canvas.drawBitmap(source, 0, 0, nullptr /* paint */);
+  canvas.drawImage(source.asImage(), 0, 0);
 
   return dest;
 }
@@ -79,9 +80,8 @@ constexpr int ImageProcessor::kJpgQuality;
 
 ImageProcessor::ImageProcessor(base::RepeatingCallback<SkBitmap()> get_pixels)
     : get_pixels_(std::move(get_pixels)),
-      background_task_runner_(
-          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                           base::TaskPriority::BEST_EFFORT})) {}
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
 
 ImageProcessor::~ImageProcessor() = default;
 

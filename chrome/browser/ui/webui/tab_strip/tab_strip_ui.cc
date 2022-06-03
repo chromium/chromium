@@ -4,39 +4,16 @@
 
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "base/base64.h"
-#include "base/bind.h"
-#include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "base/values.h"
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_network_state.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -45,591 +22,26 @@
 #include "chrome/grit/tab_strip_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/favicon_status.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/url_constants.h"
-#include "third_party/skia/include/core/SkImageEncoder.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "ui/base/accelerators/accelerator.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/resources/grit/webui_resources.h"
 
-namespace {
-
-// Writes bytes to a std::vector that can be fetched. This is used to record the
-// output of skia image encoding.
-class BufferWStream : public SkWStream {
- public:
-  BufferWStream() = default;
-  ~BufferWStream() override = default;
-
-  // Returns the output buffer by moving.
-  std::vector<unsigned char> GetBuffer() { return std::move(result_); }
-
-  // SkWStream:
-  bool write(const void* buffer, size_t size) override {
-    const unsigned char* bytes = reinterpret_cast<const unsigned char*>(buffer);
-    result_.insert(result_.end(), bytes, bytes + size);
-    return true;
-  }
-
-  size_t bytesWritten() const override { return result_.size(); }
-
- private:
-  std::vector<unsigned char> result_;
-};
-
-std::string MakeDataURIForImage(base::span<const uint8_t> image_data,
-                                base::StringPiece mime_subtype) {
-  std::string result = "data:image/";
-  result.append(mime_subtype.begin(), mime_subtype.end());
-  result += ";base64,";
-  result += base::Base64Encode(image_data);
-  return result;
-}
-
-std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor) {
-  const SkBitmap& bitmap = image.GetRepresentation(scale_factor).GetBitmap();
-  BufferWStream stream;
-  const bool encoding_succeeded =
-      SkEncodeImage(&stream, bitmap, SkEncodedImageFormat::kPNG, 100);
-  DCHECK(encoding_succeeded);
-  return MakeDataURIForImage(
-      base::as_bytes(base::make_span(stream.GetBuffer())), "png");
-}
-
-class WebUIBackgroundMenuModel : public ui::SimpleMenuModel {
- public:
-  explicit WebUIBackgroundMenuModel(ui::SimpleMenuModel::Delegate* delegate)
-      : ui::SimpleMenuModel(delegate) {
-    AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
-    AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
-    AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
-  }
-};
-
-class WebUIBackgroundContextMenu : public ui::SimpleMenuModel::Delegate,
-                                   public WebUIBackgroundMenuModel {
- public:
-  WebUIBackgroundContextMenu(
-      Browser* browser,
-      const ui::AcceleratorProvider* accelerator_provider)
-      : WebUIBackgroundMenuModel(this),
-        browser_(browser),
-        accelerator_provider_(accelerator_provider) {}
-  ~WebUIBackgroundContextMenu() override = default;
-
-  void ExecuteCommand(int command_id, int event_flags) override {
-    chrome::ExecuteCommand(browser_, command_id);
-  }
-
-  bool GetAcceleratorForCommandId(int command_id,
-                                  ui::Accelerator* accelerator) const override {
-    return accelerator_provider_->GetAcceleratorForCommandId(command_id,
-                                                             accelerator);
-  }
-
- private:
-  Browser* const browser_;
-  const ui::AcceleratorProvider* const accelerator_provider_;
-};
-
-class WebUITabMenuModel : public ui::SimpleMenuModel {
- public:
-  WebUITabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                    TabStripModel* tab_strip_model,
-                    int tab_index)
-      : ui::SimpleMenuModel(delegate) {
-    AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithStringId(TabStripModel::CommandReload, IDS_TAB_CXMENU_RELOAD);
-    AddItemWithStringId(TabStripModel::CommandDuplicate,
-                        IDS_TAB_CXMENU_DUPLICATE);
-    const int pin_str = tab_strip_model->WillContextMenuPin(tab_index)
-                            ? IDS_TAB_CXMENU_PIN_TAB
-                            : IDS_TAB_CXMENU_UNPIN_TAB;
-    AddItemWithStringId(TabStripModel::CommandTogglePinned, pin_str);
-    const int mute_str = chrome::IsSiteMuted(*tab_strip_model, tab_index)
-                             ? IDS_TAB_CXMENU_SOUND_UNMUTE_SITE
-                             : IDS_TAB_CXMENU_SOUND_MUTE_SITE;
-    AddItem(TabStripModel::CommandToggleSiteMuted,
-            l10n_util::GetPluralStringFUTF16(mute_str, 1));
-    AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithStringId(TabStripModel::CommandCloseTab,
-                        IDS_TAB_CXMENU_CLOSETAB);
-    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                        IDS_TAB_CXMENU_CLOSETABSTORIGHT);
-  }
-};
-
-class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
-                            public WebUITabMenuModel {
- public:
-  WebUITabContextMenu(Browser* browser,
-                      const ui::AcceleratorProvider* accelerator_provider,
-                      int tab_index)
-      : WebUITabMenuModel(this, browser->tab_strip_model(), tab_index),
-        browser_(browser),
-        accelerator_provider_(accelerator_provider),
-        tab_index_(tab_index) {}
-  ~WebUITabContextMenu() override = default;
-
-  void ExecuteCommand(int command_id, int event_flags) override {
-    DCHECK_LT(tab_index_, browser_->tab_strip_model()->count());
-    if (command_id == IDC_NEW_TAB) {
-      chrome::NewTab(browser_);
-      UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
-                                TabStripModel::NEW_TAB_CONTEXT_MENU,
-                                TabStripModel::NEW_TAB_ENUM_COUNT);
-      return;
-    }
-    browser_->tab_strip_model()->ExecuteContextMenuCommand(
-        tab_index_, static_cast<TabStripModel::ContextMenuCommand>(command_id));
-  }
-
-  bool GetAcceleratorForCommandId(int command_id,
-                                  ui::Accelerator* accelerator) const override {
-    int real_command = -1;
-    if (command_id == IDC_NEW_TAB) {
-      real_command = IDC_NEW_TAB;
-    } else {
-      TabStripModel::ContextMenuCommandToBrowserCommand(command_id,
-                                                        &real_command);
-    }
-
-    if (real_command != -1) {
-      return accelerator_provider_->GetAcceleratorForCommandId(real_command,
-                                                               accelerator);
-    } else {
-      return false;
-    }
-  }
-
- private:
-  Browser* const browser_;
-  const ui::AcceleratorProvider* const accelerator_provider_;
-  const int tab_index_;
-};
-
-}  // namespace
-
-class TabStripUIHandler : public content::WebUIMessageHandler,
-                          public TabStripModelObserver {
- public:
-  explicit TabStripUIHandler(Browser* browser, TabStripUI::Embedder* embedder)
-      : browser_(browser),
-        embedder_(embedder),
-        thumbnail_tracker_(base::Bind(&TabStripUIHandler::HandleThumbnailUpdate,
-                                      base::Unretained(this))) {}
-  ~TabStripUIHandler() override = default;
-
-  void OnJavascriptAllowed() override {
-    browser_->tab_strip_model()->AddObserver(this);
-  }
-
-  void NotifyLayoutChanged() {
-    if (!IsJavascriptAllowed())
-      return;
-    FireWebUIListener("layout-changed", embedder_->GetLayout().AsDictionary());
-  }
-
-  void NotifyReceivedKeyboardFocus() {
-    if (!IsJavascriptAllowed())
-      return;
-    FireWebUIListener("received-keyboard-focus");
-  }
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (tab_strip_model->empty())
-      return;
-
-    switch (change.type()) {
-      case TabStripModelChange::kInserted: {
-        for (const auto& contents : change.GetInsert()->contents) {
-          FireWebUIListener("tab-created",
-                            GetTabData(contents.contents, contents.index));
-        }
-        break;
-      }
-      case TabStripModelChange::kRemoved: {
-        for (const auto& contents : change.GetRemove()->contents) {
-          FireWebUIListener("tab-removed",
-                            base::Value(extensions::ExtensionTabUtil::GetTabId(
-                                contents.contents)));
-        }
-        break;
-      }
-      case TabStripModelChange::kMoved: {
-        auto* move = change.GetMove();
-        FireWebUIListener(
-            "tab-moved",
-            base::Value(extensions::ExtensionTabUtil::GetTabId(move->contents)),
-            base::Value(move->to_index));
-        break;
-      }
-      case TabStripModelChange::kReplaced: {
-        auto* replace = change.GetReplace();
-        FireWebUIListener("tab-replaced",
-                          base::Value(extensions::ExtensionTabUtil::GetTabId(
-                              replace->old_contents)),
-                          base::Value(extensions::ExtensionTabUtil::GetTabId(
-                              replace->new_contents)));
-        break;
-      }
-      case TabStripModelChange::kSelectionOnly:
-        // Multi-selection is not supported for touch.
-        break;
-    }
-
-    if (selection.active_tab_changed()) {
-      content::WebContents* new_contents = selection.new_contents;
-      int index = selection.new_model.active();
-      if (new_contents && index != TabStripModel::kNoTab) {
-        FireWebUIListener(
-            "tab-active-changed",
-            base::Value(extensions::ExtensionTabUtil::GetTabId(new_contents)));
-      }
-    }
-  }
-
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override {
-    FireWebUIListener("tab-updated", GetTabData(contents, index));
-  }
-
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index) override {
-    FireWebUIListener("tab-updated", GetTabData(contents, index));
-  }
-
-  void TabBlockedStateChanged(content::WebContents* contents,
-                              int index) override {
-    FireWebUIListener("tab-updated", GetTabData(contents, index));
-  }
-
- protected:
-  // content::WebUIMessageHandler:
-  void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
-        "createNewTab", base::Bind(&TabStripUIHandler::HandleCreateNewTab,
-                                   base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getTabs",
-        base::Bind(&TabStripUIHandler::HandleGetTabs, base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getThemeColors", base::Bind(&TabStripUIHandler::HandleGetThemeColors,
-                                     base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "setThumbnailTracked",
-        base::Bind(&TabStripUIHandler::HandleSetThumbnailTracked,
-                   base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "closeContainer", base::Bind(&TabStripUIHandler::HandleCloseContainer,
-                                     base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "showBackgroundContextMenu",
-        base::Bind(&TabStripUIHandler::HandleShowBackgroundContextMenu,
-                   base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "showTabContextMenu",
-        base::Bind(&TabStripUIHandler::HandleShowTabContextMenu,
-                   base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getLayout", base::Bind(&TabStripUIHandler::HandleGetLayout,
-                                base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "reportTabActivationDuration",
-        base::Bind(&TabStripUIHandler::HandleReportTabActivationDuration,
-                   base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "reportTabDataReceivedDuration",
-        base::Bind(&TabStripUIHandler::HandleReportTabDataReceivedDuration,
-                   base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "reportTabCreationDuration",
-        base::Bind(&TabStripUIHandler::HandleReportTabCreationDuration,
-                   base::Unretained(this)));
-  }
-
- private:
-  void HandleCreateNewTab(const base::ListValue* args) {
-    chrome::ExecuteCommand(browser_, IDC_NEW_TAB);
-  }
-
-  base::DictionaryValue GetTabData(content::WebContents* contents, int index) {
-    base::DictionaryValue tab_data;
-
-    tab_data.SetBoolean("active",
-                        browser_->tab_strip_model()->active_index() == index);
-    tab_data.SetInteger("id", extensions::ExtensionTabUtil::GetTabId(contents));
-    tab_data.SetInteger("index", index);
-
-    TabRendererData tab_renderer_data =
-        TabRendererData::FromTabInModel(browser_->tab_strip_model(), index);
-    tab_data.SetBoolean("pinned", tab_renderer_data.pinned);
-    tab_data.SetString("title", tab_renderer_data.title);
-    tab_data.SetString("url", tab_renderer_data.visible_url.GetContent());
-
-    if (!tab_renderer_data.favicon.isNull()) {
-      tab_data.SetString("favIconUrl", EncodePNGAndMakeDataURI(
-                                           tab_renderer_data.favicon,
-                                           web_ui()->GetDeviceScaleFactor()));
-      tab_data.SetBoolean("isDefaultFavicon",
-                          tab_renderer_data.favicon.BackedBySameObjectAs(
-                              favicon::GetDefaultFavicon().AsImageSkia()));
-    } else {
-      tab_data.SetBoolean("isDefaultFavicon", true);
-    }
-    tab_data.SetBoolean("showIcon", tab_renderer_data.show_icon);
-    tab_data.SetInteger("networkState",
-                        static_cast<int>(tab_renderer_data.network_state));
-    tab_data.SetBoolean("shouldHideThrobber",
-                        tab_renderer_data.should_hide_throbber);
-    tab_data.SetBoolean("blocked", tab_renderer_data.blocked);
-    tab_data.SetBoolean("crashed", tab_renderer_data.IsCrashed());
-    // TODO(johntlee): Add the rest of TabRendererData
-
-    auto alert_states = std::make_unique<base::ListValue>();
-    for (const auto alert_state :
-         chrome::GetTabAlertStatesForContents(contents)) {
-      alert_states->Append(static_cast<int>(alert_state));
-    }
-    tab_data.SetList("alertStates", std::move(alert_states));
-
-    return tab_data;
-  }
-
-  void HandleGetTabs(const base::ListValue* args) {
-    AllowJavascript();
-    const base::Value& callback_id = args->GetList()[0];
-
-    base::ListValue tabs;
-    TabStripModel* tab_strip_model = browser_->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      tabs.Append(GetTabData(tab_strip_model->GetWebContentsAt(i), i));
-    }
-    ResolveJavascriptCallback(callback_id, tabs);
-  }
-
-  void HandleGetThemeColors(const base::ListValue* args) {
-    AllowJavascript();
-    const base::Value& callback_id = args->GetList()[0];
-
-    const ui::ThemeProvider& tp =
-        ThemeService::GetThemeProviderForProfile(browser_->profile());
-
-    // This should return an object of CSS variables to rgba values so that
-    // the WebUI can use the CSS variables to color the tab strip
-    base::DictionaryValue colors;
-    colors.SetString("--tabstrip-background-color",
-                     color_utils::SkColorToRgbaString(
-                         tp.GetColor(ThemeProperties::COLOR_FRAME)));
-    colors.SetString("--tabstrip-tab-background-color",
-                     color_utils::SkColorToRgbaString(
-                         tp.GetColor(ThemeProperties::COLOR_TOOLBAR)));
-    colors.SetString("--tabstrip-tab-text-color",
-                     color_utils::SkColorToRgbaString(
-                         tp.GetColor(ThemeProperties::COLOR_TAB_TEXT)));
-    colors.SetString("--tabstrip-tab-separator-color",
-                     color_utils::SkColorToRgbaString(SkColorSetA(
-                         tp.GetColor(ThemeProperties::COLOR_TAB_TEXT),
-                         /* 16% opacity */ 0.16 * 255)));
-
-    colors.SetString("--tabstrip-tab-loading-spinning-color",
-                     color_utils::SkColorToRgbaString(tp.GetColor(
-                         ThemeProperties::COLOR_TAB_THROBBER_SPINNING)));
-    colors.SetString("--tabstrip-tab-waiting-spinning-color",
-                     color_utils::SkColorToRgbaString(tp.GetColor(
-                         ThemeProperties::COLOR_TAB_THROBBER_WAITING)));
-    colors.SetString("--tabstrip-indicator-recording-color",
-                     color_utils::SkColorToRgbaString(tp.GetColor(
-                         ThemeProperties::COLOR_TAB_ALERT_RECORDING)));
-    colors.SetString("--tabstrip-indicator-pip-color",
-                     color_utils::SkColorToRgbaString(
-                         tp.GetColor(ThemeProperties::COLOR_TAB_PIP_PLAYING)));
-    colors.SetString("--tabstrip-indicator-capturing-color",
-                     color_utils::SkColorToRgbaString(tp.GetColor(
-                         ThemeProperties::COLOR_TAB_ALERT_CAPTURING)));
-    colors.SetString("--tabstrip-tab-blocked-color",
-                     color_utils::SkColorToRgbaString(
-                         ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                             ui::NativeTheme::kColorId_ProminentButtonColor)));
-    colors.SetString("--tabstrip-focus-outline-color",
-                     color_utils::SkColorToRgbaString(
-                         ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                             ui::NativeTheme::kColorId_FocusedBorderColor)));
-
-    ResolveJavascriptCallback(callback_id, colors);
-  }
-
-  void HandleCloseContainer(const base::ListValue* args) {
-    // We only autoclose for tab selection.
-    RecordTabStripUICloseHistogram(TabStripUICloseAction::kTabSelected);
-    DCHECK(embedder_);
-    embedder_->CloseContainer();
-  }
-
-  void HandleShowBackgroundContextMenu(const base::ListValue* args) {
-    gfx::PointF point;
-    {
-      double x = 0;
-      args->GetDouble(0, &x);
-      double y = 0;
-      args->GetDouble(1, &y);
-      point = gfx::PointF(x, y);
-    }
-
-    DCHECK(embedder_);
-    embedder_->ShowContextMenuAtPoint(
-        gfx::ToRoundedPoint(point),
-        std::make_unique<WebUIBackgroundContextMenu>(
-            browser_, embedder_->GetAcceleratorProvider()));
-  }
-
-  void HandleShowTabContextMenu(const base::ListValue* args) {
-    int tab_id = 0;
-    args->GetInteger(0, &tab_id);
-
-    gfx::PointF point;
-    {
-      double x = 0;
-      args->GetDouble(1, &x);
-      double y = 0;
-      args->GetDouble(2, &y);
-      point = gfx::PointF(x, y);
-    }
-
-    Browser* browser = nullptr;
-    int tab_index = -1;
-    const bool got_tab = extensions::ExtensionTabUtil::GetTabById(
-        tab_id, browser_->profile(), true /* include_incognito */, &browser,
-        nullptr, nullptr, &tab_index);
-    DCHECK(got_tab);
-    DCHECK_EQ(browser, browser_);
-
-    DCHECK(embedder_);
-    embedder_->ShowContextMenuAtPoint(
-        gfx::ToRoundedPoint(point),
-        std::make_unique<WebUITabContextMenu>(
-            browser, embedder_->GetAcceleratorProvider(), tab_index));
-  }
-
-  void HandleGetLayout(const base::ListValue* args) {
-    AllowJavascript();
-    const base::Value& callback_id = args->GetList()[0];
-
-    base::Value layout = embedder_->GetLayout().AsDictionary();
-    ResolveJavascriptCallback(callback_id, layout);
-  }
-
-  void HandleSetThumbnailTracked(const base::ListValue* args) {
-    AllowJavascript();
-
-    int tab_id = 0;
-    if (!args->GetInteger(0, &tab_id))
-      return;
-
-    const bool thumbnail_tracked = args->GetList()[1].GetBool();
-
-    content::WebContents* tab = nullptr;
-    if (!extensions::ExtensionTabUtil::GetTabById(tab_id, browser_->profile(),
-                                                  true, &tab)) {
-      // ID didn't refer to a valid tab.
-      DVLOG(1) << "Invalid tab ID";
-      return;
-    }
-
-    if (thumbnail_tracked)
-      thumbnail_tracker_.AddTab(tab);
-    else
-      thumbnail_tracker_.RemoveTab(tab);
-  }
-
-  void HandleReportTabActivationDuration(const base::ListValue* args) {
-    int duration_ms = 0;
-    args->GetInteger(0, &duration_ms);
-    UMA_HISTOGRAM_TIMES("WebUITabStrip.TabActivation",
-                        base::TimeDelta::FromMilliseconds(duration_ms));
-  }
-
-  void HandleReportTabDataReceivedDuration(const base::ListValue* args) {
-    int tab_count = 0;
-    args->GetInteger(0, &tab_count);
-    int duration_ms = 0;
-    args->GetInteger(1, &duration_ms);
-    ReportTabDurationHistogram("TabDataReceived", tab_count,
-                               base::TimeDelta::FromMilliseconds(duration_ms));
-  }
-
-  void HandleReportTabCreationDuration(const base::ListValue* args) {
-    int tab_count = 0;
-    args->GetInteger(0, &tab_count);
-    int duration_ms = 0;
-    args->GetInteger(1, &duration_ms);
-    ReportTabDurationHistogram("TabCreation", tab_count,
-                               base::TimeDelta::FromMilliseconds(duration_ms));
-  }
-
-  // Callback passed to |thumbnail_tracker_|. Called when a tab's thumbnail
-  // changes, or when we start watching the tab.
-  void HandleThumbnailUpdate(content::WebContents* tab,
-                             ThumbnailTracker::CompressedThumbnailData image) {
-    // Send base-64 encoded image to JS side.
-    std::string data_uri =
-        MakeDataURIForImage(base::make_span(image->data), "jpeg");
-
-    const int tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
-    FireWebUIListener("tab-thumbnail-updated", base::Value(tab_id),
-                      base::Value(data_uri));
-  }
-
-  // Reports a histogram using the format
-  // WebUITabStrip.|histogram_fragment|.[tab count bucket].
-  void ReportTabDurationHistogram(const char* histogram_fragment,
-                                  int tab_count,
-                                  base::TimeDelta duration) {
-    if (tab_count <= 0)
-      return;
-
-    // It isn't possible to report both a number of tabs and duration datapoint
-    // together in a histogram or to correlate two histograms together. As a
-    // result the histogram is manually bucketed.
-    const char* tab_count_bucket = "01_05";
-    if (6 <= tab_count && tab_count <= 20) {
-      tab_count_bucket = "06_20";
-    } else if (20 < tab_count) {
-      tab_count_bucket = "21_";
-    }
-
-    std::string histogram_name = base::JoinString(
-        {"WebUITabStrip", histogram_fragment, tab_count_bucket}, ".");
-    base::UmaHistogramTimes(histogram_name, duration);
-  }
-
-  Browser* const browser_;
-  TabStripUI::Embedder* const embedder_;
-
-  ThumbnailTracker thumbnail_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabStripUIHandler);
-};
+// These data types must be in all lowercase.
+const char kWebUITabIdDataType[] = "application/vnd.chromium.tab";
+const char kWebUITabGroupIdDataType[] = "application/vnd.chromium.tabgroup";
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),
+      webui_load_timer_(web_ui->GetWebContents(),
+                        "WebUITabStrip.LoadDocumentTime",
+                        "WebUITabStrip.LoadCompletedTime") {
   content::HostZoomMap::Get(web_ui->GetWebContents()->GetSiteInstance())
       ->SetZoomLevelForHostAndScheme(content::kChromeUIScheme,
                                      chrome::kChromeUITabStripHost, 0);
@@ -637,11 +49,12 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUITabStripHost);
-  std::string generated_path =
-      "@out_folder@/gen/chrome/browser/resources/tab_strip/";
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kTabStripResources, kTabStripResourcesSize),
-      generated_path, IDR_TAB_STRIP_HTML);
+      IDR_TAB_STRIP_TAB_STRIP_HTML);
+
+  html_source->AddString("tabIdDataType", kWebUITabIdDataType);
+  html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
 
   // Add a load time string for the frame color to allow the tab strip to paint
   // a background color that matches the frame before any content loads
@@ -649,14 +62,9 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       ThemeService::GetThemeProviderForProfile(profile);
   html_source->AddString("frameColor",
                          color_utils::SkColorToRgbaString(
-                             tp.GetColor(ThemeProperties::COLOR_FRAME)));
-
-  html_source->AddBoolean(
-      "showDemoOptions",
-      base::FeatureList::IsEnabled(features::kWebUITabStripDemoOptions));
+                             tp.GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)));
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"newTab", IDS_TOOLTIP_NEW_TAB},
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},
       {"closeTab", IDS_ACCNAME_CLOSE},
       {"defaultTabTitle", IDS_DEFAULT_TAB_TITLE},
@@ -666,6 +74,7 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"audioPlaying", IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT},
       {"usbConnected", IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT},
       {"bluetoothConnected", IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT},
+      {"hidConnected", IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT},
       {"serialConnected", IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT},
       {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
       {"audioMuting", IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT},
@@ -673,31 +82,55 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"pipPlaying", IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT},
       {"desktopCapturing", IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT},
       {"vrPresenting", IDS_TAB_AX_LABEL_VR_PRESENTING},
+      {"unnamedGroupLabel", IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT},
+      {"namedGroupLabel", IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT},
   };
-  AddLocalizedStringsBulk(html_source, kStrings);
+  html_source->AddLocalizedStrings(kStrings);
   content::WebUIDataSource::Add(profile, html_source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
+  // TODO(crbug.com/1234500): Migrate to mojo as well.
   web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 }
 
-TabStripUI::~TabStripUI() {}
+TabStripUI::~TabStripUI() = default;
 
-void TabStripUI::Initialize(Browser* browser, Embedder* embedder) {
+WEB_UI_CONTROLLER_TYPE_IMPL(TabStripUI)
+
+void TabStripUI::BindInterface(
+    mojo::PendingReceiver<tab_strip::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void TabStripUI::CreatePageHandler(
+    mojo::PendingRemote<tab_strip::mojom::Page> page,
+    mojo::PendingReceiver<tab_strip::mojom::PageHandler> receiver) {
+  // Initialize() must be called immediately after LoadURL() for the WebUI
+  // Tab Strip to start correctly. Only create TabStripPageHandler when both
+  // browser_ and embedder_ are set after calling Initialize().
+  if (browser_ && embedder_) {
+    page_handler_ = std::make_unique<TabStripPageHandler>(
+        std::move(receiver), std::move(page), web_ui(), browser_, embedder_);
+  }
+}
+
+void TabStripUI::Initialize(Browser* browser, TabStripUIEmbedder* embedder) {
   content::WebUI* const web_ui = TabStripUI::web_ui();
   DCHECK_EQ(Profile::FromWebUI(web_ui), browser->profile());
-  auto handler = std::make_unique<TabStripUIHandler>(browser, embedder);
-  handler_ = handler.get();
-  web_ui->AddMessageHandler(std::move(handler));
+  browser_ = browser;
+  embedder_ = embedder;
 }
 
 void TabStripUI::LayoutChanged() {
-  handler_->NotifyLayoutChanged();
+  if (page_handler_)
+    page_handler_->NotifyLayoutChanged();
 }
 
 void TabStripUI::ReceivedKeyboardFocus() {
-  handler_->NotifyReceivedKeyboardFocus();
+  if (page_handler_)
+    page_handler_->NotifyReceivedKeyboardFocus();
 }

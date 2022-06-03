@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
 #include "third_party/zlib/zlib.h"
 

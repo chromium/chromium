@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {createHistoryEntry, createSearchEntry} from 'chrome://test/history/test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+
 const TEST_HISTORY_RESULTS = [
   createHistoryEntry('2016-03-16 10:00', 'http://www.google.com'),
   createHistoryEntry('2016-03-16 9:00', 'http://www.example.com'),
@@ -21,8 +27,8 @@ suite('<history-item> unit test', function() {
   let item;
 
   setup(function() {
-    PolymerTest.clearBody();
-    history.BrowserService.instance_ = new TestBrowserService();
+    document.body.innerHTML = '';
+    BrowserService.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');
     item.item = TEST_HISTORY_RESULTS[0];
@@ -36,15 +42,15 @@ suite('<history-item> unit test', function() {
     });
 
     // Checkbox should trigger selection.
-    MockInteractions.tap(item.$.checkbox);
+    item.$.checkbox.click();
     assertEquals(1, selectionCount);
 
     // Non-interactive text should trigger selection.
-    MockInteractions.tap(item.$['time-accessed']);
+    item.$['time-accessed'].click();
     assertEquals(2, selectionCount);
 
     // Menu button should not trigger selection.
-    MockInteractions.tap(item.$['menu-button']);
+    item.$['menu-button'].click();
     assertEquals(2, selectionCount);
   });
 
@@ -64,9 +70,9 @@ suite('<history-item> integration test', function() {
   let element;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);
@@ -76,8 +82,8 @@ suite('<history-item> integration test', function() {
 
   test('basic separator insertion', function() {
     element.addNewResults(TEST_HISTORY_RESULTS);
-    return test_util.flushTasks().then(function() {
-      Polymer.dom.flush();
+    return flushTasks().then(function() {
+      flush();
       // Check that the correct number of time gaps are inserted.
       const items = element.shadowRoot.querySelectorAll('history-item');
 
@@ -94,8 +100,8 @@ suite('<history-item> integration test', function() {
     element.addNewResults(SEARCH_HISTORY_RESULTS);
     element.searchedTerm = 'search';
 
-    return test_util.flushTasks().then(function() {
-      Polymer.dom.flush();
+    return flushTasks().then(function() {
+      flush();
       const items = element.shadowRoot.querySelectorAll('history-item');
 
       assertTrue(items[0].hasTimeGap);
@@ -106,8 +112,8 @@ suite('<history-item> integration test', function() {
 
   test('separator insertion after deletion', function() {
     element.addNewResults(TEST_HISTORY_RESULTS);
-    return test_util.flushTasks().then(function() {
-      Polymer.dom.flush();
+    return flushTasks().then(function() {
+      flush();
       const items = element.shadowRoot.querySelectorAll('history-item');
 
       element.removeItemsByIndex_([3]);
@@ -125,17 +131,17 @@ suite('<history-item> integration test', function() {
 
   test('remove bookmarks', function() {
     element.addNewResults(TEST_HISTORY_RESULTS);
-    return test_util.flushTasks()
+    return flushTasks()
         .then(function() {
           element.set('historyData_.1.starred', true);
           element.set('historyData_.5.starred', true);
-          return test_util.flushTasks();
+          return flushTasks();
         })
         .then(function() {
-          items = element.shadowRoot.querySelectorAll('history-item');
+          const items = element.shadowRoot.querySelectorAll('history-item');
 
           items[1].$$('#bookmark-star').focus();
-          MockInteractions.tap(items[1].$$('#bookmark-star'));
+          items[1].$$('#bookmark-star').click();
 
           // Check that focus is shifted to overflow menu icon.
           assertEquals(items[1].root.activeElement, items[1].$['menu-button']);

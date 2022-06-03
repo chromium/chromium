@@ -5,19 +5,19 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
 
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
-
-namespace autofill {
-struct PasswordForm;
-}
 
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 class GURL;
 
@@ -42,44 +42,44 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
 
 // Returns the upper and lower label to be displayed in the account chooser UI
 // for |form|. The lower label can be multiline.
-std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
-    const autofill::PasswordForm& form);
+std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
+    const password_manager::PasswordForm& form);
 
-// Sets the formatted |title| in the Save Password bubble or the Update Password
-// bubble (depending on |dialog_type|). If the registry controlled domain of
-// |user_visible_url| (i.e. the one seen in the omnibox) differs from the
-// registry controlled domain of |form_origin_url|, it adds the site name.
-void GetSavePasswordDialogTitleTextAndLinkRange(const GURL& user_visible_url,
-                                                const GURL& form_origin_url,
-                                                PasswordTitleType dialog_type,
-                                                base::string16* title);
+// Returns the formatted title in the Save Password bubble or the Update
+// Password bubble (depending on |dialog_type|). If the registry controlled
+// domain of |user_visible_url| (i.e. the one seen in the omnibox) differs from
+// the registry controlled domain of |form_origin_url|, it adds the site name.
+std::u16string GetSavePasswordDialogTitleText(
+    const GURL& user_visible_url,
+    const url::Origin& form_origin_url,
+    PasswordTitleType dialog_type);
 
-// Sets the formatted |title| in the Manage Passwords bubble. If the registry
+// Returns the formatted title in the Manage Passwords bubble. If the registry
 // controlled domain of |user_visible_url| (i.e. the one seen in the omnibox)
 // differs from the domain of the managed password origin URL
 // |password_origin_url|, sets |IDS_MANAGE_PASSWORDS_DIFFERENT_DOMAIN_TITLE| or
 // |IDS_MANAGE_PASSWORDS_DIFFERENT_DOMAIN_NO_PASSWORDS_TITLE| as
-// the |title| so that it replaces "this site" in title text with output of
+// the title so that it replaces "this site" in title text with output of
 // |FormatUrlForSecurityDisplay(password_origin_url)|.
 // Otherwise, sets |IDS_MANAGE_PASSWORDS_TITLE| or
-// |IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE| as |title| having "this site".
+// |IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE| as the title having "this site".
 // The *_NO_PASSWORDS_* variants of the title strings are used when no
 // credentials are present.
-void GetManagePasswordsDialogTitleText(const GURL& user_visible_url,
-                                       const GURL& password_origin_url,
-                                       bool has_credentials,
-                                       base::string16* title);
+std::u16string GetManagePasswordsDialogTitleText(
+    const GURL& user_visible_url,
+    const url::Origin& password_origin_url,
+    bool has_credentials);
 
 // Returns an username in the form that should be shown in the bubble.
-base::string16 GetDisplayUsername(const autofill::PasswordForm& form);
+std::u16string GetDisplayUsername(const password_manager::PasswordForm& form);
 
 // Returns either the username or the |IDS_PASSWORD_MANAGER_EMPTY_LOGIN| in case
 // it is empty.
-base::string16 GetDisplayUsername(
+std::u16string GetDisplayUsername(
     const password_manager::UiCredential& credential);
 
 // Returns |federation_origin| in a human-readable format.
-base::string16 GetDisplayFederation(const autofill::PasswordForm& form);
+std::u16string GetDisplayFederation(const password_manager::PasswordForm& form);
 
 // Check if |profile| syncing the Auto sign-in settings (by checking that user
 // syncs the PRIORITY_PREFERENCE). The view appearance might depend on it.
@@ -89,13 +89,6 @@ bool IsSyncingAutosignSetting(Profile* profile);
 // |referrer|.
 GURL GetGooglePasswordManagerURL(
     password_manager::ManagePasswordsReferrer referrer);
-
-// Returns whether users should manage their passwords in the Google Password
-// Manager. This includes users that are syncing their passwords without a
-// custom passphrase and for which the Google Password Manager experiment is
-// activated. For these users links to the Chrome password settings will be
-// repaced with links to the Google Password Manager, i.e. passwords.google.com.
-bool ShouldManagePasswordsinGooglePasswordManager(Profile* profile);
 
 // Navigates to the Google Password Manager, i.e. passwords.google.com.
 void NavigateToGooglePasswordManager(

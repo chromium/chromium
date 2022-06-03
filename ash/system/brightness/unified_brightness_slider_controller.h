@@ -15,11 +15,16 @@ class UnifiedSystemTrayModel;
 class UnifiedBrightnessSliderController : public UnifiedSliderListener {
  public:
   explicit UnifiedBrightnessSliderController(UnifiedSystemTrayModel* model);
+
+  UnifiedBrightnessSliderController(const UnifiedBrightnessSliderController&) =
+      delete;
+  UnifiedBrightnessSliderController& operator=(
+      const UnifiedBrightnessSliderController&) = delete;
+
   ~UnifiedBrightnessSliderController() override;
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,
@@ -32,8 +37,6 @@ class UnifiedBrightnessSliderController : public UnifiedSliderListener {
   // We have to store previous manually set value because |old_value| might be
   // set by UnifiedSystemTrayModel::Observer.
   double previous_percent_ = 100.0;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedBrightnessSliderController);
 };
 
 }  // namespace ash

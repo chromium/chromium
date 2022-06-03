@@ -1,0 +1,21 @@
+{
+  "fuchsia-arm64": {
+    "args_file": "//build/custom_args.gn",
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_host_cpu": "arm64"
+    }
+  },
+  "fuchsia-x64": {
+    "args_file": "//build/custom_args.gn",
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "x64",
+      "target_os": "fuchsia"
+    }
+  }
+}

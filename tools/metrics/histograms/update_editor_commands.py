@@ -22,7 +22,7 @@ from diff_util import PromptUserToAcceptDiff
 import path_util
 
 import histogram_paths
-import histograms_print_style
+import histogram_configuration_model
 
 
 ENUMS_PATH = histogram_paths.ENUMS_XML
@@ -133,8 +133,7 @@ def main():
   UpdateHistogramDefinitions(histogram_values, histograms_doc)
 
   Log('Writing out new histograms file.')
-  new_xml = histograms_print_style.GetPrintStyle().PrettyPrintXml(
-      histograms_doc)
+  new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
   if PromptUserToAcceptDiff(xml, new_xml, 'Is the updated version acceptable?'):
     with open(ENUMS_PATH, 'wb') as f:
       f.write(new_xml)

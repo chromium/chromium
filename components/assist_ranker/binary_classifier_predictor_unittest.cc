@@ -7,8 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/assist_ranker/fake_ranker_model_loader.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
@@ -52,9 +53,9 @@ BinaryClassifierPredictorTest::InitPredictor(
   std::unique_ptr<BinaryClassifierPredictor> predictor(
       new BinaryClassifierPredictor(config));
   auto fake_model_loader = std::make_unique<FakeRankerModelLoader>(
-      base::Bind(&BinaryClassifierPredictor::ValidateModel),
-      base::Bind(&BinaryClassifierPredictor::OnModelAvailable,
-                 base::Unretained(predictor.get())),
+      base::BindRepeating(&BinaryClassifierPredictor::ValidateModel),
+      base::BindRepeating(&BinaryClassifierPredictor::OnModelAvailable,
+                          base::Unretained(predictor.get())),
       std::move(ranker_model));
   predictor->LoadModel(std::move(fake_model_loader));
   return predictor;
@@ -73,7 +74,7 @@ PredictorConfig BinaryClassifierPredictorTest::GetConfig() {
 PredictorConfig BinaryClassifierPredictorTest::GetConfig(
     float predictor_threshold_replacement) {
   PredictorConfig config("model_name", "logging_name", "uma_prefix", LOG_NONE,
-                         GetEmptyWhitelist(), &kTestRankerQuery,
+                         GetEmptyAllowlist(), &kTestRankerQuery,
                          &kTestRankerUrl, predictor_threshold_replacement);
 
   return config;

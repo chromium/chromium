@@ -39,6 +39,10 @@ class WaylandKeyboardDeviceConfigurationDelegate
     ime_controller->AddObserver(this);
     OnKeyboardLayoutNameChanged(ime_controller->keyboard_layout_name());
   }
+  WaylandKeyboardDeviceConfigurationDelegate(
+      const WaylandKeyboardDeviceConfigurationDelegate&) = delete;
+  WaylandKeyboardDeviceConfigurationDelegate& operator=(
+      const WaylandKeyboardDeviceConfigurationDelegate&) = delete;
 
   ~WaylandKeyboardDeviceConfigurationDelegate() override {
     ash::Shell::Get()->ime_controller()->RemoveObserver(this);
@@ -73,8 +77,6 @@ class WaylandKeyboardDeviceConfigurationDelegate
  private:
   wl_resource* resource_;
   Keyboard* keyboard_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandKeyboardDeviceConfigurationDelegate);
 };
 
 void keyboard_device_configuration_destroy(wl_client* client,
@@ -127,7 +129,9 @@ void bind_keyboard_configuration(wl_client* client,
                                  uint32_t id) {
   wl_resource* resource = wl_resource_create(
       client, &zcr_keyboard_configuration_v1_interface,
-      std::min(version, kZcrKeyboardConfigurationVersion), id);
+      std::min<uint32_t>(version,
+                         zcr_keyboard_configuration_v1_interface.version),
+      id);
   wl_resource_set_implementation(
       resource, &keyboard_configuration_implementation, data, nullptr);
 }

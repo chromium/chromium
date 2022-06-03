@@ -1,32 +1,17 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<title>When a block inside a flexbox adds scrollbars due to overflow, the parent flexbox should re-flex based on the child size including scrollbars.</title>
+<title>When a block inside an horizontal flexbox adds vertical scrollbars due to overflow, the parent flexbox should re-flex based on the child size including scrollbars.</title>
 <style>
-.vflex {
-  display: flex;
-  flex-direction: column;
-  max-width: 200px;
-  margin: 10px 0 10px 0;
-}
 .hflex {
   display: flex;
   flex-direction: row;
   max-height: 200px;
   margin: 10px 0 10px 0;
 }
-.hbox {
-  overflow-x: auto;
-  white-space: nowrap;
-}
 .vbox {
   overflow-y: auto;
   max-height: 200px;
-}
-.intrinsic-height-box {
-  min-height: -webkit-min-content;
-  overflow: auto;
-  flex-basis: 0;
 }
 .rect {
   min-height: 100px;
@@ -35,19 +20,6 @@
   display: inline-block;
 }
 </style>
-
-<div class="vflex">
-  <div class="hbox">
-    <div class="rect"></div>
-    <div class="rect"></div>
-  </div>
-</div>
-
-<div class="vflex">
-  <div class="intrinsic-height-box">
-    <div class="rect" style="min-width: 300px"></div>
-  </div>
-</div>
 
 <div class="hflex">
   <div class="vbox">
@@ -67,17 +39,6 @@
 </div>
 
 <script>
-  var hbox = document.querySelector('.hbox');
-  test(function() {
-    assert_equals(hbox.parentNode.clientHeight, hbox.parentNode.scrollHeight);
-    assert_equals(hbox.clientHeight, hbox.scrollHeight);
-  }, 'hbox dimensions');
-
-  var intrinsicHeightBox = document.querySelector('.intrinsic-height-box');
-  test(function() {
-    assert_equals(intrinsicHeightBox.clientHeight, intrinsicHeightBox.scrollHeight);
-  }, 'intrinsicHeightBox dimensions');
-
   var measure = document.getElementById('measure');
   var scrollbarSize = measure.offsetWidth - measure.clientWidth;
   test(function() {

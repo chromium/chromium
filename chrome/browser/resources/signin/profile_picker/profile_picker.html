@@ -1,0 +1,27 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <base href="chrome://profile-picker">
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <title>$i18n{mainViewTitle}</title>
+  </head>
+  <body>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html {
+          --md-background-color: rgba(41, 42, 45, 1);
+          background: var(--md-background-color);
+        }
+      }
+    </style>
+    <profile-picker-app></profile-picker-app>
+    <script type="module" src="profile_picker.js"></script>
+  </body>
+</html>

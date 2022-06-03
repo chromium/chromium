@@ -1,0 +1,22 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The values of
+// https://w3c.github.io/webappsec-upgrade-insecure-requests/#insecure-requests-policy
+//
+// TODO(mkwst): In an ideal world, the combined state would be the same as
+// "Upgrade". Once we're consistently upgrading all requests, we can replace
+// this bitfield-style representation with an enum. Until then, we need to
+// ensure that all relevant flags are set. https://crbug.com/617584
+enum InsecureRequestPolicy {
+  kLeaveInsecureRequestsAlone = 0,
+  kUpgradeInsecureRequests = 1, // 1 << 0,
+  kBlockAllMixedContent = 2, // 1 << 1,
+  // The purpose of kMaxInsecureRequestPolicy prevents
+  // VALIDATION_ERROR_UNKNOWN_ENUM_VALUE as InsecureRequestPolicy is a bitfiled
+  // and it could be (kUpgradeInsecureRequests | kBlockAllMixedContent).
+  kMaxInsecureRequestPolicy = 3,
+};

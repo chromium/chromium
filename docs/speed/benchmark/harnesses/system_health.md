@@ -125,6 +125,24 @@ All the benchmarks using System Health stories tear down the browser after singl
 This ensures that every story is completely independent and modifications to the
 System Health story set won’t cause as many regressions/improvements on the perf dashboard.
 
+## How do I run a story locally?
+
+Running on Pinpoint is best to determine the performance of a change, but
+running locally is useful when you would like to dive deep into a story or
+iterate faster on potential solutions to the problem. In order to run locally,
+run the following:
+
+```
+$ tools/perf/run_benchmark benchmark_name --story-filter story_name \
+    --allow-software-compositing
+```
+
+Here, `benchmark_name` could be something like `system_health.common_desktop`,
+`story_name` could be `load:news:nytimes:2018` (find the exact name on Pinpoint),
+and `--allow-software-compositing` is often required because System Health will
+force a crash when the GPU is not available in order to avoid getting skewed
+results.
+
 ## Should I add new System Health stories and how?
 
 First, check this list of [System Health stories](https://docs.google.com/spreadsheets/d/1t15Ya5ssYBeXAZhHm3RJqfwBRpgWsxoib8_kwQEHMwI/edit#gid=0)
@@ -133,7 +151,7 @@ to see if your intended user stories are already covered by existing ones.
 If there is a good reason for your stories to be added, please make one CL for
 each of the new stories so they can be landed (and reverted if needed)
 individually. On each CL, make sure that the perf trybots all pass before
-comitting.
+committing.
 
 Once your patch makes it through the CQ, you’re done… unless your story starts
 failing on some random platform, in which case the perf bot sheriff will very

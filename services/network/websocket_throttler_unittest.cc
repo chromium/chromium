@@ -6,9 +6,10 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "base/test/task_environment.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -212,10 +213,8 @@ TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_16Pending) {
   EXPECT_EQ(0, throttler.num_previous_succeeded_connections());
   EXPECT_EQ(0, throttler.num_current_failed_connections());
   EXPECT_EQ(0, throttler.num_previous_failed_connections());
-  EXPECT_LE(base::TimeDelta::FromMilliseconds(1000),
-            throttler.CalculateDelay());
-  EXPECT_LE(throttler.CalculateDelay(),
-            base::TimeDelta::FromMilliseconds(5000));
+  EXPECT_LE(base::Milliseconds(1000), throttler.CalculateDelay());
+  EXPECT_LE(throttler.CalculateDelay(), base::Milliseconds(5000));
 }
 
 TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_3Failure) {
@@ -254,16 +253,14 @@ TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_16Failure) {
   EXPECT_EQ(0, throttler.num_previous_succeeded_connections());
   EXPECT_EQ(16, throttler.num_current_failed_connections());
   EXPECT_EQ(0, throttler.num_previous_failed_connections());
-  EXPECT_LE(base::TimeDelta::FromMilliseconds(1000),
-            throttler.CalculateDelay());
-  EXPECT_LE(throttler.CalculateDelay(),
-            base::TimeDelta::FromMilliseconds(5000));
+  EXPECT_LE(base::Milliseconds(1000), throttler.CalculateDelay());
+  EXPECT_LE(throttler.CalculateDelay(), base::Milliseconds(5000));
 }
 
 TEST(WebSocketPerProcessThrottlerTest, MoveTracker) {
   WebSocketPerProcessThrottler throttler;
 
-  base::Optional<WebSocketThrottler::PendingConnection> tracker_holder;
+  absl::optional<WebSocketThrottler::PendingConnection> tracker_holder;
   {
     WebSocketThrottler::PendingConnection tracker =
         throttler.IssuePendingConnectionTracker();
@@ -298,7 +295,7 @@ TEST(WebSocketPerProcessThrottlerTest, MoveTracker) {
   EXPECT_EQ(0, throttler.num_current_failed_connections());
   EXPECT_EQ(0, throttler.num_previous_failed_connections());
 
-  tracker_holder = base::nullopt;
+  tracker_holder = absl::nullopt;
 
   EXPECT_EQ(0, throttler.num_pending_connections());
   EXPECT_EQ(0, throttler.num_current_succeeded_connections());
@@ -322,21 +319,33 @@ TEST_F(WebSocketThrottlerTest, TooManyPendingConnections) {
   for (int i = 0; i < limit - 1; ++i) {
     ASSERT_FALSE(throttler.HasTooManyPendingConnections(process1));
     ASSERT_FALSE(throttler.HasTooManyPendingConnections(process2));
-    trackers.push_back(throttler.IssuePendingConnectionTracker(process1));
-    trackers.push_back(throttler.IssuePendingConnectionTracker(process2));
+    trackers.push_back(
+        std::move(throttler.IssuePendingConnectionTracker(process1).value()));
+    trackers.push_back(
+        std::move(throttler.IssuePendingConnectionTracker(process2).value()));
   }
 
   EXPECT_EQ(2u, throttler.GetSizeForTesting());
   ASSERT_FALSE(throttler.HasTooManyPendingConnections(process1));
   ASSERT_FALSE(throttler.HasTooManyPendingConnections(process2));
-  trackers.push_back(throttler.IssuePendingConnectionTracker(process1));
+  trackers.push_back(
+      std::move(throttler.IssuePendingConnectionTracker(process1).value()));
 
   ASSERT_TRUE(throttler.HasTooManyPendingConnections(process1));
   ASSERT_FALSE(throttler.HasTooManyPendingConnections(process2));
-  trackers.push_back(throttler.IssuePendingConnectionTracker(process2));
+  trackers.push_back(
+      std::move(throttler.IssuePendingConnectionTracker(process2).value()));
 
   ASSERT_TRUE(throttler.HasTooManyPendingConnections(process1));
   ASSERT_TRUE(throttler.HasTooManyPendingConnections(process2));
+}
+
+TEST_F(WebSocketThrottlerTest, BrowserProcessNotThrottled) {
+  WebSocketThrottler throttler;
+  ASSERT_FALSE(
+      throttler.HasTooManyPendingConnections(mojom::kBrowserProcessId));
+  ASSERT_FALSE(throttler.IssuePendingConnectionTracker(mojom::kBrowserProcessId)
+                   .has_value());
 }
 
 }  // namespace

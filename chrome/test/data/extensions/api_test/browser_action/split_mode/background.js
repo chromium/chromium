@@ -15,3 +15,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     });
   });
 });
+
+let message = chrome.extension.inIncognitoContext ?
+  'incognito ready' : 'regular ready';
+chrome.test.sendMessage(message);

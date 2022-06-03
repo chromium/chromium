@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -29,6 +30,8 @@
 #include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -106,7 +109,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantAndWithholdHostPermissions) {
         ExtensionBuilder(test_case_name)
             .AddPermissions(test_case)
             .AddContentScript("foo.js", test_case)
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(ManifestLocation::kInternal)
             .Build();
 
     PermissionsUpdater(profile()).InitializePermissions(extension.get());
@@ -154,7 +157,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, WithholdHostPermissionsOnInstall) {
       ExtensionBuilder("a")
           .AddPermissions({kHostGoogle, kHostChromium})
           .AddContentScript("foo.js", {kHostGoogle})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddFlags(Extension::WITHHOLD_PERMISSIONS)
           .Build();
 
@@ -223,7 +226,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   auto reload_extension = [this, &extension_id]() {
     TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()));
     service()->ReloadExtension(extension_id);
-    return base::WrapRefCounted(observer.WaitForExtensionLoaded());
+    return observer.WaitForExtensionLoaded();
   };
 
   // Permissions start withheld due to creation flag and remain withheld after
@@ -252,11 +255,6 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   {
     SCOPED_TRACE("Reload after granting single");
-    // TODO(tjudkins): We shouldn't have to explicitly call to grant
-    // permissions here, but at the moment when withholding host permissions on
-    // installation and then granting a permission, the reload or update detects
-    // that as a privilege increase and disables the extension.
-    service()->GrantPermissionsAndEnableExtension(extension.get());
     extension = reload_extension();
     CheckActiveHostPermissions(*extension, {kHostGoogle}, {});
     CheckWithheldHostPermissions(*extension, {kHostChromium}, {});
@@ -274,11 +272,6 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   {
     SCOPED_TRACE("Reload after setting to not withhold");
-    // TODO(tjudkins): We shouldn't have to explicitly call to grant
-    // permissions here, but at the moment when withholding host permissions on
-    // installation and then granting a permission, the reload or update detects
-    // that as a privilege increase and disables the extension.
-    service()->GrantPermissionsAndEnableExtension(extension.get());
     extension = reload_extension();
     CheckActiveHostPermissions(*extension, {kHostGoogle, kHostChromium}, {});
     CheckWithheldHostPermissions(*extension, {}, {});
@@ -326,7 +319,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
       data_dir().AppendASCII("permissions/update.pem");
   scoped_refptr<const Extension> extension = PackAndInstallCRX(
       test_extension_dir.UnpackedPath(), pem_path, INSTALL_NEW,
-      Extension::WITHHOLD_PERMISSIONS, Manifest::Location::INTERNAL);
+      Extension::WITHHOLD_PERMISSIONS, mojom::ManifestLocation::kInternal);
   // Cache the ID, since the extension will be invalidated across updates.
   ExtensionId extension_id = extension->id();
   // Hold onto references for the extension dirs so they don't get deleted
@@ -374,11 +367,6 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   {
     SCOPED_TRACE("Update after granting single");
-    // TODO(tjudkins): We shouldn't have to explicitly call to grant
-    // permissions here, but at the moment when withholding host permissions on
-    // installation and then granting a permission, the reload or update detects
-    // that as a privilege increase and disables the extension.
-    service()->GrantPermissionsAndEnableExtension(extension.get());
     extension = update_extension("3");
     CheckActiveHostPermissions(*extension, {kHostGoogle}, {});
     CheckWithheldHostPermissions(*extension, {kHostChromium}, {});
@@ -396,11 +384,6 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
 
   {
     SCOPED_TRACE("Update after setting to not withhold");
-    // TODO(tjudkins): We shouldn't have to explicitly call to grant
-    // permissions here, but at the moment when withholding host permissions on
-    // installation and then granting a permission, the reload or update detects
-    // that as a privilege increase and disables the extension.
-    service()->GrantPermissionsAndEnableExtension(extension.get());
     extension = update_extension("4");
     CheckActiveHostPermissions(*extension, {kHostGoogle, kHostChromium}, {});
     CheckWithheldHostPermissions(*extension, {}, {});
@@ -431,7 +414,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, SwitchBehavior) {
       ExtensionBuilder("a")
           .AddPermission(URLPattern::kAllUrlsPattern)
           .AddContentScript("foo.js", {URLPattern::kAllUrlsPattern})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
@@ -461,7 +444,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
       ExtensionBuilder("extension")
           .AddPermission(URLPattern::kAllUrlsPattern)
           .AddContentScript("foo.js", {URLPattern::kAllUrlsPattern})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   PermissionsUpdater(profile()).InitializePermissions(extension.get());
 
@@ -473,9 +456,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
   EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl));
   EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl2));
 
-  const PermissionsData* permissions = extension->permissions_data();
-  auto get_page_access = [&permissions](const GURL& url) {
-    return permissions->GetPageAccess(url, 0, nullptr);
+  const PermissionsData* permissions_data = extension->permissions_data();
+  auto get_page_access = [&permissions_data](const GURL& url) {
+    return permissions_data->GetPageAccess(url, 0, nullptr);
   };
 
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_page_access(kUrl));
@@ -518,12 +501,14 @@ TEST_F(ScriptingPermissionsModifierUnitTest, CanAffectExtensionByLocation) {
   InitializeEmptyExtensionService();
 
   struct {
-    Manifest::Location location;
+    ManifestLocation location;
     bool can_be_affected;
   } test_cases[] = {
-      {Manifest::INTERNAL, true},   {Manifest::EXTERNAL_PREF, true},
-      {Manifest::UNPACKED, true},   {Manifest::EXTERNAL_POLICY_DOWNLOAD, false},
-      {Manifest::COMPONENT, false},
+      {ManifestLocation::kInternal, true},
+      {ManifestLocation::kExternalPref, true},
+      {ManifestLocation::kUnpacked, true},
+      {ManifestLocation::kExternalPolicyDownload, false},
+      {ManifestLocation::kComponent, false},
   };
 
   for (const auto& test_case : test_cases) {
@@ -595,7 +580,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   {
     TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()));
     service()->ReloadExtension(extension->id());
-    extension = base::WrapRefCounted(observer.WaitForExtensionLoaded());
+    extension = observer.WaitForExtensionLoaded();
   }
   EXPECT_TRUE(extension->permissions_data()
                   ->active_permissions()
@@ -1040,7 +1025,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GetSiteAccess_IgnorePaths) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .AddContentScript("foo.js", {"https://www.example.com/foo"})
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   InitializeExtensionPermissions(profile(), *extension);
 

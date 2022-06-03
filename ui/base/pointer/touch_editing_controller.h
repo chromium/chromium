@@ -5,6 +5,7 @@
 #ifndef UI_BASE_POINTER_TOUCH_EDITING_CONTROLLER_H_
 #define UI_BASE_POINTER_TOUCH_EDITING_CONTROLLER_H_
 
+#include "base/component_export.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace gfx {
@@ -17,8 +18,18 @@ namespace ui {
 
 // An interface implemented by widget that has text that can be selected/edited
 // using touch.
-class UI_BASE_EXPORT TouchEditable : public ui::SimpleMenuModel::Delegate {
+class COMPONENT_EXPORT(UI_BASE) TouchEditable
+    : public ui::SimpleMenuModel::Delegate {
  public:
+  // Commands that all TouchEditables support:
+  enum MenuCommands {
+    // Don't use command ID 0 - a lot of tests use 0 for "no command".
+    kCut = 1,
+    kCopy,
+    kPaste,
+    kLastTouchEditableCommandId = kPaste,
+  };
+
   // TODO(mohsen): Consider switching from local coordinates to screen
   // coordinates in this interface and see if it will simplify things.
 
@@ -70,7 +81,7 @@ class UI_BASE_EXPORT TouchEditable : public ui::SimpleMenuModel::Delegate {
 
 // This defines the callback interface for other code to be notified of changes
 // in the state of a TouchEditable.
-class UI_BASE_EXPORT TouchEditingControllerDeprecated {
+class COMPONENT_EXPORT(UI_BASE) TouchEditingControllerDeprecated {
  public:
   virtual ~TouchEditingControllerDeprecated() {}
 
@@ -80,16 +91,9 @@ class UI_BASE_EXPORT TouchEditingControllerDeprecated {
 
   // Notifies the controller that the selection has changed.
   virtual void SelectionChanged() = 0;
-
-  // Returns true if the user is currently dragging one of the handles.
-  virtual bool IsHandleDragInProgress() = 0;
-
-  // Hides visible handles. According to the value of |quick|, handles might
-  // fade out quickly or slowly.
-  virtual void HideHandles(bool quick) = 0;
 };
 
-class UI_BASE_EXPORT TouchEditingControllerFactory {
+class COMPONENT_EXPORT(UI_BASE) TouchEditingControllerFactory {
  public:
   virtual ~TouchEditingControllerFactory() {}
 

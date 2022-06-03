@@ -6,11 +6,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/coded_frame_provider.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
 #include "chromecast/media/cma/test/frame_generator_for_test.h"
 #include "media/base/video_decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +37,8 @@ void MockFrameConsumer::Configure(
   frame_generator_ = std::move(frame_generator);
 }
 
-void MockFrameConsumer::Start(const base::Closure& done_cb) {
-  done_cb_ = done_cb;
+void MockFrameConsumer::Start(base::OnceClosure done_cb) {
+  done_cb_ = std::move(done_cb);
 
   pattern_idx_ = 0;
 
@@ -51,22 +51,19 @@ void MockFrameConsumer::ReadFrame() {
   // Once all the frames have been read, flush the frame provider.
   if (frame_generator_->RemainingFrameCount() == 0 &&
       !last_read_aborted_by_flush_) {
-    coded_frame_provider_->Flush(
-        base::Bind(&MockFrameConsumer::OnFlushCompleted,
-                   base::Unretained(this)));
+    coded_frame_provider_->Flush(base::BindOnce(
+        &MockFrameConsumer::OnFlushCompleted, base::Unretained(this)));
     return;
   }
 
   coded_frame_provider_->Read(
-      base::Bind(&MockFrameConsumer::OnNewFrame,
-                 base::Unretained(this)));
+      base::BindOnce(&MockFrameConsumer::OnNewFrame, base::Unretained(this)));
 
   // The last read is right away aborted by a Flush.
   if (frame_generator_->RemainingFrameCount() == 0 &&
       last_read_aborted_by_flush_) {
-    coded_frame_provider_->Flush(
-        base::Bind(&MockFrameConsumer::OnFlushCompleted,
-                   base::Unretained(this)));
+    coded_frame_provider_->Flush(base::BindOnce(
+        &MockFrameConsumer::OnFlushCompleted, base::Unretained(this)));
     return;
   }
 }
@@ -98,7 +95,7 @@ void MockFrameConsumer::OnNewFrame(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockFrameConsumer::ReadFrame, base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -108,7 +105,7 @@ void MockFrameConsumer::OnNewFrame(
 
 void MockFrameConsumer::OnFlushCompleted() {
   EXPECT_EQ(frame_generator_->RemainingFrameCount(), 0u);
-  done_cb_.Run();
+  std::move(done_cb_).Run();
 }
 
 }  // namespace media

@@ -36,6 +36,12 @@ MockWpPresentation::MockWpPresentation()
 
 MockWpPresentation::~MockWpPresentation() {}
 
+wl_resource* MockWpPresentation::ReleasePresentationCallback() {
+  auto* presentation_callback = presentation_callback_;
+  presentation_callback_ = nullptr;
+  return presentation_callback;
+}
+
 void MockWpPresentation::SendPresentationCallback() {
   if (!presentation_callback_)
     return;
@@ -45,6 +51,16 @@ void MockWpPresentation::SendPresentationCallback() {
       presentation_callback_, 0 /* tv_sec_hi */, 0 /* tv_sec_lo */,
       0 /* tv_nsec */, 0 /* refresh */, 0 /* seq_hi */, 0 /* seq_lo */,
       0 /* flags */);
+  wl_client_flush(wl_resource_get_client(presentation_callback_));
+  wl_resource_destroy(presentation_callback_);
+  presentation_callback_ = nullptr;
+}
+
+void MockWpPresentation::SendPresentationCallbackDiscarded() {
+  if (!presentation_callback_)
+    return;
+
+  wp_presentation_feedback_send_discarded(presentation_callback_);
   wl_client_flush(wl_resource_get_client(presentation_callback_));
   wl_resource_destroy(presentation_callback_);
   presentation_callback_ = nullptr;

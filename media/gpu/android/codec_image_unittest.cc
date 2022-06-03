@@ -5,8 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -50,7 +49,7 @@ class CodecImageTest : public testing::Test {
         .WillByDefault(Return(MEDIA_CODEC_OK));
 
     gl::init::InitializeStaticGLBindingsImplementation(
-        gl::kGLImplementationEGLGLES2, false);
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
     gl::init::InitializeGLOneOffPlatformImplementation(false, false, false);
 
     surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));
@@ -87,10 +86,16 @@ class CodecImageTest : public testing::Test {
       CodecImage::UnusedCB unused_cb = base::DoNothing()) {
     std::unique_ptr<CodecOutputBuffer> buffer;
     wrapper_->DequeueOutputBuffer(nullptr, nullptr, &buffer);
-    scoped_refptr<CodecImage> image = new CodecImage();
+
+    auto codec_buffer_wait_coordinator =
+        kind == kTextureOwner ? codec_buffer_wait_coordinator_ : nullptr;
+    auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
+        std::move(buffer), codec_buffer_wait_coordinator, /*lock=*/nullptr);
+
+    scoped_refptr<CodecImage> image =
+        new CodecImage(buffer_renderer->size(), /*lock=*/nullptr);
     image->Initialize(
-        std::move(buffer),
-        kind == kTextureOwner ? codec_buffer_wait_coordinator_ : nullptr,
+        std::move(buffer_renderer), kind == kTextureOwner,
         base::BindRepeating(&PromotionHintReceiver::OnPromotionHint,
                             base::Unretained(&promotion_hint_receiver_)));
 
@@ -140,7 +145,7 @@ TEST_F(CodecImageTest, UnusedCBRunsOnNotifyUnused) {
   base::MockCallback<CodecImage::UnusedCB> cb_2;
   auto i = NewImage(kTextureOwner);
   ASSERT_TRUE(i->get_codec_output_buffer_for_testing());
-  ASSERT_TRUE(i->is_texture_owner_backed());
+  ASSERT_TRUE(i->HasTextureOwner());
   i->AddUnusedCB(cb_1.Get());
   i->AddUnusedCB(cb_2.Get());
   EXPECT_CALL(cb_1, Run(i.get()));
@@ -149,7 +154,7 @@ TEST_F(CodecImageTest, UnusedCBRunsOnNotifyUnused) {
   // Also verify that the output buffer and texture owner are released.
   i->NotifyUnused();
   EXPECT_FALSE(i->get_codec_output_buffer_for_testing());
-  EXPECT_FALSE(i->is_texture_owner_backed());
+  EXPECT_FALSE(i->HasTextureOwner());
 
   // Verify that an additional call doesn't crash.  It should do nothing.
   i->NotifyUnused();
@@ -163,13 +168,6 @@ TEST_F(CodecImageTest, ImageStartsUnrendered) {
 TEST_F(CodecImageTest, CopyTexImageIsInvalidForOverlayImages) {
   auto i = NewImage(kOverlay);
   ASSERT_NE(gl::GLImage::COPY, i->ShouldBindOrCopy());
-}
-
-TEST_F(CodecImageTest, ScheduleOverlayPlaneIsInvalidForTextureOwnerImages) {
-  auto i = NewImage(kTextureOwner);
-  ASSERT_FALSE(i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0,
-                                       gfx::OverlayTransform(), gfx::Rect(),
-                                       gfx::RectF(), true, nullptr));
 }
 
 TEST_F(CodecImageTest, CopyTexImageFailsIfTargetIsNotOES) {
@@ -200,74 +198,6 @@ TEST_F(CodecImageTest, CopyTexImageTriggersFrontBufferRendering) {
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
               UpdateTexImage());
   i->CopyTexImage(GL_TEXTURE_EXTERNAL_OES);
-  ASSERT_TRUE(i->was_rendered_to_front_buffer());
-}
-
-TEST_F(CodecImageTestExplicitBind, CopyTexImageTriggersFrontBufferRendering) {
-  auto i = NewImage(kTextureOwner);
-  // Verify that the release comes before the wait.
-  InSequence s;
-  EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
-  EXPECT_CALL(*codec_buffer_wait_coordinator_, WaitForFrameAvailable());
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              EnsureTexImageBound());
-  i->CopyTexImage(GL_TEXTURE_EXTERNAL_OES);
-  ASSERT_TRUE(i->was_rendered_to_front_buffer());
-}
-
-TEST_F(CodecImageTest, GetTextureMatrixTriggersFrontBufferRendering) {
-  auto i = NewImage(kTextureOwner);
-  InSequence s;
-  EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
-  EXPECT_CALL(*codec_buffer_wait_coordinator_, WaitForFrameAvailable());
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              GetTransformMatrix(_));
-  float matrix[16];
-  i->GetTextureMatrix(matrix);
-  ASSERT_TRUE(i->was_rendered_to_front_buffer());
-}
-
-TEST_F(CodecImageTestExplicitBind,
-       GetTextureMatrixTriggersFrontBufferRendering) {
-  // GetTextureMatrix should not bind the image.
-  codec_buffer_wait_coordinator_->texture_owner()->expect_update_tex_image =
-      false;
-
-  auto i = NewImage(kTextureOwner);
-  InSequence s;
-  EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
-  EXPECT_CALL(*codec_buffer_wait_coordinator_, WaitForFrameAvailable());
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage());
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              GetTransformMatrix(_));
-  float matrix[16];
-  i->GetTextureMatrix(matrix);
-  ASSERT_TRUE(i->was_rendered_to_front_buffer());
-}
-
-TEST_F(CodecImageTest, GetTextureMatrixReturnsIdentityForOverlayImages) {
-  auto i = NewImage(kOverlay);
-  float matrix[16]{0};
-  i->GetTextureMatrix(matrix);
-  // See GetTextureMatrix() for the expected result.
-  ASSERT_EQ(matrix[0], 1);
-  ASSERT_EQ(matrix[5], -1);
-}
-
-TEST_F(CodecImageTest, ScheduleOverlayPlaneTriggersFrontBufferRendering) {
-  auto i = NewImage(kOverlay);
-  EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
-  // Also verify that it sends the appropriate promotion hint so that the
-  // overlay is positioned properly.
-  PromotionHintAggregator::Hint hint(gfx::Rect(1, 2, 3, 4), true);
-  EXPECT_CALL(promotion_hint_receiver_, OnPromotionHint(hint));
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint.screen_rect, gfx::RectF(), true, nullptr);
   ASSERT_TRUE(i->was_rendered_to_front_buffer());
 }
 
@@ -332,9 +262,6 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresTextureBindings) {
 }
 
 TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
-  codec_buffer_wait_coordinator_->texture_owner()->expect_update_tex_image =
-      false;
-
   GLuint pre_bound_texture = 0;
   glGenTextures(1, &pre_bound_texture);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, pre_bound_texture);
@@ -358,11 +285,9 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   ASSERT_TRUE(context->MakeCurrent(surface.get()));
 
   auto i = NewImage(kTextureOwner);
-  // Our context should not be current when UpdateTexImage() is called.
+  // UpdateTexImage sets it's own context.
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage())
-      .WillOnce(
-          Invoke([&]() { ASSERT_FALSE(context->IsCurrent(surface.get())); }));
+              UpdateTexImage());
   i->RenderToFrontBuffer();
   // Our context should have been restored.
   ASSERT_TRUE(context->IsCurrent(surface.get()));
@@ -370,24 +295,6 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   context = nullptr;
   share_group = nullptr;
   surface = nullptr;
-}
-
-TEST_F(CodecImageTest, ScheduleOverlayPlaneDoesntSendDuplicateHints) {
-  // SOP should send only one promotion hint unless the position changes.
-  auto i = NewImage(kOverlay);
-  // Also verify that it sends the appropriate promotion hint so that the
-  // overlay is positioned properly.
-  PromotionHintAggregator::Hint hint1(gfx::Rect(1, 2, 3, 4), true);
-  PromotionHintAggregator::Hint hint2(gfx::Rect(5, 6, 7, 8), true);
-  EXPECT_CALL(promotion_hint_receiver_, OnPromotionHint(hint1)).Times(1);
-  EXPECT_CALL(promotion_hint_receiver_, OnPromotionHint(hint2)).Times(1);
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint1.screen_rect, gfx::RectF(), true, nullptr);
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint1.screen_rect, gfx::RectF(), true, nullptr);
-  // Sending a different rectangle should send another hint.
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint2.screen_rect, gfx::RectF(), true, nullptr);
 }
 
 TEST_F(CodecImageTest, GetAHardwareBuffer) {
@@ -413,13 +320,31 @@ TEST_F(CodecImageTest, GetAHardwareBufferAfterRelease) {
   EXPECT_FALSE(i->GetAHardwareBuffer());
 }
 
-TEST_F(CodecImageTest, GetCropRect) {
+TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
   auto i = NewImage(kTextureOwner);
-  EXPECT_EQ(
-      codec_buffer_wait_coordinator_->texture_owner()->get_crop_rect_count, 0);
-  i->GetCropRect();
-  EXPECT_EQ(
-      codec_buffer_wait_coordinator_->texture_owner()->get_crop_rect_count, 1);
+  i->NotifyUnused();
+  EXPECT_FALSE(i->RenderToTextureOwnerBackBuffer());
+  EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer(
+      CodecImage::BindingsMode::kBindImage,
+      codec_buffer_wait_coordinator_->texture_owner()->GetTextureId()));
+}
+
+TEST_F(CodecImageTest, CodedSizeVsVisibleSize) {
+  const gfx::Size coded_size(128, 128);
+  const gfx::Size visible_size(100, 100);
+  auto buffer = CodecOutputBuffer::CreateForTesting(
+      0, visible_size, gfx::ColorSpace::CreateSRGB());
+  auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
+      std::move(buffer), nullptr, /*lock=*/nullptr);
+
+  scoped_refptr<CodecImage> image =
+      new CodecImage(coded_size, /*lock=*/nullptr);
+  image->Initialize(std::move(buffer_renderer), false,
+                    PromotionHintAggregator::NotifyPromotionHintCB());
+
+  // Verify that CodecImage::GetSize returns coded_size and not visible_size
+  // that comes in CodecOutputBuffer size.
+  EXPECT_EQ(image->GetSize(), coded_size);
 }
 
 }  // namespace media

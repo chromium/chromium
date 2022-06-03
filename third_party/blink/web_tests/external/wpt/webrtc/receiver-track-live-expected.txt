@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Setup audio call promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getUserMedia' of undefined"
+FAIL Inactivate the audio transceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getTransceivers' of undefined"
+FAIL Reactivate the audio transceiver promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getTransceivers' of undefined"
+FAIL Clean-up promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'close' of undefined"
+Harness: the test ran to completion.
+

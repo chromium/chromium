@@ -5,14 +5,14 @@
 
 """Script for use in test_env unittests."""
 
-import os
+from __future__ import print_function
 import signal
 import sys
 import time
 
 
-def print_signal(sig, *_):
-  print 'Signal :{}'.format(sig)
+def print_signal(sig, *_args):
+  print('Signal :{}'.format(sig))
 
 
 if __name__ == '__main__':

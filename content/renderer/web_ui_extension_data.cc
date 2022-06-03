@@ -4,17 +4,33 @@
 
 #include "content/renderer/web_ui_extension_data.h"
 
-#include "content/common/frame_messages.h"
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "content/public/renderer/render_frame.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace content {
 
-WebUIExtensionData::WebUIExtensionData(RenderFrame* render_frame)
-    : RenderFrameObserver(render_frame),
-      RenderFrameObserverTracker<WebUIExtensionData>(render_frame) {}
-
-WebUIExtensionData::~WebUIExtensionData() {
+// static
+void WebUIExtensionData::Create(
+    RenderFrame* render_frame,
+    mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
+    mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      base::WrapUnique(new WebUIExtensionData(render_frame, std::move(remote))),
+      std::move(receiver));
 }
+
+WebUIExtensionData::WebUIExtensionData(
+    RenderFrame* render_frame,
+    mojo::PendingAssociatedRemote<mojom::WebUIHost> remote)
+    : RenderFrameObserver(render_frame),
+      RenderFrameObserverTracker<WebUIExtensionData>(render_frame),
+      remote_(std::move(remote)) {}
+
+WebUIExtensionData::~WebUIExtensionData() = default;
 
 std::string WebUIExtensionData::GetValue(const std::string& key) const {
   auto it = variable_map_.find(key);
@@ -23,22 +39,16 @@ std::string WebUIExtensionData::GetValue(const std::string& key) const {
   return it->second;
 }
 
-bool WebUIExtensionData::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(WebUIExtensionData, message)
-    IPC_MESSAGE_HANDLER(FrameMsg_SetWebUIProperty, OnSetWebUIProperty)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+void WebUIExtensionData::SendMessage(const std::string& message,
+                                     std::unique_ptr<base::ListValue> args) {
+  remote_->Send(message, std::move(*args));
 }
 
-void WebUIExtensionData::OnSetWebUIProperty(const std::string& name,
-                                            const std::string& value) {
+void WebUIExtensionData::SetProperty(const std::string& name,
+                                     const std::string& value) {
   variable_map_[name] = value;
 }
 
-void WebUIExtensionData::OnDestruct() {
-  delete this;
-}
+void WebUIExtensionData::OnDestruct() {}
 
 }  // namespace content

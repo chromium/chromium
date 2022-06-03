@@ -13,13 +13,11 @@
 namespace ui {
 namespace {
 
-struct FakeAXTreeData {};
-
 struct FakeAXNode {
-  int32_t id;
+  AXNodeID id;
   ax::mojom::Role role;
-  std::vector<int32_t> child_ids;
-  int32_t parent_id;
+  std::vector<AXNodeID> child_ids;
+  AXNodeID parent_id;
 };
 
 // It's distracting to see an empty bounding box from every node, so do a
@@ -33,28 +31,27 @@ void CleanAXNodeDataString(std::string* error_str) {
 // explicit. This allows us to test that AXTreeSourceChecker properly warns
 // about errors in accessibility trees that have inconsistent parent/child
 // links.
-class FakeAXTreeSource
-    : public AXTreeSource<const FakeAXNode*, ui::AXNodeData, FakeAXTreeData> {
+class FakeAXTreeSource : public AXTreeSource<const FakeAXNode*> {
  public:
-  FakeAXTreeSource(std::vector<FakeAXNode> nodes, int32_t root_id)
+  FakeAXTreeSource(std::vector<FakeAXNode> nodes, AXNodeID root_id)
       : nodes_(nodes), root_id_(root_id) {
     for (size_t i = 0; i < nodes_.size(); ++i)
       id_to_node_[nodes_[i].id] = &nodes_[i];
   }
 
   // AXTreeSource overrides.
-  bool GetTreeData(FakeAXTreeData* data) const override { return true; }
+  bool GetTreeData(AXTreeData* data) const override { return true; }
 
   const FakeAXNode* GetRoot() const override { return GetFromId(root_id_); }
 
-  const FakeAXNode* GetFromId(int32_t id) const override {
+  const FakeAXNode* GetFromId(AXNodeID id) const override {
     const auto& iter = id_to_node_.find(id);
     if (iter != id_to_node_.end())
       return iter->second;
     return nullptr;
   }
 
-  int32_t GetId(const FakeAXNode* node) const override { return node->id; }
+  AXNodeID GetId(const FakeAXNode* node) const override { return node->id; }
 
   void GetChildren(
       const FakeAXNode* node,
@@ -88,18 +85,17 @@ class FakeAXTreeSource
 
  private:
   std::vector<FakeAXNode> nodes_;
-  std::map<int32_t, FakeAXNode*> id_to_node_;
-  int32_t root_id_;
+  std::map<AXNodeID, FakeAXNode*> id_to_node_;
+  AXNodeID root_id_;
 };
 
 }  // namespace
 
-using FakeAXTreeSourceChecker =
-    AXTreeSourceChecker<const FakeAXNode*, ui::AXNodeData, FakeAXTreeData>;
+using FakeAXTreeSourceChecker = AXTreeSourceChecker<const FakeAXNode*>;
 
 TEST(AXTreeSourceCheckerTest, SimpleValidTree) {
   std::vector<FakeAXNode> nodes = {
-      {1, ax::mojom::Role::kRootWebArea, {2}, -1},
+      {1, ax::mojom::Role::kRootWebArea, {2}, kInvalidAXNodeID},
       {2, ax::mojom::Role::kRootWebArea, {}, 1},
   };
   FakeAXTreeSource node_source(nodes, 1);
@@ -110,7 +106,7 @@ TEST(AXTreeSourceCheckerTest, SimpleValidTree) {
 
 TEST(AXTreeSourceCheckerTest, BadRoot) {
   std::vector<FakeAXNode> nodes = {
-      {1, ax::mojom::Role::kRootWebArea, {2}, -1},
+      {1, ax::mojom::Role::kRootWebArea, {2}, kInvalidAXNodeID},
       {2, ax::mojom::Role::kRootWebArea, {}, 1},
   };
   FakeAXTreeSource node_source(nodes, 3);
@@ -123,7 +119,7 @@ TEST(AXTreeSourceCheckerTest, BadRoot) {
 
 TEST(AXTreeSourceCheckerTest, BadNodeIdOfRoot) {
   std::vector<FakeAXNode> nodes = {
-      {0, ax::mojom::Role::kRootWebArea, {2}, -1},
+      {0, ax::mojom::Role::kRootWebArea, {2}, kInvalidAXNodeID},
       {2, ax::mojom::Role::kRootWebArea, {}, 0},
   };
   FakeAXTreeSource node_source(nodes, 0);
@@ -133,14 +129,14 @@ TEST(AXTreeSourceCheckerTest, BadNodeIdOfRoot) {
   CleanAXNodeDataString(&error_string);
   EXPECT_EQ(
       "Got a node with id 0, but all node IDs should be >= 1:\n"
-      "id=0 rootWebArea child_ids=2 parent_id=-1\n"
-      "id=0 rootWebArea child_ids=2 parent_id=-1",
+      "id=0 rootWebArea child_ids=2 parent_id=0\n"
+      "id=0 rootWebArea child_ids=2 parent_id=0",
       error_string);
 }
 
 TEST(AXTreeSourceCheckerTest, BadNodeIdOfChild) {
   std::vector<FakeAXNode> nodes = {
-      {1, ax::mojom::Role::kRootWebArea, {-5}, -1},
+      {1, ax::mojom::Role::kRootWebArea, {-5}, kInvalidAXNodeID},
       {-5, ax::mojom::Role::kRootWebArea, {}, 1},
   };
   FakeAXTreeSource node_source(nodes, -5);
@@ -157,7 +153,7 @@ TEST(AXTreeSourceCheckerTest, BadNodeIdOfChild) {
 
 TEST(AXTreeSourceCheckerTest, RootShouldNotBeNodeWithParent) {
   std::vector<FakeAXNode> nodes = {
-      {1, ax::mojom::Role::kRootWebArea, {2}, -1},
+      {1, ax::mojom::Role::kRootWebArea, {2}, kInvalidAXNodeID},
       {2, ax::mojom::Role::kRootWebArea, {}, 1},
   };
   FakeAXTreeSource node_source(nodes, 2);
@@ -169,15 +165,15 @@ TEST(AXTreeSourceCheckerTest, RootShouldNotBeNodeWithParent) {
       "Node 2 is the root, so its parent should be invalid, "
       "but we got a node with id 1.\n"
       "Node: id=2 rootWebArea (no children) parent_id=1\n"
-      "Parent: id=1 rootWebArea child_ids=2 parent_id=-1\n"
+      "Parent: id=1 rootWebArea child_ids=2 parent_id=0\n"
       "id=2 rootWebArea (no children) parent_id=1",
       error_string);
 }
 
 TEST(AXTreeSourceCheckerTest, MissingParent) {
   std::vector<FakeAXNode> nodes = {
-      {1, ax::mojom::Role::kRootWebArea, {2}, -1},
-      {2, ax::mojom::Role::kRootWebArea, {}, -1},
+      {1, ax::mojom::Role::kRootWebArea, {2}, kInvalidAXNodeID},
+      {2, ax::mojom::Role::kRootWebArea, {}, kInvalidAXNodeID},
   };
   FakeAXTreeSource node_source(nodes, 1);
   FakeAXTreeSourceChecker checker(&node_source);
@@ -186,15 +182,15 @@ TEST(AXTreeSourceCheckerTest, MissingParent) {
   CleanAXNodeDataString(&error_string);
   EXPECT_EQ(
       "Node 2 is not the root, but its parent was invalid:\n"
-      "id=2 rootWebArea (no children) parent_id=-1\n"
-      "id=1 rootWebArea child_ids=2 parent_id=-1\n"
-      "  id=2 rootWebArea (no children) parent_id=-1",
+      "id=2 rootWebArea (no children) parent_id=0\n"
+      "id=1 rootWebArea child_ids=2 parent_id=0\n"
+      "  id=2 rootWebArea (no children) parent_id=0",
       error_string);
 }
 
 TEST(AXTreeSourceCheckerTest, InvalidParent) {
   std::vector<FakeAXNode> nodes = {
-      {1, ax::mojom::Role::kRootWebArea, {2, 3}, -1},
+      {1, ax::mojom::Role::kRootWebArea, {2, 3}, kInvalidAXNodeID},
       {2, ax::mojom::Role::kButton, {}, 1},
       {3, ax::mojom::Role::kParagraph, {}, 2},
   };
@@ -207,8 +203,8 @@ TEST(AXTreeSourceCheckerTest, InvalidParent) {
       "Expected node 3 to have a parent of 1, but found a parent of 2.\n"
       "Node: id=3 paragraph (no children) parent_id=2\n"
       "Parent: id=2 button (no children) parent_id=1\n"
-      "Expected parent: id=1 rootWebArea child_ids=2,3 parent_id=-1\n"
-      "id=1 rootWebArea child_ids=2,3 parent_id=-1\n"
+      "Expected parent: id=1 rootWebArea child_ids=2,3 parent_id=0\n"
+      "id=1 rootWebArea child_ids=2,3 parent_id=0\n"
       "  id=2 button (no children) parent_id=1\n"
       "  id=3 paragraph (no children) parent_id=2",
       error_string);

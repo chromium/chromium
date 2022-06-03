@@ -7,14 +7,15 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
+#include "chrome/install_static/buildflags.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
@@ -31,11 +32,7 @@ namespace {
 TEST(ProductInstallDetailsTest, IsPathParentOf) {
   std::wstring path = L"C:\\Program Files\\Company\\Product\\Application\\foo";
   static constexpr const wchar_t* kFalseExpectations[] = {
-      L"",
-      L"\\",
-      L"\\\\",
-      L"C:\\Program File",
-      L"C:\\Program Filesz",
+      L"", L"\\", L"\\\\", L"C:\\Program File", L"C:\\Program Filesz",
   };
   for (const wchar_t* false_expectation : kFalseExpectations) {
     EXPECT_FALSE(IsPathParentOf(
@@ -96,7 +93,9 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
       EXPECT_TRUE(PathIsInProgramFiles(path)) << path;
 
       path = base::StringPrintf(
-          valid, base::i18n::ToLower(program_files_path).c_str());
+          valid, base::AsWString(base::i18n::ToLower(
+                                     base::AsStringPiece16(program_files_path)))
+                     .c_str());
       EXPECT_TRUE(PathIsInProgramFiles(path)) << path;
     }
   }
@@ -133,52 +132,72 @@ struct TestData {
 constexpr TestData kTestData[] = {
     {
         L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-        STABLE_INDEX, true, L"",
+        STABLE_INDEX,
+        true,
+        L"",
     },
     {
         L"C:\\Users\\user\\AppData\\Local\\Google\\Chrome\\Application"
         L"\\chrome.exe",
-        STABLE_INDEX, false, L"",
+        STABLE_INDEX,
+        false,
+        L"",
     },
     {
         L"C:\\Program Files (x86)\\Google\\Chrome "
         L"Beta\\Application\\chrome.exe",
-        BETA_INDEX, true, L"beta",
+        BETA_INDEX,
+        true,
+        L"beta",
     },
     {
         L"C:\\Users\\user\\AppData\\Local\\Google\\Chrome Beta\\Application"
         L"\\chrome.exe",
-        BETA_INDEX, false, L"beta",
+        BETA_INDEX,
+        false,
+        L"beta",
     },
     {
         L"C:\\Program Files (x86)\\Google\\Chrome Dev\\Application\\chrome.exe",
-        DEV_INDEX, true, L"dev",
+        DEV_INDEX,
+        true,
+        L"dev",
     },
     {
         L"C:\\Users\\user\\AppData\\Local\\Google\\Chrome Dev\\Application"
         L"\\chrome.exe",
-        DEV_INDEX, false, L"dev",
+        DEV_INDEX,
+        false,
+        L"dev",
     },
     {
         L"C:\\Users\\user\\AppData\\Local\\Google\\Chrome SxS\\Application"
         L"\\chrome.exe",
-        CANARY_INDEX, false, L"canary",
+        CANARY_INDEX,
+        false,
+        L"canary",
     },
     {
         L"C:\\Users\\user\\AppData\\Local\\Google\\CHROME SXS\\application"
         L"\\chrome.exe",
-        CANARY_INDEX, false, L"canary",
+        CANARY_INDEX,
+        false,
+        L"canary",
     },
 };
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr TestData kTestData[] = {
     {
         L"C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe",
-        CHROMIUM_INDEX, true, L"",
+        CHROMIUM_INDEX,
+        true,
+        L"",
     },
     {
         L"C:\\Users\\user\\AppData\\Local\\Chromium\\Application\\chrome.exe",
-        CHROMIUM_INDEX, false, L"",
+        CHROMIUM_INDEX,
+        false,
+        L"",
     },
 };
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -187,26 +206,36 @@ constexpr TestData kTestData[] = {
 
 // Test that MakeProductDetails properly sniffs out an install's details.
 class MakeProductDetailsTest : public testing::TestWithParam<TestData> {
+ public:
+  MakeProductDetailsTest(const MakeProductDetailsTest&) = delete;
+  MakeProductDetailsTest& operator=(const MakeProductDetailsTest&) = delete;
+
  protected:
   MakeProductDetailsTest()
       : test_data_(GetParam()),
         root_key_(test_data_.system_level ? HKEY_LOCAL_MACHINE
                                           : HKEY_CURRENT_USER),
-        nt_root_key_(test_data_.system_level ? nt::HKLM : nt::HKCU) {
-  }
+        nt_root_key_(test_data_.system_level ? nt::HKLM : nt::HKCU) {}
 
   ~MakeProductDetailsTest() {
-    nt::SetTestingOverride(nt_root_key_, base::string16());
+    nt::SetTestingOverride(nt_root_key_, std::wstring());
   }
 
   void SetUp() override {
-    base::string16 path;
+    std::wstring path;
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(root_key_, &path));
     nt::SetTestingOverride(nt_root_key_, path);
   }
 
   const TestData& test_data() const { return test_data_; }
+
+  void SetChannelOverride(const wchar_t* value) {
+    ASSERT_THAT(base::win::RegKey(root_key_, GetClientsKeyPath().c_str(),
+                                  KEY_WOW64_32KEY | KEY_SET_VALUE)
+                    .WriteValue(L"channel", value),
+                Eq(ERROR_SUCCESS));
+  }
 
   void SetAp(const wchar_t* value) {
     ASSERT_THAT(base::win::RegKey(root_key_, GetClientStateKeyPath().c_str(),
@@ -225,15 +254,27 @@ class MakeProductDetailsTest : public testing::TestWithParam<TestData> {
   }
 
  private:
+  // Returns the registry path for the product's Clients key.
+  std::wstring GetClientsKeyPath() {
+    std::wstring result(L"Software\\");
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+    result.append(L"Google\\Update\\Clients\\");
+    result.append(kInstallModes[test_data().index].app_guid);
+#else
+    result.append(kProductPathName);
+#endif
+    return result;
+  }
+
   // Returns the registry path for the product's ClientState key.
   std::wstring GetClientStateKeyPath() {
     std::wstring result(L"Software\\");
-    if (kUseGoogleUpdateIntegration) {
-      result.append(L"Google\\Update\\ClientState\\");
-      result.append(kInstallModes[test_data().index].app_guid);
-    } else {
-      result.append(kProductPathName);
-    }
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+    result.append(L"Google\\Update\\ClientState\\");
+    result.append(kInstallModes[test_data().index].app_guid);
+#else
+    result.append(kProductPathName);
+#endif
     return result;
   }
 
@@ -241,8 +282,6 @@ class MakeProductDetailsTest : public testing::TestWithParam<TestData> {
   const TestData& test_data_;
   HKEY root_key_;
   nt::ROOT_KEY nt_root_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(MakeProductDetailsTest);
 };
 
 // Test that the install mode is sniffed properly based on the path.
@@ -266,55 +305,42 @@ TEST_P(MakeProductDetailsTest, DefaultChannel) {
   EXPECT_THAT(details->channel(), StrEq(test_data().channel));
 }
 
-// Test that the channel name is properly parsed out of additional parameters.
-TEST_P(MakeProductDetailsTest, AdditionalParametersChannels) {
-  const std::pair<const wchar_t*, const wchar_t*> kApChannels[] = {
-      // stable
-      {L"", L""},
-      {L"-full", L""},
-      {L"x64-stable", L""},
-      {L"x64-stable-full", L""},
-      {L"baz-x64-stable", L""},
-      {L"foo-1.1-beta", L""},
-      {L"2.0-beta", L""},
-      {L"bar-2.0-dev", L""},
-      {L"1.0-dev", L""},
-      {L"fuzzy", L""},
-      {L"foo", L""},
-      {L"-multi-chrome", L""},                               // Legacy.
-      {L"x64-stable-multi-chrome", L""},                     // Legacy.
-      {L"-stage:ensemble_patching-multi-chrome-full", L""},  // Legacy.
-      {L"-multi-chrome-full", L""},                          // Legacy.
-      // beta
-      {L"1.1-beta", L"beta"},
-      {L"1.1-beta-full", L"beta"},
-      {L"x64-beta", L"beta"},
-      {L"x64-beta-full", L"beta"},
-      {L"1.1-bar", L"beta"},
-      {L"1n1-foobar", L"beta"},
-      {L"x64-Beta", L"beta"},
-      {L"bar-x64-beta", L"beta"},
-      // dev
-      {L"2.0-dev", L"dev"},
-      {L"2.0-dev-full", L"dev"},
-      {L"x64-dev", L"dev"},
-      {L"x64-dev-full", L"dev"},
-      {L"2.0-DEV", L"dev"},
-      {L"2.0-dev-eloper", L"dev"},
-      {L"2.0-doom", L"dev"},
-      {L"250-doom", L"dev"},
-  };
+// Test that the default channel is sniffed properly based on the channel
+// override.
+TEST_P(MakeProductDetailsTest, PolicyOverrideChannel) {
+  static constexpr std::tuple<const wchar_t*, const wchar_t*, bool>
+      kChannelOverrides[] = {
+          {L"", L"", false},         {L"stable", L"", false},
+          {L"extended", L"", true},  {L"dev", L"dev", false},
+          {L"beta", L"beta", false},
+      };
+  for (const auto& the_override : kChannelOverrides) {
+    const wchar_t* channel_override;
+    const wchar_t* expected_channel;
+    bool extended_stable;
 
-  for (const auto& ap_and_channel : kApChannels) {
-    SetAp(ap_and_channel.first);
+    std::tie(channel_override, expected_channel, extended_stable) =
+        the_override;
+    if (channel_override)
+      SetChannelOverride(channel_override);
+
     std::unique_ptr<PrimaryInstallDetails> details(
         MakeProductDetails(test_data().path));
-    if (kInstallModes[test_data().index].channel_strategy ==
-        ChannelStrategy::ADDITIONAL_PARAMETERS) {
-      EXPECT_THAT(details->channel(), StrEq(ap_and_channel.second));
-    } else {
-      // "ap" is ignored for this mode.
-      EXPECT_THAT(details->channel(), StrEq(test_data().channel));
+    switch (kInstallModes[test_data().index].channel_strategy) {
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+      case ChannelStrategy::FLOATING:
+        EXPECT_THAT(details->channel(), StrEq(expected_channel));
+        EXPECT_THAT(details->channel_origin(), Eq(ChannelOrigin::kPolicy));
+        EXPECT_THAT(details->channel_override(), StrEq(channel_override));
+        EXPECT_THAT(details->is_extended_stable_channel(), Eq(extended_stable));
+        break;
+      case ChannelStrategy::FIXED:
+#else   // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+      case ChannelStrategy::UNSUPPORTED:
+#endif  // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+        // The override is ignored for this mode.
+        EXPECT_THAT(details->channel(), StrEq(test_data().channel));
+        break;
     }
   }
 }
@@ -322,9 +348,7 @@ TEST_P(MakeProductDetailsTest, AdditionalParametersChannels) {
 // Test that the "ap" value is cached during initialization.
 TEST_P(MakeProductDetailsTest, UpdateAp) {
   // This test is only valid for brands that integrate with Google Update.
-  if (!kUseGoogleUpdateIntegration)
-    return;
-
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   // With no value in the registry, the ap value should be empty.
   {
     std::unique_ptr<PrimaryInstallDetails> details(
@@ -340,14 +364,13 @@ TEST_P(MakeProductDetailsTest, UpdateAp) {
         MakeProductDetails(test_data().path));
     EXPECT_THAT(details->update_ap(), StrEq(kCrookedMoon));
   }
+#endif
 }
 
 // Test that the cohort name is cached during initialization.
 TEST_P(MakeProductDetailsTest, UpdateCohortName) {
   // This test is only valid for brands that integrate with Google Update.
-  if (!kUseGoogleUpdateIntegration)
-    return;
-
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   // With no value in the registry, the cohort name should be empty.
   {
     std::unique_ptr<PrimaryInstallDetails> details(
@@ -363,6 +386,7 @@ TEST_P(MakeProductDetailsTest, UpdateCohortName) {
         MakeProductDetails(test_data().path));
     EXPECT_THAT(details->update_cohort_name(), StrEq(kPhony));
   }
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

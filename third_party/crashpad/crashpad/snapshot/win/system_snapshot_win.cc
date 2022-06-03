@@ -14,15 +14,21 @@
 
 #include "snapshot/win/system_snapshot_win.h"
 
-#include <windows.h>
 #include <intrin.h>
 #include <powrprof.h>
+#include <windows.h>
 #include <winnt.h>
+
+// Must be after windows.h.
+#include <versionhelpers.h>
 
 #include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -86,17 +92,13 @@ void SystemSnapshotWin::Initialize(ProcessReaderWin* process_reader) {
 
   process_reader_ = process_reader;
 
-  // We use both GetVersionEx() and GetModuleVersionAndType() (which uses
-  // VerQueryValue() internally). GetVersionEx() is not trustworthy after
-  // Windows 8 (depending on the application manifest) so its data is used only
-  // to fill the os_server_ field, and the rest comes from the version
-  // information stamped on kernel32.dll.
-  OSVERSIONINFOEX version_info = {sizeof(version_info)};
-  if (!GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&version_info))) {
-    PLOG(WARNING) << "GetVersionEx";
-  } else {
-    os_server_ = version_info.wProductType != VER_NT_WORKSTATION;
-  }
+  // We use both IsWindowsServer() (which uses VerifyVersionInfo() internally)
+  // and GetModuleVersionAndType() (which uses VerQueryValue() internally).
+  // VerifyVersionInfo() is not trustworthy after Windows 8 (depending on the
+  // application manifest) so its data is used only to fill the os_server_
+  // field, and the rest comes from the version information stamped on
+  // kernel32.dll.
+  os_server_ = IsWindowsServer();
 
   static constexpr wchar_t kSystemDll[] = L"kernel32.dll";
   VS_FIXEDFILEINFO ffi;
@@ -202,7 +204,7 @@ std::string SystemSnapshotWin::CPUVendor() const {
 
   crashpad::ScopedRegistryKey scoped_key(key);
   DWORD type;
-  wchar_t vendor_identifier[1024];
+  char16_t vendor_identifier[1024];
   DWORD vendor_identifier_size = sizeof(vendor_identifier);
 
   if (RegQueryValueEx(key,
@@ -216,9 +218,9 @@ std::string SystemSnapshotWin::CPUVendor() const {
   }
 
   std::string return_value;
-  DCHECK_EQ(vendor_identifier_size % sizeof(wchar_t), 0u);
+  DCHECK_EQ(vendor_identifier_size % sizeof(char16_t), 0u);
   base::UTF16ToUTF8(vendor_identifier,
-                    vendor_identifier_size / sizeof(wchar_t),
+                    vendor_identifier_size / sizeof(char16_t),
                     &return_value);
 
   return return_value.c_str();
@@ -407,8 +409,8 @@ void SystemSnapshotWin::TimeZone(DaylightSavingTimeStatus* dst_status,
       (time_zone_information.Bias + time_zone_information.StandardBias) * -60;
   *daylight_offset_seconds =
       (time_zone_information.Bias + time_zone_information.DaylightBias) * -60;
-  *standard_name = base::UTF16ToUTF8(time_zone_information.StandardName);
-  *daylight_name = base::UTF16ToUTF8(time_zone_information.DaylightName);
+  *standard_name = base::WideToUTF8(time_zone_information.StandardName);
+  *daylight_name = base::WideToUTF8(time_zone_information.DaylightName);
 }
 
 }  // namespace internal

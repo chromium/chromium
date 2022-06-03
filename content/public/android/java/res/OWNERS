@@ -4,6 +4,3 @@
 set noparent
 
 file://ui/android/java/res/LAYOUT_OWNERS
-
-# COMPONENT: Content>Core
-# OS: Android

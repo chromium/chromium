@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -152,8 +152,7 @@ class _EmmaHtmlParser(object):
                    lineno_element[self._ELEMENT_CONTAINING_LINENO].text)
       # Get the original line of Java source code.
       raw_source = tr[self._ELEMENT_CONTAINING_SOURCE_CODE].text
-      utf8_source = raw_source.encode('UTF-8')
-      source = utf8_source.replace(self._NO_BREAK_SPACE, ' ')
+      source = raw_source.replace(self._NO_BREAK_SPACE, ' ')
 
       line = LineCoverage(lineno, source, coverage_status, fractional_coverage)
       line_coverage.append(line)
@@ -183,7 +182,7 @@ class _EmmaHtmlParser(object):
     }
 
     package_to_emma = {}
-    for package_emma_file_path, package_name in package_links.iteritems():
+    for package_emma_file_path, package_name in package_links.items():
       # These <a> elements contain each class name in the current package and
       # the path of the file where the coverage info is stored for each class.
       coverage_file_link_elements = self._FindElements(
@@ -210,7 +209,7 @@ class _EmmaHtmlParser(object):
         Returns an empty list if there is no match.
     """
     with open(file_path) as f:
-      file_contents = f.read().decode('ISO-8859-1').encode('UTF-8')
+      file_contents = f.read()
       root = ElementTree.fromstring(file_contents)
       return root.findall(xpath_selector)
 
@@ -257,7 +256,7 @@ class _EmmaCoverageStats(object):
         |lines_for_coverage|.
     """
     file_coverage = {}
-    for file_path, line_numbers in lines_for_coverage.iteritems():
+    for file_path, line_numbers in lines_for_coverage.items():
       file_coverage_dict = self.GetCoverageDictForFile(file_path, line_numbers)
       if file_coverage_dict:
         file_coverage[file_path] = file_coverage_dict
@@ -265,7 +264,7 @@ class _EmmaCoverageStats(object):
         logging.warning(
             'No code coverage data for %s, skipping.', file_path)
 
-    covered_statuses = [s['incremental'] for s in file_coverage.itervalues()]
+    covered_statuses = [s['incremental'] for s in file_coverage.values()]
     num_covered_lines = sum(s['covered'] for s in covered_statuses)
     num_total_lines = sum(s['total'] for s in covered_statuses)
     return {
@@ -381,9 +380,11 @@ class _EmmaCoverageStats(object):
     package_to_emma = self._emma_parser.GetPackageNameToEmmaFileDict()
     # Finally, we have a dict mapping Java file paths to EMMA report files.
     # Example: /usr/code/file.java -> out/coverage/1a.html.
-    source_to_emma = {source: package_to_emma[package]
-                      for source, package in source_to_package.iteritems()
-                      if package in package_to_emma}
+    source_to_emma = {
+        source: package_to_emma[package]
+        for source, package in source_to_package.items()
+        if package in package_to_emma
+    }
     return source_to_emma
 
   @staticmethod
@@ -441,13 +442,16 @@ def GenerateCoverageReport(line_coverage_file, out_file_path, coverage_dir):
   with open(line_coverage_file) as f:
     potential_files_for_coverage = json.load(f)
 
-  files_for_coverage = {f: lines
-                        for f, lines in potential_files_for_coverage.iteritems()
-                        if _EmmaCoverageStats.NeedsCoverage(f)}
+  files_for_coverage = {
+      f: lines
+      for f, lines in potential_files_for_coverage.items()
+      if _EmmaCoverageStats.NeedsCoverage(f)
+  }
 
   coverage_results = {}
   if files_for_coverage:
-    code_coverage = _EmmaCoverageStats(coverage_dir, files_for_coverage.keys())
+    code_coverage = _EmmaCoverageStats(coverage_dir,
+                                       list(files_for_coverage.keys()))
     coverage_results = code_coverage.GetCoverageDict(files_for_coverage)
   else:
     logging.info('No Java files requiring coverage were included in %s.',

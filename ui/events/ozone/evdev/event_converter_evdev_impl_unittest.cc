@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -42,14 +42,16 @@ class MockEventConverterEvdevImpl : public EventConverterEvdevImpl {
                                 dispatcher) {
     SetEnabled(true);
   }
+
+  MockEventConverterEvdevImpl(const MockEventConverterEvdevImpl&) = delete;
+  MockEventConverterEvdevImpl& operator=(const MockEventConverterEvdevImpl&) =
+      delete;
+
   ~MockEventConverterEvdevImpl() override { SetEnabled(false); }
 
   // EventConverterEvdevImpl:
   bool HasKeyboard() const override { return true; }
   bool HasTouchpad() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventConverterEvdevImpl);
 };
 
 }  // namespace ui
@@ -58,6 +60,10 @@ class MockEventConverterEvdevImpl : public EventConverterEvdevImpl {
 class EventConverterEvdevImplTest : public testing::Test {
  public:
   EventConverterEvdevImplTest() {}
+
+  EventConverterEvdevImplTest(const EventConverterEvdevImplTest&) = delete;
+  EventConverterEvdevImplTest& operator=(const EventConverterEvdevImplTest&) =
+      delete;
 
   // Overridden from testing::Test:
   void SetUp() override {
@@ -141,8 +147,6 @@ class EventConverterEvdevImplTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdevImplTest);
 };
 
 TEST_F(EventConverterEvdevImplTest, KeyPress) {
@@ -166,11 +170,13 @@ TEST_F(EventConverterEvdevImplTest, KeyPress) {
   event = dispatched_event(0);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
+  EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
 
   event = dispatched_event(1);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
+  EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
 }
 
@@ -203,11 +209,13 @@ TEST_F(EventConverterEvdevImplTest, KeyRepeat) {
   event = dispatched_event(0);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
+  EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
 
   event = dispatched_event(1);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_BACK, event->key_code());
+  EXPECT_EQ(0x7002au, event->scan_code());
   EXPECT_EQ(0, event->flags());
 }
 
@@ -246,21 +254,25 @@ TEST_F(EventConverterEvdevImplTest, KeyWithModifier) {
   event = dispatched_event(0);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_SHIFT, event->key_code());
+  EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(ui::EF_SHIFT_DOWN, event->flags());
 
   event = dispatched_event(1);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
+  EXPECT_EQ(0x70004u, event->scan_code());
   EXPECT_EQ(ui::EF_SHIFT_DOWN, event->flags());
 
   event = dispatched_event(2);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_A, event->key_code());
+  EXPECT_EQ(0x70004u, event->scan_code());
   EXPECT_EQ(ui::EF_SHIFT_DOWN, event->flags());
 
   event = dispatched_event(3);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_SHIFT, event->key_code());
+  EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(0, event->flags());
 }
 
@@ -301,31 +313,37 @@ TEST_F(EventConverterEvdevImplTest, KeyWithDuplicateModifier) {
   event = dispatched_event(0);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
+  EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(1);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
+  EXPECT_EQ(0x700e5u, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(2);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_Z, event->key_code());
+  EXPECT_EQ(0x7001du, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(3);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_Z, event->key_code());
+  EXPECT_EQ(0x7001du, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(4);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
+  EXPECT_EQ(0x700e1u, event->scan_code());
   EXPECT_EQ(ui::EF_CONTROL_DOWN, event->flags());
 
   event = dispatched_event(5);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_CONTROL, event->key_code());
+  EXPECT_EQ(0x700e5u, event->scan_code());
   EXPECT_EQ(0, event->flags());
 }
 
@@ -350,11 +368,13 @@ TEST_F(EventConverterEvdevImplTest, KeyWithLock) {
   event = dispatched_event(0);
   EXPECT_EQ(ui::ET_KEY_PRESSED, event->type());
   EXPECT_EQ(ui::VKEY_CAPITAL, event->key_code());
+  EXPECT_EQ(0x70039u, event->scan_code());
   EXPECT_EQ(ui::EF_MOD3_DOWN, event->flags());
 
   event = dispatched_event(1);
   EXPECT_EQ(ui::ET_KEY_RELEASED, event->type());
   EXPECT_EQ(ui::VKEY_CAPITAL, event->key_code());
+  EXPECT_EQ(0x70039u, event->scan_code());
   EXPECT_EQ(ui::EF_NONE, event->flags());
 }
 

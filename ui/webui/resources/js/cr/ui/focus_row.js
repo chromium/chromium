@@ -40,8 +40,8 @@ cr.define('cr.ui', function() {
       /** @type {cr.ui.FocusRowDelegate|undefined} */
       this.delegate = delegate;
 
-      /** @protected {!EventTracker} */
-      this.eventTracker = new EventTracker;
+      /** @protected {!cr.EventTracker} */
+      this.eventTracker = new cr.EventTracker;
     }
 
     /**
@@ -61,7 +61,7 @@ cr.define('cr.ui', function() {
         assertInstanceof(current, Element);
 
         const style = window.getComputedStyle(current);
-        if (style.visibility == 'hidden' || style.display == 'none') {
+        if (style.visibility === 'hidden' || style.display === 'none') {
           return false;
         }
 
@@ -70,7 +70,7 @@ cr.define('cr.ui', function() {
           return false;
         }
 
-        if (parent == current.ownerDocument ||
+        if (parent === current.ownerDocument ||
             parent instanceof DocumentFragment) {
           return true;
         }
@@ -116,7 +116,7 @@ cr.define('cr.ui', function() {
       assert(type);
 
       let element;
-      if (typeof selectorOrElement == 'string') {
+      if (typeof selectorOrElement === 'string') {
         element = this.root.querySelector(selectorOrElement);
       } else {
         element = selectorOrElement;
@@ -186,7 +186,7 @@ cr.define('cr.ui', function() {
      */
     getFirstFocusable(opt_type) {
       const element = this.getFocusableElements().find(
-          el => !opt_type || el.getAttribute('focus-type') == opt_type);
+          el => !opt_type || el.getAttribute('focus-type') === opt_type);
       return element || null;
     }
 
@@ -214,7 +214,7 @@ cr.define('cr.ui', function() {
      * @param {boolean} active True if tab is allowed for this row.
      */
     makeActive(active) {
-      if (active == this.isActive()) {
+      if (active === this.isActive()) {
         return;
       }
 
@@ -298,13 +298,13 @@ cr.define('cr.ui', function() {
           // Bubble up to focus on the previous element outside the row.
           return;
         }
-      } else if (e.key == 'ArrowLeft') {
+      } else if (e.key === 'ArrowLeft') {
         index = elementIndex + (isRTL() ? 1 : -1);
-      } else if (e.key == 'ArrowRight') {
+      } else if (e.key === 'ArrowRight') {
         index = elementIndex + (isRTL() ? -1 : 1);
-      } else if (e.key == 'Home') {
+      } else if (e.key === 'Home') {
         index = 0;
-      } else if (e.key == 'End') {
+      } else if (e.key === 'End') {
         index = elements.length - 1;
       } else {
         shouldStopPropagation = false;

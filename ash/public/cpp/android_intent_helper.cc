@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/android_intent_helper.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/strings/string_util.h"
 
 namespace ash {
 namespace {

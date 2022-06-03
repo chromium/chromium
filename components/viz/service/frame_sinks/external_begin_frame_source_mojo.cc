@@ -4,6 +4,8 @@
 
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mojo.h"
 
+#include <utility>
+
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 
 namespace viz {
@@ -74,16 +76,25 @@ void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
     return;
   if (!pending_frame_callback_)
     return;
-  // If root frame is missing, the display scheduler will not produce a
-  // frame, so fire the pending frame callback early.
-  if (!display_->IsRootFrameMissing())
+  // If there aren't pending surfaces and the root frame is not missing,
+  // the display scheduler is likely to produce proper frame, so let it do
+  // its work. Otherwise, fire the pending frame callback early.
+  if (!display_->IsRootFrameMissing() &&
+      !display_->HasPendingSurfaces(last_begin_frame_args_)) {
     return;
+  }
+
+  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
 
   // All frame sinks are done with frame, yet the root frame is still missing,
   // the display won't draw, so resolve callback now.
   BeginFrameAck nak(last_begin_frame_args_.frame_id.source_id,
                     last_begin_frame_args_.frame_id.sequence_number,
                     /*has_damage=*/false);
+  // Prevent missing begin frames from being sent to sinks that came late,
+  // as this may result in two overlapping frames being sent, which is not
+  // supported with full pipeline mode.
+  last_begin_frame_args_ = BeginFrameArgs();
   std::move(pending_frame_callback_).Run(nak);
 }
 
@@ -92,6 +103,10 @@ void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
   if (!pending_frame_callback_)
     return;
   std::move(pending_frame_callback_).Run(ack);
+  // If there are pending copy output requests that have not been fulfilled,
+  // cancel them, as they won't be served till the next frame. This prevents
+  // the client for waiting for them indefinitely.
+  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
 }
 
 void ExternalBeginFrameSourceMojo::OnDisplayDestroyed() {

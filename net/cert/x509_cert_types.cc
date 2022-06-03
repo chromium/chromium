@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/parse_number.h"

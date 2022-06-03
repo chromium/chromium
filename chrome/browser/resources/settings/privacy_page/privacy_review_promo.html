@@ -1,0 +1,35 @@
+<style include="cr-shared-style settings-shared">
+  #wrapper {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: var(--cr-section-padding);
+  }
+
+  h2 {
+    color: var(--cr-primary-text-color);
+    font-size: 22px;
+    padding-top: 0;
+  }
+
+  #bodyText {
+    padding-block-end: var(--cr-section-vertical-padding);
+  }
+</style>
+<div id="wrapper">
+  <div id="controlsColumn">
+    <h2 id="title" aria-hidden="true">
+      $i18n{privacyReviewPromoTitle}
+    </h2>
+    <div id="bodyText" class="cr-secondary-text" aria-hidden="true">
+      $i18n{privacyReviewPromoBody}
+    </div>
+    <cr-button class="action-button" id="startButton" role="button"
+        aria-labelledby="title" aria-describedby="bodyText"
+        no-search on-click="onPrivacyReviewClick_">
+      $i18n{privacyReviewPromoStartButton}
+    </cr-button>
+  </div>
+  <img id="banner" aria-hidden="true"
+      src="chrome://settings/images/privacy_review_promo_banner.svg">
+</div>

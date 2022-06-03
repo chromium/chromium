@@ -1,0 +1,57 @@
+<style include="settings-shared"></style>
+<div class="settings-box first">
+  <div role="text">
+    [[getDescriptionText_()]]
+    <span id="guestOsInstructionsRemove" hidden="[[!sharedPaths_.length]]">
+      $i18n{guestOsSharedPathsInstructionsRemove}
+    </span>
+  </div>
+</div>
+<div id="guestOsListEmpty" class="settings-box secondary continuation"
+    hidden="[[sharedPaths_.length]]" >
+   $i18n{guestOsSharedPathsListEmptyMessage}
+</div>
+<div id="guestOsList" hidden="[[!sharedPaths_.length]]">
+  <div class="settings-box continuation">
+    <h2 id="guestOsListHeading" class="start">
+      $i18n{guestOsSharedPathsListHeading}
+    </h2>
+  </div>
+  <iron-list class="list-frame vertical-list" role="list"
+      aria-labeledby="guestOsListHeading" items="[[sharedPaths_]]">
+    <template>
+      <div class="list-item" role="listitem">
+        <div class="start" aria-hidden="true"
+            id="[[generatePathDisplayTextId_(index)]]">
+          [[item.pathDisplayText]]
+        </div>
+        <cr-icon-button class="icon-clear" tabindex$="[[tabIndex]]"
+            on-click="onRemoveSharedPathClick_"
+            title="$i18n{guestOsSharedPathsStopSharing}"
+            aria-labeledby$="[[generatePathDisplayTextId_(index)]]">
+        </cr-icon-button>
+      </div>
+    </template>
+  </iron-list>
+</div>
+<template is="dom-if" if="[[sharedPathWhichFailedRemoval_]]" restamp>
+  <cr-dialog id="removeSharedPathFailedDialog" close-text="$i18n{close}"
+      show-on-attach>
+    <div slot="title">
+      $i18n{guestOsSharedPathsRemoveFailureDialogTitle}
+    </div>
+    <div slot="body">
+      [[getRemoveFailureMessage_()]]
+    </div>
+    <div slot="button-container">
+      <cr-button id="cancel" class="cancel-button"
+          on-click="onRemoveFailedDismissClick_">
+        $i18n{ok}
+      </cr-button>
+      <cr-button id="retry" class="action-button"
+          on-click="onRemoveFailedRetryClick_">
+        $i18n{guestOsSharedPathsRemoveFailureTryAgain}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

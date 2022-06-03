@@ -2,48 +2,49 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/buttons/oobe_next_button.html">
+<link rel="import" href="/components/buttons/oobe_text_button.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
+
 <dom-module id="assistant-value-prop">
   <template>
-    <link rel="stylesheet" href="../login/oobe_dialog_host.css">
-    <link rel="stylesheet" href="../login/oobe_flex_layout.css">
+    <style include="oobe-dialog-host-styles"></style>
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_value_prop.css">
-    <oobe-dialog id="value-prop-dialog" class="value-prop-loading"
-        role="dialog" has-buttons no-footer-padding no-header>
-      <div slot="footer">
-        <div class="container">
-          <img id="logo" src="assistant_logo.png"
-              i18n-values="aria-label:assistantLogo">
-          <div class="title" id="title-text"></div>
-          <div class="content" id="intro-text"></div>
-          <div class="flex layout horizontal center">
-            <div id="value-prop-container">
-              <div class="flex layout horizontal center">
-                <img id="user-image"
-                    i18n-values="aria-label:assistantUserImage">
-                <div class="content" id="user-name"></div>
-              </div>
-              <webview id="value-prop-view" tabindex="-1"></webview>
-            </div>
-            <div id="consents-container"></div>
-          </div>
-          <div class="content" id="footer-text"></div>
-        </div>
+    <oobe-adaptive-dialog id="value-prop-dialog" role="dialog">
+      <iron-icon slot="icon" icon="assistant-32:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </iron-icon>
+      <h1 slot="title" id="title-text"></h1>
+      <div id="animation-container">
+          <webview id="value-prop-view" tabindex="-1"></webview>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
-        <oobe-text-button id="skip-button" on-tap="onSkipTap_"
+      <div slot="content" id="content-container"
+          class="landscape-vertical-centered">
+        <div class="content" id="subtitle-container"></div>
+        <div class="line" hidden$="[[isMinorMode_]]"></div>
+        <div id="consents-container"></div>
+        <div class="content" id="footer-text" hidden$="[[isMinorMode_]]"></div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="skip-button" on-click="onSkipTap_"
             disabled="[[buttonsDisabled]]">
-          <div id="skip-button-text"></div>
+          <div id="skip-button-text" slot="text"></div>
         </oobe-text-button>
-        <oobe-text-button id="next-button" inverse on-tap="onNextTap_"
-            disabled="[[buttonsDisabled]]">
-          <div id="next-button-text"></div>
+        <oobe-text-button id="next-button" inverse="[[!equalWeightButtons_]]"
+            on-click="onNextTap_" disabled="[[buttonsDisabled]]">
+          <div id="next-button-text" slot="text"></div>
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <cr-dialog id="learn-more-overlay">
       <div slot="body">
@@ -54,8 +55,7 @@
       </div>
       <div slot="button-container">
         <oobe-text-button inverse id="overlay-close-button">
-          <div i18n-content="assistantOptinOKButton" id="close-button-text">
-          </div>
+          <div id="overlay-close-button-text" slot="text"></div>
         </oobe-text-button>
       </div>
     </cr-dialog>

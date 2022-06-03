@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+  #layout-viewport {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: green;
+  }
+
+  #spacer {
+    width: 200vw;
+    height: 200vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    background-color: red;
+  }
+
+  html, body {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+  }
+
+  html {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+</style>
+<div id="layout-viewport">
+  To test manually, pinch zoom into the page and scroll around. You should be
+  able to pan around within the green area but you should never scroll the
+  document (you should never see red).
+</div>
+<div id="spacer"></div>
+<script>
+  const viewport_center = {x: 400, y: 300};
+
+  window.onload = () => {
+    if (!window.internals)
+      return;
+
+    internals.setPageScaleFactor(2);
+
+    promise_test (async (test) => {
+      await waitForCompositorCommit();
+
+      const delta = {x: 0, y: 2000};
+      await smoothScrollWithXY(delta.x,
+                               delta.y,
+                               viewport_center.x,
+                               viewport_center.y,
+                               GestureSourceType.TOUCH_INPUT,
+                               SPEED_INSTANT);
+
+      assert_equals(window.scrollY, 0, "Document doesn't scroll vertically.");
+      assert_equals(window.visualViewport.offsetTop, 300, "VisualViewport pans vertically.");
+    }, "Test viewport scrolling for overflow-y: hidden.");
+
+    promise_test (async (test) => {
+      await waitForCompositorCommit();
+
+      const delta = {x: 2000, y: 0};
+      await smoothScrollWithXY(delta.x,
+                               delta.y,
+                               viewport_center.x,
+                               viewport_center.y,
+                               GestureSourceType.TOUCH_INPUT,
+                               SPEED_INSTANT);
+
+      assert_equals(window.scrollX, 0, "Document doesn't scroll horizontally.");
+      assert_equals(window.visualViewport.offsetLeft, 400, "VisualViewport pans horizontally.");
+    }, "Test viewport scrolling for overflow-x: hidden.");
+  }
+</script>

@@ -4,6 +4,8 @@
 
 #include "base/supports_user_data.h"
 
+#include "base/sequence_checker.h"
+
 namespace base {
 
 std::unique_ptr<SupportsUserData::Data> SupportsUserData::Data::Clone() {
@@ -13,14 +15,14 @@ std::unique_ptr<SupportsUserData::Data> SupportsUserData::Data::Clone() {
 SupportsUserData::SupportsUserData() {
   // Harmless to construct on a different execution sequence to subsequent
   // usage.
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 SupportsUserData::SupportsUserData(SupportsUserData&&) = default;
 SupportsUserData& SupportsUserData::operator=(SupportsUserData&&) = default;
 
 SupportsUserData::Data* SupportsUserData::GetUserData(const void* key) const {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Avoid null keys; they are too vulnerable to collision.
   DCHECK(key);
   auto found = user_data_.find(key);
@@ -31,7 +33,7 @@ SupportsUserData::Data* SupportsUserData::GetUserData(const void* key) const {
 
 void SupportsUserData::SetUserData(const void* key,
                                    std::unique_ptr<Data> data) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Avoid null keys; they are too vulnerable to collision.
   DCHECK(key);
   if (data.get())
@@ -41,12 +43,12 @@ void SupportsUserData::SetUserData(const void* key,
 }
 
 void SupportsUserData::RemoveUserData(const void* key) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   user_data_.erase(key);
 }
 
 void SupportsUserData::DetachFromSequence() {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 void SupportsUserData::CloneDataFrom(const SupportsUserData& other) {
@@ -58,7 +60,9 @@ void SupportsUserData::CloneDataFrom(const SupportsUserData& other) {
 }
 
 SupportsUserData::~SupportsUserData() {
-  DCHECK(sequence_checker_.CalledOnValidSequence() || user_data_.empty());
+  if (!user_data_.empty()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
   DataMap local_user_data;
   user_data_.swap(local_user_data);
   // Now this->user_data_ is empty, and any destructors called transitively from
@@ -67,7 +71,7 @@ SupportsUserData::~SupportsUserData() {
 }
 
 void SupportsUserData::ClearAllUserData() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   user_data_.clear();
 }
 

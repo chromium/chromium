@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- The toolbar containing the URL bar, back button, and NTP button.
+-->
+
+<org.chromium.chrome.browser.toolbar.top.ToolbarTablet
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_height_no_shadow"
+    android:layout_marginTop="@dimen/tab_strip_height"
+    android:background="?attr/default_bg_color_dynamic"
+    android:paddingStart="@dimen/tablet_toolbar_start_padding" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <org.chromium.chrome.browser.toolbar.HomeButton
+            android:id="@+id/home_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/btn_toolbar_home"
+            android:contentDescription="@string/accessibility_toolbar_btn_home"
+            android:visibility="gone"
+            app:tint="@color/default_icon_color_tint_list" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/back_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/btn_back"
+            android:contentDescription="@string/accessibility_toolbar_btn_back"
+            app:tint="@color/default_icon_color_tint_list" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/forward_button"
+            style="@style/ToolbarButton"
+            android:src="@drawable/btn_forward"
+            android:contentDescription="@string/accessibility_toolbar_btn_forward"
+            app:tint="@color/default_icon_color_tint_list" />
+
+        <!-- The src will be set in onFinishInflate. -->
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/refresh_button"
+            android:src="@drawable/btn_reload_stop"
+            android:contentDescription="@string/accessibility_btn_refresh"
+            app:tint="@color/default_icon_color_tint_list"
+            style="@style/ToolbarButton" />
+
+        <org.chromium.chrome.browser.omnibox.LocationBarTablet
+            android:id="@+id/location_bar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/modern_toolbar_background_size"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/modern_toolbar_text_box_background"
+            android:paddingStart="@dimen/location_bar_lateral_padding"
+            android:paddingEnd="@dimen/location_bar_lateral_padding" />
+
+        <ViewStub
+            android:id="@+id/optional_button_stub"
+            android:inflatedId="@+id/optional_toolbar_button"
+            android:layout="@layout/optional_toolbar_button"
+            style="@style/ToolbarButton"
+            android:paddingStart="8dp"
+            android:visibility="gone" />
+
+        <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
+            android:id="@+id/tab_switcher_button"
+            style="@style/ToolbarButton"
+            android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
+            android:visibility="gone" />
+
+        <org.chromium.chrome.browser.toolbar.menu_button.MenuButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/menu_button_wrapper" >
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/menu_button"
+                style="@style/ToolbarMenuButtonTablet"
+                android:src="@drawable/ic_more_vert_24dp"
+                android:contentDescription="@string/accessibility_toolbar_btn_menu"
+                android:layout_gravity="center"
+                app:tint="@color/default_icon_color_tint_list" />
+
+            <ImageView
+                android:id="@+id/menu_badge"
+                style="@style/ToolbarMenuButtonTablet"
+                android:src="@drawable/badge_update_dark"
+                tools:ignore="ContentDescription"
+                android:importantForAccessibility="no"
+                android:layout_gravity="center"
+                android:visibility="invisible" />
+
+        </org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
+    </LinearLayout>
+</org.chromium.chrome.browser.toolbar.top.ToolbarTablet>

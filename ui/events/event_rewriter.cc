@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "ui/events/event_rewriter_continuation.h"
 #include "ui/events/event_source.h"
 

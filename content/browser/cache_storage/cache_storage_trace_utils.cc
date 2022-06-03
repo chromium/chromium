@@ -119,11 +119,26 @@ std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
 }
 
 std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
-    const std::vector<base::string16> string_list) {
+    const std::vector<std::u16string> string_list) {
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   value->SetInteger("count", string_list.size());
   if (!string_list.empty()) {
     value->SetString("first", base::UTF16ToUTF8(string_list.front()));
+  }
+  return value;
+}
+
+std::unique_ptr<base::trace_event::TracedValue> CacheStorageTracedValue(
+    const std::vector<blink::mojom::CacheEntryPtr>& entries) {
+  std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
+  value->SetInteger("count", entries.size());
+  if (!entries.empty()) {
+    std::unique_ptr<TracedValue> first = std::make_unique<TracedValue>();
+    first->SetValue("request",
+                    CacheStorageTracedValue(entries.front()->request).get());
+    first->SetValue("response",
+                    CacheStorageTracedValue(entries.front()->response).get());
+    value->SetValue("first", first.get());
   }
   return value;
 }

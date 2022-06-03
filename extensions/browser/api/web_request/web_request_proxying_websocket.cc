@@ -12,7 +12,9 @@
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "net/base/ip_endpoint.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace extensions {
 namespace {
@@ -23,6 +25,9 @@ namespace {
 class ShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  ShutdownNotifierFactory(const ShutdownNotifierFactory&) = delete;
+  ShutdownNotifierFactory& operator=(const ShutdownNotifierFactory&) = delete;
+
   static ShutdownNotifierFactory* GetInstance() {
     static base::NoDestructor<ShutdownNotifierFactory> factory;
     return factory.get();
@@ -37,8 +42,6 @@ class ShutdownNotifierFactory
     DependsOn(PermissionHelper::GetFactoryInstance());
   }
   ~ShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownNotifierFactory);
 };
 
 }  // namespace
@@ -51,6 +54,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
     bool has_extra_headers,
     int process_id,
     int render_frame_id,
+    ukm::SourceIdObj ukm_source_id,
     content::BrowserContext* browser_context,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     WebRequestAPI::ProxySet* proxies)
@@ -70,11 +74,12 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
           /*is_download=*/false,
           /*is_async=*/true,
           /*is_service_worker_script=*/false,
-          /*navigation_id=*/base::nullopt)),
+          /*navigation_id=*/absl::nullopt,
+          ukm_source_id)),
       proxies_(proxies) {
   // base::Unretained is safe here because the callback will be canceled when
-  // |shutdown_notifier_| is destroyed, and |proxies_| owns this.
-  shutdown_notifier_ =
+  // |shutdown_notifier_subscription_| is destroyed, and |proxies_| owns this.
+  shutdown_notifier_subscription_ =
       ShutdownNotifierFactory::GetInstance()
           ->Get(browser_context)
           ->Subscribe(base::BindRepeating(&WebRequestAPI::ProxySet::RemoveProxy,
@@ -88,11 +93,11 @@ WebRequestProxyingWebSocket::~WebRequestProxyingWebSocket() {
       browser_context_, &info_);
   if (on_before_send_headers_callback_) {
     std::move(on_before_send_headers_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt);
+        .Run(net::ERR_ABORTED, absl::nullopt);
   }
   if (on_headers_received_callback_) {
     std::move(on_headers_received_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt, base::nullopt);
+        .Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt);
   }
 }
 
@@ -141,6 +146,10 @@ void WebRequestProxyingWebSocket::OnOpeningHandshakeStarted(
   forwarding_handshake_client_->OnOpeningHandshakeStarted(std::move(request));
 }
 
+void WebRequestProxyingWebSocket::OnFailure(const std::string&,
+                                            int net_error,
+                                            int response_code) {}
+
 void WebRequestProxyingWebSocket::ContinueToHeadersReceived() {
   auto continuation = base::BindRepeating(
       &WebRequestProxyingWebSocket::OnHeadersReceivedComplete,
@@ -166,7 +175,8 @@ void WebRequestProxyingWebSocket::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::WebSocket> websocket,
     mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver,
     network::mojom::WebSocketHandshakeResponsePtr response,
-    mojo::ScopedDataPipeConsumerHandle readable) {
+    mojo::ScopedDataPipeConsumerHandle readable,
+    mojo::ScopedDataPipeProducerHandle writable) {
   DCHECK(forwarding_handshake_client_);
   DCHECK(!is_done_);
   is_done_ = true;
@@ -174,6 +184,7 @@ void WebRequestProxyingWebSocket::OnConnectionEstablished(
   client_receiver_ = std::move(client_receiver);
   handshake_response_ = std::move(response);
   readable_ = std::move(readable);
+  writable_ = std::move(writable);
 
   response_->remote_endpoint = handshake_response_->remote_endpoint;
 
@@ -191,7 +202,7 @@ void WebRequestProxyingWebSocket::OnConnectionEstablished(
           handshake_response_->status_code,
           handshake_response_->status_text.c_str()));
   for (const auto& header : handshake_response_->headers)
-    response_->headers->AddHeader(header->name + ": " + header->value);
+    response_->headers->AddHeader(header->name, header->value);
 
   ContinueToHeadersReceived();
 }
@@ -203,7 +214,8 @@ void WebRequestProxyingWebSocket::ContinueToCompleted() {
       browser_context_, &info_, net::ERR_WS_UPGRADE);
   forwarding_handshake_client_->OnConnectionEstablished(
       std::move(websocket_), std::move(client_receiver_),
-      std::move(handshake_response_), std::move(readable_));
+      std::move(handshake_response_), std::move(readable_),
+      std::move(writable_));
 
   // Deletes |this|.
   proxies_->RemoveProxy(this);
@@ -268,13 +280,14 @@ void WebRequestProxyingWebSocket::OnHeadersReceived(
 void WebRequestProxyingWebSocket::StartProxying(
     WebSocketFactory factory,
     const GURL& url,
-    const GURL& site_for_cookies,
-    const base::Optional<std::string>& user_agent,
+    const net::SiteForCookies& site_for_cookies,
+    const absl::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     bool has_extra_headers,
     int process_id,
     int render_frame_id,
+    ukm::SourceIdObj ukm_source_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     const url::Origin& origin,
     content::BrowserContext* browser_context,
@@ -282,7 +295,7 @@ void WebRequestProxyingWebSocket::StartProxying(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network::ResourceRequest request;
   request.url = url;
-  request.site_for_cookies = net::SiteForCookies::FromUrl(site_for_cookies);
+  request.site_for_cookies = site_for_cookies;
   if (user_agent) {
     request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent, *user_agent);
   }
@@ -290,8 +303,8 @@ void WebRequestProxyingWebSocket::StartProxying(
 
   auto proxy = std::make_unique<WebRequestProxyingWebSocket>(
       std::move(factory), request, std::move(handshake_client),
-      has_extra_headers, process_id, render_frame_id, browser_context,
-      request_id_generator, proxies);
+      has_extra_headers, process_id, render_frame_id, ukm_source_id,
+      browser_context, request_id_generator, proxies);
 
   auto* raw_proxy = proxy.get();
   proxies->AddProxy(std::move(proxy));
@@ -404,11 +417,11 @@ void WebRequestProxyingWebSocket::OnHeadersReceivedComplete(int error_code) {
   }
 
   if (on_headers_received_callback_) {
-    base::Optional<std::string> headers;
+    absl::optional<std::string> headers;
     if (override_headers_)
       headers = override_headers_->raw_headers();
     std::move(on_headers_received_callback_)
-        .Run(net::OK, headers, base::nullopt);
+        .Run(net::OK, headers, absl::nullopt);
   }
 
   if (override_headers_) {
@@ -434,7 +447,7 @@ void WebRequestProxyingWebSocket::OnAuthRequiredComplete(
         AUTH_REQUIRED_RESPONSE_NO_ACTION:
     case ExtensionWebRequestEventRouter::AuthRequiredResponse::
         AUTH_REQUIRED_RESPONSE_CANCEL_AUTH:
-      std::move(auth_required_callback_).Run(base::nullopt);
+      std::move(auth_required_callback_).Run(absl::nullopt);
       break;
 
     case ExtensionWebRequestEventRouter::AuthRequiredResponse::

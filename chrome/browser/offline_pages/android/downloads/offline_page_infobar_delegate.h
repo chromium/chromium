@@ -26,16 +26,21 @@ class OfflinePageInfoBarDelegate
     : public ::android::DuplicateDownloadInfoBarDelegate {
  public:
   // Creates an offline page infobar and a delegate and adds the infobar to the
-  // InfoBarService associated with |web_contents|. |page_name| is the name
-  // shown for this file in the infobar text.
-  static void Create(const base::Closure& confirm_continuation,
+  // infobars::ContentInfoBarManager associated with |web_contents|. |page_name|
+  // is the name shown for this file in the infobar text.
+  static void Create(base::OnceClosure confirm_continuation,
                      const GURL& page_to_download,
                      bool exists_duplicate_request,
                      content::WebContents* web_contents);
+
+  OfflinePageInfoBarDelegate(const OfflinePageInfoBarDelegate&) = delete;
+  OfflinePageInfoBarDelegate& operator=(const OfflinePageInfoBarDelegate&) =
+      delete;
+
   ~OfflinePageInfoBarDelegate() override;
 
  private:
-  OfflinePageInfoBarDelegate(const base::Closure& confirm_continuation,
+  OfflinePageInfoBarDelegate(base::OnceClosure confirm_continuation,
                              const std::string& page_name,
                              const GURL& page_to_download,
                              bool duplicate_request_exists);
@@ -49,17 +54,16 @@ class OfflinePageInfoBarDelegate
   bool IsOfflinePage() const override;
   std::string GetPageURL() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  void InfoBarDismissed() override;
   bool DuplicateRequestExists() const override;
   OfflinePageInfoBarDelegate* AsOfflinePageInfoBarDelegate() override;
 
   // Continuation called when the user chooses to create a new file.
-  base::Closure confirm_continuation_;
+  base::OnceClosure confirm_continuation_;
 
   std::string page_name_;
   GURL page_to_download_;
   bool duplicate_request_exists_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageInfoBarDelegate);
 };
 
 }  // namespace offline_pages

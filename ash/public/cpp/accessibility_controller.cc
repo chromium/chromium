@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/accessibility_controller.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 

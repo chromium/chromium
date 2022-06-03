@@ -11,9 +11,4 @@
             </body>
         </html>
   </xsl:template>
-
-<xsl:template >
-		<xsl:value-of select="." />
-</xsl:template>
-
 </xsl:stylesheet>

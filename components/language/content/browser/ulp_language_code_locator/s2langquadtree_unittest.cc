@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/s2cellid/src/s2/s2cellid.h"
 

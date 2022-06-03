@@ -4,29 +4,34 @@
 
 #include "pdf/pdf_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace chrome_pdf {
 namespace features {
 
-const base::Feature kSaveEditedPDFForm {
-  "SaveEditedPDFForm",
-#if defined(OS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_CHROMEOS)
-};
+const base::Feature kAccessiblePDFForm = {"AccessiblePDFForm",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kPDFAnnotations {
-  "PDFAnnotations",
-#if defined(OS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_CHROMEOS)
-};
+// "Incremental loading" refers to loading the PDF as it arrives.
+// TODO(crbug.com/1064175): Remove this once incremental loading is fixed.
+const base::Feature kPdfIncrementalLoading = {
+    "PdfIncrementalLoading", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAccessiblePDFHighlight{"AccessiblePDFHighlight",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+// "Partial loading" refers to loading only specific parts of the PDF.
+// TODO(crbug.com/1064175): Remove this once partial loading is fixed.
+const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// TODO(crbug.com/702993): Remove this once the PDF viewer is Pepper-free.
+const base::Feature kPdfUnseasoned = {"PdfUnseasoned",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature has no effect if Chrome is built with no XFA support.
+const base::Feature kPdfXfaSupport = {"PdfXfaSupport",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kTabAcrossPDFAnnotations = {
+    "TabAcrossPDFAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace chrome_pdf

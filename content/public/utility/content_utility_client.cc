@@ -6,22 +6,10 @@
 
 namespace content {
 
-bool ContentUtilityClient::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
-bool ContentUtilityClient::HandleServiceRequest(
+bool ContentUtilityClient::HandleServiceRequestDeprecated(
     const std::string& service_name,
-    service_manager::mojom::ServiceRequest request) {
+    mojo::ScopedMessagePipeHandle service_pipe) {
   return false;
-}
-
-mojo::ServiceFactory* ContentUtilityClient::GetIOThreadServiceFactory() {
-  return nullptr;
-}
-
-mojo::ServiceFactory* ContentUtilityClient::GetMainThreadServiceFactory() {
-  return nullptr;
 }
 
 }  // namespace content

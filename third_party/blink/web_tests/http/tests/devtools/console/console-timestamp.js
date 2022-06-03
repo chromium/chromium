@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the console timestamp setting.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   // It is essential that we calculate timezone for this particular moment of time
@@ -18,30 +18,34 @@
   function addMessageWithFixedTimestamp(messageText, timestamp, type) {
     var message = new SDK.ConsoleMessage(
         TestRunner.runtimeModel,
-        SDK.ConsoleMessage.MessageSource.Other,  // source
-        SDK.ConsoleMessage.MessageLevel.Info,    // level
-        messageText, type,
-        undefined,                                        // url
-        undefined,                                        // line
-        undefined,                                        // column
-        undefined,                                        // parameters
-        undefined,                                        // stackTrace
-        timestamp || baseTimestamp + 123);                // timestamp: 2014-05-13T16:53:20.123Z
+        Protocol.Log.LogEntrySource.Other,  // source
+        Protocol.Log.LogEntryLevel.Info,    // level
+        messageText, {
+          type,
+          // timestamp: 2014-05-13T16:53:20.123Z
+          timestamp: timestamp || baseTimestamp + 123,
+        });
     SDK.consoleModel.addMessage(message, true);  // allowGrouping
   }
 
   TestRunner.addResult('Console messages with timestamps disabled:');
   addMessageWithFixedTimestamp(
-      '<Before> First Command', baseTimestamp + 789, SDK.ConsoleMessage.MessageType.Command);
+      '<Before> First Command', baseTimestamp + 789,
+      SDK.ConsoleMessage.FrontendMessageType.Command);
   addMessageWithFixedTimestamp(
-      '<Before> First Result', baseTimestamp + 789, SDK.ConsoleMessage.MessageType.Result);
+      '<Before> First Result', baseTimestamp + 789,
+      SDK.ConsoleMessage.FrontendMessageType.Result);
   addMessageWithFixedTimestamp('<Before>');
   addMessageWithFixedTimestamp('<Before>', baseTimestamp + 456);
   addMessageWithFixedTimestamp('<Before>');
-  addMessageWithFixedTimestamp('<Before> Command', baseTimestamp, SDK.ConsoleMessage.MessageType.Command);
-  addMessageWithFixedTimestamp('<Before> Result', baseTimestamp + 1, SDK.ConsoleMessage.MessageType.Result);
+  addMessageWithFixedTimestamp(
+      '<Before> Command', baseTimestamp,
+      SDK.ConsoleMessage.FrontendMessageType.Command);
+  addMessageWithFixedTimestamp(
+      '<Before> Result', baseTimestamp + 1,
+      SDK.ConsoleMessage.FrontendMessageType.Result);
 
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.addResult('Console messages with timestamps enabled:');
   Common.settingForTest('consoleTimestampsEnabled').set(true);
@@ -53,6 +57,6 @@
   Common.settingForTest('consoleTimestampsEnabled').set(false);
   Common.settingForTest('consoleTimestampsEnabled').set(true);
 
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();
 })();

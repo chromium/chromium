@@ -7,64 +7,93 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
-import org.junit.Assert;
+import org.hamcrest.Matchers;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
-/** Custom {@link ChromeActivityTestRule} for tests using {@link WebApkActivity}. */
-public class WebApkActivityTestRule extends ChromeActivityTestRule<WebApkActivity> {
+/** Custom {@link ChromeActivityTestRule} for tests using a WebAPK {@link WebappActivity}. */
+public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivity> {
     /** Time in milliseconds to wait for page to be loaded. */
-    private static final long STARTUP_TIMEOUT = ScalableTimeout.scaleTimeout(10000);
+    private static final long STARTUP_TIMEOUT = 10000;
 
     public WebApkActivityTestRule() {
-        super(WebApkActivity.class);
+        super(WebappActivity.class);
+    }
+
+    @Override
+    public Statement apply(final Statement base, Description description) {
+        Statement webApkUpdateManagerStatement = new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                WebApkUpdateManager.setUpdatesEnabledForTesting(false);
+
+                base.evaluate();
+
+                WebApkUpdateManager.setUpdatesEnabledForTesting(true);
+            }
+        };
+        return super.apply(webApkUpdateManagerStatement, description);
     }
 
     /**
-     * Launches WebApkActivity and waits for the page to have finished loading and for the splash
+     * Launches a WebAPK Activity and waits for the page to have finished loading and for the splash
      * screen to be hidden.
      */
-    public WebApkActivity startWebApkActivity(WebApkInfo webApkInfo) {
+    public WebappActivity startWebApkActivity(
+            BrowserServicesIntentDataProvider webApkIntentDataProvider) {
+        WebappInfo webApkInfo = WebappInfo.create(webApkIntentDataProvider);
         Intent intent = createIntent(webApkInfo);
+        WebappActivity.setIntentDataProviderForTesting(webApkIntentDataProvider);
 
-        WebappActivity.addWebappInfo(webApkInfo.id(), webApkInfo);
-        final WebApkActivity webApkActivity =
-                (WebApkActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
+        return startWebApkActivity(intent, webApkInfo.url());
+    }
+
+    /**
+     * Launches a WebAPK Activity and waits for the page to have finished loading and for the splash
+     * screen to be hidden.
+     */
+    public WebappActivity startWebApkActivity(final String startUrl) {
+        Intent intent =
+                new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
+        intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, "org.chromium.webapk.test");
+        intent.putExtra(WebappConstants.EXTRA_URL, startUrl);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        return startWebApkActivity(intent, startUrl);
+    }
+
+    private WebappActivity startWebApkActivity(final Intent intent, final String startUrl) {
+        final WebappActivity webApkActivity =
+                (WebappActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                         intent);
         setActivity(webApkActivity);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return webApkActivity.getActivityTab() != null;
-            }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(webApkActivity.getActivityTab(), Matchers.notNullValue());
         }, STARTUP_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        ChromeTabUtils.waitForTabPageLoaded(webApkActivity.getActivityTab(), webApkInfo.url());
+        ChromeTabUtils.waitForTabPageLoaded(webApkActivity.getActivityTab(), startUrl);
         WebappActivityTestRule.waitUntilSplashHides(webApkActivity);
-
-        // Launching the WebAPK should have popped the WebApkInfo.
-        Assert.assertNull(WebappActivity.popWebappInfo(webApkInfo.id()));
-
         return webApkActivity;
     }
 
-    private Intent createIntent(WebApkInfo webApkInfo) {
+    private Intent createIntent(WebappInfo webApkInfo) {
         Intent intent =
-                new Intent(InstrumentationRegistry.getTargetContext(), WebApkActivity0.class);
+                new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, webApkInfo.webApkPackageName());
-        intent.putExtra(ShortcutHelper.EXTRA_ID, webApkInfo.id());
-        intent.putExtra(ShortcutHelper.EXTRA_URL, webApkInfo.url());
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.putExtra(WebappConstants.EXTRA_ID, webApkInfo.id());
+        intent.putExtra(WebappConstants.EXTRA_URL, webApkInfo.url());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         return intent;
     }
 }

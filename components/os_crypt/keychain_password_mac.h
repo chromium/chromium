@@ -8,23 +8,24 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace crypto {
 class AppleKeychain;
 }
 
-namespace os_crypt {
-class EncryptionKeyCreationUtil;
-}
-
-using os_crypt::EncryptionKeyCreationUtil;
-
 class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
  public:
-  KeychainPassword(
-      const crypto::AppleKeychain& keychain,
-      std::unique_ptr<EncryptionKeyCreationUtil> key_creation_util);
+#if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)
+  using KeychainNameType = std::string;
+#else
+  using KeychainNameType = const std::string;
+#endif
+
+  KeychainPassword(const crypto::AppleKeychain& keychain);
+
+  KeychainPassword(const KeychainPassword&) = delete;
+  KeychainPassword& operator=(const KeychainPassword&) = delete;
+
   ~KeychainPassword();
 
   // Get the OSCrypt password for this system. If no password exists
@@ -36,14 +37,11 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   std::string GetPassword() const;
 
   // The service and account names used in Chrome's Safe Storage keychain item.
-  static COMPONENT_EXPORT(OS_CRYPT) const char service_name[];
-  static COMPONENT_EXPORT(OS_CRYPT) const char account_name[];
+  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetServiceName();
+  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetAccountName();
 
  private:
   const crypto::AppleKeychain& keychain_;
-  std::unique_ptr<EncryptionKeyCreationUtil> key_creation_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeychainPassword);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEYCHAIN_PASSWORD_MAC_H_

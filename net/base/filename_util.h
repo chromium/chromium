@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -65,7 +64,7 @@ NET_EXPORT bool FileURLToFilePath(const GURL& url, base::FilePath* file_path);
 //
 // Note: |mime_type| should only be specified if this function is called from a
 // thread that allows IO.
-NET_EXPORT base::string16 GetSuggestedFilename(
+NET_EXPORT std::u16string GetSuggestedFilename(
     const GURL& url,
     const std::string& content_disposition,
     const std::string& referrer_charset,

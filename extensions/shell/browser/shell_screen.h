@@ -30,6 +30,10 @@ class ShellScreen : public display::ScreenBase,
   // can be null in tests.
   ShellScreen(ShellDesktopControllerAura* desktop_controller,
               const gfx::Size& size);
+
+  ShellScreen(const ShellScreen&) = delete;
+  ShellScreen& operator=(const ShellScreen&) = delete;
+
   ~ShellScreen() override;
 
   // aura::WindowTreeHostObserver overrides:
@@ -44,8 +48,6 @@ class ShellScreen : public display::ScreenBase,
 
  private:
   ShellDesktopControllerAura* const desktop_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellScreen);
 };
 
 }  // namespace extensions

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script>
+      // Add a dynamic style with document.write
+      document.write("<link rel=stylesheet href='../resources/style.css?dynamicDocWriteHead'>");
+      document.write("<link rel=stylesheet href='../resources/style.css?dynamicDocWritePrintHead' media=print>");
+</script>
+<link rel=stylesheet href='style.css?head'>
+<link rel=stylesheet href='style.css?head_print' media=print>
+<link rel=preload as=style href='style.css?preload'>
+<link rel=preload as=style href='style.css?preload_used'>
+<body>
+<link rel=stylesheet href='importer.css?body'>
+<link rel=stylesheet href='style.css?body_print' media=print>
+<script>
+      // Add a dynamic style with document.write
+      document.write("<link rel=stylesheet href='../resources/style.css?dynamicDocWriteBody'>");
+      document.write("<link rel=stylesheet href='../resources/style.css?dynamicDocWritePrintBody' media=print>");
+</script>
+<link rel=stylesheet href='style.css?preload_used'>

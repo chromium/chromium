@@ -5,9 +5,11 @@
 #include "components/payments/content/payment_method_manifest_table.h"
 
 #include <time.h>
+#include <string>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -27,9 +29,9 @@ WebDatabaseTable::TypeKey GetPaymentMethodManifestKey() {
 
 }  // namespace
 
-PaymentMethodManifestTable::PaymentMethodManifestTable() {}
+PaymentMethodManifestTable::PaymentMethodManifestTable() = default;
 
-PaymentMethodManifestTable::~PaymentMethodManifestTable() {}
+PaymentMethodManifestTable::~PaymentMethodManifestTable() = default;
 
 PaymentMethodManifestTable* PaymentMethodManifestTable::FromWebDatabase(
     WebDatabase* db) {
@@ -45,9 +47,32 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
   if (!db_->Execute("CREATE TABLE IF NOT EXISTS payment_method_manifest ( "
                     "expire_date INTEGER NOT NULL DEFAULT 0, "
                     "method_name VARCHAR, "
-                    "web_app_id VARCHAR) ")) {
+                    "web_app_id VARCHAR)")) {
     NOTREACHED();
     return false;
+  }
+
+  // The `credential_id` column is 20 bytes for UbiKey on Linux, but the size
+  // can vary for different authenticators. The relatively small sizes make it
+  // OK to make `credential_id` the primary key.
+  if (!db_->Execute(
+          "CREATE TABLE IF NOT EXISTS secure_payment_confirmation_instrument ( "
+          "credential_id BLOB NOT NULL PRIMARY KEY, "
+          "relying_party_id VARCHAR NOT NULL, "
+          "label VARCHAR NOT NULL, "
+          "icon BLOB NOT NULL)")) {
+    NOTREACHED();
+    return false;
+  }
+
+  if (!db_->DoesColumnExist("secure_payment_confirmation_instrument",
+                            "date_created")) {
+    if (!db_->Execute(
+            "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
+            "date_created INTEGER NOT NULL DEFAULT 0")) {
+      NOTREACHED();
+      return false;
+    }
   }
 
   return true;
@@ -66,9 +91,20 @@ bool PaymentMethodManifestTable::MigrateToVersion(
 void PaymentMethodManifestTable::RemoveExpiredData() {
   const time_t now_date_in_seconds = base::Time::NowFromSystemTime().ToTimeT();
   sql::Statement s(db_->GetUniqueStatement(
-      "DELETE FROM payment_method_manifest WHERE expire_date < ? "));
+      "DELETE FROM payment_method_manifest WHERE expire_date < ?"));
   s.BindInt64(0, now_date_in_seconds);
   s.Run();
+}
+
+bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationInstruments(
+    base::Time begin,
+    base::Time end) {
+  sql::Statement s(db_->GetUniqueStatement(
+      "DELETE FROM secure_payment_confirmation_instrument WHERE (date_created "
+      ">= ? AND date_created < ?) OR (date_created = 0)"));
+  s.BindInt64(0, begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindInt64(1, end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return s.Run();
 }
 
 bool PaymentMethodManifestTable::AddManifest(
@@ -79,7 +115,7 @@ bool PaymentMethodManifestTable::AddManifest(
     return false;
 
   sql::Statement s1(db_->GetUniqueStatement(
-      "DELETE FROM payment_method_manifest WHERE method_name=? "));
+      "DELETE FROM payment_method_manifest WHERE method_name=?"));
   s1.BindString(0, payment_method);
   if (!s1.Run())
     return false;
@@ -87,7 +123,7 @@ bool PaymentMethodManifestTable::AddManifest(
   sql::Statement s2(
       db_->GetUniqueStatement("INSERT INTO payment_method_manifest "
                               "(expire_date, method_name, web_app_id) "
-                              "VALUES (?, ?, ?) "));
+                              "VALUES (?, ?, ?)"));
   const time_t expire_date_in_seconds =
       base::Time::NowFromSystemTime().ToTimeT() +
       PAYMENT_METHOD_MANIFEST_VALID_TIME_IN_SECONDS;
@@ -121,6 +157,111 @@ std::vector<std::string> PaymentMethodManifestTable::GetManifest(
   }
 
   return web_app_ids;
+}
+
+bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
+    const SecurePaymentConfirmationInstrument& instrument) {
+  if (!instrument.IsValid())
+    return false;
+
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin())
+    return false;
+
+  {
+    // Check for credential identifier reuse by a different relying party.
+    sql::Statement s0(
+        db_->GetUniqueStatement("SELECT label "
+                                "FROM secure_payment_confirmation_instrument "
+                                "WHERE credential_id=? "
+                                "AND relying_party_id<>?"));
+    int index = 0;
+    s0.BindBlob(index++, instrument.credential_id);
+    s0.BindString(index++, instrument.relying_party_id);
+    if (s0.Step())
+      return false;
+  }
+
+  {
+    sql::Statement s1(db_->GetUniqueStatement(
+        "DELETE FROM secure_payment_confirmation_instrument "
+        "WHERE credential_id=?"));
+    s1.BindBlob(0, instrument.credential_id);
+
+    if (!s1.Run())
+      return false;
+  }
+
+  {
+    sql::Statement s2(db_->GetUniqueStatement(
+        "INSERT INTO secure_payment_confirmation_instrument "
+        "(credential_id, relying_party_id, label, icon, date_created) "
+        "VALUES (?, ?, ?, ?, ?)"));
+    int index = 0;
+    s2.BindBlob(index++, instrument.credential_id);
+    s2.BindString(index++, instrument.relying_party_id);
+    s2.BindString(index++, std::string());
+    s2.BindBlob(index++, std::vector<uint8_t>());
+    s2.BindInt64(index++,
+                 base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
+    if (!s2.Run())
+      return false;
+  }
+
+  if (!transaction.Commit())
+    return false;
+
+  return true;
+}
+
+std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>
+PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
+    std::vector<std::vector<uint8_t>> credential_ids) {
+  std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>> instruments;
+  sql::Statement s(
+      db_->GetUniqueStatement("SELECT relying_party_id "
+                              "FROM secure_payment_confirmation_instrument "
+                              "WHERE credential_id=?"));
+  // The `credential_id` temporary variable is not `const` because of the
+  // `std::move()` on line 231.
+  for (auto& credential_id : credential_ids) {
+    s.Reset(true);
+    if (credential_id.empty())
+      continue;
+
+    s.BindBlob(0, credential_id);
+
+    if (!s.Step())
+      continue;
+
+    auto instrument = std::make_unique<SecurePaymentConfirmationInstrument>();
+    instrument->credential_id = std::move(credential_id);
+
+    int index = 0;
+    instrument->relying_party_id = s.ColumnString(index++);
+
+    if (!instrument->IsValid())
+      continue;
+
+    instruments.push_back(std::move(instrument));
+  }
+
+  return instruments;
+}
+
+bool PaymentMethodManifestTable::ExecuteForTest(const char* sql) {
+  return db_->Execute(sql);
+}
+
+bool PaymentMethodManifestTable::RazeForTest() {
+  return db_->Raze();
+}
+
+bool PaymentMethodManifestTable::DoesColumnExistForTest(
+    const char* table_name,
+    const char* column_name) {
+  return db_->DoesColumnExist(table_name, column_name);
 }
 
 }  // namespace payments

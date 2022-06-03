@@ -10,7 +10,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -56,11 +57,18 @@ DWORD CreateRestrictedToken(HANDLE effective_token,
                             IntegrityLevel integrity_level,
                             TokenType token_type,
                             bool lockdown_default_dacl,
+                            PSID unique_restricted_sid,
                             base::win::ScopedHandle* token) {
   RestrictedToken restricted_token;
   restricted_token.Init(effective_token);
   if (lockdown_default_dacl)
     restricted_token.SetLockdownDefaultDacl();
+  if (unique_restricted_sid) {
+    restricted_token.AddDefaultDaclSid(Sid(unique_restricted_sid), GRANT_ACCESS,
+                                       GENERIC_ALL);
+    restricted_token.AddDefaultDaclSid(Sid(WinCreatorOwnerRightsSid),
+                                       GRANT_ACCESS, READ_CONTROL);
+  }
 
   std::vector<std::wstring> privilege_exceptions;
   std::vector<Sid> sid_exceptions;
@@ -105,6 +113,8 @@ DWORD CreateRestrictedToken(HANDLE effective_token,
       restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
       restricted_token.AddRestrictingSidCurrentUser();
       restricted_token.AddRestrictingSidLogonSession();
+      if (unique_restricted_sid)
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     case USER_INTERACTIVE: {
@@ -118,6 +128,8 @@ DWORD CreateRestrictedToken(HANDLE effective_token,
       restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
       restricted_token.AddRestrictingSidCurrentUser();
       restricted_token.AddRestrictingSidLogonSession();
+      if (unique_restricted_sid)
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     case USER_LIMITED: {
@@ -128,6 +140,8 @@ DWORD CreateRestrictedToken(HANDLE effective_token,
       restricted_token.AddRestrictingSid(WinBuiltinUsersSid);
       restricted_token.AddRestrictingSid(WinWorldSid);
       restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
+      if (unique_restricted_sid)
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
 
       // This token has to be able to create objects in BNO.
       // Unfortunately, on Vista+, it needs the current logon sid
@@ -141,11 +155,15 @@ DWORD CreateRestrictedToken(HANDLE effective_token,
       privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       restricted_token.AddUserSidForDenyOnly();
       restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
+      if (unique_restricted_sid)
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     case USER_LOCKDOWN: {
       restricted_token.AddUserSidForDenyOnly();
       restricted_token.AddRestrictingSid(WinNullSid);
+      if (unique_restricted_sid)
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     default: { return ERROR_BAD_ARGUMENTS; }
@@ -446,6 +464,85 @@ DWORD CreateLowBoxObjectDirectory(PSID lowbox_sid,
   directory->Set(handle);
 
   return ERROR_SUCCESS;
+}
+
+bool CanLowIntegrityAccessDesktop() {
+  // Access required for UI thread to initialize (when user32.dll loads without
+  // win32k lockdown).
+  DWORD desired_access = DESKTOP_WRITEOBJECTS | DESKTOP_READOBJECTS;
+
+  // From MSDN
+  // https://docs.microsoft.com/en-us/windows/win32/winstation/desktop-security-and-access-rights
+  GENERIC_MAPPING generic_mapping{
+      STANDARD_RIGHTS_READ | DESKTOP_READOBJECTS | DESKTOP_ENUMERATE,
+      STANDARD_RIGHTS_WRITE | DESKTOP_CREATEWINDOW | DESKTOP_CREATEMENU |
+          DESKTOP_HOOKCONTROL | DESKTOP_JOURNALRECORD |
+          DESKTOP_JOURNALPLAYBACK | DESKTOP_WRITEOBJECTS,
+      STANDARD_RIGHTS_EXECUTE | DESKTOP_SWITCHDESKTOP,
+      STANDARD_RIGHTS_REQUIRED | DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW |
+          DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK |
+          DESKTOP_JOURNALRECORD | DESKTOP_READOBJECTS | DESKTOP_SWITCHDESKTOP |
+          DESKTOP_WRITEOBJECTS};
+  ::MapGenericMask(&desired_access, &generic_mapping);
+
+  // Desktop is inherited by child process unless overridden, e.g. by sandbox.
+  HDESK hdesk = ::GetThreadDesktop(GetCurrentThreadId());
+
+  // Get the security descriptor of the desktop.
+  DWORD size = 0;
+  SECURITY_INFORMATION security_information =
+      OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+      DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION;
+  ::GetUserObjectSecurity(hdesk, &security_information, nullptr, 0, &size);
+  std::vector<char> sd_buffer(size);
+  PSECURITY_DESCRIPTOR sd =
+      reinterpret_cast<PSECURITY_DESCRIPTOR>(sd_buffer.data());
+  if (!::GetUserObjectSecurity(hdesk, &security_information, sd, size, &size)) {
+    return false;
+  }
+
+  // Get a low IL token starting with the current process token and lowering it.
+  HANDLE temp_process_token = nullptr;
+  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ALL_ACCESS,
+                          &temp_process_token)) {
+    return false;
+  }
+  base::win::ScopedHandle process_token(temp_process_token);
+
+  HANDLE temp_duplicate_token = nullptr;
+  if (!::DuplicateTokenEx(process_token.Get(), MAXIMUM_ALLOWED, nullptr,
+                          SecurityImpersonation, TokenImpersonation,
+                          &temp_duplicate_token)) {
+    return false;
+  }
+  base::win::ScopedHandle low_il_token(temp_duplicate_token);
+
+  // The token should still succeed before lowered, even if the lowered token
+  // fails.
+  PRIVILEGE_SET priv_set = {};
+  DWORD priv_set_length = sizeof(PRIVILEGE_SET);
+  DWORD granted_access = 0;
+  BOOL access_status = false;
+  DCHECK(!!::AccessCheck(sd, low_il_token.Get(), desired_access,
+                         &generic_mapping, &priv_set, &priv_set_length,
+                         &granted_access, &access_status) &&
+         access_status);
+
+  if (sandbox::SetTokenIntegrityLevel(
+          low_il_token.Get(), sandbox::INTEGRITY_LEVEL_LOW) != ERROR_SUCCESS) {
+    return false;
+  }
+
+  // Access check the Low-IL token against the desktop - known to fail for third
+  // party, winlogon, other non-default desktops, and required for user32.dll to
+  // load.
+  if (::AccessCheck(sd, low_il_token.Get(), desired_access, &generic_mapping,
+                    &priv_set, &priv_set_length, &granted_access,
+                    &access_status) &&
+      access_status) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace sandbox

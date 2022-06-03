@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 
-#include "third_party/blink/renderer/modules/hid/hid_connection_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_hid_connection_event_init.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
 
 namespace blink {
@@ -27,9 +27,10 @@ HIDConnectionEvent::HIDConnectionEvent(
 
 HIDConnectionEvent::HIDConnectionEvent(const AtomicString& type,
                                        HIDDevice* device)
-    : Event(type, Bubbles::kNo, Cancelable::kNo) {}
+    : Event(type, Bubbles::kNo, Cancelable::kNo), device_(device) {}
 
-void HIDConnectionEvent::Trace(blink::Visitor* visitor) {
+void HIDConnectionEvent::Trace(Visitor* visitor) const {
+  visitor->Trace(device_);
   Event::Trace(visitor);
 }
 

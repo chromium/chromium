@@ -18,7 +18,7 @@ class Document;
 class ViewportData final : public GarbageCollected<ViewportData> {
  public:
   ViewportData(Document& document);
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
   void Shutdown();
 
   bool ShouldMergeWithLegacyDescription(ViewportDescription::Type) const;

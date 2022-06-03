@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is used by the session chooser to set up the environment and launch
+# the session selected by the user.
+
+# On Debian-based systems, just delegate to the distro-supplied Xsession script
+# to launch the selected session.
+exec /etc/X11/Xsession "$@"

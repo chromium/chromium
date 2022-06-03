@@ -233,7 +233,7 @@ class DepsGrapher(DepsBuilder):
 
     # Reformat the computed raw node attributes into a final DOT representation.
     nodes = []
-    for (node, attrs) in node_props.iteritems():
+    for (node, attrs) in node_props.items():
       attr_strs = []
       if attrs['hilite']:
         attr_strs.append('style=filled,fillcolor=%s' % attrs['hilite'])
@@ -253,7 +253,7 @@ class DepsGrapher(DepsBuilder):
 
 
 def PrintUsage():
-  print """Usage: python graphdeps.py [--root <root>]
+  print("""Usage: python graphdeps.py [--root <root>]
 
   --root ROOT Specifies the repository root. This defaults to "../../.."
               relative to the script file. This will be correct given the
@@ -280,7 +280,7 @@ Examples:
       --excl='.*->third_party' \
       --fanin='^(apps|content/browser/renderer_host)$' \
       --ignore-specific-rules \
-      --ignore-temp-rules"""
+      --ignore-temp-rules""")
 
 
 def main():
@@ -392,11 +392,11 @@ def main():
     PrintUsage()
     return 1
 
-  print 'Using base directory: ', deps_grapher.base_directory
-  print 'include nodes       : ', options.incl
-  print 'exclude nodes       : ', options.excl
-  print 'highlight fanins of : ', options.hilite_fanins
-  print 'highlight fanouts of: ', options.hilite_fanouts
+  print('Using base directory: ', deps_grapher.base_directory)
+  print('include nodes       : ', options.incl)
+  print('exclude nodes       : ', options.excl)
+  print('highlight fanins of : ', options.hilite_fanins)
+  print('highlight fanouts of: ', options.hilite_fanouts)
 
   deps_grapher.DumpDependencies()
   return 0

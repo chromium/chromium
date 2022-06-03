@@ -69,6 +69,10 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   // |socket| and |task_runner| must outlive writer.
   QuicChromiumPacketWriter(DatagramClientSocket* socket,
                            base::SequencedTaskRunner* task_runner);
+
+  QuicChromiumPacketWriter(const QuicChromiumPacketWriter&) = delete;
+  QuicChromiumPacketWriter& operator=(const QuicChromiumPacketWriter&) = delete;
+
   ~QuicChromiumPacketWriter() override;
 
   // |delegate| must outlive writer.
@@ -94,7 +98,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
       const quic::QuicSocketAddress& peer_address) const override;
   bool SupportsReleaseTime() const override;
   bool IsBatchMode() const override;
-  char* GetNextWriteLocation(
+  quic::QuicPacketBuffer GetNextWriteLocation(
       const quic::QuicIpAddress& self_address,
       const quic::QuicSocketAddress& peer_address) override;
   quic::WriteResult Flush() override;
@@ -127,8 +131,6 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
 
   CompletionRepeatingCallback write_callback_;
   base::WeakPtrFactory<QuicChromiumPacketWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumPacketWriter);
 };
 
 }  // namespace net

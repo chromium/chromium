@@ -8,7 +8,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 

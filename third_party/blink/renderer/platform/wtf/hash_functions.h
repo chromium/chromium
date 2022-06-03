@@ -27,6 +27,7 @@
 #include "base/bit_cast.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace WTF {
@@ -275,6 +276,59 @@ struct PairHash
 template <typename T, typename U>
 struct DefaultHash<std::pair<T, U>> {
   using Hash = PairHash<T, U>;
+};
+
+// Wrapper for integral type to extend to have 0 and max keys.
+template <typename T>
+struct IntegralWithAllKeys {
+  IntegralWithAllKeys() : IntegralWithAllKeys(0, ValueType::kEmpty) {}
+  explicit IntegralWithAllKeys(T value)
+      : IntegralWithAllKeys(value, ValueType::kValid) {}
+  explicit IntegralWithAllKeys(HashTableDeletedValueType)
+      : IntegralWithAllKeys(0, ValueType::kDeleted) {}
+
+  bool IsHashTableDeletedValue() const {
+    return value_type_ == ValueType::kDeleted;
+  }
+
+  unsigned Hash() const {
+    return HashInts(value_, static_cast<unsigned>(value_type_));
+  }
+
+  bool operator==(const IntegralWithAllKeys& b) const {
+    return value_ == b.value_ && value_type_ == b.value_type_;
+  }
+
+ private:
+  enum class ValueType : uint8_t { kEmpty, kValid, kDeleted };
+
+  IntegralWithAllKeys(T value, ValueType value_type)
+      : value_(value), value_type_(value_type) {
+    static_assert(std::is_integral<T>::value,
+                  "Only integral types are supported.");
+  }
+
+  T value_;
+  ValueType value_type_;
+};
+
+// Specialization for integral type to have all possible values for key
+// including 0 and max.
+template <typename T>
+struct IntegralWithAllKeysHash {
+  static unsigned GetHash(const IntegralWithAllKeys<T>& key) {
+    return key.Hash();
+  }
+  static bool Equal(const IntegralWithAllKeys<T>& a,
+                    const IntegralWithAllKeys<T>& b) {
+    return a == b;
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
+template <typename T>
+struct DefaultHash<IntegralWithAllKeys<T>> {
+  using Hash = IntegralWithAllKeysHash<T>;
 };
 
 }  // namespace WTF

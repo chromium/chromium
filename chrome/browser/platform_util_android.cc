@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/util/jni_headers/PlatformUtil_jni.h"
 #include "ui/android/view_android.h"
@@ -25,7 +25,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
 void OpenItem(Profile* profile,
               const base::FilePath& full_path,
               OpenItemType item_type,
-              const OpenOperationCallback& callback) {
+              OpenOperationCallback callback) {
   NOTIMPLEMENTED();
 }
 

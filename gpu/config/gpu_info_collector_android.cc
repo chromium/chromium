@@ -8,7 +8,7 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace gpu {
 

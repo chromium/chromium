@@ -9,9 +9,8 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +23,10 @@ namespace disks {
 class MockDiskMountManager : public DiskMountManager {
  public:
   MockDiskMountManager();
+
+  MockDiskMountManager(const MockDiskMountManager&) = delete;
+  MockDiskMountManager& operator=(const MockDiskMountManager&) = delete;
+
   virtual ~MockDiskMountManager();
 
   // DiskMountManager override.
@@ -50,6 +53,10 @@ class MockDiskMountManager : public DiskMountManager {
                void(const std::string&,
                     FormatFileSystemType,
                     const std::string&));
+  MOCK_METHOD3(SinglePartitionFormatDevice,
+               void(const std::string&,
+                    FormatFileSystemType,
+                    const std::string&));
   MOCK_METHOD2(RenameMountedDevice,
                void(const std::string&, const std::string&));
   MOCK_METHOD2(UnmountDeviceRecursively,
@@ -70,8 +77,10 @@ class MockDiskMountManager : public DiskMountManager {
   // Sets up default results for mock methods.
   void SetupDefaultReplies();
 
-  // Creates a fake disk entry for the mounted device. This function is
-  // primarily for StorageMonitorTest.
+  // Creates a fake disk entry for the mounted device.
+  void CreateDiskEntryForMountDevice(std::unique_ptr<Disk> disk);
+
+  // Creates a fake disk entry for the mounted device.
   void CreateDiskEntryForMountDevice(
       const DiskMountManager::MountPointInfo& mount_info,
       const std::string& device_id,
@@ -122,8 +131,6 @@ class MockDiskMountManager : public DiskMountManager {
 
   // The list of existing mount points.
   DiskMountManager::MountPointMap mount_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDiskMountManager);
 };
 
 }  // namespace disks

@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      html, body {
+        width: 0%;
+        height: 0%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+
+      // Watch for the testing trigger_id for HaTS Next, defined on the browser
+      // side in hats_service.cc.
+      if (params.get('trigger_id') == 'HLpeYy5Av0ugnJ3q1cK0XzzA8UHv') {
+        // Check that the provided product specific data, and the provided
+        // preferred language, match the values defined in hats_browsertest.cc,
+        // if they do, provide a loaded response before closing.
+        const productSpecificData = JSON.parse(
+                  decodeURIComponent(params.get('product_specific_data')));
+        const languages =
+            JSON.parse(decodeURIComponent(params.get('languages')));
+        if (productSpecificData['Test Field 1'] === 'true' &&
+            productSpecificData['Test Field 2'] === 'false' &&
+            productSpecificData['Test Field 3'] === 'Test value' &&
+            languages.length == 1 && languages[0] == 'lt') {
+          history.pushState('', '', '#loaded');
+        }
+        history.pushState('', '', '#close');
+      }
+
+      if (params.get('trigger_id') == "close_for_testing") {
+        history.pushState('', '', '#close');
+      }
+
+      if (params.get('trigger_id') == "invalid_url_fragment_for_testing") {
+        history.pushState('', '', '#foo');
+      }
+
+      if (params.get('trigger_id') == "open_new_web_contents_for_testing"){
+        window.open('http://foo.com', '_blank');
+        history.pushState('', '', '#close');
+      }
+
+      if (params.get('trigger_id') == "resize_for_testing") {
+        // Size wrapping div element to a known size, with one dimension smaller
+        // than the by-default renderer-enforced minimum.
+        window.onload = function() {
+          const wrapper = document.querySelector('#surveyWrapper');
+          wrapper.setAttribute('style', 'width:70px; height:300px');
+        }
+      }
+
+      if (params.get('trigger_id') == "resize_to_large_for_testing") {
+        // Size wrapping div element larger than the maximum allowed by the HaTS
+        // Next dialog.
+        window.onload = function() {
+          const wrapper = document.querySelector('#surveyWrapper');
+          wrapper.setAttribute('style', 'width:1000px; height:1000px');
+        };
+      }
+    </script>
+  </head>
+  <body>
+    <div id="surveyWrapper"></div>
+  </body>
+</html>

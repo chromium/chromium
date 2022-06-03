@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ui/gfx/image/image.h"
@@ -22,10 +21,21 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
  public:
   ClipboardRecentContentGeneric();
 
+  ClipboardRecentContentGeneric(const ClipboardRecentContentGeneric&) = delete;
+  ClipboardRecentContentGeneric& operator=(
+      const ClipboardRecentContentGeneric&) = delete;
+
+  ~ClipboardRecentContentGeneric() override;
+
   // ClipboardRecentContent implementation.
-  base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<base::string16> GetRecentTextFromClipboard() override;
-  base::Optional<gfx::Image> GetRecentImageFromClipboard() override;
+  absl::optional<GURL> GetRecentURLFromClipboard() override;
+  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
+  void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
+  bool HasRecentImageFromClipboard() override;
+  void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
+                                     HasDataCallback callback) override;
+  void GetRecentURLFromClipboard(GetRecentURLCallback callback) override;
+  void GetRecentTextFromClipboard(GetRecentTextCallback callback) override;
   base::TimeDelta GetClipboardContentAge() const override;
   void SuppressClipboardContent() override;
   void ClearClipboardContent() override;
@@ -33,8 +43,6 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
  private:
   // Returns true if the URL is appropriate to be suggested.
   static bool IsAppropriateSuggestion(const GURL& url);
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardRecentContentGeneric);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_GENERIC_H_

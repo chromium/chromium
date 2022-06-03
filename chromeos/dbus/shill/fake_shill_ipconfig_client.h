@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 
 namespace chromeos {
@@ -19,6 +19,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
       public ShillIPConfigClient::TestInterface {
  public:
   FakeShillIPConfigClient();
+
+  FakeShillIPConfigClient(const FakeShillIPConfigClient&) = delete;
+  FakeShillIPConfigClient& operator=(const FakeShillIPConfigClient&) = delete;
+
   ~FakeShillIPConfigClient() override;
 
   // ShillIPConfigClient overrides
@@ -29,7 +33,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
       const dbus::ObjectPath& ipconfig_path,
       ShillPropertyChangedObserver* observer) override;
   void GetProperties(const dbus::ObjectPath& ipconfig_path,
-                     DictionaryValueCallback callback) override;
+                     DBusMethodCallback<base::Value> callback) override;
   void SetProperty(const dbus::ObjectPath& ipconfig_path,
                    const std::string& name,
                    const base::Value& value,
@@ -43,21 +47,15 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
 
   // ShillIPConfigClient::TestInterface overrides.
   void AddIPConfig(const std::string& ip_config_path,
-                   const base::DictionaryValue& properties) override;
+                   const base::Value& properties) override;
 
  private:
-  // Runs callback with |values|.
-  void PassProperties(const base::DictionaryValue* values,
-                      DictionaryValueCallback callback) const;
-
   // Dictionary of <ipconfig_path, property dictionaries>
-  base::DictionaryValue ipconfigs_;
+  base::Value ipconfigs_{base::Value::Type::DICTIONARY};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeShillIPConfigClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillIPConfigClient);
 };
 
 }  // namespace chromeos

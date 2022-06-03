@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -53,7 +53,16 @@
 //
 // GCPW Events
 //
-#define GCPW_CATEGORY                     ((WORD)0x00000001L)
+#define GCPW_CATEGORY                    ((WORD)0x00000001L)
+
+//
+// MessageId: GCPW_EXTENSION_CATEGORY
+//
+// MessageText:
+//
+// GCPW Extension Events
+//
+#define GCPW_EXTENSION_CATEGORY          ((WORD)0x00000002L)
 
 //
 // MessageId: MSG_LOG_MESSAGE

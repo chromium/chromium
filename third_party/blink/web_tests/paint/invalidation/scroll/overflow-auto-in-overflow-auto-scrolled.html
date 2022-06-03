@@ -1,39 +1,23 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <script src="../resources/text-based-repaint.js" type="text/javascript"></script>
-    <script>
-    window.onload = function() {
-        if (window.eventSender) {
-            if (window.internals)
-                internals.settings.setScrollAnimatorEnabled(false);
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+onload = () => {
+  // Scroll the outerDiv until we reach innerDiv.
+  outerDiv.scrollTop = 300;
+  runRepaintAndPixelTest();
+};
 
-            // Scroll the #outerDiv until we reach the #innerDiv.
-            eventSender.mouseMoveTo(50, 50);
-            eventSender.mouseScrollBy(0, -8);
-        } else {
-            document.write("This test is better run under DumpRenderTree. To manually test it, continuously scroll down on the top-most element. There should be no repaint issue.");
-        }
-        runRepaintAndPixelTest();
-    };
-
-    function repaintTest()
-    {
-        // Now scroll once in the #innerDiv to the green area.
-        if (window.eventSender)
-            eventSender.mouseScrollBy(0, -10);
-    }
-    </script>
-</head>
-<body>
-<!-- Bug 71550 - REGRESSION (r93614): Content remains despite parent element being scrolled off page using javascript. -->
+function repaintTest() {
+  // Now scroll innerDiv once to the green area.
+  innerDiv.scrollTop = 400;
+}
+</script>
+<!-- https://bugs.webkit.org/show_bug.cgi?id=71550 -->
 <!-- For the test to pass you should not see any RED or PURPLE, only green -->
 <div style="height: 300px; overflow-y: auto;" id="outerDiv">
-    <div style="height: 300px; background: purple;"></div>
-    <div style="height: 400px; overflow-y: auto;" id="innerDiv">
-        <div style="height: 400px; width: 300px; background: red"></div>
-        <div style="height: 400px; width: 300px; background: green"></div>
-    </div>
+  <div style="height: 300px; background: purple;"></div>
+  <div style="height: 400px; overflow-y: auto;" id="innerDiv">
+    <div style="height: 400px; width: 300px; background: red"></div>
+    <div style="height: 400px; width: 300px; background: green"></div>
+  </div>
 </div>
-</body>
-</html>

@@ -5,16 +5,20 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ITEM_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ITEM_H_
 
-#include <string>
-
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace media_message_center {
+
+enum class SourceType {
+  kLocalMediaSession,
+  kCast,
+  kPresentationRequest,
+  kMaxValue = kPresentationRequest,
+};
 
 class MediaNotificationView;
 
@@ -24,8 +28,15 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
   // The name of the histogram used when recording user actions.
   static const char kUserActionHistogramName[];
 
+  // The name of the histogram used when recording user actions for Cast
+  // notifications.
+  static const char kCastUserActionHistogramName[];
+
   // The name of the histogram used when recording the source.
   static const char kSourceHistogramName[];
+
+  // The name of the histogram used for recording starting and stopping casting.
+  static const char kCastStartStopHistogramName[];
 
   // The source of the media session. This is used in metrics so new values must
   // only be added to the end.
@@ -34,7 +45,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
     kWeb,
     kAssistant,
     kArc,
-    kMaxValue = kArc,
+    kLocalCastSession,
+    kNonLocalCastSession,
+    kMaxValue = kNonLocalCastSession,
   };
 
   MediaNotificationItem() = default;
@@ -49,8 +62,20 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
   virtual void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) = 0;
 
+  // Called by MediaNotificationViewImpl when progress bar is clicked to seek.
+  virtual void SeekTo(base::TimeDelta time) = 0;
+
   // Hides the media notification.
   virtual void Dismiss() = 0;
+
+  // Called by MediaNotificationView when volume is set.
+  virtual void SetVolume(float volume) = 0;
+
+  // Called by MediaNotificationView when mute button is clicked.
+  virtual void SetMute(bool mute) = 0;
+
+  // Returns the type of source.
+  virtual media_message_center::SourceType SourceType() = 0;
 };
 
 }  // namespace media_message_center

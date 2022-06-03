@@ -1,0 +1,28 @@
+# Copyright 2020 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("services") {
+  sources = [
+    "long_screenshots_tab_service.cc",
+    "long_screenshots_tab_service.h",
+  ]
+
+  deps = [
+    "//chrome/browser/share/android:jni_headers",
+    "//components/google/core/common:common",
+    "//components/keyed_service/core",
+    "//components/paint_preview/browser",
+    "//components/paint_preview/common",
+    "//content/public/browser",
+    "//third_party/re2",
+    "//url:gurl_android",
+  ]
+}
+
+java_cpp_enum("long_screenshots_tab_service_status_enum") {
+  sources = [ "long_screenshots_tab_service.h" ]
+}

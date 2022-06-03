@@ -1,0 +1,14 @@
+<style>
+  :host {
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    height: var(--favicon-size);
+    margin-inline-end: var(--favicon-margin);
+    width: var(--favicon-size);
+  }
+
+  :host([is-top-visit-favicon]) {
+    --favicon-size: var(--top-visit-favicon-size);
+  }
+</style>

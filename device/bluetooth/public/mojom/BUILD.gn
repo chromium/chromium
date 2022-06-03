@@ -5,18 +5,40 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "uuid.mojom",
+  sources = [ "uuid.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bluetooth.mojom.UUID"
+          cpp = "::device::BluetoothUUID"
+        },
+      ]
+      traits_headers = [ "//device/bluetooth/public/mojom/uuid_mojom_traits.h" ]
+      traits_public_deps = [ "//device/bluetooth/public/cpp" ]
+    },
   ]
 }
 
 mojom("fake_bluetooth_interfaces") {
-  sources = [
-    "test/fake_bluetooth.mojom",
-  ]
+  sources = [ "test/fake_bluetooth.mojom" ]
 
-  public_deps = [
-    ":mojom",
+  public_deps = [ ":mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bluetooth.mojom.ServiceDataMap"
+          cpp = "::device::BluetoothDevice::ServiceDataMap"
+        },
+      ]
+      traits_headers = [
+        "//device/bluetooth/public/mojom/test/fake_bluetooth_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//device/bluetooth" ]
+    },
   ]
 }
 
@@ -27,9 +49,7 @@ mojom("deprecated_experimental_interfaces") {
     "device.mojom",
   ]
 
-  public_deps = [
-    ":mojom",
-  ]
+  public_deps = [ ":mojom" ]
 
   visibility = [
     # Experimental interfaces are not ready for production use yet. See
@@ -38,7 +58,10 @@ mojom("deprecated_experimental_interfaces") {
     # Implementation of the mojom interfaces:
     "//device/bluetooth:deprecated_experimental_mojo",
 
-    # Single approved client of the interfaces:
+    # Bluetooth internals page
     "//chrome/browser/ui/webui/bluetooth_internals:*",
+
+    # Nearby Sharing feature
+    "//chromeos/services/nearby/public/mojom:*",
   ]
 }

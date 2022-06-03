@@ -77,7 +77,7 @@
           android:paddingEnd="30dp"
           android:paddingTop="16dp"
           android:ellipsize="end"
-          android:textAppearance="@style/TextAppearance.BlackHint1"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
           android:text="@string/sharing_no_devices_available_text"/>
 
       <org.chromium.ui.widget.ButtonCompat

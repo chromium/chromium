@@ -1,0 +1,25 @@
+: no rects
+
+: no rects
+
+: layer(785x1118) has hit test rect (13,220 42x42)
+
+: layer(785x1166) has hit test rect (13,325 102x102)
+
+: no rects
+
+: layer(785x1246) has hit test rect (8,532 100x100)
+
+: no rects
+
+: layer(785x1326) has hit test rect (8,738 100x100)
+
+: no rects
+
+: layer(785x1406) has hit test rect (120,840 102x102)
+
+: no rects
+
+: layer(785x1486) has hit test rect (118,944 100x100)
+
+

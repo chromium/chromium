@@ -9,10 +9,17 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace bluetooth {
 
@@ -37,6 +44,7 @@ class FakeCentral final : public mojom::FakeCentral,
   void SimulatePreconnectedPeripheral(
       const std::string& address,
       const std::string& name,
+      const base::flat_map<uint16_t, std::vector<uint8_t>>& manufacturer_data,
       const std::vector<device::BluetoothUUID>& known_service_uuids,
       SimulatePreconnectedPeripheralCallback callback) override;
   void SimulateAdvertisementReceived(
@@ -86,7 +94,7 @@ class FakeCentral final : public mojom::FakeCentral,
                             RemoveFakeDescriptorCallback callback) override;
   void SetNextReadCharacteristicResponse(
       uint16_t gatt_code,
-      const base::Optional<std::vector<uint8_t>>& value,
+      const absl::optional<std::vector<uint8_t>>& value,
       const std::string& characteristic_id,
       const std::string& service_id,
       const std::string& peripheral_address,
@@ -120,7 +128,7 @@ class FakeCentral final : public mojom::FakeCentral,
       GetLastWrittenCharacteristicValueCallback callback) override;
   void SetNextReadDescriptorResponse(
       uint16_t gatt_code,
-      const base::Optional<std::vector<uint8_t>>& value,
+      const absl::optional<std::vector<uint8_t>>& value,
       const std::string& descriptor_id,
       const std::string& characteristic_id,
       const std::string& service_id,
@@ -141,49 +149,64 @@ class FakeCentral final : public mojom::FakeCentral,
       GetLastWrittenDescriptorValueCallback callback) override;
 
   // BluetoothAdapter overrides:
+  void Initialize(base::OnceClosure callback) override;
   std::string GetAddress() const override;
   std::string GetName() const override;
   void SetName(const std::string& name,
-               const base::Closure& callback,
-               const ErrorCallback& error_callback) override;
+               base::OnceClosure callback,
+               ErrorCallback error_callback) override;
   bool IsInitialized() const override;
   bool IsPresent() const override;
   bool IsPowered() const override;
   void SetPowered(bool powered,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
   bool IsDiscoverable() const override;
   void SetDiscoverable(bool discoverable,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override;
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override;
   bool IsDiscovering() const override;
   UUIDList GetUUIDs() const override;
-  void CreateRfcommService(
-      const device::BluetoothUUID& uuid,
-      const ServiceOptions& options,
-      const CreateServiceCallback& callback,
-      const CreateServiceErrorCallback& error_callback) override;
-  void CreateL2capService(
-      const device::BluetoothUUID& uuid,
-      const ServiceOptions& options,
-      const CreateServiceCallback& callback,
-      const CreateServiceErrorCallback& error_callback) override;
+  void CreateRfcommService(const device::BluetoothUUID& uuid,
+                           const ServiceOptions& options,
+                           CreateServiceCallback callback,
+                           CreateServiceErrorCallback error_callback) override;
+  void CreateL2capService(const device::BluetoothUUID& uuid,
+                          const ServiceOptions& options,
+                          CreateServiceCallback callback,
+                          CreateServiceErrorCallback error_callback) override;
   void RegisterAdvertisement(
       std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
-      const CreateAdvertisementCallback& callback,
-      const AdvertisementErrorCallback& error_callback) override;
+      CreateAdvertisementCallback callback,
+      AdvertisementErrorCallback error_callback) override;
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,
-      const base::Closure& callback,
-      const AdvertisementErrorCallback& error_callback) override;
-  void ResetAdvertising(
-      const base::Closure& callback,
-      const AdvertisementErrorCallback& error_callback) override;
+      base::OnceClosure callback,
+      AdvertisementErrorCallback error_callback) override;
+  void ResetAdvertising(base::OnceClosure callback,
+                        AdvertisementErrorCallback error_callback) override;
+  void ConnectDevice(
+      const std::string& address,
+      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      ConnectDeviceCallback callback,
+      ErrorCallback error_callback) override;
 #endif
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetServiceAllowList(const UUIDList& uuids,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override;
+  LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
+  std::unique_ptr<device::BluetoothLowEnergyScanSession>
+  StartLowEnergyScanSession(
+      std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+      base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
+      override;
+#endif
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
   void UpdateFilter(

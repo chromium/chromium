@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "jingle/glue/mock_task.h"
 #include "jingle/glue/network_service_config_test_util.h"
@@ -200,25 +201,28 @@ TEST_F(XmppConnectionTest, Connect) {
 }
 
 TEST_F(XmppConnectionTest, MultipleConnect) {
-  EXPECT_DEBUG_DEATH({
-    base::WeakPtr<jingle_xmpp::Task> weak_ptr;
-    EXPECT_CALL(mock_xmpp_connection_delegate_, OnConnect(_)).
-        WillOnce(SaveArg<0>(&weak_ptr));
+  EXPECT_DCHECK_DEATH_WITH(
+      {
+        base::WeakPtr<jingle_xmpp::Task> weak_ptr;
+        EXPECT_CALL(mock_xmpp_connection_delegate_, OnConnect(_))
+            .WillOnce(SaveArg<0>(&weak_ptr));
 
-    XmppConnection xmpp_connection(
-        jingle_xmpp::XmppClientSettings(),
-        net_config_helper_.MakeSocketFactoryCallback(),
-        &mock_xmpp_connection_delegate_, NULL, TRAFFIC_ANNOTATION_FOR_TESTS);
+        XmppConnection xmpp_connection(
+            jingle_xmpp::XmppClientSettings(),
+            net_config_helper_.MakeSocketFactoryCallback(),
+            &mock_xmpp_connection_delegate_, nullptr,
+            TRAFFIC_ANNOTATION_FOR_TESTS);
 
-    xmpp_connection.weak_xmpp_client_->
-        SignalStateChange(jingle_xmpp::XmppEngine::STATE_OPEN);
-    for (int i = 0; i < 3; ++i) {
-      xmpp_connection.weak_xmpp_client_->
-          SignalStateChange(jingle_xmpp::XmppEngine::STATE_OPEN);
-    }
+        xmpp_connection.weak_xmpp_client_->SignalStateChange(
+            jingle_xmpp::XmppEngine::STATE_OPEN);
+        for (int i = 0; i < 3; ++i) {
+          xmpp_connection.weak_xmpp_client_->SignalStateChange(
+              jingle_xmpp::XmppEngine::STATE_OPEN);
+        }
 
-    EXPECT_EQ(xmpp_connection.weak_xmpp_client_.get(), weak_ptr.get());
-  }, "more than once");
+        EXPECT_EQ(xmpp_connection.weak_xmpp_client_.get(), weak_ptr.get());
+      },
+      "more than once");
 }
 
 TEST_F(XmppConnectionTest, ConnectThenError) {

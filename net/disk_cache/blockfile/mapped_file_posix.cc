@@ -16,24 +16,24 @@ namespace disk_cache {
 void* MappedFile::Init(const base::FilePath& name, size_t size) {
   DCHECK(!init_);
   if (init_ || !File::Init(name))
-    return NULL;
+    return nullptr;
 
   size_t temp_len = size ? size : 4096;
   if (!size)
     size = GetLength();
 
-  buffer_ = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED,
+  buffer_ = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED,
                  platform_file(), 0);
   init_ = true;
   view_size_ = size;
   DPLOG_IF(FATAL, buffer_ == MAP_FAILED) << "Failed to mmap " << name.value();
   if (buffer_ == MAP_FAILED)
-    buffer_ = 0;
+    buffer_ = nullptr;
 
   // Make sure we detect hardware failures reading the headers.
   std::unique_ptr<char[]> temp(new char[temp_len]);
   if (!Read(temp.get(), temp_len, 0))
-    return NULL;
+    return nullptr;
 
   return buffer_;
 }

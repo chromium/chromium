@@ -9,6 +9,24 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
+// Specialization templates that used to be in windows.foundation.h, removed in
+// the 10.0.19041.0 SDK, so placed here instead.
+namespace ABI {
+namespace Windows {
+namespace Foundation {
+template <>
+struct __declspec(uuid("3c00fd60-2950-5939-a21a-2d12c5a01b8a")) IReference<bool>
+    : IReference_impl<Internal::AggregateType<bool, boolean>> {};
+
+template <>
+struct __declspec(uuid("548cefbd-bc8a-5fa0-8df2-957440fc8bf4")) IReference<int>
+    : IReference_impl<int> {};
+}  // namespace Foundation
+}  // namespace Windows
+}  // namespace ABI
+#endif
+
 namespace base {
 namespace win {
 

@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/styled_markup_serializer.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -87,6 +86,8 @@ class StyledMarkupTraverser {
  public:
   StyledMarkupTraverser();
   StyledMarkupTraverser(StyledMarkupAccumulator*, Node*);
+  StyledMarkupTraverser(const StyledMarkupTraverser&) = delete;
+  StyledMarkupTraverser& operator=(const StyledMarkupTraverser&) = delete;
 
   Node* Traverse(Node*, Node*);
   void WrapWithNode(ContainerNode&, EditingStyle*);
@@ -105,9 +106,8 @@ class StyledMarkupTraverser {
   bool ShouldSerializeUnrenderedElement(const Node&) const;
 
   StyledMarkupAccumulator* accumulator_;
-  Member<Node> last_closed_;
-  Member<EditingStyle> wrapping_style_;
-  DISALLOW_COPY_AND_ASSIGN(StyledMarkupTraverser);
+  Node* last_closed_;
+  EditingStyle* wrapping_style_;
 };
 
 template <typename Strategy>
@@ -135,7 +135,8 @@ StyledMarkupSerializer<Strategy>::StyledMarkupSerializer(
       end_(end),
       highest_node_to_be_serialized_(highest_node_to_be_serialized),
       options_(options),
-      last_closed_(highest_node_to_be_serialized) {}
+      last_closed_(highest_node_to_be_serialized),
+      wrapping_style_(nullptr) {}
 
 template <typename Strategy>
 static bool NeedInterchangeNewlineAfter(
@@ -156,19 +157,6 @@ template <typename Strategy>
 static bool NeedInterchangeNewlineAt(
     const VisiblePositionTemplate<Strategy>& v) {
   return NeedInterchangeNewlineAfter(PreviousPositionOf(v));
-}
-
-template <typename Strategy>
-static bool AreSameRanges(Node* node,
-                          const PositionTemplate<Strategy>& start_position,
-                          const PositionTemplate<Strategy>& end_position) {
-  DCHECK(node);
-  const EphemeralRange range =
-      CreateVisibleSelection(
-          SelectionInDOMTree::Builder().SelectAllChildren(*node).Build())
-          .ToNormalizedEphemeralRange();
-  return ToPositionInDOMTree(start_position) == range.StartPosition() &&
-         ToPositionInDOMTree(end_position) == range.EndPosition();
 }
 
 static EditingStyle* StyleFromMatchedRulesAndInlineDecl(
@@ -266,7 +254,8 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
                       html_names::kBackgroundAttr) +
                   "')",
               /* important */ false,
-              fully_selected_root->GetDocument().GetSecureContextMode());
+              fully_selected_root->GetExecutionContext()
+                  ->GetSecureContextMode());
         }
 
         if (fully_selected_root_style->Style()) {
@@ -358,9 +347,9 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
     // If |n| is a selection boundary such as <input>, traverse the child
     // nodes in the DOM tree instead of the flat tree.
     if (HandleSelectionBoundary<Strategy>(*n)) {
-      last_closed = StyledMarkupTraverser<EditingStrategy>(accumulator_,
-                                                           last_closed_.Get())
-                        .Traverse(n, EditingStrategy::NextSkippingChildren(*n));
+      last_closed =
+          StyledMarkupTraverser<EditingStrategy>(accumulator_, last_closed_)
+              .Traverse(n, EditingStrategy::NextSkippingChildren(*n));
       next = EditingInFlatTreeStrategy::NextSkippingChildren(*n);
     } else {
       next = Strategy::Next(*n);

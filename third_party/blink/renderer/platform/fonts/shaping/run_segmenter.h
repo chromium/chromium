@@ -7,7 +7,6 @@
 
 #include <unicode/uscript.h>
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/orientation_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
@@ -36,6 +35,8 @@ class PLATFORM_EXPORT RunSegmenter {
 
   // Initialize a RunSegmenter.
   RunSegmenter(const UChar* buffer, unsigned buffer_size, FontOrientation);
+  RunSegmenter(const RunSegmenter&) = delete;
+  RunSegmenter& operator=(const RunSegmenter&) = delete;
 
   bool Consume(RunSegmenterRange*);
 
@@ -61,10 +62,8 @@ class PLATFORM_EXPORT RunSegmenter {
   unsigned orientation_iterator_position_;
   unsigned symbols_iterator_position_;
   bool at_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunSegmenter);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_RUN_SEGMENTER_H_

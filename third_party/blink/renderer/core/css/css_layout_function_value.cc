@@ -21,7 +21,7 @@ String CSSLayoutFunctionValue::CustomCSSText() const {
   result.Append("layout(");
   result.Append(name_->CustomCSSText());
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 AtomicString CSSLayoutFunctionValue::GetName() const {
@@ -32,7 +32,7 @@ bool CSSLayoutFunctionValue::Equals(const CSSLayoutFunctionValue& other) const {
   return GetName() == other.GetName() && IsInline() == other.IsInline();
 }
 
-void CSSLayoutFunctionValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSLayoutFunctionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(name_);
   CSSValue::TraceAfterDispatch(visitor);
 }

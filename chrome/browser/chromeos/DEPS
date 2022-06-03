@@ -1,30 +1,33 @@
 include_rules = [
+  # //chrome/browser/chromeos is conceptually part of "ash". It is migrating to
+  # //chrome/browser/ash. See the Lacros source code migration design doc:
+  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  "+ash",
+
+  "+chrome/browser/image_decoder",
   # TODO(ananta): Remove this when we move files which display UI in
   # chrome/browser/chromeos to chrome/browser/ui/views/chromeos
   # crbug.com/728877
   "+chrome/browser/ui/views/chrome_layout_provider.h",
 
-  "+chrome/services/app_service/public",
+  "+chrome/services/keymaster/public",
   "+chrome/services/wilco_dtc_supportd/public",
+  "+components/account_manager_core",
+  "+components/app_restore",
   "+components/guest_os",
+  "+components/reporting",
+  "+components/services/app_service/public",
   "+cros",
   "+dbus",
   "+device/bluetooth",
-  "+mash/public/mojom",
   "+media/audio/sounds",  # For system sounds
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/mojom",  # For platform verification mojom interface.
-  "+remoting/host/it2me",  # For CRD host in remote command
   "+services/device/public",
   "+services/metrics/public",
   "+services/network",
   "+services/tracing/public",
   "+services/viz/public/mojom",
-
-  # keyboard::KeyboardController only exists in ash and should not be accessed
-  # directly from src/chrome. Use ChromeKeyboardControllerClient instead.
-  "-ui/keyboard/keyboard_controller.h",
-  "-ui/keyboard/keyboard_util.h",
 ]
 
 specific_include_rules = {
@@ -32,38 +35,26 @@ specific_include_rules = {
   ".*fuzz.*": [
     "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
   ],
-  ".*test.*": [
-   "!ash",
-   "+ash/public",
-   "+ash/keyboard/ui/public",
-  ],
   "assistant_util_unittest\.cc": [
     "+ui/events/devices/device_data_manager.h",
   ],
   "child_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
-  "chrome_browser_main_chromeos\.cc": [
-    "+ash/shell.h",
-    "+ash/sticky_keys/sticky_keys_controller.h",
-  ],
   "device_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "legacy_device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
   "event_rewriter_unittest\.cc": [
     "+ui/events/devices/device_data_manager.h",
   ],
+  "external_protocol_dialog\.cc": [
+    "+chrome/browser/ui/views/external_protocol_dialog.h",
+  ],
   "file_manager_browsertest_base.cc": [
     "+chrome/browser/ui/views/extensions/extension_dialog.h",
     "+chrome/browser/ui/views/select_file_dialog_extension.h",
-  ],
-  "input_method_manager_impl\.cc": [
-    # For GetInputMethodKeyboardController. TODO(stevenjb/shuchen): Fix this
-    # for Mash. https://crbug.com/756059
-    "+ui/keyboard/keyboard_controller.h",
-  ],
-  "server_printers_fetcher\.cc": [
-    # IPP protocol; it is needed for communication with print servers.
-    "+third_party/libipp/libipp/ipp.h",
   ],
 }

@@ -28,13 +28,11 @@ class CORE_EXPORT CSSParserFastPaths {
   // CSSPropertyParser
   static bool IsKeywordPropertyID(CSSPropertyID);
 
-  // Returns if a property should be handled by the fast path, but have other
-  // non-keyword values which should be handled by the CSSPropertyParser.
-  static bool IsPartialKeywordPropertyID(CSSPropertyID);
-
   static bool IsValidKeywordPropertyAndValue(CSSPropertyID,
                                              CSSValueID,
                                              CSSParserMode);
+
+  static bool IsValidSystemFont(CSSValueID);
 
   static CSSValue* ParseColor(const String&, CSSParserMode);
 };

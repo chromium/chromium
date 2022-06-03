@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 17
+// Next MinVersion: 23
 
 module arc.mojom;
 
@@ -45,6 +45,22 @@ enum AccessibilityEventType {
   WINDOWS_CHANGED,
   VIEW_CONTEXT_CLICKED,
   ASSIST_READING_CONTEXT,
+};
+
+// ContentChangeType lists the possible sub types of WINDOW_STATE_CHANGED and
+// WINDOW_CONTENT_CHANGED events on Android ordered as same as developer guide
+// of return value of getContentChangeTypes.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent?hl=en#getContentChangeTypes()
+[Extensible]
+enum ContentChangeType {
+  CONTENT_DESCRIPTION,
+  STATE_DESCRIPTION,
+  SUBTREE,
+  TEXT,
+  PANE_TITLE,
+  UNDEFINED,
+  PANE_APPEARED,
+  PANE_DISAPPEARED,
 };
 
 // Possible actions that can be performed on an AccessibilityNodeInfo.
@@ -129,7 +145,8 @@ enum AccessibilityStringProperty {
   ROLE_DESCRIPTION,  // Chrome only
   TOOLTIP,
   PANE_TITLE,
-  HINT_TEXT
+  HINT_TEXT,
+  STATE_DESCRIPTION
 };
 
 // These fields are taken from int instance members of
@@ -252,6 +269,14 @@ struct AccessibilityRangeInfoData {
   float current;
 };
 
+// These fields are taken from View.ACCESSIBILITY_LIVE_REGION_*.
+[Extensible]
+enum AccessibilityLiveRegionType {
+  NONE,
+  POLITE,
+  ASSERTIVE,
+};
+
 // These fields are taken from AccessibilityWindowInfo's window types.
 [Extensible]
 enum AccessibilityWindowType {
@@ -280,6 +305,7 @@ struct AccessibilityNodeInfoData {
   [MinVersion=5] AccessibilityCollectionItemInfoData? collection_item_info;
   [MinVersion=5] AccessibilityRangeInfoData? range_info;
   [MinVersion=12] int32 window_id;
+  [MinVersion=20] bool is_virtual_node;
 };
 
 // AccessibilityWindowInfoData is a struct to contain info about
@@ -320,6 +346,39 @@ enum AccessibilityNotificationStateType {
   SURFACE_REMOVED,
 };
 
+// These fields are taken from int attributes of
+// AccessibilityEvent and AccessibilityRecord.
+[Extensible]
+enum AccessibilityEventIntProperty {
+  ACTION,
+  FROM_INDEX,
+  TO_INDEX,
+  ITEM_COUNT,
+  CURRENT_ITEM_INDEX,
+  SCROLL_X,
+  SCROLL_Y,
+  MAX_SCROLL_X,
+  MAX_SCROLL_Y,
+  SCROLL_DELTA_X,
+  SCROLL_DELTA_Y,
+};
+
+// These fields are taken from string attributes of
+// AccessibilityEvent and AccessibilityRecord.
+[Extensible]
+enum AccessibilityEventStringProperty {
+  CLASS_NAME,
+  PACKAGE_NAME,
+  CONTENT_DESCRIPTION,
+};
+
+// These fields are taken from List<Integer> like instance members of
+// AccessibilityEvent and AccessibilityRecord.
+[Extensible]
+enum AccessibilityEventIntListProperty{
+  CONTENT_CHANGE_TYPES,
+};
+
 // AccessibilityEventData is a struct to contain info of
 // AccessibilityEvent in Android.
 // https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent.html
@@ -350,7 +409,13 @@ struct AccessibilityEventData {
   [MinVersion=14] bool is_input_method_window;
 
   // Retrieved from AccessibilityRecord.getText().
-  [MinVersion=15] array<string>? eventText;
+  [MinVersion=15] array<string>? event_text;
+
+  [MinVersion=21] map<AccessibilityEventIntProperty, int32>? int_properties;
+  [MinVersion=21]
+      map<AccessibilityEventStringProperty, string>? string_properties;
+  [MinVersion=23]
+      map<AccessibilityEventIntListProperty, array<int32>>? int_list_properties;
 };
 
 // AccessibilityActionData is a struct to contain info of AccessibilityAction in
@@ -403,9 +468,16 @@ struct CaptionStyle {
   CaptionTextShadowType text_shadow_type;
 };
 
+// Information used to identify AccessibilityWindow.
+// In P or before, task_id is used. In Q or later, window_id is used.
+union AccessibilityWindowKey {
+  uint32 window_id;
+  uint32 task_id;
+};
+
 // Interface for Android communicating to Chrome.
 // Deprecated method IDs: 0
-// Next method ID: 3
+// Next method ID: 4
 interface AccessibilityHelperHost {
   // OnAccessibilityEvent is called when a converted Android accessibility event
   // is sent from Android.
@@ -415,14 +487,19 @@ interface AccessibilityHelperHost {
   // changed, e.g. surface for a notification is created.
   [MinVersion=10] OnNotificationStateChanged@2(
       string notification_key, AccessibilityNotificationStateType state);
+
+  // OnToggleNativeChromeVoxArcSupport is called when state of ChromeVox native
+  // ARC support gets changed.
+  [MinVersion=18] OnToggleNativeChromeVoxArcSupport@3(bool enabled);
 };
 
 // Interface for communicating to Android.
 // Deprecated method IDs: 0, 1, 3, 5
-// Next method ID: 11
+// Next method ID: 12
 interface AccessibilityHelperInstance {
   // Establishes full-duplex communication with the host.
-  [MinVersion=9] Init@7(AccessibilityHelperHost host) => ();
+  [MinVersion=9] Init@7(
+      pending_remote<AccessibilityHelperHost> host_remote) => ();
 
   // Set a filter on the event types received.
   SetFilter@2(AccessibilityFilterType filter_type);
@@ -446,4 +523,8 @@ interface AccessibilityHelperInstance {
 
   // Requests the service to set the caption style.
   [MinVersion=16] SetCaptionStyle@10(CaptionStyle style);
+
+  // Requests the whole accessibility tree with the specified window.
+  [MinVersion=17] RequestSendAccessibilityTree@11(
+      AccessibilityWindowKey window);
 };

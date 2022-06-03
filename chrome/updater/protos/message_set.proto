@@ -1,0 +1,27 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO: crbug/1082836
+// This file is currently manually tweaked for Chromium use. Find a
+// way to automatically sync from source and make the following necessary
+// changes:
+//   1) Add "option optimize_for = LITE_RUNTIME;" to avoid link error.
+//   2) Remove Google internal option:
+//        "option java_enable_dual_generate_mutable_api = true;"
+//   3) Update the copyright section.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+package proto2.bridge;
+
+option java_outer_classname = "MessageSetProtos";
+option java_multiple_files = true;
+option cc_enable_arenas = true;
+
+// This is proto2's version of MessageSet.
+message MessageSet {
+  option message_set_wire_format = true;
+
+  extensions 4 to max;
+}

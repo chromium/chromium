@@ -8,17 +8,10 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
-
-// This must match the kernel's seccomp_data structure.
-struct arch_seccomp_data {
-  int nr;
-  uint32_t arch;
-  uint64_t instruction_pointer;
-  uint64_t args[6];
-};
 
 namespace bpf_dsl {
 
@@ -40,6 +33,9 @@ class SANDBOX_EXPORT TrapRegistry {
   // async-signal context, so they must be async-signal safe:
   // http://pubs.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_04.html
   typedef intptr_t (*TrapFnc)(const struct arch_seccomp_data& args, void* aux);
+
+  TrapRegistry(const TrapRegistry&) = delete;
+  TrapRegistry& operator=(const TrapRegistry&) = delete;
 
   // Add registers the specified trap handler tuple and returns a
   // non-zero trap ID that uniquely identifies the tuple for the life
@@ -63,8 +59,6 @@ class SANDBOX_EXPORT TrapRegistry {
   // implementations can omit their destructor.  Instead we protect against
   // misuse by marking it protected.
   ~TrapRegistry() {}
-
-  DISALLOW_COPY_AND_ASSIGN(TrapRegistry);
 };
 
 }  // namespace bpf_dsl

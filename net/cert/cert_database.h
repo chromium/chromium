@@ -5,8 +5,6 @@
 #ifndef NET_CERT_CERT_DATABASE_H_
 #define NET_CERT_CERT_DATABASE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -39,6 +37,9 @@ class NET_EXPORT CertDatabase {
   // CertDatabase::RemoveObserver.
   class NET_EXPORT Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Called whenever the Cert Database is known to have changed.
@@ -49,13 +50,13 @@ class NET_EXPORT CertDatabase {
 
    protected:
     Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Returns the CertDatabase singleton.
   static CertDatabase* GetInstance();
+
+  CertDatabase(const CertDatabase&) = delete;
+  CertDatabase& operator=(const CertDatabase&) = delete;
 
   // Registers |observer| to receive notifications of certificate changes.  The
   // thread on which this is called is the thread on which |observer| will be
@@ -66,7 +67,7 @@ class NET_EXPORT CertDatabase {
   // on the same thread on which AddObserver() was called.
   void RemoveObserver(Observer* observer);
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   // Start observing and forwarding events from Keychain services on the
   // current thread. Current thread must have an associated CFRunLoop,
   // which means that this must be called from a MessageLoop of TYPE_UI.
@@ -86,15 +87,13 @@ class NET_EXPORT CertDatabase {
 
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   void ReleaseNotifier();
 
   class Notifier;
   friend class Notifier;
   Notifier* notifier_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CertDatabase);
 };
 
 }  // namespace net

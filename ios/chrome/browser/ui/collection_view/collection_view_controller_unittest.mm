@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 
+#import <MaterialComponents/MaterialCollectionCells.h>
+
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #include "ios/chrome/test/block_cleanup_test.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

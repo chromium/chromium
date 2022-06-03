@@ -13,8 +13,9 @@ bool StructTraits<ax::mojom::AXEventDataView, ui::AXEvent>::Read(
   out->event_type = data.event_type();
   out->id = data.id();
   out->event_from = data.event_from();
+  out->event_from_action = data.event_from_action();
   out->action_request_id = data.action_request_id();
-  return true;
+  return data.ReadEventIntents(&out->event_intents);
 }
 
 }  // namespace mojo

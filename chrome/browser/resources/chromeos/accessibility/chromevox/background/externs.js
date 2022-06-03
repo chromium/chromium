@@ -6,6 +6,7 @@
 
 var localStorage = {};
 var sessionStorage = {};
+var PhoneticDictionaries = {};
 
 /** Speech Rule Engine. See sre_browser.js. */
 var SRE = {};

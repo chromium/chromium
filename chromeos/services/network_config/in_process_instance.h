@@ -23,4 +23,11 @@ void OverrideInProcessInstanceForTesting(
 }  // namespace network_config
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace network_config {
+using ::chromeos::network_config::BindToInProcessInstance;
+}  // namespace network_config
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_IN_PROCESS_INSTANCE_H_

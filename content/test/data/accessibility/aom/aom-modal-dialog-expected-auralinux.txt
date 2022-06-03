@@ -1,0 +1,6 @@
+[document web]
+++[section]
+++++[static] name='Content outside modal dialog. '
+++++[push button] name='Button outside modal dialog.'
+++[dialog] name='Modal dialog.' modal
+++++[push button] name='Button inside modal dialog.'

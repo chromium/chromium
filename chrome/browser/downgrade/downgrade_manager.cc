@@ -4,142 +4,68 @@
 
 #include "chrome/browser/downgrade/downgrade_manager.h"
 
-#include <windows.h>
-
 #include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
+#include "base/enterprise_util.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/downgrade/downgrade_utils.h"
+#include "chrome/browser/downgrade/snapshot_manager.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
-#include "chrome/common/chrome_constants.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/common/pref_names.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
+#include "components/version_info/version_info_values.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_WIN)
+#include "chrome/installer/util/install_util.h"
+#endif
 
 namespace downgrade {
 
 namespace {
 
-// Returns true if User Data should be moved aside for a downgrade.
-bool ShouldMoveUserData(const base::Version& current_version) {
-  // Move User Data only if it follows an administrator-driven downgrade.
-  return InstallUtil::GetDowngradeVersion() > current_version;
-}
-
-// Returns a unique name for a path of the form |dir|/|name|.CHROME_DELETE, or
-// an empty path if none such can be found. The path may contain " (N)" with
-// some integer N before the final file extension.
-base::FilePath GetTempDirNameForDelete(const base::FilePath& dir,
-                                       const base::FilePath& name) {
-  if (dir.empty())
-    return base::FilePath();
-
-  return base::GetUniquePath(
-      dir.Append(name).AddExtension(kDowngradeDeleteSuffix));
-}
-
-// Attempts to move/rename |source| to |target| without falling back to
-// copy-and-delete. Returns true on success.
-bool MoveWithoutFallback(const base::FilePath& source,
-                         const base::FilePath& target) {
-  // TODO(grt): check whether or not this is sufficiently atomic when |source|
-  // is on a network share.
-  auto result = ::MoveFileEx(base::as_wcstr(source.value()),
-                             base::as_wcstr(target.value()), 0);
-  PLOG_IF(ERROR, !result) << source << " -> " << target;
-  return result;
-}
-
-// A callback that returns true when its argument names a path that should not
-// be moved by MoveContents.
-using ExclusionPredicate = base::RepeatingCallback<bool(const base::FilePath&)>;
-
-// Moves the contents of directory |source| into the directory |target| (which
-// may or may not exist) for deletion at a later time. Any directories that
-// cannot be moved (most likely due to open files therein) are recursed into.
-// |exclusions_predicate| is an optional callback that evaluates items in
-// |source| to determine whether or not they should be skipped. Returns the
-// number of items within |source| or its subdirectories that could not be
-// moved, or no value if |target| could not be created.
-base::Optional<int> MoveContents(const base::FilePath& source,
-                                 const base::FilePath& target,
-                                 ExclusionPredicate exclusion_predicate) {
-  // Implementation note: moving is better than deleting in this case since it
-  // avoids certain failure modes. For example: on Windows, a file that is open
-  // with FILE_SHARE_DELETE can be moved or marked for deletion. If it is moved
-  // aside, the containing directory may then be eligible for deletion. If, on
-  // the other hand, it is marked for deletion, it cannot be moved nor can its
-  // containing directory be moved or deleted.
-  if (!base::CreateDirectory(target)) {
-    PLOG(ERROR) << target;
-    return base::nullopt;
-  }
-
-  int failure_count = 0;
-  base::FileEnumerator enumerator(
-      source, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
-    const base::FileEnumerator::FileInfo info = enumerator.GetInfo();
-    const base::FilePath name = info.GetName();
-    if (exclusion_predicate && exclusion_predicate.Run(name))
-      continue;
-    const base::FilePath this_target = target.Append(name);
-    // A directory can be moved unless any file within it is open. A simple file
-    // can be moved unless it is opened without FILE_SHARE_DELETE. (As with most
-    // things in life, there are exceptions to this rule, but they are
-    // uncommon. For example, a file opened without FILE_SHARE_DELETE can be
-    // moved as long as it was opened only with some combination of
-    // READ_CONTROL, WRITE_DAC, WRITE_OWNER, and SYNCHRONIZE access rights.
-    // Since this short list excludes such useful rights as FILE_EXECUTE,
-    // FILE_READ_DATA, and most anything else one would want a file for, it's
-    // likely an uncommon scenario. See OpenFileTest in base/files for more.)
-    if (MoveWithoutFallback(path, this_target))
-      continue;
-    if (!info.IsDirectory()) {
-      ++failure_count;
-      // TODO(grt): Consider if UKM can be used to learn the relative path of
-      // file(s) that cannot be moved.
-      continue;
-    }
-    failure_count +=
-        MoveContents(path, this_target, ExclusionPredicate()).value_or(0);
-    // If everything within the directory was moved, it may be possible to
-    // delete it now.
-    if (!base::DeleteFile(path, false /* !recursive */))
-      ++failure_count;
-  }
-  return failure_count;
-}
+bool g_snapshots_enabled_for_testing = false;
 
 // Moves the contents of a User Data directory at |source| to |target|, with the
 // exception of files/directories that should be left behind for a full data
 // wipe. Returns no value if the target directory could not be created, or the
 // number of items that could not be moved.
-base::Optional<int> MoveUserData(const base::FilePath& source,
-                                 const base::FilePath& target) {
+void MoveUserData(const base::FilePath& source, const base::FilePath& target) {
   // Returns true to exclude a file.
   auto exclusion_predicate =
       base::BindRepeating([](const base::FilePath& name) -> bool {
+        // TODO(ydago): Share constants instead of hardcoding values here.
         static constexpr base::FilePath::StringPieceType kFilesToKeep[] = {
             FILE_PATH_LITERAL("browsermetrics"),
             FILE_PATH_LITERAL("crashpad"),
             FILE_PATH_LITERAL("first run"),
             FILE_PATH_LITERAL("last version"),
             FILE_PATH_LITERAL("lockfile"),
+            FILE_PATH_LITERAL("snapshots"),
             FILE_PATH_LITERAL("stability"),
         };
         // Don't try to move the dir into which everything is being moved.
@@ -158,12 +84,9 @@ base::Optional<int> MoveUserData(const base::FilePath& source,
   if (!result ||
       !MoveWithoutFallback(source.Append(kDowngradeLastVersionFile),
                            target.Append(kDowngradeLastVersionFile))) {
-    if (result)
-      *result += 1;
     // Attempt to delete Last Version if all else failed so that Chrome does not
     // continually attempt to perform a migration.
-    base::DeleteFile(source.Append(kDowngradeLastVersionFile),
-                     false /* recursive */);
+    base::DeleteFile(source.Append(kDowngradeLastVersionFile));
     // Inform system administrators that things have gone awry.
     SYSLOG(ERROR) << "Failed to perform User Data migration following a Chrome "
                      "version downgrade. Chrome will run with User Data from a "
@@ -172,7 +95,6 @@ base::Optional<int> MoveUserData(const base::FilePath& source,
     // switch suppresses downgrade processing, so that launch will go through
     // normal startup.
   }
-  return result;
 }
 
 // Renames |disk_cache_dir| in its containing folder. If that fails, an attempt
@@ -188,42 +110,34 @@ void MoveCache(const base::FilePath& disk_cache_dir) {
   const base::FilePath target =
       GetTempDirNameForDelete(parent, disk_cache_dir.BaseName());
 
-  // The cache dir should have no files in use, so a simple move should suffice.
-  const bool move_result = MoveWithoutFallback(disk_cache_dir, target);
-  base::UmaHistogramBoolean("Downgrade.CacheDirMove.Result", move_result);
-  if (move_result)
+  // A simple move succeeds in approx 2/3 of attempts.
+  if (MoveWithoutFallback(disk_cache_dir, target))
     return;
 
   // The directory couldn't be moved whole-hog. Attempt a recursive move of its
-  // contents.
-  auto failure_count =
-      MoveContents(disk_cache_dir, target, ExclusionPredicate());
-  if (!failure_count || *failure_count) {
-    // Report precise values rather than an exponentially bucketed histogram.
-    // Bucket 0 means that the target directory could not be created. All other
-    // buckets are a count of files/directories left behind.
-    base::UmaHistogramExactLinear("Downgrade.CacheDirMove.FailureCount",
-                                  failure_count.value_or(0), 50);
-  }
+  // contents. This succeeds in nearly all cases.
+  MoveContents(disk_cache_dir, target, ExclusionPredicate());
 }
 
 // Deletes all subdirectories in |dir| named |name|*.CHROME_DELETE.
 void DeleteAllRenamedUserDirectories(const base::FilePath& dir,
                                      const base::FilePath& name) {
-  base::FilePath::StringType pattern = name.value() + FILE_PATH_LITERAL("*");
-  kDowngradeDeleteSuffix.AppendToString(&pattern);
+  base::FilePath::StringType pattern = base::StrCat(
+      {name.value(), FILE_PATH_LITERAL("*"), kDowngradeDeleteSuffix});
   base::FileEnumerator enumerator(dir, false, base::FileEnumerator::DIRECTORIES,
                                   pattern);
   for (base::FilePath to_delete = enumerator.Next(); !to_delete.empty();
        to_delete = enumerator.Next()) {
-    base::DeleteFileRecursively(to_delete);
+    base::DeletePathRecursively(to_delete);
   }
 }
 
-// Deletes all moved User Data and Cache directories for the given dirs.
+// Deletes all moved User Data, Snapshots and Cache directories for the given
+// dirs.
 void DeleteMovedUserData(const base::FilePath& user_data_dir,
                          const base::FilePath& disk_cache_dir) {
   DeleteAllRenamedUserDirectories(user_data_dir, user_data_dir.BaseName());
+  DeleteAllRenamedUserDirectories(user_data_dir, base::FilePath(kSnapshotsDir));
 
   // Prior to Chrome M78, User Data was moved to a new name under its parent. In
   // that case, User Data at a volume's root was unsupported.
@@ -239,9 +153,29 @@ void DeleteMovedUserData(const base::FilePath& user_data_dir,
   }
 }
 
+bool UserDataSnapshotEnabled() {
+  if (g_snapshots_enabled_for_testing)
+    return true;
+  bool is_enterprise_managed =
+#if defined(OS_WIN) || defined(OS_MAC)
+      base::IsMachineExternallyManaged() ||
+#endif
+      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
+  return is_enterprise_managed &&
+         base::FeatureList::IsEnabled(features::kUserDataSnapshot);
+}
+
+#if defined(OS_WIN)
+bool IsAdministratorDrivenDowngrade(uint16_t current_milestone) {
+  const auto downgrade_version = InstallUtil::GetDowngradeVersion();
+  return downgrade_version &&
+         downgrade_version->components()[0] > current_milestone;
+}
+#endif
+
 }  // namespace
 
-bool DowngradeManager::IsMigrationRequired(
+bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
     const base::FilePath& user_data_dir) {
   DCHECK_EQ(type_, Type::kNone);
   DCHECK(!user_data_dir.empty());
@@ -256,24 +190,60 @@ bool DowngradeManager::IsMigrationRequired(
     return false;
   }
 
-  base::Optional<base::Version> last_version = GetLastVersion(user_data_dir);
+  absl::optional<base::Version> last_version = GetLastVersion(user_data_dir);
   if (!last_version)
     return false;
 
-  const base::Version current_version(chrome::kChromeVersion);
-  if (current_version >= *last_version)
-    return false;  // Same version or upgrade.
+  const base::Version& current_version = version_info::GetVersion();
 
-  type_ = ShouldMoveUserData(current_version) ? Type::kAdministrativeWipe
-                                              : Type::kUnsupported;
-  base::UmaHistogramEnumeration("Downgrade.Type", type_);
-  return type_ == Type::kAdministrativeWipe;
+  const bool user_data_snapshot_enabled = UserDataSnapshotEnabled();
+
+  if (!user_data_snapshot_enabled) {
+    if (current_version >= *last_version)
+      return false;  // Same version or upgrade.
+
+    type_ = GetDowngradeType(user_data_dir, current_version, *last_version);
+    DCHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kUnsupported);
+    base::UmaHistogramEnumeration("Downgrade.Type", type_);
+    return type_ == Type::kAdministrativeWipe;
+  }
+
+  if (current_version == *last_version)
+    return false;  // Nothing to do if the version has not changed.
+
+  if (current_version < *last_version) {
+    type_ = GetDowngradeTypeWithSnapshot(user_data_dir, current_version,
+                                         *last_version);
+    if (type_ != Type::kNone)
+      base::UmaHistogramEnumeration("Downgrade.Type", type_);
+
+    return type_ == Type::kAdministrativeWipe ||
+           type_ == Type::kSnapshotRestore;
+  }
+
+  auto current_milestone = current_version.components()[0];
+  int max_number_of_snapshots = g_browser_process->local_state()->GetInteger(
+      prefs::kUserDataSnapshotRetentionLimit);
+  absl::optional<uint32_t> purge_milestone;
+  if (current_milestone == last_version->components()[0]) {
+    // Mid-milestone snapshots are only taken on canary installs.
+    if (chrome::GetChannel() != version_info::Channel::CANARY)
+      return false;
+    // Keep one snapshot in this milestone unless snapshots are disabled.
+    max_number_of_snapshots = std::min(max_number_of_snapshots, 1);
+    purge_milestone = current_milestone;
+  }
+  SnapshotManager snapshot_manager(user_data_dir);
+  snapshot_manager.TakeSnapshot(*last_version);
+  snapshot_manager.PurgeInvalidAndOldSnapshots(max_number_of_snapshots,
+                                               purge_milestone);
+  return false;
 }
 
 void DowngradeManager::UpdateLastVersion(const base::FilePath& user_data_dir) {
   DCHECK(!user_data_dir.empty());
   DCHECK_NE(type_, Type::kAdministrativeWipe);
-  const base::StringPiece version(chrome::kChromeVersion);
+  const base::StringPiece version(PRODUCT_VERSION);
   base::WriteFile(GetLastVersionFile(user_data_dir), version.data(),
                   version.size());
 }
@@ -285,15 +255,14 @@ void DowngradeManager::DeleteMovedUserDataSoon(
   // available via base/task/post_task.h.
   content::BrowserThread::PostBestEffortTask(
       FROM_HERE,
-      base::CreateTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       base::BindOnce(&DeleteMovedUserData, user_data_dir, GetDiskCacheDir()));
 }
 
 void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir) {
-  DCHECK_EQ(type_, Type::kAdministrativeWipe);
+  DCHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kSnapshotRestore);
   DCHECK(!user_data_dir.empty());
 
   const base::FilePath disk_cache_dir(GetDiskCacheDir());
@@ -304,25 +273,18 @@ void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir) {
   // be left behind. Furthermore, User Data is moved to a new directory within
   // itself (for example, to User Data/User Data.CHROME_DELETE) to guarantee
   // that the movement isn't across volumes.
-  const auto failure_count = MoveUserData(
-      user_data_dir,
-      GetTempDirNameForDelete(user_data_dir, user_data_dir.BaseName()));
-  enum class UserDataMoveResult {
-    kCreateTargetFailure = 0,
-    kSuccess = 1,
-    kPartialSuccess = 2,
-    kMaxValue = kPartialSuccess
-  };
-  UserDataMoveResult move_result =
-      !failure_count ? UserDataMoveResult::kCreateTargetFailure
-                     : (*failure_count ? UserDataMoveResult::kPartialSuccess
-                                       : UserDataMoveResult::kSuccess);
-  base::UmaHistogramEnumeration("Downgrade.UserDataDirMove.Result",
-                                move_result);
-  if (failure_count && *failure_count) {
-    // Report precise values rather than an exponentially bucketed histogram.
-    base::UmaHistogramExactLinear("Downgrade.UserDataDirMove.FailureCount",
-                                  *failure_count, 50);
+  // This has a 95% success rate according to the histogram
+  // "Downgrade.UserDataDirMove.Result" which is acceptable in this case since
+  // the files (usually under 5 files according to
+  // "Downgrade.UserDataDirMove.FailureCount") left behind 5% of the time might
+  // be overridden by `SnapshotManager::RestoreSnapshot` or updated following a
+  // version upgrade.
+  MoveUserData(user_data_dir, GetTempDirNameForDelete(
+                                  user_data_dir, user_data_dir.BaseName()));
+
+  if (type_ == Type::kSnapshotRestore) {
+    SnapshotManager snapshot_manager(user_data_dir);
+    snapshot_manager.RestoreSnapshot(version_info::GetVersion());
   }
 
   // Add the migration switch to the command line so that it is propagated to
@@ -330,6 +292,57 @@ void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir) {
   // pathological failure.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kUserDataMigrated);
+}
+
+// static
+void DowngradeManager::EnableSnapshotsForTesting(bool enable) {
+  g_snapshots_enabled_for_testing = enable;
+}
+
+// static
+DowngradeManager::Type DowngradeManager::GetDowngradeType(
+    const base::FilePath& user_data_dir,
+    const base::Version& current_version,
+    const base::Version& last_version) {
+  DCHECK(!user_data_dir.empty());
+  DCHECK_LT(current_version, last_version);
+
+#if defined(OS_WIN)
+    // Move User Data aside for a clean launch if it follows an
+    // administrator-driven downgrade.
+  if (IsAdministratorDrivenDowngrade(current_version.components()[0]))
+    return Type::kAdministrativeWipe;
+#endif
+    return Type::kUnsupported;
+}
+
+// static
+DowngradeManager::Type DowngradeManager::GetDowngradeTypeWithSnapshot(
+    const base::FilePath& user_data_dir,
+    const base::Version& current_version,
+    const base::Version& last_version) {
+  DCHECK(!user_data_dir.empty());
+  DCHECK_LT(current_version, last_version);
+
+  const uint16_t milestone = current_version.components()[0];
+
+  // Move User Data and restore from a snapshot if there is a candidate
+  // snapshot to restore.
+  const auto snapshot_to_restore =
+      GetSnapshotToRestore(current_version, user_data_dir);
+
+#if defined(OS_WIN)
+  // Move User Data aside for a clean launch if it follows an
+  // administrator-driven downgrade when no snapshot is found.
+  if (!snapshot_to_restore && IsAdministratorDrivenDowngrade(milestone))
+    return Type::kAdministrativeWipe;
+#endif
+
+  const uint16_t last_milestone = last_version.components()[0];
+  if (last_milestone > milestone)
+    return snapshot_to_restore ? Type::kSnapshotRestore : Type::kUnsupported;
+
+  return Type::kMinorDowngrade;
 }
 
 }  // namespace downgrade

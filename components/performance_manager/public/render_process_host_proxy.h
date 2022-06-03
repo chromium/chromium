@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RENDER_PROCESS_HOST_PROXY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RENDER_PROCESS_HOST_PROXY_H_
 
+#include "components/performance_manager/public/render_process_host_id.h"
 #include "content/public/common/child_process_host.h"
 
 namespace content {
@@ -33,17 +34,21 @@ class RenderProcessHostProxy {
   // Returns the routing id of the render process (from
   // RenderProcessHost::GetID), or ChildProcessHost::kInvalidUniqueID if this is
   // not a renderer.
-  int render_process_host_id() const { return render_process_host_id_; }
+  RenderProcessHostId render_process_host_id() const {
+    return render_process_host_id_;
+  }
+
+  static RenderProcessHostProxy CreateForTesting(
+      RenderProcessHostId render_process_host_id);
 
  protected:
   friend class RenderProcessUserData;
-  friend class RenderProcessHostProxyTest;
-  FRIEND_TEST_ALL_PREFIXES(FrameNodeImplTest, GetFrameNodeById);
 
-  explicit RenderProcessHostProxy(int render_process_host_id);
+  explicit RenderProcessHostProxy(RenderProcessHostId render_process_host_id);
 
  private:
-  int render_process_host_id_ = content::ChildProcessHost::kInvalidUniqueID;
+  RenderProcessHostId render_process_host_id_ =
+      RenderProcessHostId(content::ChildProcessHost::kInvalidUniqueID);
 };
 
 }  // namespace performance_manager

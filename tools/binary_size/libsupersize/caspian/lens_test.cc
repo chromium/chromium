@@ -34,10 +34,19 @@ TEST(LensTest, TestGeneratedLensNotGenerated) {
   EXPECT_EQ("Not generated", GeneratedLens().ParentName(sym));
 }
 
-TEST(LensTest, TestGeneratedLensJavaProto) {
+TEST(LensTest, TestGeneratedLensJavaProtoFromFilename) {
   Symbol sym;
   sym.section_id_ = SectionId::kDex;
   sym.source_path_ = "a/b/FooProto.java";
+  sym.flags_ |= SymbolFlag::kGeneratedSource;
+  // Java filename match is insufficient for "Java Protocol Buffers" detection.
+  EXPECT_EQ("Generated (other)", GeneratedLens().ParentName(sym));
+}
+
+TEST(LensTest, TestGeneratedLensJavaProto) {
+  Symbol sym;
+  sym.section_id_ = SectionId::kDex;
+  sym.source_path_ = "a/b/foo_proto_java__protoc_java.srcjar";
   sym.flags_ |= SymbolFlag::kGeneratedSource;
   EXPECT_EQ("Java Protocol Buffers", GeneratedLens().ParentName(sym));
 }
@@ -50,11 +59,19 @@ TEST(LensTest, TestGeneratedLensCppProto) {
   EXPECT_EQ("C++ Protocol Buffers", GeneratedLens().ParentName(sym));
 }
 
-TEST(LensTest, TestGeneratedLensMojo) {
+TEST(LensTest, TestGeneratedLensMojo1) {
   Symbol sym;
   sym.section_id_ = SectionId::kText;
-  sym.object_path_ = "a.mojom";
+  sym.source_path_ = "a.mojom";
   sym.flags_ |= SymbolFlag::kGeneratedSource;
+  EXPECT_EQ("Mojo", GeneratedLens().ParentName(sym));
+}
+
+TEST(LensTest, TestGeneratedLensMojo2) {
+  Symbol sym;
+  sym.section_id_ = SectionId::kText;
+  sym.flags_ |= SymbolFlag::kGeneratedSource;
+  sym.full_name_ = "mojom::foo()";
   EXPECT_EQ("Mojo", GeneratedLens().ParentName(sym));
 }
 

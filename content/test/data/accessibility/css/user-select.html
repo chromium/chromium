@@ -1,0 +1,16 @@
+<!--
+@BLINK-ALLOW:notUserSelectableStyle*
+-->
+<div style="user-select:none">1. unselectable </div>
+<div style="user-select:text"> 2. Selectable </div>
+<div style="user-select:none"> 3. unselectable </div>
+<div style="user-select:text"> 4. Selectable </div>
+<!-- List bullets are not selectable, but that is not due to user-select, 
+    so they will not have the notUserSelectableStyle attribute -->
+<ul>
+    <li>One</li>
+</ul>
+<!-- Should inherit -->
+<div style="user-select:none">
+    <div style="user-select:inherit">Inner</div>
+</div>

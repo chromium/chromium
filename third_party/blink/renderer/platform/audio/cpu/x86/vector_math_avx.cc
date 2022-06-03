@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MACOSX)
+#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MAC)
 
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_avx.h"
 
@@ -28,4 +28,4 @@ using MType = __m256;
 #undef MM_PS
 #undef VECTOR_MATH_SIMD_NAMESPACE_NAME
 
-#endif  // defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MACOSX)
+#endif  // defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MAC)

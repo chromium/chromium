@@ -1,0 +1,29 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++section
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText name='List'
+++++++++++++++inlineTextBox name='List'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText name='List role has no effect'
+++++++++++++++inlineTextBox name='List role has no effect'
+++++++++none ignored
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Presentational list item'
+++++++++++++inlineTextBox name='Presentational list item'
+++++++++heading name='Another role also makes the item presentational'
+++++++++++none ignored
+++++++++++++none ignored
+++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++staticText name='Another role also makes the item presentational'
+++++++++++++++inlineTextBox name='Another role also makes the item presentational'

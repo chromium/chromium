@@ -4,152 +4,15 @@
 
 module content.mojom;
 
-import "content/common/document_scoped_interface_bundle.mojom";
+import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
-import "ipc/constants.mojom";
+import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "third_party/blink/public/mojom/manifest/manifest.mojom";
-import "third_party/blink/public/mojom/renderer_preferences.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-
-struct CreateViewParams {
-  // Renderer-wide preferences.
-  blink.mojom.RendererPreferences renderer_preferences;
-
-  // Preferences for this view.
-  WebPreferences web_preferences;
-
-  // The ID of the view to be created.
-  int32 view_id = IPC.mojom.kRoutingIdNone;
-
-  // The ID of the main frame hosted in the view, or None if creating a view to
-  // host a main frame proxy. If this is None, then |proxy_routing_id| should be
-  // set to something other than None.
-  int32 main_frame_routing_id = IPC.mojom.kRoutingIdNone;
-
-  // This is null precisely when |main_frame_routing_id| is MSG_ROUTING_NONE,
-  // that is, when creating a RenderView for a remote main frame.
-  DocumentScopedInterfaceBundle? main_frame_interface_bundle;
-
-  // The ID of the widget for the main frame.
-  int32 main_frame_widget_routing_id = IPC.mojom.kRoutingIdNone;
-
-  // The session storage namespace ID this view should use.
-  string session_storage_namespace_id;
-
-  // The route ID of the opener RenderFrame or RenderFrameProxy, if we need to
-  // set one (MSG_ROUTING_NONE otherwise).
-  int32 opener_frame_route_id = IPC.mojom.kRoutingIdNone;
-
-  // Carries replicated information, such as frame name and sandbox flags, for
-  // this view's main frame, which will be a proxy when |main_frame_routing_id|
-  // is None (due to site isolation), or a RenderFrame in all other cases.
-  FrameReplicationState replicated_frame_state;
-
-  // Used for devtools instrumentation and trace-ability. The token is
-  // propagated to Blink's LocalFrame and both Blink and content/
-  // can tag calls and requests with this instrumentation token in order to
-  // attribute them to the context frame.
-  // |devtools_main_frame_token| is only defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  mojo_base.mojom.UnguessableToken devtools_main_frame_token;
-
-  // The ID of the proxy object for the main frame in this view. It is only
-  // used if |main_frame_routing_id| is None, and exactly one of the two
-  // should be set to an id other than None at any time.
-  int32 proxy_routing_id = IPC.mojom.kRoutingIdNone;
-
-  // Whether the RenderView should initially be hidden.
-  bool hidden;
-
-  // Whether the RenderView will never be visible.
-  bool never_visible;
-
-  // Whether the window associated with this view was created with an opener.
-  bool window_was_created_with_opener;
-
-  // Whether or not the frame has previously committed a real load.
-  bool has_committed_real_load;
-
-  // Initial state for the main frame RenderWidget.
-  // TODO(danakj): This should be optional and not included when there is no
-  // main_frame_widget_routing_id.
-  VisualProperties visual_properties;
-
-  // Whether lookup of frames in the created RenderView (e.g. lookup via
-  // window.open or via <a target=...>) should be renderer-wide (i.e. going
-  // beyond the usual opener-relationship-based BrowsingInstance boundaries).
-  bool renderer_wide_named_frame_lookup;
-
-  // Set this to true when creating a RenderView inside a portal.
-  bool inside_portal;
-};
-
-struct CreateFrameWidgetParams {
-  // Gives the routing ID for the RenderWidget that will be attached to the
-  // new RenderFrame.
-  int32 routing_id;
-
-  // The initial visual properties of the widget.
-  VisualProperties visual_properties;
-};
-
-struct CreateFrameParams {
-  // Specifies the routing ID of the new RenderFrame object.
-  int32 routing_id;
-
-  // If a valid |previous_routing_id| is provided, the new frame will be
-  // configured to replace either the previous frame or the previous proxy on
-  // commit.
-  int32 previous_routing_id;
-
-  // Specifies the new frame's opener.  The opener will be null if this is
-  // MSG_ROUTING_NONE.
-  int32 opener_routing_id;
-
-  // The new frame should be created as a child of the object
-  // identified by |parent_routing_id| or as top level if that is
-  // MSG_ROUTING_NONE.
-  int32 parent_routing_id;
-
-  // Identifies the previous sibling of the new frame, so that the new frame is
-  // inserted into the correct place in the frame tree.  If this is
-  // MSG_ROUTING_NONE, the frame will be created as the leftmost child of its
-  // parent frame, in front of any other children.
-  int32 previous_sibling_routing_id;
-
-  DocumentScopedInterfaceBundle interface_bundle;
-
-  // When the new frame has a parent, |replication_state| holds the new frame's
-  // properties replicated from the process rendering the parent frame, such as
-  // the new frame's sandbox flags.
-  FrameReplicationState replication_state;
-
-  // Used for devtools instrumentation and trace-ability. The token is
-  // propagated to Blink's LocalFrame and both Blink and content/
-  // can tag calls and requests with this instrumentation token in order to
-  // attribute them to the context frame.
-  // |devtools_frame_token| is only defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  mojo_base.mojom.UnguessableToken devtools_frame_token;
-
-  // When the new frame has a parent, |frame_owner_properties| holds the
-  // properties of the HTMLFrameOwnerElement from the parent process.
-  // Note that unlike FrameReplicationState, this is not replicated for remote
-  // frames.
-  FrameOwnerProperties frame_owner_properties;
-
-  // Specifies properties for a new RenderWidget that will be attached to the
-  // new RenderFrame (if one is needed).
-  CreateFrameWidgetParams? widget_params;
-
-  // Whether or not the frame has previously committed a real load.
-  bool has_committed_real_load;
-};
 
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
@@ -168,8 +31,7 @@ struct UpdateScrollbarThemeParams {
 
 struct UpdateSystemColorInfoParams {
   bool is_dark_mode;
-  bool is_high_contrast;
-  PreferredColorScheme preferred_color_scheme;
+  bool forced_colors;
   // uint32 represents a SkColor in the map.
   map<SystemThemeColor, uint32> colors;
 };
@@ -198,31 +60,30 @@ enum RenderProcessVisibleState {
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to legacy IPC messages.
 interface Renderer {
-  // Tells the renderer to create a new view.
-  CreateView(CreateViewParams params);
+  // Tells the renderer to create a new AgentSchedulingGroup, and initialize its
+  // legacy IPC Channel using the pipe provided by `bootstrap`. The channel will
+  // later be used to bind the mojom::AgentSchedulingGroup receiver, that
+  // listens to messages sent by the host.
+  // This will create an "independent" agent scheduling group that is not
+  // associated with the process-wide or other groups' IPC channels, meaning
+  // there is no guaranteed ordering between them.
+  // `broker_remote` is the BrowserInterfaceBroker bound to the newly-created
+  // AgentSchedulingGroup.
+  CreateAgentSchedulingGroup(
+    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap,
+    pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
 
-  // Tells the renderer to destroy an existing view. This method must be called
-  // exactly once for each invocation of CreateView. |view_id| is synonymous
-  // with |routing_id|.
-  DestroyView(int32 view_id);
-
-  // Tells the renderer to create a new RenderFrame.
-  CreateFrame(CreateFrameParams params);
-
-  // Tells the renderer to create a new RenderFrameProxy object with
-  // |routing_id|.  |render_view_routing_id| identifies the
-  // RenderView to be associated with this proxy.  The new proxy's opener should
-  // be set to the object identified by |opener_routing_id|, or to null if that
-  // is MSG_ROUTING_NONE.  The new proxy should be created as a child of the
-  // object identified by |parent_routing_id| or as top level if that is
-  // MSG_ROUTING_NONE.
-  // |devtools_frame_token| is used for devtools instrumentation
-  // and trace-ability. It is defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  CreateFrameProxy(int32 routing_id, int32 render_view_routing_id,
-                   int32 opener_routing_id, int32 parent_routing_id,
-                   FrameReplicationState replication_state,
-                   mojo_base.mojom.UnguessableToken devtools_frame_token);
+  // Tells the renderer to create a new AgentSchedulingGroup, that will
+  // listen to messages sent by the host via the pending
+  // |agent_scheduling_group|.
+  // This will create an agent scheduling group that is associated with the
+  // process-wide IPC channel, preserving message ordering across different
+  // agent scheduling groups.
+  // `broker_remote` is the BrowserInterfaceBroker bound to the newly-created
+  // AgentSchedulingGroup.
+  CreateAssociatedAgentSchedulingGroup(
+    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group,
+    pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.
@@ -252,9 +113,16 @@ interface Renderer {
   // initialization.
   SetUserAgent(string user_agent);
 
+  // Sets a user-agent with high-entropy information reduced to common values.
+  // See `SetUserAgent` for caveats.
+  SetReducedUserAgent(string user_agent);
+
   // Sets the user agent metadata. This will replace `SetUserAgent()` if we
   // decide to ship https://github.com/WICG/ua-client-hints.
   SetUserAgentMetadata(blink.mojom.UserAgentMetadata metadata);
+
+  // Sets the CORS exempt header list for sanity checking (e.g. DCHECKs).
+  SetCorsExemptHeaderList(array<string> list);
 
   // Tells the renderer about a scrollbar appearance change. Only for use on
   // OS X.
@@ -276,20 +144,30 @@ interface Renderer {
   SetProcessState(RenderProcessBackgroundState background_state,
                   RenderProcessVisibleState visible_state);
 
-  // Tells the scheduler about "keep-alive" state which can be due to:
-  // service workers, shared workers, or fetch keep-alive.
-  // If set to true, then the scheduler should not freeze the renderer.
-  SetSchedulerKeepActive(bool keep_active);
-
   // Tells the renderer process that it has been locked to a site (i.e., a
   // scheme plus eTLD+1, such as https://google.com), or to a more specific
   // origin.
   SetIsLockedToSite();
 
-  // Tells the renderer to enable V8's memory saving mode when possible.
-  // This is only used when site-per-process is enabled. If the process
-  // only contains subframes, V8's low memory mode will be enabled.
-  // If a main frame exists or is created, the low memory mode will
-  // be disabled.
-  EnableV8LowMemoryMode();
+  // Write out the accumulated code profiling profile to the configured file.
+  // The callback is invoked once the profile has been flushed to disk.
+  [EnableIf=clang_profiling_inside_sandbox]
+  WriteClangProfilingProfile() => ();
+
+  // Set whether this renderer process is "cross-origin isolated". This
+  // corresponds to agent cluster's "cross-origin isolated" concept.
+  // TODO(yhirano): Have the spec URL.
+  // This property is process global because we ensure that a renderer process
+  // host only cross-origin isolated agents or only non-cross-origin isolated
+  // agents, not both.
+  // This is called at most once, prior to committing a navigation.
+  SetIsCrossOriginIsolated(bool value);
+
+  // Direct sockets require isolation above and beyond what "cross-origin
+  // isolation" provides. This flag corresponds to that set of restrictions.
+  // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
+  // process global, and called at most once, prior to committing a navigation.
+  //
+  // TODO(crbug.com/1206150): We need a specification for this restriction.
+  SetIsDirectSocketEnabled(bool value);
 };

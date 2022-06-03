@@ -1,33 +1,29 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+<!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-</head>
-<body id="static_eventTarget">
 
 <p id="p">One paragraph in the document</p>
 
-<div id="console"></div>
 <script>
-async_test((t) => {
-    var axElement = accessibilityController.rootElement;
-    axElement.addNotificationListener(t.step_func(function(notification) {
-        if (notification == 'SelectedTextChanged') {
-            axElement.removeNotificationListener();
-            t.done();
-        }
-    }));
+'use strict';
 
-    var p = document.getElementById('p');
-    var range = document.createRange();
-    range.setStart(p.firstChild, 0);
-    range.setEnd(p.firstChild, 1);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-}, "Tests that a 'selected text changed' notification fires on a contentEditable element when the user moves the cursor within it.");
+async_test((t) => {
+  const axElement = accessibilityController.rootElement;
+  axElement.setNotificationListener(t.step_func(function(notification, intents) {
+    if (notification == 'SelectedTextChanged') {
+      assert_array_equals(intents,
+                          ['AXEventIntent(setSelection,none,character,forward)']);
+      axElement.unsetNotificationListener();
+      t.done();
+    }
+  }));
+
+  const p = document.getElementById('p');
+  const range = document.createRange();
+  range.setStart(p.firstChild, 0);
+  range.setEnd(p.firstChild, 1);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+});
 
 </script>
-
-</body>
-</html>

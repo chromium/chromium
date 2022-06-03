@@ -6,5 +6,5 @@ Test calling getPropertyValue on computed styles for -webkit-border-image proper
 
 -webkit-box-reflect: below calc(5px) linear-gradient(white, black) 25 25 25 25 stretch stretch;
   -webkit-box-reflect
-    getPropertyValue:    below 5px linear-gradient(rgb(255, 255, 255), rgb(0, 0, 0)) 25 fill / auto / 0px stretch
+    getPropertyValue:    below 5px linear-gradient(rgb(255, 255, 255), rgb(0, 0, 0)) 25 fill / auto / 0 stretch
 

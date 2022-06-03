@@ -4,15 +4,31 @@
 
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_navigation_throttle.h"
 
+#include <memory>
+
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/network_service/aw_web_resource_request.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_blocking_page.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "base/memory/ptr_util.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/content/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace android_webview {
+
+// static
+std::unique_ptr<AwSafeBrowsingNavigationThrottle>
+AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+    content::NavigationHandle* handle) {
+  // Only outer-most main frames show the interstitial through the navigation
+  // throttle. In other cases, the interstitial is shown via
+  // BaseUIManager::DisplayBlockingPage.
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
+    return nullptr;
+
+  return base::WrapUnique(new AwSafeBrowsingNavigationThrottle(handle));
+}
 
 AwSafeBrowsingNavigationThrottle::AwSafeBrowsingNavigationThrottle(
     content::NavigationHandle* handle)
@@ -24,20 +40,29 @@ const char* AwSafeBrowsingNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 AwSafeBrowsingNavigationThrottle::WillFailRequest() {
+  // Subframes and nested frame trees will show an interstitial directly from
+  // BaseUIManager::DisplayBlockingPage.
+  DCHECK(navigation_handle()->IsInPrimaryMainFrame() ||
+         navigation_handle()->IsInPrerenderedMainFrame());
   AwSafeBrowsingUIManager* manager =
       AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager();
   if (manager) {
     security_interstitials::UnsafeResource resource;
     content::NavigationHandle* handle = navigation_handle();
     if (manager->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
+      std::unique_ptr<AwWebResourceRequest> request =
+          std::make_unique<AwWebResourceRequest>(
+              handle->GetURL().spec(), handle->IsPost() ? "POST" : "GET",
+              /*is_in_main_frame=*/true, handle->HasUserGesture(),
+              handle->GetRequestHeaders());
+      request->is_renderer_initiated = handle->IsRendererInitiated();
       AwSafeBrowsingBlockingPage* blocking_page =
           AwSafeBrowsingBlockingPage::CreateBlockingPage(
-              manager, handle->GetWebContents(), handle->GetURL(), resource);
+              manager, handle->GetWebContents(), handle->GetURL(), resource,
+              std::move(request));
       std::string error_page_content = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
-          AssociateBlockingPage(handle->GetWebContents(),
-                                handle->GetNavigationId(),
-                                base::WrapUnique(blocking_page));
+          AssociateBlockingPage(handle, base::WrapUnique(blocking_page));
       return content::NavigationThrottle::ThrottleCheckResult(
           CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);
     }

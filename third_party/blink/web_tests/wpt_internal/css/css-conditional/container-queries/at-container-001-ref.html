@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Tests basic evaluation of @container queries</title>
+<style>
+  .container {
+    width: 30px;
+    height: 50px;
+    border: 1px solid black;
+    display: inline-block;
+  }
+  .box {
+    background-color: black;
+    width: 20px;
+    height: 20px;
+  }
+
+</style>
+<div class=width>
+  <div class=container style="width:29px"><div class=box></div></div>
+  <div class=container style="width:30px"><div class=box style="background-color:coral"></div></div>
+  <div class=container style="width:35px"><div class=box style="background-color:coral"></div></div>
+  <div class=container style="width:40px"><div class=box style="background-color:skyblue"></div></div>
+  <div class=container style="width:50px"><div class=box style="background-color:hotpink"></div></div>
+  <div class=container style="width:60px"><div class=box style="background-color:seagreen"></div></div>
+  <div class=container style="width:70px"><div class=box style="background-color:seagreen"></div></div>
+</div>
+<div class=height>
+  <div class=container style="height:49px"><div class=box></div></div>
+  <div class=container style="height:50px"><div class=box style="background-color:coral"></div></div>
+  <div class=container style="height:55px"><div class=box style="background-color:coral"></div></div>
+  <div class=container style="height:60px"><div class=box style="background-color:skyblue"></div></div>
+  <div class=container style="height:70px"><div class=box style="background-color:hotpink"></div></div>
+  <div class=container style="height:80px"><div class=box style="background-color:seagreen"></div></div>
+  <div class=container style="height:90px"><div class=box style="background-color:seagreen"></div></div>
+</div>

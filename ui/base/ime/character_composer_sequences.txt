@@ -245,7 +245,7 @@ Compose <'> </> <o> <latin small letter o with stroke and acute>
 Compose <'> '<' <left single quotation mark>
 Compose <'> '>' <right single quotation mark>
 Compose <'> <A> <latin capital letter a with acute>
-Compose <'> <C> <latin capital letter c with cedilla>
+Compose <'> <C> <latin capital letter c with acute>
 Compose <'> <E> <latin capital letter e with acute>
 Compose <'> <G> <latin capital letter g with acute>
 Compose <'> <I> <latin capital letter i with acute>
@@ -274,7 +274,7 @@ Compose <'> <_> <o> <latin small letter o with macron and acute>
 Compose <'> <a> <latin small letter a with acute>
 Compose <'> <b> <A> <latin capital letter a with breve and acute>
 Compose <'> <b> <a> <latin small letter a with breve and acute>
-Compose <'> <c> <latin small letter c with cedilla>
+Compose <'> <c> <latin small letter c with acute>
 Compose <'> <e> <latin small letter e with acute>
 Compose <'> <g> <latin small letter g with acute>
 Compose <'> <i> <latin small letter i with acute>
@@ -3347,7 +3347,7 @@ Dead<combining acute accent> Dead<combining long solidus overlay> <O> <latin cap
 Dead<combining acute accent> Dead<combining long solidus overlay> <o> <latin small letter o with stroke and acute>
 Dead<combining acute accent> <space> <'>
 Dead<combining acute accent> <A> <latin capital letter a with acute>
-Dead<combining acute accent> <C> <latin capital letter c with cedilla>
+Dead<combining acute accent> <C> <latin capital letter c with acute>
 Dead<combining acute accent> <E> <latin capital letter e with acute>
 Dead<combining acute accent> <G> <latin capital letter g with acute>
 Dead<combining acute accent> <I> <latin capital letter i with acute>
@@ -3365,7 +3365,7 @@ Dead<combining acute accent> <W> <latin capital letter w with acute>
 Dead<combining acute accent> <Y> <latin capital letter y with acute>
 Dead<combining acute accent> <Z> <latin capital letter z with acute>
 Dead<combining acute accent> <a> <latin small letter a with acute>
-Dead<combining acute accent> <c> <latin small letter c with cedilla>
+Dead<combining acute accent> <c> <latin small letter c with acute>
 Dead<combining acute accent> <e> <latin small letter e with acute>
 Dead<combining acute accent> <g> <latin small letter g with acute>
 Dead<combining acute accent> <i> <latin small letter i with acute>

@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Өө өө! Түр зуурын RSA хувийн түлхүүрийг үүсгэж чадсангүй.</translation>
 <translation id="1445572445564823378">Энэ өргөтгөл <ph name="PRODUCT_NAME" /> удааширч байна. Та <ph name="PRODUCT_NAME" />-ийн гүйцэтгэлийг дахин сэргээхийн тулд идэвхгүй болгох хэрэгтэй.</translation>
 <translation id="1468038450257740950">WebGL-ийг дэмжихгүй байна.</translation>
-<translation id="149347756975725155">Өргөтгөлийн тэмдэглэгээг ачаалах боломжгүй байна <ph name="ICON" /> . '</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' үндсэн хуудсыг ачаалж чадсангүй.</translation>
 <translation id="2159915644201199628">Дүрсний кодыг тайлах боломжгүй байна: <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Байрлалыг ашигласан, анхдагч байрлалыг контентын жагсаалтанд зааж өгсөн.</translation>
@@ -25,7 +24,7 @@
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
 <translation id="388442998277590542">Сонголтууд хуудсыг '<ph name="OPTIONS_PAGE" />' ачаалж чадсангүй.</translation>
 <translation id="3984413272403535372">Өргөтгөл рүү нэвтрэх үед алдаа гарлаа</translation>
-<translation id="39964277676607559">Контентын бичвэрт Javascript '<ph name="RELATIVE_PATH" />'-ийг ачаалж чадсангүй.</translation>
+<translation id="39964277676607559">Контентын бичвэрт JavaScript '<ph name="RELATIVE_PATH" />'-ийг ачаалж чадсангүй.</translation>
 <translation id="4115165561519362854">Энэхүү төхөөрөмжийн администратор нь <ph name="EXTENSION_VERSION" /> -ны хамгийн бага хувилбарыг авах үүднээс <ph name="EXTENSION_NAME" /> авах хүсэлт гаргаж байна. Хувилбарыг шинэчлэх (дараах хувилбараар) хүртэл энэ үйлдлийг идэвхжүүлэх боломжгүй болно.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' Тухай хуудсыг ачаалж чадсангүй.</translation>
 <translation id="471800408830181311">Хувийн түлхүүрийг тооцоолох ажиллагаа бүтэлгүйтэв.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Хувийн түлхүүрийг унших явцад алдаа гарсан байна.</translation>
 <translation id="6391538222494443604">Оролтын хадгалалтын сантай байх ёстой.</translation>
 <translation id="641087317769093025">Өргөтгөлийг задалж чадсангүй.</translation>
-<translation id="6413453408918378296">Дүрс тэмдэг '<ph name="ICON" />' хангалттай сайн харагдахгүй байна.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" таны аль нэг, эсвэл хэд хэдэн төхөөрөмжид хандах хүсэлтэй байна:</translation>
 <translation id="657064425229075395">Дэвсгэрийн '<ph name="BACKGROUND_SCRIPT" />' скриптыг ачаалах боломжгүй байна.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />-н <ph name="PRODUCT_NAME" /> (Серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>

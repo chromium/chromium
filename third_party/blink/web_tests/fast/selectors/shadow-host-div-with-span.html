@@ -15,7 +15,7 @@
 </body>
 <script>
     var host = document.getElementById('shadowDiv');
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.innerHTML = '<style> span::selection { background-color: rgba(255, 0, 0, 0.95); color: green; } </style>' +
                         '<span>Shadow DOM </span>';
 

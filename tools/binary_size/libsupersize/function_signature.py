@@ -138,12 +138,17 @@ def ParseJava(full_name):
       * full_name = "class_with_package#member(args): type"
       * template_name = "class_with_package#member"
       * name = "class_without_package#member
+
+    When a symbols has been merged into a different class:
+      * full_name = "new_class#old_class.member(args): type"
+      * template_name: Same as above, but uses old_class
+      * name: Same as above, but uses old_class
   """
   hash_idx = full_name.find('#')
   if hash_idx != -1:
     # Parse an already parsed full_name.
     # Format: Class#symbol: type
-    full_class_name = full_name[:hash_idx]
+    full_new_class_name = full_name[:hash_idx]
     colon_idx = full_name.find(':')
     if colon_idx == -1:
       member = full_name[hash_idx + 1:]
@@ -153,22 +158,33 @@ def ParseJava(full_name):
       member_type = full_name[colon_idx:]
   else:
     parts = full_name.split(' ')
-    full_class_name = parts[0]
+    full_new_class_name = parts[0]
     member = parts[-1] if len(parts) > 1 else None
     member_type = '' if len(parts) < 3 else ': ' + parts[1]
 
-  short_class_name = full_class_name.split('.')[-1]
-
   if member is None:
+    short_class_name = full_new_class_name.split('.')[-1]
     return full_name, full_name, short_class_name
 
-  full_name = '{}#{}{}'.format(full_class_name, member, member_type)
+  full_name = '{}#{}{}'.format(full_new_class_name, member, member_type)
   paren_idx = member.find('(')
   if paren_idx != -1:
     member = member[:paren_idx]
 
+  # Class merging.
+  full_old_class_name = full_new_class_name
+  dot_idx = member.rfind('.')
+  if dot_idx != -1:
+    full_old_class_name = member[:dot_idx]
+    member = member[dot_idx + 1:]
+
+  short_class_name = full_old_class_name
+  dot_idx = full_old_class_name.rfind('.')
+  if dot_idx != -1:
+    short_class_name = short_class_name[dot_idx + 1:]
+
   name = '{}#{}'.format(short_class_name, member)
-  template_name = '{}#{}'.format(full_class_name, member)
+  template_name = '{}#{}'.format(full_old_class_name, member)
   return full_name, template_name, name
 
 
@@ -197,7 +213,7 @@ def Parse(name):
       # there was a return value.
       name = _NormalizeTopLevelGccLambda(name, left_paren_idx)
       return Parse(name)
-    elif name_no_params.endswith('::__invoke') and '$' in name_no_params:
+    if name_no_params.endswith('::__invoke') and '$' in name_no_params:
       assert '$_' in name_no_params, 'Surprising lambda: ' + name
       name = _NormalizeTopLevelClangLambda(name, left_paren_idx)
       return Parse(name)

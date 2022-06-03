@@ -6,45 +6,46 @@
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "ui/gfx/range/range.h"
 
-namespace autofill {
+namespace password_manager {
 struct PasswordForm;
-}
+}  // namespace password_manager
 
 // An interface used by the password dialog (the account chooser) for setting
 // and retrieving the state.
 class CredentialManagerDialogController : public PasswordBaseDialogController {
  public:
-  using FormsVector = std::vector<std::unique_ptr<autofill::PasswordForm>>;
+  using FormsVector =
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>;
 
   // Returns forms from the password database for the current site.
   virtual const FormsVector& GetLocalForms() const = 0;
 
   // Returns a title of the account chooser.
-  virtual base::string16 GetAccoutChooserTitle() const = 0;
+  virtual std::u16string GetAccoutChooserTitle() const = 0;
 
   // Whether the account chooser should display the "Sign in" button.
   virtual bool ShouldShowSignInButton() const = 0;
 
   // Returns the title for the autosignin first run dialog.
-  virtual base::string16 GetAutoSigninPromoTitle() const = 0;
+  virtual std::u16string GetAutoSigninPromoTitle() const = 0;
 
   // Returns a text of the auto signin first run promo.
-  virtual base::string16 GetAutoSigninText() const = 0;
+  virtual std::u16string GetAutoSigninText() const = 0;
 
   // Returns true if the footer about Google Account should be shown.
   virtual bool ShouldShowFooter() const = 0;
 
   // Called when the user chooses a credential.
   virtual void OnChooseCredentials(
-      const autofill::PasswordForm& password_form,
+      const password_manager::PasswordForm& password_form,
       password_manager::CredentialType credential_type) = 0;
 
   // Called when the user clicks "Sign in" in the account chooser.

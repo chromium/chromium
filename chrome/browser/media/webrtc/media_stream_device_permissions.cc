@@ -19,17 +19,17 @@
 MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
                                         const GURL& security_origin,
                                         const char* policy_name,
-                                        const char* whitelist_policy_name) {
+                                        const char* allowed_urls_pref_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // If the security origin policy matches a value in the whitelist, allow it.
-  // Otherwise, check the |policy_name| master switch for the default behavior.
+  // If the security origin policy matches a value in allowed urls list, allow
+  // it.  Otherwise, check the |policy_name| switch for the default behavior.
 
   const PrefService* prefs = profile->GetPrefs();
 
-  const base::ListValue* list = prefs->GetList(whitelist_policy_name);
+  const base::ListValue* list = prefs->GetList(allowed_urls_pref_name);
   std::string value;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (list->GetString(i, &value)) {
       ContentSettingsPattern pattern =
           ContentSettingsPattern::FromString(value);

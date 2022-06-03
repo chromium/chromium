@@ -104,11 +104,19 @@ interface TCPConnectedSocket {
   // Enables / disables TCP_NODELAY on the connected socket. See
   // TCPConnectedSocketOptions::no_delay for more details.
   // Returns whether the operation was successful.
+  //
+  // Should not be called and will always fail until the socket has connected
+  // successfully (signalled by a successful result from a
+  // CreateTCPConnectedSocket() callback).
   SetNoDelay(bool no_delay) => (bool success);
 
   // Enables or disables TCP Keep-Alive. This sets SO_KEEPALIVE on the socket.
   // |delay_secs| specifies the amount of time to delay in seconds.
   // Returns whether the operation is successful.
+  //
+  // Should not be called and will always fail until the socket has connected
+  // successfully (signalled by a successful result from a
+  // CreateTCPConnectedSocket() callback).
   SetKeepAlive(bool enable, int32 delay_secs) => (bool success);
 };
 

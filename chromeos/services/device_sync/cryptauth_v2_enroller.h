@@ -5,11 +5,8 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_V2_ENROLLER_H_
 
-#include <string>
-
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptauthv2 {
 class ClientAppMetadata;
@@ -54,6 +51,9 @@ class CryptAuthEnrollmentResult;
 // call. For a new Enrollment attempt, a new object should be created.
 class CryptAuthV2Enroller {
  public:
+  CryptAuthV2Enroller(const CryptAuthV2Enroller&) = delete;
+  CryptAuthV2Enroller& operator=(const CryptAuthV2Enroller&) = delete;
+
   virtual ~CryptAuthV2Enroller();
 
   using EnrollmentAttemptFinishedCallback =
@@ -69,13 +69,13 @@ class CryptAuthV2Enroller {
   // |client_directive_policy_reference|: The policy reference used to identify
   //     the last ClientDirective that was received in a SyncKeysResponse. If
   //     the client has never received a ClientDirective, then this is
-  //     base::nullopt.
+  //     absl::nullopt.
   // |callback|: Invoked when the enrollment attempt concludes, successfully or
   //     not. The CryptAuthEnrollmentResult provides information about the
   //     outcome of the enrollment attempt and possibly a new ClientDirective.
   void Enroll(const cryptauthv2::ClientMetadata& client_metadata,
               const cryptauthv2::ClientAppMetadata& client_app_metadata,
-              const base::Optional<cryptauthv2::PolicyReference>&
+              const absl::optional<cryptauthv2::PolicyReference>&
                   client_directive_policy_reference,
               EnrollmentAttemptFinishedCallback callback);
 
@@ -85,15 +85,13 @@ class CryptAuthV2Enroller {
   virtual void OnAttemptStarted(
       const cryptauthv2::ClientMetadata& client_metadata,
       const cryptauthv2::ClientAppMetadata& client_app_metadata,
-      const base::Optional<cryptauthv2::PolicyReference>&
+      const absl::optional<cryptauthv2::PolicyReference>&
           client_directive_policy_reference) = 0;
 
   void OnAttemptFinished(const CryptAuthEnrollmentResult& enrollment_result);
 
   EnrollmentAttemptFinishedCallback callback_;
   bool was_enroll_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2Enroller);
 };
 
 }  // namespace device_sync

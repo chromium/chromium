@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from core import perf_benchmark
+from core import platforms
 
 from telemetry import benchmark
 from telemetry import story
@@ -50,7 +51,11 @@ def SetExtraBrowserOptionsForMemoryMeasurement(options):
 class MemoryBenchmarkDesktop(perf_benchmark.PerfBenchmark):
   """Measure memory usage on synthetic sites."""
   options = {'pageset_repeat': 5}
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     return CreateCoreTimelineBasedMemoryMeasurementOptions()

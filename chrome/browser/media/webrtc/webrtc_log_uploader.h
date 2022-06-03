@@ -14,12 +14,11 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/webrtc_log_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -53,15 +52,16 @@ struct WebRtcLogUploadFailureReason {
 // only be one object of this type.
 class WebRtcLogUploader {
  public:
-  typedef base::Callback<void(bool, const std::string&)> GenericDoneCallback;
-  typedef base::Callback<void(bool, const std::string&, const std::string&)>
+  typedef base::OnceCallback<void(bool, const std::string&)>
+      GenericDoneCallback;
+  typedef base::OnceCallback<void(bool, const std::string&, const std::string&)>
       UploadDoneCallback;
 
   // Used when uploading is done to perform post-upload actions. |paths| is
   // also used pre-upload.
   struct UploadDoneData {
     UploadDoneData();
-    UploadDoneData(const UploadDoneData& other);
+    UploadDoneData(UploadDoneData&& other);
     ~UploadDoneData();
 
     WebRtcLogPaths paths;
@@ -72,6 +72,10 @@ class WebRtcLogUploader {
   };
 
   WebRtcLogUploader();
+
+  WebRtcLogUploader(const WebRtcLogUploader&) = delete;
+  WebRtcLogUploader& operator=(const WebRtcLogUploader&) = delete;
+
   ~WebRtcLogUploader();
 
   // Returns true is number of logs limit is not reached yet. Increases log
@@ -94,10 +98,10 @@ class WebRtcLogUploader {
   // left empty.
   void LoggingStoppedDoUpload(std::unique_ptr<WebRtcLogBuffer> log_buffer,
                               std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
-                              const UploadDoneData& upload_done_data);
+                              UploadDoneData upload_done_data);
 
   // Uploads a previously stored log (see LoggingStoppedDoStore()).
-  void UploadStoredLog(const UploadDoneData& upload_data);
+  void UploadStoredLog(UploadDoneData upload_data);
 
   // Similarly to LoggingStoppedDoUpload(), we store the log in compressed
   // format on disk but add the option to specify a unique |log_id| for later
@@ -106,7 +110,7 @@ class WebRtcLogUploader {
                              const std::string& log_id,
                              std::unique_ptr<WebRtcLogBuffer> log_buffer,
                              std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
-                             const GenericDoneCallback& done_callback);
+                             GenericDoneCallback done_callback);
 
   // Cancels URL fetcher operation by deleting all URL fetchers. This cancels
   // any pending uploads and releases SystemURLRequestContextGetter references.
@@ -150,7 +154,7 @@ class WebRtcLogUploader {
 
   std::string CompressLog(WebRtcLogBuffer* buffer);
 
-  void UploadCompressedLog(const UploadDoneData& upload_done_data,
+  void UploadCompressedLog(UploadDoneData upload_done_data,
                            std::unique_ptr<std::string> post_data);
 
   void DecreaseLogCount();
@@ -161,7 +165,7 @@ class WebRtcLogUploader {
 
   void PrepareMultipartPostData(const std::string& compressed_log,
                                 std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
-                                const UploadDoneData& upload_done_data);
+                                UploadDoneData upload_done_data);
 
   // Append information (upload time, report ID and local ID) about a log to a
   // log list file, limited to |kLogListLimitLines| entries. This list is used
@@ -192,16 +196,16 @@ class WebRtcLogUploader {
   // |response_code| not having a value means that no response code could be
   // retrieved, in which case |network_error_code| should be something other
   // than net::OK.
-  void NotifyUploadDoneAndLogStats(base::Optional<int> response_code,
+  void NotifyUploadDoneAndLogStats(absl::optional<int> response_code,
                                    int network_error_code,
                                    const std::string& report_id,
-                                   const UploadDoneData& upload_done_data);
+                                   UploadDoneData upload_done_data);
 
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   void OnSimpleLoaderComplete(SimpleURLLoaderList::iterator it,
-                              const UploadDoneData& upload_done_data,
+                              UploadDoneData upload_done_data,
                               std::unique_ptr<std::string> response_body);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
@@ -229,8 +233,6 @@ class WebRtcLogUploader {
 
   // When true, don't create new URL loaders.
   bool shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLogUploader);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_LOG_UPLOADER_H_

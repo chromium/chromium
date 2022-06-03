@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -18,6 +18,7 @@
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/common/webplugininfo.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
@@ -37,7 +38,7 @@ std::string GetIdentifier(const content::WebPluginInfo& plugin) {
 
 // Gets the plugin group name as the plugin name if it is not empty or
 // the filename without extension if the name is empty.
-static base::string16 GetGroupName(const content::WebPluginInfo& plugin) {
+static std::u16string GetGroupName(const content::WebPluginInfo& plugin) {
   if (!plugin.name.empty())
     return plugin.name;
 
@@ -47,23 +48,18 @@ static base::string16 GetGroupName(const content::WebPluginInfo& plugin) {
 void LoadMimeTypes(bool matching_mime_types,
                    const base::DictionaryValue* plugin_dict,
                    PluginMetadata* plugin) {
-  const base::ListValue* mime_types = NULL;
-  std::string list_key =
+  const base::ListValue* mime_types = nullptr;
+  base::StringPiece list_key =
       matching_mime_types ? "matching_mime_types" : "mime_types";
   if (!plugin_dict->GetList(list_key, &mime_types))
     return;
 
-  bool success = false;
-  for (auto mime_type_it = mime_types->begin();
-       mime_type_it != mime_types->end(); ++mime_type_it) {
-    std::string mime_type_str;
-    success = mime_type_it->GetAsString(&mime_type_str);
-    DCHECK(success);
-    if (matching_mime_types) {
+  for (const auto& mime_type : mime_types->GetList()) {
+    const std::string& mime_type_str = mime_type.GetString();
+    if (matching_mime_types)
       plugin->AddMatchingMimeType(mime_type_str);
-    } else {
+    else
       plugin->AddMimeType(mime_type_str);
-    }
   }
 }
 
@@ -74,12 +70,12 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
   bool success = plugin_dict->GetString("url", &url);
   std::string help_url;
   plugin_dict->GetString("help_url", &help_url);
-  base::string16 name;
+  std::u16string name;
   success = plugin_dict->GetString("name", &name);
   DCHECK(success);
   bool display_url = true;
   plugin_dict->GetBoolean("displayurl", &display_url);
-  base::string16 group_name_matcher;
+  std::u16string group_name_matcher;
   success = plugin_dict->GetString("group_name_matcher", &group_name_matcher);
   DCHECK(success);
   std::string language_str;
@@ -92,9 +88,9 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
       group_name_matcher, language_str, plugin_is_deprecated);
   const base::ListValue* versions = NULL;
   if (plugin_dict->GetList("versions", &versions)) {
-    for (auto it = versions->begin(); it != versions->end(); ++it) {
-      const base::DictionaryValue* version_dict = NULL;
-      if (!it->GetAsDictionary(&version_dict)) {
+    for (const auto& entry : versions->GetList()) {
+      const base::DictionaryValue* version_dict = nullptr;
+      if (!entry.GetAsDictionary(&version_dict)) {
         NOTREACHED();
         continue;
       }
@@ -149,7 +145,7 @@ std::unique_ptr<base::DictionaryValue> PluginFinder::LoadBuiltInPluginList() {
   base::StringPiece json_resource(
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           IDR_PLUGIN_DB_JSON));
-  base::Optional<base::Value> value = base::JSONReader::Read(json_resource);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_resource);
   if (!value)
     return nullptr;
 

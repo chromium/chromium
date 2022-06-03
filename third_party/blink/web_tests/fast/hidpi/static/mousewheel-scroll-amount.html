@@ -1,5 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<script src="../../../resources/js-test.js"></script>
+<!DOCTYPE html>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
 <style type="text/css">
     body {
         height: 2000px;
@@ -8,41 +11,50 @@
 </style>
 
 <script>
-    window.jsTestIsAsync = true;
+async function reset() {
+    document.scrollingElement.scrollTop = 0;
+    document.scrollingElement.scrollLeft = 0;
+    await waitForCompositorCommit();
+}
 
-    description("This test ensures that mouse wheel ticks scrolls the right number of pixels in high dpi mode.");
+var position = {x: 20, y: 20};
+promise_test(async () => {
+    await reset();
+    await wheelTick(0, 1, position);
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollTop;
+    });
+    assert_equals(document.scrollingElement.scrollLeft, 0);
+    assert_equals(document.scrollingElement.scrollTop, pixelsPerTick());
+}, "One vertical wheel tick scrolls the right number of pixels in high dpi mode.");
 
-    function testDiagonalScroll() {
-        // Reset
-        document.scrollingElement.scrollTop = 0;
-        document.scrollingElement.scrollLeft = 0;
+promise_test(async () => {
+    await reset();
+    await wheelTick(1, 0, position);
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollLeft;
+    });
+    assert_equals(document.scrollingElement.scrollLeft, pixelsPerTick());
+    assert_equals(document.scrollingElement.scrollTop, 0);
+}, "One horizontal wheel tick scrolls the right number of pixels in high dpi mode.");
 
-        eventSender.mouseMoveTo(20, 20);
-        // 1 tick should move 40px.
-        eventSender.mouseScrollBy(-2, -2);
+promise_test(async () => {
+    await reset();
+    await wheelTick(0, 2, position);
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollTop;
+    });
+    assert_equals(document.scrollingElement.scrollLeft, 0);
+    assert_equals(document.scrollingElement.scrollTop, 2 * pixelsPerTick());
+}, "Two vertical wheel ticks scroll the right number of pixels in high dpi mode.");
 
-        shouldBecomeEqual("document.scrollingElement.scrollTop == 80 && " +
-          "document.scrollingElement.scrollLeft == 80", "true", finishJSTest);
-    }
-
-    function runTest() {
-        if (!window.eventSender || !window.internals) {
-           debug("This test requires window.eventSender and window.internals.");
-            finishJSTest();
-            return;
-        }
-
-        // Turn on smooth scrolling.
-        internals.settings.setScrollAnimatorEnabled(true);
-
-        eventSender.mouseMoveTo(20, 20);
-        // 1 tick should move 40px.
-        eventSender.mouseScrollBy(-1, -1);
-
-        // 40px per tick.
-        shouldBecomeEqual("document.scrollingElement.scrollTop == 40 && " +
-          "document.scrollingElement.scrollLeft == 40", "true", testDiagonalScroll);
-    }
+promise_test(async () => {
+    await reset();
+    await wheelTick(2, 0, position);
+    await waitForAnimationEndTimeBased( () => {
+        return document.scrollingElement.scrollLeft;
+    });
+    assert_equals(document.scrollingElement.scrollLeft, 2 * pixelsPerTick());
+    assert_equals(document.scrollingElement.scrollTop, 0);
+}, "Two horizontal wheel ticks scroll the right number of pixels in high dpi mode.");
 </script>
-
-<body onload="runTest()"></body>

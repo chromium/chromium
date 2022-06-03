@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<dialog>
+  <div aria-owns=>
+    <style>
+      .arbitraryClassName { }
+    </style>
+  </div>
+</dialog>
+
+<script>
+async_test((t) => {
+    let child = document.createElement('div');
+    child.id = 'foo';
+    document.body.appendChild(child);
+
+    setTimeout(() => {
+        document.styleSheets[0].deleteRule(0);
+        document.replaceChild(child, document.documentElement);
+        t.done();
+    });
+}, "Regression test for aria-owns related crash in AXRelationCache::Init");
+
+</script>

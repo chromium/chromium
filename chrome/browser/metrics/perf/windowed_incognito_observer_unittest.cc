@@ -4,8 +4,7 @@
 
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 
-#include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,6 +18,10 @@ namespace {
 class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
  public:
   TestWindowedIncognitoMonitor() : WindowedIncognitoMonitor() {}
+
+  TestWindowedIncognitoMonitor(const TestWindowedIncognitoMonitor&) = delete;
+  TestWindowedIncognitoMonitor& operator=(const TestWindowedIncognitoMonitor&) =
+      delete;
 
   int num_on_browser_added() { return num_on_browser_added_; }
   int num_on_browser_removed() { return num_on_browser_removed_; }
@@ -40,8 +43,6 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
 
   int num_on_browser_added_ = 0;
   int num_on_browser_removed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowedIncognitoMonitor);
 };
 
 }  // namespace
@@ -49,6 +50,10 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
 class WindowedIncognitoMonitorTest : public testing::Test {
  public:
   WindowedIncognitoMonitorTest() = default;
+
+  WindowedIncognitoMonitorTest(const WindowedIncognitoMonitorTest&) = delete;
+  WindowedIncognitoMonitorTest& operator=(const WindowedIncognitoMonitorTest&) =
+      delete;
 
   void SetUp() override {
     // Instantiate a testing profile.
@@ -65,11 +70,12 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   size_t OpenBrowserWindow(bool incognito) {
     auto browser_window = std::make_unique<TestBrowserWindow>();
     Profile* browser_profile =
-        incognito ? profile_->GetOffTheRecordProfile() : profile_.get();
+        incognito ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                  : profile_.get();
     Browser::CreateParams params(browser_profile, true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window.get();
-    auto browser = std::make_unique<Browser>(params);
+    auto browser = std::unique_ptr<Browser>(Browser::Create(params));
 
     size_t handle = next_browser_id++;
     open_browsers_[handle] =
@@ -98,8 +104,6 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   static size_t next_browser_id;
 
   std::unique_ptr<TestWindowedIncognitoMonitor> incognito_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedIncognitoMonitorTest);
 };
 
 size_t WindowedIncognitoMonitorTest::next_browser_id = 1;

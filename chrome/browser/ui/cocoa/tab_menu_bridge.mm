@@ -30,13 +30,13 @@ void UpdateItemForWebContents(NSMenuItem* item,
     // speaker-playing-sound icon or a muted-speaker icon to its title to make
     // it easy to find the tabs playing sound in the Tab menu.
     int title_id;
-    base::string16 emoji;
+    std::u16string emoji;
     if (web_contents->IsAudioMuted()) {
       title_id = IDS_WINDOW_AUDIO_MUTING_MAC;
-      emoji = base::WideToUTF16(L"\U0001F507");
+      emoji = u"\U0001F507";
     } else {
       title_id = IDS_WINDOW_AUDIO_PLAYING_MAC;
-      emoji = base::WideToUTF16(L"\U0001F50A");
+      emoji = u"\U0001F50A";
     }
 
     item.title =
@@ -73,12 +73,13 @@ void UpdateItemForWebContents(NSMenuItem* item,
 TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
     : model_(model), menu_item_(menu_item) {
   menu_listener_.reset([[TabMenuListener alloc]
-      initWithCallback:base::Bind(&TabMenuBridge::OnDynamicItemChosen,
-                                  // Unretained is safe here: this class owns
-                                  // MenuListener, which holds the callback
-                                  // being constructed here, so the callback
-                                  // will be destructed before this class.
-                                  base::Unretained(this))]);
+      initWithCallback:base::BindRepeating(
+                           &TabMenuBridge::OnDynamicItemChosen,
+                           // Unretained is safe here: this class owns
+                           // MenuListener, which holds the callback
+                           // being constructed here, so the callback
+                           // will be destructed before this class.
+                           base::Unretained(this))]);
   model_->AddObserver(this);
 }
 
@@ -109,6 +110,8 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
                action:@selector(activateTab:)
         keyEquivalent:@""]);
     [item setTarget:menu_listener_.get()];
+    if (model_->active_index() == i)
+      [item setState:NSOnState];
     UpdateItemForWebContents(item, model_->GetWebContentsAt(i));
     [menu_item_.submenu addItem:item.get()];
   }
@@ -130,10 +133,6 @@ void TabMenuBridge::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   DCHECK(tab_strip_model);
   DCHECK_EQ(tab_strip_model, model_);
-
-  // The menu doesn't represent selection in any way, so ignore it.
-  if (change.type() == TabStripModelChange::kSelectionOnly)
-    return;
 
   // If a single WebContents is being replaced, just regenerate that one menu
   // item.

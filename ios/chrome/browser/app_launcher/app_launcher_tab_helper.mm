@@ -9,14 +9,16 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_util.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
-#import "ios/chrome/browser/ui/dialogs/dialog_features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -53,7 +55,7 @@ bool IsValidAppUrl(const GURL& app_url) {
 // Returns True if |app_url| has a Chrome bundle URL scheme.
 bool HasChromeAppScheme(const GURL& app_url) {
   NSArray* chrome_schemes =
-      [[ChromeAppConstants sharedInstance] getAllBundleURLSchemes];
+      [[ChromeAppConstants sharedInstance] allBundleURLSchemes];
   NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.scheme());
   return [chrome_schemes containsObject:app_url_scheme];
 }
@@ -71,27 +73,26 @@ enum class ExternalURLRequestStatus {
 
 }  // namespace
 
+// static
 void AppLauncherTabHelper::CreateForWebState(
     web::WebState* web_state,
-    AppLauncherAbuseDetector* abuse_detector,
-    id<AppLauncherTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new AppLauncherTabHelper(
-                               web_state, abuse_detector, delegate)));
-  }
+    AppLauncherAbuseDetector* abuse_detector) {
+  if (FromWebState(web_state))
+    return;
+
+  web_state->SetUserData(
+      UserDataKey(),
+      base::WrapUnique(new AppLauncherTabHelper(web_state, abuse_detector)));
 }
 
 AppLauncherTabHelper::AppLauncherTabHelper(
     web::WebState* web_state,
-    AppLauncherAbuseDetector* abuse_detector,
-    id<AppLauncherTabHelperDelegate> delegate)
+    AppLauncherAbuseDetector* abuse_detector)
     : web::WebStatePolicyDecider(web_state),
       web_state_(web_state),
-      abuse_detector_(abuse_detector),
-      delegate_(delegate),
-      weak_factory_(this) {}
+      abuse_detector_(abuse_detector) {
+  DCHECK(abuse_detector_);
+}
 
 AppLauncherTabHelper::~AppLauncherTabHelper() = default;
 
@@ -103,18 +104,22 @@ bool AppLauncherTabHelper::IsAppUrl(const GURL& url) {
            url.SchemeIs(url::kBlobScheme));
 }
 
-bool AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
+void AppLauncherTabHelper::SetDelegate(AppLauncherTabHelperDelegate* delegate) {
+  delegate_ = delegate;
+}
+
+void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
                                               const GURL& source_page_url,
                                               bool link_transition) {
   // Don't open external application if chrome is not active.
   if ([[UIApplication sharedApplication] applicationState] !=
       UIApplicationStateActive) {
-    return false;
+    return;
   }
 
   // Don't try to open external application if a prompt is already active.
   if (is_prompt_active_)
-    return false;
+    return;
 
   [abuse_detector_ didRequestLaunchExternalAppURL:url
                                 fromSourcePageURL:source_page_url];
@@ -123,12 +128,12 @@ bool AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
                         fromSourcePageURL:source_page_url];
   switch (policy) {
     case ExternalAppLaunchPolicyBlock: {
-      return false;
+      return;
     }
     case ExternalAppLaunchPolicyAllow: {
-      return [delegate_ appLauncherTabHelper:this
-                            launchAppWithURL:url
-                              linkTransition:link_transition];
+      if (delegate_)
+        delegate_->LaunchAppForTabHelper(this, url, link_transition);
+      return;
     }
     case ExternalAppLaunchPolicyPrompt: {
       is_prompt_active_ = true;
@@ -136,41 +141,56 @@ bool AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
           weak_factory_.GetWeakPtr();
       GURL copied_url = url;
       GURL copied_source_page_url = source_page_url;
-      [delegate_ appLauncherTabHelper:this
-          showAlertOfRepeatedLaunchesWithCompletionHandler:^(
-              BOOL user_allowed) {
+      if (!delegate_)
+        return;
+      delegate_->ShowRepeatedAppLaunchAlert(
+          this, base::BindOnce(^(bool user_allowed) {
             if (!weak_this.get())
               return;
-            if (user_allowed) {
+            if (user_allowed && weak_this->delegate()) {
               // By confirming that user wants to launch the application, there
               // is no need to check for |link_tapped|.
-              [delegate_ appLauncherTabHelper:weak_this.get()
-                             launchAppWithURL:copied_url
-                               linkTransition:YES];
-            } else {
-              if (!base::FeatureList::IsEnabled(dialogs::kNonModalDialogs)) {
-                // Only block app launches if the app launch alert is being
-                // displayed modally since DOS attacks are not possible when the
-                // app launch alert is presented non-modally.
-                [abuse_detector_ blockLaunchingAppURL:copied_url
-                                    fromSourcePageURL:copied_source_page_url];
-              }
+              weak_this->delegate()->LaunchAppForTabHelper(
+                  this, copied_url,
+                  /*link_transition=*/true);
             }
             is_prompt_active_ = false;
-          }];
-      return true;
+          }));
+      return;
     }
   }
 }
 
-bool AppLauncherTabHelper::ShouldAllowRequest(
+void AppLauncherTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info) {
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   if (!IsAppUrl(request_url)) {
     // This URL can be handled by the WebState and doesn't require App launcher
     // handling.
-    return true;
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+  }
+
+  if (IsURLBlocklistEnabled()) {
+    // Do not allow allow navigation if URL is blocked by enterprise policy.
+    PolicyBlocklistService* blocklistService =
+        PolicyBlocklistServiceFactory::GetForBrowserState(
+            web_state()->GetBrowserState());
+    if (blocklistService->GetURLBlocklistState(request_url) ==
+        policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
+              policy_url_blocking_util::CreateBlockedUrlError()));
+    }
+  }
+
+  // Disallow navigations to tel: URLs from cross-origin frames.
+  if (request_url.SchemeIs(url::kTelScheme) &&
+      request_info.target_frame_is_cross_origin) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
   }
 
   ExternalURLRequestStatus request_status =
@@ -188,12 +208,15 @@ bool AppLauncherTabHelper::ShouldAllowRequest(
   UMA_HISTOGRAM_ENUMERATION("WebController.ExternalURLRequestBlocking",
                             request_status, ExternalURLRequestStatus::kCount);
   // Request is blocked.
-  if (request_status == ExternalURLRequestStatus::kSubFrameRequestBlocked)
-    return false;
+  if (request_status == ExternalURLRequestStatus::kSubFrameRequestBlocked) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  }
 
-  if (!IsValidAppUrl(request_url))
-    return false;
-
+  if (!IsValidAppUrl(request_url)) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  }
 
   // If this is a Universal 2nd Factor (U2F) call, the origin needs to be
   // checked to make sure it's secure and then update the |request_url| with
@@ -202,12 +225,14 @@ bool AppLauncherTabHelper::ShouldAllowRequest(
     GURL origin = web_state_->GetNavigationManager()
                       ->GetLastCommittedItem()
                       ->GetURL()
-                      .GetOrigin();
+                      .DeprecatedGetOriginAsURL();
     U2FTabHelper* u2f_helper = U2FTabHelper::FromWebState(web_state_);
     request_url = u2f_helper->GetXCallbackUrl(request_url, origin);
     // If the URL was rejected by the U2F handler, |request_url| will be empty.
-    if (!request_url.is_valid())
-      return false;
+    if (!request_url.is_valid()) {
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    }
   }
 
   GURL last_committed_url = web_state_->GetLastCommittedURL();
@@ -215,28 +240,28 @@ bool AppLauncherTabHelper::ShouldAllowRequest(
       web_state_->GetNavigationManager()->GetPendingItem();
   GURL original_pending_url =
       pending_item ? pending_item->GetOriginalRequestURL() : GURL::EmptyGURL();
-  bool is_link_transition = ui::PageTransitionTypeIncludingQualifiersIs(
+  bool is_link_transition = ui::PageTransitionCoreTypeIs(
       request_info.transition_type, ui::PAGE_TRANSITION_LINK);
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
 
-    if (!is_link_transition && original_pending_url.is_valid()) {
-      // At this stage the navigation will be canceled in all cases. If this
-      // was a redirection, the |source_url| may not have been reported to
-      // ReadingListWebStateObserver. Report it to mark as read if needed.
-      ReadingListModel* model =
-          ReadingListModelFactory::GetForBrowserState(browser_state);
-      if (model && model->loaded())
-        model->SetReadStatus(original_pending_url, true);
-    }
-    if (last_committed_url.is_valid() ||
-        !web_state_->GetNavigationManager()->GetLastCommittedItem()) {
-      // Launch the app if the URL is valid or if it is the first page of the
-      // tab.
-      RequestToLaunchApp(request_url, last_committed_url, is_link_transition);
-    }
-    return false;
+  if (!is_link_transition && original_pending_url.is_valid()) {
+    // At this stage the navigation will be canceled in all cases. If this
+    // was a redirection, the |source_url| may not have been reported to
+    // ReadingListWebStateObserver. Report it to mark as read if needed.
+    ReadingListModel* model =
+        ReadingListModelFactory::GetForBrowserState(browser_state);
+    if (model && model->loaded())
+      model->SetReadStatus(original_pending_url, true);
+  }
+  if (last_committed_url.is_valid() ||
+      !web_state_->GetNavigationManager()->GetLastCommittedItem()) {
+    // Launch the app if the URL is valid or if it is the first page of the
+    // tab.
+    RequestToLaunchApp(request_url, last_committed_url, is_link_transition);
+  }
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AppLauncherTabHelper)

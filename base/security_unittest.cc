@@ -16,7 +16,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/sanitizer_buildflags.h"
 #include "build/build_config.h"
@@ -49,7 +48,8 @@ NOINLINE Type HideValueFromCompiler(volatile Type value) {
 // TCmalloc, currently supported only by Linux/CrOS, supports malloc limits.
 // - USE_TCMALLOC (should be set if compiled with use_allocator=="tcmalloc")
 // - ADDRESS_SANITIZER it has its own memory allocator
-#if defined(OS_LINUX) && BUILDFLAG(USE_TCMALLOC) && !defined(ADDRESS_SANITIZER)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && BUILDFLAG(USE_TCMALLOC) && \
+                              !defined(ADDRESS_SANITIZER)
 #define MALLOC_OVERFLOW_TEST(function) function
 #else
 #define MALLOC_OVERFLOW_TEST(function) DISABLED_##function
@@ -60,7 +60,8 @@ NOINLINE Type HideValueFromCompiler(volatile Type value) {
 // FAILS_ is too clunky.
 void OverflowTestsSoftExpectTrue(bool overflow_detected) {
   if (!overflow_detected) {
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    defined(OS_APPLE)
     // Sadly, on Linux, Android, and OSX we don't have a good story yet. Don't
     // fail the test, but report.
     printf("Platform has overflow: %s\n",
@@ -73,20 +74,23 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
   }
 }
 
-#if defined(OS_IOS) || defined(OS_FUCHSIA) || defined(OS_MACOSX) || \
-    defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||      \
-    defined(MEMORY_SANITIZER) || BUILDFLAG(IS_HWASAN)
+#if defined(OS_APPLE) || defined(ADDRESS_SANITIZER) ||        \
+    defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    BUILDFLAG(IS_HWASAN) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_NewOverflow DISABLED_NewOverflow
 #else
 #define MAYBE_NewOverflow NewOverflow
 #endif
-// Test array[TooBig][X] and array[X][TooBig] allocations for int
-// overflows.  IOS doesn't honor nothrow, so disable the test there.
-// TODO(https://crbug.com/828229): Fuchsia SDK exports an incorrect
-// new[] that gets picked up in Debug/component builds, breaking this
-// test.  Disabled on Mac for the same reason.  Disabled under XSan
-// because asan aborts when new returns nullptr,
-// https://bugs.chromium.org/p/chromium/issues/detail?id=690271#c15
+// Test that array[TooBig][X] and array[X][TooBig] allocations fail and not
+// succeed with the wrong size allocation in case of size_t overflow.  This
+// test is disabled on environments that operator new (nothrow) crashes in
+// case of size_t overflow.
+//
+// - iOS doesn't honor nothrow.
+// - XSan aborts when operator new returns nullptr.
+// - PartitionAlloc crashes by design when size_t overflows.
+//
+// TODO(https://crbug.com/927179): Fix the test on Mac.
 TEST(SecurityTest, MAYBE_NewOverflow) {
   const size_t kArraySize = 4096;
   // We want something "dynamic" here, so that the compiler doesn't
@@ -117,7 +121,7 @@ TEST(SecurityTest, MAYBE_NewOverflow) {
 #endif  // !defined(OS_WIN) || !defined(ARCH_CPU_64_BITS)
 }
 
-#if defined(OS_LINUX) && defined(__x86_64__)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__x86_64__)
 // Check if ptr1 and ptr2 are separated by less than size chars.
 bool ArePointersToSameArea(void* ptr1, void* ptr2, size_t size) {
   ptrdiff_t ptr_diff = reinterpret_cast<char*>(std::max(ptr1, ptr2)) -
@@ -171,6 +175,6 @@ TEST(SecurityTest, MALLOC_OVERFLOW_TEST(RandomMemoryAllocations)) {
   EXPECT_FALSE(impossible_random_address);
 }
 
-#endif  // defined(OS_LINUX) && defined(__x86_64__)
+#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__x86_64__)
 
 }  // namespace

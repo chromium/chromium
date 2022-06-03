@@ -30,8 +30,7 @@ AXPlatformNode* AXPlatformNodeTestHelper::FindChildByName(
     return nullptr;
 
   AXPlatformNodeDelegate* delegate = ax_node->GetDelegate();
-  if (delegate->GetData().GetStringAttribute(
-          ax::mojom::StringAttribute::kName) == name)
+  if (delegate->GetName() == name)
     return ax_node;
 
   for (int i = 0; i < delegate->GetChildCount(); ++i) {

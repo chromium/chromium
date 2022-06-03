@@ -23,7 +23,9 @@ class ParameterizedHitTestingBidiTest
   ParameterizedHitTestingBidiTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
-  bool LayoutNGEnabled() const { return GetParam(); }
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ParameterizedHitTestingBidiTest, testing::Bool());

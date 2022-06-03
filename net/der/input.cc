@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace net {
 
@@ -31,6 +31,10 @@ std::string Input::AsString() const {
 
 base::StringPiece Input::AsStringPiece() const {
   return base::StringPiece(reinterpret_cast<const char*>(data_), len_);
+}
+
+base::span<const uint8_t> Input::AsSpan() const {
+  return base::make_span(data_, len_);
 }
 
 bool operator==(const Input& lhs, const Input& rhs) {

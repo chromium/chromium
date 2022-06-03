@@ -11,8 +11,11 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace android_webview {
 
@@ -22,6 +25,7 @@ const char kProxyBypassListSwitch[] = "proxy-bypass-list";
 }  // namespace
 
 AwProxyConfigMonitor::AwProxyConfigMonitor() {
+  TRACE_EVENT0("startup", "AwProxyConfigMonitor");
   proxy_config_service_android_ =
       std::make_unique<net::ProxyConfigServiceAndroid>(
           base::ThreadTaskRunnerHandle::Get(),
@@ -40,7 +44,7 @@ AwProxyConfigMonitor* AwProxyConfigMonitor::GetInstance() {
 }
 
 void AwProxyConfigMonitor::AddProxyToNetworkContextParams(
-    network::mojom::NetworkContextParamsPtr& network_context_params) {
+    network::mojom::NetworkContextParams* network_context_params) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(kProxyServerSwitch)) {
@@ -54,7 +58,8 @@ void AwProxyConfigMonitor::AddProxyToNetworkContextParams(
     }
 
     network_context_params->initial_proxy_config =
-        net::ProxyConfigWithAnnotation(proxy_config, NO_TRAFFIC_ANNOTATION_YET);
+        net::ProxyConfigWithAnnotation(proxy_config,
+                                       MISSING_TRAFFIC_ANNOTATION);
   } else {
     mojo::PendingRemote<network::mojom::ProxyConfigClient> proxy_config_client;
     network_context_params->proxy_config_client_receiver =
@@ -92,9 +97,10 @@ std::string AwProxyConfigMonitor::SetProxyOverride(
     const std::vector<net::ProxyConfigServiceAndroid::ProxyOverrideRule>&
         proxy_rules,
     const std::vector<std::string>& bypass_rules,
+    const bool reverse_bypass,
     base::OnceClosure callback) {
   return proxy_config_service_android_->SetProxyOverride(
-      proxy_rules, bypass_rules,
+      proxy_rules, bypass_rules, reverse_bypass,
       base::BindOnce(&AwProxyConfigMonitor::FlushProxyConfig,
                      base::Unretained(this), std::move(callback)));
 }

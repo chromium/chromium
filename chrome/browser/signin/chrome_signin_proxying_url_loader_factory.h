@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +43,10 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       DisconnectCallback on_disconnect);
+
+  ProxyingURLLoaderFactory(const ProxyingURLLoaderFactory&) = delete;
+  ProxyingURLLoaderFactory& operator=(const ProxyingURLLoaderFactory&) = delete;
+
   ~ProxyingURLLoaderFactory() override;
 
   // Called when a renderer needs a URLLoaderFactory to give this module the
@@ -60,7 +63,6 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -91,8 +93,6 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       requests_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   DisconnectCallback on_disconnect_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyingURLLoaderFactory);
 };
 
 }  // namespace signin

@@ -300,7 +300,7 @@ static struct {
   absl::string_view plaintext;
   absl::string_view cyphertext;
 } const base64_tests[] = {
-    // Empty std::string.
+    // Empty string.
     {{"", 0}, {"", 0}},
     {{nullptr, 0},
      {"", 0}},  // if length is zero, plaintext ptr must be ignored!
@@ -586,7 +586,7 @@ void TestEscapeAndUnescape() {
     EXPECT_EQ(encoded, websafe);
     EXPECT_EQ(absl::WebSafeBase64Escape(tc.plaintext), websafe);
 
-    // Let's try the std::string version of the decoder
+    // Let's try the string version of the decoder
     decoded = "this junk should be ignored";
     EXPECT_TRUE(absl::WebSafeBase64Unescape(websafe, &decoded));
     EXPECT_EQ(decoded, tc.plaintext);
@@ -625,7 +625,7 @@ TEST(Base64, DISABLED_HugeData) {
   std::string escaped;
   absl::Base64Escape(huge, &escaped);
 
-  // Generates the std::string that should match a base64 encoded "xxx..." std::string.
+  // Generates the string that should match a base64 encoded "xxx..." string.
   // "xxx" in base64 is "eHh4".
   std::string expected_encoding;
   expected_encoding.reserve(kSize / 3 * 4);

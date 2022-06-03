@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+#include "base/test/bind.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/driver/test_sync_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DevToolsUIBindingsTest : public testing::Test {
@@ -19,14 +25,14 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "devtools://devtools/bundled/devtools.html#hash"},
       {"devtools://devtools/some/random/path",
        "devtools://devtools/some/random/path"},
-      {"devtools://devtools/bundled/devtools.html?experiments=true",
-       "devtools://devtools/bundled/devtools.html?experiments=true"},
+      {"devtools://devtools/bundled/devtools.html?debugFrontend=true",
+       "devtools://devtools/bundled/devtools.html?debugFrontend=true"},
       {"devtools://devtools/bundled/devtools.html"
-       "?some-flag=flag&v8only=true&experiments=false&debugFrontend=a"
+       "?some-flag=flag&v8only=true&debugFrontend=a"
        "&another-flag=another-flag&can_dock=false&isSharedWorker=notreally"
        "&remoteFrontend=sure",
        "devtools://devtools/bundled/devtools.html"
-       "?v8only=true&experiments=true&debugFrontend=true"
+       "?v8only=true&debugFrontend=true"
        "&can_dock=true&isSharedWorker=true&remoteFrontend=true"},
       {"devtools://devtools/?ws=any-value-is-fine",
        "devtools://devtools/?ws=any-value-is-fine"},
@@ -81,13 +87,13 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "devtools://devtools/?remoteFrontendUrl="
        "https%3A%2F%2Fchrome-devtools-frontend.appspot.com%2Fserve_rev"
        "%2Frev%2Finspector.html#hash"},
-      {"devtools://devtools/?experiments=whatever&remoteFrontendUrl="
+      {"devtools://devtools/?remoteFrontendUrl="
        "https://chrome-devtools-frontend.appspot.com/serve_rev/"
-       "@12345/devtools.html%3Fws%3Danyvalue%26experiments%3Dlikely"
+       "@12345/devtools.html%3Fws%3Danyvalue"
        "&unencoded=value&debugFrontend=true",
-       "devtools://devtools/?experiments=true&remoteFrontendUrl="
+       "devtools://devtools/?remoteFrontendUrl="
        "https%3A%2F%2Fchrome-devtools-frontend.appspot.com%2Fserve_rev"
-       "%2F%4012345%2Fdevtools.html%3Fws%3Danyvalue%26experiments%3Dtrue"
+       "%2F%4012345%2Fdevtools.html%3Fws%3Danyvalue"
        "&debugFrontend=true"},
       {"devtools://devtools/?remoteFrontendUrl="
        "https://chrome-devtools-frontend.appspot.com/serve_rev/"
@@ -108,4 +114,60 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
     url = DevToolsUIBindings::SanitizeFrontendURL(url);
     EXPECT_EQ(pair.second, url.spec());
   }
+}
+
+class DevToolsUIBindingsSyncInfoTest : public testing::Test {
+ public:
+  void SetUp() override {
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating([](content::BrowserContext*) {
+          return static_cast<std::unique_ptr<KeyedService>>(
+              std::make_unique<syncer::TestSyncService>());
+        }));
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(&profile_));
+  }
+
+ protected:
+  content::BrowserTaskEnvironment browser_task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+
+  TestingProfile profile_;
+  syncer::TestSyncService* sync_service_;
+};
+
+TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
+  sync_service_->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+
+  base::Value info =
+      DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
+
+  EXPECT_FALSE(info.FindBoolKey("isSyncActive").value());
+}
+
+TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
+  syncer::ModelTypeSet activeDataTypes;
+  activeDataTypes.Put(syncer::ModelType::BOOKMARKS);
+  sync_service_->SetActiveDataTypes(activeDataTypes);
+
+  base::Value info =
+      DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
+
+  EXPECT_TRUE(info.FindBoolKey("isSyncActive").value());
+  EXPECT_FALSE(info.FindBoolKey("arePreferencesSynced").value());
+}
+
+TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "sync@devtools.dev", signin::ConsentLevel::kSync);
+  sync_service_->SetAccountInfo(account_info);
+
+  EXPECT_TRUE(account_info.account_image.IsEmpty());
+
+  base::Value info =
+      DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
+
+  EXPECT_EQ(*info.FindStringKey("accountEmail"), "sync@devtools.dev");
+  EXPECT_NE(info.FindStringKey("accountImage"), nullptr);
 }

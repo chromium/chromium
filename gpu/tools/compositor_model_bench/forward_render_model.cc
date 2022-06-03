@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <vector>
 
+#include "base/notreached.h"
 #include "gpu/tools/compositor_model_bench/render_model_utils.h"
 
 using std::vector;

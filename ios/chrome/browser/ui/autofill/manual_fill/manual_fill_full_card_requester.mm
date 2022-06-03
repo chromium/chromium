@@ -8,8 +8,9 @@
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
-#include "ios/chrome/browser/ui/payments/full_card_requester.h"
+#include "ios/chrome/browser/ui/autofill/manual_fill/full_card_requester.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -25,8 +26,8 @@ class CreditCard;
 
 @interface ManualFillFullCardRequester ()
 
-// The ios::ChromeBrowserState instance passed to the initializer.
-@property(nonatomic, readonly) ios::ChromeBrowserState* browserState;
+// The ChromeBrowserState instance passed to the initializer.
+@property(nonatomic, readonly) ChromeBrowserState* browserState;
 
 // The WebStateList for this instance. Used to instantiate the child
 // coordinators lazily.
@@ -41,7 +42,7 @@ class CreditCard;
   std::unique_ptr<FullCardRequestResultDelegateBridge> _cardAssistant;
 }
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                         webStateList:(WebStateList*)webStateList
                       resultDelegate:
                           (id<FullCardRequestResultDelegateObserving>)delegate {
@@ -60,7 +61,10 @@ class CreditCard;
   // Payment Request is only enabled in main frame.
   web::WebState* webState = self.webStateList->GetActiveWebState();
   web::WebFrame* mainFrame = webState->GetWebFramesManager()->GetMainWebFrame();
-  autofill::AutofillManager* autofillManager =
+  if (!mainFrame) {
+    return;
+  }
+  autofill::BrowserAutofillManager* autofillManager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, mainFrame)
           ->autofill_manager();
   DCHECK(autofillManager);

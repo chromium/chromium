@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_ERROR_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_ERROR_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/modules/speech/speech_synthesis_error_event_init.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

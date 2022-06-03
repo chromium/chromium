@@ -21,6 +21,7 @@
 
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include <windows.h>
+#include <winsock2.h>
 #else
 #include "sandbox/win/fuzzer/fuzzer_types.h"
 #endif
@@ -55,7 +56,10 @@ class TargetServices;
 //  // -- later you can call:
 //  broker->WaitForAllTargets(option);
 //
-class BrokerServices {
+// We need [[clang::lto_visibility_public]] because instances of this class are
+// passed across module boundaries. This means different modules must have
+// compatible definitions of the class even when LTO is enabled.
+class [[clang::lto_visibility_public]] BrokerServices {
  public:
   // Initializes the broker. Must be called before any other on this class.
   // returns ALL_OK if successful. All other return values imply failure.
@@ -140,7 +144,7 @@ class BrokerServices {
 //   }
 //
 // For more information see the BrokerServices API documentation.
-class TargetServices {
+class [[clang::lto_visibility_public]] TargetServices {
  public:
   // Initializes the target. Must call this function before any other.
   // returns ALL_OK if successful. All other return values imply failure.
@@ -157,6 +161,12 @@ class TargetServices {
   // information about the current state of the process, such as whether
   // LowerToken has been called or not.
   virtual ProcessState* GetState() = 0;
+
+  // Attempts to create a socket in the broker process, and duplicates it back
+  // to the target. The socket will be created with default flags and no group.
+  // Only TCP/UDP and IPV4/IPV6 sockets are supported by the broker.
+  // The socket will be created with WSA_FLAG_OVERLAPPED flags.
+  virtual SOCKET CreateBrokeredSocket(int af, int family, int protocol) = 0;
 
  protected:
   ~TargetServices() {}

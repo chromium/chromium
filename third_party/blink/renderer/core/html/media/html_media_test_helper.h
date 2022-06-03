@@ -17,6 +17,11 @@ namespace test {
 class MediaStubLocalFrameClient : public EmptyLocalFrameClient {
  public:
   explicit MediaStubLocalFrameClient(std::unique_ptr<WebMediaPlayer>);
+  MediaStubLocalFrameClient(std::unique_ptr<WebMediaPlayer>,
+                            bool allow_empty_player);
+  MediaStubLocalFrameClient(const MediaStubLocalFrameClient&) = delete;
+  MediaStubLocalFrameClient& operator=(const MediaStubLocalFrameClient&) =
+      delete;
 
   std::unique_ptr<WebMediaPlayer> CreateWebMediaPlayer(
       HTMLMediaElement&,
@@ -25,8 +30,7 @@ class MediaStubLocalFrameClient : public EmptyLocalFrameClient {
 
  private:
   std::unique_ptr<WebMediaPlayer> player_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStubLocalFrameClient);
+  bool allow_empty_player_ = false;
 };
 
 }  // namespace test

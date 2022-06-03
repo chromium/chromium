@@ -14,14 +14,14 @@ namespace ios {
 
 // static
 BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<BookmarkUndoService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
 BookmarkUndoService* BookmarkUndoServiceFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<BookmarkUndoService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }

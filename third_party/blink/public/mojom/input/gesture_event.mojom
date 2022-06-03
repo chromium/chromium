@@ -1,0 +1,27 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The type of gesture device generating the event.
+enum GestureDevice {
+  kUninitialized,
+  kTouchpad,
+  kTouchscreen,
+  kSyntheticAutoscroll,
+
+  // This is the device type used when generating synthetic gesture scrolls for
+  // compositor thread scrollbar scrolling. Please refer to
+  // ui::InputHandlerProxy::InjectScrollbarGestureScroll to see how this is
+  // consumed. Explainer:
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/Scrolling/ImplScrollbars/dev-diagram.md
+  kScrollbar,
+};
+
+// The phase at which the current scrolling gesture is in.
+enum InertialPhaseState {
+  kUnknownMomentum,      // No phase information.
+  kNonMomentum,          // Regular scrolling phase.
+  kMomentum,             // Momentum phase.
+};

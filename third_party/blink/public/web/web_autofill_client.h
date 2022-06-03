@@ -34,6 +34,7 @@
 namespace blink {
 
 class WebFormControlElement;
+class WebFormElement;
 class WebInputElement;
 class WebKeyboardEvent;
 class WebNode;
@@ -71,10 +72,17 @@ class WebAutofillClient {
     return false;
   }
 
+  // Called when the given form element is reset.
+  virtual void FormElementReset(const WebFormElement&) {}
+
+  // Called when the empty value is set for the given input element, which is
+  // or has been a password field.
+  virtual void PasswordFieldReset(const WebInputElement& element) {}
+
  protected:
   virtual ~WebAutofillClient() = default;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_

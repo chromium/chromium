@@ -6,6 +6,8 @@
 
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 
+NotificationDisplayService::Observer::~Observer() = default;
+
 // static
 NotificationDisplayService* NotificationDisplayService::GetForProfile(
     Profile* profile) {

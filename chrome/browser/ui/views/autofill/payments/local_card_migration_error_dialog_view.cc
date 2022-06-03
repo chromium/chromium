@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_error_dialog_view.h"
 
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_factory.h"
@@ -19,10 +18,14 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -35,7 +38,19 @@ LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
     LocalCardMigrationDialogController* controller,
     content::WebContents* web_contents)
     : controller_(controller), web_contents_(web_contents) {
-  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(ui::DIALOG_BUTTON_CANCEL);
+  SetCancelCallback(
+      base::BindOnce(&LocalCardMigrationDialogController::OnDoneButtonClicked,
+                     base::Unretained(controller_)));
+
+  // The error dialog should be a modal dialog blocking the whole browser
+  // which is consistent with other dialogs. It should make sure that the
+  // user can see the error message.
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(false);
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
 }
@@ -54,39 +69,11 @@ void LocalCardMigrationErrorDialogView::CloseDialog() {
   GetWidget()->Close();
 }
 
-gfx::Size LocalCardMigrationErrorDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType LocalCardMigrationErrorDialogView::GetModalType() const {
-  // The error dialog should be a modal dialog blocking the whole browser
-  // which is consistent with other dialogs. It should make sure that the
-  // user can see the error message.
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool LocalCardMigrationErrorDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
 void LocalCardMigrationErrorDialogView::WindowClosing() {
   if (controller_) {
     controller_->OnDialogClosed();
     controller_ = nullptr;
   }
-}
-
-bool LocalCardMigrationErrorDialogView::Cancel() {
-  controller_->OnDoneButtonClicked();
-  return true;
-}
-
-bool LocalCardMigrationErrorDialogView::Close() {
-  // Close the dialog if the user exits the browser when dialog is visible.
-  return true;
 }
 
 void LocalCardMigrationErrorDialogView::Init() {
@@ -120,17 +107,16 @@ void LocalCardMigrationErrorDialogView::Init() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   error_view->SetBorder(views::CreateEmptyBorder(kMigrationDialogInsets));
   auto* error_image = new views::ImageView();
-  error_image->SetImage(
-      gfx::CreateVectorIcon(kBrowserToolsErrorIcon,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  error_image->SetImage(gfx::CreateVectorIcon(
+      kBrowserToolsErrorIcon,
+      GetColorProvider()->GetColor(ui::kColorAlertHighSeverity)));
   error_view->AddChildView(error_image);
 
   auto* error_message = new views::Label(
       l10n_util::GetPluralStringFUTF16(
           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_ERROR,
           controller_->GetCardList().size()),
-      CONTEXT_BODY_TEXT_LARGE, ChromeTextStyle::STYLE_RED);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
   error_view->AddChildView(error_message);
 
   AddChildView(error_view);
@@ -141,5 +127,9 @@ LocalCardMigrationDialog* CreateLocalCardMigrationErrorDialogView(
     content::WebContents* web_contents) {
   return new LocalCardMigrationErrorDialogView(controller, web_contents);
 }
+
+BEGIN_METADATA(LocalCardMigrationErrorDialogView,
+               views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace autofill

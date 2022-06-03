@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CHROME_STARTUP_FLAGS_H_
 #define CHROME_BROWSER_ANDROID_CHROME_STARTUP_FLAGS_H_
 
-#include <string>
-
 // Force-appends flags to the Chrome command line turning on Android-specific
 // features owned by Chrome. This is called as soon as possible during
 // initialization to make sure code sees the new flags.

@@ -4,7 +4,7 @@
 
 #include "services/audio/test/mock_group_coordinator.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/unguessable_token.h"
 #include "services/audio/test/mock_group_member.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,13 +34,14 @@ namespace {
 class MockGroupObserver : public TestGroupCoordinator::Observer {
  public:
   MockGroupObserver() = default;
+
+  MockGroupObserver(const MockGroupObserver&) = delete;
+  MockGroupObserver& operator=(const MockGroupObserver&) = delete;
+
   ~MockGroupObserver() override = default;
 
   MOCK_METHOD1(OnMemberJoinedGroup, void(MockGroupMember* member));
   MOCK_METHOD1(OnMemberLeftGroup, void(MockGroupMember* member));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGroupObserver);
 };
 
 TEST(GroupCoordinatorTest, NeverUsed) {

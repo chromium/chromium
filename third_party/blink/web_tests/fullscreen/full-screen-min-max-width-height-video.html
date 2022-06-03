@@ -15,7 +15,7 @@ video {
 <script>
 video = document.querySelector('video');
 
-waitForEventAndEnd(document, 'webkitfullscreenchange', function()
+waitForEventOnceAndEnd(document, 'webkitfullscreenchange', function()
 {
     computedStyle = getComputedStyle(video);
     testExpected('computedStyle.minWidth', '0px');

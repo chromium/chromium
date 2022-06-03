@@ -1,0 +1,44 @@
+Pod::Spec.new do |s|
+  s.name             = 'TensorFlowLiteTaskText'
+  s.version          = '${TFLS_BUILD_VERSION}'
+  s.authors          = 'Google Inc.'
+  s.license          = { :type => 'Apache' }
+  s.homepage         = 'https://github.com/tensorflow/tflite-support'
+  s.source           = { :http => '${TFLS_DOWNLOAD_URL}' }
+  s.summary          = 'TensorFlow Lite Task Library - Text'
+  s.description      = 'The Natural Language APIs of the TFLite Task Library'
+
+  s.ios.deployment_target = '9.0'
+
+  s.module_name = 'TensorFlowLiteTaskText'
+  s.static_framework = true
+
+  s.dependency 'GoogleToolboxForMac', '2.2.1'
+
+  objc_dir = 'tensorflow_lite_support/ios/task/text/'
+  s.public_header_files = [
+    objc_dir + 'apis/*.h',
+    objc_dir + '{nlclassifier,qa}/Sources/*.h'
+  ]
+
+  cc_dir = 'tensorflow_lite_support/cc/task/text/'
+  s.source_files = [
+    cc_dir + '{nlclassifier,qa}/*_c_api*.h',
+    objc_dir + 'apis/*.h',
+    objc_dir + '{nlclassifier,qa}/Sources/*.{h,m,mm}'
+  ]
+  s.module_map = objc_dir + 'apis/framework.modulemap'
+  s.pod_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' =>
+      '"${PODS_TARGET_SRCROOT}" ' +
+      '"${PODS_TARGET_SRCROOT}/' + cc_dir + 'nlclassifier" ' +
+      '"${PODS_TARGET_SRCROOT}/' + cc_dir + 'qa" ' +
+      '"${PODS_TARGET_SRCROOT}/' + objc_dir + 'apis" ' +
+      '"${PODS_TARGET_SRCROOT}/' + objc_dir + 'nlclassifier/Sources" ' +
+      '"${PODS_TARGET_SRCROOT}/' + objc_dir + 'qa/Sources"',
+    'VALID_ARCHS' => 'x86_64 armv7 arm64',
+  }
+
+  s.library = 'c++'
+  s.vendored_frameworks = 'Frameworks/TensorFlowLiteTaskTextC.framework'
+end

@@ -23,7 +23,7 @@ void ContentUtilityClientImpl::SetNetworkBinderCreationCallbackForTests(
   g_network_binder_creation_callback.Get() = std::move(callback);
 }
 
-ContentUtilityClientImpl::ContentUtilityClientImpl() {}
+ContentUtilityClientImpl::ContentUtilityClientImpl() = default;
 
 ContentUtilityClientImpl::~ContentUtilityClientImpl() = default;
 

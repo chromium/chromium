@@ -5,7 +5,7 @@
   <script src="/resources/testharnessreport.js"></script>
   <script src="support/helper.sub.js"></script>
 
-  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
+  <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
 </head>
 <body>
 <script>
@@ -52,7 +52,7 @@
       let elem = document.createElementNS(svg, "script");
       const values = [ "abc", null, html, script ];
       for (const v of values) {
-        assert_throws(new TypeError(), _ => {
+        assert_throws_js(TypeError, _ => {
           elem.setAttributeNS(xlink, "href", v);
         });
       }

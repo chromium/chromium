@@ -9,18 +9,17 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,17 +28,19 @@
 
 using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarkHomeDoneButton;
+using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
-using chrome_test_util::NavigateBackButtonTo;
 using chrome_test_util::OmniboxText;
+using chrome_test_util::ScrollToTop;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark folders integration tests for Chrome.
-@interface BookmarksFoldersTestCase : ChromeTestCase
+@interface BookmarksFoldersTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BookmarksFoldersTestCase
@@ -55,14 +56,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 - (void)tearDown {
   [super tearDown];
   [ChromeEarlGrey clearBookmarks];
-  [BookmarkEarlGreyUtils clearBookmarksPositionCache];
+  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 #pragma mark - BookmarksTestFolders Tests
 
 // Tests moving bookmarks into a new folder created in the moving process.
 - (void)testCreateNewFolderWhileMovingBookmarks {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -120,7 +121,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify Folder 2 only has one item.
-  [BookmarkEarlGreyUtils assertChildCount:1 ofFolderWithName:@"Folder 2"];
+  [BookmarkEarlGrey verifyChildCount:1 inFolderWithName:@"Folder 2"];
 
   // Select Folder 2 as new Change Folder.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 2")]
@@ -162,15 +163,15 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notVisible()];
 
   // Verify new folder has been created under Folder 2.
-  [BookmarkEarlGreyUtils assertChildCount:2 ofFolderWithName:@"Folder 2"];
+  [BookmarkEarlGrey verifyChildCount:2 inFolderWithName:@"Folder 2"];
 
   // Verify new folder has two bookmarks.
-  [BookmarkEarlGreyUtils assertChildCount:2
-                         ofFolderWithName:@"Title For New Folder"];
+  [BookmarkEarlGrey verifyChildCount:2
+                    inFolderWithName:@"Title For New Folder"];
 }
 
 - (void)testCantDeleteFolderBeingEdited {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -182,7 +183,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Swipe action to try to delete the newly created folder while its name its
   // being edited.
   [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"New Folder")]
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"New Folder"),
+                                          grey_minimumVisiblePercent(0.7),
+                                          nil)]
       performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
 
   // Verify the delete confirmation button doesn't show up.
@@ -191,7 +194,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testNavigateAwayFromFolderBeingEdited {
-  [BookmarkEarlGreyUtils setupBookmarksWhichExceedsScreenHeight];
+  [BookmarkEarlGrey setupBookmarksWhichExceedsScreenHeight];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -211,27 +214,23 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                  pressReturn:NO];
 
   // Scroll to top to navigate away from the folder being created.
-  GREYPerformBlock scrollToTopBlock =
-      ^BOOL(id element, __strong NSError** error) {
-        UIScrollView* view = base::mac::ObjCCastStrict<UIScrollView>(element);
-        view.contentOffset = CGPointZero;
-        return YES;
-      };
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarkHomeTableViewIdentifier)]
-      performAction:[GREYActionBlock actionWithName:@"Scroll to top"
-                                       performBlock:scrollToTopBlock]];
+      performAction:ScrollToTop()];
 
   // Scroll back to the Folder being created.
   [BookmarkEarlGreyUI scrollToBottom];
 
   // Folder should still be in Edit mode, because of this match for Value.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityValue(@"New Folder")]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityValue(@"New Folder"),
+                                   grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }
 
 - (void)testDeleteSingleFolderNode {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -269,14 +268,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testSwipeDownToDismissFromEditFolder {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
-
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -311,7 +303,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Test when current navigating folder is deleted in background, empty
 // background should be shown with context bar buttons disabled.
 - (void)testWhenCurrentFolderDeletedInBackground {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -330,8 +322,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Delete the Folder 1 and Folder 2 programmatically in background.
-  [BookmarkEarlGreyUtils removeBookmarkWithTitle:@"Folder 2"];
-  [BookmarkEarlGreyUtils removeBookmarkWithTitle:@"Folder 1"];
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Folder 2"];
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Folder 1"];
 
   // Verify edit mode is close automatically (context bar switched back to
   // default state) and both select and new folder button are disabled.
@@ -342,7 +334,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
 
   // Come back to Folder 1 (which is also deleted).
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Folder 1")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
   // Verify both select and new folder button are disabled.
@@ -353,7 +345,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
 
   // Come back to Mobile Bookmarks.
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Mobile Bookmarks")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
   // Ensure Folder 1.1 is seen, that means it successfully comes back to Mobile
@@ -362,7 +354,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testLongPressOnSingleFolder {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -370,35 +362,15 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_longPress()];
 
-  // Verify it shows the context menu.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmark_context_menu")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI verifyContextMenuForSingleFolderWithEditEnabled:YES];
 
-  // Verify options on context menu.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI dismissContextMenu];
 
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Dismiss the context menu. On non compact width tap the Bookmarks TableView
-  // to dismiss, since there might not be a cancel button.
-  if ([ChromeEarlGrey isCompactWidth]) {
-    [[EarlGrey
-        selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kBookmarkHomeTableViewIdentifier)]
-        performAction:grey_tap()];
-  }
+  [ChromeEarlGrey waitForMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
+                                            grey_interactable(), nil)];
 
   // Come back to the root.
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Bookmarks")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
   // Long press on Mobile Bookmarks.
@@ -406,16 +378,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           @"Mobile Bookmarks")]
       performAction:grey_longPress()];
 
-  // Verify it doesn't show the context menu. (long press is disabled on
-  // permanent node.)
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmark_context_menu")]
+  // We cannot locate new context menus any way, therefore we'll use the
+  // 'Edit' action presence as proxy.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
       assertWithMatcher:grey_nil()];
 }
 
 // Verify Edit functionality for single folder selection.
 - (void)testEditFunctionalityOnSingleFolder {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -426,9 +398,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
       performAction:grey_longPress()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
+  id<GREYMatcher> editFolderMatcher =
+      chrome_test_util::BookmarksContextMenuEditButton();
+  [[EarlGrey selectElementWithMatcher:editFolderMatcher]
       performAction:grey_tap()];
 
   // Verify that the editor is present.
@@ -561,7 +533,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify Move functionality on single folder through long press.
 - (void)testMoveFunctionalityOnSingleFolder {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -604,7 +576,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify Folder 2 only has one item.
-  [BookmarkEarlGreyUtils assertChildCount:1 ofFolderWithName:@"Folder 2"];
+  [BookmarkEarlGrey verifyChildCount:1 inFolderWithName:@"Folder 2"];
 
   // Select Folder 2 as new parent folder for "Title For New Folder".
   [[EarlGrey
@@ -636,11 +608,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI verifyFolderFlowIsClosed];
 
   // Verify new folder "Title For New Folder" has been created under Folder 2.
-  [BookmarkEarlGreyUtils assertChildCount:2 ofFolderWithName:@"Folder 2"];
+  [BookmarkEarlGrey verifyChildCount:2 inFolderWithName:@"Folder 2"];
 
   // Verify new folder "Title For New Folder" has one bookmark folder.
-  [BookmarkEarlGreyUtils assertChildCount:1
-                         ofFolderWithName:@"Title For New Folder"];
+  [BookmarkEarlGrey verifyChildCount:1
+                    inFolderWithName:@"Title For New Folder"];
 
   // Drill down to where "Folder 1.1" has been moved and assert it's presence.
   [[EarlGrey
@@ -658,7 +630,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verify Move functionality on multiple folder selection.
 - (void)testMoveFunctionalityOnMultipleFolder {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -720,8 +692,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                      newFolderEnabled:YES];
 
   // Verify new folder "Title For New Folder" has two bookmark folder.
-  [BookmarkEarlGreyUtils assertChildCount:2
-                         ofFolderWithName:@"Title For New Folder"];
+  [BookmarkEarlGrey verifyChildCount:2
+                    inFolderWithName:@"Title For New Folder"];
 
   // Drill down to where "Folder 1.1" and "Folder 1" have been moved and assert
   // it's presence.
@@ -735,7 +707,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testContextBarForSingleFolderSelection {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -772,7 +744,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testContextMenuForMultipleFolderSelection {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -797,8 +769,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Verify it shows the context menu.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmark_context_menu")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeContextMenuIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify options on context menu.
@@ -810,7 +782,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests that the default folder bookmarks are saved in is updated to the last
 // used folder.
 - (void)testStickyDefaultFolder {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -818,8 +790,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
       performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
 
   // Tap the Folder button.
@@ -851,12 +823,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that the bookmark that is going to be added is not in the
   // BookmarkModel.
-  const GURL bookmarkedURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/fullscreen.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL bookmarkedURL = self.testServer->GetURL("/fullscreen.html");
   NSString* const bookmarkedURLString =
       base::SysUTF8ToNSString(bookmarkedURL.spec());
-  [BookmarkEarlGreyUtils assertBookmarksWithTitle:bookmarkedURLString
-                                    expectedCount:0];
+  [BookmarkEarlGrey verifyBookmarksWithTitle:bookmarkedURLString
+                               expectedCount:0];
   // Open the page.
   std::string expectedURLContent = bookmarkedURL.GetContent();
   [ChromeEarlGrey loadURL:bookmarkedURL];
@@ -864,7 +836,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 
   // Verify that the folder has only one element.
-  [BookmarkEarlGreyUtils assertChildCount:1 ofFolderWithName:@"Sticky Folder"];
+  [BookmarkEarlGrey verifyChildCount:1 inFolderWithName:@"Sticky Folder"];
 
   // Bookmark the page.
   [BookmarkEarlGreyUI starCurrentTab];
@@ -875,17 +847,17 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that the newly-created bookmark is in the BookmarkModel.
-  [BookmarkEarlGreyUtils assertBookmarksWithTitle:bookmarkedURLString
-                                    expectedCount:1];
+  [BookmarkEarlGrey verifyBookmarksWithTitle:bookmarkedURLString
+                               expectedCount:1];
 
   // Verify that the folder has now two elements.
-  [BookmarkEarlGreyUtils assertChildCount:2 ofFolderWithName:@"Sticky Folder"];
+  [BookmarkEarlGrey verifyChildCount:2 inFolderWithName:@"Sticky Folder"];
 }
 
 // Tests the new folder name is committed when name editing is interrupted by
 // navigating away.
 - (void)testNewFolderNameCommittedOnNavigatingAway {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -895,7 +867,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                  pressReturn:NO];
 
   // Interrupt the folder name editing by tapping on back.
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Bookmarks")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
   // Come back to Mobile Bookmarks.
@@ -924,22 +896,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                  pressReturn:NO];
 
   // Interrupt the folder name editing by entering Folder 1
-  GREYPerformBlock scrollToTopBlock =
-      ^BOOL(id element, __strong NSError** error) {
-        UIScrollView* view = base::mac::ObjCCastStrict<UIScrollView>(element);
-        view.contentOffset = CGPointZero;
-        return YES;
-      };
-
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarkHomeTableViewIdentifier)]
-      performAction:[GREYActionBlock actionWithName:@"Scroll to top"
-                                       performBlock:scrollToTopBlock]];
+      performAction:ScrollToTop()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
       performAction:grey_tap()];
   // Come back to Mobile Bookmarks.
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Mobile Bookmarks")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
   // Verify folder name "New Folder 3" was committed.
@@ -953,8 +917,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Interrupt the folder name editing by tapping on First URL.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarkHomeTableViewIdentifier)]
-      performAction:[GREYActionBlock actionWithName:@"Scroll to top"
-                                       performBlock:scrollToTopBlock]];
+      performAction:ScrollToTop()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
       performAction:grey_tap()];
@@ -968,7 +931,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Tests the creation of new folders by tapping on 'New Folder' button of the
 // context bar.
 - (void)testCreateNewFolderWithContextBar {
-  [BookmarkEarlGreyUtils setupStandardBookmarks];
+  [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
@@ -995,8 +958,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Test the creation of a bookmark and new folder (by tapping on the star).
 - (void)testAddBookmarkInNewFolder {
-  const GURL bookmarkedURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
   std::string expectedURLContent = bookmarkedURL.GetContent();
 
   [ChromeEarlGrey loadURL:bookmarkedURL];
@@ -1012,12 +975,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Tap on the snackbar.
   NSString* snackbarLabel =
       l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(snackbarLabel),
+                                   grey_userInteractionEnabled(),
+                                   grey_not(TabGridEditButton()), nil)]
       performAction:grey_tap()];
 
   // Verify that the newly-created bookmark is in the BookmarkModel.
-  [BookmarkEarlGreyUtils
-      assertBookmarksWithTitle:base::SysUTF8ToNSString(expectedURLContent)
+  [BookmarkEarlGrey
+      verifyBookmarksWithTitle:base::SysUTF8ToNSString(expectedURLContent)
                  expectedCount:1];
 
   // Verify that the editor is present.
@@ -1043,7 +1010,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           kBookmarkEditViewContainerIdentifier)]
       assertWithMatcher:grey_notNil()];
 
-  [BookmarkEarlGreyUtils assertFolderExists:@"New Folder"];
+  [BookmarkEarlGrey verifyExistenceOfFolderWithTitle:@"New Folder"];
 }
 
 @end

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+.container {
+  font: 20px/1 custom-font, sans-serif;
+}
+
+.toggle {
+  outline: 1px solid red;
+}
+</style>
+<div class=container><b id="foo" style="color: orange">foo</b><b id="bar" style="color: purple">bar</b></div>
+<script>
+promise_test(async () => {
+  const face = new FontFace('custom-font', 'url(../../../resources/Ahem.ttf)');
+  face.load();
+  document.fonts.add(face);
+  document.body.offsetLeft; // force style and layout
+  document.querySelectorAll('b').forEach(b => b.classList.add('toggle'));
+  await document.fonts.ready;
+  document.body.offsetLeft; // force style and layout
+  assert_equals(foo.getBoundingClientRect().width, 60);
+  assert_equals(bar.getBoundingClientRect().width, 60);
+}, 'Text nodes shaped together should still have valid Font objects after font loading and do not cause crash');
+</script>
+

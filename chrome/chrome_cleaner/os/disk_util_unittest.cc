@@ -11,13 +11,14 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -132,10 +133,10 @@ bool LaunchTestProcess(const wchar_t* executable,
 }
 
 bool DoesVolumeSupportNamedStreams(const base::FilePath& path) {
-  std::vector<base::string16> components;
+  std::vector<std::wstring> components;
   path.GetComponents(&components);
   DCHECK(!components.empty());
-  base::string16& drive = components[0];
+  std::wstring& drive = components[0];
   drive += L'\\';
   DWORD system_flags = 0;
   if (::GetVolumeInformation(drive.c_str(), nullptr, 0, nullptr, nullptr,
@@ -173,10 +174,10 @@ void CreateProgramPathsAndFiles(const base::FilePath& temp_dir_path,
 // and passes the result to ExtractExecutablePathFromRegistryContent to get a
 // file path. Returns success if every file path matches |expected_path|.
 ::testing::AssertionResult ExtractExecutablePathFromMockRegistryAndExpect(
-    const base::string16& registry_path,
+    const std::wstring& registry_path,
     const base::FilePath& expected_path) {
-  for (const base::string16& registry_content : kMockRegistryContents) {
-    base::string16 full_registry_content =
+  for (const std::wstring& registry_content : kMockRegistryContents) {
+    std::wstring full_registry_content =
         base::StringPrintf(registry_content.c_str(), registry_path.c_str());
     base::FilePath extracted_path =
         ExtractExecutablePathFromRegistryContent(full_registry_content);
@@ -189,8 +190,8 @@ void CreateProgramPathsAndFiles(const base::FilePath& temp_dir_path,
   return ::testing::AssertionSuccess();
 }
 
-// Return that the sample DLL is whitelisted and all other files are not.
-bool WhitelistSampleDLL(const base::FilePath& path) {
+// Ignores reporting for the sample DLL and no other files.
+bool IngoredReportingSampleDLL(const base::FilePath& path) {
   return PathEqual(path, GetSampleDLLPath());
 }
 
@@ -831,17 +832,13 @@ TEST(DiskUtilTests, ZoneIdentifierWhenProcessIsRunning) {
   // DLL's that would have to be copied into the folder too.
   base::FilePath source_exe_path(
       executable_path.Append(kTestProcessExecutableName));
-  base::string16 target_exe_name = base::StrCat(
-      {base::UTF8ToUTF16(base::UnguessableToken::Create().ToString()),
-       L".exe"});
+  std::wstring target_exe_name = base::StrCat(
+      {base::UTF8ToWide(base::UnguessableToken::Create().ToString()), L".exe"});
   base::FilePath target_exe_path(executable_path.Append(target_exe_name));
 
   ASSERT_TRUE(base::CopyFile(source_exe_path, target_exe_path));
-  base::ScopedClosureRunner delete_temp_file(base::BindOnce(
-      [](const base::FilePath& temp_file) {
-        base::DeleteFile(temp_file, /*recursive=*/false);
-      },
-      target_exe_path));
+  base::ScopedClosureRunner delete_temp_file(
+      base::BindOnce(base::GetDeleteFileCallback(), target_exe_path));
 
   // Launch the test_process and wait it's completion. The process must set its
   // zone identifier.
@@ -875,15 +872,15 @@ TEST(DiskUtilTests,
     CreateProgramPathsAndFiles(temp_dir.GetPath(), &program_path,
                                &spaced_program_path);
     const base::FilePath program_paths[] = {program_path, spaced_program_path};
-    for (const auto& program_path : program_paths) {
+    for (const auto& path : program_paths) {
       // convert C:\\Windows\sysnative\scoped_folder\folder1234\file1 into
       // C:\\Windows\system32\scoped_folder\folder1234\file1
       base::FilePath program_path_system =
-          system_folder.Append(program_path.DirName().DirName().BaseName())
-              .Append(program_path.DirName().BaseName())
-              .Append(program_path.BaseName());
+          system_folder.Append(path.DirName().DirName().BaseName())
+              .Append(path.DirName().BaseName())
+              .Append(path.BaseName());
       EXPECT_TRUE(ExtractExecutablePathFromMockRegistryAndExpect(
-          program_path_system.value(), program_path));
+          program_path_system.value(), path));
     }
   }
 }
@@ -891,7 +888,7 @@ TEST(DiskUtilTests,
 TEST(DiskUtilTests, ExtractExecutablePathFromRegistryContentWithEnvVariable) {
   // This test expects files to be placed in %TEMP% and not anywhere else
   // ScopedTempDir might decide to put them.
-  base::string16 temp_str;
+  std::wstring temp_str;
   ASSERT_NE(0U, ::GetEnvironmentVariableW(
                     L"TEMP", ::base::WriteInto(&temp_str, MAX_PATH), MAX_PATH))
       << logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode());
@@ -906,21 +903,21 @@ TEST(DiskUtilTests, ExtractExecutablePathFromRegistryContentWithEnvVariable) {
                              &spaced_program_path);
   const base::FilePath program_paths[] = {program_path, spaced_program_path};
 
-  for (const auto& program_path : program_paths) {
+  for (const auto& path : program_paths) {
     // Convert
     // "C:\Users\$USER\AppData\Local\Temp\scoped_dir1234\folder6788\A111.tmp"
     // into "scoped_dir1234\folder6789\A111.tmp"
     base::FilePath relative_program_path =
-        program_path.DirName()
+        path.DirName()
             .DirName()
             .BaseName()
-            .Append(program_path.DirName().BaseName())
-            .Append(program_path.BaseName());
+            .Append(path.DirName().BaseName())
+            .Append(path.BaseName());
     const auto program_path_with_var =
         base::StrCat({L"%TEMP%\\", relative_program_path.value()});
 
     EXPECT_TRUE(ExtractExecutablePathFromMockRegistryAndExpect(
-        program_path_with_var, program_path));
+        program_path_with_var, path));
   }
 }
 
@@ -934,9 +931,9 @@ TEST(DiskUtilTests, ExtractExecutablePathFromRegistryContent) {
                              &spaced_program_path);
   const base::FilePath program_paths[] = {program_path, spaced_program_path};
 
-  for (const auto& program_path : program_paths) {
-    EXPECT_TRUE(ExtractExecutablePathFromMockRegistryAndExpect(
-        program_path.value(), program_path));
+  for (const auto& path : program_paths) {
+    EXPECT_TRUE(
+        ExtractExecutablePathFromMockRegistryAndExpect(path.value(), path));
   }
 }
 
@@ -969,13 +966,13 @@ TEST(DiskUtilTests, RetrieveDetailedFileInformation) {
   base::FilePath temp_file(appdata_folder.Append(L"DUMMY.inactive"));
   CreateFileWithContent(temp_file, kFileContent1, sizeof(kFileContent1));
 
-  bool whitelisted = false;
+  bool ignored_reporting = false;
   internal::FileInformation file_information;
-  RetrieveDetailedFileInformation(temp_file, &file_information, &whitelisted);
+  RetrieveDetailedFileInformation(temp_file, &file_information, &ignored_reporting);
 
-  EXPECT_FALSE(whitelisted);
+  EXPECT_FALSE(ignored_reporting);
 
-  base::string16 sanitized_path = SanitizePath(temp_file);
+  std::wstring sanitized_path = SanitizePath(temp_file);
 
   EXPECT_EQ(sanitized_path, file_information.path);
   EXPECT_FALSE(file_information.creation_date.empty());
@@ -1003,12 +1000,12 @@ TEST(DiskUtilTests, RetrieveDetailedFileInformationNoFile) {
   base::FilePath non_existent_file(
       appdata_folder.DirName().Append(L"abcd1234CCT1234.tmp"));
 
-  bool whitelisted = false;
+  bool ignored_reporting = false;
   internal::FileInformation file_information;
   RetrieveDetailedFileInformation(non_existent_file, &file_information,
-                                  &whitelisted);
+                                  &ignored_reporting);
 
-  EXPECT_FALSE(whitelisted);
+  EXPECT_FALSE(ignored_reporting);
   EXPECT_TRUE(file_information.path.empty());
   EXPECT_TRUE(file_information.creation_date.empty());
   EXPECT_TRUE(file_information.last_modified_date.empty());
@@ -1025,15 +1022,15 @@ TEST(DiskUtilTests, RetrieveDetailedFileInformationNoFile) {
   EXPECT_TRUE(file_information.file_version.empty());
 }
 
-TEST(DiskUtilTests, RetrieveDetailedFileInformationWhitelisted) {
-  bool whitelisted = false;
+TEST(DiskUtilTests, RetrieveDetailedFileInformationIgnoredReporting) {
+  bool ignored_reporting = false;
   internal::FileInformation file_information;
 
   RetrieveDetailedFileInformation(GetSampleDLLPath(), &file_information,
-                                  &whitelisted,
-                                  base::BindOnce(&WhitelistSampleDLL));
+                                  &ignored_reporting,
+                                  base::BindOnce(&IngoredReportingSampleDLL));
 
-  EXPECT_TRUE(whitelisted);
+  EXPECT_TRUE(ignored_reporting);
   EXPECT_TRUE(file_information.path.empty());
   EXPECT_TRUE(file_information.creation_date.empty());
   EXPECT_TRUE(file_information.last_modified_date.empty());
@@ -1110,7 +1107,7 @@ TEST(DiskUtilTests, RetrieveBasicFileInformationNoFile) {
 }
 
 TEST(DiskUtilTests, FileInformationToString) {
-  base::string16 display_str = FileInformationToString(kFileInformation1);
+  std::wstring display_str = FileInformationToString(kFileInformation1);
   EXPECT_EQ(kFileInformation1ExpectedString, display_str);
 }
 

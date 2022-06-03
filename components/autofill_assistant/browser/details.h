@@ -5,20 +5,26 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DETAILS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DETAILS_H_
 
-#include <map>
 #include <string>
 
 #include "base/values.h"
-#include "components/autofill_assistant/browser/client_memory.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
-class TriggerContext;
 
 class Details {
  public:
   Details();
   ~Details();
+
+  // Details is movable and copyable.
+  Details(Details&& other);
+  Details& operator=(Details&& other);
+  Details(const Details& other);
+  Details& operator=(const Details& other);
 
   // Returns a dictionary describing the current execution context, which
   // is intended to be serialized as JSON string. The execution context is
@@ -27,42 +33,41 @@ class Details {
 
   // Update details from the given parameters. Returns true if changes were
   // made.
-  // If one of the generic detail parameter is present then vertical specific
-  // parameters are not used for Details creation.
-  bool UpdateFromParameters(const TriggerContext& context);
+  bool UpdateFromParameters(const ScriptParameters& script_parameters);
 
   // Updates the details to show data directly from proto. Returns true if
   // |details| were successfully updated.
   static bool UpdateFromProto(const ShowDetailsProto& proto, Details* details);
 
   // Updates the details to show selected contact details. It shows only full
-  // name and email. Returns true if |details| were successfully updated.
-  static bool UpdateFromContactDetails(const ShowDetailsProto& proto,
-                                       ClientMemory* client_memory,
-                                       Details* details);
+  // name and/or email, depending on |user_data_options|. Returns true if
+  // |details| were successfully updated.
+  static bool UpdateFromContactDetails(
+      const ShowDetailsProto& proto,
+      const UserData* user_data,
+      const CollectUserDataOptions* user_data_options,
+      Details* details);
 
   // Updates the details to show selected shipping details. It shows full name
   // and address. Returns true if |details| were successfully updated.
   static bool UpdateFromShippingAddress(const ShowDetailsProto& proto,
-                                        ClientMemory* client_memory,
+                                        const UserData* user_data,
                                         Details* details);
 
   // Updates the details to show credit card selected by the user. Returns true
   // if |details| were successfully updated.
   static bool UpdateFromSelectedCreditCard(const ShowDetailsProto& proto,
-                                           ClientMemory* client_memory,
+                                           const UserData* user_data,
                                            Details* details);
 
   const std::string title() const;
-  int titleMaxLines() const;
   const std::string imageUrl() const;
-  const base::Optional<std::string> imageAccessibilityHint() const;
+  const absl::optional<std::string> imageAccessibilityHint() const;
   bool imageAllowClickthrough() const;
   const std::string imageDescription() const;
   const std::string imagePositiveText() const;
   const std::string imageNegativeText() const;
   const std::string imageClickthroughUrl() const;
-  bool showImagePlaceholder() const;
   const std::string totalPriceLabel() const;
   const std::string totalPrice() const;
   const std::string descriptionLine1() const;
@@ -74,7 +79,7 @@ class Details {
   bool highlightLine1() const;
   bool highlightLine2() const;
   bool highlightLine3() const;
-  bool animatePlaceholders() const;
+  DetailsProto::PlaceholdersConfiguration placeholders() const;
 
   // Clears all change flags.
   void ClearChanges();
@@ -85,18 +90,11 @@ class Details {
     change_flags_ = change_flags;
   }
 
-  // Tries updating the details using generic detail parameters. Returns true
-  // if at least one generic detail parameter was found and used.
-  bool MaybeUpdateFromDetailsParameters(const TriggerContext& context);
-
   // Updates fields by taking the current |proto_| values into account.
   void Update();
 
   DetailsProto proto_;
   DetailsChangesProto change_flags_;
-
-  // Maximum of lines for the title.
-  int title_max_lines_ = 1;
 
   // Content to be shown in description line 1 in the UI.
   std::string description_line_1_content_;

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_VERTICAL_POSITION_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_VERTICAL_POSITION_CACHE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,6 +41,8 @@ class VerticalPositionCache {
 
  public:
   VerticalPositionCache() = default;
+  VerticalPositionCache(const VerticalPositionCache&) = delete;
+  VerticalPositionCache& operator=(const VerticalPositionCache&) = delete;
 
   int Get(LineLayoutItem layout_object, FontBaseline baseline_type) const {
     const HashMap<LineLayoutItem, int>& map_to_check =
@@ -66,7 +67,6 @@ class VerticalPositionCache {
  private:
   HashMap<LineLayoutItem, int> alphabetic_positions_;
   HashMap<LineLayoutItem, int> ideographic_positions_;
-  DISALLOW_COPY_AND_ASSIGN(VerticalPositionCache);
 };
 
 }  // namespace blink

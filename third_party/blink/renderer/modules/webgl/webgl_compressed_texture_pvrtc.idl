@@ -26,7 +26,7 @@
 // https://www.khronos.org/registry/webgl/extensions/WEBGL_compressed_texture_pvrtc/
 
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     DoNotCheckConstants
 ] interface WebGLCompressedTexturePVRTC {
     /* Compressed Texture Formats */

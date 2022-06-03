@@ -18,6 +18,8 @@ class FakeClock : public base::Clock {
   static base::Time GetTime(const char* time_str);
 
   FakeClock();
+  FakeClock(const FakeClock&) = delete;
+  FakeClock& operator=(const FakeClock&) = delete;
   ~FakeClock() override;
 
   // Helper functions to set the current timestamp.
@@ -36,8 +38,6 @@ class FakeClock : public base::Clock {
 
   // Whether Now() should return mocked time.
   bool time_mocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClock);
 };
 
 }  // namespace test

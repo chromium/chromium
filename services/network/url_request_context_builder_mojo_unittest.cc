@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/host_port_pair.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
@@ -24,9 +25,9 @@
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace network {
 
@@ -76,10 +77,10 @@ TEST_F(URLRequestContextBuilderMojoTest, MojoProxyResolver) {
   builder_.SetMojoProxyResolverFactory(
       test_mojo_proxy_resolver_factory_.CreateFactoryRemote());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   builder_.SetDhcpWpadUrlClient(
       MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(std::string()));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<net::URLRequestContext> context(builder_.Build());
   net::TestDelegate delegate;
@@ -112,10 +113,10 @@ TEST_F(URLRequestContextBuilderMojoTest, ShutdownWithHungRequest) {
   builder_.SetMojoProxyResolverFactory(
       test_mojo_proxy_resolver_factory_.CreateFactoryRemote());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   builder_.SetDhcpWpadUrlClient(
       MockMojoDhcpWpadUrlClient::CreateWithSelfOwnedReceiver(std::string()));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<net::URLRequestContext> context(builder_.Build());
   net::TestDelegate delegate;

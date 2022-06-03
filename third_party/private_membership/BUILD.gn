@@ -1,0 +1,108 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("private_membership_config") {
+  # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
+  cflags = [ "-Wno-deprecated-declarations" ]
+  include_dirs = [
+    # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
+    # immediate subdirectory of the top-level.
+    "src",
+
+    # Just like the directory of private_membership/src has been added to include path, the
+    # corresponding directory tree with generated files needs to be added too.
+    # Note: this path does not change depending on the current target, e.g.
+    # it is always "//gen/third_party/private_membership/src" when building with Chromium.
+    # See also: http://cs.chromium.org/?q=%5C"default_include_dirs
+    # https://gn.googlesource.com/gn/+/master/docs/reference.md#target_gen_dir"
+    target_gen_dir,
+  ]
+}
+
+proto_library("private_membership_proto") {
+  sources = [
+    "src/internal/testing/regression_test_data/regression_test_data.proto",
+    "src/private_membership.proto",
+    "src/private_membership_rlwe.proto",
+  ]
+  import_dirs = [ "//third_party/shell-encryption/src" ]
+  proto_in_dir = "src/"
+  link_deps = [ "//third_party/shell-encryption:serialization_proto" ]
+}
+
+if (is_chromeos_ash) {
+  source_set("private_membership") {
+    public_configs = [ ":private_membership_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [
+      "src/internal/aes_ctr_256_with_fixed_iv.h",
+      "src/internal/constants.h",
+      "src/internal/crypto_utils.h",
+      "src/internal/encrypted_bucket_id.h",
+      "src/internal/hashed_bucket_id.h",
+      "src/internal/id_utils.h",
+      "src/internal/oprf_utils.h",
+      "src/internal/rlwe_id_utils.h",
+      "src/internal/rlwe_params.h",
+      "src/internal/utils.h",
+      "src/membership_response_map.h",
+      "src/private_membership_rlwe_client.h",
+    ]
+    sources = [
+      "src/internal/aes_ctr_256_with_fixed_iv.cc",
+      "src/internal/crypto_utils.cc",
+      "src/internal/encrypted_bucket_id.cc",
+      "src/internal/hashed_bucket_id.cc",
+      "src/internal/id_utils.cc",
+      "src/internal/oprf_utils.cc",
+      "src/internal/rlwe_id_utils.cc",
+      "src/internal/rlwe_params.cc",
+      "src/internal/utils.cc",
+      "src/membership_response_map.cc",
+      "src/private_membership_rlwe_client.cc",
+    ]
+    public_deps = [
+      ":private_membership_proto",
+      "//base",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/boringssl",
+      "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+      "//third_party/shell-encryption:shell_encryption",
+    ]
+  }
+}
+
+if (is_chromeos_ash) {
+  test("private_membership_unittests") {
+    testonly = true
+    public_configs = [ ":private_membership_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [ "src/internal/testing/constants.h" ]
+    sources = [
+      "src/internal/aes_ctr_256_with_fixed_iv_test.cc",
+      "src/internal/crypto_utils_test.cc",
+      "src/internal/encrypted_bucket_id_test.cc",
+      "src/internal/hashed_bucket_id_test.cc",
+      "src/internal/id_utils_test.cc",
+      "src/internal/oprf_utils_test.cc",
+      "src/internal/rlwe_id_utils_test.cc",
+      "src/internal/utils_test.cc",
+      "src/membership_response_map_test.cc",
+      "src/private_membership_rlwe_client_regression_test.cc",
+    ]
+    public_deps = [
+      ":private_membership",
+      ":private_membership_proto",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest_main",
+      "//third_party/shell-encryption:shell_encryption_test_library",
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Transferring Streams from MediaStreamTrackProcessor.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="frame-reader-worker.js"></script>
+<script>
+
+function testStreamTransfer(streamType, track) {
+  var processor = new MediaStreamTrackProcessor(track);
+  var worker = new Worker("frame-reader-worker.js");
+
+  var testSuccess = new Promise(resolve => {
+    worker.addEventListener('message', resolve);
+  }).then(message => {
+      assert_true(message.data.success, message.data.message);
+  });
+
+  var readable = processor.readable;
+  worker.postMessage({ stream: readable, type: streamType }, [readable]);
+
+  return testSuccess;
+}
+
+promise_test(async t => {
+  var video = document.createElement('video');
+  video.src = "/media/400x300-red-resize-200x150-green.mp4";
+  await test_driver.bless("Play video element", () => {
+    return video.play();
+  });
+
+  var track = video.captureStream().getVideoTracks()[0];
+  t.add_cleanup(() => track.stop());
+
+  return testStreamTransfer("video", track);
+}, "Test we can transfer a Video MediaStreamTrackProcessor stream");
+
+promise_test(async t => {
+  var audio = document.createElement('audio');
+  audio.src = "/media/sine440.mp3";
+  await test_driver.bless("Play audio element", () => {
+    return audio.play();
+  });
+
+  var track = audio.captureStream().getAudioTracks()[0];
+  t.add_cleanup(() => track.stop());
+
+  return testStreamTransfer("audio", track);
+}, "Test we can transfer an Audio MediaStreamTrackProcessor stream");
+
+</script>

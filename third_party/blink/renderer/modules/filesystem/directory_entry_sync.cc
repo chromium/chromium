@@ -30,12 +30,13 @@
 
 #include "third_party/blink/renderer/modules/filesystem/directory_entry_sync.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_flags.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_reader_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/entry.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry_sync.h"
-#include "third_party/blink/renderer/modules/filesystem/file_system_flags.h"
 #include "third_party/blink/renderer/modules/filesystem/sync_callback_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -62,7 +63,7 @@ FileEntrySync* DirectoryEntrySync::getFile(const String& path,
       this, path, options, std::move(success_callback_wrapper),
       std::move(error_callback_wrapper), DOMFileSystemBase::kSynchronous);
   Entry* entry = sync_helper->GetResultOrThrow(exception_state);
-  return entry ? ToFileEntrySync(EntrySync::Create(entry)) : nullptr;
+  return entry ? To<FileEntrySync>(EntrySync::Create(entry)) : nullptr;
 }
 
 DirectoryEntrySync* DirectoryEntrySync::getDirectory(
@@ -82,7 +83,7 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
       std::move(error_callback_wrapper), DOMFileSystemBase::kSynchronous);
 
   Entry* entry = sync_helper->GetResultOrThrow(exception_state);
-  return entry ? ToDirectoryEntrySync(EntrySync::Create(entry)) : nullptr;
+  return entry ? To<DirectoryEntrySync>(EntrySync::Create(entry)) : nullptr;
 }
 
 void DirectoryEntrySync::removeRecursively(ExceptionState& exception_state) {
@@ -97,7 +98,7 @@ void DirectoryEntrySync::removeRecursively(ExceptionState& exception_state) {
   sync_helper->GetResultOrThrow(exception_state);
 }
 
-void DirectoryEntrySync::Trace(blink::Visitor* visitor) {
+void DirectoryEntrySync::Trace(Visitor* visitor) const {
   EntrySync::Trace(visitor);
 }
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_bus.h"
@@ -27,14 +26,18 @@ class AudioEncoder {
   // Callback to deliver each SenderEncodedFrame, plus the number of audio
   // samples skipped since the last frame.
   using FrameEncodedCallback =
-      base::Callback<void(std::unique_ptr<SenderEncodedFrame>, int)>;
+      base::RepeatingCallback<void(std::unique_ptr<SenderEncodedFrame>, int)>;
 
   AudioEncoder(const scoped_refptr<CastEnvironment>& cast_environment,
                int num_channels,
                int sampling_rate,
                int bitrate,
                Codec codec,
-               const FrameEncodedCallback& frame_encoded_callback);
+               FrameEncodedCallback frame_encoded_callback);
+
+  AudioEncoder(const AudioEncoder&) = delete;
+  AudioEncoder& operator=(const AudioEncoder&) = delete;
+
   virtual ~AudioEncoder();
 
   OperationalStatus InitializationResult() const;
@@ -56,8 +59,6 @@ class AudioEncoder {
 
   // Used to ensure only one thread invokes InsertAudio().
   base::ThreadChecker insert_thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoder);
 };
 
 }  // namespace cast

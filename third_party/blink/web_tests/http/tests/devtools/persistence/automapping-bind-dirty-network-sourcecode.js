@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that dirty network uiSourceCodes are bound to filesystem.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   BindingsTestRunner.overrideNetworkModificationTime(
       {'http://127.0.0.1:8000/devtools/persistence/resources/foo.js': null});
   TestRunner.addScriptTag('resources/foo.js');

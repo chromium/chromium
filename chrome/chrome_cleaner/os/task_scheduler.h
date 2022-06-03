@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace base {
 class CommandLine;
@@ -56,7 +55,7 @@ class TaskScheduler {
   struct TaskExecAction {
     base::FilePath application_path;
     base::FilePath working_dir;
-    base::string16 arguments;
+    std::wstring arguments;
   };
 
   // Detailed description of a scheduled task. This type is returned by the
@@ -69,9 +68,9 @@ class TaskScheduler {
     TaskInfo& operator=(const TaskInfo&);
     TaskInfo& operator=(TaskInfo&&);
 
-    base::string16 name;
+    std::wstring name;
     // Description (Vista and later) or comment (XP and earlier) of the task.
-    base::string16 description;
+    std::wstring description;
     // On Windows Vista and later, a scheduled task can have more than one
     // action associated with it and actions can be of types other than
     // executables (for example, sending emails). This list however contains
@@ -93,6 +92,10 @@ class TaskScheduler {
   // Instantiate the proper version based on the Windows version. Ownership is
   // transfered to caller.
   static TaskScheduler* CreateInstance();
+
+  TaskScheduler(const TaskScheduler&) = delete;
+  TaskScheduler& operator=(const TaskScheduler&) = delete;
+
   virtual ~TaskScheduler() {}
 
   // Set a delegate to be given when creating new instances of a mock
@@ -124,7 +127,7 @@ class TaskScheduler {
   virtual bool IsTaskEnabled(const wchar_t* task_name) = 0;
 
   // List all currently registered scheduled tasks.
-  virtual bool GetTaskNameList(std::vector<base::string16>* task_names) = 0;
+  virtual bool GetTaskNameList(std::vector<std::wstring>* task_names) = 0;
 
   // Return detailed information about a task. Return true if no errors were
   // encountered. On error, the struct is left unmodified.
@@ -143,8 +146,6 @@ class TaskScheduler {
 
  private:
   static TaskScheduler* mock_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskScheduler);
 };
 
 }  // namespace chrome_cleaner

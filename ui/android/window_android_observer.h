@@ -22,8 +22,6 @@ class UI_ANDROID_EXPORT WindowAndroidObserver {
   // should account for whether or not this is the case.
   virtual void OnActivityStopped() = 0;
   virtual void OnActivityStarted() = 0;
-  virtual void OnCursorVisibilityChanged(bool visible) {}
-  virtual void OnFallbackCursorModeToggled(bool is_on) {}
 
  protected:
   virtual ~WindowAndroidObserver() {}

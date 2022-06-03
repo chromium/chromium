@@ -2,8 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
+import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+
+import {FileType} from '../../../common/js/file_type.js';
+import {util} from '../../../common/js/util.js';
+import {ThumbnailLoader} from '../thumbnail_loader.js';
+
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
+
 /** @final */
-class ContentMetadataProvider extends MetadataProvider {
+export class ContentMetadataProvider extends MetadataProvider {
   /**
    * @param {!MessagePort=} opt_messagePort Message port overriding the default
    *     worker port.
@@ -16,14 +27,6 @@ class ContentMetadataProvider extends MetadataProvider {
      * @private {RegExp}
      */
     this.urlFilter_ = /.*/;
-
-    /** @private @const {!MessagePort} */
-    this.dispatcher_ = opt_messagePort ?
-        opt_messagePort :
-        new SharedWorker(ContentMetadataProvider.WORKER_SCRIPT).port;
-    this.dispatcher_.onmessage = this.onMessage_.bind(this);
-    this.dispatcher_.postMessage({verb: 'init'});
-    this.dispatcher_.start();
 
     /**
      * Initialization is not complete until the Worker sends back the
@@ -39,6 +42,65 @@ class ContentMetadataProvider extends MetadataProvider {
      * @private @const {!Object<!string, !Array<function(!MetadataItem)>>}
      */
     this.callbacks_ = {};
+
+    /**
+     * Setup |this.disapatcher_|. Creates the Shared Worker if needed.
+     * @private @const {!MessagePort}
+     */
+    this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
+    this.dispatcher_.onmessage = this.onMessage_.bind(this);
+    this.dispatcher_.onmessageerror = (error) => {
+      console.error('ContentMetadataProvider worker msg error:', error);
+    };
+    this.dispatcher_.postMessage({verb: 'init'});
+    this.dispatcher_.start();
+  }
+
+  /**
+   * Returns |opt_messagePort| if given. Otherwise creates the Shared Worker
+   * and returns its message port.
+   * @param {!MessagePort=} opt_messagePort
+   * @private
+   * @return {!MessagePort}
+   * @suppress {checkTypes}: crbug.com/1150718
+   */
+  createSharedWorker_(opt_messagePort) {
+    if (opt_messagePort) {
+      return opt_messagePort;
+    }
+
+    const script = ContentMetadataProvider.getWorkerScript();
+
+    /** @type {!WorkerOptions} */
+    const options =
+        ContentMetadataProvider.loadAsModule_ ? {type: 'module'} : {};
+
+    const worker = new SharedWorker(script, options);
+    worker.onerror = () => {
+      console.error(
+          'Error to initialize the ContentMetadataProvider ' +
+          'SharedWorker: ' + script);
+    };
+    return worker.port;
+  }
+
+  /**
+   * Configures how the worker should be loaded.
+   *
+   * @param {string} scriptURL URL used to load the worker.
+   * @param {boolean=} isModule Indicate if the worker should be loaded as
+   *   module.
+   */
+  static configure(scriptURL, isModule) {
+    ContentMetadataProvider.workerScript_ = scriptURL;
+    ContentMetadataProvider.loadAsModule_ = !!isModule;
+  }
+
+  /** @public @return {string} */
+  static getWorkerScript() {
+    return ContentMetadataProvider.workerScript_ ?
+        ContentMetadataProvider.workerScript_ :
+        ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_;
   }
 
   /**
@@ -67,20 +129,20 @@ class ContentMetadataProvider extends MetadataProvider {
 
     const promises = [];
     for (let i = 0; i < requests.length; i++) {
-      promises.push(new Promise(((request, fulfill) => {
-                                  this.getImpl_(
-                                      request.entry, request.names, fulfill);
-                                }).bind(null, requests[i])));
+      promises.push(new Promise(function(request, fulfill) {
+        this.getImpl_(request.entry, request.names, fulfill);
+      }.bind(this, requests[i])));
     }
+
     return Promise.all(promises);
   }
 
   /**
-   * Fetches the metadata.
+   * Fetches the entry metadata.
    * @param {!Entry} entry File entry.
-   * @param {!Array<string>} names Requested metadata type.
-   * @param {function(!MetadataItem)} callback Callback expects metadata value.
-   *     This callback is called asynchronously.
+   * @param {!Array<string>} names Requested metadata types.
+   * @param {function(!MetadataItem)} callback MetadataItem callback. Note
+   *     this callback is called asynchronously.
    * @private
    */
   getImpl_(entry, names, callback) {
@@ -93,10 +155,8 @@ class ContentMetadataProvider extends MetadataProvider {
 
     const type = FileType.getType(entry);
 
-    // TODO(ryoh): mediaGalleries API does not handle image metadata correctly.
-    // We parse it in our pure js parser.
-    // chrome/browser/media_galleries/fileapi/supported_image_type_validator.cc
     if (type && type.type === 'image') {
+      // Parse the image using the Worker image metadata parsers.
       const url = entry.toURL();
       if (this.callbacks_[url]) {
         this.callbacks_[url].push(callback);
@@ -158,51 +218,81 @@ class ContentMetadataProvider extends MetadataProvider {
       }
     }
 
-    this.getFromMediaGalleries_(entry, names).then(callback);
+    const fileEntry = /** @type {!FileEntry} */ (entry);
+    this.getContentMetadata_(fileEntry, names).then(callback);
   }
 
   /**
-   * Gets a metadata from mediaGalleries API
+   * Gets the content metadata for a file entry consisting of the content mime
+   * type. For audio and video file content mime types, additional metadata is
+   * extacted if requested, such as metadata tags and images.
    *
-   * @param {!Entry} entry File entry.
-   * @param {!Array<string>} names Requested metadata type.
-   * @return {!Promise<!MetadataItem>}  Promise that resolves with the metadata
-   *     of
-   *    the entry.
+   * @param {!FileEntry} entry File entry.
+   * @param {!Array<string>} names Requested metadata types.
+   * @return {!Promise<!MetadataItem>} Promise that resolves with the content
+   *     metadata of the file entry.
    * @private
    */
-  getFromMediaGalleries_(entry, names) {
-    const self = this;
-    return new Promise((resolve, reject) => {
-      entry.file(
-          blob => {
-            let metadataType = 'mimeTypeOnly';
-            if (names.indexOf('mediaArtist') !== -1 ||
-                names.indexOf('mediaTitle') !== -1 ||
-                names.indexOf('mediaTrack') !== -1 ||
-                names.indexOf('mediaYearRecorded') !== -1) {
-              metadataType = 'mimeTypeAndTags';
-            }
-            if (names.indexOf('contentThumbnailUrl') !== -1) {
-              metadataType = 'all';
-            }
-            chrome.mediaGalleries.getMetadata(
-                blob, {metadataType: metadataType}, metadata => {
-                  if (chrome.runtime.lastError) {
-                    resolve(self.createError_(
-                        entry.toURL(), 'resolving metadata',
-                        chrome.runtime.lastError.toString()));
-                  } else {
-                    self.convertMediaMetadataToMetadataItem_(entry, metadata)
-                        .then(resolve, reject);
-                  }
-                });
-          },
-          err => {
-            resolve(self.createError_(
-                entry.toURL(), 'loading file entry',
-                'failed to open file entry'));
-          });
+  getContentMetadata_(entry, names) {
+    /**
+     * First step is to determine the sniffed content mime type of |entry|.
+     * @const {!Promise<!MetadataItem>}
+     */
+    const getContentMimeType = new Promise((resolve, reject) => {
+      chrome.fileManagerPrivate.getContentMimeType(entry, resolve);
+    }).then(mimeType => {
+      if (chrome.runtime.lastError) {
+        const error = chrome.runtime.lastError.toString();
+        return this.createError_(entry.toURL(), 'sniff mime type', error);
+      }
+      const item = new MetadataItem();
+      item.contentMimeType = mimeType;
+      item.mediaMimeType = mimeType;
+      return item;
+    });
+
+    /**
+     * Once the content mime type sniff step is done, search |names| for any
+     * remaining media metadata to extract from the file. Note mediaMimeType
+     * is excluded since it is used for the sniff step.
+     * @param {!Array<string>} names Requested metadata types.
+     * @param {(string|undefined)} type File entry content mime type.
+     * @return {?boolean} Media metadata type: false for metadata tags, true
+     *    for metadata tags and images. A null return means there is no more
+     *    media metadata that needs to be extracted.
+     */
+    function getMediaMetadataType(names, type) {
+      if (!type || !names.length) {
+        return null;
+      } else if (!type.startsWith('audio/') && !type.startsWith('video/')) {
+        return null;  // Only audio and video are supported.
+      } else if (names.includes('contentThumbnailUrl')) {
+        return true;  // Metadata tags and images.
+      } else if (names.find((name) =>
+          name.startsWith('media') && name !== 'mediaMimeType')) {
+        return false;  // Metadata tags only.
+      }
+      return null;
+    }
+
+    return getContentMimeType.then(item => {
+      const extract = getMediaMetadataType(names, item.contentMimeType);
+      if (extract === null) {
+        return item;  // done: no more media metadata to extract.
+      }
+      return new Promise((resolve, reject) => {
+        const contentMimeType = assert(item.contentMimeType);
+        chrome.fileManagerPrivate.getContentMetadata(
+            entry, contentMimeType, !!extract, resolve);
+      }).then(metadata => {
+        if (chrome.runtime.lastError) {
+          const error = chrome.runtime.lastError.toString();
+          return this.createError_(entry.toURL(), 'content metadata', error);
+        }
+        return this.convertMediaMetadataToMetadataItem_(entry, metadata);
+      }).catch((_, error = 'Conversion failed') => {
+        return this.createError_(entry.toURL(), 'convert metadata', error);
+      });
     });
   }
 
@@ -239,7 +329,7 @@ class ContentMetadataProvider extends MetadataProvider {
   }
 
   /**
-   * Handles the 'initialized' message from the metadata reader Worker.
+   * Handles the 'initialized' message from the metadata Worker.
    * @param {RegExp} regexp Regexp of supported urls.
    * @private
    */
@@ -257,7 +347,7 @@ class ContentMetadataProvider extends MetadataProvider {
   }
 
   /**
-   * Handles the 'result' message from the worker.
+   * Handles the 'result' message from the metadata Worker.
    * @param {string} url File url.
    * @param {!MetadataItem} metadataItem The metadata item.
    * @private
@@ -271,7 +361,7 @@ class ContentMetadataProvider extends MetadataProvider {
   }
 
   /**
-   * Handles the 'log' message from the worker.
+   * Handles the 'log' message from the metadata Worker.
    * @param {Array<*>} arglist Log arguments.
    * @private
    */
@@ -281,10 +371,10 @@ class ContentMetadataProvider extends MetadataProvider {
   }
 
   /**
-   * Dispatches a message from MediaGalleries API to the appropriate on* method.
-   * @param {!Entry} entry File entry.
-   * @param {!Object} metadata The metadata from MediaGalleries API.
-   * @return {!Promise<!MetadataItem>}  Promise that resolves with
+   * Converts fileManagerPrivate.MediaMetadata |metadata| to a MetadataItem.
+   * @param {!FileEntry} entry File entry.
+   * @param {!chrome.fileManagerPrivate.MediaMetadata} metadata The metadata.
+   * @return {!Promise<!MetadataItem>} Promise that resolves with the
    *    converted metadata item.
    * @private
    */
@@ -292,14 +382,15 @@ class ContentMetadataProvider extends MetadataProvider {
     return new Promise((resolve, reject) => {
       if (!metadata) {
         resolve(this.createError_(
-            entry.toURL(), 'Reading a thumbnail image',
-            'Failed to parse metadata'));
+            entry.toURL(), 'metadata result', 'Failed to parse metadata'));
         return;
       }
+
       const item = new MetadataItem();
       const mimeType = metadata['mimeType'];
       item.contentMimeType = mimeType;
       item.mediaMimeType = mimeType;
+
       const trans = {scaleX: 1, scaleY: 1, rotate90: 0};
       if (metadata.rotation) {
         switch (metadata.rotation) {
@@ -324,6 +415,7 @@ class ContentMetadataProvider extends MetadataProvider {
       if (metadata.rotation) {
         item.contentImageTransform = item.contentThumbnailTransform = trans;
       }
+
       item.imageHeight = metadata['height'];
       item.imageWidth = metadata['width'];
       item.mediaAlbum = metadata['album'];
@@ -331,6 +423,7 @@ class ContentMetadataProvider extends MetadataProvider {
       item.mediaDuration = metadata['duration'];
       item.mediaGenre = metadata['genre'];
       item.mediaTitle = metadata['title'];
+
       if (metadata['track']) {
         item.mediaTrack = '' + metadata['track'];
       }
@@ -348,36 +441,25 @@ class ContentMetadataProvider extends MetadataProvider {
           }
         });
       }
+
       if (metadata.attachedImages && metadata.attachedImages.length > 0) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          item.contentThumbnailUrl = e.target.result;
-          resolve(item);
-        };
-        reader.onerror = e => {
-          resolve(this.createError_(
-              entry.toURL(), 'Reading a thumbnail image',
-              reader.error.toString()));
-        };
-        reader.readAsDataURL(metadata.attachedImages[0]);
-      } else {
-        resolve(item);
+        item.contentThumbnailUrl = metadata.attachedImages[0].data;
       }
+
+      resolve(item);
     });
   }
 
   /**
-   * Handles the 'error' message from the worker.
+   * Returns an 'error' MetadataItem.
    * @param {string} url File entry.
-   * @param {string} step Step failed.
-   * @param {string} errorDescription Error description.
+   * @param {string} step Step that failed.
+   * @param {string} cause Error cause.
    * @return {!MetadataItem} Error metadata
    * @private
    */
-  createError_(url, step, errorDescription) {
-    // For error case, fill all fields with error object.
-    const error =
-        new ContentMetadataProvider.Error(url, step, errorDescription);
+  createError_(url, step, cause) {
+    const error = new ContentMetadataProvider.Error(url, step, cause);
     const item = new MetadataItem();
     item.contentImageTransformError = error;
     item.contentThumbnailTransformError = error;
@@ -392,11 +474,11 @@ class ContentMetadataProvider extends MetadataProvider {
 ContentMetadataProvider.Error = class extends Error {
   /**
    * @param {string} url File Entry.
-   * @param {string} step Step failed.
-   * @param {string} errorDescription Error description.
+   * @param {string} step Step that failed.
+   * @param {string} cause Error cause.
    */
-  constructor(url, step, errorDescription) {
-    super(errorDescription);
+  constructor(url, step, cause) {
+    super(cause);
 
     /** @public @const {string} */
     this.url = url;
@@ -405,7 +487,7 @@ ContentMetadataProvider.Error = class extends Error {
     this.step = step;
 
     /** @public @const {string} */
-    this.errorDescription = errorDescription;
+    this.errorDescription = cause;
   }
 };
 
@@ -429,9 +511,20 @@ ContentMetadataProvider.PROPERTY_NAMES = [
 ];
 
 /**
- * Path of a worker script.
- * @public @const {string}
+ * The metadata Worker script URL.
+ * @const @private {string}
  */
-ContentMetadataProvider.WORKER_SCRIPT =
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
+ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
     'foreground/js/metadata/metadata_dispatcher.js';
+
+/**
+ * Worker script URL that is overwritten by client code.
+ * @private {?string}
+ */
+ContentMetadataProvider.workerScript_ = null;
+
+/**
+ * Sets if the SharedWorker should start as a JS Module.
+ * @private {boolean}
+ */
+ContentMetadataProvider.loadAsModule_ = true;

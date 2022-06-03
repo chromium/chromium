@@ -29,10 +29,13 @@ namespace net {
 // data.
 class QuicSimpleServerPacketWriter : public quic::QuicPacketWriter {
  public:
-  typedef base::Callback<void(quic::WriteResult)> WriteCallback;
-
   QuicSimpleServerPacketWriter(UDPServerSocket* socket,
                                quic::QuicDispatcher* dispatcher);
+
+  QuicSimpleServerPacketWriter(const QuicSimpleServerPacketWriter&) = delete;
+  QuicSimpleServerPacketWriter& operator=(const QuicSimpleServerPacketWriter&) =
+      delete;
+
   ~QuicSimpleServerPacketWriter() override;
 
   quic::WriteResult WritePacket(const char* buffer,
@@ -50,7 +53,7 @@ class QuicSimpleServerPacketWriter : public quic::QuicPacketWriter {
       const quic::QuicSocketAddress& peer_address) const override;
   bool SupportsReleaseTime() const override;
   bool IsBatchMode() const override;
-  char* GetNextWriteLocation(
+  quic::QuicPacketBuffer GetNextWriteLocation(
       const quic::QuicIpAddress& self_address,
       const quic::QuicSocketAddress& peer_address) override;
   quic::WriteResult Flush() override;
@@ -61,15 +64,10 @@ class QuicSimpleServerPacketWriter : public quic::QuicPacketWriter {
   // To be notified after every successful asynchronous write.
   quic::QuicDispatcher* dispatcher_;
 
-  // To call once the write completes.
-  WriteCallback callback_;
-
   // Whether a write is currently in flight.
   bool write_blocked_;
 
   base::WeakPtrFactory<QuicSimpleServerPacketWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicSimpleServerPacketWriter);
 };
 
 }  // namespace net

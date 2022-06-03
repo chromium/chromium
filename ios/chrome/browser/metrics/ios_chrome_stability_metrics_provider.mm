@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "url/gurl.h"
@@ -56,7 +57,7 @@ void IOSChromeStabilityMetricsProvider::LogRendererCrash() {
   int dummy_termination_code = 105;
   helper_.LogRendererCrash(false /* not an extension process */,
                            base::TERMINATION_STATUS_ABNORMAL_TERMINATION,
-                           dummy_termination_code, base::nullopt);
+                           dummy_termination_code);
 }
 
 void IOSChromeStabilityMetricsProvider::WebStateDidStartLoading(

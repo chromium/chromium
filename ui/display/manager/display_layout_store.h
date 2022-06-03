@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager_export.h"
@@ -20,6 +19,10 @@ namespace display {
 class DISPLAY_MANAGER_EXPORT DisplayLayoutStore {
  public:
   DisplayLayoutStore();
+
+  DisplayLayoutStore(const DisplayLayoutStore&) = delete;
+  DisplayLayoutStore& operator=(const DisplayLayoutStore&) = delete;
+
   ~DisplayLayoutStore();
 
   // Set true to force mirror mode. This should only be used when tablet mode is
@@ -59,8 +62,6 @@ class DISPLAY_MANAGER_EXPORT DisplayLayoutStore {
 
   // Display layout per list of devices.
   std::map<DisplayIdList, std::unique_ptr<DisplayLayout>> layouts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayLayoutStore);
 };
 
 }  // namespace display

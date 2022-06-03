@@ -19,11 +19,13 @@
 #include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_gesture_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/tracing_controller.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -74,56 +76,26 @@ namespace content {
 // the event could occur in either.
 class TracingRenderWidgetHost : public RenderWidgetHostImpl {
  public:
-  TracingRenderWidgetHost(RenderWidgetHostDelegate* delegate,
-                          RenderProcessHost* process,
+  TracingRenderWidgetHost(FrameTree* frame_tree,
+                          RenderWidgetHostDelegate* delegate,
+                          AgentSchedulingGroupHost& agent_scheduling_group,
                           int32_t routing_id,
-                          mojo::PendingRemote<mojom::Widget> widget,
                           bool hidden)
-      : RenderWidgetHostImpl(delegate,
-                             process,
+      : RenderWidgetHostImpl(frame_tree,
+                             /*self_owned=*/false,
+                             delegate,
+                             agent_scheduling_group,
                              routing_id,
-                             std::move(widget),
                              hidden,
-                             std::make_unique<FrameTokenMessageQueue>()) {
-    ui::LatencyTracker::SetLatencyInfoProcessorForTesting(base::BindRepeating(
-        &TracingRenderWidgetHost::HandleLatencyInfoAfterGpuSwap,
-        base::Unretained(this)));
-  }
+                             /*renderer_initiated_creation=*/false,
+                             std::make_unique<FrameTokenMessageQueue>()) {}
 
-  void HandleLatencyInfoAfterGpuSwap(
-      const std::vector<ui::LatencyInfo>& latency_infos) {
-    for (const auto& latency_info : latency_infos) {
-      if (latency_info.terminated())
-        RunClosureIfNecessary(latency_info);
-    }
-  }
-
-  void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result) override {
+  void OnMouseEventAck(
+      const MouseEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) override {
     RenderWidgetHostImpl::OnMouseEventAck(event, ack_source, ack_result);
-    if (event.latency.terminated())
-      RunClosureIfNecessary(event.latency);
   }
-
-  void WaitFor(const std::string& trace_name) {
-    trace_waiting_name_ = trace_name;
-    base::RunLoop run_loop;
-    closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
- private:
-  void RunClosureIfNecessary(const ui::LatencyInfo& latency_info) {
-    if (!trace_waiting_name_.empty() && closure_ &&
-        latency_info.trace_name() == trace_waiting_name_) {
-      trace_waiting_name_.clear();
-      std::move(closure_).Run();
-    }
-  }
-
-  std::string trace_waiting_name_;
-  base::OnceClosure closure_;
 };
 
 class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
@@ -132,32 +104,41 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
     RenderWidgetHostFactory::RegisterFactory(this);
   }
 
+  TracingRenderWidgetHostFactory(const TracingRenderWidgetHostFactory&) =
+      delete;
+  TracingRenderWidgetHostFactory& operator=(
+      const TracingRenderWidgetHostFactory&) = delete;
+
   ~TracingRenderWidgetHostFactory() override {
     RenderWidgetHostFactory::UnregisterFactory();
   }
 
   std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      RenderProcessHost* process,
+      AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
-      mojo::PendingRemote<mojom::Widget> widget_interface,
       bool hidden) override {
     return std::make_unique<TracingRenderWidgetHost>(
-        delegate, process, routing_id, std::move(widget_interface), hidden);
+        frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TracingRenderWidgetHostFactory);
 };
 
 class MouseLatencyBrowserTest : public ContentBrowserTest {
  public:
   MouseLatencyBrowserTest() {}
+
+  MouseLatencyBrowserTest(const MouseLatencyBrowserTest&) = delete;
+  MouseLatencyBrowserTest& operator=(const MouseLatencyBrowserTest&) = delete;
+
   ~MouseLatencyBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {
@@ -185,7 +166,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   // Generate mouse events for a synthetic click at |point|.
   void DoSyncClick(const gfx::PointF& position) {
     SyntheticTapGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
     params.position = position;
     params.duration_ms = 100;
     std::unique_ptr<SyntheticTapGesture> gesture(
@@ -228,7 +209,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   void DoSyncCoalescedMouseWheel(const gfx::PointF position,
                                  const gfx::Vector2dF& delta) {
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
     params.anchor = position;
     params.distances.push_back(delta);
 
@@ -276,17 +257,18 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   std::string ShowTraceEventsWithId(const std::string& id_to_show,
                                     const base::ListValue* traceEvents) {
     std::stringstream stream;
-    for (size_t i = 0; i < traceEvents->GetSize(); ++i) {
-      const base::DictionaryValue* traceEvent;
-      if (!traceEvents->GetDictionary(i, &traceEvent))
+    for (const base::Value& traceEvent_value : traceEvents->GetList()) {
+      if (!traceEvent_value.is_dict())
         continue;
+      const base::DictionaryValue& traceEvent =
+          base::Value::AsDictionaryValue(traceEvent_value);
 
       std::string id;
-      if (!traceEvent->GetString("id", &id))
+      if (!traceEvent.GetString("id", &id))
         continue;
 
       if (id == id_to_show)
-        stream << *traceEvent;
+        stream << traceEvent;
     }
     return stream.str();
   }
@@ -301,18 +283,19 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
 
     std::map<std::string, int> trace_ids;
 
-    for (size_t i = 0; i < traceEvents->GetSize(); ++i) {
-      const base::DictionaryValue* traceEvent;
-      ASSERT_TRUE(traceEvents->GetDictionary(i, &traceEvent));
+    for (const base::Value& traceEvent_value : traceEvents->GetList()) {
+      ASSERT_TRUE(traceEvent_value.is_dict());
+      const base::DictionaryValue& traceEvent =
+          base::Value::AsDictionaryValue(traceEvent_value);
 
       std::string name;
-      ASSERT_TRUE(traceEvent->GetString("name", &name));
+      ASSERT_TRUE(traceEvent.GetString("name", &name));
 
       if (name != trace_event_name)
         continue;
 
       std::string id;
-      if (traceEvent->GetString("id", &id))
+      if (traceEvent.GetString("id", &id))
         ++trace_ids[id];
     }
 
@@ -326,32 +309,22 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   std::unique_ptr<base::RunLoop> runner_;
   base::Value trace_data_;
   TracingRenderWidgetHostFactory widget_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseLatencyBrowserTest);
 };
 
 // Ensures that LatencyInfo async slices are reported correctly for MouseUp and
 // MouseDown events in the case where no swap is generated.
 // Disabled on Android because we don't support synthetic mouse input on
 // Android (crbug.com/723618).
-// Disabled on Windows due to flakyness (https://crbug.com/800303).
-// Disabled on Linux due to flakyness (https://crbug.com/815363).
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_MouseDownAndUpRecordedWithoutSwap \
-  DISABLED_MouseDownAndUpRecordedWithoutSwap
-#else
-#define MAYBE_MouseDownAndUpRecordedWithoutSwap \
-  MouseDownAndUpRecordedWithoutSwap
-#endif
+// Disabled on due to flakiness (https://crbug.com/800303, https://crbug.com/815363).
 IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
-                       MAYBE_MouseDownAndUpRecordedWithoutSwap) {
+                       DISABLED_MouseDownAndUpRecordedWithoutSwap) {
   LoadURL();
 
   auto filter = std::make_unique<InputMsgWatcher>(
-      GetWidgetHost(), blink::WebInputEvent::kMouseUp);
+      GetWidgetHost(), blink::WebInputEvent::Type::kMouseUp);
   StartTracing();
   DoSyncClick(gfx::PointF(100, 100));
-  EXPECT_EQ(INPUT_EVENT_ACK_STATE_NOT_CONSUMED,
+  EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
             filter->GetAckStateWaitIfNecessary());
   const base::Value& trace_data = StopTracing();
 
@@ -364,12 +337,13 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
 
   std::vector<std::string> trace_event_names;
 
-  for (size_t i = 0; i < traceEvents->GetSize(); ++i) {
-    const base::DictionaryValue* traceEvent;
-    ASSERT_TRUE(traceEvents->GetDictionary(i, &traceEvent));
+  for (const base::Value& traceEvent_value : traceEvents->GetList()) {
+    ASSERT_TRUE(traceEvent_value.is_dict());
+    const base::DictionaryValue& traceEvent =
+        base::Value::AsDictionaryValue(traceEvent_value);
 
     std::string name;
-    ASSERT_TRUE(traceEvent->GetString("name", &name));
+    ASSERT_TRUE(traceEvent.GetString("name", &name));
 
     if (name != "InputLatency::MouseUp" && name != "InputLatency::MouseDown")
       continue;
@@ -387,17 +361,9 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
 // events in the case where events are coalesced. (crbug.com/771165).
 // Disabled on Android because we don't support synthetic mouse input on Android
 // (crbug.com/723618).
-// http://crbug.com/801629 : Flaky on Linux and Windows, and Mac with
-// --enable-features=VizDisplayCompositor
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_CoalescedMouseMovesCorrectlyTerminated \
-  DISABLED_CoalescedMouseMovesCorrectlyTerminated
-#else
-#define MAYBE_CoalescedMouseMovesCorrectlyTerminated \
-  CoalescedMouseMovesCorrectlyTerminated
-#endif
+// http://crbug.com/801629 : Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
-                       MAYBE_CoalescedMouseMovesCorrectlyTerminated) {
+                       DISABLED_CoalescedMouseMovesCorrectlyTerminated) {
   LoadURL();
 
   StartTracing();
@@ -405,8 +371,7 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
                        gfx::Vector2dF(250, 250));
   // The following wait is the upper bound for gpu swap completed callback. It
   // is two frames to account for double buffering.
-  MainThreadFrameObserver observer(RenderWidgetHostImpl::From(
-      shell()->web_contents()->GetRenderViewHost()->GetWidget()));
+  MainThreadFrameObserver observer(GetWidgetHost());
   observer.Wait();
   observer.Wait();
 

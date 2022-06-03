@@ -11,9 +11,13 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation for listing restrictions for a test method. For example, if a test method is only
- * applicable on a phone with small memory:
- *     @Restriction({RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_SMALL_MEMORY})
+ * applicable on a low-end phone:
+ * <code>
+ *     \@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
+ * </code>
+ * See {@link org.chromium.ui.test.util.UiRestriction} for more restriction types.
  * Test classes are free to define restrictions and enforce them using reflection at runtime.
+ * If the test is temporarily failing in some configurations, use {@link DisableIf} instead.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace ash {
@@ -34,15 +34,6 @@ void SearchResultContainerView::SetResults(
   Update();
 }
 
-void SearchResultContainerView::NotifyFirstResultYIndex(int /*y_index*/) {
-  NOTREACHED();
-}
-
-int SearchResultContainerView::GetYSize() {
-  NOTREACHED();
-  return 0;
-}
-
 void SearchResultContainerView::Update() {
   update_factory_.InvalidateWeakPtrs();
   num_results_ = DoUpdate();
@@ -59,21 +50,14 @@ const char* SearchResultContainerView::GetClassName() const {
   return "SearchResultContainerView";
 }
 
-void SearchResultContainerView::OnViewFocused(View* observed_view) {
-  if (delegate_) {
-    delegate_->OnSearchResultContainerResultFocused(
-        static_cast<SearchResultBaseView*>(observed_view));
-  }
-}
-
 void SearchResultContainerView::AddObservedResultView(
     SearchResultBaseView* result_view) {
-  result_view_observer_.Add(result_view);
+  result_view_observations_.AddObservation(result_view);
 }
 
 void SearchResultContainerView::RemoveObservedResultView(
     SearchResultBaseView* result_view) {
-  result_view_observer_.Remove(result_view);
+  result_view_observations_.RemoveObservation(result_view);
 }
 
 void SearchResultContainerView::ListItemsAdded(size_t /*start*/,
@@ -97,7 +81,7 @@ void SearchResultContainerView::ListItemsChanged(size_t /*start*/,
 }
 
 SearchResultBaseView* SearchResultContainerView::GetFirstResultView() {
-  return nullptr;
+  return num_results_ <= 0 ? nullptr : GetResultViewAt(0);
 }
 
 void SearchResultContainerView::SetShown(bool shown) {

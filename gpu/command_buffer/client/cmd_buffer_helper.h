@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -29,8 +29,7 @@ class Buffer;
 #if !defined(OS_ANDROID)
 #define CMD_HELPER_PERIODIC_FLUSH_CHECK
 const int kCommandsPerFlushCheck = 100;
-const int kPeriodicFlushDelayInMicroseconds =
-    base::Time::kMicrosecondsPerSecond / (5 * 60);
+const int kPeriodicFlushDelayInMicroseconds = 500;
 #endif
 
 const int kAutoFlushSmall = 16;  // 1/16 of the buffer
@@ -54,6 +53,10 @@ const int kAutoFlushBig = 2;     // 1/2 of the buffer
 class GPU_EXPORT CommandBufferHelper {
  public:
   explicit CommandBufferHelper(CommandBuffer* command_buffer);
+
+  CommandBufferHelper(const CommandBufferHelper&) = delete;
+  CommandBufferHelper& operator=(const CommandBufferHelper&) = delete;
+
   virtual ~CommandBufferHelper();
 
   // Initializes the CommandBufferHelper.
@@ -346,7 +349,6 @@ class GPU_EXPORT CommandBufferHelper {
   uint32_t flush_generation_ = 0;
 
   friend class CommandBufferHelperTest;
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelper);
 };
 
 }  // namespace gpu

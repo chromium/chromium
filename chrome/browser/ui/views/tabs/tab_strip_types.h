@@ -22,4 +22,15 @@ enum CloseTabSource {
   CLOSE_TAB_FROM_TOUCH,
 };
 
+// Source of the call to ToggleTabGroup(). The source of the call can trigger
+// different behaviors such as logging and different animations. Tests will
+// generally use |kImplicitAction| unless testing a particular code path.
+enum class ToggleTabGroupCollapsedStateOrigin {
+  kImplicitAction,
+  kMouse,
+  kKeyboard,
+  kGesture
+
+};
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_

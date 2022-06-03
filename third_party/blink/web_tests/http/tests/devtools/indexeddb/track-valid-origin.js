@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that IndexedDB live update only tracks valid security origins.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -14,11 +14,11 @@
 
   TestRunner.addResult('Invalid Origins:');
   invalidOrigins.map(origin => {
-    TestRunner.addResult(origin + ', valid = ' + indexedDBModel._isValidSecurityOrigin(origin));
+    TestRunner.addResult(origin + ', valid = ' + indexedDBModel.isValidSecurityOrigin(origin));
   });
   TestRunner.addResult('\nValid Origins:');
   validOrigins.map(origin => {
-    TestRunner.addResult(origin + ', valid = ' + indexedDBModel._isValidSecurityOrigin(origin));
+    TestRunner.addResult(origin + ', valid = ' + indexedDBModel.isValidSecurityOrigin(origin));
   });
   TestRunner.completeTest();
 })();

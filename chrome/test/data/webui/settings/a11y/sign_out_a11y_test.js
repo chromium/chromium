@@ -1,115 +1,61 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview Suite of accessibility tests for the SIGN_OUT route.
- * Not used on Chrome OS since signing out is done at the OS level, not within
- * the Chrome Browser.
- */
+import 'chrome://settings/lazy_load.js';
 
-// SettingsAccessibilityTest fixture.
-GEN_INCLUDE([
-  'settings_accessibility_test.js',
-]);
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
-/**
- * Test fixture for SIGN_OUT
- * @constructor
- * @extends {PolymerTest}
- */
-function SettingsA11ySignOut() {}
+import {simulateSyncStatus} from '../sync_test_util.js';
+import {TestSyncBrowserProxy} from '../test_sync_browser_proxy.js';
 
-SettingsA11ySignOut.prototype = {
-  __proto__: SettingsAccessibilityTest.prototype,
+// Set the URL of the page to render to load the correct view upon
+// injecting settings-ui without attaching listeners.
+window.history.pushState('object or string', 'Test', routes.PEOPLE.path);
 
-  // Include files that define the mocha tests.
-  extraLibraries: SettingsAccessibilityTest.prototype.extraLibraries.concat([
-    '../../test_browser_proxy.js',
-    '../../test_util.js',
-    '../sync_test_util.js',
-    '../test_sync_browser_proxy.js',
-  ]),
-};
+const browserProxy = new TestSyncBrowserProxy();
+SyncBrowserProxyImpl.setInstance(browserProxy);
 
-AccessibilityTest.define('SettingsA11ySignOut', {
-  /** @override */
-  name: 'SIGN_OUT',
-  /** @type {SettingsPeoplePageElement}*/
-  peoplePage: null,
-  /** @type {TestSyncBrowserProxy}*/
-  browserProxy: null,
-  /** @override */
-  axeOptions: SettingsAccessibilityTest.axeOptions,
-  /** @override */
-  setup: function() {
-    // Reset the blank to be a blank page.
-    PolymerTest.clearBody();
+const settingsUi = document.createElement('settings-ui');
+document.body.appendChild(settingsUi);
+flush();
 
-    // Set the URL of the page to render to load the correct view upon
-    // injecting settings-ui without attaching listeners.
-    window.history.pushState(
-        'object or string', 'Test', settings.routes.PEOPLE.path);
+const peoplePage = settingsUi.shadowRoot.querySelector('settings-main')
+                       .shadowRoot.querySelector('settings-basic-page')
+                       .shadowRoot.querySelector('settings-people-page');
+assertTrue(!!peoplePage);
 
-    this.browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.instance_ = this.browserProxy;
-
-    const settingsUi = document.createElement('settings-ui');
-    document.body.appendChild(settingsUi);
-    Polymer.dom.flush();
-
-    this.peoplePage = settingsUi.$$('settings-main')
-                          .$$('settings-basic-page')
-                          .$$('settings-people-page');
-    assert(!!this.peoplePage);
-
-    if (this.peoplePage.diceEnabled_) {
-      sync_test_util.simulateSyncStatus({
-        signedIn: false,
-        signinAllowed: true,
-        syncSystemEnabled: true,
-        disabled: false,
-      });
-    }
-  },
-  /** @override */
-  tests: {
-    'Accessible Dialog': function() {
-      let parent = null;
-      let disconnectButtonSelector = null;
-
-      return this.browserProxy.getSyncStatus()
-          .then(syncStatus => {
-            // Navigate to the sign out dialog.
-            Polymer.dom.flush();
-
-            if (this.peoplePage.diceEnabled_) {
-              const syncAccountControl =
-                  this.peoplePage.$$('settings-sync-account-control');
-              syncAccountControl.syncStatus = {
-                firstSetupInProgress: false,
-                signedIn: true,
-                signedInUsername: 'bar@bar.com',
-                statusAction: settings.StatusAction.NO_ACTION,
-                hasError: false,
-                disabled: false,
-              };
-              parent = syncAccountControl;
-              disconnectButtonSelector = '#turn-off';
-            } else {
-              parent = this.peoplePage;
-              disconnectButtonSelector = '#disconnectButton';
-            }
-            return test_util.waitBeforeNextRender(parent);
-          })
-          .then(() => {
-            disconnectButton = parent.$$(disconnectButtonSelector);
-            assert(!!disconnectButton);
-            disconnectButton.click();
-            Polymer.dom.flush();
-          });
-    }
-  },
-  /** @override */
-  violationFilter: SettingsAccessibilityTest.violationFilter,
+simulateSyncStatus({
+  signedIn: false,
+  signinAllowed: true,
+  syncSystemEnabled: true,
+  disabled: false,
 });
+
+let parent = null;
+
+browserProxy.getSyncStatus()
+    .then(syncStatus => {
+      // Navigate to the sign out dialog.
+      flush();
+
+      parent =
+          peoplePage.shadowRoot.querySelector('settings-sync-account-control');
+      parent.syncStatus = {
+        firstSetupInProgress: false,
+        signedIn: true,
+        signedInUsername: 'bar@bar.com',
+        statusAction: StatusAction.NO_ACTION,
+        hasError: false,
+        disabled: false,
+      };
+      return waitBeforeNextRender(parent);
+    })
+    .then(() => {
+      const disconnectButton = parent.shadowRoot.querySelector('#turn-off');
+      assertTrue(!!disconnectButton);
+      disconnectButton.click();
+      document.dispatchEvent(new CustomEvent('a11y-setup-complete'));
+    });

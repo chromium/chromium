@@ -6,14 +6,14 @@
 
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
-#include "ui/ozone/platform/drm/gpu/mock_gbm_device.h"
 
 namespace ui {
 
@@ -50,25 +50,24 @@ class DrmThreadTest : public testing::Test {
     drm_thread_.FlushForTesting();
   }
 
-  std::unique_ptr<base::WaitableEvent> PostStubTaskWithWaitableEvent(
-      gfx::AcceleratedWidget window) {
+  std::unique_ptr<base::WaitableEvent> PostStubTaskWithWaitableEvent() {
     base::OnceClosure task = base::BindOnce(StubTask);
     auto event = std::make_unique<base::WaitableEvent>(
         base::WaitableEvent::ResetPolicy::AUTOMATIC,
         base::WaitableEvent::InitialState::NOT_SIGNALED);
     drm_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&DrmThread::RunTaskAfterWindowReady,
-                                  base::Unretained(&drm_thread_), window,
+        FROM_HERE, base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
+                                  base::Unretained(&drm_thread_),
                                   std::move(task), event.get()));
     return event;
   }
 
-  void PostStubTask(gfx::AcceleratedWidget window, bool* done) {
+  void PostStubTask(bool* done) {
     *done = false;
     base::OnceClosure task = base::BindOnce(StubTaskWithDoneFeedback, done);
     drm_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&DrmThread::RunTaskAfterWindowReady,
-                                  base::Unretained(&drm_thread_), window,
+        FROM_HERE, base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
+                                  base::Unretained(&drm_thread_),
                                   std::move(task), nullptr));
   }
 
@@ -84,87 +83,53 @@ class DrmThreadTest : public testing::Test {
   mojo::Remote<ozone::mojom::DrmDevice> drm_device_;
 };
 
-TEST_F(DrmThreadTest, RunTaskAfterWindowReady) {
-  constexpr gfx::Rect bounds(10, 10);
-  bool called1 = false, called2 = false;
-  gfx::AcceleratedWidget widget1 = 1, widget2 = 2;
+TEST_F(DrmThreadTest, RunTaskAfterDeviceReady) {
+  bool called = false;
 
-  // Post a task not blocked on any window. It should still block on a graphics
-  // device becoming available.
-  PostStubTask(gfx::kNullAcceleratedWidget, &called1);
+  // Post 2 tasks. One with WaitableEvent and one without. They should block on
+  // a graphics device becoming available.
+  std::unique_ptr<base::WaitableEvent> event = PostStubTaskWithWaitableEvent();
+  PostStubTask(&called);
   drm_thread_.FlushForTesting();
-  EXPECT_FALSE(called1);
+  EXPECT_FALSE(event->IsSignaled());
+  EXPECT_FALSE(called);
 
-  // Add the graphics device. The task should run.
+  // Add the graphics device. The tasks should run.
   AddGraphicsDevice();
   drm_thread_.FlushForTesting();
-  ASSERT_TRUE(called1);
+  ASSERT_TRUE(event->IsSignaled());
+  ASSERT_TRUE(called);
 
-  // Now that a graphics device is available, further tasks that don't block on
-  // any window should execute immediately.
-  PostStubTask(gfx::kNullAcceleratedWidget, &called1);
-  drm_thread_.FlushForTesting();
-  ASSERT_TRUE(called1);
-
-  // Post a task blocked on |widget1|. It shouldn't run.
-  PostStubTask(widget1, &called1);
-  drm_thread_.FlushForTesting();
-  ASSERT_FALSE(called1);
-
-  // Post two tasks blocked on |widget2|, one with a WaitableEvent and one
-  // without. They shouldn't run.
-  std::unique_ptr<base::WaitableEvent> event =
-      PostStubTaskWithWaitableEvent(widget2);
-  PostStubTask(widget2, &called2);
-  drm_thread_.FlushForTesting();
-  ASSERT_FALSE(event->IsSignaled());
-  ASSERT_FALSE(called2);
-
-  // Now create |widget1|. The first task should run.
-  drm_device_->CreateWindow(widget1, bounds);
-  drm_thread_.FlushForTesting();
-  ASSERT_TRUE(called1);
-  ASSERT_FALSE(event->IsSignaled());
-  ASSERT_FALSE(called2);
-
-  // Now that |widget1| is created. any further task depending on it should run
+  // Now that a graphics device is available, further tasks should execute
   // immediately.
-  PostStubTask(widget1, &called1);
-  drm_thread_.FlushForTesting();
-  ASSERT_TRUE(called1);
-  ASSERT_FALSE(event->IsSignaled());
-  ASSERT_FALSE(called2);
-
-  // Destroy |widget1| and post a task blocked on it. The task should still run
-  // immediately even though the window is destroyed.
-  drm_device_->DestroyWindow(widget1);
-  PostStubTask(widget1, &called1);
-  drm_thread_.FlushForTesting();
-  ASSERT_TRUE(called1);
-  ASSERT_FALSE(event->IsSignaled());
-  ASSERT_FALSE(called2);
-
-  // Create |widget2|. The two blocked tasks should run.
-  drm_device_->CreateWindow(widget2, bounds);
+  event = PostStubTaskWithWaitableEvent();
+  PostStubTask(&called);
   drm_thread_.FlushForTesting();
   ASSERT_TRUE(event->IsSignaled());
-  ASSERT_TRUE(called2);
+  ASSERT_TRUE(called);
+}
 
-  // Post another task blocked on |widget1| with a WaitableEvent. It should run
-  // immediately.
-  event = PostStubTaskWithWaitableEvent(widget1);
+// Verifies that we gracefully handle the case where CheckOverlayCapabilities()
+// is called on a destroyed window.
+TEST_F(DrmThreadTest, CheckOverlayCapabilitiesDestroyedWindow) {
+  gfx::AcceleratedWidget widget = 5;
+  constexpr gfx::Rect bounds(10, 10);
+  constexpr size_t candidates_size = 9;
+  std::vector<OverlaySurfaceCandidate> candidates(candidates_size);
+  std::vector<OverlayStatus> result;
+  AddGraphicsDevice();
+  drm_device_->CreateWindow(widget, bounds);
+  drm_device_->DestroyWindow(widget);
+  drm_device_.FlushForTesting();
+  drm_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DrmThread::CheckOverlayCapabilitiesSync,
+                                base::Unretained(&drm_thread_), widget,
+                                candidates, &result));
   drm_thread_.FlushForTesting();
-  ASSERT_TRUE(event->IsSignaled());
-
-  // Post another task blocked on |widget2| with a WaitableEvent. It should run
-  // immediately.
-  event = PostStubTaskWithWaitableEvent(widget2);
-  drm_thread_.FlushForTesting();
-  ASSERT_TRUE(event->IsSignaled());
-
-  // Destroy |widget2| to avoid failures during tear down.
-  drm_device_->DestroyWindow(widget2);
-  drm_thread_.FlushForTesting();
+  EXPECT_EQ(candidates_size, result.size());
+  for (const auto& status : result) {
+    EXPECT_EQ(OVERLAY_STATUS_NOT, status);
+  }
 }
 
 }  // namespace ui

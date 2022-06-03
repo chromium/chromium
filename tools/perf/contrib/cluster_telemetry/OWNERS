@@ -1,10 +1,9 @@
 rmistry@chromium.org
 
-# Uncomment when alexmt@ becomes a committer.
-# per-file ad_tagging_ct.py=alexmt@chromium.org
+per-file ad_tagging_ct.py=alexmt@chromium.org
 per-file ad_tagging_ct.py=johnidel@chromium.org
+per-file layout_shift.py=sullivan@chromium.org
 per-file loading_ct.py=tdresser@chromium.org
-per-file loading_ct.py=maxlg@chromium.org
 per-file loading_ct.py=dproy@chromium.org
 per-file generic_trace.py=wangxianzhu@chromium.org
 per-file generic_trace.py=pdr@chromium.org

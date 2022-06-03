@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_store_observer_mock.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,14 +77,17 @@ class ExtensionPrefValueMapObserverMock
     : public ExtensionPrefValueMap::Observer {
  public:
   ExtensionPrefValueMapObserverMock() {}
+
+  ExtensionPrefValueMapObserverMock(const ExtensionPrefValueMapObserverMock&) =
+      delete;
+  ExtensionPrefValueMapObserverMock& operator=(
+      const ExtensionPrefValueMapObserverMock&) = delete;
+
   ~ExtensionPrefValueMapObserverMock() override {}
 
   MOCK_METHOD1(OnPrefValueChanged, void(const std::string&));
   MOCK_METHOD0(OnInitializationCompleted, void());
   MOCK_METHOD0(OnExtensionPrefValueMapDestruction, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefValueMapObserverMock);
 };
 
 TEST_F(ExtensionPrefValueMapTest, SetAndGetPrefValue) {

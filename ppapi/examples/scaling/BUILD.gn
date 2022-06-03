@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("scaling") {
   output_name = "ppapi_example_scaling"
-  sources = [
-    "scaling.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "scaling.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_SYNC_ENGINE_COMMIT_QUEUE_H_
 #define COMPONENTS_SYNC_ENGINE_COMMIT_QUEUE_H_
 
-#include "components/sync/engine/non_blocking_sync_common.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace syncer {
 
 // Interface used by a synced data type to issue requests to the sync backend.
 class CommitQueue {
  public:
-  CommitQueue();
-  virtual ~CommitQueue();
+  CommitQueue() = default;
+  virtual ~CommitQueue() = default;
 
   // Nudge sync engine to indicate the datatype has local changes to commit.
   virtual void NudgeForCommit() = 0;

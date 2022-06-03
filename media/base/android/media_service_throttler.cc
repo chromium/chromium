@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "media/base/android/media_server_crash_listener.h"
@@ -16,43 +17,33 @@ namespace media {
 namespace {
 
 // Period of inactivity after which we stop listening for MediaServer crashes.
-// NOTE: Server crashes don't count as acticity. Only calls to
+// NOTE: Server crashes don't count as activity. Only calls to
 // GetDelayForClientCreation() do.
-constexpr base::TimeDelta kReleaseInactivityDelay =
-    base::TimeDelta::FromMinutes(1);
+constexpr auto kReleaseInactivityDelay = base::Minutes(1);
 
 // Elapsed time between crashes needed to completely reset the media server
 // crash count.
-constexpr base::TimeDelta kTimeUntilCrashReset =
-    base::TimeDelta::FromMinutes(1);
+constexpr auto kTimeUntilCrashReset = base::Minutes(1);
 
 // Elapsed time between schedule calls needed to completely reset the
 // scheduling clock.
-constexpr base::TimeDelta kTimeUntilScheduleReset =
-    base::TimeDelta::FromMinutes(1);
-
-// Decay rate of server crashes, corresponding to a tolerable 'normal' crash
-// rate. This means that we will decrement our crash rate by ~1 crash/minute.
-const uint32_t kCrashDecayPeriodInMs = 60000;
+constexpr auto kTimeUntilScheduleReset = base::Minutes(1);
 
 // Rate at which client creations will be exponentially throttled based on the
 // number of media server crashes.
 // NOTE: Since our exponential delay formula is 2^(server crashes), 0 server
 // crashes still result in this delay being added once.
-constexpr base::TimeDelta kBaseExponentialDelay =
-    base::TimeDelta::FromMilliseconds(120);
+constexpr auto kBaseExponentialDelay = base::Milliseconds(120);
 
 // Base rate at which we schedule client creations.
 // The minimal delay is |kLinearThrottlingDelay| + |kBaseExponentialDelay|.
-// This corresponds to 0.2s.
-constexpr base::TimeDelta kLinearThrottlingDelay =
-    base::TimeDelta::FromMilliseconds(80);
+constexpr auto kLinearThrottlingDelay =
+    base::Seconds(0.2) - kBaseExponentialDelay;
 
 // Max exponential throttling rate from media server crashes.
 // The max delay will still be |kLinearThrottlingDelay| +
-// |kMaxExponentialDelay|. This corresponds to 3s.
-constexpr base::TimeDelta kMaxExponentialDelay =
-    base::TimeDelta::FromMilliseconds(2920);
+// |kMaxExponentialDelay|.
+constexpr auto kMaxExponentialDelay = base::Seconds(3) - kLinearThrottlingDelay;
 
 // Max number of clients to schedule immediately (e.g when loading a new page).
 const uint32_t kMaxBurstClients = 10;
@@ -89,7 +80,7 @@ MediaServiceThrottler::MediaServiceThrottler()
       crash_listener_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   // base::Unretained is safe because the MediaServiceThrottler is supposed to
   // live until the process dies.
-  release_crash_listener_cb_ = base::Bind(
+  release_crash_listener_cb_ = base::BindRepeating(
       &MediaServiceThrottler::ReleaseCrashListener, base::Unretained(this));
   EnsureCrashListenerStarted();
 }
@@ -180,8 +171,8 @@ void MediaServiceThrottler::UpdateServerCrashes() {
     current_crashes_ = 0.0;
   } else {
     // Decay at the rate of 1 crash/minute otherwise.
-    double decay = (now - last_current_crash_update_time_).InMillisecondsF() /
-                   kCrashDecayPeriodInMs;
+    const double decay =
+        (now - last_current_crash_update_time_) / base::Minutes(1);
     current_crashes_ = std::max(0.0, current_crashes_ - decay);
   }
 
@@ -197,8 +188,8 @@ void MediaServiceThrottler::EnsureCrashListenerStarted() {
     // base::Unretained is safe here because the MediaServiceThrottler will live
     // until the process is terminated.
     crash_listener_ = std::make_unique<MediaServerCrashListener>(
-        base::Bind(&MediaServiceThrottler::OnMediaServerCrash,
-                   base::Unretained(this)),
+        base::BindRepeating(&MediaServiceThrottler::OnMediaServerCrash,
+                            base::Unretained(this)),
         crash_listener_task_runner_);
   } else {
     crash_listener_->EnsureListening();
@@ -225,8 +216,7 @@ void MediaServiceThrottler::SetCrashListenerTaskRunnerForTesting(
 
   // Re-create the crash listener.
   crash_listener_ = std::make_unique<MediaServerCrashListener>(
-      MediaServerCrashListener::OnMediaServerCrashCB(),
-      crash_listener_task_runner_);
+      base::NullCallback(), crash_listener_task_runner_);
 }
 
 }  // namespace media

@@ -81,7 +81,7 @@ for (const subtest of gKeyframesTests) {
 for (const subtest of gInvalidKeyframesTests) {
   test(t => {
     const div = createDiv(t);
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       div.animate(subtest.input, 2000);
     });
   }, `Element.animate() does not accept ${subtest.desc}`);
@@ -108,7 +108,7 @@ test(t => {
 
 for (const invalid of gBadDelayValues) {
   test(t => {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       createDiv(t).animate(null, { delay: invalid });
     });
   }, `Element.animate() does not accept invalid delay value: ${invalid}`);
@@ -127,7 +127,7 @@ for (const invalid of gBadDurationValues) {
     continue;
   }
   test(t => {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       createDiv(t).animate(null, invalid);
     });
   }, 'Element.animate() does not accept invalid duration value: '
@@ -136,7 +136,7 @@ for (const invalid of gBadDurationValues) {
 
 for (const invalid of gBadDurationValues) {
   test(t => {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       createDiv(t).animate(null, { duration: invalid });
     });
   }, 'Element.animate() does not accept invalid duration value: '
@@ -146,7 +146,7 @@ for (const invalid of gBadDurationValues) {
 
 for (const invalidEasing of gInvalidEasings) {
   test(t => {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       createDiv(t).animate({ easing: invalidEasing }, 2000);
     });
   }, `Element.animate() does not accept invalid easing: '${invalidEasing}'`);
@@ -154,7 +154,7 @@ for (const invalidEasing of gInvalidEasings) {
 
 for (const invalid of gBadIterationStartValues) {
   test(t => {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       createDiv(t).animate(null, { iterationStart: invalid });
     });
   }, 'Element.animate() does not accept invalid iterationStart value: ' +
@@ -163,7 +163,7 @@ for (const invalid of gBadIterationStartValues) {
 
 for (const invalid of gBadIterationsValues) {
   test(t => {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       createDiv(t).animate(null, { iterations: invalid });
     });
   }, 'Element.animate() does not accept invalid iterations value: ' +
@@ -201,6 +201,18 @@ async_test(t => {
   document.body.appendChild(iframe);
 }, 'Element.animate() correctly sets the Animation\'s timeline when ' +
    'triggered on an element in a different document');
+
+for (const subtest of gAnimationTimelineTests) {
+  test(t => {
+    const anim = createDiv(t).animate(null, { timeline: subtest.timeline });
+    assert_not_equals(anim, null,
+                      'An animation sohuld be created');
+    assert_equals(anim.timeline, subtest.expectedTimeline,
+                  'Animation timeline should be '+
+                  subtest.expectedTimelineDescription);
+  }, 'Element.animate() correctly sets the Animation\'s timeline '
+     + subtest.description + ' in KeyframeAnimationOptions.');
+}
 
 test(t => {
   const anim = createDiv(t).animate(null, 2000);
@@ -247,7 +259,6 @@ promise_test(async t => {
 test(t => {
   const div = createDiv(t);
   div.classList.add('pseudo');
-  getComputedStyle(div,"::before").content; // Sync style
   const anim = div.animate(null, {pseudoElement: '::before'});
   assert_class_string(anim, 'Animation', 'The returned object is an Animation');
 }, 'animate() with pseudoElement parameter creates an Animation object');
@@ -262,10 +273,9 @@ test(t => {
   const div = createDiv(t);
   div.classList.add('pseudo');
   div.style.display = 'list-item';
-  getComputedStyle(div,"::marker").content; // Sync style
   const anim = div.animate(null, {pseudoElement: '::marker'});
   assert_class_string(anim, 'Animation', 'The returned object is an Animation for ::marker');
-}, 'animate() with pseudoElement parameter  creates an Animation object for ::marker');
+}, 'animate() with pseudoElement parameter creates an Animation object for ::marker');
 
 test(t => {
   const div = createDiv(t);
@@ -273,12 +283,11 @@ test(t => {
   div.textContent = 'foo';
   const anim = div.animate(null, {pseudoElement: '::first-line'});
   assert_class_string(anim, 'Animation', 'The returned object is an Animation for ::first-line');
-}, 'animate() with pseudoElement parameter  creates an Animation object for ::first-line');
+}, 'animate() with pseudoElement parameter creates an Animation object for ::first-line');
 
 test(t => {
   const div = createDiv(t);
   div.classList.add('pseudo');
-  getComputedStyle(div,"::before").content; // Sync style
   const anim = div.animate(null, {pseudoElement: '::before'});
   assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
   assert_equals(anim.effect.pseudoElement, '::before',
@@ -299,7 +308,6 @@ test(t => {
   const div = createDiv(t);
   div.classList.add('pseudo');
   div.style.display = 'list-item';
-  getComputedStyle(div,"::marker").content; // Sync style
   const anim = div.animate(null, {pseudoElement: '::marker'});
   assert_equals(anim.effect.target, div, 'The returned element has the correct target element');
   assert_equals(anim.effect.pseudoElement, '::marker',
@@ -317,6 +325,22 @@ test(t => {
                 'The returned Animation targets the correct selector');
 }, 'animate() with pseudoElement an Animation object targeting ' +
    'the correct pseudo-element for ::first-line');
+
+for (const pseudo of [
+  '',
+  'before',
+  ':abc',
+  '::abc',
+  '::placeholder',
+]) {
+  test(t => {
+    const div = createDiv(t);
+    assert_throws_dom("SyntaxError", () => {
+      div.animate(null, {pseudoElement: pseudo});
+    });
+  }, `animate() with a non-null invalid pseudoElement '${pseudo}' throws a ` +
+     `SyntaxError`);
+}
 
 </script>
 </body>

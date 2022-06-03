@@ -1,7 +1,6 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Copied from strings/stringpiece.h with modifications
 //
 // A string-like object that points to a sized piece of memory.
 //
@@ -24,15 +23,17 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iosfwd>
+#include <limits>
 #include <string>
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/char_traits.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -47,489 +48,568 @@ namespace base {
 // template internal to the .cc file.
 namespace internal {
 
-BASE_EXPORT void CopyToString(const StringPiece& self, std::string* target);
-BASE_EXPORT void CopyToString(const StringPiece16& self, string16* target);
+BASE_EXPORT size_t find(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t find(StringPiece16 self, StringPiece16 s, size_t pos);
 
-BASE_EXPORT void AppendToString(const StringPiece& self, std::string* target);
-BASE_EXPORT void AppendToString(const StringPiece16& self, string16* target);
+BASE_EXPORT size_t rfind(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t rfind(StringPiece16 self, StringPiece16 s, size_t pos);
 
-BASE_EXPORT size_t copy(const StringPiece& self,
-                        char* buf,
-                        size_t n,
-                        size_t pos);
-BASE_EXPORT size_t copy(const StringPiece16& self,
-                        char16* buf,
-                        size_t n,
-                        size_t pos);
-
-BASE_EXPORT size_t find(const StringPiece& self,
-                        const StringPiece& s,
-                        size_t pos);
-BASE_EXPORT size_t find(const StringPiece16& self,
-                        const StringPiece16& s,
-                        size_t pos);
-BASE_EXPORT size_t find(const StringPiece& self,
-                        char c,
-                        size_t pos);
-BASE_EXPORT size_t find(const StringPiece16& self,
-                        char16 c,
-                        size_t pos);
-
-BASE_EXPORT size_t rfind(const StringPiece& self,
-                         const StringPiece& s,
-                         size_t pos);
-BASE_EXPORT size_t rfind(const StringPiece16& self,
-                         const StringPiece16& s,
-                         size_t pos);
-BASE_EXPORT size_t rfind(const StringPiece& self,
-                         char c,
-                         size_t pos);
-BASE_EXPORT size_t rfind(const StringPiece16& self,
-                         char16 c,
-                         size_t pos);
-
-BASE_EXPORT size_t find_first_of(const StringPiece& self,
-                                 const StringPiece& s,
-                                 size_t pos);
-BASE_EXPORT size_t find_first_of(const StringPiece16& self,
-                                 const StringPiece16& s,
+BASE_EXPORT size_t find_first_of(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t find_first_of(StringPiece16 self,
+                                 StringPiece16 s,
                                  size_t pos);
 
-BASE_EXPORT size_t find_first_not_of(const StringPiece& self,
-                                     const StringPiece& s,
+BASE_EXPORT size_t find_first_not_of(StringPiece self,
+                                     StringPiece s,
                                      size_t pos);
-BASE_EXPORT size_t find_first_not_of(const StringPiece16& self,
-                                     const StringPiece16& s,
-                                     size_t pos);
-BASE_EXPORT size_t find_first_not_of(const StringPiece& self,
-                                     char c,
-                                     size_t pos);
-BASE_EXPORT size_t find_first_not_of(const StringPiece16& self,
-                                     char16 c,
+BASE_EXPORT size_t find_first_not_of(StringPiece16 self,
+                                     StringPiece16 s,
                                      size_t pos);
 
-BASE_EXPORT size_t find_last_of(const StringPiece& self,
-                                const StringPiece& s,
-                                size_t pos);
-BASE_EXPORT size_t find_last_of(const StringPiece16& self,
-                                const StringPiece16& s,
-                                size_t pos);
-BASE_EXPORT size_t find_last_of(const StringPiece& self,
-                                char c,
-                                size_t pos);
-BASE_EXPORT size_t find_last_of(const StringPiece16& self,
-                                char16 c,
+BASE_EXPORT size_t find_last_of(StringPiece self, StringPiece s, size_t pos);
+BASE_EXPORT size_t find_last_of(StringPiece16 self,
+                                StringPiece16 s,
                                 size_t pos);
 
-BASE_EXPORT size_t find_last_not_of(const StringPiece& self,
-                                    const StringPiece& s,
+BASE_EXPORT size_t find_last_not_of(StringPiece self,
+                                    StringPiece s,
                                     size_t pos);
-BASE_EXPORT size_t find_last_not_of(const StringPiece16& self,
-                                    const StringPiece16& s,
-                                    size_t pos);
-BASE_EXPORT size_t find_last_not_of(const StringPiece16& self,
-                                    char16 c,
-                                    size_t pos);
-BASE_EXPORT size_t find_last_not_of(const StringPiece& self,
-                                    char c,
+BASE_EXPORT size_t find_last_not_of(StringPiece16 self,
+                                    StringPiece16 s,
                                     size_t pos);
 
-BASE_EXPORT StringPiece substr(const StringPiece& self,
-                               size_t pos,
-                               size_t n);
-BASE_EXPORT StringPiece16 substr(const StringPiece16& self,
-                                 size_t pos,
-                                 size_t n);
-
-#if DCHECK_IS_ON()
-// Asserts that begin <= end to catch some errors with iterator usage.
-BASE_EXPORT void AssertIteratorsInOrder(std::string::const_iterator begin,
-                                        std::string::const_iterator end);
-BASE_EXPORT void AssertIteratorsInOrder(string16::const_iterator begin,
-                                        string16::const_iterator end);
-#endif
+BASE_EXPORT size_t find(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t rfind(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t find_first_of(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t find_first_not_of(WStringPiece self,
+                                     WStringPiece s,
+                                     size_t pos);
+BASE_EXPORT size_t find_last_of(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t find_last_not_of(WStringPiece self,
+                                    WStringPiece s,
+                                    size_t pos);
 
 }  // namespace internal
 
 // BasicStringPiece ------------------------------------------------------------
 
-// Defines the types, methods, operators, and data members common to both
-// StringPiece and StringPiece16.
-//
-// This is templatized by string class type rather than character type, so
-// BasicStringPiece<std::string> or BasicStringPiece<base::string16>.
-template <typename STRING_TYPE> class BasicStringPiece {
+// Mirrors the C++17 version of std::basic_string_view<> as closely as possible,
+// except where noted below.
+template <typename CharT, typename Traits>
+class BasicStringPiece {
  public:
-  // Standard STL container boilerplate.
-  typedef size_t size_type;
-  typedef typename STRING_TYPE::value_type value_type;
-  typedef const value_type* pointer;
-  typedef const value_type& reference;
-  typedef const value_type& const_reference;
-  typedef ptrdiff_t difference_type;
-  typedef const value_type* const_iterator;
-  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+  using traits_type = Traits;
+  using value_type = CharT;
+  using pointer = CharT*;
+  using const_pointer = const CharT*;
+  using reference = CharT&;
+  using const_reference = const CharT&;
+  using const_iterator = const CharT*;
+  using iterator = const_iterator;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+  using reverse_iterator = const_reverse_iterator;
+  using size_type = size_t;
+  using difference_type = ptrdiff_t;
 
-  static const size_type npos;
-
- public:
-  // We provide non-explicit singleton constructors so users can pass
-  // in a "const char*" or a "string" wherever a "StringPiece" is
-  // expected (likewise for char16, string16, StringPiece16).
-  constexpr BasicStringPiece() : ptr_(NULL), length_(0) {}
-  // TODO(dcheng): Construction from nullptr is not allowed for
-  // std::basic_string_view, so remove the special handling for it.
-  // Note: This doesn't just use STRING_TYPE::traits_type::length(), since that
+  constexpr BasicStringPiece() noexcept : ptr_(nullptr), length_(0) {}
+  constexpr BasicStringPiece(const BasicStringPiece& other) noexcept = default;
+  constexpr BasicStringPiece& operator=(const BasicStringPiece& view) noexcept =
+      default;
+  constexpr BasicStringPiece(const CharT* s, size_type count)
+      : ptr_(s), length_(count) {}
+  // Note: This doesn't just use traits_type::length(), since that
   // isn't constexpr until C++17.
-  constexpr BasicStringPiece(const value_type* str)
-      : ptr_(str), length_(!str ? 0 : CharTraits<value_type>::length(str)) {}
-  BasicStringPiece(const STRING_TYPE& str)
-      : ptr_(str.data()), length_(str.size()) {}
-  constexpr BasicStringPiece(const value_type* offset, size_type len)
-      : ptr_(offset), length_(len) {}
-  BasicStringPiece(const typename STRING_TYPE::const_iterator& begin,
-                   const typename STRING_TYPE::const_iterator& end) {
-#if DCHECK_IS_ON()
-    // This assertion is done out-of-line to avoid bringing in logging.h and
-    // instantiating logging macros for every instantiation.
-    internal::AssertIteratorsInOrder(begin, end);
-#endif
-    length_ = static_cast<size_t>(std::distance(begin, end));
-
-    // The length test before assignment is to avoid dereferencing an iterator
-    // that may point to the end() of a string.
-    ptr_ = length_ > 0 ? &*begin : nullptr;
+  constexpr BasicStringPiece(const CharT* s)
+      : ptr_(s), length_(s ? CharTraits<CharT>::length(s) : 0) {
+    // Intentional STL deviation: Null-check instead of UB.
+    CHECK(s);
+  }
+  // Explicitly disallow construction from nullptr. Note that this does not
+  // catch construction from runtime strings that might be null.
+  // Note: The following is just a more elaborate way of spelling
+  // `BasicStringPiece(nullptr_t) = delete`, but unfortunately the terse form is
+  // not supported by the PNaCl toolchain.
+  template <class T, class = std::enable_if_t<std::is_null_pointer<T>::value>>
+  BasicStringPiece(T) {
+    static_assert(sizeof(T) == 0,  // Always false.
+                  "StringPiece does not support construction from nullptr, use "
+                  "the default constructor instead.");
   }
 
-  // data() may return a pointer to a buffer with embedded NULs, and the
-  // returned buffer may or may not be null terminated.  Therefore it is
-  // typically a mistake to pass data() to a routine that expects a NUL
-  // terminated string.
-  constexpr const value_type* data() const { return ptr_; }
+  // These are necessary because std::basic_string provides construction from
+  // (an object convertible to) a std::basic_string_view, as well as an explicit
+  // cast operator to a std::basic_string_view, but (obviously) not from/to a
+  // BasicStringPiece.
+  BasicStringPiece(const std::basic_string<CharT>& str)
+      : ptr_(str.data()), length_(str.size()) {}
+  explicit operator std::basic_string<CharT>() const {
+    return std::basic_string<CharT>(data(), size());
+  }
+
+  constexpr const_iterator begin() const noexcept { return ptr_; }
+  constexpr const_iterator cbegin() const noexcept { return ptr_; }
+  constexpr const_iterator end() const noexcept { return ptr_ + length_; }
+  constexpr const_iterator cend() const noexcept { return ptr_ + length_; }
+  constexpr const_reverse_iterator rbegin() const noexcept {
+    return const_reverse_iterator(ptr_ + length_);
+  }
+  constexpr const_reverse_iterator crbegin() const noexcept {
+    return const_reverse_iterator(ptr_ + length_);
+  }
+  constexpr const_reverse_iterator rend() const noexcept {
+    return const_reverse_iterator(ptr_);
+  }
+  constexpr const_reverse_iterator crend() const noexcept {
+    return const_reverse_iterator(ptr_);
+  }
+
+  constexpr const_reference operator[](size_type pos) const {
+    // Intentional STL deviation: Bounds-check instead of UB.
+    return at(pos);
+  }
+  constexpr const_reference at(size_type pos) const {
+    CHECK_LT(pos, size());
+    return data()[pos];
+  }
+
+  constexpr const_reference front() const { return operator[](0); }
+
+  constexpr const_reference back() const { return operator[](size() - 1); }
+
+  constexpr const_pointer data() const noexcept { return ptr_; }
+
   constexpr size_type size() const noexcept { return length_; }
   constexpr size_type length() const noexcept { return length_; }
-  bool empty() const { return length_ == 0; }
 
-  void clear() {
-    ptr_ = NULL;
-    length_ = 0;
-  }
-  void set(const value_type* data, size_type len) {
-    ptr_ = data;
-    length_ = len;
-  }
-  void set(const value_type* str) {
-    ptr_ = str;
-    length_ = str ? STRING_TYPE::traits_type::length(str) : 0;
+  constexpr size_type max_size() const {
+    return std::numeric_limits<size_type>::max() / sizeof(CharT);
   }
 
-  constexpr value_type operator[](size_type i) const {
-    CHECK(i < length_);
-    return ptr_[i];
-  }
-
-  value_type front() const {
-    CHECK_NE(0UL, length_);
-    return ptr_[0];
-  }
-
-  value_type back() const {
-    CHECK_NE(0UL, length_);
-    return ptr_[length_ - 1];
+  constexpr bool empty() const noexcept WARN_UNUSED_RESULT {
+    return size() == 0;
   }
 
   constexpr void remove_prefix(size_type n) {
-    CHECK(n <= length_);
+    // Intentional STL deviation: Bounds-check instead of UB.
+    CHECK_LE(n, size());
     ptr_ += n;
     length_ -= n;
   }
 
   constexpr void remove_suffix(size_type n) {
-    CHECK(n <= length_);
+    // Intentional STL deviation: Bounds-check instead of UB.
+    CHECK_LE(n, size());
     length_ -= n;
   }
 
-  constexpr int compare(BasicStringPiece x) const noexcept {
-    int r = CharTraits<value_type>::compare(
-        ptr_, x.ptr_, (length_ < x.length_ ? length_ : x.length_));
-    if (r == 0) {
-      if (length_ < x.length_) r = -1;
-      else if (length_ > x.length_) r = +1;
+  constexpr void swap(BasicStringPiece& v) noexcept {
+    // Note: Cannot use std::swap() since it is not constexpr until C++20.
+    const const_pointer ptr = ptr_;
+    ptr_ = v.ptr_;
+    v.ptr_ = ptr;
+    const size_type length = length_;
+    length_ = v.length_;
+    v.length_ = length;
+  }
+
+  constexpr size_type copy(CharT* dest,
+                           size_type count,
+                           size_type pos = 0) const {
+    CHECK_LE(pos, size());
+    const size_type rcount = std::min(count, size() - pos);
+    traits_type::copy(dest, data() + pos, rcount);
+    return rcount;
+  }
+
+  constexpr BasicStringPiece substr(size_type pos = 0,
+                                    size_type count = npos) const {
+    CHECK_LE(pos, size());
+    const size_type rcount = std::min(count, size() - pos);
+    return {data() + pos, rcount};
+  }
+
+  constexpr int compare(BasicStringPiece v) const noexcept {
+    const size_type rlen = std::min(size(), v.size());
+    const int result = CharTraits<CharT>::compare(data(), v.data(), rlen);
+    if (result != 0)
+      return result;
+    if (size() == v.size())
+      return 0;
+    return size() < v.size() ? -1 : 1;
+  }
+  constexpr int compare(size_type pos1,
+                        size_type count1,
+                        BasicStringPiece v) const {
+    return substr(pos1, count1).compare(v);
+  }
+  constexpr int compare(size_type pos1,
+                        size_type count1,
+                        BasicStringPiece v,
+                        size_type pos2,
+                        size_type count2) const {
+    return substr(pos1, count1).compare(v.substr(pos2, count2));
+  }
+  constexpr int compare(const CharT* s) const {
+    return compare(BasicStringPiece(s));
+  }
+  constexpr int compare(size_type pos1,
+                        size_type count1,
+                        const CharT* s) const {
+    return substr(pos1, count1).compare(BasicStringPiece(s));
+  }
+  constexpr int compare(size_type pos1,
+                        size_type count1,
+                        const CharT* s,
+                        size_type count2) const {
+    return substr(pos1, count1).compare(BasicStringPiece(s, count2));
+  }
+
+  constexpr size_type find(BasicStringPiece v,
+                           size_type pos = 0) const noexcept {
+    if (is_constant_evaluated()) {
+      if (v.size() > size())
+        return npos;
+      for (size_type p = pos; p <= size() - v.size(); ++p) {
+        if (!compare(p, v.size(), v))
+          return p;
+      }
+      return npos;
     }
-    return r;
+
+    return internal::find(*this, v, pos);
+  }
+  constexpr size_type find(CharT ch, size_type pos = 0) const noexcept {
+    if (pos >= size())
+      return npos;
+
+    const const_pointer result =
+        base::CharTraits<CharT>::find(data() + pos, size() - pos, ch);
+    return result ? static_cast<size_type>(result - data()) : npos;
+  }
+  constexpr size_type find(const CharT* s,
+                           size_type pos,
+                           size_type count) const {
+    return find(BasicStringPiece(s, count), pos);
+  }
+  constexpr size_type find(const CharT* s, size_type pos = 0) const {
+    return find(BasicStringPiece(s), pos);
   }
 
-  // This is the style of conversion preferred by std::string_view in C++17.
-  explicit operator STRING_TYPE() const { return as_string(); }
+  constexpr size_type rfind(BasicStringPiece v,
+                            size_type pos = npos) const noexcept {
+    if (is_constant_evaluated()) {
+      if (v.size() > size())
+        return npos;
+      for (size_type p = std::min(size() - v.size(), pos);; --p) {
+        if (!compare(p, v.size(), v))
+          return p;
+        if (!p)
+          break;
+      }
+      return npos;
+    }
 
-  STRING_TYPE as_string() const {
-    // std::string doesn't like to take a NULL pointer even with a 0 size.
-    return empty() ? STRING_TYPE() : STRING_TYPE(data(), size());
+    return internal::rfind(*this, v, pos);
   }
+  constexpr size_type rfind(CharT c, size_type pos = npos) const noexcept {
+    if (empty())
+      return npos;
 
-  const_iterator begin() const { return ptr_; }
-  const_iterator end() const { return ptr_ + length_; }
-  const_reverse_iterator rbegin() const {
-    return const_reverse_iterator(ptr_ + length_);
+    for (size_t i = std::min(pos, size() - 1);; --i) {
+      if (data()[i] == c)
+        return i;
+
+      if (i == 0)
+        break;
+    }
+    return npos;
   }
-  const_reverse_iterator rend() const {
-    return const_reverse_iterator(ptr_);
+  constexpr size_type rfind(const CharT* s,
+                            size_type pos,
+                            size_type count) const {
+    return rfind(BasicStringPiece(s, count), pos);
   }
-
-  size_type max_size() const { return length_; }
-  size_type capacity() const { return length_; }
-
-  // Sets the value of the given string target type to be the current string.
-  // This saves a temporary over doing |a = b.as_string()|
-  void CopyToString(STRING_TYPE* target) const {
-    internal::CopyToString(*this, target);
-  }
-
-  void AppendToString(STRING_TYPE* target) const {
-    internal::AppendToString(*this, target);
-  }
-
-  size_type copy(value_type* buf, size_type n, size_type pos = 0) const {
-    return internal::copy(*this, buf, n, pos);
-  }
-
-  // Does "this" start with "x"
-  constexpr bool starts_with(BasicStringPiece x) const noexcept {
-    return (
-        (this->length_ >= x.length_) &&
-        (CharTraits<value_type>::compare(this->ptr_, x.ptr_, x.length_) == 0));
+  constexpr size_type rfind(const CharT* s, size_type pos = npos) const {
+    return rfind(BasicStringPiece(s), pos);
   }
 
-  // Does "this" end with "x"
-  constexpr bool ends_with(BasicStringPiece x) const noexcept {
-    return ((this->length_ >= x.length_) &&
-            (CharTraits<value_type>::compare(
-                 this->ptr_ + (this->length_ - x.length_), x.ptr_, x.length_) ==
-             0));
-  }
+  constexpr size_type find_first_of(BasicStringPiece v,
+                                    size_type pos = 0) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty() || v.empty())
+        return npos;
+      for (size_type p = pos; p < size(); ++p) {
+        if (v.find(data()[p]) != npos)
+          return p;
+      }
+      return npos;
+    }
 
-  // find: Search for a character or substring at a given offset.
-  size_type find(const BasicStringPiece<STRING_TYPE>& s,
-                 size_type pos = 0) const {
-    return internal::find(*this, s, pos);
+    return internal::find_first_of(*this, v, pos);
   }
-  size_type find(value_type c, size_type pos = 0) const {
-    return internal::find(*this, c, pos);
-  }
-
-  // rfind: Reverse find.
-  size_type rfind(const BasicStringPiece& s,
-                  size_type pos = BasicStringPiece::npos) const {
-    return internal::rfind(*this, s, pos);
-  }
-  size_type rfind(value_type c, size_type pos = BasicStringPiece::npos) const {
-    return internal::rfind(*this, c, pos);
-  }
-
-  // find_first_of: Find the first occurence of one of a set of characters.
-  size_type find_first_of(const BasicStringPiece& s,
-                          size_type pos = 0) const {
-    return internal::find_first_of(*this, s, pos);
-  }
-  size_type find_first_of(value_type c, size_type pos = 0) const {
+  constexpr size_type find_first_of(CharT c, size_type pos = 0) const noexcept {
     return find(c, pos);
   }
+  constexpr size_type find_first_of(const CharT* s,
+                                    size_type pos,
+                                    size_type count) const {
+    return find_first_of(BasicStringPiece(s, count), pos);
+  }
+  constexpr size_type find_first_of(const CharT* s, size_type pos = 0) const {
+    return find_first_of(BasicStringPiece(s), pos);
+  }
 
-  // find_first_not_of: Find the first occurence not of a set of characters.
-  size_type find_first_not_of(const BasicStringPiece& s,
-                              size_type pos = 0) const {
-    return internal::find_first_not_of(*this, s, pos);
-  }
-  size_type find_first_not_of(value_type c, size_type pos = 0) const {
-    return internal::find_first_not_of(*this, c, pos);
-  }
+  constexpr size_type find_last_of(BasicStringPiece v,
+                                   size_type pos = npos) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty() || v.empty())
+        return npos;
+      for (size_type p = std::min(pos, size() - 1);; --p) {
+        if (v.find(data()[p]) != npos)
+          return p;
+        if (!p)
+          break;
+      }
+      return npos;
+    }
 
-  // find_last_of: Find the last occurence of one of a set of characters.
-  size_type find_last_of(const BasicStringPiece& s,
-                         size_type pos = BasicStringPiece::npos) const {
-    return internal::find_last_of(*this, s, pos);
+    return internal::find_last_of(*this, v, pos);
   }
-  size_type find_last_of(value_type c,
-                         size_type pos = BasicStringPiece::npos) const {
+  constexpr size_type find_last_of(CharT c,
+                                   size_type pos = npos) const noexcept {
     return rfind(c, pos);
   }
-
-  // find_last_not_of: Find the last occurence not of a set of characters.
-  size_type find_last_not_of(const BasicStringPiece& s,
-                             size_type pos = BasicStringPiece::npos) const {
-    return internal::find_last_not_of(*this, s, pos);
+  constexpr size_type find_last_of(const CharT* s,
+                                   size_type pos,
+                                   size_type count) const {
+    return find_last_of(BasicStringPiece(s, count), pos);
   }
-  size_type find_last_not_of(value_type c,
-                             size_type pos = BasicStringPiece::npos) const {
-    return internal::find_last_not_of(*this, c, pos);
+  constexpr size_type find_last_of(const CharT* s, size_type pos = npos) const {
+    return find_last_of(BasicStringPiece(s), pos);
   }
 
-  // substr.
-  BasicStringPiece substr(size_type pos,
-                          size_type n = BasicStringPiece::npos) const {
-    return internal::substr(*this, pos, n);
+  constexpr size_type find_first_not_of(BasicStringPiece v,
+                                        size_type pos = 0) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty())
+        return npos;
+      for (size_type p = pos; p < size(); ++p) {
+        if (v.find(data()[p]) == npos)
+          return p;
+      }
+      return npos;
+    }
+
+    return internal::find_first_not_of(*this, v, pos);
   }
+  constexpr size_type find_first_not_of(CharT c,
+                                        size_type pos = 0) const noexcept {
+    if (empty())
+      return npos;
+
+    for (; pos < size(); ++pos) {
+      if (data()[pos] != c)
+        return pos;
+    }
+    return npos;
+  }
+  constexpr size_type find_first_not_of(const CharT* s,
+                                        size_type pos,
+                                        size_type count) const {
+    return find_first_not_of(BasicStringPiece(s, count), pos);
+  }
+  constexpr size_type find_first_not_of(const CharT* s,
+                                        size_type pos = 0) const {
+    return find_first_not_of(BasicStringPiece(s), pos);
+  }
+
+  constexpr size_type find_last_not_of(BasicStringPiece v,
+                                       size_type pos = npos) const noexcept {
+    if (is_constant_evaluated()) {
+      if (empty())
+        return npos;
+      for (size_type p = std::min(pos, size() - 1);; --p) {
+        if (v.find(data()[p]) == npos)
+          return p;
+        if (!p)
+          break;
+      }
+      return npos;
+    }
+
+    return internal::find_last_not_of(*this, v, pos);
+  }
+  constexpr size_type find_last_not_of(CharT c,
+                                       size_type pos = npos) const noexcept {
+    if (empty())
+      return npos;
+
+    for (size_t i = std::min(pos, size() - 1);; --i) {
+      if (data()[i] != c)
+        return i;
+      if (i == 0)
+        break;
+    }
+    return npos;
+  }
+  constexpr size_type find_last_not_of(const CharT* s,
+                                       size_type pos,
+                                       size_type count) const {
+    return find_last_not_of(BasicStringPiece(s, count), pos);
+  }
+  constexpr size_type find_last_not_of(const CharT* s,
+                                       size_type pos = npos) const {
+    return find_last_not_of(BasicStringPiece(s), pos);
+  }
+
+  static constexpr size_type npos = size_type(-1);
 
  protected:
-  const value_type* ptr_;
+  const_pointer ptr_;
   size_type length_;
 };
 
-template <typename STRING_TYPE>
-const typename BasicStringPiece<STRING_TYPE>::size_type
-BasicStringPiece<STRING_TYPE>::npos =
-    typename BasicStringPiece<STRING_TYPE>::size_type(-1);
+// static
+template <typename CharT, typename Traits>
+const typename BasicStringPiece<CharT, Traits>::size_type
+    BasicStringPiece<CharT, Traits>::npos;
 
 // MSVC doesn't like complex extern templates and DLLs.
 #if !defined(COMPILER_MSVC)
-extern template class BASE_EXPORT BasicStringPiece<std::string>;
-extern template class BASE_EXPORT BasicStringPiece<string16>;
+extern template class BASE_EXPORT BasicStringPiece<char>;
+extern template class BASE_EXPORT BasicStringPiece<char16_t>;
 #endif
 
-// Comparison operators --------------------------------------------------------
-// operator ==
-template <typename StringT>
-constexpr bool operator==(BasicStringPiece<StringT> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits>
+constexpr bool operator==(BasicStringPiece<CharT, Traits> lhs,
+                          BasicStringPiece<CharT, Traits> rhs) noexcept {
   return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
 }
-
-// Here and below we make use of std::common_type_t to emulate an identity type
-// transformation. This creates a non-deduced context, so that we can compare
-// StringPieces with types that implicitly convert to StringPieces. See
-// https://wg21.link/n3766 for details.
+// Here and below we make use of std::common_type_t to emulate
+// std::type_identity (part of C++20). This creates a non-deduced context, so
+// that we can compare StringPieces with types that implicitly convert to
+// StringPieces. See https://wg21.link/n3766 for details.
 // Furthermore, we require dummy template parameters for these overloads to work
 // around a name mangling issue on Windows.
-template <typename StringT, int = 1>
+template <typename CharT, typename Traits, int = 1>
 constexpr bool operator==(
-    BasicStringPiece<StringT> lhs,
-    std::common_type_t<BasicStringPiece<StringT>> rhs) noexcept {
+    BasicStringPiece<CharT, Traits> lhs,
+    std::common_type_t<BasicStringPiece<CharT, Traits>> rhs) noexcept {
+  return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
+}
+template <typename CharT, typename Traits, int = 2>
+constexpr bool operator==(
+    std::common_type_t<BasicStringPiece<CharT, Traits>> lhs,
+    BasicStringPiece<CharT, Traits> rhs) noexcept {
   return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
 }
 
-template <typename StringT, int = 2>
-constexpr bool operator==(std::common_type_t<BasicStringPiece<StringT>> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
-  return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
-}
-
-// operator !=
-template <typename StringT>
-constexpr bool operator!=(BasicStringPiece<StringT> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits>
+constexpr bool operator!=(BasicStringPiece<CharT, Traits> lhs,
+                          BasicStringPiece<CharT, Traits> rhs) noexcept {
   return !(lhs == rhs);
 }
-
-template <typename StringT, int = 1>
+template <typename CharT, typename Traits, int = 1>
 constexpr bool operator!=(
-    BasicStringPiece<StringT> lhs,
-    std::common_type_t<BasicStringPiece<StringT>> rhs) noexcept {
+    BasicStringPiece<CharT, Traits> lhs,
+    std::common_type_t<BasicStringPiece<CharT, Traits>> rhs) noexcept {
+  return !(lhs == rhs);
+}
+template <typename CharT, typename Traits, int = 2>
+constexpr bool operator!=(
+    std::common_type_t<BasicStringPiece<CharT, Traits>> lhs,
+    BasicStringPiece<CharT, Traits> rhs) noexcept {
   return !(lhs == rhs);
 }
 
-template <typename StringT, int = 2>
-constexpr bool operator!=(std::common_type_t<BasicStringPiece<StringT>> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
-  return !(lhs == rhs);
-}
-
-// operator <
-template <typename StringT>
-constexpr bool operator<(BasicStringPiece<StringT> lhs,
-                         BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits>
+constexpr bool operator<(BasicStringPiece<CharT, Traits> lhs,
+                         BasicStringPiece<CharT, Traits> rhs) noexcept {
   return lhs.compare(rhs) < 0;
 }
-
-template <typename StringT, int = 1>
+template <typename CharT, typename Traits, int = 1>
 constexpr bool operator<(
-    BasicStringPiece<StringT> lhs,
-    std::common_type_t<BasicStringPiece<StringT>> rhs) noexcept {
+    BasicStringPiece<CharT, Traits> lhs,
+    std::common_type_t<BasicStringPiece<CharT, Traits>> rhs) noexcept {
   return lhs.compare(rhs) < 0;
 }
 
-template <typename StringT, int = 2>
-constexpr bool operator<(std::common_type_t<BasicStringPiece<StringT>> lhs,
-                         BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits, int = 2>
+constexpr bool operator<(
+    std::common_type_t<BasicStringPiece<CharT, Traits>> lhs,
+    BasicStringPiece<CharT, Traits> rhs) noexcept {
   return lhs.compare(rhs) < 0;
 }
 
-// operator >
-template <typename StringT>
-constexpr bool operator>(BasicStringPiece<StringT> lhs,
-                         BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits>
+constexpr bool operator>(BasicStringPiece<CharT, Traits> lhs,
+                         BasicStringPiece<CharT, Traits> rhs) noexcept {
   return rhs < lhs;
 }
-
-template <typename StringT, int = 1>
+template <typename CharT, typename Traits, int = 1>
 constexpr bool operator>(
-    BasicStringPiece<StringT> lhs,
-    std::common_type_t<BasicStringPiece<StringT>> rhs) noexcept {
+    BasicStringPiece<CharT, Traits> lhs,
+    std::common_type_t<BasicStringPiece<CharT, Traits>> rhs) noexcept {
+  return rhs < lhs;
+}
+template <typename CharT, typename Traits, int = 2>
+constexpr bool operator>(
+    std::common_type_t<BasicStringPiece<CharT, Traits>> lhs,
+    BasicStringPiece<CharT, Traits> rhs) noexcept {
   return rhs < lhs;
 }
 
-template <typename StringT, int = 2>
-constexpr bool operator>(std::common_type_t<BasicStringPiece<StringT>> lhs,
-                         BasicStringPiece<StringT> rhs) noexcept {
-  return rhs < lhs;
-}
-
-// operator <=
-template <typename StringT>
-constexpr bool operator<=(BasicStringPiece<StringT> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits>
+constexpr bool operator<=(BasicStringPiece<CharT, Traits> lhs,
+                          BasicStringPiece<CharT, Traits> rhs) noexcept {
   return !(rhs < lhs);
 }
-
-template <typename StringT, int = 1>
+template <typename CharT, typename Traits, int = 1>
 constexpr bool operator<=(
-    BasicStringPiece<StringT> lhs,
-    std::common_type_t<BasicStringPiece<StringT>> rhs) noexcept {
+    BasicStringPiece<CharT, Traits> lhs,
+    std::common_type_t<BasicStringPiece<CharT, Traits>> rhs) noexcept {
+  return !(rhs < lhs);
+}
+template <typename CharT, typename Traits, int = 2>
+constexpr bool operator<=(
+    std::common_type_t<BasicStringPiece<CharT, Traits>> lhs,
+    BasicStringPiece<CharT, Traits> rhs) noexcept {
   return !(rhs < lhs);
 }
 
-template <typename StringT, int = 2>
-constexpr bool operator<=(std::common_type_t<BasicStringPiece<StringT>> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
-  return !(rhs < lhs);
-}
-
-// operator >=
-template <typename StringT>
-constexpr bool operator>=(BasicStringPiece<StringT> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
+template <typename CharT, typename Traits>
+constexpr bool operator>=(BasicStringPiece<CharT, Traits> lhs,
+                          BasicStringPiece<CharT, Traits> rhs) noexcept {
   return !(lhs < rhs);
 }
-
-template <typename StringT, int = 1>
+template <typename CharT, typename Traits, int = 1>
 constexpr bool operator>=(
-    BasicStringPiece<StringT> lhs,
-    std::common_type_t<BasicStringPiece<StringT>> rhs) noexcept {
+    BasicStringPiece<CharT, Traits> lhs,
+    std::common_type_t<BasicStringPiece<CharT, Traits>> rhs) noexcept {
+  return !(lhs < rhs);
+}
+template <typename CharT, typename Traits, int = 2>
+constexpr bool operator>=(
+    std::common_type_t<BasicStringPiece<CharT, Traits>> lhs,
+    BasicStringPiece<CharT, Traits> rhs) noexcept {
   return !(lhs < rhs);
 }
 
-template <typename StringT, int = 2>
-constexpr bool operator>=(std::common_type_t<BasicStringPiece<StringT>> lhs,
-                          BasicStringPiece<StringT> rhs) noexcept {
-  return !(lhs < rhs);
-}
+BASE_EXPORT std::ostream& operator<<(std::ostream& o, StringPiece piece);
+// Not in the STL: convenience functions to output non-UTF-8 strings to an
+// 8-bit-width stream.
+BASE_EXPORT std::ostream& operator<<(std::ostream& o, StringPiece16 piece);
+BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
 
-BASE_EXPORT std::ostream& operator<<(std::ostream& o,
-                                     const StringPiece& piece);
+// Intentionally omitted (since Chromium does not use character literals):
+// operator""sv.
 
-BASE_EXPORT std::ostream& operator<<(std::ostream& o,
-                                     const StringPiece16& piece);
-
-// Hashing ---------------------------------------------------------------------
-
-// We provide appropriate hash functions so StringPiece and StringPiece16 can
-// be used as keys in hash sets and maps.
-
-// This hash function is copied from base/strings/string16.h. We don't use the
-// ones already defined for string and string16 directly because it would
-// require the string constructors to be called, which we don't want.
-
+// Stand-ins for the STL's std::hash<> specializations.
 template <typename StringPieceType>
 struct StringPieceHashImpl {
+  // This is a custom hash function. We don't use the ones already defined for
+  // string and std::u16string directly because it would require the string
+  // constructors to be called, which we don't want.
   std::size_t operator()(StringPieceType sp) const {
     std::size_t result = 0;
     for (auto c : sp)
@@ -537,7 +617,6 @@ struct StringPieceHashImpl {
     return result;
   }
 };
-
 using StringPieceHash = StringPieceHashImpl<StringPiece>;
 using StringPiece16Hash = StringPieceHashImpl<StringPiece16>;
 using WStringPieceHash = StringPieceHashImpl<WStringPiece>;

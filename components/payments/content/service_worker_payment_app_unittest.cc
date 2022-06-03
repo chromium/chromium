@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/payments/core/mock_payment_request_delegate.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
@@ -20,8 +20,16 @@ namespace payments {
 class ServiceWorkerPaymentAppTest : public testing::Test,
                                     public PaymentRequestSpec::Observer {
  public:
-  ServiceWorkerPaymentAppTest() {}
-  ~ServiceWorkerPaymentAppTest() override {}
+  ServiceWorkerPaymentAppTest() {
+    web_contents_ =
+        test_web_contents_factory_.CreateWebContents(&browser_context_);
+  }
+
+  ServiceWorkerPaymentAppTest(const ServiceWorkerPaymentAppTest&) = delete;
+  ServiceWorkerPaymentAppTest& operator=(const ServiceWorkerPaymentAppTest&) =
+      delete;
+
+  ~ServiceWorkerPaymentAppTest() override = default;
 
  protected:
   const SkBitmap* icon_bitmap() const { return icon_bitmap_; }
@@ -37,7 +45,7 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
     amount->currency = "USD";
     total->amount = std::move(amount);
     details->total = std::move(total);
-    details->id = base::Optional<std::string>("123456");
+    details->id = absl::optional<std::string>("123456");
     details->modifiers = std::vector<mojom::PaymentDetailsModifierPtr>();
 
     mojom::PaymentDetailsModifierPtr modifier_1 =
@@ -76,7 +84,6 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
     entry_1->supported_networks.push_back(mojom::BasicCardNetwork::UNIONPAY);
     entry_1->supported_networks.push_back(mojom::BasicCardNetwork::JCB);
     entry_1->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-    entry_1->supported_types.push_back(mojom::BasicCardType::DEBIT);
     method_data.push_back(std::move(entry_1));
 
     mojom::PaymentMethodDataPtr entry_2 = mojom::PaymentMethodData::New();
@@ -85,7 +92,7 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
 
     spec_ = std::make_unique<PaymentRequestSpec>(
         mojom::PaymentOptions::New(), std::move(details),
-        std::move(method_data), this, "en-US");
+        std::move(method_data), weak_ptr_factory_.GetWeakPtr(), "en-US");
   }
 
   void TearDown() override {}
@@ -109,19 +116,15 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
         static_cast<int32_t>(mojom::BasicCardNetwork::UNIONPAY));
     stored_app->capabilities.back().supported_card_networks.emplace_back(
         static_cast<int32_t>(mojom::BasicCardNetwork::JCB));
-    stored_app->capabilities.back().supported_card_types.emplace_back(
-        static_cast<int32_t>(mojom::BasicCardType::DEBIT));
     stored_app->user_hint = "Visa 4012 ... 1881";
     stored_app->prefer_related_applications = false;
 
     icon_bitmap_ = stored_app->icon.get();
     app_ = std::make_unique<ServiceWorkerPaymentApp>(
-        &browser_context_, GURL("https://testmerchant.com"),
-        GURL("https://testmerchant.com/bobpay"), spec_.get(),
-        std::move(stored_app), &delegate_,
-        base::Bind(
-            [](const url::Origin& origin,
-               int64_t registration_id) { /* Intentionally left blank. */ }));
+        web_contents_, GURL("https://testmerchant.com"),
+        GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
+        std::move(stored_app), /*is_incognito=*/false,
+        /*show_processing_spinner=*/base::DoNothing());
   }
 
   ServiceWorkerPaymentApp* GetApp() { return app_.get(); }
@@ -135,15 +138,15 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
   }
 
  private:
-  MockPaymentRequestDelegate delegate_;
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
+  content::TestWebContentsFactory test_web_contents_factory_;
+  content::WebContents* web_contents_;
 
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::unique_ptr<ServiceWorkerPaymentApp> app_;
   const SkBitmap* icon_bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppTest);
+  base::WeakPtrFactory<ServiceWorkerPaymentAppTest> weak_ptr_factory_{this};
 };
 
 // Test app info and status are correct.
@@ -151,14 +154,13 @@ TEST_F(ServiceWorkerPaymentAppTest, AppInfo) {
   CreateServiceWorkerPaymentApp(true);
 
   EXPECT_TRUE(GetApp()->IsCompleteForPayment());
-  EXPECT_TRUE(GetApp()->IsExactlyMatchingMerchantRequest());
 
   EXPECT_EQ(base::UTF16ToUTF8(GetApp()->GetLabel()), "bobpay");
   EXPECT_EQ(base::UTF16ToUTF8(GetApp()->GetSublabel()), "bobpay.com");
 
-  const gfx::Size expected_size{icon_bitmap()->width(),
-                                icon_bitmap()->height()};
-  EXPECT_EQ(GetApp()->icon_image_skia().size(), expected_size);
+  ASSERT_NE(nullptr, GetApp()->icon_bitmap());
+  EXPECT_EQ(GetApp()->icon_bitmap()->width(), icon_bitmap()->width());
+  EXPECT_EQ(GetApp()->icon_bitmap()->height(), icon_bitmap()->height());
 }
 
 // Test payment request event data can be correctly constructed for invoking
@@ -176,7 +178,6 @@ TEST_F(ServiceWorkerPaymentAppTest, CreatePaymentRequestEventData) {
   EXPECT_EQ(event_data->method_data.size(), 2U);
   EXPECT_EQ(event_data->method_data[0]->supported_method, "basic-card");
   EXPECT_EQ(event_data->method_data[0]->supported_networks.size(), 3U);
-  EXPECT_EQ(event_data->method_data[0]->supported_types.size(), 1U);
   EXPECT_EQ(event_data->method_data[1]->supported_method, "https://bobpay.com");
 
   EXPECT_EQ(event_data->total->currency, "USD");
@@ -228,32 +229,28 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
   CreateServiceWorkerPaymentApp(/*with_url_method=*/true);
   GetApp()->ValidateCanMakePayment(base::BindOnce(
       [](ServiceWorkerPaymentApp*, bool result) { EXPECT_TRUE(result); }));
-  EXPECT_FALSE(GetApp()->IsValidForCanMakePayment());
+  EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
 }
 
 // Test modifiers can be matched based on capabilities.
 TEST_F(ServiceWorkerPaymentAppTest, IsValidForModifier) {
   CreateServiceWorkerPaymentApp(true);
 
-  EXPECT_TRUE(GetApp()->IsValidForModifier("basic-card", false, {}, false, {}));
-
-  EXPECT_TRUE(
-      GetApp()->IsValidForModifier("https://bobpay.com", true, {}, true, {}));
-
-  EXPECT_FALSE(GetApp()->IsValidForModifier("basic-card", true, {"mastercard"},
-                                            false, {}));
-
-  EXPECT_TRUE(GetApp()->IsValidForModifier("basic-card", true, {"unionpay"},
-                                           false, {}));
+  EXPECT_TRUE(GetApp()->IsValidForModifier(
+      /*method=*/"basic-card", /*supported_networks_specified=*/false,
+      /*supported_networks=*/{}));
 
   EXPECT_TRUE(GetApp()->IsValidForModifier(
-      "basic-card", true, {"unionpay"}, true,
-      {autofill::CreditCard::CardType::CARD_TYPE_DEBIT,
-       autofill::CreditCard::CardType::CARD_TYPE_CREDIT}));
+      /*method=*/"https://bobpay.com", /*supported_networks_specified=*/true,
+      /*supported_networks=*/{}));
 
   EXPECT_FALSE(GetApp()->IsValidForModifier(
-      "basic-card", true, {"unionpay"}, true,
-      {autofill::CreditCard::CardType::CARD_TYPE_CREDIT}));
+      /*method=*/"basic-card", /*supported_networks_specified=*/true,
+      /*supported_networks=*/{"mastercard"}));
+
+  EXPECT_TRUE(GetApp()->IsValidForModifier(
+      /*method=*/"basic-card", /*supported_networks_specified=*/true,
+      /*supported_networks=*/{"unionpay"}));
 }
 
 }  // namespace payments

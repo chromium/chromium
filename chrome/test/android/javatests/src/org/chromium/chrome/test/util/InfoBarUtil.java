@@ -6,10 +6,13 @@ package org.chromium.chrome.test.util;
 
 import android.view.View;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.infobar.InfoBar;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
+import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
@@ -75,11 +78,30 @@ public class InfoBarUtil {
      * Waits until the specified InfoBar list contains no info bars.
      */
     public static void waitUntilNoInfoBarsExist(final List<InfoBar> infoBars) {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return infoBars.isEmpty();
-            }
-        });
+        CriteriaHelper.pollUiThread(infoBars::isEmpty);
+    }
+
+    /**
+     * Matcher used to find a specific infobar (by id) and tolerant of multiple InfoBars
+     * simultaneously showing.
+     */
+    public static class InfoBarMatcher extends BaseMatcher<InfoBar> {
+        private @InfoBarIdentifier int mId;
+        public InfoBar mLastMatch;
+
+        public InfoBarMatcher(@InfoBarIdentifier int id) {
+            mId = id;
+        }
+
+        @Override
+        public boolean matches(Object o) {
+            mLastMatch = (InfoBar) o;
+            return mLastMatch.getInfoBarIdentifier() == mId;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("Couldn't find infobar with id " + mId);
+        }
     }
 }

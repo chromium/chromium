@@ -2,23 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 assert(use_dbus)
 
 proto_library("mtp_file_entry_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/mtp_file_entry.proto",
-  ]
+  sources = [ "//third_party/cros_system_api/dbus/mtp_file_entry.proto" ]
   proto_out_dir = "services/device/media_transfer_protocol"
 }
 
 proto_library("mtp_storage_info_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/mtp_storage_info.proto",
-  ]
+  sources = [ "//third_party/cros_system_api/dbus/mtp_storage_info.proto" ]
   proto_out_dir = "services/device/media_transfer_protocol"
 }
 
@@ -30,14 +27,13 @@ source_set("media_transfer_protocol") {
     "mtp_device_manager.h",
   ]
 
-  public_deps = [
-    "//services/device/public/mojom",
-  ]
+  public_deps = [ "//services/device/public/mojom" ]
 
   deps = [
     ":mtp_file_entry_proto",
     ":mtp_storage_info_proto",
     "//base",
+    "//build:chromeos_buildflags",
     "//chromeos/dbus",
     "//dbus",
   ]

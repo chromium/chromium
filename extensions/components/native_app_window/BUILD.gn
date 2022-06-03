@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -21,7 +22,12 @@ static_library("native_app_window") {
     "//extensions/browser",
     "//extensions/common",
     "//skia",
-    "//ui/views",
-    "//ui/views/controls/webview",
   ]
+
+  if (toolkit_views) {
+    deps += [
+      "//ui/views",
+      "//ui/views/controls/webview",
+    ]
+  }
 }

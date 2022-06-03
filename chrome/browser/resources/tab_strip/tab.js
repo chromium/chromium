@@ -5,21 +5,20 @@
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {getFavicon} from 'chrome://resources/js/icon.m.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {getFavicon} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {AlertIndicatorsElement} from './alert_indicators.js';
-import {CustomElement} from './custom_element.js';
-import {TabStripEmbedderProxy} from './tab_strip_embedder_proxy.js';
-import {tabStripOptions} from './tab_strip_options.js';
+import {Tab, TabNetworkState} from './tab_strip.mojom-webui.js';
 import {TabSwiper} from './tab_swiper.js';
-import {CloseTabAction, TabData, TabNetworkState, TabsApiProxy} from './tabs_api_proxy.js';
+import {CloseTabAction, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 const DEFAULT_ANIMATION_DURATION = 125;
 
 /**
- * @param {!TabData} tab
+ * @param {!Tab} tab
  * @return {string}
  */
 function getAccessibleTitle(tab) {
@@ -29,7 +28,7 @@ function getAccessibleTitle(tab) {
     return loadTimeData.getStringF('tabCrashed', tabTitle);
   }
 
-  if (tab.networkState === TabNetworkState.ERROR) {
+  if (tab.networkState === TabNetworkState.kError) {
     return loadTimeData.getStringF('tabNetworkError', tabTitle);
   }
 
@@ -53,57 +52,57 @@ export class TabElement extends CustomElement {
     super();
 
     this.alertIndicatorsEl_ = /** @type {!AlertIndicatorsElement} */
-        (this.shadowRoot.querySelector('tabstrip-alert-indicators'));
+        (this.$('tabstrip-alert-indicators'));
     // Normally, custom elements will get upgraded automatically once added to
     // the DOM, but TabElement may need to update properties on
     // AlertIndicatorElement before this happens, so upgrade it manually.
     customElements.upgrade(this.alertIndicatorsEl_);
 
     /** @private {!HTMLElement} */
-    this.closeButtonEl_ =
-        /** @type {!HTMLElement} */ (this.shadowRoot.querySelector('#close'));
+    this.closeButtonEl_ = /** @type {!HTMLElement} */ (this.$('#close'));
     this.closeButtonEl_.setAttribute(
         'aria-label', loadTimeData.getString('closeTab'));
 
     /** @private {!HTMLElement} */
-    this.dragImageEl_ =
-        /** @type {!HTMLElement} */ (
-            this.shadowRoot.querySelector('#dragImage'));
+    this.dragImageEl_ = /** @type {!HTMLElement} */ (this.$('#dragImage'));
 
     /** @private {!HTMLElement} */
-    this.tabEl_ =
-        /** @type {!HTMLElement} */ (this.shadowRoot.querySelector('#tab'));
+    this.tabEl_ = /** @type {!HTMLElement} */ (this.$('#tab'));
 
     /** @private {!HTMLElement} */
-    this.faviconEl_ =
-        /** @type {!HTMLElement} */ (this.shadowRoot.querySelector('#favicon'));
+    this.faviconEl_ = /** @type {!HTMLElement} */ (this.$('#favicon'));
 
     /** @private {!HTMLElement} */
     this.thumbnailContainer_ =
-        /** @type {!HTMLElement} */ (
-            this.shadowRoot.querySelector('#thumbnail'));
+        /** @type {!HTMLElement} */ (this.$('#thumbnail'));
 
     /** @private {!Image} */
-    this.thumbnail_ =
-        /** @type {!Image} */ (this.shadowRoot.querySelector('#thumbnailImg'));
+    this.thumbnail_ = /** @type {!Image} */ (this.$('#thumbnailImg'));
 
-    /** @private {!TabData} */
+    /** @private {!Tab} */
     this.tab_;
 
     /** @private {!TabsApiProxy} */
-    this.tabsApi_ = TabsApiProxy.getInstance();
-
-    /** @private {!TabStripEmbedderProxy} */
-    this.embedderApi_ = TabStripEmbedderProxy.getInstance();
+    this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
     /** @private {!HTMLElement} */
-    this.titleTextEl_ = /** @type {!HTMLElement} */ (
-        this.shadowRoot.querySelector('#titleText'));
+    this.titleTextEl_ = /** @type {!HTMLElement} */ (this.$('#titleText'));
+
+    /**
+     * Flag indicating if this TabElement can accept dragover events. This
+     * is used to pause dragover events while animating as animating causes
+     * the elements below the pointer to shift.
+     * @private {boolean}
+     */
+    this.isValidDragOverTarget_ = true;
 
     this.tabEl_.addEventListener('click', () => this.onClick_());
     this.tabEl_.addEventListener('contextmenu', e => this.onContextMenu_(e));
     this.tabEl_.addEventListener(
         'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.tabEl_.addEventListener(
+        'pointerup', e => this.onPointerUp_(/** @type {!PointerEvent} */ (e)));
+
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.addEventListener('swipe', () => this.onSwipe_());
 
@@ -114,25 +113,24 @@ export class TabElement extends CustomElement {
     this.onTabActivating_ = (tabId) => {};
   }
 
-  /** @return {!TabData} */
+  /** @return {!Tab} */
   get tab() {
     return this.tab_;
   }
 
-  /** @param {!TabData} tab */
+  /** @param {!Tab} tab */
   set tab(tab) {
-    assert(this.tab_ !== tab);
     this.toggleAttribute('active', tab.active);
     this.tabEl_.setAttribute('aria-selected', tab.active.toString());
     this.toggleAttribute('hide-icon_', !tab.showIcon);
     this.toggleAttribute(
         'waiting_',
         !tab.shouldHideThrobber &&
-            tab.networkState === TabNetworkState.WAITING);
+            tab.networkState === TabNetworkState.kWaiting);
     this.toggleAttribute(
         'loading_',
         !tab.shouldHideThrobber &&
-            tab.networkState === TabNetworkState.LOADING);
+            tab.networkState === TabNetworkState.kLoading);
     this.toggleAttribute('pinned', tab.pinned);
     this.toggleAttribute('blocked_', tab.blocked);
     this.setAttribute('draggable', true);
@@ -142,20 +140,20 @@ export class TabElement extends CustomElement {
       this.titleTextEl_.textContent = tab.title;
     } else if (
         !tab.shouldHideThrobber &&
-        (tab.networkState === TabNetworkState.WAITING ||
-         tab.networkState === TabNetworkState.LOADING)) {
+        (tab.networkState === TabNetworkState.kWaiting ||
+         tab.networkState === TabNetworkState.kLoading)) {
       this.titleTextEl_.textContent = loadTimeData.getString('loadingTab');
     } else {
       this.titleTextEl_.textContent = loadTimeData.getString('defaultTabTitle');
     }
     this.titleTextEl_.setAttribute('aria-label', getAccessibleTitle(tab));
 
-    if (tab.networkState === TabNetworkState.WAITING ||
-        (tab.networkState === TabNetworkState.LOADING &&
+    if (tab.networkState === TabNetworkState.kWaiting ||
+        (tab.networkState === TabNetworkState.kLoading &&
          tab.isDefaultFavicon)) {
       this.faviconEl_.style.backgroundImage = 'none';
-    } else if (tab.favIconUrl) {
-      this.faviconEl_.style.backgroundImage = `url(${tab.favIconUrl})`;
+    } else if (tab.faviconUrl) {
+      this.faviconEl_.style.backgroundImage = `url(${tab.faviconUrl.url})`;
     } else {
       this.faviconEl_.style.backgroundImage = getFavicon('');
     }
@@ -177,6 +175,16 @@ export class TabElement extends CustomElement {
     this.tab_ = Object.freeze(tab);
   }
 
+  /** @return {boolean} */
+  get isValidDragOverTarget() {
+    return !this.hasAttribute('dragging_') && this.isValidDragOverTarget_;
+  }
+
+  /** @param {boolean} isValid */
+  set isValidDragOverTarget(isValid) {
+    this.isValidDragOverTarget_ = isValid;
+  }
+
   /** @param {!Function} callback */
   set onTabActivating(callback) {
     this.onTabActivating_ = callback;
@@ -189,6 +197,13 @@ export class TabElement extends CustomElement {
   /** @return {!HTMLElement} */
   getDragImage() {
     return this.dragImageEl_;
+  }
+
+  /** @return {!HTMLElement} */
+  getDragImageCenter() {
+    // dragImageEl_ has padding, so the drag image should be centered relative
+    // to tabEl_, the element within the padding.
+    return this.tabEl_;
   }
 
   /**
@@ -208,9 +223,7 @@ export class TabElement extends CustomElement {
     this.onTabActivating_(tabId);
     this.tabsApi_.activateTab(tabId);
 
-    if (tabStripOptions.autoCloseEnabled) {
-      this.embedderApi_.closeContainer();
-    }
+    this.tabsApi_.closeContainer();
   }
 
   /**
@@ -219,13 +232,6 @@ export class TabElement extends CustomElement {
    */
   onContextMenu_(event) {
     event.preventDefault();
-
-    if (!this.tab_) {
-      return;
-    }
-
-    this.embedderApi_.showTabContextMenu(
-        this.tab_.id, event.clientX, event.clientY);
     event.stopPropagation();
   }
 
@@ -234,18 +240,14 @@ export class TabElement extends CustomElement {
    * @private
    */
   onClose_(event) {
-    if (!this.tab_) {
-      return;
-    }
-
+    assert(this.tab_);
     event.stopPropagation();
     this.tabsApi_.closeTab(this.tab_.id, CloseTabAction.CLOSE_BUTTON);
   }
 
   /** @private */
   onSwipe_() {
-    // Prevent slideOut animation from playing.
-    this.remove();
+    assert(this.tab_);
     this.tabsApi_.closeTab(this.tab_.id, CloseTabAction.SWIPED_TO_CLOSE);
   }
 
@@ -260,10 +262,41 @@ export class TabElement extends CustomElement {
   }
 
   /**
-   * @param {boolean} dragging
+   * @param {!PointerEvent} event
+   * @private
    */
-  setDragging(dragging) {
-    this.toggleAttribute('dragging_', dragging);
+  onPointerUp_(event) {
+    event.stopPropagation();
+    if (event.pointerType !== 'touch' && event.button === 2) {
+      this.tabsApi_.showTabContextMenu(
+          this.tab.id, event.clientX, event.clientY);
+    }
+  }
+
+  resetSwipe() {
+    this.tabSwiper_.reset();
+  }
+
+  /**
+   * @param {boolean} isDragging
+   */
+  setDragging(isDragging) {
+    this.toggleAttribute('dragging_', isDragging);
+  }
+
+  /** @param {boolean} isDraggedOut */
+  setDraggedOut(isDraggedOut) {
+    this.toggleAttribute('dragged-out_', isDraggedOut);
+  }
+
+  /** @return {boolean} */
+  isDraggedOut() {
+    return this.hasAttribute('dragged-out_');
+  }
+
+  /** @param {boolean} isTouchPressed */
+  setTouchPressed(isTouchPressed) {
+    this.toggleAttribute('touch_pressed_', isTouchPressed);
   }
 
   /**
@@ -298,6 +331,18 @@ export class TabElement extends CustomElement {
       animation.onfinish = () => {
         resolve();
       };
+
+      // TODO(crbug.com/1035678) By the next animation frame, the animation
+      // should start playing. By the time another animation frame happens,
+      // force play the animation if the animation has not yet begun. Remove
+      // if/when the Blink issue has been fixed.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (animation.pending) {
+            animation.play();
+          }
+        });
+      });
     });
   }
 
@@ -305,8 +350,8 @@ export class TabElement extends CustomElement {
    * @return {!Promise}
    */
   slideOut() {
-    if (!this.embedderApi_.isVisible() || this.tab_.pinned) {
-      // There is no point in animating if the tab strip is hidden.
+    if (!this.tabsApi_.isVisible() || this.tab_.pinned ||
+        this.tabSwiper_.wasSwiping()) {
       this.remove();
       return Promise.resolve();
     }
@@ -349,7 +394,7 @@ export class TabElement extends CustomElement {
       });
 
       const visibilityChangeListener = () => {
-        if (!this.embedderApi_.isVisible()) {
+        if (!this.tabsApi_.isVisible()) {
           // If a tab strip becomes hidden during the animation, the onfinish
           // event will not get fired until the tab strip becomes visible again.
           // Therefore, when the tab strip becomes hidden, immediately call the
@@ -375,3 +420,11 @@ export class TabElement extends CustomElement {
 }
 
 customElements.define('tabstrip-tab', TabElement);
+
+/**
+ * @param {!Element} element
+ * @return {boolean}
+ */
+export function isTabElement(element) {
+  return element.tagName === 'TABSTRIP-TAB';
+}

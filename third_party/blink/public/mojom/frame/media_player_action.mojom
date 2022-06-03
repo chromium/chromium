@@ -1,0 +1,23 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Perform the below mention actions on the media player
+enum MediaPlayerActionType {
+  kPlay,
+  kMute,
+  kLoop,
+  kControls,
+  kPictureInPicture,
+  kDefaultActionType = kPictureInPicture
+};
+
+// Send MediaPlayerAction data from browser to renderer. Attribute
+// 'type' defines action needs to be performed on Media Player and
+// boolean attribute 'enable' enables or disables the action.
+struct MediaPlayerAction {
+  MediaPlayerActionType type = kDefaultActionType;
+  bool enable = false;
+};

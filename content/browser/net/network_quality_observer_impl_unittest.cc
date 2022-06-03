@@ -24,27 +24,27 @@ TEST(NetworkQualityObserverImplTest, TestObserverNotified) {
   NetworkQualityObserverImpl impl(&test_network_quality_tracker);
 
   test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
-      base::TimeDelta::FromMilliseconds(1), 100);
+      base::Milliseconds(1), 100);
 
   base::RunLoop().RunUntilIdle();
 
   base::HistogramTester histogram_tester;
 
   test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
-      base::TimeDelta::FromMilliseconds(500), 100);
+      base::Milliseconds(500), 100);
 
   // RTT changed from 1 msec to 500 msec.
   histogram_tester.ExpectBucketCount(
       "NQE.ContentObserver.NetworkQualityMeaningfullyChanged", 1, 1);
 
   test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
-      base::TimeDelta::FromMilliseconds(625), 100);
+      base::Milliseconds(625), 100);
   // RTT changed from 500 msec to 625 msec.
   histogram_tester.ExpectBucketCount(
       "NQE.ContentObserver.NetworkQualityMeaningfullyChanged", 1, 2);
 
   test_network_quality_tracker.ReportRTTsAndThroughputForTesting(
-      base::TimeDelta::FromMilliseconds(626), 100);
+      base::Milliseconds(626), 100);
   // RTT changed from 625 msec to 626 msec which is not a meaningful change.
   histogram_tester.ExpectBucketCount(
       "NQE.ContentObserver.NetworkQualityMeaningfullyChanged", 1, 2);

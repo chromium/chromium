@@ -7,9 +7,7 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
 
 // This spotlight manager handles indexing of sites shown on the NTP. Because of
 // privacy concerns, only sites shown on the NTP are indexed; therefore, this
@@ -20,7 +18,7 @@ class ChromeBrowserState;
 @interface TopSitesSpotlightManager : BaseSpotlightManager
 
 + (TopSitesSpotlightManager*)topSitesSpotlightManagerWithBrowserState:
-    (ios::ChromeBrowserState*)browserState;
+    (ChromeBrowserState*)browserState;
 
 // Reindexes all top sites, batching reindexes by 1 second.
 - (void)reindexTopSites;

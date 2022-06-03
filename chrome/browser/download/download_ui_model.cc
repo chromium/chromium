@@ -4,44 +4,46 @@
 
 #include "chrome/browser/download/download_ui_model.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/mime_util.h"
-#include "net/url_request/url_request_status.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/text/bytes_formatting.h"
-#include "ui/gfx/text_elider.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/note_taking_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/note_taking_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using base::TimeDelta;
 using download::DownloadItem;
-using safe_browsing::DownloadFileType;
 using offline_items_collection::FailState;
+using safe_browsing::DownloadFileType;
 
 namespace {
 
 // TODO(qinmin): Migrate this description generator to OfflineItemUtils once
 // that component gets used to build desktop UI.
-base::string16 FailStateMessage(FailState fail_state) {
+std::u16string FailStateDescription(FailState fail_state) {
   int string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS;
-  base::string16 status_text;
+  std::u16string status_text;
 
   switch (fail_state) {
     case FailState::FILE_ACCESS_DENIED:
@@ -149,6 +151,10 @@ void DownloadUIModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::WeakPtr<DownloadUIModel> DownloadUIModel::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool DownloadUIModel::HasSupportedImageMimeType() const {
   if (blink::IsSupportedImageMimeType(GetMimeType()))
     return true;
@@ -166,13 +172,13 @@ bool DownloadUIModel::HasSupportedImageMimeType() const {
   return false;
 }
 
-base::string16 DownloadUIModel::GetProgressSizesString() const {
-  base::string16 size_ratio;
+std::u16string DownloadUIModel::GetProgressSizesString() const {
+  std::u16string size_ratio;
   int64_t size = GetCompletedBytes();
   int64_t total = GetTotalBytes();
   if (total > 0) {
     ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
-    base::string16 simple_size =
+    std::u16string simple_size =
         ui::FormatBytesWithUnits(size, amount_units, false);
 
     // In RTL locales, we render the text "size/total" in an RTL context. This
@@ -180,7 +186,7 @@ base::string16 DownloadUIModel::GetProgressSizesString() const {
     // as "MB 123/456" because it ends with an LTR run. In order to solve this,
     // we mark the total string as an LTR string if the UI layout is
     // right-to-left so that the string "456 MB" is treated as an LTR run.
-    base::string16 simple_total =
+    std::u16string simple_total =
         base::i18n::GetDisplayStringInLTRDirectionality(
             ui::FormatBytesWithUnits(total, amount_units, true));
     size_ratio = l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_SIZES,
@@ -191,88 +197,82 @@ base::string16 DownloadUIModel::GetProgressSizesString() const {
   return size_ratio;
 }
 
-base::string16 DownloadUIModel::GetInterruptReasonText() const {
-  if (GetState() != DownloadItem::INTERRUPTED ||
-      GetLastFailState() == FailState::USER_CANCELED) {
-    return base::string16();
-  }
-  return FailStateMessage(GetLastFailState());
-}
-
-base::string16 DownloadUIModel::GetStatusText() const {
-  base::string16 status_text;
+std::u16string DownloadUIModel::GetStatusText() const {
   switch (GetState()) {
     case DownloadItem::IN_PROGRESS:
-      status_text = GetInProgressStatusString();
-      break;
+      return GetInProgressStatusText();
     case DownloadItem::COMPLETE:
-      if (GetFileExternallyRemoved()) {
-        status_text = l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED);
-      } else {
-        status_text.clear();
-      }
-      break;
-    case DownloadItem::CANCELLED:
-      status_text = l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
-      break;
+      return GetCompletedStatusText();
     case DownloadItem::INTERRUPTED: {
-      FailState fail_state = GetLastFailState();
+      const FailState fail_state = GetLastFailState();
       if (fail_state != FailState::USER_CANCELED) {
-        base::string16 message =
-            OfflineItemUtils::GetFailStateMessage(fail_state);
-        status_text = l10n_util::GetStringFUTF16(
-            IDS_DOWNLOAD_STATUS_INTERRUPTED, message);
-      } else {
-        // Same as DownloadItem::CANCELLED.
-        status_text = l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
+        return GetInterruptedStatusText(fail_state);
       }
-      break;
     }
-    default:
+      FALLTHROUGH;
+    case DownloadItem::CANCELLED:
+      return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
+    case DownloadItem::MAX_DOWNLOAD_STATE:
       NOTREACHED();
+      return std::u16string();
   }
-
-  return status_text;
 }
 
-base::string16 DownloadUIModel::GetTooltipText(const gfx::FontList& font_list,
-                                               int max_width) const {
-  base::string16 tooltip =
-      gfx::ElideFilename(GetFileNameToReportUser(), font_list, max_width);
+std::u16string DownloadUIModel::GetTooltipText() const {
+  std::u16string tooltip = GetFileNameToReportUser().LossyDisplayName();
   if (GetState() == DownloadItem::INTERRUPTED &&
       GetLastFailState() != FailState::USER_CANCELED) {
-    tooltip += base::ASCIIToUTF16("\n");
-    tooltip += gfx::ElideText(
-        OfflineItemUtils::GetFailStateMessage(GetLastFailState()), font_list,
-        max_width, gfx::ELIDE_TAIL);
+    tooltip += u"\n" + GetFailStateMessage(GetLastFailState());
   }
   return tooltip;
 }
 
-base::string16 DownloadUIModel::GetWarningText(const gfx::FontList& font_list,
-                                               int base_width) const {
-  // Should only be called if IsDangerous().
-  DCHECK(IsDangerous());
-  base::string16 elided_filename =
-      gfx::ElideFilename(GetFileNameToReportUser(), font_list, base_width);
+// Ordering of the warning texts should be the same as order in the
+// GetDesiredDownloadItemMode() method.
+std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
+                                               size_t* offset) const {
+  *offset = std::string::npos;
+
+  if (ShouldShowIncognitoWarning()) {
+    return l10n_util::GetStringFUTF16(IDS_PROMPT_INCOGNITO_WARNING, filename,
+                                      offset);
+  }
+
+  switch (GetMixedContentStatus()) {
+    case download::DownloadItem::MixedContentStatus::BLOCK:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED, filename, offset);
+    case download::DownloadItem::MixedContentStatus::WARN:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_WARNING, filename, offset);
+    case download::DownloadItem::MixedContentStatus::UNKNOWN:
+    case download::DownloadItem::MixedContentStatus::SAFE:
+    case download::DownloadItem::MixedContentStatus::VALIDATED:
+    case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+      break;
+  }
 
   switch (GetDangerType()) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL: {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return l10n_util::GetStringUTF16(IDS_PROMPT_MALICIOUS_DOWNLOAD_URL);
-    }
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE: {
-      if (IsExtensionDownload()) {
-        return l10n_util::GetStringUTF16(
-            IDS_PROMPT_DANGEROUS_DOWNLOAD_EXTENSION);
-      } else {
-        return l10n_util::GetStringFUTF16(IDS_PROMPT_DANGEROUS_DOWNLOAD,
-                                          elided_filename);
-      }
-    }
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+      return IsExtensionDownload()
+                 ? l10n_util::GetStringUTF16(
+                       IDS_PROMPT_DANGEROUS_DOWNLOAD_EXTENSION)
+                 : l10n_util::GetStringFUTF16(IDS_PROMPT_DANGEROUS_DOWNLOAD,
+                                              filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST: {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
       return l10n_util::GetStringFUTF16(IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT,
-                                        elided_filename);
+                                        filename, offset);
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE: {
+      return base::FeatureList::IsEnabled(
+                 safe_browsing::kSafeBrowsingCTDownloadWarning)
+                 ? l10n_util::GetStringFUTF16(
+                       IDS_PROMPT_DANGEROUS_DOWNLOAD_ACCOUNT_COMPROMISE,
+                       filename, offset)
+                 : l10n_util::GetStringFUTF16(
+                       IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT, filename, offset);
     }
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
       bool request_ap_verdicts = false;
@@ -280,59 +280,68 @@ base::string16 DownloadUIModel::GetWarningText(const gfx::FontList& font_list,
       request_ap_verdicts =
           safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
               profile())
-              ->RequestsAdvancedProtectionVerdicts();
+              ->IsUnderAdvancedProtection();
 #endif
       return l10n_util::GetStringFUTF16(
           request_ap_verdicts
               ? IDS_PROMPT_UNCOMMON_DOWNLOAD_CONTENT_IN_ADVANCED_PROTECTION
               : IDS_PROMPT_UNCOMMON_DOWNLOAD_CONTENT,
-          elided_filename);
+          filename, offset);
     }
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED: {
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DOWNLOAD_CHANGES_SETTINGS,
-                                        elided_filename);
-    }
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE: {
+                                        filename, offset);
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DOWNLOAD_BLOCKED_TOO_LARGE,
-                                        elided_filename);
-    }
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED: {
+                                        filename, offset);
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_BLOCKED_PASSWORD_PROTECTED, elided_filename);
-    }
-    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING: {
+          IDS_PROMPT_DOWNLOAD_BLOCKED_PASSWORD_PROTECTED, filename, offset);
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING, elided_filename);
-    }
-    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
+          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING, filename, offset);
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED, elided_filename);
-    }
+          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED, filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+      return l10n_util::GetStringFUTF16(IDS_PROMPT_DEEP_SCANNING, filename,
+                                        offset);
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
-    case download::DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY:
-    case download::DOWNLOAD_DANGER_TYPE_MAX: {
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
-    }
   }
-  NOTREACHED();
-  return base::string16();
+
+  return std::u16string();
 }
 
-base::string16 DownloadUIModel::GetWarningConfirmButtonText() const {
-  // Should only be called if IsDangerous()
-  DCHECK(IsDangerous());
-  if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE &&
-      IsExtensionDownload()) {
-    return l10n_util::GetStringUTF16(IDS_CONTINUE_EXTENSION_DOWNLOAD);
-  } else {
-    return l10n_util::GetStringUTF16(IDS_CONFIRM_DOWNLOAD);
+std::u16string DownloadUIModel::GetWarningConfirmButtonText() const {
+  const auto kDangerousFile = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
+
+  int warningConfirmButtonTextId = IDS_CONFIRM_DOWNLOAD;
+  if (ShouldShowIncognitoWarning()) {
+    warningConfirmButtonTextId = IDS_DOWNLOAD_ANYWAY;
+  } else if (GetDangerType() == kDangerousFile && IsExtensionDownload()) {
+    warningConfirmButtonTextId = IDS_CONTINUE_EXTENSION_DOWNLOAD;
   }
+
+  return l10n_util::GetStringUTF16(warningConfirmButtonTextId);
+}
+
+std::u16string DownloadUIModel::GetShowInFolderText() const {
+  std::u16string where = GetWebDriveName();
+  if (where.empty()) {
+    // "Show in <folder/Finder>"
+    return l10n_util::GetStringUTF16(IDS_DOWNLOAD_LINK_SHOW);
+  }
+  // "Show in <WEB_DRIVE>"
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_LINK_SHOW_IN_WEB_DRIVE, where);
 }
 
 ContentId DownloadUIModel::GetContentId() const {
@@ -345,8 +354,8 @@ Profile* DownloadUIModel::profile() const {
   return nullptr;
 }
 
-base::string16 DownloadUIModel::GetTabProgressStatusText() const {
-  return base::string16();
+std::u16string DownloadUIModel::GetTabProgressStatusText() const {
+  return std::u16string();
 }
 
 int64_t DownloadUIModel::GetCompletedBytes() const {
@@ -370,6 +379,14 @@ bool DownloadUIModel::MightBeMalicious() const {
 }
 
 bool DownloadUIModel::IsMalicious() const {
+  return false;
+}
+
+bool DownloadUIModel::IsMixedContent() const {
+  return false;
+}
+
+bool DownloadUIModel::ShouldShowIncognitoWarning() const {
   return false;
 }
 
@@ -414,6 +431,11 @@ DownloadFileType::DangerLevel DownloadUIModel::GetDangerLevel() const {
 void DownloadUIModel::SetDangerLevel(
     DownloadFileType::DangerLevel danger_level) {}
 
+download::DownloadItem::MixedContentStatus
+DownloadUIModel::GetMixedContentStatus() const {
+  return download::DownloadItem::MixedContentStatus::UNKNOWN;
+}
+
 void DownloadUIModel::OpenUsingPlatformHandler() {}
 
 bool DownloadUIModel::IsBeingRevived() const {
@@ -426,6 +448,14 @@ DownloadItem* DownloadUIModel::download() {
   return nullptr;
 }
 
+std::u16string DownloadUIModel::GetWebDriveName() const {
+  return std::u16string();
+}
+
+std::u16string DownloadUIModel::GetWebDriveMessage(bool) const {
+  return std::u16string();
+}
+
 base::FilePath DownloadUIModel::GetFileNameToReportUser() const {
   return base::FilePath();
 }
@@ -434,7 +464,9 @@ base::FilePath DownloadUIModel::GetTargetFilePath() const {
   return base::FilePath();
 }
 
-void DownloadUIModel::OpenDownload() {}
+void DownloadUIModel::OpenDownload() {
+  NOTREACHED();
+}
 
 download::DownloadItem::DownloadState DownloadUIModel::GetState() const {
   return download::DownloadItem::IN_PROGRESS;
@@ -449,6 +481,10 @@ download::DownloadDangerType DownloadUIModel::GetDangerType() const {
 }
 
 bool DownloadUIModel::GetOpenWhenComplete() const {
+  return false;
+}
+
+bool DownloadUIModel::IsOpenWhenCompleteByPolicy() const {
   return false;
 }
 
@@ -500,6 +536,10 @@ GURL DownloadUIModel::GetURL() const {
   return GURL();
 }
 
+bool DownloadUIModel::HasUserGesture() const {
+  return false;
+}
+
 GURL DownloadUIModel::GetOriginalURL() const {
   return GURL();
 }
@@ -517,6 +557,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::MAX:
       NOTREACHED();
       return false;
     case DownloadCommands::CANCEL:
@@ -535,6 +576,9 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
+    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+    case DownloadCommands::DEEP_SCAN:
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
       return true;
   }
   NOTREACHED();
@@ -547,6 +591,7 @@ bool DownloadUIModel::IsCommandChecked(
   switch (command) {
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::MAX:
       NOTREACHED();
       return false;
     case DownloadCommands::PAUSE:
@@ -559,8 +604,11 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
+    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::ANNOTATE:
+    case DownloadCommands::DEEP_SCAN:
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
       return false;
   }
   return false;
@@ -572,6 +620,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::MAX:
       NOTREACHED();
       break;
     case DownloadCommands::PLATFORM_OPEN:
@@ -593,6 +642,12 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
           content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK, false));
       break;
+    case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
+      download_commands->GetBrowser()->OpenURL(content::OpenURLParams(
+          GURL(chrome::kMixedContentDownloadBlockingLearnMoreUrl),
+          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, false));
+      break;
     case DownloadCommands::PAUSE:
       Pause();
       break;
@@ -603,12 +658,16 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       download_commands->CopyFileAsImageToClipboard();
       break;
     case DownloadCommands::ANNOTATE:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (HasSupportedImageMimeType()) {
-        chromeos::NoteTakingHelper::Get()->LaunchAppForNewNote(
-            profile(), GetTargetFilePath());
+        ash::NoteTakingHelper::Get()->LaunchAppForNewNote(profile(),
+                                                          GetTargetFilePath());
       }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      break;
+    case DownloadCommands::DEEP_SCAN:
+      break;
+    case DownloadCommands::BYPASS_DEEP_SCANNING:
       break;
   }
 }
@@ -622,15 +681,18 @@ bool DownloadUIModel::IsExtensionDownload() const {
   return false;
 }
 
-base::string16 DownloadUIModel::GetInProgressStatusString() const {
+std::u16string DownloadUIModel::GetInProgressStatusText() const {
   DCHECK_EQ(DownloadItem::IN_PROGRESS, GetState());
+  const auto web_drive = GetWebDriveName();
 
-  TimeDelta time_remaining;
-  // time_remaining is only known if the download isn't paused.
-  bool time_remaining_known = (!IsPaused() && TimeRemaining(&time_remaining));
+  base::TimeDelta time_remaining;
+  // time_remaining is only known if the download isn't paused, and it isn't
+  // going to be rerouted to a web drive.
+  bool time_remaining_known =
+      (!IsPaused() && TimeRemaining(&time_remaining) && web_drive.empty());
 
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
-  base::string16 size_ratio = GetProgressSizesString();
+  std::u16string size_ratio = GetProgressSizesString();
 
   // The download is a CRX (app, extension, theme, ...) and it is being unpacked
   // and validated.
@@ -646,7 +708,7 @@ base::string16 DownloadUIModel::GetInProgressStatusString() const {
   }
 
   // A download scheduled to be opened when complete: "Opening in 10 secs"
-  if (GetOpenWhenComplete()) {
+  if (web_drive.empty() && GetOpenWhenComplete()) {
     if (!time_remaining_known)
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_OPEN_WHEN_COMPLETE);
 
@@ -664,15 +726,100 @@ base::string16 DownloadUIModel::GetInProgressStatusString() const {
                                ui::TimeFormat::LENGTH_SHORT, time_remaining));
   }
 
-  // In progress download with no known time left and non-zero completed bytes:
-  // "100/120 MB" or "100 MB"
-  if (GetCompletedBytes() > 0)
+  const auto completed_bytes = GetCompletedBytes();
+  const auto total_bytes = GetTotalBytes();
+  if (completed_bytes == 0) {
+    // Instead of displaying "0 B" we say "Starting..."
+    return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_STARTING);
+  } else if (completed_bytes < total_bytes || total_bytes == 0) {
+    // In progress download with no known time left and non-zero completed
+    // bytes: "100/120 MB" or "100 MB"
     return size_ratio;
+  } else if (web_drive.size()) {
+    // If all bytes of the file has been downloaded and it is being rerouted:
+    // "Sending to <WEB_DRIVE>..."
+    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING, web_drive);
+  } else {
+    return std::u16string();
+  }
+}
 
-  // Instead of displaying "0 B" we say "Starting..."
-  return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_STARTING);
+std::u16string DownloadUIModel::GetCompletedStatusText() const {
+  if (GetFileExternallyRemoved()) {
+    return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED);
+  }
+
+  const auto web_drive = GetWebDriveName();
+  if (web_drive.size()) {
+    // "Saved to <WEB_DRIVE>"
+    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADED, web_drive);
+  }
+  return std::u16string();
+}
+
+// To clarify variable / method names in methods below that help form failure
+// status messages:
+//                                long & descriptive / short & concise
+// "Failed                      - <STATE_DESCRIPTION / STATE_MESSAGE>"
+// "Fail to save to <WEB_DRIVE> - <STATE_DESCRIPTION / STATE_MESSAGE>"
+// <                     DESCRIPTION/STATUS_TEXT                     >
+
+std::u16string DownloadUIModel::GetFailStateMessage(
+    offline_items_collection::FailState fail_state) const {
+  std::u16string state_msg;
+  if (fail_state != FailState::SERVER_FAILED ||
+      (state_msg = GetWebDriveMessage(/* verbose = */ false)).empty()) {
+    return OfflineItemUtils::GetFailStateMessage(fail_state);
+  }
+  return state_msg;
+}
+
+std::u16string DownloadUIModel::GetInterruptDescription() const {
+  std::u16string state_description;
+  const auto fail_state = GetLastFailState();
+  if (fail_state != FailState::SERVER_FAILED ||
+      (state_description = GetWebDriveMessage(/* verbose = */ true)).empty()) {
+    state_description = FailStateDescription(fail_state);
+  }
+
+  const auto web_drive = GetWebDriveName();
+  if (web_drive.empty()) {
+    // "Failed - <STATE_DESCRIPTION>"
+    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
+                                      state_description);
+  }
+  // else: file was rerouted. Formulate the message string accordingly.
+  // "Fail to save to <WEB_DRIVE> - <STATE_DESCRIPTION>"
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED,
+                                    web_drive, state_description);
+}
+
+std::u16string DownloadUIModel::GetHistoryPageStatusText() const {
+  if (GetLastFailState() == FailState::SERVER_FAILED) {
+    // Display the full error description in case of server failure.
+    return GetInterruptDescription();
+  }
+  return GetStatusText();
+}
+
+std::u16string DownloadUIModel::GetInterruptedStatusText(
+    FailState fail_state) const {
+  auto state_msg = GetFailStateMessage(fail_state);
+  const auto web_drive = GetWebDriveName();
+  if (web_drive.empty()) {
+    // "Failed - <STATE_MESSAGE>"
+    return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
+                                      state_msg);
+  }
+  // "Fail to save to <WEB_DRIVE> - <STATE_MESSAGE>"
+  return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOAD_INTERRUPTED,
+                                    web_drive, state_msg);
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void DownloadUIModel::CompleteSafeBrowsingScan() {}
 #endif
+
+bool DownloadUIModel::ShouldShowDropdown() const {
+  return true;
+}

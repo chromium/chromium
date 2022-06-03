@@ -124,13 +124,18 @@ class Code(object):
     def trim_comment(comment, max_len):
       if len(comment) <= max_len:
         return comment, ''
+      # If we ran out of space due to existing content, don't try to wrap.
+      if max_len <= 1:
+        return '', comment.lstrip()
       last_space = comment.rfind(' ', 0, max_len + 1)
       if last_space != -1:
         line = comment[0:last_space]
         comment = comment[last_space + 1:]
       else:
-        line = comment[0:max_len]
-        comment = comment[max_len:]
+        # If the line can't be split, then don't try.  The comments might be
+        # important (e.g. JSDoc) where splitting it breaks things.
+        line = comment
+        comment = ''
       return line, comment.lstrip()
 
     # First line has the full maximum length.
@@ -145,6 +150,7 @@ class Code(object):
     # Any subsequent lines be subject to the wrap indent.
     max_len = (self._comment_length - len(''.join(self._line_prefixes)) -
                len(comment_prefix) - wrap_indent)
+    assert max_len > 1
     while len(comment):
       line, comment = trim_comment(comment, max_len)
       self.Append(comment_prefix + (' ' * wrap_indent) + line, substitute=False)

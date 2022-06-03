@@ -19,31 +19,38 @@
 
 namespace extensions {
 
-ContentHashReader::ContentHashReader() {}
+ContentHashReader::ContentHashReader(InitStatus status) : status_(status) {}
 
-ContentHashReader::~ContentHashReader() {}
+ContentHashReader::~ContentHashReader() = default;
 
-// static.
+// static
 std::unique_ptr<const ContentHashReader> ContentHashReader::Create(
     const base::FilePath& relative_path,
     const scoped_refptr<const ContentHash>& content_hash) {
   base::ElapsedTimer timer;
 
-  auto hash_reader = base::WrapUnique(new ContentHashReader);
-
-  if (!content_hash->succeeded())
-    return hash_reader;  // FAILURE.
-
-  hash_reader->has_content_hashes_ = true;
+  ComputedHashes::Status hashes_status = content_hash->computed_hashes_status();
+  if (hashes_status == ComputedHashes::Status::UNKNOWN ||
+      hashes_status == ComputedHashes::Status::READ_FAILED) {
+    // Failure: no hashes at all.
+    return base::WrapUnique(new ContentHashReader(InitStatus::HASHES_MISSING));
+  }
+  if (hashes_status == ComputedHashes::Status::PARSE_FAILED) {
+    // Failure: hashes are unreadable.
+    return base::WrapUnique(new ContentHashReader(InitStatus::HASHES_DAMAGED));
+  }
+  DCHECK_EQ(ComputedHashes::Status::SUCCESS, hashes_status);
 
   const ComputedHashes& computed_hashes = content_hash->computed_hashes();
-  base::Optional<std::string> root;
+  absl::optional<std::string> root;
 
-  if (computed_hashes.GetHashes(relative_path, &hash_reader->block_size_,
-                                &hash_reader->hashes_) &&
-      hash_reader->block_size_ % crypto::kSHA256Length == 0) {
-    root = ComputeTreeHashRoot(
-        hash_reader->hashes_, hash_reader->block_size_ / crypto::kSHA256Length);
+  int block_size;
+  std::vector<std::string> block_hashes;
+
+  if (computed_hashes.GetHashes(relative_path, &block_size, &block_hashes) &&
+      block_size % crypto::kSHA256Length == 0) {
+    root =
+        ComputeTreeHashRoot(block_hashes, block_size / crypto::kSHA256Length);
   }
 
   ContentHash::TreeHashVerificationResult verification =
@@ -64,16 +71,25 @@ std::unique_ptr<const ContentHashReader> ContentHashReader::Create(
     // A content verification failure should be triggered if there is a mismatch
     // between the file read state and the existence of verification hashes.
     if (verification == ContentHash::TreeHashVerificationResult::NO_ENTRY &&
-        (!base::PathExists(full_path) || base::DirectoryExists(full_path)))
-      hash_reader->file_missing_from_verified_contents_ = true;
+        (!base::PathExists(full_path) || base::DirectoryExists(full_path))) {
+      // Expected failure: no hashes for non-existing resource.
+      return base::WrapUnique(new ContentHashReader(
+          InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE));
+    }
 
-    return hash_reader;  // FAILURE.
+    // Failure: no hashes when resource need them.
+    return base::WrapUnique(
+        new ContentHashReader(InitStatus::NO_HASHES_FOR_RESOURCE));
   }
 
-  hash_reader->status_ = SUCCESS;
+  auto hash_reader =
+      base::WrapUnique(new ContentHashReader(InitStatus::SUCCESS));
+  hash_reader->block_size_ = block_size;
+  hash_reader->hashes_ = std::move(block_hashes);
+
   UMA_HISTOGRAM_TIMES("ExtensionContentHashReader.InitLatency",
                       timer.Elapsed());
-  return hash_reader;  // SUCCESS.
+  return hash_reader;  // Success.
 }
 
 int ContentHashReader::block_count() const {
@@ -86,7 +102,7 @@ int ContentHashReader::block_size() const {
 
 bool ContentHashReader::GetHashForBlock(int block_index,
                                         const std::string** result) const {
-  if (status_ != SUCCESS)
+  if (status_ != InitStatus::SUCCESS)
     return false;
   DCHECK(block_index >= 0);
 

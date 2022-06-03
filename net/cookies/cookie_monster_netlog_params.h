@@ -5,8 +5,6 @@
 #ifndef NET_COOKIES_COOKIE_MONSTER_NETLOG_PARAMS_H_
 #define NET_COOKIES_COOKIE_MONSTER_NETLOG_PARAMS_H_
 
-#include <memory>
-
 #include "base/values.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_change_dispatcher.h"

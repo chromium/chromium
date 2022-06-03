@@ -20,6 +20,9 @@
 #
 # and put the output into this file.
 
+from __future__ import print_function
+
+# yapf: disable
 FAKE_GPU_INFO = {
     'feature_status':
         {
@@ -45,40 +48,40 @@ FAKE_GPU_INFO = {
             'driver_version': '14.501.1003.0',
             'dx_diagnostics_info_state': 0,
             'gl_extensions':
-              'GL_OES_element_index_uint GL_OES_packed_depth_stencil '
-              'GL_OES_get_program_binary GL_OES_rgb8_rgba8 '
-              'GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra '
-              'GL_NV_pixel_buffer_object GL_OES_mapbuffer '
-              'GL_EXT_map_buffer_range GL_OES_texture_half_float '
-              'GL_OES_texture_half_float_linear GL_OES_texture_float '
-              'GL_OES_texture_float_linear GL_EXT_texture_rg '
-              'GL_ANGLE_texture_compression_dxt1 '
-              'GL_ANGLE_texture_compression_dxt3 '
-              'GL_ANGLE_texture_compression_dxt5 GL_EXT_sRGB '
-              'GL_ANGLE_depth_texture GL_EXT_texture_storage '
-              'GL_OES_texture_npot GL_EXT_draw_buffers '
-              'GL_EXT_texture_filter_anisotropic '
-              'GL_EXT_occlusion_query_boolean GL_NV_fence GL_EXT_robustness '
-              'GL_EXT_blend_minmax GL_ANGLE_framebuffer_blit '
-              'GL_ANGLE_framebuffer_multisample GL_ANGLE_instanced_arrays '
-              'GL_ANGLE_pack_reverse_row_order GL_OES_standard_derivatives '
-              'GL_EXT_shader_texture_lod GL_EXT_frag_depth '
-              'GL_ANGLE_texture_usage GL_ANGLE_translated_shader_source '
-              'GL_EXT_debug_marker GL_OES_EGL_image',
+                'GL_OES_element_index_uint GL_OES_packed_depth_stencil '
+                'GL_OES_get_program_binary GL_OES_rgb8_rgba8 '
+                'GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra '
+                'GL_NV_pixel_buffer_object GL_OES_mapbuffer '
+                'GL_EXT_map_buffer_range GL_OES_texture_half_float '
+                'GL_OES_texture_half_float_linear GL_OES_texture_float '
+                'GL_OES_texture_float_linear GL_EXT_texture_rg '
+                'GL_ANGLE_texture_compression_dxt1 '
+                'GL_ANGLE_texture_compression_dxt3 '
+                'GL_ANGLE_texture_compression_dxt5 GL_EXT_sRGB '
+                'GL_ANGLE_depth_texture GL_EXT_texture_storage '
+                'GL_OES_texture_npot GL_EXT_draw_buffers '
+                'GL_EXT_texture_filter_anisotropic '
+                'GL_EXT_occlusion_query_boolean GL_NV_fence GL_EXT_robustness '
+                'GL_EXT_blend_minmax GL_ANGLE_framebuffer_blit '
+                'GL_ANGLE_framebuffer_multisample GL_ANGLE_instanced_arrays '
+                'GL_ANGLE_pack_reverse_row_order GL_OES_standard_derivatives '
+                'GL_EXT_shader_texture_lod GL_EXT_frag_depth '
+                'GL_ANGLE_texture_usage GL_ANGLE_translated_shader_source '
+                'GL_EXT_debug_marker GL_OES_EGL_image',
             'gl_renderer':
-              'ANGLE (AMD Radeon HD 6450 Direct3D11 vs_5_0 ps_5_0)',
+                'ANGLE (AMD Radeon HD 6450 Direct3D11 vs_5_0 ps_5_0)',
             'gl_reset_notification_strategy': 33362,
             'gl_vendor': 'Google Inc.',
             'gl_version': 'OpenGL ES 2.0 (ANGLE 2.1.0.c5b2ba53591c)',
             'gl_ws_extensions':
-              'EGL_EXT_create_context_robustness '
-              'EGL_ANGLE_d3d_share_handle_client_buffer '
-              'EGL_ANGLE_surface_d3d_texture_2d_share_handle '
-              'EGL_ANGLE_query_surface_pointer EGL_ANGLE_window_fixed_size '
-              'EGL_NV_post_sub_buffer EGL_KHR_create_context '
-              'EGL_EXT_device_query EGL_KHR_image EGL_KHR_image_base '
-              'EGL_KHR_gl_texture_2D_image EGL_KHR_gl_texture_cubemap_image '
-              'EGL_KHR_gl_renderbuffer_image EGL_KHR_get_all_proc_addresses',
+                'EGL_EXT_create_context_robustness '
+                'EGL_ANGLE_d3d_share_handle_client_buffer '
+                'EGL_ANGLE_surface_d3d_texture_2d_share_handle '
+                'EGL_ANGLE_query_surface_pointer EGL_ANGLE_window_fixed_size '
+                'EGL_NV_post_sub_buffer EGL_KHR_create_context '
+                'EGL_EXT_device_query EGL_KHR_image EGL_KHR_image_base '
+                'EGL_KHR_gl_texture_2D_image EGL_KHR_gl_texture_cubemap_image '
+                'EGL_KHR_gl_renderbuffer_image EGL_KHR_get_all_proc_addresses',
             'gl_ws_vendor': 'Google Inc. (adapter LUID: 0000000000007924)',
             'gl_ws_version': '1.4 (ANGLE 2.1.0.c5b2ba53591c)',
             'in_process_gpu': False,
@@ -119,3 +122,4 @@ FAKE_GPU_INFO = {
             'scalarize_vec_and_mat_constructor_args',
         ]
 }
+# yapf: enable

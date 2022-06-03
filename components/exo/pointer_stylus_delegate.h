@@ -27,14 +27,16 @@ class PointerStylusDelegate {
   virtual void OnPointerToolChange(ui::EventPointerType type) = 0;
 
   // Called when the force (pressure) of the pointer changes.
-  // Normalized to be [0, 1].
+  // Normalized to be [0, 1]. NaN means pressure is not supported by the
+  // input device.
   virtual void OnPointerForce(base::TimeTicks time_stamp, float force) = 0;
 
   // Called when the tilt of a pen/stylus changes. Measured from surface normal
   // as plane angle in degrees, values lie in [-90,90]. A positive x is to the
-  // right and a positive y is towards the user.
+  // right and a positive y is towards the user. Always 0 if the device does
+  // not support it.
   virtual void OnPointerTilt(base::TimeTicks time_stamp,
-                             gfx::Vector2dF tilt) = 0;
+                             const gfx::Vector2dF& tilt) = 0;
 
  protected:
   virtual ~PointerStylusDelegate() {}

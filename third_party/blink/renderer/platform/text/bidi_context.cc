@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -33,8 +34,7 @@ struct SameSizeAsBidiContext
   void* parent;
 };
 
-static_assert(sizeof(BidiContext) == sizeof(SameSizeAsBidiContext),
-              "BidiContext should stay small");
+ASSERT_SIZE(BidiContext, SameSizeAsBidiContext);
 
 inline scoped_refptr<BidiContext> BidiContext::CreateUncached(
     unsigned char level,

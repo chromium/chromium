@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
@@ -23,10 +22,13 @@ class GL_EXPORT GLContextCGL : public GLContextReal {
  public:
   explicit GLContextCGL(GLShareGroup* share_group);
 
+  GLContextCGL(const GLContextCGL&) = delete;
+  GLContextCGL& operator=(const GLContextCGL&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
-  bool MakeCurrent(GLSurface* surface) override;
+  bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override;
   bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override;
@@ -55,8 +57,6 @@ class GL_EXPORT GLContextCGL : public GLContextReal {
 
   // Debugging for https://crbug.com/863817
   bool has_switched_gpus_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextCGL);
 };
 
 }  // namespace gl

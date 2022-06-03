@@ -40,17 +40,39 @@ void OverviewTestApi::SetOverviewMode(
             : OverviewAnimationState::kExitAnimationComplete,
       std::move(done_callback));
 
-  const bool animation_started = start ? overview_controller->StartOverview()
-                                       : overview_controller->EndOverview();
+  const bool animation_started =
+      start ? overview_controller->StartOverview(OverviewStartAction::kTests)
+            : overview_controller->EndOverview(OverviewEndAction::kTests);
 
   if (!animation_started)
     waiter->Cancel();
 }
 
-base::Optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
+void OverviewTestApi::WaitForOverviewState(
+    OverviewAnimationState expected_state,
+    DoneCallback callback) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  const bool overview_finished_showing =
+      overview_controller->InOverviewSession() &&
+      !overview_controller->IsInStartAnimation();
+  const bool overview_finished_hiding =
+      !overview_controller->InOverviewSession() &&
+      !overview_controller->IsCompletingShutdownAnimations();
+  if ((expected_state == OverviewAnimationState::kEnterAnimationComplete &&
+       overview_finished_showing) ||
+      (expected_state == OverviewAnimationState::kExitAnimationComplete &&
+       overview_finished_hiding)) {
+    std::move(callback).Run(/*animation_succeeded=*/true);
+    return;
+  }
+
+  new OverviewAnimationStateWaiter(expected_state, std::move(callback));
+}
+
+absl::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
   auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession())
-    return base::nullopt;
+    return absl::nullopt;
 
   OverviewInfo info;
   for (const auto& grid :

@@ -9,7 +9,7 @@
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif
 
 ChromeKeySystemsProvider::ChromeKeySystemsProvider()
@@ -77,6 +77,6 @@ void ChromeKeySystemsProvider::SetTickClockForTesting(
 }
 
 void ChromeKeySystemsProvider::SetProviderDelegateForTesting(
-    const KeySystemsProviderDelegate& test_provider) {
-  test_provider_ = test_provider;
+    KeySystemsProviderDelegate test_provider) {
+  test_provider_ = std::move(test_provider);
 }

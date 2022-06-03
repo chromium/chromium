@@ -22,6 +22,9 @@ class MOJO_SYSTEM_IMPL_EXPORT InvitationDispatcher : public Dispatcher {
  public:
   InvitationDispatcher();
 
+  InvitationDispatcher(const InvitationDispatcher&) = delete;
+  InvitationDispatcher& operator=(const InvitationDispatcher&) = delete;
+
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
@@ -39,11 +42,9 @@ class MOJO_SYSTEM_IMPL_EXPORT InvitationDispatcher : public Dispatcher {
   base::Lock lock_;
   bool is_closed_ = false;
   PortMapping attached_ports_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvitationDispatcher);
 };
 
 }  // namespace core
 }  // namespace mojo
 
-#endif  // MOJO_CORE_INVITATION_DISPATCHER_H
+#endif  // MOJO_CORE_INVITATION_DISPATCHER_H_

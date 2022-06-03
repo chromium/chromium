@@ -4,124 +4,102 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
-#include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/lookalikes/core/features.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
+#include "components/url_formatter/url_formatter.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace lookalikes {
 
-TEST(LookalikeUrlNavigationThrottleTest, IsEditDistanceAtMostOne) {
+class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {};
+
+// Tests that spoofy hostnames are properly handled in the throttle.
+TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
+  base::HistogramTester test;
+
+  reputation::InitializeSafetyTipConfig();
+
   const struct TestCase {
-    const wchar_t* domain;
-    const wchar_t* top_domain;
-    bool expected;
+    const char* hostname;
+    bool expected_blocked;
+    url_formatter::IDNSpoofChecker::Result expected_spoof_check_result;
   } kTestCases[] = {
-      {L"", L"", true},
-      {L"a", L"a", true},
-      {L"a", L"", true},
-      {L"", L"a", true},
+      // ASCII private domain.
+      {"private.hostname", false,
+       url_formatter::IDNSpoofChecker::Result::kNone},
 
-      {L"", L"ab", false},
-      {L"ab", L"", false},
+      // lɔlocked.com, fails ICU spoof checks.
+      {"xn--llocked-9bd.com", true,
+       url_formatter::IDNSpoofChecker::Result::kICUSpoofChecks},
+      // þook.com, contains a TLD specific character (þ).
+      {"xn--ook-ooa.com", true,
+       url_formatter::IDNSpoofChecker::Result::kTLDSpecificCharacters},
+      // example·com.com, unsafe middle dot.
+      {"xn--examplecom-rra.com", true,
+       url_formatter::IDNSpoofChecker::Result::kUnsafeMiddleDot},
+      // scope.com, with scope in Cyrillic. Whole script confusable.
+      {"xn--e1argc3h.com", true,
+       url_formatter::IDNSpoofChecker::Result::kWholeScriptConfusable},
+      //  Non-ASCII Latin with Non-Latin character
+      {"xn--caf-dma9024xvpg.kr", true,
+       url_formatter::IDNSpoofChecker::Result::
+           kNonAsciiLatinCharMixedWithNonLatin},
+      // testーsite.com, has dangerous pattern (ー is CJK character).
+      {"xn--testsite-1g5g.com", true,
+       url_formatter::IDNSpoofChecker::Result::kDangerousPattern},
 
-      {L"ab", L"a", true},
-      {L"a", L"ab", true},
-      {L"ab", L"b", true},
-      {L"b", L"ab", true},
-      {L"ab", L"ab", true},
+      // TODO(crbug.com/1100485): Add an example for digit lookalikes.
 
-      {L"", L"ab", false},
-      {L"ab", L"", false},
-      {L"a", L"abc", false},
-      {L"abc", L"a", false},
-
-      {L"aba", L"ab", true},
-      {L"ba", L"aba", true},
-      {L"abc", L"ac", true},
-      {L"ac", L"abc", true},
-
-      // Same length.
-      {L"xbc", L"ybc", true},
-      {L"axc", L"ayc", true},
-      {L"abx", L"aby", true},
-
-      // Should also work for non-ASCII.
-      {L"é", L"", true},
-      {L"", L"é", true},
-      {L"tést", L"test", true},
-      {L"test", L"tést", true},
-      {L"tés", L"test", false},
-      {L"test", L"tés", false},
-
-      // Real world test cases.
-      {L"google.com", L"gooogle.com", true},
-      {L"gogle.com", L"google.com", true},
-      {L"googlé.com", L"google.com", true},
-      {L"google.com", L"googlé.com", true},
-      // Different by two characters.
-      {L"google.com", L"goooglé.com", false},
+      // 🍕.com, fails ICU spoof checks, but is allowed because consists of only
+      // emoji and ASCII.
+      {"xn--vi8h.com", false,
+       url_formatter::IDNSpoofChecker::Result::kICUSpoofChecks},
+      // sparkasse-gießen.de, has a deviation character (ß). This is in punycode
+      // because GURL canonicalizes ß to ss.
+      {"xn--sparkasse-gieen-2ib.de", false,
+       url_formatter::IDNSpoofChecker::Result::kDeviationCharacters},
   };
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      lookalikes::features::kLookalikeInterstitialForPunycode);
+
   for (const TestCase& test_case : kTestCases) {
-    bool result =
-        IsEditDistanceAtMostOne(base::WideToUTF16(test_case.domain),
-                                base::WideToUTF16(test_case.top_domain));
-    EXPECT_EQ(test_case.expected, result);
+    url_formatter::IDNConversionResult idn_result =
+        url_formatter::UnsafeIDNToUnicodeWithDetails(test_case.hostname);
+    ASSERT_EQ(test_case.expected_spoof_check_result,
+              idn_result.spoof_check_result)
+        << test_case.hostname;
+
+    GURL url(std::string("http://") + test_case.hostname);
+    ::testing::NiceMock<content::MockNavigationHandle> handle(url, main_rfh());
+    handle.set_redirect_chain({url});
+    handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+
+    auto throttle =
+        LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
+    ASSERT_TRUE(throttle);
+    throttle->SetUseTestProfileForTesting();
+
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              throttle->WillStartRequest().action());
+
+    if (test_case.expected_blocked) {
+      EXPECT_EQ(content::NavigationThrottle::CANCEL,
+                throttle->WillProcessResponse().action())
+          << "Failed: " << test_case.hostname;
+    } else {
+      EXPECT_EQ(content::NavigationThrottle::PROCEED,
+                throttle->WillProcessResponse().action())
+          << "Failed: " << test_case.hostname;
+    }
   }
-}
-
-// These redirects are safe:
-// - http[s]://sité.test -> http[s]://site.test
-// - http[s]://sité.test/path -> http[s]://site.test
-// - http[s]://subdomain.sité.test -> http[s]://site.test
-// - http[s]://random.test -> http[s]://sité.test -> http[s]://site.test
-// - http://sité.test/path -> https://sité.test/path -> https://site.test ->
-// <any_url>
-// - "subdomain" on either side.
-//
-// These are not safe:
-// - http[s]://[subdomain.]sité.test -> http[s]://[subdomain.]site.test/path
-// because the redirected URL has a path.
-TEST(LookalikeUrlNavigationThrottleTest, IsSafeRedirect) {
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com", {GURL("http://éxample.com"), GURL("http://example.com")}));
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com", {GURL("http://éxample.com"), GURL("http://example.com")}));
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com",
-      {GURL("http://éxample.com"), GURL("http://subdomain.example.com")}));
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com", {GURL("http://éxample.com"), GURL("http://example.com"),
-                      GURL("https://example.com")}));
-  // Original site redirects to HTTPS.
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com", {GURL("http://éxample.com"), GURL("https://éxample.com"),
-                      GURL("https://example.com")}));
-  // Original site redirects to HTTPS which redirects to HTTP which redirects
-  // back to HTTPS of the non-IDN version.
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com",
-      {GURL("http://éxample.com/redir1"), GURL("https://éxample.com/redir1"),
-       GURL("http://éxample.com/redir2"), GURL("https://example.com/")}));
-  // Same as above, but there is another redirect at the end of the chain.
-  EXPECT_TRUE(IsSafeRedirect(
-      "example.com",
-      {GURL("http://éxample.com/redir1"), GURL("https://éxample.com/redir1"),
-       GURL("http://éxample.com/redir2"), GURL("https://example.com/"),
-       GURL("https://totallydifferentsite.com/somepath")}));
-
-  // Not a redirect, the chain is too short.
-  EXPECT_FALSE(IsSafeRedirect("example.com", {GURL("http://éxample.com")}));
-  // Not safe: Redirected site is not the same as the matched site.
-  EXPECT_FALSE(IsSafeRedirect("example.com", {GURL("http://éxample.com"),
-                                              GURL("http://other-site.com")}));
-  // Not safe: Initial URL doesn't redirect to the root of the suggested domain.
-  EXPECT_FALSE(IsSafeRedirect(
-      "example.com",
-      {GURL("http://éxample.com"), GURL("http://example.com/path")}));
-  // Not safe: The first redirect away from éxample.com is not to the matching
-  // non-IDN site.
-  EXPECT_FALSE(IsSafeRedirect("example.com", {GURL("http://éxample.com"),
-                                              GURL("http://intermediate.com"),
-                                              GURL("http://example.com")}));
 }
 
 }  // namespace lookalikes

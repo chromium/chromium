@@ -31,16 +31,15 @@ source_set("cups_proxy") {
     "//base",
     "//chrome/services/cups_proxy/public/cpp",
     "//chrome/services/cups_proxy/public/mojom",
-    "//chrome/services/ipp_parser",
+    "//chrome/services/ipp_parser/public/cpp",
+    "//chrome/services/ipp_parser/public/cpp/browser",
+    "//chromeos",
     "//chromeos/dbus",
+    "//chromeos/dbus/cups_proxy",
     "//net",
+    "//net/traffic_annotation",
+    "//printing/backend",
   ]
-
-  public_deps = [
-    "//printing",
-  ]
-
-  configs += [ "//printing:cups" ]
 }
 
 static_library("test_support") {
@@ -50,9 +49,12 @@ static_library("test_support") {
     "fake_cups_proxy_service_delegate.h",
   ]
 
-  public_deps = [
-    ":cups_proxy",
+  deps = [
+    "//base",
+    "//chromeos",
   ]
+
+  public_deps = [ ":cups_proxy" ]
 }
 
 test("libcups_unittests") {
@@ -60,10 +62,9 @@ test("libcups_unittests") {
   sources = [
     "ipp_validator_unittest.cc",
     "printer_installer_unittest.cc",
+    "proxy_manager_unittest.cc",
     "socket_manager_unittest.cc",
   ]
-
-  configs += [ "//printing:cups" ]
 
   deps = [
     ":cups_proxy",
@@ -75,11 +76,10 @@ test("libcups_unittests") {
     "//chrome/services/cups_proxy/public/cpp:unit_tests",
     "//chrome/services/cups_proxy/test:test_support",
     "//chromeos",
+    "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
-  data = [
-    "//chrome/services/cups_proxy/test/data",
-  ]
+  data = [ "//chrome/services/cups_proxy/test/data" ]
 }

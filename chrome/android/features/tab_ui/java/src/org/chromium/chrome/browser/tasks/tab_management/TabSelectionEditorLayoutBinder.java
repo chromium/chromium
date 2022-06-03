@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.graphics.Rect;
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,12 +36,12 @@ public class TabSelectionEditorLayoutBinder {
         } else if (TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR == propertyKey) {
             view.getToolbar().setToolbarBackgroundColor(
                     model.get(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR));
+        } else if (TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT == propertyKey) {
+            view.getToolbar().setTextColorStateList(
+                    model.get(TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT));
         } else if (TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT == propertyKey) {
             view.getToolbar().setButtonTint(
                     model.get(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT));
-        } else if (TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE == propertyKey) {
-            view.getToolbar().setTextAppearance(
-                    model.get(TabSelectionEditorProperties.TOOLBAR_TEXT_APPEARANCE));
         } else if (TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT == propertyKey) {
             view.getToolbar().setActionButtonText(
                     model.get(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT));
@@ -51,17 +49,10 @@ public class TabSelectionEditorLayoutBinder {
                 == propertyKey) {
             view.getToolbar().setActionButtonEnablingThreshold(model.get(
                     TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_ENABLING_THRESHOLD));
-        } else if (TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT == propertyKey) {
-            Rect positionRect =
-                    model.get(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT);
-            if (positionRect == null) {
-                return;
-            }
-            view.updateTabSelectionEditorPositionRect(positionRect);
-        } else if (TabSelectionEditorProperties.SELECTION_EDITOR_GLOBAL_LAYOUT_LISTENER
+        } else if (TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID
                 == propertyKey) {
-            view.registerGlobalLayoutListener(model.get(
-                    TabSelectionEditorProperties.SELECTION_EDITOR_GLOBAL_LAYOUT_LISTENER));
+            view.getToolbar().setActionButtonDescriptionResourceId(model.get(
+                    TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID));
         }
     }
 }

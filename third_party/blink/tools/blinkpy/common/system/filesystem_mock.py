@@ -30,10 +30,11 @@ import errno
 import hashlib
 import os
 import re
-import StringIO
 import unittest
 
 from blinkpy.common.system.filesystem import _remove_contents, _sanitize_filename
+
+from six import StringIO
 
 
 class MockFileSystem(object):
@@ -102,7 +103,8 @@ class MockFileSystem(object):
         return home_directory + self.sep + parts[1]
 
     def path_to_module(self, module_name):
-        return '/mock-checkout/third_party/blink/tools/' + module_name.replace('.', '/') + '.py'
+        return ('/mock-checkout/third_party/blink/tools/' +
+                module_name.replace('.', '/') + '.py')
 
     def chdir(self, path):
         path = self.normpath(path)
@@ -137,7 +139,8 @@ class MockFileSystem(object):
         file_filter = file_filter or filter_all
         files = []
         if self.isfile(path):
-            if file_filter(self, self.dirname(path), self.basename(path)) and self.files[path] is not None:
+            if (file_filter(self, self.dirname(path), self.basename(path))
+                    and self.files[path] is not None):
                 files.append(path)
             return files
 
@@ -153,11 +156,13 @@ class MockFileSystem(object):
                 continue
 
             suffix = filename[len(path) - 1:]
-            if any(dir_substring in suffix for dir_substring in dir_substrings):
+            if any(dir_substring in suffix
+                   for dir_substring in dir_substrings):
                 continue
 
             dirpath, basename = self._split(filename)
-            if file_filter(self, dirpath, basename) and self.files[filename] is not None:
+            if (file_filter(self, dirpath, basename)
+                    and self.files[filename] is not None):
                 files.append(filename)
 
         return files
@@ -173,8 +178,12 @@ class MockFileSystem(object):
         path_filter = lambda path: re.match(glob_string, path)
 
         # We could use fnmatch.fnmatch, but that might not do the right thing on Windows.
-        existing_files = [path for path, contents in self.files.items() if contents is not None]
-        return filter(path_filter, existing_files) + filter(path_filter, self.dirs)
+        existing_files = [
+            path for path, contents in self.files.items()
+            if contents is not None
+        ]
+        return list(filter(path_filter, existing_files)) + list(
+            filter(path_filter, self.dirs))
 
     def isabs(self, path):
         return path.startswith(self.sep)
@@ -252,7 +261,6 @@ class MockFileSystem(object):
 
     def mkdtemp(self, **kwargs):
         class TemporaryDirectory(object):
-
             def __init__(self, fs, **kwargs):
                 self._kwargs = kwargs
                 self._filesystem = fs
@@ -349,6 +357,9 @@ class MockFileSystem(object):
     def open_text_file_for_writing(self, path):
         return WritableTextFileObject(self, path)
 
+    def open_text_file_for_appending(self, path):
+        return WritableTextFileObject(self, path, append=True)
+
     def read_text_file(self, path):
         return self.read_binary_file(path).decode('utf-8')
 
@@ -406,11 +417,13 @@ class MockFileSystem(object):
         for file_path in self.files:
             # We need to add a trailing separator to path_to_remove to avoid matching
             # cases like path_to_remove='/foo/b' and file_path='/foo/bar/baz'.
-            if file_path == path_to_remove or file_path.startswith(path_to_remove + self.sep):
+            if file_path == path_to_remove or file_path.startswith(
+                    path_to_remove + self.sep):
                 self.files[file_path] = None
 
         def should_remove(directory):
-            return directory == path_to_remove or directory.startswith(path_to_remove + self.sep)
+            return directory == path_to_remove or directory.startswith(
+                path_to_remove + self.sep)
 
         self.dirs = {d for d in self.dirs if not should_remove(d)}
 
@@ -423,7 +436,8 @@ class MockFileSystem(object):
 
         for source_file in list(self.files):
             if source_file.startswith(source):
-                destination_path = self.join(destination, self.relpath(source_file, source))
+                destination_path = self.join(destination,
+                                             self.relpath(source_file, source))
                 self.maybe_make_directory(self.dirname(destination_path))
                 self.files[destination_path] = self.files[source_file]
 
@@ -447,12 +461,12 @@ class MockFileSystem(object):
 
 
 class WritableBinaryFileObject(object):
-
-    def __init__(self, fs, path):
+    def __init__(self, fs, path, append=False):
         self.fs = fs
         self.path = path
         self.closed = False
-        self.fs.files[path] = ''
+        if path not in self.fs.files or not append:
+            self.fs.files[path] = b''
 
     def __enter__(self):
         return self
@@ -469,17 +483,20 @@ class WritableBinaryFileObject(object):
 
 
 class WritableTextFileObject(WritableBinaryFileObject):
+    def __init__(self, fs, path, append=False):
+        super(WritableTextFileObject, self).__init__(fs, path, append)
+        if path not in self.fs.files or not append:
+            self.fs.files[path] = ''
 
     def write(self, string):
-        WritableBinaryFileObject.write(self, string.encode('utf-8'))
+        WritableBinaryFileObject.write(self, string)
 
     def writelines(self, lines):
-        self.fs.files[self.path] = "".join(lines).encode('utf-8')
+        self.fs.files[self.path] = "".join(lines)
         self.fs.written_files[self.path] = self.fs.files[self.path]
 
 
 class ReadableBinaryFileObject(object):
-
     def __init__(self, fs, path, data):
         self.fs = fs
         self.path = path
@@ -515,9 +532,9 @@ class ReadableBinaryFileObject(object):
 
 
 class ReadableTextFileObject(ReadableBinaryFileObject):
-
     def __init__(self, fs, path, data):
-        super(ReadableTextFileObject, self).__init__(fs, path, StringIO.StringIO(data.decode('utf-8')))
+        super(ReadableTextFileObject,
+              self).__init__(fs, path, StringIO(data.decode(encoding='utf-8')))
 
     def close(self):
         self.data.close()
@@ -569,7 +586,9 @@ class FileSystemTestCase(unittest.TestCase):
 
             for filepath in sorted(self.expected_files):
                 self.test_case.assertIn(filepath, self.mock_filesystem.files)
-                self.test_case.assertEqual(self.expected_files[filepath], self.mock_filesystem.files[filepath])
+                self.test_case.assertEqual(
+                    self.expected_files[filepath],
+                    self.mock_filesystem.files[filepath])
 
     def assertFilesAdded(self, mock_filesystem, files):
         """Assert that the given files where added to the mock_filesystem.

@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 
+#import "base/ios/block_types.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -61,6 +63,8 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
+@property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 
 // The original position of this InfobarVC view in the parent's view coordinate
 // system.
@@ -93,6 +97,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 @end
 
 @implementation InfobarBannerViewController
+// Synthesized from InfobarBannerInteractable.
 @synthesize interactionDelegate = _interactionDelegate;
 
 - (instancetype)initWithDelegate:(id<InfobarBannerDelegate>)delegate
@@ -104,6 +109,8 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
     _metricsRecorder =
         [[InfobarMetricsRecorder alloc] initWithType:infobarType];
     _presentsModal = presentsModal;
+    _useIconBackgroundTint = YES;
+    _restrictSubtitleTextToSingleLine = NO;
   }
   return self;
 }
@@ -121,14 +128,10 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [self.view.layer setShadowOpacity:kBannerViewShadowOpacity];
   // If dark mode is set when the banner is presented, the semantic color will
   // need to be set here.
-  if (@available(iOS 13, *)) {
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      [self.view.layer
-          setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
-    }];
-  } else {
-    [self.view.layer setShadowColor:[UIColor blackColor].CGColor];
-  }
+  [self.traitCollection performAsCurrentTraitCollection:^{
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
+  }];
   self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
   self.view.isAccessibilityElement = YES;
   self.view.accessibilityLabel = [self accessibilityLabel];
@@ -137,8 +140,12 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   // Icon setup.
   UIView* iconContainerView = nil;
   if (self.iconImage) {
-    self.iconImage = [self.iconImage
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    // If the icon image requires a background tint, ignore the original color
+    // information and draw the image as a template image.
+    if (self.useIconBackgroundTint) {
+      self.iconImage = [self.iconImage
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     UIImageView* iconImageView =
         [[UIImageView alloc] initWithImage:self.iconImage];
     iconImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -146,8 +153,10 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 
     UIView* backgroundIconView =
         [[UIView alloc] initWithFrame:iconImageView.frame];
-    backgroundIconView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
     backgroundIconView.layer.cornerRadius = kIconCornerRadius;
+    if (self.useIconBackgroundTint) {
+      backgroundIconView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+    }
     backgroundIconView.translatesAutoresizingMaskIntoConstraints = NO;
 
     iconContainerView = [[UIView alloc] init];
@@ -190,7 +199,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   self.subTitleLabel.adjustsFontForContentSizeCategory = YES;
   self.subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  self.subTitleLabel.numberOfLines = 0;
+  if (_restrictSubtitleTextToSingleLine) {
+    self.subTitleLabel.numberOfLines = 1;
+  } else {
+    self.subTitleLabel.numberOfLines = 0;
+  }
   // If |self.subTitleText| hasn't been set or is empty, hide the label to keep
   // the title label centered in the Y axis.
   self.subTitleLabel.hidden = !self.subtitleText.length;
@@ -198,6 +211,9 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   UIStackView* labelsStackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ self.titleLabel, self.subTitleLabel ]];
   labelsStackView.axis = UILayoutConstraintAxisVertical;
+  labelsStackView.layoutMarginsRelativeArrangement = YES;
+  labelsStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      kContainerStackVerticalPadding, 0, kContainerStackVerticalPadding, 0);
 
   // Button setup.
   self.infobarButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -213,6 +229,15 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
                forControlEvents:UIControlEventTouchUpInside];
   self.infobarButton.accessibilityIdentifier =
       kInfobarBannerAcceptButtonIdentifier;
+  self.infobarButton.pointerInteractionEnabled = YES;
+  self.infobarButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:button.frame
+                                cornerRadius:kBannerViewCornerRadius];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 
   UIView* buttonSeparator = [[UIView alloc] init];
   buttonSeparator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -247,6 +272,9 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [containerStack addArrangedSubview:self.openModalButton];
   // Hide open modal button if user shouldn't be allowed to open the modal.
   self.openModalButton.hidden = !self.presentsModal;
+  self.openModalButton.pointerInteractionEnabled = YES;
+  self.openModalButton.pointerStyleProvider =
+      CreateDefaultEffectCirclePointerStyleProvider();
 
   // Add accept button.
   [containerStack addArrangedSubview:self.infobarButton];
@@ -254,11 +282,8 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   containerStack.axis = UILayoutConstraintAxisHorizontal;
   containerStack.spacing = kContainerStackSpacing;
   containerStack.distribution = UIStackViewDistributionFill;
-  containerStack.alignment = UIStackViewAlignmentFill;
+  containerStack.alignment = UIStackViewAlignmentCenter;
   containerStack.translatesAutoresizingMaskIntoConstraints = NO;
-  containerStack.layoutMarginsRelativeArrangement = YES;
-  containerStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      kContainerStackVerticalPadding, 0, kContainerStackVerticalPadding, 0);
   containerStack.insetsLayoutMarginsFromSafeArea = NO;
   [self.view addSubview:containerStack];
 
@@ -275,6 +300,9 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
         constraintEqualToAnchor:self.view.bottomAnchor],
     // Button.
     [self.infobarButton.widthAnchor constraintEqualToConstant:kButtonWidth],
+    [self.infobarButton.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [self.infobarButton.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
     [buttonSeparator.widthAnchor
         constraintEqualToConstant:kButtonSeparatorWidth],
     [buttonSeparator.leadingAnchor
@@ -282,6 +310,14 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
     [buttonSeparator.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [buttonSeparator.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
+    // Open modal button.
+    [NSLayoutConstraint constraintWithItem:self.openModalButton
+                                 attribute:NSLayoutAttributeHeight
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.openModalButton
+                                 attribute:NSLayoutAttributeWidth
+                                multiplier:1
+                                  constant:0],
   ]];
 
   // Gestures setup.
@@ -314,7 +350,12 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 
 - (void)viewDidDisappear:(BOOL)animated {
   [self.metricsRecorder recordBannerEvent:MobileMessagesBannerEvent::Dismissed];
-  [self.delegate infobarBannerWasDismissed];
+  // If the delegate exists at the time of dismissal it should handle the
+  // dismissal cleanup. Otherwise the BannerContainer needs to be informed that
+  // this banner was dismissed in case it needs to present a queued one.
+  if (self.delegate) {
+    [self.delegate infobarBannerWasDismissed];
+  }
   [super viewDidDisappear:animated];
 }
 
@@ -322,13 +363,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 // presented.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      [self.view.layer
-          setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }
 }
 
@@ -338,15 +377,12 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   if (!self.touchInProgress) {
     [self.metricsRecorder
         recordBannerDismissType:MobileMessagesBannerDismissType::TimedOut];
-    [self.delegate dismissInfobarBanner:self
-                               animated:YES
-                             completion:nil
-                          userInitiated:NO];
+    [self.delegate dismissInfobarBannerForUserInteraction:NO];
   }
   self.shouldDismissAfterTouchesEnded = YES;
 }
 
-#pragma mark - Getters/Setters
+#pragma mark - Setters
 
 - (void)setTitleText:(NSString*)titleText {
   _titleText = titleText;
@@ -370,6 +406,15 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   _presentsModal = presentsModal;
   self.openModalButton.hidden = !presentsModal;
   self.view.accessibilityCustomActions = [self accessibilityActions];
+}
+
+- (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint {
+  _useIconBackgroundTint = useIconBackgroundTint;
+}
+
+- (void)setRestrictSubtitleTextToSingleLine:
+    (BOOL)restrictSubtitleTextToSingleLine {
+  _restrictSubtitleTextToSingleLine = restrictSubtitleTextToSingleLine;
 }
 
 #pragma mark - Private Methods
@@ -413,17 +458,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
       if (dragUpExceededThreshold) {
         [self.metricsRecorder
             recordBannerDismissType:MobileMessagesBannerDismissType::SwipedUp];
-        [self.delegate dismissInfobarBanner:self
-                                   animated:YES
-                                 completion:nil
-                              userInitiated:YES];
+        [self.delegate dismissInfobarBannerForUserInteraction:YES];
       } else {
         [self.metricsRecorder
             recordBannerDismissType:MobileMessagesBannerDismissType::TimedOut];
-        [self.delegate dismissInfobarBanner:self
-                                   animated:YES
-                                 completion:nil
-                              userInitiated:NO];
+        [self.delegate dismissInfobarBannerForUserInteraction:NO];
       }
     } else {
       [self.metricsRecorder
@@ -567,10 +606,7 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 }
 
 - (BOOL)dismiss {
-  [self.delegate dismissInfobarBanner:self
-                             animated:YES
-                           completion:nil
-                        userInitiated:YES];
+  [self.delegate dismissInfobarBannerForUserInteraction:YES];
   return NO;
 }
 

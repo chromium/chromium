@@ -1,6 +1,7 @@
-per-file script_source_.*=leszeks@chromium.org
-per-file script_streamer.*=leszeks@chromium.org
+per-file binding_security*=dtapuska@chromium.org
+per-file script_source*=leszeks@chromium.org
+per-file script_streamer*=leszeks@chromium.org
+per-file script_cache_consumer*=leszeks@chromium.org
+per-file v8_script_runner*=leszeks@chromium.org
+per-file v8_code_cache*=leszeks@chromium.org
 per-file v8_wasm_response_extensions.*=ahaas@chromium.org
-
-# TEAM: blink-reviews-bindings@chromium.org
-# COMPONENT: Blink>Bindings

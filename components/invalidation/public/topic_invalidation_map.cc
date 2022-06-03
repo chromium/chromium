@@ -6,17 +6,19 @@
 
 #include <stddef.h>
 
-#include "base/json/json_string_value_serializer.h"
-#include "components/invalidation/public/object_id_invalidation_map.h"
+#include "base/values.h"
 
-namespace syncer {
+namespace invalidation {
 
-TopicInvalidationMap::TopicInvalidationMap() {}
+TopicInvalidationMap::TopicInvalidationMap() = default;
 
 TopicInvalidationMap::TopicInvalidationMap(const TopicInvalidationMap& other) =
     default;
 
-TopicInvalidationMap::~TopicInvalidationMap() {}
+TopicInvalidationMap& TopicInvalidationMap::operator=(
+    const TopicInvalidationMap& other) = default;
+
+TopicInvalidationMap::~TopicInvalidationMap() = default;
 
 TopicSet TopicInvalidationMap::GetTopics() const {
   TopicSet ret;
@@ -30,12 +32,12 @@ bool TopicInvalidationMap::Empty() const {
 }
 
 void TopicInvalidationMap::Insert(const Invalidation& invalidation) {
-  map_[invalidation.object_id().name()].Insert(invalidation);
+  map_[invalidation.topic()].Insert(invalidation);
 }
 
 TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
     const Topics& topics) const {
-  TopicToListMap new_map;
+  std::map<Topic, SingleTopicInvalidationSet> new_map;
   for (const auto& topic : topics) {
     auto lookup = map_.find(topic.first);
     if (lookup != map_.end()) {
@@ -45,7 +47,19 @@ TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
   return TopicInvalidationMap(new_map);
 }
 
-const SingleObjectInvalidationSet& TopicInvalidationMap::ForTopic(
+TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
+    const TopicSet& topics) const {
+  std::map<Topic, SingleTopicInvalidationSet> new_map;
+  for (const auto& topic : topics) {
+    auto lookup = map_.find(topic);
+    if (lookup != map_.end()) {
+      new_map[topic] = lookup->second;
+    }
+  }
+  return TopicInvalidationMap(new_map);
+}
+
+const SingleTopicInvalidationSet& TopicInvalidationMap::ForTopic(
     Topic topic) const {
   auto lookup = map_.find(topic);
   DCHECK(lookup != map_.end());
@@ -54,16 +68,17 @@ const SingleObjectInvalidationSet& TopicInvalidationMap::ForTopic(
 }
 
 void TopicInvalidationMap::GetAllInvalidations(
-    std::vector<syncer::Invalidation>* out) const {
-  for (auto it = map_.begin(); it != map_.end(); ++it) {
-    out->insert(out->begin(), it->second.begin(), it->second.end());
+    std::vector<Invalidation>* out) const {
+  for (const auto& topic_to_invalidations : map_) {
+    out->insert(out->begin(), topic_to_invalidations.second.begin(),
+                topic_to_invalidations.second.end());
   }
 }
 
 void TopicInvalidationMap::AcknowledgeAll() const {
-  for (auto it1 = map_.begin(); it1 != map_.end(); ++it1) {
-    for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
-      it2->Acknowledge();
+  for (const auto& topic_to_invalidations : map_) {
+    for (const Invalidation& invalidation : topic_to_invalidations.second) {
+      invalidation.Acknowledge();
     }
   }
 }
@@ -74,62 +89,16 @@ bool TopicInvalidationMap::operator==(const TopicInvalidationMap& other) const {
 
 std::unique_ptr<base::ListValue> TopicInvalidationMap::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
-  for (auto it1 = map_.begin(); it1 != map_.end(); ++it1) {
-    for (auto it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
-      value->Append(it2->ToValue());
+  for (const auto& topic_to_invalidations : map_) {
+    for (const Invalidation& invalidation : topic_to_invalidations.second) {
+      value->Append(invalidation.ToValue());
     }
   }
   return value;
 }
 
-bool TopicInvalidationMap::ResetFromValue(const base::ListValue& value) {
-  map_.clear();
-  for (size_t i = 0; i < value.GetSize(); ++i) {
-    const base::DictionaryValue* dict;
-    if (!value.GetDictionary(i, &dict)) {
-      return false;
-    }
-    std::unique_ptr<Invalidation> invalidation =
-        Invalidation::InitFromValue(*dict);
-    if (!invalidation) {
-      return false;
-    }
-    Insert(*invalidation);
-  }
-  return true;
-}
-
-std::string TopicInvalidationMap::ToString() const {
-  std::string output;
-  JSONStringValueSerializer serializer(&output);
-  serializer.set_pretty_print(true);
-  serializer.Serialize(*ToValue());
-  return output;
-}
-
-TopicInvalidationMap::TopicInvalidationMap(const TopicToListMap& map)
+TopicInvalidationMap::TopicInvalidationMap(
+    const std::map<Topic, SingleTopicInvalidationSet>& map)
     : map_(map) {}
 
-TopicInvalidationMap ConvertObjectIdInvalidationMapToTopicInvalidationMap(
-    ObjectIdInvalidationMap object_ids_map) {
-  TopicInvalidationMap topics_map;
-  std::vector<Invalidation> invalidations;
-  object_ids_map.GetAllInvalidations(&invalidations);
-  for (const auto& invalidation : invalidations) {
-    topics_map.Insert(invalidation);
-  }
-  return topics_map;
-}
-
-ObjectIdInvalidationMap ConvertTopicInvalidationMapToObjectIdInvalidationMap(
-    const TopicInvalidationMap& topics_map) {
-  ObjectIdInvalidationMap object_ids_map;
-  std::vector<Invalidation> invalidations;
-  topics_map.GetAllInvalidations(&invalidations);
-  for (const auto& invalidation : invalidations) {
-    object_ids_map.Insert(invalidation);
-  }
-  return object_ids_map;
-}
-
-}  // namespace syncer
+}  // namespace invalidation

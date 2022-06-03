@@ -9,19 +9,13 @@
 #include "build/build_config.h"
 
 namespace base {
-namespace sequence_manager {
-class SequenceManager;
-}  // namespace sequence_manager
 
 // A simple TaskExecutor with exactly one SingleThreadTaskRunner.
 // Must be instantiated and destroyed on the thread that runs tasks for the
 // SingleThreadTaskRunner.
 class BASE_EXPORT SimpleTaskExecutor : public TaskExecutor {
  public:
-  // If |sequence_manager| is null, GetContinuationTaskRunner will always return
-  // |task_queue| even if no task is running.
-  SimpleTaskExecutor(sequence_manager::SequenceManager* sequence_manager,
-                     scoped_refptr<SingleThreadTaskRunner> task_queue);
+  explicit SimpleTaskExecutor(scoped_refptr<SingleThreadTaskRunner> task_queue);
 
   ~SimpleTaskExecutor() override;
 
@@ -45,12 +39,7 @@ class BASE_EXPORT SimpleTaskExecutor : public TaskExecutor {
       SingleThreadTaskRunnerThreadMode thread_mode) override;
 #endif  // defined(OS_WIN)
 
-  const scoped_refptr<SequencedTaskRunner>& GetContinuationTaskRunner()
-      override;
-
- protected:
-  sequence_manager::SequenceManager* const sequence_manager_;
-  const scoped_refptr<SequencedTaskRunner> sequenced_task_queue_;
+ private:
   const scoped_refptr<SingleThreadTaskRunner> task_queue_;
 
   // In tests there may already be a TaskExecutor registered for the thread, we

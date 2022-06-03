@@ -10,10 +10,13 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/wm/wm_window_animations.h"
+#include "ash/utility/layer_copy_animator.h"
+#include "ash/wm/desks/desks_util.h"
+#include "ash/wm/window_animations.h"
 #include "base/barrier_closure.h"
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window_event_dispatcher.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -22,109 +25,10 @@
 namespace ash {
 namespace {
 
-// Slightly-smaller size that we scale the screen down to for the pre-lock and
-// pre-shutdown states.
-const float kSlowCloseSizeRatio = 0.95f;
-
-// Maximum opacity of white layer when animating pre-shutdown state.
-const float kPartialFadeRatio = 0.3f;
-
-// Minimum size. Not zero as it causes numeric issues.
-const float kMinimumScale = 1e-4f;
-
 // Returns the primary root window's container.
 aura::Window* GetWallpaper() {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   return Shell::GetContainer(root_window, kShellWindowId_WallpaperContainer);
-}
-
-// Returns the transform that should be applied to containers for the slow-close
-// animation.
-gfx::Transform GetSlowCloseTransform() {
-  gfx::Size root_size = Shell::GetPrimaryRootWindow()->bounds().size();
-  gfx::Transform transform;
-  transform.Translate(
-      std::round(0.5 * (1.0 - kSlowCloseSizeRatio) * root_size.width()),
-      std::round(0.5 * (1.0 - kSlowCloseSizeRatio) * root_size.height()));
-  transform.Scale(kSlowCloseSizeRatio, kSlowCloseSizeRatio);
-  return transform;
-}
-
-// Returns the transform that should be applied to containers for the fast-close
-// animation.
-gfx::Transform GetFastCloseTransform() {
-  gfx::Size root_size = Shell::GetPrimaryRootWindow()->bounds().size();
-  gfx::Transform transform;
-
-  transform.Translate(std::round(0.5 * root_size.width()),
-                      std::round(0.5 * root_size.height()));
-  transform.Scale(kMinimumScale, kMinimumScale);
-  return transform;
-}
-
-// Slowly shrinks |window| to a slightly-smaller size.
-void StartSlowCloseAnimationForWindow(aura::Window* window,
-                                      base::TimeDelta duration,
-                                      ui::LayerAnimationObserver* observer) {
-  ui::LayerAnimator* animator = window->layer()->GetAnimator();
-  animator->set_preemption_strategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
-      ui::LayerAnimationElement::CreateTransformElement(GetSlowCloseTransform(),
-                                                        duration));
-  if (observer)
-    sequence->AddObserver(observer);
-  animator->StartAnimation(sequence);
-}
-
-// Quickly undoes the effects of the slow-close animation on |window|.
-void StartUndoSlowCloseAnimationForWindow(
-    aura::Window* window,
-    base::TimeDelta duration,
-    ui::LayerAnimationObserver* observer) {
-  ui::LayerAnimator* animator = window->layer()->GetAnimator();
-  animator->set_preemption_strategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
-      ui::LayerAnimationElement::CreateTransformElement(gfx::Transform(),
-                                                        duration));
-  if (observer)
-    sequence->AddObserver(observer);
-  animator->StartAnimation(sequence);
-}
-
-// Quickly shrinks |window| down to a point in the center of the screen and
-// fades it out to 0 opacity.
-void StartFastCloseAnimationForWindow(aura::Window* window,
-                                      base::TimeDelta duration,
-                                      ui::LayerAnimationObserver* observer) {
-  ui::LayerAnimator* animator = window->layer()->GetAnimator();
-  animator->set_preemption_strategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  animator->StartAnimation(new ui::LayerAnimationSequence(
-      ui::LayerAnimationElement::CreateTransformElement(GetFastCloseTransform(),
-                                                        duration)));
-  ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
-      ui::LayerAnimationElement::CreateOpacityElement(0.0, duration));
-  if (observer)
-    sequence->AddObserver(observer);
-  animator->StartAnimation(sequence);
-}
-
-// Fades |window| to |target_opacity| over |duration|.
-void StartPartialFadeAnimation(aura::Window* window,
-                               float target_opacity,
-                               base::TimeDelta duration,
-                               ui::LayerAnimationObserver* observer) {
-  ui::LayerAnimator* animator = window->layer()->GetAnimator();
-  animator->set_preemption_strategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  ui::LayerAnimationSequence* sequence = new ui::LayerAnimationSequence(
-      ui::LayerAnimationElement::CreateOpacityElement(target_opacity,
-                                                      duration));
-  if (observer)
-    sequence->AddObserver(observer);
-  animator->StartAnimation(sequence);
 }
 
 // Fades |window| to |opacity| over |duration|.
@@ -146,15 +50,6 @@ void StartOpacityAnimationForWindow(aura::Window* window,
 void HideWindowImmediately(aura::Window* window,
                            ui::LayerAnimationObserver* observer) {
   window->layer()->SetOpacity(0.0);
-  if (observer)
-    observer->OnLayerAnimationEnded(NULL);
-}
-
-// Restores |window| to its original position and scale and full opacity
-// instantaneously.
-void RestoreWindow(aura::Window* window, ui::LayerAnimationObserver* observer) {
-  window->layer()->SetTransform(gfx::Transform());
-  window->layer()->SetOpacity(1.0);
   if (observer)
     observer->OnLayerAnimationEnded(NULL);
 }
@@ -198,11 +93,10 @@ void HideWindow(aura::Window* window,
   }
 }
 
-// Animates |window| to identity transform and full opacity over |duration|.
-void TransformWindowToBaseState(aura::Window* window,
-                                base::TimeDelta duration,
-                                ui::LayerAnimationObserver* observer) {
-  ui::Layer* layer = window->layer();
+// Animates |layer| to identity transform and full opacity over |duration|.
+void TransformLayerToBaseState(ui::Layer* layer,
+                               base::TimeDelta duration,
+                               ui::LayerAnimationObserver* observer) {
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
 
   // Animate to target values.
@@ -213,6 +107,7 @@ void TransformWindowToBaseState(aura::Window* window,
   settings.SetTweenType(gfx::Tween::EASE_OUT);
   layer->SetTransform(gfx::Transform());
 
+  // TODO(oshima): TweenType can't be changed per property.
   settings.SetTweenType(gfx::Tween::EASE_IN_OUT);
   layer->SetOpacity(1.0f);
 
@@ -228,23 +123,6 @@ void TransformWindowToBaseState(aura::Window* window,
     sequence->AddObserver(observer);
     layer->GetAnimator()->ScheduleAnimation(sequence);
   }
-}
-
-void ShowWindow(aura::Window* window,
-                base::TimeDelta duration,
-                bool above,
-                ui::LayerAnimationObserver* observer) {
-  ui::Layer* layer = window->layer();
-  ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-
-  // Set initial state of animation
-  settings.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  settings.SetTransitionDuration(base::TimeDelta());
-  SetTransformForScaleAnimation(
-      layer, above ? LAYER_SCALE_ANIMATION_ABOVE : LAYER_SCALE_ANIMATION_BELOW);
-
-  TransformWindowToBaseState(window, duration, observer);
 }
 
 // Starts grayscale/brightness animation for |window| over |duration|. Target
@@ -291,6 +169,11 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
  public:
   explicit CallbackAnimationObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
+
+  CallbackAnimationObserver(const CallbackAnimationObserver&) = delete;
+  CallbackAnimationObserver& operator=(const CallbackAnimationObserver&) =
+      delete;
+
   ~CallbackAnimationObserver() override = default;
 
  private:
@@ -310,26 +193,11 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* seq) override {}
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackAnimationObserver);
 };
 
 bool IsLayerAnimated(ui::Layer* layer,
                      SessionStateAnimator::AnimationType type) {
   switch (type) {
-    case SessionStateAnimator::ANIMATION_PARTIAL_CLOSE:
-      if (layer->GetTargetTransform() != GetSlowCloseTransform())
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_UNDO_PARTIAL_CLOSE:
-      if (layer->GetTargetTransform() != gfx::Transform())
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_FULL_CLOSE:
-      if (layer->GetTargetTransform() != GetFastCloseTransform() ||
-          layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
     case SessionStateAnimator::ANIMATION_FADE_IN:
       if (layer->GetTargetOpacity() < 0.9999)
         return false;
@@ -340,10 +208,6 @@ bool IsLayerAnimated(ui::Layer* layer,
       break;
     case SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY:
       if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_RESTORE:
-      if (layer->opacity() < 0.9999 || layer->transform() != gfx::Transform())
         return false;
       break;
     case SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS:
@@ -372,14 +236,8 @@ bool IsLayerAnimated(ui::Layer* layer,
       if (layer->GetTargetOpacity() < 0.9999)
         return false;
       break;
-    // ToDo(antim) : check other effects
-    case SessionStateAnimator::ANIMATION_LOWER_BELOW_SCREEN:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    default:
-      NOTREACHED() << "Unhandled animation type " << type;
-      return false;
+    case SessionStateAnimator::ANIMATION_COPY_LAYER:
+      return true;
   }
   return true;
 }
@@ -405,11 +263,18 @@ void GetContainersInRootWindow(int container_mask,
     aura::Window* non_lock_screen_containers = Shell::GetContainer(
         root_window, kShellWindowId_NonLockScreenContainersContainer);
     // |non_lock_screen_containers| may already be removed in some tests.
+    constexpr int ContainersToAnimate[] = {
+        kShellWindowId_HomeScreenContainer,
+        kShellWindowId_AlwaysOnTopContainer,
+        kShellWindowId_PipContainer,
+        kShellWindowId_SystemModalContainer,
+    };
     if (non_lock_screen_containers) {
       for (aura::Window* window : non_lock_screen_containers->children()) {
-        if (window->id() == kShellWindowId_ShelfContainer)
-          continue;
-        containers->push_back(window);
+        if ((base::Contains(ContainersToAnimate, window->GetId()) ||
+             desks_util::IsActiveDeskContainer(window))) {
+          containers->push_back(window);
+        }
       }
     }
   }
@@ -425,6 +290,34 @@ void GetContainersInRootWindow(int container_mask,
     containers->push_back(Shell::GetContainer(
         root_window, kShellWindowId_LockScreenRelatedContainersContainer));
   }
+}
+
+void ShowWindow(aura::Window* window,
+                base::TimeDelta duration,
+                bool above,
+                ui::LayerAnimationObserver* observer) {
+  if (window->children().empty()) {
+    window->layer()->SetTransform(gfx::Transform());
+    window->layer()->SetOpacity(1.f);
+    return;
+  }
+  auto* animator = LayerCopyAnimator::Get(window);
+  if (!animator || animator->animation_requested())
+    animator = new LayerCopyAnimator(window);
+
+  auto animation_callback = [](base::TimeDelta duration, bool above,
+                               ui::Layer* animating_layer,
+                               ui::LayerAnimationObserver* observer) {
+    DCHECK(animating_layer->parent());
+    // Set initial state of animation
+    SetTransformForScaleAnimation(
+        animating_layer,
+        above ? LAYER_SCALE_ANIMATION_ABOVE : LAYER_SCALE_ANIMATION_BELOW);
+    animating_layer->SetOpacity(0.f);
+    TransformLayerToBaseState(animating_layer, duration, observer);
+  };
+  animator->MaybeStartAnimation(
+      observer, base::BindOnce(animation_callback, duration, above));
 }
 
 }  // namespace
@@ -443,11 +336,14 @@ class SessionStateAnimatorImpl::AnimationSequence
       public ui::LayerAnimationObserver {
  public:
   explicit AnimationSequence(SessionStateAnimatorImpl* animator,
-                             base::OnceClosure callback)
+                             AnimationCallback callback)
       : SessionStateAnimator::AnimationSequence(std::move(callback)),
         animator_(animator),
         sequences_attached_(0),
         sequences_completed_(0) {}
+
+  AnimationSequence(const AnimationSequence&) = delete;
+  AnimationSequence& operator=(const AnimationSequence&) = delete;
 
   // SessionStateAnimator::AnimationSequence:
   void StartAnimation(int container_mask,
@@ -487,8 +383,6 @@ class SessionStateAnimatorImpl::AnimationSequence
 
   // Number of sequences either ended or aborted.
   int sequences_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
 };
 
 bool SessionStateAnimatorImpl::TestApi::ContainersAreAnimated(
@@ -561,7 +455,7 @@ void SessionStateAnimatorImpl::StartAnimationWithCallback(
 }
 
 SessionStateAnimator::AnimationSequence*
-SessionStateAnimatorImpl::BeginAnimationSequence(base::OnceClosure callback) {
+SessionStateAnimatorImpl::BeginAnimationSequence(AnimationCallback callback) {
   return new AnimationSequence(this, std::move(callback));
 }
 
@@ -604,15 +498,6 @@ void SessionStateAnimatorImpl::RunAnimationForWindow(
   base::TimeDelta duration = GetDuration(speed);
 
   switch (type) {
-    case ANIMATION_PARTIAL_CLOSE:
-      StartSlowCloseAnimationForWindow(window, duration, observer);
-      break;
-    case ANIMATION_UNDO_PARTIAL_CLOSE:
-      StartUndoSlowCloseAnimationForWindow(window, duration, observer);
-      break;
-    case ANIMATION_FULL_CLOSE:
-      StartFastCloseAnimationForWindow(window, duration, observer);
-      break;
     case ANIMATION_FADE_IN:
       StartOpacityAnimationForWindow(window, 1.0, duration, observer);
       break;
@@ -623,10 +508,6 @@ void SessionStateAnimatorImpl::RunAnimationForWindow(
       DCHECK_EQ(speed, ANIMATION_SPEED_IMMEDIATE);
       HideWindowImmediately(window, observer);
       break;
-    case ANIMATION_RESTORE:
-      DCHECK_EQ(speed, ANIMATION_SPEED_IMMEDIATE);
-      RestoreWindow(window, observer);
-      break;
     case ANIMATION_LIFT:
       HideWindow(window, duration, true, observer);
       break;
@@ -634,22 +515,10 @@ void SessionStateAnimatorImpl::RunAnimationForWindow(
       ShowWindow(window, duration, true, observer);
       break;
     case ANIMATION_UNDO_LIFT:
-      TransformWindowToBaseState(window, duration, observer);
+      TransformLayerToBaseState(window->layer(), duration, observer);
       break;
     case ANIMATION_RAISE_TO_SCREEN:
       ShowWindow(window, duration, false, observer);
-      break;
-    case ANIMATION_LOWER_BELOW_SCREEN:
-      HideWindow(window, duration, false, observer);
-      break;
-    case ANIMATION_PARTIAL_FADE_IN:
-      StartPartialFadeAnimation(window, kPartialFadeRatio, duration, observer);
-      break;
-    case ANIMATION_UNDO_PARTIAL_FADE_IN:
-      StartPartialFadeAnimation(window, 0.0, duration, observer);
-      break;
-    case ANIMATION_FULL_FADE_IN:
-      StartPartialFadeAnimation(window, 1.0, duration, observer);
       break;
     case ANIMATION_GRAYSCALE_BRIGHTNESS:
       StartGrayscaleBrightnessAnimationForWindow(window, 1.0, duration,
@@ -658,6 +527,10 @@ void SessionStateAnimatorImpl::RunAnimationForWindow(
     case ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS:
       StartGrayscaleBrightnessAnimationForWindow(
           window, 0.0, duration, gfx::Tween::EASE_IN_OUT, observer);
+      break;
+    case ANIMATION_COPY_LAYER:
+      if (!window->children().empty())
+        new LayerCopyAnimator(window);
       break;
   }
 }

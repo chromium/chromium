@@ -20,10 +20,11 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/strings/stringprintf.h"
 #include "handler/mac/exception_handler_server.h"
+#include "util/mach/bootstrap.h"
 #include "util/mach/exc_server_variants.h"
 #include "util/mach/exception_ports.h"
 #include "util/mach/mach_extensions.h"
@@ -64,6 +65,9 @@ class ExceptionSwallower::ExceptionSwallowerThread
         pid_(getpid()) {
     Start();
   }
+
+  ExceptionSwallowerThread(const ExceptionSwallowerThread&) = delete;
+  ExceptionSwallowerThread& operator=(const ExceptionSwallowerThread&) = delete;
 
   ~ExceptionSwallowerThread() override {}
 
@@ -106,8 +110,6 @@ class ExceptionSwallower::ExceptionSwallowerThread
 
   ExceptionHandlerServer exception_handler_server_;
   pid_t pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSwallowerThread);
 };
 
 ExceptionSwallower::ExceptionSwallower() : exception_swallower_thread_() {
@@ -116,9 +118,9 @@ ExceptionSwallower::ExceptionSwallower() : exception_swallower_thread_() {
 
   if (CheckedGetenv(kServiceEnvironmentVariable)) {
     // The environment variable is already set, so just proceed with the
-    // existing service. This normally happens when the gtest “threadsafe” death
-    // test style is chosen, because the test child process will re-execute code
-    // already run in the test parent process. See
+    // existing service. This normally happens when the Google Test “threadsafe”
+    // death test style is chosen, because the test child process will
+    // re-execute code already run in the test parent process. See
     // https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#death-test-styles.
     return;
   }

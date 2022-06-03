@@ -6,18 +6,18 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace chromecast {
 
-CastURLLoaderThrottle::CastURLLoaderThrottle(
-    Delegate* delegate,
-    const std::string& session_id)
-    : settings_delegate_(delegate),
+CastURLLoaderThrottle::CastURLLoaderThrottle(scoped_refptr<Delegate> delegate,
+                                             const std::string& session_id)
+    : settings_delegate_(std::move(delegate)),
       session_id_(session_id),
       weak_factory_(this) {
-  DCHECK(settings_delegate_);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -28,6 +28,11 @@ void CastURLLoaderThrottle::DetachFromCurrentSequence() {}
 void CastURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
+  // Although unlikely, but there might be some weird edge case where `delegate`
+  // passed in the constructor is nullptr.
+  if (!settings_delegate_) {
+    return;
+  }
   int error = settings_delegate_->WillStartResourceRequest(
       request, session_id_,
       base::BindOnce(&CastURLLoaderThrottle::ResumeRequest, weak_this_));

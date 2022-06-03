@@ -29,6 +29,12 @@ namespace offline_internals {
 class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
  public:
   OfflineInternalsUIMessageHandler();
+
+  OfflineInternalsUIMessageHandler(const OfflineInternalsUIMessageHandler&) =
+      delete;
+  OfflineInternalsUIMessageHandler& operator=(
+      const OfflineInternalsUIMessageHandler&) = delete;
+
   ~OfflineInternalsUIMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -89,9 +95,6 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
   // Cancels an NWake signal.
   void HandleCancelNwake(const base::ListValue* args);
 
-  // Shows an example prefetching notification.
-  void HandleShowPrefetchNotification(const base::ListValue* args);
-
   // Sends and processes the request to generate page bundle.
   void HandleGeneratePageBundle(const base::ListValue* args);
 
@@ -136,8 +139,6 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<OfflineInternalsUIMessageHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineInternalsUIMessageHandler);
 };
 
 }  // namespace offline_internals

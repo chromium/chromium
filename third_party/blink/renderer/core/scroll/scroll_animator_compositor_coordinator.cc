@@ -213,17 +213,17 @@ bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
 }
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationStarted(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {}
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationFinished(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {
   NotifyCompositorAnimationFinished(group);
 }
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationAborted(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {
   // An animation aborted by the compositor is treated as a finished
   // animation.
@@ -269,8 +269,8 @@ void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {
   if (host && element_id) {
     if (!impl_only_animation_adjustment_.IsZero()) {
       host->scroll_offset_animations().AddAdjustmentUpdate(
-          element_id, gfx::Vector2dF(impl_only_animation_adjustment_.Width(),
-                                     impl_only_animation_adjustment_.Height()));
+          element_id, gfx::Vector2dF(impl_only_animation_adjustment_.width(),
+                                     impl_only_animation_adjustment_.height()));
     }
     if (impl_only_animation_takeover_)
       host->scroll_offset_animations().AddTakeoverUpdate(element_id);
@@ -288,16 +288,9 @@ void ScrollAnimatorCompositorCoordinator::UpdateCompositorAnimations() {
 
 void ScrollAnimatorCompositorCoordinator::ScrollOffsetChanged(
     const ScrollOffset& offset,
-    ScrollType scroll_type) {
+    mojom::blink::ScrollType scroll_type) {
   ScrollOffset clamped_offset = GetScrollableArea()->ClampScrollOffset(offset);
   GetScrollableArea()->ScrollOffsetChanged(clamped_offset, scroll_type);
-}
-
-void ScrollAnimatorCompositorCoordinator::AdjustAnimationAndSetScrollOffset(
-    const ScrollOffset& offset,
-    ScrollType scroll_type) {
-  // Subclasses should override this and adjust the animation as necessary.
-  ScrollOffsetChanged(offset, scroll_type);
 }
 
 void ScrollAnimatorCompositorCoordinator::AdjustImplOnlyScrollOffsetAnimation(
@@ -305,8 +298,8 @@ void ScrollAnimatorCompositorCoordinator::AdjustImplOnlyScrollOffsetAnimation(
   if (!GetScrollableArea()->ScrollAnimatorEnabled())
     return;
 
-  impl_only_animation_adjustment_.Expand(adjustment.Width(),
-                                         adjustment.Height());
+  impl_only_animation_adjustment_.Enlarge(adjustment.width(),
+                                          adjustment.height());
 
   GetScrollableArea()->RegisterForAnimation();
 }

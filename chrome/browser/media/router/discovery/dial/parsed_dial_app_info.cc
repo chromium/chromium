@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace media_router {
 

@@ -4,8 +4,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -23,12 +22,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
-using content::SandboxFileSystemTestHelper;
 using storage::FileSystemContext;
 using storage::FileSystemOperationContext;
 using storage::FileSystemURL;
 using storage::FileSystemURLSet;
 using storage::QuotaManager;
+using storage::SandboxFileSystemTestHelper;
 
 namespace sync_file_system {
 
@@ -40,6 +39,9 @@ class SyncableFileSystemTest : public testing::Test {
                      in_memory_env_.get(),
                      base::ThreadTaskRunnerHandle::Get().get(),
                      base::ThreadTaskRunnerHandle::Get().get()) {}
+
+  SyncableFileSystemTest(const SyncableFileSystemTest&) = delete;
+  SyncableFileSystemTest& operator=(const SyncableFileSystemTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
@@ -105,8 +107,6 @@ class SyncableFileSystemTest : public testing::Test {
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
   base::WeakPtrFactory<SyncableFileSystemTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableFileSystemTest);
 };
 
 // Brief combined testing. Just see if all the sandbox feature works.

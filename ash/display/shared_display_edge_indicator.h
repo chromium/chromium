@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
 namespace gfx {
@@ -17,7 +16,7 @@ class ThrobAnimation;
 }
 
 namespace views {
-class View;
+class Widget;
 }
 
 namespace ash {
@@ -27,28 +26,28 @@ namespace ash {
 class ASH_EXPORT SharedDisplayEdgeIndicator : public gfx::AnimationDelegate {
  public:
   SharedDisplayEdgeIndicator();
+  SharedDisplayEdgeIndicator(const SharedDisplayEdgeIndicator&) = delete;
+  SharedDisplayEdgeIndicator& operator=(const SharedDisplayEdgeIndicator&) =
+      delete;
   ~SharedDisplayEdgeIndicator() override;
 
-  // Shows/Hides the indicator window. The |src_bounds| is for the window on
-  // the source display, and the |dst_bounds| is for the window on the other
-  // display.
+  // Shows the indicator window. The |src_bounds| is for the window on the
+  // source display, and the |dst_bounds| is for the window on the other
+  // display. Hiding is done in the destructor, when the widgets get released.
   void Show(const gfx::Rect& src_bounds, const gfx::Rect& dst_bounds);
-  void Hide();
 
-  // gfx::AnimationDelegate overrides:
+  // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
   // Used to show the displays' shared edge where a window can be moved across.
   // |src_widget_| is for the display where drag starts and |dst_widget_| is
   // for the other display.
-  views::View* src_indicator_;
-  views::View* dst_indicator_;
+  std::unique_ptr<views::Widget> src_widget_;
+  std::unique_ptr<views::Widget> dst_widget_;
 
   // Used to transition the opacity.
   std::unique_ptr<gfx::ThrobAnimation> animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedDisplayEdgeIndicator);
 };
 
 }  // namespace ash

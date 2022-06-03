@@ -14,9 +14,9 @@
 namespace extensions {
 
 namespace {
-PreloadCheck::Error kDummyError1 = PreloadCheck::DISALLOWED_BY_POLICY;
-PreloadCheck::Error kDummyError2 = PreloadCheck::BLACKLISTED_ID;
-PreloadCheck::Error kDummyError3 = PreloadCheck::BLACKLISTED_UNKNOWN;
+PreloadCheck::Error kDummyError1 = PreloadCheck::Error::kDisallowedByPolicy;
+PreloadCheck::Error kDummyError2 = PreloadCheck::Error::kBlocklistedId;
+PreloadCheck::Error kDummyError3 = PreloadCheck::Error::kBlocklistedUnknown;
 }
 
 class PreloadCheckGroupTest : public testing::Test {

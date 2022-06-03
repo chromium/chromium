@@ -52,6 +52,8 @@ esc_char       = 'b'                                 -> '\u0008'
                | squote                              -> '\u0027'
                | dquote                              -> '\u0022'
                | bslash                              -> '\u005C'
+               | ~('x'|'u'|digit|eol) anything:c     -> c
+               | '0' ~digit                          -> '\u0000'
                | hex_esc:c                           -> c
                | unicode_esc:c                       -> c
 

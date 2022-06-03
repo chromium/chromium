@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_SCANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_SCANNER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -54,6 +53,8 @@ class CORE_EXPORT VTTScanner {
 
  public:
   explicit VTTScanner(const String& line);
+  VTTScanner(const VTTScanner&) = delete;
+  VTTScanner& operator=(const VTTScanner&) = delete;
 
   typedef const LChar* Position;
 
@@ -162,8 +163,6 @@ class CORE_EXPORT VTTScanner {
     const UChar* characters16;
   } end_;
   bool is_8bit_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTTScanner);
 };
 
 inline wtf_size_t VTTScanner::Run::length() const {
@@ -244,4 +243,4 @@ inline void VTTScanner::Advance(unsigned amount) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_SCANNER_H_

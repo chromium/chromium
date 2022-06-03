@@ -51,6 +51,10 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // validation purposes.
 @property(nonatomic, getter=isRequired) BOOL required;
 
+// Boolean value that indicates whether the text entered by the user in the text
+// field is hidden.
+@property(nonatomic, assign) BOOL textFieldSecureTextEntry;
+
 // Whether the text field is enabled for editing.
 @property(nonatomic, getter=isTextFieldEnabled) BOOL textFieldEnabled;
 
@@ -63,6 +67,10 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // Controls autocapitalization behavior of the text field.
 @property(nonatomic, assign)
     UITextAutocapitalizationType autoCapitalizationType;
+
+// Background color used by the textField. If none is set the
+// cellBackgroundColor will be used as background.
+@property(nonatomic, strong) UIColor* textFieldBackgroundColor;
 
 // Whether the aspect of the cell should mark the text as valid.
 - (void)setHasValidText:(BOOL)hasValidText;

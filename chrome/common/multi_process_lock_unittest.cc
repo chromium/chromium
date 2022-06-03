@@ -8,12 +8,11 @@
 
 #include "base/environment.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/rand_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_environment_variable_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/multiprocess_func_list.h"
@@ -37,8 +36,7 @@ std::string MultiProcessLockTest::GenerateLockName() {
 }
 
 void MultiProcessLockTest::ExpectLockIsLocked(const std::string &name) {
-  base::test::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName,
-                                                    name);
+  base::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName, name);
   EXPECT_FALSE(var.WasSet());
 
   base::Process process = SpawnChild("MultiProcessLockTryFailMain");
@@ -50,8 +48,7 @@ void MultiProcessLockTest::ExpectLockIsLocked(const std::string &name) {
 
 void MultiProcessLockTest::ExpectLockIsUnlocked(
     const std::string &name) {
-  base::test::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName,
-                                                    name);
+  base::ScopedEnvironmentVariableOverride var(kLockEnvironmentVarName, name);
   EXPECT_FALSE(var.WasSet());
   base::Process process = SpawnChild("MultiProcessLockTrySucceedMain");
   ASSERT_TRUE(process.IsValid());
@@ -75,7 +72,7 @@ TEST_F(MultiProcessLockTest, LongNameTest) {
   // Mac OS X: BOOTSTRAP_MAX_NAME_LEN
   // Windows: MAX_PATH
   LOG(INFO) << "Following error log due to long name is expected";
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   std::string name("This is a name that is longer than one hundred and "
       "twenty-eight characters to make sure that we fail appropriately on "
       "Mac OS X when we have a path that is too long for Mac OS X to handle");
@@ -138,14 +135,14 @@ MULTIPROCESS_TEST_MAIN(MultiProcessLockTryFailMain) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   EXPECT_TRUE(environment->GetVar(MultiProcessLockTest::kLockEnvironmentVarName,
                                   &name));
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // OS X sends out a log if a lock fails.
   // Hopefully this will keep people from panicking about it when they
   // are perusing the build logs.
   LOG(INFO) << "Following error log "
             << "\"CFMessagePort: bootstrap_register(): failed 1100 (0x44c) "
             << "'Permission denied'\" is expected";
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
   std::unique_ptr<MultiProcessLock> test_lock = MultiProcessLock::Create(name);
 
   // Expect locking to fail because it is claimed by another process.

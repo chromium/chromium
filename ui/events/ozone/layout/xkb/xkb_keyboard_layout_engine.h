@@ -12,15 +12,19 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/scoped_xkb.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/xkb/xkb_key_code_converter.h"
+
+struct xkb_keymap;
 
 namespace ui {
 
@@ -33,6 +37,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // KeyboardLayoutEngine:
   bool CanSetCurrentLayout() const override;
   bool SetCurrentLayoutByName(const std::string& layout_name) override;
+  bool SetCurrentLayoutByNameWithCallback(const std::string& layout_name,
+                                          base::OnceClosure callback);
   // Required by Ozone/Wayland (at least) for non ChromeOS builds. See
   // http://xkbcommon.org/doc/current/md_doc_quick-guide.html for further info.
   bool SetCurrentLayoutFromBuffer(const char* keymap_string,
@@ -46,10 +52,14 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
               DomKey* dom_key,
               KeyboardCode* key_code) const override;
 
+  void SetInitCallbackForTest(base::OnceClosure closure) override;
+
   int UpdateModifiers(uint32_t depressed,
                       uint32_t latched,
                       uint32_t locked,
                       uint32_t group);
+
+  DomCode GetDomCodeByKeysym(uint32_t keysym) const;
 
   static void ParseLayoutName(const std::string& layout_name,
                               std::string* layout_id,
@@ -64,7 +74,13 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   };
   std::vector<XkbFlagMapEntry> xkb_flag_map_;
 
-#if defined(OS_CHROMEOS)
+  // Table from xkb_keysym to xkb_keycode on the current keymap.
+  // Note that there could be multiple keycodes mapped to the same
+  // keysym. In the case, the first one (smallest keycode) will be
+  // kept.
+  base::flat_map<uint32_t, uint32_t> xkb_keysym_map_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Flag mask for num lock, which is always considered enabled in ChromeOS.
   xkb_mod_mask_t num_lock_mod_mask_ = 0;
 #endif
@@ -80,7 +96,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                                      xkb_keycode_t xkb_keycode,
                                      xkb_mod_mask_t xkb_flags,
                                      xkb_keysym_t xkb_keysym,
-                                     base::char16 character) const;
+                                     char16_t character) const;
 
   // Sets a new XKB keymap. This updates xkb_state_ (which takes ownership
   // of the keymap), and updates xkb_flag_map_ for the new keymap.
@@ -113,20 +129,26 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // Helper for difficult VKEY lookup. If |ui_flags| matches |base_flags|,
   // returns |base_character|; otherwise returns the XKB character for
   // the keycode and mapped |ui_flags|.
-  base::char16 XkbSubCharacter(xkb_keycode_t xkb_keycode,
-                               xkb_mod_mask_t base_flags,
-                               base::char16 base_character,
-                               xkb_mod_mask_t flags) const;
+  char16_t XkbSubCharacter(xkb_keycode_t xkb_keycode,
+                           xkb_mod_mask_t base_flags,
+                           char16_t base_character,
+                           xkb_mod_mask_t flags) const;
 
   // Callback when keymap file is loaded complete.
-  void OnKeymapLoaded(const std::string& layout_name,
+  void OnKeymapLoaded(base::OnceClosure callback,
+                      const std::string& layout_name,
                       std::unique_ptr<char, base::FreeDeleter> keymap_str);
 
   std::unique_ptr<xkb_context, XkbContextDeleter> xkb_context_;
 
+  // Holds the keymap from xkb_keymap_new_from_buffer.
+  std::unique_ptr<xkb_keymap, XkbKeymapDeleter> key_map_from_buffer_;
+
   std::string current_layout_name_;
 
   xkb_layout_index_t layout_index_ = 0;
+
+  base::OnceClosure keymap_init_closure_for_test_;
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<XkbKeyboardLayoutEngine> weak_ptr_factory_;

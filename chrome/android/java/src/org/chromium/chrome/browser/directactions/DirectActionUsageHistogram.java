@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.directactions;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,9 +20,6 @@ import java.util.Map;
  * the specific action that was performed.
  */
 class DirectActionUsageHistogram {
-    private static final EnumeratedHistogramSample PERFORM_HISTOGRAM =
-            new EnumeratedHistogramSample(
-                    "Android.DirectAction.Perform", DirectActionId.NUM_ENTRIES);
 
     /** A map that convert known string ids to enum value for the histogram. */
     private static final Map<String, Integer> ACTION_ID_MAP;
@@ -81,7 +78,7 @@ class DirectActionUsageHistogram {
      * Records an attempt to execute a direct action that was rejected as unknown.
      */
     static void recordUnknown() {
-        PERFORM_HISTOGRAM.record(DirectActionId.UNKNOWN);
+        record(DirectActionId.UNKNOWN);
     }
 
     /**
@@ -90,9 +87,15 @@ class DirectActionUsageHistogram {
      * @param actionId The string id of the direct action that was executed.
      */
     static void record(String actionId) {
+        @DirectActionId
         Integer histogramId = ACTION_ID_MAP.get(actionId);
         if (histogramId == null) histogramId = DirectActionId.OTHER;
 
-        PERFORM_HISTOGRAM.record(histogramId);
+        record(histogramId);
+    }
+
+    private static void record(@DirectActionId int actionId) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.DirectAction.Perform", actionId, DirectActionId.NUM_ENTRIES);
     }
 }

@@ -1,0 +1,26 @@
+<!--
+@BLINK-ALLOW:tableColumnCount*
+@BLINK-ALLOW:tableRowCount*
+@BLINK-ALLOW:table*Index*
+-->
+<!-- Ensure that a table with display styles and other semantic table markup
+  is still exposed as a data table.. -->
+<style>
+table, thead, tbody, tr, td { display: flex; }
+</style>
+<table>
+  <thead>
+    <tr>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>a</td>
+      <td>b</td>
+      <td>c</td>
+    </tr>
+  </tbody>
+</table>

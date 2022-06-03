@@ -26,7 +26,7 @@ function convertTemplatesToShadowRootsWithin(node) {
     parent.removeChild(template);
     var shadowRoot;
     if (!mode || mode == 'v0') {
-      shadowRoot = parent.createShadowRoot();
+      shadowRoot = parent.attachShadow({mode: 'open'});
     } else {
       shadowRoot =
           parent.attachShadow({'mode': mode, 'delegatesFocus': delegatesFocus});
@@ -75,11 +75,11 @@ function createTestTree(node) {
     let shadowRoot;
     if (template.getAttribute('data-mode') === 'v0') {
       // For legacy Shadow DOM
-      shadowRoot = parent.createShadowRoot();
-    } else if (template.getAttribute('data-slotting') === 'manual') {
+      shadowRoot = parent.attachShadow({mode: 'open'});
+    } else if (template.getAttribute('data-slot-assignment') === 'manual') {
        shadowRoot =
           parent.attachShadow({mode: template.getAttribute('data-mode'),
-                               slotting: 'manual'});
+                               slotAssignment: 'manual'});
     } else {
       shadowRoot =
           parent.attachShadow({mode: template.getAttribute('data-mode')});

@@ -5,9 +5,9 @@
 #ifndef UI_VIEWS_WIDGET_NATIVE_WIDGET_AURA_H_
 #define UI_VIEWS_WIDGET_NATIVE_WIDGET_AURA_H_
 
+#include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -21,8 +21,8 @@
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
 
-#if defined(OS_MACOSX)
-#error This file must not be included on macOS; Chromium Mac doesn't use Aura.
+#if defined(OS_MAC)
+#error "This file must not be included on macOS; Chromium Mac doesn't use Aura."
 #endif
 
 namespace aura {
@@ -46,6 +46,9 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
  public:
   explicit NativeWidgetAura(internal::NativeWidgetDelegate* delegate);
 
+  NativeWidgetAura(const NativeWidgetAura&) = delete;
+  NativeWidgetAura& operator=(const NativeWidgetAura&) = delete;
+
   // Called internally by NativeWidgetAura and DesktopNativeWidgetAura to
   // associate |native_widget| with |window|.
   static void RegisterNativeWidgetForWindow(
@@ -67,10 +70,10 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   static void SetResizeBehaviorFromDelegate(WidgetDelegate* delegate,
                                             aura::Window* window);
 
-  // Overridden from internal::NativeWidgetPrivate:
+  // internal::NativeWidgetPrivate:
   void InitNativeWidget(Widget::InitParams params) override;
   void OnWidgetInitDone() override;
-  NonClientFrameView* CreateNonClientFrameView() override;
+  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
@@ -93,9 +96,11 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   void CenterWindow(const gfx::Size& size) override;
   void GetWindowPlacement(gfx::Rect* bounds,
                           ui::WindowShowState* maximized) const override;
-  bool SetWindowTitle(const base::string16& title) override;
+  bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
+  const gfx::ImageSkia* GetWindowIcon() override;
+  const gfx::ImageSkia* GetWindowAppIcon() override;
   void InitModalType(ui::ModalType modal_type) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
@@ -125,7 +130,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   void Restore() override;
-  void SetFullscreen(bool fullscreen) override;
+  void SetFullscreen(bool fullscreen, const base::TimeDelta& delay) override;
   bool IsFullscreen() const override;
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
@@ -136,7 +141,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
                     std::unique_ptr<ui::OSExchangeData> data,
                     const gfx::Point& location,
                     int operation,
-                    ui::DragDropTypes::DragEventSource source) override;
+                    ui::mojom::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
   void SetCursor(gfx::NativeCursor cursor) override;
@@ -155,10 +160,13 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
       Widget::VisibilityTransition transition) override;
   bool IsTranslucentWindowOpacitySupported() const override;
   ui::GestureRecognizer* GetGestureRecognizer() override;
+  ui::GestureConsumer* GetGestureConsumer() override;
   void OnSizeConstraintsChanged() override;
+  void OnNativeViewHierarchyWillChange() override;
+  void OnNativeViewHierarchyChanged() override;
   std::string GetName() const override;
 
-  // Overridden from aura::WindowDelegate:
+  // aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& old_bounds,
@@ -180,37 +188,41 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   void GetHitTestMask(SkPath* mask) const override;
   void UpdateVisualState() override;
 
-  // Overridden from aura::WindowObserver:
+  // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
   void OnResizeLoopStarted(aura::Window* window) override;
   void OnResizeLoopEnded(aura::Window* window) override;
 
-  // Overridden from ui::EventHandler:
+  // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Overridden from wm::ActivationDelegate:
+  // wm::ActivationDelegate:
   bool ShouldActivate() const override;
 
-  // Overridden from wm::ActivationChangeObserver:
+  // wm::ActivationChangeObserver:
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // Overridden from aura::client::FocusChangeObserver:
+  // aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  // Overridden from aura::client::DragDropDelegate:
+  // aura::client::DragDropDelegate:
   void OnDragEntered(const ui::DropTargetEvent& event) override;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
 
  protected:
   ~NativeWidgetAura() override;
@@ -250,8 +262,6 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // The following factory is used for calls to close the NativeWidgetAura
   // instance.
   base::WeakPtrFactory<NativeWidgetAura> close_widget_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetAura);
 };
 
 }  // namespace views

@@ -6,8 +6,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/base/ui_base_jni_headers/IdleDetector_jni.h"
 

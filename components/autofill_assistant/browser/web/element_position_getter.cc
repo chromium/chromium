@@ -4,7 +4,6 @@
 
 #include "components/autofill_assistant/browser/web/element_position_getter.h"
 
-#include "base/task/post_task.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
@@ -16,9 +15,9 @@
 namespace {
 
 const char* const kScrollIntoViewIfNeededScript =
-    R"(function(node) {
-    node.scrollIntoViewIfNeeded();
-  })";
+    R"(function() {
+      this.scrollIntoViewIfNeeded();
+    })";
 
 }  // namespace
 
@@ -26,10 +25,11 @@ namespace autofill_assistant {
 
 ElementPositionGetter::ElementPositionGetter(
     DevtoolsClient* devtools_client,
-    const ClientSettings& settings,
+    int max_rounds,
+    base::TimeDelta check_interval,
     const std::string& optional_node_frame_id)
-    : check_interval_(settings.box_model_check_interval),
-      max_rounds_(settings.box_model_check_count),
+    : check_interval_(check_interval),
+      max_rounds_(max_rounds),
       devtools_client_(devtools_client),
       node_frame_id_(optional_node_frame_id),
       weak_ptr_factory_(this) {}
@@ -38,7 +38,7 @@ ElementPositionGetter::~ElementPositionGetter() = default;
 
 void ElementPositionGetter::Start(content::RenderFrameHost* frame_host,
                                   std::string element_object_id,
-                                  ElementPositionCallback callback) {
+                                  Callback callback) {
   object_id_ = element_object_id;
   callback_ = std::move(callback);
   remaining_rounds_ = max_rounds_;
@@ -61,7 +61,7 @@ void ElementPositionGetter::OnVisualStateUpdatedCallback(bool success) {
     return;
   }
 
-  OnError();
+  OnError(ClientStatus(ELEMENT_UNSTABLE));
 }
 
 void ElementPositionGetter::GetAndWaitBoxModelStable() {
@@ -75,39 +75,44 @@ void ElementPositionGetter::GetAndWaitBoxModelStable() {
 void ElementPositionGetter::OnGetBoxModelForStableCheck(
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<dom::GetBoxModelResult> result) {
-  if (!result || !result->GetModel() || !result->GetModel()->GetContent()) {
-    DVLOG(1) << __func__ << " Failed to get box model.";
-    OnError();
+  if (!result || !result->GetModel() || !result->GetModel()->GetContent() ||
+      result->GetModel()->GetWidth() == 0 ||
+      result->GetModel()->GetHeight() == 0) {
+    VLOG(2) << __func__ << " No box model.";
+    RunNextRound();
     return;
   }
 
   // Return the center of the element.
   const std::vector<double>* content_box = result->GetModel()->GetContent();
   DCHECK_EQ(content_box->size(), 8u);
-  int new_point_x =
-      round((round((*content_box)[0]) + round((*content_box)[2])) * 0.5);
-  int new_point_y =
-      round((round((*content_box)[3]) + round((*content_box)[5])) * 0.5);
+  int new_point_x = round(((*content_box)[0] + (*content_box)[2]) * 0.5);
+  int new_point_y = round(((*content_box)[3] + (*content_box)[5]) * 0.5);
 
-  // Wait for at least three rounds (~600ms = 3*check_interval_) for visual
-  // state update callback since it might take longer time to return or never
-  // return if no updates.
-  DCHECK(max_rounds_ > 2 && max_rounds_ >= remaining_rounds_);
-  if (has_point_ && new_point_x == point_x_ && new_point_y == point_y_ &&
-      (visual_state_updated_ || remaining_rounds_ + 2 < max_rounds_)) {
-    // Note that there is still a chance that the element's position has been
-    // changed after the last call of GetBoxModel, however, it might be safe to
-    // assume the element's position will not be changed before issuing click or
-    // tap event after stable for check_interval_. In addition, checking again
-    // after issuing click or tap event doesn't help since the change may be
-    // expected.
-    OnResult(new_point_x, new_point_y);
-    return;
-  }
+  DCHECK(max_rounds_ >= remaining_rounds_);
 
-  if (remaining_rounds_ <= 0) {
-    OnError();
-    return;
+  if (has_point_ || max_rounds_ <= 1) {
+    // Less than 3 rounds returns immediately, we don't expect stability
+    // information to be useful with too few rounds.
+    if (max_rounds_ <= 2) {
+      OnResult(new_point_x, new_point_y);
+      return;
+    }
+
+    // If there are enough rounds, wait for at least three rounds (~600ms =
+    // 3*check_interval_) for visual state update callback since it might take
+    // longer time to return or never return if no updates.
+    if (new_point_x == point_x_ && new_point_y == point_y_ &&
+        (visual_state_updated_ || remaining_rounds_ + 2 < max_rounds_)) {
+      // Note that there is still a chance that the element's position has been
+      // changed after the last call of GetBoxModel, however, it might be safe
+      // to assume the element's position will not be changed before issuing
+      // click or tap event after stable for check_interval_. In addition,
+      // checking again after issuing click or tap event doesn't help since the
+      // change may be expected.
+      OnResult(new_point_x, new_point_y);
+      return;
+    }
   }
 
   bool is_first_round = !has_point_;
@@ -118,13 +123,9 @@ void ElementPositionGetter::OnGetBoxModelForStableCheck(
   // Scroll the element into view again if it was moved out of view, starting
   // from the second round.
   if (!is_first_round) {
-    std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-    argument.emplace_back(
-        runtime::CallArgument::Builder().SetObjectId(object_id_).Build());
     devtools_client_->GetRuntime()->CallFunctionOn(
         runtime::CallFunctionOnParams::Builder()
             .SetObjectId(object_id_)
-            .SetArguments(std::move(argument))
             .SetFunctionDeclaration(std::string(kScrollIntoViewIfNeededScript))
             .SetReturnByValue(true)
             .Build(),
@@ -134,12 +135,7 @@ void ElementPositionGetter::OnGetBoxModelForStableCheck(
     return;
   }
 
-  --remaining_rounds_;
-  base::PostDelayedTask(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&ElementPositionGetter::GetAndWaitBoxModelStable,
-                     weak_ptr_factory_.GetWeakPtr()),
-      check_interval_);
+  RunNextRound();
 }
 
 void ElementPositionGetter::OnScrollIntoView(
@@ -148,14 +144,24 @@ void ElementPositionGetter::OnScrollIntoView(
   ClientStatus status =
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
-    DVLOG(1) << __func__ << " Failed to scroll the element: " << status;
-    OnError();
+    VLOG(1) << __func__ << " Failed to scroll the element: " << status;
+    OnError(status);
+    return;
+  }
+
+  RunNextRound();
+}
+
+void ElementPositionGetter::RunNextRound() {
+  if (remaining_rounds_ <= 0) {
+    OnError(ClientStatus(has_point_ ? ELEMENT_UNSTABLE
+                                    : ELEMENT_POSITION_NOT_FOUND));
     return;
   }
 
   --remaining_rounds_;
-  base::PostDelayedTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&ElementPositionGetter::GetAndWaitBoxModelStable,
                      weak_ptr_factory_.GetWeakPtr()),
       check_interval_);
@@ -163,13 +169,15 @@ void ElementPositionGetter::OnScrollIntoView(
 
 void ElementPositionGetter::OnResult(int x, int y) {
   if (callback_) {
-    std::move(callback_).Run(/* success= */ true, x, y);
+    point_x_ = x;
+    point_y_ = y;
+    std::move(callback_).Run(OkClientStatus());
   }
 }
 
-void ElementPositionGetter::OnError() {
+void ElementPositionGetter::OnError(const ClientStatus& status) {
   if (callback_) {
-    std::move(callback_).Run(/* success= */ false, /* x= */ 0, /* y= */ 0);
+    std::move(callback_).Run(status);
   }
 }
 

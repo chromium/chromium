@@ -1,0 +1,14 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "web_animations"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+  input_files = [ "web-animations-next-lite.min.js" ]
+  input_files_base_dir = rebase_path("./sources", "//")
+  resource_path_rewrites = [ "web-animations-next-lite.min.js|web-animations-js/web-animations-next-lite.min.js" ]
+  resource_path_prefix = "polymer/v1_0"
+}

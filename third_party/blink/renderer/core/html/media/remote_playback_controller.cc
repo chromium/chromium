@@ -16,7 +16,7 @@ RemotePlaybackController* RemotePlaybackController::From(
   return Supplement<HTMLMediaElement>::From<RemotePlaybackController>(element);
 }
 
-void RemotePlaybackController::Trace(Visitor* visitor) {
+void RemotePlaybackController::Trace(Visitor* visitor) const {
   Supplement<HTMLMediaElement>::Trace(visitor);
 }
 

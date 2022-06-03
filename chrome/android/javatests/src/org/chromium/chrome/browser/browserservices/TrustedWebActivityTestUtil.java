@@ -11,12 +11,16 @@ import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.BrowserControlsState;
 
 import java.util.concurrent.TimeoutException;
 
@@ -24,11 +28,48 @@ import java.util.concurrent.TimeoutException;
  * Common utilities for Trusted Web Activity tests.
  */
 public class TrustedWebActivityTestUtil {
+    /**
+     * Waits till verification either succeeds or fails.
+     */
+    private static class CurrentPageVerifierWaiter extends CallbackHelper {
+        private CurrentPageVerifier mVerifier;
+
+        public void start(CurrentPageVerifier verifier) throws TimeoutException {
+            mVerifier = verifier;
+            if (checkShouldNotify()) return;
+
+            mVerifier.addVerificationObserver(this::onVerificationUpdate);
+            waitForFirst();
+        }
+
+        public void onVerificationUpdate() {
+            if (checkShouldNotify()) {
+                mVerifier.removeVerificationObserver(this::onVerificationUpdate);
+            }
+        }
+
+        public boolean checkShouldNotify() {
+            return mVerifier.getState().status != CurrentPageVerifier.VerificationStatus.PENDING;
+        }
+    }
+
     /** Creates an Intent that will launch a Custom Tab to the given |url|. */
     public static Intent createTrustedWebActivityIntent(String url) {
         Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), url);
         intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+        return intent;
+    }
+
+    /**
+     * Creates an Intent that will launch a Custom Tab to the given |url|, caches a successful
+     * verification and creates the Custom Tabs Session from the intent.
+     */
+    public static Intent createTrustedWebActivityIntentAndVerifiedSession(
+            String url, String packageName) throws TimeoutException {
+        Intent intent = createTrustedWebActivityIntent(url);
+        spoofVerification(packageName, url);
+        createSession(intent, packageName);
         return intent;
     }
 
@@ -55,5 +96,14 @@ public class TrustedWebActivityTestUtil {
             return TabBrowserControlsConstraintsHelper.getConstraints(activity.getActivityTab());
         });
         return constraints == BrowserControlsState.HIDDEN;
+    }
+
+    /**
+     * Waits till {@link CurrentPageVerifier} verification either succeeds or fails.
+     */
+    public static void waitForCurrentPageVerifierToFinish(CustomTabActivity activity)
+            throws TimeoutException {
+        CurrentPageVerifier verifier = activity.getComponent().resolveCurrentPageVerifier();
+        new CurrentPageVerifierWaiter().start(verifier);
     }
 }

@@ -1,0 +1,84 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabCreationParams.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabCreator.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParams.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModel.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModelFilter.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoStateProvider.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHost.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostRegistry.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostUtils.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModel.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImpl.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManagerSupplier.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilterFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilterProvider.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelInitializer.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelOrderControllerImpl.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorSupplier.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabSwitchMetrics.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
+  ]
+}
+
+android_library_factory("factory_java") {
+  deps = [ ":java" ]
+
+  sources = [
+    "internal/android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerFactory.java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

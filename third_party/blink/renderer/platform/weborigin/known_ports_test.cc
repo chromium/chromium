@@ -21,13 +21,13 @@ TEST(KnownPortsTest, IsDefaultPortForProtocol) {
       {80, "ws", true},
       {443, "wss", true},
       {21, "ftp", true},
-      {990, "ftps", true},
 
       // Unknown ones.
       {5, "foo", false},
       {80, "http:", false},
       {443, "http", false},
       {21, "ftps", false},
+      {990, "ftps", false},
       {990, "ftp", false},
 
       // With upper cases.
@@ -52,13 +52,13 @@ TEST(KnownPortsTest, DefaultPortForProtocol) {
       {80, "ws"},
       {443, "wss"},
       {21, "ftp"},
-      {990, "ftps"},
 
       // Unknown ones.
       {0, "foo"},
       {0, "http:"},
       {0, "HTTP"},
       {0, "Https"},
+      {0, "ftps"},
   };
 
   for (const TestCase& test : inputs)

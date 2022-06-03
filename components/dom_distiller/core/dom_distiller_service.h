@@ -6,11 +6,9 @@
 #define COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_SERVICE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -32,8 +30,7 @@ class ViewRequestDelegate;
 // thread. Callbacks will be called on that same thread.
 class DomDistillerServiceInterface {
  public:
-  typedef base::Callback<void(bool)> ArticleAvailableCallback;
-  virtual ~DomDistillerServiceInterface() {}
+  virtual ~DomDistillerServiceInterface() = default;
 
   // Request to view an article by url.
   // Use CreateDefaultDistillerPage() to create a default |distiller_page|.
@@ -58,11 +55,12 @@ class DomDistillerServiceInterface {
   // DomDistillerService.
   virtual DistillerUIHandle* GetDistillerUIHandle() = 0;
 
- protected:
-  DomDistillerServiceInterface() {}
+  DomDistillerServiceInterface(const DomDistillerServiceInterface&) = delete;
+  DomDistillerServiceInterface& operator=(const DomDistillerServiceInterface&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerServiceInterface);
+ protected:
+  DomDistillerServiceInterface() = default;
 };
 
 // Provide a view of the article list and ways of interacting with it.
@@ -112,8 +110,6 @@ class DomDistillerService : public DomDistillerServiceInterface {
 
   typedef std::vector<std::unique_ptr<TaskTracker>> TaskList;
   TaskList tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerService);
 };
 
 }  // namespace dom_distiller

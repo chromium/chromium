@@ -8,20 +8,28 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/allocator/allocator_interception_mac.h"
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
 #include "base/lazy_instance.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/task/post_task.h"
-#include "base/trace_event/heap_profiler_event_filter.h"
+#include "base/task/thread_pool.h"
+#include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 
+#if !defined(OS_IOS)
+#include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
+#endif
+
 #if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
 #include "base/trace_event/cfi_backtrace_android.h"
+#endif
+
+#if defined(OS_APPLE)
+#include "base/allocator/allocator_interception_mac.h"
 #endif
 
 namespace heap_profiling {
@@ -41,7 +49,7 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   started_profiling_ = true;
   base::trace_event::MallocDumpProvider::GetInstance()->DisableMetrics();
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // On macOS, this call is necessary to shim malloc zones that were created
   // after startup. This cannot be done during shim initialization because the
   // task scheduler has not yet been initialized.
@@ -52,9 +60,9 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
     defined(OFFICIAL_BUILD)
   // On Android the unwinder initialization requires file reading before
   // initializing shim. So, post task on background thread.
-  base::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce([]() {
         bool can_unwind =
@@ -67,6 +75,11 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
                      std::move(callback)));
 #else
   StartProfilingInternal(std::move(params), std::move(callback));
+#endif
+
+#if !defined(OS_IOS)
+  // Create trace source so that it registers itself to the tracing system.
+  HeapProfilingTraceSource::GetInstance();
 #endif
 }
 
@@ -81,28 +94,6 @@ base::LazyInstance<scoped_refptr<base::TaskRunner>>::Leaky
 // In NATIVE stack mode, whether to insert stack names into the backtraces.
 bool g_include_thread_names = false;
 
-// In order for pseudo stacks to work, trace event filtering must be enabled.
-void EnableTraceEventFiltering() {
-  std::string filter_string = base::JoinString(
-      {"*", TRACE_DISABLED_BY_DEFAULT("net"), TRACE_DISABLED_BY_DEFAULT("cc"),
-       base::trace_event::MemoryDumpManager::kTraceCategory},
-      ",");
-  base::trace_event::TraceConfigCategoryFilter category_filter;
-  category_filter.InitializeFromString(filter_string);
-
-  base::trace_event::TraceConfig::EventFilterConfig heap_profiler_filter_config(
-      base::trace_event::HeapProfilerEventFilter::kName);
-  heap_profiler_filter_config.SetCategoryFilter(category_filter);
-
-  base::trace_event::TraceConfig::EventFilters filters;
-  filters.push_back(heap_profiler_filter_config);
-  base::trace_event::TraceConfig filtering_trace_config;
-  filtering_trace_config.SetEventFilters(filters);
-
-  base::trace_event::TraceLog::GetInstance()->SetEnabled(
-      filtering_trace_config, base::trace_event::TraceLog::FILTERING_MODE);
-}
-
 void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
   using base::trace_event::AllocationContextTracker;
   using CaptureMode = base::trace_event::AllocationContextTracker::CaptureMode;
@@ -116,14 +107,6 @@ void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
   }
 
   switch (params->stack_mode) {
-    case mojom::StackMode::PSEUDO:
-      EnableTraceEventFiltering();
-      AllocationContextTracker::SetCaptureMode(CaptureMode::PSEUDO_STACK);
-      break;
-    case mojom::StackMode::MIXED:
-      EnableTraceEventFiltering();
-      AllocationContextTracker::SetCaptureMode(CaptureMode::MIXED_STACK);
-      break;
     case mojom::StackMode::NATIVE_WITH_THREAD_NAMES:
     case mojom::StackMode::NATIVE_WITHOUT_THREAD_NAMES:
       // This would track task contexts only.
@@ -149,8 +132,6 @@ mojom::AllocatorType ConvertType(
       return mojom::AllocatorType::kMalloc;
     case base::PoissonAllocationSampler::AllocatorType::kPartitionAlloc:
       return mojom::AllocatorType::kPartitionAlloc;
-    case base::PoissonAllocationSampler::AllocatorType::kBlinkGC:
-      return mojom::AllocatorType::kOilpan;
   }
 }
 
@@ -222,6 +203,24 @@ void ProfilingClient::RetrieveHeapProfile(
     profile->strings.emplace(reinterpret_cast<uintptr_t>(string), string);
 
   std::move(callback).Run(std::move(profile));
+}
+
+void ProfilingClient::AddHeapProfileToTrace(
+    AddHeapProfileToTraceCallback callback) {
+  auto* profiler = base::SamplingHeapProfiler::Get();
+  std::vector<base::SamplingHeapProfiler::Sample> samples =
+      profiler->GetSamples(/*profile_id=*/0);
+
+#if !defined(OS_IOS)
+  bool success =
+      HeapProfilingTraceSource::GetInstance()->AddToTraceIfEnabled(samples);
+#else
+  bool success = false;
+  // Tracing is not supported in iOS.
+  NOTREACHED();
+#endif
+
+  std::move(callback).Run(success);
 }
 
 }  // namespace heap_profiling

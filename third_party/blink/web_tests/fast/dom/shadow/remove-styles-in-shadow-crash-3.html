@@ -9,7 +9,7 @@
         link.setAttribute("rel", "stylesheet");
         link.setAttribute("href", "file:notfound.css");
         document.head.appendChild(link);
-        var root = host.createShadowRoot();
+        var root = host.attachShadow({mode: 'open'});
         root.innerHTML = "<span><style></style><style></style>";
         root.innerHTML = "";
     }

@@ -39,6 +39,9 @@ struct Configuration {
 
   // Maximum size of a single shared memory segment, in bytes.
   size_t max_shared_memory_num_bytes = 1024 * 1024 * 1024;
+
+  // If true we will not advertise our capabilities to our peer.
+  bool dont_advertise_capabilities = false;
 };
 
 }  // namespace core

@@ -1,0 +1,24 @@
+<html>
+<head>
+<script>
+function base64DecodeToArrayBuffer(encoded) {
+  // atob() decodes base64 strings into binary string.
+  var decoded = atob(encoded);
+  var buffer = new ArrayBuffer(decoded.length);
+  var view = new Uint8Array(buffer);
+  for (var i = 0; i < decoded.length; i++) {
+    view[i] = decoded.charCodeAt(i);
+  }
+  return buffer;
+}
+
+window.onload = function() {
+  chrome.addTrustedSyncEncryptionRecoveryMethod(
+        () => { window.close(); },
+        /*gaia_id=*/location.search.substring(1),
+        /*public_key=*/base64DecodeToArrayBuffer(location.hash.substring(1)),
+        /*method_type_hint=*/2);
+}
+</script>
+</head>
+</html>

@@ -32,6 +32,9 @@ class FileSystemURL;
 namespace extensions {
 namespace app_file_handler_util {
 
+extern const char kMimeTypeApplicationOctetStream[];
+extern const char kMimeTypeInodeDirectory[];
+
 // Gets a MIME type for a local path and returns it with |callback|. If not
 // found, then the MIME type is an empty string.
 void GetMimeTypeForLocalPath(
@@ -49,6 +52,10 @@ class MimeTypeCollector {
       base::OnceCallback<void(std::unique_ptr<std::vector<std::string>>)>;
 
   explicit MimeTypeCollector(content::BrowserContext* context);
+
+  MimeTypeCollector(const MimeTypeCollector&) = delete;
+  MimeTypeCollector& operator=(const MimeTypeCollector&) = delete;
+
   virtual ~MimeTypeCollector();
 
   // Collects all mime types asynchronously for a vector of URLs and upon
@@ -70,8 +77,6 @@ class MimeTypeCollector {
   size_t left_;
   CompletionCallback callback_;
   base::WeakPtrFactory<MimeTypeCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeTypeCollector);
 };
 
 }  // namespace app_file_handler_util

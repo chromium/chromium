@@ -15,7 +15,7 @@ class UserMessageEvent;
 // arbitrary policy.
 class MessageFilter {
  public:
-  virtual ~MessageFilter() {}
+  virtual ~MessageFilter() = default;
 
   // Returns true if |message| should be accepted by whomever is applying this
   // filter. See MessageQueue::GetNextMessage(), for example.

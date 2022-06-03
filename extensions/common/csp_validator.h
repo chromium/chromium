@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "extensions/common/manifest.h"
 
@@ -29,9 +28,7 @@ enum Options {
   // Allows 'unsafe-eval' to be specified as a source in a directive.
   OPTIONS_ALLOW_UNSAFE_EVAL = 1 << 0,
   // Allow an object-src to be specified with any sources (i.e. it may contain
-  // wildcards or http sources). Specifying this requires the CSP to contain
-  // a plugin-types directive which restricts the plugins that can be loaded
-  // to those which are fully sandboxed.
+  // wildcards or http sources).
   OPTIONS_ALLOW_INSECURE_OBJECT_SRC = 1 << 1,
 };
 
@@ -48,6 +45,10 @@ class CSPParser {
     Directive(base::StringPiece directive_string,
               std::string directive_name,
               std::vector<base::StringPiece> directive_values);
+
+    Directive(const Directive&) = delete;
+    Directive& operator=(const Directive&) = delete;
+
     ~Directive();
     Directive(Directive&&);
     Directive& operator=(Directive&&);
@@ -58,13 +59,15 @@ class CSPParser {
     std::string directive_name;
 
     std::vector<base::StringPiece> directive_values;
-
-    DISALLOW_COPY_AND_ASSIGN(Directive);
   };
 
   using DirectiveList = std::vector<Directive>;
 
   CSPParser(std::string policy);
+
+  CSPParser(const CSPParser&) = delete;
+  CSPParser& operator=(const CSPParser&) = delete;
+
   ~CSPParser();
 
   // It's not safe to move CSPParser since |directives_| refers to memory owned
@@ -85,8 +88,6 @@ class CSPParser {
 
   // This refers to memory owned by |policy_|.
   DirectiveList directives_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPParser);
 };
 
 // Checks whether the given |policy| meets the minimum security requirements
@@ -136,7 +137,7 @@ bool ContentSecurityPolicyIsSandboxed(
 // If not, populates |error|.
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               base::string16* error);
+                               std::u16string* error);
 
 }  // namespace csp_validator
 

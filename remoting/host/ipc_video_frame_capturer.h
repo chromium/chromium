@@ -24,6 +24,10 @@ class IpcVideoFrameCapturer : public webrtc::DesktopCapturer {
  public:
   explicit IpcVideoFrameCapturer(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcVideoFrameCapturer(const IpcVideoFrameCapturer&) = delete;
+  IpcVideoFrameCapturer& operator=(const IpcVideoFrameCapturer&) = delete;
+
   ~IpcVideoFrameCapturer() override;
 
   // webrtc::DesktopCapturer interface.
@@ -48,8 +52,6 @@ class IpcVideoFrameCapturer : public webrtc::DesktopCapturer {
 
   // Used to cancel tasks pending on the capturer when it is stopped.
   base::WeakPtrFactory<IpcVideoFrameCapturer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IpcVideoFrameCapturer);
 };
 
 }  // namespace remoting

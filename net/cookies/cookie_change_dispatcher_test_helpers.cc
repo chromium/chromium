@@ -4,7 +4,7 @@
 
 #include "net/cookies/cookie_change_dispatcher_test_helpers.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace net {
 

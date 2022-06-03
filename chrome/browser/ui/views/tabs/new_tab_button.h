@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 
-#include "base/scoped_observer.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget_observer.h"
-
-class FeaturePromoBubbleView;
 
 namespace views {
 class InkDropContainerView;
@@ -26,46 +26,36 @@ class InkDropContainerView;
 //
 ///////////////////////////////////////////////////////////////////////////////
 class NewTabButton : public views::ImageButton,
-                     public views::MaskedTargeterDelegate,
-                     public views::WidgetObserver {
+                     public views::MaskedTargeterDelegate {
  public:
-  static constexpr char kClassName[] = "NewTabButton";
+  METADATA_HEADER(NewTabButton);
 
   static const gfx::Size kButtonSize;
 
-  NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener);
+  NewTabButton(TabStrip* tab_strip, PressedCallback callback);
+  NewTabButton(const NewTabButton&) = delete;
+  NewTabButton& operator=(const NewTabButton&) = delete;
   ~NewTabButton() override;
-
-  // Retrieves the last active BrowserView instance to display the NewTabPromo.
-  static void ShowPromoForLastActiveBrowser();
-
-  // Returns whether there was a bubble that was closed. A bubble closes only
-  // when it exists.
-  static void CloseBubbleForLastActiveBrowser();
-
-  // Shows the NewTabPromo when the NewTabFeatureEngagementTracker calls for it.
-  void ShowPromo();
-
-  // Returns whether there was a bubble that was closed. A bubble closes only
-  // when it exists.
-  void CloseBubble();
 
   // Called when the tab strip transitions to/from single tab mode, the frame
   // state changes or the accent color changes.  Updates the glyph colors for
   // the best contrast on the background.
-  void FrameColorsChanged();
+  virtual void FrameColorsChanged();
 
-  void AnimateInkDropToStateForTesting(views::InkDropState state);
+  void AnimateToStateForTesting(views::InkDropState state);
 
-  FeaturePromoBubbleView* new_tab_promo() { return new_tab_promo_; }
-
-  // views::View:
-  const char* GetClassName() const override;
+  // views::ImageButton:
   void AddLayerBeneathView(ui::Layer* new_layer) override;
   void RemoveLayerBeneathView(ui::Layer* old_layer) override;
 
  protected:
-  // views::View:
+  virtual void PaintIcon(gfx::Canvas* canvas);
+
+  TabStrip* tab_strip() { return tab_strip_; }
+
+  SkColor GetForegroundColor() const;
+
+  // views::ImageButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
@@ -83,17 +73,11 @@ class NewTabButton : public views::ImageButton,
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   // Returns the radius to use for the button corners.
   int GetCornerRadius() const;
 
   // Paints the fill region of the button into |canvas|.
   void PaintFill(gfx::Canvas* canvas) const;
-
-  // Paints a properly sized plus (+) icon into the center of the button.
-  void PaintPlusIcon(gfx::Canvas* canvas) const;
 
   SkColor GetButtonFillColor() const;
 
@@ -111,18 +95,8 @@ class NewTabButton : public views::ImageButton,
   // Contains our ink drop layer so it can paint above our background.
   views::InkDropContainerView* ink_drop_container_;
 
-  // Promotional UI that appears next to the NewTabButton and encourages its
-  // use. Owned by its NativeWidget.
-  FeaturePromoBubbleView* new_tab_promo_ = nullptr;
-
-  // were we destroyed?
-  bool* destroyed_ = nullptr;
-
-  // Observes the NewTabPromo's Widget.  Used to tell whether the promo is
-  // open and get called back when it closes.
-  ScopedObserver<views::Widget, WidgetObserver> new_tab_promo_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabButton);
+  // For tracking whether this object has been destroyed. Must be last.
+  base::WeakPtrFactory<NewTabButton> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_

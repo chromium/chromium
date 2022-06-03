@@ -5,20 +5,26 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_WEB_CONTENTS_OBSERVER_H_
 
-#include <map>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "components/optimization_guide/core/insertion_ordered_set.h"
+#include "components/optimization_guide/core/optimization_guide_navigation_data.h"
+#include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page_user_data.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class NavigationHandle;
 }  // namespace content
+
+namespace optimization_guide {
+class ChromeHintsManager;
+class ChromeHintsManagerFetchingTest;
+}  // namespace optimization_guide
 
 class OptimizationGuideKeyedService;
 
@@ -28,28 +34,37 @@ class OptimizationGuideWebContentsObserver
       public content::WebContentsUserData<
           OptimizationGuideWebContentsObserver> {
  public:
+  OptimizationGuideWebContentsObserver(
+      const OptimizationGuideWebContentsObserver&) = delete;
+  OptimizationGuideWebContentsObserver& operator=(
+      const OptimizationGuideWebContentsObserver&) = delete;
+
   ~OptimizationGuideWebContentsObserver() override;
 
-  // Gets the OptimizationGuideNavigationData associated with
+  // Notifies |this| to flush |last_navigation_data| so metrics are recorded.
+  void FlushLastNavigationData();
+
+  // Tell the observer that hints for this URL should be fetched once we reach
+  // onload in this |web_contents|. Note that |web_contents| must be the
+  // WebContents being observed by this object.
+  void AddURLsToBatchFetchBasedOnPrediction(std::vector<GURL> urls,
+                                            content::WebContents* web_contents);
+
+ private:
+  friend class content::WebContentsUserData<
+      OptimizationGuideWebContentsObserver>;
+  friend class optimization_guide::ChromeHintsManagerFetchingTest;
+
+  explicit OptimizationGuideWebContentsObserver(
+      content::WebContents* web_contents);
+
+  // Gets the OptimizationGuideNavigationData associated with the
   // |navigation_handle|. If one does not exist already, one will be created for
   // it.
   OptimizationGuideNavigationData* GetOrCreateOptimizationGuideNavigationData(
       content::NavigationHandle* navigation_handle);
 
-  // Captures the timing information at the time of FCP for the current
-  // navigation to be used by the Optimization Guide to make decisions. Other
-  // timing metric information may be missing (e.g., LCP, FMP).
-  void UpdateSessionTimingStatistics(
-      const page_load_metrics::mojom::PageLoadTiming& timing);
-
- private:
-  friend class content::WebContentsUserData<
-      OptimizationGuideWebContentsObserver>;
-
-  explicit OptimizationGuideWebContentsObserver(
-      content::WebContents* web_contents);
-
-  // Overridden from content::WebContentsObserver.
+  // content::WebContentsObserver implementation:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
@@ -57,16 +72,90 @@ class OptimizationGuideWebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Synchronously flushes the metrics for the navigation with ID
-  // |navigation_id| and then removes any data associated with it, including its
-  // entry in |inflight_optimization_guide_navigation_datas_|.
-  void FlushMetricsAndRemoveOptimizationGuideNavigationData(
-      int64_t navigation_id,
-      bool has_committed);
+  void PostFetchHintsUsingManager();
 
-  // The data related to a given navigation ID.
-  std::map<int64_t, OptimizationGuideNavigationData>
-      inflight_optimization_guide_navigation_datas_;
+  // Ask |hints_manager| to fetch hints for navigations that were predicted for
+  // the current page load.
+  void FetchHintsUsingManager(
+      optimization_guide::ChromeHintsManager* hints_manager,
+      base::WeakPtr<content::Page> page);
+
+  // Notifies |optimization_guide_keyed_service_| that the navigation has
+  // finished.
+  void NotifyNavigationFinish(
+      std::unique_ptr<OptimizationGuideNavigationData> navigation_data,
+      const std::vector<GURL>& navigation_redirect_chain);
+
+  // Data scoped to a single page. PageData has the same lifetime as the page's
+  // main document.
+  class PageData : public content::PageUserData<PageData> {
+   public:
+    explicit PageData(content::Page& page);
+    PageData(const PageData&) = delete;
+    PageData& operator=(const PageData&) = delete;
+    ~PageData() override;
+
+    bool is_sent_batched_hints_request() const {
+      return sent_batched_hints_request_;
+    }
+    void set_sent_batched_hints_request() {
+      sent_batched_hints_request_ = true;
+    }
+    void InsertHintTargetUrls(const std::vector<GURL>& urls);
+    std::vector<GURL> GetHintsTargetUrls();
+
+    void SetNavigationData(
+        std::unique_ptr<OptimizationGuideNavigationData> navigation_data) {
+      navigation_data_ = std::move(navigation_data);
+    }
+
+    PAGE_USER_DATA_KEY_DECL();
+
+   private:
+    // List of predicted URLs to fetch hints for once the page reaches onload.
+    optimization_guide::InsertionOrderedSet<GURL> hints_target_urls_;
+
+    // Whether a hints request for predicted URLs has been fired off for this
+    // page loads. Used to avoid sending more than one predicted URLs hints
+    // request per page load.
+    bool sent_batched_hints_request_ = false;
+
+    // The navigation data for the completed navigation.
+    std::unique_ptr<OptimizationGuideNavigationData> navigation_data_;
+  };
+
+  class NavigationHandleData
+      : public content::NavigationHandleUserData<NavigationHandleData> {
+   public:
+    explicit NavigationHandleData(content::NavigationHandle&);
+    NavigationHandleData(const NavigationHandleData&) = delete;
+    NavigationHandleData& operator=(const NavigationHandleData&) = delete;
+    ~NavigationHandleData() override;
+
+    std::unique_ptr<OptimizationGuideNavigationData>
+    TakeOptimizationGuideNavigationData() {
+      return std::move(optimization_guide_navigation_data_);
+    }
+
+    OptimizationGuideNavigationData* GetOptimizationGuideNavigationData() {
+      return optimization_guide_navigation_data_.get();
+    }
+
+    void SetOptimizationGuideNavigationData(
+        std::unique_ptr<OptimizationGuideNavigationData> navigation_data) {
+      optimization_guide_navigation_data_ = std::move(navigation_data);
+    }
+
+    NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
+   private:
+    // The data related to a given navigation ID.
+    std::unique_ptr<OptimizationGuideNavigationData>
+        optimization_guide_navigation_data_;
+  };
+
+  // Returns the PageData for the specified |page|.
+  PageData& GetPageData(content::Page& page);
 
   // Initialized in constructor. It may be null if the
   // OptimizationGuideKeyedService feature is not enabled.
@@ -76,8 +165,6 @@ class OptimizationGuideWebContentsObserver
       this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideWebContentsObserver);
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_WEB_CONTENTS_OBSERVER_H_

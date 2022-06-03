@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/math_constants.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 #include "ui/gfx/geometry/angle_conversions.h"

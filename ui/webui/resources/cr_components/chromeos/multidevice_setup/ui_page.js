@@ -28,7 +28,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  computeIconIdentifier_: function() {
+  computeIconIdentifier_() {
     return 'multidevice-setup-icons-32:' + this.iconName;
   },
 });

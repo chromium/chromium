@@ -15,13 +15,10 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_MANAGER_H_
 #define SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_MANAGER_H_
 
-#include <set>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "services/device/geolocation/wifi_data.h"
 
@@ -53,6 +50,9 @@ class WifiDataProviderManager {
   // Instantiates the singleton if necessary, and always returns it.
   static WifiDataProviderManager* Register(WifiDataUpdateCallback* callback);
 
+  WifiDataProviderManager(const WifiDataProviderManager&) = delete;
+  WifiDataProviderManager& operator=(const WifiDataProviderManager&) = delete;
+
   // Removes a callback. If this is the last callback, deletes the singleton
   // instance. Return value indicates success.
   static bool Unregister(WifiDataUpdateCallback* callback);
@@ -64,6 +64,8 @@ class WifiDataProviderManager {
   // value indicates whether this is all the data the provider could ever
   // obtain.
   bool GetData(WifiData* data);
+
+  void ForceRescan();
 
  private:
   // Private constructor and destructor, callers access singleton through
@@ -90,8 +92,6 @@ class WifiDataProviderManager {
 
   // The internal implementation.
   scoped_refptr<WifiDataProvider> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderManager);
 };
 
 }  // namespace device

@@ -6,15 +6,14 @@
 #define CHROME_CHROME_CLEANER_PARSERS_PARSER_UTILS_COMMAND_LINE_ARGUMENTS_SANITIZER_H_
 
 #include <cstring>
+#include <string>
 #include <vector>
-
-#include "base/strings/string16.h"
 
 namespace chrome_cleaner {
 
 // Receives a string of space separated command line arguments, sanitizes
 // each one of them and returns them inside a vector.
-std::vector<base::string16> SanitizeArguments(const base::string16& arguments);
+std::vector<std::wstring> SanitizeArguments(const std::wstring& arguments);
 
 }  // namespace chrome_cleaner
 

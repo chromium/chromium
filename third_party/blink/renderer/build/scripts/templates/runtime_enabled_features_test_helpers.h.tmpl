@@ -7,37 +7,35 @@
 #define {{header_guard}}
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
-template <bool (&getter)(), void (&setter)(bool)>
-class ScopedRuntimeEnabledFeatureForTest {
+// Don't use this class directly. Use Scoped*ForTest instead.
+class RuntimeEnabledFeaturesTestHelpers {
  public:
-  ScopedRuntimeEnabledFeatureForTest(bool enabled)
-      : enabled_(enabled), original_(getter()) {
-    setter(enabled);
-  }
+  template <bool& data_member>
+  class ScopedRuntimeEnabledFeature {
+   public:
+    ScopedRuntimeEnabledFeature(bool enabled)
+        : enabled_(enabled), original_(data_member) { data_member = enabled; }
+    ~ScopedRuntimeEnabledFeature() {
+      CHECK_EQ(enabled_, data_member);
+      data_member = original_;
+    }
+   private:
+    bool enabled_;
+    bool original_;
+  };
 
-  ~ScopedRuntimeEnabledFeatureForTest() {
-    CHECK_EQ(enabled_, getter());
-    setter(original_);
-  }
-
- private:
-  bool enabled_;
-  bool original_;
+  {% for feature in features %}
+  using Scoped{{feature.name}} = ScopedRuntimeEnabledFeature<
+      RuntimeEnabledFeaturesBase::{{feature.data_member_name}}>;
+  {% endfor %}
 };
 
 {% for feature in features %}
-typedef ScopedRuntimeEnabledFeatureForTest<
-{% if feature.in_origin_trial %}
-    RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag,
-{% else %}
-    RuntimeEnabledFeatures::{{feature.name}}Enabled,
-{% endif %}
-    RuntimeEnabledFeatures::Set{{feature.name}}Enabled>
-    Scoped{{feature.name}}ForTest;
+using Scoped{{feature.name}}ForTest =
+    RuntimeEnabledFeaturesTestHelpers::Scoped{{feature.name}};
 {% endfor %}
 }  // namespace blink
 

@@ -4,13 +4,12 @@
 
 #include "chrome/test/base/js_test_api.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 
 JsTestApiConfig::JsTestApiConfig() {
   constexpr const base::FilePath::CharType* kLibraries[] = {
-      FILE_PATH_LITERAL("chrome/third_party/mock4js/mock4js.js"),
       FILE_PATH_LITERAL("third_party/chaijs/chai.js"),
   };
   constexpr base::FilePath::CharType kWebUITestFolder[] =

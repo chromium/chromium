@@ -5,15 +5,17 @@
 #ifndef STORAGE_BROWSER_QUOTA_SPECIAL_STORAGE_POLICY_H_
 #define STORAGE_BROWSER_QUOTA_SPECIAL_STORAGE_POLICY_H_
 
-#include <string>
-
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "services/network/session_cleanup_cookie_store.h"
+#include "base/sequence_checker.h"
+#include "services/network/public/cpp/session_cookie_delete_predicate.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace storage {
 
@@ -26,6 +28,8 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) SpecialStoragePolicy
     : public base::RefCountedThreadSafe<SpecialStoragePolicy> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   using StoragePolicy = int;
   enum ChangeFlags {
     STORAGE_PROTECTED = 1 << 0,
@@ -36,11 +40,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SpecialStoragePolicy
    public:
     // Called when one or more features corresponding to |change_flags| have
     // been granted for |origin| storage.
-    virtual void OnGranted(const GURL& origin, int change_flags) {}
+    virtual void OnGranted(const url::Origin& origin, int change_flags) {}
 
     // Called when one or more features corresponding to |change_flags| have
     // been revoked for |origin| storage.
-    virtual void OnRevoked(const GURL& origin, int change_flags) {}
+    virtual void OnRevoked(const url::Origin& origin, int change_flags) {}
 
     // Called when all features corresponding to ChangeFlags have been revoked
     // for all origins.
@@ -83,7 +87,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SpecialStoragePolicy
   // It uses domain matching as described in section 5.1.3 of RFC 6265 to
   // identify content setting rules that could have influenced the cookie
   // when it was created.
-  virtual network::SessionCleanupCookieStore::DeleteCookiePredicate
+  virtual network::DeleteCookiePredicate
   CreateDeleteCookieOnExitPredicate() = 0;
 
   // Adds/removes an observer, the policy does not take
@@ -97,15 +101,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SpecialStoragePolicy
 
   // Notify observes of specific policy changes. Note that all of these also
   // implicitly invoke |NotifyPolicyChanged()|.
-  void NotifyGranted(const GURL& origin, int change_flags);
-  void NotifyRevoked(const GURL& origin, int change_flags);
+  void NotifyGranted(const url::Origin& origin, int change_flags);
+  void NotifyRevoked(const url::Origin& origin, int change_flags);
   void NotifyCleared();
 
   // Subclasses can call this for any policy changes which don't fit any of the
   // above notifications.
   void NotifyPolicyChanged();
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::Unchecked observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage

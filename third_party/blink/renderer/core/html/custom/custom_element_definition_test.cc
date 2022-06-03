@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/node.h"  // CustomElementState
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
@@ -20,10 +19,10 @@ class ConstructorFails : public TestCustomElementDefinition {
  public:
   ConstructorFails(const CustomElementDescriptor& descriptor)
       : TestCustomElementDefinition(descriptor) {}
+  ConstructorFails(const ConstructorFails&) = delete;
+  ConstructorFails& operator=(const ConstructorFails&) = delete;
   ~ConstructorFails() override = default;
   bool RunConstructor(Element&) override { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(ConstructorFails);
 };
 
 }  // namespace
@@ -34,12 +33,11 @@ TEST(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
       << "sanity check: this element should be ready to upgrade";
   {
     CEReactionsScope reactions;
-    HeapVector<Member<Command>>* commands =
-        MakeGarbageCollected<HeapVector<Member<Command>>>();
-    commands->push_back(MakeGarbageCollected<Unreached>(
+    HeapVector<Member<Command>> commands;
+    commands.push_back(MakeGarbageCollected<Unreached>(
         "upgrade failure should clear the reaction queue"));
     reactions.EnqueueToCurrentQueue(
-        element, *MakeGarbageCollected<TestReaction>(commands));
+        element, *MakeGarbageCollected<TestReaction>(std::move(commands)));
     ConstructorFails definition(CustomElementDescriptor("a-a", "a-a"));
     definition.Upgrade(element);
   }
@@ -53,12 +51,11 @@ TEST(CustomElementDefinitionTest,
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
   ResetCustomElementReactionStackForTest reset_reaction_stack;
-  HeapVector<Member<Command>>* commands =
-      MakeGarbageCollected<HeapVector<Member<Command>>>();
-  commands->push_back(MakeGarbageCollected<Unreached>(
+  HeapVector<Member<Command>> commands;
+  commands.push_back(MakeGarbageCollected<Unreached>(
       "upgrade failure should clear the reaction queue"));
   reset_reaction_stack.Stack().EnqueueToBackupQueue(
-      element, *MakeGarbageCollected<TestReaction>(commands));
+      element, *MakeGarbageCollected<TestReaction>(std::move(commands)));
   ConstructorFails definition(CustomElementDescriptor("a-a", "a-a"));
   definition.Upgrade(element);
   EXPECT_EQ(CustomElementState::kFailed, element.GetCustomElementState())

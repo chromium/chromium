@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PAINT_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PAINT_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_image_generator_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_image_generator.h"
@@ -20,6 +19,7 @@ namespace blink {
 class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
  public:
   explicit CSSPaintValue(CSSCustomIdentValue* name);
+  CSSPaintValue(CSSCustomIdentValue* name, bool threaded_compositing_enabled);
   CSSPaintValue(CSSCustomIdentValue* name,
                 Vector<scoped_refptr<CSSVariableData>>&);
   ~CSSPaintValue();
@@ -34,13 +34,8 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
                                 const Document&,
                                 const ComputedStyle&,
                                 const FloatSize& target_size);
-  bool IsFixedSize() const { return false; }
-  FloatSize FixedSize(const Document&) { return FloatSize(); }
 
-  bool IsPending() const { return true; }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
-  void LoadSubimages(const Document&) {}
 
   bool Equals(const CSSPaintValue&) const;
 
@@ -57,11 +52,6 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
     BuildInputArgumentValues(style_value);
   }
 
-  CSSPaintValue* ComputedCSSValue(const ComputedStyle&,
-                                  bool allow_visited_style) {
-    return this;
-  }
-
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
 
@@ -70,15 +60,17 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   }
   unsigned NumberOfGeneratorsForTesting() const { return generators_.size(); }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   class Observer final : public CSSPaintImageGenerator::Observer {
    public:
     explicit Observer(CSSPaintValue* owner_value) : owner_value_(owner_value) {}
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
 
     ~Observer() override = default;
-    void Trace(blink::Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(owner_value_);
       CSSPaintImageGenerator::Observer::Trace(visitor);
     }
@@ -87,7 +79,6 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
 
    private:
     Member<CSSPaintValue> owner_value_;
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   CSSPaintImageGenerator& EnsureGenerator(const Document&);

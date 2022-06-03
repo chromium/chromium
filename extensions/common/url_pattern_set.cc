@@ -7,6 +7,7 @@
 #include <iterator>
 #include <ostream>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/values.h"
@@ -80,7 +81,7 @@ URLPatternSet URLPatternSet::CreateIntersection(
   // they have with the other patterns.
   for (const auto* pattern : unique_set1) {
     for (const auto* pattern2 : unique_set2) {
-      base::Optional<URLPattern> intersection =
+      absl::optional<URLPattern> intersection =
           pattern->CreateIntersection(*pattern2);
       if (intersection)
         result.patterns_.insert(std::move(*intersection));
@@ -193,7 +194,8 @@ bool URLPatternSet::AddOrigin(int valid_schemes, const GURL& origin) {
   if (origin.is_empty())
     return false;
   const url::Origin real_origin = url::Origin::Create(origin);
-  DCHECK(real_origin.IsSameOriginWith(url::Origin::Create(origin.GetOrigin())));
+  DCHECK(real_origin.IsSameOriginWith(
+      url::Origin::Create(origin.DeprecatedGetOriginAsURL())));
   URLPattern origin_pattern(valid_schemes);
   // Origin adding could fail if |origin| does not match |valid_schemes|.
   if (origin_pattern.Parse(origin.spec()) !=
@@ -266,8 +268,11 @@ bool URLPatternSet::OverlapsWith(const URLPatternSet& other) const {
 
 std::unique_ptr<base::ListValue> URLPatternSet::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue);
-  for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i)
-    value->AppendIfNotPresent(std::make_unique<base::Value>(i->GetAsString()));
+  for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i) {
+    base::Value pattern_str_value(i->GetAsString());
+    if (!base::Contains(value->GetList(), pattern_str_value))
+      value->Append(std::move(pattern_str_value));
+  }
   return value;
 }
 
@@ -310,7 +315,7 @@ bool URLPatternSet::Populate(const base::ListValue& value,
                              bool allow_file_access,
                              std::string* error) {
   std::vector<std::string> patterns;
-  for (size_t i = 0; i < value.GetSize(); ++i) {
+  for (size_t i = 0; i < value.GetList().size(); ++i) {
     std::string item;
     if (!value.GetString(i, &item))
       return false;

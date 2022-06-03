@@ -36,6 +36,10 @@ namespace remoting {
 class CompoundBuffer {
  public:
   CompoundBuffer();
+
+  CompoundBuffer(const CompoundBuffer&) = delete;
+  CompoundBuffer& operator=(const CompoundBuffer&) = delete;
+
   ~CompoundBuffer();
 
   void Clear();
@@ -99,8 +103,6 @@ class CompoundBuffer {
   DataChunkList chunks_;
   int total_bytes_;
   bool locked_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompoundBuffer);
 };
 
 class CompoundBufferInputStream

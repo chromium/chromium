@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -16,20 +17,25 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/app_modal/javascript_app_modal_dialog.h"
-#include "components/app_modal/native_app_modal_dialog.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_view.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -43,6 +49,7 @@
 #include "ipc/ipc_logging.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_sync_message.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -51,9 +58,12 @@ using base::JSONParserOptions;
 using base::JSONReader;
 
 namespace {
+// The command-line flag to specify the command file flag.
+const char kCommandFileFlag[] = "command_file";
+
 // The maximum amount of time to wait for Chrome to finish autofilling a form.
 const base::TimeDelta kAutofillActionWaitForVisualUpdateTimeout =
-    base::TimeDelta::FromSeconds(3);
+    base::Seconds(3);
 
 // The number of tries the TestRecipeReplayer should perform when executing an
 // Chrome Autofill action.
@@ -74,13 +84,159 @@ const int kAutofillActionNumRetries = 5;
 // validation errors from WPR.
 const char kWebPageReplayCertSPKI[] =
     "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
+
+const char kClockNotSetMessage[] =
+    "No AutofillClock override set from wpr archive: ";
+
+void PrintDebugInstructions(const base::FilePath& command_file_path) {
+  const char msg[] = R"(
+
+*** INTERACTIVE DEBUGGING MODE ***
+
+To proceed, you should create a named pipe:
+  $ mkfifo %1$s
+and then write commands into it:
+  $ echo run     >%1$s  # unpauses execution
+  $ echo next 2  >%1$s  # executes the next 2 actions
+  $ echo next -1 >%1$s  # executes until the last action
+  $ echo skip -3 >%1$s  # jumps back 3 actions
+  $ echo skip 4  >%1$s  # skips the next 4 actions
+  $ echo where   >%1$s  # prints the current position
+  $ echo show -1 >%1$s  # prints last 1 actions
+  $ echo show 1  >%1$s  # prints next 1 actions
+  $ echo help    >%1$s  # prints this text
+)";
+  LOG(INFO) << base::StringPrintf(msg,
+                                  command_file_path.AsUTF8Unsafe().c_str());
+}
+
+// Command types to control and debug execution.
+// * The |kAbsoluteLimit| and |kRelativeLimit| commands indicate that
+//   execution shall not proceed if the next action's position is >= |param|
+//   or >= current_index + |param|, respectively.
+// * The |kSkipAction| command jumps |param| actions forward or backward.
+// * The |kShowAction| command prints the |param| previous (if < 0) or
+//   upcoming (if > 0) actions.
+// * The |kWhereAmI| command prints the current execution position.
+enum class ExecutionCommandType {
+  kAbsoluteLimit,
+  kRelativeLimit,
+  kSkipAction,
+  kShowAction,
+  kWhereAmI,
+};
+
+struct ExecutionCommand {
+  ExecutionCommandType type = ExecutionCommandType::kAbsoluteLimit;
+  int param = std::numeric_limits<int>::max();
+};
+
+// Blockingly reads the content of |command_file_path|, parses it into
+// ExecutionCommands, and returns the result.
+std::vector<ExecutionCommand> ReadExecutionCommands(
+    const base::FilePath& command_file_path) {
+  std::vector<ExecutionCommand> commands;
+  std::string command_lines;
+  if (base::ReadFileToString(command_file_path, &command_lines)) {
+    for (const auto command :
+         base::SplitStringPiece(command_lines, "\n", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)) {
+      auto GetParamOr = [command](int default_value) {
+        size_t space = command.find(' ');
+        if (space == base::StringPiece::npos)
+          return default_value;
+        int value;
+        if (!base::StringToInt(command.substr(space + 1), &value))
+          return default_value;
+        return value;
+      };
+
+      if (base::StartsWith(command, "run")) {
+        commands.push_back({ExecutionCommandType::kAbsoluteLimit,
+                            std::numeric_limits<int>::max()});
+      } else if (base::StartsWith(command, "next")) {
+        commands.push_back(
+            {ExecutionCommandType::kRelativeLimit, GetParamOr(1)});
+      } else if (base::StartsWith(command, "skip")) {
+        commands.push_back({ExecutionCommandType::kSkipAction, GetParamOr(1)});
+      } else if (base::StartsWith(command, "show")) {
+        commands.push_back({ExecutionCommandType::kShowAction, GetParamOr(1)});
+      } else if (base::StartsWith(command, "where")) {
+        commands.push_back({ExecutionCommandType::kWhereAmI});
+      } else if (base::StartsWith(command, "help")) {
+        PrintDebugInstructions(command_file_path);
+      }
+    }
+  }
+  return commands;
+}
+
+struct ExecutionState {
+  // The position of the next action to be executed.
+  int index = 0;
+  // The current bound on the execution.
+  int limit = std::numeric_limits<int>::max();
+  // The number of actions to be executed.
+  int length = 0;
+};
+
+// Blockingly reads the commands from |command_file_path| and executes them.
+// Execution primarily means manipulation of the |execution_state|, particularly
+// `execution_state.limit`.
+ExecutionState ProcessCommands(ExecutionState execution_state,
+                               const base::Value::ListView* action_list,
+                               const base::FilePath& command_file_path) {
+  while (execution_state.limit <= execution_state.index) {
+    for (ExecutionCommand command : ReadExecutionCommands(command_file_path)) {
+      switch (command.type) {
+        case ExecutionCommandType::kAbsoluteLimit: {
+          execution_state.limit = command.param;
+          break;
+        }
+        case ExecutionCommandType::kRelativeLimit: {
+          if (command.param >= 0) {
+            execution_state.limit += command.param;
+          } else {
+            execution_state.limit = execution_state.length + command.param;
+          }
+          break;
+        }
+        case ExecutionCommandType::kSkipAction: {
+          execution_state.index += command.param;
+          execution_state.index = std::min(std::max(execution_state.index, 0),
+                                           execution_state.length - 1);
+          break;
+        }
+        case ExecutionCommandType::kShowAction: {
+          int min_index = execution_state.index + std::min(command.param, 0);
+          int max_index = execution_state.index + std::max(command.param, 0);
+          min_index = std::max(min_index, 0);
+          max_index = std::min(max_index, execution_state.length);
+          for (int i = min_index; i < max_index; ++i) {
+            LOG(INFO) << "Action " << (i - execution_state.index) << ": "
+                      << (*action_list)[i].DebugString();
+          }
+          break;
+        }
+        case ExecutionCommandType::kWhereAmI: {
+          LOG(INFO) << "Next action is at position " << execution_state.index
+                    << ", limit (excl) is at " << execution_state.limit
+                    << ", last (excl) is at " << execution_state.length;
+        }
+      }
+    }
+  }
+  return execution_state;
+}
+
 }  // namespace
 
 namespace captured_sites_test_utils {
 
 CapturedSiteParams::CapturedSiteParams() = default;
 CapturedSiteParams::~CapturedSiteParams() = default;
-CapturedSiteParams::CapturedSiteParams(const CapturedSiteParams& other) = default;
+CapturedSiteParams::CapturedSiteParams(const CapturedSiteParams& other) =
+    default;
 
 std::ostream& operator<<(std::ostream& os, const CapturedSiteParams& param) {
   if (param.scenario_dir.empty())
@@ -109,17 +265,12 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   base::Value root_node;
   {
     JSONReader::ValueWithError value_with_error =
-        JSONReader().ReadAndReturnValueWithError(
+        JSONReader::ReadAndReturnValueWithError(
             json_text, JSONParserOptions::JSON_PARSE_RFC);
-    if (value_with_error.error_code !=
-        JSONReader::JsonParseError::JSON_NO_ERROR) {
+    if (!value_with_error.value) {
       LOG(WARNING) << "Could not load test config from json file: "
                    << "`testcases.json` because: "
                    << value_with_error.error_message;
-      return sites;
-    }
-    if (!value_with_error.value) {
-      LOG(WARNING) << "JSON Reader could not any object from `testcases.json`";
       return sites;
     }
     root_node = std::move(value_with_error.value.value());
@@ -132,18 +283,17 @@ std::vector<CapturedSiteParams> GetCapturedSites(
 
   bool also_run_disabled = testing::FLAGS_gtest_also_run_disabled_tests == 1;
   for (auto& item : list_node->GetList()) {
-    const base::DictionaryValue* dict;
-    if (!item.GetAsDictionary(&dict))
+    if (!item.is_dict())
       continue;
     CapturedSiteParams param;
-    param.site_name = *(dict->FindStringKey("site_name"));
-    if (dict->HasKey("scenario_dir"))
-      param.scenario_dir = *(dict->FindStringKey("scenario_dir"));
-    param.is_disabled = dict->FindBoolKey("disabled").value_or(false);
+    param.site_name = *(item.FindStringKey("site_name"));
+    if (item.FindKey("scenario_dir"))
+      param.scenario_dir = *(item.FindStringKey("scenario_dir"));
+    param.is_disabled = item.FindBoolKey("disabled").value_or(false);
     if (param.is_disabled && !also_run_disabled)
       continue;
 
-    const std::string* expectation_string = dict->FindStringKey("expectation");
+    const std::string* expectation_string = item.FindStringKey("expectation");
     if (expectation_string && *expectation_string == "FAIL") {
       param.expectation = kFail;
     } else {
@@ -182,6 +332,38 @@ std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 #endif
 }
 
+absl::optional<base::FilePath> GetCommandFilePath() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line && command_line->HasSwitch(kCommandFileFlag)) {
+    return absl::make_optional(
+        command_line->GetSwitchValuePath(kCommandFileFlag));
+  }
+  return absl::nullopt;
+}
+
+void PrintInstructions(const char* test_file_name) {
+  const char msg[] = R"(
+
+*** README ***
+
+A captured-site test replays an action recipe (*.test)
+against recorded web traffic (*.wpr).
+These files need to be downloaded separately.
+
+Recommended flags are:
+  --test-launcher-timeout=1000000
+  --ui-test-action-max-timeout=1000000
+  --enable-pixel-output-in-tests
+  --vmodule=captured_sites_test_utils=1,%s=1:
+
+For interactive debugging, specify a command file:
+  --%s=/path/to/file
+Commands to step through the test can be written into that file.
+Further instructions will be printed then.
+)";
+  LOG(INFO) << base::StringPrintf(msg, test_file_name, kCommandFileFlag);
+}
+
 // FrameObserver --------------------------------------------------------------
 IFrameWaiter::IFrameWaiter(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -194,7 +376,8 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
     const std::string& name,
     const base::TimeDelta timeout) {
   content::RenderFrameHost* frame = FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, name));
   if (frame) {
     return frame;
   } else {
@@ -210,8 +393,9 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingName(
 content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingOrigin(
     const GURL origin,
     const base::TimeDelta timeout) {
-  content::RenderFrameHost* frame = FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&FrameHasOrigin, origin));
+  content::RenderFrameHost* frame =
+      FrameMatchingPredicate(web_contents()->GetPrimaryPage(),
+                             base::BindRepeating(&FrameHasOrigin, origin));
   if (frame) {
     return frame;
   } else {
@@ -228,7 +412,8 @@ content::RenderFrameHost* IFrameWaiter::WaitForFrameMatchingUrl(
     const GURL url,
     const base::TimeDelta timeout) {
   content::RenderFrameHost* frame = FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&content::FrameHasSourceUrl, url));
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, url));
   if (frame) {
     return frame;
   } else {
@@ -251,7 +436,8 @@ void IFrameWaiter::RenderFrameCreated(
         run_loop_.Quit();
       break;
     case ORIGIN:
-      if (render_frame_host->GetLastCommittedURL().GetOrigin() == origin_)
+      if (render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL() ==
+          origin_)
         run_loop_.Quit();
       break;
     case URL:
@@ -269,7 +455,7 @@ void IFrameWaiter::DidFinishLoad(content::RenderFrameHost* render_frame_host,
     return;
   switch (query_type_) {
     case ORIGIN:
-      if (validated_url.GetOrigin() == origin_)
+      if (validated_url.DeprecatedGetOriginAsURL() == origin_)
         run_loop_.Quit();
       break;
     case URL:
@@ -298,7 +484,7 @@ void IFrameWaiter::FrameNameChanged(content::RenderFrameHost* render_frame_host,
 bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
                                   content::RenderFrameHost* frame) {
   GURL url = frame->GetLastCommittedURL();
-  return (url.GetOrigin() == origin.GetOrigin());
+  return (url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL());
 }
 
 // TestRecipeReplayer ---------------------------------------------------------
@@ -309,17 +495,56 @@ TestRecipeReplayer::TestRecipeReplayer(
 
 TestRecipeReplayer::~TestRecipeReplayer() {}
 
-bool TestRecipeReplayer::ReplayTest(const base::FilePath capture_file_path,
-                                    const base::FilePath recipe_file_path) {
+bool TestRecipeReplayer::ReplayTest(
+    const base::FilePath& capture_file_path,
+    const base::FilePath& recipe_file_path,
+    const absl::optional<base::FilePath>& command_file_path) {
   if (!StartWebPageReplayServer(capture_file_path))
     return false;
-
-  return ReplayRecordedActions(recipe_file_path);
+  if (OverrideAutofillClock(capture_file_path))
+    VLOG(1) << "AutofillClock was set to:" << autofill::AutofillClock::Now();
+  return ReplayRecordedActions(recipe_file_path, command_file_path);
 }
 
 const std::vector<testing::AssertionResult>
 TestRecipeReplayer::GetValidationFailures() const {
   return validation_failures_;
+}
+
+// Extracts the time of the wpr recording from the wpr archive file and
+// overrides the autofill::AutofillClock to match that time.
+bool TestRecipeReplayer::OverrideAutofillClock(
+    const base::FilePath capture_file_path) {
+  std::string json_text;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::ReadFileToString(capture_file_path, &json_text)) {
+      VLOG(1) << kClockNotSetMessage << "Could not read file";
+      return false;
+    }
+  }
+  // Decompress the json text from gzip.
+  std::string decompressed_json_text;
+  if (!compression::GzipUncompress(json_text, &decompressed_json_text)) {
+    VLOG(1) << kClockNotSetMessage << "Could not gzip decompress file";
+    return false;
+  }
+  // Convert the file text into a json object.
+  absl::optional<base::Value> parsed_json =
+      base::JSONReader::Read(decompressed_json_text);
+  if (!parsed_json) {
+    VLOG(1) << kClockNotSetMessage << "Failed to deserialize json";
+    return false;
+  }
+
+  base::Value* time_value = parsed_json->FindKey("DeterministicTimeSeedMs");
+  if (!time_value) {
+    VLOG(1) << kClockNotSetMessage << "No DeterministicTimeSeedMs found";
+    return false;
+  }
+  // wpr archive stores time seed in ms, clock is set in seconds.
+  test_clock_.SetNow(base::Time::FromDoubleT(time_value->GetDouble() / 1000));
+  return true;
 }
 
 // static
@@ -332,20 +557,27 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
           "MAP *:443 127.0.0.1:%d,"
           // Set to always exclude, allows cache_replayer overwrite
           "EXCLUDE clients1.google.com,"
+          "EXCLUDE content-autofill.googleapis.com,"
           "EXCLUDE localhost",
           kHostHttpPort, kHostHttpsPort));
   command_line->AppendSwitchASCII(
       network::switches::kIgnoreCertificateErrorsSPKIList,
       kWebPageReplayCertSPKI);
   command_line->AppendSwitch(switches::kStartMaximized);
+  // Tests are not expecting default field trials config, disable them by adding
+  // a fake field trial.
+  // TOOD(crbug/1212552) Remove this switch and either do this directly via gn
+  // args or not at all and update test expectations.
+  command_line->AppendSwitchASCII(::switches::kForceFieldTrials, "Foo/Bar");
 }
 
 void TestRecipeReplayer::Setup() {
   CleanupSiteData();
 
   // Bypass permission dialogs.
-  PermissionRequestManager::FromWebContents(GetWebContents())
-      ->set_auto_response_for_test(PermissionRequestManager::ACCEPT_ALL);
+  permissions::PermissionRequestManager::FromWebContents(GetWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
 }
 
 void TestRecipeReplayer::Cleanup() {
@@ -445,9 +677,10 @@ void TestRecipeReplayer::CleanupSiteData() {
   // Navigate to about:blank, then clear the browser cache.
   // Navigating to about:blank before clearing the cache ensures that
   // the cleanup is thorough and nothing is held.
-  ui_test_utils::NavigateToURL(browser_, GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser_, GURL(url::kAboutBlankURL)));
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(browser_->profile());
+      browser_->profile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),
@@ -500,8 +733,7 @@ bool TestRecipeReplayer::StartWebPageReplayServer(
   // process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, wpr_launch_waiter.QuitClosure(),
-      base::TimeDelta::FromSeconds(5));
+      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
   wpr_launch_waiter.Run();
 
   if (!web_page_replay_server_.IsValid()) {
@@ -568,7 +800,7 @@ bool TestRecipeReplayer::RunWebPageReplayCmd(
       base::FilePath(FILE_PATH_LITERAL("win"))
           .AppendASCII("AMD64")
           .AppendASCII("wpr.exe");
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   base::FilePath wpr_executable_binary =
       base::FilePath(FILE_PATH_LITERAL("mac"))
           .AppendASCII("x86_64")
@@ -614,7 +846,7 @@ bool TestRecipeReplayer::RunWebPageReplayCmd(
           web_page_replay_support_file_dir.AppendASCII("wpr_key.pem").value())
           .c_str()));
 
-  for (const auto arg : args)
+  for (const auto& arg : args)
     full_command.AppendArg(arg);
 
   LOG(INFO) << full_command.GetArgumentsString();
@@ -623,23 +855,26 @@ bool TestRecipeReplayer::RunWebPageReplayCmd(
   return true;
 }
 
-const std::string* FindPopulateString(
-                        const base::DictionaryValue& container,
-                        const std::string key_name,
-                        const std::string key_descriptor) {
-  const std::string* string_value = container.FindStringKey(key_name);
-  if (!string_value) {
+absl::optional<std::string> FindPopulateString(
+    const base::Value::DictStorage& container,
+    const std::string key_name,
+    const std::string key_descriptor) {
+  auto container_iter = container.find(key_name);
+  if (container_iter == container.end() ||
+      !container_iter->second.is_string()) {
     ADD_FAILURE() << "Failed to extract '" << key_descriptor
                   << "' from container!";
-    return nullptr;
+    return absl::nullopt;
   }
-  return string_value;
+
+  return container_iter->second.GetString();
 }
 
 bool TestRecipeReplayer::ReplayRecordedActions(
-    const base::FilePath& recipe_file_path) {
+    const base::FilePath& recipe_file_path,
+    const absl::optional<base::FilePath>& command_file_path) {
   // Read the text of the recipe file.
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting for_testing;
   std::string json_text;
   if (!base::ReadFileToString(recipe_file_path, &json_text)) {
     ADD_FAILURE() << "Failed to read recipe file '" << recipe_file_path << "'!";
@@ -647,105 +882,151 @@ bool TestRecipeReplayer::ReplayRecordedActions(
   }
 
   // Convert the file text into a json object.
-  std::unique_ptr<base::DictionaryValue> recipe = base::DictionaryValue::From(
-      base::JSONReader().ReadToValueDeprecated(json_text));
-  if (!recipe) {
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
+  if (!parsed_json) {
     ADD_FAILURE() << "Failed to deserialize json text!";
     return false;
   }
 
+  DCHECK(parsed_json->is_dict());
+  base::Value::DictStorage recipe = std::move(*parsed_json).TakeDict();
   if (!InitializeBrowserToExecuteRecipe(recipe))
     return false;
 
   // Iterate through and execute each action in the recipe.
-  base::Value* action_list_container = recipe->FindListKey("actions");
-  if (!action_list_container) {
+  auto action_list_container_iter = recipe.find("actions");
+  if (action_list_container_iter == recipe.end() ||
+      !action_list_container_iter->second.is_list()) {
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;
   }
-  for (auto& item : action_list_container->GetList()) {
-    base::DictionaryValue* action;
-    if (!item.GetAsDictionary(&action)) {
+
+  auto action_list = action_list_container_iter->second.GetList();
+  ExecutionState execution_state{.length =
+                                     static_cast<int>(action_list.size())};
+  if (command_file_path.has_value()) {
+    execution_state.limit = 0;  // Stop execution initially in debug mode.
+    PrintDebugInstructions(command_file_path.value());
+  }
+
+  while (execution_state.index < execution_state.length) {
+    if (command_file_path.has_value()) {
+      while (execution_state.limit <= execution_state.index) {
+        bool thread_finished = false;
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock()},
+            base::BindOnce(&ProcessCommands, execution_state, &action_list,
+                           command_file_path.value()),
+            base::BindOnce(
+                [](ExecutionState* execution_state, bool* finished,
+                   ExecutionState new_execution_state) {
+                  *execution_state = new_execution_state;
+                  *finished = true;
+                },
+                &execution_state, &thread_finished));
+        while (!thread_finished) {
+          base::RunLoop run_loop;
+          base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+              FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
+          run_loop.Run();
+        }
+      }
+    }
+    LOG(INFO) << "Proceeding with execution with action "
+              << execution_state.index << " of " << execution_state.length
+              << ": " << action_list[execution_state.index];
+
+    if (!action_list[execution_state.index].is_dict()) {
       ADD_FAILURE()
           << "Failed to extract an individual action from the recipe!";
       return false;
     }
-    const std::string* type =
-        FindPopulateString(*action, "type", "action type");
+
+    base::Value::DictStorage action =
+        std::move(action_list[execution_state.index]).TakeDict();
+    absl::optional<std::string> type =
+        FindPopulateString(action, "type", "action type");
+
     if (!type)
       return false;
     if (base::CompareCaseInsensitiveASCII(*type, "autofill") == 0) {
-      if (!ExecuteAutofillAction(*action))
+      if (!ExecuteAutofillAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "click") == 0) {
-      if (!ExecuteClickAction(*action))
+      if (!ExecuteClickAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "clickIfNotSeen") ==
                0) {
-      if (!ExecuteClickIfNotSeenAction(*action))
+      if (!ExecuteClickIfNotSeenAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "closeTab") == 0) {
-      if (!ExecuteCloseTabAction(*action))
+      if (!ExecuteCloseTabAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "coolOff") == 0) {
-      if (!ExecuteCoolOffAction(*action))
+      if (!ExecuteCoolOffAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "executeScript") == 0) {
-      if (!ExecuteRunCommandAction(*action))
+      if (!ExecuteRunCommandAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "hover") == 0) {
-      if (!ExecuteHoverAction(*action))
+      if (!ExecuteHoverAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "loadPage") == 0) {
-      if (!ExecuteForceLoadPage(*action))
+      if (!ExecuteForceLoadPage(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "pressEnter") == 0) {
-      if (!ExecutePressEnterAction(*action))
+      if (!ExecutePressEnterAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "pressEscape") == 0) {
-      if (!ExecutePressEscapeAction(*action))
+      if (!ExecutePressEscapeAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "pressSpace") == 0) {
-      if (!ExecutePressSpaceAction(*action))
+      if (!ExecutePressSpaceAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "savePassword") == 0) {
-      if (!ExecuteSavePasswordAction(*action))
+      if (!ExecuteSavePasswordAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "select") == 0) {
-      if (!ExecuteSelectDropdownAction(*action))
+      if (!ExecuteSelectDropdownAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "type") == 0) {
-      if (!ExecuteTypeAction(*action))
+      if (!ExecuteTypeAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "typePassword") == 0) {
-      if (!ExecuteTypePasswordAction(*action))
+      if (!ExecuteTypePasswordAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "updatePassword") ==
                0) {
-      if (!ExecuteUpdatePasswordAction(*action))
+      if (!ExecuteUpdatePasswordAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "validateField") == 0) {
-      if (!ExecuteValidateFieldValueAction(*action))
+      if (!ExecuteValidateFieldValueAction(std::move(action)))
+        return false;
+    } else if (base::CompareCaseInsensitiveASCII(
+                   *type, "validatePasswordGenerationPrompt") == 0) {
+      if (!ExecuteValidatePasswordGenerationPromptAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(
                    *type, "validateNoSavePasswordPrompt") == 0) {
-      if (!ExecuteValidateNoSavePasswordPromptAction(*action))
+      if (!ExecuteValidateNoSavePasswordPromptAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(
                    *type, "validatePasswordSaveFallback") == 0) {
-      if (!ExecuteValidateSaveFallbackAction(*action))
+      if (!ExecuteValidateSaveFallbackAction(std::move(action)))
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "waitFor") == 0) {
-      if (!ExecuteWaitForStateAction(*action))
+      if (!ExecuteWaitForStateAction(std::move(action)))
         return false;
     } else {
       ADD_FAILURE() << "Unrecognized action type: " << *type;
     }
-  }  // end foreach action
+
+    ++execution_state.index;
+  }
 
   // Dismiss the beforeUnloadDialog if the last page of the test has a
   // beforeUnload function.
-  if (recipe->FindKey("dismissBeforeUnload")) {
+  if (recipe.find("dismissBeforeUnload") != recipe.end()) {
     NavigateAwayAndDismissBeforeUnloadDialog();
   }
 
@@ -755,35 +1036,52 @@ bool TestRecipeReplayer::ReplayRecordedActions(
 // Functions for deserializing and executing actions from the test recipe
 // JSON object.
 bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
-    const std::unique_ptr<base::DictionaryValue>& recipe) {
+    base::Value::DictStorage& recipe) {
   // Setup any saved address and credit card at the start of the test.
-  const base::Value* autofill_profile_container =
-      recipe->FindKey("autofillProfile");
+  auto autofill_profile_container_iter = recipe.find("autofillProfile");
 
-  if (autofill_profile_container &&
-      !SetupSavedAutofillProfile(*autofill_profile_container))
-    return false;
+  if (autofill_profile_container_iter != recipe.end()) {
+    if (!autofill_profile_container_iter->second.is_list()) {
+      ADD_FAILURE() << "Save Autofill Profile is not a list!";
+      return false;
+    }
+
+    base::Value::ListStorage autofill_profile_container =
+        std::move(autofill_profile_container_iter->second).TakeList();
+    if (!SetupSavedAutofillProfile(std::move(autofill_profile_container)))
+      return false;
+  }
 
   // Setup any saved passwords at the start of the test.
-  const base::Value* saved_password_container =
-      recipe->FindKey("passwordManagerProfiles");
+  auto saved_password_container_iter = recipe.find("passwordManagerProfiles");
 
-  if (saved_password_container &&
-      !SetupSavedPasswords(*saved_password_container))
-    return false;
+  if (saved_password_container_iter != recipe.end()) {
+    if (!saved_password_container_iter->second.is_list()) {
+      ADD_FAILURE() << "Saved Password List is not a list!";
+      return false;
+    }
+
+    base::Value::ListStorage saved_password_container =
+        std::move(saved_password_container_iter->second).TakeList();
+    if (!SetupSavedPasswords(std::move(saved_password_container)))
+      return false;
+  }
 
   // Extract the starting URL from the test recipe.
-  const std::string* starting_url = recipe->FindStringKey("startingURL");
-  if (!starting_url) {
+  auto starting_url_iter = recipe.find("startingURL");
+  if (starting_url_iter == recipe.end() ||
+      !starting_url_iter->second.is_string()) {
     ADD_FAILURE() << "Failed to extract the starting url from the recipe!";
     return false;
   }
 
   // Navigate to the starting URL, wait for the page to complete loading.
-  if (!content::ExecuteScript(GetWebContents(),
-                              base::StringPrintf("window.location.href = '%s';",
-                                                 starting_url->c_str()))) {
-    ADD_FAILURE() << "Failed to navigate Chrome to '" << starting_url << "!";
+  if (!content::ExecuteScript(
+          GetWebContents(),
+          base::StringPrintf("window.location.href = '%s';",
+                             starting_url_iter->second.GetString().c_str()))) {
+    ADD_FAILURE() << "Failed to navigate Chrome to '"
+                  << starting_url_iter->second.GetString() << "!";
     return false;
   }
 
@@ -792,7 +1090,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
 }
 
 bool TestRecipeReplayer::ExecuteAutofillAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -822,8 +1120,7 @@ bool TestRecipeReplayer::ExecuteAutofillAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteClickAction(
-    const base::DictionaryValue& action) {
+bool TestRecipeReplayer::ExecuteClickAction(base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -845,40 +1142,42 @@ bool TestRecipeReplayer::ExecuteClickAction(
 }
 
 bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (ExtractFrameAndVerifyElement(action, &xpath, &frame, false, false,
                                    true)) {
     return true;
   } else {
-    const std::string* click_xpath_text =
+    // If the selector wasn't found, take the clickSelector and make it the
+    // selector to attempt a click with that element instead.
+    absl::optional<std::string> click_xpath_text =
         FindPopulateString(action, "clickSelector", "click xpath selector");
-    base::Value click_action = action.Clone();
-    click_action.SetStringKey("selector", *click_xpath_text);
-    return ExecuteClickAction(base::Value::AsDictionaryValue(click_action));
+
+    action.insert_or_assign("selector", base::Value(*click_xpath_text));
+
+    return ExecuteClickAction(std::move(action));
   }
 }
 
 bool TestRecipeReplayer::ExecuteCloseTabAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Closing Active Tab";
   browser_->tab_strip_model()->CloseSelectedTabs();
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteCoolOffAction(
-    const base::DictionaryValue& action) {
+bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::DictStorage action) {
   base::RunLoop heart_beat;
   base::TimeDelta cool_off_time = cool_off_action_timeout;
-  const base::Value* pause_time_container = action.FindKey("pauseTimeSec");
-  if (pause_time_container) {
-    if (!pause_time_container->is_int()) {
+  auto pause_time_container_iter = action.find("pauseTimeSec");
+  if (pause_time_container_iter != action.end()) {
+    if (!pause_time_container_iter->second.is_int()) {
       ADD_FAILURE() << "Pause time is not an integer!";
       return false;
     }
-    int seconds = pause_time_container->GetInt();
-    cool_off_time = base::TimeDelta::FromSeconds(seconds);
+    int seconds = pause_time_container_iter->second.GetInt();
+    cool_off_time = base::Seconds(seconds);
   }
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, heart_beat.QuitClosure(), cool_off_time);
@@ -889,8 +1188,7 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteHoverAction(
-    const base::DictionaryValue& action) {
+bool TestRecipeReplayer::ExecuteHoverAction(base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -917,17 +1215,20 @@ bool TestRecipeReplayer::ExecuteHoverAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteForceLoadPage(
-    const base::DictionaryValue& action) {
-  bool shouldForce = action.FindBoolKey("force").value_or(false);
-  if (!shouldForce)
+bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::DictStorage action) {
+  auto should_force_iter = action.find("force");
+  bool should_force = (should_force_iter != action.end() &&
+                       should_force_iter->second.GetIfBool().value_or(false));
+  if (!should_force) {
     return true;
+  }
 
-  const std::string* url = FindPopulateString(action, "url", "Force Load URL");
+  absl::optional<std::string> url =
+      FindPopulateString(action, "url", "Force Load URL");
   if (!url)
     return false;
   VLOG(1) << "Making explicit URL redirect to '" << *url << "'";
-  ui_test_utils::NavigateToURL(browser_, GURL(*url));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser_, GURL(*url)));
 
   WaitTillPageIsIdle();
 
@@ -935,7 +1236,7 @@ bool TestRecipeReplayer::ExecuteForceLoadPage(
 }
 
 bool TestRecipeReplayer::ExecutePressEnterAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -949,7 +1250,7 @@ bool TestRecipeReplayer::ExecutePressEnterAction(
 }
 
 bool TestRecipeReplayer::ExecutePressEscapeAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Pressing 'Esc' in the current frame";
   SimulateKeyPressWrapper(GetWebContents(), ui::DomKey::ESCAPE);
   WaitTillPageIsIdle();
@@ -957,7 +1258,7 @@ bool TestRecipeReplayer::ExecutePressEscapeAction(
 }
 
 bool TestRecipeReplayer::ExecutePressSpaceAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
@@ -971,16 +1272,18 @@ bool TestRecipeReplayer::ExecutePressSpaceAction(
 }
 
 bool TestRecipeReplayer::ExecuteRunCommandAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   // Extract the list of JavaScript commands into a vector.
   std::vector<std::string> commands;
 
-  const base::Value* list_container = action.FindListKey("commands");
-  if (!list_container) {
+  auto list_container_iter = action.find("commands");
+  if (list_container_iter == action.end() ||
+      !list_container_iter->second.is_list()) {
     ADD_FAILURE() << "Failed to extract commands list from action";
     return false;
   }
-  for (const auto& command : list_container->GetList()) {
+
+  for (const auto& command : list_container_iter->second.GetList()) {
     if (!command.is_string()) {
       ADD_FAILURE() << "command is not a string: " << command;
       return false;
@@ -1011,7 +1314,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(
 }
 
 bool TestRecipeReplayer::ExecuteSavePasswordAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Save password.";
 
   if (!feature_action_executor()->SavePassword())
@@ -1030,9 +1333,9 @@ bool TestRecipeReplayer::ExecuteSavePasswordAction(
 }
 
 bool TestRecipeReplayer::ExecuteSelectDropdownAction(
-    const base::DictionaryValue& action) {
-  base::Optional<int> index = action.FindIntKey("index");
-  if (!index) {
+    base::Value::DictStorage action) {
+  auto index_iter = action.find("index");
+  if (index_iter == action.end() || !index_iter->second.is_int()) {
     ADD_FAILURE() << "Failed to extract Selection Index from action";
     return false;
   }
@@ -1042,13 +1345,14 @@ bool TestRecipeReplayer::ExecuteSelectDropdownAction(
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
     return false;
 
-  VLOG(1) << "Select option '" << index.value() << "' from `" << xpath << "`.";
+  VLOG(1) << "Select option '" << index_iter->second.GetInt() << "' from `"
+          << xpath << "`.";
   if (!ExecuteJavaScriptOnElementByXpath(
           frame, xpath,
           base::StringPrintf(
               "automation_helper"
               "  .selectOptionFromDropDownElementByIndex(target, %d);",
-              index.value()))) {
+              index_iter->second.GetInt()))) {
     ADD_FAILURE() << "Failed to select drop down option with JavaScript!";
     return false;
   }
@@ -1056,9 +1360,8 @@ bool TestRecipeReplayer::ExecuteSelectDropdownAction(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteTypeAction(
-    const base::DictionaryValue& action) {
-  const std::string* value =
+bool TestRecipeReplayer::ExecuteTypeAction(base::Value::DictStorage action) {
+  absl::optional<std::string> value =
       FindPopulateString(action, "value", "typing value");
   if (!value)
     return false;
@@ -1082,13 +1385,13 @@ bool TestRecipeReplayer::ExecuteTypeAction(
 }
 
 bool TestRecipeReplayer::ExecuteTypePasswordAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
     return false;
 
-  const std::string* value =
+  absl::optional<std::string> value =
       FindPopulateString(action, "value", "password text");
   if (!value)
     return false;
@@ -1113,7 +1416,7 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(
 }
 
 bool TestRecipeReplayer::ExecuteUpdatePasswordAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Update password.";
 
   if (!feature_action_executor()->UpdatePassword())
@@ -1132,16 +1435,15 @@ bool TestRecipeReplayer::ExecuteUpdatePasswordAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, false, true))
     return false;
 
-  const base::Value* autofill_prediction_container =
-      action.FindKey("expectedAutofillType");
-  if (autofill_prediction_container) {
-    if (!autofill_prediction_container->is_string()) {
+  auto autofill_prediction_container_iter = action.find("expectedAutofillType");
+  if (autofill_prediction_container_iter != action.end()) {
+    if (!autofill_prediction_container_iter->second.is_string()) {
       ADD_FAILURE() << "Autofill prediction is not a string!";
       return false;
     }
@@ -1159,7 +1461,7 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
     }
 
     std::string expected_autofill_prediction_type =
-        autofill_prediction_container->GetString();
+        autofill_prediction_container_iter->second.GetString();
     VLOG(1) << "Checking the field `" << xpath << "` has the autofill type '"
             << expected_autofill_prediction_type << "'";
     ExpectElementPropertyEquals(
@@ -1168,8 +1470,8 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
         expected_autofill_prediction_type, "autofill type mismatch", true);
   }
 
-  const std::string* expected_value = FindPopulateString(action,
-    "expectedValue", "validation expected value");
+  absl::optional<std::string> expected_value =
+      FindPopulateString(action, "expectedValue", "validation expected value");
   if (!expected_value)
     return false;
 
@@ -1180,30 +1482,75 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidateNoSavePasswordPromptAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Verify that the page hasn't shown a save password prompt.";
   EXPECT_FALSE(feature_action_executor()->HasChromeShownSavePasswordPrompt());
   return true;
 }
 
+bool TestRecipeReplayer::ExecuteValidatePasswordGenerationPromptAction(
+    base::Value::DictStorage action) {
+  VLOG(1) << "Verify that an element is properly displaying or not displaying "
+             "the password generation prompt";
+  std::string xpath;
+  content::RenderFrameHost* frame;
+  if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
+    return false;
+
+  // Most common scenario is validating that the password generation prompt is
+  // being shown, so if unspecified default to true.
+  auto expect_to_be_shown_iter = action.find("shouldBeShown");
+  bool expect_to_be_shown =
+      expect_to_be_shown_iter == action.end() ||
+      expect_to_be_shown_iter->second.GetIfBool().value_or(true);
+
+  // First, execute a click to focus on the field in question.
+  ExecuteClickAction(std::move(action));
+
+  // Validate that the password generation prompt is shown when expected.
+  ValidatePasswordGenerationPromptState(frame, xpath, expect_to_be_shown);
+  return true;
+}
+
+void TestRecipeReplayer::ValidatePasswordGenerationPromptState(
+    const content::ToRenderFrameHost& frame,
+    const std::string& element_xpath,
+    bool expect_to_be_shown) {
+  bool is_password_generation_prompt_showing =
+      feature_action_executor()->IsChromeShowingPasswordGenerationPrompt();
+
+  if (expect_to_be_shown != is_password_generation_prompt_showing) {
+    std::string error_message =
+        base::StrCat({"Field xpath: `", element_xpath, "` is",
+                      is_password_generation_prompt_showing ? "" : " not",
+                      " showing password generation prompt but it should",
+                      expect_to_be_shown ? "" : " not", " be."});
+    VLOG(1) << error_message;
+    ADD_FAILURE() << error_message;
+    validation_failures_.push_back(testing::AssertionFailure()
+                                   << error_message);
+  }
+}
+
 bool TestRecipeReplayer::ExecuteValidateSaveFallbackAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   VLOG(1) << "Verify that Chrome shows the save fallback icon in the omnibox.";
   EXPECT_TRUE(feature_action_executor()->WaitForSaveFallback());
   return true;
 }
 
 bool TestRecipeReplayer::ExecuteWaitForStateAction(
-    const base::DictionaryValue& action) {
+    base::Value::DictStorage action) {
   // Extract the list of JavaScript assertions into a vector.
   std::vector<std::string> state_assertions;
 
-  const base::Value* list_container = action.FindListKey("assertions");
-  if (!list_container) {
+  auto list_container_iter = action.find("assertions");
+  if (list_container_iter == action.end() ||
+      !list_container_iter->second.is_list()) {
     ADD_FAILURE() << "Failed to extract wait assertions list from action";
     return false;
   }
-  for (const base::Value& assertion : list_container->GetList()) {
+  for (const base::Value& assertion : list_container_iter->second.GetList()) {
     if (!assertion.is_string()) {
       ADD_FAILURE() << "Assertion is not a string: " << assertion;
       return false;
@@ -1222,10 +1569,10 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     std::string* xpath) {
   xpath->clear();
-  const std::string* xpath_text =
+  absl::optional<std::string> xpath_text =
       FindPopulateString(action, "selector", "xpath selector");
   if (!xpath_text)
     return false;
@@ -1234,10 +1581,10 @@ bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     int* visibility_enum_val) {
-  const base::Value* visibility_container = action.FindKey("visibility");
-  if (!visibility_container) {
+  auto visibility_container_iter = action.find("visibility");
+  if (visibility_container_iter == action.end()) {
     // By default, set the visibility to (visible | enabled | on_top), as
     // defined in
     // chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js
@@ -1245,31 +1592,31 @@ bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
     return true;
   }
 
-  if (!visibility_container->is_int()) {
+  if (!visibility_container_iter->second.is_int()) {
     ADD_FAILURE() << "visibility property is not an integer!";
     return false;
   }
 
-  *visibility_enum_val = visibility_container->GetInt();
+  *visibility_enum_val = visibility_container_iter->second.GetInt();
   return true;
 }
 
 bool TestRecipeReplayer::GetTargetFrameFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     content::RenderFrameHost** frame) {
-  const base::Value* iframe_container = action.FindKey("context");
-  if (!iframe_container) {
+  auto iframe_container_iter = action.find("context");
+  if (iframe_container_iter == action.end()) {
     ADD_FAILURE() << "Failed to extract the iframe context from action!";
     return false;
   }
 
-  const base::DictionaryValue* iframe;
-  if (!iframe_container->GetAsDictionary(&iframe)) {
+  if (!iframe_container_iter->second.is_dict()) {
     ADD_FAILURE() << "Failed to extract the iframe context object!";
     return false;
   }
 
-  base::Optional<bool> is_iframe_container = iframe->FindBoolKey("isIframe");
+  absl::optional<bool> is_iframe_container =
+      iframe_container_iter->second.FindBoolKey("isIframe");
   if (!is_iframe_container) {
     ADD_FAILURE() << "Failed to extract isIframe from the iframe context! ";
     return false;
@@ -1280,11 +1627,11 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
   }
 
   const base::Value* frame_name_container =
-      iframe->FindPath({"browserTest", "name"});
+      iframe_container_iter->second.FindPath({"browserTest", "name"});
   const base::Value* frame_origin_container =
-      iframe->FindPath({"browserTest", "origin"});
+      iframe_container_iter->second.FindPath({"browserTest", "origin"});
   const base::Value* frame_url_container =
-      iframe->FindPath({"browserTest", "url"});
+      iframe_container_iter->second.FindPath({"browserTest", "url"});
   IFrameWaiter iframe_waiter(GetWebContents());
 
   if (frame_name_container != nullptr && !frame_name_container->is_string()) {
@@ -1325,7 +1672,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
 }
 
 bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     std::string* xpath,
     content::RenderFrameHost** frame,
     bool set_focus,
@@ -1364,23 +1711,23 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
 }
 
 bool TestRecipeReplayer::GetIFramePathFromAction(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     std::vector<std::string>* iframe_path) {
   *iframe_path = std::vector<std::string>();
 
-  const base::Value* iframe_container = action.FindKey("context");
-  if (!iframe_container) {
+  auto iframe_container_iter = action.find("context");
+  if (iframe_container_iter == action.end()) {
     ADD_FAILURE() << "Failed to extract the iframe context from action!";
     return false;
   }
 
-  const base::DictionaryValue* iframe;
-  if (!iframe_container->GetAsDictionary(&iframe)) {
+  if (!iframe_container_iter->second.is_dict()) {
     ADD_FAILURE() << "Failed to extract the iframe context object!";
     return false;
   }
 
-  const base::Value* iframe_path_container = iframe->FindKey("path");
+  const base::Value* iframe_path_container =
+      iframe_container_iter->second.FindKey("path");
   if (!iframe_path_container) {
     // If the action does not have a path container, it would mean that:
     // 1. The target frame is the top level frame.
@@ -1715,7 +2062,8 @@ bool TestRecipeReplayer::SimulateLeftMouseClickAt(
     return false;
 
   blink::WebMouseEvent mouse_event(
-      blink::WebInputEvent::kMouseDown, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   mouse_event.button = blink::WebMouseEvent::Button::kLeft;
   mouse_event.SetPositionInWidget(point.x(), point.y());
@@ -1730,7 +2078,7 @@ bool TestRecipeReplayer::SimulateLeftMouseClickAt(
   content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
 
   widget->ForwardMouseEvent(mouse_event);
-  mouse_event.SetType(blink::WebInputEvent::kMouseUp);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
   widget->ForwardMouseEvent(mouse_event);
   return true;
 }
@@ -1764,19 +2112,20 @@ void TestRecipeReplayer::NavigateAwayAndDismissBeforeUnloadDialog() {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
-  app_modal::JavaScriptAppModalDialog* alert =
+  javascript_dialogs::AppModalDialogController* alert =
       ui_test_utils::WaitForAppModalDialog();
-  alert->native_dialog()->AcceptAppModalDialog();
+  alert->view()->AcceptAppModalDialog();
 }
 
 bool TestRecipeReplayer::HasChromeStoredCredential(
-    const base::DictionaryValue& action,
+    const base::Value::DictStorage& action,
     bool* stored_cred) {
-  const std::string* origin = FindPopulateString(action, "origin", "Origin");
-  const std::string* username = FindPopulateString(action,
-                                                   "userName", "Username");
-  const std::string* password = FindPopulateString(action,
-                                                   "password", "Password");
+  absl::optional<std::string> origin =
+      FindPopulateString(action, "origin", "Origin");
+  absl::optional<std::string> username =
+      FindPopulateString(action, "userName", "Username");
+  absl::optional<std::string> password =
+      FindPopulateString(action, "password", "Password");
   if (!origin || !username || !password)
     return false;
   *stored_cred = feature_action_executor()->HasChromeStoredCredential(
@@ -1786,23 +2135,20 @@ bool TestRecipeReplayer::HasChromeStoredCredential(
 }
 
 bool TestRecipeReplayer::SetupSavedAutofillProfile(
-    const base::Value& saved_autofill_profile_container) {
-  if (!saved_autofill_profile_container.is_list()) {
-    ADD_FAILURE() << "Save Autofill Profile is not a list!";
-    return false;
-  }
-
-  for (const auto& list_entry : saved_autofill_profile_container.GetList()) {
-    const base::DictionaryValue* entry;
-    if (!list_entry.GetAsDictionary(&entry)) {
+    base::Value::ListStorage saved_autofill_profile_container) {
+  for (auto& list_entry : saved_autofill_profile_container) {
+    if (!list_entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract an entry!";
       return false;
     }
 
-    const std::string* type =
-        FindPopulateString(*entry, "type", "profile field type");
-    const std::string* value =
-        FindPopulateString(*entry, "value", "profile field value");
+    const base::Value::DictStorage list_entry_dict =
+        std::move(list_entry).TakeDict();
+    absl::optional<std::string> type =
+        FindPopulateString(list_entry_dict, "type", "profile field type");
+    absl::optional<std::string> value =
+        FindPopulateString(list_entry_dict, "value", "profile field value");
+
     if (!type || !value)
       return false;
 
@@ -1817,7 +2163,7 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
   // profiles. This block prevents these other tests from failing because
   // the test feature action executor does not know how to setup the autofill
   // profile.
-  if (saved_autofill_profile_container.GetList().empty()) {
+  if (saved_autofill_profile_container.empty()) {
     return true;
   }
 
@@ -1825,25 +2171,21 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
 }
 
 bool TestRecipeReplayer::SetupSavedPasswords(
-    const base::Value& saved_password_list_container) {
-  if (!saved_password_list_container.is_list()) {
-    ADD_FAILURE() << "Saved Password List is not a list!";
-    return false;
-  }
-
-  for (const auto& entry : saved_password_list_container.GetList()) {
-    const base::DictionaryValue* cred;
-    if (!entry.GetAsDictionary(&cred)) {
+    base::Value::ListStorage saved_password_list_container) {
+  for (auto& entry : saved_password_list_container) {
+    if (!entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract a saved password!";
       return false;
     }
 
-    const std::string* origin =
-        FindPopulateString(*cred, "website", "Website");
-    const std::string* username =
-        FindPopulateString(*cred, "username", "Username");
-    const std::string* password =
-        FindPopulateString(*cred, "password", "Password");
+    const base::Value::DictStorage entry_dict = std::move(entry).TakeDict();
+
+    absl::optional<std::string> origin =
+        FindPopulateString(entry_dict, "website", "Website");
+    absl::optional<std::string> username =
+        FindPopulateString(entry_dict, "username", "Username");
+    absl::optional<std::string> password =
+        FindPopulateString(entry_dict, "password", "Password");
     if (!origin || !username || !password)
       return false;
 
@@ -1864,7 +2206,7 @@ TestRecipeReplayChromeFeatureActionExecutor::
 
 bool TestRecipeReplayChromeFeatureActionExecutor::AutofillForm(
     const std::string& focus_element_css_selector,
-    const std::vector<std::string> iframe_path,
+    const std::vector<std::string>& iframe_path,
     const int attempts,
     content::RenderFrameHost* frame) {
   ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor::AutofillForm "
@@ -1910,6 +2252,14 @@ bool TestRecipeReplayChromeFeatureActionExecutor::UpdatePassword() {
 bool TestRecipeReplayChromeFeatureActionExecutor::WaitForSaveFallback() {
   ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
                    "::WaitForSaveFallback is not implemented!";
+  return false;
+}
+
+bool TestRecipeReplayChromeFeatureActionExecutor::
+    IsChromeShowingPasswordGenerationPrompt() {
+  ADD_FAILURE()
+      << "TestRecipeReplayChromeFeatureActionExecutor"
+         "::IsChromeShowingPasswordGenerationPrompt is not implemented!";
   return false;
 }
 

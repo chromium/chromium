@@ -36,7 +36,8 @@ public class FaceDetectionImpl implements FaceDetection {
     }
 
     @Override
-    public void detect(org.chromium.skia.mojom.Bitmap bitmapData, final DetectResponse callback) {
+    public void detect(
+            org.chromium.skia.mojom.BitmapN32 bitmapData, final Detect_Response callback) {
         Bitmap bitmap = BitmapUtils.convertToBitmap(bitmapData);
         if (bitmap == null) {
             Log.e(TAG, "Error converting Mojom Bitmap to Android Bitmap");

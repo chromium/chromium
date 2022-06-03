@@ -8,9 +8,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "sql/recover_module/btree.h"
 #include "sql/recover_module/integers.h"
 #include "sql/recover_module/pager.h"

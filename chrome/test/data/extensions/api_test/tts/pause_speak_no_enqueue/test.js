@@ -5,38 +5,20 @@
 // TTS api test for Chrome.
 // browser_tests.exe --gtest_filter="TtsApiTest.*"
 
-chrome.test.runTests([
-  function testPauseCancel() {
-    var callbacks = 0;
-    chrome.tts.pause();
-    chrome.tts.speak(
-        'text 1',
-        {
-         'enqueue': true,
-         'onEvent': function(event) {
-            chrome.test.assertEq('cancelled', event.type);
-            callbacks++;
-         }
-        },
-        function() {
-          chrome.test.assertNoLastError();
-          callbacks++;
-        });
-    chrome.tts.speak(
-        'text 2',
-        {
-         'enqueue': false,
-         'onEvent': function(event) {
-           chrome.test.assertEq('cancelled', event.type);
-           callbacks++;
-           if (callbacks == 4) {
-             chrome.test.succeed();
-           }
-         }
-        },
-        function() {
-          chrome.test.assertNoLastError();
-          callbacks++;
-        });
-  }
-]);
+chrome.test.runTests([function testPauseCancel() {
+  let gotSecondSpeak = false;
+  chrome.tts.pause();
+  chrome.tts.speak('text 1', {
+    'enqueue': true,
+    'onEvent': event => {
+      if (event.type == 'cancelled' && gotSecondSpeak) {
+        chrome.test.succeed();
+      }
+    }
+  });
+  chrome.tts.speak('text 2', {'enqueue': false}, function() {
+    chrome.test.assertNoLastError();
+    gotSecondSpeak = true;
+  });
+  chrome.tts.resume();
+}]);

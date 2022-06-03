@@ -4,7 +4,6 @@
 
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +21,10 @@ const power_manager::PowerSupplyProperties_ExternalPower kInitialExternalPower =
 class TestObserver : public PowerManagerClient::Observer {
  public:
   TestObserver() : num_power_changed_(0) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   const power_manager::PowerSupplyProperties& props() const { return props_; }
@@ -38,8 +41,6 @@ class TestObserver : public PowerManagerClient::Observer {
  private:
   int num_power_changed_;
   power_manager::PowerSupplyProperties props_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 void SetTestProperties(power_manager::PowerSupplyProperties* props) {

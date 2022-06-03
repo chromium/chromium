@@ -61,16 +61,20 @@ base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
 class GLRendererCopierPerfTest : public testing::Test {
  public:
   GLRendererCopierPerfTest() {
-    auto context_provider = base::MakeRefCounted<TestInProcessContextProvider>(
-        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
-    gpu::ContextResult result = context_provider->BindToCurrentThread();
+    context_provider_ = base::MakeRefCounted<TestInProcessContextProvider>(
+        /*enable_gles2_interface=*/true, /*support_locking=*/false,
+        RasterInterfaceType::None);
+    gpu::ContextResult result = context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-    gl_ = context_provider->ContextGL();
+    gl_ = context_provider_->ContextGL();
     texture_deleter_ =
         std::make_unique<TextureDeleter>(base::ThreadTaskRunnerHandle::Get());
-    copier_ = std::make_unique<GLRendererCopier>(std::move(context_provider),
+    copier_ = std::make_unique<GLRendererCopier>(context_provider_.get(),
                                                  texture_deleter_.get());
   }
+
+  GLRendererCopierPerfTest(const GLRendererCopierPerfTest&) = delete;
+  GLRendererCopierPerfTest& operator=(const GLRendererCopierPerfTest&) = delete;
 
   void TearDown() override {
     DeleteSourceFramebuffer();
@@ -168,11 +172,13 @@ class GLRendererCopierPerfTest : public testing::Test {
     }
   }
 
-  void CopyFromTextureOrFramebuffer(bool have_source_texture,
-                                    CopyOutputResult::Format result_format,
-                                    bool scale_by_half,
-                                    bool flipped_source,
-                                    const std::string& story) {
+  void CopyFromTextureOrFramebuffer(
+      bool have_source_texture,
+      CopyOutputResult::Format result_format,
+      CopyOutputResult::Destination result_destination,
+      bool scale_by_half,
+      bool flipped_source,
+      const std::string& story) {
     std::unique_ptr<CopyOutputResult> result;
 
     gfx::Rect result_selection(kRequestArea);
@@ -192,7 +198,7 @@ class GLRendererCopierPerfTest : public testing::Test {
     do {
       base::RunLoop loop;
       auto request = std::make_unique<CopyOutputRequest>(
-          result_format,
+          result_format, result_destination,
           base::BindOnce(
               [](std::unique_ptr<CopyOutputResult>* result,
                  base::OnceClosure quit_closure,
@@ -221,8 +227,10 @@ class GLRendererCopierPerfTest : public testing::Test {
       else
         ASSERT_EQ(kRequestArea, result->rect());
 
-      if (result_format == CopyOutputResult::Format::RGBA_BITMAP) {
-        const SkBitmap& result_bitmap = result->AsSkBitmap();
+      if (result_format == CopyOutputResult::Format::RGBA &&
+          result_destination == CopyOutputResult::Destination::kSystemMemory) {
+        auto scoped_bitmap = result->ScopedAccessSkBitmap();
+        const SkBitmap& result_bitmap = scoped_bitmap.bitmap();
         ASSERT_TRUE(result_bitmap.readyToDraw());
       } else if (result_format == CopyOutputResult::Format::I420_PLANES) {
         const int result_width = result->rect().width();
@@ -258,20 +266,20 @@ class GLRendererCopierPerfTest : public testing::Test {
 
  private:
   gpu::gles2::GLES2Interface* gl_ = nullptr;
+  scoped_refptr<TestInProcessContextProvider> context_provider_;
   std::unique_ptr<TextureDeleter> texture_deleter_;
   std::unique_ptr<GLRendererCopier> copier_;
   GLuint source_texture_ = 0;
   GLuint source_framebuffer_ = 0;
   base::LapTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLRendererCopierPerfTest);
 };
 
 // Fast-Path: If no transformation is necessary and no new textures need to be
 // generated, read-back directly from the currently-bound framebuffer.
 TEST_F(GLRendererCopierPerfTest, NoTransformNoNewTextures) {
   CopyFromTextureOrFramebuffer(
-      /*have_source_texture=*/false, CopyOutputResult::Format::RGBA_BITMAP,
+      /*have_source_texture=*/false, CopyOutputResult::Format::RGBA,
+      CopyOutputResult::Destination::kSystemMemory,
       /*scale_by_half=*/false, /*flipped_source=*/false,
       "no_transformation_and_no_new_textures");
 }
@@ -280,19 +288,22 @@ TEST_F(GLRendererCopierPerfTest, NoTransformNoNewTextures) {
 // than having to make a copy of the framebuffer.
 TEST_F(GLRendererCopierPerfTest, HaveTextureResultRGBABitmap) {
   CopyFromTextureOrFramebuffer(
-      /*have_source_texture=*/true, CopyOutputResult::Format::RGBA_BITMAP,
+      /*have_source_texture=*/true, CopyOutputResult::Format::RGBA,
+      CopyOutputResult::Destination::kSystemMemory,
       /*scale_by_half=*/true, /*flipped_source=*/false,
       "framebuffer_has_texture_and_result_is_RGBA_BITMAP");
 }
 TEST_F(GLRendererCopierPerfTest, HaveTextureResultRGBATexture) {
   CopyFromTextureOrFramebuffer(
-      /*have_source_texture=*/true, CopyOutputResult::Format::RGBA_TEXTURE,
+      /*have_source_texture=*/true, CopyOutputResult::Format::RGBA,
+      CopyOutputResult::Destination::kNativeTextures,
       /*scale_by_half=*/true, /*flipped_source=*/false,
       "framebuffer_has_texture_and_result_is_RGBA_TEXTURE");
 }
 TEST_F(GLRendererCopierPerfTest, HaveTextureResultI420Planes) {
   CopyFromTextureOrFramebuffer(
       /*have_source_texture=*/true, CopyOutputResult::Format::I420_PLANES,
+      CopyOutputResult::Destination::kSystemMemory,
       /*scale_by_half=*/true, /*flipped_source=*/false,
       "framebuffer_has_texture_and_result_is_I420_PLANES");
 }
@@ -301,6 +312,7 @@ TEST_F(GLRendererCopierPerfTest, HaveTextureResultI420Planes) {
 TEST_F(GLRendererCopierPerfTest, NoTextureResultI420Planes) {
   CopyFromTextureOrFramebuffer(
       /*have_source_texture=*/false, CopyOutputResult::Format::I420_PLANES,
+      CopyOutputResult::Destination::kSystemMemory,
       /*scale_by_half=*/true, /*flipped_source=*/false,
       "framebuffer_doesn't_have_texture_and_result_is_I420_PLANES");
 }
@@ -309,6 +321,7 @@ TEST_F(GLRendererCopierPerfTest, NoTextureResultI420Planes) {
 TEST_F(GLRendererCopierPerfTest, SourceContentVerticallyFlipped) {
   CopyFromTextureOrFramebuffer(/*have_source_texture=*/true,
                                CopyOutputResult::Format::I420_PLANES,
+                               CopyOutputResult::Destination::kSystemMemory,
                                /*scale_by_half=*/true, /*flipped_source=*/true,
                                "source_content_is_vertically_flipped");
 }
@@ -317,6 +330,7 @@ TEST_F(GLRendererCopierPerfTest, SourceContentVerticallyFlipped) {
 TEST_F(GLRendererCopierPerfTest, ResultNotScaled) {
   CopyFromTextureOrFramebuffer(/*have_source_texture=*/true,
                                CopyOutputResult::Format::I420_PLANES,
+                               CopyOutputResult::Destination::kSystemMemory,
                                /*scale_by_half=*/false, /*flipped_source=*/true,
                                "result_is_not_scaled_by_half");
 }

@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -27,7 +29,6 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "url/gurl.h"
@@ -175,7 +176,7 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   DCHECK(IsOnNetworkThread());
   DCHECK_EQ(STARTED, read_state_);
   if (!bidi_stream_)
@@ -185,7 +186,8 @@ void BidirectionalStream::OnHeadersReceived(
   int http_status_code = 0;
   const auto http_status_header = response_headers.find(":status");
   if (http_status_header != response_headers.end())
-    base::StringToInt(http_status_header->second, &http_status_code);
+    base::StringToInt(base::StringViewToStringPiece(http_status_header->second),
+                      &http_status_code);
   const char* protocol = "unknown";
   switch (bidi_stream_->GetProtocol()) {
     case net::kProtoHTTP2:
@@ -238,7 +240,7 @@ void BidirectionalStream::OnDataSent() {
 }
 
 void BidirectionalStream::OnTrailersReceived(
-    const spdy::SpdyHeaderBlock& response_trailers) {
+    const spdy::Http2HeaderBlock& response_trailers) {
   DCHECK(IsOnNetworkThread());
   if (!bidi_stream_)
     return;
@@ -268,10 +270,10 @@ void BidirectionalStream::StartOnNetworkThread(
   request_info->extra_headers.SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent,
       request_context->http_user_agent_settings()->GetUserAgent());
-  bidi_stream_.reset(new net::BidirectionalStream(
+  bidi_stream_ = std::make_unique<net::BidirectionalStream>(
       std::move(request_info),
       request_context->http_transaction_factory()->GetSession(),
-      !delay_headers_until_flush_, this));
+      !delay_headers_until_flush_, this);
   DCHECK(read_state_ == NOT_STARTED && write_state_ == NOT_STARTED);
   read_state_ = write_state_ = STARTED;
 }

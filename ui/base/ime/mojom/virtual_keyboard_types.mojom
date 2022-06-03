@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// This mode corresponds to virtualkeyboardpolicy
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/VirtualKeyboardPolicy/explainer.md
+enum VirtualKeyboardPolicy {
+  AUTO,
+  MANUAL,
+};
+
+// This mode corresponds to VirtualKeyboard API show/hide.
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/VirtualKeyboardPolicy/explainer.md
+enum VirtualKeyboardVisibilityRequest {
+  NONE,
+  SHOW,
+  HIDE,
+};

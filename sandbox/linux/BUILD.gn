@@ -12,12 +12,12 @@ if (is_android) {
 }
 
 declare_args() {
-  compile_suid_client = is_linux
+  compile_suid_client = is_linux || is_chromeos
 
-  compile_credentials = is_linux
+  compile_credentials = is_linux || is_chromeos
 
   # On Android, use plain GTest.
-  use_base_test_suite = is_linux
+  use_base_test_suite = is_linux || is_chromeos
 }
 
 if (is_nacl_nonsfi) {
@@ -34,9 +34,7 @@ if (is_nacl_nonsfi) {
 # the setuid sandbox and is its own target.
 
 group("sandbox") {
-  public_deps = [
-    ":sandbox_services",
-  ]
+  public_deps = [ ":sandbox_services" ]
   if (compile_suid_client || is_nacl_nonsfi) {
     public_deps += [ ":suid_sandbox_client" ]
   }
@@ -60,6 +58,7 @@ source_set("sandbox_linux_test_utils") {
   ]
 
   deps = [
+    "//base",
     "//testing/gtest",
   ]
 
@@ -100,6 +99,7 @@ source_set("sandbox_linux_unittests_sources") {
     "syscall_broker/broker_file_permission_unittest.cc",
     "syscall_broker/broker_process_unittest.cc",
     "syscall_broker/broker_simple_message_unittest.cc",
+    "syscall_broker/remote_syscall_arg_handler_unittest.cc",
     "tests/main.cc",
     "tests/scoped_temporary_file.cc",
     "tests/scoped_temporary_file.h",
@@ -112,7 +112,9 @@ source_set("sandbox_linux_unittests_sources") {
     ":sandbox",
     ":sandbox_linux_test_utils",
     "//base",
+    "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//testing/gtest",
   ]
 
@@ -191,9 +193,7 @@ action("bpf_dsl_golden") {
     "bpf_dsl/golden/x86-64/NegativeConstantsPolicy.txt",
     "bpf_dsl/golden/x86-64/SwitchPolicy.txt",
   ]
-  outputs = [
-    "$target_gen_dir/bpf_dsl/golden/golden_files.h",
-  ]
+  outputs = [ "$target_gen_dir/bpf_dsl/golden/golden_files.h" ]
   args =
       rebase_path(outputs, root_build_dir) + rebase_path(inputs, root_build_dir)
 }
@@ -201,7 +201,9 @@ action("bpf_dsl_golden") {
 test("sandbox_linux_unittests") {
   deps = [
     ":sandbox_linux_unittests_sources",
+    "//sandbox/policy:tests",
   ]
+  data_deps = [ "//testing/buildbot/filters:sandbox_linux_unittests_filters" ]
   if (is_android) {
     use_raw_android_executable = true
   }
@@ -228,8 +230,6 @@ component("seccomp_bpf") {
     "bpf_dsl/trap_registry.h",
     "seccomp-bpf-helpers/baseline_policy.cc",
     "seccomp-bpf-helpers/baseline_policy.h",
-    "seccomp-bpf-helpers/baseline_policy_android.cc",
-    "seccomp-bpf-helpers/baseline_policy_android.h",
     "seccomp-bpf-helpers/sigsys_handlers.cc",
     "seccomp-bpf-helpers/sigsys_handlers.h",
     "seccomp-bpf-helpers/syscall_parameters_restrictions.cc",
@@ -255,7 +255,16 @@ component("seccomp_bpf") {
     ":sandbox_services",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
+    "//sandbox:sandbox_buildflags",
   ]
+
+  if (is_android) {
+    sources += [
+      "seccomp-bpf-helpers/baseline_policy_android.cc",
+      "seccomp-bpf-helpers/baseline_policy_android.h",
+    ]
+  }
 
   if (is_nacl_nonsfi) {
     cflags = [ "-fgnu-inline-asm" ]
@@ -300,7 +309,7 @@ if (is_android) {
   }
 }
 
-if (is_linux) {
+if (is_linux || is_chromeos) {
   # The setuid sandbox for Linux.
   executable("chrome_sandbox") {
     sources = [
@@ -352,15 +361,19 @@ component("sandbox_services") {
     "syscall_broker/broker_permission_list.h",
     "syscall_broker/broker_process.cc",
     "syscall_broker/broker_process.h",
+    "syscall_broker/broker_sandbox_config.cc",
+    "syscall_broker/broker_sandbox_config.h",
     "syscall_broker/broker_simple_message.cc",
     "syscall_broker/broker_simple_message.h",
+    "syscall_broker/remote_syscall_arg_handler.cc",
+    "syscall_broker/remote_syscall_arg_handler.h",
+    "syscall_broker/syscall_dispatcher.cc",
+    "syscall_broker/syscall_dispatcher.h",
   ]
 
   defines = [ "SANDBOX_IMPLEMENTATION" ]
 
-  public_deps = [
-    "//sandbox:sandbox_export",
-  ]
+  public_deps = [ "//sandbox:sandbox_export" ]
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
@@ -377,6 +390,8 @@ component("sandbox_services") {
     ]
 
     public_deps += [ ":sandbox_services_headers" ]
+  } else {
+    deps += [ ":sandbox_services_headers" ]
   }
 
   if (is_nacl_nonsfi) {
@@ -403,8 +418,14 @@ component("sandbox_services") {
       "syscall_broker/broker_permission_list.h",
       "syscall_broker/broker_process.cc",
       "syscall_broker/broker_process.h",
+      "syscall_broker/broker_sandbox_config.cc",
+      "syscall_broker/broker_sandbox_config.h",
       "syscall_broker/broker_simple_message.cc",
       "syscall_broker/broker_simple_message.h",
+      "syscall_broker/remote_syscall_arg_handler.cc",
+      "syscall_broker/remote_syscall_arg_handler.h",
+      "syscall_broker/syscall_dispatcher.cc",
+      "syscall_broker/syscall_dispatcher.h",
     ]
   } else if (!is_android) {
     sources += [
@@ -422,8 +443,11 @@ source_set("sandbox_services_headers") {
     "system_headers/i386_linux_ucontext.h",
     "system_headers/linux_filter.h",
     "system_headers/linux_futex.h",
+    "system_headers/linux_prctl.h",
+    "system_headers/linux_ptrace.h",
     "system_headers/linux_seccomp.h",
     "system_headers/linux_signal.h",
+    "system_headers/linux_stat.h",
     "system_headers/linux_syscalls.h",
     "system_headers/linux_time.h",
     "system_headers/linux_ucontext.h",
@@ -445,9 +469,7 @@ if (compile_suid_client || is_nacl_nonsfi) {
       "suid/common/suid_unsafe_environment_variables.h",
     ]
     defines = [ "SANDBOX_IMPLEMENTATION" ]
-    public_deps = [
-      "//sandbox:sandbox_export",
-    ]
+    public_deps = [ "//sandbox:sandbox_export" ]
     deps = [
       ":sandbox_services",
       "//base",

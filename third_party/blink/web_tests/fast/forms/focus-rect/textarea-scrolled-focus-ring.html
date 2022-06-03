@@ -1,0 +1,18 @@
+<!doctype html>
+<head>
+<script>
+function test() {
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+  ta.focus();
+}
+</script>
+</head>
+<body onload="test()" style="background-color: green">
+Test passes if a focus ring is visible around text area when focused and scrolled to bottom.<br>
+<textarea id="ta" rows=2>
+1
+2
+3
+4
+</textarea>
+</body>

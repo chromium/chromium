@@ -82,7 +82,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
 
   virtual void AppliedEditing();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit CompositeEditCommand(Document&);

@@ -2,6 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-self.addEventListener('activate', async e => {
+self.addEventListener('message', async e => {
   e.waitUntil(self.clients.claim());
 });

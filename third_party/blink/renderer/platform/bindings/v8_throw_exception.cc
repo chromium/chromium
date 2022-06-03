@@ -48,6 +48,13 @@ DEFINE_CREATE_AND_THROW_ERROR_FUNC(ReferenceError,
                                    "Reference error")
 DEFINE_CREATE_AND_THROW_ERROR_FUNC(SyntaxError, SyntaxError, "Syntax error")
 DEFINE_CREATE_AND_THROW_ERROR_FUNC(TypeError, TypeError, "Type error")
+DEFINE_CREATE_AND_THROW_ERROR_FUNC(WasmCompileError,
+                                   WasmCompileError,
+                                   "Compile error")
+DEFINE_CREATE_AND_THROW_ERROR_FUNC(WasmLinkError, WasmLinkError, "Link error")
+DEFINE_CREATE_AND_THROW_ERROR_FUNC(WasmRuntimeError,
+                                   WasmRuntimeError,
+                                   "Runtime error")
 
 #undef DEFINE_CREATE_AND_THROW_ERROR_FUNC
 

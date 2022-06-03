@@ -50,6 +50,9 @@ class SystemSnapshot {
 
     //! \brief Fuchsia.
     kOperatingSystemFuchsia,
+
+    //! \brief iOS.
+    kOperatingSystemIOS,
   };
 
   //! \brief A system’s daylight saving time status.

@@ -4,15 +4,14 @@
 
 package org.chromium.ui.drawable;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedStateListDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.v7.content.res.AppCompatResources;
+
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,28 +125,6 @@ public class StateListDrawableBuilder {
      * @return AnimatedStateListDrawable if platform supports it, StateListDrawable otherwise.
      */
     public StateListDrawable build() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return buildPostL();
-        } else {
-            return buildPreL();
-        }
-    }
-
-    private StateListDrawable buildPreL() {
-        // Create StateListDrawable on API levels where AnimatedStateListDrawable is not available.
-        StateListDrawable result = new StateListDrawable();
-        int size = mStates.size();
-        for (int i = 0; i < size; ++i) {
-            State state = mStates.get(i);
-            Drawable drawable = AppCompatResources.getDrawable(mContext, state.getDrawable());
-            assert drawable != null;
-            result.addState(state.getStateSet(), drawable);
-        }
-        return result;
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private StateListDrawable buildPostL() {
         AnimatedStateListDrawable result = new AnimatedStateListDrawable();
         int statesSize = mStates.size();
         for (int i = 0; i < statesSize; ++i) {
@@ -161,14 +138,8 @@ public class StateListDrawableBuilder {
             Transition transition = mTransitions.get(i);
             Drawable drawable = AppCompatResources.getDrawable(mContext, transition.getDrawable());
             result.addTransition(transition.getFromId(), transition.getToId(),
-                    castToAnimatableDrawable(drawable), false);
+                    (Drawable & Animatable) (drawable), false);
         }
         return result;
-    }
-
-    @SuppressWarnings("unchecked") // Need Java 8 to cast to intersection types
-    private static <T> T castToAnimatableDrawable(Drawable drawable) {
-        if (!(drawable instanceof Animatable)) throw new IllegalArgumentException("drawable");
-        return (T) drawable;
     }
 }

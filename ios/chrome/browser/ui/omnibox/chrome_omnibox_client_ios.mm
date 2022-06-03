@@ -6,10 +6,13 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
+#include "components/omnibox/browser/omnibox_log.h"
 #include "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
@@ -22,9 +25,11 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ios/chrome/common/intents/SearchInChromeIntent.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,7 +38,7 @@
 
 ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
     WebOmniboxEditController* controller,
-    ios::ChromeBrowserState* browser_state)
+    ChromeBrowserState* browser_state)
     : controller_(controller), browser_state_(browser_state) {}
 
 ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
@@ -41,17 +46,6 @@ ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
   return std::make_unique<AutocompleteProviderClientImpl>(browser_state_);
-}
-
-std::unique_ptr<OmniboxNavigationObserver>
-ChromeOmniboxClientIOS::CreateOmniboxNavigationObserver(
-    const base::string16& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternate_nav_match) {
-  // TODO(blundell): Bring up an OmniboxNavigationObserver implementation on
-  // iOS if/once iOS wants to start using the ShortcutsProvider.
-  // crbug.com/511965
-  return nullptr;
 }
 
 bool ChromeOmniboxClientIOS::CurrentPageExists() const {
@@ -98,6 +92,15 @@ AutocompleteClassifier* ChromeOmniboxClientIOS::GetAutocompleteClassifier() {
   return ios::AutocompleteClassifierFactory::GetForBrowserState(browser_state_);
 }
 
+bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
+  // Defaulting omnibox navigations to HTTPS not yet supported on iOS.
+  return false;
+}
+
+int ChromeOmniboxClientIOS::GetHttpsPortForTesting() const {
+  return 0;
+}
+
 gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   // Extensions are not supported on iOS.
@@ -105,10 +108,10 @@ gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
 }
 
 bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
+    const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    OmniboxNavigationObserver* observer) {
+    WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
   return false;
 }
@@ -133,8 +136,7 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClientIOS::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
-    const base::Callback<void(int result_index, const SkBitmap& bitmap)>&
-        on_bitmap_fetched) {
+    const BitmapFetchedCallback& on_bitmap_fetched) {
   if (result.empty()) {
     return;
   }
@@ -159,14 +161,38 @@ void ChromeOmniboxClientIOS::OnResultChanged(
     ui::PageTransition transition = ui::PageTransitionFromInt(
         match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
     service->StartPrerender(match.destination_url, web::Referrer(), transition,
-                            is_inline_autocomplete);
+                            controller_->GetWebState(), is_inline_autocomplete);
   } else {
     service->CancelPrerender();
   }
 }
 
-void ChromeOmniboxClientIOS::OnBookmarkLaunched() {
-  RecordBookmarkLaunch(BOOKMARK_LAUNCH_LOCATION_OMNIBOX);
+void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  // If a search was done, donate the Search In Chrome intent to the OS for
+  // future Siri suggestions.
+  if (!browser_state_->IsOffTheRecord() &&
+      (log->input_type == metrics::OmniboxInputType::QUERY ||
+       log->input_type == metrics::OmniboxInputType::UNKNOWN)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(^{
+          SearchInChromeIntent* searchInChromeIntent =
+              [[SearchInChromeIntent alloc] init];
+
+          // SiriKit requires the intent parameter to be set to a non-empty
+          // string in order to accept the intent donation. Set it to a single
+          // space, to be later trimmed by the intent handler, which will result
+          // in the shortcut being treated as if no search phrase was supplied.
+          searchInChromeIntent.searchPhrase = @" ";
+          searchInChromeIntent.suggestedInvocationPhrase =
+              l10n_util::GetNSString(
+                  IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
+          INInteraction* interaction =
+              [[INInteraction alloc] initWithIntent:searchInChromeIntent
+                                           response:nil];
+          [interaction donateInteractionWithCompletion:nil];
+        }));
+  }
 }
 
 void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {
@@ -175,7 +201,7 @@ void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {
       ->DiscardNonCommittedItems();
 }
 
-const base::string16& ChromeOmniboxClientIOS::GetTitle() const {
+const std::u16string& ChromeOmniboxClientIOS::GetTitle() const {
   return CurrentPageExists() ? controller_->GetWebState()->GetTitle()
                              : base::EmptyString16();
 }

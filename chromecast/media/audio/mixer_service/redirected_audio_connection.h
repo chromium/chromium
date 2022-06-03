@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/mixer_service/mixer_connection.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/volume_control.h"
 
 namespace chromecast {
@@ -36,6 +37,11 @@ class RedirectedAudioConnection : public MixerConnection,
   struct Config {
     // The number of output channels to send to the redirected output.
     int num_output_channels = 2;
+
+    // Channel layout of the redirected audio, used for up/downmixing if needed.
+    // Leave as UNSUPPORTED to autodetect based on |num_output_channels|.
+    media::ChannelLayout output_channel_layout =
+        media::ChannelLayout::UNSUPPORTED;
 
     // The order of this redirector (used to determine which output receives the
     // audio stream, if more than one redirection applies to a single stream).
@@ -59,15 +65,23 @@ class RedirectedAudioConnection : public MixerConnection,
     // audio data in |data|. The data is always in planar float format, with the
     // number of channels as specified in the config.
     virtual void OnRedirectedAudio(int64_t timestamp,
-                                   int sample_rate,
                                    float* data,
                                    int frames) = 0;
+
+    // This will be called before OnRedirectedAudio is called for the first
+    // time, and subsequently whenever the sample rate changes.
+    virtual void SetSampleRate(int sample_rate) = 0;
 
    protected:
     virtual ~Delegate() = default;
   };
 
   RedirectedAudioConnection(const Config& config, Delegate* delegate);
+
+  RedirectedAudioConnection(const RedirectedAudioConnection&) = delete;
+  RedirectedAudioConnection& operator=(const RedirectedAudioConnection&) =
+      delete;
+
   ~RedirectedAudioConnection() override;
 
   // Sets the patterns which determine which audio streams should be redirected.
@@ -87,7 +101,7 @@ class RedirectedAudioConnection : public MixerConnection,
 
   // MixerSocket::Delegate implementation:
   bool HandleMetadata(const Generic& message) override;
-  bool HandleAudioData(char* data, int size, int64_t timestamp) override;
+  bool HandleAudioData(char* data, size_t size, int64_t timestamp) override;
 
   const Config config_;
   Delegate* const delegate_;
@@ -97,8 +111,6 @@ class RedirectedAudioConnection : public MixerConnection,
   std::unique_ptr<MixerSocket> socket_;
 
   int sample_rate_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RedirectedAudioConnection);
 };
 
 }  // namespace mixer_service

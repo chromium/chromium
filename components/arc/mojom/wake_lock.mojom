@@ -25,5 +25,5 @@ interface WakeLockHost {
 // Next method ID: 1
 interface WakeLockInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(WakeLockHost host_ptr) => ();
+  Init@0(pending_remote<WakeLockHost> host_remote) => ();
 };

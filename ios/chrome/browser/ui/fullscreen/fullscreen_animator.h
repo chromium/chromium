@@ -13,6 +13,9 @@ enum class FullscreenAnimatorStyle : short {
   EXIT_FULLSCREEN
 };
 
+// Returns the final fullscreen progress for an animation with |style|.
+CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style);
+
 // Helper object for animating changes to fullscreen progress.  Subclasses of
 // this object are provided to FullscreenControllerObservers to coordinate
 // animations across several different ojects.

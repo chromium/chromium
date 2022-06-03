@@ -9,11 +9,10 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/events/gesture_detection/motion_event.h"
 #include "ui/events/gesture_detection/scale_gesture_listeners.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace ui {

@@ -1,4 +1,4 @@
-per-file weblayer_content_browser_overlay_manifest.cc=set noparent
-per-file weblayer_content_browser_overlay_manifest.cc=file://ipc/SECURITY_OWNERS
-per-file weblayer_content_browser_overlay_manifest.h=set noparent
-per-file weblayer_content_browser_overlay_manifest.h=file://ipc/SECURITY_OWNERS
+per-file weblayer_browser_interface_binders.*=set noparent
+per-file weblayer_browser_interface_binders.*=file://ipc/SECURITY_OWNERS
+per-file content_browser_client_impl_receiver_bindings.*=set noparent
+per-file content_browser_client_impl_receiver_bindings.*=file://ipc/SECURITY_OWNERS

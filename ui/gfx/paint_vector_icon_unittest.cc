@@ -7,8 +7,8 @@
 #include <gtest/gtest.h>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "base/stl_util.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -28,6 +28,9 @@ class MockCanvas : public SkCanvas {
  public:
   MockCanvas(int width, int height) : SkCanvas(width, height) {}
 
+  MockCanvas(const MockCanvas&) = delete;
+  MockCanvas& operator=(const MockCanvas&) = delete;
+
   // SkCanvas overrides:
   void onDrawPath(const SkPath& path, const SkPaint& paint) override {
     paths_.push_back(path);
@@ -37,8 +40,6 @@ class MockCanvas : public SkCanvas {
 
  private:
   std::vector<SkPath> paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCanvas);
 };
 
 // Tests that a relative move to command (R_MOVE_TO) after a close command

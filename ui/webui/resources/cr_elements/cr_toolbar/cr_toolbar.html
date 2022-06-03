@@ -1,15 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../cr_icons_css.html">
-<link rel="import" href="../cr_toolbar/cr_toolbar_search_field.html">
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
-
-<dom-module id="cr-toolbar">
-  <template>
     <style include="cr-icons cr-hidden-style">
       :host {
         align-items: center;
@@ -17,6 +5,12 @@
         color: #fff;
         display: flex;
         height: var(--cr-toolbar-height);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]):host {
+          color: var(--google-grey-900);
+        }
       }
 
       @media (prefers-color-scheme: dark) {
@@ -35,6 +29,11 @@
         line-height: normal;
         margin-inline-start: 6px;
         padding-inline-end: 12px;
+      }
+
+      :host-context([enable-branding-update]):host h1 {
+        font-size: 170%;
+        font-weight: 500;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -58,7 +57,6 @@
       }
 
       cr-icon-button {
-        --cr-icon-button-fill-color-focus: var(--cr-toolbar-background-color);
         --cr-icon-button-size: 32px;
         min-width: 32px;
       }
@@ -66,6 +64,7 @@
       @media (prefers-color-scheme: light) {
         cr-icon-button {
           --cr-icon-button-fill-color: currentColor;
+          --cr-icon-button-focus-outline-color: white;
         }
       }
 
@@ -106,72 +105,53 @@
         text-align: end;
       }
 
-      #menuPromo {
-        align-items: center;
-        background: #616161;
-        border-radius: 2px;
-        color: white;
-        display: flex;
-        font-size: 92.3%;
-        font-weight: 500;
-        opacity: 0;
-        padding-bottom: 6px;
-        padding-inline-end: 12px;
-        padding-inline-start: 8px;
-        padding-top: 6px;
-        position: absolute;
-        top: var(--cr-toolbar-height);
-        white-space: nowrap;
-        z-index: 2;
+      picture {
+        display: none;
       }
 
-      #menuPromo::before {
-        background: inherit;
-        /* Up arrow. 105% in Y coordinates fixes glitch at 110/125% zoom. */
-        clip-path: polygon(0 105%, 100% 105%, 50% 0);
-        content: '';
-        display: block;
-        height: 6px;
-        left: 10px;
-        position: absolute;
-        top: -6px;
-        width: 12px;
+      :host-context([enable-branding-update]) #menuButton {
+        margin-inline-end: 9px;
       }
 
-      :host-context([dir=rtl]) #menuPromo::before {
-        left: auto;
-        right: 10px;
+      :host-context([enable-branding-update]) #menuButton ~ h1 {
+        margin-inline-start: 0;
       }
 
-      #closePromo {
-        -webkit-appearance: none;
-        background: none;
-        border: none;
-        color: inherit;
-        font-size: 20px;  /* Shouldn't change if default font-size changes. */
-        line-height: 20px;
-        margin-inline-start: 12px;
-        padding: 0;
-        width: 20px;
+      :host-context([enable-branding-update]):host([always-show-logo]) picture,
+      :host-context([enable-branding-update]):host(:not([narrow])) picture {
+        display: initial;
+        margin-inline-end: 16px;
+      }
+
+      :host-context([enable-branding-update]):host([always-show-logo]) #leftSpacer,
+      :host-context([enable-branding-update]):host(:not([narrow])) #leftSpacer {
+        /* 12px to match #rightSpacer + 9px to align with icons in menus. */
+        padding-inline-start: calc(12px + 9px);
+      }
+
+      :host-context([enable-branding-update]):host([always-show-logo]) :is(picture, #product-logo),
+      :host-context([enable-branding-update]):host(:not([narrow])) :is(picture, #product-logo) {
+        height: 24px;
+        width: 24px;
       }
     </style>
     <div id="leftContent">
       <div id="leftSpacer">
-        <!-- Note: showing #menuPromo relies on this dom-if being [restamp]. -->
         <template is="dom-if" if="[[showMenu]]" restamp>
           <cr-icon-button id="menuButton" class="no-overlap"
               iron-icon="cr20:menu" on-click="onMenuTap_"
               aria-label$="[[menuLabel]]"
-              title="[[titleIfNotShowMenuPromo_(menuLabel, showMenuPromo)]]">
+              title="[[menuLabel]]">
           </cr-icon-button>
-          <template is="dom-if" if="[[showMenuPromo]]">
-            <div id="menuPromo" role="tooltip">
-              [[menuPromo]]
-              <button id="closePromo" on-click="onClosePromoTap_"
-                  aria-label$="[[closeMenuPromo]]">&#x2715;</button>
-            </paper-tooltip>
-          </template>
         </template>
+        <picture>
+          <source media="(prefers-color-scheme: dark)"
+              srcset="//resources/images/chrome_logo_dark.svg">
+          <img id="product-logo"
+              srcset="chrome://theme/current-channel-logo@1x 1x,
+                      chrome://theme/current-channel-logo@2x 2x"
+              role="presentation">
+        </picture>
         <h1>[[pageName]]</h1>
       </div>
     </div>
@@ -180,7 +160,8 @@
       <cr-toolbar-search-field id="search" narrow="[[narrow]]"
           label="[[searchPrompt]]" clear-label="[[clearLabel]]"
           spinner-active="[[spinnerActive]]"
-          showing-search="{{showingSearch_}}">
+          showing-search="{{showingSearch_}}"
+          autofocus$="[[autofocus]]">
       </cr-toolbar-search-field>
       <iron-media-query query="(max-width: [[narrowThreshold]]px)"
           query-matches="{{narrow}}">
@@ -192,6 +173,3 @@
         <slot></slot>
       </div>
     </div>
-  </template>
-  <script src="cr_toolbar.js"></script>
-</dom-module>

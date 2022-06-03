@@ -11,9 +11,9 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -24,14 +24,14 @@
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterBuilder_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterList_jni.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::AppendJavaStringArrayToStringVector;
+using base::android::JavaArrayOfByteArrayToBytesVector;
+using base::android::JavaByteArrayToByteVector;
+using base::android::JavaIntArrayToIntVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
-using base::android::JavaByteArrayToByteVector;
-using base::android::JavaArrayOfByteArrayToStringVector;
-using base::android::JavaIntArrayToIntVector;
 
 namespace {
 // The poll interval in ms when there is no active discovery. This
@@ -42,30 +42,33 @@ enum { kPassivePollInterval = 11000 };
 enum { kActivePollInterval = 1000 };
 // The delay in ms to wait before purging devices when a scan starts.
 enum { kPurgeDelay = 500 };
-}
+}  // namespace
 
 namespace device {
 
 // static
-base::WeakPtr<BluetoothAdapter> BluetoothAdapter::CreateAdapter(
-    InitCallback init_callback) {
+scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return BluetoothAdapterAndroid::Create(
       BluetoothAdapterWrapper_CreateWithDefaultAdapter());
 }
 
 // static
-base::WeakPtr<BluetoothAdapterAndroid> BluetoothAdapterAndroid::Create(
+scoped_refptr<BluetoothAdapterAndroid> BluetoothAdapterAndroid::Create(
     const JavaRef<jobject>&
-        bluetooth_adapter_wrapper) {  // Java Type: bluetoothAdapterWrapper
-  BluetoothAdapterAndroid* adapter = new BluetoothAdapterAndroid();
+        bluetooth_adapter_wrapper) {  // Java Type: BluetoothAdapterWrapper
+  auto adapter = base::WrapRefCounted(new BluetoothAdapterAndroid());
 
   adapter->j_adapter_.Reset(Java_ChromeBluetoothAdapter_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(adapter),
+      AttachCurrentThread(), reinterpret_cast<intptr_t>(adapter.get()),
       bluetooth_adapter_wrapper));
 
   adapter->ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
-  return adapter->weak_ptr_factory_.GetWeakPtr();
+  return adapter;
+}
+
+void BluetoothAdapterAndroid::Initialize(base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 std::string BluetoothAdapterAndroid::GetAddress() const {
@@ -79,8 +82,8 @@ std::string BluetoothAdapterAndroid::GetName() const {
 }
 
 void BluetoothAdapterAndroid::SetName(const std::string& name,
-                                      const base::Closure& callback,
-                                      const ErrorCallback& error_callback) {
+                                      base::OnceClosure callback,
+                                      ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
@@ -103,10 +106,9 @@ bool BluetoothAdapterAndroid::IsDiscoverable() const {
                                                     j_adapter_);
 }
 
-void BluetoothAdapterAndroid::SetDiscoverable(
-    bool discoverable,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+void BluetoothAdapterAndroid::SetDiscoverable(bool discoverable,
+                                              base::OnceClosure callback,
+                                              ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
@@ -123,26 +125,27 @@ BluetoothAdapter::UUIDList BluetoothAdapterAndroid::GetUUIDs() const {
 void BluetoothAdapterAndroid::CreateRfcommService(
     const BluetoothUUID& uuid,
     const ServiceOptions& options,
-    const CreateServiceCallback& callback,
-    const CreateServiceErrorCallback& error_callback) {
+    CreateServiceCallback callback,
+    CreateServiceErrorCallback error_callback) {
   NOTIMPLEMENTED();
-  error_callback.Run("Not Implemented");
+  std::move(error_callback).Run("Not Implemented");
 }
 
 void BluetoothAdapterAndroid::CreateL2capService(
     const BluetoothUUID& uuid,
     const ServiceOptions& options,
-    const CreateServiceCallback& callback,
-    const CreateServiceErrorCallback& error_callback) {
+    CreateServiceCallback callback,
+    CreateServiceErrorCallback error_callback) {
   NOTIMPLEMENTED();
-  error_callback.Run("Not Implemented");
+  std::move(error_callback).Run("Not Implemented");
 }
 
 void BluetoothAdapterAndroid::RegisterAdvertisement(
     std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
-    const CreateAdvertisementCallback& callback,
-    const AdvertisementErrorCallback& error_callback) {
-  error_callback.Run(BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
+    CreateAdvertisementCallback callback,
+    AdvertisementErrorCallback error_callback) {
+  std::move(error_callback)
+      .Run(BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
 }
 
 BluetoothLocalGattService* BluetoothAdapterAndroid::GetGattService(
@@ -178,8 +181,8 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
     const JavaParamRef<jobjectArray>& service_data_values,  // Java Type: byte[]
     const JavaParamRef<jintArray>& manufacturer_data_keys,  // Java Type: int[]
     const JavaParamRef<jobjectArray>&
-        manufacturer_data_values  // Java Type: byte[]
-) {
+        manufacturer_data_values,  // Java Type: byte[]
+    int32_t advertisement_flags) {
   std::string device_address = ConvertJavaStringToUTF8(env, address);
   auto iter = devices_.find(device_address);
 
@@ -208,47 +211,48 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
   }
 
   std::vector<std::string> service_data_keys_vector;
-  std::vector<std::string> service_data_values_vector;
+  std::vector<std::vector<uint8_t>> service_data_values_vector;
   AppendJavaStringArrayToStringVector(env, service_data_keys,
                                       &service_data_keys_vector);
-  JavaArrayOfByteArrayToStringVector(env, service_data_values,
-                                     &service_data_values_vector);
+  JavaArrayOfByteArrayToBytesVector(env, service_data_values,
+                                    &service_data_values_vector);
   BluetoothDeviceAndroid::ServiceDataMap service_data_map;
   for (size_t i = 0; i < service_data_keys_vector.size(); i++) {
-    service_data_map.insert(
-        {BluetoothUUID(service_data_keys_vector[i]),
-         std::vector<uint8_t>(service_data_values_vector[i].begin(),
-                              service_data_values_vector[i].end())});
+    service_data_map.insert({BluetoothUUID(service_data_keys_vector[i]),
+                             service_data_values_vector[i]});
   }
 
   std::vector<jint> manufacturer_data_keys_vector;
-  std::vector<std::string> manufacturer_data_values_vector;
+  std::vector<std::vector<uint8_t>> manufacturer_data_values_vector;
   JavaIntArrayToIntVector(env, manufacturer_data_keys,
                           &manufacturer_data_keys_vector);
-  JavaArrayOfByteArrayToStringVector(env, manufacturer_data_values,
-                                     &manufacturer_data_values_vector);
+  JavaArrayOfByteArrayToBytesVector(env, manufacturer_data_values,
+                                    &manufacturer_data_values_vector);
   BluetoothDeviceAndroid::ManufacturerDataMap manufacturer_data_map;
   for (size_t i = 0; i < manufacturer_data_keys_vector.size(); i++) {
     manufacturer_data_map.insert(
         {static_cast<uint16_t>(manufacturer_data_keys_vector[i]),
-         std::vector<uint8_t>(manufacturer_data_values_vector[i].begin(),
-                              manufacturer_data_values_vector[i].end())});
+         manufacturer_data_values_vector[i]});
   }
 
   int8_t clamped_tx_power = BluetoothDevice::ClampPower(tx_power);
 
   device_android->UpdateAdvertisementData(
-      BluetoothDevice::ClampPower(rssi), base::nullopt /* flags */,
+      BluetoothDevice::ClampPower(rssi),
+      // Android uses -1 to indicate no advertising flags.
+      // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getAdvertiseFlags()
+      advertisement_flags == -1 ? absl::nullopt
+                                : absl::make_optional(advertisement_flags),
       advertised_bluetooth_uuids,
       // Android uses INT32_MIN to indicate no Advertised Tx Power.
       // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
-      tx_power == INT32_MIN ? base::nullopt
-                            : base::make_optional(clamped_tx_power),
+      tx_power == INT32_MIN ? absl::nullopt
+                            : absl::make_optional(clamped_tx_power),
       service_data_map, manufacturer_data_map);
 
   for (auto& observer : observers_) {
-    base::Optional<std::string> device_name_opt = device_android->GetName();
-    base::Optional<std::string> advertisement_name_opt;
+    absl::optional<std::string> device_name_opt = device_android->GetName();
+    absl::optional<std::string> advertisement_name_opt;
     if (local_name)
       advertisement_name_opt = ConvertJavaStringToUTF8(env, local_name);
 
@@ -257,9 +261,9 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
         BluetoothDevice::ClampPower(rssi),
         // Android uses INT32_MIN to indicate no Advertised Tx Power.
         // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
-        tx_power == INT32_MIN ? base::nullopt
-                              : base::make_optional(clamped_tx_power),
-        base::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        tx_power == INT32_MIN ? absl::nullopt
+                              : absl::make_optional(clamped_tx_power),
+        absl::nullopt, /* TODO(crbug.com/588083) Implement appearance */
         advertised_bluetooth_uuids, service_data_map, manufacturer_data_map);
   }
 
@@ -287,13 +291,13 @@ void BluetoothAdapterAndroid::PurgeTimedOutDevices() {
         FROM_HERE,
         base::BindOnce(&BluetoothAdapterAndroid::PurgeTimedOutDevices,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kActivePollInterval));
+        base::Milliseconds(kActivePollInterval));
   } else {
     ui_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BluetoothAdapterAndroid::RemoveTimedOutDevices,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kPassivePollInterval));
+        base::Milliseconds(kPassivePollInterval));
   }
 }
 
@@ -318,7 +322,7 @@ void BluetoothAdapterAndroid::UpdateFilter(
                             UMABluetoothDiscoverySessionOutcome::SUCCESS);
     return;
   } else {
-    VLOG(1) << "UpdateFilter: Fails: !isPowered";
+    DVLOG(1) << "UpdateFilter: Fails: !isPowered";
     std::move(callback).Run(/*is_error=*/true,
                             UMABluetoothDiscoverySessionOutcome::UNKNOWN);
   }
@@ -380,15 +384,15 @@ void BluetoothAdapterAndroid::StartScanWithFilter(
           FROM_HERE,
           base::BindOnce(&BluetoothAdapterAndroid::PurgeTimedOutDevices,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kPurgeDelay));
+          base::Milliseconds(kPurgeDelay));
     }
   } else {
-    VLOG(1) << "StartScanWithFilter: Fails: !isPowered";
+    DVLOG(1) << "StartScanWithFilter: Fails: !isPowered";
   }
 
   if (session_added) {
-    VLOG(1) << "StartScanWithFilter: Now " << unsigned(NumDiscoverySessions())
-            << " sessions.";
+    DVLOG(1) << "StartScanWithFilter: Now " << unsigned(NumDiscoverySessions())
+             << " sessions.";
     std::move(callback).Run(/*is_error=*/false,
                             UMABluetoothDiscoverySessionOutcome::SUCCESS);
   } else {
@@ -402,7 +406,7 @@ void BluetoothAdapterAndroid::StopScan(
     DiscoverySessionResultCallback callback) {
   DCHECK(NumDiscoverySessions() == 0);
 
-  VLOG(1) << "Stopping scan.";
+  DVLOG(1) << "Stopping scan.";
   if (Java_ChromeBluetoothAdapter_stopScan(AttachCurrentThread(), j_adapter_)) {
     std::move(callback).Run(/*is_error=*/false,
                             UMABluetoothDiscoverySessionOutcome::SUCCESS);
@@ -416,7 +420,6 @@ void BluetoothAdapterAndroid::StopScan(
 }
 
 void BluetoothAdapterAndroid::RemovePairingDelegateInternal(
-    device::BluetoothDevice::PairingDelegate* pairing_delegate) {
-}
+    device::BluetoothDevice::PairingDelegate* pairing_delegate) {}
 
 }  // namespace device

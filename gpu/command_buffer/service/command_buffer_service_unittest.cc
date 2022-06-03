@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/mocks.h"
@@ -45,7 +45,8 @@ class CommandBufferServiceTest : public testing::Test,
   void MakeService(unsigned int entry_count) {
     command_buffer_service_ =
         std::make_unique<CommandBufferService>(this, nullptr);
-    api_mock_.reset(new AsyncAPIMock(false, command_buffer_service_.get()));
+    api_mock_ =
+        std::make_unique<AsyncAPIMock>(false, command_buffer_service_.get());
     SetNewGetBuffer(entry_count * sizeof(CommandBufferEntry));
   }
 

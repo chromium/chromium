@@ -29,6 +29,11 @@ class CertificateReportingServiceFactory
   static CertificateReportingService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  CertificateReportingServiceFactory(
+      const CertificateReportingServiceFactory&) = delete;
+  CertificateReportingServiceFactory& operator=(
+      const CertificateReportingServiceFactory&) = delete;
+
   // Setters for testing.
   void SetReportEncryptionParamsForTesting(uint8_t* server_public_key,
                                            uint32_t server_public_key_version);
@@ -36,7 +41,7 @@ class CertificateReportingServiceFactory
   void SetQueuedReportTTLForTesting(base::TimeDelta queued_report_ttl);
   void SetMaxQueuedReportCountForTesting(size_t max_report_count);
   void SetServiceResetCallbackForTesting(
-      const base::Callback<void()>& service_reset_callback);
+      const base::RepeatingClosure& service_reset_callback);
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
@@ -60,10 +65,8 @@ class CertificateReportingServiceFactory
   base::Clock* clock_;
   base::TimeDelta queued_report_ttl_;
   size_t max_queued_report_count_;
-  base::Callback<void()> service_reset_callback_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateReportingServiceFactory);
+  base::RepeatingClosure service_reset_callback_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory_;
 };
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_SERVICE_FACTORY_H_

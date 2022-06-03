@@ -4,10 +4,13 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/guest_tag.h"
 
+#include <memory>
+
 namespace task_manager {
 
-GuestTask* GuestTag::CreateTask() const {
-  return new GuestTask(web_contents());
+std::unique_ptr<RendererTask> GuestTag::CreateTask(
+    WebContentsTaskProvider*) const {
+  return std::make_unique<GuestTask>(web_contents());
 }
 
 GuestTag::GuestTag(content::WebContents* web_contents)

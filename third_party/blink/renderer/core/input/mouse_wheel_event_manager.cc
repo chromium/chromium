@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/input/mouse_wheel_event_manager.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/platform/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -15,14 +15,40 @@
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
-MouseWheelEventManager::MouseWheelEventManager(LocalFrame& frame)
-    : frame_(frame), wheel_target_(nullptr) {}
 
-void MouseWheelEventManager::Trace(blink::Visitor* visitor) {
+namespace {
+
+gfx::Vector2dF ResolveMouseWheelPercentToWheelDelta(
+    const WebMouseWheelEvent& event) {
+  DCHECK(event.delta_units == ui::ScrollGranularity::kScrollByPercentage);
+  // TODO (dlibby): OS scroll settings need to be factored into this.
+  // Note that this value is negative because we're converting from wheel
+  // ticks to wheel delta pixel. Wheel ticks are negative for scrolling down,
+  // but the delta must be positive.
+  constexpr float percent_mouse_wheel_ticks_multiplier = -100.f;
+  return gfx::Vector2dF(
+      event.wheel_ticks_x * percent_mouse_wheel_ticks_multiplier,
+      event.wheel_ticks_y * percent_mouse_wheel_ticks_multiplier);
+}
+
+}  // namespace
+
+MouseWheelEventManager::MouseWheelEventManager(LocalFrame& frame,
+                                               ScrollManager& scroll_manager)
+    : frame_(frame), wheel_target_(nullptr), scroll_manager_(scroll_manager) {}
+
+void MouseWheelEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(wheel_target_);
+  visitor->Trace(scroll_manager_);
 }
 
 void MouseWheelEventManager::Clear() {
@@ -61,12 +87,18 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
   bool has_phase_info = event.phase != WebMouseWheelEvent::kPhaseNone ||
                         event.momentum_phase != WebMouseWheelEvent::kPhaseNone;
 
-  // Find and save the wheel_target_, this target will be used for the rest
-  // of the current scrolling sequence. In the absence of phase info, send the
-  // event to the target under the cursor.
-  if (event.phase == WebMouseWheelEvent::kPhaseBegan || !wheel_target_ ||
-      !has_phase_info) {
-    wheel_target_ = FindTargetNode(event, doc, view);
+  Element* pointer_locked_element =
+      PointerLockController::GetPointerLockedElement(frame_);
+  if (pointer_locked_element) {
+    wheel_target_ = pointer_locked_element;
+  } else {
+    // Find and save the wheel_target_, this target will be used for the rest
+    // of the current scrolling sequence. In the absence of phase info, send the
+    // event to the target under the cursor.
+    if (event.phase == WebMouseWheelEvent::kPhaseBegan || !wheel_target_ ||
+        !has_phase_info) {
+      wheel_target_ = FindTargetNode(event, doc, view);
+    }
   }
 
   LocalFrame* subframe =
@@ -79,7 +111,13 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
 
   if (wheel_target_) {
     WheelEvent* dom_event =
-        WheelEvent::Create(event, wheel_target_->GetDocument().domWindow());
+        (event.delta_units == ui::ScrollGranularity::kScrollByPercentage)
+            ? WheelEvent::Create(event,
+                                 ResolveMouseWheelPercentToWheelDelta(event),
+                                 wheel_target_->GetDocument().domWindow())
+            : WheelEvent::Create(event,
+                                 wheel_target_->GetDocument().domWindow());
+
     // The event handler might remove |wheel_target_| from DOM so we should get
     // this value now (see https://crbug.com/857013).
     bool should_enforce_vertical_scroll =

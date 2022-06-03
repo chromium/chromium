@@ -2,7 +2,7 @@
 <script>
 function eventhandler1() {
     var detail = document.querySelector("#details");
-    var root = detail.createShadowRoot();
+    var root = detail.attachShadow({mode: 'open'});
     root.innerHTML = "<span id=inner></span>";
     var inner = root.getElementById("inner");
     document.body.removeChild(detail);

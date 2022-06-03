@@ -50,7 +50,13 @@ class MeteredStream(object):
     def _ensure_newline(txt):
         return txt if txt.endswith('\n') else txt + '\n'
 
-    def __init__(self, stream=None, verbose=False, logger=None, time_fn=None, pid=None, number_of_columns=None):
+    def __init__(self,
+                 stream=None,
+                 verbose=False,
+                 logger=None,
+                 time_fn=None,
+                 pid=None,
+                 number_of_columns=None):
         self._stream = stream or sys.stderr
         self._verbose = verbose
         self._time_fn = time_fn or time.time
@@ -97,17 +103,15 @@ class MeteredStream(object):
             self._erase_last_partial_line()
         if self._verbose:
             now_tuple = time.localtime(now)
-            msg = '%02d:%02d:%02d.%03d %d %s' % (now_tuple.tm_hour, now_tuple.tm_min, now_tuple.tm_sec,
-                                                 int((now * 1000) % 1000), pid, self._ensure_newline(txt))
+            msg = '%02d:%02d:%02d.%03d %d %s' % (
+                now_tuple.tm_hour, now_tuple.tm_min, now_tuple.tm_sec,
+                int((now * 1000) % 1000), pid, self._ensure_newline(txt))
         elif self._isatty:
             msg = txt
         else:
             msg = self._ensure_newline(txt)
 
-        # This is the easiest way to make sure a byte stream is printable as ascii
-        # with all non-ascii characters replaced.
-        uni_msg = msg if isinstance(msg, unicode) else msg.decode('ascii', errors='replace')
-        self._stream.write(uni_msg.encode('ascii', errors='replace'))
+        self._stream.write(msg)
 
     def writeln(self, txt, now=None, pid=None):
         self.write(self._ensure_newline(txt), now, pid)
@@ -127,11 +131,11 @@ class MeteredStream(object):
 
 
 class _LogHandler(logging.Handler):
-
     def __init__(self, meter):
         logging.Handler.__init__(self)
         self._meter = meter
         self.name = LOG_HANDLER_NAME
 
     def emit(self, record):
-        self._meter.writeln(record.getMessage(), record.created, record.process)
+        self._meter.writeln(record.getMessage(), record.created,
+                            record.process)

@@ -1,0 +1,104 @@
+#!/bin/sh
+
+# Initially copied from
+# https://git.launchpad.net/~chromium-team/chromium-browser/+git/snap-from-source/tree/launcher/chromium.launcher?h=stable
+
+REALHOME=$(getent passwd $(id -u) | cut -d ':' -f 6)
+
+# Move an existing profile directory over to $SNAP_USER_COMMON, which is shared
+# across revisions of the snap. This addresses profile corruption when the snap
+# is refreshed while running, until a proper solution is implemented in snapd.
+# Ref: https://launchpad.net/bugs/1616650
+if [ ! -d "$SNAP_USER_COMMON/@@SNAPNAME@@" ]; then
+  if [ -d "$SNAP_USER_DATA/.config/@@SNAPNAME@@" ]; then
+    mv "$SNAP_USER_DATA/.config/@@SNAPNAME@@" "$SNAP_USER_COMMON/"
+  fi
+fi
+
+# When running the snap for the first time, try and locate an existing
+# @@SNAPNAME@@ config in $HOME/.config/@@SNAPNAME@@, and import it if it was
+# created by an older version of @@SNAPNAME@@ (the profile data format is not
+# guaranteed to be forward-compatible). This requires the personal-files plug
+# to be connected.
+if [ ! -d "$SNAP_USER_COMMON/@@SNAPNAME@@" ]; then
+  CHROME_CONFIG="$REALHOME/.config/@@SNAPNAME@@"
+  if [ -d "$CHROME_CONFIG" ]; then
+    PREF_FILE="$CHROME_CONFIG/Default/Preferences"
+    if [ -r "$PREF_FILE" ]; then
+      VERSION=$(sed -e 's/.*"last_chrome_version":"\([0-9\.]\+\)".*/\1/' \
+        "$PREF_FILE")
+      if [ ! -z "$VERSION" ]; then
+        OLD=$(printf "$VERSION\n$SNAP_VERSION" | sort -V | head -1)
+        if [ "$OLD" = "$VERSION" ]; then
+          SIZE=$(du -sb $CHROME_CONFIG | cut -f 1)
+          AVAILABLE_BLOCKS=$(stat -f -c %a $SNAP_USER_COMMON)
+          BLOCK_SIZE=$(stat -f -c %s $SNAP_USER_COMMON)
+          AVAILABLE_SIZE=$(($AVAILABLE_BLOCKS*$BLOCK_SIZE))
+          if [ $AVAILABLE_SIZE -gt $SIZE ]; then
+            printf "Importing existing @@SNAPNAME@@ profile from "
+            printf "$CHROME_CONFIG (version $VERSION)\n"
+            TS1=$(date +%s.%3N)
+            cp -R "$CHROME_CONFIG" "$SNAP_USER_COMMON/"
+            TS2=$(date +%s.%3N)
+            T=$(printf "$TS1 $TS2" | awk '{printf "%.3f",$2-$1}')
+            printf "Import done in $T s\n"
+          else
+            printf "Not importing existing @@SNAPNAME@@ profile from "
+            printf "$CHROME_CONFIG (version $VERSION) because there is not "
+            printf "enough available space in $SNAP_USER_COMMON "
+            printf "(required: $SIZE bytes / available: $AVAILABLE_SIZE bytes)"
+            printf "\n"
+          fi
+        fi
+      fi
+    fi
+  fi
+fi
+
+# Specify that no encrypted password store (keyring) should be used when the
+# password-manager-service interface is not plugged, because @@SNAPNAME@@
+# won't fall back to the basic store (no encryption) if it fails to talk to
+# the default password store for the current desktop environment.
+# Ref: https://launchpad.net/bugs/1763829
+PASSWORD_STORE=basic
+if snapctl is-connected password-manager-service; then
+  # An empty string means detect the store based on the current DE
+  # (os_crypt::SelectBackend())
+  PASSWORD_STORE=
+fi
+
+# Allow @@SNAPNAME@@ to look for the flash player plugin inside the snap's
+# confinement. That .so file has to be extracted from the upstream flash
+# distribution (https://get.adobe.com/flashplayer/) and copied there.
+# Ref: https://launchpad.net/bugs/1771162
+FLASHSO=$SNAP_USER_DATA/.local/lib/libpepflashplayer.so
+if [ -e $FLASHSO ]; then
+  FLASHVERSION=$(grep -a -z LNX $FLASHSO | cut -d ' ' -f 2 | sed -e "s/,/./g")
+  FLASH_OPTS="--ppapi-flash-path=$FLASHSO --ppapi-flash-version=$FLASHVERSION"
+fi
+
+WANT_TEMP_PROFILE=0
+for arg in "$@"; do
+  shift
+  if [ "$arg" = "--temp-profile" ]; then
+    WANT_TEMP_PROFILE=1
+    continue
+  fi
+  set -- "$@" "$arg"
+done
+
+if [ $WANT_TEMP_PROFILE -eq 0 ] ; then
+  exec "$SNAP/@@INSTALLDIR@@/@@PACKAGE@@" \
+    --password-store=$PASSWORD_STORE \
+    $FLASH_OPTS \
+    "$@"
+else
+  TEMP_PROFILE=$(mktemp -d)
+  trap "rm -rf $TEMP_PROFILE" EXIT
+  # we can't exec here as we need to clean-up the temporary profile
+  "$SNAP/@@INSTALLDIR@@/@@PACKAGE@@" \
+    --user-data-dir=$TEMP_PROFILE \
+    --password-store=$PASSWORD_STORE \
+    $FLASH_OPTS \
+    "$@"
+fi

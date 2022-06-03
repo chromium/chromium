@@ -14,8 +14,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/current_module.h"
 #include "remoting/host/win/core_resource.h"
 
@@ -26,6 +26,10 @@ namespace {
 class ContinueWindowWin : public ContinueWindow {
  public:
   ContinueWindowWin();
+
+  ContinueWindowWin(const ContinueWindowWin&) = delete;
+  ContinueWindowWin& operator=(const ContinueWindowWin&) = delete;
+
   ~ContinueWindowWin() override;
 
  protected:
@@ -42,8 +46,6 @@ class ContinueWindowWin : public ContinueWindow {
   void EndDialog();
 
   HWND hwnd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowWin);
 };
 
 ContinueWindowWin::ContinueWindowWin()

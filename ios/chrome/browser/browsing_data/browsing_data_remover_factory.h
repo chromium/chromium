@@ -11,21 +11,22 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace ios {
-class ChromeBrowserState;
-}
-
 class BrowsingDataRemover;
+class ChromeBrowserState;
 
 // Singleton that owns all BrowsingDataRemovers and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
   static BrowsingDataRemover* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static BrowsingDataRemover* GetForBrowserStateIfExists(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static BrowsingDataRemoverFactory* GetInstance();
+
+  BrowsingDataRemoverFactory(const BrowsingDataRemoverFactory&) = delete;
+  BrowsingDataRemoverFactory& operator=(const BrowsingDataRemoverFactory&) =
+      delete;
 
  private:
   friend class base::NoDestructor<BrowsingDataRemoverFactory>;
@@ -38,8 +39,6 @@ class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_FACTORY_H_

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 
@@ -13,21 +13,20 @@ using base::ASCIIToUTF16;
 // Simple test for clicking a menu item.  This template class clicks on an
 // item and checks that the returned id matches.  The index of the item
 // is the template argument.
-template<int INDEX>
+template <int INDEX>
 class MenuItemViewTestBasic : public MenuTestBase {
  public:
-  MenuItemViewTestBasic() {
-  }
-
-  ~MenuItemViewTestBasic() override {
-  }
+  MenuItemViewTestBasic() = default;
+  MenuItemViewTestBasic(const MenuItemViewTestBasic&) = delete;
+  MenuItemViewTestBasic& operator=(const MenuItemViewTestBasic&) = delete;
+  ~MenuItemViewTestBasic() override = default;
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
-    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
+    menu->AppendMenuItem(1, u"item 1");
+    menu->AppendMenuItem(2, u"item 2");
     menu->AppendSeparator();
-    menu->AppendMenuItem(3, ASCIIToUTF16("item 3"));
+    menu->AppendMenuItem(3, u"item 3");
   }
 
   // Click on item INDEX.
@@ -49,15 +48,12 @@ class MenuItemViewTestBasic : public MenuTestBase {
     ASSERT_EQ(INDEX + 1, last_command());
     Done();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewTestBasic);
 };
 
 // Click each item of a 3-item menu (with separator).
-typedef MenuItemViewTestBasic<0> MenuItemViewTestBasic0;
-typedef MenuItemViewTestBasic<1> MenuItemViewTestBasic1;
-typedef MenuItemViewTestBasic<2> MenuItemViewTestBasic2;
+using MenuItemViewTestBasic0 = MenuItemViewTestBasic<0>;
+using MenuItemViewTestBasic1 = MenuItemViewTestBasic<1>;
+using MenuItemViewTestBasic2 = MenuItemViewTestBasic<2>;
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestBasic0, SelectItem0)
 VIEW_TEST(MenuItemViewTestBasic1, SelectItem1)
@@ -66,19 +62,18 @@ VIEW_TEST(MenuItemViewTestBasic1, SelectItem1)
 VIEW_TEST(MenuItemViewTestBasic2, SelectItem2)
 
 // Test class for inserting a menu item while the menu is open.
-template<int INSERT_INDEX, int SELECT_INDEX>
+template <int INSERT_INDEX, int SELECT_INDEX>
 class MenuItemViewTestInsert : public MenuTestBase {
  public:
-  MenuItemViewTestInsert() : inserted_item_(NULL) {
-  }
-
-  ~MenuItemViewTestInsert() override {
-  }
+  MenuItemViewTestInsert() = default;
+  MenuItemViewTestInsert(const MenuItemViewTestInsert&) = delete;
+  MenuItemViewTestInsert& operator=(const MenuItemViewTestInsert&) = delete;
+  ~MenuItemViewTestInsert() override = default;
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
-    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
+    menu->AppendMenuItem(1, u"item 1");
+    menu->AppendMenuItem(2, u"item 2");
   }
 
   // Insert item at INSERT_INDEX and click item at SELECT_INDEX.
@@ -90,9 +85,9 @@ class MenuItemViewTestInsert : public MenuTestBase {
     ASSERT_EQ(2u, submenu->GetMenuItems().size());
 
     inserted_item_ = menu()->AddMenuItemAt(
-        INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), base::string16(),
-        nullptr, gfx::ImageSkia(), nullptr, views::MenuItemView::Type::kNormal,
-        ui::NORMAL_SEPARATOR);
+        INSERT_INDEX, 1000, u"inserted item", std::u16string(),
+        std::u16string(), ui::ImageModel(), ui::ImageModel(),
+        views::MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
     menu()->ChildrenChanged();
 
@@ -122,21 +117,19 @@ class MenuItemViewTestInsert : public MenuTestBase {
   }
 
  private:
-  views::MenuItemView* inserted_item_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewTestInsert);
+  views::MenuItemView* inserted_item_ = nullptr;
 };
 
 // MenuItemViewTestInsertXY inserts an item at index X and selects the
 // item at index Y (after the insertion).  The tests here cover
 // inserting at the beginning, middle, and end, crossbarred with
 // selecting the first and last item.
-typedef MenuItemViewTestInsert<0,0> MenuItemViewTestInsert00;
-typedef MenuItemViewTestInsert<0,2> MenuItemViewTestInsert02;
-typedef MenuItemViewTestInsert<1,0> MenuItemViewTestInsert10;
-typedef MenuItemViewTestInsert<1,2> MenuItemViewTestInsert12;
-typedef MenuItemViewTestInsert<2,0> MenuItemViewTestInsert20;
-typedef MenuItemViewTestInsert<2,2> MenuItemViewTestInsert22;
+using MenuItemViewTestInsert00 = MenuItemViewTestInsert<0, 0>;
+using MenuItemViewTestInsert02 = MenuItemViewTestInsert<0, 2>;
+using MenuItemViewTestInsert10 = MenuItemViewTestInsert<1, 0>;
+using MenuItemViewTestInsert12 = MenuItemViewTestInsert<1, 2>;
+using MenuItemViewTestInsert20 = MenuItemViewTestInsert<2, 0>;
+using MenuItemViewTestInsert22 = MenuItemViewTestInsert<2, 2>;
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestInsert00, InsertItem00)
@@ -157,37 +150,44 @@ VIEW_TEST(MenuItemViewTestInsert20, InsertItem20)
 VIEW_TEST(MenuItemViewTestInsert22, InsertItem22)
 
 // Test class for inserting a menu item while a submenu is open.
-template<int INSERT_INDEX>
+template <int INSERT_INDEX>
 class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
  public:
-  MenuItemViewTestInsertWithSubmenu() :
-      submenu_(NULL),
-      inserted_item_(NULL) {
-  }
-
-  ~MenuItemViewTestInsertWithSubmenu() override {
-  }
+  MenuItemViewTestInsertWithSubmenu() = default;
+  MenuItemViewTestInsertWithSubmenu(const MenuItemViewTestInsertWithSubmenu&) =
+      delete;
+  MenuItemViewTestInsertWithSubmenu& operator=(
+      const MenuItemViewTestInsertWithSubmenu&) = delete;
+  ~MenuItemViewTestInsertWithSubmenu() override = default;
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    submenu_ = menu->AppendSubMenu(1, ASCIIToUTF16("My Submenu"));
-    submenu_->AppendMenuItem(101, ASCIIToUTF16("submenu item 1"));
-    submenu_->AppendMenuItem(101, ASCIIToUTF16("submenu item 2"));
-    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
+    submenu_ = menu->AppendSubMenu(1, u"My Submenu");
+    submenu_->AppendMenuItem(101, u"submenu item 1");
+    submenu_->AppendMenuItem(101, u"submenu item 2");
+    menu->AppendMenuItem(2, u"item 2");
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuStart), 0);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuPopupStart), 0);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuPopupEnd), 0);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuEnd), 0);
   }
 
   // Post submenu.
   void DoTestWithMenuOpen() override {
     Click(submenu_,
           CreateEventTask(this, &MenuItemViewTestInsertWithSubmenu::Step2));
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuStart), 1);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuPopupStart), 1);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuPopupEnd), 0);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuEnd), 0);
   }
 
   // Insert item at INSERT_INDEX.
   void Step2() {
     inserted_item_ = menu()->AddMenuItemAt(
-        INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), base::string16(),
-        nullptr, gfx::ImageSkia(), nullptr, views::MenuItemView::Type::kNormal,
-        ui::NORMAL_SEPARATOR);
+        INSERT_INDEX, 1000, u"inserted item", std::u16string(),
+        std::u16string(), ui::ImageModel(), ui::ImageModel(),
+        views::MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
     menu()->ChildrenChanged();
 
@@ -197,42 +197,48 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
 
   void Step3() {
     Done();
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuStart), 1);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuPopupStart), 2);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuPopupEnd), 2);
+    EXPECT_EQ(GetAXEventCount(ax::mojom::Event::kMenuEnd), 1);
   }
 
  private:
-  views::MenuItemView* submenu_;
-  views::MenuItemView* inserted_item_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewTestInsertWithSubmenu);
+  views::MenuItemView* submenu_ = nullptr;
+  views::MenuItemView* inserted_item_ = nullptr;
 };
 
 // MenuItemViewTestInsertWithSubmenuX posts a menu and its submenu,
 // then inserts an item in the top-level menu at X.
-typedef MenuItemViewTestInsertWithSubmenu<0> MenuItemViewTestInsertWithSubmenu0;
-typedef MenuItemViewTestInsertWithSubmenu<1> MenuItemViewTestInsertWithSubmenu1;
-
+using MenuItemViewTestInsertWithSubmenu0 = MenuItemViewTestInsertWithSubmenu<0>;
+using MenuItemViewTestInsertWithSubmenu1 = MenuItemViewTestInsertWithSubmenu<1>;
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestInsertWithSubmenu0, InsertItemWithSubmenu0)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, InsertItemWithSubmenu1)
+// Failing on Linux Ozone Tester (Wayland) (See crbug.com/1236048).
+#if defined(USE_OZONE)
+#define MAYBE_InsertItemWithSubmenu1 DISABLED_InsertItemWithSubmenu1
+#else
+#define MAYBE_InsertItemWithSubmenu1 InsertItemWithSubmenu1
+#endif
+VIEW_TEST(MenuItemViewTestInsertWithSubmenu1, MAYBE_InsertItemWithSubmenu1)
 
 // Test class for removing a menu item while the menu is open.
-template<int REMOVE_INDEX, int SELECT_INDEX>
+template <int REMOVE_INDEX, int SELECT_INDEX>
 class MenuItemViewTestRemove : public MenuTestBase {
  public:
-  MenuItemViewTestRemove() {
-  }
-
-  ~MenuItemViewTestRemove() override {
-  }
+  MenuItemViewTestRemove() = default;
+  MenuItemViewTestRemove(const MenuItemViewTestRemove&) = delete;
+  MenuItemViewTestRemove& operator=(const MenuItemViewTestRemove&) = delete;
+  ~MenuItemViewTestRemove() override = default;
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
-    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
-    menu->AppendMenuItem(3, ASCIIToUTF16("item 3"));
+    menu->AppendMenuItem(1, u"item 1");
+    menu->AppendMenuItem(2, u"item 2");
+    menu->AppendMenuItem(3, u"item 3");
   }
 
   // Remove item at REMOVE_INDEX and click item at SELECT_INDEX.
@@ -266,17 +272,14 @@ class MenuItemViewTestRemove : public MenuTestBase {
 
     Done();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewTestRemove);
 };
 
-typedef MenuItemViewTestRemove<0,0> MenuItemViewTestRemove00;
-typedef MenuItemViewTestRemove<0,1> MenuItemViewTestRemove01;
-typedef MenuItemViewTestRemove<1,0> MenuItemViewTestRemove10;
-typedef MenuItemViewTestRemove<1,1> MenuItemViewTestRemove11;
-typedef MenuItemViewTestRemove<2,0> MenuItemViewTestRemove20;
-typedef MenuItemViewTestRemove<2,1> MenuItemViewTestRemove21;
+using MenuItemViewTestRemove00 = MenuItemViewTestRemove<0, 0>;
+using MenuItemViewTestRemove01 = MenuItemViewTestRemove<0, 1>;
+using MenuItemViewTestRemove10 = MenuItemViewTestRemove<1, 0>;
+using MenuItemViewTestRemove11 = MenuItemViewTestRemove<1, 1>;
+using MenuItemViewTestRemove20 = MenuItemViewTestRemove<2, 0>;
+using MenuItemViewTestRemove21 = MenuItemViewTestRemove<2, 1>;
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestRemove00, RemoveItem00)
 
@@ -296,21 +299,22 @@ VIEW_TEST(MenuItemViewTestRemove20, RemoveItem20)
 VIEW_TEST(MenuItemViewTestRemove21, RemoveItem21)
 
 // Test class for removing a menu item while a submenu is open.
-template<int REMOVE_INDEX>
+template <int REMOVE_INDEX>
 class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
  public:
-  MenuItemViewTestRemoveWithSubmenu() : submenu_(NULL) {
-  }
-
-  ~MenuItemViewTestRemoveWithSubmenu() override {
-  }
+  MenuItemViewTestRemoveWithSubmenu() = default;
+  MenuItemViewTestRemoveWithSubmenu(const MenuItemViewTestRemoveWithSubmenu&) =
+      delete;
+  MenuItemViewTestRemoveWithSubmenu& operator=(
+      const MenuItemViewTestRemoveWithSubmenu&) = delete;
+  ~MenuItemViewTestRemoveWithSubmenu() override = default;
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
-    submenu_ = menu->AppendSubMenu(2, ASCIIToUTF16("My Submenu"));
-    submenu_->AppendMenuItem(101, ASCIIToUTF16("submenu item 1"));
-    submenu_->AppendMenuItem(102, ASCIIToUTF16("submenu item 2"));
+    menu->AppendMenuItem(1, u"item 1");
+    submenu_ = menu->AppendSubMenu(2, u"My Submenu");
+    submenu_->AppendMenuItem(101, u"submenu item 1");
+    submenu_->AppendMenuItem(102, u"submenu item 2");
   }
 
   // Post submenu.
@@ -349,13 +353,11 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
   }
 
  private:
-  views::MenuItemView* submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewTestRemoveWithSubmenu);
+  views::MenuItemView* submenu_ = nullptr;
 };
 
-typedef MenuItemViewTestRemoveWithSubmenu<0> MenuItemViewTestRemoveWithSubmenu0;
-typedef MenuItemViewTestRemoveWithSubmenu<1> MenuItemViewTestRemoveWithSubmenu1;
+using MenuItemViewTestRemoveWithSubmenu0 = MenuItemViewTestRemoveWithSubmenu<0>;
+using MenuItemViewTestRemoveWithSubmenu1 = MenuItemViewTestRemoveWithSubmenu<1>;
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestRemoveWithSubmenu0, RemoveItemWithSubmenu0)

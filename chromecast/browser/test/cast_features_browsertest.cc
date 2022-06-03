@@ -10,11 +10,13 @@
 
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/test/browser_test.h"
 
 // PLEASE READ:
 // 1) These tests are run in groups to simulate a restart of cast_shell. Each
@@ -108,6 +110,10 @@ void SetupFeatures() {
 class CastFeaturesBrowserTest : public CastBrowserTest {
  public:
   CastFeaturesBrowserTest() { SetupFeatures(); }
+
+  CastFeaturesBrowserTest(const CastFeaturesBrowserTest&) = delete;
+  CastFeaturesBrowserTest& operator=(const CastFeaturesBrowserTest&) = delete;
+
   ~CastFeaturesBrowserTest() override { chromecast::ResetCastFeaturesForTesting(); }
 
   static PrefService* pref_service() {
@@ -131,7 +137,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
     ScopedUserPrefUpdate<base::DictionaryValue, base::Value::Type::DICTIONARY>
         dict(pref_service(), prefs::kLatestDCSFeatures);
     for (auto f : features)
-      dict->Remove(f.name, nullptr);
+      dict->RemoveKey(f.name);
     pref_service()->CommitPendingWrite();
   }
 
@@ -142,7 +148,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
       const std::unordered_set<int32_t>& experiment_ids) {
     base::ListValue list;
     for (auto id : experiment_ids)
-      list.AppendInteger(id);
+      list.Append(id);
     pref_service()->Set(prefs::kActiveDCSExperiments, list);
     pref_service()->CommitPendingWrite();
   }
@@ -152,9 +158,6 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
     pref_service()->Set(prefs::kActiveDCSExperiments, base::ListValue());
     pref_service()->CommitPendingWrite();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastFeaturesBrowserTest);
 };
 
 // Test that set features activate on the next boot. Part 1 of 3.
@@ -213,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   params->SetBoolean("bool_param", true);
   params->SetBoolean("bool_param_2", false);
   params->SetString("str_param", "foo");
-  params->SetDouble("doub_param", 3.14159);
+  params->SetDoubleKey("doub_param", 3.14159);
   params->SetInteger("int_param", 76543);
   features.Set("test_feat_11", std::move(params));
   SetFeatures(features);
@@ -305,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(GetDCSExperimentIds().empty());
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_TestExperimentIdsPersisted DISABLED_TestExperimentIdsPersisted
 #else
 #define MAYBE_TestExperimentIdsPersisted TestExperimentIdsPersisted

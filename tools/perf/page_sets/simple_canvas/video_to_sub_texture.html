@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<body>
+<video id="video" muted="muted" loop></video>
+<script src="resources/canvas_runner.js"></script>
+<script>
+var videoElement = document.getElementById("video");
+var canvas3D = document.createElement('canvas');
+var gl = canvas3D.getContext('webgl');
+document.body.appendChild(canvas3D);
+
+if(!gl) {
+    console.logFatalError("WebGL is not supported or enabled on this platform!");
+    throw "WebGL is not supported or enabled on this platform!";
+}
+
+function setSize(width, height) {
+    canvas3D.width = width;
+    canvas3D.height = height;
+}
+
+function getArgValue(argname) {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var result = urlParams.get(argname);
+    if (!result) {
+      return false;
+    }
+    return result === "true";
+}
+
+function startPerfTest() {
+    preRun();
+    perfTest();
+}
+
+function perfTest() {
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultiply);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, videoElement);
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+    requestAnimationFrame(perfTest);
+}
+
+var flipY = false;
+var premultiply = false;
+var tex = null;
+
+function preRun() {
+    tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, videoElement.videoWidth, videoElement.videoHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    flipY = getArgValue('flip_y');
+    premultiply = getArgValue('premult');
+}
+
+window.onload = function () {
+    setSize(1, 1);
+
+    videoElement.src = "resources/crowd1080.webm";
+    if(!videoElement.canPlayType('video/webm').replace(/no/, '')) {
+        console.logFatalError("video/webm is unsupported");
+        throw 'video/webm is unsupported';
+    };
+    CanvasRunner.startPlayingAndWaitForVideo(videoElement, startPerfTest);
+}
+
+</script>
+</body>
+</html>

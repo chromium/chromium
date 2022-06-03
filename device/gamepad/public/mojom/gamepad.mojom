@@ -25,6 +25,42 @@ struct GamepadButton {
   double value;
 };
 
+// ButtonChange holds all necessary information for creating the correct
+// events when a button state changes on a gamepad.
+struct ButtonChange {
+  // Index of the button in the |buttons| array.
+  uint32 button_index;
+  // True when the GamepadButton's |pressed| value just changed to true.
+  bool button_down;
+  // True when the GamepadButton's |pressed| value just changed to false.
+  bool button_up;
+  // True when the GamepadButton's |value| has changed.
+  bool value_changed;
+  // Snapshot of the GamepadButton's state when these events were triggered.
+  GamepadButton button_snapshot;
+};
+
+// AxisChange holds information about an axis value change on a gamepad.
+struct AxisChange {
+  // Index of the axis in the |axes| array.
+  uint32 axis_index;
+  // Snapshot of the axis's value when these events were triggered.
+  double axis_snapshot;
+};
+
+// GamepadChanges holds all the simultaneous changes that occurred to a
+// gamepad at the same moment.
+struct GamepadChanges {
+  // Index of the Gamepad in the array returned to the user from GetGamepads
+  uint32 gamepad_index;
+  // Array of all changes to the buttons.
+  array<ButtonChange> button_changes;
+  // Array of all changes to the axes.
+  array<AxisChange> axis_changes;
+  // The timestamp when these changes occurred.
+  int64 timestamp;
+};
+
 enum GamepadMapping {
   GamepadMappingNone = 0,
   GamepadMappingStandard = 1,
@@ -82,10 +118,10 @@ interface GamepadObserver {
   // connected gamepad.
   GamepadDisconnected(uint32 index, Gamepad gamepad);
 
-  // Called when a button or axis is changed on a connected gamepad. |index| is
-  // the index of the gamepad in the gamepad array, and |gamepad| is a reference
-  // to the gamepad.
-  GamepadButtonOrAxisChanged(uint32 index, Gamepad gamepad);
+  // Called when a button or axis is changed on a connected gamepad.
+  // |changes| contains the necessary info to generate the proper
+  // events.
+  GamepadChanged(GamepadChanges changes);
 };
 
 // Asks the browser process to start polling, and return a shared memory

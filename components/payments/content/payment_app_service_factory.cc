@@ -43,7 +43,7 @@ PaymentAppServiceFactory::~PaymentAppServiceFactory() = default;
 
 KeyedService* PaymentAppServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new PaymentAppService();
+  return new PaymentAppService(context);
 }
 
 content::BrowserContext* PaymentAppServiceFactory::GetBrowserContextToUse(

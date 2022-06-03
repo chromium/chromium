@@ -90,7 +90,7 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
   cfdata_offset = cffile_offset + 16 + len(cab_stored_filename) + 1
 
   chunk_size = 1 << 15
-  num_chunks = (input_size + chunk_size - 1) / chunk_size
+  num_chunks = int((input_size + chunk_size - 1) / chunk_size)
 
   # https://msdn.microsoft.com/en-us/library/bb417343.aspx#cabinet_format
   # Write CFHEADER.
@@ -112,7 +112,7 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
     'H'  # iCabinet, index in multi-file cabinets. 0 here.
   )
   output_file.write(struct.pack(CFHEADER,
-      'MSCF', 0, 0, 0,
+      b'MSCF', 0, 0, 0,
       cffile_offset, 0, 3, 1, 1, 1, 0,
       0, 0))
 
@@ -144,9 +144,9 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
   mtime = datetime.datetime.fromtimestamp(input_mtimestamp)
   date = (mtime.year - 1980) << 9 | mtime.month << 5 | mtime.day
   # TODO(thakis): hour seems to be off by 1 from makecab.exe (DST?)
-  time = mtime.hour << 11 | mtime.minute << 5 | mtime.second / 2
+  time = mtime.hour << 11 | mtime.minute << 5 | int(mtime.second / 2)
   output_file.write(struct.pack(CFFILE, input_size, 0, 0, date, time, 0))
-  output_file.write(cab_stored_filename + '\0')
+  output_file.write(cab_stored_filename.encode() + b'\0')
 
   # Write num_chunks many CFDATA headers, followed by the compressed data.
   assert output_file.tell() == cfdata_offset
@@ -156,7 +156,7 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
     'H'  # cbUncomp, size after decompressing. 1 << 15 for all but the last.
   )
   # Read input data in chunks of 32kB, compress and write out compressed data.
-  for _ in xrange(num_chunks):
+  for _ in range(num_chunks):
     chunk = input_file.read(chunk_size)
     # Have to use compressobj instead of compress() so we can pass a negative
     # window size to remove header and trailing checksum.
@@ -178,7 +178,7 @@ def WriteCab(output_file, input_file, cab_stored_filename, input_size,
     # The maximum compressed size of each MSZIP block is 32k + 12 bytes."
     assert compressed_size <= chunk_size + 12
     output_file.write(struct.pack(CFDATA, 0, compressed_size, len(chunk)))
-    output_file.write('\x43\x4b')  # MSZIP magic block header.
+    output_file.write(b'\x43\x4b')  # MSZIP magic block header.
     output_file.write(compressed)
   outfile_size = output_file.tell()
 

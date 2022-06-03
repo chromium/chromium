@@ -9,8 +9,6 @@ static_library("signaling") {
     "ftl_client_uuid_device_id_provider.cc",
     "ftl_client_uuid_device_id_provider.h",
     "ftl_device_id_provider.h",
-    "ftl_grpc_context.cc",
-    "ftl_grpc_context.h",
     "ftl_host_device_id_provider.cc",
     "ftl_host_device_id_provider.h",
     "ftl_message_reception_channel.cc",
@@ -19,6 +17,8 @@ static_library("signaling") {
     "ftl_messaging_client.h",
     "ftl_registration_manager.cc",
     "ftl_registration_manager.h",
+    "ftl_services_context.cc",
+    "ftl_services_context.h",
     "ftl_signal_strategy.cc",
     "ftl_signal_strategy.h",
     "iq_sender.cc",
@@ -38,67 +38,35 @@ static_library("signaling") {
     "signaling_address.h",
     "signaling_id_util.cc",
     "signaling_id_util.h",
+    "signaling_tracker.h",
     "xmpp_log_to_server.cc",
     "xmpp_log_to_server.h",
   ]
 
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:version",
   ]
 
   public_deps = [
     "//remoting/proto",
-    "//remoting/proto/ftl/v1:ftl_grpc_library",
-    "//remoting/proto/remoting/v1:telemetry_grpc_library",
+    "//remoting/proto/remoting/v1:telemetry_messages",
     "//third_party/libjingle_xmpp",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis",
     "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
-    "//remoting/base/grpc_support",
-    "//remoting/proto/remoting/v1:telemetry_messages",
-    "//third_party/grpc:grpcpp",
+    "//remoting/base:authorization",
+    "//remoting/proto/ftl/v1:ftl_messages",
+    "//services/network/public/cpp:cpp",
   ]
-
-  if (is_nacl) {
-    sources -= [
-      "ftl_client_uuid_device_id_provider.cc",
-      "ftl_client_uuid_device_id_provider.h",
-      "ftl_grpc_context.cc",
-      "ftl_grpc_context.h",
-      "ftl_host_device_id_provider.cc",
-      "ftl_host_device_id_provider.h",
-      "ftl_message_reception_channel.cc",
-      "ftl_message_reception_channel.h",
-      "ftl_messaging_client.cc",
-      "ftl_messaging_client.h",
-      "ftl_registration_manager.cc",
-      "ftl_registration_manager.h",
-      "ftl_signal_strategy.cc",
-      "ftl_signal_strategy.h",
-      "remoting_log_to_server.cc",
-      "remoting_log_to_server.h",
-      "server_log_entry.cc",
-      "xmpp_log_to_server.cc",
-    ]
-    deps -= [
-      "//google_apis",
-      "//remoting/base/grpc_support",
-      "//third_party/grpc:grpcpp",
-    ]
-    public_deps -= [
-      "//remoting/proto/ftl/v1:ftl_grpc_library",
-      "//remoting/proto/remoting/v1:telemetry_grpc_library",
-    ]
-  }
 }
 
 static_library("test_support") {
@@ -109,10 +77,14 @@ static_library("test_support") {
     "fake_signal_strategy.h",
     "mock_signal_strategy.cc",
     "mock_signal_strategy.h",
+    "mock_signaling_tracker.cc",
+    "mock_signaling_tracker.h",
   ]
 
   public_deps = [
     ":signaling",
+    "//remoting/base:test_support",
+    "//remoting/proto/ftl/v1:ftl_messages",
     "//testing/gmock",
   ]
 }
@@ -138,7 +110,8 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//net:test_support",
-    "//remoting/base/grpc_support:unit_tests",
+    "//remoting/base:base",
+    "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

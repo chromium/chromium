@@ -38,7 +38,7 @@ namespace blink {
 
 SourceBufferList::SourceBufferList(ExecutionContext* context,
                                    EventQueue* async_event_queue)
-    : ContextClient(context), async_event_queue_(async_event_queue) {}
+    : ExecutionContextClient(context), async_event_queue_(async_event_queue) {}
 
 SourceBufferList::~SourceBufferList() = default;
 
@@ -78,11 +78,11 @@ const AtomicString& SourceBufferList::InterfaceName() const {
   return event_target_names::kSourceBufferList;
 }
 
-void SourceBufferList::Trace(blink::Visitor* visitor) {
+void SourceBufferList::Trace(Visitor* visitor) const {
   visitor->Trace(async_event_queue_);
   visitor->Trace(list_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

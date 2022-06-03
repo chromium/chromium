@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the skip stack frames feature when stepping.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">
@@ -73,7 +73,7 @@
 
   var step = 0;
   var stepInCount = 0;
-  function didPause(callFrames, reason, breakpointIds, asyncStackTrace) {
+  async function didPause(callFrames, reason, breakpointIds, asyncStackTrace) {
     if (stepInCount < 2) {
       ++stepInCount;
       SourcesTestRunner.stepInto();
@@ -82,7 +82,7 @@
     }
 
     stepInCount = 0;
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     TestRunner.addResult('');
     if (++step < totalDebuggerStatements)
       SourcesTestRunner.resumeExecution(SourcesTestRunner.waitUntilPaused.bind(SourcesTestRunner, didPause));

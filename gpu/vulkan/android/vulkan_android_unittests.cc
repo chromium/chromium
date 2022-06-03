@@ -9,6 +9,7 @@
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -127,18 +128,15 @@ TEST_F(VulkanImplementationAndroidTest, CreateVkImageFromAHB) {
 
   // Create a vkimage and import the AHB into it.
   const gfx::Size size(hwb_desc.width, hwb_desc.height);
-  VkImage vk_image;
-  VkImageCreateInfo vk_image_info;
-  VkDeviceMemory vk_device_memory;
-  VkDeviceSize mem_allocation_size;
-  EXPECT_TRUE(vk_implementation_->CreateVkImageAndImportAHB(
-      vk_device_, vk_phy_device_, size,
-      base::android::ScopedHardwareBufferHandle::Adopt(buffer), &vk_image,
-      &vk_image_info, &vk_device_memory, &mem_allocation_size));
-
-  // Free up resources.
-  vkDestroyImage(vk_device_, vk_image, nullptr);
-  vkFreeMemory(vk_device_, vk_device_memory, nullptr);
+  auto* device_queue = vk_context_provider_->GetDeviceQueue();
+  auto handle = base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(handle));
+  auto vulkan_image = VulkanImage::CreateFromGpuMemoryBufferHandle(
+      device_queue, std::move(gmb_handle), size, VK_FORMAT_R8G8B8A8_UNORM,
+      /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+      /*queue_family_index=*/VK_QUEUE_FAMILY_EXTERNAL);
+  EXPECT_TRUE(vulkan_image);
+  vulkan_image->Destroy();
 }
 
 }  // namespace gpu

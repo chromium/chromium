@@ -19,7 +19,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <dispatch/dispatch.h>
 #elif defined(OS_WIN)
 #include <windows.h>
@@ -76,7 +76,7 @@ class Semaphore {
   void Signal();
 
  private:
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   dispatch_semaphore_t semaphore_;
 #elif defined(OS_WIN)
   HANDLE semaphore_;

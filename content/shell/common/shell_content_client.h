@@ -19,20 +19,17 @@ class ShellContentClient : public ContentClient {
   ShellContentClient();
   ~ShellContentClient() override;
 
-  base::string16 GetLocalizedString(int message_id) override;
-  base::StringPiece GetDataResource(int resource_id,
-                                    ui::ScaleFactor scale_factor) override;
+  std::u16string GetLocalizedString(int message_id) override;
+  base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
-  base::DictionaryValue GetNetLogConstants() override;
   blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
-  bool CanSendWhileSwappedOut(const IPC::Message* message) override;
-
-  void SetInWebTest(bool in_web_test);
+  void AddAdditionalSchemes(Schemes* schemes) override;
 
  private:
   ShellOriginTrialPolicy origin_trial_policy_;
-  bool in_web_test_ = false;
 };
 
 }  // namespace content

@@ -28,6 +28,8 @@
 <script src="../resources/accessibility-helper.js"></script>
 </head> 
 <body> 
+
+<div id="container">
  
 <a><div></div></a>
 
@@ -36,6 +38,8 @@
 <a href="about:blank"><div></div></a> 
 
 <div>End of test</div>
+
+</div>
 
 <p id="description"></p> 
 <div id="console"></div> 
@@ -46,16 +50,17 @@
     if (window.accessibilityController) {
         // First build up full accessibility tree.
         document.getElementById("console").innerText += "Before:\n";
-        document.body.focus();
-        buildAccessibilityTree(accessibilityController.focusedElement, 0);
+        buildAccessibilityTree(
+            accessibilityController.accessibleElementById("container"), 0);
         
         // Remove anchor that causes debug assert in AccessibilityRenderObject::addChildren
-        document.body.removeChild(document.body.children[2])
+        let container = document.getElementById("container");
+        container.removeChild(container.children[2])
         
         // Build up full accessibility tree again.
         document.getElementById("console").innerText += "After:\n";
-        document.body.focus();
-        buildAccessibilityTree(accessibilityController.focusedElement, 0);
+        buildAccessibilityTree(
+            accessibilityController.accessibleElementById("container"), 0);
     }
  
 </script> 

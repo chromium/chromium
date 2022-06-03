@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
       ipc_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
 
-  return base::LaunchUnitTests(
-      argc, argv,
-      base::Bind(&IOSChromeUnitTestSuite::Run, base::Unretained(&test_suite)));
+  return base::LaunchUnitTests(argc, argv,
+                               base::BindOnce(&IOSChromeUnitTestSuite::Run,
+                                              base::Unretained(&test_suite)));
 }

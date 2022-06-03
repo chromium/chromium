@@ -1,0 +1,5164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 7.0.0" client="cli" variant="all" version="4.1.0">
+
+    <issue
+        id="DiscouragedPrivateApi"
+        message="Reflective access to sPackageManager, which is not part of the public SDK and therefore likely to change in future Android releases">
+        <location
+            file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java"
+            line="68"/>
+    </issue>
+
+    <issue
+        id="DiscouragedPrivateApi"
+        message="Reflective access to PRIMARY_DIRECTORY, which is not part of the public SDK and therefore likely to change in future Android releases">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageArchivePublisherBridge.java"
+            line="164"/>
+    </issue>
+
+    <issue
+        id="DiscouragedPrivateApi"
+        message="Reflective access to violationsBeingTimed, which is not part of the public SDK and therefore likely to change in future Android releases">
+        <location
+            file="../../components/strictmode/android/java/src/org/chromium/components/strictmode/ReflectiveThreadStrictModeInterceptor.java"
+            line="104"/>
+    </issue>
+
+    <issue
+        id="DiscouragedPrivateApi"
+        message="Reflective access to mask, which is not part of the public SDK and therefore likely to change in future Android releases">
+        <location
+            file="../../weblayer/browser/java/org/chromium/weblayer_private/interfaces/StrictModeWorkaround.java"
+            line="32"/>
+    </issue>
+
+    <issue
+        id="DiscouragedPrivateApi"
+        message="Reflective access to sEnforceThreadChecking, which is not part of the public SDK and therefore likely to change in future Android releases">
+        <location
+            file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
+            line="398"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinator.java"
+            line="173"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinator.java"
+            line="175"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="">
+        <location
+            file="../../chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuidePushNotificationManager.java"
+            line="65"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: OmniboxSuggestionType.URL_WHAT_YOU_TYPED, OmniboxSuggestionType.HISTORY_URL, OmniboxSuggestionType.HISTORY_TITLE, OmniboxSuggestionType.HISTORY_BODY, OmniboxSuggestionType.HISTORY_KEYWORD, OmniboxSuggestionType.NAVSUGGEST, OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, OmniboxSuggestionType.SEARCH_HISTORY, OmniboxSuggestionType.SEARCH_SUGGEST, OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, OmniboxSuggestionType.SEARCH_OTHER_ENGINE, OmniboxSuggestionType.EXTENSION_APP_DEPRECATED, OmniboxSuggestionType.CONTACT_DEPRECATED, OmniboxSuggestionType.BOOKMARK_TITLE, OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, OmniboxSuggestionType.CALCULATOR, OmniboxSuggestionType.CLIPBOARD_URL, OmniboxSuggestionType.VOICE_SUGGEST, OmniboxSuggestionType.PHYSICAL_WEB_DEPRECATED, OmniboxSuggestionType.PHYSICAL_WEB_OVERFLOW_DEPRECATED, OmniboxSuggestionType.TAB_SEARCH_DEPRECATED, OmniboxSuggestionType.DOCUMENT_SUGGESTION, OmniboxSuggestionType.PEDAL_DEPRECATED, OmniboxSuggestionType.CLIPBOARD_TEXT, OmniboxSuggestionType.CLIPBOARD_IMAGE, OmniboxSuggestionType.TILE_SUGGESTION, OmniboxSuggestionType.TILE_NAVSUGGEST, OmniboxSuggestionType.NUM_TYPES">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/suggestions/basic/BasicSuggestionProcessor.java"
+            line="161"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: OmniboxSuggestionType.URL_WHAT_YOU_TYPED, OmniboxSuggestionType.HISTORY_URL, OmniboxSuggestionType.HISTORY_TITLE, OmniboxSuggestionType.HISTORY_BODY, OmniboxSuggestionType.HISTORY_KEYWORD, OmniboxSuggestionType.NAVSUGGEST, OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, OmniboxSuggestionType.SEARCH_HISTORY, OmniboxSuggestionType.SEARCH_SUGGEST, OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, OmniboxSuggestionType.SEARCH_OTHER_ENGINE, OmniboxSuggestionType.EXTENSION_APP_DEPRECATED, OmniboxSuggestionType.CONTACT_DEPRECATED, OmniboxSuggestionType.BOOKMARK_TITLE, OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, OmniboxSuggestionType.CALCULATOR, OmniboxSuggestionType.CLIPBOARD_URL, OmniboxSuggestionType.VOICE_SUGGEST, OmniboxSuggestionType.PHYSICAL_WEB_DEPRECATED, OmniboxSuggestionType.PHYSICAL_WEB_OVERFLOW_DEPRECATED, OmniboxSuggestionType.TAB_SEARCH_DEPRECATED, OmniboxSuggestionType.DOCUMENT_SUGGESTION, OmniboxSuggestionType.PEDAL_DEPRECATED, OmniboxSuggestionType.CLIPBOARD_TEXT, OmniboxSuggestionType.CLIPBOARD_IMAGE, OmniboxSuggestionType.TILE_SUGGESTION, OmniboxSuggestionType.TILE_NAVSUGGEST, OmniboxSuggestionType.NUM_TYPES">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/suggestions/basic/BasicSuggestionProcessor.java"
+            line="173"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
+            line="530"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
+            line="531"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
+            line="166"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java"
+            line="137"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: DirectActionId.GO_BACK, DirectActionId.RELOAD, DirectActionId.GO_FORWARD, DirectActionId.BOOKMARK_THIS_PAGE, DirectActionId.DOWNLOADS, DirectActionId.PREFERENCES, DirectActionId.OPEN_HISTORY, DirectActionId.HELP, DirectActionId.NEW_TAB, DirectActionId.CLOSE_TAB, DirectActionId.CLOSE_ALL_TABS, DirectActionId.FIND_IN_PAGE, DirectActionId.NUM_ENTRIES">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/DirectActionUsageHistogram.java"
+            line="81"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: DownloadState.IN_PROGRESS, DownloadState.COMPLETE, DownloadState.CANCELLED, DownloadState.INTERRUPTED, DownloadState.MAX_DOWNLOAD_STATE">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="1548"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: DownloadState.IN_PROGRESS, DownloadState.COMPLETE, DownloadState.CANCELLED, DownloadState.INTERRUPTED, DownloadState.MAX_DOWNLOAD_STATE">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="1549"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: DownloadState.IN_PROGRESS, DownloadState.COMPLETE, DownloadState.CANCELLED, DownloadState.INTERRUPTED, DownloadState.MAX_DOWNLOAD_STATE">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
+            line="1550"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/infobar/DownloadProgressInfoBar.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: WebView.RENDERER_PRIORITY_WAIVED, WebView.RENDERER_PRIORITY_BOUND, WebView.RENDERER_PRIORITY_IMPORTANT">
+        <location
+            file="../../android_webview/glue/java/src/com/android/webview/chromium/GlueApiHelperForO.java"
+            line="46"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
+            line="463"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
+            line="525"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
+            line="531"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java"
+            line="235"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION, RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/services/MetricsBridgeService.java"
+            line="203"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
+            line="343"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="111"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="160"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="162"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="162"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="193"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="198"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="205"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="211"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="217"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="230"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="231"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
+            line="231"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: FocusState.NOT_APPLICABLE, FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS, FocusState.VIEW_FOCUSED_THEN_WINDOW_FOCUSED">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/input/ThreadedInputConnectionFactory.java"
+            line="282"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ImageFormat.UNKNOWN, ImageFormat.RGB_565, ImageFormat.YV12, ImageFormat.Y8, ImageFormat.NV16, ImageFormat.NV21, ImageFormat.YUY2, ImageFormat.JPEG, ImageFormat.DEPTH_JPEG, ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888, ImageFormat.FLEX_RGB_888, ImageFormat.FLEX_RGBA_8888, ImageFormat.RAW_SENSOR, ImageFormat.RAW_PRIVATE, ImageFormat.RAW10, ImageFormat.RAW12, ImageFormat.DEPTH16, ImageFormat.DEPTH_POINT_CLOUD, ImageFormat.PRIVATE, ImageFormat.HEIC">
+        <location
+            file="../../media/capture/video/android/java/src/org/chromium/media/VideoCaptureCamera2.java"
+            line="1074"/>
+    </issue>
+
+    <issue
+        id="CustomSplashScreen"
+        message="The application should not provide its own launch screen">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/ui/splashscreen/SplashscreenObserver.java"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="CustomSplashScreen"
+        message="The application should not provide its own launch screen">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/metrics/WebApkSplashscreenMetrics.java"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/CrashesListFragment.java"
+            line="502"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/browser/gsa/java/src/org/chromium/chrome/browser/gsa/GSAState.java"
+            line="238"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadUtils.java"
+            line="60"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../components/permissions/android/java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java"
+            line="86"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../components/payments/content/android/java/src/org/chromium/components/payments/PackageManagerDelegate.java"
+            line="96"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../base/android/java/src/org/chromium/base/PackageManagerUtils.java"
+            line="56"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinator.java"
+            line="407"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinator.java"
+            line="408"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
+            line="256"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
+            line="262"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/SpeechRecognitionImpl.java"
+            line="198"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../components/webapk/android/libs/client/src/org/chromium/components/webapk/lib/client/WebApkValidator.java"
+            line="157"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/WebViewPackageError.java"
+            line="152"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="UseSwitchCompatOrMaterialCode"
+        message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fre/FreUMADialogCoordinator.java"
+            line="71"/>
+    </issue>
+
+    <issue
+        id="UseSwitchCompatOrMaterialXml"
+        message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/res/layout/fre_uma_dialog.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="Limit vector icons sizes to 200×200 to keep icon drawing fast; see https://developer.android.com/studio/write/vector-asset-studio#when for more">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="7"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="31"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="38"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="47"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="62"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="67"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/adaptive_toolbar_preference_header.xml"
+            line="73"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/drawable/address.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/drawable/address.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_down.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_down.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_down.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_down.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_down.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_up.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_up.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_up.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_up.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/arrow_up.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/async_image_view_unavailable.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/async_image_view_unavailable.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/async_image_view_unavailable.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/feed/android/java/res/drawable/back_to_top_arrow.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/camera_img.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/multiwindow/java/res/drawable/checkmark_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/checkmark_blue.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/checkmark_blue.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/checkmark_blue.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/webauthn/android/java/res/drawable/circle_loader.xml"
+            line="30"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/webauthn/android/java/res/drawable/circle_loader.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/webauthn/android/java/res/drawable/circle_loader.xml"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/webauthn/android/java/res/drawable/circle_loader.xml"
+            line="63"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/computer_black_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/data_reduction_big.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/data_reduction_big.xml"
+            line="22"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/delete_icon.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/delete_icon.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/devices_black_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/edit_icon.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/edit_icon.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/drawable/email.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/drawable/face.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/generic_favicon.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/generic_favicon.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/generic_file.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/generic_file.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_20.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_20.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_20.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_20.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_24.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_bluetooth_searching_24.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_cardboard_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_cardboard_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_cardboard_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_cardboard_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_content_paste_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_content_paste_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_content_paste_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_content_paste_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_devices_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_devices_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_devices_20.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_devices_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_devices_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_location_off_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_location_off_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_location_off_24.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_location_on_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_location_on_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_location_on_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_location_on_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_mic_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_mic_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_mic_20.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_mic_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_mic_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_mic_24.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_mic_off_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_mic_off_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_nfc_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_nfc_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_nfc_20.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_nfc_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_nfc_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_notifications_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_notifications_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_notifications_20.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_notifications_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_notifications_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_notifications_24.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_notifications_off_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_notifications_off_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_piano_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_piano_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_piano_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_piano_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_usb_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_usb_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_usb_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_usb_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_videocam_20.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_videocam_20.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_videocam_24.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/gm_filled_videocam_24.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_videocam_off_24.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_videocam_off_24.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/android/webapps/launchpad/java/res/drawable/gm_filled_videocam_off_24.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/payments/content/android/minimal_java_res/drawable/google_pay.xml"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/payments/content/android/minimal_java_res/drawable/google_pay.xml"
+            line="31"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/payments/content/android/minimal_java_res/drawable/google_pay.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable-ldrtl/google_pay_with_divider.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/google_pay_with_divider.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable-ldrtl/google_pay_with_divider.xml"
+            line="21"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/google_pay_with_divider.xml"
+            line="21"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable-ldrtl/google_pay_with_divider.xml"
+            line="24"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/google_pay_with_divider.xml"
+            line="24"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable-ldrtl/google_pay_with_divider.xml"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/google_pay_with_divider.xml"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/ic_add_alert_blue.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_add_box_rounded_corner.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_add_box_rounded_corner.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_add_to_home_screen.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../ui/android/java/res/drawable/ic_apps_blue_24dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res-arcore/drawable/ic_ar_core_install.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/ic_arrow_back_24dp.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/ic_arrow_back_24dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/ic_arrow_back_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_arrow_forward_blue_24dp.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_arrow_forward_blue_24dp.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_auto_awesome.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/password_check/android/internal/java/res/drawable/ic_autofill_assistant_white_24dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/password_check/android/internal/java/res/drawable/ic_autofill_assistant_white_24dp.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/password_check/android/internal/java/res/drawable/ic_autofill_assistant_white_24dp.xml"
+            line="22"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/password_check/android/internal/java/res/drawable/ic_autofill_assistant_white_24dp.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_block_red.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_bluetooth_connected.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_book_round.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_book_round.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_book_round.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_brightness_medium_20dp.xml"
+            line="6"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_brightness_medium_20dp.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_brightness_medium_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_business.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_cancel_circle.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/password_check/android/internal/java/res/drawable/ic_check_circle_filled_green_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_checkmark_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_collections_grey.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_content_copy_black.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_data_viz_grey.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/drawable/ic_delete.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_desktop_windows.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/ic_dino.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_done_blue.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_equals_sign_round.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_equals_sign_round.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_error.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_event_round.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_event_round.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_event_round.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_event_round.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/res/drawable/ic_expand_more_in_circle_24dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/signin/java/res/drawable/ic_expand_more_in_circle_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_eye_crossed.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_file_download_scheduled_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_file_download_scheduled_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_file_download_scheduled_24dp.xml"
+            line="20"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_file_download_scheduled_24dp.xml"
+            line="24"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_file_download_scheduled_24dp.xml"
+            line="27"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_find_in_page.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_folder_blue_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_forward_arrow_black_24dp.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_forward_arrow_black_24dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_full_screen_exit_white_24dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_full_screen_white_24dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_google_round.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_google_services_48dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/ic_group_icon_16dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_help_and_feedback.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_help_and_feedback.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_help_and_feedback.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_image_descriptions.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_image_descriptions.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_incognito_cct_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_incognito_cct_24dp.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_incognito_cct_24dp.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_info_outline_grey_16dp.xml"
+            line="20"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_info_outline_grey_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_loop_round.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_loop_round.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_new_window.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_new_window.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_offer_tag.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_offline_pin_24dp_on_dark_bg.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_offline_pin_24dp_on_dark_bg.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_offline_pin_24dp_on_light_bg.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_offline_pin_24dp_on_light_bg.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/ic_offline_pin_blue_white.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/ic_offline_pin_blue_white.xml"
+            line="20"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_offline_pin_white.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_offline_pin_white.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_open_in_browser.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/res/drawable/ic_overflow_black_24dp.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_pause_circle_outline_white_24dp.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_pause_circle_outline_white_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/site_settings/android/java/res/drawable/ic_person_24dp.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_person_add_40dp.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_photo_camera_black.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_photo_camera_black.xml"
+            line="24"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_photo_camera_grey.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_photo_camera_grey.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_play_circle_filled_24dp_on_dark_bg.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_play_circle_filled_24dp_on_dark_bg.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_play_circle_filled_24dp_on_light_bg.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_play_circle_filled_24dp_on_light_bg.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_play_circle_filled_white_24dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/ic_play_circle_filled_white_24dp.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/ic_rating_star_full.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/ic_rating_star_half.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/ic_rating_star_outline.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_reading_list_folder_24dp.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_remove.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_security_grey.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_select_window.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/widget/android/java/res/drawable/ic_settings_gear_24dp.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_0_bar.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_1_bar.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_1_bar.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_2_bar.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_2_bar.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_3_bar.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_3_bar.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/permissions/android/res/drawable/ic_signal_cellular_4_bar.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_signout_40dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_site_timer.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_storefront_blue.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_swap_vert_round.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_swap_vert_round.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_badge_error_20dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_badge_error_20dp.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_badge_error_20dp.xml"
+            line="21"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_error_48dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_error_48dp.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_error_legacy_40dp.xml"
+            line="20"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_off_48dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_off_48dp.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_on_48dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_sync_on_48dp.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_touch_app_blue.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_translate.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_trending_down_black.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/ic_trending_down_blue.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_tune_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_tv_options_input_settings_rotated_grey.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_update_grey.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_volume_off_white_24dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_volume_on_white_24dp.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_vpn_key_blue.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_vpn_key_grey.xml"
+            line="4"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_warning_red_16dp.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_warning_red_24dp.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_wb_sunny_round.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/ic_wb_sunny_round.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_widgets.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_zoom_in.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="21"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="27"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="30"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="33"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="43"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="52"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="63"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="66"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/incognito_history_placeholder_image.xml"
+            line="69"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/infobar_download_complete.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/infobar_download_complete.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/ink_highlighter.xml"
+            line="6"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/ink_highlighter.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/iph_drag_and_drop_drawable.xml"
+            line="64"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/iph_drag_and_drop_drawable.xml"
+            line="79"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/lightweight_reactions_icon.xml"
+            line="6"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/lightweight_reactions_icon.xml"
+            line="7"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/lightweight_reactions_icon.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/link.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/link_off.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/link_off.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_partly_cloudy.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_partly_cloudy.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_partly_cloudy.xml"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_partly_cloudy.xml"
+            line="33"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_partly_cloudy.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_translate_round.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_translate_round.xml"
+            line="21"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_translate_round.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/logo_translate_round.xml"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/long_screenshot.xml"
+            line="10"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/long_screenshot.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/long_screenshot.xml"
+            line="22"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/long_screenshot.xml"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/drawable/names.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/price_tracking_disabled.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/price_tracking_enabled.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="27"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="33"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="47"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/qr_code.xml"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="9"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="22"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="30"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="34"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="38"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="46"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="57"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="64"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="70"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="76"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="88"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="94"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="100"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="106"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="112"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="118"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="124"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="130"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="136"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="142"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="148"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/quick_action_search_widget_dino_content.xml"
+            line="154"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/save_icon.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/save_icon.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/save_to_device.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/screenshot.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/screenshot.xml"
+            line="23"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/screenshot.xml"
+            line="29"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/screenshot.xml"
+            line="35"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/screenshot.xml"
+            line="41"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/send_tab.xml"
+            line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/send_tab.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/site_settings/android/java/res/drawable/settings_bluetooth.xml"
+            line="4"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/share_icon.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/sharing_more.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/sharing_more.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/sharing_more.xml"
+            line="22"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/smartphone_black_24dp.xml"
+            line="17"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/switch_to_tab.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/ui/android/omnibox/java/res/drawable/switch_to_tab.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/tab_strip_selected_ring.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/tab_strip_selected_ring.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/tab_strip_selected_ring.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/tab_strip_selected_ring_incognito.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/tab_strip_selected_ring_incognito.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/features/tab_ui/java/res/drawable/tab_strip_selected_ring_incognito.xml"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/drawable/telephone.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable-ldrtl/text_icon.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/text_icon.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/feed/android/java/res/drawable/web_feed_post_follow_illustration.xml"
+            line="5"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/feed/android/java/res/drawable/web_feed_post_follow_illustration.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/webnote.xml"
+            line="6"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/browser/share/android/java/res/drawable/webnote.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/zoom_in.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/zoom_in.xml"
+            line="16"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/zoom_in.xml"
+            line="21"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/zoom_out.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/drawable/zoom_out.xml"
+            line="18"/>
+    </issue>
+
+    <issue
+        id="UnsafeOptInUsageError"
+        message="This declaration is opt-in and its usage should be marked with `@com.google.android.material.badge.ExperimentalBadgeUtils` or `@OptIn(markerClass = com.google.android.material.badge.ExperimentalBadgeUtils.class)`">
+        <location
+            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java"
+            line="96"/>
+    </issue>
+
+    <issue
+        id="UnsafeOptInUsageError"
+        message="This declaration is opt-in and its usage should be marked with `@com.google.android.material.badge.ExperimentalBadgeUtils` or `@OptIn(markerClass = com.google.android.material.badge.ExperimentalBadgeUtils.class)`">
+        <location
+            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java"
+            line="104"/>
+    </issue>
+
+    <issue
+        id="UnsupportedChromeOsCameraSystemFeature"
+        message="You should look for any camera available on the device, not just the rear">
+        <location
+            file="../../base/android/java/src/org/chromium/base/SysUtils.java"
+            line="160"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetCoordinator.java"
+            line="39"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/payments/content/android/java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java"
+            line="555"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
+            line="380"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/additional_sections/AssistantTextInputSection.java"
+            line="83"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/additional_sections/AssistantTextInputSection.java"
+            line="146"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/generic_ui/AssistantViewFactory.java"
+            line="145"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/AuthenticatorNavigationInterceptorTabHelper.java"
+            line="19"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwBrowserProcess.java"
+            line="152"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
+            line="1453"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
+            line="1971"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
+            line="2949"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContentsStatics.java"
+            line="172"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContentsStatics.java"
+            line="172"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
+            line="34"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
+            line="186"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
+            line="194"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsObserver.java"
+            line="251"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
+            line="312"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
+            line="313"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
+            line="349"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
+            line="460"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
+            line="457"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
+            line="946"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/ChromeDownloadDelegate.java"
+            line="184"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+            line="912"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetCoordinator.java"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionServiceImpl.java"
+            line="104"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
+            line="141"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
+            line="155"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceHelper.java"
+            line="134"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialog.java"
+            line="515"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialog.java"
+            line="519"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcherBridge.java"
+            line="95"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationManager.java"
+            line="55"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/infobars/android/java/src/org/chromium/components/infobars/InfoBarMessageView.java"
+            line="39"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/external_intents/android/java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java"
+            line="146"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/external_intents/android/java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java"
+            line="304"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
+            line="112"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
+            line="146"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManager.java"
+            line="428"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../weblayer/browser/java/org/chromium/weblayer_private/NavigationControllerImpl.java"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../weblayer/browser/java/org/chromium/weblayer_private/NewTabCallbackProxy.java"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
+            line="349"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
+            line="893"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java"
+            line="320"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java"
+            line="348"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanel.java"
+            line="548"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java"
+            line="102"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java"
+            line="43"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java"
+            line="66"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java"
+            line="538"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/RequestGenerator.java"
+            line="43"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java"
+            line="40"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
+            line="400"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/ShareHelper.java"
+            line="64"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
+            line="233"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within package private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
+            line="95"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within package private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
+            line="111"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within package private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
+            line="118"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelper.java"
+            line="802"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromium.java"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
+            line="88"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
+            line="182"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
+            line="190"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
+            line="197"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
+            line="212"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/SystemDownloadNotifier.java"
+            line="217"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            line="1564"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
+            line="641"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/UpdateStatusProvider.java"
+            line="423"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
+            line="974"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
+            line="1830"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/webapps/WebappLocator.java"
+            line="45"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
+            line="72"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
+            line="90"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope">
+        <location
+            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java"
+            line="145"/>
+    </issue>
+
+    <issue
+        id="Deprecated"
+        message="Job scheduling with `GcmNetworkManager` is deprecated: Use AndroidX `WorkManager` instead">
+        <location
+            file="../../components/background_task_scheduler/internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerGcmNetworkManager.java"
+            line="249"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../chrome/android/java/res/layout/custom_tabs_handle_view.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../chrome/browser/ui/android/multiwindow/java/res/layout/instance_switcher_item.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
+            line="109"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../chrome/android/java/res/layout/search_widget_template.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="364"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantActionsDecoration.java"
+            line="84"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/AssistantPaymentMethodSection.java"
+            line="114"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
+            line="299"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
+            line="750"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchQuickActionControl.java"
+            line="311"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
+            line="157"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
+            line="139"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
+            line="162"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
+            line="229"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            line="393"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            line="2716"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
+            line="60"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
+            line="70"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`">
+        <location
+            file="../../chrome/android/java/res/layout/data_usage_breakdown.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../chrome/android/java/res/layout/data_usage_breakdown.xml"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../chrome/android/java/res/layout/data_usage_breakdown.xml"
+            line="69"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`">
+        <location
+            file="../../chrome/android/java/res/layout/os_version_unsupported_text.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/persistent_error_message.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
+            line="27"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="60"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="61"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="71"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="72"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="83"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedImmutableFlag"
+        message="Missing `PendingIntent` mutability flag">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationFactory.java"
+            line="274"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedImmutableFlag"
+        message="Missing `PendingIntent` mutability flag">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java"
+            line="342"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedImmutableFlag"
+        message="Missing `PendingIntent` mutability flag">
+        <location
+            file="../../chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrShellDelegate.java"
+            line="706"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java"
+            line="188"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
+            line="174"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
+            line="338"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
+            line="386"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
+            line="399"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManager.java"
+            line="102"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java"
+            line="118"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/datareduction/settings/DataReductionPreferenceFragment.java"
+            line="143"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
+            line="551"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
+            line="574"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
+            line="611"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
+            line="646"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
+            line="660"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
+            line="781"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
+            line="245"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/history/HistoryAdapter.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java"
+            line="209"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            line="133"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            line="201"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            line="212"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
+            line="122"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
+            line="169"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
+            line="196"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
+            line="213"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
+            line="342"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerCategoryView.java"
+            line="220"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java"
+            line="259"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java"
+            line="395"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerCategoryView.java"
+            line="455"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
+        <location
+            file="../../chrome/browser/webapps/android/java/src/org/chromium/chrome/browser/webapps/PwaBottomSheetController.java"
+            line="127"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
+            line="94"/>
+    </issue>
+
+    <issue
+        id="UseCompoundDrawables"
+        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
+            line="11"/>
+    </issue>
+
+    <issue
+        id="MergeRootFrame"
+        message="This `&lt;FrameLayout>` can be replaced with a `&lt;merge>` tag">
+        <location
+            file="../../chrome/android/java/res/layout/signin_activity.xml"
+            line="5"/>
+    </issue>
+
+    <issue
+        id="UsableSpace"
+        message="Consider also using `StorageManager#getAllocatableBytes` and `allocateBytes` which will consider clearable cached data">
+        <location
+            file="../../chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java"
+            line="156"/>
+    </issue>
+
+    <issue
+        id="UsableSpace"
+        message="Consider also using `StorageManager#getAllocatableBytes` and `allocateBytes` which will consider clearable cached data">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
+            line="320"/>
+    </issue>
+
+    <issue
+        id="UsableSpace"
+        message="Consider also using `StorageManager#getAllocatableBytes` and `allocateBytes` which will consider clearable cached data">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
+            line="240"/>
+    </issue>
+
+    <issue
+        id="UsableSpace"
+        message="Consider also using `StorageManager#getAllocatableBytes` and `allocateBytes` which will consider clearable cached data">
+        <location
+            file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"
+            line="86"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/fragment_flags.xml"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="../../chrome/browser/password_check/android/java/res/layout/password_check_edit_fragment.xml"
+            line="31"/>
+    </issue>
+
+    <issue
+        id="Autofill"
+        message="Missing `autofillHints` attribute">
+        <location
+            file="../../chrome/browser/password_check/android/java/res/layout/password_check_edit_fragment.xml"
+            line="52"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `AccessibilityTabModelListItem` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/accessibility_tab_switcher/AccessibilityTabModelListItem.java"
+            line="458"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
+            line="256"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``ImageView`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkRow.java"
+            line="299"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `BottomSheet` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
+            line="286"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``TextView`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java"
+            line="54"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `CompositorViewHolder` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
+            line="654"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `ContentView` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java"
+            line="333"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``ImageButton`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/tablet/emptybackground/EmptyBackgroundViewTablet.java"
+            line="98"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``EditText`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
+            line="170"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
+            line="170"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``EditText`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
+            line="185"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `FullScreenView` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/FullScreenView.java"
+            line="91"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `InfoBarMessageView` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../components/infobars/android/java/src/org/chromium/components/infobars/InfoBarMessageView.java"
+            line="32"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``ImageView`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            line="174"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            line="174"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``ImageButton`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
+            line="78"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
+            line="211"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``Button`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
+            line="241"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``Button`` has `setOnTouchListener` called on it but does not override `performClick`">
+        <location
+            file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
+            line="243"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `NoSwipeViewPager` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/NoSwipeViewPager.java"
+            line="24"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` should call `View#performClick` when a click is detected">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/PickerVideoPlayer.java"
+            line="242"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `PlayerFrameView` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameView.java"
+            line="136"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `ScrimView` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimView.java"
+            line="79"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
+            line="236"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `ToolbarControlContainer` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
+            line="265"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `ToolbarPhone` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            line="503"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `TouchRestrictingFrameLayout` overrides `onTouchEvent` but not `performClick`">
+        <location
+            file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
+            line="46"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` should call `View#performClick` when a click is detected">
+        <location
+            file="../../weblayer/browser/java/org/chromium/weblayer_private/WebContentsGestureStateTracker.java"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/res/layout/autofill_assistant_bottom_sheet_content.xml"
+            line="8"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
+            line="73"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
+            line="97"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"
+            line="41"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../chrome/android/java/res/layout/search_activity.xml"
+            line="28"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/res/layout/start_top_toolbar.xml"
+            line="13"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
+            line="37"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
+            line="99"/>
+    </issue>
+
+    <issue
+        id="KeyboardInaccessibleWidget"
+        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
+            line="124"/>
+    </issue>
+
+</issues>

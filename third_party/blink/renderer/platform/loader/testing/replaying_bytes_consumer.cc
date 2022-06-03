@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -137,7 +137,7 @@ void ReplayingBytesConsumer::MakeErrored(const Error& e) {
   ++notification_token_;
 }
 
-void ReplayingBytesConsumer::Trace(blink::Visitor* visitor) {
+void ReplayingBytesConsumer::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   BytesConsumer::Trace(visitor);
 }

@@ -15,19 +15,18 @@
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
 #include "content/browser/background_fetch/storage/database_task.h"
 #include "content/browser/background_fetch/storage/get_initialization_data_task.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
-#include "url/origin.h"
 
 namespace storage {
 class BlobDataHandle;
@@ -39,21 +38,19 @@ namespace content {
 class BackgroundFetchDataManagerObserver;
 class BackgroundFetchRequestInfo;
 class BackgroundFetchRequestMatchParams;
-class BrowserContext;
-class CacheStorageManager;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextWrapper;
+class StoragePartitionImpl;
 
 // The BackgroundFetchDataManager is a wrapper around persistent storage (the
 // Service Worker database), exposing APIs for the read and write queries needed
 // for Background Fetch.
 //
 // There must only be a single instance of this class per StoragePartition, and
-// it must only be used on the service worker core thread, since it relies on
-// there being no other code concurrently reading/writing the Background Fetch
-// keys of the same Service Worker database (except for deletions, e.g. it's
-// safe for the Service Worker code to remove a ServiceWorkerRegistration and
-// all its keys).
+// it must only be used on the UI thread, since it relies on there being no
+// other code concurrently reading/writing the Background Fetch keys of the same
+// Service Worker database (except for deletions, e.g. it's safe for the Service
+// Worker code to remove a ServiceWorkerRegistration and all its keys).
 //
 // Storage schema is documented in storage/README.md
 class CONTENT_EXPORT BackgroundFetchDataManager
@@ -85,15 +82,18 @@ class CONTENT_EXPORT BackgroundFetchDataManager
                               scoped_refptr<BackgroundFetchRequestInfo>)>;
 
   BackgroundFetchDataManager(
-      BrowserContext* browser_context,
+      base::WeakPtr<StoragePartitionImpl> storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      scoped_refptr<CacheStorageContextImpl> cache_storage_context,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
+
+  BackgroundFetchDataManager(const BackgroundFetchDataManager&) = delete;
+  BackgroundFetchDataManager& operator=(const BackgroundFetchDataManager&) =
+      delete;
 
   ~BackgroundFetchDataManager() override;
 
   // Grabs a reference to CacheStorageManager.
-  virtual void InitializeOnCoreThread();
+  virtual void Initialize();
 
   // Adds or removes the given |observer| to this data manager instance.
   void AddObserver(BackgroundFetchDataManagerObserver* observer);
@@ -101,7 +101,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   // Gets the required data to initialize BackgroundFetchContext with the
   // appropriate JobControllers. This will be called when BackgroundFetchContext
-  // is being initialized on the service worker core thread.
+  // is being initialized.
   void GetInitializationData(GetInitializationDataCallback callback);
 
   // Creates and stores a new registration with the given properties. Will
@@ -113,11 +113,12 @@ class CONTENT_EXPORT BackgroundFetchDataManager
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       bool start_paused,
+      const net::IsolationInfo& isolation_info,
       CreateRegistrationCallback callback);
 
   // Get the BackgroundFetchRegistration.
   void GetRegistration(int64_t service_worker_registration_id,
-                       const url::Origin& origin,
+                       const blink::StorageKey& storage_key,
                        const std::string& developer_id,
                        GetRegistrationCallback callback);
 
@@ -177,7 +178,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   // Worker.
   void GetDeveloperIdsForServiceWorker(
       int64_t service_worker_registration_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::BackgroundFetchService::GetDeveloperIdsCallback callback);
 
   const base::ObserverList<BackgroundFetchDataManagerObserver>::Unchecked&
@@ -185,7 +186,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
     return observers_;
   }
 
-  void ShutdownOnCoreThread();
+  void Shutdown();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BackgroundFetchDataManagerTest, Cleanup);
@@ -196,9 +197,6 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   // Accessors for tests and DatabaseTasks.
   ServiceWorkerContextWrapper* service_worker_context() const {
     return service_worker_context_.get();
-  }
-  scoped_refptr<CacheStorageManager> cache_manager() const {
-    return cache_manager_;
   }
   std::set<std::string>& ref_counted_unique_ids() {
     return ref_counted_unique_ids_;
@@ -219,30 +217,38 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   void Cleanup();
 
-  // Get a CacheStorageHandle for the given |origin| and |unique_id|.  This will
-  // either come from an existing CacheStorageHandle or will cause the
-  // CacheStorage to be opened.
-  CacheStorageHandle GetOrOpenCacheStorage(const url::Origin& origin,
-                                           const std::string& unique_id);
+  // Get a CacheStorage remote for the given |storage_key| and |unique_id|. This
+  // will either be a reference to an existing remote or will cause the
+  // CacheStorage to be opened.  The BackgroundFetchDataManager owns this
+  // remote for the lifetime of the connection.
+  mojo::Remote<blink::mojom::CacheStorage>& GetOrOpenCacheStorage(
+      const blink::StorageKey& storage_key,
+      const std::string& unique_id);
+  void OpenCache(const blink::StorageKey& storage_key,
+                 const std::string& unique_id,
+                 int64_t trace_id,
+                 blink::mojom::CacheStorage::OpenCallback callback);
+  void DeleteCache(const blink::StorageKey& storage_key,
+                   const std::string& unique_id,
+                   int64_t trace_id,
+                   blink::mojom::CacheStorage::DeleteCallback callback);
+  void DidDeleteCache(const std::string& unique_id,
+                      blink::mojom::CacheStorage::DeleteCallback callback,
+                      blink::mojom::CacheStorageError result);
 
-  // Release the CacheStorageHandle for the given |unique_id|, if
-  // it's open.  DoomCache should be called prior to releasing the handle.
-  // There must be an entry in |cache_storage_handle_map_| for the given
-  // |unique_id|.
-  void ReleaseCacheStorage(const std::string& unique_id);
+  void HasCache(const blink::StorageKey& storage_key,
+                const std::string& unique_id,
+                int64_t trace_id,
+                blink::mojom::CacheStorage::HasCallback callback);
 
   // Whether Shutdown was called on BackgroundFetchContext.
   bool shutting_down_ = false;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
-  scoped_refptr<CacheStorageContextImpl> cache_storage_context_;
+  base::WeakPtr<StoragePartitionImpl> storage_partition_;
 
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-
-  // BackgroundFetch stores its own reference to CacheStorageManager
-  // in case StoragePartitionImpl is destroyed, which releases the reference.
-  scoped_refptr<CacheStorageManager> cache_manager_;
 
   // The blob storage request with which response information will be stored.
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
@@ -259,16 +265,18 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   // the browser is shutdown first.
   std::set<std::string> ref_counted_unique_ids_;
 
-  // A map of open CacheStorageHandle objects keyed by the registration
-  // |unique_id|. These handles are created opportunistically in
+  // A map of open CacheStorage remotes keyed by the registration
+  // |unique_id|. These remotes are created opportunistically in
   // GetOrOpenCacheStorage(). They are cleared after the Cache has been
-  // deleted and ReleaseCacheStorage() is called.
+  // deleted.
   // TODO(crbug.com/711354): Possibly update key when CORS support is added.
-  std::map<std::string, CacheStorageHandle> cache_storage_handle_map_;
+  std::map<std::string, mojo::Remote<blink::mojom::CacheStorage>>
+      cache_storage_remote_map_;
+  mojo::Remote<blink::mojom::CacheStorage> null_remote_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundFetchDataManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDataManager);
 };
 
 }  // namespace content

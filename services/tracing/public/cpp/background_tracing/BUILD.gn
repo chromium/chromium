@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+component("background_tracing") {
+  sources = [
+    "background_tracing_agent_impl.cc",
+    "background_tracing_agent_impl.h",
+    "background_tracing_agent_provider_impl.cc",
+    "background_tracing_agent_provider_impl.h",
+  ]
+
+  defines = [ "IS_BACKGROUND_TRACING_CPP_IMPL" ]
+
+  public_deps = [ "//services/tracing/public/mojom" ]
+  deps = [
+    "//base",
+    "//services/tracing/public/cpp:cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "background_tracing_agent_impl_unittest.cc" ]
+  deps = [
+    ":background_tracing",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

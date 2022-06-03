@@ -4,29 +4,38 @@
 
 #include "ui/views/examples/link_example.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/examples/examples_window.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
+
+using l10n_util::GetStringUTF16;
+using l10n_util::GetStringUTF8;
 
 namespace views {
 namespace examples {
 
-LinkExample::LinkExample() : ExampleBase("Link") {
-}
+LinkExample::LinkExample()
+    : ExampleBase(GetStringUTF8(IDS_LINK_SELECT_LABEL).c_str()) {}
 
 LinkExample::~LinkExample() = default;
 
 void LinkExample::CreateExampleView(View* container) {
-  link_ = new Link(base::ASCIIToUTF16("Click me!"));
-  link_->set_listener(this);
+  auto link = views::Builder<Link>()
+                  .SetText(GetStringUTF16(IDS_LINK_CLICK_PROMPT_LABEL))
+                  .Build();
+  link->SetCallback(base::BindRepeating(
+      &LogStatus, GetStringUTF8(IDS_LINK_CLICK_CONFIRMED_LABEL)));
 
   container->SetLayoutManager(std::make_unique<FillLayout>());
-  container->AddChildView(link_);
-}
-
-void LinkExample::LinkClicked(Link* source, int event_flags) {
-  PrintStatus("Link clicked");
+  container->AddChildView(std::move(link));
 }
 
 }  // namespace examples

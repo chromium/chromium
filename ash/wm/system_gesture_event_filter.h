@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -17,20 +16,20 @@ class WmGestureHandler;
 class SystemGestureEventFilter : public ui::EventHandler {
  public:
   SystemGestureEventFilter();
+
+  SystemGestureEventFilter(const SystemGestureEventFilter&) = delete;
+  SystemGestureEventFilter& operator=(const SystemGestureEventFilter&) = delete;
+
   ~SystemGestureEventFilter() override;
 
   // Overridden from ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
-  void OnTouchEvent(ui::TouchEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
   friend class SystemGestureEventFilterTest;
 
   std::unique_ptr<WmGestureHandler> wm_gesture_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemGestureEventFilter);
 };
 
 }  // namespace ash

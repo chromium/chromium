@@ -4,19 +4,24 @@
 
 #include "components/exo/surface_tree_host.h"
 
-#include <algorithm>
+#include <utility>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -25,9 +30,12 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
@@ -38,6 +46,10 @@ class CustomWindowTargeter : public aura::WindowTargeter {
  public:
   explicit CustomWindowTargeter(SurfaceTreeHost* surface_tree_host)
       : surface_tree_host_(surface_tree_host) {}
+
+  CustomWindowTargeter(const CustomWindowTargeter&) = delete;
+  CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
+
   ~CustomWindowTargeter() override = default;
 
   // Overridden from aura::WindowTargeter:
@@ -50,11 +62,9 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     if (!surface)
       return false;
 
-    gfx::Point local_point = event.location();
+    gfx::Point local_point =
+        ConvertEventLocationToWindowCoordinates(window, event);
 
-    if (window->parent())
-      aura::Window::ConvertPointToTarget(window->parent(), window,
-                                         &local_point);
     aura::Window::ConvertPointToTarget(window, surface->window(), &local_point);
     return surface->HitTest(local_point);
   }
@@ -72,8 +82,6 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 
  private:
   SurfaceTreeHost* const surface_tree_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomWindowTargeter);
 };
 
 }  // namespace
@@ -95,11 +103,16 @@ SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name)
   host_window_->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
   layer_tree_frame_sink_holder_ = std::make_unique<LayerTreeFrameSinkHolder>(
       this, host_window_->CreateLayerTreeFrameSink());
-  aura::Env::GetInstance()->context_factory()->AddObserver(this);
+  context_provider_ = aura::Env::GetInstance()
+                          ->context_factory()
+                          ->SharedMainThreadContextProvider();
+  DCHECK(context_provider_);
+  context_provider_->AddObserver(this);
 }
 
 SurfaceTreeHost::~SurfaceTreeHost() {
-  aura::Env::GetInstance()->context_factory()->RemoveObserver(this);
+  context_provider_->RemoveObserver(this);
+
   SetRootSurface(nullptr);
   LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       std::move(layer_tree_frame_sink_holder_));
@@ -196,21 +209,61 @@ bool SurfaceTreeHost::IsInputEnabled(Surface*) const {
   return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ui::ContextFactoryObserver overrides:
+void SurfaceTreeHost::OnNewOutputAdded() {
+  UpdateDisplayOnTree();
+}
 
-void SurfaceTreeHost::OnLostSharedContext() {
-  if (!host_window_->GetSurfaceId().is_valid() || !root_surface_)
-    return;
-  root_surface_->SurfaceHierarchyResourcesLost();
-  SubmitCompositorFrame();
+////////////////////////////////////////////////////////////////////////////////
+// display::DisplayObserver:
+void SurfaceTreeHost::OnDisplayMetricsChanged(const display::Display& display,
+                                              uint32_t changed_metrics) {
+  // The output of the surface may change when the primary display changes.
+  if (changed_metrics & DisplayObserver::DISPLAY_METRIC_PRIMARY)
+    UpdateDisplayOnTree();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// viz::ContextLostObserver overrides:
+
+void SurfaceTreeHost::OnContextLost() {
+  // Handle context loss in a new stack frame to avoid bugs from re-entrant
+  // code.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&SurfaceTreeHost::HandleContextLost,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceTreeHost, protected:
 
+void SurfaceTreeHost::UpdateDisplayOnTree() {
+  auto display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(host_window());
+  if (display_id_ != display.id()) {
+    if (root_surface_) {
+      if (root_surface_->UpdateDisplay(display_id_, display.id()))
+        display_id_ = display.id();
+    }
+  }
+}
+
 void SurfaceTreeHost::SubmitCompositorFrame() {
   viz::CompositorFrame frame = PrepareToSubmitCompositorFrame();
+
+  // TODO(1041932,1034876): Remove or early return once these issues
+  // are fixed or identified.
+  if (frame.size_in_pixels().IsEmpty()) {
+    aura::Window* toplevel = root_surface_->window()->GetToplevelWindow();
+    auto app_type = toplevel->GetProperty(aura::client::kAppType);
+    const std::string* app_id = GetShellApplicationId(toplevel);
+    const std::string* startup_id = GetShellStartupId(toplevel);
+    auto* shell_surface = GetShellSurfaceBaseForWindow(toplevel);
+    CHECK(!frame.size_in_pixels().IsEmpty())
+        << " Title=" << shell_surface->GetWindowTitle()
+        << ", AppType=" << static_cast<int>(app_type)
+        << ", AppId=" << (app_id ? *app_id : "''")
+        << ", StartupId=" << (startup_id ? *startup_id : "''");
+  }
 
   root_surface_->AppendSurfaceHierarchyCallbacks(&frame_callbacks_,
                                                  &presentation_callbacks_);
@@ -229,10 +282,7 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   std::vector<GLbyte*> sync_tokens;
   for (auto& resource : frame.resource_list)
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
-  ui::ContextFactory* context_factory =
-      aura::Env::GetInstance()->context_factory();
-  gpu::gles2::GLES2Interface* gles2 =
-      context_factory->SharedMainThreadContextProvider()->ContextGL();
+  gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
   gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
 
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
@@ -241,16 +291,16 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
 void SurfaceTreeHost::SubmitEmptyCompositorFrame() {
   viz::CompositorFrame frame = PrepareToSubmitCompositorFrame();
 
-  const std::unique_ptr<viz::RenderPass>& render_pass =
+  const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame.render_pass_list.back();
   const gfx::Rect quad_rect = gfx::Rect(0, 0, 1, 1);
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   quad_state->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/quad_rect,
-      /*visible_quad_layer_rect=*/quad_rect,
-      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/true, /*opacity=*/1.f,
+      /*visible_layer_rect=*/quad_rect,
+      /*mask_filter_info=*/gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
+      /*are_contents_opaque=*/true, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   viz::SolidColorDrawQuad* solid_quad =
@@ -269,6 +319,15 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   gfx::Rect bounds = root_surface_->surface_hierarchy_content_bounds();
   host_window_->SetBounds(
       gfx::Rect(host_window_->bounds().origin(), bounds.size()));
+  // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
+  // scale factor the buffer is created for to set the transform for
+  // synchronization.
+  if (client_submits_surfaces_in_pixel_coordinates_) {
+    gfx::Transform tr;
+    float scale = host_window_->layer()->device_scale_factor();
+    tr.Scale(1.0f / scale, 1.0f / scale);
+    host_window_->SetTransform(tr);
+  }
   const bool fills_bounds_opaquely =
       bounds.size() == root_surface_->content_size() &&
       root_surface_->FillsBoundsOpaquely();
@@ -296,11 +355,11 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   frame.metadata.begin_frame_ack =
       viz::BeginFrameAck::CreateManualAckWithDamage();
   frame.metadata.frame_token = ++next_token_;
-  frame.render_pass_list.push_back(viz::RenderPass::Create());
-  const std::unique_ptr<viz::RenderPass>& render_pass =
+  frame.render_pass_list.push_back(viz::CompositorRenderPass::Create());
+  const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame.render_pass_list.back();
 
-  const int kRenderPassId = 1;
+  const viz::CompositorRenderPassId kRenderPassId{1};
   // Compute a temporally stable (across frames) size for the render pass output
   // rectangle that is consistent with the window size. It is used to set the
   // size of the output surface. Note that computing the actual coverage while
@@ -315,15 +374,38 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   // because  the size is different.
   const float device_scale_factor =
       host_window()->layer()->device_scale_factor();
-  const gfx::Size output_surface_size_in_pixels = gfx::ConvertSizeToPixel(
-      device_scale_factor, host_window_->bounds().size());
+  // TODO(crbug.com/1131628): Should this be ceil? Why do we choose floor?
+  gfx::Size output_surface_size_in_pixels =
+      gfx::ToFlooredSize(gfx::ConvertSizeToPixels(host_window_->bounds().size(),
+                                                  device_scale_factor));
+  // Viz will crash if the frame size is empty. Ensure it's not empty.
+  // crbug.com/1041932.
+  if (output_surface_size_in_pixels.IsEmpty())
+    output_surface_size_in_pixels.SetSize(1, 1);
+
   render_pass->SetNew(kRenderPassId, gfx::Rect(output_surface_size_in_pixels),
                       gfx::Rect(), gfx::Transform());
   frame.metadata.device_scale_factor = device_scale_factor;
-  frame.metadata.local_surface_id_allocation_time =
-      host_window()->GetLocalSurfaceIdAllocation().allocation_time();
 
   return frame;
+}
+
+void SurfaceTreeHost::HandleContextLost() {
+  // Stop observering the lost context.
+  context_provider_->RemoveObserver(this);
+
+  // Get new context and start observing it.
+  context_provider_ = aura::Env::GetInstance()
+                          ->context_factory()
+                          ->SharedMainThreadContextProvider();
+  DCHECK(context_provider_);
+  context_provider_->AddObserver(this);
+
+  if (!host_window_->GetSurfaceId().is_valid() || !root_surface_)
+    return;
+
+  root_surface_->SurfaceHierarchyResourcesLost();
+  SubmitCompositorFrame();
 }
 
 }  // namespace exo

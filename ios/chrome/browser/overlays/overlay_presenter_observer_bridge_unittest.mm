@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,6 +17,7 @@
 // Fake implementation of OverlayPresenterObserving that records whether the
 // callbacks are executed.
 @interface FakeOverlayPresenterObserver : NSObject <OverlayPresenterObserving>
+@property(nonatomic) const OverlayRequestSupport* support;
 // Whether each of the OverlayPresenterObserving callbacks have been called.
 @property(nonatomic, readonly) BOOL willShowCalled;
 @property(nonatomic, readonly) BOOL didShowCalled;
@@ -24,8 +27,14 @@
 
 @implementation FakeOverlayPresenterObserver
 
+- (const OverlayRequestSupport*)overlayRequestSupportForPresenter:
+    (OverlayPresenter*)presenter {
+  return self.support;
+}
+
 - (void)overlayPresenter:(OverlayPresenter*)presenter
-    willShowOverlayForRequest:(OverlayRequest*)request {
+    willShowOverlayForRequest:(OverlayRequest*)request
+          initialPresentation:(BOOL)initialPresentation {
   _willShowCalled = YES;
 }
 
@@ -57,11 +66,21 @@ class OverlayPresenterObserverBridgeTest : public PlatformTest {
   OverlayPresenterObserverBridge bridge_;
 };
 
+// Tests that OverlayPresenterObserver::GetRequestSupport() is correctly
+// forwarded.
+TEST_F(OverlayPresenterObserverBridgeTest, GetRequestSupport) {
+  std::unique_ptr<OverlayRequestSupport> support =
+      std::make_unique<SupportsOverlayRequest<FakeOverlayUserData>>();
+  observer_.support = support.get();
+  EXPECT_EQ(support.get(), bridge_.GetRequestSupport(/*request=*/nullptr));
+}
+
 // Tests that OverlayPresenterObserver::WillShowOverlay() is correctly
 // forwarded.
 TEST_F(OverlayPresenterObserverBridgeTest, WillShowCalled) {
   ASSERT_FALSE(observer_.willShowCalled);
-  bridge_.WillShowOverlay(nullptr, nullptr);
+  bridge_.WillShowOverlay(/*presenter=*/nullptr, /*request=*/nullptr,
+                          /*initial_presentation=*/true);
   EXPECT_TRUE(observer_.willShowCalled);
 }
 
@@ -69,7 +88,7 @@ TEST_F(OverlayPresenterObserverBridgeTest, WillShowCalled) {
 // forwarded.
 TEST_F(OverlayPresenterObserverBridgeTest, DidShowCalled) {
   ASSERT_FALSE(observer_.didShowCalled);
-  bridge_.DidShowOverlay(nullptr, nullptr);
+  bridge_.DidShowOverlay(/*presenter=*/nullptr, /*request=*/nullptr);
   EXPECT_TRUE(observer_.didShowCalled);
 }
 
@@ -77,7 +96,7 @@ TEST_F(OverlayPresenterObserverBridgeTest, DidShowCalled) {
 // forwarded.
 TEST_F(OverlayPresenterObserverBridgeTest, DidHideCalled) {
   ASSERT_FALSE(observer_.didHideCalled);
-  bridge_.DidHideOverlay(nullptr, nullptr);
+  bridge_.DidHideOverlay(/*presenter=*/nullptr, /*request=*/nullptr);
   EXPECT_TRUE(observer_.didHideCalled);
 }
 
@@ -85,6 +104,6 @@ TEST_F(OverlayPresenterObserverBridgeTest, DidHideCalled) {
 // forwarded.
 TEST_F(OverlayPresenterObserverBridgeTest, DestroyedCalled) {
   ASSERT_FALSE(observer_.destroyedCalled);
-  bridge_.OverlayPresenterDestroyed(nullptr);
+  bridge_.OverlayPresenterDestroyed(/*presenter=*/nullptr);
   EXPECT_TRUE(observer_.destroyedCalled);
 }

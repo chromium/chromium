@@ -7,6 +7,8 @@ package org.chromium.components.dom_distiller.core;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.dom_distiller.mojom.FontFamily;
+import org.chromium.dom_distiller.mojom.Theme;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +26,8 @@ public final class DistilledPagePrefs {
      * Observer interface for observing DistilledPagePrefs changes.
      */
     public interface Observer {
-        void onChangeFontFamily(@FontFamily int font);
-        void onChangeTheme(@Theme int theme);
+        void onChangeFontFamily(int font);
+        void onChangeTheme(int theme);
         void onChangeFontScaling(float scaling);
     }
 
@@ -43,12 +45,14 @@ public final class DistilledPagePrefs {
         }
 
         @CalledByNative("DistilledPagePrefsObserverWrapper")
-        private void onChangeFontFamily(@FontFamily int fontFamily) {
+        private void onChangeFontFamily(int fontFamily) {
+            FontFamily.validate(fontFamily);
             mDistilledPagePrefsObserver.onChangeFontFamily(fontFamily);
         }
 
         @CalledByNative("DistilledPagePrefsObserverWrapper")
-        private void onChangeTheme(@Theme int theme) {
+        private void onChangeTheme(int theme) {
+            Theme.validate(theme);
             mDistilledPagePrefsObserver.onChangeTheme(theme);
         }
 
@@ -100,22 +104,24 @@ public final class DistilledPagePrefs {
         return true;
     }
 
-    public void setFontFamily(@FontFamily int fontFamily) {
+    public void setFontFamily(int fontFamily) {
+        FontFamily.validate(fontFamily);
         DistilledPagePrefsJni.get().setFontFamily(
                 mDistilledPagePrefsAndroid, DistilledPagePrefs.this, fontFamily);
     }
 
-    public @FontFamily int getFontFamily() {
+    public int getFontFamily() {
         return DistilledPagePrefsJni.get().getFontFamily(
                 mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
     }
 
-    public void setTheme(@Theme int theme) {
+    public void setTheme(int theme) {
+        Theme.validate(theme);
         DistilledPagePrefsJni.get().setTheme(
                 mDistilledPagePrefsAndroid, DistilledPagePrefs.this, theme);
     }
 
-    public @Theme int getTheme() {
+    public int getTheme() {
         return DistilledPagePrefsJni.get().getTheme(
                 mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
     }

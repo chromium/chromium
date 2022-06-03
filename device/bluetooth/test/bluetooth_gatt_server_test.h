@@ -5,17 +5,17 @@
 #ifndef DEVICE_BLUETOOTH_TEST_BLUETOOTH_GATT_SERVER_TEST_H_
 #define DEVICE_BLUETOOTH_TEST_BLUETOOTH_GATT_SERVER_TEST_H_
 
-#include <device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h>
 #include <cstdint>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
+#include "device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h"
 
 #if defined(OS_ANDROID)
 #include "device/bluetooth/test/bluetooth_test_android.h"
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include "device/bluetooth/test/bluetooth_test_mac.h"
 #elif defined(OS_WIN)
 #include "device/bluetooth/test/bluetooth_test_win.h"

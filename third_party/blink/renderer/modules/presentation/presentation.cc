@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/presentation/presentation.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_receiver.h"
@@ -15,23 +15,32 @@
 
 namespace blink {
 
-Presentation::Presentation(LocalFrame* frame) : ContextClient(frame) {}
+// static
+const char Presentation::kSupplementName[] = "Presentation";
 
 // static
-Presentation* Presentation::Create(LocalFrame* frame) {
-  DCHECK(frame);
-  Presentation* presentation = MakeGarbageCollected<Presentation>(frame);
-  PresentationController* controller = PresentationController::From(*frame);
-  DCHECK(controller);
-  controller->SetPresentation(presentation);
+Presentation* Presentation::presentation(Navigator& navigator) {
+  if (!navigator.DomWindow())
+    return nullptr;
+  auto* presentation = Supplement<Navigator>::From<Presentation>(navigator);
+  if (!presentation) {
+    presentation = MakeGarbageCollected<Presentation>(navigator);
+    ProvideTo(navigator, presentation);
+  }
   return presentation;
 }
 
-void Presentation::Trace(blink::Visitor* visitor) {
+Presentation::Presentation(Navigator& navigator)
+    : Supplement<Navigator>(navigator) {
+  PresentationController::From(*navigator.DomWindow())->SetPresentation(this);
+  MaybeInitReceiver();
+}
+
+void Presentation::Trace(Visitor* visitor) const {
   visitor->Trace(default_request_);
   visitor->Trace(receiver_);
   ScriptWrappable::Trace(visitor);
-  ContextClient::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 PresentationRequest* Presentation::defaultRequest() const {
@@ -41,26 +50,25 @@ PresentationRequest* Presentation::defaultRequest() const {
 void Presentation::setDefaultRequest(PresentationRequest* request) {
   default_request_ = request;
 
-  if (!GetFrame())
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!window)
     return;
 
-  PresentationController* controller =
-      PresentationController::From(*GetFrame());
-  if (!controller)
-    return;
+  PresentationController* controller = PresentationController::From(*window);
   controller->GetPresentationService()->SetDefaultPresentationUrls(
       request ? request->Urls() : WTF::Vector<KURL>());
 }
 
-PresentationReceiver* Presentation::receiver() {
-  if (!GetFrame() || !GetFrame()->GetSettings() ||
-      !GetFrame()->GetSettings()->GetPresentationReceiver()) {
-    return nullptr;
+void Presentation::MaybeInitReceiver() {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!receiver_ && window && window->GetFrame()->IsMainFrame() &&
+      window->GetFrame()->GetSettings()->GetPresentationReceiver()) {
+    receiver_ = MakeGarbageCollected<PresentationReceiver>(window);
   }
+}
 
-  if (!receiver_)
-    receiver_ = MakeGarbageCollected<PresentationReceiver>(GetFrame());
-
+PresentationReceiver* Presentation::receiver() {
+  MaybeInitReceiver();
   return receiver_;
 }
 

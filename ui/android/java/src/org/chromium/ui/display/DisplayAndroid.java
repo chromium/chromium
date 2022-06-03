@@ -137,7 +137,7 @@ public class DisplayAndroid {
     /**
      * @return current orientation in degrees. One of the values 0, 90, 180, 270.
      */
-    /* package */ int getRotationDegrees() {
+    public int getRotationDegrees() {
         switch (getRotation()) {
             case Surface.ROTATION_0:
                 return 0;

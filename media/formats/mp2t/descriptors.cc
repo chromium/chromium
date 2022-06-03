@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/base/bit_reader.h"
 #include "media/base/encryption_pattern.h"
 #include "media/formats/mp2t/mp2t_common.h"

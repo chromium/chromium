@@ -20,6 +20,10 @@ class BASE_EXPORT ScopedProcessInformation {
  public:
   ScopedProcessInformation();
   explicit ScopedProcessInformation(const PROCESS_INFORMATION& process_info);
+
+  ScopedProcessInformation(const ScopedProcessInformation&) = delete;
+  ScopedProcessInformation& operator=(const ScopedProcessInformation&) = delete;
+
   ~ScopedProcessInformation();
 
   // Returns true iff this instance is holding a thread and/or process handle.
@@ -63,10 +67,8 @@ class BASE_EXPORT ScopedProcessInformation {
  private:
   ScopedHandle process_handle_;
   ScopedHandle thread_handle_;
-  DWORD process_id_;
-  DWORD thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedProcessInformation);
+  DWORD process_id_ = 0;
+  DWORD thread_id_ = 0;
 };
 
 }  // namespace win

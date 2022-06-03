@@ -17,6 +17,15 @@ class SharingHandlerRegistry {
   // Gets SharingMessageHandler registered for |payload_case|.
   virtual SharingMessageHandler* GetSharingHandler(
       chrome_browser_sharing::SharingMessage::PayloadCase payload_case) = 0;
+
+  // Register SharingMessageHandler for |payload_case|.
+  virtual void RegisterSharingHandler(
+      std::unique_ptr<SharingMessageHandler> handler,
+      chrome_browser_sharing::SharingMessage::PayloadCase payload_case) = 0;
+
+  // Unregister SharingMessageHandler for |payload_case|.
+  virtual void UnregisterSharingHandler(
+      chrome_browser_sharing::SharingMessage::PayloadCase payload_case) = 0;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_HANDLER_REGISTRY_H_

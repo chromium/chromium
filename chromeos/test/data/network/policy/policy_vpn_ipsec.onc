@@ -1,0 +1,31 @@
+{
+  "NetworkConfigurations": [
+    {
+      "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
+      "Name": "my vpn",
+      "Type": "VPN",
+      "VPN": {
+        "AutoConnect": false,
+        "Host": "vpn.my.domain.com",
+        "Type": "L2TP-IPsec",
+        "IPsec": {
+          "AuthenticationType": "PSK",
+          "IKEVersion": 1,
+          "PSK": "my_psk",
+          "Recommended": [
+            "PSK"
+          ]
+        },
+        "L2TP": {
+          "Username": "my_username",
+          "Password": "my_password",
+          "Recommended": [
+            "Password"
+          ],
+          "SaveCredentials": true
+        }
+      }
+    }
+  ],
+  "Type": "UnencryptedConfiguration"
+}

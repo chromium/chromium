@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/logo_view/logo_view.h"
+#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -26,23 +29,17 @@ constexpr int kPreferredSizeDip = 32;
 
 }  // namespace
 
-MicView::MicView(AssistantButtonListener* listener,
-                 AssistantViewDelegate* delegate,
-                 AssistantButtonId button_id)
-    : AssistantButton(listener, button_id), delegate_(delegate) {
+MicView::MicView(AssistantButtonListener* listener, AssistantButtonId button_id)
+    : AssistantButton(listener, button_id) {
   InitLayout();
 
-  // The AssistantViewDelegate is owned by AssistantController which is
-  // guaranteed to outlive the Assistant view hierarchy.
-  delegate_->AddInteractionModelObserver(this);
+  assistant_controller_observation_.Observe(AssistantController::Get());
+  AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 }
 
 MicView::~MicView() {
-  delegate_->RemoveInteractionModelObserver(this);
-}
-
-const char* MicView::GetClassName() const {
-  return "MicView";
+  if (AssistantInteractionController::Get())
+    AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
 }
 
 gfx::Size MicView::CalculatePreferredSize() const {
@@ -53,31 +50,11 @@ int MicView::GetHeightForWidth(int width) const {
   return kPreferredSizeDip;
 }
 
-void MicView::InitLayout() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  // Logo view container.
-  views::View* logo_view_container = new views::View();
-  logo_view_container->set_can_process_events_within_subtree(false);
-  AddChildView(logo_view_container);
-
-  views::BoxLayout* layout_manager =
-      logo_view_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-
-  layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-
-  // Logo view.
-  logo_view_ = LogoView::Create();
-  logo_view_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
-  logo_view_container->AddChildView(logo_view_);
-
-  // Initialize state.
-  UpdateState(/*animate=*/false);
+void MicView::OnAssistantControllerDestroying() {
+  AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void MicView::OnMicStateChanged(MicState mic_state) {
@@ -98,15 +75,42 @@ void MicView::OnSpeechLevelChanged(float speech_level_db) {
   }
 }
 
+void MicView::InitLayout() {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  // Logo view container.
+  auto logo_view_container = std::make_unique<views::View>();
+  logo_view_container->SetCanProcessEventsWithinSubtree(false);
+
+  views::BoxLayout* layout_manager =
+      logo_view_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+
+  // Logo view.
+  logo_view_ = logo_view_container->AddChildView(LogoView::Create());
+  logo_view_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
+
+  AddChildView(std::move(logo_view_container));
+
+  // Initialize state.
+  UpdateState(/*animate=*/false);
+}
+
 void MicView::UpdateState(bool animate) {
   const AssistantInteractionModel* interaction_model =
-      delegate_->GetInteractionModel();
+      AssistantInteractionController::Get()->GetModel();
 
   if (animate) {
     // If Assistant UI is not visible, we shouldn't attempt to animate state
     // changes. We should instead advance immediately to the next state.
-    const AssistantUiModel* ui_model = delegate_->GetUiModel();
-    animate = ui_model->visibility() == AssistantVisibility::kVisible;
+    animate = AssistantUiController::Get()->GetModel()->visibility() ==
+              AssistantVisibility::kVisible;
   }
 
   LogoView::State mic_state;
@@ -121,5 +125,8 @@ void MicView::UpdateState(bool animate) {
   }
   logo_view_->SetState(mic_state, animate);
 }
+
+BEGIN_METADATA(MicView, AssistantButton)
+END_METADATA
 
 }  // namespace ash

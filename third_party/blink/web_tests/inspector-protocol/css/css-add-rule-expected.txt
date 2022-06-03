@@ -49,20 +49,27 @@ Running test: testAddRuleToStyleSheetBeginning
 
 Dumping matched rules: 
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[0:8-0:26]
+    content: "EDITED"; @[undefined-undefined]
 }
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -95,23 +102,30 @@ Running test: testAddRuleToStyleSheetEnding
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
     }
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[20:8-20:26]
+    content: "EDITED"; @[undefined-undefined]
 }
 Dumping inherited rules: 
 
@@ -141,20 +155,27 @@ Running test: testAddRuleToStyleSheetCenter
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[11:8-11:26]
+    content: "EDITED"; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -189,20 +210,27 @@ Running test: testAddRuleToRuleEnding
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[3:4-3:22]
+    content: "EDITED"; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[8:4-8:19]
+    font-family: "Arial"; @[9:4-9:25]
+    color: blue; @[10:4-10:16]
+    display: flex; @[11:4-11:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[16:8-16:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -239,20 +267,27 @@ Running test: testAddRuleWithFormatting
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[5:4-5:22]
+    content: "EDITED"; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[10:4-10:19]
+    font-family: "Arial"; @[11:4-11:25]
+    color: blue; @[12:4-12:16]
+    display: flex; @[13:4-13:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[18:8-18:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -285,21 +320,28 @@ Running test: testAddRuleToMediaRuleBeginning
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        content: 'EDITED';
+        content: 'EDITED'; @[12:33-12:51]
+        content: "EDITED"; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -332,21 +374,28 @@ Running test: testAddRuleToMediaRuleCenter
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
-        content: 'EDITED';
+        content: 'EDITED'; @[16:8-16:26]
+        content: "EDITED"; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -379,24 +428,31 @@ Running test: testAddRuleToMediaRuleEnd
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
     }
 @media (min-width: 1px)
     *#test* {    regular
-        content: 'EDITED';
+        content: 'EDITED'; @[19:8-19:26]
+        content: "EDITED"; @[undefined-undefined]
     }
 Dumping inherited rules: 
 

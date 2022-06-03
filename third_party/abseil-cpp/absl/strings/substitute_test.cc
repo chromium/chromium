@@ -89,7 +89,7 @@ TEST(SubstituteTest, Substitute) {
   str = absl::Substitute("$0", char_buf);
   EXPECT_EQ("print me too", str);
 
-  // null char* is "doubly" special. Represented as the empty std::string.
+  // null char* is "doubly" special. Represented as the empty string.
   char_p = nullptr;
   str = absl::Substitute("$0", char_p);
   EXPECT_EQ("", str);
@@ -189,14 +189,14 @@ TEST(SubstituteTest, VectorBoolRef) {
 TEST(SubstituteDeathTest, SubstituteDeath) {
   EXPECT_DEBUG_DEATH(
       static_cast<void>(absl::Substitute(absl::string_view("-$2"), "a", "b")),
-      "Invalid strings::Substitute\\(\\) format std::string: asked for \"\\$2\", "
+      "Invalid absl::Substitute\\(\\) format string: asked for \"\\$2\", "
       "but only 2 args were given.");
   EXPECT_DEBUG_DEATH(
-      static_cast<void>(absl::Substitute("-$z-")),
-      "Invalid strings::Substitute\\(\\) format std::string: \"-\\$z-\"");
+      static_cast<void>(absl::Substitute(absl::string_view("-$z-"))),
+      "Invalid absl::Substitute\\(\\) format string: \"-\\$z-\"");
   EXPECT_DEBUG_DEATH(
-      static_cast<void>(absl::Substitute("-$")),
-      "Invalid strings::Substitute\\(\\) format std::string: \"-\\$\"");
+      static_cast<void>(absl::Substitute(absl::string_view("-$"))),
+      "Invalid absl::Substitute\\(\\) format string: \"-\\$\"");
 }
 
 #endif  // GTEST_HAS_DEATH_TEST

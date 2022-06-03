@@ -28,23 +28,6 @@ class CertVerifyProc;
 // examine the differences.
 class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum TrialComparisonResult {
-    kInvalid = 0,
-    kEqual = 1,
-    kPrimaryValidSecondaryError = 2,
-    kPrimaryErrorSecondaryValid = 3,
-    kBothValidDifferentDetails = 4,
-    kBothErrorDifferentDetails = 5,
-    kIgnoredMacUndesiredRevocationChecking = 6,
-    kIgnoredMultipleEVPoliciesAndOneMatchesRoot = 7,
-    kIgnoredDifferentPathReVerifiesEquivalent = 8,
-    kIgnoredLocallyTrustedLeaf = 9,
-    kIgnoredConfigurationChanged = 10,
-    kMaxValue = kIgnoredConfigurationChanged
-  };
-
   using ReportCallback = base::RepeatingCallback<void(
       const std::string& hostname,
       const scoped_refptr<X509Certificate>& unverified_cert,
@@ -52,6 +35,8 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
       bool require_rev_checking_local_anchors,
       bool enable_sha1_local_anchors,
       bool disable_symantec_enforcement,
+      const std::string& stapled_ocsp,
+      const std::string& sct_list,
       const net::CertVerifyResult& primary_result,
       const net::CertVerifyResult& trial_result)>;
 
@@ -84,6 +69,10 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
   TrialComparisonCertVerifier(scoped_refptr<CertVerifyProc> primary_verify_proc,
                               scoped_refptr<CertVerifyProc> trial_verify_proc,
                               ReportCallback report_callback);
+
+  TrialComparisonCertVerifier(const TrialComparisonCertVerifier&) = delete;
+  TrialComparisonCertVerifier& operator=(const TrialComparisonCertVerifier&) =
+      delete;
 
   ~TrialComparisonCertVerifier() override;
 
@@ -128,8 +117,6 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
   std::set<std::unique_ptr<Job>, base::UniquePtrComparator> jobs_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifier);
 };
 
 }  // namespace net

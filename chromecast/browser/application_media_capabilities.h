@@ -22,6 +22,11 @@ class ApplicationMediaCapabilities
     : public mojom::ApplicationMediaCapabilities {
  public:
   ApplicationMediaCapabilities();
+
+  ApplicationMediaCapabilities(const ApplicationMediaCapabilities&) = delete;
+  ApplicationMediaCapabilities& operator=(const ApplicationMediaCapabilities&) =
+      delete;
+
   ~ApplicationMediaCapabilities() override;
 
   void AddReceiver(
@@ -38,8 +43,6 @@ class ApplicationMediaCapabilities
   mojo::ReceiverSet<mojom::ApplicationMediaCapabilities> receivers_;
   mojo::RemoteSet<mojom::ApplicationMediaCapabilitiesObserver> observers_;
   BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationMediaCapabilities);
 };
 
 }  // namespace shell

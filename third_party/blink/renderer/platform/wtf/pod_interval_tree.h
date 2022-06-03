@@ -26,8 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 #include "third_party/blink/renderer/platform/wtf/pod_red_black_tree.h"
@@ -88,6 +87,9 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
     Init();
   }
 
+  PODIntervalTree(const PODIntervalTree&) = delete;
+  PODIntervalTree& operator=(const PODIntervalTree&) = delete;
+
   // Returns all intervals in the tree which overlap the given query
   // interval. The returned intervals are sorted by increasing low
   // endpoint.
@@ -105,14 +107,14 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
     // Explicit dereference of "this" required because of
     // inheritance rules in template classes.
     IntervalSearchAdapterType adapter(result, interval.Low(), interval.High());
-    SearchForOverlapsFrom<IntervalSearchAdapterType>(this->Root(), adapter);
+    SearchForOverlapsFrom(this->Root(), adapter);
   }
 
   template <class AdapterType>
   void AllOverlapsWithAdapter(AdapterType& adapter) const {
     // Explicit dereference of "this" required because of
     // inheritance rules in template classes.
-    SearchForOverlapsFrom<AdapterType>(this->Root(), adapter);
+    SearchForOverlapsFrom(this->Root(), adapter);
   }
 
   // Helper to create interval objects.
@@ -127,7 +129,13 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
       return false;
     if (!this->Root())
       return true;
-    return CheckInvariantsFromNode(this->Root(), nullptr);
+    return CheckInvariantsFromNode(this->Root());
+  }
+
+  // Returns the next interval point (start or end) after the given starting
+  // point (non-inclusive). If there is no such point, returns |absl::nullopt|.
+  absl::optional<T> NextIntervalPoint(T start) const {
+    return NextIntervalPoint(start, this->Root());
   }
 
  private:
@@ -144,103 +152,183 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
   // interval to the result vector. The intervals are sorted by
   // increasing low endpoint.
   template <class AdapterType>
-  DISABLE_CFI_PERF void SearchForOverlapsFrom(IntervalNode* node,
-                                              AdapterType& adapter) const {
-    if (!node)
+  DISABLE_CFI_PERF static void SearchForOverlapsFrom(IntervalNode const* node,
+                                                     AdapterType& adapter) {
+    // This is phrased this way to avoid the need for operator
+    // <= on type T.
+    if (!node || adapter.HighValue() < node->Data().MinLow() ||
+        node->Data().MaxHigh() < adapter.LowValue()) {
       return;
+    }
 
     // Because the intervals are sorted by left endpoint, inorder
     // traversal produces results sorted as desired.
 
-    // See whether we need to traverse the left subtree.
-    IntervalNode* left = node->Left();
-    if (left
-        // This is phrased this way to avoid the need for operator
-        // <= on type T.
-        && !(left->Data().MaxHigh() < adapter.LowValue()))
-      SearchForOverlapsFrom<AdapterType>(left, adapter);
+    // Attempt to traverse left subtree
+    SearchForOverlapsFrom(node->Left(), adapter);
 
     // Check for overlap with current node.
     adapter.CollectIfNeeded(node->Data());
 
-    // See whether we need to traverse the right subtree.
-    // This is phrased this way to avoid the need for operator <=
-    // on type T.
-    if (!(adapter.HighValue() < node->Data().Low()))
-      SearchForOverlapsFrom<AdapterType>(node->Right(), adapter);
+    // Attempt to traverse right subtree
+    SearchForOverlapsFrom(node->Right(), adapter);
+  }
+
+  static absl::optional<T> NextIntervalPoint(T start,
+                                             IntervalNode const* node) {
+    // If this node doesn't exist or is entirely out of scope, just return. This
+    // prevents recursing deeper than necessary on the left.
+    if (!node || node->Data().MaxHigh() < start) {
+      return absl::nullopt;
+    }
+    // Easy shortcut: If the lowest point in this subtree is in scope, just
+    // return that. This prevents recursing deeper than necessary on the right.
+    if (start < node->Data().MinLow()) {
+      return node->Data().MinLow();
+    }
+
+    auto left_candidate = NextIntervalPoint(start, node->Left());
+
+    // If the current node's low point isn't out of scope, we don't even need to
+    // look at the right branch.
+    if (start < node->Data().Low()) {
+      if (left_candidate.has_value()) {
+        return std::min(node->Data().Low(), left_candidate.value());
+      } else {
+        return node->Data().Low();
+      }
+    }
+
+    // If the current node's high point is in scope, consider that against the
+    // left branch
+    absl::optional<T> current_candidate;
+    if (start < node->Data().High()) {
+      if (left_candidate.has_value()) {
+        current_candidate =
+            std::min(node->Data().High(), left_candidate.value());
+      } else {
+        current_candidate = node->Data().High();
+      }
+    } else {
+      current_candidate = left_candidate;
+    }
+
+    // If the current (and left) nodes fail, tail-recurse on the right node
+    if (!current_candidate.has_value()) {
+      return NextIntervalPoint(start, node->Right());
+    }
+
+    // Otherwise, pick the min between the |current_candidate| and the right
+    // node
+    auto right_candidate = NextIntervalPoint(start, node->Right());
+    if (right_candidate.has_value()) {
+      return std::min(current_candidate.value(), right_candidate.value());
+    } else {
+      return current_candidate;
+    }
   }
 
   bool UpdateNode(IntervalNode* node) override {
-    // Would use const T&, but need to reassign this reference in this
-    // function.
-    const T* cur_max = &node->Data().High();
+    T cur_max(node->Data().High());
+    T cur_min(node->Data().Low());
+
     IntervalNode* left = node->Left();
     if (left) {
-      if (*cur_max < left->Data().MaxHigh())
-        cur_max = &left->Data().MaxHigh();
+      // Left node will always have a lower MinLow than the right node, so just
+      // reassign immediately.
+      cur_min = left->Data().MinLow();
+      cur_max = std::max(cur_max, left->Data().MaxHigh());
     }
+
     IntervalNode* right = node->Right();
     if (right) {
-      if (*cur_max < right->Data().MaxHigh())
-        cur_max = &right->Data().MaxHigh();
+      // Right node will always have greater min than current node or left
+      // branch, so don't bother checking it.
+      cur_max = std::max(cur_max, right->Data().MaxHigh());
     }
-    // This is phrased like this to avoid needing operator!= on type T.
-    if (!(*cur_max == node->Data().MaxHigh())) {
-      node->Data().SetMaxHigh(*cur_max);
-      return true;
+
+    bool updated = false;
+    if (!(cur_min == node->Data().MinLow())) {
+      node->Data().SetMinLow(cur_min);
+      updated = true;
     }
-    return false;
+    if (!(cur_max == node->Data().MaxHigh())) {
+      node->Data().SetMaxHigh(cur_max);
+      updated = true;
+    }
+
+    return updated;
   }
 
-  bool CheckInvariantsFromNode(IntervalNode* node, T* current_max_value) const {
-    // These assignments are only done in order to avoid requiring
-    // a default constructor on type T.
-    T left_max_value(node->Data().MaxHigh());
-    T right_max_value(node->Data().MaxHigh());
-    IntervalNode* left = node->Left();
-    IntervalNode* right = node->Right();
+  static bool CheckInvariantsFromNode(IntervalNode const* node) {
+    IntervalNode const* left = node->Left();
+    IntervalNode const* right = node->Right();
+
+    T observed_min_value(node->Data().Low());
+    T observed_max_value(node->Data().High());
+
     if (left) {
-      if (!CheckInvariantsFromNode(left, &left_max_value))
+      // Ensure left branch is entirely valid
+      if (!CheckInvariantsFromNode(left)) {
         return false;
+      }
+      // Ensure that this node's MinLow is equal to MinLow of the left branch
+      if (!(left->Data().MinLow() == node->Data().MinLow())) {
+        LogVerificationFailedAtNode(node);
+        return false;
+      }
+      // Ensure that this node's MaxHigh is at least MaxHigh of left branch
+      if (node->Data().MaxHigh() < left->Data().MaxHigh()) {
+        LogVerificationFailedAtNode(node);
+        return false;
+      }
+
+      observed_min_value = left->Data().MinLow();
+      observed_max_value = std::max(observed_max_value, left->Data().MaxHigh());
     }
+
     if (right) {
-      if (!CheckInvariantsFromNode(right, &right_max_value))
+      // Ensure right branch is entirely valid
+      if (!CheckInvariantsFromNode(right)) {
         return false;
+      }
+      // Ensure this node's MinLow is not greater than the right node's MinLow
+      if (right->Data().MinLow() < node->Data().MinLow()) {
+        LogVerificationFailedAtNode(node);
+        return false;
+      }
+      // Ensure that this node's MaxHigh is at least MaxHigh of right branch
+      if (node->Data().MaxHigh() < right->Data().MaxHigh()) {
+        LogVerificationFailedAtNode(node);
+        return false;
+      }
+
+      observed_max_value =
+          std::max(observed_max_value, right->Data().MaxHigh());
     }
-    if (!left && !right) {
-      // Base case.
-      if (current_max_value)
-        *current_max_value = node->Data().High();
-      return (node->Data().High() == node->Data().MaxHigh());
-    }
-    T local_max_value(node->Data().MaxHigh());
-    if (!left || !right) {
-      if (left)
-        local_max_value = left_max_value;
-      else
-        local_max_value = right_max_value;
-    } else {
-      local_max_value =
-          (left_max_value < right_max_value) ? right_max_value : left_max_value;
-    }
-    if (local_max_value < node->Data().High())
-      local_max_value = node->Data().High();
-    if (!(local_max_value == node->Data().MaxHigh())) {
-#ifndef NDEBUG
-      String local_max_value_string =
-          ValueToString<T>::ToString(local_max_value);
-      DLOG(ERROR) << "PODIntervalTree verification failed at node " << node
-                  << ": localMaxValue=" << local_max_value_string
-                  << " and data=" << node->Data().ToString();
-#endif
+
+    // Ensure this node's MinLow is the min we actually observed
+    if (!(observed_min_value == node->Data().MinLow())) {
+      LogVerificationFailedAtNode(node);
       return false;
     }
-    if (current_max_value)
-      *current_max_value = local_max_value;
+    // Ensure that this node's MaxHigh is the max we actually observed
+    if (!(observed_max_value == node->Data().MaxHigh())) {
+      LogVerificationFailedAtNode(node);
+      return false;
+    }
+
     return true;
   }
 
-  DISALLOW_COPY_AND_ASSIGN(PODIntervalTree);
+#ifndef NDEBUG
+  static void LogVerificationFailedAtNode(IntervalNode const* node) {
+    DLOG(ERROR) << "PODIntervalTree verification failed at node " << node
+                << ": data=" << node->Data().ToString();
+  }
+#else
+  static void LogVerificationFailedAtNode(IntervalNode const*) {}
+#endif
 };
 
 #ifndef NDEBUG

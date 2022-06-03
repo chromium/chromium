@@ -11,18 +11,22 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/drop_data.h"
-#include "content/public/common/input_event_ack_source.h"
-#include "content/public/common/input_event_ack_state.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sender.h"
-#include "third_party/blink/public/platform/web_drag_operation.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/web/web_text_direction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/display/screen_infos.h"
 #include "ui/surface/transport_dib.h"
 
 namespace blink {
@@ -30,11 +34,20 @@ class WebMouseEvent;
 class WebMouseWheelEvent;
 }
 
+namespace cc {
+enum class TouchAction;
+}
+
+namespace display {
+struct ScreenInfo;
+}
+
 namespace gfx {
 class Point;
 }
 
 namespace ui {
+class Cursor;
 class LatencyInfo;
 }
 
@@ -43,91 +56,60 @@ class FrameSinkId;
 }
 
 namespace content {
-
-struct CursorInfo;
 class RenderProcessHost;
 class RenderWidgetHostIterator;
 class RenderWidgetHostObserver;
 class RenderWidgetHostView;
-struct ScreenInfo;
 
-// A RenderWidgetHost manages the browser side of a browser<->renderer
-// HWND connection.  The HWND lives in the browser process, and
-// windows events are sent over IPC to the corresponding object in the
-// renderer.  The renderer paints into shared memory, which we
-// transfer to a backing store and blit to the screen when Windows
-// sends us a WM_PAINT message.
+// A RenderWidgetHost acts as the abstraction for compositing and input
+// functionality. It can exist in 3 different scenarios:
 //
-// How Shutdown Works
+// 1. Popups, which are spawned in situations like <select> menus or
+//    HTML calendar widgets. These are browser-implemented widgets that
+//    are created and owned by WebContents in response to a renderer
+//    request. Since they are divorced from the web page (they are not
+//    clipped to the bounds of the page), they are an independent
+//    compositing and input target. As they are owned by WebContents,
+//    they are also destroyed by WebContents.
 //
-// There are two situations in which this object, a RenderWidgetHost, can be
-// instantiated:
+// 2. Main frames, which are a root frame of a WebContents. These frames
+//    are separated from the browser UI for compositing and input, as the
+//    renderer lives in its own coordinate space. These are attached to
+//    the lifetime of the main frame (currently, owned by the
+//    RenderViewHost, though that should change one day as per
+//    https://crbug.com/419087).
 //
-// 1. By a WebContents as the communication conduit for a rendered web page.
-//    The WebContents instantiates a derived class: RenderViewHost.
-// 2. By a WebContents as the communication conduit for a select widget. The
-//    WebContents instantiates the RenderWidgetHost directly.
+// 3. Child local root frames, which are iframes isolated from their
+//    parent frame for security or performance purposes. This allows
+//    them to be placed in an arbitrary process relative to their
+//    parent frame. Since they are isolated from the parent, they live
+//    in their own coordinate space and are an independent unit of
+//    compositing and input. These are attached to the lifetime of
+//    the local root frame, and are explicitly owned by the
+//    RenderFrameHost.
 //
-// For every WebContents there are several objects in play that need to be
-// properly destroyed or cleaned up when certain events occur.
+// A RenderWidgetHost is platform-agnostic. It defers platform-specific
+// behaviour to its RenderWidgetHostView, which ties the compositing
+// output into the native browser UI. Child local root frames also have
+// a separate "platform" RenderWidgetHostView type at this time, though
+// it stretches the abstraction uncomfortably.
 //
-// - WebContents - the WebContents itself, and its associated HWND.
-// - RenderViewHost - representing the communication conduit with the child
-//   process.
-// - RenderWidgetHostView - the view of the web page content, message handler,
-//   and plugin root.
-//
-// Normally, the WebContents contains a child RenderWidgetHostView that renders
-// the contents of the loaded page. It has a WS_CLIPCHILDREN style so that it
-// does no painting of its own.
-//
-// The lifetime of the RenderWidgetHostView is tied to the render process. If
-// the render process dies, the RenderWidgetHostView goes away and all
-// references to it must become nullptr.
-//
-// RenderViewHost (an owner delegate for RenderWidgetHost) is the conduit used
-// to communicate with the RenderView and is owned by the WebContents. If the
-// render process crashes, the RenderViewHost remains and restarts the render
-// process if needed to continue navigation.
-//
-// Some examples of how shutdown works:
-//
-// For a WebContents, its Destroy method tells the RenderViewHost to
-// shut down the render process and die.
-//
-// When the render process is destroyed it destroys the View: the
-// RenderWidgetHostView, which destroys its HWND and deletes that object.
-//
-// For select popups, the situation is a little different. The RenderWidgetHost
-// associated with the select popup owns the view and itself (is responsible
-// for destroying itself when the view is closed). The WebContents's only
-// responsibility with select popups is to create them when it is told to. When
-// the View is destroyed via an IPC message (triggered when WebCore destroys
-// the popup, e.g. if the user selects one of the options), or because
-// WM_CANCELMODE is received by the view, the View schedules the destruction of
-// the render process. However in this case since there's no WebContents
-// container, when the render process is destroyed, the RenderWidgetHost just
-// deletes itself, which is safe because no one else should have any references
-// to it (the WebContents does not).
-//
-// It should be noted that the RenderViewHost, not the RenderWidgetHost,
-// handles IPC messages relating to the render process going away, since the
-// way a RenderViewHost (WebContents) handles the process dying is different to
-// the way a select popup does. As such the RenderWidgetHostView handles these
-// messages for select popups. This placement is more out of convenience than
-// anything else. When the view is live, these messages are forwarded to it by
-// the RenderWidgetHost's IPC message map.
-class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
+// The RenderWidgetHostView has a complex and somewhat broken lifetime as
+// of this writing (see, e.g. https://crbug.com/1161585). It is eagerly
+// created along with the RenderWidgetHost on the first creation, before
+// the renderer process may exist. It is destroyed if the renderer process
+// exits, and not recreated at that time. Then it is recreated lazily when
+// the associated renderer frame/widget is recreated. 
+class CONTENT_EXPORT RenderWidgetHost {
  public:
   // Returns the RenderWidgetHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderWidgetHost.
   static RenderWidgetHost* FromID(int32_t process_id, int32_t routing_id);
 
-  // Returns an iterator to iterate over the global list of active render widget
-  // hosts.
+  // Returns an iterator over the global list of active RenderWidgetHosts.
   static std::unique_ptr<RenderWidgetHostIterator> GetRenderWidgetHosts();
 
-  ~RenderWidgetHost() override {}
+  virtual ~RenderWidgetHost() {}
 
   // Returns the viz::FrameSinkId that this object uses to put things on screen.
   // This value is constant throughout the lifetime of this object. Note that
@@ -144,7 +126,8 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   // In this scenario, we receive a menu event only once and we should update
   // the text direction immediately when a user chooses a menu item. So, we
   // should call both functions at once as listed in the following snippet.
-  //   void RenderViewHost::SetTextDirection(WebTextDirection direction) {
+  //   void RenderViewHost::SetTextDirection(
+  //       base::i18n::TextDirection direction) {
   //     UpdateTextDirection(direction);
   //     NotifyTextDirection();
   //   }
@@ -170,7 +153,7 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   // NotifyTextDirection(). (We may receive keydown events even after we
   // canceled updating the text direction because of auto-repeat.)
   // Note: we cannot undo this change for compatibility with Firefox and IE.
-  virtual void UpdateTextDirection(blink::WebTextDirection direction) = 0;
+  virtual void UpdateTextDirection(base::i18n::TextDirection direction) = 0;
   virtual void NotifyTextDirection() = 0;
 
   virtual void Focus() = 0;
@@ -213,7 +196,7 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   virtual bool IsCurrentlyUnresponsive() = 0;
 
   // Called to propagate updated visual properties to the renderer. Returns
-  // whether the renderer has been informed of updated properties.
+  // true if visual properties have changed since last call.
   virtual bool SynchronizeVisualProperties() = 0;
 
   // Access to the implementation's IPC::Listener::OnMessageReceived. Intended
@@ -239,8 +222,8 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
     virtual ~InputEventObserver() {}
 
     virtual void OnInputEvent(const blink::WebInputEvent&) {}
-    virtual void OnInputEventAck(InputEventAckSource source,
-                                 InputEventAckState state,
+    virtual void OnInputEventAck(blink::mojom::InputEventResultSource source,
+                                 blink::mojom::InputEventResultState state,
                                  const blink::WebInputEvent&) {}
 
 #if defined(OS_ANDROID)
@@ -248,11 +231,11 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
     // InputEvents are only triggered when user typed in through number bar on
     // Android keyboard. This function is triggered when text is committed in
     // input form.
-    virtual void OnImeTextCommittedEvent(const base::string16& text_str) {}
+    virtual void OnImeTextCommittedEvent(const std::u16string& text_str) {}
     // This function is triggered when composing text is updated. Note that
     // text_str contains all text that is currently under composition rather
     // than updated text only.
-    virtual void OnImeSetComposingTextEvent(const base::string16& text_str) {}
+    virtual void OnImeSetComposingTextEvent(const std::u16string& text_str) {}
     // This function is triggered when composing text is filled into the input
     // form.
     virtual void OnImeFinishComposingTextEvent() {}
@@ -275,39 +258,57 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   virtual void AddObserver(RenderWidgetHostObserver* observer) = 0;
   virtual void RemoveObserver(RenderWidgetHostObserver* observer) = 0;
 
-  // Get the screen info corresponding to this render widget.
-  virtual void GetScreenInfo(ScreenInfo* result) = 0;
+  // Get info regarding the screen showing this RenderWidgetHost.
+  virtual display::ScreenInfo GetScreenInfo() const = 0;
 
+  // Get info regarding all screens, including which screen is currently showing
+  // this RenderWidgetHost.
+  virtual display::ScreenInfos GetScreenInfos() const = 0;
+
+  // This must always return the same device scale factor as GetScreenInfo.
+  virtual float GetDeviceScaleFactor() = 0;
+
+  // Get the allowed touch action corresponding to this RenderWidgetHost.
+  virtual absl::optional<cc::TouchAction> GetAllowedTouchAction() = 0;
+
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+
+  using DragOperationCallback =
+      base::OnceCallback<void(::ui::mojom::DragOperation)>;
   // Drag-and-drop drop target messages that get sent to Blink.
-  virtual void DragTargetDragEnter(
-      const DropData& drop_data,
-      const gfx::PointF& client_pt,
-      const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
-      int key_modifiers) {}
+  virtual void DragTargetDragEnter(const DropData& drop_data,
+                                   const gfx::PointF& client_pt,
+                                   const gfx::PointF& screen_pt,
+                                   blink::DragOperationsMask operations_allowed,
+                                   int key_modifiers,
+                                   DragOperationCallback callback) {}
   virtual void DragTargetDragEnterWithMetaData(
       const std::vector<DropData::Metadata>& metadata,
       const gfx::PointF& client_pt,
       const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
-      int key_modifiers) {}
-  virtual void DragTargetDragOver(
-      const gfx::PointF& client_pt,
-      const gfx::PointF& screen_pt,
-      blink::WebDragOperationsMask operations_allowed,
-      int key_modifiers) {}
+      blink::DragOperationsMask operations_allowed,
+      int key_modifiers,
+      DragOperationCallback callback) {}
+  virtual void DragTargetDragOver(const gfx::PointF& client_pt,
+                                  const gfx::PointF& screen_pt,
+                                  blink::DragOperationsMask operations_allowed,
+                                  int key_modifiers,
+                                  DragOperationCallback callback) {}
   virtual void DragTargetDragLeave(const gfx::PointF& client_point,
                                    const gfx::PointF& screen_point) {}
   virtual void DragTargetDrop(const DropData& drop_data,
                               const gfx::PointF& client_pt,
                               const gfx::PointF& screen_pt,
-                              int key_modifiers) {}
+                              int key_modifiers,
+                              base::OnceClosure callback) {}
 
   // Notifies the renderer that a drag operation that it started has ended,
   // either in a drop or by being cancelled.
   virtual void DragSourceEndedAt(const gfx::PointF& client_pt,
                                  const gfx::PointF& screen_pt,
-                                 blink::WebDragOperation operation) {}
+                                 ui::mojom::DragOperation operation,
+                                 base::OnceClosure callback) {}
 
   // Notifies the renderer that we're done with the drag and drop operation.
   // This allows the renderer to reset some state.
@@ -317,7 +318,20 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   virtual void FilterDropData(DropData* drop_data) {}
 
   // Sets cursor to a specified one when it is over this widget.
-  virtual void SetCursor(const CursorInfo& cursor_info) {}
+  virtual void SetCursor(const ui::Cursor& cursor) {}
+
+  // Shows the context menu using the specified point as anchor point.
+  virtual void ShowContextMenuAtPoint(const gfx::Point& point,
+                                      const ui::MenuSourceType source_type) {}
+
+  // Roundtrips through the renderer and compositor pipeline to ensure that any
+  // changes to the contents resulting from operations executed prior to this
+  // call are visible on screen. The call completes asynchronously (if it
+  // succeeds) by running the supplied |callback| with a value of true upon
+  // successful completion and false otherwise when the widget is destroyed.
+  // This can run synchronously on failure.
+  using VisualStateCallback = base::OnceCallback<void(bool)>;
+  virtual void InsertVisualStateCallback(VisualStateCallback callback) {}
 };
 
 }  // namespace content

@@ -4,7 +4,7 @@
 
 #include "chromecast/media/audio/interleaved_channel_mixer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/base/channel_mixing_matrix.h"
 
 namespace chromecast {
@@ -12,13 +12,14 @@ namespace media {
 
 InterleavedChannelMixer::InterleavedChannelMixer(
     ::media::ChannelLayout input_layout,
+    int input_channel_count,
     ::media::ChannelLayout output_layout,
+    int output_channel_count,
     int max_frames)
     : input_layout_(input_layout),
-      input_channel_count_(::media::ChannelLayoutToChannelCount(input_layout_)),
+      input_channel_count_(input_channel_count),
       output_layout_(output_layout),
-      output_channel_count_(
-          ::media::ChannelLayoutToChannelCount(output_layout_)),
+      output_channel_count_(output_channel_count),
       max_frames_(max_frames) {
   if (input_layout_ == output_layout_) {
     return;

@@ -13,9 +13,9 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace win {
@@ -47,6 +47,11 @@ class DEVICE_BLUETOOTH_EXPORT DeviceRegistryPropertyValue {
       DWORD property_type,
       std::unique_ptr<uint8_t[]> value,
       size_t value_size);
+
+  DeviceRegistryPropertyValue(const DeviceRegistryPropertyValue&) = delete;
+  DeviceRegistryPropertyValue& operator=(const DeviceRegistryPropertyValue&) =
+      delete;
+
   ~DeviceRegistryPropertyValue();
 
   // Returns the vaue type a REG_xxx value (e.g. REG_SZ, REG_DWORD, ...)
@@ -61,8 +66,6 @@ class DEVICE_BLUETOOTH_EXPORT DeviceRegistryPropertyValue {
 
   DWORD property_type_;
   std::unique_ptr<uint8_t[]> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceRegistryPropertyValue);
 };
 
 // Represents the value associated to a DEVPROPKEY.
@@ -75,6 +78,10 @@ class DEVICE_BLUETOOTH_EXPORT DevicePropertyValue {
   DevicePropertyValue(DEVPROPTYPE property_type,
                       std::unique_ptr<uint8_t[]> value,
                       size_t value_size);
+
+  DevicePropertyValue(const DevicePropertyValue&) = delete;
+  DevicePropertyValue& operator=(const DevicePropertyValue&) = delete;
+
   ~DevicePropertyValue();
 
   DEVPROPTYPE property_type() const { return property_type_; }
@@ -85,8 +92,6 @@ class DEVICE_BLUETOOTH_EXPORT DevicePropertyValue {
   DEVPROPTYPE property_type_;
   std::unique_ptr<uint8_t[]> value_;
   size_t value_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePropertyValue);
 };
 
 struct DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyServiceInfo {
@@ -104,7 +109,7 @@ struct DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceInfo {
 
   base::FilePath path;
   std::string id;
-  base::Optional<std::string> friendly_name;
+  absl::optional<std::string> friendly_name;
   BLUETOOTH_ADDRESS address;
   bool visible;
   bool authenticated;
@@ -188,7 +193,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyWrapper {
   virtual HRESULT WriteCharacteristicValue(
       base::FilePath& service_path,
       const PBTH_LE_GATT_CHARACTERISTIC characteristic,
-      PBTH_LE_GATT_CHARACTERISTIC_VALUE new_value);
+      PBTH_LE_GATT_CHARACTERISTIC_VALUE new_value,
+      ULONG flags);
 
   // Register GATT events of |event_type| in the service with service device
   // path |service_path|. |event_parameter| is the event's parameter. |callback|

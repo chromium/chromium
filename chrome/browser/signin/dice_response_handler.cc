@@ -5,7 +5,7 @@
 #include "chrome/browser/signin/dice_response_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -33,6 +33,12 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 
 const int kDiceTokenFetchTimeoutSeconds = 10;
+// Timeout for locking the account reconcilor when
+// there was OAuth outage in Dice.
+const int kLockAccountReconcilorTimeoutHours = 12;
+
+const base::Feature kSupportOAuthOutageInDice{"SupportOAuthOutageInDice",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
@@ -145,8 +151,8 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
       delegate_(std::move(delegate)),
       dice_response_handler_(dice_response_handler),
       timeout_closure_(
-          base::Bind(&DiceResponseHandler::DiceTokenFetcher::OnTimeout,
-                     base::Unretained(this))),
+          base::BindOnce(&DiceResponseHandler::DiceTokenFetcher::OnTimeout,
+                         base::Unretained(this))),
       should_enable_sync_(false) {
   DCHECK(dice_response_handler_);
   account_reconcilor_lock_ =
@@ -157,7 +163,7 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(authorization_code_);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
-      base::TimeDelta::FromSeconds(kDiceTokenFetchTimeoutSeconds));
+      base::Seconds(kDiceTokenFetchTimeoutSeconds));
 }
 
 DiceResponseHandler::DiceTokenFetcher::~DiceTokenFetcher() {}
@@ -226,9 +232,9 @@ void DiceResponseHandler::ProcessDiceHeader(
     case signin::DiceAction::SIGNIN: {
       const signin::DiceResponseParams::AccountInfo& info =
           dice_params.signin_info->account_info;
-      ProcessDiceSigninHeader(info.gaia_id, info.email,
-                              dice_params.signin_info->authorization_code,
-                              std::move(delegate));
+      ProcessDiceSigninHeader(
+          info.gaia_id, info.email, dice_params.signin_info->authorization_code,
+          dice_params.signin_info->no_authorization_code, std::move(delegate));
       return;
     }
     case signin::DiceAction::ENABLE_SYNC: {
@@ -252,11 +258,41 @@ size_t DiceResponseHandler::GetPendingDiceTokenFetchersCountForTesting() const {
   return token_fetchers_.size();
 }
 
+void DiceResponseHandler::OnTimeoutUnlockReconcilor() {
+  lock_.reset();
+}
+
+void DiceResponseHandler::SetTaskRunner(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  task_runner_ = std::move(task_runner);
+}
+
 void DiceResponseHandler::ProcessDiceSigninHeader(
     const std::string& gaia_id,
     const std::string& email,
     const std::string& authorization_code,
+    bool no_authorization_code,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
+  if (no_authorization_code) {
+    if (base::FeatureList::IsEnabled(kSupportOAuthOutageInDice)) {
+      lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
+      about_signin_internals_->OnRefreshTokenReceived(
+          "Missing authorization code due to OAuth outage in Dice.");
+      if (!timer_) {
+        timer_ = std::make_unique<base::OneShotTimer>();
+        if (task_runner_)
+          timer_->SetTaskRunner(task_runner_);
+      }
+      // If there is already another lock, the timer will be reset and
+      // we'll wait another full timeout.
+      timer_->Start(
+          FROM_HERE, base::Hours(kLockAccountReconcilorTimeoutHours),
+          base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
+                         base::Unretained(this)));
+    }
+    return;
+  }
+
   DCHECK(!gaia_id.empty());
   DCHECK(!email.empty());
   DCHECK(!authorization_code.empty());
@@ -301,7 +337,8 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     const std::vector<signin::DiceResponseParams::AccountInfo>& account_infos) {
   VLOG(1) << "Start processing Dice signout response";
 
-  CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId();
+  CoreAccountId primary_account =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   bool primary_account_signed_out = false;
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   for (const auto& account_info : account_infos) {
@@ -356,13 +393,18 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
   const std::string& gaia_id = token_fetcher->gaia_id();
   VLOG(1) << "[Dice] OAuth success for email " << email;
   bool should_enable_sync = token_fetcher->should_enable_sync();
-  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-  CoreAccountId account_id = accounts_mutator->AddOrUpdateAccount(
+  CoreAccountId account_id =
+      identity_manager_->PickAccountIdForAccount(gaia_id, email);
+  bool is_new_account =
+      !identity_manager_->HasAccountWithRefreshToken(account_id);
+  identity_manager_->GetAccountsMutator()->AddOrUpdateAccount(
       gaia_id, email, refresh_token, is_under_advanced_protection,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin);
   about_signin_internals_->OnRefreshTokenReceived(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
+  token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,
+                                                        is_new_account);
   if (should_enable_sync)
     token_fetcher->delegate()->EnableSync(account_id);
 

@@ -7,9 +7,8 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/extensions/api/declarative_content/declarative_content_condition_tracker_test.h"
@@ -27,10 +26,19 @@ using testing::UnorderedElementsAreArray;
 
 class DeclarativeContentPageUrlConditionTrackerTest
     : public DeclarativeContentConditionTrackerTest {
+ public:
+  DeclarativeContentPageUrlConditionTrackerTest(
+      const DeclarativeContentPageUrlConditionTrackerTest&) = delete;
+  DeclarativeContentPageUrlConditionTrackerTest& operator=(
+      const DeclarativeContentPageUrlConditionTrackerTest&) = delete;
+
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     std::set<content::WebContents*>& evaluation_requests() {
       return evaluation_requests_;
@@ -49,8 +57,6 @@ class DeclarativeContentPageUrlConditionTrackerTest
 
    private:
     std::set<content::WebContents*> evaluation_requests_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DeclarativeContentPageUrlConditionTrackerTest()
@@ -84,8 +90,6 @@ class DeclarativeContentPageUrlConditionTrackerTest
     EXPECT_EQ("", error);
     ASSERT_TRUE(*predicate);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentPageUrlConditionTrackerTest);
 };
 
 TEST(DeclarativeContentPageUrlPredicateTest, WrongPageUrlDatatype) {

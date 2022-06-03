@@ -6,12 +6,14 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
+#include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 
 namespace media_router {
 
 NoopDualMediaSinkService::NoopDualMediaSinkService()
     : DualMediaSinkService(std::unique_ptr<CastMediaSinkService>(nullptr),
-                           std::unique_ptr<DialMediaSinkService>(nullptr)) {}
+                           std::unique_ptr<DialMediaSinkService>(nullptr),
+                           std::unique_ptr<CastAppDiscoveryService>(nullptr)) {}
 NoopDualMediaSinkService::~NoopDualMediaSinkService() = default;
 
 }  // namespace media_router

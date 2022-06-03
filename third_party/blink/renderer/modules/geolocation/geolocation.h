@@ -27,22 +27,24 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
+#include "base/dcheck_is_on.h"
 #include "services/device/public/mojom/geolocation.mojom-blink.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_error_callback.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_position_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_position_error.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_watchers.h"
 #include "third_party/blink/renderer/modules/geolocation/geoposition.h"
-#include "third_party/blink/renderer/modules/geolocation/position_options.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -51,29 +53,29 @@ namespace mojom {
 enum class PermissionStatus;
 }  // namespace mojom
 
-class Document;
 class LocalFrame;
-class ExecutionContext;
+class Navigator;
 
 class MODULES_EXPORT Geolocation final
     : public ScriptWrappable,
       public ActiveScriptWrappable<Geolocation>,
-      public ContextLifecycleObserver,
+      public Supplement<Navigator>,
+      public ExecutionContextLifecycleObserver,
       public PageVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(Geolocation);
 
  public:
-  static Geolocation* Create(ExecutionContext*);
+  static const char kSupplementName[];
+  static Geolocation* geolocation(Navigator&);
 
-  explicit Geolocation(ExecutionContext*);
+  explicit Geolocation(Navigator&);
   ~Geolocation() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
-  // Inherited from ContextLifecycleObserver and PageVisibilityObserver.
-  void ContextDestroyed(ExecutionContext*) override;
+  // Inherited from ExecutionContextLifecycleObserver and
+  // PageVisibilityObserver.
+  void ContextDestroyed() override;
 
-  Document* GetDocument() const;
   LocalFrame* GetFrame() const;
 
   // Creates a oneshot and attempts to obtain a position that meets the
@@ -119,49 +121,47 @@ class MODULES_EXPORT Geolocation final
  private:
   // Customized HeapHashSet class that checks notifiers' timers. Notifier's
   // timer may be active only when the notifier is owned by the Geolocation.
-  class GeoNotifierSet : private HeapHashSet<Member<GeoNotifier>> {
-    using BaseClass = HeapHashSet<Member<GeoNotifier>>;
-
+  class GeoNotifierSet final : public GarbageCollected<GeoNotifierSet> {
    public:
-    using BaseClass::Trace;
+    void Trace(Visitor* visitor) const { visitor->Trace(set_); }
 
-    using BaseClass::const_iterator;
-    using BaseClass::iterator;
-
-    using BaseClass::begin;
-    using BaseClass::end;
-    using BaseClass::size;
+    auto begin() const { return set_.begin(); }
+    auto end() const { return set_.end(); }
+    auto size() const { return set_.size(); }
 
     auto insert(GeoNotifier* value) {
       DCHECK(!value->IsTimerActive());
-      return BaseClass::insert(value);
+      return set_.insert(value);
     }
 
     void erase(GeoNotifier* value) {
       DCHECK(!value->IsTimerActive());
-      return BaseClass::erase(value);
+      return set_.erase(value);
     }
 
     void clear() {
 #if DCHECK_IS_ON()
-      for (const auto& notifier : *this) {
+      for (const auto& notifier : set_) {
         DCHECK(!notifier->IsTimerActive());
       }
 #endif
-      BaseClass::clear();
+      set_.clear();
     }
 
-    using BaseClass::Contains;
-    using BaseClass::IsEmpty;
+    auto Contains(GeoNotifier* value) const { return set_.Contains(value); }
+    auto IsEmpty() const { return set_.IsEmpty(); }
 
     auto InsertWithoutTimerCheck(GeoNotifier* value) {
-      return BaseClass::insert(value);
+      return set_.insert(value);
     }
-    void ClearWithoutTimerCheck() { BaseClass::clear(); }
+    void ClearWithoutTimerCheck() { set_.clear(); }
+
+   private:
+    HeapHashSet<Member<GeoNotifier>> set_;
   };
 
   bool HasListeners() const {
-    return !one_shots_.IsEmpty() || !watchers_->IsEmpty();
+    return !one_shots_->IsEmpty() || !watchers_->IsEmpty();
   }
 
   void StopTimers();
@@ -203,7 +203,7 @@ class MODULES_EXPORT Geolocation final
   void OnGeolocationPermissionStatusUpdated(GeoNotifier*,
                                             mojom::PermissionStatus);
 
-  GeoNotifierSet one_shots_;
+  Member<GeoNotifierSet> one_shots_;
   Member<GeolocationWatchers> watchers_;
   // GeoNotifiers that are in the middle of invocation.
   //
@@ -216,12 +216,12 @@ class MODULES_EXPORT Geolocation final
   // wrapper-tracing.
   // TODO(https://crbug.com/796145): Remove this hack once on-stack objects
   // get supported by either of wrapper-tracing or unified GC.
-  GeoNotifierSet one_shots_being_invoked_;
+  Member<GeoNotifierSet> one_shots_being_invoked_;
   HeapVector<Member<GeoNotifier>> watchers_being_invoked_;
   Member<Geoposition> last_position_;
 
-  mojo::Remote<device::mojom::blink::Geolocation> geolocation_;
-  mojo::Remote<mojom::blink::GeolocationService> geolocation_service_;
+  HeapMojoRemote<device::mojom::blink::Geolocation> geolocation_;
+  HeapMojoRemote<mojom::blink::GeolocationService> geolocation_service_;
   bool enable_high_accuracy_ = false;
 
   // Whether a GeoNotifier is waiting for a position update.

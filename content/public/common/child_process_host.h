@@ -10,14 +10,15 @@
 #include <memory>
 #include <string>
 
+#include "base/clang_profiling_buildflags.h"
 #include "base/files/scoped_file.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -80,7 +81,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // No special behavior requested.
     CHILD_NORMAL = 0,
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // Indicates that the child execed after forking may be execced from
     // /proc/self/exe rather than using the "real" app path. This prevents
     // autoupdate from confusing us if it changes the file out from under us.
@@ -89,7 +90,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // gdb). In this case, you'd use GetChildPath to get the real executable
     // file name, and then prepend the GDB command to the command line.
     CHILD_ALLOW_SELF = 1 << 0,
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
     // Note, on macOS these are not bitwise flags and each value is mutually
     // exclusive with the others. Each one of these options should correspond
     // to a value in //content/public/app/mac_helpers.gni.
@@ -115,6 +116,12 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // ID as the main binary, so this flag should be used when needing to load
     // third-party plug-ins.
     CHILD_PLUGIN,
+
+    // Marker for the start of embedder-specific helper child process types.
+    // Values greater than CHILD_EMBEDDER_FIRST are reserved to be used by the
+    // embedder to add custom process types and will be resolved via
+    // ContentClient::GetChildPath().
+    CHILD_EMBEDDER_FIRST,
 #endif
   };
 
@@ -139,13 +146,16 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //
   // Always valid immediately after ChildProcessHost construction, but may be
   // null if someone else has taken ownership.
-  virtual base::Optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
+  virtual absl::optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
 
-  // Creates the IPC channel over a Mojo message pipe. The pipe connection is
-  // brokered through the Service Manager like any other service connection.
+  // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
+  // legacy IPC will be used to communicate with the child process, but
+  // otherwise should not be called.
   virtual void CreateChannelMojo() = 0;
 
-  // Returns true iff the IPC channel is currently being opened;
+  // Returns true iff the IPC channel is currently being opened; this means
+  // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
+  // been invoked.
   virtual bool IsChannelOpening() = 0;
 
   // Adds an IPC message filter.  A reference will be kept to the filter.
@@ -163,10 +173,17 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //   3. Main thread, ChildThreadImpl::BindReceiver (virtual).
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
-  // Instructs the child process to run an instance of the named service.
-  virtual void RunService(
+  // Instructs the child process to run an instance of the named service. This
+  // is DEPRECATED and should never be used.
+  virtual void RunServiceDeprecated(
       const std::string& service_name,
-      mojo::PendingReceiver<service_manager::mojom::Service> receiver) = 0;
+      mojo::ScopedMessagePipeHandle service_pipe) = 0;
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+  // Write out the accumulated code profiling profile to the configured file.
+  // The callback is invoked once the profile has been flushed to disk.
+  virtual void DumpProfilingData(base::OnceClosure callback) = 0;
+#endif
 };
 
 }  // namespace content

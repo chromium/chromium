@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/autofill_observer.h"
 

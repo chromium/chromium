@@ -13,10 +13,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/files/file.h"
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"
 
 namespace google_apis {
@@ -165,7 +165,7 @@ class FileManagerPrivateInternalGetDownloadUrlFunction
 
   // Callback with an |access_token|, called by
   // drive::DriveReadonlyTokenFetcher.
-  void OnTokenFetched(google_apis::DriveApiErrorCode code,
+  void OnTokenFetched(google_apis::ApiErrorCode code,
                       const std::string& access_token);
 
   ResponseAction RunAsyncForDriveFs(
@@ -178,24 +178,17 @@ class FileManagerPrivateInternalGetDownloadUrlFunction
   std::unique_ptr<google_apis::AuthService> auth_service_;
 };
 
-class FileManagerPrivateInternalGetThumbnailFunction
-    : public LoggedExtensionFunction {
+// Implements the chrome.fileManagerPrivate.notifyDriveDialogResult method.
+class FileManagerPrivateNotifyDriveDialogResultFunction
+    : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getThumbnail",
-                             FILEMANAGERPRIVATEINTERNAL_GETTHUMBNAIL)
-
-  FileManagerPrivateInternalGetThumbnailFunction();
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.notifyDriveDialogResult",
+                             FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT)
 
  protected:
-  ~FileManagerPrivateInternalGetThumbnailFunction() override;
+  ~FileManagerPrivateNotifyDriveDialogResultFunction() override = default;
 
-  // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  void GotThumbnail(const base::Optional<std::vector<uint8_t>>& data);
-
-  void SendEncodedThumbnail(std::string thumbnail_data_url);
 };
 
 }  // namespace extensions

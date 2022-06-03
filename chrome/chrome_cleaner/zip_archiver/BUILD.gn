@@ -41,9 +41,7 @@ source_set("test_support") {
 source_set("unittest_sources") {
   testonly = true
 
-  sources = [
-    "sandboxed_zip_archiver_unittest.cc",
-  ]
+  sources = [ "sandboxed_zip_archiver_unittest.cc" ]
 
   deps = [
     "//base/test:test_support",

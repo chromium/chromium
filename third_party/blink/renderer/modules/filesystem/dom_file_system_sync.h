@@ -60,7 +60,7 @@ class DOMFileSystemSync final : public DOMFileSystemBase {
   File* CreateFile(const FileEntrySync*, ExceptionState&);
   FileWriterSync* CreateWriter(const FileEntrySync*, ExceptionState&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<DirectoryEntrySync> root_entry_;

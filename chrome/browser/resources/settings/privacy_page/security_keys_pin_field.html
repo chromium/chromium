@@ -1,14 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-security-keys-pin-field">
-  <template>
     <style include="settings-shared">
       cr-input {
         display: inline-block;
@@ -18,8 +7,8 @@
     </style>
 
     <p>$i18n{securityKeysPINPrompt}</p>
-    <cr-input id="pin" value="{{value_}}" minLength="4"
-        maxLength="255" spellcheck="false"
+    <cr-input id="pin" value="{{value_}}" min-length="[[minPinLength]]"
+        max-length="255" spellcheck="false"
         on-input="onPINInput_"
         invalid="[[isNonEmpty_(error_)]]"
         label="$i18n{securityKeysPIN}" tabindex="0"
@@ -31,6 +20,3 @@
           focus-row-control focus-type="showPassword"
           on-click="showButtonClick_"></cr-icon-button>
     </cr-input>
-  </template>
-  <script src="security_keys_pin_field.js"></script>
-</dom-module>

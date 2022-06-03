@@ -11,10 +11,10 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -37,6 +37,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
 
   ScopedInterfaceEndpointHandle(ScopedInterfaceEndpointHandle&& other);
 
+  ScopedInterfaceEndpointHandle(const ScopedInterfaceEndpointHandle&) = delete;
+  ScopedInterfaceEndpointHandle& operator=(
+      const ScopedInterfaceEndpointHandle&) = delete;
+
   ~ScopedInterfaceEndpointHandle();
 
   ScopedInterfaceEndpointHandle& operator=(
@@ -56,7 +60,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
 
   // Returns the disconnect reason if the peer handle is closed before
   // association and specifies a custom disconnect reason.
-  const base::Optional<DisconnectReason>& disconnect_reason() const;
+  const absl::optional<DisconnectReason>& disconnect_reason() const;
 
   enum AssociationEvent {
     // The interface has been associated with a message pipe.
@@ -94,7 +98,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
       InterfaceId id,
       scoped_refptr<AssociatedGroupController> peer_group_controller);
 
-  void ResetInternal(const base::Optional<DisconnectReason>& reason);
+  void ResetInternal(const absl::optional<DisconnectReason>& reason);
 
   // Used by AssociatedGroup.
   // It is safe to run the returned callback on any sequence, or after this
@@ -113,8 +117,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
   CreateGroupControllerGetter() const;
 
   scoped_refptr<State> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedInterfaceEndpointHandle);
 };
 
 }  // namespace mojo

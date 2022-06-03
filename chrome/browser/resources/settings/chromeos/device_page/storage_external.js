@@ -8,7 +8,20 @@
  * settings.
  */
 
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import './storage_external_entry.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-storage-external',
 
   behaviors: [
@@ -19,11 +32,11 @@ Polymer({
   properties: {
     /**
      * List of the plugged-in external storages.
-     * @private {Arrray<!settings.ExternalStorage>}
+     * @private {Array<!ExternalStorage>}
      */
     externalStorages_: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       }
     },
@@ -31,43 +44,43 @@ Polymer({
     /** @private {!chrome.settingsPrivate.PrefObject} */
     externalStorageVisiblePref_: {
       type: Object,
-      value: function() {
+      value() {
         return /** @type {!chrome.settingsPrivate.PrefObject} */ ({});
       },
     },
   },
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
-  created: function() {
-    this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
+  created() {
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     this.browserProxy_.setExternalStoragesUpdatedCallback(
         this.handleExternalStoragesUpdated_.bind(this));
     this.browserProxy_.updateExternalStorages();
   },
 
   /**
-   * @param {Array<!settings.ExternalStorage>} storages
+   * @param {Array<!ExternalStorage>} storages
    * @private
    */
-  handleExternalStoragesUpdated_: function(storages) {
+  handleExternalStoragesUpdated_(storages) {
     this.externalStorages_ = storages;
   },
 
   /**
-   * @param {Arrray<!settings.ExternalStorage>} externalStorages
+   * @param {Array<!ExternalStorage>} externalStorages
    * @return {string}
    * @private
    */
-  computeStorageListHeader_: function(externalStorages) {
+  computeStorageListHeader_(externalStorages) {
     return this.i18n(
-        !externalStorages || externalStorages.length == 0 ?
+        !externalStorages || externalStorages.length === 0 ?
             'storageExternalStorageEmptyListHeader' :
             'storageExternalStorageListHeader');
   },

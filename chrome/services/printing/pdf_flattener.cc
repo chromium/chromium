@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "pdf/pdf.h"
 
 namespace printing {
@@ -35,7 +33,7 @@ void PdfFlattener::FlattenPdf(base::ReadOnlySharedMemoryRegion src_pdf_region,
   }
 
   base::MappedReadOnlyRegion region_mapping =
-      mojo::CreateReadOnlySharedMemoryRegion(output_pdf_buffer.size());
+      base::ReadOnlySharedMemoryRegion::Create(output_pdf_buffer.size());
   if (!region_mapping.IsValid()) {
     std::move(callback).Run(std::move(region_mapping.region));
     return;

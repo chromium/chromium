@@ -6,12 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
+#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_mac.h"
 #include "device/gamepad/xbox_hid_controller.h"
@@ -34,6 +35,7 @@ const uint16_t kPowerUsageNumber = 0x30;
 const uint16_t kSearchUsageNumber = 0x0221;
 const uint16_t kHomeUsageNumber = 0x0223;
 const uint16_t kBackUsageNumber = 0x0224;
+const uint16_t kRecordUsageNumber = 0xb2;
 
 const int kRumbleMagnitudeMax = 10000;
 
@@ -51,6 +53,7 @@ struct SpecialUsages {
     // Back.
     {kConsumerUsagePage, kHomeUsageNumber},
     {kConsumerUsagePage, kBackUsageNumber},
+    {kConsumerUsagePage, kRecordUsageNumber},
 };
 const size_t kSpecialUsagesLen = base::size(kSpecialUsages);
 
@@ -89,6 +92,7 @@ GamepadBusType QueryBusType(IOHIDDeviceRef device) {
 
 GamepadDeviceMac::GamepadDeviceMac(int location_id,
                                    IOHIDDeviceRef device_ref,
+                                   base::StringPiece product_name,
                                    int vendor_id,
                                    int product_id)
     : location_id_(location_id),
@@ -96,14 +100,16 @@ GamepadDeviceMac::GamepadDeviceMac(int location_id,
       bus_type_(QueryBusType(device_ref_)),
       ff_device_ref_(nullptr),
       ff_effect_ref_(nullptr) {
-  if (Dualshock4Controller::IsDualshock4(vendor_id, product_id)) {
+  auto gamepad_id =
+      GamepadIdList::Get().GetGamepadId(product_name, vendor_id, product_id);
+
+  if (Dualshock4Controller::IsDualshock4(gamepad_id)) {
     dualshock4_ = std::make_unique<Dualshock4Controller>(
-        vendor_id, product_id, bus_type_,
-        std::make_unique<HidWriterMac>(device_ref));
+        gamepad_id, bus_type_, std::make_unique<HidWriterMac>(device_ref));
     return;
   }
 
-  if (XboxHidController::IsXboxHid(vendor_id, product_id)) {
+  if (XboxHidController::IsXboxHid(gamepad_id)) {
     xbox_hid_ = std::make_unique<XboxHidController>(
         std::make_unique<HidWriterMac>(device_ref));
     return;
@@ -204,6 +210,7 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
           continue;
 
         button_elements_[button_index] = element;
+        gamepad->buttons[button_index].used = true;
         button_count = std::max(button_count, button_index + 1);
       } else {
         // Check for common gamepad buttons that are not on the Button usage
@@ -237,6 +244,7 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
         break;
 
       button_elements_[button_index] = special_element[special_index];
+      gamepad->buttons[button_index].used = true;
       button_count = std::max(button_count, button_index + 1);
 
       if (--unmapped_button_count == 0)
@@ -347,6 +355,8 @@ bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
       axis_minimums_[axis_index] = axis_min;
       axis_maximums_[axis_index] = axis_max;
       axis_report_sizes_[axis_index] = IOHIDElementGetReportSize(element);
+
+      gamepad->axes_used |= 1 << axis_index;
     }
   }
 

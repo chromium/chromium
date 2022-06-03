@@ -49,6 +49,11 @@ namespace remoting {
 class NormalizingInputFilterMac : public protocol::InputFilter {
  public:
   explicit NormalizingInputFilterMac(protocol::InputStub* input_stub);
+
+  NormalizingInputFilterMac(const NormalizingInputFilterMac&) = delete;
+  NormalizingInputFilterMac& operator=(const NormalizingInputFilterMac&) =
+      delete;
+
   ~NormalizingInputFilterMac() override;
 
   // InputFilter overrides.
@@ -62,8 +67,6 @@ class NormalizingInputFilterMac : public protocol::InputFilter {
 
   // A map that stores pressed keycodes and the corresponding key event.
   KeyPressedMap key_pressed_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizingInputFilterMac);
 };
 
 }  // namespace remoting

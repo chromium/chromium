@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/sync_sessions/switches.h"
 
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(Browser* browser)
     : browser_(browser) {}
@@ -39,7 +40,7 @@ SessionID BrowserSyncedWindowDelegate::GetTabIdAt(int index) const {
 }
 
 bool BrowserSyncedWindowDelegate::HasWindow() const {
-  return browser_->window() != NULL;
+  return browser_->window() != nullptr;
 }
 
 SessionID BrowserSyncedWindowDelegate::GetSessionId() const {
@@ -67,5 +68,12 @@ bool BrowserSyncedWindowDelegate::IsSessionRestoreInProgress() const {
 }
 
 bool BrowserSyncedWindowDelegate::ShouldSync() const {
-  return IsTypeNormal() || IsTypePopup();
+  if (!IsTypeNormal() && !IsTypePopup()) {
+    return false;
+  }
+
+  // Do not sync windows which are about to be closed.
+  return !browser_->IsAttemptingToCloseBrowser() ||
+         !base::FeatureList::IsEnabled(
+             switches::kSyncConsiderEmptyWindowsSyncable);
 }

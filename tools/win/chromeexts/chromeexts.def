@@ -9,3 +9,4 @@ EXPORTS
   DebugExtensionUninitialize
   help
   hwnd = RunHwndCommand
+  view = RunViewCommand

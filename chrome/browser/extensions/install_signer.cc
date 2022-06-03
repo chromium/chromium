@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -14,9 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/process/process.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -29,6 +29,7 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "extensions/common/extension.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -37,7 +38,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
-#include "rlz/lib/machine_id.h"
+#include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
 #endif
 
 namespace {
@@ -128,7 +129,7 @@ void SetExtensionIdSet(base::DictionaryValue* dictionary,
                        const ExtensionIdSet& ids) {
   auto id_list = std::make_unique<base::ListValue>();
   for (auto i = ids.begin(); i != ids.end(); ++i)
-    id_list->AppendString(*i);
+    id_list->Append(*i);
   dictionary->Set(key, std::move(id_list));
 }
 
@@ -139,15 +140,14 @@ void SetExtensionIdSet(base::DictionaryValue* dictionary,
 bool GetExtensionIdSet(const base::DictionaryValue& dictionary,
                        const char* key,
                        ExtensionIdSet* ids) {
-  const base::ListValue* id_list = NULL;
+  const base::ListValue* id_list = nullptr;
   if (!dictionary.GetList(key, &id_list))
     return false;
-  for (auto i = id_list->begin(); i != id_list->end(); ++i) {
-    std::string id;
-    if (!i->GetAsString(&id)) {
+  for (const auto& entry : id_list->GetList()) {
+    if (!entry.is_string()) {
       return false;
     }
-    ids->insert(id);
+    ids->insert(entry.GetString());
   }
   return true;
 }
@@ -186,9 +186,9 @@ std::unique_ptr<InstallSignature> InstallSignature::FromValue(
 
   // For now we don't want to support any backwards compability, but in the
   // future if we do, we would want to put the migration code here.
-  int format_version = 0;
-  if (!value.GetInteger(kSignatureFormatVersionKey, &format_version) ||
-      format_version != kSignatureFormatVersion) {
+  absl::optional<int> format_version =
+      value.FindIntKey(kSignatureFormatVersionKey);
+  if (format_version != kSignatureFormatVersion) {
     result.reset();
     return result;
   }
@@ -277,45 +277,6 @@ ExtensionIdSet InstallSigner::GetForcedNotFromWebstore() {
   return ExtensionIdSet(ids.begin(), ids.end());
 }
 
-namespace {
-
-int g_request_count = 0;
-
-base::LazyInstance<base::TimeTicks>::DestructorAtExit g_last_request_time =
-    LAZY_INSTANCE_INITIALIZER;
-
-base::LazyInstance<base::ThreadChecker>::DestructorAtExit
-    g_single_thread_checker = LAZY_INSTANCE_INITIALIZER;
-
-void LogRequestStartHistograms() {
-  // Make sure we only ever call this from one thread, so that we don't have to
-  // worry about race conditions setting g_last_request_time.
-  DCHECK(g_single_thread_checker.Get().CalledOnValidThread());
-
-  // Process::Current().CreationTime is only defined on some platforms.
-#if defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_LINUX)
-  const base::Time process_creation_time =
-      base::Process::Current().CreationTime();
-  UMA_HISTOGRAM_COUNTS_1M(
-      "ExtensionInstallSigner.UptimeAtTimeOfRequest",
-      (base::Time::Now() - process_creation_time).InSeconds());
-#endif  // defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_LINUX)
-
-  base::TimeDelta delta;
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!g_last_request_time.Get().is_null())
-    delta = now - g_last_request_time.Get();
-  g_last_request_time.Get() = now;
-  UMA_HISTOGRAM_COUNTS_1M("ExtensionInstallSigner.SecondsSinceLastRequest",
-                          delta.InSeconds());
-
-  g_request_count += 1;
-  UMA_HISTOGRAM_COUNTS_100("ExtensionInstallSigner.RequestCount",
-                           g_request_count);
-}
-
-}  // namespace
-
 void InstallSigner::GetSignature(SignatureCallback callback) {
   CHECK(!simple_loader_.get());
   CHECK(callback_.is_null());
@@ -366,9 +327,9 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
             "This feature cannot be disabled, but it is only activated if "
             "extensions are installed."
           chrome_policy {
-            ExtensionInstallBlacklist {
+            ExtensionInstallBlocklist {
               policy_options {mode: MANDATORY}
-              ExtensionInstallBlacklist: {
+              ExtensionInstallBlocklist: {
                 entries: '*'
               }
             }
@@ -386,7 +347,7 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
   dictionary.SetString(kHashKey, hash_base64);
   std::unique_ptr<base::ListValue> id_list(new base::ListValue);
   for (auto i = ids_.begin(); i != ids_.end(); ++i) {
-    id_list->AppendString(*i);
+    id_list->Append(*i);
   }
   dictionary.Set(kIdsKey, std::move(id_list));
   std::string json;
@@ -404,7 +365,6 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
                                                     traffic_annotation);
   simple_loader_->AttachStringForUpload(json, kContentTypeJSON);
 
-  LogRequestStartHistograms();
   request_start_time_ = base::Time::Now();
   VLOG(1) << "Sending request: " << json;
 
@@ -423,9 +383,6 @@ void InstallSigner::ReportErrorViaCallback() {
 
 void InstallSigner::ParseFetchResponse(
     std::unique_ptr<std::string> response_body) {
-  UMA_HISTOGRAM_BOOLEAN("ExtensionInstallSigner.FetchSuccess", !!response_body);
-  UMA_HISTOGRAM_BOOLEAN("ExtensionInstallSigner.GetResponseSuccess",
-                        !!response_body && !response_body->empty());
   if (!response_body || response_body->empty()) {
     ReportErrorViaCallback();
     return;
@@ -446,19 +403,17 @@ void InstallSigner::ParseFetchResponse(
   std::unique_ptr<base::Value> parsed =
       base::JSONReader::ReadDeprecated(*response_body);
   bool json_success = parsed.get() && parsed->GetAsDictionary(&dictionary);
-  UMA_HISTOGRAM_BOOLEAN("ExtensionInstallSigner.ParseJsonSuccess",
-                        json_success);
   if (!json_success) {
     ReportErrorViaCallback();
     return;
   }
 
-  int protocol_version = 0;
+  int protocol_version =
+      dictionary->FindIntKey(kProtocolVersionKey).value_or(0);
   std::string signature_base64;
   std::string signature;
   std::string expire_date;
 
-  dictionary->GetInteger(kProtocolVersionKey, &protocol_version);
   dictionary->GetString(kSignatureKey, &signature_base64);
   dictionary->GetString(kExpiryKey, &expire_date);
 
@@ -466,8 +421,6 @@ void InstallSigner::ParseFetchResponse(
       protocol_version == 1 && !signature_base64.empty() &&
       ValidateExpireDateFormat(expire_date) &&
       base::Base64Decode(signature_base64, &signature);
-  UMA_HISTOGRAM_BOOLEAN("ExtensionInstallSigner.ParseFieldsSuccess",
-                        fields_success);
   if (!fields_success) {
     ReportErrorViaCallback();
     return;
@@ -476,7 +429,7 @@ void InstallSigner::ParseFetchResponse(
   ExtensionIdSet invalid_ids;
   const base::ListValue* invalid_ids_list = NULL;
   if (dictionary->GetList(kInvalidIdsKey, &invalid_ids_list)) {
-    for (size_t i = 0; i < invalid_ids_list->GetSize(); i++) {
+    for (size_t i = 0; i < invalid_ids_list->GetList().size(); i++) {
       std::string id;
       if (!invalid_ids_list->GetString(i, &id)) {
         ReportErrorViaCallback();
@@ -497,18 +450,14 @@ void InstallSigner::HandleSignatureResult(const std::string& signature,
 
   std::unique_ptr<InstallSignature> result;
   if (!signature.empty()) {
-    result.reset(new InstallSignature);
+    result = std::make_unique<InstallSignature>();
     result->ids = valid_ids;
     result->invalid_ids = invalid_ids;
     result->salt = salt_;
     result->signature = signature;
     result->expire_date = expire_date;
     result->timestamp = request_start_time_;
-    bool verified = VerifySignature(*result);
-    UMA_HISTOGRAM_BOOLEAN("ExtensionInstallSigner.ResultWasValid", verified);
-    UMA_HISTOGRAM_COUNTS_100("ExtensionInstallSigner.InvalidCount",
-                             invalid_ids.size());
-    if (!verified)
+    if (!VerifySignature(*result))
       result.reset();
   }
 

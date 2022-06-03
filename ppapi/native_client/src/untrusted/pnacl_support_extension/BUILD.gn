@@ -29,15 +29,11 @@ action("pnacl_support_extension") {
   shim_toolchain_base = "//build/toolchain/nacl:irt_"
 
   shim_target_tc_label = "$shim_target_label($shim_toolchain_base$target_cpu)"
-  deps = [
-    shim_target_tc_label,
-  ]
+  deps = [ shim_target_tc_label ]
   shim_cpu = target_cpu
 
   output_prefix = "$root_out_dir/pnacl/pnacl_public_"
-  outputs = [
-    "${output_prefix}pnacl_json",
-  ]
+  outputs = [ "${output_prefix}pnacl_json" ]
 
   # Files that will be copied from the toolchain to output.
   outputs_from_toolchain = [

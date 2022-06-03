@@ -50,7 +50,7 @@ class MockDevUiModuleProvider : public DevUiModuleProvider {
   }
 
   // DevUiModuleProvider:
-  void LoadModule() override { is_loaded_ = true; }
+  void EnsureLoaded() override { is_loaded_ = true; }
 
   void Reset() {
     is_installed_ = false;
@@ -145,6 +145,26 @@ TEST_F(DevUiLoaderThrottleTest, ShouldInstallDevUiDfm) {
     EXPECT_FALSE(ShouldInstallDevUiDfm(GURL(url_string)));
   for (const char* url_string : kDevUiUrls)
     EXPECT_TRUE(ShouldInstallDevUiDfm(GURL(url_string)));
+}
+
+// Test to ensure that pages that are purposefully left in the base module are
+// not accidentally moved to the DevUI DFM.
+TEST_F(DevUiLoaderThrottleTest, PreventAccidentalInclusion) {
+  auto ShouldInstallDevUiDfm = DevUiLoaderThrottle::ShouldInstallDevUiDfm;
+
+  // Useful to have the catalog always.
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://chrome-urls")));
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://about")));
+  // Inclusion in base module is mandatory.
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://credits")));
+  // Well-loved game, and shown when there's no internet (cannot install DFM).
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://dino")));
+  // chrome://flags has relatively high usage.
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://flags")));
+  // Useful for filing bugs.
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://version")));
+  // Used by Android WebView.
+  EXPECT_FALSE(ShouldInstallDevUiDfm(GURL("chrome://safe-browsing")));
 }
 
 TEST_F(DevUiLoaderThrottleTest, MaybeCreateThrottleFor) {

@@ -9,9 +9,13 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/mock_file_chooser.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -63,7 +67,7 @@ TEST(FileInputTypeTest, createFileList) {
 }
 
 TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
-  auto* document = MakeGarbageCollected<Document>();
+  auto* document = Document::CreateForTest();
   auto* input =
       MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
@@ -97,7 +101,7 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
 }
 
 TEST(FileInputTypeTest, setFilesFromPaths) {
-  auto* document = MakeGarbageCollected<Document>();
+  auto* document = Document::CreateForTest();
   auto* input =
       MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
@@ -130,15 +134,12 @@ TEST(FileInputTypeTest, setFilesFromPaths) {
 }
 
 TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   auto* chrome_client = MakeGarbageCollected<WebKitDirectoryChromeClient>();
-  page_clients.chrome_client = chrome_client;
   auto page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(), &page_clients);
+      std::make_unique<DummyPageHolder>(IntSize(), chrome_client);
   Document& doc = page_holder->GetDocument();
 
-  doc.body()->SetInnerHTMLFromString("<input type=file webkitdirectory>");
+  doc.body()->setInnerHTML("<input type=file webkitdirectory>");
   auto& input = *To<HTMLInputElement>(doc.body()->firstChild());
 
   base::RunLoop run_loop;
@@ -154,6 +155,79 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
 
   // The test passes if WebKitDirectoryChromeClient::
   // UnregisterPopupOpeningObserver() was not called.
+}
+
+TEST(FileInputTypeTest, BeforePseudoCrash) {
+  std::unique_ptr<DummyPageHolder> page_holder =
+      std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  Document& doc = page_holder->GetDocument();
+  doc.documentElement()->setInnerHTML(R"HTML(
+<style>
+.c6 {
+  zoom: 0.01;
+}
+
+.c6::first-letter {
+  position: fixed;
+  border-style: groove;
+}
+
+.c6::before {
+  content: 'c6';
+}
+
+.c7 {
+  zoom: 0.1;
+}
+
+.c7::first-letter {
+  position: fixed;
+  border-style: groove;
+}
+
+.c7::before {
+  content: 'c7';
+}
+
+</style>
+<input type=file class=c6>
+<input type=file class=c7>
+)HTML");
+  doc.View()->UpdateAllLifecyclePhasesForTest();
+  // The test passes if no CHECK failures and no null pointer dereferences.
+}
+
+TEST(FileInputTypeTest, ChangeTypeDuringOpeningFileChooser) {
+  // We use WebViewHelper instead of DummyPageHolder, in order to use
+  // ChromeClientImpl.
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize();
+  LocalFrame* frame = helper.LocalMainFrame()->GetFrame();
+
+  Document& doc = *frame->GetDocument();
+  doc.body()->setInnerHTML("<input type=file>");
+  auto& input = *To<HTMLInputElement>(doc.body()->firstChild());
+
+  base::RunLoop run_loop;
+  MockFileChooser chooser(frame->GetBrowserInterfaceBroker(),
+                          run_loop.QuitClosure());
+
+  // Calls MockFileChooser::OpenFileChooser().
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::blink::UserActivationNotificationType::kInteraction);
+  input.click();
+  run_loop.Run();
+
+  input.setType(input_type_names::kColor);
+
+  FileChooserFileInfoList list;
+  list.push_back(CreateFileChooserFileInfoNative("/path/to/file.txt", ""));
+  chooser.ResponseOnOpenFileChooser(std::move(list));
+
+  // Receiving a FileChooser response should not alter a shadow tree
+  // for another type.
+  EXPECT_TRUE(IsA<HTMLElement>(
+      input.UserAgentShadowRoot()->firstChild()->firstChild()));
 }
 
 }  // namespace blink

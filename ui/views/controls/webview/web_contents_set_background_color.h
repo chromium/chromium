@@ -24,7 +24,13 @@ class WebContentsSetBackgroundColor
       content::WebContents* web_contents,
       SkColor color);
 
+  WebContentsSetBackgroundColor(const WebContentsSetBackgroundColor&) = delete;
+  WebContentsSetBackgroundColor& operator=(
+      const WebContentsSetBackgroundColor&) = delete;
+
   ~WebContentsSetBackgroundColor() override;
+
+  SkColor color() const { return color_; }
 
  private:
   friend class content::WebContentsUserData<WebContentsSetBackgroundColor>;
@@ -32,16 +38,11 @@ class WebContentsSetBackgroundColor
                                 SkColor color);
 
   // content::WebContentsObserver:
-  void RenderViewReady() override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
 
   SkColor color_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsSetBackgroundColor);
 };
 
 }  // namespace views

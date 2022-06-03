@@ -31,7 +31,7 @@ TEST_F(AutofillPolicyHandlerTest, Enabled) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kAutoFillEnabled, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(true), nullptr);
+             base::Value(true), nullptr);
   PrefValueMap prefs;
   AutofillPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
@@ -50,7 +50,7 @@ TEST_F(AutofillPolicyHandlerTest, Disabled) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kAutoFillEnabled, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(false), nullptr);
+             base::Value(false), nullptr);
   PrefValueMap prefs;
   AutofillPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
@@ -80,11 +80,10 @@ TEST_F(AutofillPolicyHandlerTest, DeprecatedPolicyIgnored_AddressEnabled) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kAutoFillEnabled, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(false), nullptr);
+             base::Value(false), nullptr);
   policy.Set(policy::key::kAutofillAddressEnabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(false),
-             nullptr);
+             policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   PrefValueMap prefs;
   AutofillPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);
@@ -104,11 +103,10 @@ TEST_F(AutofillPolicyHandlerTest, DeprecatedPolicyIgnored_CreditCardEnabled) {
   policy::PolicyMap policy;
   policy.Set(policy::key::kAutoFillEnabled, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(false), nullptr);
+             base::Value(false), nullptr);
   policy.Set(policy::key::kAutofillCreditCardEnabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(false),
-             nullptr);
+             policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   PrefValueMap prefs;
   AutofillPolicyHandler handler;
   handler.ApplyPolicySettings(policy, &prefs);

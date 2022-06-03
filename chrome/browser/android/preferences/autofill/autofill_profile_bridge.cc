@@ -51,10 +51,10 @@ static void JNI_AutofillProfileBridge_GetSupportedCountries(
     const JavaParamRef<jobject>& j_country_name_list) {
   std::vector<std::string> country_codes = GetRegionCodes();
   std::vector<std::string> known_country_codes;
-  std::vector<base::string16> known_country_names;
+  std::vector<std::u16string> known_country_names;
   std::string locale = g_browser_process->GetApplicationLocale();
   for (auto country_code : country_codes) {
-    const base::string16& country_name =
+    const std::u16string& country_name =
         l10n_util::GetDisplayNameForCountry(country_code, locale);
     // Don't display a country code for which a name is not known yet.
     if (country_name != base::UTF8ToUTF16(country_code)) {

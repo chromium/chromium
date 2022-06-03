@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
@@ -32,10 +31,11 @@ VideoDecoderConfig CreateFakeVideoConfig() {
   gfx::Size coded_size(320, 240);
   gfx::Rect visible_rect(0, 0, 320, 240);
   gfx::Size natural_size(320, 240);
-  return VideoDecoderConfig(
-      kCodecH264, H264PROFILE_MAIN, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, coded_size, visible_rect,
-      natural_size, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  return VideoDecoderConfig(VideoCodec::kH264, H264PROFILE_MAIN,
+                            VideoDecoderConfig::AlphaMode::kIsOpaque,
+                            VideoColorSpace(), kNoTransformation, coded_size,
+                            visible_rect, natural_size, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted);
 }
 
 BufferQueue GenerateFakeBuffers(const int* frame_pts_ms,
@@ -51,8 +51,7 @@ BufferQueue GenerateFakeBuffers(const int* frame_pts_ms,
     if (frame_pts_ms[k] < 0) {
       buffers[k]->set_timestamp(kNoTimestamp);
     } else {
-      buffers[k]->set_timestamp(
-          base::TimeDelta::FromMilliseconds(frame_pts_ms[k]));
+      buffers[k]->set_timestamp(base::Milliseconds(frame_pts_ms[k]));
     }
   }
   return buffers;
@@ -63,6 +62,9 @@ BufferQueue GenerateFakeBuffers(const int* frame_pts_ms,
 class EsAdapterVideoTest : public testing::Test {
  public:
   EsAdapterVideoTest();
+
+  EsAdapterVideoTest(const EsAdapterVideoTest&) = delete;
+  EsAdapterVideoTest& operator=(const EsAdapterVideoTest&) = delete;
 
  protected:
   // Feed the ES adapter with the buffers from |buffer_queue|.
@@ -77,16 +79,13 @@ class EsAdapterVideoTest : public testing::Test {
   EsAdapterVideo es_adapter_;
 
   std::stringstream buffer_descriptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsAdapterVideoTest);
 };
 
 EsAdapterVideoTest::EsAdapterVideoTest()
-    : es_adapter_(base::Bind(&EsAdapterVideoTest::OnNewConfig,
-                             base::Unretained(this)),
-                  base::Bind(&EsAdapterVideoTest::OnNewBuffer,
-                             base::Unretained(this))) {
-}
+    : es_adapter_(base::BindRepeating(&EsAdapterVideoTest::OnNewConfig,
+                                      base::Unretained(this)),
+                  base::BindRepeating(&EsAdapterVideoTest::OnNewBuffer,
+                                      base::Unretained(this))) {}
 
 void EsAdapterVideoTest::OnNewConfig(const VideoDecoderConfig& video_config) {
 }

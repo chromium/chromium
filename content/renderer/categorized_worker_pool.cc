@@ -9,16 +9,41 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequence_manager/task_time_observer.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/raster/task_category.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace content {
 namespace {
+
+// Task categories running at normal thread priority.
+constexpr cc::TaskCategory kNormalThreadPriorityCategories[] = {
+    cc::TASK_CATEGORY_NONCONCURRENT_FOREGROUND, cc::TASK_CATEGORY_FOREGROUND,
+    cc::TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY};
+
+// Task categories running at background thread priority.
+constexpr cc::TaskCategory kBackgroundThreadPriorityCategories[] = {
+    cc::TASK_CATEGORY_BACKGROUND};
+
+// Foreground task categories.
+constexpr cc::TaskCategory kForegroundCategories[] = {
+    cc::TASK_CATEGORY_NONCONCURRENT_FOREGROUND, cc::TASK_CATEGORY_FOREGROUND};
+
+// Background task categories. Tasks in these categories cannot start running
+// when a task with a category in |kForegroundCategories| is running or ready to
+// run.
+constexpr cc::TaskCategory kBackgroundCategories[] = {
+    cc::TASK_CATEGORY_BACKGROUND,
+    cc::TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY};
 
 // A thread which forwards to CategorizedWorkerPool::Run with the runnable
 // categories.
@@ -29,10 +54,12 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
       const Options& options,
       CategorizedWorkerPool* pool,
       std::vector<cc::TaskCategory> categories,
+      gfx::RenderingPipeline* pipeline,
       base::ConditionVariable* has_ready_to_run_tasks_cv)
       : SimpleThread(name_prefix, options),
         pool_(pool),
         categories_(categories),
+        pipeline_(pipeline),
         has_ready_to_run_tasks_cv_(has_ready_to_run_tasks_cv) {}
 
   void SetBackgroundingCallback(
@@ -52,11 +79,14 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
     }
   }
 
-  void Run() override { pool_->Run(categories_, has_ready_to_run_tasks_cv_); }
+  void Run() override {
+    pool_->Run(categories_, pipeline_, has_ready_to_run_tasks_cv_);
+  }
 
  private:
   CategorizedWorkerPool* const pool_;
   const std::vector<cc::TaskCategory> categories_;
+  gfx::RenderingPipeline* pipeline_;
   base::ConditionVariable* const has_ready_to_run_tasks_cv_;
 
   base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
@@ -150,56 +180,61 @@ class CategorizedWorkerPool::CategorizedWorkerPoolSequencedTaskRunner
 
 CategorizedWorkerPool::CategorizedWorkerPool()
     : namespace_token_(GenerateNamespaceToken()),
-      has_ready_to_run_foreground_tasks_cv_(&lock_),
-      has_ready_to_run_background_tasks_cv_(&lock_),
+      has_task_for_normal_priority_thread_cv_(&lock_),
+      has_task_for_background_priority_thread_cv_(&lock_),
       has_namespaces_with_finished_running_tasks_cv_(&lock_),
       shutdown_(false) {
   // Declare the two ConditionVariables which are used by worker threads to
   // sleep-while-idle as such to avoid throwing off //base heuristics.
-  has_ready_to_run_foreground_tasks_cv_.declare_only_used_while_idle();
-  has_ready_to_run_background_tasks_cv_.declare_only_used_while_idle();
+  has_task_for_normal_priority_thread_cv_.declare_only_used_while_idle();
+  has_task_for_background_priority_thread_cv_.declare_only_used_while_idle();
 }
 
-void CategorizedWorkerPool::Start(int num_threads) {
+void CategorizedWorkerPool::Start(int num_normal_threads,
+                                  gfx::RenderingPipeline* foreground_pipeline) {
   DCHECK(threads_.empty());
 
-  // Start |num_threads| threads for foreground work, including nonconcurrent
-  // foreground work.
-  std::vector<cc::TaskCategory> foreground_categories;
-  foreground_categories.push_back(cc::TASK_CATEGORY_NONCONCURRENT_FOREGROUND);
-  foreground_categories.push_back(cc::TASK_CATEGORY_FOREGROUND);
+  // |num_normal_threads| normal threads and 1 background threads are created.
+  const size_t num_threads = num_normal_threads + 1;
+  threads_.reserve(num_threads);
 
-  for (int i = 0; i < num_threads; i++) {
-    base::SimpleThread::Options thread_options;
-    // Use same priority for foreground workers as compositor thread.
-    thread_options.priority = base::PlatformThread::GetCurrentThreadPriority();
-    std::unique_ptr<base::SimpleThread> thread(new CategorizedWorkerPoolThread(
-        base::StringPrintf("CompositorTileWorker%d", i + 1).c_str(),
-        base::SimpleThread::Options(), this, foreground_categories,
-        &has_ready_to_run_foreground_tasks_cv_));
+  // Start |num_normal_threads| normal priority threads, which run foreground
+  // work and background work that cannot run at background thread priority.
+  std::vector<cc::TaskCategory> normal_thread_prio_categories(
+      std::begin(kNormalThreadPriorityCategories),
+      std::end(kNormalThreadPriorityCategories));
+
+  for (int i = 0; i < num_normal_threads; i++) {
+    auto thread = std::make_unique<CategorizedWorkerPoolThread>(
+        base::StringPrintf("CompositorTileWorker%d", i + 1),
+        base::SimpleThread::Options(), this, normal_thread_prio_categories,
+        foreground_pipeline, &has_task_for_normal_priority_thread_cv_);
     thread->StartAsync();
     threads_.push_back(std::move(thread));
   }
 
-  // Start a single thread for background work.
-  std::vector<cc::TaskCategory> background_categories;
-  background_categories.push_back(cc::TASK_CATEGORY_BACKGROUND);
+  // Start a single thread running at background thread priority.
+  std::vector<cc::TaskCategory> background_thread_prio_categories{
+      std::begin(kBackgroundThreadPriorityCategories),
+      std::end(kBackgroundThreadPriorityCategories)};
 
-  // Use background priority for background thread.
   base::SimpleThread::Options thread_options;
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   thread_options.priority = base::ThreadPriority::BACKGROUND;
 #endif
 
   auto thread = std::make_unique<CategorizedWorkerPoolThread>(
       "CompositorTileWorkerBackground", thread_options, this,
-      background_categories, &has_ready_to_run_background_tasks_cv_);
+      background_thread_prio_categories,
+      /*pipeline=*/nullptr, &has_task_for_background_priority_thread_cv_);
   if (backgrounding_callback_) {
     thread->SetBackgroundingCallback(std::move(background_task_runner_),
                                      std::move(backgrounding_callback_));
   }
   thread->StartAsync();
   threads_.push_back(std::move(thread));
+
+  DCHECK_EQ(num_threads, threads_.size());
 }
 
 void CategorizedWorkerPool::Shutdown() {
@@ -220,8 +255,8 @@ void CategorizedWorkerPool::Shutdown() {
     shutdown_ = true;
 
     // Wake up all workers so they exit.
-    has_ready_to_run_foreground_tasks_cv_.Broadcast();
-    has_ready_to_run_background_tasks_cv_.Broadcast();
+    has_task_for_normal_priority_thread_cv_.Broadcast();
+    has_task_for_background_priority_thread_cv_.Broadcast();
   }
   while (!threads_.empty()) {
     threads_.back()->Join();
@@ -239,9 +274,10 @@ bool CategorizedWorkerPool::PostDelayedTask(const base::Location& from_here,
   DCHECK(completed_tasks_.empty());
   CollectCompletedTasksWithLockAcquired(namespace_token_, &completed_tasks_);
 
-  base::EraseIf(tasks_, [this](const scoped_refptr<cc::Task>& e) {
-    return base::Contains(this->completed_tasks_, e);
-  });
+  base::EraseIf(tasks_, [this](const scoped_refptr<cc::Task>& e)
+                            EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+                              return base::Contains(this->completed_tasks_, e);
+                            });
 
   tasks_.push_back(base::MakeRefCounted<ClosureTask>(std::move(task)));
   graph_.Reset();
@@ -260,14 +296,23 @@ bool CategorizedWorkerPool::PostDelayedTask(const base::Location& from_here,
 
 void CategorizedWorkerPool::Run(
     const std::vector<cc::TaskCategory>& categories,
+    gfx::RenderingPipeline* pipeline,
     base::ConditionVariable* has_ready_to_run_tasks_cv) {
+  base::sequence_manager::TaskTimeObserver* observer =
+      pipeline ? pipeline->AddSimpleThread(base::PlatformThread::CurrentId())
+               : nullptr;
   base::AutoLock lock(lock_);
 
   while (true) {
-    if (!RunTaskWithLockAcquired(categories)) {
+    if (!RunTaskWithLockAcquired(categories, observer)) {
       // We are no longer running tasks, which may allow another category to
       // start running. Signal other worker threads.
       SignalHasReadyToRunTasksWithLockAcquired();
+
+      // Make sure the END of the last trace event emitted before going idle
+      // is flushed to perfetto.
+      // TODO(crbug.com/1021571): Remove this once fixed.
+      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_)
@@ -302,7 +347,7 @@ void CategorizedWorkerPool::SetBackgroundingCallback(
   background_task_runner_ = std::move(task_runner);
 }
 
-CategorizedWorkerPool::~CategorizedWorkerPool() {}
+CategorizedWorkerPool::~CategorizedWorkerPool() = default;
 
 cc::NamespaceToken CategorizedWorkerPool::GenerateNamespaceToken() {
   base::AutoLock lock(lock_);
@@ -377,10 +422,11 @@ void CategorizedWorkerPool::CollectCompletedTasksWithLockAcquired(
 }
 
 bool CategorizedWorkerPool::RunTaskWithLockAcquired(
-    const std::vector<cc::TaskCategory>& categories) {
+    const std::vector<cc::TaskCategory>& categories,
+    base::sequence_manager::TaskTimeObserver* observer) {
   for (const auto& category : categories) {
     if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
-      RunTaskInCategoryWithLockAcquired(category);
+      RunTaskInCategoryWithLockAcquired(category, observer);
       return true;
     }
   }
@@ -388,21 +434,32 @@ bool CategorizedWorkerPool::RunTaskWithLockAcquired(
 }
 
 void CategorizedWorkerPool::RunTaskInCategoryWithLockAcquired(
-    cc::TaskCategory category) {
-
+    cc::TaskCategory category,
+    base::sequence_manager::TaskTimeObserver* observer) {
   lock_.AssertAcquired();
 
   auto prioritized_task = work_queue_.GetNextTaskToRun(category);
 
-  TRACE_EVENT1("toplevel", "TaskGraphRunner::RunTask", "source_frame_number_",
-               prioritized_task.task->frame_number());
+  TRACE_EVENT(
+      "toplevel", "TaskGraphRunner::RunTask", [&](perfetto::EventContext ctx) {
+        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+            ->set_chrome_raster_task()
+            ->set_source_frame_number(prioritized_task.task->frame_number());
+      });
   // There may be more work available, so wake up another worker thread.
   SignalHasReadyToRunTasksWithLockAcquired();
 
   {
     base::AutoUnlock unlock(lock_);
-
+    base::TimeTicks start_time;
+    if (observer) {
+      start_time = base::TimeTicks::Now();
+      observer->WillProcessTask(start_time);
+    }
     prioritized_task.task->RunOnWorkerThread();
+    if (observer) {
+      observer->DidProcessTask(start_time, base::TimeTicks::Now());
+    }
   }
 
   auto* task_namespace = prioritized_task.task_namespace;
@@ -420,20 +477,21 @@ bool CategorizedWorkerPool::ShouldRunTaskForCategoryWithLockAcquired(
   if (!work_queue_.HasReadyToRunTasksForCategory(category))
     return false;
 
-  if (category == cc::TASK_CATEGORY_BACKGROUND) {
+  if (base::Contains(kBackgroundCategories, category)) {
     // Only run background tasks if there are no foreground tasks running or
     // ready to run.
-    size_t num_running_foreground_tasks =
-        work_queue_.NumRunningTasksForCategory(
-            cc::TASK_CATEGORY_NONCONCURRENT_FOREGROUND) +
-        work_queue_.NumRunningTasksForCategory(cc::TASK_CATEGORY_FOREGROUND);
-    bool has_ready_to_run_foreground_tasks =
-        work_queue_.HasReadyToRunTasksForCategory(
-            cc::TASK_CATEGORY_NONCONCURRENT_FOREGROUND) ||
-        work_queue_.HasReadyToRunTasksForCategory(cc::TASK_CATEGORY_FOREGROUND);
+    for (cc::TaskCategory foreground_category : kForegroundCategories) {
+      if (work_queue_.NumRunningTasksForCategory(foreground_category) > 0 ||
+          work_queue_.HasReadyToRunTasksForCategory(foreground_category)) {
+        return false;
+      }
+    }
 
-    if (num_running_foreground_tasks > 0 || has_ready_to_run_foreground_tasks)
-      return false;
+    // Enforce that only one background task runs at a time.
+    for (cc::TaskCategory background_category : kBackgroundCategories) {
+      if (work_queue_.NumRunningTasksForCategory(background_category) > 0)
+        return false;
+    }
   }
 
   // Enforce that only one nonconcurrent task runs at a time.
@@ -449,14 +507,20 @@ bool CategorizedWorkerPool::ShouldRunTaskForCategoryWithLockAcquired(
 void CategorizedWorkerPool::SignalHasReadyToRunTasksWithLockAcquired() {
   lock_.AssertAcquired();
 
-  if (ShouldRunTaskForCategoryWithLockAcquired(cc::TASK_CATEGORY_FOREGROUND) ||
-      ShouldRunTaskForCategoryWithLockAcquired(
-          cc::TASK_CATEGORY_NONCONCURRENT_FOREGROUND)) {
-    has_ready_to_run_foreground_tasks_cv_.Signal();
+  for (cc::TaskCategory category : kNormalThreadPriorityCategories) {
+    if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
+      has_task_for_normal_priority_thread_cv_.Signal();
+      return;
+    }
   }
 
-  if (ShouldRunTaskForCategoryWithLockAcquired(cc::TASK_CATEGORY_BACKGROUND)) {
-    has_ready_to_run_background_tasks_cv_.Signal();
+  // Due to the early return in the previous loop, this only runs when there are
+  // no tasks to run on normal priority threads.
+  for (cc::TaskCategory category : kBackgroundThreadPriorityCategories) {
+    if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
+      has_task_for_background_priority_thread_cv_.Signal();
+      return;
+    }
   }
 }
 

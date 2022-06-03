@@ -6,14 +6,16 @@
 [Exposed=Window]
 interface RTCRtpSender {
     readonly attribute MediaStreamTrack? track;
-    [RuntimeEnabled=RTCDtlsTransport] readonly attribute RTCDtlsTransport? transport;
-    [RuntimeEnabled=RTCDtlsTransport] readonly attribute RTCDtlsTransport? rtcpTransport;
-    static RTCRtpCapabilities? getCapabilities(DOMString kind);
-    [CallWith=ScriptState] Promise<void> setParameters(optional RTCRtpSendParameters parameters);
+    readonly attribute RTCDtlsTransport? transport;
+    readonly attribute RTCDtlsTransport? rtcpTransport;
+    [CallWith=ScriptState, HighEntropy, Measure] static RTCRtpCapabilities? getCapabilities(DOMString kind);
+    [CallWith=ScriptState] Promise<void> setParameters(RTCRtpSendParameters parameters);
     RTCRtpSendParameters getParameters();
     [Measure, CallWith=ScriptState] Promise<void> replaceTrack(MediaStreamTrack? withTrack);
     [Measure] readonly attribute RTCDTMFSender? dtmf;
     [Measure, RaisesException] void setStreams(MediaStream... streams);
     [CallWith=ScriptState] Promise<RTCStatsReport> getStats();
-    // TODO(hbos): Implement the rest of RTCRtpSender, https://crbug.com/700916.
+    [Measure,
+     CallWith=ScriptState,
+     RaisesException] RTCInsertableStreams createEncodedStreams();
 };

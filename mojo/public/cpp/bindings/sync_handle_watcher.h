@@ -22,7 +22,7 @@ namespace mojo {
 // SyncHandleWatcher is used for sync methods. While a sync call is waiting for
 // response, we would like to block the sequence. On the other hand, we need
 // incoming sync method requests on the same sequence to be able to reenter. We
-// also need master interface endpoints to continue dispatching messages for
+// also need primary interface endpoints to continue dispatching messages for
 // associated endpoints on different sequence.
 //
 // This class is not thread safe.
@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncHandleWatcher {
   SyncHandleWatcher(const Handle& handle,
                     MojoHandleSignals handle_signals,
                     const SyncHandleRegistry::HandleCallback& callback);
+
+  SyncHandleWatcher(const SyncHandleWatcher&) = delete;
+  SyncHandleWatcher& operator=(const SyncHandleWatcher&) = delete;
 
   ~SyncHandleWatcher();
 
@@ -66,8 +69,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncHandleWatcher {
   scoped_refptr<base::RefCountedData<bool>> destroyed_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncHandleWatcher);
 };
 
 }  // namespace mojo

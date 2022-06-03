@@ -51,7 +51,7 @@ class PLATFORM_EXPORT V8ValueOrScriptWrappableAdapter {
 
  private:
   v8::Local<v8::Value> v8_value_;
-  Member<ScriptWrappable> script_wrappable_;
+  ScriptWrappable* script_wrappable_ = nullptr;
 };
 
 }  // namespace bindings

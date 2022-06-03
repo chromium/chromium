@@ -16,7 +16,7 @@ namespace service_manager {
 
 // Encapsulates a mojo::PendingRemote|Remote<mojom::InterfaceProvider>
 // implemented in a remote application. Provides two main features:
-// - a typesafe GetInterface() method for binding InterfacePtrs.
+// - a typesafe GetInterface() method for binding Interface remotes.
 // - a testing API that allows local callbacks to be registered that bind
 //   requests for remote interfaces.
 // An instance of this class is used by the GetInterface() methods on
@@ -29,6 +29,10 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   class TestApi {
    public:
     explicit TestApi(InterfaceProvider* provider) : provider_(provider) {}
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi() {}
 
     void SetBinderForName(
@@ -51,18 +55,24 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
 
    private:
     InterfaceProvider* provider_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   // Constructs an InterfaceProvider which is usable immediately despite not
   // being bound to any actual remote implementation. Must call Bind()
   // eventually in order for the provider to function properly.
-  InterfaceProvider();
+  // The task_runner argument is used for mojo remote connection.
+  explicit InterfaceProvider(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Constructs an InterfaceProvider which uses |interface_provider| to issue
   // remote interface requests.
-  explicit InterfaceProvider(
-      mojo::PendingRemote<mojom::InterfaceProvider> interface_provider);
+  // The task_runner argument is used for mojo remote connection.
+  InterfaceProvider(
+      mojo::PendingRemote<mojom::InterfaceProvider> interface_provider,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  InterfaceProvider(const InterfaceProvider&) = delete;
+  InterfaceProvider& operator=(const InterfaceProvider&) = delete;
 
   ~InterfaceProvider();
 
@@ -87,18 +97,11 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
 
   base::WeakPtr<InterfaceProvider> GetWeakPtr();
 
-  // Binds a passed in interface pointer to an implementation of the interface
-  // in the remote application using MakeRequest. The interface pointer can
-  // immediately be used to start sending requests to the remote interface.
-  // Uses templated parameters in order to work with weak interfaces in blink.
-  template <typename... Args>
-  void GetInterface(Args&&... args) {
-    GetInterface(MakeRequest(std::forward<Args>(args)...));
-  }
-  template <typename Interface>
-  void GetInterface(mojo::InterfaceRequest<Interface> request) {
-    GetInterfaceByName(Interface::Name_, std::move(request.PassMessagePipe()));
-  }
+  // Binds a passed in pending receiver to an implementation of the interface in
+  // the remote application. The mojo remote associated to the interface in the
+  // local application can immediately be used to start sending requests to the
+  // remote interface. Uses templated parameters in order to work with weak
+  // interfaces in blink.
   template <typename Interface>
   void GetInterface(mojo::PendingReceiver<Interface> receiver) {
     GetInterfaceByName(Interface::Name_, receiver.PassPipe());
@@ -106,23 +109,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   void GetInterfaceByName(const std::string& name,
                           mojo::ScopedMessagePipeHandle request_handle);
 
-  // Returns a callback to GetInterface<Interface>(). This can be passed to
-  // BinderRegistry::AddInterface() to forward requests.
-  template <typename Interface>
-  base::RepeatingCallback<void(mojo::InterfaceRequest<Interface>)>
-  CreateInterfaceFactory() {
-    return base::BindRepeating(
-        &InterfaceProvider::BindInterfaceRequestFromSource<Interface>,
-        GetWeakPtr());
-  }
-
  private:
-  template <typename Interface>
-  void BindInterfaceRequestFromSource(
-      mojo::InterfaceRequest<Interface> request) {
-    GetInterface<Interface>(std::move(request));
-  }
-
   void SetBinderForName(
       const std::string& name,
       base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) {
@@ -139,14 +126,13 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
 
   mojo::Remote<mojom::InterfaceProvider> interface_provider_;
   mojo::PendingReceiver<mojom::InterfaceProvider> pending_receiver_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // A callback to receive all GetInterface() requests in lieu of the
   // InterfaceProvider pipe.
   ForwardCallback forward_callback_;
 
   base::WeakPtrFactory<InterfaceProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceProvider);
 };
 
 }  // namespace service_manager

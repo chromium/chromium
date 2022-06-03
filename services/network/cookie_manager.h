@@ -21,27 +21,31 @@
 
 namespace net {
 class CookieStore;
-}
+class URLRequestContext;
+}  // namespace net
 
 class GURL;
 
 namespace network {
+class FirstPartySets;
 class SessionCleanupCookieStore;
 
 // Wrap a cookie store in an implementation of the mojo cookie interface.
-
-// This is an IO thread object; all methods on this object must be called on
-// the IO thread.  Note that this does not restrict the locations from which
-// mojo messages may be sent to the object.
 class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
     : public mojom::CookieManager {
  public:
   // Construct a CookieService that can serve mojo requests for the underlying
-  // cookie store.  |*cookie_store| must outlive this object.
+  // cookie store.  |url_request_context->cookie_store()| must outlive this
+  // object. `*first_party_sets` must outlive
+  // `url_request_context->cookie_store()`.
   CookieManager(
-      net::CookieStore* cookie_store,
+      net::URLRequestContext* url_request_context,
+      const FirstPartySets* first_party_sets,
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
+
+  CookieManager(const CookieManager&) = delete;
+  CookieManager& operator=(const CookieManager&) = delete;
 
   ~CookieManager() override;
 
@@ -58,11 +62,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void GetAllCookies(GetAllCookiesCallback callback) override;
   void GetAllCookiesWithAccessSemantics(
       GetAllCookiesWithAccessSemanticsCallback callback) override;
-  void GetCookieList(const GURL& url,
-                     const net::CookieOptions& cookie_options,
-                     GetCookieListCallback callback) override;
+  void GetCookieList(
+      const GURL& url,
+      const net::CookieOptions& cookie_options,
+      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      GetCookieListCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
-                          const std::string& source_scheme,
+                          const GURL& source_url,
                           const net::CookieOptions& cookie_options,
                           SetCanonicalCookieCallback callback) override;
   void DeleteCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -70,9 +76,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void SetContentSettings(const ContentSettingsForOneType& settings) override;
   void DeleteCookies(mojom::CookieDeletionFilterPtr filter,
                      DeleteCookiesCallback callback) override;
+  void DeleteSessionOnlyCookies(
+      DeleteSessionOnlyCookiesCallback callback) override;
   void AddCookieChangeListener(
       const GURL& url,
-      const base::Optional<std::string>& name,
+      const absl::optional<std::string>& name,
       mojo::PendingRemote<mojom::CookieChangeListener> listener) override;
   void AddGlobalChangeListener(
       mojo::PendingRemote<mojom::CookieChangeListener> listener) override;
@@ -91,6 +99,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void BlockThirdPartyCookies(bool block) override;
   void SetContentSettingsForLegacyCookieAccess(
       const ContentSettingsForOneType& settings) override;
+  void SetStorageAccessGrantSettings(
+      const ContentSettingsForOneType& settings,
+      SetStorageAccessGrantSettingsCallback callback) override;
 
   // Configures |out| based on |params|. (This doesn't honor
   // allow_file_scheme_cookies, which affects the cookie store rather than the
@@ -106,6 +117,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // State associated with a CookieChangeListener.
   struct ListenerRegistration {
     ListenerRegistration();
+
+    ListenerRegistration(const ListenerRegistration&) = delete;
+    ListenerRegistration& operator=(const ListenerRegistration&) = delete;
+
     ~ListenerRegistration();
 
     // Translates a CookieStore change callback to a CookieChangeListener call.
@@ -116,8 +131,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
 
     // The observer receiving change notifications.
     mojo::Remote<mojom::CookieChangeListener> listener;
-
-    DISALLOW_COPY_AND_ASSIGN(ListenerRegistration);
   };
 
   // Handles connection errors on change listener pipes.
@@ -130,8 +143,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Note: RestrictedCookieManager and CookieAccessDelegate store pointers to
   // |cookie_settings_|.
   CookieSettings cookie_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManager);
 };
 
 COMPONENT_EXPORT(NETWORK_SERVICE)

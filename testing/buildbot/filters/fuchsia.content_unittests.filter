@@ -1,12 +1,7 @@
 # Being ported, https://crbug.com/754861.
 
 # https://crbug.com/780317 - Flakily timeout under QEMU s/w emulation of ARM64.
--BluetoothBlocklistTest.InvalidUUID
 -WebBluetoothDeviceIdTest.DefaultConstructor
-
-# https://crbug.com/761214
--RendererAudioOutputStreamFactoryIntegrationTest.StreamIntegrationTest
--WebContentsAudioInputStreamTest.MirroringNothingWithTargetChange/0
 
 # Flaky: https://crbug.com/759653.
 -RenderWidgetHostViewAuraTest.Resize
@@ -39,7 +34,7 @@
 -LevelDBTransactionRangeTests/LevelDBTransactionRangeTest.*
 
 # Flaky: https://crbug.com/780508.
--ServiceWorkerProviderHostTest.*
+-ServiceWorkerContainerHostTest.*
 
 # Flaky, https://crbug.com/784449.
 -WebContentsAudioInputStreamTest.MirroringOneStreamAfterTargetChange*
@@ -48,10 +43,7 @@
 -RenderWidgetHostViewAuraTest.SyntheticFlingCancelAtTouchpadScrollBegin
 -RenderWidgetHostViewAuraTest.TimerBasedWheelEventPhaseInfo
 
-# Flaky, https://crbug.com/884250.
--ReferrerSanitizerTest.SanitizesPolicyForNonEmptyReferrers
-
-# These tests require OSExchangeDataProviderFactory::CreateProvider to
-# be implemented: https://crbug.com/750934.
+# TODO(crbug.com/1231509): These tests require
+# OSExchangeDataProviderFactory::CreateProvider to be implemented.
 -WebContentsViewAuraTest.DragDropFiles
 -WebContentsViewAuraTest.DragDropFilesOriginateFromRenderer

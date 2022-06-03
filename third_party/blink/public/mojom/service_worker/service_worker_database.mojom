@@ -6,3 +6,4 @@ module blink.mojom;
 
 const int64 kInvalidServiceWorkerRegistrationId = -1;
 const int64 kInvalidServiceWorkerVersionId = -1;
+const int64 kInvalidServiceWorkerResourceId = -1;

@@ -1,96 +1,23 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'The chief difficulty Alice found at first was in managing'",
-          "rect": [14, 80, 406, 119],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'away,\n'",
-          "rect": [14, 80, 406, 119],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'but generally, just as she had got its'",
-          "rect": [14, 80, 406, 119],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'comfortably enough, under her arm, with its legs'",
-          "rect": [14, 80, 406, 119],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'flamingo: she succeeded in getting its body tucked'",
-          "rect": [14, 80, 406, 119],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'hanging down,\n'",
-          "rect": [14, 80, 406, 119],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'hedgehog a blow with its head, it\n'",
-          "rect": [14, 80, 406, 119],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'her\n'",
-          "rect": [14, 80, 406, 119],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'neck nicely straightened\n'",
-          "rect": [14, 80, 406, 119],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'out, and was going to give the'",
-          "rect": [14, 80, 406, 119],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'away,\n'",
-          "rect": [14, 80, 354, 119],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'but generally, just as she had got its'",
-          "rect": [14, 80, 354, 119],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'comfortably enough, under her arm, with its legs'",
-          "rect": [14, 80, 354, 119],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'hanging down,\n'",
-          "rect": [14, 80, 354, 119],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'neck nicely straightened\n'",
-          "rect": [14, 80, 354, 119],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'out, and was going to give the'",
-          "rect": [14, 80, 354, 119],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow (floating) DIV id='pinkFloat'",
-          "rect": [378, 138, 70, 30],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [14, 80, 354, 19],
+        [39, 100, 329, 19],
+        [55, 120, 313, 19],
+        [120, 140, 248, 19],
+        [190, 160, 230, 19],
+        [14, 180, 224, 19],
+        [172, 160, 196, 19],
+        [14, 160, 176, 19],
+        [14, 140, 106, 19],
+        [378, 138, 70, 30],
+        [14, 120, 41, 19],
+        [14, 100, 25, 19]
       ]
     }
   ]

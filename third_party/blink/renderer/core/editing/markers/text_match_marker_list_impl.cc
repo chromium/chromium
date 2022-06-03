@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker_list_impl.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 
 namespace blink {
 
@@ -19,14 +21,32 @@ DocumentMarker::MarkerType TextMatchMarkerListImpl::MarkerType() const {
 }
 
 static void UpdateMarkerLayoutRect(const Node& node, TextMatchMarker& marker) {
-  const Position start_position(node, marker.StartOffset());
-  const Position end_position(node, marker.EndOffset());
-  EphemeralRange range(start_position, end_position);
-
   DCHECK(node.GetDocument().GetFrame());
   LocalFrameView* frame_view = node.GetDocument().GetFrame()->View();
 
   DCHECK(frame_view);
+
+  // If we have a locked ancestor, then the only reliable place to have a marker
+  // is at the locked root rect, since the elements under a locked root might
+  // not have up-to-date layout information.
+  if (auto* locked_root =
+          DisplayLockUtilities::HighestLockedInclusiveAncestor(node)) {
+    if (auto* locked_root_layout_object = locked_root->GetLayoutObject()) {
+      marker.SetRect(frame_view->FrameToDocument(
+          PhysicalRect(locked_root_layout_object->AbsoluteBoundingBoxRect())));
+    } else {
+      // If the locked root doesn't have a layout object, then we don't have the
+      // information needed to place the tickmark. Set the marker rect to an
+      // empty rect.
+      marker.SetRect(PhysicalRect());
+    }
+    return;
+  }
+
+  const Position start_position(node, marker.StartOffset());
+  const Position end_position(node, marker.EndOffset());
+  EphemeralRange range(start_position, end_position);
+
   marker.SetRect(
       frame_view->FrameToDocument(PhysicalRect(ComputeTextRect(range))));
 }

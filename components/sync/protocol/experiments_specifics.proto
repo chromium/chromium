@@ -1,11 +1,13 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// Sync protocol datatype extension for experimental feature flags.
 
-// If you change or add any fields in this file, update proto_visitors.h and
-// potentially proto_enum_conversions.{h, cc}.
+// This was a sync protocol datatype extension for experimental feature flags,
+// also exposed via a separate ExperimentStatus API. As of M75, the datatype
+// isn't used anymore, and as of M81 the ExperimentStatus API isn't used anymore
+// either (see crbug.com/939819 and crbug.com/1009361). The proto definition
+// needs to stay around for now so that the server can continue supporting these
+// old clients .
 
 syntax = "proto2";
 

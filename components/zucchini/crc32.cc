@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace zucchini {
 

@@ -5,7 +5,9 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_STYLE_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_STYLE_H_
 
+#include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace ash {
@@ -14,6 +16,15 @@ namespace message_center_style {
 
 constexpr SkColor kEmptyViewColor = SkColorSetARGB(0x8A, 0x0, 0x0, 0x0);
 constexpr SkColor kScrollShadowColor = SkColorSetARGB(0x24, 0x0, 0x0, 0x0);
+
+// TODO: Get the colors from AshColorProvider once notification supports
+// dark/light mode.
+constexpr SkColor kCountLabelColor = gfx::kGoogleGrey900;
+constexpr SkColor kSeperatorColor = SkColorSetA(SK_ColorBLACK, 0x24);  // 14%
+constexpr SkColor kNotificationBackgroundColor = SK_ColorWHITE;
+constexpr SkColor kUnifiedMenuButtonColorActive = gfx::kGoogleBlueDark600;
+constexpr SkColor kInkRippleColor = SK_ColorBLACK;
+constexpr float kInkRippleOpacity = 0.06f;
 
 constexpr int kEmptyIconSize = 24;
 constexpr gfx::Insets kEmptyIconPadding(0, 0, 4, 0);
@@ -32,6 +43,12 @@ constexpr SkColor kSwipeControlBackgroundColor =
 // The ratio to multiply with the swipe control width to get the width to
 // display at full opacity when swiping.
 constexpr float kSwipeControlFullOpacityRatio = 1.5f;
+
+constexpr int kMaxGroupedNotificationsInCollapsedState = 3;
+constexpr gfx::Insets kGroupedCollapsedCountViewInsets(0,
+                                                       0,
+                                                       16,
+                                                       kTrayMenuWidth - 100);
 
 }  // namespace message_center_style
 

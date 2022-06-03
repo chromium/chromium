@@ -65,6 +65,13 @@
 // otherwise.
 - (CommandDispatcher*)strictCallableForProtocol:(Protocol*)protocol;
 
+// After this method is called, -stopDispatching methods will stop dispatching,
+// but this object will continue to respond to registered selectors by silently
+// failing. This method should be called on -applicationWillTerminate. It helps
+// avoid untangling the dispatcher chains in the correct order, which sometimes
+// can be very hard.
+- (void)prepareForShutdown;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_COMMAND_DISPATCHER_H_

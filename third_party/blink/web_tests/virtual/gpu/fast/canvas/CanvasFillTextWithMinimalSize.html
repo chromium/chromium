@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Test when fillText doesn't respect browser minimal font size.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+</style>
+
+<canvas id="target" width="300" height="300"></canvas>
+<script>
+  if (window.testRunner) {
+    testRunner.overridePreference('WebKitMinimumFontSize', '12');
+    testRunner.waitUntilDone();
+  }
+  var target = document.getElementById("target");
+  var targetCtx = target.getContext("2d");
+
+  function drawTextTo(elem) {
+    var ctx = elem.getContext("2d");
+    ctx.fillStyle = "black";
+    ctx.font = "8px Arial";
+    ctx.fillText("Hello", 10, 10);
+  }
+
+  // Case A: Text rendered directly to target
+  // Result A: 8px font size respected
+  drawTextTo(target);
+
+  // Case B: Text rendered to canvas element outside DOM
+  // Result B: 8px font size respected
+  var offscreen = document.createElement("canvas");
+  drawTextTo(offscreen);
+  targetCtx.drawImage(offscreen, 0, 20);
+
+  // Case C: Text rendered to OffscreenCanvas element
+  // Result C: 8px font size respected
+  var offscreen2 = new OffscreenCanvas(100, 100);
+  drawTextTo(offscreen2);
+  targetCtx.drawImage(offscreen2, 0, 40);
+
+  if (window.testRunner)
+      testRunner.notifyDone();
+</script>

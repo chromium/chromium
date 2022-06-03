@@ -26,7 +26,12 @@ struct NET_EXPORT SSLContextConfig {
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
   // SSL 2.0 and SSL 3.0 are not supported. If version_max < version_min, it
   // means no protocol versions are enabled.
+  //
+  // version_min_warn is the minimum protocol version that won't cause cert
+  // errors (e.g., in Chrome we'll show a security interstitial for connections
+  // using a version lower than version_min_warn).
   uint16_t version_min = kDefaultSSLVersionMin;
+  uint16_t version_min_warn = kDefaultSSLVersionMinWarn;
   uint16_t version_max = kDefaultSSLVersionMax;
 
   // Presorted list of cipher suites which should be explicitly prevented from
@@ -39,12 +44,10 @@ struct NET_EXPORT SSLContextConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
 
-  // If true, enables TLS 1.3 downgrade hardening for connections using
-  // local trust anchors. (Hardening for known roots is always enabled.)
-  //
-  // TODO(https://crbug.com/1033598): Enable this it has successfully been
-  // enabled in Chrome.
-  bool tls13_hardening_for_local_anchors_enabled = false;
+  // If false, disables post-quantum key agreement in TLS connections.
+  bool cecpq2_enabled = true;
+
+  // ADDING MORE HERE? Don't forget to update |SSLContextConfigsAreEqual|.
 };
 
 // The interface for retrieving global SSL configuration.  This interface

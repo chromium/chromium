@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  await internals.setPermission({name: 'screen-wake-lock'}, 'granted',
+                                location.origin, location.origin);
+
+  const lock = await navigator.wakeLock.request('screen');
+  await lock.release();
+}, "Screen wake locks available.");
+
+promise_test(async t => {
+  await internals.setPermission({name: 'system-wake-lock'}, 'granted',
+                                location.origin, location.origin);
+
+  const lock = await navigator.wakeLock.request('system');
+  await lock.release();
+}, "System wake locks available.");
+</script>
+</body>
+</html>

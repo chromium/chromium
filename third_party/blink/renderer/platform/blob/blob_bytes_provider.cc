@@ -4,11 +4,15 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
+#include <utility>
+
+#include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -80,7 +84,7 @@ class BlobBytesStreamer {
 
  private:
   // The index of the item currently being written.
-  size_t current_item_ = 0;
+  wtf_size_t current_item_ = 0;
   // The offset into the current item of the first byte not yet written to the
   // data pipe.
   size_t current_item_offset_ = 0;
@@ -117,8 +121,8 @@ constexpr size_t BlobBytesProvider::kMaxConsolidatedItemSizeInBytes;
 // static
 BlobBytesProvider* BlobBytesProvider::CreateAndBind(
     mojo::PendingReceiver<mojom::blink::BytesProvider> receiver) {
-  auto task_runner = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   auto provider = base::WrapUnique(new BlobBytesProvider(task_runner));
   auto* result = provider.get();
   // TODO(mek): Consider binding BytesProvider on the IPC thread instead, only
@@ -131,7 +135,7 @@ BlobBytesProvider* BlobBytesProvider::CreateAndBind(
             mojo::MakeSelfOwnedReceiver(std::move(provider),
                                         std::move(receiver));
           },
-          WTF::Passed(std::move(provider)), WTF::Passed(std::move(receiver))));
+          std::move(provider), std::move(receiver)));
   return result;
 }
 
@@ -158,7 +162,8 @@ void BlobBytesProvider::AppendData(base::span<const char> data) {
       data_.back()->length() + data.size() > kMaxConsolidatedItemSizeInBytes) {
     AppendData(RawData::Create());
   }
-  data_.back()->MutableData()->Append(data.data(), data.size());
+  data_.back()->MutableData()->Append(
+      data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
 void BlobBytesProvider::RequestAsReply(RequestAsReplyCallback callback) {
@@ -167,7 +172,7 @@ void BlobBytesProvider::RequestAsReply(RequestAsReplyCallback callback) {
   // to reduce the number of copies of data that are made here.
   Vector<uint8_t> result;
   for (const auto& d : data_)
-    result.Append(d->data(), d->length());
+    result.Append(d->data(), base::checked_cast<wtf_size_t>(d->length()));
   std::move(callback).Run(result);
 }
 
@@ -184,30 +189,26 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
                                       uint64_t file_offset,
                                       RequestAsFileCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BooleanHistogram, seek_histogram,
-                                  ("Storage.Blob.RendererFileSeekFailed"));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BooleanHistogram, write_histogram,
-                                  ("Storage.Blob.RendererFileWriteFailed"));
 
   if (!file.IsValid()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   int64_t seek_distance =
       file.Seek(base::File::FROM_BEGIN, SafeCast<int64_t>(file_offset));
   bool seek_failed = seek_distance < 0;
-  seek_histogram.Count(seek_failed);
+  base::UmaHistogramBoolean("Storage.Blob.RendererFileSeekFailed", seek_failed);
   if (seek_failed) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   // Find first data item that should be read from (by finding the first offset
   // that starts after the offset we want to start reading from).
-  size_t data_index =
+  wtf_size_t data_index = static_cast<wtf_size_t>(
       std::upper_bound(offsets_.begin(), offsets_.end(), source_offset) -
-      offsets_.begin();
+      offsets_.begin());
 
   // Offset of the current data chunk in the overall stream provided by this
   // provider.
@@ -231,9 +232,10 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
       int actual_written = file.WriteAtCurrentPos(
           data->data() + data_offset + written, writing_size);
       bool write_failed = actual_written < 0;
-      write_histogram.Count(write_failed);
+      base::UmaHistogramBoolean("Storage.Blob.RendererFileWriteFailed",
+                                write_failed);
       if (write_failed) {
-        std::move(callback).Run(base::nullopt);
+        std::move(callback).Run(absl::nullopt);
         return;
       }
       written += actual_written;
@@ -243,12 +245,12 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   }
 
   if (!file.Flush()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   base::File::Info info;
   if (!file.GetInfo(&info)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   std::move(callback).Run(info.last_modified);

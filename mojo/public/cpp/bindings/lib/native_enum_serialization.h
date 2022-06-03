@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/pickle.h"
 #include "ipc/ipc_param_traits.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"

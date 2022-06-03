@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 
@@ -23,6 +23,9 @@ ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                       base::SequencedTaskRunnerHandle::Get()) {
+  // TODO(yhirano): Turn this to a DCHECK once we find the root cause of
+  // https://crbug.com/1156550.
+  CHECK(chunked_data_pipe_getter_.is_bound());
   chunked_data_pipe_getter_.set_disconnect_handler(
       base::BindOnce(&ChunkedDataPipeUploadDataStream::OnDataPipeGetterClosed,
                      base::Unretained(this)));
@@ -32,6 +35,10 @@ ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
 }
 
 ChunkedDataPipeUploadDataStream::~ChunkedDataPipeUploadDataStream() {}
+
+bool ChunkedDataPipeUploadDataStream::AllowHTTP1() const {
+  return resource_request_body_->AllowHTTP1ForStreamingUpload();
+}
 
 int ChunkedDataPipeUploadDataStream::InitInternal(
     const net::NetLogWithSource& net_log) {
@@ -44,10 +51,27 @@ int ChunkedDataPipeUploadDataStream::InitInternal(
   if (!chunked_data_pipe_getter_.is_connected())
     return net::ERR_FAILED;
 
+  switch (cache_state_) {
+    case CacheState::kActive:
+      if (data_pipe_.is_valid())
+        return net::OK;
+      else
+        break;
+    case CacheState::kExhausted:
+      return net::ERR_FAILED;
+    case CacheState::kDisabled:
+      break;
+  }
+
   // Get a new data pipe and start.
-  mojo::DataPipe data_pipe;
-  chunked_data_pipe_getter_->StartReading(std::move(data_pipe.producer_handle));
-  data_pipe_ = std::move(data_pipe.consumer_handle);
+  mojo::ScopedDataPipeProducerHandle data_pipe_producer;
+  mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
+  MojoResult result =
+      mojo::CreateDataPipe(nullptr, data_pipe_producer, data_pipe_consumer);
+  if (result != MOJO_RESULT_OK)
+    return net::ERR_INSUFFICIENT_RESOURCES;
+  chunked_data_pipe_getter_->StartReading(std::move(data_pipe_producer));
+  data_pipe_ = std::move(data_pipe_consumer);
 
   return net::OK;
 }
@@ -72,6 +96,10 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
     return net::OK;
   }
 
+  int cache_read_len = ReadFromCacheIfNeeded(buf, buf_len);
+  if (cache_read_len > 0)
+    return cache_read_len;
+
   // Only start watching once a read starts. This is because OnHandleReadable()
   // uses |buf_| implicitly assuming that this method has already been called.
   if (!handle_watcher_.IsWatching()) {
@@ -94,6 +122,7 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
     // allow it.
     if (size_ && *size_ == bytes_read_)
       SetIsFinalChunk();
+    WriteToCacheIfNeeded(buf, num_bytes);
     return num_bytes;
   }
 
@@ -125,12 +154,14 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
 }
 
 void ChunkedDataPipeUploadDataStream::ResetInternal() {
-  // Init rewinds the stream. Throw away current state, other than |size_| and
-  // |status_|.
   buf_ = nullptr;
   buf_len_ = 0;
   handle_watcher_.Cancel();
   bytes_read_ = 0;
+  if (cache_state_ != CacheState::kDisabled)
+    return;
+  // Init rewinds the stream. Throw away current state, other than |size_| and
+  // |status_|.
   data_pipe_.reset();
 }
 
@@ -200,6 +231,51 @@ void ChunkedDataPipeUploadDataStream::OnDataPipeGetterClosed() {
   // start reading again, so do nothing.
   if (!size_)
     OnSizeReceived(net::ERR_FAILED, 0);
+}
+
+void ChunkedDataPipeUploadDataStream::EnableCache(size_t dst_window_size) {
+  DCHECK_EQ(bytes_read_, 0u);
+  DCHECK_EQ(cache_state_, CacheState::kDisabled);
+  DCHECK(cache_.empty());
+  cache_state_ = CacheState::kActive;
+  dst_window_size_ = dst_window_size;
+}
+
+void ChunkedDataPipeUploadDataStream::WriteToCacheIfNeeded(net::IOBuffer* buf,
+                                                           uint32_t num_bytes) {
+  if (cache_state_ != CacheState::kActive)
+    return;
+
+  // |cache_state_ == CacheState::kActive| and |cache_.size() >= bytes_read_|
+  // means we're reading from the cache.
+  if (cache_.size() >= bytes_read_)
+    return;
+
+  if (cache_.size() >= dst_window_size_) {
+    // Attempted to write over the max size. Replay must be failed.
+    // Notes: CDPUDS caches chunks from the date pipe until whole size gets over
+    // the max size. For example, if the date pipe sends [60k, 60k, 60k] chunks,
+    // CDPUDS caches the first 2 60ks. If it is [120k, 1k,], CDPUDS caches the
+    // 120k chunk or any size if it is the first chunk.
+    cache_state_ = CacheState::kExhausted;
+    return;
+  }
+  cache_.insert(cache_.end(), buf->data(), buf->data() + num_bytes);
+}
+
+int ChunkedDataPipeUploadDataStream::ReadFromCacheIfNeeded(net::IOBuffer* buf,
+                                                           int buf_len) {
+  if (cache_state_ != CacheState::kActive)
+    return 0;
+  if (cache_.size() <= bytes_read_)
+    return 0;
+
+  int read_size =
+      std::min(static_cast<int>(cache_.size() - bytes_read_), buf_len);
+  DCHECK_GT(read_size, 0);
+  memcpy(buf->data(), &cache_[bytes_read_], read_size);
+  bytes_read_ += read_size;
+  return read_size;
 }
 
 }  // namespace network

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that when a deferred image is loaded, it uses the latest referrerpolicy assert_unreached: The image request should successfully load Reached unreachable code
+Harness: the test ran to completion.
+

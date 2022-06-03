@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
 #include "net/cookies/cookie_options.h"
 
 namespace net {

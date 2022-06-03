@@ -4,14 +4,15 @@
 
 #include "net/disk_cache/blockfile/stats.h"
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/sample_vector.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 

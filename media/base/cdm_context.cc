@@ -21,19 +21,24 @@ Decryptor* CdmContext::GetDecryptor() {
   return nullptr;
 }
 
-int CdmContext::GetCdmId() const {
-  return kInvalidCdmId;
+absl::optional<base::UnguessableToken> CdmContext::GetCdmId() const {
+  return absl::nullopt;
 }
 
+std::string CdmContext::CdmIdToString(const base::UnguessableToken* cdm_id) {
+  return cdm_id ? cdm_id->ToString() : "null";
+}
+
+#if defined(OS_WIN)
 bool CdmContext::RequiresMediaFoundationRenderer() {
   return false;
 }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-CdmProxyContext* CdmContext::GetCdmProxyContext() {
-  return nullptr;
+bool CdmContext::GetMediaFoundationCdmProxy(
+    GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) {
+  return false;
 }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif
 
 #if defined(OS_ANDROID)
 MediaCryptoContext* CdmContext::GetMediaCryptoContext() {
@@ -47,6 +52,10 @@ FuchsiaCdmContext* CdmContext::GetFuchsiaCdmContext() {
 }
 #endif
 
-void IgnoreCdmAttached(bool /* success */) {}
+#if defined(OS_CHROMEOS)
+chromeos::ChromeOsCdmContext* CdmContext::GetChromeOsCdmContext() {
+  return nullptr;
+}
+#endif
 
 }  // namespace media

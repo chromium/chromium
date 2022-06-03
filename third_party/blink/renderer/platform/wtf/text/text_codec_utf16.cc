@@ -25,7 +25,9 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf16.h"
 
+#include <unicode/utf16.h>
 #include <memory>
+
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -76,7 +78,7 @@ String TextCodecUTF16::Decode(const char* bytes,
     if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {
       have_lead_byte_ = have_lead_surrogate_ = false;
       saw_error = true;
-      return String(&kReplacementCharacter, 1);
+      return String(&kReplacementCharacter, 1u);
     }
     return String();
   }

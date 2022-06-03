@@ -12,7 +12,6 @@
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/background_fetch/storage/database_task.h"
-#include "content/browser/cache_storage/cache_storage_cache.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
@@ -36,20 +35,19 @@ class MatchRequestsTask : public DatabaseTask {
       std::unique_ptr<BackgroundFetchRequestMatchParams> match_params,
       SettledFetchesCallback callback);
 
+  MatchRequestsTask(const MatchRequestsTask&) = delete;
+  MatchRequestsTask& operator=(const MatchRequestsTask&) = delete;
+
   ~MatchRequestsTask() override;
 
   // DatabaseTask implementation:
   void Start() override;
 
  private:
-  void DidOpenCache(int64_t trace_id,
-                    CacheStorageCacheHandle handle,
-                    blink::mojom::CacheStorageError error);
-
+  void DidOpenCache(int64_t trace_id, blink::mojom::CacheStorageError error);
   void DidGetAllMatchedEntries(
       int64_t trace_id,
-      blink::mojom::CacheStorageError error,
-      std::vector<CacheStorageCache::CacheEntry> entries);
+      blink::mojom::GetAllMatchedEntriesResultPtr result);
 
   // Checks whether |request| shuld be matched given the provided query params.
   bool ShouldMatchRequest(const blink::mojom::FetchAPIRequestPtr& request);
@@ -62,12 +60,9 @@ class MatchRequestsTask : public DatabaseTask {
   std::unique_ptr<BackgroundFetchRequestMatchParams> match_params_;
   SettledFetchesCallback callback_;
 
-  CacheStorageCacheHandle handle_;
   std::vector<blink::mojom::BackgroundFetchSettledFetchPtr> settled_fetches_;
 
   base::WeakPtrFactory<MatchRequestsTask> weak_factory_{this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(MatchRequestsTask);
 };
 
 }  // namespace background_fetch

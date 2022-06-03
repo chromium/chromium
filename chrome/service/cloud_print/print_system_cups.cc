@@ -21,12 +21,11 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
@@ -51,11 +50,10 @@ const char kCUPSDefaultSupportedTypes[] =
     "application/pdf,application/postscript,image/jpeg,image/png,image/gif";
 
 // Time interval to check for printer's updates.
-constexpr base::TimeDelta kCheckForPrinterUpdatesTime =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kCheckForPrinterUpdatesTime = base::Minutes(5);
 
 // Job update timeout
-constexpr base::TimeDelta kJobUpdateTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kJobUpdateTimeout = base::Seconds(5);
 
 // Job id for dry run (it should not affect CUPS job ids, since 0 job-id is
 // invalid in CUPS.
@@ -187,6 +185,9 @@ class PrintServerWatcherCUPS
   explicit PrintServerWatcherCUPS(PrintSystemCUPS* print_system)
       : print_system_(print_system) {}
 
+  PrintServerWatcherCUPS(const PrintServerWatcherCUPS&) = delete;
+  PrintServerWatcherCUPS& operator=(const PrintServerWatcherCUPS&) = delete;
+
   // PrintSystem::PrintServerWatcher implementation.
   bool StartWatching(
       PrintSystem::PrintServerWatcher::Delegate* delegate) override {
@@ -243,8 +244,6 @@ class PrintServerWatcherCUPS
   scoped_refptr<PrintSystemCUPS> print_system_;
   PrintSystem::PrintServerWatcher::Delegate* delegate_ = nullptr;
   std::string printers_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServerWatcherCUPS);
 };
 
 class PrinterWatcherCUPS
@@ -256,11 +255,14 @@ class PrinterWatcherCUPS
         print_system_(print_system) {
   }
 
+  PrinterWatcherCUPS(const PrinterWatcherCUPS&) = delete;
+  PrinterWatcherCUPS& operator=(const PrinterWatcherCUPS&) = delete;
+
   // PrintSystem::PrinterWatcher implementation.
   bool StartWatching(PrintSystem::PrinterWatcher::Delegate* delegate) override {
     scoped_refptr<printing::PrintBackend> print_backend(
-        printing::PrintBackend::CreateInstance(nullptr,
-                                               /*locale=*/std::string()));
+        printing::PrintBackend::CreateInstanceForCloudPrint(
+            /*print_backend_settings=*/nullptr));
     crash_keys::ScopedPrinterInfo crash_key(
         print_backend->GetPrinterDriverInfo(printer_name_));
     if (delegate_)
@@ -360,8 +362,6 @@ class PrinterWatcherCUPS
   PrintSystem::PrinterWatcher::Delegate* delegate_ = nullptr;
   scoped_refptr<PrintSystemCUPS> print_system_;
   std::string settings_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterWatcherCUPS);
 };
 
 class JobSpoolerCUPS : public PrintSystem::JobSpooler {
@@ -370,6 +370,9 @@ class JobSpoolerCUPS : public PrintSystem::JobSpooler {
       : print_system_(print_system) {
     DCHECK(print_system_.get());
   }
+
+  JobSpoolerCUPS(const JobSpoolerCUPS&) = delete;
+  JobSpoolerCUPS& operator=(const JobSpoolerCUPS&) = delete;
 
   // PrintSystem::JobSpooler implementation.
   bool Spool(const std::string& print_ticket,
@@ -404,8 +407,6 @@ class JobSpoolerCUPS : public PrintSystem::JobSpooler {
 
  private:
   scoped_refptr<PrintSystemCUPS> print_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobSpoolerCUPS);
 };
 
 PrintSystemCUPS::PrintSystemCUPS(
@@ -413,7 +414,7 @@ PrintSystemCUPS::PrintSystemCUPS(
   if (print_system_settings) {
     int timeout;
     if (print_system_settings->GetInteger(kCUPSUpdateTimeoutMs, &timeout))
-      update_timeout_ = base::TimeDelta::FromMilliseconds(timeout);
+      update_timeout_ = base::Milliseconds(timeout);
 
     int encryption;
     if (print_system_settings->GetInteger(kCUPSEncryption, &encryption))
@@ -436,7 +437,7 @@ void PrintSystemCUPS::InitPrintBackends(
   const base::ListValue* url_list;
   if (print_system_settings &&
       print_system_settings->GetList(kCUPSPrintServerURLs, &url_list)) {
-    for (size_t i = 0; i < url_list->GetSize(); i++) {
+    for (size_t i = 0; i < url_list->GetList().size(); i++) {
       std::string print_server_url;
       if (url_list->GetString(i, &print_server_url))
         AddPrintServer(print_server_url);
@@ -463,8 +464,8 @@ void PrintSystemCUPS::AddPrintServer(const std::string& url) {
   backend_settings.SetInteger(kCUPSEncryption, cups_encryption_);
 
   PrintServerInfoCUPS print_server;
-  print_server.backend = printing::PrintBackend::CreateInstance(
-      &backend_settings, /*locale=*/std::string());
+  print_server.backend =
+      printing::PrintBackend::CreateInstanceForCloudPrint(&backend_settings);
   print_server.url = GURL(url.c_str());
 
   print_servers_.push_back(print_server);
@@ -479,7 +480,8 @@ PrintSystem::PrintSystemResult PrintSystemCUPS::Init() {
 void PrintSystemCUPS::UpdatePrinters() {
   printer_enum_succeeded_ = true;
   for (auto& print_server : print_servers_) {
-    if (!print_server.backend->EnumeratePrinters(&print_server.printers))
+    if (print_server.backend->EnumeratePrinters(&print_server.printers) !=
+        printing::mojom::ResultCode::kSuccess)
       printer_enum_succeeded_ = false;
     print_server.caps_cache.clear();
     for (auto& printer : print_server.printers) {
@@ -531,7 +533,7 @@ bool PrintSystemCUPS::ValidatePrintTicket(
     const std::string& print_ticket_data,
     const std::string& print_ticket_mime_type) {
   DCHECK(initialized_);
-  base::Optional<base::Value> ticket =
+  absl::optional<base::Value> ticket =
       base::JSONReader::Read(print_ticket_data);
   return ticket.has_value() && ticket.value().is_dict();
 }
@@ -541,12 +543,12 @@ bool PrintSystemCUPS::ParsePrintTicket(
     const std::string& print_ticket,
     std::map<std::string, std::string>* options) {
   DCHECK(options);
-  base::Optional<base::Value> ticket = base::JSONReader::Read(print_ticket);
+  absl::optional<base::Value> ticket = base::JSONReader::Read(print_ticket);
   if (!ticket.has_value() || !ticket.value().is_dict())
     return false;
 
   options->clear();
-  for (const auto& it : ticket.value().DictItems()) {
+  for (const auto it : ticket.value().DictItems()) {
     if (it.second.is_string())
       (*options)[it.first] = it.second.GetString();
   }
@@ -573,8 +575,9 @@ bool PrintSystemCUPS::GetPrinterCapsAndDefaults(
   // TODO(gene): Retry multiple times in case of error.
   crash_keys::ScopedPrinterInfo crash_key(
       server_info->backend->GetPrinterDriverInfo(short_printer_name));
-  if (!server_info->backend->GetPrinterCapsAndDefaults(short_printer_name,
-                                                       printer_info) ) {
+  if (server_info->backend->GetPrinterCapsAndDefaults(short_printer_name,
+                                                      printer_info) !=
+      printing::mojom::ResultCode::kSuccess) {
     return false;
   }
 
@@ -726,8 +729,7 @@ int PrintSystemCUPS::PrintFile(const GURL& url,
   if (url.is_empty())
     return cupsPrintFile(name, filename, title, num_options, options);
 
-  printing::HttpConnectionCUPS http(url, encryption);
-  http.SetBlocking(false);
+  printing::HttpConnectionCUPS http(url, encryption, /*blocking=*/false);
   return cupsPrintFile2(http.http(), name, filename, title, num_options,
                         options);
 }
@@ -743,8 +745,7 @@ int PrintSystemCUPS::GetJobs(cups_job_t** jobs,
   if (url.is_empty())
     return cupsGetJobs(jobs, name, myjobs, whichjobs);
 
-  printing::HttpConnectionCUPS http(url, encryption);
-  http.SetBlocking(false);
+  printing::HttpConnectionCUPS http(url, encryption, /*blocking=*/false);
   return cupsGetJobs2(http.http(), jobs, name, myjobs, whichjobs);
 }
 
@@ -794,7 +795,7 @@ PlatformJobId PrintSystemCUPS::SpoolPrintJob(
       PrintFile(server_info->url, cups_encryption_, short_printer_name.c_str(),
                 print_data_file_path.value().c_str(), job_title.c_str(),
                 cups_options.size(), cups_options.data());
-  base::DeleteFile(print_data_file_path, false);
+  base::DeleteFile(print_data_file_path);
 
   // TODO(alexyu): Output printer id.
   VLOG(1) << "CP_CUPS: Job spooled"

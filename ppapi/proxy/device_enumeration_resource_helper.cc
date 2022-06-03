@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "ppapi/c/pp_array_output.h"
@@ -49,7 +49,7 @@ int32_t DeviceEnumerationResourceHelper::EnumerateDevices(
   PpapiHostMsg_DeviceEnumeration_EnumerateDevices msg;
   owner_->Call<PpapiPluginMsg_DeviceEnumeration_EnumerateDevicesReply>(
       PluginResource::RENDERER, msg,
-      base::Bind(
+      base::BindOnce(
           &DeviceEnumerationResourceHelper::OnPluginMsgEnumerateDevicesReply,
           AsWeakPtr(), output, callback));
   return PP_OK_COMPLETIONPENDING;

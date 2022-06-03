@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum AlphaOption { "discard", "keep" };
+dictionary VideoFrameInit {
+  [EnforceRange] long long timestamp;  // microseconds
+  [EnforceRange] unsigned long long duration;   // microseconds
+  AlphaOption alpha = "keep";
+  DOMRectInit visibleRect;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
+};

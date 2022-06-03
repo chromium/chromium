@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_stream_sink.h"
@@ -20,12 +22,6 @@
 #include "media/cdm/default_cdm_factory.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "media/renderers/default_renderer_factory.h"
-
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-#include "media/cdm/cdm_paths.h"  // nogncheck
-#include "media/cdm/cdm_proxy.h"  // nogncheck
-#include "media/cdm/library_cdm/clear_key_cdm/clear_key_cdm_proxy.h"  // nogncheck
-#endif
 
 namespace media {
 
@@ -55,27 +51,32 @@ void TestMojoMediaClient::Initialize() {
 }
 
 std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
-    service_manager::mojom::InterfaceProvider* host_interfaces,
+    mojom::FrameInterfaceFactory* frame_interfaces,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     const std::string& /* audio_device_id */) {
   // If called the first time, do one time initialization.
   if (!decoder_factory_) {
-    decoder_factory_.reset(new media::DefaultDecoderFactory(nullptr));
+    decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
   }
 
   if (!renderer_factory_) {
+#if defined(OS_ANDROID)
     renderer_factory_ = std::make_unique<DefaultRendererFactory>(
         media_log, decoder_factory_.get(),
         DefaultRendererFactory::GetGpuFactoriesCB());
+#else
+    renderer_factory_ = std::make_unique<DefaultRendererFactory>(
+        media_log, decoder_factory_.get(),
+        DefaultRendererFactory::GetGpuFactoriesCB(), nullptr);
+#endif
   }
 
   // We cannot share AudioOutputStreamSink or NullVideoSink among different
   // RendererImpls. Thus create one for each Renderer creation.
   auto audio_sink = base::MakeRefCounted<AudioOutputStreamSink>();
   auto video_sink = std::make_unique<NullVideoSink>(
-      false, base::TimeDelta::FromSecondsD(1.0 / 60),
-      NullVideoSink::NewFrameCB(), task_runner);
+      false, base::Seconds(1.0 / 60), NullVideoSink::NewFrameCB(), task_runner);
   auto* video_sink_ptr = video_sink.get();
 
   // Hold created sinks since DefaultRendererFactory only takes raw pointers to
@@ -86,34 +87,24 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
 
   return renderer_factory_->CreateRenderer(
       task_runner, task_runner, audio_sink.get(), video_sink_ptr,
-      RequestOverlayInfoCB(), gfx::ColorSpace());
+      base::NullCallback(), gfx::ColorSpace());
 }
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 std::unique_ptr<Renderer> TestMojoMediaClient::CreateCastRenderer(
-    service_manager::mojom::InterfaceProvider* host_interfaces,
+    mojom::FrameInterfaceFactory* frame_interfaces,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     const base::UnguessableToken& /* overlay_plane_id */) {
-  return CreateRenderer(host_interfaces, task_runner, media_log, std::string());
+  return CreateRenderer(frame_interfaces, task_runner, media_log,
+                        std::string());
 }
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
 std::unique_ptr<CdmFactory> TestMojoMediaClient::CreateCdmFactory(
-    service_manager::mojom::InterfaceProvider* /* host_interfaces */) {
+    mojom::FrameInterfaceFactory* /* frame_interfaces */) {
   DVLOG(1) << __func__;
   return std::make_unique<DefaultCdmFactory>();
 }
-
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-std::unique_ptr<CdmProxy> TestMojoMediaClient::CreateCdmProxy(
-    const base::Token& cdm_guid) {
-  DVLOG(1) << __func__ << ": cdm_guid = " << cdm_guid.ToString();
-  if (cdm_guid == kClearKeyCdmGuid)
-    return std::make_unique<ClearKeyCdmProxy>();
-
-  return nullptr;
-}
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 }  // namespace media

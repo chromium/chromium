@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_IMPL_H_
 #define CHROMEOS_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_IMPL_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/host_scan_device_prioritizer.h"
 
@@ -20,6 +19,11 @@ class HostScanDevicePrioritizerImpl : public HostScanDevicePrioritizer {
  public:
   HostScanDevicePrioritizerImpl(
       TetherHostResponseRecorder* tether_host_response_recorder);
+
+  HostScanDevicePrioritizerImpl(const HostScanDevicePrioritizerImpl&) = delete;
+  HostScanDevicePrioritizerImpl& operator=(
+      const HostScanDevicePrioritizerImpl&) = delete;
+
   ~HostScanDevicePrioritizerImpl() override;
 
   // HostScanDevicePrioritizer:
@@ -28,8 +32,6 @@ class HostScanDevicePrioritizerImpl : public HostScanDevicePrioritizer {
 
  private:
   TetherHostResponseRecorder* tether_host_response_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostScanDevicePrioritizerImpl);
 };
 
 }  // namespace tether

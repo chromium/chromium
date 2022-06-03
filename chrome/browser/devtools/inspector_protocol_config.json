@@ -8,13 +8,13 @@
         "options": [
             {
                 "domain": "Page",
-                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons" ],
+                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "setSPCTransactionMode" ],
                 "include_events": [],
-                "async": ["getInstallabilityErrors", "getManifestIcons"]
+                "async": ["getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId" ]
             },
             {
                 "domain": "Browser",
-                "include": [ "getWindowForTarget", "getWindowBounds", "setWindowBounds", "close", "setDockTile" ],
+                "include": [ "getWindowForTarget", "getWindowBounds", "setWindowBounds", "close", "setDockTile", "executeBrowserCommand" ],
                 "include_events": []
             },
             {

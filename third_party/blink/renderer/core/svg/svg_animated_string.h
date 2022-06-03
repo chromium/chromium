@@ -38,10 +38,11 @@
 
 namespace blink {
 
+class V8UnionStringOrTrustedScriptURL;
+
 class SVGAnimatedString : public ScriptWrappable,
                           public SVGAnimatedProperty<SVGString> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGAnimatedString);
 
  public:
   SVGAnimatedString(SVGElement* context_element,
@@ -50,11 +51,13 @@ class SVGAnimatedString : public ScriptWrappable,
                                        attribute_name,
                                        MakeGarbageCollected<SVGString>()) {}
 
-  virtual String baseVal();
-  virtual void setBaseVal(const String&, ExceptionState&);
+  virtual V8UnionStringOrTrustedScriptURL* baseVal();
+  virtual void setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
+                          ExceptionState& exception_state);
+
   virtual String animVal();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

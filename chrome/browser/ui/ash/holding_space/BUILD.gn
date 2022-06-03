@@ -1,0 +1,67 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "//chrome/browser/ui/ash/holding_space/holding_space_client_impl_browsertest.cc",
+    "//chrome/browser/ui/ash/holding_space/holding_space_keyed_service_browsertest.cc",
+    "//chrome/browser/ui/ash/holding_space/holding_space_ui_browsertest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//ash/public/cpp/holding_space:test_support",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/chromeos:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//chromeos/dbus/power:power",
+    "//content/test:test_support",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
+    "//ui/events:test_support",
+    "//ui/gfx:test_support",
+    "//ui/views",
+    "//ui/wm/public",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "//chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.cc",
+    "//chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h",
+    "//chrome/browser/ui/ash/holding_space/scoped_test_mount_point.cc",
+    "//chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h",
+  ]
+
+  deps = [
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/dbus/session_manager",
+    "//components/session_manager/core",
+    "//ui/views",
+  ]
+}

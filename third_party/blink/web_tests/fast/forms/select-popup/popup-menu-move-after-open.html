@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Test popup menu positioned correctly after layout change</title>
+<script src='../resources/picker-common.js'></script>
+
+<div id="err" style="height:50px; display:block">
+  Test select popup positions correctly after an event causes update to select element positioning.
+</div>
+<select id="menu">
+    <option value="one">One</option>
+    <option value="two">Two</option>
+</select>
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
+  function startTest() {
+    err.style.display = 'none';
+    if (window.testRunner){
+      testRunner.notifyDone();
+    }
+  }
+
+  openPicker(menu, startTest);
+</script>

@@ -1,0 +1,15 @@
+<!--
+@WAIT-FOR:done
+-->
+
+<button id="3" aria-owns="4" tabindex="0"></button>
+<div aria-owns="3"></div>
+
+<script>
+setTimeout(() => {
+  document.getElementById('3').id = 4;
+}, 500);
+setTimeout(() => {
+  document.title = 'done';
+}, 1000);
+</script>

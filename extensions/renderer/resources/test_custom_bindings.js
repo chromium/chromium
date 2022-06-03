@@ -29,6 +29,45 @@ apiBridge.registerCustomHook(function(api) {
   var testsFailed = 0;
   var testCount = 1;
   var failureException = 'chrome.test.failure';
+  var pendingCallbacks = 0;
+  var pendingPromiseRejections = 0;
+
+  function safeFunctionApply(func, args) {
+    try {
+      if (func)
+        return $Function.apply(func, undefined, args);
+    } catch (e) {
+      if (e === failureException)
+        throw e;
+      handleException(e.message, e);
+    }
+  }
+
+  function runNextTest() {
+    // There may have been callbacks or promise rejections which were
+    // interrupted by failure exceptions.
+    pendingCallbacks = 0;
+    pendingPromiseRejections = 0;
+
+    lastTest = currentTest;
+    currentTest = $Array.shift(chromeTest.tests);
+
+    if (!currentTest) {
+      allTestsDone();
+      return;
+    }
+
+    try {
+      chromeTest.log("( RUN      ) " + testName(currentTest));
+      bindingUtil.setExceptionHandler(function(message, e) {
+        if (e !== failureException)
+          chromeTest.fail('uncaught exception: ' + message);
+      });
+      $Function.call(currentTest);
+    } catch (e) {
+      handleException(e.message, e);
+    }
+  }
 
   // Helper function to get around the fact that function names in javascript
   // are read-only, and you can't assign one to anonymous functions.
@@ -37,7 +76,7 @@ apiBridge.registerCustomHook(function(api) {
   }
 
   function testDone() {
-    environmentSpecificBindings.testDone(chromeTest.runNextTest);
+    environmentSpecificBindings.testDone(runNextTest);
   }
 
   function allTestsDone() {
@@ -49,7 +88,18 @@ apiBridge.registerCustomHook(function(api) {
     }
   }
 
-  var pendingCallbacks = 0;
+  // Helper function for boolean asserts. Compares |test| to |expected|.
+  function assertBool(test, expected, message) {
+    if (test !== expected) {
+      if (typeof(test) == "string") {
+        if (message)
+          message = test + "\n" + message;
+        else
+          message = test;
+      }
+      chromeTest.fail(message);
+    }
+  }
 
   apiFunctions.setHandleRequest('callbackAdded', function() {
     pendingCallbacks++;
@@ -72,31 +122,6 @@ apiBridge.registerCustomHook(function(api) {
         chromeTest.succeed();
       }
     };
-  });
-
-  apiFunctions.setHandleRequest('runNextTest', function() {
-    // There may have been callbacks which were interrupted by failure
-    // exceptions.
-    pendingCallbacks = 0;
-
-    lastTest = currentTest;
-    currentTest = $Array.shift(chromeTest.tests);
-
-    if (!currentTest) {
-      allTestsDone();
-      return;
-    }
-
-    try {
-      chromeTest.log("( RUN      ) " + testName(currentTest));
-      bindingUtil.setExceptionHandler(function(message, e) {
-        if (e !== failureException)
-          chromeTest.fail('uncaught exception: ' + message);
-      });
-      $Function.call(currentTest);
-    } catch (e) {
-      handleException(e.message, e);
-    }
   });
 
   apiFunctions.setHandleRequest('fail', function failHandler(message) {
@@ -125,6 +150,12 @@ apiBridge.registerCustomHook(function(api) {
   });
 
   apiFunctions.setHandleRequest('succeed', function() {
+    chromeTest.assertEq(
+        0, pendingPromiseRejections,
+        'Test had pending promise rejections. This is likely the result of ' +
+        'not waiting for the promise returned by `assertPromiseRejects()` to ' +
+        'resolve. Instead, use `await assertPromiseRejects(...)` or ' +
+        '`assertPromiseRejects(...).then(...).`.');
     console.log("[SUCCESS] " + testName(currentTest));
     chromeTest.log("(  SUCCESS )");
     testDone();
@@ -135,24 +166,11 @@ apiBridge.registerCustomHook(function(api) {
   });
 
   apiFunctions.setHandleRequest('assertTrue', function(test, message) {
-    chromeTest.assertBool(test, true, message);
+    assertBool(test, true, message);
   });
 
   apiFunctions.setHandleRequest('assertFalse', function(test, message) {
-    chromeTest.assertBool(test, false, message);
-  });
-
-  apiFunctions.setHandleRequest('assertBool',
-                                function(test, expected, message) {
-    if (test !== expected) {
-      if (typeof(test) == "string") {
-        if (message)
-          message = test + "\n" + message;
-        else
-          message = test;
-      }
-      chromeTest.fail(message);
-    }
+    assertBool(test, false, message);
   });
 
   apiFunctions.setHandleRequest('checkDeepEq', function(expected, actual) {
@@ -164,7 +182,13 @@ apiBridge.registerCustomHook(function(api) {
 
     if (typeof(expected) !== typeof(actual))
       return false;
+    if (Array.isArray(expected) !== Array.isArray(actual))
+      return false;
 
+    // Handle the ArrayBuffer cases. Bail out in case of type mismatch, to
+    // prevent the ArrayBuffer from being treated as an empty enumerable below.
+    if ((actual instanceof ArrayBuffer) !== (expected instanceof ArrayBuffer))
+      return false;
     if ((actual instanceof ArrayBuffer) && (expected instanceof ArrayBuffer)) {
       if (actual.byteLength != expected.byteLength)
         return false;
@@ -268,16 +292,48 @@ apiBridge.registerCustomHook(function(api) {
     }
   });
 
-  function safeFunctionApply(func, args) {
-    try {
-      if (func)
-        return $Function.apply(func, undefined, args);
-    } catch (e) {
-      if (e === failureException)
-        throw e;
-      handleException(e.message, e);
+  apiFunctions.setHandleRequest('loadScript', function(scriptUrl) {
+    // Note: Importing scripts is different depending on if this script is
+    // executing in a Service Worker context.
+    const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+    if (inServiceWorker) {
+      importScripts(scriptUrl);
+      return Promise.resolve();
     }
-  };
+    let script = document.createElement('script');
+    let onScriptLoad = new Promise((resolve) => {
+      script.onload = resolve;
+    });
+    script.src = scriptUrl;
+    document.body.appendChild(script);
+    return onScriptLoad;
+  });
+
+  apiFunctions.setHandleRequest('assertPromiseRejects',
+                                function(promise, expectedMessage) {
+    pendingPromiseRejections++;
+    return promise.then(
+        () => {
+          pendingPromiseRejections--;
+          chromeTest.assertTrue(pendingPromiseRejections >= 0,
+                                'Negative pending promise rejection count!');
+          chromeTest.fail(
+              'Promise did not reject. Expected error: ' + expectedMessage);
+        },
+        (e) => {
+          pendingPromiseRejections--;
+          chromeTest.assertTrue(pendingPromiseRejections >= 0,
+                                'Negative pending promise rejection count!');
+          if (expectedMessage instanceof RegExp) {
+            chromeTest.assertTrue(
+                expectedMessage.test(e.toString()),
+                `"${e.message}" should match "${expectedMessage}"`);
+          } else {
+            chromeTest.assertEq('string', typeof expectedMessage);
+            chromeTest.assertEq(expectedMessage, e.toString());
+          }
+        });
+  });
 
   // Wrapper for generating test functions, that takes care of calling
   // assertNoLastError() and (optionally) succeed() for you.
@@ -341,7 +397,7 @@ apiBridge.registerCustomHook(function(api) {
   apiFunctions.setHandleRequest('runTests', function(tests) {
     chromeTest.tests = tests;
     testCount = chromeTest.tests.length;
-    chromeTest.runNextTest();
+    runNextTest();
   });
 
   apiFunctions.setHandleRequest('getApiDefinitions', function() {

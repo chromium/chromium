@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 

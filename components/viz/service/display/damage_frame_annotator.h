@@ -10,21 +10,25 @@
 #include "components/viz/service/display/surface_aggregator.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 
-class CompositorFrame;
-class RenderPass;
+class AggregatedFrame;
+class AggregatedRenderPass;
 
 // Draws a red outline around the root RenderPasses damage rect.
 class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
  public:
   DamageFrameAnnotator();
+
+  DamageFrameAnnotator(const DamageFrameAnnotator&) = delete;
+  DamageFrameAnnotator& operator=(const DamageFrameAnnotator&) = delete;
+
   ~DamageFrameAnnotator() override;
 
   // SurfaceAggregator::FrameAnnotator implementation.
-  void AnnotateAggregatedFrame(CompositorFrame* frame) override;
+  void AnnotateAggregatedFrame(AggregatedFrame* frame) override;
 
  private:
   struct Highlight {
@@ -38,11 +42,9 @@ class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
     Highlight highlight;
   };
 
-  void AnnotateRootRenderPass(RenderPass* render_pass);
+  void AnnotateRootRenderPass(AggregatedRenderPass* render_pass);
 
   std::vector<AnnotationData> annotations_;
-
-  DISALLOW_COPY_AND_ASSIGN(DamageFrameAnnotator);
 };
 
 }  // namespace viz

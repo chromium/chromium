@@ -13,50 +13,21 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 namespace {
 
+String CreateWriterLockReleasedMessage(const char* verbed) {
+  return String::Format(
+      "This writable stream writer has been released and cannot be %s", verbed);
+}
+
 v8::Local<v8::Value> CreateWriterLockReleasedException(v8::Isolate* isolate,
                                                        const char* verbed) {
-  return v8::Exception::TypeError(V8String(
-      isolate,
-      String::Format(
-          "This writable stream writer has been released and cannot be %s",
-          verbed)));
-}
-
-v8::Local<v8::String> CreateCannotActionOnStateStreamMessage(
-    v8::Isolate* isolate,
-    const char* action,
-    const char* state_name) {
-  return V8String(isolate, String::Format("Cannot %s a %s writable stream",
-                                          action, state_name));
-}
-
-v8::Local<v8::Value> CreateCannotActionOnStateStreamException(
-    v8::Isolate* isolate,
-    const char* action,
-    WritableStream::State state) {
-  const char* state_name = nullptr;
-  switch (state) {
-    case WritableStream::kClosed:
-      state_name = "CLOSED";
-      break;
-
-    case WritableStream::kErrored:
-      state_name = "ERRORED";
-      break;
-
-    default:
-      NOTREACHED();
-  }
   return v8::Exception::TypeError(
-      CreateCannotActionOnStateStreamMessage(isolate, action, state_name));
+      V8String(isolate, CreateWriterLockReleasedMessage(verbed)));
 }
 
 }  // namespace
@@ -121,7 +92,7 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
     case WritableStream::kErroring: {
       //      a. Set this.[[readyPromise]] to a promise rejected with
       //         stream.[[storedError]].
-      ready_promise_ = StreamPromiseResolver::CreateRejected(
+      ready_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
           script_state, stream->GetStoredError(isolate));
 
       //      b. Set this.[[readyPromise]].[[PromiseIsHandled]] to true.
@@ -156,16 +127,16 @@ WritableStreamDefaultWriter::WritableStreamDefaultWriter(
 
       //      c. Set this.[[readyPromise]] to a promise rejected with
       //         storedError.
-      ready_promise_ =
-          StreamPromiseResolver::CreateRejected(script_state, stored_error);
+      ready_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
+          script_state, stored_error);
 
       //      d. Set this.[[readyPromise]].[[PromiseIsHandled]] to true.
       ready_promise_->MarkAsHandled(isolate);
 
       //      e. Set this.[[closedPromise]] to a promise rejected with
       //         storedError.
-      closed_promise_ =
-          StreamPromiseResolver::CreateRejected(script_state, stored_error);
+      closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
+          script_state, stored_error);
 
       //      f. Set this.[[closedPromise]].[[PromiseIsHandled]] to true.
       closed_promise_->MarkAsHandled(isolate);
@@ -207,21 +178,25 @@ ScriptPromise WritableStreamDefaultWriter::ready(
   return ready_promise_->GetScriptPromise(script_state);
 }
 
-ScriptPromise WritableStreamDefaultWriter::abort(ScriptState* script_state) {
+ScriptPromise WritableStreamDefaultWriter::abort(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return abort(script_state,
                ScriptValue(script_state->GetIsolate(),
-                           v8::Undefined(script_state->GetIsolate())));
+                           v8::Undefined(script_state->GetIsolate())),
+               exception_state);
 }
 
-ScriptPromise WritableStreamDefaultWriter::abort(ScriptState* script_state,
-                                                 ScriptValue reason) {
+ScriptPromise WritableStreamDefaultWriter::abort(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-writer-abort
   //  2. If this.[[ownerWritableStream]] is undefined, return a promise rejected
   //     with a TypeError exception.
   if (!owner_writable_stream_) {
-    return ScriptPromise::Reject(script_state,
-                                 CreateWriterLockReleasedException(
-                                     script_state->GetIsolate(), "aborted"));
+    exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("aborted"));
+    return ScriptPromise();
   }
 
   //  3. Return ! WritableStreamDefaultWriterAbort(this, reason).
@@ -229,7 +204,9 @@ ScriptPromise WritableStreamDefaultWriter::abort(ScriptState* script_state,
                        Abort(script_state, this, reason.V8Value()));
 }
 
-ScriptPromise WritableStreamDefaultWriter::close(ScriptState* script_state) {
+ScriptPromise WritableStreamDefaultWriter::close(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-writer-close
   //  2. Let stream be this.[[ownerWritableStream]].
   WritableStream* stream = owner_writable_stream_;
@@ -237,19 +214,17 @@ ScriptPromise WritableStreamDefaultWriter::close(ScriptState* script_state) {
   //  3. If stream is undefined, return a promise rejected with a TypeError
   //     exception.
   if (!stream) {
-    return ScriptPromise::Reject(script_state,
-                                 CreateWriterLockReleasedException(
-                                     script_state->GetIsolate(), "closed"));
+    exception_state.ThrowTypeError(CreateWriterLockReleasedMessage("closed"));
+    return ScriptPromise();
   }
 
   //  4. If ! WritableStreamCloseQueuedOrInFlight(stream) is true, return a
   //      promise rejected with a TypeError exception.
   if (WritableStream::CloseQueuedOrInFlight(stream)) {
-    return ScriptPromise::Reject(
-        script_state, v8::Exception::TypeError(
-                          V8String(script_state->GetIsolate(),
-                                   "Cannot close a writable stream that has "
-                                   "already been requested to be closed")));
+    exception_state.ThrowTypeError(
+        "Cannot close a writable stream that has "
+        "already been requested to be closed");
+    return ScriptPromise();
   }
 
   //  5. Return ! WritableStreamDefaultWriterClose(this).
@@ -273,21 +248,26 @@ void WritableStreamDefaultWriter::releaseLock(ScriptState* script_state) {
   Release(script_state, this);
 }
 
-ScriptPromise WritableStreamDefaultWriter::write(ScriptState* script_state) {
+ScriptPromise WritableStreamDefaultWriter::write(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return write(script_state,
                ScriptValue(script_state->GetIsolate(),
-                           v8::Undefined(script_state->GetIsolate())));
+                           v8::Undefined(script_state->GetIsolate())),
+               exception_state);
 }
 
-ScriptPromise WritableStreamDefaultWriter::write(ScriptState* script_state,
-                                                 ScriptValue chunk) {
+ScriptPromise WritableStreamDefaultWriter::write(
+    ScriptState* script_state,
+    ScriptValue chunk,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-writer-write
   //  2. If this.[[ownerWritableStream]] is undefined, return a promise rejected
   //     with a TypeError exception.
   if (!owner_writable_stream_) {
-    return ScriptPromise::Reject(script_state,
-                                 CreateWriterLockReleasedException(
-                                     script_state->GetIsolate(), "written to"));
+    exception_state.ThrowTypeError(
+        CreateWriterLockReleasedMessage("written to"));
+    return ScriptPromise();
   }
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).
@@ -304,12 +284,13 @@ void WritableStreamDefaultWriter::EnsureReadyPromiseRejected(
   //  1. If writer.[[readyPromise]].[[PromiseState]] is "pending", reject
   //     writer.[[readyPromise]] with error.
   if (!writer->ready_promise_->IsSettled()) {
+    writer->ready_promise_->MarkAsSilent(isolate);
     writer->ready_promise_->Reject(script_state, error);
   } else {
     //  2. Otherwise, set writer.[[readyPromise]] to a promise rejected with
     //     error.
     writer->ready_promise_ =
-        StreamPromiseResolver::CreateRejected(script_state, error);
+        StreamPromiseResolver::CreateRejectedAndSilent(script_state, error);
   }
 
   //  3. Set writer.[[readyPromise]].[[PromiseIsHandled]] to true.
@@ -344,8 +325,8 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::CloseWithErrorPropagation(
   }
 
   //  6. Assert: state is "writable" or "erroring".
-  DCHECK(state == WritableStream::kWritable ||
-         state == WritableStream::kErroring);
+  CHECK(state == WritableStream::kWritable ||
+        state == WritableStream::kErroring);
 
   //  7. Return ! WritableStreamDefaultWriterClose(writer).
   return Close(script_state, writer);
@@ -427,13 +408,14 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   if (WritableStream::CloseQueuedOrInFlight(stream)) {
     return PromiseReject(
         script_state,
-        v8::Exception::TypeError(CreateCannotActionOnStateStreamMessage(
-            isolate, "write to", "closing")));
+        v8::Exception::TypeError(
+            WritableStream::CreateCannotActionOnStateStreamMessage(
+                isolate, "write to", "closing")));
   }
   if (state == WritableStream::kClosed) {
-    return PromiseReject(script_state,
-                         CreateCannotActionOnStateStreamException(
-                             isolate, "write to", WritableStream::kClosed));
+    return PromiseReject(
+        script_state, WritableStream::CreateCannotActionOnStateStreamException(
+                          isolate, "write to", WritableStream::kClosed));
   }
 
   //  9. If state is "erroring", return a promise rejected with
@@ -457,7 +439,7 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   return promise;
 }
 
-base::Optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
+absl::optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
     const {
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-get-desired-size
   //  1. Let stream be writer.[[ownerWritableStream]].
@@ -470,7 +452,7 @@ base::Optional<double> WritableStreamDefaultWriter::GetDesiredSizeInternal()
     //  3. If state is "errored" or "erroring", return null.
     case WritableStream::kErrored:
     case WritableStream::kErroring:
-      return base::nullopt;
+      return absl::nullopt;
 
       //  4. If state is "closed", return 0.
     case WritableStream::kClosed:
@@ -489,7 +471,7 @@ void WritableStreamDefaultWriter::SetReadyPromise(
   ready_promise_ = ready_promise;
 }
 
-void WritableStreamDefaultWriter::Trace(Visitor* visitor) {
+void WritableStreamDefaultWriter::Trace(Visitor* visitor) const {
   visitor->Trace(closed_promise_);
   visitor->Trace(owner_writable_stream_);
   visitor->Trace(ready_promise_);
@@ -523,42 +505,8 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Close(
   //  2. Assert: stream is not undefined.
   DCHECK(stream);
 
-  //  3. Let state be stream.[[state]].
-  const auto state = stream->GetState();
-
-  //  4. If state is "closed" or "errored", return a promise rejected with a
-  //     TypeError exception.
-  if (state == WritableStream::kClosed || state == WritableStream::kErrored) {
-    return PromiseReject(script_state,
-                         CreateCannotActionOnStateStreamException(
-                             script_state->GetIsolate(), "close", state));
-  }
-
-  //  5. Assert: state is "writable" or "erroring".
-  DCHECK(state == WritableStream::kWritable ||
-         state == WritableStream::kErroring);
-
-  //  6. Assert: ! WritableStreamCloseQueuedOrInFlight(stream) is false.
-  DCHECK(!WritableStream::CloseQueuedOrInFlight(stream));
-
-  //  7. Let promise be a new promise.
-  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
-
-  //  8. Set stream.[[closeRequest]] to promise.
-  stream->SetCloseRequest(promise);
-
-  //  9. If stream.[[backpressure]] is true and state is "writable", resolve
-  //     writer.[[readyPromise]] with undefined.
-  if (stream->HasBackpressure() && state == WritableStream::kWritable) {
-    writer->ready_promise_->ResolveWithUndefined(script_state);
-  }
-
-  // 10. Perform ! WritableStreamDefaultControllerClose(
-  //     stream.[[writableStreamController]]).
-  WritableStreamDefaultController::Close(script_state, stream->Controller());
-
-  // 11. Return promise.
-  return promise->V8Promise(script_state->GetIsolate());
+  //  3. Return ! WritableStreamClose(stream).
+  return WritableStream::Close(script_state, stream);
 }
 
 void WritableStreamDefaultWriter::EnsureClosedPromiseRejected(
@@ -570,12 +518,13 @@ void WritableStreamDefaultWriter::EnsureClosedPromiseRejected(
   //  1. If writer.[[closedPromise]].[[PromiseState]] is "pending", reject
   //     writer.[[closedPromise]] with error.
   if (!writer->closed_promise_->IsSettled()) {
+    writer->closed_promise_->MarkAsSilent(isolate);
     writer->closed_promise_->Reject(script_state, error);
   } else {
     //  2. Otherwise, set writer.[[closedPromise]] to a promise rejected with
     //     error.
     writer->closed_promise_ =
-        StreamPromiseResolver::CreateRejected(script_state, error);
+        StreamPromiseResolver::CreateRejectedAndSilent(script_state, error);
   }
 
   //  3. Set writer.[[closedPromise]].[[PromiseIsHandled]] to true.
@@ -589,7 +538,7 @@ v8::Local<v8::Value> WritableStreamDefaultWriter::GetDesiredSize(
   //  1. Let stream be writer.[[ownerWritableStream]].
   //  2. Let state be stream.[[state]].
   //  3. If state is "errored" or "erroring", return null.
-  base::Optional<double> desired_size = writer->GetDesiredSizeInternal();
+  absl::optional<double> desired_size = writer->GetDesiredSizeInternal();
   if (!desired_size.has_value()) {
     return v8::Null(isolate);
   }

@@ -26,9 +26,10 @@ enum class FrameThrottlingState {
 
 enum class FrameOriginState {
   kMainFrame = 0,
-  kSameOrigin = 1,
-  kCrossOrigin = 2,
+  kSameOriginToMainFrame = 1,
+  kCrossOriginToMainFrame = 2,
 
+  // TODO(dcheng): get rid of kCount here.
   kCount = 3
 };
 
@@ -60,9 +61,9 @@ FrameOriginState GetFrameOriginState(const FrameScheduler& frame_scheduler) {
   if (frame_scheduler.GetFrameType() == FrameScheduler::FrameType::kMainFrame) {
     return FrameOriginState::kMainFrame;
   }
-  if (frame_scheduler.IsCrossOrigin())
-    return FrameOriginState::kCrossOrigin;
-  return FrameOriginState::kSameOrigin;
+  if (frame_scheduler.IsCrossOriginToMainFrame())
+    return FrameOriginState::kCrossOriginToMainFrame;
+  return FrameOriginState::kSameOriginToMainFrame;
 }
 
 }  // namespace

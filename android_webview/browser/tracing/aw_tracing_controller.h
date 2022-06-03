@@ -15,6 +15,9 @@ class AwTracingController {
  public:
   AwTracingController(JNIEnv* env, jobject obj);
 
+  AwTracingController(const AwTracingController&) = delete;
+  AwTracingController& operator=(const AwTracingController&) = delete;
+
   bool Start(JNIEnv* env,
              const base::android::JavaParamRef<jobject>& obj,
              const base::android::JavaParamRef<jstring>& categories,
@@ -31,8 +34,6 @@ class AwTracingController {
 
   JavaObjectWeakGlobalRef weak_java_object_;
   base::WeakPtrFactory<AwTracingController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwTracingController);
 };
 
 }  // namespace android_webview

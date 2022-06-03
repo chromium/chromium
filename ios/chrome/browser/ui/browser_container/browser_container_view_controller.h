@@ -7,22 +7,34 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
+
+@protocol LinkToTextDelegate;
+
 // UIViewController which allows displaying and removing a content view.
-@interface BrowserContainerViewController : UIViewController
-
-// Adds the given |contentView| as a subview and removes the previously added
-// |contentView| or |contentViewController|, if any. If |contentView| is nil
-// then only old content view or view controller is removed.
-@property(nonatomic, strong) UIView* contentView;
-
-// Adds the given |contentViewController| as a child view controller and removes
-// the previously added |contentViewController| if any.  Setting
-// |contentViewController| does not clear |contentView|.
-@property(nonatomic, strong) UIViewController* contentViewController;
+@interface BrowserContainerViewController
+    : UIViewController <BrowserContainerConsumer>
 
 // The UIViewController used to display overlay UI over the web content area.
 @property(nonatomic, strong)
     UIViewController* webContentsOverlayContainerViewController;
+
+// The UIViewController used to display the ScreenTime blocker above the web
+// content area.
+@property(nonatomic, strong) UIViewController* screenTimeViewController;
+
+// The delegate to handle link to text button selection.
+@property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;
+
+// Adds the given |contentView| as a subview and removes the previously added
+// |contentView| or |contentViewController|, if any. If |contentView| is nil
+// then only old content view or view controller is removed.
+- (void)setContentView:(UIView*)contentView;
+
+// Adds the given |contentViewController| as a child view controller and removes
+// the previously added |contentViewController| if any.  Setting
+// |contentViewController| does not clear |contentView|.
+- (void)setContentViewController:(UIViewController*)contentViewController;
 
 @end
 

@@ -8,7 +8,7 @@
 
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace skia_bindings {
 
@@ -43,7 +43,8 @@ void GLES2ImplementationWithGrContextSupport::ResetGrContextIfNeeded(
   }
 }
 
-void GLES2ImplementationWithGrContextSupport::SetGrContext(GrContext* gr) {
+void GLES2ImplementationWithGrContextSupport::SetGrContext(
+    GrDirectContext* gr) {
   DCHECK(!gr || !gr_context_);  // Cant have multiple linked GrContexts
   gr_context_ = gr;
 }
@@ -392,21 +393,6 @@ void GLES2ImplementationWithGrContextSupport::ColorMask(GLboolean red,
                                                         GLboolean alpha) {
   BaseClass::ColorMask(red, green, blue, alpha);
   ResetGrContextIfNeeded(kMisc_GrGLBackendState);
-}
-
-// Calls that invalidate kPathRendering_GrGLBackendState
-void GLES2ImplementationWithGrContextSupport::PathStencilFuncCHROMIUM(
-    GLenum func,
-    GLint ref,
-    GLuint mask) {
-  BaseClass::PathStencilFuncCHROMIUM(func, ref, mask);
-  ResetGrContextIfNeeded(kPathRendering_GrGLBackendState);
-}
-void GLES2ImplementationWithGrContextSupport::MatrixLoadfCHROMIUM(
-    GLenum matrixMode,
-    const GLfloat* m) {
-  BaseClass::MatrixLoadfCHROMIUM(matrixMode, m);
-  ResetGrContextIfNeeded(kPathRendering_GrGLBackendState);
 }
 
 // Calls that invalidate many flags

@@ -12,8 +12,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
 
@@ -24,11 +24,15 @@ namespace {
 class Target : public service_manager::Service,
                public ConnectTestService {
  public:
-  explicit Target(service_manager::mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)) {
+  explicit Target(
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)) {
     registry_.AddInterface<ConnectTestService>(
         base::BindRepeating(&Target::Create, base::Unretained(this)));
   }
+
+  Target(const Target&) = delete;
+  Target& operator=(const Target&) = delete;
 
   ~Target() override = default;
 
@@ -50,19 +54,18 @@ class Target : public service_manager::Service,
   }
 
   void GetInstanceId(GetInstanceIdCallback callback) override {
-    std::move(callback).Run(service_binding_.identity().instance_id());
+    std::move(callback).Run(service_receiver_.identity().instance_id());
   }
 
-  service_manager::ServiceBinding service_binding_;
+  service_manager::ServiceReceiver service_receiver_;
   service_manager::BinderRegistry registry_;
   mojo::ReceiverSet<ConnectTestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Target);
 };
 
 }  // namespace
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor executor;
-  Target(std::move(request)).RunUntilTermination();
+  Target(std::move(receiver)).RunUntilTermination();
 }

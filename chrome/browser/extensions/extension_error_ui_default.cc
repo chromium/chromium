@@ -4,40 +4,103 @@
 
 #include "chrome/browser/extensions/extension_error_ui_default.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
 
 namespace {
 
-std::vector<base::string16> GenerateMessage(const ExtensionSet& external,
-                                            const ExtensionSet& forbidden) {
-  std::vector<base::string16> message(external.size() + forbidden.size());
-  auto it = std::transform(
-      external.begin(), external.end(), message.begin(),
-      [](const auto& extension) {
-        int id = extension->is_app() ? IDS_APP_ALERT_ITEM_EXTERNAL
-                                     : IDS_EXTENSION_ALERT_ITEM_EXTERNAL;
-        base::string16 name = base::UTF8ToUTF16(extension->name());
-        return l10n_util::GetStringFUTF16(id, name);
-      });
-  std::transform(forbidden.begin(), forbidden.end(), it,
-                 [](const auto& extension) {
-                   int id = extension->is_app()
-                                ? IDS_APP_ALERT_ITEM_BLACKLISTED
-                                : IDS_EXTENSION_ALERT_ITEM_BLACKLISTED;
-                   base::string16 name = base::UTF8ToUTF16(extension->name());
-                   return l10n_util::GetStringFUTF16(id, name);
-                 });
+std::u16string GenerateTitle(const ExtensionSet& forbidden,
+                             bool item_blocked_by_policy_exists,
+                             int extension_count,
+                             int app_count) {
+  // If |item_blocked_by_policy_exists| is true, this ignores the case that
+  // there may be a mixture of enterprise and blocklisted items in |forbidden|.
+  // The case does happen but is rare. In addition, this assumes that all policy
+  // blocked items are extensions only.
+  if (item_blocked_by_policy_exists) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_POLICY_BLOCKED_EXTENSION_ALERT_TITLE, extension_count + app_count);
+  }
+
+  // Otherwise, the extensions/apps are marked as malware because all other
+  // blocklist reasons are not included in alerts yet.
+  if ((app_count > 1) && (extension_count > 1)) {
+    return l10n_util::GetStringUTF16(IDS_EXTENSION_AND_APP_ALERT_TITLE);
+  }
+  if (app_count > 0) {
+    return l10n_util::GetPluralStringFUTF16(IDS_APP_ALERT_TITLE, app_count);
+  }
+  return l10n_util::GetPluralStringFUTF16(IDS_EXTENSION_ALERT_TITLE,
+                                          extension_count);
+}
+
+std::vector<std::u16string> GenerateEnterpriseMessage(
+    const ExtensionSet& forbidden) {
+  std::vector<std::u16string> message;
+  message.reserve(forbidden.size() + 1);
+  // This assumes that all policy blocked items are extensions only.
+  if (forbidden.size() > 1) {
+    message.push_back(l10n_util::GetStringUTF16(
+        IDS_POLICY_BLOCKED_EXTENSIONS_ALERT_ITEM_TITLE));
+    for (const auto& extension : forbidden) {
+      message.push_back(
+          l10n_util::GetStringFUTF16(IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM,
+                                     base::UTF8ToUTF16(extension->name())));
+    }
+  } else {
+    message.push_back(l10n_util::GetStringFUTF16(
+        IDS_POLICY_BLOCKED_EXTENSION_ALERT_ITEM_DETAIL,
+        base::UTF8ToUTF16(forbidden.begin()->get()->name())));
+  }
+  return message;
+}
+
+std::vector<std::u16string> GenerateMessage(
+    const ExtensionSet& forbidden,
+    bool item_blocked_by_policy_exists) {
+  std::vector<std::u16string> message;
+  message.reserve(forbidden.size());
+
+  // Currently, this ignores the case where there may be an extension that is
+  // blockedlisted by enterprise and another extension blocklisted by Safe
+  // Browsing.
+  if (item_blocked_by_policy_exists) {
+    return GenerateEnterpriseMessage(forbidden);
+  }
+
+  if (forbidden.size() == 1) {
+    message.push_back(l10n_util::GetStringFUTF16(
+        IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE,
+        base::UTF8ToUTF16(forbidden.begin()->get()->name())));
+    return message;
+  }
+  message.push_back(l10n_util::GetStringUTF16(
+      IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE));
+  for (const auto& extension : forbidden) {
+    message.push_back(
+        l10n_util::GetStringFUTF16(IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM,
+                                   base::UTF8ToUTF16(extension->name())));
+  }
   return message;
 }
 
@@ -46,7 +109,38 @@ std::vector<base::string16> GenerateMessage(const ExtensionSet& external,
 class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
  public:
   explicit ExtensionGlobalError(ExtensionErrorUI::Delegate* delegate)
-      : delegate_(delegate) {}
+      : delegate_(delegate),
+        management_policy_(
+            ExtensionSystem::Get(delegate->GetContext())->management_policy()) {
+    for (const auto& extension : delegate_->GetBlocklistedExtensions()) {
+      if (extension->is_app()) {
+        app_count_++;
+      } else {
+        extension_count_++;
+      }
+      if (management_policy_ &&
+          !management_policy_->UserMayLoad(extension.get(),
+                                           nullptr /*=ignore error */)) {
+        item_blocked_by_policy_exists_ = true;
+      }
+    }
+  }
+
+  void SetManagementPolicy(ManagementPolicy* management_policy) {
+    management_policy_ = management_policy;
+
+    // Since the |management_policy_| may be set to something new,
+    // |item_blocked_by_policy_exists_| may also need to be updated.
+    if (management_policy_) {
+      for (const auto& extension : delegate_->GetBlocklistedExtensions()) {
+        if (!management_policy_->UserMayLoad(extension.get(),
+                                             nullptr /*=ignore error */)) {
+          item_blocked_by_policy_exists_ = true;
+          break;
+        }
+      }
+    }
+  }
 
  private:
   // GlobalError overrides:
@@ -57,29 +151,31 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
     return 0;
   }
 
-  base::string16 MenuItemLabel() override {
+  std::u16string MenuItemLabel() override {
     NOTREACHED();
     return {};
   }
 
   void ExecuteMenuItem(Browser* browser) override { NOTREACHED(); }
 
-  base::string16 GetBubbleViewTitle() override {
-    return l10n_util::GetStringUTF16(IDS_EXTENSION_ALERT_TITLE);
+  std::u16string GetBubbleViewTitle() override {
+    return GenerateTitle(delegate_->GetBlocklistedExtensions(),
+                         item_blocked_by_policy_exists_, extension_count_,
+                         app_count_);
   }
 
-  std::vector<base::string16> GetBubbleViewMessages() override {
-    return GenerateMessage(delegate_->GetExternalExtensions(),
-                           delegate_->GetBlacklistedExtensions());
+  std::vector<std::u16string> GetBubbleViewMessages() override {
+    return GenerateMessage(delegate_->GetBlocklistedExtensions(),
+                           item_blocked_by_policy_exists_);
   }
 
-  base::string16 GetBubbleViewAcceptButtonLabel() override {
+  std::u16string GetBubbleViewAcceptButtonLabel() override {
     return l10n_util::GetStringUTF16(IDS_EXTENSION_ALERT_ITEM_OK);
   }
 
-  base::string16 GetBubbleViewCancelButtonLabel() override { return {}; }
+  std::u16string GetBubbleViewCancelButtonLabel() override { return {}; }
 
-  base::string16 GetBubbleViewDetailsButtonLabel() override {
+  std::u16string GetBubbleViewDetailsButtonLabel() override {
     return l10n_util::GetStringUTF16(IDS_EXTENSION_ALERT_ITEM_DETAILS);
   }
 
@@ -100,6 +196,10 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   }
 
   ExtensionErrorUI::Delegate* delegate_;
+  ManagementPolicy* management_policy_;
+  int app_count_ = 0;
+  int extension_count_ = 0;
+  bool item_blocked_by_policy_exists_ = false;
 
   ExtensionGlobalError(const ExtensionGlobalError&) = delete;
   ExtensionGlobalError& operator=(const ExtensionGlobalError&) = delete;
@@ -137,6 +237,11 @@ void ExtensionErrorUIDefault::Close() {
 
 GlobalErrorWithStandardBubble* ExtensionErrorUIDefault::GetErrorForTesting() {
   return global_error_.get();
+}
+
+void ExtensionErrorUIDefault::SetManagementPolicyForTesting(
+    ManagementPolicy* management_policy) {
+  global_error_->SetManagementPolicy(management_policy);
 }
 
 }  // namespace extensions

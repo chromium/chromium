@@ -4,63 +4,14 @@
 
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/activity_services/activities/print_activity.h"
-#import "ios/chrome/browser/ui/activity_services/appex_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// A substring to identify activity strings that are from Password Management
-// App Extensions. This string is intentionally without the leading and
-// trailing "." so it can be used as a prefix, suffix, or substring of the
-// App Extension's bundle ID.
-NSString* const kFindLoginActionBundleSubstring = @"find-login-action";
-
-// Returns whether |activity_string| refers to a supported Password Management
-// App Extension. Supported extensions are listed in kAllPasswordManagerApps.
-// The |exact_match| field defines whether an exact match of bundle_id is
-// required to consider activity_string a match. To add more Password Manager
-// extensions, add more entries to the static array.
-bool IsPasswordManagerActivity(NSString* activity_string) {
-  static struct {
-    const char* bundle_id;
-    bool exact_match;
-  } kAllPasswordManagerApps[] = {
-      // 1Password
-      {"com.agilebits.onepassword-ios.extension", true},
-      // LastPass
-      {"com.lastpass.ilastpass.LastPassExt", true},
-      // Dashlane
-      {"com.dashlane.dashlanephonefinal.", false},
-      // Enpass
-      {"in.sinew.Walletx.WalletxExt", true},
-      // Secrets touch
-      {"com.outercorner.ios.Secrets.Search", true}};
-
-  std::string activity = base::SysNSStringToUTF8(activity_string);
-  for (const auto& app : kAllPasswordManagerApps) {
-    std::string bundle_id(app.bundle_id);
-    if (app.exact_match) {
-      if (activity == bundle_id)
-        return true;
-    } else {
-      if (activity.find(bundle_id) == 0)
-        return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 namespace activity_type_util {
 
@@ -79,8 +30,11 @@ const PrefixTypeAssociation prefixTypeAssociations[] = {
     {NATIVE_TWITTER, @"com.apple.UIKit.activity.PostToTwitter", true},
     {NATIVE_WEIBO, @"com.apple.UIKit.activity.PostToWeibo", true},
     {NATIVE_CLIPBOARD, @"com.apple.UIKit.activity.CopyToPasteboard", true},
+    {NATIVE_SAVE_IMAGE, @"com.apple.UIKit.activity.SaveToCameraRoll", true},
+    {NATIVE_PRINT, @"com.apple.UIKit.activity.Print", true},
     {PRINT, @"com.google.chrome.printActivity", true},
     {FIND_IN_PAGE, @"com.google.chrome.FindInPageActivityType", true},
+    {GENERATE_QR_CODE, @"com.google.chrome.GenerateQrCodeActivityType", true},
     // The trailing '.' prevents false positives.
     // For instance, "com.viberific" won't be matched by the "com.viber.".
     {GOOGLE_DRIVE, @"com.google.Drive.", false},
@@ -112,12 +66,6 @@ const PrefixTypeAssociation prefixTypeAssociations[] = {
 
 ActivityType TypeFromString(NSString* activityString) {
   DCHECK(activityString);
-  // Checks for the special case first so the more general patterns in
-  // prefixTypeAssociations would not prematurely trapped them.
-  NSRange found =
-      [activityString rangeOfString:kFindLoginActionBundleSubstring];
-  if (found.length)
-    return APPEX_PASSWORD_MANAGEMENT;
   for (auto const& association : prefixTypeAssociations) {
     if (association.requiresExactMatch_) {
       if ([activityString isEqualToString:association.prefix_])
@@ -127,24 +75,7 @@ ActivityType TypeFromString(NSString* activityString) {
         return association.type_;
     }
   }
-  if (IsPasswordManagerActivity(activityString))
-    return APPEX_PASSWORD_MANAGEMENT;
   return UNKNOWN;
-}
-
-NSString* CompletionMessageForActivity(ActivityType type) {
-  // Some activities can be reported as completed even if not successful.
-  // Make sure that the message is meaningful even if the activity completed
-  // unsuccessfully.
-  switch (type) {
-    case COPY:
-    case NATIVE_CLIPBOARD:
-      return l10n_util::GetNSString(IDS_IOS_SHARE_TO_CLIPBOARD_SUCCESS);
-    case APPEX_PASSWORD_MANAGEMENT:
-      return l10n_util::GetNSString(IDS_IOS_APPEX_PASSWORD_FORM_FILLED_SUCCESS);
-    default:
-      return nil;
-  }
 }
 
 void RecordMetricForActivity(ActivityType type) {
@@ -159,10 +90,14 @@ void RecordMetricForActivity(ActivityType type) {
     case NATIVE_CLIPBOARD:
       base::RecordAction(base::UserMetricsAction("MobileShareMenuClipboard"));
       break;
+    case NATIVE_SAVE_IMAGE:
+      base::RecordAction(base::UserMetricsAction("MobileShareMenuSaveImage"));
+      break;
     case FIND_IN_PAGE:
       base::RecordAction(base::UserMetricsAction("MobileShareMenuFindInPage"));
       break;
     case PRINT:
+    case NATIVE_PRINT:
       base::RecordAction(base::UserMetricsAction("MobileShareMenuPrint"));
       break;
     case READ_LATER:
@@ -221,13 +156,13 @@ void RecordMetricForActivity(ActivityType type) {
       base::RecordAction(
           base::UserMetricsAction("MobileShareMenuToContentApp"));
       break;
-    case APPEX_PASSWORD_MANAGEMENT:
-      base::RecordAction(
-          base::UserMetricsAction("MobileAppExFormFilledByPasswordManager"));
-      break;
     case SEND_TAB_TO_SELF:
       base::RecordAction(
           base::UserMetricsAction("MobileShareMenuSendTabToSelf"));
+      break;
+    case GENERATE_QR_CODE:
+      base::RecordAction(
+          base::UserMetricsAction("MobileShareMenuGenerateQRCode"));
       break;
   }
 }

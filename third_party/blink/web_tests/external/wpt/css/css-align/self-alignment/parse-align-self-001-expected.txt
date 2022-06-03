@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Checking align-self: auto
+PASS Checking align-self: normal
+PASS Checking align-self: stretch
+PASS Checking align-self: start
+PASS Checking align-self: end
+PASS Checking align-self: self-start
+PASS Checking align-self: self-end
+PASS Checking align-self: center
+PASS Checking align-self: flex-start
+PASS Checking align-self: flex-end
+PASS Checking align-self: baseline
+PASS Checking align-self: first baseline
+FAIL Checking align-self: last baseline assert_equals: align-self computed style is not what is should. expected "last baseline" but got "auto"
+PASS Checking align-self: safe flex-end
+PASS Checking align-self: unsafe end
+PASS Checking align-self: safe end
+PASS Checking align-self: unsafe flex-start
+PASS Checking align-self: safe center
+Harness: the test ran to completion.
+

@@ -4,7 +4,10 @@
 
 #include "services/test/echo/echo_service.h"
 
+#include <string.h>
+
 #include "base/immediate_crash.h"
+#include "base/memory/shared_memory_mapping.h"
 
 namespace echo {
 
@@ -16,6 +19,13 @@ EchoService::~EchoService() = default;
 void EchoService::EchoString(const std::string& input,
                              EchoStringCallback callback) {
   std::move(callback).Run(input);
+}
+
+void EchoService::EchoStringToSharedMemory(
+    const std::string& input,
+    base::UnsafeSharedMemoryRegion region) {
+  base::WritableSharedMemoryMapping mapping = region.Map();
+  memcpy(mapping.memory(), input.data(), input.size());
 }
 
 void EchoService::Quit() {

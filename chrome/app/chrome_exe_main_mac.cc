@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <libgen.h>
 #include <mach-o/dyld.h>
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -21,12 +22,32 @@
 #include "chrome/common/chrome_version.h"
 
 #if defined(HELPER_EXECUTABLE)
-#include "sandbox/mac/seatbelt_exec.h"
+#include "sandbox/mac/seatbelt_exec.h"  // nogncheck
 #endif  // defined(HELPER_EXECUTABLE)
+
+extern "C" {
+// abort_report_np() records the message in a special section that both the
+// system CrashReporter and Crashpad collect in crash reports. Using a Crashpad
+// Annotation would be preferable, but this executable cannot depend on
+// Crashpad directly.
+void abort_report_np(const char* fmt, ...);
+}
 
 namespace {
 
 typedef int (*ChromeMainPtr)(int, char**);
+
+[[noreturn]] void FatalError(const char* format, ...) {
+  va_list valist;
+  va_start(valist, format);
+  char message[4096];
+  if (vsnprintf(message, sizeof(message), format, valist) >= 0) {
+    fputs(message, stderr);
+    abort_report_np("%s", message);
+  }
+  va_end(valist);
+  abort();
+}
 
 }  // namespace
 
@@ -34,15 +55,13 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
   uint32_t exec_path_size = 0;
   int rv = _NSGetExecutablePath(NULL, &exec_path_size);
   if (rv != -1) {
-    fprintf(stderr, "_NSGetExecutablePath: get length failed\n");
-    abort();
+    FatalError("_NSGetExecutablePath: get length failed.");
   }
 
   std::unique_ptr<char[]> exec_path(new char[exec_path_size]);
   rv = _NSGetExecutablePath(exec_path.get(), &exec_path_size);
   if (rv != 0) {
-    fprintf(stderr, "_NSGetExecutablePath: get path failed\n");
-    abort();
+    FatalError("_NSGetExecutablePath: get path failed.");
   }
 
 #if defined(HELPER_EXECUTABLE)
@@ -51,12 +70,10 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
                                                        argv);
   if (seatbelt.sandbox_required) {
     if (!seatbelt.server) {
-      fprintf(stderr, "Failed to create seatbelt sandbox server.\n");
-      abort();
+      FatalError("Failed to create seatbelt sandbox server.");
     }
     if (!seatbelt.server->InitializeSandbox()) {
-      fprintf(stderr, "Failed to initialize sandbox.\n");
-      abort();
+      FatalError("Failed to initialize sandbox.");
     }
   }
 
@@ -73,8 +90,7 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
   // version framework information.
   const char* parent_dir = dirname(exec_path.get());
   if (!parent_dir) {
-    fprintf(stderr, "dirname %s: %s\n", exec_path.get(), strerror(errno));
-    abort();
+    FatalError("dirname %s: %s.", exec_path.get(), strerror(errno));
   }
 
   const size_t parent_dir_len = strlen(parent_dir);
@@ -88,15 +104,13 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
   void* library =
       dlopen(framework_path.get(), RTLD_LAZY | RTLD_LOCAL | RTLD_FIRST);
   if (!library) {
-    fprintf(stderr, "dlopen %s: %s\n", framework_path.get(), dlerror());
-    abort();
+    FatalError("dlopen %s: %s.", framework_path.get(), dlerror());
   }
 
   const ChromeMainPtr chrome_main =
       reinterpret_cast<ChromeMainPtr>(dlsym(library, "ChromeMain"));
   if (!chrome_main) {
-    fprintf(stderr, "dlsym ChromeMain: %s\n", dlerror());
-    abort();
+    FatalError("dlsym ChromeMain: %s.", dlerror());
   }
   rv = chrome_main(argc, argv);
 

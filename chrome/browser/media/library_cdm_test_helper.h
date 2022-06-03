@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_LIBRARY_CDM_TEST_HELPER_H_
 #define CHROME_BROWSER_MEDIA_LIBRARY_CDM_TEST_HELPER_H_
 
-#include <string>
-
-#include "base/files/file_path.h"
-
 namespace base {
 class CommandLine;
 class Token;

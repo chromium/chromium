@@ -8,6 +8,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 
 namespace {
@@ -44,7 +45,7 @@ void RunTestCase(std::string& ipc_filter_message, SkBitmap& bitmap,
 
     // This call shouldn't crash or cause ASAN to flag any memory issues
     // If nothing bad happens within this call, everything is fine
-    canvas->drawBitmap(bitmap, 0, 0, &paint);
+    canvas->drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), &paint);
 
     LOG(INFO) << "Filter DAG rendered successfully";
     canvas->restore();
@@ -79,7 +80,7 @@ int main(int argc, char** argv) {
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(BitmapSize, BitmapSize);
-  SkCanvas canvas(bitmap);
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
   canvas.clear(0x00000000);
 
   for (int i = 1; i < argc; i++)

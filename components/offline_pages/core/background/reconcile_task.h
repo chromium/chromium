@@ -24,11 +24,11 @@ class ReconcileTask : public Task {
                 RequestQueueStore::UpdateCallback callback);
   ~ReconcileTask() override;
 
+ private:
   // TaskQueue::Task implementation:
   // Starts the async chain.
   void Run() override;
 
- private:
   // Step 1. Get results from the store.
   void GetRequests();
 

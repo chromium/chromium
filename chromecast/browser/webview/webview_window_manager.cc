@@ -4,61 +4,17 @@
 
 #include "chromecast/browser/webview/webview_window_manager.h"
 
-#include "chromecast/graphics/cast_window_manager.h"
+#include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 
 namespace chromecast {
 
-// Keeps track of the creation and destruction of webview container windows, and
-// adds and removes the root window rounded corner decoration accordingly.
-// Rounded corners only need to be present when webviews are being displayed.
-class RoundedCornersObserver : public WebviewWindowManager::Observer,
-                               public aura::WindowObserver {
- public:
-  explicit RoundedCornersObserver(CastWindowManager* cast_window_manager)
-      : cast_window_manager_(cast_window_manager) {}
-
-  ~RoundedCornersObserver() override {}
-
-  // WebviewWindowManager::Observer implementation
-  void OnNewWebviewContainerWindow(aura::Window* window, int app_id) override {
-    // Observe the lifecycle of this window so we can remove rounded corners
-    // when it goes away.
-    window->AddObserver(this);
-
-    // Add rounded corners on the first created window.
-    if (cast_window_manager_ && !num_container_windows_) {
-      cast_window_manager_->SetEnableRoundedCorners(true);
-    }
-    num_container_windows_++;
-  }
-
-  // aura::WindowObserver implementation
-  void OnWindowDestroyed(aura::Window* window) override {
-    // Remove the rounded corners when we're out of container windows.
-    num_container_windows_--;
-    DCHECK_GE(num_container_windows_, 0);
-    if (cast_window_manager_ && !num_container_windows_) {
-      cast_window_manager_->SetEnableRoundedCorners(false);
-    }
-  }
-
- private:
-  CastWindowManager* cast_window_manager_;
-  int num_container_windows_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedCornersObserver);
-};
-
-WebviewWindowManager::WebviewWindowManager(
-    CastWindowManager* cast_window_manager)
-    : rounded_corners_observer_(
-          std::make_unique<RoundedCornersObserver>(cast_window_manager)) {
+WebviewWindowManager::WebviewWindowManager() {
   aura::Env::GetInstance()->AddObserver(this);
-
-  AddObserver(rounded_corners_observer_.get());
 }
 
 WebviewWindowManager::~WebviewWindowManager() {
@@ -92,7 +48,17 @@ void WebviewWindowManager::OnWindowPropertyChanged(aura::Window* window,
   if (key != exo::kClientSurfaceIdKey)
     return;
 
-  int app_id = window->GetProperty(exo::kClientSurfaceIdKey);
+  // Note: The property was originally an integer, and was switched to be a
+  // string. For compatibility integer values are converted to a string via
+  // base::NumberToString before being set as the property value.
+  std::string* app_id_str = window->GetProperty(exo::kClientSurfaceIdKey);
+  if (!app_id_str)
+    return;
+
+  int app_id = 0;
+  if (!base::StringToInt(*app_id_str, &app_id))
+    return;
+
   LOG(INFO) << "Found window for webview " << app_id;
   for (auto& observer : observers_)
     observer.OnNewWebviewContainerWindow(window, app_id);

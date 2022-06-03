@@ -16,20 +16,18 @@ class MediaControlsImpl;
 // floating UI.
 class MODULES_EXPORT MediaControlDivElement : public HTMLDivElement,
                                               public MediaControlElementBase {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaControlDivElement);
-
  public:
   // Implements MediaControlElementBase.
   void SetOverflowElementIsWanted(bool) final;
   void MaybeRecordDisplayed() final;
 
   // Get the size of the element in pixels or the default if we cannot get the
-  // size because the element has not been layed out yet.
-  WebSize GetSizeOrDefault() const override;
+  // size because the element has not been laid out yet.
+  gfx::Size GetSizeOrDefault() const override;
 
   bool IsDisabled() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   MediaControlDivElement(MediaControlsImpl&);

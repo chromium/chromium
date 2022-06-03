@@ -23,8 +23,7 @@ using ntp_snippets::ContentSuggestionsService;
 // static
 ContentSuggestionsService*
 IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
-  DCHECK(!browser_state->IsOffTheRecord());
+    ChromeBrowserState* browser_state) {
   return static_cast<ContentSuggestionsService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -72,5 +71,8 @@ void IOSChromeContentSuggestionsServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kArticlesForYouEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kNTPContentSuggestionsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

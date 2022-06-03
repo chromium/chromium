@@ -22,6 +22,10 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   VideoSourceProviderImpl(
       DeviceFactory* device_factory,
       base::RepeatingClosure on_last_client_disconnected_cb);
+
+  VideoSourceProviderImpl(const VideoSourceProviderImpl&) = delete;
+  VideoSourceProviderImpl& operator=(const VideoSourceProviderImpl&) = delete;
+
   ~VideoSourceProviderImpl() override;
 
   void AddClient(mojo::PendingReceiver<mojom::VideoSourceProvider> receiver);
@@ -57,7 +61,6 @@ class VideoSourceProviderImpl : public mojom::VideoSourceProvider {
   int closed_but_not_yet_disconnected_client_count_ = 0;
   mojo::ReceiverSet<mojom::VideoSourceProvider> receivers_;
   std::map<std::string, std::unique_ptr<VideoSourceImpl>> sources_;
-  DISALLOW_COPY_AND_ASSIGN(VideoSourceProviderImpl);
 };
 
 }  // namespace video_capture

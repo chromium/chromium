@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
+struct arch_seccomp_data;
 struct sock_filter;
 
 namespace sandbox {
-struct arch_seccomp_data;
 
 namespace bpf_dsl {
 
@@ -23,6 +23,10 @@ namespace bpf_dsl {
 // deserves a new name.
 class SANDBOX_EXPORT Verifier {
  public:
+  Verifier() = delete;
+  Verifier(const Verifier&) = delete;
+  Verifier& operator=(const Verifier&) = delete;
+
   // Evaluate a given BPF program for a particular set of system call
   // parameters. If evaluation failed for any reason, "err" will be set to
   // a non-NULL error string. Otherwise, the BPF program's result will be
@@ -34,9 +38,6 @@ class SANDBOX_EXPORT Verifier {
   static uint32_t EvaluateBPF(const std::vector<struct sock_filter>& program,
                               const struct arch_seccomp_data& data,
                               const char** err);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Verifier);
 };
 
 }  // namespace bpf_dsl

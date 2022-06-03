@@ -34,8 +34,8 @@ using GetProxyResolvingFactoryCallback = base::RepeatingCallback<void(
 // backoff policies when attempting connections.
 class GCM_EXPORT ConnectionFactory {
  public:
-  typedef base::Callback<void(mcs_proto::LoginRequest* login_request)>
-      BuildLoginRequestCallback;
+  using BuildLoginRequestCallback =
+      base::RepeatingCallback<void(mcs_proto::LoginRequest* login_request)>;
 
   // Reasons for triggering a connection reset. Note that these enums are
   // consumed by a histogram, so ordering should not be modified.

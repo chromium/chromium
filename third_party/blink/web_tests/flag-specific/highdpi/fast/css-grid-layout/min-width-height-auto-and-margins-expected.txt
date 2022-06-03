@@ -1,0 +1,136 @@
+This test checks min-width|height auto does not interfere in margins computation, properly placing items inside their grid area.
+
+Stretching allowed in both axis | column smaller than content-box, row bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | column of same size than content-box, row bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | column bigger than content-box, row bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | column of same size as margin-box, row bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | column bigger than content-box, row bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in column axis, fitContent in row-axis | column smaller than content-box, row bigger than margin-box
+
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid fit-content autoHeight justifyItemsStart columnsSmallerThanContentBox rowsBiggerThanMarginBox">
+        <div class="item" data-offset-x="20" data-offset-y="20" data-expected-width="100" data-expected-height="60">XXXX</div>
+    </div>
+</div>
+
+Stretching allowed in column axis, fitContent in row-axis | column of same size than content-box, row bigger than margin-box
+
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid fit-content autoHeight justifyItemsStart columnsSameAsContentBox rowsBiggerThanMarginBox">
+        <div class="item" data-offset-x="20" data-offset-y="20" data-expected-width="100" data-expected-height="60">XXXX</div>
+    </div>
+</div>
+
+Stretching allowed in column axis, fitContent in row-axis | column bigger than content-box, row bigger than margin-box
+
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid fit-content autoHeight justifyItemsStart columnsBiggerThanContentBox rowsBiggerThanMarginBox">
+        <div class="item" data-offset-x="20" data-offset-y="20" data-expected-width="100" data-expected-height="60">XXXX</div>
+    </div>
+</div>
+
+Stretching allowed in column axis, fitContent in row-axis | column of same size as margin-box, row bigger than margin-box
+
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid fit-content autoHeight justifyItemsStart columnsSameAsMarginBox rowsBiggerThanMarginBox">
+        <div class="item" data-offset-x="20" data-offset-y="20" data-expected-width="100" data-expected-height="60">XXXX</div>
+    </div>
+</div>
+
+Stretching allowed in column axis, fitContent in row-axis | column bigger than content-box, row bigger than margin-box
+
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid fit-content autoHeight justifyItemsStart columnsBiggerThanMarginBox rowsBiggerThanMarginBox">
+        <div class="item" data-offset-x="20" data-offset-y="20" data-expected-width="100" data-expected-height="60">XXXX</div>
+    </div>
+</div>
+
+Stretching allowed in both axis | row smaller than content-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | row of same size than content-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | row bigger than content-box, column bigger column margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | row of same size as margin-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in both axis | row bigger than margin-box, column bigger column margin-box
+
+XXXX
+PASS
+
+Stretching allowed in row axis, fitContent in column-axis | row smaller than content-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in row axis, fitContent in column-axis | row of same size than content-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in column axis, fitContent in row-axis | row bigger than content-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in row axis, fitContent in column-axis | row of same size as margin-box, column bigger than margin-box
+
+XXXX
+PASS
+
+Stretching allowed in column axis, fitContent in row-axis | row bigger than margin-box, column bigger than margin-box
+
+XXXX
+PASS

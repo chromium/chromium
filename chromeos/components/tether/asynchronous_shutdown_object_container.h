@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 #define CHROMEOS_COMPONENTS_TETHER_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace tether {
@@ -23,21 +21,24 @@ class WifiHotspotDisconnector;
 class AsynchronousShutdownObjectContainer {
  public:
   AsynchronousShutdownObjectContainer() {}
+
+  AsynchronousShutdownObjectContainer(
+      const AsynchronousShutdownObjectContainer&) = delete;
+  AsynchronousShutdownObjectContainer& operator=(
+      const AsynchronousShutdownObjectContainer&) = delete;
+
   virtual ~AsynchronousShutdownObjectContainer() {}
 
   // Shuts down the objects contained by this class and invokes
   // |shutdown_complete_callback| upon completion. This function should only be
   // called once.
-  virtual void Shutdown(const base::Closure& shutdown_complete_callback) = 0;
+  virtual void Shutdown(base::OnceClosure shutdown_complete_callback) = 0;
 
   virtual TetherHostFetcher* tether_host_fetcher() = 0;
   virtual DisconnectTetheringRequestSender*
   disconnect_tethering_request_sender() = 0;
   virtual NetworkConfigurationRemover* network_configuration_remover() = 0;
   virtual WifiHotspotDisconnector* wifi_hotspot_disconnector() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainer);
 };
 
 }  // namespace tether

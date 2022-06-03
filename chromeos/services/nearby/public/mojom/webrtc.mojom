@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sharing.mojom;
+
+import "url/mojom/url.mojom";
+
+// Represents an ICE server to be used for communication.
+struct IceServer {
+  // URLs of this server.
+  array<url.mojom.Url> urls;
+  // Username for authentication with this server.
+  string? username;
+  // Credential for authentication with this server.
+  string? credential;
+};
+
+// Used to fetch ice servers for WebRtc communication. Implemented in browser
+// process.
+interface IceConfigFetcher {
+  // Returns a list of ice servers for WebRtc communication.
+  GetIceServers() => (array<IceServer> ice_servers);
+};

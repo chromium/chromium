@@ -43,11 +43,17 @@ ArcRotationLockBridge* ArcRotationLockBridge::GetForBrowserContext(
   return ArcRotationLockBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcRotationLockBridge* ArcRotationLockBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcRotationLockBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcRotationLockBridge::ArcRotationLockBridge(content::BrowserContext* context,
                                              ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
   arc_bridge_service_->rotation_lock()->AddObserver(this);
-  // TODO(mash): Support this functionality without ash::Shell access in Chrome.
+  // ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->screen_orientation_controller()->AddObserver(this);
     ash::Shell::Get()->tablet_mode_controller()->AddObserver(this);
@@ -56,8 +62,7 @@ ArcRotationLockBridge::ArcRotationLockBridge(content::BrowserContext* context,
 
 ArcRotationLockBridge::~ArcRotationLockBridge() {
   arc_bridge_service_->rotation_lock()->RemoveObserver(this);
-  // TODO(mus): mus needs proper shutdown process.
-  // TODO(mash): Support this functionality without ash::Shell access in Chrome.
+  // ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->screen_orientation_controller()->RemoveObserver(this);
     ash::Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
@@ -77,7 +82,7 @@ void ArcRotationLockBridge::OnTabletPhysicalStateChanged() {
 }
 
 void ArcRotationLockBridge::SendRotationLockState() {
-  // TODO(mash): Support this functionality without ash::Shell access in Chrome.
+  // ash::Shell may not exist in tests.
   if (!ash::Shell::HasInstance())
     return;
 
@@ -94,10 +99,11 @@ void ArcRotationLockBridge::SendRotationLockState() {
     DCHECK(found);
   }
 
-  auto* shell = ash::Shell::Get();
+  auto* screen_orientation_controller =
+      ash::Shell::Get()->screen_orientation_controller();
   const bool accelerometer_active =
-      shell->tablet_mode_controller()->is_in_tablet_physical_state() &&
-      !shell->screen_orientation_controller()->rotation_locked();
+      screen_orientation_controller->IsAutoRotationAllowed() &&
+      !screen_orientation_controller->rotation_locked();
 
   rotation_lock_instance->OnRotationLockStateChanged(
       accelerometer_active,

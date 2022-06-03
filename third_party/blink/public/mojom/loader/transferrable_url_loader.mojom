@@ -1,0 +1,18 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/url_response_head.mojom";
+import "services/network/public/mojom/url_loader.mojom";
+import "url/mojom/url.mojom";
+
+// Used to transfer a URLLoader when after OnReceiveResponse() has been called
+// on the URLLoaderClient.
+struct TransferrableURLLoader {
+  url.mojom.Url url;
+  pending_remote<network.mojom.URLLoader> url_loader;
+  pending_receiver<network.mojom.URLLoaderClient> url_loader_client;
+  network.mojom.URLResponseHead head;
+};

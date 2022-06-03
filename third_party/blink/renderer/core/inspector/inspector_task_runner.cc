@@ -28,25 +28,29 @@ void InspectorTaskRunner::Dispose() {
   isolate_task_runner_ = nullptr;
 }
 
-void InspectorTaskRunner::AppendTask(Task task) {
+bool InspectorTaskRunner::AppendTask(Task task) {
   MutexLocker lock(mutex_);
   if (disposed_)
-    return;
+    return false;
   interrupting_task_queue_.push_back(std::move(task));
   PostCrossThreadTask(
       *isolate_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &InspectorTaskRunner::PerformSingleInterruptingTaskDontWait,
           WrapRefCounted(this)));
-  if (isolate_)
+  if (isolate_) {
+    AddRef();
     isolate_->RequestInterrupt(&V8InterruptCallback, this);
+  }
+  return true;
 }
 
-void InspectorTaskRunner::AppendTaskDontInterrupt(Task task) {
+bool InspectorTaskRunner::AppendTaskDontInterrupt(Task task) {
   MutexLocker lock(mutex_);
   if (disposed_)
-    return;
+    return false;
   PostCrossThreadTask(*isolate_task_runner_, FROM_HERE, std::move(task));
+  return true;
 }
 
 InspectorTaskRunner::Task InspectorTaskRunner::TakeNextInterruptingTask() {
@@ -69,6 +73,7 @@ void InspectorTaskRunner::PerformSingleInterruptingTaskDontWait() {
 void InspectorTaskRunner::V8InterruptCallback(v8::Isolate*, void* data) {
   InspectorTaskRunner* runner = static_cast<InspectorTaskRunner*>(data);
   Task task = runner->TakeNextInterruptingTask();
+  runner->Release();
   if (!task) {
     return;
   }

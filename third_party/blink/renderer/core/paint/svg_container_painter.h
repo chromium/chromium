@@ -22,6 +22,8 @@ class SVGContainerPainter {
   void Paint(const PaintInfo&);
 
  private:
+  bool CanUseCullRect() const;
+
   const LayoutSVGContainer& layout_svg_container_;
 };
 

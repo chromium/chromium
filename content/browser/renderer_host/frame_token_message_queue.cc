@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
 #include "base/bind.h"
-#include "ipc/ipc_message.h"
 
 namespace content {
 
@@ -17,14 +16,31 @@ void FrameTokenMessageQueue::Init(Client* client) {
   client_ = client;
 }
 
-void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
-  // Frame tokens always increase.
-  if (frame_token <= last_received_frame_token_) {
+void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
+                                             base::TimeTicks activation_time) {
+  // The queue will be cleared if the Renderer has been Reset. Do not enforce
+  // token order, as ACKs for old frames may still be in flight from Viz.
+  if (callback_map_.empty()) {
+    last_received_frame_token_ = frame_token;
+    last_received_activation_time_ = activation_time;
+    return;
+  }
+
+  // Frame tokens always increase. However when a Reset occurs old tokens can
+  // arrive. Do not enforce token order if we are seeing the ACK for the
+  // previous frame.
+  // TODO(jonross): we should consider updating LocalSurfaceId to also track
+  // frame_token. So that we could properly differentiate between origins of
+  // frame. As we cannot enforce ordering between Reset Renderers.
+  if ((frame_token <= last_received_frame_token_) &&
+      !(last_received_frame_token_reset_ &&
+        last_received_frame_token_reset_ != frame_token)) {
     client_->OnInvalidFrameToken(frame_token);
     return;
   }
 
   last_received_frame_token_ = frame_token;
+  last_received_activation_time_ = activation_time;
 
   // Gets the first callback associated with a token after |frame_token| or
   // callback_map_.end().
@@ -33,7 +49,7 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
   // std::multimap already sorts on keys, so this will process all enqueued
   // messages up to the current frame token.
   for (auto it = callback_map_.begin(); it != upper_bound; ++it)
-    std::move(it->second).Run();
+    std::move(it->second).Run(activation_time);
 
   // Clear all callbacks up to the current frame token.
   callback_map_.erase(callback_map_.begin(), upper_bound);
@@ -41,40 +57,18 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
 
 void FrameTokenMessageQueue::EnqueueOrRunFrameTokenCallback(
     uint32_t frame_token,
-    base::OnceClosure callback) {
-  // Zero token is invalid.
-  if (!frame_token) {
-    client_->OnInvalidFrameToken(frame_token);
-    return;
-  }
-
+    base::OnceCallback<void(base::TimeTicks)> callback) {
   if (frame_token <= last_received_frame_token_) {
-    std::move(callback).Run();
+    std::move(callback).Run(last_received_activation_time_);
     return;
   }
   callback_map_.insert(std::make_pair(frame_token, std::move(callback)));
 }
 
-void FrameTokenMessageQueue::OnFrameSwapMessagesReceived(
-    uint32_t frame_token,
-    std::vector<IPC::Message> messages) {
-  EnqueueOrRunFrameTokenCallback(
-      frame_token, base::BindOnce(&FrameTokenMessageQueue::ProcessSwapMessages,
-                                  base::Unretained(this), std::move(messages)));
-}
-
 void FrameTokenMessageQueue::Reset() {
+  last_received_frame_token_reset_ = last_received_frame_token_;
   last_received_frame_token_ = 0;
   callback_map_.clear();
-}
-
-void FrameTokenMessageQueue::ProcessSwapMessages(
-    std::vector<IPC::Message> messages) {
-  for (const IPC::Message& i : messages) {
-    client_->OnProcessSwapMessage(i);
-    if (i.dispatch_error())
-      client_->OnMessageDispatchError(i);
-  }
 }
 
 }  // namespace content

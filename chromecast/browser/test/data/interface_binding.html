@@ -1,0 +1,17 @@
+<html>
+    <head><title>Binding some Mojo interfaces</title></head>
+    <body>
+        <script>
+          function bindInterface(name) {
+            const {handle0, handle1} = Mojo.createMessagePipe();
+            Mojo.bindInterface(name, handle0);
+          }
+
+          // The browser test which uses this page will succeed once these
+          // bindInterface requests reach browser-side binders registered by
+          // the test.
+          bindInterface('chromecast.mojom.TestAdder');
+          bindInterface('chromecast.mojom.TestDoubler');
+        </script>
+    </body>
+</html>

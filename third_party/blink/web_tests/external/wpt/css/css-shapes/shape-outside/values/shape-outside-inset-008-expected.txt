@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+FAIL inset(calc(10in)) - inline style assert_equals: expected "inset(calc(960px))" but got "inset(calc(10in))"
+PASS inset(calc(10in + 20px)) - inline style
+PASS inset(calc(30%)) - inline style
+PASS inset(calc(100%/4)) - inline style
+PASS inset(calc(25%*3)) - inline style
+FAIL inset(calc(25%*3 - 10in)) - inline style assert_equals: expected "inset(calc(75% - 960px))" but got "inset(calc(75% - 10in))"
+FAIL inset(calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "inset(calc(18.75% + 240px))" but got "inset(calc((75% + 10in) / 4))"
+FAIL inset(calc(10in) calc(10in)) - inline style assert_equals: expected "inset(calc(960px))" but got "inset(calc(10in))"
+PASS inset(calc(10in + 20px) calc(10in + 20px)) - inline style
+PASS inset(calc(30%) calc(30%)) - inline style
+PASS inset(calc(100%/4) calc(100%/4)) - inline style
+PASS inset(calc(25%*3) calc(25%*3)) - inline style
+FAIL inset(calc(25%*3 - 10in) calc(25%*3 - 10in)) - inline style assert_equals: expected "inset(calc(75% - 960px))" but got "inset(calc(75% - 10in))"
+FAIL inset(calc((12.5%*6 + 10in) / 4) calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "inset(calc(18.75% + 240px))" but got "inset(calc((75% + 10in) / 4))"
+PASS inset(calc(10in)) - computed style
+PASS inset(calc(10in + 20px)) - computed style
+PASS inset(calc(30%)) - computed style
+PASS inset(calc(100%/4)) - computed style
+PASS inset(calc(25%*3)) - computed style
+PASS inset(calc(25%*3 - 10in)) - computed style
+PASS inset(calc((12.5%*6 + 10in) / 4)) - computed style
+PASS inset(calc(10in) calc(10in)) - computed style
+PASS inset(calc(10in + 20px) calc(10in + 20px)) - computed style
+PASS inset(calc(30%) calc(30%)) - computed style
+PASS inset(calc(100%/4) calc(100%/4)) - computed style
+PASS inset(calc(25%*3) calc(25%*3)) - computed style
+PASS inset(calc(25%*3 - 10in) calc(25%*3 - 10in)) - computed style
+PASS inset(calc((12.5%*6 + 10in) / 4) calc((12.5%*6 + 10in) / 4)) - computed style
+Harness: the test ran to completion.
+

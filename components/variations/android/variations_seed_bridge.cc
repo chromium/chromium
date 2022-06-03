@@ -6,7 +6,6 @@
 
 #include <jni.h>
 #include <stdint.h>
-#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -68,6 +67,11 @@ void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
       ConvertUTF8ToJavaString(env, seed_country),
       static_cast<jlong>(response_date),
       static_cast<jboolean>(is_gzip_compressed));
+}
+
+bool HasMarkedPrefsForTesting() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_VariationsSeedBridge_hasNativePref(env);
 }
 
 }  // namespace android

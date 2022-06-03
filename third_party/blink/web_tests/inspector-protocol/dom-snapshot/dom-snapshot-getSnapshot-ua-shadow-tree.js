@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startURL('../resources/dom-snapshot-ua-shadow-tree.html', 'Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted to false.');
+  const {page, session, dp} = await testRunner.startURL('../resources/dom-snapshot-ua-shadow-tree.html', 'Tests DOMSnapshot.getSnapshot method with includeUserAgentShadowTree defaulted to false.');
 
   await session.evaluate(`
     var shadowroot = document.querySelector('#shadow-host').attachShadow({mode: 'open'});
@@ -11,17 +11,21 @@
     shadowroot.appendChild(video);
   `);
 
-  function stabilize(key, value) {
-    var unstableKeys = ['documentURL', 'baseURL', 'frameId', 'backendNodeId', 'layoutTreeNodes'];
-    if (unstableKeys.indexOf(key) !== -1)
-      return '<' + typeof(value) + '>';
-    return value;
+  function cleanupPaths(obj) {
+    for (const key of Object.keys(obj)) {
+      const value = obj[key];
+      if (typeof value === 'string' && value.indexOf('/dom-snapshot/') !== -1)
+        obj[key] = '<value>';
+      else if (typeof value === 'object')
+        cleanupPaths(value);
+    }
+    return obj;
   }
 
-  var response = await dp.DOMSnapshot.getSnapshot({'computedStyleWhitelist': [], 'includeEventListeners': true});
+  const response = await dp.DOMSnapshot.getSnapshot({'computedStyleWhitelist': [], 'includeEventListeners': true});
   if (response.error)
     testRunner.log(response);
   else
-    testRunner.log(JSON.stringify(response.result, stabilize, 2));
+    testRunner.log(cleanupPaths(response.result), null, ['documentURL', 'baseURL', 'frameId', 'backendNodeId', 'layoutTreeNodes']);
   testRunner.completeTest();
 })

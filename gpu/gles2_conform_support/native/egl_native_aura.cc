@@ -8,7 +8,7 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 extern "C" {
 #if defined(GLES2_CONFORM_SUPPORT_ONLY)

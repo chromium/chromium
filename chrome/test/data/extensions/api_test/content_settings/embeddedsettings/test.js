@@ -3,8 +3,15 @@
 // found in the LICENSE file.
 
 var cs = chrome.contentSettings;
+var delegation;
 
 chrome.test.runTests([
+  function setup() {
+    chrome.test.getConfig(function(config) {
+      delegation = config.customArg;
+      chrome.test.succeed();
+    });
+  },
   function embeddedSettings() {
     // Cookies is not impacted by permission delegation and embedded patterns
     // are permitted even when it's enabled.
@@ -16,7 +23,7 @@ chrome.test.runTests([
 
     // Geolocation embedded patterns are not permitted when permission
     // delegation is enabled.
-    if (window.location.search == '?permission_delegation') {
+    if (delegation  == 'permission') {
       cs['location'].set({
         primaryPattern: 'http://google.com/*',
         secondaryPattern: 'http://example.com/*',

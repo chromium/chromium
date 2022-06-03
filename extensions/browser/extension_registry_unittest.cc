@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,6 +39,9 @@ testing::AssertionResult HasSingleExtension(
 class TestObserver : public ExtensionRegistryObserver {
  public:
   TestObserver() {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   void Reset() {
     loaded_.clear();
@@ -82,8 +86,6 @@ class TestObserver : public ExtensionRegistryObserver {
   ExtensionList unloaded_;
   ExtensionList installed_;
   ExtensionList uninstalled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {
@@ -97,18 +99,18 @@ TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {
   EXPECT_EQ(0u, registry.enabled_extensions().size());
   EXPECT_EQ(0u, registry.disabled_extensions().size());
   EXPECT_EQ(0u, registry.terminated_extensions().size());
-  EXPECT_EQ(0u, registry.blacklisted_extensions().size());
+  EXPECT_EQ(0u, registry.blocklisted_extensions().size());
 
   // Extensions can be added to each set.
   registry.AddEnabled(extension1);
   registry.AddDisabled(extension2);
   registry.AddTerminated(extension3);
-  registry.AddBlacklisted(extension4);
+  registry.AddBlocklisted(extension4);
 
   EXPECT_EQ(1u, registry.enabled_extensions().size());
   EXPECT_EQ(1u, registry.disabled_extensions().size());
   EXPECT_EQ(1u, registry.terminated_extensions().size());
-  EXPECT_EQ(1u, registry.blacklisted_extensions().size());
+  EXPECT_EQ(1u, registry.blocklisted_extensions().size());
 
   // Clearing the registry clears all sets.
   registry.ClearAll();
@@ -116,7 +118,7 @@ TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {
   EXPECT_EQ(0u, registry.enabled_extensions().size());
   EXPECT_EQ(0u, registry.disabled_extensions().size());
   EXPECT_EQ(0u, registry.terminated_extensions().size());
-  EXPECT_EQ(0u, registry.blacklisted_extensions().size());
+  EXPECT_EQ(0u, registry.blocklisted_extensions().size());
 }
 
 // A simple test of adding and removing things from sets.
@@ -131,7 +133,7 @@ TEST_F(ExtensionRegistryTest, AddAndRemoveExtensionFromRegistry) {
   // The extension was only added to one set.
   EXPECT_EQ(0u, registry.disabled_extensions().size());
   EXPECT_EQ(0u, registry.terminated_extensions().size());
-  EXPECT_EQ(0u, registry.blacklisted_extensions().size());
+  EXPECT_EQ(0u, registry.blocklisted_extensions().size());
 
   // Removing an extension works.
   EXPECT_TRUE(registry.RemoveEnabled(extension->id()));
@@ -153,7 +155,7 @@ TEST_F(ExtensionRegistryTest, AddExtensionToRegistryTwice) {
   EXPECT_EQ(1u, registry.enabled_extensions().size());
   EXPECT_EQ(1u, registry.disabled_extensions().size());
   EXPECT_EQ(0u, registry.terminated_extensions().size());
-  EXPECT_EQ(0u, registry.blacklisted_extensions().size());
+  EXPECT_EQ(0u, registry.blocklisted_extensions().size());
 }
 
 TEST_F(ExtensionRegistryTest, GetExtensionById) {
@@ -168,14 +170,14 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
       ExtensionBuilder("disabled").Build();
   scoped_refptr<const Extension> terminated =
       ExtensionBuilder("terminated").Build();
-  scoped_refptr<const Extension> blacklisted =
+  scoped_refptr<const Extension> blocklisted =
       ExtensionBuilder("blacklisted").Build();
 
   // Add an extension to each set.
   registry.AddEnabled(enabled);
   registry.AddDisabled(disabled);
   registry.AddTerminated(terminated);
-  registry.AddBlacklisted(blacklisted);
+  registry.AddBlocklisted(blocklisted);
 
   // Enabled is part of everything and the enabled list.
   EXPECT_TRUE(
@@ -187,7 +189,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   EXPECT_FALSE(
       registry.GetExtensionById(enabled->id(), ExtensionRegistry::TERMINATED));
   EXPECT_FALSE(
-      registry.GetExtensionById(enabled->id(), ExtensionRegistry::BLACKLISTED));
+      registry.GetExtensionById(enabled->id(), ExtensionRegistry::BLOCKLISTED));
 
   // Disabled is part of everything and the disabled list.
   EXPECT_TRUE(
@@ -199,7 +201,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   EXPECT_FALSE(
       registry.GetExtensionById(disabled->id(), ExtensionRegistry::TERMINATED));
   EXPECT_FALSE(registry.GetExtensionById(disabled->id(),
-                                         ExtensionRegistry::BLACKLISTED));
+                                         ExtensionRegistry::BLOCKLISTED));
 
   // Terminated is part of everything and the terminated list.
   EXPECT_TRUE(registry.GetExtensionById(terminated->id(),
@@ -211,19 +213,19 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   EXPECT_TRUE(registry.GetExtensionById(terminated->id(),
                                         ExtensionRegistry::TERMINATED));
   EXPECT_FALSE(registry.GetExtensionById(terminated->id(),
-                                         ExtensionRegistry::BLACKLISTED));
+                                         ExtensionRegistry::BLOCKLISTED));
 
-  // Blacklisted is part of everything and the blacklisted list.
-  EXPECT_TRUE(registry.GetExtensionById(blacklisted->id(),
+  // Blocklisted is part of everything and the blocklisted list.
+  EXPECT_TRUE(registry.GetExtensionById(blocklisted->id(),
                                         ExtensionRegistry::EVERYTHING));
   EXPECT_FALSE(
-      registry.GetExtensionById(blacklisted->id(), ExtensionRegistry::ENABLED));
-  EXPECT_FALSE(registry.GetExtensionById(blacklisted->id(),
+      registry.GetExtensionById(blocklisted->id(), ExtensionRegistry::ENABLED));
+  EXPECT_FALSE(registry.GetExtensionById(blocklisted->id(),
                                          ExtensionRegistry::DISABLED));
-  EXPECT_FALSE(registry.GetExtensionById(blacklisted->id(),
+  EXPECT_FALSE(registry.GetExtensionById(blocklisted->id(),
                                          ExtensionRegistry::TERMINATED));
-  EXPECT_TRUE(registry.GetExtensionById(blacklisted->id(),
-                                        ExtensionRegistry::BLACKLISTED));
+  EXPECT_TRUE(registry.GetExtensionById(blocklisted->id(),
+                                        ExtensionRegistry::BLOCKLISTED));
 
   // Enabled can be found with multiple flags set.
   EXPECT_TRUE(registry.GetExtensionById(
@@ -233,7 +235,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   // Enabled isn't found if the wrong flags are set.
   EXPECT_FALSE(registry.GetExtensionById(
       enabled->id(),
-      ExtensionRegistry::DISABLED | ExtensionRegistry::BLACKLISTED));
+      ExtensionRegistry::DISABLED | ExtensionRegistry::BLOCKLISTED));
 }
 
 TEST_F(ExtensionRegistryTest, Observer) {

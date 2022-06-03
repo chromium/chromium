@@ -7,10 +7,6 @@
 
 var PROHIBITED_ERR = "Browsing history is not allowed to be deleted.";
 
-// The maximum number of tries querying the history database to make sure that
-// the initial addUrl calls succeeded.
-var MAX_HISTORY_TRIES = 10;
-
 function deleteProhibitedTestVerification() {
   removeItemRemovedListener();
   chrome.test.fail("Delete was prohibited, but succeeded anyway.");
@@ -46,15 +42,9 @@ function verifyNoDeletion(testFunction) {
   var query = { 'text': '' };
   chrome.history.addUrl({ url: GOOGLE_URL }, pass(function() {
     chrome.history.addUrl({ url: PICASA_URL }, pass(function() {
-      // Humans use 1-based counting.
-      var tries = 1;
       chrome.history.search(query, pass(function lambda(resultsBefore) {
         if (verifyHistory(resultsBefore)) {
           // Success: proceed with the test.
-          if (tries > 1) {
-            console.log("Warning: Added URLs took " + tries + " tries to " +
-                        "show up in history. See http://crbug.com/176828.");
-          }
           testFunction(fail(PROHIBITED_ERR, function() {
             chrome.history.search(query, pass(function(resultsAfter) {
               assertEq(resultsBefore.sort(sortResults),
@@ -62,14 +52,7 @@ function verifyNoDeletion(testFunction) {
               removeItemRemovedListener();
             }));
           }));
-        } else if (tries < MAX_HISTORY_TRIES) {
-          // Results not yet in history: try again. See http://crbug.com/176828.
-          ++tries;
-          waitAFewSeconds(0.1, pass(function() {
-            chrome.history.search(query, pass(lambda));
-          }));
         } else {
-          // Too many tries: fail.
           chrome.test.fail("Added URLs never showed up in the history. " +
                            "See http://crbug.com/176828.");
         }

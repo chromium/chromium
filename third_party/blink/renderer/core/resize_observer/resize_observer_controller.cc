@@ -4,35 +4,45 @@
 
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_controller.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 
 namespace blink {
 
-ResizeObserverController::ResizeObserverController()
-    : observers_changed_(false) {}
+const char ResizeObserverController::kSupplementName[] =
+    "ResizeObserverController";
+
+ResizeObserverController* ResizeObserverController::From(
+    LocalDOMWindow& window) {
+  auto* controller = FromIfExists(window);
+  if (!controller) {
+    controller = MakeGarbageCollected<ResizeObserverController>();
+    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+  }
+  return controller;
+}
+
+ResizeObserverController* ResizeObserverController::FromIfExists(
+    LocalDOMWindow& window) {
+  return Supplement<LocalDOMWindow>::From<ResizeObserverController>(window);
+}
+
+ResizeObserverController::ResizeObserverController() : Supplement(nullptr) {}
 
 void ResizeObserverController::AddObserver(ResizeObserver& observer) {
   observers_.insert(&observer);
 }
 
-size_t ResizeObserverController::GatherObservations(size_t deeper_than) {
+size_t ResizeObserverController::GatherObservations() {
   size_t shallowest = ResizeObserverController::kDepthBottom;
-  if (!observers_changed_)
-    return shallowest;
+
   for (auto& observer : observers_) {
-    size_t depth = observer->GatherObservations(deeper_than);
+    size_t depth = observer->GatherObservations(min_depth_);
     if (depth < shallowest)
       shallowest = depth;
   }
-  return shallowest;
-}
-
-void ResizeObserverController::SetNeedsForcedResizeObservations() {
-  for (auto& observer : observers_) {
-    // Set ElementSizeChanged as a way of forcing the observer to check all
-    // observations.
-    observer->ElementSizeChanged();
-  }
+  min_depth_ = shallowest;
+  return min_depth_;
 }
 
 bool ResizeObserverController::SkippedObservations() {
@@ -44,7 +54,6 @@ bool ResizeObserverController::SkippedObservations() {
 }
 
 void ResizeObserverController::DeliverObservations() {
-  observers_changed_ = false;
   // Copy is needed because m_observers might get modified during
   // deliverObservations.
   HeapVector<Member<ResizeObserver>> observers;
@@ -53,8 +62,6 @@ void ResizeObserverController::DeliverObservations() {
   for (auto& observer : observers) {
     if (observer) {
       observer->DeliverObservations();
-      observers_changed_ =
-          observers_changed_ || observer->HasElementSizeChanged();
     }
   }
 }
@@ -64,7 +71,8 @@ void ResizeObserverController::ClearObservations() {
     observer->ClearObservations();
 }
 
-void ResizeObserverController::Trace(blink::Visitor* visitor) {
+void ResizeObserverController::Trace(Visitor* visitor) const {
+  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(observers_);
 }
 

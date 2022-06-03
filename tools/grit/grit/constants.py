@@ -15,7 +15,9 @@ ENCODING_CHECK = u'm\u00f6l'
 # A special language, translations into which are always "TTTTTT".
 CONSTANT_LANGUAGE = 'x_constant'
 
-FAKE_BIDI = 'fake-bidi'
+PSEUDOLOCALE_LONG_STRINGS = 'en-XA'
+PSEUDOLOCALE_RTL = 'ar-XB'
+PSEUDOLOCALES = [PSEUDOLOCALE_LONG_STRINGS, PSEUDOLOCALE_RTL]
 
 # Magic number added to the header of resources brotli compressed by grit. Used
 # to easily identify resources as being brotli compressed. See

@@ -9,6 +9,7 @@ PAGE: http://bar.com/d/
 document.getElementById('frame_b').src = '/e/'
 PAGE: http://bar.com/e/
 PAGE: http://bar.com/f/
+history.forward()
 history.back()
 PAGE: http://bar.com/b/
 PAGE: http://bar.com/d/

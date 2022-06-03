@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/url_constants.h"
 
@@ -19,6 +21,38 @@ namespace {
 
 // The minimum time in seconds between consecutive metrics report uploads.
 constexpr int kMetricsUploadIntervalSecMinimum = 20;
+
+// If a metrics log upload fails, and the transmission is over this byte count,
+// then we will discard the log, and not try to retransmit it. We also don't
+// persist the log to the prefs for transmission during the next chrome session
+// if this limit is exceeded.
+#if defined(OS_CHROMEOS)
+// Increase CrOS limit to accommodate SampledProfile data (crbug.com/1210595).
+constexpr size_t kMaxOngoingLogSize = 1024 * 1024;  // 1 MiB
+#else
+constexpr size_t kMaxOngoingLogSize = 100 * 1024;  // 100 KiB
+#endif  // defined(OS_CHROMEOS)
+
+// The number of bytes of logs to save of each type (initial/ongoing). This
+// ensures that a reasonable amount of history will be stored even if there is a
+// long series of very small logs.
+constexpr size_t kMinLogQueueSize = 300 * 1024;  // 300 KiB
+
+// The minimum number of "initial" logs to save, and hope to send during a
+// future Chrome session. Initial logs contain crash stats, and are pretty
+// small.
+constexpr size_t kMinInitialLogQueueCount = 20;
+
+// The minimum number of ongoing logs to save persistently, and hope to send
+// during a this or future sessions. Note that each log may be pretty large, as
+// presumably the related "initial" log wasn't sent (probably nothing was, as
+// the user was probably off-line). As a result, the log probably kept
+// accumulating while the "initial" log was stalled, and couldn't be sent. As a
+// result, we don't want to save too many of these mega-logs. A "standard
+// shutdown" will create a small log, including just the data that was not yet
+// been transmitted, and that is normal (to have exactly one ongoing_log_ at
+// startup).
+constexpr size_t kMinOngoingLogQueueCount = 8;
 
 }  // namespace
 
@@ -30,16 +64,8 @@ ukm::UkmService* MetricsServiceClient::GetUkmService() {
   return nullptr;
 }
 
-bool MetricsServiceClient::IsReportingPolicyManaged() {
-  return false;
-}
-
-EnableMetricsDefault MetricsServiceClient::GetMetricsReportingDefaultState() {
-  return EnableMetricsDefault::DEFAULT_UNKNOWN;
-}
-
-bool MetricsServiceClient::IsUMACellularUploadLogicEnabled() {
-  return false;
+bool MetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
+  return true;
 }
 
 GURL MetricsServiceClient::GetMetricsServerUrl() {
@@ -60,7 +86,7 @@ base::TimeDelta MetricsServiceClient::GetUploadInterval() {
         metrics::switches::kMetricsUploadIntervalSec);
     int custom_upload_interval;
     if (base::StringToInt(switch_value, &custom_upload_interval)) {
-      return base::TimeDelta::FromSeconds(
+      return base::Seconds(
           std::max(custom_upload_interval, kMetricsUploadIntervalSecMinimum));
     }
     LOG(DFATAL) << "Malformed value for --metrics-upload-interval. "
@@ -71,6 +97,22 @@ base::TimeDelta MetricsServiceClient::GetUploadInterval() {
 
 bool MetricsServiceClient::ShouldStartUpFastForTesting() const {
   return false;
+}
+
+bool MetricsServiceClient::IsReportingPolicyManaged() {
+  return false;
+}
+
+EnableMetricsDefault MetricsServiceClient::GetMetricsReportingDefaultState() {
+  return EnableMetricsDefault::DEFAULT_UNKNOWN;
+}
+
+bool MetricsServiceClient::IsUMACellularUploadLogicEnabled() {
+  return false;
+}
+
+bool MetricsServiceClient::IsExternalExperimentAllowlistEnabled() {
+  return true;
 }
 
 bool MetricsServiceClient::IsUkmAllowedForAllProfiles() {
@@ -85,7 +127,7 @@ bool MetricsServiceClient::AreNotificationListenersEnabledOnAllProfiles() {
   return false;
 }
 
-std::string MetricsServiceClient::GetAppPackageName() {
+std::string MetricsServiceClient::GetAppPackageNameIfLoggable() {
   return std::string();
 }
 
@@ -93,8 +135,22 @@ std::string MetricsServiceClient::GetUploadSigningKey() {
   return std::string();
 }
 
+bool MetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
+  return false;
+}
+
+MetricsLogStore::StorageLimits MetricsServiceClient::GetStorageLimits() const {
+  return {
+      /*min_initial_log_queue_count=*/kMinInitialLogQueueCount,
+      /*min_initial_log_queue_size=*/kMinLogQueueSize,
+      /*min_ongoing_log_queue_count=*/kMinOngoingLogQueueCount,
+      /*min_ongoing_log_queue_size=*/kMinLogQueueSize,
+      /*max_ongoing_log_size=*/kMaxOngoingLogSize,
+  };
+}
+
 void MetricsServiceClient::SetUpdateRunningServicesCallback(
-    const base::Closure& callback) {
+    const base::RepeatingClosure& callback) {
   update_running_services_ = callback;
 }
 
@@ -104,8 +160,7 @@ void MetricsServiceClient::UpdateRunningServices() {
 }
 
 bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceEnableMetricsReporting);
+  return ::metrics::IsMetricsReportingForceEnabled();
 }
 
 }  // namespace metrics

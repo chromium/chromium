@@ -1,0 +1,17 @@
+Test for chromium bug : 305169. <colgroup> is ignored if seen after <tr>.
+Columns width are not based on width specified in colGroup because colGroup is present after table row and we was supporting it only when colGroup is present at the start in table.
+First	
+PASS
+
+
+Col-1	
+FAIL:
+Expected 64 for width, but got 65. 
+
+<td data-expected-width="64">Col-1</td>
+Col-2	
+PASS
+Col-3	
+PASS
+Col-4	
+PASS

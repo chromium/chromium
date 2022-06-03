@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Ensure overflow menu has the correct background color.</title>
+<meta name="color-scheme" content="dark">
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../media/media-controls.js'></script>
+<video controls></video>
+<script>
+async_test(t => {
+  const  video = document.querySelector('video');
+  video.src = '../../../media/content/test.ogv';
+  const track = video.addTextTrack('captions');
+
+  video.onloadeddata = t.step_func(() => {
+    const menu = overflowMenu(video);
+    const button = overflowButton(video);
+
+    assert_not_equals(getComputedStyle(button).display, 'none');
+    assert_equals(getComputedStyle(menu).display, 'none');
+
+    // Clicking on the button should show the menu.
+    singleTapOnControl(button, t.step_func_done(() => {
+      assert_not_equals(getComputedStyle(menu).display, 'none');
+      assert_equals(getComputedStyle(menu).backgroundColor, 'rgb(59, 59, 59)');
+    }));
+  });
+});
+</script>

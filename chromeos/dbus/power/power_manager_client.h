@@ -14,14 +14,15 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace base {
@@ -101,12 +102,24 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
     // Called when peripheral device battery status is received.
     // |path| is the sysfs path for the battery of the peripheral device.
-    // |name| is the human readble name of the device.
+    // |name| is the human-readable name of the device.
     // |level| within [0, 100] represents the device battery level and -1
     // means an unknown level or device is disconnected.
-    virtual void PeripheralBatteryStatusReceived(const std::string& path,
-                                                 const std::string& name,
-                                                 int level) {}
+    // |status| charging status, primarily for peripheral chargers.
+    // Note that peripherals and peripheral chargers may be separate
+    // (such as stylus vs. internal stylus charger), and have two distinct
+    // charge levels.
+    // |serial_number| Text representation of peripheral S/N, if available
+    // and retrievable, empty string otherwise.
+    // |active_update| true if peripheral event triggered update, false
+    // if due to periodic poll or restart, and value may be stale.
+    virtual void PeripheralBatteryStatusReceived(
+        const std::string& path,
+        const std::string& name,
+        int level,
+        power_manager::PeripheralBatteryStatus_ChargeStatus status,
+        const std::string& serial_number,
+        bool active_update) {}
 
     // Called when updated information about the power supply is available.
     // The status is automatically updated periodically, but
@@ -127,7 +140,7 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // Called when a suspend attempt (previously announced via
     // SuspendImminent()) has completed. The system may not have actually
     // suspended (if e.g. the user canceled the suspend attempt).
-    virtual void SuspendDone(const base::TimeDelta& sleep_duration) {}
+    virtual void SuspendDone(base::TimeDelta sleep_duration) {}
 
     // Called when the system is about to resuspend from a dark resume.  Like
     // SuspendImminent(), the suspend will be deferred until all observers have
@@ -145,22 +158,20 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
     // Called when the power button is pressed or released.
     virtual void PowerButtonEventReceived(bool down,
-                                          const base::TimeTicks& timestamp) {}
+                                          base::TimeTicks timestamp) {}
 
     // Called when the device's lid is opened or closed. LidState::NOT_PRESENT
     // is never passed.
-    virtual void LidEventReceived(LidState state,
-                                  const base::TimeTicks& timestamp) {}
+    virtual void LidEventReceived(LidState state, base::TimeTicks timestamp) {}
 
     // Called when the device's tablet mode switch is on or off.
     // TabletMode::UNSUPPORTED is never passed.
     virtual void TabletModeEventReceived(TabletMode mode,
-                                         const base::TimeTicks& timestamp) {}
+                                         base::TimeTicks timestamp) {}
 
     // Called when the idle action will be performed after
     // |time_until_idle_action|.
-    virtual void IdleActionImminent(
-        const base::TimeDelta& time_until_idle_action) {}
+    virtual void IdleActionImminent(base::TimeDelta time_until_idle_action) {}
 
     // Called after IdleActionImminent() when the inactivity timer is reset
     // before the idle action has been performed.
@@ -222,12 +233,19 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
       DBusMethodCallback<double> callback) = 0;
 
   // Returns the last power status that was received from D-Bus, if any.
-  virtual const base::Optional<power_manager::PowerSupplyProperties>&
+  virtual const absl::optional<power_manager::PowerSupplyProperties>&
   GetLastStatus() = 0;
 
   // Requests an updated copy of the power status. Observer::PowerChanged()
   // will be called asynchronously.
   virtual void RequestStatusUpdate() = 0;
+
+  // Requests all peripheral batteries have status re-issued.
+  // Observer::PeripheralBatteryStatusReceived() will be called asynchronously,
+  virtual void RequestAllPeripheralBatteryUpdate() = 0;
+
+  // Requests the current thermal state.
+  virtual void RequestThermalState() = 0;
 
   // Requests suspend of the system.
   virtual void RequestSuspend() = 0;
@@ -309,8 +327,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // ids corresponding to all clocks in the arguments i.e timer id at index 0
   // corresponds to the clock id at position 0 in |arc_timer_requests|. Only one
   // timer per clock is allowed per tag, asynchronously runs |callback| with
-  // base::nullopt if the same clock is present more than once in the arguments.
-  // Also, runs |callback| with base::nullopt if timers are already created for
+  // absl::nullopt if the same clock is present more than once in the arguments.
+  // Also, runs |callback| with absl::nullopt if timers are already created for
   // |tag|.
   virtual void CreateArcTimers(
       const std::string& tag,
@@ -336,7 +354,25 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // The time power manager will wait before resuspending from a dark resume.
   virtual base::TimeDelta GetDarkSuspendDelayTimeout() = 0;
 
+  // Refreshes the battery signal of the specified Bluetooth device.
+  // TODO(b/166543531): Remove after migrating to BlueZ Battery Provider API.
+  virtual void RefreshBluetoothBattery(const std::string& address) = 0;
+
+  // On devices that support external displays with ambient light sensors, this
+  // enables/disables the ALS-based brightness adjustment on those displays.
+  virtual void SetExternalDisplayALSBrightness(bool enabled) = 0;
+
+  // On devices that support external displays with ambient light sensors, this
+  // returns true when the ALS-based brightness feature is enabled on those
+  // displays.
+  virtual void GetExternalDisplayALSBrightness(
+      DBusMethodCallback<bool> callback) = 0;
+
   PowerManagerClient();
+
+  PowerManagerClient(const PowerManagerClient&) = delete;
+  PowerManagerClient& operator=(const PowerManagerClient&) = delete;
+
   virtual ~PowerManagerClient();
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -350,11 +386,13 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
   // Returns the global instance if initialized. May return null.
   static PowerManagerClient* Get();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::PowerManagerClient;
+}
 
 #endif  // CHROMEOS_DBUS_POWER_POWER_MANAGER_CLIENT_H_

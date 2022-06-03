@@ -4,8 +4,11 @@
 
 #include "base/task/sequence_manager/work_queue.h"
 
+#include "base/containers/stack_container.h"
+#include "base/debug/alias.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace sequence_manager {
@@ -16,11 +19,11 @@ WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      QueueType queue_type)
     : task_queue_(task_queue), name_(name), queue_type_(queue_type) {}
 
-void WorkQueue::AsValueInto(TimeTicks now,
-                            trace_event::TracedValue* state) const {
-  for (const Task& task : tasks_) {
-    TaskQueueImpl::TaskAsValueInto(task, now, state);
-  }
+Value WorkQueue::AsValue(TimeTicks now) const {
+  Value state(Value::Type::LIST);
+  for (const Task& task : tasks_)
+    state.Append(TaskQueueImpl::TaskAsValue(task, now));
+  return state;
 }
 
 WorkQueue::~WorkQueue() {
@@ -89,19 +92,19 @@ WorkQueue::TaskPusher::TaskPusher(TaskPusher&& other)
   other.work_queue_ = nullptr;
 }
 
-void WorkQueue::TaskPusher::Push(Task* task) {
+void WorkQueue::TaskPusher::Push(Task task) {
   DCHECK(work_queue_);
 
 #ifndef NDEBUG
-  DCHECK(task->enqueue_order_set());
+  DCHECK(task.enqueue_order_set());
 #endif
 
   // Make sure the |enqueue_order()| is monotonically increasing.
   DCHECK(work_queue_->tasks_.empty() ||
-         work_queue_->tasks_.back().enqueue_order() < task->enqueue_order());
+         work_queue_->tasks_.back().enqueue_order() < task.enqueue_order());
 
   // Amortized O(1).
-  work_queue_->tasks_.push_back(std::move(*task));
+  work_queue_->tasks_.push_back(std::move(task));
 }
 
 WorkQueue::TaskPusher::~TaskPusher() {
@@ -199,13 +202,20 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
 bool WorkQueue::RemoveAllCanceledTasksFromFront() {
   if (!work_queue_sets_)
     return false;
-  bool task_removed = false;
-  while (!tasks_.empty() &&
-         (!tasks_.front().task || tasks_.front().task.IsCancelled())) {
+
+  // Since task destructors could have a side-effect of deleting this task queue
+  // we move cancelled tasks into a temporary container which can be emptied
+  // without accessing |this|.
+  StackVector<Task, 8> tasks_to_delete;
+
+  while (!tasks_.empty()) {
+    const auto& pending_task = tasks_.front();
+    if (pending_task.task && !pending_task.task.IsCancelled())
+      break;
+    tasks_to_delete->push_back(std::move(tasks_.front()));
     tasks_.pop_front();
-    task_removed = true;
   }
-  if (task_removed) {
+  if (!tasks_to_delete->empty()) {
     if (tasks_.empty()) {
       // NB delayed tasks are inserted via Push, no don't need to reload those.
       if (queue_type_ == QueueType::kImmediate) {
@@ -223,7 +233,7 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
       work_queue_sets_->OnQueuesFrontTaskChanged(this);
     task_queue_->TraceQueueSize();
   }
-  return task_removed;
+  return !tasks_to_delete->empty();
 }
 
 void WorkQueue::AssignToWorkQueueSets(WorkQueueSets* work_queue_sets) {
@@ -274,29 +284,8 @@ bool WorkQueue::RemoveFence() {
   return false;
 }
 
-bool WorkQueue::ShouldRunBefore(const WorkQueue* other_queue) const {
-  DCHECK(!tasks_.empty());
-  DCHECK(!other_queue->tasks_.empty());
-  EnqueueOrder enqueue_order;
-  EnqueueOrder other_enqueue_order;
-  bool have_task = GetFrontTaskEnqueueOrder(&enqueue_order);
-  bool have_other_task =
-      other_queue->GetFrontTaskEnqueueOrder(&other_enqueue_order);
-  DCHECK(have_task);
-  DCHECK(have_other_task);
-  return enqueue_order < other_enqueue_order;
-}
-
 void WorkQueue::MaybeShrinkQueue() {
   tasks_.MaybeShrinkQueue();
-}
-
-void WorkQueue::DeletePendingTasks() {
-  tasks_.clear();
-
-  if (work_queue_sets_ && heap_handle().IsValid())
-    work_queue_sets_->OnQueuesFrontTaskChanged(this);
-  DCHECK(!heap_handle_.IsValid());
 }
 
 void WorkQueue::PopTaskForTesting() {

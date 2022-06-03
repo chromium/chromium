@@ -4,6 +4,8 @@
 
 #include "ui/views/examples/table_example.h"
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/strings/string_util.h"
@@ -13,7 +15,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/examples/examples_window.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 using base::ASCIIToUTF16;
 
@@ -41,8 +46,8 @@ TableExample::~TableExample() {
 }
 
 void TableExample::CreateExampleView(View* container) {
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
+  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(LayoutOrientation::kVertical);
 
   std::vector<ui::TableColumn> columns;
   columns.push_back(TestTableColumn(0, "Fruit"));
@@ -51,79 +56,79 @@ void TableExample::CreateExampleView(View* container) {
   columns.push_back(TestTableColumn(2, "Origin"));
   columns.push_back(TestTableColumn(3, "Price"));
   columns.back().alignment = ui::TableColumn::RIGHT;
+
+  auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
+                                     MaximumFlexSizeRule::kUnbounded)
+                       .WithWeight(1);
+
+  // Make table
   auto table = std::make_unique<TableView>(this, columns, ICON_AND_TEXT, true);
   table->SetGrouper(this);
   table->set_observer(this);
-  icon1_.allocN32Pixels(16, 16);
-  SkCanvas canvas1(icon1_);
-  canvas1.drawColor(SK_ColorRED);
+  table_ = table.get();
+  container
+      ->AddChildView(TableView::CreateScrollViewWithTable(std::move(table)))
+      ->SetProperty(views::kFlexBehaviorKey, full_flex);
 
+  icon1_.allocN32Pixels(16, 16);
   icon2_.allocN32Pixels(16, 16);
-  SkCanvas canvas2(icon2_);
+
+  SkCanvas canvas1(icon1_, SkSurfaceProps{}), canvas2(icon2_, SkSurfaceProps{});
+  canvas1.drawColor(SK_ColorRED);
   canvas2.drawColor(SK_ColorBLUE);
 
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                        GridLayout::USE_PREF, 0, 0);
-  layout->StartRow(1 /* expand */, 0);
-  table_ = table.get();
-  layout->AddView(TableView::CreateScrollViewWithTable(std::move(table)));
+  auto* button_panel = container->AddChildView(std::make_unique<View>());
+  button_panel->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(LayoutOrientation::kHorizontal);
 
-  column_set = layout->AddColumnSet(1);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL,
-                        0.5f, GridLayout::USE_PREF, 0, 0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL,
-                        0.5f, GridLayout::USE_PREF, 0, 0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL,
-                        0.5f, GridLayout::USE_PREF, 0, 0);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL,
-                        0.5f, GridLayout::USE_PREF, 0, 0);
-
-  layout->StartRow(0 /* no expand */, 1);
-
-  auto make_checkbox =
-      [this](base::string16 text) -> std::unique_ptr<Checkbox> {
-    auto result = std::make_unique<Checkbox>(text, this);
-    result->SetChecked(true);
-    return result;
+  const auto make_checkbox = [&](std::u16string label, int id) {
+    auto* const checkbox =
+        button_panel->AddChildView(std::make_unique<Checkbox>(
+            std::move(label), Button::PressedCallback()));
+    checkbox->SetCallback(base::BindRepeating(
+        [](TableView* table, int id, Checkbox* checkbox) {
+          table->SetColumnVisibility(id, checkbox->GetChecked());
+        },
+        base::Unretained(table_), id, checkbox));
+    checkbox->SetChecked(true);
+    return checkbox;
   };
+  column1_visible_checkbox_ = make_checkbox(u"Fruit column visible", 0);
+  column2_visible_checkbox_ = make_checkbox(u"Color column visible", 1);
+  column3_visible_checkbox_ = make_checkbox(u"Origin column visible", 2);
+  column4_visible_checkbox_ = make_checkbox(u"Price column visible", 3);
 
-  column1_visible_checkbox_ =
-      layout->AddView(make_checkbox(ASCIIToUTF16("Fruit column visible")));
-  column2_visible_checkbox_ =
-      layout->AddView(make_checkbox(ASCIIToUTF16("Color column visible")));
-  column3_visible_checkbox_ =
-      layout->AddView(make_checkbox(ASCIIToUTF16("Origin column visible")));
-  column4_visible_checkbox_ =
-      layout->AddView(make_checkbox(ASCIIToUTF16("Price column visible")));
+  for (View* child : button_panel->children())
+    child->SetProperty(views::kFlexBehaviorKey, full_flex);
 }
 
 int TableExample::RowCount() {
   return 10;
 }
 
-base::string16 TableExample::GetText(int row, int column_id) {
+std::u16string TableExample::GetText(int row, int column_id) {
   if (row == -1)
-    return base::string16();
+    return std::u16string();
 
   const char* const cells[5][4] = {
-    { "Orange", "Orange", "South america", "$5" },
-    { "Apple", "Green", "Canada", "$3" },
-    { "Blue berries", "Blue", "Mexico", "$10.3" },
-    { "Strawberries", "Red", "California", "$7" },
-    { "Cantaloupe", "Orange", "South america", "$5" },
+      {"Orange", "Orange", "South america", "$5"},
+      {"Apple", "Green", "Canada", "$3"},
+      {"Blue berries", "Blue", "Mexico", "$10.3"},
+      {"Strawberries", "Red", "California", "$7"},
+      {"Cantaloupe", "Orange", "South america", "$5"},
   };
   return ASCIIToUTF16(cells[row % 5][column_id]);
 }
 
-gfx::ImageSkia TableExample::GetIcon(int row) {
+ui::ImageModel TableExample::GetIcon(int row) {
   SkBitmap row_icon = row % 2 ? icon1_ : icon2_;
-  return gfx::ImageSkia::CreateFrom1xBitmap(row_icon);
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(row_icon));
 }
 
-base::string16 TableExample::GetTooltip(int row) {
+std::u16string TableExample::GetTooltip(int row) {
   if (row == -1)
-    return base::string16();
+    return std::u16string();
 
   const char* const tooltips[5] = {
       "Orange - Orange you glad I didn't say banana?",
@@ -152,38 +157,19 @@ void TableExample::GetGroupRange(int model_index, GroupRange* range) {
 
 void TableExample::OnSelectionChanged() {
   PrintStatus("Selected: %s",
-              base::UTF16ToASCII(GetText(table_->selection_model().active(),
-                                         0)).c_str());
+              base::UTF16ToASCII(GetText(table_->selection_model().active(), 0))
+                  .c_str());
 }
 
 void TableExample::OnDoubleClick() {
   PrintStatus("Double Click: %s",
-              base::UTF16ToASCII(GetText(table_->selection_model().active(),
-                                         0)).c_str());
+              base::UTF16ToASCII(GetText(table_->selection_model().active(), 0))
+                  .c_str());
 }
 
 void TableExample::OnMiddleClick() {}
 
 void TableExample::OnKeyDown(ui::KeyboardCode virtual_keycode) {}
-
-void TableExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  int index = 0;
-  bool show = true;
-  if (sender == column1_visible_checkbox_) {
-    index = 0;
-    show = column1_visible_checkbox_->GetChecked();
-  } else if (sender == column2_visible_checkbox_) {
-    index = 1;
-    show = column2_visible_checkbox_->GetChecked();
-  } else if (sender == column3_visible_checkbox_) {
-    index = 2;
-    show = column3_visible_checkbox_->GetChecked();
-  } else if (sender == column4_visible_checkbox_) {
-    index = 3;
-    show = column4_visible_checkbox_->GetChecked();
-  }
-  table_->SetColumnVisibility(index, show);
-}
 
 }  // namespace examples
 }  // namespace views

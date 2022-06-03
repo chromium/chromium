@@ -1,4 +1,4 @@
--- unit_tests --gtest_filter=ThumbnailDatabaseTest.WildSchema
+-- unit_tests --gtest_filter=FaviconDatabaseTest.WildSchema
 --
 -- Based on version 5 schema found in the wild by error diagnostics.
 -- The schema failed to open because the v3 [favicons] table is

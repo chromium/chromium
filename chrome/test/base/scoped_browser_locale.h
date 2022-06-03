@@ -7,18 +7,16 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 // Helper class to temporarily set the locale of the browser process.
 class ScopedBrowserLocale {
  public:
   explicit ScopedBrowserLocale(const std::string& new_locale);
+  ScopedBrowserLocale(const ScopedBrowserLocale&) = delete;
+  ScopedBrowserLocale& operator=(const ScopedBrowserLocale&) = delete;
   ~ScopedBrowserLocale();
 
  private:
   const std::string old_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBrowserLocale);
 };
 
 #endif  // CHROME_TEST_BASE_SCOPED_BROWSER_LOCALE_H_

@@ -71,13 +71,13 @@ uint32_t GetCompletenessScore(
          13 * !(CREDIT_CARD_NO_NUMBER & status);
 }
 
-base::string16 GetCompletionMessageForCard(CreditCardCompletionStatus status) {
+std::u16string GetCompletionMessageForCard(CreditCardCompletionStatus status) {
   switch (status) {
     // No message is shown for complete or expired card (which will be fixable)
     // in the CVC screen.
     case CREDIT_CARD_COMPLETE:
     case CREDIT_CARD_EXPIRED:
-      return base::string16();
+      return std::u16string();
     case CREDIT_CARD_NO_CARDHOLDER:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_NAME_ON_CARD_REQUIRED);
     case CREDIT_CARD_NO_NUMBER:
@@ -92,7 +92,7 @@ base::string16 GetCompletionMessageForCard(CreditCardCompletionStatus status) {
   }
 }
 
-base::string16 GetEditDialogTitleForCard(CreditCardCompletionStatus status) {
+std::u16string GetEditDialogTitleForCard(CreditCardCompletionStatus status) {
   switch (status) {
     case CREDIT_CARD_COMPLETE:
     case CREDIT_CARD_EXPIRED:

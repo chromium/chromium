@@ -5,13 +5,13 @@
 (async function() {
   TestRunner.addResult(`Tests that simple evaluations may be performed in the console.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('1+2', step2);
 
-  function step2() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step2() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

@@ -9,31 +9,12 @@
 
 namespace translate {
 
-TranslateWaiter::TranslateWaiter(content::WebContents* web_contents,
-                                 WaitEvent wait_event)
-    : wait_event_(wait_event) {
-  scoped_observer_.Add(
-      ChromeTranslateClient::FromWebContents(web_contents)->translate_driver());
-}
-
-TranslateWaiter::~TranslateWaiter() = default;
-
-void TranslateWaiter::Wait() {
-  run_loop_.Run();
-}
-
-// ContentTranslateDriver::Observer:
-void TranslateWaiter::OnLanguageDetermined(
-    const LanguageDetectionDetails& details) {
-  if (wait_event_ == WaitEvent::kLanguageDetermined)
-    run_loop_.Quit();
-}
-
-void TranslateWaiter::OnPageTranslated(const std::string& original_lang,
-                                       const std::string& translated_lang,
-                                       TranslateErrors::Type error_type) {
-  if (wait_event_ == WaitEvent::kPageTranslated)
-    run_loop_.Quit();
+std::unique_ptr<TranslateWaiter> CreateTranslateWaiter(
+    content::WebContents* web_contents,
+    TranslateWaiter::WaitEvent wait_event) {
+  return std::make_unique<TranslateWaiter>(
+      ChromeTranslateClient::FromWebContents(web_contents)->translate_driver(),
+      wait_event);
 }
 
 }  // namespace translate

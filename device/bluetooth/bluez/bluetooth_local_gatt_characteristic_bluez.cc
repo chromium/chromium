@@ -32,7 +32,7 @@ BluetoothLocalGattCharacteristic::Create(
   return characteristic->weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // device
+}  // namespace device
 
 namespace bluez {
 
@@ -48,8 +48,8 @@ BluetoothLocalGattCharacteristicBlueZ::BluetoothLocalGattCharacteristicBlueZ(
       properties_(properties),
       permissions_(permissions),
       service_(service) {
-  VLOG(1) << "Creating local GATT characteristic with identifier: "
-          << GetIdentifier();
+  DVLOG(1) << "Creating local GATT characteristic with identifier: "
+           << GetIdentifier();
   service->AddCharacteristic(base::WrapUnique(this));
 }
 

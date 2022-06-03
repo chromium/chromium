@@ -7,14 +7,19 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "base/bind.h"
+#include "chrome/browser/ui/views/chrome_views_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/metadata/view_factory.h"
 
 class TabStripModel;
 
@@ -27,7 +32,6 @@ class MenuModel;
 }
 
 namespace views {
-class InstallableInkDrop;
 class MenuModelAdapter;
 class MenuRunner;
 }
@@ -37,16 +41,18 @@ class MenuRunner;
 class ToolbarButton : public views::LabelButton,
                       public views::ContextMenuController {
  public:
+  METADATA_HEADER(ToolbarButton);
+
   // More convenient form of the ctor below, when |model| and |tab_strip_model|
   // are both nullptr.
-  explicit ToolbarButton(views::ButtonListener* listener);
+  explicit ToolbarButton(PressedCallback callback = PressedCallback());
 
-  // |listener| and |tab_strip_model| must outlive this class.
+  // |tab_strip_model| must outlive this class.
   // |model| can be null if no menu is to be shown.
   // |tab_strip_model| is only needed if showing the menu with |model| requires
   // an active tab. There may be no active tab in |tab_strip_model| during
   // shutdown.
-  ToolbarButton(views::ButtonListener* listener,
+  ToolbarButton(PressedCallback callback,
                 std::unique_ptr<ui::MenuModel> model,
                 TabStripModel* tab_strip_model,
                 bool trigger_menu_on_long_press = true);
@@ -54,17 +60,13 @@ class ToolbarButton : public views::LabelButton,
   ToolbarButton& operator=(const ToolbarButton&) = delete;
   ~ToolbarButton() override;
 
-  // Set up basic mouseover border behavior.
-  // Should be called before first paint.
-  void Init();
-
   // Highlights the button by setting the label to given |highlight_text|, using
   // tinting it using the |hightlight_color| if set. The highlight is displayed
   // using an animation. If some highlight is already set, it shows the new
   // highlight directly without any animation. To clear the previous highlight
   // (also using an animation), call this function with both parameters empty.
-  void SetHighlight(const base::string16& highlight_text,
-                    base::Optional<SkColor> highlight_color);
+  void SetHighlight(const std::u16string& highlight_text,
+                    absl::optional<SkColor> highlight_color);
 
   // Sets the leading margin when the browser is maximized and updates layout to
   // make the focus rectangle centered.
@@ -78,11 +80,29 @@ class ToolbarButton : public views::LabelButton,
   void ClearPendingMenu();
   bool IsMenuShowing() const;
 
-  // Sets |layout_insets_|, see comment there.
-  void SetLayoutInsets(const gfx::Insets& insets);
+  // Sets the button's vector icon. This icon uses the default colors and are
+  // automatically updated on theme changes.
+  void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  // Sets an icon and touch-mode icon for this button.
+  // TODO(pbos): Investigate if touch-mode icons are just different-size ones
+  // that can be folded into the same .icon file as different CANVAS_DIMENSIONS.
+  void SetVectorIcons(const gfx::VectorIcon& icon,
+                      const gfx::VectorIcon& touch_icon);
+
+  // Updates the images using the given icon and the default colors returned by
+  // GetForegroundColor().
+  void UpdateIconsWithStandardColors(const gfx::VectorIcon& icon);
+
+  // Updates the icon images and colors as necessary. Should be called any time
+  // icon state changes, e.g. in response to theme or touch mode changes.
+  virtual void UpdateIcon();
+
+  // Gets/Sets |layout_insets_|, see comment there.
+  absl::optional<gfx::Insets> GetLayoutInsets() const;
+  void SetLayoutInsets(const absl::optional<gfx::Insets>& insets);
 
   // views::LabelButton:
-  void SetText(const base::string16& text) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
@@ -94,16 +114,15 @@ class ToolbarButton : public views::LabelButton,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-  views::InkDrop* GetInkDrop() override;
-  SkColor GetInkDropBaseColor() const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
+
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
 
   ui::MenuModel* menu_model_for_test() { return model_.get(); }
 
@@ -121,13 +140,19 @@ class ToolbarButton : public views::LabelButton,
       SkColor dark_extreme,
       SkColor light_extreme);
 
-  // Returns the default border color used for toolbar buttons (when having a
-  // highlight text, see SetHighlight()).
+  // Returns the default background and border color used for toolbar buttons
+  // (when having a highlight text, see SetHighlight()).
+  static SkColor GetDefaultBackgroundColor(
+      const ui::ThemeProvider* theme_provider);
   static SkColor GetDefaultBorderColor(views::View* host_view);
 
  protected:
   // Returns if menu should be shown. Override this to change default behavior.
   virtual bool ShouldShowMenu();
+
+  // Returns if the button inkdrop should persist after the user interacts with
+  // IPH for the button. Override this to change default behavior.
+  virtual bool ShouldShowInkdropAfterIphInteraction();
 
   // Function to show the dropdown menu.
   virtual void ShowDropDownMenu(ui::MenuSourceType source_type);
@@ -136,6 +161,17 @@ class ToolbarButton : public views::LabelButton,
   void SetLayoutInsetDelta(const gfx::Insets& insets);
 
   void UpdateColorsAndInsets();
+
+  // Returns the standard toolbar button foreground color for the given state.
+  // This color is typically used for the icon and text of toolbar buttons.
+  virtual SkColor GetForegroundColor(ButtonState state) const;
+
+  // Updates the images using the given icons and specific colors.
+  void UpdateIconsWithColors(const gfx::VectorIcon& icon,
+                             SkColor normal_color,
+                             SkColor hovered_color,
+                             SkColor pressed_color,
+                             SkColor disabled_color);
 
   static constexpr int kDefaultIconSize = 16;
   static constexpr int kDefaultTouchableIconSize = 24;
@@ -152,7 +188,7 @@ class ToolbarButton : public views::LabelButton,
 
     // Starts a fade-in animation using the provided |highlight color| or using
     // a default color if not set.
-    void Show(base::Optional<SkColor> highlight_color);
+    void Show(absl::optional<SkColor> highlight_color);
 
     // Starts a fade-out animation. A no-op if the fade-out animation is
     // currently in progress or not shown.
@@ -163,15 +199,17 @@ class ToolbarButton : public views::LabelButton,
     // influences the alpha channel). Returns no value if there is no such color
     // and we should use the default text color / paint no border / paint no
     // background / use the default ink-drop base color.
-    base::Optional<SkColor> GetTextColor() const;
-    base::Optional<SkColor> GetBorderColor() const;
-    base::Optional<SkColor> GetBackgroundColor() const;
-    base::Optional<SkColor> GetInkDropBaseColor() const;
+    absl::optional<SkColor> GetTextColor() const;
+    absl::optional<SkColor> GetBorderColor() const;
+    absl::optional<SkColor> GetBackgroundColor() const;
+    absl::optional<SkColor> GetInkDropBaseColor() const;
 
     void AnimationEnded(const gfx::Animation* animation) override;
     void AnimationProgressed(const gfx::Animation* animation) override;
 
    private:
+    friend test::ToolbarButtonTestApi;
+
     // Returns whether the animation is currently shown. Note that this returns
     // true even after calling Hide() until the fade-out animation finishes.
     bool IsShown() const;
@@ -183,13 +221,20 @@ class ToolbarButton : public views::LabelButton,
     // A highlight color is used to signal special states. When set this color
     // is used as a base for background, text, border and ink drops. When not
     // set, uses the default ToolbarButton ink drop.
-    base::Optional<SkColor> highlight_color_;
+    absl::optional<SkColor> highlight_color_;
 
     // Animation for showing the highlight color (in border, text, and
     // background) when it becomes non-empty and hiding it when it becomes empty
     // again.
     gfx::SlideAnimation highlight_color_animation_;
   };
+
+  struct VectorIcons {
+    const gfx::VectorIcon& icon;
+    const gfx::VectorIcon& touch_icon;
+  };
+
+  void TouchUiChanged();
 
   // Clears the current highlight, i.e. it sets the label to an empty string and
   // clears the highlight color. If there was a non-empty highlight, previously,
@@ -204,8 +249,15 @@ class ToolbarButton : public views::LabelButton,
   // Callback for MenuModelAdapter.
   void OnMenuClosed();
 
-  // views::ImageButton:
-  const char* GetClassName() const override;
+  // views::LabelButton:
+  // This is private to avoid a foot-shooter. Callers should use SetHighlight()
+  // instead which sets an optional color as well.
+  void SetText(const std::u16string& text) override;
+
+  // Sets the in product help promo. Called after the kHasInProductHelpPromoKey
+  // property changes. When this button has an in product help promo, the button
+  // gets a blue highlight that pulses.
+  void SetHasInProductHelpPromo(bool has_in_product_help_promo);
 
   // The model that populates the attached menu.
   std::unique_ptr<ui::MenuModel> model_;
@@ -219,6 +271,9 @@ class ToolbarButton : public views::LabelButton,
   // event.
   const bool trigger_menu_on_long_press_;
 
+  // Determines whether to highlight the button for in-product help.
+  bool has_in_product_help_promo_ = false;
+
   // Y position of mouse when left mouse button is pressed.
   int y_position_on_lbuttondown_ = 0;
 
@@ -228,11 +283,15 @@ class ToolbarButton : public views::LabelButton,
   // Menu runner to display drop down menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
+  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
+  // Reacts to theme changes using default colors.
+  absl::optional<VectorIcons> vector_icons_;
+
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
   // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
   // outside the toolbar.
-  base::Optional<gfx::Insets> layout_insets_;
+  absl::optional<gfx::Insets> layout_insets_;
 
   // Delta from regular toolbar-button insets. This is necessary for buttons
   // that use smaller or larger icons than regular ToolbarButton instances.
@@ -240,18 +299,29 @@ class ToolbarButton : public views::LabelButton,
   // larger-than-16dp avatar avatar icon outside of touchable mode.
   gfx::Insets layout_inset_delta_;
 
-  // Used instead of the standard InkDrop implementation when
-  // |views::kInstallableInkDropFeature| is enabled.
-  std::unique_ptr<views::InstallableInkDrop> installable_ink_drop_;
-
   // Class responsible for animating highlight color (calling a callback on
   // |this| to refresh UI).
   HighlightColorAnimation highlight_color_animation_;
 
-  base::Optional<SkColor> last_border_color_;
+  // If either |last_border_color_| or |last_paint_insets_| have changed since
+  // the last update to |border_| it must be recalculated  to match current
+  // values.
+  absl::optional<SkColor> last_border_color_;
+  gfx::Insets last_paint_insets_;
+
+  base::CallbackListSubscription subscription_ =
+      ui::TouchUiController::Get()->RegisterCallback(
+          base::BindRepeating(&ToolbarButton::TouchUiChanged,
+                              base::Unretained(this)));
 
   // A factory for tasks that show the dropdown context menu for the button.
   base::WeakPtrFactory<ToolbarButton> show_menu_factory_{this};
 };
+
+BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton, views::LabelButton)
+VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, LayoutInsets)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ToolbarButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_BUTTON_H_

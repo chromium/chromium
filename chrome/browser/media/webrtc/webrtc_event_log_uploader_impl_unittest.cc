@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -21,6 +20,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +28,7 @@
 
 namespace webrtc_event_logging {
 
+using ::testing::_;
 using ::testing::StrictMock;
 using BrowserContextId = WebRtcEventLogPeerConnectionKey::BrowserContextId;
 
@@ -81,7 +82,8 @@ class WebRtcEventLogUploaderImplTest : public ::testing::Test {
 
     EXPECT_TRUE(base::Time::FromString("30 Dec 1983", &kReasonableTime));
 
-    uploader_factory_ = std::make_unique<WebRtcEventLogUploaderImpl::Factory>();
+    uploader_factory_ = std::make_unique<WebRtcEventLogUploaderImpl::Factory>(
+        base::SequencedTaskRunnerHandle::Get());
   }
 
   ~WebRtcEventLogUploaderImplTest() override {
@@ -276,31 +278,34 @@ TEST_F(WebRtcEventLogUploaderImplTest, ExcessivelyLargeFilesNotUploaded) {
 }
 
 TEST_F(WebRtcEventLogUploaderImplTest,
-       CancelBeforeUploadCompletionReturnsTrue) {
+       CancelBeforeUploadCompletionCallsCallbackWithFalse) {
   const base::Time last_modified = base::Time::Now();
   StartUploadThatWillNotTerminate(browser_context_id_, last_modified);
-
-  EXPECT_TRUE(uploader_->Cancel());
+  EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
+  uploader_->Cancel();
 }
 
-TEST_F(WebRtcEventLogUploaderImplTest, CancelOnCancelledUploadReturnsFalse) {
+TEST_F(WebRtcEventLogUploaderImplTest, SecondCallToCancelHasNoEffect) {
   const base::Time last_modified = base::Time::Now();
   StartUploadThatWillNotTerminate(browser_context_id_, last_modified);
 
-  ASSERT_TRUE(uploader_->Cancel());
-  EXPECT_FALSE(uploader_->Cancel());
+  EXPECT_CALL(observer_, CompletionCallback(log_file_, _)).Times(1);
+
+  uploader_->Cancel();
+  uploader_->Cancel();
 }
 
 TEST_F(WebRtcEventLogUploaderImplTest,
-       CancelAfterUploadCompletionReturnsFalse) {
+       CancelAfterUploadCompletionCallbackWasCalledHasNoEffect) {
   SetURLLoaderResponse(net::HTTP_OK, net::OK);
   EXPECT_CALL(observer_, CompletionCallback(log_file_, true)).Times(1);
   StartAndWaitForUpload();
 
-  EXPECT_FALSE(uploader_->Cancel());
+  EXPECT_CALL(observer_, CompletionCallback(_, _)).Times(0);
+  uploader_->Cancel();
 }
 
-TEST_F(WebRtcEventLogUploaderImplTest, CancelOnAbortedUploadReturnsFalse) {
+TEST_F(WebRtcEventLogUploaderImplTest, CancelOnAbortedUploadHasNoEffect) {
   // Show the failure was independent of the URLLoaderFactory's primed return
   // value.
   SetURLLoaderResponse(net::HTTP_OK, net::OK);
@@ -309,13 +314,17 @@ TEST_F(WebRtcEventLogUploaderImplTest, CancelOnAbortedUploadReturnsFalse) {
   EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
   StartAndWaitForUpload();
 
-  EXPECT_FALSE(uploader_->Cancel());
+  EXPECT_CALL(observer_, CompletionCallback(_, _)).Times(0);
+  uploader_->Cancel();
 }
 
 TEST_F(WebRtcEventLogUploaderImplTest, CancelOnOngoingUploadDeletesFile) {
   const base::Time last_modified = base::Time::Now();
   StartUploadThatWillNotTerminate(browser_context_id_, last_modified);
-  ASSERT_TRUE(uploader_->Cancel());
+
+  EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
+  uploader_->Cancel();
+  observer_run_loop_.Run();
 
   EXPECT_FALSE(base::PathExists(log_file_));
 }
@@ -331,7 +340,8 @@ TEST_F(WebRtcEventLogUploaderImplTest,
   EXPECT_EQ(info.last_modified, last_modified);
 
   // Test tear-down.
-  ASSERT_TRUE(uploader_->Cancel());
+  EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
+  uploader_->Cancel();
 }
 
 TEST_F(WebRtcEventLogUploaderImplTest,
@@ -352,7 +362,8 @@ TEST_F(WebRtcEventLogUploaderImplTest,
        GetWebRtcLogFileInfoReturnsCorrectInfoWhenCalledOnCancelledUpload) {
   const base::Time last_modified = base::Time::Now();
   StartUploadThatWillNotTerminate(browser_context_id_, last_modified);
-  ASSERT_TRUE(uploader_->Cancel());
+  EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
+  uploader_->Cancel();
 
   const WebRtcLogFileInfo info = uploader_->GetWebRtcLogFileInfo();
   EXPECT_EQ(info.browser_context_id, browser_context_id_);

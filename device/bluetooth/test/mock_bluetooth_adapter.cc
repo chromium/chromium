@@ -38,6 +38,10 @@ MockBluetoothAdapter::MockBluetoothAdapter() {
 
 MockBluetoothAdapter::~MockBluetoothAdapter() = default;
 
+void MockBluetoothAdapter::Initialize(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 void MockBluetoothAdapter::Shutdown() {
 }
@@ -99,20 +103,20 @@ BluetoothAdapter::DeviceList MockBluetoothAdapter::GetMockDevices() {
 
 void MockBluetoothAdapter::RegisterAdvertisement(
     std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
-    const CreateAdvertisementCallback& callback,
-    const AdvertisementErrorCallback& error_callback) {
-  callback.Run(new MockBluetoothAdvertisement);
+    CreateAdvertisementCallback callback,
+    AdvertisementErrorCallback error_callback) {
+  std::move(callback).Run(new MockBluetoothAdvertisement);
 }
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 void MockBluetoothAdapter::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,
-    const base::Closure& callback,
-    const AdvertisementErrorCallback& error_callback) {}
+    base::OnceClosure callback,
+    AdvertisementErrorCallback error_callback) {}
 void MockBluetoothAdapter::ResetAdvertising(
-    const base::Closure& callback,
-    const AdvertisementErrorCallback& error_callback) {}
+    base::OnceClosure callback,
+    AdvertisementErrorCallback error_callback) {}
 #endif
 
 }  // namespace device

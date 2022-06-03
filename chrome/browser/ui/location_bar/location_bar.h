@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -32,6 +31,7 @@ class LocationBar {
   virtual WindowOpenDisposition GetWindowOpenDisposition() const = 0;
   virtual ui::PageTransition GetPageTransition() const = 0;
   virtual base::TimeTicks GetMatchSelectionTimestamp() const = 0;
+  virtual bool IsInputTypedUrlWithoutScheme() const = 0;
 
   // Accepts the current string of text entered in the location bar.
   virtual void AcceptInput() = 0;
@@ -48,8 +48,6 @@ class LocationBar {
   // Renderer-initiated focuses (like browser startup or NTP finished loading),
   // should have |is_user_initiated| set to false, so we can avoid disrupting
   // user actions and avoid requesting on-focus suggestions.
-  //
-  // TODO(tommycli): See if there's a more descriptive name for this method.
   virtual void FocusLocation(bool is_user_initiated) = 0;
 
   // Puts the user into keyword mode with their default search provider.

@@ -4,6 +4,10 @@
 
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 
+#include <signal.h>
+
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -11,13 +15,13 @@
 #import "base/test/ios/wait_util.h"
 #include "base/values.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/settings_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/testing/earl_grey/earl_grey_app.h"
+#import "ios/chrome/test/wpt/cwt_stderr_logger.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -39,7 +43,7 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 WebStateList* GetCurrentWebStateList() {
   return chrome_test_util::GetMainController()
-      .interfaceProvider.currentInterface.tabModel.webStateList;
+      .interfaceProvider.currentInterface.browser->GetWebStateList();
 }
 
 web::WebState* GetWebStateWithId(NSString* tab_id) {
@@ -59,15 +63,40 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
   return web_state_list->GetIndexOfWebState(GetWebStateWithId(tab_id));
 }
 
+void DispatchSyncOnMainThread(void (^block)(void)) {
+  if ([NSThread isMainThread]) {
+    block();
+  } else {
+    dispatch_semaphore_t waitForBlock = dispatch_semaphore_create(0);
+    CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopDefaultMode, ^{
+      block();
+      dispatch_semaphore_signal(waitForBlock);
+    });
+    // CFRunLoopPerformBlock does not wake up the main queue.
+    CFRunLoopWakeUp(CFRunLoopGetMain());
+    // Waits until block is executed and semaphore is signalled.
+    dispatch_semaphore_wait(waitForBlock, DISPATCH_TIME_FOREVER);
+  }
+}
+
 }  // namespace
 
 @implementation CWTWebDriverAppInterface
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _executingQueue = dispatch_queue_create("com.google.chrome.cwt.background",
+                                            DISPATCH_QUEUE_SERIAL);
+  }
+  return self;
+}
 
 + (NSError*)loadURL:(NSString*)URL
                inTab:(NSString*)tabID
     timeoutInSeconds:(NSTimeInterval)timeout {
   __block web::WebState* webState = nullptr;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     webState = GetWebStateWithId(tabID);
     if (webState)
       web::test::LoadUrl(webState, GURL(base::SysNSStringToUTF8(URL)));
@@ -78,7 +107,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 
   bool success = WaitUntilConditionOrTimeout(timeout, ^bool {
     __block BOOL isLoading = NO;
-    grey_dispatch_sync_on_main_thread(^{
+    DispatchSyncOnMainThread(^{
       isLoading = webState->IsLoading();
     });
     return !isLoading;
@@ -92,7 +121,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 
 + (NSString*)currentTabID {
   __block NSString* tabID = nil;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     web::WebState* webState = chrome_test_util::GetCurrentWebState();
     if (webState)
       tabID = GetIdForWebState(webState);
@@ -103,7 +132,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 
 + (NSArray*)tabIDs {
   __block NSMutableArray* tabIDs;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     DCHECK(!chrome_test_util::IsIncognitoMode());
     WebStateList* webStateList = GetCurrentWebStateList();
     tabIDs = [NSMutableArray arrayWithCapacity:webStateList->count()];
@@ -119,7 +148,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 
 + (NSError*)closeTabWithID:(NSString*)ID {
   __block NSError* error = nil;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     int webStateIndex = GetIndexOfWebStateWithId(ID);
     if (webStateIndex != WebStateList::kInvalidIndex) {
       WebStateList* webStateList = GetCurrentWebStateList();
@@ -133,9 +162,19 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
   return error;
 }
 
++ (NSString*)openNewTab {
+  __block NSString* tabID = nil;
+  DispatchSyncOnMainThread(^{
+    chrome_test_util::OpenNewTab();
+    tabID = GetIdForWebState(chrome_test_util::GetCurrentWebState());
+  });
+
+  return tabID;
+}
+
 + (NSError*)switchToTabWithID:(NSString*)ID {
   __block NSError* error = nil;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     DCHECK(!chrome_test_util::IsIncognitoMode());
     int webStateIndex = GetIndexOfWebStateWithId(ID);
     if (webStateIndex != WebStateList::kInvalidIndex) {
@@ -174,9 +213,9 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
       "(%s).call(null, %s)", base::SysNSStringToUTF8(function).c_str(),
       scriptCompletionHandler.c_str());
 
-  __block base::Optional<base::Value> messageValue;
+  __block absl::optional<base::Value> messageValue;
   const web::WebState::ScriptCommandCallback callback =
-      base::BindRepeating(^(const base::DictionaryValue& value, const GURL&,
+      base::BindRepeating(^(const base::Value& value, const GURL&,
                             /*interacted*/ bool,
                             /*sender_frame*/ web::WebFrame*) {
         const base::Value* result = value.FindKey(kMessageResultKey);
@@ -192,9 +231,8 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
       });
 
   __block BOOL webStateFound = NO;
-  __block std::unique_ptr<web::WebState::ScriptCommandSubscription>
-      subscription;
-  grey_dispatch_sync_on_main_thread(^{
+  __block base::CallbackListSubscription subscription;
+  DispatchSyncOnMainThread(^{
     web::WebState* webState = GetWebStateWithId(tabID);
     if (!webState)
       return;
@@ -209,7 +247,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 
   bool success = WaitUntilConditionOrTimeout(timeout, ^bool {
     __block BOOL scriptExecutionComplete = NO;
-    grey_dispatch_sync_on_main_thread(^{
+    DispatchSyncOnMainThread(^{
       scriptExecutionComplete = messageValue.has_value();
     });
     return scriptExecutionComplete;
@@ -224,14 +262,14 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 }
 
 + (void)enablePopups {
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     chrome_test_util::SetContentSettingsBlockPopups(CONTENT_SETTING_ALLOW);
   });
 }
 
 + (NSString*)takeSnapshotOfTabWithID:(NSString*)ID {
   __block web::WebState* webState;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     webState = GetWebStateWithId(ID);
   });
 
@@ -239,7 +277,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
     return nil;
 
   __block UIImage* snapshot = nil;
-  grey_dispatch_sync_on_main_thread(^{
+  DispatchSyncOnMainThread(^{
     CGRect bounds = webState->GetWebViewProxy().bounds;
     UIEdgeInsets insets = webState->GetWebViewProxy().contentInset;
     CGRect adjustedBounds = UIEdgeInsetsInsetRect(bounds, insets);
@@ -253,7 +291,7 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
   const NSTimeInterval kSnapshotTimeoutSeconds = 100;
   bool success = WaitUntilConditionOrTimeout(kSnapshotTimeoutSeconds, ^bool {
     __block BOOL snapshotComplete = NO;
-    grey_dispatch_sync_on_main_thread(^{
+    DispatchSyncOnMainThread(^{
       if (snapshot != nil)
         snapshotComplete = YES;
     });
@@ -265,6 +303,21 @@ int GetIndexOfWebStateWithId(NSString* tab_id) {
 
   NSData* snapshotAsPNG = UIImagePNGRepresentation(snapshot);
   return [snapshotAsPNG base64EncodedStringWithOptions:0];
+}
+
++ (void)logStderrToFilePath:(NSString*)filePath {
+  base::FilePath stderrPath(base::SysNSStringToUTF8(filePath));
+  CWTStderrLogger::GetInstance()->StartRedirectingToFile(stderrPath);
+}
+
++ (void)stopLoggingStderr {
+  CWTStderrLogger::GetInstance()->StopRedirectingToFile();
+}
+
++ (void)installCleanExitHandlerForAbortSignal {
+  struct sigaction sa {};
+  sa.sa_handler = [](int) { exit(0); };
+  sigaction(SIGABRT, &sa, nullptr);
 }
 
 @end

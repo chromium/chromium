@@ -66,6 +66,9 @@ class GPU_GLES2_EXPORT ErrorStateClient {
 
 class GPU_GLES2_EXPORT ErrorState {
  public:
+  ErrorState(const ErrorState&) = delete;
+  ErrorState& operator=(const ErrorState&) = delete;
+
   virtual ~ErrorState();
 
   static ErrorState* Create(ErrorStateClient* client, Logger* logger);
@@ -118,12 +121,9 @@ class GPU_GLES2_EXPORT ErrorState {
 
  protected:
   ErrorState();
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorState);
 };
 
 }  // namespace gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_ERROR_STATE_H_
-

@@ -7,8 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/component_export.h"
 #import "base/mac/scoped_nsobject.h"
-#include "ui/base/ui_base_export.h"
 
 @protocol CommandDispatcherDelegate;
 @protocol CommandDispatchingWindow;
@@ -16,12 +16,12 @@
 
 // CommandDispatcher guides the processing of key events to ensure key commands
 // are executed in the appropriate order. In particular, it allows a first
-// responder implementing CommandDispatcherTarget to handle an event
-// asynchronously and return unhandled events via -redispatchKeyEvent:. An
-// NSWindow can use CommandDispatcher by implementing CommandDispatchingWindow
-// and overriding -[NSWindow performKeyEquivalent:] and -[NSWindow sendEvent:]
-// to call the respective CommandDispatcher methods.
-UI_BASE_EXPORT
+// responder  to handle an event asynchronously and return unhandled events
+// via -redispatchKeyEvent:. An NSWindow can use CommandDispatcher by
+// implementing CommandDispatchingWindow and overriding
+// -[NSWindow performKeyEquivalent:] and -[NSWindow sendEvent:] to call the
+// respective CommandDispatcher methods.
+COMPONENT_EXPORT(UI_BASE)
 @interface CommandDispatcher : NSObject
 
 @property(assign, nonatomic) id<CommandDispatcherDelegate> delegate;
@@ -50,6 +50,9 @@ UI_BASE_EXPORT
 // this before a native -sendEvent:. Ensures that a redispatched event is not
 // reposted infinitely. Returns YES if the event is handled.
 - (BOOL)preSendEvent:(NSEvent*)event;
+
+// The parent to bubble events to, or nil.
+- (NSWindow<CommandDispatchingWindow>*)bubbleParent;
 
 // Dispatch a -commandDispatch: action either to |handler| or a parent window's
 // handler.
@@ -86,6 +89,11 @@ enum class PerformKeyEquivalentResult {
   // the event to be passed to the MainMenu, which will handle the key
   // equivalent.
   kPassToMainMenu,
+
+  // The CommandDispatcherDelegate determined the event should not be handled.
+  // This can occur when an event has been sent via key repeat that we've
+  // determined should not be triggered via repeat.
+  kDrop,
 };
 
 }  // namespace ui

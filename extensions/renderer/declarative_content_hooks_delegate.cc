@@ -5,7 +5,7 @@
 #include "extensions/renderer/declarative_content_hooks_delegate.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/argument_spec.h"
@@ -13,6 +13,16 @@
 #include "gin/converter.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_selector.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
+#include "v8/include/v8-value.h"
 
 namespace extensions {
 
@@ -180,9 +190,9 @@ void DeclarativeContentHooksDelegate::InitializeTemplate(
     // base::Unretained and the callback itself are safe. Similarly, the same
     // bindings system owns all these objects, so the spec and type refs should
     // also be safe.
-    callbacks_.push_back(std::make_unique<HandlerCallback>(
-        base::Bind(&DeclarativeContentHooksDelegate::HandleCall,
-                   base::Unretained(this), spec, &type_refs, type.full_name)));
+    callbacks_.push_back(std::make_unique<HandlerCallback>(base::BindRepeating(
+        &DeclarativeContentHooksDelegate::HandleCall, base::Unretained(this),
+        spec, &type_refs, type.full_name)));
     object_template->Set(
         gin::StringToSymbol(isolate, type.exposed_name),
         v8::FunctionTemplate::New(

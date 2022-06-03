@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_P2P_FILTERING_NETWORK_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -13,13 +12,15 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/rtc_base/network.h"
 #include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
-#include "url/gurl.h"
 
 namespace media {
 class MediaPermission;
 }  // namespace media
 
 namespace blink {
+
+class FilteringNetworkManagerTest;
+class IpcNetworkManager;
 
 // FilteringNetworkManager exposes rtc::NetworkManager to
 // PeerConnectionDependencyFactory and wraps the IpcNetworkManager. It only
@@ -34,18 +35,17 @@ namespace blink {
 // rtc::NetworkManagerBase to have the same implementation of
 // GetAnyAddressNetworks(). We can't mark the whole class PLATFORM_EXPORT
 // as it requires all super classes to be PLATFORM_EXPORT as well.
-//
-// TODO(crbug.com/787254): Also, move it away from url/gurl.h.
 class FilteringNetworkManager : public rtc::NetworkManagerBase,
                                 public sigslot::has_slots<> {
  public:
-  // This class is created by WebRTC's signaling thread but used by WebRTC's
+  // This class is created by WebRTC's main thread but used by WebRTC's
   // worker thread |task_runner|.
   PLATFORM_EXPORT FilteringNetworkManager(
-      rtc::NetworkManager* network_manager,
-      const GURL& requesting_origin,
+      IpcNetworkManager* network_manager,
       media::MediaPermission* media_permission,
       bool allow_mdns_obfuscation);
+  FilteringNetworkManager(const FilteringNetworkManager&) = delete;
+  FilteringNetworkManager& operator=(const FilteringNetworkManager&) = delete;
 
   PLATFORM_EXPORT ~FilteringNetworkManager() override;
 
@@ -58,6 +58,13 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;
 
  private:
+  friend class FilteringNetworkManagerTest;
+
+  PLATFORM_EXPORT FilteringNetworkManager(
+      base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread,
+      media::MediaPermission* media_permission,
+      bool allow_mdns_obfuscation);
+
   // Check mic/camera permission.
   void CheckPermission();
 
@@ -86,11 +93,14 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
 
   void SendNetworksChangedSignal();
 
-  // |network_manager_| is just a reference, owned by
-  // PeerConnectionDependencyFactory.
-  rtc::NetworkManager* network_manager_;
+  // `network_manager_for_signaling_thread_` is owned by the
+  // `PeerConnectionDependencyFactory`, that may be destroyed when the frame is
+  // detached.
+  // TODO(crbug.com/1191914): Clarify the lifetime of
+  // `network_manager_for_signaling_thread_` and `this`.
+  base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread_;
 
-  // The class is created by the signaling thread but used by the worker thread.
+  // The class is created by the main thread but used by the worker thread.
   THREAD_CHECKER(thread_checker_);
 
   media::MediaPermission* media_permission_;
@@ -116,15 +126,11 @@ class FilteringNetworkManager : public rtc::NetworkManagerBase,
   // the setup time.
   base::TimeTicks start_updating_time_;
 
-  GURL requesting_origin_;
-
   // When the mDNS obfuscation is allowed, access to the mDNS responder provided
   // by the base network manager is provided to conceal IPs with mDNS hostnames.
   bool allow_mdns_obfuscation_ = true;
 
   base::WeakPtrFactory<FilteringNetworkManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FilteringNetworkManager);
 };
 
 }  // namespace blink

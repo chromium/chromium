@@ -4,6 +4,7 @@
 
 #include "components/arc/clipboard/arc_clipboard_bridge.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 namespace arc {
 namespace {
@@ -43,13 +45,14 @@ class ArcClipboardBridgeFactory
 mojom::ClipRepresentationPtr CreateHTML(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
-  base::string16 markup16;
+  std::u16string markup16;
   // Unused. URL is sent from CreatePlainText() by reading it from the Bookmark.
   std::string url;
   uint32_t fragment_start, fragment_end;
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
 
-  clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, &markup16, &url,
-                      &fragment_start, &fragment_end);
+  clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, &data_dst, &markup16,
+                      &url, &fragment_start, &fragment_end);
 
   std::string text(base::UTF16ToUTF8(
       markup16.substr(fragment_start, fragment_end - fragment_start)));
@@ -65,15 +68,16 @@ mojom::ClipRepresentationPtr CreatePlainText(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
   // Unused. Title is not used at Instance.
-  base::string16 title;
+  std::u16string title;
   std::string text;
   std::string mime_type(ui::kMimeTypeText);
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
 
   // Both Bookmark and AsciiText are represented by text/plain. If both are
   // present, only use Bookmark.
-  clipboard->ReadBookmark(&title, &text);
+  clipboard->ReadBookmark(&data_dst, &title, &text);
   if (text.size() == 0)
-    clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &text);
+    clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
 
   return mojom::ClipRepresentation::New(mime_type,
                                         mojom::ClipValue::NewText(text));
@@ -82,10 +86,10 @@ mojom::ClipRepresentationPtr CreatePlainText(const ui::Clipboard* clipboard) {
 mojom::ClipDataPtr GetClipData(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
-  std::vector<base::string16> mime_types;
-  bool contains_files;
-  clipboard->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &mime_types,
-                                &contains_files);
+  std::vector<std::u16string> mime_types;
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
+  clipboard->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &data_dst,
+                                &mime_types);
 
   mojom::ClipDataPtr clip_data(mojom::ClipData::New());
 
@@ -172,7 +176,9 @@ void ArcClipboardBridge::SetClipContent(mojom::ClipDataPtr clip_data) {
 
   // Order is important. AutoReset should outlive ScopedClipboardWriter.
   base::AutoReset<bool> auto_reset(&event_originated_at_instance_, true);
-  ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+  ui::ScopedClipboardWriter writer(
+      ui::ClipboardBuffer::kCopyPaste,
+      std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kArc));
 
   for (const auto& repr : clip_data->representations) {
     const std::string& mime_type(repr->mime_type);

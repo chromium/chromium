@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import org.chromium.base.Callback;
+
 import java.util.List;
 
 /**
@@ -52,11 +54,26 @@ public interface HistoryProvider {
      */
     void queryHistory(String query);
 
+    /**
+     * Query browsing history for a particular host. Only one query may be in-flight at any time.
+     * See BrowsingHistoryService::QueryHistory.
+     * @param hostName The host name.
+     */
+    void queryHistoryForHost(String hostName);
+
     /*
      * Fetches more results using the previous query's text, only valid to call
      * after queryHistory is called.
      */
     void queryHistoryContinuation();
+
+    /**
+     * Gets the last time any webpage on the given host was visited, excluding the last navigation
+     * and with an internal time buffer.
+     * @param hostName The hostname of the query.
+     * @param callback The Callback to call with the last visit timestamp in milliseconds.
+     */
+    void getLastVisitToHostBeforeRecentNavigations(String hostName, Callback<Long> callback);
 
     /**
      * Adds the HistoryItem to the list of items being removed. The removal will not be committed

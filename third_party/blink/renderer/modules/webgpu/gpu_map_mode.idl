@@ -1,0 +1,13 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/#typedefdef-gpumapmodeflags
+
+typedef [EnforceRange] unsigned long GPUMapModeFlags;
+[
+    Exposed(Window WebGPU, Worker WebGPU)
+] interface GPUMapMode {
+    const unsigned long READ  = 0x0001;
+    const unsigned long WRITE = 0x0002;
+};

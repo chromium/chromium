@@ -9,16 +9,15 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace l10n_util {
 
-UI_BASE_EXPORT base::string16 GetDisplayNameForLocale(
-    const std::string& locale,
-    const std::string& display_locale);
+COMPONENT_EXPORT(UI_BASE)
+std::u16string GetDisplayNameForLocale(const std::string& locale,
+                                       const std::string& display_locale);
 
-UI_BASE_EXPORT bool IsLayoutRtl();
+COMPONENT_EXPORT(UI_BASE) bool IsLayoutRtl();
 
 }  // namespace l10n_util
 

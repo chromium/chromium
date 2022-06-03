@@ -37,4 +37,4 @@ class DomDistillerServiceAndroid {
 }  // namespace android
 }  // namespace dom_distiller
 
-#endif  // COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_SERVICE_ANDROID_H
+#endif  // COMPONENTS_DOM_DISTILLER_CORE_DOM_DISTILLER_SERVICE_ANDROID_H_

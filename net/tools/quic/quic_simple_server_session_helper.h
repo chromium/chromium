@@ -13,7 +13,7 @@ namespace net {
 // Simple helper for server sessions which generates a new random
 // connection ID for stateless rejects.
 class QuicSimpleServerSessionHelper
-    : public quic::QuicCryptoServerStream::Helper {
+    : public quic::QuicCryptoServerStreamBase::Helper {
  public:
   explicit QuicSimpleServerSessionHelper(quic::QuicRandom* random);
 

@@ -2,8 +2,7 @@
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
-    testRunner.setCloseRemainingWindowsWhenComplete(true);
+    testRunner.setPopupBlockingEnabled(false);
 }
 </script>
 <body>

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that text prompt suggestions' casing follows that of the user input.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <div id="inner" style="color:initial;"></div>
@@ -34,7 +34,7 @@
     var selectionRange = document.createRange();
     selectionRange.selectNodeContents(proxyElement);
     var prefix = selectionRange.toString();
-    prompt._buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
+    prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, true)
         .then(completions);
 
     function completions(result) {

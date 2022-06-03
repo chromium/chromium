@@ -7,6 +7,29 @@ function waitForMultipleEvents(name, times, func) {
     }, true);
 }
 
+function waitForAllCallbacks(callCount, func) {
+    var rvfc_calls = 0;
+    return function() {
+        if(++rvfc_calls == callCount) {
+            func();
+        }
+    }
+}
+
+function setVideoSrcAndWaitForFirstFrame(src) {
+    var videos = document.getElementsByTagName('video');
+
+    var endTestCallback = waitForAllCallbacks(videos.length, () => {
+        if (window.testRunner)
+            testRunner.notifyDone();
+    });
+
+    for (var i = 0; i < videos.length; ++i) {
+        videos[i].requestVideoFrameCallback(endTestCallback);
+        videos[i].src = src;
+    }
+}
+
 function init()
 {
     var videos = document.getElementsByTagName('video');

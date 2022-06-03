@@ -52,12 +52,12 @@ Blink uses the following prioritized list to determine the script.
 
 This result is available at `ComputedStyle::getFontDescription().localeOrDefault().script()`.
 
-[generic-family]: https://drafts.csswg.org/css-fonts-3/#generic-family-value
+[generic-family]: https://drafts.csswg.org/css-fonts/#generic-family-value
 [Advanced Font Settings]: https://chrome.google.com/webstore/detail/advanced-font-settings/caclkomlalccbpcdllchkeecicepbmbm
 
-## System Font Fallback
+## Installed Font Fallback
 
-[CSS Fonts] defines a concept of [system font fallback],
+[CSS Fonts] defines a concept of [installed font fallback],
 though its behavior is UA dependent.
 
 As Blink tries to match the font fallback behavior
@@ -66,8 +66,27 @@ the logic varies by platforms.
 While the complete logic varies by platforms,
 we try to share parts of the logic where possible.
 
-[CSS Fonts]: https://drafts.csswg.org/css-fonts-3/
-[system font fallback]: https://drafts.csswg.org/css-fonts-3/#system-font-fallback
+[CSS Fonts]: https://drafts.csswg.org/css-fonts/
+[installed font fallback]: https://drafts.csswg.org/css-fonts/#installed-font-fallback
+
+### Emojis
+
+If we've determined that a character is [emoji-default], also known as "emoji
+in emoji" representation, we treat the character a bit differently. The goal is
+to not only find a font that supports emojis, but also to prioritize color
+emoji fonts over traditional monochrome fonts that happen to have the glyph.
+
+On Android/Skia, Linux, and Windows, Blink will pass the special locale
+`und-Zsye` to the operating system when looking for an emoji font. The [Zsye]
+script tag is defined by UTS #51 as "prefer emoji style for characters that
+have both text and emoji styles available", which is precisely what we need.
+
+On Linux, Blink will additionally always use U+1F46A FAMILY (👪) when matching
+potential candidates to increase the odds of finding the right emoji font, in
+case the installed emoji font doesn't support the actual emoji in question.
+
+[emoji-default]: https://unicode.org/reports/tr51/#Presentation_Style
+[Zsye]: https://unicode.org/reports/tr51/#Emoji_Script
 
 ### Unified Han Ideographs
 
@@ -75,7 +94,7 @@ As seen in [CJK Unified Ideographs code charts] in Unicode,
 glyphs of Han Ideographs vary by locales.
 
 To render correct glyphs,
-the system font fallback uses the following prioritized list of locales.
+the installed font fallback uses the following prioritized list of locales.
 
 1. The [language of a node] as defined in HTML, if known.
 2. The list of languages the browser sends in the [Accept-Language] header.
@@ -89,7 +108,7 @@ For this purpose,
 `LayoutLocale::hasScriptForHan()` determines whether
 the locale can choose the correct font for the Unified Han Ideographs or not.
 
-When the system font fallback needs to determine the font
+When the installed font fallback needs to determine the font
 for a Unified Han Ideograph,
 it uses `scriptForHan()` of the first locale in the prioritized list
 that has `hasScriptForHan()` true.

@@ -25,25 +25,21 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
   SendTabToSelfBubbleControllerMock() = default;
   ~SendTabToSelfBubbleControllerMock() override = default;
 
+  std::vector<TargetDeviceInfo> GetValidDevices() const override {
+    base::SimpleTestClock clock;
+    return {
+        {"Device_1", "Device_1", "device_guid_1",
+         sync_pb::SyncEnums_DeviceType_TYPE_LINUX, clock.Now() - base::Days(0)},
+        {"Device_2", "Device_2", "device_guid_2",
+         sync_pb::SyncEnums_DeviceType_TYPE_WIN, clock.Now() - base::Days(1)},
+        {"Device_3", "Device_3", "device_guid_3",
+         sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+         clock.Now() - base::Days(5)}};
+  }
+
   MOCK_METHOD2(OnDeviceSelected,
                void(const std::string& target_device_name,
                     const std::string& target_device_guid));
-};
-
-class SendTabToSelfBubbleViewImplMock : public SendTabToSelfBubbleViewImpl {
- public:
-  SendTabToSelfBubbleViewImplMock(views::View* anchor_view,
-                                  content::WebContents* web_contents,
-                                  SendTabToSelfBubbleController* controller)
-      : SendTabToSelfBubbleViewImpl(anchor_view,
-                                    web_contents,
-                                    controller) {}
-  ~SendTabToSelfBubbleViewImplMock() override = default;
-
-  // The delegate cannot find widget since it is created from a null profile.
-  // This method will be called inside DevicePressed(). Unit tests will
-  // chrash without mocking.
-  MOCK_METHOD0(CloseBubble, void());
 };
 
 }  // namespace
@@ -54,62 +50,49 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Create an anchor for the bubble.
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    anchor_widget_ = std::make_unique<views::Widget>();
-    anchor_widget_->Init(std::move(params));
+    anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
 
     profile_ = std::make_unique<TestingProfile>();
     controller_ = std::make_unique<SendTabToSelfBubbleControllerMock>();
-    bubble_ = std::make_unique<SendTabToSelfBubbleViewImplMock>(
-        anchor_widget_->GetContentsView(), nullptr, controller_.get());
+    bubble_ = new SendTabToSelfBubbleViewImpl(anchor_widget_->GetContentsView(),
+                                              nullptr, controller_.get());
+    views::BubbleDialogDelegateView::CreateBubble(bubble_);
   }
 
   void TearDown() override {
+    bubble_->GetWidget()->CloseNow();
     anchor_widget_.reset();
     ChromeViewsTestBase::TearDown();
-  }
-
-  const std::vector<TargetDeviceInfo> SetUpDeviceList() {
-    base::SimpleTestClock clock;
-    std::vector<TargetDeviceInfo> list;
-    TargetDeviceInfo valid_device_1(
-        "Device_1", "Device_1", "device_guid_1",
-        sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-        /*last_updated_timestamp=*/clock.Now() - base::TimeDelta::FromDays(0));
-    TargetDeviceInfo valid_device_2(
-        "Device_2", "Device_2", "device_guid_2",
-        sync_pb::SyncEnums_DeviceType_TYPE_WIN,
-        /*last_updated_timestamp=*/clock.Now() - base::TimeDelta::FromDays(1));
-    TargetDeviceInfo valid_device_3(
-        "Device_3", "Device_3", "device_guid_3",
-        sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
-        /*last_updated_timestamp=*/clock.Now() - base::TimeDelta::FromDays(5));
-    list.push_back(valid_device_1);
-    list.push_back(valid_device_2);
-    list.push_back(valid_device_3);
-    return list;
   }
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<views::Widget> anchor_widget_;
   std::unique_ptr<SendTabToSelfBubbleControllerMock> controller_;
-  std::unique_ptr<SendTabToSelfBubbleViewImpl> bubble_;
+  SendTabToSelfBubbleViewImpl* bubble_;
 };
 
-TEST_F(SendTabToSelfBubbleViewImplTest, PopulateScrollView) {
-  bubble_->CreateScrollView();
-  bubble_->PopulateScrollView(SetUpDeviceList());
-  EXPECT_EQ(3UL, bubble_->GetDeviceButtonsForTest().size());
+TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
+  auto* container = bubble_->GetButtonContainerForTesting();
+
+  ASSERT_EQ(3U, container->children().size());
+
+  // All three device entries should be grouped together, and the first one
+  // should receive initial keyboard focus.
+  EXPECT_EQ(container->children()[0], bubble_->GetInitiallyFocusedView());
+  EXPECT_NE(-1, container->children()[0]->GetGroup());
+  EXPECT_EQ(container->children()[0]->GetGroup(),
+            container->children()[1]->GetGroup());
+  EXPECT_EQ(container->children()[0]->GetGroup(),
+            container->children()[2]->GetGroup());
 }
 
-TEST_F(SendTabToSelfBubbleViewImplTest, DevicePressed) {
-  bubble_->Init();
-  bubble_->PopulateScrollView(SetUpDeviceList());
+TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
   EXPECT_CALL(*controller_.get(),
               OnDeviceSelected("Device_3", "device_guid_3"));
-  bubble_->DevicePressed(2);
+  const views::View* button_container = bubble_->GetButtonContainerForTesting();
+  ASSERT_EQ(3U, button_container->children().size());
+  bubble_->DeviceButtonPressed(static_cast<SendTabToSelfBubbleDeviceButton*>(
+      button_container->children()[2]));
 }
 
 }  // namespace send_tab_to_self

@@ -26,6 +26,10 @@ TEST(BluetoothAdvertisementTest, DataMembersAreAssignedCorrectly) {
   BluetoothAdvertisement::ServiceData service_data;
   service_data["1234"] = std::vector<uint8_t>(5, 0);
 
+  // Sample Scan Response Data.
+  BluetoothAdvertisement::ScanResponseData scan_response_data;
+  scan_response_data[0x16] = std::vector<uint8_t>(5, 0);
+
   BluetoothAdvertisement::Data data(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   ASSERT_EQ(data.type(), BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
@@ -70,6 +74,17 @@ TEST(BluetoothAdvertisementTest, DataMembersAreAssignedCorrectly) {
   ASSERT_EQ(*data.service_data(), service_data);
   // Retrieve again.
   ASSERT_FALSE(data.service_data().get());
+
+  // Try without assigning Scan Response Data.
+  ASSERT_FALSE(data.scan_response_data().get());
+  // Assign Service Data.
+  data.set_scan_response_data(
+      std::make_unique<BluetoothAdvertisement::ScanResponseData>(
+          scan_response_data));
+  // Retrieve Service Data.
+  ASSERT_EQ(*data.scan_response_data(), scan_response_data);
+  // Retrieve again.
+  ASSERT_FALSE(data.scan_response_data().get());
 }
 
 }  // namespace

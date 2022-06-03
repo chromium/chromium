@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct evp_aead_st;
 
@@ -26,7 +26,12 @@ namespace crypto {
 // Prefer the latter in new code.
 class CRYPTO_EXPORT Aead {
  public:
-  enum AeadAlgorithm { AES_128_CTR_HMAC_SHA256, AES_256_GCM, AES_256_GCM_SIV };
+  enum AeadAlgorithm {
+    AES_128_CTR_HMAC_SHA256,
+    AES_256_GCM,
+    AES_256_GCM_SIV,
+    CHACHA20_POLY1305
+  };
 
   explicit Aead(AeadAlgorithm algorithm);
   Aead(const Aead&) = delete;
@@ -50,7 +55,7 @@ class CRYPTO_EXPORT Aead {
             base::StringPiece additional_data,
             std::string* ciphertext) const;
 
-  base::Optional<std::vector<uint8_t>> Open(
+  absl::optional<std::vector<uint8_t>> Open(
       base::span<const uint8_t> ciphertext,
       base::span<const uint8_t> nonce,
       base::span<const uint8_t> additional_data) const;
@@ -79,7 +84,7 @@ class CRYPTO_EXPORT Aead {
             size_t* output_length,
             size_t max_output_length) const;
 
-  base::Optional<base::span<const uint8_t>> key_;
+  absl::optional<base::span<const uint8_t>> key_;
   const evp_aead_st* aead_;
 };
 

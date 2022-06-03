@@ -7,9 +7,9 @@
 
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy.h"
 
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -21,17 +21,17 @@ class SensorProviderProxy;
 // JS sensor instances of the same type (within a single frame).
 class SensorProxyImpl final : public SensorProxy,
                               public device::mojom::blink::SensorClient {
-  USING_PRE_FINALIZER(SensorProxyImpl, Dispose);
-
  public:
   SensorProxyImpl(device::mojom::blink::SensorType,
                   SensorProviderProxy*,
                   Page*);
+
+  SensorProxyImpl(const SensorProxyImpl&) = delete;
+  SensorProxyImpl& operator=(const SensorProxyImpl&) = delete;
+
   ~SensorProxyImpl() override;
 
-  void Trace(blink::Visitor*) override;
-
-  void Dispose();
+  void Trace(Visitor*) const override;
 
  private:
   // SensorProxy overrides.
@@ -78,8 +78,10 @@ class SensorProxyImpl final : public SensorProxy,
 
   device::mojom::blink::ReportingMode mode_ =
       device::mojom::blink::ReportingMode::CONTINUOUS;
-  mojo::Remote<device::mojom::blink::Sensor> sensor_remote_;
-  mojo::Receiver<device::mojom::blink::SensorClient> client_receiver_{this};
+  HeapMojoRemote<device::mojom::blink::Sensor> sensor_remote_;
+  HeapMojoReceiver<device::mojom::blink::SensorClient, SensorProxyImpl>
+      client_receiver_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   std::unique_ptr<device::SensorReadingSharedBufferReader>
       shared_buffer_reader_;
@@ -88,9 +90,7 @@ class SensorProxyImpl final : public SensorProxy,
   bool suspended_ = false;
 
   WTF::Vector<double> active_frequencies_;
-  TaskRunnerTimer<SensorProxyImpl> polling_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorProxyImpl);
+  HeapTaskRunnerTimer<SensorProxyImpl> polling_timer_;
 };
 
 }  // namespace blink

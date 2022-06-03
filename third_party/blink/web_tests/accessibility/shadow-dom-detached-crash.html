@@ -4,14 +4,14 @@
 
 <script>
 test(() => {
-  var bar = document.createElementNS("http://example.org/foo", "bar");
-  var shadowRoot = bar.createShadowRoot();
+  var bar = document.createElement("div");
+  var shadowRoot = bar.attachShadow({mode: 'open'});
   bar.computedName;
 }, "No crash when getting computed name from a node with a shadow root not attached to a document");
 
 test(() => {
-  var bar = document.createElementNS("http://example.org/foo", "bar");
-  var shadowRoot = bar.createShadowRoot();
+  var bar = document.createElement("div");
+  var shadowRoot = bar.attachShadow({mode: 'open'});
   bar.computedRole;
 }, "No crash when getting computed role from a node with a shadow root not attached to a document");
 

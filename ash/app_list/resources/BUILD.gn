@@ -6,9 +6,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
 group("resources") {
-  public_deps = [
-    ":resources_grd",
-  ]
+  public_deps = [ ":resources_grd" ]
 }
 
 grit("resources_grd") {

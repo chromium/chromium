@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_NET_NET_ERROR_PAGE_CONTROLLER_H_
 #define CHROME_RENDERER_NET_NET_ERROR_PAGE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/renderer/net/net_error_helper_core.h"
 #include "gin/arguments.h"
@@ -25,11 +24,11 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
   // Interface used to notify creator of user actions invoked on the error page.
   class Delegate {
    public:
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Button press notification from error page.
     virtual void ButtonPressed(NetErrorHelperCore::Button button) = 0;
-
-    // Called when a link with the given tracking ID is pressed.
-    virtual void TrackClick(int tracking_id) = 0;
 
     // Called to open suggested offline content when it is pressed.
     virtual void LaunchOfflineItem(const std::string& id,
@@ -64,9 +63,10 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
    protected:
     Delegate();
     virtual ~Delegate();
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
+
+  NetErrorPageController(const NetErrorPageController&) = delete;
+  NetErrorPageController& operator=(const NetErrorPageController&) = delete;
 
   // Will invoke methods on |delegate| in response to user actions taken on the
   // error page. May call delegate methods even after the page has been
@@ -98,13 +98,6 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
   // Execute a "Diagnose Errors" button click.
   bool DiagnoseErrorsButtonClick();
 
-  // Track "Show cached copy" button clicks.
-  bool TrackCachedCopyButtonClick();
-
-  // Track a click when the page has suggestions from the navigation correction
-  // service.
-  bool TrackClick(const gin::Arguments& args);
-
   // Used internally by other button click methods.
   bool ButtonClick(NetErrorHelperCore::Button button);
 
@@ -119,8 +112,6 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
       v8::Isolate* isolate) override;
 
   base::WeakPtr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorPageController);
 };
 
 #endif  // CHROME_RENDERER_NET_NET_ERROR_PAGE_CONTROLLER_H_

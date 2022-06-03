@@ -1,19 +1,46 @@
-# DumpAccessibilityTreeTest and DumpAccessibilityEventsTest Notes:
+# Dump Accessibility Tests
 
-Both sets of tests use a similar format for files.
+There are several types of dump accessibility tests:
 
-`DumpAccessibilityTree` tests load an HTML file, wait for it to load, then
-dump the accessibility tree.
+* `tree tests` to test accessible trees;
+* `node tests` to test a single accessible node;
+* `script tests` to run a script and compare its output to expected results;
+* `event tests` to test accessible events.
+
+All these tests are backed by the same engine and linked with the same idea:
+a test generates an output and then the output gets compared to expected
+results. Such approach has a great benefit: the tests can be rebaselined easily
+by making a test to generate expectations itself.
+
+`Tree tests` are designed to test accessible tree. It loads an HTML file, waits
+for it to load, then dumps the accessible tree. The dumped tree is compared
+to an expectation file. The tests are driven by `DumpAccessibilityTree` testing
+class.
+
+`Node tests` are used to run a test for a single node, for example, to check
+a specific property. The test loads an HTML file, waits for it to load, then
+dump a single accessible node for a DOM element whose `id` or `class` attribute
+is `test`. There is no support for multiple "test" nodes and the output will be
+for the first match located. The tests are driven by `DumpAccessibilityNode`
+testing class.
+
+`Script tests` are used to run a script and test its output against
+expectations. The tests is driven by `DumpAccessibilityScript` testing
+class.
+
+`Event tests` tests use a similar format but the events are dumped after
+the document finishes loading, and an optional go() function runs. See more on
+this below.
 
 Each test is parameterized to run multiple times.  Most platforms dump in the
 "blink" format (the internal data), and again in a "native" (platform-specific)
-format.  The Windows platform has a second native format, "uia", so it runs a
-third time.  The test name indicates which test pass was run, e.g.,
+format.  The Windows platform has two native formats, "uia" and "ia2", so the
+test is run three times.  The test name indicates which test pass was run, e.g.,
 `DumpAccessibilityTreeTest.TestName/blink`.  (Note: for easier identification,
 the Windows, Mac, Linux, and Android platforms rename the "native" pass to
-"win", "mac", "linux" and "android", respectively.)
+"ia2", "mac", "linux" and "android", respectively.)
 
-The test output is a compact text representation of the accessibility tree
+The test output is a compact text representation of the accessible node(s)
 for that format, and it should be familiar if you're familiar with the
 accessibility protocol on that platform, but it's not in a standardized
 format - it's just a text dump, meant to be compared to expected output.
@@ -27,28 +54,52 @@ platform is present, it must match exactly or the test fails. If no
 expectation file is present, the test passes. Most tests don't have
 expectations on all platforms.
 
-`DumpAccessibilityEvent` tests use a similar format but dump events fired after
-the document finishes loading. See more on this below.
+## Compiling and running the tests
 
-## Compiling and running the tests:
+Most of the tests are hosted by `content_browsertests` testsuite.
 ```
-ninja -C out/Debug content_browsertests
-out/Debug/content_browsertests --gtest_filter="DumpAccessibility*"
+autoninja -C out/Debug content_browsertests
+out/Debug/content_browsertests --gtest_filter="All/DumpAccessibility*"
 ```
 
-## Files used:
+PDF accessibility tests though are running under `browsertest` testsuite.
+
+```
+autoninja -C out/Default browser_tests
+out/Default/browser_tests --gtest_filter="PDFExtensionAccessibilityTreeDumpTest*"
+```
+
+## File structure
 
 * `foo.html` -- a file to be tested
-* `foo-expected-android.txt` -- expected Android AccessibilityNodeInfo output
-* `foo-expected-auralinux.txt` -- expected Linux ATK output
-* `foo-expected-blink.txt` -- representation of internal accessibility tree
-* `foo-expected-mac.txt` -- expected Mac NSAccessibility output
-* `foo-expected-win.txt` -- expected Win IAccessible/IAccessible2 output
-* `foo-expected-uia-win.txt` -- expected Win UIA output
-* `foo-expected-uia-win7.txt` -- expected Win7 UIA output (Version Specific
-  Expected File)
+* `foo-expected-[platform].txt` -- a file to be tested
+* `foo-node-expected-[platform].txt` - a a file containing a node test
+   expectations
 
-## Format for expected files:
+Supported platforms are:
+* `android` -- expected Android AccessibilityNodeInfo output
+* `auralinux` -- expected Linux ATK output
+* `auralinux-trusty` -- expected Linux ATK output (Version Specific Expected File)
+* `auralinux-xenial` -- expected Linux ATK output (Version Specific Expected File)
+* `blink` -- representation of internal accessibility tree
+* `blink-cros` -- representation of internal accessibility tree
+  (Version Specific Expected File for Chrome OS and Lacros)
+* `mac` -- expected Mac NSAccessibility output
+* `win` -- expected Win IAccessible/IAccessible2 output
+* `uia-win` -- expected Win UIA output
+* `uia-win7` -- expected Win7 UIA output (Version Specific Expected File)
+
+Note, a single HTML test files can be used both for `tree tests` and
+`node tests`. In this case the expectations files for `node tests` portion will
+have an expectations-file qualifier of `-node` inserted immediately before
+`expected`. Thus for `foo.html`, there could be:
+
+* `foo-expected-mac.txt` -- expected Mac NSAccessibility output for the
+  entire accessibility tree
+* `foo-node-expected-mac.txt` -- expected Mac NSAccessibility output for
+  just the node in `foo.html` whose `class` is `test`
+
+## Expected files format
 
 * Blank lines and lines beginning with `#` are ignored
 * Skipped files: if first line of file begins with `#<skip` then the
@@ -66,47 +117,166 @@ does not exist, the normal expected file will be used instead:
 "`foo-expected-uia-win.txt`". There is no concept of version
 specific filters.
 
-## Filters:
+In the case of Linux, the tests are run on several LTS
+[releases](https://releases.ubuntu.com/) of Ubuntu:
 
-* By default only some attributes of nodes in the accessibility tree, or
-  events fired (when running `DumpAccessibilityEvents`), are output.
-  This is to keep the tests robust and not prone to failure when unrelated
-  changes affect the accessibility tree in unimportant ways.
-* Filters contained in the HTML file can be used to control what is output.
-  They can appear anywhere but typically they're in an HTML comment block,
-  and must be one per line.
-* Filters are platform-specific:
+* "Trusty Tahr": Ubuntu 14.04 LTS, ATK version 2.10 (bot: "linux-trusty-rel")
+* "Xenial Xerus": Ubuntu 16.04, ATK version 2.18 (bot: "linux-xenial-rel")
+* "Bionic Beaver": Ubuntu 18.04, ATK version 2.28 (runs on multiple bots)
+
+In many cases the expected results for `foo.html` will be the same for all
+versions of Ubuntu, in which case `foo-expected-auralinux.txt` is all that is
+needed. However, if the `foo.html` test passes on the Linux release build
+("linux-rel"), but fails on "linux-trusty-rel", you will need an additional
+`foo-expected-auralinux-trusty.txt` file. If it also fails on "linux-xenial-rel",
+create `foo-expected-auralinux-xenial.txt`.
+
+At the present time there is no version-specific support for Bionic Beaver,
+which is the current version run on "linux-rel".
+
+The need for a version-specific expectations file on Chrome OS / Lacros is
+extremely rare. However, there can be occasional differences in the internal
+accessibility tree. For instance, the SVG `g` element is always included
+in order to support select-to-speak functionality. If `foo.html` has a
+`foo-expected-blink.txt` file which works on all platforms except the Chrome OS
+and Lacros bots, create `foo-expected-blink-cros.txt`.
+
+## Directives
+
+Directives allow you to control test flow and test output. The directives are
+defined inside the first comment block in the test's input file, one directive
+per line. For example, in the case of an HTML file the directives are located in
+between `<!--` and `-->`, in the case of a PDF file the directives are
+preceding by `%` character designating a comment.
+
+Directives have format of `@directive_name:directive_value`. Directives can be
+spawned over multiple lines:
 ```
-    @WIN-
-    @UIA-WIN-
-    @MAC-
-    @BLINK-
-    @ANDROID-
-    @AURALINUX-
+@directive_name:
+  directive_value
+  directive_value
 ```
-* To dump all attributes while writing or debugging a test, add this filter:
-  `@WIN-ALLOW:*` (and similarly for other platforms).
-* Once you know what you want to output, you can use filters to match the
-  attributes and attribute values you want included in the output. An
-  `ALLOW` filter means to include the attribute, and a `DENY` filter means to
-  exclude it. Filters can contain simple wildcards (`*`) only, they're not
-  regular expressions. Examples:
 
-  - `@WIN-ALLOW:name*` - this will output the name attribute on Windows
-  - `@WIN-ALLOW:name='Foo'` - this will only output the name attribute if it
-    exactly matches 'Foo'.
-  - `@WIN-DENY:name='X*` - this will skip outputting any name that begins with
-    the letter X.
+Certain directives are platform dependent. If so, then such directives are
+prefixed by a platform name:
+* `@WIN-` applied to Windows platform, MSAA/IAccessible2 APIs;
+* `@UIA-WIN-` applied to UIA on Windows;
+* `@MAC-` applied to Mac platform, NSAccessibility API;
+* `@BLINK-` applied to Chromium engine;
+* `@ANDROID-` applied to Android platform;
+* `@AURALINUX-` applied to Linux platform, ATK API.
 
-* By default empty attributes are skipped. To output the value of an attribute
-  even if it's empty, use `@WIN-ALLOW-EMPTY:name`, for example, and similarly
-  for other platforms.
+### Filters
 
+By default only some attributes of nodes in the accessibility tree, or
+events fired (when running `event tests`), are output.
+This is to keep the tests robust and not prone to failure when unrelated
+changes affect the accessibility tree in unimportant ways.
 
-## Advanced:
+You can use these filter types to match the attributes and/or attribute values
+you want included in the output.
 
-Normally the system waits for the document to finish loading before dumping
-the accessibility tree.
+* `-ALLOW` filter means to include the attribute having non empty values;
+* `-ALLOW-EMPTY` filter means to include the attribute even if its value is empty;
+* `-DENY` filter means to exclude an attribute.
+
+Filter directives are platform-dependent (see above).
+
+Filters can contain simple wildcards (`*`) only, they're not
+regular expressions. Examples:
+
+* `@WIN-ALLOW:name` will output the `name` attribute on Windows
+* `@WIN-ALLOW:name='Foo'` will only output the name attribute if it exactly
+matches 'Foo'.
+* `@WIN-DENY:name='X*` will skip outputting any name that begins with the letter X.
+* `@WIN-ALLOW:*` to dump all attributes, useful for debuggin a test.
+
+### Scripting
+
+Note: Mac platform is supported only.
+
+`Script tests` provide platform dependent `-SCRIPT` directive to indicate
+a script to run. For example:
+
+`MAC-SCRIPT: input.AXName`
+
+to dump accessible name of an accessible node for a DOM element having
+`input` DOM id on Mac platform. You can also use `:LINE_NUM` syntax to indicate
+an accessible object, where `LINE_NUM` is index of a line where
+the accessible object is placed in the formatted tree. However you should avoid
+using `:LINE_NUM` in a test as it may break the test automatic rebaseling.
+
+You can put multiple instructions under the same `MAC-SCRIPT` directive, for
+example:
+```
+MAC-SCRIPT:
+  input.AXRole
+  input.AXName
+```
+
+Calls can be chained, for example:
+
+`input.AXFocusableAncestor.AXRole`
+
+Parameterized attributes are also supported, for example:
+
+`paragraph.AXTextMarkerForIndex(0)`
+
+`AXTextMarker` is serialized as a `{:LINE_NUM, offset, direction}` triple, for
+example:
+`textarea.AXPreviousWordStartTextMarkerForTextMarker({:3, 3, down})`
+
+`AXTextMarkerRange` is serialized as a dictionary:
+`{anchor: TEXT_MARKER, focus: TEXT_MARKER}`.
+
+You can also retrieve `anchor` and `focus` text markers from a text marker range,
+for example:
+
+`p.AXTextMarkerRangeForUIElement(p).anchor` or
+`p.AXTextMarkerRangeForUIElement(p).focus`
+
+You can also use array operator[] to refer to an array element at a given index,
+for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
+
+To set a settable attribute you can assign a value to the attribute, for example:
+```
+textarea_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
+textarea.AXSelectedTextMarkerRange = textarea_range
+```
+
+You can use `waitfor` instruction to wait for a specific event before the script
+continues, for example:
+
+```
+MAC-SCRIPT:
+  button.AXPerformAction(AXPress)
+  wait for AXFocusedUIElementChanged
+```
+
+will trigger `AXPress` action on a button and will wait for
+`AXFocusedUIElementChanged` event. You can also be more specific if you want to
+and provide the event target, for example:
+`wait for AXFocusedUIElementChanged on AXButton`
+
+### Advanced directives
+
+Normally the system waits for the document to finish loading before running
+the test. You can tune the behavior up by the following directives.
+
+#### @NO-LOAD-EXPECTED
+
+Instructs to not wait for document load for url defined by the directive.
+
+If you do not expect an iframe or object to load, (e.g. testing fallback), you
+can use the `@NO-LOAD-EXPECTED:` to cause the test to not wait for that frame to
+finish loading. For example the test would not wait for a url containing
+"broken.jpg" to load:
+`@NO-LOAD-EXPECTED:broken.jpg`
+`<object data="./broken.jpg">Fallback</object`
+
+#### @WAIT-FOR
+
+Delays a test unitl a string defined by the directive is present in the dump.
 
 Occasionally you may need to write a dump tree test that makes some changes to
 the document before it runs the test. In that case you can use a special
@@ -118,6 +288,11 @@ system will keep blocking until that text appears.
 You can add as many `@WAIT-FOR:` directives as you want, the test won't finish
 until all strings appear.
 
+#### @EXECUTE-AND-WAIT-FOR
+
+Delays a test until a string returned by a script defined by the directive is
+present in the dump.
+
 You may also want to execute script and then capture a dump. Rather than use
 `setTimeout` and `@WAIT-FOR:`, consider using the `@EXECUTE-AND-WAIT-FOR:`
 directive. This directive expects a javascript function that returns a string to
@@ -126,22 +301,23 @@ wait for. If a string is not returned, the tree dumper will not wait.
 ready and all `@WAIT-FOR:` strings have been found.
 Example: `@EXECUTE-AND-WAIT-FOR: foo()`
 
-Or, you may need to write an event test that keeps dumping events until a
-specific event line. In this case, use `@RUN-UNTIL-EVENT` with a substring that
-should occur in the event log, e.g.,
-`@RUN-UNTIL-EVENT:IA2_EVENT_TEXT_CARET_MOVED`. Note that `@RUN-UNTIL-EVENT` is
-only used in dump events tests, and not used in dump tree tests.
+#### @DEFAULT-ACTION-ON
 
-If you add multiple `@RUN-UNTIL-EVENT` directives, the test will finish once any
-of them are satisfied. Note that any other events that come along with the last
-event will also be logged.
+Invokes default action on an accessible object defined by the directive.
 
-To skip dumping a particular element, make its accessible name equal to
-`@NO_DUMP`, for example `<div aria-label="@NO_DUMP"></div>`.
+#### @NO_DUMP and @NO_CHILDREN_DUMP
 
-To skip dumping all children of a particular element, make its accessible
-name equal to `@NO_CHILDREN_DUMP`, for example
-`<div aria-label="@NO_CHILDREN_DUMP"></div>`.
+To skip dumping a particular element, add `@NO_DUMP` to a property that will
+be exposed as an ax::mojom::StringAttribute, for example
+`<div class="@NO_DUMP"></div>`.
+
+To skip dumping all children of a particular element, add `@NO_CHILDREN_DUMP`
+to a property that will be exposed as an ax::mojom::StringAttribute, for example
+`<div class="@NO_CHILDREN_DUMP"></div>`.
+
+Note that setting the `aria-label` value to `@NO_DUMP` or `@NO_CHILDREN_DUMP`
+is not guaranteed to work due to certain roles no longer supporting author-
+provided naming in ARIA 1.2.
 
 To load an iframe from a different site, forcing it into a different process,
 use `/cross-site/HOSTNAME/` in the url, for example:
@@ -173,13 +349,24 @@ For more information, see the detailed help with:
   out/Debug/content_browsertests --gtest_help
 ```
 
-## Adding a new test:
+Note: For Android, generated expectations will replace the existing files on
+the test device. For example, if running on an emulator, for an ARIA test
+called `my-test.html`, the generated output can be found:
+```
+  /storage/emulated/0/chromium_tests_root/content/test/
+     data/accessibility/aria/my-test-expected-android.txt
+```
+
+## Adding a new test
 
 If you are adding a new test file remember to add a corresponding test case in:
 * `content/browser/accessibility/dump_accessibility_events_browsertest.cc`; or
 * `content/browser/accessibility/dump_accessibility_tree_browsertest.cc`
 
-## More details on DumpAccessibilityEvents tests:
+If you are adding a new events test, remember to add a corresponding test case
+for Android, see more info below.
+
+## More details on DumpAccessibilityEvents tests
 
 These tests are similar to `DumpAccessibilityTree` tests in that they first
 load an HTML document, then dump something, then compare the output to
@@ -202,3 +389,50 @@ a direct result of calling `go()`.
 Windows will "translate" some IA2 events to UIA, and it is not
 possible to turn this feature off. Therefore as our UIA behavior is in addition
 to IA2, we will receive duplicated events for Focus, MenuOpened and MenuClosed.
+
+### Including Tests for Android
+
+The Android DumpAccessibilityEvents tests work differently than the other
+platforms and are driven by the Java-side code. The tests all reside in the
+[WebContentsAccessibilityEventsTest.java](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java)
+class. The tests are controlled from the Java code so that they can leverage the
+full accessibility suite and test the
+[AccessibilityEvents](https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent)
+that are sent to downstream services. For this to work, when adding a new events
+test, you must include a test line in the Java class.
+
+Example: If you are adding a new events test, "example-test.html", you would
+first create the html file as normal (content/test/data/accessibility/event/example-test.html),
+and add the test to the existing `dump_accessibility_events_browsertests.cc`:
+
+```
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, AccessibilityEventsExampleTest) {
+  RunEventTest(FILE_PATH_LITERAL("example-test.html"));
+}
+```
+
+To include this test on Android, you would add a similar block to the
+`WebContentsAccessibilityEventsTest.java` class:
+
+```
+@Test
+@SmallTest
+public void test_exampleTest() {
+    performTest("example-test.html", "example-test-expected-android.txt");
+}
+```
+
+Some tests on Android won't produce any events. For these you do not need to
+create an empty file, but can instead make the test line:
+
+```
+    performTest("example-test.html", EMPTY_EXPECTATIONS_FILE);
+```
+
+The easiest approach is to use the above line, run the tests, and if it fails,
+the error message will give you the exact text to add to the
+`-expected-android.txt` file. The `-expected-android.txt` file should go in the
+same directory as the others (content/test/data/accessibility/event).
+
+A PRESUBMIT check will give a non-blocking warning if you are adding, renaming,
+or deleting an events test without a corresponding change for Android.

@@ -22,7 +22,7 @@ class CORE_EXPORT AudioTrackList final : public TrackListBase<AudioTrack> {
   // EventTarget
   const AtomicString& InterfaceName() const override;
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     TrackListBase<AudioTrack>::Trace(visitor);
   }
 };

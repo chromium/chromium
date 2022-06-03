@@ -1,81 +1,98 @@
-<style>
-td {
-    border: 1px solid #aaa;
-}
-</style>
-
-<body style="border: 1px solid red;" contenteditable="true"><table id="table" style="margin: 25px; border:10px solid #ccc; padding: 10px;"><tr><td>cell one</td><td>cell two</td></tr></table>
-<ul id="console"></ul>
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.dumpEditingCallbacks();
+const kStyle = 'margin: 25px; border:20px solid #ccc; padding: 10px;';
+const kSample = [
+    '<div contenteditable>',
+        `<table id="target" style="${kStyle}"><tbody><tr>`,
+            '<td>ABC</td><td>XYZ</td>',
+        '</tr></tbody></table>',
+    '</div>',
+].join('');
 
-function log(message) {
-    var console = document.getElementById("console");
-    var li = document.createElement("li");
-    var text = document.createTextNode(message);
-    
-    console.appendChild(li);
-    li.appendChild(text);
+function click(x, y) {
+    if (!window.eventSender)
+        throw 'This test requires eventSender.';
+    eventSender.leapForward(9999); // reset muose button state.
+    eventSender.mouseMoveTo(x, y);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
 }
 
-function runAutomatedTest() {
-    testRunner.dumpAsText();
-    var s, x, y, e, top, bottom, left, right;
-    table = document.getElementById("table");
+function getPoints(selection) {
+  const target = selection.document.getElementById('target');
+  const left = selection.computeLeft(target);
+  const top = selection.computeTop(target);
 
-    top = table.offsetTop;
-    left = table.offsetLeft;
-    bottom = top + table.offsetHeight;
-    right = left + table.offsetWidth;
-    
-    x = right + 5;
-    y = (top + bottom) / 2;
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    s = window.getSelection();
-    if (!(s.anchorNode == document.body && s.anchorOffset == 1))
-        log("Failure: Clicking @ " + x + ", " + y + " after the table didn't put the caret after it.  Instead: " + s.anchorNode + ", " + s.anchorOffset);
-    
-    x = right - 5;
-    y = (top + bottom) / 2;
-    eventSender.leapForward(1000);
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    s = window.getSelection();
-    if (s.anchorNode == document.body)
-        log("Failure: Clicking @ " + x + ", " + y + " inside the table put the caret before or after it.  Instead: " + s.anchorNode + ", " + s.anchorOffset);
-        
-    x = left - 5;
-    y = (top + bottom) / 2;
-    eventSender.leapForward(1000);
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    s = window.getSelection();
-    if (s.anchorNode != table || s.anchorOffset != 0)
-    if (!(s.anchorNode == document.body && s.anchorOffset == 0))
-        log("Failure: Clicking @ " + x + ", " + y + " before the table should be the caret before it.  Instead: " + s.anchorNode + ", " + s.anchorOffset);
-        
-    x = left + 5;
-    y = (top + bottom) / 2;
-    eventSender.leapForward(1000);
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    s = window.getSelection();
-    if (s.anchorNode == document.body)
-        log("Failure: Clicking @ " + x + ", " + y + " inside the table put the caret before or after it.  Instead: " + s.anchorNode + ", " + s.anchorOffset);
+  return {
+    top: top,
+    left: left,
+    bottom: top + target.offsetHeight,
+    right: left + target.offsetWidth,
+    middle: top + target.offsetHeight / 2,
+  }
 }
 
-if (window.testRunner)
-    runAutomatedTest();
-else {
-    log("This test uses the eventSender to do mouse clicks.  To run it manually, click after the table, the caret should appear there (and not inside the table).  Then click inside the table.  The caret should appear inside it.");
-    document.body.addEventListener("click", function() { var s = window.getSelection(); log("click @ " + event.clientX + ", " + event.clientY + " caret at: " + s.anchorNode + ", " + s.anchorOffset); }, true);
-}
+selection_test(
+    kSample,
+    selection => {
+      const rect = getPoints(selection);
+      click(rect.right + 5, rect.middle);
+    },
+    [
+        '<div contenteditable>',
+            `<table id="target" style="${kStyle}"><tbody><tr>`,
+                '<td>ABC</td><td>XYZ</td>',
+            '</tr></tbody></table>|',
+        '</div>',
+    ],
+    'Click the after table');
 
+selection_test(
+    kSample,
+    selection => {
+      const rect = getPoints(selection);
+      click(rect.right - 5, rect.middle);
+    },
+    [
+        '<div contenteditable>',
+            `<table id="target" style="${kStyle}"><tbody><tr>`,
+                '<td>ABC</td><td>XYZ|</td>',
+            '</tr></tbody></table>',
+        '</div>',
+    ],
+    'Click inside of right side border of the table');
+
+selection_test(
+    kSample,
+    selection => {
+      const rect = getPoints(selection);
+      click(rect.left - 5, rect.middle);
+    },
+    [
+        '<div contenteditable>',
+            `|<table id="target" style="${kStyle}"><tbody><tr>`,
+                '<td>ABC</td><td>XYZ</td>',
+            '</tr></tbody></table>',
+        '</div>',
+    ],
+    'Click before the table');
+
+selection_test(
+    kSample,
+    selection => {
+      const rect = getPoints(selection);
+      click(rect.left + 5, rect.middle);
+    },
+    [
+        '<div contenteditable>',
+            `<table id="target" style="${kStyle}"><tbody><tr>`,
+                '<td>|ABC</td><td>XYZ</td>',
+            '</tr></tbody></table>',
+        '</div>',
+    ],
+    'Click inside of left side border of the table');
 </script>
-</body>

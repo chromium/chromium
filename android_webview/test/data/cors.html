@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head><title>running</title></head>
+<body><script>
+window.onload = function () {
+  const params = new URL(document.location).searchParams;
+  const api = params.get('api');
+  if (api == "xhr") {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', params.get('url'), true);
+    xhr.onload = e => document.title = 'load';
+    xhr.onerror = e => document.title = 'error';
+    xhr.onabort = e => document.title = 'abort';
+    xhr.send();
+  } else if (api == "fetch") {
+    fetch(params.get('url')).then(
+      e => document.title = 'load',
+      e => document.title = 'error');
+  } else {
+    document.title = "unknown api";
+  }
+};
+</script></body>
+</html>

@@ -149,7 +149,9 @@ promise_test(async t => {
 
 promise_test(async t => {
   pc1 = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc1.close());
   pc2 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc2.close());
   return navigator.mediaDevices.getUserMedia({video: true})
     .then(stream => {
       pc1.addTrack(stream.getVideoTracks()[0]);
@@ -170,6 +172,17 @@ promise_test(async t => {
 
 }, 'Plan B with one video track can connect to Unified plan');
 
+promise_test(async t => {
+  pc1 = new RTCPeerConnection({sdpSemantics: 'unified-plan'});
+  t.add_cleanup(() => pc1.close());
+  pc2 = new RTCPeerConnection({sdpSemantics: 'plan-b'});
+  t.add_cleanup(() => pc2.close());
+  pc1.addTransceiver('video');
+  pc1.addTransceiver('video');
+  await pc2.setRemoteDescription(await pc1.createOffer());
+  assert_equals(pc1.getReceivers().length, 2);
+  assert_equals(pc2.getReceivers().length, 1);
+}, 'Plan B rejects additional m-lines without throwing an error');
     </script>
   </body>
 </html>

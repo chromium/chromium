@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="is_android">
+    <message name="IDS_POPUPS_BLOCKED_INFOBAR_BUTTON_SHOW" desc="Pop-up Blocking Show Button [CHAR_LIMIT=32]">
+      Always show
+    </message>
+    <message name="IDS_POPUPS_BLOCKED_INFOBAR_TEXT" desc="Pop-up Blocking Title [CHAR_LIMIT=32] [ICU Syntax]">
+      {NUM_POPUPS,plural,=1{Pop-up blocked} other{# pop-ups blocked}}
+    </message>
+  </if>
+</grit-part>

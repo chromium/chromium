@@ -6,10 +6,10 @@
 #define BASE_CONTAINERS_STACK_CONTAINER_H_
 
 #include <stddef.h>
-
+#include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -46,7 +46,9 @@ class StackAllocator : public std::allocator<T> {
     }
 
     // Casts the buffer in its right type.
+    NO_SANITIZE("cfi-unrelated-cast")
     T* stack_buffer() { return reinterpret_cast<T*>(stack_buffer_); }
+    NO_SANITIZE("cfi-unrelated-cast")
     const T* stack_buffer() const {
       return reinterpret_cast<const T*>(&stack_buffer_);
     }
@@ -84,17 +86,15 @@ class StackAllocator : public std::allocator<T> {
   // for Us.
   // TODO: If we were fancy pants, perhaps we could share storage
   // iff sizeof(T) == sizeof(U).
-  template<typename U, size_t other_capacity>
+  template <typename U, size_t other_capacity>
   StackAllocator(const StackAllocator<U, other_capacity>& other)
-      : source_(NULL) {
-  }
+      : source_(nullptr) {}
 
   // This constructor must exist. It creates a default allocator that doesn't
   // actually have a stack buffer. glibc's std::string() will compare the
   // current allocator against the default-constructed allocator, so this
   // should be fast.
-  StackAllocator() : source_(NULL) {
-  }
+  StackAllocator() : source_(nullptr) {}
 
   explicit StackAllocator(Source* source) : source_(source) {
   }
@@ -102,20 +102,19 @@ class StackAllocator : public std::allocator<T> {
   // Actually do the allocation. Use the stack buffer if nobody has used it yet
   // and the size requested fits. Otherwise, fall through to the standard
   // allocator.
-  pointer allocate(size_type n, void* hint = 0) {
-    if (source_ != NULL && !source_->used_stack_buffer_
-        && n <= stack_capacity) {
+  pointer allocate(size_type n) {
+    if (source_ && !source_->used_stack_buffer_ && n <= stack_capacity) {
       source_->used_stack_buffer_ = true;
       return source_->stack_buffer();
     } else {
-      return std::allocator<T>::allocate(n, hint);
+      return std::allocator<T>::allocate(n);
     }
   }
 
   // Free: when trying to free the stack buffer, just mark it as free. For
   // non-stack-buffer pointers, just fall though to the standard allocator.
   void deallocate(pointer p, size_type n) {
-    if (source_ != NULL && p == source_->stack_buffer())
+    if (source_ && p == source_->stack_buffer())
       source_->used_stack_buffer_ = false;
     else
       std::allocator<T>::deallocate(p, n);
@@ -150,6 +149,8 @@ class StackContainer {
     // before doing anything else.
     container_.reserve(stack_capacity);
   }
+  StackContainer(const StackContainer&) = delete;
+  StackContainer& operator=(const StackContainer&) = delete;
 
   // Getters for the actual container.
   //
@@ -178,9 +179,6 @@ class StackContainer {
   typename Allocator::Source stack_data_;
   Allocator allocator_;
   ContainerType container_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackContainer);
 };
 
 // Range-based iteration support for StackContainer.

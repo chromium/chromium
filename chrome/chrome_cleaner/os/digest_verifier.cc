@@ -5,6 +5,7 @@
 #include "chrome/chrome_cleaner/os/digest_verifier.h"
 
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -75,13 +76,13 @@ bool DigestVerifier::InitializeFromResource(int resource_id) {
   }
 
   chrome_cleaner::FileDigests digests_pb;
-  if (!digests_pb.ParseFromString(serialized_digest_pb.as_string())) {
+  if (!digests_pb.ParseFromString(std::string(serialized_digest_pb))) {
     LOG(ERROR) << "Failed to parse digests protobuf";
     return false;
   }
 
   for (const chrome_cleaner::FileDigest& digest : digests_pb.file_digests()) {
-    const base::string16 filename = base::UTF8ToUTF16(digest.filename());
+    const std::wstring filename = base::UTF8ToWide(digest.filename());
     digests_[base::ToLowerASCII(filename)] =
         base::ToLowerASCII(digest.digest());
   }

@@ -42,9 +42,9 @@ void BackgroundLoaderContents::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-bool BackgroundLoaderContents::IsNeverVisible(
+bool BackgroundLoaderContents::IsNeverComposited(
     content::WebContents* web_contents) {
-  // Background, so not visible.
+  // Background, so not user-visible.
   return true;
 }
 
@@ -89,6 +89,7 @@ bool BackgroundLoaderContents::IsWebContentsCreationOverridden(
 void BackgroundLoaderContents::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture,
@@ -126,9 +127,9 @@ bool BackgroundLoaderContents::CheckMediaAccessPermission(
 
 void BackgroundLoaderContents::AdjustPreviewsStateForNavigation(
     content::WebContents* web_contents,
-    content::PreviewsState* previews_state) {
-    if (*previews_state == 0)
-      *previews_state = content::PREVIEWS_OFF;
+    blink::PreviewsState* previews_state) {
+  if (*previews_state == 0)
+    *previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
 }
 
 bool BackgroundLoaderContents::ShouldAllowLazyLoad() {

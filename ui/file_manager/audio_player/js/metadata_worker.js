@@ -2,7 +2,4 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Load the worker script of the Files app.
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
-    'foreground/js/metadata/metadata_dispatcher.js');
+import '../../file_manager/foreground/js/metadata/metadata_dispatcher.js';

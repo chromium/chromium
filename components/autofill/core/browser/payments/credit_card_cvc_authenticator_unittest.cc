@@ -11,7 +11,6 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -19,11 +18,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,7 +32,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/metrics/form_events.h"
+#include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -51,12 +47,12 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -66,25 +62,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-using base::ASCIIToUTF16;
-
 namespace autofill {
 namespace {
 
 const char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
 const char kTestNumber[] = "4234567890123456";  // Visa
-
-std::string NextYear() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.year + 1);
-}
-
-std::string NextMonth() {
-  base::Time::Exploded now;
-  AutofillClock::Now().LocalExplode(&now);
-  return base::NumberToString(now.month % 12 + 1);
-}
+const char16_t kTestNumber16[] = u"4234567890123456";
 
 }  // namespace
 
@@ -97,13 +80,16 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
     personal_data_manager_.Init(/*profile_database=*/database_,
                                 /*account_database=*/nullptr,
                                 /*pref_service=*/autofill_client_.GetPrefs(),
+                                /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
                                 /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
+                                /*strike_database=*/nullptr,
+                                /*image_fetcher=*/nullptr,
                                 /*is_off_the_record=*/false);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
 
-    requester_.reset(new TestAuthenticationRequester());
+    requester_ = std::make_unique<TestAuthenticationRequester>();
     autofill_driver_ =
         std::make_unique<testing::NiceMock<TestAutofillDriver>>();
 
@@ -129,8 +115,8 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
   CreditCard CreateServerCard(std::string guid, std::string number) {
     CreditCard masked_server_card = CreditCard();
     test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                            number.c_str(), NextMonth().c_str(),
-                            NextYear().c_str(), "1");
+                            number.c_str(), test::NextMonth().c_str(),
+                            test::NextYear().c_str(), "1");
     masked_server_card.set_guid(guid);
     masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
 
@@ -141,18 +127,22 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
   }
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
-                       const std::string& real_pan) {
+                       const std::string& real_pan,
+                       bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
         cvc_authenticator_->full_card_request_.get();
     DCHECK(full_card_request);
 
     // Mock user response.
     payments::FullCardRequest::UserProvidedUnmaskDetails details;
-    details.cvc = base::ASCIIToUTF16("123");
+    details.cvc = u"123";
     full_card_request->OnUnmaskPromptAccepted(details);
 
     // Mock payments response.
     payments::PaymentsClient::UnmaskResponseDetails response;
+    response.card_type = is_virtual_card
+                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
+                             : AutofillClient::PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
   }
@@ -160,6 +150,8 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
  protected:
   std::unique_ptr<TestAuthenticationRequester> requester_;
   base::test::TaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   scoped_refptr<AutofillWebDataService> database_;
@@ -172,49 +164,48 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardSuccess) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::SUCCESS, kTestNumber);
-  EXPECT_TRUE(requester_->did_succeed());
-  EXPECT_EQ(ASCIIToUTF16(kTestNumber), requester_->number());
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
+  EXPECT_TRUE((*requester_->did_succeed()));
+  EXPECT_EQ(kTestNumber16, requester_->number());
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardNetworkError) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::NETWORK_ERROR, std::string());
-  EXPECT_FALSE(requester_->did_succeed());
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kNetworkError,
+                  std::string());
+  EXPECT_FALSE((*requester_->did_succeed()));
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardPermanentFailure) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::PERMANENT_FAILURE, std::string());
-  EXPECT_FALSE(requester_->did_succeed());
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kPermanentFailure,
+                  std::string());
+  EXPECT_FALSE((*requester_->did_succeed()));
 }
 
 TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardTryAgainFailure) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
-  OnDidGetRealPan(AutofillClient::TRY_AGAIN_FAILURE, std::string());
-  EXPECT_FALSE(requester_->did_succeed());
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kTryAgainFailure,
+                  std::string());
+  EXPECT_FALSE(requester_->did_succeed().has_value());
 
-  OnDidGetRealPan(AutofillClient::SUCCESS, kTestNumber);
-  EXPECT_TRUE(requester_->did_succeed());
-  EXPECT_EQ(ASCIIToUTF16(kTestNumber), requester_->number());
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
+  EXPECT_TRUE((*requester_->did_succeed()));
+  EXPECT_EQ(kTestNumber16, requester_->number());
 }
 
 }  // namespace autofill

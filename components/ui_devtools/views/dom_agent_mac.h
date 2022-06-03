@@ -17,6 +17,10 @@ namespace ui_devtools {
 class DOMAgentMac : public DOMAgentViews, public views::WidgetObserver {
  public:
   DOMAgentMac();
+
+  DOMAgentMac(const DOMAgentMac&) = delete;
+  DOMAgentMac& operator=(const DOMAgentMac&) = delete;
+
   ~DOMAgentMac() override;
 
   void OnNativeWidgetAdded(views::NativeWidgetMac* native_widget);
@@ -39,8 +43,6 @@ class DOMAgentMac : public DOMAgentViews, public views::WidgetObserver {
   void InitializeRootsFromOpenWindows();
 
   std::vector<views::Widget*> roots_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMAgentMac);
 };
 }  // namespace ui_devtools
 

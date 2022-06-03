@@ -18,13 +18,19 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.v4.app.BundleCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
+
+import androidx.browser.customtabs.CustomTabsCallback;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsServiceConnection;
+import androidx.browser.customtabs.CustomTabsSession;
+import androidx.core.app.BundleCompat;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,12 +39,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
-import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsClient;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsServiceConnection;
-import androidx.browser.customtabs.CustomTabsSession;
 
 /** Activity used to benchmark Custom Tabs PLT.
  *
@@ -674,8 +674,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             intent.launchUrl(MainActivity.this, Uri.parse(launchInfo.url));
             cb.recordIntentHasBeenSent();
-            if (launchInfo.timeoutSeconds != NONE)
+            if (launchInfo.timeoutSeconds != NONE) {
                 cb.logMetricsAndFinishDelayed(launchInfo.timeoutSeconds * 1000);
+            }
         };
 
         if (cb.pinInfo.pinningBenchmark) {

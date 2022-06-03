@@ -26,13 +26,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import urlparse
+from six.moves.urllib import parse
 
 
 def web_socket_do_extra_handshake(request):
-    query = urlparse.urlparse(request.uri)[4]
+    query = parse.urlparse(request.uri)[4]
     max_age = ''
-    if 'clear' in urlparse.parse_qs(query):
+    if 'clear' in parse.parse_qs(query):
         max_age = '; Max-Age=0'
     cookie_values = [
         'ws-domain-local-ip=1; Domain=127.0.0.1' + max_age,

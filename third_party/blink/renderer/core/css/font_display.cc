@@ -12,20 +12,20 @@ FontDisplay CSSValueToFontDisplay(const CSSValue* value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kAuto:
-        return kFontDisplayAuto;
+        return FontDisplay::kAuto;
       case CSSValueID::kBlock:
-        return kFontDisplayBlock;
+        return FontDisplay::kBlock;
       case CSSValueID::kSwap:
-        return kFontDisplaySwap;
+        return FontDisplay::kSwap;
       case CSSValueID::kFallback:
-        return kFontDisplayFallback;
+        return FontDisplay::kFallback;
       case CSSValueID::kOptional:
-        return kFontDisplayOptional;
+        return FontDisplay::kOptional;
       default:
         break;
     }
   }
-  return kFontDisplayAuto;
+  return FontDisplay::kAuto;
 }
 
 }  // namespace blink

@@ -26,10 +26,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client/crash_report_database.h"
@@ -561,7 +561,7 @@ int DatabaseUtilMain(int argc, char* argv[]) {
   }
 
   bool used_stdin = false;
-  for (const base::FilePath new_report_path : options.new_report_paths) {
+  for (const base::FilePath& new_report_path : options.new_report_paths) {
     std::unique_ptr<FileReaderInterface> file_reader;
 
     if (new_report_path.value() == FILE_PATH_LITERAL("-")) {

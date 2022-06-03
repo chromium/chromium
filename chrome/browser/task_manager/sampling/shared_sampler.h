@@ -12,14 +12,13 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace task_manager {
 
@@ -38,6 +37,9 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   explicit SharedSampler(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_pool_runner);
 
+  SharedSampler(const SharedSampler&) = delete;
+  SharedSampler& operator=(const SharedSampler&) = delete;
+
   struct SamplingResult {
     base::TimeDelta cpu_time;
     int64_t hard_faults_per_second;
@@ -45,7 +47,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
     base::Time start_time;
   };
   using OnSamplingCompleteCallback =
-      base::Callback<void(base::Optional<SamplingResult>)>;
+      base::RepeatingCallback<void(absl::optional<SamplingResult>)>;
 
   // Returns a combination of refresh flags supported by the shared sampler.
   int64_t GetSupportedFlags() const;
@@ -132,8 +134,6 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   // To assert we're running on the correct thread.
   base::SequenceChecker worker_pool_sequenced_checker_;
 #endif  // defined(OS_WIN)
-
-  DISALLOW_COPY_AND_ASSIGN(SharedSampler);
 };
 
 }  // namespace task_manager

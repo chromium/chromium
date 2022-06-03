@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.content.SharedPreferences;
-import android.os.StrictMode;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 
@@ -19,12 +17,16 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.TaskRunner;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
-import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -46,40 +48,26 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     @VisibleForTesting
     static final String LEGACY_SAVED_STATE_FILE = "tab_state";
 
-    @VisibleForTesting
-    static final String PREF_HAS_RUN_FILE_MIGRATION =
-            "org.chromium.chrome.browser.tabmodel.TabPersistentStore.HAS_RUN_FILE_MIGRATION";
-
-    @VisibleForTesting
-    static final String PREF_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION =
-            "org.chromium.chrome.browser.tabmodel.TabPersistentStore."
-            + "HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION";
-
-    /** The name of the directory where the state is saved. */
-    @VisibleForTesting
-    static final String SAVED_STATE_DIRECTORY = "0";
-
     /** Prevents two copies of the Migration task from being created. */
     private static final Object MIGRATION_LOCK = new Object();
-    /** Prevents two state directories from getting created simultaneously. */
-    private static final Object DIR_CREATION_LOCK = new Object();
     /**
      * Prevents two clean up tasks from getting created simultaneously. Also protects against
      * incorrectly interleaving create/run/cancel on the task.
      */
     private static final Object CLEAN_UP_TASK_LOCK = new Object();
     /** Tracks whether tabs from two TabPersistentStores tabs are being merged together. */
+    // TODO(crbug.com/1082936): Transit AtomicBoolean to an AtomicInteger to keep track the task id
+    //        of activity being merged.
     private static final AtomicBoolean MERGE_IN_PROGRESS = new AtomicBoolean();
 
     private static AsyncTask<Void> sMigrationTask;
     private static AsyncTask<Void> sCleanupTask;
 
-    private static File sStateDirectory;
-
-    private final SharedPreferences mPreferences;
     private final int mSelectorIndex;
     private final int mOtherSelectorIndex;
-    private final boolean mMergeTabs;
+    private final boolean mMergeTabsOnStartup;
+    private final boolean mTabMergingEnabled;
+    private final int mMaxSelectors;
 
     private TabContentManager mTabContentManager;
     private boolean mDestroyed;
@@ -87,20 +75,25 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     /**
      * Constructs a persistence policy that handles the Tabbed mode specific logic.
      * @param selectorIndex The index that represents which state file to pull and save state to.
-     *                      This is used when there can be more than one TabModelSelector.
-     * @param mergeTabs     Whether this policy should handle merging tabs from all available
-     *                      tabbed mode files.
+     *            This is used when there can be more than one TabModelSelector.
+     * @param mergeTabsOnStartup Whether this policy should handle merging tabs from all available
+     *            tabbed mode files at startup.
+     * @param tabMergingEnabled Whether tab merging operation should be done for multi-window/
+     *            instance feature in general.
+     * @param maxSelectors Maximum number of tab model selectors.
      */
-    public TabbedModeTabPersistencePolicy(int selectorIndex, boolean mergeTabs) {
-        mPreferences = ContextUtils.getAppSharedPreferences();
+    public TabbedModeTabPersistencePolicy(int selectorIndex, boolean mergeTabsOnStartup,
+            boolean tabMergingEnabled, int maxSelectors) {
         mSelectorIndex = selectorIndex;
         mOtherSelectorIndex = selectorIndex == 0 ? 1 : 0;
-        mMergeTabs = mergeTabs;
+        mMergeTabsOnStartup = mergeTabsOnStartup;
+        mTabMergingEnabled = tabMergingEnabled;
+        mMaxSelectors = maxSelectors;
     }
 
     @Override
     public File getOrCreateStateDirectory() {
-        return getOrCreateTabbedModeStateDirectory();
+        return TabStateDirectory.getOrCreateTabbedModeStateDirectory();
     }
 
     @Override
@@ -110,13 +103,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public boolean shouldMergeOnStartup() {
-        return mMergeTabs;
+        return mMergeTabsOnStartup;
     }
 
     @Override
     public List<String> getStateToBeMergedFileNames() {
         List<String> mergedFileNames = new ArrayList<>();
-        if (FeatureUtilities.isTabModelMergingEnabled()) {
+        if (mMergeTabsOnStartup || mTabMergingEnabled) {
             mergedFileNames.add(getStateFileName(mOtherSelectorIndex));
         }
         // TODO(peconn): Can I clean up this code now that Browser Actions are gone?
@@ -127,41 +120,19 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      * @param selectorIndex The index that represents which state file to pull and save state to.
      * @return The name of the state file.
      */
-    @VisibleForTesting
     public static String getStateFileName(int selectorIndex) {
         return TabPersistentStore.getStateFileName(Integer.toString(selectorIndex));
-    }
-
-    /**
-     * The folder where the state should be saved to.
-     * @return A file representing the directory that contains TabModelSelector states.
-     */
-    public static File getOrCreateTabbedModeStateDirectory() {
-        synchronized (DIR_CREATION_LOCK) {
-            if (sStateDirectory == null) {
-                sStateDirectory = new File(
-                        TabPersistentStore.getOrCreateBaseStateDirectory(), SAVED_STATE_DIRECTORY);
-                StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-                try {
-                    if (!sStateDirectory.exists() && !sStateDirectory.mkdirs()) {
-                        Log.e(TAG, "Failed to create state folder: " + sStateDirectory);
-                    }
-                } finally {
-                    StrictMode.setThreadPolicy(oldPolicy);
-                }
-            }
-        }
-        return sStateDirectory;
     }
 
     @Override
     public boolean performInitialization(TaskRunner taskRunner) {
         ThreadUtils.assertOnUiThread();
 
-        final boolean hasRunLegacyMigration =
-                mPreferences.getBoolean(PREF_HAS_RUN_FILE_MIGRATION, false);
+        final boolean hasRunLegacyMigration = SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         final boolean hasRunMultiInstanceMigration =
-                mPreferences.getBoolean(PREF_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);
+                SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);
 
         if (hasRunLegacyMigration && hasRunMultiInstanceMigration) return false;
 
@@ -211,7 +182,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             File[] files = oldFolder.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (TabState.parseInfoFromFilename(file.getName()) != null) {
+                    if (TabStateFileManager.parseInfoFromFilename(file.getName()) != null) {
                         if (!file.renameTo(new File(newFolder, file.getName()))) {
                             Log.e(TAG, "Failed to rename file: " + file);
                         }
@@ -246,13 +217,12 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         // 2. Move files from other state directories.
-        for (int i = TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX;
-                i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
+        for (int i = TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX; i < mMaxSelectors; i++) {
             // Skip the directory we're migrating to.
             if (i == 0) continue;
 
             File otherStateDir = new File(
-                    TabPersistentStore.getOrCreateBaseStateDirectory(), Integer.toString(i));
+                    TabStateDirectory.getOrCreateBaseStateDirectory(), Integer.toString(i));
             if (otherStateDir == null || !otherStateDir.exists()) continue;
 
             // Rename tab state file.
@@ -267,7 +237,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             File[] files = otherStateDir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (TabState.parseInfoFromFilename(file.getName()) != null) {
+                    if (TabStateFileManager.parseInfoFromFilename(file.getName()) != null) {
                         // Custom tabs does not currently use tab files. Delete them rather than
                         // migrating.
                         if (i == TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX) {
@@ -304,11 +274,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     private void setLegacyFileMigrationPref() {
-        mPreferences.edit().putBoolean(PREF_HAS_RUN_FILE_MIGRATION, true).apply();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, true);
     }
 
     private void setMultiInstanceFileMigrationPref() {
-        mPreferences.edit().putBoolean(PREF_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, true).apply();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, true);
     }
 
     @Override
@@ -350,8 +322,65 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     public void cleanupUnusedFiles(Callback<List<String>> filesToDelete) {
         synchronized (CLEAN_UP_TASK_LOCK) {
             if (sCleanupTask != null) sCleanupTask.cancel(true);
-            sCleanupTask = new CleanUpTabStateDataTask(filesToDelete);
+            sCleanupTask = new CleanUpTabStateDataTask(
+                    filesToDelete, () -> getOtherTabsId(mSelectorIndex));
             sCleanupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    @Override
+    public void cleanupInstanceState(int index, Callback<List<String>> filesToDelete) {
+        TabModelSelector selector =
+                TabWindowManagerSingleton.getInstance().getTabModelSelectorById(index);
+        if (selector != null) {
+            // Remove all the tabs from the instance if it is in running state to be able to
+            // delete the corresponding tab state file.
+            for (int i = 0; i < selector.getModels().size(); i++) {
+                TabModel tabModel = selector.getModels().get(i);
+                while (tabModel.getCount() > 0) tabModel.removeTab(tabModel.getTabAt(0));
+            }
+        }
+        synchronized (CLEAN_UP_TASK_LOCK) {
+            if (sCleanupTask != null) sCleanupTask.cancel(true);
+            sCleanupTask = new CleanUpTabStateDataTask(filesToDelete, () -> getOtherTabsId(index));
+            sCleanupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    /**
+     * Gets the IDs of all tabs in the instances other than the specified one. IDs for custom tabs
+     * are excluded.
+     * @param index Index of the instance whose tabs are being deleted.
+     */
+    private SparseBooleanArray getOtherTabsId(int index) {
+        SparseBooleanArray tabIds = new SparseBooleanArray();
+        for (int i = 0; i < mMaxSelectors; ++i) {
+            // Although we check all selectors before deleting, we can only be sure that our own
+            // selector will not go away between now and then. So, we read from disk all other
+            // state files, even if they are already loaded by another selector.
+            if (i != index) getTabsFromStateFiles(tabIds, i);
+        }
+        return tabIds;
+    }
+
+    /**
+     * Gets the IDs of all tabs in TabModelSelectors of a given instance.
+     * @param tabIds SparseBooleanArray to populate with TabIds.
+     * @param index Index for the corresponding instance.
+     */
+    private void getTabsFromStateFiles(SparseBooleanArray tabIds, int index) {
+        File metadataFile = new File(getOrCreateStateDirectory(), getStateFileName(index));
+        if (metadataFile.exists()) {
+            DataInputStream stream = null;
+            try {
+                stream = new DataInputStream(
+                        new BufferedInputStream(new FileInputStream(metadataFile)));
+                TabPersistentStore.readSavedStateFile(stream, null, tabIds);
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
+            } finally {
+                StreamUtil.closeQuietly(stream);
+            }
         }
     }
 
@@ -367,6 +396,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public void destroy() {
+        mTabContentManager = null;
         mDestroyed = true;
     }
 
@@ -375,10 +405,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
         private String[] mTabFileNames;
         private String[] mThumbnailFileNames;
-        private SparseBooleanArray mOtherTabIds;
+        private Supplier<SparseBooleanArray> mOtherTabSupplier;
+        private SparseBooleanArray mOtherTabIds; // Tab in use by other selectors, not be deleted.
 
-        CleanUpTabStateDataTask(Callback<List<String>> filesToDelete) {
+        CleanUpTabStateDataTask(Callback<List<String>> filesToDelete,
+                Supplier<SparseBooleanArray> otherTabsSupplier) {
             mFilesToDeleteCallback = filesToDelete;
+            mOtherTabSupplier = otherTabsSupplier;
         }
 
         @Override
@@ -388,21 +421,20 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             mTabFileNames = getOrCreateStateDirectory().list();
             String thumbnailDirectory = PathUtils.getThumbnailCacheDirectory();
             mThumbnailFileNames = new File(thumbnailDirectory).list();
-
-            mOtherTabIds = new SparseBooleanArray();
-            getTabsFromOtherStateFiles(mOtherTabIds);
+            mOtherTabIds = mOtherTabSupplier.get();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void unused) {
             if (mDestroyed) return;
-            TabWindowManager tabWindowManager = TabWindowManager.getInstance();
+            TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
 
+            List<String> filesToDelete = new ArrayList<>();
             if (mTabFileNames != null) {
-                List<String> filesToDelete = new ArrayList<>();
                 for (String fileName : mTabFileNames) {
-                    Pair<Integer, Boolean> data = TabState.parseInfoFromFilename(fileName);
+                    Pair<Integer, Boolean> data =
+                            TabStateFileManager.parseInfoFromFilename(fileName);
                     if (data != null) {
                         int tabId = data.first;
                         if (shouldDeleteTabFile(tabId, tabWindowManager)) {
@@ -410,8 +442,11 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                         }
                     }
                 }
-                mFilesToDeleteCallback.onResult(filesToDelete);
             }
+            // Invoke the callback even if filesToDelete is empty since it could perform other
+            // cleanups.
+            mFilesToDeleteCallback.onResult(filesToDelete);
+
             if (mTabContentManager != null && mThumbnailFileNames != null) {
                 for (String fileName : mThumbnailFileNames) {
                     try {
@@ -431,35 +466,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         private boolean shouldDeleteTabFile(int tabId, TabWindowManager tabWindowManager) {
-            return !tabWindowManager.tabExistsInAnySelector(tabId) && !mOtherTabIds.get(tabId);
-        }
-
-        /**
-         * Gets the IDs of all tabs in TabModelSelectors other than the currently selected one. IDs
-         * for custom tabs are excluded.
-         * @param tabIds SparseBooleanArray to populate with TabIds.
-         */
-        private void getTabsFromOtherStateFiles(SparseBooleanArray tabIds) {
-            for (int i = 0; i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
-                // Although we check all selectors before deleting, we can only be sure that our own
-                // selector will not go away between now and then. So, we read from disk all other
-                // state files, even if they are already loaded by another selector.
-                if (i == mSelectorIndex) continue;
-
-                File metadataFile = new File(getOrCreateStateDirectory(), getStateFileName(i));
-                if (metadataFile.exists()) {
-                    DataInputStream stream = null;
-                    try {
-                        stream = new DataInputStream(
-                                new BufferedInputStream(new FileInputStream(metadataFile)));
-                        TabPersistentStore.readSavedStateFile(stream, null, tabIds, false);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
-                    } finally {
-                        StreamUtil.closeQuietly(stream);
-                    }
-                }
-            }
+            return tabWindowManager.getTabById(tabId) == null && !mOtherTabIds.get(tabId);
         }
 
         @Override
@@ -469,5 +476,10 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                 sCleanupTask = null;
             }
         }
+    }
+
+    @VisibleForTesting
+    protected static void resetMigrationTaskForTesting() {
+        sMigrationTask = null;
     }
 }

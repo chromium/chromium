@@ -5,15 +5,11 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [
-    "chrome_prompt.proto",
-  ]
+  sources = [ "chrome_prompt.proto" ]
 }
 
 proto_library("test_only_proto") {
   testonly = true
   generate_python = false
-  sources = [
-    "chrome_prompt_for_tests.proto",
-  ]
+  sources = [ "chrome_prompt_for_tests.proto" ]
 }

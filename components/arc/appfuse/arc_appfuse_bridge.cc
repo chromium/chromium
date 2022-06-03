@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "chromeos/dbus/arc_appfuse_provider_client.h"
+#include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -40,7 +40,7 @@ class ArcAppfuseBridgeFactory
 };
 
 void RunWithScopedHandle(base::OnceCallback<void(mojo::ScopedHandle)> callback,
-                         base::Optional<base::ScopedFD> fd) {
+                         absl::optional<base::ScopedFD> fd) {
   if (!fd || !fd.value().is_valid()) {
     LOG(ERROR) << "Invalid FD: fd.has_value() = " << fd.has_value();
     std::move(callback).Run(mojo::ScopedHandle());
@@ -62,6 +62,12 @@ void RunWithScopedHandle(base::OnceCallback<void(mojo::ScopedHandle)> callback,
 ArcAppfuseBridge* ArcAppfuseBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcAppfuseBridgeFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcAppfuseBridge* ArcAppfuseBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcAppfuseBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcAppfuseBridge::ArcAppfuseBridge(content::BrowserContext* context,

@@ -8,4 +8,7 @@ thakis@chromium.org
 
 # Clipboard
 per-file test_clipboard*=dcheng@chromium.org
-# COMPONENT: Tests
+
+# Skia Gold
+per-file skia_gold*=svenzheng@chromium.org
+per-file skia_gold*=bsheedy@chromium.org

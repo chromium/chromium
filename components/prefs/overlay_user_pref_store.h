@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -29,6 +28,9 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   // The |ephemeral| store must already be initialized.
   OverlayUserPrefStore(PersistentPrefStore* ephemeral,
                        PersistentPrefStore* persistent);
+
+  OverlayUserPrefStore(const OverlayUserPrefStore&) = delete;
+  OverlayUserPrefStore& operator=(const OverlayUserPrefStore&) = delete;
 
   // Returns true if a value has been set for the |key| in this
   // OverlayUserPrefStore, i.e. if it potentially overrides a value
@@ -53,6 +55,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
                         std::unique_ptr<base::Value> value,
                         uint32_t flags) override;
   void RemoveValue(const std::string& key, uint32_t flags) override;
+  void RemoveValuesByPrefixSilently(const std::string& prefix) override;
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
   PrefReadError ReadPrefs() override;
@@ -90,8 +93,6 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   scoped_refptr<PersistentPrefStore> persistent_user_pref_store_;
   NamesSet persistent_names_set_;
   NamesSet written_ephemeral_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayUserPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_OVERLAY_USER_PREF_STORE_H_

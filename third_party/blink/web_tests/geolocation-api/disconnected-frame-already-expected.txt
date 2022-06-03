@@ -1,9 +1,0 @@
-Tests that when a request is made on a Geolocation object after its frame has been disconnected, no callbacks are made and no crash occurs.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-Method called on Geolocation object with disconnected Frame.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

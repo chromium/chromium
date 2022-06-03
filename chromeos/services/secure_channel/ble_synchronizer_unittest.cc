@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -43,46 +42,48 @@ int64_t kTimeBetweenEachCommandMs = 200;
 struct RegisterAdvertisementArgs {
   RegisterAdvertisementArgs(
       const device::BluetoothAdvertisement::UUIDList& service_uuids,
-      const device::BluetoothAdapter::CreateAdvertisementCallback& callback,
-      const device::BluetoothAdapter::AdvertisementErrorCallback&
-          error_callback)
+      device::BluetoothAdapter::CreateAdvertisementCallback callback,
+      device::BluetoothAdapter::AdvertisementErrorCallback error_callback)
       : service_uuids(service_uuids),
-        callback(callback),
-        error_callback(error_callback) {}
+        callback(std::move(callback)),
+        error_callback(std::move(error_callback)) {}
 
   device::BluetoothAdvertisement::UUIDList service_uuids;
-  const device::BluetoothAdapter::CreateAdvertisementCallback callback;
-  const device::BluetoothAdapter::AdvertisementErrorCallback error_callback;
+  device::BluetoothAdapter::CreateAdvertisementCallback callback;
+  device::BluetoothAdapter::AdvertisementErrorCallback error_callback;
 };
 
 struct UnregisterAdvertisementArgs {
   UnregisterAdvertisementArgs(
-      const device::BluetoothAdvertisement::SuccessCallback& callback,
-      const device::BluetoothAdvertisement::ErrorCallback& error_callback)
-      : callback(callback), error_callback(error_callback) {}
+      device::BluetoothAdvertisement::SuccessCallback callback,
+      device::BluetoothAdvertisement::ErrorCallback error_callback)
+      : callback(std::move(callback)),
+        error_callback(std::move(error_callback)) {}
 
-  const device::BluetoothAdvertisement::SuccessCallback callback;
-  const device::BluetoothAdvertisement::ErrorCallback error_callback;
+  device::BluetoothAdvertisement::SuccessCallback callback;
+  device::BluetoothAdvertisement::ErrorCallback error_callback;
 };
 
 struct StartDiscoverySessionArgs {
   StartDiscoverySessionArgs(
-      const base::RepeatingClosure callback,
-      const device::BluetoothAdapter::ErrorCallback& error_callback)
-      : callback(callback), error_callback(error_callback) {}
+      base::OnceClosure callback,
+      device::BluetoothAdapter::ErrorCallback error_callback)
+      : callback(std::move(callback)),
+        error_callback(std::move(error_callback)) {}
 
-  const base::RepeatingClosure callback;
-  const device::BluetoothAdapter::ErrorCallback error_callback;
+  base::OnceClosure callback;
+  device::BluetoothAdapter::ErrorCallback error_callback;
 };
 
 struct StopDiscoverySessionArgs {
   StopDiscoverySessionArgs(
-      const base::Closure& callback,
-      const device::BluetoothDiscoverySession::ErrorCallback& error_callback)
-      : callback(callback), error_callback(error_callback) {}
+      base::OnceClosure callback,
+      device::BluetoothDiscoverySession::ErrorCallback error_callback)
+      : callback(std::move(callback)),
+        error_callback(std::move(error_callback)) {}
 
-  const base::Closure callback;
-  const device::BluetoothDiscoverySession::ErrorCallback error_callback;
+  base::OnceClosure callback;
+  device::BluetoothDiscoverySession::ErrorCallback error_callback;
 };
 
 class MockBluetoothAdapterWithAdvertisements
@@ -95,11 +96,12 @@ class MockBluetoothAdapterWithAdvertisements
 
   void RegisterAdvertisement(
       std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
-      const device::BluetoothAdapter::CreateAdvertisementCallback& callback,
-      const device::BluetoothAdapter::AdvertisementErrorCallback&
-          error_callback) override {
+      device::BluetoothAdapter::CreateAdvertisementCallback callback,
+      device::BluetoothAdapter::AdvertisementErrorCallback error_callback)
+      override {
     RegisterAdvertisementWithArgsStruct(new RegisterAdvertisementArgs(
-        *advertisement_data->service_uuids(), callback, error_callback));
+        *advertisement_data->service_uuids(), std::move(callback),
+        std::move(error_callback)));
   }
 
  protected:
@@ -111,28 +113,29 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
   // |unregister_callback| should be called with the callbacks passed to
   // Unregister() whenever an Unregister() call occurs.
   FakeBluetoothAdvertisement(
-      const base::Callback<
-          void(const device::BluetoothAdvertisement::SuccessCallback&,
-               const device::BluetoothAdvertisement::ErrorCallback&)>&
-          unregister_callback)
+      const base::RepeatingCallback<void(
+          device::BluetoothAdvertisement::SuccessCallback,
+          device::BluetoothAdvertisement::ErrorCallback)>& unregister_callback)
       : unregister_callback_(unregister_callback) {}
+
+  FakeBluetoothAdvertisement(const FakeBluetoothAdvertisement&) = delete;
+  FakeBluetoothAdvertisement& operator=(const FakeBluetoothAdvertisement&) =
+      delete;
 
   // BluetoothAdvertisement:
   void Unregister(
-      const device::BluetoothAdvertisement::SuccessCallback& success_callback,
-      const device::BluetoothAdvertisement::ErrorCallback& error_callback)
-      override {
-    unregister_callback_.Run(success_callback, error_callback);
+      device::BluetoothAdvertisement::SuccessCallback success_callback,
+      device::BluetoothAdvertisement::ErrorCallback error_callback) override {
+    unregister_callback_.Run(std::move(success_callback),
+                             std::move(error_callback));
   }
 
  private:
   ~FakeBluetoothAdvertisement() override = default;
 
-  base::Callback<void(const device::BluetoothAdvertisement::SuccessCallback&,
-                      const device::BluetoothAdvertisement::ErrorCallback&)>
+  base::RepeatingCallback<void(device::BluetoothAdvertisement::SuccessCallback,
+                               device::BluetoothAdvertisement::ErrorCallback)>
       unregister_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothAdvertisement);
 };
 
 // Creates a UUIDList with one element of value |id|.
@@ -154,11 +157,18 @@ std::unique_ptr<device::BluetoothAdvertisement::Data> GenerateAdvertisementData(
 }  // namespace
 
 class SecureChannelBleSynchronizerTest : public testing::Test {
+ public:
+  SecureChannelBleSynchronizerTest(const SecureChannelBleSynchronizerTest&) =
+      delete;
+  SecureChannelBleSynchronizerTest& operator=(
+      const SecureChannelBleSynchronizerTest&) = delete;
+
  protected:
   SecureChannelBleSynchronizerTest()
       : fake_advertisement_(base::MakeRefCounted<FakeBluetoothAdvertisement>(
-            base::Bind(&SecureChannelBleSynchronizerTest::OnUnregisterCalled,
-                       base::Unretained(this)))) {}
+            base::BindRepeating(
+                &SecureChannelBleSynchronizerTest::OnUnregisterCalled,
+                base::Unretained(this)))) {}
 
   void SetUp() override {
     num_register_success_ = 0;
@@ -189,8 +199,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
     test_clock_.Advance(TimeDeltaMillis(kTimeBetweenEachCommandMs));
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
-    synchronizer_ =
-        BleSynchronizer::Factory::Get()->BuildInstance(mock_adapter_);
+    synchronizer_ = BleSynchronizer::Factory::Create(mock_adapter_);
 
     BleSynchronizer* derived_type =
         static_cast<BleSynchronizer*>(synchronizer_.get());
@@ -199,7 +208,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   }
 
   base::TimeDelta TimeDeltaMillis(int64_t num_millis) {
-    return base::TimeDelta::FromMilliseconds(num_millis);
+    return base::Milliseconds(num_millis);
   }
 
   void OnAdapterRegisterAdvertisement(RegisterAdvertisementArgs* args) {
@@ -211,24 +220,24 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
       device::BluetoothAdapter::DiscoverySessionResultCallback& callback) {
     EXPECT_EQ(device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE,
               discovery_filter->GetTransport());
-    auto copyable_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     start_discovery_args_list_.emplace_back(
         base::WrapUnique(new StartDiscoverySessionArgs(
-            base::BindRepeating(
-                copyable_callback, /*is_error=*/false,
+            base::BindOnce(
+                std::move(split_callback.first), /*is_error=*/false,
                 device::UMABluetoothDiscoverySessionOutcome::SUCCESS),
-            base::BindRepeating(
-                copyable_callback, /*is_error=*/true,
+            base::BindOnce(
+                std::move(split_callback.second), /*is_error=*/true,
                 device::UMABluetoothDiscoverySessionOutcome::UNKNOWN))));
   }
 
   void RegisterAdvertisement(const std::string& id) {
     synchronizer_->RegisterAdvertisement(
         GenerateAdvertisementData(id),
-        base::Bind(&SecureChannelBleSynchronizerTest::OnAdvertisementRegistered,
-                   base::Unretained(this)),
-        base::Bind(
+        base::BindOnce(
+            &SecureChannelBleSynchronizerTest::OnAdvertisementRegistered,
+            base::Unretained(this)),
+        base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnErrorRegisteringAdvertisement,
             base::Unretained(this)));
   }
@@ -243,13 +252,13 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
 
     BleSynchronizer::BluetoothAdvertisementResult expected_result;
     if (success) {
-      register_args_list_[reg_arg_index]->callback.Run(
-          base::MakeRefCounted<device::MockBluetoothAdvertisement>());
+      std::move(register_args_list_[reg_arg_index]->callback)
+          .Run(base::MakeRefCounted<device::MockBluetoothAdvertisement>());
       expected_result = BleSynchronizer::BluetoothAdvertisementResult::SUCCESS;
     } else {
-      register_args_list_[reg_arg_index]->error_callback.Run(
-          device::BluetoothAdvertisement::ErrorCode::
-              INVALID_ADVERTISEMENT_ERROR_CODE);
+      std::move(register_args_list_[reg_arg_index]->error_callback)
+          .Run(device::BluetoothAdvertisement::ErrorCode::
+                   INVALID_ADVERTISEMENT_ERROR_CODE);
       expected_result = BleSynchronizer::BluetoothAdvertisementResult::
           INVALID_ADVERTISEMENT_ERROR_CODE;
     }
@@ -276,12 +285,12 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   void UnregisterAdvertisement() {
     synchronizer_->UnregisterAdvertisement(
         fake_advertisement_,
-        base::Bind(
+        base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnAdvertisementUnregistered,
             base::Unretained(this)),
-        base::Bind(&SecureChannelBleSynchronizerTest::
-                       OnErrorUnregisteringAdvertisement,
-                   base::Unretained(this)));
+        base::BindOnce(&SecureChannelBleSynchronizerTest::
+                           OnErrorUnregisteringAdvertisement,
+                       base::Unretained(this)));
   }
 
   // If |success| is false, the error code defaults to
@@ -291,16 +300,17 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
       bool success,
       size_t unreg_arg_index,
       size_t expected_unregistration_result_count,
-      const device::BluetoothAdvertisement::ErrorCode& error_code = device::
+      device::BluetoothAdvertisement::ErrorCode error_code = device::
           BluetoothAdvertisement::ErrorCode::INVALID_ADVERTISEMENT_ERROR_CODE) {
     EXPECT_TRUE(unregister_args_list_.size() >= unreg_arg_index);
 
     BleSynchronizer::BluetoothAdvertisementResult expected_result;
     if (success) {
-      unregister_args_list_[unreg_arg_index]->callback.Run();
+      std::move(unregister_args_list_[unreg_arg_index]->callback).Run();
       expected_result = BleSynchronizer::BluetoothAdvertisementResult::SUCCESS;
     } else {
-      unregister_args_list_[unreg_arg_index]->error_callback.Run(error_code);
+      std::move(unregister_args_list_[unreg_arg_index]->error_callback)
+          .Run(error_code);
       BleSynchronizer* derived_type =
           static_cast<BleSynchronizer*>(synchronizer_.get());
       expected_result =
@@ -325,9 +335,10 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
 
   void StartDiscoverySession() {
     synchronizer_->StartDiscoverySession(
-        base::Bind(&SecureChannelBleSynchronizerTest::OnDiscoverySessionStarted,
-                   base::Unretained(this)),
-        base::Bind(
+        base::BindOnce(
+            &SecureChannelBleSynchronizerTest::OnDiscoverySessionStarted,
+            base::Unretained(this)),
+        base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnErrorStartingDiscoverySession,
             base::Unretained(this)));
   }
@@ -339,9 +350,10 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
     EXPECT_TRUE(start_discovery_args_list_.size() >= start_arg_index);
 
     if (success) {
-      start_discovery_args_list_[start_arg_index]->callback.Run();
+      std::move(start_discovery_args_list_[start_arg_index]->callback).Run();
     } else {
-      start_discovery_args_list_[start_arg_index]->error_callback.Run();
+      std::move(start_discovery_args_list_[start_arg_index]->error_callback)
+          .Run();
     }
 
     histogram_tester_.ExpectUniqueSample(
@@ -368,9 +380,10 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
       base::WeakPtr<device::BluetoothDiscoverySession> discovery_session) {
     synchronizer_->StopDiscoverySession(
         discovery_session,
-        base::Bind(&SecureChannelBleSynchronizerTest::OnDiscoverySessionStopped,
-                   base::Unretained(this)),
-        base::Bind(
+        base::BindOnce(
+            &SecureChannelBleSynchronizerTest::OnDiscoverySessionStopped,
+            base::Unretained(this)),
+        base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnErrorStoppingDiscoverySession,
             base::Unretained(this)));
   }
@@ -380,7 +393,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
       size_t expected_stop_discovery_result_count) {
     EXPECT_TRUE(stop_discovery_args_list_.size() >= stop_arg_index);
 
-    stop_discovery_args_list_[stop_arg_index]->callback.Run();
+    std::move(stop_discovery_args_list_[stop_arg_index]->callback).Run();
 
     histogram_tester_.ExpectUniqueSample(
         "InstantTethering.BluetoothDiscoverySessionStopped", 1,
@@ -404,23 +417,23 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   }
 
   void OnUnregisterCalled(
-      const device::BluetoothAdvertisement::SuccessCallback& callback,
-      const device::BluetoothAdvertisement::ErrorCallback& error_callback) {
-    unregister_args_list_.emplace_back(base::WrapUnique(
-        new UnregisterAdvertisementArgs(callback, error_callback)));
+      device::BluetoothAdvertisement::SuccessCallback callback,
+      device::BluetoothAdvertisement::ErrorCallback error_callback) {
+    unregister_args_list_.push_back(
+        std::make_unique<UnregisterAdvertisementArgs>(
+            std::move(callback), std::move(error_callback)));
   }
 
   void OnStopScan(
       device::BluetoothAdapter::DiscoverySessionResultCallback callback) {
-    auto repeating_callback =
-        base::AdaptCallbackForRepeating(std::move(callback));
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
     stop_discovery_args_list_.emplace_back(
         base::WrapUnique(new StopDiscoverySessionArgs(
-            base::BindRepeating(
-                repeating_callback, /*is_error=*/false,
+            base::BindOnce(
+                std::move(split_callback.first), /*is_error=*/false,
                 device::UMABluetoothDiscoverySessionOutcome::SUCCESS),
-            base::BindRepeating(
-                repeating_callback,
+            base::BindOnce(
+                std::move(split_callback.second),
                 /*is_error=*/true,
                 device::UMABluetoothDiscoverySessionOutcome::UNKNOWN))));
   }
@@ -460,9 +473,6 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   std::unique_ptr<BleSynchronizerBase> synchronizer_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleSynchronizerTest);
 };
 
 TEST_F(SecureChannelBleSynchronizerTest, TestRegisterSuccess) {

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -46,21 +46,23 @@ device::BluetoothAdvertisement::ErrorCode GetErrorCodeFromErrorStrings(
 }
 
 void RegisterErrorCallbackConnector(
-    const device::BluetoothAdapter::AdvertisementErrorCallback& error_callback,
+    device::BluetoothAdapter::AdvertisementErrorCallback error_callback,
     const std::string& error_name,
     const std::string& error_message) {
   LOG(ERROR) << "Error while registering advertisement. error_name = "
              << error_name << ", error_message = " << error_message;
-  error_callback.Run(GetErrorCodeFromErrorStrings(error_name, error_message));
+  std::move(error_callback)
+      .Run(GetErrorCodeFromErrorStrings(error_name, error_message));
 }
 
 void UnregisterErrorCallbackConnector(
-    const device::BluetoothAdapter::AdvertisementErrorCallback& error_callback,
+    device::BluetoothAdapter::AdvertisementErrorCallback error_callback,
     const std::string& error_name,
     const std::string& error_message) {
   LOG(WARNING) << "Error while unregistering advertisement. error_name = "
                << error_name << ", error_message = " << error_message;
-  error_callback.Run(GetErrorCodeFromErrorStrings(error_name, error_message));
+  std::move(error_callback)
+      .Run(GetErrorCodeFromErrorStrings(error_name, error_message));
 }
 
 }  // namespace
@@ -87,33 +89,33 @@ BluetoothAdvertisementBlueZ::BluetoothAdvertisementBlueZ(
           bluez::BluetoothLEAdvertisementServiceProvider::AdvertisementType>(
           data->type()),
       data->service_uuids(), data->manufacturer_data(), data->solicit_uuids(),
-      data->service_data());
+      data->service_data(), data->scan_response_data());
 }
 
 void BluetoothAdvertisementBlueZ::Register(
-    const base::Closure& success_callback,
-    const device::BluetoothAdapter::AdvertisementErrorCallback&
-        error_callback) {
+    SuccessCallback success_callback,
+    device::BluetoothAdapter::AdvertisementErrorCallback error_callback) {
   DCHECK(bluez::BluezDBusManager::Get());
   bluez::BluezDBusManager::Get()
       ->GetBluetoothLEAdvertisingManagerClient()
-      ->RegisterAdvertisement(
-          adapter_path_, provider_->object_path(), success_callback,
-          base::Bind(&RegisterErrorCallbackConnector, error_callback));
+      ->RegisterAdvertisement(adapter_path_, provider_->object_path(),
+                              std::move(success_callback),
+                              base::BindOnce(&RegisterErrorCallbackConnector,
+                                             std::move(error_callback)));
 }
 
 BluetoothAdvertisementBlueZ::~BluetoothAdvertisementBlueZ() {
-  Unregister(base::DoNothing(), base::Bind(&UnregisterFailure));
+  Unregister(base::DoNothing(), base::BindOnce(&UnregisterFailure));
 }
 
-void BluetoothAdvertisementBlueZ::Unregister(
-    const SuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
+void BluetoothAdvertisementBlueZ::Unregister(SuccessCallback success_callback,
+                                             ErrorCallback error_callback) {
   // If we don't have a provider, that means we have already been unregistered,
   // return an error.
   if (!provider_) {
-    error_callback.Run(device::BluetoothAdvertisement::ErrorCode::
-                           ERROR_ADVERTISEMENT_DOES_NOT_EXIST);
+    std::move(error_callback)
+        .Run(device::BluetoothAdvertisement::ErrorCode::
+                 ERROR_ADVERTISEMENT_DOES_NOT_EXIST);
     return;
   }
 
@@ -121,8 +123,9 @@ void BluetoothAdvertisementBlueZ::Unregister(
   bluez::BluezDBusManager::Get()
       ->GetBluetoothLEAdvertisingManagerClient()
       ->UnregisterAdvertisement(
-          adapter_path_, provider_->object_path(), success_callback,
-          base::Bind(&UnregisterErrorCallbackConnector, error_callback));
+          adapter_path_, provider_->object_path(), std::move(success_callback),
+          base::BindOnce(&UnregisterErrorCallbackConnector,
+                         std::move(error_callback)));
   provider_.reset();
 }
 

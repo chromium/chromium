@@ -5,12 +5,13 @@
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -65,7 +66,6 @@ AccountInfo CreateTestAccountInfo(const std::string& name,
   }
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
-  account_info.is_child_account = false;
   EXPECT_EQ(is_valid, account_info.IsValid());
   return account_info;
 }
@@ -99,7 +99,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         pref_service_.registry());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
-    client_.reset(new TestSigninClient(&pref_service_));
+    client_ = std::make_unique<TestSigninClient>(&pref_service_);
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_revoke_url().spec(), "");
     LoadTokenDatabase();
@@ -175,6 +175,10 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override {
     ++access_token_failure_count_;
     access_token_failure_ = error;
+  }
+
+  std::string GetConsumerName() const override {
+    return "mutable_profile_oauth2_token_service_delegate_unittest";
   }
 
   // ProfileOAuth2TokenServiceObserver implementation.
@@ -376,6 +380,54 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
       oauth2_service_delegate_->load_credentials_state());
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       RevokeAllCredentialsDuringLoad) {
+  class TokenServiceForceRevokeObserver
+      : public ProfileOAuth2TokenServiceObserver {
+   public:
+    explicit TokenServiceForceRevokeObserver(
+        MutableProfileOAuth2TokenServiceDelegate* delegate)
+        : delegate_(delegate) {}
+
+    TokenServiceForceRevokeObserver(const TokenServiceForceRevokeObserver&) =
+        delete;
+    TokenServiceForceRevokeObserver& operator=(
+        const TokenServiceForceRevokeObserver&) = delete;
+
+    void OnRefreshTokenRevoked(const CoreAccountId& account_id) override {
+      revoke_all_credentials_called_ = true;
+      delegate_->RevokeAllCredentials();
+    }
+
+    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    bool revoke_all_credentials_called_ = false;
+  };
+
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+
+  TokenServiceForceRevokeObserver token_service_observer(
+      oauth2_service_delegate_.get());
+  oauth2_service_delegate_->AddObserver(&token_service_observer);
+
+  CoreAccountId account1("account1");
+  CoreAccountId account2("account2");
+
+  AddAuthTokenManually("AccountId-" + account1.ToString(), "refresh_token");
+  AddAuthTokenManually("AccountId-" + account2.ToString(), "refresh_token");
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, tokens_loaded_count_);
+  EXPECT_EQ(0, token_available_count_);
+  EXPECT_EQ(2, token_revoked_count_);
+  EXPECT_EQ(1, end_batch_changes_);
+  EXPECT_TRUE(oauth2_service_delegate_->revoke_all_tokens_on_load_);
+  EXPECT_TRUE(token_service_observer.revoke_all_credentials_called_);
+  EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account1));
+  EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account2));
+  oauth2_service_delegate_->RemoveObserver(&token_service_observer);
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -1048,14 +1100,13 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
     ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
-    update->Clear();
+    update->ClearList();
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("account_id", email);
     dict->SetString("email", email);
     dict->SetString("gaia", gaia_id);
     update->Append(std::move(dict));
-    account_tracker_service_.Shutdown();
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
+    account_tracker_service_.ResetForTesting();
 
     AddAuthTokenManually("AccountId-" + email, "refresh_token");
     oauth2_service_delegate_->LoadCredentials(acc_id_gaia_id);
@@ -1112,7 +1163,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
     ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
-    update->Clear();
+    update->ClearList();
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("account_id", email1);
     dict->SetString("email", email1);
@@ -1123,8 +1174,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     dict->SetString("email", email2);
     dict->SetString("gaia", gaia_id2);
     update->Append(std::move(dict));
-    account_tracker_service_.Shutdown();
-    account_tracker_service_.Initialize(&pref_service_, base::FilePath());
+    account_tracker_service_.ResetForTesting();
 
     AddAuthTokenManually("AccountId-" + email1, "refresh_token");
     AddAuthTokenManually("AccountId-" + email2, "refresh_token");
@@ -1200,6 +1250,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
         MutableProfileOAuth2TokenServiceDelegate* delegate)
         : delegate_(delegate) {}
 
+    TokenServiceErrorObserver(const TokenServiceErrorObserver&) = delete;
+    TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
+        delete;
+
     void OnAuthErrorChanged(const CoreAccountId& account_id,
                             const GoogleServiceAuthError& auth_error) override {
       error_changed_ = true;
@@ -1212,8 +1266,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
 
     MutableProfileOAuth2TokenServiceDelegate* delegate_;
     bool error_changed_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenServiceErrorObserver);
   };
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
@@ -1274,6 +1326,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
         MutableProfileOAuth2TokenServiceDelegate* delegate)
         : delegate_(delegate) {}
 
+    TokenServiceErrorObserver(const TokenServiceErrorObserver&) = delete;
+    TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
+        delete;
+
     void OnAuthErrorChanged(const CoreAccountId& account_id,
                             const GoogleServiceAuthError& auth_error) override {
       error_changed_ = true;
@@ -1302,8 +1358,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     MutableProfileOAuth2TokenServiceDelegate* delegate_;
     bool error_changed_ = false;
     bool token_available_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenServiceErrorObserver);
   };
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
@@ -1453,8 +1507,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                                 Source::kDiceResponseHandler_Signout, 2);
     base::RunLoop().RunUntilIdle();
   }
-
-  token_service.Shutdown();
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {

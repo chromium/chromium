@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 
 class PasswordManagerInternalsWebUIBrowserTest : public WebUIBrowserTest {
  public:
@@ -64,7 +65,7 @@ void PasswordManagerInternalsWebUIBrowserTest::OpenInternalsPageWithBrowser(
   url_string += chrome::kChromeUIPasswordManagerInternalsHost;
   ui_test_utils::NavigateToURLWithDisposition(
       browser, GURL(url_string), disposition,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   controller_ = static_cast<PasswordManagerInternalsUI*>(
       GetWebContents()->GetWebUI()->GetController());
 }
@@ -146,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
           browser()->profile());
   ASSERT_TRUE(log_router);
   log_router->ProcessLog("<script> text for testing");
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
 }
 
 // Test that the description is correct in a non-Incognito tab.
@@ -163,9 +165,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordManagerInternalsWebUIBrowserTest,
                        IncognitoMessage) {
   Browser* incognito = CreateIncognitoBrowser();
+  EXPECT_TRUE(incognito->profile()->IsOffTheRecord());
   autofill::LogRouter* log_router =
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
-          incognito->profile()->GetOffTheRecordProfile());
+          incognito->profile());
   EXPECT_FALSE(log_router);  // There should be no log_router for Incognito.
   OpenInternalsPageWithBrowser(incognito, WindowOpenDisposition::CURRENT_TAB);
   SetWebUIInstance(

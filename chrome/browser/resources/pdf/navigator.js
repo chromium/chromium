@@ -2,42 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserApi} from './browser_api.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {Viewport} from './viewport.js';
 
-/**
- * NavigatorDelegate for calling browser-specific functions to do the actual
- * navigating.
- */
+// NavigatorDelegate for calling browser-specific functions to do the actual
+// navigating.
+/** @interface */
 export class NavigatorDelegate {
-  /**
-   * @param {number} tabId The tab ID of the PDF viewer or -1 if the viewer is
-   *     not displayed in a tab.
-   */
-  constructor(tabId) {
-    /** @private {number} */
-    this.tabId_ = tabId;
-  }
-
   /**
    * Called when navigation should happen in the current tab.
    * @param {string} url The url to be opened in the current tab.
    */
-  navigateInCurrentTab(url) {
-    // When the PDFviewer is inside a browser tab, prefer the tabs API because
-    // it can navigate from one file:// URL to another.
-    if (chrome.tabs && this.tabId_ != -1) {
-      chrome.tabs.update(this.tabId_, {url: url});
-    } else {
-      window.location.href = url;
-    }
-  }
+  navigateInCurrentTab(url) {}
 
   /**
    * Called when navigation should happen in the new tab.
    * @param {string} url The url to be opened in the new tab.
    * @param {boolean} active Indicates if the new tab should be the active tab.
    */
+  navigateInNewTab(url, active) {}
+
+  /**
+   * Called when navigation should happen in the new window.
+   * @param {string} url The url to be opened in the new window.
+   */
+  navigateInNewWindow(url) {}
+}
+
+// NavigatorDelegate for calling browser-specific functions to do the actual
+// navigating.
+/** @implements {NavigatorDelegate} */
+export class NavigatorDelegateImpl {
+  /** @param {!BrowserApi} browserApi */
+  constructor(browserApi) {
+    /** @private {!BrowserApi} */
+    this.browserApi_ = browserApi;
+  }
+
+  /** @override */
+  navigateInCurrentTab(url) {
+    this.browserApi_.navigateInCurrentTab(url);
+  }
+
+  /** @override */
   navigateInNewTab(url, active) {
     // Prefer the tabs API because it guarantees we can just open a new tab.
     // window.open doesn't have this guarantee.
@@ -48,10 +56,7 @@ export class NavigatorDelegate {
     }
   }
 
-  /**
-   * Called when navigation should happen in the new window.
-   * @param {string} url The url to be opened in the new window.
-   */
+  /** @override */
   navigateInNewWindow(url) {
     // Prefer the windows API because it guarantees we can just open a new
     // window. window.open with '_blank' argument doesn't have this guarantee.
@@ -63,7 +68,7 @@ export class NavigatorDelegate {
   }
 }
 
-/** Navigator for navigating to links inside or outside the PDF. */
+// Navigator for navigating to links inside or outside the PDF.
 export class PdfNavigator {
   /**
    * @param {string} originalUrl The original page URL.
@@ -96,12 +101,13 @@ export class PdfNavigator {
    * Function to navigate to the given URL. This might involve navigating
    * within the PDF page or opening a new url (in the same tab or a new tab).
    * @param {string} urlString The URL to navigate to.
-   * @param {!PdfNavigator.WindowOpenDisposition} disposition The window open
+   * @param {!WindowOpenDisposition} disposition The window open
    *     disposition when navigating to the new URL.
+   * @return {!Promise<void>} When navigation has completed (used for testing).
    */
   navigate(urlString, disposition) {
-    if (urlString.length == 0) {
-      return;
+    if (urlString.length === 0) {
+      return Promise.resolve();
     }
 
     // If |urlFragment| starts with '#', then it's for the same URL with a
@@ -123,36 +129,40 @@ export class PdfNavigator {
     try {
       url = new URL(urlString);
     } catch (err) {
-      return;
+      return Promise.reject(err);
     }
 
     if (!this.isValidUrl_(url)) {
-      return;
+      return Promise.resolve();
     }
 
+    let whenDone = Promise.resolve();
+
     switch (disposition) {
-      case PdfNavigator.WindowOpenDisposition.CURRENT_TAB:
-        this.paramsParser_.getViewportFromUrlParams(
-            url.href, this.onViewportReceived_.bind(this));
+      case WindowOpenDisposition.CURRENT_TAB:
+        whenDone = this.paramsParser_.getViewportFromUrlParams(url.href).then(
+            this.onViewportReceived_.bind(this));
         break;
-      case PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB:
+      case WindowOpenDisposition.NEW_BACKGROUND_TAB:
         this.navigatorDelegate_.navigateInNewTab(url.href, false);
         break;
-      case PdfNavigator.WindowOpenDisposition.NEW_FOREGROUND_TAB:
+      case WindowOpenDisposition.NEW_FOREGROUND_TAB:
         this.navigatorDelegate_.navigateInNewTab(url.href, true);
         break;
-      case PdfNavigator.WindowOpenDisposition.NEW_WINDOW:
+      case WindowOpenDisposition.NEW_WINDOW:
         this.navigatorDelegate_.navigateInNewWindow(url.href);
         break;
-      case PdfNavigator.WindowOpenDisposition.SAVE_TO_DISK:
+      case WindowOpenDisposition.SAVE_TO_DISK:
         // TODO(jaepark): Alt + left clicking a link in PDF should
         // download the link.
-        this.paramsParser_.getViewportFromUrlParams(
-            url.href, this.onViewportReceived_.bind(this));
+        whenDone = this.paramsParser_.getViewportFromUrlParams(url.href).then(
+            this.onViewportReceived_.bind(this));
         break;
       default:
         break;
     }
+
+    return whenDone;
   }
 
   /**
@@ -169,7 +179,7 @@ export class PdfNavigator {
     }
 
     const pageNumber = viewportPosition.page;
-    if (pageNumber != undefined && this.originalUrl_ && newUrl &&
+    if (pageNumber !== undefined && this.originalUrl_ && newUrl &&
         this.originalUrl_.origin === newUrl.origin &&
         this.originalUrl_.pathname === newUrl.pathname) {
       this.viewport_.goToPage(pageNumber);
@@ -236,7 +246,7 @@ export class PdfNavigator {
     }
     if (!url.startsWith('.')) {
       const domainSeparatorIndex = url.indexOf('/');
-      const domainName = domainSeparatorIndex == -1 ?
+      const domainName = domainSeparatorIndex === -1 ?
           url :
           url.substr(0, domainSeparatorIndex);
       const domainDotCount = (domainName.match(/\./g) || []).length;
@@ -255,7 +265,7 @@ export class PdfNavigator {
  * the only values that are passed from Plugin.
  * @enum {number}
  */
-PdfNavigator.WindowOpenDisposition = {
+export const WindowOpenDisposition = {
   CURRENT_TAB: 1,
   NEW_FOREGROUND_TAB: 3,
   NEW_BACKGROUND_TAB: 4,
@@ -266,3 +276,4 @@ PdfNavigator.WindowOpenDisposition = {
 // Export on |window| such that scripts injected from pdf_extension_test.cc can
 // access it.
 window.PdfNavigator = PdfNavigator;
+window.WindowOpenDisposition = WindowOpenDisposition;

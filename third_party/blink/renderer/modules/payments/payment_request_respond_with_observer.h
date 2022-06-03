@@ -34,12 +34,10 @@ class MODULES_EXPORT PaymentRequestRespondWithObserver final
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
   void OnResponseFulfilled(ScriptState*,
                            const ScriptValue&,
-                           ExceptionState::ContextType,
-                           const char* interface_name,
-                           const char* property_name) override;
+                           const ExceptionContext&) override;
   void OnNoResponse() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void set_should_have_payer_name(bool should_have_payer_name) {
     should_have_payer_name_ = should_have_payer_name;

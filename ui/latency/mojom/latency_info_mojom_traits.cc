@@ -63,13 +63,6 @@ ui::SourceEventType MojoSourceEventTypeToUI(ui::mojom::SourceEventType type) {
 }  // namespace
 
 // static
-const std::string&
-StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::trace_name(
-    const ui::LatencyInfo& info) {
-  return info.trace_name_;
-}
-
-// static
 const ui::LatencyInfo::LatencyMap&
 StructTraits<ui::mojom::LatencyInfoDataView,
              ui::LatencyInfo>::latency_components(const ui::LatencyInfo& info) {
@@ -128,11 +121,23 @@ float StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::
 }
 
 // static
+int64_t
+StructTraits<ui::mojom::LatencyInfoDataView,
+             ui::LatencyInfo>::gesture_scroll_id(const ui::LatencyInfo& info) {
+  return info.gesture_scroll_id();
+}
+
+// static
+int64_t
+StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::touch_trace_id(
+    const ui::LatencyInfo& info) {
+  return info.touch_trace_id();
+}
+
+// static
 bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::Read(
     ui::mojom::LatencyInfoDataView data,
     ui::LatencyInfo* out) {
-  if (!data.ReadTraceName(&out->trace_name_))
-    return false;
   if (!data.ReadLatencyComponents(&out->latency_components_))
     return false;
   out->trace_id_ = data.trace_id();
@@ -143,6 +148,8 @@ bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::Read(
   out->source_event_type_ = MojoSourceEventTypeToUI(data.source_event_type());
   out->scroll_update_delta_ = data.scroll_update_delta();
   out->predicted_scroll_update_delta_ = data.predicted_scroll_update_delta();
+  out->gesture_scroll_id_ = data.gesture_scroll_id();
+  out->touch_trace_id_ = data.touch_trace_id();
 
   return true;
 }
@@ -178,9 +185,6 @@ EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType>::ToMojom(
     case ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT:
       return ui::mojom::LatencyComponentType::
           INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT;
-    case ui::INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT:
-      return ui::mojom::LatencyComponentType::
-          INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT;
     case ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT:
       return ui::mojom::LatencyComponentType::
           INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT;
@@ -233,9 +237,6 @@ bool EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType>::
     case ui::mojom::LatencyComponentType::
         INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT:
       *output = ui::INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT;
-      return true;
-    case ui::mojom::LatencyComponentType::INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT:
-      *output = ui::INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT;
       return true;
     case ui::mojom::LatencyComponentType::
         INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT:

@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "rlz/buildflags/buildflags.h"
 
@@ -13,8 +14,9 @@
 using MusicManagerPrivateTest = extensions::PlatformAppBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(MusicManagerPrivateTest, DeviceIdValueReturned) {
-  ASSERT_TRUE(RunPlatformAppTest(
-      "platform_apps/music_manager_private/device_id_value_returned"))
+  ASSERT_TRUE(RunExtensionTest(
+      "platform_apps/music_manager_private/device_id_value_returned",
+      {.launch_as_platform_app = true}))
       << message_;
 }
 

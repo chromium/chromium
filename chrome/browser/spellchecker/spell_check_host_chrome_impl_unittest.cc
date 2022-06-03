@@ -4,7 +4,6 @@
 
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -22,6 +21,10 @@ class TestSpellCheckHostChromeImpl {
  public:
   TestSpellCheckHostChromeImpl()
       : spellcheck_(std::make_unique<SpellcheckService>(&testing_profile_)) {}
+
+  TestSpellCheckHostChromeImpl(const TestSpellCheckHostChromeImpl&) = delete;
+  TestSpellCheckHostChromeImpl& operator=(const TestSpellCheckHostChromeImpl&) =
+      delete;
 
   SpellcheckCustomDictionary& GetCustomDictionary() const {
     EXPECT_NE(nullptr, spellcheck_.get());
@@ -41,18 +44,16 @@ class TestSpellCheckHostChromeImpl {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   std::unique_ptr<SpellcheckService> spellcheck_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSpellCheckHostChromeImpl);
 };
 
 // Spelling corrections of custom dictionary words should be removed from the
 // results returned by the remote Spelling service.
 TEST(SpellCheckHostChromeImplTest, CustomSpellingResults) {
   std::vector<SpellCheckResult> service_results;
-  service_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 0, 6,
-                                             base::ASCIIToUTF16("Hello")));
-  service_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 7, 5,
-                                             base::ASCIIToUTF16("World")));
+  service_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 6, u"Hello"));
+  service_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 7, 5, u"World"));
   TestSpellCheckHostChromeImpl host_impl;
   host_impl.GetCustomDictionary().AddWord("Helllo");
   std::vector<SpellCheckResult> results =
@@ -71,10 +72,10 @@ TEST(SpellCheckHostChromeImplTest, CustomSpellingResults) {
 // be retained in the results returned by the remote Spelling service.
 TEST(SpellCheckHostChromeImplTest, SpellingServiceResults) {
   std::vector<SpellCheckResult> service_results;
-  service_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 0, 6,
-                                             base::ASCIIToUTF16("Hello")));
-  service_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 7, 5,
-                                             base::ASCIIToUTF16("World")));
+  service_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 6, u"Hello"));
+  service_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 7, 5, u"World"));
   TestSpellCheckHostChromeImpl host_impl;
   host_impl.GetCustomDictionary().AddWord("Hulo");
   std::vector<SpellCheckResult> results =

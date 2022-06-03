@@ -53,24 +53,24 @@ net::URLRequestContext* TestUtil::GetURLRequestContext(jlong jcontext_adapter) {
 
 // static
 void TestUtil::RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,
-                                                  const base::Closure& task) {
+                                                  base::OnceClosure task) {
   CronetURLRequestContextAdapter* context_adapter =
       reinterpret_cast<CronetURLRequestContextAdapter*>(jcontext_adapter);
   if (context_adapter->context_->network_tasks_->is_context_initialized_) {
-    task.Run();
+    std::move(task).Run();
   } else {
     context_adapter->context_->network_tasks_->tasks_waiting_for_context_.push(
-        task);
+        std::move(task));
   }
 }
 
 // static
 void TestUtil::RunAfterContextInit(jlong jcontext_adapter,
-                                   const base::Closure& task) {
+                                   base::OnceClosure task) {
   GetTaskRunner(jcontext_adapter)
       ->PostTask(FROM_HERE,
                  base::BindOnce(&TestUtil::RunAfterContextInitOnNetworkThread,
-                                jcontext_adapter, task));
+                                jcontext_adapter, std::move(task)));
 }
 
 // static
@@ -118,7 +118,7 @@ void JNI_CronetTestUtil_CleanupNetworkThread(
     JNIEnv* env,
     jlong jcontext_adapter) {
   TestUtil::RunAfterContextInit(
-      jcontext_adapter, base::Bind(&CleanupNetworkThreadOnNetworkThread));
+      jcontext_adapter, base::BindOnce(&CleanupNetworkThreadOnNetworkThread));
 }
 
 jboolean JNI_CronetTestUtil_CanGetTaggedBytes(JNIEnv* env) {

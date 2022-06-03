@@ -10,150 +10,151 @@ namespace notifications_uma {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class DisplayStatus {
-  SUCCESS = 0,
-  RO_ACTIVATE_FAILED = 1,
-  CONVERSION_FAILED_INSPECTABLE_TO_XML_IO = 2,
-  LOAD_XML_FAILED = 3,
-  CONVERSION_FAILED_XML_IO_TO_XML = 4,
-  CREATE_FACTORY_FAILED = 5,
-  CREATE_TOAST_NOTIFICATION_FAILED = 6,
-  CREATE_TOAST_NOTIFICATION2_FAILED = 7,
-  SETTING_GROUP_FAILED = 8,
-  SETTING_TAG_FAILED = 9,
-  GET_GROUP_FAILED = 10,
-  GET_TAG_FAILED = 11,
-  SUPPRESS_POPUP_FAILED = 12,
-  ADD_TOAST_DISMISS_HANDLER_FAILED = 13,
-  ADD_TOAST_ERROR_HANDLER_FAILED = 14,
-  SHOWING_TOAST_FAILED = 15,
-  CREATE_TOAST_NOTIFICATION_MANAGER_FAILED = 16,
-  CREATE_TOAST_NOTIFIER_WITH_ID_FAILED = 17,
-  DEPRECATED_DISABLED_FOR_APPLICATION = 18,
-  DEPRECATED_DISABLED_FOR_USER = 19,
-  DEPRECATED_DISABLED_BY_GROUP_POLICY = 20,
-  DEPRECATED_DISABLED_BY_MANIFEST = 21,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kRoActivateFailed = 1,
+  kConversionFailedInspectableToXmlIo = 2,
+  kLoadXmlFailed = 3,
+  kConversionFailedXmlIoToXml = 4,
+  kCreateFactoryFailed = 5,
+  kCreateToastNotificationFailed = 6,
+  kCreateToastNotification2Failed = 7,
+  kSettingGroupFailed = 8,
+  kSettingTagFailed = 9,
+  kGetGroupFailed = 10,
+  kGetTagFailed = 11,
+  kSuppressPopupFailed = 12,
+  kAddToastDismissHandlerFailed = 13,
+  kAddToastErrorHandlerFailed = 14,
+  kShowingToastFailed = 15,
+  kCreateToastNotificationManagerFailed = 16,
+  kCreateToastNotifierWithIdFailed = 17,
+  kDeprecatedDisabledForApplication = 18,
+  kDeprecatedDisabledForUser = 19,
+  kDeprecatedDisabledByGroupPolicy = 20,
+  kDeprecatedDisabledByManifest = 21,
+  kMaxValue = kDeprecatedDisabledByManifest,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class CloseStatus {
-  SUCCESS = 0,
-  GET_TOAST_HISTORY_FAILED = 1,
-  REMOVING_TOAST_FAILED = 2,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kGetToastHistoryFailed = 1,
+  kRemovingToastFailed = 2,
+  kMaxValue = kRemovingToastFailed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class HistoryStatus {
-  SUCCESS = 0,
-  CREATE_TOAST_NOTIFICATION_MANAGER_FAILED = 1,
-  QUERY_TOAST_MANAGER_STATISTICS2_FAILED = 2,
-  GET_TOAST_HISTORY_FAILED = 3,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kCreateToastNotificationManagerFailed = 1,
+  kQueryToastManagerStatistics2Failed = 2,
+  kGetToastHistoryFailed = 3,
+  kMaxValue = kGetToastHistoryFailed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GetDisplayedStatus {
-  SUCCESS = 0,
-  SUCCESS_WITH_GET_AT_FAILURE = 1,
-  GET_TOAST_HISTORY_FAILED = 2,
-  QUERY_TOAST_NOTIFICATION_HISTORY2_FAILED = 3,
-  GET_HISTORY_WITH_ID_FAILED = 4,
-  GET_SIZE_FAILED = 5,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kSuccessWithGetAtFailure = 1,
+  kGetToastHistoryFailed = 2,
+  kQueryToastNotificationHistory2Failed = 3,
+  kGetHistoryWithIdFailed = 4,
+  kGetSizeFailed = 5,
+  kMaxValue = kGetSizeFailed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GetDisplayedLaunchIdStatus {
-  SUCCESS = 0,
-  DECODE_LAUNCH_ID_FAILED = 1,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kDecodeLaunchIdFailed = 1,
+  kMaxValue = kDecodeLaunchIdFailed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GetNotificationLaunchIdStatus {
-  SUCCESS = 0,
-  NOTIFICATION_GET_CONTENT_FAILED = 1,
-  GET_ELEMENTS_BY_TAG_FAILED = 2,
-  MISSING_TOAST_ELEMENT_IN_DOC = 3,
-  ITEM_AT_FAILED = 4,
-  GET_ATTRIBUTES_FAILED = 5,
-  GET_NAMED_ITEM_FAILED = 6,
-  GET_FIRST_CHILD_FAILED = 7,
-  GET_NODE_VALUE_FAILED = 8,
-  CONVERSION_TO_PROP_VALUE_FAILED = 9,
-  GET_STRING_FAILED = 10,
-  GET_NAMED_ITEM_NULL = 11,
-  GET_FIRST_CHILD_NULL = 12,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kNotificationGetContentFailed = 1,
+  kGetElementsByTagFailed = 2,
+  kMissingToastElementInDoc = 3,
+  kItemAtFailed = 4,
+  kGetAttributesFailed = 5,
+  kGetNamedItemFailed = 6,
+  kGetFirstChildFailed = 7,
+  kGetNodeValueFailed = 8,
+  kConversionToPropValueFailed = 9,
+  kGetStringFailed = 10,
+  kGetNamedItemNull = 11,
+  kGetFirstChildNull = 12,
+  kMaxValue = kGetFirstChildNull,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GetSettingPolicy {
-  ENABLED = 0,
-  DISABLED_FOR_APPLICATION = 1,
-  DISABLED_FOR_USER = 2,
-  DISABLED_BY_GROUP_POLICY = 3,
-  DISABLED_BY_MANIFEST = 4,
-  COUNT  // Must be the final value.
+  kEnabled = 0,
+  kDisabledForApplication = 1,
+  kDisabledForUser = 2,
+  kDisabledByGroupPolicy = 3,
+  kDisabledByManifest = 4,
+  kUnknown = 5,
+  kMaxValue = kUnknown,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GetSettingStatus {
-  SUCCESS = 0,
-  UNKNOWN_FAILURE = 1,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kUnknownFailure = 1,
+  kMaxValue = kUnknownFailure,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ActivationStatus {
-  SUCCESS = 0,
-  DEPRECATED_GET_PROFILE_ID_INVALID_LAUNCH_ID = 1,
-  DEPRECATED_ACTIVATION_INVALID_LAUNCH_ID = 2,
-  INVALID_LAUNCH_ID = 3,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kDeprecatedGetProfileIdInvalidLaunchId = 1,
+  kDeprecatedActivationInvalidLaunchId = 2,
+  kInvalidLaunchId = 3,
+  kMaxValue = kInvalidLaunchId,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class HandleEventStatus {
-  SUCCESS = 0,
-  HANDLE_EVENT_LAUNCH_ID_INVALID = 1,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kHandleEventLaunchIdInvalid = 1,
+  kMaxValue = kHandleEventLaunchIdInvalid,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SetReadyCallbackStatus {
-  SUCCESS = 0,
-  SHORTCUT_MISCONFIGURATION = 1 << 0,
-  COM_SERVER_MISCONFIGURATION = 1 << 1,
-  COM_NOT_INITIALIZED = 1 << 2,
-  COUNT = 1 << 3  // Must be the final value.
+  kSuccess = 0,
+  kShortcutMisconfiguration = 1 << 0,
+  kComServerMisconfiguration = 1 << 1,
+  kComNotInitialized = 1 << 2,
+  kMaxValue = kComNotInitialized,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OnDismissedStatus {
-  SUCCESS = 0,
-  GET_DISMISSAL_REASON_FAILED = 1,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kGetDismissalReasonFailed = 1,
+  kMaxValue = kGetDismissalReasonFailed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OnFailedStatus {
-  SUCCESS = 0,
-  GET_ERROR_CODE_FAILED = 1,
-  COUNT  // Must be the final value.
+  kSuccess = 0,
+  kGetErrorCodeFailed = 1,
+  kMaxValue = kGetErrorCodeFailed,
 };
 
 // Methods to log histograms (to detect error rates in Native Notifications on
@@ -166,6 +167,8 @@ void LogGetDisplayedLaunchIdStatus(GetDisplayedLaunchIdStatus status);
 void LogGetNotificationLaunchIdStatus(GetNotificationLaunchIdStatus status);
 void LogGetSettingPolicy(GetSettingPolicy policy);
 void LogGetSettingStatus(GetSettingStatus status);
+void LogGetSettingPolicyStartup(GetSettingPolicy policy);
+void LogGetSettingStatusStartup(GetSettingStatus status);
 void LogHandleEventStatus(HandleEventStatus status);
 void LogActivationStatus(ActivationStatus status);
 void LogSetReadyCallbackStatus(SetReadyCallbackStatus status);

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 #include <set>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file.h"
@@ -88,7 +87,7 @@ void ArchiveManagerTest::SetUp() {
   ASSERT_TRUE(public_archive_dir_.CreateUniqueTempDir());
   ResetManager(temporary_dir_.GetPath(), private_archive_dir_.GetPath(),
                public_archive_dir_.GetPath());
-  histogram_tester_.reset(new base::HistogramTester());
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
 
 void ArchiveManagerTest::PumpLoop() {
@@ -104,9 +103,9 @@ void ArchiveManagerTest::ResetManager(
     const base::FilePath& temporary_dir,
     const base::FilePath& private_archive_dir,
     const base::FilePath& public_archive_dir) {
-  manager_.reset(new ArchiveManager(temporary_dir, private_archive_dir,
-                                    public_archive_dir,
-                                    base::ThreadTaskRunnerHandle::Get()));
+  manager_ = std::make_unique<ArchiveManager>(
+      temporary_dir, private_archive_dir, public_archive_dir,
+      base::ThreadTaskRunnerHandle::Get());
 }
 
 void ArchiveManagerTest::Callback(bool result) {

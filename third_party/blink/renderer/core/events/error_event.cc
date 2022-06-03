@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/events/error_event.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_error_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "v8/include/v8.h"
 
@@ -59,14 +60,23 @@ ErrorEvent::ErrorEvent(ScriptState* script_state,
     : Event(type, initializer),
       sanitized_message_(),
       world_(&script_state->World()) {
-  if (initializer->hasMessage())
-    sanitized_message_ = initializer->message();
-  location_ = std::make_unique<SourceLocation>(
-      initializer->hasFilename() ? initializer->filename() : String(),
-      initializer->hasLineno() ? initializer->lineno() : 0,
-      initializer->hasColno() ? initializer->colno() : 0, nullptr);
+  sanitized_message_ = initializer->message();
+  location_ = std::make_unique<SourceLocation>(initializer->filename(),
+                                               initializer->lineno(),
+                                               initializer->colno(), nullptr);
+  // TODO(crbug.com/1070964): Remove this existence check.  There is a bug that
+  // the current code generator does not initialize a ScriptValue with the
+  // v8::Null value despite that the dictionary member has the default value of
+  // IDL null.  |hasError| guard is necessary here.
   if (initializer->hasError()) {
-    error_.Set(script_state->GetIsolate(), initializer->error().V8Value());
+    v8::Local<v8::Value> error = initializer->error().V8Value();
+    // TODO(crbug.com/1070871): Remove the following IsNullOrUndefined() check.
+    // This null/undefined check fills the gap between the new and old bindings
+    // code.  The new behavior is preferred in a long term, and we'll switch to
+    // the new behavior once the migration to the new bindings gets settled.
+    if (!error->IsNullOrUndefined()) {
+      error_.Set(script_state->GetIsolate(), error);
+    }
   }
 }
 
@@ -113,7 +123,7 @@ ScriptValue ErrorEvent::error(ScriptState* script_state) const {
   return ScriptValue(script_state->GetIsolate(), error_.Get(script_state));
 }
 
-void ErrorEvent::Trace(blink::Visitor* visitor) {
+void ErrorEvent::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   Event::Trace(visitor);
 }

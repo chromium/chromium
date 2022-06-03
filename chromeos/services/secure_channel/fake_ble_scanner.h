@@ -5,10 +5,8 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SCANNER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SCANNER_H_
 
-#include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_scanner.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 
@@ -19,50 +17,65 @@ namespace secure_channel {
 // Test BleScanner implementation.
 class FakeBleScanner : public BleScanner {
  public:
-  explicit FakeBleScanner(Delegate* delegate);
+  FakeBleScanner();
+
+  FakeBleScanner(const FakeBleScanner&) = delete;
+  FakeBleScanner& operator=(const FakeBleScanner&) = delete;
+
   ~FakeBleScanner() override;
 
-  size_t num_scan_filter_changes_handled() const {
-    return num_scan_filter_changes_handled_;
+  size_t num_scan_request_changes_handled() const {
+    return num_scan_request_changes_handled_;
   }
 
-  std::vector<ScanFilter> GetAllScanFiltersForRemoteDevice(
+  std::vector<ConnectionAttemptDetails> GetAllScanRequestsForRemoteDevice(
       const std::string& remote_device_id);
 
   // Public for testing.
-  using BleScanner::scan_filters;
   using BleScanner::NotifyReceivedAdvertisementFromDevice;
+  using BleScanner::scan_requests;
 
  private:
-  void HandleScanFilterChange() override;
+  void HandleScanRequestChange() override;
 
-  size_t num_scan_filter_changes_handled_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScanner);
+  size_t num_scan_request_changes_handled_ = 0u;
 };
 
-// Test BleScanner::Delegate implementation.
-class FakeBleScannerDelegate : public BleScanner::Delegate {
+// Test BleScanner::Observer implementation.
+class FakeBleScannerObserver : public BleScanner::Observer {
  public:
-  FakeBleScannerDelegate();
-  ~FakeBleScannerDelegate() override;
+  struct Result {
+    Result(multidevice::RemoteDeviceRef remote_device,
+           device::BluetoothDevice* bluetooth_device,
+           ConnectionMedium connection_medium,
+           ConnectionRole connection_role);
+    ~Result();
 
-  using ScannedResultList = std::vector<std::tuple<multidevice::RemoteDeviceRef,
-                                                   device::BluetoothDevice*,
-                                                   ConnectionRole>>;
+    multidevice::RemoteDeviceRef remote_device;
+    device::BluetoothDevice* bluetooth_device;
+    ConnectionMedium connection_medium;
+    ConnectionRole connection_role;
+  };
 
-  const ScannedResultList& handled_scan_results() const {
+  FakeBleScannerObserver();
+
+  FakeBleScannerObserver(const FakeBleScannerObserver&) = delete;
+  FakeBleScannerObserver& operator=(const FakeBleScannerObserver&) = delete;
+
+  ~FakeBleScannerObserver() override;
+
+  const std::vector<Result>& handled_scan_results() const {
     return handled_scan_results_;
   }
 
  private:
   void OnReceivedAdvertisement(multidevice::RemoteDeviceRef remote_device,
                                device::BluetoothDevice* bluetooth_device,
-                               ConnectionRole connection_role) override;
+                               ConnectionMedium connection_medium,
+                               ConnectionRole connection_role,
+                               const std::vector<uint8_t>& eid) override;
 
-  ScannedResultList handled_scan_results_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerDelegate);
+  std::vector<Result> handled_scan_results_;
 };
 
 }  // namespace secure_channel

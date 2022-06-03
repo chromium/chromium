@@ -1,0 +1,151 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import <Foundation/Foundation.h>
+#include <string>
+
+#include "base/ios/ios_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/passwords/password_manager_app_interface.h"
+#import "ios/chrome/browser/ui/passwords/password_constants.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#include "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+
+constexpr char kInputPage[] = "Input";
+constexpr char kInputElement[] = "input";
+
+id<GREYMatcher> PasswordProtectionMatcher() {
+  return grey_accessibilityID(kPasswordProtectionViewAccessibilityIdentifier);
+}
+
+// Request handler for net::EmbeddedTestServer that serves a simple input
+// textfield.
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_content("Input: <input type='text' id='input'>");
+  http_response->set_content_type("text/html");
+  return http_response;
+}
+}  // namespace
+
+// Tests PhishGuard saved password reuse protection.
+@interface PasswordProtectionTestCase : ChromeTestCase {
+  // A URL that is treated as an unsafe phishing page by PhishGuard.
+  GURL _phishingURL;
+  // A URL that is allow listed by PhishGuard.
+  GURL _allowlistedURL;
+}
+@end
+
+@implementation PasswordProtectionTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      password_manager::features::kPasswordReuseDetectionEnabled);
+  config.relaunch_policy = NoForceRelaunchAndResetState;
+
+  // Use commandline args to save a fake allowlisted URL.
+  config.additional_args.push_back(
+      std::string("--mark_as_allowlisted_for_phish_guard=") +
+      _allowlistedURL.spec());
+  // TODO(crbug.com/1221635) testPasswordReuseDetectionWarning is disabled
+  /*
+  if ([self isRunningTest:@selector(testPasswordReuseDetectionWarning)]) {
+    // Use commandline args to save a fake phishing cached verdict.
+    config.additional_args.push_back(
+        std::string("--mark_as_phish_guard_phishing=") + _phishingURL.spec());
+  }*/
+
+  return config;
+}
+
+- (void)setUp {
+  self.testServer->RegisterRequestHandler(base::BindRepeating(&HandleRequest));
+  bool started = self.testServer->Start();
+  _phishingURL = self.testServer->GetURL("/phishingURL");
+  _allowlistedURL = self.testServer->GetURL("/allowlistedURL");
+  [super setUp];
+  GREYAssertTrue(started, @"Server did not start.");
+  NSURL* URL = [NSURL URLWithString:@"http://www.example.com"];
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"Username"
+                                                  password:@"Password"
+                                                       URL:URL];
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"There should be one credential.");
+}
+
+- (void)tearDown {
+  [PasswordManagerAppInterface clearCredentials];
+  [super tearDown];
+}
+
+- (void)typePasswordIntoWebInput {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kInputElement)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"P")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"a")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"s")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"s")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"w")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"o")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"r")]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"d")]
+      performAction:grey_tap()];
+}
+
+// Tests that password protection UI is shown when saved password is reused on
+// phishing site.
+// TODO(crbug.com/1221635) This fails on iPad 14.4 and iPhone 14.5+
+- (void)DISABLED_testPasswordReuseDetectionWarning {
+  // PhishGuard is only available on iOS 14.0 or above.
+
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInputPage];
+
+  [self typePasswordIntoWebInput];
+
+  [[EarlGrey selectElementWithMatcher:PasswordProtectionMatcher()]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that password protection UI is not shown when saved password is reused
+// on safe site.
+// TODO(crbug.com/1213616) Test is flaky.
+- (void)DISABLED_testPasswordProtectionNotShownForAllowListedURL {
+  // PhishGuard is only available on iOS 14.0 or above.
+
+  [ChromeEarlGrey loadURL:_allowlistedURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInputPage];
+
+  [self typePasswordIntoWebInput];
+
+  [[EarlGrey selectElementWithMatcher:PasswordProtectionMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+@end

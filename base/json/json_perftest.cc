@@ -29,30 +29,30 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 // Generates a simple dictionary value with simple data types, a string and a
 // list.
-DictionaryValue GenerateDict() {
-  DictionaryValue root;
+Value GenerateDict() {
+  Value root(Value::Type::DICTIONARY);
   root.SetDoubleKey("Double", 3.141);
   root.SetBoolKey("Bool", true);
   root.SetIntKey("Int", 42);
   root.SetStringKey("String", "Foo");
 
-  ListValue list;
-  list.Append(2.718);
-  list.Append(false);
-  list.Append(123);
-  list.Append("Bar");
-  root.SetKey("List", std::move(list));
+  Value::ListStorage list;
+  list.push_back(Value(2.718));
+  list.push_back(Value(false));
+  list.push_back(Value(123));
+  list.push_back(Value("Bar"));
+  root.SetKey("List", Value(std::move(list)));
 
   return root;
 }
 
 // Generates a tree-like dictionary value with a size of O(breadth ** depth).
-DictionaryValue GenerateLayeredDict(int breadth, int depth) {
+Value GenerateLayeredDict(int breadth, int depth) {
   if (depth == 1)
     return GenerateDict();
 
-  DictionaryValue root = GenerateDict();
-  DictionaryValue next = GenerateLayeredDict(breadth, depth - 1);
+  Value root = GenerateDict();
+  Value next = GenerateLayeredDict(breadth, depth - 1);
 
   for (int i = 0; i < breadth; ++i) {
     root.SetKey("Dict" + base::NumberToString(i), next.Clone());
@@ -68,7 +68,7 @@ class JSONPerfTest : public testing::Test {
   void TestWriteAndRead(int breadth, int depth) {
     std::string description = "Breadth: " + base::NumberToString(breadth) +
                               ", Depth: " + base::NumberToString(depth);
-    DictionaryValue dict = GenerateLayeredDict(breadth, depth);
+    Value dict = GenerateLayeredDict(breadth, depth);
     std::string json;
 
     TimeTicks start_write = TimeTicks::Now();
@@ -85,15 +85,13 @@ class JSONPerfTest : public testing::Test {
   }
 };
 
-// Times out on Android (crbug.com/906686).
-#if defined(OS_ANDROID)
-#define MAYBE_StressTest DISABLED_StressTest
-#else
-#define MAYBE_StressTest StressTest
-#endif
-TEST_F(JSONPerfTest, MAYBE_StressTest) {
+TEST_F(JSONPerfTest, StressTest) {
+  // These loop ranges are chosen such that this test will complete in a
+  // reasonable amount of time and will work on a 32-bit build without hitting
+  // an out-of-memory failure. Having j go to 10 uses over 2 GiB of memory and
+  // might hit Android timeouts so be wary of going that high.
   for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 12; ++j) {
+    for (int j = 0; j < 10; ++j) {
       TestWriteAndRead(i + 1, j + 1);
     }
   }

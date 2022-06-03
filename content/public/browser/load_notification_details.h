@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_LOAD_NOTIFICATION_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_LOAD_NOTIFICATION_DETAILS_H_
 
-#include "base/time/time.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -17,19 +16,14 @@ namespace content {
 // log page load metrics.
 struct LoadNotificationDetails {
   LoadNotificationDetails(const GURL& url,
-                          base::TimeDelta load_time,
                           NavigationController* controller,
                           int session_index)
       : url(url),
-        load_time(load_time),
         session_index(session_index),
         controller(controller) {}
 
   // The URL loaded.
   GURL url;
-
-  // The length of time the page load took.
-  base::TimeDelta load_time;
 
   // The index of the load within the tab session.
   int session_index;

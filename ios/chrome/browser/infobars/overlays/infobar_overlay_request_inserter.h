@@ -8,48 +8,98 @@
 #include <map>
 #include <memory>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory.h"
 #include "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
+#include "ios/web/public/web_state_user_data.h"
 
-namespace infobars {
-class InfoBar;
-}
-class InfobarOverlayRequestFactory;
+class InfoBarIOS;
+class InfobarModalCompletionNotifier;
 class OverlayRequestQueue;
 namespace web {
 class WebState;
 }
 
+// Struct to indicate what is triggering the Infobar overlay request insertion.
+enum class InfobarOverlayInsertionSource {
+  kInfoBarManager,  // Request initiated from InfoBarManager::Observer callbacks
+                    // (i.e. primary banners for Infobars).
+  kBanner,          // Request initiated from a banner button tap.
+  kDetailSheet,     // Request initiated from a detail sheet action.
+  kBadge,           // Request initiated from a badge tap.
+  kInfoBarDelegate,  // Request initiated from the InfoBarDelegate (i.e.
+                     // secondary banner for translate).
+};
+
+// Struct passed into InfobarOverlayRequestInserter API.
+struct InsertParams {
+  explicit InsertParams(InfoBarIOS* infobar);
+  InsertParams() = delete;
+
+  InfoBarIOS* infobar;
+  InfobarOverlayType overlay_type = InfobarOverlayType::kBanner;
+  size_t insertion_index = 0;
+  InfobarOverlayInsertionSource source =
+      InfobarOverlayInsertionSource::kInfoBarManager;
+};
+
 // Helper object that creates OverlayRequests for InfoBars and inserts them into
 // a WebState's OverlayRequestQueues.
-class InfobarOverlayRequestInserter {
+class InfobarOverlayRequestInserter
+    : public web::WebStateUserData<InfobarOverlayRequestInserter> {
  public:
+  // Creates an inserter for |web_state| that uses |request_factory| to create
+  // inserted requests.
+  static void CreateForWebState(
+      web::WebState* web_state,
+      InfobarOverlayRequestFactory request_factory = nullptr);
+
+  ~InfobarOverlayRequestInserter() override;
+
+  // Creates an OverlayRequest with |params| configurations.
+  void InsertOverlayRequest(const InsertParams& params);
+
+  // Notifies observers of Infobar request insertions
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    // Called to notify observers that an Infobar request has been inserted
+    // with |params| configurations.
+    // |params.insertion_index| must be less than or equal to the size of the
+    // queue.
+    virtual void InfobarRequestInserted(InfobarOverlayRequestInserter* inserter,
+                                        const InsertParams& params) = 0;
+    // Called to notify observers that the |inserter| is about to be destroyed;
+    virtual void InserterDestroyed(InfobarOverlayRequestInserter* inserter) = 0;
+  };
+
+  // Adds and removes observers of inserted modals.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+ private:
+  friend class web::WebStateUserData<InfobarOverlayRequestInserter>;
+  WEB_STATE_USER_DATA_KEY_DECL();
+
   // Constructor for an inserter that uses |factory| to construct
   // OverlayRequests to insert into |web_state|'s OverlayRequestQueues.  Both
   // |web_state| and |factory| must be non-null.
-  InfobarOverlayRequestInserter(
-      web::WebState* web_state,
-      std::unique_ptr<InfobarOverlayRequestFactory> factory);
-  ~InfobarOverlayRequestInserter();
+  InfobarOverlayRequestInserter(web::WebState* web_state,
+                                InfobarOverlayRequestFactory factory);
 
-  // Creates an OverlayRequest for |type| configured with |infobar| and adds it
-  // to the back of the OverlayRequestQueue at |type|'s modality.
-  void AddOverlayRequest(infobars::InfoBar* infobar,
-                         InfobarOverlayType type) const;
-
-  // Creates an OverlayRequest for |type| configured with |infobar| and adds it
-  // at |index| to the OverlayRequestQueue at |type|'s modality.  |index| must
-  // be less than or equal to the size of the queue.
-  void InsertOverlayRequest(infobars::InfoBar* infobar,
-                            InfobarOverlayType type,
-                            size_t index) const;
-
- private:
   // The WebState whose queues are being inserted into.
   web::WebState* web_state_ = nullptr;
+  // The infobar modal completion notifier.
+  std::unique_ptr<InfobarModalCompletionNotifier> modal_completion_notifier_;
   // The factory used to create OverlayRequests.
-  std::unique_ptr<InfobarOverlayRequestFactory> request_factory_;
+  InfobarOverlayRequestFactory request_factory_;
   // Map of the OverlayRequestQueues to use for each InfobarOverlayType.
   std::map<InfobarOverlayType, OverlayRequestQueue*> queues_;
+  // Observers of request insertions.
+  base::ObserverList<Observer> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_REQUEST_INSERTER_H_

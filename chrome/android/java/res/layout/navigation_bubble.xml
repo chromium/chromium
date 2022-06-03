@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.BlueTitle2"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Blue"
         android:paddingTop="@dimen/navigation_bubble_text_top_padding"
         android:paddingStart="@dimen/navigation_bubble_text_start_padding"
         android:paddingEnd="@dimen/navigation_bubble_text_end_padding"

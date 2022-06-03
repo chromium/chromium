@@ -42,15 +42,11 @@
     const unsigned short KEYFRAMES_RULE = 7;
     const unsigned short KEYFRAME_RULE = 8;
 
+    // CSS Counter Styles
+    // https://drafts.csswg.org/css-counter-styles-3/#extentions-to-cssrule-interface
+    const unsigned short COUNTER_STYLE_RULE = 11;
+
     // CSS Conditional Rules
     // https://drafts.csswg.org/css-conditional/#extentions-to-cssrule-interface
     const unsigned short SUPPORTS_RULE = 12;
-
-    // CSS Device Adaptation
-    // https://drafts.csswg.org/css-device-adapt/#css-rule-interface
-    [RuntimeEnabled=CSSViewport] const unsigned short VIEWPORT_RULE = 15;
-
-    // CSS Properties and Values Level 1
-    // https://drafts.css-houdini.org/css-properties-values-api/#extensions-to-css-rule-interface
-    [RuntimeEnabled=CSSVariables2AtProperty] const unsigned short PROPERTY_RULE = 18;
 };

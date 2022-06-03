@@ -9,7 +9,6 @@ import("//v8/gni/v8.gni")
 # Changing the size or the order of files in this array also requires changing
 # src/tools/gypv8sh.py.
 js2gtest_js_input_libraries = [
-  "//chrome/third_party/mock4js/mock4js.js",
   "//chrome/test/data/webui/test_api.js",
   "//chrome/test/base/js2gtest.js",
 ]
@@ -38,7 +37,8 @@ template("js2gtest") {
   assert(defined(invoker.test_type) &&
          (invoker.test_type == "webui" || invoker.test_type == "unit" ||
           invoker.test_type == "extension" ||
-          invoker.test_type == "mojo_lite_webui"))
+          invoker.test_type == "mojo_lite_webui" ||
+          invoker.test_type == "mojo_webui"))
   action_name = target_name + "_action"
   source_set_name = target_name
 
@@ -89,27 +89,27 @@ template("js2gtest") {
         rebase_path(invoker.deps_js, root_build_dir),
       ]
     }
-    args += [
-      # Need "./" for script to find binary (cur dir is not on path).
-      "./" + rebase_path(v8_shell_path, root_build_dir),
-    ]
-    args += rebase_path(js2gtest_js_input_libraries, root_build_dir) +
-            [ invoker.test_type ]
+
     if (v8_use_external_startup_data) {
       args += [ "--external=y" ]
     } else {
       args += [ "--external=n" ]
     }
+
     args += [
+      # Need "./" for script to find binary (cur dir is not on path).
+      "./" + rebase_path(v8_shell_path, root_build_dir),
+    ]
+    args += rebase_path(js2gtest_js_input_libraries, root_build_dir)
+    args += [
+      invoker.test_type,
       "{{source}}",
       rebase_path("//", root_build_dir),  # Path to source root.
       gen_source_pattern,
       rebase_path(copied_source_pattern, root_build_dir),
     ]
 
-    deps = [
-      "//v8:v8_shell($v8_snapshot_toolchain)",
-    ]
+    deps = [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
@@ -120,9 +120,7 @@ template("js2gtest") {
     copy(copy_target_name) {
       visibility = [ ":$source_set_name" ]
       sources = invoker.extra_js_files
-      outputs = [
-        copied_source_pattern,
-      ]
+      outputs = [ copied_source_pattern ]
     }
   }
 
@@ -155,9 +153,7 @@ template("js2gtest") {
       data += invoker.gen_include_files
     }
     if (defined(invoker.extra_js_files)) {
-      data_deps = [
-        ":$copy_target_name",
-      ]
+      data_deps = [ ":$copy_target_name" ]
     }
   }
 }

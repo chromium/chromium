@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "printing/metafile.h"
@@ -44,14 +45,14 @@ base::LazyInstance<base::FilePath>::Leaky g_debug_dump_info =
     LAZY_INSTANCE_INITIALIZER;
 
 #if defined(OS_WIN)
-void DebugDumpPageTask(const base::string16& doc_name,
+void DebugDumpPageTask(const std::u16string& doc_name,
                        const PrintedPage* page) {
   DCHECK(PrintedDocument::HasDebugDumpPath());
 
   static constexpr base::FilePath::CharType kExtension[] =
       FILE_PATH_LITERAL(".emf");
 
-  base::string16 name = doc_name;
+  std::u16string name = doc_name;
   name += base::ASCIIToUTF16(base::StringPrintf("_%04d", page->page_number()));
   base::FilePath path = PrintedDocument::CreateDebugDumpPath(name, kExtension);
   base::File file(path,
@@ -60,43 +61,44 @@ void DebugDumpPageTask(const base::string16& doc_name,
 }
 #endif  // defined(OS_WIN)
 
-void DebugDumpTask(const base::string16& doc_name,
+void DebugDumpTask(const std::u16string& doc_name,
                    const MetafilePlayer* metafile) {
   DCHECK(PrintedDocument::HasDebugDumpPath());
 
   static constexpr base::FilePath::CharType kExtension[] =
       FILE_PATH_LITERAL(".pdf");
 
-  base::string16 name = doc_name;
+  std::u16string name = doc_name;
   base::FilePath path = PrintedDocument::CreateDebugDumpPath(name, kExtension);
   base::File file(path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+#if defined(OS_ANDROID)
+  metafile->SaveToFileDescriptor(file.GetPlatformFile());
+#else
   metafile->SaveTo(&file);
+#endif  // defined(OS_ANDROID)
 }
 
-void DebugDumpDataTask(const base::string16& doc_name,
+void DebugDumpDataTask(const std::u16string& doc_name,
                        const base::FilePath::StringType& extension,
                        const base::RefCountedMemory* data) {
   base::FilePath path =
       PrintedDocument::CreateDebugDumpPath(doc_name, extension);
   if (path.empty())
     return;
-  base::WriteFile(path, reinterpret_cast<const char*>(data->front()),
-                  base::checked_cast<int>(data->size()));
+  base::WriteFile(path, *data);
 }
 
-void DebugDumpSettings(const base::string16& doc_name,
+void DebugDumpSettings(const std::u16string& doc_name,
                        const PrintSettings& settings) {
-  base::DictionaryValue job_settings;
-  PrintSettingsToJobSettingsDebug(settings, &job_settings);
+  base::Value job_settings = PrintSettingsToJobSettingsDebug(settings);
   std::string settings_str;
   base::JSONWriter::WriteWithOptions(
       job_settings, base::JSONWriter::OPTIONS_PRETTY_PRINT, &settings_str);
   scoped_refptr<base::RefCountedMemory> data =
       base::RefCountedString::TakeString(&settings_str);
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&DebugDumpDataTask, doc_name, FILE_PATH_LITERAL(".json"),
                      base::RetainedRef(data)));
 }
@@ -104,7 +106,7 @@ void DebugDumpSettings(const base::string16& doc_name,
 }  // namespace
 
 PrintedDocument::PrintedDocument(std::unique_ptr<PrintSettings> settings,
-                                 const base::string16& name,
+                                 const std::u16string& name,
                                  int cookie)
     : immutable_(std::move(settings), name, cookie) {
   // If there is a range, set the number of page
@@ -123,7 +125,7 @@ void PrintedDocument::SetConvertingPdf() {
   mutable_.converting_pdf_ = true;
 }
 
-void PrintedDocument::SetPage(int page_number,
+void PrintedDocument::SetPage(uint32_t page_number,
                               std::unique_ptr<MetafilePlayer> metafile,
                               float shrink,
                               const gfx::Size& page_size,
@@ -139,14 +141,13 @@ void PrintedDocument::SetPage(int page_number,
   }
 
   if (HasDebugDumpPath()) {
-    base::PostTask(
-        FROM_HERE,
-        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&DebugDumpPageTask, name(), base::RetainedRef(page)));
   }
 }
 
-scoped_refptr<PrintedPage> PrintedDocument::GetPage(int page_number) {
+scoped_refptr<PrintedPage> PrintedDocument::GetPage(uint32_t page_number) {
   scoped_refptr<PrintedPage> page;
   {
     base::AutoLock lock(lock_);
@@ -156,24 +157,25 @@ scoped_refptr<PrintedPage> PrintedDocument::GetPage(int page_number) {
   }
   return page;
 }
+
+void PrintedDocument::DropPage(const PrintedPage* page) {
+  base::AutoLock lock(lock_);
+  PrintedPages::const_iterator it =
+      mutable_.pages_.find(page->page_number() - 1);
+  DCHECK_EQ(page, it->second.get());
+  mutable_.pages_.erase(it);
+}
 #endif  // defined(OS_WIN)
 
-void PrintedDocument::SetDocument(std::unique_ptr<MetafilePlayer> metafile,
-                                  const gfx::Size& page_size,
-                                  const gfx::Rect& page_content_rect) {
+void PrintedDocument::SetDocument(std::unique_ptr<MetafilePlayer> metafile) {
   {
     base::AutoLock lock(lock_);
     mutable_.metafile_ = std::move(metafile);
-#if defined(OS_MACOSX)
-    mutable_.page_size_ = page_size;
-    mutable_.page_content_rect_ = page_content_rect;
-#endif
   }
 
   if (HasDebugDumpPath()) {
-    base::PostTask(
-        FROM_HERE,
-        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&DebugDumpTask, name(), mutable_.metafile_.get()));
   }
 }
@@ -195,7 +197,7 @@ bool PrintedDocument::IsComplete() const {
     return false;
 
   for (; page != PageNumber::npos(); ++page) {
-    PrintedPages::const_iterator it = mutable_.pages_.find(page.ToInt());
+    PrintedPages::const_iterator it = mutable_.pages_.find(page.ToUint());
     if (it == mutable_.pages_.end() || !it->second.get() ||
         !it->second->metafile()) {
       return false;
@@ -207,25 +209,25 @@ bool PrintedDocument::IsComplete() const {
 #endif
 }
 
-void PrintedDocument::set_page_count(int max_page) {
+void PrintedDocument::set_page_count(uint32_t max_page) {
   base::AutoLock lock(lock_);
-  DCHECK_EQ(0, mutable_.page_count_);
+  DCHECK_EQ(0u, mutable_.page_count_);
   mutable_.page_count_ = max_page;
   if (immutable_.settings_->ranges().empty()) {
     mutable_.expected_page_count_ = max_page;
   } else {
     // If there is a range, don't bother since expected_page_count_ is already
     // initialized.
-    DCHECK_NE(mutable_.expected_page_count_, 0);
+    DCHECK_NE(mutable_.expected_page_count_, 0u);
   }
 }
 
-int PrintedDocument::page_count() const {
+uint32_t PrintedDocument::page_count() const {
   base::AutoLock lock(lock_);
   return mutable_.page_count_;
 }
 
-int PrintedDocument::expected_page_count() const {
+uint32_t PrintedDocument::expected_page_count() const {
   base::AutoLock lock(lock_);
   return mutable_.expected_page_count_;
 }
@@ -243,19 +245,19 @@ bool PrintedDocument::HasDebugDumpPath() {
 
 // static
 base::FilePath PrintedDocument::CreateDebugDumpPath(
-    const base::string16& document_name,
+    const std::u16string& document_name,
     const base::FilePath::StringType& extension) {
   DCHECK(HasDebugDumpPath());
 
   // Create a filename.
-  base::string16 filename;
+  std::u16string filename;
   base::Time now(base::Time::Now());
   filename = base::TimeFormatShortDateAndTime(now);
-  filename += base::ASCIIToUTF16("_");
+  filename += u"_";
   filename += document_name;
   base::FilePath::StringType system_filename;
 #if defined(OS_WIN)
-  system_filename = filename;
+  system_filename = base::UTF16ToWide(filename);
 #else   // OS_WIN
   system_filename = base::UTF16ToUTF8(filename);
 #endif  // OS_WIN
@@ -269,18 +271,18 @@ void PrintedDocument::DebugDumpData(
     const base::RefCountedMemory* data,
     const base::FilePath::StringType& extension) {
   DCHECK(HasDebugDumpPath());
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&DebugDumpDataTask, name(), extension,
                      base::RetainedRef(data)));
 }
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN)
+// static
 gfx::Rect PrintedDocument::GetCenteredPageContentRect(
     const gfx::Size& paper_size,
     const gfx::Size& page_size,
-    const gfx::Rect& page_content_rect) const {
+    const gfx::Rect& page_content_rect) {
   gfx::Rect content_rect = page_content_rect;
   if (paper_size.width() > page_size.width()) {
     int diff = paper_size.width() - page_size.width();
@@ -299,7 +301,7 @@ PrintedDocument::Mutable::Mutable() = default;
 PrintedDocument::Mutable::~Mutable() = default;
 
 PrintedDocument::Immutable::Immutable(std::unique_ptr<PrintSettings> settings,
-                                      const base::string16& name,
+                                      const std::u16string& name,
                                       int cookie)
     : settings_(std::move(settings)), name_(name), cookie_(cookie) {}
 

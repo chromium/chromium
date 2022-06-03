@@ -10,12 +10,15 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 
 class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
  public:
   explicit MockBrowsingDataQuotaHelper(Profile* profile);
+
+  MockBrowsingDataQuotaHelper(const MockBrowsingDataQuotaHelper&) = delete;
+  MockBrowsingDataQuotaHelper& operator=(const MockBrowsingDataQuotaHelper&) =
+      delete;
 
   void StartFetching(FetchResultCallback callback) override;
   void RevokeHostQuota(const std::string& host) override;
@@ -32,8 +35,6 @@ class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
 
   FetchResultCallback callback_;
   std::list<QuotaInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowsingDataQuotaHelper);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_QUOTA_HELPER_H_

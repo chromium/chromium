@@ -1,5 +1,7 @@
 # Component Updater
 
+[TOC]
+
 ## Overview
 The Component Updater is a piece of Chrome responsible for updating other pieces
 of Chrome. It runs in the browser process and communicates with a set of servers
@@ -24,7 +26,7 @@ For the purposes of this document:
    delivered by the component updater separately from the browser itself,
    usually as a dynamically-linked library or data file.
  * A `crx file` is any file in the
-   [CRX package format](https://developer.chrome.com/extensions/crx).
+   [CRX package format](../crx_file/README.md).
 
 ## Adding New Components
 This document covers the work that must be done on the client side. Additional

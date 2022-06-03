@@ -10,29 +10,25 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
-#include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
 #include "chromeos/services/device_sync/device_sync_type_converters.h"
-#include "chromeos/services/device_sync/fake_cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_v2_test_util.h"
-#include "chromeos/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -41,9 +37,9 @@ namespace device_sync {
 namespace {
 
 const char kAccessTokenUsed[] = "access token used by CryptAuthClient";
-const char kTestCryptAuthGCMRegistrationId[] = "cryptAuthRegistrationId";
 const char kDeviceId[] = "device_id1";
 const int kLastActivityTimeSecs = 111;
+const int kLastUpdateTimeSecs = 222;
 const cryptauthv2::ConnectivityStatus kConnectivityStatus =
     cryptauthv2::ConnectivityStatus::ONLINE;
 
@@ -61,9 +57,8 @@ const cryptauthv2::RequestContext& GetRequestContext() {
         return cryptauthv2::BuildRequestContext(
             CryptAuthKeyBundle::KeyBundleNameEnumToString(
                 CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether),
-            GetClientMetadata(),
-            cryptauthv2::GetClientAppMetadataForTest().instance_id(),
-            cryptauthv2::GetClientAppMetadataForTest().instance_id_token());
+            GetClientMetadata(), cryptauthv2::kTestInstanceId,
+            cryptauthv2::kTestInstanceIdToken);
       }());
   return *request_context;
 }
@@ -72,9 +67,12 @@ const cryptauthv2::GetDevicesActivityStatusResponse& GetResponse() {
   static const base::NoDestructor<cryptauthv2::GetDevicesActivityStatusResponse>
       activity_response([] {
         cryptauthv2::GetDevicesActivityStatusResponse response;
+        cryptauthv2::Timestamp last_update_time;
+        last_update_time.set_seconds(kLastUpdateTimeSecs);
         response.add_device_activity_statuses()->CopyFrom(
             cryptauthv2::BuildDeviceActivityStatus(
-                kDeviceId, kLastActivityTimeSecs, kConnectivityStatus));
+                kDeviceId, kLastActivityTimeSecs, kConnectivityStatus,
+                last_update_time));
         return response;
       }());
 
@@ -86,6 +84,12 @@ const cryptauthv2::GetDevicesActivityStatusResponse& GetResponse() {
 class DeviceSyncCryptAuthDeviceActivityGetterImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthDeviceActivityGetterImplTest(
+      const DeviceSyncCryptAuthDeviceActivityGetterImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceActivityGetterImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceActivityGetterImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthDeviceActivityGetterImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -101,17 +105,10 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   void SetUp() override {
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
     timer_ = mock_timer.get();
-
-    fake_cryptauth_gcm_manager_ = std::make_unique<FakeCryptAuthGCMManager>(
-        kTestCryptAuthGCMRegistrationId);
-
-    fake_client_app_metadata_provider_ =
-        std::make_unique<FakeClientAppMetadataProvider>();
-
     device_activity_getter_ =
         CryptAuthDeviceActivityGetterImpl::Factory::Create(
-            client_factory_.get(), fake_client_app_metadata_provider_.get(),
-            fake_cryptauth_gcm_manager_.get(), std::move(mock_timer));
+            cryptauthv2::kTestInstanceId, cryptauthv2::kTestInstanceIdToken,
+            client_factory_.get(), std::move(mock_timer));
   }
 
   // MockCryptAuthClientFactory::Observer:
@@ -134,14 +131,6 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
         base::BindOnce(&DeviceSyncCryptAuthDeviceActivityGetterImplTest::
                            OnGetDevicesActivityStatusError,
                        base::Unretained(this)));
-  }
-
-  void RetrieveClientAppMetadata(
-      const base::Optional<cryptauthv2::ClientAppMetadata>&
-          client_app_metadata) {
-    std::move(
-        fake_client_app_metadata_provider_->metadata_requests().back().callback)
-        .Run(client_app_metadata);
   }
 
   void VerifyGetDevicesActivityStatusRequest() {
@@ -183,15 +172,15 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
  private:
   void OnGetDevicesActivityStatus(
       const cryptauthv2::GetDevicesActivityStatusRequest& request,
-      const CryptAuthClient::GetDevicesActivityStatusCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+      CryptAuthClient::GetDevicesActivityStatusCallback callback,
+      CryptAuthClient::ErrorCallback error_callback) {
     EXPECT_FALSE(get_device_activity_status_request_);
     EXPECT_FALSE(get_device_activity_status_success_callback_);
     EXPECT_FALSE(get_device_activity_status_failure_callback_);
 
     get_device_activity_status_request_ = request;
-    get_device_activity_status_success_callback_ = callback;
-    get_device_activity_status_failure_callback_ = error_callback;
+    get_device_activity_status_success_callback_ = std::move(callback);
+    get_device_activity_status_failure_callback_ = std::move(error_callback);
   }
 
   void OnGetDevicesActivityStatusFinished(
@@ -206,7 +195,7 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
         mojo::ConvertTo<mojom::NetworkRequestResult>(error);
   }
 
-  base::Optional<cryptauthv2::GetDevicesActivityStatusRequest>
+  absl::optional<cryptauthv2::GetDevicesActivityStatusRequest>
       get_device_activity_status_request_;
   CryptAuthClient::GetDevicesActivityStatusCallback
       get_device_activity_status_success_callback_;
@@ -218,25 +207,18 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
   base::MockOneShotTimer* timer_;
 
-  std::unique_ptr<FakeCryptAuthGCMManager> fake_cryptauth_gcm_manager_;
-  std::unique_ptr<FakeClientAppMetadataProvider>
-      fake_client_app_metadata_provider_;
-
   std::unique_ptr<CryptAuthDeviceActivityGetter> device_activity_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceActivityGetterImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest, Success) {
   GetDeviceActivityStatus();
-  RetrieveClientAppMetadata(cryptauthv2::GetClientAppMetadataForTest());
   VerifyGetDevicesActivityStatusRequest();
   SendGetDevicesActivityStatusResponse();
   VerifyNetworkRequestResult(mojom::NetworkRequestResult::kSuccess);
   mojom::DeviceActivityStatusPtr expected_device_activity_status =
       mojom::DeviceActivityStatus::New(
           kDeviceId, base::Time::FromTimeT(kLastActivityTimeSecs),
-          kConnectivityStatus);
+          kConnectivityStatus, base::Time::FromTimeT(kLastUpdateTimeSecs));
   std::vector<mojom::DeviceActivityStatusPtr>
       expected_device_activity_status_result;
   expected_device_activity_status_result.emplace_back(
@@ -245,23 +227,8 @@ TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest, Success) {
 }
 
 TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest,
-       NullMetadata_GetClientAppMetadata) {
-  GetDeviceActivityStatus();
-  RetrieveClientAppMetadata(base::nullopt);
-  VerifyNetworkRequestResult(mojom::NetworkRequestResult::kUnknown);
-}
-
-TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest,
-       Failure_Timeout_GetClientAppMetadata) {
-  GetDeviceActivityStatus();
-  timer()->Fire();
-  VerifyNetworkRequestResult(mojom::NetworkRequestResult::kUnknown);
-}
-
-TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest,
        Failure_Timeout_GetDevicesActivityStatusResponse) {
   GetDeviceActivityStatus();
-  RetrieveClientAppMetadata(cryptauthv2::GetClientAppMetadataForTest());
   VerifyGetDevicesActivityStatusRequest();
   timer()->Fire();
   VerifyNetworkRequestResult(mojom::NetworkRequestResult::kUnknown);
@@ -270,7 +237,6 @@ TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest,
 TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest,
        Failure_ApiCall_GetDevicesActivityStatus) {
   GetDeviceActivityStatus();
-  RetrieveClientAppMetadata(cryptauthv2::GetClientAppMetadataForTest());
   VerifyGetDevicesActivityStatusRequest();
   FailGetDevicesActivityStatusRequest(NetworkRequestError::kBadRequest);
   VerifyNetworkRequestResult(mojom::NetworkRequestResult::kBadRequest);

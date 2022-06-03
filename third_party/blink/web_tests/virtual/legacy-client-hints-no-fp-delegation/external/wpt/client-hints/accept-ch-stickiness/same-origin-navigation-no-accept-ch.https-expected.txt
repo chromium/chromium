@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS empty-ch on navigation precondition: Test that the browser does not have client hints preferences cached
+PASS empty-ch on navigation set Accept-CH to non-empty first
+PASS empty-ch on navigation set Accept-CH w/o header second
+FAIL empty-ch on navigation got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+Harness: the test ran to completion.
+

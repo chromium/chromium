@@ -36,21 +36,15 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 
   java_cpp_enum("java_enums") {
-    sources = [
-      "avsettings.h",
-    ]
+    sources = [ "avsettings.h" ]
   }
 
   java_cpp_enum("java_enums_volume_control") {
-    sources = [
-      "volume_control.h",
-    ]
+    sources = [ "volume_control.h" ]
   }
 
   android_library("volume_control_enums_java") {
     srcjar_deps = [ ":java_enums_volume_control" ]
-    deps = [
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-    ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }

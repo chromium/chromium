@@ -6,70 +6,74 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "content/browser/utility_process_host.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace content {
 
 namespace {
 
-// Internal helper to track running service processes. Usage of this class is
-// split across the IO thread and UI thread.
+// Changes to this function should be reviewed by a security person.
+bool ShouldEnableSandbox(sandbox::mojom::Sandbox sandbox) {
+  if (sandbox == sandbox::mojom::Sandbox::kAudio)
+    return GetContentClient()->browser()->ShouldSandboxAudioService();
+  if (sandbox == sandbox::mojom::Sandbox::kNetwork)
+    return GetContentClient()->browser()->ShouldSandboxNetworkService();
+  return true;
+}
+
+// Internal helper to track running service processes.
 class ServiceProcessTracker {
  public:
-  ServiceProcessTracker()
-      : ui_task_runner_(
-            base::CreateSingleThreadTaskRunner({BrowserThread::UI})) {}
+  ServiceProcessTracker() = default;
+
+  ServiceProcessTracker(const ServiceProcessTracker&) = delete;
+  ServiceProcessTracker& operator=(const ServiceProcessTracker&) = delete;
+
   ~ServiceProcessTracker() = default;
 
   ServiceProcessInfo AddProcess(const base::Process& process,
                                 const std::string& service_interface_name) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    base::AutoLock lock(processes_lock_);
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto id = GenerateNextId();
     ServiceProcessInfo& info = processes_[id];
     info.service_process_id = id;
     info.pid = process.Pid();
     info.service_interface_name = service_interface_name;
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceProcessTracker::NotifyLaunchOnUIThread,
-                       base::Unretained(this), info));
+    for (auto& observer : observers_)
+      observer.OnServiceProcessLaunched(info);
     return info;
   }
 
   void NotifyTerminated(ServiceProcessId id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    base::AutoLock lock(processes_lock_);
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
     DCHECK(iter != processes_.end());
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceProcessTracker::NotifyTerminatedOnUIThread,
-                       base::Unretained(this), iter->second));
+
+    for (auto& observer : observers_)
+      observer.OnServiceProcessTerminatedNormally(iter->second);
     processes_.erase(iter);
   }
 
   void NotifyCrashed(ServiceProcessId id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    base::AutoLock lock(processes_lock_);
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
     DCHECK(iter != processes_.end());
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceProcessTracker::NotifyCrashedOnUIThread,
-                       base::Unretained(this), iter->second));
+    for (auto& observer : observers_)
+      observer.OnServiceProcessCrashed(iter->second);
     processes_.erase(iter);
   }
 
@@ -87,7 +91,6 @@ class ServiceProcessTracker {
 
   std::vector<ServiceProcessInfo> GetProcesses() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    base::AutoLock lock(processes_lock_);
     std::vector<ServiceProcessInfo> processes;
     for (const auto& entry : processes_)
       processes.push_back(entry.second);
@@ -111,22 +114,16 @@ class ServiceProcessTracker {
   }
 
   ServiceProcessId GenerateNextId() {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    auto id = next_id_;
-    next_id_ = ServiceProcessId::FromUnsafeValue(next_id_.GetUnsafeValue() + 1);
-    return id;
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    return service_process_id_generator_.GenerateNextId();
   }
 
-  const scoped_refptr<base::TaskRunner> ui_task_runner_;
-  ServiceProcessId next_id_{1};
+  ServiceProcessId::Generator service_process_id_generator_;
 
-  base::Lock processes_lock_;
   std::map<ServiceProcessId, ServiceProcessInfo> processes_;
 
   // Observers are owned and used exclusively on the UI thread.
   base::ObserverList<ServiceProcessHost::Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessTracker);
 };
 
 ServiceProcessTracker& GetServiceProcessTracker() {
@@ -141,6 +138,10 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
  public:
   explicit UtilityProcessClient(const std::string& service_interface_name)
       : service_interface_name_(service_interface_name) {}
+
+  UtilityProcessClient(const UtilityProcessClient&) = delete;
+  UtilityProcessClient& operator=(const UtilityProcessClient&) = delete;
+
   ~UtilityProcessClient() override = default;
 
   // UtilityProcessHost::Client:
@@ -166,22 +167,23 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
  private:
   const std::string service_interface_name_;
-  base::Optional<ServiceProcessInfo> process_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(UtilityProcessClient);
+  absl::optional<ServiceProcessInfo> process_info_;
 };
 
 // TODO(crbug.com/977637): Once UtilityProcessHost is used only by service
 // processes, its logic can be inlined here.
-void LaunchServiceProcessOnIOThread(mojo::GenericPendingReceiver receiver,
-                                    ServiceProcessHost::Options options) {
+void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
+                          ServiceProcessHost::Options options,
+                          sandbox::mojom::Sandbox sandbox) {
   UtilityProcessHost* host = new UtilityProcessHost(
       std::make_unique<UtilityProcessClient>(*receiver.interface_name()));
   host->SetName(!options.display_name.empty()
                     ? options.display_name
                     : base::UTF8ToUTF16(*receiver.interface_name()));
   host->SetMetricsName(*receiver.interface_name());
-  host->SetSandboxType(options.sandbox_type);
+  if (!ShouldEnableSandbox(sandbox))
+    sandbox = sandbox::mojom::Sandbox::kNoSandbox;
+  host->SetSandboxType(sandbox);
   host->SetExtraCommandLineSwitches(std::move(options.extra_switches));
   if (options.child_flags)
     host->set_child_flags(*options.child_flags);
@@ -208,12 +210,37 @@ void ServiceProcessHost::RemoveObserver(Observer* observer) {
 
 // static
 void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
-                                Options options) {
+                                Options options,
+                                sandbox::mojom::Sandbox sandbox) {
   DCHECK(receiver.interface_name().has_value());
-  base::CreateSingleThreadTaskRunner({BrowserThread::IO})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&LaunchServiceProcessOnIOThread,
-                                std::move(receiver), std::move(options)));
+  if (GetUIThreadTaskRunner({})->BelongsToCurrentThread()) {
+    LaunchServiceProcess(std::move(receiver), std::move(options), sandbox);
+  } else {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&LaunchServiceProcess, std::move(receiver),
+                                  std::move(options), sandbox));
+  }
+}
+
+void LaunchUtilityProcessServiceDeprecated(
+    const std::string& service_name,
+    const std::u16string& display_name,
+    sandbox::mojom::Sandbox sandbox_type,
+    mojo::ScopedMessagePipeHandle service_pipe,
+    base::OnceCallback<void(base::ProcessId)> callback) {
+  UtilityProcessHost* host = new UtilityProcessHost();
+  host->SetName(display_name);
+  host->SetMetricsName(service_name);
+  host->SetSandboxType(sandbox_type);
+  host->Start();
+  host->RunServiceDeprecated(
+      service_name, std::move(service_pipe),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::ProcessId)> callback,
+             const absl::optional<base::ProcessId> pid) {
+            std::move(callback).Run(pid.value_or(base::kNullProcessId));
+          },
+          std::move(callback)));
 }
 
 }  // namespace content

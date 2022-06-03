@@ -66,6 +66,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           <input id="extendPlanesEnabled" type="checkbox">
           <label for="extendPlanesEnabled">Extend bottom-most plane to infinity</label><br/>
+
+          <input id="useDomOverlay" type="checkbox" checked>
+          <label for="useDomOverlay">Enable DOM Overlay</label><br/>
+
           <a class="back" href="./index.html">Back</a>
         </p>
       </details>
@@ -83,6 +87,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       import {DropShadowNode} from '../js/cottontail/src/nodes/drop-shadow.js';
       import {vec3, vec4} from '../js/cottontail/src/math/gl-matrix.js';
       import {runUnitTests} from '../js/hit-test-unittests.js';
+      import {DebugSources} from '../js/debug-sources.js';
 
       runUnitTests();
 
@@ -91,12 +96,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         var polyfill = new WebXRPolyfill();
       }
 
+      let debugSources;
+      if (QueryArgs.getBool('debugSources', false)) {
+        debugSources = new DebugSources();
+      }
+
       const useReticle = document.getElementById('useReticle');
       const useReticleRays = document.getElementById('useReticleRays');
       const useReticleOrigin = document.getElementById('useReticleOrigin');
       const usePlaneOrigin = document.getElementById('usePlaneOrigin');
       const enlargedPlanesEnabled = document.getElementById('enlargedPlanesEnabled');
       const extendPlanesEnabled = document.getElementById('extendPlanesEnabled');
+      const useDomOverlay = document.getElementById('useDomOverlay');
 
       const flowerEnabled = true;
 
@@ -111,6 +122,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             child.visible = usePlaneOrigin.checked;
           }
         });
+      });
+
+      // Suppress XR events for interactions with the DOM overlay
+      document.querySelector('header').addEventListener('beforexrselect', (ev) => {
+        console.log(ev.type);
+        ev.preventDefault();
       });
 
       enlargedPlanesEnabled.addEventListener('input', element => {
@@ -243,7 +260,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onRequestSession() {
-        navigator.xr.requestSession('immersive-ar').then((session) => {
+        let sessionInit = {
+          requiredFeatures: ['anchors', 'plane-detection'],
+          optionalFeatures: [],
+        };
+        if (useDomOverlay.checked) {
+          sessionInit.optionalFeatures.push('dom-overlay');
+          sessionInit.domOverlay = {root: document.body};
+        }
+        navigator.xr.requestSession('immersive-ar', sessionInit).then((session) => {
           session.mode = 'immersive-ar';
           xrButton.setSession(session);
           onSessionStarted(session);
@@ -251,8 +276,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionStarted(session) {
+        useDomOverlay.disabled = true;
         session.addEventListener('end', onSessionEnded);
         session.addEventListener('select', onSelect);
+
+        if (debugSources) debugSources.startSession(session);
 
         if (!gl) {
           gl = createWebGLContext({
@@ -270,10 +298,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             baseLayer: new XRWebGLLayer(session, gl)
         });
 
-        session.updateWorldTrackingState({
-          "planeDetectionState" : { "enabled" : true}
-        });
-
         session.requestReferenceSpace('local').then((refSpace) => {
           xrRefSpace = refSpace;
           session.requestAnimationFrame(onXRFrame);
@@ -285,6 +309,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionEnded(event) {
+        useDomOverlay.disabled = false;
         xrButton.setSession(null);
       }
 
@@ -315,49 +340,42 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // from growing too much.
         if (flowers.length > MAX_FLOWERS) {
           let oldFlower = flowers.shift();
-          oldFlower.anchor.detach();
+          oldFlower.anchor.delete();
           scene.removeNode(oldFlower);
         }
       }
 
       // Creates new anchor for object and places it there.
-      function addARObjectAt(session, frame, plane, pose, space) {
+      function addARObjectAt(frame, pose, space) {
         console.debug("Creating anchor", pose, space);
-        if(plane != null) {
-          plane.createAnchor(pose, space).then(onCreateAnchor);
-        } else {
-          session.createAnchor(pose, space).then(onCreateAnchor);
-        }
+        frame.createAnchor(pose, space).then(onCreateAnchor);
       }
 
       function onSelect(event) {
         if (useReticle.checked && arObject.visible) {
           // If we're using the reticle then we've already got a mesh positioned
-          // at the latest hit point and we should just use it's matrix to save
+          // at the latest hit point and we should just use its matrix to save
           // an unnecessary requestHitTest call.
-          addARObjectAt(event.frame.session,
-                        event.frame,
-                        arObject.plane,
+          addARObjectAt(event.frame,
                         new XRRigidTransform(arObject.hitPoint),
                         arObject.space);
         } else {
-          if(!event.frame.worldInformation.detectedPlanes) {
+          if(!event.frame.detectedPlanes) {
             console.log("No planes detected, placing an anchor at origin.");
-            addARObjectAt(event.frame.session,
-                          event.frame,
-                          null,
+            addARObjectAt(event.frame,
                           new XRRigidTransform({x : 0, y : 0, z : 0, w : 1}),
                           xrRefSpace);
             return;
           }
 
-          console.log("Detected some planes, length:", event.frame.worldInformation.detectedPlanes.length);
+          console.log("Detected some planes, length:", event.frame.detectedPlanes.length);
 
           // Otherwise we'll use the target ray from the input source that generated
           // this event to fire off a new hit test.
           let inputPose = event.frame.getPose(event.inputSource.targetRaySpace, xrRefSpace);
           if (inputPose) {
-            let targetRay = new XRRay(inputPose.transform);
+            const targetRay = new XRRay(inputPose.transform);
+            // Note: this is a plane-based, JS-side hit test:
             const hitTestResults = hitTest(event.frame, targetRay, xrRefSpace);
             const hitTestFiltered = filterHitTestResults(hitTestResults,
                                                          extendPlanesEnabled.checked,
@@ -365,17 +383,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                                                          enlargedPlanesEnabled.checked);
 
             if (hitTestFiltered.length) {
-              let hitResult = hitTestFiltered[0];
-              addARObjectAt(event.frame.session,
-                            event.frame,
-                            hitResult.plane,
+              const hitResult = hitTestFiltered[0];
+              addARObjectAt(event.frame,
                             new XRRigidTransform(hitResult.point_on_plane),
                             hitResult.plane.planeSpace);
             } else {
               console.log("Missed everything, placing an anchor at origin.");
-              addARObjectAt(event.frame.session,
-                            event.frame,
-                            null,
+              addARObjectAt(event.frame,
                             new XRRigidTransform({x : 0, y : 0, z : 0, w: 1}),
                             xrRefSpace);
             }
@@ -423,10 +437,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           planeFrameOfReference.addNode(zRay);
 
           plane_node.addNode(planeFrameOfReference);
-
           plane.scene_node = plane_node;
-          plane.scene_node.matrix = frame.getPose(plane.planeSpace, xrRefSpace).transform.matrix;
 
+          const planePose = frame.getPose(plane.planeSpace, xrRefSpace);
+          if (planePose) {
+            plane.scene_node.matrix = planePose.transform.matrix;
+            plane.scene_node.visible = true;
+          } else {
+            plane.scene_node.visible = false;
+          }
           plane.extended_polygon = extendPolygon(plane.polygon);
           plane.extended_polygon_node = new PlaneNode({
             polygon : plane.extended_polygon,
@@ -442,7 +461,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         {
           // old plane that was updated in current frame
           plane.scene_node.onPlaneChanged(plane.polygon);
-          plane.scene_node.matrix = frame.getPose(plane.planeSpace, xrRefSpace).transform.matrix;
+          const planePose = frame.getPose(plane.planeSpace, xrRefSpace);
+          if (planePose) {
+            plane.scene_node.matrix = planePose.transform.matrix;
+            plane.scene_node.visible = true;
+          } else {
+            plane.scene_node.visible = false;
+          }
           plane.extended_polygon = extendPolygon(plane.polygon);
           plane.extended_polygon_node.onPlaneChanged(plane.extended_polygon);
         }
@@ -456,12 +481,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       // Called every time a XRSession requests that a new frame be drawn.
       async function onXRFrame(t, frame) {
         let session = frame.session;
-
         session.requestAnimationFrame(onXRFrame);
+
+        if (debugSources) debugSources.update(frame, xrRefSpace);
 
         let pose = frame.getViewerPose(xrRefSpace);
 
-        let detected_planes = frame.worldInformation.detectedPlanes;
+        let detected_planes = frame.detectedPlanes;
 
         // Check if any of the old planes is no longer present in detected planes set.
         // If it's no longer present, it was removed - clean up after.
@@ -503,9 +529,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           });
 
           tracked_anchors.forEach(anchor => {
-            if(t == anchor.lastChangedTime) {
-              anchor.context.sceneObject.matrix = frame.getPose(anchor.anchorSpace, xrRefSpace).transform.matrix;
+            const anchorPose = frame.getPose(anchor.anchorSpace, xrRefSpace);
+            if (anchorPose) {
+              anchor.context.sceneObject.matrix = anchorPose.transform.matrix;
               anchor.context.sceneObject.visible = true;
+            } else {
+              anchor.context.sceneObject.visible = false;
             }
           });
 
@@ -535,7 +564,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           if(hitTestFiltered && hitTestFiltered.length > 0) {
             // Reticle position is always up-to-date wrt the hittest result.
-            let hitResult = hitTestFiltered[0];
+            const hitResult = hitTestFiltered[0];
             arObject.visible = true;
             arObject.matrix = hitResult.hitMatrix;
 

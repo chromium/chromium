@@ -18,11 +18,16 @@ namespace remoting {
 class FakeSecurityKeyMessageReader : public SecurityKeyMessageReader {
  public:
   FakeSecurityKeyMessageReader();
+
+  FakeSecurityKeyMessageReader(const FakeSecurityKeyMessageReader&) = delete;
+  FakeSecurityKeyMessageReader& operator=(const FakeSecurityKeyMessageReader&) =
+      delete;
+
   ~FakeSecurityKeyMessageReader() override;
 
   // SecurityKeyMessageReader interface.
   void Start(const SecurityKeyMessageCallback& message_callback,
-             const base::Closure& error_callback) override;
+             base::OnceClosure error_callback) override;
 
   base::WeakPtr<FakeSecurityKeyMessageReader> AsWeakPtr();
 
@@ -30,16 +35,12 @@ class FakeSecurityKeyMessageReader : public SecurityKeyMessageReader {
     return message_callback_;
   }
 
-  const base::Closure& error_callback() { return error_callback_; }
-
  private:
   // Caller-supplied message and error callbacks.
   SecurityKeyMessageCallback message_callback_;
-  base::Closure error_callback_;
+  base::OnceClosure error_callback_;
 
   base::WeakPtrFactory<FakeSecurityKeyMessageReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyMessageReader);
 };
 
 }  // namespace remoting

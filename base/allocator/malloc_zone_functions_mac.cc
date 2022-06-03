@@ -40,6 +40,10 @@ void StoreZoneFunctions(const ChromeMallocZone* zone,
     functions->free_definite_size = zone->free_definite_size;
   }
 
+  // Note that zone version 8 introduced a pressure relief callback, and version
+  // 10 introduced a claimed address callback, but neither are allocation or
+  // deallocation callbacks and so aren't important to intercept.
+
   functions->context = zone;
 }
 

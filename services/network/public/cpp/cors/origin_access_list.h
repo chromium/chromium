@@ -29,7 +29,7 @@ class CorsOriginAccessPatterns;
 namespace cors {
 
 // A class to manage origin access allow / block lists. If these lists conflict,
-// blacklisting is respected. These lists are managed per source-origin basis.
+// blocklisting is respected. These lists are managed per source-origin basis.
 class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
  public:
   using CorsOriginPatternPtr = mojo::StructPtr<mojom::CorsOriginPattern>;
@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
   };
 
   OriginAccessList();
+
+  OriginAccessList(const OriginAccessList&) = delete;
+  OriginAccessList& operator=(const OriginAccessList&) = delete;
+
   ~OriginAccessList();
 
   // Clears the old allow list for |source_origin|, and set |patterns| to the
@@ -128,8 +132,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessList {
       MapType type);
 
   OriginPatternsMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessList);
 };
 
 }  // namespace cors

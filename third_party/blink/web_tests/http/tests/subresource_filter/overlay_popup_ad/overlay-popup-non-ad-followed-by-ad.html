@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div {
+  width: 100vw;
+  height: 100vh;
+}
+iframe {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+form {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+
+<body marginwidth="0" marginheight="0">
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+<!-- To contain the overlay popup -->
+<div></div>
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+
+<script>
+promise_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  // Create a overlay pop-up <form> element.
+  let form = document.createElement('form');
+  document.getElementsByTagName('div')[0].appendChild(form);
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate.
+  await forceLayoutUpdate();
+
+  // Hide the pop-up.
+  document.getElementsByTagName('form')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect use counter kOverlayPopup.
+  assert_true(internals.isUseCounted(document, kOverlayPopup));
+
+  // Expect use counter kOverlayPopupAd is NOT recorded.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate.
+  await forceLayoutUpdate();
+
+  // Hide the pop-up ad.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
+
+  // Expect use counter kOverlayPopupAd.
+  assert_true(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test UseCounter for overlay-popup non-ad element followed by an ad element.");
+</script>
+</body>
+</html>

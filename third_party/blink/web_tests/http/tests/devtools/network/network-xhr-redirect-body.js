@@ -4,7 +4,7 @@
 
 (async function() {
   await TestRunner.addResult(`Tests that XHR redirects preserve request body.`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   var offset;
@@ -24,7 +24,8 @@
 
 
   function step4() {
-    NetworkTestRunner.networkRequests()[offset + 1].requestContent().then(step5);
+    NetworkTestRunner.networkRequests()[offset + 2].requestContent().then(
+        step5);
   }
   async function step5() {
     var requests = NetworkTestRunner.networkRequests();

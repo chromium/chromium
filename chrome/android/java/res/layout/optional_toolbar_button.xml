@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ToolbarButton"
+    android:layout_gravity="top"
+    android:paddingStart="@dimen/toolbar_phone_optional_button_padding"
+    tools:ignore="ContentDescription"/>

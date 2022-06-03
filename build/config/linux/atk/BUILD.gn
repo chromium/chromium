@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
@@ -16,7 +17,7 @@ if (use_atk) {
   assert(use_glib, "use_atk=true requires that use_glib=true")
 }
 
-pkg_config("atk_base") {
+pkg_config("atk") {
   packages = [
     "atk",
     "atk-bridge-2.0",
@@ -30,30 +31,5 @@ pkg_config("atk_base") {
   defines = [
     "ATK_LIB_DIR=\"$atk_lib_dir\"",
     "USE_ATK_BRIDGE",
-
-    # The AtkValue interface methods we implement and test have been deprecated
-    # in favor of new API. But that new API cannot be used until corresponding
-    # support has been added to AT-SPI2 and we stop supporting earlier versions
-    # of ATK (i.e. < 2.12).
-    "ATK_DISABLE_DEPRECATION_WARNINGS",
   ]
-}
-
-# gn orders flags on a target before flags from configs. The default config
-# adds -Wall, and these flags have to be after -Wall -- so they need to
-# come from a config and can't be on the target directly.
-config("atk") {
-  configs = [ ":atk_base" ]
-
-  cflags = [
-    # G_DEFINE_TYPE automatically generates a *get_instance_private
-    # inline function after glib 2.37. That's unused. Prevent to
-    # complain about it.
-    "-Wno-unused-function",
-  ]
-
-  if (is_clang) {
-    # glib uses the pre-c++11 typedef-as-static_assert hack.
-    cflags += [ "-Wno-unused-local-typedef" ]
-  }
 }

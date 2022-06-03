@@ -7,15 +7,14 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_factory_selector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -25,13 +24,13 @@ namespace media {
 
 class MediaLog;
 
-// Callbacks used for Renderer creation. When the FactoryType is nullopt, the
+// Callbacks used for Renderer creation. When the RendererType is nullopt, the
 // current base one will be created.
 using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
-    base::Optional<RendererFactoryType>)>;
+    absl::optional<RendererType>)>;
 using RendererCreatedCB = base::OnceCallback<void(std::unique_ptr<Renderer>)>;
 using AsyncCreateRendererCB =
-    base::RepeatingCallback<void(base::Optional<RendererFactoryType>,
+    base::RepeatingCallback<void(absl::optional<RendererType>,
                                  RendererCreatedCB)>;
 
 // Pipeline runs the media pipeline.  Filters are created and called on the
@@ -86,24 +85,30 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
                scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                CreateRendererCB create_renderer_cb,
                MediaLog* media_log);
+
+  PipelineImpl(const PipelineImpl&) = delete;
+  PipelineImpl& operator=(const PipelineImpl&) = delete;
+
   ~PipelineImpl() override;
 
   // Pipeline implementation.
   void Start(StartType start_type,
              Demuxer* demuxer,
              Client* client,
-             const PipelineStatusCB& seek_cb) override;
+             PipelineStatusCallback seek_cb) override;
   void Stop() override;
-  void Seek(base::TimeDelta time, const PipelineStatusCB& seek_cb) override;
-  void Suspend(const PipelineStatusCB& suspend_cb) override;
-  void Resume(base::TimeDelta time, const PipelineStatusCB& seek_cb) override;
+  void Seek(base::TimeDelta time, PipelineStatusCallback seek_cb) override;
+  void Suspend(PipelineStatusCallback suspend_cb) override;
+  void Resume(base::TimeDelta time, PipelineStatusCallback seek_cb) override;
   bool IsRunning() const override;
   bool IsSuspended() const override;
   double GetPlaybackRate() const override;
   void SetPlaybackRate(double playback_rate) override;
   float GetVolume() const override;
   void SetVolume(float volume) override;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetPreservesPitch(bool preserves_pitch) override;
+  void SetAutoplayInitiated(bool autoplay_initiated) override;
   base::TimeDelta GetMediaTime() const override;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const override;
   base::TimeDelta GetMediaDuration() const override;
@@ -119,7 +124,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id,
+      absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) override;
 
  private:
@@ -144,7 +149,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Create a Renderer asynchronously. Must be called on the main task runner
   // and the callback will be called on the main task runner as well.
-  void AsyncCreateRenderer(base::Optional<RendererFactoryType> factory_type,
+  void AsyncCreateRenderer(absl::optional<RendererType> renderer_type,
                            RendererCreatedCB renderer_created_cb);
 
   // Notifications from RendererWrapper.
@@ -160,9 +165,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnVideoOpacityChange(bool opaque);
   void OnVideoAverageKeyframeDistanceUpdate();
-  void OnAudioDecoderChange(const PipelineDecoderInfo& info);
-  void OnVideoDecoderChange(const PipelineDecoderInfo& info);
+  void OnAudioPipelineInfoChange(const AudioPipelineInfo& info);
+  void OnVideoPipelineInfoChange(const VideoPipelineInfo& info);
   void OnRemotePlayStateChange(MediaStatus::State state);
+  void OnVideoFrameRateChange(absl::optional<int> fps);
 
   // Task completion callbacks from RendererWrapper.
   void OnSeekDone(bool is_suspended);
@@ -180,10 +186,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   std::unique_ptr<RendererWrapper> renderer_wrapper_;
 
   // Temporary callback used for Start(), Seek(), and Resume().
-  PipelineStatusCB seek_cb_;
+  PipelineStatusCallback seek_cb_;
 
   // Temporary callback used for Suspend().
-  PipelineStatusCB suspend_cb_;
+  PipelineStatusCallback suspend_cb_;
 
   // Current playback rate (>= 0.0). This value is set immediately via
   // SetPlaybackRate() and a task is dispatched on the task runner to notify
@@ -212,8 +218,6 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<PipelineImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineImpl);
 };
 
 }  // namespace media

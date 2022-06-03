@@ -8,15 +8,18 @@
 #include <memory>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
+#include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_metrics.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 class Browser;
@@ -29,16 +32,18 @@ class Canvas;
 namespace media_router {
 
 class CastDialogSinkButton;
+enum class MediaRouterDialogOpenOrigin;
 struct UIMediaSink;
 
 // View component of the Cast dialog that allows users to start and stop Casting
 // to devices. The list of devices used to populate the dialog is supplied by
 // CastDialogModel.
 class CastDialogView : public views::BubbleDialogDelegateView,
-                       public views::ButtonListener,
                        public CastDialogController::Observer,
                        public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(CastDialogView);
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnDialogModelUpdated(CastDialogView* dialog_view) = 0;
@@ -47,25 +52,33 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   enum SourceType { kTab, kDesktop, kLocalFile };
 
+  CastDialogView(const CastDialogView&) = delete;
+  CastDialogView& operator=(const CastDialogView&) = delete;
+
   // Shows the singleton dialog anchored to the Cast toolbar icon. Requires that
   // BrowserActionsContainer exists for |browser|.
-  static void ShowDialogWithToolbarAction(CastDialogController* controller,
-                                          Browser* browser,
-                                          const base::Time& start_time);
+  static void ShowDialogWithToolbarAction(
+      CastDialogController* controller,
+      Browser* browser,
+      const base::Time& start_time,
+      MediaRouterDialogOpenOrigin activation_location);
 
   // Shows the singleton dialog anchored to the top-center of the browser
   // window.
   static void ShowDialogCenteredForBrowserWindow(
       CastDialogController* controller,
       Browser* browser,
-      const base::Time& start_time);
+      const base::Time& start_time,
+      MediaRouterDialogOpenOrigin activation_location);
 
   // Shows the singleton dialog anchored to the bottom of |bounds|, horizontally
   // centered.
-  static void ShowDialogCentered(const gfx::Rect& bounds,
-                                 CastDialogController* controller,
-                                 Profile* profile,
-                                 const base::Time& start_time);
+  static void ShowDialogCentered(
+      const gfx::Rect& bounds,
+      CastDialogController* controller,
+      Profile* profile,
+      const base::Time& start_time,
+      MediaRouterDialogOpenOrigin activation_location);
 
   // No-op if the dialog is currently not shown.
   static void HideDialog();
@@ -77,24 +90,14 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Returns nullptr if the dialog is currently not shown.
   static views::Widget* GetCurrentDialogWidget();
 
-  // views::WidgetDelegateView:
-  bool ShouldShowCloseButton() const override;
-
   // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
-
-  // views::DialogDelegate:
-  bool Close() override;
+  std::u16string GetWindowTitle() const override;
 
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
   void OnControllerInvalidated() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  // views::BubbleDialogDelegateView:
   void OnPaint(gfx::Canvas* canvas) override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -117,6 +120,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   views::View* no_sinks_view_for_test() { return no_sinks_view_; }
   views::Button* sources_button_for_test() { return sources_button_; }
+  HoverButton* access_code_cast_button_for_test() {
+    return access_code_cast_button_;
+  }
   ui::SimpleMenuModel* sources_menu_model_for_test() {
     return sources_menu_model_.get();
   }
@@ -126,7 +132,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
  private:
   friend class CastDialogViewTest;
-  friend class MediaRouterUiForTest;
+  friend class MediaRouterCastUiForTest;
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, CancelLocalFileSelection);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, CastLocalFile);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, DisableUnsupportedSinks);
@@ -139,18 +145,23 @@ class CastDialogView : public views::BubbleDialogDelegateView,
                          views::BubbleBorder::Arrow anchor_position,
                          CastDialogController* controller,
                          Profile* profile,
-                         const base::Time& start_time);
+                         const base::Time& start_time,
+                         MediaRouterDialogOpenOrigin activation_location);
 
   CastDialogView(views::View* anchor_view,
                  views::BubbleBorder::Arrow anchor_position,
                  CastDialogController* controller,
                  Profile* profile,
-                 const base::Time& start_time);
+                 const base::Time& start_time,
+                 MediaRouterDialogOpenOrigin activation_location);
   ~CastDialogView() override;
 
   // views::BubbleDialogDelegateView:
   void Init() override;
   void WindowClosing() override;
+
+  void ShowAccessCodeCastDialog();
+  void MaybeShowAccessCodeCastButton();
 
   void ShowNoSinksView();
   void ShowScrollView();
@@ -174,7 +185,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // Returns the cast mode that is selected in the sources menu and supported by
   // |sink|. Returns nullopt if no such cast mode exists.
-  base::Optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
+  absl::optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
 
   // Disables sink buttons for sinks that do not support the currently selected
   // source.
@@ -190,12 +201,15 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Sets local file as the selected source if |file_info| is not null.
   void OnFilePickerClosed(const ui::SelectedFileInfo* file_info);
 
+  // Returns true if there are active Cast and DIAL sinks.
+  bool HasCastAndDialSinks() const;
+
   // The singleton dialog instance. This is a nullptr when a dialog is not
   // shown.
   static CastDialogView* instance_;
 
   // Title shown at the top of the dialog.
-  base::string16 dialog_title_;
+  std::u16string dialog_title_;
 
   // The source selected in the sources menu. This defaults to "tab"
   // (presentation or tab mirroring). "Tab" is represented by a single item in
@@ -220,6 +234,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // it to this value.
   int scroll_position_ = 0;
 
+  // The access code cast button allows the user to add a cast device through
+  // the chrome://enterprise-casting dialog.
+  CastDialogAccessCodeCastButton* access_code_cast_button_ = nullptr;
+
   // The sources menu allows the user to choose a source to cast.
   views::Button* sources_button_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> sources_menu_model_;
@@ -230,10 +248,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   // The sink that the user has selected to cast to. If the user is using
   // multiple sinks at the same time, the last activated sink is used.
-  base::Optional<size_t> selected_sink_index_;
+  absl::optional<size_t> selected_sink_index_;
 
   // This value is set if the user has chosen a local file to cast.
-  base::Optional<base::string16> local_file_name_;
+  absl::optional<std::u16string> local_file_name_;
 
   base::ObserverList<Observer> observers_;
 
@@ -241,8 +259,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   bool keep_shown_for_testing_ = false;
 
   base::WeakPtrFactory<CastDialogView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastDialogView);
 };
 
 }  // namespace media_router

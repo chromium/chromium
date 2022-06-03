@@ -4,8 +4,6 @@
 
 #import "ui/base/test/nswindow_fullscreen_notification_waiter.h"
 
-#import "base/mac/sdk_forward_declarations.h"
-
 @interface NSWindowFullscreenNotificationWaiter ()
 // Exit the RunLoop if there is one and the counts being tracked match.
 - (void)maybeQuitForChangedArg:(int*)changedArg;

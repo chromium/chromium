@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 
 namespace updater {

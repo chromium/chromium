@@ -50,5 +50,5 @@ interface TimerHost {
 // Next method ID: 1
 interface TimerInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(TimerHost host_ptr) => ();
+  Init@0(pending_remote<TimerHost> host_remote) => ();
 };

@@ -7,10 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
@@ -28,6 +25,10 @@ namespace media {
 class MEDIA_EXPORT AesCbcCrypto {
  public:
   AesCbcCrypto();
+
+  AesCbcCrypto(const AesCbcCrypto&) = delete;
+  AesCbcCrypto& operator=(const AesCbcCrypto&) = delete;
+
   ~AesCbcCrypto();
 
   // Initializes the encryptor using |key| and |iv|. Returns false if either
@@ -44,8 +45,6 @@ class MEDIA_EXPORT AesCbcCrypto {
 
  private:
   EVP_CIPHER_CTX ctx_;
-
-  DISALLOW_COPY_AND_ASSIGN(AesCbcCrypto);
 };
 
 }  // namespace media

@@ -1,0 +1,151 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// The type of dialog to open. The integer values intentionally do not match
+// ui::SelectFileDialog::Type because there is no "none" value and kOpenFile
+// is the common case.
+[Stable, Extensible]
+enum SelectFileDialogType {
+  // For opening a file.
+  kOpenFile = 0,
+
+  // Like kOpenFile, but allowing multiple files to open.
+  kOpenMultiFile = 1,
+
+  // For opening a folder.
+  kFolder = 2,
+
+  // Like kFolder, but the dialog UI shows it's specifically for "upload".
+  kUploadFolder = 3,
+
+  // Like kFolder, but folder creation is disabled.
+  kExistingFolder = 4,
+
+  // For saving into a file, allowing a nonexistent file to be selected.
+  kSaveAsFile = 5,
+};
+
+// Specifies which type of paths the caller can handle.
+[Stable, Extensible]
+enum AllowedPaths {
+  // Any type of path, whether local/native or remote/virtual.
+  kAnyPath,
+  // Set when the caller cannot handle virtual volumes (e.g. File System
+  // Provider [FSP] volumes like "File System for Dropbox"). When opening files,
+  // the dialog will create a native replica of the file and return its path.
+  // When saving files, the dialog will hide virtual volumes.
+  kNativePath,
+  // Set when the caller can open files via URL. For example, when opening a
+  // .gdoc file from Google Drive the file is "opened" by navigating to
+  // docs.google.com.
+  kAnyPathOrUrl,
+};
+
+// Information about the types of files used by the dialog.
+[Stable]
+struct SelectFileTypeInfo {
+  // The list of allowed file extensions. For example:
+  // { { "htm", "html" }, { "txt" } }
+  // Only pass more than one extension in the inner vector if the extensions
+  // are equivalent.
+  array<array<string>> extensions@0;
+
+  // Overrides the system descriptions of specified extensions. For example,
+  // when saving a web page, "Webpage, HTML only" is used for {"htm", "html"}
+  // and "Webpage, Single File" is used for {"mhtml"}. Length must match the
+  // length of |extensions|. If empty or if the length doesn't match then
+  // the system descriptions will be used.
+  array<mojo_base.mojom.String16> extension_description_overrides@1;
+
+  // One-based index of the file type (in the extensions list) to select by
+  // default. Zero means no selection. (The index is one-based for consistency
+  // with the C++ code and because mojo doesn't allow nullable primitive types.)
+  // For example, when saving a web page, we use the index of {"mhtml"} so the
+  // user sees "Webpage, Single File" as the default choice.
+  int32 default_file_type_index@2;
+
+  // Whether or not there will be a filter added for all files (*.*).
+  bool include_all_files@3;
+
+  // Types of paths/volumes allowed. Unrelated to file extensions.
+  AllowedPaths allowed_paths@4;
+};
+
+// Options for the select file dialog.
+[Stable]
+struct SelectFileOptions {
+  // Dialog type.
+  SelectFileDialogType type@0;
+
+  // Window title.
+  mojo_base.mojom.String16 title@1;
+
+  // Default path to open.
+  mojo_base.mojom.FilePath default_path@2;
+
+  // Optional file type configuration. In the common case for file open (Ctrl-O)
+  // this is null.
+  SelectFileTypeInfo? file_types@3;
+
+  // Internal window ID for the top-level shell window that owns the dialog.
+  // If provided, the dialog will be window-modal to that shell window.
+  // If empty, a modeless dialog will be opened on the default display.
+  string owning_shell_window_id@4;
+};
+
+// Result of the select file dialog.
+[Stable, Extensible]
+enum SelectFileResult {
+  // Everything worked.
+  kSuccess = 0,
+
+  // Failed because the dialog couldn't find the owning top-level window.
+  kInvalidShellWindow = 1,
+};
+
+// Information about the selected file or files.
+[Stable]
+struct SelectedFileInfo {
+  // Path to the file, as seen in the UI.
+  mojo_base.mojom.FilePath file_path@0;
+
+  // The actual local path to the selected file. This can be a snapshot file
+  // with a human unreadable name like /blah/.d41d8cd98f00b204e9800998ecf8427e.
+  // |local_path| can differ from |file_path| for drive files (e.g.
+  // /drive_cache/temporary/d41d8cd98f00b204e9800998ecf8427e vs.
+  // /special/drive/foo.txt).
+  mojo_base.mojom.FilePath local_path@1;
+
+  // Optional display name of the file. UTF-8 encoded. If empty, the UI should
+  // display the base name portion of |file_path|.
+  string display_name@2;
+
+  // Optional URL to access the file. If the caller can use a URL to access a
+  // file, |url| should be used instead of |local_path|. For example, when
+  // opening a .gdoc file from Google Drive the |local_path| is a placeholder
+  // file that should be "opened" by navigating to docs.google.com.
+  url.mojom.Url? url@3;
+};
+
+// Select file dialog interface. Wrapper around the C++ SelectFileDialog
+// class. Called from lacros-chrome. Implemented in ash-chrome using the
+// file manager dialog.
+[Stable, Uuid="8c0eb5f3-4c90-4bfd-8a0f-377c99f09125"]
+interface SelectFile {
+  // Selects one or more files. If the dialog is closed or canceled without
+  // selecting a file, or if there is an error, |files| will be empty.
+  // When saving a file or opening a single file, |file_type_index| is the
+  // one-based index of the selected file type from the SelectFileTypeInfo
+  // extension list, otherwise it is zero.
+  Select@0(SelectFileOptions options) =>
+      (SelectFileResult result,
+       array<SelectedFileInfo> files,
+       int32 file_type_index);
+};

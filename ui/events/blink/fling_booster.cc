@@ -5,6 +5,7 @@
 #include "ui/events/blink/fling_booster.h"
 
 #include "base/trace_event/trace_event.h"
+#include "ui/events/blink/blink_features.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -22,17 +23,24 @@ const double kMinBoostTouchScrollSpeedSquare = 150 * 150.;
 // ticks, scrolls or flings of sufficient velocity relative to the current fling
 // are received. The default value on Android native views is 40ms, but we use a
 // slightly increased value to accomodate small IPC message delays.
-constexpr base::TimeDelta kFlingBoostTimeoutDelay =
-    base::TimeDelta::FromSecondsD(0.05);
+constexpr base::TimeDelta kFlingBoostTimeoutDelay = base::Seconds(0.05);
 }  // namespace
 
 namespace ui {
 
 gfx::Vector2dF FlingBooster::GetVelocityForFlingStart(
     const blink::WebGestureEvent& fling_start) {
-  DCHECK_EQ(blink::WebInputEvent::kGestureFlingStart, fling_start.GetType());
+  DCHECK_EQ(blink::WebInputEvent::Type::kGestureFlingStart,
+            fling_start.GetType());
   gfx::Vector2dF velocity(fling_start.data.fling_start.velocity_x,
                           fling_start.data.fling_start.velocity_y);
+
+  static const bool reduce_horizontal_fling_velocity =
+      base::FeatureList::IsEnabled(features::kReduceHorizontalFlingVelocity);
+  if (reduce_horizontal_fling_velocity) {
+    // Reduce the horizontal velocity of flings.
+    velocity.Scale(0.2f, 1.0f);
+  }
   TRACE_EVENT2("input", "FlingBooster::GetVelocityForFlingStart", "vx",
                velocity.x(), "vy", velocity.y());
 
@@ -74,12 +82,12 @@ void FlingBooster::ObserveGestureEvent(const WebGestureEvent& gesture_event) {
   }
 
   switch (gesture_event.GetType()) {
-    case WebInputEvent::kGestureScrollBegin: {
+    case WebInputEvent::Type::kGestureScrollBegin: {
       cutoff_time_for_boost_ =
           gesture_event.TimeStamp() + kFlingBoostTimeoutDelay;
       break;
     }
-    case WebInputEvent::kGestureScrollUpdate: {
+    case WebInputEvent::Type::kGestureScrollUpdate: {
       if (gesture_event.data.scroll_update.inertial_phase ==
           WebGestureEvent::InertialPhaseState::kMomentum) {
         return;
@@ -123,11 +131,11 @@ void FlingBooster::ObserveGestureEvent(const WebGestureEvent& gesture_event) {
           gesture_event.TimeStamp() + kFlingBoostTimeoutDelay;
       break;
     }
-    case WebInputEvent::kGestureScrollEnd: {
+    case WebInputEvent::Type::kGestureScrollEnd: {
       previous_boosting_scroll_timestamp_ = base::TimeTicks();
       break;
     }
-    case WebInputEvent::kGestureFlingCancel: {
+    case WebInputEvent::Type::kGestureFlingCancel: {
       if (gesture_event.data.fling_cancel.prevent_boosting) {
         TRACE_EVENT_INSTANT0("input", "GFC PreventBoosting",
                              TRACE_EVENT_SCOPE_THREAD);
@@ -155,7 +163,8 @@ void FlingBooster::ObserveProgressFling(
 }
 
 bool FlingBooster::ShouldBoostFling(const WebGestureEvent& fling_start_event) {
-  DCHECK_EQ(WebInputEvent::kGestureFlingStart, fling_start_event.GetType());
+  DCHECK_EQ(WebInputEvent::Type::kGestureFlingStart,
+            fling_start_event.GetType());
   if (previous_fling_starting_velocity_.IsZero()) {
     TRACE_EVENT_INSTANT0("input", "No Boost - NoActiveFling",
                          TRACE_EVENT_SCOPE_THREAD);

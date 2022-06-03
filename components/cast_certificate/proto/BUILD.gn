@@ -5,13 +5,9 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [
-    "revocation.proto",
-  ]
+  sources = [ "revocation.proto" ]
 }
 
 proto_library("unittest_proto") {
-  sources = [
-    "test_suite.proto",
-  ]
+  sources = [ "test_suite.proto" ]
 }

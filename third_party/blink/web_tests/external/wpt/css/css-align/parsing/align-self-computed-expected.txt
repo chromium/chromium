@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Property align-self value 'auto'
+PASS Property align-self value 'normal'
+PASS Property align-self value 'stretch'
+PASS Property align-self value 'baseline'
+FAIL Property align-self value 'last baseline' assert_true: 'last baseline' is a supported value for align-self. expected true got false
+PASS Property align-self value 'center'
+PASS Property align-self value 'start'
+PASS Property align-self value 'end'
+PASS Property align-self value 'self-start'
+PASS Property align-self value 'self-end'
+PASS Property align-self value 'flex-start'
+PASS Property align-self value 'flex-end'
+PASS Property align-self value 'unsafe center'
+PASS Property align-self value 'safe self-end'
+Harness: the test ran to completion.
+

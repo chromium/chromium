@@ -4,7 +4,7 @@
 
 #include "remoting/protocol/connection_to_host.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace remoting {
 namespace protocol {

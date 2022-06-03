@@ -13,6 +13,8 @@
 #include <memory>
 #include <string>
 
+#include "build/chromeos_buildflags.h"
+
 namespace base {
 class DictionaryValue;
 }  // namespace base
@@ -26,7 +28,6 @@ class FeedbackUploader;
 }  // namespace feedback
 
 namespace system_logs {
-class SystemLogsFetcher;
 class SystemLogsSource;
 }  // namespace system_logs
 
@@ -48,11 +49,11 @@ class FeedbackPrivateDelegate {
       content::BrowserContext* browser_context,
       bool from_crash) const = 0;
 
-  // Returns a SystemLogsFetcher for responding to a request for system logs.
-  virtual system_logs::SystemLogsFetcher* CreateSystemLogsFetcher(
-      content::BrowserContext* context) const = 0;
+  virtual void FetchSystemInformation(
+      content::BrowserContext* context,
+      system_logs::SysLogsFetcherCallback callback) const = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Creates a SystemLogsSource for the given type of log file.
   virtual std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const = 0;
@@ -74,6 +75,11 @@ class FeedbackPrivateDelegate {
   // report is successfully sent.
   virtual api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const = 0;
+
+  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
+  // Gets Lacros histograms in zip compressed format which will be attached
+  // as a file in unified feedback report.
+  virtual void GetLacrosHistograms(GetHistogramsCallback callback) = 0;
 #endif
 
   // Returns the normalized email address of the signed-in user associated with

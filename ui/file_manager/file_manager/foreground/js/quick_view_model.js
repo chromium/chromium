@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
 /**
  * Quick view model that doesn't fit into properties of quick view element.
  */
-class QuickViewModel extends cr.EventTarget {
+export class QuickViewModel extends EventTarget {
   constructor() {
     super();
 
@@ -32,6 +35,6 @@ class QuickViewModel extends cr.EventTarget {
    */
   setSelectedEntry(entry) {
     this.selectedEntry_ = entry;
-    cr.dispatchSimpleEvent(this, 'selected-entry-changed');
+    dispatchSimpleEvent(this, 'selected-entry-changed');
   }
 }

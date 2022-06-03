@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8"/>
 <meta name="timeout" content="long">
-<meta name="variant" content="">
-<meta name="variant" content="?legacy-samesite">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/cookies/resources/cookie-helper.sub.js"></script>
@@ -46,15 +44,10 @@
                            assert_cookie_absent(target, "samesite_strict", value),
                          expectedStatus == SameSiteStatus.CROSS_SITE ?
                            assert_cookie_absent(target, "samesite_lax", value) :
-                           assert_cookie_present(target, "samesite_lax", value)];
-          if (isLegacySameSite()) {
-            // Legacy behavior: unspecified SameSite acts like SameSite=None.
-            asserts.push(assert_cookie_present(target, "samesite_unspecified", value));
-          } else {
-            asserts.push(expectedStatus == SameSiteStatus.CROSS_SITE ?
+                           assert_cookie_present(target, "samesite_lax", value),
+                         expectedStatus == SameSiteStatus.CROSS_SITE ?
                            assert_cookie_absent(target, "samesite_unspecified", value) :
-                           assert_cookie_present(target, "samesite_unspecified", value));
-          }
+                           assert_cookie_present(target, "samesite_unspecified", value)];
           return Promise.all(asserts);
         });
     }, title);
@@ -68,12 +61,12 @@
   // Redirect from {same-host,subdomain,cross-site} to same-host:
   create_test(SECURE_ORIGIN, redirectTo(SECURE_ORIGIN, SECURE_ORIGIN), SameSiteStatus.STRICT, "Same-host redirecting to same-host images are strictly same-site");
   create_test(SECURE_ORIGIN, redirectTo(SECURE_SUBDOMAIN_ORIGIN, SECURE_ORIGIN), SameSiteStatus.STRICT, "Subdomain redirecting to same-host images are strictly same-site");
-  create_test(SECURE_ORIGIN, redirectTo(SECURE_CROSS_SITE_ORIGIN, SECURE_ORIGIN), SameSiteStatus.STRICT, "Cross-site redirecting to same-host images are strictly same-site");
+  create_test(SECURE_ORIGIN, redirectTo(SECURE_CROSS_SITE_ORIGIN, SECURE_ORIGIN), SameSiteStatus.CROSS_SITE, "Cross-site redirecting to same-host images are cross-site");
 
   // Redirect from {same-host,subdomain,cross-site} to same-host:
   create_test(SECURE_SUBDOMAIN_ORIGIN, redirectTo(SECURE_ORIGIN, SECURE_SUBDOMAIN_ORIGIN), SameSiteStatus.STRICT, "Same-host redirecting to subdomain images are strictly same-site");
   create_test(SECURE_SUBDOMAIN_ORIGIN, redirectTo(SECURE_SUBDOMAIN_ORIGIN, SECURE_SUBDOMAIN_ORIGIN), SameSiteStatus.STRICT, "Subdomain redirecting to subdomain images are strictly same-site");
-  create_test(SECURE_SUBDOMAIN_ORIGIN, redirectTo(SECURE_CROSS_SITE_ORIGIN, SECURE_SUBDOMAIN_ORIGIN), SameSiteStatus.STRICT, "Cross-site redirecting to subdomain images are strictly same-site");
+  create_test(SECURE_SUBDOMAIN_ORIGIN, redirectTo(SECURE_CROSS_SITE_ORIGIN, SECURE_SUBDOMAIN_ORIGIN), SameSiteStatus.CROSS_SITE, "Cross-site redirecting to subdomain images are cross-site");
 
   // Redirect from {same-host,subdomain,cross-site} to cross-site:
   create_test(SECURE_CROSS_SITE_ORIGIN, redirectTo(SECURE_ORIGIN, SECURE_CROSS_SITE_ORIGIN), SameSiteStatus.CROSS_SITE, "Same-host redirecting to cross-site images are cross-site");

@@ -7,39 +7,42 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "components/sync/driver/sync_auth_util.h"
-#include "components/sync/driver/sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
+#include "components/send_tab_to_self/features.h"
 
 namespace send_tab_to_self {
 
 SendTabToSelfModelTypeController::SendTabToSelfModelTypeController(
-    syncer::SyncService* sync_service,
-    std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate)
-    : ModelTypeController(syncer::SEND_TAB_TO_SELF, std::move(delegate)),
-      sync_service_(sync_service) {
-  // TODO(crbug.com/906995): Remove this observing mechanism once all sync
-  // datatypes are stopped by ProfileSyncService, when sync is paused.
-  sync_service_->AddObserver(this);
+    std::unique_ptr<syncer::ModelTypeControllerDelegate>
+        delegate_for_full_sync_mode,
+    std::unique_ptr<syncer::ModelTypeControllerDelegate>
+        delegate_for_transport_mode)
+    : ModelTypeController(syncer::SEND_TAB_TO_SELF,
+                          std::move(delegate_for_full_sync_mode),
+                          std::move(delegate_for_transport_mode)) {
+  DCHECK_EQ(base::FeatureList::IsEnabled(
+                send_tab_to_self::kSendTabToSelfWhenSignedIn),
+            ShouldRunInTransportOnlyMode());
 }
 
-SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() {
-  sync_service_->RemoveObserver(this);
-}
+SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() = default;
 
-syncer::DataTypeController::PreconditionState
-SendTabToSelfModelTypeController::GetPreconditionState() const {
+void SendTabToSelfModelTypeController::Stop(
+    syncer::ShutdownReason shutdown_reason,
+    StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  return syncer::IsWebSignout(sync_service_->GetAuthError())
-             ? PreconditionState::kMustStopAndClearData
-             : PreconditionState::kPreconditionsMet;
-}
-
-void SendTabToSelfModelTypeController::OnStateChanged(
-    syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
-  // Most of these calls will be no-ops but SyncService handles that just fine.
-  sync_service_->DataTypePreconditionChanged(type());
+  switch (shutdown_reason) {
+    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+      // Special case: We want to clear all data even when Sync is stopped
+      // temporarily. This is also needed to make sure the feature stops being
+      // offered to the user, because predicates like IsUserSyncTypeActive()
+      // should return false upon stop.
+      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
+      break;
+    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      break;
+  }
+  ModelTypeController::Stop(shutdown_reason, std::move(callback));
 }
 
 }  // namespace send_tab_to_self

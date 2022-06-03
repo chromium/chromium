@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.resources;
 
 import org.chromium.chrome.R;
 
-public class ResourceId {
-    public static int mapToDrawableId(int enumeratedId) {
+class ResourceId {
+    static int[] getResourceIdList() {
         int[] resourceList = {
 #define LINK_RESOURCE_ID(c_id,java_id) java_id,
 #define DECLARE_RESOURCE_ID(c_id,java_id) java_id,
 #include "chrome/browser/android/resource_id.h"
+#include "components/resources/android/blocked_content_resource_id.h"
+#include "components/resources/android/page_info_resource_id.h"
+#include "components/resources/android/permissions_resource_id.h"
+#include "components/resources/android/sms_resource_id.h"
+#include "components/resources/android/webxr_resource_id.h"
         };
-
-        if (enumeratedId >= 0 && enumeratedId < resourceList.length) {
-            return resourceList[enumeratedId];
-        }
-
-        assert false : "enumeratedId '" + enumeratedId + "' was out of range.";
-        return R.drawable.missing;
+        return resourceList;
     }
 }

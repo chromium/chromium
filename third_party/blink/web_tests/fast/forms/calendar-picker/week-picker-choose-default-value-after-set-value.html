@@ -37,12 +37,15 @@ function test1() {
     eventSender.keyDown('ArrowLeft');
     removeCommitDelay();
     eventSender.keyDown('Enter');
-    shouldBeEqualToString('input.value', '2000-W01');
 
-    shouldBe('eventsCounter.input', '1');
-    shouldBe('eventsCounter.change', '1');
+    waitUntilClosing(() => {
+        shouldBeEqualToString('input.value', '2000-W01');
 
-    finishJSTest();
+        shouldBe('eventsCounter.input', '1');
+        shouldBe('eventsCounter.change', '1');
+
+        finishJSTest();
+    })
 }
 </script>
 </body>

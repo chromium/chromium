@@ -39,32 +39,33 @@
               },
               "frameId": { "type": "integer", "minimum": 0, "description": "The ID of the frame in the given tab." }
             }
-          },
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {
-                "type": "object",
-                "name": "details",
-                "optional": true,
-                "description": "Information about the requested frame, null if the specified frame ID and/or tab ID are invalid.",
-                "properties": {
-                  "errorOccurred": {
-                    "type": "boolean",
-                    "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
-                  },
-                  "url": {
-                    "type": "string",
-                    "description": "The URL currently associated with this frame, if the frame identified by the frameId existed at one point in the given tab. The fact that an URL is associated with a given frameId does not imply that the corresponding frame still exists."
-                  },
-                  "parentFrameId": {
-                    "type": "integer",
-                    "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
-                  }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "object",
+              "name": "details",
+              "optional": true,
+              "description": "Information about the requested frame, null if the specified frame ID and/or tab ID are invalid.",
+              "properties": {
+                "errorOccurred": {
+                  "type": "boolean",
+                  "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The URL currently associated with this frame, if the frame identified by the frameId existed at one point in the given tab. The fact that an URL is associated with a given frameId does not imply that the corresponding frame still exists."
+                },
+                "parentFrameId": {
+                  "type": "integer",
+                  "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "getAllFrames",
@@ -78,43 +79,44 @@
             "properties": {
               "tabId": { "type": "integer", "minimum": 0, "description": "The ID of the tab." }
             }
-          },
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {
-                "name": "details",
-                "type": "array",
-                "description": "A list of frames in the given tab, null if the specified tab ID is invalid.",
-                "optional": true,
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "errorOccurred": {
-                      "type": "boolean",
-                      "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
-                    },
-                    "processId": {
-                      "type": "integer",
-                      "description": "The ID of the process that runs the renderer for this frame."
-                    },
-                    "frameId": {
-                      "type": "integer",
-                      "description": "The ID of the frame. 0 indicates that this is the main frame; a positive value indicates the ID of a subframe."
-                    },
-                    "parentFrameId": {
-                      "type": "integer",
-                      "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
-                    },
-                    "url": {
-                      "type": "string",
-                      "description": "The URL currently associated with this frame."
-                    }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "details",
+              "type": "array",
+              "description": "A list of frames in the given tab, null if the specified tab ID is invalid.",
+              "optional": true,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "errorOccurred": {
+                    "type": "boolean",
+                    "description": "True if the last navigation in this frame was interrupted by an error, i.e. the onErrorOccurred event fired."
+                  },
+                  "processId": {
+                    "type": "integer",
+                    "description": "The ID of the process that runs the renderer for this frame."
+                  },
+                  "frameId": {
+                    "type": "integer",
+                    "description": "The ID of the frame. 0 indicates that this is the main frame; a positive value indicates the ID of a subframe."
+                  },
+                  "parentFrameId": {
+                    "type": "integer",
+                    "description": "The ID of the parent frame, or <code>-1</code> if this is the main frame."
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "The URL currently associated with this frame."
                   }
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ],
     "events": [

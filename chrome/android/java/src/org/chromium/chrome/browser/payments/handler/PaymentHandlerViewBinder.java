@@ -14,9 +14,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /* package */ class PaymentHandlerViewBinder {
     /* package */ static void bind(
             PropertyModel model, PaymentHandlerView view, PropertyKey propertyKey) {
-        if (PaymentHandlerProperties.BOTTOM_SHEET_HEIGHT_FRACTION == propertyKey) {
-            view.onHeightFractionChanged(
-                    model.get(PaymentHandlerProperties.BOTTOM_SHEET_HEIGHT_FRACTION));
+        if (PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX == propertyKey) {
+            view.onContentVisibleHeightChanged(
+                    model.get(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX));
+        } else if (PaymentHandlerProperties.BACK_PRESS_CALLBACK == propertyKey) {
+            view.setBackPressCallback(model.get(PaymentHandlerProperties.BACK_PRESS_CALLBACK));
         }
     }
 }

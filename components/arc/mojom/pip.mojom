@@ -28,7 +28,7 @@ interface PipHost {
 // Next Method ID: 3
 interface PipInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(PipHost host_ptr) => ();
+  Init@0(pending_remote<PipHost> host_remote) => ();
 
   // Instruct Android to close the current Android PIP window, if it exists.
   // This is used if the user initiates a Chrome side PIP window, since we

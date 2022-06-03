@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/input_event_ack_state.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 #include "base/logging.h"
 
 namespace content {
 
-const char* InputEventAckStateToString(InputEventAckState ack_state) {
+const char* InputEventResultStateToString(
+    blink::mojom::InputEventResultState ack_state) {
   switch (ack_state) {
-    case INPUT_EVENT_ACK_STATE_UNKNOWN:
+    case blink::mojom::InputEventResultState::kUnknown:
       return "UNKNOWN";
-    case INPUT_EVENT_ACK_STATE_CONSUMED:
+    case blink::mojom::InputEventResultState::kConsumed:
       return "CONSUMED";
-    case INPUT_EVENT_ACK_STATE_NOT_CONSUMED:
+    case blink::mojom::InputEventResultState::kNotConsumed:
       return "NOT_CONSUMED";
-    case INPUT_EVENT_ACK_STATE_CONSUMED_SHOULD_BUBBLE:
-      return "CONSUMED_SHOULD_BUBBLE";
-    case INPUT_EVENT_ACK_STATE_NO_CONSUMER_EXISTS:
+    case blink::mojom::InputEventResultState::kNoConsumerExists:
       return "NO_CONSUMER_EXISTS";
-    case INPUT_EVENT_ACK_STATE_IGNORED:
+    case blink::mojom::InputEventResultState::kIgnored:
       return "IGNORED";
-    case INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING:
+    case blink::mojom::InputEventResultState::kSetNonBlocking:
       return "SET_NON_BLOCKING";
-    case INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING_DUE_TO_FLING:
+    case blink::mojom::InputEventResultState::kSetNonBlockingDueToFling:
       return "SET_NON_BLOCKING_DUE_TO_FLING";
   }
-  DLOG(WARNING) << "InputEventAckStateToString: Unhandled InputEventAckState.";
+  DLOG(WARNING)
+      << "InputEventResultStateToString: Unhandled InputEventResultState.";
   return "";
 }
 

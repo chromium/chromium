@@ -16,26 +16,40 @@
     android:visibility="gone" >
 
     <!-- Search provider logo -->
-    <org.chromium.chrome.browser.ntp.LogoView
-        android:id="@+id/search_provider_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/ntp_logo_height"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="@dimen/ntp_logo_margin_top"
-        android:layout_marginBottom="23dp" />
+    <FrameLayout
+        android:id="@+id/logo_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ViewStub
+            android:id="@+id/cryptid_holder"
+            android:layout="@layout/new_tab_page_cryptid_holder"
+            android:layout_width="@dimen/cryptid_width_in_logo_wrapper"
+            android:layout_height="@dimen/cryptid_height_in_logo_wrapper"
+            android:layout_gravity="bottom|start" />
+
+        <org.chromium.chrome.browser.ntp.LogoView
+            android:id="@+id/search_provider_logo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ntp_logo_height"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="@dimen/ntp_logo_margin_top"
+            android:layout_marginBottom="23dp" />
+
+    </FrameLayout>
 
     <!-- Search box -->
     <include layout="@layout/fake_search_box_layout"/>
 
-    <!-- Explore offline card -->
-    <ViewStub
-        android:id="@+id/explore_offline_card_stub"
+    <!-- Query tiles -->
+    <FrameLayout
+        android:id="@+id/query_tiles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout="@layout/new_tab_page_offline_card"
-        android:inflatedId="@+id/explore_offline_card" />
+        android:visibility="gone"/>
 
     <!-- Middle spacer -->
     <View
@@ -63,6 +77,16 @@
         android:layout_weight="1"
         android:inflatedId="@+id/tile_grid_placeholder"
         android:layout="@layout/new_tab_page_tile_grid_placeholder" />
+
+    <!-- Video tutorial IPH card -->
+    <ViewStub
+        android:id="@+id/video_iph_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout="@layout/video_tutorial_iph_card"
+        android:inflatedId="@+id/video_iph_card"/>
 
     <!-- Spacer for when there is no search provider logo. -->
     <View

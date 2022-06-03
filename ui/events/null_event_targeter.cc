@@ -4,7 +4,7 @@
 
 #include "ui/events/null_event_targeter.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ui {
 

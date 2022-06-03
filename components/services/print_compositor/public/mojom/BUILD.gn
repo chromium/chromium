@@ -1,0 +1,25 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
+
+mojom("mojom") {
+  sources = [ "print_compositor.mojom" ]
+  public_deps = [
+    "//components/discardable_memory/public/mojom",
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  if (enable_tagged_pdf) {
+    assert(enable_print_preview)
+    enabled_features = [ "enable_tagged_pdf" ]
+
+    # Accessibility dependencies for exporting tagged PDFs on platforms
+    # that support print preview only (desktop platforms).
+    public_deps += [ "//ui/accessibility/mojom" ]
+  }
+}

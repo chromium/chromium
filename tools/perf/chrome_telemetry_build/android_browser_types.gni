@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+
+# This provides a list of suffixes for all Android Chromium Telemetry targets
+# for use in auto-generating binary-specific targets.
+# All the suffixes should be kept in sync with android_browser_types.py.
+
+telemetry_android_browser_target_suffixes = [
+  "_android_chrome",
+  "_android_monochrome",
+  "_android_monochrome_bundle",
+  "_android_weblayer",
+  "_android_webview",
+]
+
+if (enable_chrome_android_internal) {
+  import("//clank/telemetry_browser_types.gni")
+  telemetry_android_browser_target_suffixes +=
+      telemetry_clank_browser_target_suffixes
+}

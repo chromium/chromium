@@ -14,23 +14,12 @@ declare_args() {
 
 cast_source_set("backend") {
   sources = [
-    "audio_decoder_software_wrapper.cc",
-    "audio_decoder_software_wrapper.h",
-    "audio_decoder_wrapper.cc",
-    "audio_decoder_wrapper.h",
-    "cma_backend.h",
-    "cma_backend_factory.h",
     "cma_backend_factory_impl.cc",
     "cma_backend_factory_impl.h",
-    "media_pipeline_backend_manager.cc",
-    "media_pipeline_backend_manager.h",
-    "media_pipeline_backend_wrapper.cc",
-    "media_pipeline_backend_wrapper.h",
-    "video_decoder_wrapper.cc",
-    "video_decoder_wrapper.h",
   ]
 
   public_deps = [
+    "//chromecast/media/api",
     "//chromecast/public",
     "//chromecast/public/media",
   ]
@@ -40,10 +29,15 @@ cast_source_set("backend") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base/metrics:metrics",
     "//chromecast/media:libcast_media",
-    "//chromecast/media/base:media_resource_tracker",
     "//chromecast/media/cma/base",
     "//chromecast/media/cma/decoder",
+    "//chromecast/media/common:media_pipeline_backend_manager",
+    "//chromecast/media/common:media_resource_tracker",
   ]
+
+  if (enable_chromium_runtime_cast_renderer) {
+    deps += [ "//chromecast/media/cma/backend/proxy" ]
+  }
 
   if (have_full_mixer) {
     sources += [ "media_pipeline_backend_manager_mixer.cc" ]
@@ -57,9 +51,7 @@ cast_source_set("backend") {
 # libcast_media_1.0.so. This target is only used to build executables
 # with correct linkage information.
 cast_shared_library("libcast_media_1.0") {
-  sources = [
-    "cast_media_dummy.cc",
-  ]
+  sources = [ "cast_media_dummy.cc" ]
 
   deps = [
     ":audio_buildflags",
@@ -95,9 +87,7 @@ cast_source_set("null_video") {
 }
 
 cast_source_set("public") {
-  sources = [
-    "system_volume_control.h",
-  ]
+  sources = [ "system_volume_control.h" ]
 
   deps = [
     "//base",
@@ -106,9 +96,7 @@ cast_source_set("public") {
 }
 
 cast_source_set("av_sync_dummy") {
-  sources = [
-    "av_sync_dummy.cc",
-  ]
+  sources = [ "av_sync_dummy.cc" ]
 
   deps = [
     "//base",
@@ -117,9 +105,7 @@ cast_source_set("av_sync_dummy") {
 }
 
 cast_source_set("audio_codec_support") {
-  sources = [
-    "media_codec_support_cast_audio.cc",
-  ]
+  sources = [ "media_codec_support_cast_audio.cc" ]
   deps = [
     "//base",
     "//chromecast/public",
@@ -133,15 +119,25 @@ cast_source_set("cast_audio_json") {
     "cast_audio_json.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 cast_source_set("volume_map") {
   sources = [
     "volume_map.cc",
     "volume_map.h",
+  ]
+  deps = [
+    ":cast_audio_json",
+    "//base",
+    "//chromecast/public",
+  ]
+}
+
+cast_source_set("saved_volumes") {
+  sources = [
+    "saved_volumes.cc",
+    "saved_volumes.h",
   ]
   deps = [
     ":cast_audio_json",
@@ -163,15 +159,18 @@ cast_source_set("for_mixer_audio") {
     ":audio_buildflags",
     ":cast_audio_json",
     ":public",
+    ":saved_volumes",
     ":volume_map",
     "//base",
     "//chromecast/base",
-    "//chromecast/media/audio:audio_resampler",
-    "//chromecast/media/audio:fader",
+    "//chromecast/media/api",
+    "//chromecast/media/audio:processing",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:control_connection",
     "//chromecast/media/audio/mixer_service:output_stream_connection",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/cma/base",
     "//chromecast/media/cma/decoder",
@@ -189,9 +188,7 @@ cast_source_set("for_mixer_audio") {
 
 test("cast_audio_backend_unittests") {
   testonly = true
-  sources = [
-    "volume_map_unittest.cc",
-  ]
+  sources = [ "volume_map_unittest.cc" ]
 
   deps = [
     ":cast_audio_json",

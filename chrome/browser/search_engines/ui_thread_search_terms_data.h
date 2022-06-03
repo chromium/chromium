@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/search_engines/search_terms_data.h"
 
 // Implementation of SearchTermsData that is only usable on the UI thread.
@@ -17,9 +15,12 @@ class UIThreadSearchTermsData : public SearchTermsData {
  public:
   UIThreadSearchTermsData();
 
+  UIThreadSearchTermsData(const UIThreadSearchTermsData&) = delete;
+  UIThreadSearchTermsData& operator=(const UIThreadSearchTermsData&) = delete;
+
   std::string GoogleBaseURLValue() const override;
   std::string GetApplicationLocale() const override;
-  base::string16 GetRlzParameterValue(bool from_app_list) const override;
+  std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
   std::string GetSuggestClient() const override;
   std::string GetSuggestRequestIdentifier() const override;
@@ -33,9 +34,6 @@ class UIThreadSearchTermsData : public SearchTermsData {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIThreadSearchTermsData);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_UI_THREAD_SEARCH_TERMS_DATA_H_

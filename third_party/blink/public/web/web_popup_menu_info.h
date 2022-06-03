@@ -31,8 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_POPUP_MENU_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_POPUP_MENU_INFO_H_
 
+#include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_menu_item_info.h"
 
 namespace blink {
 
@@ -41,10 +41,10 @@ struct WebPopupMenuInfo {
   int item_height;
   int item_font_size;
   int selected_index;
-  WebVector<WebMenuItemInfo> items;
+  WebVector<MenuItemInfo> items;
   bool right_aligned;
   bool allow_multiple_selection;
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_POPUP_MENU_INFO_H_

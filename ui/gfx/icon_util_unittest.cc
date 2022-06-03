@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/icon_util_unittests_resource.h"
 #include "ui/gfx/image/image.h"
@@ -200,52 +201,17 @@ TEST_F(IconUtilTest, TestBitmapToIconInvalidParameters) {
 // The following test case makes sure IconUtil::CreateIconFileFromImageFamily
 // fails gracefully when called with invalid input parameters.
 TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
-  std::unique_ptr<SkBitmap> bitmap;
   gfx::ImageFamily image_family;
   base::FilePath valid_icon_filename =
       temp_directory_.GetPath().AppendASCII(kTempIconFilename);
   base::FilePath invalid_icon_filename =
       temp_directory_.GetPath().AppendASCII("<>?.ico");
 
-  // Wrong bitmap format.
-  bitmap = std::make_unique<SkBitmap>();
-  ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
-  // Must allocate pixels or else ImageSkia will ignore the bitmap and just
-  // return an empty image.
-  bitmap->allocPixels(SkImageInfo::MakeA8(kSmallIconWidth, kSmallIconHeight));
-  memset(bitmap->getPixels(), 0, bitmap->width() * bitmap->height());
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
-  EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
-                                                       valid_icon_filename));
-  EXPECT_FALSE(base::PathExists(valid_icon_filename));
-
-  // Invalid bitmap size.
-  image_family.clear();
-  bitmap = std::make_unique<SkBitmap>();
-  ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
-  bitmap->allocPixels(SkImageInfo::MakeN32Premul(0, 0));
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
-  EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
-                                                       valid_icon_filename));
-  EXPECT_FALSE(base::PathExists(valid_icon_filename));
-
-  // Bitmap with no allocated pixels.
-  image_family.clear();
-  bitmap = std::make_unique<SkBitmap>();
-  ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
-  bitmap->setInfo(SkImageInfo::MakeN32Premul(kSmallIconWidth,
-                                             kSmallIconHeight));
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
-  EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
-                                                       valid_icon_filename));
-  EXPECT_FALSE(base::PathExists(valid_icon_filename));
-
   // Invalid file name.
+  SkBitmap bitmap;
   image_family.clear();
-  bitmap->allocPixels();
-  // Setting the pixels to black.
-  memset(bitmap->getPixels(), 0, bitmap->width() * bitmap->height() * 4);
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
+  bitmap.allocN32Pixels(1, 1);
+  image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));
   EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                        invalid_icon_filename));
   EXPECT_FALSE(base::PathExists(invalid_icon_filename));
@@ -429,4 +395,37 @@ TEST_F(IconUtilTest, TestNumIconDimensionsUpToMediumSize) {
   EXPECT_EQ(IconUtil::kMediumIconSize,
             IconUtil::kIconDimensions[
                 IconUtil::kNumIconDimensionsUpToMediumSize - 1]);
+}
+
+TEST_F(IconUtilTest, TestTransparentIcon) {
+  base::FilePath icon_filename =
+      temp_directory_.GetPath().AppendASCII(kTempIconFilename);
+  int size = 48;
+  auto semi_transparent_red = SkColorSetARGB(0x77, 0xFF, 0x00, 0x00);
+
+  // Create a bitmap with a semi transparent red dot.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size, size, false);
+  EXPECT_EQ(bitmap.alphaType(), kPremul_SkAlphaType);
+  {
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    canvas.drawColor(SK_ColorWHITE);
+    SkPaint paint;
+    paint.setColor(semi_transparent_red);
+    paint.setBlendMode(SkBlendMode::kSrc);
+    canvas.drawPoint(1, 1, paint);
+  }
+
+  // Create icon from that bitmap.
+  gfx::ImageFamily image_family;
+  image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));
+  ASSERT_TRUE(
+      IconUtil::CreateIconFileFromImageFamily(image_family, icon_filename));
+
+  // Load icon and check that dot has same color.
+  ScopedHICON icon(LoadIconFromFile(icon_filename, size, size));
+  ASSERT_TRUE(icon.is_valid());
+  SkBitmap bitmap_loaded =
+      IconUtil::CreateSkBitmapFromHICON(icon.get(), gfx::Size(size, size));
+  EXPECT_EQ(bitmap_loaded.getColor(1, 1), semi_transparent_red);
 }

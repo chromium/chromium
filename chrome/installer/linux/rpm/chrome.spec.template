@@ -138,27 +138,12 @@ if [ "$repo_add_once" = "true" ]; then
     "yum")
       install_yum
       ;;
-    "urpmi")
-      install_urpmi
-      ;;
-    "yast")
-      install_yast
+    "zypp")
+      install_zypp
       ;;
     esac
   done
 fi
-
-# Some package managers have locks that prevent everything from being
-# configured at install time, so wait a bit then kick the cron job to do
-# whatever is left. Probably the db will be unlocked by then, but if not, the
-# cron job will keep retrying.
-# Do this with 'at' instead of a backgrounded shell because zypper waits on all
-# sub-shells to finish before it finishes, which is exactly the opposite of
-# what we want here. Also preemptively start atd because for some reason it's
-# not always running, which kind of defeats the purpose of having 'at' as a
-# required LSB command.
-service atd start
-echo "sh /etc/cron.daily/@@PACKAGE@@" | at now + 2 minute > /dev/null 2>&1
 
 CHANNEL=@@CHANNEL@@
 case $CHANNEL in
@@ -219,11 +204,8 @@ fi
 #  "yum")
 #    remove_yum
 #    ;;
-#  "urpmi")
-#    remove_urpmi
-#    ;;
-#  "yast")
-#    remove_yast
+#  "zypp")
+#    remove_zypp
 #    ;;
 #  esac
 #done

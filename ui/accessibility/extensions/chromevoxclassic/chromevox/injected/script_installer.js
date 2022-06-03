@@ -15,7 +15,7 @@ goog.provide('cvox.ScriptInstaller');
  * URL pattern where we do not allow script installation.
  * @type {RegExp}
  */
-cvox.ScriptInstaller.blacklistPattern = /chrome:\/\/|chrome-extension:\/\//;
+cvox.ScriptInstaller.denylistPattern = /chrome:\/\/|chrome-extension:\/\//;
 
 /**
  * Installs a script in the web page.
@@ -31,7 +31,7 @@ cvox.ScriptInstaller.blacklistPattern = /chrome:\/\/|chrome-extension:\/\//;
  */
 cvox.ScriptInstaller.installScript = function(
     srcs, uid, opt_onload, opt_chromevoxScriptBase) {
-  if (cvox.ScriptInstaller.blacklistPattern.test(document.URL)) {
+  if (cvox.ScriptInstaller.denylistPattern.test(document.URL)) {
     return false;
   }
   if (document.querySelector('script[' + uid + ']')) {

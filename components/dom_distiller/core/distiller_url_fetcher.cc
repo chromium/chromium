@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
@@ -30,10 +31,10 @@ DistillerURLFetcher::DistillerURLFetcher(
 DistillerURLFetcher::~DistillerURLFetcher() {}
 
 void DistillerURLFetcher::FetchURL(const std::string& url,
-                                   const URLFetcherCallback& callback) {
+                                   URLFetcherCallback callback) {
   // Don't allow a fetch if one is pending.
   DCHECK(!url_loader_);
-  callback_ = callback;
+  callback_ = std::move(callback);
   url_loader_ = CreateURLFetcher(url);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
@@ -98,7 +99,7 @@ void DistillerURLFetcher::OnURLLoadComplete(
     // an empty string into the proto otherwise.
     response = std::move(*response_body);
   }
-  callback_.Run(response);
+  std::move(callback_).Run(response);
 }
 
 }  // namespace dom_distiller

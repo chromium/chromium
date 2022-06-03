@@ -15,10 +15,11 @@ namespace {
 class GpuTestSuite : public base::TestSuite {
  public:
   GpuTestSuite(int argc, char** argv);
-  ~GpuTestSuite() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuTestSuite);
+  GpuTestSuite(const GpuTestSuite&) = delete;
+  GpuTestSuite& operator=(const GpuTestSuite&) = delete;
+
+  ~GpuTestSuite() override;
 };
 
 GpuTestSuite::GpuTestSuite(int argc, char** argv)

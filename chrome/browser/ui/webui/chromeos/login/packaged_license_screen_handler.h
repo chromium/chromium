@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PACKAGED_LICENSE_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PACKAGED_LICENSE_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class PackagedLicenseScreen;
+}
+
+namespace chromeos {
 
 class PackagedLicenseView {
  public:
@@ -21,8 +22,8 @@ class PackagedLicenseView {
   PackagedLicenseView& operator=(const PackagedLicenseView&) = delete;
   virtual ~PackagedLicenseView() = default;
 
-  // Binds |screen| to the view.
-  virtual void Bind(PackagedLicenseScreen* screen) = 0;
+  // Binds `screen` to the view.
+  virtual void Bind(ash::PackagedLicenseScreen* screen) = 0;
 
   // Unbinds model from the view.
   virtual void Unbind() = 0;
@@ -46,7 +47,7 @@ class PackagedLicenseScreenHandler : public BaseScreenHandler,
   ~PackagedLicenseScreenHandler() override;
 
   // PackagedLicenseView:
-  void Bind(PackagedLicenseScreen* screen) override;
+  void Bind(ash::PackagedLicenseScreen* screen) override;
   void Unbind() override;
   void Show() override;
   void Hide() override;
@@ -60,9 +61,16 @@ class PackagedLicenseScreenHandler : public BaseScreenHandler,
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
 
-  PackagedLicenseScreen* screen_ = nullptr;
+  ash::PackagedLicenseScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::PackagedLicenseScreenHandler;
+using ::chromeos::PackagedLicenseView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PACKAGED_LICENSE_SCREEN_HANDLER_H_

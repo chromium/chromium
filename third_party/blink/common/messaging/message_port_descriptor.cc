@@ -37,32 +37,15 @@ MessagePortDescriptor::MessagePortDescriptor() = default;
 MessagePortDescriptor::MessagePortDescriptor(
     MessagePortDescriptor&& message_port)
     : handle_(std::move(message_port.handle_)),
-#if DCHECK_IS_ON()
-      raw_handle_(
-          std::exchange(message_port.raw_handle_, mojo::MessagePipeHandle())),
-#endif
       id_(std::exchange(message_port.id_, base::UnguessableToken::Null())),
       sequence_number_(std::exchange(message_port.sequence_number_,
-                                     kInvalidSequenceNumber)) {
-#if DCHECK_IS_ON()
-  DCHECK_EQ(raw_handle_.value(), handle_.get().value());
-#endif
-}
-
-MessagePortDescriptor::~MessagePortDescriptor() {
-  Reset();
-}
+                                     kInvalidSequenceNumber)) {}
 
 MessagePortDescriptor& MessagePortDescriptor::operator=(
     MessagePortDescriptor&& message_port) {
   Reset();
 
   handle_ = std::move(message_port.handle_);
-#if DCHECK_IS_ON()
-  raw_handle_ =
-      std::exchange(message_port.raw_handle_, mojo::MessagePipeHandle());
-  DCHECK_EQ(raw_handle_.value(), handle_.get().value());
-#endif
   id_ = std::exchange(message_port.id_, base::UnguessableToken::Null());
   sequence_number_ =
       std::exchange(message_port.sequence_number_, kInvalidSequenceNumber);
@@ -70,27 +53,33 @@ MessagePortDescriptor& MessagePortDescriptor::operator=(
   return *this;
 }
 
+MessagePortDescriptor::~MessagePortDescriptor() {
+  Reset();
+}
+
+MojoHandle MessagePortDescriptor::GetMojoHandleForTesting() const {
+  if (!handle_.get())
+    return MOJO_HANDLE_INVALID;
+  return handle_.get().value();
+}
+
 bool MessagePortDescriptor::IsValid() const {
   // |handle_| can be valid or invalid, depending on if we're entangled or
   // not. But everything else should be consistent.
-#if DCHECK_IS_ON()
-  DCHECK_EQ(id_.is_empty(), !raw_handle_.is_valid());
-  DCHECK_EQ(sequence_number_ == kInvalidSequenceNumber,
-            !raw_handle_.is_valid());
-  return raw_handle_.is_valid();
-#else
+  EnsureValidSerializationState();
   DCHECK_EQ(id_.is_empty(), sequence_number_ == kInvalidSequenceNumber);
   return !id_.is_empty() && sequence_number_ != kInvalidSequenceNumber;
-#endif
 }
 
 bool MessagePortDescriptor::IsEntangled() const {
+  EnsureNotSerialized();
   // This descriptor is entangled if it's valid, but its handle has been loaned
   // out.
   return IsValid() && !handle_.is_valid();
 }
 
 bool MessagePortDescriptor::IsDefault() const {
+  EnsureValidSerializationState();
   if (IsValid())
     return false;
 
@@ -101,6 +90,11 @@ bool MessagePortDescriptor::IsDefault() const {
 }
 
 void MessagePortDescriptor::Reset() {
+#if DCHECK_IS_ON()
+  EnsureValidSerializationState();
+  serialization_state_ = {};
+#endif
+
   if (IsValid()) {
     // Call NotifyDestroyed before clearing members, as the notification needs
     // to access them.
@@ -109,11 +103,6 @@ void MessagePortDescriptor::Reset() {
     // Ensure that MessagePipeDescriptor-wrapped handles are fully accounted for
     // over their entire lifetime.
     DCHECK(handle_.is_valid());
-#if DCHECK_IS_ON()
-    DCHECK(raw_handle_.is_valid());
-    DCHECK_EQ(raw_handle_.value(), handle_.get().value());
-    raw_handle_ = mojo::MessagePipeHandle();
-#endif
 
     handle_.reset();
     id_ = base::UnguessableToken::Null();
@@ -121,17 +110,20 @@ void MessagePortDescriptor::Reset() {
   }
 }
 
-void MessagePortDescriptor::Init(mojo::ScopedMessagePipeHandle handle,
-                                 base::UnguessableToken id,
-                                 uint64_t sequence_number) {
-  // Init is only called by deserialization code and thus should only be called
+void MessagePortDescriptor::InitializeFromSerializedValues(
+    mojo::ScopedMessagePipeHandle handle,
+    const base::UnguessableToken& id,
+    uint64_t sequence_number) {
+#if DCHECK_IS_ON()
+  EnsureValidSerializationState();
+  serialization_state_ = {};
+
+  // This is only called by deserialization code and thus should only be called
   // on a default initialized descriptor.
   DCHECK(IsDefault());
+#endif
 
   handle_ = std::move(handle);
-#if DCHECK_IS_ON()
-  raw_handle_ = handle_.get();
-#endif
   id_ = id;
   sequence_number_ = sequence_number;
 
@@ -140,67 +132,110 @@ void MessagePortDescriptor::Init(mojo::ScopedMessagePipeHandle handle,
   DCHECK((IsValid() && !IsEntangled()) || IsDefault());
 }
 
-mojo::ScopedMessagePipeHandle MessagePortDescriptor::TakeHandle() {
-  DCHECK(handle_.is_valid());
+mojo::ScopedMessagePipeHandle
+MessagePortDescriptor::TakeHandleForSerialization() {
 #if DCHECK_IS_ON()
-  DCHECK(raw_handle_.is_valid());
-  DCHECK_EQ(raw_handle_.value(), handle_.get().value());
-  raw_handle_ = mojo::MessagePipeHandle();
+  DCHECK(handle_.is_valid());  // Ensures not entangled.
+  DCHECK(!serialization_state_.took_handle_for_serialization_);
+  serialization_state_.took_handle_for_serialization_ = true;
 #endif
   return std::move(handle_);
 }
 
-base::UnguessableToken MessagePortDescriptor::TakeId() {
+base::UnguessableToken MessagePortDescriptor::TakeIdForSerialization() {
+#if DCHECK_IS_ON()
   DCHECK(!id_.is_empty());
+  DCHECK(serialization_state_.took_handle_for_serialization_ ||
+         handle_.is_valid());  // Ensures not entangled.
+  DCHECK(!serialization_state_.took_id_for_serialization_);
+  serialization_state_.took_id_for_serialization_ = true;
+#endif
   return std::exchange(id_, base::UnguessableToken::Null());
 }
 
-uint64_t MessagePortDescriptor::TakeSequenceNumber() {
+uint64_t MessagePortDescriptor::TakeSequenceNumberForSerialization() {
+#if DCHECK_IS_ON()
   DCHECK_NE(kInvalidSequenceNumber, sequence_number_);
+  DCHECK(serialization_state_.took_handle_for_serialization_ ||
+         handle_.is_valid());  // Ensures not entangled.
+  DCHECK(!serialization_state_.took_sequence_number_for_serialization_);
+  serialization_state_.took_sequence_number_for_serialization_ = true;
+#endif
   return std::exchange(sequence_number_, kInvalidSequenceNumber);
 }
 
 mojo::ScopedMessagePipeHandle MessagePortDescriptor::TakeHandleToEntangle(
-    const base::UnguessableToken& execution_context_id) {
+    ExecutionContext* execution_context) {
+  EnsureNotSerialized();
   DCHECK(handle_.is_valid());
-  NotifyAttached(execution_context_id);
-  // Do not use TakeHandle, because it also resets |raw_handle_|. In DCHECK
-  // builds we use |raw_handle_| to ensure that the same handle is given back to
-  // us via "GiveDisentangledHandle".
+  NotifyAttached(execution_context);
+  return std::move(handle_);
+}
+
+mojo::ScopedMessagePipeHandle
+MessagePortDescriptor::TakeHandleToEntangleWithEmbedder() {
+  EnsureNotSerialized();
+  DCHECK(handle_.is_valid());
+  NotifyAttachedToEmbedder();
   return std::move(handle_);
 }
 
 void MessagePortDescriptor::GiveDisentangledHandle(
     mojo::ScopedMessagePipeHandle handle) {
-  // We should only ever be given back the same handle that was taken from us.
-  DCHECK(!handle_.is_valid());
-#if DCHECK_IS_ON()
-  DCHECK_EQ(raw_handle_.value(), handle.get().value());
-#endif
+  EnsureNotSerialized();
+  // Ideally, we should only ever be given back the same handle that was taken
+  // from us.
+  // NOTE: It is possible that this can happen if the handle is bound to a
+  // Connector, and the Connector subsequently encounters an error, force closes
+  // the pipe, and the transparently binds another dangling pipe. This can be
+  // caught by having the descriptor own the connector and observer connection
+  // errors, but this can only occur once descriptors are being used everywhere.
   handle_ = std::move(handle);
+
+  // If we've been given back a null handle, then the handle we vended out was
+  // closed due to error (this can happen in Java code). For now, simply create
+  // a dangling handle to replace it. This allows the IsEntangled() and
+  // IsValid() logic to work as is.
+  // TODO(chrisha): Clean this up once we make this own a connector, and endow
+  // it with knowledge of the connector error state. There's no need for us to
+  // hold on to a dangling pipe endpoint, and we can send a NotifyClosed()
+  // earlier.
+  if (!handle_.is_valid()) {
+    mojo::MessagePipe pipe;
+    handle_ = std::move(pipe.handle0);
+  }
+
   NotifyDetached();
 }
 
 MessagePortDescriptor::MessagePortDescriptor(
     mojo::ScopedMessagePipeHandle handle)
     : handle_(std::move(handle)),
-#if DCHECK_IS_ON()
-      raw_handle_(handle_.get()),
-#endif
       id_(base::UnguessableToken::Create()),
       sequence_number_(kFirstValidSequenceNumber) {
 }
 
 void MessagePortDescriptor::NotifyAttached(
-    const base::UnguessableToken& execution_context_id) {
+    ExecutionContext* execution_context) {
+  EnsureNotSerialized();
   DCHECK(!id_.is_empty());
   if (g_instrumentation_delegate) {
     g_instrumentation_delegate->NotifyMessagePortAttached(
-        id_, sequence_number_++, execution_context_id);
+        id_, sequence_number_++, execution_context);
+  }
+}
+
+void MessagePortDescriptor::NotifyAttachedToEmbedder() {
+  EnsureNotSerialized();
+  DCHECK(!id_.is_empty());
+  if (g_instrumentation_delegate) {
+    g_instrumentation_delegate->NotifyMessagePortAttachedToEmbedder(
+        id_, sequence_number_++);
   }
 }
 
 void MessagePortDescriptor::NotifyDetached() {
+  EnsureNotSerialized();
   DCHECK(!id_.is_empty());
   if (g_instrumentation_delegate) {
     g_instrumentation_delegate->NotifyMessagePortDetached(id_,
@@ -209,11 +244,30 @@ void MessagePortDescriptor::NotifyDetached() {
 }
 
 void MessagePortDescriptor::NotifyDestroyed() {
+  EnsureNotSerialized();
   DCHECK(!id_.is_empty());
   if (g_instrumentation_delegate) {
     g_instrumentation_delegate->NotifyMessagePortDestroyed(id_,
                                                            sequence_number_++);
   }
+}
+
+void MessagePortDescriptor::EnsureNotSerialized() const {
+#if DCHECK_IS_ON()
+  DCHECK(!serialization_state_.took_handle_for_serialization_ &&
+         !serialization_state_.took_id_for_serialization_ &&
+         !serialization_state_.took_sequence_number_for_serialization_);
+#endif
+}
+
+void MessagePortDescriptor::EnsureValidSerializationState() const {
+#if DCHECK_IS_ON()
+  // Either everything was serialized, or nothing was.
+  DCHECK((serialization_state_.took_handle_for_serialization_ ==
+          serialization_state_.took_id_for_serialization_) &&
+         (serialization_state_.took_handle_for_serialization_ ==
+          serialization_state_.took_sequence_number_for_serialization_));
+#endif
 }
 
 MessagePortDescriptorPair::MessagePortDescriptorPair() {
@@ -223,8 +277,10 @@ MessagePortDescriptorPair::MessagePortDescriptorPair() {
 
   // Notify the instrumentation that these ports are newly created and peers of
   // each other.
-  if (g_instrumentation_delegate)
-    g_instrumentation_delegate->NotifyMessagePortPairCreated(*this);
+  if (g_instrumentation_delegate) {
+    g_instrumentation_delegate->NotifyMessagePortPairCreated(port0_.id(),
+                                                             port1_.id());
+  }
 }
 
 MessagePortDescriptorPair::~MessagePortDescriptorPair() = default;

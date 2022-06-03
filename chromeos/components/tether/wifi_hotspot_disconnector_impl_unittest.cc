@@ -42,48 +42,50 @@ std::string CreateConnectedWifiConfigurationJsonString(
 
 class TestNetworkConnectionHandler : public NetworkConnectionHandler {
  public:
-  explicit TestNetworkConnectionHandler(base::Closure disconnect_callback)
-      : disconnect_callback_(disconnect_callback) {}
+  explicit TestNetworkConnectionHandler(base::OnceClosure disconnect_callback) {
+    disconnect_callback_ = std::move(disconnect_callback);
+  }
   ~TestNetworkConnectionHandler() override = default;
 
   std::string last_disconnect_service_path() {
     return last_disconnect_service_path_;
   }
 
-  base::Closure last_disconnect_success_callback() {
+  base::OnceClosure& last_disconnect_success_callback() {
     return last_disconnect_success_callback_;
   }
 
-  network_handler::ErrorCallback last_disconnect_error_callback() {
+  network_handler::ErrorCallback& last_disconnect_error_callback() {
     return last_disconnect_error_callback_;
   }
 
   // NetworkConnectionHandler:
   void DisconnectNetwork(
       const std::string& service_path,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) override {
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback) override {
     last_disconnect_service_path_ = service_path;
-    last_disconnect_success_callback_ = success_callback;
-    last_disconnect_error_callback_ = error_callback;
+    last_disconnect_success_callback_ = std::move(success_callback);
+    last_disconnect_error_callback_ = std::move(error_callback);
 
-    disconnect_callback_.Run();
+    std::move(disconnect_callback_).Run();
   }
   void ConnectToNetwork(const std::string& service_path,
-                        const base::Closure& success_callback,
-                        const network_handler::ErrorCallback& error_callback,
+                        base::OnceClosure success_callback,
+                        network_handler::ErrorCallback error_callback,
                         bool check_error_state,
                         ConnectCallbackMode mode) override {}
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override {}
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularConnectionHandler* cellular_connection_handler) override {}
 
  private:
-  base::Closure disconnect_callback_;
+  base::OnceClosure disconnect_callback_;
 
   std::string last_disconnect_service_path_;
-  base::Closure last_disconnect_success_callback_;
+  base::OnceClosure last_disconnect_success_callback_;
   network_handler::ErrorCallback last_disconnect_error_callback_;
 };
 
@@ -92,6 +94,12 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
 class WifiHotspotDisconnectorImplTest : public testing::Test {
  public:
   WifiHotspotDisconnectorImplTest() = default;
+
+  WifiHotspotDisconnectorImplTest(const WifiHotspotDisconnectorImplTest&) =
+      delete;
+  WifiHotspotDisconnectorImplTest& operator=(
+      const WifiHotspotDisconnectorImplTest&) = delete;
+
   ~WifiHotspotDisconnectorImplTest() override = default;
 
   void SetUp() override {
@@ -99,9 +107,9 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
 
     test_network_connection_handler_ =
         base::WrapUnique(new TestNetworkConnectionHandler(
-            base::Bind(&WifiHotspotDisconnectorImplTest::
-                           OnNetworkConnectionManagerDisconnect,
-                       base::Unretained(this))));
+            base::BindOnce(&WifiHotspotDisconnectorImplTest::
+                               OnNetworkConnectionManagerDisconnect,
+                           base::Unretained(this))));
     fake_configuration_remover_ =
         std::make_unique<FakeNetworkConfigurationRemover>();
     test_pref_service_ =
@@ -138,10 +146,10 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
   void CallDisconnect(const std::string& wifi_network_guid) {
     wifi_hotspot_disconnector_->DisconnectFromWifiHotspot(
         wifi_network_guid,
-        base::Bind(&WifiHotspotDisconnectorImplTest::SuccessCallback,
-                   base::Unretained(this)),
-        base::Bind(&WifiHotspotDisconnectorImplTest::ErrorCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&WifiHotspotDisconnectorImplTest::SuccessCallback,
+                       base::Unretained(this)),
+        base::BindOnce(&WifiHotspotDisconnectorImplTest::ErrorCallback,
+                       base::Unretained(this)));
   }
 
   void OnNetworkConnectionManagerDisconnect() {
@@ -163,14 +171,16 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
       EXPECT_FALSE(
           test_network_connection_handler_->last_disconnect_success_callback()
               .is_null());
-      test_network_connection_handler_->last_disconnect_success_callback()
+      std::move(
+          test_network_connection_handler_->last_disconnect_success_callback())
           .Run();
     } else {
       EXPECT_FALSE(
           test_network_connection_handler_->last_disconnect_error_callback()
               .is_null());
       network_handler::RunErrorCallback(
-          test_network_connection_handler_->last_disconnect_error_callback(),
+          std::move(test_network_connection_handler_
+                        ->last_disconnect_error_callback()),
           wifi_service_path_, NetworkConnectionHandler::kErrorDisconnectFailed,
           std::string() /* error_detail */);
     }
@@ -211,9 +221,6 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
   bool should_disconnect_successfully_;
 
   std::unique_ptr<WifiHotspotDisconnectorImpl> wifi_hotspot_disconnector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotDisconnectorImplTest);
 };
 
 TEST_F(WifiHotspotDisconnectorImplTest, NetworkDoesNotExist) {

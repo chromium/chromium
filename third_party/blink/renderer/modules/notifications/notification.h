@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_NOTIFICATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_NOTIFICATION_H_
 
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
@@ -40,11 +39,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/vibration/navigator_vibration.h"
+#include "third_party/blink/renderer/modules/vibration/vibration_controller.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -60,9 +60,8 @@ class TimestampTrigger;
 class MODULES_EXPORT Notification final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<Notification>,
-      public ContextLifecycleObserver,
+      public ExecutionContextLifecycleObserver,
       public mojom::blink::NonPersistentNotificationListener {
-  USING_GARBAGE_COLLECTED_MIXIN(Notification);
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -111,7 +110,7 @@ class MODULES_EXPORT Notification final
   String image() const;
   String icon() const;
   String badge() const;
-  NavigatorVibration::VibrationPattern vibrate() const;
+  VibrationController::VibrationPattern vibrate() const;
   DOMTimeStamp timestamp() const;
   bool renotify() const;
   bool silent() const;
@@ -130,17 +129,17 @@ class MODULES_EXPORT Notification final
 
   // EventTarget interface.
   ExecutionContext* GetExecutionContext() const final {
-    return ContextLifecycleObserver::GetExecutionContext();
+    return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
   const AtomicString& InterfaceName() const override;
 
-  // ContextLifecycleObserver interface.
-  void ContextDestroyed(ExecutionContext* context) override;
+  // ExecutionContextLifecycleObserver interface.
+  void ContextDestroyed() override;
 
   // ScriptWrappable interface.
   bool HasPendingActivity() const final;
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  protected:
   // EventTarget interface.
@@ -188,12 +187,13 @@ class MODULES_EXPORT Notification final
 
   String token_;
 
-  TaskRunnerTimer<Notification> prepare_show_timer_;
+  HeapTaskRunnerTimer<Notification> prepare_show_timer_;
 
   Member<NotificationResourcesLoader> loader_;
 
-  mojo::Receiver<mojom::blink::NonPersistentNotificationListener>
-      listener_receiver_{this};
+  HeapMojoReceiver<mojom::blink::NonPersistentNotificationListener,
+                   Notification>
+      listener_receiver_;
 };
 
 }  // namespace blink

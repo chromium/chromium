@@ -20,12 +20,16 @@ SaveUPIOfferBubbleViews::SaveUPIOfferBubbleViews(
       controller_(controller) {
   DCHECK(controller_);
 
-  DialogDelegate::set_button_label(
+  SetTitle(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_UPI_PROMPT_TITLE));
+  SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_UPI_PROMPT_ACCEPT));
-  DialogDelegate::set_button_label(
+  SetButtonLabel(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_UPI_PROMPT_REJECT));
+
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
 SaveUPIOfferBubbleViews::~SaveUPIOfferBubbleViews() = default;
@@ -34,20 +38,9 @@ void SaveUPIOfferBubbleViews::Show() {
   ShowForReason(LocationBarBubbleDelegateView::DisplayReason::AUTOMATIC);
 }
 
-gfx::Size SaveUPIOfferBubbleViews::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 bool SaveUPIOfferBubbleViews::Accept() {
   controller_->OnAccept();
   return true;
-}
-
-base::string16 SaveUPIOfferBubbleViews::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_UPI_PROMPT_TITLE);
 }
 
 void SaveUPIOfferBubbleViews::Hide() {

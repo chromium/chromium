@@ -11,4 +11,8 @@ blink_modules_sources("installedapp") {
     "navigator_installed_app.cc",
     "navigator_installed_app.h",
   ]
+  deps = [
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/renderer/modules/manifest",
+  ]
 }

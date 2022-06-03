@@ -20,16 +20,20 @@ class Tab;
 class ErrorPageCallbackProxy : public ErrorPageDelegate {
  public:
   ErrorPageCallbackProxy(JNIEnv* env, jobject obj, Tab* tab);
+
+  ErrorPageCallbackProxy(const ErrorPageCallbackProxy&) = delete;
+  ErrorPageCallbackProxy& operator=(const ErrorPageCallbackProxy&) = delete;
+
   ~ErrorPageCallbackProxy() override;
 
   // ErrorPageDelegate:
   bool OnBackToSafety() override;
+  std::unique_ptr<ErrorPage> GetErrorPageContent(
+      Navigation* navigation) override;
 
  private:
   Tab* tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorPageCallbackProxy);
 };
 
 }  // namespace weblayer

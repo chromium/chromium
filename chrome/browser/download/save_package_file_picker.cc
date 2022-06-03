@@ -10,10 +10,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
@@ -30,6 +32,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::RenderProcessHost;
@@ -58,22 +61,32 @@ void AddHtmlOnlyFileTypeInfo(
   extensions.push_back(FILE_PATH_LITERAL("htm"));
   if (!extra_extension.empty())
     extensions.push_back(extra_extension);
-  file_type_info->extensions.push_back(extensions);
+  file_type_info->extensions.emplace_back(std::move(extensions));
 }
 
-// Adds "Web Archive, Single File" type to FileTypeInfo.
+// Adds "Webpage, Single File" type to FileTypeInfo.
 void AddSingleFileFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info) {
   file_type_info->extension_description_overrides.push_back(
       l10n_util::GetStringUTF16(IDS_SAVE_PAGE_DESC_SINGLE_FILE));
 
-  std::vector<base::FilePath::StringType> extensions;
-  extensions.push_back(FILE_PATH_LITERAL("mhtml"));
-  file_type_info->extensions.push_back(extensions);
+  file_type_info->extensions.emplace_back(
+      std::initializer_list<base::FilePath::StringType>{
+          FILE_PATH_LITERAL("mhtml")});
+}
+
+// Adds "Webpage, Single File (Web Bundle)" type to FileTypeInfo.
+void AddWebBundleFileFileTypeInfo(
+    ui::SelectFileDialog::FileTypeInfo* file_type_info) {
+  file_type_info->extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_SAVE_PAGE_DESC_WEB_BUNDLE_FILE));
+  file_type_info->extensions.emplace_back(
+      std::initializer_list<base::FilePath::StringType>{
+          FILE_PATH_LITERAL("wbn")});
 }
 
 // Chrome OS doesn't support HTML-Complete. crbug.com/154823
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds "Webpage, Complete" type to FileTypeInfo.
 void AddCompleteFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
@@ -88,7 +101,7 @@ void AddCompleteFileTypeInfo(
     extensions.push_back(extra_extension);
   file_type_info->extensions.push_back(extensions);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Checks whether this is a blocked page (e.g., when a child user is accessing
 // a mature site).
@@ -120,7 +133,7 @@ bool SavePackageFilePicker::ShouldSaveAsOnlyHTML(
 }
 
 bool SavePackageFilePicker::ShouldSaveAsMHTML() const {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSavePageAsMHTML))
     return false;
@@ -141,7 +154,7 @@ SavePackageFilePicker::SavePackageFilePicker(
       callback_(std::move(callback)) {
   base::FilePath suggested_path_copy = suggested_path;
   base::FilePath::StringType default_extension_copy = default_extension;
-  int file_type_index = 0;
+  size_t file_type_index = 0;
   ui::SelectFileDialog::FileTypeInfo file_type_info;
 
   file_type_info.allowed_paths =
@@ -152,16 +165,10 @@ SavePackageFilePicker::SavePackageFilePicker(
     save_types_.push_back(content::SAVE_PAGE_TYPE_UNKNOWN);
 
     base::FilePath::StringType extra_extension;
-    if (ShouldSaveAsMHTML()) {
-      default_extension_copy = FILE_PATH_LITERAL("mhtml");
-      suggested_path_copy = suggested_path_copy.ReplaceExtension(
-          default_extension_copy);
-    } else {
-      if (!suggested_path_copy.FinalExtension().empty() &&
-          !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".htm")) &&
-          !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".html"))) {
-        extra_extension = suggested_path_copy.FinalExtension().substr(1);
-      }
+    if (!ShouldSaveAsMHTML() && !suggested_path_copy.FinalExtension().empty() &&
+        !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".htm")) &&
+        !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".html"))) {
+      extra_extension = suggested_path_copy.FinalExtension().substr(1);
     }
 
     if (ShouldSaveAsOnlyHTML(web_contents)) {
@@ -172,12 +179,17 @@ SavePackageFilePicker::SavePackageFilePicker(
     if (can_save_as_complete_) {
       AddSingleFileFileTypeInfo(&file_type_info);
       save_types_.push_back(content::SAVE_PAGE_TYPE_AS_MHTML);
+
+      if (base::FeatureList::IsEnabled(features::kSavePageAsWebBundle)) {
+        AddWebBundleFileFileTypeInfo(&file_type_info);
+        save_types_.push_back(content::SAVE_PAGE_TYPE_AS_WEB_BUNDLE);
+      }
     }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     AddCompleteFileTypeInfo(&file_type_info, extra_extension);
     save_types_.push_back(content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     file_type_info.include_all_files = false;
 
@@ -213,18 +225,21 @@ SavePackageFilePicker::SavePackageFilePicker(
     file_type_index = 1;
   }
 
+  if (file_type_index < save_types_.size() &&
+      save_types_[file_type_index] == content::SAVE_PAGE_TYPE_AS_MHTML) {
+    default_extension_copy = FILE_PATH_LITERAL("mhtml");
+    suggested_path_copy =
+        suggested_path_copy.ReplaceExtension(default_extension_copy);
+  }
+
   if (g_should_prompt_for_filename) {
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
     select_file_dialog_->SelectFile(
-        ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-        base::string16(),
-        suggested_path_copy,
-        &file_type_info,
-        file_type_index,
+        ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+        suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()),
-        NULL);
+        platform_util::GetTopLevel(web_contents->GetNativeView()), NULL);
   } else {
     // Just use 'suggested_path_copy' instead of opening the dialog prompt.
     // Go through FileSelected() for consistency.

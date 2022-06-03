@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
-        android:background="@color/default_bg_color_elev_3">
+        android:background="@color/default_bg_color">
 
         <ImageView
             android:id="@+id/show_keyboard"
@@ -52,13 +52,13 @@
             android:id="@+id/sheet_title"
             android:minHeight="48dp"
             android:gravity="center_vertical|start"
-            android:textAppearance="@style/TextAppearance.BlackTitle1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:background="?android:attr/selectableItemBackground"
             android:visibility="gone"/>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bar_items_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

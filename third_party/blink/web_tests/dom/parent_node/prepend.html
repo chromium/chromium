@@ -83,7 +83,7 @@ function test_prepend(node, nodeName) {
     test(function() {
         var parent = node.cloneNode();
         var doc2 = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "html");
-        assert_throws('HierarchyRequestError', () => { parent.prepend(doc2, "foo") });
+        assert_throws_dom('HierarchyRequestError', () => { parent.prepend(doc2, "foo") });
         assert_equals(parent.firstChild, null);
     }, nodeName + '.prepend() with a Document as an argument should throw.');
 }

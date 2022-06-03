@@ -4,11 +4,11 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-typedef unsigned long GPUShaderStageFlags;
+typedef [EnforceRange] unsigned long GPUShaderStageFlags;
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUShaderStage {
-    const GPUShaderStageFlags VERTEX = 1;
-    const GPUShaderStageFlags FRAGMENT = 2;
-    const GPUShaderStageFlags COMPUTE = 4;
+    const unsigned long VERTEX = 1;
+    const unsigned long FRAGMENT = 2;
+    const unsigned long COMPUTE = 4;
 };

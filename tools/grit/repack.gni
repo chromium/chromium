@@ -53,9 +53,12 @@ template("repack") {
 
     script = "//tools/grit/pak_util.py"
 
-    inputs = invoker.sources
-    foreach(_invoker_source, invoker.sources) {
-      inputs += [ "${_invoker_source}.info" ]
+    inputs = []
+    foreach(source, invoker.sources) {
+      inputs += [
+        source,
+        "${source}.info",
+      ]
     }
     outputs = [
       invoker.output,
@@ -63,10 +66,10 @@ template("repack") {
     ]
 
     args = [ "repack" ]
-    if (defined(invoker.repack_whitelist)) {
-      inputs += [ invoker.repack_whitelist ]
-      _rebased_whitelist = rebase_path(invoker.repack_whitelist)
-      args += [ "--whitelist=$_rebased_whitelist" ]
+    if (defined(invoker.repack_allowlist)) {
+      inputs += [ invoker.repack_allowlist ]
+      _rebased_allowlist = rebase_path(invoker.repack_allowlist)
+      args += [ "--allowlist=$_rebased_allowlist" ]
       args += [ "--suppress-removed-key-output" ]
     }
     args += [ rebase_path(invoker.output, root_build_dir) ]
@@ -84,20 +87,12 @@ template("repack") {
                                "visibility",
                              ])
 
-      public_deps = [
-        ":$_repack_target_name",
-      ]
-      sources = [
-        invoker.output,
-      ]
+      public_deps = [ ":$_repack_target_name" ]
+      sources = [ invoker.output ]
       if (defined(invoker.bundle_output)) {
-        outputs = [
-          invoker.bundle_output,
-        ]
+        outputs = [ invoker.bundle_output ]
       } else {
-        outputs = [
-          "{{bundle_resources_dir}}/{{source_file_part}}",
-        ]
+        outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
       }
     }
   }
@@ -128,7 +123,7 @@ template("repack") {
 #   visibility  [optional]
 #   testonly  [optional]
 #   copy_data_to_bundle [optional]
-#   repack_whitelist [optional]
+#   repack_allowlist [optional]
 #       Normal meaning.
 template("repack_locales") {
   if (defined(invoker.output_dir)) {
@@ -163,7 +158,7 @@ template("repack_locales") {
                                "bundle_output",
                                "compress",
                                "deps",
-                               "repack_whitelist",
+                               "repack_allowlist",
                                "testonly",
                              ])
       visibility = [ ":${invoker.target_name}" ]
@@ -176,7 +171,6 @@ template("repack_locales") {
         bundle_output =
             "{{bundle_resources_dir}}/${_output_locale}.lproj/locale.pak"
       }
-      set_sources_assignment_filter([])
       sources = []
       foreach(_pattern, invoker.source_patterns) {
         sources += [ "${_pattern}${_input_locale}.pak" ]
@@ -194,5 +188,8 @@ template("repack_locales") {
                              "testonly",
                            ])
     public_deps = _locale_targets
+    if (!defined(invoker.copy_data_to_bundle) || !invoker.copy_data_to_bundle) {
+      data_deps = public_deps
+    }
   }
 }

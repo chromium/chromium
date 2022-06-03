@@ -19,8 +19,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
-#include "net/url_request/url_request.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 
 namespace content {
 
@@ -97,12 +95,8 @@ const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
       return "_FETCH_SUB_RESOURCE";
     case ServiceWorkerMetrics::EventType::UNKNOWN:
       return "_UNKNOWN";
-    case ServiceWorkerMetrics::EventType::FOREIGN_FETCH:
-      return "_FOREIGN_FETCH";
     case ServiceWorkerMetrics::EventType::FETCH_WAITUNTIL:
       return "_FETCH_WAITUNTIL";
-    case ServiceWorkerMetrics::EventType::FOREIGN_FETCH_WAITUNTIL:
-      return "_FOREIGN_FETCH_WAITUNTIL";
     case ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST:
       return "_EXTERNAL_REQUEST";
     case ServiceWorkerMetrics::EventType::PAYMENT_REQUEST:
@@ -127,6 +121,10 @@ const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
       return "_PERIODIC_SYNC";
     case ServiceWorkerMetrics::EventType::CONTENT_DELETE:
       return "_CONTENT_DELETE";
+    case ServiceWorkerMetrics::EventType::PUSH_SUBSCRIPTION_CHANGE:
+      return "_PUSH_SUBSCRIPTION_CHANGE";
+    case ServiceWorkerMetrics::EventType::FETCH_FENCED_FRAME:
+      return "_FETCH_FENCED_FRAME";
   }
   return "_UNKNOWN";
 }
@@ -159,12 +157,8 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
       return "Fetch Subresource";
     case EventType::UNKNOWN:
       return "Unknown";
-    case EventType::FOREIGN_FETCH:
-      return "Foreign Fetch";
     case EventType::FETCH_WAITUNTIL:
       return "Fetch WaitUntil";
-    case EventType::FOREIGN_FETCH_WAITUNTIL:
-      return "Foreign Fetch WaitUntil";
     case EventType::EXTERNAL_REQUEST:
       return "External Request";
     case EventType::PAYMENT_REQUEST:
@@ -189,6 +183,10 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
       return "Periodic Sync";
     case EventType::CONTENT_DELETE:
       return "Content Delete";
+    case EventType::PUSH_SUBSCRIPTION_CHANGE:
+      return "Push Subscription Change";
+    case EventType::FETCH_FENCED_FRAME:
+      return "Fetch Fenced Frame";
   }
   NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
   return "error";
@@ -207,45 +205,10 @@ const char* ServiceWorkerMetrics::StartSituationToString(
       return "Existing unready process";
     case StartSituation::EXISTING_READY_PROCESS:
       return "Existing ready process";
-      break;
   }
   NOTREACHED() << "Got unexpected start situation: "
                << static_cast<int>(start_situation);
   return "error";
-}
-
-ServiceWorkerMetrics::Site ServiceWorkerMetrics::SiteFromURL(const GURL& url) {
-  // TODO(falken): Plumb through ContentBrowserClient::GetMetricSuffixForURL or
-  // figure out a way to remove ServiceWorkerMetrics::Site entirely instead of
-  // hardcoding sites in //content.
-
-  // This inaccurately matches google.example.com, see the TODO above.
-  static const char google_like_scope_prefix[] = "https://www.google.";
-  static const char ntp_scope_path[] = "/_/chrome/";
-  if (base::StartsWith(url.spec(), google_like_scope_prefix,
-                       base::CompareCase::INSENSITIVE_ASCII) &&
-      base::StartsWith(url.path(), ntp_scope_path,
-                       base::CompareCase::SENSITIVE)) {
-    return ServiceWorkerMetrics::Site::NEW_TAB_PAGE;
-  }
-
-  const base::StringPiece host = url.host_piece();
-  if (host == "plus.google.com")
-    return ServiceWorkerMetrics::Site::PLUS;
-  if (host == "inbox.google.com")
-    return ServiceWorkerMetrics::Site::INBOX;
-  if (host == "docs.google.com")
-    return ServiceWorkerMetrics::Site::DOCS;
-  if (host == "drive.google.com") {
-    // TODO(falken): This should not be DOCS but historically we logged them
-    // together.
-    return ServiceWorkerMetrics::Site::DOCS;
-  }
-  return ServiceWorkerMetrics::Site::OTHER;
-}
-
-void ServiceWorkerMetrics::CountInitDiskCacheResult(bool result) {
-  UMA_HISTOGRAM_BOOLEAN("ServiceWorker.DiskCache.InitResult", result);
 }
 
 void ServiceWorkerMetrics::CountReadResponseResult(
@@ -258,27 +221,6 @@ void ServiceWorkerMetrics::CountWriteResponseResult(
     ServiceWorkerMetrics::WriteResponseResult result) {
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.DiskCache.WriteResponseResult",
                             result, NUM_WRITE_RESPONSE_RESULT_TYPES);
-}
-
-void ServiceWorkerMetrics::RecordPurgeResourceResult(int net_error) {
-  base::UmaHistogramSparse("ServiceWorker.Storage.PurgeResourceResult",
-                           std::abs(net_error));
-}
-
-void ServiceWorkerMetrics::RecordDeleteAndStartOverResult(
-    DeleteAndStartOverResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.Storage.DeleteAndStartOverResult",
-                            result, NUM_DELETE_AND_START_OVER_RESULT_TYPES);
-}
-
-void ServiceWorkerMetrics::CountControlledPageLoad(Site site,
-                                                   const GURL& url,
-                                                   bool is_main_frame_load) {
-  DCHECK_NE(site, Site::OTHER);
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.PageLoad", site);
-  if (is_main_frame_load) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MainFramePageLoad", site);
-  }
 }
 
 void ServiceWorkerMetrics::RecordStartInstalledWorkerStatus(
@@ -316,14 +258,6 @@ void ServiceWorkerMetrics::RecordStartWorkerTime(base::TimeDelta time,
   }
 }
 
-void ServiceWorkerMetrics::RecordWorkerStopped(StopStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.WorkerStopped", status);
-}
-
-void ServiceWorkerMetrics::RecordStopWorkerTime(base::TimeDelta time) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.StopWorker.Time", time);
-}
-
 void ServiceWorkerMetrics::RecordActivateEventStatus(
     blink::ServiceWorkerStatusCode status,
     bool is_shutdown) {
@@ -338,22 +272,37 @@ void ServiceWorkerMetrics::RecordActivateEventStatus(
 }
 
 void ServiceWorkerMetrics::RecordInstallEventStatus(
-    blink::ServiceWorkerStatusCode status) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.InstallEventStatus", status);
+    blink::ServiceWorkerStatusCode status,
+    uint32_t fetch_count) {
+  base::UmaHistogramEnumeration("ServiceWorker.InstallEvent.All.Status",
+                                status);
+  base::UmaHistogramCounts1000("ServiceWorker.InstallEvent.All.FetchCount",
+                               fetch_count);
+  if (fetch_count > 0) {
+    base::UmaHistogramEnumeration("ServiceWorker.InstallEvent.WithFetch.Status",
+                                  status);
+  }
 }
 
 void ServiceWorkerMetrics::RecordEventDuration(EventType event,
                                                base::TimeDelta time,
-                                               bool was_handled) {
+                                               bool was_handled,
+                                               uint32_t fetch_count) {
   switch (event) {
     case EventType::ACTIVATE:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.ActivateEvent.Time", time);
       break;
     case EventType::INSTALL:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.InstallEvent.Time", time);
+      base::UmaHistogramMediumTimes("ServiceWorker.InstallEvent.All.Time",
+                                    time);
+      if (fetch_count) {
+        base::UmaHistogramMediumTimes(
+            "ServiceWorker.InstallEvent.WithFetch.Time", time);
+      }
       break;
     case EventType::FETCH_MAIN_FRAME:
     case EventType::FETCH_SUB_FRAME:
+    case EventType::FETCH_FENCED_FRAME:
     case EventType::FETCH_SHARED_WORKER:
     case EventType::FETCH_SUB_RESOURCE:
       if (was_handled) {
@@ -365,21 +314,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
       }
       break;
     case EventType::FETCH_WAITUNTIL:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.FetchEvent.WaitUntil.Time",
-                                 time);
-      break;
-    case EventType::FOREIGN_FETCH:
-      if (was_handled) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "ServiceWorker.ForeignFetchEvent.HasResponse.Time", time);
-      } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "ServiceWorker.ForeignFetchEvent.Fallback.Time", time);
-      }
-      break;
-    case EventType::FOREIGN_FETCH_WAITUNTIL:
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "ServiceWorker.ForeignFetchEvent.WaitUntil.Time", time);
+      // Do nothing: the histogram has been removed.
       break;
     case EventType::SYNC:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.BackgroundSyncEvent.Time",
@@ -440,7 +375,10 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     case EventType::CONTENT_DELETE:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.ContentDeleteEvent.Time", time);
       break;
-
+    case EventType::PUSH_SUBSCRIPTION_CHANGE:
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "ServiceWorker.PushSubscriptionChangeEvent.Time", time);
+      break;
     case EventType::NAVIGATION_HINT:
     // The navigation hint should not be sent as an event.
     case EventType::UNKNOWN:
@@ -461,23 +399,8 @@ void ServiceWorkerMetrics::RecordFetchEventStatus(
   }
 }
 
-void ServiceWorkerMetrics::RecordProcessCreated(bool is_new_process) {
-  UMA_HISTOGRAM_BOOLEAN("EmbeddedWorkerInstance.ProcessCreated",
-                        is_new_process);
-}
-
 void ServiceWorkerMetrics::RecordStartWorkerTiming(const StartTimes& times,
                                                    StartSituation situation) {
-  if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    // This is in-process timing, so process consistency doesn't matter.
-    constexpr base::TimeDelta kMinTime = base::TimeDelta::FromMicroseconds(1);
-    constexpr base::TimeDelta kMaxTime = base::TimeDelta::FromMilliseconds(100);
-    constexpr int kBuckets = 50;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "ServiceWorker.StartTiming.BrowserThreadHopTime", times.thread_hop_time,
-        kMinTime, kMaxTime, kBuckets);
-  }
-
   // Bail if the timings across processes weren't consistent.
   if (!base::TimeTicks::IsHighResolution() ||
       !base::TimeTicks::IsConsistentAcrossProcesses()) {
@@ -541,87 +464,25 @@ void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartTiming.ClockConsistency", type);
 }
 
-void ServiceWorkerMetrics::RecordStartStatusAfterFailure(
-    int failure_count,
-    blink::ServiceWorkerStatusCode status) {
-  DCHECK_GT(failure_count, 0);
-
-  if (status == blink::ServiceWorkerStatusCode::kOk) {
-    UMA_HISTOGRAM_COUNTS_1000("ServiceWorker.StartWorker.FailureStreakEnded",
-                              failure_count);
-  } else if (failure_count < std::numeric_limits<int>::max()) {
-    UMA_HISTOGRAM_COUNTS_1000("ServiceWorker.StartWorker.FailureStreak",
-                              failure_count + 1);
-  }
-
-  if (failure_count == 1) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartWorker.AfterFailureStreak_1",
-                              status);
-  } else if (failure_count == 2) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartWorker.AfterFailureStreak_2",
-                              status);
-  } else if (failure_count == 3) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartWorker.AfterFailureStreak_3",
-                              status);
-  }
-}
-
-void ServiceWorkerMetrics::RecordNavigationPreloadRequestHeaderSize(
-    size_t size) {
-  UMA_HISTOGRAM_COUNTS_100000("ServiceWorker.NavigationPreload.HeaderSize",
-                              size);
-}
-
-void ServiceWorkerMetrics::RecordRuntime(base::TimeDelta time) {
-  // Start at 1 second since we expect service worker to last at least this
-  // long: the update timer and idle timeout timer run on the order of seconds.
-  constexpr base::TimeDelta kMin = base::TimeDelta::FromSeconds(1);
-  // End at 1 day since service workers can conceivably run as long as the the
-  // browser is open; we have to cap somewhere.
-  constexpr base::TimeDelta kMax = base::TimeDelta::FromDays(1);
-  // Set the bucket count to 50 since that is the recommended value for all
-  // histograms.
-  const int kBucketCount = 50;
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("ServiceWorker.Runtime", time, kMin, kMax,
-                             kBucketCount);
-}
-
-void ServiceWorkerMetrics::RecordStartServiceWorkerForNavigationHintResult(
-    StartServiceWorkerForNavigationHintResult result) {
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartForNavigationHint.Result",
-                            result);
-}
-
-void ServiceWorkerMetrics::RecordRegisteredOriginCount(size_t origin_count) {
-  UMA_HISTOGRAM_COUNTS_1M("ServiceWorker.RegisteredOriginCount", origin_count);
-}
-
-void ServiceWorkerMetrics::RecordLookupRegistrationTime(
+void ServiceWorkerMetrics::RecordOfflineCapableReason(
     blink::ServiceWorkerStatusCode status,
-    base::TimeDelta duration) {
-  if (status == blink::ServiceWorkerStatusCode::kOk) {
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LookupRegistration.MainResource.Time.Exists", duration);
-  } else if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LookupRegistration.MainResource.Time.DoesNotExist",
-        duration);
-  } else {
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LookupRegistration.MainResource.Time.Error", duration);
+    int status_code) {
+  if (status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
+    base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
+                                  OfflineCapableReason::kTimeout);
+    return;
+  } else if (status == blink::ServiceWorkerStatusCode::kOk) {
+    if (200 <= status_code && status_code <= 299) {
+      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
+                                    OfflineCapableReason::kSuccess);
+      return;
+    } else if (300 <= status_code && status_code <= 399) {
+      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
+                                    OfflineCapableReason::kRedirect);
+      return;
+    }
   }
-}
-
-void ServiceWorkerMetrics::RecordByteForByteUpdateCheckStatus(
-    blink::ServiceWorkerStatusCode status,
-    bool has_found_update) {
-  DCHECK(blink::ServiceWorkerUtils::IsImportedScriptUpdateCheckEnabled());
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.UpdateCheck.Result", status);
-  if (status == blink::ServiceWorkerStatusCode::kOk) {
-    UMA_HISTOGRAM_BOOLEAN("ServiceWorker.UpdateCheck.UpdateFound",
-                          has_found_update);
-  }
+  NOTREACHED();
 }
 
 }  // namespace content

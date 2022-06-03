@@ -1,0 +1,23 @@
+<title></title>
+<body>
+<script>
+function addPrefetch(url) {
+  let link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.as = 'document';
+  link.href = url;
+  link.addEventListener('error', () => {
+    document.title = 'FAIL';
+  });
+  document.body.appendChild(link);
+}
+const sxg_url = location.hash.substr(1);
+addPrefetch(sxg_url);
+new PerformanceObserver((list) => {
+  for (const e of list.getEntries()) {
+    if (e.name == sxg_url) {
+      document.title = 'OK';
+    }
+  }
+}).observe({ entryTypes: ['resource'] });
+</script>

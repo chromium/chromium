@@ -20,6 +20,6 @@ promise_test(async function() {
 setTimeout(() => {
   let doc = document.implementation.createDocument("", null);
   doc.adoptNode(alert_atomic);
-});
+}, 1);
 
 </script>

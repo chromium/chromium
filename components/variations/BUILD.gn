@@ -2,19 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/chromecast_build.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+
+mojom("variations_mojom") {
+  sources = [ "variations.mojom" ]
+}
 
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("variations") {
+large_variation_key_size_enabled = is_chromecast || is_chromeos_lacros
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "LARGE_VARIATION_KEY_SIZE=$large_variation_key_size_enabled" ]
+}
+
+component("variations_features") {
+  output_name = "variations_features"
+
+  defines = [ "IS_VARIATIONS_FEATURES_IMPL" ]
+
+  sources = [
+    "variations_features.cc",
+    "variations_features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+component("variations") {
   sources = [
     "active_field_trials.cc",
     "active_field_trials.h",
-    "android/variations_associated_data_android.cc",
-    "android/variations_seed_bridge.cc",
-    "android/variations_seed_bridge.h",
     "child_process_field_trial_syncer.cc",
     "child_process_field_trial_syncer.h",
     "client_filterable_state.cc",
@@ -42,12 +67,13 @@ static_library("variations") {
     "synthetic_trials_active_group_id_provider.h",
     "variations_associated_data.cc",
     "variations_associated_data.h",
+    "variations_client.h",
     "variations_crash_keys.cc",
     "variations_crash_keys.h",
-    "variations_http_header_provider.cc",
-    "variations_http_header_provider.h",
-    "variations_id_collection.cc",
-    "variations_id_collection.h",
+    "variations_ids_provider.cc",
+    "variations_ids_provider.h",
+    "variations_layers.cc",
+    "variations_layers.h",
     "variations_murmur_hash.cc",
     "variations_murmur_hash.h",
     "variations_request_scheduler.cc",
@@ -64,6 +90,9 @@ static_library("variations") {
     "variations_url_constants.h",
   ]
 
+  # Needed for exporting functions (because the target type is a component).
+  defines = [ "IS_VARIATIONS_IMPL" ]
+
   if (is_android || is_ios) {
     sources += [
       "variations_request_scheduler_mobile.cc",
@@ -71,11 +100,35 @@ static_library("variations") {
     ]
   }
 
-  deps = [
+  if (is_android) {
+    sources += [
+      "android/variations_associated_data_android.cc",
+      "android/variations_seed_bridge.cc",
+      "android/variations_seed_bridge.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "variations_crash_keys_chromeos.cc",
+      "variations_crash_keys_chromeos.h",
+    ]
+  }
+
+  public_deps = [
+    ":variations_features",
     "proto",
     "//base",
+  ]
+
+  deps = [
+    ":buildflags",
+    ":variations_mojom",
+    "proto",
+    "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/prefs",
+    "//components/version_info",
     "//crypto",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib/google:compression_utils",
@@ -94,34 +147,52 @@ if (is_android) {
     ]
   }
 
-  android_library("load_seed_result_enum_java") {
-    deps = [
-      "//base:base_java",
+  java_cpp_strings("java_switches_srcjar") {
+    # External code should depend on ":variations_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "variations_switches.cc" ]
+    template = "//components/variations/android/java_templates/VariationsSwitches.java.tmpl"
+  }
+
+  android_library("variations_java") {
+    srcjar_deps = [
+      ":java_switches_srcjar",
+      ":load_seed_result_enum_srcjar",
     ]
-    srcjar_deps = [ ":load_seed_result_enum_srcjar" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 
   java_cpp_enum("load_seed_result_enum_srcjar") {
-    sources = [
-      "metrics.h",
-    ]
+    # External code should depend on ":variations_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "metrics.h" ]
   }
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
+    "scoped_variations_ids_provider.cc",
+    "scoped_variations_ids_provider.h",
     "variations_params_manager.cc",
     "variations_params_manager.h",
+    "variations_test_utils.cc",
+    "variations_test_utils.h",
   ]
 
   public_deps = [
     ":variations",
+    ":variations_mojom",
   ]
 
   deps = [
     "field_trial_config:field_trial_config",
+    "proto",
     "//base/test:test_support",
+    "//components/metrics",
+    "//components/prefs:prefs",
+    "//components/variations/service:constants",
+    "//third_party/zlib/google:compression_utils",
   ]
 }
 
@@ -139,44 +210,70 @@ source_set("unit_tests") {
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
     "variations_associated_data_unittest.cc",
-    "variations_crash_keys_unittest.cc",
-    "variations_http_header_provider_unittest.cc",
-    "variations_id_collection_unittest.cc",
+    "variations_ids_provider_unittest.cc",
     "variations_murmur_hash_unittest.cc",
     "variations_request_scheduler_unittest.cc",
     "variations_seed_processor_unittest.cc",
     "variations_seed_simulator_unittest.cc",
     "variations_seed_store_unittest.cc",
+    "variations_test_utils_unittest.cc",
   ]
 
   if (is_android || is_ios) {
     sources += [ "variations_request_scheduler_mobile_unittest.cc" ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [ "variations_crash_keys_chromeos_unittest.cc" ]
+  }
+
+  # This test uses crash_reporter::GetCrashKeyValue(), which in a component
+  # build returns the crash keys in the unit-test, not the "variations"
+  # target. The test verifies the keys in the "variations" target, not the
+  # test. As such, it fails in component builds.
+  if (!is_component_build) {
+    sources += [ "variations_crash_keys_unittest.cc" ]
+  }
+
   deps = [
+    ":test_support",
     ":variations",
+    ":variations_features",
+    ":variations_mojom",
     "net",
     "proto",
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
     "//components/prefs:test_support",
     "//components/variations/field_trial_config:field_trial_config",
+    "//services/network/public/cpp:cpp_base",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/smhasher:murmurhash3",
     "//third_party/zlib/google:compression_utils",
+    "//url",
   ]
 }
 
 # Convenience testing target
 test("variations_unittests") {
-  sources = [
-    "//components/test/run_all_unittests.cc",
-  ]
+  sources = [ "//components/test/run_all_unittests.cc" ]
   deps = [
     ":unit_tests",
     "//components/test:test_support",
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
   ]
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("create_trial_from_study_fuzzer") {
+    sources = [ "fuzzers/create_trial_from_study_fuzzer.cc" ]
+    deps = [
+      ":variations",
+      "proto",
+      "//base/test:test_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

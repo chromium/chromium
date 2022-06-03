@@ -4,10 +4,24 @@
 
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/assistant_manager_service_impl.h"
+#include "chromeos/services/assistant/media_host.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/cpp/features.h"
+
+// A macro which ensures we are running on the main thread.
+#define ENSURE_MAIN_THREAD(method, ...)                                     \
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {                   \
+    main_task_runner_->PostTask(                                            \
+        FROM_HERE,                                                          \
+        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
+    return;                                                                 \
+  }
 
 namespace chromeos {
 namespace assistant {
@@ -22,10 +36,8 @@ const char kAudioFocusSourceName[] = "assistant";
 
 }  // namespace
 
-AssistantMediaSession::AssistantMediaSession(
-    mojom::Client* client,
-    AssistantManagerServiceImpl* assistant_manager)
-    : assistant_manager_service_(assistant_manager), client_(client) {}
+AssistantMediaSession::AssistantMediaSession(MediaHost* host)
+    : host_(host), main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 AssistantMediaSession::~AssistantMediaSession() {
   AbandonAudioFocusIfNeeded();
@@ -33,57 +45,49 @@ AssistantMediaSession::~AssistantMediaSession() {
 
 void AssistantMediaSession::GetMediaSessionInfo(
     GetMediaSessionInfoCallback callback) {
-  std::move(callback).Run(GetMediaSessionInfoInternal());
+  std::move(callback).Run(session_info_.Clone());
 }
 
 void AssistantMediaSession::AddObserver(
     mojo::PendingRemote<media_session::mojom::MediaSessionObserver> observer) {
+  ENSURE_MAIN_THREAD(&AssistantMediaSession::AddObserver, std::move(observer));
   mojo::Remote<media_session::mojom::MediaSessionObserver>
       media_session_observer(std::move(observer));
-  media_session_observer->MediaSessionInfoChanged(
-      GetMediaSessionInfoInternal());
+  media_session_observer->MediaSessionInfoChanged(session_info_.Clone());
   media_session_observer->MediaSessionMetadataChanged(metadata_);
   observers_.Add(std::move(media_session_observer));
 }
 
 void AssistantMediaSession::GetDebugInfo(GetDebugInfoCallback callback) {
-  media_session::mojom::MediaSessionDebugInfoPtr info(
-      media_session::mojom::MediaSessionDebugInfo::New());
-  std::move(callback).Run(std::move(info));
+  std::move(callback).Run(media_session::mojom::MediaSessionDebugInfo::New());
 }
 
-// TODO(b/135064564): Update StartDucking() and StopDucking() after volume
-// control API for media streams is implemented.
 void AssistantMediaSession::StartDucking() {
-  if (is_ducking_)
+  if (!IsSessionStateActive())
     return;
-  is_ducking_ = true;
-  Suspend(SuspendType::kSystem);
+  SetAudioFocusInfo(MediaSessionInfo::SessionState::kDucking,
+                    audio_focus_type_);
 }
 
 void AssistantMediaSession::StopDucking() {
-  if (!is_ducking_)
+  if (!IsSessionStateDucking())
     return;
-  is_ducking_ = false;
-  Resume(SuspendType::kSystem);
+  SetAudioFocusInfo(MediaSessionInfo::SessionState::kActive, audio_focus_type_);
 }
 
 void AssistantMediaSession::Suspend(SuspendType suspend_type) {
-  if (!IsActive())
+  if (!IsSessionStateActive() && !IsSessionStateDucking())
     return;
-
-  SetAudioFocusInfo(State::SUSPENDED, audio_focus_type_);
-  assistant_manager_service_->UpdateInternalMediaPlayerStatus(
-      media_session::mojom::MediaSessionAction::kPause);
+  SetAudioFocusInfo(MediaSessionInfo::SessionState::kSuspended,
+                    audio_focus_type_);
+  host_->PauseInternalMediaPlayer();
 }
 
 void AssistantMediaSession::Resume(SuspendType suspend_type) {
-  if (!IsSuspended())
+  if (!IsSessionStateSuspended())
     return;
-
-  SetAudioFocusInfo(State::ACTIVE, audio_focus_type_);
-  assistant_manager_service_->UpdateInternalMediaPlayerStatus(
-      media_session::mojom::MediaSessionAction::kPlay);
+  SetAudioFocusInfo(MediaSessionInfo::SessionState::kActive, audio_focus_type_);
+  host_->ResumeInternalMediaPlayer();
 }
 
 void AssistantMediaSession::RequestAudioFocus(AudioFocusType audio_focus_type) {
@@ -92,10 +96,10 @@ void AssistantMediaSession::RequestAudioFocus(AudioFocusType audio_focus_type) {
     return;
   }
 
-  if (request_client_remote_.is_bound()) {
+  if (audio_focus_request_client_.is_bound()) {
     // We have an existing request so we should request an updated focus type.
-    request_client_remote_->RequestAudioFocus(
-        GetMediaSessionInfoInternal(), audio_focus_type,
+    audio_focus_request_client_->RequestAudioFocus(
+        session_info_.Clone(), audio_focus_type,
         base::BindOnce(&AssistantMediaSession::FinishAudioFocusRequest,
                        base::Unretained(this), audio_focus_type));
     return;
@@ -105,9 +109,9 @@ void AssistantMediaSession::RequestAudioFocus(AudioFocusType audio_focus_type) {
 
   // Create a mojo interface pointer to our media session.
   receiver_.reset();
-  audio_focus_remote_->RequestAudioFocus(
-      request_client_remote_.BindNewPipeAndPassReceiver(),
-      receiver_.BindNewPipeAndPassRemote(), GetMediaSessionInfoInternal(),
+  audio_focus_manager_->RequestAudioFocus(
+      audio_focus_request_client_.BindNewPipeAndPassReceiver(),
+      receiver_.BindNewPipeAndPassRemote(), session_info_.Clone(),
       audio_focus_type,
       base::BindOnce(&AssistantMediaSession::FinishInitialAudioFocusRequest,
                      base::Unretained(this), audio_focus_type));
@@ -119,40 +123,86 @@ void AssistantMediaSession::AbandonAudioFocusIfNeeded() {
     return;
   }
 
-  if (audio_focus_state_ == State::INACTIVE)
+  if (IsSessionStateInactive())
     return;
 
-  SetAudioFocusInfo(State::INACTIVE, audio_focus_type_);
+  SetAudioFocusInfo(MediaSessionInfo::SessionState::kInactive,
+                    audio_focus_type_);
 
-  if (!request_client_remote_.is_bound())
+  if (!audio_focus_request_client_.is_bound())
     return;
 
-  request_client_remote_->AbandonAudioFocus();
-  request_client_remote_.reset();
-  audio_focus_remote_.reset();
+  audio_focus_request_client_->AbandonAudioFocus();
+  audio_focus_request_client_.reset();
+  audio_focus_manager_.reset();
   internal_audio_focus_id_ = base::UnguessableToken::Null();
+}
+
+void AssistantMediaSession::NotifyMediaSessionMetadataChanged(
+    const chromeos::libassistant::mojom::MediaState& status) {
+  media_session::MediaMetadata metadata;
+
+  if (!status.metadata.is_null()) {
+    metadata.title = base::UTF8ToUTF16(status.metadata->title);
+    metadata.artist = base::UTF8ToUTF16(status.metadata->artist);
+    metadata.album = base::UTF8ToUTF16(status.metadata->album);
+  }
+
+  bool metadata_changed = metadata_ != metadata;
+  if (!metadata_changed)
+    return;
+
+  metadata_ = metadata;
+
+  for (auto& observer : observers_)
+    observer->MediaSessionMetadataChanged(this->metadata_);
+}
+
+base::WeakPtr<AssistantMediaSession> AssistantMediaSession::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+bool AssistantMediaSession::IsSessionStateActive() const {
+  return session_info_.state == MediaSessionInfo::SessionState::kActive;
+}
+
+bool AssistantMediaSession::IsSessionStateDucking() const {
+  return session_info_.state == MediaSessionInfo::SessionState::kDucking;
+}
+
+bool AssistantMediaSession::IsSessionStateSuspended() const {
+  return session_info_.state == MediaSessionInfo::SessionState::kSuspended;
+}
+
+bool AssistantMediaSession::IsSessionStateInactive() const {
+  return session_info_.state == MediaSessionInfo::SessionState::kInactive;
+}
+
+void AssistantMediaSession::SetInternalAudioFocusIdForTesting(
+    const base::UnguessableToken& token) {
+  internal_audio_focus_id_ = token;
 }
 
 void AssistantMediaSession::EnsureServiceConnection() {
   DCHECK(base::FeatureList::IsEnabled(
       media_session::features::kMediaSessionService));
 
-  if (audio_focus_remote_.is_bound() && audio_focus_remote_.is_connected())
+  if (audio_focus_manager_.is_bound() && audio_focus_manager_.is_connected())
     return;
 
-  audio_focus_remote_.reset();
+  audio_focus_manager_.reset();
 
-  client_->RequestAudioFocusManager(
-      audio_focus_remote_.BindNewPipeAndPassReceiver());
-  audio_focus_remote_->SetSource(base::UnguessableToken::Create(),
-                                 kAudioFocusSourceName);
+  AssistantBrowserDelegate::Get()->RequestAudioFocusManager(
+      audio_focus_manager_.BindNewPipeAndPassReceiver());
+  audio_focus_manager_->SetSource(base::UnguessableToken::Create(),
+                                  kAudioFocusSourceName);
 }
 
 void AssistantMediaSession::FinishAudioFocusRequest(
     AudioFocusType audio_focus_type) {
-  DCHECK(request_client_remote_.is_bound());
+  DCHECK(audio_focus_request_client_.is_bound());
 
-  SetAudioFocusInfo(State::ACTIVE, audio_focus_type);
+  SetAudioFocusInfo(MediaSessionInfo::SessionState::kActive, audio_focus_type);
 }
 
 void AssistantMediaSession::FinishInitialAudioFocusRequest(
@@ -162,86 +212,31 @@ void AssistantMediaSession::FinishInitialAudioFocusRequest(
   FinishAudioFocusRequest(audio_focus_type);
 }
 
-void AssistantMediaSession::SetAudioFocusInfo(State audio_focus_state,
-                                              AudioFocusType audio_focus_type) {
-  if (audio_focus_state == audio_focus_state_ &&
+void AssistantMediaSession::SetAudioFocusInfo(
+    MediaSessionInfo::SessionState audio_focus_state,
+    AudioFocusType audio_focus_type) {
+  if (audio_focus_state == session_info_.state &&
       audio_focus_type == audio_focus_type_) {
     return;
   }
 
-  audio_focus_state_ = audio_focus_state;
+  // Update |session_info_| and |audio_focus_type_|.
+  session_info_.state = audio_focus_state;
   audio_focus_type_ = audio_focus_type;
+  session_info_.is_controllable =
+      !IsSessionStateInactive() &&
+      (audio_focus_type != AudioFocusType::kGainTransient);
+
   NotifyMediaSessionInfoChanged();
 }
 
-void AssistantMediaSession::NotifyMediaSessionMetadataChanged(
-    const assistant_client::MediaStatus& status) {
-  media_session::MediaMetadata metadata;
-
-  metadata.title = base::UTF8ToUTF16(status.metadata.title);
-  metadata.artist = base::UTF8ToUTF16(status.metadata.artist);
-  metadata.album = base::UTF8ToUTF16(status.metadata.album);
-
-  bool metadata_changed = metadata_ != metadata;
-  if (!metadata_changed)
-    return;
-
-  metadata_ = metadata;
-
-  current_track_ = status.track_type;
-
-  for (auto& observer : observers_)
-    observer->MediaSessionMetadataChanged(this->metadata_);
-}
-
-media_session::mojom::MediaSessionInfoPtr
-AssistantMediaSession::GetMediaSessionInfoInternal() {
-  media_session::mojom::MediaSessionInfoPtr info(
-      media_session::mojom::MediaSessionInfo::New());
-  switch (audio_focus_state_) {
-    case State::ACTIVE:
-      info->state = MediaSessionInfo::SessionState::kActive;
-      break;
-    case State::SUSPENDED:
-      info->state = MediaSessionInfo::SessionState::kSuspended;
-      break;
-    case State::INACTIVE:
-      info->state = MediaSessionInfo::SessionState::kInactive;
-      break;
-  }
-  if (audio_focus_state_ != State::INACTIVE &&
-      audio_focus_type_ != AudioFocusType::kGainTransient) {
-    info->is_controllable = true;
-  }
-  return info;
-}
-
 void AssistantMediaSession::NotifyMediaSessionInfoChanged() {
-  media_session::mojom::MediaSessionInfoPtr current_info =
-      GetMediaSessionInfoInternal();
-
-  if (current_info == session_info_)
-    return;
-
-  if (request_client_remote_.is_bound())
-    request_client_remote_->MediaSessionInfoChanged(current_info.Clone());
+  ENSURE_MAIN_THREAD(&AssistantMediaSession::NotifyMediaSessionInfoChanged);
+  if (audio_focus_request_client_.is_bound())
+    audio_focus_request_client_->MediaSessionInfoChanged(session_info_.Clone());
 
   for (auto& observer : observers_)
-    observer->MediaSessionInfoChanged(current_info.Clone());
-
-  session_info_ = std::move(current_info);
-}
-
-bool AssistantMediaSession::IsActive() const {
-  return audio_focus_state_ == State::ACTIVE;
-}
-
-bool AssistantMediaSession::IsSuspended() const {
-  return audio_focus_state_ == State::SUSPENDED;
-}
-
-base::WeakPtr<AssistantMediaSession> AssistantMediaSession::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
+    observer->MediaSessionInfoChanged(session_info_.Clone());
 }
 
 }  // namespace assistant

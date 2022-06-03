@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/extension.h"
@@ -58,9 +59,8 @@ class BackgroundXhrTest : public ExtensionBrowserTest {
     ResultCatcher catcher;
     GURL test_url = net::AppendQueryParameter(extension->GetResourceURL(path),
                                               "url", url.spec());
-    ui_test_utils::NavigateToURL(browser(), test_url);
-    content::BrowserContext::GetDefaultStoragePartition(profile())
-        ->FlushNetworkInterfaceForTesting();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+    profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
     constexpr char kSendXHRScript[] = R"(
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '%s');
@@ -106,6 +106,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, HttpAuth) {
 class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
  public:
   BackgroundXhrWebstoreTest() = default;
+
+  BackgroundXhrWebstoreTest(const BackgroundXhrWebstoreTest&) = delete;
+  BackgroundXhrWebstoreTest& operator=(const BackgroundXhrWebstoreTest&) =
+      delete;
+
   ~BackgroundXhrWebstoreTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -131,12 +136,12 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
         content::JsReplace("executeFetch($1);", url));
     std::string json;
     EXPECT_TRUE(message_queue.WaitForMessage(&json));
-    base::JSONReader reader(base::JSON_ALLOW_TRAILING_COMMAS);
-    std::unique_ptr<base::Value> value = reader.ReadToValueDeprecated(json);
-    std::string result;
-    EXPECT_TRUE(value->GetAsString(&result));
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
+    EXPECT_TRUE(value->is_string());
     std::string trimmed_result;
-    base::TrimWhitespaceASCII(result, base::TRIM_ALL, &trimmed_result);
+    base::TrimWhitespaceASCII(value->GetString(), base::TRIM_ALL,
+                              &trimmed_result);
     return trimmed_result;
   }
 
@@ -167,10 +172,6 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     return extension;
   }
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundXhrWebstoreTest);
 };
 
 // Extensions should not be able to XHR to the webstore.
@@ -237,67 +238,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyBlockedXHR) {
       embedded_test_server()->GetURL("public.example.com", "/simple.html");
   EXPECT_THAT(ExecuteFetch(extension, exempted_url_to_fetch),
               ::testing::HasSubstr("<head><title>OK</title></head>"));
-}
-
-// Verify that policy blocklists apply to XHRs done from injected scripts.
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyContentScriptXHR) {
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(R"(
-    {
-      "name": "XHR Content Script Test",
-      "manifest_version": 2,
-      "version": "0.1",
-      "permissions": ["<all_urls>", "tabs"],
-      "background": {"scripts": ["background.js"]}
-    })");
-
-  constexpr char kBackgroundScript[] =
-      R"(function executeFetch(url) {
-           chrome.tabs.executeScript({code: `
-             fetch("${url}")
-             .then(response => response.text())
-             .then(text => domAutomationController.send(text))
-             .catch(err => domAutomationController.send('ERROR: ' + err));
-           `});
-         }
-      )";
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
-
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  // Navigate to a foo.com page.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  GURL page_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), page_url);
-  EXPECT_EQ(page_url, web_contents->GetMainFrame()->GetLastCommittedURL());
-
-  // Using "/non-corb.octet-stream" resource (instead of "/simple.html" as in
-  // most other tests here) because XHRs/fetches from content scripts are
-  // subject to CORB (which is already covered by
-  // CrossOriginReadBlockingExtensionTest) and we want to focus the test below
-  // on policy behavior (which should be independent from whether or not CORB
-  // blocks the response).
-  GURL example_url =
-      embedded_test_server()->GetURL("example.com", "/non-corb.octet-stream");
-  GURL public_example_url = embedded_test_server()->GetURL(
-      "public.example.com", "/non-corb.octet-stream");
-
-  // Sanity Check: Should be able to fetch cross origin.
-  EXPECT_EQ("octet-stream-body", ExecuteFetch(extension, example_url));
-  EXPECT_EQ("octet-stream-body", ExecuteFetch(extension, public_example_url));
-
-  {
-    ExtensionManagementPolicyUpdater pref(&policy_provider_);
-    pref.AddPolicyBlockedHost("*", "*://*.example.com");
-    pref.AddPolicyAllowedHost("*", "*://public.example.com");
-  }
-
-  // Policies apply to XHR from a content script.
-  EXPECT_EQ("ERROR: TypeError: Failed to fetch",
-            ExecuteFetch(extension, example_url));
-  EXPECT_EQ("octet-stream-body", ExecuteFetch(extension, public_example_url));
 }
 
 // Make sure the blocklist and allowlist update for both Default and Individual

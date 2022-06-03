@@ -1,0 +1,51 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_DELEGATED_INK_TRAIL_PRESENTER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_DELEGATED_INK_TRAIL_PRESENTER_H_
+
+#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+
+namespace blink {
+
+class Element;
+class ExceptionState;
+class InkTrailStyle;
+class LocalFrame;
+class PointerEvent;
+class ScriptState;
+
+// This class collects the required metadata for rendering a delegated ink
+// trail and sends it to cc in a unique_ptr<viz::DelegatedInkMetadata>. This
+// information is collected from the presentation_area_ and provided
+// PointerEvent and InkTrailStyle, and is transformed into root frame
+// coordinates before being packed up and sent to cc.
+//
+// Explainer for the feature:
+// https://github.com/WICG/ink-enhancement/blob/master/README.md
+class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
+  DEFINE_WRAPPERTYPEINFO();
+
+ public:
+  DelegatedInkTrailPresenter(Element* element, LocalFrame* frame);
+
+  void updateInkTrailStartPoint(ScriptState* state,
+                                PointerEvent* evt,
+                                InkTrailStyle* style,
+                                ExceptionState& exception_state);
+  uint32_t expectedImprovement() const { return expected_improvement_; }
+  Element* presentationArea() const { return presentation_area_; }
+
+  void Trace(Visitor* visitor) const override;
+
+ private:
+  Member<Element> presentation_area_;
+  Member<LocalFrame> local_frame_;
+  uint32_t expected_improvement_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_DELEGATED_INK_DELEGATED_INK_TRAIL_PRESENTER_H_

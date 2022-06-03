@@ -12,8 +12,8 @@
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/ozone/platform/wayland/test/mock_xdg_popup.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
 
 struct wl_resource;
 
@@ -31,6 +31,10 @@ class MockXdgTopLevel;
 class MockXdgSurface : public ServerObject {
  public:
   MockXdgSurface(wl_resource* resource, wl_resource* surface);
+
+  MockXdgSurface(const MockXdgSurface&) = delete;
+  MockXdgSurface& operator=(const MockXdgSurface&) = delete;
+
   ~MockXdgSurface() override;
 
   MOCK_METHOD1(AckConfigure, void(uint32_t serial));
@@ -42,25 +46,27 @@ class MockXdgSurface : public ServerObject {
   }
   MockXdgTopLevel* xdg_toplevel() const { return xdg_toplevel_.get(); }
 
-  void set_xdg_popup(MockXdgPopup* xdg_popup) { xdg_popup_ = xdg_popup; }
-  MockXdgPopup* xdg_popup() const { return xdg_popup_; }
+  void set_xdg_popup(TestXdgPopup* xdg_popup) { xdg_popup_ = xdg_popup; }
+  TestXdgPopup* xdg_popup() const { return xdg_popup_; }
 
  private:
   // Has either toplevel role..
   std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
   // Or popup role.
-  MockXdgPopup* xdg_popup_ = nullptr;
+  TestXdgPopup* xdg_popup_ = nullptr;
 
   // MockSurface that is the ground for this xdg_surface.
   wl_resource* surface_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockXdgSurface);
 };
 
 // Manage zxdg_toplevel for providing desktop UI.
 class MockXdgTopLevel : public ServerObject {
  public:
   MockXdgTopLevel(wl_resource* resource, const void* implementation);
+
+  MockXdgTopLevel(const MockXdgTopLevel&) = delete;
+  MockXdgTopLevel& operator=(const MockXdgTopLevel&) = delete;
+
   ~MockXdgTopLevel() override;
 
   MOCK_METHOD1(SetParent, void(wl_resource* parent));
@@ -94,8 +100,6 @@ class MockXdgTopLevel : public ServerObject {
 
   std::string title_;
   std::string app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockXdgTopLevel);
 };
 
 }  // namespace wl

@@ -4,7 +4,7 @@
 
 #include "cc/test/fake_ui_resource_layer_tree_host_impl.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 
@@ -29,7 +29,7 @@ void FakeUIResourceLayerTreeHostImpl::CreateUIResource(
       viz::TransferableResource::MakeGL(
           gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
           bitmap.GetSize(), false /* is_overlay_candidate */),
-      viz::SingleReleaseCallback::Create(base::DoNothing()));
+      base::DoNothing());
 
   data.opaque = bitmap.GetOpaque();
   fake_ui_resource_map_[uid] = std::move(data);

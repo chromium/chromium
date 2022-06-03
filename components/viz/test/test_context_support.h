@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <set>
+#include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/context_support.h"
 
@@ -25,6 +26,10 @@ namespace viz {
 class TestContextSupport : public gpu::ContextSupport {
  public:
   TestContextSupport();
+
+  TestContextSupport(const TestContextSupport&) = delete;
+  TestContextSupport& operator=(const TestContextSupport&) = delete;
+
   ~TestContextSupport() override;
 
   // gpu::ContextSupport implementation.
@@ -82,10 +87,11 @@ class TestContextSupport : public gpu::ContextSupport {
   bool CanDecodeWithHardwareAcceleration(
       const cc::ImageHeaderMetadata* image_metadata) const override;
   bool HasGrContextSupport() const override;
-  void SetGrContext(GrContext* gr) override;
+  void SetGrContext(GrDirectContext* gr) override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
   void SetDisplayTransform(gfx::OverlayTransform transform) override {}
+  void SetFrameRate(float frame_rate) override {}
 
   void CallAllSyncPointCallbacks();
 
@@ -112,8 +118,6 @@ class TestContextSupport : public gpu::ContextSupport {
   bool out_of_order_callbacks_;
 
   base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextSupport);
 };
 
 }  // namespace viz

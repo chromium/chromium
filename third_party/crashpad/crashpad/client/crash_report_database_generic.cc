@@ -21,6 +21,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "client/settings.h"
 #include "util/file/directory_reader.h"
@@ -100,6 +101,10 @@ struct ReportMetadata {
 class ScopedLockFile {
  public:
   ScopedLockFile() = default;
+
+  ScopedLockFile(const ScopedLockFile&) = delete;
+  ScopedLockFile& operator=(const ScopedLockFile&) = delete;
+
   ~ScopedLockFile() = default;
 
   ScopedLockFile& operator=(ScopedLockFile&& other) {
@@ -158,8 +163,6 @@ class ScopedLockFile {
 
  private:
   ScopedRemoveFile lock_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLockFile);
 };
 
 off_t GetFileSize(const base::FilePath& filepath) {
@@ -195,6 +198,11 @@ void AddAttachmentSize(const base::FilePath& attachments_dir, uint64_t* size) {
 class CrashReportDatabaseGeneric : public CrashReportDatabase {
  public:
   CrashReportDatabaseGeneric();
+
+  CrashReportDatabaseGeneric(const CrashReportDatabaseGeneric&) = delete;
+  CrashReportDatabaseGeneric& operator=(const CrashReportDatabaseGeneric&) =
+      delete;
+
   ~CrashReportDatabaseGeneric() override;
 
   bool Initialize(const base::FilePath& path, bool may_create);
@@ -297,8 +305,6 @@ class CrashReportDatabaseGeneric : public CrashReportDatabase {
   base::FilePath base_dir_;
   Settings settings_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportDatabaseGeneric);
 };
 
 FileWriter* CrashReportDatabase::NewReport::AddAttachment(
@@ -336,23 +342,23 @@ void CrashReportDatabase::UploadReport::InitializeAttachments() {
   if (!IsDirectory(attachments_dir, /*allow_symlinks=*/false)) {
     return;
   }
-  DirectoryReader reader;
-  if (!reader.Open(attachments_dir)) {
+  DirectoryReader directory_reader;
+  if (!directory_reader.Open(attachments_dir)) {
     return;
   }
 
   base::FilePath filename;
   DirectoryReader::Result dir_result;
-  while ((dir_result = reader.NextFile(&filename)) ==
+  while ((dir_result = directory_reader.NextFile(&filename)) ==
          DirectoryReader::Result::kSuccess) {
     const base::FilePath filepath(attachments_dir.Append(filename));
-    std::unique_ptr<FileReader> reader(std::make_unique<FileReader>());
-    if (!reader->Open(filepath)) {
+    std::unique_ptr<FileReader> file_reader(std::make_unique<FileReader>());
+    if (!file_reader->Open(filepath)) {
       LOG(ERROR) << "attachment " << filepath.value()
                  << " couldn't be opened, skipping";
       continue;
     }
-    attachment_readers_.emplace_back(std::move(reader));
+    attachment_readers_.emplace_back(std::move(file_reader));
     attachment_map_[filename.value()] = attachment_readers_.back().get();
   }
 }

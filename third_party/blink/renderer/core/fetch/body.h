@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -29,17 +29,11 @@ class ScriptState;
 // spec only Response has it and Request has a byte stream defined in the
 // Encoding spec. The spec should be fixed shortly to be aligned with this
 // implementation.
-class CORE_EXPORT Body : public ScriptWrappable,
-                         public ActiveScriptWrappable<Body>,
-                         public ContextClient {
-  DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(Body);
-
+class CORE_EXPORT Body : public ExecutionContextClient {
  public:
-  enum class BodyUsed { kUsed, kUnused, kBroken };
-  enum class BodyLocked { kLocked, kUnlocked, kBroken };
-
   explicit Body(ExecutionContext*);
+  Body(const Body&) = delete;
+  Body& operator=(const Body&) = delete;
 
   ScriptPromise arrayBuffer(ScriptState*, ExceptionState&);
   ScriptPromise blob(ScriptState*, ExceptionState&);
@@ -52,30 +46,15 @@ class CORE_EXPORT Body : public ScriptWrappable,
 
   // This should only be called from the generated bindings. All other code
   // should use IsBodyUsed() instead.
-  bool bodyUsed(ExceptionState& exception_state) {
-    return IsBodyUsed(exception_state) == BodyUsed::kUsed;
-  }
+  bool bodyUsed() const { return IsBodyUsed(); }
 
-  // Returns kUsed, kUnused or kBroken. kBroken implies there is an exception
-  // pending and the caller should return to JavaScript immediately.
-  virtual BodyUsed IsBodyUsed(ExceptionState&);
+  // True if the body has been read from.
+  virtual bool IsBodyUsed() const;
 
-  // Returns kLocked, kUnlocked or kBroken. kBroken implies there is an
-  // exception pending and the caller should return to JavaScript immediately.
-  BodyLocked IsBodyLocked(ExceptionState&);
+  // True if the body is locked.
+  bool IsBodyLocked() const;
 
-  // ScriptWrappable override.
-  bool HasPendingActivity() const override;
-
-  void Trace(blink::Visitor* visitor) override {
-    ScriptWrappable::Trace(visitor);
-    ContextClient::Trace(visitor);
-  }
-
- protected:
-  // A version of IsBodyUsed() which catches exceptions and returns
-  // false. Should never be used outside DCHECK().
-  virtual bool IsBodyUsedForDCheck(ExceptionState& exception_state);
+  bool HasPendingActivity() const;
 
  private:
   // TODO(e_hakkinen): Fix |MimeType()| to always contain parameters and
@@ -87,8 +66,7 @@ class CORE_EXPORT Body : public ScriptWrappable,
   // error conditions. This method wraps those up into one call which throws
   // an exception if consumption cannot proceed. The caller must check
   // |exception_state| on return.
-  void RejectInvalidConsumption(ScriptState*, ExceptionState& exception_state);
-  DISALLOW_COPY_AND_ASSIGN(Body);
+  void RejectInvalidConsumption(ExceptionState& exception_state) const;
 };
 
 }  // namespace blink

@@ -1,5 +1,8 @@
+from six.moves import range
+
 from mod_pywebsocket import common
 from mod_pywebsocket import stream
+from mod_pywebsocket import util
 
 
 def web_socket_do_extra_handshake(request):
@@ -7,7 +10,7 @@ def web_socket_do_extra_handshake(request):
 
 
 def web_socket_transfer_data(request):
-    messages_to_send = ['Hello, world!', '', all_distinct_bytes()]
+    messages_to_send = [b'Hello, world!', b'', all_distinct_bytes()]
     for message in messages_to_send:
         # FIXME: Should use better API to send binary messages when pywebsocket
         # supports it.
@@ -17,4 +20,4 @@ def web_socket_transfer_data(request):
 
 
 def all_distinct_bytes():
-    return ''.join([chr(i) for i in xrange(256)])
+    return b''.join([util.pack_byte(i) for i in range(256)])

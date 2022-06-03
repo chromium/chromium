@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -271,4 +271,12 @@ CGFloat UIEdgeInsetsGetLeading(UIEdgeInsets insets) {
 
 CGFloat UIEdgeInsetsGetTrailing(UIEdgeInsets insets) {
   return UseRTLLayout() ? insets.left : insets.right;
+}
+
+BOOL EdgeLeadsEdge(CGFloat a, CGFloat b, base::i18n::TextDirection direction) {
+  return direction == base::i18n::RIGHT_TO_LEFT ? a > b : a < b;
+}
+
+BOOL EdgeLeadsEdge(CGFloat a, CGFloat b) {
+  return EdgeLeadsEdge(a, b, LayoutDirection());
 }

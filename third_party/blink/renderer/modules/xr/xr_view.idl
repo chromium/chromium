@@ -16,5 +16,15 @@ enum XREye {
 ] interface XRView {
   readonly attribute XREye eye;
   readonly attribute Float32Array projectionMatrix;
-  [SameObject] readonly attribute XRRigidTransform transform;
+  [SameObject, ImplementedAs=refSpaceFromView] readonly attribute XRRigidTransform transform;
+  [RuntimeEnabled=WebXRViewportScale] readonly attribute double? recommendedViewportScale;
+
+  // Added by the AR module.
+  // https://immersive-web.github.io/webxr-ar-module/
+  readonly attribute boolean isFirstPersonObserver;
+
+  [RuntimeEnabled=WebXRViewportScale] void requestViewportScale(double? scale);
+
+  [RuntimeEnabled=WebXRCameraAccess, SameObject]
+  readonly attribute XRCamera? camera;
 };

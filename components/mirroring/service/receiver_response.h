@@ -9,125 +9,143 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/component_export.h"
-#include "base/values.h"
+#include "third_party/jsoncpp/source/include/json/value.h"
+#include "third_party/openscreen/src/cast/streaming/answer_messages.h"
 
 namespace mirroring {
 
 // Receiver response message type.
-enum ResponseType {
+enum class ResponseType {
   UNKNOWN,
   ANSWER,                 // Response to OFFER message.
-  STATUS_RESPONSE,        // Response to GET_STATUS message.
   CAPABILITIES_RESPONSE,  // Response to GET_CAPABILITIES message.
   RPC,                    // Rpc binary messages. The payload is base64 encoded.
-};
-
-struct COMPONENT_EXPORT(MIRRORING_SERVICE) Answer {
-  Answer();
-  ~Answer();
-  Answer(const Answer& answer);
-  bool Parse(const base::Value& raw_value);
-
-  // The UDP port used for all streams in this session.
-  int32_t udp_port;
-  // The indexes chosen from the OFFER message.
-  std::vector<int32_t> send_indexes;
-  // The RTP SSRC used to send the RTCP feedback of the stream, indicated by
-  // the |send_indexes| above.
-  std::vector<int32_t> ssrcs;
-  // A 128bit hex number containing the initialization vector for the crypto.
-  std::string iv;
-  // Indicates whether receiver supports the GET_STATUS command.
-  bool supports_get_status;
-  // "mirroring" for screen mirroring, or "remoting" for media remoting.
-  std::string cast_mode;
-};
-
-struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverStatus {
-  ReceiverStatus();
-  ~ReceiverStatus();
-  ReceiverStatus(const ReceiverStatus& status);
-  bool Parse(const base::Value& raw_value);
-
-  // Current WiFi signal to noise ratio in decibels.
-  double wifi_snr;
-  // Min, max, average, and current bandwidth in bps in order of the WiFi link.
-  // Example: [1200, 1300, 1250, 1230].
-  std::vector<int32_t> wifi_speed;
-};
-
-struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverKeySystem {
-  ReceiverKeySystem();
-  ~ReceiverKeySystem();
-  ReceiverKeySystem(const ReceiverKeySystem& receiver_key_system);
-  bool Parse(const base::Value& raw_value);
-
-  // Reverse URI (e.g. com.widevine.alpha).
-  std::string name;
-  // EME init data types (e.g. cenc).
-  std::vector<std::string> init_data_types;
-  // Codecs supported by key system. This will include AVC and VP8 on all
-  // Chromecasts.
-  std::vector<std::string> codecs;
-  // Codecs that are also hardware-secure.
-  std::vector<std::string> secure_codecs;
-  // Support levels for audio encryption robustness.
-  std::vector<std::string> audio_robustness;
-  // Support levels for video encryption robustness.
-  std::vector<std::string> video_robustness;
-
-  std::string persistent_license_session_support;
-  std::string persistent_release_message_session_support;
-  std::string persistent_state_support;
-  std::string distinctive_identifier_support;
 };
 
 struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverCapability {
   ReceiverCapability();
   ~ReceiverCapability();
-  ReceiverCapability(const ReceiverCapability& capabilities);
-  bool Parse(const base::Value& raw_value);
+  ReceiverCapability(ReceiverCapability&& receiver_response);
+  ReceiverCapability(const ReceiverCapability& receiver_response);
+  ReceiverCapability& operator=(ReceiverCapability&& receiver_response);
+  ReceiverCapability& operator=(const ReceiverCapability& receiver_response);
+
+  static constexpr int kRemotingVersionUnknown = -1;
+
+  // The remoting version that the receiver uses.
+  int remoting = kRemotingVersionUnknown;
 
   // Set of capabilities (e.g., ac3, 4k, hevc, vp9, dolby_vision, etc.).
   std::vector<std::string> media_caps;
-  std::vector<ReceiverKeySystem> key_systems;
 };
 
 struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverError {
   ReceiverError();
   ~ReceiverError();
-  bool Parse(const base::Value& raw_value);
+  ReceiverError(ReceiverError&& receiver_response);
+  ReceiverError(const ReceiverError& receiver_response);
+  ReceiverError& operator=(ReceiverError&& receiver_response);
+  ReceiverError& operator=(const ReceiverError& receiver_response);
 
-  int32_t code;
+  int32_t code = -1;
   std::string description;
   std::string details;  // In JSON format.
 };
 
-struct COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverResponse {
+// TODO(b/160978984): Migrate parsing and ReceiverResponse object to libcast.
+class COMPONENT_EXPORT(MIRRORING_SERVICE) ReceiverResponse {
+ public:
   ReceiverResponse();
   ~ReceiverResponse();
-  ReceiverResponse(ReceiverResponse&& receiver_response);
-  ReceiverResponse& operator=(ReceiverResponse&& receiver_response);
-  bool Parse(const std::string& message_data);
 
-  ResponseType type;
+  // ReceiverResponse is shallow move only due to having unique_ptrs. We expose
+  // a clone method for testing that performs a deep copy.
+  ReceiverResponse(ReceiverResponse&& receiver_response);
+  ReceiverResponse(const ReceiverResponse& receiver_response) = delete;
+  ReceiverResponse& operator=(ReceiverResponse&& receiver_response);
+  ReceiverResponse& operator=(const ReceiverResponse& receiver_response) =
+      delete;
+
+  static std::unique_ptr<ReceiverResponse> Parse(
+      const std::string& message_data);
+  static ReceiverResponse CreateErrorResponse();
+
+  // Test only methods
+  std::unique_ptr<ReceiverResponse> CloneForTesting() const;
+  static ReceiverResponse CreateAnswerResponseForTesting(
+      int32_t sequence_number,
+      std::unique_ptr<openscreen::cast::Answer> answer);
+  static ReceiverResponse CreateCapabilitiesResponseForTesting(
+      int32_t sequence_number,
+      std::unique_ptr<ReceiverCapability> capabilities);
+
+  // Simple getter for the ResponseType. Note that if the message is an error
+  // message, this will be UNKNOWN since it's technically not applicable.
+  ResponseType type() const { return type_; }
+
   // All messages have same |session_id| for each mirroring session. This value
   // is provided by the media router provider.
-  int32_t session_id;
+  int32_t session_id() const { return session_id_; }
+
   // This should be same as the value in the corresponding query/OFFER messages
   // for non-rpc messages.
-  int32_t sequence_number;
+  int sequence_number() const { return sequence_number_; }
 
-  std::string result;  // "ok" or "error".
+  // We don't expose "result" directly, to avoid string comparisons to "ok"
+  // and "error." This method returns true if and only if the result is "ok"
+  // and the object its specified payload.
+  bool valid() const { return valid_; }
 
-  // Only one of the following has value, according to |type|.
-  std::unique_ptr<Answer> answer;
-  std::string rpc;
-  std::unique_ptr<ReceiverStatus> status;
-  std::unique_ptr<ReceiverCapability> capabilities;
-  // Can only be non-null when result is "error".
-  std::unique_ptr<ReceiverError> error;
+  // Each response type has its own payload, including errors. If the receiver
+  // response exists, the payload is guaranteed to be present based on the
+  // DCHECK rules below.
+  const openscreen::cast::Answer& answer() const {
+    DCHECK(valid_ && type_ == ResponseType::ANSWER);
+    return *answer_;
+  }
+
+  const std::string& rpc() const {
+    DCHECK(valid_ && type_ == ResponseType::RPC);
+    return rpc_;
+  }
+
+  const ReceiverCapability& capabilities() const {
+    DCHECK(valid_ && type_ == ResponseType::CAPABILITIES_RESPONSE);
+    return *capabilities_;
+  }
+
+  // Errors are different than the other payloads, and may be null depending
+  // on the type of error.
+  const ReceiverError* error() const {
+    DCHECK(!valid_);
+    return error_.get();
+  }
+
+ private:
+  ResponseType type_ = ResponseType::UNKNOWN;
+  int32_t session_id_ = -1;
+  int32_t sequence_number_ = -1;
+  bool valid_ = false;
+
+  // Only one of these fields will be populated, based on the ResponseType
+  // value. Currently, we enforce this by DCHECKing on their accessors, instead
+  // of subclasses or a sum type/union/variant. ResponseType associated with
+  // each type is documented below.
+
+  // ResponseType::ANSWER
+  std::unique_ptr<openscreen::cast::Answer> answer_;
+
+  // ResponseType::RPC
+  // Contains the decoded (i.e. raw binary) RPC data.
+  std::string rpc_;
+
+  // ResponseType::CAPABILITIES_RESPONSE
+  std::unique_ptr<ReceiverCapability> capabilities_;
+
+  // Error may be populated for any ResponseType, as long as valid_ = false.
+  std::unique_ptr<ReceiverError> error_;
 };
 
 }  // namespace mirroring

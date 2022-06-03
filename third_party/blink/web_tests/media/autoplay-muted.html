@@ -49,11 +49,9 @@
     }, "Test that play() on a muted video succeeds without gesture.");
 
     promise_test(function (t) {
-        return promise_rejects(
+        return promise_rejects_dom(
             t,
-            new DOMException(
-                'play() can only be initiated by a user gesture.',
-                'NotAllowedError'),
+            'NotAllowedError',
             createMutedAudioElement().play());
     }, "Test that play() on a muted audio without gesture will reject.");
 

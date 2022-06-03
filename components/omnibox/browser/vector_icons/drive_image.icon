@@ -8,7 +8,7 @@
 // Mountain coordinates were manually rounded to grid.
 
 CANVAS_DIMENSIONS, 16,
-PATH_COLOR_ARGB, 0xFF, 0xEA, 0x43, 0x35,
+PATH_COLOR_ARGB, 0xFF, 0xD9, 0x30, 0x25,
 MOVE_TO, 16, 14,
 V_LINE_TO, 2,
 R_CUBIC_TO, 0, -1, -1, -2, -2, -2,

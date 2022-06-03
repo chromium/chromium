@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_SHILL_FAKE_SHILL_SIMULATED_RESULT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace chromeos {
 

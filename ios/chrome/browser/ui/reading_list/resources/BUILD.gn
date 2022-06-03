@@ -14,28 +14,19 @@ imageset("distillation_fail_new") {
   ]
 }
 
+imageset("reading_list_empty") {
+  sources = [
+    "reading_list_empty.imageset/Contents.json",
+    "reading_list_empty.imageset/reading_list_empty.pdf",
+    "reading_list_empty.imageset/reading_list_empty_dark.pdf",
+  ]
+}
+
 imageset("reading_list_empty_state") {
   sources = [
     "reading_list_empty_state.imageset/Contents.json",
     "reading_list_empty_state.imageset/reading_list_empty_state.png",
     "reading_list_empty_state.imageset/reading_list_empty_state@2x.png",
     "reading_list_empty_state.imageset/reading_list_empty_state@3x.png",
-  ]
-}
-
-imageset("reading_list_empty_state_new") {
-  sources = [
-    "reading_list_empty_state_new.imageset/Contents.json",
-    "reading_list_empty_state_new.imageset/reading_list_empty_state_new@2x.png",
-    "reading_list_empty_state_new.imageset/reading_list_empty_state_new@3x.png",
-  ]
-}
-
-imageset("reading_list_tools_icon") {
-  sources = [
-    "reading_list_tools_icon.imageset/Contents.json",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon.png",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon@2x.png",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon@3x.png",
   ]
 }

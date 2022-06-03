@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL When a loading=lazy image is loaded, it loads relative to the document's base URL computed at parse-time. assert_unreached: The image request should not load relative to the current (incorrect) base URL. Reached unreachable code
+Harness: the test ran to completion.
+

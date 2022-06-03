@@ -2,14 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/util/version.gni")
 import("//testing/test.gni")
 
 assert(!is_ios, "Paint Previews are not supported on iOS.")
 
-static_library("browser") {
+source_set("browser") {
   sources = [
     "compositor_utils.cc",
     "compositor_utils.h",
+    "directory_key.cc",
+    "directory_key.h",
     "file_manager.cc",
     "file_manager.h",
     "hit_tester.cc",
@@ -18,19 +22,34 @@ static_library("browser") {
     "paint_preview_base_service.h",
     "paint_preview_client.cc",
     "paint_preview_client.h",
+    "paint_preview_compositor_client_impl.cc",
+    "paint_preview_compositor_client_impl.h",
+    "paint_preview_compositor_service_impl.cc",
+    "paint_preview_compositor_service_impl.h",
+    "paint_preview_file_mixin.cc",
+    "paint_preview_file_mixin.h",
+    "paint_preview_policy.h",
+    "warm_compositor.cc",
+    "warm_compositor.h",
   ]
 
   deps = [
     "//base",
     "//cc/base",
     "//components/discardable_memory/service",
-    "//components/strings:components_strings",
+    "//components/keyed_service/core",
+    "//components/strings:components_strings_grit",
+    "//components/ukm/content",
     "//content/public/browser",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
     "//third_party/zlib/google:zip",
+    "//ui/accessibility",
+    "//ui/accessibility/mojom",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -39,8 +58,34 @@ static_library("browser") {
     "//components/paint_preview/common",
     "//components/paint_preview/common/mojom",
     "//components/paint_preview/common/proto",
+    "//components/paint_preview/public",
     "//components/services/paint_preview_compositor/public/mojom",
   ]
+
+  defines = [
+    "CHROME_VERSION_MAJOR=" + chrome_version_major,
+    "CHROME_VERSION_MINOR=" + chrome_version_minor,
+    "CHROME_VERSION_BUILD=" + chrome_version_build,
+    "CHROME_VERSION_PATCH=" + chrome_version_patch,
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "paint_preview_base_service_test_factory.cc",
+    "paint_preview_base_service_test_factory.h",
+    "test_paint_preview_policy.cc",
+    "test_paint_preview_policy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+
+  public_deps = [ ":browser" ]
 }
 
 source_set("unit_tests") {
@@ -55,8 +100,10 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/paint_preview/common:test_utils",
     "//content/public/browser",
     "//content/test:test_support",
@@ -64,6 +111,17 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx/geometry",
     "//url",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
+  }
+
+  defines = [
+    "CHROME_VERSION_MAJOR=" + chrome_version_major,
+    "CHROME_VERSION_MINOR=" + chrome_version_minor,
+    "CHROME_VERSION_BUILD=" + chrome_version_build,
+    "CHROME_VERSION_PATCH=" + chrome_version_patch,
   ]
 }
 

@@ -28,6 +28,7 @@ config("static_config") {
 
 config("ldconfig") {
   visibility = [ ":*" ]
+  configs = []
 
   # Chromecast executables depend on several shared libraries in
   # /oem_cast_shlib, $ORIGIN, and $ORIGIN/lib. Add these rpaths to each binary.
@@ -42,6 +43,11 @@ config("ldconfig") {
     ]
   } else {
     ldflags = [ "-Wl,-rpath=${target_rpath}" ]
+  }
+
+  if (chromecast_branding != "public") {
+    # Some internal x64 builds need additional rpath and dynamic-linker config.
+    configs += [ "//chromecast/internal/build/config/ldconfig" ]
   }
 
   # Binaries which don't live in the same directory as Chrome component

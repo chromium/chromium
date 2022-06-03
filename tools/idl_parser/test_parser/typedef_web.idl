@@ -180,3 +180,13 @@ typedef ([TreatNullAs=EmptyString] DOMString or [Clamp] long) MyAnnotationInUnio
  *    PrimitiveType(double)
  */
 typedef double Date;
+
+/** TREE
+ *Typedef(StringSequenceOrNull)
+ *  Type()
+ *    NULLABLE: True
+ *    Sequence()
+ *      Type()
+ *        StringType(DOMString)
+ */
+typedef sequence<DOMString>? StringSequenceOrNull;

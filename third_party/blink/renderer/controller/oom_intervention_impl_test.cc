@@ -12,12 +12,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -117,7 +117,7 @@ class OomInterventionImplTest : public testing::Test {
     intervention_->StartDetection(std::move(remote_host), std::move(args),
                                   renderer_pause_enabled, navigate_ads_enabled,
                                   purge_v8_memory_enabled);
-    test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+    test::RunDelayedTasks(base::Seconds(1));
   }
 
  protected:
@@ -156,7 +156,7 @@ TEST_F(OomInterventionImplTest, BlinkThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -174,7 +174,7 @@ TEST_F(OomInterventionImplTest, PmfThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -192,7 +192,7 @@ TEST_F(OomInterventionImplTest, SwapThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -210,7 +210,29 @@ TEST_F(OomInterventionImplTest, VmSizeThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
+  EXPECT_FALSE(page->Paused());
+}
+
+TEST_F(OomInterventionImplTest, MojoDisconnection) {
+  mojo::Remote<mojom::blink::OomIntervention> remote_host;
+  intervention_->Bind(remote_host.BindNewPipeAndPassReceiver());
+
+  MemoryUsage usage;
+  usage.v8_bytes = 0;
+  usage.blink_gc_bytes = 0;
+  usage.partition_alloc_bytes = 0;
+  usage.private_footprint_bytes = 0;
+  usage.swap_bytes = 0;
+  // Set value more than the threshold to trigger intervention.
+  usage.vm_size_bytes = kTestVmSizeThreshold + 1024;
+  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
+
+  Page* page = DetectOnceOnBlankPage();
+
+  EXPECT_TRUE(page->Paused());
+  remote_host.reset();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -264,13 +286,9 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad("about:blank");
   Page* page = web_view->MainFrameImpl()->GetFrame()->GetPage();
 
-  web_view->MainFrameImpl()
-      ->GetFrame()
-      ->GetDocument()
-      ->body()
-      ->SetInnerHTMLFromString(
-          "<iframe name='ad' src='data:text/html,'></iframe><iframe "
-          "name='non-ad' src='data:text/html,'>");
+  web_view->MainFrameImpl()->GetFrame()->GetDocument()->body()->setInnerHTML(
+      "<iframe name='ad' src='data:text/html,'></iframe><iframe "
+      "name='non-ad' src='data:text/html,'>");
 
   WebFrame* ad_iframe = web_view_helper_.LocalMainFrame()->FindFrameByName(
       WebString::FromUTF8("ad"));
@@ -282,8 +300,13 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       non_ad_iframe->ToWebLocalFrame());
 
+  blink::FrameAdEvidence ad_evidence(/*parent_is_ad=*/false);
+  ad_evidence.set_created_by_ad_script(
+      mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+
   auto* local_adframe = To<LocalFrame>(WebFrame::ToCoreFrame(*ad_iframe));
-  local_adframe->SetIsAdSubframe(blink::mojom::AdFrameType::kRootAd);
+  local_adframe->SetAdEvidence(ad_evidence);
   auto* local_non_adframe =
       To<LocalFrame>(WebFrame::ToCoreFrame(*non_ad_iframe));
 
@@ -296,7 +319,7 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   RunDetection(true, true, false);
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
 
   // The about:blank navigation won't actually happen until the page unpauses.
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
@@ -319,9 +342,9 @@ TEST_F(OomInterventionImplTest, V2DetectionV8PurgeMemory) {
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad("about:blank");
   Page* page = web_view->MainFrameImpl()->GetFrame()->GetPage();
   auto* frame = To<LocalFrame>(page->MainFrame());
-  EXPECT_FALSE(frame->GetDocument()->ExecutionContext::IsContextDestroyed());
+  EXPECT_FALSE(frame->DomWindow()->IsContextDestroyed());
   RunDetection(true, true, true);
-  EXPECT_TRUE(frame->GetDocument()->ExecutionContext::IsContextDestroyed());
+  EXPECT_TRUE(frame->DomWindow()->IsContextDestroyed());
 }
 
 TEST_F(OomInterventionImplTest, ReducedMemoryMetricReporting) {
@@ -348,7 +371,7 @@ TEST_F(OomInterventionImplTest, ReducedMemoryMetricReporting) {
   usage.private_footprint_bytes =
       initial_private_footprint_bytes + 2 * 1024 * 1024;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(10));
+  test::RunDelayedTasks(base::Seconds(10));
   histogram_tester.ExpectUniqueSample(
       "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter10secs2", 2,
       1);
@@ -359,7 +382,7 @@ TEST_F(OomInterventionImplTest, ReducedMemoryMetricReporting) {
   usage.v8_bytes = initial_blink_usage_bytes - 1;
   usage.private_footprint_bytes = initial_private_footprint_bytes + 1;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(10));
+  test::RunDelayedTasks(base::Seconds(10));
   histogram_tester.ExpectUniqueSample(
       "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter20secs2", 0,
       1);
@@ -371,7 +394,7 @@ TEST_F(OomInterventionImplTest, ReducedMemoryMetricReporting) {
   usage.private_footprint_bytes =
       initial_private_footprint_bytes + 800 * 1024 * 1024;
   intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(10));
+  test::RunDelayedTasks(base::Seconds(10));
   histogram_tester.ExpectUniqueSample(
       "Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter30secs2", 500,
       1);

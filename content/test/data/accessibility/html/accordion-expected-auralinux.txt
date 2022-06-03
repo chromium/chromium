@@ -1,0 +1,23 @@
+[document web]
+++[heading] name='Accordion Section #1'
+++++[push button] name='Accordion Section #1' expanded controller-for label-for
+++++++[paragraph]
+++++++++[static] name='Accordion Section #1'
+++[landmark] name='Accordion Section #1' controlled-by labelled-by
+++++[paragraph]
+++++++[static] name='Content for first section of accordion element.'
+++[heading] name='Accordion Section #2'
+++++[push button] name='Accordion Section #2'
+++++++[paragraph]
+++++++++[static] name='Accordion Section #2'
+++[heading] name='Accordion Section #3'
+++++[push button] name='Accordion Section #3'
+++++++[paragraph]
+++++++++[static] name='Accordion Section #3'
+++[heading] name='Accordion Section #4'
+++++[push button] name='Accordion Section #4' expanded label-for
+++++++[paragraph]
+++++++++[static] name='Accordion Section #4'
+++[landmark] name='Accordion Section #4' labelled-by
+++++[paragraph]
+++++++[static] name='Content for forth section of accordion element. This section will always be visible but disabled.'

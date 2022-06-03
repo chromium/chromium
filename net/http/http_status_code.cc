@@ -4,7 +4,9 @@
 
 #include "net/http/http_status_code.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace net {
 

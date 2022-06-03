@@ -13,9 +13,9 @@ PASS w.currentNode is subTree
 Test that setting the currentNode to non-Node values throws.
 
 
-PASS w.currentNode = null threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': The provided value is not of type 'Node'..
-PASS w.currentNode = {} threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': The provided value is not of type 'Node'..
-PASS w.currentNode = window threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': The provided value is not of type 'Node'..
+PASS w.currentNode = null threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': Failed to convert value to 'Node'..
+PASS w.currentNode = {} threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': Failed to convert value to 'Node'..
+PASS w.currentNode = window threw exception TypeError: Failed to set the 'currentNode' property on 'TreeWalker': Failed to convert value to 'Node'..
 
 
 Test that we handle setting the currentNode to arbitrary nodes not under the root element.

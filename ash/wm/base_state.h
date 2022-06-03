@@ -7,7 +7,6 @@
 
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -18,16 +17,21 @@ namespace ash {
 // BaseState implements the common framework for WindowState::State.
 class BaseState : public WindowState::State {
  public:
-  explicit BaseState(WindowStateType initial_state_type);
+  explicit BaseState(chromeos::WindowStateType initial_state_type);
+
+  BaseState(const BaseState&) = delete;
+  BaseState& operator=(const BaseState&) = delete;
+
   ~BaseState() override;
 
   // WindowState::State:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
-  WindowStateType GetType() const override;
+  chromeos::WindowStateType GetType() const override;
 
  protected:
-  // Returns the WindowStateType corresponds to the WMEvent type.
-  static WindowStateType GetStateForTransitionEvent(const WMEvent* event);
+  // Returns the chromeos::WindowStateType corresponds to the WMEvent type.
+  static chromeos::WindowStateType GetStateForTransitionEvent(
+      const WMEvent* event);
 
   static void CenterWindow(WindowState* window_state);
   static void CycleSnap(WindowState* window_state, WMEventType event);
@@ -51,17 +55,22 @@ class BaseState : public WindowState::State {
 
   // Shows/Hides window when minimized state changes.
   void UpdateMinimizedState(WindowState* window_state,
-                            WindowStateType previous_state_type);
+                            chromeos::WindowStateType previous_state_type);
 
   // Returns the window bounds for snapped window state.
-  gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
-                                           const WindowStateType state_type);
+  gfx::Rect GetSnappedWindowBoundsInParent(
+      aura::Window* window,
+      const chromeos::WindowStateType state_type);
+
+  // Prepares for the window snap event. Check if the window can be snapped in
+  // split screen and if so, SplitViewController will start observe this window.
+  // This needs to be done before the window's state and bounds change to its
+  // snapped window state and bounds to make sure split screen can be properly
+  // set up.
+  void HandleWindowSnapping(WindowState* window_state, WMEventType event_type);
 
   // The current type of the window.
-  WindowStateType state_type_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BaseState);
+  chromeos::WindowStateType state_type_;
 };
 
 }  // namespace ash

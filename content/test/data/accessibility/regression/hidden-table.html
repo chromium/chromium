@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+@WAIT-FOR:Done
+-->
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>Header 1</th>
+        <th>Header 2</th>
+      </tr>
+    </thead>
+    <tbody hidden>
+    </tbody>
+    <tfoot>
+    </tfoot>
+  </table>
+
+  <script>
+    function addRow(container) {
+        let row = document.createElement('tr');
+        container.appendChild(row);
+        for (let j = 0; j < 100; j++) {
+            let cell = document.createElement('td');
+            cell.innerHTML = Math.random();
+            row.appendChild(cell);
+            cell.tabIndex = -1;
+        }
+    }
+
+    setTimeout(() => {
+        // Now add a bunch of rows to the tbody, which is hidden.
+        // Every one of those added cells changes its tabIndex, which
+        // triggers a call to MarkAXObjectDirty on a node that's not
+        // included in the accessibility tree. That caused a bug where
+        // all of the real nodes of the table keep getting re-serialized.
+        // This is now caught by a DCHECK in BrowserAccessibilityManager
+        // that an AXTreeUpdate shouldn't be larger than the resulting tree.
+        for (let i = 0; i < 10; i++) {
+            addRow(document.querySelector('tbody'));
+        }
+
+        // Finally, clear out all of those extra rows and finish
+        // the test.
+        setTimeout(() => {
+            document.querySelector('tbody').innerHTML = '';
+            let done = document.createElement('div');
+            done.innerHTML = 'Done';
+            document.body.appendChild(done);
+        }, 10);
+    }, 10);
+  </script>
+</body>

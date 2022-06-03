@@ -5,7 +5,7 @@
 import os
 
 from code import Code
-from model import PropertyType
+from model import PropertyType, Type, Property
 import cpp_util
 import schema_util
 
@@ -32,7 +32,8 @@ class _Generator(object):
     c = Code()
     (c.Append(cpp_util.CHROMIUM_LICENSE)
       .Append()
-      .Append(cpp_util.GENERATED_FILE_MESSAGE % self._namespace.source_file)
+      .Append(cpp_util.GENERATED_FILE_MESSAGE %
+              cpp_util.ToPosixPath(self._namespace.source_file))
       .Append()
     )
 
@@ -57,7 +58,6 @@ class _Generator(object):
       .Append('#include <string>')
       .Append('#include <vector>')
       .Append()
-      .Append('#include "base/logging.h"')
       .Append('#include "base/values.h"')
       .Cblock(self._type_helper.GenerateIncludes(include_soft=include_soft))
       .Append()
@@ -94,6 +94,12 @@ class _Generator(object):
                                     is_toplevel=True,
                                     generate_typedefs=True))
       )
+    if self._namespace.manifest_keys:
+      c.Append('//')
+      c.Append('// Manifest Keys')
+      c.Append('//')
+      c.Append()
+      c.Cblock(self._GenerateManifestKeys())
     if self._namespace.functions:
       (c.Append('//')
         .Append('// Functions')
@@ -111,6 +117,7 @@ class _Generator(object):
       for event in self._namespace.events.values():
         c.Cblock(self._GenerateEvent(event))
     (c.Concat(cpp_util.CloseNamespace(cpp_namespace))
+      .Append()
       .Append('#endif  // %s' % ifndef_name)
       .Append()
     )
@@ -209,7 +216,7 @@ class _Generator(object):
     elif type_.property_type == PropertyType.ENUM:
       if type_.description:
         c.Comment(type_.description)
-      c.Cblock(self._GenerateEnumDeclaration(classname, type_));
+      c.Cblock(self._GenerateEnumDeclaration(classname, type_))
       # Top level enums are in a namespace scope so the methods shouldn't be
       # static. On the other hand, those declared inline (e.g. in an object) do.
       maybe_static = '' if is_toplevel else 'static '
@@ -223,13 +230,21 @@ class _Generator(object):
                                  PropertyType.OBJECT):
       if type_.description:
         c.Comment(type_.description)
+
       (c.Sblock('struct %(classname)s {')
-          .Append('%(classname)s();')
-          .Append('~%(classname)s();')
-      )
-      (c.Append('%(classname)s(%(classname)s&& rhs);')
+        .Append('%(classname)s();')
+        .Append('~%(classname)s();')
+        .Append('%(classname)s(const %(classname)s&) = delete;')
+        .Append('%(classname)s& operator=(const %(classname)s&) = delete;')
+        .Append('%(classname)s(%(classname)s&& rhs);')
         .Append('%(classname)s& operator=(%(classname)s&& rhs);')
       )
+
+      if type_.origin.from_manifest_keys:
+        c.Append()
+        c.Comment('Manifest key constants.')
+        c.Concat(self._GenerateManifestKeyConstants(type_.properties.values()))
+
       if type_.origin.from_json:
         (c.Append()
           .Comment('Populates a %s object from a base::Value. Returns'
@@ -253,6 +268,10 @@ class _Generator(object):
                    '%s object.' % (value_type, classname))
           .Append('std::unique_ptr<%s> ToValue() const;' % value_type)
         )
+
+      if type_.origin.from_manifest_keys:
+        c.Cblock(self._GenerateParseFromDictionary(type_, classname))
+
       if type_.property_type == PropertyType.CHOICES:
         # Choices are modelled with optional fields for each choice. Exactly one
         # field of the choice is guaranteed to be set by the compiler.
@@ -278,12 +297,7 @@ class _Generator(object):
                       self._type_helper.GetCppType(type_.additional_properties,
                                                    is_in_container=True))
             )
-      (c.Eblock()
-        .Append()
-        .Sblock(' private:')
-          .Append('DISALLOW_COPY_AND_ASSIGN(%(classname)s);')
-        .Eblock('};')
-      )
+      (c.Eblock('};'))
     return c.Substitute({'classname': classname})
 
   def _GenerateEvent(self, event):
@@ -295,7 +309,7 @@ class _Generator(object):
     (c.Append('namespace %s {' % event_namespace)
       .Append()
       .Concat(self._GenerateEventNameConstant(event))
-      .Concat(self._GenerateCreateCallbackArguments(event))
+      .Concat(self._GenerateAsyncResponseArguments(event.params))
       .Append('}  // namespace %s' % event_namespace)
     )
     return c
@@ -314,8 +328,8 @@ class _Generator(object):
       .Append()
       .Cblock(self._GenerateFunctionParams(function))
     )
-    if function.callback:
-      c.Cblock(self._GenerateFunctionResults(function.callback))
+    if function.returns_async:
+      c.Cblock(self._GenerateFunctionResults(function.returns_async))
     c.Append('}  // namespace %s' % function_namespace)
     return c
 
@@ -328,7 +342,10 @@ class _Generator(object):
     c = Code()
     (c.Sblock('struct Params {')
       .Append('static std::unique_ptr<Params> Create(%s);' %
-                  self._GenerateParams(('const base::ListValue& args',)))
+                  self._GenerateParams(
+                      ('const base::Value::ConstListView& args',)))
+      .Append('Params(const Params&) = delete;')
+      .Append('Params& operator=(const Params&) = delete;')
       .Append('~Params();')
       .Append()
       .Cblock(self._GenerateTypes(p.type_ for p in function.params))
@@ -337,8 +354,6 @@ class _Generator(object):
       .Append()
       .Sblock(' private:')
         .Append('Params();')
-        .Append()
-        .Append('DISALLOW_COPY_AND_ASSIGN(Params);')
       .Eblock('};')
     )
     return c
@@ -354,11 +369,70 @@ class _Generator(object):
                                   generate_typedefs=generate_typedefs))
     return c
 
-  def _GenerateCreateCallbackArguments(self, function):
-    """Generates functions for passing parameters to a callback.
+  def _GenerateManifestKeys(self):
+    # type: () -> Code
+    """Generates the types and parsing code for manifest keys.
+    """
+    assert self._namespace.manifest_keys
+    assert self._namespace.manifest_keys.property_type == PropertyType.OBJECT
+    return self._GenerateType(self._namespace.manifest_keys)
+
+  def _GenerateParseFromDictionary(self, type_, classname):
+    # type: (Type, str) -> Code
+    """Generates the ParseFromDictionary method declaration.
+    """
+    # Omit |key| and |error_path_reversed| argument for the top level
+    # ManifestKeys type. These are an implementation detail for the inner
+    # manifest types.
+    if type_.IsRootManifestKeyType():
+      params = [
+        'const base::DictionaryValue& root_dict',
+        '%s* out' % classname,
+        'std::u16string* error'
+      ]
+      comment = (
+        'Parses manifest keys for this namespace. Any keys not available to the'
+        ' manifest will be ignored. On a parsing error, false is returned and '
+        '|error| is populated.')
+    else:
+      params = [
+        'const base::DictionaryValue& root_dict',
+        'base::StringPiece key',
+        '%s* out' % classname,
+        'std::u16string* error',
+        'std::vector<base::StringPiece>* error_path_reversed'
+      ]
+      comment = (
+        'Parses the given |key| from |root_dict|. Any keys not available to the'
+        ' manifest will be ignored. On a parsing error, false is returned and '
+        '|error| and |error_path_reversed| are populated.')
+
+    c = Code()
+    c.Append().Comment(comment)
+
+    # Make |generate_error_messages| False since |error| is already included
+    # within |params|.
+    params = self._GenerateParams(params, generate_error_messages=False)
+    c.Append('static bool ParseFromDictionary(%s);' % params)
+    return c
+
+  def _GenerateManifestKeyConstants(self, properties):
+    # type: (list[Property]) -> Code
+    """Generates string constants for manifest keys for the given |properties|.
+    """
+
+    c = Code()
+    for prop in properties:
+      c.Append('static constexpr char %s[] = "%s";' %
+               (cpp_util.UnixNameToConstantName(prop.unix_name), prop.name))
+
+    return c
+
+  def _GenerateAsyncResponseArguments(self, params):
+    """Generates a function to create the arguments to pass as results to a
+    function callback, promise or event details.
     """
     c = Code()
-    params = function.params
     c.Cblock(self._GenerateTypes((p.type_ for p in params), is_toplevel=True))
 
     declaration_list = []
@@ -367,7 +441,7 @@ class _Generator(object):
         c.Comment(param.description)
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
-    c.Append('std::unique_ptr<base::ListValue> Create(%s);' %
+    c.Append('std::vector<base::Value> Create(%s);' %
              ', '.join(declaration_list))
     return c
 
@@ -380,25 +454,29 @@ class _Generator(object):
     c.Append()
     return c
 
-  def _GenerateFunctionResults(self, callback):
+  def _GenerateFunctionResults(self, returns_async):
     """Generates namespace for passing a function's result back.
     """
     c = Code()
     (c.Append('namespace Results {')
       .Append()
-      .Concat(self._GenerateCreateCallbackArguments(callback))
+      .Concat(self._GenerateAsyncResponseArguments(returns_async.params))
       .Append('}  // namespace Results')
     )
     return c
 
-  def _GenerateParams(self, params):
+  def _GenerateParams(self, params, generate_error_messages=None):
     """Builds the parameter list for a function, given an array of parameters.
+    If |generate_error_messages| is specified, it overrides
+    |self._generate_error_messages|.
     """
     # |error| is populated with warnings and/or errors found during parsing.
     # |error| being set does not necessarily imply failure and may be
     # recoverable.
     # For example, optional properties may have failed to parse, but the
     # parser was able to continue.
-    if self._generate_error_messages:
-      params += ('base::string16* error',)
+    if generate_error_messages is None:
+      generate_error_messages = self._generate_error_messages
+    if generate_error_messages:
+      params += ('std::u16string* error',)
     return ', '.join(str(p) for p in params)

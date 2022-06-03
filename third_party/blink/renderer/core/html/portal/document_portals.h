@@ -24,8 +24,6 @@ class PortalContents;
 // a contents, it is also tracked by this object.
 class DocumentPortals final : public GarbageCollected<DocumentPortals>,
                               public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(DocumentPortals);
-
  public:
   static const char kSupplementName[];
   static DocumentPortals& From(Document&);
@@ -52,7 +50,7 @@ class DocumentPortals final : public GarbageCollected<DocumentPortals>,
 
   explicit DocumentPortals(Document&);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<PortalContents>> portals_;

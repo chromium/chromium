@@ -12,8 +12,7 @@
 
 namespace device {
 
-MockUsbService::MockUsbService() : UsbService() {}
-
+MockUsbService::MockUsbService() = default;
 MockUsbService::~MockUsbService() = default;
 
 void MockUsbService::AddDevice(scoped_refptr<UsbDevice> device) {

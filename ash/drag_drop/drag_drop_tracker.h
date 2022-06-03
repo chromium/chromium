@@ -8,15 +8,17 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
+#include "base/bind.h"
 #include "ui/events/event.h"
 
 namespace aura {
 class Window;
-class WindowDelegate;
 }
 
 namespace ash {
+class DragDropTrackerDelegate;
+
+using CancelDragDropCallback = base::RepeatingCallback<void(void)>;
 
 // Provides functions for handling drag events inside and outside the root
 // window where drag is started. This internally sets up a capture window for
@@ -24,7 +26,11 @@ namespace ash {
 // Only X11 environment is supported for now.
 class ASH_EXPORT DragDropTracker {
  public:
-  DragDropTracker(aura::Window* context_root, aura::WindowDelegate* delegate);
+  DragDropTracker(aura::Window* context_root, CancelDragDropCallback callback);
+
+  DragDropTracker(const DragDropTracker&) = delete;
+  DragDropTracker& operator=(const DragDropTracker&) = delete;
+
   ~DragDropTracker();
 
   aura::Window* capture_window() { return capture_window_.get(); }
@@ -47,8 +53,7 @@ class ASH_EXPORT DragDropTracker {
  private:
   // A window for capturing drag events while dragging.
   std::unique_ptr<aura::Window> capture_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropTracker);
+  ash::DragDropTrackerDelegate* tracker_window_delegate_;
 };
 
 }  // namespace ash

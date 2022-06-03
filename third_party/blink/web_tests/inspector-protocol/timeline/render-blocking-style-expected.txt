@@ -1,0 +1,16 @@
+Tests various style traces.
+Recording started
+Tracing complete
+Previous value requestId is identical to the current one
+importer.css: blocking
+importer_print.css: non_blocking
+style.css?dynamicDOM: dynamically_injected_non_blocking
+style.css?dynamicDocWrite: blocking
+style.css?dynamicDocWritePrint: non_blocking
+style.css?dynamicInnerHTML: dynamically_injected_non_blocking
+style.css?dynamicInnerHTMLPrint: non_blocking
+style.css?imported: blocking
+style.css?imported_print: non_blocking
+style.css?preload: non_blocking
+style.css?preload_used: dynamically_injected_non_blocking
+

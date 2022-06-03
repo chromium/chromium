@@ -1,0 +1,7 @@
+{
+  "urls": {
+    "google_url": {
+      "bad-url-key": "http://example.com"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Parser blocking stylesheet in xhtml body</title>
+  <link rel="help" href="https://github.com/chrishtr/rendering/blob/master/stylesheet-loading-proposal.md" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    async_test(t => {
+      t.step_timeout(() => {
+        assert_equals(document.querySelector("#after-sheet"), null, "#after-sheet element should not have been inserted into the DOM.");
+        t.done();
+      }, 100);
+    }, "setTimeout() triggered while the stylesheet is loading.");
+  </script>
+  <link rel="stylesheet" href="support/empty.css?pipe=trickle(d1)" />
+  <div id="after-sheet"></div>
+</body>
+</html>

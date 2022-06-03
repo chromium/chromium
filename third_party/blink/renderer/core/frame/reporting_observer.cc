@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/reporting_observer.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/report.h"
@@ -25,7 +25,7 @@ ReportingObserver* ReportingObserver::Create(
 ReportingObserver::ReportingObserver(ExecutionContext* execution_context,
                                      V8ReportingObserverCallback* callback,
                                      ReportingObserverOptions* options)
-    : ContextClient(execution_context),
+    : ExecutionContextClient(execution_context),
       execution_context_(execution_context),
       callback_(callback),
       options_(options),
@@ -60,8 +60,8 @@ void ReportingObserver::QueueReport(Report* report) {
 }
 
 bool ReportingObserver::ObservedType(const String& type) {
-  return !options_->hasTypes() || options_->types().IsEmpty() ||
-         options_->types().Find(type) != kNotFound;
+  return !options_->hasTypesNonNull() || options_->typesNonNull().IsEmpty() ||
+         options_->typesNonNull().Find(type) != kNotFound;
 }
 
 bool ReportingObserver::Buffered() {
@@ -88,13 +88,13 @@ HeapVector<Member<Report>> ReportingObserver::takeRecords() {
   return reports;
 }
 
-void ReportingObserver::Trace(blink::Visitor* visitor) {
+void ReportingObserver::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(callback_);
   visitor->Trace(options_);
   visitor->Trace(report_queue_);
   ScriptWrappable::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

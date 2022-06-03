@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <unistd.h>
 #endif
 
@@ -34,7 +34,7 @@ SocketDescriptor CreatePlatformSocket(int family, int type, int protocol) {
   return result;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   SocketDescriptor result = ::socket(family, type, protocol);
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Disable SIGPIPE on this socket. Although Chromium globally disables
   // SIGPIPE, the net stack may be used in other consumers which do not do
   // this. SO_NOSIGPIPE is a Mac-only API. On Linux, it is a flag on send.

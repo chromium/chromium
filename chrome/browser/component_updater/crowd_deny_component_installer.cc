@@ -16,6 +16,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
+#include "components/permissions/permission_uma_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -43,11 +45,11 @@ namespace component_updater {
 
 bool CrowdDenyComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool CrowdDenyComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // Just check that the file is there, detailed verification of the contents is
   // delegated to code in //chrome/browser/permissions.
@@ -55,12 +57,12 @@ bool CrowdDenyComponentInstallerPolicy::VerifyInstallation(
 }
 
 bool CrowdDenyComponentInstallerPolicy::RequiresNetworkEncryption() const {
-  return true;
+  return false;
 }
 
 update_client::CrxInstaller::Result
 CrowdDenyComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   // Nothing custom here.
   return update_client::CrxInstaller::Result(0);
@@ -73,20 +75,20 @@ void CrowdDenyComponentInstallerPolicy::OnCustomUninstall() {
 void CrowdDenyComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DVLOG(1) << "Crowd Deny component ready, version " << version.GetString()
            << " in " << install_dir.value();
 
-  int format = 0;
-  if (!manifest->GetInteger(kCrowdDenyManifestPreloadDataFormatKey, &format) ||
-      format != kCrowdDenyManifestPreloadDataCurrentFormat) {
+  absl::optional<int> format =
+      manifest.FindIntKey(kCrowdDenyManifestPreloadDataFormatKey);
+  if (!format || *format != kCrowdDenyManifestPreloadDataCurrentFormat) {
     DVLOG(1) << "Crowd Deny component bailing out. Future data version: "
-             << format;
+             << *format;
     return;
   }
 
   CrowdDenyPreloadData::GetInstance()->LoadFromDisk(
-      GetPreloadDataFilePath(install_dir));
+      GetPreloadDataFilePath(install_dir), version);
 }
 
 base::FilePath CrowdDenyComponentInstallerPolicy::GetRelativeInstallDir()
@@ -105,20 +107,13 @@ std::string CrowdDenyComponentInstallerPolicy::GetName() const {
   return kCrowdDenyHumanReadableName;
 }
 
-std::vector<std::string> CrowdDenyComponentInstallerPolicy::GetMimeTypes()
-    const {
-  // Not a plugin.
-  return std::vector<std::string>();
-}
-
 update_client::InstallerAttributes
 CrowdDenyComponentInstallerPolicy::GetInstallerAttributes() const {
   // No special update rules.
   return update_client::InstallerAttributes();
 }
 
-void RegisterCrowdDenyComponent(ComponentUpdateService* cus,
-                                const base::FilePath& user_data_dir) {
+void RegisterCrowdDenyComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<CrowdDenyComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());

@@ -4,13 +4,14 @@
 
 #import "ios/showcase/core/app_delegate.h"
 
+#import <MaterialComponents/MaterialTypography.h>
+
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #import "ios/showcase/core/showcase_model.h"
 #import "ios/showcase/core/showcase_view_controller.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

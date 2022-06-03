@@ -5,24 +5,28 @@
 #ifndef GPU_VULKAN_VULKAN_COMMAND_POOL_H_
 #define GPU_VULKAN_VULKAN_COMMAND_POOL_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "gpu/vulkan/vulkan_export.h"
 
 namespace gpu {
 
 class VulkanCommandBuffer;
 class VulkanDeviceQueue;
 
-class VULKAN_EXPORT VulkanCommandPool {
+class COMPONENT_EXPORT(VULKAN) VulkanCommandPool {
  public:
   explicit VulkanCommandPool(VulkanDeviceQueue* device_queue);
+
+  VulkanCommandPool(const VulkanCommandPool&) = delete;
+  VulkanCommandPool& operator=(const VulkanCommandPool&) = delete;
+
   ~VulkanCommandPool();
 
-  bool Initialize(bool use_protected_memory);
+  bool Initialize();
   // Destroy() should be called when all related GPU tasks have been finished.
   void Destroy();
 
@@ -41,8 +45,6 @@ class VULKAN_EXPORT VulkanCommandPool {
   VkCommandPool handle_ = VK_NULL_HANDLE;
   uint32_t command_buffer_count_ = 0;
   bool use_protected_memory_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanCommandPool);
 };
 
 }  // namespace gpu

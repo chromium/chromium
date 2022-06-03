@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,11 +18,19 @@ class NetworkState;
 
 class InternetConfigDialog : public SystemWebDialogDelegate {
  public:
+  InternetConfigDialog(const InternetConfigDialog&) = delete;
+  InternetConfigDialog& operator=(const InternetConfigDialog&) = delete;
+
   // Shows a network configuration dialog for |network_id|. Does nothing if
   // there is no NetworkState matching |network_id|.
-  static void ShowDialogForNetworkId(const std::string& network_id);
+  static void ShowDialogForNetworkId(const std::string& network_id,
+                                     gfx::NativeWindow parent = nullptr);
   // Shows a network configuration dialog for a new network of |network_type|.
-  static void ShowDialogForNetworkType(const std::string& network_type);
+  static void ShowDialogForNetworkType(const std::string& network_type,
+                                       gfx::NativeWindow parent = nullptr);
+
+  // SystemWebDialogDelegate
+  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
  protected:
   // |dialog_id| provides a pre-calculated identifier for the dialog based on
@@ -44,8 +51,6 @@ class InternetConfigDialog : public SystemWebDialogDelegate {
   std::string dialog_id_;
   std::string network_type_;
   std::string network_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetConfigDialog);
 };
 
 // A WebUI to host the network configuration UI in a dialog, used in the
@@ -53,14 +58,19 @@ class InternetConfigDialog : public SystemWebDialogDelegate {
 class InternetConfigDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit InternetConfigDialogUI(content::WebUI* web_ui);
-  ~InternetConfigDialogUI() override;
 
- private:
-  void BindCrosNetworkConfig(
+  InternetConfigDialogUI(const InternetConfigDialogUI&) = delete;
+  InternetConfigDialogUI& operator=(const InternetConfigDialogUI&) = delete;
+
+  ~InternetConfigDialogUI() override;
+  // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver);
 
-  DISALLOW_COPY_AND_ASSIGN(InternetConfigDialogUI);
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace chromeos

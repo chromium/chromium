@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSFORM_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSFORM_COMPONENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -35,6 +34,8 @@ class CORE_EXPORT CSSTransformComponent : public ScriptWrappable {
     kTranslationType,
   };
 
+  CSSTransformComponent(const CSSTransformComponent&) = delete;
+  CSSTransformComponent& operator=(const CSSTransformComponent&) = delete;
   ~CSSTransformComponent() override = default;
 
   // Blink-internal ways of creating CSSTransformComponents.
@@ -56,9 +57,8 @@ class CORE_EXPORT CSSTransformComponent : public ScriptWrappable {
 
  private:
   bool is2D_;
-  DISALLOW_COPY_AND_ASSIGN(CSSTransformComponent);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSFORM_COMPONENT_H_

@@ -5,53 +5,55 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_INCOGNITO_WEB_STATE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_METRICS_INCOGNITO_WEB_STATE_OBSERVER_H_
 
-#include "base/macros.h"
+#include <set>
 
-#include "base/scoped_observer.h"
-#import "ios/chrome/browser/tabs/tab_model_list_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "base/macros.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
+class AllWebStateListObservationRegistrar;
+
 // Interface for getting notified when WebStates get added/removed to/from an
-// incognito browser state. For example, implementations can invoke
-// TabModelList::IsOffTheRecordSessionActive() in the body of the observer
-// methods to learn if incognito session is currently active (i.e., at least one
-// incognito tab is open).
-class IncognitoWebStateObserver : public TabModelListObserver,
-                                  public WebStateListObserver {
+// incognito browser state.
+class IncognitoWebStateObserver {
  public:
   IncognitoWebStateObserver();
-  ~IncognitoWebStateObserver() override;
-
-  // TabModelListObserver:
-  void TabModelRegisteredWithBrowserState(
-      TabModel* tab_model,
-      ios::ChromeBrowserState* browser_state) override;
-  void TabModelUnregisteredFromBrowserState(
-      TabModel* tab_model,
-      ios::ChromeBrowserState* browser_state) override;
-
-  // WebStateListObserver:
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
-  void WebStateReplacedAt(WebStateList* web_state_list,
-                          web::WebState* old_web_state,
-                          web::WebState* new_web_state,
-                          int index) override;
+  IncognitoWebStateObserver(const IncognitoWebStateObserver&) = delete;
+  IncognitoWebStateObserver& operator=(const IncognitoWebStateObserver&) =
+      delete;
+  ~IncognitoWebStateObserver();
 
  protected:
   virtual void OnIncognitoWebStateAdded() = 0;
   virtual void OnIncognitoWebStateRemoved() = 0;
 
  private:
-  ScopedObserver<WebStateList, WebStateListObserver> scoped_observer_{this};
+  // Observer implementation for each browser state.
+  class Observer : public WebStateListObserver {
+   public:
+    explicit Observer(IncognitoWebStateObserver* incognito_tracker);
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override;
 
-  DISALLOW_COPY_AND_ASSIGN(IncognitoWebStateObserver);
+   private:
+    // WebStateListObserver:
+    void WebStateInsertedAt(WebStateList* web_state_list,
+                            web::WebState* web_state,
+                            int index,
+                            bool activating) override;
+    void WebStateDetachedAt(WebStateList* web_state_list,
+                            web::WebState* web_state,
+                            int index) override;
+    void WebStateReplacedAt(WebStateList* web_state_list,
+                            web::WebState* old_web_state,
+                            web::WebState* new_web_state,
+                            int index) override;
+    IncognitoWebStateObserver* incognito_tracker_;
+  };
+
+  // Observation registrars for each browser state; each one owns an instance
+  // of IncognitoWebStateObserver::Observer.
+  std::set<std::unique_ptr<AllWebStateListObservationRegistrar>> registrars_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_INCOGNITO_WEB_STATE_OBSERVER_H_

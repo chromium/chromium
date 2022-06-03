@@ -17,9 +17,9 @@
         android:gravity="start|center_vertical"
         android:text="@string/powered_by_chrome_message"
         android:maxLines="1"
-        style="@style/TextAppearance.BlackCaption" />
+        style="@style/TextAppearance.TextSmall.Secondary" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/divider_bg_color" />
+        android:background="@color/divider_line_bg_color" />
 </FrameLayout>

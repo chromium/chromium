@@ -4,23 +4,45 @@
 
 #include "ui/ozone/platform/x11/gl_surface_egl_readback_x11.h"
 
-#include "ui/gfx/x/x11_types.h"
+#include "base/logging.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace ui {
 
+namespace {
+
+constexpr x11::GraphicsContext kNoGC = x11::GraphicsContext{};
+
+}
+
 GLSurfaceEglReadbackX11::GLSurfaceEglReadbackX11(gfx::AcceleratedWidget window)
-    : window_(window), xdisplay_(gfx::GetXDisplay()) {}
+    : window_(static_cast<x11::Window>(window)),
+      connection_(x11::Connection::Get()) {}
 
 bool GLSurfaceEglReadbackX11::Initialize(gl::GLSurfaceFormat format) {
   if (!GLSurfaceEglReadback::Initialize(format))
     return false;
 
   // We don't need to reinitialize |window_graphics_context_|.
-  if (window_graphics_context_)
+  if (window_graphics_context_ != kNoGC)
     return true;
 
-  window_graphics_context_ = XCreateGC(xdisplay_, window_, 0, nullptr);
-  if (!window_graphics_context_) {
+  window_graphics_context_ = connection_->GenerateId<x11::GraphicsContext>();
+  auto gc_future = connection_->CreateGC({window_graphics_context_, window_});
+
+  if (auto attributes = connection_->GetWindowAttributes({window_}).Sync()) {
+    visual_ = attributes->visual;
+  } else {
+    DLOG(ERROR) << "Failed to get attributes for window "
+                << static_cast<uint32_t>(window_);
+    Destroy();
+    return false;
+  }
+
+  if (gc_future.Sync().error) {
     DLOG(ERROR) << "XCreateGC failed";
     Destroy();
     return false;
@@ -30,67 +52,14 @@ bool GLSurfaceEglReadbackX11::Initialize(gl::GLSurfaceFormat format) {
 }
 
 void GLSurfaceEglReadbackX11::Destroy() {
-  if (pixmap_graphics_context_) {
-    XFreeGC(xdisplay_, pixmap_graphics_context_);
-    pixmap_graphics_context_ = nullptr;
+  if (window_graphics_context_ != kNoGC) {
+    connection_->FreeGC({window_graphics_context_});
+    window_graphics_context_ = kNoGC;
   }
 
-  if (pixmap_) {
-    XFreePixmap(xdisplay_, pixmap_);
-    pixmap_ = x11::None;
-  }
-
-  if (window_graphics_context_) {
-    XFreeGC(xdisplay_, window_graphics_context_);
-    window_graphics_context_ = nullptr;
-  }
-
-  XSync(xdisplay_, x11::False);
+  connection_->Sync();
 
   GLSurfaceEglReadback::Destroy();
-}
-
-bool GLSurfaceEglReadbackX11::Resize(const gfx::Size& size,
-                                     float scale_factor,
-                                     ColorSpace color_space,
-                                     bool has_alpha) {
-  if (!GLSurfaceEglReadback::Resize(size, scale_factor, color_space,
-                                    has_alpha)) {
-    return false;
-  }
-
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(xdisplay_, window_, &attributes)) {
-    DLOG(ERROR) << "XGetWindowAttributes failed";
-    return false;
-  }
-
-  // Destroy the previous pixmap and graphics context.
-  if (pixmap_graphics_context_) {
-    XFreeGC(xdisplay_, pixmap_graphics_context_);
-    pixmap_graphics_context_ = nullptr;
-  }
-  if (pixmap_) {
-    XFreePixmap(xdisplay_, pixmap_);
-    pixmap_ = x11::None;
-  }
-
-  // Recreate a pixmap to hold the frame.
-  pixmap_ = XCreatePixmap(xdisplay_, window_, size.width(), size.height(),
-                          attributes.depth);
-  if (!pixmap_) {
-    DLOG(ERROR) << "XCreatePixmap failed";
-    return false;
-  }
-
-  // Recreate a graphics context for the pixmap.
-  pixmap_graphics_context_ = XCreateGC(xdisplay_, pixmap_, 0, nullptr);
-  if (!pixmap_graphics_context_) {
-    DLOG(ERROR) << "XCreateGC failed";
-    return false;
-  }
-
-  return true;
 }
 
 GLSurfaceEglReadbackX11::~GLSurfaceEglReadbackX11() {
@@ -98,19 +67,15 @@ GLSurfaceEglReadbackX11::~GLSurfaceEglReadbackX11() {
 }
 
 bool GLSurfaceEglReadbackX11::HandlePixels(uint8_t* pixels) {
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(xdisplay_, window_, &attributes)) {
-    DLOG(ERROR) << "XGetWindowAttributes failed";
-    return false;
-  }
+  SkImageInfo image_info =
+      SkImageInfo::Make(GetSize().width(), GetSize().height(),
+                        kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+  SkPixmap pixmap(image_info, pixels, image_info.minRowBytes());
 
   // Copy pixels into pixmap and then update the XWindow.
   const gfx::Size size = GetSize();
-  gfx::PutARGBImage(xdisplay_, attributes.visual, attributes.depth, pixmap_,
-                    pixmap_graphics_context_, pixels, size.width(),
-                    size.height());
-  XCopyArea(xdisplay_, pixmap_, window_, window_graphics_context_, 0, 0,
-            size.width(), size.height(), 0, 0);
+  DrawPixmap(connection_, visual_, window_, window_graphics_context_, pixmap, 0,
+             0, 0, 0, size.width(), size.height());
 
   return true;
 }

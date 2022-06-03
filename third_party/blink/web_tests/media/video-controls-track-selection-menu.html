@@ -28,7 +28,10 @@ async_test(function(t) {
         if (numberOfTracksLoaded != 2)
             return;
 
-        video.oncanplaythrough = t.step_func(function() {
+        // Seek to some point within the first second
+        video.currentTime = 0.5;
+
+        video.onseeked = t.step_func(function() {
             assert_true(isClosedCaptionsButtonEnabled(video));
             assert_equals(video.textTracks.length, 2);
             assert_equals(video.textTracks[0].mode, "hidden");

@@ -1,0 +1,153 @@
+<style>
+  #addContacts {
+    padding: 8px;
+  }
+
+  #addContactsLabel {
+    color: var(--cros-text-color-primary);
+    line-height: 138%;
+  }
+
+  #addContactsLabelSecondary {
+    color: var(--cros-text-color-secondary);
+    line-height: 138%;
+  }
+
+  #confirmationToken {
+    color: var(--cros-text-color-disabled);
+    flex-grow: 1;
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    line-height: 12px;
+    margin-top: 46px;
+    padding-top: 6px;
+    text-align: center;
+  }
+
+  cr-lottie {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+  }
+
+  nearby-progress {
+    width: 116px;
+  }
+
+  #centerContent {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 0 32px;
+  }
+
+  #processRow {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  #processRowContent {
+    align-self: center;
+    display: flex;
+    flex-grow: 1;
+    margin: 24px 8px;
+  }
+
+  #errorSection {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+  }
+
+  #error {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+  }
+
+  #errorTitle {
+    color: var(--cros-text-color-alert);
+    font-weight: bold;
+    margin: 3px 0;
+  }
+
+  #errorDescription {
+    color: var(--cros-text-color-secondary);
+    line-height: 13px;
+  }
+
+  #errorIcon {
+    fill: var(--cros-icon-color-alert);
+    flex-shrink: 0;
+    height: 20px;
+    margin-inline-end: 12px;
+    width: 20px;
+  }
+</style>
+
+<nearby-page-template title="$i18n{nearbyShareConfirmationPageTitle}"
+        action-button-label="[[getActionButtonLabel_(needsConfirmation_)]]"
+        action-button-event-name="accept"
+        cancel-button-label="[[getCancelButtonLabel_(needsConfirmation_)]]"
+        cancel-button-event-name="[[getCancelEventName_(needsConfirmation_)]]"
+        close-only="[[errorTitle_]]">
+  <div id="centerContent" slot="content">
+    <div id="processRow">
+      <div id="processRowContent">
+        <nearby-preview payload-preview="[[payloadPreview]]"
+            disabled="[[errorTitle_]]">
+        </nearby-preview>
+        <div id="confirmationToken" aria-live="polite">
+          <template is="dom-if" if="[[confirmationToken_]]">
+            [[i18n('nearbyShareSecureConnectionId', confirmationToken_)]]
+          </template>
+        </div>
+        <nearby-progress share-target="[[shareTarget]]"
+            show-indeterminate-progress
+            has-error="[[errorTitle_]]">
+        </nearby-progress>
+      </div>
+    </div>
+
+    <iron-media-query query="(prefers-color-scheme: dark)"
+        query-matches="{{isDarkModeActive_}}">
+    </iron-media-query>
+    <template is="dom-if" if="[[!errorTitle_]]">
+      <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+          autoplay="true">
+      </cr-lottie>
+    </template>
+
+    <template is="dom-if" if="[[contactName_(shareTarget, errorTitle_)]]">
+      <cr-checkbox id="addContacts" aria-labelledby="addContactsLabel"
+          aria-describedby="addContactsLabelSecondary">
+        <div id="addContactsLabel" aria-hidden="true">
+          [[contactName_(shareTarget)]]
+        </div>
+        <div id="addContactsLabelSecondary" aria-hidden="true">
+          [[i18n('nearbyShareConfirmationPageAddContactSubtitle')]]
+        </div>
+      </cr-checkbox>
+    </template>
+
+    <!-- TODO(crbug.com/1149546) factor error section into its own component -->
+    <template is="dom-if" if="[[errorTitle_]]" restamp>
+      <div id="errorSection">
+        <iron-icon id="errorIcon" icon="nearby20:info"></iron-icon>
+        <div id="error" role="alert" aria-labelledby="errorTitle"
+            aria-describedby="errorDescription">
+          <div id="errorTitle" aria-hidden="true">[[errorTitle_]]</div>
+          <div id="errorDescription" aria-hidden="true">
+            [[errorDescription_]]
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</nearby-page-template>

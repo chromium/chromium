@@ -1,20 +1,21 @@
 rootWebArea
 ++genericContainer ignored
-++++pre
-++++++staticText name='This test is to check   pre<newline>formatting.'
-++++++++inlineTextBox name='This test is to check   pre'
-++++++++inlineTextBox name='<newline>'
-++++++++inlineTextBox name='formatting.'
-++++genericContainer
-++++++staticText name='This test is to check   pre<newline>formatting'
-++++++++inlineTextBox name='This test is to check   pre'
-++++++++inlineTextBox name='<newline>'
-++++++++inlineTextBox name='formatting'
-++++genericContainer
-++++++staticText name='This test is to check   pre<newline>formatting.'
-++++++++inlineTextBox name='This test is to check   pre'
-++++++++inlineTextBox name='<newline>'
-++++++++inlineTextBox name='formatting.'
-++++genericContainer
-++++++staticText name='This test is to check pre formatting.'
-++++++++inlineTextBox name='This test is to check pre formatting.'
+++++genericContainer ignored
+++++++pre
+++++++++staticText name='This test is to check   pre<newline>formatting.'
+++++++++++inlineTextBox name='This test is to check   pre'
+++++++++++inlineTextBox name='<newline>'
+++++++++++inlineTextBox name='formatting.'
+++++++genericContainer
+++++++++staticText name='This test is to check   pre<newline>formatting'
+++++++++++inlineTextBox name='This test is to check   pre'
+++++++++++inlineTextBox name='<newline>'
+++++++++++inlineTextBox name='formatting'
+++++++genericContainer
+++++++++staticText name='This test is to check   pre<newline>formatting.'
+++++++++++inlineTextBox name='This test is to check   pre'
+++++++++++inlineTextBox name='<newline>'
+++++++++++inlineTextBox name='formatting.'
+++++++genericContainer
+++++++++staticText name='This test is to check pre formatting.'
+++++++++++inlineTextBox name='This test is to check pre formatting.'

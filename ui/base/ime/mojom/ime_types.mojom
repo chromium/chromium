@@ -6,6 +6,29 @@ module ui.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 
+enum TextInputMode {
+  kDefault,
+  kNone,
+  kText,
+  kTel,
+  kUrl,
+  kEmail,
+  kNumeric,
+  kDecimal,
+  kSearch,
+};
+
+enum TextInputAction {
+  kDefault,
+  kEnter,
+  kDone,
+  kGo,
+  kNext,
+  kPrevious,
+  kSearch,
+  kSend,
+};
+
 // Text input type which is based on blink::WebTextInputType.
 enum TextInputType {
   NONE,
@@ -25,7 +48,8 @@ enum TextInputType {
   TEXT_AREA,
   CONTENT_EDITABLE,
   DATE_TIME_FIELD,
-  MAX = DATE_TIME_FIELD,
+  TYPE_NULL,
+  MAX = TYPE_NULL,
 };
 
 // See comments for ui::ImeTextSpan::Type for more details.
@@ -33,6 +57,8 @@ enum ImeTextSpanType {
   kComposition,
   kSuggestion,
   kMisspellingSuggestion,
+  kAutocorrect,
+  kGrammarSuggestion,
 };
 
 // This enum represents the thickness of an underline segment of text,
@@ -47,6 +73,21 @@ enum ImeTextSpanThickness {
   kThick,
 };
 
+// This enum represents the style of an underline segment of text,
+// the underline style of a ui::ImeTextSpan element.
+// The possible values are:
+// * kNone: When you don't want to paint the underline.
+// * kSolid: For regular style.
+// * kDot: For dotted underlines.
+// * kDash: For dashed underlines.
+enum ImeTextSpanUnderlineStyle {
+  kNone,
+  kSolid,
+  kDot,
+  kDash,
+  kSquiggle,
+};
+
 // Represents an underlined segment of text currently composed by IME.
 // Corresponds to ui::ImeTextSpan.
 struct ImeTextSpan {
@@ -55,8 +96,11 @@ struct ImeTextSpan {
   uint32 end_offset;
   uint32 underline_color;
   ImeTextSpanThickness thickness;
+  ImeTextSpanUnderlineStyle underline_style;
+  uint32 text_color;
   uint32 background_color;
   uint32 suggestion_highlight_color;
   bool remove_on_finish_composing;
+  bool interim_char_selection;
   array<string> suggestions;
 };

@@ -10,11 +10,8 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "chromecast/public/media/media_pipeline_backend.h"
-
-namespace media {
-class AudioBus;
-}  // namespace media
+#include "chromecast/media/audio/audio_provider.h"
+#include "chromecast/media/audio/cast_audio_bus.h"
 
 namespace chromecast {
 namespace media {
@@ -25,48 +22,30 @@ namespace media {
 // data to ensure that a full fade can always take place if necessary; note that
 // this increases output latency by |fade_frames| samples. All methods except
 // constructor/destructor must be called on the same thread.
-class AudioFader {
+class AudioFader : public AudioProvider {
  public:
-  using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
-
-  // The source of real audio data for the fader.
-  class Source {
-   public:
-    // Called to get more audio data for playback. The source must fill in
-    // the |channels| with up to |num_frames| of audio. Note that only planar
-    // float format is supported. The |rendering_delay| indicates when the
-    // first frame of the filled data will be played out.
-    // Note that this method is called on a high priority audio output thread
-    // and must not block.
-    // Returns the number of frames filled.
-    virtual int FillFaderFrames(int num_frames,
-                                RenderingDelay rendering_delay,
-                                float* const* channels) = 0;
-
-   protected:
-    virtual ~Source() = default;
-  };
-
-  AudioFader(Source* source,
+  AudioFader(AudioProvider* provider,
              base::TimeDelta fade_time,
-             int num_channels,
-             int sample_rate,
              double playback_rate);
-  AudioFader(Source* source,
-             int fade_frames,
-             int num_channels,
-             int sample_rate,
-             double playback_rate);
-  ~AudioFader();
+  AudioFader(AudioProvider* provider, int fade_frames, double playback_rate);
+
+  AudioFader(const AudioFader&) = delete;
+  AudioFader& operator=(const AudioFader&) = delete;
+
+  ~AudioFader() override;
 
   int buffered_frames() const { return buffered_frames_; }
 
-  // Fills in |channel_data| with |num_frames| frames of properly faded audio.
-  // The |rendering_delay| should reflect when the first sample of the filled
-  // audio is expected to play out.
+  // AudioProvider implementation:
   int FillFrames(int num_frames,
-                 RenderingDelay rendering_delay,
-                 float* const* channel_data);
+                 int64_t playout_timestamp,
+                 float* const* channel_data) override;
+  size_t num_channels() const override;
+  int sample_rate() const override;
+
+  void set_playback_rate(double playback_rate) {
+    playback_rate_ = playback_rate;
+  }
 
   // Returns the total number of frames that will be requested from the source
   // (potentially over multiple calls to source_->FillFaderFrames()) if
@@ -81,12 +60,12 @@ class AudioFader {
   // (which will be less than |fade_frames| if part of the fade has already
   // been completed on a previous buffer).
   static void FadeInHelper(float* const* channel_data,
-                           int num_channels,
+                           size_t num_channels,
                            int filled_frames,
                            int fade_frames,
                            int fade_frames_remaining);
   static void FadeOutHelper(float* const* channel_data,
-                            int num_channels,
+                            size_t num_channels,
                             int filled_frames,
                             int fade_frames,
                             int fade_frames_remaining);
@@ -106,18 +85,16 @@ class AudioFader {
   void FadeIn(float* const* channel_data, int filled_frames);
   void FadeOut(float* const* channel_data, int filled_frames);
 
-  Source* const source_;
+  AudioProvider* const provider_;
   const int fade_frames_;
-  const int num_channels_;
+  const size_t num_channels_;
   const int sample_rate_;
-  const double playback_rate_;
+  double playback_rate_;
 
   State state_ = State::kSilent;
-  std::unique_ptr<::media::AudioBus> fade_buffer_;
+  std::unique_ptr<CastAudioBus> fade_buffer_;
   int buffered_frames_ = 0;
   int fade_frames_remaining_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFader);
 };
 
 }  // namespace media

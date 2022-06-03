@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>Web app banner test page</title>
+    <script src="main.js"></script>
+    <script>
+      // If a "manifest=/path/to/manifest.json" query argument is provided to
+      // the URL accessing this page, that path is injected as the manifest tag.
+      // Otherwise, "manifest.json" is used as the manifest tag.
+      addManifestLinkTag();
+    </script>
+  </head>
+  <body onload="initializeWithWorker('service_worker_empty_fetch_handler.js')">
+    Do-nothing page with a manifest and a service worker.
+  </body>
+</html>

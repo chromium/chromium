@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++slider horizontal inputType='range' valueForRange=5.00 minValueForRange=1.00 maxValueForRange=10.00
+++++++slider horizontal inputType='range' valueForRange=3.00 minValueForRange=1.00 maxValueForRange=10.00
+++++++slider horizontal inputType='range' value='Medium' valueForRange=5.00 minValueForRange=1.00 maxValueForRange=10.00
+++++++slider horizontal inputType='range' value='Friday' valueForRange=6.00 minValueForRange=0.00 maxValueForRange=5.00
+++++++slider horizontal inputType='range' valueForRange=0.20 minValueForRange=-1.00 maxValueForRange=1.00

@@ -4,6 +4,7 @@
 
 #include "base/files/file_enumerator.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -11,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +30,57 @@ const std::vector<FileEnumerator::FolderSearchPolicy> kFolderSearchPolicies{
     FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
     FileEnumerator::FolderSearchPolicy::ALL};
 
+struct TestFile {
+  TestFile(const FilePath::CharType* file_name, const char* c)
+      : path(file_name), contents(c) {}
+
+  TestFile(const FilePath::CharType* directory,
+           const FilePath::CharType* file_name,
+           const char* c)
+      : path(FilePath(directory).Append(file_name)), contents(c) {}
+
+  const FilePath path;
+  const std::string contents;
+  File::Info info;
+  bool found = false;
+};
+
+struct TestDirectory {
+  explicit TestDirectory(const FilePath::CharType* n) : name(n) {}
+  const FilePath name;
+  File::Info info;
+  bool found = false;
+};
+
+void CheckModificationTime(const FileEnumerator::FileInfo& actual,
+                           Time expected_last_modified_time) {
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+  // On POSIX, GetLastModifiedTime() rounds down to the second, but
+  // File::GetInfo() does not.
+  Time::Exploded exploded;
+  expected_last_modified_time.UTCExplode(&exploded);
+  exploded.millisecond = 0;
+  EXPECT_TRUE(Time::FromUTCExploded(exploded, &expected_last_modified_time));
+#endif
+  EXPECT_EQ(actual.GetLastModifiedTime(), expected_last_modified_time);
+}
+
+void CheckFileAgainstInfo(const FileEnumerator::FileInfo& actual,
+                          TestFile& expected) {
+  EXPECT_FALSE(expected.found)
+      << "Got " << expected.path.BaseName().value() << " twice";
+  expected.found = true;
+  EXPECT_EQ(actual.GetSize(), int64_t(expected.contents.size()));
+  CheckModificationTime(actual, expected.info.last_modified);
+}
+
+void CheckDirectoryAgainstInfo(const FileEnumerator::FileInfo& actual,
+                               TestDirectory& expected) {
+  EXPECT_FALSE(expected.found) << "Got " << expected.name.value() << " twice";
+  expected.found = true;
+  CheckModificationTime(actual, expected.info.last_modified);
+}
+
 circular_deque<FilePath> RunEnumerator(
     const FilePath& root_path,
     bool recursive,
@@ -36,7 +89,8 @@ circular_deque<FilePath> RunEnumerator(
     FileEnumerator::FolderSearchPolicy folder_search_policy) {
   circular_deque<FilePath> rv;
   FileEnumerator enumerator(root_path, recursive, file_type, pattern,
-                            folder_search_policy);
+                            folder_search_policy,
+                            FileEnumerator::ErrorPolicy::IGNORE_ERRORS);
   for (auto file = enumerator.Next(); !file.empty(); file = enumerator.Next())
     rv.emplace_back(std::move(file));
   return rv;
@@ -44,6 +98,34 @@ circular_deque<FilePath> RunEnumerator(
 
 bool CreateDummyFile(const FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+}
+
+bool GetFileInfo(const FilePath& file_path, File::Info& info) {
+  // FLAG_WIN_BACKUP_SEMANTICS: Needed to open directories on Windows.
+  File f(file_path,
+         File::FLAG_OPEN | File::FLAG_READ | File::FLAG_WIN_BACKUP_SEMANTICS);
+  if (!f.IsValid()) {
+    LOG(ERROR) << "Could not open " << file_path.value() << ": "
+               << File::ErrorToString(f.error_details());
+    return false;
+  }
+  if (!f.GetInfo(&info)) {
+    std::string last_error = File::ErrorToString(File::GetLastFileError());
+    LOG(ERROR) << "Could not get info about " << file_path.value() << ": "
+               << last_error;
+    return false;
+  }
+
+  return true;
+}
+
+void SetUpTestFiles(const ScopedTempDir& temp_dir,
+                    std::vector<TestFile>& files) {
+  for (TestFile& file : files) {
+    const FilePath file_path = temp_dir.GetPath().Append(file.path);
+    ASSERT_TRUE(WriteFile(file_path, file.contents));
+    ASSERT_TRUE(GetFileInfo(file_path, file.info));
+  }
 }
 
 }  // namespace
@@ -310,6 +392,29 @@ TEST(FileEnumerator, FilesInSubfoldersWithFiltering) {
   EXPECT_THAT(files, UnorderedElementsAre(subdir_foo, foo_foo, bar_foo));
 }
 
+TEST(FileEnumerator, InvalidDirectory) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const FilePath test_file = temp_dir.GetPath().AppendASCII("test_file");
+  ASSERT_TRUE(CreateDummyFile(test_file));
+
+  // Attempt to enumerate entries at a regular file path.
+  FileEnumerator enumerator(test_file, /*recursive=*/true,
+                            FileEnumerator::FILES, kEmptyPattern,
+                            FileEnumerator::FolderSearchPolicy::ALL,
+                            FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
+  FilePath path = enumerator.Next();
+  EXPECT_TRUE(path.empty());
+
+  // Slightly different outcomes between Windows and POSIX.
+#if defined(OS_WIN)
+  EXPECT_EQ(File::Error::FILE_ERROR_FAILED, enumerator.GetError());
+#else
+  EXPECT_EQ(File::Error::FILE_ERROR_NOT_A_DIRECTORY, enumerator.GetError());
+#endif
+}
+
 #if defined(OS_POSIX)
 TEST(FileEnumerator, SymLinkLoops) {
   ScopedTempDir temp_dir;
@@ -340,5 +445,170 @@ TEST(FileEnumerator, SymLinkLoops) {
   EXPECT_THAT(files, UnorderedElementsAre(link, file));
 }
 #endif
+
+// Test FileEnumerator::GetInfo() on some files and ensure all the returned
+// information is correct.
+TEST(FileEnumerator, GetInfo) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  std::vector<TestFile> files = {
+      TestFile(FILE_PATH_LITERAL("file1"), "First"),
+      TestFile(FILE_PATH_LITERAL("file2"), "Second"),
+      TestFile(FILE_PATH_LITERAL("file3"), "Third-third-third")};
+  SetUpTestFiles(temp_dir, files);
+
+  FileEnumerator file_enumerator(temp_dir.GetPath(), false,
+                                 FileEnumerator::FILES);
+  while (!file_enumerator.Next().empty()) {
+    auto info = file_enumerator.GetInfo();
+    bool found = false;
+    for (TestFile& file : files) {
+      if (info.GetName() == file.path.BaseName()) {
+        CheckFileAgainstInfo(info, file);
+        found = true;
+        break;
+      }
+    }
+
+    EXPECT_TRUE(found) << "Got unexpected result " << info.GetName().value();
+  }
+
+  for (const TestFile& file : files) {
+    EXPECT_TRUE(file.found)
+        << "File " << file.path.value() << " was not returned";
+  }
+}
+
+// Test that FileEnumerator::GetInfo() works when searching recursively. It also
+// tests that it returns the correct information about directories.
+TEST(FileEnumerator, GetInfoRecursive) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  TestDirectory directories[] = {TestDirectory(FILE_PATH_LITERAL("dir1")),
+                                 TestDirectory(FILE_PATH_LITERAL("dir2")),
+                                 TestDirectory(FILE_PATH_LITERAL("dir3")),
+                                 TestDirectory(FILE_PATH_LITERAL("dirempty"))};
+
+  for (const TestDirectory& dir : directories) {
+    const FilePath dir_path = temp_dir.GetPath().Append(dir.name);
+    ASSERT_TRUE(CreateDirectory(dir_path));
+  }
+
+  std::vector<TestFile> files = {
+      TestFile(FILE_PATH_LITERAL("dir1"), FILE_PATH_LITERAL("file1"), "First"),
+      TestFile(FILE_PATH_LITERAL("dir1"), FILE_PATH_LITERAL("file2"), "Second"),
+      TestFile(FILE_PATH_LITERAL("dir2"), FILE_PATH_LITERAL("fileA"),
+               "Third-third-3"),
+      TestFile(FILE_PATH_LITERAL("dir3"), FILE_PATH_LITERAL(".file"), "Dot")};
+  SetUpTestFiles(temp_dir, files);
+
+  // Get last-modification times for directories. Must be done after we create
+  // all the files.
+  for (TestDirectory& dir : directories) {
+    const FilePath dir_path = temp_dir.GetPath().Append(dir.name);
+    ASSERT_TRUE(GetFileInfo(dir_path, dir.info));
+  }
+
+  FileEnumerator file_enumerator(
+      temp_dir.GetPath(), true,
+      FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+  while (!file_enumerator.Next().empty()) {
+    auto info = file_enumerator.GetInfo();
+    bool found = false;
+    if (info.IsDirectory()) {
+      for (TestDirectory& dir : directories) {
+        if (info.GetName() == dir.name) {
+          CheckDirectoryAgainstInfo(info, dir);
+          found = true;
+          break;
+        }
+      }
+    } else {
+      for (TestFile& file : files) {
+        if (info.GetName() == file.path.BaseName()) {
+          CheckFileAgainstInfo(info, file);
+          found = true;
+          break;
+        }
+      }
+    }
+
+    EXPECT_TRUE(found) << "Got unexpected result " << info.GetName().value();
+  }
+
+  for (const TestDirectory& dir : directories) {
+    EXPECT_TRUE(dir.found) << "Directory " << dir.name.value()
+                           << " was not returned";
+  }
+  for (const TestFile& file : files) {
+    EXPECT_TRUE(file.found)
+        << "File " << file.path.value() << " was not returned";
+  }
+}
+
+#if defined(OS_FUCHSIA)
+// FileEnumerator::GetInfo does not work correctly with INCLUDE_DOT_DOT.
+// https://crbug.com/1106172
+#elif defined(OS_WIN)
+// Windows has a bug in their handling of ".."; they always report the file
+// modification time of the current directory, not the parent directory. This is
+// a bug in Windows, not us -- you can see it with the "dir" command (notice
+// that the time of . and .. always match). Skip this test.
+// https://crbug.com/1119546
+#else
+// Tests that FileEnumerator::GetInfo() returns the correct info for the ..
+// directory.
+TEST(FileEnumerator, GetInfoDotDot) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const FilePath::CharType kSubdir[] = FILE_PATH_LITERAL("subdir");
+  const FilePath subdir_path = temp_dir.GetPath().Append(kSubdir);
+  ASSERT_TRUE(CreateDirectory(subdir_path));
+
+  std::vector<TestFile> files = {
+      TestFile(kSubdir, FILE_PATH_LITERAL("file1"), "First"),
+      TestFile(kSubdir, FILE_PATH_LITERAL("file2"), "Second"),
+      TestFile(kSubdir, FILE_PATH_LITERAL("file3"), "Third-third-third")};
+  SetUpTestFiles(temp_dir, files);
+
+  TestDirectory dotdot(FILE_PATH_LITERAL(".."));
+  // test_dir/subdir/.. is just test_dir.
+  ASSERT_TRUE(GetFileInfo(temp_dir.GetPath(), dotdot.info));
+
+  FileEnumerator file_enumerator(subdir_path, false,
+                                 FileEnumerator::FILES |
+                                     FileEnumerator::DIRECTORIES |
+                                     FileEnumerator::INCLUDE_DOT_DOT);
+  while (!file_enumerator.Next().empty()) {
+    auto info = file_enumerator.GetInfo();
+    bool found = false;
+    if (info.IsDirectory()) {
+      EXPECT_EQ(info.GetName(), FilePath(FILE_PATH_LITERAL("..")));
+      CheckDirectoryAgainstInfo(info, dotdot);
+      found = true;
+    } else {
+      for (TestFile& file : files) {
+        if (info.GetName() == file.path.BaseName()) {
+          CheckFileAgainstInfo(info, file);
+          found = true;
+          break;
+        }
+      }
+    }
+
+    EXPECT_TRUE(found) << "Got unexpected result " << info.GetName().value();
+  }
+
+  EXPECT_TRUE(dotdot.found) << "Directory .. was not returned";
+
+  for (const TestFile& file : files) {
+    EXPECT_TRUE(file.found)
+        << "File " << file.path.value() << " was not returned";
+  }
+}
+#endif  // !defined(OS_FUCHSIA) && !defined(OS_WIN)
 
 }  // namespace base

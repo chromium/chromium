@@ -16,8 +16,8 @@
         test.parentNode.removeChild(test);
         if (window.testRunner) {
             // Force a focus in which forces a paint that can trigger the crash.
-            testRunner.setWindowIsKey(false);
-            testRunner.setWindowIsKey(true);
+            testRunner.setWindowFocus(false);
+            testRunner.setWindowFocus(true);
             document.getElementById("results").innerHTML = "PASS";
         }
     }

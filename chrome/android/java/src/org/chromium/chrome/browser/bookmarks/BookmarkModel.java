@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -41,7 +42,7 @@ public class BookmarkModel extends BookmarkBridge {
      * Initialize bookmark model for last used non-incognito profile.
      */
     public BookmarkModel() {
-        this(Profile.getLastUsedProfile().getOriginalProfile());
+        this(Profile.getLastUsedRegularProfile());
     }
 
     @VisibleForTesting
@@ -73,7 +74,7 @@ public class BookmarkModel extends BookmarkBridge {
      *                  children, because deleting folder will also remove all its children, and
      *                  deleting children once more will cause errors.
      */
-    void deleteBookmarks(BookmarkId... bookmarks) {
+    public void deleteBookmarks(BookmarkId... bookmarks) {
         assert bookmarks != null && bookmarks.length > 0;
         // Store all titles of bookmarks.
         List<String> titles = new ArrayList<>();
@@ -115,9 +116,35 @@ public class BookmarkModel extends BookmarkBridge {
     }
 
     /**
-     * @return The id of the default folder to add bookmarks/folders to.
+     * @param bookmarkId The {@link BookmarkId} for the reading list folder.
+     * @return The total number of unread reading list articles.
+     */
+    public int getUnreadCount(@NonNull BookmarkId bookmarkId) {
+        assert bookmarkId.getType() == BookmarkType.READING_LIST;
+        List<BookmarkId> children = getChildIDs(bookmarkId);
+        int unreadCount = 0;
+        for (BookmarkId child : children) {
+            BookmarkItem childItem = getBookmarkById(child);
+            if (!childItem.isRead()) unreadCount++;
+        }
+
+        return unreadCount;
+    }
+
+    /**
+     * @return The id of the default folder to save bookmarks/folders to.
      */
     public BookmarkId getDefaultFolder() {
+        return getMobileFolderId();
+    }
+
+    /**
+     * @return The id of the default folder to view bookmarks.
+     */
+    public BookmarkId getDefaultFolderViewLocation() {
+        if (ReadingListFeatures.shouldUseRootFolderAsDefaultForReadLater()) {
+            return getRootFolderId();
+        }
         return getMobileFolderId();
     }
 }

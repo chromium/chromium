@@ -10,9 +10,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.MenuOrKeyboardActionController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.Set;
  *
  * <p>This handler exposes a subset of available menu item actions, exposed by the given {@link
  * MenuOrKeyboardActionController}. By default, no actions are exposed; call {@link
- * #whitelistActions} or {@link #allowAllActions} to enable them.
+ * #allowlistActions} or {@link #allowAllActions} to enable them.
  */
 class MenuDirectActionHandler implements DirectActionHandler {
     /** Maps some menu item actions to direct actions. */
@@ -47,9 +47,9 @@ class MenuDirectActionHandler implements DirectActionHandler {
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabModelSelector mTabModelSelector;
 
-    /** If non-null, only actions that belong to this whitelist are available. */
+    /** If non-null, only actions that belong to this allowlist are available. */
     @Nullable
-    private Set<Integer> mActionIdWhitelist = new HashSet<>();
+    private Set<Integer> mActionIdAllowlist = new HashSet<>();
 
     MenuDirectActionHandler(MenuOrKeyboardActionController menuOrKeyboardActionController,
             TabModelSelector tabModelSelector) {
@@ -59,7 +59,7 @@ class MenuDirectActionHandler implements DirectActionHandler {
 
     /** Allows the use of all known actions. */
     void allowAllActions() {
-        mActionIdWhitelist = null;
+        mActionIdAllowlist = null;
     }
 
     /**
@@ -67,11 +67,11 @@ class MenuDirectActionHandler implements DirectActionHandler {
      *
      * <p>Does nothing if the actions are already available.
      */
-    void whitelistActions(Integer... itemIds) {
-        if (mActionIdWhitelist == null) return;
+    void allowlistActions(Integer... itemIds) {
+        if (mActionIdAllowlist == null) return;
 
         for (int itemId : itemIds) {
-            mActionIdWhitelist.add(itemId);
+            mActionIdAllowlist.add(itemId);
         }
     }
 
@@ -96,7 +96,7 @@ class MenuDirectActionHandler implements DirectActionHandler {
         availableItemIds.add(R.id.new_tab_menu_id);
         availableItemIds.add(R.id.preferences_id);
 
-        if (mActionIdWhitelist != null) availableItemIds.retainAll(mActionIdWhitelist);
+        if (mActionIdAllowlist != null) availableItemIds.retainAll(mActionIdAllowlist);
 
         for (Map.Entry<String, Integer> entry : ACTION_MAP.entrySet()) {
             if (availableItemIds.contains(entry.getValue())) {
@@ -109,7 +109,7 @@ class MenuDirectActionHandler implements DirectActionHandler {
     public boolean performDirectAction(
             String actionId, Bundle arguments, Callback<Bundle> callback) {
         Integer menuId = ACTION_MAP.get(actionId);
-        if (menuId != null && (mActionIdWhitelist == null || mActionIdWhitelist.contains(menuId))
+        if (menuId != null && (mActionIdAllowlist == null || mActionIdAllowlist.contains(menuId))
                 && mMenuOrKeyboardActionController.onMenuOrKeyboardAction(
                         menuId, /* fromMenu= */ false)) {
             callback.onResult(Bundle.EMPTY);

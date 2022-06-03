@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_CRASH_MEMORY_METRICS_REPORTER_IMPL_H_
 
 #include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
@@ -31,9 +32,6 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
   void SetSharedMemory(
       base::UnsafeSharedMemoryRegion shared_metrics_buffer) override;
 
-  // MemoryUsageMonitor::Observer:
-  void OnMemoryPing(MemoryUsage) override;
-
   // This method tracks when an allocation failure occurs. It should be hooked
   // into all platform allocation failure handlers in a process such as
   // base::TerminateBecauseOutOfMemory() and OOM_CRASH() in Partition Alloc.
@@ -47,8 +45,12 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
  private:
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, CalculateProcessFootprint);
 
-  void WriteIntoSharedMemory(const OomInterventionMetrics& metrics);
+  // MemoryUsageMonitor::Observer:
+  void OnMemoryPing(MemoryUsage) override;
 
+  void WriteIntoSharedMemory();
+
+  OomInterventionMetrics last_reported_metrics_;
   base::WritableSharedMemoryMapping shared_metrics_mapping_;
   mojo::Receiver<mojom::blink::CrashMemoryMetricsReporter> receiver_{this};
 };

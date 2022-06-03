@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
@@ -16,9 +17,9 @@
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/cast_receiver.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/udp_transport_impl.h"
+#include "media/cast/test/receiver/cast_receiver.h"
 
 using media::cast::CastTransportStatus;
 using media::cast::UdpTransportImpl;
@@ -56,10 +57,10 @@ InProcessReceiver::~InProcessReceiver() {
 }
 
 void InProcessReceiver::Start() {
-  cast_environment_->PostTask(CastEnvironment::MAIN,
-                              FROM_HERE,
-                              base::Bind(&InProcessReceiver::StartOnMainThread,
-                                         base::Unretained(this)));
+  cast_environment_->PostTask(
+      CastEnvironment::MAIN, FROM_HERE,
+      base::BindOnce(&InProcessReceiver::StartOnMainThread,
+                     base::Unretained(this)));
   stopped_ = false;
 }
 
@@ -72,11 +73,10 @@ void InProcessReceiver::Stop() {
   if (cast_environment_->CurrentlyOn(CastEnvironment::MAIN)) {
     StopOnMainThread(&event);
   } else {
-    cast_environment_->PostTask(CastEnvironment::MAIN,
-                                FROM_HERE,
-                                base::Bind(&InProcessReceiver::StopOnMainThread,
-                                           base::Unretained(this),
-                                           &event));
+    cast_environment_->PostTask(
+        CastEnvironment::MAIN, FROM_HERE,
+        base::BindOnce(&InProcessReceiver::StopOnMainThread,
+                       base::Unretained(this), &event));
     event.Wait();
   }
   stopped_ = true;
@@ -107,8 +107,8 @@ void InProcessReceiver::StartOnMainThread() {
       std::make_unique<UdpTransportImpl>(
           cast_environment_->GetTaskRunner(CastEnvironment::MAIN),
           local_end_point_, remote_end_point_,
-          base::Bind(&InProcessReceiver::UpdateCastTransportStatus,
-                     base::Unretained(this))),
+          base::BindRepeating(&InProcessReceiver::UpdateCastTransportStatus,
+                              base::Unretained(this))),
       cast_environment_->GetTaskRunner(CastEnvironment::MAIN));
 
   cast_receiver_ = CastReceiver::Create(
@@ -138,14 +138,13 @@ void InProcessReceiver::GotVideoFrame(scoped_refptr<VideoFrame> video_frame,
 
 void InProcessReceiver::PullNextAudioFrame() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  cast_receiver_->RequestDecodedAudioFrame(
-      base::Bind(&InProcessReceiver::GotAudioFrame,
-                 weak_factory_.GetWeakPtr()));
+  cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
+      &InProcessReceiver::GotAudioFrame, weak_factory_.GetWeakPtr()));
 }
 
 void InProcessReceiver::PullNextVideoFrame() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  cast_receiver_->RequestDecodedVideoFrame(base::Bind(
+  cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
       &InProcessReceiver::GotVideoFrame, weak_factory_.GetWeakPtr()));
 }
 

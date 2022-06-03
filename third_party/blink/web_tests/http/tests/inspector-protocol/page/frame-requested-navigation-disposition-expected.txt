@@ -1,0 +1,23 @@
+Tests that dispostion for client-requested navigation is properly reported.
+New window
+{
+    disposition : newWindow
+    frameId : <string>
+    reason : anchorClick
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-disposition.html?done
+}
+New tab
+{
+    disposition : newTab
+    frameId : <string>
+    reason : anchorClick
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-disposition.html?done
+}
+Current tab
+{
+    disposition : currentTab
+    frameId : <string>
+    reason : anchorClick
+    url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-disposition.html?done
+}
+

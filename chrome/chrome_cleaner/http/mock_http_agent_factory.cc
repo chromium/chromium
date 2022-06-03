@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/chrome_cleaner/http/http_agent.h"
 #include "chrome/chrome_cleaner/http/http_agent_factory.h"
 #include "chrome/chrome_cleaner/http/http_response.h"
@@ -28,6 +28,9 @@ class MockHttpResponse : public chrome_cleaner::HttpResponse {
   explicit MockHttpResponse(MockHttpAgentConfig* config) : config_(config) {
     DCHECK(config);
   }
+
+  MockHttpResponse(const MockHttpResponse&) = delete;
+  MockHttpResponse& operator=(const MockHttpResponse&) = delete;
 
   ~MockHttpResponse() override = default;
 
@@ -47,7 +50,7 @@ class MockHttpResponse : public chrome_cleaner::HttpResponse {
   }
 
   bool GetContentType(bool* has_content_type,
-                      base::string16* content_type) override {
+                      std::wstring* content_type) override {
     ADD_FAILURE() << "This method should not be called.";
     return false;
   }
@@ -75,8 +78,6 @@ class MockHttpResponse : public chrome_cleaner::HttpResponse {
 
  private:
   MockHttpAgentConfig* config_{nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpResponse);
 };
 
 // Class that acts as an HttpAgent based on how the MockHttpAgentConfig is
@@ -87,15 +88,18 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
     DCHECK(config);
   }
 
+  MockHttpAgent(const MockHttpAgent&) = delete;
+  MockHttpAgent& operator=(const MockHttpAgent&) = delete;
+
   ~MockHttpAgent() override = default;
 
   // chrome_cleaner::HttpAgent:
   std::unique_ptr<chrome_cleaner::HttpResponse> Post(
-      const base::string16& host,
+      const std::wstring& host,
       uint16_t port,
-      const base::string16& path,
+      const std::wstring& path,
       bool secure,
-      const base::string16& extra_headers,
+      const std::wstring& extra_headers,
       const std::string& body,
       const net::NetworkTrafficAnnotationTag& /*traffic_annotation*/) override {
     const bool post_succeeds = config_->GetCurrentCalls().request_succeeds;
@@ -110,16 +114,16 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
 
     if (post_succeeds)
       return std::make_unique<MockHttpResponse>(config_);
-    return std::unique_ptr<MockHttpResponse>();
+    return nullptr;
   }
 
   // chrome_cleaner::HttpAgent:
   std::unique_ptr<chrome_cleaner::HttpResponse> Get(
-      const base::string16& host,
+      const std::wstring& host,
       uint16_t port,
-      const base::string16& path,
+      const std::wstring& path,
       bool secure,
-      const base::string16& extra_headers,
+      const std::wstring& extra_headers,
       const net::NetworkTrafficAnnotationTag& /*traffic_annotation*/) override {
     const bool get_succeeds = config_->GetCurrentCalls().request_succeeds;
     MockHttpAgentConfig::RequestData get_data;
@@ -132,13 +136,11 @@ class MockHttpAgent : public chrome_cleaner::HttpAgent {
 
     if (get_succeeds)
       return std::make_unique<MockHttpResponse>(config_);
-    return std::unique_ptr<MockHttpResponse>();
+    return nullptr;
   }
 
  private:
   MockHttpAgentConfig* config_{nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpAgent);
 };
 
 }  // namespace

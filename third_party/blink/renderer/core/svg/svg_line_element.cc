@@ -20,6 +20,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_line_element.h"
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -54,7 +56,7 @@ SVGLineElement::SVGLineElement(Document& document)
   AddToPropertyMap(y2_);
 }
 
-void SVGLineElement::Trace(blink::Visitor* visitor) {
+void SVGLineElement::Trace(Visitor* visitor) const {
   visitor->Trace(x1_);
   visitor->Trace(y1_);
   visitor->Trace(x2_);
@@ -66,15 +68,19 @@ Path SVGLineElement::AsPath() const {
   Path path;
 
   SVGLengthContext length_context(this);
-  path.MoveTo(FloatPoint(x1()->CurrentValue()->Value(length_context),
-                         y1()->CurrentValue()->Value(length_context)));
-  path.AddLineTo(FloatPoint(x2()->CurrentValue()->Value(length_context),
-                            y2()->CurrentValue()->Value(length_context)));
+  DCHECK(GetComputedStyle());
+
+  path.MoveTo(gfx::PointF(x1()->CurrentValue()->Value(length_context),
+                          y1()->CurrentValue()->Value(length_context)));
+  path.AddLineTo(gfx::PointF(x2()->CurrentValue()->Value(length_context),
+                             y2()->CurrentValue()->Value(length_context)));
 
   return path;
 }
 
-void SVGLineElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGLineElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kX1Attr || attr_name == svg_names::kY1Attr ||
       attr_name == svg_names::kX2Attr || attr_name == svg_names::kY2Attr) {
     UpdateRelativeLengthsInformation();
@@ -82,7 +88,7 @@ void SVGLineElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGGeometryElement::SvgAttributeChanged(attr_name);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 bool SVGLineElement::SelfHasRelativeLengths() const {

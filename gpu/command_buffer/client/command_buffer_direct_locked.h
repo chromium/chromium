@@ -14,6 +14,11 @@ namespace gpu {
 class CommandBufferDirectLocked : public CommandBufferDirect {
  public:
   CommandBufferDirectLocked() = default;
+
+  CommandBufferDirectLocked(const CommandBufferDirectLocked&) = delete;
+  CommandBufferDirectLocked& operator=(const CommandBufferDirectLocked&) =
+      delete;
+
   ~CommandBufferDirectLocked() override = default;
 
   // Overridden from CommandBufferDirect
@@ -22,8 +27,11 @@ class CommandBufferDirectLocked : public CommandBufferDirect {
   CommandBuffer::State WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
                                                int32_t start,
                                                int32_t end) override;
-  scoped_refptr<Buffer> CreateTransferBuffer(uint32_t size,
-                                             int32_t* id) override;
+  scoped_refptr<Buffer> CreateTransferBuffer(
+      uint32_t size,
+      int32_t* id,
+      TransferBufferAllocationOption option =
+          TransferBufferAllocationOption::kLoseContextOnOOM) override;
 
   void LockFlush() { flush_locked_ = true; }
 
@@ -48,7 +56,6 @@ class CommandBufferDirectLocked : public CommandBufferDirect {
   int client_put_offset_ = 0;
   int service_put_offset_ = 0;
   int flush_count_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferDirectLocked);
 };
 
 }  // namespace gpu

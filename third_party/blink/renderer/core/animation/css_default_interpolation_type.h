@@ -11,7 +11,8 @@
 
 namespace blink {
 
-class CORE_EXPORT CSSDefaultNonInterpolableValue : public NonInterpolableValue {
+class CORE_EXPORT CSSDefaultNonInterpolableValue final
+    : public NonInterpolableValue {
  public:
   ~CSSDefaultNonInterpolableValue() final = default;
 
@@ -30,7 +31,15 @@ class CORE_EXPORT CSSDefaultNonInterpolableValue : public NonInterpolableValue {
   Persistent<const CSSValue> css_value_;
 };
 
-DEFINE_NON_INTERPOLABLE_VALUE_TYPE_CASTS(CSSDefaultNonInterpolableValue);
+template <>
+struct DowncastTraits<CSSDefaultNonInterpolableValue> {
+  static bool AllowFrom(const NonInterpolableValue* value) {
+    return value && AllowFrom(*value);
+  }
+  static bool AllowFrom(const NonInterpolableValue& value) {
+    return value.GetType() == CSSDefaultNonInterpolableValue::static_type_;
+  }
+};
 
 // Never supports pairwise conversion while always supporting single conversion.
 // A catch all default for CSSValue interpolation.

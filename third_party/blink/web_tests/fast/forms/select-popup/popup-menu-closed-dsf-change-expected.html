@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<div id="text" style="color:green">This text should be green if the test ran</div>
+
+<select id="menu">
+    <option value="one">One</option>
+    <option value="two">Two</option>
+</select>
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    menu.focus();
+    testRunner.setBackingScaleFactor(2, () => { testRunner.notifyDone(); });
+  }
+</script>

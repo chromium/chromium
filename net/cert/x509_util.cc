@@ -9,6 +9,9 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,6 +33,7 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 
@@ -75,29 +79,91 @@ const EVP_MD* ToEVP(DigestAlgorithm alg) {
   return nullptr;
 }
 
-// Adds an X.509 Name with the specified common name to |cbb|.
-bool AddNameWithCommonName(CBB* cbb, base::StringPiece common_name) {
+// Adds an X.509 Name with the specified distinguished name to |cbb|.
+bool AddName(CBB* cbb, base::StringPiece name) {
   // See RFC 4519.
   static const uint8_t kCommonName[] = {0x55, 0x04, 0x03};
+  static const uint8_t kCountryName[] = {0x55, 0x04, 0x06};
+  static const uint8_t kOrganizationName[] = {0x55, 0x04, 0x0a};
+  static const uint8_t kOrganizationalUnitName[] = {0x55, 0x04, 0x0b};
+
+  std::vector<std::string> attributes = SplitString(
+      name, /*separators=*/",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  if (attributes.size() == 0) {
+    LOG(ERROR) << "Missing DN or wrong format";
+    return false;
+  }
 
   // See RFC 5280, section 4.1.2.4.
-  CBB rdns, rdn, attr, type, value;
-  if (!CBB_add_asn1(cbb, &rdns, CBS_ASN1_SEQUENCE) ||
-      !CBB_add_asn1(&rdns, &rdn, CBS_ASN1_SET) ||
-      !CBB_add_asn1(&rdn, &attr, CBS_ASN1_SEQUENCE) ||
-      !CBB_add_asn1(&attr, &type, CBS_ASN1_OBJECT) ||
-      !CBB_add_bytes(&type, kCommonName, sizeof(kCommonName)) ||
-      !CBB_add_asn1(&attr, &value, CBS_ASN1_UTF8STRING) ||
-      !CBB_add_bytes(&value,
-                     reinterpret_cast<const uint8_t*>(common_name.data()),
-                     common_name.size()) ||
-      !CBB_flush(cbb)) {
+  CBB rdns;
+  if (!CBB_add_asn1(cbb, &rdns, CBS_ASN1_SEQUENCE)) {
+    return false;
+  }
+
+  for (const std::string& attribute : attributes) {
+    std::vector<std::string> parts =
+        SplitString(attribute, /*separators=*/"=",
+                    base::WhitespaceHandling::KEEP_WHITESPACE,
+                    base::SplitResult::SPLIT_WANT_ALL);
+    if (parts.size() != 2) {
+      LOG(ERROR) << "Wrong DN format at " + attribute;
+      return false;
+    }
+
+    const std::string& type_string = parts[0];
+    const std::string& value_string = parts[1];
+    base::span<const uint8_t> type_bytes;
+    if (type_string == "CN") {
+      type_bytes = kCommonName;
+    } else if (type_string == "C") {
+      type_bytes = kCountryName;
+    } else if (type_string == "O") {
+      type_bytes = kOrganizationName;
+    } else if (type_string == "OU") {
+      type_bytes = kOrganizationalUnitName;
+    } else {
+      LOG(ERROR) << "Unrecognized type " + type_string;
+      return false;
+    }
+
+    CBB rdn, attr, type, value;
+    if (!CBB_add_asn1(&rdns, &rdn, CBS_ASN1_SET) ||
+        !CBB_add_asn1(&rdn, &attr, CBS_ASN1_SEQUENCE) ||
+        !CBB_add_asn1(&attr, &type, CBS_ASN1_OBJECT) ||
+        !CBB_add_bytes(&type, type_bytes.data(), type_bytes.size()) ||
+        !CBB_add_asn1(&attr, &value, type_string == "C" ?
+                          CBS_ASN1_PRINTABLESTRING : CBS_ASN1_UTF8STRING) ||
+        !CBB_add_bytes(&value,
+                       reinterpret_cast<const uint8_t*>(value_string.data()),
+                       value_string.size()) ||
+        !CBB_flush(&rdns)) {
+      return false;
+    }
+  }
+  if (!CBB_flush(cbb)) {
     return false;
   }
   return true;
 }
 
-bool AddTime(CBB* cbb, base::Time time) {
+class BufferPoolSingleton {
+ public:
+  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
+  CRYPTO_BUFFER_POOL* pool() { return pool_; }
+
+ private:
+  // The singleton is leaky, so there is no need to use a smart pointer.
+  CRYPTO_BUFFER_POOL* pool_;
+};
+
+base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
+    LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
+
+bool CBBAddTime(CBB* cbb, base::Time time) {
   der::GeneralizedTime generalized_time;
   if (!der::EncodeTimeAsGeneralizedTime(time, &generalized_time))
     return false;
@@ -116,21 +182,6 @@ bool AddTime(CBB* cbb, base::Time time) {
          CBB_add_space(&child, &out, der::kGeneralizedTimeLength) &&
          der::EncodeGeneralizedTime(generalized_time, out) && CBB_flush(cbb);
 }
-
-class BufferPoolSingleton {
- public:
-  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
-  CRYPTO_BUFFER_POOL* pool() { return pool_; }
-
- private:
-  // The singleton is leaky, so there is no need to use a smart pointer.
-  CRYPTO_BUFFER_POOL* pool_;
-};
-
-base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
                                         std::string* token) {
@@ -235,17 +286,6 @@ bool CreateSelfSignedCert(EVP_PKEY* key,
   crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  // Because |subject| only contains a common name and starts with 'CN=', there
-  // is no need for a full RFC 2253 parser here. Do some sanity checks though.
-  static const char kCommonNamePrefix[] = "CN=";
-  if (!base::StartsWith(subject, kCommonNamePrefix,
-                        base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "Subject must begin with " << kCommonNamePrefix;
-    return false;
-  }
-  base::StringPiece common_name = subject;
-  common_name.remove_prefix(sizeof(kCommonNamePrefix) - 1);
-
   // See RFC 5280, section 4.1. First, construct the TBSCertificate.
   bssl::ScopedCBB cbb;
   CBB tbs_cert, version, validity;
@@ -257,13 +297,13 @@ bool CreateSelfSignedCert(EVP_PKEY* key,
                     CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0) ||
       !CBB_add_asn1_uint64(&version, 2) ||
       !CBB_add_asn1_uint64(&tbs_cert, serial_number) ||
-      !AddRSASignatureAlgorithm(&tbs_cert, alg) ||       // signature
-      !AddNameWithCommonName(&tbs_cert, common_name) ||  // issuer
+      !AddRSASignatureAlgorithm(&tbs_cert, alg) ||  // signature
+      !AddName(&tbs_cert, subject) ||               // issuer
       !CBB_add_asn1(&tbs_cert, &validity, CBS_ASN1_SEQUENCE) ||
-      !AddTime(&validity, not_valid_before) ||
-      !AddTime(&validity, not_valid_after) ||
-      !AddNameWithCommonName(&tbs_cert, common_name) ||  // subject
-      !EVP_marshal_public_key(&tbs_cert, key)) {         // subjectPublicKeyInfo
+      !CBBAddTime(&validity, not_valid_before) ||
+      !CBBAddTime(&validity, not_valid_after) ||
+      !AddName(&tbs_cert, subject) ||             // subject
+      !EVP_marshal_public_key(&tbs_cert, key)) {  // subjectPublicKeyInfo
     return false;
   }
 
@@ -346,6 +386,13 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
                         data.size(), GetBufferPool()));
 }
 
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBufferFromStaticDataUnsafe(
+    base::span<const uint8_t> data) {
+  return bssl::UniquePtr<CRYPTO_BUFFER>(
+      CRYPTO_BUFFER_new_from_static_data_unsafe(data.data(), data.size(),
+                                                GetBufferPool()));
+}
+
 bool CryptoBufferEqual(const CRYPTO_BUFFER* a, const CRYPTO_BUFFER* b) {
   DCHECK(a && b);
   if (a == b)
@@ -359,6 +406,10 @@ base::StringPiece CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
   return base::StringPiece(
       reinterpret_cast<const char*>(CRYPTO_BUFFER_data(buffer)),
       CRYPTO_BUFFER_len(buffer));
+}
+
+base::span<const uint8_t> CryptoBufferAsSpan(const CRYPTO_BUFFER* buffer) {
+  return base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
@@ -376,6 +427,30 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
   return X509Certificate::CreateFromBuffer(
       bssl::UpRef(sk_CRYPTO_BUFFER_value(buffers, 0)),
       std::move(intermediate_chain));
+}
+
+bool CreateCertBuffersFromPKCS7Bytes(
+    base::span<const uint8_t> data,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles) {
+  crypto::EnsureOpenSSLInit();
+  crypto::OpenSSLErrStackTracer err_cleaner(FROM_HERE);
+
+  CBS der_data;
+  CBS_init(&der_data, data.data(), data.size());
+  STACK_OF(CRYPTO_BUFFER)* certs = sk_CRYPTO_BUFFER_new_null();
+  bool success =
+      PKCS7_get_raw_certificates(certs, &der_data, x509_util::GetBufferPool());
+  if (success) {
+    for (size_t i = 0; i < sk_CRYPTO_BUFFER_num(certs); ++i) {
+      handles->push_back(
+          bssl::UniquePtr<CRYPTO_BUFFER>(sk_CRYPTO_BUFFER_value(certs, i)));
+    }
+  }
+  // |handles| took ownership of the individual buffers, so only free the list
+  // itself.
+  sk_CRYPTO_BUFFER_free(certs);
+
+  return success;
 }
 
 ParseCertificateOptions DefaultParseCertificateOptions() {
@@ -432,6 +507,25 @@ bool SignatureVerifierInitWithCertificate(
   return verifier->VerifyInit(
       signature_algorithm, signature,
       base::make_span(tbs.spki_tlv.UnsafeData(), tbs.spki_tlv.Length()));
+}
+
+bool HasSHA1Signature(const CRYPTO_BUFFER* cert_buffer) {
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer),
+                                   CRYPTO_BUFFER_len(cert_buffer)),
+                        &tbs_certificate_tlv, &signature_algorithm_tlv,
+                        &signature_value, /*out_errors=*/nullptr)) {
+    return false;
+  }
+
+  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
+      SignatureAlgorithm::Create(signature_algorithm_tlv, /*errors=*/nullptr);
+  if (!signature_algorithm)
+    return false;
+
+  return signature_algorithm->digest() == net::DigestAlgorithm::Sha1;
 }
 
 }  // namespace x509_util

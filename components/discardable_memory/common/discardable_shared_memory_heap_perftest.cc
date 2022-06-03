@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/discardable_shared_memory.h"
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -27,12 +27,11 @@ const int kTimeCheckInterval = 8192;
 void NullTask() {}
 
 TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
-  size_t block_size = base::GetPageSize();
-  DiscardableSharedMemoryHeap heap(block_size);
+  DiscardableSharedMemoryHeap heap;
 
   const size_t kBlocks = 4096;
   const size_t kSegments = 16;
-  size_t segment_size = block_size * kBlocks;
+  size_t segment_size = base::GetPageSize() * kBlocks;
   int next_discardable_shared_memory_id = 0;
 
   for (size_t i = 0; i < kSegments; ++i) {
@@ -41,7 +40,7 @@ TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
     ASSERT_TRUE(memory->CreateAndMap(segment_size));
     heap.MergeIntoFreeLists(heap.Grow(std::move(memory), segment_size,
                                       next_discardable_shared_memory_id++,
-                                      base::Bind(NullTask)));
+                                      base::BindOnce(NullTask)));
   }
 
   unsigned kSeed = 1;
@@ -62,7 +61,7 @@ TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
   std::vector<std::unique_ptr<base::ScopedClosureRunner>> spans;
 
   base::TimeTicks start = base::TimeTicks::Now();
-  base::TimeTicks end = start + base::TimeDelta::FromMilliseconds(kTimeLimitMs);
+  base::TimeTicks end = start + base::Milliseconds(kTimeLimitMs);
   base::TimeDelta accumulator;
   int count = 0;
   while (start < end) {

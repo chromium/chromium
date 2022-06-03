@@ -4,6 +4,9 @@
 
 #include "ui/views/controls/button/button_controller.h"
 
+#include <memory>
+#include <utility>
+
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
@@ -18,13 +21,14 @@ ButtonController::ButtonController(
 ButtonController::~ButtonController() = default;
 
 bool ButtonController::OnMousePressed(const ui::MouseEvent& event) {
-  if (button_->state() == Button::STATE_DISABLED)
+  if (button_->GetState() == Button::STATE_DISABLED)
     return true;
-  if (button_->state() != Button::STATE_PRESSED &&
+  if (button_->GetState() != Button::STATE_PRESSED &&
       button_controller_delegate_->ShouldEnterPushedState(event) &&
       button_->HitTestPoint(event.location())) {
     button_->SetState(Button::STATE_PRESSED);
-    button_->AnimateInkDrop(views::InkDropState::ACTION_PENDING, &event);
+    InkDrop::Get(button_)->AnimateToState(views::InkDropState::ACTION_PENDING,
+                                          &event);
   }
   button_controller_delegate_->RequestFocusFromEvent();
   if (button_controller_delegate_->IsTriggerableEvent(event) &&
@@ -37,7 +41,7 @@ bool ButtonController::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void ButtonController::OnMouseReleased(const ui::MouseEvent& event) {
-  if (button_->state() != Button::STATE_DISABLED) {
+  if (button_->GetState() != Button::STATE_DISABLED) {
     if (!button_->HitTestPoint(event.location())) {
       button_->SetState(Button::STATE_NORMAL);
     } else {
@@ -56,7 +60,7 @@ void ButtonController::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void ButtonController::OnMouseMoved(const ui::MouseEvent& event) {
-  if (button_->state() != Button::STATE_DISABLED) {
+  if (button_->GetState() != Button::STATE_DISABLED) {
     button_->SetState(button_->HitTestPoint(event.location())
                           ? Button::STATE_HOVERED
                           : Button::STATE_NORMAL);
@@ -64,19 +68,19 @@ void ButtonController::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void ButtonController::OnMouseEntered(const ui::MouseEvent& event) {
-  if (button_->state() != Button::STATE_DISABLED)
+  if (button_->GetState() != Button::STATE_DISABLED)
     button_->SetState(Button::STATE_HOVERED);
 }
 
 void ButtonController::OnMouseExited(const ui::MouseEvent& event) {
   // Starting a drag results in a MouseExited, we need to ignore it.
-  if (button_->state() != Button::STATE_DISABLED &&
+  if (button_->GetState() != Button::STATE_DISABLED &&
       !button_controller_delegate_->InDrag())
     button_->SetState(Button::STATE_NORMAL);
 }
 
 bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
-  if (button_->state() == Button::STATE_DISABLED)
+  if (button_->GetState() == Button::STATE_DISABLED)
     return false;
 
   switch (button_->GetKeyClickActionForEvent(event)) {
@@ -84,8 +88,8 @@ bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
       button_->SetState(Button::STATE_PRESSED);
       if (button_controller_delegate_->GetInkDrop()->GetTargetInkDropState() !=
           InkDropState::ACTION_PENDING) {
-        button_->AnimateInkDrop(InkDropState::ACTION_PENDING,
-                                nullptr /* event */);
+        InkDrop::Get(button_)->AnimateToState(InkDropState::ACTION_PENDING,
+                                              nullptr /* event */);
       }
       return true;
     case Button::KeyClickAction::kOnKeyPress:
@@ -101,7 +105,7 @@ bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool ButtonController::OnKeyReleased(const ui::KeyEvent& event) {
-  const bool click_button = button_->state() == Button::STATE_PRESSED &&
+  const bool click_button = button_->GetState() == Button::STATE_PRESSED &&
                             button_->GetKeyClickActionForEvent(event) ==
                                 Button::KeyClickAction::kOnKeyRelease;
   if (!click_button)
@@ -113,6 +117,9 @@ bool ButtonController::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 void ButtonController::OnGestureEvent(ui::GestureEvent* event) {
+  if (button_->GetState() == Button::STATE_DISABLED)
+    return;
+
   if (event->type() == ui::ET_GESTURE_TAP &&
       button_controller_delegate_->IsTriggerableEvent(*event)) {
     // A GESTURE_END event is issued immediately after ET_GESTURE_TAP and will
@@ -133,13 +140,11 @@ void ButtonController::OnGestureEvent(ui::GestureEvent* event) {
 
 void ButtonController::UpdateAccessibleNodeData(ui::AXNodeData* node_data) {}
 
-void ButtonController::OnStateChanged(Button::ButtonState old_state) {}
-
 bool ButtonController::IsTriggerableEvent(const ui::Event& event) {
   return event.type() == ui::ET_GESTURE_TAP_DOWN ||
          event.type() == ui::ET_GESTURE_TAP ||
          (event.IsMouseEvent() &&
-          (button_->triggerable_event_flags() & event.flags()) != 0);
+          (button_->GetTriggerableEventFlags() & event.flags()) != 0);
 }
 
 }  // namespace views

@@ -11,6 +11,16 @@
       "all"
     ]
   },
+  "android-official": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "fuchsia-official": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "linux-archive-dbg": {
     "additional_compile_targets": [
       "all"
@@ -19,8 +29,17 @@
   "linux-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
+  },
+  "linux-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "linux-official": {
+    "additional_compile_targets": [
+      "all"
+    ]
   },
   "mac-archive-dbg": {
     "additional_compile_targets": [
@@ -30,8 +49,32 @@
   "mac-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
+  },
+  "mac-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "mac-arm64-archive-dbg": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "mac-arm64-archive-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "mac-arm64-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "mac-official": {
+    "additional_compile_targets": [
+      "all"
+    ]
   },
   "win-archive-dbg": {
     "additional_compile_targets": [
@@ -45,8 +88,26 @@
     "scripts": [
       {
         "name": "checkbins",
-        "script": "checkbins.py"
+        "script": "checkbins.py",
+        "swarming": {}
       }
+    ]
+  },
+  "win-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "checkbins",
+        "script": "checkbins.py",
+        "swarming": {}
+      }
+    ]
+  },
+  "win-official": {
+    "additional_compile_targets": [
+      "all"
     ]
   },
   "win32-archive-dbg": {
@@ -61,8 +122,26 @@
     "scripts": [
       {
         "name": "checkbins",
-        "script": "checkbins.py"
+        "script": "checkbins.py",
+        "swarming": {}
       }
+    ]
+  },
+  "win32-archive-tagged": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "checkbins",
+        "script": "checkbins.py",
+        "swarming": {}
+      }
+    ]
+  },
+  "win32-official": {
+    "additional_compile_targets": [
+      "all"
     ]
   }
 }

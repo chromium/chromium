@@ -233,7 +233,7 @@ def update_test_copies():
 
   latest_cr_position = cr_positions[0]
   if latest_cr_position is None and not g_flags.force_destination_cr_position:
-    raise Exception('Top commit has no Cr-Commit-Position. Sync to master?')
+    raise Exception('Top commit has no Cr-Commit-Position. Sync to tip of tree?')
 
   existing_copies = get_bucket_copies()
   logging.debug('Found bucket copies: %s', existing_copies)

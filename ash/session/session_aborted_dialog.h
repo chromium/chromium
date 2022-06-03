@@ -18,14 +18,8 @@ class SessionAbortedDialog : public views::DialogDelegateView {
  public:
   static void Show(const std::string& user_email);
 
-  // views::DialogDelegate overrides.
-  bool Accept() override;
-  int GetDialogButtons() const override;
-
-  // views::WidgetDelegate overrides.
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
+  SessionAbortedDialog(const SessionAbortedDialog&) = delete;
+  SessionAbortedDialog& operator=(const SessionAbortedDialog&) = delete;
 
   // views::View overrides.
   gfx::Size CalculatePreferredSize() const override;
@@ -35,8 +29,6 @@ class SessionAbortedDialog : public views::DialogDelegateView {
   ~SessionAbortedDialog() override;
 
   void InitDialog(const std::string& user_email);
-
-  DISALLOW_COPY_AND_ASSIGN(SessionAbortedDialog);
 };
 
 }  // namespace ash

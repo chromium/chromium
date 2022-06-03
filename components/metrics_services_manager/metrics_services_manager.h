@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread_checker.h"
 
@@ -18,10 +17,6 @@ class FilePath;
 namespace metrics {
 class MetricsService;
 class MetricsServiceClient;
-}
-
-namespace rappor {
-class RapporServiceImpl;
 }
 
 namespace ukm {
@@ -38,30 +33,29 @@ class MetricsServicesManagerClient;
 
 // MetricsServicesManager is a helper class for embedders that use the various
 // metrics-related services in a Chrome-like fashion: MetricsService (via its
-// client), RapporServiceImpl and VariationsService.
+// client) and VariationsService.
 class MetricsServicesManager {
  public:
   // Creates the MetricsServicesManager with the given client.
   explicit MetricsServicesManager(
       std::unique_ptr<MetricsServicesManagerClient> client);
+
+  MetricsServicesManager(const MetricsServicesManager&) = delete;
+  MetricsServicesManager& operator=(const MetricsServicesManager&) = delete;
+
   virtual ~MetricsServicesManager();
 
-  // Returns the preferred entropy provider used to seed persistent activities
-  // based on whether or not metrics reporting is permitted on this client.
+  // Instantiates the FieldTrialList using Chrome's default entropy provider.
+  // Uses |enable_gpu_benchmarking_switch| to set up the FieldTrialList for
+  // benchmarking runs.
   //
-  // If there's consent to report metrics, this method returns an entropy
-  // provider that has a high source of entropy, partially based on the client
-  // ID. Otherwise, it returns an entropy provider that is based on a low
-  // entropy source.
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateEntropyProvider();
+  // Side effect: Initializes the CleanExitBeacon.
+  void InstantiateFieldTrialList(
+      const char* enable_gpu_benchmarking_switch = nullptr) const;
 
   // Returns the MetricsService, creating it if it hasn't been created yet (and
   // additionally creating the MetricsServiceClient in that case).
   metrics::MetricsService* GetMetricsService();
-
-  // Returns the RapporServiceImpl, creating it if it hasn't been created yet.
-  rappor::RapporServiceImpl* GetRapporServiceImpl();
 
   // Returns the UkmService, creating it if it hasn't been created yet.
   ukm::UkmService* GetUkmService();
@@ -69,12 +63,11 @@ class MetricsServicesManager {
   // Returns the VariationsService, creating it if it hasn't been created yet.
   variations::VariationsService* GetVariationsService();
 
+  // Called when loading state changed.
+  void LoadingStateChanged(bool is_loading);
+
   // Should be called when a plugin loading error occurs.
   void OnPluginLoadingError(const base::FilePath& plugin_path);
-
-  // Some embedders use this method to notify the metrics system when a
-  // renderer process exits unexpectedly.
-  void OnRendererProcessCrash();
 
   // Update the managed services when permissions for uploading metrics change.
   void UpdateUploadPermissions(bool may_upload);
@@ -85,11 +78,11 @@ class MetricsServicesManager {
   // Gets the current state of metrics consent.
   bool IsMetricsConsentGiven() const;
 
- private:
-  // Update the managed services when permissions for recording/uploading
-  // metrics change.
-  void UpdateRapporServiceImpl();
+  // Returns the default entropy provider.
+  std::unique_ptr<const base::FieldTrial::EntropyProvider>
+  CreateEntropyProviderForTesting();
 
+ private:
   // Returns the MetricsServiceClient, creating it if it hasn't been
   // created yet (and additionally creating the MetricsService in that case).
   metrics::MetricsServiceClient* GetMetricsServiceClient();
@@ -124,13 +117,8 @@ class MetricsServicesManager {
   // The MetricsServiceClient. Owns the MetricsService.
   std::unique_ptr<metrics::MetricsServiceClient> metrics_service_client_;
 
-  // The RapporServiceImpl, for RAPPOR metric uploads.
-  std::unique_ptr<rappor::RapporServiceImpl> rappor_service_;
-
   // The VariationsService, for server-side experiments infrastructure.
   std::unique_ptr<variations::VariationsService> variations_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServicesManager);
 };
 
 }  // namespace metrics_services_manager

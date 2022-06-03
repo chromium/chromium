@@ -12,17 +12,12 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@protocol ApplicationCommands;
-@protocol BrowserCommands;
 @class BookmarkHomeViewController;
+class Browser;
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 class GURL;
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
-class WebStateList;
 
 @protocol BookmarkHomeViewControllerDelegate
 // The view controller wants to be dismissed. If |urls| is not empty, then
@@ -51,14 +46,11 @@ class WebStateList;
 @property(nonatomic, weak) id<BookmarkHomeViewControllerDelegate> homeDelegate;
 
 // Initializers.
-- (instancetype)
-    initWithBrowserState:(ios::ChromeBrowserState*)browserState
-              dispatcher:(id<ApplicationCommands, BrowserCommands>)dispatcher
-            webStateList:(WebStateList*)webStateList NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)tableViewStyle
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStyle:(UITableViewStyle)tableViewStyle NS_UNAVAILABLE;
+
+// Called before the instance is deallocated.
+- (void)shutdown;
 
 // Setter to set _rootNode value.
 - (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode;

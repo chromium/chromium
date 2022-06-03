@@ -1,0 +1,187 @@
+Tests layer command log
+
+Canvas log:
+{
+    0 : {
+        commandIndex : 0
+        method : "drawPaint"
+        params : {
+            paint : {
+                blendMode : "Src"
+                color : "#00000000"
+                flags : "none"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+        }
+    }
+    1 : {
+        commandIndex : 1
+        method : "drawRect"
+        params : {
+            paint : {
+                color : "#FF0000FF"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            rect : {
+                bottom : 150
+                left : 0
+                right : 150
+                top : 0
+            }
+        }
+    }
+    10 : {
+        commandIndex : 10
+        method : "restore"
+        params : undefined
+    }
+    11 : {
+        commandIndex : 11
+        method : "restore"
+        params : undefined
+    }
+    2 : {
+        commandIndex : 2
+        method : "drawRect"
+        params : {
+            paint : {
+                color : "#FFFF0000"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            rect : {
+                bottom : 75
+                left : 0
+                right : 75
+                top : 0
+            }
+        }
+    }
+    3 : {
+        commandIndex : 3
+        method : "drawImageRect"
+        params : {
+            dst : {
+                bottom : 107
+                left : 0
+                right : 29
+                top : 75
+            }
+            image : {
+                height : 21
+                opaque : false
+                width : 19
+            }
+            paint : {
+                color : "#FF000000"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            sampling : {
+                filter : "kLinear"
+                mipmap : "kLinear"
+            }
+            src : {
+                bottom : 21
+                left : 0
+                right : 19
+                top : 0
+            }
+        }
+    }
+    4 : {
+        commandIndex : 4
+        method : "save"
+        params : undefined
+    }
+    5 : {
+        commandIndex : 5
+        method : "translate"
+        params : {
+            dx : 0
+            dy : 107
+        }
+    }
+    6 : {
+        commandIndex : 6
+        method : "clipRect"
+        params : {
+            SkRegion::Op : "kIntersect_Op"
+            rect : {
+                bottom : 225
+                left : 0
+                right : 450
+                top : 0
+            }
+            softClipEdgeStyle : true
+        }
+    }
+    7 : {
+        commandIndex : 7
+        method : "save"
+        params : undefined
+    }
+    8 : {
+        commandIndex : 8
+        method : "concat44"
+        params : {
+            matrix44 : [
+                1.5
+                0
+                0
+                0
+                0
+                1.5
+                0
+                0
+                0
+                0
+                1
+                0
+                0
+                0
+                0
+                1
+            ]
+        }
+    }
+    9 : {
+        commandIndex : 9
+        method : "drawRect"
+        params : {
+            paint : {
+                color : "#7F000000"
+                flags : "AntiAlias"
+                strokeCap : "Butt"
+                strokeJoin : "Miter"
+                strokeMiter : 4
+                strokeWidth : 0
+                styleName : "Fill"
+            }
+            rect : {
+                bottom : 10
+                left : 0
+                right : 10
+                top : 0
+            }
+        }
+    }
+}
+

@@ -4,10 +4,13 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/devtools_tag.h"
 
+#include <memory>
+
 namespace task_manager {
 
-DevToolsTask* DevToolsTag::CreateTask() const {
-  return new DevToolsTask(web_contents());
+std::unique_ptr<RendererTask> DevToolsTag::CreateTask(
+    WebContentsTaskProvider*) const {
+  return std::make_unique<DevToolsTask>(web_contents());
 }
 
 DevToolsTag::DevToolsTag(content::WebContents* web_contents)

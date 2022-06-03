@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+// DEPRECATED.
+// TODO(yuweih): Remove this file once the down stream implementation is
+// removed.
+
 @protocol AppController<NSObject>
 
 // For adding new methods, please mark them as optional until they are

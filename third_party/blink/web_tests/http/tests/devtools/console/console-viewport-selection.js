@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console viewport handles selection properly.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function populateConsoleWithMessages(count)
@@ -18,36 +18,36 @@
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
   var consoleView = Console.ConsoleView.instance();
-  var viewport = consoleView._viewport;
+  var viewport = consoleView.viewport;
   const minimumViewportMessagesCount = 10;
   const messagesCount = 150;
   const middleMessage = messagesCount / 2;
   var viewportMessagesCount;
 
   var testSuite = [
-    function testSelectionSingleLineText(next) {
+    async function testSelectionSingleLineText(next) {
       viewport.invalidate();
       viewport.forceScrollItemToBeFirst(0);
       viewportMessagesCount = viewport.lastVisibleIndex() - viewport.firstVisibleIndex() + 1;
-      selectMessages(middleMessage, 2, middleMessage, 7);
+      await selectMessages(middleMessage, 2, middleMessage, 7);
       dumpSelectionText();
       next();
     },
 
-    function testReversedSelectionSingleLineText(next) {
-      selectMessages(middleMessage, 7, middleMessage, 2);
+    async function testReversedSelectionSingleLineText(next) {
+      await selectMessages(middleMessage, 7, middleMessage, 2);
       dumpSelectionText();
       next();
     },
 
-    function testSelectionMultiLineText(next) {
-      selectMessages(middleMessage - 1, 4, middleMessage + 1, 7);
+    async function testSelectionMultiLineText(next) {
+      await selectMessages(middleMessage - 1, 4, middleMessage + 1, 7);
       dumpSelectionText();
       next();
     },
 
-    function testSimpleVisibleSelection(next) {
-      selectMessages(middleMessage - 3, 6, middleMessage + 2, 6);
+    async function testSimpleVisibleSelection(next) {
+      await selectMessages(middleMessage - 3, 6, middleMessage + 2, 6);
       dumpSelectionModel();
       next();
     },
@@ -71,20 +71,20 @@
     },
 
     function testScrollSelectionAwayDown(next) {
-      consoleView._immediatelyScrollToBottom();
+      consoleView.immediatelyScrollToBottom();
       viewport.refresh();
       dumpSelectionModel();
       next();
     },
 
-    function testShiftClickSelectionOver(next) {
-      emulateShiftClickOnMessage(minimumViewportMessagesCount);
+    async function testShiftClickSelectionOver(next) {
+      await emulateShiftClickOnMessage(minimumViewportMessagesCount);
       dumpSelectionModel();
       next();
     },
 
-    function testShiftClickSelectionBelow(next) {
-      emulateShiftClickOnMessage(messagesCount - minimumViewportMessagesCount);
+    async function testShiftClickSelectionBelow(next) {
+      await emulateShiftClickOnMessage(messagesCount - minimumViewportMessagesCount);
       dumpSelectionModel();
       next();
     },
@@ -96,20 +96,20 @@
       next();
     },
 
-    function testReversedVisibleSelection(next) {
-      selectMessages(middleMessage + 1, 6, middleMessage - 4, 6);
+    async function testReversedVisibleSelection(next) {
+      await selectMessages(middleMessage + 1, 6, middleMessage - 4, 6);
       dumpSelectionModel();
       next();
     },
 
-    function testShiftClickReversedSelectionOver(next) {
-      emulateShiftClickOnMessage(minimumViewportMessagesCount);
+    async function testShiftClickReversedSelectionOver(next) {
+      await emulateShiftClickOnMessage(minimumViewportMessagesCount);
       dumpSelectionModel();
       next();
     },
 
-    function testShiftClickReversedSelectionBelow(next) {
-      emulateShiftClickOnMessage(messagesCount - minimumViewportMessagesCount);
+    async function testShiftClickReversedSelectionBelow(next) {
+      await emulateShiftClickOnMessage(messagesCount - minimumViewportMessagesCount);
       dumpSelectionModel();
       next();
     },
@@ -123,7 +123,7 @@
         blueSpan = blueSpan.traverseNextNode();
 
       window.getSelection().setBaseAndExtent(blueSpan, 0, blueSpan, blueSpan.childNodes.length);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
       next();
     },
 
@@ -138,7 +138,7 @@
       // Try to select all messages.
       document.execCommand('selectAll');
 
-      var text = viewport._selectedText();
+      var text = viewport.selectedText();
       var count = text ? text.split('\n').length : 0;
       TestRunner.addResult(
           count === messagesCount ? 'Selected all ' + count + ' messages.' :
@@ -155,13 +155,13 @@
       var textNodeExtent = consoleView.itemElement(2).element().traverseNextTextNode();
 
       window.getSelection().setBaseAndExtent(nonTextNodeBase, 0, nonTextNodeExtent, 0);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
 
       window.getSelection().setBaseAndExtent(textNodeBase, 0, nonTextNodeExtent, 0);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
 
       window.getSelection().setBaseAndExtent(nonTextNodeBase, 0, textNodeExtent, 0);
-      TestRunner.addResult('Selected text: ' + viewport._selectedText());
+      TestRunner.addResult('Selected text: ' + viewport.selectedText());
 
       next();
     }
@@ -185,18 +185,18 @@
   function dumpSelectionModel() {
     viewport.refresh();
     var text = String.sprintf(
-        'anchor = %s, head = %s', dumpSelectionModelElement(viewport._anchorSelection),
-        dumpSelectionModelElement(viewport._headSelection));
+        'anchor = %s, head = %s', dumpSelectionModelElement(viewport.anchorSelection),
+        dumpSelectionModelElement(viewport.headSelection));
     TestRunner.addResult(text);
   }
 
   function dumpSelectionText() {
     viewport.refresh();
-    var text = viewport._selectedText();
+    var text = viewport.selectedText();
     TestRunner.addResult('Selected text:<<<EOL\n' + text + '\nEOL');
   }
 
-  function emulateShiftClickOnMessage(messageIndex) {
+  async function emulateShiftClickOnMessage(messageIndex) {
     viewport.refresh();
     var selection = window.getSelection();
     if (!selection || !selection.rangeCount) {
@@ -205,11 +205,13 @@
     }
     viewport.forceScrollItemToBeFirst(Math.max(messageIndex - minimumViewportMessagesCount / 2, 0));
     var element = consoleView.itemElement(messageIndex).element();
+    // Console messages contain live locations.
+    await TestRunner.waitForPendingLiveLocationUpdates();
     selection.setBaseAndExtent(selection.anchorNode, selection.anchorOffset, element, 0);
     viewport.refresh();
   }
 
-  function selectMessages(fromMessage, fromTextOffset, toMessage, toTextOffset) {
+  async function selectMessages(fromMessage, fromTextOffset, toMessage, toTextOffset) {
     if (Math.abs(toMessage - fromMessage) > minimumViewportMessagesCount) {
       TestRunner.addResult(String.sprintf(
           'FAILURE: Cannot select more than %d messages (requested to select from %d to %d',
@@ -219,7 +221,7 @@
     }
     viewport.forceScrollItemToBeFirst(Math.min(fromMessage, toMessage));
 
-    ConsoleTestRunner.selectConsoleMessages(fromMessage, fromTextOffset, toMessage, toTextOffset);
+    await ConsoleTestRunner.selectConsoleMessages(fromMessage, fromTextOffset, toMessage, toTextOffset);
     viewport.refresh();
   }
 })();

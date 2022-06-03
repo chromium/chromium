@@ -5,6 +5,7 @@
 #ifndef CHROME_CHROME_CLEANER_TEST_REBOOT_DELETION_HELPER_H_
 #define CHROME_CHROME_CLEANER_TEST_REBOOT_DELETION_HELPER_H_
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,7 @@ namespace chrome_cleaner {
 
 // Holds the (source, destination) paths of a pending move. An empty
 // destination string means deletion instead of move.
-typedef std::pair<base::string16, base::string16> PendingMove;
+typedef std::pair<std::wstring, std::wstring> PendingMove;
 typedef std::vector<PendingMove> PendingMoveVector;
 
 // Returns true if the given file is registered to be deleted on the next

@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/variations/variations_associated_data.h"
@@ -38,8 +39,8 @@ DesktopSessionDurationTracker* DesktopSessionDurationTracker::Get() {
 
 void DesktopSessionDurationTracker::StartTimer(base::TimeDelta duration) {
   timer_.Start(FROM_HERE, duration,
-               base::Bind(&DesktopSessionDurationTracker::OnTimerFired,
-                          weak_factory_.GetWeakPtr()));
+               base::BindOnce(&DesktopSessionDurationTracker::OnTimerFired,
+                              weak_factory_.GetWeakPtr()));
 }
 
 void DesktopSessionDurationTracker::OnVisibilityChanged(
@@ -152,7 +153,7 @@ void DesktopSessionDurationTracker::EndSession(
   // Trim any timeouts from the session length and lower bound to a session of
   // length 0.
   delta -= time_to_discount;
-  if (delta < base::TimeDelta())
+  if (delta.is_negative())
     delta = base::TimeDelta();
 
   for (Observer& observer : observer_list_)
@@ -165,8 +166,7 @@ void DesktopSessionDurationTracker::EndSession(
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {
@@ -178,7 +178,7 @@ void DesktopSessionDurationTracker::InitInactivityTimeout() {
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_minutes);
 
-  inactivity_timeout_ = base::TimeDelta::FromMinutes(timeout_minutes);
+  inactivity_timeout_ = base::Minutes(timeout_minutes);
 }
 
 }  // namespace metrics

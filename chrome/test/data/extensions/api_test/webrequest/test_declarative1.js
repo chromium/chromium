@@ -271,8 +271,8 @@ runTests([
   },
 
   function testSiteForCookiesUrl() {
-    // This is an end-to-end test for firstPartyForCookies. The choice of URL to
-    // navigate to is purely arbitrary.
+    // This is an end-to-end test for firstPartyForCookies being ignored,
+    // so the cancellation matches.
     ignoreUnexpected = false;
     expect(
       [
@@ -299,7 +299,7 @@ runTests([
       [ {'conditions': [
            new RequestMatcher({
              firstPartyForCookiesUrl: {
-               hostEquals: testServer
+               hostEquals: "not" + testServer
              }
            })
          ],

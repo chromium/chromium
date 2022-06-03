@@ -14,19 +14,19 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/cancelable_callback.h"
 #include "base/containers/id_map.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "chrome/common/service_process.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Not supported on ChromeOS"
 #endif
 
@@ -49,28 +49,11 @@ class IsolatedConnection;
 // This class is accessed on the UI thread through some UI actions.
 class ServiceProcessControl : public UpgradeObserver {
  public:
-  enum ServiceProcessEvent {
-    SERVICE_EVENT_INITIALIZE,
-    SERVICE_EVENT_ENABLED_ON_LAUNCH,
-    SERVICE_EVENT_ENABLE,
-    SERVICE_EVENT_DISABLE,
-    SERVICE_EVENT_DISABLE_BY_POLICY,
-    SERVICE_EVENT_LAUNCH,
-    SERVICE_EVENT_LAUNCHED,
-    SERVICE_EVENT_LAUNCH_FAILED,
-    SERVICE_EVENT_CHANNEL_CONNECTED,
-    SERVICE_EVENT_CHANNEL_ERROR,
-    SERVICE_EVENT_INFO_REQUEST,
-    SERVICE_EVENT_INFO_REPLY,
-    SERVICE_EVENT_HISTOGRAMS_REQUEST,
-    SERVICE_EVENT_HISTOGRAMS_REPLY,
-    SERVICE_PRINTERS_REQUEST,
-    SERVICE_PRINTERS_REPLY,
-    SERVICE_EVENT_MAX,
-  };
-
   // Returns the singleton instance of this class.
   static ServiceProcessControl* GetInstance();
+
+  ServiceProcessControl(const ServiceProcessControl&) = delete;
+  ServiceProcessControl& operator=(const ServiceProcessControl&) = delete;
 
   // Return true if this object is connected to the service.
   // Virtual for testing.
@@ -103,14 +86,6 @@ class ServiceProcessControl : public UpgradeObserver {
   // Virtual for testing.
   virtual bool Shutdown();
 
-  // Send request for histograms collected in service process.
-  // Returns true if request was sent, and callback will be called in case of
-  // success or timeout. The method resets any previous callback.
-  // Returns false if service is not running or other failure, callback will not
-  // be called in this case.
-  bool GetHistograms(const base::Closure& cloud_print_status_callback,
-                     const base::TimeDelta& timeout);
-
   service_manager::InterfaceProvider& remote_interfaces() {
     return remote_interfaces_;
   }
@@ -127,7 +102,7 @@ class ServiceProcessControl : public UpgradeObserver {
     // Execute the command line to start the process asynchronously. After the
     // command is executed |task| is called with the process handle on the UI
     // thread.
-    void Run(const base::Closure& task);
+    void Run(base::OnceClosure task);
 
     bool launched() const { return launched_; }
     base::ProcessId saved_pid() const { return saved_pid_; }
@@ -136,14 +111,14 @@ class ServiceProcessControl : public UpgradeObserver {
     friend class base::RefCountedThreadSafe<ServiceProcessControl::Launcher>;
     virtual ~Launcher();
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
     void DoDetectLaunched();
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC
 
     void DoRun();
     void Notify();
     std::unique_ptr<base::CommandLine> cmd_line_;
-    base::Closure notify_task_;
+    base::OnceClosure notify_task_;
     bool launched_;
     uint32_t retry_count_;
     base::Process process_;
@@ -167,11 +142,6 @@ class ServiceProcessControl : public UpgradeObserver {
   void OnChannelConnected();
   void OnChannelError();
 
-  void OnHistograms(const std::vector<std::string>& pickled_histograms);
-
-  // Runs callback provided in |GetHistograms()|.
-  void RunHistogramsCallback();
-
   // Helper method to invoke all the callbacks based on success or failure.
   void RunConnectDoneTasks();
 
@@ -193,7 +163,8 @@ class ServiceProcessControl : public UpgradeObserver {
 
   std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
 
-  service_manager::InterfaceProvider remote_interfaces_;
+  service_manager::InterfaceProvider remote_interfaces_{
+      base::ThreadTaskRunnerHandle::Get()};
   mojo::Remote<chrome::mojom::ServiceProcess> service_process_;
 
   // Service process launcher.
@@ -204,13 +175,6 @@ class ServiceProcessControl : public UpgradeObserver {
   // Callbacks that get invoked when there was a connection failure.
   TaskList connect_failure_tasks_;
 
-  // Callback that gets invoked when a message with histograms is received from
-  // the service process.
-  base::Closure histograms_callback_;
-
-  // Callback that gets invoked if service didn't reply in time.
-  base::CancelableClosure histograms_timeout_callback_;
-
   // If true changes to UpgradeObserver are applied, if false they are ignored.
   bool apply_changes_from_upgrade_observer_;
 
@@ -218,8 +182,6 @@ class ServiceProcessControl : public UpgradeObserver {
   base::ProcessId saved_pid_;
 
   base::WeakPtrFactory<ServiceProcessControl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessControl);
 };
 
 #endif  // CHROME_BROWSER_SERVICE_PROCESS_SERVICE_PROCESS_CONTROL_H_

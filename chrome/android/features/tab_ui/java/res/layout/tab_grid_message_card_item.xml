@@ -4,11 +4,13 @@
      found in the LICENSE file. -->
 <org.chromium.chrome.browser.tasks.tab_management.MessageCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tab_grid_message_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/tab_list_selected_margin"
     android:orientation="horizontal"
-    android:background="@drawable/popup_bg_tinted">
+    android:background="@drawable/card_with_corners_background">
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/icon"
         android:layout_width="0dp"
@@ -17,8 +19,8 @@
         android:minWidth="8dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_omnibox_page"/>
-    <org.chromium.chrome.browser.ui.widget.text.TemplatePreservingTextView
+        app:srcCompat="@drawable/ic_globe_24dp"/>
+    <org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -27,7 +29,7 @@
         android:layout_marginBottom="14dp"
         android:layout_weight="4"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.BlackBodyDefault" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/action_button"
         android:layout_width="wrap_content"
@@ -36,10 +38,9 @@
         android:layout_gravity="center"/>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/close_button"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         style="@style/BottomToolbarButton"
         android:contentDescription="@string/close"
-        android:tint="@color/default_icon_color" />
+        android:tint="?attr/default_icon_color" />
 </org.chromium.chrome.browser.tasks.tab_management.MessageCardView>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>application-identifier</key>
+	<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.${IOS_BUNDLE_ID_PREFIX}.chrome</string>
+		<string>group.${IOS_BUNDLE_ID_PREFIX}.common</string>
+	</array>
+</dict>
+</plist>

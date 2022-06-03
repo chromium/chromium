@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>Degenerate stop offset does not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+div {
+  height: 600px;
+  width: 800px;
+  background-image: -webkit-radial-gradient(circle closest-side,
+                                            green,
+                                            red calc(9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999% + 174px));
+}
+</style>
+
+<div></div>
+
+<script>
+  test(() => {});
+</script>

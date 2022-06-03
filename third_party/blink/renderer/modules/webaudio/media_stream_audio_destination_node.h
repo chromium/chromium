@@ -64,6 +64,8 @@ class MediaStreamAudioDestinationHandler final
   // As an audio source, we will never propagate silence.
   bool PropagatesSilence() const override { return false; }
 
+  void SendLogMessage(const String& message);
+
   // MediaStreamSource is held alive by MediaStreamAudioDestinationNode.
   // Accessed by main thread and during audio thread processing.
   //
@@ -95,7 +97,7 @@ class MediaStreamAudioDestinationNode final : public AudioBasicInspectorNode {
   MediaStream* stream() const { return stream_; }
   MediaStreamSource* source() const { return source_; }
 
-  void Trace(Visitor*) final;
+  void Trace(Visitor*) const final;
 
   // InspectorHelperMixin
   void ReportDidCreate() final;

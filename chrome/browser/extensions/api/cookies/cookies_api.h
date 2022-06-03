@@ -12,19 +12,21 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_function.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace extensions {
 
@@ -33,6 +35,10 @@ namespace extensions {
 class CookiesEventRouter : public BrowserListObserver {
  public:
   explicit CookiesEventRouter(content::BrowserContext* context);
+
+  CookiesEventRouter(const CookiesEventRouter&) = delete;
+  CookiesEventRouter& operator=(const CookiesEventRouter&) = delete;
+
   ~CookiesEventRouter() override;
 
   // BrowserListObserver:
@@ -47,6 +53,10 @@ class CookiesEventRouter : public BrowserListObserver {
   class CookieChangeListener : public network::mojom::CookieChangeListener {
    public:
     CookieChangeListener(CookiesEventRouter* router, bool otr);
+
+    CookieChangeListener(const CookieChangeListener&) = delete;
+    CookieChangeListener& operator=(const CookieChangeListener&) = delete;
+
     ~CookieChangeListener() override;
 
     // network::mojom::CookieChangeListener:
@@ -55,8 +65,6 @@ class CookiesEventRouter : public BrowserListObserver {
    private:
     CookiesEventRouter* router_;
     bool otr_;
-
-    DISALLOW_COPY_AND_ASSIGN(CookieChangeListener);
   };
 
   void MaybeStartListening();
@@ -85,8 +93,6 @@ class CookiesEventRouter : public BrowserListObserver {
   CookieChangeListener otr_listener_{this, true};
   mojo::Receiver<network::mojom::CookieChangeListener> otr_receiver_{
       &otr_listener_};
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesEventRouter);
 };
 
 // Implements the cookies.get() extension function.
@@ -103,8 +109,9 @@ class CookiesGetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void GetCookieListCallback(const net::CookieStatusList& cookie_status_list,
-                             const net::CookieStatusList& excluded_cookies);
+  void GetCookieListCallback(
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& excluded_cookies);
 
   GURL url_;
   mojo::Remote<network::mojom::CookieManager> store_browser_cookie_manager_;
@@ -128,8 +135,9 @@ class CookiesGetAllFunction : public ExtensionFunction {
   // For the two different callback signatures for getting cookies for a URL vs
   // getting all cookies. They do the same thing.
   void GetAllCookiesCallback(const net::CookieList& cookie_list);
-  void GetCookieListCallback(const net::CookieStatusList& cookie_status_list,
-                             const net::CookieStatusList& excluded_cookies);
+  void GetCookieListCallback(
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& excluded_cookies);
 
   GURL url_;
   mojo::Remote<network::mojom::CookieManager> store_browser_cookie_manager_;
@@ -148,10 +156,10 @@ class CookiesSetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void SetCanonicalCookieCallback(
-      net::CanonicalCookie::CookieInclusionStatus set_cookie_result);
-  void GetCookieListCallback(const net::CookieStatusList& cookie_list,
-                             const net::CookieStatusList& excluded_cookies);
+  void SetCanonicalCookieCallback(net::CookieAccessResult set_cookie_result);
+  void GetCookieListCallback(
+      const net::CookieAccessResultList& cookie_list,
+      const net::CookieAccessResultList& excluded_cookies);
 
   enum { NO_RESPONSE, SET_COMPLETED, GET_COMPLETED } state_;
   GURL url_;
@@ -197,6 +205,10 @@ class CookiesGetAllCookieStoresFunction : public ExtensionFunction {
 class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
  public:
   explicit CookiesAPI(content::BrowserContext* context);
+
+  CookiesAPI(const CookiesAPI&) = delete;
+  CookiesAPI& operator=(const CookiesAPI&) = delete;
+
   ~CookiesAPI() override;
 
   // KeyedService implementation.
@@ -221,8 +233,6 @@ class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<CookiesEventRouter> cookies_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesAPI);
 };
 
 }  // namespace extensions

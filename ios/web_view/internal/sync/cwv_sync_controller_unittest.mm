@@ -7,38 +7,33 @@
 #include <memory>
 #include <set>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/test/bind_test_util.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/password_manager/core/browser/test_password_store.h"
-#include "components/signin/core/browser/signin_error_controller.h"
-#include "components/signin/public/base/account_consistency_method.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
+#include "components/signin/public/identity_manager/identity_manager_builder.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/scoped_testing_web_client.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/web_client.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 #include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
-#include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
-#include "ios/web_view/internal/signin/web_view_signin_client_factory.h"
-#include "ios/web_view/internal/signin/web_view_signin_error_controller_factory.h"
-#include "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
-#include "ios/web_view/test/test_with_locale_and_resources.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -51,188 +46,196 @@
 namespace ios_web_view {
 namespace {
 
-using testing::_;
-using testing::Invoke;
-using testing::Return;
-
-const char kTestGaiaId[] = "1337";
 const char kTestEmail[] = "johndoe@chromium.org";
-const char kTestFullName[] = "John Doe";
-const char kTestPassphrase[] = "dummy-passphrase";
-const char kTestScope1[] = "scope1.chromium.org";
-const char kTestScope2[] = "scope2.chromium.org";
-
-std::unique_ptr<KeyedService> BuildMockSyncService(web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
-}
 
 }  // namespace
 
-class CWVSyncControllerTest : public TestWithLocaleAndResources {
+class CWVSyncControllerTest : public PlatformTest {
  protected:
-  CWVSyncControllerTest()
-      : web_client_(std::make_unique<web::WebClient>()),
-        browser_state_(/*off_the_record=*/false) {
-    // Clear account info before each test.
-    PrefService* pref_service = browser_state_.GetPrefs();
-    pref_service->ClearPref(prefs::kGoogleServicesAccountId);
-    pref_service->ClearPref(prefs::kGoogleServicesConsentedToSync);
-    pref_service->ClearPref(prefs::kAccountInfo);
+  CWVSyncControllerTest() {
+    scoped_feature_.InitAndEnableFeature(
+        password_manager::features::kEnablePasswordsAccountStorage);
 
-    WebViewProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
-        &browser_state_, base::BindRepeating(&BuildMockSyncService));
+    pref_service_.registry()->RegisterDictionaryPref(
+        autofill::prefs::kAutofillSyncTransportOptIn);
+    pref_service_.registry()->RegisterDictionaryPref(
+        password_manager::prefs::kAccountStoragePerAccountSettings);
 
-    EXPECT_CALL(*mock_sync_service(), AddObserver(_))
-        .WillOnce(Invoke(this, &CWVSyncControllerTest::AddObserver));
-
-    personal_data_manager_ =
-        std::make_unique<autofill::TestPersonalDataManager>();
-
-    password_store_ = new password_manager::TestPasswordStore();
-    password_store_->Init(base::RepeatingCallback<void(syncer::ModelType)>(),
-                          nullptr);
-
-    sync_controller_ = [[CWVSyncController alloc]
-          initWithSyncService:mock_sync_service()
-              identityManager:identity_manager()
-        signinErrorController:signin_error_controller()
-          personalDataManager:personal_data_manager_.get()
-                passwordStore:password_store_.get()];
+    // Change the default transport state to be disabled.
+    sync_service_.SetTransportState(
+        syncer::SyncService::TransportState::DISABLED);
   }
 
-  ~CWVSyncControllerTest() override {
-    password_store_->ShutdownOnUIThread();
-    EXPECT_CALL(*mock_sync_service(), RemoveObserver(_));
-    EXPECT_CALL(*mock_sync_service(), Shutdown());
-  }
-
-  void AddObserver(syncer::SyncServiceObserver* observer) {
-    sync_service_observer_ = observer;
-  }
-
-  signin::IdentityManager* identity_manager() {
-    return WebViewIdentityManagerFactory::GetForBrowserState(&browser_state_);
-  }
-
-  syncer::MockSyncService* mock_sync_service() {
-    return static_cast<syncer::MockSyncService*>(
-        WebViewProfileSyncServiceFactory::GetForBrowserState(&browser_state_));
-  }
-
-  SigninErrorController* signin_error_controller() {
-    return WebViewSigninErrorControllerFactory::GetForBrowserState(
-        &browser_state_);
-  }
-
-  web::WebTaskEnvironment task_environment_;
-  web::ScopedTestingWebClient web_client_;
-  ios_web_view::WebViewBrowserState browser_state_;
-  scoped_refptr<password_manager::TestPasswordStore> password_store_;
-  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
-  CWVSyncController* sync_controller_ = nil;
-  syncer::SyncServiceObserver* sync_service_observer_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_;
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_environment_;
+  syncer::TestSyncService sync_service_;
+  TestingPrefServiceSimple local_state_;
+  TestingPrefServiceSimple pref_service_;
 };
 
-// Verifies CWVSyncControllerDataSource methods are invoked with the correct
-// parameters.
-TEST_F(CWVSyncControllerTest, DataSourceCallbacks) {
-  // [data_source expect] returns an autoreleased object, but it must be
-  // destroyed before this test exits to avoid holding on to |sync_controller_|.
-  @autoreleasepool {
-    id data_source = OCMProtocolMock(@protocol(CWVSyncControllerDataSource));
-    CWVSyncController.dataSource = data_source;
-    [[data_source expect]
-        fetchAccessTokenForIdentity:[OCMArg checkWithBlock:^BOOL(
-                                                CWVIdentity* identity) {
-          return [identity.gaiaID isEqualToString:@(kTestGaiaId)];
-        }]
-                             scopes:[OCMArg checkWithBlock:^BOOL(
-                                                NSArray* scopes) {
-                               return [scopes containsObject:@(kTestScope1)] &&
-                                      [scopes containsObject:@(kTestScope2)];
-                             }]
-                  completionHandler:[OCMArg any]];
+TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
+  CoreAccountInfo account_info =
+      identity_test_environment_.MakeAccountAvailable(kTestEmail);
 
-    WebViewDeviceAccountsProviderImpl accounts_provider;
-    std::set<std::string> scopes = {kTestScope1, kTestScope2};
-    accounts_provider.GetAccessToken(kTestGaiaId, "dummy-client-id", scopes,
-                                     base::DoNothing());
+  CWVIdentity* identity = [[CWVIdentity alloc]
+      initWithEmail:@(kTestEmail)
+           fullName:nil
+             gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
 
-    [data_source verify];
-  }
+  // Preconfigure TestSyncService as if it was enabled in transport mode.
+  sync_service_.SetFirstSetupComplete(false);
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetIsUsingExplicitPassphrase(false);
+  sync_service_.SetAccountInfo(account_info);
+
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  [sync_controller startSyncWithIdentity:identity];
+  EXPECT_NSEQ(sync_controller.currentIdentity.gaiaID, identity.gaiaID);
+
+  CoreAccountInfo primary_account_info =
+      identity_test_environment_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync);
+  EXPECT_EQ(primary_account_info, account_info);
+
+  // Ensure opt-ins for transport only sync data is flipped to true.
+  EXPECT_TRUE(autofill::prefs::IsUserOptedInWalletSyncTransport(
+      &pref_service_, primary_account_info.account_id));
+  EXPECT_EQ(password_manager::features_util::GetDefaultPasswordStore(
+                &pref_service_, &sync_service_),
+            password_manager::PasswordForm::Store::kAccountStore);
+  EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
+      &pref_service_, &sync_service_));
 }
 
-// Verifies CWVSyncControllerDelegate methods are invoked with the correct
-// parameters.
-TEST_F(CWVSyncControllerTest, DelegateCallbacks) {
-  // [delegate expect] returns an autoreleased object, but it must be destroyed
-  // before this test exits to avoid holding on to |sync_controller_|.
-  @autoreleasepool {
-    CWVIdentity* identity = [[CWVIdentity alloc] initWithEmail:@(kTestEmail)
-                                                      fullName:@(kTestFullName)
-                                                        gaiaID:@(kTestGaiaId)];
-    id data_source = OCMProtocolMock(@protocol(CWVSyncControllerDataSource));
-    [[[data_source stub] andReturn:@[ identity ]] allKnownIdentities];
-    CWVSyncController.dataSource = data_source;
-    id delegate = OCMProtocolMock(@protocol(CWVSyncControllerDelegate));
-    sync_controller_.delegate = delegate;
-    [sync_controller_ startSyncWithIdentity:identity];
+TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
+  CoreAccountInfo account_info =
+      identity_test_environment_.MakePrimaryAccountAvailable(
+          kTestEmail, signin::ConsentLevel::kSync);
 
-    [[delegate expect] syncControllerDidStartSync:sync_controller_];
-    sync_service_observer_->OnSyncConfigurationCompleted(mock_sync_service());
-    [[delegate expect]
-          syncController:sync_controller_
-        didFailWithError:[OCMArg checkWithBlock:^BOOL(NSError* error) {
-          return error.code == CWVSyncErrorInvalidGAIACredentials;
-        }]];
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  CWVIdentity* current_identity = sync_controller.currentIdentity;
+  ASSERT_TRUE(current_identity);
+  EXPECT_NSEQ(current_identity.gaiaID,
+              base::SysUTF8ToNSString(account_info.gaia));
+  EXPECT_NSEQ(current_identity.email, base::SysUTF8ToNSString(kTestEmail));
 
-    // Create authentication error.
-    GoogleServiceAuthError auth_error(
-        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-        identity_manager(), identity_manager()->GetPrimaryAccountId(),
-        auth_error);
-
-    [[delegate expect] syncControllerDidStopSync:sync_controller_];
-    identity_manager()->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
-        signin_metrics::ProfileSignout::USER_CLICKED_SIGNOUT_SETTINGS,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
-
-    [delegate verify];
-  }
+  [sync_controller stopSyncAndClearIdentity];
+  EXPECT_FALSE(sync_controller.currentIdentity);
 }
 
-// Verifies CWVSyncController properly maintains the current syncing user.
-TEST_F(CWVSyncControllerTest, CurrentIdentity) {
-  CWVIdentity* identity = [[CWVIdentity alloc] initWithEmail:@(kTestEmail)
-                                                    fullName:@(kTestFullName)
-                                                      gaiaID:@(kTestGaiaId)];
-  id data_source = OCMProtocolMock(@protocol(CWVSyncControllerDataSource));
-  [[[data_source stub] andReturn:@[ identity ]] allKnownIdentities];
-  CWVSyncController.dataSource = data_source;
-  [sync_controller_ startSyncWithIdentity:identity];
-  CWVIdentity* currentIdentity = sync_controller_.currentIdentity;
-  EXPECT_TRUE(currentIdentity);
-  EXPECT_NSEQ(identity.email, currentIdentity.email);
-  EXPECT_NSEQ(identity.fullName, currentIdentity.fullName);
-  EXPECT_NSEQ(identity.gaiaID, currentIdentity.gaiaID);
-
-  EXPECT_CALL(*mock_sync_service(), StopAndClear());
-  [sync_controller_ stopSyncAndClearIdentity];
-  EXPECT_FALSE(sync_controller_.currentIdentity);
+TEST_F(CWVSyncControllerTest, Syncing) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTransportState(
+      syncer::SyncService::TransportState::DISABLED);
+  EXPECT_FALSE(sync_controller.syncing);
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  EXPECT_TRUE(sync_controller.syncing);
 }
 
-// Verifies CWVSyncController's passphrase API.
-TEST_F(CWVSyncControllerTest, Passphrase) {
-  EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
-              IsPassphraseRequiredForPreferredDataTypes())
-      .WillOnce(Return(true));
-  EXPECT_TRUE(sync_controller_.passphraseNeeded);
-  EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
-              SetDecryptionPassphrase(kTestPassphrase))
-      .WillOnce(Return(true));
-  EXPECT_TRUE([sync_controller_ unlockWithPassphrase:@(kTestPassphrase)]);
+TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetPassphraseRequiredForPreferredDataTypes(false);
+  EXPECT_FALSE(sync_controller.passphraseNeeded);
+  sync_service_.SetPassphraseRequiredForPreferredDataTypes(true);
+  EXPECT_TRUE(sync_controller.passphraseNeeded);
+}
+
+TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(false);
+  EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
+  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+  EXPECT_TRUE(sync_controller.trustedVaultKeysRequired);
+}
+
+TEST_F(CWVSyncControllerTest, TrustedVaultRecoverabilityDegraded) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTrustedVaultRecoverabilityDegraded(false);
+  EXPECT_FALSE(sync_controller.trustedVaultRecoverabilityDegraded);
+  sync_service_.SetTrustedVaultRecoverabilityDegraded(true);
+  EXPECT_TRUE(sync_controller.trustedVaultRecoverabilityDegraded);
+}
+
+TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+
+  id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
+  [delegate setExpectationOrderMatters:YES];
+  sync_controller.delegate = delegate;
+
+  // TestSyncService's transport state has to actually change before a callback
+  // will be fired, so we have to start it before we can stop it.
+  OCMExpect([delegate syncControllerDidStartSync:sync_controller]);
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
+  OCMExpect([delegate syncControllerDidStopSync:sync_controller]);
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
+  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.FireStateChanged();
+  sync_service_.SetTransportState(
+      syncer::SyncService::TransportState::DISABLED);
+  sync_service_.FireStateChanged();
+
+  [delegate verify];
+}
+
+TEST_F(CWVSyncControllerTest, DelegateDidFailWithError) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+
+  id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
+  [delegate setExpectationOrderMatters:YES];
+  sync_controller.delegate = delegate;
+
+  OCMExpect([delegate
+        syncController:sync_controller
+      didFailWithError:[OCMArg checkWithBlock:^BOOL(NSError* error) {
+        return error.code == CWVSyncErrorConnectionFailed &&
+               error.domain == CWVSyncErrorDomain &&
+               [error.userInfo[CWVSyncErrorIsTransientKey] boolValue];
+      }]]);
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
+  sync_service_.SetAuthError(GoogleServiceAuthError::FromConnectionError(0));
+  sync_service_.FireStateChanged();
+
+  [delegate verify];
+}
+
+TEST_F(CWVSyncControllerTest, DelegateDidUpdateState) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+
+  id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
+  sync_controller.delegate = delegate;
+
+  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
+  sync_service_.FireStateChanged();
+  [delegate verify];
 }
 
 }  // namespace ios_web_view

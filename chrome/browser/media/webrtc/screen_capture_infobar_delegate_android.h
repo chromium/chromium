@@ -17,10 +17,15 @@ class WebContents;
 class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
  public:
   // Creates a screen capture infobar and delegate and adds the infobar to the
-  // InfoBarService associated with |web_contents|.
+  // infobars::ContentInfoBarManager associated with |web_contents|.
   static void Create(content::WebContents* web_contents,
                      const content::MediaStreamRequest& request,
                      content::MediaResponseCallback callback);
+
+  ScreenCaptureInfoBarDelegateAndroid(
+      const ScreenCaptureInfoBarDelegateAndroid&) = delete;
+  ScreenCaptureInfoBarDelegateAndroid& operator=(
+      const ScreenCaptureInfoBarDelegateAndroid&) = delete;
 
  private:
   ScreenCaptureInfoBarDelegateAndroid(
@@ -31,9 +36,9 @@ class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetIconId() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
   void InfoBarDismissed() override;
@@ -45,8 +50,6 @@ class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
   content::WebContents* web_contents_;
   const content::MediaStreamRequest request_;
   content::MediaResponseCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureInfoBarDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID_H_

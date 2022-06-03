@@ -6,7 +6,7 @@ Running: testSetup
 Running: testBreakpointsSetAndRemoveInFormattedSource
 Script execution paused.
 Breakpoint sidebar pane while paused in pretty printed
-unformatted2.js:formatted:4    var c = 3;
+unformatted2.js:formatted:4checked    var c = 3;
 Breakpoint sidebar pane while paused in raw
 No breakpoints
 Script execution resumed.

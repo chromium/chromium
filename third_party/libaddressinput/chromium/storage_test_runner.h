@@ -19,6 +19,10 @@ class StorageTestRunner {
  public:
   // Does not take ownership of |storage|.
   explicit StorageTestRunner(::i18n::addressinput::Storage* storage);
+
+  StorageTestRunner(const StorageTestRunner&) = delete;
+  StorageTestRunner& operator=(const StorageTestRunner&) = delete;
+
   ~StorageTestRunner();
 
   // Runs all the tests from the standard test suite.
@@ -38,8 +42,6 @@ class StorageTestRunner {
   bool success_;
   std::string key_;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageTestRunner);
 };
 
 }  // namespace autofill

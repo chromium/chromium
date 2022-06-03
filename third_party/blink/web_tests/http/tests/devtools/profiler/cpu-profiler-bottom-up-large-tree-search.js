@@ -4,9 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests that search works for large bottom-up view of CPU profile.\n`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
-  var nodesCount = 1000;
+  var nodesCount = 200;
   function buildTree(startId, count) {
     // Build a call tree of a chain form: foo1 -> foo2 -> foo3 -> ...
     // This should give a O(n^2) nodes in bottom-up tree.
@@ -53,12 +53,12 @@
   };
   var view = new Profiler.CPUProfileView(profileAndExpectations);
   view.viewSelectComboBox.setSelectedIndex(1);
-  view._changeView();
+  view.changeView();
   var tree = view.profileDataGridTree;
   if (!tree)
     TestRunner.addResult('no tree');
   tree.performSearch(new UI.SearchableView.SearchConfig('foo12', true, false), false);
-  for (var item of tree._searchResults) {
+  for (var item of tree.searchResults) {
     var node = item.profileNode;
     TestRunner.addResult(`${node.callUID}: ${node.functionName} ${node.self} ${node.total}`);
   }

@@ -49,44 +49,37 @@ float FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
   if (fabsf(specified_size) < std::numeric_limits<float>::epsilon())
     return 0.0f;
 
-  // We support two types of minimum font size. The first is a hard override
-  // that applies to all fonts. This is "minSize." The second type of minimum
-  // font size is a "smart minimum" that is applied only when the Web page can't
-  // know what size it really asked for, e.g., when it uses logical sizes like
-  // "small" or expresses the font-size as a percentage of the user's default
-  // font setting.
-
-  // With the smart minimum, we never want to get smaller than the minimum font
-  // size to keep fonts readable. However we always allow the page to set an
-  // explicit pixel size that is smaller, since sites will mis-render otherwise
-  // (e.g., http://www.gamespot.com with a 9px minimum).
-
   Settings* settings = document->GetSettings();
-  if (!settings)
-    return 1.0f;
+  if (apply_minimum_font_size && settings) {
+    // We support two types of minimum font size. The first is a hard override
+    // that applies to all fonts. This is "min_size." The second type of minimum
+    // font size is a "smart minimum" that is applied only when the Web page
+    // can't know what size it really asked for, e.g., when it uses logical
+    // sizes like "small" or expresses the font-size as a percentage of the
+    // user's default font setting.
 
-  float zoomed_size = specified_size * zoom_factor;
-  if (apply_minimum_font_size) {
+    // With the smart minimum, we never want to get smaller than the minimum
+    // font size to keep fonts readable. However we always allow the page to set
+    // an explicit pixel size that is smaller, since sites will mis-render
+    // otherwise (e.g., http://www.gamespot.com with a 9px minimum).
+
     int min_size = settings->GetMinimumFontSize();
     int min_logical_size = settings->GetMinimumLogicalFontSize();
 
-    // Apply the hard minimum first. We only apply the hard minimum if after
-    // zooming we're still too small.
-    if (zoomed_size < min_size)
-      zoomed_size = min_size;
+    // Apply the hard minimum first.
+    if (specified_size < min_size)
+      specified_size = min_size;
 
-    // Now apply the "smart minimum." This minimum is also only applied if we're
-    // still too small after zooming. The font size must either be relative to
+    // Now apply the "smart minimum". The font size must either be relative to
     // the user default or the original size must have been acceptable. In other
     // words, we only apply the smart minimum whenever we're positive doing so
     // won't disrupt the layout.
-    if (zoomed_size < min_logical_size &&
-        (specified_size >= min_logical_size || !is_absolute_size))
-      zoomed_size = min_logical_size;
+    if (specified_size < min_logical_size && !is_absolute_size)
+      specified_size = min_logical_size;
   }
   // Also clamp to a reasonable maximum to prevent insane font sizes from
   // causing crashes on various platforms (I'm looking at you, Windows.)
-  return std::min(kMaximumAllowedFontSize, zoomed_size);
+  return std::min(kMaximumAllowedFontSize, specified_size * zoom_factor);
 }
 
 const int kFontSizeTableMax = 16;

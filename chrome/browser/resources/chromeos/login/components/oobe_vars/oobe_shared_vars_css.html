@@ -1,0 +1,46 @@
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<custom-style>
+  <style is="custom-style">
+     /* Please check whether multidevice_setup/ui_page.html needs to be */
+     /* updated when below css vars are changed. */
+     /* TODO(crbug.com/1202135): Move equall custom vars here. */
+    html {
+      --oobe-adaptive-dialog-buttons-horizontal-padding: clamp(20px,
+        calc(var(--oobe-adaptive-dialog-width) * 0.035), 40px);
+      --oobe-adaptive-dialog-buttons-vertical-padding: clamp(20px,
+        calc(var(--oobe-adaptive-dialog-height) * 0.035), 40px);
+      --oobe-adaptive-dialog-back-button-vertical-padding:
+        var(--oobe-adaptive-dialog-buttons-vertical-padding);
+      /* 16px is a distance from border of button to icon. Once oobe-dialog is
+         deleted this could be calculated from button vars. */
+      --oobe-adaptive-dialog-back-button-horizontal-padding:
+        calc(var(--oobe-adaptive-dialog-buttons-horizontal-padding) - 16px);
+      --oobe-adaptive-dialog-content-padding: 40px;
+      --oobe-adaptive-dialog-header-top-padding:
+            var(--oobe-adaptive-dialog-content-padding);
+      --oobe-adaptive-dialog-title-top-padding: 40px;
+      --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-content-padding);
+
+      /* Fonts vars */
+      --oobe-header-font-family: "Google Sans", Roboto, sans-serif;
+
+      --oobe-radio-card-label-font-size: 18px;
+      --oobe-modal-dialog-header-font-size: 15px;
+
+      --oobe-default-font-weight: 400; /* regular */
+      --oobe-subheader-font-weight: 400; /* regular */
+      --oobe-modal-dialog-header-font-weight: 500; /* medium */
+
+      --oobe-header-text-color: var(--google-grey-900);
+      --oobe-subheader-text-color: var(--google-grey-700);
+      --oobe-footer-text-color: var(--google-grey-500);
+
+      --oobe-radio-card-label-line-height: 24px;
+      /* Fonts vars end */
+    }
+  </style>
+</custom-style>

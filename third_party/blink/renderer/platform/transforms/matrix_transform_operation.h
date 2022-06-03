@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -49,10 +50,6 @@ class PLATFORM_EXPORT MatrixTransformOperation final
 
   TransformationMatrix Matrix() const {
     return TransformationMatrix(a_, b_, c_, d_, e_, f_);
-  }
-
-  bool CanBlendWith(const TransformOperation& other) const override {
-    return false;
   }
 
   static bool IsMatchingOperationType(OperationType type) {
@@ -89,6 +86,9 @@ class PLATFORM_EXPORT MatrixTransformOperation final
   bool PreservesAxisAlignment() const final {
     return Matrix().Preserves2dAxisAlignment();
   }
+  bool IsIdentityOrTranslation() const final {
+    return Matrix().IsIdentityOr2DTranslation();
+  }
 
   MatrixTransformOperation(double a,
                            double b,
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT MatrixTransformOperation final
                            double f)
       : a_(a), b_(b), c_(c), d_(d), e_(e), f_(f) {}
 
-  MatrixTransformOperation(const TransformationMatrix& t)
+  explicit MatrixTransformOperation(const TransformationMatrix& t)
       : a_(t.A()), b_(t.B()), c_(t.C()), d_(t.D()), e_(t.E()), f_(t.F()) {}
 
   double a_;
@@ -109,7 +109,13 @@ class PLATFORM_EXPORT MatrixTransformOperation final
   double f_;
 };
 
-DEFINE_TRANSFORM_TYPE_CASTS(MatrixTransformOperation);
+template <>
+struct DowncastTraits<MatrixTransformOperation> {
+  static bool AllowFrom(const TransformOperation& transform) {
+    return MatrixTransformOperation::IsMatchingOperationType(
+        transform.GetType());
+  }
+};
 
 }  // namespace blink
 

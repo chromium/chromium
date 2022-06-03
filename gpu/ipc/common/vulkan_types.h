@@ -5,6 +5,6 @@
 #ifndef GPU_IPC_COMMON_VULKAN_TYPES_H_
 #define GPU_IPC_COMMON_VULKAN_TYPES_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #endif  // GPU_IPC_COMMON_VULKAN_TYPES_H_

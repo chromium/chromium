@@ -4,6 +4,9 @@
 
 #include "ui/gfx/color_space_win.h"
 
+#include "base/logging.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
+
 namespace gfx {
 
 DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
@@ -122,8 +125,9 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::TransferID::BT709_APPLE:
     case gfx::ColorSpace::TransferID::GAMMA18:
     case gfx::ColorSpace::TransferID::GAMMA24:
-    case gfx::ColorSpace::TransferID::SMPTEST2084_NON_HDR:
     case gfx::ColorSpace::TransferID::CUSTOM:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::INVALID:
       // Not handled
       break;
@@ -135,6 +139,10 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
 DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
     const ColorSpace& color_space,
     bool force_yuv) {
+  // Treat invalid color space as sRGB.
+  if (!color_space.IsValid())
+    return DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+
   if (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::RGB &&
       !force_yuv) {
     // For RGB, we default to FULL
@@ -163,9 +171,16 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
             color_space.GetTransferID() ==
                 gfx::ColorSpace::TransferID::LINEAR_HDR) {
           return DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
-        } else {
-          return DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+        } else if (color_space.GetTransferID() ==
+                   gfx::ColorSpace::TransferID::CUSTOM_HDR) {
+          skcms_TransferFunction fn;
+          color_space.GetTransferFunction(&fn);
+          if (fn.g == 1.f)
+            return DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+          else
+            DLOG(ERROR) << "Windows HDR only supports gamma=1.0.";
         }
+        return DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
       }
     }
   } else {
@@ -175,6 +190,10 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
         return DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020;
         // Could also be:
         // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020
+      } else if (color_space.GetTransferID() ==
+                 gfx::ColorSpace::TransferID::ARIB_STD_B67) {
+        // Note: This may not always work. See https://crbug.com/1144260#c6.
+        return DXGI_COLOR_SPACE_YCBCR_STUDIO_GHLG_TOPLEFT_P2020;
       } else {
         // For YUV, we default to LIMITED
         if (color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL) {
@@ -211,6 +230,20 @@ DXGI_COLOR_SPACE_TYPE ColorSpaceWin::GetDXGIColorSpace(
       }
     }
   }
+}
+
+DXGI_FORMAT ColorSpaceWin::GetDXGIFormat(const gfx::ColorSpace& color_space) {
+  // The PQ transfer function needs 10 bits.
+  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SMPTEST2084)
+    return DXGI_FORMAT_R10G10B10A2_UNORM;
+
+  // Non-PQ HDR color spaces use half-float.
+  if (color_space.IsHDR())
+    return DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+  // For now just give everything else 8 bits. We will want to use 10 or 16 bits
+  // for BT2020 gamuts.
+  return DXGI_FORMAT_B8G8R8A8_UNORM;
 }
 
 D3D11_VIDEO_PROCESSOR_COLOR_SPACE ColorSpaceWin::GetD3D11ColorSpace(

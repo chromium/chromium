@@ -41,7 +41,7 @@ class ViewportScrollCallback : public ScrollStateCallback {
   void Invoke(ScrollState*) override;
   void SetScroller(ScrollableArea*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool ShouldScrollBrowserControls(const ScrollOffset&,

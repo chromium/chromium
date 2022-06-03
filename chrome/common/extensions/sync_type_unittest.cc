@@ -32,7 +32,7 @@ class ExtensionSyncTypeTest : public testing::Test {
       SyncTestExtensionType type,
       const GURL& update_url,
       const GURL& launch_url,
-      Manifest::Location location,
+      mojom::ManifestLocation location,
       const base::FilePath& extension_path,
       int creation_flags) {
     base::DictionaryValue source;
@@ -42,7 +42,7 @@ class ExtensionSyncTypeTest : public testing::Test {
     if (type == APP)
       source.SetString(keys::kApp, "true");
     if (type == THEME)
-      source.Set(keys::kTheme, std::make_unique<base::DictionaryValue>());
+      source.SetKey(keys::kTheme, base::Value(base::Value::Type::DICTIONARY));
     if (!update_url.is_empty()) {
       source.SetString(keys::kUpdateURL, update_url.spec());
     }
@@ -70,10 +70,9 @@ const char ExtensionSyncTypeTest::kValidUpdateUrl2[] =
     "https://clients2.google.com/service/update2/crx";
 
 TEST_F(ExtensionSyncTypeTest, NormalExtensionNoUpdateUrl) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_extension());
   EXPECT_TRUE(sync_helper::IsSyncable(extension.get()));
 }
@@ -81,26 +80,24 @@ TEST_F(ExtensionSyncTypeTest, NormalExtensionNoUpdateUrl) {
 TEST_F(ExtensionSyncTypeTest, UserScriptValidUpdateUrl) {
   scoped_refptr<Extension> extension(
       MakeSyncTestExtension(USER_SCRIPT, GURL(kValidUpdateUrl1), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+                            mojom::ManifestLocation::kInternal,
+                            base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_extension());
   EXPECT_TRUE(sync_helper::IsSyncable(extension.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, UserScriptNoUpdateUrl) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(USER_SCRIPT, GURL(), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      USER_SCRIPT, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_extension());
   EXPECT_FALSE(sync_helper::IsSyncable(extension.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, ThemeNoUpdateUrl) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(THEME, GURL(), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      THEME, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_theme());
   EXPECT_TRUE(sync_helper::IsSyncable(extension.get()));
 }
@@ -108,43 +105,41 @@ TEST_F(ExtensionSyncTypeTest, ThemeNoUpdateUrl) {
 TEST_F(ExtensionSyncTypeTest, AppWithLaunchUrl) {
   scoped_refptr<Extension> extension(
       MakeSyncTestExtension(EXTENSION, GURL(), GURL("http://www.google.com"),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+                            mojom::ManifestLocation::kInternal,
+                            base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_app());
   EXPECT_TRUE(sync_helper::IsSyncable(extension.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, ExtensionExternal) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(),
-                            Manifest::EXTERNAL_PREF, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kExternalPref,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_extension());
   EXPECT_FALSE(sync_helper::IsSyncable(extension.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, UserScriptThirdPartyUpdateUrl) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(
-          USER_SCRIPT, GURL("http://third-party.update_url.com"), GURL(),
-          Manifest::INTERNAL, base::FilePath(), Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      USER_SCRIPT, GURL("http://third-party.update_url.com"), GURL(),
+      mojom::ManifestLocation::kInternal, base::FilePath(),
+      Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_extension());
   EXPECT_FALSE(sync_helper::IsSyncable(extension.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, OnlyDisplayAppsInLauncher) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::NO_FLAGS));
 
   EXPECT_FALSE(extension->ShouldDisplayInAppLauncher());
   EXPECT_FALSE(extension->ShouldDisplayInNewTabPage());
 
   scoped_refptr<Extension> app(
       MakeSyncTestExtension(APP, GURL(), GURL("http://www.google.com"),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+                            mojom::ManifestLocation::kInternal,
+                            base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(app->ShouldDisplayInAppLauncher());
   EXPECT_TRUE(app->ShouldDisplayInNewTabPage());
 }
@@ -156,74 +151,70 @@ TEST_F(ExtensionSyncTypeTest, DisplayInXManifestProperties) {
   manifest.SetString(keys::kApp, "true");
   manifest.SetString(keys::kPlatformAppBackgroundPage, std::string());
 
-  std::string error;
-  scoped_refptr<Extension> app;
-
   // Default to true.
-  app = Extension::Create(
-      base::FilePath(), Manifest::COMPONENT, manifest, 0, &error);
+  std::string error;
+  scoped_refptr<Extension> app =
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
+                        manifest, 0, &error);
   EXPECT_EQ(error, std::string());
   EXPECT_TRUE(app->ShouldDisplayInAppLauncher());
   EXPECT_TRUE(app->ShouldDisplayInNewTabPage());
 
   // Value display_in_NTP defaults to display_in_launcher.
   manifest.SetBoolean(keys::kDisplayInLauncher, false);
-  app = Extension::Create(
-      base::FilePath(), Manifest::COMPONENT, manifest, 0, &error);
+  app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
+                          manifest, 0, &error);
   EXPECT_EQ(error, std::string());
   EXPECT_FALSE(app->ShouldDisplayInAppLauncher());
   EXPECT_FALSE(app->ShouldDisplayInNewTabPage());
 
   // Value display_in_NTP = true overriding display_in_launcher = false.
   manifest.SetBoolean(keys::kDisplayInNewTabPage, true);
-  app = Extension::Create(
-      base::FilePath(), Manifest::COMPONENT, manifest, 0, &error);
+  app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
+                          manifest, 0, &error);
   EXPECT_EQ(error, std::string());
   EXPECT_FALSE(app->ShouldDisplayInAppLauncher());
   EXPECT_TRUE(app->ShouldDisplayInNewTabPage());
 
   // Value display_in_NTP = false only, overrides default = true.
-  manifest.Remove(keys::kDisplayInLauncher, NULL);
+  manifest.RemoveKey(keys::kDisplayInLauncher);
   manifest.SetBoolean(keys::kDisplayInNewTabPage, false);
-  app = Extension::Create(
-      base::FilePath(), Manifest::COMPONENT, manifest, 0, &error);
+  app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
+                          manifest, 0, &error);
   EXPECT_EQ(error, std::string());
   EXPECT_TRUE(app->ShouldDisplayInAppLauncher());
   EXPECT_FALSE(app->ShouldDisplayInNewTabPage());
 
   // Error checking.
   manifest.SetString(keys::kDisplayInNewTabPage, "invalid");
-  app = Extension::Create(
-      base::FilePath(), Manifest::COMPONENT, manifest, 0, &error);
+  app = Extension::Create(base::FilePath(), mojom::ManifestLocation::kComponent,
+                          manifest, 0, &error);
   EXPECT_EQ(error, std::string(errors::kInvalidDisplayInNewTabPage));
 }
 
 TEST_F(ExtensionSyncTypeTest, OnlySyncInternal) {
-  scoped_refptr<Extension> extension_internal(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension_internal(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(sync_helper::IsSyncable(extension_internal.get()));
 
-  scoped_refptr<Extension> extension_noninternal(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(),
-                            Manifest::COMPONENT, base::FilePath(),
-                            Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension_noninternal(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kComponent,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_FALSE(sync_helper::IsSyncable(extension_noninternal.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, DontSyncDefault) {
-  scoped_refptr<Extension> extension_default(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(),
-                            Manifest::INTERNAL, base::FilePath(),
-                            Extension::WAS_INSTALLED_BY_DEFAULT));
+  scoped_refptr<Extension> extension_default(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::WAS_INSTALLED_BY_DEFAULT));
   EXPECT_FALSE(sync_helper::IsSyncable(extension_default.get()));
 }
 
 TEST_F(ExtensionSyncTypeTest, DontSyncExtensionInDoNotSyncList) {
-  scoped_refptr<Extension> extension(
-      MakeSyncTestExtension(EXTENSION, GURL(), GURL(), Manifest::INTERNAL,
-                            base::FilePath(), Extension::NO_FLAGS));
+  scoped_refptr<Extension> extension(MakeSyncTestExtension(
+      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
+      base::FilePath(), Extension::NO_FLAGS));
   EXPECT_TRUE(extension->is_extension());
   EXPECT_TRUE(sync_helper::IsSyncable(extension.get()));
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(extension->id());

@@ -26,13 +26,13 @@ class TopRealWorldDesktopPage(rendering_story.RenderingStory):
         extra_browser_args=extra_browser_args)
 
   def RunPageInteractions(self, action_runner):
-      action_runner.Wait(1)
-      with action_runner.CreateGestureInteraction('ScrollAction'):
-        action_runner.ScrollPage()
-        if self.story_set.scroll_forever:
-          while True:
-            action_runner.ScrollPage(direction='up')
-            action_runner.ScrollPage(direction='down')
+    action_runner.Wait(1)
+    with action_runner.CreateGestureInteraction('ScrollAction'):
+      action_runner.ScrollPage()
+      if self.story_set.scroll_forever:
+        while True:
+          action_runner.ScrollPage(direction='up')
+          action_runner.ScrollPage(direction='down')
 
 
 class GoogleWebSearch2018Page(TopRealWorldDesktopPage):

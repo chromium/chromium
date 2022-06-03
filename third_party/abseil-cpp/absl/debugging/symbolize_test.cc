@@ -27,18 +27,39 @@
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/base/casts.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/per_thread_tls.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/optimization.h"
 #include "absl/debugging/internal/stack_consumption.h"
 #include "absl/memory/memory.h"
+#include "absl/strings/string_view.h"
 
 using testing::Contains;
 
+#ifdef _WIN32
+#define ABSL_SYMBOLIZE_TEST_NOINLINE __declspec(noinline)
+#else
+#define ABSL_SYMBOLIZE_TEST_NOINLINE ABSL_ATTRIBUTE_NOINLINE
+#endif
+
 // Functions to symbolize. Use C linkage to avoid mangled names.
 extern "C" {
-void nonstatic_func() { ABSL_BLOCK_TAIL_CALL_OPTIMIZATION(); }
-static void static_func() { ABSL_BLOCK_TAIL_CALL_OPTIMIZATION(); }
+ABSL_SYMBOLIZE_TEST_NOINLINE void nonstatic_func() {
+  // The next line makes this a unique function to prevent the compiler from
+  // folding identical functions together.
+  volatile int x = __LINE__;
+  static_cast<void>(x);
+  ABSL_BLOCK_TAIL_CALL_OPTIMIZATION();
+}
+
+ABSL_SYMBOLIZE_TEST_NOINLINE static void static_func() {
+  // The next line makes this a unique function to prevent the compiler from
+  // folding identical functions together.
+  volatile int x = __LINE__;
+  static_cast<void>(x);
+  ABSL_BLOCK_TAIL_CALL_OPTIMIZATION();
+}
 }  // extern "C"
 
 struct Foo {
@@ -46,7 +67,11 @@ struct Foo {
 };
 
 // A C++ method that should have a mangled name.
-void ABSL_ATTRIBUTE_NOINLINE Foo::func(int) {
+ABSL_SYMBOLIZE_TEST_NOINLINE void Foo::func(int) {
+  // The next line makes this a unique function to prevent the compiler from
+  // folding identical functions together.
+  volatile int x = __LINE__;
+  static_cast<void>(x);
   ABSL_BLOCK_TAIL_CALL_OPTIMIZATION();
 }
 
@@ -80,6 +105,7 @@ static ABSL_PER_THREAD_TLS_KEYWORD char
     symbolize_test_thread_big[2 * 1024 * 1024];
 #endif
 
+#if !defined(__EMSCRIPTEN__)
 // Used below to hopefully inhibit some compiler/linker optimizations
 // that may remove kHpageTextPadding, kPadding0, and kPadding1 from
 // the binary.
@@ -89,6 +115,7 @@ static volatile bool volatile_bool = false;
 static constexpr size_t kHpageSize = 1 << 21;
 const char kHpageTextPadding[kHpageSize * 4] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     .text) = "";
+#endif  // !defined(__EMSCRIPTEN__)
 
 static char try_symbolize_buffer[4096];
 
@@ -119,7 +146,22 @@ static const char *TrySymbolize(void *pc) {
   return TrySymbolizeWithLimit(pc, sizeof(try_symbolize_buffer));
 }
 
-#ifdef ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE
+#if defined(ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE) ||    \
+    defined(ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE) || \
+    defined(ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE)
+
+// Test with a return address.
+void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
+#if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
+  void *return_address = __builtin_return_address(0);
+  const char *symbol = TrySymbolize(return_address);
+  ABSL_RAW_CHECK(symbol != nullptr, "TestWithReturnAddress failed");
+  ABSL_RAW_CHECK(strcmp(symbol, "main") == 0, "TestWithReturnAddress failed");
+  std::cout << "TestWithReturnAddress passed" << std::endl;
+#endif
+}
+
+#ifndef ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
 
 TEST(Symbolize, Cached) {
   // Compilers should give us pointers to them.
@@ -193,8 +235,8 @@ static const char *SymbolizeStackConsumption(void *pc, int *stack_consumed) {
 static int GetStackConsumptionUpperLimit() {
   // Symbolize stack consumption should be within 2kB.
   int stack_consumption_upper_limit = 2048;
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(THREAD_SANITIZER)
+#if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
   // Account for sanitizer instrumentation requiring additional stack space.
   stack_consumption_upper_limit *= 5;
 #endif
@@ -233,6 +275,7 @@ TEST(Symbolize, SymbolizeWithDemanglingStackConsumption) {
 
 #endif  // ABSL_INTERNAL_HAVE_DEBUGGING_STACK_CONSUMPTION
 
+#ifndef ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE
 // Use a 64K page size for PPC.
 const size_t kPageSize = 64 << 10;
 // We place a read-only symbols into the .text section and verify that we can
@@ -374,8 +417,8 @@ TEST(Symbolize, ForEachSection) {
 
   std::vector<std::string> sections;
   ASSERT_TRUE(absl::debugging_internal::ForEachSection(
-      fd, [&sections](const std::string &name, const ElfW(Shdr) &) {
-        sections.push_back(name);
+      fd, [&sections](const absl::string_view name, const ElfW(Shdr) &) {
+        sections.emplace_back(name);
         return true;
       }));
 
@@ -388,6 +431,8 @@ TEST(Symbolize, ForEachSection) {
 
   close(fd);
 }
+#endif  // !ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE
+#endif  // !ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
 
 // x86 specific tests.  Uses some inline assembler.
 extern "C" {
@@ -436,25 +481,55 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideInlineFunction() {
 }
 }
 
-// Test with a return address.
-void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
+#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+// Test that we correctly identify bounds of Thumb functions on ARM.
+//
+// Thumb functions have the lowest-order bit set in their addresses in the ELF
+// symbol table. This requires some extra logic to properly compute function
+// bounds. To test this logic, nudge a Thumb function right up against an ARM
+// function and try to symbolize the ARM function.
+//
+// A naive implementation will simply use the Thumb function's entry point as
+// written in the symbol table and will therefore treat the Thumb function as
+// extending one byte further in the instruction stream than it actually does.
+// When asked to symbolize the start of the ARM function, it will identify an
+// overlap between the Thumb and ARM functions, and it will return the name of
+// the Thumb function.
+//
+// A correct implementation, on the other hand, will null out the lowest-order
+// bit in the Thumb function's entry point. It will correctly compute the end of
+// the Thumb function, it will find no overlap between the Thumb and ARM
+// functions, and it will return the name of the ARM function.
+
+__attribute__((target("thumb"))) int ArmThumbOverlapThumb(int x) {
+  return x * x * x;
+}
+
+__attribute__((target("arm"))) int ArmThumbOverlapArm(int x) {
+  return x * x * x;
+}
+
+void ABSL_ATTRIBUTE_NOINLINE TestArmThumbOverlap() {
 #if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
-  void *return_address = __builtin_return_address(0);
-  const char *symbol = TrySymbolize(return_address);
-  ABSL_RAW_CHECK(symbol != nullptr, "TestWithReturnAddress failed");
-  ABSL_RAW_CHECK(strcmp(symbol, "main") == 0, "TestWithReturnAddress failed");
-  std::cout << "TestWithReturnAddress passed" << std::endl;
+  const char *symbol = TrySymbolize((void *)&ArmThumbOverlapArm);
+  ABSL_RAW_CHECK(symbol != nullptr, "TestArmThumbOverlap failed");
+  ABSL_RAW_CHECK(strcmp("ArmThumbOverlapArm()", symbol) == 0,
+                 "TestArmThumbOverlap failed");
+  std::cout << "TestArmThumbOverlap passed" << std::endl;
 #endif
 }
 
-#elif defined(_WIN32) && defined(_DEBUG)
+#endif  // defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+
+#elif defined(_WIN32)
+#if !defined(ABSL_CONSUME_DLL)
 
 TEST(Symbolize, Basics) {
   EXPECT_STREQ("nonstatic_func", TrySymbolize((void *)(&nonstatic_func)));
 
   // The name of an internal linkage symbol is not specified; allow either a
   // mangled or an unmangled name here.
-  const char* static_func_symbol = TrySymbolize((void *)(&static_func));
+  const char *static_func_symbol = TrySymbolize((void *)(&static_func));
   ASSERT_TRUE(static_func_symbol != nullptr);
   EXPECT_TRUE(strstr(static_func_symbol, "static_func") != nullptr);
 
@@ -481,13 +556,13 @@ TEST(Symbolize, Truncation) {
 }
 
 TEST(Symbolize, SymbolizeWithDemangling) {
-  const char* result = TrySymbolize((void *)(&Foo::func));
+  const char *result = TrySymbolize((void *)(&Foo::func));
   ASSERT_TRUE(result != nullptr);
   EXPECT_TRUE(strstr(result, "Foo::func") != nullptr) << result;
 }
 
+#endif  // !defined(ABSL_CONSUME_DLL)
 #else  // Symbolizer unimplemented
-
 TEST(Symbolize, Unimplemented) {
   char buf[64];
   EXPECT_FALSE(absl::Symbolize((void *)(&nonstatic_func), buf, sizeof(buf)));
@@ -498,10 +573,12 @@ TEST(Symbolize, Unimplemented) {
 #endif
 
 int main(int argc, char **argv) {
+#if !defined(__EMSCRIPTEN__)
   // Make sure kHpageTextPadding is linked into the binary.
   if (volatile_bool) {
     ABSL_RAW_LOG(INFO, "%s", kHpageTextPadding);
   }
+#endif  // !defined(__EMSCRIPTEN__)
 
 #if ABSL_PER_THREAD_TLS
   // Touch the per-thread variables.
@@ -512,10 +589,14 @@ int main(int argc, char **argv) {
   absl::InitializeSymbolizer(argv[0]);
   testing::InitGoogleTest(&argc, argv);
 
-#ifdef ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE
+#if defined(ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE) || \
+    defined(ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE)
   TestWithPCInsideInlineFunction();
   TestWithPCInsideNonInlineFunction();
   TestWithReturnAddress();
+#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+  TestArmThumbOverlap();
+#endif
 #endif
 
   return RUN_ALL_TESTS();

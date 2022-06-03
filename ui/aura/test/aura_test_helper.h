@@ -7,31 +7,29 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/aura/window_tree_host.h"
+#include "ui/wm/core/wm_state.h"
 
 namespace ui {
 class ContextFactory;
-class ContextFactoryPrivate;
 class ScopedAnimationDurationScaleMode;
-}
-
-namespace wm {
-class WMState;
+class TestContextFactories;
 }
 
 namespace aura {
 class Env;
 class TestScreen;
 class Window;
+class WindowTreeHost;
 
 namespace client {
 class CaptureClient;
 class DefaultCaptureClient;
 class FocusClient;
+class ScreenPositionClient;
 }
+
 namespace test {
 class TestWindowParentingClient;
 
@@ -40,55 +38,57 @@ class TestWindowParentingClient;
 // that are necessary to run test on Aura.
 class AuraTestHelper {
  public:
-  AuraTestHelper();
-  explicit AuraTestHelper(std::unique_ptr<Env> env);
-  ~AuraTestHelper();
+  // Instantiates/destroys an AuraTestHelper. This can happen in a
+  // single-threaded phase without a backing task environment, and must not
+  // create one lest the caller wish to do so.
+  explicit AuraTestHelper(ui::ContextFactory* context_factory = nullptr);
+
+  AuraTestHelper(const AuraTestHelper&) = delete;
+  AuraTestHelper& operator=(const AuraTestHelper&) = delete;
+
+  virtual ~AuraTestHelper();
 
   // Returns the current AuraTestHelper, or nullptr if it's not alive.
   static AuraTestHelper* GetInstance();
 
   // Creates and initializes (shows and sizes) the RootWindow for use in tests.
-  void SetUp(ui::ContextFactory* context_factory,
-             ui::ContextFactoryPrivate* context_factory_private);
+  // This implementation does not create a task environment, but subclasses may
+  // choose to do so.
+  virtual void SetUp();
 
-  // Clean up objects that are created for tests. This also deletes the Env
-  // object.
-  void TearDown();
+  // Destroys the window, Env, and most other objects.  This will be called
+  // automatically on destruction if it is not called manually earlier.
+  virtual void TearDown();
 
   // Flushes message loop.
   void RunAllPendingInMessageLoop();
 
-  Window* root_window() { return host_ ? host_->window() : nullptr; }
-  ui::EventSink* event_sink() { return host_->event_sink(); }
-  WindowTreeHost* host() { return host_.get(); }
+  virtual Window* GetContext();
+  virtual WindowTreeHost* GetHost();
+  virtual TestScreen* GetTestScreen();
+  virtual client::FocusClient* GetFocusClient();
+  virtual client::CaptureClient* GetCaptureClient();
 
-  TestScreen* test_screen() { return test_screen_.get(); }
-
-  client::FocusClient* focus_client() { return focus_client_.get(); }
-  client::CaptureClient* capture_client();
+  static constexpr gfx::Size kDefaultHostSize{800, 600};
 
   Env* GetEnv();
 
+ protected:
+  // May only be called between SetUp() and TearDown().
+  ui::ContextFactory* GetContextFactory();
+
  private:
-#if defined(OS_WIN)
-  // Deletes existing NativeWindowOcclusionTrackerWin instance.
-  void DeleteNativeWindowOcclusionTrackerWin();
-#endif  // defined(OS_WIN)
-
-  bool setup_called_ = false;
-  bool teardown_called_ = false;
-  ui::ContextFactory* context_factory_to_restore_ = nullptr;
-  ui::ContextFactoryPrivate* context_factory_private_to_restore_ = nullptr;
-  std::unique_ptr<Env> env_;
-  std::unique_ptr<wm::WMState> wm_state_;
-  std::unique_ptr<WindowTreeHost> host_;
-  std::unique_ptr<TestWindowParentingClient> parenting_client_;
-  std::unique_ptr<client::DefaultCaptureClient> capture_client_;
-  std::unique_ptr<client::FocusClient> focus_client_;
-  std::unique_ptr<TestScreen> test_screen_;
+  std::unique_ptr<wm::WMState> wm_state_ = std::make_unique<wm::WMState>();
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraTestHelper);
+  std::unique_ptr<Env> env_;
+  ui::ContextFactory* context_factory_to_restore_ = nullptr;
+  std::unique_ptr<ui::TestContextFactories> context_factories_;
+  std::unique_ptr<TestScreen> test_screen_;
+  std::unique_ptr<WindowTreeHost> host_;
+  std::unique_ptr<client::FocusClient> focus_client_;
+  std::unique_ptr<client::DefaultCaptureClient> capture_client_;
+  std::unique_ptr<TestWindowParentingClient> parenting_client_;
+  std::unique_ptr<client::ScreenPositionClient> screen_position_client_;
 };
 
 }  // namespace test

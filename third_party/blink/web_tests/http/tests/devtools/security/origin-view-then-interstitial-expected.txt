@@ -7,11 +7,11 @@ Before selecting origin view:
 Security overview
         </DIV>
         <DIV class=lock-spectrum >
-            <DIV class=lock-icon lock-icon-secure >
+            <DIV class=lock-icon lock-icon-secure title=Secure >
             </DIV>
-            <DIV class=lock-icon lock-icon-neutral >
+            <DIV class=lock-icon lock-icon-neutral title=Info >
             </DIV>
-            <DIV class=lock-icon lock-icon-insecure >
+            <DIV class=lock-icon lock-icon-insecure title=Not secure >
             </DIV>
         </DIV>
         <DIV class=triangle-pointer-container >
@@ -30,10 +30,6 @@ Security overview
 </DIV>
 Panel on origin view before interstitial:
 <DIV class=widget vbox security-origin-view slot=insertion-point-main >
-    <STYLE >
-    </STYLE>
-    <STYLE >
-    </STYLE>
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -54,9 +50,9 @@ foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <SPAN class=devtools-link origin-button role=link >
+            <BUTTON class=text-button type=button role=link >
 View requests in Network Panel
-            </SPAN>
+            </BUTTON>
         </DIV>
     </DIV>
     <DIV class=origin-view-section >
@@ -75,11 +71,11 @@ After interstitial is shown:
 Security overview
         </DIV>
         <DIV class=lock-spectrum >
-            <DIV class=lock-icon lock-icon-secure >
+            <DIV class=lock-icon lock-icon-secure title=Secure >
             </DIV>
-            <DIV class=lock-icon lock-icon-neutral >
+            <DIV class=lock-icon lock-icon-neutral title=Info >
             </DIV>
-            <DIV class=lock-icon lock-icon-insecure >
+            <DIV class=lock-icon lock-icon-insecure title=Not secure >
             </DIV>
         </DIV>
         <DIV class=triangle-pointer-container >

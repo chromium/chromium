@@ -9,9 +9,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/optional.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "url/origin.h"
@@ -37,6 +37,12 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // |rfh| should be the RenderFrameHost that owns the WebBluetoothServiceImpl
   // that owns this map.
   explicit FrameConnectedBluetoothDevices(RenderFrameHost* rfh);
+
+  FrameConnectedBluetoothDevices(const FrameConnectedBluetoothDevices&) =
+      delete;
+  FrameConnectedBluetoothDevices& operator=(
+      const FrameConnectedBluetoothDevices&) = delete;
+
   ~FrameConnectedBluetoothDevices();
 
   // Returns true if the map holds a connection to |device_id|.
@@ -58,8 +64,14 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // WebContents count of connected devices if |device_address| had a
   // connection. Returns the device_id of the device associated with the
   // connection.
-  base::Optional<blink::WebBluetoothDeviceId>
+  absl::optional<blink::WebBluetoothDeviceId>
   CloseConnectionToDeviceWithAddress(const std::string& device_address);
+
+  // Deletes all connections that are NOT in the list of |permitted_ids| and
+  // decrements the WebContents count of connected devices for each device that
+  // had a connection.
+  void CloseConnectionsToDevicesNotInList(
+      const std::set<blink::WebBluetoothDeviceId>& permitted_ids);
 
  private:
   // Increments the Connected Devices count of the frame's WebContents.
@@ -80,8 +92,6 @@ class CONTENT_EXPORT FrameConnectedBluetoothDevices final {
   // Keeps track of which device addresses correspond to which ids.
   std::unordered_map<std::string, blink::WebBluetoothDeviceId>
       device_address_to_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameConnectedBluetoothDevices);
 };
 
 }  // namespace content

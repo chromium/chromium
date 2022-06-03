@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/module_record_resolver_impl.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 
@@ -59,12 +60,12 @@ const ModuleScript* ModuleRecordResolverImpl::GetModuleScriptFromModuleRecord(
 // <specdef
 // href="https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier)">
 v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
-    const String& specifier,
+    const ModuleRequest& module_request,
     v8::Local<v8::Module> referrer,
     ExceptionState& exception_state) {
   v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-  DVLOG(1) << "ModuleRecordResolverImpl::resolve(specifier=\"" << specifier
-           << ", referrer.hash="
+  DVLOG(1) << "ModuleRecordResolverImpl::resolve(specifier=\""
+           << module_request.specifier << ", referrer.hash="
            << BoxedV8ModuleHash::GetHash(
                   MakeGarbageCollected<BoxedV8Module>(isolate, referrer))
            << ")";
@@ -91,16 +92,20 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
   // <spec step="3.3">Set base URL to referencing script's base URL.</spec>
   // <spec step="5">Let url be the result of resolving a module specifier given
   // base URL and specifier.</spec>
-  KURL url = referrer_module->ResolveModuleSpecifier(specifier);
+  KURL url = referrer_module->ResolveModuleSpecifier(module_request.specifier);
+  ModuleType child_module_type =
+      modulator_->ModuleTypeFromRequest(module_request);
 
   // <spec step="6">Assert: url is never failure, because resolving a module
   // specifier must have been previously successful with these same two
   // arguments ...</spec>
   DCHECK(url.IsValid());
+  CHECK_NE(child_module_type, ModuleType::kInvalid);
 
   // <spec step="7">Let resolved module script be moduleMap[url]. (This entry
   // must exist for us to have gotten to this point.)</spec>
-  ModuleScript* module_script = modulator_->GetFetchedModuleScript(url);
+  ModuleScript* module_script =
+      modulator_->GetFetchedModuleScript(url, child_module_type);
 
   // <spec step="8">Assert: resolved module script is a module script (i.e., is
   // not null or "fetching").</spec>
@@ -114,15 +119,15 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
   return record;
 }
 
-void ModuleRecordResolverImpl::ContextDestroyed(ExecutionContext*) {
+void ModuleRecordResolverImpl::ContextDestroyed() {
   // crbug.com/725816 : What we should really do is to make the map key
   // weak reference to v8::Module.
   record_to_module_script_map_.clear();
 }
 
-void ModuleRecordResolverImpl::Trace(Visitor* visitor) {
+void ModuleRecordResolverImpl::Trace(Visitor* visitor) const {
   ModuleRecordResolver::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(record_to_module_script_map_);
   visitor->Trace(modulator_);
 }

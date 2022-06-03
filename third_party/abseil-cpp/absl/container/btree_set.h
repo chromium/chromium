@@ -51,6 +51,7 @@
 #include "absl/container/internal/btree_container.h"  // IWYU pragma: export
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // absl::btree_set<>
 //
@@ -182,7 +183,7 @@ class btree_set
   // template <typename K> size_type erase(const K& key):
   //
   //   Erases the element with the matching key, if it exists, returning the
-  //   number of elements erased.
+  //   number of elements erased (0 or 1).
   using Base::erase;
 
   // btree_set::insert()
@@ -262,7 +263,7 @@ class btree_set
   //   Extracts the element at the indicated position and returns a node handle
   //   owning that extracted data.
   //
-  // template <typename K> node_type extract(const K& x):
+  // template <typename K> node_type extract(const K& k):
   //
   //   Extracts the element with the key matching the passed key value and
   //   returns a node handle owning that extracted data. If the `btree_set`
@@ -299,8 +300,8 @@ class btree_set
   // Determines whether an element comparing equal to the given `key` exists
   // within the `btree_set`, returning `true` if so or `false` otherwise.
   //
-  // Supports heterogeneous lookup, provided that the set is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
   using Base::contains;
 
   // btree_set::count()
@@ -311,8 +312,8 @@ class btree_set
   // the `btree_set`. Note that this function will return either `1` or `0`
   // since duplicate elements are not allowed within a `btree_set`.
   //
-  // Supports heterogeneous lookup, provided that the set is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
   using Base::count;
 
   // btree_set::equal_range()
@@ -329,9 +330,31 @@ class btree_set
   //
   // Finds an element with the passed `key` within the `btree_set`.
   //
-  // Supports heterogeneous lookup, provided that the set is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
   using Base::find;
+
+  // btree_set::lower_bound()
+  //
+  // template <typename K> iterator lower_bound(const K& key):
+  // template <typename K> const_iterator lower_bound(const K& key) const:
+  //
+  // Finds the first element that is not less than `key` within the `btree_set`.
+  //
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
+  using Base::lower_bound;
+
+  // btree_set::upper_bound()
+  //
+  // template <typename K> iterator upper_bound(const K& key):
+  // template <typename K> const_iterator upper_bound(const K& key) const:
+  //
+  // Finds the first element that is greater than `key` within the `btree_set`.
+  //
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
+  using Base::upper_bound;
 
   // btree_set::get_allocator()
   //
@@ -357,6 +380,20 @@ class btree_set
 template <typename K, typename C, typename A>
 void swap(btree_set<K, C, A> &x, btree_set<K, C, A> &y) {
   return x.swap(y);
+}
+
+// absl::erase_if(absl::btree_set<>, Pred)
+//
+// Erases all elements that satisfy the predicate pred from the container.
+template <typename K, typename C, typename A, typename Pred>
+void erase_if(btree_set<K, C, A> &set, Pred pred) {
+  for (auto it = set.begin(); it != set.end();) {
+    if (pred(*it)) {
+      it = set.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 // absl::btree_multiset<>
@@ -552,7 +589,7 @@ class btree_multiset
   //   Extracts the element at the indicated position and returns a node handle
   //   owning that extracted data.
   //
-  // template <typename K> node_type extract(const K& x):
+  // template <typename K> node_type extract(const K& k):
   //
   //   Extracts the element with the key matching the passed key value and
   //   returns a node handle owning that extracted data. If the `btree_multiset`
@@ -567,9 +604,8 @@ class btree_multiset
 
   // btree_multiset::merge()
   //
-  // Extracts elements from a given `source` btree_multiset into this
-  // `btree_multiset`. If the destination `btree_multiset` already contains an
-  // element with an equivalent key, that element is not extracted.
+  // Extracts all elements from a given `source` btree_multiset into this
+  // `btree_multiset`.
   using Base::merge;
 
   // btree_multiset::swap(btree_multiset& other)
@@ -589,8 +625,8 @@ class btree_multiset
   // Determines whether an element comparing equal to the given `key` exists
   // within the `btree_multiset`, returning `true` if so or `false` otherwise.
   //
-  // Supports heterogeneous lookup, provided that the set is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
   using Base::contains;
 
   // btree_multiset::count()
@@ -600,8 +636,8 @@ class btree_multiset
   // Returns the number of elements comparing equal to the given `key` within
   // the `btree_multiset`.
   //
-  // Supports heterogeneous lookup, provided that the set is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
   using Base::count;
 
   // btree_multiset::equal_range()
@@ -618,9 +654,33 @@ class btree_multiset
   //
   // Finds an element with the passed `key` within the `btree_multiset`.
   //
-  // Supports heterogeneous lookup, provided that the set is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
   using Base::find;
+
+  // btree_multiset::lower_bound()
+  //
+  // template <typename K> iterator lower_bound(const K& key):
+  // template <typename K> const_iterator lower_bound(const K& key) const:
+  //
+  // Finds the first element that is not less than `key` within the
+  // `btree_multiset`.
+  //
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
+  using Base::lower_bound;
+
+  // btree_multiset::upper_bound()
+  //
+  // template <typename K> iterator upper_bound(const K& key):
+  // template <typename K> const_iterator upper_bound(const K& key) const:
+  //
+  // Finds the first element that is greater than `key` within the
+  // `btree_multiset`.
+  //
+  // Supports heterogeneous lookup, provided that the set has a compatible
+  // heterogeneous comparator.
+  using Base::upper_bound;
 
   // btree_multiset::get_allocator()
   //
@@ -648,6 +708,21 @@ void swap(btree_multiset<K, C, A> &x, btree_multiset<K, C, A> &y) {
   return x.swap(y);
 }
 
+// absl::erase_if(absl::btree_multiset<>, Pred)
+//
+// Erases all elements that satisfy the predicate pred from the container.
+template <typename K, typename C, typename A, typename Pred>
+void erase_if(btree_multiset<K, C, A> &set, Pred pred) {
+  for (auto it = set.begin(); it != set.end();) {
+    if (pred(*it)) {
+      it = set.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_BTREE_SET_H_

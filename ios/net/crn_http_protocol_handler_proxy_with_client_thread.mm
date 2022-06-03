@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #import "ios/net/protocol_handler_util.h"
 #include "net/base/auth.h"

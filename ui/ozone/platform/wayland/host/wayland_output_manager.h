@@ -8,9 +8,8 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
@@ -24,7 +23,11 @@ class WaylandOutput;
 
 class WaylandOutputManager : public WaylandOutput::Delegate {
  public:
-  WaylandOutputManager();
+  explicit WaylandOutputManager(WaylandConnection* connection);
+
+  WaylandOutputManager(const WaylandOutputManager&) = delete;
+  WaylandOutputManager& operator=(const WaylandOutputManager&) = delete;
+
   ~WaylandOutputManager() override;
 
   // Says if at least one output has already been announced by a Wayland
@@ -34,34 +37,34 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   void AddWaylandOutput(const uint32_t output_id, wl_output* output);
   void RemoveWaylandOutput(const uint32_t output_id);
 
-  // Creates a platform screen and feeds it with existing outputs.
-  std::unique_ptr<WaylandScreen> CreateWaylandScreen(
-      WaylandConnection* connection);
+  void InitializeAllXdgOutputs();
 
-  uint32_t GetIdForOutput(wl_output* output) const;
+  // Creates a platform screen.
+  std::unique_ptr<WaylandScreen> CreateWaylandScreen();
+
+  // Feeds a new platform screen with existing outputs.
+  void InitWaylandScreen(WaylandScreen* screen);
+
   WaylandOutput* GetOutput(uint32_t id) const;
+  WaylandOutput* GetPrimaryOutput() const;
 
   WaylandScreen* wayland_screen() const { return wayland_screen_.get(); }
 
  private:
-  void OnWaylandOutputAdded(uint32_t output_id);
-  void OnWaylandOutputRemoved(uint32_t output_id);
-
   // WaylandOutput::Delegate:
   void OnOutputHandleMetrics(uint32_t output_id,
                              const gfx::Rect& new_bounds,
-                             int32_t scale_factor) override;
+                             float scale_factor,
+                             int32_t transform) override;
 
-  using OutputList = std::vector<std::unique_ptr<WaylandOutput>>;
-
-  OutputList::const_iterator GetOutputItById(uint32_t id) const;
+  using OutputList = base::flat_map<uint32_t, std::unique_ptr<WaylandOutput>>;
 
   OutputList output_list_;
 
+  WaylandConnection* const connection_;
+
   // Non-owned wayland screen instance.
   base::WeakPtr<WaylandScreen> wayland_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandOutputManager);
 };
 
 }  // namespace ui

@@ -145,9 +145,14 @@ ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate)
 
 ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate,
                                              const char* type_name)
-    : isolate_(isolate),
-      type_name_(type_name),
-      template_(v8::ObjectTemplate::New(isolate)) {
+    : ObjectTemplateBuilder(isolate,
+                            type_name,
+                            v8::ObjectTemplate::New(isolate)) {}
+
+ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate,
+                                             const char* type_name,
+                                             v8::Local<v8::ObjectTemplate> tmpl)
+    : isolate_(isolate), type_name_(type_name), template_(tmpl) {
   template_->SetInternalFieldCount(kNumberOfInternalFields);
 }
 
@@ -176,6 +181,12 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::AddIndexedPropertyInterceptor() {
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(
     const base::StringPiece& name, v8::Local<v8::Data> val) {
   template_->Set(StringToSymbol(isolate_, name), val);
+  return *this;
+}
+
+ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(v8::Local<v8::Name> name,
+                                                      v8::Local<v8::Data> val) {
+  template_->Set(name, val);
   return *this;
 }
 

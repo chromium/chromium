@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
 namespace aura {
 class Window;
@@ -18,20 +18,20 @@ namespace gfx {
 class Point;
 }
 
-namespace ui {
-enum class CursorType;
-}
-
 namespace ash {
 
 class MirrorWindowTestApi {
  public:
   MirrorWindowTestApi() {}
+
+  MirrorWindowTestApi(const MirrorWindowTestApi&) = delete;
+  MirrorWindowTestApi& operator=(const MirrorWindowTestApi&) = delete;
+
   ~MirrorWindowTestApi() {}
 
   std::vector<aura::WindowTreeHost*> GetHosts() const;
 
-  ui::CursorType GetCurrentCursorType() const;
+  ui::mojom::CursorType GetCurrentCursorType() const;
 
   // Returns the position of the hot point within the cursor. This is
   // unaffected by the cursor location.
@@ -43,9 +43,6 @@ class MirrorWindowTestApi {
 
   const aura::Window* GetCursorWindow() const;
   gfx::Point GetCursorLocation() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MirrorWindowTestApi);
 };
 
 }  // namespace ash

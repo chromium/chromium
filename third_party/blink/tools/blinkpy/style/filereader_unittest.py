@@ -20,7 +20,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.style.checker import ProcessorBase
@@ -28,9 +27,7 @@ from blinkpy.style.filereader import TextFileReader
 
 
 class TextFileReaderTest(LoggingTestCase):
-
     class MockProcessor(ProcessorBase):
-
         """A processor for test purposes.
 
         This processor simply records the parameters passed to its process()
@@ -101,7 +98,9 @@ class TextFileReaderTest(LoggingTestCase):
         # remain.
         message = log_messages.pop()
 
-        self.assertTrue(message.startswith("WARNING: Could not read file. Skipping: '%s'\n  " % temp_dir))
+        self.assertTrue(
+            message.startswith(
+                "WARNING: Could not read file. Skipping: '%s'\n  " % temp_dir))
 
         self._assert_file_reader([], 1)
 
@@ -143,8 +142,7 @@ class TextFileReaderTest(LoggingTestCase):
         file_path2 = self._create_file(rel_path, 'bar')
 
         self._file_reader.process_paths([dir, file_path1])
-        processed = [(['bar'], file_path2, None),
-                     (['foo'], file_path1, None)]
+        processed = [(['bar'], file_path2, None), (['foo'], file_path1, None)]
         self._assert_file_reader(processed, 2)
 
     def test_count_delete_only_file(self):

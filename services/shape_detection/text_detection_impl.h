@@ -15,10 +15,11 @@ class TextDetectionImpl {
   // Binds TextDetection receiver to an implementation of mojom::TextDetection.
   static void Create(mojo::PendingReceiver<mojom::TextDetection> receiver);
 
+  TextDetectionImpl(const TextDetectionImpl&) = delete;
+  TextDetectionImpl& operator=(const TextDetectionImpl&) = delete;
+
  private:
   ~TextDetectionImpl() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TextDetectionImpl);
 };
 
 }  // namespace shape_detection

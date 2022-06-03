@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -145,7 +145,7 @@ HttpAuthController::HttpAuthController(
     HostResolver* host_resolver)
     : target_(target),
       auth_url_(auth_url),
-      auth_origin_(auth_url.GetOrigin()),
+      auth_origin_(auth_url.DeprecatedGetOriginAsURL()),
       auth_path_(auth_url.path()),
       network_isolation_key_(network_isolation_key),
       embedded_identity_used_(false),
@@ -231,8 +231,8 @@ bool HttpAuthController::SelectPreemptiveAuth(
   std::unique_ptr<HttpAuthHandler> handler_preemptive;
   int rv_create =
       http_auth_handler_factory_->CreatePreemptiveAuthHandlerFromString(
-          entry->auth_challenge(), target_, auth_origin_,
-          entry->IncrementNonceCount(), net_log_, host_resolver_,
+          entry->auth_challenge(), target_, network_isolation_key_,
+          auth_origin_, entry->IncrementNonceCount(), net_log_, host_resolver_,
           &handler_preemptive);
   if (rv_create != OK)
     return false;
@@ -328,9 +328,10 @@ int HttpAuthController::HandleAuthChallenge(
   do {
     if (!handler_.get() && can_send_auth) {
       // Find the best authentication challenge that we support.
-      HttpAuth::ChooseBestChallenge(
-          http_auth_handler_factory_, *headers, ssl_info, target_, auth_origin_,
-          disabled_schemes_, net_log_, host_resolver_, &handler_);
+      HttpAuth::ChooseBestChallenge(http_auth_handler_factory_, *headers,
+                                    ssl_info, network_isolation_key_, target_,
+                                    auth_origin_, disabled_schemes_, net_log_,
+                                    host_resolver_, &handler_);
       if (handler_.get())
         HistogramAuthEvent(handler_.get(), AUTH_EVENT_START);
     }
@@ -340,7 +341,7 @@ int HttpAuthController::HandleAuthChallenge(
         // We are establishing a tunnel, we can't show the error page because an
         // active network attacker could control its contents.  Instead, we just
         // fail to establish the tunnel.
-        DCHECK(target_ == HttpAuth::AUTH_PROXY);
+        DCHECK_EQ(target_, HttpAuth::AUTH_PROXY);
         net_log_.EndEventWithNetErrorCode(
             NetLogEventType::AUTH_HANDLE_CHALLENGE, ERR_PROXY_AUTH_UNSUPPORTED);
         return ERR_PROXY_AUTH_UNSUPPORTED;
@@ -396,7 +397,7 @@ void HttpAuthController::ResetAuth(const AuthCredentials& credentials) {
     identity_.credentials = credentials;
 
     // auth_info_ is no longer necessary.
-    auth_info_ = base::nullopt;
+    auth_info_ = absl::nullopt;
   }
 
   DCHECK(identity_.source != HttpAuth::IDENT_SRC_PATH_LOOKUP);
@@ -509,8 +510,8 @@ bool HttpAuthController::SelectNextAuthIdentityToTry() {
     identity_.source = HttpAuth::IDENT_SRC_URL;
     identity_.invalid = false;
     // Extract the username:password from the URL.
-    base::string16 username;
-    base::string16 password;
+    std::u16string username;
+    std::u16string password;
     GetIdentityFromURL(auth_url_, &username, &password);
     identity_.credentials.Set(username, password);
     embedded_identity_used_ = true;
@@ -622,7 +623,7 @@ void HttpAuthController::OnGenerateAuthTokenDone(int result) {
 }
 
 void HttpAuthController::TakeAuthInfo(
-    base::Optional<AuthChallengeInfo>* other) {
+    absl::optional<AuthChallengeInfo>* other) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auth_info_.swap(*other);
 }

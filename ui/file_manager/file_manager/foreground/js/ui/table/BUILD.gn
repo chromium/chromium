@@ -3,50 +3,67 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/js/cr.gni")
+
+group("js_modules") {
+  deps = [
+    ":table",
+    ":table_column",
+    ":table_column_model",
+    ":table_header",
+    ":table_list",
+    ":table_splitter",
+  ]
+}
 
 js_library("table_column") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
 js_library("table") {
   deps = [
+    ":table_column",
     ":table_column_model",
     ":table_header",
     ":table_list",
-    "//ui/webui/resources/js/cr/ui:list",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
+    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
   ]
 }
 
 js_library("table_column_model") {
   deps = [
     ":table_column",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
 js_library("table_header") {
   deps = [
     ":table_splitter",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("table_list") {
   deps = [
-    ":table_column_model",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:list",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
+    "//ui/webui/resources/js/cr/ui:list_item.m",
   ]
 }
 
 js_library("table_splitter") {
   deps = [
-    ":table_column_model",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
     "//ui/webui/resources/js/cr/ui:splitter",
   ]
 }

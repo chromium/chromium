@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -21,6 +20,10 @@ namespace content {
 class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
+
+namespace service_worker_object_host_unittest {
+class ServiceWorkerObjectHostTest;
+}  // namespace service_worker_object_host_unittest
 
 // ServiceWorkerRegistrationObjectHost has a 1:1 correspondence to
 // blink::ServiceWorkerRegistration in the renderer process.
@@ -36,6 +39,12 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
       base::WeakPtr<ServiceWorkerContextCore> context,
       ServiceWorkerContainerHost* container_host,
       scoped_refptr<ServiceWorkerRegistration> registration);
+
+  ServiceWorkerRegistrationObjectHost(
+      const ServiceWorkerRegistrationObjectHost&) = delete;
+  ServiceWorkerRegistrationObjectHost& operator=(
+      const ServiceWorkerRegistrationObjectHost&) = delete;
+
   ~ServiceWorkerRegistrationObjectHost() override;
 
   // Establishes a new mojo connection into |receivers_|.
@@ -45,6 +54,7 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
  private:
   friend class ServiceWorkerRegistrationObjectHostTest;
+  friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
 
   using StatusCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
@@ -52,8 +62,7 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
   // ServiceWorkerRegistration::Listener overrides.
   void OnVersionAttributesChanged(
       ServiceWorkerRegistration* registration,
-      blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask,
-      const ServiceWorkerRegistrationInfo& info) override;
+      blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) override;
   void OnUpdateViaCacheChanged(
       ServiceWorkerRegistration* registration) override;
   void OnRegistrationFailed(ServiceWorkerRegistration* registration) override;
@@ -83,7 +92,7 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
   //
   // TODO(falken): See if tests can call |Update| directly, then this separate
   // function isn't needed.
-  static void DelayUpdate(blink::mojom::ServiceWorkerProviderType provider_type,
+  static void DelayUpdate(bool is_container_for_client,
                           ServiceWorkerRegistration* registration,
                           ServiceWorkerVersion* version,
                           StatusCallback update_function);
@@ -96,13 +105,13 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
   // complete.
   void UnregistrationComplete(UnregisterCallback callback,
                               blink::ServiceWorkerStatusCode status);
-  // Called back from ServiceWorkerStorage when setting navigation preload is
+  // Called back from ServiceWorkerRegistry when setting navigation preload is
   // complete.
   void DidUpdateNavigationPreloadEnabled(
       bool enable,
       EnableNavigationPreloadCallback callback,
       blink::ServiceWorkerStatusCode status);
-  // Called back from ServiceWorkerStorage when setting navigation preload
+  // Called back from ServiceWorkerRegistry when setting navigation preload
   // header is complete.
   void DidUpdateNavigationPreloadHeader(
       const std::string& value,
@@ -149,8 +158,6 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
   base::WeakPtrFactory<ServiceWorkerRegistrationObjectHost> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationObjectHost);
 };
 
 }  // namespace content

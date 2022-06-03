@@ -1,1 +1,0 @@
-There should be no text below this, because the text is inside a canvas element. The canvas is never closed, and the rest of the body ends up inside it.

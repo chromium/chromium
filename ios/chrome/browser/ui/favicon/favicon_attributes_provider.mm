@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"

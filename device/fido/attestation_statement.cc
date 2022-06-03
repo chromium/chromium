@@ -22,17 +22,17 @@ NoneAttestationStatement::NoneAttestationStatement()
 NoneAttestationStatement::~NoneAttestationStatement() = default;
 
 bool NoneAttestationStatement::
-    IsAttestationCertificateInappropriatelyIdentifying() {
+    IsAttestationCertificateInappropriatelyIdentifying() const {
   return false;
 }
 
-bool NoneAttestationStatement::IsSelfAttestation() {
+bool NoneAttestationStatement::IsSelfAttestation() const {
   return false;
 }
 
-base::Optional<base::span<const uint8_t>>
+absl::optional<base::span<const uint8_t>>
 NoneAttestationStatement::GetLeafCertificate() const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 cbor::Value NoneAttestationStatement::AsCBOR() const {

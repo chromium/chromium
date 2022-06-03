@@ -6,10 +6,8 @@
 
 namespace blink {
 
-void C::Trace(Visitor* visitor)
-{
-    // Missing Trace of m_one.
-    // Not missing ignored field m_two.
+void C::Trace(Visitor* visitor) const {
+  // Missing Trace of m_one.
+  // Not missing ignored field m_two.
 }
-
 }

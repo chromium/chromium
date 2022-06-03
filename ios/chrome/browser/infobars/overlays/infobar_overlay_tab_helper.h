@@ -5,14 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 
-#include <memory>
-
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/web/public/web_state_user_data.h"
 
-class InfobarOverlayRequestFactory;
 class InfobarOverlayRequestInserter;
 
 // Helper class that creates OverlayRequests for the banner UI for InfoBars
@@ -22,23 +18,14 @@ class InfobarOverlayTabHelper
  public:
   ~InfobarOverlayTabHelper() override;
 
-  // Creates an InfobarOverlayTabHelper scoped to |web_state| that creates
-  // OverlayRequests for InfoBars added to |web_state|'s InfoBarManagerImpl
-  // using |request_factory|.
-  static void CreateForWebState(
-      web::WebState* web_state,
-      std::unique_ptr<InfobarOverlayRequestFactory> request_factory);
-
  private:
-  InfobarOverlayTabHelper(
-      web::WebState* web_state,
-      std::unique_ptr<InfobarOverlayRequestFactory> request_factory);
   friend class web::WebStateUserData<InfobarOverlayTabHelper>;
+  InfobarOverlayTabHelper(web::WebState* web_state);
   WEB_STATE_USER_DATA_KEY_DECL();
 
   // Getter for the request inserter.
-  const InfobarOverlayRequestInserter* request_inserter() const {
-    return &request_inserter_;
+  InfobarOverlayRequestInserter* request_inserter() {
+    return request_inserter_;
   }
 
   // Helper object that schedules OverlayRequests for the banner UI for InfoBars
@@ -57,12 +44,14 @@ class InfobarOverlayTabHelper
    private:
     // The owning tab helper.
     InfobarOverlayTabHelper* tab_helper_ = nullptr;
-    ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-        scoped_observer_;
+    web::WebState* web_state_ = nullptr;
+    base::ScopedObservation<infobars::InfoBarManager,
+                            infobars::InfoBarManager::Observer>
+        scoped_observation_{this};
   };
 
   // The inserter used to add infobar OverlayRequests to the WebState's queue.
-  InfobarOverlayRequestInserter request_inserter_;
+  InfobarOverlayRequestInserter* request_inserter_;
   // The scheduler used to create OverlayRequests for InfoBars added to the
   // corresponding WebState's InfoBarManagerImpl.
   OverlayRequestScheduler request_scheduler_;

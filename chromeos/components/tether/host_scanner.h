@@ -23,6 +23,10 @@ class HostScanner {
   };
 
   HostScanner();
+
+  HostScanner(const HostScanner&) = delete;
+  HostScanner& operator=(const HostScanner&) = delete;
+
   virtual ~HostScanner();
 
   // Returns true if a scan is currently in progress.
@@ -44,8 +48,6 @@ class HostScanner {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostScanner);
 };
 
 }  // namespace tether

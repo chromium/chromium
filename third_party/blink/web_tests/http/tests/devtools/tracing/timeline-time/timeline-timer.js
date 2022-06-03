@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline events for Timers\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()
@@ -26,13 +26,13 @@
       }
   `);
 
-  UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
+  UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
 
-  PerformanceTestRunner.printTimelineRecordsWithDetails('TimerInstall');
-  PerformanceTestRunner.printTimelineRecordsWithDetails('TimerFire');
-  PerformanceTestRunner.printTimelineRecordsWithDetails('TimerRemove');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('TimerInstall');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('TimerFire');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('TimerRemove');
   PerformanceTestRunner.printTimelineRecords('FunctionCall');
-  PerformanceTestRunner.printTimelineRecordsWithDetails('EvaluateScript');
+  await PerformanceTestRunner.printTimelineRecordsWithDetails('EvaluateScript');
   TestRunner.completeTest();
 })();

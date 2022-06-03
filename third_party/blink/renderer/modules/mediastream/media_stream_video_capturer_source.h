@@ -9,9 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/media/video_capture.h"
@@ -19,13 +22,10 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
-namespace media {
-class VideoCapturerSource;
-}  // namespace media
-
 namespace blink {
 
 class LocalFrame;
+class VideoCapturerSource;
 
 // Representation of a video stream coming from a camera, owned by Blink as
 // WebMediaStreamSource. Objects of this class are created and live on main
@@ -35,18 +35,23 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
     : public MediaStreamVideoSource {
  public:
   using DeviceCapturerFactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<media::VideoCapturerSource>(
+      base::RepeatingCallback<std::unique_ptr<VideoCapturerSource>(
           const base::UnguessableToken& session_id)>;
-  MediaStreamVideoCapturerSource(
-      LocalFrame* frame,
-      SourceStoppedCallback stop_callback,
-      std::unique_ptr<media::VideoCapturerSource> source);
+  MediaStreamVideoCapturerSource(LocalFrame* frame,
+                                 SourceStoppedCallback stop_callback,
+                                 std::unique_ptr<VideoCapturerSource> source);
   MediaStreamVideoCapturerSource(
       LocalFrame* frame,
       SourceStoppedCallback stop_callback,
       const MediaStreamDevice& device,
       const media::VideoCaptureParams& capture_params,
       DeviceCapturerFactoryCallback device_capturer_factory_callback);
+
+  MediaStreamVideoCapturerSource(const MediaStreamVideoCapturerSource&) =
+      delete;
+  MediaStreamVideoCapturerSource& operator=(
+      const MediaStreamVideoCapturerSource&) = delete;
+
   ~MediaStreamVideoCapturerSource() override;
 
   void SetDeviceCapturerFactoryCallbackForTesting(
@@ -56,7 +61,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
       mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>
           dispatcher_host);
 
-  media::VideoCapturerSource* GetSourceForTesting();
+  VideoCapturerSource* GetSourceForTesting();
 
  private:
   friend class MediaStreamVideoCapturerSourceTest;
@@ -66,6 +71,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoCapturerSourceTest, ChangeSource);
 
   // MediaStreamVideoSource overrides.
+  void SetCanDiscardAlpha(bool can_discard_alpha) override;
   void RequestRefreshFrame() override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;
@@ -73,13 +79,18 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void OnCapturingLinkSecured(bool is_secure) override;
   void StartSourceImpl(VideoCaptureDeliverFrameCB frame_callback,
                        EncodedVideoFrameCB encoded_frame_callback) override;
+  media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
   void StopSourceImpl() override;
   void StopSourceForRestartImpl() override;
   void RestartSourceImpl(const media::VideoCaptureFormat& new_format) override;
-  base::Optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
-  base::Optional<media::VideoCaptureParams> GetCurrentCaptureParams()
+  absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
+  absl::optional<media::VideoCaptureParams> GetCurrentCaptureParams()
       const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override;
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
   void OnRunStateChanged(const media::VideoCaptureParams& new_capture_params,
@@ -91,7 +102,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   mojo::Remote<mojom::blink::MediaStreamDispatcherHost> host_;
 
   // The source that provides video frames.
-  std::unique_ptr<media::VideoCapturerSource> source_;
+  std::unique_ptr<VideoCapturerSource> source_;
 
   enum State {
     STARTING,
@@ -107,7 +118,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   VideoCaptureDeliverFrameCB frame_callback_;
   DeviceCapturerFactoryCallback device_capturer_factory_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoCapturerSource);
+  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 };
 
 }  // namespace blink

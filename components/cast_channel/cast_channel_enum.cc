@@ -4,7 +4,9 @@
 
 #include "components/cast_channel/cast_channel_enum.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace cast_channel {
 

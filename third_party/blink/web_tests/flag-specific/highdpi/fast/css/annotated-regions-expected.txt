@@ -1,0 +1,18 @@
+This tests that transformed annotated regions have the correct bounds.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS draggableRegions() is ''
+PASS nonDraggableRegions() is ''
+FAIL draggableRegions() should be 20,10+100x60. Was 30,15+150x90.
+PASS nonDraggableRegions() is ''
+FAIL draggableRegions() should be 45,25+50x30. Was 67.5,37.5+75x45.
+PASS nonDraggableRegions() is ''
+FAIL draggableRegions() should be 45,25+50x30. Was 67.5,37.5+75x45.
+FAIL nonDraggableRegions() should be 45,25+30x10. Was 67.5,37.5+45x15.
+FAIL draggableRegions() should be 20,10+100x60. Was 30,15+150x90.
+FAIL nonDraggableRegions() should be 20,10+60x20. Was 30,15+90x30.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -11,6 +11,8 @@
 
 namespace remote_cocoa {
 
+constexpr uint64_t kInvalidNSViewId = 0;
+
 // Return a new unique is to be used with ScopedNSViewIdMapping and
 // GetNSViewFromId in various app shim processes.
 uint64_t REMOTE_COCOA_BROWSER_EXPORT GetNewNSViewId();

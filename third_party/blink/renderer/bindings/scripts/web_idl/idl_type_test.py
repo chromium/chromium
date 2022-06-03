@@ -54,7 +54,7 @@ class IdlTypesTest(unittest.TestCase):
         ext_attrs = ExtendedAttributes([ExtendedAttribute('Clamp')])
         annotated_type = factory.simple_type(
             'short', extended_attributes=ext_attrs)
-        self.assertTrue(annotated_type.is_annotated)
+        self.assertTrue(annotated_type.extended_attributes)
         self.assertTrue(annotated_type.is_numeric)
 
         optional_type = factory.simple_type('DOMString', is_optional=True)
@@ -63,7 +63,7 @@ class IdlTypesTest(unittest.TestCase):
 
         annotated_optional = factory.simple_type(
             'long', is_optional=True, extended_attributes=ext_attrs)
-        self.assertTrue(annotated_optional.is_annotated)
+        self.assertTrue(annotated_optional.extended_attributes)
         self.assertTrue(annotated_optional.is_optional)
         self.assertTrue(annotated_optional.is_numeric)
 
@@ -83,7 +83,7 @@ class IdlTypesTest(unittest.TestCase):
             'void': 'Void',
             'symbol': 'Symbol',
         }
-        for name, expect in type_names.iteritems():
+        for name, expect in type_names.items():
             self.assertEqual(expect, factory.simple_type(name).type_name)
 
         short_type = factory.simple_type('short')

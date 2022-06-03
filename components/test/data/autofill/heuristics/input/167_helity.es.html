@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+  </head>
+  <body>
+    <form id="w2" action="/index.php?r=site%2Fsignup">
+    <label for="signupform-name">Nombre</label>
+    <input type="text" id="signupform-name" name="SignupForm[name]">
+
+    <label for="signupform-surname">Primer apellido</label>
+    <input type="text" id="signupform-surname" name="SignupForm[surname]">
+
+    <label for="signupform-second_surname">Segundo apellido</label>
+    <input type="text" id="signupform-second_surname" name="SignupForm[second_surname]">
+
+    <label for="signupform-card_type">Documento</label>
+    <select id="signupform-card_type" name="SignupForm[card_type]">
+    <option value="1">DNI</option>
+    <option value="2">NIE</option>
+    <option value="3">Pasaporte / DNI extranjero</option>
+    </select>
+
+    <label for="signupform-card_number">Número de documento</label>
+    <input type="text" id="signupform-card_number" name="SignupForm[card_number]">
+
+    <label for="signupform-phone">Teléfono</label>
+    <input type="text" id="signupform-phone" name="SignupForm[phone]">
+
+    <label for="signupform-email">Correo</label>
+    <input type="text" id="signupform-email" name="SignupForm[email]">
+
+    <label for="signupform-passenger_type_id">Tipo de Pasajero</label>
+    <select id="signupform-passenger_type_id" name="SignupForm[passenger_type_id]">
+    <option value="1">Adulto, a partir de 12 años</option>
+    <option value="2">Niño entre 2 y 11 años</option>
+    <option value="3">Bebé entre 1 y 23 meses</option>
+    <option value="4">Adulto residente</option>
+    <option value="5">Niño residente</option>
+    <option value="6">Adulto familia numerosa general</option>
+    <option value="7">Adulto familia numerosa especial</option>
+    <option value="8">Adulto familia numerosa general residente</option>
+    <option value="9">Adulto familia numerosa especial residente</option>
+    <option value="10">Niño familia numerosa general</option>
+    <option value="11">Niño familia numerosa especial</option>
+    <option value="12">Niño familia numerosa general residente</option>
+    <option value="13">Niño familia numerosa especial residente</option>
+    </select>
+
+    <label for="signupform-password_hash">Contraseña</label>
+    <input type="password" id="signupform-password_hash" name="SignupForm[password_hash]">
+
+    <label for="signupform-password_hash_repeat">Repetir contraseña</label>
+    <input type="password" id="signupform-password_hash_repeat" name="SignupForm[password_hash_repeat]">
+
+    </form>
+  </body>
+</html>
+
+

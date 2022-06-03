@@ -4,28 +4,38 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.core.app.NotificationCompat;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
-import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.webapps.WebappsIconUtils;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
 
 /** Java counterpart to webapk_install_service.h. */
 public class WebApkInstallService {
     /** Prefix used for generating a unique notification tag. */
-    private static final String WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX =
+    @VisibleForTesting
+    static final String WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX =
             "webapk_install_notification_tag_prefix.";
 
     /** We always use the same platform id for notifications. */
@@ -33,63 +43,87 @@ public class WebApkInstallService {
 
     /** Displays a notification when a WebAPK is successfully installed. */
     @CalledByNative
-    private static void showInstalledNotification(String webApkPackage, String manifestUrl,
+    @VisibleForTesting
+    static void showInstalledNotification(String webApkPackage, String manifestUrl,
             String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(webApkPackage, url, false
                 /* forceNavigation */);
-        PendingIntent clickPendingIntent =
-                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider clickPendingIntent = PendingIntentProvider.getActivity(
+                context, 0 /*requestCode */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (isIconMaskable && ShortcutHelper.doesAndroidSupportMaskableIcons()) {
-            icon = ShortcutHelper.generateAdaptiveIconBitmap(icon);
+        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+            icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
 
         showNotification(manifestUrl, shortName, url, icon,
                 context.getResources().getString(R.string.notification_webapk_installed),
-                clickPendingIntent);
+                clickPendingIntent, true /* isCompleted */);
     }
 
     /** Display a notification when an install starts. */
     @CalledByNative
-    private static void showInstallInProgressNotification(
+    @VisibleForTesting
+    static void showInstallInProgressNotification(
             String manifestUrl, String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         String message = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_webapk_install_in_progress, shortName);
-        if (isIconMaskable && ShortcutHelper.doesAndroidSupportMaskableIcons()) {
-            icon = ShortcutHelper.generateAdaptiveIconBitmap(icon);
+        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+            icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
-        showNotification(manifestUrl, shortName, url, icon, message, null);
-        ShortcutHelper.showToast(message);
+        showNotification(manifestUrl, shortName, url, icon, message, null, false /* isCompleted */);
+        WebappsUtils.showToast(message);
     }
 
     private static void showNotification(String notificationId, String shortName, String url,
-            Bitmap icon, String message, PendingIntent clickPendingIntent) {
+            Bitmap icon, String message, PendingIntentProvider clickPendingIntent,
+            boolean isCompleted) {
         Context context = ContextUtils.getApplicationContext();
-        ChromeNotificationBuilder notificationBuilder =
-                NotificationBuilderFactory.createChromeNotificationBuilder(
-                        false /* preferCompat */, ChannelDefinitions.ChannelId.BROWSER);
+        String channelId;
+        int preOPriority;
+        if (isCompleted
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.WEB_APK_INSTALL_COMPLETE_NOTIFICATION)) {
+            channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS;
+            preOPriority = NotificationCompat.PRIORITY_HIGH;
+        } else {
+            channelId = ChromeChannelDefinitions.ChannelId.BROWSER;
+            preOPriority = NotificationCompat.PRIORITY_DEFAULT;
+        }
+
+        int umaType = isCompleted
+                ? NotificationUmaTracker.SystemNotificationType.WEBAPK_INSTALL_COMPLETE
+                : NotificationUmaTracker.SystemNotificationType.WEBAPK_INSTALL_IN_PROGRESS;
+
+        NotificationMetadata metadata = new NotificationMetadata(
+                umaType, WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX + notificationId, PLATFORM_ID);
+
+        NotificationWrapperBuilder notificationBuilder =
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        channelId, metadata);
         notificationBuilder.setContentTitle(shortName)
                 .setContentText(message)
                 .setLargeIcon(icon)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentIntent(clickPendingIntent)
+                .setPriorityBeforeO(preOPriority)
                 .setWhen(System.currentTimeMillis())
-                .setSubText(UrlFormatter.formatUrlForSecurityDisplayOmitScheme(url))
+                .setSubText(UrlFormatter.formatUrlForSecurityDisplay(
+                        url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
                 .setAutoCancel(true);
 
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX + notificationId,
-                PLATFORM_ID, notificationBuilder.build());
+        NotificationWrapper notification = notificationBuilder.buildNotificationWrapper();
+        NotificationManagerProxy notificationManager = new NotificationManagerProxyImpl(context);
+        notificationManager.notify(notification);
+        NotificationUmaTracker.getInstance().onNotificationShown(
+                umaType, notification.getNotification());
     }
 
     /** Cancels any ongoing notification for the WebAPK. */
     @CalledByNative
     private static void cancelNotification(String notificationId) {
-        NotificationManager notificationManager =
-                (NotificationManager) ContextUtils.getApplicationContext().getSystemService(
-                        NOTIFICATION_SERVICE);
+        NotificationManagerProxy notificationManager =
+                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
         notificationManager.cancel(
                 WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX + notificationId, PLATFORM_ID);
     }

@@ -4,9 +4,8 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,8 +15,8 @@ namespace content {
 class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
  public:
   ScreenlockMonitorTestSource() {
-    DCHECK(base::MessageLoopCurrent::Get())
-        << "ScreenlocMonitorTestSource requires a MessageLoop.";
+    DCHECK(base::CurrentThread::Get())
+        << "ScreenlockMonitorTestSource requires a MessageLoop.";
   }
   ~ScreenlockMonitorTestSource() override = default;
 
@@ -48,6 +47,10 @@ class ScreenlockMonitorTestObserver : public ScreenlockObserver {
 };
 
 class ScreenlockMonitorTest : public testing::Test {
+ public:
+  ScreenlockMonitorTest(const ScreenlockMonitorTest&) = delete;
+  ScreenlockMonitorTest& operator=(const ScreenlockMonitorTest&) = delete;
+
  protected:
   ScreenlockMonitorTest() {
     screenlock_monitor_source_ = new ScreenlockMonitorTestSource();
@@ -62,8 +65,6 @@ class ScreenlockMonitorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitorTest);
 };
 
 TEST_F(ScreenlockMonitorTest, ScreenlockNotifications) {

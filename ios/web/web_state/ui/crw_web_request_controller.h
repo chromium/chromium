@@ -7,6 +7,8 @@
 
 #import <WebKit/WebKit.h>
 
+#include <memory>
+
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/web_state/ui/crw_web_view_handler.h"
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
@@ -29,11 +31,6 @@ class NavigationContextImpl;
 // The delegate is called when a page has actually started loading.
 - (void)webRequestControllerDidStartLoading:
     (CRWWebRequestController*)requestController;
-
-// The delegate is called when a page is loaded.
-- (void)webRequestController:(CRWWebRequestController*)requestController
-    didCompleteLoadWithSuccess:(BOOL)loadSuccess
-                    forContext:(web::NavigationContextImpl*)context;
 
 // Asks proxy to disable back forward navigation gestures until the current (in
 // this case restore) navigation is complete.  This is necessary as restore
@@ -88,8 +85,7 @@ class NavigationContextImpl;
     registerLoadRequestForURL:(const GURL&)URL
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)rendererInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation;
+            rendererInitiated:(BOOL)rendererInitiated;
 
 // Creates a page change request and registers it with the navigation handler.
 // Returns navigation context for this request.
@@ -99,8 +95,7 @@ class NavigationContextImpl;
                    transition:(ui::PageTransition)transition
        sameDocumentNavigation:(BOOL)sameDocumentNavigation
                hasUserGesture:(BOOL)hasUserGesture
-            rendererInitiated:(BOOL)rendererInitiated
-        placeholderNavigation:(BOOL)placeholderNavigation;
+            rendererInitiated:(BOOL)rendererInitiated;
 
 // Loads |data| of type |MIMEType| and replaces last committed URL with the
 // given |URL|.

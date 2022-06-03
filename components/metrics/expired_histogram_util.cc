@@ -15,19 +15,19 @@ namespace {
 const base::Feature kExpiredHistogramLogicFeature{
     "ExpiredHistogramLogic", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::FeatureParam<std::string> kWhitelistParam{
-    &kExpiredHistogramLogicFeature, "whitelist", ""};
+const base::FeatureParam<std::string> kAllowlistParam{
+    &kExpiredHistogramLogicFeature, "allowlist", ""};
 
 }  // namespace
 
-void EnableExpiryChecker(const uint64_t* expired_histograms_hashes,
+void EnableExpiryChecker(const uint32_t* expired_histograms_hashes,
                          size_t num_expired_histograms) {
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(kExpiredHistogramLogicFeature)) {
+    std::string allowlist = kAllowlistParam.Get();
     base::StatisticsRecorder::SetRecordChecker(
-        std::make_unique<ExpiredHistogramsChecker>(expired_histograms_hashes,
-                                                   num_expired_histograms,
-                                                   kWhitelistParam.Get()));
+        std::make_unique<ExpiredHistogramsChecker>(
+            expired_histograms_hashes, num_expired_histograms, allowlist));
   }
 }
 

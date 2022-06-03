@@ -5,6 +5,8 @@
 #ifndef FUCHSIA_RUNNERS_CAST_CAST_PLATFORM_BINDINGS_IDS_H_
 #define FUCHSIA_RUNNERS_CAST_CAST_PLATFORM_BINDINGS_IDS_H_
 
+#include <cstdint>
+
 // Managed the space of unique identifiers for injected scripts, to prevent ID
 // conflicts inside Cast Runner.
 enum class CastPlatformBindingsId : uint64_t {

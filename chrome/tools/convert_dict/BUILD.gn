@@ -25,9 +25,7 @@ executable("convert_dict") {
   # Production code shouldn't be depending on this.
   testonly = true
 
-  sources = [
-    "convert_dict.cc",
-  ]
+  sources = [ "convert_dict.cc" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     ":lib",

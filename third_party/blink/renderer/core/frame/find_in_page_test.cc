@@ -28,6 +28,12 @@ class FindInPageTest : public testing::Test {
     find_in_page_ = frame_impl.GetFindInPage();
   }
 
+  void SetUp() override {
+    web_view_helper_.Resize(gfx::Size(640, 480));
+    web_view_helper_.GetWebView()->MainFrameWidget()->SetFocus(true);
+    test::RunPendingTasks();
+  }
+
   Document& GetDocument() const;
   FindInPage& GetFindInPage() const;
   TextFinder& GetTextFinder() const;
@@ -57,11 +63,11 @@ class FindInPageCallbackReceiver {
   bool IsCalled() { return is_called; }
 
   void AssertFindMatchRects(int expected_version,
-                            const WebVector<WebFloatRect>& expected_rects,
-                            const WebFloatRect& expected_active_match_rect,
+                            const WebVector<gfx::RectF>& expected_rects,
+                            const gfx::RectF& expected_active_match_rect,
                             int actual_version,
-                            const Vector<WebFloatRect>& actual_rects,
-                            const WebFloatRect& actual_active_match_rect) {
+                            const Vector<gfx::RectF>& actual_rects,
+                            const gfx::RectF& actual_active_match_rect) {
     is_called = true;
     EXPECT_EQ(expected_version, actual_version);
     EXPECT_EQ(expected_rects.size(), actual_rects.size());
@@ -76,8 +82,8 @@ class FindInPageCallbackReceiver {
 };
 
 TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
-  GetDocument().body()->SetInnerHTMLFromString("aAaAbBaBbAaAaA");
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().body()->setInnerHTML("aAaAbBaBbAaAaA");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
   WebString search_text(String("aA"));
@@ -98,6 +104,26 @@ TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
                      GetTextFinder().FindMatchRects(),
                      GetTextFinder().ActiveFindMatchRect()));
   EXPECT_TRUE(callback_receiver.IsCalled());
+}
+
+TEST_F(FindInPageTest, FindAllAs) {
+  std::ostringstream str;
+  for (int i = 0; i < 10'000; ++i)
+    str << "a ";
+
+  GetDocument().body()->setInnerHTML(str.str().c_str());
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  int identifier = 0;
+  WebString search_text(String("a"));
+  auto find_options =
+      mojom::blink::FindOptions::New();  // Default + add testing flag.
+  find_options->run_synchronously_for_testing = true;
+
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(10'000, GetTextFinder().TotalMatchCount());
 }
 
 }  // namespace blink

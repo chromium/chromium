@@ -37,6 +37,33 @@ enum LoadingBehaviorFlag {
   kLoadingBehaviorSubresourceFilterMatch = 1 << 6,
   // Indicates that the page is an AMP document, with <html amp> tag.
   kLoadingBehaviorAmpDocumentLoaded = 1 << 7,
+  // Indicates that the page uses the Next.js JavaScript framework (via a
+  // window variable).
+  kLoadingBehaviorNextJSFrameworkUsed = 1 << 8,
+  // Indicates that an async script was ready to execute before the script
+  // element's node document has finished parsing.
+  kLoadingBehaviorAsyncScriptReadyBeforeDocumentFinishedParsing = 1 << 9,
+  // Indicates that competing low priority requests were delayed. See
+  // https://crbug.com/1112515 for details.
+  kLoadingBehaviorCompetingLowPriorityRequestsDelayed = 1 << 10,
+  // Indicates that the page uses the NuxtJS JavaScript framework.
+  kLoadingBehaviorNuxtJSFrameworkUsed = 1 << 11,
+  // Indicates that the page uses the VuePress JavaScript framework.
+  kLoadingBehaviorVuePressFrameworkUsed = 1 << 12,
+  // Indicates that the page uses the Sapper JavaScript framework.
+  kLoadingBehaviorSapperFrameworkUsed = 1 << 13,
+  // Indicates that the page uses the Gatsby JavaScript framework.
+  kLoadingBehaviorGatsbyFrameworkUsed = 1 << 14,
+  // Indicates that the page uses the Angular JavaScript framework.
+  kLoadingBehaviorAngularFrameworkUsed = 1 << 15,
+  // Indicates that the page uses the Vue JavaScript framework.
+  kLoadingBehaviorVueFrameworkUsed = 1 << 16,
+  // Indicates that the page uses the Svelte JavaScript framework.
+  kLoadingBehaviorSvelteFrameworkUsed = 1 << 17,
+  // Indicates that the page uses the Preact JavaScript framework.
+  kLoadingBehaviorPreactFrameworkUsed = 1 << 18,
+  // Indicates that the page uses the React JavaScript framework.
+  kLoadingBehaviorReactFrameworkUsed = 1 << 19,
 };
 
 }  // namespace blink

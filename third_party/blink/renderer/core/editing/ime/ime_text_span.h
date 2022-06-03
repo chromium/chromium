@@ -31,35 +31,47 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/mojom/ime_types.mojom-blink-forward.h"
 
 namespace blink {
-
-struct WebImeTextSpan;
 
 class CORE_EXPORT ImeTextSpan {
   DISALLOW_NEW();
 
  public:
-  enum class Type { kComposition, kSuggestion, kMisspellingSuggestion };
+  enum class Type {
+    kComposition,
+    kSuggestion,
+    kMisspellingSuggestion,
+    kAutocorrect,
+    kGrammarSuggestion,
+  };
 
   ImeTextSpan(Type,
               unsigned start_offset,
               unsigned end_offset,
               const Color& underline_color,
               ui::mojom::ImeTextSpanThickness,
+              ui::mojom::ImeTextSpanUnderlineStyle,
+              const Color& text_color,
               const Color& background_color,
               const Color& suggestion_highlight_color = Color::kTransparent,
               bool remove_on_finish_composing = false,
+              bool interim_char_selection_ = false,
               const Vector<String>& suggestions = Vector<String>());
 
-  ImeTextSpan(const WebImeTextSpan&);
+  explicit ImeTextSpan(const ui::ImeTextSpan&);
 
   Type GetType() const { return type_; }
   unsigned StartOffset() const { return start_offset_; }
   unsigned EndOffset() const { return end_offset_; }
   const Color& UnderlineColor() const { return underline_color_; }
   ui::mojom::ImeTextSpanThickness Thickness() const { return thickness_; }
+  ui::mojom::ImeTextSpanUnderlineStyle UnderlineStyle() const {
+    return underline_style_;
+  }
+  const Color& TextColor() const { return text_color_; }
   const Color& BackgroundColor() const { return background_color_; }
   const Color& SuggestionHighlightColor() const {
     return suggestion_highlight_color_;
@@ -67,7 +79,10 @@ class CORE_EXPORT ImeTextSpan {
   bool NeedsRemovalOnFinishComposing() const {
     return remove_on_finish_composing_;
   }
+  bool InterimCharSelection() const { return interim_char_selection_; }
   const Vector<String>& Suggestions() const { return suggestions_; }
+
+  ui::ImeTextSpan ToUiImeTextSpan();
 
  private:
   Type type_;
@@ -75,11 +90,16 @@ class CORE_EXPORT ImeTextSpan {
   unsigned end_offset_;
   Color underline_color_;
   ui::mojom::ImeTextSpanThickness thickness_;
+  ui::mojom::ImeTextSpanUnderlineStyle underline_style_;
+  Color text_color_;
   Color background_color_;
   Color suggestion_highlight_color_;
   bool remove_on_finish_composing_;
+  bool interim_char_selection_;
   Vector<String> suggestions_;
 };
+
+ImeTextSpan::Type ConvertUiTypeToType(ui::ImeTextSpan::Type type);
 
 }  // namespace blink
 

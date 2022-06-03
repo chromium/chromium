@@ -4,6 +4,7 @@
 
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -11,6 +12,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -82,16 +85,16 @@ void SetVp8CodecParameters(vpx_codec_enc_cfg_t* config,
                            const webrtc::DesktopSize& size) {
   SetCommonCodecParameters(config, size);
 
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Linux, using too many threads for VP8 encoding has been linked to high
+  // CPU usage on machines that are under stress. See http://crbug.com/1151148.
+  config->g_threads = std::min(config->g_threads, 2U);
+#endif  // defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Value of 2 means using the real time profile. This is basically a
   // redundant option since we explicitly select real time mode when doing
   // encoding.
   config->g_profile = 2;
-
-  // To enable remoting to be highly interactive and allow the target bitrate
-  // to be met, we relax the max quantizer. The quality will get topped-off
-  // in subsequent frames.
-  config->rc_min_quantizer = 20;
-  config->rc_max_quantizer = 50;
 }
 
 void SetVp9CodecParameters(vpx_codec_enc_cfg_t* config,
@@ -110,10 +113,6 @@ void SetVp9CodecParameters(vpx_codec_enc_cfg_t* config,
     config->rc_max_quantizer = 0;
     config->rc_end_usage = VPX_VBR;
   } else {
-    // TODO(wez): Set quantization range to 4-40, once the libvpx encoder is
-    // updated not to output any bits if nothing needs topping-off.
-    config->rc_min_quantizer = 20;
-    config->rc_max_quantizer = 30;
     config->rc_end_usage = VPX_CBR;
     // In the absence of a good bandwidth estimator set the target bitrate to a
     // conservative default.
@@ -425,6 +424,13 @@ WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
 void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
   DCHECK(use_vp9_ || !lossless_color_);
   DCHECK(use_vp9_ || !lossless_encode_);
+
+  if (use_vp9_) {
+    VLOG(0) << "Configuring VP9 encoder with lossless-color="
+            << (lossless_color_ ? "true" : "false")
+            << ", lossless-encode=" << (lossless_encode_ ? "true" : "false")
+            << ".";
+  }
 
   // Tear down |image_| if it no longer matches the size and color settings.
   // PrepareImage() will then create a new buffer of the required dimensions if

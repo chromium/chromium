@@ -7,8 +7,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "v8/include/v8.h"
+#include "base/task/single_thread_task_runner.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace extensions {
 
@@ -25,18 +28,21 @@ class GCCallback {
   GCCallback(ScriptContext* context,
              const v8::Local<v8::Object>& object,
              const v8::Local<v8::Function>& callback,
-             const base::Closure& fallback);
+             base::OnceClosure fallback);
   GCCallback(ScriptContext* context,
              const v8::Local<v8::Object>& object,
-             const base::Closure& callback,
-             const base::Closure& fallback);
+             base::OnceClosure callback,
+             base::OnceClosure fallback);
+
+  GCCallback(const GCCallback&) = delete;
+  GCCallback& operator=(const GCCallback&) = delete;
 
  private:
   GCCallback(ScriptContext* context,
              const v8::Local<v8::Object>& object,
              const v8::Local<v8::Function> v8_callback,
-             const base::Closure& closure_callback,
-             const base::Closure& fallback);
+             base::OnceClosure closure_callback,
+             base::OnceClosure fallback);
   ~GCCallback();
 
   static void OnObjectGC(const v8::WeakCallbackInfo<GCCallback>& data);
@@ -46,21 +52,22 @@ class GCCallback {
   // The context which owns |object_|.
   ScriptContext* context_;
 
+  // A task runner associated with the frame for the context.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
   // The object this GCCallback is bound to.
   v8::Global<v8::Object> object_;
 
   // The function to run when |object_| is garbage collected. Can be either a
   // JS or native function (only one will be set).
   v8::Global<v8::Function> v8_callback_;
-  base::Closure closure_callback_;
+  base::OnceClosure closure_callback_;
 
   // The function to run if |context_| is invalidated before we have a chance
   // to execute |callback_|.
-  base::Closure fallback_;
+  base::OnceClosure fallback_;
 
   base::WeakPtrFactory<GCCallback> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCCallback);
 };
 
 }  // namespace extensions

@@ -5,7 +5,7 @@
 #ifndef UI_BASE_DEVICE_FORM_FACTOR_H_
 #define UI_BASE_DEVICE_FORM_FACTOR_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -17,7 +17,7 @@ enum DeviceFormFactor {
 
 // Returns the form factor of current device. For platforms other than Android
 // and iOS, DEVICE_FORM_FACTOR_DESKTOP is always returned.
-UI_BASE_EXPORT DeviceFormFactor GetDeviceFormFactor();
+COMPONENT_EXPORT(UI_BASE) DeviceFormFactor GetDeviceFormFactor();
 
 }  // namespace ui
 

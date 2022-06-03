@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' list>
+<script>
+openPickerAppearanceOnly(document.getElementById('color'), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+  </head>
+  <body>
+  <p>Greetings planet</p>
+  </body>
+  <script>
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    document.addEventListener('click', function(e) { toggleFullscreen(); }, false);
+
+    const viewport = document.getElementsByTagName('meta')[0];
+    const defaultValue = viewport.getAttribute('content');
+
+    function setViewportFit(fit) {
+        if (fit) {
+          viewport.setAttribute('content', defaultValue + ', viewport-fit=' + fit);
+        } else {
+          viewport.setAttribute('content', defaultValue);
+        }
+    }
+  </script>
+</html>

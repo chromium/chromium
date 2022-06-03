@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "ui/base/models/table_model.h"
@@ -32,6 +31,11 @@ class TableModelObserver;
 class CustomHomePagesTableModel : public ui::TableModel {
  public:
   explicit CustomHomePagesTableModel(Profile* profile);
+
+  CustomHomePagesTableModel(const CustomHomePagesTableModel&) = delete;
+  CustomHomePagesTableModel& operator=(const CustomHomePagesTableModel&) =
+      delete;
+
   ~CustomHomePagesTableModel() override;
 
   // Sets the set of urls that this model contains.
@@ -57,8 +61,8 @@ class CustomHomePagesTableModel : public ui::TableModel {
 
   // TableModel overrides:
   int RowCount() override;
-  base::string16 GetText(int row, int column_id) override;
-  base::string16 GetTooltip(int row) override;
+  std::u16string GetText(int row, int column_id) override;
+  std::u16string GetTooltip(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
@@ -96,7 +100,7 @@ class CustomHomePagesTableModel : public ui::TableModel {
   void RemoveWithoutNotification(int index);
 
   // Returns the URL for a particular row, formatted for display to the user.
-  base::string16 FormattedURL(int row) const;
+  std::u16string FormattedURL(int row) const;
 
   // Set of entries we're showing.
   std::vector<Entry> entries_;
@@ -112,8 +116,6 @@ class CustomHomePagesTableModel : public ui::TableModel {
   // Used to keep track of when it's time to update the observer when loading
   // multiple titles.
   int num_outstanding_title_lookups_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomHomePagesTableModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CUSTOM_HOME_PAGES_TABLE_MODEL_H_

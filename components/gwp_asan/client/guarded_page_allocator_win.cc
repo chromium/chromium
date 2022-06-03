@@ -6,7 +6,7 @@
 
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 
 namespace gwp_asan {

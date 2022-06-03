@@ -10,12 +10,6 @@
 namespace blink {
 
 // static
-std::unique_ptr<InterpolableTransformList> InterpolableTransformList::Create(
-    TransformOperations&& operations) {
-  return std::make_unique<InterpolableTransformList>(std::move(operations));
-}
-
-// static
 std::unique_ptr<InterpolableTransformList>
 InterpolableTransformList::ConvertCSSValue(const CSSValue& css_value,
                                            const StyleResolverState* state) {

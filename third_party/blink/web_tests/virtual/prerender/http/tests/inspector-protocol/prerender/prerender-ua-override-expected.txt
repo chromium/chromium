@@ -1,0 +1,3 @@
+Tests that prerender gets the UA override.
+got: User-Agent: Lynx v0.1
+

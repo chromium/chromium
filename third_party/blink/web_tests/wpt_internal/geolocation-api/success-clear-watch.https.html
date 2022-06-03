@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("This tests removing the watcher from a position callback does not causes assertions.");
+
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude,
+                            mockLongitude,
+                            mockAccuracy);
+
+const watchId = navigator.geolocation.watchPosition(function() {
+    navigator.geolocation.clearWatch(watchId);
+    finishJSTest();
+}, function(e) {
+    navigator.geolocation.clearWatch(watchId);
+    finishJSTest();
+});
+</script>
+</body>
+</html>

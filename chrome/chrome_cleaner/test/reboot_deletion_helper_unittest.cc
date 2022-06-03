@@ -5,6 +5,7 @@
 #include "chrome/chrome_cleaner/test/reboot_deletion_helper.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"

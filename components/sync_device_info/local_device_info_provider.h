@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/system/sys_info.h"
+#include "components/sync/base/model_type.h"
 #include "components/version_info/version_info.h"
 
 namespace syncer {
@@ -20,8 +20,6 @@ class DeviceInfo;
 // local device.
 class LocalDeviceInfoProvider {
  public:
-  using Subscription = base::CallbackList<void(void)>::Subscription;
-
   virtual ~LocalDeviceInfoProvider() = default;
 
   virtual version_info::Channel GetChannel() const = 0;
@@ -33,18 +31,26 @@ class LocalDeviceInfoProvider {
   virtual const DeviceInfo* GetLocalDeviceInfo() const = 0;
 
   // Registers a callback to be called when local device info becomes available.
-  // The callback will remain registered until the
-  // returned Subscription is destroyed, which must occur before the
-  // CallbackList is destroyed.
-  virtual std::unique_ptr<Subscription> RegisterOnInitializedCallback(
+  // The callback will remain registered until the returned subscription is
+  // destroyed, which must occur before the CallbackList is destroyed.
+  virtual base::CallbackListSubscription RegisterOnInitializedCallback(
       const base::RepeatingClosure& callback) WARN_UNUSED_RESULT = 0;
 };
 
 class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
  public:
-  virtual void Initialize(const std::string& cache_guid,
-                          const std::string& client_name,
-                          const base::SysInfo::HardwareInfo& hardware_info) = 0;
+  // Initialize initializes the LocalDeviceInfoProvider using the given values.
+  // The |device_info_restored_from_store| argument contains a previous
+  // DeviceInfo loaded from the store and may be nullptr if unavailable. If
+  // provided it is only used as a fallback and the provided arguments, and data
+  // from the DeviceInfoSyncClient, take precedence.
+  virtual void Initialize(
+      const std::string& cache_guid,
+      const std::string& client_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      const std::string& full_hardware_class,
+      std::unique_ptr<DeviceInfo> device_info_restored_from_store) = 0;
   virtual void Clear() = 0;
 
   // Updates the local device's client name. Initialize() must be called before

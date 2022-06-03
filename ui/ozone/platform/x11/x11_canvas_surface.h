@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -17,6 +16,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
+
+class SkSurface;
 
 namespace ui {
 
@@ -26,13 +27,16 @@ namespace ui {
 // the software output is destroyed.
 class X11CanvasSurface : public SurfaceOzoneCanvas {
  public:
-  X11CanvasSurface(gfx::AcceleratedWidget widget,
-                   scoped_refptr<base::SequencedTaskRunner> gpu_task_runner);
+  explicit X11CanvasSurface(gfx::AcceleratedWidget widget);
+
+  X11CanvasSurface(const X11CanvasSurface&) = delete;
+  X11CanvasSurface& operator=(const X11CanvasSurface&) = delete;
+
   ~X11CanvasSurface() override;
 
   // SurfaceOzoneCanvas overrides:
-  sk_sp<SkSurface> GetSurface() override;
-  void ResizeCanvas(const gfx::Size& viewport_size) override;
+  SkCanvas* GetCanvas() override;
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
   bool SupportsAsyncBufferSwap() const override;
@@ -43,12 +47,8 @@ class X11CanvasSurface : public SurfaceOzoneCanvas {
   // Current surface we paint to.
   sk_sp<SkSurface> surface_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // Helper X11 bitmap presenter that presents the contents.
   X11SoftwareBitmapPresenter x11_software_bitmap_presenter_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11CanvasSurface);
 };
 
 }  // namespace ui

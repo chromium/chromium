@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -32,18 +31,22 @@ class FinalizeDismissedUrlSuggestionTask : public Task {
 
   FinalizeDismissedUrlSuggestionTask(PrefetchStore* prefetch_store,
                                      const ClientId& client_id);
+
+  FinalizeDismissedUrlSuggestionTask(
+      const FinalizeDismissedUrlSuggestionTask&) = delete;
+  FinalizeDismissedUrlSuggestionTask& operator=(
+      const FinalizeDismissedUrlSuggestionTask&) = delete;
+
   ~FinalizeDismissedUrlSuggestionTask() override;
 
-  void Run() override;
-
  private:
+  void Run() override;
   void OnComplete(bool removed);
 
   PrefetchStore* prefetch_store_;
   ClientId client_id_;
   base::WeakPtrFactory<FinalizeDismissedUrlSuggestionTask> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(FinalizeDismissedUrlSuggestionTask);
 };
 
 }  // namespace offline_pages

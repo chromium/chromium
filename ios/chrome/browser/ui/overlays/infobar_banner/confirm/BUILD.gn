@@ -1,0 +1,48 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("confirm") {
+  sources = [
+    "confirm_infobar_banner_overlay_mediator.h",
+    "confirm_infobar_banner_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "confirm_infobar_banner_overlay_mediator_unittest.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":confirm",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/infobars/banners/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

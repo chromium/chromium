@@ -4,7 +4,9 @@
 
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 
-#include "base/stl_util.h"
+#include <sstream>
+
+#include "base/containers/contains.h"
 
 namespace chromeos {
 
@@ -59,6 +61,24 @@ bool CryptAuthDeviceRegistry::SetRegistry(
 
   OnDeviceRegistryUpdated();
   return true;
+}
+
+base::Value CryptAuthDeviceRegistry::AsReadableDictionary() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
+       instance_id_to_device_map_) {
+    std::string key = id_device_pair.second.device_name +
+                      " (ID: " + id_device_pair.second.instance_id() + ")";
+    dict.SetKey(key, id_device_pair.second.AsReadableDictionary());
+  }
+
+  return dict;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const CryptAuthDeviceRegistry& registry) {
+  stream << registry.AsReadableDictionary();
+  return stream;
 }
 
 }  // namespace device_sync

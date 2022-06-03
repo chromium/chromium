@@ -1,0 +1,11 @@
+{
+  "name": "no caching",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Checks that extension permission is scoped to correct origin even in presence of the back forward cache.",
+  "permissions": ["http://a.com/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+}

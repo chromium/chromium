@@ -15,8 +15,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
-import org.chromium.chrome.browser.widget.selection.SelectableListToolbar;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.List;
 
@@ -102,7 +103,8 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
         // be added back until the user refreshes the history UI. This could happen if the user is
         // signed in to an account that cannot remove browsing history or has incognito disabled and
         // signs out.
-        if (!PrefServiceBridge.getInstance().getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
+        if (!UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
             getMenu().removeItem(R.id.selection_mode_delete_menu_id);
         }
         if (!IncognitoUtils.isIncognitoModeEnabled()) {

@@ -66,10 +66,15 @@ class EnterBase;
 class PPAPI_SHARED_EXPORT TrackedCallback
     : public base::RefCountedThreadSafe<TrackedCallback> {
  public:
+  TrackedCallback() = delete;
+
   // Create a tracked completion callback and register it with the tracker. The
   // resource pointer is not stored. If |resource| is NULL, this callback will
   // not be added to the callback tracker.
   TrackedCallback(Resource* resource, const PP_CompletionCallback& callback);
+
+  TrackedCallback(const TrackedCallback&) = delete;
+  TrackedCallback& operator=(const TrackedCallback&) = delete;
 
   // These run the callback in an abortive manner, or post a task to do so (but
   // immediately marking the callback as to be aborted).
@@ -95,12 +100,12 @@ class PPAPI_SHARED_EXPORT TrackedCallback
   // far, e.g. whether the callback has been aborted. If the callback hasn't
   // been aborted the return value of the task will become the callback result.
   // The task is always called on the same thread as the callback to the plugin.
-  typedef base::Callback<int32_t(int32_t /* result */)> CompletionTask;
+  using CompletionTask = base::OnceCallback<int32_t(int32_t /* result */)>;
 
   // Sets a task that is run just before calling back into the plugin. This
   // should only be called once. Note that the CompletionTask always runs while
   // holding the ppapi::ProxyLock.
-  void set_completion_task(const CompletionTask& completion_task);
+  void set_completion_task(CompletionTask completion_task);
 
   // Returns the ID of the resource which "owns" the callback, or 0 if the
   // callback is not associated with any resource.
@@ -193,8 +198,6 @@ class PPAPI_SHARED_EXPORT TrackedCallback
   // callback. Note that in-process, there is no lock, blocking callbacks are
   // not allowed, and therefore this pointer will be NULL.
   std::unique_ptr<base::ConditionVariable> operation_completed_condvar_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TrackedCallback);
 };
 
 }  // namespace ppapi

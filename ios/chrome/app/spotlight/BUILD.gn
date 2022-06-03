@@ -20,31 +20,28 @@ source_set("spotlight") {
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/browser_sync",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",
-    "//components/suggestions",
     "//ios/chrome/app",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/suggestions",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/common/app_group",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/spotlight",
     "//ios/third_party/material_components_ios",
     "//net",
     "//skia",
     "//ui/base",
     "//url",
   ]
-  libs = [
+  frameworks = [
     "CoreSpotlight.framework",
     "UIKit.framework",
   ]
@@ -53,9 +50,7 @@ source_set("spotlight") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "spotlight_manager_unittest.mm",
-  ]
+  sources = [ "spotlight_manager_unittest.mm" ]
   deps = [
     ":spotlight",
     "//base",
@@ -66,10 +61,8 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/favicon_base",
     "//ios/chrome/browser/bookmarks",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/spotlight",
     "//net",
     "//testing/gtest",
   ]
-  libs = [ "CoreSpotlight.framework" ]
+  frameworks = [ "CoreSpotlight.framework" ]
 }

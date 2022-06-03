@@ -43,8 +43,7 @@ class ExternalCache {
   // If the external extension is not curently cached, whether the extension's
   // value should be added to the set of cached extensions (returned by
   // GetCachedExtensions()) regardles of the extension's download status.
-  static bool ShouldCacheImmediately(const base::Value& extension_value,
-                                     const std::string& installed_version);
+  static bool ShouldCacheImmediately(const base::Value& extension_value);
 
   // Returns already cached extensions.
   virtual const base::DictionaryValue* GetCachedExtensions() = 0;
@@ -89,5 +88,11 @@ class ExternalCache {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ExternalCache;
+}
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTERNAL_CACHE_H_

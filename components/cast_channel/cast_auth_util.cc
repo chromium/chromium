@@ -8,12 +8,10 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/cast_certificate/cast_cert_validator.h"
 #include "components/cast_certificate/cast_crl.h"
 #include "components/cast_channel/cast_channel_enum.h"
@@ -125,8 +123,7 @@ class CastNonce {
 
   void EnsureNonceTimely() {
     if (base::Time::Now() >
-        (nonce_generation_time_ +
-         base::TimeDelta::FromHours(kNonceExpirationTimeInHours))) {
+        (nonce_generation_time_ + base::Hours(kNonceExpirationTimeInHours))) {
       GenerateNonce();
     }
   }
@@ -259,9 +256,26 @@ AuthContext AuthContext::Create() {
   return AuthContext(CastNonce::Get());
 }
 
+// static
+AuthContext AuthContext::CreateForTest(const std::string& nonce_data) {
+  // Given some garbage data, try to turn it into a string that at least has the
+  // right length.
+  std::string nonce;
+  if (nonce_data.empty()) {
+    nonce = std::string(kNonceSizeInBytes, '0');
+  } else {
+    while (nonce.size() < kNonceSizeInBytes) {
+      nonce += nonce_data;
+    }
+    nonce.erase(kNonceSizeInBytes);
+  }
+  DCHECK(nonce.size() == kNonceSizeInBytes);
+  return AuthContext(nonce);
+}
+
 AuthContext::AuthContext(const std::string& nonce) : nonce_(nonce) {}
 
-AuthContext::~AuthContext() {}
+AuthContext::~AuthContext() = default;
 
 AuthResult AuthContext::VerifySenderNonce(
     const std::string& nonce_response) const {
@@ -315,8 +329,7 @@ AuthResult VerifyTLSCertificate(const net::X509Certificate& peer_cert,
   // is repurposed as this signature's expiration.
   base::Time expiry = peer_cert.valid_expiry();
   base::Time lifetime_limit =
-      verification_time +
-      base::TimeDelta::FromDays(kMaxSelfSignedCertLifetimeInDays);
+      verification_time + base::Days(kMaxSelfSignedCertLifetimeInDays);
   if (peer_cert.valid_start().is_null() ||
       peer_cert.valid_start() > verification_time) {
     return AuthResult::CreateWithParseError(
@@ -436,9 +449,13 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
 
   if (!verification_context->VerifySignatureOverData(
           response.signature(), signature_input, digest_algorithm)) {
+    // For fuzz testing we just pretend the signature was OK.  The signature is
+    // normally verified using boringssl, which has its own fuzz tests.
+#ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     RecordSignatureEvent(SIGNATURE_VERIFY_FAILED);
     return AuthResult("Failed verifying signature over data.",
                       AuthResult::ERROR_SIGNED_BLOBS_MISMATCH);
+#endif
   }
   RecordSignatureEvent(SIGNATURE_OK);
 

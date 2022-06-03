@@ -7,13 +7,16 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_WIDEVINE)
 #error "This file only applies when Widevine used."
 #endif
 
-#if !defined(OS_LINUX) || defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #error "This file only applies to desktop Linux."
 #endif
 

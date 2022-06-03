@@ -24,20 +24,29 @@
 
 #include <locale.h>
 #include <stdarg.h>
+
 #include <algorithm>
+
+#include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace WTF {
+
+ASSERT_SIZE(String, void*);
 
 // Construct a string with UTF-16 data.
 String::String(const UChar* characters, unsigned length)
@@ -61,6 +70,9 @@ String::String(const char* characters, unsigned length)
                 : nullptr) {}
 
 #if defined(ARCH_CPU_64_BITS)
+String::String(const UChar* characters, size_t length)
+    : String(characters, SafeCast<unsigned>(length)) {}
+
 String::String(const char* characters, size_t length)
     : String(characters, SafeCast<unsigned>(length)) {}
 #endif  // defined(ARCH_CPU_64_BITS)
@@ -72,6 +84,11 @@ int CodeUnitCompare(const String& a, const String& b) {
 int CodeUnitCompareIgnoringASCIICase(const String& a, const char* b) {
   return CodeUnitCompareIgnoringASCIICase(a.Impl(),
                                           reinterpret_cast<const LChar*>(b));
+}
+
+wtf_size_t String::Find(base::RepeatingCallback<bool(UChar)> match_callback,
+                        wtf_size_t index) const {
+  return impl_ ? impl_->Find(match_callback, index) : kNotFound;
 }
 
 UChar32 String::CharacterStartingAt(unsigned i) const {
@@ -295,6 +312,15 @@ unsigned String::HexToUIntStrict(bool* ok) const {
   return impl_->HexToUIntStrict(ok);
 }
 
+uint64_t String::HexToUInt64Strict(bool* ok) const {
+  if (!impl_) {
+    if (ok)
+      *ok = false;
+    return 0;
+  }
+  return impl_->HexToUInt64Strict(ok);
+}
+
 int64_t String::ToInt64Strict(bool* ok) const {
   if (!impl_) {
     if (ok)
@@ -400,8 +426,8 @@ std::string String::Ascii() const {
     return std::string();
 
   std::string ascii(length, '\0');
-  if (this->Is8Bit()) {
-    const LChar* characters = this->Characters8();
+  if (Is8Bit()) {
+    const LChar* characters = Characters8();
 
     for (unsigned i = 0; i < length; ++i) {
       LChar ch = characters[i];
@@ -410,7 +436,7 @@ std::string String::Ascii() const {
     return ascii;
   }
 
-  const UChar* characters = this->Characters16();
+  const UChar* characters = Characters16();
   for (unsigned i = 0; i < length; ++i) {
     UChar ch = characters[i];
     ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : static_cast<char>(ch);
@@ -428,11 +454,10 @@ std::string String::Latin1() const {
     return std::string();
 
   if (Is8Bit()) {
-    return std::string(reinterpret_cast<const char*>(this->Characters8()),
-                       length);
+    return std::string(reinterpret_cast<const char*>(Characters8()), length);
   }
 
-  const UChar* characters = this->Characters16();
+  const UChar* characters = Characters16();
   std::string latin1(length, '\0');
   for (unsigned i = 0; i < length; ++i) {
     UChar ch = characters[i];
@@ -440,105 +465,6 @@ std::string String::Latin1() const {
   }
 
   return latin1;
-}
-
-// Helper to write a three-byte UTF-8 code point to the buffer, caller must
-// check room is available.
-static inline void PutUTF8Triple(char*& buffer, UChar ch) {
-  DCHECK_GE(ch, 0x0800);
-  *buffer++ = static_cast<char>(((ch >> 12) & 0x0F) | 0xE0);
-  *buffer++ = static_cast<char>(((ch >> 6) & 0x3F) | 0x80);
-  *buffer++ = static_cast<char>((ch & 0x3F) | 0x80);
-}
-
-std::string String::Utf8(UTF8ConversionMode mode) const {
-  unsigned length = this->length();
-
-  if (!length)
-    return std::string();
-
-  // Allocate a buffer big enough to hold all the characters
-  // (an individual UTF-16 UChar can only expand to 3 UTF-8 bytes).
-  // Optimization ideas, if we find this function is hot:
-  //  * We could speculatively create a std::string to contain 'length'
-  //    characters, and resize if necessary (i.e. if the buffer contains
-  //    non-ascii characters). (Alternatively, scan the buffer first for
-  //    ascii characters, so we know this will be sufficient).
-  //  * We could allocate a std::string with an appropriate size to
-  //    have a good chance of being able to write the string into the
-  //    buffer without reallocing (say, 1.5 x length).
-  if (length > std::numeric_limits<unsigned>::max() / 3)
-    return std::string();
-  Vector<char, 1024> buffer_vector(length * 3);
-
-  char* buffer = buffer_vector.data();
-
-  if (Is8Bit()) {
-    const LChar* characters = this->Characters8();
-
-    unicode::ConversionResult result =
-        unicode::ConvertLatin1ToUTF8(&characters, characters + length, &buffer,
-                                     buffer + buffer_vector.size());
-    // (length * 3) should be sufficient for any conversion
-    DCHECK_NE(result, unicode::kTargetExhausted);
-  } else {
-    const UChar* characters = this->Characters16();
-
-    if (mode == kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD) {
-      const UChar* characters_end = characters + length;
-      char* buffer_end = buffer + buffer_vector.size();
-      while (characters < characters_end) {
-        // Use strict conversion to detect unpaired surrogates.
-        unicode::ConversionResult result = unicode::ConvertUTF16ToUTF8(
-            &characters, characters_end, &buffer, buffer_end, true);
-        DCHECK_NE(result, unicode::kTargetExhausted);
-        // Conversion fails when there is an unpaired surrogate.  Put
-        // replacement character (U+FFFD) instead of the unpaired
-        // surrogate.
-        if (result != unicode::kConversionOK) {
-          DCHECK_LE(0xD800, *characters);
-          DCHECK_LE(*characters, 0xDFFF);
-          // There should be room left, since one UChar hasn't been
-          // converted.
-          DCHECK_LE(buffer + 3, buffer_end);
-          PutUTF8Triple(buffer, kReplacementCharacter);
-          ++characters;
-        }
-      }
-    } else {
-      bool strict = mode == kStrictUTF8Conversion;
-      unicode::ConversionResult result =
-          unicode::ConvertUTF16ToUTF8(&characters, characters + length, &buffer,
-                                      buffer + buffer_vector.size(), strict);
-      // (length * 3) should be sufficient for any conversion
-      DCHECK_NE(result, unicode::kTargetExhausted);
-
-      // Only produced from strict conversion.
-      if (result == unicode::kSourceIllegal) {
-        DCHECK(strict);
-        return std::string();
-      }
-
-      // Check for an unconverted high surrogate.
-      if (result == unicode::kSourceExhausted) {
-        if (strict)
-          return std::string();
-        // This should be one unpaired high surrogate. Treat it the same
-        // was as an unpaired high surrogate would have been handled in
-        // the middle of a string with non-strict conversion - which is
-        // to say, simply encode it to UTF-8.
-        DCHECK_EQ(characters + 1, this->Characters16() + length);
-        DCHECK_GE(*characters, 0xD800);
-        DCHECK_LE(*characters, 0xDBFF);
-        // There should be room left, since one UChar hasn't been
-        // converted.
-        DCHECK_LE(buffer + 3, buffer + buffer_vector.size());
-        PutUTF8Triple(buffer, *characters);
-      }
-    }
-  }
-
-  return std::string(buffer_vector.data(), buffer - buffer_vector.data());
 }
 
 String String::Make8BitFrom16BitSource(const UChar* source, wtf_size_t length) {
@@ -574,8 +500,9 @@ String String::FromUTF8(const LChar* string_start, size_t string_length) {
   if (!length)
     return g_empty_string;
 
-  if (CharactersAreAllASCII(string_start, length))
-    return StringImpl::Create(string_start, length);
+  ASCIIStringAttributes attributes = CharacterAttributes(string_start, length);
+  if (attributes.contains_only_ascii)
+    return StringImpl::Create(string_start, length, attributes);
 
   Vector<UChar, 1024> buffer(length);
   UChar* buffer_start = buffer.data();
@@ -620,5 +547,19 @@ void String::Show() const {
   DLOG(INFO) << *this;
 }
 #endif
+
+void String::WriteIntoTrace(perfetto::TracedValue context) const {
+  if (!length()) {
+    std::move(context).WriteString("", 0);
+    return;
+  }
+
+  // Avoid the default String to StringView conversion since it calls
+  // AddRef() on the StringImpl and this method is sometimes called in
+  // places where that triggers DCHECKs.
+  StringUTF8Adaptor adaptor(Is8Bit() ? StringView(Characters8(), length())
+                                     : StringView(Characters16(), length()));
+  std::move(context).WriteString(adaptor.data(), adaptor.size());
+}
 
 }  // namespace WTF

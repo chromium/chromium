@@ -24,7 +24,7 @@
 namespace image_writer {
 
 class ImageWriterHandler;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 class DiskUnmounterMac;
 #endif
 
@@ -86,7 +86,7 @@ class ImageWriter : public base::SupportsWeakPtr<ImageWriter> {
   std::vector<HANDLE> volume_handles_;
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   friend class DiskUnmounterMac;
   std::unique_ptr<DiskUnmounterMac> unmounter_;
 #endif

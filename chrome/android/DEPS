@@ -1,20 +1,123 @@
 include_rules = [
-  "+chrome/browser/notifications",
-  "+chrome/browser/preferences/android/java",
-  "+chrome/browser/ui/android/widget",
-  "+chrome/browser/util/android/java",
+  # Restricting uses of Chrome*Activity in favor of direct dependency aquisition. Code that lives
+  # under java/src/.../chrome/browser has a seperate exception under that same directory.
+  # Exceptions can be found under "specific_include_rules"below. Valid Chrome*Activity dependents
+  # should add an allow rule to a DEPS file in the relevant directory.
+  "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+  "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
+
+  # Allow dependencies on chrome/browser modules
+  "+chrome/browser",
+
+  # Restrict dependencies to xsurface by default (crbug.com/1115137)
+  "-chrome/browser/xsurface",
+
+  "+components/browser_ui/banners/android",
+  "+components/browser_ui/bottomsheet/android",
+  "+components/browser_ui/contacts_picker/android",
+  "+components/browser_ui/display_cutout/android",
+  "+components/browser_ui/media/android",
   "+components/browser_ui/modaldialog/android",
+  "+components/browser_ui/photo_picker/android",
+  "+components/browser_ui/share/android",
+  "+components/browser_ui/site_settings/android",
+  "+components/browser_ui/styles/android",
+  "+components/browser_ui/util/android",
+  "+components/browser_ui/webshare/android",
   "+components/browser_ui/widget/android",
   "+components/content_capture",
+  "+components/content_settings",
   "+components/download",
+  "+components/embedder_support/android",
+  "+components/external_intents/android",
+  "+components/externalauth/android",
+  "+components/favicon/android",
   "+components/favicon_base",
+  "+components/find_in_page/android",
+  "+components/infobars/android",
+  "+components/installedapp/android",
   "+components/invalidation",
+  "+components/javascript_dialogs/android",
+  "+components/messages/android",
+  "+components/media_router/browser/android",
+  "+components/page_info/android/java",
+  "+components/permissions/android/nfc",
   "+components/policy",
-  "+components/signin/core/browser/android",
-  "+components/signin/public/identity_manager/android",
+  "+components/prefs/android",
+  "+components/query_tiles",
+  "+components/security_interstitials/content/android",
+  "+components/signin/public/android",
+  "+components/site_engagement/content/android",
   "+components/spellcheck/browser",
+  "+components/strictmode/android",
+  "+components/subresource_filter/android",
+  "+components/translate/content/android",
+  "+components/user_prefs/android",
   "+components/viz/common/java",
+  "+components/webapk/android",
+  "+components/webapps/browser/android/java",
+  "+components/webrtc/android",
   "+jni",
   "+media/base/android/java",
+  "+services/device/public",
   "+services/media_session/public",
 ]
+
+specific_include_rules = {
+  # Allow dependencies to xsurface from AppHooks only (crbug.com/1115137)
+  "chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java": [
+    "+chrome/browser/xsurface/android",
+  ],
+
+  # Tests and test-oriented classes are allowed to rely on ChromeActivity for DEPS. When committing
+  # a file that doesn't conform to these patterns, add an allow rule to the DEPS file to the
+  # testing directory.
+  ".*Test\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+  ],
+  ".*TestRule\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+  ],
+  ".*TestUtils\.java": [
+      "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+   ],
+
+  # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
+  # new code should rely on acceptable dependency aquisition patterns.
+  "AutofillAssistantUiController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillAssistantFacade\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ManualFillingMediator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "VrShellDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+
+  # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
+  # new code should rely on acceptable dependency aquisition patterns.
+  "TabGroupUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "TabGroupUiCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "TabSwitcherCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "VrDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "VrShell\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+  "VrShellDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
+}

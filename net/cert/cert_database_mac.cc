@@ -7,13 +7,14 @@
 #include <Security/Security.h>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/mac/mac_logging.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/net_errors.h"
@@ -35,7 +36,7 @@ class CertDatabase::Notifier {
         registered_(false),
         called_shutdown_(false) {
     // Ensure an associated CFRunLoop.
-    DCHECK(base::MessageLoopCurrentForUI::IsSet());
+    DCHECK(base::CurrentUIThread::IsSet());
     DCHECK(task_runner_->BelongsToCurrentThread());
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&Notifier::Init, base::Unretained(this)));

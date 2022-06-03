@@ -6,7 +6,7 @@ package org.chromium.components.module_installer.util;
 
 import android.os.SystemClock;
 
-import org.chromium.base.metrics.CachedMetrics.TimesHistogramSample;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.Closeable;
 
@@ -38,8 +38,6 @@ public class Timer implements Closeable {
     }
 
     public static void recordStartupTime() {
-        String name = "Android.FeatureModules.StartupTime";
-        TimesHistogramSample sample = new TimesHistogramSample(name);
-        sample.record(sTotalTime);
+        RecordHistogram.recordTimesHistogram("Android.FeatureModules.StartupTime", sTotalTime);
     }
 }

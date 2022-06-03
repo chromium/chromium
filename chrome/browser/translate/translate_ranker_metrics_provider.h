@@ -5,22 +5,32 @@
 #ifndef CHROME_BROWSER_TRANSLATE_TRANSLATE_RANKER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_TRANSLATE_TRANSLATE_RANKER_METRICS_PROVIDER_H_
 
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace translate {
 
 // Provides metrics related to the translate ranker.
-class TranslateRankerMetricsProvider : public metrics::MetricsProvider {
+class TranslateRankerMetricsProvider : public metrics::MetricsProvider,
+                                       public ProfileManagerObserver {
  public:
-  TranslateRankerMetricsProvider() : logging_enabled_(false) {}
+  TranslateRankerMetricsProvider();
 
-  ~TranslateRankerMetricsProvider() override {}
+  TranslateRankerMetricsProvider(const TranslateRankerMetricsProvider&) =
+      delete;
+  TranslateRankerMetricsProvider& operator=(
+      const TranslateRankerMetricsProvider&) = delete;
 
-  // From metrics::MetricsProvider...
+  ~TranslateRankerMetricsProvider() override;
+
+  // From metrics::MetricsProvider.
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
+
+  // From ProfileManagerObserver.
+  void OnProfileAdded(Profile* profile) override;
 
  private:
   // Updates the logging state of all ranker instances.
@@ -28,8 +38,6 @@ class TranslateRankerMetricsProvider : public metrics::MetricsProvider {
 
   // The current state of logging.
   bool logging_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerMetricsProvider);
 };
 
 }  // namespace translate

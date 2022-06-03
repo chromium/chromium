@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
+
+// This interface defines back-forward cache related methods that will be
+// invoked from the renderer process.
+//
+// Calls to any of the methods defined in this interface must be allowed while
+// the frame is in the back-forward cache. Calls to other (associated) interface
+// methods while the frame is in the back-forward cache are disallowed and may
+// trigger a renderer kill, depending on policy.
+interface BackForwardCacheControllerHost {
+  // Evicts the page from the back/forward cache due to e.g., JavaScript
+  // execution and network request redirect.
+  EvictFromBackForwardCache(RendererEvictionReason reason);
+
+  // Sent by the blink's FrameScheduler when a list of active features
+  // the scheduler tracks changes.
+  // See blink::scheduler::SchedulingPolicy::Feature for the meaning
+  // of the individual bits.
+  DidChangeBackForwardCacheDisablingFeatures(uint64 features_mask);
+};

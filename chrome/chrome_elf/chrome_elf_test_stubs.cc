@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/win/windows_types.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"

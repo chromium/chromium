@@ -1,0 +1,64 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Separate target to allow for a dependency on GmsCore. It compiles the abstract class;
+# implementations are compiled separately.
+android_library("google_delegate_java") {
+  sources = [
+    "java/src/org/chromium/components/externalauth/ExternalAuthGoogleDelegate.java",
+    "java/src/org/chromium/components/externalauth/ExternalAuthGoogleDelegateImpl.java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/ExternalAuthGoogleDelegateImpl.class" ]
+}
+
+# This target compiles the implementation of ExternalAuthGoogleDelegate for
+# public targets.
+android_library("google_delegate_public_impl_java") {
+  sources = [ "java/src/org/chromium/components/externalauth/ExternalAuthGoogleDelegateImpl.java" ]
+  deps = [ ":google_delegate_java" ]
+}
+
+android_library("java") {
+  deps = [
+    ":google_delegate_java",
+    "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_basement_java",
+    "//base:base_java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:chromium_play_services_availability_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  sources = [
+    "java/src/org/chromium/components/externalauth/ExternalAuthUtils.java",
+    "java/src/org/chromium/components/externalauth/UserRecoverableErrorHandler.java",
+    "java/src/org/chromium/components/externalauth/VerifiedHandler.java",
+  ]
+}
+
+android_library("junit") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+
+  deps = [
+    ":java",
+    "$google_play_services_package:google_play_services_basement_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+
+  sources = [
+    "junit/src/org/chromium/components/externalauth/ExternalAuthUtilsTest.java",
+  ]
+}

@@ -4,15 +4,15 @@
 
 (async function() {
   TestRunner.addResult(`Test recording page reload works in Timeline.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   TestRunner.resourceTreeModel.addEventListener(SDK.ResourceTreeModel.Events.Load, TestRunner.pageLoaded);
 
   var panel = UI.panels.timeline;
   PerformanceTestRunner.runWhenTimelineIsReady(recordingStopped);
 
-  panel._millisecondsToRecordAfterLoadEvent = 1;
-  panel._recordReload();
+  panel.millisecondsToRecordAfterLoadEvent = 1;
+  panel.recordReload();
 
   function recordingStopped() {
     TestRunner.addResult('Recording stopped');

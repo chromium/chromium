@@ -8,45 +8,54 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/assistant/assistant_controller_observer.h"
 #include "ash/assistant/assistant_web_view_delegate_impl.h"
-#include "base/macros.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
-class AssistantController;
 class AssistantWebContainerView;
 class AssistantWebContainerEventObserver;
 
 // The class to manage Assistant web container view.
 class ASH_EXPORT AssistantWebUiController : public views::WidgetObserver,
-                                            public AssistantControllerObserver {
+                                            public AssistantControllerObserver,
+                                            public AssistantStateObserver {
  public:
-  explicit AssistantWebUiController(AssistantController* assistant_controller);
+  AssistantWebUiController();
+
+  AssistantWebUiController(const AssistantWebUiController&) = delete;
+  AssistantWebUiController& operator=(const AssistantWebUiController&) = delete;
+
   ~AssistantWebUiController() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // AssistantControllerObserver:
+  void OnAssistantControllerConstructed() override;
   void OnAssistantControllerDestroying() override;
   void OnDeepLinkReceived(
       assistant::util::DeepLinkType type,
       const std::map<std::string, std::string>& params) override;
+
+  // AssistantStateObserver:
+  void OnAssistantSettingsEnabled(bool enabled) override;
 
   void OnBackButtonPressed();
 
   AssistantWebContainerView* GetViewForTest();
 
  private:
-  void ShowUi();
+  void ShowUi(const GURL& url);
+  void CloseUi();
 
   // Constructs/resets |web_container_view_|.
   void CreateWebContainerView();
   void ResetWebContainerView();
-
-  AssistantController* const assistant_controller_;  // Owned by Shell.
 
   AssistantWebViewDelegateImpl view_delegate_;
 
@@ -56,7 +65,8 @@ class ASH_EXPORT AssistantWebUiController : public views::WidgetObserver,
   // Observes key press events on the |web_container_view_|.
   std::unique_ptr<AssistantWebContainerEventObserver> event_observer_;
 
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebUiController);
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 };
 
 }  // namespace ash

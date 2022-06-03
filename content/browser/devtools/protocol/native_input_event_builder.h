@@ -12,7 +12,7 @@ namespace protocol {
 
 class NativeInputEventBuilder {
  public:
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // This returned object has a retain count of 1.
   static gfx::NativeEvent CreateEvent(const NativeWebKeyboardEvent& event);
 #else

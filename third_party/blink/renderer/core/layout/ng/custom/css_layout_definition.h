@@ -18,6 +18,7 @@ namespace blink {
 class CustomLayoutScope;
 class FragmentResultOptions;
 class IntrinsicSizesResultOptions;
+class LayoutUnit;
 struct LogicalSize;
 class NGBlockNode;
 struct NGBoxStrut;
@@ -43,7 +44,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
       const Vector<AtomicString>& custom_invalidation_properties,
       const Vector<CSSPropertyID>& child_native_invalidation_properties,
       const Vector<AtomicString>& child_custom_invalidation_properties);
-  virtual ~CSSLayoutDefinition();
+  ~CSSLayoutDefinition() final;
 
   // This class represents an instance of the layout class defined by the
   // CSSLayoutDefinition.
@@ -54,14 +55,15 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
     // Runs the web developer defined layout, returns true if everything
     // succeeded. It populates the FragmentResultOptions dictionary, and
     // fragment_result_data.
-    bool Layout(const NGConstraintSpace&,
-                const Document&,
-                const NGBlockNode&,
-                const LogicalSize& border_box_size,
-                const NGBoxStrut& border_scrollbar_padding,
-                CustomLayoutScope*,
-                FragmentResultOptions*,
-                scoped_refptr<SerializedScriptValue>* fragment_result_data);
+    bool Layout(
+        const NGConstraintSpace&,
+        const Document&,
+        const NGBlockNode&,
+        const LogicalSize& border_box_size,
+        const NGBoxStrut& border_scrollbar_padding,
+        CustomLayoutScope*,
+        FragmentResultOptions*&,
+        scoped_refptr<SerializedScriptValue>* fragment_result_data);
 
     // Runs the web developer defined intrinsicSizes, returns true if everything
     // succeeded. It populates the IntrinsicSizesResultOptions dictionary.
@@ -70,10 +72,12 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
                         const NGBlockNode&,
                         const LogicalSize& border_box_size,
                         const NGBoxStrut& border_scrollbar_padding,
+                        const LayoutUnit child_available_block_size,
                         CustomLayoutScope*,
-                        IntrinsicSizesResultOptions*);
+                        IntrinsicSizesResultOptions**,
+                        bool* child_depends_on_block_constraints);
 
-    void Trace(blink::Visitor*);
+    void Trace(Visitor*) const;
 
    private:
     void ReportException(ExceptionState*);
@@ -101,7 +105,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
 
   ScriptState* GetScriptState() const { return script_state_; }
 
-  virtual void Trace(blink::Visitor* visitor);
+  virtual void Trace(Visitor* visitor) const;
 
   const char* NameInHeapSnapshot() const override {
     return "CSSLayoutDefinition";

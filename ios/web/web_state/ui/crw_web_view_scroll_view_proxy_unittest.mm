@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #include "base/compiler_specific.h"
+#include "base/test/scoped_feature_list.h"
+#include "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -22,6 +24,48 @@
 @interface CRWWebViewScrollViewProxy (Testing)
 
 @property(nonatomic, readonly) CRWWebViewScrollViewDelegateProxy* delegateProxy;
+
+@end
+
+@interface UIScrollView (TestingCategory)
+- (int)crw_categoryMethod;
+@end
+
+@implementation UIScrollView (TestingCategory)
+
+- (int)crw_categoryMethod {
+  return 1;
+}
+
+@end
+
+@interface CRWTestObserver : NSObject
+
+- (instancetype)initWithProxy:(CRWWebViewScrollViewProxy*)proxy
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+@implementation CRWTestObserver {
+  CRWWebViewScrollViewProxy* _proxy;
+}
+
+- (instancetype)initWithProxy:(CRWWebViewScrollViewProxy*)proxy {
+  self = [super init];
+  if (self) {
+    _proxy = proxy;
+    [_proxy addObserver:self
+             forKeyPath:@"contentSize"
+                options:NSKeyValueObservingOptionNew
+                context:nullptr];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [_proxy removeObserver:self forKeyPath:@"contentSize"];
+}
 
 @end
 
@@ -155,8 +199,8 @@ TEST_F(CRWWebViewScrollViewProxyTest, ScrollViewPresent) {
   EXPECT_TRUE([web_view_scroll_view_proxy_ clipsToBounds]);
 }
 
-// Tests that CRWWebViewScrollViewProxy returns the correct property values when
-// there is no underlying UIScrollView.
+// Tests that CRWWebViewScrollViewProxy returns the default values of
+// UIScrollView's properties when there is no underlying UIScrollView.
 TEST_F(CRWWebViewScrollViewProxyTest, ScrollViewAbsent) {
   [web_view_scroll_view_proxy_ setScrollView:nil];
 
@@ -173,11 +217,11 @@ TEST_F(CRWWebViewScrollViewProxyTest, ScrollViewAbsent) {
   EXPECT_FALSE([web_view_scroll_view_proxy_ isDecelerating]);
   EXPECT_FALSE([web_view_scroll_view_proxy_ isDragging]);
   EXPECT_FALSE([web_view_scroll_view_proxy_ isTracking]);
-  EXPECT_FALSE([web_view_scroll_view_proxy_ scrollsToTop]);
+  EXPECT_TRUE([web_view_scroll_view_proxy_ scrollsToTop]);
   EXPECT_EQ((NSUInteger)0, [web_view_scroll_view_proxy_ subviews].count);
   EXPECT_EQ(UIScrollViewContentInsetAdjustmentAutomatic,
             [web_view_scroll_view_proxy_ contentInsetAdjustmentBehavior]);
-  EXPECT_FALSE([web_view_scroll_view_proxy_ clipsToBounds]);
+  EXPECT_TRUE([web_view_scroll_view_proxy_ clipsToBounds]);
 
   // Make sure setting the properties is fine too.
   // Arbitrary point.
@@ -338,15 +382,15 @@ TEST_F(CRWWebViewScrollViewProxyTest, AsUIScrollViewWithUnderlyingScrollView) {
 }
 
 // Verifies that method calls to -asUIScrollView are no-op if the underlying
-// scroll view is nil and the method is not implemented in
+// scroll view is not set and the method is not implemented in
 // CRWWebViewScrollViewProxy.
 TEST_F(CRWWebViewScrollViewProxyTest,
        AsUIScrollViewWithoutUnderlyingScrollView) {
   [web_view_scroll_view_proxy_ setScrollView:nil];
 
-  // Any methods should return nil when the underlying scroll view is nil.
-  EXPECT_EQ(nil,
-            [[web_view_scroll_view_proxy_ asUIScrollView] viewPrintFormatter]);
+  // Any methods should return nil when the underlying scroll view is not set.
+  EXPECT_EQ(nil, [[web_view_scroll_view_proxy_ asUIScrollView]
+                     restorationIdentifier]);
 
   // It is expected that nothing happens. Just verifies that it doesn't crash.
   CGRect rect = CGRectMake(0, 0, 1, 1);
@@ -537,6 +581,42 @@ TEST_F(CRWWebViewScrollViewProxyTest, AddKVObserver) {
                                    forKeyPath:@"contentOffset"];
 }
 
+// Verifies that a key-value observer is kept after the underlying scroll view
+// is set.
+TEST_F(CRWWebViewScrollViewProxyTest,
+       KVObserversAreKeptAfterSettingUnderlyingScrollView) {
+  // Add a key-value observer to a CRWWebViewScrollViewProxy.
+  NSObject* observer = OCMClassMock([NSObject class]);
+  int context = 0;
+  [web_view_scroll_view_proxy_
+      addObserver:observer
+       forKeyPath:@"contentOffset"
+          options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+          context:&context];
+
+  // Set the underlying scroll view.
+  UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
+  underlying_scroll_view.contentOffset = CGPointZero;
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+
+  // KVO is inherited to the new underlying scroll view.
+  CGPoint new_offset = CGPointMake(10, 20);
+  NSDictionary<NSKeyValueChangeKey, id>* expected_change = @{
+    NSKeyValueChangeKindKey : @(NSKeyValueChangeSetting),
+    NSKeyValueChangeOldKey : @(CGPointZero),
+    NSKeyValueChangeNewKey : @(new_offset)
+  };
+  OCMExpect([observer observeValueForKeyPath:@"contentOffset"
+                                    ofObject:web_view_scroll_view_proxy_
+                                      change:expected_change
+                                     context:&context]);
+  underlying_scroll_view.contentOffset = new_offset;
+
+  EXPECT_OCMOCK_VERIFY(static_cast<id>(observer));
+  [web_view_scroll_view_proxy_ removeObserver:observer
+                                   forKeyPath:@"contentOffset"];
+}
+
 // Verifies that removing a key-value observer from a CRWWebViewScrollViewProxy
 // works as expected.
 TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserver) {
@@ -570,6 +650,279 @@ TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserver) {
   underlying_scroll_view.contentOffset = new_offset;
 
   EXPECT_OCMOCK_VERIFY(static_cast<id>(observer));
+}
+
+// When -addObserver:forKeyPath:options:context: is called multiple times with
+// the same observer and key path, -removeObserver:forKeyPath: removes the last
+// observation.
+//
+// This matches the (undocumented) behavior of the built-in KVO.
+TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverRemovesLastObservation) {
+  UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
+  underlying_scroll_view.contentOffset = CGPointZero;
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+
+  // Add an observer twice with |context1| and then with |context2|.
+  NSObject* observer = OCMClassMock([NSObject class]);
+  int context1 = 0;
+  int context2 = 0;
+  [web_view_scroll_view_proxy_
+      addObserver:observer
+       forKeyPath:@"contentOffset"
+          options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+          context:&context1];
+  [web_view_scroll_view_proxy_
+      addObserver:observer
+       forKeyPath:@"contentOffset"
+          options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+          context:&context2];
+
+  // Remove an observer once. This should remove the observation with
+  // |context2|.
+  [web_view_scroll_view_proxy_ removeObserver:observer
+                                   forKeyPath:@"contentOffset"];
+
+  // The observer should be notified of a change with |context1| but not with
+  // |context2|.
+  CGPoint new_offset = CGPointMake(10, 20);
+  NSDictionary<NSKeyValueChangeKey, id>* expected_change = @{
+    NSKeyValueChangeKindKey : @(NSKeyValueChangeSetting),
+    NSKeyValueChangeOldKey : @(CGPointZero),
+    NSKeyValueChangeNewKey : @(new_offset)
+  };
+  OCMExpect([observer observeValueForKeyPath:@"contentOffset"
+                                    ofObject:web_view_scroll_view_proxy_
+                                      change:expected_change
+                                     context:&context1]);
+  [[static_cast<id>(observer) reject]
+      observeValueForKeyPath:@"contentOffset"
+                    ofObject:web_view_scroll_view_proxy_
+                      change:expected_change
+                     context:&context2];
+
+  underlying_scroll_view.contentOffset = new_offset;
+
+  EXPECT_OCMOCK_VERIFY(static_cast<id>(observer));
+  [web_view_scroll_view_proxy_ removeObserver:observer
+                                   forKeyPath:@"contentOffset"];
+}
+
+// Verifies that removing a key-value observer from a CRWWebViewScrollViewProxy
+// works as expected when given a context.
+TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverWithContext) {
+  UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
+  underlying_scroll_view.contentOffset = CGPointZero;
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+
+  // Add an observer twice with |context1| and then with |context2|.
+  NSObject* observer = OCMClassMock([NSObject class]);
+  int context1 = 0;
+  int context2 = 0;
+  [web_view_scroll_view_proxy_
+      addObserver:observer
+       forKeyPath:@"contentOffset"
+          options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+          context:&context1];
+  [web_view_scroll_view_proxy_
+      addObserver:observer
+       forKeyPath:@"contentOffset"
+          options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+          context:&context2];
+
+  // Remove the observation with |context1|.
+  [web_view_scroll_view_proxy_ removeObserver:observer
+                                   forKeyPath:@"contentOffset"
+                                      context:&context1];
+
+  // The observer should be notified of a change with |context2| but not with
+  // |context1|.
+  CGPoint new_offset = CGPointMake(10, 20);
+  NSDictionary<NSKeyValueChangeKey, id>* expected_change = @{
+    NSKeyValueChangeKindKey : @(NSKeyValueChangeSetting),
+    NSKeyValueChangeOldKey : @(CGPointZero),
+    NSKeyValueChangeNewKey : @(new_offset)
+  };
+  OCMExpect([observer observeValueForKeyPath:@"contentOffset"
+                                    ofObject:web_view_scroll_view_proxy_
+                                      change:expected_change
+                                     context:&context2]);
+  [[static_cast<id>(observer) reject]
+      observeValueForKeyPath:@"contentOffset"
+                    ofObject:web_view_scroll_view_proxy_
+                      change:expected_change
+                     context:&context1];
+
+  underlying_scroll_view.contentOffset = new_offset;
+
+  EXPECT_OCMOCK_VERIFY(static_cast<id>(observer));
+  [web_view_scroll_view_proxy_ removeObserver:observer
+                                   forKeyPath:@"contentOffset"
+                                      context:&context2];
+}
+
+// Verifies that it is safe to call -removeObserver:forKeyPath: against the
+// proxy during -dealloc of the observer.
+TEST_F(CRWWebViewScrollViewProxyTest,
+       RemoveKVObserverWhileDeallocatingObserver) {
+  // CRWTestObserver adds itself as a key-value observer of the proxy in its
+  // initializer, and removes itself as a observer during its -dealloc.
+  CRWTestObserver* observer __attribute__((unused)) =
+      [[CRWTestObserver alloc] initWithProxy:web_view_scroll_view_proxy_];
+}
+
+// Verifies that properties registered to |propertiesStore| are preserved if:
+//   - the setter is called when the underlying scroll view is not set
+//   - the getter is called after the underlying scroll view is still not set
+TEST_F(CRWWebViewScrollViewProxyTest,
+       PreservePropertiesWhileUnderlyingScrollViewIsAbsent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kPreserveScrollViewProperties);
+
+  // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
+  web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
+
+  [web_view_scroll_view_proxy_ setScrollView:nil];
+
+  // A preserved property with a primitive type.
+  [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled = YES;
+  EXPECT_TRUE(
+      [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled);
+  [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled = NO;
+  EXPECT_FALSE(
+      [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled);
+
+  // A preserved property with an object type.
+  [web_view_scroll_view_proxy_ asUIScrollView].tintColor = UIColor.redColor;
+  EXPECT_EQ(UIColor.redColor,
+            [web_view_scroll_view_proxy_ asUIScrollView].tintColor);
+}
+
+// Verifies that properties registered to |propertiesStore| are preserved if:
+//   - the setter is called when the underlying scroll view is not set
+//   - the getter is called after the underlying scroll view is set
+TEST_F(CRWWebViewScrollViewProxyTest,
+       PreservePropertiesWhenUnderlyingScrollViewIsNewlyAssigned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kPreserveScrollViewProperties);
+
+  // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
+  web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
+
+  [web_view_scroll_view_proxy_ setScrollView:nil];
+
+  [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled = YES;
+  [web_view_scroll_view_proxy_ asUIScrollView].tintColor = UIColor.redColor;
+
+  UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+
+  // The properties are restored on the underlying scroll view.
+  EXPECT_TRUE(underlying_scroll_view.directionalLockEnabled);
+  EXPECT_EQ(UIColor.redColor, underlying_scroll_view.tintColor);
+
+  // The same property values are available via the scroll view proxy as well.
+  EXPECT_TRUE(
+      [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled);
+  EXPECT_EQ(UIColor.redColor,
+            [web_view_scroll_view_proxy_ asUIScrollView].tintColor);
+
+  [web_view_scroll_view_proxy_ setScrollView:nil];
+}
+
+// Verifies that properties registered to |propertiesStore| are preserved if:
+//   - the setter is called when the underlying scroll view is set
+//   - the getter is called after the underlying scroll view is reassigned
+TEST_F(CRWWebViewScrollViewProxyTest,
+       PreservePropertiesWhenUnderlyingScrollViewIsReassigned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kPreserveScrollViewProperties);
+
+  // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
+  web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
+
+  UIScrollView* underlying_scroll_view1 = [[UIScrollView alloc] init];
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view1];
+
+  [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled = YES;
+  [web_view_scroll_view_proxy_ asUIScrollView].tintColor = UIColor.redColor;
+
+  UIScrollView* underlying_scroll_view2 = [[UIScrollView alloc] init];
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view2];
+
+  // The properties are restored on the underlying scroll view.
+  EXPECT_TRUE(underlying_scroll_view2.directionalLockEnabled);
+  EXPECT_EQ(UIColor.redColor, underlying_scroll_view2.tintColor);
+
+  // The same property values are available via the scroll view proxy as well.
+  EXPECT_TRUE(
+      [web_view_scroll_view_proxy_ asUIScrollView].directionalLockEnabled);
+  EXPECT_EQ(UIColor.redColor,
+            [web_view_scroll_view_proxy_ asUIScrollView].tintColor);
+
+  [web_view_scroll_view_proxy_ setScrollView:nil];
+}
+
+// Verifies that the proxy uses the real implementation of a method defined in a
+// category of UIScrollView while the underlying scroll view is not set.
+TEST_F(CRWWebViewScrollViewProxyTest,
+       UIScrollViewCategoryWithoutUnderlyingScrollView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kPreserveScrollViewProperties);
+
+  // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
+  web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
+
+  [web_view_scroll_view_proxy_ setScrollView:nil];
+
+  EXPECT_EQ(1,
+            [[web_view_scroll_view_proxy_ asUIScrollView] crw_categoryMethod]);
+}
+
+// Verifies that the proxy uses the real implementation of a method defined in a
+// category of UIScrollView while the underlying scroll view is set.
+TEST_F(CRWWebViewScrollViewProxyTest,
+       UIScrollViewCategoryWithUnderlyingScrollView) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kPreserveScrollViewProperties);
+
+  // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
+  web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
+
+  UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+
+  EXPECT_EQ(1,
+            [[web_view_scroll_view_proxy_ asUIScrollView] crw_categoryMethod]);
+}
+
+// Verifies that the scroll view backgound color is not preserved between
+// scroll views.  Used to prevent regression of crbug.com/1078790.
+TEST_F(CRWWebViewScrollViewProxyTest, DontPreserveBackgroundColor) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kPreserveScrollViewProperties);
+
+  // Recreate CRWWebViewScrollViewProxy with the updated feature flags.
+  web_view_scroll_view_proxy_ = [[CRWWebViewScrollViewProxy alloc] init];
+
+  // Set an underlying UIScrollView, and update its background color to red.
+  UIScrollView* underlying_scroll_view1 = [[UIScrollView alloc] init];
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view1];
+  [web_view_scroll_view_proxy_ asUIScrollView].backgroundColor =
+      UIColor.redColor;
+
+  // Create a second UIScrollView and set its background color to black.
+  UIScrollView* underlying_scroll_view2 = [[UIScrollView alloc] init];
+  underlying_scroll_view2.backgroundColor = UIColor.blackColor;
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view2];
+
+  // Verify that the second scroll view's background color remains black.
+  EXPECT_EQ(UIColor.blackColor, underlying_scroll_view2.backgroundColor);
 }
 
 }  // namespace

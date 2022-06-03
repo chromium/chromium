@@ -1,0 +1,130 @@
+/*
+ * Copyright (c) 2000-2007 Apple Computer, Inc. All rights reserved.
+ *
+ * @APPLE_OSREFERENCE_LICENSE_HEADER_START@
+ * 
+ * This file contains Original Code and/or Modifications of Original Code
+ * as defined in and that are subject to the Apple Public Source License
+ * Version 2.0 (the 'License'). You may not use this file except in
+ * compliance with the License. The rights granted to you under the License
+ * may not be used to create, or enable the creation or redistribution of,
+ * unlawful or unlicensed copies of an Apple operating system, or to
+ * circumvent, violate, or enable the circumvention or violation of, any
+ * terms of an Apple operating system software license agreement.
+ * 
+ * Please obtain a copy of the License at
+ * http://www.opensource.apple.com/apsl/ and read it before using this file.
+ * 
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+ * Please see the License for the specific language governing rights and
+ * limitations under the License.
+ * 
+ * @APPLE_OSREFERENCE_LICENSE_HEADER_END@
+ */
+/*
+ * @OSF_COPYRIGHT@
+ */
+
+/*
+ *	Header file for basic, machine-dependent data types.  arm+i386 version.
+ */
+ 
+#ifndef _MACH_MACHINE_MACHNINE_TYPES_DEFS
+#define _MACH_MACHINE_MACHNINE_TYPES_DEFS
+
+type short = int16_t;
+type int = int32_t;
+type unsigned = uint32_t;
+
+type float = MACH_MSG_TYPE_REAL_32;
+type double = MACH_MSG_TYPE_REAL_64;
+
+
+/* from ISO/IEC 988:1999 spec */
+/* 7.18.1.4 Integer types capable of hgolding object pointers */
+/*
+ * The [u]intptr_t types for the native
+ * integer type, e.g. 32 or 64 or.. whatever
+ * register size the machine has.  They are
+ * used for entities that might be either
+ * [unsigned] integers or pointers, and for
+ * type-casting between the two.
+ *
+ * For instance, the IPC system represents
+ * a port in user space as an integer and
+ * in kernel space as a pointer.
+ */
+#if defined(__LP64__)
+type uintptr_t = uint64_t;
+type intptr_t = int64_t;
+#else
+type uintptr_t = uint32_t;
+type intptr_t = int32_t;
+#endif
+
+/*
+ * These are the legacy Mach types that are
+ * the [rough] equivalents of the standards above.
+ * They were defined in terms of int, not
+ * long int, so they remain separate.
+ */
+#if defined(__LP64__)
+type register_t = int64_t;
+#else
+type register_t = int32_t;
+#endif
+type integer_t = int32_t;
+type natural_t = uint32_t;
+
+/*
+ * These are the VM types that scale with the address
+ * space size of a given process.
+ */
+
+#if defined(__LP64__)
+type vm_address_t = uint64_t;
+type vm_offset_t = uint64_t;
+type vm_size_t = uint64_t;
+#else
+type vm_address_t = natural_t;
+type vm_offset_t = natural_t;
+type vm_size_t = natural_t;
+#endif
+
+/* This is a bit of a hack for arm.  We implement the backend with a wide type, but present a native-sized type to callers */
+type mach_port_context_t = uint64_t;
+
+/*
+ * The mach_vm_xxx_t types are sized to hold the
+ * maximum pointer, offset, etc... supported on the
+ * platform.
+ */
+type mach_vm_address_t = uint64_t;
+type mach_vm_offset_t = uint64_t;
+type mach_vm_size_t = uint64_t;
+
+#if	MACH_IPC_COMPAT
+/*
+ * For the old IPC interface
+ */
+#define	MSG_TYPE_PORT_NAME	natural_t
+
+#endif	/* MACH_IPC_COMPAT */
+
+/*
+ * These are types used internal to Mach to implement the
+ * legacy 32-bit VM APIs published by the kernel.
+ */
+#define	VM32_SUPPORT	1
+
+type vm32_address_t = uint32_t;
+type vm32_offset_t = uint32_t;
+type vm32_size_t = uint32_t;
+
+#endif /* _MACH_MACHINE_MACHNINE_TYPES_DEFS */
+
+/* vim: set ft=c : */

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
-<translation id="6106989379647458772">ممکن ہے <ph name="PAGE" /> پر موجود ویب صفحہ عارضی طور پر ڈاؤن ہو یا ممکن ہے یہ مستقل طور پر ایک نئے ویب پتہ پر منتقل ہوگیا ہو۔</translation>
-<translation id="6312113039770857350">ویب صفحہ دستیاب نہیں ہے</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> پر موجود ویب صفحہ لوڈ نہیں ہو سکا کیوںکہ:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />تجاویز:<ph name="MARKUP_2" />یقینی بنائیں کہ آپ کے پاس ڈیٹا کنکشن ہے<ph name="MARKUP_3" />یہ ویب صفحہ بعد میں دوبارہ لوڈ کریں<ph name="MARKUP_4" />اپنا درج کردہ پتہ چيک کریں<ph name="MARKUP_5" /></translation>
 </translationbundle>

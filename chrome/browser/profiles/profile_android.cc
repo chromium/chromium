@@ -5,13 +5,15 @@
 #include "chrome/browser/profiles/profile_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/public/profiles/jni_headers/Profile_jni.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/android/jni_headers/Profile_jni.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
 using base::android::AttachCurrentThread;
@@ -50,7 +52,8 @@ Profile* ProfileAndroid::FromProfileAndroid(const JavaRef<jobject>& obj) {
 }
 
 // static
-ScopedJavaLocalRef<jobject> ProfileAndroid::GetLastUsedProfile(JNIEnv* env) {
+ScopedJavaLocalRef<jobject> ProfileAndroid::GetLastUsedRegularProfile(
+    JNIEnv* env) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (profile == NULL) {
     NOTREACHED() << "Profile not found.";
@@ -83,18 +86,57 @@ base::android::ScopedJavaLocalRef<jobject> ProfileAndroid::GetOriginalProfile(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-ProfileAndroid::GetOffTheRecordProfile(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+ProfileAndroid::GetOffTheRecordProfile(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_otr_profile_id,
+    const jboolean j_create_if_needed) {
+  Profile::OTRProfileID otr_profile_id =
+      Profile::OTRProfileID::ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
   ProfileAndroid* otr_profile = ProfileAndroid::FromProfile(
-      profile_->GetOffTheRecordProfile());
+      profile_->GetOffTheRecordProfile(otr_profile_id, j_create_if_needed));
+  if (!j_create_if_needed && !otr_profile)
+    return nullptr;
   DCHECK(otr_profile);
   return otr_profile->GetJavaObject();
 }
 
+base::android::ScopedJavaLocalRef<jobject> ProfileAndroid::GetPrimaryOTRProfile(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const jboolean j_create_if_needed) {
+  ProfileAndroid* otr_profile = ProfileAndroid::FromProfile(
+      profile_->GetPrimaryOTRProfile(j_create_if_needed));
+  if (!j_create_if_needed && !otr_profile)
+    return nullptr;
+  DCHECK(otr_profile);
+  return otr_profile->GetJavaObject();
+}
+
+base::android::ScopedJavaLocalRef<jobject> ProfileAndroid::GetOTRProfileID(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  return profile_->GetOTRProfileID().ConvertToJavaOTRProfileID(env);
+}
+
 jboolean ProfileAndroid::HasOffTheRecordProfile(
     JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_otr_profile_id) {
+  Profile::OTRProfileID otr_profile_id =
+      Profile::OTRProfileID::ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
+  return profile_->HasOffTheRecordProfile(otr_profile_id);
+}
+
+jboolean ProfileAndroid::HasPrimaryOTRProfile(
+    JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return profile_->HasOffTheRecordProfile();
+  return profile_->HasPrimaryOTRProfile();
+}
+
+jboolean ProfileAndroid::IsPrimaryOTRProfile(JNIEnv* env,
+                                             const JavaParamRef<jobject>& obj) {
+  return profile_->IsPrimaryOTRProfile();
 }
 
 base::android::ScopedJavaLocalRef<jobject> ProfileAndroid::GetProfileKey(
@@ -121,9 +163,14 @@ void ProfileAndroid::Wipe(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   profile_->Wipe();
 }
 
+jlong ProfileAndroid::GetBrowserContextPointer(JNIEnv* env) {
+  return reinterpret_cast<jlong>(
+      static_cast<content::BrowserContext*>(profile_));
+}
+
 // static
-ScopedJavaLocalRef<jobject> JNI_Profile_GetLastUsedProfile(JNIEnv* env) {
-  return ProfileAndroid::GetLastUsedProfile(env);
+ScopedJavaLocalRef<jobject> JNI_Profile_GetLastUsedRegularProfile(JNIEnv* env) {
+  return ProfileAndroid::GetLastUsedRegularProfile(env);
 }
 
 // static

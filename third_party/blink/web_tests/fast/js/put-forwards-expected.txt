@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Overriding getter of [PutForwards] attribute
-PASS Overriding setter of [PutForwards] target attribute
-PASS Overriding target of [PutForwards] attribute
-FAIL Exception propagation from getter of [PutForwards] attribute assert_throws: function "() => element.style = "color: green"" threw "exception" with type "string", not an object
-FAIL Exception propagation from setter of [PutForwards] target attribute assert_throws: function "() => element.style = "color: green"" threw "exception" with type "string", not an object
-PASS TypeError when getter of [PutForwards] attribute returns non-object
-Harness: the test ran to completion.
-

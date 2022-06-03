@@ -6,16 +6,13 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/network/public/mojom/content_security_policy.mojom";
-import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
-import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/http_raw_request_response_info.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/origin_policy_manager.mojom";
+import "services/network/public/mojom/parsed_headers.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
 
@@ -55,9 +52,11 @@ struct URLResponseHead {
   // True if the request accessed the network in the process of retrieving data.
   bool network_accessed = false;
 
-  // The appcache this response was loaded from, or kAppCacheNoCacheId.
+  // The appcache this response was loaded from, or
+  // kAppCacheNoCacheId (hard-coded as 0 because services/network
+  // can't take a dependency on Blink).
   // TODO(rdsmith): Remove conceptual dependence on appcache.
-  int64 appcache_id;
+  int64 appcache_id = 0;
 
   // The manifest url of the appcache this response was loaded from.
   // Note: this value is only populated for main resource requests.
@@ -67,16 +66,17 @@ struct URLResponseHead {
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
 
-  // Actual request and response headers, as obtained from the network stack.
-  // Only present if the renderer set report_raw_headers to true and had the
-  // CanReadRawCookies permission.
-  HttpRawRequestResponseInfo? raw_request_response_info;
+  // Set to true if the request had devtools_request_id set and OnRawRequest
+  // and OnRawResponse are called on the corresponding DevToolsObserver. This
+  // allows Chrome DevTools Protocol clients to know whether they should wait
+  // for the signals from OnRawRequest and OnRawResponse for this request.
+  bool emitted_extra_info = false;
 
   // True if the response was delivered using SPDY.
   bool was_fetched_via_spdy = false;
 
   // True if the response was delivered after NPN is negotiated.
-  bool was_alpn_negotiated;
+  bool was_alpn_negotiated = false;
 
   // True if response could use alternate protocol. However, browser will
   // ignore the alternate protocol when spdy is not enabled on browser side.
@@ -91,6 +91,10 @@ struct URLResponseHead {
   // Remote address of the socket which fetched this resource.
   IPEndPoint remote_endpoint;
 
+  // True if the response was fetched from the cache and validated over the
+  // network.
+  bool is_validated = false;
+
   // True if the response came from cache.
   bool was_fetched_via_cache = false;
 
@@ -99,17 +103,18 @@ struct URLResponseHead {
 
   // True if a service worker responded to the request. If the service worker
   // received a fetch event and did not call respondWith(), or was bypassed due
-  // to absence of a fetch event handler, this function typically returns false
-  // but returns true if "fallback to renderer" was required (however in this
-  // case the response is not an actual resource and the request will be
-  // reissued by the renderer).
+  // to absence of a fetch event handler, this is false.
   bool was_fetched_via_service_worker = false;
 
-  // True when a request whose mode is |CORS| or |CORS-with-forced-preflight|
-  // is sent to a ServiceWorker but FetchEvent.respondWith is not called. So the
-  // renderer has to resend the request with skip service worker flag
-  // considering the CORS preflight logic.
-  bool was_fallback_required_by_service_worker;
+  // Source of a serviceworker response - CacheStorage, HttpCache, Network or
+  // Unspecified (default).
+  // The value can be Unspecified in some cases including:
+  // 1. |was_fetched_via_service_worker| is false.
+  // 2. The service worker responded with an error (response status code is 0).
+  // 3. The service worker responded with a generated response, i.e.,
+  // `respondWith(new Response(...))`.
+  FetchResponseSource service_worker_response_source =
+      FetchResponseSource.kUnspecified;
 
   // The URL list of the Response object the service worker passed to
   // respondWith() to create this response. For example, if the service worker
@@ -122,11 +127,13 @@ struct URLResponseHead {
   array<url.mojom.Url> url_list_via_service_worker;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
-  FetchResponseType response_type;
+  FetchResponseType response_type = FetchResponseType.kDefault;
 
-  // True when the response is served from the CacheStorage via the
-  // ServiceWorker.
-  bool is_in_cache_storage = false;
+  // Pre-computed padding.  This should only be non-zero when |response_type|
+  // is set to kOpaque.  Note, this is not set by network service, but will be
+  // populated if the response was provided by a service worker FetchEvent
+  // handler.
+  int64 padding = 0;
 
   // The cache name of the CacheStorage from where the response is served via
   // the ServiceWorker. Empty if the response isn't from the CacheStorage.
@@ -138,7 +145,7 @@ struct URLResponseHead {
 
   // Only provided if kURLLoadOptionSendSSLInfoWithResponse was specified to
   // the URLLoaderFactory::CreateLoaderAndStart option or
-  // if ResourceRequest::report_raw_headers is set. When set via
+  // if ResourceRequest::devtools_request_id is set. When set via
   // |report_raw_headers|, the SSLInfo is not guaranteed to be fully populated
   // and may only contain certain fields of interest (namely, connection
   // parameters and certificate information).
@@ -171,12 +178,18 @@ struct URLResponseHead {
   // True if this resource is served from the prefetch cache.
   bool was_in_prefetch_cache = false;
 
+  // True if the request included a cookie.
+  bool was_cookie_in_request = false;
+
   // True if the response was intercepted by a plugin.
   bool intercepted_by_plugin = false;
 
   // True if the response was sent over TLS 1.0 or 1.1, which are deprecated and
   // will be removed in the future.
   bool is_legacy_tls_version = false;
+
+  // https://fetch.spec.whatwg.org/#concept-response-range-requested-flag
+  bool has_range_requested = false;
 
   // https://fetch.spec.whatwg.org/#concept-response-timing-allow-passed
   bool timing_allow_passed = false;
@@ -185,14 +198,19 @@ struct URLResponseHead {
   // recorded here.
   AuthChallengeInfo? auth_challenge_info;
 
-  // The parsed content security policy from the response headers.
-  array<ContentSecurityPolicy> content_security_policy;
-
   // TimeTicks::Now() when the browser received the request from the renderer.
   mojo_base.mojom.TimeTicks request_start;
 
   // TimeTicks::Now() when the browser sent the response to the renderer.
   mojo_base.mojom.TimeTicks response_start;
+
+  // A set of security related parsed headers. This is for clients that should
+  // not do the parsing themselves, because they aren't sandboxed (e.g. the
+  // browser process). This is the output of network::PopulateParsedHeaders().
+  //
+  // This can be null. It means the URLLoader didn't parsed the headers. Either
+  // it wasn't implemented or not allowed from its process.
+  ParsedHeaders? parsed_headers;
 
   // Origin Policy associated with this response or nullptr if not applicable.
   // Spec: https://wicg.github.io/origin-policy/
@@ -203,11 +221,23 @@ struct URLResponseHead {
   // (see corresponding documentation in url_loader.mojom).
   mojo_base.mojom.UnguessableToken? recursive_prefetch_token;
 
-  // The parsed value of the Cross-Origin-Embedder-Policy (COEP) header.
-  CrossOriginEmbedderPolicy cross_origin_embedder_policy =
-      CrossOriginEmbedderPolicy.kNone;
+  // Aliases, if any, for the destination URL, as read from DNS CNAME records.
+  // The first entry of `dns_aliases`, if it exists, is the canonical name.
+  // The alias chain is preserved in reverse order, from canonical name (i.e.
+  // address record name) through to query name.
+  array<string> dns_aliases;
 
-  // The parsed value of the Cross-Origin-Opener-Policy (COOP) header.
-  CrossOriginOpenerPolicy cross_origin_opener_policy =
-      CrossOriginOpenerPolicy.kUnsafeNone;
+  // The URL of WebBundle this response was loaded from. This value is only
+  // populated for resources loaded from a WebBundle.
+  url.mojom.Url web_bundle_url;
+
+  // True when there is an "authorization" header on the request and it is
+  // covered by the wildcard in the preflight response.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool has_authorization_covered_by_wildcard_on_preflight = false;
+
+  // The request's |includeCredentials| value from the "HTTP-network fetch"
+  // algorithm.
+  // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
+  bool request_include_credentials = true;
 };

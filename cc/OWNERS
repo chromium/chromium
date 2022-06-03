@@ -5,9 +5,8 @@
 # Folks listed as unofficial can't do OWNERS approvals but are good people to
 # ask for informal reviews.
 
+set noparent
 # layers
-enne@chromium.org
-danakj@chromium.org
 pdr@chromium.org
 wangxianzhu@chromium.org
 
@@ -19,12 +18,12 @@ sunnyps@chromium.org
 
 # tiles, tile management, and raster work
 vmpstr@chromium.org
-ericrk@chromium.org
 
 # texture uploading
 sunnyps@chromium.org
 
 # math / geometry
+dbaron@chromium.org
 flackr@chromium.org
 
 # property trees
@@ -38,28 +37,27 @@ flackr@chromium.org
 smcgruer@chromium.org
 
 # images
-ericrk@chromium.org
-khushalsagar@chromium.org
 vmpstr@chromium.org
 
 # surfaces
-enne@chromium.org
 kylechar@chromium.org
-samans@chromium.org
+jonross@chromium.org
 
 # input, scrolling
 bokan@chromium.org
-
-# scroll snap
-majidvp@chromium.org
+flackr@chromium.org
+skobes@chromium.org
 
 # metrics
 sadrul@chromium.org
+behdadb@chromium.org
+
+# paint
+sunnyps@chromium.org
+vasilyt@chromium.org
+reed@google.com
+fmalita@chromium.org
 
 # general
-enne@chromium.org
-danakj@chromium.org
 vmpstr@chromium.org
-
-# TEAM: graphics-dev@chromium.org
-# COMPONENT: Internals>Compositing
+khushalsagar@chromium.org

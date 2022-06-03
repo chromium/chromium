@@ -55,7 +55,7 @@
 
     promise_test(async () => {
         eventFired = false;
-        eventSender.setPageZoomFactor(1.2);
+        testRunner.setPageZoomFactor(1.2);
         await sendMouseDownAt(100, 100);
         assert_true(eventFired);
         assert_approx_equals(lastEvent.clientX, 83.33333, floatPrecision, "clientX");
@@ -69,7 +69,7 @@
     promise_test(async () => {
         eventFired = false;
         window.scrollTo(50, 50);
-        eventSender.setPageZoomFactor(1.0)
+        testRunner.setPageZoomFactor(1.0)
         await sendMouseDownAt(100, 100);
         assert_true(eventFired);
             assert_equals(lastEvent.clientX, 100, "clientX");
@@ -83,7 +83,7 @@
 
     promise_test(async () => {
         eventFired = false;
-        eventSender.setPageZoomFactor(1.2);
+        testRunner.setPageZoomFactor(1.2);
         window.scrollTo(50, 50);
         await sendMouseDownAt(100, 100);
         assert_true(eventFired);
@@ -93,7 +93,7 @@
         assert_approx_equals(lastEvent.pageY, 133.33333, floatPrecision, "pageY");
         assert_approx_equals(lastEvent.offsetX, 133.33333, floatPrecision, "offsetX");
         assert_approx_equals(lastEvent.offsetY, 133.33333, floatPrecision, "offsetY");
-        eventSender.setPageZoomFactor(1.0)
+        testRunner.setPageZoomFactor(1.0)
         window.scrollTo(0, 0);
     }, 'Zoomed and scrolled');
 </script>

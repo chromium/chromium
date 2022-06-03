@@ -30,6 +30,11 @@ namespace {
 class NSSTempCertsCacheChromeOSTest : public testing::Test {
  public:
   NSSTempCertsCacheChromeOSTest() {}
+
+  NSSTempCertsCacheChromeOSTest(const NSSTempCertsCacheChromeOSTest&) = delete;
+  NSSTempCertsCacheChromeOSTest& operator=(
+      const NSSTempCertsCacheChromeOSTest&) = delete;
+
   ~NSSTempCertsCacheChromeOSTest() override {}
 
  protected:
@@ -90,9 +95,6 @@ class NSSTempCertsCacheChromeOSTest : public testing::Test {
         net::ParseTbsCertificate(tbs_certificate_tlv, options, &tbs, nullptr));
     *out_subject = tbs.subject_tlv;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NSSTempCertsCacheChromeOSTest);
 };
 
 // Checks that a certificate made available through the
@@ -110,7 +112,7 @@ TEST_F(NSSTempCertsCacheChromeOSTest, CertMadeAvailable) {
     ASSERT_TRUE(base::ReadFileToString(cert_file_path, &x509_authority_cert));
     net::CertificateList x509_authority_certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            x509_authority_cert.data(), x509_authority_cert.length(),
+            base::as_bytes(base::make_span(x509_authority_cert)),
             net::X509Certificate::Format::FORMAT_AUTO);
 
     NSSTempCertsCacheChromeOS cache(x509_authority_certs);

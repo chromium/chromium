@@ -6,29 +6,42 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_UTIL_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace views {
-class StyledLabel;
+class Label;
 class Textfield;
+class Throbber;
 }  // namespace views
 
 namespace autofill {
 
 // Defines a title view with an icon, a separator, and a label, to be used
-// by dialogs that need to present the Google Pay logo with a separator and
-// custom horizontal padding.
+// by dialogs that need to present the Google or Google Pay logo with a
+// separator and custom horizontal padding.
 class TitleWithIconAndSeparatorView : public views::View {
  public:
-  explicit TitleWithIconAndSeparatorView(const base::string16& window_title);
+  METADATA_HEADER(TitleWithIconAndSeparatorView);
+
+  enum class Icon {
+    // Google Pay icon. The "Pay" portion is recolored for light/dark mode.
+    GOOGLE_PAY,
+    // Google super G.
+    GOOGLE_G,
+  };
+
+  TitleWithIconAndSeparatorView(const std::u16string& window_title,
+                                Icon icon_to_show);
   ~TitleWithIconAndSeparatorView() override;
 
  private:
@@ -43,18 +56,34 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield();
 // parsing and the links clicking events.
 class LegalMessageView : public views::View {
  public:
-  explicit LegalMessageView(const LegalMessageLines& legal_message_lines,
-                            views::StyledLabelListener* listener);
-  ~LegalMessageView() override;
+  METADATA_HEADER(LegalMessageView);
 
-  const GURL GetUrlForLink(views::StyledLabel* label, const gfx::Range& range);
+  using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
+
+  LegalMessageView(const LegalMessageLines& legal_message_lines,
+                   LinkClickedCallback callback);
+  ~LegalMessageView() override;
+};
+
+PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
+    views::Widget::ClosedReason reason);
+
+// TODO(crbug.com/1249665): Replace all payments' progress bar usages with this.
+// Creates a progress bar with an explanatory text below.
+class ProgressBarWithTextView : public views::View {
+ public:
+  METADATA_HEADER(ProgressBarWithTextView);
+
+  explicit ProgressBarWithTextView(const std::u16string& progress_bar_text);
+  ~ProgressBarWithTextView() override;
 
  private:
-  std::unique_ptr<views::StyledLabel> CreateLegalMessageLineLabel(
-      const LegalMessageLine& line,
-      views::StyledLabelListener* listener);
+  // views::View:
+  void OnThemeChanged() override;
+  void AddedToWidget() override;
 
-  LegalMessageLines legal_message_lines_;
+  views::Label* progress_label_ = nullptr;
+  views::Throbber* progress_throbber_ = nullptr;
 };
 
 }  // namespace autofill

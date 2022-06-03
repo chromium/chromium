@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_CONSTANTS_H_
 
-#include <string>
-
 namespace chromeos {
 
 namespace secure_channel {

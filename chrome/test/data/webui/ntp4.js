@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 GEN('#include "chrome/test/data/webui/ntp4_browsertest.h"');
+GEN('#include "content/public/test/browser_test.h"');
 
 /**
  * TestFixture for NTP4 WebUI testing.

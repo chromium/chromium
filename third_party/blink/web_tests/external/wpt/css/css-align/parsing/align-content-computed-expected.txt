@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Property align-content value 'normal'
+PASS Property align-content value 'baseline'
+FAIL Property align-content value 'last baseline' assert_true: 'last baseline' is a supported value for align-content. expected true got false
+PASS Property align-content value 'space-between'
+PASS Property align-content value 'space-around'
+PASS Property align-content value 'space-evenly'
+PASS Property align-content value 'stretch'
+PASS Property align-content value 'center'
+PASS Property align-content value 'start'
+PASS Property align-content value 'end'
+PASS Property align-content value 'flex-start'
+PASS Property align-content value 'flex-end'
+PASS Property align-content value 'unsafe end'
+PASS Property align-content value 'safe flex-start'
+Harness: the test ran to completion.
+

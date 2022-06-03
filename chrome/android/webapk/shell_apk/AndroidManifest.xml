@@ -23,20 +23,33 @@
     {{{raw_manifest_tags}}}
 
     <uses-sdk
-        android:minSdkVersion="19"
+        android:minSdkVersion="23"
         android:targetSdkVersion="29" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/short_name"
         android:allowBackup="false"
         android:supportsRtl="true">
-        <activity android:name="org.chromium.webapk.shell_apk.[[#use_new_splash]]h2o.H2O[[/use_new_splash]]TransparentLauncherActivity"
+        <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OTransparentLauncherActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:excludeFromRecents="true"
+                  android:exported="true"
                   android:relinquishTaskIdentity="true">
             {{#intent_filters}}
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"></action>
                 <category android:name="android.intent.category.DEFAULT"></category>
                 <category android:name="android.intent.category.BROWSABLE"></category>
@@ -51,10 +64,16 @@
             {{{raw_intent_filters}}}
          </activity>
 
-        [[#use_new_splash]]
+        <activity android:name="org.chromium.webapk.shell_apk.ManageDataLauncherActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        </activity>
+
         <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
                   android:theme="@style/SplashTheme"
-                  android:relinquishTaskIdentity="true">
+                  android:relinquishTaskIdentity="true"
+                  android:screenOrientation="{{{android_orientation}}}"
+                  android:exported="true"
+                  android:enabled="[[#use_new_splash]]@bool/opaque_main_activity_enabled_default[[/use_new_splash]][[^use_new_splash]]false[[/use_new_splash]]">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -63,15 +82,16 @@
         </activity>
         <activity android:name="org.chromium.webapk.shell_apk.h2o.SplashActivity"
                   android:theme="@style/SplashTheme"
+                  android:screenOrientation="{{{android_orientation}}}"
                   android:launchMode="singleTask">
         </activity>
         <provider android:name="org.chromium.webapk.shell_apk.h2o.SplashContentProvider"
                   android:authorities="{{manifest_package}}.SplashContentProvider"
                   android:exported="true" />
-        [[/use_new_splash]]
-        <activity android:name="org.chromium.webapk.shell_apk.[[#use_new_splash]]h2o.H2O[[/use_new_splash]]MainActivity"
+        <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OMainActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  [[#use_new_splash]]android:enabled="false"[[/use_new_splash]]
+                  android:exported="true"
+                  android:enabled="[[#use_new_splash]]@bool/transparent_main_activity_enabled_default[[/use_new_splash]][[^use_new_splash]]true[[/use_new_splash]]"
                   android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,7 +103,8 @@
         {{#share_template}}
         <activity-alias android:name="org.chromium.webapk.shell_apk.ShareActivity{{{index}}}"
                   android:label="{{{title}}}"
-                  android:targetActivity="org.chromium.webapk.shell_apk.[[#use_new_splash]]h2o.H2O[[/use_new_splash]]TransparentLauncherActivity">
+                  android:exported="true"
+                  android:targetActivity="org.chromium.webapk.shell_apk.h2o.H2OTransparentLauncherActivity">
           <meta-data android:name="org.chromium.webapk.shell_apk.shareAction" android:value="{{{action}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareMethod" android:value="{{{method}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareParamTitle" android:value="{{{param_title}}}" />
@@ -117,7 +138,7 @@
           {{/is_file_upload}}
         </activity-alias>
         {{/share_template}}
-        <meta-data android:name="org.chromium.webapk.shell_apk.shellApkVersion" android:value="[[{shell_apk_version}]]" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.shellApkVersion" android:value="[[ shell_apk_version ]]" />
         {{#bound_webapk}}
         <meta-data android:name="org.chromium.webapk.shell_apk.runtimeHost" android:value="{{{runtime_host}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.runtimeHostApplicationName" android:value="{{{runtime_host_application_name}}}" />
@@ -149,7 +170,9 @@
         <meta-data android:name="org.chromium.webapk.shell_apk.iconUrlsAndIconMurmur2Hashes" android:value="{{{icon_urls_and_icon_murmur2_hashes}}}" />
 
         <meta-data android:name="org.chromium.webapk.shell_apk.webManifestUrl" android:value="{{{web_manifest_url}}}" />
-        {{#badge_icon_id}}<meta-data android:name="org.chromium.webapk.shell_apk.badgeIconId" android:resource="{{{badge_icon_id}}}" />{{/badge_icon_id}}
+
+        <meta-data android:name="org.chromium.webapk.shell_apk.isNewStyleWebApk" android:value="[[ use_new_splash ]]" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.enableSiteSettingsShortcut" android:value="{{{enable_site_settings_shortcut}}}" />
         <service
             android:name="org.chromium.webapk.shell_apk.WebApkServiceFactory"
             android:exported="true"

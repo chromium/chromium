@@ -7,4 +7,10 @@ specific_include_rules = {
     # Allow the unittest to create a data_decoder service.
     "+services/data_decoder"
   ],
+
+  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
+  # https://crbug.com/1084826
+  "developer_private_api\.cc": [
+    "+chrome/browser/apps/app_service/app_launch_params.h",
+  ],
 }

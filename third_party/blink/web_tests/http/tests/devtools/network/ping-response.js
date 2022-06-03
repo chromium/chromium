@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Test that ping request response is recorded.\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function sendBeacon()
@@ -21,7 +21,7 @@
     NetworkTestRunner.networkRequests().pop().requestContent().then(step3);
   }
 
-  function step3() {
+  async function step3() {
     var request = NetworkTestRunner.networkRequests().pop();
     TestRunner.addResult('URL: ' + request.url());
     TestRunner.addResult('Finished: ' + request.finished);
@@ -30,7 +30,7 @@
     TestRunner.addResult('Status: ' + request.statusCode + ' ' + request.statusText);
     TestRunner.addResult('Has raw request headers: ' + (typeof request.requestHeadersText() === 'string'));
     TestRunner.addResult('Has raw response headers: ' + (typeof request.responseHeadersText === 'string'));
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

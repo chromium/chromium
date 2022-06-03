@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/app/notification_dialog_view_controller.h"
-
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
-#import "ios/third_party/material_components_ios/src/components/Dialogs/src/MaterialDialogs.h"
-#import "remoting/ios/app/remoting_theme.h"
 
 #include <algorithm>
 
-#include "base/logging.h"
+#import <MaterialComponents/MaterialButtons.h>
+#import <MaterialComponents/MaterialDialogs.h>
+
+#include "base/check.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/client/notification/notification_message.h"
+#import "remoting/ios/app/remoting_theme.h"
 #include "remoting/ios/app/view_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 static const CGFloat kLabelInset = 20.f;
 static const CGFloat kSwitchInset = 10.f;
@@ -229,9 +229,10 @@ static const CGFloat kDontShowAgainViewHeightAdjustment = 10.f;
 }
 
 - (void)didTapLinkButton:(id)button {
+  NSURL* linkUrl = _linkUrl;
   [self dismissViewControllerAnimated:YES
                            completion:^() {
-                             [UIApplication.sharedApplication openURL:_linkUrl
+                             [UIApplication.sharedApplication openURL:linkUrl
                                                               options:@{}
                                                     completionHandler:nil];
                            }];

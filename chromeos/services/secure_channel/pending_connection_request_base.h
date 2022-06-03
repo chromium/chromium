@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
@@ -35,6 +34,10 @@ class PendingConnectionRequestBase
     : public PendingConnectionRequest<FailureDetailType>,
       public ClientConnectionParameters::Observer {
  public:
+  PendingConnectionRequestBase(const PendingConnectionRequestBase&) = delete;
+  PendingConnectionRequestBase& operator=(const PendingConnectionRequestBase&) =
+      delete;
+
   ~PendingConnectionRequestBase() override {
     if (client_connection_parameters_)
       client_connection_parameters_->RemoveObserver(this);
@@ -114,8 +117,6 @@ class PendingConnectionRequestBase
   bool has_finished_without_connection_ = false;
 
   base::WeakPtrFactory<PendingConnectionRequestBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionRequestBase);
 };
 
 }  // namespace secure_channel

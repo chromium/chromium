@@ -5,6 +5,9 @@
 // This file ensures that these header files don't include Windows.h and can
 // compile without including Windows.h. This helps to improve compile times.
 
+#include "base/allocator/partition_allocator/partition_alloc-inl.h"
+#include "base/allocator/partition_allocator/partition_tls.h"
+#include "base/allocator/partition_allocator/spinning_mutex.h"
 #include "base/atomicops.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
@@ -24,10 +27,19 @@
 // Make sure windows.h can be included after windows_types.h
 #include "base/win/windows_types.h"
 
+// windows.h must be included before objidl.h
 #include <windows.h>
+
+#include <objidl.h>
 
 // Check that type sizes match.
 static_assert(sizeof(CHROME_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),
               "Definition mismatch.");
 static_assert(sizeof(CHROME_SRWLOCK) == sizeof(SRWLOCK),
               "Definition mismatch.");
+static_assert(sizeof(CHROME_WIN32_FIND_DATA) == sizeof(WIN32_FIND_DATA),
+              "Definition mismatch.");
+static_assert(sizeof(CHROME_FORMATETC) == sizeof(FORMATETC),
+              "Definition mismatch.");
+static_assert(sizeof(CHROME_LUID) == sizeof(LUID), "Definition mismatch.");
+static_assert(sizeof(CHROME_MSG) == sizeof(MSG), "Definition mismatch.");

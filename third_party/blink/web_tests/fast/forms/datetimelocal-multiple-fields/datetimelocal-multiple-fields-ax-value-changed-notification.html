@@ -31,7 +31,7 @@ async_test((t) => {
     window.setTimeout(function() {
         assert_unreached("Did not receive all accessibility notifications");
         t.done();
-    }, 500);
+    }, 1000);
 }, 'This test checks value changed accessibility notifications.');
 
 </script>

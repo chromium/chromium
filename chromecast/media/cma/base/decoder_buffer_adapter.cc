@@ -84,10 +84,5 @@ bool DecoderBufferAdapter::end_of_stream() const {
   return buffer_->end_of_stream();
 }
 
-scoped_refptr<::media::DecoderBuffer>
-DecoderBufferAdapter::ToMediaBuffer() const {
-  return buffer_;
-}
-
 }  // namespace media
 }  // namespace chromecast

@@ -6,9 +6,7 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("video_decode_stats_proto") {
-  sources = [
-    "video_decode_stats.proto",
-  ]
+  sources = [ "video_decode_stats.proto" ]
 }
 
 source_set("capabilities") {

@@ -1,37 +1,7 @@
 <!DOCTYPE html>
-<html>
-<head>
-<link rel="help" href="http://www.w3.org/TR/DOM-Level-3-Events/#events-WheelEvent">
-<script src="../../../resources/js-test.js"></script>
-<script>
-function runTest() {
-    var div = document.getElementById('target');
-    div.addEventListener('wheel', wheelHandler);
-    div.addEventListener('mousewheel', mouseWheelHandler);
-    if (window.eventSender) {
-        eventSender.mouseMoveTo(div.offsetLeft + 5, div.offsetTop + 5);
-        eventSender.mouseScrollBy(10, 20, false, true, 0, true, "phaseBegan");
-        finishJSTest();
-    } else {
-        debug("FAIL: This test requires window.eventSender.");
-        finishJSTest();
-    }
-}
-
-var testEvent;
-function wheelHandler(e) {
-    testEvent = e;
-    testPassed("Standard wheel event was fired.");
-    shouldBe("testEvent.__proto__", "WheelEvent.prototype");
-}
-
-function mouseWheelHandler(e) {
-    testFailed("mousewheel event should not have fired.");
-}
-
-</script>
-</head>
-<body>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <span id="parent">
     <div id="target" style="border:solid 1px green; width:220px; height:70px; overflow:scroll">
         TOP TOP TOP TOP TOP TOP TOP
@@ -44,11 +14,28 @@ function mouseWheelHandler(e) {
         END END END END END END END
     </div>
 </span>
-<script>
-description("Tests the interaction between the standard 'wheel' event and the non-standard 'mousewheel' one");
-window.jsTestIsAsync = true;
 
-runTest();
+<script>
+var receivedMouseWheel = false;
+var testEvent;
+
+function wheelHandler(e) {
+    testEvent = e; 
+}
+
+function mouseWheelHandler(e) {
+    receivedMouseWheel = true;
+}
+
+promise_test(async () => {
+    var div = document.getElementById('target');
+    div.addEventListener('wheel', wheelHandler);
+    div.addEventListener('mousewheel', mouseWheelHandler);
+    var center = elementCenter(div);
+    await wheelTick(-20, -20, center, 4000);
+
+    assert_equals(testEvent.__proto__, WheelEvent.prototype, "Standard wheel event was fired.");
+    assert_false(receivedMouseWheel, "mousewheel event should not have fired.");
+}, "Tests the interaction between the standard and the non-standard 'mousewheel'.");
+
 </script>
-</body>
-</html>

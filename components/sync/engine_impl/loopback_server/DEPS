@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/sync/base",
-  "+components/sync/engine_impl/net",
-  "+net",
-]

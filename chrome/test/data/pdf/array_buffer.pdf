@@ -1,0 +1,57 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /OpenAction 3 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 612 792]
+>>
+endobj
+3 0 obj <<
+  /Type /Action
+  /S /JavaScript
+  /JS 4 0 R
+>>
+endobj
+4 0 obj <<
+  /Length 258
+>>
+stream
+var ab1, ab2, ab3;
+try {
+  ab1 = new ArrayBuffer(1000);
+  ab2 = new ArrayBuffer(2000000);
+  ab3 = new ArrayBuffer(2147483640); // Too large per pdfium.
+} catch (e) {
+}
+// Clumsily signal test harness if successful.
+if (ab1 && ab2 && !ab3) {
+  app.beep(1);
+}
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000015 00000 n 
+0000000088 00000 n 
+0000000228 00000 n 
+0000000294 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 5
+>>
+startxref
+604
+%%EOF

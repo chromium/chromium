@@ -1,0 +1,6 @@
+Verifies that disable cache works for media resources.
+
+got first media request
+reloading page
+got second media request
+

@@ -10,15 +10,16 @@
 #include <map>
 
 #include "base/atomic_sequence_num.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
-#include "content/common/render_message_filter.mojom.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/common/widget_type.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -33,10 +34,28 @@ class RenderWidgetHelper
  public:
   RenderWidgetHelper();
 
+  RenderWidgetHelper(const RenderWidgetHelper&) = delete;
+  RenderWidgetHelper& operator=(const RenderWidgetHelper&) = delete;
+
   void Init(int render_process_id);
 
   // Gets the next available routing id.  This is thread safe.
   int GetNextRoutingID();
+
+  // Retrieve a previously stored frame tokens. Returns true if the tokens
+  // were found.
+  bool TakeFrameTokensForFrameRoutingID(
+      int32_t routing_id,
+      blink::LocalFrameToken& frame_token,
+      base::UnguessableToken& devtools_frame_token);
+
+  // Store a set of frame tokens given a routing id. This is usually called on
+  // the IO thread, and |GetFrameTokensForFrameRoutingID| will be called on the
+  // UI thread at a later point.
+  void StoreNextFrameRoutingID(
+      int32_t routing_id,
+      const blink::LocalFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token);
 
   // IO THREAD ONLY -----------------------------------------------------------
 
@@ -45,14 +64,6 @@ class RenderWidgetHelper
   // store in a scoped_refptr.
   static RenderWidgetHelper* FromProcessHostID(int render_process_host_id);
 
-  // IO THREAD ONLY -----------------------------------------------------------
-  void CreateNewWidget(int opener_id,
-                       mojo::PendingRemote<mojom::Widget>,
-                       int* route_id);
-  void CreateNewFullscreenWidget(int opener_id,
-                                 mojo::PendingRemote<mojom::Widget>,
-                                 int* route_id);
-
  private:
   friend class base::RefCountedThreadSafe<RenderWidgetHelper>;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::IO>;
@@ -60,22 +71,31 @@ class RenderWidgetHelper
 
   ~RenderWidgetHelper();
 
-  // Called on the UI thread to finish creating a widget.
-  void OnCreateWidgetOnUI(int32_t opener_id,
-                          int32_t route_id,
-                          mojo::PendingRemote<mojom::Widget> widget);
-
-  // Called on the UI thread to create a fullscreen widget.
-  void OnCreateFullscreenWidgetOnUI(int32_t opener_id,
-                                    int32_t route_id,
-                                    mojo::PendingRemote<mojom::Widget> widget);
-
   int render_process_id_;
+
+  struct FrameTokens {
+    FrameTokens(const blink::LocalFrameToken& frame_token,
+                const base::UnguessableToken& devtools_frame_token);
+    FrameTokens(const FrameTokens& other);
+    FrameTokens& operator=(const FrameTokens& other);
+    ~FrameTokens();
+
+    blink::LocalFrameToken frame_token;
+    base::UnguessableToken devtools_frame_token;
+  };
+
+  // Lock that is used to provide access to |frame_token_routing_id_map_|
+  // from the IO and UI threads.
+  base::Lock frame_token_map_lock_;
+
+  // Map that stores handed out routing IDs and frame tokens. Items
+  // will be removed from this table in GetFrameTokensForRoutingID.
+  // Locked by |lock_|
+  std::map<int32_t, FrameTokens> frame_token_routing_id_map_
+      GUARDED_BY(frame_token_map_lock_);
 
   // The next routing id to use.
   base::AtomicSequenceNumber next_routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHelper);
 };
 
 }  // namespace content

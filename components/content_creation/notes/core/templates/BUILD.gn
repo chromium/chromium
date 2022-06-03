@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("templates") {
+  sources = [
+    "note_template.cc",
+    "note_template.h",
+    "template_constants.cc",
+    "template_constants.h",
+    "template_store.cc",
+    "template_store.h",
+  ]
+
+  deps = [
+    ":types",
+    "//base",
+    "//components/content_creation/notes/core:features",
+    "//components/content_creation/notes/core:prefs",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//ui/base",
+  ]
+}
+
+static_library("types") {
+  sources = [
+    "template_types.cc",
+    "template_types.h",
+  ]
+
+  deps = [ "//base" ]
+}

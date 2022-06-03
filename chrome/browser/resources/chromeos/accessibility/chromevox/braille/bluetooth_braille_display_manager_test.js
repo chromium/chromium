@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
-
+GEN_INCLUDE(['../testing/chromevox_webui_test_base.js']);
 GEN_INCLUDE(['../testing/fake_objects.js']);
+
+GEN('#include "content/public/test/browser_test.h"');
 
 // Fake out the Chrome API namespace we depend on.
 var chrome = {};
@@ -25,79 +26,71 @@ chrome.accessibilityPrivate = {};
 
 /**
  * A fake BluetoothBraileDisplayManagerListener.
- * @constructor
  */
-function FakeBluetoothBrailleDisplayManagerListener() {
-  this.displays = [];
-  this.wasPincodeRequested = false;
+class FakeBluetoothBrailleDisplayManagerListener {
+  constructor() {
+    this.displays = [];
+    this.wasPincodeRequested = false;
+  }
+
+  onDisplayListChanged(displays) {
+    this.displays = displays;
+  }
+
+  onPincodeRequested(displays) {
+    this.wasPincodeRequested = true;
+  }
 }
 
-FakeBluetoothBrailleDisplayManagerListener.prototype = {
-  onDisplayListChanged: function(displays) {
-    this.displays = displays;
-  },
-  onPincodeRequested: function(displays) {
-    this.wasPincodeRequested = true;
-  },
-};
 
 /**
  * Test fixture.
- * @constructor
- * @extends {ChromeVoxUnitTestBase}
  */
-function ChromeVoxBluetoothBrailleDisplayManagerUnitTest() {
-  ChromeVoxUnitTestBase.call(this);
-}
+ChromeVoxBluetoothBrailleDisplayManagerWebUITest =
+    class extends ChromeVoxWebUITestBase {};
 
-ChromeVoxBluetoothBrailleDisplayManagerUnitTest.prototype = {
-  __proto__: ChromeVoxUnitTestBase.prototype,
+/** @override */
+ChromeVoxBluetoothBrailleDisplayManagerWebUITest.prototype.closureModuleDeps = [
+  'BluetoothBrailleDisplayManager',
+];
 
-  /** @override */
-  isAsync: true,
-
-  /** @override */
-  closureModuleDeps: [
-    'BluetoothBrailleDisplayManager',
-  ]
-};
-
+ChromeVoxBluetoothBrailleDisplayManagerWebUITest.prototype.isAsync = true;
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest', 'Connect', function() {
-      var connectCalled = false;
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest', 'Connect', function() {
+      let connectCalled = false;
       chrome.bluetoothPrivate.connect = (result, callback) => {
         connectCalled = true;
         callback();
       };
       chrome.bluetoothPrivate.disconnectAll = assertNotReached;
       chrome.bluetoothPrivate.pair = this.newCallback();
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: false, paired: false});
       assertTrue(connectCalled);
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest', 'ConnectAlreadyPaired',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest', 'ConnectAlreadyPaired',
     function() {
       chrome.bluetoothPrivate.connect = this.newCallback();
       chrome.bluetoothPrivate.disconnectAll = assertNotReached;
       chrome.bluetoothPrivate.pair = assertNotReached;
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: false, paired: true});
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'ConnectAlreadyConnectedNotPaired', function() {
       chrome.bluetoothPrivate.connect = assertNotReached;
       chrome.bluetoothPrivate.disconnectAll = assertNotReached;
       chrome.bluetoothPrivate.pair = this.newCallback();
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: true, paired: false});
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'DisconnectPreviousPreferredOnConnectNewPreferred', function() {
       chrome.bluetoothPrivate.connect = this.newCallback((address) => {
         assertEquals('abcd', address);
@@ -108,26 +101,26 @@ TEST_F(
             callback();
           });
       localStorage['preferredBrailleDisplayAddress'] = '1234';
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: false, paired: false});
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest', 'ReconnectPreferred',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest', 'ReconnectPreferred',
     function() {
       chrome.bluetoothPrivate.connect = this.newCallback();
       chrome.bluetoothPrivate.disconnectAll = assertNotReached;
       localStorage['preferredBrailleDisplayAddress'] = 'abcd';
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
       manager.connect({address: 'abcd', connected: false, paired: false});
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest', 'Listener', function() {
-      var manager = new BluetoothBrailleDisplayManager();
-      var listener = new FakeBluetoothBrailleDisplayManagerListener();
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest', 'Listener', function() {
+      const manager = new BluetoothBrailleDisplayManager();
+      const listener = new FakeBluetoothBrailleDisplayManagerListener();
       manager.addListener(listener);
-      var devices = [];
+      let devices = [];
       chrome.bluetooth.getDevices = (callback) => callback(devices);
 
       // No devices have been added, removed, or changed.
@@ -161,7 +154,7 @@ SYNC_TEST_F(
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'ConnectPreferredTriggersBrlttyUpdate', function() {
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
           this.newCallback((address) => {
@@ -169,8 +162,8 @@ TEST_F(
           });
 
       localStorage['preferredBrailleDisplayAddress'] = 'abcd';
-      var manager = new BluetoothBrailleDisplayManager();
-      var devices = [];
+      const manager = new BluetoothBrailleDisplayManager();
+      let devices = [];
       chrome.bluetooth.getDevices = (callback) => callback(devices);
 
       // No devices.
@@ -190,7 +183,7 @@ TEST_F(
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'ForgetPreferredTriggersBrlttyUpdate', function() {
       chrome.bluetoothPrivate.forgetDevice = this.newCallback();
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
@@ -198,7 +191,7 @@ TEST_F(
             assertEquals('', address);
           });
 
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
 
       // Forget the preferred device. Note there is no requirement that this
       // device be preferred.
@@ -206,7 +199,7 @@ TEST_F(
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayManagerUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayManagerWebUITest',
     'DisconnectPreferredTriggersBrlttyUpdate', function() {
       chrome.bluetoothPrivate.disconnectAll = this.newCallback();
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress =
@@ -214,7 +207,7 @@ TEST_F(
             assertEquals('', address);
           });
 
-      var manager = new BluetoothBrailleDisplayManager();
+      const manager = new BluetoothBrailleDisplayManager();
 
       // Disconnect the preferred device. Note there is no requirement that this
       // device be preferred.

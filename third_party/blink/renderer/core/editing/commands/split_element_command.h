@@ -34,7 +34,7 @@ class SplitElementCommand final : public SimpleEditCommand {
  public:
   SplitElementCommand(Element*, Node* split_point_child);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

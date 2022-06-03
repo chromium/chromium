@@ -8,10 +8,9 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/values.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -54,6 +53,9 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
     DCHECK(registry_);
   }
 
+  LiveRequest(const LiveRequest&) = delete;
+  LiveRequest& operator=(const LiveRequest&) = delete;
+
   ~LiveRequest() override {}
 
   // Accessors.
@@ -85,24 +87,12 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   }
 
   void GetCaptureInfo(tab_capture::CaptureInfo* info) const {
-    info->tab_id = SessionTabHelper::IdForTab(web_contents()).id();
+    info->tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
     info->status = capture_state_;
     info->fullscreen = is_fullscreened_;
   }
 
  protected:
-  void DidShowFullscreenWidget() override {
-    is_fullscreened_ = true;
-    if (capture_state_ == tab_capture::TAB_CAPTURE_STATE_ACTIVE)
-      registry_->DispatchStatusChangeEvent(this);
-  }
-
-  void DidDestroyFullscreenWidget() override {
-    is_fullscreened_ = false;
-    if (capture_state_ == tab_capture::TAB_CAPTURE_STATE_ACTIVE)
-      registry_->DispatchStatusChangeEvent(this);
-  }
-
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
     is_fullscreened_ = entered_fullscreen;
@@ -127,14 +117,13 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   // calls to OnRequestUpdate() will always refer to this request by this ID.
   int render_process_id_;
   int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(LiveRequest);
 };
 
 TabCaptureRegistry::TabCaptureRegistry(content::BrowserContext* context)
     : browser_context_(context) {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 TabCaptureRegistry::~TabCaptureRegistry() {
@@ -160,7 +149,7 @@ void TabCaptureRegistry::GetCapturedTabs(
     base::ListValue* list_of_capture_info) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(list_of_capture_info);
-  list_of_capture_info->Clear();
+  list_of_capture_info->ClearList();
   for (const std::unique_ptr<LiveRequest>& request : requests_) {
     if (request->is_anonymous() || !request->is_verified() ||
         request->extension_id() != extension_id)
@@ -306,9 +295,10 @@ void TabCaptureRegistry::DispatchStatusChangeEvent(
   tab_capture::CaptureInfo info;
   request->GetCaptureInfo(&info);
   args->Append(info.ToValue());
-  auto event = std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
-                                       tab_capture::OnStatusChanged::kEventName,
-                                       std::move(args), browser_context_);
+  auto event =
+      std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
+                              tab_capture::OnStatusChanged::kEventName,
+                              std::move(*args).TakeList(), browser_context_);
 
   router->DispatchEventToExtension(request->extension_id(), std::move(event));
 }

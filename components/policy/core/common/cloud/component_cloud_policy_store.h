@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
@@ -57,14 +56,12 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // kChromeExtensionPolicyType, kChromeMachineLevelExtensionCloudPolicyType.
   // Please update component_cloud_policy_store.cc in case there is new policy
   // type added.
-  // |policy_source| specifies where the policy originates from, and can be used
-  // to configure precedence when the same components are configured by policies
-  // from different sources. It only accepts POLICY_SOURCE_CLOUD and
-  // POLICY_SOURCE_PRIORITY_CLOUD now.
   ComponentCloudPolicyStore(Delegate* delegate,
                             ResourceCache* cache,
-                            const std::string& policy_type,
-                            PolicySource policy_source);
+                            const std::string& policy_type);
+  ComponentCloudPolicyStore(const ComponentCloudPolicyStore&) = delete;
+  ComponentCloudPolicyStore& operator=(const ComponentCloudPolicyStore&) =
+      delete;
   ~ComponentCloudPolicyStore();
 
   // Helper that returns true for PolicyDomains that can be managed by this
@@ -133,7 +130,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
       const PolicyNamespace& ns,
       std::unique_ptr<enterprise_management::PolicyFetchResponse> proto,
       enterprise_management::PolicyData* policy_data,
-      enterprise_management::ExternalPolicyData* payload);
+      enterprise_management::ExternalPolicyData* payload,
+      std::string* error);
 
  private:
   // Validates the JSON policy serialized in |data|, and verifies its hash
@@ -141,11 +139,14 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // parsed policies in |policy|.
   bool ValidateData(const std::string& data,
                     const std::string& secure_hash,
-                    PolicyMap* policy);
+                    PolicyMap* policy,
+                    std::string* error);
 
   // Parses the JSON policy in |data| into |policy|, and returns true if the
   // parse was successful.
-  bool ParsePolicy(const std::string& data, PolicyMap* policy);
+  bool ParsePolicy(const std::string& data,
+                   PolicyMap* policy,
+                   std::string* error);
 
   Delegate* const delegate_;
   ResourceCache* const cache_;
@@ -169,11 +170,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
 
   const DomainConstants* domain_constants_;
 
-  const PolicySource policy_source_;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentCloudPolicyStore);
 };
 
 }  // namespace policy

@@ -11,7 +11,7 @@ namespace blink {
 
 TEST(WebStringTest, UTF8ConversionRoundTrip) {
   // Valid characters.
-  for (UChar uchar = 0; uchar <= 0xD7FF; ++uchar) {
+  for (WebUChar uchar = 0; uchar <= 0xD7FF; ++uchar) {
     WebString utf16_string(&uchar, 1);
     std::string utf8_string(utf16_string.Utf8());
     WebString utf16_new_string =
@@ -21,7 +21,7 @@ TEST(WebStringTest, UTF8ConversionRoundTrip) {
   }
 
   // Unpaired surrogates.
-  for (UChar uchar = 0xD800; uchar <= 0xDFFF; ++uchar) {
+  for (WebUChar uchar = 0xD800; uchar <= 0xDFFF; ++uchar) {
     WebString utf16_string(&uchar, 1);
 
     // Conversion with Strict mode results in an empty string.

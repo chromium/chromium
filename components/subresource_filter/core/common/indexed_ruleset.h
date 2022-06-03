@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
+#include "components/subresource_filter/core/common/load_policy.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
@@ -58,6 +58,10 @@ class RulesetIndexer {
   static const int kIndexedFormatVersion;
 
   RulesetIndexer();
+
+  RulesetIndexer(const RulesetIndexer&) = delete;
+  RulesetIndexer& operator=(const RulesetIndexer&) = delete;
+
   ~RulesetIndexer();
 
   // Adds |rule| to the ruleset and the index unless the |rule| has unsupported
@@ -81,15 +85,13 @@ class RulesetIndexer {
  private:
   flatbuffers::FlatBufferBuilder builder_;
 
-  url_pattern_index::UrlPatternIndexBuilder blacklist_;
-  url_pattern_index::UrlPatternIndexBuilder whitelist_;
+  url_pattern_index::UrlPatternIndexBuilder blocklist_;
+  url_pattern_index::UrlPatternIndexBuilder allowlist_;
   url_pattern_index::UrlPatternIndexBuilder deactivation_;
 
   // Maintains a map of domain vectors to their existing offsets, to avoid
   // storing a particular vector more than once.
   url_pattern_index::FlatDomainMap domain_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetIndexer);
 };
 
 // Matches URLs against the FlatBuffer representation of an indexed ruleset.
@@ -104,6 +106,9 @@ class IndexedRulesetMatcher {
   // |size|.
   IndexedRulesetMatcher(const uint8_t* buffer, size_t size);
 
+  IndexedRulesetMatcher(const IndexedRulesetMatcher&) = delete;
+  IndexedRulesetMatcher& operator=(const IndexedRulesetMatcher&) = delete;
+
   // Returns whether the subset of subresource filtering rules specified by the
   // |activation_type| should be disabled for the |document| loaded from
   // |parent_document_origin|. Always returns false if |activation_type| ==
@@ -115,18 +120,18 @@ class IndexedRulesetMatcher {
       const url::Origin& parent_document_origin,
       url_pattern_index::proto::ActivationType activation_type) const;
 
-  // Returns whether the network request to |url| of |element_type| initiated by
-  // |document_origin| is not allowed to proceed. Always returns false if the
-  // |url| is not valid or |element_type| == ELEMENT_TYPE_UNSPECIFIED.
-  bool ShouldDisallowResourceLoad(
+  // Returns the LoadPolicy for a network request to |url| of |element_type|
+  // initiated by |document_origin|. Always returns ALLOW if the  |url| is not
+  // valid or |element_type| == ELEMENT_TYPE_UNSPECIFIED.
+  LoadPolicy GetLoadPolicyForResourceLoad(
       const GURL& url,
       const FirstPartyOrigin& first_party,
       url_pattern_index::proto::ElementType element_type,
       bool disable_generic_rules) const;
 
   // Like ShouldDisallowResourceLoad, but returns the matching rule that
-  // determines whether the request should be allowed or not. Whitelist rules
-  // override blacklist rules. If no rule matches, returns nullptr.
+  // determines whether the request should be allowed or not. Allowlist rules
+  // override blocklist rules. If no rule matches, returns nullptr.
   const url_pattern_index::flat::UrlRule* MatchedUrlRule(
       const GURL& url,
       const FirstPartyOrigin& first_party,
@@ -136,11 +141,9 @@ class IndexedRulesetMatcher {
  private:
   const flat::IndexedRuleset* root_;
 
-  url_pattern_index::UrlPatternIndexMatcher blacklist_;
-  url_pattern_index::UrlPatternIndexMatcher whitelist_;
+  url_pattern_index::UrlPatternIndexMatcher blocklist_;
+  url_pattern_index::UrlPatternIndexMatcher allowlist_;
   url_pattern_index::UrlPatternIndexMatcher deactivation_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedRulesetMatcher);
 };
 
 }  // namespace subresource_filter

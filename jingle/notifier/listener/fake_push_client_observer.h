@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef JINGLE_NOTIFIER_LISTENER_NON_BLOCKING_FAKE_PUSH_CLIENT_OBSERVER_H_
-#define JINGLE_NOTIFIER_LISTENER_NON_BLOCKING_FAKE_PUSH_CLIENT_OBSERVER_H_
+#ifndef JINGLE_NOTIFIER_LISTENER_FAKE_PUSH_CLIENT_OBSERVER_H_
+#define JINGLE_NOTIFIER_LISTENER_FAKE_PUSH_CLIENT_OBSERVER_H_
 
 #include "base/compiler_specific.h"
 #include "jingle/notifier/listener/push_client_observer.h"
@@ -31,4 +31,4 @@ class FakePushClientObserver : public PushClientObserver {
 
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_LISTENER_NON_BLOCKING_FAKE_PUSH_CLIENT_OBSERVER_H_
+#endif  // JINGLE_NOTIFIER_LISTENER_FAKE_PUSH_CLIENT_OBSERVER_H_

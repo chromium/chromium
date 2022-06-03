@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "net/base/network_interfaces.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 namespace mojom {
@@ -44,9 +45,14 @@ class WebRtcTextLogHandler {
     STOPPED,          // Logging has been stopped, log still open in memory.
   };
 
-  typedef base::Callback<void(bool, const std::string&)> GenericDoneCallback;
+  typedef base::OnceCallback<void(bool, const std::string&)>
+      GenericDoneCallback;
 
   explicit WebRtcTextLogHandler(int render_process_id);
+
+  WebRtcTextLogHandler(const WebRtcTextLogHandler&) = delete;
+  WebRtcTextLogHandler& operator=(const WebRtcTextLogHandler&) = delete;
+
   ~WebRtcTextLogHandler();
 
   // Returns the current state of the log.
@@ -60,16 +66,16 @@ class WebRtcTextLogHandler {
   // start is written to the beginning of the log. Meta data set after log start
   // is written to the log at that time.
   void SetMetaData(std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
-                   const GenericDoneCallback& callback);
+                   GenericDoneCallback callback);
 
   // Opens a log and starts logging if allowed by the LogUploader.
   // Returns false if logging could not be started.
   bool StartLogging(WebRtcLogUploader* log_uploader,
-                    const GenericDoneCallback& callback);
+                    GenericDoneCallback callback);
 
   // Stops logging. Log will remain open until UploadLog or DiscardLog is
   // called.
-  bool StopLogging(const GenericDoneCallback& callback);
+  bool StopLogging(GenericDoneCallback callback);
 
   // Called by the WebRtcLoggingHandlerHost when logging has stopped in the
   // renderer. Should only be called in response to a
@@ -97,22 +103,26 @@ class WebRtcTextLogHandler {
 
   // Returns true if the logging state is CLOSED and fires an the callback
   // with an error message otherwise.
-  bool ExpectLoggingStateStopped(const GenericDoneCallback& callback);
+  bool ExpectLoggingStateStopped(GenericDoneCallback* callback);
 
-  void FireGenericDoneCallback(const GenericDoneCallback& callback,
+  void FireGenericDoneCallback(GenericDoneCallback callback,
                                bool success,
                                const std::string& error_message);
 
   void SetWebAppId(int web_app_id);
 
  private:
-  void StartDone(const GenericDoneCallback& callback);
+  void StartDone(GenericDoneCallback callback);
 
   void LogToCircularBuffer(const std::string& message);
 
   void OnGetNetworkInterfaceList(
-      const GenericDoneCallback& callback,
-      const base::Optional<net::NetworkInterfaceList>& networks);
+      GenericDoneCallback callback,
+      const absl::optional<net::NetworkInterfaceList>& networks);
+  void OnGetNetworkInterfaceListFinish(
+      GenericDoneCallback callback,
+      const absl::optional<net::NetworkInterfaceList>& networks,
+      const std::string& linux_distro);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -142,8 +152,6 @@ class WebRtcTextLogHandler {
   int web_app_id_ = 0;
 
   base::WeakPtrFactory<WebRtcTextLogHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcTextLogHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_TEXT_LOG_HANDLER_H_

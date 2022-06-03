@@ -19,6 +19,11 @@
 #include <set>
 
 #include "base/logging.h"
+#include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+#include <android/api-level.h>
+#endif
 
 namespace crashpad {
 
@@ -136,6 +141,17 @@ bool DebugRendezvous::InitializeSpecific(const ProcessMemoryRange& memory,
     }
     modules_.push_back(entry);
   }
+
+#if defined(OS_ANDROID)
+  // Android P (API 28) mistakenly places the vdso in the first entry in the
+  // link map.
+  const int android_runtime_api = android_get_device_api_level();
+  if (android_runtime_api == 28 && executable_.name == "[vdso]") {
+    LinkEntry executable = modules_[0];
+    modules_[0] = executable_;
+    executable_ = executable;
+  }
+#endif  // OS_ANDROID
 
   return true;
 }

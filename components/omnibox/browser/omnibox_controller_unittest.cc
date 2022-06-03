@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -20,6 +19,8 @@ class OmniboxControllerTest : public testing::Test {
  protected:
   OmniboxControllerTest();
   ~OmniboxControllerTest() override;
+  OmniboxControllerTest(const OmniboxControllerTest&) = delete;
+  OmniboxControllerTest& operator=(const OmniboxControllerTest&) = delete;
 
   void CreateController();
   void AssertProviders(int expected_providers);
@@ -33,11 +34,9 @@ class OmniboxControllerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxControllerTest);
 };
 
 OmniboxControllerTest::OmniboxControllerTest() {}

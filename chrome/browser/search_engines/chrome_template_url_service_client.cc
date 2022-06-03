@@ -8,14 +8,13 @@
 
 ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
     history::HistoryService* history_service)
-    : owner_(NULL),
-      history_service_(history_service) {
+    : owner_(nullptr), history_service_(history_service) {
   // TODO(sky): bug 1166191. The keywords should be moved into the history
   // db, which will mean we no longer need this notification and the history
   // backend can handle automatically adding the search terms as the user
   // navigates.
   if (history_service_)
-    history_service_observer_.Add(history_service_);
+    history_service_observation_.Observe(history_service_);
 }
 
 ChromeTemplateURLServiceClient::~ChromeTemplateURLServiceClient() {
@@ -29,7 +28,7 @@ void ChromeTemplateURLServiceClient::Shutdown() {
   // Remove self from |history_service_| observers in the shutdown phase of the
   // two-phases since KeyedService are not supposed to use a dependend service
   // after the Shutdown call.
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ChromeTemplateURLServiceClient::SetOwner(TemplateURLService* owner) {
@@ -46,17 +45,18 @@ void ChromeTemplateURLServiceClient::DeleteAllSearchTermsForKeyword(
 void ChromeTemplateURLServiceClient::SetKeywordSearchTermsForURL(
     const GURL& url,
     TemplateURLID id,
-    const base::string16& term) {
+    const std::u16string& term) {
   if (history_service_)
     history_service_->SetKeywordSearchTermsForURL(url, id, term);
 }
 
 void ChromeTemplateURLServiceClient::AddKeywordGeneratedVisit(const GURL& url) {
   if (history_service_)
-    history_service_->AddPage(url, base::Time::Now(), NULL, 0, GURL(),
-                              history::RedirectList(),
-                              ui::PAGE_TRANSITION_KEYWORD_GENERATED,
-                              history::SOURCE_BROWSED, false);
+    history_service_->AddPage(
+        url, base::Time::Now(), /*context_id=*/NULL, /*nav_entry_id=*/0,
+        /*referrer=*/GURL(), history::RedirectList(),
+        ui::PAGE_TRANSITION_KEYWORD_GENERATED, history::SOURCE_BROWSED,
+        /*did_replace_entry=*/false, /*publicly_routable=*/false);
 }
 
 void ChromeTemplateURLServiceClient::OnURLVisited(

@@ -5,7 +5,7 @@
 #ifndef UI_BASE_TEST_VIEW_TREE_VALIDATOR_H_
 #define UI_BASE_TEST_VIEW_TREE_VALIDATOR_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NSView;
 
@@ -33,7 +33,7 @@ struct ViewTreeProblemDetails {
 // Validates the view tree rooted at |root|. If at least one problem is found,
 // returns a |ViewTreeProblemDetails| as described above; if not, returns an
 // empty option.
-base::Optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root);
+absl::optional<ViewTreeProblemDetails> ValidateViewTree(NSView* root);
 
 }  // namespace ui
 

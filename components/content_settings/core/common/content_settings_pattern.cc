@@ -9,17 +9,19 @@
 #include <memory>
 #include <tuple>
 #include <utility>
-#include <vector>
 
-#include "base/logging.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -30,10 +32,11 @@ size_t g_non_domain_wildcard_non_port_schemes_count = 0;
 // Keep it consistent with enum SchemeType in content_settings_pattern.h.
 // TODO(msramek): Layering violation: assemble this array from hardcoded
 // schemes and those injected via |SetNonWildcardDomainNonPortSchemes()|.
-const char* const kSchemeNames[] = {"wildcard",       "other",
-                                    url::kHttpScheme, url::kHttpsScheme,
-                                    url::kFileScheme, "chrome-extension",
-                                    "chrome-search"};
+const char* const kSchemeNames[] = {"wildcard",         "other",
+                                    url::kHttpScheme,   url::kHttpsScheme,
+                                    url::kFileScheme,   "chrome-extension",
+                                    "chrome-search",    "chrome",
+                                    "chrome-untrusted", "devtools"};
 
 static_assert(base::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");
@@ -70,23 +73,23 @@ bool IsSubDomainOrEqual(base::StringPiece sub_domain,
 
 // Splits a |domain| name on the last dot. The returned tuple will consist of:
 //  (1) A prefix of the |domain| name such that the right-most domain label and
-//      its separating dot is removed; or base::nullopt if |domain| consisted
+//      its separating dot is removed; or absl::nullopt if |domain| consisted
 //      only of a single domain label.
 //  (2) The right-most domain label, which is defined as the empty string if
 //      |domain| is empty or ends in a dot.
-std::tuple<base::Optional<base::StringPiece>, base::StringPiece>
+std::tuple<absl::optional<base::StringPiece>, base::StringPiece>
 SplitDomainOnLastDot(const base::StringPiece domain) {
   size_t index_of_last_dot = domain.rfind('.');
   if (index_of_last_dot == base::StringPiece::npos)
-    return std::make_tuple(base::nullopt, domain);
+    return std::make_tuple(absl::nullopt, domain);
   return std::make_tuple(domain.substr(0, index_of_last_dot),
                          domain.substr(index_of_last_dot + 1));
 }
 
 // Compares two domain names.
 int CompareDomainNames(base::StringPiece domain_a, base::StringPiece domain_b) {
-  base::Optional<base::StringPiece> rest_of_a(domain_a);
-  base::Optional<base::StringPiece> rest_of_b(domain_b);
+  absl::optional<base::StringPiece> rest_of_a(domain_a);
+  absl::optional<base::StringPiece> rest_of_b(domain_b);
 
   while (rest_of_a && rest_of_b) {
     base::StringPiece rightmost_label_a;
@@ -123,6 +126,10 @@ class ContentSettingsPattern::Builder :
     public ContentSettingsPattern::BuilderInterface {
  public:
   Builder();
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder() override;
 
   // BuilderInterface:
@@ -149,8 +156,6 @@ class ContentSettingsPattern::Builder :
   bool is_valid_;
 
   PatternParts parts_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 ContentSettingsPattern::Builder::Builder() : is_valid_(true) {}
@@ -238,9 +243,18 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
   parts->scheme = base::ToLowerASCII(parts->scheme);
 
   if (parts->scheme == url::kFileScheme && !parts->is_path_wildcard) {
-    GURL url(std::string(url::kFileScheme) +
-             std::string(url::kStandardSchemeSeparator) + parts->path);
-    parts->path = url.path();
+    // TODO(crbug.com/1132957): Remove this loop once GURL canonicalization is
+    // idempotent (see crbug.com/1128999).
+    while (true) {
+      std::string url_spec = base::StrCat(
+          {url::kFileScheme, url::kStandardSchemeSeparator, parts->path});
+      GURL url(url_spec);
+      if (!url.is_valid())
+        return false;
+      if (parts->path == url.path_piece())
+        break;
+      parts->path = url.path();
+    }
   }
 
   // Canonicalize the host part.
@@ -399,7 +413,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURL(
     }
     if (local_url->port_piece().empty()) {
       if (local_url->SchemeIs(url::kHttpsScheme))
-        builder.WithPort(GetDefaultPort(url::kHttpsScheme).as_string());
+        builder.WithPort(std::string(GetDefaultPort(url::kHttpsScheme)));
       else
         builder.WithPortWildcard();
     } else {
@@ -422,7 +436,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURLNoWildcard(
   } else {
     builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
     if (local_url->port_piece().empty()) {
-      builder.WithPort(GetDefaultPort(local_url->scheme_piece()).as_string());
+      builder.WithPort(std::string(GetDefaultPort(local_url->scheme_piece())));
     } else {
       builder.WithPort(local_url->port());
     }

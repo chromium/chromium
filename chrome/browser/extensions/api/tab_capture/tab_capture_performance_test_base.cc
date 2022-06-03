@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -33,7 +34,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/service_manager/sandbox/features.h"
+#include "sandbox/policy/features.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/gl/gl_switches.h"
 
@@ -51,7 +52,7 @@ void TabCapturePerformanceTestBase::SetUp() {
 
   feature_list_.InitWithFeatures(
       {
-          service_manager::features::kAudioServiceSandbox,
+          features::kAudioServiceSandbox,
           features::kAudioServiceLaunchOnStartup,
           features::kAudioServiceOutOfProcess,
       },
@@ -82,10 +83,8 @@ void TabCapturePerformanceTestBase::SetUpCommandLine(
   // won't (which means use the default hardware-accelerated compositor).
   command_line->AppendSwitch(switches::kUseGpuInTests);
 
-  command_line->AppendSwitchASCII(extensions::switches::kWhitelistedExtensionID,
+  command_line->AppendSwitchASCII(extensions::switches::kAllowlistedExtensionID,
                                   kExtensionId);
-
-  InProcessBrowserTest::SetUpCommandLine(command_line);
 }
 
 void TabCapturePerformanceTestBase::LoadExtension(
@@ -101,7 +100,7 @@ void TabCapturePerformanceTestBase::LoadExtension(
       extensions::ExtensionSystem::Get(browser()->profile())
           ->extension_service();
   extensions::UnpackedInstaller::Create(extension_service)->Load(unpacked_dir);
-  extension_ = registry_observer.WaitForExtensionReady();
+  extension_ = registry_observer.WaitForExtensionReady().get();
   CHECK(extension_);
   CHECK_EQ(kExtensionId, extension_->id());
 }
@@ -110,9 +109,9 @@ void TabCapturePerformanceTestBase::NavigateToTestPage(
     const std::string& test_page_html_content) {
   LOG(INFO) << "Navigating to test page...";
   test_page_to_serve_ = test_page_html_content;
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL(kTestWebPageHostname, kTestWebPagePath));
+      embedded_test_server()->GetURL(kTestWebPageHostname, kTestWebPagePath)));
 }
 
 base::Value TabCapturePerformanceTestBase::SendMessageToExtension(
@@ -243,7 +242,7 @@ void TabCapturePerformanceTestBase::QueryTraceEvents(
     base::StringPiece event_name,
     trace_analyzer::TraceEventVector* events) {
   const trace_analyzer::Query kQuery =
-      trace_analyzer::Query::EventNameIs(event_name.as_string()) &&
+      trace_analyzer::Query::EventNameIs(std::string(event_name)) &&
       (trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
        trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_FLOW_BEGIN) ||

@@ -9,16 +9,17 @@
 #include "base/files/file_util.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/browser/webrtc/webrtc_internals.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -61,12 +62,12 @@ std::vector<base::FilePath> GetRecordingFileNames(
 // This is to handle when not being able to delete the file due to race when the
 // file is being closed. See comment for CallWithAudioDebugRecordings test case
 // below.
-bool DeleteFileWithRetryAfterPause(const base::FilePath& path, bool recursive) {
-  if (base::DeleteFile(path, recursive))
+bool DeleteFileWithRetryAfterPause(const base::FilePath& path) {
+  if (base::DeleteFile(path))
     return true;
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
-  return base::DeleteFile(path, recursive);
+  base::PlatformThread::Sleep(base::Milliseconds(100));
+  return base::DeleteFile(path);
 }
 
 }  // namespace
@@ -83,7 +84,7 @@ class WebRtcAudioDebugRecordingsBrowserTest
   ~WebRtcAudioDebugRecordingsBrowserTest() override {}
 };
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 // Renderer crashes under Android: https://crbug.com/820934.
 // Failures on Android M. https://crbug.com/535728.
@@ -115,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
-  bool prev_io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   int64_t file_size = 0;
   EXPECT_TRUE(base::GetFileSize(input_files[0], &file_size));
   EXPECT_GT(file_size, kWaveHeaderSizeBytes);
-  EXPECT_TRUE(DeleteFileWithRetryAfterPause(input_files[0], false));
+  EXPECT_TRUE(DeleteFileWithRetryAfterPause(input_files[0]));
 
   // Verify that the expected output audio files exist and contain some data.
   // Two files are expected, one for each peer in the call.
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
     file_size = 0;
     EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
     EXPECT_GT(file_size, kWaveHeaderSizeBytes);
-    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path, false));
+    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path));
   }
 
   // Verify that the expected AEC dump file exists and contains some data.
@@ -170,13 +171,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   file_size = 0;
   EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
   EXPECT_GT(file_size, 0);
-  EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path, false));
+  EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path));
 
   // Verify that no other files exist and remove temp dir.
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_path));
-  EXPECT_TRUE(base::DeleteFile(temp_dir_path, false));
-
-  base::ThreadRestrictions::SetIOAllowed(prev_io_allowed);
+  EXPECT_TRUE(base::DeleteFile(temp_dir_path));
 }
 
 // TODO(grunell): Add test for multiple dumps when re-use of
@@ -201,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
     return;
   }
 
-  bool prev_io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -227,9 +226,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // Verify that no files exist and remove temp dir.
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_path));
-  EXPECT_TRUE(base::DeleteFile(temp_dir_path, false));
-
-  base::ThreadRestrictions::SetIOAllowed(prev_io_allowed);
+  EXPECT_TRUE(base::DeleteFile(temp_dir_path));
 }
 
 // Same test as CallWithAudioDebugRecordings, but does two parallel calls.
@@ -250,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
-  bool prev_io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -276,14 +273,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(NavigateToURL(shell2, url));
   ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell2, "call({video: true, audio: true});", &result));
-  ASSERT_STREQ("OK", result.c_str());
+  EXPECT_EQ("OK", EvalJs(shell2, "call({video: true, audio: true});",
+                         EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   ExecuteJavascriptAndWaitForOk("hangup();");
-  EXPECT_TRUE(ExecuteScriptAndExtractString(shell2, "hangup();", &result));
-  ASSERT_STREQ("OK", result.c_str());
+  EXPECT_EQ("OK", EvalJs(shell2, "hangup();", EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   WebRTCInternals::GetInstance()->DisableAudioDebugRecordings();
 
@@ -297,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
     file_size = 0;
     EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
     EXPECT_GT(file_size, kWaveHeaderSizeBytes);
-    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path, false));
+    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path));
   }
 
   // Verify that the expected output audio files exist and contain some data.
@@ -310,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
     file_size = 0;
     EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
     EXPECT_GT(file_size, kWaveHeaderSizeBytes);
-    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path, false));
+    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path));
   }
 
   // Verify that the expected AEC dump files exist and contain some data.
@@ -327,14 +321,12 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
     file_size = 0;
     EXPECT_TRUE(base::GetFileSize(file_path, &file_size));
     EXPECT_GT(file_size, 0);
-    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path, false));
+    EXPECT_TRUE(DeleteFileWithRetryAfterPause(file_path));
   }
 
   // Verify that no other files exist and remove temp dir.
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_path));
-  EXPECT_TRUE(base::DeleteFile(temp_dir_path, false));
-
-  base::ThreadRestrictions::SetIOAllowed(prev_io_allowed);
+  EXPECT_TRUE(base::DeleteFile(temp_dir_path));
 }
 
 }  // namespace content

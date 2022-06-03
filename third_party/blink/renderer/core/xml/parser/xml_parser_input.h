@@ -73,4 +73,4 @@ class XMLParserInput {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_PARSER_INPUT_H_

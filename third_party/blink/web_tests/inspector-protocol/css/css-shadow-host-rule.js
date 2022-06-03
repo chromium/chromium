@@ -11,7 +11,7 @@
 <div id='shadow-host'></div>`, 'Tests that rules in shadow host are reported in matched styles');
 
   await session.evaluate(() => {
-    var host = document.querySelector('#shadow-host').createShadowRoot();
+    var host = document.querySelector('#shadow-host').attachShadow({mode: 'open'});
     var template = document.querySelector('#shadow-template');
     host.appendChild(template.content);
     template.remove();

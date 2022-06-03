@@ -14,7 +14,7 @@ source_set("collection_view") {
     "//base",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/material_components",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
   ]
   public_deps = [
     "//ios/chrome/browser/ui/collection_view/cells",
@@ -43,9 +43,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "collection_view_controller_unittest.mm",
-  ]
+  sources = [ "collection_view_controller_unittest.mm" ]
   deps = [
     ":collection_view",
     "//base",

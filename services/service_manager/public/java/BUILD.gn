@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("service_manager_java") {
-  java_files = [
+  sources = [
     "src/org/chromium/services/service_manager/Connector.java",
     "src/org/chromium/services/service_manager/InterfaceFactory.java",
     "src/org/chromium/services/service_manager/InterfaceProvider.java",

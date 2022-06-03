@@ -9,7 +9,7 @@
 #include <queue>
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 // Separating template definitions and declarations requires defining all
 // possible template parameters to avoid linking errors.

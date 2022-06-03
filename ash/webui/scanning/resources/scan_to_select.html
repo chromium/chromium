@@ -1,0 +1,17 @@
+<style include="scanning-shared"></style>
+<scan-settings-section>
+  <span id="scanToLabel" slot="label" aria-hidden="true">
+    [[i18n('scanToDropdownLabel')]]
+  </span>
+  <div slot="settings">
+    <select id="scanToSelect" class="md-select" disabled="[[disabled]]"
+        on-change="onSelectFolder_" aria-labelledby="scanToLabel">
+      <option selected>
+        [[selectedFolder]]
+      </option>
+      <option>
+        [[i18n('selectFolderOption')]]
+      </option>
+    </select>
+  </div>
+</scan-settings-section>

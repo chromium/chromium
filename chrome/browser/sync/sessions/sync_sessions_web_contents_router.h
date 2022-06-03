@@ -37,6 +37,10 @@ class SyncSessionsWebContentsRouter : public LocalSessionEventRouter,
  public:
   explicit SyncSessionsWebContentsRouter(Profile* profile);
 
+  SyncSessionsWebContentsRouter(const SyncSessionsWebContentsRouter&) = delete;
+  SyncSessionsWebContentsRouter& operator=(
+      const SyncSessionsWebContentsRouter&) = delete;
+
   // Notify the router that the tab corresponding to |web_contents| has been
   // modified in some way.
   void NotifyTabModified(content::WebContents* web_contents,
@@ -58,19 +62,12 @@ class SyncSessionsWebContentsRouter : public LocalSessionEventRouter,
   ~SyncSessionsWebContentsRouter() override;
 
  private:
-  void OnFaviconsChanged(const std::set<GURL>& page_urls, const GURL& icon_url);
-
-  std::unique_ptr<base::CallbackList<void(const std::set<GURL>&,
-                                          const GURL&)>::Subscription>
-      favicon_changed_subscription_;
   syncer::SyncableService::StartSyncFlare flare_;
   LocalSessionEventHandler* handler_ = nullptr;
 
 #if !defined(OS_ANDROID)
   std::unique_ptr<BrowserListRouterHelper> browser_list_helper_;
 #endif  // !defined(OS_ANDROID)
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsWebContentsRouter);
 };
 
 }  // namespace sync_sessions

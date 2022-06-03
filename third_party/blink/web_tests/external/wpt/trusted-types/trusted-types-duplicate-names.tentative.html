@@ -18,8 +18,8 @@ test(t => {
   assert_equals("" + b.createHTML(""), "b");
 
   let def = trustedTypes.createPolicy("default", {});
-  assert_throws(new TypeError(),
-                _ => trustedTypes.createPolicy("default", {}));
+  assert_throws_js(TypeError,
+                   _ => trustedTypes.createPolicy("default", {}));
 }, "policy - duplicate names");
 </script>
 </body>

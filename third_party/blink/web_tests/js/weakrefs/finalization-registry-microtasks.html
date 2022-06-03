@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="module">
+
+// Keep FinalizationRegistry global to avoid it being reclaimed by garbage
+// collections that may happen until the registry is processed in microtasks.
+let fr1;
+let fr2;
+
+async_test(t => {
+  let last_task_that_ran = "";
+  let num_microtasks_that_ran = 0;
+
+  const callback = () => {
+    last_task_that_ran = 'finalizer';
+    Promise.resolve().then(t.step_func(function() {
+      assert_equals(last_task_that_ran, 'finalizer');
+      last_task_that_ran = 'microtask';
+      // The two FinalizationRegistries below run their finalizers in two
+      // separate tasks. Those tasks should be each followed by a microtask
+      // checkpoint, thus the counter here.
+      if (++num_microtasks_that_ran == 2) t.done();
+    }));
+  };
+
+  fr1 = new FinalizationRegistry(callback);
+  fr2 = new FinalizationRegistry(callback);
+
+  (function() {
+    let garbage = {};
+    fr1.register(garbage, 'holdings1');
+    fr2.register(garbage, 'holdings2');
+    garbage = null;
+  })();
+
+  gc();
+}, 'FinalizationRegistry finalizers have a microtask checkpoint on completion');
+</script>

@@ -4,12 +4,37 @@
 
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#include "base/logging.h"
 #include "ui/gfx/generic_shared_memory_id.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#include "base/win/scoped_handle.h"
+#endif
 
 namespace gfx {
 
-GpuMemoryBufferHandle::GpuMemoryBufferHandle()
-    : type(EMPTY_BUFFER), id(0), offset(0), stride(0) {}
+#if defined(OS_WIN)
+namespace {
+base::win::ScopedHandle CloneDXGIHandle(HANDLE handle) {
+  HANDLE target_handle = nullptr;
+  if (!::DuplicateHandle(GetCurrentProcess(), handle, GetCurrentProcess(),
+                         &target_handle, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
+    DVLOG(1) << "Error duplicating GMB DXGI handle. error=" << GetLastError();
+  }
+  return base::win::ScopedHandle(target_handle);
+}
+}  // namespace
+#endif
+
+GpuMemoryBufferHandle::GpuMemoryBufferHandle() = default;
+
+#if defined(OS_ANDROID)
+GpuMemoryBufferHandle::GpuMemoryBufferHandle(
+    base::android::ScopedHardwareBufferHandle handle)
+    : type(GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER),
+      android_hardware_buffer(std::move(handle)) {}
+#endif
 
 // TODO(crbug.com/863011): Reset |type| and possibly the handles on the
 // moved-from object.
@@ -28,18 +53,21 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   handle.region = region.Duplicate();
   handle.offset = offset;
   handle.stride = stride;
-#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   handle.native_pixmap_handle = CloneHandleForIPC(native_pixmap_handle);
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
-  NOTIMPLEMENTED();
+#elif defined(OS_MAC)
+  handle.io_surface = io_surface;
 #elif defined(OS_WIN)
-  NOTIMPLEMENTED();
+  handle.dxgi_handle = CloneDXGIHandle(dxgi_handle.Get());
+  handle.dxgi_token = dxgi_token;
 #elif defined(OS_ANDROID)
   NOTIMPLEMENTED();
 #endif
   return handle;
 }
 
-void GpuMemoryBuffer::SetColorSpace(const gfx::ColorSpace& color_space) {}
+void GpuMemoryBuffer::SetColorSpace(const ColorSpace& color_space) {}
+
+void GpuMemoryBuffer::SetHDRMetadata(const HDRMetadata& hdr_metadata) {}
 
 }  // namespace gfx

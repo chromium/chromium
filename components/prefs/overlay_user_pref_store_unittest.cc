@@ -145,7 +145,7 @@ TEST_F(OverlayUserPrefStoreTest, ModifyDictionaries) {
   EXPECT_TRUE(underlay_->GetMutableValue(regular_key, &original_in_underlay));
   ASSERT_TRUE(original_in_underlay);
   ASSERT_TRUE(original_in_underlay->is_dict());
-  EXPECT_TRUE(static_cast<DictionaryValue*>(original_in_underlay)->empty());
+  EXPECT_TRUE(original_in_underlay->DictEmpty());
 
   Value* modified = nullptr;
   EXPECT_TRUE(overlay_->GetMutableValue(regular_key, &modified));

@@ -6,9 +6,10 @@
 
 namespace chrome {
 
-BrowserNonClientFrameView* CreateBrowserNonClientFrameView(
-    BrowserFrame* frame, BrowserView* browser_view) {
-  return new BrowserNonClientFrameViewMac(frame, browser_view);
+std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
+    BrowserFrame* frame,
+    BrowserView* browser_view) {
+  return std::make_unique<BrowserNonClientFrameViewMac>(frame, browser_view);
 }
 
 }  // namespace chrome

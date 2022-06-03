@@ -5,14 +5,15 @@
 #include "content/browser/devtools/devtools_renderer_channel.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
-#include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace content {
@@ -38,7 +39,8 @@ void DevToolsRendererChannel::SetRenderer(
     agent_remote_.set_disconnect_handler(std::move(connection_error));
   if (host_receiver)
     receiver_.Bind(std::move(host_receiver));
-  SetRendererInternal(agent, process_id, nullptr);
+  const bool force_using_io = true;
+  SetRendererInternal(agent, process_id, nullptr, force_using_io);
 }
 
 void DevToolsRendererChannel::SetRendererAssociated(
@@ -55,7 +57,8 @@ void DevToolsRendererChannel::SetRendererAssociated(
   }
   if (host_receiver)
     associated_receiver_.Bind(std::move(host_receiver));
-  SetRendererInternal(agent, process_id, frame_host);
+  const bool force_using_io = false;
+  SetRendererInternal(agent, process_id, frame_host, force_using_io);
 }
 
 void DevToolsRendererChannel::CleanupConnection() {
@@ -73,19 +76,19 @@ void DevToolsRendererChannel::ForceDetachWorkerSessions() {
 void DevToolsRendererChannel::SetRendererInternal(
     blink::mojom::DevToolsAgent* agent,
     int process_id,
-    RenderFrameHostImpl* frame_host) {
+    RenderFrameHostImpl* frame_host,
+    bool force_using_io) {
   ReportChildWorkersCallback();
   process_id_ = process_id;
   frame_host_ = frame_host;
-  if (agent && !report_attachers_.empty()) {
-    agent->ReportChildWorkers(true /* report */,
-                              !wait_for_debugger_attachers_.empty(),
+  if (agent && child_worker_created_callback_) {
+    agent->ReportChildWorkers(true /* report */, wait_for_debugger_,
                               base::DoNothing());
   }
   for (DevToolsSession* session : owner_->sessions()) {
     for (auto& pair : session->handlers())
       pair.second->SetRenderer(process_id_, frame_host_);
-    session->AttachToAgent(agent);
+    session->AttachToAgent(agent, force_using_io);
   }
 }
 
@@ -95,9 +98,9 @@ void DevToolsRendererChannel::AttachSession(DevToolsSession* session) {
   for (auto& pair : session->handlers())
     pair.second->SetRenderer(process_id_, frame_host_);
   if (agent_remote_)
-    session->AttachToAgent(agent_remote_.get());
+    session->AttachToAgent(agent_remote_.get(), true);
   else if (associated_agent_remote_)
-    session->AttachToAgent(associated_agent_remote_.get());
+    session->AttachToAgent(associated_agent_remote_.get(), false);
 }
 
 void DevToolsRendererChannel::InspectElement(const gfx::Point& point) {
@@ -112,33 +115,32 @@ void DevToolsRendererChannel::InspectElement(const gfx::Point& point) {
 }
 
 void DevToolsRendererChannel::SetReportChildWorkers(
-    protocol::TargetAutoAttacher* attacher,
-    bool report,
+    ChildWorkerCreatedCallback report_callback,
     bool wait_for_debugger,
-    base::OnceClosure callback) {
+    base::OnceClosure completion_callback) {
+  DCHECK(report_callback || !wait_for_debugger);
   ReportChildWorkersCallback();
-  set_report_callback_ = std::move(callback);
-  if (report) {
-    if (report_attachers_.find(attacher) == report_attachers_.end()) {
-      report_attachers_.insert(attacher);
-      for (DevToolsAgentHostImpl* host : child_workers_)
-        attacher->ChildWorkerCreated(host, false /* waiting_for_debugger */);
-    }
-  } else {
-    report_attachers_.erase(attacher);
+  set_report_completion_callback_ = std::move(completion_callback);
+
+  if (child_worker_created_callback_ == report_callback &&
+      wait_for_debugger_ == wait_for_debugger) {
+    ReportChildWorkersCallback();
+    return;
   }
-  if (wait_for_debugger)
-    wait_for_debugger_attachers_.insert(attacher);
-  else
-    wait_for_debugger_attachers_.erase(attacher);
+  if (report_callback) {
+    for (DevToolsAgentHostImpl* host : child_workers_)
+      report_callback.Run(host, false /* waiting_for_debugger */);
+  }
+  child_worker_created_callback_ = std::move(report_callback);
+  wait_for_debugger_ = wait_for_debugger;
   if (agent_remote_) {
     agent_remote_->ReportChildWorkers(
-        !report_attachers_.empty(), !wait_for_debugger_attachers_.empty(),
+        !!child_worker_created_callback_, wait_for_debugger_,
         base::BindOnce(&DevToolsRendererChannel::ReportChildWorkersCallback,
                        base::Unretained(this)));
   } else if (associated_agent_remote_) {
     associated_agent_remote_->ReportChildWorkers(
-        !report_attachers_.empty(), !wait_for_debugger_attachers_.empty(),
+        !!child_worker_created_callback_, wait_for_debugger_,
         base::BindOnce(&DevToolsRendererChannel::ReportChildWorkersCallback,
                        base::Unretained(this)));
   } else {
@@ -147,8 +149,8 @@ void DevToolsRendererChannel::SetReportChildWorkers(
 }
 
 void DevToolsRendererChannel::ReportChildWorkersCallback() {
-  if (set_report_callback_)
-    std::move(set_report_callback_).Run();
+  if (set_report_completion_callback_)
+    std::move(set_report_completion_callback_).Run();
 }
 
 void DevToolsRendererChannel::ChildWorkerCreated(
@@ -158,23 +160,49 @@ void DevToolsRendererChannel::ChildWorkerCreated(
     const std::string& name,
     const base::UnguessableToken& devtools_worker_token,
     bool waiting_for_debugger) {
+  RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
+  if (!process)
+    return;
+
+  GURL filtered_url = url;
+  process->FilterURL(true /* empty_allowed */, &filtered_url);
+
+  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    // WorkerDevToolsAgentHost is already created on the browser process when
+    // PlzDedicatedWorker is enabled.
+    DCHECK(
+        content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString()));
+    scoped_refptr<WorkerDevToolsAgentHost> agent_host =
+        WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
+            devtools_worker_token);
+    agent_host->ChildWorkerCreated(
+        url, name,
+        base::BindOnce(&DevToolsRendererChannel::ChildWorkerDestroyed,
+                       weak_factory_.GetWeakPtr()));
+    agent_host->SetRenderer(process_id_, std::move(worker_devtools_agent),
+                            std::move(host_receiver));
+
+    child_workers_.insert(agent_host.get());
+    if (child_worker_created_callback_) {
+      child_worker_created_callback_.Run(agent_host.get(),
+                                         waiting_for_debugger);
+    }
+    return;
+  }
+
+  DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   if (content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString())) {
     mojo::ReportBadMessage("Workers should have unique tokens.");
     return;
   }
-  RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
-  if (!process)
-    return;
-  GURL filtered_url = url;
-  process->FilterURL(true /* empty_allowed */, &filtered_url);
   auto agent_host = base::MakeRefCounted<WorkerDevToolsAgentHost>(
       process_id_, std::move(worker_devtools_agent), std::move(host_receiver),
       filtered_url, std::move(name), devtools_worker_token, owner_->GetId(),
       base::BindOnce(&DevToolsRendererChannel::ChildWorkerDestroyed,
                      weak_factory_.GetWeakPtr()));
   child_workers_.insert(agent_host.get());
-  for (protocol::TargetAutoAttacher* attacher : report_attachers_)
-    attacher->ChildWorkerCreated(agent_host.get(), waiting_for_debugger);
+  if (child_worker_created_callback_)
+    child_worker_created_callback_.Run(agent_host.get(), waiting_for_debugger);
 }
 
 void DevToolsRendererChannel::ChildWorkerDestroyed(

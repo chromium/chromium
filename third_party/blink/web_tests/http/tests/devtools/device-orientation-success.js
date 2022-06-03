@@ -4,20 +4,18 @@
 
 (async function() {
   TestRunner.addResult(`Test device orientation\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.addScriptTag('/resources/testharness.js');
-  await TestRunner.addScriptTag('/resources/sensor-helpers.js');
-  await TestRunner.addScriptTag('/gen/layout_test_data/mojo/public/js/mojo_bindings.js');
-  await TestRunner.addScriptTag('/gen/services/device/public/mojom/sensor.mojom.js');
-  await TestRunner.addScriptTag('/gen/services/device/public/mojom/sensor_provider.mojom.js');
   await TestRunner.evaluateInPagePromise(`
       var sensorProvider = null;
       var mockAlpha = 1.1;
       var mockBeta = 2.2;
       var mockGamma = 3.3;
 
-      function setUpDeviceOrientation()
+      async function setUpDeviceOrientation()
       {
+          const {sensorMocks, setMockSensorDataForType} =
+              await import('/wpt_internal/orientation-event/resources/sensor-helpers.js');
           sensorProvider = sensorMocks();
           let mockDataPromise = setMockSensorDataForType(
               sensorProvider,
@@ -64,6 +62,10 @@
     },
 
     function setUpOrientationSensor(next) {
+      // The devtools inspector window needs to be focused to hear about
+      // sensor changes.
+      if (window.testRunner)
+        testRunner.focusDevtoolsSecondaryWindow();
       TestRunner.evaluateInPage('setUpOrientationSensor()', next);
     },
 
@@ -75,7 +77,7 @@
     async function clearOverride(next) {
       await TestRunner.DeviceOrientationAgent.clearDeviceOrientationOverride();
       await TestRunner.evaluateInPageAsync('cleanUpDeviceOrientation()');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       next();
     },
 
@@ -92,7 +94,7 @@
       // The console message from the call to setDeviceOrientationOverride()
       // above is lost with the reload, but we do not care.
       await TestRunner.reloadPagePromise();
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
 
       await TestRunner.DeviceOrientationAgent.clearDeviceOrientationOverride();
       next();

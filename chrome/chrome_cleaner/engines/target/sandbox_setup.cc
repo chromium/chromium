@@ -9,7 +9,7 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -31,6 +31,11 @@ class EngineMojoSandboxTargetHooks : public MojoSandboxTargetHooks {
  public:
   EngineMojoSandboxTargetHooks(scoped_refptr<EngineDelegate> engine_delegate,
                                MojoTaskRunner* mojo_task_runner);
+
+  EngineMojoSandboxTargetHooks(const EngineMojoSandboxTargetHooks&) = delete;
+  EngineMojoSandboxTargetHooks& operator=(const EngineMojoSandboxTargetHooks&) =
+      delete;
+
   ~EngineMojoSandboxTargetHooks() override;
 
   void BindEngineCommandsReceiver(
@@ -48,8 +53,6 @@ class EngineMojoSandboxTargetHooks : public MojoSandboxTargetHooks {
   base::SingleThreadTaskExecutor single_thread_task_executor_;
 
   std::unique_ptr<EngineCommandsImpl> engine_commands_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(EngineMojoSandboxTargetHooks);
 };
 
 EngineMojoSandboxTargetHooks::EngineMojoSandboxTargetHooks(
@@ -63,7 +66,7 @@ EngineMojoSandboxTargetHooks::~EngineMojoSandboxTargetHooks() {
                      [](std::unique_ptr<EngineCommandsImpl> commands) {
                        commands.reset();
                      },
-                     base::Passed(&engine_commands_impl_)));
+                     std::move(engine_commands_impl_)));
 }
 
 ResultCode EngineMojoSandboxTargetHooks::TargetDroppedPrivileges(
@@ -78,7 +81,7 @@ ResultCode EngineMojoSandboxTargetHooks::TargetDroppedPrivileges(
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&EngineMojoSandboxTargetHooks::BindEngineCommandsReceiver,
-                     base::Unretained(this), base::Passed(&receiver)));
+                     base::Unretained(this), std::move(receiver)));
 
   run_loop.Run();
   return RESULT_CODE_SUCCESS;

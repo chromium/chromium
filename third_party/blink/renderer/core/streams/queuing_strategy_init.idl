@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://streams.spec.whatwg.org/#cqs-class
+// https://streams.spec.whatwg.org/#dictdef-queuingstrategyinit
 
-[PermissiveDictionaryConversion]
 dictionary QueuingStrategyInit {
-  any highWaterMark;
+  required unrestricted double highWaterMark;
 };

@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_file_system_host.h"
@@ -19,12 +21,14 @@
 #include "ppapi/shared_impl/resource_var.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/public/web/web_dom_file_system.h"
 #include "third_party/blink/public/web/web_dom_media_stream_track.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
 
 using ppapi::ResourceVar;
 
@@ -112,12 +116,13 @@ bool DOMFileSystemToResource(
   if (*pending_renderer_id == 0)
     return false;
 
-  create_message->reset(
-      new PpapiPluginMsg_FileSystem_CreateFromPendingHost(file_system_type));
+  *create_message =
+      std::make_unique<PpapiPluginMsg_FileSystem_CreateFromPendingHost>(
+          file_system_type);
 
-  browser_host_create_message->reset(
-      new PpapiHostMsg_FileSystem_CreateFromRenderer(root_url.spec(),
-                                                     file_system_type));
+  *browser_host_create_message =
+      std::make_unique<PpapiHostMsg_FileSystem_CreateFromRenderer>(
+          root_url.spec(), file_system_type);
   return true;
 }
 
@@ -172,8 +177,8 @@ bool DOMMediaStreamTrackToResource(
     if (*pending_renderer_id == 0)
       return false;
 
-    create_message->reset(
-        new PpapiPluginMsg_MediaStreamVideoTrack_CreateFromPendingHost(id));
+    *create_message = std::make_unique<
+        PpapiPluginMsg_MediaStreamVideoTrack_CreateFromPendingHost>(id);
     return true;
   } else if (track.Source().GetType() ==
              blink::WebMediaStreamSource::kTypeAudio) {
@@ -183,8 +188,8 @@ bool DOMMediaStreamTrackToResource(
     if (*pending_renderer_id == 0)
       return false;
 
-    create_message->reset(
-        new PpapiPluginMsg_MediaStreamAudioTrack_CreateFromPendingHost(id));
+    *create_message = std::make_unique<
+        PpapiPluginMsg_MediaStreamAudioTrack_CreateFromPendingHost>(id);
     return true;
   }
   return false;

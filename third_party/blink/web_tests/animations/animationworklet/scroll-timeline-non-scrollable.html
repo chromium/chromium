@@ -64,7 +64,7 @@ runInAnimationWorklet(
   );
 
   const scroller = document.getElementById('scroller');
-  const timeline = new ScrollTimeline({ scrollSource: scroller, timeRange: 1000, orientation: 'block' });
+  const timeline = new ScrollTimeline({ scrollSource: scroller, orientation: 'block' });
   const animation = new WorkletAnimation('test_animator', effect, timeline);
   animation.play();
 

@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -31,10 +31,10 @@ namespace chrome_cleaner {
 
 namespace {
 
-constexpr base::char16 kFileName1[] = L"File1";
-constexpr base::char16 kFileName2[] = L"File2";
-constexpr base::char16 kFileName3[] = L"File3";
-constexpr base::char16 kFileName4[] = L"File4";
+constexpr wchar_t kFileName1[] = L"File1";
+constexpr wchar_t kFileName2[] = L"File2";
+constexpr wchar_t kFileName3[] = L"File3";
+constexpr wchar_t kFileName4[] = L"File4";
 
 constexpr char kFileContent1[] = "This is the file content.";
 constexpr char kFileContent2[] = "Hi!";
@@ -49,16 +49,20 @@ const char* const kKnownContentDigests[] = {
     "BD283E41A3672B6BDAA574F8BD7176F8BCA95BD81383CDE32AA6D78B1DB0E371",
 };
 
-constexpr base::char16 kKnownOriginalFilename[] = L"uws.exe";
-constexpr base::char16 kUnknownOriginalFilename[] = L"knowngood.exe";
-const base::char16* const kKnownOriginalFilenames[] = {
-    L"dummy entry", L"uws.exe", L"zombie uws.exe",
+constexpr wchar_t kKnownOriginalFilename[] = L"uws.exe";
+constexpr wchar_t kUnknownOriginalFilename[] = L"knowngood.exe";
+const wchar_t* const kKnownOriginalFilenames[] = {
+    L"dummy entry",
+    L"uws.exe",
+    L"zombie uws.exe",
 };
 
-constexpr base::char16 kKnownCompanyName[] = L"uws vendor inc";
-constexpr base::char16 kUnknownCompanyName[] = L"paradise";
-const base::char16* const kKnownCompanyNames[] = {
-    L"dummy entry", L"uws vendor inc", L"ACME",
+constexpr wchar_t kKnownCompanyName[] = L"uws vendor inc";
+constexpr wchar_t kUnknownCompanyName[] = L"paradise";
+const wchar_t* const kKnownCompanyNames[] = {
+    L"dummy entry",
+    L"uws vendor inc",
+    L"ACME",
 };
 
 constexpr FileDigestInfo kFileContentDigestInfos[] = {

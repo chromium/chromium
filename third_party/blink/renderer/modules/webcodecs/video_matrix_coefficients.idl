@@ -1,0 +1,12 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoMatrixCoefficients {
+  "rgb",        // sRGB
+  "bt709",      // BT.709
+  "bt470bg",    // BT.601 PAL
+  "smpte170m",  // BT.601 NTSC (functionally the same as bt470bg)
+};

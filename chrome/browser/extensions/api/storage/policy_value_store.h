@@ -12,10 +12,9 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
-#include "extensions/browser/value_store/value_store.h"
 
 namespace policy {
 class PolicyMap;
@@ -28,11 +27,15 @@ namespace extensions {
 // run the function of the storage.managed namespace; it's read-only for the
 // extension. The ManagedValueStoreCache sends updated policy to this store
 // and manages its lifetime.
-class PolicyValueStore : public ValueStore {
+class PolicyValueStore : public value_store::ValueStore {
  public:
   PolicyValueStore(const std::string& extension_id,
                    scoped_refptr<SettingsObserverList> observers,
-                   std::unique_ptr<ValueStore> delegate);
+                   std::unique_ptr<value_store::ValueStore> delegate);
+
+  PolicyValueStore(const PolicyValueStore&) = delete;
+  PolicyValueStore& operator=(const PolicyValueStore&) = delete;
+
   ~PolicyValueStore() override;
 
   // Stores |policy| in the persistent database represented by the |delegate_|
@@ -59,14 +62,12 @@ class PolicyValueStore : public ValueStore {
   WriteResult Clear() override;
 
   // For unit tests.
-  ValueStore* delegate() { return delegate_.get(); }
+  value_store::ValueStore* delegate() { return delegate_.get(); }
 
  private:
   std::string extension_id_;
   scoped_refptr<SettingsObserverList> observers_;
-  std::unique_ptr<ValueStore> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyValueStore);
+  std::unique_ptr<value_store::ValueStore> delegate_;
 };
 
 }  // namespace extensions

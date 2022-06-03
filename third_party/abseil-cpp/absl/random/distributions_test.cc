@@ -14,6 +14,7 @@
 
 #include "absl/random/distributions.h"
 
+#include <cfloat>
 #include <cmath>
 #include <cstdint>
 #include <random>
@@ -29,94 +30,6 @@ constexpr int kSize = 400000;
 
 class RandomDistributionsTest : public testing::Test {};
 
-TEST_F(RandomDistributionsTest, UniformBoundFunctions) {
-  using absl::IntervalClosedClosed;
-  using absl::IntervalClosedOpen;
-  using absl::IntervalOpenClosed;
-  using absl::IntervalOpenOpen;
-  using absl::random_internal::uniform_lower_bound;
-  using absl::random_internal::uniform_upper_bound;
-
-  // absl::uniform_int_distribution natively assumes IntervalClosedClosed
-  // absl::uniform_real_distribution natively assumes IntervalClosedOpen
-
-  EXPECT_EQ(uniform_lower_bound(IntervalOpenClosed, 0, 100), 1);
-  EXPECT_EQ(uniform_lower_bound(IntervalOpenOpen, 0, 100), 1);
-  EXPECT_GT(uniform_lower_bound<float>(IntervalOpenClosed, 0, 1.0), 0);
-  EXPECT_GT(uniform_lower_bound<float>(IntervalOpenOpen, 0, 1.0), 0);
-  EXPECT_GT(uniform_lower_bound<double>(IntervalOpenClosed, 0, 1.0), 0);
-  EXPECT_GT(uniform_lower_bound<double>(IntervalOpenOpen, 0, 1.0), 0);
-
-  EXPECT_EQ(uniform_lower_bound(IntervalClosedClosed, 0, 100), 0);
-  EXPECT_EQ(uniform_lower_bound(IntervalClosedOpen, 0, 100), 0);
-  EXPECT_EQ(uniform_lower_bound<float>(IntervalClosedClosed, 0, 1.0), 0);
-  EXPECT_EQ(uniform_lower_bound<float>(IntervalClosedOpen, 0, 1.0), 0);
-  EXPECT_EQ(uniform_lower_bound<double>(IntervalClosedClosed, 0, 1.0), 0);
-  EXPECT_EQ(uniform_lower_bound<double>(IntervalClosedOpen, 0, 1.0), 0);
-
-  EXPECT_EQ(uniform_upper_bound(IntervalOpenOpen, 0, 100), 99);
-  EXPECT_EQ(uniform_upper_bound(IntervalClosedOpen, 0, 100), 99);
-  EXPECT_EQ(uniform_upper_bound<float>(IntervalOpenOpen, 0, 1.0), 1.0);
-  EXPECT_EQ(uniform_upper_bound<float>(IntervalClosedOpen, 0, 1.0), 1.0);
-  EXPECT_EQ(uniform_upper_bound<double>(IntervalOpenOpen, 0, 1.0), 1.0);
-  EXPECT_EQ(uniform_upper_bound<double>(IntervalClosedOpen, 0, 1.0), 1.0);
-
-  EXPECT_EQ(uniform_upper_bound(IntervalOpenClosed, 0, 100), 100);
-  EXPECT_EQ(uniform_upper_bound(IntervalClosedClosed, 0, 100), 100);
-  EXPECT_GT(uniform_upper_bound<float>(IntervalOpenClosed, 0, 1.0), 1.0);
-  EXPECT_GT(uniform_upper_bound<float>(IntervalClosedClosed, 0, 1.0), 1.0);
-  EXPECT_GT(uniform_upper_bound<double>(IntervalOpenClosed, 0, 1.0), 1.0);
-  EXPECT_GT(uniform_upper_bound<double>(IntervalClosedClosed, 0, 1.0), 1.0);
-
-  // Negative value tests
-  EXPECT_EQ(uniform_lower_bound(IntervalOpenClosed, -100, -1), -99);
-  EXPECT_EQ(uniform_lower_bound(IntervalOpenOpen, -100, -1), -99);
-  EXPECT_GT(uniform_lower_bound<float>(IntervalOpenClosed, -2.0, -1.0), -2.0);
-  EXPECT_GT(uniform_lower_bound<float>(IntervalOpenOpen, -2.0, -1.0), -2.0);
-  EXPECT_GT(uniform_lower_bound<double>(IntervalOpenClosed, -2.0, -1.0), -2.0);
-  EXPECT_GT(uniform_lower_bound<double>(IntervalOpenOpen, -2.0, -1.0), -2.0);
-
-  EXPECT_EQ(uniform_lower_bound(IntervalClosedClosed, -100, -1), -100);
-  EXPECT_EQ(uniform_lower_bound(IntervalClosedOpen, -100, -1), -100);
-  EXPECT_EQ(uniform_lower_bound<float>(IntervalClosedClosed, -2.0, -1.0), -2.0);
-  EXPECT_EQ(uniform_lower_bound<float>(IntervalClosedOpen, -2.0, -1.0), -2.0);
-  EXPECT_EQ(uniform_lower_bound<double>(IntervalClosedClosed, -2.0, -1.0),
-            -2.0);
-  EXPECT_EQ(uniform_lower_bound<double>(IntervalClosedOpen, -2.0, -1.0), -2.0);
-
-  EXPECT_EQ(uniform_upper_bound(IntervalOpenOpen, -100, -1), -2);
-  EXPECT_EQ(uniform_upper_bound(IntervalClosedOpen, -100, -1), -2);
-  EXPECT_EQ(uniform_upper_bound<float>(IntervalOpenOpen, -2.0, -1.0), -1.0);
-  EXPECT_EQ(uniform_upper_bound<float>(IntervalClosedOpen, -2.0, -1.0), -1.0);
-  EXPECT_EQ(uniform_upper_bound<double>(IntervalOpenOpen, -2.0, -1.0), -1.0);
-  EXPECT_EQ(uniform_upper_bound<double>(IntervalClosedOpen, -2.0, -1.0), -1.0);
-
-  EXPECT_EQ(uniform_upper_bound(IntervalOpenClosed, -100, -1), -1);
-  EXPECT_EQ(uniform_upper_bound(IntervalClosedClosed, -100, -1), -1);
-  EXPECT_GT(uniform_upper_bound<float>(IntervalOpenClosed, -2.0, -1.0), -1.0);
-  EXPECT_GT(uniform_upper_bound<float>(IntervalClosedClosed, -2.0, -1.0), -1.0);
-  EXPECT_GT(uniform_upper_bound<double>(IntervalOpenClosed, -2.0, -1.0), -1.0);
-  EXPECT_GT(uniform_upper_bound<double>(IntervalClosedClosed, -2.0, -1.0),
-            -1.0);
-
-  // Edge cases: the next value toward itself is itself.
-  const double d = 1.0;
-  const float f = 1.0;
-  EXPECT_EQ(uniform_lower_bound(IntervalOpenClosed, d, d), d);
-  EXPECT_EQ(uniform_lower_bound(IntervalOpenClosed, f, f), f);
-
-  EXPECT_GT(uniform_lower_bound(IntervalOpenClosed, 1.0, 2.0), 1.0);
-  EXPECT_LT(uniform_lower_bound(IntervalOpenClosed, 1.0, +0.0), 1.0);
-  EXPECT_LT(uniform_lower_bound(IntervalOpenClosed, 1.0, -0.0), 1.0);
-  EXPECT_LT(uniform_lower_bound(IntervalOpenClosed, 1.0, -1.0), 1.0);
-
-  EXPECT_EQ(uniform_upper_bound(IntervalClosedClosed, 0.0f,
-                                std::numeric_limits<float>::max()),
-            std::numeric_limits<float>::max());
-  EXPECT_EQ(uniform_upper_bound(IntervalClosedClosed, 0.0,
-                                std::numeric_limits<double>::max()),
-            std::numeric_limits<double>::max());
-}
 
 struct Invalid {};
 
@@ -171,14 +84,11 @@ void CheckArgsInferType() {
       "");
   static_assert(
       absl::conjunction<
+          std::is_same<Expect, decltype(InferredTaggedUniformReturnT<
+                                        absl::IntervalOpenOpenTag, A, B>(0))>,
           std::is_same<Expect,
                        decltype(InferredTaggedUniformReturnT<
-                                absl::random_internal::IntervalOpenOpenT, A, B>(
-                           0))>,
-          std::is_same<Expect,
-                       decltype(InferredTaggedUniformReturnT<
-                                absl::random_internal::IntervalOpenOpenT, B, A>(
-                           0))>>::value,
+                                absl::IntervalOpenOpenTag, B, A>(0))>>::value,
       "");
 }
 
@@ -218,12 +128,10 @@ void CheckArgsReturnExpectedType() {
       absl::conjunction<
           std::is_same<Expect,
                        decltype(ExplicitTaggedUniformReturnT<
-                                absl::random_internal::IntervalOpenOpenT, A, B,
-                                Expect>(0))>,
-          std::is_same<Expect,
-                       decltype(ExplicitTaggedUniformReturnT<
-                                absl::random_internal::IntervalOpenOpenT, B, A,
-                                Expect>(0))>>::value,
+                                absl::IntervalOpenOpenTag, A, B, Expect>(0))>,
+          std::is_same<Expect, decltype(ExplicitTaggedUniformReturnT<
+                                        absl::IntervalOpenOpenTag, B, A,
+                                        Expect>(0))>>::value,
       "");
 }
 
@@ -289,7 +197,9 @@ TEST_F(RandomDistributionsTest, UniformTypeInference) {
 
   // Properly promotes float.
   CheckArgsInferType<float, double, double>();
+}
 
+TEST_F(RandomDistributionsTest, UniformExamples) {
   // Examples.
   absl::InsecureBitGen gen;
   EXPECT_NE(1, absl::Uniform(gen, static_cast<uint16_t>(0), 1.0f));
@@ -310,6 +220,67 @@ TEST_F(RandomDistributionsTest, UniformNoBounds) {
   absl::Uniform<uint16_t>(gen);
   absl::Uniform<uint32_t>(gen);
   absl::Uniform<uint64_t>(gen);
+}
+
+TEST_F(RandomDistributionsTest, UniformNonsenseRanges) {
+  // The ranges used in this test are undefined behavior.
+  // The results are arbitrary and subject to future changes.
+
+#if (defined(__i386__) || defined(_M_IX86)) && FLT_EVAL_METHOD != 0
+  // We're using an x87-compatible FPU, and intermediate operations can be
+  // performed with 80-bit floats. This produces slightly different results from
+  // what we expect below.
+  GTEST_SKIP()
+      << "Skipping the test because we detected x87 floating-point semantics";
+#endif
+
+  absl::InsecureBitGen gen;
+
+  // <uint>
+  EXPECT_EQ(0, absl::Uniform<uint64_t>(gen, 0, 0));
+  EXPECT_EQ(1, absl::Uniform<uint64_t>(gen, 1, 0));
+  EXPECT_EQ(0, absl::Uniform<uint64_t>(absl::IntervalOpenOpen, gen, 0, 0));
+  EXPECT_EQ(1, absl::Uniform<uint64_t>(absl::IntervalOpenOpen, gen, 1, 0));
+
+  constexpr auto m = (std::numeric_limits<uint64_t>::max)();
+
+  EXPECT_EQ(m, absl::Uniform(gen, m, m));
+  EXPECT_EQ(m, absl::Uniform(gen, m, m - 1));
+  EXPECT_EQ(m - 1, absl::Uniform(gen, m - 1, m));
+  EXPECT_EQ(m, absl::Uniform(absl::IntervalOpenOpen, gen, m, m));
+  EXPECT_EQ(m, absl::Uniform(absl::IntervalOpenOpen, gen, m, m - 1));
+  EXPECT_EQ(m - 1, absl::Uniform(absl::IntervalOpenOpen, gen, m - 1, m));
+
+  // <int>
+  EXPECT_EQ(0, absl::Uniform<int64_t>(gen, 0, 0));
+  EXPECT_EQ(1, absl::Uniform<int64_t>(gen, 1, 0));
+  EXPECT_EQ(0, absl::Uniform<int64_t>(absl::IntervalOpenOpen, gen, 0, 0));
+  EXPECT_EQ(1, absl::Uniform<int64_t>(absl::IntervalOpenOpen, gen, 1, 0));
+
+  constexpr auto l = (std::numeric_limits<int64_t>::min)();
+  constexpr auto r = (std::numeric_limits<int64_t>::max)();
+
+  EXPECT_EQ(l, absl::Uniform(gen, l, l));
+  EXPECT_EQ(r, absl::Uniform(gen, r, r));
+  EXPECT_EQ(r, absl::Uniform(gen, r, r - 1));
+  EXPECT_EQ(r - 1, absl::Uniform(gen, r - 1, r));
+  EXPECT_EQ(l, absl::Uniform(absl::IntervalOpenOpen, gen, l, l));
+  EXPECT_EQ(r, absl::Uniform(absl::IntervalOpenOpen, gen, r, r));
+  EXPECT_EQ(r, absl::Uniform(absl::IntervalOpenOpen, gen, r, r - 1));
+  EXPECT_EQ(r - 1, absl::Uniform(absl::IntervalOpenOpen, gen, r - 1, r));
+
+  // <double>
+  const double e = std::nextafter(1.0, 2.0);  // 1 + epsilon
+  const double f = std::nextafter(1.0, 0.0);  // 1 - epsilon
+  const double g = std::numeric_limits<double>::denorm_min();
+
+  EXPECT_EQ(1.0, absl::Uniform(gen, 1.0, e));
+  EXPECT_EQ(1.0, absl::Uniform(gen, 1.0, f));
+  EXPECT_EQ(0.0, absl::Uniform(gen, 0.0, g));
+
+  EXPECT_EQ(e, absl::Uniform(absl::IntervalOpenOpen, gen, 1.0, e));
+  EXPECT_EQ(f, absl::Uniform(absl::IntervalOpenOpen, gen, 1.0, f));
+  EXPECT_EQ(g, absl::Uniform(absl::IntervalOpenOpen, gen, 0.0, g));
 }
 
 // TODO(lar): Validate properties of non-default interval-semantics.

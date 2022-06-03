@@ -1,0 +1,5 @@
+# Adding new component extensions requires approval from the Extensions Tech
+# Lead. See comment in allowlist.h
+set noparent
+
+file://chrome/browser/extensions/component_extensions_allowlist/EXTENSION_ALLOWLIST_OWNERS

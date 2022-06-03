@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_MIXER_MIXER_INPUT_CONNECTION_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_MIXER_MIXER_INPUT_CONNECTION_H_
 
+#include <atomic>
 #include <memory>
 #include <string>
 
@@ -16,21 +17,22 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
-#include "chromecast/media/audio/audio_fader.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/audio_clock_simulator.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/playback_rate_shifter.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/volume_control.h"
+#include "media/base/channel_layout.h"
+#include "media/base/media_util.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
 namespace media {
-class AudioBufferMemoryPool;
 class AudioBus;
-class AudioRendererAlgorithm;
 }  // namespace media
 
 namespace net {
@@ -41,6 +43,7 @@ namespace chromecast {
 class IOBufferPool;
 
 namespace media {
+class RateAdjuster;
 class StreamMixer;
 
 namespace mixer_service {
@@ -53,8 +56,7 @@ class OutputStreamParams;
 // on an IO thread. This class manages its own lifetime and should not be
 // externally deleted.
 class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
-                             public MixerInput::Source,
-                             public AudioFader::Source {
+                             public MixerInput::Source {
  public:
   using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
 
@@ -62,11 +64,15 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
                        std::unique_ptr<mixer_service::MixerSocket> socket,
                        const mixer_service::OutputStreamParams& params);
 
+  MixerInputConnection(const MixerInputConnection&) = delete;
+  MixerInputConnection& operator=(const MixerInputConnection&) = delete;
+
   // Only public to allow task_runner->DeleteSoon() to work.
   ~MixerInputConnection() override;
 
  private:
   friend class MixerServiceReceiver;
+  class TimestampedFader;
 
   enum class State {
     kUninitialized,   // Not initialized by the mixer yet.
@@ -78,10 +84,10 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
 
   // mixer_service::MixerSocket::Delegate implementation:
   bool HandleMetadata(const mixer_service::Generic& message) override;
-  bool HandleAudioData(char* data, int size, int64_t timestamp) override;
+  bool HandleAudioData(char* data, size_t size, int64_t timestamp) override;
   bool HandleAudioBuffer(scoped_refptr<net::IOBuffer> buffer,
                          char* data,
-                         int size,
+                         size_t size,
                          int64_t timestamp) override;
   void OnConnectionError() override;
 
@@ -89,14 +95,22 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   void OnInactivityTimeout();
   void RestartPlaybackAt(int64_t timestamp, int64_t pts);
   void SetMediaPlaybackRate(double rate);
+  void SetMediaPlaybackRateLocked(double rate) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void SetAudioClockRate(double rate);
+  double ChangeAudioRate(double desired_clock_rate,
+                         double error_slope,
+                         double current_error) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void AdjustTimestamps(int64_t timestamp_adjustment);
   void SetPaused(bool paused);
 
   // MixerInput::Source implementation:
-  int num_channels() override;
-  int input_samples_per_second() override;
+  size_t num_channels() const override;
+  ::media::ChannelLayout channel_layout() const override;
+  int sample_rate() const override;
   bool primary() override;
   const std::string& device_id() override;
   AudioContentType content_type() override;
+  AudioContentType focus_type() override;
   int desired_read_size() override;
   int playout_channel() override;
   bool active() override;
@@ -107,26 +121,31 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
                               RenderingDelay rendering_delay,
                               ::media::AudioBus* buffer) override;
   void OnAudioPlaybackError(MixerError error) override;
+  void OnOutputUnderrun() override;
   void FinalizeAudioPlayback() override;
 
-  // AudioFader::Source implementation:
-  int FillFaderFrames(int num_frames,
-                      RenderingDelay rendering_delay,
-                      float* const* channels)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_) override;
-
-  bool PrepareDataForFill(int num_frames) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  bool FillRateShifted(int needed_frames) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  int FillAudio(int num_frames, float* const* channels)
+  int FillAudio(int num_frames,
+                int64_t expected_playout_time,
+                float* const* channels,
+                bool after_silence) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  int FillTimestampedAudio(int num_frames,
+                           int64_t expected_playout_time,
+                           float* const* channels,
+                           bool after_silence) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  int FillFromQueue(int num_frames, float* const* channels, int write_offset)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void LogUnderrun(int num_frames, int filled) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void WritePcm(scoped_refptr<net::IOBuffer> data);
-  int64_t QueueData(scoped_refptr<net::IOBuffer> data)
+  RenderingDelay QueueData(scoped_refptr<net::IOBuffer> data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  double ExtraDelayFrames() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void PostPcmCompletion();
   void PostEos();
   void PostError(MixerError error);
+  void PostStreamUnderrun();
+  void PostOutputUnderrun();
   void PostAudioReadyForPlayback();
   void DropAudio(int64_t frames) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void CheckAndStartPlaybackIfNecessary(int num_frames,
@@ -140,12 +159,19 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   const int fill_size_;
   const int algorithm_fill_size_;
   const int num_channels_;
+  const ::media::ChannelLayout channel_layout_;
   const int input_samples_per_second_;
-  const mixer_service::SampleFormat sample_format_;
+  const audio_service::SampleFormat sample_format_;
   const bool primary_;
   const std::string device_id_;
   const AudioContentType content_type_;
+  const AudioContentType focus_type_;
   const int playout_channel_;
+  const bool pts_is_timestamp_;
+  const int64_t max_timestamp_error_;
+  const bool never_crop_;
+
+  std::atomic<int> effective_playout_channel_;
 
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   int max_queued_frames_;
@@ -169,12 +195,16 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   base::circular_deque<scoped_refptr<net::IOBuffer>> queue_ GUARDED_BY(lock_);
   int queued_frames_ GUARDED_BY(lock_) = 0;
   RenderingDelay mixer_rendering_delay_ GUARDED_BY(lock_);
-  int64_t next_playback_timestamp_ GUARDED_BY(lock_) = INT64_MIN;
+  RenderingDelay next_delay_ GUARDED_BY(lock_);
   int mixer_read_size_ GUARDED_BY(lock_) = 0;
-  int extra_delay_frames_ GUARDED_BY(lock_) = 0;
   int current_buffer_offset_ GUARDED_BY(lock_) = 0;
-  AudioFader fader_ GUARDED_BY(lock_);
-  bool zero_fader_frames_ GUARDED_BY(lock_) = false;
+  std::unique_ptr<RateAdjuster> rate_adjuster_ GUARDED_BY(lock_);
+  int64_t total_filled_frames_ GUARDED_BY(lock_) = 0;
+  bool filled_some_since_resume_ GUARDED_BY(lock_) = false;
+  std::unique_ptr<TimestampedFader> timestamped_fader_ GUARDED_BY(lock_);
+  PlaybackRateShifter rate_shifter_ GUARDED_BY(lock_);
+  AudioClockSimulator audio_clock_simulator_ GUARDED_BY(lock_);
+  bool in_underrun_ GUARDED_BY(lock_) = false;
   bool started_ GUARDED_BY(lock_) = false;
   double playback_rate_ GUARDED_BY(lock_) = 1.0;
   bool use_start_timestamp_ GUARDED_BY(lock_) = false;
@@ -189,24 +219,15 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   // to us.
   int64_t playback_start_pts_ GUARDED_BY(lock_) = INT64_MIN;
   int remaining_silence_frames_ GUARDED_BY(lock_) = 0;
-  std::unique_ptr<::media::AudioRendererAlgorithm> rate_shifter_
-      GUARDED_BY(lock_);
-  std::unique_ptr<::media::AudioBus> rate_shifter_output_ GUARDED_BY(lock_);
-  int rate_shifted_offset_ GUARDED_BY(lock_) = 0;
-  bool waiting_for_rate_shifter_fill_ GUARDED_BY(lock_) = false;
-  int64_t rate_shifter_input_frames_ GUARDED_BY(lock_) = 0;
-  int64_t rate_shifter_output_frames_ GUARDED_BY(lock_) = 0;
-  bool skip_next_fill_for_rate_change_ GUARDED_BY(lock_) = false;
-  scoped_refptr<::media::AudioBufferMemoryPool> audio_buffer_pool_;
+  bool fed_one_silence_buffer_after_removal_ GUARDED_BY(lock_) = false;
 
   base::RepeatingClosure pcm_completion_task_;
   base::RepeatingClosure eos_task_;
   base::RepeatingClosure ready_for_playback_task_;
+  base::RepeatingClosure post_stream_underrun_task_;
 
   base::WeakPtr<MixerInputConnection> weak_this_;
   base::WeakPtrFactory<MixerInputConnection> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerInputConnection);
 };
 
 }  // namespace media

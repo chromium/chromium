@@ -6,8 +6,8 @@
 // for the sandboxed process. For more details see
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
-#ifndef SANDBOX_SRC_INTERCEPTION_H_
-#define SANDBOX_SRC_INTERCEPTION_H_
+#ifndef SANDBOX_WIN_SRC_INTERCEPTION_H_
+#define SANDBOX_WIN_SRC_INTERCEPTION_H_
 
 #include <stddef.h>
 
@@ -69,8 +69,12 @@ class InterceptionManager {
   // An interception manager performs interceptions on a given child process.
   // If we are allowed to intercept functions that have been patched by somebody
   // else, relaxed should be set to true.
-  // Note: We increase the child's reference count internally.
-  InterceptionManager(TargetProcess* child_process, bool relaxed);
+  // |child_process| should outlive the manager.
+  InterceptionManager(TargetProcess& child_process, bool relaxed);
+
+  InterceptionManager(const InterceptionManager&) = delete;
+  InterceptionManager& operator=(const InterceptionManager&) = delete;
+
   ~InterceptionManager();
 
   // Patches function_name inside dll_name to point to replacement_code_address.
@@ -151,13 +155,6 @@ class InterceptionManager {
   // Calculates the size of the required configuration buffer.
   size_t GetBufferSize() const;
 
-  // Rounds up the size of a given buffer, considering alignment (padding).
-  // value is the current size of the buffer, and alignment is specified in
-  // bytes.
-  static inline size_t RoundUpToMultiple(size_t value, size_t alignment) {
-    return ((value + alignment - 1) / alignment) * alignment;
-  }
-
   // Sets up a given buffer with all the information that has to be transfered
   // to the child.
   // Returns true on success.
@@ -215,7 +212,7 @@ class InterceptionManager {
                                   DllInterceptionData* dll_data);
 
   // The process to intercept.
-  TargetProcess* child_;
+  TargetProcess& child_;
   // Holds all interception info until the call to initialize (perform the
   // actual patch).
   std::list<InterceptionData> interceptions_;
@@ -225,8 +222,6 @@ class InterceptionManager {
 
   // true if we are allowed to patch already-patched functions.
   bool relaxed_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptionManager);
 };
 
 // This macro simply calls interception_manager.AddToPatchedFunctions with
@@ -235,32 +230,6 @@ class InterceptionManager {
 // Note that num_params is the number of bytes to pop out of the stack for
 // the exported interceptor, following the calling convention of a service call
 // (WINAPI = with the "C" underscore).
-#if SANDBOX_EXPORTS
-#if defined(_WIN64)
-#define MAKE_SERVICE_NAME(service, params) "Target" #service "64"
-#else
-#define MAKE_SERVICE_NAME(service, params) "_Target" #service "@" #params
-#endif
-
-#define ADD_NT_INTERCEPTION(service, id, num_params)        \
-  AddToPatchedFunctions(kNtdllName, #service,               \
-                        sandbox::INTERCEPTION_SERVICE_CALL, \
-                        MAKE_SERVICE_NAME(service, num_params), id)
-
-#define INTERCEPT_NT(manager, service, id, num_params)                        \
-  ((&Target##service) ? manager->ADD_NT_INTERCEPTION(service, id, num_params) \
-                      : false)
-
-// When intercepting the EAT it is important that the patched version of the
-// function not call any functions imported from system libraries unless
-// |TargetServices::InitCalled()| returns true, because it is only then that
-// we are guaranteed that our IAT has been initialized.
-#define INTERCEPT_EAT(manager, dll, function, id, num_params)             \
-  ((&Target##function) ? manager->AddToPatchedFunctions(                  \
-                             dll, #function, sandbox::INTERCEPTION_EAT,   \
-                             MAKE_SERVICE_NAME(function, num_params), id) \
-                       : false)
-#else  // SANDBOX_EXPORTS
 #if defined(_WIN64)
 #define MAKE_SERVICE_NAME(service) &Target##service##64
 #else
@@ -283,8 +252,7 @@ class InterceptionManager {
   manager->AddToPatchedFunctions(                             \
       dll, #function, sandbox::INTERCEPTION_EAT,              \
       reinterpret_cast<void*>(MAKE_SERVICE_NAME(function)), id)
-#endif  // SANDBOX_EXPORTS
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTION_H_
+#endif  // SANDBOX_WIN_SRC_INTERCEPTION_H_

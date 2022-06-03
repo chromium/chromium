@@ -4,14 +4,18 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/content_decryption_module_result_promise.h"
 
+#include "media/base/key_systems.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -35,11 +39,11 @@ ExceptionCode WebCdmExceptionToExceptionCode(
 
 ContentDecryptionModuleResultPromise::ContentDecryptionModuleResultPromise(
     ScriptState* script_state,
-    const char* interface_name,
-    const char* property_name)
+    const MediaKeysConfig& config,
+    EmeApiType api_type)
     : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      interface_name_(interface_name),
-      property_name_(property_name) {}
+      config_(config),
+      api_type_(api_type) {}
 
 ContentDecryptionModuleResultPromise::~ContentDecryptionModuleResultPromise() =
     default;
@@ -85,9 +89,26 @@ void ContentDecryptionModuleResultPromise::CompleteWithError(
   if (!IsValidToFulfillPromise())
     return;
 
-  // Non-zero |systemCode| is appended to the |errorMessage|. If the
-  // |errorMessage| is empty, we'll report "Rejected with system code
-  // (systemCode)".
+  // Report Media.EME.ApiPromiseRejection UKM.
+  auto* execution_context = GetExecutionContext();
+  if (IsA<LocalDOMWindow>(execution_context)) {
+    Document* document = To<LocalDOMWindow>(execution_context)->document();
+    if (document) {
+      ukm::builders::Media_EME_ApiPromiseRejection builder(
+          document->UkmSourceID());
+      builder.SetKeySystem(
+          media::GetKeySystemIntForUKM(config_.key_system.Ascii()));
+      builder.SetUseHardwareSecureCodecs(
+          static_cast<int>(config_.use_hardware_secure_codecs));
+      builder.SetApi(static_cast<int>(api_type_));
+      builder.SetSystemCode(system_code);
+      builder.Record(document->UkmRecorder());
+    }
+  }
+
+  // Non-zero |system_code| is appended to the |error_message|. If the
+  // |error_message| is empty, we'll report "Rejected with system code
+  // (|system_code|)".
   StringBuilder result;
   result.Append(error_message);
   if (system_code != 0) {
@@ -97,6 +118,7 @@ void ContentDecryptionModuleResultPromise::CompleteWithError(
     result.AppendNumber(system_code);
     result.Append(')');
   }
+
   Reject(WebCdmExceptionToExceptionCode(exception_code), result.ToString());
 }
 
@@ -109,9 +131,11 @@ void ContentDecryptionModuleResultPromise::Reject(ExceptionCode code,
   DCHECK(IsValidToFulfillPromise());
 
   ScriptState::Scope scope(resolver_->GetScriptState());
-  ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
-                                 interface_name_, property_name_);
+  ExceptionState exception_state(
+      resolver_->GetScriptState()->GetIsolate(),
+      ExceptionState::kExecutionContext,
+      EncryptedMediaUtils::GetInterfaceName(api_type_),
+      EncryptedMediaUtils::GetPropertyName(api_type_));
   exception_state.ThrowException(code, error_message);
   resolver_->Reject(exception_state);
 
@@ -131,7 +155,7 @@ bool ContentDecryptionModuleResultPromise::IsValidToFulfillPromise() {
   return GetExecutionContext() && !GetExecutionContext()->IsContextDestroyed();
 }
 
-void ContentDecryptionModuleResultPromise::Trace(blink::Visitor* visitor) {
+void ContentDecryptionModuleResultPromise::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
   ContentDecryptionModuleResult::Trace(visitor);
 }

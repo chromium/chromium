@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
 
+#include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto = chromeos::printing::proto;
@@ -40,6 +41,8 @@ TEST(PrintJobInfoIdlConversionsTest, PrintJobInfoProtoToIdl) {
   print_job_info_proto.set_status(proto::PrintJobInfo_PrintJobStatus_FAILED);
   print_job_info_proto.set_creation_time(kJobCreationTime);
   print_job_info_proto.set_completion_time(kJobCompletionTime);
+  print_job_info_proto.set_printer_error_code(
+      proto::PrintJobInfo_PrinterErrorCode_OUT_OF_PAPER);
 
   proto::Printer printer_proto;
   printer_proto.set_name(kName);
@@ -85,6 +88,8 @@ TEST(PrintJobInfoIdlConversionsTest, PrintJobInfoProtoToIdl) {
   EXPECT_EQ(kHeight, media_size.height);
   EXPECT_EQ(kVendorId, media_size.vendor_id);
   EXPECT_EQ(kPagesNumber, print_job_info.number_of_pages);
+  EXPECT_EQ(api::printing::PRINTER_STATUS_OUT_OF_PAPER,
+            print_job_info.printer_status);
 }
 
 }  // namespace extensions

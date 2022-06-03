@@ -4,9 +4,10 @@ Categories active:
 Has category: Appearance
 Has category: Console
 Has category: Debugger
-Has category: DevTools
 Has category: Drawer
 Has category: Elements
+Has category: Global
+Has category: Grid
 Has category: Mobile
 Has category: Network
 Has category: Panel

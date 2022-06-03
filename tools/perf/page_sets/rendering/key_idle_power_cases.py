@@ -16,15 +16,17 @@ class KeyIdlePowerPage(rendering_story.RenderingStory):
 
   def __init__(self,
                page_set,
-               shared_page_state_class=(android_screen_restoration_shared_state
-                                        .AndroidScreenRestorationSharedState),
+               shared_page_state_class=(android_screen_restoration_shared_state.
+                                        AndroidScreenRestorationSharedState),
                name_suffix='',
-               extra_browser_args=None):
+               extra_browser_args=None,
+               perform_final_navigation=False):
     super(KeyIdlePowerPage, self).__init__(
         page_set=page_set,
         shared_page_state_class=shared_page_state_class,
         name_suffix=name_suffix,
-        extra_browser_args=['--report-silk-details','--disable-top-sites'])
+        extra_browser_args=['--report-silk-details', '--disable-top-sites'],
+        perform_final_navigation=perform_final_navigation)
 
   def RunNavigateSteps(self, action_runner):
     super(KeyIdlePowerPage, self).RunNavigateSteps(action_runner)

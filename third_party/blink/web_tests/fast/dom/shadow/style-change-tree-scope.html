@@ -5,7 +5,7 @@
 <style id="style"></style>
 <script>
 function moveAndReentrantlyAppendToStyleElement() {
-  let sr = shadowHost.createShadowRoot();
+  let sr = shadowHost.attachShadow({mode: 'open'});
   let script = document.createElement('script');
   sr.appendChild(script);
 

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/host/file_transfer/fake_file_operations.h"
+#include "remoting/host/file_transfer/test_byte_vector_utils.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,15 +25,18 @@ class BufferedFileWriterTest : public testing::Test {
 
  protected:
   const base::FilePath kTestFilename{FILE_PATH_LITERAL("test-file.txt")};
-  const std::string kTestDataOne = "this is the first test string";
-  const std::string kTestDataTwo = "this is the second test string";
-  const std::string kTestDataThree = "this is the third test string";
+  const std::vector<std::uint8_t> kTestDataOne =
+      ByteArrayFrom("this is the first test string");
+  const std::vector<std::uint8_t> kTestDataTwo =
+      ByteArrayFrom("this is the second test string");
+  const std::vector<std::uint8_t> kTestDataThree =
+      ByteArrayFrom("this is the third test string");
 
   void OnCompleted();
   void OnError(protocol::FileTransfer_Error error);
 
   bool complete_called_ = false;
-  base::Optional<protocol::FileTransfer_Error> error_ = base::nullopt;
+  absl::optional<protocol::FileTransfer_Error> error_ = absl::nullopt;
 
   base::test::TaskEnvironment task_environment_;
 };
@@ -83,8 +87,8 @@ TEST_F(BufferedFileWriterTest, WritesThreeChunks) {
 
   ASSERT_EQ(1ul, test_io.files_written.size());
   ASSERT_EQ(false, test_io.files_written[0].failed);
-  std::vector<std::string> expected_chunks = {kTestDataOne, kTestDataTwo,
-                                              kTestDataThree};
+  std::vector<std::vector<std::uint8_t>> expected_chunks = {
+      kTestDataOne, kTestDataTwo, kTestDataThree};
   ASSERT_EQ(expected_chunks, test_io.files_written[0].chunks);
 }
 
@@ -112,8 +116,8 @@ TEST_F(BufferedFileWriterTest, QueuesOperations) {
 
   ASSERT_EQ(1ul, test_io.files_written.size());
   ASSERT_EQ(false, test_io.files_written[0].failed);
-  std::vector<std::string> expected_chunks = {kTestDataOne, kTestDataTwo,
-                                              kTestDataThree};
+  std::vector<std::vector<std::uint8_t>> expected_chunks = {
+      kTestDataOne, kTestDataTwo, kTestDataThree};
   ASSERT_EQ(expected_chunks, test_io.files_written[0].chunks);
 }
 
@@ -145,7 +149,8 @@ TEST_F(BufferedFileWriterTest, HandlesWriteError) {
 
   ASSERT_EQ(1ul, test_io.files_written.size());
   ASSERT_EQ(true, test_io.files_written[0].failed);
-  std::vector<std::string> expected_chunks = {kTestDataOne, kTestDataTwo};
+  std::vector<std::vector<std::uint8_t>> expected_chunks = {kTestDataOne,
+                                                            kTestDataTwo};
   ASSERT_EQ(expected_chunks, test_io.files_written[0].chunks);
 }
 
@@ -174,7 +179,8 @@ TEST_F(BufferedFileWriterTest, CancelsWriter) {
 
   ASSERT_EQ(1ul, test_io.files_written.size());
   ASSERT_EQ(true, test_io.files_written[0].failed);
-  std::vector<std::string> expected_chunks = {kTestDataOne, kTestDataTwo};
+  std::vector<std::vector<std::uint8_t>> expected_chunks = {kTestDataOne,
+                                                            kTestDataTwo};
   ASSERT_EQ(expected_chunks, test_io.files_written[0].chunks);
 }
 

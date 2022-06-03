@@ -6,13 +6,15 @@
  * @fileoverview Fake implementations of ChromeEvent.
  */
 
-/* #export */ class FakeChromeEvent {
+import {assertFalse, assertTrue} from '../chai_assert.js';
+
+export class FakeChromeEvent {
   constructor() {
     /** @type {!Set<!Function>} */
     this.listeners_ = new Set();
   }
 
-  /** @param {Function} listener */
+  /** @param {!Function} listener */
   addListener(listener) {
     assertFalse(
         this.listeners_.has(listener),
@@ -20,7 +22,7 @@
     this.listeners_.add(listener);
   }
 
-  /** @param {Function} listener */
+  /** @param {!Function} listener */
   removeListener(listener) {
     assertTrue(
         this.listeners_.has(listener),
@@ -29,9 +31,9 @@
   }
 
   /** @param {...} args */
-  callListeners(...var_args) {
+  callListeners(...args) {
     this.listeners_.forEach(function(l) {
-      l.apply(null, var_args);
+      l(...args);
     });
   }
 }

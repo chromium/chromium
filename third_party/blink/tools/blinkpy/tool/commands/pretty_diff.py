@@ -36,7 +36,6 @@ from blinkpy.common.pretty_diff import prettify_diff
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.tool.commands.command import Command
 
-
 _log = logging.getLogger(__name__)
 
 
@@ -47,9 +46,15 @@ class PrettyDiff(Command):
 
     def __init__(self):
         options = [
-            optparse.make_option('-g', '--git-commit', action='store', dest='git_commit',
-                                 help=('Operate on a local commit. If a range, the commits are squashed into one. <ref>.... '
-                                       'includes the working copy changes. UPSTREAM can be used for the upstream/tracking branch.'))
+            optparse.make_option(
+                '-g',
+                '--git-commit',
+                action='store',
+                dest='git_commit',
+                help=
+                ('Operate on a local commit. If a range, the commits are squashed into one. <ref>.... '
+                 'includes the working copy changes. UPSTREAM can be used for the upstream/tracking branch.'
+                 ))
         ]
         super(PrettyDiff, self).__init__(options)
         self._tool = None
@@ -82,8 +87,8 @@ class PrettyDiff(Command):
 
     def _diff(self, options):
         changed_files = self._tool.git().changed_files(options.git_commit)
-        return self._tool.git().create_patch(options.git_commit,
-                                             changed_files=changed_files)
+        return self._tool.git().create_patch(
+            options.git_commit, changed_files=changed_files)
 
     @staticmethod
     def _pretty_diff_file(diff):

@@ -2,6 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("protobuf_http_client_messages_proto") {
+  sources = [ "protobuf_http_client_messages.proto" ]
+}
+
 source_set("base") {
   sources = [
     "auto_thread.cc",
@@ -20,9 +27,29 @@ source_set("base") {
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "cpu_utils.cc",
+    "cpu_utils.h",
+    "directory_service_client.cc",
+    "directory_service_client.h",
     "leaky_bucket.cc",
     "leaky_bucket.h",
     "name_value_map.h",
+    "protobuf_http_client.cc",
+    "protobuf_http_client.h",
+    "protobuf_http_request.cc",
+    "protobuf_http_request.h",
+    "protobuf_http_request_base.cc",
+    "protobuf_http_request_base.h",
+    "protobuf_http_request_config.cc",
+    "protobuf_http_request_config.h",
+    "protobuf_http_status.cc",
+    "protobuf_http_status.h",
+    "protobuf_http_stream_parser.cc",
+    "protobuf_http_stream_parser.h",
+    "protobuf_http_stream_request.cc",
+    "protobuf_http_stream_request.h",
+    "queued_task_poster.cc",
+    "queued_task_poster.h",
     "rate_counter.cc",
     "rate_counter.h",
     "result.h",
@@ -30,13 +57,15 @@ source_set("base") {
     "rsa_key_pair.h",
     "running_samples.cc",
     "running_samples.h",
-    "scoped_sc_handle_win.h",
+    "scoped_protobuf_http_request.cc",
+    "scoped_protobuf_http_request.h",
     "service_urls.cc",
     "service_urls.h",
     "session_options.cc",
     "session_options.h",
     "socket_reader.cc",
     "socket_reader.h",
+    "task_util.h",
     "telemetry_log_writer.cc",
     "telemetry_log_writer.h",
     "typed_buffer.h",
@@ -60,27 +89,32 @@ source_set("base") {
     "//base",
     "//net",
     "//remoting/proto",
-    "//remoting/proto/remoting/v1:telemetry_grpc_library",
+    "//remoting/proto/remoting/v1:chromoting_event_proto",
     "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
+    ":authorization",
+    ":protobuf_http_client_messages_proto",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//google_apis",
-    "//remoting/base/grpc_support",
+    "//remoting/proto/remoting/v1:directory_proto",
+    "//remoting/proto/remoting/v1:telemetry_messages",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
     "//url",
   ]
-  if (is_nacl) {
-    sources -= [
-      "chromium_url_request.cc",
-      "chromoting_event.cc",
-      "telemetry_log_writer.cc",
-      "url_request_context_getter.cc",
+
+  if (is_win) {
+    sources += [ "scoped_sc_handle_win.h" ]
+  } else if (is_linux || is_chromeos) {
+    sources += [
+      "file_path_util_linux.cc",
+      "file_path_util_linux.h",
     ]
-    public_deps -= [ "//remoting/proto/remoting/v1:telemetry_grpc_library" ]
-    deps -= [ "//google_apis" ]
   }
 }
 
@@ -89,16 +123,12 @@ source_set("authorization") {
     "gaia_oauth_client.cc",
     "gaia_oauth_client.h",
     "oauth_client.h",
-    "oauth_token_exchanger.cc",
-    "oauth_token_exchanger.h",
     "oauth_token_getter.cc",
     "oauth_token_getter.h",
     "oauth_token_getter_impl.cc",
     "oauth_token_getter_impl.h",
     "oauth_token_getter_proxy.cc",
     "oauth_token_getter_proxy.h",
-    "offline_token_exchanger.cc",
-    "offline_token_exchanger.h",
     "passthrough_oauth_token_getter.cc",
     "passthrough_oauth_token_getter.h",
   ]
@@ -108,35 +138,66 @@ source_set("authorization") {
     "//remoting/build/config:version",
   ]
 
+  deps = [ "//services/network/public/cpp" ]
+
   public_deps = [
     "//base",
     "//google_apis",
     "//net",
   ]
-
-  deps = [
-    "//remoting/proto/remoting/v1:directory_grpc_library",
-  ]
 }
 
 source_set("breakpad") {
-  sources = [
-    "breakpad.h",
-    "breakpad_linux.cc",
-    "breakpad_mac.mm",
-    "breakpad_win.cc",
-  ]
+  sources = [ "breakpad.h" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "breakpad_linux.cc" ]
+  }
 
   if (is_mac) {
+    sources += [ "breakpad_mac.mm" ]
     deps += [ "//third_party/breakpad" ]
-  } else if (is_win) {
+  }
+
+  if (is_win) {
+    sources += [ "breakpad_win.cc" ]
     deps += [ "//third_party/breakpad:breakpad_handler" ]
+  }
+}
+
+source_set("settings") {
+  sources = [
+    "host_settings.cc",
+    "host_settings.h",
+    "user_settings.cc",
+    "user_settings.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/base",
+  ]
+
+  if (is_win) {
+    sources += [
+      "host_settings_win.cc",
+      "host_settings_win.h",
+      "user_settings_win.cc",
+      "user_settings_win.h",
+    ]
+  } else if (is_mac || (is_linux && !is_chromeos)) {
+    sources += [
+      "file_host_settings.cc",
+      "file_host_settings.h",
+    ]
+    if (is_linux) {
+      sources += [ "file_host_settings_linux.cc" ]
+    } else if (is_mac) {
+      sources += [ "file_host_settings_mac.cc" ]
+    }
   }
 }
 
@@ -148,11 +209,16 @@ static_library("test_support") {
     "fake_oauth_token_getter.h",
     "mock_oauth_client.cc",
     "mock_oauth_client.h",
+    "protobuf_http_test_responder.cc",
+    "protobuf_http_test_responder.h",
     "test_rsa_key_pair.h",
   ]
 
   deps = [
+    ":protobuf_http_client_messages_proto",
+    "//base/test:test_support",
     "//remoting/proto",
+    "//services/network:test_support",
   ]
   public_deps = [
     ":authorization",
@@ -165,47 +231,70 @@ static_library("test_support") {
   ]
 }
 
+proto_library("test_proto") {
+  testonly = true
+
+  sources = [ "protobuf_http_client_test_messages.proto" ]
+}
+
+source_set("run_all_unittests") {
+  testonly = true
+
+  sources = [ "run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "auto_thread_task_runner_unittest.cc",
     "auto_thread_unittest.cc",
-    "breakpad_win_unittest.cc",
     "buffered_socket_writer_unittest.cc",
     "capabilities_unittest.cc",
     "compound_buffer_unittest.cc",
     "leaky_bucket_unittest.cc",
     "oauth_token_getter_proxy_unittest.cc",
+    "protobuf_http_client_unittest.cc",
+    "protobuf_http_stream_parser_unittest.cc",
+    "queued_task_poster_unittest.cc",
     "rate_counter_unittest.cc",
     "result_unittest.cc",
     "rsa_key_pair_unittest.cc",
-    "run_all_unittests.cc",
     "running_samples_unittest.cc",
     "session_options_unittest.cc",
-
-    # TODO(https://crbug.com/968640): Fix and reenable tests once we have some
-    # breathing room.
-    # "telemetry_log_writer_unittest.cc",
+    "telemetry_log_writer_unittest.cc",
     "typed_buffer_unittest.cc",
     "util_unittest.cc",
     "weighted_samples_unittest.cc",
   ]
 
   deps = [
+    ":protobuf_http_client_messages_proto",
+    ":run_all_unittests",
+    ":test_proto",
     ":test_support",
     "//base",
-    "//mojo/core/embedder",
     "//net:test_support",
+    "//remoting/proto/remoting/v1:telemetry_messages",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
-  if (is_win || is_mac || is_chromeos) {
+  if (is_win || is_mac || is_chromeos_ash) {
     deps += [ "//third_party/breakpad:client" ]
   }
 
   if (is_win) {
+    sources += [ "breakpad_win_unittest.cc" ]
+    deps += [ "//third_party/breakpad:breakpad_handler" ]
     libs = [ "rpcrt4.lib" ]  # For UuidCreate in breakpad_win_unittest.cc.
   }
 }

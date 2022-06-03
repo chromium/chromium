@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -64,40 +64,39 @@ class BookmarkHTMLWriterTest : public testing::Test {
 
   // Converts an ImportedBookmarkEntry to a string suitable for assertion
   // testing.
-  base::string16 BookmarkEntryToString(const ImportedBookmarkEntry& entry) {
-    base::string16 result;
-    result.append(base::ASCIIToUTF16("on_toolbar="));
+  std::u16string BookmarkEntryToString(const ImportedBookmarkEntry& entry) {
+    std::u16string result;
+    result.append(u"on_toolbar=");
     if (entry.in_toolbar)
-      result.append(base::ASCIIToUTF16("true"));
+      result.append(u"true");
     else
-      result.append(base::ASCIIToUTF16("false"));
+      result.append(u"false");
 
-    result.append(base::ASCIIToUTF16(" url=") +
-        base::UTF8ToUTF16(entry.url.spec()));
+    result.append(u" url=" + base::UTF8ToUTF16(entry.url.spec()));
 
-    result.append(base::ASCIIToUTF16(" path="));
+    result.append(u" path=");
     for (size_t i = 0; i < entry.path.size(); ++i) {
       if (i != 0)
-        result.append(base::ASCIIToUTF16("/"));
+        result.append(u"/");
       result.append(entry.path[i]);
     }
 
-    result.append(base::ASCIIToUTF16(" title="));
+    result.append(u" title=");
     result.append(entry.title);
 
-    result.append(base::ASCIIToUTF16(" time="));
+    result.append(u" time=");
     result.append(base::TimeFormatFriendlyDateAndTime(entry.creation_time));
     return result;
   }
 
   // Creates a set of bookmark values to a string for assertion testing.
-  base::string16 BookmarkValuesToString(bool on_toolbar,
-                                  const GURL& url,
-                                  const base::string16& title,
-                                  base::Time creation_time,
-                                  const base::string16& f1,
-                                  const base::string16& f2,
-                                  const base::string16& f3) {
+  std::u16string BookmarkValuesToString(bool on_toolbar,
+                                        const GURL& url,
+                                        const std::u16string& title,
+                                        base::Time creation_time,
+                                        const std::u16string& f1,
+                                        const std::u16string& f2,
+                                        const std::u16string& f3) {
     ImportedBookmarkEntry entry;
     entry.in_toolbar = on_toolbar;
     entry.url = url;
@@ -117,11 +116,11 @@ class BookmarkHTMLWriterTest : public testing::Test {
   void AssertBookmarkEntryEquals(const ImportedBookmarkEntry& entry,
                                  bool on_toolbar,
                                  const GURL& url,
-                                 const base::string16& title,
+                                 const std::u16string& title,
                                  base::Time creation_time,
-                                 const base::string16& f1,
-                                 const base::string16& f2,
-                                 const base::string16& f3) {
+                                 const std::u16string& f1,
+                                 const std::u16string& f2,
+                                 const std::u16string& f3) {
     EXPECT_EQ(BookmarkValuesToString(on_toolbar, url, title, creation_time,
                                      f1, f2, f3),
               BookmarkEntryToString(entry));
@@ -138,12 +137,16 @@ class BookmarksObserver : public BookmarksExportObserver {
     DCHECK(loop);
   }
 
-  void OnExportFinished() override { loop_->Quit(); }
+  BookmarksObserver(const BookmarksObserver&) = delete;
+  BookmarksObserver& operator=(const BookmarksObserver&) = delete;
+
+  void OnExportFinished(Result result) override {
+    EXPECT_EQ(Result::kSuccess, result);
+    loop_->Quit();
+  }
 
  private:
   base::RunLoop* loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksObserver);
 };
 
 // Tests bookmark_html_writer by populating a BookmarkModel, writing it out by
@@ -151,13 +154,19 @@ class BookmarksObserver : public BookmarksExportObserver {
 TEST_F(BookmarkHTMLWriterTest, Test) {
   content::BrowserTaskEnvironment task_environment;
 
-  TestingProfile profile;
-  ASSERT_TRUE(profile.CreateHistoryService(true, false));
-  profile.BlockUntilHistoryProcessesPendingRequests();
-  profile.CreateFaviconService();
-  profile.CreateBookmarkModel(true);
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(BookmarkModelFactory::GetInstance(),
+                                    BookmarkModelFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
+                                    FaviconServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
 
-  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(&profile);
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+  profile->BlockUntilHistoryProcessesPendingRequests();
+
+  BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(profile.get());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
   // Create test PNG representing favicon for url1.
@@ -183,15 +192,15 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   // Mobile
   //   url1
   //   <bookmark without a title.>
-  base::string16 f1_title = base::ASCIIToUTF16("F\"&;<1\"");
-  base::string16 f2_title = base::ASCIIToUTF16("F2");
-  base::string16 f3_title = base::ASCIIToUTF16("F 3");
-  base::string16 f4_title = base::ASCIIToUTF16("F4");
-  base::string16 url1_title = base::ASCIIToUTF16("url 1");
-  base::string16 url2_title = base::ASCIIToUTF16("url&2");
-  base::string16 url3_title = base::ASCIIToUTF16("url\"3");
-  base::string16 url4_title = base::ASCIIToUTF16("url\"&;");
-  base::string16 unnamed_bookmark_title = base::ASCIIToUTF16("");
+  std::u16string f1_title = u"F\"&;<1\"";
+  std::u16string f2_title = u"F2";
+  std::u16string f3_title = u"F 3";
+  std::u16string f4_title = u"F4";
+  std::u16string url1_title = u"url 1";
+  std::u16string url2_title = u"url&2";
+  std::u16string url3_title = u"url\"3";
+  std::u16string url4_title = u"url\"&;";
+  std::u16string unnamed_bookmark_title = u"";
   GURL url1("http://url1");
   GURL url1_favicon("http://url1/icon.ico");
   GURL url2("http://url2");
@@ -199,16 +208,16 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   GURL url4("javascript:alert(\"Hello!\");");
   GURL unnamed_bookmark_url("about:blank");
   base::Time t1(base::Time::Now());
-  base::Time t2(t1 + base::TimeDelta::FromHours(1));
-  base::Time t3(t1 + base::TimeDelta::FromHours(1));
-  base::Time t4(t1 + base::TimeDelta::FromHours(1));
+  base::Time t2(t1 + base::Hours(1));
+  base::Time t3(t1 + base::Hours(1));
+  base::Time t4(t1 + base::Hours(1));
   const BookmarkNode* f1 = model->AddFolder(
       model->bookmark_bar_node(), 0, f1_title);
   model->AddURL(f1, 0, url1_title, url1, nullptr, t1);
-  HistoryServiceFactory::GetForProfile(&profile,
+  HistoryServiceFactory::GetForProfile(profile.get(),
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->AddPage(url1, base::Time::Now(), history::SOURCE_BROWSED);
-  FaviconServiceFactory::GetForProfile(&profile,
+  FaviconServiceFactory::GetForProfile(profile.get(),
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->SetFavicons({url1}, url1_favicon, favicon_base::IconType::kFavicon,
                     gfx::Image::CreateFrom1xBitmap(bitmap));
@@ -230,11 +239,15 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
 
   // Write to a temp file.
   BookmarksObserver observer(&run_loop);
-  bookmark_html_writer::WriteBookmarks(&profile, path_, &observer);
+  bookmark_html_writer::WriteBookmarks(profile.get(), path_, &observer);
   run_loop.Run();
+  if (HasFailure()) {
+    // WriteBookmarks has failed, no point in trying to read the file.
+    return;
+  }
 
   // Clear favicon so that it would be read from file.
-  FaviconServiceFactory::GetForProfile(&profile,
+  FaviconServiceFactory::GetForProfile(profile.get(),
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->SetFavicons({url1}, url1_favicon, favicon_base::IconType::kFavicon,
                     gfx::Image());
@@ -243,12 +256,10 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   std::vector<ImportedBookmarkEntry> parsed_bookmarks;
   std::vector<importer::SearchEngineInfo> parsed_search_engines;
   favicon_base::FaviconUsageDataList favicons;
-  bookmark_html_reader::ImportBookmarksFile(base::Callback<bool(void)>(),
-                                            base::Callback<bool(const GURL&)>(),
-                                            path_,
-                                            &parsed_bookmarks,
-                                            &parsed_search_engines,
-                                            &favicons);
+  bookmark_html_reader::ImportBookmarksFile(
+      base::RepeatingCallback<bool(void)>(),
+      base::RepeatingCallback<bool(const GURL&)>(), path_, &parsed_bookmarks,
+      &parsed_search_engines, &favicons);
 
   // Check loaded favicon (url1 is represented by 4 separate bookmarks).
   EXPECT_EQ(4U, favicons.size());
@@ -269,31 +280,30 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   // Verify we got back what we wrote.
   ASSERT_EQ(9U, parsed_bookmarks.size());
   // Windows and ChromeOS builds use Sentence case.
-  base::string16 bookmark_folder_name =
+  std::u16string bookmark_folder_name =
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME);
   AssertBookmarkEntryEquals(parsed_bookmarks[0], true, url1, url1_title, t1,
-                            bookmark_folder_name, f1_title, base::string16());
+                            bookmark_folder_name, f1_title, std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[1], true, url2, url2_title, t2,
                             bookmark_folder_name, f1_title, f2_title);
   AssertBookmarkEntryEquals(parsed_bookmarks[2], true, url3, url3_title, t3,
-                            bookmark_folder_name, base::string16(),
-                            base::string16());
+                            bookmark_folder_name, std::u16string(),
+                            std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[3], true, url4, url4_title, t4,
-                            bookmark_folder_name, base::string16(),
-                            base::string16());
+                            bookmark_folder_name, std::u16string(),
+                            std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[4], false, url1, url1_title, t1,
-                            base::string16(), base::string16(),
-                            base::string16());
+                            std::u16string(), std::u16string(),
+                            std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[5], false, url2, url2_title, t2,
-                            base::string16(), base::string16(),
-                            base::string16());
+                            std::u16string(), std::u16string(),
+                            std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[6], false, url1, url1_title, t1,
-                            f3_title, f4_title, base::string16());
+                            f3_title, f4_title, std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[7], false, url1, url1_title, t1,
-                            base::string16(), base::string16(),
-                            base::string16());
+                            std::u16string(), std::u16string(),
+                            std::u16string());
   AssertBookmarkEntryEquals(parsed_bookmarks[8], false, unnamed_bookmark_url,
-                            unnamed_bookmark_title, t2,
-                            base::string16(), base::string16(),
-                            base::string16());
+                            unnamed_bookmark_title, t2, std::u16string(),
+                            std::u16string(), std::u16string());
 }

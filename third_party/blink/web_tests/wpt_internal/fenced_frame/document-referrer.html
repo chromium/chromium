@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<title>Test document.referrer referrer</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const referrer_key = KEYS["document.referrer"];
+  const referrer_ack_key  = KEYS["document.referrer ACK"];
+
+  attachFencedFrame("resources/document-referrer-inner.html");
+
+  const expected_document_referrer = "";
+  const actual_document_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(actual_document_referrer, expected_document_referrer,
+                "The top-level fenced frame's document.referrer is censored");
+
+  writeValueToServer(referrer_ack_key, "ACK");
+
+  const iframe_expected_document_referrer =
+      new URL("resources/document-referrer-inner.html", location.href).toString();
+  const iframe_actual_document_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(iframe_actual_document_referrer,
+                iframe_expected_document_referrer,
+                "The document.referrer of the iframe inside the fenced frame " +
+                "is not censored upon subsequent navigations");
+
+  writeValueToServer(referrer_ack_key, "ACK");
+
+  const nested_fenced_frame_expected_document_referrer = "";
+  const nested_fenced_frame_actual_document_referrer = await nextValueFromServer(referrer_key);
+  assert_equals(nested_fenced_frame_actual_document_referrer,
+                nested_fenced_frame_expected_document_referrer,
+                "The document.referrer of the nested fenced frame is censored");
+
+  writeValueToServer(referrer_ack_key, "ACK");
+
+  // Test the value of `document.referrer` after a fenced frame navigates itself
+  // (i.e., it is its own initiator, so its `document.referrer` should not be
+  // redacted).
+  const navigate_self_expected_document_referrer =
+      new URL("resources/document-referrer-inner.html", location.href).toString();
+  const navigate_self_actual_subsequent_navigation_referrer =
+      await nextValueFromServer(referrer_key);
+  assert_equals(navigate_self_actual_subsequent_navigation_referrer,
+                navigate_self_expected_document_referrer,
+                "The document.referrer of a fenced frame after it navigates " +
+                "itself is not censored");
+
+}, "document.referrer");
+</script>
+
+</body>

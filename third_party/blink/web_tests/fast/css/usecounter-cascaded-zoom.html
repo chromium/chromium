@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style id="style">
+  *    { zoom: 1; }
+  body { zoom: 100%; }
+</style>
+<body>
+<script>
+'use strict';
+
+test(() => {
+    let kCSSZoomNotEqualToOne = 691;
+    let kCascadedCSSZoomNotEqualToOne = 3578;
+
+    // Force a cascade
+    getComputedStyle(document.body);
+    assert_false(internals.isUseCounted(document, kCSSZoomNotEqualToOne));
+    assert_false(internals.isUseCounted(document, kCascadedCSSZoomNotEqualToOne));
+    let style = document.getElementById('style');
+    style.textContent = "* { zoom: 2; }"
+    assert_equals(getComputedStyle(document.body).zoom, "2");
+    assert_true(internals.isUseCounted(document, kCSSZoomNotEqualToOne));
+    assert_true(internals.isUseCounted(document, kCascadedCSSZoomNotEqualToOne));
+}, 'CSS `zoom` property use counted for parsing and cascade.');
+</script>
+

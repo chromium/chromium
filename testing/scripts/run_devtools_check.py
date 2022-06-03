@@ -6,13 +6,11 @@
 """Runs a python script under an isolate
 
 This script attempts to emulate the contract of gtest-style tests
-invoked via recipes. The main contract is that the caller passes the
-argument:
+invoked via recipes.
 
-  --isolated-script-test-output=[FILENAME]
-
-json is written to that file in the format produced by
-common.parse_common_test_results.
+If optional argument --isolated-script-test-output=[FILENAME] is passed
+to the script, json is written to that file in the format detailed in
+//docs/testing/json-test-results-format.md.
 
 This script is intended to be the base command invoked by the isolate,
 followed by a subsequent Python script."""
@@ -32,8 +30,7 @@ import xvfb
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--isolated-script-test-output', type=str,
-                      required=True)
+  parser.add_argument('--isolated-script-test-output', type=str)
   args, rest_args = parser.parse_known_args()
   # Remove the isolated script extra args this script doesn't care about.
   should_ignore_arg = lambda arg: any(to_ignore in arg for to_ignore in (
@@ -44,9 +41,10 @@ def main():
   rest_args = [arg for arg in rest_args if not should_ignore_arg(arg)]
 
   ret = common.run_command([sys.executable] + rest_args)
-  with open(args.isolated_script_test_output, 'w') as fp:
-    json.dump({'valid': True,
-               'failures': ['failed'] if ret else []}, fp)
+  if args.isolated_Script_test_output:
+    with open(args.isolated_script_test_output, 'w') as fp:
+      json.dump({'valid': True,
+                 'failures': ['failed'] if ret else []}, fp)
   return ret
 
 

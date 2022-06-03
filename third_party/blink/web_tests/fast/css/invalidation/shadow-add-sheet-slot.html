@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<style>
+    #outerHost { color: red }
+</style>
+<div>
+    <div id="outerHost">
+        <span id="outerSpan"></span>
+    </div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+<script>
+    description("Insert a style element into a shadow tree affecting a distributed node.");
+
+    var outerRoot = outerHost.attachShadow({mode: 'open'});
+    outerRoot.innerHTML = "<div id='host1'><slot/></div>";
+
+    var host1 = outerRoot.querySelector("#host1");
+    var root1 = host1.attachShadow({mode: 'open'});
+    root1.innerHTML = "<div id='host2'><slot/></div>";
+
+    var host2 = root1.querySelector("#host2");
+    var root2 = host2.attachShadow({mode: 'open'});
+    root2.innerHTML = "<slot/>";
+
+    shouldBeEqualToString("getComputedStyle(outerSpan).color", "rgb(255, 0, 0)");
+
+    document.body.offsetTop;
+    var sheet = document.createElement("style");
+    sheet.appendChild(document.createTextNode("::slotted(#outerSpan) { color: green }"));
+    root2.appendChild(sheet);
+
+    if (window.internals)
+        shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "2");
+
+    shouldBeEqualToString("getComputedStyle(outerSpan).color", "rgb(0, 128, 0)");
+</script>

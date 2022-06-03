@@ -8,9 +8,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -32,10 +30,9 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/transform.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/wm/core/default_activation_client.h"
 
 namespace ui {
 namespace {
@@ -51,6 +48,10 @@ class TestPaintingWindowDelegate : public aura::test::TestWindowDelegate {
       : window_size_(window_size) {
   }
 
+  TestPaintingWindowDelegate(const TestPaintingWindowDelegate&) = delete;
+  TestPaintingWindowDelegate& operator=(const TestPaintingWindowDelegate&) =
+      delete;
+
   ~TestPaintingWindowDelegate() override {}
 
   void OnPaint(const ui::PaintContext& context) override {
@@ -65,8 +66,6 @@ class TestPaintingWindowDelegate : public aura::test::TestWindowDelegate {
 
  private:
   gfx::Size window_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPaintingWindowDelegate);
 };
 
 size_t GetFailedPixelsCountWithScaleFactor(const gfx::Image& image,
@@ -96,6 +95,10 @@ size_t GetFailedPixelsCount(const gfx::Image& image) {
 class SnapshotAuraTest : public testing::TestWithParam<bool> {
  public:
   SnapshotAuraTest() {}
+
+  SnapshotAuraTest(const SnapshotAuraTest&) = delete;
+  SnapshotAuraTest& operator=(const SnapshotAuraTest&) = delete;
+
   ~SnapshotAuraTest() override {}
 
   void SetUp() override {
@@ -110,17 +113,16 @@ class SnapshotAuraTest : public testing::TestWithParam<bool> {
     context_factories_ = std::make_unique<ui::TestContextFactories>(
         enable_pixel_output, GetParam());
 
-    helper_ = std::make_unique<aura::test::AuraTestHelper>();
-    helper_->SetUp(context_factories_->GetContextFactory(),
-                   context_factories_->GetContextFactoryPrivate());
-    new ::wm::DefaultActivationClient(helper_->root_window());
+    helper_ = std::make_unique<aura::test::AuraTestHelper>(
+        context_factories_->GetContextFactory());
+    helper_->SetUp();
   }
 
   void TearDown() override {
     test_window_.reset();
     delegate_.reset();
     helper_->RunAllPendingInMessageLoop();
-    helper_->TearDown();
+    helper_.reset();
     context_factories_.reset();
     task_environment_.reset();
     testing::Test::TearDown();
@@ -128,13 +130,13 @@ class SnapshotAuraTest : public testing::TestWithParam<bool> {
 
  protected:
   aura::Window* test_window() { return test_window_.get(); }
-  aura::Window* root_window() { return helper_->root_window(); }
-  aura::TestScreen* test_screen() { return helper_->test_screen(); }
+  aura::Window* root_window() { return helper_->GetContext(); }
+  aura::TestScreen* test_screen() { return helper_->GetTestScreen(); }
 
   void WaitForDraw() {
-    helper_->host()->compositor()->ScheduleDraw();
+    helper_->GetHost()->compositor()->ScheduleDraw();
     ui::DrawWaiterForTest::WaitForCompositingEnded(
-        helper_->host()->compositor());
+        helper_->GetHost()->compositor());
   }
 
   void SetupTestWindow(const gfx::Rect& window_bounds) {
@@ -190,8 +192,6 @@ class SnapshotAuraTest : public testing::TestWithParam<bool> {
   std::unique_ptr<aura::Window> test_window_;
   std::unique_ptr<TestPaintingWindowDelegate> delegate_;
   std::vector<unsigned char> png_representation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotAuraTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, SnapshotAuraTest, ::testing::Bool());
@@ -199,17 +199,19 @@ INSTANTIATE_TEST_SUITE_P(All, SnapshotAuraTest, ::testing::Bool());
 #if defined(OS_WIN) && !defined(NDEBUG)
 // https://crbug.com/852512
 #define MAYBE_FullScreenWindow DISABLED_FullScreenWindow
+#elif defined(OS_LINUX)
+// https://crbug.com/1143031
+#define MAYBE_FullScreenWindow DISABLED_FullScreenWindow
 #else
 #define MAYBE_FullScreenWindow FullScreenWindow
 #endif
 TEST_P(SnapshotAuraTest, MAYBE_FullScreenWindow) {
-#if defined(OS_LINUX)
-  // TODO(https://crbug.com/1002716): Fix this test to run in < action_timeout()
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+  // TODO(https://crbug.com/1143031): Fix this test to run in < action_timeout()
   // on the Linux Debug & TSAN bots.
-  const base::RunLoop::ScopedRunTimeoutForTest increased_run_timeout(
-      TestTimeouts::action_max_timeout(),
-      base::MakeExpectedNotRunClosure(FROM_HERE, "RunLoop::Run() timed out."));
-#endif  // defined(OS_LINUX)
+  const base::test::ScopedRunLoopTimeout increased_run_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 #if defined(OS_WIN)
   // TODO(https://crbug.com/850556): Make work on Win10.

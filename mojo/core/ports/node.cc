@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -15,13 +16,14 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
+#include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "mojo/core/ports/event.h"
 #include "mojo/core/ports/node_delegate.h"
 #include "mojo/core/ports/port_locker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_NACL)
 #include "crypto/random.h"
@@ -47,6 +49,10 @@ constexpr size_t kRandomNameCacheSize = 256;
 class RandomNameGenerator {
  public:
   RandomNameGenerator() = default;
+
+  RandomNameGenerator(const RandomNameGenerator&) = delete;
+  RandomNameGenerator& operator=(const RandomNameGenerator&) = delete;
+
   ~RandomNameGenerator() = default;
 
   PortName GenerateRandomPortName() {
@@ -66,8 +72,6 @@ class RandomNameGenerator {
   base::Lock lock_;
   PortName cache_[kRandomNameCacheSize];
   size_t cache_index_ = kRandomNameCacheSize;
-
-  DISALLOW_COPY_AND_ASSIGN(RandomNameGenerator);
 };
 
 base::LazyInstance<RandomNameGenerator>::Leaky g_name_generator =
@@ -682,10 +686,11 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
         DVLOG(2) << "Delaying ObserveProxyAck to " << event->proxy_port_name()
                  << "@" << event->proxy_node_name();
 
-        port->send_on_proxy_removal.reset(new std::pair<NodeName, ScopedEvent>(
-            event->proxy_node_name(),
-            std::make_unique<ObserveProxyAckEvent>(event->proxy_port_name(),
-                                                   kInvalidSequenceNum)));
+        port->send_on_proxy_removal =
+            std::make_unique<std::pair<NodeName, ScopedEvent>>(
+                event->proxy_node_name(),
+                std::make_unique<ObserveProxyAckEvent>(event->proxy_port_name(),
+                                                       kInvalidSequenceNum));
       }
     } else {
       // Forward this event along to our peer. Eventually, it should find the
@@ -919,7 +924,8 @@ int Node::OnUserMessageReadAckRequest(
     }
   }
 
-  delegate_->ForwardEvent(peer_node_name, std::move(event_to_send));
+  if (event_to_send)
+    delegate_->ForwardEvent(peer_node_name, std::move(event_to_send));
 
   return OK;
 }
@@ -1052,7 +1058,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::ReleasableAutoLock ports_locker(&ports_lock_);
 
-    base::Optional<PortLocker> locker(base::in_place, port_refs, 2);
+    absl::optional<PortLocker> locker(absl::in_place, port_refs, 2);
     auto* port0 = locker->GetPort(port0_ref);
     auto* port1 = locker->GetPort(port1_ref);
 
@@ -1726,7 +1732,7 @@ Node::DelegateHolder::DelegateHolder(Node* node, NodeDelegate* delegate)
   DCHECK(node_);
 }
 
-Node::DelegateHolder::~DelegateHolder() {}
+Node::DelegateHolder::~DelegateHolder() = default;
 
 #if DCHECK_IS_ON()
 void Node::DelegateHolder::EnsureSafeDelegateAccess() const {

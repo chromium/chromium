@@ -77,14 +77,15 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
  public:
   IOBuffer();
 
-  // TODO(eroman): Deprecated. Use the size_t flavor instead. crbug.com/488553
-  explicit IOBuffer(int buffer_size);
   explicit IOBuffer(size_t buffer_size);
 
   char* data() const { return data_; }
 
  protected:
   friend class base::RefCountedThreadSafe<IOBuffer>;
+
+  static void AssertValidBufferSize(size_t size);
+  static void AssertValidBufferSize(int size);
 
   // Only allow derived classes to specify data_.
   // In all other cases, we own data_, and must delete it at destruction time.
@@ -101,16 +102,11 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 // argument to IO functions. Please keep using IOBuffer* for API declarations.
 class NET_EXPORT IOBufferWithSize : public IOBuffer {
  public:
-  // TODO(eroman): Deprecated. Use the size_t flavor instead. crbug.com/488553
-  explicit IOBufferWithSize(int size);
   explicit IOBufferWithSize(size_t size);
 
   int size() const { return size_; }
 
  protected:
-  // TODO(eroman): Deprecated. Use the size_t flavor instead. crbug.com/488553
-  IOBufferWithSize(char* data, int size);
-
   // Purpose of this constructor is to give a subclass access to the base class
   // constructor IOBuffer(char*) thus allowing subclass to use underlying
   // memory it does not own.

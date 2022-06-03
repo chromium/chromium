@@ -4,7 +4,6 @@
 
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 
-#include "base/logging.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -21,7 +20,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const base::Optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin) {
   navigation_interception::InterceptNavigationDelegate* delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (!delegate)
@@ -29,13 +28,17 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
 
   navigation_interception::NavigationParams navigation_params(
       url, content::Referrer(),
+      // Pass 0 as the navigation ID to specify that this instance doesn't
+      // correspond to a NavigationHandle.
+      0,
       has_user_gesture,  // has_user_gesture
       false,             // is_post, doesn't matter here.
       page_transition,
-      false,    // is_redirect, doesn't matter here.
-      true,     // is_external_protocol
-      false,    // is_main_frame
-      true,     // is_renderer_initiated, doesn't matter here.
-      GURL());  // base_url_for_data_url, not applicable.
+      false,   // is_redirect, doesn't matter here.
+      true,    // is_external_protocol
+      false,   // is_main_frame
+      true,    // is_renderer_initiated.
+      GURL(),  // base_url_for_data_url, not applicable.
+      initiating_origin);
   delegate->ShouldIgnoreNavigation(navigation_params);
 }

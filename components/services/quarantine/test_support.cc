@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_WIN) && !defined(OS_MACOSX)
+#if !defined(OS_WIN) && !defined(OS_APPLE)
 
 namespace quarantine {
 

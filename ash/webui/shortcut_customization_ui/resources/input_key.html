@@ -1,0 +1,42 @@
+<style>
+  #key {
+    display: flex;
+    justify-content: center;
+    padding: 5px 5px 5px 5px;
+    margin-inline-start: 5px;
+    min-width: 35px;
+  }
+
+  .key-container {
+    border-radius: 5px;
+  }
+
+  :host([key-state='not-selected']) .key-container {
+    border-color: var(--google-grey-200);
+    border-style: solid;
+    border-width: thin;
+    box-shadow: 0px 1px 1px var(--google-grey-200);
+    color: var(--google-grey-400);
+    font-weight: lighter;
+  }
+
+  :host([key-state='modifier-selected']) .key-container {
+    background-color: var(--google-blue-50);
+    border-color: var(--google-blue-50);
+    border-style: solid;
+    box-shadow: 0px 1px 1px var(--google-blue-50);
+    color: var(--google-grey-600);
+    font-weight: bold;
+  }
+
+  :host([key-state='alpha-numeric-selected']) .key-container {
+    background-color: var(--google-grey-100);
+    border-color: var(--google-grey-100);
+    border-style: solid;
+    box-shadow: 0px 1px 1px var(--google-grey-100);
+    color: var(--google-grey-600);
+    font-weight: bold;
+  }
+</style>
+
+<div id="key" class="key-container">[[key]]</div>

@@ -4,7 +4,7 @@
 
 #include "ui/gl/shader_tracking.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gl/gl_switches.h"
 
 namespace gl {

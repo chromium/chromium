@@ -11,15 +11,14 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/guid.h"
+#include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/pickle.h"
 #include "base/token.h"
 #include "components/sessions/core/base_session_service_commands.h"
-#include "components/sessions/core/base_session_service_delegate.h"
-#include "components/sessions/core/session_command.h"
-#include "components/sessions/core/session_types.h"
-#include "components/tab_groups/tab_group_id.h"
-#include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tab_groups/tab_group_color.h"
 
 namespace sessions {
 
@@ -52,6 +51,7 @@ static const SessionCommand::id_type kCommandSetWindowBounds3 = 14;
 static const SessionCommand::id_type kCommandSetWindowAppName = 15;
 static const SessionCommand::id_type kCommandTabClosed = 16;
 static const SessionCommand::id_type kCommandWindowClosed = 17;
+// OBSOLETE: Superseded by kCommandSetTabUserAgentOverride2.
 static const SessionCommand::id_type kCommandSetTabUserAgentOverride = 18;
 static const SessionCommand::id_type kCommandSessionStorageAssociated = 19;
 static const SessionCommand::id_type kCommandSetActiveWindow = 20;
@@ -61,7 +61,16 @@ static const SessionCommand::id_type kCommandLastActiveTime = 21;
 static const SessionCommand::id_type kCommandSetWindowWorkspace2 = 23;
 static const SessionCommand::id_type kCommandTabNavigationPathPruned = 24;
 static const SessionCommand::id_type kCommandSetTabGroup = 25;
-static const SessionCommand::id_type kCommandSetTabGroupMetadata = 26;
+// OBSOLETE Superseded by kCommandSetTabGroupMetadata2.
+// static const SessionCommand::id_type kCommandSetTabGroupMetadata = 26;
+static const SessionCommand::id_type kCommandSetTabGroupMetadata2 = 27;
+static const SessionCommand::id_type kCommandSetTabGuid = 28;
+static const SessionCommand::id_type kCommandSetTabUserAgentOverride2 = 29;
+static const SessionCommand::id_type kCommandSetTabData = 30;
+static const SessionCommand::id_type kCommandSetWindowUserTitle = 31;
+static const SessionCommand::id_type kCommandSetWindowVisibleOnAllWorkspaces =
+    32;
+// ID 255 is used by CommandStorageBackend.
 
 namespace {
 
@@ -136,6 +145,11 @@ struct PinnedStatePayload {
 struct LastActiveTimePayload {
   SessionID::id_type tab_id;
   int64_t last_active_time;
+};
+
+struct VisibleOnAllWorkspacesPayload {
+  SessionID::id_type window_id;
+  bool visible_on_all_workspaces;
 };
 
 // Persisted versions of ui::WindowShowState that are written to disk and can
@@ -620,17 +634,17 @@ bool CreateTabsAndWindows(
         const base::Token token(payload.maybe_group.id_high,
                                 payload.maybe_group.id_low);
         session_tab->group =
-            payload.has_group ? base::make_optional(
+            payload.has_group ? absl::make_optional(
                                     tab_groups::TabGroupId::FromRawToken(token))
-                              : base::nullopt;
+                              : absl::nullopt;
         break;
       }
 
-      case kCommandSetTabGroupMetadata: {
+      case kCommandSetTabGroupMetadata2: {
         std::unique_ptr<base::Pickle> pickle = command->PayloadAsPickle();
         base::PickleIterator iter(*pickle);
 
-        base::Optional<base::Token> group_token = ReadTokenFromPickle(&iter);
+        absl::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         if (!group_token.has_value())
           return true;
 
@@ -638,14 +652,20 @@ bool CreateTabsAndWindows(
             tab_groups::TabGroupId::FromRawToken(group_token.value()),
             tab_groups);
 
-        base::string16 title;
+        std::u16string title;
         if (!iter.ReadString16(&title))
           return true;
 
-        SkColor color;
-        if (!iter.ReadUInt32(&color))
+        uint32_t color_int;
+        if (!iter.ReadUInt32(&color_int))
           return true;
-        group->visual_data = tab_groups::TabGroupVisualData(title, color);
+
+        // The |is_collapsed| boolean was added in M88 to save the collapsed
+        // state, so previous versions may not have this stored.
+        bool is_collapsed = false;
+        ignore_result(!iter.ReadBool(&is_collapsed));
+        group->visual_data =
+            tab_groups::TabGroupVisualData(title, color_int, is_collapsed);
         break;
       }
 
@@ -694,7 +714,26 @@ bool CreateTabsAndWindows(
           return true;
         }
 
-        GetTab(tab_id, tabs)->user_agent_override.swap(user_agent_override);
+        SessionTab* tab = GetTab(tab_id, tabs);
+        tab->user_agent_override.ua_string_override.swap(user_agent_override);
+        tab->user_agent_override.opaque_ua_metadata_override = absl::nullopt;
+        break;
+      }
+
+      case kCommandSetTabUserAgentOverride2: {
+        SessionID tab_id = SessionID::InvalidValue();
+        std::string user_agent_override;
+        absl::optional<std::string> opaque_ua_metadata_override;
+        if (!RestoreSetTabUserAgentOverrideCommand2(
+                *command, &tab_id, &user_agent_override,
+                &opaque_ua_metadata_override)) {
+          return true;
+        }
+        SessionTab* tab = GetTab(tab_id, tabs);
+        tab->user_agent_override.ua_string_override =
+            std::move(user_agent_override);
+        tab->user_agent_override.opaque_ua_metadata_override =
+            std::move(opaque_ua_metadata_override);
         break;
       }
 
@@ -750,9 +789,66 @@ bool CreateTabsAndWindows(
         break;
       }
 
+      case kCommandSetWindowVisibleOnAllWorkspaces: {
+        VisibleOnAllWorkspacesPayload payload;
+        if (!command->GetPayload(&payload, sizeof(payload))) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return true;
+        }
+        GetWindow(SessionID::FromSerializedValue(payload.window_id), windows)
+            ->visible_on_all_workspaces = payload.visible_on_all_workspaces;
+        break;
+      }
+
+      case kCommandSetTabGuid: {
+        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
+        base::PickleIterator it(*pickle);
+        SessionID::id_type tab_id = -1;
+        std::string guid;
+        if (!it.ReadInt(&tab_id) || !it.ReadString(&guid) ||
+            !base::IsValidGUID(guid)) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return true;
+        }
+        GetTab(SessionID::FromSerializedValue(tab_id), tabs)->guid = guid;
+        break;
+      }
+
+      case kCommandSetTabData: {
+        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
+        base::PickleIterator it(*pickle);
+        SessionID::id_type tab_id = -1;
+        int size = 0;
+        if (!it.ReadInt(&tab_id) || !it.ReadInt(&size)) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return true;
+        }
+        std::map<std::string, std::string> tab_data;
+        for (int i = 0; i < size; i++) {
+          std::string key;
+          std::string value;
+          if (!it.ReadString(&key) || !it.ReadString(&value)) {
+            DVLOG(1) << "Failed reading command " << command->id();
+            return true;
+          }
+          tab_data.insert({key, value});
+        }
+
+        GetTab(SessionID::FromSerializedValue(tab_id), tabs)->data =
+            std::move(tab_data);
+        break;
+      }
+
+      case kCommandSetWindowUserTitle: {
+        SessionID window_id = SessionID::InvalidValue();
+        std::string title;
+        if (!RestoreSetWindowUserTitleCommand(*command, &window_id, &title))
+          return true;
+        GetWindow(window_id, windows)->user_title = title;
+        break;
+      }
+
       default:
-        // TODO(skuhne): This might call back into a callback handler to extend
-        // the command set for specific implementations.
         DVLOG(1) << "Failed reading an unknown command " << command->id();
         return true;
     }
@@ -852,7 +948,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
 
 std::unique_ptr<SessionCommand> CreateTabGroupCommand(
     const SessionID& tab_id,
-    base::Optional<tab_groups::TabGroupId> group) {
+    absl::optional<tab_groups::TabGroupId> group) {
   TabGroupPayload payload = {0};
   payload.tab_id = tab_id.id();
   if (group.has_value()) {
@@ -870,8 +966,11 @@ std::unique_ptr<SessionCommand> CreateTabGroupMetadataUpdateCommand(
   base::Pickle pickle;
   WriteTokenToPickle(&pickle, group.token());
   pickle.WriteString16(visual_data->title());
-  pickle.WriteUInt32(visual_data->color());
-  return std::make_unique<SessionCommand>(kCommandSetTabGroupMetadata, pickle);
+  pickle.WriteUInt32(static_cast<int>(visual_data->color()));
+
+  // This boolean was added in M88 to save the collapsed state.
+  pickle.WriteBool(visual_data->is_collapsed());
+  return std::make_unique<SessionCommand>(kCommandSetTabGroupMetadata2, pickle);
 }
 
 std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
@@ -918,6 +1017,16 @@ std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
   return std::make_unique<SessionCommand>(kCommandSetWindowWorkspace2, pickle);
 }
 
+std::unique_ptr<SessionCommand> CreateSetWindowVisibleOnAllWorkspacesCommand(
+    const SessionID& window_id,
+    bool visible_on_all_workspaces) {
+  VisibleOnAllWorkspacesPayload payload = {0};
+  payload.window_id = window_id.id();
+  payload.visible_on_all_workspaces = visible_on_all_workspaces;
+  return CreateSessionCommandForPayload(kCommandSetWindowVisibleOnAllWorkspaces,
+                                        payload);
+}
+
 std::unique_ptr<SessionCommand> CreateTabNavigationPathPrunedCommand(
     const SessionID& tab_id,
     int index,
@@ -946,8 +1055,8 @@ std::unique_ptr<SessionCommand> CreateSetTabExtensionAppIDCommand(
 
 std::unique_ptr<SessionCommand> CreateSetTabUserAgentOverrideCommand(
     const SessionID& tab_id,
-    const std::string& user_agent_override) {
-  return CreateSetTabUserAgentOverrideCommand(kCommandSetTabUserAgentOverride,
+    const SerializedUserAgentOverride& user_agent_override) {
+  return CreateSetTabUserAgentOverrideCommand(kCommandSetTabUserAgentOverride2,
                                               tab_id, user_agent_override);
 }
 
@@ -958,7 +1067,36 @@ std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
                                        app_name);
 }
 
-bool ReplacePendingCommand(BaseSessionService* base_session_service,
+std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
+    const SessionID& window_id,
+    const std::string& user_title) {
+  return CreateSetWindowUserTitleCommand(kCommandSetWindowUserTitle, window_id,
+                                         user_title);
+}
+
+std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
+    const SessionID& tab_id,
+    const std::string& guid) {
+  base::Pickle pickle;
+  pickle.WriteInt(tab_id.id());
+  pickle.WriteString(guid);
+  return std::make_unique<SessionCommand>(kCommandSetTabGuid, pickle);
+}
+
+std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
+    const SessionID& tab_id,
+    const std::map<std::string, std::string>& data) {
+  base::Pickle pickle;
+  pickle.WriteInt(tab_id.id());
+  pickle.WriteInt(data.size());
+  for (const auto& kv : data) {
+    pickle.WriteString(kv.first);
+    pickle.WriteString(kv.second);
+  }
+  return std::make_unique<SessionCommand>(kCommandSetTabData, pickle);
+}
+
+bool ReplacePendingCommand(CommandStorageManager* command_storage_manager,
                            std::unique_ptr<SessionCommand>* command) {
   // We optimize page navigations, which can happen quite frequently and
   // is expensive. And activation is like Highlander, there can only be one!
@@ -966,8 +1104,8 @@ bool ReplacePendingCommand(BaseSessionService* base_session_service,
       (*command)->id() != kCommandSetActiveWindow) {
     return false;
   }
-  for (auto i = base_session_service->pending_commands().rbegin();
-       i != base_session_service->pending_commands().rend(); ++i) {
+  for (auto i = command_storage_manager->pending_commands().rbegin();
+       i != command_storage_manager->pending_commands().rend(); ++i) {
     SessionCommand* existing_command = i->get();
     if ((*command)->id() == kCommandUpdateTabNavigation &&
         existing_command->id() == kCommandUpdateTabNavigation) {
@@ -999,16 +1137,16 @@ bool ReplacePendingCommand(BaseSessionService* base_session_service,
         // existing_command is an update for the same tab/index pair. Replace
         // it with the new one. We need to add to the end of the list just in
         // case there is a prune command after the update command.
-        base_session_service->EraseCommand((i.base() - 1)->get());
-        base_session_service->AppendRebuildCommand(std::move(*command));
+        command_storage_manager->EraseCommand((i.base() - 1)->get());
+        command_storage_manager->AppendRebuildCommand(std::move(*command));
         return true;
       }
       return false;
     }
     if ((*command)->id() == kCommandSetActiveWindow &&
         existing_command->id() == kCommandSetActiveWindow) {
-      base_session_service->SwapCommand(existing_command,
-                                        (std::move(*command)));
+      command_storage_manager->SwapCommand(existing_command,
+                                           (std::move(*command)));
       return true;
     }
   }

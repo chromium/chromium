@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/client/program_info_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,7 +65,7 @@ class ProgramInfoManagerTest : public testing::Test {
   };
 
   void SetUp() override {
-    program_info_manager_.reset(new ProgramInfoManager);
+    program_info_manager_ = std::make_unique<ProgramInfoManager>();
     program_info_manager_->CreateInfo(kClientProgramId);
     {
       base::AutoLock auto_lock(program_info_manager_->lock_);

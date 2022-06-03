@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Context;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.chrome.browser.background_task_scheduler.NativeBackgroundTask;
-import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
@@ -39,8 +39,8 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
         List<String> ids = WebappRegistry.getInstance().findWebApksWithPendingUpdate();
         for (String id : ids) {
             WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(id);
-            WeakReference<WebappActivity> activity =
-                    WebappActivity.findRunningWebappActivityWithId(storage.getId());
+            WeakReference<BaseCustomTabActivity> activity =
+                    WebappLocator.findRunningWebappActivityWithId(storage.getId());
             if (activity == null || activity.get() == null) {
                 mStorageToUpdate = storage;
                 mMoreToUpdate = ids.size() > 1;

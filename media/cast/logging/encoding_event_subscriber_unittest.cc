@@ -44,7 +44,8 @@ class EncodingEventSubscriberTest : public ::testing::Test {
 
   void Init(EventMediaType event_media_type) {
     DCHECK(!event_subscriber_);
-    event_subscriber_.reset(new EncodingEventSubscriber(event_media_type, 10));
+    event_subscriber_ =
+        std::make_unique<EncodingEventSubscriber>(event_media_type, 10);
     cast_environment_->logger()->Subscribe(event_subscriber_.get());
   }
 
@@ -282,7 +283,7 @@ TEST_F(EncodingEventSubscriberTest, FrameEventDelay) {
   playout_event->media_type = AUDIO_EVENT;
   playout_event->rtp_timestamp = rtp_timestamp;
   playout_event->frame_id = FrameId::first();
-  playout_event->delay_delta = base::TimeDelta::FromMilliseconds(delay_ms);
+  playout_event->delay_delta = base::Milliseconds(delay_ms);
   cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
   GetEventsAndReset();
@@ -364,10 +365,10 @@ TEST_F(EncodingEventSubscriberTest, MultipleFrameEvents) {
   playout_event->media_type = AUDIO_EVENT;
   playout_event->rtp_timestamp = rtp_timestamp1;
   playout_event->frame_id = FrameId::first();
-  playout_event->delay_delta = base::TimeDelta::FromMilliseconds(100);
+  playout_event->delay_delta = base::Milliseconds(100);
   cast_environment_->logger()->DispatchFrameEvent(std::move(playout_event));
 
-  task_runner_->Sleep(base::TimeDelta::FromMilliseconds(20));
+  task_runner_->Sleep(base::Milliseconds(20));
   base::TimeTicks now2(testing_clock_.NowTicks());
   std::unique_ptr<FrameEvent> encode_event(new FrameEvent());
   encode_event->timestamp = now2;
@@ -380,7 +381,7 @@ TEST_F(EncodingEventSubscriberTest, MultipleFrameEvents) {
   encode_event->idealized_bitrate_utilization = 0.55;
   cast_environment_->logger()->DispatchFrameEvent(std::move(encode_event));
 
-  task_runner_->Sleep(base::TimeDelta::FromMilliseconds(20));
+  task_runner_->Sleep(base::Milliseconds(20));
   base::TimeTicks now3(testing_clock_.NowTicks());
   std::unique_ptr<FrameEvent> decode_event(new FrameEvent());
   decode_event->timestamp = now3;
@@ -492,7 +493,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEventsForPacket) {
   send_event->size = size;
   cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-  task_runner_->Sleep(base::TimeDelta::FromMilliseconds(20));
+  task_runner_->Sleep(base::Milliseconds(20));
   base::TimeTicks now2(testing_clock_.NowTicks());
   std::unique_ptr<PacketEvent> retransmit_event(new PacketEvent());
   retransmit_event->timestamp = now2;
@@ -547,7 +548,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEventsForFrame) {
   send_event->size = size;
   cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-  task_runner_->Sleep(base::TimeDelta::FromMilliseconds(20));
+  task_runner_->Sleep(base::Milliseconds(20));
   base::TimeTicks now2(testing_clock_.NowTicks());
   std::unique_ptr<PacketEvent> retransmit_event(new PacketEvent());
   retransmit_event->timestamp = now2;
@@ -608,7 +609,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEvents) {
   send_event->size = size;
   cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-  task_runner_->Sleep(base::TimeDelta::FromMilliseconds(20));
+  task_runner_->Sleep(base::Milliseconds(20));
   base::TimeTicks now2(testing_clock_.NowTicks());
   std::unique_ptr<PacketEvent> retransmit_event(new PacketEvent());
   retransmit_event->timestamp = now2;
@@ -701,7 +702,7 @@ TEST_F(EncodingEventSubscriberTest, FirstRtpTimeTicks) {
 
   rtp_timestamp = rtp_timestamp.Expand(UINT32_C(67890));
 
-  capture_begin_event.reset(new FrameEvent());
+  capture_begin_event = std::make_unique<FrameEvent>();
   capture_begin_event->timestamp = now;
   capture_begin_event->type = FRAME_CAPTURE_BEGIN;
   capture_begin_event->media_type = VIDEO_EVENT;
@@ -763,7 +764,7 @@ TEST_F(EncodingEventSubscriberTest, MaxEventsPerProto) {
     ack_event->frame_id = FrameId::first();
     cast_environment_->logger()->DispatchFrameEvent(std::move(ack_event));
 
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(30));
+    task_runner_->Sleep(base::Milliseconds(30));
   }
 
   GetEventsAndReset();
@@ -788,7 +789,7 @@ TEST_F(EncodingEventSubscriberTest, MaxEventsPerProto) {
     send_event->size = 123;
     cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(30));
+    task_runner_->Sleep(base::Milliseconds(30));
   }
 
   GetEventsAndReset();
@@ -822,7 +823,7 @@ TEST_F(EncodingEventSubscriberTest, MaxEventsPerProto) {
     send_event->size = 123;
     cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-    task_runner_->Sleep(base::TimeDelta::FromMilliseconds(30));
+    task_runner_->Sleep(base::Milliseconds(30));
   }
 
   GetEventsAndReset();

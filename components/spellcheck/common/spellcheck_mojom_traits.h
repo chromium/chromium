@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_MOJOM_TRAITS_H_
 #define COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_MOJOM_TRAITS_H_
 
-#include "components/spellcheck/common/spellcheck.mojom.h"
+#include "components/spellcheck/common/spellcheck.mojom-shared.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 
 namespace mojo {
@@ -33,7 +33,7 @@ struct StructTraits<spellcheck::mojom::SpellCheckResultDataView,
     return result.length;
   }
 
-  static const std::vector<base::string16>& replacements(
+  static const std::vector<std::u16string>& replacements(
       const SpellCheckResult& result) {
     return result.replacements;
   }

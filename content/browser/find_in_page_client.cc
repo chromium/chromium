@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "content/browser/find_request_manager.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {

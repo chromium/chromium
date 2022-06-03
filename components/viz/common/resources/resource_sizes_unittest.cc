@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

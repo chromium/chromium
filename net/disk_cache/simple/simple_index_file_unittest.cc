@@ -6,16 +6,16 @@
 
 #include <memory>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -431,14 +431,13 @@ TEST_F(SimpleIndexFileTest, LegacyIsIndexFileStale) {
   EXPECT_FALSE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
 
-  const base::Time past_time = base::Time::Now() -
-      base::TimeDelta::FromSeconds(10);
+  const base::Time past_time = base::Time::Now() - base::Seconds(10);
   EXPECT_TRUE(base::TouchFile(index_path, past_time, past_time));
   EXPECT_TRUE(base::TouchFile(cache_path, past_time, past_time));
   ASSERT_TRUE(simple_util::GetMTime(cache_path, &cache_mtime));
   EXPECT_FALSE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
-  const base::Time even_older = past_time - base::TimeDelta::FromSeconds(10);
+  const base::Time even_older = past_time - base::Seconds(10);
   EXPECT_TRUE(base::TouchFile(index_path, even_older, even_older));
   EXPECT_TRUE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
@@ -462,9 +461,9 @@ TEST_F(SimpleIndexFileTest, WriteThenLoadIndex) {
   net::TestClosure closure;
   {
     WrappedSimpleIndexFile simple_index_file(cache_dir.GetPath());
-    simple_index_file.WriteToDisk(
-        net::DISK_CACHE, SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN, entries,
-        kCacheSize, base::TimeTicks(), false, closure.closure());
+    simple_index_file.WriteToDisk(net::DISK_CACHE,
+                                  SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN,
+                                  entries, kCacheSize, closure.closure());
     closure.WaitForResult();
     EXPECT_TRUE(base::PathExists(simple_index_file.GetIndexFilePath()));
   }
@@ -637,9 +636,9 @@ TEST_F(SimpleIndexFileTest, OverwritesStaleTempFile) {
   SimpleIndex::EntrySet entries;
   SimpleIndex::InsertInEntrySet(11, EntryMetadata(Time(), 11u), &entries);
   net::TestClosure closure;
-  simple_index_file.WriteToDisk(
-      net::DISK_CACHE, SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN, entries, 120U,
-      base::TimeTicks(), false, closure.closure());
+  simple_index_file.WriteToDisk(net::DISK_CACHE,
+                                SimpleIndex::INDEX_WRITE_REASON_SHUTDOWN,
+                                entries, 120U, closure.closure());
   closure.WaitForResult();
 
   // Check that the temporary file was deleted and the index file was created.

@@ -16,20 +16,36 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
+namespace {
+
+gfx::ImageSkia GetIconImage() {
+  return gfx::CreateVectorIcon(
+      kShelfKeyboardNewuiIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+}
+
+}  // namespace
+
 VirtualKeyboardTray::VirtualKeyboardTray(Shelf* shelf)
     : TrayBackgroundView(shelf), icon_(new views::ImageView), shelf_(shelf) {
-  UpdateIcon();
+  const gfx::ImageSkia image = GetIconImage();
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
+  const int vertical_padding = (kTrayItemSize - image.height()) / 2;
+  const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
+  icon_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(vertical_padding, horizontal_padding)));
   tray_container()->AddChildView(icon_);
 
   // The Shell may not exist in some unit tests.
@@ -49,9 +65,20 @@ VirtualKeyboardTray::~VirtualKeyboardTray() {
   }
 }
 
-base::string16 VirtualKeyboardTray::GetAccessibleNameForTray() {
+void VirtualKeyboardTray::Initialize() {
+  TrayBackgroundView::Initialize();
+  SetVisiblePreferred(
+      Shell::Get()->accessibility_controller()->virtual_keyboard().enabled());
+}
+
+std::u16string VirtualKeyboardTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME);
+}
+
+void VirtualKeyboardTray::HandleLocaleChange() {
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
 }
 
 void VirtualKeyboardTray::HideBubbleWithView(
@@ -87,9 +114,14 @@ bool VirtualKeyboardTray::PerformAction(const ui::Event& event) {
   return true;
 }
 
+void VirtualKeyboardTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(GetIconImage());
+}
+
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
-      Shell::Get()->accessibility_controller()->virtual_keyboard_enabled();
+      Shell::Get()->accessibility_controller()->virtual_keyboard().enabled();
   SetVisiblePreferred(new_enabled);
 }
 
@@ -99,25 +131,11 @@ void VirtualKeyboardTray::OnKeyboardVisibilityChanged(const bool is_visible) {
 
 void VirtualKeyboardTray::OnSessionStateChanged(
     session_manager::SessionState state) {
-  UpdateIcon();
+  icon_->SetImage(GetIconImage());
 }
 
 const char* VirtualKeyboardTray::GetClassName() const {
   return "VirtualKeyboardTray";
-}
-
-void VirtualKeyboardTray::UpdateIcon() {
-  const gfx::VectorIcon& icon = kShelfKeyboardNewuiIcon;
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
-      icon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
-  icon_->SetImage(image);
-  icon_->set_tooltip_text(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-  const int vertical_padding = (kTrayItemSize - image.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
-  icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
 }
 
 }  // namespace ash

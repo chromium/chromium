@@ -12,9 +12,7 @@ function editable(sample) {
 function testIt(input, command_name, expected, description) {
   selection_test(
       editable(input),
-      selection => {
-        if (!window.testRunner)
-          throw 'This test requires testRunner.execCommand()';
+      (selection, testRunner) => {
         testRunner.execCommand(command_name);
       },
       editable(expected),

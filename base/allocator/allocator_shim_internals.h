@@ -5,9 +5,13 @@
 #ifndef BASE_ALLOCATOR_ALLOCATOR_SHIM_INTERNALS_H_
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_INTERNALS_H_
 
+#include "build/build_config.h"
+
 #if defined(__GNUC__)
 
+#if defined(OS_POSIX)
 #include <sys/cdefs.h>  // for __THROW
+#endif
 
 #ifndef __THROW  // Not a glibc system
 #ifdef _NOEXCEPT  // LLVM libc++ uses noexcept instead
@@ -38,6 +42,11 @@
 // DSOs altogether. This will save a little space and stop giving DSOs the false
 // impression that they can hook the allocator.
 #define SHIM_ALWAYS_EXPORT __attribute__((visibility("default"), noinline))
+
+#elif defined(OS_WIN)  // __GNUC__
+
+#define __THROW
+#define SHIM_ALWAYS_EXPORT __declspec(noinline)
 
 #endif  // __GNUC__
 

@@ -1,6 +1,3 @@
-<!--
-@UIA-WIN-DENY:Text_TextChanged*
--->
 <!DOCTYPE html>
 <html>
 <body>
@@ -10,9 +7,19 @@
   <option>Banana</option>
 </select>
 <script>
-  document.querySelector('select').focus();
+  const go_passes = [
+    () => {
+      document.querySelector('select').focus();
+    },
+    () => {
+      document.querySelector('select').selectedIndex = 1;
+    }
+  ];
+
+  let current_pass = 0;
   function go() {
-    document.querySelector('select').selectedIndex = 1;
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
   }
 </script>
 </body>

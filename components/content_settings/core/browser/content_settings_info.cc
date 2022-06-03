@@ -4,7 +4,8 @@
 
 #include "components/content_settings/core/browser/content_settings_info.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
@@ -12,13 +13,13 @@ namespace content_settings {
 
 ContentSettingsInfo::ContentSettingsInfo(
     const WebsiteSettingsInfo* website_settings_info,
-    const std::vector<std::string>& whitelisted_schemes,
+    const std::vector<std::string>& allowlisted_schemes,
     const std::set<ContentSetting>& valid_settings,
     IncognitoBehavior incognito_behavior,
     StorageBehavior storage_behavior,
     OriginRestriction origin_restriction)
     : website_settings_info_(website_settings_info),
-      whitelisted_schemes_(whitelisted_schemes),
+      allowlisted_schemes_(allowlisted_schemes),
       valid_settings_(valid_settings),
       incognito_behavior_(incognito_behavior),
       storage_behavior_(storage_behavior),
@@ -41,17 +42,16 @@ bool ContentSettingsInfo::IsSettingValid(ContentSetting setting) const {
 // IsDefaultSettingValid.
 bool ContentSettingsInfo::IsDefaultSettingValid(ContentSetting setting) const {
   ContentSettingsType type = website_settings_info_->type();
-#if defined(OS_CHROMEOS)
-  // Don't support ALLOW for protected media default setting until migration.
-  if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER &&
-      setting == CONTENT_SETTING_ALLOW) {
-    return false;
-  }
-#endif
-
   // Don't support ALLOW for the default media settings.
   if ((type == ContentSettingsType::MEDIASTREAM_CAMERA ||
        type == ContentSettingsType::MEDIASTREAM_MIC) &&
+      setting == CONTENT_SETTING_ALLOW) {
+    return false;
+  }
+
+  // Don't support ALLOW for the file system settings.
+  if ((type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
+       type == ContentSettingsType::FILE_SYSTEM_READ_GUARD) &&
       setting == CONTENT_SETTING_ALLOW) {
     return false;
   }

@@ -29,13 +29,6 @@ const basicMastercardMethod = { // eslint-disable-line no-unused-vars
   },
 };
 
-const basicDebitMethod = { // eslint-disable-line no-unused-vars
-  supportedMethods: 'basic-card',
-  data: {
-    supportedTypes: ['debit'],
-  },
-};
-
 const alicePayMethod = { // eslint-disable-line no-unused-vars
   supportedMethods: 'https://alicepay.com/webpay',
 };

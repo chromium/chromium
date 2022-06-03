@@ -15,6 +15,7 @@ AXObject* AccessibilityMediaElement::Create(
     LayoutObject* layout_object,
     AXObjectCacheImpl& ax_object_cache) {
   DCHECK(layout_object->GetNode());
+  DCHECK(IsA<HTMLMediaElement>(layout_object->GetNode()));
   return MakeGarbageCollected<AccessibilityMediaElement>(layout_object,
                                                          ax_object_cache);
 }
@@ -26,19 +27,31 @@ AccessibilityMediaElement::AccessibilityMediaElement(
 
 String AccessibilityMediaElement::TextAlternative(
     bool recursive,
-    bool in_aria_labelled_by_traversal,
+    const AXObject* aria_label_or_description_root,
     AXObjectSet& visited,
     ax::mojom::NameFrom& name_from,
     AXRelatedObjectVector* related_objects,
     NameSources* name_sources) const {
+  if (IsDetached())
+    return String();
+
   if (IsUnplayable()) {
     HTMLMediaElement* element =
         static_cast<HTMLMediaElement*>(layout_object_->GetNode());
     return element->GetLocale().QueryString(IDS_MEDIA_PLAYBACK_ERROR);
   }
   return AXLayoutObject::TextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources);
+}
+
+bool AccessibilityMediaElement::CanHaveChildren() const {
+  return true;
+}
+
+bool AccessibilityMediaElement::ComputeAccessibilityIsIgnored(
+    IgnoredReasons* ignored_reasons) const {
+  return false;
 }
 
 AXRestriction AccessibilityMediaElement::Restriction() const {
@@ -49,6 +62,8 @@ AXRestriction AccessibilityMediaElement::Restriction() const {
 }
 
 bool AccessibilityMediaElement::IsUnplayable() const {
+  if (IsDetached())
+    return true;
   HTMLMediaElement* element =
       static_cast<HTMLMediaElement*>(layout_object_->GetNode());
   HTMLMediaElement::NetworkState network_state = element->getNetworkState();

@@ -6,7 +6,6 @@ static_library("renderer") {
   sources = [
     "print_render_frame_helper.cc",
     "print_render_frame_helper.h",
-    "print_render_frame_helper_mac.mm",
   ]
 
   deps = [
@@ -23,4 +22,8 @@ static_library("renderer") {
     "//third_party/blink/public/common",
     "//ui/base",
   ]
+
+  if (is_mac) {
+    sources += [ "print_render_frame_helper_mac.mm" ]
+  }
 }

@@ -10,16 +10,14 @@ import("//build/config/python.gni")
 # Variables:
 #    export_java_symbols: Optional. If true, also export all Java_* symbols
 #      exported for JNI.
-#    export_symbol_whitelist_files: Optional. List of paths to input files containing
+#    export_symbol_allowlist_files: Optional. List of paths to input files containing
 #      lists of symbols to export.
 #    linker_script: Path to output linker version script.
 #
 template("generate_linker_version_script") {
   action_with_pydeps(target_name) {
     script = "//build/android/gyp/generate_linker_version_script.py"
-    outputs = [
-      invoker.linker_script,
-    ]
+    outputs = [ invoker.linker_script ]
     inputs = []
     args = [ "--output=" + rebase_path(invoker.linker_script, root_build_dir) ]
 
@@ -32,11 +30,11 @@ template("generate_linker_version_script") {
       args += [ "--export-feature-registrations" ]
     }
 
-    if (defined(invoker.export_symbol_whitelist_files)) {
-      foreach(file_, invoker.export_symbol_whitelist_files) {
+    if (defined(invoker.export_symbol_allowlist_files)) {
+      foreach(file_, invoker.export_symbol_allowlist_files) {
         inputs += [ file_ ]
         args += [
-          "--export-symbol-whitelist-file",
+          "--export-symbol-allowlist-file",
           rebase_path(file_, root_build_dir),
         ]
       }

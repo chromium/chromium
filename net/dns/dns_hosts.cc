@@ -4,11 +4,15 @@
 
 #include "net/dns/dns_hosts.h"
 
+#include <string>
+
+#include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "net/dns/dns_util.h"
 
 using base::StringPiece;
@@ -29,6 +33,9 @@ class HostsParser {
         pos_(0),
         token_is_ip_(false),
         comma_mode_(comma_mode) {}
+
+  HostsParser(const HostsParser&) = delete;
+  HostsParser& operator=(const HostsParser&) = delete;
 
   // Advances to the next token (IP or hostname).  Returns whether another
   // token was available.  |token_is_ip| and |token| can be used to find out
@@ -126,8 +133,6 @@ class HostsParser {
   bool token_is_ip_;
 
   const ParseHostsCommaMode comma_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostsParser);
 };
 
 void ParseHostsWithCommaMode(const std::string& contents,
@@ -156,7 +161,7 @@ void ParseHostsWithCommaMode(const std::string& contents,
         }
       }
     } else {
-      DnsHostsKey key(parser.token().as_string(), family);
+      DnsHostsKey key(std::string(parser.token()), family);
       if (!IsValidDNSDomain(key.first))
         continue;
       key.first = base::ToLowerASCII(key.first);
@@ -178,7 +183,7 @@ void ParseHostsWithCommaModeForTesting(const std::string& contents,
 
 void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
   ParseHostsCommaMode comma_mode;
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Mac OS X allows commas to separate hostnames.
   comma_mode = PARSE_HOSTS_COMMA_IS_WHITESPACE;
 #else
@@ -189,18 +194,22 @@ void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
   ParseHostsWithCommaMode(contents, dns_hosts, comma_mode);
 }
 
-bool ParseHostsFile(const base::FilePath& path, DnsHosts* dns_hosts) {
+DnsHostsParser::~DnsHostsParser() = default;
+
+DnsHostsFileParser::DnsHostsFileParser(base::FilePath hosts_file_path)
+    : hosts_file_path_(std::move(hosts_file_path)) {}
+
+DnsHostsFileParser::~DnsHostsFileParser() = default;
+
+bool DnsHostsFileParser::ParseHosts(DnsHosts* dns_hosts) const {
   dns_hosts->clear();
   // Missing file indicates empty HOSTS.
-  if (!base::PathExists(path))
+  if (!base::PathExists(hosts_file_path_))
     return true;
 
   int64_t size;
-  if (!base::GetFileSize(path, &size))
+  if (!base::GetFileSize(hosts_file_path_, &size))
     return false;
-
-  UMA_HISTOGRAM_COUNTS_1M("AsyncDNS.HostsSize",
-                          static_cast<base::HistogramBase::Sample>(size));
 
   // Reject HOSTS files larger than |kMaxHostsSize| bytes.
   const int64_t kMaxHostsSize = 1 << 25;  // 32MB
@@ -208,10 +217,10 @@ bool ParseHostsFile(const base::FilePath& path, DnsHosts* dns_hosts) {
     return false;
 
   std::string contents;
-  if (!base::ReadFileToString(path, &contents))
+  if (!base::ReadFileToString(hosts_file_path_, &contents))
     return false;
 
-  ParseHosts(contents, dns_hosts);
+  net::ParseHosts(contents, dns_hosts);
   return true;
 }
 

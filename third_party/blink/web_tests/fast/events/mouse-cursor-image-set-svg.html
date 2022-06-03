@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+<script src="../js/resources/image-preload-helper.js"></script>
+<style type="text/css">
+</style>
+</head>
+<body>
+<p id="description"></p>
+<div id="test-container">
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1x), pointer'>25x25 image at 1x</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 2x), pointer'>25x25 image at 2x</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1x, url(resources/greenbox30.svg) 2x), pointer'>25x25 image at 1x, 30x30 image at 2x</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1.5x, url(resources/greenbox30.svg) 5x), pointer'>25x25 image at 1.5x, 30x30 image at 5x</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 0.0001x), pointer'>Invalid tiny scale on with fallback to pointer</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox200.svg) 1x), pointer'>Over-large image with fallback to pointer</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox200.svg) 4x), pointer'>200x200 image at 4x (not over-large in UI pixels)</div>
+  <div style='cursor: -webkit-image-set(url(doesntexist.svg) 1x), url(resources/greenbox.svg), pointer'>Non-existent image in image-set with fallback to 25x25 image</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1x, url(resources/greenbox30.svg) 2x) 5 3, pointer'>Explicit hotspot at (5,3) logical in 1x and 2x</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1x) 5 24, pointer'>Explicit hotspot at (5,24) logical in 1x</div>
+  <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 0.7x, url(resources/greenbox30.svg) 1.4x) 7 3, pointer'>Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer</div>
+</div>
+<br/>
+<div id="console"></div>
+<script>
+var testContainer = document.getElementById('test-container');
+
+function checkCursors() {
+    debug('Checking cursors with device pixel ratio of ' + window.devicePixelRatio);
+    debug('----------------------------------------------');
+
+    var nodesToTest = document.querySelectorAll('#test-container > div');
+    for (var i = 0; i < nodesToTest.length; i++) {
+        var node = nodesToTest[i];
+        debug('TEST CASE: ' + node.textContent);
+        // Make sure the node is visible and move the mouse over top of it.
+        document.documentElement.scrollTop = node.offsetTop - 50;
+        eventSender.mouseMoveTo(node.offsetLeft + 3, node.offsetTop - document.documentElement.scrollTop + 3);
+
+        // Get details of the current mouse cursor.
+        // Note that we could return structured data which we then validate, but that's a lot more
+        // work and is redundant with relying on the expected output anyway.  Better to just dump
+        // it and inspect that it matches the description.
+        debug('Cursor Info: ' + internals.getCurrentCursorInfo());
+        debug('');
+    }
+}
+
+function runTests() {
+    if (window.eventSender) {
+        checkCursors();
+        // Repeat in high-dpi mode
+        testRunner.setBackingScaleFactor(2, function() {
+            // Flush style (and layout) to ensure that requests for the (cursor) resources
+            // referenced by style has been issued. This means that the ordering request performed
+            // below will be able to re-use the same (internal) resource if it is still pending.
+            // If the actual cursor request has already completed before the ordering request is
+            // issued then the ordering request will not re-use the same resource, but ordering is
+            // still guaranteed in that case.
+            testContainer.offsetTop;
+            // Failed images are apparently reset on scale factor change.
+            loadImages([{ url: 'doesntexist.svg', error: true }],
+                        function() {
+                checkCursors();
+                testContainer.style.display = 'none';
+                finishJSTest();
+            });
+      });
+    } else {
+        finishJSTest();
+    }
+}
+
+description("Test that mouse cursors are applied correctly.");
+
+if (!window.eventSender) {
+    testFailed('This test requires DumpRenderTree');
+}
+
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+    window.jsTestIsAsync = true;
+}
+
+// Now wait for each image to load or fail to load before starting tests.
+// Without this we can get null images in the cursors - eg. no known size.
+preloadImagesFromStyle(testContainer, 4, runTests, /doesntexist/);
+
+</script>
+
+</script>
+</body>
+</html>

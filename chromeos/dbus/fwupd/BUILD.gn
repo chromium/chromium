@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("fwupd") {
+  output_name = "chromeos_fwupd"
+  defines = [ "IS_CHROMEOS_DBUS_FUWPD_IMPL" ]
+
+  deps = [
+    "//ash/constants",
+    "//chromeos/dbus:common",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_fwupd_client.cc",
+    "fake_fwupd_client.h",
+    "fwupd_client.cc",
+    "fwupd_client.h",
+    "fwupd_device.cc",
+    "fwupd_device.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  deps = [
+    ":fwupd",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [ "fwupd_client_unittest.cc" ]
+}

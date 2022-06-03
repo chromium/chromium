@@ -6,7 +6,7 @@
 
 namespace password_manager {
 
-MockPasswordFeatureManager::MockPasswordFeatureManager() {}
+MockPasswordFeatureManager::MockPasswordFeatureManager() = default;
 
 MockPasswordFeatureManager::~MockPasswordFeatureManager() = default;
 

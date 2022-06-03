@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Moving loading='lazy' image into another top level document assert_false: lazy-load image shouldn't be loaded yet expected false got true
+Harness: the test ran to completion.
+

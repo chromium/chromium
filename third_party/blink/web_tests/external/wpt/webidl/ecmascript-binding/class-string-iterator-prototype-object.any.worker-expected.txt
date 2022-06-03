@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL @@toStringTag exists with the appropriate descriptor assert_equals: value expected "URLSearchParams Iterator" but got "Iterator"
+FAIL Object.prototype.toString assert_equals: expected "[object URLSearchParams Iterator]" but got "[object Iterator]"
+PASS Object.prototype.toString applied after modifying @@toStringTag
+PASS Object.prototype.toString applied to a null-prototype instance
+PASS Object.prototype.toString applied after nulling the prototype
+PASS Object.prototype.toString applied after deleting @@toStringTag
+Harness: the test ran to completion.
+

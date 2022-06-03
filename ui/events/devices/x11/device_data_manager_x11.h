@@ -12,15 +12,14 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/event.h"
+#include "ui/gfx/x/xinput.h"
 
 namespace ui {
 
@@ -95,13 +94,19 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
     DT_TOUCH_RAW_TIMESTAMP,
 
     // End of touch data types.
+    // Beginning of stylus data types.
+    DT_STYLUS_POSITION_X,  // Position in X-axis
+    DT_STYLUS_POSITION_Y,  // Position in Y-axis
+    DT_STYLUS_PRESSURE,    // Pressure of contact
+    DT_STYLUS_TILT_X,      // Tilt in X-axis
+    DT_STYLUS_TILT_Y,      // Tilt in Y-axis
 
     DT_LAST_ENTRY  // This must come last.
   };
 
   // A Device ID number that can be passed to InvalidateScrollClasses that
   // invalidates all devices.
-  static const int kAllDevices = -1;
+  static constexpr auto kAllDevices = static_cast<x11::Input::DeviceId>(-1);
 
   // Data struct to store extracted data from an input event.
   typedef std::map<int, double> EventData;
@@ -111,75 +116,82 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // We use int because enums can be casted to ints but not vice versa.
   static bool IsCMTDataType(const int type);
   static bool IsTouchDataType(const int type);
+  static bool IsStylusDataType(const int type);
 
   // Returns the DeviceDataManagerX11 singleton.
   static DeviceDataManagerX11* GetInstance();
+
+  DeviceDataManagerX11(const DeviceDataManagerX11&) = delete;
+  DeviceDataManagerX11& operator=(const DeviceDataManagerX11&) = delete;
 
   // Returns if XInput2 is available on the system.
   bool IsXInput2Available() const;
 
   // Updates the list of devices.
-  void UpdateDeviceList(Display* display);
+  void UpdateDeviceList(x11::Connection* connection);
 
   // For multitouch events we use slot number to distinguish touches from
   // different fingers. This function returns true if the associated slot
   // for |xiev| can be found and it is saved in |slot|, returns false if
   // no slot can be found.
-  bool GetSlotNumber(const XIDeviceEvent* xiev, int* slot);
+  bool GetSlotNumber(const x11::Input::DeviceEvent& xiev, int* slot);
 
   // Check if an XI event contains data of the specified type.
-  bool HasEventData(const XIDeviceEvent* xiev, const DataType type) const;
+  bool HasEventData(const x11::Event& xev, const DataType type) const;
 
   // Get all event data in one pass. We extract only data types that we know
   // about (defined in enum DataType). The data is not processed (e.g. not
   // filled in by cached values) as in GetEventData.
-  void GetEventRawData(const XEvent& xev, EventData* data);
+  void GetEventRawData(const x11::Event& xev, EventData* data);
 
   // Get a datum of the specified type. Return true and the value
   // is updated if the data is found, false and value unchanged if the data is
   // not found. In the case of MT-B/XI2.2, the value can come from a previously
   // cached one (see the comment above last_seen_valuator_).
-  bool GetEventData(const XEvent& xev, const DataType type, double* value);
+  bool GetEventData(const x11::Event& xev, const DataType type, double* value);
 
   // Check if the event is an XI input event in the strict sense
   // (i.e. XIDeviceEvent). This rules out things like hierarchy changes,
   /// device changes, property changes and so on.
-  bool IsXIDeviceEvent(const XEvent& xev) const;
+  bool IsXIDeviceEvent(const x11::Event& xev) const;
+
+  // Check if the event comes from stylus devices.
+  bool IsStylusXInputEvent(const x11::Event& xev) const;
 
   // Check if the event comes from touchpad devices.
-  bool IsTouchpadXInputEvent(const XEvent& xev) const;
+  bool IsTouchpadXInputEvent(const x11::Event& xev) const;
 
   // Check if the event comes from devices running CMT driver or using
   // CMT valuators (e.g. mouses). Note that doesn't necessarily mean the event
   // is a CMT event (e.g. it could be a mouse pointer move).
-  bool IsCMTDeviceEvent(const XEvent& xev) const;
+  bool IsCMTDeviceEvent(const x11::Event& xev) const;
 
   // Check if the event contains information about a ScrollClass, and
   // report which scroll axes are contained in this event, defined by
   // ScrollType.
-  int GetScrollClassEventDetail(const XEvent& xev) const;
+  int GetScrollClassEventDetail(const x11::Event& xev) const;
 
   // Check if the event comes from a device that has a ScrollClass, and
   // report which scroll axes it supports as a bit field, defined by
   // ScrollType.
-  int GetScrollClassDeviceDetail(const XEvent& xev) const;
+  int GetScrollClassDeviceDetail(const x11::Event& xev) const;
 
   // Check if the event is one of the CMT gesture events (scroll, fling,
   // metrics etc.).
-  bool IsCMTGestureEvent(const XEvent& xev) const;
+  bool IsCMTGestureEvent(const x11::Event& xev) const;
 
   // Returns true if the event is of the specific type, false if not.
-  bool IsScrollEvent(const XEvent& xev) const;
-  bool IsFlingEvent(const XEvent& xev) const;
-  bool IsCMTMetricsEvent(const XEvent& xev) const;
+  bool IsScrollEvent(const x11::Event& xev) const;
+  bool IsFlingEvent(const x11::Event& xev) const;
+  bool IsCMTMetricsEvent(const x11::Event& xev) const;
 
   // Returns true if the event has CMT start/end timestamps.
-  bool HasGestureTimes(const XEvent& xev) const;
+  bool HasGestureTimes(const x11::Event& xev) const;
 
   // Extract data from a scroll event (a motion event with the necessary
   // valuators). User must first verify the event type with IsScrollEvent.
   // Pointers shouldn't be NULL.
-  void GetScrollOffsets(const XEvent& xev,
+  void GetScrollOffsets(const x11::Event& xev,
                         float* x_offset,
                         float* y_offset,
                         float* x_offset_ordinal,
@@ -189,18 +201,18 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // Extract data from a scroll class event (smooth scrolling). User must
   // first verify the event type with GetScrollClassEventDetail.
   // Pointers shouldn't be NULL.
-  void GetScrollClassOffsets(const XEvent& xev,
+  void GetScrollClassOffsets(const x11::Event& xev,
                              double* x_offset,
                              double* y_offset);
 
   // Invalidate stored scroll class counters, since they can change when
   // pointing at other windows. If kAllDevices is specified, all devices are
   // invalidated.
-  void InvalidateScrollClasses(int device_id);
+  void InvalidateScrollClasses(x11::Input::DeviceId device_id);
 
   // Extract data from a fling event. User must first verify the event type
   // with IsFlingEvent. Pointers shouldn't be NULL.
-  void GetFlingData(const XEvent& xev,
+  void GetFlingData(const x11::Event& xev,
                     float* vx,
                     float* vy,
                     float* vx_ordinal,
@@ -209,7 +221,7 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
 
   // Extract data from a CrOS metrics gesture event. User must first verify
   // the event type with IsCMTMetricsEvent. Pointers shouldn't be NULL.
-  void GetMetricsData(const XEvent& xev,
+  void GetMetricsData(const x11::Event& xev,
                       GestureMetricsType* type,
                       float* data1,
                       float* data2);
@@ -223,19 +235,21 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
 
   // Extract the start/end timestamps from CMT events. User must first verify
   // the event with HasGestureTimes. Pointers shouldn't be NULL.
-  void GetGestureTimes(const XEvent& xev, double* start_time, double* end_time);
+  void GetGestureTimes(const x11::Event& xev,
+                       double* start_time,
+                       double* end_time);
 
   // Normalize the data value on deviceid to fall into [0, 1].
   // *value = (*value - min_value_of_tp) / (max_value_of_tp - min_value_of_tp)
   // Returns true and sets the normalized value in|value| if normalization is
   // successful. Returns false and |value| is unchanged otherwise.
-  bool NormalizeData(int deviceid,
+  bool NormalizeData(x11::Input::DeviceId deviceid,
                      const DataType type,
                      double* value);
 
   // Extract the range of the data type. Return true if the range is available
   // and written into min & max, false if the range is not available.
-  bool GetDataRange(int deviceid,
+  bool GetDataRange(x11::Input::DeviceId deviceid,
                     const DataType type,
                     double* min,
                     double* max);
@@ -248,7 +262,7 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
                             const std::vector<int>& cmt_devices,
                             const std::vector<int>& other_devices);
 
-  void SetValuatorDataForTest(XIDeviceEvent* xievent,
+  void SetValuatorDataForTest(x11::Input::DeviceEvent* devev,
                               DataType type,
                               double value);
 
@@ -257,15 +271,15 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
       std::unique_ptr<std::set<KeyboardCode>> excepted_keys);
 
   // Disables and enables events from devices by device id.
-  void DisableDevice(int deviceid);
-  void EnableDevice(int deviceid);
+  void DisableDevice(x11::Input::DeviceId deviceid);
+  void EnableDevice(x11::Input::DeviceId deviceid);
 
-  bool IsDeviceEnabled(int device_id) const;
+  bool IsDeviceEnabled(x11::Input::DeviceId device_id) const;
 
   // Returns true if |native_event| should be blocked.
-  bool IsEventBlocked(const XEvent& xev);
+  bool IsEventBlocked(const x11::Event& xev);
 
-  const std::vector<int>& master_pointers() const {
+  const std::vector<x11::Input::DeviceId>& master_pointers() const {
     return master_pointers_;
   }
 
@@ -314,15 +328,16 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
                                   double min_value,
                                   double max_value);
 
-  // Updates a device based on a Valuator class info. Returns true if the
-  // device is a possible CMT device.
-  bool UpdateValuatorClassDevice(XIValuatorClassInfo* valuator_class_info,
-                                 Atom* atoms,
-                                 int deviceid);
+  // Updates a device based on a Valuator class info.
+  DataType UpdateValuatorClassDevice(
+      const x11::Input::DeviceClass::Valuator& valuator_class_info,
+      x11::Atom* atoms,
+      uint16_t deviceid);
 
   // Updates a device based on a Scroll class info.
-  void UpdateScrollClassDevice(XIScrollClassInfo* scroll_class_info,
-                               int deviceid);
+  void UpdateScrollClassDevice(
+      const x11::Input::DeviceClass::Scroll& scroll_class_info,
+      uint16_t deviceid);
 
   // Normalize the scroll amount according to the increment size.
   // *value /= increment
@@ -333,22 +348,20 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
       DeviceDataManagerX11::ScrollInfo::AxisInfo* axis,
       double valuator) const;
 
-  static const int kMaxXIEventType = XI_LASTEVENT + 1;
+  static const int kMaxXIEventType = 32;
   static const int kMaxSlotNum = 10;
 
   // Major opcode for the XInput extension. Used to identify XInput events.
   int xi_opcode_;
 
-  // A quick lookup table for determining if the XI event is an XIDeviceEvent.
-  std::bitset<kMaxXIEventType> xi_device_event_types_;
-
   // A quick lookup table for determining if events from the pointer device
   // should be processed.
   std::bitset<kMaxDeviceNum> cmt_devices_;
   std::bitset<kMaxDeviceNum> touchpads_;
+  std::bitset<kMaxDeviceNum> stylus_;
 
   // List of the master pointer devices.
-  std::vector<int> master_pointers_;
+  std::vector<x11::Input::DeviceId> master_pointers_;
 
   // A quick lookup table for determining if events from the XI device
   // should be blocked.
@@ -386,12 +399,9 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
 
   // Map that stores meta-data for blocked keyboards. This is needed to restore
   // devices when they are re-enabled.
-  std::map<int, ui::InputDevice> blocked_keyboard_devices_;
+  std::map<x11::Input::DeviceId, ui::InputDevice> blocked_keyboard_devices_;
 
-  unsigned char button_map_[256];
-  int button_map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerX11);
+  std::vector<uint8_t> button_map_;
 };
 
 }  // namespace ui

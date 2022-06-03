@@ -7,14 +7,13 @@
 #include <stddef.h>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/files/memory_mapped_file.h"
 #include "base/time/time.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/common/spellcheck_common.h"
-#include "components/spellcheck/spellcheck_buildflags.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
@@ -62,16 +61,17 @@ void HunspellEngine::InitializeHunspell() {
   if (hunspell_)
     return;
 
-  bdict_file_.reset(new base::MemoryMappedFile);
+  bdict_file_ = std::make_unique<base::MemoryMappedFile>();
 
   if (bdict_file_->Initialize(std::move(file_))) {
-    hunspell_.reset(new Hunspell(bdict_file_->data(), bdict_file_->length()));
+    hunspell_ =
+        std::make_unique<Hunspell>(bdict_file_->data(), bdict_file_->length());
   } else {
     NOTREACHED() << "Could not mmap spellchecker dictionary.";
   }
 }
 
-bool HunspellEngine::CheckSpelling(const base::string16& word_to_check,
+bool HunspellEngine::CheckSpelling(const std::u16string& word_to_check,
                                    int tag) {
   // Assume all words that cannot be checked are valid. Since Chrome can't
   // offer suggestions on them, either, there's no point in flagging them to
@@ -93,8 +93,8 @@ bool HunspellEngine::CheckSpelling(const base::string16& word_to_check,
 }
 
 void HunspellEngine::FillSuggestionList(
-    const base::string16& wrong_word,
-    std::vector<base::string16>* optional_suggestions) {
+    const std::u16string& wrong_word,
+    std::vector<std::u16string>* optional_suggestions) {
   std::string wrong_word_utf8(base::UTF16ToUTF8(wrong_word));
   if (wrong_word_utf8.length() > kMaxSuggestLen)
     return;

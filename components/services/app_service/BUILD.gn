@@ -1,0 +1,42 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("lib") {
+  sources = [
+    "app_service_mojom_impl.cc",
+    "app_service_mojom_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  public_deps = [
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:preferred_apps",
+    "//components/services/app_service/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "app_service_mojom_impl_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//components/prefs:test_support",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:icon_types",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:preferred_apps",
+    "//components/services/app_service/public/cpp:publisher",
+    "//components/services/app_service/public/cpp:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

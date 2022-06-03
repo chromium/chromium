@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableSection TBODY",
-          "rect": [8, 108, 106, 104],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [10, 110, 102, 100]
       ]
     }
   ]

@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "google_apis/gcm/base/gcm_util.h"
@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace gcm {
@@ -120,13 +121,13 @@ RegistrationRequest::RegistrationRequest(
     const RequestInfo& request_info,
     std::unique_ptr<CustomRequestHandler> custom_request_handler,
     const net::BackoffEntry::Policy& backoff_policy,
-    const RegistrationCallback& callback,
+    RegistrationCallback callback,
     int max_retry_count,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     GCMStatsRecorder* recorder,
     const std::string& source_to_record)
-    : callback_(callback),
+    : callback_(std::move(callback)),
       request_info_(request_info),
       custom_request_handler_(std::move(custom_request_handler)),
       registration_url_(registration_url),
@@ -183,8 +184,9 @@ void RegistrationRequest::Start() {
   std::string body;
   BuildRequestBody(&body);
 
-  DVLOG(1) << "Performing registration for: " << request_info_.app_id();
-  DVLOG(1) << "Registration request: " << body;
+  // TODO(crbug.com/1043347): Change back to DVLOG when the bug is resolved.
+  VLOG(1) << "Performing registration for: " << request_info_.app_id();
+  VLOG(1) << "Registration request: " << body;
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   url_loader_->AttachStringForUpload(body, kRegistrationRequestContentType);
@@ -313,7 +315,7 @@ void RegistrationRequest::OnURLLoadComplete(
     custom_request_handler_->ReportStatusToUMA(status);
   }
 
-  callback_.Run(status, token);
+  std::move(callback_).Run(status, token);
 }
 
 }  // namespace gcm

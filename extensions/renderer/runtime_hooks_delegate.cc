@@ -5,12 +5,13 @@
 #include "extensions/renderer/runtime_hooks_delegate.h"
 
 #include "base/containers/span.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -24,6 +25,12 @@
 #include "extensions/renderer/script_context.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 namespace extensions {
 
@@ -215,21 +222,21 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
   }
 
   v8::Local<v8::Context> v8_context = script_context->v8_context();
-  messaging_util::MessageOptions options;
-  if (!arguments[2]->IsNull()) {
-    options = messaging_util::ParseMessageOptions(
-        v8_context, arguments[2].As<v8::Object>(),
-        messaging_util::PARSE_INCLUDE_TLS_CHANNEL_ID);
-  }
 
   v8::Local<v8::Value> v8_message = arguments[1];
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(v8_context, v8_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      v8_context, v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
     return result;
   }
+
+  // Note: arguments[2] is the options argument. However, the only available
+  // option for sendMessage() is includeTlsChannelId. That option has no effect
+  // since M72, but it is still part of the public spec for compatibility and is
+  // parsed into |arguments|. See crbug.com/1045232.
 
   v8::Local<v8::Function> response_callback;
   if (!arguments[3]->IsNull())
@@ -237,8 +244,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      messaging_util::kSendMessageChannel, options.include_tls_channel_id,
-      *message, response_callback);
+      messaging_util::kSendMessageChannel, *message, response_callback);
 
   return RequestResult(RequestResult::HANDLED);
 }
@@ -254,8 +260,12 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   v8::Local<v8::Value> v8_message = arguments[1];
   DCHECK(!v8_message.IsEmpty());
   std::string error;
-  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+
+  // Native messaging always uses JSON since a native host doesn't understand
+  // structured cloning serialization.
+  std::unique_ptr<Message> message =
+      messaging_util::MessageFromV8(script_context->v8_context(), v8_message,
+                                    SerializationFormat::kJson, &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -268,7 +278,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string(), false, *message, response_callback);
+      std::string(), *message, response_callback);
 
   return RequestResult(RequestResult::HANDLED);
 }
@@ -292,13 +302,13 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
   if (!arguments[1]->IsNull()) {
     options = messaging_util::ParseMessageOptions(
         script_context->v8_context(), arguments[1].As<v8::Object>(),
-        messaging_util::PARSE_INCLUDE_TLS_CHANNEL_ID |
             messaging_util::PARSE_CHANNEL_NAME);
   }
 
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForExtension(target_id),
-      options.channel_name, options.include_tls_channel_id);
+      options.channel_name,
+      messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
 
   RequestResult result(RequestResult::HANDLED);
@@ -314,9 +324,13 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 
   std::string application_name =
       gin::V8ToString(script_context->isolate(), arguments[0]);
+
+  // Native messaging always uses JSON since a native host doesn't understand
+  // structured cloning serialization.
+  auto format = SerializationFormat::kJson;
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string(), false);
+      std::string(), format);
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = port.ToV8();
@@ -362,7 +376,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     // allow native code to run in the background page, we'll also need a
     // NativesEnabledScope for that context.
     DCHECK(v8_context == isolate->GetCurrentContext());
-    base::Optional<ModuleSystem::NativesEnabledScope> background_page_natives;
+    absl::optional<ModuleSystem::NativesEnabledScope> background_page_natives;
     if (background_page &&
         background_page != script_context->GetRenderFrame() &&
         blink::WebFrame::ScriptCanAccess(background_page->GetWebFrame())) {

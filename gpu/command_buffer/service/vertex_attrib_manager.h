@@ -10,7 +10,7 @@
 
 #include <list>
 #include <vector>
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"

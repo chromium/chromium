@@ -1,0 +1,14 @@
+# tags: [ android-weblayer android-webview chrome-android ]
+# results: [ Skip ]
+
+# This expectations file will disable tests for functionality which there are no
+# plans to implement in any of the Android browsers.
+
+# WebAuthn WPT tests use the WebAuthn WebDriver extension, which integrates
+# with the WebAuthn implementation in //content. Android delegates to GMSCore
+# for its WebAuthn implementation, so the WebDriver API isn't available, so
+# these tests can't work.
+# https://w3c.github.io/webauthn/#sctn-automation
+external/wpt/webauthn/* [ Skip ]
+
+# Add untriaged disabled tests in this block

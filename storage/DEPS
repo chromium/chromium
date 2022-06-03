@@ -1,11 +1,11 @@
 include_rules = [
   "+components/services/filesystem",
+  "+components/services/storage",
   "+crypto",
   "+mojo",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
-  "+services/network/session_cleanup_cookie_store.h",
   "+sql",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",

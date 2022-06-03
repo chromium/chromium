@@ -1,5 +1,6 @@
 include_rules = [
   "+components/autofill/core",
+  "+components/keyed_service/content",
   "+components/keyed_service/core",
   "+components/password_manager/core/browser/webdata",
   "+components/payments/content",
@@ -7,6 +8,7 @@ include_rules = [
   "+components/signin/public/webdata",
   "+components/sync",
   "+components/webdata/common",
+  "+content/public/browser",
   "+sql",
   "+testing/gtest",
 ]

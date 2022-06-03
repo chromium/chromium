@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 
 namespace IPC {

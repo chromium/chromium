@@ -4,6 +4,7 @@
 ../../../../build/android/pylib/__init__.py
 ../../../../build/android/pylib/constants/__init__.py
 ../../../../build/android/pylib/constants/host_paths.py
+../../../../build/gn_helpers.py
 ../../../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../../../third_party/catapult/common/py_utils/py_utils/cloud_storage.py
 ../../../../third_party/catapult/common/py_utils/py_utils/cloud_storage_global_lock.py
@@ -77,11 +78,12 @@
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_ssl_compat.py
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_url.py
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_utils.py
-../../../../third_party/catapult/third_party/zipfile/zipfile_2_7_13.py
+../../../../third_party/catapult/third_party/gsutil/third_party/monotonic/monotonic.py
 ../chrome_paths.py
 ../client/chromedriver.py
 ../client/command_executor.py
 ../client/webelement.py
+../client/webshadowroot.py
 ../client/websocket_connection.py
 ../server/server.py
 ../util.py

@@ -1,0 +1,12 @@
+{
+  global:
+    gpr_*;
+    extern "C++" {
+        grpc::*;
+        grpc_*;
+        tsi_*;
+        vtable*grpc::*;
+    };
+  local:
+    *;
+};

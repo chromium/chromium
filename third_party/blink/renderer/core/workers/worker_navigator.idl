@@ -38,3 +38,4 @@ WorkerNavigator includes NavigatorDeviceMemory;
 WorkerNavigator includes NavigatorID;
 WorkerNavigator includes NavigatorLanguage;
 WorkerNavigator includes NavigatorOnLine;
+WorkerNavigator includes NavigatorUA;

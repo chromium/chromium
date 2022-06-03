@@ -14,8 +14,8 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/pref_names.h"
@@ -29,6 +29,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
@@ -99,7 +100,7 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
   GURL tab_url = current_navigation.virtual_url();
 
   Java_ForeignSessionHelper_pushTab(
-      env, j_window, ConvertUTF8ToJavaString(env, tab_url.spec()),
+      env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
       ConvertUTF16ToJavaString(env, current_navigation.title()),
       tab.timestamp.ToJavaTime(), tab.tab_id.id());
 }
@@ -176,8 +177,7 @@ jboolean ForeignSessionHelper::IsTabSyncEnabled(JNIEnv* env) {
 }
 
 void ForeignSessionHelper::TriggerSessionSync(JNIEnv* env) {
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service)
     return;
 
@@ -298,8 +298,7 @@ void ForeignSessionHelper::DeleteForeignSession(
 void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(
     JNIEnv* env,
     jboolean enabled) {
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service)
     return;
 

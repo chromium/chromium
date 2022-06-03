@@ -1,0 +1,50 @@
+<!-- Simple file to generate many TYPE_WINDOW_CONTENT_CHANGED events. -->
+<html>
+  <head>
+    <script>
+      const SCRIPT_COUNT = 50;
+      var elementArray = [];
+
+      function expandComboboxes() {
+        elementArray.forEach(node => {
+          node.setAttribute("aria-expanded", true);
+          node.getElementsByTagName('div')[0].removeAttribute('hidden');
+        });
+        var button = document.getElementsByTagName('button')[0];
+        button.innerHTML = "Done";
+      }
+
+      function createComboboxes() {
+        var body = document.getElementsByTagName('body')[0];
+        for (i = 0; i < SCRIPT_COUNT; i++) {
+          var containingDiv = document.createElement('div');
+
+          var combobox = document.createElement('div');
+          combobox.setAttribute("role", "combobox");
+          combobox.setAttribute("aria-expanded", "false");
+
+          var input = document.createElement('input');
+          input.setAttribute("type", "text");
+
+          var childDiv = document.createElement('div');
+          childDiv.setAttribute("hidden", "");
+
+          var paragraph = document.createElement('p');
+          paragraph.innerHTML = "Example Text";
+
+          childDiv.appendChild(paragraph);
+          combobox.appendChild(input);
+          combobox.appendChild(childDiv);
+
+          containingDiv.appendChild(combobox);
+          body.appendChild(containingDiv);
+
+          elementArray[i] = combobox;
+        }
+      }
+    </script>
+  </head>
+  <body onload="createComboboxes()">
+    <button onclick="expandComboboxes()">Expand All</button>
+  </body>
+</html>

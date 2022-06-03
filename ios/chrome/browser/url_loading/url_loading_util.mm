@@ -12,10 +12,10 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#include "ios/chrome/browser/sessions/tab_restore_service_delegate_impl_ios.h"
-#include "ios/chrome/browser/sessions/tab_restore_service_delegate_impl_ios_factory.h"
+#include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -30,7 +30,7 @@ bool IsURLAllowedInIncognito(const GURL& url) {
 }
 
 void LoadJavaScriptURL(const GURL& url,
-                       ios::ChromeBrowserState* browser_state,
+                       ChromeBrowserState* browser_state,
                        web::WebState* web_state) {
   DCHECK(url.SchemeIs(url::kJavaScriptScheme));
   DCHECK(web_state);
@@ -47,12 +47,19 @@ void LoadJavaScriptURL(const GURL& url,
 
 void RestoreTab(const SessionID session_id,
                 WindowOpenDisposition disposition,
-                ios::ChromeBrowserState* browser_state) {
-  TabRestoreServiceDelegateImplIOS* delegate =
-      TabRestoreServiceDelegateImplIOSFactory::GetForBrowserState(
-          browser_state);
+                Browser* browser) {
+  // iOS Chrome doesn't yet support restoring tabs to new windows.
+  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
+  DCHECK(disposition != WindowOpenDisposition::NEW_WINDOW);
+  LiveTabContextBrowserAgent* context =
+      LiveTabContextBrowserAgent::FromBrowser(browser);
+  // Passing a nil context into RestoreEntryById can result in the restore
+  // service requesting a new window. This is unsupported on iOS (see above
+  // TODO).
+  DCHECK(context);
+  ChromeBrowserState* browser_state =
+      browser->GetBrowserState()->GetOriginalChromeBrowserState();
   sessions::TabRestoreService* restoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          browser_state->GetOriginalChromeBrowserState());
-  restoreService->RestoreEntryById(delegate, session_id, disposition);
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state);
+  restoreService->RestoreEntryById(context, session_id, disposition);
 }

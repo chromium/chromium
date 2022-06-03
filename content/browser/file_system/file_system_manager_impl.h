@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/common/content_export.h"
@@ -27,13 +26,13 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 
 class GURL;
 
 namespace base {
 class FilePath;
-class Time;
 }  // namespace base
 
 namespace storage {
@@ -61,10 +60,15 @@ class CONTENT_EXPORT FileSystemManagerImpl
       int process_id,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
+
+  FileSystemManagerImpl(const FileSystemManagerImpl&) = delete;
+  FileSystemManagerImpl& operator=(const FileSystemManagerImpl&) = delete;
+
   ~FileSystemManagerImpl() override;
   base::WeakPtr<FileSystemManagerImpl> GetWeakPtr();
 
   void BindReceiver(
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver);
 
   // blink::mojom::FileSystem
@@ -117,10 +121,6 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void TruncateSync(const GURL& file_path,
                     int64_t length,
                     TruncateSyncCallback callback) override;
-  void TouchFile(const GURL& path,
-                 base::Time last_access_time,
-                 base::Time last_modified_time,
-                 TouchFileCallback callback) override;
   void CreateSnapshotFile(const GURL& file_path,
                           CreateSnapshotFileCallback callback) override;
   void GetPlatformPath(const GURL& file_path,
@@ -190,9 +190,10 @@ class CONTENT_EXPORT FileSystemManagerImpl
       int process_id,
       scoped_refptr<storage::FileSystemContext> context,
       base::WeakPtr<FileSystemManagerImpl> file_system_manager,
+      const blink::StorageKey& storage_key,
       GetPlatformPathCallback callback);
-  // Returns an error if |url| is invalid.
-  base::Optional<base::File::Error> ValidateFileSystemURL(
+  // Returns an error if `url` is invalid.
+  absl::optional<base::File::Error> ValidateFileSystemURL(
       const storage::FileSystemURL& url);
 
   storage::FileSystemOperationRunner* operation_runner() {
@@ -212,7 +213,8 @@ class CONTENT_EXPORT FileSystemManagerImpl
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;
 
-  mojo::ReceiverSet<blink::mojom::FileSystemManager> receivers_;
+  mojo::ReceiverSet<blink::mojom::FileSystemManager, blink::StorageKey>
+      receivers_;
   mojo::UniqueReceiverSet<blink::mojom::FileSystemCancellableOperation>
       cancellable_operations_;
   mojo::UniqueReceiverSet<blink::mojom::ReceivedSnapshotListener>
@@ -229,8 +231,6 @@ class CONTENT_EXPORT FileSystemManagerImpl
       in_transit_snapshot_files_;
 
   base::WeakPtrFactory<FileSystemManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemManagerImpl);
 };
 
 }  // namespace content

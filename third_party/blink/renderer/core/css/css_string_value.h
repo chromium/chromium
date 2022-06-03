@@ -11,11 +11,11 @@
 
 namespace blink {
 
-class CSSStringValue : public CSSValue {
+class CORE_EXPORT CSSStringValue : public CSSValue {
  public:
   CSSStringValue(const String&);
 
-  String Value() const { return string_; }
+  const String& Value() const { return string_; }
 
   String CustomCSSText() const;
 
@@ -23,7 +23,7 @@ class CSSStringValue : public CSSValue {
     return string_ == other.string_;
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   String string_;

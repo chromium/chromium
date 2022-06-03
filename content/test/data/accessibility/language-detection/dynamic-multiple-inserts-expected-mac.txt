@@ -1,0 +1,8 @@
+AXWebArea AXLanguage='fr-FR'
+++AXGroup AXLanguage='fr-FR'
+++++AXGroup AXLanguage='fr-FR'
+++++++AXStaticText AXLanguage='en' AXValue='This is text created using Google Translate, it is unlikely to be idiomatic in the given target language. This text is only used to test language detection'
+++++AXGroup AXLanguage='fr-FR'
+++++++AXStaticText AXLanguage='fr' AXValue='Ce texte a %C3%A9t%C3%A9 cr%C3%A9%C3%A9 avec Google Translate, il est peu probable qu'il soit idiomatique dans la langue cible indiqu%C3%A9e Ce texte est uniquement utilis%C3%A9 pour tester la d%C3%A9tection de la langue.'
+++++AXGroup AXLanguage='fr-FR'
+++++++AXStaticText AXLanguage='de' AXValue='Dies ist ein mit Google Translate erstellter Text. Es ist unwahrscheinlich, dass er in der angegebenen Zielsprache idiomatisch ist. Dieser Text wird nur zum Testen der Spracherkennung verwendet.'

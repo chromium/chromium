@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
-#include "third_party/blink/renderer/modules/gamepad/gamepad_event_init.h"
 
 namespace blink {
 
@@ -35,7 +35,7 @@ class GamepadEvent : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Gamepad> gamepad_;

@@ -4,6 +4,6 @@
 
 dictionary XRTransientInputHitTestOptionsInit {
   required DOMString profile;
-  FrozenArray<XRHitTestTrackableType> entityTypes;
+  [RuntimeEnabled=WebXRHitTestEntityTypes] FrozenArray<XRHitTestTrackableType> entityTypes;
   XRRay offsetRay;
 };

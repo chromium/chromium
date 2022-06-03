@@ -16,17 +16,14 @@
   top: 100px;
   left: 100px;
 }
-.fast {
-  will-change: transform;
-}
 .space {
   height: 150px;
   width: 150px;
 }
 </style>
 
-<!-- Composited non-custom fast scroller -->
-<div id="standard" class="appearance standardLocation fast">
+<!-- Composited non-custom scroller -->
+<div id="standard" class="appearance standardLocation">
   <div class="space"></div>
 </div>
 
@@ -58,6 +55,7 @@ window.onload = () => {
 
     await mouseMoveTo(x, y);
     assert_equals(standardDivFast.scrollTop, 0, "Vertical thumb drag beyond the track and back should not cause a scroll.");
+    await mouseUpAt(x, y);
   }, "Test thumb drags beyond scrollbar track.");
 }
 </script>

@@ -1,0 +1,16 @@
+include_rules = [
+    "+base/task/bind_post_task.h",
+    "+media/base",
+    "+media/capture/video",
+    "-third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/modules/breakout_box",
+    "+third_party/blink/renderer/modules/mediastream",
+    "+third_party/blink/renderer/modules/webcodecs",
+    "+third_party/blink/renderer/modules/modules_export.h",
+]
+
+specific_include_rules = {
+    ".*test\.cc" : [
+        "+base/run_loop.h",
+    ],
+}

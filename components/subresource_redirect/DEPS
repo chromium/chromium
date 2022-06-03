@@ -1,0 +1,9 @@
+include_rules = [
+  "+chrome/common",
+  "+components/data_reduction_proxy",
+  "+components/metrics",
+  "+content/public/test",
+  "+net/base",
+  "+net/test/embedded_test_server",
+  "+third_party/blink/public/common/features.h",
+]

@@ -19,8 +19,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/process/process.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/node_channel.h"
@@ -28,9 +28,9 @@
 #include "mojo/core/ports/name.h"
 #include "mojo/core/ports/node.h"
 #include "mojo/core/ports/node_delegate.h"
-#include "mojo/core/scoped_process_handle.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -48,15 +48,18 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
     virtual void OnPortStatusChanged() = 0;
 
    protected:
-    ~PortObserver() override {}
+    ~PortObserver() override = default;
   };
 
   // |core| owns and out-lives us.
-  explicit NodeController(Core* core);
+  NodeController();
+
+  NodeController(const NodeController&) = delete;
+  NodeController& operator=(const NodeController&) = delete;
+
   ~NodeController() override;
 
   const ports::NodeName& name() const { return name_; }
-  Core* core() const { return core_; }
   ports::Node* node() const { return node_.get(); }
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() const {
     return io_task_runner_;
@@ -70,7 +73,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // Sends an invitation to a remote process (via |connection_params|) to join
   // this process's graph of connected processes as a broker client.
   void SendBrokerClientInvitation(
-      base::ProcessHandle target_process,
+      base::Process target_process,
       ConnectionParams connection_params,
       const std::vector<std::pair<std::string, ports::PortRef>>& attached_ports,
       const ProcessErrorCallback& process_error_callback);
@@ -118,9 +121,13 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   void RequestShutdown(base::OnceClosure callback);
 
   // Notifies the NodeController that we received a bad message from the given
-  // node.
+  // node.  To avoid losing error reports the caller should ensure that the
+  // source node |HasBadMessageHandler| before calling |NotifyBadMessageFrom|.
   void NotifyBadMessageFrom(const ports::NodeName& source_node,
                             const std::string& error);
+
+  // Returns whether |source_node| exists and has a bad message handler.
+  bool HasBadMessageHandler(const ports::NodeName& source_node);
 
   // Force-closes the connection to another process to simulate connection
   // failures for testing. |process_id| must correspond to a process to which
@@ -130,6 +137,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   static void DeserializeRawBytesAsEventForFuzzer(
       base::span<const unsigned char> data);
   static void DeserializeMessageAsEventForFuzzer(Channel::MessagePtr message);
+
+  scoped_refptr<NodeChannel> GetBrokerChannel();
 
  private:
   friend Core;
@@ -158,13 +167,13 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   };
 
   void SendBrokerClientInvitationOnIOThread(
-      ScopedProcessHandle target_process,
+      base::Process target_process,
       ConnectionParams connection_params,
       ports::NodeName token,
       const ProcessErrorCallback& process_error_callback);
   void AcceptBrokerClientInvitationOnIOThread(
       ConnectionParams connection_params,
-      base::Optional<PlatformHandle> broker_host_handle);
+      absl::optional<PlatformHandle> broker_host_handle);
 
   void ConnectIsolatedOnIOThread(ConnectionParams connection_params,
                                  ports::PortRef port,
@@ -172,7 +181,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   scoped_refptr<NodeChannel> GetPeerChannel(const ports::NodeName& name);
   scoped_refptr<NodeChannel> GetInviterChannel();
-  scoped_refptr<NodeChannel> GetBrokerChannel();
 
   void AddPeer(const ports::NodeName& name,
                scoped_refptr<NodeChannel> channel,
@@ -202,7 +210,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
                            PlatformHandle broker_channel) override;
   void OnAcceptBrokerClient(const ports::NodeName& from_node,
                             const ports::NodeName& broker_name,
-                            PlatformHandle broker_channel) override;
+                            PlatformHandle broker_channel,
+                            const uint64_t broker_capabilities) override;
   void OnEventMessage(const ports::NodeName& from_node,
                       Channel::MessagePtr message) override;
   void OnRequestPortMerge(const ports::NodeName& from_node,
@@ -212,7 +221,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
                              const ports::NodeName& name) override;
   void OnIntroduce(const ports::NodeName& from_node,
                    const ports::NodeName& name,
-                   PlatformHandle channel_handle) override;
+                   PlatformHandle channel_handle,
+                   const uint64_t remote_capailities) override;
   void OnBroadcast(const ports::NodeName& from_node,
                    Channel::MessagePtr message) override;
 #if defined(OS_WIN)
@@ -250,7 +260,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   void ForceDisconnectProcessForTestingOnIOThread(base::ProcessId process_id);
 
   // These are safe to access from any thread as long as the Node is alive.
-  Core* const core_;
   const ports::NodeName name_;
   const std::unique_ptr<ports::Node> node_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -315,7 +324,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   AtomicFlag shutdown_callback_flag_;
 
   // All other fields below must only be accessed on the I/O thread, i.e., the
-  // thread on which core_->io_task_runner() runs tasks.
+  // thread on which `io_task_runner_` runs tasks.
 
   // Channels to invitees during handshake.
   NodeMap pending_invitations_;
@@ -327,12 +336,10 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // Must only be accessed from the IO thread.
   bool destroy_on_io_thread_shutdown_ = false;
 
-#if !defined(OS_MACOSX) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !defined(OS_APPLE) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
   // Broker for sync shared buffer creation on behalf of broker clients.
   std::unique_ptr<Broker> broker_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(NodeController);
 };
 
 }  // namespace core

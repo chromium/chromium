@@ -5,9 +5,25 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_
 
-#include "base/macros.h"
-#include "chrome/browser/ui/permission_bubble/permission_prompt.h"
+#include <string>
+
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "components/permissions/permission_prompt.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+
+namespace permissions {
+enum class RequestType;
+enum class PermissionAction;
+}  // namespace permissions
+
+namespace view {
+class Widget;
+}
+
+namespace view {
+class Widget;
+}
 
 class Browser;
 
@@ -15,44 +31,74 @@ class Browser;
 // website.
 class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(PermissionPromptBubbleView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+                                         kPermissionPromptBubbleViewIdentifier);
   PermissionPromptBubbleView(Browser* browser,
-                             PermissionPrompt::Delegate* delegate);
+                             permissions::PermissionPrompt::Delegate* delegate,
+                             base::TimeTicks permission_requested_time,
+                             PermissionPromptStyle prompt_style);
+  PermissionPromptBubbleView(const PermissionPromptBubbleView&) = delete;
+  PermissionPromptBubbleView& operator=(const PermissionPromptBubbleView&) =
+      delete;
+  ~PermissionPromptBubbleView() override;
+
+  void Show();
 
   // Anchors the bubble to the view or rectangle returned from
   // bubble_anchor_util::GetPageInfoAnchorConfiguration.
   void UpdateAnchorPosition();
 
-  // Closes the bubble without notifying |delegate_|. Called when the
-  // controlling PermissionPrompt is removed from the permission system, and so
-  // the delegate will have lost the relevant reference. This can happen when
-  // the user changes tabs or initiates a navigation without interacting with
-  // the UI.
-  void CloseWithoutNotifyingDelegate();
+  void SetPromptStyle(PermissionPromptStyle prompt_style);
+  void SetOnBubbleDismissedByUserCallback(base::OnceClosure callback) {
+    on_bubble_dismissed_by_user_callback_ = std::move(callback);
+  }
 
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
   bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
-  bool Cancel() override;
-  bool Accept() override;
-  bool Close() override;
+  std::u16string GetAccessibleWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  void AcceptPermission();
+  void AcceptPermissionThisTime();
+  void DenyPermission();
+  void ClosingPermission();
 
  private:
-  void AddPermissionRequestLine(PermissionRequest* request);
+  bool ShouldShowRequest(permissions::RequestType type) const;
+  std::vector<permissions::PermissionRequest*> GetVisibleRequests() const;
+  void AddRequestLine(permissions::PermissionRequest* request);
 
-  void Show();
+  // Returns the origin to be displayed in the permission prompt. May return
+  // a non-origin, e.g. extension URLs use the name of the extension.
+  std::u16string GetDisplayName() const;
+
+  // Returns whether the display name is an origin.
+  bool GetDisplayNameIsOrigin() const;
+
+  // Get extra information to display for the permission, if any.
+  absl::optional<std::u16string> GetExtraText() const;
+
+  // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
+  // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
+  // depending on which UI is used.
+  void RecordDecision(permissions::PermissionAction action);
+
+  // Determines whether the current request should also display an
+  // "Allow only this time" option in addition to the "Allow on every visit"
+  // option.
+  bool GetShowAllowThisTimeButton() const;
 
   Browser* const browser_;
-  PermissionPrompt::Delegate* const delegate_;
+  permissions::PermissionPrompt::Delegate* const delegate_;
 
-  // The requesting domain's name or origin.
-  const PermissionPrompt::DisplayNameOrOrigin name_or_origin_;
+  base::TimeTicks permission_requested_time_;
 
-  // Whether to notify |delegate_| of a decision. Set to false when
-  // CloseWithNotifyingDelegate is called; see the comment on that method.
-  bool notify_delegate_ = true;
+  PermissionPromptStyle prompt_style_;
 
-  DISALLOW_COPY_AND_ASSIGN(PermissionPromptBubbleView);
+  base::OnceClosure on_bubble_dismissed_by_user_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_

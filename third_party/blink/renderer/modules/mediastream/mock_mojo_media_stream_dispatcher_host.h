@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MOJO_MEDIA_STREAM_DISPATCHER_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MOJO_MEDIA_STREAM_DISPATCHER_HOST_H_
 
-#include <string>
-
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +20,12 @@ class MockMojoMediaStreamDispatcherHost
     : public mojom::blink::MediaStreamDispatcherHost {
  public:
   MockMojoMediaStreamDispatcherHost();
+
+  MockMojoMediaStreamDispatcherHost(const MockMojoMediaStreamDispatcherHost&) =
+      delete;
+  MockMojoMediaStreamDispatcherHost& operator=(
+      const MockMojoMediaStreamDispatcherHost&) = delete;
+
   ~MockMojoMediaStreamDispatcherHost() override;
 
   mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost>
@@ -35,7 +40,7 @@ class MockMojoMediaStreamDispatcherHost
   void CancelRequest(int32_t request_id) override;
   void StopStreamDevice(
       const WTF::String& device_id,
-      const base::Optional<base::UnguessableToken>& session_id) override;
+      const absl::optional<base::UnguessableToken>& session_id) override;
   void OpenDevice(int32_t request_id,
                   const WTF::String& device_id,
                   mojom::blink::MediaStreamType type,
@@ -43,10 +48,13 @@ class MockMojoMediaStreamDispatcherHost
 
   MOCK_METHOD1(CloseDevice, void(const WTF::String&));
   MOCK_METHOD3(SetCapturingLinkSecured,
-               void(const base::Optional<base::UnguessableToken>&,
+               void(const absl::optional<base::UnguessableToken>&,
                     mojom::blink::MediaStreamType,
                     bool));
   MOCK_METHOD1(OnStreamStarted, void(const WTF::String&));
+#if !defined(OS_ANDROID)
+  MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
+#endif
 
   void ResetSessionId() { session_id_ = base::UnguessableToken::Create(); }
   void DoNotRunCallback() { do_not_run_cb_ = true; }
@@ -74,8 +82,6 @@ class MockMojoMediaStreamDispatcherHost
   WTF::Vector<MediaStreamDevice> video_devices_;
   GenerateStreamCallback generate_stream_cb_;
   mojo::Receiver<mojom::blink::MediaStreamDispatcherHost> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoMediaStreamDispatcherHost);
 };
 
 }  // namespace blink

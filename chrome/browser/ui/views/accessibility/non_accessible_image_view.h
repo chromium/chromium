@@ -5,21 +5,22 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_NON_ACCESSIBLE_IMAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_NON_ACCESSIBLE_IMAGE_VIEW_H_
 
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 
 // ImageView that sets the "invisible" state on AXNodeData so that
 // the image is not traversed by screen readers.
 class NonAccessibleImageView : public views::ImageView {
  public:
+  METADATA_HEADER(NonAccessibleImageView);
   NonAccessibleImageView();
+  NonAccessibleImageView(const NonAccessibleImageView&) = delete;
+  NonAccessibleImageView& operator=(const NonAccessibleImageView&) = delete;
   ~NonAccessibleImageView() override;
 
  private:
   // Overridden from views::ImageView.
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NonAccessibleImageView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_NON_ACCESSIBLE_IMAGE_VIEW_H_

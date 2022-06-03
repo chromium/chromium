@@ -6,6 +6,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/cocoa/animation_utils.h"
@@ -40,8 +41,7 @@ CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
   return pending_ca_renderer_layer_tree_.get();
 }
 
-void CALayerTreeCoordinator::CommitPendingTreesToCA(
-    const gfx::Rect& pixel_damage_rect) {
+void CALayerTreeCoordinator::CommitPendingTreesToCA() {
   // Update the CALayer hierarchy.
   ScopedCAActionDisabler disabler;
   if (pending_ca_renderer_layer_tree_) {

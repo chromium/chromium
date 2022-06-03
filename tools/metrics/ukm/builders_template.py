@@ -6,9 +6,8 @@
 
 import codegen
 
-HEADER = codegen.Template(
-basename="ukm_builders.h",
-file_template="""
+HEADER = codegen.Template(basename="ukm_builders.h",
+                          file_template="""
 // Generated from gen_builders.py.  DO NOT EDIT!
 // source: ukm.xml
 
@@ -29,11 +28,11 @@ namespace builders {{
 
 #endif  // {file.guard_path}
 """,
-event_template="""
+                          event_template="""
 class {event.name} final : public ::ukm::internal::UkmEntryBuilderBase {{
  public:
   explicit {event.name}(ukm::SourceId source_id);
-  explicit {event.name}(base::UkmSourceId source_id);
+  explicit {event.name}(ukm::SourceIdObj source_id);
   ~{event.name}() override;
 
   static const char kEntryName[];
@@ -42,19 +41,18 @@ class {event.name} final : public ::ukm::internal::UkmEntryBuilderBase {{
 {metric_code}
 }};
 """,
-metric_template="""
+                          metric_template="""
   static const char k{metric.name}Name[];
   static constexpr uint64_t k{metric.name}NameHash = UINT64_C({metric.hash});
   {event.name}& Set{metric.name}(int64_t value);
 """)
 
-IMPL = codegen.Template(
-basename="ukm_builders.cc",
-file_template="""
+IMPL = codegen.Template(basename="ukm_builders.cc",
+                        file_template="""
 // Generated from gen_builders.py.  DO NOT EDIT!
 // source: ukm.xml
 
-#include "{file.dir_path}/ukm_builders.h"
+#include "{file.dir_path}ukm_builders.h"
 
 namespace ukm {{
 namespace builders {{
@@ -64,14 +62,15 @@ namespace builders {{
 }}  // namespace builders
 }}  // namespace ukm
 """,
-event_template="""
+                        event_template="""
 const char {event.name}::kEntryName[] = "{event.raw_name}";
+const uint64_t {event.name}::kEntryNameHash;
 
 {event.name}::{event.name}(ukm::SourceId source_id) :
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}
 
-{event.name}::{event.name}(base::UkmSourceId source_id) :
+{event.name}::{event.name}(ukm::SourceIdObj source_id) :
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}
 
@@ -79,8 +78,9 @@ const char {event.name}::kEntryName[] = "{event.raw_name}";
 
 {metric_code}
 """,
-metric_template="""
+                        metric_template="""
 const char {event.name}::k{metric.name}Name[] = "{metric.raw_name}";
+const uint64_t {event.name}::k{metric.name}NameHash;
 
 {event.name}& {event.name}::Set{metric.name}(int64_t value) {{
   SetMetricInternal(k{metric.name}NameHash, value);

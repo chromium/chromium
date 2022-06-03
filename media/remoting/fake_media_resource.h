@@ -5,6 +5,8 @@
 #ifndef MEDIA_REMOTING_FAKE_MEDIA_RESOURCE_H_
 #define MEDIA_REMOTING_FAKE_MEDIA_RESOURCE_H_
 
+#include <memory>
+
 #include "base/containers/circular_deque.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
@@ -18,12 +20,15 @@ namespace remoting {
 class FakeDemuxerStream : public DemuxerStream {
  public:
   explicit FakeDemuxerStream(bool is_audio);
+
+  FakeDemuxerStream(const FakeDemuxerStream&) = delete;
+  FakeDemuxerStream& operator=(const FakeDemuxerStream&) = delete;
+
   ~FakeDemuxerStream() override;
 
   // DemuxerStream implementation.
   MOCK_METHOD1(Read, void(ReadCB read_cb));
   void FakeRead(ReadCB read_cb);
-  bool IsReadPending() const override;
   AudioDecoderConfig audio_decoder_config() override;
   VideoDecoderConfig video_decoder_config() override;
   Type type() const override;
@@ -40,23 +45,24 @@ class FakeDemuxerStream : public DemuxerStream {
   Type type_;
   AudioDecoderConfig audio_config_;
   VideoDecoderConfig video_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDemuxerStream);
 };
 
 // Audio only demuxer stream provider
-class FakeMediaResource : public MediaResource {
+class FakeMediaResource final : public MediaResource {
  public:
   FakeMediaResource();
-  ~FakeMediaResource() final;
+
+  FakeMediaResource(const FakeMediaResource&) = delete;
+  FakeMediaResource& operator=(const FakeMediaResource&) = delete;
+
+  ~FakeMediaResource() override;
 
   // MediaResource implementation.
   std::vector<DemuxerStream*> GetAllStreams() override;
 
  private:
-  std::unique_ptr<FakeDemuxerStream> demuxer_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaResource);
+  std::unique_ptr<FakeDemuxerStream> audio_stream_;
+  std::unique_ptr<FakeDemuxerStream> video_stream_;
 };
 
 }  // namespace remoting

@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace gpu {
 

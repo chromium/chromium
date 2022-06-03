@@ -9,8 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
@@ -18,7 +19,10 @@
 
 namespace viz {
 class Display;
+class DisplayCompositorMemoryAndTaskController;
+class ScopedAllowGpuAccessForDisplayResourceProvider;
 class OutputSurfaceProviderImpl;
+class OverlayProcessorAndroid;
 }  // namespace viz
 
 namespace gpu {
@@ -28,19 +32,29 @@ class Scheduler;
 // is used for a thread.
 class GL_IN_PROCESS_CONTEXT_EXPORT ScopedAllowScheduleGpuTask {
  public:
+  ScopedAllowScheduleGpuTask(const ScopedAllowScheduleGpuTask&) = delete;
+  ScopedAllowScheduleGpuTask& operator=(const ScopedAllowScheduleGpuTask&) =
+      delete;
+
   ~ScopedAllowScheduleGpuTask();
 
  private:
   // Only add more friend declarations for classes that Android WebView is
   // guaranteed to be able to support. Talk to boliu@ if in doubt.
   friend class viz::Display;
+  friend class viz::DisplayCompositorMemoryAndTaskController;
+  friend class viz::ScopedAllowGpuAccessForDisplayResourceProvider;
   friend class viz::OutputSurfaceProviderImpl;
+  // Overlay is not supported for WebView. However the initialization and
+  // destruction of OverlayProcessor requires posting task to gpu thread, which
+  // would trigger DCHECK, even though the task posting would not run on
+  // WebView.
+  friend class viz::OverlayProcessorAndroid;
   ScopedAllowScheduleGpuTask();
 
 #if DCHECK_IS_ON()
   const bool original_value_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowScheduleGpuTask);
 };
 
 // SingleTaskSequence implementation that uses gpu scheduler sequences.
@@ -52,7 +66,11 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
   // allow ScheduleTask.
   static void DefaultDisallowScheduleTaskOnCurrentThread();
 
-  explicit SchedulerSequence(Scheduler* scheduler);
+  SchedulerSequence(Scheduler* scheduler,
+                    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  SchedulerSequence(const SchedulerSequence&) = delete;
+  SchedulerSequence& operator=(const SchedulerSequence&) = delete;
 
   // Note: this drops tasks not executed yet.
   ~SchedulerSequence() override;
@@ -60,17 +78,19 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
   // SingleTaskSequence implementation.
   SequenceId GetSequenceId() override;
   bool ShouldYield() override;
-  void ScheduleTask(base::OnceClosure task,
-                    std::vector<SyncToken> sync_token_fences) override;
-  void ScheduleOrRetainTask(base::OnceClosure task,
-                            std::vector<SyncToken> sync_token_fences) override;
+  void ScheduleTask(
+      base::OnceClosure task,
+      std::vector<SyncToken> sync_token_fences,
+      ReportingCallback report_callback = ReportingCallback()) override;
+  void ScheduleOrRetainTask(
+      base::OnceClosure task,
+      std::vector<SyncToken> sync_token_fences,
+      ReportingCallback report_callback = ReportingCallback()) override;
   void ContinueTask(base::OnceClosure task) override;
 
  private:
   Scheduler* const scheduler_;
   const SequenceId sequence_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerSequence);
 };
 
 }  // namespace gpu

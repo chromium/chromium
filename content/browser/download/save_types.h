@@ -13,16 +13,16 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "url/gurl.h"
 
 namespace content {
 
 class SavePackage;
-using SavePackageId = util::IdType32<SavePackage>;
+using SavePackageId = base::IdType32<SavePackage>;
 
 class SaveItem;
-using SaveItemId = util::IdType32<SaveItem>;
+using SaveItemId = base::IdType32<SaveItem>;
 
 // Map from save_item_id into final file path.
 using FinalNamesMap =

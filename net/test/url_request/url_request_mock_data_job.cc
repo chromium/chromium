@@ -9,16 +9,18 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/url_util.h"
+#include "net/cert/x509_certificate.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request_filter.h"
 
 namespace net {
@@ -76,30 +78,29 @@ GURL GetMockUrl(const std::string& scheme,
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestInterceptor implementation
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new URLRequestMockDataJob(request, network_delegate,
-                                     GetDataFromRequest(*request),
-                                     GetRepeatCountFromRequest(*request),
-                                     GetRequestClientCertificate(*request));
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::make_unique<URLRequestMockDataJob>(
+        request, GetDataFromRequest(*request),
+        GetRepeatCountFromRequest(*request),
+        GetRequestClientCertificate(*request));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace
 
 URLRequestMockDataJob::URLRequestMockDataJob(URLRequest* request,
-                                             NetworkDelegate* network_delegate,
                                              const std::string& data,
                                              int data_repeat_count,
                                              bool request_client_certificate)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       data_offset_(0),
       request_client_certificate_(request_client_certificate) {
   DCHECK_GT(data_repeat_count, 0);
@@ -107,6 +108,8 @@ URLRequestMockDataJob::URLRequestMockDataJob(URLRequest* request,
     data_.append(data);
   }
 }
+
+URLRequestMockDataJob::~URLRequestMockDataJob() = default;
 
 void URLRequestMockDataJob::OverrideResponseHeaders(
     const std::string& headers) {
@@ -120,8 +123,6 @@ void URLRequestMockDataJob::Start() {
       FROM_HERE, base::BindOnce(&URLRequestMockDataJob::StartAsync,
                                 weak_factory_.GetWeakPtr()));
 }
-
-URLRequestMockDataJob::~URLRequestMockDataJob() = default;
 
 int URLRequestMockDataJob::ReadRawData(IOBuffer* buf, int buf_size) {
   int bytes_read =

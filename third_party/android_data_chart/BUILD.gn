@@ -7,12 +7,14 @@ import("//build/config/android/rules.gni")
 assert(is_android)
 
 android_resources("android_data_chart_java_resources") {
-  custom_package = "org.chromium.third_party.android"
-  resource_dirs = [ "java/res" ]
+  sources = [
+    "java/res/values/attrs.xml",
+    "java/res/values/values.xml",
+  ]
 }
 
 android_library("android_data_chart_java") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/third_party/android/datausagechart/ChartAxis.java",
     "java/src/org/chromium/third_party/android/datausagechart/ChartDataUsageView.java",
     "java/src/org/chromium/third_party/android/datausagechart/ChartNetworkSeriesView.java",
@@ -21,7 +23,6 @@ android_library("android_data_chart_java") {
     "java/src/org/chromium/third_party/android/datausagechart/NetworkStats.java",
     "java/src/org/chromium/third_party/android/datausagechart/NetworkStatsHistory.java",
   ]
-  deps = [
-    ":android_data_chart_java_resources",
-  ]
+  deps = [ ":android_data_chart_java_resources" ]
+  resources_package = "org.chromium.third_party.android"
 }

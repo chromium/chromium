@@ -8,7 +8,9 @@ import argparse
 import copy
 from datetime import datetime
 from functools import partial
+import json
 import os
+import posixpath
 import re
 import sys
 
@@ -23,6 +25,7 @@ HEADER_FILE_TEMPLATE = """
 
 // GENERATED FROM THE FEATURES FILE:
 //   %(source_files)s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 
 #ifndef %(header_guard)s
@@ -46,6 +49,7 @@ CC_FILE_BEGIN = """
 
 // GENERATED FROM THE FEATURES FILE:
 //   %(source_files)s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 
 #include "%(header_file_path)s"
@@ -54,6 +58,7 @@ CC_FILE_BEGIN = """
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/manifest_feature.h"
 #include "extensions/common/features/permission_feature.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 
 namespace extensions {
 
@@ -66,6 +71,13 @@ CC_FILE_END = """
 
 }  // namespace extensions
 """
+
+def ToPosixPath(path):
+  """Returns |path| with separator converted to POSIX style.
+
+  This is needed to generate C++ #include paths.
+  """
+  return path.replace(os.path.sep, posixpath.sep)
 
 # Returns true if the list 'l' only contains strings that are a hex-encoded SHA1
 # hashes.
@@ -114,138 +126,162 @@ def ListContainsOnlySha1Hashes(l):
 #       setting an option.
 # If a type definition does not have any restrictions (beyond the type itself),
 # an empty definition ({}) is used.
-FEATURE_GRAMMAR = (
-  {
+FEATURE_GRAMMAR = ({
     'alias': {
-      str: {},
-      'shared': True
+        str: {},
+        'shared': True
     },
-    'blacklist': {
-      list: {
-        'subtype': str,
-        'validators': [
-          (ListContainsOnlySha1Hashes,
-           'list should only have hex-encoded SHA1 hashes of extension ids')
-        ]
-      }
+    'allowlist': {
+        list: {
+            'subtype':
+            str,
+            'validators':
+            [(ListContainsOnlySha1Hashes,
+              'list should only have hex-encoded SHA1 hashes of extension ids')]
+        }
+    },
+    'blocklist': {
+        list: {
+            'subtype':
+            str,
+            'validators':
+            [(ListContainsOnlySha1Hashes,
+              'list should only have hex-encoded SHA1 hashes of extension ids')]
+        }
     },
     'channel': {
-      str: {
-        'enum_map': {
-          'trunk': 'version_info::Channel::UNKNOWN',
-          'canary': 'version_info::Channel::CANARY',
-          'dev': 'version_info::Channel::DEV',
-          'beta': 'version_info::Channel::BETA',
-          'stable': 'version_info::Channel::STABLE',
+        str: {
+            'enum_map': {
+                'trunk': 'version_info::Channel::UNKNOWN',
+                'canary': 'version_info::Channel::CANARY',
+                'dev': 'version_info::Channel::DEV',
+                'beta': 'version_info::Channel::BETA',
+                'stable': 'version_info::Channel::STABLE',
+            }
         }
-      }
     },
     'command_line_switch': {
-      str: {}
+        str: {}
     },
     'component_extensions_auto_granted': {
-      bool: {}
+        bool: {}
     },
     'contexts': {
-      list: {
-        'enum_map': {
-          'blessed_extension': 'Feature::BLESSED_EXTENSION_CONTEXT',
-          'blessed_web_page': 'Feature::BLESSED_WEB_PAGE_CONTEXT',
-          'content_script': 'Feature::CONTENT_SCRIPT_CONTEXT',
-          'lock_screen_extension': 'Feature::LOCK_SCREEN_EXTENSION_CONTEXT',
-          'web_page': 'Feature::WEB_PAGE_CONTEXT',
-          'webui': 'Feature::WEBUI_CONTEXT',
-          'unblessed_extension': 'Feature::UNBLESSED_EXTENSION_CONTEXT',
+        list: {
+            'enum_map': {
+                'blessed_extension': 'Feature::BLESSED_EXTENSION_CONTEXT',
+                'blessed_web_page': 'Feature::BLESSED_WEB_PAGE_CONTEXT',
+                'content_script': 'Feature::CONTENT_SCRIPT_CONTEXT',
+                'lock_screen_extension':
+                'Feature::LOCK_SCREEN_EXTENSION_CONTEXT',
+                'web_page': 'Feature::WEB_PAGE_CONTEXT',
+                'webui': 'Feature::WEBUI_CONTEXT',
+                'webui_untrusted': 'Feature::WEBUI_UNTRUSTED_CONTEXT',
+                'unblessed_extension': 'Feature::UNBLESSED_EXTENSION_CONTEXT',
+            },
+            'allow_all': True,
+            'allow_empty': True
         },
-        'allow_all': True
-      },
     },
     'default_parent': {
-      bool: {'values': [True]}
+        bool: {
+            'values': [True]
+        }
     },
     'dependencies': {
-      list: {
-        # We allow an empty list of dependencies for child features that want
-        # to override their parents' dependency set.
-        'allow_empty': True,
-        'subtype': str
-      }
+        list: {
+            # We allow an empty list of dependencies for child features that
+            # want to override their parents' dependency set.
+            'allow_empty': True,
+            'subtype': str
+        }
     },
     'disallow_for_service_workers': {
-      bool: {}
+        bool: {}
     },
     'extension_types': {
-      list: {
-        'enum_map': {
-          'extension': 'Manifest::TYPE_EXTENSION',
-          'hosted_app': 'Manifest::TYPE_HOSTED_APP',
-          'legacy_packaged_app': 'Manifest::TYPE_LEGACY_PACKAGED_APP',
-          'platform_app': 'Manifest::TYPE_PLATFORM_APP',
-          'shared_module': 'Manifest::TYPE_SHARED_MODULE',
-          'theme': 'Manifest::TYPE_THEME',
-          'login_screen_extension': 'Manifest::TYPE_LOGIN_SCREEN_EXTENSION',
+        list: {
+            'enum_map': {
+                'extension': 'Manifest::TYPE_EXTENSION',
+                'hosted_app': 'Manifest::TYPE_HOSTED_APP',
+                'legacy_packaged_app': 'Manifest::TYPE_LEGACY_PACKAGED_APP',
+                'platform_app': 'Manifest::TYPE_PLATFORM_APP',
+                'shared_module': 'Manifest::TYPE_SHARED_MODULE',
+                'theme': 'Manifest::TYPE_THEME',
+                'login_screen_extension':
+                'Manifest::TYPE_LOGIN_SCREEN_EXTENSION',
+                'chromeos_system_extension':
+                'Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION',
+            },
+            'allow_all': True
         },
-        'allow_all': True
-      },
+    },
+    'feature_flag': {
+        str: {}
     },
     'location': {
-      str: {
-        'enum_map': {
-          'component': 'SimpleFeature::COMPONENT_LOCATION',
-          'external_component': 'SimpleFeature::EXTERNAL_COMPONENT_LOCATION',
-          'policy': 'SimpleFeature::POLICY_LOCATION',
-          'unpacked': 'SimpleFeature::UNPACKED_LOCATION',
+        str: {
+            'enum_map': {
+                'component': 'SimpleFeature::COMPONENT_LOCATION',
+                'external_component':
+                'SimpleFeature::EXTERNAL_COMPONENT_LOCATION',
+                'policy': 'SimpleFeature::POLICY_LOCATION',
+                'unpacked': 'SimpleFeature::UNPACKED_LOCATION',
+            }
         }
-      }
     },
     'internal': {
-      bool: {'values': [True]}
+        bool: {
+            'values': [True]
+        }
     },
     'matches': {
-      list: {'subtype': str}
+        list: {
+            'subtype': str
+        }
     },
     'max_manifest_version': {
-      int: {'values': [1, 2]}
+        int: {
+            'values': [1, 2]
+        }
     },
     'min_manifest_version': {
-      int: {'values': [2, 3]}
+        int: {
+            'values': [2, 3]
+        }
     },
     'noparent': {
-      bool: {'values': [True]}
+        bool: {
+            'values': [True]
+        }
     },
     'platforms': {
-      list: {
-        'enum_map': {
-          'chromeos': 'Feature::CHROMEOS_PLATFORM',
-          'linux': 'Feature::LINUX_PLATFORM',
-          'mac': 'Feature::MACOSX_PLATFORM',
-          'win': 'Feature::WIN_PLATFORM',
+        list: {
+            'enum_map': {
+                'chromeos': 'Feature::CHROMEOS_PLATFORM',
+                'lacros': 'Feature::LACROS_PLATFORM',
+                'linux': 'Feature::LINUX_PLATFORM',
+                'mac': 'Feature::MACOSX_PLATFORM',
+                'win': 'Feature::WIN_PLATFORM',
+                'fuchsia': 'Feature::FUCHSIA_PLATFORM',
+            }
         }
-      }
     },
     'session_types': {
-      list: {
-        'enum_map': {
-          'regular': 'FeatureSessionType::REGULAR',
-          'kiosk': 'FeatureSessionType::KIOSK',
-          'kiosk.autolaunched': 'FeatureSessionType::AUTOLAUNCHED_KIOSK',
+        list: {
+            'enum_map': {
+                'regular': 'mojom::FeatureSessionType::kRegular',
+                'kiosk': 'mojom::FeatureSessionType::kKiosk',
+                'kiosk.autolaunched':
+                  'mojom::FeatureSessionType::kAutolaunchedKiosk',
+            }
         }
-      }
     },
     'source': {
-      str: {},
-      'shared': True
+        str: {},
+        'shared': True
     },
-    'whitelist': {
-      list: {
-        'subtype': str,
-        'validators': [
-          (ListContainsOnlySha1Hashes,
-           'list should only have hex-encoded SHA1 hashes of extension ids')
-        ]
-      }
-    },
-  })
+})
 
 FEATURE_TYPES = ['APIFeature', 'BehaviorFeature',
                  'ManifestFeature', 'PermissionFeature']
@@ -261,6 +297,28 @@ def DoesNotHaveAllProperties(property_names, value):
 
 def DoesNotHaveProperty(property_name, value):
   return property_name not in value
+
+def IsEmptyContextsAllowed(feature, all_features):
+  # An alias feature wouldn't have the 'contexts' feature value.
+  if feature.GetValue('source'):
+    return True
+
+  if type(feature) is ComplexFeature:
+    for child_feature in feature.feature_list:
+      if not IsEmptyContextsAllowed(child_feature, all_features):
+        return False
+    return True
+
+  contexts = feature.GetValue('contexts')
+  assert contexts, 'contexts must have been specified for the APIFeature'
+
+  allowlisted_empty_context_namespaces = [
+    'manifestTypes',
+    'extensionsManifestTypes',
+    'empty_contexts' # Only added for testing.
+  ]
+  return (contexts != '{}' or
+          feature.name in allowlisted_empty_context_namespaces)
 
 def IsFeatureCrossReference(property_name, reverse_property_name, feature,
                             all_features):
@@ -291,6 +349,60 @@ def IsFeatureCrossReference(property_name, reverse_property_name, feature,
     return True
   return reverse_reference_value == ('"%s"' % feature.name)
 
+# Verifies that a feature with an allowlist is not available to hosted apps,
+# returning true on success.
+def DoesNotHaveAllowlistForHostedApps(value):
+  if not 'allowlist' in value:
+    return True
+
+  # Hack Alert: |value| here has the code for the generated C++ feature. Since
+  # we're looking at the individual values, we do a bit of yucky back-parsing
+  # to get a better look at the feature. This would be cleaner if we were
+  # operating on the JSON feature itself, but we currently never generate a
+  # JSON-based feature object that has all the values inherited from its
+  # parents. Since this is the only scenario we need this type of validation,
+  # doing it in a slightly ugly way isn't too bad. If we need more of these,
+  # we should find a smoother way to do it (e.g. first generate JSON-based
+  # features with inherited properties, do any necessary validation, then
+  # generate the C++ code strings).
+
+  # The feature did not specify extension types; this is fine for e.g.
+  # API features (which would typically rely on a permission feature, which
+  # is required to specify types).
+  if not 'extension_types' in value:
+    return True
+
+  types = value['extension_types']
+  # |types| looks like "{Manifest::TYPE_1, Manifest::TYPE_2}", so just looking
+  # for the "TYPE_HOSTED_APP substring is sufficient.
+  if 'TYPE_HOSTED_APP' not in types:
+    return True
+
+  # Helper to convert our C++ string array like "{\"aaa\", \"bbb\"}" (which is
+  # what the allowlist looks like) to a python list of strings.
+  def cpp_list_to_list(cpp_list):
+    assert type(cpp_list) is str
+    assert cpp_list[0] == '{'
+    assert cpp_list[-1] == '}'
+    new_list = json.loads('[%s]' % cpp_list[1:-1])
+    assert type(new_list) is list
+    return new_list
+
+  # Exceptions (see the feature files).
+  # DO NOT ADD MORE.
+  HOSTED_APP_EXCEPTIONS = [
+      'B44D08FD98F1523ED5837D78D0A606EA9D6206E5',
+      '2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4',
+  ]
+
+  allowlist = cpp_list_to_list(value['allowlist'])
+  for entry in allowlist:
+    if entry not in HOSTED_APP_EXCEPTIONS:
+      return False
+
+  return True
+
+
 SIMPLE_FEATURE_CPP_CLASSES = ({
   'APIFeature': 'SimpleFeature',
   'ManifestFeature': 'ManifestFeature',
@@ -302,10 +414,12 @@ VALIDATION = ({
   'all': [
     (partial(HasAtLeastOneProperty, ['channel', 'dependencies']),
      'Features must specify either a channel or dependencies'),
+    (DoesNotHaveAllowlistForHostedApps,
+     'Hosted apps are not allowed to use restricted features')
   ],
   'APIFeature': [
     (partial(HasProperty, 'contexts'),
-     'APIFeatures must specify at least one context'),
+     'APIFeatures must specify the contexts property'),
     (partial(DoesNotHaveAllProperties, ['alias', 'source']),
      'Features cannot specify both alias and source.')
   ],
@@ -345,8 +459,9 @@ FINAL_VALIDATION = ({
      'property references it back.'),
     (partial(IsFeatureCrossReference, 'source', 'alias'),
      'A feature source property should reference a feature whose alias '
-     'property references it back.')
-
+     'property references it back.'),
+    (IsEmptyContextsAllowed,
+    'An empty contexts list is not allowed for this feature.')
   ],
   'ManifestFeature': [],
   'BehaviorFeature': [],
@@ -368,14 +483,7 @@ def GetCodeForFeatureValues(feature_values):
     if key in IGNORED_KEYS:
       continue;
 
-    # TODO(devlin): Remove this hack as part of 842387.
-    set_key = key
-    if key == "whitelist":
-      set_key = "allowlist"
-    elif key == "blacklist":
-      set_key = "blocklist"
-
-    c.Append('feature->set_%s(%s);' % (set_key, feature_values[key]))
+    c.Append('feature->set_%s(%s);' % (key, feature_values[key]))
   return c
 
 class Feature(object):
@@ -515,8 +623,7 @@ class Feature(object):
                                               sub_value)
         if cpp_sub_value:
           cpp_value.append(cpp_sub_value)
-      if cpp_value:
-        cpp_value = '{' + ','.join(cpp_value) + '}'
+      cpp_value = '{' + ','.join(cpp_value) + '}'
     else:
       cpp_value = self._GetCheckedValue(key, expected_type, expected_values,
                                         enum_map, v)
@@ -636,7 +743,7 @@ class FeatureCompiler(object):
   """A compiler to load, parse, and generate C++ code for a number of
   features.json files."""
   def __init__(self, chrome_root, source_files, feature_type,
-               method_name, out_root, out_base_filename):
+               method_name, out_root, gen_dir_relpath, out_base_filename):
     # See __main__'s ArgumentParser for documentation on these properties.
     self._chrome_root = chrome_root
     self._source_files = source_files
@@ -644,6 +751,7 @@ class FeatureCompiler(object):
     self._method_name = method_name
     self._out_root = out_root
     self._out_base_filename = out_base_filename
+    self._gen_dir_relpath = gen_dir_relpath
 
     # The json value for the feature files.
     self._json = {}
@@ -779,10 +887,7 @@ class FeatureCompiler(object):
     header_file = self._out_base_filename + '.h'
     cc_file = self._out_base_filename + '.cc'
 
-    include_file_root = self._out_root
-    GEN_DIR_PREFIX = 'gen/'
-    if include_file_root.startswith(GEN_DIR_PREFIX):
-      include_file_root = include_file_root[len(GEN_DIR_PREFIX):]
+    include_file_root = self._out_root[len(self._gen_dir_relpath)+1:]
     header_file_path = '%s/%s' % (include_file_root, header_file)
     cc_file_path = '%s/%s' % (include_file_root, cc_file)
     substitutions = ({
@@ -790,7 +895,7 @@ class FeatureCompiler(object):
         'header_guard': (header_file_path.replace('/', '_').
                              replace('.', '_').upper()),
         'method_name': self._method_name,
-        'source_files': str(self._source_files),
+        'source_files': str([ToPosixPath(f) for f in self._source_files]),
         'year': str(datetime.now().year)
     })
     if not os.path.exists(self._out_root):
@@ -825,6 +930,9 @@ if __name__ == '__main__':
                       help='The name of the method to populate the provider')
   parser.add_argument('out_root', type=str,
                       help='The root directory to generate the C++ files into')
+  parser.add_argument('gen_dir_relpath', default='gen', help='Path of the '
+      'gen directory relative to the out/. If running in the default '
+      'toolchain, the path is gen, otherwise $toolchain_name/gen')
   parser.add_argument(
       'out_base_filename', type=str,
       help='The base filename for the C++ files (.h and .cc will be appended)')
@@ -834,7 +942,7 @@ if __name__ == '__main__':
   if args.feature_type not in FEATURE_TYPES:
     raise NameError('Unknown feature type: %s' % args.feature_type)
   c = FeatureCompiler(args.chrome_root, args.source_files, args.feature_type,
-                      args.method_name, args.out_root,
+                      args.method_name, args.out_root, args.gen_dir_relpath,
                       args.out_base_filename)
   c.Load()
   c.Compile()

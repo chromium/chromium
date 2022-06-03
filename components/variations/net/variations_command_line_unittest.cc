@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,8 +21,7 @@ TEST(VariationsCommandLineTest, TestGetVariationsCommandLine) {
   std::string disable_feature_list = "feature2<trial2";
 
   AssociateParamsFromString(param_list);
-  base::FieldTrialList::CreateTrialsFromString(trial_list,
-                                               std::set<std::string>());
+  base::FieldTrialList::CreateTrialsFromString(trial_list);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine(enable_feature_list,
                                           disable_feature_list);

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
@@ -15,6 +14,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_net {
 
@@ -24,7 +24,7 @@ namespace {
 
 DnsProbeRunner::Result EvaluateResponse(
     int net_error,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   switch (net_error) {
     case net::OK:
       break;
@@ -95,7 +95,8 @@ void DnsProbeRunner::RunProbe(base::OnceClosure callback) {
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = net::DnsQueryType::A;
   parameters->source = net::HostResolverSource::DNS;
-  parameters->allow_cached_response = false;
+  parameters->cache_usage =
+      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
   // Use transient NIKs - don't want cached responses anyways, so no benefit
   // from sharing a cache, beyond multiple probes not evicting anything.
@@ -117,7 +118,7 @@ bool DnsProbeRunner::IsRunning() const {
 void DnsProbeRunner::OnComplete(
     int32_t result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
@@ -140,7 +141,7 @@ void DnsProbeRunner::OnMojoConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             base::nullopt);
+             absl::nullopt);
 }
 
 }  // namespace chrome_browser_net

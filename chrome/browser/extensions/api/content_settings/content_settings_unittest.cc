@@ -4,7 +4,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -1,0 +1,24 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer textIndent=13.23
+++++++++staticText name='Text indent 50px'
+++++++++++inlineTextBox name='Text indent 50px'
+++++++genericContainer textIndent=-13.23
+++++++++staticText name='Text indent -50px'
+++++++++++inlineTextBox name='Text indent -50px'
+++++++genericContainer
+++++++++staticText name='Text indent 0px'
+++++++++++inlineTextBox name='Text indent 0px'
+++++++genericContainer
+++++++++staticText name='Text indent initial'
+++++++++++inlineTextBox name='Text indent initial'
+++++++genericContainer
+++++++++staticText name='Text indent inherit'
+++++++++++inlineTextBox name='Text indent inherit'
+++++++genericContainer
+++++++++staticText name='No text indent specified'
+++++++++++inlineTextBox name='No text indent specified'
+++++++genericContainer
+++++++++staticText name='Invalid text indent'
+++++++++++inlineTextBox name='Invalid text indent'

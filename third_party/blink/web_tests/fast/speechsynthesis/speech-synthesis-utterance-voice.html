@@ -19,7 +19,7 @@ test(() => {
 test(() => {
   const u = new SpeechSynthesisUtterance();
   for (const value of [{}, "", window]) {
-    assert_throws(new TypeError, () => { u.voice = value; } );
+    assert_throws_js(TypeError, () => { u.voice = value; } );
     assert_equals(u.voice, null);
   }
 }, 'setting to non-SpeechSynthesisVoice values');

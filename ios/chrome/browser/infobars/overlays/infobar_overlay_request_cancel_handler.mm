@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
+#include "ios/chrome/browser/infobars/infobar_ios.h"
+#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
@@ -18,52 +19,44 @@
 using infobars::InfoBar;
 using infobars::InfoBarManager;
 
+const base::Feature kInfobarRemoveCheck{"InfobarRemoveCheck",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 #pragma mark - InfobarOverlayRequestCancelHandler
 
 InfobarOverlayRequestCancelHandler::InfobarOverlayRequestCancelHandler(
     OverlayRequest* request,
     OverlayRequestQueue* queue,
-    InfobarOverlayType type,
-    const InfobarOverlayRequestInserter* inserter)
+    InfoBarIOS* infobar)
     : OverlayRequestCancelHandler(request, queue),
-      type_(type),
-      inserter_(inserter),
-      infobar_(request->GetConfig<InfobarOverlayRequestConfig>()->infobar()),
+      infobar_(infobar),
       removal_observer_(this) {
-  DCHECK(inserter_);
   DCHECK(infobar_);
 }
 
 InfobarOverlayRequestCancelHandler::~InfobarOverlayRequestCancelHandler() =
     default;
 
-void InfobarOverlayRequestCancelHandler::Cancel() {
-  CancelRequest();
-}
+#pragma mark - Protected
 
-void InfobarOverlayRequestCancelHandler::InsertReplacementRequest(
-    InfoBar* replacement) {
-  size_t index = 0;
-  while (index < queue()->size()) {
-    InfobarOverlayRequestConfig* config =
-        queue()->GetRequest(index)->GetConfig<InfobarOverlayRequestConfig>();
-    if (config->infobar() == infobar())
-      break;
-    ++index;
-  }
-  DCHECK_LT(index, queue()->size());
-  inserter_->InsertOverlayRequest(replacement, type_, index + 1);
+void InfobarOverlayRequestCancelHandler::HandleReplacement(
+    InfoBarIOS* replacement) {}
+
+#pragma mark - Private
+
+void InfobarOverlayRequestCancelHandler::CancelForInfobarRemoval() {
+  CancelRequest();
 }
 
 #pragma mark - InfobarOverlayRequestCancelHandler::RemovalObserver
 
 InfobarOverlayRequestCancelHandler::RemovalObserver::RemovalObserver(
     InfobarOverlayRequestCancelHandler* cancel_handler)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
+    : cancel_handler_(cancel_handler) {
   DCHECK(cancel_handler_);
   InfoBarManager* manager = cancel_handler_->infobar()->owner();
   DCHECK(manager);
-  scoped_observer_.Add(manager);
+  scoped_observation_.Observe(manager);
 }
 
 InfobarOverlayRequestCancelHandler::RemovalObserver::~RemovalObserver() =
@@ -72,21 +65,35 @@ InfobarOverlayRequestCancelHandler::RemovalObserver::~RemovalObserver() =
 void InfobarOverlayRequestCancelHandler::RemovalObserver::OnInfoBarRemoved(
     infobars::InfoBar* infobar,
     bool animate) {
-  if (cancel_handler_->infobar() == infobar)
-    cancel_handler_->Cancel();
+  if (cancel_handler_->infobar() == infobar) {
+    if (base::FeatureList::IsEnabled(kInfobarRemoveCheck)) {
+      static_cast<InfoBarIOS*>(infobar)->set_removed_from_owner();
+    }
+    cancel_handler_->CancelForInfobarRemoval();
+    // The cancel handler is destroyed after Cancel(), so no code can be added
+    // after this call.
+  }
 }
 
 void InfobarOverlayRequestCancelHandler::RemovalObserver::OnInfoBarReplaced(
     InfoBar* old_infobar,
     InfoBar* new_infobar) {
   if (cancel_handler_->infobar() == old_infobar) {
-    cancel_handler_->InsertReplacementRequest(new_infobar);
-    cancel_handler_->Cancel();
+    if (base::FeatureList::IsEnabled(kInfobarRemoveCheck)) {
+      static_cast<InfoBarIOS*>(old_infobar)->set_removed_from_owner();
+    }
+    cancel_handler_->HandleReplacement(static_cast<InfoBarIOS*>(new_infobar));
+    cancel_handler_->CancelForInfobarRemoval();
+    // The cancel handler is destroyed after Cancel(), so no code can be added
+    // after this call.
   }
 }
 
 void InfobarOverlayRequestCancelHandler::RemovalObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  cancel_handler_->Cancel();
-  scoped_observer_.Remove(manager);
+  DCHECK(scoped_observation_.IsObservingSource(manager));
+  scoped_observation_.Reset();
+  cancel_handler_->CancelForInfobarRemoval();
+  // The cancel handler is destroyed after Cancel(), so no code can be added
+  // after this call.
 }

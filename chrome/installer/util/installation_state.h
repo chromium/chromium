@@ -10,9 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/installer/util/app_commands.h"
-#include "chrome/installer/util/channel_info.h"
 
 namespace base {
 class Version;
@@ -30,14 +28,15 @@ class InstallationState;
 class ProductState {
  public:
   ProductState();
+
+  ProductState(const ProductState&) = delete;
+  ProductState& operator=(const ProductState&) = delete;
+
   ~ProductState();
 
   // Returns true if the product is installed (i.e., the product's Clients key
   // exists and has a "pv" value); false otherwise.
   bool Initialize(bool system_install);
-
-  // Returns the product's channel info (i.e., the Google Update "ap" value).
-  const ChannelInfo& channel() const { return channel_; }
 
   // Returns the path to the product's "setup.exe"; may be empty.
   base::FilePath GetSetupPath() const;
@@ -47,7 +46,7 @@ class ProductState {
   const base::Version& version() const;
 
   // Returns the current version of the product if a new version is awaiting
-  // update; may be NULL.  Ownership of a returned value is not passed to the
+  // update; may be nullptr.  Ownership of a returned value is not passed to the
   // caller.
   const base::Version* old_version() const { return old_version_.get(); }
 
@@ -83,9 +82,6 @@ class ProductState {
     return uninstall_command_;
   }
 
-  // True if |uninstall_command| contains --multi-install.
-  bool is_multi_install() const { return multi_install_; }
-
   // Returns the set of Google Update commands.
   const AppCommands& commands() const { return commands_; }
 
@@ -96,7 +92,6 @@ class ProductState {
   void Clear();
 
  protected:
-  ChannelInfo channel_;
   std::unique_ptr<base::Version> version_;
   std::unique_ptr<base::Version> old_version_;
   std::wstring brand_;
@@ -107,15 +102,12 @@ class ProductState {
   DWORD eula_accepted_;
   DWORD usagestats_;
   bool msi_ : 1;
-  bool multi_install_ : 1;
   bool has_eula_accepted_ : 1;
   bool has_oem_install_ : 1;
   bool has_usagestats_ : 1;
 
  private:
   friend class InstallationState;
-
-  DISALLOW_COPY_AND_ASSIGN(ProductState);
 };  // class ProductState
 
 // Encapsulates the state of all products on the system.
@@ -124,10 +116,13 @@ class InstallationState {
  public:
   InstallationState();
 
+  InstallationState(const InstallationState&) = delete;
+  InstallationState& operator=(const InstallationState&) = delete;
+
   // Initializes this object with the machine's current state.
   void Initialize();
 
-  // Returns the state of a product or NULL if not installed.
+  // Returns the state of a product or nullptr if not installed.
   // Caller does NOT assume ownership of returned pointer.
   const ProductState* GetProductState(bool system_install) const;
 
@@ -137,15 +132,12 @@ class InstallationState {
   // ProductState returned here are the version numbers. Do NOT try to access
   // the version numbers from a ProductState returned by this method.
   // Caller does NOT assume ownership of returned pointer. This method will
-  // never return NULL.
+  // never return nullptr.
   const ProductState* GetNonVersionedProductState(bool system_install) const;
 
  protected:
   ProductState user_chrome_;
   ProductState system_chrome_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallationState);
 };  // class InstallationState
 
 }  // namespace installer

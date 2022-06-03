@@ -1,0 +1,15 @@
+<body>
+PASS if no crash.
+<div id="d">
+<iframe id="i"></iframe>
+<canvas id="c"></canvas>
+</div>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var canvas = document.getElementById("c");
+i.contentDocument.body.appendChild(d);
+canvas.toBlob(() => {});
+</script>
+</body>

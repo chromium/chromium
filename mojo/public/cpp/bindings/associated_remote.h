@@ -9,27 +9,32 @@
 #include <utility>
 
 #include "base/callback_forward.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/associated_interface_ptr_state.h"
-#include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
 
-// An AssociatedRemote is similar to a Remote (see remote.h) in that it is used
-// to transmit mojom interface method calls to a remote (Associated) Receiver.
+// An AssociatedRemote is similar to a Remote (see remote.h): it is used to
+// issue mojom interface method calls that will be sent over a message pipe to
+// be handled by the entangled AssociatedReceiver.
 //
-// Unlike Remote, an entangled AssociatedRemote/AssociatedReceiver pair cannot
-// operate on its own and requires a concrete Remote/Receiver pair upon which
-// to piggyback.
+// An AssociatedRemote is needed when it is important to preserve the relative
+// ordering of calls with another mojom interface. This is implemented by
+// sharing the underlying message pipe between the mojom interfaces where
+// ordering must be preserved.
+//
+// Because of this, an AssociatedRemote cannot be used to issue mojom interface
+// method calls until one of its endpoints (either the AssociatedRemote itself
+// or its entangled AssociatedReceiver) is sent over a Remote/Receiver pair
+// or an already-established AssociatedRemote/AssociatedReceiver pair.
 template <typename Interface>
 class AssociatedRemote {
  public:
@@ -60,6 +65,9 @@ class AssociatedRemote {
     Bind(std::move(pending_remote), std::move(task_runner));
   }
 
+  AssociatedRemote(const AssociatedRemote&) = delete;
+  AssociatedRemote& operator=(const AssociatedRemote&) = delete;
+
   ~AssociatedRemote() = default;
 
   AssociatedRemote& operator=(AssociatedRemote&& other) noexcept {
@@ -87,8 +95,8 @@ class AssociatedRemote {
   // being "connected" (see |is_connected()| below). An AssociatedRemote is
   // NEVER passively unbound and the only way for it to become unbound is to
   // explicitly call |reset()| or |Unbind()|. As such, unless you make explicit
-  // calls to those methods, it is always safe to assume that a AssociatedRemote
-  // you've bound will remain bound and callable.
+  // calls to those methods, it is always safe to assume that an
+  // AssociatedRemote you've bound will remain bound and callable.
   bool is_bound() const { return internal_state_.is_bound(); }
   explicit operator bool() const { return is_bound(); }
 
@@ -114,8 +122,8 @@ class AssociatedRemote {
   // receiver. This can happen if the corresponding AssociatedReceiver (or
   // unconsumed PendingAssociatedReceiver) is destroyed, or if the
   // AssociatedReceiver sends a malformed or otherwise unexpected response
-  // message to this AssociatedRemote. Must only be called
-  // on a bound AssociatedRemote object, and only remains set as long as the
+  // message to this AssociatedRemote. Must only be called on a bound
+  // AssociatedRemote object, and only remains set as long as the
   // AssociatedRemote is both bound and connected.
   //
   // If invoked at all, |handler| will be scheduled asynchronously using the
@@ -133,6 +141,20 @@ class AssociatedRemote {
         std::move(handler));
   }
 
+  // A convenient helper that resets this AssociatedRemote on disconnect. Note
+  // that this replaces any previously set disconnection handler. Must be called
+  // on a bound AssociatedRemote object. If the AssociatedRemote is connected,
+  // a callback is set to reset it after it is disconnected. If AssociatedRemote
+  // is bound but disconnected then reset is called immediately.
+  void reset_on_disconnect() {
+    if (!is_connected()) {
+      reset();
+      return;
+    }
+    set_disconnect_handler(
+        base::BindOnce(&AssociatedRemote::reset, base::Unretained(this)));
+  }
+
   // Resets this AssociatedRemote to an unbound state. To reset the
   // AssociatedRemote and recover an PendingAssociatedRemote that can be bound
   // again later, use |Unbind()| instead.
@@ -148,23 +170,22 @@ class AssociatedRemote {
     reset();
   }
 
-  // Binds this AssociatedRemote, connecting it to a new
-  // PendingAssociatedReceiver which is returned for transmission to some
-  // AssociatedReceiver which can bind it. The AssociatedRemote will schedule
-  // any response callbacks or disconnection notifications on the default
-  // SequencedTaskRunner (i.e. base::SequencedTaskRunnerHandle::Get() at the
-  // time of this call). Must only be called on an unbound AssociatedRemote.
-  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver()
-      WARN_UNUSED_RESULT {
-    return BindNewEndpointAndPassReceiver(nullptr);
-  }
+  // Helpers for binding and unbinding the AssociatedRemote. Only an unbound
+  // AssociatedRemote (i.e. |is_bound()| is false) may be bound. Similarly, only
+  // a bound AssociatedRemote may be unbound.
 
-  // Like above, but the AssociatedRemote will schedule response callbacks and
-  // disconnection notifications on |task_runner| instead of the default
-  // SequencedTaskRunner. |task_runner| must run tasks on the same sequence that
-  // owns this AssociatedRemote.
+  // Binds this AssociatedRemote with the returned PendingAssociatedReceiver.
+  // Mojom interface method calls made through |this| will be routed to the
+  // object that ends up binding the returned PendingAssociatedReceiver.
+  //
+  // Any response callbacks or disconnection notifications will be scheduled to
+  // run on |task_runner|. If |task_runner| is null, defaults to the current
+  // SequencedTaskRunner.
   PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+      WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+
     ScopedInterfaceEndpointHandle remote_handle;
     ScopedInterfaceEndpointHandle receiver_handle;
     ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
@@ -174,54 +195,15 @@ class AssociatedRemote {
     return PendingAssociatedReceiver<Interface>(std::move(receiver_handle));
   }
 
-  // Like BindNewEndpointAndPassReceiver() above, but it creates a dedicated
-  // message pipe. The returned receiver can be bound directly to an
-  // implementation, without being first passed through a message pipe endpoint.
+  // Binds this AssociatedRemote by consuming |pending_remote|.
   //
-  // For testing, where the returned request is bound to e.g. a mock and there
-  // are no other interfaces involved.
-  PendingAssociatedReceiver<Interface>
-  BindNewEndpointAndPassDedicatedReceiverForTesting() WARN_UNUSED_RESULT {
-    MessagePipe pipe;
-    scoped_refptr<internal::MultiplexRouter> router0 =
-        new internal::MultiplexRouter(
-            std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
-            false, base::SequencedTaskRunnerHandle::Get());
-    scoped_refptr<internal::MultiplexRouter> router1 =
-        new internal::MultiplexRouter(
-            std::move(pipe.handle1), internal::MultiplexRouter::MULTI_INTERFACE,
-            true, base::SequencedTaskRunnerHandle::Get());
-
-    ScopedInterfaceEndpointHandle remote_handle;
-    ScopedInterfaceEndpointHandle receiver_handle;
-    ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
-        &remote_handle, &receiver_handle);
-    InterfaceId id = router1->AssociateInterface(std::move(remote_handle));
-    remote_handle = router0->CreateLocalEndpointHandle(id);
-
-    Bind(PendingAssociatedRemote<Interface>(std::move(remote_handle), 0),
-         nullptr);
-    return PendingAssociatedReceiver<Interface>(std::move(receiver_handle));
-  }
-
-  // Binds this AssociatedRemote by consuming |pending_remote|, which must be
-  // valid. The AssociatedRemote will schedule any response callbacks or
-  // disconnection notifications on the default SequencedTaskRunner (i.e.
-  // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
-  // be called on an unbound AssociatedRemote.
-  void Bind(PendingAssociatedRemote<Interface> pending_remote) {
-    DCHECK(pending_remote.is_valid());
-    Bind(std::move(pending_remote), nullptr);
-  }
-
-  // Like above, but the AssociatedRemote will schedule response callbacks and
-  // disconnection notifications on |task_runner| instead of the default
-  // SequencedTaskRunner. Must only be called on an unbound AssociatedRemote.
-  // |task_runner| must run tasks on the same sequence that owns this
-  // AssociatedRemote.
+  // Any response callbacks or disconnection notifications will be scheduled to
+  // run on |task_runner|. If |task_runner| is null, defaults to the current
+  // SequencedTaskRunner.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
-            scoped_refptr<base::SequencedTaskRunner> task_runner) {
+            scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+
     if (!pending_remote) {
       reset();
       return;
@@ -239,13 +221,32 @@ class AssociatedRemote {
     ignore_result(internal_state_.instance());
   }
 
+  // Binds this AssociatedRemote with the returned PendingAssociatedReceiver
+  // using a dedicated message pipe. This allows the entangled
+  // AssociatedReceiver/AssociatedRemote endpoints to be used without ever being
+  // associated with any other mojom interfaces.
+  //
+  // Needless to say, messages sent between the two entangled endpoints will not
+  // be ordered with respect to any other mojom interfaces. This is generally
+  // useful for ignoring calls on an associated remote or for binding associated
+  // endpoints in tests.
+  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassDedicatedReceiver()
+      WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+
+    PendingAssociatedReceiver<Interface> receiver =
+        BindNewEndpointAndPassReceiver();
+    receiver.EnableUnassociatedUsage();
+    return receiver;
+  }
+
   // Unbinds this AssociatedRemote, rendering it unable to issue further
   // Interface method calls. Returns a PendingAssociatedRemote which may be
   // passed across threads or processes and consumed by another AssociatedRemote
   // elsewhere.
   //
   // Note that it is an error (the bad, crashy kind of error) to attempt to
-  // |Unbind()| a AssociatedRemote which is awaiting one or more responses to
+  // |Unbind()| an AssociatedRemote which is awaiting one or more responses to
   // previously issued Interface method calls. Calling this method should only
   // be considered in cases where satisfaction of that constraint can be proven.
   //
@@ -273,18 +274,6 @@ class AssociatedRemote {
  private:
   using State = internal::AssociatedInterfacePtrState<Interface>;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedRemote);
-};
-
-// Constructs an invalid PendingAssociatedRemote of any arbitrary interface
-// type. Useful as short-hand for a default constructed value.
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) NullAssociatedRemote {
- public:
-  template <typename Interface>
-  operator PendingAssociatedRemote<Interface>() const {
-    return PendingAssociatedRemote<Interface>();
-  }
 };
 
 }  // namespace mojo

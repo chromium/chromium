@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_clock.h"
@@ -112,6 +112,10 @@ Result AddUniqueUrlsSync(
   for (auto candidate_iter = candidate_prefetch_urls.rbegin();
        candidate_iter != candidate_prefetch_urls.rend(); ++candidate_iter) {
     const PrefetchURL& prefetch_url = *candidate_iter;
+
+    if (!prefetch_url.url.is_valid() || !prefetch_url.url.SchemeIsHTTPOrHTTPS())
+      continue;
+
     const std::string url_spec = prefetch_url.url.spec();
     // Don't add the same URL more than once.
     if (!added_urls.insert(url_spec).second)
@@ -133,7 +137,7 @@ Result AddUniqueUrlsSync(
 
     // We artificially add a microsecond to ensure that the timestamp is
     // different (and guarantee a particular order when sorting by timestamp).
-    now += base::TimeDelta::FromMicroseconds(1);
+    now += base::Microseconds(1);
   }
 
   if (!transaction.Commit())

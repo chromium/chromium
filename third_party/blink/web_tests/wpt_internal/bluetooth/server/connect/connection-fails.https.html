@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+
+bluetooth_test(() => {
+  // The following tests make sure the Web Bluetooth implementation
+  // responds correctly to the different types of errors the
+  // underlying platform might throw.
+
+  // Each implementation maps these devices to specific code paths
+  // that result in different errors thus increasing code coverage
+  // when testing. Therefore some of these devices might not be useful
+  // for all implementations.
+
+  let connection_test_specs = [{
+    testName: 'Authentication canceled when connecting.',
+    uuid: errorUUID(0x0),
+    error: new DOMException('Authentication canceled.',
+                            'NetworkError')
+  }, {
+    testName: 'Authentication failed when connecting.',
+    uuid: errorUUID(0x1),
+    error: new DOMException('Authentication failed.',
+                            'NetworkError')
+  }, {
+    testName: 'Authentication rejected when connecting.',
+    uuid: errorUUID(0x2),
+    error: new DOMException('Authentication rejected.',
+                            'NetworkError')
+  }, {
+    testName: 'Authentication timed out when connecting.',
+    uuid: errorUUID(0x3),
+    error: new DOMException('Authentication timeout.',
+                            'NetworkError')
+  }, {
+    testName: 'Connection failed.',
+    uuid: errorUUID(0x4),
+    error: new DOMException('Connection failed for unknown reason.',
+                            'NetworkError')
+  }, {
+    testName: 'Connection was already in progress.',
+    uuid: errorUUID(0x5),
+    error: new DOMException('Connection already in progress.',
+                            'NetworkError')
+  }, {
+    testName: 'Unknown error when connnecting.',
+    uuid: errorUUID(0x6),
+    error: new DOMException('Unknown error when connecting to the device.',
+                            'NetworkError')
+  }, {
+    testName: 'Tried to connect to an unsupported device.',
+    uuid: errorUUID(0x7),
+    error: new DOMException('Unsupported device.',
+                            'NetworkError')
+  }];
+
+  return setBluetoothFakeAdapter('FailingConnectionsAdapter')
+      .then(() => {
+        let test_promises = Promise.resolve();
+        connection_test_specs.forEach(testSpec => {
+          test_promises = test_promises
+            .then(() => requestDeviceWithTrustedClick({
+              filters: [{services: [testSpec.uuid]}]}))
+            .then(device => assert_promise_rejects_with_message(
+              device.gatt.connect(),
+              testSpec.error,
+              testSpec.testName));
+          });
+        return test_promises;
+      });
+}, 'Adapter fails to connect to device. Should reject with the correct ' +
+   'exception.');
+</script>

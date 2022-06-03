@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -31,6 +30,11 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
       int render_process_id,
       base::WeakPtr<PepperFileSystemBrowserHost> fs_host,
       const std::string& path);
+
+  PepperInternalFileRefBackend(const PepperInternalFileRefBackend&) = delete;
+  PepperInternalFileRefBackend& operator=(const PepperInternalFileRefBackend&) =
+      delete;
+
   ~PepperInternalFileRefBackend() override;
 
   // PepperFileRefBackend overrides.
@@ -60,6 +64,25 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
                  const IPC::Message& msg,
                  base::File::Error error);
 
+  // Helper methods called on IO thread.
+  static void DidFinishOnIOThread(
+      base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+      ppapi::host::ReplyMessageContext reply_context,
+      const IPC::Message& msg,
+      base::File::Error error);
+  static void ReadDirectoryCompleteOnIOThread(
+      base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+      ppapi::host::ReplyMessageContext reply_context,
+      storage::FileSystemOperation::FileEntryList* accumulated_file_list,
+      base::File::Error error,
+      storage::FileSystemOperation::FileEntryList file_list,
+      bool has_more);
+  static void GetMetadataCompleteOnIOThread(
+      base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
+      ppapi::host::ReplyMessageContext reply_context,
+      base::File::Error result,
+      const base::File::Info& file_info);
+
   // Operation specific callbacks.
   void GetMetadataComplete(ppapi::host::ReplyMessageContext reply_context,
                            base::File::Error error,
@@ -82,8 +105,6 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
   mutable storage::FileSystemURL fs_url_;
 
   base::WeakPtrFactory<PepperInternalFileRefBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperInternalFileRefBackend);
 };
 
 }  // namespace content

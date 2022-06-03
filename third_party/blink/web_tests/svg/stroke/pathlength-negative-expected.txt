@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 4: Error: <path> attribute pathLength: A negative value is not valid. ("-4")

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<ruby></ruby>
+<script>
+function check(target, declUnprefixed, declPrefixed, csUnprefixed, csPrefixed) {
+  assert_equals(target.style.rubyPosition, declUnprefixed, 'style.rubyPosition');
+  assert_equals(target.style.webkitRubyPosition, declPrefixed,
+                'style.webkitRubyPosition');
+  assert_equals(getComputedStyle(target)['ruby-position'], csUnprefixed,
+                'getComputedStyle()["ruby-position"]');
+  assert_equals(getComputedStyle(target)['-webkit-ruby-position'], csPrefixed,
+                'getComputedStyle()["-webkit-ruby-position"]');
+}
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.removeAttribute('style');
+  check(target, '', '', 'over', 'before');
+}, 'No style attribute');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.setAttribute('style', 'ruby-position: over');
+  check(target, 'over', '', 'over', 'before');
+}, 'Specifying ruby-position:over in a style attribute');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.setAttribute('style', 'ruby-position: under');
+  check(target, 'under', '', 'under', 'after');
+}, 'Specifying ruby-position:under in a style attribute');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.setAttribute('style', 'ruby-position: after');
+  check(target, '', '', 'over', 'before');
+}, 'Specifying ruby-position:after in a style attribute');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.removeAttribute('style');
+  target.style.rubyPosition = 'under';
+  assert_equals(target.style.rubyPosition, 'under', 'style.rubyPosition');
+  assert_equals(target.style.webkitRubyPosition, '',
+                'style.webkitRubyPosition');
+  assert_equals(target.getAttribute('style'), 'ruby-position: under;',
+                'style attribute value');
+}, 'Specifying "under" via element.style.rubyPosition');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.removeAttribute('style');
+  target.style.rubyPosition = 'after';
+  assert_equals(target.style.rubyPosition, '', 'style.rubyPosition');
+  assert_equals(target.style.webkitRubyPosition, '',
+                'style.webkitRubyPosition');
+  assert_equals(target.getAttribute('style'), null, 'style attribute value');
+}, 'Specifying "after" via element.style.rubyPosition');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.setAttribute('style', '-webkit-ruby-position: before');
+  check(target, '', 'before', 'over', 'before');
+}, 'Specifying -webkit-ruby-position:before in a style attribute');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.setAttribute('style', '-webkit-ruby-position: after');
+  check(target, '', 'after', 'under', 'after');
+}, 'Specifying -webkit-ruby-position:after in a style attribute');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.removeAttribute('style');
+  target.style.webkitRubyPosition = 'under';
+  assert_equals(target.style.rubyPosition, '', 'style.rubyPosition');
+  assert_equals(target.style.webkitRubyPosition, '',
+                'style.webkitRubyPosition');
+  assert_equals(target.getAttribute('style'), null, 'style attribute value');
+}, 'Specifying "under" via element.style.webkitRubyPosition');
+
+test(() => {
+  const target = document.querySelector('ruby');
+  target.removeAttribute('style');
+  target.style.webkitRubyPosition = 'after';
+  assert_equals(target.style.rubyPosition, '', 'style.rubyPosition');
+  assert_equals(target.style.webkitRubyPosition, 'after',
+                'style.webkitRubyPosition');
+  assert_equals(target.getAttribute('style'), '-webkit-ruby-position: after;',
+                'style attribute value');
+
+}, 'Specifying "after" via element.style.webkitRubyPosition');
+
+</script>

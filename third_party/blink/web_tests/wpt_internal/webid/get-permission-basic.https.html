@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>navigator.id.get() promise resolution</title>
+<link rel="author" title="Majid Valipour" href="mailto:majidvp@chromium.org">
+<link rel="help" href="https://wicg.github.io/WebID">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="module">
+  import {webid_test} from './resources/webid-helper.js';
+  const test_options = {
+    provider: 'https://idp.test',
+    client_id: '1',
+    nonce: '2',
+  };
+
+  webid_test(async (t, mock) => {
+    mock.returnIdToken("a_token");
+    const token = await navigator.id.get(test_options);
+    assert_equals(token, "a_token");
+  }, "Successfully obtaining id_token should resolve the promise.");
+
+  webid_test(async (t, mock) => {
+    mock.returnError("ApprovalDeclined");
+    const result = navigator.id.get(test_options);
+    return promise_rejects_dom(t, 'AbortError', result);
+  }, "User approval decline should reject the promise.");
+</script>

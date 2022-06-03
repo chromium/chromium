@@ -4,7 +4,6 @@
 
 #include "content/renderer/worker/worker_thread_registry.h"
 
-#include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/public/renderer/worker_thread.h"

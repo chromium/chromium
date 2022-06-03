@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/page_transition_types.h"
@@ -23,13 +23,13 @@ using IOSChromeSyncedTabDelegateTest = PlatformTest;
 // Regression test for crbug.com/980841: Verifies that the browser does not
 // crash if the pending item is null.
 TEST_F(IOSChromeSyncedTabDelegateTest, ShouldHandleNullItem) {
-  auto navigation_manager = std::make_unique<web::TestNavigationManager>();
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->SetPendingItemIndex(0);
 
   ASSERT_EQ(0, navigation_manager->GetPendingItemIndex());
   ASSERT_EQ(nullptr, navigation_manager->GetPendingItem());
 
-  web::TestWebState web_state;
+  web::FakeWebState web_state;
   web_state.SetNavigationManager(std::move(navigation_manager));
   IOSChromeSyncedTabDelegate::CreateForWebState(&web_state);
 

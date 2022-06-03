@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console is cleared upon clear() eval in console.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -19,11 +19,11 @@
   `);
 
   TestRunner.addResult('=== Before clear ===');
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
-  function callback() {
+  async function callback() {
     TestRunner.addResult('=== After clear ===');
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 

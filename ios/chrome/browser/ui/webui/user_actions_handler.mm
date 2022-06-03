@@ -25,8 +25,10 @@ UserActionsHandler::~UserActionsHandler() {
 
 void UserActionsHandler::RegisterMessages() {}
 
-void UserActionsHandler::OnUserAction(const std::string& action) {
+void UserActionsHandler::OnUserAction(const std::string& action,
+                                      base::TimeTicks action_time) {
+  base::Value event_name = base::Value("user-action");
   base::Value user_action_name(action);
-  std::vector<const base::Value*> args{&user_action_name};
-  web_ui()->CallJavascriptFunction("userActions.observeUserAction", args);
+  std::vector<const base::Value*> args{&event_name, &user_action_name};
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }

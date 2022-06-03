@@ -14,9 +14,9 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 
 namespace base {
@@ -50,6 +50,9 @@ class IDMap final {
     // it.
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
+
+  IDMap(const IDMap&) = delete;
+  IDMap& operator=(const IDMap&) = delete;
 
   ~IDMap() {
     // Many IDMap's are static, and hence will be destroyed on the main
@@ -281,8 +284,6 @@ class IDMap final {
   bool check_on_null_data_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IDMap);
 };
 
 }  // namespace base

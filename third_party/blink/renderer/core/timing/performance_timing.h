@@ -31,8 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_TIMING_H_
 
+#include "base/time/time.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -45,7 +48,6 @@ class DocumentLoader;
 class DocumentParserTiming;
 class DocumentTiming;
 class InteractiveDetector;
-class LocalFrame;
 class PaintTiming;
 class PaintTimingDetector;
 class ResourceLoadTiming;
@@ -54,12 +56,24 @@ class ScriptValue;
 
 // Legacy support for NT1(https://www.w3.org/TR/navigation-timing/).
 class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
-                                            public DOMWindowClient {
+                                            public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(PerformanceTiming);
 
  public:
-  explicit PerformanceTiming(LocalFrame*);
+  struct BackForwardCacheRestoreTiming {
+    uint64_t navigation_start;
+    uint64_t first_paint;
+    std::array<uint64_t,
+               WebPerformance::
+                   kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>
+        request_animation_frames;
+    absl::optional<base::TimeDelta> first_input_delay;
+  };
+
+  using BackForwardCacheRestoreTimings =
+      WTF::Vector<BackForwardCacheRestoreTiming>;
+
+  explicit PerformanceTiming(ExecutionContext*);
 
   uint64_t navigationStart() const;
   uint64_t inputStart() const;
@@ -84,10 +98,16 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   uint64_t loadEventStart() const;
   uint64_t loadEventEnd() const;
 
-  // The below are non-spec timings, for Page Load UMA metrics.
+  // The below are non-spec timings, for Page Load UMA metrics. Not to be
+  // exposed to JavaScript.
 
-  // The time the first document layout is performed.
-  uint64_t FirstLayout() const;
+  // The time immediately after the user agent finishes prompting to unload the
+  // previous document, or if there is no previous document, the same value as
+  // fetchStart.  Intended to be used for correlation with other events internal
+  // to blink.
+  base::TimeTicks NavigationStartAsMonotonicTime() const;
+  // The timings after the page is restored from back-forward cache.
+  BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
   // The time the first paint operation was performed.
   uint64_t FirstPaint() const;
   // The time the first paint operation for image was performed.
@@ -95,6 +115,9 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // The time of the first 'contentful' paint. A contentful paint is a paint
   // that includes content of some kind (for example, text or image content).
   uint64_t FirstContentfulPaint() const;
+  // The first 'contentful' paint as full-resolution monotonic time. Intended to
+  // be used for correlation with other events internal to blink.
+  base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;
   // The time of the first 'meaningful' paint, A meaningful paint is a paint
   // where the page's primary content is visible.
   uint64_t FirstMeaningfulPaint() const;
@@ -110,33 +133,54 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // are the time and size of it.
   uint64_t LargestImagePaint() const;
   uint64_t LargestImagePaintSize() const;
+  LargestContentfulPaintTypeMask LargestContentfulPaintType() const;
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize
   // are the time and size of it.
   uint64_t LargestTextPaint() const;
   uint64_t LargestTextPaintSize() const;
-  // The first time the page is considered 'interactive'. This is determined
-  // using heuristics based on main thread and network activity.
-  uint64_t PageInteractive() const;
-  // The time of when we detect the page is interactive. There is a delay
-  // between when the page was interactive and when we were able to detect it.
-  uint64_t PageInteractiveDetection() const;
-  // The time of when a significant input event happened that may cause
-  // observers to discard the value of Time to Interactive.
-  uint64_t FirstInputInvalidatingInteractive() const;
+  // Largest Contentful Paint is the either the largest text paint time or the
+  // largest image paint time, whichever has the larger size.
+  base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
+  // The time at which the frame is first eligible for painting due to not
+  // being throttled. A zero value indicates throttling.
+  uint64_t FirstEligibleToPaint() const;
+  // The time at which we are notified of the first input or scroll event which
+  // causes the largest contentful paint algorithm to stop.
+  uint64_t FirstInputOrScrollNotifiedTimestamp() const;
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.
-  uint64_t FirstInputDelay() const;
+  absl::optional<base::TimeDelta> FirstInputDelay() const;
   // The timestamp of the event whose delay is reported by FirstInputDelay().
-  uint64_t FirstInputTimestamp() const;
+  absl::optional<base::TimeDelta> FirstInputTimestamp() const;
   // The longest duration between the hardware timestamp and being queued on the
   // main thread for the click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.
-  uint64_t LongestInputDelay() const;
+  absl::optional<base::TimeDelta> LongestInputDelay() const;
   // The timestamp of the event whose delay is reported by LongestInputDelay().
-  uint64_t LongestInputTimestamp() const;
+  absl::optional<base::TimeDelta> LongestInputTimestamp() const;
+  // The duration of event handlers processing the first input event.
+  absl::optional<base::TimeDelta> FirstInputProcessingTime() const;
+  // The duration between the user's first scroll and display update.
+  absl::optional<base::TimeDelta> FirstScrollDelay() const;
+  // The hardware timestamp of the first scroll.
+  absl::optional<base::TimeDelta> FirstScrollTimestamp() const;
+  // TimeTicks for unload start and end.
+  absl::optional<base::TimeTicks> UnloadStart() const;
+  absl::optional<base::TimeTicks> UnloadEnd() const;
+  // The timestamp of when the commit navigation finished in the frame loader.
+  absl::optional<base::TimeTicks> CommitNavigationEnd() const;
+  // The timestamp of the user timing mark 'mark_fully_loaded', if
+  // available.
+  absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
+  // The timestamp of the user timing mark 'mark_fully_visible', if
+  // available.
+  absl::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
+  // The timestamp of the user timing mark 'mark_interactive', if
+  // available.
+  absl::optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
   uint64_t ParseStart() const;
   uint64_t ParseStop() const;
@@ -145,9 +189,22 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   uint64_t ParseBlockedOnScriptExecutionDuration() const;
   uint64_t ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
 
+  // The time of the first paint after a portal activation.
+  absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
+  // The start time of the prerender activation navigation.
+  absl::optional<base::TimeDelta> PrerenderActivationStart() const;
+
+  // Returns true iff the given string identifies an attribute of
+  // |performance.timing|.
+  static bool IsAttributeName(const AtomicString&);
+
+  // Returns the attribute value identified by the given string. The string
+  // passed as parameter must be an attribute of |performance.timing|.
+  uint64_t GetNamedAttribute(const AtomicString&) const;
+
   ScriptValue toJSONForBinding(ScriptState*) const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   uint64_t MonotonicTimeToIntegerMilliseconds(base::TimeTicks) const;
 
@@ -163,6 +220,14 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   DocumentLoadTiming* GetDocumentLoadTiming() const;
   ResourceLoadTiming* GetResourceLoadTiming() const;
   InteractiveDetector* GetInteractiveDetector() const;
+  absl::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
+      const absl::optional<base::TimeTicks>&) const;
+
+  typedef uint64_t (PerformanceTiming::*PerformanceTimingGetter)() const;
+  using NameToAttributeMap = HashMap<AtomicString, PerformanceTimingGetter>;
+  static const NameToAttributeMap& GetAttributeMapping();
+
+  bool cross_origin_isolated_capability_;
 };
 
 }  // namespace blink

@@ -293,6 +293,38 @@ TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReallocated) {
   ASSERT_FALSE(pool.HasMarkedFrameWithSize(kBiggerSize));
 }
 
+TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReused) {
+  InterprocessFramePool pool(2);
+
+  // Reserve enough frames to hit capacity.
+  scoped_refptr<media::VideoFrame> frame1 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  scoped_refptr<media::VideoFrame> frame2 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  ASSERT_TRUE(frame1);
+  EXPECT_TRUE(frame2);
+
+  // Mark one of them
+  pool.MarkFrame(*frame1);
+  EXPECT_TRUE(pool.HasMarkedFrameWithSize(kSize));
+
+  // Release all frames
+  frame1 = nullptr;
+  frame2 = nullptr;
+
+  // Reserve all frames again but this time request a smaller size.
+  // This should lead to all buffers being reused and the marking being
+  // lost.
+  gfx::Size kSmallerSize(kSize.width() - 2, kSize.height() - 2);
+  frame1 = pool.ReserveVideoFrame(kFormat, kSmallerSize);
+  frame2 = pool.ReserveVideoFrame(kFormat, kSmallerSize);
+  EXPECT_TRUE(frame1);
+  EXPECT_TRUE(frame2);
+
+  EXPECT_FALSE(pool.HasMarkedFrameWithSize(kSize));
+  EXPECT_FALSE(pool.HasMarkedFrameWithSize(kSmallerSize));
+}
+
 TEST(InterprocessFramePoolTest, ReportsCorrectUtilization) {
   InterprocessFramePool pool(2);
   ASSERT_EQ(0.0f, pool.GetUtilization());

@@ -64,7 +64,7 @@ bool CompositionMarkerListImpl::ShiftMarkers(const String&,
       &markers_, offset, old_length, new_length);
 }
 
-void CompositionMarkerListImpl::Trace(Visitor* visitor) {
+void CompositionMarkerListImpl::Trace(Visitor* visitor) const {
   visitor->Trace(markers_);
   DocumentMarkerList::Trace(visitor);
 }

@@ -7,7 +7,10 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <set>
+#include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "cc/base/math_util.h"
@@ -24,6 +27,7 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
@@ -37,6 +41,7 @@ struct DataForRecursion {
   int scroll_tree_parent;
   int closest_ancestor_with_cached_render_surface;
   int closest_ancestor_with_copy_request;
+  int closest_ancestor_being_captured;
   SkColor safe_opaque_background_color;
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
@@ -135,13 +140,9 @@ bool HasPotentiallyRunningTransformAnimation(const MutatorHost& host,
       layer->element_id(), layer->GetElementTypeForAnimation());
 }
 
-void GetAnimationScales(const MutatorHost& host,
-                        Layer* layer,
-                        float* maximum_scale,
-                        float* starting_scale) {
-  return host.GetAnimationScales(layer->element_id(),
-                                 layer->GetElementTypeForAnimation(),
-                                 maximum_scale, starting_scale);
+float MaximumAnimationScale(const MutatorHost& host, Layer* layer) {
+  return host.MaximumScale(layer->element_id(),
+                           layer->GetElementTypeForAnimation());
 }
 
 bool AnimationsPreserveAxisAlignment(const MutatorHost& host, Layer* layer) {
@@ -163,10 +164,6 @@ bool LayerClipsSubtreeToItsBounds(Layer* layer) {
 bool LayerClipsSubtree(Layer* layer) {
   return LayerClipsSubtreeToItsBounds(layer) || layer->HasRoundedCorner() ||
          !layer->clip_rect().IsEmpty();
-}
-
-gfx::RRectF RoundedCornerBounds(Layer* layer) {
-  return gfx::RRectF(layer->EffectiveClipRect(), layer->corner_radii());
 }
 
 void PropertyTreeBuilderContext::AddClipNodeIfNeeded(
@@ -289,10 +286,9 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
 
   node->has_potential_animation = has_potentially_animated_transform;
   node->is_currently_animating = TransformIsAnimating(mutator_host_, layer);
-  GetAnimationScales(mutator_host_, layer, &node->maximum_animation_scale,
-                     &node->starting_animation_scale);
+  node->maximum_animation_scale = MaximumAnimationScale(mutator_host_, layer);
 
-  node->scroll_offset = layer->CurrentScrollOffset();
+  node->scroll_offset = layer->scroll_offset();
 
   node->needs_local_transform_update = true;
   transform_tree_.UpdateTransforms(node->id);
@@ -344,8 +340,9 @@ RenderSurfaceReason ComputeRenderSurfaceReason(const MutatorHost& mutator_host,
 
   // If the layer has blending.
   // TODO(rosca): this is temporary, until blending is implemented for other
-  // types of quads than viz::RenderPassDrawQuad. Layers having descendants that
-  // draw content will still create a separate rendering surface.
+  // types of quads than viz::CompositorRenderPassDrawQuad. Layers having
+  // descendants that draw content will still create a separate rendering
+  // surface.
   if (layer->blend_mode() != SkBlendMode::kSrcOver) {
     return RenderSurfaceReason::kBlendMode;
   }
@@ -389,6 +386,9 @@ RenderSurfaceReason ComputeRenderSurfaceReason(const MutatorHost& mutator_host,
   // If the layer is mirrored.
   if (layer->mirror_count())
     return RenderSurfaceReason::kMirrored;
+
+  if (layer->subtree_capture_id().is_valid())
+    return RenderSurfaceReason::kSubtreeIsBeingCaptured;
 
   return RenderSurfaceReason::kNone;
 }
@@ -456,6 +456,24 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->stable_id = layer->id();
   node->opacity = layer->opacity();
   node->blend_mode = layer->blend_mode();
+  node->subtree_capture_id = layer->subtree_capture_id();
+
+  // Layers marked with a valid |subtree_capture_id| represent a subsection
+  // of the tree that should be rendered and copied as a separate render pass.
+  // Using the layer bounds as the subtree size here allows us to crop out
+  // undesired sections of the render pass, such as the shadow added by the
+  // shadow layer.
+  //
+  // If it becomes desirable to capture a different sub-rectangle of the render
+  // pass, a new custom size (or potentially rect) can be plumbed through the
+  // layer to here.
+  if (node->subtree_capture_id.is_valid()) {
+    // Layer bounds are specified in layer space, which excludes device and
+    // page scale factors. While the page scale can be ignored for subtree
+    // capture purposes, the device scale must be accounted for here.
+    node->subtree_size = gfx::ScaleToFlooredSize(
+        layer->bounds(), layer_tree_host_->device_scale_factor());
+  }
   node->cache_render_surface = layer->cache_render_surface();
   node->has_copy_request = layer->HasCopyRequest();
   node->filters = layer->filters();
@@ -470,7 +488,6 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   node->trilinear_filtering = layer->trilinear_filtering();
   node->has_potential_opacity_animation = has_potential_opacity_animation;
   node->has_potential_filter_animation = has_potential_filter_animation;
-  node->double_sided = layer->double_sided();
   node->subtree_hidden = layer->hide_layer_and_subtree();
   node->is_currently_animating_opacity =
       OpacityIsAnimating(mutator_host_, layer);
@@ -486,12 +503,17 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       layer->HasCopyRequest()
           ? node_id
           : data_from_ancestor.closest_ancestor_with_copy_request;
+  node->closest_ancestor_being_captured_id =
+      layer->subtree_capture_id().is_valid()
+          ? node_id
+          : data_from_ancestor.closest_ancestor_being_captured;
 
   if (layer->HasRoundedCorner()) {
     // This is currently in the local space of the layer and hence in an invalid
     // space. Once we have the associated transform node for this effect node,
     // we will update this to the transform node's coordinate space.
-    node->rounded_corner_bounds = RoundedCornerBounds(layer);
+    node->mask_filter_info =
+        gfx::MaskFilterInfo(layer->EffectiveClipRect(), layer->corner_radii());
     node->is_fast_rounded_corner = layer->is_fast_rounded_corner();
   }
 
@@ -519,6 +541,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       node->closest_ancestor_with_cached_render_surface_id;
   data_for_children->closest_ancestor_with_copy_request =
       node->closest_ancestor_with_copy_request_id;
+  data_for_children->closest_ancestor_being_captured =
+      node->closest_ancestor_being_captured_id;
   data_for_children->effect_tree_parent = node_id;
   layer->SetEffectTreeIndex(node_id);
 
@@ -557,7 +581,8 @@ bool PropertyTreeBuilderContext::UpdateRenderSurfaceIfNeeded(
 
   EffectNode* effect_node =
       effect_tree_.Node(data_for_children->effect_tree_parent);
-  const bool has_rounded_corner = !effect_node->rounded_corner_bounds.IsEmpty();
+  const bool has_rounded_corner =
+      effect_node->mask_filter_info.HasRoundedCorners();
 
   // Having a rounded corner should trigger a transform node.
   if (has_rounded_corner)
@@ -613,6 +638,7 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
     node.user_scrollable_vertical = layer->GetUserScrollableVertical();
     node.element_id = layer->element_id();
     node.transform_id = data_for_children->transform_tree_parent;
+    node.is_composited = true;
 
     node_id = scroll_tree_.Insert(node, parent_id);
     data_for_children->scroll_tree_parent = node_id;
@@ -626,27 +652,11 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
 
     if (node.scrollable) {
       scroll_tree_.SetBaseScrollOffset(layer->element_id(),
-                                       layer->CurrentScrollOffset());
+                                       layer->scroll_offset());
     }
   }
 
   layer->SetScrollTreeIndex(node_id);
-}
-
-void SetBackfaceVisibilityTransform(Layer* layer, bool created_transform_node) {
-  if (layer->use_parent_backface_visibility()) {
-    DCHECK(layer->parent());
-    DCHECK(!layer->parent()->use_parent_backface_visibility());
-    layer->SetShouldCheckBackfaceVisibility(
-        layer->parent()->should_check_backface_visibility());
-  } else {
-    // A double-sided layer's backface can been shown when its visible.
-    // In addition, we need to check if (1) there might be a local 3D transform
-    // on the layer that might turn it to the backface, or (2) it is not drawn
-    // into a flattened space.
-    layer->SetShouldCheckBackfaceVisibility(!layer->double_sided() &&
-                                            created_transform_node);
-  }
 }
 
 void SetSafeOpaqueBackgroundColor(const DataForRecursion& data_from_ancestor,
@@ -680,7 +690,6 @@ void PropertyTreeBuilderContext::BuildPropertyTreesInternal(
 
   AddScrollNodeIfNeeded(data_from_parent, layer, &data_for_children);
 
-  SetBackfaceVisibilityTransform(layer, created_transform_node);
   SetSafeOpaqueBackgroundColor(data_from_parent, layer, &data_for_children);
 
   bool not_axis_aligned_since_last_clip =
@@ -733,6 +742,8 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
       EffectTree::kInvalidNodeId;
   data_for_recursion.closest_ancestor_with_copy_request =
       EffectTree::kInvalidNodeId;
+  data_for_recursion.closest_ancestor_being_captured =
+      EffectTree::kInvalidNodeId;
   data_for_recursion.compound_transform_since_render_target = gfx::Transform();
   data_for_recursion.animation_axis_aligned_since_render_target = true;
   data_for_recursion.not_axis_aligned_since_last_clip = false;
@@ -764,7 +775,6 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   transform_tree_.set_needs_update(false);
   clip_tree_.set_needs_update(true);
   effect_tree_.set_needs_update(true);
-  scroll_tree_.set_needs_update(false);
 }
 
 }  // namespace

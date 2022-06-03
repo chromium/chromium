@@ -7,8 +7,10 @@
 
 #include <string>
 
-#include "components/sync/base/enum_set.h"
+#include "base/containers/enum_set.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -25,44 +27,50 @@ enum class UserSelectableType {
   kApps,
   kReadingList,
   kTabs,
-  kLastType = kTabs
+  kWifiConfigurations,
+  kLastType = kWifiConfigurations
 };
 
-using UserSelectableTypeSet = EnumSet<UserSelectableType,
-                                      UserSelectableType::kFirstType,
-                                      UserSelectableType::kLastType>;
+using UserSelectableTypeSet = base::EnumSet<UserSelectableType,
+                                            UserSelectableType::kFirstType,
+                                            UserSelectableType::kLastType>;
 
 const char* GetUserSelectableTypeName(UserSelectableType type);
-UserSelectableType GetUserSelectableTypeFromString(const std::string& type);
+// Returns the type if the string matches a known type.
+absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
+    const std::string& type);
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types);
 ModelTypeSet UserSelectableTypeToAllModelTypes(UserSelectableType type);
 
 ModelType UserSelectableTypeToCanonicalModelType(UserSelectableType type);
-int UserSelectableTypeToHistogramInt(UserSelectableType type);
 
-constexpr int UserSelectableTypeHistogramNumEntries() {
-  return static_cast<int>(ModelType::NUM_ENTRIES);
-}
-
-#if defined(OS_CHROMEOS)
-// Chrome OS provides a separate UI with sync controls for OS data types.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Chrome OS provides a separate UI with sync controls for OS data types. Note
+// that wallpaper is a special case due to its reliance on apps, so while it
+// appears in the UI, it is not included in this enum.
+// TODO(https://crbug.com/967987): Break this dependency.
 enum class UserSelectableOsType {
   kOsApps,
   kFirstType = kOsApps,
 
   kOsPreferences,
-  kWifiConfigurations,
-  kLastType = kWifiConfigurations
+  kOsWifiConfigurations,
+  kLastType = kOsWifiConfigurations
 };
 
-using UserSelectableOsTypeSet = EnumSet<UserSelectableOsType,
-                                        UserSelectableOsType::kFirstType,
-                                        UserSelectableOsType::kLastType>;
+using UserSelectableOsTypeSet = base::EnumSet<UserSelectableOsType,
+                                              UserSelectableOsType::kFirstType,
+                                              UserSelectableOsType::kLastType>;
 
 const char* GetUserSelectableOsTypeName(UserSelectableOsType type);
+std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types);
 ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type);
 ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type);
-#endif  // defined(OS_CHROMEOS)
+
+// Returns the type if the string matches a known OS type.
+absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
+    const std::string& type);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace syncer
 

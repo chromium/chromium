@@ -5,5 +5,5 @@
 // https://html.spec.whatwg.org/C/#the-popstateevent-interface
 
 dictionary PopStateEventInit : EventInit {
-    any state;
+    any state = null;
 };

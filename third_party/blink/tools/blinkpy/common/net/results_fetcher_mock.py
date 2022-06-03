@@ -26,13 +26,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from collections import namedtuple
+
 from blinkpy.common.net.results_fetcher import TestResultsFetcher
 
+BuilderStep = namedtuple('BuilderStep', ['build', 'step_name'])
 
 # TODO(qyearsley): To be consistent with other fake ("mock") classes, this
 # could be changed so it's not a subclass of TestResultsFetcher.
 class MockTestResultsFetcher(TestResultsFetcher):
-
     def __init__(self):
         super(MockTestResultsFetcher, self).__init__()
         self._canned_results = {}
@@ -40,14 +42,18 @@ class MockTestResultsFetcher(TestResultsFetcher):
         self._webdriver_results = {}
         self.fetched_builds = []
         self.fetched_webdriver_builds = []
-        self._layout_test_step_name = 'webkit_layout_tests (with patch)'
+        self._layout_test_step_name = 'blink_web_tests (with patch)'
 
-    def set_results(self, build, results):
-        self._canned_results[build] = results
+    def set_results(self, build, results, step_name=None):
+        step_name = step_name or self.get_layout_test_step_name(build)
+        step = BuilderStep(build=build, step_name=step_name)
+        self._canned_results[step] = results
 
-    def fetch_results(self, build, full=False):
-        self.fetched_builds.append(build)
-        return self._canned_results.get(build)
+    def fetch_results(self, build, full=False, step_name=None):
+        step_name = step_name or self.get_layout_test_step_name(build)
+        step = BuilderStep(build=build, step_name=step_name)
+        self.fetched_builds.append(step)
+        return self._canned_results.get(step)
 
     def set_webdriver_test_results(self, build, master, results):
         self._webdriver_results[(build, master)] = results

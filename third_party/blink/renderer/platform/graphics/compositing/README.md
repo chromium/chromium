@@ -16,7 +16,7 @@ Inputs: `PaintArtifact`
 Outputs: List of `cc::Layer` objects and `cc::PropertyTree`'s.
 
 The algorithm walks through the list of `PaintChunks` in the `PaintArtifact`,
-allocating new `c::Layers` if the `PaintChunk` cannot merge into an existing
+allocating new `cc::Layers` if the `PaintChunk` cannot merge into an existing
 `cc::Layer`. The reasons why it would not be able to do so are:
 
 1. The `PaintChunk` requires a foreign layer (see below)

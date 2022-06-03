@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<style>
+input {
+  font-size: 20px;
+  margin: 4px;
+}
+</style>
+<body>
+<div id="sizes">
+<input type=file style="width:6em">
+<input type=file style="width:7em">
+<input type=file style="width:8em">
+<input type=file style="width:9em">
+<input type=file style="width:10em">
+<input type=file style="width:11em">
+<input type=file style="width:12em">
+<input type=file style="width:13em">
+<input type=file style="width:14em">
+<input type=file style="width:22em">
+<div dir="rtl">
+<input type=file style="width:6em">
+<input type=file style="width:7em">
+<input type=file style="width:8em">
+<input type=file style="width:9em">
+<input type=file style="width:10em">
+<input type=file style="width:11em">
+<input type=file style="width:12em">
+<input type=file style="width:13em">
+<input type=file style="width:14em">
+<input type=file style="width:22em">
+</div>
+</div>
+
+<script src="resources/file-drag-common.js"></script>
+<script>
+let controls = document.querySelector('#sizes').querySelectorAll('input');
+for (control of controls) {
+  dragFilesOntoInput(control, ['\uD83D\uDCDB\u05E9\u05E0\u05D9\u05D4foo\u05E9\u05E0\u05D9\u05D4bar.txt']);
+}
+</script>
+
+</body>

@@ -14,10 +14,9 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -37,7 +36,9 @@ class POLICY_EXPORT ResourceCache {
  public:
   ResourceCache(const base::FilePath& cache_path,
                 scoped_refptr<base::SequencedTaskRunner> task_runner,
-                const base::Optional<int64_t> max_cache_size);
+                const absl::optional<int64_t> max_cache_size);
+  ResourceCache(const ResourceCache&) = delete;
+  ResourceCache& operator=(const ResourceCache&) = delete;
   virtual ~ResourceCache();
 
   // Stores |data| under (key, subkey). Returns file path if the store
@@ -64,7 +65,7 @@ class POLICY_EXPORT ResourceCache {
   void Clear(const std::string& key);
 
   // Deletes the subkeys of |key| for which the |filter| returns true.
-  typedef base::Callback<bool(const std::string&)> SubkeyFilter;
+  typedef base::RepeatingCallback<bool(const std::string&)> SubkeyFilter;
   void FilterSubkeys(const std::string& key, const SubkeyFilter& filter);
 
   // Deletes all keys not in |keys_to_keep|, along with their subkeys.
@@ -132,13 +133,11 @@ class POLICY_EXPORT ResourceCache {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Maximum size of the cache directory.
-  const base::Optional<int64_t> max_cache_size_;
+  const absl::optional<int64_t> max_cache_size_;
 
   // Note that this variable could be created on any thread, but is modified
   // only on the |task_runner_| thread.
   int64_t current_cache_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCache);
 };
 
 }  // namespace policy

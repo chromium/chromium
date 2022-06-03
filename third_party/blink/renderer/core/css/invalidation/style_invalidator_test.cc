@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
@@ -25,7 +26,7 @@ class StyleInvalidatorTest : public testing::Test {
 };
 
 TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
-  GetDocument().body()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().body()->setInnerHTML(R"HTML(
     <div id="root">
       <div style="display:none">
         <div class="a"></div>
@@ -34,8 +35,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
     </div>
   )HTML");
 
-  GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   PendingInvalidations pending;
   {
@@ -54,7 +54,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNone) {
 }
 
 TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
-  GetDocument().body()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().body()->setInnerHTML(R"HTML(
     <div id="none" style="display:none">
       <div class="a"></div>
       <div class="a"></div>
@@ -64,8 +64,7 @@ TEST_F(StyleInvalidatorTest, SkipDisplayNoneClearPendingNth) {
     </div>
   )HTML");
 
-  GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   PendingInvalidations pending;
   {

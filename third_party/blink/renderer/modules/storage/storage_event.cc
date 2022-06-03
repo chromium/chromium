@@ -25,9 +25,9 @@
 
 #include "third_party/blink/renderer/modules/storage/storage_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_storage_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
-#include "third_party/blink/renderer/modules/storage/storage_event_init.h"
 
 namespace blink {
 
@@ -76,7 +76,7 @@ StorageEvent::StorageEvent(const AtomicString& type,
     old_value_ = initializer->oldValue();
   if (initializer->hasNewValue())
     new_value_ = initializer->newValue();
-  if (initializer->hasURL())
+  if (initializer->hasUrl())
     url_ = initializer->url();
   if (initializer->hasStorageArea())
     storage_area_ = initializer->storageArea();
@@ -106,7 +106,7 @@ const AtomicString& StorageEvent::InterfaceName() const {
   return event_interface_names::kStorageEvent;
 }
 
-void StorageEvent::Trace(blink::Visitor* visitor) {
+void StorageEvent::Trace(Visitor* visitor) const {
   visitor->Trace(storage_area_);
   Event::Trace(visitor);
 }

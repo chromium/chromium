@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      resampling-crash.html
+    </title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audit-util.js"></script>
+    <script src="../resources/audit.js"></script>
+  </head>
+  <body>
+    <script>
+      let audit = Audit.createTaskRunner();
+
+      audit.define(
+          {
+            label: 'resampling-crash',
+            description: 'Verify no crash when resampling from 192k to 44.1k'
+          },
+          (task, should) => {
+            let context = new AudioContext({sampleRate: 44100});
+            let audioElement = new Audio('../resources/media/192khz-10ms.ogg');
+            let mediaSource = context.createMediaElementSource(audioElement);
+            mediaSource.connect(context.destination);
+
+            // If connecting doesn't crash then the test passed.
+            // See https://crbug.com/1033408.
+            task.done();
+          });
+
+      audit.run();
+    </script>
+  </body>
+</html>

@@ -13,9 +13,10 @@ FakePrivilegedHostDeviceSetter::FakePrivilegedHostDeviceSetter() = default;
 FakePrivilegedHostDeviceSetter::~FakePrivilegedHostDeviceSetter() = default;
 
 void FakePrivilegedHostDeviceSetter::SetHostDevice(
-    const std::string& host_device_id,
+    const std::string& host_instance_id_or_legacy_device_id,
     SetHostDeviceCallback callback) {
-  set_host_args_.emplace_back(host_device_id, std::move(callback));
+  set_host_args_.emplace_back(host_instance_id_or_legacy_device_id,
+                              std::move(callback));
 }
 
 }  // namespace multidevice_setup

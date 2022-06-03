@@ -7,8 +7,6 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/mac_util.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ui/base/hit_test.h"
 #import "ui/base/test/nswindow_fullscreen_notification_waiter.h"
@@ -22,27 +20,14 @@
 
 namespace views {
 namespace test {
-namespace {
-
-// Provide a resizable Widget by default. Starting in 10.11, OSX doesn't
-// correctly restore the window size when coming out of fullscreen if the window
-// is not user-sizable.
-class ResizableDelegateView : public WidgetDelegateView {
- public:
-  ResizableDelegateView() = default;
-
-  // WidgetDelgate:
-  bool CanResize() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResizableDelegateView);
-};
-
-}  // namespace
 
 class BridgedNativeWidgetUITest : public WidgetTest {
  public:
   BridgedNativeWidgetUITest() = default;
+
+  BridgedNativeWidgetUITest(const BridgedNativeWidgetUITest&) = delete;
+  BridgedNativeWidgetUITest& operator=(const BridgedNativeWidgetUITest&) =
+      delete;
 
   // testing::Test:
   void SetUp() override {
@@ -53,7 +38,14 @@ class BridgedNativeWidgetUITest : public WidgetTest {
         CreateParams(Widget::InitParams::TYPE_WINDOW);
     init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     init_params.bounds = gfx::Rect(100, 100, 300, 200);
-    init_params.delegate = new ResizableDelegateView;
+    init_params.delegate = new views::WidgetDelegate;
+    init_params.delegate->SetOwnedByWidget(true);
+
+    // Provide a resizable Widget by default. Starting in 10.11, OSX doesn't
+    // correctly restore the window size when coming out of fullscreen if the
+    // window is not user-sizable.
+    init_params.delegate->SetCanResize(true);
+
     widget_ = std::make_unique<Widget>();
     widget_->Init(std::move(init_params));
   }
@@ -71,9 +63,6 @@ class BridgedNativeWidgetUITest : public WidgetTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetUITest);
 };
 
 // Tests for correct fullscreen tracking, regardless of whether it is initiated

@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "url/gurl.h"
 
@@ -23,7 +23,7 @@ class StoragePartition;
 class GeneratedCodeCacheContext;
 
 // Helper to remove code cache data from a StoragePartition. This class is
-// created on and acts on the UI thread.
+// created on the UI thread and acts on the code cache thread.
 class StoragePartitionCodeCacheDataRemover {
  public:
   // Creates a StoragePartitionCodeCacheDataRemover that deletes all cache
@@ -33,6 +33,11 @@ class StoragePartitionCodeCacheDataRemover {
       base::RepeatingCallback<bool(const GURL&)> url_predicate,
       base::Time begin_time,
       base::Time end_time);
+
+  StoragePartitionCodeCacheDataRemover(
+      const StoragePartitionCodeCacheDataRemover&) = delete;
+  StoragePartitionCodeCacheDataRemover& operator=(
+      const StoragePartitionCodeCacheDataRemover&) = delete;
 
   // Calls |done_callback| on UI thread upon completion and also destroys
   // itself on UI thread.
@@ -57,8 +62,13 @@ class StoragePartitionCodeCacheDataRemover {
 
   ~StoragePartitionCodeCacheDataRemover();
 
+  // Executed on UI thread.
+  void ClearedCodeCache();
+
+  // Executed on code cache thread.
   void ClearJSCodeCache();
   void ClearWASMCodeCache(int rv);
+  void ClearWebUIJSCodeCache(int rv);
   void ClearCache(net::CompletionOnceCallback callback,
                   disk_cache::Backend* backend);
   void DoneClearCodeCache(int rv);
@@ -69,8 +79,6 @@ class StoragePartitionCodeCacheDataRemover {
   base::Time begin_time_;
   base::Time end_time_;
   base::RepeatingCallback<bool(const GURL&)> url_predicate_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitionCodeCacheDataRemover);
 };
 
 }  // namespace content

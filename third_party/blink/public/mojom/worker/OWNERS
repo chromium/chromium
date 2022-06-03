@@ -2,6 +2,3 @@ file://content/browser/worker_host/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# TEAM: worker-dev@chromium.org
-# COMPONENT: Blink>Worker

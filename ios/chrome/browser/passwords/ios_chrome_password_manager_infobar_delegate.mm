@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_infobar_delegate.h"
 
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -46,12 +47,12 @@ NSString* IOSChromePasswordManagerInfoBarDelegate::GetPasswordText() const {
 }
 
 NSString* IOSChromePasswordManagerInfoBarDelegate::GetURLHostText() const {
-  return base::SysUTF8ToNSString(form_to_save_->GetOrigin().host());
+  return base::SysUTF8ToNSString(form_to_save_->GetURL().host());
 }
 
-void IOSChromePasswordManagerInfoBarDelegate::set_dispatcher(
-    id<ApplicationCommands> dispatcher) {
-  dispatcher_ = dispatcher;
+void IOSChromePasswordManagerInfoBarDelegate::set_handler(
+    id<ApplicationCommands> handler) {
+  handler_ = handler;
 }
 
 int IOSChromePasswordManagerInfoBarDelegate::GetIconId() const {

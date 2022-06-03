@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,38 +7,45 @@
 
 #include <stdint.h>
 
-#include <string>
-
-#include "base/macros.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace gl {
 
 // Encapsulates an EGL surface bound to a view using the X Window System.
-class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL {
+class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
+                                            public x11::EventObserver {
  public:
-  explicit NativeViewGLSurfaceEGLX11(EGLNativeWindowType window);
+  explicit NativeViewGLSurfaceEGLX11(x11::Window window);
+  NativeViewGLSurfaceEGLX11(const NativeViewGLSurfaceEGLX11& other) = delete;
+  NativeViewGLSurfaceEGLX11& operator=(const NativeViewGLSurfaceEGLX11& rhs) =
+      delete;
 
   // NativeViewGLSurfaceEGL overrides.
-  EGLConfig GetConfig() override;
+  bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
-  bool Resize(const gfx::Size& size,
-              float scale_factor,
-              ColorSpace color_space,
-              bool has_alpha) override;
-  bool InitializeNativeWindow() override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
 
- private:
+ protected:
   ~NativeViewGLSurfaceEGLX11() override;
 
-  EGLNativeWindowType parent_window_;
+  x11::Connection* GetXNativeConnection() const;
 
-  // PlatformEventDispatcher implementation.
-  bool CanDispatchEvent(const ui::PlatformEvent& event) override;
-  uint32_t DispatchEvent(const ui::PlatformEvent& event) override;
+ private:
+  // NativeViewGLSurfaceEGL overrides:
+  std::unique_ptr<gfx::VSyncProvider> CreateVsyncProviderInternal() override;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeViewGLSurfaceEGLX11);
+  // x11::EventObserver:
+  void OnEvent(const x11::Event& xev) override;
+
+  std::vector<x11::Window> children_;
+
+  // Indicates if the dispatcher has been set.
+  bool dispatcher_set_ = false;
+
+  bool has_swapped_buffers_ = false;
 };
 
 }  // namespace gl

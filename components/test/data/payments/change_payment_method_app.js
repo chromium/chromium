@@ -16,7 +16,7 @@ self.addEventListener('canmakepayment', (event) => {
  * @param {PaymentRequestEvent} event - The event to respond.
  * @return {PamentDetailsUpdate} - The update to the payment details.
  */
-async function responder(event) {
+async function responder(event) { // eslint-disable-line no-unused-vars
   const methodName = event.methodData[0].supportedMethods;
   if (!event.changePaymentMethod) {
     return {
@@ -29,9 +29,7 @@ async function responder(event) {
   }
   let changePaymentMethodReturned;
   try {
-    const response = await event.changePaymentMethod(methodName, {
-      country: 'US',
-    });
+    const response = await event.changePaymentMethod(methodName);
     changePaymentMethodReturned = response;
   } catch (error) {
     changePaymentMethodReturned = error.message;

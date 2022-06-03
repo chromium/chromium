@@ -32,18 +32,6 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
   EXPECT_NSEQ(@"test_identifier", [cell accessibilityIdentifier]);
 }
 
-TEST_F(TableViewItemTest, ConfigureCellWithStyler) {
-  TableViewItem* item = [[TableViewItem alloc] initWithType:0];
-  TableViewCell* cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewCell class]]);
-
-  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = UIColor.redColor;
-  styler.tableViewBackgroundColor = testColor;
-  [item configureCell:cell withStyler:styler];
-  EXPECT_NSEQ(testColor, cell.backgroundColor);
-}
-
 TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
   TableViewItem* item = [[TableViewItem alloc] initWithType:0];
   TableViewCell* cell = [[[item cellClass] alloc] init];

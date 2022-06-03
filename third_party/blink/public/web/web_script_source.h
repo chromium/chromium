@@ -36,8 +36,6 @@
 
 namespace blink {
 
-class ScriptSourceCode;
-
 struct WebScriptSource {
   WebString code;
   WebURL url;
@@ -48,12 +46,8 @@ struct WebScriptSource {
       : code(code), url(url), start_line(1) {}
   WebScriptSource(const WebString& code, const WebURL& url, int start_line)
       : code(code), url(url), start_line(start_line) {}
-
-#if INSIDE_BLINK
-  BLINK_EXPORT operator ScriptSourceCode() const;
-#endif
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SCRIPT_SOURCE_H_

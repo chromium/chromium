@@ -123,7 +123,8 @@ void MinidumpUnloadedModuleListWriter::InitializeFromSnapshot(
   DCHECK_EQ(state(), kStateMutable);
   DCHECK(unloaded_modules_.empty());
 
-  for (auto unloaded_module_snapshot : unloaded_module_snapshots) {
+  for (const UnloadedModuleSnapshot& unloaded_module_snapshot :
+       unloaded_module_snapshots) {
     auto unloaded_module = std::make_unique<MinidumpUnloadedModuleWriter>();
     unloaded_module->InitializeFromSnapshot(unloaded_module_snapshot);
     AddUnloadedModule(std::move(unloaded_module));

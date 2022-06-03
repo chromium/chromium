@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -36,47 +37,37 @@
 
 namespace blink {
 
-template <typename CharType>
-static String StripLeadingAndTrailingHTMLSpaces(String string,
-                                                const CharType* characters,
-                                                unsigned length) {
-  unsigned num_leading_spaces = 0;
-  unsigned num_trailing_spaces = 0;
-
-  for (; num_leading_spaces < length; ++num_leading_spaces) {
-    if (IsNotHTMLSpace<CharType>(characters[num_leading_spaces]))
-      break;
-  }
-
-  if (num_leading_spaces == length)
-    return string.IsNull() ? string : g_empty_atom.GetString();
-
-  for (; num_trailing_spaces < length; ++num_trailing_spaces) {
-    if (IsNotHTMLSpace<CharType>(characters[length - num_trailing_spaces - 1]))
-      break;
-  }
-
-  DCHECK_LT(num_leading_spaces + num_trailing_spaces, length);
-
-  if (!(num_leading_spaces | num_trailing_spaces))
-    return string;
-
-  return string.Substring(num_leading_spaces,
-                          length - (num_leading_spaces + num_trailing_spaces));
-}
-
 String StripLeadingAndTrailingHTMLSpaces(const String& string) {
   unsigned length = string.length();
 
   if (!length)
     return string.IsNull() ? string : g_empty_atom.GetString();
 
-  if (string.Is8Bit())
-    return StripLeadingAndTrailingHTMLSpaces<LChar>(
-        string, string.Characters8(), length);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    unsigned num_leading_spaces = 0;
+    unsigned num_trailing_spaces = 0;
 
-  return StripLeadingAndTrailingHTMLSpaces<UChar>(string, string.Characters16(),
-                                                  length);
+    for (; num_leading_spaces < length; ++num_leading_spaces) {
+      if (IsNotHTMLSpace(chars[num_leading_spaces]))
+        break;
+    }
+
+    if (num_leading_spaces == length)
+      return string.IsNull() ? string : g_empty_atom.GetString();
+
+    for (; num_trailing_spaces < length; ++num_trailing_spaces) {
+      if (IsNotHTMLSpace(chars[length - num_trailing_spaces - 1]))
+        break;
+    }
+
+    DCHECK_LT(num_leading_spaces + num_trailing_spaces, length);
+
+    if (!(num_leading_spaces | num_trailing_spaces))
+      return string;
+
+    return string.Substring(num_leading_spaces, length - (num_leading_spaces +
+                                                          num_trailing_spaces));
+  });
 }
 
 String SerializeForNumberType(const Decimal& number) {
@@ -159,22 +150,6 @@ template <typename CharacterType>
 static bool ParseHTMLIntegerInternal(const CharacterType* position,
                                      const CharacterType* end,
                                      int& value) {
-  // Step 4
-  SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
-
-  // Step 5
-  if (position == end)
-    return false;
-  DCHECK_LT(position, end);
-
-  bool ok;
-  WTF::NumberParsingOptions options(
-      WTF::NumberParsingOptions::kAcceptTrailingGarbage |
-      WTF::NumberParsingOptions::kAcceptLeadingPlus);
-  int wtf_value = CharactersToInt(position, end - position, options, &ok);
-  if (ok)
-    value = wtf_value;
-  return ok;
 }
 
 // http://www.whatwg.org/specs/web-apps/current-work/#rules-for-parsing-integers
@@ -182,46 +157,31 @@ bool ParseHTMLInteger(const String& input, int& value) {
   // Step 1
   // Step 2
   unsigned length = input.length();
-  if (!length || input.Is8Bit()) {
-    const LChar* start = input.Characters8();
-    return ParseHTMLIntegerInternal(start, start + length, value);
-  }
+  if (length == 0)
+    return false;
 
-  const UChar* start = input.Characters16();
-  return ParseHTMLIntegerInternal(start, start + length, value);
-}
+  return WTF::VisitCharacters(
+      input, [&](const auto* position, unsigned length) {
+        using CharacterType = std::decay_t<decltype(*position)>;
+        const auto* end = position + length;
 
-template <typename CharacterType>
-static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
-    const CharacterType* position,
-    const CharacterType* end,
-    unsigned& value) {
-  // This function is an implementation of the following algorithm:
-  // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
-  // However, in order to support integers >= 2^31, we fold [1] into this.
-  // 'Step N' in the following comments refers to [1].
-  //
-  // [1]
-  // https://html.spec.whatwg.org/C/#rules-for-parsing-integers
+        // Step 4
+        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
 
-  // Step 4: Skip whitespace.
-  SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+        // Step 5
+        if (position == end)
+          return false;
+        DCHECK_LT(position, end);
 
-  // Step 5: If position is past the end of input, return an error.
-  if (position == end)
-    return WTF::NumberParsingResult::kError;
-  DCHECK_LT(position, end);
-
-  WTF::NumberParsingResult result;
-  WTF::NumberParsingOptions options(
-      WTF::NumberParsingOptions::kAcceptTrailingGarbage |
-      WTF::NumberParsingOptions::kAcceptLeadingPlus |
-      WTF::NumberParsingOptions::kAcceptMinusZeroForUnsigned);
-  unsigned wtf_value =
-      CharactersToUInt(position, end - position, options, &result);
-  if (result == WTF::NumberParsingResult::kSuccess)
-    value = wtf_value;
-  return result;
+        bool ok;
+        WTF::NumberParsingOptions options(
+            WTF::NumberParsingOptions::kAcceptTrailingGarbage |
+            WTF::NumberParsingOptions::kAcceptLeadingPlus);
+        int wtf_value = CharactersToInt(position, end - position, options, &ok);
+        if (ok)
+          value = wtf_value;
+        return ok;
+      });
 }
 
 static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
@@ -230,13 +190,39 @@ static WTF::NumberParsingResult ParseHTMLNonNegativeIntegerInternal(
   unsigned length = input.length();
   if (length == 0)
     return WTF::NumberParsingResult::kError;
-  if (input.Is8Bit()) {
-    const LChar* start = input.Characters8();
-    return ParseHTMLNonNegativeIntegerInternal(start, start + length, value);
-  }
 
-  const UChar* start = input.Characters16();
-  return ParseHTMLNonNegativeIntegerInternal(start, start + length, value);
+  return WTF::VisitCharacters(
+      input, [&](const auto* position, unsigned length) {
+        using CharacterType = std::decay_t<decltype(*position)>;
+        const auto* end = position + length;
+
+        // This function is an implementation of the following algorithm:
+        // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
+        // However, in order to support integers >= 2^31, we fold [1] into this.
+        // 'Step N' in the following comments refers to [1].
+        //
+        // [1]
+        // https://html.spec.whatwg.org/C/#rules-for-parsing-integers
+
+        // Step 4: Skip whitespace.
+        SkipWhile<CharacterType, IsHTMLSpace<CharacterType>>(position, end);
+
+        // Step 5: If position is past the end of input, return an error.
+        if (position == end)
+          return WTF::NumberParsingResult::kError;
+        DCHECK_LT(position, end);
+
+        WTF::NumberParsingResult result;
+        WTF::NumberParsingOptions options(
+            WTF::NumberParsingOptions::kAcceptTrailingGarbage |
+            WTF::NumberParsingOptions::kAcceptLeadingPlus |
+            WTF::NumberParsingOptions::kAcceptMinusZeroForUnsigned);
+        unsigned wtf_value =
+            CharactersToUInt(position, end - position, options, &result);
+        if (result == WTF::NumberParsingResult::kSuccess)
+          value = wtf_value;
+        return result;
+      });
 }
 
 // https://html.spec.whatwg.org/C/#rules-for-parsing-non-negative-integers
@@ -281,32 +267,38 @@ static Vector<double> ParseHTMLListOfFloatingPointNumbersInternal(
     const CharacterType* position,
     const CharacterType* end) {
   Vector<double> numbers;
-  SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
-
-  while (position < end) {
-    SkipWhile<CharacterType, IsNotSpaceDelimiterOrNumberStart>(position, end);
-
-    const CharacterType* unparsed_number_start = position;
-    SkipUntil<CharacterType, IsSpaceOrDelimiter>(position, end);
-
-    size_t parsed_length = 0;
-    double number = CharactersToDouble(
-        unparsed_number_start, position - unparsed_number_start, parsed_length);
-    numbers.push_back(CheckDoubleValue(number, parsed_length != 0, 0));
-
-    SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
-  }
   return numbers;
 }
 
 // https://html.spec.whatwg.org/C/#rules-for-parsing-a-list-of-floating-point-numbers
 Vector<double> ParseHTMLListOfFloatingPointNumbers(const String& input) {
+  Vector<double> numbers;
   unsigned length = input.length();
-  if (!length || input.Is8Bit())
-    return ParseHTMLListOfFloatingPointNumbersInternal(
-        input.Characters8(), input.Characters8() + length);
-  return ParseHTMLListOfFloatingPointNumbersInternal(
-      input.Characters16(), input.Characters16() + length);
+  if (!length)
+    return numbers;
+
+  WTF::VisitCharacters(input, [&](const auto* position, unsigned length) {
+    using CharacterType = std::decay_t<decltype(*position)>;
+    const auto* end = position + length;
+
+    SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
+
+    while (position < end) {
+      SkipWhile<CharacterType, IsNotSpaceDelimiterOrNumberStart>(position, end);
+
+      const CharacterType* unparsed_number_start = position;
+      SkipUntil<CharacterType, IsSpaceOrDelimiter>(position, end);
+
+      size_t parsed_length = 0;
+      double number =
+          CharactersToDouble(unparsed_number_start,
+                             position - unparsed_number_start, parsed_length);
+      numbers.push_back(CheckDoubleValue(number, parsed_length != 0, 0));
+
+      SkipWhile<CharacterType, IsSpaceOrDelimiter>(position, end);
+    }
+  });
+  return numbers;
 }
 
 static const char kCharsetString[] = "charset";
@@ -379,7 +371,7 @@ WTF::TextEncoding EncodingFromMetaAttributes(
     const AtomicString& attribute_value = AtomicString(html_attribute.second);
 
     if (ThreadSafeMatch(attribute_name, html_names::kHttpEquivAttr)) {
-      if (DeprecatedEqualIgnoringCase(attribute_value, "content-type"))
+      if (EqualIgnoringASCIICase(attribute_value, "content-type"))
         got_pragma = true;
     } else if (ThreadSafeMatch(attribute_name, html_names::kCharsetAttr)) {
       has_charset = true;

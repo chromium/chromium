@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 package org.chromium.support_lib_boundary.util;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +21,6 @@ import java.util.Collection;
  */
 // Although this is not enforced in chromium, this is a requirement enforced when this file is
 // mirrored into AndroidX. See http://b/120770118 for details.
-@SuppressLint("BanTargetApiAnnotation")
 public class BoundaryInterfaceReflectionUtil {
     /**
      * Check if an object is an instance of {@code className}, resolving {@code className} in
@@ -91,7 +89,7 @@ public class BoundaryInterfaceReflectionUtil {
      *     method calls to.
      * @return an InvocationHandlerWithDelegateGetter wrapping {@code delegate}
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Nullable
     public static InvocationHandler createInvocationHandlerFor(@Nullable final Object delegate) {
         if (delegate == null) return null;
@@ -111,7 +109,7 @@ public class BoundaryInterfaceReflectionUtil {
      * @return an array of InvocationHandlerWithDelegateGetter instances, each delegating to
      *     the corresponding member of {@code delegates}.
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Nullable
     public static InvocationHandler[] createInvocationHandlersForArray(
             @Nullable final Object[] delegates) {
@@ -134,6 +132,7 @@ public class BoundaryInterfaceReflectionUtil {
      * @param invocationHandler a {@link Nullable} InvocationHandlerWithDelegateGetter.
      * @return the corresponding delegate.
      */
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Nullable
     public static Object getDelegateFromInvocationHandler(
             @Nullable InvocationHandler invocationHandler) {
@@ -148,7 +147,7 @@ public class BoundaryInterfaceReflectionUtil {
      * This allows us to pass InvocationHandlers across the support library boundary and later
      * unwrap the objects used as delegates within those InvocationHandlers.
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private static class InvocationHandlerWithDelegateGetter implements InvocationHandler {
         private final Object mDelegate;
 

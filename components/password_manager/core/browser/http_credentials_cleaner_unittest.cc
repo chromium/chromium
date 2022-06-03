@@ -4,11 +4,10 @@
 
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
 
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -35,7 +34,7 @@ enum class HttpCredentialType { kConflicting, kEquivalent, kNoMatching };
 
 struct TestCase {
   bool is_hsts_enabled;
-  autofill::PasswordForm::Scheme http_form_scheme;
+  PasswordForm::Scheme http_form_scheme;
   bool same_signon_realm;
   bool same_scheme;
   bool same_username;
@@ -54,48 +53,48 @@ struct TestCase {
 
 constexpr static TestCase kCases[] = {
 
-    {true, autofill::PasswordForm::Scheme::kHtml, false, true, true, true,
+    {true, PasswordForm::Scheme::kHtml, false, true, true, true,
      HttpCredentialType::kNoMatching},
-    {true, autofill::PasswordForm::Scheme::kHtml, true, false, true, true,
+    {true, PasswordForm::Scheme::kHtml, true, false, true, true,
      HttpCredentialType::kNoMatching},
-    {true, autofill::PasswordForm::Scheme::kHtml, true, true, false, true,
+    {true, PasswordForm::Scheme::kHtml, true, true, false, true,
      HttpCredentialType::kNoMatching},
-    {true, autofill::PasswordForm::Scheme::kHtml, true, true, true, false,
+    {true, PasswordForm::Scheme::kHtml, true, true, true, false,
      HttpCredentialType::kConflicting},
-    {true, autofill::PasswordForm::Scheme::kHtml, true, true, true, true,
+    {true, PasswordForm::Scheme::kHtml, true, true, true, true,
      HttpCredentialType::kEquivalent},
 
-    {false, autofill::PasswordForm::Scheme::kHtml, false, true, true, true,
+    {false, PasswordForm::Scheme::kHtml, false, true, true, true,
      HttpCredentialType::kNoMatching},
-    {false, autofill::PasswordForm::Scheme::kHtml, true, false, true, true,
+    {false, PasswordForm::Scheme::kHtml, true, false, true, true,
      HttpCredentialType::kNoMatching},
-    {false, autofill::PasswordForm::Scheme::kHtml, true, true, false, true,
+    {false, PasswordForm::Scheme::kHtml, true, true, false, true,
      HttpCredentialType::kNoMatching},
-    {false, autofill::PasswordForm::Scheme::kHtml, true, true, true, false,
+    {false, PasswordForm::Scheme::kHtml, true, true, true, false,
      HttpCredentialType::kConflicting},
-    {false, autofill::PasswordForm::Scheme::kHtml, true, true, true, true,
+    {false, PasswordForm::Scheme::kHtml, true, true, true, true,
      HttpCredentialType::kEquivalent},
 
-    {true, autofill::PasswordForm::Scheme::kBasic, false, true, true, true,
+    {true, PasswordForm::Scheme::kBasic, false, true, true, true,
      HttpCredentialType::kNoMatching},
-    {true, autofill::PasswordForm::Scheme::kBasic, true, false, true, true,
+    {true, PasswordForm::Scheme::kBasic, true, false, true, true,
      HttpCredentialType::kNoMatching},
-    {true, autofill::PasswordForm::Scheme::kBasic, true, true, false, true,
+    {true, PasswordForm::Scheme::kBasic, true, true, false, true,
      HttpCredentialType::kNoMatching},
-    {true, autofill::PasswordForm::Scheme::kBasic, true, true, true, false,
+    {true, PasswordForm::Scheme::kBasic, true, true, true, false,
      HttpCredentialType::kConflicting},
-    {true, autofill::PasswordForm::Scheme::kBasic, true, true, true, true,
+    {true, PasswordForm::Scheme::kBasic, true, true, true, true,
      HttpCredentialType::kEquivalent},
 
-    {false, autofill::PasswordForm::Scheme::kBasic, false, true, true, true,
+    {false, PasswordForm::Scheme::kBasic, false, true, true, true,
      HttpCredentialType::kNoMatching},
-    {false, autofill::PasswordForm::Scheme::kBasic, true, false, true, true,
+    {false, PasswordForm::Scheme::kBasic, true, false, true, true,
      HttpCredentialType::kNoMatching},
-    {false, autofill::PasswordForm::Scheme::kBasic, true, true, false, true,
+    {false, PasswordForm::Scheme::kBasic, true, true, false, true,
      HttpCredentialType::kNoMatching},
-    {false, autofill::PasswordForm::Scheme::kBasic, true, true, true, false,
+    {false, PasswordForm::Scheme::kBasic, true, true, true, false,
      HttpCredentialType::kConflicting},
-    {false, autofill::PasswordForm::Scheme::kBasic, true, true, true, true,
+    {false, PasswordForm::Scheme::kBasic, true, true, true, true,
      HttpCredentialType::kEquivalent}};
 
 }  // namespace
@@ -103,24 +102,29 @@ constexpr static TestCase kCases[] = {
 class MockCredentialsCleanerObserver : public CredentialsCleaner::Observer {
  public:
   MockCredentialsCleanerObserver() = default;
+
+  MockCredentialsCleanerObserver(const MockCredentialsCleanerObserver&) =
+      delete;
+  MockCredentialsCleanerObserver& operator=(
+      const MockCredentialsCleanerObserver&) = delete;
+
   ~MockCredentialsCleanerObserver() override = default;
   MOCK_METHOD0(CleaningCompleted, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialsCleanerObserver);
 };
 
 class HttpCredentialCleanerTest : public ::testing::TestWithParam<TestCase> {
  public:
   HttpCredentialCleanerTest() = default;
 
+  HttpCredentialCleanerTest(const HttpCredentialCleanerTest&) = delete;
+  HttpCredentialCleanerTest& operator=(const HttpCredentialCleanerTest&) =
+      delete;
+
   ~HttpCredentialCleanerTest() override = default;
 
  protected:
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-
-  DISALLOW_COPY_AND_ASSIGN(HttpCredentialCleanerTest);
 };
 
 TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
@@ -133,14 +137,13 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   static const std::string signon_realm[2] = {"https://example.org/realm/",
                                               "https://example.org/"};
 
-  static const base::string16 username[2] = {base::ASCIIToUTF16("user0"),
-                                             base::ASCIIToUTF16("user1")};
+  static const std::u16string username[2] = {u"user0", u"user1"};
 
-  static const base::string16 password[2] = {base::ASCIIToUTF16("pass0"),
-                                             base::ASCIIToUTF16("pass1")};
+  static const std::u16string password[2] = {u"pass0", u"pass1"};
 
   base::test::TaskEnvironment task_environment;
-  ASSERT_TRUE(store_->Init(syncer::SyncableService::StartSyncFlare(), nullptr));
+  ASSERT_TRUE(
+      store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr));
   TestCase test = GetParam();
   SCOPED_TRACE(testing::Message()
                << "is_hsts_enabled=" << test.is_hsts_enabled
@@ -151,25 +154,24 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
                << ", same_username=" << test.same_username
                << ", same_password=" << test.same_password);
 
-  autofill::PasswordForm http_form;
-  http_form.origin = GURL("http://example.org/");
+  PasswordForm http_form;
+  http_form.url = GURL("http://example.org/");
   http_form.signon_realm = "http://example.org/";
   http_form.scheme = test.http_form_scheme;
   http_form.username_value = username[1];
   http_form.password_value = password[1];
   store_->AddLogin(http_form);
 
-  autofill::PasswordForm https_form;
-  https_form.origin = GURL("https://example.org/");
+  PasswordForm https_form;
+  https_form.url = GURL("https://example.org/");
   https_form.signon_realm = signon_realm[test.same_signon_realm];
   https_form.username_value = username[test.same_username];
   https_form.password_value = password[test.same_password];
   https_form.scheme = test.http_form_scheme;
   if (!test.same_scheme) {
-    https_form.scheme =
-        (http_form.scheme == autofill::PasswordForm::Scheme::kBasic
-             ? autofill::PasswordForm::Scheme::kHtml
-             : autofill::PasswordForm::Scheme::kBasic);
+    https_form.scheme = (http_form.scheme == PasswordForm::Scheme::kBasic
+                             ? PasswordForm::Scheme::kHtml
+                             : PasswordForm::Scheme::kBasic);
   }
   store_->AddLogin(https_form);
 
@@ -183,7 +185,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
 
   if (test.is_hsts_enabled) {
     base::RunLoop run_loop;
-    network_context->AddHSTS(http_form.origin.host(), base::Time::Max(),
+    network_context->AddHSTS(http_form.url.host(), base::Time::Max(),
                              false /*include_subdomains*/,
                              run_loop.QuitClosure());
     run_loop.Run();
@@ -252,11 +254,10 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
 
     base::test::TaskEnvironment task_environment;
     auto password_store = base::MakeRefCounted<TestPasswordStore>();
-    ASSERT_TRUE(password_store->Init(syncer::SyncableService::StartSyncFlare(),
-                                     nullptr));
+    ASSERT_TRUE(password_store->Init(/*prefs=*/nullptr,
+                                     /*affiliated_match_helper=*/nullptr));
 
-    double last_time =
-        (base::Time::Now() - base::TimeDelta::FromMinutes(10)).ToDoubleT();
+    double last_time = (base::Time::Now() - base::Minutes(10)).ToDoubleT();
     if (should_start_clean_up) {
       // Simulate that the clean-up was performed
       // (HttpCredentialCleaner::kCleanUpDelayInDays + 1) days ago.
@@ -265,8 +266,7 @@ TEST(HttpCredentialCleaner, StartCleanUpTest) {
       // |HttpCredentialCleaner::kCleanUpDelayInDays| days between two
       // clean-ups)
       last_time = (base::Time::Now() -
-                   base::TimeDelta::FromDays(
-                       HttpCredentialCleaner::kCleanUpDelayInDays + 1))
+                   base::Days(HttpCredentialCleaner::kCleanUpDelayInDays + 1))
                       .ToDoubleT();
     }
 

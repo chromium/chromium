@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.contextualsearch;
 import androidx.annotation.Nullable;
 
 /**
- * Provides an interface for forcing translation on a Contextual Search Request.
+ * Provides an interface for detecting and forcing translation on a Contextual Search Request.
  * When translation is forced, the request has additional parameters that force a one-box for the
  * supplied source and destination languages.
- * Methods support forcing translation on a request from a given source language, or forcing
- * translation on a request using an auto-detection for whether the source and destination are
- * different.
+ * Methods support detecting underlying translation signals and forcing translation on a request
+ * from a given source language, or forcing translation on a request using an auto-detection for
+ * to determine whether the source and destination are different.
  */
 public interface ContextualSearchTranslation {
     /**
@@ -20,8 +20,10 @@ public interface ContextualSearchTranslation {
      * Also log whenever conditions are right to translate.
      * @param searchRequest The search request to force translation upon.
      * @param sourceLanguage The language to translate from, or an empty string if not known.
+     * @param isTapSelection Whether the selection was established with a Tap gesture.
      */
-    void forceTranslateIfNeeded(ContextualSearchRequest searchRequest, String sourceLanguage);
+    void forceTranslateIfNeeded(
+            ContextualSearchRequest searchRequest, String sourceLanguage, boolean isTapSelection);
 
     /**
      * Force auto-detect translation for the current search request.  The language to translate from
@@ -38,4 +40,9 @@ public interface ContextualSearchTranslation {
      * @return The best target language based on what the Translate Service knows about the user.
      */
     String getTranslateServiceTargetLanguage();
+
+    /**
+     * @return The ordered list of languages that the user can read fluently.
+     */
+    String getTranslateServiceFluentLanguages();
 }

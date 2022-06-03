@@ -17,27 +17,45 @@
 
 #include <stdlib.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <iterator>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
+#include "absl/base/attributes.h"
+#include "absl/base/config.h"
+#include "absl/base/const_init.h"
+#include "absl/base/thread_annotations.h"
+#include "absl/flags/commandlineflag.h"
+#include "absl/flags/config.h"
 #include "absl/flags/flag.h"
+#include "absl/flags/internal/commandlineflag.h"
+#include "absl/flags/internal/flag.h"
+#include "absl/flags/internal/parse.h"
+#include "absl/flags/internal/private_handle_accessor.h"
 #include "absl/flags/internal/program_name.h"
-#include "absl/flags/internal/registry.h"
 #include "absl/flags/internal/usage.h"
+#include "absl/flags/reflection.h"
 #include "absl/flags/usage.h"
 #include "absl/flags/usage_config.h"
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
 #include "absl/synchronization/mutex.h"
 
 // --------------------------------------------------------------------
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 namespace {
 
@@ -50,8 +68,25 @@ ABSL_CONST_INIT bool fromenv_needs_processing
 ABSL_CONST_INIT bool tryfromenv_needs_processing
     ABSL_GUARDED_BY(processing_checks_guard) = false;
 
+ABSL_CONST_INIT absl::Mutex specified_flags_guard(absl::kConstInit);
+ABSL_CONST_INIT std::vector<const CommandLineFlag*>* specified_flags
+    ABSL_GUARDED_BY(specified_flags_guard) = nullptr;
+
+struct SpecifiedFlagsCompare {
+  bool operator()(const CommandLineFlag* a, const CommandLineFlag* b) const {
+    return a->Name() < b->Name();
+  }
+  bool operator()(const CommandLineFlag* a, absl::string_view b) const {
+    return a->Name() < b;
+  }
+  bool operator()(absl::string_view a, const CommandLineFlag* b) const {
+    return a < b->Name();
+  }
+};
+
 }  // namespace
 }  // namespace flags_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 ABSL_FLAG(std::vector<std::string>, flagfile, {},
@@ -109,6 +144,7 @@ ABSL_FLAG(std::vector<std::string>, undefok, {},
           "with that name");
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 
 namespace {
@@ -187,7 +223,7 @@ bool ArgsList::ReadFromFlagfile(const std::string& flag_file_name) {
 // Reads the environment variable with name `name` and stores results in
 // `value`. If variable is not present in environment returns false, otherwise
 // returns true.
-bool GetEnvVar(const char* var_name, std::string* var_value) {
+bool GetEnvVar(const char* var_name, std::string& var_value) {
 #ifdef _WIN32
   char buf[1024];
   auto get_res = GetEnvironmentVariableA(var_name, buf, sizeof(buf));
@@ -199,14 +235,14 @@ bool GetEnvVar(const char* var_name, std::string* var_value) {
     return false;
   }
 
-  *var_value = std::string(buf, get_res);
+  var_value = std::string(buf, get_res);
 #else
   const char* val = ::getenv(var_name);
   if (val == nullptr) {
     return false;
   }
 
-  *var_value = val;
+  var_value = val;
 #endif
 
   return true;
@@ -254,11 +290,11 @@ std::tuple<absl::string_view, absl::string_view, bool> SplitNameAndValue(
 //  found flag or nullptr
 //  is negative in case of --nofoo
 std::tuple<CommandLineFlag*, bool> LocateFlag(absl::string_view flag_name) {
-  CommandLineFlag* flag = flags_internal::FindCommandLineFlag(flag_name);
+  CommandLineFlag* flag = absl::FindCommandLineFlag(flag_name);
   bool is_negative = false;
 
   if (!flag && absl::ConsumePrefix(&flag_name, "no")) {
-    flag = flags_internal::FindCommandLineFlag(flag_name);
+    flag = absl::FindCommandLineFlag(flag_name);
     is_negative = true;
   }
 
@@ -271,18 +307,17 @@ std::tuple<CommandLineFlag*, bool> LocateFlag(absl::string_view flag_name) {
 // back.
 void CheckDefaultValuesParsingRoundtrip() {
 #ifndef NDEBUG
-  flags_internal::ForEachFlag([&](CommandLineFlag* flag) {
-    if (flag->IsRetired()) return;
+  flags_internal::ForEachFlag([&](CommandLineFlag& flag) {
+    if (flag.IsRetired()) return;
 
-#define IGNORE_TYPE(T) \
-  if (flag->IsOfType<T>()) return;
+#define ABSL_FLAGS_INTERNAL_IGNORE_TYPE(T, _) \
+  if (flag.IsOfType<T>()) return;
 
-    ABSL_FLAGS_INTERNAL_FOR_EACH_LOCK_FREE(IGNORE_TYPE)
-    IGNORE_TYPE(std::string)
-    IGNORE_TYPE(std::vector<std::string>)
-#undef IGNORE_TYPE
+    ABSL_FLAGS_INTERNAL_SUPPORTED_TYPES(ABSL_FLAGS_INTERNAL_IGNORE_TYPE)
+#undef ABSL_FLAGS_INTERNAL_IGNORE_TYPE
 
-    flag->CheckDefaultValueParsingRoundtrip();
+    flags_internal::PrivateHandleAccessor::CheckDefaultValueParsingRoundtrip(
+        flag);
   });
 #endif
 }
@@ -295,13 +330,13 @@ void CheckDefaultValuesParsingRoundtrip() {
 // the first flagfile in the input list are processed before the second flagfile
 // etc.
 bool ReadFlagfiles(const std::vector<std::string>& flagfiles,
-                   std::vector<ArgsList>* input_args) {
+                   std::vector<ArgsList>& input_args) {
   bool success = true;
   for (auto it = flagfiles.rbegin(); it != flagfiles.rend(); ++it) {
     ArgsList al;
 
     if (al.ReadFromFlagfile(*it)) {
-      input_args->push_back(al);
+      input_args.push_back(al);
     } else {
       success = false;
     }
@@ -316,7 +351,7 @@ bool ReadFlagfiles(const std::vector<std::string>& flagfiles,
 // `flag_name` is a string from the input flag_names list. If successful we
 // append a single ArgList at the end of the input_args.
 bool ReadFlagsFromEnv(const std::vector<std::string>& flag_names,
-                      std::vector<ArgsList>* input_args,
+                      std::vector<ArgsList>& input_args,
                       bool fail_on_absent_in_env) {
   bool success = true;
   std::vector<std::string> args;
@@ -337,7 +372,7 @@ bool ReadFlagsFromEnv(const std::vector<std::string>& flag_names,
 
     const std::string envname = absl::StrCat("FLAGS_", flag_name);
     std::string envval;
-    if (!GetEnvVar(envname.c_str(), &envval)) {
+    if (!GetEnvVar(envname.c_str(), envval)) {
       if (fail_on_absent_in_env) {
         flags_internal::ReportUsageError(
             absl::StrCat(envname, " not found in environment"), true);
@@ -352,7 +387,7 @@ bool ReadFlagsFromEnv(const std::vector<std::string>& flag_names,
   }
 
   if (success) {
-    input_args->emplace_back(args);
+    input_args.emplace_back(args);
   }
 
   return success;
@@ -362,8 +397,8 @@ bool ReadFlagsFromEnv(const std::vector<std::string>& flag_names,
 
 // Returns success status, which is true if were able to handle all generator
 // flags (flagfile, fromenv, tryfromemv) successfully.
-bool HandleGeneratorFlags(std::vector<ArgsList>* input_args,
-                          std::vector<std::string>* flagfile_value) {
+bool HandleGeneratorFlags(std::vector<ArgsList>& input_args,
+                          std::vector<std::string>& flagfile_value) {
   bool success = true;
 
   absl::MutexLock l(&flags_internal::processing_checks_guard);
@@ -388,9 +423,9 @@ bool HandleGeneratorFlags(std::vector<ArgsList>* input_args,
   if (flags_internal::flagfile_needs_processing) {
     auto flagfiles = absl::GetFlag(FLAGS_flagfile);
 
-    if (input_args->size() == 1) {
-      flagfile_value->insert(flagfile_value->end(), flagfiles.begin(),
-                             flagfiles.end());
+    if (input_args.size() == 1) {
+      flagfile_value.insert(flagfile_value.end(), flagfiles.begin(),
+                            flagfiles.end());
     }
 
     success &= ReadFlagfiles(flagfiles, input_args);
@@ -517,12 +552,12 @@ std::tuple<bool, absl::string_view> DeduceFlagValue(const CommandLineFlag& flag,
     curr_list->PopFront();
     value = curr_list->Front();
 
-    // Heuristic to detect the case where someone treats a std::string arg
+    // Heuristic to detect the case where someone treats a string arg
     // like a bool or just forgets to pass a value:
     // --my_string_var --foo=bar
-    // We look for a flag of std::string type, whose value begins with a
+    // We look for a flag of string type, whose value begins with a
     // dash and corresponds to known flag or standalone --.
-    if (value[0] == '-' && flag.IsOfType<std::string>()) {
+    if (!value.empty() && value[0] == '-' && flag.IsOfType<std::string>()) {
       auto maybe_flag_name = std::get<0>(SplitNameAndValue(value.substr(1)));
 
       if (maybe_flag_name.empty() ||
@@ -559,11 +594,27 @@ bool CanIgnoreUndefinedFlag(absl::string_view flag_name) {
 
 // --------------------------------------------------------------------
 
+bool WasPresentOnCommandLine(absl::string_view flag_name) {
+  absl::MutexLock l(&specified_flags_guard);
+  ABSL_INTERNAL_CHECK(specified_flags != nullptr,
+                      "ParseCommandLine is not invoked yet");
+
+  return std::binary_search(specified_flags->begin(), specified_flags->end(),
+                            flag_name, SpecifiedFlagsCompare{});
+}
+
+// --------------------------------------------------------------------
+
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
                                         ArgvListAction arg_list_act,
                                         UsageFlagsAction usage_flag_act,
                                         OnUndefinedFlag on_undef_flag) {
   ABSL_INTERNAL_CHECK(argc > 0, "Missing argv[0]");
+
+  // Once parsing has started we will not have more flag registrations.
+  // If we did, they would be missing during parsing, which is a problem on
+  // itself.
+  flags_internal::FinalizeRegistry();
 
   // This routine does not return anything since we abort on failure.
   CheckDefaultValuesParsingRoundtrip();
@@ -589,13 +640,20 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
   }
   output_args.push_back(argv[0]);
 
+  absl::MutexLock l(&specified_flags_guard);
+  if (specified_flags == nullptr) {
+    specified_flags = new std::vector<const CommandLineFlag*>;
+  } else {
+    specified_flags->clear();
+  }
+
   // Iterate through the list of the input arguments. First level are arguments
   // originated from argc/argv. Following levels are arguments originated from
   // recursive parsing of flagfile(s).
   bool success = true;
   while (!input_args.empty()) {
     // 10. First we process the built-in generator flags.
-    success &= HandleGeneratorFlags(&input_args, &flagfile_value);
+    success &= HandleGeneratorFlags(input_args, flagfile_value);
 
     // 30. Select top-most (most recent) arguments list. If it is empty drop it
     // and re-try.
@@ -630,7 +688,7 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
 
     // 60. Split the current argument on '=' to figure out the argument
     // name and value. If flag name is empty it means we've got "--". value
-    // can be empty either if there were no '=' in argument std::string at all or
+    // can be empty either if there were no '=' in argument string at all or
     // an argument looked like "--foo=". In a latter case is_empty_value is
     // true.
     absl::string_view flag_name;
@@ -655,6 +713,11 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
     std::tie(flag, is_negative) = LocateFlag(flag_name);
 
     if (flag == nullptr) {
+      // Usage flags are not modeled as Abseil flags. Locate them separately.
+      if (flags_internal::DeduceUsageFlags(flag_name, value)) {
+        continue;
+      }
+
       if (on_undef_flag != OnUndefinedFlag::kIgnoreUndefined) {
         undefined_flag_names.emplace_back(arg_from_argv,
                                           std::string(flag_name));
@@ -676,13 +739,17 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
     }
 
     // 100. Set the located flag to a new new value, unless it is retired.
-    // Setting retired flag fails, but we ignoring it here.
-    if (flag->IsRetired()) continue;
-
+    // Setting retired flag fails, but we ignoring it here while also reporting
+    // access to retired flag.
     std::string error;
-    if (!flag->SetFromString(value, SET_FLAGS_VALUE, kCommandLine, &error)) {
+    if (!flags_internal::PrivateHandleAccessor::ParseFrom(
+            *flag, value, SET_FLAGS_VALUE, kCommandLine, error)) {
+      if (flag->IsRetired()) continue;
+
       flags_internal::ReportUsageError(error, true);
       success = false;
+    } else {
+      specified_flags->push_back(flag);
     }
   }
 
@@ -734,6 +801,10 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
     }
   }
 
+  // Trim and sort the vector.
+  specified_flags->shrink_to_fit();
+  std::sort(specified_flags->begin(), specified_flags->end(),
+            SpecifiedFlagsCompare{});
   return output_args;
 }
 
@@ -748,4 +819,5 @@ std::vector<char*> ParseCommandLine(int argc, char* argv[]) {
       flags_internal::OnUndefinedFlag::kAbortIfUndefined);
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl

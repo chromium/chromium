@@ -4,15 +4,18 @@
 
 #include "components/download/internal/background_service/in_memory_download.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "net/base/io_buffer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "storage/browser/blob/blob_reader.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -57,6 +60,9 @@ class MockDelegate : public InMemoryDownload::Delegate {
   MockDelegate(BlobContextGetter blob_context_getter)
       : blob_context_getter_(blob_context_getter) {}
 
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   void WaitForCompletion() {
     DCHECK(!run_loop_.running());
     run_loop_.Run();
@@ -78,19 +84,21 @@ class MockDelegate : public InMemoryDownload::Delegate {
  private:
   base::RunLoop run_loop_;
   BlobContextGetter blob_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 class InMemoryDownloadTest : public testing::Test {
  public:
   InMemoryDownloadTest() = default;
+
+  InMemoryDownloadTest(const InMemoryDownloadTest&) = delete;
+  InMemoryDownloadTest& operator=(const InMemoryDownloadTest&) = delete;
+
   ~InMemoryDownloadTest() override = default;
 
   void SetUp() override {
-    io_thread_.reset(new base::Thread("Network and Blob IO thread"));
+    io_thread_ = std::make_unique<base::Thread>("Network and Blob IO thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    io_thread_->StartWithOptions(options);
+    io_thread_->StartWithOptions(std::move(options));
 
     base::RunLoop loop;
     io_thread_->task_runner()->PostTask(
@@ -182,8 +190,6 @@ class InMemoryDownloadTest : public testing::Test {
 
   // Memory backed blob storage that can never page to disk.
   std::unique_ptr<storage::BlobStorageContext> blob_storage_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadTest);
 };
 
 TEST_F(InMemoryDownloadTest, DownloadTest) {
@@ -216,7 +222,7 @@ TEST_F(InMemoryDownloadTest, RedirectResponseHeaders) {
   // Add some random header.
   auto response_head = network::mojom::URLResponseHead::New();
   response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_head->headers->AddHeader("X-Random-Test-Header: 123");
+  response_head->headers->SetHeader("X-Random-Test-Header", "123");
 
   // The size must match for download as stream from SimpleUrlLoader.
   network::URLLoaderCompletionStatus status;

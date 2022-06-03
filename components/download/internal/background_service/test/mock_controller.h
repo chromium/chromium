@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/controller.h"
 #include "components/download/internal/background_service/startup_status.h"
 #include "components/download/public/background_service/download_params.h"
@@ -19,27 +18,43 @@ namespace test {
 class MockController : public Controller {
  public:
   MockController();
+
+  MockController(const MockController&) = delete;
+  MockController& operator=(const MockController&) = delete;
+
   ~MockController() override;
 
   // Controller implementation.
-  void Initialize(const base::Closure& callback) override;
-  MOCK_METHOD0(GetState, Controller::State());
-  MOCK_METHOD1(StartDownload, void(const DownloadParams&));
-  MOCK_METHOD1(PauseDownload, void(const std::string&));
-  MOCK_METHOD1(ResumeDownload, void(const std::string&));
-  MOCK_METHOD1(CancelDownload, void(const std::string&));
-  MOCK_METHOD2(ChangeDownloadCriteria,
-               void(const std::string&, const SchedulingParams&));
-  MOCK_METHOD1(GetOwnerOfDownload, DownloadClient(const std::string&));
-  MOCK_METHOD2(OnStartScheduledTask,
-               void(DownloadTaskType, TaskFinishedCallback));
-  MOCK_METHOD1(OnStopScheduledTask, bool(DownloadTaskType task_type));
+  void Initialize(base::OnceClosure callback) override;
+  MOCK_METHOD(Controller::State, GetState, (), (override));
+  MOCK_METHOD(const ServiceConfig&, GetConfig, (), (override));
+  MOCK_METHOD(BackgroundDownloadService::ServiceStatus,
+              GetStatus,
+              (),
+              (override));
+  MOCK_METHOD(void, StartDownload, (DownloadParams), (override));
+  MOCK_METHOD(void, PauseDownload, (const std::string&), (override));
+  MOCK_METHOD(void, ResumeDownload, (const std::string&), (override));
+  MOCK_METHOD(void, CancelDownload, (const std::string&), (override));
+  MOCK_METHOD(void,
+              ChangeDownloadCriteria,
+              (const std::string&, const SchedulingParams&),
+              (override));
+  MOCK_METHOD(DownloadClient,
+              GetOwnerOfDownload,
+              (const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              OnStartScheduledTask,
+              (DownloadTaskType, TaskFinishedCallback),
+              (override));
+  MOCK_METHOD(bool, OnStopScheduledTask, (DownloadTaskType), (override));
+  MOCK_METHOD(Logger*, GetLogger, (), (override));
 
   void TriggerInitCompleted();
 
  private:
-  base::Closure init_callback_;
-  DISALLOW_COPY_AND_ASSIGN(MockController);
+  base::OnceClosure init_callback_;
 };
 
 }  // namespace test

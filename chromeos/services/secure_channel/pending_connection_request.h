@@ -8,11 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace chromeos {
 
@@ -35,6 +33,9 @@ class PendingConnectionRequest {
       std::unique_ptr<PendingConnectionRequest<FailureDetailType>> request) {
     return request->ExtractClientConnectionParameters();
   }
+
+  PendingConnectionRequest(const PendingConnectionRequest&) = delete;
+  PendingConnectionRequest& operator=(const PendingConnectionRequest&) = delete;
 
   virtual ~PendingConnectionRequest() = default;
 
@@ -67,8 +68,6 @@ class PendingConnectionRequest {
  private:
   PendingConnectionRequestDelegate* delegate_;
   ConnectionPriority connection_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionRequest);
 };
 
 }  // namespace secure_channel

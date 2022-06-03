@@ -157,9 +157,10 @@ std::unique_ptr<HttpResponse> HandleSetImageResponse(
   bool header_exist = false;
   if (query.find("header") != query.end()) {
     for (const auto& header : query.at("header")) {
-      if (request.headers.find(header) != request.headers.end())
+      if (request.headers.find(header) != request.headers.end()) {
         header_exist = true;
-      break;
+        break;
+      }
     }
   }
 

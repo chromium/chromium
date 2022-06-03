@@ -5,8 +5,8 @@
 #ifndef ASH_ASSISTANT_MODEL_UI_ASSISTANT_UI_ELEMENT_H_
 #define ASH_ASSISTANT_MODEL_UI_ASSISTANT_UI_ELEMENT_H_
 
+#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -14,8 +14,9 @@ namespace ash {
 
 // Defines possible types of Assistant UI elements.
 enum class AssistantUiElementType {
-  kCard,  // See AssistantCardElement.
-  kText,  // See AssistantTextElement.
+  kCard,   // See AssistantCardElement.
+  kError,  // See AssistantErrorElement.
+  kText,   // See AssistantTextElement.
 };
 
 // AssistantUiElement ----------------------------------------------------------
@@ -23,17 +24,32 @@ enum class AssistantUiElementType {
 // Base class for a UI element that will be rendered inside of Assistant UI.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiElement {
  public:
-  virtual ~AssistantUiElement() = default;
+  AssistantUiElement(const AssistantUiElement&) = delete;
+  AssistantUiElement& operator=(const AssistantUiElement&) = delete;
+
+  virtual ~AssistantUiElement();
+
+  bool operator==(const AssistantUiElement& other) const {
+    return this->Compare(other);
+  }
 
   AssistantUiElementType type() const { return type_; }
 
+  // Invoke to being processing the UI element for rendering. The specified
+  // |callback| will be run upon completion. Note that we don't include the
+  // processing result in the callback, as in |AssistantResponse| we handle
+  // success/failure cases the same because failures will be skipped in view
+  // handling.
+  using ProcessingCallback = base::OnceCallback<void()>;
+  virtual void Process(ProcessingCallback callback);
+
  protected:
-  explicit AssistantUiElement(AssistantUiElementType type) : type_(type) {}
+  explicit AssistantUiElement(AssistantUiElementType type);
 
  private:
   const AssistantUiElementType type_;
 
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiElement);
+  virtual bool Compare(const AssistantUiElement& other) const = 0;
 };
 
 }  // namespace ash

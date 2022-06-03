@@ -8,7 +8,8 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.Log;
 
@@ -43,20 +44,18 @@ public class CastAudioFocusRequest {
     }
 
     private int getStreamType() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (mAudioAttributes != null) {
-                switch (mAudioAttributes.getContentType()) {
-                    case AudioAttributes.CONTENT_TYPE_MOVIE:
-                    case AudioAttributes.CONTENT_TYPE_MUSIC:
-                        return AudioManager.STREAM_MUSIC;
-                    case AudioAttributes.CONTENT_TYPE_SONIFICATION:
-                        return AudioManager.STREAM_ALARM;
-                    case AudioAttributes.CONTENT_TYPE_SPEECH:
-                        return AudioManager.STREAM_VOICE_CALL;
-                    case AudioAttributes.CONTENT_TYPE_UNKNOWN:
-                    default:
-                        return AudioManager.STREAM_SYSTEM;
-                }
+        if (mAudioAttributes != null) {
+            switch (mAudioAttributes.getContentType()) {
+                case AudioAttributes.CONTENT_TYPE_MOVIE:
+                case AudioAttributes.CONTENT_TYPE_MUSIC:
+                    return AudioManager.STREAM_MUSIC;
+                case AudioAttributes.CONTENT_TYPE_SONIFICATION:
+                    return AudioManager.STREAM_ALARM;
+                case AudioAttributes.CONTENT_TYPE_SPEECH:
+                    return AudioManager.STREAM_VOICE_CALL;
+                case AudioAttributes.CONTENT_TYPE_UNKNOWN:
+                default:
+                    return AudioManager.STREAM_SYSTEM;
             }
         }
         return 0;
@@ -64,6 +63,11 @@ public class CastAudioFocusRequest {
 
     void setAudioFocusChangeListener(AudioManager.OnAudioFocusChangeListener l) {
         mAudioFocusChangeListener = l;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mAudioFocusRequest != null) {
+            mAudioFocusRequest = new AudioFocusRequest.Builder(mAudioFocusRequest)
+                                         .setOnAudioFocusChangeListener(mAudioFocusChangeListener)
+                                         .build();
+        }
     }
 
     int request(AudioManager audioManager) {

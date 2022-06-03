@@ -199,12 +199,12 @@ void MCSClient::Initialize(
   message_sent_callback_ = message_sent_callback;
 
   connection_factory_->Initialize(
-      base::Bind(&MCSClient::ResetStateAndBuildLoginRequest,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&MCSClient::HandlePacketFromWire,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&MCSClient::MaybeSendMessage,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&MCSClient::ResetStateAndBuildLoginRequest,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&MCSClient::HandlePacketFromWire,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&MCSClient::MaybeSendMessage,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   stream_id_out_ = 1;  // Login request is hardcoded to id 1.
 
@@ -254,9 +254,8 @@ void MCSClient::Initialize(
 
   if (!expired_ttl_ids.empty()) {
     gcm_store_->RemoveOutgoingMessages(
-        expired_ttl_ids,
-        base::Bind(&MCSClient::OnGCMUpdateFinished,
-                   weak_ptr_factory_.GetWeakPtr()));
+        expired_ttl_ids, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                                        weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Now go through and add the outgoing messages to the send queue in their
@@ -341,10 +340,9 @@ void MCSClient::SendMessage(const MCSMessage& message) {
       SetPersistentId(original_packet->persistent_id,
                       original_packet->protobuf.get());
       gcm_store_->OverwriteOutgoingMessage(
-          original_packet->persistent_id,
-          message,
-          base::Bind(&MCSClient::OnGCMUpdateFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+          original_packet->persistent_id, message,
+          base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                         weak_ptr_factory_.GetWeakPtr()));
 
       // The message is already queued, return.
       return;
@@ -354,10 +352,10 @@ void MCSClient::SendMessage(const MCSMessage& message) {
       packet_info->persistent_id = persistent_id;
       SetPersistentId(persistent_id, packet_info->protobuf.get());
       if (!gcm_store_->AddOutgoingMessage(
-               persistent_id,
-               MCSMessage(message.tag(), *(packet_info->protobuf)),
-               base::Bind(&MCSClient::OnGCMUpdateFinished,
-                          weak_ptr_factory_.GetWeakPtr()))) {
+              persistent_id,
+              MCSMessage(message.tag(), *(packet_info->protobuf)),
+              base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                             weak_ptr_factory_.GetWeakPtr()))) {
         NotifyMessageSendStatus(message.GetProtobuf(),
                                 APP_QUEUE_SIZE_LIMIT_REACHED);
         return;
@@ -392,9 +390,10 @@ void MCSClient::AddHeartbeatInterval(const std::string& scope,
     return;
 
   custom_heartbeat_intervals_[scope] = interval_ms;
-  gcm_store_->AddHeartbeatInterval(scope, interval_ms,
-                                   base::Bind(&MCSClient::OnGCMUpdateFinished,
-                                              weak_ptr_factory_.GetWeakPtr()));
+  gcm_store_->AddHeartbeatInterval(
+      scope, interval_ms,
+      base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   int min_interval_ms = GetMinHeartbeatIntervalMs();
   heartbeat_manager_.SetClientHeartbeatIntervalMs(min_interval_ms);
@@ -403,8 +402,8 @@ void MCSClient::AddHeartbeatInterval(const std::string& scope,
 void MCSClient::RemoveHeartbeatInterval(const std::string& scope) {
   custom_heartbeat_intervals_.erase(scope);
   gcm_store_->RemoveHeartbeatInterval(
-      scope, base::Bind(&MCSClient::OnGCMUpdateFinished,
-                        weak_ptr_factory_.GetWeakPtr()));
+      scope, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                            weak_ptr_factory_.GetWeakPtr()));
 
   int min_interval = GetMinHeartbeatIntervalMs();
   heartbeat_manager_.SetClientHeartbeatIntervalMs(min_interval);
@@ -506,9 +505,8 @@ void MCSClient::ResetStateAndBuildLoginRequest(
     DVLOG(1) << "Connection reset, " << expired_ttl_ids.size()
              << " messages expired.";
     gcm_store_->RemoveOutgoingMessages(
-        expired_ttl_ids,
-        base::Bind(&MCSClient::OnGCMUpdateFinished,
-                   weak_ptr_factory_.GetWeakPtr()));
+        expired_ttl_ids, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                                        weak_ptr_factory_.GetWeakPtr()));
   }
 
   to_send_.swap(new_to_send);
@@ -549,9 +547,8 @@ void MCSClient::MaybeSendMessage() {
     DVLOG(1) << "Dropping expired message " << packet->persistent_id << ".";
     NotifyMessageSendStatus(*packet->protobuf, TTL_EXCEEDED);
     gcm_store_->RemoveOutgoingMessage(
-        packet->persistent_id,
-        base::Bind(&MCSClient::OnGCMUpdateFinished,
-                   weak_ptr_factory_.GetWeakPtr()));
+        packet->persistent_id, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                                              weak_ptr_factory_.GetWeakPtr()));
     io_task_runner_->PostTask(FROM_HERE,
                               base::BindOnce(&MCSClient::MaybeSendMessage,
                                              weak_ptr_factory_.GetWeakPtr()));
@@ -676,9 +673,9 @@ void MCSClient::HandlePacketFromWire(
   ++stream_id_in_;
   if (!persistent_id.empty()) {
     unacked_server_ids_[stream_id_in_] = persistent_id;
-    gcm_store_->AddIncomingMessage(persistent_id,
-                                   base::Bind(&MCSClient::OnGCMUpdateFinished,
-                                              weak_ptr_factory_.GetWeakPtr()));
+    gcm_store_->AddIncomingMessage(
+        persistent_id, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                                      weak_ptr_factory_.GetWeakPtr()));
   }
 
   DVLOG(1) << "Received message of type " << protobuf->GetTypeName()
@@ -737,10 +734,10 @@ void MCSClient::HandlePacketFromWire(
       }
 
       heartbeat_manager_.Start(
-          base::Bind(&MCSClient::SendHeartbeat,
-                     weak_ptr_factory_.GetWeakPtr()),
-          base::Bind(&MCSClient::OnConnectionResetByHeartbeat,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(&MCSClient::SendHeartbeat,
+                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&MCSClient::OnConnectionResetByHeartbeat,
+                              weak_ptr_factory_.GetWeakPtr()));
       return;
     }
     case kHeartbeatPingTag:
@@ -823,8 +820,8 @@ void MCSClient::HandleStreamAck(StreamId last_stream_id_received) {
            << " remaining unacked";
   gcm_store_->RemoveOutgoingMessages(
       acked_outgoing_persistent_ids,
-      base::Bind(&MCSClient::OnGCMUpdateFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   HandleServerConfirmedReceipt(last_stream_id_received);
 }
@@ -892,9 +889,8 @@ void MCSClient::HandleSelectiveAck(const PersistentIdList& id_list) {
   DVLOG(1) << "Server acked " << acked_ids.size()
            << " messages, " << to_resend_.size() << " remaining unacked.";
   gcm_store_->RemoveOutgoingMessages(
-      acked_ids,
-      base::Bind(&MCSClient::OnGCMUpdateFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      acked_ids, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                                weak_ptr_factory_.GetWeakPtr()));
 
   // Resend any remaining outgoing messages, as they were not received by the
   // server.
@@ -923,9 +919,8 @@ void MCSClient::HandleServerConfirmedReceipt(StreamId device_stream_id) {
   DVLOG(1) << "Server confirmed receipt of " << acked_incoming_ids.size()
            << " acknowledged server messages.";
   gcm_store_->RemoveIncomingMessages(
-      acked_incoming_ids,
-      base::Bind(&MCSClient::OnGCMUpdateFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      acked_incoming_ids, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 MCSClient::PersistentId MCSClient::GetNextPersistentId() {

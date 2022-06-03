@@ -90,25 +90,48 @@
               getRestoreURL(sessionHistoryObject.urls[i] || "about:blank"));
         }
 
-        // iOS12.2 added a throttling mechanism where previous pushStates may
-        // not immediately be available. Set a 10ms interval delay until
-        // history.length reaches sessionHistory.length.
+        // iOS12.2 added a throttling mechanism where the previous pushStates
+        // may not immediately be available.  Instead of directly calling
+        // finishRestore(currentItemOffset) here, call it via a round trip
+        // native call to flush out the pushState IPC backlog.
         var currentItemOffset = parseInt(sessionHistoryObject.offset);
-        var goWhenReady = setInterval(() => {
-          if (history.length == sessionHistoryObject.urls.length) {
-            history.go(currentItemOffset);
-            window.clearInterval(goWhenReady);
+        var offset = {'offset': currentItemOffset}
+        window.webkit.messageHandlers['session_restore'].postMessage(offset);
+       } catch (e) {
+         handleError(e.name + ": " + e.message + " raw session history: " + sessionHistory);
+       }
+     }
 
+    /**
+     * Finishes restoration by history.go-ing to |offset| and reloading the
+     * page.
+     * @param {int} offset Either zero, or the number of pages (negative) to
+     * go backwards.
+     */
+    function _crFinishSessionRestoration(offset) {
+      // Webkit indirectly forces a user gesture on the final restore
+      // navigations because this method is called from native code via
+      // ExecuteJavaScript. This has unintended consequences (such as triggering
+      // universal app links). Instead, discard the gesture by calling the same
+      // setInterval twice as WebKit won't propagate the gesture the second
+      // time.
+      var skipped_first_interval = false;
+      var finalizeInterval = setInterval(() => {
+        if (skipped_first_interval) {
+          try {
+            window.clearInterval(finalizeInterval);
+            history.go(offset);
             // Queue a reload to redirect to the target URL after history.go
             // is processed.
             setTimeout(() => {
               location.reload();
             });
-           }
-        }, 10);
-      } catch (e) {
-        handleError(e.name + ": " + e.message + " raw session history: " + sessionHistory);
-      }
+          } catch (e) {
+            handleError(e.name + ": " + e.message + " offset: " + offset);
+          }
+        }
+        skipped_first_interval = true;
+      }, 0)
     }
 
     /**

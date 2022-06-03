@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<style>
+  #keg { contain: inline-size layout style; }
+  @container (max-width: 200px) {
+    #target { height: 400px; }
+  }
+  @container (min-width: 400px) {
+    #target { height: 20px; }
+  }
+</style>
+<div id="ancestry">
+  <div id="keg">
+    <div id="target">
+      <div style="height:50px;"></div>
+    </div>
+  </div>
+</div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+      ancestry.style.width = "100px";
+      assert_equals(keg.offsetHeight, 400);
+
+      ancestry.style.width = "300px";
+      assert_equals(keg.offsetHeight, 50);
+
+      ancestry.style.width = "500px";
+      assert_equals(keg.offsetHeight, 20);
+  }, "inline-size containment only");
+</script>

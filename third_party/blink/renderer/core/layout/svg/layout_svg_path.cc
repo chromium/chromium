@@ -29,54 +29,71 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 
 namespace blink {
 
+namespace {
+
+bool SupportsMarkers(const SVGGeometryElement& element) {
+  return element.HasTagName(svg_names::kLineTag) ||
+         element.HasTagName(svg_names::kPathTag) ||
+         element.HasTagName(svg_names::kPolygonTag) ||
+         element.HasTagName(svg_names::kPolylineTag);
+}
+
+}  // namespace
+
 LayoutSVGPath::LayoutSVGPath(SVGGeometryElement* node)
     // <line> elements have no joins and thus needn't care about miters.
-    : LayoutSVGShape(node, IsA<SVGLineElement>(node) ? kNoMiters : kComplex) {}
+    : LayoutSVGShape(node, IsA<SVGLineElement>(node) ? kNoMiters : kComplex) {
+  DCHECK(SupportsMarkers(*node));
+}
 
 LayoutSVGPath::~LayoutSVGPath() = default;
 
 void LayoutSVGPath::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutSVGShape::StyleDidChange(diff, old_style);
   SVGResources::UpdateMarkers(*GetElement(), old_style, StyleRef());
 }
 
 void LayoutSVGPath::WillBeDestroyed() {
+  NOT_DESTROYED();
   SVGResources::ClearMarkers(*GetElement(), Style());
   LayoutSVGShape::WillBeDestroyed();
 }
 
 void LayoutSVGPath::UpdateShapeFromElement() {
+  NOT_DESTROYED();
   LayoutSVGShape::UpdateShapeFromElement();
   UpdateMarkers();
 }
 
 const StylePath* LayoutSVGPath::GetStylePath() const {
+  NOT_DESTROYED();
   if (!IsA<SVGPathElement>(*GetElement()))
     return nullptr;
-  return StyleRef().SvgStyle().D();
+  return StyleRef().D();
 }
 
 void LayoutSVGPath::UpdateMarkers() {
+  NOT_DESTROYED();
   marker_positions_.clear();
 
-  if (!StyleRef().SvgStyle().HasMarkers() ||
-      !SVGResources::SupportsMarkers(*To<SVGGraphicsElement>(GetElement())))
+  const ComputedStyle& style = StyleRef();
+  if (!style.HasMarkers())
     return;
-
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(*this);
-  if (!resources)
+  SVGElementResourceClient* client = SVGResources::GetClient(*this);
+  if (!client)
     return;
-
-  LayoutSVGResourceMarker* marker_start = resources->MarkerStart();
-  LayoutSVGResourceMarker* marker_mid = resources->MarkerMid();
-  LayoutSVGResourceMarker* marker_end = resources->MarkerEnd();
+  auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, style.MarkerStartResource());
+  auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, style.MarkerMidResource());
+  auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, style.MarkerEndResource());
   if (!(marker_start || marker_mid || marker_end))
     return;
 
@@ -90,16 +107,16 @@ void LayoutSVGPath::UpdateMarkers() {
     return;
 
   const float stroke_width = StrokeWidthForMarkerUnits();
-  FloatRect boundaries;
+  gfx::RectF boundaries;
   for (const auto& position : marker_positions_) {
     if (LayoutSVGResourceMarker* marker =
             position.SelectMarker(marker_start, marker_mid, marker_end)) {
-      boundaries.Unite(marker->MarkerBoundaries(
+      boundaries.Union(marker->MarkerBoundaries(
           marker->MarkerTransformation(position, stroke_width)));
     }
   }
 
-  stroke_bounding_box_.Unite(boundaries);
+  stroke_bounding_box_.Union(boundaries);
 }
 
 }  // namespace blink

@@ -1,0 +1,67 @@
+<style>
+  :host {
+    --standard-border: 1px solid black;
+  }
+
+  #item {
+    background: rgb(204, 204, 255);
+    border-inline-end: var(--standard-border);
+    border-inline-start: var(--standard-border);
+    border-top: var(--standard-border);
+  }
+
+  #header {
+    display: flex;
+    padding: 6px;
+  }
+
+  .expanded-element-title {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    text-align: start;
+    white-space: pre-wrap;
+    width: 100%;
+  }
+
+  #time {
+    display: flex;
+    font-size: 10px;
+    margin-bottom: 4px;
+    padding: 6px;
+  }
+
+  #flex {
+    flex: 1;
+  }
+
+  .expanded-element {
+    display: inline-block;
+    padding-inline-start: 10px;
+    white-space: pre-wrap;
+  }
+</style>
+<div id="item">
+  <div id="header">
+    <span>
+      <p>Contacts list changed? [[item.contactsListChanged]]</p>
+      <p>
+        Contacts added to allowlist? [[item.contactsAddedToAllowlist]]
+      </p>
+      <p>
+        Contacts removed from allowlist? [[item.contactsRemovedFromAllowlist]]
+      </p>
+    </span>
+    <div id="flex"></div>
+    <span id="time">[[formatTime_(item.time)]]</span>
+    <cr-expand-button id="expandContent" class="cr-row"
+          expanded="{{contentExpanded_}}">
+    </cr-expand-button>
+  </div>
+  <iron-collapse opened="[[contentExpanded_]]">
+    <p class="expanded-element-title">Contact Records:</p>
+    <p class="expanded-element">[[item.contactRecords]]</p>
+    <p class="expanded-element-title">Allowed Contact Ids:</p>
+    <p class="expanded-element">[[item.allowedIds]]</p>
+  </iron-collapse>
+</div>

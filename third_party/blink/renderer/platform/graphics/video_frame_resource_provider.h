@@ -20,7 +20,7 @@ class VideoResourceUpdater;
 }  // namespace media
 
 namespace viz {
-class RenderPass;
+class CompositorRenderPass;
 class RasterContextProvider;
 }
 
@@ -42,9 +42,9 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   virtual void Initialize(viz::RasterContextProvider* media_context_provider,
                           viz::SharedBitmapReporter* shared_bitmap_reporter);
-  virtual void AppendQuads(viz::RenderPass*,
+  virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
-                           media::VideoRotation,
+                           media::VideoTransformation,
                            bool is_opaque);
   virtual void ReleaseFrameResources();
 
@@ -58,7 +58,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
       const WebVector<viz::ResourceId>& resource_ids,
       WebVector<viz::TransferableResource>* transferable_resources);
   virtual void ReceiveReturnsFromParent(
-      const Vector<viz::ReturnedResource>& transferable_resources);
+      Vector<viz::ReturnedResource> transferable_resources);
 
  private:
   const cc::LayerTreeSettings settings_;

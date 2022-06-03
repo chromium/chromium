@@ -1,0 +1,4 @@
+include_rules = [
+  "+mojo/public",
+  "+services/service_manager/public",
+]

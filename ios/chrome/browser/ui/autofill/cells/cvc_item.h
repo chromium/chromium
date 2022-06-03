@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MaterialComponents/MaterialCollectionCells.h>
+
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 
 // Item corresponding to a CVCCell.
 @interface CVCItem : CollectionViewItem
@@ -35,9 +36,6 @@
 
 // Whether the cell should show the "New Card?" button.
 @property(nonatomic, assign) BOOL showNewCardButton;
-
-// Whether the CVC input contains erroneous data.
-@property(nonatomic, assign) BOOL showCVCInputError;
 
 // The resource ID of the CVC image to use.
 @property(nonatomic, assign) int CVCImageResourceID;

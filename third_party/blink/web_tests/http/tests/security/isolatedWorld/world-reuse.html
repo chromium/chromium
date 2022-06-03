@@ -26,9 +26,13 @@ if (window.testRunner) {
   var iframeComplete = function(result) {
 
     // Isolated world executing in frame should be able to to access parent content.
+    let childFrameScriptElement = frames[0].document.createElement('script');
+    childFrameScriptElement.innerText = `
     testRunner.evaluateScriptInIsolatedWorld(1,
       "parent.document.body.appendChild(parent.document.createTextNode('Expecting true: ' + !!parent.frames[0].document.getElementById('output')));" +
       "parent.document.body.appendChild(parent.document.createElement('br'));");
+    `;
+    frames[0].document.body.appendChild(childFrameScriptElement);
 
     document.body.appendChild(document.createTextNode('Expecting undefined,undefined: ' + result));
     document.body.appendChild(document.createElement('br'));

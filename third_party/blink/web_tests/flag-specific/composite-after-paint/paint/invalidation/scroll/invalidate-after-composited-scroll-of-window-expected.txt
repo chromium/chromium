@@ -5,17 +5,9 @@
       "bounds": [785, 4936],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Tests that invalidation of a div after scrolling invalidates just the div and no other area.'",
-          "rect": [8, 4908, 540, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='target'",
-          "rect": [8, 2408, 100, 100],
-          "reason": "background"
-        }
+      "invalidations": [
+        [8, 4908, 540, 19],
+        [8, 2408, 100, 100]
       ],
       "transform": 1
     },

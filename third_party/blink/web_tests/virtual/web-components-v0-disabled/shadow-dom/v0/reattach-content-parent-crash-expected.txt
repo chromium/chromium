@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL This test passes if there is no crash or DCHECK failure. host.createShadowRoot is not a function
-Harness: the test ran to completion.
-

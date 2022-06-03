@@ -25,8 +25,6 @@ enum PrivateRegistryFilter {
 
 PLATFORM_EXPORT bool IsReservedIPAddress(const String& host);
 
-PLATFORM_EXPORT bool IsLocalHostname(const String& host, bool* is_local6);
-
 PLATFORM_EXPORT String GetDomainAndRegistry(const String& host,
                                             PrivateRegistryFilter);
 

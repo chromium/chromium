@@ -4,10 +4,11 @@
 
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
 
+#include <memory>
 #include <sstream>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,6 +21,7 @@
 #include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_io_surface.h"
@@ -49,8 +51,17 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::
            ->workarounds()
            .disable_av_sample_buffer_display_layer;
 
-  ca_layer_tree_coordinator_.reset(new ui::CALayerTreeCoordinator(
-      use_remote_layer_api_, allow_av_sample_buffer_display_layer));
+  ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
+      use_remote_layer_api_, allow_av_sample_buffer_display_layer);
+
+  // Create the CAContext to send this to the GPU process, and the layer for
+  // the context.
+  if (use_remote_layer_api_) {
+    CGSConnectionID connection_id = CGSMainConnectionID();
+    ca_context_.reset([[CAContext contextWithCGSConnection:connection_id
+                                                   options:@{}] retain]);
+    [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
+  }
 }
 
 template <typename BaseClass>
@@ -63,14 +74,6 @@ ImageTransportSurfaceOverlayMacBase<
 template <typename BaseClass>
 bool ImageTransportSurfaceOverlayMacBase<BaseClass>::Initialize(
     gl::GLSurfaceFormat format) {
-  // Create the CAContext to send this to the GPU process, and the layer for
-  // the context.
-  if (use_remote_layer_api_) {
-    CGSConnectionID connection_id = CGSMainConnectionID();
-    ca_context_.reset([
-        [CAContext contextWithCGSConnection:connection_id options:@{}] retain]);
-    [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
-  }
   return true;
 }
 
@@ -112,8 +115,8 @@ void ImageTransportSurfaceOverlayMacBase<BaseClass>::BufferPresented(
 template <typename BaseClass>
 gfx::SwapResult
 ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
-    const gfx::Rect& pixel_damage_rect,
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::SwapCompletionCallback completion_callback,
+    gl::GLSurface::PresentationCallback presentation_callback) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::SwapBuffersInternal");
 
   // Do a GL fence for flush to apply back-pressure before drawing.
@@ -126,7 +129,7 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
   base::TimeTicks before_transaction_time = base::TimeTicks::Now();
   {
     TRACE_EVENT0("gpu", "CommitPendingTreesToCA");
-    ca_layer_tree_coordinator_->CommitPendingTreesToCA(pixel_damage_rect);
+    ca_layer_tree_coordinator_->CommitPendingTreesToCA();
     base::TimeTicks after_transaction_time = base::TimeTicks::Now();
     UMA_HISTOGRAM_TIMES("GPU.IOSurface.CATransactionTime",
                         after_transaction_time - before_transaction_time);
@@ -162,10 +165,8 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
       bool in_use = false;
       gl::GLImageIOSurface* io_surface_image =
           gl::GLImageIOSurface::FromGLImage(query.image.get());
-      if (io_surface_image) {
-        in_use = io_surface_image->CanCheckIOSurfaceIsInUse() &&
-                 IOSurfaceIsInUse(io_surface_image->io_surface());
-      }
+      if (io_surface_image)
+        in_use = io_surface_image->IsInUseByWindowServer();
       response.in_use = in_use;
       params.texture_in_use_responses.push_back(std::move(response));
     }
@@ -173,18 +174,28 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
   }
 
   // Send the swap parameters to the browser.
-  delegate_->DidSwapBuffersComplete(std::move(params));
+  if (completion_callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(completion_callback),
+            gfx::SwapCompletionResult(
+                gfx::SwapResult::SWAP_ACK,
+                std::make_unique<gfx::CALayerParams>(params.ca_layer_params))));
+  }
+  delegate_->DidSwapBuffersComplete(std::move(params),
+                                    /*release_fence=*/gfx::GpuFenceHandle());
   constexpr int64_t kRefreshIntervalInMicroseconds =
       base::Time::kMicrosecondsPerSecond / 60;
   gfx::PresentationFeedback feedback(
       base::TimeTicks::Now(),
-      base::TimeDelta::FromMicroseconds(kRefreshIntervalInMicroseconds),
-      0 /* flags */);
+      base::Microseconds(kRefreshIntervalInMicroseconds), 0 /* flags */);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ImageTransportSurfaceOverlayMacBase<BaseClass>::BufferPresented,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback), feedback));
+          weak_ptr_factory_.GetWeakPtr(), std::move(presentation_callback),
+          feedback));
   return gfx::SwapResult::SWAP_ACK;
 }
 
@@ -192,8 +203,15 @@ template <typename BaseClass>
 gfx::SwapResult ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffers(
     gl::GLSurface::PresentationCallback callback) {
   return SwapBuffersInternal(
-      gfx::Rect(0, 0, pixel_size_.width(), pixel_size_.height()),
-      std::move(callback));
+      base::DoNothing(), std::move(callback));
+}
+
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersAsync(
+    gl::GLSurface::SwapCompletionCallback completion_callback,
+    gl::GLSurface::PresentationCallback presentation_callback) {
+  SwapBuffersInternal(
+      std::move(completion_callback), std::move(presentation_callback));
 }
 
 template <typename BaseClass>
@@ -203,12 +221,49 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacBase<BaseClass>::PostSubBuffer(
     int width,
     int height,
     gl::GLSurface::PresentationCallback callback) {
-  return SwapBuffersInternal(gfx::Rect(x, y, width, height),
-                             std::move(callback));
+  return SwapBuffersInternal(base::DoNothing(), std::move(callback));
+}
+
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::PostSubBufferAsync(
+    int x,
+    int y,
+    int width,
+    int height,
+    gl::GLSurface::SwapCompletionCallback completion_callback,
+    gl::GLSurface::PresentationCallback presentation_callback) {
+  SwapBuffersInternal(std::move(completion_callback),
+                      std::move(presentation_callback));
+}
+
+template <typename BaseClass>
+gfx::SwapResult
+ImageTransportSurfaceOverlayMacBase<BaseClass>::CommitOverlayPlanes(
+    gl::GLSurface::PresentationCallback callback) {
+  return SwapBuffersInternal(base::DoNothing(), std::move(callback));
+}
+
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::CommitOverlayPlanesAsync(
+    gl::GLSurface::SwapCompletionCallback completion_callback,
+    gl::GLSurface::PresentationCallback presentation_callback) {
+  SwapBuffersInternal(std::move(completion_callback),
+                      std::move(presentation_callback));
 }
 
 template <typename BaseClass>
 bool ImageTransportSurfaceOverlayMacBase<BaseClass>::SupportsPostSubBuffer() {
+  return true;
+}
+
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<
+    BaseClass>::SupportsCommitOverlayPlanes() {
+  return true;
+}
+
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::SupportsAsyncSwap() {
   return true;
 }
 
@@ -240,18 +295,14 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::OnMakeCurrent(
 
 template <typename BaseClass>
 bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
-    int z_order,
-    gfx::OverlayTransform transform,
     gl::GLImage* image,
-    const gfx::Rect& pixel_frame_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  if (transform != gfx::OVERLAY_TRANSFORM_NONE) {
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    const gfx::OverlayPlaneData& overlay_plane_data) {
+  if (overlay_plane_data.plane_transform != gfx::OVERLAY_TRANSFORM_NONE) {
     DLOG(ERROR) << "Invalid overlay plane transform.";
     return false;
   }
-  if (z_order) {
+  if (overlay_plane_data.z_order) {
     DLOG(ERROR) << "Invalid non-zero Z order.";
     return false;
   }
@@ -267,12 +318,13 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
       gfx::RRectF(),  // rounded_corner_bounds
       0,              // sorting_context_id
       gfx::Transform(), image,
-      crop_rect,            // contents_rect
-      pixel_frame_rect,     // rect
-      SK_ColorTRANSPARENT,  // background_color
-      0,                    // edge_aa_mask
-      1.f,                  // opacity
-      GL_LINEAR);           // filter;
+      overlay_plane_data.crop_rect,       // contents_rect
+      overlay_plane_data.display_bounds,  // rect
+      SK_ColorTRANSPARENT,                // background_color
+      0,                                  // edge_aa_mask
+      1.f,                                // opacity
+      GL_LINEAR,                          // filter
+      gfx::ProtectedVideoType::kClear);   // protected_video_type
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);
 }
@@ -304,10 +356,16 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::IsSurfaceless() const {
 }
 
 template <typename BaseClass>
+gfx::SurfaceOrigin ImageTransportSurfaceOverlayMacBase<BaseClass>::GetOrigin()
+    const {
+  return gfx::SurfaceOrigin::kTopLeft;
+}
+
+template <typename BaseClass>
 bool ImageTransportSurfaceOverlayMacBase<BaseClass>::Resize(
     const gfx::Size& pixel_size,
     float scale_factor,
-    gl::GLSurface::ColorSpace color_space,
+    const gfx::ColorSpace& color_space,
     bool has_alpha) {
   pixel_size_ = pixel_size;
   scale_factor_ = scale_factor;
@@ -332,14 +390,11 @@ void ImageTransportSurfaceOverlayMacBase<BaseClass>::OnGpuSwitched(
   }
   gl_renderer_id_ = context_renderer_id & kCGLRendererIDMatchingMask;
 
-  // Post a task holding a reference to the new GL context. The reason for
-  // this is to avoid creating-then-destroying the context for every image
-  // transport surface that is observing the GPU switch.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::DoNothing::Once<scoped_refptr<ui::IOSurfaceContext>>(),
-          context_on_new_gpu));
+  // Delay releasing the reference to the new GL context. The reason for this
+  // is to avoid creating-then-destroying the context for every image transport
+  // surface that is observing the GPU switch.
+  base::ThreadTaskRunnerHandle::Get()->ReleaseSoon(
+      FROM_HERE, std::move(context_on_new_gpu));
 }
 
 // Template instantiation

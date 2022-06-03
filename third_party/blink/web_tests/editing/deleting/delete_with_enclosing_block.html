@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+        '<div contenteditable><div>',
+            '<div><b>one^</b></div><div><i>two|</i></div>',
+            '<div><b>three</b></div><div><i>four</i></div>',
+        '</div></div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable><div>',
+            '<div><b>one|</b></div>',
+            '<div><b>three</b></div><div><i>four</i></div>',
+        '</div></div>',
+    ]);
+</script>

@@ -12,6 +12,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 
+import androidx.annotation.GuardedBy;
+
 import org.junit.Assert;
 
 import org.chromium.base.Log;
@@ -20,8 +22,6 @@ import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.File;
-
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * A simple file server for java tests.
@@ -494,6 +494,7 @@ public class EmbeddedTestServer {
             synchronized (mImplMonitor) {
                 checkServiceLocked();
                 mImpl.destroy();
+                mImpl = null;
             }
         } catch (RemoteException e) {
             throw new EmbeddedTestServerFailure("Failed to destroy native server.", e);

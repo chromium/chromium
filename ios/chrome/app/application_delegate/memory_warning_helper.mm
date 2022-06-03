@@ -6,8 +6,8 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_macros.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
-#import "ios/chrome/browser/metrics/previous_session_info.h"
+#import "components/previous_session_info/previous_session_info.h"
+#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,8 +49,8 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
       CFAbsoluteTimeGetCurrent() + kOutOfMemoryResetTimeInterval;
 
   // Add information to breakpad.
-  breakpad_helper::SetMemoryWarningCount(_foregroundMemoryWarningCount);
-  breakpad_helper::SetMemoryWarningInProgress(true);
+  crash_keys::SetMemoryWarningCount(_foregroundMemoryWarningCount);
+  crash_keys::SetMemoryWarningInProgress(true);
 
   dispatch_after(kOutOfMemoryResetTimeInterval, dispatch_get_main_queue(), ^{
     [self resetOutOfMemoryFlagIfNecessary];
@@ -62,12 +62,12 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
     return;
   _outOfMemoryResetTime = 0;
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
-  breakpad_helper::SetMemoryWarningInProgress(false);
+  crash_keys::SetMemoryWarningInProgress(false);
 }
 
 - (void)resetForegroundMemoryWarningCount {
   _foregroundMemoryWarningCount = 0;
-  breakpad_helper::SetMemoryWarningCount(0);
+  crash_keys::SetMemoryWarningCount(0);
 }
 
 @end

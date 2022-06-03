@@ -18,7 +18,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "util/mach/exc.h"
 #include "util/mach/mach_exc.h"
 

@@ -5,9 +5,9 @@
 <div id="host2"></div>
 <div id="host3"></div>
 <script>
-    var root1 = host1.createShadowRoot();
-    var root2 = host2.createShadowRoot();
-    var root3 = host3.createShadowRoot();
+    var root1 = host1.attachShadow({mode: 'open'});
+    var root2 = host2.attachShadow({mode: 'open'});
+    var root3 = host3.attachShadow({mode: 'open'});
 
     root1.innerHTML = `<style>#t1 + div + div + #r1 {background-color:green}</style>
         <div id="t1"></div>

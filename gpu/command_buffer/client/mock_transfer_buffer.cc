@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 
+#include "base/bits.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -145,7 +146,7 @@ uint32_t MockTransferBuffer::MaxTransferBufferSize() {
 }
 
 unsigned int MockTransferBuffer::RoundToAlignment(unsigned int size) {
-  return (size + alignment_ - 1) & ~(alignment_ - 1);
+  return base::bits::AlignUp(size, alignment_);
 }
 
 bool MockTransferBuffer::InSync() {

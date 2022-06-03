@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
 import("//build/config/ui.gni")
-import("//components/paint_preview/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
@@ -63,21 +63,29 @@ if (use_system_harfbuzz) {
     ]
 
     sources = [
-      "src/src/hb-aat-fdsc-table.hh",
       "src/src/hb-aat-layout-ankr-table.hh",
       "src/src/hb-aat-layout-bsln-table.hh",
+      "src/src/hb-aat-layout-common.hh",
       "src/src/hb-aat-layout-feat-table.hh",
+      "src/src/hb-aat-layout-just-table.hh",
       "src/src/hb-aat-layout-kerx-table.hh",
       "src/src/hb-aat-layout-morx-table.hh",
+      "src/src/hb-aat-layout-opbd-table.hh",
       "src/src/hb-aat-layout-trak-table.hh",
       "src/src/hb-aat-layout.cc",
+      "src/src/hb-aat-layout.h",
+      "src/src/hb-aat-layout.hh",
       "src/src/hb-aat-ltag-table.hh",
       "src/src/hb-aat-map.cc",
       "src/src/hb-aat-map.hh",
+      "src/src/hb-aat.h",
       "src/src/hb-algs.hh",
       "src/src/hb-array.hh",
       "src/src/hb-atomic.hh",
       "src/src/hb-bimap.hh",
+      "src/src/hb-bit-page.hh",
+      "src/src/hb-bit-set-invertible.hh",
+      "src/src/hb-bit-set.hh",
       "src/src/hb-blob.cc",
       "src/src/hb-blob.hh",
       "src/src/hb-buffer-deserialize-json.hh",
@@ -95,18 +103,25 @@ if (use_system_harfbuzz) {
       "src/src/hb-config.hh",
       "src/src/hb-debug.hh",
       "src/src/hb-dispatch.hh",
+      "src/src/hb-draw.cc",
+      "src/src/hb-draw.h",
+      "src/src/hb-draw.hh",
       "src/src/hb-face.cc",
       "src/src/hb-face.hh",
       "src/src/hb-font.cc",
       "src/src/hb-font.hh",
       "src/src/hb-ft.cc",
-      "src/src/hb-gdi.cc",
-      "src/src/hb-gdi.h",
       "src/src/hb-icu.cc",
+      "src/src/hb-iter.hh",
+      "src/src/hb-kern.hh",
+      "src/src/hb-machinery.hh",
       "src/src/hb-map.cc",
       "src/src/hb-map.hh",
       "src/src/hb-meta.hh",
+      "src/src/hb-ms-feature-ranges.cc",
+      "src/src/hb-ms-feature-ranges.hh",
       "src/src/hb-mutex.hh",
+      "src/src/hb-null.hh",
       "src/src/hb-number-parser.hh",
       "src/src/hb-number.cc",
       "src/src/hb-number.hh",
@@ -114,18 +129,25 @@ if (use_system_harfbuzz) {
       "src/src/hb-open-file.hh",
       "src/src/hb-open-type.hh",
       "src/src/hb-ot-cff-common.hh",
+      "src/src/hb-ot-cff1-std-str.hh",
       "src/src/hb-ot-cff1-table.cc",
       "src/src/hb-ot-cff1-table.hh",
       "src/src/hb-ot-cff2-table.cc",
       "src/src/hb-ot-cff2-table.hh",
+      "src/src/hb-ot-cmap-table.hh",
       "src/src/hb-ot-color-cbdt-table.hh",
       "src/src/hb-ot-color-colr-table.hh",
+      "src/src/hb-ot-color-colrv1-closure.hh",
       "src/src/hb-ot-color-cpal-table.hh",
+      "src/src/hb-ot-color-sbix-table.hh",
+      "src/src/hb-ot-color-svg-table.hh",
+      "src/src/hb-ot-deprecated.h",
       "src/src/hb-ot-face-table-list.hh",
       "src/src/hb-ot-face.cc",
       "src/src/hb-ot-face.hh",
       "src/src/hb-ot-font.cc",
       "src/src/hb-ot-gasp-table.hh",
+      "src/src/hb-ot-glyf-table.hh",
       "src/src/hb-ot-hdmx-table.hh",
       "src/src/hb-ot-head-table.hh",
       "src/src/hb-ot-hhea-table.hh",
@@ -137,6 +159,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-layout-gpos-table.hh",
       "src/src/hb-ot-layout-gsub-table.hh",
       "src/src/hb-ot-layout-gsubgpos.hh",
+      "src/src/hb-ot-layout-jstf-table.hh",
       "src/src/hb-ot-layout.cc",
       "src/src/hb-ot-layout.hh",
       "src/src/hb-ot-map.cc",
@@ -154,9 +177,14 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-name-language.hh",
       "src/src/hb-ot-name-table.hh",
       "src/src/hb-ot-name.cc",
+      "src/src/hb-ot-name.h",
+      "src/src/hb-ot-os2-table.hh",
       "src/src/hb-ot-os2-unicode-ranges.hh",
       "src/src/hb-ot-post-macroman.hh",
+      "src/src/hb-ot-post-table-v2subset.hh",
+      "src/src/hb-ot-post-table.hh",
       "src/src/hb-ot-shape-complex-arabic-fallback.hh",
+      "src/src/hb-ot-shape-complex-arabic-joining-list.hh",
       "src/src/hb-ot-shape-complex-arabic-table.hh",
       "src/src/hb-ot-shape-complex-arabic.cc",
       "src/src/hb-ot-shape-complex-arabic.hh",
@@ -173,11 +201,12 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-shape-complex-myanmar-machine.hh",
       "src/src/hb-ot-shape-complex-myanmar.cc",
       "src/src/hb-ot-shape-complex-myanmar.hh",
+      "src/src/hb-ot-shape-complex-syllabic.cc",
+      "src/src/hb-ot-shape-complex-syllabic.hh",
       "src/src/hb-ot-shape-complex-thai.cc",
       "src/src/hb-ot-shape-complex-use-machine.hh",
-      "src/src/hb-ot-shape-complex-use-table.cc",
+      "src/src/hb-ot-shape-complex-use-table.hh",
       "src/src/hb-ot-shape-complex-use.cc",
-      "src/src/hb-ot-shape-complex-use.hh",
       "src/src/hb-ot-shape-complex-vowel-constraints.cc",
       "src/src/hb-ot-shape-complex-vowel-constraints.hh",
       "src/src/hb-ot-shape-complex.hh",
@@ -187,13 +216,19 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-shape-normalize.hh",
       "src/src/hb-ot-shape.cc",
       "src/src/hb-ot-shape.hh",
+      "src/src/hb-ot-stat-table.hh",
+      "src/src/hb-ot-tag-table.hh",
       "src/src/hb-ot-tag.cc",
       "src/src/hb-ot-var-avar-table.hh",
       "src/src/hb-ot-var-fvar-table.hh",
+      "src/src/hb-ot-var-gvar-table.hh",
       "src/src/hb-ot-var-hvar-table.hh",
       "src/src/hb-ot-var-mvar-table.hh",
       "src/src/hb-ot-var.cc",
+      "src/src/hb-ot-vorg-table.hh",
       "src/src/hb-pool.hh",
+      "src/src/hb-priority-queue.hh",
+      "src/src/hb-repacker.hh",
       "src/src/hb-sanitize.hh",
       "src/src/hb-serialize.hh",
       "src/src/hb-set-digest.hh",
@@ -211,7 +246,9 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-cff-common.cc",
       "src/src/hb-subset-cff-common.hh",
       "src/src/hb-subset-cff1.cc",
+      "src/src/hb-subset-cff1.hh",
       "src/src/hb-subset-cff2.cc",
+      "src/src/hb-subset-cff2.hh",
       "src/src/hb-subset-input.cc",
       "src/src/hb-subset-input.hh",
       "src/src/hb-subset-plan.cc",
@@ -224,17 +261,42 @@ if (use_system_harfbuzz) {
       "src/src/hb-unicode.cc",
       "src/src/hb-unicode.hh",
       "src/src/hb-utf.hh",
+      "src/src/hb-vector.hh",
       "src/src/hb.hh",
     ]
+
+    # The following sources are explictly not used.
+    # They are referenced to aid in detecting previously uncategorized files.
+    unused_sources = [
+      "src/src/hb-coretext.cc",
+      "src/src/hb-coretext.h",
+      "src/src/hb-directwrite.cc",
+      "src/src/hb-directwrite.h",
+      "src/src/hb-fallback-shape.cc",
+      "src/src/hb-gdi.cc",
+      "src/src/hb-gdi.h",
+      "src/src/hb-gobject-structs.cc",
+      "src/src/hb-gobject-structs.h",
+      "src/src/hb-gobject.h",
+      "src/src/hb-graphite2.cc",
+      "src/src/hb-graphite2.h",
+      "src/src/hb-ot-color.cc",
+      "src/src/hb-ot-color.h",
+      "src/src/hb-ot-shape-complex-arabic-win1256.hh",
+      "src/src/hb-style.cc",
+      "src/src/hb-style.h",
+      "src/src/hb-uniscribe.cc",
+      "src/src/hb-uniscribe.h",
+    ]
+    assert(unused_sources != [])
 
     defines = [
       "HAVE_OT",
       "HAVE_FREETYPE",
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
-      "HAVE_INTEL_ATOMIC_PRIMITIVES",
-      "HAVE_ROUNDF",
       "HB_NO_MMAP",
+      "HB_NO_RESOURCE_FORK",
 
       # Size reductions by disabling parts that we do not currently require:
 
@@ -260,7 +322,22 @@ if (use_system_harfbuzz) {
 
       # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
       "U_DISABLE_VERSION_SUFFIX=0",
+
+      # Letting HarfBuzz enable warnings through pragmas can block compiler
+      # upgrades in situations where say a ToT compiler build adds a new
+      # stricter warning under -Wfoowarning-subgroup. HarfBuzz pragma-enables
+      # -Wfoowarning which default-enables -Wfoowarning-subgroup implicitly but
+      # HarfBuzz upstream is not yet clean of warnings produced for
+      # -Wfoowarning-subgroup. Hence disabling pragma warning control here.
+      # See also https:/crbug.com/1203071
+      "HB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR",
+      "HB_NO_PRAGMA_GCC_DIAGNOSTIC_WARNING",
     ]
+
+    if (!is_win && !is_mac) {
+      # Needed for HarfBuzz mutex implementation, see hb-mutex.hh
+      defines += [ "HAVE_PTHREAD" ]
+    }
 
     if (enable_paint_preview) {
       # Paint Previews make use of CFF subsetting. However, enabling this is
@@ -271,17 +348,25 @@ if (use_system_harfbuzz) {
 
     if (is_component_build) {
       if (is_win) {
-        defines += [ "HB_EXTERN=__declspec (dllexport) extern" ]
+        defines += [ "HB_EXTERN=__declspec (dllexport)" ]
       } else {
-        configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-        configs += [ "//build/config/gcc:symbol_visibility_default" ]
+        defines += [ "HB_EXTERN=__attribute__((visibility(\"default\")))" ]
+
+        # Exposing symbols in component builds can cause a mixture of system
+        # harfbuzz symbols and //third_party harfbuzz symbols to be loaded at
+        # the same time.  This can cause issues for libraries that indirectly
+        # load harfbuzz like pango (see https://crbug.com/1146397), so include
+        # metrics symbols to prevent pango from using the system library.
+        # TODO(https://crbug.com/1148459): Remove this workaround once bug
+        # 1148459 is fixed.
+        defines -= [ "HB_NO_METRICS" ]
       }
     }
 
     if (use_system_freetype) {
       configs += [ "//build/linux:freetype_from_pkgconfig" ]
     } else {
-      configs += [ "//third_party/freetype:freetype_config" ]
+      configs += [ "//third_party/freetype:freetype_component_config" ]
     }
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
@@ -300,9 +385,7 @@ if (use_system_harfbuzz) {
 
     public_configs = [ ":harfbuzz_config" ]
 
-    deps = [
-      "//third_party/icu:icuuc",
-    ]
+    deps = [ "//third_party/icu:icuuc" ]
 
     if (use_glib) {
       configs += [ "//build/config/linux:glib" ]
@@ -312,13 +395,27 @@ if (use_system_harfbuzz) {
   }
 }
 
-fuzzer_test("harfbuzz_fuzzer") {
-  sources = [
-    "fuzz/harfbuzz_fuzzer.cc",
-  ]
+source_set("hb_scoped_util") {
+  sources = [ "utils/hb_scoped.h" ]
+  deps = [ "//third_party:freetype_harfbuzz" ]
+}
+
+fuzzer_test("hb_shape_fuzzer") {
+  sources = [ "fuzz/hb_shape_fuzzer.cc" ]
   deps = [
+    ":hb_scoped_util",
+    "//base",
     "//third_party:freetype_harfbuzz",
   ]
-  libfuzzer_options = [ "max_len=16800" ]
+  seed_corpus = "fuzz/seed_corpus"
+}
+
+fuzzer_test("hb_subset_fuzzer") {
+  sources = [ "fuzz/hb_subset_fuzzer.cc" ]
+  deps = [
+    ":hb_scoped_util",
+    "//base",
+    "//third_party:freetype_harfbuzz",
+  ]
   seed_corpus = "fuzz/seed_corpus"
 }

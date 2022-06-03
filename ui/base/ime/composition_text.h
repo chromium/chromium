@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/gfx/range/range.h"
 
@@ -20,23 +21,11 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) CompositionText {
   CompositionText(const CompositionText& other);
   ~CompositionText();
 
-  bool operator==(const CompositionText& rhs) const {
-    if ((this->text != rhs.text) || (this->selection != rhs.selection) ||
-        (this->ime_text_spans.size() != rhs.ime_text_spans.size()))
-      return false;
-    for (size_t i = 0; i < this->ime_text_spans.size(); ++i) {
-      if (this->ime_text_spans[i] != rhs.ime_text_spans[i])
-        return false;
-    }
-    return true;
-  }
-
-  bool operator!=(const CompositionText& rhs) const {
-    return !(*this == rhs);
-  }
+  bool operator==(const CompositionText& other) const;
+  bool operator!=(const CompositionText& other) const;
 
   // Content of the composition text.
-  base::string16 text;
+  std::u16string text;
 
   // ImeTextSpan information for the composition text.
   ImeTextSpans ime_text_spans;

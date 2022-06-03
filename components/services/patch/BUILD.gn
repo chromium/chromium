@@ -15,9 +15,7 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
   ]
 
-  public_deps = [
-    "//components/services/patch/public/mojom",
-  ]
+  public_deps = [ "//components/services/patch/public/mojom" ]
 }
 
 source_set("in_process") {
@@ -30,9 +28,7 @@ source_set("in_process") {
     "in_process_file_patcher.h",
   ]
 
-  deps = [
-    ":lib",
-  ]
+  deps = [ ":lib" ]
 
   public_deps = [
     "//components/services/patch/public/mojom",

@@ -11,10 +11,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/blockfile/in_flight_io.h"
 #include "net/disk_cache/disk_cache.h"
@@ -36,6 +37,9 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
       : disk_cache::BackgroundIO(controller), callback_(callback), file_(file),
         buf_(buf), buf_len_(buf_len), offset_(offset) {
   }
+
+  FileBackgroundIO(const FileBackgroundIO&) = delete;
+  FileBackgroundIO& operator=(const FileBackgroundIO&) = delete;
 
   disk_cache::FileIOCallback* callback() {
     return callback_;
@@ -62,8 +66,6 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
   const void* buf_;
   size_t buf_len_;
   size_t offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileBackgroundIO);
 };
 
 
@@ -71,6 +73,10 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
 class FileInFlightIO : public disk_cache::InFlightIO {
  public:
   FileInFlightIO() {}
+
+  FileInFlightIO(const FileInFlightIO&) = delete;
+  FileInFlightIO& operator=(const FileInFlightIO&) = delete;
+
   ~FileInFlightIO() override {}
 
   // These methods start an asynchronous operation. The arguments have the same
@@ -88,9 +94,6 @@ class FileInFlightIO : public disk_cache::InFlightIO {
   // the one performing the call.
   void OnOperationComplete(disk_cache::BackgroundIO* operation,
                            bool cancel) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileInFlightIO);
 };
 
 // ---------------------------------------------------------------------------
@@ -121,10 +124,10 @@ void FileInFlightIO::PostRead(disk_cache::File *file, void* buf, size_t buf_len,
       new FileBackgroundIO(file, buf, buf_len, offset, callback, this));
   file->AddRef();  // Balanced on OnOperationComplete()
 
-  base::PostTask(FROM_HERE,
-                 {base::ThreadPool(), base::MayBlock(),
-                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                 base::BindOnce(&FileBackgroundIO::Read, operation.get()));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&FileBackgroundIO::Read, operation.get()));
   OnOperationPosted(operation.get());
 }
 
@@ -135,10 +138,10 @@ void FileInFlightIO::PostWrite(disk_cache::File* file, const void* buf,
       new FileBackgroundIO(file, buf, buf_len, offset, callback, this));
   file->AddRef();  // Balanced on OnOperationComplete()
 
-  base::PostTask(FROM_HERE,
-                 {base::ThreadPool(), base::MayBlock(),
-                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                 base::BindOnce(&FileBackgroundIO::Write, operation.get()));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&FileBackgroundIO::Write, operation.get()));
   OnOperationPosted(operation.get());
 }
 
@@ -271,7 +274,7 @@ size_t File::GetLength() {
 }
 
 // Static.
-void File::WaitForPendingIO(int* num_pending_io) {
+void File::WaitForPendingIOForTesting(int* num_pending_io) {
   // We may be running unit tests so we should allow be able to reset the
   // message loop.
   GetFileInFlightIO()->WaitForPendingIO();

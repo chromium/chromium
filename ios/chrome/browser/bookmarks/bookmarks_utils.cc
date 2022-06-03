@@ -4,9 +4,9 @@
 
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -16,13 +16,7 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-void RecordBookmarkLaunch(BookmarkLaunchLocation launch_location) {
-  DCHECK(launch_location < BOOKMARK_LAUNCH_LOCATION_COUNT);
-  UMA_HISTOGRAM_ENUMERATION("Stars.LaunchLocation", launch_location,
-                            BOOKMARK_LAUNCH_LOCATION_COUNT);
-}
-
-bool RemoveAllUserBookmarksIOS(ios::ChromeBrowserState* browser_state) {
+bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
   BookmarkModel* bookmark_model =
       ios::BookmarkModelFactory::GetForBrowserState(browser_state);
 

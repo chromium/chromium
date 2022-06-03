@@ -28,8 +28,12 @@ class SessionInputInjectorWin : public InputInjector {
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       std::unique_ptr<InputInjector> nested_executor,
       scoped_refptr<base::SingleThreadTaskRunner> execute_action_task_runner,
-      const base::Closure& inject_sas,
-      const base::Closure& lock_workstation);
+      const base::RepeatingClosure& inject_sas,
+      const base::RepeatingClosure& lock_workstation);
+
+  SessionInputInjectorWin(const SessionInputInjectorWin&) = delete;
+  SessionInputInjectorWin& operator=(const SessionInputInjectorWin&) = delete;
+
   ~SessionInputInjectorWin() override;
 
   // InputInjector implementation.
@@ -50,8 +54,6 @@ class SessionInputInjectorWin : public InputInjector {
   // The actual implementation resides in SessionInputInjectorWin::Core class.
   class Core;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionInputInjectorWin);
 };
 
 }  // namespace remoting

@@ -13,8 +13,8 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/fuchsia/default_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/service_provider_impl.h"
 #include "base/macros.h"
@@ -50,6 +50,9 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   // };
   class ComponentStateBase {
    public:
+    ComponentStateBase(const ComponentStateBase&) = delete;
+    ComponentStateBase& operator=(const ComponentStateBase&) = delete;
+
     virtual ~ComponentStateBase();
 
    protected:
@@ -91,10 +94,8 @@ class AgentImpl : public ::fuchsia::modular::Agent {
     const std::string component_id_;
     AgentImpl* agent_impl_ = nullptr;
     sys::OutgoingDirectory outgoing_directory_;
-    std::unique_ptr<base::fuchsia::ServiceProviderImpl> service_provider_;
+    std::unique_ptr<base::ServiceProviderImpl> service_provider_;
     std::vector<base::RepeatingCallback<bool()>> keepalive_callbacks_;
-
-    DISALLOW_COPY_AND_ASSIGN(ComponentStateBase);
   };
 
   // Creates a component state instance providing the services to which the
@@ -109,6 +110,10 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   // create per-component data structures and services.
   AgentImpl(sys::OutgoingDirectory* outgoing_directory,
             CreateComponentStateCallback create_component_state_callback);
+
+  AgentImpl(const AgentImpl&) = delete;
+  AgentImpl& operator=(const AgentImpl&) = delete;
+
   ~AgentImpl() override;
 
   // fuchsia::modular::Agent implementation.
@@ -126,13 +131,11 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   const CreateComponentStateCallback create_component_state_callback_;
 
   // Binds this Agent implementation into the |outgoing_directory|.
-  base::fuchsia::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
+  base::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
 
   // Owns the ComponentState instances for each connected component.
   base::flat_map<std::string, std::unique_ptr<ComponentStateBase>>
       active_components_;
-
-  DISALLOW_COPY_AND_ASSIGN(AgentImpl);
 };
 
 }  // namespace cr_fuchsia

@@ -9,17 +9,16 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class GURL;
 class PrefService;
 
 namespace base {
-class ListValue;
+class Value;
 }
 
 namespace bookmarks {
@@ -43,17 +42,21 @@ class ManagedBookmarksTracker {
   ManagedBookmarksTracker(BookmarkModel* model,
                           PrefService* prefs,
                           GetManagementDomainCallback callback);
+
+  ManagedBookmarksTracker(const ManagedBookmarksTracker&) = delete;
+  ManagedBookmarksTracker& operator=(const ManagedBookmarksTracker&) = delete;
+
   ~ManagedBookmarksTracker();
 
   // Returns the initial list of managed bookmarks, which can be passed to
   // LoadInitial() to do the initial load.
-  std::unique_ptr<base::ListValue> GetInitialManagedBookmarks();
+  base::Value GetInitialManagedBookmarks();
 
   // Loads the initial managed bookmarks in |list| into |folder|.
   // New nodes will be assigned IDs starting at |next_node_id|.
   // Returns the next node ID to use.
   static int64_t LoadInitial(BookmarkNode* folder,
-                             const base::ListValue* list,
+                             const base::Value* list,
                              int64_t next_node_id);
 
   // Starts tracking the pref for updates to the managed bookmarks.
@@ -61,27 +64,24 @@ class ManagedBookmarksTracker {
   void Init(BookmarkPermanentNode* managed_node);
 
  private:
-  base::string16 GetBookmarksFolderTitle() const;
+  std::u16string GetBookmarksFolderTitle() const;
 
   void ReloadManagedBookmarks();
 
-  void UpdateBookmarks(const BookmarkNode* folder, const base::ListValue* list);
-  static bool LoadBookmark(const base::ListValue* list,
+  void UpdateBookmarks(const BookmarkNode* folder, const base::Value* list);
+  static bool LoadBookmark(const base::Value* list,
                            size_t index,
-                           base::string16* title,
+                           std::u16string* title,
                            GURL* url,
-                           const base::ListValue** children);
+                           const base::Value** children);
 
   BookmarkModel* model_;
   BookmarkPermanentNode* managed_node_;
   PrefService* prefs_;
   PrefChangeRegistrar registrar_;
   GetManagementDomainCallback get_management_domain_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarksTracker);
 };
 
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_MANAGED_MANAGED_BOOKMARKS_TRACKER_H_
-

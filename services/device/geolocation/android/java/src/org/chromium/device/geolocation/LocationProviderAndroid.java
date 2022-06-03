@@ -4,7 +4,9 @@
 
 package org.chromium.device.geolocation;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -100,7 +102,13 @@ public class LocationProviderAndroid implements LocationListener, LocationProvid
         // bounce notifications to the Geolocation thread as they arrive in the mainLooper.
         try {
             Criteria criteria = new Criteria();
-            if (enableHighAccuracy) criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            Context context = ContextUtils.getApplicationContext();
+            if (enableHighAccuracy
+                    && context.checkCallingOrSelfPermission(
+                               Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            }
             mLocationManager.requestLocationUpdates(
                     0, 0, criteria, this, ThreadUtils.getUiThreadLooper());
         } catch (SecurityException e) {

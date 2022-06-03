@@ -21,10 +21,6 @@ class WebContents;
 // context.
 class ExclusiveAccessContext {
  public:
-  enum TabFullscreenState {
-    STATE_ENTER_TAB_FULLSCREEN,
-    STATE_EXIT_TAB_FULLSCREEN,
-  };
 
   virtual ~ExclusiveAccessContext() = default;
 
@@ -38,7 +34,7 @@ class ExclusiveAccessContext {
   // Called when we transition between tab and browser fullscreen. This method
   // updates the UI by showing/hiding the tab strip, toolbar and bookmark bar
   // in the browser fullscreen. Currently only supported on Mac.
-  virtual void UpdateUIForTabFullscreen(TabFullscreenState state) {}
+  virtual void UpdateUIForTabFullscreen() {}
 
   // Updates the toolbar state to be hidden or shown in fullscreen according to
   // the preference's state. Only supported on Mac.
@@ -46,7 +42,8 @@ class ExclusiveAccessContext {
 
   // Enters fullscreen and update exit bubble.
   virtual void EnterFullscreen(const GURL& url,
-                               ExclusiveAccessBubbleType bubble_type) = 0;
+                               ExclusiveAccessBubbleType bubble_type,
+                               const int64_t display_id) = 0;
 
   // Exits fullscreen and update exit bubble.
   virtual void ExitFullscreen() = 0;
@@ -58,22 +55,14 @@ class ExclusiveAccessContext {
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) = 0;
 
+  virtual bool IsExclusiveAccessBubbleDisplayed() const = 0;
+
   // Informs the exclusive access system of some user input, which may update
   // internal timers and/or re-display the bubble.
   virtual void OnExclusiveAccessUserInput() = 0;
 
   // Returns the currently active WebContents, or nullptr if there is none.
   virtual content::WebContents* GetActiveWebContents() = 0;
-
-  // TODO(sriramsr): This is abstraction violation as the following two function
-  // does not apply to a platform app window. Ideally, the BrowserView should
-  // hide/unhide its download shelf widget when it is instructed to enter/exit
-  // fullscreen mode.
-  // Displays the download shelf associated with currently active window.
-  virtual void UnhideDownloadShelf() = 0;
-
-  // Hides download shelf associated with currently active window.
-  virtual void HideDownloadShelf() = 0;
 
   // There are special modes where the user isn't allowed to exit fullscreen on
   // their own, and this function allows us to check for that.

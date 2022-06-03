@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -24,6 +23,9 @@ namespace app_list {
 
 class AppResult : public ChromeSearchResult, public AppContextMenuDelegate {
  public:
+  AppResult(const AppResult&) = delete;
+  AppResult& operator=(const AppResult&) = delete;
+
   ~AppResult() override;
 
   void UpdateFromLastLaunchedOrInstalledTime(const base::Time& current_time,
@@ -33,8 +35,6 @@ class AppResult : public ChromeSearchResult, public AppContextMenuDelegate {
   Profile* profile() const { return profile_; }
 
   const std::string& app_id() const { return app_id_; }
-
-  ash::SearchResultType GetSearchResultType() const override;
 
   base::WeakPtr<AppResult> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -57,8 +57,6 @@ class AppResult : public ChromeSearchResult, public AppContextMenuDelegate {
   AppListControllerDelegate* controller_;
 
   base::WeakPtrFactory<AppResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppResult);
 };
 
 }  // namespace app_list

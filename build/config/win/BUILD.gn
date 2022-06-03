@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/win/control_flow_guard.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/timestamp.gni")
 import("//build/toolchain/goma.gni")
@@ -79,17 +81,12 @@ config("compiler") {
   ]
 
   if (is_clang) {
-    # Don't look for includes in %INCLUDE%.
-    cflags += [ "/X" ]
+    # Required to make the 19041 SDK compatible with clang-cl.
+    # See https://crbug.com/1089996 issue #2 for details.
+    cflags += [ "/D__WRL_ENABLE_FUNCTION_STATICS__" ]
 
     # Tell clang which version of MSVC to emulate.
     cflags += [ "-fmsc-version=1916" ]
-
-    # Emit table of address-taken functions for Control-Flow Guard (CFG). We
-    # don't emit the CFG checks themselves, but this enables the functions to
-    # be called by code that is built with those checks enabled, such as system
-    # libraries.
-    cflags += [ "/guard:cf,nochecks" ]
 
     if (is_component_build) {
       cflags += [
@@ -109,6 +106,13 @@ config("compiler") {
       assert(false, "unknown current_cpu " + current_cpu)
     }
 
+    # Chrome currently requires SSE3. Clang supports targeting any Intel
+    # microarchitecture. MSVC only supports a subset of architectures, and the
+    # next step after SSE2 will be AVX.
+    if (current_cpu == "x86" || current_cpu == "x64") {
+      cflags += [ "-msse3" ]
+    }
+
     if (exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
         "True") {
       cflags += [
@@ -121,12 +125,10 @@ config("compiler") {
     if (use_clang_diagnostics_format) {
       cflags += [ "/clang:-fdiagnostics-format=clang" ]
     }
-
-    # Clang runtime libraries, such as the sanitizer runtimes, live here.
-    lib_dirs = [ "$clang_base_path/lib/clang/$clang_version/lib/windows" ]
   }
 
-  if (use_lld && !use_thin_lto && (is_clang || !use_goma)) {
+  # Disabled with cc_wrapper because of https://github.com/mozilla/sccache/issues/264
+  if (use_lld && !use_thin_lto && (is_clang || !use_goma) && cc_wrapper == "") {
     # /Brepro lets the compiler not write the mtime field in the .obj output.
     # link.exe /incremental relies on this field to work correctly, but lld
     # never looks at this timestamp, so it's safe to pass this flag with
@@ -152,8 +154,7 @@ config("compiler") {
 
   if (!is_debug && !is_component_build) {
     # Enable standard linker optimizations like GC (/OPT:REF) and ICF in static
-    # release builds. These are implied by /PROFILE below, but /PROFILE is
-    # incompatible with /debug:fastlink.
+    # release builds.
     # Release builds always want these optimizations, so enable them explicitly.
     ldflags += [
       "/OPT:REF",
@@ -173,9 +174,7 @@ config("compiler") {
     # PDB file by about 5%) but does not otherwise alter the output binary. It
     # is enabled opportunistically for builds where it is not prohibited (not
     # supported when incrementally linking, or using /debug:fastlink).
-    if (!is_win_fastlink) {
-      ldflags += [ "/PROFILE" ]
-    }
+    ldflags += [ "/PROFILE" ]
   }
 
   # arflags apply only to static_libraries. The normal linker configs are only
@@ -217,10 +216,6 @@ config("runtime_library") {
     "_SECURE_ATL",
   ]
 
-  # This is required for ATL to use XP-safe versions of its functions.
-  # TODO(thakis): We no longer support XP; try removing this.
-  defines += [ "_USING_V110_SDK71_" ]
-
   if (current_os == "winuwp") {
     # When targeting Windows Runtime, certain compiler/linker flags are
     # necessary.
@@ -239,9 +234,7 @@ config("runtime_library") {
     } else {
       defines += [ "WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP" ]
     }
-    cflags_cc += [
-      "/EHsc",
-    ]
+    cflags_cc += [ "/EHsc" ]
 
     # This warning is given because the linker cannot tell the difference
     # between consuming WinRT APIs versus authoring WinRT within static
@@ -274,7 +267,7 @@ config("runtime_library") {
 # manually override this config for their compiles.
 config("winver") {
   defines = [
-    "NTDDI_VERSION=NTDDI_WIN10_RS2",
+    "NTDDI_VERSION=NTDDI_WIN10_VB",
 
     # We can't say `=_WIN32_WINNT_WIN10` here because some files do
     # `#if WINVER < 0x0600` without including windows.h before,
@@ -349,20 +342,42 @@ config("common_linker_setup") {
   }
 }
 
+config("default_cfg_compiler") {
+  # Emit table of address-taken functions for Control-Flow Guard (CFG).
+  # This is needed to allow functions to be called by code that is built
+  # with CFG enabled, such as system libraries.
+  # The CFG guards are only emitted if |win_enable_cfg_guards| is enabled.
+  if (is_clang) {
+    if (win_enable_cfg_guards) {
+      cflags = [ "/guard:cf" ]
+    } else {
+      cflags = [ "/guard:cf,nochecks" ]
+    }
+  }
+}
+
+# To disable CFG guards for a target, remove the "default_cfg_compiler"
+# config, and add "disable_guards_cfg_compiler" config.
+config("disable_guards_cfg_compiler") {
+  # Emit table of address-taken functions for Control-Flow Guard (CFG).
+  # This is needed to allow functions to be called by code that is built
+  # with CFG enabled, such as system libraries.
+  if (is_clang) {
+    cflags = [ "/guard:cf,nochecks" ]
+  }
+}
+
 config("cfi_linker") {
   # Control Flow Guard (CFG)
   # https://msdn.microsoft.com/en-us/library/windows/desktop/mt637065.aspx
-  # /DYNAMICBASE (ASLR) is turned off in debug builds, therefore CFG can’t be
+  # /DYNAMICBASE (ASLR) is turned off in debug builds, therefore CFG cannot be
   # turned on either.
-  # CFG seems to lead to random corruption with incremental linking so turn off
-  # CFG in component builds. https://crbug.com/812421
   # ASan and CFG leads to slow process startup. Chromium's test runner uses
   # lots of child processes, so this means things are really slow. Disable CFG
   # for now. https://crbug.com/846966
-  if (!is_debug && !is_component_build && !is_asan) {
-    # Turn on CFG, except for longjmp because it relies on compiler support
-    # which clang doesn't have yet.
-    ldflags = [ "/guard:cf,nolongjmp" ]
+  if (!is_debug && !is_asan) {
+    # Turn on CFG bitmap generation and CFG load config.
+    ldflags = [ "/guard:cf" ]
   }
 }
 
@@ -476,8 +491,17 @@ config("default_crt") {
 config("release_crt") {
   if (is_component_build) {
     cflags = [ "/MD" ]
+
+    if (use_custom_libcxx) {
+      # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
+      # standard library, which libc++ needs for exception_ptr internals.
+      ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
+    }
   } else {
     cflags = [ "/MT" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
+    }
   }
 }
 
@@ -485,8 +509,14 @@ config("dynamic_crt") {
   if (is_debug) {
     # This pulls in the DLL debug CRT and defines _DEBUG
     cflags = [ "/MDd" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
+    }
   } else {
     cflags = [ "/MD" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
+    }
   }
 }
 
@@ -494,8 +524,14 @@ config("static_crt") {
   if (is_debug) {
     # This pulls in the static debug CRT and defines _DEBUG
     cflags = [ "/MTd" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
+    }
   } else {
     cflags = [ "/MT" ]
+    if (use_custom_libcxx) {
+      ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
+    }
   }
 }
 
@@ -523,52 +559,24 @@ config("windowed") {
 
 # Incremental linking ----------------------------------------------------------
 
-incremental_linking_on_switch = [ "/INCREMENTAL" ]
-if ((!is_debug && !is_component_build) || !use_lld) {
-  incremental_linking_off_switch = [ "/INCREMENTAL:NO" ]
-}
-if (use_lld) {
-  incremental_linking_on_switch += [ "/OPT:NOREF" ]
-}
-
-# Enable incremental linking for debug builds and all component builds - any
-# builds where performance is not job one.
-if (is_debug || is_component_build) {
-  default_incremental_linking_switch = incremental_linking_on_switch
-} else {
-  default_incremental_linking_switch = incremental_linking_off_switch
-}
-
 # Applies incremental linking or not depending on the current configuration.
 config("default_incremental_linking") {
-  ldflags = default_incremental_linking_switch
-}
-
-# Explicitly on or off incremental linking
-config("incremental_linking") {
-  ldflags = incremental_linking_on_switch
-}
-config("no_incremental_linking") {
-  # Projects disable incremental linking to work around ilk file issues with
-  # link.exe. lld doesn't use ilk files and doesn't really have an incremental
-  # link mode; the only effect of the flag is that the .lib file timestamp isn't
-  # updated if the .lib doesn't change.
-  if (!use_lld) {
-    ldflags = incremental_linking_off_switch
-  }
-}
-
-# Some large modules can't handle incremental linking in some situations. This
-# config should be applied to large modules to turn off incremental linking
-# when it won't work.
-config("default_large_module_incremental_linking") {
-  if (use_lld || symbol_level == 0 ||
-      (current_cpu == "x86" && is_component_build)) {
-    # In these configurations, ilk file sizes stay low enough that we can
-    # link incrementally.
-    ldflags = default_incremental_linking_switch
+  # Enable incremental linking for debug builds and all component builds - any
+  # builds where performance is not job one.
+  # TODO(thakis): Always turn this on with lld, no reason not to.
+  if (is_debug || is_component_build) {
+    ldflags = [ "/INCREMENTAL" ]
+    if (use_lld) {
+      # lld doesn't use ilk files and doesn't really have an incremental link
+      # mode; the only effect of the flag is that the .lib file timestamp isn't
+      # updated if the .lib doesn't change.
+      # TODO(thakis): Why pass /OPT:NOREF for lld, but not otherwise?
+      # TODO(thakis): /INCREMENTAL is on by default in link.exe, but not in
+      # lld.
+      ldflags += [ "/OPT:NOREF" ]
+    }
   } else {
-    ldflags = incremental_linking_off_switch
+    ldflags = [ "/INCREMENTAL:NO" ]
   }
 }
 
@@ -599,22 +607,4 @@ config("lean_and_mean") {
 
 config("nominmax") {
   defines = [ "NOMINMAX" ]
-}
-
-# Generating order files -------------------------------------------------------
-
-config("default_cygprofile_instrumentation") {
-  if (generate_order_files) {
-    assert(is_clang, "cygprofile instrumentation only works with clang")
-    assert(is_official_build, "order files should be made w/ official builds")
-    assert(!is_chrome_branded, "order files could leak internal symbol names")
-    configs = [ ":cygprofile_instrumentation" ]
-  }
-}
-
-config("cygprofile_instrumentation") {
-  cflags = [
-    "-Xclang",
-    "-finstrument-functions-after-inlining",
-  ]
 }

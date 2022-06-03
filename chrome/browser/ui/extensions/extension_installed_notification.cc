@@ -7,7 +7,9 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/apps/launch_service/launch_service.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -61,19 +63,22 @@ ExtensionInstalledNotification::ExtensionInstalledNotification(
 ExtensionInstalledNotification::~ExtensionInstalledNotification() {}
 
 void ExtensionInstalledNotification::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!extensions::util::IsAppLaunchable(extension_id_, profile_))
     return;
 
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
-          extension_id_, extensions::ExtensionRegistry::EVERYTHING);
-  if (!extension)
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  if (proxy->AppRegistryCache().GetAppType(extension_id_) ==
+      apps::mojom::AppType::kUnknown) {
     return;
+  }
 
-  apps::AppLaunchParams params = CreateAppLaunchParamsUserContainer(
-      profile_, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::AppLaunchSource::kSourceInstalledNotification);
-  apps::LaunchService::Get(profile_)->OpenApplication(params);
+  proxy->Launch(
+      extension_id_,
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
+                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                          true /* preferred_containner */),
+      apps::mojom::LaunchSource::kFromInstalledNotification);
 }

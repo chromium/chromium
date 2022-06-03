@@ -7,8 +7,10 @@
 // AFDO can mess with them. Better not to use AFDO there.  This is a
 // temporary hack. We will add a mechanism in the build system to
 // avoid using -fauto-profile for tcmalloc files.
+#include "build/chromeos_buildflags.h"
+
 #if !defined(__clang__) && \
-    (defined(OS_CHROMEOS) || (__GNUC__ > 5 && __GNUC__ < 7))
+    (BUILDFLAG(IS_CHROMEOS_ASH) || (__GNUC__ > 5 && __GNUC__ < 7))
 // Note that this option only seems to be available in the chromeos GCC 4.9
 // toolchain, and stock GCC 5 upto 7.
 #pragma GCC optimize ("no-auto-profile")

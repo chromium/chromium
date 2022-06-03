@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
@@ -25,22 +25,6 @@ mojom::ActivationState ComputeActivationState(
     const mojom::ActivationState& parent_activation_state,
     const MemoryMappedRuleset* ruleset) {
   DCHECK(ruleset);
-
-  SCOPED_UMA_HISTOGRAM_MICRO_TIMER(
-      "SubresourceFilter.DocumentLoad.Activation.WallDuration");
-  SCOPED_UMA_HISTOGRAM_MICRO_THREAD_TIMER(
-      "SubresourceFilter.DocumentLoad.Activation.CPUDuration");
-
-  auto page_wall_duration_timer = ScopedTimers::StartIf(
-      parent_document_origin.opaque(), [](base::TimeDelta delta) {
-        UMA_HISTOGRAM_MICRO_TIMES(
-            "SubresourceFilter.PageLoad.Activation.WallDuration", delta);
-      });
-  auto page_cpu_duration_timer = ScopedThreadTimers::StartIf(
-      parent_document_origin.opaque(), [](base::TimeDelta delta) {
-        UMA_HISTOGRAM_MICRO_TIMES(
-            "SubresourceFilter.PageLoad.Activation.CPUDuration", delta);
-      });
 
   IndexedRulesetMatcher matcher(ruleset->data(), ruleset->length());
   mojom::ActivationState activation_state = parent_activation_state;
@@ -121,6 +105,28 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
                      std::move(activation_state_callback)));
 }
 
+AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
+    VerifiedRuleset::Handle* ruleset_handle,
+    const url::Origin& inherited_document_origin,
+    const mojom::ActivationState& activation_state)
+    : task_runner_(ruleset_handle->task_runner()),
+      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)) {
+  DCHECK_NE(mojom::ActivationLevel::kDisabled,
+            activation_state.activation_level);
+
+  VerifiedRuleset* verified_ruleset = ruleset_handle->ruleset_.get();
+  DCHECK(verified_ruleset);
+
+  // See previous constructor for the safety of posting |ruleset_handle|'s
+  // VerifiedRuleset pointer.
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Core::InitializeWithActivation,
+                                base::Unretained(core_.get()), activation_state,
+                                inherited_document_origin,
+                                ruleset_handle->ruleset_.get()));
+  OnActivateStateCalculated(base::DoNothing(), activation_state);
+}
+
 AsyncDocumentSubresourceFilter::~AsyncDocumentSubresourceFilter() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 }
@@ -153,6 +159,20 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
                        : LoadPolicy::ALLOW;
           },
           core_.get(), subdocument_url),
+      std::move(result_callback));
+}
+
+void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocumentURLs(
+    const std::vector<GURL>& urls,
+    MultiLoadPolicyCallback result_callback) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+
+  // TODO(pkalinnikov): Think about avoiding copying of |urls| if they are
+  // too big and won't be allowed anyway (e.g. data: URI).
+  base::PostTaskAndReplyWithResult(
+      task_runner_, FROM_HERE,
+      base::BindOnce(&AsyncDocumentSubresourceFilter::Core::GetLoadPolicies,
+                     base::Unretained(core_.get()), urls),
       std::move(result_callback));
 }
 
@@ -200,6 +220,19 @@ AsyncDocumentSubresourceFilter::Core::~Core() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 }
 
+std::vector<LoadPolicy> AsyncDocumentSubresourceFilter::Core::GetLoadPolicies(
+    const std::vector<GURL>& urls) {
+  std::vector<LoadPolicy> policies;
+  for (const auto& url : urls) {
+    auto policy =
+        filter() ? filter()->GetLoadPolicy(
+                       url, url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT)
+                 : LoadPolicy::ALLOW;
+    policies.push_back(policy);
+  }
+  return policies;
+}
+
 void AsyncDocumentSubresourceFilter::Core::SetActivationState(
     const mojom::ActivationState& state) {
   DCHECK(filter_);
@@ -225,6 +258,26 @@ mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
                   verified_ruleset->Get());
 
   return activation_state;
+}
+
+void AsyncDocumentSubresourceFilter::Core::InitializeWithActivation(
+    mojom::ActivationState activation_state,
+    const url::Origin& inherited_document_origin,
+    VerifiedRuleset* verified_ruleset) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK(verified_ruleset);
+
+  // Avoids a crash in the rare case that the ruleset's status has changed to
+  // unavailable/corrupt since the caller checked.
+  if (!verified_ruleset->Get()) {
+    DLOG(DFATAL) << "Ruleset must be available and intact.";
+    return;
+  }
+
+  DCHECK_NE(mojom::ActivationLevel::kDisabled,
+            activation_state.activation_level);
+  filter_.emplace(inherited_document_origin, activation_state,
+                  verified_ruleset->Get());
 }
 
 }  // namespace subresource_filter

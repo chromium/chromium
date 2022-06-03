@@ -1,2 +1,2 @@
-android.app.Dialog focusable focused scrollable
-++android.view.View clickable name='Text in dialog'
+android.webkit.WebView focusable focused scrollable
+++android.app.Dialog role_description='dialog' name='Text in dialog'

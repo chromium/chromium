@@ -19,6 +19,10 @@ class FlashFullscreenResource
  public:
   FlashFullscreenResource(Connection connection,
                           PP_Instance instance);
+
+  FlashFullscreenResource(const FlashFullscreenResource&) = delete;
+  FlashFullscreenResource& operator=(const FlashFullscreenResource&) = delete;
+
   ~FlashFullscreenResource() override;
 
   // Resource overrides.
@@ -32,8 +36,6 @@ class FlashFullscreenResource
 
  private:
   PP_Bool is_fullscreen_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashFullscreenResource);
 };
 
 }  // namespace proxy

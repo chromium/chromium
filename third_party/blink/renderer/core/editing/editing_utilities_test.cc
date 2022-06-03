@@ -5,19 +5,42 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
 
 class EditingUtilitiesTest : public EditingTestBase {};
 
+TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterChildren) {
+  SetBodyContent("<div id=a><p id=b><img id=c></p></div>");
+  const Position position = Position::LastPositionInNode(*GetElementById("c"));
+  // Simulate <p> will be removed.
+  EXPECT_EQ(Position(*GetElementById("a"), 0),
+            ComputePositionForNodeRemoval(position, *GetElementById("b")));
+}
+
+TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterNode) {
+  // "editing/deleting/delete-start-block.html" hits this case.
+  SetBodyContent("<div id=a><p id=b><img id=c></p></div>");
+  const Position position = Position::AfterNode(*GetElementById("c"));
+  // Simulate <p> will be removed.
+  EXPECT_EQ(Position(*GetElementById("a"), 0),
+            ComputePositionForNodeRemoval(position, *GetElementById("b")));
+}
+
 TEST_F(EditingUtilitiesTest, DirectionOfEnclosingBlockOf) {
   const char* body_content =
-      "<p id='host'><b id='one'></b><b id='two'>22</b></p>";
+      "<p id='host'><b slot='#one' id='one'></b><b slot='#two' "
+      "id='two'>22</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><p dir=rtl><content "
-      "select=#one></content><p>";
+      "<slot name=#two></slot><p dir=rtl><slot name=#one></slot><p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* one = GetDocument().getElementById("one");
@@ -27,12 +50,14 @@ TEST_F(EditingUtilitiesTest, DirectionOfEnclosingBlockOf) {
             DirectionOfEnclosingBlockOf(PositionInFlatTree(one, 0)));
 }
 
-TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest,
+       DISABLED_firstEditablePositionAfterPositionInRoot) {
   const char* body_content =
-      "<p id='host' contenteditable><b id='one'>1</b><b id='two'>22</b></p>";
+      "<p id='host' contenteditable><b slot='#one' id='one'>1</b><b "
+      "slot='#two' id='two'>22</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#one></content><b "
-      "id='three'>333</b>";
+      "<slot name=#two></slot><slot name=#one></slot><b id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* host = GetDocument().getElementById("host");
@@ -42,7 +67,9 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
 
   EXPECT_EQ(Position(one, 0),
             FirstEditablePositionAfterPositionInRoot(Position(one, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
+  EXPECT_EQ(Position(two->firstChild(), 2),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       Position(one, 0), *host))
                 .DeepEquivalent());
@@ -50,6 +77,8 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
   EXPECT_EQ(PositionInFlatTree(one, 0),
             FirstEditablePositionAfterPositionInRoot(PositionInFlatTree(one, 0),
                                                      *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
   EXPECT_EQ(PositionInFlatTree(two->firstChild(), 2),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       PositionInFlatTree(one, 0), *host))
@@ -58,7 +87,9 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
   EXPECT_EQ(
       Position::FirstPositionInNode(*host),
       FirstEditablePositionAfterPositionInRoot(Position(three, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // beginning of "22".
+  EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       Position(three, 0), *host))
                 .DeepEquivalent());
@@ -72,10 +103,9 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
 }
 
 TEST_F(EditingUtilitiesTest, enclosingBlock) {
-  const char* body_content = "<p id='host'><b id='one'>11</b></p>";
+  const char* body_content = "<p id='host'><b slot='#one' id='one'>11</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><div id='three'><content "
-      "select=#one></content></div>";
+      "<slot name=#two></slot><div id='three'><slot name=#one></slot></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
@@ -89,10 +119,9 @@ TEST_F(EditingUtilitiesTest, enclosingBlock) {
 }
 
 TEST_F(EditingUtilitiesTest, enclosingNodeOfType) {
-  const char* body_content = "<p id='host'><b id='one'>11</b></p>";
+  const char* body_content = "<p id='host'><b slot='#one' id='one'>11</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><div id='three'><content "
-      "select=#one></div></content>";
+      "<slot name=#two></slot><div id='three'><slot name=#one></div></slot>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
@@ -127,7 +156,7 @@ TEST_F(EditingUtilitiesTest, isEditablePositionWithTable) {
   // element. So, we build DOM tree manually.
   // Note: This is unusual HTML taken from http://crbug.com/574230
   Element* table = GetDocument().CreateRawElement(html_names::kTableTag);
-  table->SetInnerHTMLFromString("<caption>foo</caption>");
+  table->setInnerHTML("<caption>foo</caption>");
   while (GetDocument().firstChild())
     GetDocument().firstChild()->remove();
   GetDocument().AppendChild(table);
@@ -137,6 +166,140 @@ TEST_F(EditingUtilitiesTest, isEditablePositionWithTable) {
   EXPECT_FALSE(IsEditablePosition(Position(table, 0)));
 }
 
+// http://crbug.com/1185089
+// See also PositionRespectingEditingBoundaryWithInputReadWrite
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithInputReadOnly) {
+  LoadAhem();
+  InsertStyleElement("body { font: 10px/15px Ahem; margin: 0px; }");
+  SetBodyContent(
+      "<div id=sample>012"
+      "<input value=abc placeholder=xyz readonly>"
+      "345</div>");
+  const auto& sample = *GetElementById("sample");
+  const auto& text_012 = *To<Text>(sample.firstChild());
+  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& inner_editor = *input.InnerEditorElement();
+  const auto& text_abc = *To<Text>(inner_editor.firstChild());
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(0, 0));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  ASSERT_EQ(PositionWithAffinity(Position(text_012, 0)),
+            hit_result.GetPosition());
+
+  EXPECT_EQ(
+      PositionWithAffinity(Position(text_abc, 0)),
+      PositionRespectingEditingBoundary(Position(text_abc, 1), hit_result))
+      << "Adjust to outside of <input> to inside of <input>";
+  EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)),
+            PositionRespectingEditingBoundary(Position::BeforeNode(input),
+                                              hit_result))
+      << "No adjustment because both position are in same enclosing element";
+}
+
+// http://crbug.com/1185089
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithInputReadOnlyInEditable) {
+  LoadAhem();
+  InsertStyleElement("body { font: 10px/15px Ahem; margin: 0px; }");
+  SetBodyContent(
+      "<div contenteditable id=sample>012"
+      "<input value=abc placeholder=xyz readonly>"
+      "345</div>");
+  const auto& sample = *GetElementById("sample");
+  const auto& text_012 = *To<Text>(sample.firstChild());
+  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& inner_editor = *input.InnerEditorElement();
+  const auto& text_abc = *To<Text>(inner_editor.firstChild());
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(5, 5));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  ASSERT_EQ(PositionWithAffinity(Position(text_012, 0)),
+            hit_result.GetPosition());
+
+  EXPECT_EQ(
+      PositionWithAffinity(Position(text_abc, 0)),
+      PositionRespectingEditingBoundary(Position(text_abc, 1), hit_result))
+      << "Adjust to outside of <input> to inside of <input>";
+  EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)),
+            PositionRespectingEditingBoundary(Position::BeforeNode(input),
+                                              hit_result))
+      << "No adjustment because both position are in same enclosing element";
+}
+
+// http://crbug.com/1185089
+// See also PositionRespectingEditingBoundaryWithInputReadOnly
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithInputReadWrite) {
+  LoadAhem();
+  InsertStyleElement("body { font: 10px/15px Ahem; margin: 0px; }");
+  SetBodyContent(
+      "<div id=sample>012"
+      "<input value=abc placeholder=xyz>"
+      "345</div>");
+  const auto& sample = *GetElementById("sample");
+  const auto& text_012 = *To<Text>(sample.firstChild());
+  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& inner_editor = *input.InnerEditorElement();
+  const auto& text_abc = *To<Text>(inner_editor.firstChild());
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(5, 5));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  ASSERT_EQ(PositionWithAffinity(Position(text_012, 0)),
+            hit_result.GetPosition());
+
+  EXPECT_EQ(
+      PositionWithAffinity(Position(text_abc, 0)),
+      PositionRespectingEditingBoundary(Position(text_abc, 1), hit_result))
+      << "Adjust to outside of <input> to inside of <input>";
+  EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)),
+            PositionRespectingEditingBoundary(Position::BeforeNode(input),
+                                              hit_result))
+      << "No adjustment because both position are in same enclosing element";
+}
+
+// http://crbug.com/1249655 and http://crbug.com/1252377
+TEST_F(EditingUtilitiesTest,
+       PositionRespectingEditingBoundaryWithPointerEventNone) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/15px Ahem; margin: 0px; }"
+      "input { pointer-events: none; }");
+  SetBodyContent("<div>012 <input id=target placeholder=abc> 345</div>");
+  const auto& target = *To<TextControlElement>(GetElementById("target"));
+  const auto& text_abc = *To<Text>(target.PlaceholderElement()->firstChild());
+
+  const HitTestRequest hit_request(HitTestRequest::kActive);
+  const HitTestLocation hit_location(PhysicalOffset(50, 5));
+  HitTestResult hit_result(hit_request, hit_location);
+  ASSERT_TRUE(
+      GetDocument().View()->GetLayoutView()->HitTest(hit_location, hit_result));
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    ASSERT_EQ(PositionWithAffinity(Position(text_abc, 1)),
+              hit_result.GetPosition());
+    // Simulates drag from "abc"@2 to "abc@1"
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_abc, 1)),
+        PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
+  } else {
+    ASSERT_EQ(PositionWithAffinity(Position::BeforeNode(target)),
+              hit_result.GetPosition());
+  // Simulates drag from "abc"@2 to "abc@1"
+    EXPECT_EQ(
+        PositionWithAffinity(Position::BeforeNode(target)),
+        PositionRespectingEditingBoundary(Position(text_abc, 2), hit_result));
+  }
+}
+
 TEST_F(EditingUtilitiesTest, RepeatString) {
   EXPECT_EQ("", RepeatString("xyz", 0));
   EXPECT_EQ("xyz", RepeatString("xyz", 1));
@@ -144,28 +307,32 @@ TEST_F(EditingUtilitiesTest, RepeatString) {
   EXPECT_EQ("xyzxyzxyz", RepeatString("xyz", 3));
 }
 
-TEST_F(EditingUtilitiesTest, tableElementJustBefore) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest, DISABLED_tableElementJustBefore) {
   const char* body_content =
-      "<div contenteditable id=host><table "
-      "id=table><tr><td>1</td></tr></table><b id=two>22</b></div>";
+      "<div contenteditable id=host><table slot=#table "
+      "id=table><tr><td>1</td></tr></table><b slot=#two id=two>22</b></div>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#table></content>";
+      "<slot name=#two></slot><slot name=#table></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
   Node* table = GetDocument().getElementById("table");
 
   EXPECT_EQ(table, TableElementJustBefore(VisiblePosition::AfterNode(*table)));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(
                        VisiblePositionInFlatTree::AfterNode(*table)));
 
   EXPECT_EQ(table, TableElementJustBefore(
                        VisiblePosition::LastPositionInNode(*table)));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(CreateVisiblePosition(
                        PositionInFlatTree::LastPositionInNode(*table))));
 
   EXPECT_EQ(nullptr,
             TableElementJustBefore(CreateVisiblePosition(Position(host, 2))));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(
                        CreateVisiblePosition(PositionInFlatTree(host, 2))));
 
@@ -175,15 +342,19 @@ TEST_F(EditingUtilitiesTest, tableElementJustBefore) {
 
   EXPECT_EQ(nullptr,
             TableElementJustBefore(VisiblePosition::LastPositionInNode(*host)));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(CreateVisiblePosition(
                        PositionInFlatTree::LastPositionInNode(*host))));
 }
 
-TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest,
+       DISABLED_lastEditablePositionBeforePositionInRoot) {
   const char* body_content =
-      "<p id='host' contenteditable><b id='one'>1</b><b id='two'>22</b></p>";
+      "<p id='host' contenteditable><b slot=#one id='one'>1</b><b slot=#two "
+      "id='two'>22</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#one></content><b "
+      "<slot name=#two></slot><slot name=#one></slot><b "
       "id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -194,7 +365,9 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
 
   EXPECT_EQ(Position(one, 0),
             LastEditablePositionBeforePositionInRoot(Position(one, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
+  EXPECT_EQ(Position(two->firstChild(), 2),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       Position(one, 0), *host))
                 .DeepEquivalent());
@@ -202,6 +375,8 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
   EXPECT_EQ(PositionInFlatTree(one, 0),
             LastEditablePositionBeforePositionInRoot(PositionInFlatTree(one, 0),
                                                      *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
   EXPECT_EQ(PositionInFlatTree(two->firstChild(), 2),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       PositionInFlatTree(one, 0), *host))
@@ -210,24 +385,29 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
   EXPECT_EQ(
       Position::FirstPositionInNode(*host),
       LastEditablePositionBeforePositionInRoot(Position(three, 0), *host));
-  EXPECT_EQ(Position(one->firstChild(), 0),
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // beginning of "22".
+  EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       Position(three, 0), *host))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*host),
             LastEditablePositionBeforePositionInRoot(
                 PositionInFlatTree(three, 0), *host));
+  // TODO(crbug.com/1157146): This returns nullptr instead of the beginning of
+  // "22".
   EXPECT_EQ(PositionInFlatTree(two->firstChild(), 0),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       PositionInFlatTree(three, 0), *host))
                 .DeepEquivalent());
 }
 
-TEST_F(EditingUtilitiesTest, NextNodeIndex) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest, DISABLED_NextNodeIndex) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
-  const char* shadow_content =
-      "<content select=#two></content><content select=#one></content>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
+  const char* shadow_content = "<slot name=#two></slot><slot name=#one></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
@@ -236,6 +416,7 @@ TEST_F(EditingUtilitiesTest, NextNodeIndex) {
   EXPECT_EQ(
       Position(host, 3),
       NextPositionOf(Position(two, 1), PositionMoveType::kGraphemeCluster));
+  // TODO(crbug.com/1157146): This returns the slot instead of the <p>.
   EXPECT_EQ(PositionInFlatTree(host, 1),
             NextPositionOf(PositionInFlatTree(two, 1),
                            PositionMoveType::kGraphemeCluster));
@@ -243,18 +424,17 @@ TEST_F(EditingUtilitiesTest, NextNodeIndex) {
 
 TEST_F(EditingUtilitiesTest, NextVisuallyDistinctCandidate) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b><b "
-      "id='three'>33</b></p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b><b slot='#three' id='three'>33</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#one></content><content "
-      "select=#three></content>";
+      "<slot name=#two></slot><slot name=#one></slot><slot name=#three></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* one = GetDocument().getElementById("one");
   Node* two = GetDocument().getElementById("two");
   Node* three = GetDocument().getElementById("three");
 
-  EXPECT_EQ(Position(two->firstChild(), 1),
+  EXPECT_EQ(Position(two->firstChild(), 0),
             NextVisuallyDistinctCandidate(Position(one, 1)));
   EXPECT_EQ(PositionInFlatTree(three->firstChild(), 1),
             NextVisuallyDistinctCandidate(PositionInFlatTree(one, 1)));

@@ -19,13 +19,6 @@ var unexpected = [
   "PageTransitionEvent",
   // https://dom.spec.whatwg.org/
   "DOMImplementation",
-  // https://streams.spec.whatwg.org/
-  "ReadableStreamDefaultReader",
-  "ReadableStreamBYOBReader",
-  "ReadableStreamDefaultController",
-  "ReadableByteStreamController",
-  "WritableStreamDefaultWriter",
-  "WritableStreamDefaultController",
   // http://w3c.github.io/IndexedDB/
   "IDBEnvironment",
   // https://www.w3.org/TR/2010/NOTE-webdatabase-20101118/

@@ -24,11 +24,11 @@ MediaPlayerRendererClientFactory::~MediaPlayerRendererClientFactory() {}
 std::unique_ptr<media::Renderer>
 MediaPlayerRendererClientFactory::CreateRenderer(
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
-    const scoped_refptr<base::TaskRunner>& /* worker_task_runner */,
-    media::AudioRendererSink* /* audio_renderer_sink */,
+    const scoped_refptr<base::TaskRunner>& worker_task_runner,
+    media::AudioRendererSink* audio_renderer_sink,
     media::VideoRendererSink* video_renderer_sink,
-    const media::RequestOverlayInfoCB& /* request_overlay_info_cb */,
-    const gfx::ColorSpace& /* target_color_space */) {
+    media::RequestOverlayInfoCB request_overlay_info_cb,
+    const gfx::ColorSpace& target_color_space) {
   // Used to send messages from the MPRC (Renderer process), to the MPR (Browser
   // process). The |renderer_extension_request| will be bound in
   // MediaPlayerRenderer.

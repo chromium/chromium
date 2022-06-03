@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -56,15 +57,19 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -88,7 +93,7 @@ class AttributeChange {
 
   void Apply() { element_->setAttribute(name_, AtomicString(value_)); }
 
-  void Trace(Visitor* visitor) { visitor->Trace(element_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(element_); }
 
  private:
   Member<Element> element_;
@@ -193,12 +198,7 @@ static HTMLElement* HighestAncestorToWrapMarkup(
           FirstPositionInOrBeforeNode(*first_node);
       if (Node* parent_list_node =
               EnclosingNodeOfType(first_node_position, IsListItem)) {
-        EphemeralRangeTemplate<Strategy> markup_range =
-            EphemeralRangeTemplate<Strategy>(start_position, end_position);
-        EphemeralRangeTemplate<Strategy> node_range =
-            NormalizeRange(EphemeralRangeTemplate<Strategy>::RangeOfContents(
-                *parent_list_node));
-        if (node_range == markup_range) {
+        if (AreSameRanges(parent_list_node, start_position, end_position)) {
           ContainerNode* ancestor = parent_list_node->parentNode();
           while (ancestor && !IsHTMLListElement(ancestor))
             ancestor = ancestor->parentNode();
@@ -411,8 +411,9 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
                                    node_after_context))
     return nullptr;
 
-  auto* tagged_document =
-      MakeGarbageCollected<Document>(DocumentInit::Create());
+  auto* tagged_document = MakeGarbageCollected<Document>(
+      DocumentInit::Create().WithExecutionContext(
+          document.GetExecutionContext()));
   tagged_document->SetContextFeatures(document.GetContextFeatures());
 
   auto* root =
@@ -446,14 +447,17 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(
 
 String CreateMarkup(const Node* node,
                     ChildrenOnly children_only,
-                    AbsoluteURLs should_resolve_urls) {
+                    AbsoluteURLs should_resolve_urls,
+                    IncludeShadowRoots include_shadow_roots,
+                    ClosedRootsSet include_closed_roots) {
   if (!node)
     return "";
 
   MarkupAccumulator accumulator(should_resolve_urls,
-                                node->GetDocument().IsHTMLDocument()
+                                IsA<HTMLDocument>(node->GetDocument())
                                     ? SerializationType::kHTML
-                                    : SerializationType::kXML);
+                                    : SerializationType::kXML,
+                                include_shadow_roots, include_closed_roots);
   return accumulator.SerializeNodes<EditingStrategy>(*node, children_only);
 }
 
@@ -601,15 +605,23 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     Element* context_element,
     ParserContentPolicy parser_content_policy,
     const char* method,
+    bool include_shadow_roots,
     ExceptionState& exception_state) {
   DCHECK(context_element);
+  const HTMLTemplateElement* template_element =
+      DynamicTo<HTMLTemplateElement>(*context_element);
+  if (template_element && !template_element->GetExecutionContext()) {
+    return nullptr;
+  }
+
   Document& document =
       IsA<HTMLTemplateElement>(*context_element)
           ? context_element->GetDocument().EnsureTemplateDocument()
           : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
+  document.setAllowDeclarativeShadowRoots(include_shadow_roots);
 
-  if (document.IsHTMLDocument()) {
+  if (IsA<HTMLDocument>(document)) {
     fragment->ParseHTML(markup, context_element, parser_content_policy);
     return fragment;
   }
@@ -675,7 +687,7 @@ DocumentFragment* CreateContextualFragment(
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, element, parser_content_policy, "createContextualFragment",
-      exception_state);
+      /*include_shadow_roots=*/false, exception_state);
   if (!fragment)
     return nullptr;
 
@@ -688,10 +700,10 @@ DocumentFragment* CreateContextualFragment(
     next_node = node->nextSibling();
     if (IsA<HTMLHtmlElement>(node) || IsA<HTMLHeadElement>(node) ||
         IsA<HTMLBodyElement>(node)) {
-      auto* element = To<HTMLElement>(node);
-      if (Node* first_child = element->firstChild())
+      auto* child_element = To<HTMLElement>(node);
+      if (Node* first_child = child_element->firstChild())
         next_node = first_child;
-      RemoveElementPreservingChildren(fragment, element);
+      RemoveElementPreservingChildren(fragment, child_element);
     }
   }
   return fragment;
@@ -760,18 +772,23 @@ void MergeWithNextTextNode(Text* text_node, ExceptionState& exception_state) {
     text_next->remove(exception_state);
 }
 
-static Document* CreateStagingDocumentForMarkupSanitization() {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
-  Page* page = Page::CreateNonOrdinary(page_clients);
+static Document* CreateStagingDocumentForMarkupSanitization(
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
+  Page* page = Page::CreateNonOrdinary(GetStaticEmptyChromeClientInstance(),
+                                       agent_group_scheduler);
 
   page->GetSettings().SetScriptEnabled(false);
   page->GetSettings().SetPluginsEnabled(false);
   page->GetSettings().SetAcceleratedCompositingEnabled(false);
+  page->GetSettings().SetParserScriptingFlagPolicy(
+      ParserScriptingFlagPolicy::kEnabled);
 
   LocalFrame* frame = MakeGarbageCollected<LocalFrame>(
       MakeGarbageCollected<EmptyLocalFrameClient>(), *page,
       nullptr,  // FrameOwner*
+      nullptr,  // Frame* parent
+      nullptr,  // Frame* previous_sibling
+      FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
       nullptr,  // WindowAgentFactory*
       nullptr   // InterfaceRegistry*
   );
@@ -779,11 +796,11 @@ static Document* CreateStagingDocumentForMarkupSanitization() {
   LocalFrameView* frame_view =
       MakeGarbageCollected<LocalFrameView>(*frame, IntSize(800, 600));
   frame->SetView(frame_view);
-  frame->Init();
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
   Document* document = frame->GetDocument();
   DCHECK(document);
-  DCHECK(document->IsHTMLDocument());
+  DCHECK(IsA<HTMLDocument>(document));
   DCHECK(document->body());
 
   document->SetIsForMarkupSanitization(true);
@@ -791,34 +808,81 @@ static Document* CreateStagingDocumentForMarkupSanitization() {
   return document;
 }
 
-String SanitizeMarkupWithContext(const String& raw_markup,
-                                 unsigned fragment_start,
-                                 unsigned fragment_end) {
-  if (raw_markup.IsEmpty())
-    return g_empty_string;
+static bool ContainsStyleElements(const DocumentFragment& fragment) {
+  for (const Node& node : NodeTraversal::DescendantsOf(fragment)) {
+    if (IsA<HTMLStyleElement>(node) || IsA<SVGStyleElement>(node))
+      return true;
+  }
+  return false;
+}
 
-  Document* staging_document = CreateStagingDocumentForMarkupSanitization();
+// Returns true if any svg <use> element is removed.
+static bool StripSVGUseDataURLs(Node& node) {
+  if (IsA<SVGUseElement>(node)) {
+    SVGUseElement& use = To<SVGUseElement>(node);
+    SVGURLReferenceResolver resolver(use.HrefString(), use.GetDocument());
+    if (resolver.AbsoluteUrl().ProtocolIsData())
+      node.remove();
+    return true;
+  }
+  bool stripped = false;
+  for (Node* child = node.firstChild(); child;) {
+    Node* next = child->nextSibling();
+    if (StripSVGUseDataURLs(*child))
+      stripped = true;
+    child = next;
+  }
+  return stripped;
+}
+
+DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
+    Document& document,
+    const String& raw_markup,
+    unsigned fragment_start,
+    unsigned fragment_end,
+    const String& base_url) {
+  if (raw_markup.IsEmpty())
+    return nullptr;
+
+  Document* staging_document = CreateStagingDocumentForMarkupSanitization(
+      *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
   Element* body = staging_document->body();
 
   DocumentFragment* fragment = CreateFragmentFromMarkupWithContext(
       *staging_document, raw_markup, fragment_start, fragment_end, KURL(),
       kDisallowScriptingAndPluginContent);
-  if (!fragment)
-    return g_empty_string;
+  if (!fragment) {
+    staging_document->GetPage()->WillBeDestroyed();
+    return nullptr;
+  }
+
+  bool needs_sanitization = false;
+  if (ContainsStyleElements(*fragment))
+    needs_sanitization = true;
+  if (StripSVGUseDataURLs(*fragment))
+    needs_sanitization = true;
+
+  if (!needs_sanitization) {
+    staging_document->GetPage()->WillBeDestroyed();
+    return CreateFragmentFromMarkupWithContext(
+        document, raw_markup, fragment_start, fragment_end, base_url,
+        kDisallowScriptingAndPluginContent);
+  }
 
   body->appendChild(fragment);
-  staging_document->UpdateStyleAndLayout();
+  staging_document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // This sanitizes stylesheets in the markup into element inline styles
-  String result = CreateMarkup(Position::FirstPositionInNode(*body),
+  String markup = CreateMarkup(Position::FirstPositionInNode(*body),
                                Position::LastPositionInNode(*body),
                                CreateMarkupOptions::Builder()
                                    .SetShouldAnnotateForInterchange(true)
                                    .SetIsForMarkupSanitization(true)
                                    .Build());
-
   staging_document->GetPage()->WillBeDestroyed();
-  return result;
+
+  return CreateFragmentFromMarkup(document, markup, base_url,
+                                  kDisallowScriptingAndPluginContent);
 }
 
 template class CORE_TEMPLATE_EXPORT CreateMarkupAlgorithm<EditingStrategy>;

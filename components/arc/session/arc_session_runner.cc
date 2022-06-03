@@ -9,20 +9,23 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "components/arc/arc_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultRestartDelay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kDefaultRestartDelay = base::Seconds(5);
 
 void RecordInstanceCrashUma(ArcContainerLifetimeEvent sample) {
   UMA_HISTOGRAM_ENUMERATION("Arc.ContainerLifetimeEvent", sample,
                             ArcContainerLifetimeEvent::COUNT);
+  // Log the metric to facilitate finding feedback reports in Xamine.
+  VLOG(1) << "Arc.ContainerLifetimeEvent: "
+          << static_cast<std::underlying_type_t<ArcContainerLifetimeEvent>>(
+                 sample);
 }
 
 void RecordInstanceRestartAfterCrashUma(size_t restart_after_crash_count) {
@@ -32,7 +35,7 @@ void RecordInstanceRestartAfterCrashUma(size_t restart_after_crash_count) {
 
 // Gets an ArcContainerLifetimeEvent value to record. Returns nullopt when no
 // UMA recording is needed.
-base::Optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
+absl::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
     size_t restart_after_crash_count,
     ArcStopReason stop_reason,
     bool was_running) {
@@ -41,13 +44,13 @@ base::Optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
   // container restart might be recorded. Each CONTAINER_STARTED event can
   // be paired up to one non-START event.
   if (restart_after_crash_count)
-    return base::nullopt;
+    return absl::nullopt;
 
   switch (stop_reason) {
     case ArcStopReason::SHUTDOWN:
     case ArcStopReason::LOW_DISK_SPACE:
       // We don't record these events.
-      return base::nullopt;
+      return absl::nullopt;
     case ArcStopReason::GENERIC_BOOT_FAILURE:
       return ArcContainerLifetimeEvent::CONTAINER_FAILED_TO_START;
     case ArcStopReason::CRASH:
@@ -56,11 +59,11 @@ base::Optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Returns true if restart is needed for given conditions.
-bool IsRestartNeeded(base::Optional<ArcInstanceMode> target_mode,
+bool IsRestartNeeded(absl::optional<ArcInstanceMode> target_mode,
                      ArcStopReason stop_reason,
                      bool was_running) {
   if (!target_mode.has_value()) {
@@ -95,7 +98,7 @@ bool IsRestartNeeded(base::Optional<ArcInstanceMode> target_mode,
 
 // Returns true if the request to start/upgrade ARC instance is allowed
 // operation.
-bool IsRequestAllowed(const base::Optional<ArcInstanceMode>& current_mode,
+bool IsRequestAllowed(const absl::optional<ArcInstanceMode>& current_mode,
                       ArcInstanceMode request_mode) {
   if (!current_mode.has_value()) {
     // This is a request to start a new ARC instance (either mini instance
@@ -136,6 +139,16 @@ void ArcSessionRunner::AddObserver(Observer* observer) {
 void ArcSessionRunner::RemoveObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observer_list_.RemoveObserver(observer);
+}
+
+void ArcSessionRunner::ResumeRunner() {
+  VLOG(1) << "ArcSessionRunner is resumed";
+  resumed_ = true;
+  if (target_mode_) {
+    ArcInstanceMode original_mode = *target_mode_;
+    target_mode_ = absl::nullopt;
+    RequestStart(original_mode);
+  }
 }
 
 void ArcSessionRunner::RequestStartMiniInstance() {
@@ -181,6 +194,12 @@ void ArcSessionRunner::RequestStart(ArcInstanceMode request_mode) {
     return;
   }
 
+  if (!resumed_) {
+    VLOG(1) << "Deferring to start ARC instance. "
+            << "This runner hasn't been resumed yet.";
+    return;
+  }
+
   // No asynchronous event is expected later. Trigger the ArcSession now.
   StartArcSession();
 }
@@ -189,7 +208,7 @@ void ArcSessionRunner::RequestStop() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   VLOG(1) << "Session stop requested";
-  target_mode_ = base::nullopt;
+  target_mode_ = absl::nullopt;
 
   if (arc_session_) {
     // If |arc_session_| is running, stop it.
@@ -210,7 +229,7 @@ void ArcSessionRunner::OnShutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   VLOG(1) << "OnShutdown";
-  target_mode_ = base::nullopt;
+  target_mode_ = absl::nullopt;
   restart_timer_.Stop();
   if (arc_session_)
     arc_session_->OnShutdown();
@@ -219,17 +238,35 @@ void ArcSessionRunner::OnShutdown() {
   DCHECK(!arc_session_);
 }
 
-void ArcSessionRunner::SetUserInfo(const std::string& hash,
-                                   const std::string& serial_number) {
-  // |hash| can be empty in unit tests. This function can also be called
-  // multiple times in tests.
-  // TODO(yusukes): Fix tests and add DCHECKs to make sure |hash| is not
-  // empty and the function is called only once.
-  DCHECK(!serial_number.empty());
+void ArcSessionRunner::SetUserInfo(
+    const cryptohome::Identification& cryptohome_id,
+    const std::string& hash,
+    const std::string& serial_number) {
+  // |cryptohome_id.id()| and |hash| can be empty in unit tests. This function
+  // can also be called multiple times in tests.
+  // TODO(yusukes): Fix tests and add DCHECKs to make sure they are not empty
+  // and the function is called only once.
+  DCHECK(!IsArcVmEnabled() || !serial_number.empty());
+  cryptohome_id_ = cryptohome_id;
   user_id_hash_ = hash;
   serial_number_ = serial_number;
   if (arc_session_)
-    arc_session_->SetUserInfo(user_id_hash_, serial_number_);
+    arc_session_->SetUserInfo(cryptohome_id_, user_id_hash_, serial_number_);
+}
+
+void ArcSessionRunner::SetDemoModeDelegate(
+    std::unique_ptr<ArcClientAdapter::DemoModeDelegate> delegate) {
+  demo_mode_delegate_ = std::move(delegate);
+}
+
+void ArcSessionRunner::TrimVmMemory(TrimVmMemoryCallback callback) {
+  if (arc_session_) {
+    arc_session_->TrimVmMemory(std::move(callback));
+    return;
+  }
+  LOG(WARNING) << "TrimVmMemory is called when no ARC session is running";
+  std::move(callback).Run(/*success=*/false,
+                          /*failure_reason=*/"No ARC session is running");
 }
 
 void ArcSessionRunner::SetRestartDelayForTesting(
@@ -247,8 +284,12 @@ void ArcSessionRunner::StartArcSession() {
   VLOG(1) << "Starting ARC instance";
   if (!arc_session_) {
     arc_session_ = factory_.Run();
-    if (!user_id_hash_.empty() && !serial_number_.empty())
-      arc_session_->SetUserInfo(user_id_hash_, serial_number_);
+    if (!cryptohome_id_.id().empty() && !user_id_hash_.empty() &&
+        !serial_number_.empty()) {
+      arc_session_->SetUserInfo(cryptohome_id_, user_id_hash_, serial_number_);
+    }
+    arc_session_->SetDefaultDeviceScaleFactor(default_device_scale_factor_);
+    arc_session_->SetDemoModeDelegate(demo_mode_delegate_.get());
     arc_session_->AddObserver(this);
     arc_session_->StartMiniInstance();
     // Record the UMA only when |restart_after_crash_count_| is zero to avoid
@@ -284,7 +325,7 @@ void ArcSessionRunner::OnSessionStopped(ArcStopReason stop_reason,
   arc_session_->RemoveObserver(this);
   arc_session_.reset();
 
-  const base::Optional<ArcContainerLifetimeEvent> uma_to_record =
+  const absl::optional<ArcContainerLifetimeEvent> uma_to_record =
       GetArcContainerLifetimeEvent(restart_after_crash_count_, stop_reason,
                                    was_running);
   if (uma_to_record.has_value())

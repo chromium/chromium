@@ -1,36 +1,14 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'PASSED'",
-          "rect": [187, 10, 53, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'PASSED'",
-          "rect": [10, 10, 53, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'FAILED'",
-          "rect": [187, 10, 44, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'FAILED'",
-          "rect": [10, 10, 44, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [181, 9, 4, 19],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [193, 11, 53, 16],
+        [12, 11, 53, 16],
+        [185, 9, 4, 19]
       ]
     }
   ]

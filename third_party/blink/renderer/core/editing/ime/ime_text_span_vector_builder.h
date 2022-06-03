@@ -32,14 +32,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_IME_TEXT_SPAN_VECTOR_BUILDER_H_
 
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_ime_text_span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/ime/ime_text_span.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/base/ime/ime_text_span.h"
 
 namespace blink {
 
-// This class is used for converting from WebVector<WebImeTextSpan>
+// This class is used for converting from WebVector<ui::ImeTextSpan>
 // to Vector<ImeTextSpan>.
 
 class ImeTextSpanVectorBuilder {
@@ -47,9 +47,9 @@ class ImeTextSpanVectorBuilder {
 
  public:
   CORE_EXPORT static Vector<ImeTextSpan> Build(
-      const WebVector<WebImeTextSpan>&);
+      const WebVector<ui::ImeTextSpan>&);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_IME_TEXT_SPAN_VECTOR_BUILDER_H_

@@ -34,6 +34,9 @@ class AnimationEffectOwner : public GarbageCollectedMixin {
   // to be updated or not.
   virtual bool EffectSuppressed() const = 0;
 
+  // Returns true if this is a replaced animation that has been removed.
+  virtual bool ReplaceStateRemoved() const = 0;
+
   // Notifies the owning animation that the effect has been invalidated, and any
   // cached information regarding it may need to be invalidated. This can
   // happen e.g. if the timing information changes or the keyframes change.

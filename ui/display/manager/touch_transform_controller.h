@@ -9,11 +9,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 struct TouchscreenDevice;
@@ -25,7 +24,6 @@ namespace display {
 class DisplayManager;
 class ManagedDisplayInfo;
 class TouchTransformSetter;
-class TouchDeviceIdentifier;
 
 namespace test {
 class TouchTransformControllerTest;
@@ -39,6 +37,10 @@ class DISPLAY_MANAGER_EXPORT TouchTransformController {
  public:
   TouchTransformController(DisplayManager* display_manager,
                            std::unique_ptr<TouchTransformSetter> setter);
+
+  TouchTransformController(const TouchTransformController&) = delete;
+  TouchTransformController& operator=(const TouchTransformController&) = delete;
+
   ~TouchTransformController();
 
   // Updates the transform for touch input-devices and pushes the new transforms
@@ -58,7 +60,7 @@ class DISPLAY_MANAGER_EXPORT TouchTransformController {
     UpdateData();
     ~UpdateData();
 
-    std::map<display::TouchDeviceIdentifier, double> device_to_scale;
+    std::map<int, double> device_to_scale;
     std::vector<ui::TouchDeviceTransform> touch_device_transforms;
   };
 
@@ -107,8 +109,6 @@ class DISPLAY_MANAGER_EXPORT TouchTransformController {
   bool is_calibrating_ = false;
 
   std::unique_ptr<TouchTransformSetter> touch_transform_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTransformController);
 };
 
 }  // namespace display

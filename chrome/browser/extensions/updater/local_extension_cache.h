@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -31,8 +30,9 @@ namespace extensions {
 class LocalExtensionCache {
  public:
   // Callback invoked on UI thread when PutExtension is completed.
-  typedef base::Callback<void(const base::FilePath& file_path,
-                              bool file_ownership_passed)> PutExtensionCallback;
+  using PutExtensionCallback =
+      base::OnceCallback<void(const base::FilePath& file_path,
+                              bool file_ownership_passed)>;
 
   // |cache_dir| - directory that will be used for caching CRX files.
   // |max_cache_size| - maximum disk space that cache can use, 0 means no limit.
@@ -44,6 +44,10 @@ class LocalExtensionCache {
       uint64_t max_cache_size,
       const base::TimeDelta& max_cache_age,
       const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner);
+
+  LocalExtensionCache(const LocalExtensionCache&) = delete;
+  LocalExtensionCache& operator=(const LocalExtensionCache&) = delete;
+
   ~LocalExtensionCache();
 
   // Name of flag file that indicates that cache is ready (import finished).
@@ -53,12 +57,11 @@ class LocalExtensionCache {
   // contents will not be read until a flag file appears in the cache directory,
   // signaling that the cache is ready. The |callback| is called when cache is
   // ready and cache dir content was already checked.
-  void Init(bool wait_for_cache_initialization,
-            const base::Closure& callback);
+  void Init(bool wait_for_cache_initialization, base::OnceClosure callback);
 
   // Shut down the cache. The |callback| will be invoked when the cache has shut
   // down completely and there are no more pending file I/O operations.
-  void Shutdown(const base::Closure& callback);
+  void Shutdown(base::OnceClosure callback);
 
   // If extension with |id| and |expected_hash| exists in the cache (or there
   // is an extension with the same |id|, but without expected hash sum),
@@ -85,7 +88,7 @@ class LocalExtensionCache {
                     const std::string& expected_hash,
                     const base::FilePath& file_path,
                     const std::string& version,
-                    const PutExtensionCallback& callback);
+                    PutExtensionCallback callback);
 
   // Remove extension with |id| and |expected_hash| from local cache,
   // corresponding crx file will be removed from disk too. If |expected_hash| is
@@ -111,6 +114,8 @@ class LocalExtensionCache {
 
  private:
   struct CacheItemInfo {
+    // TODO(https://crbug.com/1076376): Change |version| from std::string to
+    // base::Version.
     std::string version;
     std::string expected_hash;
     base::Time last_used;
@@ -179,7 +184,7 @@ class LocalExtensionCache {
   bool RemoveExtensionAt(const CacheMap::iterator& it, bool match_hash);
 
   // Sends BackendCheckCacheStatus task on backend thread.
-  void CheckCacheStatus(const base::Closure& callback);
+  void CheckCacheStatus(base::OnceClosure callback);
 
   // Checks whether a flag file exists in the |cache_dir|, indicating that the
   // cache is ready. This method is invoked via the |backend_task_runner_| and
@@ -187,16 +192,16 @@ class LocalExtensionCache {
   static void BackendCheckCacheStatus(
       base::WeakPtr<LocalExtensionCache> local_cache,
       const base::FilePath& cache_dir,
-      const base::Closure& callback);
+      base::OnceClosure callback);
 
   // Invoked on the UI thread after checking whether the cache is ready. If the
   // cache is not ready yet, posts a delayed task that will repeat the check,
   // thus polling for cache readiness.
-  void OnCacheStatusChecked(bool ready, const base::Closure& callback);
+  void OnCacheStatusChecked(bool ready, base::OnceClosure callback);
 
   // Checks the cache contents. This is a helper that invokes the actual check
   // by posting to the |backend_task_runner_|.
-  void CheckCacheContents(const base::Closure& callback);
+  void CheckCacheContents(base::OnceClosure callback);
 
   // Checks the cache contents. This method is invoked via the
   // |backend_task_runner_| and posts back a list of cache entries to the
@@ -204,7 +209,7 @@ class LocalExtensionCache {
   static void BackendCheckCacheContents(
       base::WeakPtr<LocalExtensionCache> local_cache,
       const base::FilePath& cache_dir,
-      const base::Closure& callback);
+      base::OnceClosure callback);
 
   // Helper for BackendCheckCacheContents() that updates |cache_content|.
   static void BackendCheckCacheContentsInternal(
@@ -214,7 +219,7 @@ class LocalExtensionCache {
   // Invoked when the cache content on disk has been checked. |cache_content|
   // contains all the currently valid crx files in the cache.
   void OnCacheContentsChecked(std::unique_ptr<CacheMap> cache_content,
-                              const base::Closure& callback);
+                              base::OnceClosure callback);
 
   // Update timestamp for the file to mark it as "used". This method is invoked
   // via the |backend_task_runner_|.
@@ -230,13 +235,13 @@ class LocalExtensionCache {
       const std::string& expected_hash,
       const base::FilePath& file_path,
       const std::string& version,
-      const PutExtensionCallback& callback);
+      PutExtensionCallback callback);
 
   // Invoked on the UI thread when a new entry has been installed in the cache.
   void OnCacheEntryInstalled(const std::string& id,
                              const CacheItemInfo& info,
                              bool was_error,
-                             const PutExtensionCallback& callback);
+                             PutExtensionCallback callback);
 
   // Remove cached crx files(all versions) under |cached_dir| for extension with
   // |id|. This method is invoked via the |backend_task_runner_|.
@@ -275,8 +280,6 @@ class LocalExtensionCache {
 
   // Weak factory for callbacks from the backend and delayed tasks.
   base::WeakPtrFactory<LocalExtensionCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalExtensionCache);
 };
 
 }  // namespace extensions

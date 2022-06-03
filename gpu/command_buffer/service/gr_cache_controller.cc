@@ -7,12 +7,17 @@
 #include <chrono>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
 namespace raster {
+
+GrCacheController::GrCacheController(SharedContextState* context_state)
+    : context_state_(context_state),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 GrCacheController::GrCacheController(
     SharedContextState* context_state,
@@ -32,9 +37,6 @@ void GrCacheController::ScheduleGrContextCleanup() {
   if (!purge_gr_cache_cb_.IsCancelled())
     return;
 
-  // Record memory usage periodically.
-  RecordGrContextMemory();
-
   constexpr int kOldResourceCleanupDelaySeconds = 5;
   // Here we ask GrContext to free any resources that haven't been used in
   // a long while even if it is under budget. Below we set a call back to
@@ -48,9 +50,8 @@ void GrCacheController::ScheduleGrContextCleanup() {
   purge_gr_cache_cb_.Reset(base::BindOnce(&GrCacheController::PurgeGrCache,
                                           base::Unretained(this),
                                           current_idle_id_));
-  task_runner_->PostDelayedTask(
-      FROM_HERE, purge_gr_cache_cb_.callback(),
-      base::TimeDelta::FromSeconds(kIdleCleanupDelaySeconds));
+  task_runner_->PostDelayedTask(FROM_HERE, purge_gr_cache_cb_.callback(),
+                                base::Seconds(kIdleCleanupDelaySeconds));
 }
 
 void GrCacheController::PurgeGrCache(uint64_t idle_id) {
@@ -69,15 +70,21 @@ void GrCacheController::PurgeGrCache(uint64_t idle_id) {
   }
 
   context_state_->set_need_context_state_reset(true);
-  context_state_->gr_context()->freeGpuResources();
-}
 
-void GrCacheController::RecordGrContextMemory() const {
-  int resource_count = 0;
-  size_t resource_bytes = 0;
-  context_state_->gr_context()->getResourceCacheUsage(&resource_count,
-                                                      &resource_bytes);
-  UMA_HISTOGRAM_MEMORY_KB("GPU.GrContextMemoryKb", resource_bytes / 1000);
+  // Force Skia to check fences to determine what can be freed.
+  context_state_->gr_context()->checkAsyncWorkCompletion();
+  context_state_->gr_context()->freeGpuResources();
+
+  // Skia may have released resources, but the driver may not process that
+  // without a flush.
+  if (context_state_->GrContextIsGL()) {
+    auto* api = gl::g_current_gl_context;
+    api->glFlushFn();
+  }
+
+  // Skia store VkPipeline cache only on demand. We do it when we're idle idle
+  // as it might take time.
+  context_state_->StoreVkPipelineCacheIfNeeded();
 }
 
 }  // namespace raster

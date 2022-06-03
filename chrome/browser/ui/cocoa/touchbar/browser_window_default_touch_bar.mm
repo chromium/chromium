@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -170,6 +169,10 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
   bool show_home_button() { return show_home_button_.GetValue(); }
 
+  TouchBarNotificationBridge(const TouchBarNotificationBridge&) = delete;
+  TouchBarNotificationBridge& operator=(const TouchBarNotificationBridge&) =
+      delete;
+
   ~TouchBarNotificationBridge() override {
     BrowserList::RemoveObserver(this);
     browser_->tab_strip_model()->RemoveObserver(this);
@@ -257,8 +260,6 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   BooleanPrefMember show_home_button_;
 
   PrefChangeRegistrar profile_pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchBarNotificationBridge);
 };
 
 }  // namespace
@@ -273,6 +274,9 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   // The starred button in the touch bar.
   base::scoped_nsobject<NSButton> _starredButton;
 }
+
+// Creates and returns a touch bar for tab non-fullscreen mode.
+- (NSTouchBar*)createTabTouchBar;
 
 // Creates and returns a touch bar for tab fullscreen mode.
 - (NSTouchBar*)createTabFullscreenTouchBar;
@@ -305,37 +309,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
     return [self createTabFullscreenTouchBar];
   }
 
-  base::scoped_nsobject<NSTouchBar> touchBar([[ui::NSTouchBar() alloc] init]);
-  [touchBar
-      setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
-  [touchBar setDelegate:self];
-
-  NSMutableArray<NSString*>* customIdentifiers = [NSMutableArray array];
-  NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
-
-  NSArray<NSString*>* touchBarItems = @[
-    kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
-    kSearchTouchId, kStarTouchId, kNewTabTouchId
-  ];
-
-  for (NSString* item in touchBarItems) {
-    NSString* itemIdentifier =
-        ui::GetTouchBarItemId(kBrowserWindowTouchBarId, item);
-    [customIdentifiers addObject:itemIdentifier];
-
-    // Don't add the home button if it's not shown in the toolbar.
-    if (item == kHomeTouchId && !_notificationBridge->show_home_button())
-      continue;
-
-    [defaultIdentifiers addObject:itemIdentifier];
-  }
-
-  [customIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
-
-  [touchBar setDefaultItemIdentifiers:defaultIdentifiers];
-  [touchBar setCustomizationAllowedItemIdentifiers:customIdentifiers];
-
-  return touchBar.autorelease();
+  return [self createTabTouchBar];
 }
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
@@ -360,7 +334,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   }
 
   base::scoped_nsobject<NSCustomTouchBarItem> touchBarItem(
-      [[ui::NSCustomTouchBarItem() alloc] initWithIdentifier:identifier]);
+      [[NSCustomTouchBarItem alloc] initWithIdentifier:identifier]);
   if ([identifier hasSuffix:kBackTouchId]) {
     auto* button = CreateTouchBarButton(vector_icons::kBackArrowIcon, self,
                                         IDC_BACK, IDS_ACCNAME_BACK);
@@ -416,7 +390,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
     // Strip the trailing slash.
     url::Parsed parsed;
-    base::string16 displayText = url_formatter::FormatUrl(
+    std::u16string displayText = url_formatter::FormatUrl(
         contents->GetLastCommittedURL(),
         url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
         net::UnescapeRule::SPACES, &parsed, nullptr, nullptr);
@@ -436,6 +410,9 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
     [touchBarItem
         setView:[NSTextField labelWithAttributedString:attributedString.get()]];
+    [touchBarItem
+        setCustomizationLabel:l10n_util::GetNSString(
+                                  IDS_TOUCH_BAR_URL_CUSTOMIZATION_LABEL)];
   } else {
     return nil;
   }
@@ -443,12 +420,52 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   return touchBarItem.autorelease();
 }
 
-- (NSTouchBar*)createTabFullscreenTouchBar {
-  base::scoped_nsobject<NSTouchBar> touchBar([[ui::NSTouchBar() alloc] init]);
+- (NSTouchBar*)createTabTouchBar {
+  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
+  [touchBar
+      setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
   [touchBar setDelegate:self];
-  [touchBar setDefaultItemIdentifiers:@[ ui::GetTouchBarItemId(
-                                          kTabFullscreenTouchBarId,
-                                          kFullscreenOriginLabelTouchId) ]];
+
+  NSMutableArray<NSString*>* customIdentifiers = [NSMutableArray array];
+  NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
+
+  NSArray<NSString*>* touchBarItems = @[
+    kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
+    kSearchTouchId, kStarTouchId, kNewTabTouchId
+  ];
+
+  for (NSString* item in touchBarItems) {
+    NSString* itemIdentifier =
+        ui::GetTouchBarItemId(kBrowserWindowTouchBarId, item);
+    [customIdentifiers addObject:itemIdentifier];
+
+    // Don't add the home button if it's not shown in the toolbar.
+    if (item == kHomeTouchId && !_notificationBridge->show_home_button())
+      continue;
+
+    [defaultIdentifiers addObject:itemIdentifier];
+  }
+
+  [customIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
+
+  [touchBar setDefaultItemIdentifiers:defaultIdentifiers];
+  [touchBar setCustomizationAllowedItemIdentifiers:customIdentifiers];
+
+  return touchBar.autorelease();
+}
+
+- (NSTouchBar*)createTabFullscreenTouchBar {
+  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
+  [touchBar
+      setCustomizationIdentifier:ui::GetTouchBarId(kTabFullscreenTouchBarId)];
+  [touchBar setDelegate:self];
+
+  NSArray<NSString*>* touchBarItems = @[ ui::GetTouchBarItemId(
+      kTabFullscreenTouchBarId, kFullscreenOriginLabelTouchId) ];
+
+  [touchBar setDefaultItemIdentifiers:touchBarItems];
+  [touchBar setCustomizationAllowedItemIdentifiers:touchBarItems];
+
   return touchBar.autorelease();
 }
 
@@ -482,7 +499,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   const TemplateURL* defaultProvider =
       templateUrlService->GetDefaultSearchProvider();
   BOOL isGoogle = NO;
-  base::string16 title;
+  std::u16string title;
   if (defaultProvider) {
     isGoogle =
         defaultProvider->GetEngineType(
@@ -502,6 +519,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
         gfx::CreateVectorIcon(kGoogleGLogoIcon, kTouchBarIconSize,
                               gfx::kPlaceholderColor),
         base::mac::GetSRGBColorSpace());
+  } else {
     image = CreateNSImageFromIcon(vector_icons::kSearchIcon);
   }
 #endif

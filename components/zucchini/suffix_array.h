@@ -10,8 +10,7 @@
 #include <numeric>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check.h"
 
 namespace zucchini {
 
@@ -425,8 +424,9 @@ class InducedSuffixSort {
                   suffix_array);
     }
 
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Implementation);
+    Implementation() = delete;
+    Implementation(const Implementation&) = delete;
+    const Implementation& operator=(const Implementation&) = delete;
   };
 };
 

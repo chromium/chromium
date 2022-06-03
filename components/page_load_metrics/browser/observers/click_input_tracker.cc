@@ -7,8 +7,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
-#include "third_party/blink/public/platform/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace page_load_metrics {
 
@@ -17,7 +17,7 @@ const int kMaxCountForUkm = 50;
 ClickInputTracker::ClickInputTracker() {
   // Set thresholds per Feature parameters as appropriate.
   time_delta_threshold_ =
-      base::TimeDelta::FromMilliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
           kClickInputTracker, "time_delta_threshold_ms", 500));
   position_delta_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
       kClickInputTracker, "position_delta_threshold", 10);
@@ -31,17 +31,17 @@ void ClickInputTracker::OnUserInput(const blink::WebInputEvent& event) {
   if (!base::FeatureList::IsEnabled(kClickInputTracker))
     return;
 
-  if (event.GetType() != blink::WebInputEvent::kGestureTap &&
-      event.GetType() != blink::WebInputEvent::kMouseUp) {
+  if (event.GetType() != blink::WebInputEvent::Type::kGestureTap &&
+      event.GetType() != blink::WebInputEvent::Type::kMouseUp) {
     return;
   }
 
-  blink::WebFloatPoint position;
-  if (event.GetType() == blink::WebInputEvent::kGestureTap) {
+  gfx::PointF position;
+  if (event.GetType() == blink::WebInputEvent::Type::kGestureTap) {
     const blink::WebGestureEvent& gesture =
         static_cast<const blink::WebGestureEvent&>(event);
     position = gesture.PositionInScreen();
-  } else if (event.GetType() == blink::WebInputEvent::kMouseUp) {
+  } else if (event.GetType() == blink::WebInputEvent::Type::kMouseUp) {
     const blink::WebMouseEvent& mouse_click =
         static_cast<const blink::WebMouseEvent&>(event);
     position = mouse_click.PositionInScreen();
@@ -53,9 +53,9 @@ void ClickInputTracker::OnUserInput(const blink::WebInputEvent& event) {
   if (!last_click_timestamp_.is_null()) {
     base::TimeDelta delta = event.TimeStamp() - last_click_timestamp_;
     if (delta < time_delta_threshold_ &&
-        std::abs(position.x - last_click_position_.x) <
+        std::abs(position.x() - last_click_position_.x()) <
             position_delta_threshold_ &&
-        std::abs(position.y - last_click_position_.y) <
+        std::abs(position.y() - last_click_position_.y()) <
             position_delta_threshold_) {
       current_click_input_burst_++;
       max_click_input_burst_ =

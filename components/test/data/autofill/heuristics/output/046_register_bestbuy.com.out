@@ -1,4 +1,4 @@
-SEARCH_TERM | st | SEARCH FOR | Keyword or Item # | st_1-default
+UNKNOWN_TYPE | st | SEARCH FOR | Keyword or Item # | st_1-default
 UNKNOWN_TYPE | sc | IN | Global | st_1-default
 NAME_FIRST | TxtFirstName | *First Name |  | TxtFirstName_1-default
 NAME_MIDDLE_INITIAL | TxtMI | MI |  | TxtFirstName_1-default

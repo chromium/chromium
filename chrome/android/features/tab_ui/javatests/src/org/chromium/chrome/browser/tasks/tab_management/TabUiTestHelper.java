@@ -4,59 +4,70 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.waitForStableRecyclerView;
 
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.os.Build;
+import android.app.Activity;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.NoMatchingRootException;
-import android.support.test.espresso.NoMatchingViewException;
-import android.support.test.espresso.UiController;
-import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.ViewAssertion;
-import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.NoMatchingRootException;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.GeneralSwipeAction;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Swipe;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import org.hamcrest.Matcher;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.widget.ScrimView;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +76,15 @@ import java.util.List;
  */
 public class TabUiTestHelper {
     /**
+     * Apply the necessary theme overlay for activity.
+     * TODO(https://crbug.com/1227875): Move this into a test rule.
+     * @param activity The test activity that will be used to create tab components.
+     */
+    public static void applyThemeOverlays(Activity activity) {
+        activity.setTheme(TabUiThemeProvider.getThemeOverlayStyleResourceId());
+    }
+
+    /**
      * Create {@code tabsCount} tabs for {@code cta} in certain tab model based on {@code
      * isIncognito}.
      * @param cta            A current running activity to create tabs.
@@ -72,7 +92,7 @@ public class TabUiTestHelper {
      *         model.
      * @param tabsCount      Number of tabs to be created.
      */
-    static void createTabs(ChromeTabbedActivity cta, boolean isIncognito, int tabsCount) {
+    public static void createTabs(ChromeTabbedActivity cta, boolean isIncognito, int tabsCount) {
         for (int i = 0; i < (isIncognito ? tabsCount : tabsCount - 1); i++) {
             ChromeTabUtils.newTabFromMenu(
                     InstrumentationRegistry.getInstrumentation(), cta, isIncognito, true);
@@ -86,11 +106,21 @@ public class TabUiTestHelper {
     public static void enterTabSwitcher(ChromeTabbedActivity cta) {
         OverviewModeBehaviorWatcher showWatcher = createOverviewShowWatcher(cta);
         assertFalse(cta.getLayoutManager().overviewVisible());
-        // TODO(crbug.com/1019727) Figure out a better way to wait until isCompletelyDisplayed() is
-        // true in espresso.
+        // TODO(crbug.com/1145271): Replace this with clicking tab switcher button via espresso.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
         showWatcher.waitForBehavior();
+    }
+
+    /**
+     * Leave tab switcher by tapping "back".
+     * @param cta  The current running activity.
+     */
+    public static void leaveTabSwitcher(ChromeTabbedActivity cta) {
+        OverviewModeBehaviorWatcher hideWatcher = createOverviewHideWatcher(cta);
+        assertTrue(cta.getLayoutManager().overviewVisible());
+        pressBack();
+        hideWatcher.waitForBehavior();
     }
 
     /**
@@ -130,8 +160,7 @@ public class TabUiTestHelper {
      */
     static void clickNthTabInDialog(ChromeTabbedActivity cta, int index) {
         OverviewModeBehaviorWatcher hideWatcher = createOverviewHideWatcher(cta);
-        onView(withId(R.id.tab_list_view))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
         hideWatcher.waitForBehavior();
     }
@@ -140,18 +169,16 @@ public class TabUiTestHelper {
      * Close the first tab in tab gri dialog.
      * @param cta  The current running activity.
      */
-    static void closeFirstTabInDialog(ChromeTabbedActivity cta) {
-        closeNthTabInDialog(cta, 0);
+    static void closeFirstTabInDialog() {
+        closeNthTabInDialog(0);
     }
 
     /**
      * Close the Nth tab in tab gri dialog.
-     * @param cta  The current running activity.
      * @param index The index of the target tab to close.
      */
-    static void closeNthTabInDialog(ChromeTabbedActivity cta, int index) {
-        onView(withId(R.id.tab_list_view))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
+    static void closeNthTabInDialog(int index) {
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
                 .perform(new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
@@ -160,7 +187,40 @@ public class TabUiTestHelper {
 
                     @Override
                     public String getDescription() {
-                        return "close first tab";
+                        return "close tab with index " + String.valueOf(index);
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        RecyclerView recyclerView = (RecyclerView) view;
+                        RecyclerView.ViewHolder viewHolder =
+                                recyclerView.findViewHolderForAdapterPosition(index);
+                        assert viewHolder != null;
+                        viewHolder.itemView.findViewById(R.id.action_button).performClick();
+                    }
+                });
+    }
+
+    /** Close the first tab in grid tab switcher. */
+    public static void closeFirstTabInTabSwitcher() {
+        closeNthTabInTabSwitcher(0);
+    }
+
+    /**
+     * Close the Nth tab in grid tab switcher.
+     * @param index The index of the target tab to close.
+     */
+    static void closeNthTabInTabSwitcher(int index) {
+        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isDisplayed();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "close tab with index " + String.valueOf(index);
                     }
 
                     @Override
@@ -175,23 +235,44 @@ public class TabUiTestHelper {
     }
 
     /**
-     * Check whether there is a tab list showing in a {@link android.widget.PopupWindow}. This can
-     * be used for tab grid dialog and tab group popup UI.
+     * Check whether the tab list in {@link android.widget.PopupWindow} is completely showing. This
+     * can be used for tab grid dialog and tab group popup UI.
      * @param cta  The current running activity.
-     * @return Whether there is a tab list showing in a popup component.
+     * @return Whether the tab list in a popup component is completely showing.
      */
-    static boolean isShowingPopupTabList(ChromeTabbedActivity cta) {
+    static boolean isPopupTabListCompletelyShowing(ChromeTabbedActivity cta) {
         boolean isShowing = true;
         try {
             onView(withId(R.id.tab_list_view))
                     .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                    .check(matches(isDisplayed()));
-        } catch (NoMatchingRootException e) {
+                    .check(matches(isCompletelyDisplayed()))
+                    .check((v, e) -> assertEquals(1f, v.getAlpha(), 0.0));
+        } catch (NoMatchingRootException | AssertionError e) {
             isShowing = false;
         } catch (Exception e) {
             assert false : "error when inspecting pop up tab list.";
         }
         return isShowing;
+    }
+
+    /**
+     * Check whether the tab list in {@link android.widget.PopupWindow} is completely hidden. This
+     * can be used for tab grid dialog and tab group popup UI.
+     * @param cta  The current running activity.
+     * @return Whether the tab list in a popup component is completely hidden.
+     */
+    static boolean isPopupTabListCompletelyHidden(ChromeTabbedActivity cta) {
+        boolean isHidden = false;
+        try {
+            onView(withId(R.id.tab_list_view))
+                    .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
+                    .check(matches(isDisplayed()));
+        } catch (NoMatchingRootException e) {
+            isHidden = true;
+        } catch (Exception e) {
+            assert false : "error when inspecting pop up tab list.";
+        }
+        return isHidden;
     }
 
     /**
@@ -209,18 +290,35 @@ public class TabUiTestHelper {
      * Merge all normal tabs into a single tab group.
      * @param cta   The current running activity.
      */
-    static void mergeAllNormalTabsToAGroup(ChromeTabbedActivity cta) {
+    public static void mergeAllNormalTabsToAGroup(ChromeTabbedActivity cta) {
+        mergeAllTabsToAGroup(cta, false);
+    }
+
+    /**
+     * Merge all incognito tabs into a single tab group.
+     * @param cta   The current running activity.
+     */
+    static void mergeAllIncognitoTabsToAGroup(ChromeTabbedActivity cta) {
+        mergeAllTabsToAGroup(cta, true);
+    }
+
+    /**
+     * Merge all tabs in one tab model into a single tab group.
+     * @param cta           The current running activity.
+     * @param isIncognito   indicates the tab model that we are creating tab group in.
+     */
+    static void mergeAllTabsToAGroup(ChromeTabbedActivity cta, boolean isIncognito) {
         List<Tab> tabGroup = new ArrayList<>();
-        TabModel tabModel = cta.getTabModelSelector().getModel(false);
+        TabModel tabModel = cta.getTabModelSelector().getModel(isIncognito);
         for (int i = 0; i < tabModel.getCount(); i++) {
             tabGroup.add(tabModel.getTabAt(i));
         }
-        createTabGroup(cta, false, tabGroup);
+        createTabGroup(cta, isIncognito, tabGroup);
         assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                            instanceof TabGroupModelFilter);
         TabGroupModelFilter filter = (TabGroupModelFilter) cta.getTabModelSelector()
                                              .getTabModelFilterProvider()
-                                             .getCurrentTabModelFilter();
+                                             .getTabModelFilter(isIncognito);
         assertEquals(1, filter.getCount());
     }
 
@@ -230,12 +328,16 @@ public class TabUiTestHelper {
      * @param normalTabs     The correct number of normal tabs.
      * @param incognitoTabs  The correct number of incognito tabs.
      */
-    static void verifyTabModelTabCount(
+    public static void verifyTabModelTabCount(
             ChromeTabbedActivity cta, int normalTabs, int incognitoTabs) {
-        CriteriaHelper.pollUiThread(Criteria.equals(
-                normalTabs, () -> cta.getTabModelSelector().getModel(false).getCount()));
-        CriteriaHelper.pollUiThread(Criteria.equals(
-                incognitoTabs, () -> cta.getTabModelSelector().getModel(true).getCount()));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    cta.getTabModelSelector().getModel(false).getCount(), is(normalTabs));
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    cta.getTabModelSelector().getModel(true).getCount(), is(incognitoTabs));
+        });
     }
 
     /**
@@ -267,7 +369,8 @@ public class TabUiTestHelper {
      * @param isIncognito     Whether the group is in normal model or incognito model.
      * @param tabs            A list of {@link Tab} to create group.
      */
-    static void createTabGroup(ChromeTabbedActivity cta, boolean isIncognito, List<Tab> tabs) {
+    public static void createTabGroup(
+            ChromeTabbedActivity cta, boolean isIncognito, List<Tab> tabs) {
         if (tabs.size() == 0) return;
         assert cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
@@ -286,39 +389,15 @@ public class TabUiTestHelper {
     /**
      * Create a {@link OverviewModeBehaviorWatcher} to inspect overview show.
      */
-    static OverviewModeBehaviorWatcher createOverviewShowWatcher(ChromeTabbedActivity cta) {
+    public static OverviewModeBehaviorWatcher createOverviewShowWatcher(ChromeTabbedActivity cta) {
         return new OverviewModeBehaviorWatcher(cta.getLayoutManager(), true, false);
     }
 
     /**
      * Create a {@link OverviewModeBehaviorWatcher} to inspect overview hide.
      */
-    static OverviewModeBehaviorWatcher createOverviewHideWatcher(ChromeTabbedActivity cta) {
+    public static OverviewModeBehaviorWatcher createOverviewHideWatcher(ChromeTabbedActivity cta) {
         return new OverviewModeBehaviorWatcher(cta.getLayoutManager(), false, true);
-    }
-
-    /**
-     * Rotate device to the target orientation. Do nothing if the screen is already in that
-     * orientation.
-     * @param cta             The current running activity.
-     * @param orientation     The target orientation we want the screen to rotate to.
-     */
-    public static void rotateDeviceToOrientation(ChromeTabbedActivity cta, int orientation) {
-        if (cta.getResources().getConfiguration().orientation == orientation) return;
-        assertTrue(orientation == Configuration.ORIENTATION_LANDSCAPE
-                || orientation == Configuration.ORIENTATION_PORTRAIT);
-        cta.setRequestedOrientation(orientation == Configuration.ORIENTATION_LANDSCAPE
-                        ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                        : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        CriteriaHelper.pollUiThread(
-                () -> orientation == cta.getResources().getConfiguration().orientation);
-    }
-
-    /**
-     * @return whether current running API is lower or equal to KitKat.
-     */
-    static boolean isKitKatAndBelow() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
     }
 
     /**
@@ -369,7 +448,7 @@ public class TabUiTestHelper {
 
     private static void verifyAllTabsHaveUrl(TabModel tabModel, String url) {
         for (int i = 0; i < tabModel.getCount(); i++) {
-            assertEquals(url, tabModel.getTabAt(i).getUrl());
+            assertEquals(url, ChromeTabUtils.getUrlStringOnUiThread(tabModel.getTabAt(i)));
         }
     }
 
@@ -429,13 +508,16 @@ public class TabUiTestHelper {
         }
 
         ChromeTabUtils.waitForTabPageLoaded(
-                rule.getActivity().getActivityTab(), null, null, WAIT_TIMEOUT_SECONDS * 10);
+                rule.getActivity().getActivityTab(), null, null, WAIT_TIMEOUT_SECONDS * 3);
 
         assertEquals(numTabs + previousTabCount,
                 rule.getActivity().getTabModelSelector().getModel(isIncognito).getCount());
 
-        CriteriaHelper.pollUiThread(Criteria.equals(0,
-                () -> rule.getActivity().getTabContentManager().getPendingReadbacksForTesting()));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    rule.getActivity().getTabContentManager().getPendingReadbacksForTesting(),
+                    is(0));
+        });
     }
 
     public static void verifyAllTabsHaveThumbnail(TabModel tabModel) {
@@ -450,51 +532,103 @@ public class TabUiTestHelper {
                 "The thumbnail " + etc1File.getName() + " is not found",
                 DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);
 
-        File jpegFile = TabContentManager.getTabThumbnailFileJpeg(tab);
+        File jpegFile = TabContentManager.getTabThumbnailFileJpeg(tab.getId());
         CriteriaHelper.pollInstrumentationThread(jpegFile::exists,
                 "The thumbnail " + jpegFile.getName() + " is not found",
                 DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
-     * Exit the PopupWindow dialog by clicking the outer ScrimView.
-     * @param cta  The current running activity.
+     * Verify that the snack bar is showing and click on the snack bar button. Right now it is only
+     * used for undoing a tab closure. This should be used with
+     * CriteriaHelper.pollInstrumentationThread().
+     * @return whether the visibility checking and the clicking have finished or not.
      */
-    static void clickScrimToExitDialog(ChromeTabbedActivity cta) {
-        onView(instanceOf(ScrimView.class))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                .perform(new ViewAction() {
-                    @Override
-                    public Matcher<View> getConstraints() {
-                        return isDisplayed();
-                    }
+    public static boolean verifyUndoBarShowingAndClickUndo() {
+        boolean hasClicked = true;
+        try {
+            onView(withId(R.id.snackbar_button)).check(matches(isCompletelyDisplayed()));
+            onView(withId(R.id.snackbar_button)).perform(click());
+        } catch (NoMatchingRootException | AssertionError e) {
+            hasClicked = false;
+        } catch (Exception e) {
+            assert false : "error when verifying undo snack bar.";
+        }
+        return hasClicked;
+    }
 
-                    @Override
-                    public String getDescription() {
-                        return "click on ScrimView";
-                    }
+    /**
+     * Get the {@link GeneralSwipeAction} used to perform a swipe-to-dismiss action in tab grid
+     * layout.
+     * @param isLeftToRight  decides whether the swipe is from left to right or from right to left.
+     * @return {@link GeneralSwipeAction} to perform swipe-to-dismiss.
+     */
+    public static GeneralSwipeAction getSwipeToDismissAction(boolean isLeftToRight) {
+        if (isLeftToRight) {
+            return new GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER_LEFT,
+                    GeneralLocation.CENTER_RIGHT, Press.FINGER);
+        } else {
+            return new GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER_RIGHT,
+                    GeneralLocation.CENTER_LEFT, Press.FINGER);
+        }
+    }
 
-                    @Override
-                    public void perform(UiController uiController, View view) {
-                        assertTrue(view instanceof ScrimView);
-                        ScrimView scrimView = (ScrimView) view;
-                        scrimView.performClick();
-                    }
-                });
+    /** Finishes the given activity and do tab_ui-specific cleanup. */
+    public static void finishActivity(final Activity activity) throws Exception {
+        ApplicationTestUtils.finishActivity(activity);
+        PseudoTab.clearForTesting();
+    }
+
+    /**
+     * Click on the incognito toggle within grid tab switcher top toolbar to switch between normal
+     * and incognito tab model.
+     * @param cta          The current running activity.
+     * @param isIncognito  indicates whether the incognito or normal tab model is selected after
+     *         switch.
+     */
+    public static void switchTabModel(ChromeTabbedActivity cta, boolean isIncognito) {
+        assertTrue(isIncognito != cta.getTabModelSelector().isIncognitoSelected());
+        assertTrue(cta.getOverviewModeBehavior().overviewVisible());
+
+        onView(withContentDescription(isIncognito
+                               ? R.string.accessibility_tab_switcher_incognito_stack
+                               : R.string.accessibility_tab_switcher_standard_stack))
+                .perform(click());
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(cta.getTabModelSelector().isIncognitoSelected(), is(isIncognito));
+        });
+        // Wait for tab list recyclerView to finish animation after tab model switch.
+        RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
+        waitForStableRecyclerView(recyclerView);
     }
 
     /**
      * Implementation of {@link ViewAssertion} to verify the {@link RecyclerView} has correct number
-     * of children, and children are showing correctly.
+     * of children.
      */
     public static class ChildrenCountAssertion implements ViewAssertion {
-        private int mExpectedCount;
-
-        public static ChildrenCountAssertion havingTabCount(int tabCount) {
-            return new ChildrenCountAssertion(tabCount);
+        @IntDef({ChildrenType.TAB, ChildrenType.TAB_SUGGESTION_MESSAGE})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface ChildrenType {
+            int TAB = 0;
+            int TAB_SUGGESTION_MESSAGE = 1;
         }
 
-        public ChildrenCountAssertion(int expectedCount) {
+        private int mExpectedCount;
+        @ChildrenType
+        private int mExpectedChildrenType;
+
+        public static ChildrenCountAssertion havingTabCount(int tabCount) {
+            return new ChildrenCountAssertion(ChildrenType.TAB, tabCount);
+        }
+
+        public static ChildrenCountAssertion havingTabSuggestionMessageCardCount(int count) {
+            return new ChildrenCountAssertion(ChildrenType.TAB_SUGGESTION_MESSAGE, count);
+        }
+
+        public ChildrenCountAssertion(@ChildrenType int expectedChildrenType, int expectedCount) {
+            mExpectedChildrenType = expectedChildrenType;
             mExpectedCount = expectedCount;
         }
 
@@ -502,19 +636,54 @@ public class TabUiTestHelper {
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
 
-            RecyclerView recyclerView = ((RecyclerView) view);
-            RecyclerView.Adapter adapter = recyclerView.getAdapter();
-            CriteriaHelper.pollUiThread(
-                    Criteria.equals(mExpectedCount, () -> adapter.getItemCount()));
+            switch (mExpectedChildrenType) {
+                case ChildrenType.TAB:
+                    checkTabCount(view);
+                    break;
+                case ChildrenType.TAB_SUGGESTION_MESSAGE:
+                    checkTabSuggestionMessageCard(view);
+                    break;
+            }
+        }
 
-            for (int i = 0; i < mExpectedCount; i++) {
+        private void checkTabCount(View view) {
+            RecyclerView recyclerView = ((RecyclerView) view);
+            recyclerView.setItemAnimator(null); // Disable animation to reduce flakiness.
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+
+            int itemCount = adapter.getItemCount();
+            int nonTabCardCount = 0;
+
+            for (int i = 0; i < itemCount; i++) {
                 RecyclerView.ViewHolder viewHolder =
                         recyclerView.findViewHolderForAdapterPosition(i);
                 if (viewHolder == null) return;
-                // This is to check if dialog hiding animation plays properly.
-                assertTrue(1f == viewHolder.itemView.getAlpha());
-                assertEquals(View.VISIBLE, viewHolder.itemView.getVisibility());
+                if (viewHolder.getItemViewType() != TabProperties.UiType.CLOSABLE
+                        && viewHolder.getItemViewType() != TabProperties.UiType.SELECTABLE
+                        && viewHolder.getItemViewType() != TabProperties.UiType.STRIP) {
+                    nonTabCardCount += 1;
+                }
             }
+            assertEquals(mExpectedCount + nonTabCardCount, itemCount);
+        }
+
+        private void checkTabSuggestionMessageCard(View view) {
+            RecyclerView recyclerView = ((RecyclerView) view);
+            recyclerView.setItemAnimator(null); // Disable animation to reduce flakiness.
+            RecyclerView.Adapter adapter = recyclerView.getAdapter();
+
+            int itemCount = adapter.getItemCount();
+            int tabSuggestionMessageCount = 0;
+
+            for (int i = 0; i < itemCount; i++) {
+                RecyclerView.ViewHolder viewHolder =
+                        recyclerView.findViewHolderForAdapterPosition(i);
+                if (viewHolder == null) return;
+                if (viewHolder.getItemViewType() == TabProperties.UiType.MESSAGE) {
+                    tabSuggestionMessageCount += 1;
+                }
+            }
+            assertEquals(mExpectedCount, tabSuggestionMessageCount);
         }
     }
 }

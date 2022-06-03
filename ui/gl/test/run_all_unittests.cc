@@ -5,19 +5,19 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
 #if defined(USE_OZONE)
 #include "base/command_line.h"
-#include "mojo/core/embedder/embedder.h"                  // nogncheck
+#include "mojo/core/embedder/embedder.h"  // nogncheck
+#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -27,11 +27,14 @@ class GlTestSuite : public base::TestSuite {
   GlTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
   }
 
+  GlTestSuite(const GlTestSuite&) = delete;
+  GlTestSuite& operator=(const GlTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
     // This registers a custom NSApplication. It must be done before
     // TaskEnvironment registers a regular NSApplication.
     mock_cr_app::RegisterMockCrApp();
@@ -47,7 +50,6 @@ class GlTestSuite : public base::TestSuite {
     // and GPU components.
     ui::OzonePlatform::InitParams params;
     params.single_process = true;
-    params.using_mojo = true;
 
     // This initialization must be done after TaskEnvironment has
     // initialized the UI thread.
@@ -61,8 +63,6 @@ class GlTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlTestSuite);
 };
 
 }  // namespace

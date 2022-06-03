@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
-#include "ui/gfx/x/x11_types.h"
 
 namespace gpu {
 
@@ -18,6 +17,10 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
     : public VulkanImplementation {
  public:
   explicit VulkanImplementationX11(bool use_swiftshader = false);
+
+  VulkanImplementationX11(const VulkanImplementationX11&) = delete;
+  VulkanImplementationX11& operator=(const VulkanImplementationX11&) = delete;
+
   ~VulkanImplementationX11() override;
 
   // VulkanImplementation:
@@ -30,6 +33,7 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
       const std::vector<VkQueueFamilyProperties>& queue_family_properties,
       uint32_t queue_family_index) override;
   std::vector<const char*> GetRequiredDeviceExtensions() override;
+  std::vector<const char*> GetOptionalDeviceExtensions() override;
   VkFence CreateVkFenceForGpuFence(VkDevice vk_device) override;
   std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
       VkDevice vk_device,
@@ -42,21 +46,15 @@ class COMPONENT_EXPORT(VULKAN_X11) VulkanImplementationX11
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
       gfx::GpuMemoryBufferType memory_buffer_type) override;
-  bool CreateImageFromGpuMemoryHandle(
-      VkDevice vk_device,
+  std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
+      VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkImage* vk_image,
-      VkImageCreateInfo* vk_image_info,
-      VkDeviceMemory* vk_device_memory,
-      VkDeviceSize* mem_allocation_size,
-      base::Optional<VulkanYCbCrInfo>* ycbcr_info) override;
+      VkFormat vk_formae) override;
 
  private:
   bool using_surface_ = true;
   VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationX11);
 };
 
 }  // namespace gpu

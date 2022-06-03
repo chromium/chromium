@@ -70,6 +70,7 @@ struct Session {
 
   explicit Session(const std::string& id);
   Session(const std::string& id, std::unique_ptr<Chrome> chrome);
+  Session(const std::string& id, const std::string& host);
   ~Session();
 
   Status GetTargetWindow(WebView** web_view);
@@ -78,12 +79,12 @@ struct Session {
   void SwitchToParentFrame();
   void SwitchToSubFrame(const std::string& frame_id,
                         const std::string& chromedriver_frame_id);
-  void ClearNavigationState(bool for_top_frame);
   std::string GetCurrentFrameId() const;
   std::vector<WebDriverLog*> GetAllLogs() const;
 
   const std::string id;
   bool w3c_compliant;
+  bool webSocketUrl = false;
   bool quit;
   bool detach;
   std::unique_ptr<Chrome> chrome;
@@ -125,9 +126,14 @@ struct Session {
   // |DevToolsEventListener|s owned by |chrome|.
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   bool strict_file_interactability;
+
   std::string unhandled_prompt_behavior;
   int click_count;
   base::TimeTicks mouse_click_timestamp;
+  std::string host;
+
+ private:
+  void SwitchFrameInternal(bool for_top_frame);
 };
 
 Session* GetThreadLocalSession();

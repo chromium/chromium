@@ -27,7 +27,14 @@ class Chrome {
     kPrompt,
   };
 
-  virtual ~Chrome() {}
+  struct WindowRect {
+    int x;
+    int y;
+    int width;
+    int height;
+  };
+
+  virtual ~Chrome() = default;
 
   virtual Status GetAsDesktop(ChromeDesktopImpl** desktop) = 0;
 
@@ -53,29 +60,12 @@ class Chrome {
                            WindowType type,
                            std::string* window_handle) = 0;
 
-  // Gets the size of the specified WebView.
-  virtual Status GetWindowSize(const std::string& id,
-                               int* width,
-                               int* height) = 0;
+  // Gets the rect of the specified WebView
+  virtual Status GetWindowRect(const std::string& id, WindowRect* rect) = 0;
 
   // Sets the rect of the specified WebView
   virtual Status SetWindowRect(const std::string& target_id,
                                const base::DictionaryValue& params) = 0;
-
-  // Sets the size of the specified WebView.
-  virtual Status SetWindowSize(const std::string& target_id,
-                               int width,
-                               int height) = 0;
-
-  // Gets the on-screen position of the specified WebView.
-  virtual Status GetWindowPosition(const std::string& target_id,
-                                   int* x,
-                                   int* y) = 0;
-
-  // Sets the on-screen position of the specified WebView.
-  virtual Status SetWindowPosition(const std::string& target_id,
-                                   int x,
-                                   int y) = 0;
 
   // Maximizes specified WebView.
   virtual Status MaximizeWindow(const std::string& target_id) = 0;

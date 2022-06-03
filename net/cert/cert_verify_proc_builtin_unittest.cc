@@ -4,8 +4,11 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
@@ -15,6 +18,7 @@
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/der/encode_values.h"
 #include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -32,17 +36,10 @@ namespace net {
 
 namespace {
 
-class DummySystemTrustStoreProvider : public SystemTrustStoreProvider {
- public:
-  std::unique_ptr<SystemTrustStore> CreateSystemTrustStore() override {
-    return CreateEmptySystemTrustStore();
-  }
-};
-
 std::unique_ptr<test_server::HttpResponse> HangRequestAndCallback(
-    base::Closure callback,
+    base::OnceClosure callback,
     const test_server::HttpRequest& request) {
-  callback.Run();
+  std::move(callback).Run();
   return std::make_unique<test_server::HungResponse>();
 }
 
@@ -54,7 +51,7 @@ std::unique_ptr<test_server::HttpResponse> FailRequestAndFailTest(
     const std::string& message,
     scoped_refptr<base::TaskRunner> main_task_runner,
     const test_server::HttpRequest& request) {
-  main_task_runner->PostTask(FROM_HERE, base::Bind(FailTest, message));
+  main_task_runner->PostTask(FROM_HERE, base::BindOnce(FailTest, message));
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_NOT_ACCEPTABLE);
   return response;
@@ -65,15 +62,19 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          const std::string& hostname,
                          int flags,
                          const CertificateList& additional_trust_anchors,
-                         CertVerifyResult* verify_result) {
+                         CertVerifyResult* verify_result,
+                         NetLogSource* out_source) {
   base::ScopedAllowBaseSyncPrimitivesForTesting scoped_allow_blocking;
   scoped_refptr<CRLSet> crl_set = CRLSet::EmptyCRLSetForTesting();
+  NetLogWithSource net_log(NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
   int error =
       verify_proc->Verify(cert.get(), hostname,
                           /*ocsp_response=*/std::string(),
                           /*sct_list=*/std::string(), flags, crl_set.get(),
-                          additional_trust_anchors, verify_result);
+                          additional_trust_anchors, verify_result, net_log);
   verify_result->DetachFromSequence();
+  *out_source = net_log.source();
   return error;
 }
 
@@ -85,8 +86,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
-    verify_proc_ = CreateCertVerifyProcBuiltin(
-        cert_net_fetcher_, std::make_unique<DummySystemTrustStoreProvider>());
+    verify_proc_ = CreateCertVerifyProcBuiltin(cert_net_fetcher_,
+                                               CreateEmptySystemTrustStore());
 
     context_ = std::make_unique<net::TestURLRequestContext>();
 
@@ -100,15 +101,15 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
               int flags,
               const CertificateList& additional_trust_anchors,
               CertVerifyResult* verify_result,
+              NetLogSource* out_source,
               CompletionOnceCallback callback) {
     verify_result->DetachFromSequence();
-    base::PostTaskAndReplyWithResult(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&VerifyOnWorkerThread, verify_proc_, std::move(cert),
-                       hostname, flags, additional_trust_anchors,
-                       verify_result),
+                       hostname, flags, additional_trust_anchors, verify_result,
+                       out_source),
         std::move(callback));
   }
 
@@ -121,8 +122,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     ASSERT_TRUE(*out_leaf && *out_intermediate && *out_root);
     // This test uses MOCK_TIME, so need to set the cert validity dates based
     // on whatever the mock time happens to start at.
-    base::Time not_before = base::Time::Now() - base::TimeDelta::FromDays(1);
-    base::Time not_after = base::Time::Now() + base::TimeDelta::FromDays(10);
+    base::Time not_before = base::Time::Now() - base::Days(1);
+    base::Time not_after = base::Time::Now() + base::Days(10);
     (*out_leaf)->SetValidity(not_before, not_after);
     (*out_intermediate)->SetValidity(not_before, not_after);
     (*out_root)->SetValidity(not_before, not_after);
@@ -149,10 +150,11 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   ASSERT_TRUE(chain.get());
 
   CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
   Verify(chain.get(), "www.example.com", /*flags=*/0,
          /*additional_trust_anchors=*/{root->GetX509Certificate()},
-         &verify_result, callback.callback());
+         &verify_result, &verify_net_log_source, callback.callback());
 
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
@@ -167,9 +169,11 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   const int expected_request_count =
-      GetCertVerifyProcBuiltinTimeLimitForTesting() / timeout_increment + 1;
+      base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
+                       timeout_increment) +
+      1;
 
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
   ASSERT_TRUE(test_server.InitializeAndListen());
@@ -191,7 +195,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   for (int i = expected_request_count; i < expected_request_count + 1; ++i) {
     std::string path = base::StringPrintf("/failtest/%i", i);
     crl_urls.emplace_back(test_server.GetURL(path));
-    test_server.RegisterRequestHandler(base::Bind(
+    test_server.RegisterRequestHandler(base::BindRepeating(
         &test_server::HandlePrefixedRequest, path,
         base::BindRepeating(FailRequestAndFailTest,
                             "additional request made after deadline exceeded",
@@ -205,11 +209,12 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   ASSERT_TRUE(chain.get());
 
   CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
          CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
          /*additional_trust_anchors=*/{root->GetX509Certificate()},
-         &verify_result, verify_callback.callback());
+         &verify_result, &verify_net_log_source, verify_callback.callback());
 
   for (int i = 0; i < expected_request_count; i++) {
     // Wait for request #|i| to be made.
@@ -237,9 +242,11 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   const int expected_request_count =
-      GetCertVerifyProcBuiltinTimeLimitForTesting() / timeout_increment + 1;
+      base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
+                       timeout_increment) +
+      1;
 
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
   ASSERT_TRUE(test_server.InitializeAndListen());
@@ -261,7 +268,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
   for (int i = expected_request_count; i < expected_request_count + 1; ++i) {
     std::string path = base::StringPrintf("/failtest/%i", i);
     ocsp_urls.emplace_back(test_server.GetURL(path));
-    test_server.RegisterRequestHandler(base::Bind(
+    test_server.RegisterRequestHandler(base::BindRepeating(
         &test_server::HandlePrefixedRequest, path,
         base::BindRepeating(FailRequestAndFailTest,
                             "additional request made after deadline exceeded",
@@ -275,11 +282,12 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
   ASSERT_TRUE(chain.get());
 
   CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
          CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
          /*additional_trust_anchors=*/{root->GetX509Certificate()},
-         &verify_result, verify_callback.callback());
+         &verify_result, &verify_net_log_source, verify_callback.callback());
 
   for (int i = 0; i < expected_request_count; i++) {
     // Wait for request #|i| to be made.
@@ -313,9 +321,11 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   const int expected_request_count =
-      GetCertVerifyProcBuiltinTimeLimitForTesting() / timeout_increment + 1;
+      base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
+                       timeout_increment) +
+      1;
 
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
   ASSERT_TRUE(test_server.InitializeAndListen());
@@ -345,12 +355,14 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
   CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
   Verify(chain.get(), "www.example.com",
          /*flags=*/0,
          /*additional_trust_anchors=*/{root->GetX509Certificate()},
-         &verify_result, verify_callback.callback());
+         &verify_result, &verify_net_log_source, verify_callback.callback());
 
   for (int i = 0; i < expected_request_count; i++) {
     // Wait for request #|i| to be made.
@@ -368,6 +380,61 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
   EXPECT_THAT(error, IsOk());
   EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+
+  auto events = net_log_observer.GetEntriesForSource(verify_net_log_source);
+
+  auto event = std::find_if(events.begin(), events.end(), [](const auto& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
+  });
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+  ASSERT_TRUE(event->params.is_dict());
+  EXPECT_EQ(true, event->params.FindBoolKey("is_ev_attempt"));
+
+  event = std::find_if(++event, events.end(), [](const auto& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT;
+  });
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
+  ASSERT_TRUE(event->params.is_dict());
+  const std::string* errors = event->params.FindStringKey("errors");
+  ASSERT_TRUE(errors);
+  EXPECT_EQ("----- Certificate i=1 (CN=" +
+                intermediate->GetX509Certificate()->subject().common_name +
+                ") -----\nERROR: Unable to check revocation\n\n",
+            *errors);
+
+  event = std::find_if(++event, events.end(), [](const auto& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
+  });
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
+  ASSERT_TRUE(event->params.is_dict());
+  EXPECT_EQ(false, event->params.FindBoolKey("has_valid_path"));
+
+  event = std::find_if(++event, events.end(), [](const auto& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
+  });
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
+  ASSERT_TRUE(event->params.is_dict());
+  EXPECT_EQ(absl::nullopt, event->params.FindBoolKey("is_ev_attempt"));
+
+  event = std::find_if(++event, events.end(), [](const auto& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT;
+  });
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
+  ASSERT_TRUE(event->params.is_dict());
+  EXPECT_FALSE(event->params.FindStringKey("errors"));
+
+  event = std::find_if(++event, events.end(), [](const auto& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT;
+  });
+  ASSERT_NE(event, events.end());
+  EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
+  ASSERT_TRUE(event->params.is_dict());
+  EXPECT_EQ(true, event->params.FindBoolKey("has_valid_path"));
 }
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
@@ -382,10 +449,11 @@ TEST_F(CertVerifyProcBuiltinTest, DebugData) {
   base::Time time = base::Time::Now();
 
   CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
   Verify(chain.get(), "www.example.com", /*flags=*/0,
          /*additional_trust_anchors=*/{root->GetX509Certificate()},
-         &verify_result, callback.callback());
+         &verify_result, &verify_net_log_source, callback.callback());
 
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());

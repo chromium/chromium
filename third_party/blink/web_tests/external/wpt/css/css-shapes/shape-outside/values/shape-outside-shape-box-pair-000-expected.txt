@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS polygon(nonzero, 1px 1px) content-box - inline
+PASS polygon(nonzero, 1px 1px) padding-box - inline
+PASS polygon(nonzero, 1px 1px) border-box - inline
+FAIL polygon(nonzero, 1px 1px) margin-box - inline assert_equals: expected "polygon(1px 1px)" but got "polygon(1px 1px) margin-box"
+PASS  content-box polygon(nonzero, 1px 1px) - inline
+PASS padding-box polygon(nonzero, 1px 1px) - inline
+PASS border-box polygon(nonzero, 1px 1px) - inline
+FAIL margin-box polygon(nonzero, 1px 1px) - inline assert_equals: expected "polygon(1px 1px)" but got "polygon(1px 1px) margin-box"
+PASS polygon(nonzero, 1px 1px) content-box - computed
+PASS polygon(nonzero, 1px 1px) padding-box - computed
+PASS polygon(nonzero, 1px 1px) border-box - computed
+FAIL polygon(nonzero, 1px 1px) margin-box - computed assert_equals: expected "polygon(1px 1px)" but got "polygon(1px 1px) margin-box"
+PASS  content-box polygon(nonzero, 1px 1px) - computed
+PASS padding-box polygon(nonzero, 1px 1px) - computed
+PASS border-box polygon(nonzero, 1px 1px) - computed
+FAIL margin-box polygon(nonzero, 1px 1px) - computed assert_equals: expected "polygon(1px 1px)" but got "polygon(1px 1px) margin-box"
+Harness: the test ran to completion.
+

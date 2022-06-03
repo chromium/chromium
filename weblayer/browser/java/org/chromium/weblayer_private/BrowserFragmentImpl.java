@@ -4,11 +4,18 @@
 
 package org.chromium.weblayer_private;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IBrowser;
@@ -20,26 +27,42 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 /**
  * Implementation of RemoteFragmentImpl which forwards logic to BrowserImpl.
  */
-public class BrowserFragmentImpl extends RemoteFragmentImpl {
+public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
+    private static int sResumedCount;
+    private static long sSessionStartTimeMs;
+
     private final ProfileImpl mProfile;
+    private final String mPersistenceId;
 
     private BrowserImpl mBrowser;
-    private Context mContext;
+
+    // The embedder's original context object. Only use this to resolve resource IDs provided by the
+    // embedder.
+    private Context mEmbedderActivityContext;
 
     public BrowserFragmentImpl(
             ProfileManager profileManager, IRemoteFragmentClient client, Bundle fragmentArgs) {
         super(client);
-        mProfile =
-                profileManager.getProfile(fragmentArgs.getString(BrowserFragmentArgs.PROFILE_NAME));
+        mPersistenceId = fragmentArgs.getString(BrowserFragmentArgs.PERSISTENCE_ID);
+        String name = fragmentArgs.getString(BrowserFragmentArgs.PROFILE_NAME);
+
+        boolean isIncognito;
+        if (fragmentArgs.containsKey(BrowserFragmentArgs.IS_INCOGNITO)) {
+            isIncognito = fragmentArgs.getBoolean(BrowserFragmentArgs.IS_INCOGNITO, false);
+        } else {
+            isIncognito = "".equals(name);
+        }
+        mProfile = profileManager.getProfile(name, isIncognito);
     }
 
     @Override
     public void onAttach(Context context) {
         StrictModeWorkaround.apply();
         super.onAttach(context);
-        mContext = ClassLoaderContextWrapperFactory.get(context);
+        mEmbedderActivityContext = context;
         if (mBrowser != null) { // On first creation, onAttach is called before onCreate
-            mBrowser.onFragmentAttached(mContext, new FragmentWindowAndroid(mContext, this));
+            mBrowser.onFragmentAttached(mEmbedderActivityContext,
+                    new FragmentWindowAndroid(getWebLayerContext(), this));
         }
     }
 
@@ -47,14 +70,18 @@ public class BrowserFragmentImpl extends RemoteFragmentImpl {
     public void onCreate(Bundle savedInstanceState) {
         StrictModeWorkaround.apply();
         super.onCreate(savedInstanceState);
-        mBrowser = new BrowserImpl(mProfile, savedInstanceState);
-        if (mContext != null) {
-            mBrowser.onFragmentAttached(mContext, new FragmentWindowAndroid(mContext, this));
-        }
+        // onCreate() is only called once
+        assert mBrowser == null;
+        // onCreate() is always called after onAttach(). onAttach() sets |getWebLayerContext()| and
+        // |mEmbedderContext|.
+        assert getWebLayerContext() != null;
+        assert mEmbedderActivityContext != null;
+        mBrowser = new BrowserImpl(mEmbedderActivityContext, mProfile, mPersistenceId,
+                savedInstanceState, new FragmentWindowAndroid(getWebLayerContext(), this));
     }
 
     @Override
-    public View onCreateView() {
+    public View onCreateView(ViewGroup container, Bundle savedInstanceState) {
         StrictModeWorkaround.apply();
         return mBrowser.getFragmentView();
     }
@@ -88,7 +115,50 @@ public class BrowserFragmentImpl extends RemoteFragmentImpl {
         if (mBrowser != null) {
             mBrowser.onFragmentDetached();
         }
-        mContext = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        StrictModeWorkaround.apply();
+        mBrowser.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mBrowser.onFragmentStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Activity activity = getActivity();
+        mBrowser.onFragmentStop(activity != null && activity.getChangingConfigurations() != 0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        sResumedCount++;
+        if (sResumedCount == 1) sSessionStartTimeMs = SystemClock.uptimeMillis();
+        mBrowser.onFragmentResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sResumedCount--;
+        if (sResumedCount == 0) {
+            long deltaMs = SystemClock.uptimeMillis() - sSessionStartTimeMs;
+            RecordHistogram.recordLongTimesHistogram("Session.TotalDuration", deltaMs);
+        }
+        mBrowser.onFragmentPause();
+    }
+
+    @Nullable
+    public BrowserImpl getBrowser() {
+        return mBrowser;
     }
 
     public IBrowserFragment asIBrowserFragment() {
@@ -109,5 +179,15 @@ public class BrowserFragmentImpl extends RemoteFragmentImpl {
                 return mBrowser;
             }
         };
+    }
+
+    @Override
+    protected FragmentHostingRemoteFragmentImpl.RemoteFragmentContext createRemoteFragmentContext(
+            Context embedderContext) {
+        Context wrappedContext = ClassLoaderContextWrapperFactory.get(embedderContext);
+        Context themedContext =
+                new ContextThemeWrapper(wrappedContext, R.style.Theme_WebLayer_Settings);
+        themedContext.getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
+        return new FragmentHostingRemoteFragmentImpl.RemoteFragmentContext(themedContext);
     }
 }

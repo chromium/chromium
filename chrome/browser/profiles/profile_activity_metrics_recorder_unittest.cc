@@ -23,7 +23,8 @@
 
 namespace {
 
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Minutes(5);
+constexpr base::TimeDelta kLongTimeOfInactivity = base::Minutes(30);
 
 }  // namespace
 
@@ -35,6 +36,11 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
   }
+
+  ProfileActivityMetricsRecorderTest(
+      const ProfileActivityMetricsRecorderTest&) = delete;
+  ProfileActivityMetricsRecorderTest& operator=(
+      const ProfileActivityMetricsRecorderTest&) = delete;
 
   void SetUp() override {
     Test::SetUp();
@@ -55,13 +61,19 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
 
   void ActivateBrowser(Profile* profile) {
     Browser::CreateParams browser_params(profile, false);
-    browsers_.push_back(CreateBrowserWithTestWindowForParams(&browser_params));
+    browsers_.push_back(CreateBrowserWithTestWindowForParams(browser_params));
 
+    // This triggers the recorder to post a task, wait until that's done.
     BrowserList::SetLastActive(browsers_.back().get());
+    task_environment_.RunUntilIdle();
   }
 
   void ActivateIncognitoBrowser(Profile* profile) {
-    ActivateBrowser(profile->GetOffTheRecordProfile());
+    ActivateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  }
+
+  void ActivateGuestBrowser(Profile* profile) {
+    ActivateBrowser(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
   void SimulateUserEvent() {
@@ -92,8 +104,6 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::vector<std::unique_ptr<Browser>> browsers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileActivityMetricsRecorderTest);
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
@@ -107,13 +117,15 @@ TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
+                                 /*count=*/0);
 
-  // Activate an incognito browser instance of the guest profile.
-  // Note: Creating a non-incognito guest browser instance is not possible.
-  ActivateIncognitoBrowser(guest_profile);
+  ActivateGuestBrowser(guest_profile);
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/0, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/0);
+  histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
+                                   /*bucket=*/1, /*count=*/1);
 
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 2);
 }
@@ -131,6 +143,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, IncognitoProfile) {
                                   /*bucket=*/1, /*count=*/2);
 
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 2);
+  histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
+                                 /*count=*/0);
 }
 
 TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
@@ -156,9 +170,12 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
   SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  // No profile switch, so far.
+  histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
+                                 /*count=*/0);
 
   // Profile 1: Session lasts 2 minutes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
 
   // Profile 3: Browser is activated for the first time. The profile is assigned
   // bucket 2.
@@ -166,13 +183,15 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/2, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/2);
+  histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
+                                   /*bucket=*/3, /*count=*/1);
 
   // Profile 1: Session ended. The duration(2 minutes) is recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
 
   // Profile 3: Session lasts 2 minutes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
 
   // Profile 2: Browser is activated for the first time. The profile is assigned
   // bucket 3.
@@ -180,6 +199,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/3, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/3);
+  histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
+                                   /*bucket=*/3, /*count=*/2);
 
   // Profile 3: Session ended. The duration(2 minutes) is recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
@@ -196,7 +217,7 @@ TEST_F(ProfileActivityMetricsRecorderTest, SessionInactivityNotRecorded) {
                                   /*bucket=*/1, /*count=*/1);
 
   // Wait 2 minutes before doing another user interaction.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
   SimulateUserEvent();
 
   // Stay inactive so the session ends.
@@ -205,4 +226,53 @@ TEST_F(ProfileActivityMetricsRecorderTest, SessionInactivityNotRecorded) {
   // The inactive time is not recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
+}
+
+TEST_F(ProfileActivityMetricsRecorderTest, ProfileState) {
+  Profile* regular_profile = profile_manager()->CreateTestingProfile("p1");
+  Profile* guest_profile = profile_manager()->CreateGuestProfile();
+  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 0);
+
+  ActivateBrowser(regular_profile);
+  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 1);
+  // This is somehow important for the session to end later in the test.
+  SimulateUserEvent();
+
+  // Repeating the same thing immediately has no impact.
+  ActivateBrowser(regular_profile);
+  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 1);
+
+  // Repeating the same thing immediately has no impact (neither for any other
+  // profile).
+  ActivateGuestBrowser(guest_profile);
+  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 1);
+
+  // Stay inactive so the session ends and stay inactive long after that.
+  task_environment()->FastForwardBy(kInactivityTimeout * 2 +
+                                    kLongTimeOfInactivity);
+
+  // Now we get another record (no matter which profile triggers that).
+  ActivateBrowser(regular_profile);
+  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 2);
+
+  // Repeating the same thing immediately has no impact.
+  ActivateBrowser(regular_profile);
+  histograms()->ExpectTotalCount("Profile.State.Avatar_All", 2);
+}
+
+TEST_F(ProfileActivityMetricsRecorderTest, AccountMetrics) {
+  Profile* regular_profile = profile_manager()->CreateTestingProfile("p1");
+  Profile* guest_profile = profile_manager()->CreateGuestProfile();
+  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 0);
+
+  ActivateBrowser(regular_profile);
+  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 1);
+
+  // Repeating the same thing records the metric again.
+  ActivateBrowser(regular_profile);
+  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 2);
+
+  // We don't record for the guest profile.
+  ActivateGuestBrowser(guest_profile);
+  histograms()->ExpectTotalCount("Profile.AllAccounts.Names", 2);
 }

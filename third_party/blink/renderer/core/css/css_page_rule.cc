@@ -55,7 +55,7 @@ String CSSPageRule::selectorText() const {
     if (!page_specification.IsEmpty())
       text.Append(page_specification);
   }
-  return text.ToString();
+  return text.ReleaseString();
 }
 
 void CSSPageRule::setSelectorText(const ExecutionContext* execution_context,
@@ -87,7 +87,7 @@ String CSSPageRule::cssText() const {
   if (!decls.IsEmpty())
     result.Append(' ');
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSPageRule::Reattach(StyleRuleBase* rule) {
@@ -97,7 +97,7 @@ void CSSPageRule::Reattach(StyleRuleBase* rule) {
     properties_cssom_wrapper_->Reattach(page_rule_->MutableProperties());
 }
 
-void CSSPageRule::Trace(blink::Visitor* visitor) {
+void CSSPageRule::Trace(Visitor* visitor) const {
   visitor->Trace(page_rule_);
   visitor->Trace(properties_cssom_wrapper_);
   CSSRule::Trace(visitor);

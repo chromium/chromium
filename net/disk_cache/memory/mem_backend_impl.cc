@@ -14,8 +14,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
+#include "base/time/clock.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
@@ -28,18 +27,6 @@ namespace {
 
 const int kDefaultInMemoryCacheSize = 10 * 1024 * 1024;
 const int kDefaultEvictionSize = kDefaultInMemoryCacheSize / 10;
-
-bool CheckLRUListOrder(const base::LinkedList<MemEntryImpl>& lru_list) {
-  // TODO(gavinp): Check MemBackendImpl::current_size_ here as well.
-  base::Time previous_last_use_time;
-  for (base::LinkNode<MemEntryImpl>* node = lru_list.head();
-       node != lru_list.end(); node = node->next()) {
-    if (node->value()->GetLastUsed() < previous_last_use_time)
-      return false;
-    previous_last_use_time = node->value()->GetLastUsed();
-  }
-  return true;
-}
 
 // Returns the next entry after |node| in |lru_list| that's not a child
 // of |node|.  This is useful when dooming, since dooming a parent entry
@@ -58,15 +45,16 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
+      custom_clock_for_testing_(nullptr),
       max_size_(0),
       current_size_(0),
       net_log_(net_log),
       memory_pressure_listener_(
+          FROM_HERE,
           base::BindRepeating(&MemBackendImpl::OnMemoryPressure,
                               base::Unretained(this))) {}
 
 MemBackendImpl::~MemBackendImpl() {
-  DCHECK(CheckLRUListOrder(lru_list_));
   while (!entries_.empty())
     entries_.begin()->second->Doom();
 
@@ -131,15 +119,13 @@ void MemBackendImpl::OnEntryInserted(MemEntryImpl* entry) {
 }
 
 void MemBackendImpl::OnEntryUpdated(MemEntryImpl* entry) {
-  DCHECK(CheckLRUListOrder(lru_list_));
   // LinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
   entry->RemoveFromList();
   lru_list_.Append(entry);
 }
 
 void MemBackendImpl::OnEntryDoomed(MemEntryImpl* entry) {
-  DCHECK(CheckLRUListOrder(lru_list_));
-  if (entry->type() == MemEntryImpl::PARENT_ENTRY)
+  if (entry->type() == MemEntryImpl::EntryType::kParent)
     entries_.erase(entry->key());
   // LinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
   entry->RemoveFromList();
@@ -158,6 +144,18 @@ bool MemBackendImpl::HasExceededStorageSize() const {
 void MemBackendImpl::SetPostCleanupCallback(base::OnceClosure cb) {
   DCHECK(post_cleanup_callback_.is_null());
   post_cleanup_callback_ = std::move(cb);
+}
+
+// static
+base::Time MemBackendImpl::Now(const base::WeakPtr<MemBackendImpl>& self) {
+  MemBackendImpl* instance = self.get();
+  if (instance && instance->custom_clock_for_testing_)
+    return instance->custom_clock_for_testing_->Now();
+  return Time::Now();
+}
+
+void MemBackendImpl::SetClockForTesting(base::Clock* clock) {
+  custom_clock_for_testing_ = clock;
 }
 
 int32_t MemBackendImpl::GetEntryCount() const {
@@ -225,12 +223,14 @@ net::Error MemBackendImpl::DoomEntriesBetween(Time initial_time,
   DCHECK_GE(end_time, initial_time);
 
   base::LinkNode<MemEntryImpl>* node = lru_list_.head();
-  while (node != lru_list_.end() && node->value()->GetLastUsed() < initial_time)
-    node = node->next();
-  while (node != lru_list_.end() && node->value()->GetLastUsed() < end_time) {
-    MemEntryImpl* to_doom = node->value();
+  while (node != lru_list_.end()) {
+    MemEntryImpl* candidate = node->value();
     node = NextSkippingChildren(lru_list_, node);
-    to_doom->Doom();
+
+    if (candidate->GetLastUsed() >= initial_time &&
+        candidate->GetLastUsed() < end_time) {
+      candidate->Doom();
+    }
   }
 
   return net::OK;
@@ -256,11 +256,12 @@ int64_t MemBackendImpl::CalculateSizeOfEntriesBetween(
 
   int size = 0;
   base::LinkNode<MemEntryImpl>* node = lru_list_.head();
-  while (node != lru_list_.end() && node->value()->GetLastUsed() < initial_time)
-    node = node->next();
-  while (node != lru_list_.end() && node->value()->GetLastUsed() < end_time) {
+  while (node != lru_list_.end()) {
     MemEntryImpl* entry = node->value();
-    size += entry->GetStorageSize();
+    if (entry->GetLastUsed() >= initial_time &&
+        entry->GetLastUsed() < end_time) {
+      size += entry->GetStorageSize();
+    }
     node = node->next();
   }
   return size;
@@ -321,27 +322,6 @@ void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
     it->second->UpdateStateOnUse(MemEntryImpl::ENTRY_WAS_NOT_MODIFIED);
 }
 
-size_t MemBackendImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(parent_absolute_name + "/memory_backend");
-
-  // Entries in lru_list_ will be counted by EMU but not in entries_ since
-  // they're pointers.
-  size_t size = base::trace_event::EstimateMemoryUsage(lru_list_) +
-                base::trace_event::EstimateMemoryUsage(entries_);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
-  dump->AddScalar("mem_backend_size",
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  current_size_);
-  dump->AddScalar("mem_backend_max_size",
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  max_size_);
-  return size;
-}
-
 void MemBackendImpl::EvictIfNeeded() {
   if (current_size_ <= max_size_)
     return;
@@ -364,8 +344,6 @@ void MemBackendImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      // Not supposed to get this here, but if there is no problem, there is
-      // no problem...
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
       EvictTill(max_size_ / 2);

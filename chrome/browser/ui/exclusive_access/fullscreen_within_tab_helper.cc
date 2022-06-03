@@ -17,4 +17,4 @@ void FullscreenWithinTabHelper::RemoveForWebContents(
   web_contents->RemoveUserData(UserDataKey());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FullscreenWithinTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FullscreenWithinTabHelper);

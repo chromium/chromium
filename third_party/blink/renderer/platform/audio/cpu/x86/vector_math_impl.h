@@ -9,13 +9,12 @@
 
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MACOSX)
+#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MAC)
 
 #include <algorithm>
 #include <cmath>
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace vector_math {
@@ -130,6 +129,44 @@ void Vadd(const float* source1p,
   }
 
 #undef ADD_ALL
+}
+
+// dest[k] = source1[k] - source2[k]
+void Vsub(const float* source1p,
+          const float* source2p,
+          float* dest_p,
+          uint32_t frames_to_process) {
+  const float* const source1_end_p = source1p + frames_to_process;
+
+  DCHECK(IsAligned(source1p));
+  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+
+#define SUB_ALL(loadSource2, storeDest)              \
+  while (source1p < source1_end_p) {                 \
+    MType m_source1 = MM_PS(load)(source1p);         \
+    MType m_source2 = MM_PS(loadSource2)(source2p);  \
+    MType m_dest = MM_PS(sub)(m_source1, m_source2); \
+    MM_PS(storeDest)(dest_p, m_dest);                \
+    source1p += kPackedFloatsPerRegister;            \
+    source2p += kPackedFloatsPerRegister;            \
+    dest_p += kPackedFloatsPerRegister;              \
+  }
+
+  if (IsAligned(source2p)) {
+    if (IsAligned(dest_p)) {
+      SUB_ALL(load, store);
+    } else {
+      SUB_ALL(load, storeu);
+    }
+  } else {
+    if (IsAligned(dest_p)) {
+      SUB_ALL(loadu, store);
+    } else {
+      SUB_ALL(loadu, storeu);
+    }
+  }
+
+#undef SUB_ALL
 }
 
 // dest[k] = clip(source[k], low_threshold, high_threshold)
@@ -293,6 +330,36 @@ void Vsmul(const float* source_p,
 #undef SCALAR_MULTIPLY_ALL
 }
 
+// dest[k] = addend + source[k]
+void Vsadd(const float* source_p,
+           const float* addend,
+           float* dest_p,
+           uint32_t frames_to_process) {
+  const float* const source_end_p = source_p + frames_to_process;
+
+  DCHECK(IsAligned(source_p));
+  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+
+  const MType m_addend = MM_PS(set1)(*addend);
+
+#define SCALAR_ADD_ALL(storeDest)                  \
+  while (source_p < source_end_p) {                \
+    MType m_source = MM_PS(load)(source_p);        \
+    MType m_dest = MM_PS(add)(m_addend, m_source); \
+    MM_PS(storeDest)(dest_p, m_dest);              \
+    source_p += kPackedFloatsPerRegister;          \
+    dest_p += kPackedFloatsPerRegister;            \
+  }
+
+  if (IsAligned(dest_p)) {
+    SCALAR_ADD_ALL(store);
+  } else {
+    SCALAR_ADD_ALL(storeu);
+  }
+
+#undef SCALAR_ADD_ALL
+}
+
 // sum += sum(source[k]^2) for all k
 void Vsvesq(const float* source_p, float* sum_p, uint32_t frames_to_process) {
   const float* const source_end_p = source_p + frames_to_process;
@@ -354,4 +421,4 @@ void Zvmul(const float* real1p,
 }  // namespace vector_math
 }  // namespace blink
 
-#endif  // defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MACOSX)
+#endif  // defined(ARCH_CPU_X86_FAMILY) && !defined(OS_MAC)

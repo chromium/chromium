@@ -19,7 +19,7 @@ private:
 
 class HeapObject : public GarbageCollected<HeapObject> {
  public:
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   Vector<std::unique_ptr<HeapObject>> m_objs;

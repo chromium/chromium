@@ -5,28 +5,32 @@
 package org.chromium.chrome.browser.device_dialog;
 
 import android.app.Dialog;
-import android.support.test.filters.LargeTest;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -35,12 +39,16 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * Tests for the UsbChooserDialog class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
 public class UsbChooserDialogTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -65,14 +73,14 @@ public class UsbChooserDialogTest {
     @Before
     public void setUp() throws Exception {
         mocker.mock(UsbChooserDialogJni.TEST_HOOKS, new TestUsbChooserDialogJni());
-        mActivityTestRule.startMainActivityOnBlankPage();
         mChooserDialog = createDialog();
     }
 
     private UsbChooserDialog createDialog() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            UsbChooserDialog dialog = new UsbChooserDialog(/*nativeUsbChooserDialogPtr=*/42);
-            dialog.show(mActivityTestRule.getActivity(), "https://origin.example.com/",
+            UsbChooserDialog dialog = new UsbChooserDialog(
+                    /*nativeUsbChooserDialogPtr=*/42, Profile.getLastUsedRegularProfile());
+            dialog.show(sActivityTestRule.getActivity(), "https://origin.example.com/",
                     ConnectionSecurityLevel.SECURE);
             return dialog;
         });
@@ -83,31 +91,19 @@ public class UsbChooserDialogTest {
         final ListView items = (ListView) dialog.findViewById(R.id.items);
         final Button button = (Button) dialog.findViewById(R.id.positive);
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return items.getChildAt(0) != null;
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(items.getChildAt(0), Matchers.notNullValue()));
 
         // The actual index for the first item displayed on screen.
         int firstVisiblePosition = items.getFirstVisiblePosition();
         TouchCommon.singleClickView(items.getChildAt(position - firstVisiblePosition));
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return button.isEnabled();
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> button.isEnabled());
 
         TouchCommon.singleClickView(button);
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return !mSelectedDeviceId.equals("");
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mSelectedDeviceId, Matchers.not(Matchers.isEmptyString()));
         });
     }
 
@@ -122,7 +118,7 @@ public class UsbChooserDialogTest {
     }
 
     @Test
-    @LargeTest
+    @SmallTest
     public void testCancel() {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
@@ -136,16 +132,12 @@ public class UsbChooserDialogTest {
 
         dialog.cancel();
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mSelectedDeviceId.equals("");
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mSelectedDeviceId, Matchers.isEmptyString()));
     }
 
     @Test
-    @LargeTest
+    @SmallTest
     public void testSelectItem() {
         Dialog dialog = mChooserDialog.mItemChooserDialog.getDialogForTesting();
 
@@ -167,7 +159,7 @@ public class UsbChooserDialogTest {
         // After adding items to the dialog, the help message should be showing,
         // the 'Connect' button should still be disabled (since nothing's selected),
         // and the list view should show.
-        Assert.assertEquals(removeLinkTags(mActivityTestRule.getActivity().getString(
+        Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
                                     R.string.usb_chooser_dialog_footnote_text)),
                 statusView.getText().toString());
         Assert.assertFalse(button.isEnabled());

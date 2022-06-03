@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/background_sync",
+  "+components/content_settings/browser",
+  "+components/content_settings/core/browser",
+  "+components/content_settings/core/common",
+  "+components/permissions",
+  "+components/policy/core/common",
+  "+components/prefs",
+  "+components/version_info",
+  "+content/public/browser",
+  "+content/public/common",
+  "+net",
+  "+third_party/blink/public/common",
+  "+third_party/re2",
+]

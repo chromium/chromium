@@ -5,36 +5,37 @@
 #ifndef COMPONENTS_VIZ_COMMON_GPU_DAWN_CONTEXT_PROVIDER_H_
 #define COMPONENTS_VIZ_COMMON_GPU_DAWN_CONTEXT_PROVIDER_H_
 
-#include <dawn_native/DawnNative.h>
+#include <memory>
 
-#include "base/macros.h"
 #include "components/viz/common/viz_dawn_context_provider_export.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/dawn/src/include/dawn_native/DawnNative.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/dawn/GrDawnTypes.h"
-
-class GrContext;
 
 namespace viz {
 
 class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
  public:
   static std::unique_ptr<DawnContextProvider> Create();
+
+  DawnContextProvider(const DawnContextProvider&) = delete;
+  DawnContextProvider& operator=(const DawnContextProvider&) = delete;
+
   ~DawnContextProvider();
 
-  dawn::Device GetDevice() { return device_; }
-  GrContext* GetGrContext() { return gr_context_.get(); }
+  wgpu::Device GetDevice() { return device_; }
+  wgpu::Instance GetInstance() { return instance_.Get(); }
+  GrDirectContext* GetGrContext() { return gr_context_.get(); }
   bool IsValid() { return !!gr_context_; }
 
  private:
   DawnContextProvider();
 
-  dawn::Device CreateDevice(dawn_native::BackendType type);
+  wgpu::Device CreateDevice(dawn_native::BackendType type);
 
   dawn_native::Instance instance_;
-  dawn::Device device_;
-  sk_sp<GrContext> gr_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(DawnContextProvider);
+  wgpu::Device device_;
+  sk_sp<GrDirectContext> gr_context_;
 };
 
 }  // namespace viz

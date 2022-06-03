@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_TETHER_DISCONNECTOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/tether_disconnector.h"
 #include "chromeos/components/tether/tether_session_completion_logger.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -19,6 +18,10 @@ namespace tether {
 class FakeTetherDisconnector : public TetherDisconnector {
  public:
   FakeTetherDisconnector();
+
+  FakeTetherDisconnector(const FakeTetherDisconnector&) = delete;
+  FakeTetherDisconnector& operator=(const FakeTetherDisconnector&) = delete;
+
   ~FakeTetherDisconnector() override;
 
   std::string last_disconnected_tether_network_guid() {
@@ -38,8 +41,8 @@ class FakeTetherDisconnector : public TetherDisconnector {
   // TetherDisconnector:
   void DisconnectFromNetwork(
       const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback,
+      base::OnceClosure success_callback,
+      StringErrorCallback error_callback,
       const TetherSessionCompletionLogger::SessionCompletionReason&
           session_completion_reason) override;
 
@@ -48,8 +51,6 @@ class FakeTetherDisconnector : public TetherDisconnector {
   std::string disconnection_error_name_;
   std::unique_ptr<TetherSessionCompletionLogger::SessionCompletionReason>
       last_session_completion_reason_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherDisconnector);
 };
 
 }  // namespace tether

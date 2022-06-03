@@ -51,7 +51,7 @@ bool DesktopFocusRules::IsWindowConsideredVisibleForActivation(
   // |content_window_| is initially hidden and made visible from Show(). Even in
   // this state we still want it to be activatable.
   return BaseFocusRules::IsWindowConsideredVisibleForActivation(window) ||
-      (window == content_window_);
+         (window == content_window_);
 }
 
 const aura::Window* DesktopFocusRules::GetToplevelWindow(

@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -40,6 +40,8 @@ void MediaPowerExperimentManager::PlayerStopped(
       current_experiment_player_ && *current_experiment_player_ == player_id) {
     current_experiment_player_.reset();
     current_experiment_cb_ = ExperimentCB();
+    // Note that there will be no incoming player; there's exactly one and we're
+    // removing it.
   }
   players_.erase(player_id);
   CheckExperimentState();
@@ -48,7 +50,7 @@ void MediaPowerExperimentManager::PlayerStopped(
 void MediaPowerExperimentManager::CheckExperimentState() {
   // See if an experiment should be running.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Optional<MediaPlayerId> new_experiment_player;
+  absl::optional<MediaPlayerId> new_experiment_player;
   if (players_.size() == 1)
     new_experiment_player = players_.begin()->first;
 

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H
-#define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H
+#ifndef COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_
+#define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_
 
-#include "base/macros.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -30,6 +29,10 @@ class SpellCheckPanel : public content::RenderFrameObserver,
   SpellCheckPanel(content::RenderFrame* render_frame,
                   service_manager::BinderRegistry* registry,
                   service_manager::LocalInterfaceProvider* embedder_provider);
+
+  SpellCheckPanel(const SpellCheckPanel&) = delete;
+  SpellCheckPanel& operator=(const SpellCheckPanel&) = delete;
+
   ~SpellCheckPanel() override;
 
  private:
@@ -59,8 +62,6 @@ class SpellCheckPanel : public content::RenderFrameObserver,
   bool spelling_panel_visible_;
 
   service_manager::LocalInterfaceProvider* embedder_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckPanel);
 };
 
-#endif
+#endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_

@@ -4,27 +4,29 @@
 
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace subresource_filter {
 
 TestSubresourceFilterObserver::TestSubresourceFilterObserver(
-    content::WebContents* web_contents)
-    : scoped_observer_(this) {
+    content::WebContents* web_contents) {
   auto* manager =
       SubresourceFilterObserverManager::FromWebContents(web_contents);
   DCHECK(manager);
-  scoped_observer_.Add(manager);
+  scoped_observation_.Observe(manager);
   Observe(web_contents);
 }
 
 TestSubresourceFilterObserver::~TestSubresourceFilterObserver() {}
 
 void TestSubresourceFilterObserver::OnSubresourceFilterGoingAway() {
-  scoped_observer_.RemoveAll();
+  DCHECK(scoped_observation_.IsObserving());
+  scoped_observation_.Reset();
 }
 
 void TestSubresourceFilterObserver::OnPageActivationComputed(
@@ -38,16 +40,17 @@ void TestSubresourceFilterObserver::OnPageActivationComputed(
 
 void TestSubresourceFilterObserver::OnSubframeNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
-    LoadPolicy load_policy,
-    bool is_ad_subframe) {
+    LoadPolicy load_policy) {
   subframe_load_evaluations_[navigation_handle->GetURL()] = load_policy;
-  ad_subframe_evaluations_[navigation_handle->GetFrameTreeNodeId()] =
-      is_ad_subframe;
 }
 
-void TestSubresourceFilterObserver::OnAdSubframeDetected(
-    content::RenderFrameHost* render_frame_host) {
-  ad_subframe_evaluations_[render_frame_host->GetFrameTreeNodeId()] = true;
+void TestSubresourceFilterObserver::OnIsAdSubframeChanged(
+    content::RenderFrameHost* render_frame_host,
+    bool is_ad_subframe) {
+  if (is_ad_subframe)
+    ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
+  else
+    ad_frames_.erase(render_frame_host->GetFrameTreeNodeId());
 }
 
 void TestSubresourceFilterObserver::DidFinishNavigation(
@@ -69,41 +72,38 @@ void TestSubresourceFilterObserver::DidFinishNavigation(
   }
 }
 
-base::Optional<mojom::ActivationLevel>
+absl::optional<mojom::ActivationLevel>
 TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
   auto it = page_activations_.find(url);
   if (it != page_activations_.end())
     return it->second;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool> TestSubresourceFilterObserver::GetIsAdSubframe(
+bool TestSubresourceFilterObserver::GetIsAdSubframe(
     int frame_tree_node_id) const {
-  auto it = ad_subframe_evaluations_.find(frame_tree_node_id);
-  if (it != ad_subframe_evaluations_.end())
-    return it->second;
-  return base::Optional<bool>();
+  return base::Contains(ad_frames_, frame_tree_node_id);
 }
 
-base::Optional<LoadPolicy> TestSubresourceFilterObserver::GetSubframeLoadPolicy(
+absl::optional<LoadPolicy> TestSubresourceFilterObserver::GetSubframeLoadPolicy(
     const GURL& url) const {
   auto it = subframe_load_evaluations_.find(url);
   if (it != subframe_load_evaluations_.end())
     return it->second;
-  return base::Optional<LoadPolicy>();
+  return absl::optional<LoadPolicy>();
 }
 
-base::Optional<mojom::ActivationLevel>
+absl::optional<mojom::ActivationLevel>
 TestSubresourceFilterObserver::GetPageActivationForLastCommittedLoad() const {
   return last_committed_activation_;
 }
 
-base::Optional<TestSubresourceFilterObserver::SafeBrowsingCheck>
+absl::optional<TestSubresourceFilterObserver::SafeBrowsingCheck>
 TestSubresourceFilterObserver::GetSafeBrowsingResult(const GURL& url) const {
   auto it = safe_browsing_checks_.find(url);
   if (it != safe_browsing_checks_.end())
     return it->second;
-  return base::Optional<SafeBrowsingCheck>();
+  return absl::optional<SafeBrowsingCheck>();
 }
 
 }  // namespace subresource_filter

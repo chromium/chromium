@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_activity_glue.ReparentingTask;
 
 import javax.inject.Inject;
 

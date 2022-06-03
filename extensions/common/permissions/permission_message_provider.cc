@@ -15,4 +15,9 @@ const PermissionMessageProvider* PermissionMessageProvider::Get() {
   return &(ExtensionsClient::Get()->GetPermissionMessageProvider());
 }
 
+PermissionIDSet PermissionMessageProvider::GetManagementUIPermissionIDs(
+    const PermissionSet& permissions,
+    Manifest::Type extension_type) const {
+  return PermissionIDSet();
+}
 }  // namespace extensions

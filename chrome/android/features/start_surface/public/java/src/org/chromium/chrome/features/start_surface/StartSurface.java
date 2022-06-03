@@ -6,31 +6,73 @@ package org.chromium.chrome.features.start_surface;
 
 import android.os.SystemClock;
 
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeState;
+import com.google.android.material.appbar.AppBarLayout;
+
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
 /** Interface to communicate with the start surface. */
 public interface StartSurface {
     /**
+     * Called to initialize this interface.
+     * It should be called before showing.
+     * It should not be called in the critical startup process since it will do expensive work.
+     * It might be called many times.
+     */
+    void initialize();
+
+    /**
+     * Called when activity is being destroyed.
+     */
+    void destroy();
+
+    /**
+     * Called when the Start surface is hidden. It hides TasksSurfaces which are created when the
+     * Start surface is enabled.
+     */
+    void onHide();
+
+    /**
      * An observer that is notified when the start surface internal state, excluding
      * the states notified in {@link OverviewModeObserver}, is changed.
+     *
+     * TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
+     * two different things, let's audit the usage of this observer.
      */
     interface StateObserver {
         /**
          * Called when the internal state is changed.
-         * @param overviewModeState the {@link OverviewModeState}.
+         * @param overviewModeState the {@link StartSurfaceState}.
          * @param shouldShowTabSwitcherToolbar Whether or not should show the Tab switcher toolbar.
          */
         void onStateChanged(
-                @OverviewModeState int overviewModeState, boolean shouldShowTabSwitcherToolbar);
+                @StartSurfaceState int overviewModeState, boolean shouldShowTabSwitcherToolbar);
     }
 
     /**
-     * Set the given {@link StateObserver}.
-     * Note that this will override the previous observer.
-     * @param observer The given observer.
+     * @param onOffsetChangedListener Registers listener for the offset changes on top of the start
+     *         surface.
      */
-    void setStateChangeObserver(StateObserver observer);
+    void addHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
+
+    /**
+     * @param onOffsetChangedListener Unregisters listener for the offset changes on top of the
+     *         start surface.
+     */
+    void removeHeaderOffsetChangeListener(
+            AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
+
+    /**
+     * @param observer Registers {@code observer} for the {@link StartSurfaceState} changes.
+     */
+    void addStateChangeObserver(StateObserver observer);
+
+    /**
+     * @param observer Unregisters {@code observer} for the {@link StartSurfaceState} changes.
+     */
+    void removeStateChangeObserver(StateObserver observer);
 
     /**
      * Defines an interface to pass out tab selecting event.
@@ -42,6 +84,11 @@ public interface StartSurface {
      * @param listener The {@link OnTabSelectingListener} to use.
      */
     void setOnTabSelectingListener(OnTabSelectingListener listener);
+
+    /**
+     * Called when native initialization is completed.
+     */
+    void initWithNative();
 
     /**
      * An observer that is notified when the StartSurface view state changes.
@@ -100,6 +147,22 @@ public interface StartSurface {
         void showOverview(boolean animate);
 
         /**
+         * Sets the state {@link StartSurfaceState} and {@link NewTabPageLaunchOrigin}.
+         * @param state The {@link StartSurfaceState} to show.
+         * @param launchOrigin The {@link NewTabPageLaunchOrigin} representing what launched the
+         *         start surface.
+         */
+        void setOverviewState(
+                @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin);
+
+        /**
+         * Sets the state {@link StartSurfaceState} without changing the existing {@link
+         * NewTabPageLaunchOrigin}.
+         * @param state The {@link StartSurfaceState} to show.
+         */
+        void setOverviewState(@StartSurfaceState int state);
+
+        /**
          * Called by the TabSwitcherLayout when the system back button is pressed.
          * @return Whether or not the TabSwitcher consumed the event.
          */
@@ -110,6 +173,23 @@ public interface StartSurface {
          * @param activityCreateTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
          */
         void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs);
+
+        /**
+         * @return The current {@link StartSurfaceState}.
+         */
+        @StartSurfaceState
+        int getStartSurfaceState();
+
+        /**
+         * @return The previous {@link StartSurfaceState}.
+         */
+        @StartSurfaceState
+        int getPreviousStartSurfaceState();
+
+        /**
+         * @return Whether the Start surface or the Tab switcher is shown or showing.
+         */
+        boolean inShowState();
     }
 
     /**
@@ -119,12 +199,29 @@ public interface StartSurface {
     Controller getController();
 
     /**
-     * @return TabListDelegate implementation that can be used to access the Tab List.
+     * Returns the TabListDelegate implementation that can be used to access the Tab list of the
+     * grid tab switcher surface.
      */
-    TabSwitcher.TabListDelegate getTabListDelegate();
+    TabSwitcher.TabListDelegate getGridTabListDelegate();
 
     /**
-     * @return TabDialogDelegation implementation that can be used to access the Tab Dialog.
+     * Returns the TabListDelegate implementation that can be used to access the Tab list of the
+     * carousel/single tab switcher when start surface is enabled; when start surface is disabled,
+     * null should be returned.
      */
-    TabSwitcher.TabDialogDelegation getTabDialogDelegate();
+    TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate();
+
+    /**
+     * @return {@link Supplier} that provides dialog visibility.
+     */
+    Supplier<Boolean> getTabGridDialogVisibilitySupplier();
+
+    /**
+     * Called after the Chrome activity is launched.
+     * @param isOverviewShownOnStartup Whether the StartSurace is shown when Chrome is launched from
+     *                                 cold start.
+     * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
+     */
+    void onOverviewShownAtLaunch(
+            boolean isOverviewShownOnStartup, final long activityCreationTimeMs);
 }

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "media/audio/audio_input_ipc.h"
@@ -31,6 +30,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
       const media::AudioParameters& params,
       uint32_t total_segments)>;
   explicit CapturedAudioInput(StreamCreatorCallback callback);
+
+  CapturedAudioInput(const CapturedAudioInput&) = delete;
+  CapturedAudioInput& operator=(const CapturedAudioInput&) = delete;
+
   ~CapturedAudioInput() override;
 
  private:
@@ -48,11 +51,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
   void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
                      mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
                          client_receiver,
-                     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
-                     bool initially_muted) override;
+                     media::mojom::ReadOnlyAudioDataPipePtr data_pipe) override;
 
   // media::mojom::AudioInputStreamClient implementation.
-  void OnError() override;
+  void OnError(media::mojom::InputStreamErrorCode code) override;
   void OnMutedStateChanged(bool is_muted) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -64,8 +66,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
       stream_creator_client_receiver_{this};
   media::AudioInputIPCDelegate* delegate_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStream> stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturedAudioInput);
 };
 
 }  // namespace mirroring

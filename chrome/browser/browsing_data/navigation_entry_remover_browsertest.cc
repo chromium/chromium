@@ -18,6 +18,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "url/gurl.h"
 
@@ -42,7 +43,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     for (const GURL& url : urls) {
       ui_test_utils::NavigateToURLWithDisposition(
           browser, url, WindowOpenDisposition::CURRENT_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
   }
 
@@ -50,7 +51,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
-            ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     AddNavigations(browser, {urls.begin() + 1, urls.end()});
   }
 
@@ -87,7 +88,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
                                   base::Time to,
                                   std::set<GURL> restrict_urls = {}) {
     return DeletionInfo(history::DeletionTimeRange(from, to), false, {}, {},
-                        restrict_urls.empty() ? base::Optional<std::set<GURL>>()
+                        restrict_urls.empty() ? absl::optional<std::set<GURL>>()
                                               : restrict_urls);
   }
 

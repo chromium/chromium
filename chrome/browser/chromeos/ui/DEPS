@@ -1,7 +1,0 @@
-specific_include_rules = {
-  # TODO(mash): http://crbug.com/581462.
-  "screen_capture_notification_ui_chromeos\.cc": [
-    "+ash/shell.h",
-    "+ash/system/tray/system_tray_notifier.h",
-  ],
-}

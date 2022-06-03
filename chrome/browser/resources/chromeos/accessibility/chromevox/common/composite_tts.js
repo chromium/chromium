@@ -14,121 +14,118 @@ goog.require('TtsInterface');
 
 /**
  * A Composite Tts
- * @constructor
  * @implements {TtsInterface}
  */
-CompositeTts = function() {
+CompositeTts = class {
+  constructor() {
+    /**
+     * @type {Array<TtsInterface>}
+     * @private
+     */
+    this.ttsEngines_ = [];
+  }
+
   /**
-   * @type {Array<TtsInterface>}
-   * @private
+   * Adds a TTS engine to the composite TTS
+   * @param {TtsInterface} tts The TTS to add.
+   * @return {CompositeTts} this.
    */
-  this.ttsEngines_ = [];
-};
-
-
-/**
- * Adds a TTS engine to the composite TTS
- * @param {TtsInterface} tts The TTS to add.
- * @return {CompositeTts} this.
- */
-CompositeTts.prototype.add = function(tts) {
-  this.ttsEngines_.push(tts);
-  return this;
-};
-
-
-/**
- * @override
- */
-CompositeTts.prototype.speak = function(textString, queueMode, properties) {
-  this.ttsEngines_.forEach(function(engine) {
-    engine.speak(textString, queueMode, properties);
-  });
-  return this;
-};
-
-
-/**
- * Returns true if any of the TTSes are still speaking.
- * @override
- */
-CompositeTts.prototype.isSpeaking = function() {
-  return this.ttsEngines_.some(function(engine) {
-    return engine.isSpeaking();
-  });
-};
-
-
-/**
- * @override
- */
-CompositeTts.prototype.stop = function() {
-  this.ttsEngines_.forEach(function(engine) {
-    engine.stop();
-  });
-};
-
-
-/**
- * @override
- */
-CompositeTts.prototype.addCapturingEventListener = function(listener) {
-  this.ttsEngines_.forEach(function(engine) {
-    engine.addCapturingEventListener(listener);
-  });
-};
-
-
-/**
- * @override
- */
-CompositeTts.prototype.increaseOrDecreaseProperty = function(
-    propertyName, increase) {
-  this.ttsEngines_.forEach(function(engine) {
-    engine.increaseOrDecreaseProperty(propertyName, increase);
-  });
-};
-
-
-/**
- * @override
- */
-CompositeTts.prototype.propertyToPercentage = function(property) {
-  for (var i = 0, engine; engine = this.ttsEngines_[i]; i++) {
-    var value = engine.propertyToPercentage(property);
-    if (value !== undefined) {
-      return value;
-    }
+  add(tts) {
+    this.ttsEngines_.push(tts);
+    return this;
   }
-  return null;
-};
 
-
-/**
- * @override
- */
-CompositeTts.prototype.getDefaultProperty = function(property) {
-  for (var i = 0, engine; engine = this.ttsEngines_[i]; i++) {
-    var value = engine.getDefaultProperty(property);
-    if (value !== undefined) {
-      return value;
-    }
+  /**
+   * @override
+   */
+  speak(textString, queueMode, properties) {
+    this.ttsEngines_.forEach(function(engine) {
+      engine.speak(textString, queueMode, properties);
+    });
+    return this;
   }
-  return null;
-};
 
-/** @override */
-CompositeTts.prototype.toggleSpeechOnOrOff = function() {
-  var value = false;
-  this.ttsEngines_.forEach(function(engine) {
-    value = value || engine.toggleSpeechOnOrOff();
-  });
-  return value;
-};
+  /**
+   * Returns true if any of the TTSes are still speaking.
+   * @override
+   */
+  isSpeaking() {
+    return this.ttsEngines_.some(function(engine) {
+      return engine.isSpeaking();
+    });
+  }
 
-/** @override */
-CompositeTts.prototype.resetTextToSpeechSettings = function() {
-  this.ttsEngines_.forEach(function(engine) {
-    engine.resetTextToSpeechSettings();
-  });
+  /**
+   * @override
+   */
+  stop() {
+    this.ttsEngines_.forEach(function(engine) {
+      engine.stop();
+    });
+  }
+
+  /** @override */
+  addCapturingEventListener(listener) {
+    this.ttsEngines_.forEach(function(engine) {
+      engine.addCapturingEventListener(listener);
+    });
+  }
+
+  /** @override */
+  removeCapturingEventListener(listener) {
+    this.ttsEngines_.forEach(function(engine) {
+      engine.removeCapturingEventListener(listener);
+    });
+  }
+
+  /**
+   * @override
+   */
+  increaseOrDecreaseProperty(propertyName, increase) {
+    this.ttsEngines_.forEach(function(engine) {
+      engine.increaseOrDecreaseProperty(propertyName, increase);
+    });
+  }
+
+  /**
+   * @override
+   */
+  propertyToPercentage(property) {
+    for (let i = 0, engine; engine = this.ttsEngines_[i]; i++) {
+      const value = engine.propertyToPercentage(property);
+      if (value !== undefined) {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @override
+   */
+  getDefaultProperty(property) {
+    for (let i = 0, engine; engine = this.ttsEngines_[i]; i++) {
+      const value = engine.getDefaultProperty(property);
+      if (value !== undefined) {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  /** @override */
+  toggleSpeechOnOrOff() {
+    let value = false;
+    this.ttsEngines_.forEach(function(engine) {
+      value = value || engine.toggleSpeechOnOrOff();
+    });
+    return value;
+  }
+
+  /** @override */
+  resetTextToSpeechSettings() {
+    this.ttsEngines_.forEach(function(engine) {
+      engine.resetTextToSpeechSettings();
+    });
+  }
 };

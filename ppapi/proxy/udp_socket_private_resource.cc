@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/udp_socket_private_resource.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "ppapi/c/ppb_udp_socket.h"
 #include "ppapi/shared_impl/tracked_callback.h"
 

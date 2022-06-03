@@ -50,8 +50,9 @@ class LayoutSVGModelObject : public LayoutObject {
   PhysicalRect VisualRectInDocument(
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
-  FloatRect VisualRectInLocalSVGCoordinates() const override {
-    return local_visual_rect_;
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override {
+    NOT_DESTROYED();
+    return StrokeBoundingBox();
   }
 
   void AbsoluteQuads(Vector<FloatQuad>&,
@@ -64,21 +65,23 @@ class LayoutSVGModelObject : public LayoutObject {
   void MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const final;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   SVGElement* GetElement() const {
+    NOT_DESTROYED();
     return To<SVGElement>(LayoutObject::GetNode());
   }
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVG || LayoutObject::IsOfType(type);
   }
 
  protected:
   void WillBeDestroyed() override;
+
+  void InsertedIntoTree() override;
+  void WillBeRemovedFromTree() override;
 
   AffineTransform CalculateLocalTransform() const;
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
@@ -90,11 +93,8 @@ class LayoutSVGModelObject : public LayoutObject {
   void AddOutlineRects(Vector<PhysicalRect>&,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
-
- protected:
-  FloatRect local_visual_rect_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_MODEL_OBJECT_H_

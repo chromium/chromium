@@ -9,6 +9,19 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 
+// TODO(https://crbug.com/1062136): This can be removed when Cloud Print support
+// is dropped.
+namespace content {
+struct MainFunctionParams;
+}  // namespace content
+int CloudPrintServiceProcessMain(content::MainFunctionParams parameters);
+
+namespace mojo {
+
+class SharedMemoryUtils;
+
+}  // namespace mojo
+
 namespace base {
 
 class SharedMemoryHooks {
@@ -17,6 +30,9 @@ class SharedMemoryHooks {
 
  private:
   friend class SharedMemoryHooksTest;
+  friend int ::CloudPrintServiceProcessMain(
+      content::MainFunctionParams parameters);
+  friend mojo::SharedMemoryUtils;
 
   // Allows shared memory region creation to be hooked. Useful for sandboxed
   // processes that are restricted from invoking the platform APIs directly.

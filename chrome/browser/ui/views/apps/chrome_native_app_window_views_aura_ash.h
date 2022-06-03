@@ -12,14 +12,20 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observer.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/context_menu_controller.h"
+
+namespace gfx {
+class ImageSkia;
+}
 
 namespace ui {
 class MenuModel;
@@ -45,6 +51,12 @@ class ChromeNativeAppWindowViewsAuraAsh
       public aura::WindowObserver {
  public:
   ChromeNativeAppWindowViewsAuraAsh();
+
+  ChromeNativeAppWindowViewsAuraAsh(const ChromeNativeAppWindowViewsAuraAsh&) =
+      delete;
+  ChromeNativeAppWindowViewsAuraAsh& operator=(
+      const ChromeNativeAppWindowViewsAuraAsh&) = delete;
+
   ~ChromeNativeAppWindowViewsAuraAsh() override;
 
  protected:
@@ -58,8 +70,10 @@ class ChromeNativeAppWindowViewsAuraAsh
       const extensions::AppWindow::CreateParams& create_params,
       views::Widget::InitParams* init_params,
       views::Widget* widget) override;
-  views::NonClientFrameView* CreateNonStandardAppFrame() override;
+  std::unique_ptr<views::NonClientFrameView> CreateNonStandardAppFrame()
+      override;
   bool ShouldRemoveStandardFrame() override;
+  void EnsureAppIconCreated() override;
 
   // ui::BaseWindow:
   gfx::Rect GetRestoredBounds() const override;
@@ -72,9 +86,10 @@ class ChromeNativeAppWindowViewsAuraAsh
                                   ui::MenuSourceType source_type) override;
 
   // WidgetDelegate:
-  views::NonClientFrameView* CreateNonClientFrameView(
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   ui::ModalType GetModalType() const override;
+  ui::ImageModel GetWindowIcon() override;
 
   // NativeAppWindow:
   void SetFullscreen(int fullscreen_types) override;
@@ -92,17 +107,17 @@ class ChromeNativeAppWindowViewsAuraAsh
   Profile* GetProfile() override;
   bool IsFullscreen() const override;
   void EnterFullscreen(const GURL& url,
-                       ExclusiveAccessBubbleType bubble_type) override;
+                       ExclusiveAccessBubbleType bubble_type,
+                       const int64_t display_id) override;
   void ExitFullscreen() override;
   void UpdateExclusiveAccessExitBubbleContent(
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) override;
+  bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
   content::WebContents* GetActiveWebContents() override;
-  void UnhideDownloadShelf() override;
-  void HideDownloadShelf() override;
   bool CanUserExitFullscreen() const override;
 
   // ExclusiveAccessBubbleViewsContext:
@@ -122,7 +137,7 @@ class ChromeNativeAppWindowViewsAuraAsh
 
   // ash::WindowStateObserver:
   void OnPostWindowStateTypeChange(ash::WindowState* window_state,
-                                   ash::WindowStateType old_type) override;
+                                   chromeos::WindowStateType old_type) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -138,7 +153,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            NoImmersiveModeWhenForcedFullscreen);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                           PublicSessionImmersiveMode);
+                           PublicSessionNoImmersiveModeWhenFullscreen);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            RestoreImmersiveMode);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
@@ -146,9 +161,9 @@ class ChromeNativeAppWindowViewsAuraAsh
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            NoImmersiveOrBubbleOutsidePublicSessionDom);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                           ImmersiveAndBubbleInsidePublicSessionWindow);
+                           BubbleInsidePublicSessionWindow);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                           ImmersiveAndBubbleInsidePublicSessionDom);
+                           BubbleInsidePublicSessionDom);
   FRIEND_TEST_ALL_PREFIXES(ShapedAppWindowTargeterTest,
                            ResizeInsetsWithinBounds);
 
@@ -165,6 +180,18 @@ class ChromeNativeAppWindowViewsAuraAsh
   // app's and window manager's state.
   void UpdateImmersiveMode();
 
+  // Generates the standard custom icon
+  gfx::Image GetCustomImage() override;
+  // Generates the standard app icon
+  gfx::Image GetAppIconImage() override;
+
+  // Helper function to call AppServiceProxy to load icon.
+  void LoadAppIcon(bool allow_placeholder_icon);
+  // Invoked when the icon is loaded.
+  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+
+  gfx::ImageSkia app_icon_image_skia_;
+
   // Used to show the system menu.
   std::unique_ptr<ui::MenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
@@ -176,11 +203,13 @@ class ChromeNativeAppWindowViewsAuraAsh
   bool tablet_mode_enabled_ = false;
   bool draggable_regions_sent_ = false;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_window_{this};
-  ScopedObserver<ash::WindowState, ash::WindowStateObserver>
-      observed_window_state_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+  base::ScopedObservation<ash::WindowState, ash::WindowStateObserver>
+      window_state_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsAuraAsh);
+  base::WeakPtrFactory<ChromeNativeAppWindowViewsAuraAsh> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_AURA_ASH_H_

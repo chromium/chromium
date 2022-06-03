@@ -14,7 +14,7 @@
 
 #include "snapshot/mac/process_reader_mac.h"
 
-#include <AvailabilityMacros.h>
+#include <Availability.h>
 #include <mach-o/loader.h>
 #include <mach/mach_vm.h>
 
@@ -95,9 +95,12 @@ ProcessReaderMac::ProcessReaderMac()
       process_memory_(),
       task_(TASK_NULL),
       initialized_(),
+#if defined(CRASHPAD_MAC_32_BIT_SUPPORT)
       is_64_bit_(false),
+#endif  // CRASHPAD_MAC_32_BIT_SUPPORT
       initialized_threads_(false),
-      initialized_modules_(false) {}
+      initialized_modules_(false) {
+}
 
 ProcessReaderMac::~ProcessReaderMac() {
   for (const Thread& thread : threads_) {
@@ -117,7 +120,12 @@ bool ProcessReaderMac::Initialize(task_t task) {
     return false;
   }
 
+#if defined(CRASHPAD_MAC_32_BIT_SUPPORT)
   is_64_bit_ = process_info_.Is64Bit();
+#else  // CRASHPAD_MAC_32_BIT_SUPPORT
+  DCHECK(process_info_.Is64Bit());
+#endif  // CRASHPAD_MAC_32_BIT_SUPPORT
+
   task_ = task;
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
@@ -213,7 +221,7 @@ mach_vm_address_t ProcessReaderMac::DyldAllImageInfo(
 // This may look for the module that matches the executable path in the same
 // data set that vmmap uses.
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_7
   // The task_dyld_info_data_t struct grew in 10.7, adding the format field.
   // Don’t check this field if it’s not present, which can happen when either
   // the SDK used at compile time or the kernel at run time are too old and
@@ -280,6 +288,15 @@ void ProcessReaderMac::InitializeThreads() {
         Is64Bit() ? x86_DEBUG_STATE64 : x86_DEBUG_STATE32;
     mach_msg_type_number_t debug_state_count =
         Is64Bit() ? x86_DEBUG_STATE64_COUNT : x86_DEBUG_STATE32_COUNT;
+#elif defined(ARCH_CPU_ARM64)
+    const thread_state_flavor_t kThreadStateFlavor = ARM_THREAD_STATE64;
+    mach_msg_type_number_t thread_state_count = ARM_THREAD_STATE64_COUNT;
+
+    const thread_state_flavor_t kFloatStateFlavor = ARM_NEON_STATE64;
+    mach_msg_type_number_t float_state_count = ARM_NEON_STATE64_COUNT;
+
+    const thread_state_flavor_t kDebugStateFlavor = ARM_DEBUG_STATE64;
+    mach_msg_type_number_t debug_state_count = ARM_DEBUG_STATE64_COUNT;
 #endif
 
     kr = thread_get_state(
@@ -366,6 +383,9 @@ void ProcessReaderMac::InitializeThreads() {
     mach_vm_address_t stack_pointer = Is64Bit()
                                           ? thread.thread_context.t64.__rsp
                                           : thread.thread_context.t32.__esp;
+#elif defined(ARCH_CPU_ARM64)
+    mach_vm_address_t stack_pointer =
+        arm_thread_state64_get_sp(thread.thread_context);
 #endif
 
     thread.stack_region_address =
@@ -681,7 +701,7 @@ void ProcessReaderMac::LocateRedZone(mach_vm_address_t* const start_address,
 #if defined(ARCH_CPU_X86_FAMILY)
   if (Is64Bit()) {
     // x86_64 has a red zone. See AMD64 ABI 0.99.8,
-    // https://raw.githubusercontent.com/wiki/hjl-tools/x86-psABI/x86-64-psABI-r252.pdf#page=19,
+    // https://gitlab.com/x86-psABIs/x86-64-ABI/-/wikis/uploads/01de35b2c8adc7545de52604cc45d942/x86-64-psABI-2021-05-20.pdf#page=23.
     // section 3.2.2, “The Stack Frame”.
     constexpr mach_vm_size_t kRedZoneSize = 128;
     mach_vm_address_t red_zone_base =

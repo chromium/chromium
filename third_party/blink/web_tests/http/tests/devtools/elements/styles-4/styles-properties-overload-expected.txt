@@ -56,9 +56,4 @@ div { (user agent stylesheet)
 .container { (<style>)
 /-- overloaded --/     font-size: 10px;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 

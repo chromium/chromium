@@ -7,10 +7,11 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/Forward.h"
@@ -20,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/server/http_server.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ui_devtools {
 
@@ -28,23 +30,23 @@ class TracingAgent;
 class UI_DEVTOOLS_EXPORT UiDevToolsServer
     : public network::server::HttpServer::Delegate {
  public:
-  // Network tags to be used for the UI and the Viz devtools servers.
+  // Network tags to be used for the UI devtools servers.
   static const net::NetworkTrafficAnnotationTag kUIDevtoolsServerTag;
-  static const net::NetworkTrafficAnnotationTag kVizDevtoolsServerTag;
+
+  UiDevToolsServer(const UiDevToolsServer&) = delete;
+  UiDevToolsServer& operator=(const UiDevToolsServer&) = delete;
 
   ~UiDevToolsServer() override;
 
   // Returns an empty unique_ptr if ui devtools flag isn't enabled or if a
-  // server instance has already been created.
+  // server instance has already been created. If |port| is 0, the server will
+  // choose an available port. If |port| is 0 and |active_port_output_directory|
+  // is present, the server will write the chosen port to
+  // |kUIDevToolsActivePortFileName| on |active_port_output_directory|.
   static std::unique_ptr<UiDevToolsServer> CreateForViews(
       network::mojom::NetworkContext* network_context,
-      int port);
-
-  // Assumes that the devtools flag is enabled, and was checked when the socket
-  // was created.
-  static std::unique_ptr<UiDevToolsServer> CreateForViz(
-      mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
-      int port);
+      int port,
+      const base::FilePath& active_port_output_directory = base::FilePath());
 
   // Creates a TCPServerSocket to be used by a UiDevToolsServer.
   static void CreateTCPServerSocket(
@@ -75,13 +77,20 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   TracingAgent* tracing_agent() { return tracing_agent_; }
   void set_tracing_agent(TracingAgent* agent) { tracing_agent_ = agent; }
 
+  // Sets the callback which will be invoked when the session is closed.
+  // Marks as a const function so it can be called after the server is set up
+  // and used as a constant instance.
+  void SetOnSessionEnded(base::OnceClosure callback) const;
+
  private:
-  UiDevToolsServer(int port, const net::NetworkTrafficAnnotationTag tag);
+  UiDevToolsServer(int port,
+                   const net::NetworkTrafficAnnotationTag tag,
+                   const base::FilePath& active_port_output_directory);
 
   void MakeServer(
       mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
       int result,
-      const base::Optional<net::IPEndPoint>& local_addr);
+      const absl::optional<net::IPEndPoint>& local_addr);
 
   // HttpServer::Delegate
   void OnConnect(int connection_id) override;
@@ -102,19 +111,24 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   std::unique_ptr<network::server::HttpServer> server_;
 
   // The port the devtools server listens on
-  const int port_;
+  int port_;
+
+  // Output directory for |kUIDevToolsActivePortFileName| when
+  // --enable-ui-devtools=0.
+  base::FilePath active_port_output_directory_;
 
   const net::NetworkTrafficAnnotationTag tag_;
 
   TracingAgent* tracing_agent_ = nullptr;
+
+  // Invoked when the server doesn't have any live connection.
+  mutable base::OnceClosure on_session_ended_;
 
   // The server (owned by Chrome for now)
   static UiDevToolsServer* devtools_server_;
 
   SEQUENCE_CHECKER(devtools_server_sequence_);
   base::WeakPtrFactory<UiDevToolsServer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UiDevToolsServer);
 };
 
 }  // namespace ui_devtools

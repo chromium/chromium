@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/dcheck_is_on.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -15,6 +17,7 @@
 namespace blink {
 
 class DOMException;
+class IDBDatabaseGetAllResultSinkImpl;
 class IDBKey;
 class IDBRequest;
 class IDBRequestLoader;
@@ -77,6 +80,13 @@ class IDBRequestQueueItem {
                       std::unique_ptr<IDBValue>,
                       bool attach_loader,
                       base::OnceClosure on_result_load_complete);
+  // Asynchronous fetching of multiple results.
+  IDBRequestQueueItem(
+      IDBRequest*,
+      bool key_only,
+      mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver,
+      base::OnceClosure on_result_load_complete);
+
   ~IDBRequestQueueItem();
 
   // False if this result still requires post-processing.
@@ -111,6 +121,8 @@ class IDBRequestQueueItem {
   void OnResultLoadComplete(DOMException* error);
 
  private:
+  friend class IDBDatabaseGetAllResultSinkImpl;
+
   // The IDBRequest callback that will be called for this result.
   enum ResponseType {
     kCanceled,
@@ -148,6 +160,9 @@ class IDBRequestQueueItem {
   // The cursor argument to the IDBRequest callback.
   std::unique_ptr<WebIDBCursor> cursor_;
 
+  // Asynchronous result collection for get all.
+  std::unique_ptr<IDBDatabaseGetAllResultSinkImpl> get_all_sink_;
+
   // Performs post-processing on this result.
   //
   // nullptr for results that do not require post-processing and for results
@@ -165,6 +180,9 @@ class IDBRequestQueueItem {
 
   // False if this result still requires post-processing.
   bool ready_;
+
+  // True iff this result has started loading.
+  bool started_loading_ = false;
 
 #if DCHECK_IS_ON()
   // True if the appropriate EnqueueResponse() method was called in IDBRequest.

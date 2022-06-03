@@ -7,32 +7,11 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "base/win/windows_types.h"
-#include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "url/gurl.h"
 
 namespace credential_provider {
-
-// Mdm registry value key name.
-
-// The url used to register the machine to MDM. If specified and non-empty
-// additional user access restrictions will be applied to users associated
-// to GCPW that have invalid token handles.
-extern const wchar_t kRegMdmUrl[];
-
-// Base server url for the password recovery escrow service.
-extern const wchar_t kRegEscrowServiceServerUrl[];
-
-// Determines if multiple users can be added to a system managed by MDM.
-extern const wchar_t kRegMdmSupportsMultiUser[];
-
-// Allow sign in using normal consumer accounts.
-extern const wchar_t kRegMdmAllowConsumerAccounts[];
-
-// Enables force password reset option in forgot password flow.
-extern const wchar_t kRegMdmEnableForcePasswordReset[];
 
 // Password lsa store key prefix.
 extern const wchar_t kUserPasswordLsaStoreKeyPrefix[];
@@ -52,47 +31,52 @@ class GoogleMdmEnrolledStatusForTesting {
   ~GoogleMdmEnrolledStatusForTesting();
 };
 
-// Class used in tests to set registration data for testing.
-class GoogleRegistrationDataForTesting {
+// Class used in tests to force upload device details needed.
+class GoogleUploadDeviceDetailsNeededForTesting {
  public:
-  explicit GoogleRegistrationDataForTesting(base::string16 serial_number);
-  ~GoogleRegistrationDataForTesting();
+  explicit GoogleUploadDeviceDetailsNeededForTesting(bool success);
+  ~GoogleUploadDeviceDetailsNeededForTesting();
 };
 
-// Class used in tests to force password escrow service availability when not
-// in a Google Chrome build (where the service is disabled).
-class GoogleMdmEscrowServiceEnablerForTesting {
- public:
-  GoogleMdmEscrowServiceEnablerForTesting();
-  ~GoogleMdmEscrowServiceEnablerForTesting();
-};
+// This function returns true if the user identified by |sid| is allowed to
+// enroll with MDM and the device is not currently enrolled with the MDM server
+// specified in |kGlobalMdmUrlRegKey|.
+bool NeedsToEnrollWithMdm(const std::wstring& sid);
 
-// If MdmEnrollmentEnabled returns true, this function verifies that the machine
-// is enrolled to MDM AND that the server to which it is enrolled is the same
-// as the one specified in |kGlobalMdmUrlRegKey|, otherwise returns false.
-bool NeedsToEnrollWithMdm();
-
-// Gets the bios serial number of the windows device.
-base::string16 GetSerialNumber();
+// Checks user properties to determine whether last upload device details
+// attempt succeeded for the given user.
+bool UploadDeviceDetailsNeeded(const std::wstring& sid);
 
 // Checks whether the |kRegMdmUrl| is set on this machine and points
 // to a valid URL. Returns false otherwise.
 bool MdmEnrollmentEnabled();
 
+// Get the URL used to enroll with MDM.
+std::wstring GetMdmUrl();
+
 // Checks whether the |kRegEscrowServiceServerUrl| is not empty on this
 // machine.
 bool PasswordRecoveryEnabled();
 
-// Gets the escrow service URL as defined in the registry or a default value if
-// nothing is set.
+// Returns true if the |kKeyEnableGemFeatures| is set to 1.
+bool IsGemEnabled();
+
+// Checks if online login is enforced. Returns true if
+// |kRegMdmEnforceOnlineLogin| is set to true at global or user level.
+bool IsOnlineLoginEnforced(const std::wstring& sid);
+
+// Gets the escrow service URL unless password sync is disabled. Otherwise an
+// empty url is returned.
 GURL EscrowServiceUrl();
 
 // Enrolls the machine to with the Google MDM server if not already.
 HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties);
 
 // Constructs the password lsa store key for the given |sid|.
-base::string16 GetUserPasswordLsaStoreKey(const base::string16& sid);
+std::wstring GetUserPasswordLsaStoreKey(const std::wstring& sid);
 
+// Returns true if the device is enrolled with Google MDM.
+bool IsEnrolledWithGoogleMdm();
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_MDM_UTILS_H_

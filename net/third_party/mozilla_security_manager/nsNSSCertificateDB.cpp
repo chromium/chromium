@@ -44,6 +44,7 @@
 #include <secerr.h>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (Authorization)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (Pragma)
+FAIL XMLHttpRequest: setRequestHeader() - headers that are allowed (User-Agent) assert_equals: expected "User-Agent," but got ""
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (Content-Transfer-Encoding)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (Content-Type)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (Overwrite)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (If)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (Status-URI)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (X-Pink-Unicorn)
+PASS XMLHttpRequest: setRequestHeader() - headers that are allowed (!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyz)
+Harness: the test ran to completion.
+

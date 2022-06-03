@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_METRICS_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_METRICS_H_
 
-namespace base {
-class TimeDelta;
-}
+#include <string>
+
+#include "base/time/time.h"
 
 namespace webapk {
 
@@ -25,7 +25,8 @@ enum InstallEvent {
   INSTALL_EVENT_MAX = 5,
 };
 
-void TrackRequestTokenDuration(base::TimeDelta delta);
+void TrackRequestTokenDuration(base::TimeDelta delta,
+                               const std::string& webapk_package);
 void TrackInstallDuration(base::TimeDelta delta);
 void TrackInstallEvent(InstallEvent event);
 

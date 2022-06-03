@@ -1,0 +1,27 @@
+Test for opening select popup and closing.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+These tests run specfically for Linux and Windows
+Test opening and closing of popup using alt and down arrow key
+PASS internals.isSelectPopupVisible(popup) is true
+PASS internals.isSelectPopupVisible(popup) is false
+Test opening and closing of popup using alt and up arrow key
+PASS internals.isSelectPopupVisible(popup) is true
+PASS internals.isSelectPopupVisible(popup) is false
+Test opening of popup using F4
+PASS internals.isSelectPopupVisible(popup) is true
+Test opening of popup using enter key
+FAIL internals.isSelectPopupVisible(popup) should be false. Was true.
+Works for all platforms
+Test opening of popup using space key
+PASS internals.isSelectPopupVisible(popup) is true
+Works for only mac
+Test opening of popup using up key
+FAIL internals.isSelectPopupVisible(popup) should be true. Was false.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+One
+Two

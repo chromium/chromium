@@ -14,10 +14,10 @@ TEST(MiniDecompressTest, ExpandTest) {
   base::FilePath source_path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
   source_path = source_path.Append(FILE_PATH_LITERAL("chrome"))
-      .Append(FILE_PATH_LITERAL("installer"))
-      .Append(FILE_PATH_LITERAL("test"))
-      .Append(FILE_PATH_LITERAL("data"))
-      .Append(FILE_PATH_LITERAL("SETUP.EX_"));
+                    .Append(FILE_PATH_LITERAL("installer"))
+                    .Append(FILE_PATH_LITERAL("test"))
+                    .Append(FILE_PATH_LITERAL("data"))
+                    .Append(FILE_PATH_LITERAL("SETUP.EX_"));
 
   // Prepare a temp folder that will be automatically deleted along with
   // our temporary test data.

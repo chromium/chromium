@@ -6,14 +6,22 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_STREAMER_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/script/script_scheduling_type.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
+
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+namespace mojo {
+class SimpleWatcher;
+}
 
 namespace blink {
 
@@ -22,12 +30,9 @@ class SourceStream;
 class ResponseBodyLoaderClient;
 
 // ScriptStreamer streams incomplete script data to V8 so that it can be parsed
-// while it's loaded. ScriptResource holds a reference to ScriptStreamer.
-// At the moment, ScriptStreamer is only used for parser blocking scripts; this
-// means that the Document stays stable and no other scripts are executing
-// while we're streaming. It is possible, though, that Document and the
-// ClassicPendingScript are destroyed while the streaming is in progress, and
-// ScriptStreamer handles it gracefully.
+// while it's loaded. ScriptResource holds a reference to ScriptStreamer. If the
+// Document and the ClassicPendingScript are destroyed while the streaming is in
+// progress, and ScriptStreamer handles it gracefully.
 class CORE_EXPORT ScriptStreamer final
     : public GarbageCollected<ScriptStreamer> {
   USING_PRE_FINALIZER(ScriptStreamer, Prefinalize);
@@ -36,7 +41,7 @@ class CORE_EXPORT ScriptStreamer final
   // For tracking why some scripts are not streamed. Not streaming is part of
   // normal operation (e.g., script already loaded, script too small) and
   // doesn't necessarily indicate a failure.
-  enum NotStreamingReason {
+  enum class NotStreamingReason {
     kAlreadyLoaded,  // DEPRECATED
     kNotHTTP,
     kRevalidate,
@@ -49,44 +54,128 @@ class CORE_EXPORT ScriptStreamer final
     kHasCodeCache,
     kStreamerNotReadyOnGetSource,  // DEPRECATED
     kInlineScript,
-    kDidntTryToStartStreaming,
+    kDidntTryToStartStreaming,  // DEPRECATED
     kErrorOccurred,
     kStreamingDisabled,
     kSecondScriptResourceUse,
     kWorkerTopLevelScript,
     kModuleScript,
+    kNoDataPipe,
+    kLoadingCancelled,
+    kNonJavascriptModule,
+    kDisabledByFeatureList,
+    kErrorScriptTypeMismatch,
 
     // Pseudo values that should never be seen in reported metrics
-    kCount,
+    kMaxValue = kErrorScriptTypeMismatch,
     kInvalid = -1,
   };
 
-  ScriptStreamer(ScriptResource*,
-                 v8::ScriptCompiler::CompileOptions,
-                 scoped_refptr<base::SingleThreadTaskRunner>);
-  ~ScriptStreamer();
-  void Trace(blink::Visitor*);
+  ScriptStreamer(
+      ScriptResource* resource,
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
+      ResponseBodyLoaderClient* response_body_loader_client,
+      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
 
-  // Create a script streamer which will stream the given ScriptResource into V8
-  // as it loads.
-  static ScriptStreamer* Create(ScriptResource*,
-                                scoped_refptr<base::SingleThreadTaskRunner>,
-                                NotStreamingReason* not_streaming_reason);
+  ScriptStreamer(const ScriptStreamer&) = delete;
+  ScriptStreamer& operator=(const ScriptStreamer&) = delete;
+
+  ~ScriptStreamer();
+  void Trace(Visitor*) const;
+
+  // Get a successful ScriptStreamer for the given ScriptResource.
+  // If
+  // - there was no streamer,
+  // - or streaming was suppressed,
+  // - or the expected_type does not match the one with which the ScripStramer
+  //    was started,
+  // nullptr instead of a valid ScriptStreamer is returned.
+  static std::tuple<ScriptStreamer*, NotStreamingReason> TakeFrom(
+      ScriptResource* resource,
+      mojom::blink::ScriptType expected_type);
+  static void RecordStreamingHistogram(ScriptSchedulingType type,
+                                       bool can_use_streamer,
+                                       ScriptStreamer::NotStreamingReason);
 
   // Returns false if we cannot stream the given encoding.
   static bool ConvertEncoding(const char* encoding_name,
                               v8::ScriptCompiler::StreamedSource::Encoding*);
 
-  bool IsFinished() const;           // Has loading & streaming finished?
-  bool IsStreamingFinished() const;  // Has streaming finished?
+  bool IsStreamingStarted() const;     // Have we actually started streaming?
+  bool CanStartStreaming() const;      // Can we still start streaming later?
+  bool IsLoaded() const;               // Has loading finished?
+  bool IsFinished() const;             // Has loading & streaming finished?
+  bool IsStreamingSuppressed() const;  // Has streaming been suppressed?
 
-  v8::ScriptCompiler::StreamedSource* Source() { return source_.get(); }
+  v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type) {
+    DCHECK_EQ(expected_type, script_type_);
+    return source_.get();
+  }
 
   // Called when the script is not needed any more (e.g., loading was
   // cancelled). After calling cancel, ClassicPendingScript can drop its
   // reference to ScriptStreamer, and ScriptStreamer takes care of eventually
   // deleting itself (after the V8 side has finished too).
   void Cancel();
+
+  NotStreamingReason StreamingSuppressedReason() const {
+    CheckState();
+    return suppressed_reason_;
+  }
+
+  const String& ScriptURLString() const { return script_url_string_; }
+  uint64_t ScriptResourceIdentifier() const {
+    return script_resource_identifier_;
+  }
+
+ private:
+  friend class SourceStream;
+
+  // Valid loading state transitions:
+  //
+  //               kLoading
+  //          .--------|---------.
+  //          |        |         |
+  //          v        v         v
+  //      kLoaded   kFailed  kCancelled
+  enum class LoadingState { kLoading, kLoaded, kFailed, kCancelled };
+
+  v8::ScriptType GetScriptType() const;
+
+  static const char* str(LoadingState state) {
+    switch (state) {
+      case LoadingState::kLoading:
+        return "Loading";
+      case LoadingState::kLoaded:
+        return "Loaded";
+      case LoadingState::kFailed:
+        return "Failed";
+      case LoadingState::kCancelled:
+        return "Cancelled";
+    }
+  }
+
+  // Scripts whose first data chunk is smaller than this constant won't be
+  // streamed, unless small script streaming is enabled.
+  static constexpr size_t kSmallScriptThreshold = 30 * 1024;
+  // Maximum size of the BOM marker.
+  static constexpr size_t kMaximumLengthOfBOM = 4;
+
+  static void RunScriptStreamingTask(
+      std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask> task,
+      ScriptStreamer* streamer,
+      SourceStream* stream);
+
+  void OnDataPipeReadable(MojoResult result,
+                          const mojo::HandleSignalsState& state);
+
+  // Given the data we have collected already, try to start an actual V8
+  // streaming task. Returns true if the task was started.
+  bool TryStartStreamingTask();
+
+  static v8::ScriptType ScriptTypeForStreamingTask(ScriptResource*);
+
+  void Prefinalize();
 
   // When the streaming is suppressed, the data is not given to V8, but
   // ScriptStreamer still watches the resource load and notifies the upper
@@ -95,75 +184,48 @@ class CORE_EXPORT ScriptStreamer final
   // we have the code cache for the script) and we still want to parse and
   // execute it when it has finished loading.
   void SuppressStreaming(NotStreamingReason reason);
-  bool StreamingSuppressed() const {
-    DCHECK(!streaming_suppressed_ || suppressed_reason_ != kInvalid);
-    return streaming_suppressed_;
-  }
-  NotStreamingReason StreamingSuppressedReason() const {
-    DCHECK(streaming_suppressed_ || suppressed_reason_ == kInvalid);
-    return suppressed_reason_;
-  }
-
-  // Called by ScriptResource when data arrives from the network.
-  bool TryStartStreaming(mojo::ScopedDataPipeConsumerHandle* data_pipe,
-                         ResponseBodyLoaderClient* response_body_loader_client);
-
-  // Called by ScriptResource when loading has completed.
-  //
-  // Should not be called synchronously, as it can trigger script resource
-  // client callbacks.
-  void NotifyFinished();
 
   // Called by ScriptStreamingTask when it has streamed all data to V8 and V8
   // has processed it.
-  void StreamingCompleteOnBackgroundThread();
+  void StreamingCompleteOnBackgroundThread(LoadingState loading_state);
 
-  const String& ScriptURLString() const { return script_url_string_; }
-  uint64_t ScriptResourceIdentifier() const {
-    return script_resource_identifier_;
-  }
+  // The four methods below should not be called synchronously, as they can
+  // trigger script resource client callbacks.
 
-  static void SetSmallScriptThresholdForTesting(size_t threshold) {
-    small_script_threshold_ = threshold;
-  }
+  // Streaming completed with loading in the given |state|.
+  void StreamingComplete(LoadingState loading_state);
+  // Loading completed in the given state, without ever starting streaming.
+  void LoadCompleteWithoutStreaming(LoadingState loading_state,
+                                    NotStreamingReason no_streaming_reason);
+  // Helper for the above methods to notify the client that loading has
+  // completed in the given state. Streaming is guaranteed to either have
+  // completed or be suppressed.
+  void SendClientLoadFinishedCallback();
 
- private:
-  // Scripts whose first data chunk is smaller than this constant won't be
-  // streamed. Non-const for testing.
-  static size_t small_script_threshold_;
-  // Maximum size of the BOM marker.
-  static constexpr size_t kMaximumLengthOfBOM = 4;
-
-  void Prefinalize();
-
-  // Should not be called synchronously, as it can trigger script resource
-  // client callbacks.
-  void StreamingComplete();
-  // Should not be called synchronously, as it can trigger script resource
-  // client callbacks.
-  void NotifyFinishedToClient();
   bool HasEnoughDataForStreaming(size_t resource_buffer_size);
 
+  // Has the script streamer been detached from its client. If true, then we can
+  // safely abort loading and not output any more data.
+  bool IsClientDetached() const;
+
+  void AdvanceLoadingState(LoadingState new_state);
+  void CheckState() const;
+
+  LoadingState loading_state_ = LoadingState::kLoading;
+
   Member<ScriptResource> script_resource_;
-  // Whether ScriptStreamer is detached from the Resource. In those cases, the
-  // script data is not needed any more, and the client won't get notified
-  // when the loading and streaming are done.
-  bool detached_;
+  Member<ResponseBodyLoaderClient> response_body_loader_client_;
 
-  SourceStream* stream_;
+  // Fields active during asynchronous (non-streaming) reads.
+  mojo::ScopedDataPipeConsumerHandle data_pipe_;
+  std::unique_ptr<mojo::SimpleWatcher> watcher_;
+
+  // Fields active during streaming.
+  SourceStream* stream_ = nullptr;
   std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;
-  bool loading_finished_;  // Whether loading from the network is done.
-  bool parsing_finished_;  // Whether the V8 side processing is done.
-  // Whether we have received enough data to start the streaming.
-  bool have_enough_data_for_streaming_;
 
-  // Whether the script source code should be retrieved from the Resource
-  // instead of the ScriptStreamer.
-  bool streaming_suppressed_;
-  NotStreamingReason suppressed_reason_;
-
-  // What kind of cached data V8 produces during streaming.
-  v8::ScriptCompiler::CompileOptions compile_options_;
+  // The reason that streaming is disabled
+  NotStreamingReason suppressed_reason_ = NotStreamingReason::kInvalid;
 
   // Keep the script URL string for event tracing.
   const String script_url_string_;
@@ -174,15 +236,9 @@ class CORE_EXPORT ScriptStreamer final
   // Encoding of the streamed script. Saved for sanity checking purposes.
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
+  v8::ScriptType script_type_;
+
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
-
-  // This is a temporary flag to confirm that ScriptStreamer is not
-  // touched after its refinalizer call and thus https://crbug.com/715309
-  // doesn't break assumptions.
-  // TODO(hiroshige): Check the state in more general way.
-  bool prefinalizer_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptStreamer);
 };
 
 }  // namespace blink

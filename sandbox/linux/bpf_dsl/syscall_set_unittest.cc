@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "sandbox/linux/bpf_dsl/linux_syscall_ranges.h"
 #include "sandbox/linux/tests/unit_tests.h"
 

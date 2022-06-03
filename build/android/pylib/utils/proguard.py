@@ -33,11 +33,8 @@ _PROGUARD_ANNOTATION_VALUE_RE = re.compile(r'^(\s*?)- \S+? \[(.*)\]$')
 
 
 def _GetProguardPath():
-  # Use the one in lib.java rather than source tree because it is the one that
-  # is added to swarming .isolate files.
-  return os.path.join(
-      constants.GetOutDirectory(), 'lib.java', 'third_party', 'proguard',
-      'proguard603.jar')
+  return os.path.join(constants.DIR_SOURCE_ROOT, 'third_party', 'proguard',
+                      'lib', 'proguard603.jar')
 
 
 def Dump(jar_path):

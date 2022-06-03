@@ -27,7 +27,7 @@ function onMessage(evt) {
   let agentIdC = evt.data;
   let message = [
     'skip-level same-origin test',
-    internals.getDocumentAgentId(document),
+    internals.getAgentId(window),
     agentIdC
   ];
   window.parent.postMessage(message, '*');

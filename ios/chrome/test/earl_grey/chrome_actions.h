@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <UIKit/UIKit.h>
+
 #include <string>
 
 @class ElementSelector;
@@ -47,6 +49,18 @@ id<GREYAction> TapWebElementWithId(const std::string& element_id);
 // the main frame.
 id<GREYAction> TapWebElementWithIdInFrame(const std::string& element_id,
                                           const int frame_index);
+
+// Action to scroll to top of a UIScrollView.
+// On iOS 13 the settings menu appears as a card that can be dismissed with a
+// downward swipe, for this reason we need to swipe up programmatically to
+// avoid dismissing the VC.
+id<GREYAction> ScrollToTop();
+
+// Action to tap an element at the given xOriginStartPercentage as a percentage
+// of the total width and yOriginStartPercentage as a percentage of the total
+// height. Percentages are between 0 and 1, where 1 is 100%.
+id<GREYAction> TapAtPointPercentage(CGFloat xOriginStartPercentage,
+                                    CGFloat yOriginStartPercentage);
 
 }  // namespace chrome_test_util
 

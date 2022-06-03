@@ -26,7 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/abstract_range.h"
 #include "third_party/blink/renderer/core/dom/range_boundary_point.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -46,10 +48,9 @@ class ExceptionState;
 class FloatQuad;
 class Node;
 class NodeWithIndex;
-class StringOrTrustedHTML;
 class Text;
 
-class CORE_EXPORT Range final : public ScriptWrappable {
+class CORE_EXPORT Range final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -65,16 +66,16 @@ class CORE_EXPORT Range final : public ScriptWrappable {
 
   void Dispose();
 
-  Document& OwnerDocument() const {
+  Document& OwnerDocument() const override {
     DCHECK(owner_document_);
     return *owner_document_.Get();
   }
-  Node* startContainer() const { return &start_.Container(); }
-  unsigned startOffset() const { return start_.Offset(); }
-  Node* endContainer() const { return &end_.Container(); }
-  unsigned endOffset() const { return end_.Offset(); }
+  Node* startContainer() const override { return &start_.Container(); }
+  unsigned startOffset() const override { return start_.Offset(); }
+  Node* endContainer() const override { return &end_.Container(); }
+  unsigned endOffset() const override { return end_.Offset(); }
 
-  bool collapsed() const { return start_ == end_; }
+  bool collapsed() const override { return start_ == end_; }
   bool IsConnected() const;
 
   Node* commonAncestorContainer() const;
@@ -89,12 +90,6 @@ class CORE_EXPORT Range final : public ScriptWrappable {
   void collapse(bool to_start);
   bool isPointInRange(Node* ref_node, unsigned offset, ExceptionState&) const;
   int16_t comparePoint(Node* ref_node, unsigned offset, ExceptionState&) const;
-  enum CompareResults {
-    NODE_BEFORE,
-    NODE_AFTER,
-    NODE_BEFORE_AND_AFTER,
-    NODE_INSIDE
-  };
   enum CompareHow { kStartToStart, kStartToEnd, kEndToEnd, kEndToStart };
   int16_t compareBoundaryPoints(unsigned how,
                                 const Range* source_range,
@@ -117,7 +112,7 @@ class CORE_EXPORT Range final : public ScriptWrappable {
 
   String GetText() const;
 
-  DocumentFragment* createContextualFragment(const StringOrTrustedHTML& html,
+  DocumentFragment* createContextualFragment(const String& html,
                                              ExceptionState&);
 
   void detach();
@@ -171,7 +166,8 @@ class CORE_EXPORT Range final : public ScriptWrappable {
 
   static Node* CheckNodeWOffset(Node*, unsigned offset, ExceptionState&);
 
-  void Trace(Visitor*) override;
+  bool IsStaticRange() const override { return false; }
+  void Trace(Visitor*) const override;
 
  private:
   void SetDocument(Document&);
@@ -180,7 +176,7 @@ class CORE_EXPORT Range final : public ScriptWrappable {
   void CheckExtractPrecondition(ExceptionState&);
   bool HasSameRoot(const Node&) const;
 
-  enum ActionType { DELETE_CONTENTS, EXTRACT_CONTENTS, CLONE_CONTENTS };
+  enum ActionType { kDeleteContents, kExtractContents, kCloneContents };
   DocumentFragment* ProcessContents(ActionType, ExceptionState&);
   static Node* ProcessContentsBetweenOffsets(ActionType,
                                              DocumentFragment*,
@@ -204,10 +200,8 @@ class CORE_EXPORT Range final : public ScriptWrappable {
                                                 Node* common_root,
                                                 ExceptionState&);
   void UpdateSelectionIfAddedToSelection();
+  void ScheduleVisualUpdateIfInRegisteredHighlight(Document& document);
   void RemoveFromSelectionIfInDifferentRoot(Document& old_document);
-
-  DocumentFragment* createContextualFragmentFromString(const String& html,
-                                                       ExceptionState&);
 
   Member<Document> owner_document_;  // Cannot be null.
   RangeBoundaryPoint start_;
@@ -224,7 +218,7 @@ using RangeVector = HeapVector<Member<Range>>;
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::Range*);
+void ShowTree(const blink::Range*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_H_

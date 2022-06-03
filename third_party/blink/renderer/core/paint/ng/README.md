@@ -59,6 +59,25 @@ even though the inline block LayoutObject has children.
 If the inline block has another inline block which LayoutNG can handle,
 another NGPaintFragment tree is created for the inner inline block.
 
+### NGPhysicalFragment traversal ###
+
+When possible (when sufficiently transitioned to LayoutNG), we'll paint and
+hit-test by traversing the physical fragment tree, rather than traversing the
+LayoutObject tree. This is important for block fragmentation, where a CSS layout
+box (LayoutObject) may be split into multiple fragments, and it's the
+relationship between the fragments (not the layout objects) that determines the
+offsets. In LayoutNG, there are also fragments that have no corresponding layout
+object - e.g. a column (or other types of [fragmentainer]s too).
+
+Traditionally, when doing block fragmentation (multicol) in legacy layout, we
+have to perform some complicated calculations, where we map and slice layout
+objects into fragments during pre-paint. In LayoutNG this job is now as a
+natural part of layout. So, all we have to do for painting and hit-testing, is
+traverse the fragments. A fragment holds a list of child fragments and their
+offsets. The offsets are relative to the parent fragment. As such, it's a rather
+straight-forward job for pre-paint to calculate the offsets and bounding box.
+
 [LayoutNG]: ../../layout/ng/README.md
 [NGPaintFragment]: ng_paint_fragment.h
 [NGPhysicalFragment]: ../../layout/ng/ng_physical_fragment.h
+[fragmentainer]: https://drafts.csswg.org/css-break/#fragmentation-container

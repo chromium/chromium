@@ -10,9 +10,9 @@ namespace mojo {
 namespace core {
 namespace ports {
 
-PortRef::~PortRef() {}
+PortRef::~PortRef() = default;
 
-PortRef::PortRef() {}
+PortRef::PortRef() = default;
 
 PortRef::PortRef(const PortName& name, scoped_refptr<Port> port)
     : name_(name), port_(std::move(port)) {}

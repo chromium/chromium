@@ -4,13 +4,15 @@
 
 #include "chromecast/metrics/cast_metrics_service_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -19,19 +21,17 @@
 #include "chromecast/base/path_utils.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/base/version.h"
-#include "chromecast/public/cast_sys_info.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/enabled_state_provider.h"
-#include "components/metrics/gpu/gpu_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/net/net_metrics_log_uploader.h"
-#include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
@@ -152,15 +152,18 @@ std::string CastMetricsServiceClient::GetApplicationLocale() {
   return base::i18n::GetConfiguredLocale();
 }
 
+const network_time::NetworkTimeTracker*
+CastMetricsServiceClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
   return false;
 }
 
 ::metrics::SystemProfileProto::Channel CastMetricsServiceClient::GetChannel() {
-  std::unique_ptr<CastSysInfo> sys_info = CreateSysInfo();
-
 #if defined(OS_ANDROID) || defined(OS_FUCHSIA)
-  switch (sys_info->GetBuildType()) {
+  switch (cast_sys_info_->GetBuildType()) {
     case CastSysInfo::BUILD_ENG:
       return ::metrics::SystemProfileProto::CHANNEL_UNKNOWN;
     case CastSysInfo::BUILD_BETA:
@@ -175,8 +178,12 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
   // metrics caused by the virtual channel which could be temporary or
   // arbitrary.
   return GetReleaseChannelFromUpdateChannelName(
-      sys_info->GetSystemReleaseChannel());
+      cast_sys_info_->GetSystemReleaseChannel());
 #endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+}
+
+bool CastMetricsServiceClient::IsExtendedStableChannel() {
+  return false;  // Not supported on Chromecast.
 }
 
 std::string CastMetricsServiceClient::GetVersionString() {
@@ -241,7 +248,15 @@ CastMetricsServiceClient::CreateUploader(
 }
 
 base::TimeDelta CastMetricsServiceClient::GetStandardUploadInterval() {
-  return base::TimeDelta::FromMinutes(kStandardUploadIntervalMinutes);
+  return base::Minutes(kStandardUploadIntervalMinutes);
+}
+
+::metrics::MetricsLogStore::StorageLimits
+CastMetricsServiceClient::GetStorageLimits() const {
+  auto limits = ::metrics::MetricsServiceClient::GetStorageLimits();
+  if (delegate_)
+    delegate_->ApplyMetricsStorageLimits(&limits);
+  return limits;
 }
 
 bool CastMetricsServiceClient::IsConsentGiven() const {
@@ -272,7 +287,8 @@ CastMetricsServiceClient::CastMetricsServiceClient(
       pref_service_(pref_service),
       client_info_loaded_(false),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      cast_sys_info_(CreateSysInfo()) {}
 
 CastMetricsServiceClient::~CastMetricsServiceClient() = default;
 
@@ -285,28 +301,43 @@ void CastMetricsServiceClient::SetForceClientId(const std::string& client_id) {
   DCHECK(!client_info_loaded_)
       << "Force client ID must be set before client info is loaded.";
   force_client_id_ = client_id;
+  SetMetricsClientId(force_client_id_);
 }
 
 void CastMetricsServiceClient::InitializeMetricsService() {
   DCHECK(!metrics_state_manager_);
   metrics_state_manager_ = ::metrics::MetricsStateManager::Create(
-      pref_service_, this, base::string16(),
-      base::Bind(&CastMetricsServiceClient::StoreClientInfo,
-                 base::Unretained(this)),
-      base::Bind(&CastMetricsServiceClient::LoadClientInfo,
-                 base::Unretained(this)));
+      pref_service_, this, std::wstring(),
+      // Pass an empty file path since Chromecast does not use the Variations
+      // framework.
+      /*user_data_dir=*/base::FilePath(),
+      ::metrics::StartupVisibility::kUnknown, version_info::Channel::UNKNOWN,
+      base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
+                          base::Unretained(this)),
+      base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,
+                          base::Unretained(this)));
+
+  // Check that the FieldTrialList already exists. This happens in
+  // CastMainDelegate::PostEarlyInitialization().
+  DCHECK(base::FieldTrialList::GetInstance());
+  // Perform additional setup that should be done after the FieldTrialList, the
+  // MetricsStateManager, and its CleanExitBeacon exist. Since the list already
+  // exists, the entropy provider type is unused.
+  // TODO(crbug/1249485): Make Chromecast consistent with other platforms. I.e.
+  // create the FieldTrialList and the MetricsStateManager around the same time.
+  metrics_state_manager_->InstantiateFieldTrialList();
+
   metrics_service_.reset(new ::metrics::MetricsService(
       metrics_state_manager_.get(), this, pref_service_));
 
   // Always create a client id as it may also be used by crash reporting,
-  // (indirectly) included in feedback, and can be queried during setup.
-  // For UMA and crash reporting, associated opt-in settings will control
-  // sending reports as directed by the user.
-  // For Setup (which also communicates the user's opt-in preferences),
-  // report the client-id and expect that setup will handle the current opt-in
-  // value.
+  // (indirectly) included in feedback, and can be queried during setup. For UMA
+  // and crash reporting, associated opt-in settings control sending reports as
+  // directed by the user. For setup (which also communicates the user's opt-in
+  // preferences), report the client id and expect setup to handle the current
+  // opt-in value.
   metrics_state_manager_->ForceClientIdCreation();
-  // Populate |client_id| to other component parts.
+  // Populate |client_id| in other component parts.
   SetMetricsClientId(metrics_state_manager_->client_id());
 }
 
@@ -316,8 +347,10 @@ void CastMetricsServiceClient::StartMetricsService() {
 
   metrics_service_->InitializeMetricsRecordingState();
 #if !defined(OS_ANDROID)
-  // Reset clean_shutdown bit after InitializeMetricsRecordingState().
-  metrics_service_->LogNeedForCleanShutdown();
+  // Signal that the session has not yet exited cleanly. We later signal that
+  // the session exited cleanly via MetricsService::RecordCompletedSessionEnd().
+  // TODO(crbug.com/1208587): See whether this can be called even earlier.
+  metrics_state_manager_->LogHasSessionShutdownCleanly(false);
 #endif  // !defined(OS_ANDROID)
 
   if (IsReportingEnabled())

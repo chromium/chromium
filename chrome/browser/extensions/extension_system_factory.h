@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/extensions/extension_system_impl.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -18,6 +17,10 @@ class ExtensionSystem;
 // Should not be used except by ExtensionSystem(Factory).
 class ExtensionSystemSharedFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionSystemSharedFactory(const ExtensionSystemSharedFactory&) = delete;
+  ExtensionSystemSharedFactory& operator=(const ExtensionSystemSharedFactory&) =
+      delete;
+
   static ExtensionSystemImpl::Shared* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -34,14 +37,15 @@ class ExtensionSystemSharedFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSystemSharedFactory);
 };
 
 // BrowserContextKeyedServiceFactory for ExtensionSystemImpl.
 // TODO(yoz): Rename to ExtensionSystemImplFactory.
 class ExtensionSystemFactory : public ExtensionSystemProvider {
  public:
+  ExtensionSystemFactory(const ExtensionSystemFactory&) = delete;
+  ExtensionSystemFactory& operator=(const ExtensionSystemFactory&) = delete;
+
   // ExtensionSystem provider implementation:
   ExtensionSystem* GetForBrowserContext(
       content::BrowserContext* context) override;
@@ -60,8 +64,6 @@ class ExtensionSystemFactory : public ExtensionSystemProvider {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSystemFactory);
 };
 
 }  // namespace extensions

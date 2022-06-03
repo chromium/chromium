@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace {
 const int kMaxGaiaRetries = 3;
@@ -25,14 +25,14 @@ void GaiaOAuthClient::GetCredentialsFromAuthCode(
     const std::string& auth_code,
     bool need_user_email,
     CompletionCallback on_done) {
-  if (!on_done_.is_null()) {
-    pending_requests_.push(
-        Request(oauth_client_info, auth_code, need_user_email, on_done));
+  if (on_done_) {
+    pending_requests_.push(Request(oauth_client_info, auth_code,
+                                   need_user_email, std::move(on_done)));
     return;
   }
 
   need_user_email_ = need_user_email;
-  on_done_ = on_done;
+  on_done_ = std::move(on_done);
   // Map the authorization code to refresh and access tokens.
   gaia_oauth_client_.GetTokensFromAuthCode(oauth_client_info, auth_code,
                                            kMaxGaiaRetries, this);
@@ -62,11 +62,12 @@ void GaiaOAuthClient::SendResponse(const std::string& user_email,
 
   // Process the next request in the queue.
   if (pending_requests_.size()) {
-    Request request = pending_requests_.front();
+    Request request = std::move(pending_requests_.front());
     pending_requests_.pop();
     // GetCredentialsFromAuthCode is asynchronous, so it's safe to call it here.
     GetCredentialsFromAuthCode(request.oauth_client_info, request.auth_code,
-                               request.need_user_email, request.on_done);
+                               request.need_user_email,
+                               std::move(request.on_done));
   }
 }
 
@@ -90,10 +91,13 @@ GaiaOAuthClient::Request::Request(
   this->oauth_client_info = oauth_client_info;
   this->auth_code = auth_code;
   this->need_user_email = need_user_email;
-  this->on_done = on_done;
+  this->on_done = std::move(on_done);
 }
 
-GaiaOAuthClient::Request::Request(const Request& other) = default;
+GaiaOAuthClient::Request::Request(Request&& other) = default;
+
+GaiaOAuthClient::Request& GaiaOAuthClient::Request::operator=(Request&& other) =
+    default;
 
 GaiaOAuthClient::Request::~Request() = default;
 

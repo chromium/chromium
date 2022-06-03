@@ -28,9 +28,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/progress_event_init.h"
 
 namespace blink {
+
+class ProgressEventInit;
 
 class CORE_EXPORT ProgressEvent : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -64,7 +65,7 @@ class CORE_EXPORT ProgressEvent : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool length_computable_;

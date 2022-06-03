@@ -6,9 +6,10 @@ package org.chromium.content_shell.browsertests;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -21,6 +22,7 @@ import org.chromium.content_shell.ShellManager;
 import org.chromium.native_test.NativeBrowserTest;
 import org.chromium.native_test.NativeBrowserTestActivity;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
@@ -58,7 +60,9 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
         setContentView(getTestActivityViewId());
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
-        mWindowAndroid = new ActivityWindowAndroid(this);
+        IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        mWindowAndroid = new ActivityWindowAndroid(
+                this, /* listenToActivityState= */ true, intentRequestTracker);
         mShellManager.setWindow(mWindowAndroid);
 
         Window wind = this.getWindow();
@@ -66,15 +70,14 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         wind.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         wind.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                .setContentMainCallbackForTests(() -> {
-                    // This jumps into C++ to set up and run the test harness. The test harness runs
-                    // ContentMain()-equivalent code, and then waits for javaStartupTasksComplete()
-                    // to be called.
-                    runTests();
-                });
-        BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                .startBrowserProcessesAsync(false, false, new StartupCallback() {
+        BrowserStartupController.getInstance().setContentMainCallbackForTests(() -> {
+            // This jumps into C++ to set up and run the test harness. The test harness runs
+            // ContentMain()-equivalent code, and then waits for javaStartupTasksComplete()
+            // to be called.
+            runTests();
+        });
+        BrowserStartupController.getInstance().startBrowserProcessesAsync(
+                LibraryProcessType.PROCESS_BROWSER, false, false, new StartupCallback() {
                     @Override
                     public void onSuccess() {
                         // The C++ test harness is running thanks to runTests() above, but it
@@ -89,6 +92,16 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                 });
     }
 
+    @Override
+    /**
+     * Ensure that the user data directory gets overridden to getPrivateDataDirectory() (which is
+     * cleared at the start of every run); the directory that ANDROID_APP_DATA_DIR is set to in the
+     * context of Java browsertests is not cleared as it also holds persistent state, which
+     * causes test failures due to state bleedthrough. See crbug.com/617734 for details.
+     */
+    protected String getUserDataDirectoryCommandLineSwitch() {
+        return "data-path";
+    }
     protected abstract int getTestActivityViewId();
 
     protected abstract int getShellManagerViewId();

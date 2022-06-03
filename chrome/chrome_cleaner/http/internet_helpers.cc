@@ -12,7 +12,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -24,30 +24,28 @@ namespace {
 
 // Returns the index of the closing quote of the string, if any. |start| points
 // at the opening quote.
-size_t FindStringEnd(const base::string16& line,
-                     size_t start,
-                     base::char16 delim) {
+size_t FindStringEnd(const std::wstring& line, size_t start, wchar_t delim) {
   DCHECK_LT(start, line.length());
   DCHECK_EQ(line[start], delim);
   DCHECK((delim == L'"') || (delim == L'\''));
 
-  const base::char16 set[] = {delim, L'\\', L'\0'};
+  const wchar_t set[] = {delim, L'\\', L'\0'};
   for (size_t end = line.find_first_of(set, start + 1);
-       end != base::string16::npos; end = line.find_first_of(set, end + 2)) {
+       end != std::wstring::npos; end = line.find_first_of(set, end + 2)) {
     if (line[end] != L'\\')
       return end;
   }
   return line.length();
 }
 
-const base::char16 kHttpLws[] = L" \t";
+const wchar_t kHttpLws[] = L" \t";
 
-bool IsLWS(base::char16 c) {
+bool IsLWS(wchar_t c) {
   return ::wcschr(kHttpLws, c) != NULL;
 }
 
-void TrimLWS(base::string16::const_iterator* begin,
-             base::string16::const_iterator* end) {
+void TrimLWS(std::wstring::const_iterator* begin,
+             std::wstring::const_iterator* end) {
   // Skip leading whitespace.
   while (*begin < *end && IsLWS((*begin)[0]))
     ++(*begin);
@@ -59,21 +57,21 @@ void TrimLWS(base::string16::const_iterator* begin,
 
 }  // namespace
 
-void ParseContentType(const base::string16& content_type_str,
-                      base::string16* mime_type,
-                      base::string16* charset,
+void ParseContentType(const std::wstring& content_type_str,
+                      std::wstring* mime_type,
+                      std::wstring* charset,
                       bool* had_charset,
-                      base::string16* boundary) {
-  const base::string16::const_iterator begin = content_type_str.begin();
+                      std::wstring* boundary) {
+  const std::wstring::const_iterator begin = content_type_str.begin();
 
   // Trim leading and trailing whitespace from type. We include '(' in the
   // trailing trim set to catch media-type comments, which are not at all
   // standard, but may occur in rare cases.
   size_t type_val = content_type_str.find_first_not_of(kHttpLws);
   type_val = std::min(type_val, content_type_str.length());
-  size_t type_end = content_type_str.find_first_of(
-      base::string16(kHttpLws) + L";(", type_val);
-  if (type_end == base::string16::npos)
+  size_t type_end =
+      content_type_str.find_first_of(std::wstring(kHttpLws) + L";(", type_val);
+  if (type_end == std::wstring::npos)
     type_end = content_type_str.length();
 
   size_t charset_val = 0;
@@ -83,32 +81,32 @@ void ParseContentType(const base::string16& content_type_str,
   // Iterate over parameters.
   size_t param_start = content_type_str.find_first_of(';', type_end);
   if (param_start != std::string::npos) {
-    base::StringTokenizerT<base::string16, base::string16::const_iterator>
+    base::StringTokenizerT<std::wstring, std::wstring::const_iterator>
         tokenizer(begin + param_start, content_type_str.end(), L";");
     tokenizer.set_quote_chars(L"\"");
     while (tokenizer.GetNext()) {
-      base::string16::const_iterator equals_sign =
+      std::wstring::const_iterator equals_sign =
           std::find(tokenizer.token_begin(), tokenizer.token_end(), L'=');
       if (equals_sign == tokenizer.token_end())
         continue;
 
-      base::string16::const_iterator param_name_begin = tokenizer.token_begin();
-      base::string16::const_iterator param_name_end = equals_sign;
+      std::wstring::const_iterator param_name_begin = tokenizer.token_begin();
+      std::wstring::const_iterator param_name_end = equals_sign;
       TrimLWS(&param_name_begin, &param_name_end);
 
-      base::string16::const_iterator param_value_begin = equals_sign + 1;
-      base::string16::const_iterator param_value_end = tokenizer.token_end();
+      std::wstring::const_iterator param_value_begin = equals_sign + 1;
+      std::wstring::const_iterator param_value_end = tokenizer.token_end();
       DCHECK(param_value_begin <= tokenizer.token_end());
       TrimLWS(&param_value_begin, &param_value_end);
 
       if (base::LowerCaseEqualsASCII(
-              base::StringPiece16(param_name_begin, param_name_end),
+              base::MakeWStringPiece(param_name_begin, param_name_end),
               "charset")) {
         charset_val = param_value_begin - begin;
         charset_end = param_value_end - begin;
         type_has_charset = true;
       } else if (base::LowerCaseEqualsASCII(
-                     base::StringPiece16(param_name_begin, param_name_end),
+                     base::MakeWStringPiece(param_name_begin, param_name_end),
                      "boundary")) {
         if (boundary)
           boundary->assign(param_value_begin, param_value_end);
@@ -122,14 +120,14 @@ void ParseContentType(const base::string16& content_type_str,
     // standard, but may occur in rare cases.
     charset_val = content_type_str.find_first_not_of(kHttpLws, charset_val);
     charset_val = std::min(charset_val, charset_end);
-    base::char16 first_char = content_type_str[charset_val];
+    wchar_t first_char = content_type_str[charset_val];
     if (first_char == L'"' || first_char == L'\'') {
       charset_end = FindStringEnd(content_type_str, charset_val, first_char);
       ++charset_val;
       DCHECK(charset_end >= charset_val);
     } else {
       charset_end = std::min(content_type_str.find_first_of(
-                                 base::string16(kHttpLws) + L";(", charset_val),
+                                 std::wstring(kHttpLws) + L";(", charset_val),
                              charset_end);
     }
   }
@@ -141,29 +139,29 @@ void ParseContentType(const base::string16& content_type_str,
   // not include a slash. Some servers give junk after the charset parameter,
   // which may include a comma, so this check makes us a bit more tolerant.
   if (content_type_str.length() != 0 && content_type_str != L"*/*" &&
-      content_type_str.find_first_of(L'/') != base::string16::npos) {
+      content_type_str.find_first_of(L'/') != std::wstring::npos) {
     // The common case here is that mime_type is empty.
     bool eq = !mime_type->empty() &&
               base::LowerCaseEqualsASCII(
-                  base::StringPiece16(begin + type_val, begin + type_end),
+                  base::MakeWStringPiece(begin + type_val, begin + type_end),
                   base::WideToUTF8(*mime_type).data());
     if (!eq) {
       mime_type->assign(base::ToLowerASCII(
-          base::StringPiece16(begin + type_val, begin + type_end)));
+          base::MakeWStringPiece(begin + type_val, begin + type_end)));
     }
     if ((!eq && *had_charset) || type_has_charset) {
       *had_charset = true;
       charset->assign(base::ToLowerASCII(
-          base::StringPiece16(begin + charset_val, begin + charset_end)));
+          base::MakeWStringPiece(begin + charset_val, begin + charset_end)));
     }
   }
 }
 
-bool DecomposeUrl(const base::string16& url,
-                  base::string16* scheme,
-                  base::string16* host,
+bool DecomposeUrl(const std::wstring& url,
+                  std::wstring* scheme,
+                  std::wstring* host,
                   uint16_t* port,
-                  base::string16* path) {
+                  std::wstring* path) {
   DCHECK(scheme);
   DCHECK(host);
   DCHECK(path);
@@ -187,23 +185,23 @@ bool DecomposeUrl(const base::string16& url,
   return true;
 }
 
-base::string16 ComposeUrl(const base::string16& host,
-                          uint16_t port,
-                          const base::string16& path,
-                          bool secure) {
+std::wstring ComposeUrl(const std::wstring& host,
+                        uint16_t port,
+                        const std::wstring& path,
+                        bool secure) {
   if (secure) {
     if (port == 443)
       return L"https://" + host + path;
-    return L"https://" + host + L':' + base::NumberToString16(port) + path;
+    return L"https://" + host + L':' + base::NumberToWString(port) + path;
   }
   if (port == 80)
     return L"http://" + host + path;
-  return L"http://" + host + L':' + base::NumberToString16(port) + path;
+  return L"http://" + host + L':' + base::NumberToWString(port) + path;
 }
 
-base::string16 GenerateMultipartHttpRequestBoundary() {
+std::wstring GenerateMultipartHttpRequestBoundary() {
   // The boundary has 27 '-' characters followed by 16 hex digits.
-  static const base::char16 kBoundaryPrefix[] = L"---------------------------";
+  static const wchar_t kBoundaryPrefix[] = L"---------------------------";
   static const size_t kBoundaryLength = 27 + 16;
 
   // Generate some random numbers to fill out the boundary.
@@ -211,23 +209,23 @@ base::string16 GenerateMultipartHttpRequestBoundary() {
   int r1 = rand();
 
   // Add one character for the NULL termination.
-  base::char16 temp[kBoundaryLength + 1];
+  wchar_t temp[kBoundaryLength + 1];
   ::swprintf(temp, sizeof(temp) / sizeof(*temp), L"%s%08X%08X", kBoundaryPrefix,
              r0, r1);
 
-  return base::string16(temp, kBoundaryLength);
+  return std::wstring(temp, kBoundaryLength);
 }
 
-base::string16 GenerateMultipartHttpRequestContentTypeHeader(
-    const base::string16 boundary) {
+std::wstring GenerateMultipartHttpRequestContentTypeHeader(
+    const std::wstring boundary) {
   return L"Content-Type: multipart/form-data; boundary=" + boundary;
 }
 
 std::string GenerateMultipartHttpRequestBody(
-    const std::map<base::string16, base::string16>& parameters,
+    const std::map<std::wstring, std::wstring>& parameters,
     const std::string& upload_file,
-    const base::string16& file_part_name,
-    const base::string16& boundary) {
+    const std::wstring& file_part_name,
+    const std::wstring& boundary) {
   DCHECK(!boundary.empty());
   DCHECK(!file_part_name.empty());
   std::string boundary_utf8 = base::WideToUTF8(boundary);

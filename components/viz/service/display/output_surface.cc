@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/output_surface_client.h"
@@ -26,6 +25,8 @@ namespace viz {
 OutputSurface::Capabilities::Capabilities() = default;
 OutputSurface::Capabilities::Capabilities(const Capabilities& capabilities) =
     default;
+OutputSurface::Capabilities& OutputSurface::Capabilities::operator=(
+    const Capabilities& capabilities) = default;
 
 OutputSurface::OutputSurface(Type type) : type_(type) {}
 
@@ -41,6 +42,14 @@ OutputSurface::OutputSurface(
 }
 
 OutputSurface::~OutputSurface() = default;
+
+void OutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
+  NOTREACHED();
+}
+
+void OutputSurface::SetEnableDCLayers(bool enabled) {
+  NOTREACHED();
+}
 
 gfx::Rect OutputSurface::GetCurrentFramebufferDamage() const {
   return gfx::Rect();
@@ -82,4 +91,15 @@ void OutputSurface::SetGpuVSyncCallback(GpuVSyncCallback callback) {
 void OutputSurface::SetGpuVSyncEnabled(bool enabled) {
   NOTREACHED();
 }
+
+gpu::Mailbox OutputSurface::GetOverlayMailbox() const {
+  return gpu::Mailbox();
+}
+
+void OutputSurface::InitDelegatedInkPointRendererReceiver(
+    mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
+        pending_receiver) {
+  NOTREACHED();
+}
+
 }  // namespace viz

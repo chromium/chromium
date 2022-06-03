@@ -4,9 +4,12 @@ include_rules = [
   "+mojo/core/embedder",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+services/network/test",
   "+third_party/breakpad",
   "+third_party/google_trust_services",
   "+third_party/grpc",
+  "+third_party/protobuf",
   "+third_party/zlib",
   "+ui/base",
 ]

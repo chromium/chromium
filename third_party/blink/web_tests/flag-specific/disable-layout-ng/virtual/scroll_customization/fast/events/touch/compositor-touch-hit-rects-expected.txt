@@ -42,7 +42,7 @@ styleModified: layer(785x2548) has hit test rect (13,437 290x22)
 
 containsSvg: layer(785x2596) has hit test rect (13,464 290x16)
 
-svgline: layer(785x2644) has hit test rect (13,489 22x3)
+svgline: layer(785x2644) has hit test rect (13,488 22x4)
 
 tablecell: layer(785x2692) has hit test rect (45,518 32x11)
 

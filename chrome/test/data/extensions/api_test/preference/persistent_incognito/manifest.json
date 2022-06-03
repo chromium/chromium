@@ -5,6 +5,7 @@
   "description" : "Preference API Test Extension (Incognito)",
   "permissions": [ "privacy" ],
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": false
   }
 }

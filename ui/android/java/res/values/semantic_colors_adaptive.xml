@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2013 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- TODO(huayinz): remove tools:ignore once these colors are used in ui/android -->
+    <!-- Common text colors -->
+    <color name="default_text_color_baseline">@color/default_text_color_dark</color>
+    <!-- Text color used on dark background on light theme, and light background on dark theme. -->
+    <color name="default_text_color_inverse">@color/default_text_color_light</color>
+    <color name="default_text_color_secondary">@color/default_text_color_secondary_dark</color>
+    <!-- Text color for non-clickable blue text. -->
+    <color name="default_text_color_blue" tools:ignore="UnusedResources">@color/default_text_color_link</color>
+    <!-- Text color for clickable text. -->
+    <color name="default_text_color_link">@color/default_text_color_link_dark</color>
+    <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark</color>
+    <color name="default_text_color_error">@color/default_text_color_error_dark</color>
+    <color name="default_text_color_on_accent1">@color/default_text_color_on_accent1_light</color>
+    <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_dark</color>
+    <!-- TODO(https://crbug.com/1248157): This is the same as light mode's
+         ?attr/colorOnSecondaryContainer, but it would break in dark mode.
+         Figure out a solution for dynamic colors. -->
+    <color name="default_text_color_on_accent2_container">@color/baseline_secondary_900</color>
+
+    <!-- Common icon colors for drawables. -->
+    <color name="default_icon_color">@color/default_icon_color_dark</color>
+    <color name="default_icon_color_inverse" tools:ignore="UnusedResources">@color/default_icon_color_inverse_light</color>
+    <color name="default_icon_color_accent1_baseline" tools:ignore="UnusedResources">@color/default_icon_color_blue_dark</color>
+    <color name="default_icon_color_secondary" tools:ignore="UnusedResources">@color/default_icon_color_secondary_dark</color>
+
+    <color name="hairline_stroke_color_baseline">@color/hairline_stroke_color_dark</color>
+    <color name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</color>
+    <color name="default_icon_color_disabled_inverse" tools:ignore="UnusedResources">@color/default_icon_color_disabled_light</color>
+
+    <!-- Common background and branding color. -->
+    <color name="default_bg_color">@color/default_bg_color_light</color>
+    <color name="default_bg_color_secondary" tools:ignore="UnusedResources">@color/default_bg_color_secondary_light</color>
+
+    <color name="default_bg_color_blue" tools:ignore="UnusedResources">@color/default_bg_color_blue_dark</color>
+
+    <!-- TODO(https://crbug.com/1210689): These all need to ultimately be
+         removed because they do not work with dynamic colors. -->
+    <color name="default_bg_color_elev_0" tools:ignore="UnusedResources">@color/default_bg_color_light</color>
+    <color name="default_bg_color_elev_1" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_1</color>
+    <color name="default_bg_color_elev_2" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_2</color>
+    <color name="default_bg_color_elev_3" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_3</color>
+    <color name="default_bg_color_elev_4">@color/default_bg_color_light_elev_4</color>
+    <color name="default_bg_color_elev_5" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_5</color>
+    <color name="default_bg_color_elev_6" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_6</color>
+    <color name="legacy_bg_color_elev_1">@color/legacy_bg_color_light_elev_1</color>
+    <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
+
+    <!-- Dialog colors -->
+    <color name="dialog_bg_color">@color/dialog_bg_color_light</color>
+    <color name="dialog_bg_color_light">@color/default_bg_color_light</color>
+    <color name="dialog_bg_color_dark">@color/default_bg_color_dark_elev_3</color>
+
+    <!-- Snackbar colors -->
+    <color name="snackbar_background_color">@color/default_bg_color</color>
+
+    <!-- Infobar colors -->
+    <color name="infobar_background_color" tools:ignore="UnusedResources">@color/snackbar_background_color</color>
+
+    <!-- Bottom sheet colors -->
+    <color name="sheet_bg_color" tools:ignore="UnusedResources">@color/default_bg_color</color>
+
+    <!-- Ripple colors for clickable widgets -->
+    <color name="ripple_color_blue">@color/ripple_color_blue_dark</color>
+
+    <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
+    <color name="default_control_color_normal" tools:ignore="UnusedResources">@color/default_control_color_normal_light</color>
+    <color name="default_control_color_active" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
+
+    <!-- Chip colors -->
+    <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>
+    <color name="chip_text_color_selected">@color/default_text_color_on_accent2_container</color>
+    <color name="default_chip_assistive_text_color_secondary">@color/default_text_color_secondary</color>
+    <color name="chip_bg_color">@color/default_bg_color</color>
+    <color name="chip_background_color_disabled">@android:color/transparent</color>
+    <color name="default_chip_ripple_color">@color/default_bg_color_elev_2</color>
+    <color name="default_chip_outline_color" tools:ignore="UnusedResources">@color/default_chip_outline_color_light</color>
+    <color name="chip_selected_hover">@color/chip_selected_hover_dark</color>
+    <color name="chip_selected_focused">@color/chip_selected_focused_dark</color>
+    <color name="chip_selected_hover_and_focused">@color/chip_selected_hover_and_focused_dark</color>
+    <color name="chip_focused">@color/default_bg_color_elev_4</color>
+    <color name="chip_hover_focused">@color/default_bg_color_elev_4</color>
+    <color name="chip_selected">@color/chip_selected_light</color>
+
+    <!-- CircularProgressView colors -->
+    <color name="circular_progress_inner_background_color_small" tools:ignore="UnusedResources">@color/default_bg_color_elev_1</color>
+    <color name="circular_progress_outer_circle_background_color_small" tools:ignore="UnusedResources">@color/default_bg_color_elev_1</color>
+    <color name="circular_progress_outer_circle_progress_color_small" tools:ignore="UnusedResources">@color/circular_progress_outer_circle_progress_color_small_light</color>
+    <color name="circular_progress_icon_color_small_large" tools:ignore="UnusedResources">@color/circular_progress_icon_color_small_large_light</color>
+
+    <!-- Incognito icon colors -->
+    <color name="incognito_icon_filled_bg_color">@color/incognito_icon_filled_bg_color_dark</color>
+
+    <!-- IncognitoHistoryPlaceholderView  colors -->
+    <color name="incognito_history_placeholder_stroke_color">@color/modern_grey_500</color>
+    <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_300</color>
+
+    <!-- Colors of adaptive toolbar -->
+    <color name="adaptive_toolbar_preference_header_background">@color/adaptive_toolbar_preference_header_background_light</color>
+    <color name="adaptive_toolbar_preference_header_line">@color/adaptive_toolbar_preference_header_line_light</color>
+    <color name="adaptive_toolbar_preference_header_blue">@color/adaptive_toolbar_preference_header_blue_light</color>
+    <color name="adaptive_toolbar_preference_header_omnibox">@color/adaptive_toolbar_preference_header_omnibox_light</color>
+
+    <!-- Menu colors -->
+    <!-- TODO(https://crbug.com/1232518): Move light/dark colors to non-adaptive
+         file. These reference non-color palette colors which is currently
+         blocked by PRESUBMIT scripts. -->
+    <color name="menu_action_bar_bg_color">@color/menu_action_bar_bg_color_light</color>
+    <color name="menu_action_bar_bg_color_light">@color/default_bg_color_light_elev_1</color>
+    <color name="menu_action_bar_bg_color_dark">@color/default_bg_color_dark_elev_6</color>
+    <color name="menu_item_bg_color">@color/menu_item_bg_color_light</color>
+    <color name="menu_item_bg_color_light">@color/default_bg_color_light</color>
+    <color name="menu_item_bg_color_dark">@color/default_bg_color_dark_elev_5</color>
+
+    <!-- Other colors -->
+    <color name="default_red" tools:ignore="UnusedResources">@color/default_red_dark</color>
+    <color name="default_green" tools:ignore="UnusedResources">@color/default_green_dark</color>
+    <color name="filled_button_bg_color">@color/filled_button_bg_color_dark</color>
+    <color name="filled_button_bg_color_disabled">@color/filled_button_bg_color_disabled_dark</color>
+    <color name="divider_line_bg_color" tools:ignore="UnusedResources">@color/divider_line_bg_color_dark</color>
+    <color name="drag_handlebar_color">@color/divider_line_bg_color</color>
+    <color name="omnibox_bg_color" tools:ignore="UnusedResources">@color/omnibox_bg_color_light</color>
+    <color name="image_loading_color" tools:ignore="UnusedResources">@color/image_loading_color_dark</color>
+    <color name="promo_illustration_bg_color" tools:ignore="UnusedResources">@color/promo_illustration_bg_color_light</color>
+    <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_dark</color>
+    <color name="menu_chip_background_color">@color/menu_chip_background_color_dark</color>
+    <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_dark</color>
+    <color name="iph_highlight_blue">@color/iph_highlight_blue_dark</color>
+    <color name="rating_star_yellow">@color/rating_star_yellow_dark</color>
+</resources>

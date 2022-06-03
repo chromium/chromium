@@ -33,7 +33,7 @@ PASS CSS.supports("(not (border: 1px 1px 1px 1px 1px solid #000)) and (display: 
 PASS CSS.supports("(display: block !important) and ((display: inline) or (display: deadbeef))") is true
 PASS CSS.supports("not ((not (display: block)) or ((display: none) and (deadbeef: 1px)))") is true
 PASS CSS.supports("not( display: deadbeef)") is false
-PASS CSS.supports("(display: none)and (   -webkit-transition: all 1s )") is false
+PASS CSS.supports("(display: none)and (   -webkit-transition: all 1s )") is true
 PASS CSS.supports("(display: none)or(-webkit-transition: all 1s)") is false
 PASS CSS.supports("(display: none) or(-webkit-transition: all 1s    )") is false
 PASS CSS.supports("(((((((display: none)))))))") is true

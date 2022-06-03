@@ -17,7 +17,7 @@ TEST(AutoFetch, MakeClientId) {
 }
 
 TEST(AutoFetch, ExtractMetadataSuccess) {
-  base::Optional<auto_fetch::ClientIdMetadata> metadata =
+  absl::optional<auto_fetch::ClientIdMetadata> metadata =
       auto_fetch::ExtractMetadata(
           auto_fetch::MakeClientId(auto_fetch::ClientIdMetadata(123)));
   ASSERT_TRUE(metadata);

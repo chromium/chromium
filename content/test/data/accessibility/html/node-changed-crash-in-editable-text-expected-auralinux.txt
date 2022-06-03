@@ -2,5 +2,3 @@
 ++[section] name='Done' selectable-text
 ++++[section]
 ++++[section]
-++++++[section]
-++++[section]

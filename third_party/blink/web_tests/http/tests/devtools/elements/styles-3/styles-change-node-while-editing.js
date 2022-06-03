@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that changing selected node while editing style does update styles sidebar.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="color: red">Text</div>
@@ -16,8 +16,8 @@
   var treeElement;
   var section;
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, true, true);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true, true);
     treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('color');
 
     treeElement.startEditing();
@@ -26,13 +26,13 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('other', step2);
   }
 
-  function step2() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, true, true);
+  async function step2() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true, true);
     ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step3);
   }
 
-  function step3() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, true, true);
+  async function step3() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true, true);
     TestRunner.completeTest();
   }
 })();

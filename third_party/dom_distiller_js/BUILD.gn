@@ -5,12 +5,8 @@
 import("//third_party/protobuf/proto_library.gni")
 
 group("proto") {
-  public_deps = [
-    ":dom_distiller_proto",
-  ]
-  deps = [
-    ":json_values_converter_tests",
-  ]
+  public_deps = [ ":dom_distiller_proto" ]
+  deps = [ ":json_values_converter_tests" ]
 }
 
 protoc_plugin_files = [
@@ -30,12 +26,8 @@ if (host_os == "win") {
 
 proto_library("dom_distiller_proto") {
   visibility = [ ":*" ]
-  sources = [
-    "dist/proto/dom_distiller.proto",
-  ]
-  deps = [
-    "//base",
-  ]
+  sources = [ "dist/proto/dom_distiller.proto" ]
+  deps = [ "//base" ]
   proto_out_dir = "third_party/dom_distiller_js"
 
   generator_plugin_script = json_converter_plugin_script
@@ -48,12 +40,8 @@ proto_library("dom_distiller_proto") {
 # protoc_plugins by generating the json_converter.h file.
 proto_library("json_values_converter_test_proto") {
   visibility = [ ":*" ]
-  sources = [
-    "test_sample.proto",
-  ]
-  deps = [
-    "//base",
-  ]
+  sources = [ "test_sample.proto" ]
+  deps = [ "//base" ]
   proto_out_dir = "third_party/dom_distiller_js"
 
   generator_plugin_script = json_converter_plugin_script
@@ -64,21 +52,20 @@ proto_library("json_values_converter_test_proto") {
 
 action("json_values_converter_tests") {
   _stamp = "$target_gen_dir/json_values_converter_tests.stamp"
-  deps = [
-    ":json_values_converter_test_proto",
-  ]
+  _actual_file = "$target_gen_dir/test_sample_json_converter.h"
+  _golden_file = "test_sample_json_converter.h.golden"
+  deps = [ ":json_values_converter_test_proto" ]
   inputs = [
-    "test_sample_json_converter.h.golden",
+    _actual_file,
+    _golden_file,
   ]
-  outputs = [
-    _stamp,
-  ]
+  outputs = [ _stamp ]
 
   script = "protoc_plugins/json_values_converter_tests.py"
   args = [
     "--stamp",
     rebase_path(_stamp, root_build_dir),
-    rebase_path("$target_gen_dir/test_sample_json_converter.h", root_build_dir),
-    rebase_path("test_sample_json_converter.h.golden", root_build_dir),
+    rebase_path(_actual_file, root_build_dir),
+    rebase_path(_golden_file, root_build_dir),
   ]
 }

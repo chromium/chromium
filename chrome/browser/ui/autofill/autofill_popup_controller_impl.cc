@@ -8,11 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -21,13 +19,17 @@
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_active_popup.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
@@ -44,7 +46,7 @@ using base::WeakPtr;
 
 namespace autofill {
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 // static
 WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     WeakPtr<AutofillPopupControllerImpl> previous,
@@ -61,12 +63,10 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
   }
 
   if (previous.get())
-    previous->Hide();
+    previous->Hide(PopupHidingReason::kViewDestroyed);
 
-  AutofillPopupControllerImpl* controller =
-      new AutofillPopupControllerImpl(
-          delegate, web_contents, container_view, element_bounds,
-          text_direction);
+  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
+      delegate, web_contents, container_view, element_bounds, text_direction);
   return controller->GetWeakPtr();
 }
 #endif
@@ -79,22 +79,19 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     base::i18n::TextDirection text_direction)
     : controller_common_(element_bounds, text_direction, container_view),
       web_contents_(web_contents),
-      layout_model_(this, delegate->GetPopupType() == PopupType::kCreditCards),
       delegate_(delegate) {
   ClearState();
   delegate->RegisterDeletionCallback(base::BindOnce(
       &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
 }
 
-AutofillPopupControllerImpl::~AutofillPopupControllerImpl() {}
+AutofillPopupControllerImpl::~AutofillPopupControllerImpl() = default;
 
 void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
   SetValues(suggestions);
-  DCHECK_EQ(suggestions_.size(), elided_values_.size());
-  DCHECK_EQ(suggestions_.size(), elided_labels_.size());
 
   bool just_created = false;
   if (!view_) {
@@ -104,26 +101,13 @@ void AutofillPopupControllerImpl::Show(
     // treat the popup as hiding right away.
     if (!view_) {
       delegate_->OnPopupSuppressed();
-      Hide();
+      Hide(PopupHidingReason::kViewDestroyed);
       return;
     }
     just_created = true;
   }
 
-#if !defined(OS_ANDROID)
-  // Android displays the long text with ellipsis using the view attributes.
-
-  layout_model_.UpdatePopupBounds();
-
-  // Elide the name and label strings so that the popup fits in the available
-  // space.
-  for (int i = 0; i < GetLineCount(); ++i) {
-    bool has_label = !suggestions_[i].label.empty();
-    ElideValueAndLabelForRow(
-        i, layout_model_.GetAvailableWidthForRow(i, has_label));
-  }
-#endif
-
+  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
   if (just_created) {
 #if defined(OS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
@@ -131,6 +115,9 @@ void AutofillPopupControllerImpl::Show(
                                    !suggestions.empty());
 #endif
     view_->Show();
+    // crbug.com/1055981. |this| can be destroyed synchronously at this point.
+    if (!weak_this)
+      return;
 
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
@@ -143,31 +130,36 @@ void AutofillPopupControllerImpl::Show(
       selected_line_.reset();
 
     OnSuggestionsChanged();
+    // crbug.com/1200766. |this| can be destroyed synchronously at this point.
+    if (!weak_this)
+      return;
   }
 
-  static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-      ->RegisterKeyPressHandler(
-          base::Bind(&AutofillPopupControllerImpl::HandleKeyPressEvent,
-                     base::Unretained(this)));
-  delegate_->OnPopupShown();
+  absl::visit(
+      [&](auto* driver) {
+        driver->SetKeyPressHandler(base::BindRepeating(
+            // Cannot bind HandleKeyPressEvent() directly because of its
+            // return value.
+            [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
+               const content::NativeWebKeyboardEvent& event) {
+              return weak_this && weak_this->HandleKeyPressEvent(event);
+            },
+            weak_this));
+      },
+      GetDriver());
 
-  DCHECK_EQ(suggestions_.size(), elided_values_.size());
-  DCHECK_EQ(suggestions_.size(), elided_labels_.size());
+  delegate_->OnPopupShown();
 }
 
 void AutofillPopupControllerImpl::UpdateDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
-  DCHECK_EQ(suggestions_.size(), elided_values_.size());
-  DCHECK_EQ(suggestions_.size(), elided_labels_.size());
-
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
+  selected_line_.reset();
   // Remove all the old data list values, which should always be at the top of
   // the list if they are present.
   while (!suggestions_.empty() &&
          suggestions_[0].frontend_id == POPUP_ITEM_ID_DATALIST_ENTRY) {
     suggestions_.erase(suggestions_.begin());
-    elided_values_.erase(elided_values_.begin());
-    elided_labels_.erase(elided_labels_.begin());
   }
 
   // If there are no new data list values, exit (clearing the separator if there
@@ -176,15 +168,13 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
     if (!suggestions_.empty() &&
         suggestions_[0].frontend_id == POPUP_ITEM_ID_SEPARATOR) {
       suggestions_.erase(suggestions_.begin());
-      elided_values_.erase(elided_values_.begin());
-      elided_labels_.erase(elided_labels_.begin());
     }
 
-     // The popup contents have changed, so either update the bounds or hide it.
+    // The popup contents have changed, so either update the bounds or hide it.
     if (HasSuggestions())
       OnSuggestionsChanged();
     else
-      Hide();
+      Hide(PopupHidingReason::kNoSuggestions);
 
     return;
   }
@@ -194,37 +184,45 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
       suggestions_[0].frontend_id != POPUP_ITEM_ID_SEPARATOR) {
     suggestions_.insert(suggestions_.begin(), Suggestion());
     suggestions_[0].frontend_id = POPUP_ITEM_ID_SEPARATOR;
-    elided_values_.insert(elided_values_.begin(), base::string16());
-    elided_labels_.insert(elided_labels_.begin(), base::string16());
   }
 
   // Prepend the parameters to the suggestions we already have.
   suggestions_.insert(suggestions_.begin(), values.size(), Suggestion());
-  elided_values_.insert(elided_values_.begin(), values.size(),
-                        base::string16());
-  elided_labels_.insert(elided_labels_.begin(), values.size(),
-                        base::string16());
   for (size_t i = 0; i < values.size(); i++) {
     suggestions_[i].value = values[i];
     suggestions_[i].label = labels[i];
     suggestions_[i].frontend_id = POPUP_ITEM_ID_DATALIST_ENTRY;
-
-    // TODO(brettw) it looks like these should be elided.
-    elided_values_[i] = values[i];
-    elided_labels_[i] = labels[i];
   }
 
   OnSuggestionsChanged();
-  DCHECK_EQ(suggestions_.size(), elided_values_.size());
-  DCHECK_EQ(suggestions_.size(), elided_labels_.size());
 }
 
-void AutofillPopupControllerImpl::Hide() {
+void AutofillPopupControllerImpl::PinView() {
+  is_view_pinned_ = true;
+}
+
+base::span<const Suggestion>
+AutofillPopupControllerImpl::GetUnelidedSuggestions() const {
+  return base::span<const Suggestion>(suggestions_);
+}
+
+void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
+  // If the reason for hiding is only stale data or a user interacting with
+  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
+  if (is_view_pinned_ && (reason == PopupHidingReason::kStaleData ||
+                          reason == PopupHidingReason::kFocusChanged ||
+                          reason == PopupHidingReason::kEndEditing)) {
+    return;  // Don't close the popup while waiting for an update.
+  }
+  // For tests, keep open when hiding is due to external stimuli.
+  if (keep_popup_open_for_testing_ &&
+      reason == PopupHidingReason::kWidgetChanged)
+    return;  // Don't close the popup because the browser window is resized.
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
-    static_cast<ContentAutofillDriver*>(delegate_->GetAutofillDriver())
-        ->RemoveKeyPressHandler();
+    absl::visit([](auto* driver) { driver->UnsetKeyPressHandler(); },
+                GetDriver());
   }
 
   HideViewAndDie();
@@ -232,9 +230,9 @@ void AutofillPopupControllerImpl::Hide() {
 
 void AutofillPopupControllerImpl::ViewDestroyed() {
   // The view has already been destroyed so clear the reference to it.
-  view_ = NULL;
+  view_ = nullptr;
 
-  Hide();
+  Hide(PopupHidingReason::kViewDestroyed);
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
@@ -249,14 +247,14 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      SetSelectedLine(base::nullopt);
+      SetSelectedLine(absl::nullopt);
       SelectNextLine();
       return true;
     case ui::VKEY_NEXT:  // Page down.
       SetSelectedLine(GetLineCount() - 1);
       return true;
     case ui::VKEY_ESCAPE:
-      Hide();
+      Hide(PopupHidingReason::kUserAborted);
       return true;
     case ui::VKEY_DELETE:
       return (event.GetModifiers() &
@@ -276,13 +274,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
-#if !defined(OS_ANDROID)
-  // TODO(csharp): Since UpdatePopupBounds can change the position of the popup,
-  // the popup could end up jumping from above the element to below it.
-  // It is unclear if it is better to keep the popup where it was, or if it
-  // should try and move to its desired position.
-  layout_model_.UpdatePopupBounds();
-#else
+#if defined(OS_ANDROID)
   // Assume that suggestions are (still) available. If this is wrong, the method
   // |HideViewAndDie| will be called soon after and will hide all suggestions.
   ManualFillingController::GetOrCreate(web_contents_)
@@ -294,29 +286,8 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   view_->OnSuggestionsChanged();
 }
 
-void AutofillPopupControllerImpl::SetSelectionAtPoint(const gfx::Point& point) {
-  SetSelectedLine(layout_model_.LineFromY(point.y()));
-}
-
-bool AutofillPopupControllerImpl::AcceptSelectedLine() {
-  if (!selected_line_)
-    return false;
-
-  DCHECK_LT(*selected_line_, GetLineCount());
-
-  if (!CanAccept(suggestions_[*selected_line_].frontend_id))
-    return false;
-
-  AcceptSuggestion(*selected_line_);
-  return true;
-}
-
 void AutofillPopupControllerImpl::SelectionCleared() {
-  SetSelectedLine(base::nullopt);
-}
-
-bool AutofillPopupControllerImpl::HasSelection() const {
-  return selected_line_.has_value();
+  SetSelectedLine(absl::nullopt);
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
@@ -330,15 +301,15 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   mf_controller->Hide();
 #endif
   delegate_->DidAcceptSuggestion(suggestion.value, suggestion.frontend_id,
-                                 index);
-}
-
-gfx::Rect AutofillPopupControllerImpl::popup_bounds() const {
-  return layout_model_.popup_bounds();
+                                 suggestion.backend_id, index);
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {
   return controller_common_.container_view;
+}
+
+content::WebContents* AutofillPopupControllerImpl::GetWebContents() const {
+  return web_contents_;
 }
 
 const gfx::RectF& AutofillPopupControllerImpl::element_bounds() const {
@@ -354,21 +325,9 @@ bool AutofillPopupControllerImpl::IsRTL() const {
   return controller_common_.text_direction == base::i18n::RIGHT_TO_LEFT;
 }
 
-const std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() {
+std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
   return suggestions_;
 }
-
-#if !defined(OS_ANDROID)
-int AutofillPopupControllerImpl::GetElidedValueWidthForRow(int row) {
-  return gfx::GetStringWidth(GetElidedValueAt(row),
-                             layout_model_.GetValueFontListForRow(row));
-}
-
-int AutofillPopupControllerImpl::GetElidedLabelWidthForRow(int row) {
-  return gfx::GetStringWidth(GetElidedLabelAt(row),
-                             layout_model_.GetLabelFontListForRow(row));
-}
-#endif
 
 int AutofillPopupControllerImpl::GetLineCount() const {
   return suggestions_.size();
@@ -378,26 +337,43 @@ const Suggestion& AutofillPopupControllerImpl::GetSuggestionAt(int row) const {
   return suggestions_[row];
 }
 
-const base::string16& AutofillPopupControllerImpl::GetElidedValueAt(
+std::u16string AutofillPopupControllerImpl::GetSuggestionMainTextAt(
     int row) const {
-  return elided_values_[row];
+  return suggestions_[row].frontend_id ==
+                 POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY
+             ? l10n_util::GetStringUTF16(
+                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
+             : suggestions_[row].value;
 }
 
-const base::string16& AutofillPopupControllerImpl::GetElidedLabelAt(
+std::u16string AutofillPopupControllerImpl::GetSuggestionMinorTextAt(
     int row) const {
-  return elided_labels_[row];
+  return suggestions_[row].frontend_id ==
+                 POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY
+             ? suggestions_[row].value
+             : std::u16string();
+}
+
+const std::u16string& AutofillPopupControllerImpl::GetSuggestionLabelAt(
+    int row) const {
+  return suggestions_[row].label;
 }
 
 bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
     int list_index,
-    base::string16* title,
-    base::string16* body) {
+    std::u16string* title,
+    std::u16string* body) {
   return delegate_->GetDeletionConfirmationText(
       suggestions_[list_index].value, suggestions_[list_index].frontend_id,
       title, body);
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
+  // This function might be called in a callback, so ensure the list index is
+  // still in bounds. If not, terminate the removing and consider it failed.
+  // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
+  if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
+    return false;
   if (!delegate_->RemoveSuggestion(suggestions_[list_index].value,
                                    suggestions_[list_index].frontend_id)) {
     return false;
@@ -405,8 +381,6 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
 
   // Remove the deleted element.
   suggestions_.erase(suggestions_.begin() + list_index);
-  elided_values_.erase(elided_values_.begin() + list_index);
-  elided_labels_.erase(elided_labels_.begin() + list_index);
 
   selected_line_.reset();
 
@@ -414,30 +388,29 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
     delegate_->ClearPreviewedForm();
     OnSuggestionsChanged();
   } else {
-    Hide();
+    Hide(PopupHidingReason::kNoSuggestions);
   }
 
   return true;
 }
 
-base::Optional<int> AutofillPopupControllerImpl::selected_line() const {
+absl::optional<int> AutofillPopupControllerImpl::selected_line() const {
   return selected_line_;
 }
 
-const AutofillPopupLayoutModel& AutofillPopupControllerImpl::layout_model()
-    const {
-  return layout_model_;
+PopupType AutofillPopupControllerImpl::GetPopupType() const {
+  return delegate_->GetPopupType();
 }
 
 void AutofillPopupControllerImpl::SetSelectedLine(
-    base::Optional<int> selected_line) {
+    absl::optional<int> selected_line) {
   if (selected_line_ == selected_line)
     return;
 
   if (selected_line) {
     DCHECK_LT(*selected_line, GetLineCount());
     if (!CanAccept(suggestions_[*selected_line].frontend_id))
-      selected_line = base::nullopt;
+      selected_line = absl::nullopt;
   }
 
   auto previous_selected_line(selected_line_);
@@ -493,7 +466,7 @@ bool AutofillPopupControllerImpl::RemoveSelectedLine() {
 bool AutofillPopupControllerImpl::CanAccept(int id) {
   return id != POPUP_ITEM_ID_SEPARATOR &&
          id != POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE &&
-         id != POPUP_ITEM_ID_TITLE;
+         id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE && id != POPUP_ITEM_ID_TITLE;
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() {
@@ -503,6 +476,8 @@ bool AutofillPopupControllerImpl::HasSuggestions() {
   return id > 0 || id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
          id == POPUP_ITEM_ID_PASSWORD_ENTRY ||
          id == POPUP_ITEM_ID_USERNAME_ENTRY ||
+         id == POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
+         id == POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY ||
          id == POPUP_ITEM_ID_DATALIST_ENTRY ||
          id == POPUP_ITEM_ID_SCAN_CREDIT_CARD;
 }
@@ -510,52 +485,29 @@ bool AutofillPopupControllerImpl::HasSuggestions() {
 void AutofillPopupControllerImpl::SetValues(
     const std::vector<Suggestion>& suggestions) {
   suggestions_ = suggestions;
-  elided_values_.resize(suggestions.size());
-  elided_labels_.resize(suggestions.size());
-  for (size_t i = 0; i < suggestions.size(); i++) {
-    elided_values_[i] = suggestions[i].value;
-    elided_labels_[i] = suggestions[i].label;
-  }
 }
 
 WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-#if !defined(OS_ANDROID)
-void AutofillPopupControllerImpl::ElideValueAndLabelForRow(
-    int row,
-    int available_width) {
-  int value_width = gfx::GetStringWidth(
-      suggestions_[row].value, layout_model_.GetValueFontListForRow(row));
-  int label_width = gfx::GetStringWidth(
-      suggestions_[row].label, layout_model_.GetLabelFontListForRow(row));
-  int total_text_length = value_width + label_width;
+bool AutofillPopupControllerImpl::AcceptSelectedLine() {
+  if (!selected_line_)
+    return false;
 
-  // The line can have no strings if it represents a UI element, such as
-  // a separator line.
-  if (total_text_length == 0)
-    return;
+  DCHECK_LT(*selected_line_, GetLineCount());
 
-  // Each field receives space in proportion to its length.
-  int value_size = available_width * value_width / total_text_length;
-  elided_values_[row] = gfx::ElideText(
-      suggestions_[row].value, layout_model_.GetValueFontListForRow(row),
-      value_size, gfx::ELIDE_TAIL);
+  if (!CanAccept(suggestions_[*selected_line_].frontend_id))
+    return false;
 
-  int label_size = available_width * label_width / total_text_length;
-  elided_labels_[row] = gfx::ElideText(
-      suggestions_[row].label, layout_model_.GetLabelFontListForRow(row),
-      label_size, gfx::ELIDE_TAIL);
+  AcceptSuggestion(*selected_line_);
+  return true;
 }
-#endif
 
 void AutofillPopupControllerImpl::ClearState() {
   // Don't clear view_, because otherwise the popup will have to get regenerated
   // and this will cause flickering.
   suggestions_.clear();
-  elided_values_.clear();
-  elided_labels_.clear();
 
   selected_line_.reset();
 }
@@ -579,13 +531,33 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   delete this;
 }
 
+absl::variant<ContentAutofillDriver*,
+              password_manager::ContentPasswordManagerDriver*>
+AutofillPopupControllerImpl::GetDriver() {
+  using PasswordManagerDriver = password_manager::PasswordManagerDriver;
+  using ContentPasswordManagerDriver =
+      password_manager::ContentPasswordManagerDriver;
+  absl::variant<AutofillDriver*, PasswordManagerDriver*> driver =
+      delegate_->GetDriver();
+  DCHECK(absl::holds_alternative<AutofillDriver*>(driver) ||
+         absl::holds_alternative<PasswordManagerDriver*>(driver));
+  if (absl::holds_alternative<AutofillDriver*>(driver)) {
+    return static_cast<ContentAutofillDriver*>(
+        absl::get<AutofillDriver*>(driver));
+  } else {
+    return static_cast<ContentPasswordManagerDriver*>(
+        absl::get<PasswordManagerDriver*>(driver));
+  }
+}
+
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   if (!accessibility_state_utils::IsScreenReaderEnabled())
     return;
   DCHECK(view_);
 
   // Retrieve the ax tree id associated with the current web contents.
-  ui::AXTreeID tree_id = delegate_->GetAutofillDriver()->GetAxTreeId();
+  ui::AXTreeID tree_id = absl::visit(
+      [](auto* driver) { return driver->GetAxTreeId(); }, GetDriver());
 
   // Retrieve the ax node id associated with the current web contents' element
   // that has a controller relation to the current autofill popup.
@@ -606,7 +578,7 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
       root_platform_node_delegate->GetFromTreeIDAndNodeID(tree_id, node_id);
-  base::Optional<int32_t> popup_ax_id = view_->GetAxUniqueId();
+  absl::optional<int32_t> popup_ax_id = view_->GetAxUniqueId();
   if (!target_node || !popup_ax_id)
     return;
 

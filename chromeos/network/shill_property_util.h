@@ -56,9 +56,10 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
     const base::DictionaryValue& shill_dictionary);
 
 // Sets the UIData property in |shill_dictionary| to the serialization of
-// |ui_data|.
-void SetUIData(const NetworkUIData& ui_data,
-               base::DictionaryValue* shill_dictionary);
+// |ui_data|. Sets the ONCSource property in |shill_dictionary|,
+// derived from |ui_data|.
+void SetUIDataAndSource(const NetworkUIData& ui_data,
+                        base::DictionaryValue* shill_dictionary);
 
 // Copy configuration properties required by Shill to identify a network in the
 // format that Shill expects on writes.
@@ -68,18 +69,17 @@ void SetUIData(const NetworkUIData& ui_data,
 // |service_properties| has the format that Shill exposes on reads, as opposed
 // to property dictionaries which are sent to Shill. Returns true only if all
 // required properties could be copied.
-bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,
+bool CopyIdentifyingProperties(const base::Value& service_properties,
                                const bool properties_read_from_shill,
-                               base::DictionaryValue* dest);
+                               base::Value* dest);
 
 // Compares the identifying configuration properties of |new_properties| and
 // |old_properties|, returns true if they are identical. |new_properties| must
 // have the form that Shill expects on writes. |old_properties| must have the
 // form that Shill exposes on reads. See also CopyIdentifyingProperties. Only
 // WiFi, VPN, Ethernet and EthernetEAP are supported. Cellular is not supported.
-bool DoIdentifyingPropertiesMatch(
-    const base::DictionaryValue& new_properties,
-    const base::DictionaryValue& old_properties);
+bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
+                                  const base::Value& old_properties);
 
 // Returns false if |key| is something that should not be logged either
 // because it is sensitive or noisy. Note: this is not necessarily

@@ -22,6 +22,12 @@ class FakeRendererCompositorFrameSink
   FakeRendererCompositorFrameSink(
       mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> receiver);
+
+  FakeRendererCompositorFrameSink(const FakeRendererCompositorFrameSink&) =
+      delete;
+  FakeRendererCompositorFrameSink& operator=(
+      const FakeRendererCompositorFrameSink&) = delete;
+
   ~FakeRendererCompositorFrameSink() override;
 
   bool did_receive_ack() { return did_receive_ack_; }
@@ -31,13 +37,14 @@ class FakeRendererCompositorFrameSink
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override;
+      std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override {
   }
   void OnBeginFramePausedChanged(bool paused) override {}
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   // Resets test data.
   void Reset();
@@ -50,8 +57,6 @@ class FakeRendererCompositorFrameSink
   mojo::Remote<viz::mojom::CompositorFrameSink> sink_;
   bool did_receive_ack_ = false;
   std::vector<viz::ReturnedResource> last_reclaimed_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRendererCompositorFrameSink);
 };
 
 }  // namespace content

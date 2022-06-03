@@ -8,6 +8,7 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -18,28 +19,29 @@ PageActionIconLoadingIndicatorView::PageActionIconLoadingIndicatorView(
     : parent_(parent) {
   parent_->AddObserver(this);
   // Don't let the loading indicator process events.
-  set_can_process_events_within_subtree(false);
+  SetCanProcessEventsWithinSubtree(false);
 }
 
 PageActionIconLoadingIndicatorView::~PageActionIconLoadingIndicatorView() {
   parent_->RemoveObserver(this);
 }
 
-void PageActionIconLoadingIndicatorView::ShowAnimation() {
-  if (!throbber_start_time_)
+void PageActionIconLoadingIndicatorView::SetAnimating(bool animating) {
+  if (!throbber_start_time_ == !animating)
+    return;
+
+  SetVisible(animating);
+  if (animating) {
     throbber_start_time_ = base::TimeTicks::Now();
-
-  SetVisible(true);
-  animation_.StartThrobbing(-1);
+    animation_.StartThrobbing(-1);
+  } else {
+    throbber_start_time_.reset();
+    animation_.Reset();
+  }
+  OnPropertyChanged(&throbber_start_time_, views::kPropertyEffectsNone);
 }
 
-void PageActionIconLoadingIndicatorView::StopAnimation() {
-  throbber_start_time_.reset();
-  SetVisible(false);
-  animation_.Reset();
-}
-
-bool PageActionIconLoadingIndicatorView::IsAnimating() {
+bool PageActionIconLoadingIndicatorView::GetAnimating() const {
   return animation_.is_animating();
 }
 
@@ -65,3 +67,7 @@ void PageActionIconLoadingIndicatorView::AnimationProgressed(
   DCHECK_EQ(animation, &animation_);
   SchedulePaint();
 }
+
+BEGIN_METADATA(PageActionIconLoadingIndicatorView, views::View)
+ADD_PROPERTY_METADATA(bool, Animating)
+END_METADATA

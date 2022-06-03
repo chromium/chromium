@@ -25,7 +25,7 @@ var updateFunction = function() {
 
     if (window.internals) {
         // Repaint should be at x=400px, since that is the position relative to the squashing layer.
-        var data = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        var data = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         var output = document.getElementById('output');

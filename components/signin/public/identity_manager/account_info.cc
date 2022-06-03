@@ -7,8 +7,11 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
-#include "components/signin/internal/identity_manager/android/jni_headers/CoreAccountId_jni.h"
-#include "components/signin/internal/identity_manager/android/jni_headers/CoreAccountInfo_jni.h"
+#include "components/signin/public/android/jni_headers/AccountInfo_jni.h"
+#include "components/signin/public/android/jni_headers/CoreAccountId_jni.h"
+#include "components/signin/public/android/jni_headers/CoreAccountInfo_jni.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #endif
 
 namespace {
@@ -33,6 +36,16 @@ bool UpdateField(std::string* field,
 // changed.
 bool UpdateField(bool* field, bool new_value) {
   if (*field == new_value || !new_value)
+    return false;
+
+  *field = new_value;
+  return true;
+}
+
+// Updates |field| with |new_value| if true. Returns whether |field| was
+// changed.
+bool UpdateField(signin::Tribool* field, signin::Tribool new_value) {
+  if (*field == new_value || new_value == signin::Tribool::kUnknown)
     return false;
 
   *field = new_value;
@@ -107,9 +120,20 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&is_child_account, other.is_child_account);
   modified |= UpdateField(&is_under_advanced_protection,
                           other.is_under_advanced_protection);
+  modified |= capabilities.UpdateWith(other.capabilities);
 
   return modified;
 }
+
+// static
+bool AccountInfo::IsManaged(const std::string& hosted_domain) {
+  return !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
+}
+
+bool AccountInfo::IsManaged() const {
+  return IsManaged(hosted_domain);
+}
+
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r) {
   return l.account_id == r.account_id && l.gaia == r.gaia &&
          gaia::AreEmailsSame(l.email, r.email) &&
@@ -136,6 +160,21 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(
       base::android::ConvertUTF8ToJavaString(env, account_info.gaia));
 }
 
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
+    JNIEnv* env,
+    const AccountInfo& account_info) {
+  gfx::Image avatar_image = account_info.account_image;
+  return signin::Java_AccountInfo_Constructor(
+      env, ConvertToJavaCoreAccountId(env, account_info.account_id),
+      base::android::ConvertUTF8ToJavaString(env, account_info.email),
+      base::android::ConvertUTF8ToJavaString(env, account_info.gaia),
+      base::android::ConvertUTF8ToJavaString(env, account_info.full_name),
+      base::android::ConvertUTF8ToJavaString(env, account_info.given_name),
+      avatar_image.IsEmpty()
+          ? nullptr
+          : gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap()));
+}
+
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
     JNIEnv* env,
     const CoreAccountId& account_id) {
@@ -153,7 +192,7 @@ CoreAccountInfo ConvertFromJavaCoreAccountInfo(
   account.gaia = base::android::ConvertJavaStringToUTF8(
       signin::Java_CoreAccountInfo_getGaiaId(env, j_core_account_info));
   account.email = base::android::ConvertJavaStringToUTF8(
-      signin::Java_CoreAccountInfo_getName(env, j_core_account_info));
+      signin::Java_CoreAccountInfo_getEmail(env, j_core_account_info));
   return account;
 }
 

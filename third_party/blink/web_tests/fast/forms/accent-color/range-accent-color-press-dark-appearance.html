@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../resources/common.js"></script>
+
+<body style="accent-color: rgb(65, 190, 75)">
+
+not pressed:<br>
+<input type=range><br>
+<br>
+
+pressed:<br>
+<input type=range id=hovered><br>
+
+<script>
+pressElement(document.getElementById('hovered'));
+</script>

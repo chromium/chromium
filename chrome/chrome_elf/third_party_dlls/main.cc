@@ -96,7 +96,7 @@ bool Init() {
 
   // Sanity check: third_party_dlls should only be enabled in the browser
   // process at this time.
-  if (install_static::IsNonBrowserProcess())
+  if (!install_static::IsBrowserProcess())
     return false;
 
   // Zero tolerance for unsupported versions of Windows.  Third-party control

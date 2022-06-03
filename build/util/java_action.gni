@@ -22,9 +22,7 @@ template("java_action") {
   action(target_name) {
     script = jarrunner
 
-    inputs = [
-      jarscript,
-    ]
+    inputs = [ jarscript ]
     if (defined(invoker.inputs)) {
       inputs += invoker.inputs
     }
@@ -72,9 +70,7 @@ template("java_action_foreach") {
   action_foreach(target_name) {
     script = jarrunner
 
-    inputs = [
-      jarscript,
-    ]
+    inputs = [ jarscript ]
     if (defined(invoker.inputs)) {
       inputs += invoker.inputs
     }

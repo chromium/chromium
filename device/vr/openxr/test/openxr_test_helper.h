@@ -14,10 +14,11 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/synchronization/lock.h"
+#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/test/test_hook.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
@@ -25,18 +26,15 @@ namespace gfx {
 class Transform;
 }  // namespace gfx
 
-namespace interaction_profile {
-constexpr char kMicrosoftMotionControllerInteractionProfile[] =
-    "/interaction_profiles/microsoft/motion_controller";
-
-constexpr char kKHRSimpleControllerInteractionProfile[] =
-    "/interaction_profiles/khr/simple_controller";
-}  // namespace interaction_profile
-
 class OpenXrTestHelper : public device::ServiceTestHook {
  public:
   OpenXrTestHelper();
   ~OpenXrTestHelper();
+
+  // Because the test helper isn't intended to be recreated, even if an instance
+  // is destroyed, this should be called whenever a session is/would have been
+  // terminated regardless of the path it took to be terminated; otherwise, it
+  // may not be possible to request a new session.
   void Reset();
   void TestFailure();
 
@@ -52,6 +50,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // state of the runtime.
 
   XrSystemId GetSystemId();
+  XrSystemProperties GetSystemProperties();
+
   XrSwapchain GetSwapchain();
   XrInstance CreateInstance();
   XrResult GetActionStateFloat(XrAction action, XrActionStateFloat* data) const;
@@ -124,7 +124,12 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   // Properties of the mock OpenXR runtime that do not change are created
   static constexpr const char* const kExtensions[] = {
-      XR_KHR_D3D11_ENABLE_EXTENSION_NAME};
+      XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
+      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
+      device::kExtSamsungOdysseyControllerExtensionName,
+      device::kExtHPMixedRealityControllerExtensionName,
+      device::kMSFTHandInteractionExtensionName,
+  };
   static constexpr uint32_t kDimension = 128;
   static constexpr uint32_t kSwapCount = 1;
   static constexpr uint32_t kMinSwapchainBuffering = 3;
@@ -152,6 +157,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       "/reference_space/view";
   static constexpr const char* kUnboundedReferenceSpacePath =
       "/reference_space/unbounded";
+  static constexpr XrSystemProperties kSystemProperties = {
+      XR_TYPE_SYSTEM_PROPERTIES, nullptr,           0, 0xBADFACE, "Test System",
+      {2048, 2048, 1},           {XR_TRUE, XR_TRUE}};
 
   static constexpr uint32_t kNumExtensionsSupported = base::size(kExtensions);
   static constexpr uint32_t kNumViews = base::size(kViewConfigurationViews);
@@ -165,16 +173,16 @@ class OpenXrTestHelper : public device::ServiceTestHook {
     ActionProperties(const ActionProperties& other);
   };
 
+  void CopyTextureDataIntoFrameData(device::SubmittedFrameData* data,
+                                    bool left);
   XrResult UpdateAction(XrAction action);
   void SetSessionState(XrSessionState state);
-  base::Optional<gfx::Transform> GetPose();
+  absl::optional<gfx::Transform> GetPose();
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(
       device_test::mojom::InteractionProfileType type);
   bool IsSessionRunning() const;
-
-  bool create_fake_instance_;
 
   // Properties of the mock OpenXR runtime that doesn't change throughout the
   // lifetime of the instance. However, these aren't static because they are

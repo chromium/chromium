@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include "base/memory/singleton.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -27,13 +28,17 @@ class PrefRegistrySyncable;
 
 class Profile;
 
-// Singleton that tracks the known interception disclosure cooldown time.
+// Singleton that tracks the known interception disclosure cooldown time. On
+// Android, this is measured across browser sessions (which tend to be short) by
+// storing the last dismissal time in a pref. On Desktop, the last dismissal
+// time is stored in memory, so this is is only measured within the same
+// browsing session (and thus will trigger on every browser startup).
 class KnownInterceptionDisclosureCooldown {
  public:
   static KnownInterceptionDisclosureCooldown* GetInstance();
 
-  bool IsKnownInterceptionDisclosureCooldownActive(Profile* profile);
-  void ActivateKnownInterceptionDisclosureCooldown(Profile* profile);
+  bool IsActive(Profile* profile);
+  void Activate(Profile* profile);
 
   bool get_has_seen_known_interception() {
     return has_seen_known_interception_;
@@ -51,7 +56,7 @@ class KnownInterceptionDisclosureCooldown {
   KnownInterceptionDisclosureCooldown();
   ~KnownInterceptionDisclosureCooldown();
 
-  std::unique_ptr<base::Clock> clock_;
+  std::unique_ptr<base::Clock> clock_ = std::make_unique<base::DefaultClock>();
   bool has_seen_known_interception_ = false;
 
 #if !defined(OS_ANDROID)
@@ -72,26 +77,25 @@ class KnownInterceptionDisclosureInfoBarDelegate
   ~KnownInterceptionDisclosureInfoBarDelegate() override = default;
 
   // ConfirmInfoBarDelegate:
-  base::string16 GetMessageText() const override;
-  int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
-  bool Accept() override;
-  base::string16 GetLinkText() const override;
-  GURL GetLinkURL() const override;
-
-  // infobars::InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  void InfoBarDismissed() override;
+  std::u16string GetLinkText() const override;
+  GURL GetLinkURL() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  void InfoBarDismissed() override;
+  std::u16string GetMessageText() const override;
+  int GetButtons() const override;
+  bool Accept() override;
 
 #if defined(OS_ANDROID)
   int GetIconId() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
+
   // This function is the equivalent of GetMessageText(), but for the portion of
   // the infobar below the 'message' title for the Android infobar.
-  base::string16 GetDescriptionText() const;
-#endif
+  std::u16string GetDescriptionText() const;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+#endif
 
  private:
   Profile* profile_;

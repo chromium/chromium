@@ -8,39 +8,45 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/notifications/notification_interactive_uitest_support.h"
 #include "chrome/browser/notifications/notification_test_util.h"
-#include "chrome/browser/permissions/permission_uma_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
@@ -48,7 +54,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
@@ -61,6 +67,9 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
       : message_center::NotificationBlocker(
             message_center::MessageCenter::Get()),
         notifications_enabled_(true) {}
+  ToggledNotificationBlocker(const ToggledNotificationBlocker&) = delete;
+  ToggledNotificationBlocker& operator=(const ToggledNotificationBlocker&) =
+      delete;
   ~ToggledNotificationBlocker() override {}
 
   void SetNotificationsEnabled(bool enabled) {
@@ -78,9 +87,27 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
 
  private:
   bool notifications_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggledNotificationBlocker);
 };
+
+#if !defined(OS_ANDROID)
+// Browser test class that creates a fake monitor MediaStream device and auto
+// selects it when requesting one via navigator.mediaDevices.getDisplayMedia().
+class NotificationsTestWithFakeMediaStream : public NotificationsTest {
+ public:
+  NotificationsTestWithFakeMediaStream() = default;
+  ~NotificationsTestWithFakeMediaStream() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NotificationsTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kUseFakeDeviceForMediaStream);
+    command_line->AppendSwitchASCII(switches::kUseFakeDeviceForMediaStream,
+                                    "display-media-type=monitor");
+    command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
+                                    "Entire screen");
+  }
+};
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -94,10 +121,9 @@ const char kExpectedIconUrl[] = "/notifications/no_such_file.png";
 IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "/notifications/notifications_request_function.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/notifications/notifications_request_function.html")));
 
   // Request permission by calling request() while eval'ing an inline script;
   // That's considered a user gesture to webkit, and should produce an infobar.
@@ -107,9 +133,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
       "window.domAutomationController.send(request());", &result));
   EXPECT_TRUE(result);
 
-  InfoBarService* infobar_service = InfoBarService::FromWebContents(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_EQ(1U, infobar_service->infobar_count());
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(
+          browser()->tab_strip_model()->GetWebContentsAt(0));
+  EXPECT_EQ(1U, infobar_manager->infobar_count());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
@@ -117,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -126,10 +153,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  EXPECT_EQ(base::ASCIIToUTF16("My Title"),
-            (*notifications.rbegin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("My Body"),
-            (*notifications.rbegin())->message());
+  EXPECT_EQ(u"My Title", (*notifications.rbegin())->title());
+  EXPECT_EQ(u"My Body", (*notifications.rbegin())->message());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
@@ -141,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   EXPECT_EQ(0, GetNotificationPopupCount());
   blocker.SetNotificationsEnabled(false);
@@ -171,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseNotification) {
 
   // Creates a notification and closes it.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -191,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCancelNotification) {
 
   // Creates a notification and cancels it in the origin page.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string note_id = CreateSimpleNotification(browser(), true);
   EXPECT_NE(note_id, "-1");
@@ -205,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCancelNotification) {
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionRequestUIAppears) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_TRUE(RequestPermissionAndWait(browser()));
   ASSERT_EQ(0, GetNotificationCount());
 }
@@ -214,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowOnPermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Tries to create a notification & clicks 'allow' on the prompt.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   // This notification should not be shown because we do not have permission.
   CreateSimpleNotification(browser(), false);
   ASSERT_EQ(0, GetNotificationCount());
@@ -229,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyOnPermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that no notification is created when Deny is chosen from prompt.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_TRUE(RequestAndDenyPermission(browser()));
   CreateSimpleNotification(browser(), false);
   ASSERT_EQ(0, GetNotificationCount());
@@ -242,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestClosePermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that no notification is created when prompt is dismissed.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_TRUE(RequestAndDismissPermission(browser()));
   CreateSimpleNotification(browser(), false);
   ASSERT_EQ(0, GetNotificationCount());
@@ -255,13 +280,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionAPI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that Notification.permission returns the right thing.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_EQ("default", QueryPermissionStatus(browser()));
 
-  AllowOrigin(GetTestPageURL().GetOrigin());
+  AllowOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   EXPECT_EQ("granted", QueryPermissionStatus(browser()));
 
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   EXPECT_EQ("denied", QueryPermissionStatus(browser()));
 }
 
@@ -269,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithPermissionsEmbargo,
                        TestPermissionEmbargo) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Verify embargo behaviour - automatically blocked after 3 dismisses.
   ASSERT_TRUE(RequestAndDismissPermission(browser()));
@@ -287,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowNotificationsFromAllSites) {
 
   // Verify that all domains can be allowed to show notifications.
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW);
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -300,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyNotificationsFromAllSites) {
 
   // Verify that no domain can show notifications.
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK);
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), false);
   EXPECT_EQ("-1", result);
@@ -313,10 +338,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyDomainAndAllowAll) {
 
   // Verify that denying a domain and allowing all shouldn't show
   // notifications from the denied domain.
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), false);
   EXPECT_EQ("-1", result);
@@ -329,10 +354,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowDomainAndDenyAll) {
 
   // Verify that allowing a domain and denying all others should show
   // notifications from the allowed domain.
-  AllowOrigin(GetTestPageURL().GetOrigin());
+  AllowOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -344,16 +369,16 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyAndThenAllowDomain) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Verify that denying and again allowing should show notifications.
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), false);
   EXPECT_EQ("-1", result);
 
   ASSERT_EQ(0, GetNotificationCount());
 
-  AllowOrigin(GetTestPageURL().GetOrigin());
+  AllowOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
 
@@ -366,19 +391,11 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
 
   // Verify able to create, deny, and close the notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
-  Profile* profile = Profile::FromBrowserContext(browser()
-                                                     ->tab_strip_model()
-                                                     ->GetActiveWebContents()
-                                                     ->GetBrowserContext());
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
   base::RunLoop origin_queried_waiter;
-  history_service->set_origin_queried_closure_for_testing(
-      origin_queried_waiter.QuitClosure());
-
+  ukm_recorder.SetOnAddEntryCallback(ukm::builders::Permission::kEntryName,
+                                     origin_queried_waiter.QuitClosure());
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
 
@@ -395,12 +412,15 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
 
   ukm_recorder.ExpectEntrySourceHasUrl(entry,
                                        embedded_test_server()->base_url());
-  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),
-            static_cast<int64_t>(PermissionSourceUI::INLINE_SETTINGS));
+  EXPECT_EQ(
+      *ukm_recorder.GetEntryMetric(entry, "Source"),
+      static_cast<int64_t>(permissions::PermissionSourceUI::INLINE_SETTINGS));
+  size_t num_values = 0;
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-            static_cast<int64_t>(ContentSettingsType::NOTIFICATIONS));
+            ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS, &num_values));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
-            static_cast<int64_t>(PermissionAction::REVOKED));
+            static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateDenyCloseNotifications) {
@@ -408,14 +428,15 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateDenyCloseNotifications) {
 
   // Verify able to create, deny, and close the notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
 
-  DenyOrigin(GetTestPageURL().GetOrigin());
+  DenyOrigin(GetTestPageURL().DeprecatedGetOriginAsURL());
   ContentSettingsForOneType settings;
   GetDisabledContentSettings(&settings);
-  ASSERT_TRUE(CheckOriginInSetting(settings, GetTestPageURL().GetOrigin()));
+  ASSERT_TRUE(CheckOriginInSetting(
+      settings, GetTestPageURL().DeprecatedGetOriginAsURL()));
 
   EXPECT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
@@ -430,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseTabWithPermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that user can close tab when bubble present.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_TRUE(RequestPermissionAndWait(browser()));
   content::WebContentsDestroyedWatcher destroyed_watcher(
       browser()->tab_strip_model()->GetWebContentsAt(0));
@@ -439,17 +460,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseTabWithPermissionRequestUI) {
   destroyed_watcher.Wait();
 }
 
-// See crbug.com/248470
-#if defined(OS_LINUX)
-#define MAYBE_TestCrashRendererNotificationRemain \
-    DISABLED_TestCrashRendererNotificationRemain
-#else
-#define MAYBE_TestCrashRendererNotificationRemain \
-    TestCrashRendererNotificationRemain
-#endif
-
-IN_PROC_BROWSER_TEST_F(NotificationsTest,
-                       MAYBE_TestCrashRendererNotificationRemain) {
+IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCrashRendererNotificationRemain) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test crashing renderer does not close or crash notification.
@@ -459,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
   CrashTab(browser(), 0);
@@ -472,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationReplacement) {
   // Test that we can replace a notification using the replaceId.
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateNotification(
       browser(), true, "abc.png", "Title1", "Body1", "chat");
@@ -487,9 +498,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationReplacement) {
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  EXPECT_EQ(base::ASCIIToUTF16("Title2"), (*notifications.rbegin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("Body2"),
-            (*notifications.rbegin())->message());
+  EXPECT_EQ(u"Title2", (*notifications.rbegin())->title());
+  EXPECT_EQ(u"Body2", (*notifications.rbegin())->message());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest,
@@ -502,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest,
   // cause the notification to reappear as a popup again.
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   ASSERT_EQ(0, GetNotificationPopupCount());
 
@@ -530,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationValidIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_EQ(0, GetNotificationPopupCount());
 
   std::string result = CreateNotification(
@@ -551,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationInvalidIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_EQ(0, GetNotificationPopupCount());
 
   // Not supplying an icon URL.
@@ -582,8 +592,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationDoubleClose) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(
-      browser(), GetTestPageURLForFile("notification-double-close.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetTestPageURLForFile("notification-double-close.html")));
   ASSERT_EQ(0, GetNotificationPopupCount());
 
   std::string result = CreateNotification(
@@ -611,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayNormal) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -627,13 +637,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayNormal) {
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Set the page fullscreen
   browser()->exclusive_access_manager()->fullscreen_controller()->
@@ -663,20 +673,20 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
 
 // The Fake OSX fullscreen window doesn't like drawing a second fullscreen
 // window when another is visible.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   Browser* other_browser = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(other_browser, GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
 
-  // Set the notifcation page fullscreen
+  // Set the notification page fullscreen
   browser()->exclusive_access_manager()->fullscreen_controller()->
       ToggleBrowserFullscreenMode();
   {
@@ -712,14 +722,14 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
 // Verify that a notification is actually displayed when the webpage that
 // creates it is fullscreen with the fullscreen notification flag turned on.
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Set the page fullscreen
   browser()->exclusive_access_manager()->fullscreen_controller()->
@@ -741,3 +751,93 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
       message_center::MessageCenter::Get()->GetPopupNotifications();
   ASSERT_EQ(1u, notifications.size());
 }
+
+#if !defined(OS_ANDROID)
+// TODO(crbug.com/1132058): Test fails on Windows and macOS on the bots as there
+// is no real display to test with. Need to find a way to run these without a
+// display and figure out why Lacros is timing out. Tests pass locally with a
+// real display.
+#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShouldQueueDuringScreenPresent \
+  DISABLED_ShouldQueueDuringScreenPresent
+#else
+#define MAYBE_ShouldQueueDuringScreenPresent ShouldQueueDuringScreenPresent
+#endif
+IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
+                       MAYBE_ShouldQueueDuringScreenPresent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Start second server so we can test screen recording on secure connections.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  AllowAllOrigins();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
+  const int notification_tab = browser()->tab_strip_model()->active_index();
+
+  // We should see displayed notifications by default.
+  std::string result = CreateSimpleNotification(browser(), /*wait=*/false);
+  EXPECT_NE("-1", result);
+  message_center::NotificationList::Notifications notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  EXPECT_EQ(u"My Title", (*notifications.begin())->title());
+  EXPECT_EQ(u"My Body", (*notifications.begin())->message());
+
+  // Open a new tab to a diffent origin from the one that shows notifications.
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server.GetURL("/notifications/notification_tester.html")));
+  const int screen_capture_tab = browser()->tab_strip_model()->active_index();
+
+  // Start a screen capture session.
+  content::WebContents* web_contents = GetActiveWebContents(browser());
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents, "startScreenCapture();", &result));
+  ASSERT_EQ("success", result);
+
+  // Showing a notification during the screen capture session should show the
+  // "Notifications muted" notification.
+  browser()->tab_strip_model()->ActivateTabAt(notification_tab);
+  result = CreateSimpleNotification(browser(), /*wait=*/false);
+  EXPECT_NE("-1", result);
+  notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(2u, notifications.size());
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(IDS_NOTIFICATION_MUTED_TITLE,
+                                             /*count=*/1),
+            (*notifications.begin())->title());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOTIFICATION_MUTED_MESSAGE),
+            (*notifications.begin())->message());
+
+  // Showing another notification during the screen captuure session should
+  // update the "Notifications muted" notification title.
+  result = CreateSimpleNotification(browser(), /*wait=*/false);
+  EXPECT_NE("-1", result);
+  notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(2u, notifications.size());
+  EXPECT_EQ(l10n_util::GetPluralStringFUTF16(IDS_NOTIFICATION_MUTED_TITLE,
+                                             /*count=*/2),
+            (*notifications.begin())->title());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOTIFICATION_MUTED_MESSAGE),
+            (*notifications.begin())->message());
+
+  // Stop the screen capture session.
+  browser()->tab_strip_model()->ActivateTabAt(screen_capture_tab);
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents, "stopScreenCapture();", &result));
+  ASSERT_EQ("success", result);
+
+  // Stopping the screen capture session should display the queued notifications
+  // and close the "Notifications muted" notification.
+  notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  ASSERT_EQ(3u, notifications.size());
+  for (const auto* notification : notifications) {
+    EXPECT_EQ(u"My Title", notification->title());
+    EXPECT_EQ(u"My Body", notification->message());
+  }
+}
+#endif  // !defined(OS_ANDROID)

@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_PROFILE_VALIDATOR_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
 #include "components/autofill/core/browser/test_autofill_profile_validator_delayed.h"
 
@@ -18,6 +17,10 @@ class TestAutofillProfileValidator {
   static AutofillProfileValidator* GetInstance();
   static TestAutofillProfileValidatorDelayed* GetDelayedInstance();
 
+  TestAutofillProfileValidator(const TestAutofillProfileValidator&) = delete;
+  TestAutofillProfileValidator& operator=(const TestAutofillProfileValidator&) =
+      delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<TestAutofillProfileValidator>;
 
@@ -27,8 +30,6 @@ class TestAutofillProfileValidator {
   // The only instance that exists of normal and delayed validators.
   AutofillProfileValidator autofill_profile_validator_;
   TestAutofillProfileValidatorDelayed autofill_profile_validator_delayed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillProfileValidator);
 };
 
 }  // namespace autofill

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Reentrantly appending to style element while changing tree scope does not crash Cannot read property 'styleSheets' of null
-Harness: the test ran to completion.
-

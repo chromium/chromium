@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
-<translation id="6106989379647458772">Verkkosivu <ph name="PAGE" /> saattaa olla väliaikaisesti poissa käytöstä tai se on siirretty pysyvästi uuteen osoitteeseen.</translation>
-<translation id="6312113039770857350">Verkkosivu ei ole saatavilla</translation>
-<translation id="8681531050781943054">Verkkosivun <ph name="PAGE" /> lataaminen epäonnistui:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Ehdotuksia:<ph name="MARKUP_2" />Varmista tiedonsiirtoyhteyden saatavuus.<ph name="MARKUP_3" />Lataa verkkosivu uudelleen.<ph name="MARKUP_4" />Tarkista syöttämäsi osoite.<ph name="MARKUP_5" /></translation>
 </translationbundle>

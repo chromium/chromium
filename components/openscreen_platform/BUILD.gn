@@ -1,0 +1,107 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("openscreen_platform") {
+  sources = [
+    "logging.cc",
+    "network_util.cc",
+    "network_util.h",
+    "task_runner.cc",
+    "task_runner.h",
+    "time.cc",
+    "trace_logging_platform.cc",
+  ]
+
+  public_deps = [ "//third_party/openscreen/src/platform" ]
+
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+# //net-based implementation of UdpSocket.
+# Incompatible with ":openscreen_platform_network_service".
+source_set("openscreen_platform_net") {
+  sources = [
+    "net_udp_socket.cc",
+    "net_udp_socket.h",
+  ]
+
+  public_deps = [ ":openscreen_platform" ]
+
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+# Network service-based implementation of Open Screen platform.
+# Incompatible with ":openscreen_platform_net".
+source_set("openscreen_platform_network_service") {
+  sources = [
+    "network_context.cc",
+    "network_context.h",
+    "tls_client_connection.cc",
+    "tls_client_connection.h",
+    "tls_connection_factory.cc",
+    "tls_connection_factory.h",
+    "udp_socket.cc",
+    "udp_socket.h",
+  ]
+
+  public_deps = [
+    ":openscreen_platform",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+
+  deps = [
+    "//base",
+    "//services/network:network_service",
+  ]
+}
+
+if (!is_win && !is_ios) {
+  source_set("message_port_tls_connection") {
+    sources = [
+      "message_port_tls_connection.cc",
+      "message_port_tls_connection.h",
+    ]
+
+    public_deps = [
+      "//components/cast/message_port",
+      "//third_party/openscreen/src/platform",
+    ]
+
+    deps = [
+      "//base",
+      "//net",
+    ]
+  }
+}
+
+source_set("unittests") {
+  testonly = true
+
+  sources = [
+    "tls_client_connection_unittest.cc",
+    "tls_connection_factory_unittest.cc",
+  ]
+
+  deps = [
+    ":openscreen_platform_network_service",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_win && !is_ios) {
+    sources += [ "message_port_tls_connection_unittest.cc" ]
+    deps += [ ":message_port_tls_connection" ]
+  }
+}

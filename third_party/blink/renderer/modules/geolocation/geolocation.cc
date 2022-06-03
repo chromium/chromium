@@ -29,29 +29,31 @@
 
 #include "services/device/public/mojom/geoposition.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/hosts_using_features.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_error.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace {
 
 const char kPermissionDeniedErrorMessage[] = "User denied Geolocation";
 const char kFeaturePolicyErrorMessage[] =
-    "Geolocation has been disabled in this document by Feature Policy.";
+    "Geolocation has been disabled in this document by permissions policy.";
 const char kFeaturePolicyConsoleWarning[] =
-    "Geolocation access has been blocked because of a Feature Policy applied "
-    "to the current document. See https://goo.gl/EuHzyv for more details.";
+    "Geolocation access has been blocked because of a permissions policy "
+    "applied to the current document. See https://goo.gl/EuHzyv for more "
+    "details.";
 
 Geoposition* CreateGeoposition(
     const device::mojom::blink::Geoposition& position) {
@@ -63,8 +65,7 @@ Geoposition* CreateGeoposition(
       position.heading >= 0. && position.heading <= 360., position.heading,
       position.speed >= 0., position.speed);
   return MakeGarbageCollected<Geoposition>(
-      coordinates,
-      ConvertSecondsToDOMTimeStamp(position.timestamp.ToDoubleT()));
+      coordinates, ConvertTimeToEpochTimeStamp(position.timestamp));
 }
 
 GeolocationPositionError* CreatePositionError(
@@ -87,12 +88,12 @@ GeolocationPositionError* CreatePositionError(
   return MakeGarbageCollected<GeolocationPositionError>(error_code, error);
 }
 
-static void ReportGeolocationViolation(Document* doc) {
+static void ReportGeolocationViolation(LocalDOMWindow* window) {
   // TODO(dcheng): |doc| probably can't be null here.
-  if (!LocalFrame::HasTransientUserActivation(doc ? doc->GetFrame()
-                                                  : nullptr)) {
+  if (!LocalFrame::HasTransientUserActivation(window ? window->GetFrame()
+                                                     : nullptr)) {
     PerformanceMonitor::ReportGenericViolation(
-        doc, PerformanceMonitor::kDiscouragedAPIUse,
+        window, PerformanceMonitor::kDiscouragedAPIUse,
         "Only request geolocation information in response to a user gesture.",
         base::TimeDelta(), nullptr);
   }
@@ -100,82 +101,89 @@ static void ReportGeolocationViolation(Document* doc) {
 
 }  // namespace
 
-Geolocation* Geolocation::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<Geolocation>(context);
+// static
+const char Geolocation::kSupplementName[] = "Geolocation";
+
+// static
+Geolocation* Geolocation::geolocation(Navigator& navigator) {
+  if (!navigator.DomWindow())
+    return nullptr;
+
+  Geolocation* supplement = Supplement<Navigator>::From<Geolocation>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<Geolocation>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
 }
 
-Geolocation::Geolocation(ExecutionContext* context)
-    : ContextLifecycleObserver(context),
-      PageVisibilityObserver(GetDocument()->GetPage()),
-      watchers_(MakeGarbageCollected<GeolocationWatchers>()) {}
+Geolocation::Geolocation(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      ExecutionContextLifecycleObserver(navigator.DomWindow()),
+      PageVisibilityObserver(navigator.DomWindow()->GetFrame()->GetPage()),
+      one_shots_(MakeGarbageCollected<GeoNotifierSet>()),
+      watchers_(MakeGarbageCollected<GeolocationWatchers>()),
+      one_shots_being_invoked_(MakeGarbageCollected<GeoNotifierSet>()),
+      geolocation_(navigator.DomWindow()),
+      geolocation_service_(navigator.DomWindow()) {}
 
 Geolocation::~Geolocation() = default;
 
-void Geolocation::Trace(blink::Visitor* visitor) {
+void Geolocation::Trace(Visitor* visitor) const {
   visitor->Trace(one_shots_);
   visitor->Trace(watchers_);
   visitor->Trace(one_shots_being_invoked_);
   visitor->Trace(watchers_being_invoked_);
   visitor->Trace(last_position_);
+  visitor->Trace(geolocation_);
+  visitor->Trace(geolocation_service_);
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
 }
 
-Document* Geolocation::GetDocument() const {
-  return To<Document>(GetExecutionContext());
-}
-
 LocalFrame* Geolocation::GetFrame() const {
-  return GetDocument() ? GetDocument()->GetFrame() : nullptr;
+  return DomWindow() ? DomWindow()->GetFrame() : nullptr;
 }
 
-void Geolocation::ContextDestroyed(ExecutionContext*) {
+void Geolocation::ContextDestroyed() {
   StopTimers();
-  one_shots_.clear();
+  one_shots_->clear();
   watchers_->Clear();
 
   StopUpdating();
 
   last_position_ = nullptr;
-  geolocation_.reset();
-  geolocation_service_.reset();
 }
 
 void Geolocation::RecordOriginTypeAccess() const {
   DCHECK(GetFrame());
 
-  Document* document = this->GetDocument();
-  DCHECK(document);
+  LocalDOMWindow* window = DomWindow();
 
   // It is required by isSecureContext() but isn't actually used. This could be
   // used later if a warning is shown in the developer console.
   String insecure_origin_msg;
-  if (document->IsSecureContext(insecure_origin_msg)) {
-    UseCounter::Count(document, WebFeature::kGeolocationSecureOrigin);
-    document->CountUseOnlyInCrossOriginIframe(
+  if (window->IsSecureContext(insecure_origin_msg)) {
+    UseCounter::Count(window, WebFeature::kGeolocationSecureOrigin);
+    window->CountUseOnlyInCrossOriginIframe(
         WebFeature::kGeolocationSecureOriginIframe);
   } else if (GetFrame()
                  ->GetSettings()
                  ->GetAllowGeolocationOnInsecureOrigins()) {
-    // TODO(jww): This should be removed after WebView is fixed so that it
-    // disallows geolocation in insecure contexts.
-    //
-    // See https://crbug.com/603574.
+    // Android WebView allows geolocation in secure contexts for legacy apps.
+    // See https://crbug.com/603574 for details.
     Deprecation::CountDeprecation(
-        document, WebFeature::kGeolocationInsecureOriginDeprecatedNotRemoved);
+        window, WebFeature::kGeolocationInsecureOriginDeprecatedNotRemoved);
     Deprecation::CountDeprecationCrossOriginIframe(
-        *document,
+        window,
         WebFeature::kGeolocationInsecureOriginIframeDeprecatedNotRemoved);
-    HostsUsingFeatures::CountAnyWorld(
-        *document, HostsUsingFeatures::Feature::kGeolocationInsecureHost);
   } else {
-    Deprecation::CountDeprecation(document,
+    Deprecation::CountDeprecation(window,
                                   WebFeature::kGeolocationInsecureOrigin);
     Deprecation::CountDeprecationCrossOriginIframe(
-        *document, WebFeature::kGeolocationInsecureOriginIframe);
-    HostsUsingFeatures::CountAnyWorld(
-        *document, HostsUsingFeatures::Feature::kGeolocationInsecureHost);
+        window, WebFeature::kGeolocationInsecureOriginIframe);
   }
 }
 
@@ -185,12 +193,13 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
   if (!GetFrame())
     return;
 
-  probe::BreakableLocation(GetDocument(), "Geolocation.getCurrentPosition");
+  probe::BreakableLocation(GetExecutionContext(),
+                           "Geolocation.getCurrentPosition");
 
   auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
                                                      error_callback, options);
 
-  one_shots_.insert(notifier);
+  one_shots_->insert(notifier);
 
   StartRequest(notifier);
 }
@@ -201,7 +210,7 @@ int Geolocation::watchPosition(V8PositionCallback* success_callback,
   if (!GetFrame())
     return 0;
 
-  probe::BreakableLocation(GetDocument(), "Geolocation.watchPosition");
+  probe::BreakableLocation(GetExecutionContext(), "Geolocation.watchPosition");
 
   auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
                                                      error_callback, options);
@@ -228,10 +237,10 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
     return;
   }
 
-  if (!GetDocument()->IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kGeolocation,
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kGeolocation,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
-    UseCounter::Count(GetDocument(),
+    UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationDisabledByFeaturePolicy);
     notifier->SetFatalError(MakeGarbageCollected<GeolocationPositionError>(
         GeolocationPositionError::kPermissionDenied,
@@ -239,7 +248,7 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
     return;
   }
 
-  ReportGeolocationViolation(GetDocument());
+  ReportGeolocationViolation(DomWindow());
 
   if (HaveSuitableCachedPosition(notifier->Options())) {
     notifier->SetUseCachedPosition();
@@ -252,7 +261,7 @@ void Geolocation::FatalErrorOccurred(GeoNotifier* notifier) {
   DCHECK(!notifier->IsTimerActive());
 
   // This request has failed fatally. Remove it from our lists.
-  one_shots_.erase(notifier);
+  one_shots_->erase(notifier);
   watchers_->Remove(notifier);
 
   if (!HasListeners())
@@ -266,8 +275,8 @@ void Geolocation::RequestUsesCachedPosition(GeoNotifier* notifier) {
 
   // If this is a one-shot request, stop it. Otherwise, if the watch still
   // exists, start the service to get updates.
-  if (one_shots_.Contains(notifier)) {
-    one_shots_.erase(notifier);
+  if (one_shots_->Contains(notifier)) {
+    one_shots_->erase(notifier);
   } else if (watchers_->Contains(notifier)) {
     StartUpdating(notifier);
   }
@@ -280,15 +289,15 @@ void Geolocation::RequestTimedOut(GeoNotifier* notifier) {
   DCHECK(!notifier->IsTimerActive());
 
   // If this is a one-shot request, stop it.
-  one_shots_.erase(notifier);
+  one_shots_->erase(notifier);
 
   if (!HasListeners())
     StopUpdating();
 }
 
 bool Geolocation::DoesOwnNotifier(GeoNotifier* notifier) const {
-  return one_shots_.Contains(notifier) ||
-         one_shots_being_invoked_.Contains(notifier) ||
+  return one_shots_->Contains(notifier) ||
+         one_shots_being_invoked_->Contains(notifier) ||
          watchers_->Contains(notifier) ||
          watchers_being_invoked_.Contains(notifier);
 }
@@ -298,8 +307,8 @@ bool Geolocation::HaveSuitableCachedPosition(const PositionOptions* options) {
     return false;
   if (!options->maximumAge())
     return false;
-  DOMTimeStamp current_time_millis =
-      ConvertSecondsToDOMTimeStamp(base::Time::Now().ToDoubleT());
+  EpochTimeStamp current_time_millis =
+      ConvertTimeToEpochTimeStamp(base::Time::Now());
   return last_position_->timestamp() >
          current_time_millis - options->maximumAge();
 }
@@ -320,7 +329,7 @@ void Geolocation::clearWatch(int watch_id) {
 }
 
 void Geolocation::StopTimers() {
-  for (const auto& notifier : one_shots_) {
+  for (const auto& notifier : *one_shots_) {
     notifier->StopTimer();
   }
 
@@ -332,7 +341,7 @@ void Geolocation::StopTimers() {
 void Geolocation::HandleError(GeolocationPositionError* error) {
   DCHECK(error);
 
-  DCHECK(one_shots_being_invoked_.IsEmpty());
+  DCHECK(one_shots_being_invoked_->IsEmpty());
   DCHECK(watchers_being_invoked_.IsEmpty());
 
   if (error->IsFatal()) {
@@ -362,7 +371,7 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
   // already scheduled must be immediately cancelled according to the spec. But
   // the current implementation doesn't support such case.
   // TODO(mattreynolds): Support watcher cancellation inside notifier callbacks.
-  for (auto& notifier : one_shots_being_invoked_) {
+  for (auto& notifier : *one_shots_being_invoked_) {
     if (error->IsFatal() || !notifier->UseCachedPosition())
       notifier->RunErrorCallback(error);
   }
@@ -379,23 +388,23 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
 
   if (!error->IsFatal()) {
     // Keep the notifiers that are okay with a cached position in |one_shots_|.
-    for (const auto& notifier : one_shots_being_invoked_) {
+    for (const auto& notifier : *one_shots_being_invoked_) {
       if (notifier->UseCachedPosition())
-        one_shots_.InsertWithoutTimerCheck(notifier.Get());
+        one_shots_->InsertWithoutTimerCheck(notifier.Get());
       else
         notifier->StopTimer();
     }
-    one_shots_being_invoked_.ClearWithoutTimerCheck();
+    one_shots_being_invoked_->ClearWithoutTimerCheck();
   }
 
-  one_shots_being_invoked_.clear();
+  one_shots_being_invoked_->clear();
   watchers_being_invoked_.clear();
 }
 
 void Geolocation::MakeSuccessCallbacks() {
   DCHECK(last_position_);
 
-  DCHECK(one_shots_being_invoked_.IsEmpty());
+  DCHECK(one_shots_being_invoked_->IsEmpty());
   DCHECK(watchers_being_invoked_.IsEmpty());
 
   // Set |one_shots_being_invoked_| and |watchers_being_invoked_| to the
@@ -412,7 +421,7 @@ void Geolocation::MakeSuccessCallbacks() {
   // already scheduled must be immediately cancelled according to the spec. But
   // the current implementation doesn't support such case.
   // TODO(mattreynolds): Support watcher cancellation inside notifier callbacks.
-  for (auto& notifier : one_shots_being_invoked_)
+  for (auto& notifier : *one_shots_being_invoked_)
     notifier->RunSuccessCallback(last_position_);
   for (auto& notifier : watchers_being_invoked_)
     notifier->RunSuccessCallback(last_position_);
@@ -420,7 +429,7 @@ void Geolocation::MakeSuccessCallbacks() {
   if (!HasListeners())
     StopUpdating();
 
-  one_shots_being_invoked_.clear();
+  one_shots_being_invoked_->clear();
   watchers_being_invoked_.clear();
 }
 
@@ -435,7 +444,7 @@ void Geolocation::StartUpdating(GeoNotifier* notifier) {
   updating_ = true;
   if (notifier->Options()->enableHighAccuracy() && !enable_high_accuracy_) {
     enable_high_accuracy_ = true;
-    if (geolocation_)
+    if (geolocation_.is_bound())
       geolocation_->SetHighAccuracy(true);
   }
   UpdateGeolocationConnection(notifier);
@@ -455,7 +464,7 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
     disconnected_geolocation_ = true;
     return;
   }
-  if (geolocation_) {
+  if (geolocation_.is_bound()) {
     if (notifier)
       notifier->StartTimer();
     return;
@@ -491,8 +500,12 @@ void Geolocation::OnPositionUpdated(
     last_position_ = CreateGeoposition(*position);
     PositionChanged();
   } else {
-    HandleError(
-        CreatePositionError(position->error_code, position->error_message));
+    GeolocationPositionError* position_error =
+        CreatePositionError(position->error_code, position->error_message);
+    if (position_error->code() == GeolocationPositionError::kPermissionDenied) {
+      position_error->SetIsFatal(true);
+    }
+    HandleError(position_error);
   }
   if (!disconnected_geolocation_)
     QueryNextPosition();
@@ -503,7 +516,7 @@ void Geolocation::PageVisibilityChanged() {
 }
 
 bool Geolocation::HasPendingActivity() const {
-  return !one_shots_.IsEmpty() || !one_shots_being_invoked_.IsEmpty() ||
+  return !one_shots_->IsEmpty() || !one_shots_being_invoked_->IsEmpty() ||
          !watchers_->IsEmpty() || !watchers_being_invoked_.IsEmpty();
 }
 

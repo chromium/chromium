@@ -16,7 +16,8 @@
   height: 100px;
   overflow: scroll;
   position: absolute;
-  will-change: transform;
+  /* Not using will-change:transform because it ignores subpixel accumulation. */ 
+  will-change: opacity;
 }
 
 .spacer {

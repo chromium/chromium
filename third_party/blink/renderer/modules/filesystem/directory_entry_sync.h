@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_DIRECTORY_ENTRY_SYNC_H_
 
 #include "third_party/blink/renderer/modules/filesystem/entry_sync.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -58,14 +59,13 @@ class DirectoryEntrySync final : public EntrySync {
                                    ExceptionState&);
   void removeRecursively(ExceptionState&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
-DEFINE_TYPE_CASTS(DirectoryEntrySync,
-                  EntrySync,
-                  entry,
-                  entry->isDirectory(),
-                  entry.isDirectory());
+template <>
+struct DowncastTraits<DirectoryEntrySync> {
+  static bool AllowFrom(const EntrySync& entry) { return entry.isDirectory(); }
+};
 
 }  // namespace blink
 

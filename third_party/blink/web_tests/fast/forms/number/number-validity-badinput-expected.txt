@@ -2,7 +2,7 @@ A number input fields with a bad input string should make validity.badInput true
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-Initial state. The elment has no value.
+Initial state. The element has no value.
 PASS colorOf(number) is not invalidStyleColor
 PASS number.validity.badInput is false
 Type '-'. The element becomes badInput.
@@ -14,20 +14,20 @@ Type '1' additionally. The element becomes valid.
 PASS colorOf(number) is not invalidStyleColor
 PASS number.validity.badInput is false
 PASS number.value is "-1"
-Type '-' additionally. The element becomes badInput again.
+Type 'e' additionally. The element becomes badInput again.
 PASS colorOf(number) is invalidStyleColor
 PASS number.validity.badInput is true
 PASS number.value is ""
 The element losts focus. The element state should not be changed.
 PASS colorOf(number) is invalidStyleColor
 PASS number.validity.badInput is true
-PASS document.getSelection().toString() is "-1-"
+PASS document.getSelection().toString() is "-1e"
 PASS number.value is ""
 The element losts a renderer. The element state should not be changed.
 PASS number.style.display = "none"; number.validity.badInput is true
 A bad input should be cleared by value="".
 PASS number.value = ""; document.execCommand("SelectAll"); document.getSelection().toString() is ""
-Setting a valud value via |value| IDL attribute should clear badInput.
+Setting a valid value via |value| IDL attribute should clear badInput.
 PASS number.validity.badInput is true
 PASS number.checkValidity() is false
 PASS number.validity.badInput is false
@@ -47,6 +47,12 @@ PASS number.value is "1"
 ' +1. ' is not a badInput.
 PASS number.validity.badInput is false
 PASS number.value is "1"
+Arabic number is not a badInput.
+PASS number_ar.validity.badInput is false
+PASS number_ar.value is "1.1"
+Arabic number with two decimal separators is a badInput.
+PASS number_ar.validity.badInput is true
+PASS number_ar.value is ""
 PASS successfullyParsed is true
 
 TEST COMPLETE

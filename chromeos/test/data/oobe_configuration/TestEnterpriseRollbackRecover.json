@@ -1,0 +1,16 @@
+{
+  "enrollmentRestoreAfterRollback": true,
+  "eulaAutoAccept": true,
+  "eulaSendStatistics": true,
+  "networkUseConnected": true,
+  "updateSkipNonCritical": true,
+  "welcomeNext": true,
+  "networkConfig": "{\"NetworkConfigurations\":[{
+    \"GUID\":\"wpa-psk-network-guid\",
+    \"Type\": \"WiFi\",
+    \"Name\": \"WiFi\",
+    \"WiFi\": {
+      \"Security\": \"WPA-PSK\",
+      \"Passphrase\": \"wpa-psk-network-passphrase\"
+  }}]}"
+}

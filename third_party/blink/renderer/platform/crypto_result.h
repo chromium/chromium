@@ -61,7 +61,7 @@ class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
   virtual void CompleteWithKeyPair(const WebCryptoKey& public_key,
                                    const WebCryptoKey& private_key) = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

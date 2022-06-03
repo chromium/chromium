@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>The overflow playback speed button is not visible for mediastream.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+
+<!--Padding ensures the overflow menu is visible for the tests. -->
+<body style="padding-top: 200px; padding-left: 100px">
+<video controls></video>
+<script>
+async_test(function(t) {
+  // Set up video.
+  var video = document.querySelector("video");
+  var canvas = document.createElement('canvas');
+  canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
+  video.srcObject = canvas.captureStream();
+  video.setAttribute("width", "60");
+  video.setAttribute("height", "100");
+
+  enableTestMode(video);
+
+  video.onloadeddata = t.step_func_done(function () {
+    assert_false(isPlaybackSpeedButtonEnabled(video));
+  });
+});
+</script>
+</body>

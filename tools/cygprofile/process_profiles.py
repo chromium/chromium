@@ -25,10 +25,10 @@ def _Median(items):
     return None
   sorted_items = sorted(items)
   if len(sorted_items) & 1:
-    return sorted_items[len(sorted_items)/2]
+    return sorted_items[len(sorted_items) // 2]
   else:
-    return (sorted_items[len(sorted_items)/2 - 1] +
-            sorted_items[len(sorted_items)/2]) / 2
+    return (sorted_items[len(sorted_items) // 2 - 1] +
+            sorted_items[len(sorted_items) // 2]) // 2
 
 
 class SymbolOffsetProcessor(object):
@@ -204,7 +204,7 @@ class SymbolOffsetProcessor(object):
     """
     our_symbol_names = set(s.name for s in self.SymbolInfos())
     matched_names = our_symbol_names.intersection(set(symbol_names))
-    return [self.NameToSymbolMap()[n] for n in matched_names]
+    return sorted([self.NameToSymbolMap()[n] for n in matched_names])
 
   def TranslateAnnotatedSymbolOffsets(self, annotated_offsets):
     """Merges offsets across run groups and translates to symbol offsets.
@@ -237,7 +237,7 @@ class SymbolOffsetProcessor(object):
     dump_offset_to_symbol_info = self.GetDumpOffsetToSymbolInfo()
     for i in items:
       dump_offset = get(i)
-      idx = dump_offset / 2
+      idx = dump_offset // 2
       assert dump_offset >= 0 and idx < len(dump_offset_to_symbol_info), (
           'Dump offset out of binary range')
       symbol_info = dump_offset_to_symbol_info[idx]
@@ -275,7 +275,7 @@ class SymbolOffsetProcessor(object):
         if sym.size != 0 or sym.offset == start_of_text:
           continue
         self._whitelist.add(sym.name)
-        idx = (sym.offset - start_of_text)/ 2
+        idx = (sym.offset - start_of_text) // 2
         assert self._offset_to_symbol_info[idx] == sym, (
             'Unexpected unset offset')
         idx += 1
@@ -297,7 +297,7 @@ class SymbolOffsetProcessor(object):
       assert len(start_syms) == 1, 'Can\'t find unique start of text symbol'
       start_of_text = start_syms[0].offset
       max_offset = max(s.offset + s.size for s in self.SymbolInfos())
-      text_length_halfwords = (max_offset - start_of_text) / 2
+      text_length_halfwords = (max_offset - start_of_text) // 2
       self._offset_to_symbol_info = [None] * text_length_halfwords
       for sym in self.SymbolInfos():
         offset = sym.offset - start_of_text
@@ -306,7 +306,7 @@ class SymbolOffsetProcessor(object):
         # The low bit of offset may be set to indicate a thumb instruction. The
         # actual offset is still halfword aligned and so the low bit may be
         # safely ignored in the division by two below.
-        for i in range(offset / 2, (offset + sym.size) / 2):
+        for i in range(offset // 2, (offset + sym.size) // 2):
           assert i < text_length_halfwords
           other_symbol = self._offset_to_symbol_info[i]
           # There may be overlapping symbols, for example fancy
@@ -316,7 +316,7 @@ class SymbolOffsetProcessor(object):
             self._offset_to_symbol_info[i] = sym
 
         if sym.name != symbol_extractor.START_OF_TEXT_SYMBOL and sym.size == 0:
-          idx = offset / 2
+          idx = offset // 2
           assert (self._offset_to_symbol_info[idx] is None or
                   self._offset_to_symbol_info[idx].size == 0), (
               'Unexpected symbols overlapping')
@@ -390,10 +390,10 @@ class ProfileManager(object):
       return self._count.get((phase, process), 0)
 
     def Processes(self):
-      return set(k[1] for k in self._count.iterkeys())
+      return set(k[1] for k in self._count.keys())
 
     def Phases(self):
-      return set(k[0] for k in self._count.iterkeys())
+      return set(k[0] for k in self._count.keys())
 
     def Offset(self):
       return self._offset
@@ -478,12 +478,12 @@ class ProfileManager(object):
     return offsets_by_process
 
   def _SanityCheckAllCallsCapturedByTheInstrumentation(self, process_info):
-    total_calls_count = long(process_info['total_calls_count'])
+    total_calls_count = int(process_info['total_calls_count'])
     call_graph = process_info['call_graph']
     count = 0
     for el in call_graph:
       for bucket in el['caller_and_count']:
-        count += long(bucket['count'])
+        count += int(bucket['count'])
 
     # This is a sanity check to ensure the number of race-related
     # inconsistencies is small.
@@ -580,8 +580,8 @@ class ProfileManager(object):
     assert self._run_groups
     if len(self._run_groups) < 5:
       return  # Small runs have too much variance for testing.
-    sizes = map(lambda g: len(g.Filenames()), self._run_groups)
-    avg_size = sum(sizes) / len(self._run_groups)
+    sizes = list(map(lambda g: len(g.Filenames()), self._run_groups))
+    avg_size = sum(sizes) // len(self._run_groups)
     num_outliers = len([s for s in sizes
                         if s > 1.5 * avg_size or s < 0.75 * avg_size])
     expected_outliers = 0.1 * len(self._run_groups)

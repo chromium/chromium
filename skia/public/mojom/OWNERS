@@ -3,6 +3,3 @@ per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-per-file *.typemap=set noparent
-per-file *.typemap=file://ipc/SECURITY_OWNERS

@@ -15,10 +15,13 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/touch_delegate.h"
 #include "components/exo/touch_stylus_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -59,9 +62,12 @@ class TestDataSourceDelegate : public DataSourceDelegate {
  public:
   TestDataSourceDelegate() {}
 
+  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
+  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
+
   // Overridden from DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const base::Optional<std::string>& mime_type) override {}
+  void OnTarget(const absl::optional<std::string>& mime_type) override {}
   void OnSend(const std::string& mime_type, base::ScopedFD fd) override {}
   void OnCancelled() override {}
   void OnDndDropPerformed() override {}
@@ -70,8 +76,6 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataSourceDelegate);
 };
 
 TEST_F(TouchTest, OnTouchDown) {
@@ -80,28 +84,34 @@ TEST_F(TouchTest, OnTouchDown) {
   std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
-  auto bottom_window = exo_test_helper()->CreateWindow(10, 10, false);
-  auto top_window = exo_test_helper()->CreateWindow(8, 8, false);
+  auto bottom_shell_surface =
+      test::ShellSurfaceBuilder({10, 10}).SetCentered().BuildShellSurface();
+  auto top_shell_surface =
+      test::ShellSurfaceBuilder({8, 8}).SetCentered().BuildShellSurface();
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(top_window.surface()))
-      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(delegate,
-              OnTouchDown(top_window.surface(), testing::_, 1, gfx::PointF()));
+              CanAcceptTouchEventsForSurface(top_shell_surface->root_surface()))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate, OnTouchDown(top_shell_surface->root_surface(),
+                                    testing::_, 1, gfx::PointF()));
   EXPECT_CALL(delegate, OnTouchFrame());
-  generator.set_current_screen_location(top_window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(top_shell_surface.get()));
   generator.PressTouchId(1);
 
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(bottom_window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(
+                            bottom_shell_surface->root_surface()))
       .WillRepeatedly(testing::Return(true));
 
   // Second touch point should be relative to the focus surface.
-  EXPECT_CALL(delegate, OnTouchDown(top_window.surface(), testing::_, 2,
-                                    gfx::PointF(-1, -1)));
+  EXPECT_CALL(delegate, OnTouchDown(top_shell_surface->root_surface(),
+                                    testing::_, 2, gfx::PointF(-1, -1)));
   EXPECT_CALL(delegate, OnTouchFrame());
 
-  generator.set_current_screen_location(bottom_window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(bottom_shell_surface.get()));
   generator.PressTouchId(2);
 
   EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
@@ -109,7 +119,8 @@ TEST_F(TouchTest, OnTouchDown) {
 }
 
 TEST_F(TouchTest, OnTouchUp) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   Seat seat;
@@ -118,13 +129,14 @@ TEST_F(TouchTest, OnTouchUp) {
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
-                                    gfx::PointF()))
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, testing::_, gfx::PointF()))
       .Times(2);
   EXPECT_CALL(delegate, OnTouchFrame()).Times(2);
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.PressTouchId(1);
   generator.PressTouchId(2);
 
@@ -140,7 +152,8 @@ TEST_F(TouchTest, OnTouchUp) {
 }
 
 TEST_F(TouchTest, OnTouchMotion) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   Seat seat;
@@ -149,26 +162,28 @@ TEST_F(TouchTest, OnTouchMotion) {
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
-                                    gfx::PointF()));
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, testing::_, gfx::PointF()));
   EXPECT_CALL(delegate,
               OnTouchMotion(testing::_, testing::_, gfx::PointF(5, 5)));
   EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
   EXPECT_CALL(delegate, OnTouchFrame()).Times(3);
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.PressMoveAndReleaseTouchBy(5, 5);
 
   // Check if touch point motion outside focus surface is reported properly to
   // the focus surface.
-  EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
-                                    gfx::PointF()));
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, testing::_, gfx::PointF()));
   EXPECT_CALL(delegate,
               OnTouchMotion(testing::_, testing::_, gfx::PointF(100, 100)));
   EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
   EXPECT_CALL(delegate, OnTouchFrame()).Times(3);
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.PressMoveAndReleaseTouchBy(100, 100);
 
   EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
@@ -176,18 +191,19 @@ TEST_F(TouchTest, OnTouchMotion) {
 }
 
 TEST_F(TouchTest, OnTouchShape) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   Seat seat;
   std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
+    EXPECT_CALL(delegate, OnTouchDown(root_surface, testing::_, testing::_,
                                       gfx::PointF()));
     EXPECT_CALL(delegate, OnTouchShape(testing::_, 20, 10));
     EXPECT_CALL(delegate, OnTouchFrame());
@@ -202,7 +218,8 @@ TEST_F(TouchTest, OnTouchShape) {
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
     EXPECT_CALL(delegate, OnTouchFrame());
   }
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.SetTouchRadius(10, 5);
   generator.PressTouch();
   generator.MoveTouchBy(5, 5);
@@ -214,7 +231,8 @@ TEST_F(TouchTest, OnTouchShape) {
 }
 
 TEST_F(TouchTest, OnTouchCancel) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   Seat seat;
@@ -223,13 +241,14 @@ TEST_F(TouchTest, OnTouchCancel) {
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
-                                    gfx::PointF()))
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, testing::_, gfx::PointF()))
       .Times(2);
   EXPECT_CALL(delegate, OnTouchFrame()).Times(2);
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.PressTouchId(1);
   generator.PressTouchId(2);
 
@@ -238,16 +257,90 @@ TEST_F(TouchTest, OnTouchCancel) {
   EXPECT_CALL(delegate, OnTouchFrame());
   ui::TouchEvent cancel_event(
       ui::ET_TOUCH_CANCELLED, gfx::Point(), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 1));
   generator.Dispatch(&cancel_event);
 
   EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
   touch.reset();
 }
 
+TEST_F(TouchTest, OnTouchCancelWhenSurfaceDestroying) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
+
+  MockTouchDelegate delegate;
+  Seat seat;
+  auto touch = std::make_unique<Touch>(&delegate, &seat);
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, 1, gfx::PointF()));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
+  generator.PressTouchId(1);
+
+  // Since there is an active touch pointer on the surface, destroying the
+  // surface should cancel touches.
+  EXPECT_CALL(delegate, OnTouchCancel());
+  EXPECT_CALL(delegate, OnTouchFrame());
+
+  test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface.get());
+
+  EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
+  touch.reset();
+}
+
+TEST_F(TouchTest, OnTouchCancelNotTriggeredAfterTouchReleased) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
+
+  MockTouchDelegate delegate;
+  Seat seat;
+  auto touch = std::make_unique<Touch>(&delegate, &seat);
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, 1, gfx::PointF()));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
+  generator.PressTouchId(1);
+
+  EXPECT_CALL(delegate, OnTouchUp(testing::_, 1));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  generator.ReleaseTouchId(1);
+
+  // Since the surface no longer has any active touch pointers, destroying the
+  // surface should not cancel any touches.
+  EXPECT_CALL(delegate, OnTouchCancel()).Times(0);
+  test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface.get());
+
+  EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
+  touch.reset();
+}
+
 TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
-  auto modal = exo_test_helper()->CreateWindow(5, 5, true);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10})
+                           .SetCentered()
+                           .SetCanMinimize(false)
+                           .BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
+
+  auto modal_shell_surface = test::ShellSurfaceBuilder({5, 5})
+                                 .SetCentered()
+                                 .SetUseSystemModalContainer()
+                                 .SetCanMinimize(false)
+                                 .BuildShellSurface();
+  auto* modal_root_surface = modal_shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   Seat seat;
@@ -255,21 +348,23 @@ TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   // Make the window modal.
-  modal.shell_surface()->SetSystemModal(true);
+  EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
+
+  modal_shell_surface->SetSystemModal(true);
 
   EXPECT_TRUE(ash::Shell::IsSystemModalWindowOpen());
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(modal.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(modal_root_surface))
       .WillRepeatedly(testing::Return(true));
 
   // Check if touch events on modal window are registered.
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(modal.surface(), testing::_, testing::_,
-                                      gfx::PointF()));
+    EXPECT_CALL(delegate, OnTouchDown(modal_root_surface, testing::_,
+                                      testing::_, gfx::PointF()));
     EXPECT_CALL(delegate, OnTouchFrame());
     EXPECT_CALL(delegate,
                 OnTouchMotion(testing::_, testing::_, gfx::PointF(1, 1)));
@@ -277,13 +372,14 @@ TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
     EXPECT_CALL(delegate, OnTouchFrame());
   }
-  generator.set_current_screen_location(modal.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(modal_shell_surface.get()));
   generator.PressMoveAndReleaseTouchBy(1, 1);
 
   // Check if touch events on non-modal window are ignored.
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
+    EXPECT_CALL(delegate, OnTouchDown(root_surface, testing::_, testing::_,
                                       gfx::PointF()))
         .Times(0);
     EXPECT_CALL(delegate,
@@ -292,17 +388,18 @@ TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_)).Times(0);
     EXPECT_CALL(delegate, OnTouchFrame()).Times(0);
   }
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.PressMoveAndReleaseTouchBy(1, 1);
 
   // Make the window non-modal.
-  modal.shell_surface()->SetSystemModal(false);
+  modal_shell_surface->SetSystemModal(false);
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
 
   // Check if touch events on non-modal window are registered.
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
+    EXPECT_CALL(delegate, OnTouchDown(root_surface, testing::_, testing::_,
                                       gfx::PointF()));
     EXPECT_CALL(delegate, OnTouchFrame());
     EXPECT_CALL(delegate,
@@ -311,7 +408,8 @@ TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
     EXPECT_CALL(delegate, OnTouchFrame());
   }
-  generator.set_current_screen_location(window.origin());
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
   generator.PressMoveAndReleaseTouchBy(1, 1);
 
   EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
@@ -319,7 +417,8 @@ TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
 }
 
 TEST_F(TouchTest, OnTouchTool) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   MockTouchStylusDelegate stylus_delegate;
@@ -330,22 +429,22 @@ TEST_F(TouchTest, OnTouchTool) {
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
 
   // Expect tool change to happen before frame of down event.
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
+    EXPECT_CALL(delegate, OnTouchDown(root_surface, testing::_, testing::_,
                                       gfx::PointF()));
-    EXPECT_CALL(stylus_delegate,
-                OnTouchTool(0, ui::EventPointerType::POINTER_TYPE_PEN));
+    EXPECT_CALL(stylus_delegate, OnTouchTool(0, ui::EventPointerType::kPen));
     EXPECT_CALL(delegate, OnTouchFrame());
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
     EXPECT_CALL(delegate, OnTouchFrame());
   }
-  generator.set_current_screen_location(window.origin());
-  generator.SetTouchPointerType(ui::EventPointerType::POINTER_TYPE_PEN);
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
+  generator.SetTouchPointerType(ui::EventPointerType::kPen);
   generator.PressTouch();
   generator.ReleaseTouch();
 
@@ -354,7 +453,8 @@ TEST_F(TouchTest, OnTouchTool) {
 }
 
 TEST_F(TouchTest, OnTouchForce) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   MockTouchStylusDelegate stylus_delegate;
@@ -365,23 +465,23 @@ TEST_F(TouchTest, OnTouchForce) {
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
 
   // Expect tool change to happen before frame of down event.
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
+    EXPECT_CALL(delegate, OnTouchDown(root_surface, testing::_, testing::_,
                                       gfx::PointF()));
-    EXPECT_CALL(stylus_delegate,
-                OnTouchTool(0, ui::EventPointerType::POINTER_TYPE_PEN));
+    EXPECT_CALL(stylus_delegate, OnTouchTool(0, ui::EventPointerType::kPen));
     EXPECT_CALL(stylus_delegate, OnTouchForce(testing::_, 0, 1.0));
     EXPECT_CALL(delegate, OnTouchFrame());
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
     EXPECT_CALL(delegate, OnTouchFrame());
   }
-  generator.set_current_screen_location(window.origin());
-  generator.SetTouchPointerType(ui::EventPointerType::POINTER_TYPE_PEN);
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
+  generator.SetTouchPointerType(ui::EventPointerType::kPen);
   generator.SetTouchForce(1.0);
   generator.PressTouch();
   generator.ReleaseTouch();
@@ -391,7 +491,8 @@ TEST_F(TouchTest, OnTouchForce) {
 }
 
 TEST_F(TouchTest, OnTouchTilt) {
-  auto window = exo_test_helper()->CreateWindow(10, 10, false);
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
 
   MockTouchDelegate delegate;
   MockTouchStylusDelegate stylus_delegate;
@@ -402,24 +503,24 @@ TEST_F(TouchTest, OnTouchTilt) {
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
       .Times(testing::AnyNumber());
-  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
       .WillRepeatedly(testing::Return(true));
 
   // Expect tool change to happen before frame of down event.
   {
     testing::InSequence sequence;
-    EXPECT_CALL(delegate, OnTouchDown(window.surface(), testing::_, testing::_,
+    EXPECT_CALL(delegate, OnTouchDown(root_surface, testing::_, testing::_,
                                       gfx::PointF()));
-    EXPECT_CALL(stylus_delegate,
-                OnTouchTool(0, ui::EventPointerType::POINTER_TYPE_PEN));
+    EXPECT_CALL(stylus_delegate, OnTouchTool(0, ui::EventPointerType::kPen));
     EXPECT_CALL(stylus_delegate,
                 OnTouchTilt(testing::_, 0, gfx::Vector2dF(1.0, 2.0)));
     EXPECT_CALL(delegate, OnTouchFrame());
     EXPECT_CALL(delegate, OnTouchUp(testing::_, testing::_));
     EXPECT_CALL(delegate, OnTouchFrame());
   }
-  generator.set_current_screen_location(window.origin());
-  generator.SetTouchPointerType(ui::EventPointerType::POINTER_TYPE_PEN);
+  generator.set_current_screen_location(
+      GetOriginOfShellSurface(shell_surface.get()));
+  generator.SetTouchPointerType(ui::EventPointerType::kPen);
   generator.SetTouchTilt(1.0, 2.0);
   generator.PressTouch();
   generator.ReleaseTouch();
@@ -429,7 +530,8 @@ TEST_F(TouchTest, OnTouchTilt) {
 }
 
 TEST_F(TouchTest, DragDropAbort) {
-  Seat seat;
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+
   MockTouchDelegate touch_delegate;
   std::unique_ptr<Touch> touch(new Touch(&touch_delegate, &seat));
   TestDataSourceDelegate data_source_delegate;
@@ -449,8 +551,7 @@ TEST_F(TouchTest, DragDropAbort) {
   EXPECT_CALL(touch_delegate, OnTouchFrame()).Times(2);
   generator.MoveTouch(origin.window()->GetBoundsInScreen().origin());
 
-  seat.StartDrag(&source, &origin, &icon,
-                 ui::DragDropTypes::DragEventSource::DRAG_EVENT_SOURCE_MOUSE);
+  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
 
   EXPECT_CALL(touch_delegate, OnTouchDown).Times(1);
@@ -462,6 +563,68 @@ TEST_F(TouchTest, DragDropAbort) {
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
 
   EXPECT_CALL(touch_delegate, OnTouchDestroying(touch.get()));
+  touch.reset();
+}
+
+TEST_F(TouchTest, TouchMultiple2Surfaces) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
+
+  auto child_shell_surface = test::ShellSurfaceBuilder({15, 15})
+                                 .SetParent(shell_surface.get())
+                                 .SetCanMinimize(false)
+                                 .SetDisableMovement()
+                                 .BuildShellSurface();
+  auto* child_surface = child_shell_surface->root_surface();
+
+  MockTouchDelegate delegate;
+  Seat seat;
+  auto touch = std::make_unique<Touch>(&delegate, &seat);
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  // Touch down on the two surfaces.
+  EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(root_surface))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate,
+              OnTouchDown(root_surface, testing::_, 1, gfx::PointF()));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  const gfx::Point origin = GetOriginOfShellSurface(shell_surface.get());
+  generator.set_current_screen_location(origin);
+  generator.PressTouchId(1);
+
+  EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(child_surface))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(delegate,
+              OnTouchDown(child_surface, testing::_, 2, gfx::PointF()));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  const gfx::Point child_origin =
+      GetOriginOfShellSurface(child_shell_surface.get());
+  generator.set_current_screen_location(child_origin);
+  generator.PressTouchId(2);
+
+  // Move the two touch pointers.
+  for (int i = 1; i <= 10; i++) {
+    EXPECT_CALL(delegate, OnTouchMotion(testing::_, 1, gfx::PointF(i, i)));
+    EXPECT_CALL(delegate, OnTouchFrame());
+    generator.MoveTouchId(origin + gfx::Vector2d(i, i), 1);
+
+    EXPECT_CALL(delegate, OnTouchMotion(testing::_, 2, gfx::PointF(i, i)));
+    EXPECT_CALL(delegate, OnTouchFrame());
+    generator.MoveTouchId(child_origin + gfx::Vector2d(i, i), 2);
+  }
+
+  // Release the two touch pointers.
+  EXPECT_CALL(delegate, OnTouchUp(testing::_, 2));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  generator.ReleaseTouchId(2);
+
+  EXPECT_CALL(delegate, OnTouchUp(testing::_, 1));
+  EXPECT_CALL(delegate, OnTouchFrame());
+  generator.ReleaseTouchId(1);
+
+  EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
   touch.reset();
 }
 

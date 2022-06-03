@@ -1,0 +1,20 @@
+A layer that may or may not be composited
+
+Make sure we don't crash when a layer with a touch event handler becomes non-composited
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS rects.length is 1
+PASS rects[0].hitTestRect.x is 0
+PASS rects[0].hitTestRect.y is 0
+FAIL rects[0].hitTestRect.width should be 400. Was 600.
+FAIL rects[0].hitTestRect.height should be 300. Was 450.
+PASS rects.length is 1
+FAIL rects[0].hitTestRect.x should be 18. Was 27.
+FAIL rects[0].hitTestRect.y should be 8. Was 12.
+FAIL rects[0].hitTestRect.width should be 400. Was 600.
+FAIL rects[0].hitTestRect.height should be 300. Was 450.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

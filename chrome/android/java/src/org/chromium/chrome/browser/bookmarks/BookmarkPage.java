@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
+import android.content.ComponentName;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.native_page.BasicNativePage;
-import org.chromium.chrome.browser.native_page.NativePageHost;
-import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarManageable;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
+import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * A native page holding a {@link BookmarkManager} on _tablet_.
@@ -24,25 +23,21 @@ public class BookmarkPage extends BasicNativePage {
 
     /**
      * Create a new instance of the bookmarks page.
-     * @param activity The activity to get context and manage fragments.
+     * @param componentName The current activity component, used to open bookmarks.
+     * @param snackbarManager Allows control over the app snackbar.
+     * @param isIncognito Whether the bookmark UI is loaded in incognito mode.
      * @param host A NativePageHost to load urls.
      */
-    public BookmarkPage(ChromeActivity activity, NativePageHost host) {
-        super(activity, host);
-    }
+    public BookmarkPage(ComponentName componentName, SnackbarManager snackbarManager,
+            boolean isIncognito, NativePageHost host) {
+        super(host);
 
-    @Override
-    protected void initialize(ChromeActivity activity, NativePageHost host) {
         mManager = new BookmarkManager(
-                activity, false, ((SnackbarManageable) activity).getSnackbarManager());
+                host.getContext(), componentName, false, isIncognito, snackbarManager);
         mManager.setBasicNativePage(this);
-        mManager.setHistoryNavigationDelegate(host.createHistoryNavigationDelegate());
-        mTitle = activity.getString(R.string.bookmarks);
-    }
+        mTitle = host.getContext().getResources().getString(R.string.bookmarks);
 
-    @Override
-    public View getView() {
-        return mManager.getView();
+        initWithView(mManager.getView());
     }
 
     @Override

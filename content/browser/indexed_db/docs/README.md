@@ -28,7 +28,8 @@ IndexedDB databases are identified by a unique auto-incrementing `int64_t`
 ## Blob Storage
 Blob are supported in IndexedDB to allow large values to be stored in IndexedDB
 without needing to save them directly into leveldb (which doesn't work well
-with large values).
+with large values). Blobs are a special type of "External Object", i.e. objects
+where some other subsystem in chrome is involved in managing them.
 
 
 ### Blob States
@@ -75,27 +76,27 @@ A blob number is a `int64_t` number that is unique and auto-incrementing per
 database in an origin. This is used to uniquely identify a blob in an IndexedDB
 database.
 
-#### Blob Number
-A blob number is a `int64_t` `database_id` and a unique auto-incrementing
+#### Blob Key
+A blob key is a `int64_t` `database_id` and a unique auto-incrementing
 `int64_t` `blob_number`. The database metadata contains a
-`BlobNumberGeneratorCurrentNumber` which is used to save the next blob number number
+`BlobNumberGeneratorCurrentNumber` which is used to save the next blob key number
 to use.
 
-A blob number uniquely identifies a blob in an backing store.
+A blob key uniquely identifies a blob in an backing store.
 
 ####  Blob File
 A blob file is the physical file stored on disk that represents a **persisted**
 blob. It resides in the following directory:
 `IndexedDB/<serialized_origin>.blob/<database_id>/<blob_number>`
-Note that `database_id` + `blob_number` is a unique blob number.
+Note that `database_id` + `blob_number` is a unique blob key.
 
 A blob that has been **persisted** in the database is stored in a blob file.
 This file is deleted when the blob is **unlinked** and **inactive**.
-(Technically this is done by adding the corresponding blob number is added to the
+(Technically this is done by adding the corresponding blob key is added to the
 recovery journal, which is processed every once in a while to delete unused
 files).
 
-There is a 1:1 mapping between a blob file and a blob number.
+There is a 1:1 mapping between a blob file and a blob key.
 
 #### Blob Handle
 This is-a `storage::BlobDataHandle` OR a `blink::BlobDataHandle` OR a
@@ -105,7 +106,8 @@ Blob handles basically hold a reference to the given blob, which allows
 IndexedDB (or a client) to keep the blob alive and/or read the blob.
 
 #### Blob Info
-A  blob info usually is-a [IndexedDBBlobInfo](../indexed_db_blob_info.h), and
+A  blob info is one version of-a
+[IndexedDBExternalObject](../indexed_db_external_object.h), and
 basically contains all of the information needed to read a blob. This means it
 has a blob handle if it is a **pending** blob, and/or the file information if
 it is a **persisted** blob.
@@ -116,7 +118,7 @@ and keeps it alive in the blob system.
 #### Blob Entry
 A blob entry contains a vector of blob infos that are **persisted** in the
 database. All of these blob infos, at least initially, do not have a blob
-handle, and only contain the blob number & blob file information (like size, type,
+handle, and only contain the blob key & blob file information (like size, type,
 time modified, etc).
 
 A Blob Entry is a value that is saved into the database using a `BlobEntryKey`:
@@ -128,17 +130,17 @@ A `BlobEntryKey` is used as a key in the leveldb database and contains the
 given object store data key.
 
 #### Recovery Journal
-The recovery journal is a list of blob numbers that are pending deletion. These
-blob numbers represent blobs that are in an **unlinked**, **inactive**, and
+The recovery journal is a list of blob keys that are pending deletion. These
+blob keys represent blobs that are in an **unlinked**, **inactive**, and
 **persisted** state.
 
 This is used to maintain consistency if a crash occurs or if there is an error
 while committing a transaction. The recovery journal is "processed"
 intermittently when there isn't an active transaction. Processing means that
-every blob file referenced in the journal (by the blob number) is deleted, and the
+every blob file referenced in the journal (by the blob key) is deleted, and the
 journal is cleared.
 
-The recovery journal is where all blob numbers that are to-be-deleted by a
+The recovery journal is where all blob keys that are to-be-deleted by a
 transaction are placed. (They are subsequently immediately deleted after the
 transaction is committed, but this can fail / crash so they are placed in the
 journal first).

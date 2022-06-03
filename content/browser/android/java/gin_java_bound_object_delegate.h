@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/browser/android/java/gin_java_method_invocation_helper.h"
@@ -18,6 +17,11 @@ class GinJavaBoundObjectDelegate
     : public GinJavaMethodInvocationHelper::ObjectDelegate {
  public:
   GinJavaBoundObjectDelegate(scoped_refptr<GinJavaBoundObject> object);
+
+  GinJavaBoundObjectDelegate(const GinJavaBoundObjectDelegate&) = delete;
+  GinJavaBoundObjectDelegate& operator=(const GinJavaBoundObjectDelegate&) =
+      delete;
+
   ~GinJavaBoundObjectDelegate() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override;
@@ -30,8 +34,6 @@ class GinJavaBoundObjectDelegate
 
  private:
   scoped_refptr<GinJavaBoundObject> object_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBoundObjectDelegate);
 };
 
 }  // namespace content

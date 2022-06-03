@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -41,7 +40,12 @@ class CredentialProviderSigninInfoFetcher
 
   CredentialProviderSigninInfoFetcher(
       const std::string& refresh_token,
+      const std::string& consumer_name,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  CredentialProviderSigninInfoFetcher(
+      const CredentialProviderSigninInfoFetcher&) = delete;
+  CredentialProviderSigninInfoFetcher& operator=(
+      const CredentialProviderSigninInfoFetcher&) = delete;
   ~CredentialProviderSigninInfoFetcher() override;
 
   void SetCompletionCallbackAndStart(
@@ -60,6 +64,7 @@ class CredentialProviderSigninInfoFetcher
   // OAuth2AccessTokenConsumer:
   void OnGetTokenSuccess(const TokenResponse& token_response) override;
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override;
 
  protected:
   void RequestUserInfoFromAccessToken(const std::string& access_token);
@@ -74,12 +79,11 @@ class CredentialProviderSigninInfoFetcher
   std::string picture_url_;
   std::string mdm_id_token_;
   std::string mdm_access_token_;
+  const std::string consumer_name_;
 
   std::unique_ptr<OAuth2AccessTokenFetcher> scoped_access_token_fetcher_;
   std::unique_ptr<gaia::GaiaOAuthClient> user_info_fetcher_;
   std::unique_ptr<gaia::GaiaOAuthClient> token_handle_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderSigninInfoFetcher);
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_CREDENTIAL_PROVIDER_SIGNIN_INFO_FETCHER_WIN_H_

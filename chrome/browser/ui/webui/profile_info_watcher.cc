@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/profile_info_watcher.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -15,9 +15,9 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-ProfileInfoWatcher::ProfileInfoWatcher(
-    Profile* profile, const base::Closure& callback)
-    : profile_(profile), callback_(callback) {
+ProfileInfoWatcher::ProfileInfoWatcher(Profile* profile,
+                                       base::RepeatingClosure callback)
+    : profile_(profile), callback_(std::move(callback)) {
   DCHECK(profile_);
   DCHECK(!callback_.is_null());
 
@@ -26,8 +26,10 @@ ProfileInfoWatcher::ProfileInfoWatcher(
   if (profile_manager)
     profile_manager->GetProfileAttributesStorage().AddObserver(this);
 
-  signin_allowed_pref_.Init(prefs::kSigninAllowed, profile_->GetPrefs(),
-      base::Bind(&ProfileInfoWatcher::RunCallback, base::Unretained(this)));
+  signin_allowed_pref_.Init(
+      prefs::kSigninAllowed, profile_->GetPrefs(),
+      base::BindRepeating(&ProfileInfoWatcher::RunCallback,
+                          base::Unretained(this)));
 }
 
 ProfileInfoWatcher::~ProfileInfoWatcher() {
@@ -45,8 +47,11 @@ void ProfileInfoWatcher::OnProfileAuthInfoChanged(
 std::string ProfileInfoWatcher::GetAuthenticatedUsername() const {
   std::string username;
   auto* identity_manager = GetIdentityManager();
-  if (identity_manager)
-    username = identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager) {
+    username =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
+  }
   return username;
 }
 

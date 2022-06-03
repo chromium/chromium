@@ -1,9 +1,9 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Gamepad (https://w3c.github.io/gamepad/)
 
-[Exposed=Window]
+[Exposed=Window, SecureContext]
 interface Gamepad {
   readonly attribute DOMString id;
   readonly attribute long index;
@@ -14,7 +14,7 @@ interface Gamepad {
   readonly attribute FrozenArray<GamepadButton> buttons;
 };
 
-[Exposed=Window]
+[Exposed=Window, SecureContext]
 interface GamepadButton {
   readonly attribute boolean pressed;
   readonly attribute boolean touched;
@@ -24,6 +24,7 @@ interface GamepadButton {
 enum GamepadMappingType {
   "",
   "standard",
+  "xr-standard",
 };
 
 [Exposed=Window]
@@ -31,7 +32,7 @@ partial interface Navigator {
   sequence<Gamepad?> getGamepads();
 };
 
-[Exposed=Window]
+[Exposed=Window, SecureContext]
 
 interface GamepadEvent: Event {
   constructor(DOMString type, GamepadEventInit eventInitDict);
@@ -40,4 +41,9 @@ interface GamepadEvent: Event {
 
 dictionary GamepadEventInit : EventInit {
   required Gamepad gamepad;
+};
+
+partial interface mixin WindowEventHandlers {
+  attribute EventHandler ongamepadconnected;
+  attribute EventHandler ongamepaddisconnected;
 };

@@ -9,58 +9,21 @@
 
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
-#include "base/logging.h"
 #include "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ui/base/device_form_factor.h"
 #include "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-bool IsIPadIdiom() {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-}
-
-const CGFloat kPortraitWidth[INTERFACE_IDIOM_COUNT] = {
-    320,  // IPHONE_IDIOM
-    768   // IPAD_IDIOM
-};
-
-bool IsHighResScreen() {
-  return [[UIScreen mainScreen] scale] > 1.0;
-}
-
-bool IsPortrait() {
-  UIInterfaceOrientation orient = GetInterfaceOrientation();
-  return UIInterfaceOrientationIsPortrait(orient) ||
-         orient == UIInterfaceOrientationUnknown;
-}
-
-bool IsLandscape() {
-  return UIInterfaceOrientationIsLandscape(GetInterfaceOrientation());
-}
-
-CGFloat CurrentScreenHeight() {
-  return [UIScreen mainScreen].bounds.size.height;
-}
-
-CGFloat CurrentScreenWidth() {
-  return [UIScreen mainScreen].bounds.size.width;
-}
-
-bool IsIPhoneX() {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  CGFloat height = CGRectGetHeight([[UIScreen mainScreen] nativeBounds]);
-  return (idiom == UIUserInterfaceIdiomPhone &&
-          (height == 2436 || height == 2688 || height == 1792));
-}
-
 CGFloat DeviceCornerRadius() {
-  return IsIPhoneX() ? 40.0 : 0.0;
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+  UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+  const BOOL isRoundedDevice =
+      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
+  return isRoundedDevice ? 40.0 : 0.0;
 }
 
 CGFloat AlignValueToPixel(CGFloat value) {
@@ -81,10 +44,6 @@ CGRect AlignRectOriginAndSizeToPixels(CGRect rect) {
   rect.origin = AlignPointToPixel(rect.origin);
   rect.size = ui::AlignSizeToUpperPixel(rect.size);
   return rect;
-}
-
-CGRect CGRectCopyWithOrigin(CGRect rect, CGFloat x, CGFloat y) {
-  return CGRectMake(x, y, rect.size.width, rect.size.height);
 }
 
 CGRect CGRectMakeAlignedAndCenteredAt(CGFloat x, CGFloat y, CGFloat width) {

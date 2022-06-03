@@ -17,7 +17,7 @@ namespace blink {
 TEST(HTMLViewSourceParserTest, DetachThenFinish_ShouldNotCrash) {
   String mime_type("text/html");
   auto* document = MakeGarbageCollected<HTMLViewSourceDocument>(
-      DocumentInit::Create(), mime_type);
+      DocumentInit::Create().ForTest().WithTypeFrom(mime_type));
   auto* parser =
       MakeGarbageCollected<HTMLViewSourceParser>(*document, mime_type);
   // A client may detach the parser from the document.

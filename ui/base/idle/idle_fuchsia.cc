@@ -4,18 +4,18 @@
 
 #include "ui/base/idle/idle.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ui {
 
 int CalculateIdleTime() {
-  // TODO(fuchsia): https://crbug.com/743296.
+  // TODO(crbug.com/1133867): Implement this.
   NOTIMPLEMENTED();
   return 0;
 }
 
 bool CheckIdleStateIsLocked() {
-  // TODO(fuchsia): https://crbug.com/743296.
+  // TODO(crbug.com/1133867): Implement this.
   NOTIMPLEMENTED();
   return false;
 }

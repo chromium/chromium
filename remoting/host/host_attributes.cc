@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/atomicops.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
@@ -93,11 +93,7 @@ static_assert(std::is_pod<Attribute>::value, "Attribute should be POD.");
 
 std::string GetHostAttributes() {
   std::vector<std::string> result;
-  // By using ranged for-loop, MSVC throws error C3316:
-  // 'const remoting::StaticAttribute [0]':
-  // an array of unknown size cannot be used in a range-based for statement.
-  for (size_t i = 0; i < base::size(kAttributes); i++) {
-    const auto& attribute = kAttributes[i];
+  for (const auto& attribute : kAttributes) {
     DCHECK_EQ(std::string(attribute.name).find(kSeparator), std::string::npos);
     if (attribute.get_value_func()) {
       result.push_back(attribute.name);
@@ -119,12 +115,14 @@ std::string GetHostAttributes() {
     }
   }
 
+  // TODO(crbug.com/1184041): Remove this and/or the entire HostAttributes class
+  // so we can remove //remoting/host:common from //media/gpu's visibility list.
   if (media::MediaFoundationVideoEncodeAccelerator
       ::PreSandboxInitialization() &&
       media::InitializeMediaFoundation()) {
     result.push_back("HWEncoder");
   }
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   result.push_back("HWEncoder");
 #endif
 

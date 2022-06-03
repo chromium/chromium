@@ -102,6 +102,7 @@ for message parameters.
 | `handle<shared_buffer>`       | Shared buffer handle.
 | `handle<data_pipe_producer>`  | Data pipe producer handle.
 | `handle<data_pipe_consumer>`  | Data pipe consumer handle.
+| `handle<platform>`            | A native platform/OS handle.
 | *`pending_remote<InterfaceType>`*             | Any user-defined Mojom interface type. This is sugar for a strongly-typed message pipe handle which should eventually be used to make outgoing calls on the interface.
 | *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
 | *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
@@ -112,8 +113,8 @@ for message parameters.
 
 Every Mojom file may optionally specify a single **module** to which it belongs.
 
-This is used strictly for aggregaging all defined symbols therein within a
-common Mojom namespace. The specific impact this has on generated binidngs code
+This is used strictly for aggregating all defined symbols therein within a
+common Mojom namespace. The specific impact this has on generated bindings code
 varies for each target language. For example, if the following Mojom is used to
 generate bindings:
 
@@ -131,7 +132,7 @@ Generated C++ bindings will define a class interface `MoneyGenerator` in the
 bindings at this time are unaffected by module declarations.
 
 **NOTE:** By convention in the Chromium codebase, **all** Mojom files should
-declare a module name with at least (and preferrably exactly) one top-level name
+declare a module name with at least (and preferably exactly) one top-level name
 as well as an inner `mojom` module suffix. *e.g.*, `chrome.mojom`,
 `business.mojom`, *etc.*
 
@@ -187,8 +188,8 @@ struct StringPair {
 };
 
 enum AnEnum {
-  YES,
-  NO
+  kYes,
+  kNo
 };
 
 interface SampleInterface {
@@ -208,7 +209,7 @@ struct AllTheThings {
   uint64 unsigned_64bit_value;
   float float_value_32bit;
   double float_value_64bit;
-  AnEnum enum_value = AnEnum.YES;
+  AnEnum enum_value = AnEnum.kYes;
 
   // Strings may be nullable.
   string? maybe_a_string_maybe_not;
@@ -270,7 +271,7 @@ code, see
 ### Unions
 
 Mojom supports tagged unions using the **union** keyword. A union is a
-collection of fields which may taken the value of any single one of those fields
+collection of fields which may take the value of any single one of those fields
 at a time. Thus they provide a way to represent a variant value type while
 minimizing storage requirements.
 
@@ -299,14 +300,14 @@ within a module or nested within the namespace of some struct or interface:
 module business.mojom;
 
 enum Department {
-  SALES = 0,
-  DEV,
+  kSales = 0,
+  kDev,
 };
 
 struct Employee {
   enum Type {
-    FULL_TIME,
-    PART_TIME,
+    kFullTime,
+    kPartTime,
   };
 
   Type type;
@@ -314,12 +315,15 @@ struct Employee {
 };
 ```
 
+C++ constant-style enum value names are preferred as specified in the
+[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#Enumerator_Names).
+
 Similar to C-style enums, individual values may be explicitly assigned within an
 enum definition. By default, values are based at zero and increment by
 1 sequentially.
 
 The effect of nested definitions on generated bindings varies depending on the
-target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages)
+target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
 
 ### Constants
 
@@ -335,8 +339,8 @@ struct Employee {
   const uint64 kInvalidId = 0;
 
   enum Type {
-    FULL_TIME,
-    PART_TIME,
+    kFullTime,
+    kPartTime,
   };
 
   uint64 id = kInvalidId;
@@ -345,7 +349,7 @@ struct Employee {
 ```
 
 The effect of nested definitions on generated bindings varies depending on the
-target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages)
+target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
 
 ### Interfaces
 
@@ -378,47 +382,101 @@ Mojom definitions may have their meaning altered by **attributes**, specified
 with a syntax similar to Java or C# attributes. There are a handle of
 interesting attributes supported today.
 
-**`[Sync]`**
-:   The `Sync` attribute may be specified for any interface method which expects
-    a response. This makes it so that callers of the method can wait
-    synchronously for a response. See
-    [Synchronous Calls](/mojo/public/cpp/bindings/README.md#Synchronous-Calls)
-    in the C++ bindings documentation. Note that sync calls are not currently
-    supported in other target languages.
+* **`[Sync]`**:
+  The `Sync` attribute may be specified for any interface method which expects a
+  response. This makes it so that callers of the method can wait synchronously
+  for a response. See [Synchronous
+  Calls](/mojo/public/cpp/bindings/README.md#Synchronous-Calls) in the C++
+  bindings documentation. Note that sync methods are only actually synchronous
+  when called from C++.
 
-**`[Extensible]`**
-:   The `Extensible` attribute may be specified for any enum definition. This
-    essentially disables builtin range validation when receiving values of the
-    enum type in a message, allowing older bindings to tolerate unrecognized
-    values from newer versions of the enum.
+* **`[NoInterrupt]`**:
+  When a thread is waiting for a reply to a `Sync` message, it's possible to be
+  woken up to dispatch other unrelated incoming `Sync` messages. This measure
+  helps to avoid deadlocks. If a `Sync` message is also marked as `NoInterrupt`
+  however, this behavior is disabled: instead the calling thread will only wake
+  up for the precise message being waited upon. This attribute must be used with
+  extreme caution, because it can lead to deadlocks otherwise.
 
-**`[Native]`**
-:   The `Native` attribute may be specified for an empty struct declaration to
-    provide a nominal bridge between Mojo IPC and legacy `IPC::ParamTraits` or
-    `IPC_STRUCT_TRAITS*` macros.
-    See
-    [Repurposing Legacy IPC Traits](/docs/mojo_ipc_conversion.md#repurposing-and-invocations)
-    for more details. Note support for this attribute is strictly limited to C++
-    bindings generation.
+* **`[Default]`**:
+  The `Default` attribute may be used to specify an enumerator value that
+  will be used if an `Extensible` enumeration does not deserialize to a known
+  value on the receiver side, i.e. the sender is using a newer version of the
+  enum. This allows unknown values to be mapped to a well-defined value that can
+  be appropriately handled.
 
-**`[MinVersion=N]`**
-:   The `MinVersion` attribute is used to specify the version at which a given
-    field, enum value, interface method, or method parameter was introduced.
-    See [Versioning](#Versioning) for more details.
+* **`[Extensible]`**:
+  The `Extensible` attribute may be specified for any enum definition. This
+  essentially disables builtin range validation when receiving values of the
+  enum type in a message, allowing older bindings to tolerate unrecognized
+  values from newer versions of the enum.
 
-**`[EnableIf=value]`**
-:   The `EnableIf` attribute is used to conditionally enable definitions when
-    the mojom is parsed. If the `mojom` target in the GN file does not include
-    the matching `value` in the list of `enabled_features`, the definition
-    will be disabled. This is useful for mojom definitions that only make
-    sense on one platform. Note that the `EnableIf` attribute can only be set
-    once per definition.
+  Note: in the future, an `Extensible` enumeration will require that a `Default`
+  enumerator value also be specified.
+
+* **`[Native]`**:
+  The `Native` attribute may be specified for an empty struct declaration to
+  provide a nominal bridge between Mojo IPC and legacy `IPC::ParamTraits` or
+  `IPC_STRUCT_TRAITS*` macros. See [Repurposing Legacy IPC
+  Traits](/docs/mojo_ipc_conversion.md#repurposing-and-invocations) for more
+  details. Note support for this attribute is strictly limited to C++ bindings
+  generation.
+
+* **`[MinVersion=N]`**:
+  The `MinVersion` attribute is used to specify the version at which a given
+  field, enum value, interface method, or method parameter was introduced.
+  See [Versioning](#Versioning) for more details.
+
+* **`[Stable]`**:
+  The `Stable` attribute specifies that a given mojom type or interface
+  definition can be considered stable over time, meaning it is safe to use for
+  things like persistent storage or communication between independent
+  version-skewed binaries. Stable definitions may only depend on builtin mojom
+  types or other stable definitions, and changes to such definitions MUST
+  preserve backward-compatibility through appropriate use of versioning.
+  Backward-compatibility of changes is enforced in the Chromium tree using a
+  strict presubmit check. See [Versioning](#Versioning) for more details on
+  backward-compatibility constraints.
+
+* **`[Uuid=<UUID>]`**:
+  Specifies a UUID to be associated with a given interface. The UUID is intended
+  to remain stable across all changes to the interface definition, including
+  name changes. The value given for this attribute should be a standard UUID
+  string representation as specified by RFC 4122. New UUIDs can be generated
+  with common tools such as `uuidgen`.
+
+* **`[EnableIf=value]`**:
+  The `EnableIf` attribute is used to conditionally enable definitions when the
+  mojom is parsed. If the `mojom` target in the GN file does not include the
+  matching `value` in the list of `enabled_features`, the definition will be
+  disabled. This is useful for mojom definitions that only make sense on one
+  platform. Note that the `EnableIf` attribute can only be set once per
+  definition and cannot be set at the same time as `EnableIfNot`. Also be aware
+  that only one condition can be tested, `EnableIf=value,xyz` introduces a new
+  `xyz` attribute. `xyz` is not part of the `EnableIf` condition that depends
+  only on the feature `value`. Complex conditions can be introduced via
+  enabled_features in `build.gn` files.
+
+* **`[EnableIfNot=value]`**:
+  The `EnableIfNot` attribute is used to conditionally enable definitions when
+  the mojom is parsed. If the `mojom` target in the GN file includes the
+  matching `value` in the list of `enabled_features`, the definition will be
+  disabled. This is useful for mojom definitions that only make sense on all but
+  one platform. Note that the `EnableIfNot` attribute can only be set once per
+  definition and cannot be set at the same time as `EnableIf`.
+
+* **`[ServiceSandbox=value]`**:
+  The `ServiceSandbox` attribute is used in Chromium to tag which sandbox a
+  service hosting an implementation of interface will be launched in. This only
+  applies to `C++` bindings. `value` should match a constant defined in an
+  imported `sandbox.mojom.Sandbox` enum (for Chromium this is
+  `//sandbox/policy/mojom/sandbox.mojom`), such as `kService`.
 
 ## Generated Code For Target Languages
 
 When the bindings generator successfully processes an input Mojom file, it emits
 corresponding code for each supported target language. For more details on how
-Mojom concepts translate to a given target langauge, please refer to the
+Mojom concepts translate to a given target language, please refer to the
 bindings API documentation for that language:
 
 * [C++ Bindings](/mojo/public/cpp/bindings/README.md)
@@ -429,7 +487,7 @@ bindings API documentation for that language:
 
 Regardless of target language, all interface messages are validated during
 deserialization before they are dispatched to a receiving implementation of the
-interface. This helps to ensure consitent validation across interfaces without
+interface. This helps to ensure consistent validation across interfaces without
 leaving the burden to developers and security reviewers every time a new message
 is added.
 
@@ -459,9 +517,9 @@ values. For example if a Mojom declares the enum:
 
 ``` cpp
 enum AdvancedBoolean {
-  TRUE = 0,
-  FALSE = 1,
-  FILE_NOT_FOUND = 2,
+  kTrue = 0,
+  kFalse = 1,
+  kFileNotFound = 2,
 };
 ```
 
@@ -514,10 +572,16 @@ See the documentation for
 
 *** note
 **NOTE:** You don't need to worry about versioning if you don't care about
-backwards compatibility. Specifically, all parts of Chrome are updated
-atomically today and there is not yet any possibility of any two Chrome
-processes communicating with two different versions of any given Mojom
-interface.
+backwards compatibility. Today, all parts of the Chrome browser are
+updated atomically and there is not yet any possibility of any two
+Chrome processes communicating with two different versions of any given Mojom
+interface. On Chrome OS, there are several places where versioning is required.
+For example,
+[ARC++](https://developer.android.com/chrome-os/intro)
+uses versioned mojo to send IPC to the Android container.
+Likewise, the
+[Lacros](/docs/lacros.md)
+browser uses versioned mojo to talk to the ash system UI.
 ***
 
 Services extend their interfaces to support new features over time, and clients
@@ -543,25 +607,37 @@ struct Employee {
 };
 ```
 
-and you would like to add a birthday field. You can do:
+and you would like to add birthday and nickname fields. You can add them as
+optional types with a `MinVersion` like so:
 
 ``` cpp
 struct Employee {
   uint64 employee_id;
   string name;
   [MinVersion=1] Date? birthday;
+  [MinVersion=1] string? nickname;
 };
 ```
+
+*** note
+**NOTE:** Mojo object or handle types added with a `MinVersion` **MUST** be
+optional (nullable) or primitive. See [Primitive Types](#Primitive-Types) for
+details on nullable values.
+***
 
 By default, fields belong to version 0. New fields must be appended to the
 struct definition (*i.e*., existing fields must not change **ordinal value**)
 with the `MinVersion` attribute set to a number greater than any previous
 existing versions.
 
+The value of `MinVersion` is unrelated to ordinals. The choice of a particular
+version number is arbitrary. All its usage means is that a field isn't present
+before the numbered version.
+
 *** note
 **NOTE:** do not change existing fields in versioned structs, as this is
 not backwards-compatible. Instead, rename the old field to make its
-deprecation clear and add a new field with the new version number.
+deprecation clear and add a new field with a new `MinVersion` number.
 ***
 
 **Ordinal value** refers to the relative positional layout of a struct's fields
@@ -576,8 +652,10 @@ the following hard constraints:
 * For any given struct or interface, if any field or method explicitly specifies
     an ordinal value, all fields or methods must explicitly specify an ordinal
     value.
-* For an *N*-field struct or *N*-method interface, the set of explicitly
-    assigned ordinal values must be limited to the range *[0, N-1]*.
+* For an *N*-field struct, the set of explicitly assigned ordinal values must be
+    limited to the range *[0, N-1]*. Structs should include placeholder fields
+    to fill the ordinal positions of removed fields (for example "Unused_Field"
+    or "RemovedField", etc).
 
 You may reorder fields, but you must ensure that the ordinal values of existing
 fields remain unchanged. For example, the following struct remains
@@ -588,13 +666,9 @@ struct Employee {
   uint64 employee_id@0;
   [MinVersion=1] Date? birthday@2;
   string name@1;
+  [MinVersion=1] string? nickname@3;
 };
 ```
-
-*** note
-**NOTE:** Newly added fields of Mojo object or handle types MUST be nullable.
-See [Primitive Types](#Primitive-Types).
-***
 
 ### Versioned Interfaces
 
@@ -666,8 +740,8 @@ If you want an enum to be extensible in the future, you can apply the
 ``` cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
+  kSales,
+  kDev,
 };
 ```
 
@@ -676,9 +750,9 @@ And later you can extend this enum without breaking backwards compatibility:
 ``` cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
-  [MinVersion=1] RESEARCH,
+  kSales,
+  kDev,
+  [MinVersion=1] kResearch,
 };
 ```
 
@@ -691,6 +765,39 @@ With extensible enums, bound interface implementations may receive unknown enum
 values and will need to deal with them gracefully. See
 [C++ Versioning Considerations](/mojo/public/cpp/bindings/README.md#Versioning-Considerations)
 for details.
+
+### Renaming versioned structs
+It's possible to rename versioned structs by using the `[RenamedFrom]` attribute.
+RenamedFrom
+
+``` cpp
+module asdf.mojom;
+
+// Old version:
+[Stable]
+struct OldStruct {
+};
+
+// New version:
+[Stable, RenamedFrom="asdf.mojom.OldStruct"]
+struct NewStruct {
+};
+```
+
+## Component targets
+
+If there are multiple components depending on the same mojom target within one binary,
+the target will need to be defined as `mojom_component` instead of `mojom`.
+Since `mojom` targets are generated `source_set` targets and `mojom_component` targets
+are generated `component` targets, you would use `mojom_component` in the same cases
+where you would use `component` for non-mojom files.
+*** note
+**NOTE**: by default, components for both blink and non-blink bindings are generated.
+Use the `disable_variants` target parameter to generate only non-blink bindings.
+You can also generate a `source_set` for one of the variants by defining
+[export_*](https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/tools/bindings/mojom.gni;drc=739b9fbce50310c1dd2b59c279cd90a9319cb6e8;l=318)
+parameters for the `mojom_component` target.
+***
 
 ## Grammar Reference
 
@@ -751,6 +858,7 @@ SpecificHandleType = "message_pipe"
                    | "shared_buffer"
                    | "data_pipe_consumer"
                    | "data_pipe_producer"
+                   | "platform"
 Array = "array" "<" TypeSpec ">"
 FixedArray = "array" "<" TypeSpec "," IntConstDec ">"
 Map = "map" "<" Identifier "," TypeSpec ">"

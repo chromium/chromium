@@ -60,14 +60,16 @@ namespace gpu {
 class GLES2_IMPL_EXPORT LogSettings {
  public:
   LogSettings();
+
+  LogSettings(const LogSettings&) = delete;
+  LogSettings& operator=(const LogSettings&) = delete;
+
   ~LogSettings();
 
   bool enabled() { return enabled_; }
 
  private:
   bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogSettings);
 };
 
 }  // namespace gpu

@@ -156,6 +156,13 @@ emit display items to a `PaintController` (using `GraphicsContext`).
 Holds a `PaintRecord` which contains the paint operations required to draw some
 atom of content.
 
+#### [GraphicsLayerDisplayItem](graphics_layer_display_item.h)
+
+Placeholder for `GraphicsLayers` allocated by the pre-CompositeAfterPaint
+compositing logic. Each one of these may or may not ultimately produce a
+`cc::PictureLayer`, depending on the layer squashing mechanism. This class
+becomes obsolete with CompositeAfterPaint.
+
 #### [ForeignLayerDisplayItem](foreign_layer_display_item.h)
 
 Draws an atom of content, but using a `cc::Layer` produced by some agent outside

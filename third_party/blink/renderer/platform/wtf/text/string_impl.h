@@ -26,9 +26,11 @@
 
 #include <limits.h>
 #include <string.h>
+#include <atomic>
 
+#include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -39,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -47,7 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_restriction_verifier.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/scoped_cftyperef.h"
 
 typedef const struct __CFString* CFStringRef;
@@ -92,14 +94,9 @@ class WTF_EXPORT StringImpl {
   // ref-counted in a non-threadsafe manner.
   enum ConstructEmptyStringTag { kConstructEmptyString };
   explicit StringImpl(ConstructEmptyStringTag)
-      : ref_count_(1),
-        length_(0),
-        hash_(0),
-        contains_only_ascii_(true),
-        needs_ascii_check_(false),
-        is_atomic_(false),
-        is_8bit_(true),
-        is_static_(true) {
+      : length_(0),
+        hash_and_flags_(kAsciiPropertyCheckDone | kContainsOnlyAscii |
+                        kIsLowerAscii | kIs8Bit | kIsStatic) {
     // Ensure that the hash is computed so that AtomicStringHash can call
     // existingHash() with impunity. The empty string is special because it
     // is never entered into AtomicString's HashKey, but still needs to
@@ -109,59 +106,37 @@ class WTF_EXPORT StringImpl {
 
   enum ConstructEmptyString16BitTag { kConstructEmptyString16Bit };
   explicit StringImpl(ConstructEmptyString16BitTag)
-      : ref_count_(1),
-        length_(0),
-        hash_(0),
-        contains_only_ascii_(true),
-        needs_ascii_check_(false),
-        is_atomic_(false),
-        is_8bit_(false),
-        is_static_(true) {
+      : length_(0),
+        hash_and_flags_(kAsciiPropertyCheckDone | kContainsOnlyAscii |
+                        kIsLowerAscii | kIsStatic) {
     GetHash();
   }
 
   // FIXME: there has to be a less hacky way to do this.
   enum Force8Bit { kForce8BitConstructor };
   StringImpl(wtf_size_t length, Force8Bit)
-      : ref_count_(1),
-        length_(length),
-        hash_(0),
-        contains_only_ascii_(!length),
-        needs_ascii_check_(static_cast<bool>(length)),
-        is_atomic_(false),
-        is_8bit_(true),
-        is_static_(false) {
+      : length_(length), hash_and_flags_(LengthToAsciiFlags(length) | kIs8Bit) {
     DCHECK(length_);
   }
 
   StringImpl(wtf_size_t length)
-      : ref_count_(1),
-        length_(length),
-        hash_(0),
-        contains_only_ascii_(!length),
-        needs_ascii_check_(static_cast<bool>(length)),
-        is_atomic_(false),
-        is_8bit_(false),
-        is_static_(false) {
+      : length_(length), hash_and_flags_(LengthToAsciiFlags(length)) {
     DCHECK(length_);
   }
 
   enum StaticStringTag { kStaticString };
   StringImpl(wtf_size_t length, wtf_size_t hash, StaticStringTag)
-      : ref_count_(1),
-        length_(length),
-        hash_(hash),
-        contains_only_ascii_(!length),
-        needs_ascii_check_(static_cast<bool>(length)),
-        is_atomic_(false),
-        is_8bit_(true),
-        is_static_(true) {}
+      : length_(length),
+        hash_and_flags_(hash << kHashShift | LengthToAsciiFlags(length) |
+                        kIs8Bit | kIsStatic) {}
 
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
   static StringImpl* empty_;
   static StringImpl* empty16_bit_;
 
+  StringImpl(const StringImpl&) = delete;
+  StringImpl& operator=(const StringImpl&) = delete;
   ~StringImpl();
 
   static void InitStatics();
@@ -178,6 +153,10 @@ class WTF_EXPORT StringImpl {
 
   static scoped_refptr<StringImpl> Create(const UChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(const LChar*, wtf_size_t length);
+  static scoped_refptr<StringImpl> Create(
+      const LChar*,
+      wtf_size_t length,
+      ASCIIStringAttributes ascii_attributes);
   static scoped_refptr<StringImpl> Create8BitIfPossible(const UChar*,
                                                         wtf_size_t length);
   template <wtf_size_t inlineCapacity>
@@ -201,7 +180,9 @@ class WTF_EXPORT StringImpl {
                                                        UChar*& data);
 
   wtf_size_t length() const { return length_; }
-  bool Is8Bit() const { return is_8bit_; }
+  bool Is8Bit() const {
+    return hash_and_flags_.load(std::memory_order_relaxed) & kIs8Bit;
+  }
 
   ALWAYS_INLINE const LChar* Characters8() const {
     DCHECK(Is8Bit());
@@ -230,12 +211,25 @@ class WTF_EXPORT StringImpl {
     return length() * (Is8Bit() ? sizeof(LChar) : sizeof(UChar));
   }
 
-  bool IsAtomic() const { return is_atomic_; }
-  void SetIsAtomic(bool is_atomic) { is_atomic_ = is_atomic; }
+  bool IsAtomic() const {
+    return hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic;
+  }
 
-  bool IsStatic() const { return is_static_; }
+  void SetIsAtomic() {
+    hash_and_flags_.fetch_or(kIsAtomic, std::memory_order_release);
+  }
+
+  void UnsetIsAtomic() {
+    hash_and_flags_.fetch_and(~kIsAtomic, std::memory_order_release);
+  }
+
+  bool IsStatic() const {
+    return hash_and_flags_.load(std::memory_order_relaxed) & kIsStatic;
+  }
 
   bool ContainsOnlyASCIIOrEmpty() const;
+
+  bool IsLowerASCII() const;
 
   bool IsSafeToSendToAnotherThread() const;
 
@@ -244,27 +238,26 @@ class WTF_EXPORT StringImpl {
   // access.  So, we shift left and right when setting and getting our hash
   // code.
   void SetHash(wtf_size_t hash) const {
-    DCHECK(!HasHash());
     // Multiple clients assume that StringHasher is the canonical string
     // hash function.
     DCHECK(hash == (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
                                    Characters8(), length_)
                              : StringHasher::ComputeHashAndMaskTop8Bits(
                                    Characters16(), length_)));
-    hash_ = hash;
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
+    SetHashRaw(hash);
   }
 
-  bool HasHash() const { return hash_ != 0; }
+  bool HasHash() const { return GetHashRaw() != 0; }
 
   wtf_size_t ExistingHash() const {
     DCHECK(HasHash());
-    return hash_;
+    return GetHashRaw();
   }
 
   wtf_size_t GetHash() const {
-    if (HasHash())
-      return ExistingHash();
+    if (wtf_size_t hash = GetHashRaw())
+      return hash;
     return HashSlowCase();
   }
 
@@ -279,8 +272,12 @@ class WTF_EXPORT StringImpl {
 #if DCHECK_IS_ON()
     DCHECK(IsStatic() || verifier_.OnRef(ref_count_)) << AsciiForDebugging();
 #endif
-    if (!IsStatic())
+    if (!IsStatic()) {
       ref_count_ = base::CheckAdd(ref_count_, 1).ValueOrDie();
+#if DCHECK_IS_ON()
+      ref_count_change_count_++;
+#endif
+    }
   }
 
   ALWAYS_INLINE void Release() const {
@@ -296,6 +293,7 @@ class WTF_EXPORT StringImpl {
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
       ref_count_ = base::CheckSub(ref_count_, 1).ValueOrDie();
+      ref_count_change_count_++;
 #else
       --ref_count_;
 #endif
@@ -303,6 +301,13 @@ class WTF_EXPORT StringImpl {
     if (ref_count_ == 0)
       DestroyIfNotStatic();
   }
+
+#if DCHECK_IS_ON()
+  unsigned int RefCountChangeCountForTesting() const {
+    return ref_count_change_count_;
+  }
+  void ResetRefCountChangeCountForTesting() { ref_count_change_count_ = 0; }
+#endif
 
   ALWAYS_INLINE void Adopted() const {}
 
@@ -345,6 +350,7 @@ class WTF_EXPORT StringImpl {
   uint64_t ToUInt64(NumberParsingOptions, bool* ok) const;
 
   wtf_size_t HexToUIntStrict(bool* ok);
+  uint64_t HexToUInt64Strict(bool* ok);
 
   // FIXME: Like NumberParsingOptions::kStrict, these give false for "ok" when
   // there is trailing garbage.  Like NumberParsingOptions::kLoose, these return
@@ -387,6 +393,8 @@ class WTF_EXPORT StringImpl {
   wtf_size_t Find(char character, wtf_size_t start = 0);
   wtf_size_t Find(UChar character, wtf_size_t start = 0);
   wtf_size_t Find(CharacterMatchFunctionPtr, wtf_size_t index = 0);
+  wtf_size_t Find(base::RepeatingCallback<bool(UChar)> match_callback,
+                  wtf_size_t index = 0) const;
 
   // Find substrings.
   wtf_size_t Find(const StringView&, wtf_size_t index = 0);
@@ -448,7 +456,7 @@ class WTF_EXPORT StringImpl {
                  wtf_size_t start = 0,
                  wtf_size_t length = UINT_MAX) const;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::ScopedCFTypeRef<CFStringRef> CreateCFString();
 #endif
 #ifdef __OBJC__
@@ -458,6 +466,73 @@ class WTF_EXPORT StringImpl {
   static const UChar kLatin1CaseFoldTable[256];
 
  private:
+  enum Flags {
+    // These two fields are never modified for the lifetime of the StringImpl.
+    // It is therefore safe to read them with a relaxed operation.
+    kIs8Bit = 1 << 0,
+    kIsStatic = 1 << 1,
+
+    // This is the only flag that can be both set and unset. It is safe to do
+    // so because all accesses are mediated by the same atomic string table and
+    // so protected by thread locality (pre-unification) or a mutex
+    // (post-unification). Thus these accesses can also be relaxed.
+    kIsAtomic = 1 << 2,
+
+    // These bits are set atomically together. They are initially all
+    // zero, and like the hash computation below, become non-zero only as part
+    // of a single atomic bitwise or. Thus concurrent loads will always observe
+    // either a state where the ASCII property check has not been completed and
+    // all bits are zero, or a state where the state is fully populated.
+    //
+    // The reason kIsLowerAscii is cached but upper ascii is not is that
+    // DOM attributes APIs require a lowercasing check making it fairly hot.
+    kAsciiPropertyCheckDone = 1 << 3,
+    kContainsOnlyAscii = 1 << 4,
+    kIsLowerAscii = 1 << 5,
+
+    // The last 24 bits (past kHashShift) are reserved for the hash.
+    // These bits are all zero if the hash is uncomputed, and the hash is
+    // atomically stored with bitwise or.
+    //
+    // Therefore a relaxed read can be used, and will either observe an
+    // uncomputed hash (if the fetch_or is not yet visible on this thread)
+    // or the correct hash (if it is). It is possible for a thread to compute
+    // the hash for a second time if there is a race. This is safe, since
+    // storing the same bits again with a bitwise or is idempotent.
+  };
+
+  // Hash value is 24 bits.
+  constexpr static int kHashShift = (sizeof(unsigned) * 8) - 24;
+
+  static inline constexpr uint32_t LengthToAsciiFlags(int length) {
+    return length
+               ? 0
+               : kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii;
+  }
+
+  static inline uint32_t ASCIIStringAttributesToFlags(
+      ASCIIStringAttributes ascii_attributes) {
+    uint32_t flags = kAsciiPropertyCheckDone;
+    if (ascii_attributes.contains_only_ascii)
+      flags |= kContainsOnlyAscii;
+    if (ascii_attributes.is_lower_ascii)
+      flags |= kIsLowerAscii;
+    return flags;
+  }
+
+  void SetHashRaw(unsigned hash_val) const {
+    // Setting the hash is idempotent so fetch_or() is sufficient. DCHECK()
+    // as a sanity check.
+    unsigned previous_value = hash_and_flags_.fetch_or(
+        hash_val << kHashShift, std::memory_order_relaxed);
+    DCHECK(((previous_value >> kHashShift) == 0) ||
+           ((previous_value >> kHashShift) == hash_val));
+  }
+
+  unsigned GetHashRaw() const {
+    return hash_and_flags_.load(std::memory_order_relaxed) >> kHashShift;
+  }
+
   template <typename CharType>
   static size_t AllocationSize(wtf_size_t length) {
     static_assert(
@@ -484,7 +559,10 @@ class WTF_EXPORT StringImpl {
   NOINLINE wtf_size_t HashSlowCase() const;
 
   void DestroyIfNotStatic() const;
-  void UpdateContainsOnlyASCIIOrEmpty() const;
+
+  // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
+  // a bitfield with those 2 values.
+  unsigned ComputeASCIIFlags() const;
 
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;
@@ -500,20 +578,13 @@ class WTF_EXPORT StringImpl {
   }
 #endif
 
- private:
 #if DCHECK_IS_ON()
   mutable ThreadRestrictionVerifier verifier_;
+  mutable unsigned int ref_count_change_count_{0};
 #endif
-  mutable unsigned ref_count_;
+  mutable unsigned ref_count_{1};
   const unsigned length_;
-  mutable unsigned hash_ : 24;
-  mutable unsigned contains_only_ascii_ : 1;
-  mutable unsigned needs_ascii_check_ : 1;
-  unsigned is_atomic_ : 1;
-  const unsigned is_8bit_ : 1;
-  const unsigned is_static_ : 1;
-
-  DISALLOW_COPY_AND_ASSIGN(StringImpl);
+  mutable std::atomic<uint32_t> hash_and_flags_;
 };
 
 template <>
@@ -553,9 +624,17 @@ inline bool Equal(const char* a, StringImpl* b) {
 WTF_EXPORT bool EqualNonNull(const StringImpl* a, const StringImpl* b);
 
 ALWAYS_INLINE bool StringImpl::ContainsOnlyASCIIOrEmpty() const {
-  if (needs_ascii_check_)
-    UpdateContainsOnlyASCIIOrEmpty();
-  return contains_only_ascii_;
+  uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
+  if (flags & kAsciiPropertyCheckDone)
+    return flags & kContainsOnlyAscii;
+  return ComputeASCIIFlags() & kContainsOnlyAscii;
+}
+
+ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
+  uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
+  if (flags & kAsciiPropertyCheckDone)
+    return flags & kIsLowerAscii;
+  return ComputeASCIIFlags() & kIsLowerAscii;
 }
 
 template <typename CharType>
@@ -610,6 +689,8 @@ inline bool EqualIgnoringASCIICase(const CharacterTypeA* a,
   return true;
 }
 
+WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
+                                                const StringImpl*);
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
                                                 const LChar*);
 
@@ -814,14 +895,6 @@ static inline int CodeUnitCompare(const StringImpl* string1,
   return CodeUnitCompare16(string1, string2);
 }
 
-static inline bool IsSpaceOrNewline(UChar c) {
-  // Use IsASCIISpace() for basic Latin-1.
-  // This will include newlines, which aren't included in Unicode DirWS.
-  return c <= 0x7F
-             ? WTF::IsASCIISpace(c)
-             : WTF::unicode::Direction(c) == WTF::unicode::kWhiteSpaceNeutral;
-}
-
 inline scoped_refptr<StringImpl> StringImpl::IsolatedCopy() const {
   if (Is8Bit())
     return Create(Characters8(), length_);
@@ -880,4 +953,4 @@ using WTF::EqualNonNull;
 using WTF::LengthOfNullTerminatedString;
 using WTF::ReverseFind;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_

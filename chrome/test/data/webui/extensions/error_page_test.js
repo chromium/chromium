@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isVisible} from '../test_util.m.js';
+import {isChildVisible} from '../test_util.js';
 
 import {ClickMock, createExtensionInfo} from './test_util.js';
 
@@ -63,7 +63,7 @@ suite(extension_error_page_tests.suiteName, function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const runtimeError = Object.assign(
         {
           source: 'chrome-extension://' + extensionId + '/source.html',
@@ -86,7 +86,7 @@ suite(extension_error_page_tests.suiteName, function() {
   test(assert(extension_error_page_tests.TestNames.Layout), function() {
     flush();
 
-    const testIsVisible = isVisible.bind(null, errorPage);
+    const testIsVisible = isChildVisible.bind(null, errorPage);
     expectTrue(testIsVisible('#closeButton'));
     expectTrue(testIsVisible('#heading'));
     expectTrue(testIsVisible('#errorsList'));
@@ -96,7 +96,7 @@ suite(extension_error_page_tests.suiteName, function() {
     let error = errorElements[0];
     expectEquals(
         'message', error.querySelector('.error-message').textContent.trim());
-    expectTrue(error.querySelector('iron-icon').icon == 'cr:error');
+    expectTrue(error.querySelector('iron-icon').icon === 'cr:error');
 
     const manifestError = Object.assign(
         {
@@ -114,7 +114,7 @@ suite(extension_error_page_tests.suiteName, function() {
     expectEquals(
         'invalid key',
         error.querySelector('.error-message').textContent.trim());
-    expectTrue(error.querySelector('iron-icon').icon == 'cr:warning');
+    expectTrue(error.querySelector('iron-icon').icon === 'cr:warning');
 
     mockDelegate.testClickingCalls(
         error.querySelector('.icon-delete-gray'), 'deleteErrors',
@@ -141,7 +141,10 @@ suite(extension_error_page_tests.suiteName, function() {
         mockDelegate.requestFileSourceResolver.resolve(code);
         mockDelegate.requestFileSourceResolver.promise.then(function() {
           flush();
-          expectEquals(code, errorPage.$$('extensions-code-section').code);
+          expectEquals(
+              code,
+              errorPage.shadowRoot.querySelector('extensions-code-section')
+                  .code);
           done();
         });
       });

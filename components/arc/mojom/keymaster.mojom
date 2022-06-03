@@ -12,13 +12,14 @@ module arc.mojom;
 // Host is implemented in Chrome. Listens until server and instance come online
 // and forwards a server handle to the instance.
 interface KeymasterHost {
-  GetServer@0() => (KeymasterServer server_ptr);
+  GetServer@0() => (pending_remote<KeymasterServer>? server_remote);
 };
 
 // Instance is implemented in ARC. Retrieves a server pointer from the host and
 // uses it to fulfill Android Keymaster operations.
 interface KeymasterInstance {
-  Init@0(KeymasterHost host_ptr) => ();
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<KeymasterHost> host_remote) => ();
 };
 
 // Server is implemented in arc-keymasterd in Chrome OS. This interface is the

@@ -6,9 +6,10 @@
 #define IOS_WEB_COMMON_CRW_WEB_VIEW_CONTENT_VIEW_H_
 
 #import "ios/web/common/crw_content_view.h"
+#import "ios/web/common/crw_viewport_adjustment.h"
 
 // Wraps a web vew in a CRWContentView.
-@interface CRWWebViewContentView : CRWContentView
+@interface CRWWebViewContentView : CRWContentView <CRWViewportAdjustment>
 
 // The webView passed to |-initWithWebView|.
 @property(nonatomic, strong, readonly) UIView* webView;

@@ -14,32 +14,35 @@
 
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/video_frame.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
-#include "media/gpu/windows/return_on_failure.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "ui/gl/gl_image.h"
 
 namespace media {
-class CdmProxyContext;
+
+constexpr int kRefFrameMaxCount = 16;
+
 class D3D11H264Accelerator;
 class MediaLog;
 
-
 class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
  public:
-  // |cdm_proxy_context| may be null for clear content.
   D3D11H264Accelerator(D3D11VideoDecoderClient* client,
                        MediaLog* media_log,
-                       CdmProxyContext* cdm_proxy_context,
-                       ComD3D11VideoDecoder video_decoder,
                        ComD3D11VideoDevice video_device,
                        std::unique_ptr<VideoContextWrapper> video_context);
+
+  D3D11H264Accelerator(const D3D11H264Accelerator&) = delete;
+  D3D11H264Accelerator& operator=(const D3D11H264Accelerator&) = delete;
+
   ~D3D11H264Accelerator() override;
 
   // H264Decoder::H264Accelerator implementation.
@@ -78,19 +81,22 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   void PicParamsFromSliceHeader(DXVA_PicParams_H264* pic_param,
                                 const H264SliceHeader* pps);
 
-  void PicParamsFromPic(DXVA_PicParams_H264* pic_param,
-                        scoped_refptr<H264Picture> pic);
+  void PicParamsFromPic(DXVA_PicParams_H264* pic_param, D3D11H264Picture* pic);
+
+  void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
 
  private:
   bool SubmitSliceData();
   bool RetrieveBitstreamBuffer();
 
   // Record a failure to DVLOG and |media_log_|.
-  void RecordFailure(const std::string& reason, HRESULT hr = S_OK) const;
+  void RecordFailure(const std::string& reason,
+                     D3D11Status::Codes code,
+                     HRESULT hr = S_OK) const;
+  void RecordFailure(D3D11Status error) const;
 
   D3D11VideoDecoderClient* client_;
   MediaLog* media_log_ = nullptr;
-  CdmProxyContext* const cdm_proxy_context_;
 
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;
@@ -98,10 +104,10 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.
-  DXVA_PicEntry_H264 ref_frame_list_[16];
+  DXVA_PicEntry_H264 ref_frame_list_[kRefFrameMaxCount];
   H264SPS sps_;
-  INT field_order_cnt_list_[16][2];
-  USHORT frame_num_list_[16];
+  INT field_order_cnt_list_[kRefFrameMaxCount][2];
+  USHORT frame_num_list_[kRefFrameMaxCount];
   UINT used_for_reference_flags_;
   USHORT non_existing_frame_flags_;
 
@@ -116,10 +122,8 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> subsamples_;
   // IV for the current frame.
   std::vector<uint8_t> frame_iv_;
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11H264Accelerator);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_D3D11_WINDOWS_H264_ACCELERATOR_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D11_H264_ACCELERATOR_H_

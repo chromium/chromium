@@ -18,12 +18,13 @@ TestRenderWidgetHostFactory::~TestRenderWidgetHostFactory() {
 
 std::unique_ptr<RenderWidgetHostImpl>
 TestRenderWidgetHostFactory::CreateRenderWidgetHost(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    RenderProcessHost* process,
+    AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
-    mojo::PendingRemote<mojom::Widget> widget_interface,
     bool hidden) {
-  return TestRenderWidgetHost::Create(delegate, process, routing_id, hidden);
+  return TestRenderWidgetHost::Create(
+      frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
 }
 
 }  // namespace content

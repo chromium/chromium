@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_error.h"

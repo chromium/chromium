@@ -9,11 +9,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 #include "services/service_manager/public/cpp/service_keepalive.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
@@ -24,9 +23,9 @@ class ConnectTestClassApp : public Service,
                             public test::mojom::ConnectTestService,
                             public test::mojom::ClassInterface {
  public:
-  explicit ConnectTestClassApp(mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)),
-        service_keepalive_(&service_binding_, base::TimeDelta()) {
+  explicit ConnectTestClassApp(mojo::PendingReceiver<mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)),
+        service_keepalive_(&service_receiver_, base::TimeDelta()) {
     receivers_.set_disconnect_handler(base::BindRepeating(
         &ConnectTestClassApp::HandleInterfaceClose, base::Unretained(this)));
     class_interface_receivers_.set_disconnect_handler(base::BindRepeating(
@@ -38,6 +37,9 @@ class ConnectTestClassApp : public Service,
         base::BindRepeating(&ConnectTestClassApp::BindClassInterfaceReceiver,
                             base::Unretained(this)));
   }
+
+  ConnectTestClassApp(const ConnectTestClassApp&) = delete;
+  ConnectTestClassApp& operator=(const ConnectTestClassApp&) = delete;
 
   ~ConnectTestClassApp() override = default;
 
@@ -67,7 +69,7 @@ class ConnectTestClassApp : public Service,
   }
 
   void GetInstanceId(GetInstanceIdCallback callback) override {
-    std::move(callback).Run(service_binding_.identity().instance_id());
+    std::move(callback).Run(service_receiver_.identity().instance_id());
   }
 
   // test::mojom::ClassInterface:
@@ -75,21 +77,20 @@ class ConnectTestClassApp : public Service,
 
   void HandleInterfaceClose() { refs_.pop_back(); }
 
-  ServiceBinding service_binding_;
+  ServiceReceiver service_receiver_;
   ServiceKeepalive service_keepalive_;
   std::vector<std::unique_ptr<ServiceKeepaliveRef>> refs_;
 
   BinderRegistry registry_;
   mojo::ReceiverSet<test::mojom::ConnectTestService> receivers_;
   mojo::ReceiverSet<test::mojom::ClassInterface> class_interface_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestClassApp);
 };
 
 }  // namespace service_manager
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
-  service_manager::ConnectTestClassApp(std::move(request))
+  service_manager::ConnectTestClassApp(std::move(receiver))
       .RunUntilTermination();
 }

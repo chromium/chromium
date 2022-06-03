@@ -11,6 +11,7 @@
 #define IN_LIBXML
 #include "libxml.h"
 
+#include <limits.h>
 #include <string.h>
 
 #include <libxml/xmlmemory.h>
@@ -22,7 +23,7 @@
  * MAX_URI_LENGTH:
  *
  * The definition of the URI regexp in the above RFC has no size limit
- * In practice they are usually relativey short except for the
+ * In practice they are usually relatively short except for the
  * data URI scheme as defined in RFC 2397. Even for data URI the usual
  * maximum size before hitting random practical limits is around 64 KB
  * and 4KB is usually a maximum admitted limit for proper operations.
@@ -325,16 +326,23 @@ static int
 xmlParse3986Port(xmlURIPtr uri, const char **str)
 {
     const char *cur = *str;
-    unsigned port = 0; /* unsigned for defined overflow behavior */
+    int port = 0;
 
     if (ISA_DIGIT(cur)) {
 	while (ISA_DIGIT(cur)) {
-	    port = port * 10 + (*cur - '0');
+            int digit = *cur - '0';
+
+            if (port > INT_MAX / 10)
+                return(1);
+            port *= 10;
+            if (port > INT_MAX - digit)
+                return(1);
+	    port += digit;
 
 	    cur++;
 	}
 	if (uri != NULL)
-	    uri->port = port & USHRT_MAX; /* port value modulo USHRT_MAX+1 */
+	    uri->port = port;
 	*str = cur;
 	return(0);
     }
@@ -346,7 +354,7 @@ xmlParse3986Port(xmlURIPtr uri, const char **str)
  * @uri:  pointer to an URI structure
  * @str:  the string to analyze
  *
- * Parse an user informations part and fills in the appropriate fields
+ * Parse an user information part and fills in the appropriate fields
  * of the @uri structure
  *
  * userinfo      = *( unreserved / pct-encoded / sub-delims / ":" )
@@ -436,7 +444,7 @@ xmlParse3986Host(xmlURIPtr uri, const char **str)
 
     host = cur;
     /*
-     * IPv6 and future adressing scheme are enclosed between brackets
+     * IPv6 and future addressing scheme are enclosed between brackets
      */
     if (*cur == '[') {
         cur++;
@@ -1456,7 +1464,7 @@ xmlNormalizeURIPath(char *path) {
               goto done_cd;
 	    (out++)[0] = (cur++)[0];
 	}
-	/* nomalize // */
+	/* normalize // */
 	while ((cur[0] == '/') && (cur[1] == '/'))
 	    cur++;
 
@@ -1746,11 +1754,6 @@ xmlURIEscape(const xmlChar * str)
     xmlURIPtr uri;
     int ret2;
 
-#define NULLCHK(p) if(!p) { \
-         xmlURIErrMemory("escaping URI value\n"); \
-         xmlFreeURI(uri); \
-         return NULL; } \
-
     if (str == NULL)
         return (NULL);
 
@@ -1772,6 +1775,12 @@ xmlURIEscape(const xmlChar * str)
 
     ret = NULL;
 
+#define NULLCHK(p) if(!p) { \
+         xmlURIErrMemory("escaping URI value\n"); \
+         xmlFreeURI(uri); \
+         xmlFree(ret); \
+         return NULL; } \
+
     if (uri->scheme) {
         segment = xmlURIEscapeStr(BAD_CAST uri->scheme, BAD_CAST "+-.");
         NULLCHK(segment)
@@ -1792,7 +1801,7 @@ xmlURIEscape(const xmlChar * str)
     if (uri->user) {
         segment = xmlURIEscapeStr(BAD_CAST uri->user, BAD_CAST ";:&=+$,");
         NULLCHK(segment)
-		ret = xmlStrcat(ret,BAD_CAST "//");
+        ret = xmlStrcat(ret,BAD_CAST "//");
         ret = xmlStrcat(ret, segment);
         ret = xmlStrcat(ret, BAD_CAST "@");
         xmlFree(segment);
@@ -1801,8 +1810,8 @@ xmlURIEscape(const xmlChar * str)
     if (uri->server) {
         segment = xmlURIEscapeStr(BAD_CAST uri->server, BAD_CAST "/?;:@");
         NULLCHK(segment)
-		if (uri->user == NULL)
-		ret = xmlStrcat(ret, BAD_CAST "//");
+        if (uri->user == NULL)
+            ret = xmlStrcat(ret, BAD_CAST "//");
         ret = xmlStrcat(ret, segment);
         xmlFree(segment);
     }
@@ -2150,7 +2159,7 @@ done:
  *     http://site1.com/docs/pic1.gif   http://site1.com/docs/pic1.gif
  *
  *
- * Note: if the URI reference is really wierd or complicated, it may be
+ * Note: if the URI reference is really weird or complicated, it may be
  *       worthwhile to first convert it into a "nice" one by calling
  *       xmlBuildURI (using 'base') before calling this routine,
  *       since this routine (for reasonable efficiency) assumes URI has
@@ -2461,7 +2470,7 @@ path_processing:
 	/* allocate space for leading '/' + path + string terminator */
 	uri->path = xmlMallocAtomic(len + 2);
 	if (uri->path == NULL) {
-	    xmlFreeURI(uri);	/* Guard agains 'out of memory' */
+	    xmlFreeURI(uri);	/* Guard against 'out of memory' */
 	    return(NULL);
 	}
 	/* Put in leading '/' plus path */
@@ -2476,7 +2485,7 @@ path_processing:
 	}
 	p = uri->path;
     }
-    /* Now change all occurences of '\' to '/' */
+    /* Now change all occurrences of '\' to '/' */
     while (*p != '\0') {
 	if (*p == '\\')
 	    *p = '/';
@@ -2526,7 +2535,7 @@ xmlPathToURI(const xmlChar *path)
         return(NULL);
 #if defined(_WIN32) && !defined(__CYGWIN__)
     /* xmlCanonicPath can return an URI on Windows (is that the intended behaviour?)
-       If 'cal' is a valid URI allready then we are done here, as continuing would make
+       If 'cal' is a valid URI already then we are done here, as continuing would make
        it invalid. */
     if ((uri = xmlParseURI((const char *) cal)) != NULL) {
 	xmlFreeURI(uri);

@@ -26,7 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import cgi
+from six.moves.urllib import parse
 from mod_pywebsocket import msgutil
 
 
@@ -34,7 +34,7 @@ def web_socket_do_extra_handshake(request):
     r = request.ws_resource.split('?', 1)
     if len(r) == 1:
         return
-    param = cgi.parse_qs(r[1])
+    param = parse.parse_qs(r[1])
     if 'protocol' in param:
         request.ws_protocol = param['protocol'][0]
 

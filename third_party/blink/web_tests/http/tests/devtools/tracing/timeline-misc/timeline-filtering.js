@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test filtering in Timeline Tree View panel.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -278,7 +278,7 @@
   ];
 
   var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const tabbedPane = UI.panels.timeline._flameChart._detailsView._tabbedPane;
+  const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.EventLog);
   const view = tabbedPane.visibleView;
 
@@ -290,21 +290,21 @@
     TestRunner.addResult(' '.repeat(level) + text);
   }
 
-  function dumpRecords() {
-    PerformanceTestRunner.walkTimelineEventTreeUnderNode(printEventMessage, view._currentTree);
+  async function dumpRecords() {
+    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(printEventMessage, view.currentTree);
     TestRunner.addResult('');
   }
 
   TestRunner.addResult('Initial:');
-  dumpRecords();
+  await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'bar':`);
-  view._textFilterUI.setValue('bar', true);
-  dumpRecords();
+  view.textFilterUI.setValue('bar', true);
+  await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'foo':`);
-  view._textFilterUI.setValue('foo', true);
-  dumpRecords();
+  view.textFilterUI.setValue('foo', true);
+  await dumpRecords();
 
   TestRunner.completeTest();
 })();

@@ -1,8 +1,6 @@
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "get_stream_engine.cc",
-  ]
+  sources = [ "get_stream_engine.cc" ]
 
   deps = [
     "//base",
@@ -15,9 +13,7 @@ source_set("unit_tests") {
 
 source_set("get_stream_engine_header") {
   testonly = true
-  sources = [
-    "get_stream_engine.h",
-  ]
+  sources = [ "get_stream_engine.h" ]
 
   deps = [
     "//base",

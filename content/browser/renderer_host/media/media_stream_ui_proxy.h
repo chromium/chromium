@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -37,6 +37,9 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   static std::unique_ptr<MediaStreamUIProxy> CreateForTests(
       RenderFrameHostDelegate* render_delegate);
 
+  MediaStreamUIProxy(const MediaStreamUIProxy&) = delete;
+  MediaStreamUIProxy& operator=(const MediaStreamUIProxy&) = delete;
+
   virtual ~MediaStreamUIProxy();
 
   // Requests access for the MediaStream by calling
@@ -54,9 +57,37 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   // the stream source to be changed.
   // |window_id_callback| is called on the IO thread with the platform-
   // dependent window ID of the UI.
-  virtual void OnStarted(base::OnceClosure stop_callback,
-                         MediaStreamUI::SourceCallback source_callback,
-                         WindowIdCallback window_id_callback);
+  // |label| is the unique label of the stream's request.
+  // |screen_share_ids| is a list of media IDs of the started desktop captures.
+  // |state_change_callback| is called on the IO thread when the stream should
+  // be paused on unpaused.
+  virtual void OnStarted(
+      base::OnceClosure stop_callback,
+      MediaStreamUI::SourceCallback source_callback,
+      WindowIdCallback window_id_callback,
+      const std::string& label,
+      std::vector<DesktopMediaID> screen_share_ids,
+      MediaStreamUI::StateChangeCallback state_change_callback);
+
+  virtual void OnDeviceStopped(const std::string& label,
+                               const DesktopMediaID& media_id);
+
+#if !defined(OS_ANDROID)
+  // Determines whether the captured display surface represented by |media_id|
+  // should be focused or not.
+  // Only the first call to this method on a given object has an effect; the
+  // rest are ignored.
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  virtual void SetFocus(const DesktopMediaID& media_id,
+                        bool focus,
+                        bool is_from_microtask,
+                        bool is_from_timer);
+#endif
 
  protected:
   explicit MediaStreamUIProxy(RenderFrameHostDelegate* test_render_delegate);
@@ -71,6 +102,8 @@ class CONTENT_EXPORT MediaStreamUIProxy {
       blink::mojom::MediaStreamRequestResult result);
   void ProcessStopRequestFromUI();
   void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id);
+  void ProcessStateChangeFromUI(const DesktopMediaID& media_id,
+                                blink::mojom::MediaStreamStateChange new_state);
   void OnWindowId(WindowIdCallback window_id_callback,
                   gfx::NativeViewId* window_id);
 
@@ -78,10 +111,9 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   ResponseCallback response_callback_;
   base::OnceClosure stop_callback_;
   MediaStreamUI::SourceCallback source_callback_;
+  MediaStreamUI::StateChangeCallback state_change_callback_;
 
   base::WeakPtrFactory<MediaStreamUIProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamUIProxy);
 };
 
 class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
@@ -89,7 +121,11 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // Set |tests_use_fake_render_frame_hosts| to false if the test that's
   // creating the FakeMediaStreamUIProxy creates real RFH objects or true if it
   // just passes in dummy IDs to refer to RFHs.
-  FakeMediaStreamUIProxy(bool tests_use_fake_render_frame_hosts);
+  explicit FakeMediaStreamUIProxy(bool tests_use_fake_render_frame_hosts);
+
+  FakeMediaStreamUIProxy(const FakeMediaStreamUIProxy&) = delete;
+  FakeMediaStreamUIProxy& operator=(const FakeMediaStreamUIProxy&) = delete;
+
   ~FakeMediaStreamUIProxy() override;
 
   void SetAvailableDevices(const blink::MediaStreamDevices& devices);
@@ -99,9 +135,15 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // MediaStreamUIProxy overrides.
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request,
                      ResponseCallback response_callback) override;
-  void OnStarted(base::OnceClosure stop_callback,
-                 MediaStreamUI::SourceCallback source_callback,
-                 WindowIdCallback window_id_callback) override;
+  void OnStarted(
+      base::OnceClosure stop_callback,
+      MediaStreamUI::SourceCallback source_callback,
+      WindowIdCallback window_id_callback,
+      const std::string& label,
+      std::vector<DesktopMediaID> screen_share_ids,
+      MediaStreamUI::StateChangeCallback state_change_callback) override;
+  void OnDeviceStopped(const std::string& label,
+                       const DesktopMediaID& media_id) override;
 
  private:
   // This is used for RequestAccess().
@@ -110,8 +152,6 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // These are used for CheckAccess().
   bool mic_access_;
   bool camera_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaStreamUIProxy);
 };
 
 }  // namespace content

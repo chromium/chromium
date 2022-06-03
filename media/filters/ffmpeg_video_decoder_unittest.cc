@@ -9,9 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/run_loop.h"
@@ -66,6 +64,9 @@ class FFmpegVideoDecoderTest : public testing::Test {
     corrupt_i_frame_buffer_ = ReadTestDataFile("vp8-corrupt-I-frame");
   }
 
+  FFmpegVideoDecoderTest(const FFmpegVideoDecoderTest&) = delete;
+  FFmpegVideoDecoderTest& operator=(const FFmpegVideoDecoderTest&) = delete;
+
   ~FFmpegVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
@@ -75,8 +76,14 @@ class FFmpegVideoDecoderTest : public testing::Test {
   void InitializeWithConfigWithResult(const VideoDecoderConfig& config,
                                       bool success) {
     decoder_->Initialize(
-        config, false, nullptr, NewExpectedBoolCB(success),
-        base::Bind(&FFmpegVideoDecoderTest::FrameReady, base::Unretained(this)),
+        config, false, nullptr,
+        base::BindOnce(
+            [](bool success, Status status) {
+              EXPECT_EQ(status.is_ok(), success);
+            },
+            success),
+        base::BindRepeating(&FFmpegVideoDecoderTest::FrameReady,
+                            base::Unretained(this)),
         base::NullCallback());
     base::RunLoop().RunUntilIdle();
   }
@@ -102,14 +109,14 @@ class FFmpegVideoDecoderTest : public testing::Test {
   // Sets up expectations and actions to put FFmpegVideoDecoder in an active
   // decoding state.
   void EnterDecodingState() {
-    EXPECT_EQ(DecodeStatus::OK, DecodeSingleFrame(i_frame_buffer_));
+    EXPECT_TRUE(DecodeSingleFrame(i_frame_buffer_).is_ok());
     ASSERT_EQ(1U, output_frames_.size());
   }
 
   // Sets up expectations and actions to put FFmpegVideoDecoder in an end
   // of stream state.
   void EnterEndOfStreamState() {
-    EXPECT_EQ(DecodeStatus::OK, DecodeSingleFrame(end_of_stream_buffer_));
+    EXPECT_TRUE(DecodeSingleFrame(end_of_stream_buffer_).is_ok());
     ASSERT_FALSE(output_frames_.empty());
   }
 
@@ -119,29 +126,29 @@ class FFmpegVideoDecoderTest : public testing::Test {
   // Decodes all buffers in |input_buffers| and push all successfully decoded
   // output frames into |output_frames|.
   // Returns the last decode status returned by the decoder.
-  DecodeStatus DecodeMultipleFrames(const InputBuffers& input_buffers) {
+  Status DecodeMultipleFrames(const InputBuffers& input_buffers) {
     for (auto iter = input_buffers.begin(); iter != input_buffers.end();
          ++iter) {
-      DecodeStatus status = Decode(*iter);
-      switch (status) {
-        case DecodeStatus::OK:
+      Status status = Decode(*iter);
+      switch (status.code()) {
+        case StatusCode::kOk:
           break;
-        case DecodeStatus::ABORTED:
+        case StatusCode::kAborted:
           NOTREACHED();
           FALLTHROUGH;
-        case DecodeStatus::DECODE_ERROR:
+        default:
           DCHECK(output_frames_.empty());
           return status;
       }
     }
-    return DecodeStatus::OK;
+    return StatusCode::kOk;
   }
 
   // Decodes the single compressed frame in |buffer| and writes the
   // uncompressed output to |video_frame|. This method works with single
   // and multithreaded decoders. End of stream buffers are used to trigger
   // the frame to be returned in the multithreaded decoder case.
-  DecodeStatus DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
+  Status DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
     InputBuffers input_buffers;
     input_buffers.push_back(buffer);
     input_buffers.push_back(end_of_stream_buffer_);
@@ -163,9 +170,9 @@ class FFmpegVideoDecoderTest : public testing::Test {
     input_buffers.push_back(buffer);
     input_buffers.push_back(end_of_stream_buffer_);
 
-    DecodeStatus status = DecodeMultipleFrames(input_buffers);
+    Status status = DecodeMultipleFrames(input_buffers);
 
-    EXPECT_EQ(DecodeStatus::OK, status);
+    EXPECT_TRUE(status.is_ok());
     ASSERT_EQ(2U, output_frames_.size());
 
     gfx::Size original_size = kVisibleRect.size();
@@ -179,8 +186,8 @@ class FFmpegVideoDecoderTest : public testing::Test {
               output_frames_[1]->visible_rect().size().height());
   }
 
-  DecodeStatus Decode(scoped_refptr<DecoderBuffer> buffer) {
-    DecodeStatus status;
+  Status Decode(scoped_refptr<DecoderBuffer> buffer) {
+    Status status;
     EXPECT_CALL(*this, DecodeDone(_)).WillOnce(SaveArg<0>(&status));
 
     decoder_->Decode(buffer, base::BindOnce(&FFmpegVideoDecoderTest::DecodeDone,
@@ -192,11 +199,11 @@ class FFmpegVideoDecoderTest : public testing::Test {
   }
 
   void FrameReady(scoped_refptr<VideoFrame> frame) {
-    DCHECK(!frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM));
+    DCHECK(!frame->metadata().end_of_stream);
     output_frames_.push_back(std::move(frame));
   }
 
-  MOCK_METHOD1(DecodeDone, void(DecodeStatus));
+  MOCK_METHOD1(DecodeDone, void(Status));
 
   StrictMock<MockMediaLog> media_log_;
 
@@ -210,9 +217,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
   scoped_refptr<DecoderBuffer> corrupt_i_frame_buffer_;
 
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FFmpegVideoDecoderTest);
 };
 
 TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {
@@ -221,7 +225,7 @@ TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {
 
 TEST_F(FFmpegVideoDecoderTest, Initialize_OpenDecoderFails) {
   // Specify Theora w/o extra data so that avcodec_open2() fails.
-  VideoDecoderConfig config(kCodecTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
+  VideoDecoderConfig config(VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             VideoDecoderConfig::AlphaMode::kIsOpaque,
                             VideoColorSpace(), kNoTransformation, kCodedSize,
                             kVisibleRect, kNaturalSize, EmptyExtraData(),
@@ -251,8 +255,16 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_Normal) {
   Initialize();
 
   // Simulate decoding a single frame.
-  EXPECT_EQ(DecodeStatus::OK, DecodeSingleFrame(i_frame_buffer_));
+  EXPECT_TRUE(DecodeSingleFrame(i_frame_buffer_).is_ok());
   ASSERT_EQ(1U, output_frames_.size());
+}
+
+TEST_F(FFmpegVideoDecoderTest, DecodeFrame_OOM) {
+  Initialize();
+  decoder_->force_allocation_error_for_testing();
+  EXPECT_MEDIA_LOG(_);
+  EXPECT_FALSE(DecodeSingleFrame(i_frame_buffer_).is_ok());
+  EXPECT_TRUE(output_frames_.empty());
 }
 
 TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeError) {
@@ -263,14 +275,14 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeError) {
   // The error is only raised on the second decode attempt, so we expect at
   // least one successful decode but we don't expect valid frame to be decoded.
   // During the second decode attempt an error is raised.
-  EXPECT_EQ(DecodeStatus::OK, Decode(corrupt_i_frame_buffer_));
+  EXPECT_TRUE(Decode(corrupt_i_frame_buffer_).is_ok());
   EXPECT_TRUE(output_frames_.empty());
-  EXPECT_EQ(DecodeStatus::DECODE_ERROR, Decode(i_frame_buffer_));
+  EXPECT_THAT(Decode(i_frame_buffer_), IsDecodeErrorStatus());
   EXPECT_TRUE(output_frames_.empty());
 
   // After a decode error occurred, all following decodes will return
   // DecodeStatus::DECODE_ERROR.
-  EXPECT_EQ(DecodeStatus::DECODE_ERROR, Decode(i_frame_buffer_));
+  EXPECT_THAT(Decode(i_frame_buffer_), IsDecodeErrorStatus());
   EXPECT_TRUE(output_frames_.empty());
 }
 
@@ -280,8 +292,8 @@ TEST_F(FFmpegVideoDecoderTest, DecodeFrame_DecodeErrorAtEndOfStream) {
 
   EXPECT_MEDIA_LOG(ContainsFailedToSendLog());
 
-  EXPECT_EQ(DecodeStatus::DECODE_ERROR,
-            DecodeSingleFrame(corrupt_i_frame_buffer_));
+  EXPECT_THAT(DecodeSingleFrame(corrupt_i_frame_buffer_),
+              IsDecodeErrorStatus());
 }
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify

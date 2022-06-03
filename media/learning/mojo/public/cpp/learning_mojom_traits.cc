@@ -49,4 +49,39 @@ bool StructTraits<media::learning::mojom::ObservationCompletionDataView,
   out_observation_completion->weight = data.weight();
   return true;
 }
+
+// static
+bool StructTraits<media::learning::mojom::TargetHistogramPairDataView,
+                  media::learning::TargetHistogramPair>::
+    Read(media::learning::mojom::TargetHistogramPairDataView data,
+         media::learning::TargetHistogramPair* out_pair) {
+  if (!data.ReadTargetValue(&out_pair->target_value))
+    return false;
+  out_pair->count = data.count();
+  return true;
+}
+
+// static
+bool StructTraits<media::learning::mojom::TargetHistogramDataView,
+                  media::learning::TargetHistogram>::
+    Read(media::learning::mojom::TargetHistogramDataView data,
+         media::learning::TargetHistogram* out_target_histogram) {
+  ArrayDataView<media::learning::mojom::TargetHistogramPairDataView> pairs;
+  data.GetPairsDataView(&pairs);
+  if (pairs.is_null())
+    return false;
+
+  for (size_t i = 0; i < pairs.size(); ++i) {
+    media::learning::mojom::TargetHistogramPairDataView pair_data;
+    pairs.GetDataView(i, &pair_data);
+    media::learning::TargetValue value;
+    if (!pair_data.ReadTargetValue(&value))
+      return false;
+
+    out_target_histogram->counts_.emplace(std::move(value), pair_data.count());
+  }
+
+  return true;
+}
+
 }  // namespace mojo

@@ -1,0 +1,38 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_modulizer("modulize") {
+  input_files = [
+    "cr_policy_network_behavior_mojo_tests.js",
+    "cr_policy_network_indicator_mojo_tests.js",
+    "network_apnlist_test.js",
+    "network_choose_mobile_test.js",
+    "network_config_element_behavior_test.js",
+    "network_config_input_test.js",
+    "network_config_select_test.js",
+    "network_config_toggle_test.js",
+    "network_config_test.js",
+    "network_icon_test.js",
+    "network_ip_config_test.js",
+    "network_list_item_test.js",
+    "network_list_test.js",
+    "network_nameservers_test.js",
+    "network_password_input_test.js",
+    "network_property_list_mojo_test.js",
+    "network_proxy_exclusions_test.js",
+    "network_proxy_input_test.js",
+    "network_proxy_test.js",
+    "network_select_test.js",
+    "network_siminfo_test.js",
+    "sim_lock_dialogs_test.js",
+  ]
+  namespace_rewrites =
+      cr_components_chromeos_namespace_rewrites + [
+        "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
+        "test_util.eventToPromise|eventToPromise",
+      ]
+}

@@ -14,6 +14,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -23,6 +24,7 @@ WebauthnDialogViewImpl::WebauthnDialogViewImpl(
     WebauthnDialogController* controller,
     WebauthnDialogState dialog_state)
     : controller_(controller) {
+  SetShowTitle(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   std::unique_ptr<WebauthnDialogModel> model =
       std::make_unique<WebauthnDialogModel>(dialog_state);
@@ -32,10 +34,16 @@ WebauthnDialogViewImpl::WebauthnDialogViewImpl(
       AddChildView(CreateSheetViewForAutofillWebAuthn(std::move(model)));
   sheet_view_->ReInitChildViews();
 
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
-                                   model_->GetAcceptButtonLabel());
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
-                                   model_->GetCancelButtonLabel());
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->GetAcceptButtonLabel());
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, model_->GetCancelButtonLabel());
+  SetButtons(model_->IsAcceptButtonVisible()
+                 ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
+                 : ui::DIALOG_BUTTON_CANCEL);
 }
 
 WebauthnDialogViewImpl::~WebauthnDialogViewImpl() {
@@ -77,12 +85,6 @@ void WebauthnDialogViewImpl::OnDialogStateChanged() {
   }
 }
 
-gfx::Size WebauthnDialogViewImpl::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 bool WebauthnDialogViewImpl::Accept() {
   DCHECK_EQ(model_->dialog_state(), WebauthnDialogState::kOffer);
   controller_->OnOkButtonClicked();
@@ -99,34 +101,14 @@ bool WebauthnDialogViewImpl::Cancel() {
   return true;
 }
 
-int WebauthnDialogViewImpl::GetDialogButtons() const {
-  // Cancel button is always visible but OK button depends on dialog state.
-  DCHECK(model_->IsCancelButtonVisible());
-  return model_->IsAcceptButtonVisible()
-             ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
-             : ui::DIALOG_BUTTON_CANCEL;
-}
-
 bool WebauthnDialogViewImpl::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button == ui::DIALOG_BUTTON_OK ? model_->IsAcceptButtonEnabled()
                                         : true;
 }
 
-ui::ModalType WebauthnDialogViewImpl::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-base::string16 WebauthnDialogViewImpl::GetWindowTitle() const {
+std::u16string WebauthnDialogViewImpl::GetWindowTitle() const {
   return model_->GetStepTitle();
-}
-
-bool WebauthnDialogViewImpl::ShouldShowWindowTitle() const {
-  return false;
-}
-
-bool WebauthnDialogViewImpl::ShouldShowCloseButton() const {
-  return false;
 }
 
 void WebauthnDialogViewImpl::Hide() {
@@ -143,10 +125,13 @@ void WebauthnDialogViewImpl::Hide() {
 void WebauthnDialogViewImpl::RefreshContent() {
   sheet_view_->ReInitChildViews();
   sheet_view_->InvalidateLayout();
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
-                                   model_->GetAcceptButtonLabel());
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
-                                   model_->GetCancelButtonLabel());
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->GetAcceptButtonLabel());
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, model_->GetCancelButtonLabel());
+  DCHECK(model_->IsCancelButtonVisible());
+  SetButtons(model_->IsAcceptButtonVisible()
+                 ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
+                 : ui::DIALOG_BUTTON_CANCEL);
+
   DialogModelChanged();
   Layout();
 
@@ -159,5 +144,8 @@ void WebauthnDialogViewImpl::RefreshContent() {
                          ->GetWebContentsModalDialogHost());
   }
 }
+
+BEGIN_METADATA(WebauthnDialogViewImpl, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace autofill

@@ -6,10 +6,8 @@
 #define UI_GL_GL_CONTEXT_EGL_H_
 
 #include <map>
-#include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
 
@@ -26,17 +24,21 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
  public:
   explicit GLContextEGL(GLShareGroup* share_group);
 
+  GLContextEGL(const GLContextEGL&) = delete;
+  GLContextEGL& operator=(const GLContextEGL&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
-  bool MakeCurrent(GLSurface* surface) override;
+  bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override;
   bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override;
-  unsigned int CheckStickyGraphicsResetStatus() override;
+  unsigned int CheckStickyGraphicsResetStatusImpl() override;
   void SetUnbindFboOnMakeCurrent() override;
   YUVToRGBConverter* GetYUVToRGBConverter(
       const gfx::ColorSpace& color_space) override;
+  void SetVisibility(bool visibility) override;
 
  protected:
   ~GLContextEGL() override;
@@ -53,8 +55,6 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
   bool lost_ = false;
   std::map<gfx::ColorSpace, std::unique_ptr<YUVToRGBConverter>>
       yuv_to_rgb_converters_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextEGL);
 };
 
 }  // namespace gl

@@ -5,18 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_TRACKER_H_
 
-#include <map>
-
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
@@ -25,31 +27,55 @@ class DataChannelInterface;
 }  // namespace webrtc
 
 namespace blink {
+class LocalFrame;
+class MediaConstraints;
+class MockPeerConnectionTracker;
+class PeerConnectionTrackerTest;
 class RTCAnswerOptionsPlatform;
 class RTCIceCandidatePlatform;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandler;
+class UserMediaRequest;
 class WebLocalFrame;
-class WebMediaConstraints;
-class WebUserMediaRequest;
 
 // This class collects data about each peer connection,
 // sends it to the browser process, and handles messages
 // from the browser process.
 class MODULES_EXPORT PeerConnectionTracker
-    : public blink::mojom::blink::PeerConnectionManager,
-      public base::SupportsWeakPtr<PeerConnectionTracker> {
+    : public GarbageCollected<PeerConnectionTracker>,
+      public Supplement<LocalDOMWindow>,
+      public blink::mojom::blink::PeerConnectionManager {
  public:
-  static PeerConnectionTracker* GetInstance();
+  static const char kSupplementName[];
 
-  // TODO(crbug.com/787254): Make these ctors private, and accessible to
-  // tests only.
-  explicit PeerConnectionTracker(
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
+  static PeerConnectionTracker& From(LocalDOMWindow& window);
+  static PeerConnectionTracker* From(LocalFrame& frame);
+  static PeerConnectionTracker* From(WebLocalFrame& frame);
   PeerConnectionTracker(
-      mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost> host,
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
+      LocalDOMWindow& window,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      base::PassKey<PeerConnectionTracker>);
+
+  PeerConnectionTracker(const PeerConnectionTracker&) = delete;
+  PeerConnectionTracker& operator=(const PeerConnectionTracker&) = delete;
+
   ~PeerConnectionTracker() override;
+
+  // Ctors for tests.
+  PeerConnectionTracker(
+      mojo::Remote<mojom::blink::PeerConnectionTrackerHost> host,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      base::PassKey<PeerConnectionTrackerTest> key)
+      : PeerConnectionTracker(std::move(host), main_thread_task_runner) {}
+  PeerConnectionTracker(
+      mojo::Remote<mojom::blink::PeerConnectionTrackerHost> host,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      base::PassKey<MockPeerConnectionTracker> key)
+      : PeerConnectionTracker(std::move(host), main_thread_task_runner) {}
+
+  static void BindToFrame(
+      LocalFrame* frame,
+      mojo::PendingReceiver<mojom::blink::PeerConnectionManager> receiver);
 
   enum Source { SOURCE_LOCAL, SOURCE_REMOTE };
 
@@ -71,9 +97,6 @@ class MODULES_EXPORT PeerConnectionTracker
     kSetRemoteDescription,
   };
 
-  void Bind(mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
-                receiver);
-
   // The following methods send an update to the browser process when a
   // PeerConnection update happens. The caller should call the Track* methods
   // after calling RegisterPeerConnection and before calling
@@ -89,7 +112,7 @@ class MODULES_EXPORT PeerConnectionTracker
   void RegisterPeerConnection(
       RTCPeerConnectionHandler* pc_handler,
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
-      const blink::WebMediaConstraints& constraints,
+      const MediaConstraints& constraints,
       const blink::WebLocalFrame* frame);
 
   // Sends an update when a PeerConnection has been destroyed.
@@ -102,11 +125,11 @@ class MODULES_EXPORT PeerConnectionTracker
                                 RTCOfferOptionsPlatform* options);
   // TODO(hta): Get rid of the version below.
   virtual void TrackCreateOffer(RTCPeerConnectionHandler* pc_handler,
-                                const blink::WebMediaConstraints& options);
+                                const MediaConstraints& options);
   virtual void TrackCreateAnswer(RTCPeerConnectionHandler* pc_handler,
                                  blink::RTCAnswerOptionsPlatform* options);
   virtual void TrackCreateAnswer(RTCPeerConnectionHandler* pc_handler,
-                                 const blink::WebMediaConstraints& constraints);
+                                 const MediaConstraints& constraints);
 
   // Sends an update when setLocalDescription or setRemoteDescription is called.
   virtual void TrackSetSessionDescription(RTCPeerConnectionHandler* pc_handler,
@@ -128,6 +151,8 @@ class MODULES_EXPORT PeerConnectionTracker
                                     bool succeeded);
   // Sends an update when an Ice candidate error is receiver.
   virtual void TrackIceCandidateError(RTCPeerConnectionHandler* pc_handler,
+                                      const String& address,
+                                      absl::optional<uint16_t> port,
                                       const String& host_candidate,
                                       const String& url,
                                       int error_code,
@@ -164,8 +189,8 @@ class MODULES_EXPORT PeerConnectionTracker
       const webrtc::DataChannelInterface* data_channel,
       Source source);
 
-  // Sends an update when a PeerConnection has been stopped.
-  virtual void TrackStop(RTCPeerConnectionHandler* pc_handler);
+  // Sends an update when a PeerConnection has been closed.
+  virtual void TrackClose(RTCPeerConnectionHandler* pc_handler);
 
   // Sends an update when the signaling state of a PeerConnection has changed.
   virtual void TrackSignalingStateChange(
@@ -218,15 +243,25 @@ class MODULES_EXPORT PeerConnectionTracker
   virtual void TrackOnRenegotiationNeeded(RTCPeerConnectionHandler* pc_handler);
 
   // Sends an update when getUserMedia is called.
-  virtual void TrackGetUserMedia(
-      const blink::WebUserMediaRequest& user_media_request);
+  virtual void TrackGetUserMedia(UserMediaRequest* user_media_request);
 
   // Sends a new fragment on an RtcEventLog.
   virtual void TrackRtcEventLogWrite(RTCPeerConnectionHandler* pc_handler,
-                                     const std::string& output);
+                                     const WTF::Vector<uint8_t>& output);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, OnSuspend);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, OnThermalStateChange);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, OnSpeedLimitChange);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest,
+                           ReportInitialThermalState);
+
+  PeerConnectionTracker(
+      mojo::Remote<mojom::blink::PeerConnectionTrackerHost> host,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
+
+  void Bind(mojo::PendingReceiver<blink::mojom::blink::PeerConnectionManager>
+                receiver);
 
   // Assign a local ID to a peer connection so that the browser process can
   // uniquely identify a peer connection in the renderer process.
@@ -245,6 +280,9 @@ class MODULES_EXPORT PeerConnectionTracker
 
   // PeerConnectionTracker implementation.
   void OnSuspend() override;
+  void OnThermalStateChange(
+      mojom::blink::DeviceThermalState thermal_state) override;
+  void OnSpeedLimitChange(int32_t speed_limit) override;
   void StartEventLog(int peer_connection_local_id,
                      int output_period_ms) override;
   void StopEventLog(int peer_connection_local_id) override;
@@ -270,19 +308,18 @@ class MODULES_EXPORT PeerConnectionTracker
   void AddLegacyStats(int lid, base::Value value);
 
   // This map stores the local ID assigned to each RTCPeerConnectionHandler.
-  typedef std::map<RTCPeerConnectionHandler*, int> PeerConnectionLocalIdMap;
+  typedef WTF::HashMap<RTCPeerConnectionHandler*, int> PeerConnectionLocalIdMap;
   PeerConnectionLocalIdMap peer_connection_local_id_map_;
+  mojom::blink::DeviceThermalState current_thermal_state_ =
+      mojom::blink::DeviceThermalState::kUnknown;
+  int32_t current_speed_limit_ = mojom::blink::kSpeedLimitMax;
 
-  // This keeps track of the next available local ID.
-  int next_local_id_;
   THREAD_CHECKER(main_thread_);
   mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost>
       peer_connection_tracker_host_;
   mojo::Receiver<blink::mojom::blink::PeerConnectionManager> receiver_{this};
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionTracker);
 };
 
 }  // namespace blink

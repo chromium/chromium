@@ -4,37 +4,27 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
-import("//chrome/android/channel.gni")
 
 declare_args() {
   enable_gvr_services = is_android && !is_chromecast &&
                         (current_cpu == "arm" || current_cpu == "arm64")
 
-  enable_openvr = is_win
-
-  enable_windows_mr = is_win
+  use_command_buffer = is_win
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
-  # TODO (crbug.com/998160): there's an issue affecting the __preload macro
-  # used in DirectXMathVector.inl on Windows on Arm.
-  enable_openxr = checkout_openxr && (is_win && current_cpu != "arm64")
-
-  # To build with Oculus support, the Oculus SDK for Windows will need to be
-  # installed in third_party/libovr/src.  See
-  # third_party/libovr/README.chromium for details.
-  enable_oculus_vr = checkout_oculus_sdk && is_chrome_branded && is_win
+  enable_openxr = checkout_openxr && is_win
 }
 
 declare_args() {
   # Enable VR device support whenever VR device SDK(s) are supported.
   # We enable VR on Linux even though VR features aren't usable because
   # the binary size impact is small and allows many VR tests to run on Linux
-  enable_vr =
-      enable_gvr_services || enable_openvr || enable_oculus_vr ||
-      enable_windows_mr || enable_openxr ||
-      (is_desktop_linux && (current_cpu == "x64" || current_cpu == "x86"))
+  enable_vr = enable_gvr_services || enable_openxr ||
+              (is_linux && (current_cpu == "x64" || current_cpu == "x86") &&
+               !is_chromeos_lacros && !is_chromecast)
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
   include_vr_data = false

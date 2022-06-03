@@ -4,11 +4,14 @@
 
 #include "services/device/usb/usb_service.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
@@ -20,11 +23,11 @@
 #include "services/device/usb/usb_service_android.h"
 #elif defined(USE_UDEV)
 #include "services/device/usb/usb_service_linux.h"
-#else
-#if defined(OS_WIN)
-#include "services/device/usb/usb_service_win.h"
-#endif
+#elif defined(OS_MAC)
 #include "services/device/usb/usb_service_impl.h"
+#include "services/device/usb/usb_service_mac.h"
+#elif defined(OS_WIN)
+#include "services/device/usb/usb_service_win.h"
 #endif
 
 namespace device {
@@ -50,12 +53,12 @@ std::unique_ptr<UsbService> UsbService::Create() {
 #elif defined(USE_UDEV)
   return base::WrapUnique(new UsbServiceLinux());
 #elif defined(OS_WIN)
+  return base::WrapUnique(new UsbServiceWin());
+#elif defined(OS_MAC)
   if (base::FeatureList::IsEnabled(kNewUsbBackend))
-    return base::WrapUnique(new UsbServiceWin());
+    return base::WrapUnique(new UsbServiceMac());
   else
     return base::WrapUnique(new UsbServiceImpl());
-#elif defined(OS_MACOSX)
-  return base::WrapUnique(new UsbServiceImpl());
 #else
   return nullptr;
 #endif
@@ -64,7 +67,7 @@ std::unique_ptr<UsbService> UsbService::Create() {
 // static
 scoped_refptr<base::SequencedTaskRunner>
 UsbService::CreateBlockingTaskRunner() {
-  return base::CreateSequencedTaskRunner(kBlockingTaskTraits);
+  return base::ThreadPool::CreateSequencedTaskRunner(kBlockingTaskTraits);
 }
 
 UsbService::~UsbService() {

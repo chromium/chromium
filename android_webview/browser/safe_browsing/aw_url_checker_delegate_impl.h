@@ -9,13 +9,13 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "components/safe_browsing/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace android_webview {
 
 class AwSafeBrowsingUIManager;
-class AwSafeBrowsingWhitelistManager;
+class AwSafeBrowsingAllowlistManager;
 struct AwWebResourceRequest;
 
 class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
@@ -31,13 +31,16 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
       scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
-      AwSafeBrowsingWhitelistManager* whitelist_manager);
+      AwSafeBrowsingAllowlistManager* allowlist_manager);
+
+  AwUrlCheckerDelegateImpl(const AwUrlCheckerDelegateImpl&) = delete;
+  AwUrlCheckerDelegateImpl& operator=(const AwUrlCheckerDelegateImpl&) = delete;
 
  private:
   ~AwUrlCheckerDelegateImpl() override;
 
   // Implementation of UrlCheckerDelegate:
-  void MaybeDestroyPrerenderContents(
+  void MaybeDestroyNoStatePrefetchContents(
       content::WebContents::OnceGetter web_contents_getter) override;
   void StartDisplayingBlockingPageHelper(
       const security_interstitials::UnsafeResource& resource,
@@ -45,9 +48,13 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       const net::HttpRequestHeaders& headers,
       bool is_main_frame,
       bool has_user_gesture) override;
-  bool IsUrlWhitelisted(const GURL& url) override;
-  bool ShouldSkipRequestCheck(content::ResourceContext* resource_context,
-                              const GURL& original_url,
+  void StartObservingInteractionsForDelayedBlockingPageHelper(
+      const security_interstitials::UnsafeResource& resource,
+      bool is_main_frame) override;
+  bool IsUrlAllowlisted(const GURL& url) override;
+  void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) override;
+  bool ShouldSkipRequestCheck(const GURL& original_url,
                               int frame_tree_node_id,
                               int render_process_id,
                               int render_frame_id,
@@ -71,6 +78,7 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   static void DoApplicationResponse(
       scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
       const security_interstitials::UnsafeResource& resource,
+      const AwWebResourceRequest& request,
       SafeBrowsingAction action,
       bool reporting);
 
@@ -81,9 +89,7 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<AwSafeBrowsingUIManager> ui_manager_;
   safe_browsing::SBThreatTypeSet threat_types_;
-  AwSafeBrowsingWhitelistManager* whitelist_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwUrlCheckerDelegateImpl);
+  AwSafeBrowsingAllowlistManager* allowlist_manager_;
 };
 
 }  // namespace android_webview

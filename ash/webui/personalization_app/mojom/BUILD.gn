@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "personalization_app.mojom" ]
+
+  webui_module_path = "/ash/web/personalization_app"
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.personalization_app.mojom.WallpaperLayout"
+          cpp = "ash::WallpaperLayout"
+        },
+        {
+          mojom = "ash.personalization_app.mojom.WallpaperType"
+          cpp = "ash::WallpaperType"
+        },
+        {
+          mojom = "ash.personalization_app.mojom.WallpaperCollection"
+          cpp = "backdrop::Collection"
+        },
+        {
+          mojom = "ash.personalization_app.mojom.WallpaperImage"
+          cpp = "backdrop::Image"
+        },
+        {
+          mojom = "ash.personalization_app.mojom.OnlineImageType"
+          cpp = "backdrop::Image::ImageType"
+        },
+      ]
+      traits_headers = [ "personalization_app_mojom_traits.h" ]
+      traits_sources = [ "personalization_app_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ash/public/cpp",
+        "//ash/webui/personalization_app/proto",
+        "//skia",
+      ]
+    },
+  ]
+}

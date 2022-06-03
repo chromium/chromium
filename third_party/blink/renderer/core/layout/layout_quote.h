@@ -42,15 +42,21 @@ class LayoutQuote final : public LayoutInline {
  public:
   LayoutQuote(PseudoElement&, const QuoteType);
   ~LayoutQuote() override;
+  void Trace(Visitor*) const override;
+
   void AttachQuote();
 
-  const char* GetName() const override { return "LayoutQuote"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutQuote";
+  }
 
  private:
   void DetachQuote();
 
   void WillBeDestroyed() override;
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectQuote || LayoutInline::IsOfType(type);
   }
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
@@ -60,7 +66,10 @@ class LayoutQuote final : public LayoutInline {
   void UpdateText();
   const QuotesData* GetQuotesData() const;
   void UpdateDepth();
-  bool IsAttached() { return attached_; }
+  bool IsAttached() {
+    NOT_DESTROYED();
+    return attached_;
+  }
 
   LayoutTextFragment* FindFragmentChild() const;
 
@@ -78,13 +87,13 @@ class LayoutQuote final : public LayoutInline {
   // The next and previous LayoutQuote in layout tree order.
   // LayoutQuotes are linked together by this doubly-linked list.
   // Those are used to compute |m_depth| in an efficient manner.
-  LayoutQuote* next_;
-  LayoutQuote* previous_;
+  Member<LayoutQuote> next_;
+  Member<LayoutQuote> previous_;
 
   // The pseudo-element that owns us.
   //
   // Lifetime is the same as LayoutObject::m_node, so this is safe.
-  UntracedMember<PseudoElement> owning_pseudo_;
+  Member<PseudoElement> owning_pseudo_;
 
   // This tracks whether this LayoutQuote was inserted into the layout tree
   // and its position in the linked list is correct (m_next and m_previous).
@@ -97,7 +106,10 @@ class LayoutQuote final : public LayoutInline {
   String text_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutQuote, IsQuote());
+template <>
+struct DowncastTraits<LayoutQuote> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsQuote(); }
+};
 
 }  // namespace blink
 

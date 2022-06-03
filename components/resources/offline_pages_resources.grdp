@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-  <include name="IDR_OFFLINE_PAGES_RENOVATIONS_JS" file="../offline_pages/resources/renovations.js" type="BINDATA" compress="gzip" />
+  <include name="IDR_OFFLINE_PAGES_RENOVATIONS_JS" file="../offline_pages/resources/renovations.js" type="BINDATA" />
 </grit-part>

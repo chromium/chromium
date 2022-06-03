@@ -29,8 +29,10 @@ grid > * {
   display: inline-block;
 }
 
-html[class*='col-resize'] list,
-html[class*='col-resize'] grid {
+html.col-resize list,
+html.breadcrumb-elider-expanded list,
+html.col-resize grid,
+html.breadcrumb-elider-expanded grid {
   overflow-y: hidden !important;
 }
 

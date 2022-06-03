@@ -36,7 +36,7 @@ void MediaControlAnimatedArrowContainerElement::AnimatedArrow::ShowInternal() {
     return;
   }
 
-  SetInnerHTMLFromString(MediaControlsResourceLoader::GetJumpSVGImage());
+  setInnerHTML(MediaControlsResourceLoader::GetJumpSVGImage());
 
   last_arrow_ = getElementById("arrow-3");
   svg_container_ = getElementById("jump");
@@ -66,7 +66,7 @@ Element& MediaControlAnimatedArrowContainerElement::AnimatedArrow::
 }
 
 void MediaControlAnimatedArrowContainerElement::AnimatedArrow::Trace(
-    Visitor* visitor) {
+    Visitor* visitor) const {
   MediaControlAnimationEventListener::Observer::Trace(visitor);
   HTMLDivElement::Trace(visitor);
   visitor->Trace(last_arrow_);
@@ -121,7 +121,7 @@ void MediaControlAnimatedArrowContainerElement::ShowArrowAnimation(
   }
 }
 
-void MediaControlAnimatedArrowContainerElement::Trace(blink::Visitor* visitor) {
+void MediaControlAnimatedArrowContainerElement::Trace(Visitor* visitor) const {
   MediaControlDivElement::Trace(visitor);
   visitor->Trace(left_jump_arrow_);
   visitor->Trace(right_jump_arrow_);

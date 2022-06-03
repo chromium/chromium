@@ -7,6 +7,7 @@
 
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/khronos/GLES2/gl2ext.h"
 
 namespace blink {
 

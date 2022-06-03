@@ -5,6 +5,8 @@
 #ifndef NET_QUIC_ADDRESS_UTILS_H_
 #define NET_QUIC_ADDRESS_UTILS_H_
 
+#include <string.h>
+
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_ip_address.h"
@@ -55,9 +57,9 @@ inline quic::QuicSocketAddress ToQuicSocketAddress(IPEndPoint address) {
 
   sockaddr_storage result;
   socklen_t size = sizeof(result);
-  bool success =
-      address.ToSockAddr(reinterpret_cast<sockaddr*>(&result), &size);
-  DCHECK(success);
+  if (!address.ToSockAddr(reinterpret_cast<sockaddr*>(&result), &size)) {
+    return quic::QuicSocketAddress();
+  }
   return quic::QuicSocketAddress(result);
 }
 

@@ -21,3 +21,16 @@ component("client") {
     "//components/discardable_memory/public/mojom",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "client_discardable_shared_memory_manager_unittest.cc" ]
+
+  deps = [
+    ":client",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

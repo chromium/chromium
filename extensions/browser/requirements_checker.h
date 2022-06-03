@@ -24,12 +24,16 @@ class Extension;
 class RequirementsChecker : public PreloadCheck {
  public:
   explicit RequirementsChecker(scoped_refptr<const Extension> extension);
+
+  RequirementsChecker(const RequirementsChecker&) = delete;
+  RequirementsChecker& operator=(const RequirementsChecker&) = delete;
+
   ~RequirementsChecker() override;
 
   // PreloadCheck:
   void Start(ResultCallback callback) override;
   // Joins multiple errors into a space-separated string.
-  base::string16 GetErrorMessage() const override;
+  std::u16string GetErrorMessage() const override;
 
  private:
   // Callback for the GpuFeatureChecker.
@@ -45,8 +49,6 @@ class RequirementsChecker : public PreloadCheck {
   Errors errors_;
 
   base::WeakPtrFactory<RequirementsChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequirementsChecker);
 };
 
 }  // namespace extensions

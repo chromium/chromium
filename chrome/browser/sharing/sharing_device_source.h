@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 
 namespace syncer {
 class DeviceInfo;
@@ -19,6 +19,10 @@ class DeviceInfo;
 class SharingDeviceSource {
  public:
   SharingDeviceSource();
+
+  SharingDeviceSource(const SharingDeviceSource&) = delete;
+  SharingDeviceSource& operator=(const SharingDeviceSource&) = delete;
+
   virtual ~SharingDeviceSource();
 
   // Returns if the source is ready. Calling GetAllDevices before this is true
@@ -29,8 +33,11 @@ class SharingDeviceSource {
   virtual std::unique_ptr<syncer::DeviceInfo> GetDeviceByGuid(
       const std::string& guid) = 0;
 
-  // Returns all devices found.
-  virtual std::vector<std::unique_ptr<syncer::DeviceInfo>> GetAllDevices() = 0;
+  // Returns all device candidates for |required_feature|. Internally filters
+  // out older devices and returns them in (not strictly) decreasing order of
+  // last updated timestamp.
+  virtual std::vector<std::unique_ptr<syncer::DeviceInfo>> GetDeviceCandidates(
+      sync_pb::SharingSpecificFields::EnabledFeatures required_feature) = 0;
 
   // Adds a callback to be run when the SharingDeviceSource is ready. If a
   // callback is added when it is already ready, it will be run immediately.
@@ -41,8 +48,6 @@ class SharingDeviceSource {
 
  private:
   std::vector<base::OnceClosure> ready_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingDeviceSource);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_H_

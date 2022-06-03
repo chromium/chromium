@@ -1,0 +1,2 @@
+autocomplete.AXAutocompleteValue='list'
+not_applicable.AXAutocompleteValue=n/a

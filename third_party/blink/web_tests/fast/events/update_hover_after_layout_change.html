@@ -18,8 +18,6 @@
 </style>
 
 <script>
-internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
-
 var eventList = [];
 var x = 100;
 var y = 100;
@@ -44,6 +42,5 @@ promise_test (async () => {
   var result = eventList.join();
   assert_true(result == 'mouseover,mouseenter');
   assert_true(document.getElementById("blue").matches(':hover'));
-  assert_true(internals.runtimeFlags.updateHoverAtBeginFrameEnabled);
 }, 'Tests that the mouseover event is fired and the element has hover effect when the element underneath the mouse cursor is changed.');
 </script>

@@ -1,0 +1,33 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style>
+ textarea {
+      /* Some of the height tests are based on font size px values. */
+      font-size: 1em;
+      height: 25px; /* Need to force an initial height < our minHeight. */
+      width: 150px;
+      padding: 2px;
+      margin: 0;
+      border: 1px solid #000;
+    }
+    .drop-shadowed {
+      filter:progid:DXImageTransform.Microsoft.DropShadow(color='#e7e7e7',
+          offX='5',offY='5');
+      box-shadow: 5px 5px 0 #e7e7e7;
+      -moz-box-shadow: 5px 5px 0 #e7e7e7;
+      -webkit-box-shadow: 5px 5px 0 #e7e7e7;
+    }
+</style>
+<h1>
+ goog.ui.Textarea tests
+</h1>
+<p>
+ Here's a textarea defined in markup:
+</p>
+<textarea id="demo-textarea">Foo</textarea>
+<div id="sandbox">
+</div>

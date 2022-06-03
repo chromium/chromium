@@ -24,7 +24,7 @@ shouldThrow("__proto__ = anotherObject; __proto__", error);
 shouldBe("__proto__ = originalWindowPrototype; __proto__", "originalWindowPrototype");
 shouldBe("anotherObject.__proto__ = window; anotherObject.__proto__", "window");
 shouldThrow("__proto__ = null; __proto__", error);
-shouldThrow("location.__proto__.__proto__ = location", "'TypeError: Cyclic __proto__ value'");
+shouldThrow("location.__proto__.__proto__ = location", "'TypeError: Immutable prototype object \\'#<Location>\\' cannot have their prototype set'");
 </script>
 </body>
 </html>

@@ -16,7 +16,7 @@
 " Add the following to your .vimrc file:
 "     so /path/to/src/tools/vim/ninja-build.vim
 
-python << endpython
+pythonx << endpython
 import os
 import vim
 
@@ -86,11 +86,11 @@ fun! s:MakeWithCustomCommand(build_cmd)
 endfun
 
 fun! s:NinjaCommandForCurrentBuffer()
-  python compute_ninja_command_for_current_buffer()
+  pythonx compute_ninja_command_for_current_buffer()
 endfun
 
 fun! s:NinjaCommandForTargets(targets)
-  python compute_ninja_command_for_targets(vim.eval('a:targets'))
+  pythonx compute_ninja_command_for_targets(vim.eval('a:targets'))
 endfun
 
 fun! CrCompileFile()

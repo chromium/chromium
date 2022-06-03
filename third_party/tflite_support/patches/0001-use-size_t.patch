@@ -1,0 +1,25 @@
+From ecb535154168358a72de6b51099a9549b970bce5 Mon Sep 17 00:00:00 2001
+From: Michael Crouse <mcrouse@chromium.org>
+Date: Tue, 22 Dec 2020 14:34:12 -0800
+Subject: [PATCH] use size_t
+
+---
+ .../cc/task/text/nlclassifier/nl_classifier.h                   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+index d3c3bed2083d..4055a93467d4 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+@@ -151,7 +151,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+       const std::string& name,
+       int index) {
+     if (metadata_array != nullptr && metadata_array->size() == tensors.size()) {
+-      for (int i = 0; i < metadata_array->size(); i++) {
++      for (size_t i = 0; i < metadata_array->size(); i++) {
+         if (strcmp(name.data(), metadata_array->Get(i)->name()->c_str()) == 0) {
+           return tensors[i];
+         }
+-- 
+2.29.2.729.g45daf8777d-goog
+

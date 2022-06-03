@@ -1,6 +1,10 @@
 [document web]
-++[section]
-++++[static]
-++++++[panel]
-++++++++[static] name='ruby text'
+++[section] description='ruby text' description-from:ruby-annotation
+++++[static] name='ruby base'
+++[paragraph]
+++++[section] description='ruby text' description-from:ruby-annotation
+++++++[static] name='ruby base'
+++[paragraph]
+++++[static] name='Hi! '
+++++[section] description='ruby text' description-from:ruby-annotation
 ++++++[static] name='ruby base'

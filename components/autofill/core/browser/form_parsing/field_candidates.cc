@@ -42,7 +42,7 @@ ServerFieldType FieldCandidates::BestHeuristicType() const {
       std::max_element(type_scores.begin(), type_scores.end());
   const size_t index = std::distance(type_scores.begin(), best_type_iter);
 
-  return static_cast<ServerFieldType>(index);
+  return ToSafeServerFieldType(index, NO_SERVER_DATA);
 }
 
 }  // namespace autofill

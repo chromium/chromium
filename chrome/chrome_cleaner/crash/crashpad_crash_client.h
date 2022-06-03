@@ -7,11 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/crash/crash_client.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -26,6 +25,9 @@ namespace chrome_cleaner {
 // This class manages interaction with the Crashpad reporter.
 class CrashpadCrashClient : public CrashClient {
  public:
+  CrashpadCrashClient(const CrashpadCrashClient&) = delete;
+  CrashpadCrashClient& operator=(const CrashpadCrashClient&) = delete;
+
   ~CrashpadCrashClient() override;
 
   // Initializes the crash database only. Used in the crash reporter, which
@@ -41,7 +43,7 @@ class CrashpadCrashClient : public CrashClient {
 
   // Sets |client_id| to the current guid associated with crashes. |client_id|
   // may be empty if no guid is associated.
-  static void GetClientId(base::string16* client_id);
+  static void GetClientId(std::wstring* client_id);
 
   // Returns whether upload of crashes is enabled or not.
   static bool IsUploadEnabled();
@@ -58,8 +60,6 @@ class CrashpadCrashClient : public CrashClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<crashpad::CrashReportDatabase> database_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadCrashClient);
 };
 
 }  // namespace chrome_cleaner

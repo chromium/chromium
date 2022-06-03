@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class PrefService;
@@ -20,11 +21,12 @@ namespace prefs {
 
 // Alphabetical list of preference names specific to the Autofill
 // component. Keep alphabetized, and document each in the .cc file.
-extern const char kAutofillAcceptSaveCreditCardPromptState[];
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillCreditCardEnabled[];
 extern const char kAutofillCreditCardFidoAuthEnabled[];
+#if defined(OS_ANDROID)
 extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
+#endif
 extern const char kAutofillCreditCardSigninPromoImpressionCount[];
 // Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];
@@ -38,6 +40,7 @@ extern const char kAutofillOrphanRowsRemoved[];
 extern const char kAutofillProfileEnabled[];
 extern const char kAutofillProfileValidity[];
 extern const char kAutofillSyncTransportOptIn[];
+extern const char kAutofillStatesDataDir[];
 extern const char kAutofillUploadEncodingSeed[];
 extern const char kAutofillUploadEvents[];
 extern const char kAutofillUploadEventsLastResetTimestamp[];
@@ -50,15 +53,6 @@ enum Flags {
   kWallet = 1 << 0,
 };
 }  // namespace sync_transport_opt_in
-
-// Possible values for previous user decision when we displayed a save credit
-// card prompt.
-enum PreviousSaveCreditCardPromptUserDecision {
-  PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE,
-  PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED,
-  PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED,
-  NUM_PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISIONS
-};
 
 // Registers Autofill prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

@@ -9,7 +9,14 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/shell/app/shell_main_delegate.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(erikchen): Move #include to .cc file and forward declare
+// chromeos::LacrosService to resolve crbug.com/1195401.
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace content {
 class ContentUtilityClient;
@@ -20,7 +27,16 @@ namespace extensions {
 class TestShellMainDelegate : public extensions::ShellMainDelegate {
  public:
   TestShellMainDelegate();
+
+  TestShellMainDelegate(const TestShellMainDelegate&) = delete;
+  TestShellMainDelegate& operator=(const TestShellMainDelegate&) = delete;
+
   ~TestShellMainDelegate() override;
+
+  // ContentMainDelegate implementation:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void PostEarlyInitialization(bool is_running_tests) override;
+#endif
 
  protected:
   // content::ContentMainDelegate implementation:
@@ -29,7 +45,9 @@ class TestShellMainDelegate : public extensions::ShellMainDelegate {
  private:
   std::unique_ptr<content::ContentUtilityClient> utility_client_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestShellMainDelegate);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::LacrosService> lacros_service_;
+#endif
 };
 
 }  // namespace extensions

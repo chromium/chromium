@@ -1,0 +1,3 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE language:fr-FR
+++IA2_ROLE_SECTION language:de
+++++ROLE_SYSTEM_STATICTEXT name='Ein Bild ist nicht zu verwechseln mit einer Sache, die man ber%C3%BChren kann. K%C3%B6nnen Sie meine Pfeife stopfen? Nat%C3%BCrlich nicht! Sie ist nur eine Darstellung. H%C3%A4tte ich auf mein Bild geschrieben, dies ist eine Pfeife, so h%C3%A4tte ich gelogen. Das Abbild einer Marmeladenschnitte ist ganz gewiss nichts Essbares.' language:de

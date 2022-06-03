@@ -4,7 +4,7 @@
 
 #include "ppapi/proxy/plugin_resource_tracker.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/singleton.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/plugin_globals.h"

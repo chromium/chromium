@@ -1,0 +1,18 @@
+Verifies that sending a Wasm Module to a same-site context causes an issue.
+
+Iframe Created: true
+postMessage sent: true
+Inspector issue: {
+    issue : {
+        code : WasmCrossOriginModuleSharingIssue
+        details : {
+            wasmCrossOriginModuleSharingIssue : {
+                isWarning : <boolean>
+                sourceOrigin : https://a.wasm.test:8443
+                targetOrigin : https://b.wasm.test:8443
+                wasmModuleUrl : https://a.wasm.test:8443/inspector-protocol/resources/add.wasm.php
+            }
+        }
+    }
+}
+

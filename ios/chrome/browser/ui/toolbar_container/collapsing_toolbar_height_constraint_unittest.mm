@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint.h"
 
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_collapsing.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

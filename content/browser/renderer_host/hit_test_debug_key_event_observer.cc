@@ -34,10 +34,10 @@ HitTestDebugKeyEventObserver::~HitTestDebugKeyEventObserver() {
 }
 
 void HitTestDebugKeyEventObserver::OnInputEventAck(
-    InputEventAckSource source,
-    InputEventAckState state,
+    blink::mojom::InputEventResultSource source,
+    blink::mojom::InputEventResultState state,
     const blink::WebInputEvent& event) {
-  if (INPUT_EVENT_ACK_STATE_CONSUMED == state ||
+  if (blink::mojom::InputEventResultState::kConsumed == state ||
       (event.GetType() != Type::kRawKeyDown &&
        event.GetType() != Type::kKeyDown)) {
     return;

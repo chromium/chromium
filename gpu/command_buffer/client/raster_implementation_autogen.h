@@ -19,8 +19,6 @@ void Flush() override;
 
 GLenum GetError() override;
 
-void ShallowFlushCHROMIUM() override;
-
 void OrderingBarrierCHROMIUM() override;
 
 void GenQueriesEXT(GLsizei n, GLuint* queries) override;

@@ -2,18 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * 'settings-keyboard' is the settings subpage with keyboard settings.
- */
-cr.exportPath('settings');
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import '../../controls/settings_dropdown_menu.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
 
 /**
  * Modifier key IDs corresponding to the ModifierKey enumerators in
- * /ui/base/ime/chromeos/ime_keyboard.h.
+ * /ui/base/ime/ash/ime_keyboard.h.
  * @enum {number}
  */
-settings.ModifierKey = {
+const ModifierKey = {
   SEARCH_KEY: 0,
   CONTROL_KEY: 1,
   ALT_KEY: 2,
@@ -24,8 +38,15 @@ settings.ModifierKey = {
   ASSISTANT_KEY: 7,
 };
 
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-keyboard',
+
+  behaviors: [
+    DeepLinkingBehavior,
+    RouteObserverBehavior,
+  ],
 
   properties: {
     /** Preferences state. */
@@ -34,11 +55,21 @@ Polymer({
       notify: true,
     },
 
+    /** @private {!Map<string, (string|Function)>} */
+    focusConfig: {
+      type: Object,
+      observer: 'onFocusConfigChange_',
+    },
+
     /** @private Whether to show Caps Lock options. */
     showCapsLock_: Boolean,
 
-    /** @private Whether this device has an internal keyboard. */
-    hasInternalKeyboard_: Boolean,
+    /**
+     * @private
+     * Whether this device has a ChromeOS launcher key. Applies only to
+     * ChromeOS keyboards, internal or external.
+     */
+    hasLauncherKey_: Boolean,
 
     /** @private Whether this device has an Assistant key on keyboard. */
     hasAssistantKey_: Boolean,
@@ -52,8 +83,8 @@ Polymer({
     showExternalMetaKey_: Boolean,
 
     /**
-     * Whether to show a remapping option for the Command key. This is true when
-     * one of the connected keyboards is an Apple keyboard.
+     * Whether to show a remapping option for the Command key. This is true
+     * when one of the connected keyboards is an Apple keyboard.
      * @private
      */
     showAppleCommandKey_: Boolean,
@@ -84,55 +115,92 @@ Polymer({
       value: [2000, 1000, 500, 300, 200, 100, 50, 30, 20],
       readOnly: true,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kKeyboardFunctionKeys,
+        chromeos.settings.mojom.Setting.kKeyboardAutoRepeat,
+        chromeos.settings.mojom.Setting.kKeyboardShortcuts,
+      ]),
+    },
   },
 
   /** @override */
-  ready: function() {
-    cr.addWebUIListener('show-keys-changed', this.onShowKeysChange_.bind(this));
-    settings.DevicePageBrowserProxyImpl.getInstance().initializeKeyboard();
+  ready() {
+    addWebUIListener(
+        'show-keys-changed',
+        (keyboardParams) => this.onShowKeysChange_(keyboardParams));
+    DevicePageBrowserProxyImpl.getInstance().initializeKeyboard();
     this.setUpKeyMapTargets_();
+  },
+
+  /**
+   * @param {!Route} route
+   * @param {Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== routes.KEYBOARD) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**
    * Initializes the dropdown menu options for remapping keys.
    * @private
    */
-  setUpKeyMapTargets_: function() {
-    // Ordering is according to UX, but values match settings.ModifierKey.
+  setUpKeyMapTargets_() {
+    // Ordering is according to UX, but values match ModifierKey.
     this.keyMapTargets_ = [
       {
-        value: settings.ModifierKey.SEARCH_KEY,
+        value: ModifierKey.SEARCH_KEY,
         name: loadTimeData.getString('keyboardKeySearch'),
       },
       {
-        value: settings.ModifierKey.CONTROL_KEY,
+        value: ModifierKey.CONTROL_KEY,
         name: loadTimeData.getString('keyboardKeyCtrl')
       },
       {
-        value: settings.ModifierKey.ALT_KEY,
+        value: ModifierKey.ALT_KEY,
         name: loadTimeData.getString('keyboardKeyAlt')
       },
       {
-        value: settings.ModifierKey.CAPS_LOCK_KEY,
+        value: ModifierKey.CAPS_LOCK_KEY,
         name: loadTimeData.getString('keyboardKeyCapsLock')
       },
       {
-        value: settings.ModifierKey.ESCAPE_KEY,
+        value: ModifierKey.ESCAPE_KEY,
         name: loadTimeData.getString('keyboardKeyEscape')
       },
       {
-        value: settings.ModifierKey.BACKSPACE_KEY,
+        value: ModifierKey.BACKSPACE_KEY,
         name: loadTimeData.getString('keyboardKeyBackspace')
       },
       {
-        value: settings.ModifierKey.ASSISTANT_KEY,
+        value: ModifierKey.ASSISTANT_KEY,
         name: loadTimeData.getString('keyboardKeyAssistant')
       },
       {
-        value: settings.ModifierKey.VOID_KEY,
+        value: ModifierKey.VOID_KEY,
         name: loadTimeData.getString('keyboardKeyDisabled')
       }
     ];
+  },
+
+  /** @private */
+  onFocusConfigChange_() {
+    this.focusConfig.set(routes.OS_LANGUAGES_INPUT.path, () => {
+      afterNextRender(this, () => {
+        focusWithoutInk(assert(this.$$('#showLanguagesInput')));
+      });
+    });
   },
 
   /**
@@ -140,33 +208,35 @@ Polymer({
    * @param {Object} keyboardParams
    * @private
    */
-  onShowKeysChange_: function(keyboardParams) {
-    this.hasInternalKeyboard_ = keyboardParams['hasInternalKeyboard'];
+  onShowKeysChange_(keyboardParams) {
+    this.hasLauncherKey_ = keyboardParams['hasLauncherKey'];
     this.hasAssistantKey_ = keyboardParams['hasAssistantKey'];
     this.showCapsLock_ = keyboardParams['showCapsLock'];
     this.showExternalMetaKey_ = keyboardParams['showExternalMetaKey'];
     this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
   },
 
-  onShowKeyboardShortcutViewerTap_: function() {
-    settings.DevicePageBrowserProxyImpl.getInstance()
-        .showKeyboardShortcutViewer();
+  /** @private */
+  onShowKeyboardShortcutViewerTap_() {
+    DevicePageBrowserProxyImpl.getInstance().showKeyboardShortcutViewer();
   },
 
-  onShowLanguageInputTap_: function() {
-    settings.navigateTo(
-        settings.routes.LANGUAGES_DETAILS,
-        /* dynamicParams */ null, /* removeSearch */ true);
+  /** @private */
+  onShowInputSettingsTap_() {
+    Router.getInstance().navigateTo(
+        routes.OS_LANGUAGES_INPUT,
+        /*dynamicParams=*/ null, /*removeSearch=*/ true);
   },
 
-  getExternalMetaKeyLabel_: function(hasInternalKeyboard) {
+  /** @private */
+  getExternalMetaKeyLabel_(hasLauncherKey) {
     return loadTimeData.getString(
-        hasInternalKeyboard ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
+        hasLauncherKey ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');
   },
 
-  getExternalCommandKeyLabel_: function(hasInternalKeyboard) {
+  /** @private */
+  getExternalCommandKeyLabel_(hasLauncherKey) {
     return loadTimeData.getString(
-        hasInternalKeyboard ? 'keyboardKeyExternalCommand' :
-                              'keyboardKeyCommand');
+        hasLauncherKey ? 'keyboardKeyExternalCommand' : 'keyboardKeyCommand');
   },
 });

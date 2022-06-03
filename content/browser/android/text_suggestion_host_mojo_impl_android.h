@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 
 namespace content {
@@ -16,9 +17,18 @@ class TextSuggestionHostAndroid;
 class TextSuggestionHostMojoImplAndroid final
     : public blink::mojom::TextSuggestionHost {
  public:
-  explicit TextSuggestionHostMojoImplAndroid(TextSuggestionHostAndroid*);
+  TextSuggestionHostMojoImplAndroid(
+      TextSuggestionHostAndroid*,
+      mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
 
-  static void Create(
+  TextSuggestionHostMojoImplAndroid(const TextSuggestionHostMojoImplAndroid&) =
+      delete;
+  TextSuggestionHostMojoImplAndroid& operator=(
+      const TextSuggestionHostMojoImplAndroid&) = delete;
+
+  ~TextSuggestionHostMojoImplAndroid() override;
+
+  static std::unique_ptr<TextSuggestionHostMojoImplAndroid> Create(
       TextSuggestionHostAndroid*,
       mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
 
@@ -37,8 +47,7 @@ class TextSuggestionHostMojoImplAndroid final
 
  private:
   TextSuggestionHostAndroid* const text_suggestion_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSuggestionHostMojoImplAndroid);
+  mojo::Receiver<blink::mojom::TextSuggestionHost> receiver_;
 };
 
 }  // namespace content

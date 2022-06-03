@@ -5,11 +5,8 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_TRAY_BLUETOOTH_HELPER_EXPERIMENTAL_H_
 #define ASH_SYSTEM_BLUETOOTH_TRAY_BLUETOOTH_HELPER_EXPERIMENTAL_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +23,12 @@ class TrayBluetoothHelperExperimental
   explicit TrayBluetoothHelperExperimental(
       mojo::PendingRemote<device::mojom::BluetoothSystemFactory>
           bluetooth_system_factory);
+
+  TrayBluetoothHelperExperimental(const TrayBluetoothHelperExperimental&) =
+      delete;
+  TrayBluetoothHelperExperimental& operator=(
+      const TrayBluetoothHelperExperimental&) = delete;
+
   ~TrayBluetoothHelperExperimental() override;
 
   // TrayBluetoothHelper:
@@ -52,8 +55,6 @@ class TrayBluetoothHelperExperimental
   device::mojom::BluetoothSystem::State cached_state_ =
       device::mojom::BluetoothSystem::State::kUnavailable;
   device::mojom::BluetoothSystem::ScanState cached_scan_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBluetoothHelperExperimental);
 };
 
 }  // namespace ash

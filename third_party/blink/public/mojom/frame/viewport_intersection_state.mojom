@@ -1,0 +1,52 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// These values are used to implement a browser intervention: if a cross-
+// origin iframe has moved more than 30 screen pixels (manhattan distance)
+// within its embedding page's viewport within the last 500 milliseconds, most
+// input events targeting the iframe will be quietly discarded.
+const uint32 kMaxChildFrameScreenRectMovement = 30;
+const uint32 kMinScreenRectStableTimeMs = 500;
+
+// Indicates whether a child frame is occluded or visually altered (e.g., with
+// CSS opacity or transform) by content or styles in the parent frame.
+enum FrameOcclusionState {
+  // No occlusion determination was made.
+  kUnknown = 0,
+  // The frame *may* be occluded or visually altered.
+  kPossiblyOccluded = 1,
+  // The frame is definitely not occluded or visually altered.
+  kGuaranteedNotOccluded = 2,
+};
+
+// Communicates information about the position and visibility of a child frame
+// within the viewport of the top-level main frame.
+struct ViewportIntersectionState {
+  // Portion of the child frame which is within the main frame's scrolling
+  gfx.mojom.Rect viewport_intersection;
+
+  // Same as viewport_intersection, but without applying the main frame's
+  // document-level overflow clip.
+  gfx.mojom.Rect main_frame_intersection;
+
+  // Area of the child frame that needs to be rastered, in physical pixels.
+  gfx.mojom.Rect compositor_visible_rect;
+
+  // Occlusion state, as described above.
+  FrameOcclusionState occlusion_state = FrameOcclusionState.kUnknown;
+
+  // Main frame's size.
+  gfx.mojom.Size main_frame_viewport_size;
+
+  // Main frame's scrolling offset.
+  gfx.mojom.Point main_frame_scroll_offset;
+
+  // Child frame's transform to the coordinate system of the main frame.
+  gfx.mojom.Transform main_frame_transform;
+};

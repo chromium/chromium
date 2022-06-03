@@ -27,7 +27,7 @@ class FakeVideoStub : public VideoStub {
     return received_packets_;
   }
 
-  void set_on_frame_callback(base::Closure on_frame_callback);
+  void set_on_frame_callback(const base::RepeatingClosure& on_frame_callback);
 
   // VideoStub interface.
   void ProcessVideoPacket(std::unique_ptr<VideoPacket> video_packet,
@@ -37,7 +37,7 @@ class FakeVideoStub : public VideoStub {
   base::ThreadChecker thread_checker_;
 
   std::list<std::unique_ptr<VideoPacket>> received_packets_;
-  base::Closure on_frame_callback_;
+  base::RepeatingClosure on_frame_callback_;
 };
 
 class FakeFrameConsumer : public FrameConsumer {
@@ -49,20 +49,20 @@ class FakeFrameConsumer : public FrameConsumer {
     return received_frames_;
   }
 
-  void set_on_frame_callback(base::Closure on_frame_callback);
+  void set_on_frame_callback(const base::RepeatingClosure& on_frame_callback);
 
   // FrameConsumer interface.
   std::unique_ptr<webrtc::DesktopFrame> AllocateFrame(
       const webrtc::DesktopSize& size) override;
   void DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
-                 const base::Closure& done) override;
+                 base::OnceClosure done) override;
   PixelFormat GetPixelFormat() override;
 
  private:
   base::ThreadChecker thread_checker_;
 
   std::list<std::unique_ptr<webrtc::DesktopFrame>> received_frames_;
-  base::Closure on_frame_callback_;
+  base::RepeatingClosure on_frame_callback_;
 };
 
 class FakeFrameStatsConsumer : public FrameStatsConsumer {
@@ -72,7 +72,7 @@ class FakeFrameStatsConsumer : public FrameStatsConsumer {
 
   const std::list<FrameStats>& received_stats() { return received_stats_; }
 
-  void set_on_stats_callback(base::Closure on_stats_callback);
+  void set_on_stats_callback(const base::RepeatingClosure& on_stats_callback);
 
   // FrameStatsConsumer interface.
   void OnVideoFrameStats(const FrameStats& stats) override;
@@ -81,7 +81,7 @@ class FakeFrameStatsConsumer : public FrameStatsConsumer {
   base::ThreadChecker thread_checker_;
 
   std::list<FrameStats> received_stats_;
-  base::Closure on_stats_callback_;
+  base::RepeatingClosure on_stats_callback_;
 };
 
 class FakeVideoRenderer : public VideoRenderer {

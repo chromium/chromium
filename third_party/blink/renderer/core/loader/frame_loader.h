@@ -35,10 +35,12 @@
 
 #include <memory>
 
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -47,21 +49,20 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
-#include "third_party/blink/renderer/core/frame/sandbox_flags.h"
-#include "third_party/blink/renderer/core/loader/frame_loader_state_machine.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
-class ContentSecurityPolicy;
 class DocumentLoader;
-class LocalFrame;
+class FetchClientSettingsObject;
 class Frame;
+class LocalFrame;
 class LocalFrameClient;
 class ProgressTracker;
 class ResourceRequest;
@@ -78,9 +79,11 @@ class CORE_EXPORT FrameLoader final {
 
  public:
   explicit FrameLoader(LocalFrame*);
+  FrameLoader(const FrameLoader&) = delete;
+  FrameLoader& operator=(const FrameLoader&) = delete;
   ~FrameLoader();
 
-  void Init();
+  void Init(std::unique_ptr<PolicyContainer> policy_container);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,
@@ -88,12 +91,13 @@ class CORE_EXPORT FrameLoader final {
 
   ProgressTracker& Progress() const { return *progress_tracker_; }
 
-  // Starts a navigation. It will eventually send the navigation to the
-  // browser process, or call LoadInSameDocument for same-document navigation.
-  // For reloads, an appropriate WebFrameLoadType should be given. Otherwise,
-  // kStandard should be used (and the final WebFrameLoadType
-  // will be computed).
-  void StartNavigation(const FrameLoadRequest&,
+  // This is the entry-point for all renderer-initiated navigations except
+  // history traversals. It will eventually send the navigation to the browser
+  // process, or call DocumentLoader::CommitSameDocumentNavigation for
+  // same-document navigation. For reloads, an appropriate WebFrameLoadType
+  // should be given. Otherwise, kStandard should be used (and the final
+  // WebFrameLoadType will be computed).
+  void StartNavigation(FrameLoadRequest&,
                        WebFrameLoadType = WebFrameLoadType::kStandard);
 
   // Called when the browser process has asked this renderer process to commit
@@ -103,25 +107,27 @@ class CORE_EXPORT FrameLoader final {
   void CommitNavigation(
       std::unique_ptr<WebNavigationParams> navigation_params,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data,
-      base::OnceClosure call_before_attaching_new_document =
-          base::DoNothing::Once(),
-      bool is_javascript_url = false);
+      CommitReason = CommitReason::kRegular);
 
   // Called before the browser process is asked to navigate this frame, to mark
   // the frame as loading and save some navigation information for later use.
-  bool WillStartNavigation(const WebNavigationInfo& info,
-                           bool is_history_navigation_in_new_frame);
+  bool WillStartNavigation(const WebNavigationInfo& info);
 
   // This runs the "stop document loading" algorithm in HTML:
   // https://html.spec.whatwg.org/C/browsing-the-web.html#stop-document-loading
   // Note, this function only cancels ongoing navigation handled through
-  // FrameLoader. You might also want to call
-  // LocalFrameClient::AbortClientNavigation() if appropriate.
+  // FrameLoader.
+  //
+  // If |abort_client| is true, then the frame's client will have
+  // AbortClientNavigation() called if a navigation was aborted. Normally this
+  // should be passed as true, unless the navigation has been migrated to a
+  // provisional frame, while this frame is going away, so the navigation isn't
+  // actually being aborted.
   //
   // Warning: StopAllLoaders() may detach the LocalFrame to which this
   // FrameLoader belongs. Callers need to be careful about checking the
   // existence of the frame after StopAllLoaders() returns.
-  void StopAllLoaders();
+  void StopAllLoaders(bool abort_client);
 
   // Notifies the client that the initial empty document has been accessed, and
   // thus it is no longer safe to show a provisional URL above the document
@@ -130,35 +136,25 @@ class CORE_EXPORT FrameLoader final {
 
   DocumentLoader* GetDocumentLoader() const { return document_loader_.Get(); }
 
-  void SetDefersLoading(bool);
+  void SetDefersLoading(LoaderFreezeMode mode);
 
   void DidExplicitOpen();
 
   String UserAgent() const;
-  blink::UserAgentMetadata UserAgentMetadata() const;
+  String ReducedUserAgent() const;
+  absl::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
 
   void DispatchDidClearWindowObjectInMainWorld();
   void DispatchDidClearDocumentOfWindowObject();
   void DispatchDocumentElementAvailable();
   void RunScriptsAtDocumentElementAvailable();
 
-  // The following sandbox flags will be forced, regardless of changes to the
-  // sandbox attribute of any parent frames.
-  void ForceSandboxFlags(WebSandboxFlags flags) {
-    forced_sandbox_flags_ |= flags;
-  }
-
-  // Set frame_owner's effective sandbox flags, which are sandbox flags value
-  // at the beginning of navigation.
-  void SetFrameOwnerSandboxFlags(WebSandboxFlags flags) {
-    frame_owner_sandbox_flags_ = flags;
-  }
-
-  // Includes the collection of forced, inherited, and FrameOwner's sandbox
-  // flags. Note: with FeaturePolicyForSandbox the frame owner's sandbox flags
-  // only includes the flags which are *not* implemented as feature policies
-  // already present in the FrameOwner's ContainerPolicy.
-  WebSandboxFlags EffectiveSandboxFlags() const;
+  // See content/browser/renderer_host/sandbox_flags.md
+  // This contains the sandbox flags to commit for new documents.
+  // - For main documents, it contains the sandbox inherited from the opener.
+  // - For nested documents, it contains the sandbox flags inherited from the
+  //   parent and the one defined in the <iframe>'s sandbox attribute.
+  network::mojom::blink::WebSandboxFlags PendingEffectiveSandboxFlags() const;
 
   // Modifying itself is done based on |fetch_client_settings_object|.
   // |document_for_logging| is used only for logging, use counters,
@@ -166,17 +162,14 @@ class CORE_EXPORT FrameLoader final {
   void ModifyRequestForCSP(
       ResourceRequest&,
       const FetchClientSettingsObject* fetch_client_settings_object,
-      Document* document_for_logging,
-      network::mojom::RequestContextFrameType) const;
+      LocalDOMWindow* window_for_logging,
+      mojom::RequestContextFrameType) const;
   void ReportLegacyTLSVersion(const KURL& url,
                               bool is_subresource,
                               bool is_ad_resource);
 
   Frame* Opener();
   void SetOpener(LocalFrame*);
-
-  const AtomicString& RequiredCSP() const { return required_csp_; }
-  void RecordLatestRequiredCSP();
 
   void Detach();
 
@@ -192,9 +185,7 @@ class CORE_EXPORT FrameLoader final {
   // events and abort XHR requests. Returns true if the frame is ready to
   // receive the next document commit, or false otherwise.
   bool DetachDocument(SecurityOrigin* committing_origin,
-                      base::Optional<Document::UnloadEventTiming>*);
-
-  FrameLoaderStateMachine* StateMachine() const { return &state_machine_; }
+                      absl::optional<Document::UnloadEventTiming>*);
 
   bool ShouldClose(bool is_reload = false);
 
@@ -207,9 +198,9 @@ class CORE_EXPORT FrameLoader final {
   // If the dispatch of the unload event is not due to a commit, both parameters
   // should be null.
   void DispatchUnloadEvent(SecurityOrigin* committing_origin,
-                           base::Optional<Document::UnloadEventTiming>*);
+                           absl::optional<Document::UnloadEventTiming>*);
 
-  bool AllowPlugins(ReasonForCallingAllowPlugins);
+  bool AllowPlugins();
 
   void SaveScrollAnchor();
   void SaveScrollState();
@@ -219,32 +210,58 @@ class CORE_EXPORT FrameLoader final {
     return committing_navigation_ || client_navigation_.get();
   }
 
-  bool MaybeRenderFallbackContent();
-
   // Like ClearClientNavigation, but also notifies the client to actually cancel
   // the navigation.
   void CancelClientNavigation();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   void DidDropNavigation();
-  void MarkAsLoading();
 
-  ContentSecurityPolicy* GetLastOriginDocumentCSP() {
-    return last_origin_document_csp_.Get();
+  bool HasAccessedInitialDocument() { return has_accessed_initial_document_; }
+
+  void SetIsNotOnInitialEmptyDocument() {
+    // The "initial empty document" state can be false if the frame has loaded
+    // a non-initial/synchronous about:blank document, or if the document has
+    // done a document.open() before. However, this function can only be called
+    // when a frame is first re-created in a new renderer, which can only be
+    // caused by a new document load. So, we know that the state must be set to
+    // kNotInitialOrSynchronousAboutBlank instead of
+    // kInitialOrSynchronousAboutBlankButExplicitlyOpened here.
+    initial_empty_document_status_ =
+        InitialEmptyDocumentStatus::kNotInitialOrSynchronousAboutBlank;
   }
-  bool ShouldReuseDefaultView(const scoped_refptr<const SecurityOrigin>&,
-                              const ContentSecurityPolicy*);
 
-  bool IsClientNavigationInitialHistoryLoad();
+  // Whether the frame's current document is still considered as the "initial
+  // empty document" or not. Might be false even when
+  // HasLoadedNonInitialEmptyDocument() is false, if the frame is still on the
+  // first about:blank document that loaded in the frame, but it has done
+  // a document.open(), causing it to lose its "initial empty document"-ness
+  // even though it's still on the same document.
+  bool IsOnInitialEmptyDocument() {
+    return initial_empty_document_status_ ==
+           InitialEmptyDocumentStatus::kInitialOrSynchronousAboutBlank;
+  }
+
+  // Whether the frame has loaded a document that is not the initial empty
+  // document. Might be false even when IsOnInitialEmptyDocument() is false (see
+  // comment for IsOnInitialEmptyDocument() for details).
+  bool HasLoadedNonInitialEmptyDocument() {
+    return initial_empty_document_status_ ==
+           InitialEmptyDocumentStatus::kNotInitialOrSynchronousAboutBlank;
+  }
+
+  static bool NeedsHistoryItemRestore(WebFrameLoadType type);
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
 
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
-  WebFrameLoadType DetermineFrameLoadType(const KURL& url,
-                                          const AtomicString& http_method,
-                                          Document* origin_document,
-                                          const KURL& failing_url,
-                                          WebFrameLoadType);
+  WebFrameLoadType HandleInitialEmptyDocumentReplacementIfNeeded(
+      const KURL& url,
+      WebFrameLoadType);
 
   bool ShouldPerformFragmentNavigation(bool is_form_submission,
                                        const String& http_method,
@@ -259,44 +276,23 @@ class CORE_EXPORT FrameLoader final {
   void ClearClientNavigation();
 
   void RestoreScrollPositionAndViewState(WebFrameLoadType,
-                                         bool is_same_document,
                                          const HistoryItem::ViewState&,
-                                         HistoryScrollRestorationType);
+                                         mojom::blink::ScrollRestorationType);
 
   void DetachDocumentLoader(Member<DocumentLoader>&,
                             bool flush_microtask_queue = false);
 
-  std::unique_ptr<TracedValue> ToTracedValue() const;
   void TakeObjectSnapshot() const;
 
   // Commits the given |document_loader|.
-  // |is_initialization| should be true when committing the initial empty
-  // document. |is_javascript_url| should be true when committing a navigation
-  // to a javascript URL (eg. javascript:foo).
-  void CommitDocumentLoader(
-      DocumentLoader* document_loader,
-      const base::Optional<Document::UnloadEventTiming>&,
-      HistoryItem* previous_history_item,
-      bool is_initialization,
-      base::OnceClosure call_before_attaching_new_document,
-      bool is_javascript_url);
-
-  // Creates CSP based on |response| and checks that they allow loading |url|.
-  // Returns nullptr if the check fails.
-  ContentSecurityPolicy* CreateCSP(
-      const KURL& url,
-      const ResourceResponse& response,
-      const base::Optional<WebOriginPolicy>& origin_policy);
+  void CommitDocumentLoader(DocumentLoader* document_loader,
+                            const absl::optional<Document::UnloadEventTiming>&,
+                            HistoryItem* previous_history_item,
+                            CommitReason);
 
   LocalFrameClient* Client() const;
 
   Member<LocalFrame> frame_;
-  AtomicString required_csp_;
-
-  // FIXME: These should be std::unique_ptr<T> to reduce build times and
-  // simplify header dependencies unless performance testing proves otherwise.
-  // Some of these could be lazily created for memory savings on devices.
-  mutable FrameLoaderStateMachine state_machine_;
 
   Member<ProgressTracker> progress_tracker_;
 
@@ -308,34 +304,48 @@ class CORE_EXPORT FrameLoader final {
   // is either committed or cancelled.
   struct ClientNavigationState {
     KURL url;
-    bool is_history_navigation_in_new_frame = false;
   };
   std::unique_ptr<ClientNavigationState> client_navigation_;
 
-  bool in_restore_scroll_;
-
-  WebSandboxFlags forced_sandbox_flags_;
-  // A snapshot value of frame_owner's sandbox flags states at the beginning of
-  // navigation. For main frame which does not have a frame owner, the value is
-  // base::nullopt.
-  // The snapshot value is needed because of potential racing conditions on
-  // sandbox attribute on iframe element.
-  // crbug.com/1026627
-  base::Optional<WebSandboxFlags> frame_owner_sandbox_flags_ = base::nullopt;
+  // The state is set to kInitialized when Init() completes, and kDetached
+  // during teardown in Detach().
+  enum class State { kUninitialized, kInitialized, kDetached };
+  State state_ = State::kUninitialized;
 
   bool dispatching_did_clear_window_object_in_main_world_;
-  bool detached_;
   bool committing_navigation_ = false;
+  bool has_accessed_initial_document_ = false;
+
+  // Enum to determine the frame's "initial empty document"-ness.
+  // NOTE: we treat both the "initial about:blank document" and the
+  // "synchronously committed about:blank document" as the initial empty
+  // document. In the future, we plan to remove the synchronous about:blank
+  // commit so that this enum only considers the true "initial about:blank"
+  // document. See also:
+  // - https://github.com/whatwg/html/issues/6863
+  // - https://crbug.com/1215096
+  enum class InitialEmptyDocumentStatus {
+    // The document is the initial about:blank document or the synchronously
+    // committed about:blank document.
+    kInitialOrSynchronousAboutBlank,
+    // The document is the initial about:blank document or the synchronously
+    // committed about:blank document, but the document's input stream has been
+    // opened with document.open(), so the document lost its "initial empty
+    // document" status, per the spec:
+    // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+    kInitialOrSynchronousAboutBlankButExplicitlyOpened,
+    // The document is neither the initial about:blank document nor the
+    // synchronously committed about:blank document.
+    kNotInitialOrSynchronousAboutBlank
+  };
+  InitialEmptyDocumentStatus initial_empty_document_status_ =
+      InitialEmptyDocumentStatus::kInitialOrSynchronousAboutBlank;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
-
-  Member<ContentSecurityPolicy> last_origin_document_csp_;
 
   // The origins for which a legacy TLS version warning has been printed. The
   // size of this set is capped, after which no more warnings are printed.
   HashSet<String> tls_version_warning_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameLoader);
 };
 
 }  // namespace blink

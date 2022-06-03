@@ -25,13 +25,11 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/input/scrollbar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_mouse_event.h"
-#include "third_party/blink/public/platform/web_point.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -41,37 +39,44 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #endif
 
 namespace blink {
 
 void ScrollbarTheme::Paint(const Scrollbar& scrollbar,
-                           GraphicsContext& graphics_context) {
-  PaintTrackButtonsTickmarks(graphics_context, scrollbar, IntPoint());
+                           GraphicsContext& graphics_context,
+                           const gfx::Vector2d& paint_offset) {
+  PaintTrackButtonsTickmarks(graphics_context, scrollbar, paint_offset);
 
-  IntRect thumb_rect = ThumbRect(scrollbar);
-  if (HasThumb(scrollbar))
+  if (HasThumb(scrollbar)) {
+    IntRect thumb_rect = ThumbRect(scrollbar);
+    thumb_rect.Offset(paint_offset);
     PaintThumbWithOpacity(graphics_context, scrollbar, thumb_rect);
+  }
+}
+
+ScrollbarPart ScrollbarTheme::HitTestRootFramePosition(
+    const Scrollbar& scrollbar,
+    const gfx::Point& position_in_root_frame) {
+  if (!AllowsHitTest())
+    return kNoPart;
+
+  if (!scrollbar.Enabled())
+    return kNoPart;
+
+  gfx::Point test_position =
+      scrollbar.ConvertFromRootFrame(position_in_root_frame);
+  test_position.Offset(scrollbar.X(), scrollbar.Y());
+  return HitTest(scrollbar, test_position);
 }
 
 ScrollbarPart ScrollbarTheme::HitTest(const Scrollbar& scrollbar,
-                                      const IntPoint& position_in_root_frame) {
-  ScrollbarPart result = kNoPart;
-  if (!scrollbar.Enabled())
-    return result;
-
-  IntPoint test_position =
-      scrollbar.ConvertFromRootFrame(position_in_root_frame);
-  test_position.Move(scrollbar.X(), scrollbar.Y());
-
+                                      const gfx::Point& test_position) {
   if (!scrollbar.FrameRect().Contains(test_position))
     return kNoPart;
-
-  result = kScrollbarBGPart;
 
   IntRect track = TrackRect(scrollbar);
   if (track.Contains(test_position)) {
@@ -81,27 +86,20 @@ ScrollbarPart ScrollbarTheme::HitTest(const Scrollbar& scrollbar,
     SplitTrack(scrollbar, track, before_thumb_rect, thumb_rect,
                after_thumb_rect);
     if (thumb_rect.Contains(test_position))
-      result = kThumbPart;
-    else if (before_thumb_rect.Contains(test_position))
-      result = kBackTrackPart;
-    else if (after_thumb_rect.Contains(test_position))
-      result = kForwardTrackPart;
-    else
-      result = kTrackBGPart;
-  } else if (BackButtonRect(scrollbar, kBackButtonStartPart)
-                 .Contains(test_position)) {
-    result = kBackButtonStartPart;
-  } else if (BackButtonRect(scrollbar, kBackButtonEndPart)
-                 .Contains(test_position)) {
-    result = kBackButtonEndPart;
-  } else if (ForwardButtonRect(scrollbar, kForwardButtonStartPart)
-                 .Contains(test_position)) {
-    result = kForwardButtonStartPart;
-  } else if (ForwardButtonRect(scrollbar, kForwardButtonEndPart)
-                 .Contains(test_position)) {
-    result = kForwardButtonEndPart;
+      return kThumbPart;
+    if (before_thumb_rect.Contains(test_position))
+      return kBackTrackPart;
+    if (after_thumb_rect.Contains(test_position))
+      return kForwardTrackPart;
+    return kTrackBGPart;
   }
-  return result;
+
+  if (BackButtonRect(scrollbar).Contains(test_position))
+    return kBackButtonStartPart;
+  if (ForwardButtonRect(scrollbar).Contains(test_position))
+    return kForwardButtonEndPart;
+
+  return kScrollbarBGPart;
 }
 
 void ScrollbarTheme::PaintScrollCorner(
@@ -109,7 +107,7 @@ void ScrollbarTheme::PaintScrollCorner(
     const Scrollbar* vertical_scrollbar,
     const DisplayItemClient& display_item_client,
     const IntRect& corner_rect,
-    WebColorScheme color_scheme) {
+    mojom::blink::ColorScheme color_scheme) {
   if (corner_rect.IsEmpty())
     return;
 
@@ -118,13 +116,13 @@ void ScrollbarTheme::PaintScrollCorner(
     return;
 
   DrawingRecorder recorder(context, display_item_client,
-                           DisplayItem::kScrollCorner);
-#if defined(OS_MACOSX)
-  context.FillRect(corner_rect, Color::kWhite);
+                           DisplayItem::kScrollCorner, ToGfxRect(corner_rect));
+#if defined(OS_MAC)
+  context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 #else
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, WebRect(corner_rect), nullptr,
+      WebThemeEngine::kStateNormal, ToGfxRect(corner_rect), nullptr,
       color_scheme);
 #endif
 }
@@ -137,7 +135,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   if (scrollbar.Orientation() != kVerticalScrollbar)
     return;
 
-  if (rect.Height() <= 0 || rect.Width() <= 0)
+  if (rect.height() <= 0 || rect.width() <= 0)
     return;
 
   Vector<IntRect> tickmarks = scrollbar.GetTickmarks();
@@ -148,25 +146,27 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
           context, scrollbar, DisplayItem::kScrollbarTickmarks))
     return;
 
-  DrawingRecorder recorder(context, scrollbar,
-                           DisplayItem::kScrollbarTickmarks);
+  DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarTickmarks,
+                           ToGfxRect(rect));
   GraphicsContextStateSaver state_saver(context);
   context.SetShouldAntialias(false);
 
   for (const IntRect& tickmark : tickmarks) {
     // Calculate how far down (in %) the tick-mark should appear.
     const float percent =
-        static_cast<float>(tickmark.Y()) / scrollbar.TotalSize();
+        static_cast<float>(tickmark.y()) / scrollbar.TotalSize();
 
     // Calculate how far down (in pixels) the tick-mark should appear.
-    const int y_pos = rect.Y() + (rect.Height() * percent);
+    const int y_pos = rect.y() + (rect.height() * percent);
 
-    FloatRect tick_rect(rect.X(), y_pos, rect.Width(), 3);
-    context.FillRect(tick_rect, Color(0xCC, 0xAA, 0x00, 0xFF));
+    FloatRect tick_rect(rect.x(), y_pos, rect.width(), 3);
+    context.FillRect(tick_rect, Color(0xB0, 0x60, 0x00, 0xFF),
+                     AutoDarkMode::Disabled());
 
-    FloatRect tick_stroke(rect.X() + TickmarkBorderWidth(), y_pos + 1,
-                          rect.Width() - 2 * TickmarkBorderWidth(), 1);
-    context.FillRect(tick_stroke, Color(0xFF, 0xDD, 0x00, 0xFF));
+    FloatRect tick_stroke(rect.x() + TickmarkBorderWidth(), y_pos + 1,
+                          rect.width() - 2 * TickmarkBorderWidth(), 1);
+    context.FillRect(tick_stroke, Color(0xFF, 0xDD, 0x00, 0xFF),
+                     AutoDarkMode::Disabled());
   }
 #endif
 }
@@ -191,7 +191,7 @@ int ScrollbarTheme::ThumbPosition(const Scrollbar& scrollbar,
       return 0;
     float pos = std::max(0.0f, scroll_position) *
                 (TrackLength(scrollbar) - ThumbLength(scrollbar)) / size;
-    return (pos < 1 && pos > 0) ? 1 : pos;
+    return (pos < 1 && pos > 0) ? 1 : base::saturated_cast<int>(pos);
   }
   return 0;
 }
@@ -219,16 +219,16 @@ int ScrollbarTheme::TrackPosition(const Scrollbar& scrollbar) {
   IntRect constrained_track_rect =
       ConstrainTrackRectToTrackPieces(scrollbar, TrackRect(scrollbar));
   return (scrollbar.Orientation() == kHorizontalScrollbar)
-             ? constrained_track_rect.X() - scrollbar.X()
-             : constrained_track_rect.Y() - scrollbar.Y();
+             ? constrained_track_rect.x() - scrollbar.X()
+             : constrained_track_rect.y() - scrollbar.Y();
 }
 
 int ScrollbarTheme::TrackLength(const Scrollbar& scrollbar) {
   IntRect constrained_track_rect =
       ConstrainTrackRectToTrackPieces(scrollbar, TrackRect(scrollbar));
   return (scrollbar.Orientation() == kHorizontalScrollbar)
-             ? constrained_track_rect.Width()
-             : constrained_track_rect.Height();
+             ? constrained_track_rect.width()
+             : constrained_track_rect.height();
 }
 
 IntRect ScrollbarTheme::ThumbRect(const Scrollbar& scrollbar) {
@@ -244,12 +244,6 @@ IntRect ScrollbarTheme::ThumbRect(const Scrollbar& scrollbar) {
   return thumb_rect;
 }
 
-int ScrollbarTheme::ThumbThickness(const Scrollbar& scrollbar) {
-  IntRect track = TrackRect(scrollbar);
-  return scrollbar.Orientation() == kHorizontalScrollbar ? track.Height()
-                                                         : track.Width();
-}
-
 void ScrollbarTheme::SplitTrack(const Scrollbar& scrollbar,
                                 const IntRect& unconstrained_track_rect,
                                 IntRect& before_thumb_rect,
@@ -261,23 +255,23 @@ void ScrollbarTheme::SplitTrack(const Scrollbar& scrollbar,
       ConstrainTrackRectToTrackPieces(scrollbar, unconstrained_track_rect);
   int thumb_pos = ThumbPosition(scrollbar);
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    thumb_rect = IntRect(track_rect.X() + thumb_pos, track_rect.Y(),
+    thumb_rect = IntRect(track_rect.x() + thumb_pos, track_rect.y(),
                          ThumbLength(scrollbar), scrollbar.Height());
     before_thumb_rect =
-        IntRect(track_rect.X(), track_rect.Y(),
-                thumb_pos + thumb_rect.Width() / 2, track_rect.Height());
+        IntRect(track_rect.x(), track_rect.y(),
+                thumb_pos + thumb_rect.width() / 2, track_rect.height());
     after_thumb_rect = IntRect(
-        track_rect.X() + before_thumb_rect.Width(), track_rect.Y(),
-        track_rect.MaxX() - before_thumb_rect.MaxX(), track_rect.Height());
+        track_rect.x() + before_thumb_rect.width(), track_rect.y(),
+        track_rect.right() - before_thumb_rect.right(), track_rect.height());
   } else {
-    thumb_rect = IntRect(track_rect.X(), track_rect.Y() + thumb_pos,
+    thumb_rect = IntRect(track_rect.x(), track_rect.y() + thumb_pos,
                          scrollbar.Width(), ThumbLength(scrollbar));
     before_thumb_rect =
-        IntRect(track_rect.X(), track_rect.Y(), track_rect.Width(),
-                thumb_pos + thumb_rect.Height() / 2);
+        IntRect(track_rect.x(), track_rect.y(), track_rect.width(),
+                thumb_pos + thumb_rect.height() / 2);
     after_thumb_rect = IntRect(
-        track_rect.X(), track_rect.Y() + before_thumb_rect.Height(),
-        track_rect.Width(), track_rect.MaxY() - before_thumb_rect.MaxY());
+        track_rect.x(), track_rect.y() + before_thumb_rect.height(),
+        track_rect.width(), track_rect.bottom() - before_thumb_rect.bottom());
   }
 }
 
@@ -286,7 +280,7 @@ base::TimeDelta ScrollbarTheme::InitialAutoscrollTimerDelay() {
 }
 
 base::TimeDelta ScrollbarTheme::AutoscrollTimerDelay() {
-  return base::TimeDelta::FromSecondsD(1.f / kAutoscrollMultiplier);
+  return base::Seconds(1.f / kAutoscrollMultiplier);
 }
 
 ScrollbarTheme& ScrollbarTheme::GetTheme() {
@@ -301,44 +295,41 @@ ScrollbarTheme& ScrollbarTheme::GetTheme() {
 
 void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
                                           const Scrollbar& scrollbar,
-                                          const IntPoint& offset) {
+                                          const gfx::Vector2d& offset) {
   // CustomScrollbarTheme must override this method.
   DCHECK(!scrollbar.IsCustomScrollbar());
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           context, scrollbar, DisplayItem::kScrollbarTrackAndButtons))
     return;
+  IntRect visual_rect = scrollbar.FrameRect();
+  visual_rect.Offset(offset);
   DrawingRecorder recorder(context, scrollbar,
-                           DisplayItem::kScrollbarTrackAndButtons);
+                           DisplayItem::kScrollbarTrackAndButtons,
+                           ToGfxRect(visual_rect));
 
   if (HasButtons(scrollbar)) {
-    IntRect back_button_rect = BackButtonRect(scrollbar, kBackButtonStartPart);
-    back_button_rect.MoveBy(offset);
+    IntRect back_button_rect = BackButtonRect(scrollbar);
+    back_button_rect.Offset(offset);
     PaintButton(context, scrollbar, back_button_rect, kBackButtonStartPart);
 
-    IntRect forward_button_rect =
-        ForwardButtonRect(scrollbar, kForwardButtonEndPart);
-    forward_button_rect.MoveBy(offset);
+    IntRect forward_button_rect = ForwardButtonRect(scrollbar);
+    forward_button_rect.Offset(offset);
     PaintButton(context, scrollbar, forward_button_rect, kForwardButtonEndPart);
-
-    // Non-custom scrollbars don't have kBackButtonEndPart and
-    // kForwardButtonStartPart.
-    DCHECK(BackButtonRect(scrollbar, kBackButtonEndPart).IsEmpty());
-    DCHECK(ForwardButtonRect(scrollbar, kForwardButtonStartPart).IsEmpty());
   }
 
   IntRect track_rect = TrackRect(scrollbar);
-  track_rect.MoveBy(offset);
+  track_rect.Offset(offset);
   PaintTrack(context, scrollbar, track_rect);
 }
 
 void ScrollbarTheme::PaintTrackButtonsTickmarks(GraphicsContext& context,
                                                 const Scrollbar& scrollbar,
-                                                const IntPoint& offset) {
+                                                const gfx::Vector2d& offset) {
   PaintTrackAndButtons(context, scrollbar, offset);
   if (scrollbar.HasTickmarks()) {
     IntRect track_rect = TrackRect(scrollbar);
-    track_rect.MoveBy(offset);
+    track_rect.Offset(offset);
     PaintTickmarks(context, scrollbar, track_rect);
   }
 }

@@ -14,17 +14,24 @@ class TestBrowserAccessibilityDelegate : public BrowserAccessibilityDelegate {
   TestBrowserAccessibilityDelegate();
 
   void AccessibilityPerformAction(const ui::AXActionData& data) override;
-  bool AccessibilityViewHasFocus() const override;
+  bool AccessibilityViewHasFocus() override;
   void AccessibilityViewSetFocus() override;
-  gfx::Rect AccessibilityGetViewBounds() const override;
-  float AccessibilityGetDeviceScaleFactor() const override;
+  gfx::Rect AccessibilityGetViewBounds() override;
+  float AccessibilityGetDeviceScaleFactor() override;
   void AccessibilityFatalError() override;
   gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
-  WebContents* AccessibilityWebContents() override;
-  bool AccessibilityIsMainFrame() const override;
+  RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
+  bool AccessibilityIsMainFrame() override;
+  void AccessibilityHitTest(
+      const gfx::Point& point_in_frame_pixels,
+      ax::mojom::Event opt_event_to_fire,
+      int opt_request_id,
+      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
+                              int hit_node_id)> opt_callback) override;
+  WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
 
   bool got_fatal_error() const;
   void reset_got_fatal_error();

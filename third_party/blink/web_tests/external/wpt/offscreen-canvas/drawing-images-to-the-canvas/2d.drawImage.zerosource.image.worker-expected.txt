@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL drawImage with zero-sized source rectangle from image throws INDEX_SIZE_ERR assert_throws: function "function() { ctx.drawImage(response, 0, 0, 100, 50); }" threw object "TypeError: Failed to execute 'drawImage' on 'OffscreenCanvasRenderingContext2D': The provided value is not of type '(CSSImageValue or HTMLImageElement or SVGImageElement or HTMLVideoElement or HTMLCanvasElement or ImageBitmap or OffscreenCanvas)'" that is not a DOMException INDEX_SIZE_ERR: property "code" is equal to undefined, expected 1
-Harness: the test ran to completion.
-

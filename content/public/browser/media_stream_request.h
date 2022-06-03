@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -33,7 +34,8 @@ struct CONTENT_EXPORT MediaStreamRequest {
                      const std::string& requested_video_device_id,
                      blink::mojom::MediaStreamType audio_type,
                      blink::mojom::MediaStreamType video_type,
-                     bool disable_local_echo);
+                     bool disable_local_echo,
+                     bool request_pan_tilt_zoom_permission);
 
   MediaStreamRequest(const MediaStreamRequest& other);
 
@@ -79,8 +81,8 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // audio being played out locally.
   bool disable_local_echo;
 
-  // True if all ancestors of the requesting frame have the same origin.
-  bool all_ancestors_have_same_origin;
+  // Flag to indicate whether the request is for PTZ use.
+  bool request_pan_tilt_zoom_permission;
 };
 
 // Interface used by the content layer to notify chrome about changes in the
@@ -90,15 +92,40 @@ class MediaStreamUI {
  public:
   using SourceCallback =
       base::RepeatingCallback<void(const DesktopMediaID& media_id)>;
+  using StateChangeCallback = base::RepeatingCallback<void(
+      const DesktopMediaID& media_id,
+      blink::mojom::MediaStreamStateChange new_state)>;
 
   virtual ~MediaStreamUI() {}
 
   // Called when MediaStream capturing is started. Chrome layer can call |stop|
-  // to stop the stream, or |source| to change the source of the stream.
+  // to stop the stream, or |source| to change the source of the stream, or
+  // |state_change| to pause/unpause the stream.
   // Returns the platform-dependent window ID for the UI, or 0 if not
   // applicable.
-  virtual gfx::NativeViewId OnStarted(base::OnceClosure stop,
-                                      SourceCallback source) = 0;
+  virtual gfx::NativeViewId OnStarted(
+      base::OnceClosure stop,
+      SourceCallback source,
+      const std::string& label,
+      std::vector<DesktopMediaID> screen_capture_ids,
+      StateChangeCallback state_change) = 0;
+
+  virtual void OnDeviceStopped(const std::string& label,
+                               const DesktopMediaID& media_id) = 0;
+
+#if !defined(OS_ANDROID)
+  // Focuses the display surface represented by |media_id|.
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  virtual void SetFocus(const DesktopMediaID& media_id,
+                        bool focus,
+                        bool is_from_microtask,
+                        bool is_from_timer) {}
+#endif
 };
 
 // Callback used return results of media access requests.

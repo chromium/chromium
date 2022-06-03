@@ -1,30 +1,27 @@
+set noparent
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 agrieve@chromium.org
 brucedawson@chromium.org
-dpranke@chromium.org
-jbudorick@chromium.org
+dpranke@google.com
 jochen@chromium.org
-scottmg@chromium.org
+sdefresne@chromium.org
 thakis@chromium.org
 thomasanderson@chromium.org
 tikuta@chromium.org
 
-# Clang build config changes
-hans@chromium.org
+# Clang build config changes:
+file://tools/clang/scripts/OWNERS
+
+# For java build changes:
+wnwen@chromium.org
+
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 
 per-file .gitignore=*
 per-file check_gn_headers_whitelist.txt=*
 per-file mac_toolchain.py=erikchen@chromium.org
 per-file mac_toolchain.py=justincohen@chromium.org
-per-file package_mac_toolchain.py=erikchen@chromium.org
-per-file package_mac_toolchain.py=justincohen@chromium.org
 per-file whitespace_file.txt=*
 per-file OWNERS.status=*
 per-file OWNERS.setnoparent=set noparent
 per-file OWNERS.setnoparent=file://ENG_REVIEW_OWNERS
-
-# gn-dev is probably a better team here, but the tooling won't let us
-# have more than one team per component, and infra-dev is a catch-all
-# for other build-related lists.
-#
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Build

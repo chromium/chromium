@@ -14,16 +14,18 @@ namespace declarative_net_request {
 class DNRManifestHandler : public ManifestHandler {
  public:
   DNRManifestHandler();
+
+  DNRManifestHandler(const DNRManifestHandler&) = delete;
+  DNRManifestHandler& operator=(const DNRManifestHandler&) = delete;
+
   ~DNRManifestHandler() override;
 
  private:
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DNRManifestHandler);
 };
 
 }  // namespace declarative_net_request

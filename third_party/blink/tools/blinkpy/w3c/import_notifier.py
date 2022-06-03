@@ -1,15 +1,12 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-"""Sends notifications after automatic imports (WIP).
+"""Sends notifications after automatic imports from web-platform-tests (WPT).
 
 Automatically file bugs for new failures caused by WPT imports for opted-in
 directories.
 
 Design doc: https://docs.google.com/document/d/1W3V81l94slAC_rPcTKWXgv3YxRxtlSIAxi3yj6NsbBw/edit?usp=sharing
-
-During the implementation phase, we do not open bugs but log everything instead.
 """
 
 from collections import defaultdict
@@ -21,16 +18,16 @@ from blinkpy.common.path_finder import PathFinder
 from blinkpy.w3c.common import WPT_GH_URL
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
-from blinkpy.w3c.wpt_expectations_updater import UMBRELLA_BUG
+from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
+from blinkpy.web_tests.port.android import (
+    PRODUCTS, ANDROID_WEBLAYER)
 
 _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
 
-
 class ImportNotifier(object):
-
     def __init__(self, host, chromium_git, local_wpt):
         self.host = host
         self.git = chromium_git
@@ -39,11 +36,23 @@ class ImportNotifier(object):
         self._monorail_api = MonorailAPI
         self.default_port = host.port_factory.get()
         self.finder = PathFinder(host.filesystem)
-        self.owners_extractor = DirectoryOwnersExtractor(host.filesystem)
+        self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
+        self.components_for_product = {ANDROID_WEBLAYER: ["Internals>WebLayer"]}
+        self.labels_for_product = {
+            ANDROID_WEBLAYER: ["Project-WebLayer-WebPlatformSupport", "WL-WPT-Compat"]
+        }
 
-    def main(self, wpt_revision_start, wpt_revision_end, rebaselined_tests, test_expectations, issue, patchset,
-             dry_run=True, service_account_key_json=None):
+    def main(self,
+             wpt_revision_start,
+             wpt_revision_end,
+             rebaselined_tests,
+             test_expectations,
+             new_override_expectations,
+             issue,
+             patchset,
+             dry_run=True,
+             service_account_key_json=None):
         """Files bug reports for new failures.
 
         Args:
@@ -66,12 +75,23 @@ class ImportNotifier(object):
         gerrit_url = SHORT_GERRIT_PREFIX + issue
         gerrit_url_with_ps = gerrit_url + '/' + patchset + '/'
 
-        changed_test_baselines = self.find_changed_baselines_of_tests(rebaselined_tests)
-        self.examine_baseline_changes(changed_test_baselines, gerrit_url_with_ps)
+        changed_test_baselines = self.find_changed_baselines_of_tests(
+            rebaselined_tests)
+        self.examine_baseline_changes(changed_test_baselines,
+                                      gerrit_url_with_ps)
         self.examine_new_test_expectations(test_expectations)
 
-        bugs = self.create_bugs_from_new_failures(wpt_revision_start, wpt_revision_end, gerrit_url)
+        bugs = self.create_bugs_from_new_failures(wpt_revision_start,
+                                                  wpt_revision_end, gerrit_url)
         self.file_bugs(bugs, dry_run, service_account_key_json)
+
+        for product, expectation_lines in new_override_expectations.items():
+            bugs = self.create_bugs_for_product(wpt_revision_start,
+                                                wpt_revision_end,
+                                                gerrit_url,
+                                                product,
+                                                expectation_lines)
+            self.file_bugs(bugs, dry_run, service_account_key_json)
 
     def find_changed_baselines_of_tests(self, rebaselined_tests):
         """Finds the corresponding changed baselines of each test.
@@ -97,7 +117,8 @@ class ImportNotifier(object):
                 test_baselines[test_name] = changed_baselines
         return test_baselines
 
-    def examine_baseline_changes(self, changed_test_baselines, gerrit_url_with_ps):
+    def examine_baseline_changes(self, changed_test_baselines,
+                                 gerrit_url_with_ps):
         """Examines all changed baselines to find new failures.
 
         Args:
@@ -105,7 +126,7 @@ class ImportNotifier(object):
                 changed baselines.
             gerrit_url_with_ps: Gerrit URL of this CL with the patchset number.
         """
-        for test_name, changed_baselines in changed_test_baselines.iteritems():
+        for test_name, changed_baselines in changed_test_baselines.items():
             directory = self.find_owned_directory(test_name)
             if not directory:
                 _log.warning('Cannot find OWNERS of %s', test_name)
@@ -114,19 +135,37 @@ class ImportNotifier(object):
             for baseline in changed_baselines:
                 if self.more_failures_in_baseline(baseline):
                     self.new_failures_by_directory[directory].append(
-                        TestFailure(TestFailure.BASELINE_CHANGE, test_name,
-                                    baseline_path=baseline, gerrit_url_with_ps=gerrit_url_with_ps)
-                    )
+                        TestFailure(
+                            TestFailure.BASELINE_CHANGE,
+                            test_name,
+                            baseline_path=baseline,
+                            gerrit_url_with_ps=gerrit_url_with_ps))
 
     def more_failures_in_baseline(self, baseline):
-        diff = self.git.run(['diff', '-U0', 'origin/master', '--', baseline])
+        """Determines if a testharness.js baseline file has new failures.
+
+        The file is assumed to have been modified in the current git checkout,
+        and so has a diff we can parse.
+
+        We recognize two types of failures: FAIL lines, which are output for a
+        specific subtest failing, and harness errors, which indicate an uncaught
+        error in the test. Increasing numbers of either are considered new
+        failures - this includes going from FAIL to error or vice-versa.
+        """
+
+        diff = self.git.run(['diff', '-U0', 'origin/main', '--', baseline])
         delta_failures = 0
+        delta_harness_errors = 0
         for line in diff.splitlines():
             if line.startswith('+FAIL'):
                 delta_failures += 1
             if line.startswith('-FAIL'):
                 delta_failures -= 1
-        return delta_failures > 0
+            if line.startswith('+Harness Error.'):
+                delta_harness_errors += 1
+            if line.startswith('-Harness Error.'):
+                delta_harness_errors -= 1
+        return delta_failures > 0 or delta_harness_errors > 0
 
     def examine_new_test_expectations(self, test_expectations):
         """Examines new test expectations to find new failures.
@@ -135,7 +174,7 @@ class ImportNotifier(object):
             test_expectations: A dictionary mapping names of tests that cannot
                 be rebaselined to a list of new test expectation lines.
         """
-        for test_name, expectation_lines in test_expectations.iteritems():
+        for test_name, expectation_lines in test_expectations.items():
             directory = self.find_owned_directory(test_name)
             if not directory:
                 _log.warning('Cannot find OWNERS of %s', test_name)
@@ -143,11 +182,59 @@ class ImportNotifier(object):
 
             for expectation_line in expectation_lines:
                 self.new_failures_by_directory[directory].append(
-                    TestFailure(TestFailure.NEW_EXPECTATION, test_name,
-                                expectation_line=expectation_line)
-                )
+                    TestFailure(
+                        TestFailure.NEW_EXPECTATION,
+                        test_name,
+                        expectation_line=expectation_line))
 
-    def create_bugs_from_new_failures(self, wpt_revision_start, wpt_revision_end, gerrit_url):
+    def create_bugs_for_product(self, wpt_revision_start, wpt_revision_end,
+                                gerrit_url, product, expectation_lines):
+        """Files bug reports for new failures per product
+
+        Args:
+            wpt_revision_start: The start of the imported WPT revision range
+                (exclusive), i.e. the last imported revision.
+            wpt_revision_end: The end of the imported WPT revision range
+                (inclusive), i.e. the current imported revision.
+            gerrit_url: Gerrit URL of the CL.
+            product: the product for which to file bugs for.
+            expectation_lines: list of new expectations for this product
+
+        Return:
+            A MonorailIssue object that should be filed.
+        """
+        bugs = []
+        summary = '[WPT] New failures introduced by import {}'.format(gerrit_url)
+
+        prologue = ('WPT import {} introduced new failures:\n\n'
+                    'List of new failures:\n'.format(gerrit_url))
+
+        failure_list = ''
+        for _, failure in expectation_lines.items():
+            failure_list += str(failure) + '\n'
+
+        expectations_statement = (
+            '\nExpectations have been automatically added for '
+            'the failing results to keep the bots green. Please '
+            'investigate the new failures and triage as appropriate.\n')
+
+        range_statement = '\nThis import contains upstream changes from {} to {}:\n'.format(
+            wpt_revision_start, wpt_revision_end)
+
+        description = (prologue + failure_list + expectations_statement +
+                       range_statement)
+
+        bug = MonorailIssue.new_chromium_issue(
+            summary,
+            description,
+            cc=[],
+            components=self.components_for_product[product],
+            labels=self.labels_for_product[product])
+        bugs.append(bug)
+        return bugs
+
+    def create_bugs_from_new_failures(self, wpt_revision_start,
+                                      wpt_revision_end, gerrit_url):
         """Files bug reports for new failures.
 
         Args:
@@ -160,44 +247,67 @@ class ImportNotifier(object):
         Return:
             A list of MonorailIssue objects that should be filed.
         """
-        imported_commits = self.local_wpt.commits_in_range(wpt_revision_start, wpt_revision_end)
+        imported_commits = self.local_wpt.commits_in_range(
+            wpt_revision_start, wpt_revision_end)
         bugs = []
-        for directory, failures in self.new_failures_by_directory.iteritems():
-            summary = '[WPT] New failures introduced in {} by import {}'.format(directory, gerrit_url)
+        for directory, failures in self.new_failures_by_directory.items():
+            summary = '[WPT] New failures introduced in {} by import {}'.format(
+                directory, gerrit_url)
 
-            full_directory = self.host.filesystem.join(self.finder.web_tests_dir(), directory)
+            full_directory = self.host.filesystem.join(
+                self.finder.web_tests_dir(), directory)
             owners_file = self.host.filesystem.join(full_directory, 'OWNERS')
-            is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(owners_file)
+            metadata_file = self.host.filesystem.join(full_directory,
+                                                      'DIR_METADATA')
+            is_wpt_notify_enabled = False
+            try:
+                is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
+                    metadata_file)
+            except KeyError:
+                _log.info('KeyError when parsing %s' % metadata_file)
+
+            if not is_wpt_notify_enabled:
+                _log.info("WPT-NOTIFY disabled in %s." % full_directory)
+                continue
 
             owners = self.owners_extractor.extract_owners(owners_file)
             # owners may be empty but not None.
             cc = owners
 
-            component = self.owners_extractor.extract_component(owners_file)
+            component = self.owners_extractor.extract_component(metadata_file)
             # component could be None.
             components = [component] if component else None
 
             prologue = ('WPT import {} introduced new failures in {}:\n\n'
-                        'List of new failures:\n'.format(gerrit_url, directory))
+                        'List of new failures:\n'.format(
+                            gerrit_url, directory))
             failure_list = ''
             for failure in failures:
                 failure_list += str(failure) + '\n'
 
-            epilogue = '\nThis import contains upstream changes from {} to {}:\n'.format(
-                wpt_revision_start, wpt_revision_end
-            )
-            commit_list = self.format_commit_list(imported_commits, full_directory)
+            expectations_statement = (
+                '\nExpectations or baseline files [0] have been automatically '
+                'added for the failing results to keep the bots green. Please '
+                'investigate the new failures and triage as appropriate.\n')
 
-            description = prologue + failure_list + epilogue + commit_list
+            range_statement = '\nThis import contains upstream changes from {} to {}:\n'.format(
+                wpt_revision_start, wpt_revision_end)
+            commit_list = self.format_commit_list(imported_commits,
+                                                  full_directory)
 
-            bug = MonorailIssue.new_chromium_issue(summary, description, cc, components)
-            _log.info(unicode(bug))
+            links_list = '\n[0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md\n'
 
-            if is_wpt_notify_enabled:
-                _log.info("WPT-NOTIFY enabled in this directory; adding the bug to the pending list.")
-                bugs.append(bug)
-            else:
-                _log.info("WPT-NOTIFY disabled in this directory; discarding the bug.")
+            description = (prologue + failure_list + expectations_statement +
+                           range_statement + commit_list + links_list)
+
+            bug = MonorailIssue.new_chromium_issue(summary,
+                                                   description,
+                                                   cc,
+                                                   components,
+                                                   labels=['Test-WebTest'])
+            _log.info(bug)
+            _log.info("WPT-NOTIFY enabled in %s; adding the bug to the pending list." % full_directory)
+            bugs.append(bug)
         return bugs
 
     def format_commit_list(self, imported_commits, directory):
@@ -219,7 +329,8 @@ class ImportNotifier(object):
         for sha, subject in imported_commits:
             # subject is a Unicode string and can contain non-ASCII characters.
             line = u'{}: {}'.format(subject, GITHUB_COMMIT_PREFIX + sha)
-            if self.local_wpt.is_commit_affecting_directory(sha, path_from_wpt):
+            if self.local_wpt.is_commit_affecting_directory(
+                    sha, path_from_wpt):
                 line += ' [affecting this directory]'
             commit_list += line + '\n'
         return commit_list
@@ -239,11 +350,13 @@ class ImportNotifier(object):
         # find_owners_file takes either a relative path from the *root* of the
         # repository, or an absolute path.
         abs_test_path = self.finder.path_from_web_tests(test_name)
-        owners_file = self.owners_extractor.find_owners_file(self.host.filesystem.dirname(abs_test_path))
+        owners_file = self.owners_extractor.find_owners_file(
+            self.host.filesystem.dirname(abs_test_path))
         if not owners_file:
             return None
         owned_directory = self.host.filesystem.dirname(owners_file)
-        short_directory = self.host.filesystem.relpath(owned_directory, self.finder.web_tests_dir())
+        short_directory = self.host.filesystem.relpath(
+            owned_directory, self.finder.web_tests_dir())
         return short_directory
 
     def file_bugs(self, bugs, dry_run, service_account_key_json=None):
@@ -256,18 +369,22 @@ class ImportNotifier(object):
         """
         # TODO(robertma): Better error handling in this method.
         if dry_run:
-            _log.info('[dry_run] Would have filed the %d bugs in the pending list.', len(bugs))
+            _log.info(
+                '[dry_run] Would have filed the %d bugs in the pending list.',
+                len(bugs))
             return
 
         _log.info('Filing %d bugs in the pending list to Monorail', len(bugs))
         api = self._get_monorail_api(service_account_key_json)
         for index, bug in enumerate(bugs, start=1):
             response = api.insert_issue(bug)
-            _log.info('[%d] Filed bug: %s', index, MonorailIssue.crbug_link(response['id']))
+            _log.info('[%d] Filed bug: %s', index,
+                      MonorailIssue.crbug_link(response['id']))
 
     def _get_monorail_api(self, service_account_key_json):
         if service_account_key_json:
-            return self._monorail_api(service_account_key_json=service_account_key_json)
+            return self._monorail_api(
+                service_account_key_json=service_account_key_json)
         token = LuciAuth(self.host).get_access_token()
         return self._monorail_api(access_token=token)
 
@@ -279,7 +396,12 @@ class TestFailure(object):
     BASELINE_CHANGE = 1
     NEW_EXPECTATION = 2
 
-    def __init__(self, failure_type, test_name, expectation_line='', baseline_path='', gerrit_url_with_ps=''):
+    def __init__(self,
+                 failure_type,
+                 test_name,
+                 expectation_line='',
+                 baseline_path='',
+                 gerrit_url_with_ps=''):
         if failure_type == self.BASELINE_CHANGE:
             assert baseline_path and gerrit_url_with_ps
         else:
@@ -299,13 +421,11 @@ class TestFailure(object):
             return self._format_new_expectation()
 
     def __eq__(self, other):
-        return (
-            self.failure_type == other.failure_type and
-            self.test_name == other.test_name and
-            self.expectation_line == other.expectation_line and
-            self.baseline_path == other.baseline_path and
-            self.gerrit_url_with_ps == other.gerrit_url_with_ps
-        )
+        return (self.failure_type == other.failure_type
+                and self.test_name == other.test_name
+                and self.expectation_line == other.expectation_line
+                and self.baseline_path == other.baseline_path
+                and self.gerrit_url_with_ps == other.gerrit_url_with_ps)
 
     def _format_baseline_change(self):
         assert self.failure_type == self.BASELINE_CHANGE
@@ -322,6 +442,6 @@ class TestFailure(object):
         assert self.failure_type == self.NEW_EXPECTATION
         # TODO(robertma): Are there saner ways to remove the link to the umbrella bug?
         line = self.expectation_line
-        if line.startswith(UMBRELLA_BUG):
-            line = line[len(UMBRELLA_BUG):].lstrip()
+        if line.startswith(WPTExpectationsUpdater.UMBRELLA_BUG):
+            line = line[len(WPTExpectationsUpdater.UMBRELLA_BUG):].lstrip()
         return line

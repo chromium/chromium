@@ -157,7 +157,6 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       }
       // Skip the element.
       return result + element_size;
-      break;
     case kWebMIdCluster:
       if (!cluster_parser_) {
         MEDIA_LOG(ERROR, media_log_) << "Found Cluster element before Info.";
@@ -166,14 +165,12 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       ChangeState(kParsingClusters);
       new_segment_cb_.Run();
       return 0;
-      break;
     case kWebMIdSegment:
       // Segment of unknown size indicates live stream.
       if (element_size == kWebMUnknownSize)
         unknown_segment_size_ = true;
       // Just consume the segment header.
       return result;
-      break;
     case kWebMIdInfo:
       // We've found the element we are looking for.
       break;
@@ -208,7 +205,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
 
   if (info_parser.duration() > 0) {
     int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
-    params.duration = base::TimeDelta::FromMicroseconds(duration_in_us);
+    params.duration = base::Microseconds(duration_in_us);
   }
 
   params.timeline_offset = info_parser.date_utc();
@@ -237,7 +234,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
     return -1;
   }
 
-  cluster_parser_.reset(new WebMClusterParser(
+  cluster_parser_ = std::make_unique<WebMClusterParser>(
       timecode_scale_in_ns, tracks_parser.audio_track_num(),
       tracks_parser.GetAudioDefaultDuration(timecode_scale_in_ns),
       tracks_parser.video_track_num(),
@@ -245,7 +242,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
       tracks_parser.video_encryption_key_id(), audio_config.codec(),
-      media_log_));
+      media_log_);
 
   if (init_cb_) {
     params.detected_audio_track_count =

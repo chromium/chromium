@@ -1,0 +1,17 @@
+<style>
+.c:hover { display: block; }
+</style>
+
+<select id=target autofocus=autofocus size=2 class=c></select>
+
+<script>
+if (window.testRunner)
+	testRunner.dumpAsText();
+
+window.onload = function() {
+    eventSender.beginDragWithFiles( ["resources/file-for-drag-to-navigate.html"]);
+    eventSender.mouseMoveTo(target.offsetLeft + 5, target.offsetTop + 5);
+};
+</script>
+
+<p>PASS - this test passes if it does not crash (ASAN)</p>

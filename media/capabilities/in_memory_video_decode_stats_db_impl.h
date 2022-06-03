@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "media/base/media_export.h"
@@ -35,6 +34,12 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // seed DB is available.
   explicit InMemoryVideoDecodeStatsDBImpl(
       VideoDecodeStatsDBProvider* seed_db_provider);
+
+  InMemoryVideoDecodeStatsDBImpl(const InMemoryVideoDecodeStatsDBImpl&) =
+      delete;
+  InMemoryVideoDecodeStatsDBImpl& operator=(
+      const InMemoryVideoDecodeStatsDBImpl&) = delete;
+
   ~InMemoryVideoDecodeStatsDBImpl() override;
 
   // Implement VideoDecodeStatsDB.
@@ -94,8 +99,6 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<InMemoryVideoDecodeStatsDBImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryVideoDecodeStatsDBImpl);
 };
 
 }  // namespace media

@@ -8,12 +8,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/cert/x509_util.h"
+#include "url/gurl.h"
 
 namespace safe_browsing {
 
 namespace {
 
-// Escapes a certificate attribute so that it can be used in a whitelist
+// Escapes a certificate attribute so that it can be used in a allowlist
 // entry.  Currently, we only escape slashes, since they are used as a
 // separator between attributes.
 std::string EscapeCertAttribute(const std::string& attribute) {
@@ -32,19 +33,14 @@ std::string EscapeCertAttribute(const std::string& attribute) {
 
 }  // namespace
 
-void RecordCountOfWhitelistedDownload(WhitelistType type) {
-  UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckWhitelistResult", type,
-                            WHITELIST_TYPE_MAX);
-}
-
-void GetCertificateWhitelistStrings(
+void GetCertificateAllowlistStrings(
     const net::X509Certificate& certificate,
     const net::X509Certificate& issuer,
-    std::vector<std::string>* whitelist_strings) {
-  // The whitelist paths are in the format:
+    std::vector<std::string>* allowlist_strings) {
+  // The allowlist paths are in the format:
   // cert/<ascii issuer fingerprint>[/CN=common_name][/O=org][/OU=unit]
   //
-  // Any of CN, O, or OU may be omitted from the whitelist entry, in which
+  // Any of CN, O, or OU may be omitted from the allowlist entry, in which
   // case they match anything.  However, the attributes that do appear will
   // always be in the order shown above.  At least one attribute will always
   // be present.
@@ -88,7 +84,36 @@ void GetCertificateWhitelistStrings(
       net::x509_util::CryptoBufferAsStringPiece(issuer.cert_buffer())));
   std::string issuer_fp = base::HexEncode(hashed.data(), hashed.size());
   for (auto it = paths_to_check.begin(); it != paths_to_check.end(); ++it) {
-    whitelist_strings->push_back("cert/" + issuer_fp + *it);
+    allowlist_strings->push_back("cert/" + issuer_fp + *it);
+  }
+}
+
+GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
+  // Regular blob: URLs are of the form
+  // "blob:https://my-origin.com/def07373-cbd8-49d2-9ef7-20b071d34a1a". To make
+  // these URLs distinguishable from those we use a fixed string rather than a
+  // random UUID.
+  return GURL("blob:" + frame_url.DeprecatedGetOriginAsURL().spec() +
+              "file-system-access-write");
+}
+
+ClientDownloadResponse::Verdict DownloadDangerTypeToDownloadResponseVerdict(
+    download::DownloadDangerType download_danger_type) {
+  switch (download_danger_type) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      return ClientDownloadResponse::DANGEROUS;
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+      return ClientDownloadResponse::UNCOMMON;
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      return ClientDownloadResponse::POTENTIALLY_UNWANTED;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+      return ClientDownloadResponse::DANGEROUS_HOST;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE;
+    default:
+      // Return SAFE for any other danger types.
+      return ClientDownloadResponse::SAFE;
   }
 }
 

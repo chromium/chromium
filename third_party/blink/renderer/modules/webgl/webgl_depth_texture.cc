@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_depth_texture.h"
 
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+
 namespace blink {
 
 WebGLDepthTexture::WebGLDepthTexture(WebGLRenderingContextBase* context)

@@ -1,0 +1,21 @@
+This test requires the Ahem font. The green content should wrap around the blue rounded rectangle.
+
+X
+
+X
+X
+
+X
+XXXX
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+FAIL imageShapeRect('a').top should be 0. Was -0.6666641235351562.
+FAIL imageShapeRect('b').top should be 50. Was 49.333335876464844.
+FAIL imageShapeRect('b').right should be 300. Was 299.9999885559082.
+FAIL imageShapeRect('c').top should be 75. Was 74.33333587646484.
+FAIL imageShapeRect('c').right should be 300. Was 299.9999885559082.
+FAIL imageShapeRect('d').top should be 125. Was 124.33334350585938.
+FAIL imageShapeRect('e').top should be 150. Was 149.33334350585938.
+FAIL imageShapeRect('e').right should be 0. Was -0.0000457763671875.

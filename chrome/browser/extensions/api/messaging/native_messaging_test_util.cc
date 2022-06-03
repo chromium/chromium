@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,10 +41,10 @@ void WriteTestNativeHostManifest(const base::FilePath& target_dir,
   manifest->SetBoolean("supports_native_initiated_connections",
                        supports_native_initiated_connections);
 
-  std::unique_ptr<base::ListValue> origins(new base::ListValue());
-  origins->AppendString(base::StringPrintf(
+  base::Value origins(base::Value::Type::LIST);
+  origins.Append(base::StringPrintf(
       "chrome-extension://%s/", ScopedTestNativeMessagingHost::kExtensionId));
-  manifest->Set("allowed_origins", std::move(origins));
+  manifest->SetKey("allowed_origins", std::move(origins));
 
   base::FilePath manifest_path = target_dir.AppendASCII(host_name + ".json");
   JSONFileValueSerializer serializer(manifest_path);
@@ -51,8 +52,8 @@ void WriteTestNativeHostManifest(const base::FilePath& target_dir,
 
 #if defined(OS_WIN)
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
-  base::string16 key = L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\" +
-                       base::UTF8ToUTF16(host_name);
+  std::wstring key = L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\" +
+                     base::UTF8ToWide(host_name);
   base::win::RegKey manifest_key(
       root_key, key.c_str(),
       KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK);
@@ -90,10 +91,10 @@ void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
   ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(root_key));
 #else
-  path_override_.reset(new base::ScopedPathOverride(
+  path_override_ = std::make_unique<base::ScopedPathOverride>(
       user_level ? chrome::DIR_USER_NATIVE_MESSAGING
                  : chrome::DIR_NATIVE_MESSAGING,
-      temp_dir_.GetPath()));
+      temp_dir_.GetPath());
 #endif
 
   base::CopyFile(test_user_data_dir.AppendASCII("echo.py"),

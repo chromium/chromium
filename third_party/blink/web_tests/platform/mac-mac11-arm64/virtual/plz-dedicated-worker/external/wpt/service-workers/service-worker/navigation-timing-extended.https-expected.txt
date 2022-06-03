@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Service worker controlled navigation timing assert_greater_than: workerStart marking should not wait for worker activation to finish expected a number greater than 1634043763019.1 but got 1634043763018.9
+Harness: the test ran to completion.
+

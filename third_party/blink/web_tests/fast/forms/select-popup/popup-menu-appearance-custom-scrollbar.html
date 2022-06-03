@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.enablePixelTesting = true;
+</script>
+<script src="../resources/picker-common.js"></script>
+<style>
+  select:focus {
+    outline-width: 0;
+  }
+  select {
+    width: 200px;
+    font: 10px Ahem;
+    -webkit-appearance: none;
+    background-color: white;
+  }
+  select::-webkit-scrollbar {
+    width: 20px;
+  }
+
+  select::-webkit-scrollbar-track {
+    border-width: 2px;
+    border-color: gold;
+    border-style: solid;
+    box-shadow: 0 0 1px 1px inset blue;
+    border-radius: 0px;
+    background: orange;
+  }
+
+  select::-webkit-scrollbar-track-piece {
+     border-width: 2px;
+    border-color: fuchsia;
+    border-style: solid dashed;
+    box-shadow: 0 0 4px 4px inset greenyellow;
+    border-radius: 30px;
+    background: ivory;
+  }
+
+  select::-webkit-scrollbar-corner {
+    border-width: 3px;
+    border-color: brown;
+    border-style: double;
+    box-shadow: 0 0 4px 1px inset pink;
+    border-radius: 10px 0 20px 0;
+    background: yellow;
+  }
+
+  select::-webkit-scrollbar-thumb {
+    border-width: 3px;
+    border-style: solid;
+    border-color: transparent;
+    border-right-color: black;
+    border-top-color: black;
+    background-clip: padding-box;
+    background-color: gray;
+    border-radius: 0 20px 0 10px;
+    box-shadow: -1px 0 4px 1px inset white;
+  }
+</style>
+</head>
+<body>
+<select id='menu'>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+  <option>This is an option</option>
+</select>
+<script>
+   openPickerAppearanceOnly(document.getElementById('menu'), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

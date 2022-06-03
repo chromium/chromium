@@ -3,7 +3,46 @@
 // found in the LICENSE file.
 
 // fileManagerPrivate API.
-// This is a private API used by the file browser of ChromeOS.
+// This is a private API used by the file manager on ChromeOS. The API can
+// roughly be divided into two parts: functions and events.
+//
+// Functions: The Functions interface defines a number of privileged operations
+// that allow File Manager to execute tasks not available via public APIs. Most
+// of the time this is due to the fact that enabling those tasks via public APIs
+// would allow malicious applications to either take control of the hardware
+// or leak private information about the user. None of these API must be exposed
+// in any public services.
+//
+// Events: The Event interface defines a number of events that are supported
+// by the API. These events allow one to register, in JavaScript, a listener
+// that is invoked with event's parameters, every time the event is observed
+// by the file_manager::EventRouter.
+//
+// Both the functions and events interface are only available to clients that
+// are explicitly granted permission to use the fileManagerPrivate API. This
+// API is not available to any client without code reviewed changes
+// (eg. via _api_features.json)
+//
+// CAVEAT: An application A registering as a listener to any events must assume
+// that an application B can listen to any events that are destined for A, where
+// A and B are any applications that are granted access to fileManagerPrivate.
+// For example, if applications A and B listen to onDirectoryChanged events on
+// two unique paths, they both receive events about changes in either path. This
+// is due to the fact that events are broadcasted to ALL listeners. It is the
+// responsibility of the listener to discard events not destined for it. It is
+// also the responsibility of all listeners not to log information transmitted
+// in those events, as it may record in logs information that is private to a
+// given user (e.g., the full paths and name of a given file).  This API is
+// designed with the assumption that all users are equal in terms of their
+// permission to observe events, call the function interface and access the file
+// system of the device. As the API is only used by Chrome OS' File Manager, and
+// the File Manager is being used by the user to access their own files, this
+// assumption holds true.
+//
+// The API defined in this file may use W3C Entry object (FileEntry and
+// DirectoryEntry). Since these cannot be directly sent or received by the C++
+// code, there exists an additional layer, in file_manager_private_internal.idl,
+// that provides translation from or to W3C Entry objects.
 [platforms=("chromeos"),
  implemented_in="chrome/browser/chromeos/extensions/file_manager/file_manager_private_api_functions.h"]
 namespace fileManagerPrivate {
@@ -50,7 +89,8 @@ enum MountCompletedStatus {
   error_invalid_device_path,
   error_unknown_filesystem,
   error_unsupported_filesystem,
-  error_invalid_archive
+  error_invalid_archive,
+  error_need_password
 };
 
 // Filesystem to format to.
@@ -59,21 +99,37 @@ enum FormatFileSystemType { vfat, exfat, ntfs };
 // File transfer progress state.
 enum TransferState { in_progress, completed, failed };
 
-// The type of the progress event.
-enum CopyProgressStatusType {
-  // "begin_copy_entry" is fired for each entry (file or directory) before
-  // starting the copy operation.
-  begin_copy_entry,
+// The type of the progress event for copy or move operations.
+// A copy or a cross-filesystem move happens recursively: these events are
+// expected for each single entry (file or directory) being moved.
+// A local (same-filesystem) move only requires the top-level entries to be
+// renamed: if we move entries 'a.txt', 'b/c.txt', 'b/d.txt' (relative paths),
+// events will be received for only for 'a.txt' and 'b'.
+enum CopyOrMoveProgressStatusType {
+  // "begin" is fired for each entry (file or directory) before
+  // starting the copy or move operation.
+  begin,
 
-  // "end_copy_entry" is fired for each entry (file or directory) after ending
-  // the copy operation.
-  end_copy_entry,
-
-  // "progress" is fired periodically to report progress of a file copy (not
-  // directory).
+  // "progress" is fired periodically to report progress of a file copy or move
+  // (not directory).
   progress,
 
-  // "success" is fired after all entries are copied.
+  // "end_copy" is fired for each entry (file or directory) that has been
+  // successfully copied to its destination. This event is expected both both
+  // copies and cross-filesystem moves (implemented as copy + delete).
+  end_copy,
+
+  // "end_move" is fired for each entry (file or directory) that has been
+  // successfully moved to its destination, in the case of a "same-filesystem"
+  // move.
+  end_move,
+
+  // "end_remove_source" is fired for each entry (file or directory) that has
+  // been successfully removed from its source location as part of a
+  // "cross-filesystem" move operation.
+  end_remove_source,
+
+  // "success" is fired after all entries have been copied or moved.
   success,
 
   // "error" is fired when an error occurs.
@@ -130,11 +186,17 @@ enum DeviceEventType {
   // Rename succeeded.
   rename_success,
   // Rename failed.
-  rename_fail
+  rename_fail,
+  // Partition started.
+  partition_start,
+  // Partition succeeded.
+  partition_success,
+  // Partition failed.
+  partition_fail
 };
 
 // Drive sync error type.
-// Keep it synced with DriveSyncErrorType in operation_observer.h.
+// Keep it synced with DriveError::Type in drivefs.mojom.
 enum DriveSyncErrorType {
   // Request to delete a file without permission.
   delete_without_permission,
@@ -142,21 +204,48 @@ enum DriveSyncErrorType {
   service_unavailable,
   // There is no server space to sync a file.
   no_server_space,
+  // There is no local space to sync a file.
+  no_local_space,
   // Miscellaneous errors other than listed above.
   misc
 };
 
-// Result of task execution.
+// Drive confirm dialog type.
+// Keep it synced with DialogReason::Type in drivefs.mojom.
+enum DriveConfirmDialogType {
+  // Request to enable Docs Offline to allow saving hosted files offline.
+  enable_docs_offline
+};
+
+// Possible result of dialog displayed as a result of the onDriveConfirmDialog
+// event. Sent back to the browser via notifyDriveDialogResult().
+enum DriveDialogResult {
+  // The dialog was not displayed to the user.
+  not_displayed,
+  // The user accepted the action proposed by the dialog.
+  accept,
+  // The user rejected the action proposed by the dialog.
+  reject,
+  // The user closed the dialog without selecting an option.
+  dismiss
+};
+
+// Result of task execution. If changing, update the strings used in
+// ui/file_manager/file_manager/foreground/js/file_tasks.js
 enum TaskResult {
-  // The task execution succeeded and a new window/tab was opened.
+  // The task execution succeeded and a new window/tab was opened on the current
+  // desktop.
   opened,
   // The task execution succeeded and the message was sent to the proper
-  // extension.
+  // extension or app. This could result in a window being opened on a different
+  // desktop.
   message_sent,
   // The task execution failed.
   failed,
   // No URL is specified.
-  empty
+  empty,
+  // The task was a |plugin_vm| task, and the file was in an unshared directory
+  failed_plugin_vm_directory_not_shared
 };
 
 // Drive share type.
@@ -226,11 +315,54 @@ enum SourceRestriction {
   native_source
 };
 
+// Recent file types to filter results from getRecentFiles().
+enum RecentFileType {
+  all,
+  audio,
+  image,
+  video
+};
+
 enum CrostiniEventType {
   enable,
   disable,
   share,
-  unshare
+  unshare,
+  drop_failed_plugin_vm_directory_not_shared
+};
+
+enum ProviderSource {
+  file,
+  device,
+  network
+};
+
+enum SharesheetLaunchSource {
+  context_menu,
+  sharesheet_button,
+  unknown
+};
+
+enum IOTaskState {
+  queued,
+  in_progress,
+  success,
+  error,
+  cancelled
+};
+
+enum IOTaskType {
+  copy,
+  move,
+  delete,
+  zip
+};
+
+// These three fields together uniquely identify a task.
+dictionary FileTaskDescriptor {
+  DOMString appId;
+  DOMString taskType;
+  DOMString actionId;
 };
 
 // A file task represents an action that the file manager can perform over the
@@ -238,8 +370,8 @@ enum CrostiniEventType {
 // chrome/browser/chromeos/extensions/file_manager/file_tasks.h for details
 // about how file tasks are handled.
 dictionary FileTask {
-  // The unique identifier of the task.
-  DOMString taskId;
+  // Unique identifier for the task.
+  FileTaskDescriptor descriptor;
 
   // Task title (ex. App name).
   DOMString title;
@@ -457,6 +589,10 @@ dictionary VolumeMetadata {
   // Drive label of the volume. Removable partitions that belong to the
   // same physical removable device share the same drive label.
   DOMString? driveLabel;
+
+  // The path on the remote host where this volume is mounted, for crostini this
+  // is the user's homedir (/home/<username>).
+  DOMString? remoteMountPath;
 };
 
 // Payload data for mount event.
@@ -490,7 +626,7 @@ dictionary FileTransferStatus {
   double total;
 
   // Total number of jobs.
-  long num_total_jobs;
+  long numTotalJobs;
 
   // If true, hide when a job is completed when there are zero jobs in
   // progress. Otherwise, hide when one job is in progress.
@@ -506,10 +642,20 @@ dictionary DriveSyncErrorEvent {
   DOMString fileUrl;
 };
 
-// Payload data for copy status progress updates.
-dictionary CopyProgressStatus {
+// Confirmation dialog from Drive asking the user to accept or reject an
+// action.
+dictionary DriveConfirmDialogEvent {
+  // Dialog type.
+  DriveConfirmDialogType type;
+
+  // File URL of the entry associated with the dialog.
+  DOMString fileUrl;
+};
+
+// Payload data for copy or move status progress updates.
+dictionary CopyOrMoveProgressStatus {
   // The type of the progress event.
-  CopyProgressStatusType type;
+  CopyOrMoveProgressStatusType type;
 
   // URL for the entry currently being copied. This field is particularly useful
   // when a directory copy is initiated with startCopy(). The field tells what
@@ -556,6 +702,16 @@ dictionary FileWatchEvent {
   // Detailed change information of change. It would be null if the detailed
   // information is not available.
   FileChange[]? changedFiles;
+};
+
+// Parameters passed to fileManagerPrivateInternal.getVolumeRoot function.
+dictionary GetVolumeRootOptions {
+  // The ID of the requested volume.
+  DOMString volumeId;
+
+  // Whether the requested file system should be writable. The default is
+  // read-only.
+  boolean? writable;
 };
 
 dictionary Preferences {
@@ -624,6 +780,9 @@ dictionary DriveConnectionState {
   // Whether the device has a cellular network access or not. i.e. the |type|
   // can be 'metered' or not.
   boolean hasCellularNetworkAccess;
+
+  // Whether or not hosted files can be pinned.
+  boolean canPinHostedFiles;
 };
 
 // Device event dispatched to listeners of onDeviceChaged.  See also
@@ -658,7 +817,7 @@ dictionary Provider {
   boolean multipleMounts;
 
   // Source of file systems' data.
-  manifestTypes.FileSystemProviderSource source;
+  ProviderSource source;
 };
 
 // Information about a Linux package in response to GetLinuxPackageInfo.
@@ -699,6 +858,115 @@ dictionary AndroidApp {
   IconSet? iconSet;
 };
 
+dictionary StreamInfo {
+  // The stream type e.g., "mp3", "h264", "ogg".
+  DOMString type;
+
+  // An unfiltered string->string dictionary of tags from the stream.
+  object tags;
+};
+
+dictionary AttachedImages {
+  // Data encoded as a dataURL.
+  DOMString data;
+
+  // Data type.
+  DOMString type;
+};
+
+dictionary MediaMetadata {
+  // Content mime type.
+  DOMString mimeType;
+
+  // Defined for video. In pixels.
+  long? height;
+  long? width;
+
+  // Defined for audio and video. In seconds.
+  double? duration;
+
+  // Defined for video. In degrees.
+  long? rotation;
+
+  // Defined for audio and video.
+  DOMString? album;
+  DOMString? artist;
+  DOMString? comment;
+  DOMString? copyright;
+  long? disc;
+  DOMString? genre;
+  DOMString? language;
+  DOMString? title;
+  long? track;
+
+  // All the metadata in the media file. For formats with multiple streams,
+  // stream order is preserved. Container metadata is the first stream.
+  StreamInfo[] rawTags;
+
+  // Raw images embedded in the media file. This is most often audio album
+  // art or video thumbnails.
+  AttachedImages[] attachedImages;
+};
+
+dictionary HoldingSpaceState {
+  // File system URLs of items pinned to the holding space.
+  DOMString[] itemUrls;
+};
+
+dictionary OpenWindowParams {
+  // The desired target directory when opening a new window. If omitted Files
+  // app displays the default directory: MyFiles.
+  DOMString? currentDirectoryURL;
+
+  // The URL for a file or directory to be selected once a new window is
+  // spawned.
+  DOMString? selectionURL;
+};
+
+dictionary IOTaskParams {
+  // Destination folder for tasks that require one. Not required by |delete|
+  // task.
+  [instanceof=DirectoryEntry] object? destinationFolder;
+};
+
+// IO Task Progress status, see file_manager::io_task::ProgressStatus.
+dictionary ProgressStatus {
+
+  // Type of the task sending the progress.
+  IOTaskType type;
+
+  // Current state of the task sending the progress.
+  IOTaskState state;
+
+  // Name of the first source entry.
+  DOMString sourceName;
+
+  // Number of remaining entries to be processed.
+  long numRemainingItems;
+
+  // Total number of entries to be processed.
+  long itemCount;
+
+  // Name of the destination folder for operations that transfer files to a
+  // directory (e.g. copy or move).
+  DOMString destinationName;
+
+  // ProgressStatus over all |sources|.
+  long bytesTransferred;
+
+  // Total size of all |sources|.
+  long totalBytes;
+
+  // The task id for this progress status.
+  long taskId;
+
+  // The estimate time to finish the operation.
+  double remainingSeconds;
+
+  // The name of the last error that happened.
+  DOMString errorName;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -713,6 +981,12 @@ callback GetFileTasksCallback = void(FileTask[] tasks);
 
 // |result| Mime type of the file.
 callback GetMimeTypeCallback = void(DOMString result);
+
+// |result| Content sniffed mime type of the file.
+callback GetContentMimeTypeCallback = void(DOMString result);
+
+// |result| Metadata of the Audio or Video file.
+callback GetContentMetadataCallback = void(MediaMetadata result);
 
 // |result| Hash containing the string assets.
 callback GetStringsCallback = void(object result);
@@ -762,7 +1036,15 @@ callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
 // contain at most one path per hash.
 callback SearchFilesByHashesCallback = void(object paths);
 
-callback ZipSelectionCallback = void(optional boolean success);
+// |zipId| The ID of the ZIP operation.
+// |totalBytes| Total number of bytes to be zipped.
+callback ZipSelectionCallback = void(long zipId, double totalBytes);
+
+// |result| Less than 0 if the operation is still in progress, 0 if the
+// operation finished successfully, or greater than 0 if the operation finished
+// with an error.
+// |bytes| Total number of bytes having been zipped so far.
+callback ZipProgressCallback = void(long result, double bytes);
 
 callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 
@@ -801,6 +1083,10 @@ callback GetDirectorySizeCallback = void(double size);
 // |entries| Recently modified entries.
 callback GetRecentFilesCallback = void([instanceOf=Entry] object[] entries);
 
+// |rootDir| The root directory of the volume to which access was requested.
+callback GetVolumeRootCallback =
+    void([instanceof=DirectoryEntry] object rootDir);
+
 // |entries| Entries shared with crostini container.
 // |firstForSession| true the first time this is called for the session.
 callback GetCrostiniSharedPathsCallback =
@@ -815,15 +1101,15 @@ callback GetLinuxPackageInfoCallback =
 callback InstallLinuxPackageCallback = void(
     InstallLinuxPackageResponse response, DOMString failure_reason);
 
-// |result| String representing the detected coding system.
-callback DetectCharacterEncodingCallback = void(DOMString result);
-
-// |thumbnailDataUrl| A data URL for the thumbnail as a PNG; |thumbnailDataUrl|
-// is empty if no thumbnail was available.
+// |thumbnailDataUrl| A data URL for the thumbnail; |thumbnailDataUrl| is empty
+// if no thumbnail was available.
 callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
 
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
+
+// |state| Describes the current holding space state.
+callback HoldingSpaceStateCallback = void(HoldingSpaceState state);
 
 interface Functions {
   // Logout the current user for navigating to the re-authentication screen for
@@ -834,23 +1120,23 @@ interface Functions {
   static void cancelDialog();
 
   // Executes file browser task over selected files.
-  // |taskId| The unique identifier of task to execute.
+  // |descriptor| The unique identifier of task to execute.
   // |entries| Array of entries
   // |callback|
   [nocompile]
-  static void executeTask(DOMString taskId,
+  static void executeTask(FileTaskDescriptor descriptor,
                           [instanceof=Entry] object[] entries,
                           ExecuteTaskCallback callback);
 
   // Sets the default task for the supplied MIME types and path extensions.
   // Lists of MIME types and URLs may contain duplicates. Additionally, the
   // list of MIME types can be empty.
-  // |taskId| The unique identifier of task to mark as default.
+  // |descriptor| The unique identifier of task to mark as default.
   // |entries| Array of selected entries to extract path extensions from.
   // |mimeTypes| Array of selected file MIME types.
   // |callback|
   [nocompile]
-  static void setDefaultTask(DOMString taskId,
+  static void setDefaultTask(FileTaskDescriptor descriptor,
                              [instanceof=Entry] object[] entries,
                              DOMString[] mimeTypes,
                              SimpleCallback callback);
@@ -862,12 +1148,31 @@ interface Functions {
   static void getFileTasks([instanceof=Entry] object[] entries,
                            GetFileTasksCallback callback);
 
-  // Gets the MIME type of a file.
-  // |entry| Entry to be checked.
+  // Gets the MIME type of an entry.
+  // |entry| The entry to be checked.
   // |callback|
   [nocompile]
   static void getMimeType([instanceof=Entry] object entry,
                           GetMimeTypeCallback callback);
+
+  // Gets the content sniffed MIME type of a file.
+  // |fileEntry| The file entry to be checked.
+  // |callback|
+  [nocompile]
+  static void getContentMimeType([instanceof=FileEntry] object fileEntry,
+                                 GetContentMimeTypeCallback callback);
+
+  // Gets metadata from an Audio or Video file.
+  // |fileEntry| The file entry to be checked.
+  // |mimeType| Content sniffed mimeType of the file.
+  // |includeImages| False returns metadata tags only. True returns
+  //     metadata tags and metadata (thumbnail) images.
+  // |callback|
+  [nocompile]
+  static void getContentMetadata([instanceof=FileEntry] object fileEntry,
+                                 DOMString mimeType,
+                                 boolean includeImages,
+                                 GetContentMetadataCallback callback);
 
   // Gets localized strings and initialization data.
   // |callback|
@@ -949,11 +1254,13 @@ interface Functions {
       [instanceOf=Entry] object[] entries,
       ResolveEntriesCallback callback);
 
-  // Mount a resource or a file.
-  // |source| Mount point source. For compressed files it is relative file path
-  //     within external file system
-  // |callback|
-  static void addMount(DOMString source, AddMountCallback callback);
+  // Mounts a resource or a file.
+  // |source| Mount point source. For compressed files it is the relative file
+  //     path within the external file system.
+  // |password| Optional password to decrypt the file.
+  // |callback| Callback called with the source path of the mount.
+  static void addMount(DOMString source, optional DOMString password,
+                       AddMountCallback callback);
 
   // Unmounts a mounted resource.
   // |volumeId| An ID of the volume.
@@ -993,6 +1300,15 @@ interface Functions {
                            FormatFileSystemType filesystem,
                            DOMString volumeLabel);
 
+  // Deletes partitions of removable device, creates a new partition and format
+  // it.
+  // |deviceStoragePath| Storage path of the device to be formatted.
+  // |filesystem| Filesystem type to be formatted to.
+  // |volumeLabel| Label of the drive after formatting.
+  static void singlePartitionFormat(DOMString deviceStoragePath,
+                           FormatFileSystemType filesystem,
+                           DOMString volumeLabel);
+
   // Renames a mounted volume.
   // |volumeId| ID of the volume to be renamed.
   // |newName| New name of the target volume.
@@ -1027,18 +1343,30 @@ interface Functions {
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
 
-  // Create a zip file for the selected files.
-  // |parentEntry| Entry of the directory containing the selected files.
-  // |entries| Entries of the selected files. The files must be under the
-  //     directory specified by |parentEntry|.
-  // |destName| Name of the destination zip file. The zip file will be created
-  //     under the directory specified by |parentEntry|.
-  // |callback|
+  // Creates a ZIP file for the selected files and folders. Folders are
+  // recursively explored and zipped. Hidden files and folders (with names
+  // starting with a dot) found during recursive exploration are included too.
+  // |entries| Entries of the selected files and folders to zip. They must be
+  //     under the |parentEntry| directory.
+  // |parentEntry| Entry of the directory containing the selected files and
+  //     folders. This is where the ZIP file will be created, too.
+  // |destName| Name of the destination ZIP file. The ZIP file will be created
+  //     in the directory specified by |parentEntry|.
+  // |callback| Callback called on completion.
   [nocompile]
   static void zipSelection([instanceof=Entry] object[] entries,
                            [instanceof=DirectoryEntry] object parentEntry,
                            DOMString destName,
                            ZipSelectionCallback callback);
+
+  // Cancels an ongoing ZIP operation.
+  // Does nothing if there is no matching ongoing ZIP operation.
+  // |zipId| ID of the ZIP operation.
+  static void cancelZip(long zipId);
+
+  // Gets the progress of an ongoing ZIP operation.
+  // |zipId| ID of the ZIP operation.
+  static void getZipProgress(long zipId, ZipProgressCallback callback);
 
   // Retrieves the state of the current drive connection.
   // |callback|
@@ -1091,23 +1419,23 @@ interface Functions {
   // Returns list of available providers.
   static void getProviders(GetProvidersCallback callback);
 
-  // Requests adding a new provided file system. If not possible, then an error
-  // via chrome.runtime.lastError is returned.
+  // Requests adding a new provided file system. On failure, sets
+  // $(ref:runtime.lastError).
   static void addProvidedFileSystem(DOMString provider_id,
                                     SimpleCallback callback);
 
-  // Requests configuring an existing volume. If not possible, then returns
-  // an error via chrome.runtime.lastError.
+  // Requests configuring an existing volume. On failure, sets
+  // $(ref:runtime.lastError).
   static void configureVolume(DOMString volumeId, SimpleCallback callback);
 
-  // Requests list of custom actions for the specified entries. If not possible,
-  // then an error via chrome.runtime.lastError is returned.
+  // Requests list of custom actions for the specified entries. On failure, sets
+  // $(ref:runtime.lastError).
   [nocompile]
   static void getCustomActions([instanceof=Entry] object[] entries,
                                GetCustomActionsCallback callback);
 
-  // Executes a custom action for a set of entries. If not possible, then an
-  // error via chrome.runtime.lastError is returned.
+  // Executes a custom action for a set of entries. On failure, sets
+  // $(ref:runtime.lastError).
   [nocompile]
   static void executeCustomAction([instanceof=Entry] object[] entries,
                                   DOMString actionId,
@@ -1122,10 +1450,18 @@ interface Functions {
 
   // Gets recently modified files across file systems.
   // |restriction| Flag to restrict sources of recent files.
+  // |fileType| Requested file type to filter recent files.
   // |callback|
   [nocompile]
   static void getRecentFiles(SourceRestriction restriction,
+                             RecentFileType fileType,
                              GetRecentFilesCallback callback);
+
+  // Requests the root directory of the volume with the ID specified in
+  // |options.volumeId|.
+  [nocompile]
+  static void getVolumeRoot(GetVolumeRootOptions options,
+                            GetVolumeRootCallback callback);
 
   // Starts and mounts crostini container.
   // |callback|
@@ -1175,18 +1511,30 @@ interface Functions {
   // returns a thumbnail appropriate for file list or grid views; otherwise,
   // returns a thumbnail appropriate for quickview.
   [nocompile]
-  static void getThumbnail([instanceOf=FileEntry] object entry,
-                           boolean cropToSquare,
-                           GetThumbnailCallback callback);
+  static void getDriveThumbnail([instanceof=FileEntry] object entry,
+                                boolean cropToSquare,
+                                GetThumbnailCallback callback);
 
-  // Returns a guessed character encoding of a hex-encoded string. Every 2
-  // characters of |bytes| represent one byte by 2-digit hexadecimal number.
-  // The result is preferred MIME name of the detected character encoding
-  // system. It is slightly different from IANA name.
-  // See third_party/ced/src/util/encodings/encodings.cc
-  // Returns an empty string if failed.
-  static DOMString detectCharacterEncoding(DOMString bytes,
-    DetectCharacterEncodingCallback callback);
+  // For a local PDF file, retrieves its thumbnail with a given |width| and
+  // |height|.
+  [nocompile]
+  static void getPdfThumbnail([instanceof=FileEntry] object entry,
+                              long width,
+                              long height,
+                              GetThumbnailCallback callback);
+
+  // Retrieves a thumbnail of an ARC DocumentsProvider file, closely matching
+  // the hinted size specified by |widthHint| and |heightHint|, but not
+  // necessarily the exact size. |callback| is called with thumbnail data
+  // encoded as a data URL. If the document does not support thumbnails,
+  // |callback| is called with an empty string.
+  // Note: The thumbnail data may originate from third-party application code,
+  // and is untrustworthy (Security).
+  [nocompile]
+  static void getArcDocumentsProviderThumbnail([instanceof=FileEntry] object entry,
+                                               long widthHint,
+                                               long heightHint,
+                                               GetThumbnailCallback callback);
 
   // Returns a list of Android picker apps to be shown in file selector.
   static void getAndroidPickerApps(DOMString[] extensions,
@@ -1195,14 +1543,75 @@ interface Functions {
   // Called when the user selects an Android picker app in file selector.
   static void selectAndroidPickerApp(AndroidApp androidApp,
                                      SimpleCallback callback);
+
+  // Return true if sharesheet contains share targets for entries.
+  // |entries| Array of selected entries
+  // |callback| is called with error in case of failure and with no arguments
+  // if successfully launched the Sharesheet dialog, but before user has
+  // finished the sharing.
+  [nocompile]
+  static void sharesheetHasTargets([instanceof=Entry] object[] entries,
+                           BooleanCallback callback);
+
+  // Invoke Sharesheet for selected files.
+  // |entries| Array of selected entries.
+  // |launchSource| Source from which sharesheet was invoked.
+  // |callback|
+  [nocompile]
+  static void invokeSharesheet([instanceof=Entry] object[] entries,
+                               SharesheetLaunchSource launchSource,
+                               SimpleCallback callback);
+
+  // Adds or removes a list of entries to temporary holding space. Any entries
+  // whose current holding space state matches the intended state will be
+  // skipped.
+  // |entries| The list of entries whose holding space needs to be updated.
+  // |add| Whether items should be added or removed from the holding space.
+  // |callback| Completion callback.
+  [nocompile]
+  static void toggleAddedToHoldingSpace([instanceOf=Entry] object[] entries,
+                                        boolean added,
+                                        optional SimpleCallback callback);
+
+  // Retrieves the current holding space state, for example the list of items
+  // the holding space currently contains.
+  // |callback| The result callback.
+  static void getHoldingSpaceState(HoldingSpaceStateCallback callback);
+
+  // Returns true via `callback` if tablet mode is enabled, false otherwise.
+  static void isTabletModeEnabled(BooleanCallback callback);
+
+  // Notifies the browser of the result of a dialog displayed earlier as a
+  // result of the onDriveConfirmDialog event.
+  static void notifyDriveDialogResult(DriveDialogResult result);
+
+  // Creates a new Files app window in the directory provided in `params`.
+  static void openWindow(OpenWindowParams params, BooleanCallback callback);
+
+  // Starts an I/O task of type |type| on |entries|. Task type specific
+  // parameters are passed via |params|.
+  [nocompile]
+  static void startIOTask(
+      IOTaskType type,
+      [instanceof=Entry] object[] entries,
+      IOTaskParams params);
+
+  // Cancels an I/O task by id. Task ids are communicated to the Files App in
+  // each I/O task's progress status.
+  static void cancelIOTask(long taskId);
 };
 
+// Events supported by fileManagerPrivate API. These events are broadcasted.
+// See the note at the top of the file with regards implications of event
+// broadcasting to applications that can use fileManagerPrivate Event API.
 interface Events {
   static void onMountCompleted(MountCompletedEvent event);
 
   static void onFileTransfersUpdated(FileTransferStatus event);
 
-  static void onCopyProgress(long copyId, CopyProgressStatus status);
+  static void onPinTransfersUpdated(FileTransferStatus event);
+
+  static void onCopyProgress(long copyId, CopyOrMoveProgressStatus status);
 
   static void onDirectoryChanged(FileWatchEvent event);
 
@@ -1214,8 +1623,14 @@ interface Events {
 
   static void onDriveSyncError(DriveSyncErrorEvent event);
 
+  static void onDriveConfirmDialog(DriveConfirmDialogEvent event);
+
   static void onAppsUpdated();
 
   static void onCrostiniChanged(CrostiniEvent event);
+
+  static void onTabletModeChanged(boolean enabled);
+
+  static void onIOTaskProgressStatus(ProgressStatus status);
 };
 };

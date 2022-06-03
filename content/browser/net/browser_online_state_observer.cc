@@ -4,7 +4,6 @@
 
 #include "content/browser/net/browser_online_state_observer.h"
 
-#include "content/common/view_messages.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"

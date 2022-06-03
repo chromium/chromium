@@ -1,3 +1,4 @@
 include_rules = [
   "+ui/events/event.h",
+  "+ui/events/types/scroll_input_type.h",
 ]

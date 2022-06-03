@@ -1,3 +1,17 @@
+// Copyright 2020 The Abseil Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <string>
 
 #include "gmock/gmock.h"
@@ -5,21 +19,26 @@
 #include "absl/strings/str_format.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace str_format_internal {
 namespace {
 
-std::string ConvToString(Conv conv) {
+std::string ConvToString(FormatConversionCharSet conv) {
   std::string out;
-#define CONV_SET_CASE(c) \
-  if (Contains(conv, Conv::c)) out += #c;
-  ABSL_CONVERSION_CHARS_EXPAND_(CONV_SET_CASE, )
+#define CONV_SET_CASE(c)                                    \
+  if (Contains(conv, FormatConversionCharSetInternal::c)) { \
+    out += #c;                                              \
+  }
+  ABSL_INTERNAL_CONVERSION_CHARS_EXPAND_(CONV_SET_CASE, )
 #undef CONV_SET_CASE
-  if (Contains(conv, Conv::star)) out += "*";
+  if (Contains(conv, FormatConversionCharSetInternal::kStar)) {
+    out += "*";
+  }
   return out;
 }
 
 TEST(StrFormatChecker, ArgumentToConv) {
-  Conv conv = ArgumentToConv<std::string>();
+  FormatConversionCharSet conv = ArgumentToConv<std::string>();
   EXPECT_EQ(ConvToString(conv), "s");
 
   conv = ArgumentToConv<const char*>();
@@ -35,7 +54,7 @@ TEST(StrFormatChecker, ArgumentToConv) {
   EXPECT_EQ(ConvToString(conv), "p");
 }
 
-#if ABSL_INTERNAL_ENABLE_FORMAT_CHECKER
+#ifdef ABSL_INTERNAL_ENABLE_FORMAT_CHECKER
 
 struct Case {
   bool result;
@@ -147,4 +166,5 @@ TEST(StrFormatChecker, LongFormat) {
 
 }  // namespace
 }  // namespace str_format_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

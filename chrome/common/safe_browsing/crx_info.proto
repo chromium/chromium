@@ -7,9 +7,9 @@ option optimize_for = LITE_RUNTIME;
 
 package extensions;
 
-// This is used to request more information on blacklisted CRX packages. The
-// client maintains a local cache of blacklisted ids, and makes requests to our
-// server to get more information, such as the blacklist type.
+// This is used to request more information on blocklisted CRX packages. The
+// client maintains a local cache of blocklisted ids, and makes requests to our
+// server to get more information, such as the blocklist type.
 message ClientCRXListInfoRequest {
   // ID of the CRX package.
   required string id = 1;
@@ -20,14 +20,14 @@ message ClientCRXListInfoRequest {
 
 message ClientCRXListInfoResponse {
   enum Verdict {
-    NOT_IN_BLACKLIST = 0;
+    NOT_IN_BLOCKLIST = 0;
     MALWARE = 1;
     SECURITY_VULNERABILITY = 2;
     CWS_POLICY_VIOLATION = 3;
     POTENTIALLY_UNWANTED = 4;
   }
   // Although listed as optional, this is required.
-  optional Verdict verdict = 1 [default=NOT_IN_BLACKLIST];
+  optional Verdict verdict = 1 [default = NOT_IN_BLOCKLIST];
 
   message UserMessage {
     // If present, will be appended to disable reason in the details page. We

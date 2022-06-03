@@ -4,6 +4,8 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
+
 assert_equals(new Comment("one").data, "one");
 assert_equals(new Comment().data, "");
 assert_equals(new Comment(undefined).data, "");

@@ -10,14 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 
@@ -46,6 +46,10 @@ Export::~Export() {
 
 struct ModuleVerificationState {
   explicit ModuleVerificationState(HMODULE hModule);
+
+  ModuleVerificationState(const ModuleVerificationState&) = delete;
+  ModuleVerificationState& operator=(const ModuleVerificationState&) = delete;
+
   ~ModuleVerificationState();
 
   base::win::PEImageAsData disk_peimage;
@@ -88,9 +92,6 @@ struct ModuleVerificationState {
 
   // The module state protobuf object that |VerifyModule| will populate.
   ClientIncidentReport_EnvironmentData_Process_ModuleState* module_state;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModuleVerificationState);
 };
 
 ModuleVerificationState::ModuleVerificationState(HMODULE hModule)
@@ -251,7 +252,6 @@ bool EnumRelocsCallback(const base::win::PEImage& mem_peimage,
     default:
       // TODO(robertshield): Find a reliable description of the behaviour of the
       // remaining types of relocation and handle them.
-      base::UmaHistogramSparse("SafeBrowsing.ModuleBaseRelocation", type);
       state->unknown_reloc_type = true;
       break;
   }

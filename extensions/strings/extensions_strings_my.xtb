@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">ဖြစ်မှဖြစ်ရတယ်! ကျပန်း RSA ကိုယ်ပိုင် သော့ ထုတ်လုပ် မရလိုက်ပါ။</translation>
 <translation id="1445572445564823378">ဒီတိုးချဲ့မှုက <ph name="PRODUCT_NAME" />ကို နှေးလာစေနေသည်။ သင်သည် <ph name="PRODUCT_NAME" />၏ လုပ်ကိုင်နိုင်စွမ်းကို ပြန်ဖေါ်ထုတ်ပေးရန် ၎င်းကို ပိတ်သင့်ပါသည်။</translation>
 <translation id="1468038450257740950">WebGL ကို မပံ့ပိုးပါ။</translation>
-<translation id="149347756975725155">တိုးချဲ့မှု အိုင်ကွန် '<ph name="ICON" />' ကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="1803557475693955505">နောက်ခံစာမျက်နှာ '<ph name="BACKGROUND_PAGE" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
 <translation id="2350172092385603347">ဒေသတွင်း အသုံးပြုနိုင်ရန် ဖန်တီးရာတွင် အသုံးပြုခဲ့၊ သို့သော် default_locale အားသိသာစွာ သတ်မှတ်မထားပါ။</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ကိုယ်ရေးကိုယ်တာ ကီးဖတ်ရန် မအောင်မြင်ပါ။</translation>
 <translation id="6391538222494443604">ထည့်သွင်းမှု လမ်းကြောင်းထွက်ရပါမည်။</translation>
 <translation id="641087317769093025">တိုးချဲ့မှု ဇီပ်ကို မဖွင့်နိုင်ခဲ့ပါ</translation>
-<translation id="6413453408918378296">ဤသင်္ကေတသည် သိသာစွာ မြင်ရသော '<ph name="ICON" />' မဟုတ်ပါ။</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" သည် သင့်စက်ပစ္စည်း တစ်ခုနှင့် အထက်ကို အသုံးပြုခွင့် တောင်းဆိုနေပါသည်−</translation>
 <translation id="657064425229075395">နောက်ခံ စာသားကို တင် မပေးနိုင်ခဲ့ပါ '<ph name="BACKGROUND_SCRIPT" />'။</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> <ph name="VENDOR_NAME" /> ထံမှ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>

@@ -3,7 +3,5 @@
 # found in the LICENSE file.
 
 executable("fincore") {
-  sources = [
-    "fincore.cc",
-  ]
+  sources = [ "fincore.cc" ]
 }

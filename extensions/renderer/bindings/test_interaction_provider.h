@@ -7,7 +7,6 @@
 
 #include "extensions/renderer/bindings/interaction_provider.h"
 
-#include "base/logging.h"
 #include "base/macros.h"
 #include "v8/include/v8.h"
 
@@ -15,6 +14,10 @@ namespace extensions {
 class TestInteractionProvider : public InteractionProvider {
  public:
   TestInteractionProvider();
+
+  TestInteractionProvider(const TestInteractionProvider&) = delete;
+  TestInteractionProvider& operator=(const TestInteractionProvider&) = delete;
+
   ~TestInteractionProvider() override;
 
   // InteractionProvider:
@@ -24,9 +27,6 @@ class TestInteractionProvider : public InteractionProvider {
       v8::Local<v8::Context> v8_context,
       std::unique_ptr<InteractionProvider::Token> token) const override;
   bool HasActiveInteraction(v8::Local<v8::Context> v8_context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestInteractionProvider);
 };
 
 // User activation mock for test: sets transient activation state on

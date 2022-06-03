@@ -29,7 +29,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_image_generator.h"
@@ -89,6 +88,8 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
         use_count_(use_count),
         prev_(nullptr),
         next_(nullptr) {}
+  CacheEntry(const CacheEntry&) = delete;
+  CacheEntry& operator=(const CacheEntry&) = delete;
 
   virtual ~CacheEntry() { DCHECK(!use_count_); }
 
@@ -112,8 +113,6 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
  private:
   CacheEntry* prev_;
   CacheEntry* next_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheEntry);
 };
 
 class DecoderCacheEntry final : public CacheEntry {
@@ -124,8 +123,8 @@ class DecoderCacheEntry final : public CacheEntry {
                     cc::PaintImage::GeneratorClientId client_id)
       : CacheEntry(generator, count),
         cached_decoder_(std::move(decoder)),
-        size_(SkISize::Make(cached_decoder_->DecodedSize().Width(),
-                            cached_decoder_->DecodedSize().Height())),
+        size_(SkISize::Make(cached_decoder_->DecodedSize().width(),
+                            cached_decoder_->DecodedSize().height())),
         alpha_option_(cached_decoder_->GetAlphaOption()),
         client_id_(client_id) {}
 
@@ -151,8 +150,8 @@ class DecoderCacheEntry final : public CacheEntry {
       const ImageDecoder* decoder,
       cc::PaintImage::GeneratorClientId client_id) {
     return MakeCacheKey(generator,
-                        SkISize::Make(decoder->DecodedSize().Width(),
-                                      decoder->DecodedSize().Height()),
+                        SkISize::Make(decoder->DecodedSize().width(),
+                                      decoder->DecodedSize().height()),
                         decoder->GetAlphaOption(), client_id);
   }
   DecoderCacheKey CacheKey() const {
@@ -245,6 +244,8 @@ class PLATFORM_EXPORT ImageDecodingStore final {
 
  public:
   ImageDecodingStore();
+  ImageDecodingStore(const ImageDecodingStore&) = delete;
+  ImageDecodingStore& operator=(const ImageDecodingStore&) = delete;
   ~ImageDecodingStore();
 
   static ImageDecodingStore& Instance();
@@ -348,8 +349,6 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   // - calls to underlying skBitmap's LockPixels()/UnlockPixels() as they are
   //   not threadsafe.
   Mutex mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodingStore);
 };
 
 }  // namespace blink

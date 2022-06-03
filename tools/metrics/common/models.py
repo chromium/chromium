@@ -5,7 +5,7 @@
 
 UMA uses several XML files to allow clients to describe the metrics that they
 collect, e.g.
-https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/rappor/rappor.xml
+https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/rappor/rappor.xml
 
 These types can be used to build models that describe the canonical formatted
 structure of these files, and the models can be used to extract the contents of
@@ -14,14 +14,15 @@ those files, or convert content back into a canonicalized version of the file.
 
 import abc
 import re
+import xml.etree.ElementTree as ET
 from xml.dom import minidom
-
 import pretty_print_xml
 
 
-# A non-basic type key for storing comments, so they don't conflict with
-# regular keys, and can be skipped in JSON serialization.
-COMMENT_KEY = ('comment',)
+# Non-basic type keys for storing comments and text attributes, so they don't
+# conflict with regular keys, and can be skipped in JSON serialization.
+COMMENT_KEY = ('comment')
+TEXT_KEY = ('text')
 
 
 def GetCommentsForNode(node):
@@ -57,7 +58,7 @@ def PutCommentsInNode(doc, node, comments):
 
 
 def GetChildrenByTag(node, tag):
-  """Get all children of a particular tag type.
+  """Gets all children of a particular tag type.
 
   Args:
     node: The DOM node to write comments to.
@@ -66,6 +67,13 @@ def GetChildrenByTag(node, tag):
     A list of DOM nodes.
   """
   return [child for child in node.childNodes if child.nodeName == tag]
+
+
+def GetUnexpectedChildren(node, tags):
+  """Gets a set of unexpected children from |node|."""
+  # Ingore text and comment nodes.
+  return (set(child.nodeName for child in node.childNodes) - set(tags) - set(
+      ('#comment', '#text')))
 
 
 class NodeType(object):
@@ -149,6 +157,14 @@ class NodeType(object):
     """
     return []
 
+  def GetRequiredAttributes(self):
+    """Gets a list of required attributes that this node has.
+
+    Returns:
+      A list of names of required attributes of the node.
+    """
+    return []
+
   def GetNodeTypes(self):
     """Gets a map of tags to node types for all dependent types.
 
@@ -178,27 +194,51 @@ class TextNodeType(NodeType):
       node: The XML node to extract data from.
 
     Returns:
-      The string content of the node.
+      The object representation of the node.
     """
+
+    obj = {}
+    obj[COMMENT_KEY] = GetCommentsForNode(node)
+
     if not node.firstChild:
-      return ''
+      return obj
     text = node.firstChild.nodeValue
-    return '\n\n'.join(pretty_print_xml.SplitParagraphs(text))
+    obj[TEXT_KEY] = '\n\n'.join(pretty_print_xml.SplitParagraphs(text))
+
+    # TextNode shouldn't have any child.
+    unexpected = GetUnexpectedChildren(node, set())
+    if unexpected:
+      raise ValueError("Unexpected children: %s in <%s> node" %
+                       (','.join(unexpected), self.tag))
+
+    return obj
 
   def Marshall(self, doc, obj):
     """Converts an object into an XML node of this type.
 
     Args:
-      doc: A document create an XML node in.
-      obj: A string to be encoded into the XML.
+      doc: A document to create an XML node in.
+      obj: An object to be encoded into the XML.
 
     Returns:
       An XML node encoding the object.
     """
     node = doc.createElement(self.tag)
-    if obj:
-      node.appendChild(doc.createTextNode(obj))
+    text = obj.get(TEXT_KEY)
+    if text:
+      node.appendChild(doc.createTextNode(text))
     return node
+
+  def GetComments(self, obj):
+    """Gets comments for the object being encoded.
+
+    Args:
+      obj: The object to be encoded into the XML.
+
+    Returns:
+      A list of comment nodes for the object.
+    """
+    return obj[COMMENT_KEY]
 
 
 class ChildType(object):
@@ -234,13 +274,16 @@ class ObjectNodeType(NodeType):
     ValueError: Attributes contains duplicate definitions.
   """
 
-  def __init__(self, tag,
+  def __init__(self,
+               tag,
                attributes=None,
+               required_attributes=None,
                children=None,
                text_attribute=None,
                **kwargs):
     NodeType.__init__(self, tag, **kwargs)
     self.attributes = attributes or []
+    self.required_attributes = required_attributes or []
     self.children = children or []
     self.text_attribute = text_attribute
     if len(self.attributes) != len(set(a for a, _, _ in self.attributes)):
@@ -262,7 +305,6 @@ class ObjectNodeType(NodeType):
       ValueError: The node is missing required children.
     """
     obj = {}
-
     obj[COMMENT_KEY] = GetCommentsForNode(node)
 
     for attr, attr_type, attr_re in self.attributes:
@@ -274,8 +316,19 @@ class ObjectNodeType(NodeType):
           raise ValueError('%s "%s" does not match regex "%s"' %
                            (attr, attr_val, attr_re))
 
-    if self.text_attribute and node.firstChild:
-      obj[self.text_attribute] = node.firstChild.nodeValue
+    # We need to iterate through all the children and get their nodeValue,
+    # to account for the cases where other children node precedes the text
+    # attribute.
+    obj[self.text_attribute] = ''
+    child = node.firstChild
+    while child:
+      obj[self.text_attribute] += (child.nodeValue.strip()
+                                   if child.nodeValue else '')
+      child = child.nextSibling
+
+    # This prevents setting a None key with empty string value
+    if obj[self.text_attribute] == '':
+      del obj[self.text_attribute]
 
     for child in self.children:
       nodes = GetChildrenByTag(node, child.node_type.tag)
@@ -284,6 +337,13 @@ class ObjectNodeType(NodeType):
             child.node_type.Unmarshall(n) for n in nodes]
       elif nodes:
         obj[child.attr] = child.node_type.Unmarshall(nodes[0])
+
+    unexpected = GetUnexpectedChildren(
+        node, set([child.node_type.tag for child in self.children]))
+    if unexpected:
+      raise ValueError("Unexpected children: %s in <%s> node" %
+                       (','.join(unexpected), self.tag))
+
     return obj
 
   def Marshall(self, doc, obj):
@@ -331,6 +391,15 @@ class ObjectNodeType(NodeType):
     """
     return [attr for attr, _, _ in self.attributes]
 
+  def GetRequiredAttributes(self):
+    """Gets a list of required attributes that this node has.
+
+    Returns:
+      A list of names of required attributes, or an empty list if there is no
+      required attribute.
+    """
+    return self.required_attributes or []
+
   def GetNodeTypes(self):
     """Get a map of tags to node types for all dependent types.
 
@@ -354,19 +423,39 @@ class DocumentType(object):
   def __init__(self, root_type):
     self.root_type = root_type
 
-  def Parse(self, input_file):
-    """Parses the data out of an XML file's contents.
+  def _ParseMinidom(self, minidom_doc):
+    """Parses the input minidom document
 
     Args:
-      input_file: The content of an XML file, as a string.
+      minidom_doc: The input minidom document
 
     Returns:
       An object representing the unmarshalled content of the document's root
       node.
     """
-    tree = minidom.parseString(input_file)
-    root = tree.getElementsByTagName(self.root_type.tag)[0]
+    root = minidom_doc.getElementsByTagName(self.root_type.tag)[0]
     return self.root_type.Unmarshall(root)
+
+  def Parse(self, input_file):
+    """Parses the input file, which can be minidom, ET or xml string.
+
+    The flexibility of input is to accommodate the currently different
+    representations of ukm, enums, histograms and actions in their
+    respective pretty_print.py.
+
+    Args:
+      input_file: The input file can be given in the form of minidom, ET
+      or xml string.
+
+    Returns:
+      An object representing the unmarshalled content of the document's root
+      node.
+    """
+    if not isinstance(input_file, minidom.Document):
+      if isinstance(input_file, ET.Element):
+        input_file = ET.tostring(input_file, encoding='utf-8', method='xml')
+      input_file = minidom.parseString(input_file)
+    return self._ParseMinidom(input_file)
 
   def GetPrintStyle(self):
     """Gets an XmlStyle object for pretty printing a document of this type.
@@ -376,14 +465,22 @@ class DocumentType(object):
     """
     types = self.root_type.GetNodeTypes()
     return pretty_print_xml.XmlStyle(
-        attribute_order={t: types[t].GetAttributes() for t in types},
-        required_attributes=[],
-        tags_that_have_extra_newline={t: types[t].extra_newlines for t in types
-                                      if types[t].extra_newlines},
+        attribute_order={t: types[t].GetAttributes()
+                         for t in types},
+        required_attributes={
+            t: types[t].GetRequiredAttributes()
+            for t in types
+        },
+        tags_that_have_extra_newline={
+            t: types[t].extra_newlines
+            for t in types if types[t].extra_newlines
+        },
         tags_that_dont_indent=[t for t in types if not types[t].indent],
         tags_that_allow_single_line=[t for t in types if types[t].single_line],
-        tags_alphabetization_rules={t: types[t].alphabetization for t in types
-                                    if types[t].alphabetization})
+        tags_alphabetization_rules={
+            t: types[t].alphabetization
+            for t in types if types[t].alphabetization
+        })
 
   def _ToXML(self, obj):
     """Converts an object into an XML document.

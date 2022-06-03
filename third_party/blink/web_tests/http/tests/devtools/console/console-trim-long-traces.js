@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that a long stack trace is truncated.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function recursive(n) {
@@ -20,6 +20,6 @@
   `);
 
   await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
-  ConsoleTestRunner.dumpConsoleMessages(false, false, messageElement => '\n' + messageElement.deepTextContent().replace(/\u200b/g, ''));
+  await ConsoleTestRunner.dumpConsoleMessages(false, false, messageElement => '\n' + messageElement.deepTextContent().replace(/\u200b/g, ''));
   TestRunner.completeTest();
 })();

@@ -11,7 +11,6 @@ namespace subresource_redirect {
 TEST(SubresourceRedirectURL, ProperlyChangesURL) {
   EXPECT_EQ(GetSubresourceURLForURL(GURL("https://www.test.com/test.jpg")),
             GURL("https://"
-                 "jy6r5d5zc3n6juvq35nveinxzyuk4n4wndppyli5x5ycmrza36fa."
                  "litepages.googlezip.net/"
                  "i?u=https%3A%2F%2Fwww.test.com%2Ftest.jpg"));
 }
@@ -19,14 +18,13 @@ TEST(SubresourceRedirectURL, ProperlyChangesURL) {
 TEST(SubresourceRedirectURL, ProperlyHandlesFragment) {
   EXPECT_EQ(GetSubresourceURLForURL(GURL("https://www.test.com/test.jpg#test")),
             GURL("https://"
-                 "jy6r5d5zc3n6juvq35nveinxzyuk4n4wndppyli5x5ycmrza36fa."
                  "litepages.googlezip.net/"
                  "i?u=https%3A%2F%2Fwww.test.com%2Ftest.jpg#test"));
 }
 
 TEST(SubresourceRedirectURL, ProperlyHandlesSetPort) {
   EXPECT_EQ(GetSubresourceURLForURL(GURL("https://www.test.com:4444/test.jpg")),
-            GURL("https://flm6clfkawcjb2bw5cnrrcdf4fkoliileuljcc23lahdet75ouqq."
+            GURL("https://"
                  "litepages.googlezip.net/i?u=https%3A%2F%2Fwww.test."
                  "com%3A4444%2Ftest.jpg"));
 }
@@ -35,7 +33,6 @@ TEST(SubresourceRedirectURL, ProperlyHandlesQueryParams) {
   EXPECT_EQ(GetSubresourceURLForURL(
                 GURL("https://www.test.com/test.jpg?color=yellow")),
             GURL("https://"
-                 "jy6r5d5zc3n6juvq35nveinxzyuk4n4wndppyli5x5ycmrza36fa."
                  "litepages.googlezip.net/"
                  "i?u=https%3A%2F%2Fwww.test.com%2Ftest.jpg%3Fcolor%3Dyellow"));
 }
@@ -44,7 +41,6 @@ TEST(SubresourceRedirectURL, ProperlyHandlesMultipleQueryParams) {
   EXPECT_EQ(GetSubresourceURLForURL(
                 GURL("https://www.test.com/test.jpg?color=yellow&name=test")),
             GURL("https://"
-                 "jy6r5d5zc3n6juvq35nveinxzyuk4n4wndppyli5x5ycmrza36fa."
                  "litepages.googlezip.net/"
                  "i?u=https%3A%2F%2Fwww.test.com%2Ftest.jpg%3Fcolor%3Dyellow%"
                  "26name%3Dtest"));
@@ -54,7 +50,6 @@ TEST(SubresourceRedirectURL, ProperlyHandlesQueryParamsWithFragments) {
   EXPECT_EQ(GetSubresourceURLForURL(
                 GURL("https://www.test.com/test.jpg?color=yellow#test")),
             GURL("https://"
-                 "jy6r5d5zc3n6juvq35nveinxzyuk4n4wndppyli5x5ycmrza36fa."
                  "litepages.googlezip.net/"
                  "i?u=https%3A%2F%2Fwww.test.com%2Ftest.jpg%3Fcolor%3Dyellow"
                  "#test"));
@@ -64,7 +59,7 @@ TEST(SubresourceRedirectURL, ProperlyHandlesQueryParamsWithFragments) {
 // potential to add them in the future.
 TEST(SubresourceRedirectURL, ProperlyChangesHTTPURL) {
   EXPECT_EQ(GetSubresourceURLForURL(GURL("http://www.test.com/test.jpg")),
-            GURL("https://bc6pgqmtr6nlicooao2zh77svcptncpwfolwlgbrop6gqnr6ck3q."
+            GURL("https://"
                  "litepages.googlezip.net/i?u=http%3A%2F%2Fwww.test.com%2Ftest."
                  "jpg"));
 }

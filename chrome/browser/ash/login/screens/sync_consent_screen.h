@@ -1,0 +1,215 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_SYNC_CONSENT_SCREEN_H_
+#define CHROME_BROWSER_ASH_LOGIN_SCREENS_SYNC_CONSENT_SCREEN_H_
+
+#include <memory>
+#include <string>
+
+#include "base/auto_reset.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_observer.h"
+#include "components/user_manager/user.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class Profile;
+
+namespace ash {
+
+// This is Sync settings screen that is displayed as a part of user first
+// sign-in flow.
+class SyncConsentScreen : public BaseScreen,
+                          public syncer::SyncServiceObserver {
+ public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Public for testing. See
+  // GetSyncScreenBehavior() for documentation on each case.
+  enum class SyncScreenBehavior {
+    kUnknown = 0,
+    kShow = 1,
+    kSkipNonGaiaAccount = 2,
+    kSkipPublicAccount = 3,
+    kSkipPermissionsPolicy = 4,
+    kSkipAndEnableNonBrandedBuild = 5,
+    kSkipAndEnableEmphemeralUser = 6,
+    kSkipAndEnableScreenPolicy = 7,
+    kMaxValue = kSkipAndEnableScreenPolicy
+  };
+
+  enum ConsentGiven { CONSENT_NOT_GIVEN, CONSENT_GIVEN };
+
+  enum class Result { NEXT, NOT_APPLICABLE };
+
+  static std::string GetResultString(Result result);
+
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
+  class SyncConsentScreenTestDelegate {
+   public:
+    SyncConsentScreenTestDelegate() = default;
+
+    SyncConsentScreenTestDelegate(const SyncConsentScreenTestDelegate&) =
+        delete;
+    SyncConsentScreenTestDelegate& operator=(
+        const SyncConsentScreenTestDelegate&) = delete;
+
+    // This is called from SyncConsentScreen when user consent is passed to
+    // consent auditor with resource ids recorder as consent.
+    virtual void OnConsentRecordedIds(
+        ConsentGiven consent_given,
+        const std::vector<int>& consent_description,
+        int consent_confirmation) = 0;
+
+    // This is called from SyncConsentScreenHandler when user consent is passed
+    // to consent auditor with resource strings recorder as consent.
+    virtual void OnConsentRecordedStrings(
+        const ::login::StringList& consent_description,
+        const std::string& consent_confirmation) = 0;
+  };
+
+  class SyncConsentScreenExitTestDelegate {
+   public:
+    virtual ~SyncConsentScreenExitTestDelegate() = default;
+
+    virtual void OnSyncConsentScreenExit(
+        Result result,
+        ScreenExitCallback& original_callback) = 0;
+  };
+
+  // Launches the sync consent settings dialog if the user requested to review
+  // them after completing OOBE.
+  static void MaybeLaunchSyncConsentSettings(Profile* profile);
+
+  SyncConsentScreen(SyncConsentScreenView* view,
+                    const ScreenExitCallback& exit_callback);
+
+  SyncConsentScreen(const SyncConsentScreen&) = delete;
+  SyncConsentScreen& operator=(const SyncConsentScreen&) = delete;
+
+  ~SyncConsentScreen() override;
+
+  // Inits `user_`, its `profile_` and `behavior_` before using the screen.
+  void Init(const WizardContext* context);
+
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
+
+  // Reacts to user action on non-split-settings sync.
+  void OnNonSplitSettingsContinue(const bool opted_in,
+                                  const bool review_sync,
+                                  const std::vector<int>& consent_description,
+                                  const int consent_confirmation);
+
+  // Reacts to "Yes, I'm in" and "No, thanks".
+  void OnContinue(const std::vector<int>& consent_description,
+                  int consent_confirmation,
+                  SyncConsentScreenHandler::UserChoice choice);
+
+  // Configures OS sync and browser sync.
+  void UpdateSyncSettings(bool enable_sync);
+
+  // Enables sync if required when skipping the dialog.
+  void MaybeEnableSyncForSkip();
+
+  // Called when sync engine initialization timed out.
+  void OnTimeout();
+
+  // Sets internal condition "Sync disabled by policy" for tests.
+  static void SetProfileSyncDisabledByPolicyForTesting(bool value);
+
+  // Sets internal condition "Sync engine initialized" for tests.
+  static void SetProfileSyncEngineInitializedForTesting(bool value);
+
+  // Test API.
+  void SetDelegateForTesting(
+      SyncConsentScreen::SyncConsentScreenTestDelegate* delegate);
+  SyncConsentScreenTestDelegate* GetDelegateForTesting() const;
+
+  // When set, test callback will be called instead of the |exit_callback_|.
+  static void SetSyncConsentScreenExitTestDelegate(
+      SyncConsentScreenExitTestDelegate* test_delegate);
+
+  // Test API
+  // Returns true if profile sync is disabled by policy for test.
+  bool IsProfileSyncDisabledByPolicyForTest() const;
+
+ private:
+  // Marks the dialog complete and runs `exit_callback_`.
+  void Finish(Result result);
+
+  // BaseScreen:
+  bool MaybeSkip(WizardContext* context) override;
+  void ShowImpl() override;
+  void HideImpl() override;
+
+  // Returns new SyncScreenBehavior value.
+  SyncScreenBehavior GetSyncScreenBehavior(const WizardContext& context) const;
+
+  // Calculates updated `behavior_` and performs required update actions.
+  void UpdateScreen(const WizardContext& context);
+
+  // Records user Sync consent.
+  void RecordConsent(ConsentGiven consent_given,
+                     const std::vector<int>& consent_description,
+                     int consent_confirmation);
+
+  // Returns true if profile sync is disabled by policy.
+  bool IsProfileSyncDisabledByPolicy() const;
+
+  // Returns true if profile sync has finished initialization.
+  bool IsProfileSyncEngineInitialized() const;
+
+  // This function does two things based on account capability: turn on "sync
+  // everything" toggle for non-minor users; pass the minor mode signal to
+  // the front end, which controls whether nudge techniques could be used.
+  void PrepareScreenBasedOnCapability();
+
+  // Set "sync everything" toggle to be on or off. We also turn off all data
+  // types when the toggle is off.
+  void SetSyncEverythingEnabled(bool enabled);
+
+  // Controls screen appearance.
+  // Spinner is shown until sync status has been decided.
+  SyncScreenBehavior behavior_ = SyncScreenBehavior::kUnknown;
+
+  SyncConsentScreenView* const view_;
+  ScreenExitCallback exit_callback_;
+
+  // Manages sync service observer lifetime.
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
+
+  // Primary user ind his Profile (if screen is shown).
+  const user_manager::User* user_ = nullptr;
+  Profile* profile_ = nullptr;
+  bool is_initialized_ = false;
+
+  // Used to record whether sync engine initialization is timed out.
+  base::OneShotTimer timeout_waiter_;
+  bool is_timed_out_ = false;
+
+  // The time when sync consent screen starts loading.
+  base::TimeTicks start_time_;
+
+  // Notify tests.
+  SyncConsentScreenTestDelegate* test_delegate_ = nullptr;
+
+  base::WeakPtrFactory<SyncConsentScreen> weak_factory_{this};
+};
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::SyncConsentScreen;
+}
+
+#endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_SYNC_CONSENT_SCREEN_H_

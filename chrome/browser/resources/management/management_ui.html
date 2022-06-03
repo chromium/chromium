@@ -22,14 +22,9 @@
         overflow: overlay;
       }
 
-      .sections-container {
-        @apply --cr-centered-card-container;
-        height: 100%;
-      }
-
       .card {
-        @apply --cr-card-elevation;
         background-color: var(--cr-card-background-color);
+        box-shadow: var(--cr-card-shadow);
         margin: 0 3px;
         min-height: 100%;
       }
@@ -49,8 +44,48 @@
         margin-inline-start: -10px;
       }
 
+  <if expr="chromeos">
+      .eol-section {
+        border: 1px solid var(--google-grey-300);
+        border-radius: var(--cr-card-border-radius);
+        flex-direction: row;
+        justify-content: start;
+        margin-inline-end: 20px;
+        margin-inline-start: 20px;
+        padding: 16px var(--cr-section-padding);
+      }
+
+      .eol-section .eol-warning-icon {
+        --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
+        --google-yellow-50: rgb(var(--google-yellow-50-rgb));
+        align-items: center;
+        background: var(--google-yellow-50);
+        border-radius: 50%;
+        display: flex;
+        height: 40px;
+        justify-content: center;
+        margin-inline-end: 20px;
+        width: 40px;
+      }
+
+      .eol-section iron-icon {
+        --iron-icon-fill-color: #E8710A;
+        height: var(--cr-icon-size);
+        width: var(--cr-icon-size);
+      }
+
+      .eol-section .eol-admin-title {
+        font-weight: 500;
+      }
+  </if>
+
       .overview-section div + div {
         margin-top: 16px;
+      }
+
+      .overview-container {
+        align-items: center;
+        display: flex;
       }
 
       .overview-container img {
@@ -83,13 +118,12 @@
       }
 
       section {
-        @apply --cr-section;
         align-items: flex-start;
-        border-top: none;
+        display: flex;
         flex-direction: column;
         justify-content: center;
-        padding-bottom: 12px;
-        padding-top: 12px;
+        min-height: var(--cr-section-min-height);
+        padding: 12px var(--cr-section-padding);
       }
 
       section:not(.page-subtitle) h2 {
@@ -163,14 +197,24 @@
         margin: 0;
         padding: 0;
       }
+
+      #cr-container-shadow-top {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) #cr-container-shadow-top {
+        display: initial;
+      }
     </style>
 
-    <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner"
+    <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
         on-search-changed="onSearchChanged_" clear-label="$i18n{clearSearch}"
         search-prompt="$i18n{searchPrompt}">
     </cr-toolbar>
+    <div id="cr-container-shadow-top"
+        class="cr-container-shadow has-shadow"></div>
     <main id="mainContent">
-      <div class="sections-container">
+      <div class="cr-centered-card-container">
         <div class="card">
           <section hidden="[[!managed_]]" class="page-subtitle">
             <cr-icon-button class="icon-arrow-back" id="closeButton"
@@ -180,6 +224,22 @@
               [[subtitle_]]
             </h2>
           </section>
+<if expr="chromeos">
+          <section class="eol-section" hidden="[[!eolMessage_]]">
+            <div class="eol-warning-icon">
+              <iron-icon icon="cr20:banner-warning"></iron-icon>
+            </div>
+            <div class="eol-message">
+              <div>[[eolMessage_]]</div>
+              <div hidden="[[isEmpty_(eolAdminMessage_)]]">
+                <div class="eol-admin-title">
+                  $i18n{updateRequiredEolAdminMessageTitle}
+                </div>
+                <div>[[eolAdminMessage_]]</div>
+              </div>
+            </div>
+          </section>
+</if>
           <section class="overview-section" hidden="[[!managementOverview_]]">
 <if expr="not chromeos">
             <div inner-h-t-m-l="[[managementNoticeHtml_]]"></div>
@@ -201,9 +261,9 @@
               </div>
               <table class="content-indented">
                 <tr>
-                  <th class="protection-name">$i18n{extensionName}</th>
+                  <th class="protection-name">$i18n{connectorEvent}</th>
                   <th class="protection-permissions">
-                    $i18n{extensionPermissions}
+                    $i18n{connectorVisibleData}
                   </th>
                 </tr>
                 <template is="dom-repeat"
@@ -231,6 +291,10 @@
               if="[[showDeviceReportingInfo_(deviceReportingInfo_)]]">
             <section>
               <h2 class="cr-title-text">$i18n{deviceReporting}</h2>
+              <div class="subtitle"
+                hidden="[[!showProxyServerPrivacyDisclosure_]]">
+                $i18n{proxyServerPrivacyDisclosure}
+              </div>
               <div class="subtitle">
                 $i18n{deviceConfiguration}
               </div>
@@ -239,9 +303,13 @@
                   <div class="report">
                     <iron-icon icon="[[getIconForDeviceReportingType_(
                         item.reportingType)]]"></iron-icon>
-                    [[i18n(item.messageId)]]
+                    <div inner-h-t-m-l="[[i18nAdvanced(item.messageId)]]"></div>
                   </div>
                 </template>
+              </div>
+              <div class="subtitle"
+                  hidden="[[!pluginVmDataCollectionEnabled_]]">
+                $i18nRaw{pluginVmDataCollection}
               </div>
             </section>
           </template>
@@ -303,6 +371,22 @@
                   </tr>
                 </template>
               </table>
+            </section>
+          </template>
+          <template is="dom-if"
+                    if="[[showManagedWebsitesInfo_(managedWebsites_)]]">
+            <section class="managed-webistes">
+              <h2 class="cr-title-text">$i18n{managedWebsites}</h2>
+              <div class="subtitle">
+                [[managedWebsitesSubtitle_]]
+              </div>
+              <div class="content-indented">
+              <template is="dom-repeat" items="[[managedWebsites_]]">
+                  <div class="report">
+                    [[item]]
+                  </div>
+                </template>
+              </div>
             </section>
           </template>
         </div>

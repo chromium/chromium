@@ -7,10 +7,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_control.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xinput.h"
+#include "ui/gfx/x/xproto_types.h"
 
 namespace remoting {
 
@@ -18,18 +21,18 @@ class CurtainModeLinux : public CurtainMode {
  public:
   CurtainModeLinux();
 
+  CurtainModeLinux(const CurtainModeLinux&) = delete;
+  CurtainModeLinux& operator=(const CurtainModeLinux&) = delete;
+
   // Overriden from CurtainMode.
   bool Activate() override;
 
  private:
   // Returns true if the host is running under a virtual session.
   bool IsVirtualSession();
-
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeLinux);
 };
 
-CurtainModeLinux::CurtainModeLinux() {
-}
+CurtainModeLinux::CurtainModeLinux() = default;
 
 bool CurtainModeLinux::Activate() {
   // We can't curtain the session in run-time in Linux.
@@ -48,60 +51,60 @@ bool CurtainModeLinux::IsVirtualSession() {
   // Try to identify a virtual session. Since there's no way to tell from the
   // vendor string, we check for known virtual input devices.
   // TODO(rmsousa): Find a similar way to determine that the *output* is secure.
-  Display* display = XOpenDisplay(nullptr);
-  int opcode, event, error;
-  if (!XQueryExtension(display, "XInputExtension", &opcode, &event, &error)) {
+  x11::Connection* connection = x11::Connection::Get();
+  if (!connection->xinput().present()) {
     // If XInput is not available, assume it is not a virtual session.
-    LOG(ERROR) << "X Input extension not available: " << error;
-    XCloseDisplay(display);
+    LOG(ERROR) << "X Input extension not available";
     return false;
   }
-  int num_devices;
-  XDeviceInfo* devices;
+
+  auto devices = connection->xinput().ListInputDevices().Sync();
+  if (!devices) {
+    LOG(ERROR) << "ListInputDevices failed";
+    return false;
+  }
+
   bool found_xvfb_mouse = false;
   bool found_xvfb_keyboard = false;
   bool found_crd_void_input = false;
   bool found_other_devices = false;
-  devices = XListInputDevices(display, &num_devices);
-  for (int i = 0; i < num_devices; i++) {
-    XDeviceInfo* device_info = &devices[i];
-    if (device_info->use == IsXExtensionPointer) {
-      if (strcmp(device_info->name, "Xvfb mouse") == 0) {
+  for (size_t i = 0; i < devices->devices.size(); i++) {
+    const auto& device_info = devices->devices[i];
+    const std::string& name = devices->names[i].name;
+    if (device_info.device_use == x11::Input::DeviceUse::IsXExtensionPointer) {
+      if (name == "Xvfb mouse") {
         found_xvfb_mouse = true;
-      } else if (strcmp(device_info->name,
-                        "Chrome Remote Desktop Input") == 0) {
+      } else if (name == "Chrome Remote Desktop Input") {
         found_crd_void_input = true;
-      } else if (strcmp(device_info->name, "Virtual core XTEST pointer") != 0) {
+      } else if (name != "Virtual core XTEST pointer") {
         found_other_devices = true;
-        HOST_LOG << "Non-virtual mouse found: " << device_info->name;
+        HOST_LOG << "Non-virtual mouse found: " << name;
       }
-    } else if (device_info->use == IsXExtensionKeyboard) {
-      if (strcmp(device_info->name, "Xvfb keyboard") == 0) {
+    } else if (device_info.device_use ==
+               x11::Input::DeviceUse::IsXExtensionKeyboard) {
+      if (name == "Xvfb keyboard") {
         found_xvfb_keyboard = true;
-      } else if (strcmp(device_info->name,
-                        "Virtual core XTEST keyboard") != 0) {
+      } else if (name != "Virtual core XTEST keyboard") {
         found_other_devices = true;
-        HOST_LOG << "Non-virtual keyboard found: " << device_info->name;
+        HOST_LOG << "Non-virtual keyboard found: " << name;
       }
-    } else if (device_info->use == IsXPointer) {
-      if (strcmp(device_info->name, "Virtual core pointer") != 0) {
+    } else if (device_info.device_use == x11::Input::DeviceUse::IsXPointer) {
+      if (name != "Virtual core pointer") {
         found_other_devices = true;
-        HOST_LOG << "Non-virtual mouse found: " << device_info->name;
+        HOST_LOG << "Non-virtual mouse found: " << name;
       }
-    } else if (device_info->use == IsXKeyboard) {
-      if (strcmp(device_info->name, "Virtual core keyboard") != 0) {
+    } else if (device_info.device_use == x11::Input::DeviceUse::IsXKeyboard) {
+      if (name != "Virtual core keyboard") {
         found_other_devices = true;
-        HOST_LOG << "Non-virtual keyboard found: " << device_info->name;
+        HOST_LOG << "Non-virtual keyboard found: " << name;
       }
     } else {
       found_other_devices = true;
-      HOST_LOG << "Non-virtual device found: " << device_info->name;
+      HOST_LOG << "Non-virtual device found: " << name;
     }
   }
-  XFreeDeviceList(devices);
-  XCloseDisplay(display);
-  return ((found_xvfb_mouse && found_xvfb_keyboard) || found_crd_void_input)
-      && !found_other_devices;
+  return ((found_xvfb_mouse && found_xvfb_keyboard) || found_crd_void_input) &&
+         !found_other_devices;
 }
 
 // static

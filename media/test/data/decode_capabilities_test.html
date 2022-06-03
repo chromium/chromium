@@ -84,4 +84,64 @@
 
     runTest(configuration);
   }
+
+  function testVideoConfigWithHdrMetadata(hdrMetadataType,
+                                          colorGamut,
+                                          transferFunction,
+                                          queryType,
+                                          contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing video content type: " + contentType +
+        ", HDR metadata type: " + hdrMetadataType +
+        ", color gamut: " + colorGamut +
+        ", transfer function: " + transferFunction);
+
+    const configuration = {
+      type : queryType,
+      video : {
+        contentType : contentType,
+        hdrMetadataType : hdrMetadataType,
+        colorGamut : colorGamut,
+        transferFunction : transferFunction,
+        // Any reasonable value will do.
+        width : 640,
+        height : 480,
+        bitrate : 10000,
+        framerate : 30
+      }
+    };
+
+    runTest(configuration);
+  }
+
+  function testVideoConfigWithoutHdrMetadata(colorGamut,
+                                          transferFunction,
+                                          queryType,
+                                          contentType) {
+    // Clear previous test result from title.
+    document.title = '';
+
+    log("Testing video content type: " + contentType +
+        ", color gamut: " + colorGamut +
+        ", transfer function: " + transferFunction);
+
+    const configuration = {
+      type : queryType,
+      video : {
+        contentType : contentType,
+        colorGamut : colorGamut,
+        transferFunction : transferFunction,
+
+        // Any reasonable value will do.
+        width : 640,
+        height : 480,
+        bitrate : 10000,
+        framerate : 30
+      }
+    };
+
+    runTest(configuration);
+  }
 </script>

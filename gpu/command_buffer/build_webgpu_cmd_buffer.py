@@ -27,7 +27,14 @@ _NAMED_TYPE_INFO = {
     'invalid': [
       'PowerPreference::kNumPowerPreferences',
     ],
-  }
+  },
+  'MailboxFlags': {
+    'type': 'MailboxFlags',
+    'valid': [
+      'WEBGPU_MAILBOX_NONE',
+      'WEBGPU_MAILBOX_DISCARD',
+    ],
+  },
 }
 
 # A function info object specifies the type and other special data for the
@@ -47,31 +54,39 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'internal': True,
     'data_transfer_methods': ['shm'],
-    'cmd_args': 'uint32_t commands_shm_id, uint32_t commands_shm_offset, '
-                'uint32_t size',
+    'cmd_args': 'uint32_t commands_shm_id, '
+                'uint32_t commands_shm_offset, uint32_t size',
     'size_args': {
       'commands': 'size * sizeof(char)',
     },
   },
   'AssociateMailbox': {
+    'impl_func': False,
+    'client_test': False,
     'type': 'PUT',
     'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
-    'trace_level': 1,
   },
   'DissociateMailbox': {
-    'trace_level': 1,
+    'impl_func': False,
+    'client_test': False,
+  },
+  'DissociateMailboxForPresent': {
+    'impl_func': False,
+    'client_test': False,
   },
   'RequestAdapter': {
     'impl_func': False,
     'internal': True,
-    'cmd_args': 'uint32_t request_adapter_serial, uint32_t power_preference'
+    'cmd_args': 'uint64_t request_adapter_serial, uint32_t power_preference'
   },
   'RequestDevice': {
     'impl_func': False,
     'internal': True,
     'data_transfer_methods': ['shm'],
-    'cmd_args': 'uint32_t request_device_serial, '
+    'cmd_args': 'uint64_t request_device_serial, '
                 'uint32_t adapter_service_id, '
+                'uint32_t device_id, '
+                'uint32_t device_generation, '
                 'uint32_t request_device_properties_shm_id, '
                 'uint32_t request_device_properties_shm_offset, '
                 'uint32_t request_device_properties_size',
@@ -80,6 +95,10 @@ _FUNCTION_INFO = {
         'request_device_properties_size * sizeof(char)',
     },
   },
+  'DestroyServer': {
+    'impl_func': False,
+    'internal': True,
+    },
 }
 
 def main(argv):

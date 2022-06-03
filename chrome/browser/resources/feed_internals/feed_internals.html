@@ -17,6 +17,8 @@ found in the LICENSE file.
 
   <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
   <script src="chrome://resources/mojo/url/mojom/url.mojom-lite.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js"></script>
+  <script src="chrome://resources/js/assert.js"></script>
   <script src="chrome://resources/js/util.js"></script>
   <script src="feed_internals.mojom-lite.js"></script>
 
@@ -24,6 +26,40 @@ found in the LICENSE file.
 </head>
 
 <body>
+
+  <h2>Web Feed</h2>
+  <p>
+    <label>
+      <input type="checkbox" id="enable-webfeed-follow-intro-debug"
+             name="enable-webfeed-follow-intro-debug">
+      Enable IPH debug mode
+    </label>
+  </p>
+  <p>
+    <label>
+      <input type="checkbox" id="use-feed-query-requests-for-web-feeds"
+             name="use-feed-query-requests-for-web-feeds">
+      Use legacy endpoint for Web Feed content fetches
+    </label>
+  </p>
+  <p>
+    Following feed order:
+    <label>
+      <input type="radio" id="following-feed-order-unset"
+             name="following-feed-order">
+      Unset
+    </label>
+    <label>
+      <input type="radio" id="following-feed-order-grouped"
+             name="following-feed-order">
+      Grouped
+    </label>
+    <label>
+      <input type="radio" id="following-feed-order-reverse-chron"
+             name="following-feed-order">
+      Reverse-Chron
+    </label>
+  </p>
 
   <h2>Properties</h2>
   <table>
@@ -44,36 +80,28 @@ found in the LICENSE file.
       <td id="is-prefetching-enabled"></td>
     </tr>
     <tr>
+      <td>Load Stream Status</td>
+      <td id="load-stream-status"></td>
+    </tr>
+    <tr>
       <td>Feed Fetch URL</td>
       <td id="feed-fetch-url"></td>
     </tr>
-  </table>
-
-  <h2>User Classifier</h2>
-  <table>
     <tr>
-      <td>User Class Description</td>
-      <td id="user-class-description"></td>
-    </tr>
-    <tr>
-      <td>Average Hours Between Suggestion Views</td>
-      <td id="avg-hours-between-views"></td>
-    </tr>
-    <tr>
-      <td>Average Hours Between Suggestion Uses</td>
-      <td id="avg-hours-between-uses"></td>
+      <td>Feed Actions URL</td>
+      <td id="feed-actions-url"></td>
     </tr>
   </table>
-  <button id="clear-user-classification">
-    Clear User Classification
-  </button>
 
   <h2>Feed Library Actions</h2>
-  <button id="refresh-feed">
-    Refresh Feed
+  <button id="refresh-for-you">
+    Refresh For-You Feed
   </button>
-  <button id="clear-cached-data">
-    Clear Cache & Refresh Feed
+  <button id="refresh-following">
+    Refresh Following Feed
+  </button>
+  <button id="refresh-webfeed-suggestions">
+    Refresh Following Feed Suggestions
   </button>
 
   <h2>Last Fetch</h2>
@@ -100,32 +128,17 @@ found in the LICENSE file.
     </tr>
   </table>
 
-  <h2>Current Content</h2>
-  <div id="current-content">
-    <template id="suggestion-template">
-      <details>
-        <summary class="title"></summary>
-        <table>
-          <tr>
-            <td>Publisher Name</td>
-            <td class="publisher"></td>
-          </tr>
-          <tr>
-            <td>URL</td>
-            <td><a class="url"></a></td>
-          </tr>
-          <tr>
-            <td>Favicon URL</td>
-            <td><a class="favicon"></a></td>
-          </tr>
-          <tr>
-            <td>Image URL</td>
-            <td><a class="image"></a></td>
-          </tr>
-        </table>
-      </details>
-    </template>
-  </div>
+  <h2>Last Action Upload</h2>
+  <table>
+    <tr>
+      <td>Status</td>
+      <td id="last-action-upload-status"></td>
+    </tr>
+    <tr>
+      <td>Last Upload Time</td>
+      <td id="last-action-upload-time"></td>
+    </tr>
+  </table>
 
   <h2>Feed Histograms</h2>
   <button id="load-feed-histograms">
@@ -150,5 +163,12 @@ found in the LICENSE file.
   <input id="feed-host-override">
   <button id="feed-host-override-apply">Apply</button>
 
+  <h2>Discover API Endpoint Override</h2>
+  <input id="discover-api-override">
+  <button id="discover-api-override-apply">Apply</button>
+
+  <h2>Feed Stream Data</h2>
+  <input id="feed-stream-data-file" type="file">
+  <button id="feed-stream-data-override">Override</button>
 </body>
 </html>

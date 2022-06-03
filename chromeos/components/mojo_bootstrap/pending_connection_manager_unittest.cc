@@ -4,7 +4,7 @@
 
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo_bootstrap {

@@ -71,7 +71,7 @@ public class OptionalShareTargetsManager {
      *                 interacting with the Android framework.
      */
     public void enableOptionalShareActivities(final Activity triggeringActivity,
-            final List<Class<? extends ShareActivity>> enabledClasses, final Runnable callback) {
+            final List<Class<? extends Activity>> enabledClasses, final Runnable callback) {
         ThreadUtils.assertOnUiThread();
 
         ApplicationStatus.registerStateListenerForAllActivities(mStateListener);

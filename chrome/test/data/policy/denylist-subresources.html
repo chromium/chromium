@@ -1,0 +1,43 @@
+<html>
+<script>
+
+var imageLoadResult = 'N/A';
+var iframeLoadResult = 'N/A';
+
+function imageLoaded() {
+  var image = document.getElementById('denylist_image');
+  // Additional sanity check to make sure the image is indeed loaded.
+  // Not strictly needed.
+  if (image.height == 1 && image.width == 1) {
+    imageLoadResult = "success";
+  } else {
+    imageLoadResult = "error";
+  }
+}
+
+function imageError() {
+  imageLoadResult = "error";
+}
+
+function iframeLoaded() {
+  // Unfortunately, iframe load errors generally don't result in onerror
+  // actually being called, so also check that the title is accessible.
+  // Since this is a same-site iframe, it generally should be, unless there's
+  // an error page showing in the iframe, in which case it's treated as a
+  // cross-domain iframe.
+  try {
+    document.getElementById('denylist_iframe').contentDocument.title;
+    iframeLoadResult = "success";
+  } catch (err) {
+    iframeLoadResult = "error";
+  }
+}
+
+function iframeError() {
+  iframeLoadResult = "error";
+}
+
+</script>
+<img id="denylist_image" src="pixel.png" onload="imageLoaded()" onerror="imageError()"></img>
+<iframe id="denylist_iframe" src="blank.html" onload="iframeLoaded()" onerror="iframeError()"></iframe>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<title>Filesystem URL inherits CSP from initiator.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+
+    // Using the filesystem api, create a file URL which checks if eval is
+    // allowed.
+    let filesystem_url = new Promise((resolve, reject) => {
+      webkitRequestFileSystem(TEMPORARY, 2 ** 10, function(fs) {
+        fs.root.getFile('test', { create: true }, function(entry) {
+          entry.createWriter(function(writer) {
+            const blob_payload = `
+              <!doctype html>
+               <script>
+                 var i = false;
+                 try {
+                   eval('i = true');
+                 } catch {}
+                 top.postMessage(i ? "eval allowed" : "eval blocked", '*');
+               </scr` + `ipt>
+               `;
+            writer.write(new Blob([blob_payload], { type: 'text/html' }));
+            resolve(entry.toURL());
+          });
+        });
+      });
+    });
+
+    // Create `child_with_csp`, a child iframe with CSP disallowing eval.
+    let child_with_csp = document.createElement('iframe');
+    document.body.appendChild(child_with_csp);
+    let meta = child_with_csp.contentDocument.createElement('meta');
+    meta.httpEquiv =  "Content-Security-Policy";
+    meta.content = "script-src 'unsafe-inline'";
+    child_with_csp.contentDocument.head.appendChild(meta);
+
+
+    // This first test creates a child iframe of `child_with_csp`. The iframe is
+    // first navigated to some new URL, then to the filesystem URL. We check
+    // that in the filesystem URL, eval is blocked.
+    async_test(t => {
+      let child = child_with_csp.contentDocument.createElement('iframe');
+
+      window.addEventListener("message", t.step_func(e => {
+        if (e.source !== child.contentWindow) return;
+        assert_equals(e.data, "eval blocked",
+                      "Eval should be blocked by CSP in filesystem URL.");
+        t.done();
+      }));
+
+      child.src = "http://{{hosts[alt][]}}:{{ports[http][0]}}/common/blank.html";
+      child.onload = async () => {
+        child.onload = undefined;
+        child.src = await filesystem_url;
+      }
+      child_with_csp.contentDocument.body.appendChild(child);
+    }, "Filesystem url in iframe inherits CSPs from parent.");
+
+
+    // This test creates a new iframe `target` of the main document, and
+    // navigates that iframe from `child_with_csp` to the filesystem URL. The
+    // navigated document should inherit CSPs from the initiator, hence have
+    // eval blocked.
+    async_test(t => {
+      let target = document.createElement('iframe');
+      target.name = "target";
+
+      window.addEventListener("message", t.step_func(e => {
+        if (e.source !== target.contentWindow) return;
+        assert_equals(e.data, "eval blocked",
+                      "Eval should be blocked by CSP in filesystem URL.");
+        t.done();
+      }));
+
+      target.src = "http://{{hosts[alt][]}}:{{ports[http][0]}}/common/blank.html";
+      target.onload = async () => {
+        target.onload = undefined;
+        let script = child_with_csp.contentDocument.createElement('script');
+        script.innerHTML = 'window.open("' + await filesystem_url + '", "target");'
+        child_with_csp.contentDocument.body.appendChild(script);
+      };
+      document.body.appendChild(target);
+    }, "Filesystem url in iframe inherits CSPs from initiator.");
+
+</script>
+</body>

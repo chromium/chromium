@@ -10,7 +10,7 @@
 namespace gfx {
 struct DecoratedText;
 class Point;
-}
+}  // namespace gfx
 
 namespace views {
 

@@ -10,7 +10,7 @@
 
 namespace blink {
 
-HTMLIFrameElementPayments::HTMLIFrameElementPayments() = default;
+HTMLIFrameElementPayments::HTMLIFrameElementPayments() : Supplement(nullptr) {}
 
 // static
 const char HTMLIFrameElementPayments::kSupplementName[] =
@@ -18,15 +18,15 @@ const char HTMLIFrameElementPayments::kSupplementName[] =
 
 // static
 bool HTMLIFrameElementPayments::FastHasAttribute(
-    const QualifiedName& name,
-    const HTMLIFrameElement& element) {
+    const HTMLIFrameElement& element,
+    const QualifiedName& name) {
   DCHECK(name == html_names::kAllowpaymentrequestAttr);
   return element.FastHasAttribute(name);
 }
 
 // static
-void HTMLIFrameElementPayments::SetBooleanAttribute(const QualifiedName& name,
-                                                    HTMLIFrameElement& element,
+void HTMLIFrameElementPayments::SetBooleanAttribute(HTMLIFrameElement& element,
+                                                    const QualifiedName& name,
                                                     bool value) {
   DCHECK(name == html_names::kAllowpaymentrequestAttr);
   element.SetBooleanAttribute(name, value);
@@ -51,7 +51,7 @@ bool HTMLIFrameElementPayments::AllowPaymentRequest(
          element.FastHasAttribute(html_names::kAllowpaymentrequestAttr);
 }
 
-void HTMLIFrameElementPayments::Trace(blink::Visitor* visitor) {
+void HTMLIFrameElementPayments::Trace(Visitor* visitor) const {
   Supplement<HTMLIFrameElement>::Trace(visitor);
 }
 

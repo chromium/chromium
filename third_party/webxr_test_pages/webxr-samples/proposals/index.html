@@ -102,19 +102,42 @@
 
         <script>
           let pages = [
-            { title: 'Phone AR', category: 'Phone AR',
+            { title: 'AR barebones with optional DOM Overlay', category: 'Phone AR',
+              path: 'ar-barebones-dom-overlay.html',
+              description: 'No-framework test for immersive-ar mode.' },
+
+           { title: 'Phone AR', category: 'Phone AR',
               path: 'phone-ar.html',
               description: 'Demonstrates basic support for passthrough AR on a mobile device.' },
 
             { title: 'AR Hit Test', category: 'Phone AR',
               path: 'phone-ar-hit-test.html',
+              variants: [
+                  {name: 'Debug input source events', query: '?debugSources=true'},
+                  {name: 'Debug iframe input', query: '?debugSources=true&iframe=true'}],
               description: 'Demonstrates using the Hit Test API to place virtual objects on real-world surfaces.' },
 
             { title: 'AR Plane Detection & Anchors', category: 'Phone AR',
               path: 'phone-ar-plane-detection-anchors.html',
+              variants: [{name: 'Debug input source events', query: '?debugSources=true'}],
               description: 'Demonstrates using the Plane Detection feature, including implementation of ' +
                            'synchronous hit test in JavaScript leveraging obtained plane data and ' +
                            'anchors API to position objects.' },
+            { title: 'AR Lighting estimation', category: 'Phone AR',
+              path: 'lighting-estimation.html',
+              description: 'Demonstrates using the Lighting Estimation feature.' },
+            { title: 'AR Camera Access', category: 'Phone AR',
+              path: 'camera-access-barebones.html',
+              description: 'Demonstrates using the Camera Access feature to obtain and use a camera ' +
+                           'image texture.' },
+            { title: 'AR Depth Sensing - GPU access', category: 'AR',
+              path: 'phone-ar-depth-gpu.html',
+              description: 'Demonstrates use of a depth API in immersive-ar session. ' +
+                           'The data will be uploaded to the GPU & accessed from a shader to visualize the depth map.' },
+            { title: 'AR Depth Sensing - CPU access', category: 'AR',
+              path: 'phone-ar-depth.html',
+              description: 'Demonstrates use of a depth API in immersive-ar session. ' +
+                           'The data will be accessed on the CPU.' },
           ];
 
           let mainElement = document.getElementById("main");
@@ -155,8 +178,18 @@
             polyfillLink.innerHTML = 'Open with Polyfill';
             links.appendChild(polyfillLink);
 
+            if (page.variants) {
+              for (let i = 0; i < page.variants.length; ++i) {
+                let variant = page.variants[i];
+                let link = document.createElement('a');
+                link.href = page.path + variant.query;
+                link.innerHTML = variant.name;
+                links.appendChild(link);
+              }
+            }
+
             let sourceLink = document.createElement('a');
-            sourceLink.href = 'https://github.com/immersive-web/webxr-samples/blob/master/proposals/' + page.path;
+            sourceLink.href = 'https://cs.chromium.org/chromium/src/third_party/webxr_test_pages/webxr-samples/proposals/' + page.path;
             sourceLink.innerHTML = 'Source';
             links.appendChild(sourceLink);
 

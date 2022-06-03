@@ -10,9 +10,8 @@ import android.view.textclassifier.TextClassifier;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.SelectionMetricsLogger;
+import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.touch_selection.SelectionEventType;
@@ -45,8 +44,7 @@ public class SelectionClientManager {
      * @param webContents The {@link WebContents} that will show popups for this client.
      */
     SelectionClientManager(WebContents webContents) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SMART_SELECTION)
-                && Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
             assert webContents != null;
             mOptionalSelectionClient = SelectionClient.createSmartSelectionClient(webContents);
             SelectionPopupController controller =
@@ -194,8 +192,8 @@ public class SelectionClientManager {
         }
 
         @Override
-        public SelectionMetricsLogger getSelectionMetricsLogger() {
-            return mSmartSelectionClient.getSelectionMetricsLogger();
+        public SelectionEventProcessor getSelectionEventProcessor() {
+            return mSmartSelectionClient.getSelectionEventProcessor();
         }
     }
 }

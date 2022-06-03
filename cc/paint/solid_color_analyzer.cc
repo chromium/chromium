@@ -81,44 +81,52 @@ bool IsSolidColorPaint(const PaintFlags& flags) {
       !flags.getLooper() && !flags.getMaskFilter() && !flags.getColorFilter() &&
       !flags.getImageFilter() && flags.getStyle() == PaintFlags::kFill_Style;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Additionally, on Mac, we require that the color is opaque due to
   // https://crbug.com/922899.
   // TODO(andrescj): remove this condition once that bug is fixed.
   is_solid_color = (is_solid_color && SkColorGetA(flags.getColor()) == 255);
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
   return is_solid_color;
 }
 
 // Returns true if the specified |drawn_shape| will cover the entire canvas
 // and that the canvas is not clipped (i.e. it covers ALL of the canvas).
+// We expect this method to return false most of the time so we take
+// conservative early-outs when possible.
 template <typename T>
 bool IsFullQuad(const SkCanvas& canvas, const T& drawn_shape) {
   if (!canvas.isClipRect())
     return false;
 
-  SkIRect clip_irect;
-  if (!canvas.getDeviceClipBounds(&clip_irect))
+  SkIRect clip_bounds;
+  if (!canvas.getDeviceClipBounds(&clip_bounds))
     return false;
 
   // if the clip is smaller than the canvas, we're partly clipped, so abort.
-  if (!clip_irect.contains(SkIRect::MakeSize(canvas.getBaseLayerSize())))
+  if (!clip_bounds.contains(SkIRect::MakeSize(canvas.getBaseLayerSize())))
     return false;
 
-  const SkMatrix& matrix = canvas.getTotalMatrix();
-  // If the transform results in a non-axis aligned
-  // rect, then be conservative and return false.
-  if (!matrix.rectStaysRect())
+  const SkM44& matrix = canvas.getLocalToDevice();
+  // If the transform results in a non-axis aligned rectangle, then be
+  // conservative and return false.
+  if (!MathUtil::SkM44Preserves2DAxisAlignment(matrix))
     return false;
 
-  SkMatrix inverse;
+  SkM44 inverse;
   if (!matrix.invert(&inverse))
     return false;
 
-  SkRect clip_rect = SkRect::Make(clip_irect);
-  inverse.mapRect(&clip_rect, clip_rect);
-  return drawn_shape.contains(clip_rect);
+  // Check that the drawn shape contains the canvas bounds when those bounds
+  // are transformed into the shape's coordinate space. Since we know the
+  // transform is axis aligned we only need to test two corners.
+  SkV4 upper_left = inverse.map(clip_bounds.left(), clip_bounds.top(), 0, 1);
+  SkV4 lower_right =
+      inverse.map(clip_bounds.right(), clip_bounds.bottom(), 0, 1);
+  SkRect transformed_clip_bounds = SkRect::MakeLTRB(
+      upper_left.x, upper_left.y, lower_right.x, lower_right.y);
+  return drawn_shape.contains(transformed_clip_bounds);
 }
 
 void CalculateSolidColor(SkColor src_color,
@@ -166,12 +174,12 @@ void CheckIfSolidColor(const SkCanvas& canvas,
   bool solid_color_candidate =
       does_cover_canvas && IsSolidColorBlendMode(blendmode);
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Additionally, on Mac, we require that the color is opaque due to
   // https://crbug.com/922899.
   // TODO(andrescj): remove this condition once that bug is fixed.
   solid_color_candidate = (solid_color_candidate && alpha == 255);
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
   if (solid_color_candidate) {
     CalculateSolidColor(color /* src_color */, blendmode,
@@ -217,7 +225,7 @@ bool CheckIfRRectClipCoversCanvas(const SkCanvas& canvas,
 
 }  // namespace
 
-base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
+absl::optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
     const PaintOpBuffer* buffer,
     const gfx::Rect& rect,
     int max_ops_to_analyze,
@@ -231,12 +239,12 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
 
   struct Frame {
     Frame(PaintOpBuffer::CompositeIterator iter,
-          const SkMatrix& original_ctm,
+          const SkM44& original_ctm,
           int save_count)
         : iter(iter), original_ctm(original_ctm), save_count(save_count) {}
 
     PaintOpBuffer::CompositeIterator iter;
-    const SkMatrix original_ctm;
+    const SkM44 original_ctm;
     int save_count = 0;
   };
 
@@ -249,7 +257,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
   // constructed. Reserve this to 2, and go from there.
   stack.reserve(2);
   stack.emplace_back(PaintOpBuffer::CompositeIterator(buffer, offsets),
-                     canvas.getTotalMatrix(), canvas.getSaveCount());
+                     canvas.getLocalToDevice(), canvas.getSaveCount());
 
   int num_draw_ops = 0;
   while (!stack.empty()) {
@@ -263,13 +271,13 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
     }
 
     const PaintOp* op = *frame.iter;
-    PlaybackParams params(nullptr, frame.original_ctm);
+    PlaybackParams params(nullptr, SkM44(frame.original_ctm));
     switch (op->GetType()) {
       case PaintOpType::DrawRecord: {
         const DrawRecordOp* record_op = static_cast<const DrawRecordOp*>(op);
         stack.emplace_back(
             PaintOpBuffer::CompositeIterator(record_op->record.get(), nullptr),
-            canvas.getTotalMatrix(), canvas.getSaveCount());
+            canvas.getLocalToDevice(), canvas.getSaveCount());
         continue;
       }
 
@@ -281,11 +289,11 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::DrawLine:
       case PaintOpType::DrawOval:
       case PaintOpType::DrawPath:
-        return base::nullopt;
+        return absl::nullopt;
       // TODO(vmpstr): Add more tests on exceeding max_ops_to_analyze.
       case PaintOpType::DrawRRect: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return base::nullopt;
+          return absl::nullopt;
         const DrawRRectOp* rrect_op = static_cast<const DrawRRectOp*>(op);
         CheckIfSolidShape(canvas, rrect_op->rrect, rrect_op->flags, &is_solid,
                           &is_transparent, &color);
@@ -302,7 +310,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       // cover the canvas.
       // TODO(vmpstr): We could investigate handling these.
       case PaintOpType::ClipPath:
-        return base::nullopt;
+        return absl::nullopt;
       case PaintOpType::ClipRRect: {
         const ClipRRectOp* rrect_op = static_cast<const ClipRRectOp*>(op);
         bool does_cover_canvas =
@@ -310,12 +318,12 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
         // If the clip covers the full canvas, we can treat it as if there's no
         // clip at all and continue, otherwise this is no longer a solid color.
         if (!does_cover_canvas)
-          return base::nullopt;
+          return absl::nullopt;
         break;
       }
       case PaintOpType::DrawRect: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return base::nullopt;
+          return absl::nullopt;
         const DrawRectOp* rect_op = static_cast<const DrawRectOp*>(op);
         CheckIfSolidShape(canvas, rect_op->rect, rect_op->flags, &is_solid,
                           &is_transparent, &color);
@@ -323,7 +331,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       }
       case PaintOpType::DrawColor: {
         if (++num_draw_ops > max_ops_to_analyze)
-          return base::nullopt;
+          return absl::nullopt;
         const DrawColorOp* color_op = static_cast<const DrawColorOp*>(op);
         CheckIfSolidColor(canvas, color_op->color, color_op->mode, &is_solid,
                           &is_transparent, &color);
@@ -336,7 +344,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
         // a rect, this is no longer solid color.
         const ClipRectOp* clip_op = static_cast<const ClipRectOp*>(op);
         if (clip_op->op == SkClipOp::kDifference)
-          return base::nullopt;
+          return absl::nullopt;
         op->Raster(&canvas, params);
         break;
       }
@@ -344,6 +352,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
       // Don't affect the canvas, so ignore.
       case PaintOpType::Annotate:
       case PaintOpType::CustomData:
+      case PaintOpType::SetNodeId:
       case PaintOpType::Noop:
         break;
 
@@ -365,7 +374,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
     return SK_ColorTRANSPARENT;
   if (is_solid)
     return color;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace cc

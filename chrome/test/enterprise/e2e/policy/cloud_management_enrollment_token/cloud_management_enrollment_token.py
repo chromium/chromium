@@ -2,10 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from absl import flags
 import os
 
 from infra import ChromeEnterpriseTestCase
 from chrome_ent_test.infra.core import before_all, category, environment, test
+
+
+FLAGS = flags.FLAGS
+flags.DEFINE_string(
+    'enrollToken', None,
+    'The enrollment token to use, it overwrites the default token')
 
 
 @category("chrome_only")
@@ -16,24 +23,27 @@ class CloudManagementEnrollmentTokenTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2012')
-    self.InstallWebDriver('client2012')
+    self.InstallChrome(self.win_config['client'])
+    self.InstallWebDriver(self.win_config['client'])
 
   @test
-  def test_browser_enrolled(self):
-    path = "gs://%s/secrets/enrollToken" % self.gsbucket
-    cmd = r'gsutil cat ' + path
-    token = self.RunCommand('win2012-dc', cmd).rstrip()
-    self.SetPolicy('win2012-dc', r'CloudManagementEnrollmentToken', token,
-                   'String')
-    self.RunCommand('client2012', 'gpupdate /force')
+  def test_browser_enrolled_prod(self):
+    token = FLAGS.enrollToken
+    if token == None:
+      path = "gs://%s/secrets/enrollToken" % self.gsbucket
+      cmd = r'gsutil cat ' + path
+      token = self.RunCommand(self.win_config['dc'], cmd).rstrip()
+    self.SetPolicy(self.win_config['dc'], r'CloudManagementEnrollmentToken',
+                   token, 'String')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     local_dir = os.path.dirname(os.path.abspath(__file__))
 
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(local_dir, 'cloud_enrollment_webdriver.py'))
+        self.win_config['client'],
+        os.path.join(local_dir, 'cloud_enrollment_webdriver.py'))
     # Verify CBCM status legend
     self.assertIn('Machine policies', output)
-    self.assertIn('CLIENT2012', output)
+    self.assertIn('CLIENT2016', output)
     self.assertIn(token, output)
     self.assertIn('Policy cache OK', output)

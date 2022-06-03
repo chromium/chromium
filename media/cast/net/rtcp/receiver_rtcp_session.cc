@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/big_endian.h"
-#include "base/time/tick_clock.h"
 #include "media/cast/net/rtcp/receiver_rtcp_session.h"
+
+#include "base/big_endian.h"
+#include "base/logging.h"
+#include "base/time/tick_clock.h"
 #include "media/cast/net/rtcp/rtcp_builder.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
@@ -107,8 +109,7 @@ bool ReceiverRtcpSession::GetLatestLipSyncTimes(
       local_clock_ahead_by_.Current();
 
   // Sanity-check: Getting regular lip sync updates?
-  DCHECK((clock_->NowTicks() - local_reference_time) <
-         base::TimeDelta::FromMinutes(1));
+  DCHECK((clock_->NowTicks() - local_reference_time) < base::Minutes(1));
 
   *rtp_timestamp = lip_sync_rtp_timestamp_;
   *reference_time = local_reference_time;

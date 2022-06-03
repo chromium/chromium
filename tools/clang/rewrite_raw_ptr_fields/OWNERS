@@ -1,0 +1,9 @@
+dcheng@chromium.org
+lukasza@chromium.org
+
+per-file manual-*-to-ignore.txt=bartekn@chromium.org
+per-file manual-*-to-ignore.txt=glazunov@google.com
+per-file manual-*-to-ignore.txt=keishi@chromium.org
+per-file rewrite*.sh=bartekn@chromium.org
+per-file rewrite*.sh=keishi@chromium.org
+per-file rewrite*.sh=yukishiino@chromium.org

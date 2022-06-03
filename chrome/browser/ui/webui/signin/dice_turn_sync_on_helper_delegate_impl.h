@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
@@ -15,6 +14,8 @@
 
 class Browser;
 class Profile;
+class SigninUIError;
+struct AccountInfo;
 
 // Default implementation for DiceTurnSyncOnHelper::Delegate.
 class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
@@ -22,36 +23,34 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
                                          public LoginUIService::Observer {
  public:
   explicit DiceTurnSyncOnHelperDelegateImpl(Browser* browser);
+
+  DiceTurnSyncOnHelperDelegateImpl(const DiceTurnSyncOnHelperDelegateImpl&) =
+      delete;
+  DiceTurnSyncOnHelperDelegateImpl& operator=(
+      const DiceTurnSyncOnHelperDelegateImpl&) = delete;
+
   ~DiceTurnSyncOnHelperDelegateImpl() override;
 
+ protected:
+  void ShowEnterpriseAccountConfirmation(
+      const AccountInfo& account_info,
+      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+  virtual void ShouldEnterpriseConfirmationPromptForNewProfile(
+      Profile* profile,
+      base::OnceCallback<void(bool)> callback);
+
  private:
-  // User input handler for the signin confirmation dialog.
-  class SigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
-   public:
-    explicit SigninDialogDelegate(
-        DiceTurnSyncOnHelper::SigninChoiceCallback callback);
-    ~SigninDialogDelegate() override;
-    void OnCancelSignin() override;
-    void OnContinueSignin() override;
-    void OnSigninWithNewProfile() override;
-
-   private:
-    DiceTurnSyncOnHelper::SigninChoiceCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(SigninDialogDelegate);
-  };
-
   // DiceTurnSyncOnHelper::Delegate:
-  void ShowLoginError(const std::string& email,
-                      const std::string& error_message) override;
+  void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
-  void ShowEnterpriseAccountConfirmation(
-      const std::string& email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
+      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+          callback) override;
+  void ShowSyncDisabledConfirmation(
+      bool is_managed_account,
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
           callback) override;
   void ShowSyncSettings() override;
@@ -68,10 +67,8 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
   Profile* profile_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
-  ScopedObserver<LoginUIService, LoginUIService::Observer>
-      scoped_login_ui_service_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperDelegateImpl);
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      scoped_login_ui_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL user activation messagechannel test Cannot read properties of null (reading 'isActive')
+Harness: the test ran to completion.
+

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,20 +12,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.settings.privacy.BrowsingDataBridge;
-import org.chromium.chrome.browser.settings.privacy.BrowsingDataBridge.OnClearBrowsingDataListener;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
-import org.chromium.chrome.browser.webapps.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
@@ -44,25 +40,7 @@ import java.util.Map;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BrowsingDataRemoverIntegrationTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
-
-    private boolean mCallbackCalled;
-
-    private class CallbackCriteria extends Criteria {
-        public CallbackCriteria() {
-            mCallbackCalled = false;
-        }
-
-        @Override
-        public boolean isSatisfied() {
-            if (mCallbackCalled) {
-                mCallbackCalled = false;
-                return true;
-            }
-            return false;
-        }
-    }
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Before
     public void setUp() throws InterruptedException {
@@ -70,11 +48,12 @@ public class BrowsingDataRemoverIntegrationTest {
     }
 
     private void registerWebapp(final String webappId, final String webappUrl) throws Exception {
-        WebappInfo webappInfo = WebappTestHelper.createWebappInfo(webappId, webappUrl);
+        BrowserServicesIntentDataProvider intentDataProvider =
+                WebappTestHelper.createIntentDataProvider(webappId, webappUrl);
         TestFetchStorageCallback callback = new TestFetchStorageCallback();
-        WebappRegistry.getInstance().register(webappInfo.id(), callback);
+        WebappRegistry.getInstance().register(webappId, callback);
         callback.waitForCallback(0);
-        callback.getStorage().updateFromWebappInfo(webappInfo);
+        callback.getStorage().updateFromWebappIntentDataProvider(intentDataProvider);
     }
 
     /**
@@ -84,7 +63,6 @@ public class BrowsingDataRemoverIntegrationTest {
      */
     @Test
     @MediumTest
-    @RetryOnFailure
     public void testUnregisteringWebapps() throws Exception {
         // Register three web apps.
         final HashMap<String, String> apps = new HashMap<String, String>();
@@ -97,34 +75,36 @@ public class BrowsingDataRemoverIntegrationTest {
         }
         Assert.assertEquals(apps.keySet(), WebappRegistry.getRegisteredWebappIdsForTesting());
 
+        CallbackHelper dataClearedExcludingDomainHelper = new CallbackHelper();
         // Clear cookies and site data excluding the registrable domain "google.com".
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BrowsingDataBridge.getInstance().clearBrowsingDataExcludingDomains(
                     new OnClearBrowsingDataListener() {
                         @Override
                         public void onBrowsingDataCleared() {
-                            mCallbackCalled = true;
+                            dataClearedExcludingDomainHelper.notifyCalled();
                         }
                     },
                     new int[] {BrowsingDataType.COOKIES}, TimePeriod.ALL_TIME,
                     new String[] {"google.com"}, new int[] {1}, new String[0], new int[0]);
         });
-        CriteriaHelper.pollUiThread(new CallbackCriteria());
+        dataClearedExcludingDomainHelper.waitForFirst();
 
         // The last two webapps should have been unregistered.
         Assert.assertEquals(new HashSet<String>(Arrays.asList("webapp1")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
+        CallbackHelper dataClearedNoUrlFilterHelper = new CallbackHelper();
         // Clear cookies and site data with no url filter.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BrowsingDataBridge.getInstance().clearBrowsingData(new OnClearBrowsingDataListener() {
                 @Override
                 public void onBrowsingDataCleared() {
-                    mCallbackCalled = true;
+                    dataClearedNoUrlFilterHelper.notifyCalled();
                 }
             }, new int[] {BrowsingDataType.COOKIES}, TimePeriod.ALL_TIME);
         });
-        CriteriaHelper.pollUiThread(new CallbackCriteria());
+        dataClearedNoUrlFilterHelper.waitForFirst();
 
         // All webapps should have been unregistered.
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());

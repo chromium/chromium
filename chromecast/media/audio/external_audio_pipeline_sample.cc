@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 #include "chromecast/public/media/mixer_output_stream.h"

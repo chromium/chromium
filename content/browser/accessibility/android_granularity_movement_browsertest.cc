@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
@@ -16,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -66,7 +66,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
   // and fails (by logging an error and returning the empty string) if
   // the result when traversing backwards is not the same
   // (but in reverse order).
-  base::string16 TraverseNodeAtGranularity(BrowserAccessibility* node,
+  std::u16string TraverseNodeAtGranularity(BrowserAccessibility* node,
                                            int granularity) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
@@ -80,22 +80,20 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         static_cast<BrowserAccessibilityAndroid*>(node);
     BrowserAccessibilityManagerAndroid* manager =
         static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-    base::string16 text = android_node->GetInnerText();
-    base::string16 concatenated;
+    std::u16string text = android_node->GetInnerText();
+    std::u16string concatenated;
     int previous_end_index = -1;
     while (manager->NextAtGranularity(granularity, end_index, android_node,
                                       &start_index, &end_index)) {
-      int len =
-          (granularity == GRANULARITY_CHARACTER) ? 1 : end_index - start_index;
-      base::string16 selection = text.substr(start_index, len);
-      if (base::EndsWith(selection, base::ASCIIToUTF16("\n"),
+      int len = end_index - start_index;
+      std::u16string selection = text.substr(start_index, len);
+      if (base::EndsWith(selection, u"\n",
                          base::CompareCase::INSENSITIVE_ASCII))
         selection.erase(selection.size() - 1);
       if (!selection.empty()) {
         if (!concatenated.empty())
-          concatenated += base::ASCIIToUTF16(", ");
-        concatenated +=
-            base::ASCIIToUTF16("'") + selection + base::ASCIIToUTF16("'");
+          concatenated += u", ";
+        concatenated += u"'" + selection + u"'";
       }
 
       // Prevent an endless loop.
@@ -106,21 +104,19 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
       previous_end_index = end_index;
     }
 
-    base::string16 reverse;
+    std::u16string reverse;
     previous_end_index = -1;
     start_index = end_index;
     while (manager->PreviousAtGranularity(
         granularity, start_index, android_node, &start_index, &end_index)) {
-      int len =
-          (granularity == GRANULARITY_CHARACTER) ? 1 : end_index - start_index;
-      base::string16 selection = text.substr(start_index, len);
-      if (base::EndsWith(selection, base::ASCIIToUTF16("\n"),
+      int len = end_index - start_index;
+      std::u16string selection = text.substr(start_index, len);
+      if (base::EndsWith(selection, u"\n",
                          base::CompareCase::INSENSITIVE_ASCII))
         selection = selection.substr(0, selection.size() - 1);
       if (!reverse.empty())
-        reverse = base::ASCIIToUTF16(", ") + reverse;
-      reverse = base::ASCIIToUTF16("'") + selection + base::ASCIIToUTF16("'") +
-                reverse;
+        reverse = u", " + reverse;
+      reverse = u"'" + selection + u"'" + reverse;
 
       // Prevent an endless loop.
       if (end_index == previous_end_index) {
@@ -135,7 +131,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
                  << "reverse directions!";
       LOG(ERROR) << "Forwards: " << concatenated;
       LOG(ERROR) << "Backwards " << reverse;
-      return base::string16();
+      return std::u16string();
     }
 
     return concatenated;
@@ -161,12 +157,13 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest,
   BrowserAccessibility* button = button_container->PlatformGetChild(0);
   ASSERT_EQ(0U, button->PlatformChildCount());
 
-  ASSERT_EQ(base::ASCIIToUTF16("'O', 'n', 'e', ',', ' ', 't', 'w', 'o', "
-                               "',', ' ', 't', 'h', 'r', 'e', 'e', '!'"),
-            TraverseNodeAtGranularity(para, GRANULARITY_CHARACTER));
-  ASSERT_EQ(
-      base::ASCIIToUTF16("'S', 'e', 'v', 'e', 'n', ',', ' ', 'e', 'i', 'g', "
-                         "'h', 't', ',', ' ', 'n', 'i', 'n', 'e', '!'"),
+  EXPECT_EQ(
+      u"'O', 'n', 'e', ',', ' ', 't', 'w', 'o', "
+      u"',', ' ', 't', 'h', 'r', 'e', 'e', '!'",
+      TraverseNodeAtGranularity(para, GRANULARITY_CHARACTER));
+  EXPECT_EQ(
+      u"'S', 'e', 'v', 'e', 'n', ',', ' ', 'e', 'i', 'g', "
+      u"'h', 't', ',', ' ', 'n', 'i', 'n', 'e', '!'",
       TraverseNodeAtGranularity(button, GRANULARITY_CHARACTER));
 }
 
@@ -188,9 +185,9 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByWords) {
   BrowserAccessibility* button = button_container->PlatformGetChild(0);
   ASSERT_EQ(0U, button->PlatformChildCount());
 
-  ASSERT_EQ(base::ASCIIToUTF16("'One', 'two', 'three'"),
+  EXPECT_EQ(u"'One', ',', 'two', ',', 'three', '!'",
             TraverseNodeAtGranularity(para, GRANULARITY_WORD));
-  ASSERT_EQ(base::ASCIIToUTF16("'Seven', 'eight', 'nine'"),
+  EXPECT_EQ(u"'Seven', 'eight', 'nine'",
             TraverseNodeAtGranularity(button, GRANULARITY_WORD));
 }
 
@@ -205,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByLine) {
   BrowserAccessibility* pre = root->PlatformGetChild(0);
   ASSERT_EQ(0U, pre->PlatformChildCount());
 
-  ASSERT_EQ(base::ASCIIToUTF16("'One,', 'two,', 'three!'"),
+  EXPECT_EQ(u"'One,', 'two,', 'three!'",
             TraverseNodeAtGranularity(pre, GRANULARITY_LINE));
 }
 

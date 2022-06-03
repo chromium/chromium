@@ -5,13 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_HTMLCANVAS_CANVAS_CONTEXT_CREATION_ATTRIBUTES_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_HTMLCANVAS_CANVAS_CONTEXT_CREATION_ATTRIBUTES_HELPERS_H_
 
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class CanvasContextCreationAttributesModule;
 
-CanvasContextCreationAttributesCore ToCanvasContextCreationAttributes(
-    const CanvasContextCreationAttributesModule*);
+bool ToCanvasContextCreationAttributes(
+    const CanvasContextCreationAttributesModule*,
+    CanvasContextCreationAttributesCore& result,
+    ExceptionState& exception_state);
 
 }  // namespace blink
 

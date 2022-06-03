@@ -1,0 +1,6 @@
+include_rules = [
+  # Enforce similar dependency restrictions as //android_webview/nonembedded
+  "-android_webview/java",
+  "+android_webview/nonembedded/java",
+  "+android_webview/java/src/org/chromium/android_webview/common",
+]

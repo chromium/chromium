@@ -18,22 +18,26 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "remoting/base/directory_service_client.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/string_resources.h"
+#include "remoting/base/task_util.h"
 #include "remoting/client/chromoting_client_runtime.h"
-#include "remoting/ios/facade/directory_client.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace remoting {
 
 namespace {
 
-HostListService::FetchFailureReason MapError(grpc::StatusCode status_code) {
+HostListService::FetchFailureReason MapError(
+    ProtobufHttpStatus::Code status_code) {
   switch (status_code) {
-    case grpc::StatusCode::UNAVAILABLE:
-    case grpc::StatusCode::DEADLINE_EXCEEDED:
+    case ProtobufHttpStatus::Code::UNAVAILABLE:
+    case ProtobufHttpStatus::Code::DEADLINE_EXCEEDED:
       return HostListService::FetchFailureReason::NETWORK_ERROR;
-    case grpc::StatusCode::PERMISSION_DENIED:
-    case grpc::StatusCode::UNAUTHENTICATED:
+    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
+    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
       return HostListService::FetchFailureReason::AUTH_ERROR;
     default:
       return HostListService::FetchFailureReason::UNKNOWN_ERROR;
@@ -64,16 +68,12 @@ HostListService* HostListService::GetInstance() {
   return instance.get();
 }
 
-HostListService::HostListService() : weak_factory_(this) {
-  token_getter_ =
-      ChromotingClientRuntime::GetInstance()->CreateOAuthTokenGetter();
-  directory_client_ = std::make_unique<DirectoryClient>(token_getter_.get());
-  Init();
-}
+HostListService::HostListService()
+    : HostListService(ChromotingClientRuntime::GetInstance()
+                          ->CreateDirectoryServiceClient()) {}
 
 HostListService::HostListService(
-    std::unique_ptr<DirectoryClient> directory_client)
-    : weak_factory_(this) {
+    base::SequenceBound<DirectoryServiceClient> directory_client) {
   directory_client_ = std::move(directory_client);
   Init();
 }
@@ -96,14 +96,12 @@ void HostListService::Init() {
               }];
 }
 
-std::unique_ptr<HostListService::CallbackSubscription>
-HostListService::RegisterHostListStateCallback(
+base::CallbackListSubscription HostListService::RegisterHostListStateCallback(
     const base::RepeatingClosure& callback) {
   return host_list_state_callbacks_.Add(callback);
 }
 
-std::unique_ptr<HostListService::CallbackSubscription>
-HostListService::RegisterFetchFailureCallback(
+base::CallbackListSubscription HostListService::RegisterFetchFailureCallback(
     const base::RepeatingClosure& callback) {
   return fetch_failure_callbacks_.Add(callback);
 }
@@ -113,8 +111,10 @@ void HostListService::RequestFetch() {
     return;
   }
   SetState(State::FETCHING);
-  directory_client_->GetHostList(base::BindOnce(
-      &HostListService::HandleHostListResult, weak_factory_.GetWeakPtr()));
+  PostWithCallback(FROM_HERE, &directory_client_,
+                   &DirectoryServiceClient::GetHostList,
+                   base::BindOnce(&HostListService::HandleHostListResult,
+                                  weak_factory_.GetWeakPtr()));
 }
 
 void HostListService::SetState(State state) {
@@ -131,24 +131,24 @@ void HostListService::SetState(State state) {
 }
 
 void HostListService::HandleHostListResult(
-    const grpc::Status& status,
-    const apis::v1::GetHostListResponse& response) {
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::GetHostListResponse> response) {
   if (!status.ok()) {
     HandleFetchFailure(status);
     return;
   }
   hosts_.clear();
-  for (const auto& host : response.hosts()) {
+  for (const auto& host : response->hosts()) {
     hosts_.push_back(host);
   }
   std::sort(hosts_.begin(), hosts_.end(), &CompareHost);
   SetState(State::FETCHED);
 }
 
-void HostListService::HandleFetchFailure(const grpc::Status& status) {
+void HostListService::HandleFetchFailure(const ProtobufHttpStatus& status) {
   SetState(State::NOT_FETCHED);
 
-  if (status.error_code() == grpc::StatusCode::CANCELLED) {
+  if (status.error_code() == ProtobufHttpStatus::Code::CANCELLED) {
     return;
   }
 
@@ -177,7 +177,7 @@ void HostListService::HandleFetchFailure(const grpc::Status& status) {
 }
 
 void HostListService::OnUserUpdated(bool is_user_signed_in) {
-  directory_client_->CancelPendingRequests();
+  directory_client_.AsyncCall(&DirectoryServiceClient::CancelPendingRequests);
   SetState(State::NOT_FETCHED);
   if (is_user_signed_in) {
     RequestFetch();

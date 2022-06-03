@@ -5,7 +5,7 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "cc/test/fake_layer_tree_frame_sink_client.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -34,7 +34,8 @@ class StubLayerTreeFrameSink : public LayerTreeFrameSink {
                              bool show_hit_test_borders) override {
     client_->DidReceiveCompositorFrameAck();
   }
-  void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {}
+  void DidNotProduceFrame(const viz::BeginFrameAck& ack,
+                          FrameSkippedReason reason) override {}
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const viz::SharedBitmapId& id) override {}
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}

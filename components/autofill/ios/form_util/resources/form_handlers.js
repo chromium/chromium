@@ -10,8 +10,7 @@
 
 goog.provide('__crWeb.formHandlers');
 
-goog.require('__crWeb.fill');
-goog.require('__crWeb.form');
+// Requires __crWeb.fill and __crWeb.form.
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -26,6 +25,11 @@ __gCrWeb.formHandlers = {};
  * The MutationObserver tracking form related changes.
  */
 let formMutationObserver = null;
+
+/**
+ * The MutationObserver tracking the latest password field that had user input.
+ */
+let passwordFieldsObserver = null;
 
 /**
  * The form mutation message scheduled to be sent to browser.
@@ -57,7 +61,7 @@ let formSubmitOriginalFunction = null;
 function sendMessageOnNextLoop_(mesg) {
   if (!messageToSend) {
     setTimeout(function() {
-      __gCrWeb.message.invokeOnHost(messageToSend);
+      __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', messageToSend);
       messageToSend = null;
     }, 0);
   }
@@ -77,8 +81,88 @@ function getFullyQualifiedUrl_(originalURL) {
 }
 
 /**
- * Focus, input, change, keyup and blur events for form elements (form and input
- * elements) are messaged to the main application for broadcast to
+ * @param {Element} A form element to check.
+ * @return {boolean} Whether the element is an input of type password.
+ */
+function isPasswordField_(element) {
+  return element.tagName === 'INPUT' && element.type === 'password';
+}
+
+/**
+ * Installs a MutationObserver to track the last password field that had
+ * user input.
+ * @param {Element} A password field that should be observed.
+ * @suppress {checkTypes} Required for for...of loop on mutations.
+ */
+function trackPasswordField_(field) {
+  if (passwordFieldsObserver) {
+    passwordFieldsObserver.disconnect();
+  }
+
+  passwordFieldsObserver = new MutationObserver(function(mutations) {
+    for (let i = 0; i < mutations.length; i++) {
+      const mutation = mutations[i];
+      if (mutation.attributeName !== 'value') {
+        return;
+      }
+      const target = mutation.target;
+      const form = target.form;
+      let shouldNotifyPasswordManager = true;
+      if (form) {
+        // Verify that all password fields are cleared.
+        for (let i = 0; i < form.elements.length; i++) {
+          if (isPasswordField_(form.elements[i]) &&
+              form.elements[i].value !== '') {
+            shouldNotifyPasswordManager = false;
+          }
+        }
+      }
+      if (!shouldNotifyPasswordManager) {
+        return;
+      }
+      const formData = form ?
+          __gCrWeb.passwords.getPasswordFormData(form, window) :
+          __gCrWeb.passwords.getPasswordFormDataFromUnownedElements(window);
+      if (target.value === '') {
+        const msg = {
+          'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
+          'formName': '',
+          'uniqueFormID': '',
+          'fieldIdentifier': '',
+          'uniqueFieldID': '',
+          'fieldType': '',
+          'type': 'password_form_cleared',
+          'value': __gCrWeb.stringify(formData),
+          'hasUserGesture': false
+        };
+        sendMessageOnNextLoop_(msg);
+      }
+    }
+  });
+  passwordFieldsObserver.observe(field, {attributes: true});
+}
+
+
+/**
+ * @param {Element} A form that was reset.
+ * @return {boolean} Whether the form contains password fields that had user
+ * typed or manually filled input.
+ */
+function shouldNotifyAboutFormReset_(form) {
+  for (let i = 0; i < form.elements.length; i++) {
+    const element = form.elements[i];
+    if (isPasswordField_(element) &&
+        __gCrWeb.form.wasEditedByUser.get(element)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Focus, input, change, keyup, blur and reset events for form elements (form
+ * and input elements) are messaged to the main application for broadcast to
  * WebStateObservers.
  * Events will be included in a message to be sent in a future runloop (without
  * delay). If an event is already scheduled to be sent, it is replaced by |evt|.
@@ -87,6 +171,8 @@ function getFullyQualifiedUrl_(originalURL) {
  * replace it.
  * Only the events targeting the active element (or the previously active in
  * case of 'blur') are sent to the main application.
+ * 'reset' events are sent to the main application only if they are targeting
+ * a password form that has user input in it.
  * This is done with a single event handler for each type being added to the
  * main document element which checks the source element of the event; this
  * is much easier to manage than adding handlers to individual elements.
@@ -98,8 +184,6 @@ function formActivity_(evt) {
           target.tagName)) {
     return;
   }
-  const value = target.value || '';
-  const fieldType = target.type || '';
   if (evt.type !== 'blur') {
     lastFocusedElement = document.activeElement;
   }
@@ -107,13 +191,44 @@ function formActivity_(evt) {
       __gCrWeb.form.wasEditedByUser !== null) {
     __gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
   }
-  if (target != lastFocusedElement) return;
+
+  // Notify FormActivityTabHelper about form reset if the form contains
+  // password fields that had user typed or manually filled input.
+  const isPasswordFormReset = target.tagName === 'FORM' &&
+      evt.type === 'reset' && shouldNotifyAboutFormReset_(target);
+
+  if (target !== lastFocusedElement && !isPasswordFormReset) {
+    return;
+  }
+  const form = target.tagName === 'FORM' ? target : target.form;
+  const field = target.tagName === 'FORM' ? null : target;
+
+  __gCrWeb.fill.setUniqueIDIfNeeded(form);
+  const formUniqueId = __gCrWeb.fill.getUniqueID(form);
+  __gCrWeb.fill.setUniqueIDIfNeeded(field);
+  const fieldUniqueId = __gCrWeb.fill.getUniqueID(field);
+
+  const fieldType = target.type || '';
+  const fieldValue = target.value || '';
+  const value = isPasswordFormReset ?
+      __gCrWeb.stringify(__gCrWeb.passwords.getPasswordFormData(form, window)) :
+      fieldValue;
+  const type = isPasswordFormReset ? 'password_form_cleared' : evt.type;
+
+  if ((evt.type === 'change' || evt.type === 'input') &&
+      isPasswordField_(target)) {
+    trackPasswordField_(evt.target);
+  }
+
   const msg = {
     'command': 'form.activity',
-    'formName': __gCrWeb.form.getFormIdentifier(evt.target.form),
-    'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(target),
+    'frameID': __gCrWeb.message.getFrameId(),
+    'formName': __gCrWeb.form.getFormIdentifier(form),
+    'uniqueFormID': formUniqueId,
+    'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(field),
+    'uniqueFieldID': fieldUniqueId,
     'fieldType': fieldType,
-    'type': evt.type,
+    'type': type,
     'value': value,
     'hasUserGesture': evt.isTrusted
   };
@@ -137,8 +252,9 @@ function submitHandler_(evt) {
 function formSubmitted_(form) {
   // Default action is to re-submit to same page.
   const action = form.getAttribute('action') || document.location.href;
-  __gCrWeb.message.invokeOnHost({
+  __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', {
     'command': 'form.submit',
+    'frameID': __gCrWeb.message.getFrameId(),
     'formName': __gCrWeb.form.getFormIdentifier(form),
     'href': getFullyQualifiedUrl_(action),
     'formData': __gCrWeb.fill.autofillSubmissionData(form)
@@ -154,7 +270,8 @@ function sendFormMutationMessageAfterDelay_(msg, delay) {
 
   formMutationMessageToSend = msg;
   setTimeout(function() {
-    __gCrWeb.message.invokeOnHost(formMutationMessageToSend);
+    __gCrWeb.common.sendWebKitMessage(
+        'FormHandlersMessage', formMutationMessageToSend);
     formMutationMessageToSend = null;
   }, delay);
 }
@@ -170,6 +287,7 @@ function attachListeners_() {
   document.addEventListener('blur', formActivity_, true);
   document.addEventListener('change', formActivity_, true);
   document.addEventListener('input', formActivity_, true);
+  document.addEventListener('reset', formActivity_, true);
 
   /**
    * Other events are watched at the bubbling phase as this seems adequate in
@@ -204,6 +322,78 @@ attachListeners_();
 setTimeout(attachListeners_, 1000);
 
 /**
+ * Extracts changed form and input elements.
+ * @param {MutationRecord} An observed mutation.
+ * @return {Element} An extracted form element or null.
+ */
+function extractChangedFormElements_(mutation) {
+  const addedElements = [];
+  for (let j = 0; j < mutation.addedNodes.length; j++) {
+    const node = mutation.addedNodes[j];
+    // Ignore non-element nodes.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      continue;
+    }
+    addedElements.push(node);
+    [].push.apply(addedElements, [].slice.call(node.getElementsByTagName('*')));
+  }
+  return addedElements.find(function(element) {
+    return element.tagName.match(/^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/);
+  });
+}
+
+/**
+ * @param {MutationRecord} An observed mutation.
+ * @return {Array<Element>} Extracted form and input elements.
+ */
+function extractRemovedFormElements_(mutation) {
+  const removedElements = [];
+  for (let j = 0; j < mutation.removedNodes.length; j++) {
+    const node = mutation.removedNodes[j];
+    // Ignore non-element nodes.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      continue;
+    }
+    removedElements.push(node);
+    [].push.apply(
+        removedElements, [].slice.call(node.getElementsByTagName('FORM')));
+    [].push.apply(
+        removedElements, [].slice.call(node.getElementsByTagName('INPUT')));
+  }
+  return removedElements;
+}
+
+/**
+ * @param {Array<Element>} All form and input elements removed from DOM.
+ * @return {HTMLFormElement} Extracted password form.
+ */
+function extractRemovedPasswordForm_(removedElements) {
+  return removedElements.find(function(element) {
+    if (element.tagName !== 'FORM') {
+      return false;
+    }
+    for (let i = 0; i < element.elements.length; i++) {
+      if (isPasswordField_(element.elements[i])) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+/**
+ * @param {Array<Element>} All form and input elements removed from DOM.
+ * @return {Array<String>} Renderer ids of removed formless password fields.
+ */
+function extractRemovedFormlessPasswordFieldsIds_(removedElements) {
+  const formlessPasswordFieldsGone = removedElements.filter(function(element) {
+    return element.tagName === 'INPUT' && !element.form &&
+        isPasswordField_(element);
+  });
+  return formlessPasswordFieldsGone.map(__gCrWeb.fill.getUniqueID);
+}
+
+/**
  * Installs a MutationObserver to track form related changes. Waits |delay|
  * milliseconds before sending a message to browser. A delay is used because
  * form mutations are likely to come in batches. An undefined or zero value for
@@ -222,28 +412,49 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
     for (let i = 0; i < mutations.length; i++) {
       const mutation = mutations[i];
       // Only process mutations to the tree of nodes.
-      if (mutation.type != 'childList') continue;
-      const addedElements = [];
-      for (let j = 0; j < mutation.addedNodes.length; j++) {
-        const node = mutation.addedNodes[j];
-        // Ignore non-element nodes.
-        if (node.nodeType != Node.ELEMENT_NODE) continue;
-        addedElements.push(node);
-        [].push.apply(
-            addedElements, [].slice.call(node.getElementsByTagName('*')));
+      if (mutation.type !== 'childList') {
+        continue;
       }
-      const formChanged = addedElements.find(function(element) {
-        return element.tagName.match(/(FORM|INPUT|SELECT|OPTION|TEXTAREA)/);
-      });
+      const formChanged = extractChangedFormElements_(mutation);
       if (formChanged) {
         const msg = {
           'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
+          'uniqueFormID': '',
           'fieldIdentifier': '',
+          'uniqueFieldID': '',
           'fieldType': '',
           'type': 'form_changed',
           'value': '',
           'hasUserGesture': false
+        };
+        return sendFormMutationMessageAfterDelay_(msg, delay);
+      }
+
+      const removedElements = extractRemovedFormElements_(mutation);
+      const formGone = extractRemovedPasswordForm_(removedElements);
+      if (formGone) {
+        const uniqueFormId = __gCrWeb.fill.getUniqueID(formGone);
+        const msg = {
+          'command': 'form.removal',
+          'frameID': __gCrWeb.message.getFrameId(),
+          'formName': __gCrWeb.form.getFormIdentifier(formGone),
+          'uniqueFormID': uniqueFormId,
+          'uniqueFieldID': '',
+        };
+        return sendFormMutationMessageAfterDelay_(msg, delay);
+      }
+
+      const removedFormlessPasswordFieldsIds =
+          extractRemovedFormlessPasswordFieldsIds_(removedElements);
+      if (removedFormlessPasswordFieldsIds.length > 0) {
+        const msg = {
+          'command': 'form.removal',
+          'frameID': __gCrWeb.message.getFrameId(),
+          'formName': '',
+          'uniqueFormID': '',
+          'uniqueFieldID': __gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }
@@ -263,9 +474,5 @@ __gCrWeb.formHandlers['toggleTrackingUserEditedFields'] = function(track) {
     __gCrWeb.form.wasEditedByUser = null;
   }
 };
-/** Flush the message queue. */
-if (__gCrWeb.message) {
-  __gCrWeb.message.invokeQueues();
-}
 
 }());  // End of anonymous object

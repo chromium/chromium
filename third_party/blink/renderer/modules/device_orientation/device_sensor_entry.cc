@@ -6,6 +6,7 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_event_pump.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -13,18 +14,18 @@
 namespace blink {
 
 DeviceSensorEntry::DeviceSensorEntry(DeviceSensorEventPump* event_pump,
+                                     ExecutionContext* context,
                                      device::mojom::blink::SensorType type)
-    : event_pump_(event_pump), type_(type) {}
-
-void DeviceSensorEntry::Dispose() {
-  client_receiver_.reset();
-}
+    : event_pump_(event_pump),
+      sensor_remote_(context),
+      client_receiver_(this, context),
+      type_(type) {}
 
 DeviceSensorEntry::~DeviceSensorEntry() = default;
 
 void DeviceSensorEntry::Start(
     device::mojom::blink::SensorProvider* sensor_provider) {
-  if (state_ == State::NOT_INITIALIZED) {
+  if (!sensor_remote_.is_bound() || state_ == State::NOT_INITIALIZED) {
     state_ = State::INITIALIZING;
     sensor_provider->GetSensor(type_,
                                WTF::Bind(&DeviceSensorEntry::OnSensorCreated,
@@ -46,7 +47,7 @@ void DeviceSensorEntry::Start(
 }
 
 void DeviceSensorEntry::Stop() {
-  if (sensor_remote_) {
+  if (sensor_remote_.is_bound()) {
     sensor_remote_->Suspend();
     state_ = State::SUSPENDED;
   } else if (state_ == State::INITIALIZING) {
@@ -71,7 +72,7 @@ bool DeviceSensorEntry::ReadyOrErrored() const {
 }
 
 bool DeviceSensorEntry::GetReading(device::SensorReading* reading) {
-  if (!sensor_remote_)
+  if (!sensor_remote_.is_bound())
     return false;
 
   DCHECK(shared_buffer_reader_);
@@ -84,8 +85,10 @@ bool DeviceSensorEntry::GetReading(device::SensorReading* reading) {
   return true;
 }
 
-void DeviceSensorEntry::Trace(Visitor* visitor) {
+void DeviceSensorEntry::Trace(Visitor* visitor) const {
   visitor->Trace(event_pump_);
+  visitor->Trace(sensor_remote_);
+  visitor->Trace(client_receiver_);
 }
 
 void DeviceSensorEntry::RaiseError() {
@@ -118,8 +121,9 @@ void DeviceSensorEntry::OnSensorCreated(
 
   DCHECK_EQ(0u, params->buffer_offset % kReadBufferSize);
 
-  sensor_remote_.Bind(std::move(params->sensor));
-  client_receiver_.Bind(std::move(params->client_receiver));
+  sensor_remote_.Bind(std::move(params->sensor), event_pump_->task_runner_);
+  client_receiver_.Bind(std::move(params->client_receiver),
+                        event_pump_->task_runner_);
 
   shared_buffer_reader_ = device::SensorReadingSharedBufferReader::Create(
       std::move(params->memory), params->buffer_offset);

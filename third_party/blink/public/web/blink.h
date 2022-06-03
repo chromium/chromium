@@ -31,14 +31,20 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
 
-#include "third_party/blink/public/platform/platform.h"
-#include "v8/include/v8.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "v8/include/v8-isolate.h"
 
 namespace mojo {
 class BinderMap;
 }
 
 namespace blink {
+
+namespace scheduler {
+class WebThreadScheduler;
+}  // namespace scheduler
+
+class Platform;
 
 // Initialize the entire Blink (wtf, platform, core, modules and web).
 // If you just need wtf and platform, use Platform::Initialize instead.
@@ -69,6 +75,9 @@ BLINK_EXPORT v8::Isolate* MainThreadIsolate();
 BLINK_EXPORT void SetWebTestMode(bool);
 BLINK_EXPORT bool WebTestMode();
 
+// Alters whether the browser can handle focus events while running web tests.
+BLINK_EXPORT void SetBrowserCanHandleFocusForWebTest(bool);
+
 // Alters the rendering of fonts for web tests.
 BLINK_EXPORT void SetFontAntialiasingEnabledForTest(bool);
 BLINK_EXPORT bool FontAntialiasingEnabledForTest();
@@ -86,12 +95,41 @@ BLINK_EXPORT void DecommitFreeableMemory();
 BLINK_EXPORT void MemoryPressureNotificationToWorkerThreadIsolates(
     v8::MemoryPressureLevel);
 
-// Set the RAIL performance mode on all worker thread isolates.
-BLINK_EXPORT void SetRAILModeOnWorkerThreadIsolates(v8::RAILMode);
+// Logs stats. Intended to be called during shutdown.
+BLINK_EXPORT void LogStatsDuringShutdown();
 
-// Logs Runtime Call Stats table for Blink.
-BLINK_EXPORT void LogRuntimeCallStats();
+// Allows disabling domain relaxation.
+BLINK_EXPORT void SetDomainRelaxationForbiddenForTest(bool forbidden,
+                                                      const WebString& scheme);
+// Undos all calls to SetDomainRelaxationForbiddenForTest().
+BLINK_EXPORT void ResetDomainRelaxationForTest();
 
+// Force the webgl context to fail so that webglcontextcreationerror
+// event gets generated/tested.
+BLINK_EXPORT void ForceNextWebGLContextCreationToFailForTest();
+
+// Force the drawing buffer used by webgl contexts to fail so that the webgl
+// context's ability to deal with that failure gracefully can be tested.
+BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
+
+// Set whether this renderer process is "cross-origin isolated". This
+// corresponds to agent cluster's "cross-origin isolated" concept.
+// TODO(yhirano): Have the spec URL.
+// This property is process global because we ensure that a renderer process
+// host only cross-origin isolated agents or only non-cross-origin isolated
+// agents, not both.
+// This is called at most once. This is called earlier than any frame commit.
+BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
+BLINK_EXPORT bool IsCrossOriginIsolated();
+
+// Direct sockets require isolation above and beyond what "cross-origin
+// isolation" provides. This flag corresponds to that set of restrictions.
+// Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
+// process global, and called at most once, prior to committing a frame.
+//
+// TODO(mkwst): We need a specification for this restriction.
+BLINK_EXPORT void SetIsDirectSocketEnabled(bool value);
+BLINK_EXPORT bool IsDirectSocketEnabled();
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_

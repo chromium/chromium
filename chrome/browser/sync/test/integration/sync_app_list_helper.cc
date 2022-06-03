@@ -42,7 +42,7 @@ void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
   for (auto* profile : test_->GetAllProfiles()) {
     extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
         true /* extensions_enabled */);
-    if (test_->use_verifier() && profile == test_->verifier()) {
+    if (test_->UseVerifier() && profile == test_->verifier()) {
       // The default page break items are only installed for first-time users.
       // The verifier() profile doesn't get initialized with remote sync data,
       // and hence the default page breaks are not installed for it. We have to
@@ -103,8 +103,9 @@ bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
       DVLOG(1) << "Profile1: "
                << AppListSyncableServiceFactory::GetForProfile(profile);
       PrintAppList(profile);
-      DVLOG(1) << "Profile2: " <<
-          AppListSyncableServiceFactory::GetForProfile(profiles.front());
+      DVLOG(1) << "Profile2: "
+               << AppListSyncableServiceFactory::GetForProfile(
+                      profiles.front());
       PrintAppList(profiles.front());
       return false;
     }
@@ -122,7 +123,7 @@ void SyncAppListHelper::MoveAppToFolder(Profile* profile,
                                         const std::string& folder_id) {
   AppListSyncableService* service =
       AppListSyncableServiceFactory::GetForProfile(profile);
-  service->GetModelUpdater()->MoveItemToFolder(id, folder_id);
+  service->GetModelUpdater()->SetItemFolderId(id, folder_id);
 }
 
 void SyncAppListHelper::MoveAppFromFolder(Profile* profile,
@@ -136,7 +137,7 @@ void SyncAppListHelper::MoveAppFromFolder(Profile* profile,
     LOG(ERROR) << "Folder not found: " << folder_id;
     return;
   }
-  service->GetModelUpdater()->MoveItemToFolder(id, "");
+  service->GetModelUpdater()->SetItemFolderId(id, "");
 }
 
 void SyncAppListHelper::PrintAppList(Profile* profile) {

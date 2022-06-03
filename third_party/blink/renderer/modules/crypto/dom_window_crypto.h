@@ -41,8 +41,6 @@ class LocalDOMWindow;
 
 class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
                               public Supplement<LocalDOMWindow> {
-  USING_GARBAGE_COLLECTED_MIXIN(DOMWindowCrypto);
-
  public:
   static const char kSupplementName[];
 
@@ -53,7 +51,7 @@ class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
 
   Crypto* crypto() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   mutable Member<Crypto> crypto_;

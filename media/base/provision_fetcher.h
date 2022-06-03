@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "url/gurl.h"
 
 namespace media {
 
@@ -29,12 +30,13 @@ class ProvisionFetcher {
   // MediaDrm.ProvisionRequest.
   // The implementation must call |response_cb| asynchronously on the same
   // thread that this method is called.
-  virtual void Retrieve(const std::string& default_url,
+  virtual void Retrieve(const GURL& default_url,
                         const std::string& request_data,
                         ResponseCB response_cb) = 0;
 };
 
-using CreateFetcherCB = base::Callback<std::unique_ptr<ProvisionFetcher>()>;
+using CreateFetcherCB =
+    base::RepeatingCallback<std::unique_ptr<ProvisionFetcher>()>;
 
 }  // namespace media
 

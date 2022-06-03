@@ -5,9 +5,12 @@
 #ifndef UI_COMPOSITOR_TEST_TEST_SUITE_H_
 #define UI_COMPOSITOR_TEST_TEST_SUITE_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/test_suite.h"
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
 
 namespace ui {
 namespace test {
@@ -15,14 +18,20 @@ namespace test {
 class CompositorTestSuite : public base::TestSuite {
  public:
   CompositorTestSuite(int argc, char** argv);
+
+  CompositorTestSuite(const CompositorTestSuite&) = delete;
+  CompositorTestSuite& operator=(const CompositorTestSuite&) = delete;
+
   ~CompositorTestSuite() override;
 
  protected:
-  // Overridden from base::TestSuite:
+  // base::TestSuite:
   void Initialize() override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorTestSuite);
+#if defined(OS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif
 };
 
 }  // namespace test

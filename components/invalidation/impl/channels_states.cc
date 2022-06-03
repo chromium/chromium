@@ -4,7 +4,7 @@
 
 #include "components/invalidation/impl/channels_states.h"
 
-namespace syncer {
+namespace invalidation {
 
 const char* FcmChannelStateToString(FcmChannelState state) {
   switch (state) {
@@ -30,4 +30,4 @@ const char* SubscriptionChannelStateToString(SubscriptionChannelState state) {
   }
 }
 
-}  // namespace syncer
+}  // namespace invalidation

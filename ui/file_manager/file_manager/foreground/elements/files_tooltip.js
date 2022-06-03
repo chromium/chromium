@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * Files Tooltip.
  *
@@ -12,7 +14,9 @@
  * document.querySelector('files-tooltip').addTargets(
  *     document.querySelectorAll('[has-tooltip]'))
  */
-const FilesTooltip = Polymer({
+export const FilesTooltip = Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-tooltip',
 
   properties: {
@@ -58,14 +62,22 @@ const FilesTooltip = Polymer({
      * @private {number}
      */
     this.hideTooltipTimerId_ = 0;
+
+    /**
+     * Add <files-tooltip files-ng> for files-ng specific CSS styles.
+     */
+    this.toggleAttribute('files-ng', true);
   },
 
   /**
    * Adds an event listener to the body.
    */
   attached: function() {
-    document.body.addEventListener(
-      'mousedown', this.onDocumentMouseDown_.bind(this));
+    const closeTooltipHandler = this.onDocumentMouseDown_.bind(this);
+    const cleanupTooltipHandler = this.onTransitionEnd_.bind(this);
+    document.body.addEventListener('mousedown', closeTooltipHandler);
+    this.addEventListener('transitionend', cleanupTooltipHandler);
+    window.addEventListener('resize', closeTooltipHandler);
   },
 
   /**
@@ -94,6 +106,9 @@ const FilesTooltip = Polymer({
    * is not dispatched. This method is used to handle these cases manually.
    */
   hideTooltip: function() {
+    if (this.showTooltipTimerId_) {
+      clearTimeout(this.showTooltipTimerId_);
+    }
     if (this.visibleTooltipTarget_) {
       this.initHidingTooltip_(this.visibleTooltipTarget_);
     }
@@ -142,8 +157,8 @@ const FilesTooltip = Polymer({
     if (this.hideTooltipTimerId_) {
       clearTimeout(this.hideTooltipTimerId_);
     }
-    this.hideTooltipTimerId_ = setTimeout(
-        this.hideTooltip_.bind(this), this.hideTimeout);
+    this.hideTooltipTimerId_ =
+        setTimeout(this.hideTooltip_.bind(this), this.hideTimeout);
   },
 
   /**
@@ -158,31 +173,77 @@ const FilesTooltip = Polymer({
 
     this.visibleTooltipTarget_ = target;
 
+    const useCardTooltip = target.hasAttribute('show-card-tooltip');
+
+    const windowEdgePadding = 6;
+
     const label = target.getAttribute('aria-label');
     if (!label) {
       return;
     }
 
     this.$.label.textContent = label;
+    const invert = 'invert-tooltip';
+    this.$.label.toggleAttribute('invert', target.hasAttribute(invert));
+
     const rect = target.getBoundingClientRect();
 
     let top = rect.top + rect.height;
+    if (!useCardTooltip) {
+      top += 8;
+    }
+
     if (top + this.offsetHeight > document.body.offsetHeight) {
       top = rect.top - this.offsetHeight;
     }
+
     this.style.top = `${Math.round(top)}px`;
 
-    let left = rect.left + rect.width / 2 - this.offsetWidth / 2;
-    if (left < 0) {
-      left = 0;
-    }
-    if (left > document.body.offsetWidth - this.offsetWidth) {
-      left = document.body.offsetWidth - this.offsetWidth;
-    }
-    this.style.left = `${Math.round(left)}px`;
+    let left;
 
-    this.setAttribute('visible', true);
+    if (useCardTooltip) {
+      this.className = 'card-tooltip';
+      this.$.label.className = 'card-label';
+
+      // Push left to the body's left when tooltip is longer than viewport.
+      if (this.offsetWidth > document.body.offsetWidth) {
+        left = 0;
+      } else if (document.dir == 'rtl') {
+        // Calculate position for rtl mode to align to the right of target.
+        const width = this.getBoundingClientRect().width;
+        const minLeft = rect.right - width;
+
+        // The tooltip remains inside viewport if right align push it outside.
+        left = Math.max(minLeft, 0);
+      } else {
+        // The tooltip remains inside viewport if left align push it outside.
+        let maxLeft = document.body.offsetWidth - this.offsetWidth;
+        maxLeft = Math.max(0, maxLeft);
+
+        // Stick to the body's right if it goes outside viewport from right.
+        left = Math.min(rect.left, maxLeft);
+      }
+    } else {
+      // Clearing out style in case card-tooltip displayed previously.
+      this.cleanupCardTooltip_();
+
+      left = rect.left + rect.width / 2 - this.offsetWidth / 2;
+      if (left < windowEdgePadding) {
+        left = windowEdgePadding;
+      }
+
+      const maxLeft =
+          document.body.offsetWidth - this.offsetWidth - windowEdgePadding;
+      if (left > maxLeft) {
+        left = maxLeft;
+      }
+    }
+
+    left = Math.round(left);
+    this.style.left = `${left}px`;
+
     this.setAttribute('aria-hidden', 'false');
+    this.setAttribute('visible', true);
   },
 
   /**
@@ -243,5 +304,27 @@ const FilesTooltip = Polymer({
       clearTimeout(this.showTooltipTimerId_);
       this.showTooltipTimerId_ = 0;
     }
+  },
+
+  /**
+   * @param {Event} event
+   * @private
+   */
+  onTransitionEnd_: function(event) {
+    // Clear card tooltip.
+    if (!this.hasAttribute('visible')) {
+      this.cleanupCardTooltip_();
+    }
+  },
+
+  /**
+   * Clear card tooltip styles to prevent overwriting normal tooltip rules.
+   * @private
+   */
+  cleanupCardTooltip_: function() {
+    this.className = '';
+    this.$.label.className = '';
   }
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js

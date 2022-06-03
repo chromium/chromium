@@ -14,7 +14,7 @@ source_set("itunes_urls") {
     "//ios/web",
     "//url",
   ]
-  libs = [
+  frameworks = [
     "Foundation.framework",
     "StoreKit.framework",
   ]
@@ -23,9 +23,7 @@ source_set("itunes_urls") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "itunes_urls_handler_tab_helper_unittest.mm",
-  ]
+  sources = [ "itunes_urls_handler_tab_helper_unittest.mm" ]
   deps = [
     ":itunes_urls",
     "//base",

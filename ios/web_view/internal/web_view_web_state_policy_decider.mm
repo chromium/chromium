@@ -19,9 +19,10 @@ WebViewWebStatePolicyDecider::WebViewWebStatePolicyDecider(
     CWVWebView* web_view)
     : web::WebStatePolicyDecider(web_state), web_view_(web_view) {}
 
-bool WebViewWebStatePolicyDecider::ShouldAllowRequest(
+void WebViewWebStatePolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info) {
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   id<CWVNavigationDelegate> delegate = web_view_.navigationDelegate;
   if ([delegate respondsToSelector:@selector
                 (webView:shouldStartLoadWithRequest:navigationType:)]) {
@@ -31,23 +32,33 @@ bool WebViewWebStatePolicyDecider::ShouldAllowRequest(
     // in a C++ header //ui/base/page_transition_types.h.
     CWVNavigationType navigation_type =
         CWVNavigationTypeFromPageTransition(request_info.transition_type);
-    return [delegate webView:web_view_
+    BOOL allow = [delegate webView:web_view_
         shouldStartLoadWithRequest:request
                     navigationType:navigation_type];
+    if (!allow) {
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    }
   }
-  return true;
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
-bool WebViewWebStatePolicyDecider::ShouldAllowResponse(NSURLResponse* response,
-                                                       bool for_main_frame) {
+void WebViewWebStatePolicyDecider::ShouldAllowResponse(
+    NSURLResponse* response,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   id<CWVNavigationDelegate> delegate = web_view_.navigationDelegate;
   if ([delegate respondsToSelector:@selector
                 (webView:shouldContinueLoadWithResponse:forMainFrame:)]) {
-    return [delegate webView:web_view_
+    BOOL allow = [delegate webView:web_view_
         shouldContinueLoadWithResponse:response
-                          forMainFrame:for_main_frame];
+                          forMainFrame:response_info.for_main_frame];
+    if (!allow) {
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    };
   }
-  return true;
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
 }  // namespace ios_web_view

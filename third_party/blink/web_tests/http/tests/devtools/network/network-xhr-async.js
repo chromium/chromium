@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests XHR network resource type and content for asynchronous requests. Bug 61205\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
@@ -18,9 +18,9 @@
     request1.requestContent().then(step3);
   }
 
-  function step3({ content, error, isEncoded }) {
+  async function step3({ content, error, isEncoded }) {
     TestRunner.addResult('resource.content after requesting content: ' + content);
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

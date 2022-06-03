@@ -5,7 +5,6 @@
 #ifndef APPS_SAVED_FILES_SERVICE_FACTORY_H_
 #define APPS_SAVED_FILES_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -28,6 +27,9 @@ class SavedFilesServiceFactory : public BrowserContextKeyedServiceFactory {
 
   static SavedFilesServiceFactory* GetInstance();
 
+  SavedFilesServiceFactory(const SavedFilesServiceFactory&) = delete;
+  SavedFilesServiceFactory& operator=(const SavedFilesServiceFactory&) = delete;
+
  private:
   SavedFilesServiceFactory();
   ~SavedFilesServiceFactory() override;
@@ -37,8 +39,6 @@ class SavedFilesServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SavedFilesServiceFactory);
 };
 
 }  // namespace apps

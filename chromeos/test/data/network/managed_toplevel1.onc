@@ -23,6 +23,7 @@
               "Port": 1194,
               "Username": "abc ${LOGIN_ID} def",
               "Recommended": [ "Username", "Password" ],
+              "CompressionAlgorithm": "None",
               "ClientCertType": "Pattern",
               "ClientCertPattern": {
                   "IssuerCARef": [ "openvpn-test-ca" ],

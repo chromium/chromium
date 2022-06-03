@@ -7,14 +7,12 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -25,7 +23,10 @@
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_output_stream.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_input_stream_data_interceptor.h"
 
 namespace media {
@@ -63,6 +64,18 @@ enum StreamFormat {
   STREAM_FORMAT_MAX = 4,
 };
 
+PRINTF_FORMAT(2, 3)
+void SendLogMessage(const AudioManagerBase::LogCallback& callback,
+                    const char* format,
+                    ...) {
+  if (callback.is_null())
+    return;
+  va_list args;
+  va_start(args, format);
+  callback.Run("AMB::" + base::StringPrintV(format, args));
+  va_end(args);
+}
+
 }  // namespace
 
 struct AudioManagerBase::DispatcherParams {
@@ -72,15 +85,16 @@ struct AudioManagerBase::DispatcherParams {
       : input_params(input),
         output_params(output),
         output_device_id(output_device_id) {}
+
+  DispatcherParams(const DispatcherParams&) = delete;
+  DispatcherParams& operator=(const DispatcherParams&) = delete;
+
   ~DispatcherParams() = default;
 
   const AudioParameters input_params;
   const AudioParameters output_params;
   const std::string output_device_id;
   std::unique_ptr<AudioOutputDispatcher> dispatcher;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DispatcherParams);
 };
 
 class AudioManagerBase::CompareByParams {
@@ -188,15 +202,17 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
     return nullptr;
   }
 
+  SendLogMessage(log_callback, "%s({device_id=%s}, {params=[%s]})", __func__,
+                 device_id.c_str(), params.AsHumanReadableString().c_str());
+
   // Limit the number of audio streams opened. This is to prevent using
   // excessive resources for a large number of audio streams. More
   // importantly it prevents instability on certain systems.
   // See bug: http://crbug.com/30242.
   if (num_output_streams_ >= max_num_output_streams_) {
-    DLOG(ERROR) << "Number of opened output audio streams "
-                << num_output_streams_
-                << " exceed the max allowed number "
-                << max_num_output_streams_;
+    LOG(ERROR) << "Number of opened output audio streams "
+               << num_output_streams_ << " exceed the max allowed number "
+               << max_num_output_streams_;
     return nullptr;
   }
 
@@ -224,6 +240,8 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
 
   if (stream) {
     ++num_output_streams_;
+    SendLogMessage(log_callback, "%s => (number of streams=%d)", __func__,
+                   output_stream_count());
   }
 
   return stream;
@@ -247,17 +265,20 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
     return nullptr;
   }
 
+  SendLogMessage(log_callback, "%s({device_id=%s}, {params=[%s]})", __func__,
+                 device_id.c_str(), params.AsHumanReadableString().c_str());
+
   if (!params.IsValid() || (params.channels() > kMaxInputChannels) ||
       device_id.empty()) {
-    DLOG(ERROR) << "Audio parameters are invalid for device " << device_id;
-    VLOG(1) << params.AsHumanReadableString();
+    DLOG(ERROR) << "Audio parameters are invalid for device " << device_id
+                << ", params: " << params.AsHumanReadableString();
     return nullptr;
   }
 
   if (input_stream_count() >= kMaxInputStreams) {
-    DLOG(ERROR) << "Number of opened input audio streams "
-                << input_stream_count() << " exceed the max allowed number "
-                << kMaxInputStreams;
+    LOG(ERROR) << "Number of opened input audio streams "
+               << input_stream_count() << " exceed the max allowed number "
+               << kMaxInputStreams;
     return nullptr;
   }
 
@@ -283,9 +304,8 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
   if (stream) {
     input_streams_.insert(stream);
     if (!log_callback.is_null()) {
-      log_callback.Run(base::StringPrintf(
-          "AMB::MakeAudioInputStream => (number of streams=%d)",
-          input_stream_count()));
+      SendLogMessage(log_callback, "%s => (number of streams=%d)", __func__,
+                     input_stream_count());
     }
 
     if (!params.IsBitstreamFormat() && debug_recording_manager_) {
@@ -312,7 +332,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
     const std::string& device_id) {
   CHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(params.IsValid());
-  base::Optional<StreamFormat> uma_stream_format;
+  absl::optional<StreamFormat> uma_stream_format;
 
   // If the caller supplied an empty device id to select the default device,
   // we fetch the actual device id of the default device so that the lookup
@@ -323,7 +343,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   std::string output_device_id =
       AudioDeviceDescription::IsDefaultDevice(device_id)
           ?
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
           // On ChromeOS, it is expected that, if the default device is given,
           // no specific device ID should be used since the actual output device
           // should change dynamically if the system default device changes.
@@ -408,8 +428,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
   if (it != output_dispatchers_.end())
     return (*it)->dispatcher->CreateStreamProxy();
 
-  const base::TimeDelta kCloseDelay =
-      base::TimeDelta::FromSeconds(kStreamCloseDelaySeconds);
+  const base::TimeDelta kCloseDelay = base::Seconds(kStreamCloseDelaySeconds);
   std::unique_ptr<AudioOutputDispatcher> dispatcher;
   if (output_params.format() != AudioParameters::AUDIO_FAKE &&
       !output_params.IsBitstreamFormat()) {

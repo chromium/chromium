@@ -123,7 +123,7 @@ bool HTMLElementStack::ElementRecord::IsAbove(ElementRecord* other) const {
   return false;
 }
 
-void HTMLElementStack::ElementRecord::Trace(Visitor* visitor) {
+void HTMLElementStack::ElementRecord::Trace(Visitor* visitor) const {
   visitor->Trace(item_);
   visitor->Trace(next_);
 }
@@ -249,8 +249,8 @@ bool HTMLElementStack::IsHTMLIntegrationPoint(HTMLStackItem* item) {
         item->GetAttributeItem(mathml_names::kEncodingAttr);
     if (encoding_attr) {
       const String& encoding = encoding_attr->Value();
-      return DeprecatedEqualIgnoringCase(encoding, "text/html") ||
-             DeprecatedEqualIgnoringCase(encoding, "application/xhtml+xml");
+      return EqualIgnoringASCIICase(encoding, "text/html") ||
+             EqualIgnoringASCIICase(encoding, "application/xhtml+xml");
     }
     return false;
   }
@@ -541,7 +541,7 @@ HTMLElementStack::FurthestBlockForFormattingElement(
   return nullptr;
 }
 
-void HTMLElementStack::Trace(Visitor* visitor) {
+void HTMLElementStack::Trace(Visitor* visitor) const {
   visitor->Trace(top_);
   visitor->Trace(root_node_);
   visitor->Trace(head_element_);

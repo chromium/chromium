@@ -6,14 +6,24 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
+#include "base/check.h"
 #include "chromecast/media/audio/mixer_service/loopback_interrupt_reason.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/net/io_buffer_pool.h"
 
 namespace chromecast {
 namespace media {
+
+namespace {
+
+enum MessageTypes : int {
+  kStreamConfig = 1,
+  kInterrupt,
+};
+
+}  // namespace
 
 MixerLoopbackConnection::MixerLoopbackConnection(
     std::unique_ptr<mixer_service::MixerSocket> socket)
@@ -25,6 +35,11 @@ MixerLoopbackConnection::MixerLoopbackConnection(
 MixerLoopbackConnection::~MixerLoopbackConnection() = default;
 
 void MixerLoopbackConnection::SetErrorCallback(base::OnceClosure callback) {
+  if (pending_error_) {
+    pending_error_ = false;
+    std::move(callback).Run();
+    return;
+  }
   error_callback_ = std::move(callback);
 }
 
@@ -34,11 +49,11 @@ void MixerLoopbackConnection::SetStreamConfig(SampleFormat sample_format,
                                               int data_size) {
   mixer_service::Generic message;
   mixer_service::StreamConfig* config = message.mutable_stream_config();
-  config->set_sample_format(mixer_service::ConvertSampleFormat(sample_format));
+  config->set_sample_format(audio_service::ConvertSampleFormat(sample_format));
   config->set_sample_rate(sample_rate);
   config->set_num_channels(num_channels);
   config->set_data_size(data_size);
-  socket_->SendProto(message);
+  socket_->SendProto(kStreamConfig, message);
 
   sent_stream_config_ = true;
 }
@@ -48,7 +63,10 @@ void MixerLoopbackConnection::SendAudio(
     int data_size_bytes,
     int64_t timestamp) {
   DCHECK(sent_stream_config_);
-  socket_->SendAudioBuffer(std::move(audio_buffer), data_size_bytes, timestamp);
+  if (!socket_->SendAudioBuffer(std::move(audio_buffer), data_size_bytes,
+                                timestamp)) {
+    SendInterrupt(LoopbackInterruptReason::kSocketOverflow);
+  }
 }
 
 void MixerLoopbackConnection::SendInterrupt(LoopbackInterruptReason reason) {
@@ -58,7 +76,7 @@ void MixerLoopbackConnection::SendInterrupt(LoopbackInterruptReason reason) {
   interrupt->set_reason(
       static_cast<mixer_service::StreamInterruption::InterruptionReason>(
           reason));
-  socket_->SendProto(message);
+  socket_->SendProto(kInterrupt, message);
 }
 
 bool MixerLoopbackConnection::HandleMetadata(
@@ -67,7 +85,7 @@ bool MixerLoopbackConnection::HandleMetadata(
 }
 
 bool MixerLoopbackConnection::HandleAudioData(char* data,
-                                              int size,
+                                              size_t size,
                                               int64_t timestamp) {
   return true;
 }
@@ -75,7 +93,9 @@ bool MixerLoopbackConnection::HandleAudioData(char* data,
 void MixerLoopbackConnection::OnConnectionError() {
   if (error_callback_) {
     std::move(error_callback_).Run();
+    return;
   }
+  pending_error_ = true;
 }
 
 }  // namespace media

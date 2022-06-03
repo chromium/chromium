@@ -8,13 +8,13 @@
 #import <WebKit/WebKit.h>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #import "ios/net/cookies/system_cookie_util.h"
-#include "ios/web/common/features.h"
 #import "ios/web/net/cookies/wk_cookie_util.h"
 #include "ios/web/public/browser_state.h"
+#import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -173,13 +173,12 @@ int GetTaskPercentComplete(NSURLSessionTask* task) {
 
 namespace web {
 
-DownloadTaskImpl::DownloadTaskImpl(const WebState* web_state,
+DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
                                    const GURL& original_url,
                                    NSString* http_method,
                                    const std::string& content_disposition,
                                    int64_t total_bytes,
                                    const std::string& mime_type,
-                                   ui::PageTransition page_transition,
                                    NSString* identifier,
                                    Delegate* delegate)
     : original_url_(original_url),
@@ -188,22 +187,23 @@ DownloadTaskImpl::DownloadTaskImpl(const WebState* web_state,
       content_disposition_(content_disposition),
       original_mime_type_(mime_type),
       mime_type_(mime_type),
-      page_transition_(page_transition),
       identifier_([identifier copy]),
       web_state_(web_state),
-      delegate_(delegate),
-      weak_factory_(this) {
+      delegate_(delegate) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(web_state_);
   DCHECK(delegate_);
-
+  base::WeakPtr<DownloadTaskImpl> weak_Task = weak_factory_.GetWeakPtr();
   observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIApplicationWillResignActiveNotification
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification* _Nonnull) {
-                if (state_ == State::kInProgress) {
-                  has_performed_background_download_ = true;
+                DownloadTaskImpl* task = weak_Task.get();
+                if (task) {
+                  if (task->state_ == State::kInProgress) {
+                    task->has_performed_background_download_ = true;
+                  }
                 }
               }];
 }
@@ -227,25 +227,53 @@ void DownloadTaskImpl::ShutDown() {
   delegate_ = nullptr;
 }
 
+WebState* DownloadTaskImpl::GetWebState() {
+  return web_state_;
+}
+
 DownloadTask::State DownloadTaskImpl::GetState() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return state_;
 }
 
-void DownloadTaskImpl::Start(
-    std::unique_ptr<net::URLFetcherResponseWriter> writer) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+void DownloadTaskImpl::Start(const base::FilePath& path,
+                             Destination destination_hint) {
+  DCHECK(path != base::FilePath() ||
+         destination_hint == DownloadTask::Destination::kToMemory);
   DCHECK_NE(state_, State::kInProgress);
-  writer_ = std::move(writer);
+  state_ = State::kInProgress;
   percent_complete_ = 0;
   received_bytes_ = 0;
-  state_ = State::kInProgress;
 
-  if (original_url_.SchemeIs(url::kDataScheme)) {
+  if (destination_hint == Destination::kToMemory) {
+    OnWriterInitialized(std::make_unique<net::URLFetcherStringWriter>(),
+                        net::OK);
+  } else {
+    DCHECK(path != base::FilePath());
+    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+    auto writer =
+        std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
+    net::URLFetcherFileWriter* writer_ptr = writer.get();
+    writer_ptr->Initialize(
+        base::BindOnce(&DownloadTaskImpl::OnWriterInitialized,
+                       weak_factory_.GetWeakPtr(), std::move(writer)));
+  }
+}
+
+void DownloadTaskImpl::OnWriterInitialized(
+    std::unique_ptr<net::URLFetcherResponseWriter> writer,
+    int writer_initialization_status) {
+  DCHECK_EQ(state_, State::kInProgress);
+  writer_ = std::move(writer);
+
+  if (writer_initialization_status != net::OK) {
+    OnDownloadFinished(writer_initialization_status);
+  } else if (original_url_.SchemeIs(url::kDataScheme)) {
     StartDataUrlParsing();
   } else {
-    GetCookies(base::Bind(&DownloadTaskImpl::StartWithCookies,
-                          weak_factory_.GetWeakPtr()));
+    GetCookies(base::BindRepeating(&DownloadTaskImpl::StartWithCookies,
+                                   weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -257,9 +285,34 @@ void DownloadTaskImpl::Cancel() {
   OnDownloadUpdated();
 }
 
-net::URLFetcherResponseWriter* DownloadTaskImpl::GetResponseWriter() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return writer_.get();
+NSData* DownloadTaskImpl::GetResponseData() const {
+  DCHECK(writer_);
+  net::URLFetcherStringWriter* string_writer = writer_->AsStringWriter();
+  if (string_writer) {
+    const std::string& data = string_writer->data();
+    return [NSData dataWithBytes:data.c_str() length:data.size()];
+  }
+
+  net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
+  if (file_writer) {
+    const base::FilePath& path = file_writer->file_path();
+    return [NSData
+        dataWithContentsOfFile:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
+  }
+
+  return nil;
+}
+
+const base::FilePath& DownloadTaskImpl::GetResponsePath() const {
+  DCHECK(writer_);
+  net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
+  if (file_writer) {
+    const base::FilePath& path = file_writer->file_path();
+    return path;
+  }
+
+  static const base::FilePath kEmptyPath;
+  return kEmptyPath;
 }
 
 NSString* DownloadTaskImpl::GetIndentifier() const {
@@ -322,12 +375,7 @@ std::string DownloadTaskImpl::GetMimeType() const {
   return mime_type_;
 }
 
-ui::PageTransition DownloadTaskImpl::GetTransitionType() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return page_transition_;
-}
-
-base::string16 DownloadTaskImpl::GetSuggestedFilename() const {
+std::u16string DownloadTaskImpl::GetSuggestedFilename() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return net::GetSuggestedFilename(GetOriginalUrl(), GetContentDisposition(),
                                    /*referrer_charset=*/std::string(),
@@ -414,7 +462,7 @@ NSURLSession* DownloadTaskImpl::CreateSession(NSString* identifier,
 }
 
 void DownloadTaskImpl::GetCookies(
-    base::Callback<void(NSArray<NSHTTPCookie*>*)> callback) {
+    base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   scoped_refptr<net::URLRequestContextGetter> context_getter(
       web_state_->GetBrowserState()->GetRequestContext());
@@ -422,23 +470,23 @@ void DownloadTaskImpl::GetCookies(
   // net::URLRequestContextGetter must be used in the IO thread.
   base::PostTask(FROM_HERE, {WebThread::IO},
                  base::BindOnce(&DownloadTaskImpl::GetCookiesFromContextGetter,
-                                context_getter, callback));
+                                context_getter, std::move(callback)));
 }
 
 void DownloadTaskImpl::GetCookiesFromContextGetter(
     scoped_refptr<net::URLRequestContextGetter> context_getter,
-    base::Callback<void(NSArray<NSHTTPCookie*>*)> callback) {
+    base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback) {
   DCHECK_CURRENTLY_ON(WebThread::IO);
   context_getter->GetURLRequestContext()->cookie_store()->GetAllCookiesAsync(
       base::BindOnce(
-          [](base::Callback<void(NSArray<NSHTTPCookie*>*)> callback,
+          [](base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback,
              const net::CookieList& cookie_list) {
             NSArray<NSHTTPCookie*>* cookies =
                 SystemCookiesFromCanonicalCookieList(cookie_list);
             base::PostTask(FROM_HERE, {WebThread::UI},
-                           base::BindOnce(callback, cookies));
+                           base::BindOnce(std::move(callback), cookies));
           },
-          callback));
+          std::move(callback)));
 }
 
 void DownloadTaskImpl::StartWithCookies(NSArray<NSHTTPCookie*>* cookies) {
@@ -489,7 +537,9 @@ void DownloadTaskImpl::OnDownloadFinished(int error_code) {
   // If downloads manager's flag is enabled, keeps the downloaded file. The
   // writer deletes it if it owns it, that's why it shouldn't owns it anymore
   // when the current download is finished.
-  if (base::FeatureList::IsEnabled(web::features::kEnablePersistentDownloads))
+  // Check if writer_->AsFileWriter() is necessary because in some cases the
+  // writer isn't a fileWriter as for Passkit downloads for example.
+  if (writer_->AsFileWriter())
     writer_->AsFileWriter()->DisownFile();
   error_code_ = error_code;
   state_ = State::kComplete;

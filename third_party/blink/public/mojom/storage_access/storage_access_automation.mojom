@@ -1,0 +1,14 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+// Provides a way for tests to change the storage access policy.
+// See https://privacycg.github.io/storage-access/#automation
+interface StorageAccessAutomation {
+  // Sets whether |origin| has access to cookies from |embedding_origin|.
+  SetStorageAccess(string origin,
+                   string embedding_origin,
+                   bool allowed) => (bool success);
+};

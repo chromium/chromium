@@ -5,10 +5,15 @@
 source_set("test") {
   testonly = true
   sources = [
-    "fake_overlay_presentation_context.cc",
     "fake_overlay_presentation_context.h",
+    "fake_overlay_presentation_context.mm",
+    "fake_overlay_request_callback_installer.cc",
+    "fake_overlay_request_callback_installer.h",
+    "fake_overlay_request_cancel_handler.cc",
+    "fake_overlay_request_cancel_handler.h",
     "fake_overlay_user_data.cc",
     "fake_overlay_user_data.h",
+    "overlay_test_macros.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -16,6 +21,7 @@ source_set("test") {
   deps = [
     "//base",
     "//ios/chrome/browser/overlays",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

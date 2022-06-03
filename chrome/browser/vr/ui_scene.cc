@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -19,7 +18,7 @@
 #include "chrome/browser/vr/elements/reticle.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/frame_lifecycle.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

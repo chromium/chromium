@@ -8,9 +8,7 @@ import("//testing/test.gni")
 
 source_set("shutdown") {
   testonly = true
-  sources = [
-    "shutdown_unittest.cc",
-  ]
+  sources = [ "shutdown_unittest.cc" ]
 
   deps = [
     ":interfaces",
@@ -33,16 +31,12 @@ source_set("shutdown") {
 
 mojom("interfaces") {
   testonly = true
-  sources = [
-    "shutdown.test-mojom",
-  ]
+  sources = [ "shutdown.test-mojom" ]
 }
 
 service_executable("shutdown_service") {
   testonly = true
-  sources = [
-    "shutdown_service_app.cc",
-  ]
+  sources = [ "shutdown_service_app.cc" ]
   deps = [
     ":interfaces",
     "//base",
@@ -53,9 +47,7 @@ service_executable("shutdown_service") {
 
 service_executable("shutdown_client") {
   testonly = true
-  sources = [
-    "shutdown_client_app.cc",
-  ]
+  sources = [ "shutdown_client_app.cc" ]
   deps = [
     ":interfaces",
     "//base",

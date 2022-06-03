@@ -22,9 +22,9 @@ DelayedCallbackRunner::~DelayedCallbackRunner() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void DelayedCallbackRunner::RegisterCallback(const base::Closure& callback) {
+void DelayedCallbackRunner::RegisterCallback(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  callbacks_.push(callback);
+  callbacks_.push(std::move(callback));
 }
 
 void DelayedCallbackRunner::Start() {
@@ -43,9 +43,8 @@ void DelayedCallbackRunner::Start() {
 
 void DelayedCallbackRunner::OnTimer() {
   // Run the next callback on the task runner.
-  auto callback = callbacks_.front();
+  task_runner_->PostTask(FROM_HERE, std::move(callbacks_.front()));
   callbacks_.pop();
-  task_runner_->PostTask(FROM_HERE, callback);
 
   // Remove this callback and get ready for the next if there is one.
   has_work_ = !callbacks_.empty();

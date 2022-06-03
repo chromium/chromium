@@ -223,7 +223,7 @@ test(() => {
 
 test(() => {
   var rules11 = document.styleSheets.item(0).cssRules.item(10).cssRules;
-  assert_throws('SyntaxError', () => {rules11.item(0).keyText = "40%, -50%, 60%";}, "The key '40%, -50%, 60%' is invalid and cannot be parsed");
+  assert_throws_dom('SyntaxError', () => {rules11.item(0).keyText = "40%, -50%, 60%";}, "The key '40%, -50%, 60%' is invalid and cannot be parsed");
   assert_equals(rules11.length, 2);
   assert_equals(rules11.item(0).type, window.CSSRule.KEYFRAME_RULE);
   assert_equals(rules11.item(0).keyText, "0%");
@@ -232,7 +232,7 @@ test(() => {
 
 test(() => {
   var rules12 = document.styleSheets.item(0).cssRules.item(11).cssRules;
-  assert_throws('SyntaxError', () => {rules12.item(0).keyText = "foo";}, "The key 'foo' is invalid and cannot be parsed");
+  assert_throws_dom('SyntaxError', () => {rules12.item(0).keyText = "foo";}, "The key 'foo' is invalid and cannot be parsed");
   assert_equals(rules12.length, 2);
   assert_equals(rules12.item(0).type, window.CSSRule.KEYFRAME_RULE);
   assert_equals(rules12.item(0).keyText, "0%");
@@ -241,7 +241,7 @@ test(() => {
 
 test(() => {
   var rules13 = document.styleSheets.item(0).cssRules.item(12).cssRules;
-  assert_throws('SyntaxError', () => {rules13.item(0).keyText = null;}, "The key 'null' is invalid and cannot be parsed");
+  assert_throws_dom('SyntaxError', () => {rules13.item(0).keyText = null;}, "The key 'null' is invalid and cannot be parsed");
   assert_equals(rules13.length, 2);
   assert_equals(rules13.item(0).type, window.CSSRule.KEYFRAME_RULE);
   assert_equals(rules13.item(0).keyText, "0%");

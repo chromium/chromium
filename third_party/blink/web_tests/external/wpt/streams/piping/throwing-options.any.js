@@ -1,4 +1,5 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
+'use strict';
 
 class ThrowingOptions {
   constructor(whatShouldThrow) {
@@ -34,7 +35,7 @@ class ThrowingOptions {
   }
 }
 
-const checkOrder = ['preventClose', 'preventAbort', 'preventCancel', 'signal'];
+const checkOrder = ['preventAbort', 'preventCancel', 'preventClose', 'signal'];
 
 for (let i = 0; i < checkOrder.length; ++i) {
   const whatShouldThrow = checkOrder[i];
@@ -42,8 +43,8 @@ for (let i = 0; i < checkOrder.length; ++i) {
 
   promise_test(t => {
     const options = new ThrowingOptions(whatShouldThrow);
-    return promise_rejects(
-               t, new Error(),
+    return promise_rejects_js(
+               t, Error,
                new ReadableStream().pipeTo(new WritableStream(), options),
                'pipeTo should reject')
         .then(() => assert_array_equals(
@@ -53,8 +54,8 @@ for (let i = 0; i < checkOrder.length; ++i) {
 
   test(() => {
     const options = new ThrowingOptions(whatShouldThrow);
-    assert_throws(
-        new Error(),
+    assert_throws_js(
+        Error,
         () => new ReadableStream().pipeThrough(new TransformStream(), options),
         'pipeThrough should throw');
     assert_array_equals(

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 174 tests; 166 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 174 tests; 173 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Value Properties of the Global Object
 PASS Value Property: NaN
 PASS Value Property: Infinity
@@ -70,12 +70,12 @@ PASS Window method: scrollBy
 PASS Window readonly attribute: history
 PASS Window readonly attribute: frameElement
 PASS Window readonly attribute: navigator
-PASS Window readonly attribute: applicationCache
+FAIL Window readonly attribute: applicationCache assert_true: applicationCache in window expected true got false
 PASS Window readonly attribute: sessionStorage
 PASS Window readonly attribute: localStorage
 PASS Window attribute: name
 PASS Window attribute: status
-FAIL Window attribute: opener assert_equals: expected "function" but got "undefined"
+PASS Window attribute: opener
 PASS Window attribute: onabort
 PASS Window attribute: onafterprint
 PASS Window attribute: onbeforeprint
@@ -143,21 +143,21 @@ PASS Window attribute: ontimeupdate
 PASS Window attribute: onunload
 PASS Window attribute: onvolumechange
 PASS Window attribute: onwaiting
-FAIL Window unforgeable attribute: window assert_equals: expected "function" but got "undefined"
+PASS Window unforgeable attribute: window
 PASS Window unforgeable attribute: document
-FAIL Window unforgeable attribute: location assert_equals: expected "function" but got "undefined"
-FAIL Window unforgeable attribute: top assert_equals: expected "function" but got "undefined"
-FAIL Window replaceable attribute: self assert_equals: expected "function" but got "undefined"
+PASS Window unforgeable attribute: location
+PASS Window unforgeable attribute: top
+PASS Window replaceable attribute: self
 PASS Window replaceable attribute: locationbar
 PASS Window replaceable attribute: menubar
 PASS Window replaceable attribute: personalbar
 PASS Window replaceable attribute: scrollbars
 PASS Window replaceable attribute: statusbar
 PASS Window replaceable attribute: toolbar
-FAIL Window replaceable attribute: frames assert_equals: expected "function" but got "undefined"
-FAIL Window replaceable attribute: parent assert_equals: expected "function" but got "undefined"
+PASS Window replaceable attribute: frames
+PASS Window replaceable attribute: parent
 PASS Window replaceable attribute: external
-FAIL Window replaceable attribute: length assert_equals: expected "function" but got "undefined"
+PASS Window replaceable attribute: length
 PASS Window replaceable attribute: origin
 PASS Window replaceable attribute: screen
 PASS Window replaceable attribute: scrollX

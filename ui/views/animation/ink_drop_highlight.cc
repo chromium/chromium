@@ -10,12 +10,11 @@
 
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop_highlight_observer.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/animation/ink_drop_util.h"
@@ -25,33 +24,27 @@ namespace views {
 namespace {
 
 // The opacity of the highlight when it is not visible.
-const float kHiddenOpacity = 0.0f;
+constexpr float kHiddenOpacity = 0.0f;
 
 }  // namespace
 
 std::string ToString(InkDropHighlight::AnimationType animation_type) {
   switch (animation_type) {
-    case InkDropHighlight::FADE_IN:
+    case InkDropHighlight::AnimationType::kFadeIn:
       return std::string("FADE_IN");
-    case InkDropHighlight::FADE_OUT:
+    case InkDropHighlight::AnimationType::kFadeOut:
       return std::string("FADE_OUT");
   }
-  NOTREACHED()
-      << "Should never be reached but is necessary for some compilers.";
-  return std::string("UNKNOWN");
 }
 
 InkDropHighlight::InkDropHighlight(
     const gfx::PointF& center_point,
     std::unique_ptr<BasePaintedLayerDelegate> layer_delegate)
     : center_point_(center_point),
-      visible_opacity_(1.f),
-      last_animation_initiated_was_fade_in_(false),
       layer_delegate_(std::move(layer_delegate)),
-      layer_(new ui::Layer()),
-      observer_(nullptr) {
+      layer_(std::make_unique<ui::Layer>()) {
   const gfx::RectF painted_bounds = layer_delegate_->GetPaintedBounds();
-  size_ = explode_size_ = painted_bounds.size();
+  size_ = painted_bounds.size();
 
   layer_->SetBounds(gfx::ToEnclosingRect(painted_bounds));
   layer_->SetFillsBoundsOpaquely(false);
@@ -67,9 +60,9 @@ InkDropHighlight::InkDropHighlight(const gfx::SizeF& size,
                                    SkColor color)
     : InkDropHighlight(
           center_point,
-          std::unique_ptr<BasePaintedLayerDelegate>(
-              new RoundedRectangleLayerDelegate(color, size, corner_radius))) {
-  visible_opacity_ = 0.128f;
+          std::make_unique<RoundedRectangleLayerDelegate>(color,
+                                                          size,
+                                                          corner_radius)) {
   layer_->SetOpacity(visible_opacity_);
 }
 
@@ -79,10 +72,20 @@ InkDropHighlight::InkDropHighlight(const gfx::Size& size,
                                    SkColor color)
     : InkDropHighlight(gfx::SizeF(size), corner_radius, center_point, color) {}
 
+InkDropHighlight::InkDropHighlight(const gfx::SizeF& size, SkColor base_color)
+    : size_(size), layer_(std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
+  layer_->SetColor(base_color);
+  layer_->SetBounds(gfx::Rect(gfx::ToRoundedSize(size)));
+  layer_->SetVisible(false);
+  layer_->SetMasksToBounds(false);
+  layer_->SetOpacity(visible_opacity_);
+  layer_->SetName("InkDropHighlight:solid_color_layer");
+}
+
 InkDropHighlight::~InkDropHighlight() {
   // Explicitly aborting all the animations ensures all callbacks are invoked
   // while this instance still exists.
-  layer_->GetAnimator()->AbortAllAnimations();
+  animation_abort_handle_.reset();
 }
 
 bool InkDropHighlight::IsFadingInOrVisible() const {
@@ -92,11 +95,11 @@ bool InkDropHighlight::IsFadingInOrVisible() const {
 void InkDropHighlight::FadeIn(const base::TimeDelta& duration) {
   layer_->SetOpacity(kHiddenOpacity);
   layer_->SetVisible(true);
-  AnimateFade(FADE_IN, duration, size_, size_);
+  AnimateFade(AnimationType::kFadeIn, duration);
 }
 
-void InkDropHighlight::FadeOut(const base::TimeDelta& duration, bool explode) {
-  AnimateFade(FADE_OUT, duration, size_, explode ? explode_size_ : size_);
+void InkDropHighlight::FadeOut(const base::TimeDelta& duration) {
+  AnimateFade(AnimationType::kFadeOut, duration);
 }
 
 test::InkDropHighlightTestApi* InkDropHighlight::GetTestApi() {
@@ -104,63 +107,44 @@ test::InkDropHighlightTestApi* InkDropHighlight::GetTestApi() {
 }
 
 void InkDropHighlight::AnimateFade(AnimationType animation_type,
-                                   const base::TimeDelta& duration,
-                                   const gfx::SizeF& initial_size,
-                                   const gfx::SizeF& target_size) {
+                                   const base::TimeDelta& duration) {
+  last_animation_initiated_was_fade_in_ =
+      animation_type == AnimationType::kFadeIn;
+
+  layer_->SetTransform(CalculateTransform());
+
   const base::TimeDelta effective_duration =
       gfx::Animation::ShouldRenderRichAnimation() ? duration
                                                   : base::TimeDelta();
-  last_animation_initiated_was_fade_in_ = animation_type == FADE_IN;
-
-  layer_->SetTransform(CalculateTransform(initial_size));
-
-  // The |animation_observer| will be destroyed when the
-  // AnimationStartedCallback() returns true.
-  ui::CallbackLayerAnimationObserver* animation_observer =
-      new ui::CallbackLayerAnimationObserver(
-          base::BindRepeating(&InkDropHighlight::AnimationStartedCallback,
-                              base::Unretained(this), animation_type),
-          base::BindRepeating(&InkDropHighlight::AnimationEndedCallback,
-                              base::Unretained(this), animation_type));
-
-  ui::LayerAnimator* animator = layer_->GetAnimator();
-  ui::ScopedLayerAnimationSettings animation(animator);
-  animation.SetTweenType(gfx::Tween::EASE_IN_OUT);
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-
-  std::unique_ptr<ui::LayerAnimationElement> opacity_element =
-      ui::LayerAnimationElement::CreateOpacityElement(
-          animation_type == FADE_IN ? visible_opacity_ : kHiddenOpacity,
-          effective_duration);
-  ui::LayerAnimationSequence* opacity_sequence =
-      new ui::LayerAnimationSequence(std::move(opacity_element));
-  opacity_sequence->AddObserver(animation_observer);
-  animator->StartAnimation(opacity_sequence);
-
-  if (initial_size != target_size) {
-    std::unique_ptr<ui::LayerAnimationElement> transform_element =
-        ui::LayerAnimationElement::CreateTransformElement(
-            CalculateTransform(target_size), effective_duration);
-
-    ui::LayerAnimationSequence* transform_sequence =
-        new ui::LayerAnimationSequence(std::move(transform_element));
-
-    transform_sequence->AddObserver(animation_observer);
-    animator->StartAnimation(transform_sequence);
-  }
-
-  animation_observer->SetActive();
+  const float opacity = animation_type == AnimationType::kFadeIn
+                            ? visible_opacity_
+                            : kHiddenOpacity;
+  views::AnimationBuilder builder;
+  if (effective_duration.is_positive())
+    animation_abort_handle_ = builder.GetAbortHandle();
+  builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnStarted(base::BindOnce(&InkDropHighlight::AnimationStartedCallback,
+                                base::Unretained(this), animation_type))
+      .OnEnded(base::BindOnce(&InkDropHighlight::AnimationEndedCallback,
+                              base::Unretained(this), animation_type,
+                              InkDropAnimationEndedReason::SUCCESS))
+      .OnAborted(base::BindOnce(&InkDropHighlight::AnimationEndedCallback,
+                                base::Unretained(this), animation_type,
+                                InkDropAnimationEndedReason::PRE_EMPTED))
+      .Once()
+      .SetDuration(effective_duration)
+      .SetOpacity(layer_.get(), opacity, gfx::Tween::EASE_IN_OUT);
 }
 
-gfx::Transform InkDropHighlight::CalculateTransform(
-    const gfx::SizeF& size) const {
+gfx::Transform InkDropHighlight::CalculateTransform() const {
   gfx::Transform transform;
+  // No transform needed for a solid color layer.
+  if (!layer_delegate_)
+    return transform;
+
   transform.Translate(center_point_.x(), center_point_.y());
-  // TODO(bruthig): Fix the InkDropHighlight to work well when initialized with
-  // a (0x0) size. See https://crbug.com/661618.
-  transform.Scale(size_.width() == 0 ? 0 : size.width() / size_.width(),
-                  size_.height() == 0 ? 0 : size.height() / size_.height());
   gfx::Vector2dF layer_offset = layer_delegate_->GetCenteringOffset();
   transform.Translate(-layer_offset.x(), -layer_offset.y());
 
@@ -171,28 +155,21 @@ gfx::Transform InkDropHighlight::CalculateTransform(
   return transform;
 }
 
-void InkDropHighlight::AnimationStartedCallback(
-    AnimationType animation_type,
-    const ui::CallbackLayerAnimationObserver& observer) {
+void InkDropHighlight::AnimationStartedCallback(AnimationType animation_type) {
   if (observer_)
     observer_->AnimationStarted(animation_type);
 }
 
-bool InkDropHighlight::AnimationEndedCallback(
+void InkDropHighlight::AnimationEndedCallback(
     AnimationType animation_type,
-    const ui::CallbackLayerAnimationObserver& observer) {
+    InkDropAnimationEndedReason reason) {
   // AnimationEndedCallback() may be invoked when this is being destroyed and
   // |layer_| may be null.
-  if (animation_type == FADE_OUT && layer_)
+  if (animation_type == AnimationType::kFadeOut && layer_)
     layer_->SetVisible(false);
 
-  if (observer_) {
-    observer_->AnimationEnded(animation_type,
-                              observer.aborted_count()
-                                  ? InkDropAnimationEndedReason::PRE_EMPTED
-                                  : InkDropAnimationEndedReason::SUCCESS);
-  }
-  return true;
+  if (observer_)
+    observer_->AnimationEnded(animation_type, reason);
 }
 
 }  // namespace views

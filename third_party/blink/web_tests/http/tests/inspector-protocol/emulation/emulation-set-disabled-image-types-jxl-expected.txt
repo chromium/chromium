@@ -1,0 +1,14 @@
+Tests the Emulation.setDisabledImageTypes method for JPEG XL.
+With emulation (jxl enabled):
+Expected jxl image: http://127.0.0.1:8000/inspector-protocol/emulation/resources/test.jxl
+Image request Accept header: image/jxl,image/avif,image/apng,image/svg+xml,image/*,*/*;q=0.8
+With emulation (jxl disabled):
+Expected png image: http://127.0.0.1:8000/inspector-protocol/emulation/resources/test.png
+Image request Accept header: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+With emulation (jxl enabled):
+Expected jxl image: http://127.0.0.1:8000/inspector-protocol/emulation/resources/test.jxl
+Image request Accept header: image/jxl,image/avif,image/apng,image/svg+xml,image/*,*/*;q=0.8
+With emulation (jxl disabled):
+Expected png image: http://127.0.0.1:8000/inspector-protocol/emulation/resources/test.png
+Image request Accept header: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+

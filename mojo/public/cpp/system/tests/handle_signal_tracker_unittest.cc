@@ -18,6 +18,10 @@ namespace {
 class HandleSignalTrackerTest : public testing::Test {
  public:
   HandleSignalTrackerTest() {}
+
+  HandleSignalTrackerTest(const HandleSignalTrackerTest&) = delete;
+  HandleSignalTrackerTest& operator=(const HandleSignalTrackerTest&) = delete;
+
   ~HandleSignalTrackerTest() override {}
 
   void WaitForNextNotification(HandleSignalTracker* tracker) {
@@ -34,8 +38,6 @@ class HandleSignalTrackerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleSignalTrackerTest);
 };
 
 TEST_F(HandleSignalTrackerTest, StartsWithCorrectState) {

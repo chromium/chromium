@@ -7,13 +7,50 @@
  * information.
  */
 
+import '../../icons.js';
+import '../../prefs/prefs.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_section.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_page_css.js';
+import '../../settings_shared_css.js';
+import '../os_icons.m.js';
+import '../os_reset_page/os_powerwash_dialog.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import './detailed_build_info.js';
+import './update_warning_dialog.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {parseHtmlSubset} from '//resources/js/parse_html_subset.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {MainPageBehavior} from '../os_settings_page/main_page_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, ChannelInfo, isTargetChannelMoreStable, RegulatoryInfo, TPMFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent, VersionInfo} from './about_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-about-page',
 
   behaviors: [
+    DeepLinkingBehavior,
     WebUIListenerBehavior,
-    settings.MainPageBehavior,
-    settings.RouteObserverBehavior,
+    MainPageBehavior,
+    RouteObserverBehavior,
     I18nBehavior,
   ],
 
@@ -25,7 +62,8 @@ Polymer({
         message: '',
         progress: 0,
         rollback: false,
-        status: UpdateStatus.DISABLED
+        powerwash: false,
+        status: UpdateStatus.UPDATED
       },
     },
 
@@ -36,7 +74,7 @@ Polymer({
      */
     isManaged_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('isManaged');
       },
     },
@@ -52,6 +90,12 @@ Polymer({
 
     /** @private {!BrowserChannel} */
     targetChannel_: String,
+
+    /** @private */
+    isLts_: {
+      type: Boolean,
+      value: false,
+    },
 
     /** @private {?RegulatoryInfo} */
     regulatoryInfo_: Object,
@@ -70,12 +114,6 @@ Polymer({
 
     /** @private */
     hasInternetConnection_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    hasReleaseNotes_: {
       type: Boolean,
       value: false,
     },
@@ -102,14 +140,7 @@ Polymer({
     showRelaunch_: {
       type: Boolean,
       value: false,
-    },
-
-    /** @private */
-    showRelaunchAndPowerwash_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeShowRelaunchAndPowerwash_(' +
-          'currentUpdateStatusEvent_, targetChannel_, currentChannel_)',
+      computed: 'computeShowRelaunch_(currentUpdateStatusEvent_)',
     },
 
     /** @private */
@@ -119,15 +150,22 @@ Polymer({
           'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
     },
 
+    /** @private */
+    showDiagnosticsApp_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('diagnosticsAppEnabled');
+      }
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
-      value: function() {
+      value() {
         const map = new Map();
-        if (settings.routes.DETAILED_BUILD_INFO) {
+        if (routes.DETAILED_BUILD_INFO) {
           map.set(
-              settings.routes.DETAILED_BUILD_INFO.path,
-              '#detailed-build-info-trigger');
+              routes.DETAILED_BUILD_INFO.path, '#detailed-build-info-trigger');
         }
         return map;
       },
@@ -150,32 +188,50 @@ Polymer({
 
     /** @private {!AboutPageUpdateInfo|undefined} */
     updateInfo_: Object,
+
+    /**
+     * Whether the deep link to the check for OS update setting was unable to
+     * be shown.
+     * @private
+     */
+    isPendingOsUpdateDeepLink_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kCheckForOsUpdate,
+        chromeos.settings.mojom.Setting.kSeeWhatsNew,
+        chromeos.settings.mojom.Setting.kGetHelpWithChromeOs,
+        chromeos.settings.mojom.Setting.kReportAnIssue,
+        chromeos.settings.mojom.Setting.kTermsOfService,
+        chromeos.settings.mojom.Setting.kDiagnostics,
+      ]),
+    },
   },
 
   observers: [
     'updateShowUpdateStatus_(' +
         'hasEndOfLife_, currentUpdateStatusEvent_,' +
         'hasCheckedForUpdates_)',
-    'updateShowRelaunch_(currentUpdateStatusEvent_, targetChannel_,' +
-        'currentChannel_)',
     'updateShowButtonContainer_(' +
-        'showRelaunch_, showRelaunchAndPowerwash_, showCheckUpdates_)',
+        'showRelaunch_, showCheckUpdates_)',
     'handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
   ],
 
-  /** @private {?settings.AboutPageBrowserProxy} */
+  /** @private {?AboutPageBrowserProxy} */
   aboutBrowserProxy_: null,
 
-  /** @private {?settings.LifetimeBrowserProxy} */
-  lifetimeBrowserProxy_: null,
-
   /** @override */
-  attached: function() {
-    this.aboutBrowserProxy_ = settings.AboutPageBrowserProxyImpl.getInstance();
+  attached() {
+    this.aboutBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
     this.aboutBrowserProxy_.pageReady();
-
-    this.lifetimeBrowserProxy_ =
-        settings.LifetimeBrowserProxyImpl.getInstance();
 
     this.addEventListener('target-channel-changed', e => {
       this.targetChannel_ = e.detail;
@@ -184,6 +240,7 @@ Polymer({
     this.aboutBrowserProxy_.getChannelInfo().then(info => {
       this.currentChannel_ = info.currentChannel;
       this.targetChannel_ = info.targetChannel;
+      this.isLts_ = info.isLts;
       this.startListening_();
     });
 
@@ -196,35 +253,47 @@ Polymer({
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
     });
 
-    this.aboutBrowserProxy_.getEnabledReleaseNotes().then(result => {
-      this.hasReleaseNotes_ = result;
-    });
-
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {
       this.hasInternetConnection_ = result;
     });
 
-    if (settings.getQueryParameters().get('checkForUpdate') == 'true') {
+    if (Router.getInstance().getQueryParameters().get('checkForUpdate') ===
+        'true') {
       this.onCheckUpdatesClick_();
     }
   },
 
   /**
-   * @param {!settings.Route} newRoute
-   * @param {settings.Route} oldRoute
+   * @param {!Route} newRoute
+   * @param {Route} oldRoute
    */
-  currentRouteChanged: function(newRoute, oldRoute) {
-    settings.MainPageBehavior.currentRouteChanged.call(
-        this, newRoute, oldRoute);
+  currentRouteChanged(newRoute, oldRoute) {
+    MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
+
+    // Does not apply to this page.
+    if (newRoute !== routes.ABOUT_ABOUT) {
+      return;
+    }
+
+    this.attemptDeepLink().then(result => {
+      if (!result.deepLinkShown && result.pendingSettingId) {
+        // Only the check for OS update is expected to fail deep link when
+        // awaiting the check for update.
+        assert(
+            result.pendingSettingId ===
+            chromeos.settings.mojom.Setting.kCheckForOsUpdate);
+        this.isPendingOsUpdateDeepLink_ = true;
+      }
+    });
   },
 
-  // Override settings.MainPageBehavior method.
-  containsRoute: function(route) {
-    return !route || settings.routes.ABOUT.contains(route);
+  // Override MainPageBehavior method.
+  containsRoute(route) {
+    return !route || routes.ABOUT.contains(route);
   },
 
   /** @private */
-  startListening_: function() {
+  startListening_() {
     this.addWebUIListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshUpdateStatus();
@@ -238,10 +307,10 @@ Polymer({
    * @param {!UpdateStatusChangedEvent} event
    * @private
    */
-  onUpdateStatusChanged_: function(event) {
-    if (event.status == UpdateStatus.CHECKING) {
+  onUpdateStatusChanged_(event) {
+    if (event.status === UpdateStatus.CHECKING) {
       this.hasCheckedForUpdates_ = true;
-    } else if (event.status == UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
+    } else if (event.status === UpdateStatus.NEED_PERMISSION_TO_UPDATE) {
       this.showUpdateWarningDialog_ = true;
       this.updateInfo_ = {version: event.version, size: event.size};
     }
@@ -252,32 +321,46 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onLearnMoreClick_: function(event) {
+  onLearnMoreClick_(event) {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
   },
 
   /** @private */
-  onReleaseNotesTap_: function() {
+  onReleaseNotesTap_() {
     this.aboutBrowserProxy_.launchReleaseNotes();
   },
 
   /** @private */
-  onHelpClick_: function() {
+  onHelpClick_() {
     this.aboutBrowserProxy_.openOsHelpPage();
   },
 
   /** @private */
-  onRelaunchClick_: function() {
-    this.lifetimeBrowserProxy_.relaunch();
+  onDiagnosticsClick_() {
+    assert(this.showDiagnosticsApp_);
+    this.aboutBrowserProxy_.openDiagnostics();
+    recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
   },
 
   /** @private */
-  updateShowUpdateStatus_: function() {
-    // Do not show the "updated" status if we haven't checked yet or the update
-    // warning dialog is shown to user.
-    if (this.currentUpdateStatusEvent_.status == UpdateStatus.UPDATED &&
+  onRelaunchClick_() {
+    recordSettingChange();
+    LifetimeBrowserProxyImpl.getInstance().relaunch();
+  },
+
+  /** @private */
+  updateShowUpdateStatus_() {
+    // Do not show the "updated" status or error states from a previous update
+    // attempt if we haven't checked yet or the update warning dialog is shown
+    // to user.
+    if ((this.currentUpdateStatusEvent_.status === UpdateStatus.UPDATED ||
+         this.currentUpdateStatusEvent_.status ===
+             UpdateStatus.FAILED_DOWNLOAD ||
+         this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED_HTTP ||
+         this.currentUpdateStatusEvent_.status ===
+             UpdateStatus.DISABLED_BY_ADMIN) &&
         (!this.hasCheckedForUpdates_ || this.showUpdateWarningDialog_)) {
       this.showUpdateStatus_ = false;
       return;
@@ -290,7 +373,7 @@ Polymer({
     }
 
     this.showUpdateStatus_ =
-        this.currentUpdateStatusEvent_.status != UpdateStatus.DISABLED;
+        this.currentUpdateStatusEvent_.status !== UpdateStatus.DISABLED;
   },
 
   /**
@@ -298,36 +381,47 @@ Polymer({
    * container displays an unwanted border (see separator class).
    * @private
    */
-  updateShowButtonContainer_: function() {
-    this.showButtonContainer_ = this.showRelaunch_ ||
-        this.showRelaunchAndPowerwash_ || this.showCheckUpdates_;
+  updateShowButtonContainer_() {
+    this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_;
+
+    // Check if we have yet to focus the check for update button.
+    if (!this.isPendingOsUpdateDeepLink_) {
+      return;
+    }
+
+    this.showDeepLink(chromeos.settings.mojom.Setting.kCheckForOsUpdate)
+        .then(result => {
+          if (result.deepLinkShown) {
+            this.isPendingOsUpdateDeepLink_ = false;
+          }
+        });
   },
 
   /** @private */
-  updateShowRelaunch_: function() {
-    this.showRelaunch_ =
-        this.checkStatus_(UpdateStatus.NEARLY_UPDATED) && !this.isRollback_();
+  computeShowRelaunch_() {
+    return this.checkStatus_(UpdateStatus.NEARLY_UPDATED);
   },
 
   /**
    * @return {boolean}
    * @private
    */
-  shouldShowLearnMoreLink_: function() {
-    return this.currentUpdateStatusEvent_.status == UpdateStatus.FAILED;
+  shouldShowLearnMoreLink_() {
+    return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
   },
+
 
   /**
    * @return {string}
    * @private
    */
-  getUpdateStatusMessage_: function() {
+  getUpdateStatusMessage_() {
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.NEED_PERMISSION_TO_UPDATE:
         return this.i18nAdvanced('aboutUpgradeCheckStarted');
       case UpdateStatus.NEARLY_UPDATED:
-        if (this.currentChannel_ != this.targetChannel_) {
+        if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeSuccessChannelSwitch');
         }
         if (this.currentUpdateStatusEvent_.rollback) {
@@ -337,14 +431,14 @@ Polymer({
       case UpdateStatus.UPDATED:
         return this.i18nAdvanced('aboutUpgradeUpToDate');
       case UpdateStatus.UPDATING:
-        assert(typeof this.currentUpdateStatusEvent_.progress == 'number');
+        assert(typeof this.currentUpdateStatusEvent_.progress === 'number');
         const progressPercent = this.currentUpdateStatusEvent_.progress + '%';
 
-        if (this.currentChannel_ != this.targetChannel_) {
+        if (this.currentChannel_ !== this.targetChannel_) {
           return this.i18nAdvanced('aboutUpgradeUpdatingChannelSwitch', {
             substitutions: [
               this.i18nAdvanced(
-                  settings.browserChannelToI18nId(this.targetChannel_)),
+                  browserChannelToI18nId(this.targetChannel_, this.isLts_)),
               progressPercent
             ]
           });
@@ -365,6 +459,12 @@ Polymer({
           });
         }
         return this.i18nAdvanced('aboutUpgradeUpdating');
+      case UpdateStatus.FAILED_HTTP:
+        return this.i18nAdvanced('aboutUpgradeTryAgain');
+      case UpdateStatus.FAILED_DOWNLOAD:
+        return this.i18nAdvanced('aboutUpgradeDownloadError');
+      case UpdateStatus.DISABLED_BY_ADMIN:
+        return this.i18nAdvanced('aboutUpgradeAdministrator');
       default:
         function formatMessage(msg) {
           return parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
@@ -387,7 +487,7 @@ Polymer({
    * @return {?string}
    * @private
    */
-  getUpdateStatusIcon_: function() {
+  getUpdateStatusIcon_() {
     // If Chrome OS has reached end of life, display a special icon and
     // ignore UpdateStatus.
     if (this.hasEndOfLife_) {
@@ -397,10 +497,13 @@ Polymer({
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.DISABLED_BY_ADMIN:
         return 'cr20:domain';
+      case UpdateStatus.FAILED_DOWNLOAD:
+      case UpdateStatus.FAILED_HTTP:
       case UpdateStatus.FAILED:
-        return 'cr:error';
+        return 'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
+        // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
         return 'settings:check-circle';
       default:
         return null;
@@ -411,7 +514,7 @@ Polymer({
    * @return {?string}
    * @private
    */
-  getThrobberSrcIfUpdating_: function() {
+  getThrobberSrcIfUpdating_() {
     if (this.hasEndOfLife_) {
       return null;
     }
@@ -430,12 +533,12 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  checkStatus_: function(status) {
-    return this.currentUpdateStatusEvent_.status == status;
+  checkStatus_(status) {
+    return this.currentUpdateStatusEvent_.status === status;
   },
 
   /** @private */
-  onManagementPageClick_: function() {
+  onManagementPageClick_() {
     window.open('chrome://management');
   },
 
@@ -443,52 +546,42 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isRollback_: function() {
-    assert(this.currentChannel_.length > 0);
-    assert(this.targetChannel_.length > 0);
-    if (this.currentUpdateStatusEvent_.rollback) {
-      return true;
-    }
-    // Channel switch to a more stable channel is also a rollback
-    return settings.isTargetChannelMoreStable(
-        this.currentChannel_, this.targetChannel_);
+  isPowerwash_() {
+    return this.currentUpdateStatusEvent_.powerwash;
   },
 
   /** @private */
-  onDetailedBuildInfoClick_: function() {
-    settings.navigateTo(settings.routes.DETAILED_BUILD_INFO);
-  },
-
-  /** @private */
-  onRelaunchAndPowerwashClick_: function() {
-    if (this.currentUpdateStatusEvent_.rollback) {
-      // Wipe already initiated, simply relaunch.
-      this.lifetimeBrowserProxy_.relaunch();
-    } else {
-      this.lifetimeBrowserProxy_.factoryReset(
-          /* requestTpmFirmwareUpdate= */ false);
-    }
+  onDetailedBuildInfoClick_() {
+    Router.getInstance().navigateTo(routes.DETAILED_BUILD_INFO);
   },
 
   /**
-   * @return {boolean}
+   * @return {string}
    * @private
    */
-  computeShowRelaunchAndPowerwash_: function() {
-    return this.checkStatus_(UpdateStatus.NEARLY_UPDATED) && this.isRollback_();
+  getRelaunchButtonText_() {
+    if (this.checkStatus_(UpdateStatus.NEARLY_UPDATED)) {
+      if (this.isPowerwash_()) {
+        return this.i18nAdvanced('aboutRelaunchAndPowerwash');
+      } else {
+        return this.i18nAdvanced('aboutRelaunch');
+      }
+    }
+    return '';
   },
 
   /** @private */
-  onCheckUpdatesClick_: function() {
+  onCheckUpdatesClick_() {
     this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
     this.aboutBrowserProxy_.requestUpdate();
+    this.$.updateStatusMessageInner.focus();
   },
 
   /**
    * @return {boolean}
    * @private
    */
-  computeShowCheckUpdates_: function() {
+  computeShowCheckUpdates_() {
     // Disable update button if the device is end of life.
     if (this.hasEndOfLife_) {
       return false;
@@ -498,8 +591,10 @@ Polymer({
     // update has failed. Disable it otherwise.
     const staleUpdatedStatus =
         !this.hasCheckedForUpdates_ && this.checkStatus_(UpdateStatus.UPDATED);
-
-    return staleUpdatedStatus || this.checkStatus_(UpdateStatus.FAILED);
+    return staleUpdatedStatus || this.checkStatus_(UpdateStatus.FAILED) ||
+        this.checkStatus_(UpdateStatus.FAILED_HTTP) ||
+        this.checkStatus_(UpdateStatus.FAILED_DOWNLOAD) ||
+        this.checkStatus_(UpdateStatus.DISABLED_BY_ADMIN);
   },
 
   /**
@@ -508,7 +603,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getAboutProductOsLicense_: function(showCrostiniLicense) {
+  getAboutProductOsLicense_(showCrostiniLicense) {
     return showCrostiniLicense ?
         this.i18nAdvanced('aboutProductOsWithLinuxLicense') :
         this.i18nAdvanced('aboutProductOsLicense');
@@ -518,7 +613,7 @@ Polymer({
    * @param {boolean} enabled True if Crostini is enabled.
    * @private
    */
-  handleCrostiniEnabledChanged_: function(enabled) {
+  handleCrostiniEnabledChanged_(enabled) {
     this.showCrostiniLicense_ = enabled && this.showCrostini;
   },
 
@@ -526,7 +621,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowSafetyInfo_: function() {
+  shouldShowSafetyInfo_() {
     return loadTimeData.getBoolean('shouldShowSafetyInfo');
   },
 
@@ -534,7 +629,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowRegulatoryInfo_: function() {
+  shouldShowRegulatoryInfo_() {
     return this.regulatoryInfo_ !== null;
   },
 
@@ -542,12 +637,12 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowRegulatoryOrSafetyInfo_: function() {
+  shouldShowRegulatoryOrSafetyInfo_() {
     return this.shouldShowSafetyInfo_() || this.shouldShowRegulatoryInfo_();
   },
 
   /** @private */
-  onUpdateWarningDialogClose_: function() {
+  onUpdateWarningDialogClose_() {
     this.showUpdateWarningDialog_ = false;
     // Shows 'check for updates' button in case that the user cancels the
     // dialog and then intends to check for update again.
@@ -558,22 +653,22 @@ Polymer({
    * @param {!TPMFirmwareUpdateStatusChangedEvent} event
    * @private
    */
-  onTPMFirmwareUpdateStatusChanged_: function(event) {
+  onTPMFirmwareUpdateStatusChanged_(event) {
     this.showTPMFirmwareUpdateLineItem_ = event.updateAvailable;
   },
 
   /** @private */
-  onTPMFirmwareUpdateClick_: function() {
+  onTPMFirmwareUpdateClick_() {
     this.showTPMFirmwareUpdateDialog_ = true;
   },
 
   /** @private */
-  onPowerwashDialogClose_: function() {
+  onPowerwashDialogClose_() {
     this.showTPMFirmwareUpdateDialog_ = false;
   },
 
   /** @private */
-  onProductLogoClick_: function() {
+  onProductLogoClick_() {
     this.$['product-logo'].animate(
         {
           transform: ['none', 'rotate(-10turn)'],
@@ -586,7 +681,7 @@ Polymer({
 
   // <if expr="_google_chrome">
   /** @private */
-  onReportIssueClick_: function() {
+  onReportIssueClick_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
   },
   // </if>
@@ -595,7 +690,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowIcons_: function() {
+  shouldShowIcons_() {
     if (this.hasEndOfLife_) {
       return true;
     }

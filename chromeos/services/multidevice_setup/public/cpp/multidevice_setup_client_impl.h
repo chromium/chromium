@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -19,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,22 +30,29 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetInstanceForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<MultiDeviceSetupClient> BuildInstance(
+    static std::unique_ptr<MultiDeviceSetupClient> Create(
         mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<MultiDeviceSetupClient> CreateInstance(
+        mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  MultiDeviceSetupClientImpl(const MultiDeviceSetupClientImpl&) = delete;
+  MultiDeviceSetupClientImpl& operator=(const MultiDeviceSetupClientImpl&) =
+      delete;
 
   ~MultiDeviceSetupClientImpl() override;
 
   // MultiDeviceSetupClient:
   void GetEligibleHostDevices(GetEligibleHostDevicesCallback callback) override;
   void SetHostDevice(
-      const std::string& host_device_id,
+      const std::string& host_instance_id_or_legacy_device_id,
       const std::string& auth_token,
       mojom::MultiDeviceSetup::SetHostDeviceCallback callback) override;
   void RemoveHostDevice() override;
@@ -54,7 +60,7 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   void SetFeatureEnabledState(
       mojom::Feature feature,
       bool enabled,
-      const base::Optional<std::string>& auth_token,
+      const absl::optional<std::string>& auth_token,
       mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback)
       override;
   const FeatureStatesMap& GetFeatureStates() const override;
@@ -68,7 +74,7 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   // mojom::HostStatusObserver:
   void OnHostStatusChanged(
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDevice>& host_device) override;
+      const absl::optional<multidevice::RemoteDevice>& host_device) override;
 
   // mojom::FeatureStateObserver:
   void OnFeatureStatesChanged(
@@ -100,12 +106,17 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
 
   HostStatusWithDevice host_status_with_device_;
   FeatureStatesMap feature_states_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientImpl);
 };
 
 }  // namespace multidevice_setup
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::MultiDeviceSetupClientImpl;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_MULTIDEVICE_SETUP_CLIENT_IMPL_H_

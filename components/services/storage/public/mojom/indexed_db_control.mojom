@@ -1,0 +1,94 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "components/services/storage/public/mojom/indexed_db_control_test.mojom";
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
+import "components/services/storage/public/mojom/storage_usage_info.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+
+// Recorded in histograms, so append only.
+enum ForceCloseReason {
+  FORCE_CLOSE_DELETE_ORIGIN = 0,
+  FORCE_CLOSE_BACKING_STORE_FAILURE = 1,
+  FORCE_CLOSE_INTERNALS_PAGE = 2,
+  FORCE_CLOSE_COPY_ORIGIN = 3,
+  FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
+  // Append new values here and update IDBContextForcedCloseReason in
+  // enums.xml.
+};
+
+// Communicates with IndexedDB clients about changes in IndexedDB.
+interface IndexedDBObserver {
+  // This function is called when the size of the usage for a particular
+  // `storage_key` changes (both in memory and on disk).
+  OnIndexedDBListChanged(blink.mojom.StorageKey storage_key);
+
+  // This function is called when the content of a particular object store
+  // for a particular `storage_key` has been modified.
+  OnIndexedDBContentChanged(blink.mojom.StorageKey storage_key,
+                            mojo_base.mojom.String16 database_name,
+                            mojo_base.mojom.String16 object_store_name);
+};
+
+// Controls the state of IndexedDB within a partition. This is a privileged
+// interface and must not be brokered to untrusted clients.
+//
+// Currently this is consumed and implemented in the browser process, but the
+// implementation will eventually live in the storage service which may run
+// out-of-process.
+interface IndexedDBControl {
+  // Binds an IDBFactory to the given `storage_key`.
+  BindIndexedDB(blink.mojom.StorageKey storage_key,
+                pending_receiver<blink.mojom.IDBFactory> receiver);
+
+  // Retrieves some basic usage information about the IndexedDB state. The
+  // returned array has one StorageUsageInfo per `storage_key` in the
+  // partition that has IndexedDB usage data.
+  GetUsage() => (array<StorageUsageInfo> info);
+
+  // Deletes all indexed db files for the given `storage_key`.
+  DeleteForStorageKey(blink.mojom.StorageKey storage_key) => (bool success);
+
+  // Forcibly closes all connections to all databases within the `storage_key`.
+  ForceClose(blink.mojom.StorageKey storage_key, ForceCloseReason reason) => ();
+
+  // Returns the current number of connections.
+  GetConnectionCount(blink.mojom.StorageKey storage_key) =>
+    (uint64 connection_count);
+
+  // Called by chrome://indexeddb-internals to download all of the indexeddb
+  // data for a particular `storage_key`.  This creates a zip file at
+  // `zip_path` using the temporary directory `temp_path` which needs to be
+  // cleaned up after the user downloads the file.
+  DownloadStorageKeyData(blink.mojom.StorageKey storage_key) => (
+      bool success,
+      mojo_base.mojom.FilePath temp_path,
+      mojo_base.mojom.FilePath zip_path);
+
+  // Called by chrome://indexeddb-internals to populate its page details.
+  GetAllStorageKeysDetails() => (bool incognito,
+                                 mojo_base.mojom.ListValue details);
+
+  // Disables the exit-time deletion of session-only data, so that internal
+  // restarts can preserve that data.
+  SetForceKeepSessionState();
+
+  // Adds an observer to be notified about modifications to IndexedDB.
+  AddObserver(pending_remote<IndexedDBObserver> observer);
+
+  // Applies changes to data retention policy which are relevant at shutdown.
+  // See StoragePolicyUpdate.
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
+
+  // Binds the testing interface for extra functionality only available in
+  // tests.
+  BindTestInterface(pending_receiver<IndexedDBControlTest> receiver);
+};

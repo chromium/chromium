@@ -6,11 +6,11 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/android/chrome_feature_list.h"
-#include "chrome/browser/android/explore_sites/blacklist_site_task.h"
+#include "chrome/browser/android/explore_sites/block_site_task.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/clear_activities_task.h"
 #include "chrome/browser/android/explore_sites/clear_catalog_task.h"
@@ -26,6 +26,7 @@
 #include "chrome/browser/android/explore_sites/increment_shown_count_task.h"
 #include "chrome/browser/android/explore_sites/record_site_click_task.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/offline_pages/task/task.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,10 +70,7 @@ ExploreSitesServiceImpl::~ExploreSitesServiceImpl() {}
 
 // static
 bool ExploreSitesServiceImpl::IsExploreSitesEnabled() {
-  ExploreSitesVariation variation = GetExploreSitesVariation();
-  return variation == ExploreSitesVariation::ENABLED ||
-         variation == ExploreSitesVariation::PERSONALIZED ||
-         variation == ExploreSitesVariation::MOST_LIKELY;
+  return GetExploreSitesVariation() == ExploreSitesVariation::ENABLED;
 }
 
 void ExploreSitesServiceImpl::GetCatalog(CatalogCallback callback) {
@@ -84,16 +82,6 @@ void ExploreSitesServiceImpl::GetCatalog(CatalogCallback callback) {
   task_queue_.AddTask(std::make_unique<GetCatalogTask>(
       explore_sites_store_.get(), /*update_current*/ true,
       std::move(callback)));
-}
-
-void ExploreSitesServiceImpl::GetCategoryImage(int category_id,
-                                               int pixel_size,
-                                               BitmapCallback callback) {
-  task_queue_.AddTask(std::make_unique<GetImagesTask>(
-      explore_sites_store_.get(), category_id, kFaviconsPerCategoryImage,
-      base::BindOnce(&ExploreSitesServiceImpl::ComposeCategoryImage,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     pixel_size)));
 }
 
 void ExploreSitesServiceImpl::GetSummaryImage(int pixel_size,
@@ -148,10 +136,10 @@ void ExploreSitesServiceImpl::RecordClick(const std::string& url,
       explore_sites_store_.get(), url, category_type));
 }
 
-void ExploreSitesServiceImpl::BlacklistSite(const std::string& url) {
-  // Add the url to the blacklist table in the database.
+void ExploreSitesServiceImpl::BlockSite(const std::string& url) {
+  // Add the url to the blocklist table in the database.
   task_queue_.AddTask(
-      std::make_unique<BlacklistSiteTask>(explore_sites_store_.get(), url));
+      std::make_unique<BlockSiteTask>(explore_sites_store_.get(), url));
 
   // TODO(https://crbug.com/893845): Remove cached category icon if affected.
 }
@@ -164,11 +152,6 @@ void ExploreSitesServiceImpl::ClearActivities(base::Time begin,
       base::BindOnce(
           [](base::OnceClosure callback, bool) { std::move(callback).Run(); },
           std::move(callback))));
-}
-
-void ExploreSitesServiceImpl::IncrementNtpShownCount(int category_id) {
-  task_queue_.AddTask(std::make_unique<IncrementShownCountTask>(
-      explore_sites_store_.get(), category_id));
 }
 
 void ExploreSitesServiceImpl::ClearCachedCatalogsForDebugging() {
@@ -262,7 +245,7 @@ std::unique_ptr<Catalog> ValidateCatalog(std::unique_ptr<Catalog> catalog) {
       Site* new_site = new_category->add_sites();
       new_site->Swap(&site);
 
-      // We want to use a canonicalized URL in the database so that blacklisting
+      // We want to use a canonicalized URL in the database so that blocking
       // will always work.  Typically this will cause a trailing slash to be
       // added if it's missing.
       new_site->set_site_url(url.spec());

@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEFloodElement
 
-interface SVGFEFloodElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEFloodElement : SVGElement {
 };
 
 SVGFEFloodElement includes SVGFilterPrimitiveStandardAttributes;

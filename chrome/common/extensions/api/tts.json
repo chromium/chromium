@@ -195,7 +195,7 @@
             "type": "function",
             "name": "callback",
             "optional": true,
-            "description": "Called right away, before speech finishes. Check chrome.runtime.lastError to make sure there were no errors. Use options.onEvent to get more detailed feedback.",
+            "description": "Called right away, before speech finishes. Check $(ref:runtime.lastError) to make sure there were no errors. Use options.onEvent to get more detailed feedback.",
             "parameters": []
           }
         ]

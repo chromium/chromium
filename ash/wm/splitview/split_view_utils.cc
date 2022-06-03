@@ -5,8 +5,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -33,25 +32,21 @@ namespace ash {
 
 namespace {
 
+using ::chromeos::WindowStateType;
+
 // The animation speed at which the highlights fade in or out.
-constexpr base::TimeDelta kHighlightsFadeInOut =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kHighlightsFadeInOut = base::Milliseconds(250);
 // The animation speed which the other highlight fades in or out.
-constexpr base::TimeDelta kOtherFadeInOut =
-    base::TimeDelta::FromMilliseconds(133);
+constexpr base::TimeDelta kOtherFadeInOut = base::Milliseconds(133);
 // The delay before the other highlight starts fading in.
-constexpr base::TimeDelta kOtherFadeInDelay =
-    base::TimeDelta::FromMilliseconds(117);
+constexpr base::TimeDelta kOtherFadeInDelay = base::Milliseconds(117);
 // The animation speed at which the preview area fades out (when you snap a
 // window).
-constexpr base::TimeDelta kPreviewAreaFadeOut =
-    base::TimeDelta::FromMilliseconds(67);
+constexpr base::TimeDelta kPreviewAreaFadeOut = base::Milliseconds(67);
 // The time duration for the indicator label opacity animations.
-constexpr base::TimeDelta kLabelAnimation =
-    base::TimeDelta::FromMilliseconds(83);
+constexpr base::TimeDelta kLabelAnimation = base::Milliseconds(83);
 // The delay before the indicator labels start fading in.
-constexpr base::TimeDelta kLabelAnimationDelay =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
 // Toast data.
 constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
@@ -67,6 +62,7 @@ void GetAnimationValuesForType(
   *out_preemption_strategy = ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET;
   switch (type) {
     case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN:
+    case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN_CANNOT_SNAP:
     case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_IN:
     case SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_IN:
@@ -81,6 +77,7 @@ void GetAnimationValuesForType(
       *out_tween_type = gfx::Tween::FAST_OUT_SLOW_IN;
       return;
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN:
+    case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN_CANNOT_SNAP:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_IN:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_IN:
       *out_delay = kOtherFadeInDelay;
@@ -138,7 +135,7 @@ void ApplyAnimationSettings(
 }
 
 // Returns BubbleDialogDelegateView if |transient_window| is a bubble dialog.
-views::BubbleDialogDelegateView* AsBubbleDialogDelegate(
+views::BubbleDialogDelegate* AsBubbleDialogDelegate(
     aura::Window* transient_window) {
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(transient_window);
@@ -173,7 +170,7 @@ void WindowTransformAnimationObserver::OnImplicitAnimationsCompleted() {
        ::wm::TransientWindowManager::GetOrCreate(window_)
            ->transient_children()) {
     // For now we only care about bubble dialog type transient children.
-    views::BubbleDialogDelegateView* bubble_delegate_view =
+    views::BubbleDialogDelegate* bubble_delegate_view =
         AsBubbleDialogDelegate(transient_window);
     if (bubble_delegate_view)
       bubble_delegate_view->OnAnchorBoundsChanged();
@@ -200,11 +197,21 @@ void DoSplitviewOpacityAnimation(ui::Layer* layer,
       target_opacity = 0.f;
       break;
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_IN:
-      target_opacity = kPreviewAreaHighlightOpacity;
+      target_opacity = features::IsDarkLightModeEnabled()
+                           ? kDarkLightPreviewAreaHighlightOpacity
+                           : kPreviewAreaHighlightOpacity;
       break;
     case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN:
-      target_opacity = kHighlightOpacity;
+      target_opacity = features::IsDarkLightModeEnabled()
+                           ? kDarkLightHighlightOpacity
+                           : kHighlightOpacity;
+      break;
+    case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN_CANNOT_SNAP:
+    case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN_CANNOT_SNAP:
+      target_opacity = features::IsDarkLightModeEnabled()
+                           ? kDarkLightHighlightCannotSnapOpacity
+                           : kHighlightOpacity;
       break;
     case SPLITVIEW_ANIMATION_OVERVIEW_ITEM_FADE_IN:
     case SPLITVIEW_ANIMATION_TEXT_FADE_IN:
@@ -238,18 +245,14 @@ void DoSplitviewTransformAnimation(
     ui::Layer* layer,
     SplitviewAnimationType type,
     const gfx::Transform& target_transform,
-    std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer) {
+    const std::vector<ui::ImplicitAnimationObserver*>& animation_observers) {
   if (layer->GetTargetTransform() == target_transform)
     return;
 
   switch (type) {
-    case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_IN:
-    case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_OUT:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_IN:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_OUT:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_NIX_INSET:
-    case SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN:
-    case SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_OUT:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_TEXT_SLIDE_IN:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_TEXT_SLIDE_OUT:
     case SPLITVIEW_ANIMATION_SET_WINDOW_TRANSFORM:
@@ -268,12 +271,48 @@ void DoSplitviewTransformAnimation(
 
   ui::LayerAnimator* animator = layer->GetAnimator();
   ui::ScopedLayerAnimationSettings settings(animator);
-  if (animation_observer.get())
-    settings.AddObserver(animation_observer.release());
+  for (ui::ImplicitAnimationObserver* animation_observer : animation_observers)
+    settings.AddObserver(animation_observer);
   ApplyAnimationSettings(&settings, animator,
                          ui::LayerAnimationElement::TRANSFORM, duration, tween,
                          preemption_strategy, delay);
   layer->SetTransform(target_transform);
+}
+
+void DoSplitviewClipRectAnimation(
+    ui::Layer* layer,
+    SplitviewAnimationType type,
+    const gfx::Rect& target_clip_rect,
+    std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer) {
+  ui::LayerAnimator* animator = layer->GetAnimator();
+  if (animator->GetTargetClipRect() == target_clip_rect)
+    return;
+
+  switch (type) {
+    case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_IN:
+    case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_OUT:
+    case SPLITVIEW_ANIMATION_PREVIEW_AREA_NIX_INSET:
+    case SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN:
+    case SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_OUT:
+      break;
+    default:
+      NOTREACHED() << "Not a valid split view clip rect type.";
+      return;
+  }
+
+  base::TimeDelta duration;
+  gfx::Tween::Type tween;
+  ui::LayerAnimator::PreemptionStrategy preemption_strategy;
+  base::TimeDelta delay;
+  GetAnimationValuesForType(type, &duration, &tween, &preemption_strategy,
+                            &delay);
+
+  ui::ScopedLayerAnimationSettings settings(animator);
+  if (animation_observer.get())
+    settings.AddObserver(animation_observer.release());
+  ApplyAnimationSettings(&settings, animator, ui::LayerAnimationElement::CLIP,
+                         duration, tween, preemption_strategy, delay);
+  layer->SetClipRect(target_clip_rect);
 }
 
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
@@ -310,14 +349,14 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
       }
 
       switch (WindowState::Get(window)->GetStateType()) {
-        case WindowStateType::kLeftSnapped:
+        case WindowStateType::kPrimarySnapped:
           if (!split_view_controller->left_window()) {
             split_view_controller->SnapWindow(window,
                                               SplitViewController::LEFT);
           }
           break;
 
-        case WindowStateType::kRightSnapped:
+        case WindowStateType::kSecondarySnapped:
           if (!split_view_controller->right_window()) {
             split_view_controller->SnapWindow(window,
                                               SplitViewController::RIGHT);
@@ -340,91 +379,129 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   SplitViewController::State state = split_view_controller->state();
   if (state == SplitViewController::State::kLeftSnapped ||
       state == SplitViewController::State::kRightSnapped) {
-    overview_controller->StartOverview();
+    overview_controller->StartOverview(OverviewStartAction::kSplitView);
   } else {
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::kSplitView);
   }
-}
-
-bool IsClamshellSplitViewModeEnabled() {
-  return base::FeatureList::IsEnabled(
-      ash::features::kDragToSnapInClamshellMode);
-}
-
-bool AreMultiDisplayOverviewAndSplitViewEnabled() {
-  return base::FeatureList::IsEnabled(
-      ash::features::kMultiDisplayOverviewAndSplitView);
 }
 
 bool ShouldAllowSplitView() {
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !IsClamshellSplitViewModeEnabled()) {
-    return false;
-  }
-
   // Don't allow split view if we're in pinned mode.
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     return false;
 
   // TODO(crubg.com/853588): Disallow window dragging and split screen while
   // ChromeVox is on until they are in a usable state.
-  if (Shell::Get()->accessibility_controller()->spoken_feedback_enabled())
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     return false;
 
   return true;
 }
 
 void ShowAppCannotSnapToast() {
-  ash::Shell::Get()->toast_manager()->Show(ash::ToastData(
+  Shell::Get()->toast_manager()->Show(ToastData(
       kAppCannotSnapToastId,
       l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
-      kAppCannotSnapToastDurationMs, base::Optional<base::string16>()));
+      kAppCannotSnapToastDurationMs, absl::optional<std::u16string>()));
+}
+
+SplitViewController::SnapPosition GetSnapPositionForLocation(
+    aura::Window* root_window,
+    const gfx::Point& location_in_screen,
+    const absl::optional<gfx::Point>& initial_location_in_screen,
+    int snap_distance_from_edge,
+    int minimum_drag_distance,
+    int horizontal_edge_inset,
+    int vertical_edge_inset) {
+  if (!ShouldAllowSplitView())
+    return SplitViewController::NONE;
+
+  const bool horizontal = SplitViewController::IsLayoutHorizontal(root_window);
+  const bool right_side_up = SplitViewController::IsLayoutPrimary(root_window);
+
+  // Check to see if the current event location |location_in_screen| is within
+  // the drag indicators bounds.
+  const gfx::Rect work_area(
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window));
+  SplitViewController::SnapPosition snap_position = SplitViewController::NONE;
+  if (horizontal) {
+    gfx::Rect area(work_area);
+    area.Inset(horizontal_edge_inset, 0);
+    if (location_in_screen.x() <= area.x()) {
+      snap_position = right_side_up ? SplitViewController::LEFT
+                                    : SplitViewController::RIGHT;
+    } else if (location_in_screen.x() >= area.right() - 1) {
+      snap_position = right_side_up ? SplitViewController::RIGHT
+                                    : SplitViewController::LEFT;
+    }
+  } else {
+    gfx::Rect area(work_area);
+    area.Inset(0, vertical_edge_inset);
+    if (location_in_screen.y() <= area.y()) {
+      snap_position = right_side_up ? SplitViewController::LEFT
+                                    : SplitViewController::RIGHT;
+    } else if (location_in_screen.y() >= area.bottom() - 1) {
+      snap_position = right_side_up ? SplitViewController::RIGHT
+                                    : SplitViewController::LEFT;
+    }
+  }
+
+  if (snap_position == SplitViewController::NONE)
+    return snap_position;
+
+  // To avoid accidental snap, the window needs to be dragged inside
+  // |snap_distance_from_edge| from edge or dragged toward the edge for at least
+  // |minimum_drag_distance| until it's dragged into |horizontal_edge_inset| or
+  // |vertical_edge_inset| region.
+  // The window should always be snapped if inside |snap_distance_from_edge|
+  // from edge.
+  bool drag_end_near_edge = false;
+  gfx::Rect area(work_area);
+  area.Inset(snap_distance_from_edge, snap_distance_from_edge);
+  if (horizontal ? location_in_screen.x() < area.x() ||
+                       location_in_screen.x() > area.right()
+                 : location_in_screen.y() < area.y() ||
+                       location_in_screen.y() > area.bottom()) {
+    drag_end_near_edge = true;
+  }
+
+  if (!drag_end_near_edge && initial_location_in_screen) {
+    // Check how far the window has been dragged.
+    const auto distance = location_in_screen - *initial_location_in_screen;
+    const int primary_axis_distance = horizontal ? distance.x() : distance.y();
+    const bool is_left_or_top =
+        SplitViewController::IsPhysicalLeftOrTop(snap_position, root_window);
+    if ((is_left_or_top && primary_axis_distance > -minimum_drag_distance) ||
+        (!is_left_or_top && primary_axis_distance < minimum_drag_distance)) {
+      snap_position = SplitViewController::NONE;
+    }
+  }
+
+  return snap_position;
 }
 
 SplitViewController::SnapPosition GetSnapPosition(
     aura::Window* root_window,
     aura::Window* window,
-    const gfx::Point& location_in_screen) {
-  if (!ShouldAllowSplitView() ||
-      !SplitViewController::Get(root_window)->CanSnapWindow(window)) {
+    const gfx::Point& location_in_screen,
+    const gfx::Point& initial_location_in_screen,
+    int snap_distance_from_edge,
+    int minimum_drag_distance,
+    int horizontal_edge_inset,
+    int vertical_edge_inset) {
+  if (!SplitViewController::Get(root_window)->CanSnapWindow(window)) {
     return SplitViewController::NONE;
   }
 
-  const bool horizontal = SplitViewController::IsLayoutHorizontal();
-  const bool right_side_up = SplitViewController::IsLayoutRightSideUp();
+  absl::optional<gfx::Point> initial_location_in_current_screen = absl::nullopt;
+  if (window->GetRootWindow() == root_window)
+    initial_location_in_current_screen = initial_location_in_screen;
 
-  // Check to see if the current event location |location_in_screen|is within
-  // the drag indicators bounds.
-  gfx::Rect area(
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window));
-  if (horizontal) {
-    const int screen_edge_inset_for_drag =
-        area.width() * kHighlightScreenPrimaryAxisRatio +
-        kHighlightScreenEdgePaddingDp;
-    area.Inset(screen_edge_inset_for_drag, 0);
-    if (location_in_screen.x() <= area.x()) {
-      return right_side_up ? SplitViewController::LEFT
-                           : SplitViewController::RIGHT;
-    }
-    if (location_in_screen.x() >= area.right() - 1) {
-      return right_side_up ? SplitViewController::RIGHT
-                           : SplitViewController::LEFT;
-    }
-    return SplitViewController::NONE;
-  }
-
-  const int screen_edge_inset_for_drag =
-      area.height() * kHighlightScreenPrimaryAxisRatio +
-      kHighlightScreenEdgePaddingDp;
-  area.Inset(0, screen_edge_inset_for_drag);
-  if (location_in_screen.y() <= area.y())
-    return right_side_up ? SplitViewController::LEFT
-                         : SplitViewController::RIGHT;
-  if (location_in_screen.y() >= area.bottom() - 1)
-    return right_side_up ? SplitViewController::RIGHT
-                         : SplitViewController::LEFT;
-  return SplitViewController::NONE;
+  return GetSnapPositionForLocation(
+      root_window, location_in_screen, initial_location_in_current_screen,
+      snap_distance_from_edge, minimum_drag_distance, horizontal_edge_inset,
+      vertical_edge_inset);
 }
 
 }  // namespace ash

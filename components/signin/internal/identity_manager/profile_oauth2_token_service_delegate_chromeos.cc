@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "net/base/backoff_entry.h"
@@ -43,18 +45,17 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 // |account_keys| is the set of accounts that need to be translated.
 // |account_tracker_service| is an unowned pointer.
 std::vector<CoreAccountId> GetOAuthAccountIdsFromAccountKeys(
-    const std::set<chromeos::AccountManager::AccountKey>& account_keys,
+    const std::set<account_manager::AccountKey>& account_keys,
     const AccountTrackerService* const account_tracker_service) {
   std::vector<CoreAccountId> accounts;
   for (auto& account_key : account_keys) {
-    if (account_key.account_type !=
-        chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+    if (account_key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     CoreAccountId account_id =
         account_tracker_service
-            ->FindAccountInfoByGaiaId(account_key.id /* gaia_id */)
+            ->FindAccountInfoByGaiaId(account_key.id() /* gaia_id */)
             .account_id;
     DCHECK(!account_id.empty());
     accounts.emplace_back(account_id);
@@ -63,17 +64,87 @@ std::vector<CoreAccountId> GetOAuthAccountIdsFromAccountKeys(
   return accounts;
 }
 
+// Helper class to request persistent errors for multiple accounts.
+// See `GetErrorsForMultipleAccounts` for details.
+class PersistentErrorsHelper : public base::RefCounted<PersistentErrorsHelper> {
+ public:
+  using AccountToErrorMap =
+      std::map<account_manager::AccountKey, GoogleServiceAuthError>;
+
+  // Do not instantiate manually - use `GetErrorsForMultipleAccounts` instead.
+  // Made public for MakeRefCounted only.
+  PersistentErrorsHelper(
+      int outstanding_requests,
+      base::OnceCallback<void(const AccountToErrorMap&)> callback)
+      : outstanding_requests_(outstanding_requests),
+        callback_(std::move(callback)) {}
+
+  PersistentErrorsHelper(const PersistentErrorsHelper&) = delete;
+  PersistentErrorsHelper& operator=(const PersistentErrorsHelper&) = delete;
+
+  // Asynchronously gets persistent errors for `accounts` from
+  // `account_manager_facade` and passes them to `callback`.
+  //
+  // Note: If `account_manager_facade` doesn't call one of the callbacks passed
+  // to `AccountManagerFacade::GetPersistentErrorForAccount` (for example, if
+  // the Mojo connection is interrupted), then `callback` will not be invoked.
+  static void GetErrorsForMultipleAccounts(
+      account_manager::AccountManagerFacade* account_manager_facade,
+      const std::vector<account_manager::Account>& accounts,
+      base::OnceCallback<void(const AccountToErrorMap&)> callback) {
+    DCHECK(account_manager_facade);
+    if (accounts.empty()) {
+      // No accounts to get error status for, run callback immediately.
+      std::move(callback).Run(
+          std::map<account_manager::AccountKey, GoogleServiceAuthError>());
+      return;
+    }
+
+    // The ownership of this object is shared between callbacks passed to
+    // `AccountManagerFacade::GetPersistentErrorForAccount`.
+    scoped_refptr<PersistentErrorsHelper> shared_state =
+        base::MakeRefCounted<PersistentErrorsHelper>(accounts.size(),
+                                                     std::move(callback));
+    // Request error statuses for all accounts.
+    for (const auto& account : accounts) {
+      account_manager_facade->GetPersistentErrorForAccount(
+          account.key,
+          base::BindOnce(
+              &PersistentErrorsHelper::OnGetPersistentErrorForAccount,
+              shared_state, account.key));
+    }
+  }
+
+ private:
+  friend base::RefCounted<PersistentErrorsHelper>;
+
+  ~PersistentErrorsHelper() = default;
+
+  void OnGetPersistentErrorForAccount(
+      const account_manager::AccountKey& account,
+      const GoogleServiceAuthError& error) {
+    DCHECK_GT(outstanding_requests_, 0);
+    persistent_errors_.emplace(account, error);
+    if (--outstanding_requests_ == 0)
+      std::move(callback_).Run(persistent_errors_);
+  }
+
+  AccountToErrorMap persistent_errors_;
+  int outstanding_requests_;
+  base::OnceCallback<void(const AccountToErrorMap&)> callback_;
+};
+
 }  // namespace
 
 ProfileOAuth2TokenServiceDelegateChromeOS::
     ProfileOAuth2TokenServiceDelegateChromeOS(
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
-        chromeos::AccountManager* account_manager,
+        account_manager::AccountManagerFacade* account_manager_facade,
         bool is_regular_profile)
     : account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
-      account_manager_(account_manager),
+      account_manager_facade_(account_manager_facade),
       backoff_entry_(&kBackoffPolicy),
       backoff_error_(GoogleServiceAuthError::NONE),
       is_regular_profile_(is_regular_profile),
@@ -83,7 +154,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
 
 ProfileOAuth2TokenServiceDelegateChromeOS::
     ~ProfileOAuth2TokenServiceDelegateChromeOS() {
-  account_manager_->RemoveObserver(this);
+  account_manager_facade_->RemoveObserver(this);
   network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
@@ -119,12 +190,11 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
         consumer, backoff_error_);
   }
 
-  return account_manager_->CreateAccessTokenFetcher(
-      chromeos::AccountManager::AccountKey{
+  return account_manager_facade_->CreateAccessTokenFetcher(
+      account_manager::AccountKey{
           account_tracker_service_->GetAccountInfo(account_id).gaia,
-          chromeos::account_manager::AccountType::
-              ACCOUNT_TYPE_GAIA} /* account_key */,
-      url_loader_factory, consumer);
+          account_manager::AccountType::kGaia} /* account_key */,
+      consumer->GetConsumerName(), consumer);
 }
 
 // Note: This method should use the same logic for filtering accounts as
@@ -148,6 +218,13 @@ bool ProfileOAuth2TokenServiceDelegateChromeOS::RefreshTokenIsAvailable(
 void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
     const CoreAccountId& account_id,
     const GoogleServiceAuthError& error) {
+  UpdateAuthErrorInternal(account_id, error, /*fire_auth_error_changed=*/true);
+}
+
+void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthErrorInternal(
+    const CoreAccountId& account_id,
+    const GoogleServiceAuthError& error,
+    bool fire_auth_error_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   backoff_entry_.InformOfRequest(!error.IsTransientError());
@@ -166,11 +243,15 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
       errors_.erase(it);
     else
       it->second.last_auth_error = error;
-    FireAuthErrorChanged(account_id, error);
+    if (fire_auth_error_changed) {
+      FireAuthErrorChanged(account_id, error);
+    }
   } else if (error.state() != GoogleServiceAuthError::NONE) {
     // Add a new error.
     errors_.emplace(account_id, AccountErrorStatus{error});
-    FireAuthErrorChanged(account_id, error);
+    if (fire_auth_error_changed) {
+      FireAuthErrorChanged(account_id, error);
+    }
   }
 }
 
@@ -225,9 +306,9 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
     return;
   }
 
-  DCHECK(account_manager_);
-  account_manager_->AddObserver(this);
-  account_manager_->GetAccounts(
+  DCHECK(account_manager_facade_);
+  account_manager_facade_->AddObserver(this);
+  account_manager_facade_->GetAccounts(
       base::BindOnce(&ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts,
                      weak_factory_.GetWeakPtr()));
 }
@@ -235,78 +316,30 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
 void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
-  // This API could have been called for upserting the Device/Primary
-  // |account_id| or a Secondary |account_id|.
-
-  // Account insertion:
-  // Device Account insertion on Chrome OS happens as a 2 step process:
-  // 1. The account is inserted into PrimaryAccountManager /
-  // AccountTrackerService, via IdentityManager, with a valid Gaia id and email
-  // but an invalid refresh token.
-  // 2. This API is called to update the aforementioned account with a valid
-  // refresh token.
-  // Secondary Account insertion on Chrome OS happens atomically in
-  // |InlineLoginHandlerChromeOS::<anon>::SigninHelper::OnClientOAuthSuccess|.
-  // In both of the aforementioned cases, we can be sure that when this API is
-  // called, |account_id| is guaranteed to be present in
-  // |AccountTrackerService|. This guarantee is important because
-  // |ProfileOAuth2TokenServiceDelegateChromeOS| relies on
-  // |AccountTrackerService| to convert |account_id| to an email id.
-
-  // Account update:
-  // If an account is being updated, it must be present in
-  // |AccountTrackerService|.
-
-  // Hence for all cases (insertion and updates for Device and Secondary
-  // Accounts) we can be sure that |account_id| is present in
-  // |AccountTrackerService|.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(
-      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-      load_credentials_state());
-  DCHECK(!account_id.empty());
-  DCHECK(!refresh_token.empty());
-
-  ValidateAccountId(account_id);
-
-  const AccountInfo& account_info =
-      account_tracker_service_->GetAccountInfo(account_id);
-  LOG_IF(FATAL, account_info.gaia.empty())
-      << "account_id must be present in AccountTrackerService before "
-         "UpdateCredentials is called";
-
-  // Will result in chromeos::AccountManager calling
-  // |ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted|.
-  account_manager_->UpsertAccount(
-      chromeos::AccountManager::AccountKey{
-          account_info.gaia, chromeos::account_manager::AccountType::
-                                 ACCOUNT_TYPE_GAIA} /* account_key */,
-      account_info.email /* email */, refresh_token);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  NOTREACHED()
+      << "If you're seeing this error in a browser_test, consider "
+         "disabling the test while we set up the testing "
+         "infrastructure to talk to Ash in a browser_test. Also, please add a "
+         "comment / CL ref. to crbug.com/1197201 if you disable your test.";
+  // TODO(sinhak): We need a way to write accounts to Account Manager in
+  // browser_tests and lacros_chrome_browsertests. For browser_tests, the
+  // solution may be to build Account Manager in Lacros. For
+  // lacros_chrome_browsertests, we will need to talk to EngProd.
+#else
+  // UpdateCredentials should not be called on Chrome OS. Credentials should be
+  // updated through Chrome OS Account Manager.
+  NOTREACHED();
+#endif
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ProfileOAuth2TokenServiceDelegateChromeOS::GetURLLoaderFactory() const {
-  if (!is_regular_profile_) {
-    // Signin and Lock Screen profiles (non-|is_regular_profile_|s) have weird
-    // expectations around token loading. They do not have an account associated
-    // with them but expect calls like |LoadCredentials| and
-    // |GetURLLoaderFactory| to successfully complete.
-    // We *can* return a |nullptr| here because the return value of
-    // |GetURLLoaderFactory| is never used by Signin and Lock Screen profiles.
-    // They get a hard-coded |GoogleServiceAuthError::USER_NOT_SIGNED_UP| error
-    // returned to them by access token fetchers.
-    // We *must* return a |nullptr| here because otherwise |AccountManager|
-    // DCHECKs as it has not been initialized for non-|is_regular_profile_| and
-    // crashes for this weird case (Non-regular profiles expecting to act on
-    // accounts).
-    // See https://crbug.com/996615 for details.
     return nullptr;
-  }
-  return account_manager_->GetUrlLoaderFactory();
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(
-    const std::vector<chromeos::AccountManager::Account>& accounts) {
+    const std::vector<account_manager::Account>& accounts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This callback should only be triggered during |LoadCredentials|, which
@@ -314,7 +347,26 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(
   // |LOAD_CREDENTIALS_IN_PROGRESS| state.
   DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             load_credentials_state());
+  std::vector<account_manager::Account> gaia_accounts;
+  for (const auto& account : accounts) {
+    pending_accounts_.emplace(account.key, account);
+    if (account.key.account_type() == account_manager::AccountType::kGaia) {
+      gaia_accounts.emplace_back(account);
+    }
+  }
+  PersistentErrorsHelper::GetErrorsForMultipleAccounts(
+      account_manager_facade_, gaia_accounts,
+      base::BindOnce(
+          &ProfileOAuth2TokenServiceDelegateChromeOS::FinishLoadingCredentials,
+          weak_factory_.GetWeakPtr(), std::move(accounts)));
+}
 
+void ProfileOAuth2TokenServiceDelegateChromeOS::FinishLoadingCredentials(
+    const std::vector<account_manager::Account>& accounts,
+    const std::map<account_manager::AccountKey, GoogleServiceAuthError>&
+        persistent_errors) {
+  DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
+            load_credentials_state());
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   // The typical order of |ProfileOAuth2TokenServiceObserver| callbacks is:
@@ -324,19 +376,52 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(
   {
     ScopedBatchChange batch(this);
     for (const auto& account : accounts) {
-      OnTokenUpserted(account);
+      auto it = persistent_errors.find(account.key);
+      if (it != persistent_errors.end()) {
+        FinishAddingPendingAccount(account, it->second);
+      } else {
+        DCHECK_NE(account.key.account_type(),
+                  account_manager::AccountType::kGaia);
+        FinishAddingPendingAccount(account,
+                                   GoogleServiceAuthError::AuthErrorNone());
+      }
     }
   }
   FireRefreshTokensLoaded();
+
+  // The first batch of OnRefreshTokenAvailable calls should contain the list
+  // of accounts obtained from `GetAccounts`, even if there are
+  // `OnAccountUpserted` notification that were received right after calling
+  // `GetAccounts`. To avoid this `front running`, `OnAccountUpserted` won't
+  // process notifications that arrive before credentials are loaded,
+  // queueing them in `pending_accounts_` instead. Start processing these
+  // requests now.
+  //
+  // Make a copy of `pending_accounts_`, since `OnAccountUpserted` might modify
+  // that collection.
+  std::map<account_manager::AccountKey, account_manager::Account>
+      pending_accounts(pending_accounts_);
+  for (const auto& pending_account : pending_accounts) {
+    OnAccountUpserted(pending_account.second);
+  }
 }
 
-void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
-    const chromeos::AccountManager::Account& account) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void ProfileOAuth2TokenServiceDelegateChromeOS::FinishAddingPendingAccount(
+    const account_manager::Account& account,
+    const GoogleServiceAuthError& error) {
+  DCHECK_EQ(
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
+      load_credentials_state());
+  auto it = pending_accounts_.find(account.key);
+  if (it == pending_accounts_.end()) {
+    // The account was removed using |OnAccountRemoved| before we finished
+    // adding it.
+    return;
+  }
+  pending_accounts_.erase(it);
   account_keys_.insert(account.key);
 
-  if (account.key.account_type !=
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia) {
     return;
   }
 
@@ -344,27 +429,13 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
   // associated with them (https://crbug.com/933307).
   DCHECK(!account.raw_email.empty());
   CoreAccountId account_id = account_tracker_service_->SeedAccountInfo(
-      account.key.id /* gaia_id */, account.raw_email);
+      account.key.id() /* gaia_id */, account.raw_email);
   DCHECK(!account_id.empty());
 
-  // Clear any previously cached errors for |account_id|.
-  // We cannot directly use |UpdateAuthError| because it does not invoke
-  // |FireAuthErrorChanged| if |account_id|'s error state was already
-  // |GoogleServiceAuthError::State::NONE|, but |FireAuthErrorChanged| must be
-  // invoked here, regardless. See the comment above |FireAuthErrorChanged| few
-  // lines down.
-  errors_.erase(account_id);
-  GoogleServiceAuthError error(GoogleServiceAuthError::AuthErrorNone());
-
-  // However, if we know that |account_key| has a dummy token, store a
-  // persistent error against it, so that we can pre-emptively reject access
-  // token requests for it.
-  if (account_manager_->HasDummyGaiaToken(account.key)) {
-    error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-            CREDENTIALS_REJECTED_BY_CLIENT);
-    errors_.emplace(account_id, AccountErrorStatus{error});
-  }
+  // Don't call |FireAuthErrorChanged|, since we call it at the end of this
+  // function.
+  UpdateAuthErrorInternal(account_id, error,
+                          /*fire_auth_error_changed=*/false);
 
   ScopedBatchChange batch(this);
   FireRefreshTokenAvailable(account_id);
@@ -374,12 +445,46 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnTokenUpserted(
   FireAuthErrorChanged(account_id, error);
 }
 
-void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
-    const chromeos::AccountManager::Account& account) {
+void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountUpserted(
+    const account_manager::Account& account) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(
-      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-      load_credentials_state());
+  pending_accounts_.emplace(account.key, account);
+
+  if (load_credentials_state() !=
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS) {
+    // Haven't finished loading credentials yet, postpone adding the account.
+    // `FinishLoadingCredentials` will continue adding this account when the
+    // initial list of account has been processed.
+    return;
+  }
+
+  if (account.key.account_type() != account_manager::AccountType::kGaia) {
+    // Don't request pending account status for non-Gaia accounts.
+    FinishAddingPendingAccount(account,
+                               GoogleServiceAuthError::AuthErrorNone());
+    return;
+  }
+
+  account_manager_facade_->GetPersistentErrorForAccount(
+      account.key, base::BindOnce(&ProfileOAuth2TokenServiceDelegateChromeOS::
+                                      FinishAddingPendingAccount,
+                                  weak_factory_.GetWeakPtr(), account));
+}
+
+void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
+    const account_manager::Account& account) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto pending_it = pending_accounts_.find(account.key);
+  if (pending_it != pending_accounts_.end()) {
+    // The delegate hasn't yet finished processing `OnAccountUpserted` call for
+    // this account. Remove it from `pending_accounts_` to let
+    // `FinishAddingPendingAccount` know that the account was removed.
+    // Do not return yet, as the aforementioned `OnAccountUpserted` call could
+    // be for an already known account. In this case, the account should be
+    // removed and observers notified accordingly.
+    pending_accounts_.erase(pending_it);
+  }
 
   auto it = account_keys_.find(account.key);
   if (it == account_keys_.end()) {
@@ -387,15 +492,16 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
   }
   account_keys_.erase(it);
 
-  if (account.key.account_type !=
-      chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) {
+  if (account.key.account_type() != account_manager::AccountType::kGaia) {
     return;
   }
   CoreAccountId account_id =
       account_tracker_service_
-          ->FindAccountInfoByGaiaId(account.key.id /* gaia_id */)
+          ->FindAccountInfoByGaiaId(account.key.id() /* gaia_id */)
           .account_id;
   DCHECK(!account_id.empty());
+  UpdateAuthErrorInternal(account_id, GoogleServiceAuthError::AuthErrorNone(),
+                          /*fire_auth_error_changed=*/false);
 
   ScopedBatchChange batch(this);
 
@@ -406,12 +512,12 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
     const CoreAccountId& account_id) {
-  // Signing out of Chrome is not possible on Chrome OS.
+  // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
   NOTREACHED();
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {
-  // Signing out of Chrome is not possible on Chrome OS.
+  // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
   NOTREACHED();
 }
 

@@ -14,7 +14,11 @@
     "partitions": [
       {
         "name": "foo",
-        "accessible_resources": ["assets/*"]
+        "accessible_resources": [
+          "assets/foo.html",
+          "assets/test.bmp",
+          "assets/accessible.txt"
+        ]
       }
     ]
   },

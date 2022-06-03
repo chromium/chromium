@@ -1,3 +1,0 @@
-This tests window.event was kept the same when nested event handling was called. You should see 'PASS' if the test passes.
-
-PASS

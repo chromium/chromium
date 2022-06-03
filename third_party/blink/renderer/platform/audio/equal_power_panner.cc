@@ -30,11 +30,11 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
-EqualPowerPanner::EqualPowerPanner(float sample_rate)
-    : Panner(kPanningModelEqualPower) {}
+EqualPowerPanner::EqualPowerPanner(float sample_rate) {}
 
 void EqualPowerPanner::Pan(double azimuth,
                            double /*elevation*/,
@@ -65,7 +65,7 @@ void EqualPowerPanner::Pan(double azimuth,
     return;
 
   // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = clampTo(azimuth, -180.0, 180.0);
+  azimuth = ClampTo(azimuth, -180.0, 180.0);
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
@@ -96,8 +96,8 @@ void EqualPowerPanner::Pan(double azimuth,
     }
   }
 
-  desired_gain_l = std::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = std::sin(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 
   int n = frames_to_process;
 
@@ -136,7 +136,7 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
                                             double azimuth,
                                             int number_of_input_channels) {
   // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = clampTo(azimuth, -180.0, 180.0);
+  azimuth = ClampTo(azimuth, -180.0, 180.0);
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
@@ -165,8 +165,8 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
     }
   }
 
-  desired_gain_l = std::cos(kPiOverTwoDouble * desired_pan_position);
-  desired_gain_r = std::sin(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_l = fdlibm::cos(kPiOverTwoDouble * desired_pan_position);
+  desired_gain_r = fdlibm::sin(kPiOverTwoDouble * desired_pan_position);
 }
 
 void EqualPowerPanner::PanWithSampleAccurateValues(

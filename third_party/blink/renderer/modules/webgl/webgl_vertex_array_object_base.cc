@@ -124,7 +124,7 @@ void WebGLVertexArrayObjectBase::UnbindBuffer(WebGLBuffer* buffer) {
   UpdateAttribBufferBoundStatus();
 }
 
-void WebGLVertexArrayObjectBase::Trace(blink::Visitor* visitor) {
+void WebGLVertexArrayObjectBase::Trace(Visitor* visitor) const {
   visitor->Trace(bound_element_array_buffer_);
   visitor->Trace(array_buffer_list_);
   WebGLContextObject::Trace(visitor);

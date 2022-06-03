@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_REGION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_REGION_H_
 
+#include "base/dcheck_is_on.h"
 #include "cc/base/region.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -66,14 +67,18 @@ class PLATFORM_EXPORT Region {
   // Returns true if the query region is a subset of this region.
   bool Contains(const Region&) const;
 
-  bool Contains(const IntPoint&) const;
+  bool Contains(const gfx::Point&) const;
 
   // Returns true if the query region intersects any part of this region.
   bool Intersects(const Region&) const;
 
   uint64_t Area() const;
 
-#ifndef NDEBUG
+  wtf_size_t Complexity() const {
+    return shape_.SpansSize() + shape_.SegmentsSize();
+  }
+
+#if DCHECK_IS_ON()
   void Dump() const;
 #endif
 
@@ -130,7 +135,7 @@ class PLATFORM_EXPORT Region {
     static bool CompareShapes(const Shape& shape1, const Shape& shape2);
     void TrimCapacities();
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
     void Dump() const;
 #endif
 
@@ -192,7 +197,7 @@ static inline cc::Region RegionToCCRegion(const Region& in_region) {
   Vector<IntRect> rects = in_region.Rects();
   cc::Region out_region;
   for (const IntRect& r : rects)
-    out_region.Union(gfx::Rect(r.X(), r.Y(), r.Width(), r.Height()));
+    out_region.Union(gfx::Rect(r.x(), r.y(), r.width(), r.height()));
   return out_region;
 }
 

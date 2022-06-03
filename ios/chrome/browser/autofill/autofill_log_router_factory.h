@@ -9,9 +9,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 
 namespace autofill {
 
@@ -22,9 +20,12 @@ class LogRouter;
 class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
   static autofill::LogRouter* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   static AutofillLogRouterFactory* GetInstance();
+
+  AutofillLogRouterFactory(const AutofillLogRouterFactory&) = delete;
+  AutofillLogRouterFactory& operator=(const AutofillLogRouterFactory&) = delete;
 
  private:
   friend class base::NoDestructor<AutofillLogRouterFactory>;
@@ -35,8 +36,6 @@ class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillLogRouterFactory);
 };
 
 }  // namespace autofill

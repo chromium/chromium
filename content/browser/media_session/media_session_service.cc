@@ -4,41 +4,79 @@
 
 #include "content/public/browser/media_session_service.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/media_session/media_session_service.h"
+#include "services/media_session/media_session_service_impl.h"
 #include "services/media_session/public/cpp/features.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#include "services/media_session/public/cpp/media_session_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace content {
 
-media_session::mojom::MediaSessionService& GetMediaSessionService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace {
 
-  // NOTE: We use sequence-local storage here strictly to limit the lifetime of
-  // this Remote to that of the UI-thread sequence. This ensures that it doesn't
-  // persist when the task environment is torn down and reinitialized e.g.
-  // between unit tests.
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      mojo::Remote<media_session::mojom::MediaSessionService>>>
-      remote_slot;
-  auto& remote = remote_slot->GetOrCreateValue();
-  if (!remote) {
-    if (base::FeatureList::IsEnabled(
-            media_session::features::kMediaSessionService)) {
-      static base::NoDestructor<
-          std::unique_ptr<media_session::MediaSessionService>>
-          service;
-      *service = std::make_unique<media_session::MediaSessionService>(
-          remote.BindNewPipeAndPassReceiver());
-    } else {
-      // If the service is not enabled, bind to a disconnected pipe.
-      ignore_result(remote.BindNewPipeAndPassReceiver());
+class LacrosMediaSessionServiceImpl
+    : public media_session::MediaSessionService {
+ public:
+  LacrosMediaSessionServiceImpl() = default;
+  ~LacrosMediaSessionServiceImpl() override = default;
+  LacrosMediaSessionServiceImpl(const LacrosMediaSessionServiceImpl&) = delete;
+  LacrosMediaSessionServiceImpl& operator=(
+      const LacrosMediaSessionServiceImpl&) = delete;
+
+  void BindAudioFocusManager(
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
+      override {
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (lacros_service && lacros_service->IsMediaSessionAudioFocusAvailable()) {
+      lacros_service->BindAudioFocusManager(std::move(receiver));
     }
   }
-  return *remote.get();
+
+  void BindAudioFocusManagerDebug(
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
+          receiver) override {
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (lacros_service &&
+        lacros_service->IsMediaSessionAudioFocusDebugAvailable()) {
+      lacros_service->BindAudioFocusManagerDebug(std::move(receiver));
+    }
+  }
+
+  void BindMediaControllerManager(
+      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
+          receiver) override {
+    auto* lacros_service = chromeos::LacrosService::Get();
+    if (lacros_service && lacros_service->IsMediaSessionControllerAvailable()) {
+      lacros_service->BindMediaControllerManager(std::move(receiver));
+    }
+  }
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+media_session::MediaSessionService& GetMediaSessionService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service && lacros_service->IsMediaSessionControllerAvailable() &&
+      lacros_service->IsMediaSessionAudioFocusDebugAvailable() &&
+      lacros_service->IsMediaSessionAudioFocusAvailable()) {
+    static base::NoDestructor<LacrosMediaSessionServiceImpl> service;
+    return *service;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  static base::NoDestructor<media_session::MediaSessionServiceImpl> service;
+  return *service;
 }
 
 }  // namespace content

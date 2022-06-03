@@ -23,7 +23,7 @@ namespace ksr = keystone_registration;
 // KSRegistration class on which to base FakeKeystoneRegistration.
 @implementation KSRegistration
 
-+ (id)registrationWithProductID:(NSString*)productID {
++ (instancetype)registrationWithProductID:(NSString*)productID {
   return nil;
 }
 
@@ -62,10 +62,8 @@ namespace ksr = keystone_registration;
 // Send the notifications that a real KeystoneGlue object would send.
 
 - (void)checkForUpdateWasUserInitiated:(BOOL)userInitiated {
-  NSNumber* yesNumber = [NSNumber numberWithBool:YES];
   NSString* statusKey = @"Status";
-  NSDictionary* dictionary = [NSDictionary dictionaryWithObject:yesNumber
-                                                         forKey:statusKey];
+  NSDictionary* dictionary = @{statusKey : @YES};
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center postNotificationName:ksr::KSRegistrationCheckForUpdateNotification
                         object:nil
@@ -97,7 +95,7 @@ namespace ksr = keystone_registration;
 
 @implementation FakeKeystoneGlue
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     // some lies
     _upToDate = YES;
@@ -123,11 +121,11 @@ namespace ksr = keystone_registration;
 
 // For mocking
 - (NSDictionary*)infoDictionary {
-  NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                     @"http://foo.bar", @"KSUpdateURL",
-                                     @"com.google.whatever", @"KSProductID",
-                                     @"0.0.0.1", @"KSVersion",
-                                     nil];
+  NSDictionary* dict = @{
+    @"KSUpdateURL" : @"http://foo.bar",
+    @"KSProductID" : @"com.google.whatever",
+    @"KSVersion" : @"0.0.0.1"
+  };
   return dict;
 }
 
@@ -156,12 +154,11 @@ namespace ksr = keystone_registration;
 - (void)fakeAboutWindowCallback:(NSNotification*)notification {
   NSDictionary* dictionary = [notification userInfo];
   AutoupdateStatus status = static_cast<AutoupdateStatus>(
-      [[dictionary objectForKey:kAutoupdateStatusStatus] intValue]);
+      [dictionary[kAutoupdateStatusStatus] intValue]);
 
   if (status == kAutoupdateAvailable) {
     _upToDate = NO;
-    _latestVersion.reset(
-        [[dictionary objectForKey:kAutoupdateStatusVersion] copy]);
+    _latestVersion.reset([dictionary[kAutoupdateStatusVersion] copy]);
   } else if (status == kAutoupdateInstallFailed) {
     _successful = NO;
     _installs = 0;
@@ -184,7 +181,8 @@ class KeystoneGlueTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(KeystoneGlueTest, BasicGlobalCreate) {
+// The test is flaky: crbug.com/1041813.
+TEST_F(KeystoneGlueTest, DISABLED_BasicGlobalCreate) {
   // Allow creation of a KeystoneGlue by mocking out a few calls
   SEL ids = @selector(infoDictionary);
   IMP oldInfoImp_ = [[KeystoneGlue class] instanceMethodForSelector:ids];

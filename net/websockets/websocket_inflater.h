@@ -29,6 +29,10 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   // |input_queue_capacity| is a capacity for each contiguous block in the
   // input queue. The input queue can grow without limit.
   WebSocketInflater(size_t input_queue_capacity, size_t output_buffer_capacity);
+
+  WebSocketInflater(const WebSocketInflater&) = delete;
+  WebSocketInflater& operator=(const WebSocketInflater&) = delete;
+
   ~WebSocketInflater();
 
   // Returns true if there is no error.
@@ -123,8 +127,6 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   std::unique_ptr<z_stream_s> stream_;
   InputQueue input_queue_;
   OutputBuffer output_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketInflater);
 };
 
 }  // namespace net

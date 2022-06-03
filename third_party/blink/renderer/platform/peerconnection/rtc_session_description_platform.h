@@ -17,13 +17,13 @@ class PLATFORM_EXPORT RTCSessionDescriptionPlatform final
  public:
   RTCSessionDescriptionPlatform(const String& type, const String& sdp);
 
-  String GetType() { return type_; }
+  String GetType() const { return type_; }
   void SetType(const String& type) { type_ = type; }
 
-  String Sdp() { return sdp_; }
+  String Sdp() const { return sdp_; }
   void SetSdp(const String& sdp) { sdp_ = sdp; }
 
-  void Trace(blink::Visitor* visitor) {}
+  void Trace(Visitor* visitor) const {}
 
  private:
   String type_;

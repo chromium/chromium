@@ -58,8 +58,8 @@ TEST_F(FileRemovalStatusUpdaterTest, Clear) {
 TEST_F(FileRemovalStatusUpdaterTest, UpdateRemovalStatus) {
   // This function uses GetRemovalStatusOfSanitizedPath to cut down on the
   // number of times it calls SanitizePath on the same paths, which is slow.
-  const base::string16 file_1_sanitized = SanitizePath(file_1_);
-  const base::string16 file_2_sanitized = SanitizePath(file_2_);
+  const std::wstring file_1_sanitized = SanitizePath(file_1_);
+  const std::wstring file_2_sanitized = SanitizePath(file_2_);
 
   // Creates a vector of all RemovalStatus enum values to improve readability
   // of loops in this test and ensure that all RemovalStatus enumerators are
@@ -117,7 +117,7 @@ TEST_F(FileRemovalStatusUpdaterTest, UpdateRemovalStatus) {
           instance_->GetAllRemovalStatuses();
       EXPECT_EQ(2U, all_statuses.size());
       for (const auto& path_and_status : all_statuses) {
-        base::string16 sanitized_path = path_and_status.first;
+        std::wstring sanitized_path = path_and_status.first;
         FileRemovalStatusUpdater::FileRemovalStatus status =
             path_and_status.second;
         EXPECT_EQ(instance_->GetRemovalStatusOfSanitizedPath(sanitized_path),
@@ -193,12 +193,12 @@ TEST_F(FileRemovalStatusUpdaterTest, PathSanitization) {
 
   // Path should be accessible with any capitalization, sanitized or
   // unsanitized.
-  base::string16 lowercase_path = base::ToLowerASCII(path.value());
+  std::wstring lowercase_path = base::ToLowerASCII(path.value());
   EXPECT_EQ(REMOVAL_STATUS_REMOVED, instance_->GetRemovalStatus(path));
   EXPECT_EQ(REMOVAL_STATUS_REMOVED,
             instance_->GetRemovalStatus(base::FilePath(lowercase_path)));
 
-  base::string16 sanitized_path = SanitizePath(path);
+  std::wstring sanitized_path = SanitizePath(path);
   EXPECT_EQ(REMOVAL_STATUS_REMOVED,
             instance_->GetRemovalStatusOfSanitizedPath(sanitized_path));
 

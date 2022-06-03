@@ -57,11 +57,11 @@ TEST(HttpRequestHeaders, SetHeaderTwiceCaseInsensitive) {
 
 TEST(HttpRequestHeaders, SetHeaderTwiceSamePrefix) {
   HttpRequestHeaders headers;
-  headers.SetHeader("FooBar", "smokes");
-  headers.SetHeader("Foo", "crack");
-  EXPECT_EQ("FooBar: smokes\r\nFoo: crack\r\n\r\n", headers.ToString());
+  headers.SetHeader("FooBar", "baz");
+  headers.SetHeader("Foo", "qux");
+  EXPECT_EQ("FooBar: baz\r\nFoo: qux\r\n\r\n", headers.ToString());
   const HttpRequestHeaders& headers_ref = headers;
-  EXPECT_EQ("FooBar: smokes\r\nFoo: crack\r\n\r\n", headers_ref.ToString());
+  EXPECT_EQ("FooBar: baz\r\nFoo: qux\r\n\r\n", headers_ref.ToString());
 }
 
 TEST(HttpRequestHeaders, SetEmptyHeader) {

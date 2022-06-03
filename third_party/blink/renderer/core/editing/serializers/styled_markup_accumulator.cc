@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -55,8 +56,8 @@ StyledMarkupAccumulator::StyledMarkupAccumulator(
     Document* document,
     const CreateMarkupOptions& options)
     : formatter_(options.ShouldResolveURLs(),
-                 document->IsHTMLDocument() ? SerializationType::kHTML
-                                            : SerializationType::kXML),
+                 IsA<HTMLDocument>(document) ? SerializationType::kHTML
+                                             : SerializationType::kXML),
       start_(start),
       end_(end),
       document_(document),
@@ -90,7 +91,8 @@ void StyledMarkupAccumulator::AppendText(Text& text) {
     }
   }
   MarkupFormatter::AppendCharactersReplacingEntities(
-      result_, str, start, length, formatter_.EntityMaskForText(text));
+      result_, StringView(str, start, length),
+      formatter_.EntityMaskForText(text));
 }
 
 void StyledMarkupAccumulator::AppendTextWithInlineStyle(
@@ -107,7 +109,7 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
 
     result_.Append("<span style=\"");
     MarkupFormatter::AppendAttributeValue(
-        result_, inline_style->Style()->AsText(), document_->IsHTMLDocument());
+        result_, inline_style->Style()->AsText(), IsA<HTMLDocument>(document_));
     result_.Append("\">");
   }
   if (!ShouldAnnotate()) {
@@ -118,8 +120,8 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
     String content =
         use_rendered_text ? RenderedText(text) : StringValueForRange(text);
     StringBuilder buffer;
-    MarkupFormatter::AppendCharactersReplacingEntities(
-        buffer, content, 0, content.length(), kEntityMaskInPCDATA);
+    MarkupFormatter::AppendCharactersReplacingEntities(buffer, content,
+                                                       kEntityMaskInPCDATA);
     // Keep collapsible white spaces as is during markup sanitization.
     const String text_to_append =
         IsForMarkupSanitization()
@@ -141,7 +143,7 @@ void StyledMarkupAccumulator::AppendElementWithInlineStyle(
     StringBuilder& out,
     const Element& element,
     EditingStyle* style) {
-  const bool document_is_html = element.GetDocument().IsHTMLDocument();
+  const bool document_is_html = IsA<HTMLDocument>(element.GetDocument());
   formatter_.AppendStartTagOpen(out, element);
   AttributeCollection attributes = element.Attributes();
   for (const auto& attribute : attributes) {
@@ -194,7 +196,7 @@ void StyledMarkupAccumulator::WrapWithStyleNode(CSSPropertyValueSet* style) {
   StringBuilder open_tag;
   open_tag.Append("<div style=\"");
   MarkupFormatter::AppendAttributeValue(open_tag, style->AsText(),
-                                        document_->IsHTMLDocument());
+                                        IsA<HTMLDocument>(document_));
   open_tag.Append("\">");
   reversed_preceding_markup_.push_back(open_tag.ToString());
 

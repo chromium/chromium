@@ -4,6 +4,8 @@
 
 #include "ui/events/gestures/physics_based_fling_curve.h"
 
+#include <cmath>
+
 namespace {
 
 // These constants are defined based on UX experiment.
@@ -15,24 +17,21 @@ const float kDefaultPixelDeceleration = 2300.0f;
 const float kMaxCurveDurationForFling = 2.0f;
 const float kDefaultPhysicalDeceleration = 2.7559e-5f;  // inch/ms^2.
 
-inline gfx::Vector2dF GetPositionAtTime(const gfx::Vector2dF& end_point,
-                                        double progress) {
+inline gfx::Vector2dF GetPositionAtValue(const gfx::Vector2dF& end_point,
+                                         double progress) {
   return gfx::ScaleVector2d(end_point, progress);
 }
 
 inline gfx::Vector2dF GetVelocityAtTime(const gfx::Vector2dF& current_offset,
                                         const gfx::Vector2dF& prev_offset,
-                                        double delta) {
-  return gfx::ScaleVector2d(current_offset - prev_offset, (1 / delta));
+                                        base::TimeDelta delta) {
+  return gfx::ScaleVector2d(current_offset - prev_offset, delta.ToHz());
 }
 
 float GetOffset(float velocity, float deceleration, float duration) {
-  float position =
+  const float position =
       (std::abs(velocity) - deceleration * duration * 0.5) * duration;
-  if (velocity < 0.0f)
-    return -position;
-
-  return position;
+  return std::copysign(position, velocity);
 }
 
 gfx::Vector2dF GetDecelerationInPixelsPerMs2(
@@ -54,7 +53,7 @@ gfx::Vector2dF GetDuration(const gfx::Vector2dF& velocity,
 // generate fling animation curve.
 gfx::Vector2dF CalculateEndPoint(const gfx::Vector2dF& pixels_per_inch,
                                  const gfx::Vector2dF& velocity_pixels_per_ms,
-                                 const gfx::Size& viewport) {
+                                 const gfx::Size& bounding_size) {
   // deceleration is in pixels/ ms^2.
   gfx::Vector2dF deceleration = GetDecelerationInPixelsPerMs2(pixels_per_inch);
 
@@ -66,18 +65,14 @@ gfx::Vector2dF CalculateEndPoint(const gfx::Vector2dF& pixels_per_inch,
       GetOffset(velocity_pixels_per_ms.x(), deceleration.x(), duration.x()),
       GetOffset(velocity_pixels_per_ms.y(), deceleration.y(), duration.y()));
 
-  // Upper bound for the scroll distance for a fling
-  gfx::Vector2dF max_end_point =
-      gfx::Vector2dF(3 * viewport.width(), 3 * viewport.height());
-
-  if (std::abs(offset_in_screen_coord_space.x()) > max_end_point.x()) {
+  if (std::abs(offset_in_screen_coord_space.x()) > bounding_size.width()) {
     float sign = offset_in_screen_coord_space.x() > 0 ? 1 : -1;
-    offset_in_screen_coord_space.set_x(max_end_point.x() * sign);
+    offset_in_screen_coord_space.set_x(bounding_size.width() * sign);
   }
 
-  if (std::abs(offset_in_screen_coord_space.y()) > max_end_point.y()) {
+  if (std::abs(offset_in_screen_coord_space.y()) > bounding_size.height()) {
     float sign = offset_in_screen_coord_space.y() > 0 ? 1 : -1;
-    offset_in_screen_coord_space.set_y(max_end_point.y() * sign);
+    offset_in_screen_coord_space.set_y(bounding_size.height() * sign);
   }
 
   return offset_in_screen_coord_space;
@@ -91,17 +86,22 @@ PhysicsBasedFlingCurve::PhysicsBasedFlingCurve(
     const gfx::Vector2dF& velocity,
     base::TimeTicks start_timestamp,
     const gfx::Vector2dF& pixels_per_inch,
-    const gfx::Size& viewport)
+    const float boost_multiplier,
+    const gfx::Size& bounding_size)
     : start_timestamp_(start_timestamp),
       p1_(gfx::PointF(kDefaultP1X, kDefaultP1Y)),
       p2_(gfx::PointF(kDefaultP2X, kDefaultP2Y)),
-      distance_(CalculateEndPoint(pixels_per_inch,
-                                  gfx::ScaleVector2d(velocity, 1 / 1000.0f),
-                                  viewport)),
+      distance_(CalculateEndPoint(
+          pixels_per_inch,
+          gfx::ScaleVector2d(velocity, 1 / 1000.0f),
+          ScaleToFlooredSize(bounding_size,
+                             boost_multiplier * kDefaultBoundsMultiplier))),
       curve_duration_(CalculateDurationAndConfigureControlPoints(velocity)),
       bezier_(p1_.x(), p1_.y(), p2_.x(), p2_.y()),
       previous_time_delta_(base::TimeDelta()) {
   DCHECK(!velocity.IsZero());
+  DCHECK(!std::isnan(velocity.x()));
+  DCHECK(!std::isnan(velocity.y()));
 }
 
 PhysicsBasedFlingCurve::~PhysicsBasedFlingCurve() = default;
@@ -111,40 +111,35 @@ bool PhysicsBasedFlingCurve::ComputeScrollOffset(base::TimeTicks time,
                                                  gfx::Vector2dF* velocity) {
   DCHECK(offset);
   DCHECK(velocity);
-  base::TimeDelta elapsed_time = time - start_timestamp_;
-  if (elapsed_time < base::TimeDelta()) {
+
+  const base::TimeDelta elapsed_time = time - start_timestamp_;
+  if (elapsed_time.is_negative()) {
     *offset = gfx::Vector2dF();
     *velocity = gfx::Vector2dF();
     return true;
   }
 
-  bool still_active = true;
-  double x = elapsed_time.InSecondsF() / curve_duration_;
-  if (x < 1.0f) {
-    double progress = bezier_.Solve(x);
-    *offset = GetPositionAtTime(distance_, progress);
-    *velocity =
-        GetVelocityAtTime(*offset, prev_offset_,
-                          (elapsed_time - previous_time_delta_).InSecondsF());
+  const double x = elapsed_time / curve_duration_;
+  const bool still_active = x < 1.0f;
+  if (still_active) {
+    const double progress = bezier_.Solve(x);
+    *offset = GetPositionAtValue(distance_, progress);
+    *velocity = GetVelocityAtTime(*offset, prev_offset_,
+                                  elapsed_time - previous_time_delta_);
     prev_offset_ = *offset;
     previous_time_delta_ = elapsed_time;
-    still_active = true;
   } else {
-    // At the end of animation, we should have travel distance equal to
-    // distance_
+    // At the end of animation, we should have traveled a distance equal to
+    // |distance_|.
     *offset = distance_;
     *velocity = gfx::Vector2dF();
-    still_active = false;
   }
 
   return still_active;
 }
 
-// This method calculate the curve duration and generate the control points for
-// bezier curve based on velocity and |distance_|. It calculate the slope based
-// on the input velocity (initial velocity), curve duration and |distance_|.
-// Slope is then used to configure the value of control points for curve.
-float PhysicsBasedFlingCurve::CalculateDurationAndConfigureControlPoints(
+base::TimeDelta
+PhysicsBasedFlingCurve::CalculateDurationAndConfigureControlPoints(
     const gfx::Vector2dF& velocity) {
   float fling_velocity = std::max(fabs(velocity.x()), fabs(velocity.y()));
   float duration = std::min(kMaxCurveDurationForFling,
@@ -162,6 +157,6 @@ float PhysicsBasedFlingCurve::CalculateDurationAndConfigureControlPoints(
     p1_.set_x(p1_.y() / slope);
   }
 
-  return duration;
+  return base::Seconds(duration);
 }
 }  // namespace ui

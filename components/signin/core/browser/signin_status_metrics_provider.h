@@ -10,9 +10,8 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_base.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
@@ -24,12 +23,15 @@ class ChromeUserMetricsExtension;
 
 class SigninStatusMetricsProviderDelegate;
 
-// Collect login status of all opened profiles during one UMA session and
-// record the value into a histogram before UMA log is uploaded on platform
-// Windows, Linux, Mac and Android.
+// Responsible for sign-in status metrics on Windows, Mac, Linux, Android, and
+// iOS. See SigninStatusMetricsProviderChromeOS for ChromeOS-specific support.
 class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
                                     public signin::IdentityManager::Observer {
  public:
+  SigninStatusMetricsProvider(const SigninStatusMetricsProvider&) = delete;
+  SigninStatusMetricsProvider& operator=(const SigninStatusMetricsProvider&) =
+      delete;
+
   ~SigninStatusMetricsProvider() override;
 
   // SigninStatusMetricsProviderBase:
@@ -42,9 +44,6 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
 
   // Update the sign-in status when a IdentityManager is created.
   void OnIdentityManagerCreated(signin::IdentityManager* identity_manager);
-
-  // Update the sign-in status when a IdentityManager is shut down.
-  void OnIdentityManagerShutdown(signin::IdentityManager* identity_manager);
 
   // Updates the initial sign-in status. For testing purpose only.
   void UpdateInitialSigninStatusForTesting(size_t total_count,
@@ -70,8 +69,10 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
       bool is_test);
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Obtain sign-in status and add observers.
   void Initialize();
@@ -90,15 +91,14 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
 
   // Used to track the IdentityManagers that this instance is observing so that
   // this instance can be removed as an observer on its destruction.
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      scoped_observer_;
+  base::ScopedMultiSourceObservation<signin::IdentityManager,
+                                     signin::IdentityManager::Observer>
+      scoped_observations_{this};
 
   // Whether the instance is for testing or not.
   bool is_test_;
 
   base::WeakPtrFactory<SigninStatusMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProvider);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_H_

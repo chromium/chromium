@@ -57,6 +57,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
 
   const StringList& included_categories() const { return included_categories_; }
   const StringList& excluded_categories() const { return excluded_categories_; }
+  const StringList& disabled_categories() const { return disabled_categories_; }
 
  private:
   void SetCategoriesFromIncludedList(const Value& included_list);

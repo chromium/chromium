@@ -3,6 +3,18 @@
 // found in the LICENSE file.
 
 /**
+ * @typedef {{
+ *   seccompStatus: number,
+ *   pid: string,
+ *   uid: string,
+ *   secontext: string,
+ *   procStatus: string,
+ *   androidBuildId: string
+ * }}
+ */
+let AndroidSandboxStatus;
+
+/**
  * This function is only exposed to the Android chrome://sandbox webui.
  * @param {!function(!AndroidSandboxStatus)=} callback
  */

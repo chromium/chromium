@@ -8,8 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 struct Feature;
@@ -26,6 +25,9 @@ class AvailabilityModel {
   // GetAvailability(...).
   using OnInitializedCallback = base::OnceCallback<void(bool success)>;
 
+  AvailabilityModel(const AvailabilityModel&) = delete;
+  AvailabilityModel& operator=(const AvailabilityModel&) = delete;
+
   virtual ~AvailabilityModel() = default;
 
   // Starts initialization of the AvailabilityModel.
@@ -39,14 +41,11 @@ class AvailabilityModel {
   // Returns the day number since epoch (1970-01-01) in the local timezone for
   // when the particular |feature| was made available.
   // See TimeProvider::GetCurrentDay().
-  virtual base::Optional<uint32_t> GetAvailability(
+  virtual absl::optional<uint32_t> GetAvailability(
       const base::Feature& feature) const = 0;
 
  protected:
   AvailabilityModel() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModel);
 };
 
 }  // namespace feature_engagement

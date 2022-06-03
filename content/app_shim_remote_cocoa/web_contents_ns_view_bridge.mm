@@ -18,6 +18,7 @@ WebContentsNSViewBridge::WebContentsNSViewBridge(
   ns_view_.reset(
       [[WebContentsViewCocoa alloc] initWithViewsHostableView:nullptr]);
   [ns_view_ setHost:host_.get()];
+  [ns_view_ enableDroppedScreenShotCopier];
   view_id_ = std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(
       view_id, ns_view_.get());
 }

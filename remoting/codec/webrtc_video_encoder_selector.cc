@@ -4,7 +4,7 @@
 
 #include "remoting/codec/webrtc_video_encoder_selector.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "remoting/base/constants.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -57,6 +57,16 @@ void WebrtcVideoEncoderSelector::SetPreferredCodec(int codec) {
   DCHECK_GE(codec, 0);
   DCHECK_LT(codec, static_cast<int>(encoders_.size()));
   preferred_codec_ = codec;
+
+  // Reset so that the next call to CreateEncoder() creates an encoder which
+  // matches the one negotiated over SDP. Otherwise, repeated calls to
+  // CreateEncoder() would cycle through every codec that could encode at the
+  // current resolution, even when they do not match the codec "created" by
+  // WebRTC via the DummyVideoEncoderFactory.
+
+  // TODO(crbug.com/1115789): Review the CreateEncoder() logic to ensure it only
+  // creates encoders that are compatible with the SDP-selected codec.
+  last_codec_ = -1;
 }
 
 int WebrtcVideoEncoderSelector::RegisterEncoder(

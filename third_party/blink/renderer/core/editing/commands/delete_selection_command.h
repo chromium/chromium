@@ -43,11 +43,11 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
       InputEvent::InputType input_type = InputEvent::InputType::kNone,
       const Position& reference_move_position = Position());
   DeleteSelectionCommand(
-      const VisibleSelection&,
+      const SelectionForUndoStep&,
       const DeleteSelectionOptions&,
       InputEvent::InputType input_type = InputEvent::InputType::kNone);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;
@@ -72,6 +72,8 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
                   EditingState*,
                   ShouldAssumeContentIsAlwaysEditable =
                       kDoNotAssumeContentIsAlwaysEditable) override;
+  void RemoveCompletelySelectedNodes(Node* start_node,
+                                     EditingState* editing_state);
   void DeleteTextFromNode(Text*, unsigned, unsigned) override;
   void RemoveRedundantBlocks(EditingState*);
 
@@ -85,7 +87,7 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
 
   // This data is transient and should be cleared at the end of the doApply
   // function.
-  VisibleSelection selection_to_delete_;
+  SelectionForUndoStep selection_to_delete_;
   Position upstream_start_;
   Position downstream_start_;
   Position upstream_end_;

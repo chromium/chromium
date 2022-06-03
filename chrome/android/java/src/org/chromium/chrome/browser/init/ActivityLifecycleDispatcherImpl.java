@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.init;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -12,11 +13,12 @@ import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
@@ -34,7 +36,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             new ObserverList<>();
     private final ObserverList<StartStopWithNativeObserver> mStartStopObservers =
             new ObserverList<>();
-    private final ObserverList<Destroyable> mDestroyables = new ObserverList<>();
+    private final ObserverList<DestroyObserver> mDestroyables = new ObserverList<>();
     private final ObserverList<SaveInstanceStateObserver> mSaveInstanceStateObservers =
             new ObserverList<>();
     private final ObserverList<WindowFocusChangedObserver> mWindowFocusChangesObservers =
@@ -43,8 +45,17 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
             mActivityResultWithNativeObservers = new ObserverList<>();
     private final ObserverList<ConfigurationChangedObserver> mConfigurationChangedListeners =
             new ObserverList<>();
+    private final ObserverList<RecreateObserver> mRecreateObservers = new ObserverList<>();
+
+    private final Activity mActivity;
 
     private @ActivityState int mActivityState = ActivityState.DESTROYED;
+    private boolean mIsNativeInitialized;
+    private boolean mDestroyed;
+
+    public ActivityLifecycleDispatcherImpl(Activity activity) {
+        mActivity = activity;
+    }
 
     @Override
     public void register(LifecycleObserver observer) {
@@ -60,8 +71,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof NativeInitObserver) {
             mNativeInitObservers.addObserver((NativeInitObserver) observer);
         }
-        if (observer instanceof Destroyable) {
-            mDestroyables.addObserver((Destroyable) observer);
+        if (observer instanceof DestroyObserver) {
+            mDestroyables.addObserver((DestroyObserver) observer);
         }
         if (observer instanceof SaveInstanceStateObserver) {
             mSaveInstanceStateObservers.addObserver((SaveInstanceStateObserver) observer);
@@ -75,6 +86,9 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
         if (observer instanceof ConfigurationChangedObserver) {
             mConfigurationChangedListeners.addObserver((ConfigurationChangedObserver) observer);
+        }
+        if (observer instanceof RecreateObserver) {
+            mRecreateObservers.addObserver((RecreateObserver) observer);
         }
     }
 
@@ -92,8 +106,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof NativeInitObserver) {
             mNativeInitObservers.removeObserver((NativeInitObserver) observer);
         }
-        if (observer instanceof Destroyable) {
-            mDestroyables.removeObserver((Destroyable) observer);
+        if (observer instanceof DestroyObserver) {
+            mDestroyables.removeObserver((DestroyObserver) observer);
         }
         if (observer instanceof SaveInstanceStateObserver) {
             mSaveInstanceStateObservers.removeObserver((SaveInstanceStateObserver) observer);
@@ -108,6 +122,9 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (observer instanceof ConfigurationChangedObserver) {
             mConfigurationChangedListeners.removeObserver((ConfigurationChangedObserver) observer);
         }
+        if (observer instanceof RecreateObserver) {
+            mRecreateObservers.removeObserver((RecreateObserver) observer);
+        }
     }
 
     @Override
@@ -115,9 +132,25 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         return mActivityState;
     }
 
+    @Override
+    public boolean isNativeInitializationFinished() {
+        return mIsNativeInitialized;
+    }
+
+    @Override
+    public boolean isActivityFinishingOrDestroyed() {
+        return mDestroyed || mActivity.isFinishing();
+    }
+
     void dispatchPreInflationStartup() {
         for (InflationObserver observer : mInflationObservers) {
             observer.onPreInflationStartup();
+        }
+    }
+
+    void dispatchOnInflationComplete() {
+        for (InflationObserver observer : mInflationObservers) {
+            observer.onInflationComplete();
         }
     }
 
@@ -160,16 +193,21 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     }
 
     void dispatchNativeInitializationFinished() {
+        mIsNativeInitialized = true;
         for (NativeInitObserver observer : mNativeInitObservers) {
             observer.onFinishNativeInitialization();
         }
     }
 
+    void onDestroyStarted() {
+        mDestroyed = true;
+    }
+
     void dispatchOnDestroy() {
         mActivityState = ActivityState.DESTROYED;
 
-        for (Destroyable destroyable : mDestroyables) {
-            destroyable.destroy();
+        for (DestroyObserver destroyable : mDestroyables) {
+            destroyable.onDestroy();
         }
 
         // Drain observers to prevent possible memory leaks.
@@ -184,6 +222,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         mActivityResultWithNativeObservers.clear();
         mConfigurationChangedListeners.clear();
         mDestroyables.clear();
+        mRecreateObservers.clear();
     }
 
     void dispatchOnSaveInstanceState(Bundle outBundle) {
@@ -207,6 +246,12 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     void dispatchOnConfigurationChanged(Configuration newConfig) {
         for (ConfigurationChangedObserver observer : mConfigurationChangedListeners) {
             observer.onConfigurationChanged(newConfig);
+        }
+    }
+
+    void dispatchOnRecreate() {
+        for (RecreateObserver observer : mRecreateObservers) {
+            observer.onRecreate();
         }
     }
 }

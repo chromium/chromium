@@ -4,8 +4,8 @@
 
 #include "media/audio/android/opensles_input.h"
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/audio_bus.h"
@@ -24,9 +24,9 @@ namespace media {
 OpenSLESInputStream::OpenSLESInputStream(AudioManagerAndroid* audio_manager,
                                          const AudioParameters& params)
     : audio_manager_(audio_manager),
-      callback_(NULL),
-      recorder_(NULL),
-      simple_buffer_queue_(NULL),
+      callback_(nullptr),
+      recorder_(nullptr),
+      simple_buffer_queue_(nullptr),
       active_buffer_index_(0),
       buffer_size_bytes_(0),
       started_(false),
@@ -47,8 +47,8 @@ OpenSLESInputStream::OpenSLESInputStream(AudioManagerAndroid* audio_manager,
   format_.channelMask = ChannelCountToSLESChannelMask(params.channels());
 
   buffer_size_bytes_ = params.GetBytesPerBuffer(kSampleFormat);
-  hardware_delay_ = base::TimeDelta::FromSecondsD(
-      params.frames_per_buffer() / static_cast<double>(params.sample_rate()));
+  hardware_delay_ = base::Seconds(params.frames_per_buffer() /
+                                  static_cast<double>(params.sample_rate()));
 
   memset(&audio_data_, 0, sizeof(audio_data_));
 }
@@ -63,18 +63,17 @@ OpenSLESInputStream::~OpenSLESInputStream() {
   DCHECK(!audio_data_[0]);
 }
 
-bool OpenSLESInputStream::Open() {
+AudioInputStream::OpenOutcome OpenSLESInputStream::Open() {
   DVLOG(2) << __PRETTY_FUNCTION__;
   DCHECK(thread_checker_.CalledOnValidThread());
   if (engine_object_.Get())
-    return false;
+    return AudioInputStream::OpenOutcome::kFailed;
 
   if (!CreateRecorder())
-    return false;
+    return AudioInputStream::OpenOutcome::kFailed;
 
   SetupAudioBuffer();
-
-  return true;
+  return AudioInputStream::OpenOutcome::kSuccess;
 }
 
 void OpenSLESInputStream::Start(AudioInputCallback* callback) {
@@ -87,7 +86,7 @@ void OpenSLESInputStream::Start(AudioInputCallback* callback) {
     return;
 
   base::AutoLock lock(lock_);
-  DCHECK(callback_ == NULL || callback_ == callback);
+  DCHECK(!callback_ || callback_ == callback);
   callback_ = callback;
   active_buffer_index_ = 0;
 
@@ -137,7 +136,7 @@ void OpenSLESInputStream::Stop() {
       (*simple_buffer_queue_)->Clear(simple_buffer_queue_));
 
   started_ = false;
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 void OpenSLESInputStream::Close() {
@@ -153,8 +152,8 @@ void OpenSLESInputStream::Close() {
     // Destroy the buffer queue recorder object and invalidate all associated
     // interfaces.
     recorder_object_.Reset();
-    simple_buffer_queue_ = NULL;
-    recorder_ = NULL;
+    simple_buffer_queue_ = nullptr;
+    recorder_ = nullptr;
 
     // Destroy the engine object. We don't store any associated interface for
     // this object.
@@ -205,7 +204,7 @@ bool OpenSLESInputStream::CreateRecorder() {
   SLEngineOption option[] = {
       {SL_ENGINEOPTION_THREADSAFE, static_cast<SLuint32>(SL_BOOLEAN_TRUE)}};
   LOG_ON_FAILURE_AND_RETURN(
-      slCreateEngine(engine_object_.Receive(), 1, option, 0, NULL, NULL),
+      slCreateEngine(engine_object_.Receive(), 1, option, 0, nullptr, nullptr),
       false);
 
   // Realize the SL engine object in synchronous mode.
@@ -219,10 +218,10 @@ bool OpenSLESInputStream::CreateRecorder() {
                             false);
 
   // Audio source configuration.
-  SLDataLocator_IODevice mic_locator = {
-      SL_DATALOCATOR_IODEVICE,       SL_IODEVICE_AUDIOINPUT,
-      SL_DEFAULTDEVICEID_AUDIOINPUT, NULL};
-  SLDataSource audio_source = {&mic_locator, NULL};
+  SLDataLocator_IODevice mic_locator = {SL_DATALOCATOR_IODEVICE,
+                                        SL_IODEVICE_AUDIOINPUT,
+                                        SL_DEFAULTDEVICEID_AUDIOINPUT, nullptr};
+  SLDataSource audio_source = {&mic_locator, nullptr};
 
   // Audio sink configuration.
   SLDataLocator_AndroidSimpleBufferQueue buffer_queue = {
@@ -338,7 +337,7 @@ void OpenSLESInputStream::ReleaseAudioBuffer() {
   if (audio_data_[0]) {
     for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i) {
       delete[] audio_data_[i];
-      audio_data_[i] = NULL;
+      audio_data_[i] = nullptr;
     }
   }
 }

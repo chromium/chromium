@@ -6,14 +6,15 @@
 
 #include <unordered_set>
 
-#include <base/strings/stringprintf.h>
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -28,30 +29,6 @@ constexpr char kTimeFormat[] = "h:mm a";
 constexpr char kDateTimeSeparator[] = " \xE2\x80\xA2 ";
 constexpr char kSpaceBetweenCardNumAndDate[] = "    ";
 
-// Parse RFC 3339 date-time. Store the value in the datetime proto field.
-bool ParseDateTimeStringToProto(const std::string& datetime,
-                                DateTimeProto* result) {
-  // RFC 3339 format without timezone: yyyy'-'MM'-'dd'T'HH':'mm':'ss
-  std::string pattern =
-      R"rgx((\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}))rgx";
-
-  int year, month, day, hour, minute, second;
-  if (re2::RE2::FullMatch(datetime, pattern, &year, &month, &day, &hour,
-                          &minute, &second)) {
-    auto* date = result->mutable_date();
-    date->set_year(year);
-    date->set_month(month);
-    date->set_day(day);
-    auto* time = result->mutable_time();
-    time->set_hour(hour);
-    time->set_minute(minute);
-    time->set_second(second);
-    return true;
-  } else {
-    return false;
-  }
-}
-
 // Format a datetime proto with current locale.
 std::string FormatDateTimeProto(const DateTimeProto& date_time) {
   if (!date_time.has_date() || !date_time.has_time()) {
@@ -60,10 +37,14 @@ std::string FormatDateTimeProto(const DateTimeProto& date_time) {
   auto date_proto = date_time.date();
   auto time_proto = date_time.time();
 
-  base::Time::Exploded exploded_time = {
-      date_proto.year(),      date_proto.month(),
-      /* day_of_week = */ -1, date_proto.day(),    time_proto.hour(),
-      time_proto.minute(),    time_proto.second(), 0};
+  base::Time::Exploded exploded_time = {static_cast<int>(date_proto.year()),
+                                        date_proto.month(),
+                                        /* day_of_week = */ -1,
+                                        date_proto.day(),
+                                        time_proto.hour(),
+                                        time_proto.minute(),
+                                        time_proto.second(),
+                                        0};
   base::Time time;
 
   if (base::Time::FromLocalExploded(exploded_time, &time)) {
@@ -78,7 +59,7 @@ std::string FormatDateTimeProto(const DateTimeProto& date_time) {
 }
 
 // This logic is from NameInfo::FullName.
-base::string16 FullName(const autofill::AutofillProfile& profile) {
+std::u16string FullName(const autofill::AutofillProfile& profile) {
   return autofill::data_util::JoinNameParts(
       profile.GetRawInfo(autofill::NAME_FIRST),
       profile.GetRawInfo(autofill::NAME_MIDDLE),
@@ -89,6 +70,10 @@ base::string16 FullName(const autofill::AutofillProfile& profile) {
 
 Details::Details() = default;
 Details::~Details() = default;
+Details::Details(Details&& other) = default;
+Details& Details::operator=(Details&& other) = default;
+Details::Details(const Details& other) = default;
+Details& Details::operator=(const Details& other) = default;
 
 // static
 bool Details::UpdateFromProto(const ShowDetailsProto& proto, Details* details) {
@@ -111,22 +96,34 @@ bool Details::UpdateFromProto(const ShowDetailsProto& proto, Details* details) {
 }
 
 // static
-bool Details::UpdateFromContactDetails(const ShowDetailsProto& proto,
-                                       ClientMemory* client_memory,
-                                       Details* details) {
+bool Details::UpdateFromContactDetails(
+    const ShowDetailsProto& proto,
+    const UserData* user_data,
+    const CollectUserDataOptions* user_data_options,
+    Details* details) {
+  if (!user_data_options || !(user_data_options->request_payer_name ||
+                              user_data_options->request_payer_email)) {
+    return false;
+  }
+
   std::string contact_details = proto.contact_details();
-  if (!client_memory->has_selected_address(contact_details)) {
+  if (!user_data->has_selected_address(contact_details)) {
     return false;
   }
 
   ShowDetailsProto updated_proto = proto;
-  auto* profile = client_memory->selected_address(contact_details);
+  auto* profile = user_data->selected_address(contact_details);
   auto* details_proto = updated_proto.mutable_details();
   details_proto->set_title(
       l10n_util::GetStringUTF8(IDS_PAYMENTS_CONTACT_DETAILS_LABEL));
-  details_proto->set_description_line_1(base::UTF16ToUTF8(FullName(*profile)));
-  details_proto->set_description_line_2(
-      base::UTF16ToUTF8(profile->GetRawInfo(autofill::EMAIL_ADDRESS)));
+  if (user_data_options->request_payer_name) {
+    details_proto->set_description_line_1(
+        base::UTF16ToUTF8(FullName(*profile)));
+  }
+  if (user_data_options->request_payer_email) {
+    details_proto->set_description_line_2(
+        base::UTF16ToUTF8(profile->GetRawInfo(autofill::EMAIL_ADDRESS)));
+  }
   details->SetDetailsProto(updated_proto.details());
   details->SetDetailsChangesProto(updated_proto.change_flags());
   return true;
@@ -134,15 +131,15 @@ bool Details::UpdateFromContactDetails(const ShowDetailsProto& proto,
 
 // static
 bool Details::UpdateFromShippingAddress(const ShowDetailsProto& proto,
-                                        ClientMemory* client_memory,
+                                        const UserData* user_data,
                                         Details* details) {
   std::string shipping_address = proto.shipping_address();
-  if (!client_memory->has_selected_address(shipping_address)) {
+  if (!user_data->has_selected_address(shipping_address)) {
     return false;
   }
 
   ShowDetailsProto updated_proto = proto;
-  auto* profile = client_memory->selected_address(shipping_address);
+  auto* profile = user_data->selected_address(shipping_address);
   auto* details_proto = updated_proto.mutable_details();
   autofill::CountryNames* country_names = autofill::CountryNames::GetInstance();
   details_proto->set_title(
@@ -165,14 +162,14 @@ bool Details::UpdateFromShippingAddress(const ShowDetailsProto& proto,
 }
 
 bool Details::UpdateFromSelectedCreditCard(const ShowDetailsProto& proto,
-                                           ClientMemory* client_memory,
+                                           const UserData* user_data,
                                            Details* details) {
-  if (!client_memory->has_selected_card() || !proto.credit_card()) {
+  if (!user_data->selected_card() || !proto.credit_card()) {
     return false;
   }
 
   ShowDetailsProto updated_proto = proto;
-  auto* card = client_memory->selected_card();
+  const auto* card = user_data->selected_card();
   auto* details_proto = updated_proto.mutable_details();
   details_proto->set_title(
       l10n_util::GetStringUTF8(IDS_PAYMENTS_METHOD_OF_PAYMENT_LABEL));
@@ -235,96 +232,60 @@ base::Value Details::GetDebugContext() const {
   return dict;
 }
 
-bool Details::UpdateFromParameters(const TriggerContext& context) {
-  base::Optional<std::string> show_initial =
-      context.GetParameter("DETAILS_SHOW_INITIAL");
-  if (show_initial.value_or("true") == "false") {
+bool Details::UpdateFromParameters(const ScriptParameters& script_parameters) {
+  absl::optional<bool> show_initial = script_parameters.GetDetailsShowInitial();
+  if (show_initial.has_value() && !*show_initial) {
     return false;
   }
-  // Whenever details are updated from parameters we want to animate missing
-  // data.
-  proto_.set_animate_placeholders(true);
-  proto_.set_show_image_placeholder(true);
-  if (MaybeUpdateFromDetailsParameters(context)) {
-    Update();
-    return true;
-  }
 
-  // NOTE: The logic below is only needed for backward compatibility.
-  // Remove once we always pass detail parameters.
-  bool is_updated = false;
-  base::Optional<std::string> movie_name =
-      context.GetParameter("MOVIES_MOVIE_NAME");
-  if (movie_name) {
-    proto_.set_title(movie_name.value());
-    is_updated = true;
-  }
-
-  base::Optional<std::string> theater_name =
-      context.GetParameter("MOVIES_THEATER_NAME");
-  if (theater_name) {
-    proto_.set_description_line_2(theater_name.value());
-    is_updated = true;
-  }
-
-  base::Optional<std::string> screening_datetime =
-      context.GetParameter("MOVIES_SCREENING_DATETIME");
-  if (screening_datetime &&
-      ParseDateTimeStringToProto(screening_datetime.value(),
-                                 proto_.mutable_datetime())) {
-    is_updated = true;
-  }
-
-  Update();
-  return is_updated;
-}
-
-bool Details::MaybeUpdateFromDetailsParameters(const TriggerContext& context) {
+  // Whenever details are updated from parameters we want to show a placeholder
+  // for the image.
+  proto_.mutable_placeholders()->set_show_image_placeholder(true);
   bool details_updated = false;
 
-  base::Optional<std::string> title = context.GetParameter("DETAILS_TITLE");
+  absl::optional<std::string> title = script_parameters.GetDetailsTitle();
   if (title) {
     proto_.set_title(title.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> description_line_1 =
-      context.GetParameter("DETAILS_DESCRIPTION_LINE_1");
+  absl::optional<std::string> description_line_1 =
+      script_parameters.GetDetailsDescriptionLine1();
   if (description_line_1) {
     proto_.set_description_line_1(description_line_1.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> description_line_2 =
-      context.GetParameter("DETAILS_DESCRIPTION_LINE_2");
+  absl::optional<std::string> description_line_2 =
+      script_parameters.GetDetailsDescriptionLine2();
   if (description_line_2) {
     proto_.set_description_line_2(description_line_2.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> description_line_3 =
-      context.GetParameter("DETAILS_DESCRIPTION_LINE_3");
+  absl::optional<std::string> description_line_3 =
+      script_parameters.GetDetailsDescriptionLine3();
   if (description_line_3) {
     proto_.set_description_line_3(description_line_3.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> image_url =
-      context.GetParameter("DETAILS_IMAGE_URL");
+  absl::optional<std::string> image_url =
+      script_parameters.GetDetailsImageUrl();
   if (image_url) {
     proto_.set_image_url(image_url.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> image_accessibility_hint =
-      context.GetParameter("DETAILS_IMAGE_ACCESSIBILITY_HINT");
+  absl::optional<std::string> image_accessibility_hint =
+      script_parameters.GetDetailsImageAccessibilityHint();
   if (image_accessibility_hint) {
     proto_.set_image_accessibility_hint(image_accessibility_hint.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> image_clickthrough_url =
-      context.GetParameter("DETAILS_IMAGE_CLICKTHROUGH_URL");
+  absl::optional<std::string> image_clickthrough_url =
+      script_parameters.GetDetailsImageClickthroughUrl();
   if (image_clickthrough_url) {
     proto_.mutable_image_clickthrough_data()->set_allow_clickthrough(true);
     proto_.mutable_image_clickthrough_data()->set_clickthrough_url(
@@ -332,20 +293,23 @@ bool Details::MaybeUpdateFromDetailsParameters(const TriggerContext& context) {
     details_updated = true;
   }
 
-  base::Optional<std::string> total_price_label =
-      context.GetParameter("DETAILS_TOTAL_PRICE_LABEL");
+  absl::optional<std::string> total_price_label =
+      script_parameters.GetDetailsTotalPriceLabel();
   if (total_price_label) {
     proto_.set_total_price_label(total_price_label.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> total_price =
-      context.GetParameter("DETAILS_TOTAL_PRICE");
+  absl::optional<std::string> total_price =
+      script_parameters.GetDetailsTotalPrice();
   if (total_price) {
     proto_.set_total_price(total_price.value());
     details_updated = true;
   }
 
+  if (details_updated) {
+    Update();
+  }
   return details_updated;
 }
 
@@ -358,19 +322,15 @@ const std::string Details::title() const {
   return proto_.title();
 }
 
-int Details::titleMaxLines() const {
-  return title_max_lines_;
-}
-
 const std::string Details::imageUrl() const {
   return proto_.image_url();
 }
 
-const base::Optional<std::string> Details::imageAccessibilityHint() const {
+const absl::optional<std::string> Details::imageAccessibilityHint() const {
   if (proto_.has_image_accessibility_hint()) {
     return proto_.image_accessibility_hint();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool Details::imageAllowClickthrough() const {
@@ -391,10 +351,6 @@ const std::string Details::imageNegativeText() const {
 
 const std::string Details::imageClickthroughUrl() const {
   return proto_.image_clickthrough_data().clickthrough_url();
-}
-
-bool Details::showImagePlaceholder() const {
-  return proto_.show_image_placeholder();
 }
 
 const std::string Details::totalPriceLabel() const {
@@ -441,8 +397,8 @@ bool Details::highlightLine3() const {
   return change_flags_.highlight_line3();
 }
 
-bool Details::animatePlaceholders() const {
-  return proto_.animate_placeholders();
+DetailsProto::PlaceholdersConfiguration Details::placeholders() const {
+  return proto_.placeholders();
 }
 
 void Details::ClearChanges() {
@@ -461,16 +417,6 @@ void Details::Update() {
   price_attribution_content_.assign(proto_.total_price().empty()
                                         ? std::string()
                                         : proto_.description_line_3());
-
-  bool isDescriptionLine1Empty = descriptionLine1().empty();
-  bool isDescriptionLine2Empty = descriptionLine2().empty();
-  if (isDescriptionLine1Empty && isDescriptionLine2Empty) {
-    title_max_lines_ = 3;
-  } else if (isDescriptionLine1Empty || isDescriptionLine2Empty) {
-    title_max_lines_ = 2;
-  } else {
-    title_max_lines_ = 1;
-  }
 }
 
 }  // namespace autofill_assistant

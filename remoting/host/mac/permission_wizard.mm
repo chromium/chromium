@@ -7,12 +7,12 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/base/string_resources.h"
@@ -28,7 +28,7 @@ namespace {
 
 // Interval between permission checks, used to update the UI when the user
 // grants permission.
-constexpr base::TimeDelta kPollingInterval = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kPollingInterval = base::Seconds(1);
 
 // The steps of the wizard.
 enum class WizardPage {
@@ -228,9 +228,12 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   _instructionText.editable = NO;
   _instructionText.preferredMaxLayoutWidth = 400;
 
+  NSString* appPath = [[NSBundle mainBundle] bundlePath];
+  NSImage* iconImage = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
+  [iconImage setSize:NSMakeSize(64, 64)];
   NSImageView* icon = [[[NSImageView alloc] init] autorelease];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
-  icon.image = [[NSApplication sharedApplication] applicationIconImage];
+  icon.image = iconImage;
 
   _cancelButton = [[[NSButton alloc] init] autorelease];
   _cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -285,7 +288,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   iconAndTextStack.alignment = NSLayoutAttributeTop;
   [iconAndTextStack addView:icon inGravity:NSStackViewGravityLeading];
   [iconAndTextStack addView:_instructionText
-                  inGravity:NSStackViewGravityLeading];
+                  inGravity:NSStackViewGravityCenter];
 
   NSStackView* buttonsStack = [[[NSStackView alloc] init] autorelease];
   buttonsStack.translatesAutoresizingMaskIntoConstraints = NO;
@@ -297,10 +300,17 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
   [buttonsStack addView:_nextButton inGravity:NSStackViewGravityTrailing];
   [buttonsStack addView:_okButton inGravity:NSStackViewGravityTrailing];
 
+  // Prevent buttonsStack from expanding vertically. This fixes incorrect
+  // vertical placement of OK button in All Set page
+  // (http://crbug.com/1032157). The parent NSStackView was expanding this
+  // view instead of adding space between the gravity-areas.
+  [buttonsStack setHuggingPriority:NSLayoutPriorityDefaultHigh
+                    forOrientation:NSLayoutConstraintOrientationVertical];
+
   NSStackView* mainStack = [[[NSStackView alloc] init] autorelease];
   mainStack.translatesAutoresizingMaskIntoConstraints = NO;
   mainStack.orientation = NSUserInterfaceLayoutOrientationVertical;
-  mainStack.spacing = 20;
+  mainStack.spacing = 12;
   [mainStack addView:iconAndTextStack inGravity:NSStackViewGravityTop];
   [mainStack addView:buttonsStack inGravity:NSStackViewGravityBottom];
 
@@ -382,7 +392,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 // updates the first-responder button, so it should only be called when the
 // state needs to change.
 - (void)updateUI {
-  base::string16 bundleName = base::UTF8ToUTF16(_impl->GetBundleName());
+  std::u16string bundleName = base::UTF8ToUTF16(_impl->GetBundleName());
   switch (_page) {
     case WizardPage::ACCESSIBILITY:
       _instructionText.stringValue = l10n_util::GetNSStringF(
@@ -502,16 +512,6 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
     return;
 
   _hasPermission = result;
-
-  // Ugly workaround for crbug.com/1031343:
-  // Polling stops when permission is granted. Posting a task to execute in the
-  // future seems to keep the system's UI message-pump active, in order to
-  // render the button outlines.
-  // TODO(lambroslambrou): Remove this hack and fix the underlying problem.
-  if (_hasPermission) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::DoNothing(), base::TimeDelta::Max());
-  }
 
   if (_hasPermission && _autoAdvance) {
     // Skip showing the "Next" button, and immediately kick off a permission

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,6 +37,9 @@ class BookmarkTabHelper
    protected:
     virtual ~BookmarkDrag() {}
   };
+
+  BookmarkTabHelper(const BookmarkTabHelper&) = delete;
+  BookmarkTabHelper& operator=(const BookmarkTabHelper&) = delete;
 
   ~BookmarkTabHelper() override;
 
@@ -88,8 +90,6 @@ class BookmarkTabHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidAttachInterstitialPage() override;
-  void DidDetachInterstitialPage() override;
 
   // Whether the current URL is starred.
   bool is_starred_;
@@ -104,8 +104,6 @@ class BookmarkTabHelper
   BookmarkDrag* bookmark_drag_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_TAB_HELPER_H_

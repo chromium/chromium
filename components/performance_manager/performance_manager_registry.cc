@@ -5,6 +5,7 @@
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 
 #include "components/performance_manager/performance_manager_registry_impl.h"
+#include "components/performance_manager/performance_manager_tab_helper.h"
 
 namespace performance_manager {
 
@@ -17,6 +18,15 @@ PerformanceManagerRegistry::Create() {
 // static
 PerformanceManagerRegistry* PerformanceManagerRegistry::GetInstance() {
   return PerformanceManagerRegistryImpl::GetInstance();
+}
+
+void PerformanceManagerRegistry::MaybeCreatePageNodeForWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  // Do not attach if we're already attached.
+  if (PerformanceManagerTabHelper::FromWebContents(web_contents))
+    return;
+  CreatePageNodeForWebContents(web_contents);
 }
 
 }  // namespace performance_manager

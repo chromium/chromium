@@ -7,7 +7,7 @@
 # Gitiles returns the result as base64 formatted, so the result needs to be
 # decoded. See https://code.google.com/p/gitiles/issues/detail?id=7 for
 # more information about this security precaution.
-script_url="https://chromium.googlesource.com/chromium/src.git/+/master"
+script_url="https://chromium.googlesource.com/chromium/src.git/+/main"
 script_url+="/tools/android/adb_remote_setup.sh"
 script_url+="?format=TEXT"
 

@@ -6,7 +6,12 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/fuchsia/scheduler.h"
+#include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"
+#include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -24,18 +29,30 @@ bool AudioManagerFuchsia::HasAudioOutputDevices() {
 }
 
 bool AudioManagerFuchsia::HasAudioInputDevices() {
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API for device
+  // enumeration. Update this method when that functionality is implemented.
+  return true;
 }
 
 void AudioManagerFuchsia::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
-  device_names->clear();
-  NOTIMPLEMENTED();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioInput)) {
+    return;
+  }
+
+  // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API for device
+  // enumeration. Update this method when that functionality is implemented.
+  *device_names = {AudioDeviceName::CreateDefault()};
 }
 
 void AudioManagerFuchsia::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioOutput)) {
+    return;
+  }
+
   // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API for device
   // enumeration. Update this method when that functionality is implemented.
   *device_names = {AudioDeviceName::CreateDefault()};
@@ -43,8 +60,24 @@ void AudioManagerFuchsia::GetAudioOutputDeviceNames(
 
 AudioParameters AudioManagerFuchsia::GetInputStreamParameters(
     const std::string& device_id) {
-  NOTREACHED();
-  return AudioParameters();
+  // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API to get
+  // device configuration and supported effects. Update this method when that
+  // functionality is implemented.
+  //
+  // Use 16kHz sample rate with 10ms buffer, which is consistent with
+  // the default configuration used in the AudioCapturer implementation.
+  // Assume that the system-provided AudioConsumer supports echo cancellation,
+  // noise suppression and automatic gain control.
+  const size_t kSampleRate = 16000;
+  const size_t kPeriodSamples = AudioTimestampHelper::TimeToFrames(
+      base::kAudioSchedulingPeriod, kSampleRate);
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         CHANNEL_LAYOUT_MONO, kSampleRate, kPeriodSamples);
+  params.set_effects(AudioParameters::ECHO_CANCELLER |
+                     AudioParameters::NOISE_SUPPRESSION |
+                     AudioParameters::AUTOMATIC_GAIN_CONTROL);
+
+  return params;
 }
 
 AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
@@ -53,8 +86,11 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
   // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API to get
   // device configuration. Update this method when that functionality is
   // implemented.
+  const size_t kSampleRate = 48000;
+  const size_t kPeriodFrames = AudioTimestampHelper::TimeToFrames(
+      base::kAudioSchedulingPeriod, kSampleRate);
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 480);
+                         CHANNEL_LAYOUT_STEREO, kSampleRate, kPeriodFrames);
 }
 
 const char* AudioManagerFuchsia::GetName() {
@@ -86,16 +122,16 @@ AudioInputStream* AudioManagerFuchsia::MakeLinearInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  NOTREACHED();
-  return nullptr;
+  DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
+  return MakeInputStream(params, device_id);
 }
 
 AudioInputStream* AudioManagerFuchsia::MakeLowLatencyInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  NOTREACHED();
-  return nullptr;
+  DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
+  return MakeInputStream(params, device_id);
 }
 
 std::unique_ptr<AudioManager> CreateAudioManager(
@@ -105,4 +141,15 @@ std::unique_ptr<AudioManager> CreateAudioManager(
                                                audio_log_factory);
 }
 
+AudioInputStream* AudioManagerFuchsia::MakeInputStream(
+    const AudioParameters& params,
+    const std::string& device_id) {
+  if (!device_id.empty() &&
+      device_id != AudioDeviceDescription::kDefaultDeviceId &&
+      device_id != AudioDeviceDescription::kLoopbackInputDeviceId) {
+    return nullptr;
+  }
+
+  return new AudioInputStreamFuchsia(this, params, device_id);
+}
 }  // namespace media

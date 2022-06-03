@@ -6,15 +6,12 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_USE_ADDRESS_ACTION_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/actions/action.h"
-#include "components/autofill_assistant/browser/actions/required_fields_fallback_handler.h"
+#include "components/autofill_assistant/browser/actions/fallback_handler/required_fields_fallback_handler.h"
 
 namespace autofill {
 class AutofillProfile;
@@ -27,43 +24,37 @@ class ClientStatus;
 class UseAddressAction : public Action {
  public:
   explicit UseAddressAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  UseAddressAction(const UseAddressAction&) = delete;
+  UseAddressAction& operator=(const UseAddressAction&) = delete;
+
   ~UseAddressAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void EndAction(const ClientStatus& final_status,
-                 const base::Optional<ClientStatus>& optional_details_status =
-                     base::nullopt);
+  void EndAction(const ClientStatus& status);
 
-  // Fill the form using data in client memory. Return whether filling succeeded
-  // or not through OnFormFilled.
+  // Fill the form using |profile_|. Return whether filling succeeded or not
+  // through OnFormFilled.
   void FillFormWithData();
   void OnWaitForElement(const ClientStatus& element_status);
 
+  void InitFallbackHandler(const autofill::AutofillProfile& profile);
+
   // Called when the address has been filled.
-  void OnFormFilled(std::unique_ptr<RequiredFieldsFallbackHandler::FallbackData>
-                        fallback_data,
-                    const ClientStatus& status);
+  void ExecuteFallback(const ClientStatus& status);
 
-  // Create fallback data.
-  std::unique_ptr<RequiredFieldsFallbackHandler::FallbackData>
-  CreateFallbackData(const autofill::AutofillProfile& profile);
-
-  // Usage of the autofilled address.
-  std::string name_;
-  std::string prompt_;
+  // Note: |fallback_handler_| must be a member, because checking for fallbacks
+  // is asynchronous and the existence of the handler must be ensured.
+  std::unique_ptr<RequiredFieldsFallbackHandler> fallback_handler_;
+  std::unique_ptr<autofill::AutofillProfile> profile_;
   Selector selector_;
-
-  std::unique_ptr<RequiredFieldsFallbackHandler>
-      required_fields_fallback_handler_;
 
   ProcessActionCallback process_action_callback_;
   base::WeakPtrFactory<UseAddressAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UseAddressAction);
 };
 
 }  // namespace autofill_assistant
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_AUTOFILL_ACTION_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_USE_ADDRESS_ACTION_H_

@@ -3,27 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * Event of the ProgressCenter class.
- * @const @enum {string}
- */
-const ProgressCenterEvent = {
-  /**
-   * Background page notifies item update to application windows.
-   */
-  ITEM_UPDATED: 'itemUpdated',
-
-  /**
-   * Background page notifies all the items are cleared.
-   */
-  RESET: 'reset'
-};
-Object.freeze(ProgressCenterEvent);
-
-/**
  * State of progress items.
  * @const @enum {string}
  */
-const ProgressItemState = {
+export const ProgressItemState = {
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',
   ERROR: 'error',
@@ -35,7 +18,7 @@ Object.freeze(ProgressItemState);
  * Type of progress items.
  * @const @enum {string}
  */
-const ProgressItemType = {
+export const ProgressItemType = {
   // The item is file copy operation.
   COPY: 'copy',
   // The item is file move operation.
@@ -48,14 +31,20 @@ const ProgressItemType = {
   SYNC: 'sync',
   // The item is general file transfer operation.
   // This is used for the mixed operation of summarized item.
-  TRANSFER: 'transfer'
+  TRANSFER: 'transfer',
+  // The item is external drive format operation.
+  FORMAT: 'format',
+  // The item is archive operation.
+  MOUNT_ARCHIVE: 'mount_archive',
+  // The item is external drive partitioning operation.
+  PARTITION: 'partition'
 };
 Object.freeze(ProgressItemType);
 
 /**
  * Item of the progress center.
  */
-class ProgressCenterItem {
+export class ProgressCenterItem {
   constructor() {
     /**
      * Item ID.
@@ -129,6 +118,12 @@ class ProgressCenterItem {
      * @type {?function()}
      */
     this.cancelCallback = null;
+
+    /**
+     * The predicted remaining time to complete the progress item in seconds.
+     * @type {number}
+     */
+    this.remainingTime;
   }
 
   /**
@@ -182,8 +177,6 @@ class ProgressCenterItem {
 
   /**
    * Clones the item.
-   * TODO(adanilo) This is used by ProgressCenterItemGroup only, remove when
-   * VS feedback panels are turned on permanently.
    * @return {!ProgressCenterItem} New item having the same properties as this.
    */
   clone() {

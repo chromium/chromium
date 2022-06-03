@@ -5,22 +5,10 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "HorizontalScrollbar",
-          "rect": [8, 193, 85, 15],
-          "reason": "paint property change"
-        },
-        {
-          "object": "VerticalScrollbar",
-          "rect": [93, 108, 15, 85],
-          "reason": "incremental"
-        },
-        {
-          "object": "Scroll corner of LayoutNGBlockFlow DIV id='target'",
-          "rect": [93, 193, 15, 15],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [8, 193, 85, 15],
+        [93, 108, 15, 85],
+        [93, 193, 15, 15]
       ]
     }
   ]

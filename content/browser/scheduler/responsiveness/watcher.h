@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 
 namespace content {
@@ -20,6 +22,13 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
   Watcher();
   void SetUp();
   void Destroy();
+
+  // Must be invoked once-and-only-once, after SetUp(), the first time
+  // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
+  // during startup). This will be used as a signal for the true end of
+  // "startup" and the beginning of recording
+  // Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.
+  void OnFirstIdle();
 
  protected:
   friend class base::RefCounted<Watcher>;

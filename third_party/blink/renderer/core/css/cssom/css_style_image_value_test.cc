@@ -17,16 +17,19 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
       : cache_pending_(cache_pending), size_(size) {}
 
   // CSSStyleImageValue
-  base::Optional<IntSize> IntrinsicSize() const final {
+  absl::optional<IntSize> IntrinsicSize() const final {
     if (cache_pending_)
-      return base::nullopt;
+      return absl::nullopt;
     return size_;
   }
 
   // CanvasImageSource
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               AccelerationHint,
-                                               const FloatSize&) final {
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final {
+    // Only cover premultiply alpha cases.
+    DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
     return nullptr;
   }
   ResourceStatus Status() const final {

@@ -11,8 +11,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check_op.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
@@ -41,7 +41,8 @@ void CronetUploadDataStreamAdapter::InitializeOnNetworkThread(
   DCHECK(network_task_runner_);
 }
 
-void CronetUploadDataStreamAdapter::Read(net::IOBuffer* buffer, int buf_len) {
+void CronetUploadDataStreamAdapter::Read(scoped_refptr<net::IOBuffer> buffer,
+                                         int buf_len) {
   DCHECK(upload_data_stream_);
   DCHECK(network_task_runner_);
   DCHECK(network_task_runner_->BelongsToCurrentThread());
@@ -52,7 +53,8 @@ void CronetUploadDataStreamAdapter::Read(net::IOBuffer* buffer, int buf_len) {
   // ones used last time.
   if (!(buffer_ && buffer_->io_buffer()->data() == buffer->data() &&
         buffer_->io_buffer_len() == buf_len)) {
-    buffer_ = std::make_unique<ByteBufferWithIOBuffer>(env, buffer, buf_len);
+    buffer_ = std::make_unique<ByteBufferWithIOBuffer>(env, std::move(buffer),
+                                                       buf_len);
   }
   Java_CronetUploadDataStream_readData(env, jupload_data_stream_,
                                        buffer_->byte_buffer());

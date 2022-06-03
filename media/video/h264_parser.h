@@ -15,13 +15,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/video/h264_bit_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -214,10 +213,10 @@ struct MEDIA_EXPORT H264SPS {
                                              bool* constraint_set3_flag);
 
   // Helpers to compute frequently-used values. These methods return
-  // base::nullopt if they encounter integer overflow. They do not verify that
+  // absl::nullopt if they encounter integer overflow. They do not verify that
   // the results are in-spec for the given profile or level.
-  base::Optional<gfx::Size> GetCodedSize() const;
-  base::Optional<gfx::Rect> GetVisibleRect() const;
+  absl::optional<gfx::Size> GetCodedSize() const;
+  absl::optional<gfx::Rect> GetVisibleRect() const;
   VideoColorSpace GetColorSpace() const;
 
   // Helper to compute indicated level from parsed SPS data. The value of
@@ -359,6 +358,14 @@ struct MEDIA_EXPORT H264SliceHeader {
   // Size in bits of dec_ref_pic_marking() syntax element.
   size_t dec_ref_pic_marking_bit_size;
   size_t pic_order_cnt_bit_size;
+
+  // This is when we are using full sample encryption and only the portions
+  // needed for DPB management are filled in, the rest will already be known
+  // by the accelerator and we will not need to specify it.
+  bool full_sample_encryption;
+  // This is used by some accelerators to handle decoding after slice header
+  // parsing.
+  uint32_t full_sample_index;
 };
 
 struct H264SEIRecoveryPoint {
@@ -429,6 +436,10 @@ class MEDIA_EXPORT H264Parser {
                          std::vector<H264NALU>* nalus);
 
   H264Parser();
+
+  H264Parser(const H264Parser&) = delete;
+  H264Parser& operator=(const H264Parser&) = delete;
+
   ~H264Parser();
 
   void Reset();
@@ -557,8 +568,6 @@ class MEDIA_EXPORT H264Parser {
   // This contains the range of the previous NALU found in
   // AdvanceToNextNalu(). Holds exactly one range.
   Ranges<const uint8_t*> previous_nalu_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Parser);
 };
 
 }  // namespace media

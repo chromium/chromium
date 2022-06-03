@@ -2,6 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+import {FilesToast} from '../elements/files_toast.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import {DragSelector} from './ui/drag_selector.js';
+import {ListContainer} from './ui/list_container.js';
+
 /**
  * Global (placed in the window object) variable name to hold internal
  * file dragging information. Needed to show visual feedback while dragging
@@ -11,11 +37,24 @@
 const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
 
 /**
+ * The key under which we store if the file content is missing. This property
+ * tells us if we are attemptint to use a drive file while Drive is
+ * disconnected.
+ */
+const MISSING_FILE_CONTENTS = 'missingFileContents';
+
+/**
+ * The key under which we store the root of the file system of files on which
+ * we operate. This allows us to set the correct drag effect.
+ */
+const SOURCE_ROOT_URL = 'sourceRootURL';
+
+/**
  * @typedef {{file:?File, externalFileUrl:string}}
  */
 let FileAsyncData;
 
-class FileTransferController {
+export class FileTransferController {
   /**
    * @param {!Document} doc Owning document.
    * @param {!ListContainer} listContainer List container.
@@ -28,15 +67,15 @@ class FileTransferController {
    * @param {!FileOperationManager} fileOperationManager File operation manager
    *     instance.
    * @param {!MetadataModel} metadataModel Metadata cache service.
-   * @param {!ThumbnailModel} thumbnailModel
    * @param {!DirectoryModel} directoryModel Directory model instance.
    * @param {!VolumeManager} volumeManager Volume manager instance.
    * @param {!FileSelectionHandler} selectionHandler Selection handler.
+   * @param {!FilesToast} filesToast Files toast.
    */
   constructor(
       doc, listContainer, directoryTree, confirmationCallback, progressCenter,
-      fileOperationManager, metadataModel, thumbnailModel, directoryModel,
-      volumeManager, selectionHandler) {
+      fileOperationManager, metadataModel, directoryModel, volumeManager,
+      selectionHandler, filesToast) {
     /**
      * @private {!Document}
      * @const
@@ -60,12 +99,6 @@ class FileTransferController {
      * @const
      */
     this.metadataModel_ = metadataModel;
-
-    /**
-     * @private {!ThumbnailModel}
-     * @const
-     */
-    this.thumbnailModel_ = thumbnailModel;
 
     /**
      * @private {!DirectoryModel}
@@ -99,17 +132,16 @@ class FileTransferController {
     this.progressCenter_ = progressCenter;
 
     /**
+     * @private {!FilesToast}
+     * @const
+     */
+    this.filesToast_ = filesToast;
+
+    /**
      * The array of pending task ID.
      * @type {Array<string>}
      */
     this.pendingTaskIds = [];
-
-    /**
-     * Promise to be fulfilled with the thumbnail image of selected file in drag
-     * operation. Used if only one element is selected.
-     * @private {Promise}
-     */
-    this.preloadedThumbnailImagePromise_ = null;
 
     /**
      * File objects for selected files.
@@ -137,17 +169,17 @@ class FileTransferController {
     this.sourceNotFoundErrorCount_ = 0;
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
-    this.copyCommand_ = /** @type {!cr.ui.Command} */ (
+    this.copyCommand_ = /** @type {!Command} */ (
         queryRequiredElement('command#copy', assert(this.document_.body)));
 
     /**
-     * @private {!cr.ui.Command}
+     * @private {!Command}
      * @const
      */
-    this.cutCommand_ = /** @type {!cr.ui.Command} */ (
+    this.cutCommand_ = /** @type {!Command} */ (
         queryRequiredElement('command#cut', assert(this.document_.body)));
 
     /**
@@ -178,9 +210,6 @@ class FileTransferController {
 
     // Register the events.
     selectionHandler.addEventListener(
-        FileSelectionHandler.EventType.CHANGE,
-        this.onFileSelectionChanged_.bind(this));
-    selectionHandler.addEventListener(
         FileSelectionHandler.EventType.CHANGE_THROTTLED,
         this.onFileSelectionChangedThrottled_.bind(this));
     this.attachDragSource_(listContainer.table.list);
@@ -194,9 +223,8 @@ class FileTransferController {
     chrome.fileManagerPrivate.enableExternalFileScheme();
   }
 
-
   /**
-   * @param {!cr.ui.List} list Items in the list will be draggable.
+   * @param {!List} list Items in the list will be draggable.
    * @private
    */
   attachDragSource_(list) {
@@ -211,7 +239,7 @@ class FileTransferController {
   }
 
   /**
-   * @param {!cr.ui.List} list List itself and its directory items will could
+   * @param {!List} list List itself and its directory items will could
    *                          be drop target.
    * @param {boolean=} opt_onlyIntoDirectories If true only directory list
    *     items could be drop targets. Otherwise any other place of the list
@@ -305,7 +333,7 @@ class FileTransferController {
     // Tag to check it's filemanager data.
     clipboardData.setData('fs/tag', 'filemanager-data');
     clipboardData.setData(
-        'fs/sourceRootURL', sourceVolumeInfo.fileSystem.root.toURL());
+        `fs/${SOURCE_ROOT_URL}`, sourceVolumeInfo.fileSystem.root.toURL());
 
     const sourceURLs = util.entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
@@ -314,7 +342,7 @@ class FileTransferController {
     clipboardData.setData('fs/effectallowed', effectAllowed);
 
     clipboardData.setData(
-        'fs/missingFileContents', missingFileContents.toString());
+        `fs/${MISSING_FILE_CONTENTS}`, missingFileContents.toString());
   }
 
   /**
@@ -349,15 +377,26 @@ class FileTransferController {
    * @private
    */
   getDragAndDropGlobalData_() {
-    if (window[DRAG_AND_DROP_GLOBAL_DATA]) {
-      return window[DRAG_AND_DROP_GLOBAL_DATA];
-    }
-
-    // Dragging from other tabs/windows.
-    const views = chrome && chrome.extension ? chrome.extension.getViews() : [];
-    for (let i = 0; i < views.length; i++) {
-      if (views[i][DRAG_AND_DROP_GLOBAL_DATA]) {
-        return views[i][DRAG_AND_DROP_GLOBAL_DATA];
+    if (window.isSWA) {
+      const storage = window.localStorage;
+      const sourceRootURL =
+          storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
+      const missingFileContents = storage.getItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+      if (sourceRootURL !== null && missingFileContents !== null) {
+        return {sourceRootURL, missingFileContents};
+      }
+    } else {
+      // TODO(b/198106171): Remove this code.
+      if (window[DRAG_AND_DROP_GLOBAL_DATA]) {
+        return window[DRAG_AND_DROP_GLOBAL_DATA];
+      }
+      // Dragging from other tabs/windows.
+      const views = chrome.extension.getViews();
+      for (let i = 0; i < views.length; i++) {
+        if (views[i][DRAG_AND_DROP_GLOBAL_DATA]) {
+          return views[i][DRAG_AND_DROP_GLOBAL_DATA];
+        }
       }
     }
     return null;
@@ -374,7 +413,7 @@ class FileTransferController {
    * @private
    */
   getSourceRootURL_(clipboardData, dragAndDropData) {
-    const sourceRootURL = clipboardData.getData('fs/sourceRootURL');
+    const sourceRootURL = clipboardData.getData(`fs/${SOURCE_ROOT_URL}`);
     if (sourceRootURL) {
       return sourceRootURL;
     }
@@ -394,7 +433,7 @@ class FileTransferController {
    * @private
    */
   isMissingFileContents_(clipboardData) {
-    let data = clipboardData.getData('fs/missingFileContents');
+    let data = clipboardData.getData(`fs/${MISSING_FILE_CONTENTS}`);
     if (!data) {
       // |clipboardData| in protected mode.
       const globalData = this.getDragAndDropGlobalData_();
@@ -406,23 +445,100 @@ class FileTransferController {
   }
 
   /**
+   * Calls executePaste with |pastePlan| if paste is allowed by Data Leak
+   * Prevention policy. If paste is not allowed, it shows a toast to the
+   * user.
+   *
+   * @param {!FileTransferController.PastePlan} pastePlan
+   * @return {!Promise<string>} Either "copy" or "move".
+   * @private
+   */
+  async executePasteIfAllowed_(pastePlan) {
+    const sourceEntries = await pastePlan.resolveEntries();
+    const isPasteAllowed = true;
+
+    // TODO(crbug.com/1259202): Add Dlp logic
+    if (!isPasteAllowed) {
+      this.filesToast_.show(
+          'Pasting this file is blocked by your administrator', {
+            text: 'Learn more',
+            callback: () => {
+              util.visitURL(
+                  'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
+            }
+          });
+      throw new Error('ABORT');
+    }
+    if (sourceEntries.length == 0) {
+      // This can happen when copied files were deleted before pasting
+      // them. We execute the plan as-is, so as to share the post-copy
+      // logic. This is basically same as getting empty by filtering
+      // same-directory entries.
+      return this.executePaste(pastePlan);
+    }
+    const confirmationType = pastePlan.getConfirmationType();
+    if (confirmationType == FileTransferController.ConfirmationType.NONE) {
+      return this.executePaste(pastePlan);
+    }
+    const messages = pastePlan.getConfirmationMessages(confirmationType);
+    const userApproved =
+        await this.confirmationCallback_(pastePlan.isMove, messages);
+    if (!userApproved) {
+      throw new Error('ABORT');
+    }
+    return this.executePaste(pastePlan);
+  }
+
+  /**
    * Collects parameters of paste operation by the given command and the current
    * system clipboard.
    *
+   * @param {!DataTransfer} clipboardData System data transfer object.
+   * @param {DirectoryEntry=} opt_destinationEntry Paste destination.
+   * @param {string=} opt_effect Desired drop/paste effect. Could be
+   *     'move'|'copy' (default is copy). Ignored if conflicts with
+   *     |clipboardData.effectAllowed|.
    * @return {!FileTransferController.PastePlan}
    */
   preparePaste(clipboardData, opt_destinationEntry, opt_effect) {
+    const destinationEntry = assert(
+        opt_destinationEntry ||
+        /** @type {DirectoryEntry} */
+        (this.directoryModel_.getCurrentDirEntry()));
+
+    // When FilesApp does drag and drop to itself, it uses fs/sources to
+    // populate sourceURLs, and it will resolve sourceEntries later using
+    // webkitResolveLocalFileSystemURL().
     const sourceURLs = clipboardData.getData('fs/sources') ?
         clipboardData.getData('fs/sources').split('\n') :
         [];
+
+    // When FilesApp is the paste target for other apps such as crostini,
+    // the file URL is either not provided, or it is not compatible. We use
+    // DataTransferItem.webkitGetAsEntry() to get the entry now.
+    const sourceEntries = [];
+    if (sourceURLs.length === 0) {
+      for (let i = 0; i < clipboardData.items.length; i++) {
+        if (clipboardData.items[i].kind === 'file') {
+          const item = clipboardData.items[i];
+          const entry = item.webkitGetAsEntry();
+          if (entry !== null) {
+            sourceEntries.push(entry);
+          } else {
+            // A File which does not resolve for webkitGetAsEntry() must be an
+            // image drag drop from the browser. Write it to destination dir.
+            this.fileOperationManager_.writeFile(
+                assert(item.getAsFile()), destinationEntry);
+          }
+        }
+      }
+    }
+
     // effectAllowed set in copy/paste handlers stay uninitialized. DnD handlers
     // work fine.
     const effectAllowed = clipboardData.effectAllowed !== 'uninitialized' ?
         clipboardData.effectAllowed :
         clipboardData.getData('fs/effectallowed');
-    const destinationEntry = opt_destinationEntry ||
-        /** @type {DirectoryEntry} */
-        (this.directoryModel_.getCurrentDirEntry());
     const toMove = util.isDropEffectAllowed(effectAllowed, 'move') &&
         (!util.isDropEffectAllowed(effectAllowed, 'copy') ||
          opt_effect === 'move');
@@ -430,12 +546,15 @@ class FileTransferController {
     const destinationLocationInfo =
         this.volumeManager_.getLocationInfo(destinationEntry);
     if (!destinationLocationInfo) {
-      console.log(
-          'Failed to get destination location for ' + destinationEntry.title() +
+      console.error(
+          'Failed to get destination location for ' + destinationEntry.toURL() +
           ' while attempting to paste files.');
     }
+    assert(destinationLocationInfo);
+
     return new FileTransferController.PastePlan(
-        sourceURLs, destinationEntry, assert(destinationLocationInfo), toMove);
+        sourceURLs, sourceEntries, destinationEntry, this.metadataModel_,
+        toMove);
   }
 
   /**
@@ -453,31 +572,7 @@ class FileTransferController {
     const pastePlan =
         this.preparePaste(clipboardData, opt_destinationEntry, opt_effect);
 
-    return FileTransferController.URLsToEntriesWithAccess(pastePlan.sourceURLs)
-        .then(entriesResult => {
-          const sourceEntries = entriesResult.entries;
-
-          if (sourceEntries.length == 0) {
-            // This can happen when copied files were deleted before pasting
-            // them. We execute the plan as-is, so as to share the post-copy
-            // logic. This is basically same as getting empty by filtering
-            // same-directory entries.
-            return Promise.resolve(this.executePaste(pastePlan));
-          }
-          const confirmationType = pastePlan.getConfirmationType(sourceEntries);
-          if (confirmationType ==
-              FileTransferController.ConfirmationType.NONE) {
-            return Promise.resolve(this.executePaste(pastePlan));
-          }
-          const messages = pastePlan.getConfirmationMessages(
-              confirmationType, sourceEntries);
-          this.confirmationCallback_(pastePlan.isMove, messages)
-              .then(userApproved => {
-                if (userApproved) {
-                  this.executePaste(pastePlan);
-                }
-              });
-        });
+    return this.executePasteIfAllowed_(pastePlan);
   }
 
   /**
@@ -492,21 +587,16 @@ class FileTransferController {
     const destinationEntry = pastePlan.destinationEntry;
 
     let entries = [];
-    let failureUrls;
     let shareEntries;
     const taskId = this.fileOperationManager_.generateTaskId();
 
-    FileTransferController.URLsToEntriesWithAccess(sourceURLs)
-        .then(/**
-               * @param {Object} result
-               */
-              result => {
-                failureUrls = result.failureUrls;
-                // The promise is not rejected, so it's safe to not remove the
-                // early progress center item here.
-                return this.fileOperationManager_.filterSameDirectoryEntry(
-                    result.entries, destinationEntry, toMove);
-              })
+    pastePlan.resolveEntries()
+        .then(sourceEntries => {
+          // The promise is not rejected, so it's safe to not remove the
+          // early progress center item here.
+          return this.fileOperationManager_.filterSameDirectoryEntry(
+              sourceEntries, destinationEntry, toMove);
+        })
         .then(/**
                * @param {!Array<Entry>} filteredEntries
                */
@@ -514,6 +604,14 @@ class FileTransferController {
                 entries = filteredEntries;
                 if (entries.length === 0) {
                   return Promise.reject('ABORT');
+                }
+                // Send only the copy operation to IO Queue in the C++.
+                if (window.isSWA) {
+                  chrome.fileManagerPrivate.startIOTask(
+                      toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
+                               chrome.fileManagerPrivate.IOTaskType.COPY,
+                      entries, {destinationFolder: destinationEntry});
+                  return;
                 }
 
                 this.pendingTaskIds.push(taskId);
@@ -563,7 +661,7 @@ class FileTransferController {
                     entries, destinationEntry, toMove, taskId);
                 this.pendingTaskIds.splice(
                     this.pendingTaskIds.indexOf(taskId), 1);
-        })
+              })
         .catch(error => {
           if (error !== 'ABORT') {
             console.error(error.stack ? error.stack : error);
@@ -571,9 +669,9 @@ class FileTransferController {
         })
         .finally(() => {
           // Publish source not found error item.
-          for (let i = 0; i < failureUrls.length; i++) {
-            const fileName =
-                decodeURIComponent(failureUrls[i].replace(/^.+\//, ''));
+          for (let i = 0; i < pastePlan.failureUrls.length; i++) {
+            const fileName = decodeURIComponent(
+                pastePlan.failureUrls[i].replace(/^.+\//, ''));
             const item = new ProgressCenterItem();
             item.id = 'source-not-found-' + this.sourceNotFoundErrorCount_;
             if (toMove) {
@@ -590,115 +688,41 @@ class FileTransferController {
   }
 
   /**
-   * Preloads an image thumbnail for the specified file entry.
-   *
-   * @param {!Entry} entry Entry to preload a thumbnail for.
-   * @private
-   */
-  preloadThumbnailImage_(entry) {
-    const imagePromise = this.thumbnailModel_.get([entry]).then(metadata => {
-      return new Promise((fulfill, reject) => {
-        const loader = new ThumbnailLoader(
-            entry, ThumbnailLoader.LoaderType.IMAGE, metadata[0]);
-        loader.loadDetachedImage(result => {
-          if (result) {
-            fulfill(loader.getImage());
-          }
-        });
-      });
-    });
-
-    imagePromise.then(image => {
-      // Store the image so that we can obtain the image synchronously.
-      imagePromise.value = image;
-    });
-
-    this.preloadedThumbnailImagePromise_ = imagePromise;
-  }
-
-  /**
    * Renders a drag-and-drop thumbnail.
    *
-   * @return {!HTMLElement} Element containing the thumbnail.
+   * @return {!HTMLElement} Thumbnail element.
    * @private
    */
   renderThumbnail_() {
-    const length = this.selectionHandler_.selection.entries.length;
-    const container = /** @type {HTMLElement} */ (
-        this.document_.body.querySelector('#drag-container'));
-    const contents = this.document_.createElement('div');
-    contents.className = 'drag-contents';
-    container.appendChild(contents);
-
-    // Option 1. Multiple selection, render only a label.
-    if (length > 1) {
-      const label = this.document_.createElement('div');
-      label.className = 'label';
-      label.textContent = strf('DRAGGING_MULTIPLE_ITEMS', length);
-      contents.appendChild(label);
-      return container;
-    }
-
-    // Option 2. Thumbnail image available from preloadedThumbnailImagePromise_,
-    // then render it without a label.
-    if (this.preloadedThumbnailImagePromise_ &&
-        this.preloadedThumbnailImagePromise_.value) {
-      const thumbnailImage = this.preloadedThumbnailImagePromise_.value;
-
-      // Resize the image to canvas.
-      const canvas = document.createElement('canvas');
-      canvas.width = FileTransferController.DRAG_THUMBNAIL_SIZE_;
-      canvas.height = FileTransferController.DRAG_THUMBNAIL_SIZE_;
-
-      const minScale = Math.min(
-          thumbnailImage.width / canvas.width,
-          thumbnailImage.height / canvas.height);
-      const srcWidth = Math.min(canvas.width * minScale, thumbnailImage.width);
-      const srcHeight =
-          Math.min(canvas.height * minScale, thumbnailImage.height);
-
-      const context = canvas.getContext('2d');
-      context.drawImage(
-          thumbnailImage, (thumbnailImage.width - srcWidth) / 2,
-          (thumbnailImage.height - srcHeight) / 2, srcWidth, srcHeight, 0, 0,
-          canvas.width, canvas.height);
-      contents.classList.add('for-image');
-      contents.appendChild(canvas);
-      return container;
-    }
-
-    // Option 3. Thumbnail image available from file grid / list, render it
-    // without a label.
-    // Because of Option 1, there is only exactly one item selected.
+    const entry = this.selectionHandler_.selection.entries[0];
     const index = this.selectionHandler_.selection.indexes[0];
-    // We only need one of the thumbnails.
+    const items = this.selectionHandler_.selection.entries.length;
+
+    const container = /** @type {!HTMLElement} */ (
+        this.document_.body.querySelector('#drag-container'));
+    const multiple = items > 1 ? 'block' : 'none';
+    container.innerHTML = `
+      <div class='drag-box drag-multiple' style='display:${multiple}'></div>
+      <div class='drag-box drag-contents'>
+        <div class='detail-icon'></div><div class='label'>${entry.name}</div>
+      </div>
+      <div class='drag-bubble' style='display:${multiple}'>${items}</div>
+    `;
+
+    const icon = container.querySelector('.detail-icon');
     const thumbnail = this.listContainer_.currentView.getThumbnail(index);
     if (thumbnail) {
-      const canvas = document.createElement('canvas');
-      canvas.width = FileTransferController.DRAG_THUMBNAIL_SIZE_;
-      canvas.height = FileTransferController.DRAG_THUMBNAIL_SIZE_;
-      canvas.style.backgroundImage = thumbnail.style.backgroundImage;
-      canvas.style.backgroundSize = 'cover';
-      canvas.classList.add('for-image');
-      contents.appendChild(canvas);
-      return container;
+      icon.style.backgroundImage = thumbnail.style.backgroundImage;
+      icon.style.backgroundSize = 'cover';
+    } else {
+      icon.setAttribute('file-type-icon', FileType.getIcon(entry));
     }
 
-    // Option 4. Thumbnail not available. Render an icon and a label.
-    const entry = this.selectionHandler_.selection.entries[0];
-    const icon = this.document_.createElement('div');
-    icon.className = 'detail-icon';
-    icon.setAttribute('file-type-icon', FileType.getIcon(entry));
-    contents.appendChild(icon);
-    const label = this.document_.createElement('div');
-    label.className = 'label';
-    label.textContent = entry.name;
-    contents.appendChild(label);
     return container;
   }
 
   /**
-   * @param {!cr.ui.List} list Drop target list
+   * @param {!List} list Drop target list
    * @param {!Event} event A dragstart event of DOM.
    * @private
    */
@@ -732,39 +756,52 @@ class FileTransferController {
       return;
     }
 
-    const dt = /** @type {DragEvent} */ (event).dataTransfer;
+    const dataTransfer = /** @type {DragEvent} */ (event).dataTransfer;
+
     const canCopy = this.canCopyOrDrag();
     const canCut = this.canCutOrDrag();
     if (canCopy || canCut) {
       if (canCopy && canCut) {
-        this.cutOrCopy_(dt, 'all');
+        this.cutOrCopy_(dataTransfer, 'all');
       } else if (canCopy) {
-        this.cutOrCopy_(dt, 'copyLink');
+        this.cutOrCopy_(dataTransfer, 'copyLink');
       } else {
-        this.cutOrCopy_(dt, 'move');
+        this.cutOrCopy_(dataTransfer, 'move');
       }
     } else {
       event.preventDefault();
       return;
     }
 
-    const dragThumbnail = this.renderThumbnail_();
-    let yOffset = 0;
-    // Position the drag image above the start point for touch intiated drag.
-    if (this.touching_) {
-      const thumbNailExtent = dragThumbnail.getBoundingClientRect();
-      yOffset = thumbNailExtent.height;
-    }
-    dt.setDragImage(dragThumbnail, 0, yOffset);
+    const thumbnail = {element: null, x: 0, y: 0};
 
-    window[DRAG_AND_DROP_GLOBAL_DATA] = {
-      sourceRootURL: dt.getData('fs/sourceRootURL'),
-      missingFileContents: dt.getData('fs/missingFileContents')
-    };
+    thumbnail.element = this.renderThumbnail_();
+    if (this.document_.querySelector(':root[dir=rtl]')) {
+      thumbnail.x = thumbnail.element.clientWidth * window.devicePixelRatio;
+    }
+
+    dataTransfer.setDragImage(thumbnail.element, thumbnail.x, thumbnail.y);
+
+    if (window.isSWA) {
+      const storage = window.localStorage;
+      storage.setItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`,
+          dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`));
+      storage.setItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`,
+          dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`));
+    } else {
+      // TODO(b/198106171): Remove this code.
+      window[DRAG_AND_DROP_GLOBAL_DATA] = {
+        sourceRootURL: dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`),
+        missingFileContents:
+            dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`),
+      };
+    }
   }
 
   /**
-   * @param {!cr.ui.List} list Drop target list.
+   * @param {!List} list Drop target list.
    * @param {!Event} event A dragend event of DOM.
    * @private
    */
@@ -776,13 +813,21 @@ class FileTransferController {
     const container = this.document_.body.querySelector('#drag-container');
     container.textContent = '';
     this.clearDropTarget_();
-    delete window[DRAG_AND_DROP_GLOBAL_DATA];
+    if (window.isSWA) {
+      const storage = window.localStorage;
+      storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
+      storage.removeItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+    } else {
+      // TODO(b/198106171): Remove this code.
+      delete window[DRAG_AND_DROP_GLOBAL_DATA];
+    }
   }
 
   /**
    * @param {boolean} onlyIntoDirectories True if the drag is only into
    *     directories.
-   * @param {(!cr.ui.List|!DirectoryTree)} list Drop target list.
+   * @param {(!List|!DirectoryTree)} list Drop target list.
    * @param {Event} event A dragover event of DOM.
    * @private
    */
@@ -792,36 +837,26 @@ class FileTransferController {
     if (!entry && !onlyIntoDirectories) {
       entry = this.directoryModel_.getCurrentDirEntry();
     }
+
     const effectAndLabel =
         this.selectDropEffect_(event, this.getDragAndDropGlobalData_(), entry);
     event.dataTransfer.dropEffect = effectAndLabel.getDropEffect();
     event.preventDefault();
-    const label = effectAndLabel.getLabel();
-    if (!this.dropLabel_) {
-      this.dropLabel_ = document.querySelector('div#drop-label');
-    }
-    if (label) {
-      this.dropLabel_.innerText = label;
-      this.dropLabel_.style.left = event.pageX + 'px';
-      this.dropLabel_.style.top =
-          (event.pageY + FileTransferController.DRAG_LABEL_Y_OFFSET_) + 'px';
-      this.dropLabel_.style.display = 'block';
-    } else {
-      this.dropLabel_.style.display = 'none';
-    }
   }
 
   /**
-   * @param {(!cr.ui.List|!DirectoryTree)} list Drop target list.
+   * @param {(!List|!DirectoryTree)} list Drop target list.
    * @param {!Event} event A dragenter event of DOM.
    * @private
    */
   onDragEnterFileList_(list, event) {
     event.preventDefault();  // Required to prevent the cursor flicker.
+
     this.lastEnteredTarget_ = event.target;
     let item = list.getListItemAncestor(
         /** @type {HTMLElement} */ (event.target));
     item = item && list.isItem(item) ? item : null;
+
     if (item === this.dropTarget_) {
       return;
     }
@@ -841,9 +876,15 @@ class FileTransferController {
    */
   onDragEnterTree_(tree, event) {
     event.preventDefault();  // Required to prevent the cursor flicker.
+
+    if (!event.relatedTarget) {
+      event.dataTransfer.dropEffect = 'move';
+      return;
+    }
+
     this.lastEnteredTarget_ = event.target;
     let item = event.target;
-    while (item && !(item instanceof cr.ui.TreeItem)) {
+    while (item && !(item instanceof TreeItem)) {
       item = item.parentNode;
     }
 
@@ -875,6 +916,8 @@ class FileTransferController {
       this.clearDropTarget_();
       this.lastEnteredTarget_ = null;
     }
+
+    // TODO(files-ng): dropLabel_ is not used in files-ng, remove it.
     if (this.dropLabel_) {
       this.dropLabel_.style.display = 'none';
     }
@@ -935,28 +978,51 @@ class FileTransferController {
 
     // Set the new drop target.
     this.dropTarget_ = domElement;
-
     if (!domElement || !destinationEntry.isDirectory) {
       return;
     }
 
-    if (this.selectionHandler_.selection.entries.find(element => {
-          return util.isSameEntry(element, destinationEntry);
-        })) {
+    assert(destinationEntry.isDirectory);
+
+    // Assume the destination directory won't accept this drop.
+    domElement.classList.remove('accepts');
+    domElement.classList.add('denies');
+
+    // Disallow dropping a directory on itself.
+    const entries = this.selectionHandler_.selection.entries;
+    for (let i = 0; i < entries.length; i++) {
+      if (util.isSameEntry(entries[i], destinationEntry)) {
+        return;
+      }
+    }
+
+    this.destinationEntry_ = destinationEntry;
+
+    // Add accept classes if the directory can accept this drop.
+    if (this.canPasteOrDrop_(clipboardData, destinationEntry)) {
+      domElement.classList.remove('denies');
+      domElement.classList.add('accepts');
+    }
+
+    // Change directory immediately if it's a fake entry for Crostini.
+    if (destinationEntry.rootType === VolumeManagerCommon.RootType.CROSTINI) {
+      this.changeToDropTargetDirectory_();
       return;
     }
 
-    // Add accept class if the domElement can accept the drag.
-    domElement.classList.add('accepts');
-    this.destinationEntry_ = destinationEntry;
+    // Change to the directory after the drag target hover time out.
+    const navigate = this.changeToDropTargetDirectory_.bind(this);
+    this.navigateTimer_ = setTimeout(navigate, this.dragTargetHoverTime_());
+  }
 
-    // Change directory immediately for crostini, otherwise start timer.
-    if (destinationEntry.rootType === VolumeManagerCommon.RootType.CROSTINI) {
-      this.changeToDropTargetDirectory_();
-    } else {
-      this.navigateTimer_ =
-          setTimeout(this.changeToDropTargetDirectory_.bind(this), 2000);
-    }
+  /**
+   * Return the drag target hover time in milliseconds.
+   *
+   * @private
+   * @return {number}
+   */
+  dragTargetHoverTime_() {
+    return window.IN_TEST ? 500 : 2000;
   }
 
   /**
@@ -984,12 +1050,14 @@ class FileTransferController {
    * @private
    */
   clearDropTarget_() {
-    if (this.dropTarget_ && this.dropTarget_.classList.contains('accepts')) {
-      this.dropTarget_.classList.remove('accepts');
+    if (this.dropTarget_) {
+      this.dropTarget_.classList.remove('accepts', 'denies');
     }
+
     this.dropTarget_ = null;
     this.destinationEntry_ = null;
-    if (this.navigateTimer_ !== undefined) {
+
+    if (this.navigateTimer_) {
       clearTimeout(this.navigateTimer_);
       this.navigateTimer_ = 0;
     }
@@ -1137,7 +1205,8 @@ class FileTransferController {
   }
 
   /**
-   * @return {boolean} Returns true if the current directory is not read only.
+   * @return {boolean} Returns true if the current directory is not read only,
+   *     or any of the selected entries isn't read-only.
    * @public
    */
   canCutOrDrag() {
@@ -1152,6 +1221,13 @@ class FileTransferController {
     if (metadata.some(item => item.canDelete === false)) {
       return false;
     }
+
+    for (let i = 0; i < entries.length; i++) {
+      if (util.isNonModifiable(this.volumeManager_, entries[i])) {
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -1211,19 +1287,26 @@ class FileTransferController {
     if (!clipboardData) {
       return false;
     }
+
     if (!destinationEntry) {
       return false;
     }
+
     const destinationLocationInfo =
         this.volumeManager_.getLocationInfo(destinationEntry);
     if (!destinationLocationInfo || destinationLocationInfo.isReadOnly) {
       return false;
     }
+
     if (destinationLocationInfo.volumeInfo &&
         destinationLocationInfo.volumeInfo.error) {
       return false;
     }
-    if (!clipboardData.types || clipboardData.types.indexOf('fs/tag') === -1) {
+
+    // DataTransfer type will be 'fs/tag' when the source was FilesApp or exo,
+    // or 'Files' when the source was any other app.
+    const types = clipboardData.types;
+    if (!types || !(types.includes('fs/tag') || types.includes('Files'))) {
       return false;  // Unsupported type of content.
     }
 
@@ -1312,13 +1395,6 @@ class FileTransferController {
   /**
    * @private
    */
-  onFileSelectionChanged_() {
-    this.preloadedThumbnailImagePromise_ = null;
-  }
-
-  /**
-   * @private
-   */
   onFileSelectionChangedThrottled_() {
     // Remove file objects that are no longer in the selection.
     const asyncData = {};
@@ -1357,13 +1433,6 @@ class FileTransferController {
           }
         })(fileEntries[i]);
       }
-    }
-
-    if (entries.length === 1) {
-      // For single selection, the dragged element is created in advance,
-      // otherwise an image may not be loaded at the time the 'dragstart' event
-      // comes.
-      this.preloadThumbnailImage_(entries[0]);
     }
 
     this.metadataModel_
@@ -1489,15 +1558,6 @@ class FileTransferController {
 }
 
 /**
- * Size of drag thumbnail for image files.
- *
- * @type {number}
- * @const
- * @private
- */
-FileTransferController.DRAG_THUMBNAIL_SIZE_ = 64;
-
-/**
  * Y coordinate of the label to describe drop action, relative to mouse cursor.
  *
  * @type {number}
@@ -1513,6 +1573,8 @@ FileTransferController.DRAG_LABEL_Y_OFFSET_ = -32;
  */
 FileTransferController.ConfirmationType = {
   NONE: 'none',
+  COPY_TO_SHARED_DRIVE: 'copy_to_shared_drive',
+  MOVE_TO_SHARED_DRIVE: 'move_to_shared_drive',
   MOVE_BETWEEN_SHARED_DRIVES: 'between_team_drives',
   MOVE_FROM_SHARED_DRIVE_TO_OTHER: 'move_from_team_drive_to_other',
   MOVE_FROM_OTHER_TO_SHARED_DRIVE: 'move_from_other_to_team_drive',
@@ -1525,12 +1587,13 @@ FileTransferController.ConfirmationType = {
 FileTransferController.PastePlan = class {
   /**
    * @param {!Array<string>} sourceURLs URLs of source entries.
+   * @param {!Array<!Entry>} sourceEntries Entries of source entries.
    * @param {!DirectoryEntry} destinationEntry Destination directory.
-   * @param {!EntryLocation} destinationLocationInfo Location info of the
-   *     destination directory.
+   * @param {!MetadataModel} metadataModel Metadata model instance.
    * @param {boolean} isMove true if move, false if copy.
    */
-  constructor(sourceURLs, destinationEntry, destinationLocationInfo, isMove) {
+  constructor(
+      sourceURLs, sourceEntries, destinationEntry, metadataModel, isMove) {
     /**
      * @type {!Array<string>}
      * @const
@@ -1538,14 +1601,26 @@ FileTransferController.PastePlan = class {
     this.sourceURLs = sourceURLs;
 
     /**
+     * @type {!Array<!Entry>}
+     */
+    this.sourceEntries = sourceEntries;
+
+    /**
+     * Any URLs from sourceURLs which failed resolving to into sourceEntries.
+     * @type {!Array<string>}
+     */
+    this.failureUrls = [];
+
+    /**
      * @type {!DirectoryEntry}
      */
     this.destinationEntry = destinationEntry;
 
     /**
-     * @type {!EntryLocation}
+     * @private {!MetadataModel}
+     * @const
      */
-    this.destinationLocationInfo = destinationLocationInfo;
+    this.metadataModel_ = metadataModel;
 
     /**
      * @type {boolean}
@@ -1555,19 +1630,53 @@ FileTransferController.PastePlan = class {
   }
 
   /**
+   * Resolves sourceEntries from sourceURLs if needed and returns them.
+   *
+   * @return {!Promise<!Array<!Entry>>}
+   */
+  async resolveEntries() {
+    if (!this.sourceEntries.length) {
+      const result =
+          await FileTransferController.URLsToEntriesWithAccess(this.sourceURLs);
+      this.sourceEntries = result.entries;
+      this.failureUrls = result.failureUrls;
+    }
+    return this.sourceEntries;
+  }
+
+  /**
    * Obtains whether the planned operation requires user's confirmation, as well
    * as its type.
    *
-   * @param {!Array<!Entry>} sourceEntries
-   * @return {FileTransferController.ConfirmationType} type of the confirmation
-   *     required for the operation. If no confirmation is needed,
+   * @return {!FileTransferController.ConfirmationType} Type of the confirmation
+   *     needed for the operation. If no confirmation is needed,
    *     FileTransferController.ConfirmationType.NONE will be returned.
    */
-  getConfirmationType(sourceEntries) {
-    assert(sourceEntries.length != 0);
+  getConfirmationType() {
+    assert(this.sourceEntries.length !== 0);
+
+    // Confirmation type for local drive.
+    const sourceEntryCache =
+        this.metadataModel_.getCache([this.sourceEntries[0]], ['shared']);
+    const destinationEntryCache =
+        this.metadataModel_.getCache([this.destinationEntry], ['shared']);
+
+    // The shared property tells us whether an entry is shared on Drive, and is
+    // potentially undefined.
+    const isSharedSource = sourceEntryCache[0].shared === true;
+    const isSharedDestination = destinationEntryCache[0].shared === true;
+
+    // See crbug.com/731583#c20.
+    if (!isSharedSource && isSharedDestination) {
+      return this.isMove ?
+          FileTransferController.ConfirmationType.MOVE_TO_SHARED_DRIVE :
+          FileTransferController.ConfirmationType.COPY_TO_SHARED_DRIVE;
+    }
+
+    // Confirmation type for team drives.
     const source = {
-      isTeamDrive: util.isSharedDriveEntry(sourceEntries[0]),
-      teamDriveName: util.getTeamDriveName(sourceEntries[0])
+      isTeamDrive: util.isSharedDriveEntry(this.sourceEntries[0]),
+      teamDriveName: util.getTeamDriveName(this.sourceEntries[0])
     };
     const destination = {
       isTeamDrive: util.isSharedDriveEntry(this.destinationEntry),
@@ -1612,11 +1721,19 @@ FileTransferController.PastePlan = class {
    * @param {FileTransferController.ConfirmationType} confirmationType
    * @return {!Array<string>} sentences for a confirmation dialog box.
    */
-  getConfirmationMessages(confirmationType, sourceEntries) {
-    assert(sourceEntries.length != 0);
-    const sourceName = util.getTeamDriveName(sourceEntries[0]);
+  getConfirmationMessages(confirmationType) {
+    assert(this.sourceEntries.length != 0);
+    const sourceName = util.getTeamDriveName(this.sourceEntries[0]);
     const destinationName = util.getTeamDriveName(this.destinationEntry);
     switch (confirmationType) {
+      case FileTransferController.ConfirmationType.COPY_TO_SHARED_DRIVE:
+        return [strf(
+            'DRIVE_CONFIRM_COPY_TO_SHARED_DRIVE',
+            this.destinationEntry.fullPath.split('/').pop())];
+      case FileTransferController.ConfirmationType.MOVE_TO_SHARED_DRIVE:
+        return [strf(
+            'DRIVE_CONFIRM_MOVE_TO_SHARED_DRIVE',
+            this.destinationEntry.fullPath.split('/').pop())];
       case FileTransferController.ConfirmationType.MOVE_BETWEEN_SHARED_DRIVES:
         return [
           strf('DRIVE_CONFIRM_TD_MEMBERS_LOSE_ACCESS', sourceName),
@@ -1643,7 +1760,6 @@ FileTransferController.PastePlan = class {
     return [];
   }
 };
-
 
 /**
  * Converts list of urls to list of Entries with granting R/W permissions to

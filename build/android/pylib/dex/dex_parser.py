@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,7 +10,7 @@ A DexFile class that exposes access to several memory items in the dex format
 is provided, but it does not include error handling or validation.
 """
 
-from __future__ import print_function
+
 
 import argparse
 import collections
@@ -91,7 +91,7 @@ class _MemoryItemList(object):
     self.offset = offset
     self.size = size
     reader.Seek(first_item_offset or offset)
-    self._items = [factory(reader) for _ in xrange(size)]
+    self._items = [factory(reader) for _ in range(size)]
 
     if alignment:
       reader.AlignUpTo(alignment)
@@ -141,7 +141,7 @@ class _StringItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     reader.Seek(offset)
-    string_item_offsets = iter([reader.ReadUInt() for _ in xrange(size)])
+    string_item_offsets = iter([reader.ReadUInt() for _ in range(size)])
 
     def factory(x):
       data_offset = next(string_item_offsets)
@@ -182,7 +182,7 @@ class _ClassDefItemList(_MemoryItemList):
 
     def factory(x):
       return _ClassDefItem(*(x.ReadUInt()
-                             for _ in xrange(len(_ClassDefItem._fields))))
+                             for _ in range(len(_ClassDefItem._fields))))
 
     super(_ClassDefItemList, self).__init__(reader, offset, size, factory)
 
@@ -209,7 +209,7 @@ class _DexMapList(object):
     self._map = {}
     reader.Seek(offset)
     self._size = reader.ReadUInt()
-    for _ in xrange(self._size):
+    for _ in range(self._size):
       item = _DexMapItem(reader)
       self._map[item.type] = item
 
@@ -299,7 +299,7 @@ class _DexReader(object):
     self.Seek(offset)
     ret = ''
 
-    for _ in xrange(string_length):
+    for _ in range(string_length):
       a = self.ReadUByte()
       if a == 0:
         raise _MUTf8DecodeError('Early string termination encountered',
@@ -320,7 +320,10 @@ class _DexReader(object):
       else:
         raise _MUTf8DecodeError('Bad byte', string_length, offset)
 
-      ret += unichr(code)
+      try:
+        ret += unichr(code)
+      except NameError:
+        ret += chr(code)
 
     if self.ReadUByte() != 0x00:
       raise _MUTf8DecodeError('Expected string termination', string_length,
@@ -417,10 +420,26 @@ class DexFile(object):
 
   @staticmethod
   def ResolveClassAccessFlags(access_flags):
-    return tuple(
-        flag_string
-        for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.iteritems()
-        if flag & access_flags)
+    return tuple(flag_string
+                 for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.items()
+                 if flag & access_flags)
+
+  def IterMethodSignatureParts(self):
+    """Yields the string components of dex methods in a dex file.
+
+    Yields:
+      Tuples that look like:
+        (class name, return type, method name, (parameter type, ...)).
+    """
+    for method_item in self.method_item_list:
+      class_name_string = self.GetTypeString(method_item.type_idx)
+      method_name_string = self.GetString(method_item.name_idx)
+      proto_item = self.proto_item_list[method_item.proto_idx]
+      return_type_string = self.GetTypeString(proto_item.return_type_idx)
+      parameter_types = self.GetTypeListStringsByOffset(
+          proto_item.parameters_off)
+      yield (class_name_string, return_type_string, method_name_string,
+             parameter_types)
 
   def __repr__(self):
     items = [
@@ -436,45 +455,6 @@ class DexFile(object):
     return '\n'.join(str(item) for item in items)
 
 
-def _MethodSignaturePartsFromDexFile(dexfile):
-  """Yields the string components of dex methods in a dex file.
-
-  Args:
-    dexfile: The input dex file.
-
-  Yields:
-    Tuples that look like:
-      (class name, return type, method name, (parameter type, ...)).
-  """
-  for method_item in dexfile.method_item_list:
-    class_name_string = dexfile.GetTypeString(method_item.type_idx)
-    method_name_string = dexfile.GetString(method_item.name_idx)
-    proto_item = dexfile.proto_item_list[method_item.proto_idx]
-    return_type_string = dexfile.GetTypeString(proto_item.return_type_idx)
-    parameter_types = dexfile.GetTypeListStringsByOffset(
-        proto_item.parameters_off)
-    yield (class_name_string, return_type_string, method_name_string,
-           parameter_types)
-
-
-def CountUniqueDexMethods(dexfiles):
-  """Returns the number of unique methods given an iterable of dex files.
-
-  For method counts, most tools count the total number of dex methods referred
-  to by a dex file. In the multi-dex case, some method items are referred to by
-  multiple dex files, which means some methods are double counted. This method
-  returns a count of the number of unique methods referred to across all given
-  dex files.
-
-  Args:
-    dexfiles: Iterable of DexFile objects to count unique methods for.
-  """
-  unique_methods = set()
-  for dexfile in dexfiles:
-    unique_methods.update(_MethodSignaturePartsFromDexFile(dexfile))
-  return len(unique_methods)
-
-
 class _DumpCommand(object):
 
   def __init__(self, dexfile):
@@ -487,7 +467,7 @@ class _DumpCommand(object):
 class _DumpMethods(_DumpCommand):
 
   def Run(self):
-    for parts in _MethodSignaturePartsFromDexFile(self._dexfile):
+    for parts in self._dexfile.IterMethodSignatureParts():
       class_type, return_type, method_name, parameter_types = parts
       print('{} {} (return type={}, parameters={})'.format(
           class_type, method_name, return_type, parameter_types))

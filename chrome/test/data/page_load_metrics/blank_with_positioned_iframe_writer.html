@@ -1,0 +1,27 @@
+<html>
+<body>
+<script>
+// Creates an iframe element with an absolute x and y position and dimensions
+// width and height. The iframe element is appended to the body element.
+// Make sure the caller has a body element!
+function createIframeAtRect(frame_id, x, y, width, height) {
+    let frame = document.createElement('iframe');
+    frame.id = frame_id;
+    frame.style.border = "0px none transparent";
+    frame.style.overflow = "hidden";
+    frame.style.position = "absolute";
+    frame.style.left = x;
+    frame.style.top = y;
+    frame.scrolling = "no";
+    frame.frameborder="0";
+    frame.allowTransparency="true";
+    frame.width = width;
+    frame.height = height;
+    document.body.appendChild(frame);
+    return frame;
+}
+</script>
+</body>
+</html>
+
+

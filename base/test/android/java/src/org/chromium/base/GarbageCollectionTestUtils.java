@@ -4,8 +4,6 @@
 
 package org.chromium.base;
 
-import android.os.Build;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -17,8 +15,8 @@ public class GarbageCollectionTestUtils {
      * Note that {@link #MAX_GC_ITERATIONS} * {@link #GC_SLEEP_TIME} should not be too large,
      * since there are tests asserting objects NOT garbage collected.
      */
-    private final static int MAX_GC_ITERATIONS = 3;
-    private final static long GC_SLEEP_TIME = 100;
+    private static final int MAX_GC_ITERATIONS = 3;
+    private static final long GC_SLEEP_TIME = 10;
 
     /**
      * Do garbage collection and see if an object is released.
@@ -27,8 +25,8 @@ public class GarbageCollectionTestUtils {
      */
     public static boolean canBeGarbageCollected(WeakReference<?> reference) {
         // Robolectric tests, one iteration is enough.
-        final int iterations = isInRobolectric() ? 1 : MAX_GC_ITERATIONS;
-        final long sleepTime = isInRobolectric() ? 0 : GC_SLEEP_TIME;
+        final int iterations = MAX_GC_ITERATIONS;
+        final long sleepTime = GC_SLEEP_TIME;
         Runtime runtime = Runtime.getRuntime();
         for (int i = 0; i < iterations; i++) {
             runtime.runFinalization();
@@ -44,9 +42,5 @@ public class GarbageCollectionTestUtils {
         }
 
         return reference.get() == null;
-    }
-
-    private static boolean isInRobolectric() {
-        return Build.FINGERPRINT.equals("robolectric");
     }
 }

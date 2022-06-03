@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_COOKIE_REMINTER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_COOKIE_REMINTER_FACTORY_H_
 
-#include <memory>
-
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/navigation_interception/navigation_params.h"
@@ -109,8 +109,8 @@ class InterceptNavigationThrottleTest
     simulator->Start();
     if (failed(simulator.get()))
       return simulator->GetLastThrottleCheckResult();
-    for (const GURL& url : redirect_chain) {
-      simulator->Redirect(url);
+    for (const GURL& redirect_url : redirect_chain) {
+      simulator->Redirect(redirect_url);
       if (failed(simulator.get()))
         return simulator->GetLastThrottleCheckResult();
     }

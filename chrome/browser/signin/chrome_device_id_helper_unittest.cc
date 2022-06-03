@@ -8,9 +8,10 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kEpehemeralPrefix[] = "t_";
 
 TEST(DeviceIdHelper, NotEphemeral) {

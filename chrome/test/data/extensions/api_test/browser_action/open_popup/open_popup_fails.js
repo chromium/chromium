@@ -13,6 +13,6 @@ chrome.test.sendMessage('ready', function(reply) {
   chrome.browserAction.openPopup(function(popupWindow2) {
     // This popup should fail to open.
     chrome.test.assertTrue(!popupWindow2);
-    chrome.test.succeed();
+    chrome.test.notifyPass();
   });
 });

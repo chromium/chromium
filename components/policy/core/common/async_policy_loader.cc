@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace policy {
 
@@ -21,17 +21,28 @@ namespace {
 // Amount of time to wait for the files on disk to settle before trying to load
 // them. This alleviates the problem of reading partially written files and
 // makes it possible to batch quasi-simultaneous changes.
-constexpr TimeDelta kSettleInterval = TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSettleInterval = base::Seconds(5);
 
 // The time interval for rechecking policy. This is the fallback in case the
 // implementation never detects changes.
-constexpr TimeDelta kReloadInterval = TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kReloadInterval = base::Minutes(15);
 
 }  // namespace
 
 AsyncPolicyLoader::AsyncPolicyLoader(
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : task_runner_(task_runner) {}
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    bool periodic_updates)
+    : task_runner_(task_runner),
+      management_service_(nullptr),
+      periodic_updates_(periodic_updates) {}
+
+AsyncPolicyLoader::AsyncPolicyLoader(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    ManagementService* management_service,
+    bool periodic_updates)
+    : task_runner_(task_runner),
+      management_service_(management_service),
+      periodic_updates_(periodic_updates) {}
 
 AsyncPolicyLoader::~AsyncPolicyLoader() {}
 
@@ -42,7 +53,7 @@ Time AsyncPolicyLoader::LastModificationTime() {
 void AsyncPolicyLoader::Reload(bool force) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  TimeDelta delay;
+  base::TimeDelta delay;
   Time now = Time::Now();
   // Check if there was a recent modification to the underlying files.
   if (!force && !IsSafeToReload(now, &delay)) {
@@ -59,12 +70,24 @@ void AsyncPolicyLoader::Reload(bool force) {
   }
 
   // Filter out mismatching policies.
-  schema_map_->FilterBundle(bundle.get());
+  schema_map_->FilterBundle(bundle.get(),
+                            /*drop_invalid_component_policies=*/true);
 
   update_callback_.Run(std::move(bundle));
-  ScheduleNextReload(kReloadInterval);
+  if (periodic_updates_) {
+    ScheduleNextReload(kReloadInterval);
+  }
 }
 
+bool AsyncPolicyLoader::ShouldFilterSensitivePolicies() {
+#if defined(OS_WIN)
+  DCHECK(management_service_);
+  return management_service_->GetManagementAuthorityTrustworthiness() <
+         ManagementAuthorityTrustworthiness::TRUSTED;
+#else
+  return false;
+#endif
+}
 std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
     const scoped_refptr<SchemaMap>& schema_map) {
   // This is the first load, early during startup. Use this to record the
@@ -74,7 +97,8 @@ std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
   schema_map_ = schema_map;
   std::unique_ptr<PolicyBundle> bundle(Load());
   // Filter out mismatching policies.
-  schema_map_->FilterBundle(bundle.get());
+  schema_map_->FilterBundle(bundle.get(),
+                            /*drop_invalid_component_policies=*/true);
   return bundle;
 }
 
@@ -92,7 +116,9 @@ void AsyncPolicyLoader::Init(const UpdateCallback& update_callback) {
     Reload(false);
 
   // Start periodic refreshes.
-  ScheduleNextReload(kReloadInterval);
+  if (periodic_updates_) {
+    ScheduleNextReload(kReloadInterval);
+  }
 }
 
 void AsyncPolicyLoader::RefreshPolicies(scoped_refptr<SchemaMap> schema_map) {
@@ -101,7 +127,7 @@ void AsyncPolicyLoader::RefreshPolicies(scoped_refptr<SchemaMap> schema_map) {
   Reload(true);
 }
 
-void AsyncPolicyLoader::ScheduleNextReload(TimeDelta delay) {
+void AsyncPolicyLoader::ScheduleNextReload(base::TimeDelta delay) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   weak_factory_.InvalidateWeakPtrs();
   task_runner_->PostDelayedTask(
@@ -111,7 +137,8 @@ void AsyncPolicyLoader::ScheduleNextReload(TimeDelta delay) {
       delay);
 }
 
-bool AsyncPolicyLoader::IsSafeToReload(const Time& now, TimeDelta* delay) {
+bool AsyncPolicyLoader::IsSafeToReload(const Time& now,
+                                       base::TimeDelta* delay) {
   Time last_modification = LastModificationTime();
   if (last_modification.is_null())
     return true;
@@ -125,7 +152,7 @@ bool AsyncPolicyLoader::IsSafeToReload(const Time& now, TimeDelta* delay) {
   }
 
   // Check whether the settle interval has elapsed.
-  const TimeDelta age = now - last_modification_clock_;
+  const base::TimeDelta age = now - last_modification_clock_;
   if (age < kSettleInterval) {
     *delay = kSettleInterval - age;
     return false;

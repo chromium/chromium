@@ -32,6 +32,12 @@ namespace ntp_tiles {
 class MostVisitedSitesObserverBridge : public MostVisitedSites::Observer {
  public:
   MostVisitedSitesObserverBridge(id<MostVisitedSitesObserving> observer);
+
+  MostVisitedSitesObserverBridge(const MostVisitedSitesObserverBridge&) =
+      delete;
+  MostVisitedSitesObserverBridge& operator=(
+      const MostVisitedSitesObserverBridge&) = delete;
+
   ~MostVisitedSitesObserverBridge() override;
 
   void OnURLsAvailable(
@@ -40,8 +46,6 @@ class MostVisitedSitesObserverBridge : public MostVisitedSites::Observer {
 
  private:
   __weak id<MostVisitedSitesObserving> observer_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(MostVisitedSitesObserverBridge);
 };
 
 }  // namespace ntp_tiles

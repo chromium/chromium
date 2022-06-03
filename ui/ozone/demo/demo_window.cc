@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -65,7 +66,7 @@ void DemoWindow::Quit() {
   window_manager_->Quit();
 }
 
-void DemoWindow::OnBoundsChanged(const gfx::Rect& new_bounds) {
+void DemoWindow::OnBoundsChanged(const BoundsChange& change) {
   StartRendererIfNecessary();
 }
 
@@ -84,7 +85,8 @@ void DemoWindow::OnCloseRequest() {
 
 void DemoWindow::OnClosed() {}
 
-void DemoWindow::OnWindowStateChanged(PlatformWindowState new_state) {}
+void DemoWindow::OnWindowStateChanged(PlatformWindowState old_state,
+                                      PlatformWindowState new_state) {}
 
 void DemoWindow::OnLostCapture() {}
 

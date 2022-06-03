@@ -12,7 +12,7 @@
 // other SQLite libraries loaded by the system libraries. This only matters when
 // using the component build, where our SQLite's symbols are visible to the
 // dynamic library loader.
-#include "third_party/sqlite/amalgamation/rename_exports.h"
+#include "third_party/sqlite/src/amalgamation/rename_exports.h"
 
 #if defined(SQLITE_OMIT_COMPLETE)
 // When SQLITE_OMIT_COMPLETE is defined, sqlite3.h does not emit a declaration
@@ -56,6 +56,6 @@
 #endif  // !defined(sqlite3_compileoption_used)
 #endif  // defined(SQLITE_OMIT_COMPILEOPTION_DIAGS)
 
-#include "third_party/sqlite/amalgamation/sqlite3.h"
+#include "third_party/sqlite/src/amalgamation/sqlite3.h"
 
 #endif  // THIRD_PARTY_SQLITE_SQLITE3_H_

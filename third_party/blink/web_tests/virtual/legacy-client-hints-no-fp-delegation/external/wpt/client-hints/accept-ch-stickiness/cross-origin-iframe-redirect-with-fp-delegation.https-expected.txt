@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Iframe redirect with Feature Policy delegation got client hints according to expectations. assert_equals: message from opened frame expected "PASS" but got "DEVICE-MEMORY"
+Harness: the test ran to completion.
+

@@ -62,8 +62,8 @@ class FieldTrialToStruct(unittest.TestCase):
         }
       ]
     }
-    result = fieldtrial_to_struct._FieldTrialConfigToDescription(config,
-                                                                 ['windows'])
+    result = fieldtrial_to_struct._FieldTrialConfigToDescription(
+        config, ['windows'], False)
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -80,7 +80,6 @@ class FieldTrialToStruct(unittest.TestCase):
                   ],
                   'enable_features': ['A', 'B'],
                   'disable_features': ['C'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 },
                 {
@@ -92,7 +91,6 @@ class FieldTrialToStruct(unittest.TestCase):
                   ],
                   'enable_features': ['D', 'E'],
                   'disable_features': ['F'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 },
               ],
@@ -103,7 +101,6 @@ class FieldTrialToStruct(unittest.TestCase):
                 {
                   'name': 'OtherGroup',
                   'platforms': ['Study::PLATFORM_WINDOWS'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 }
               ]
@@ -115,7 +112,6 @@ class FieldTrialToStruct(unittest.TestCase):
                     'name': 'ForcedGroup',
                     'platforms': ['Study::PLATFORM_WINDOWS'],
                     'forcing_flag': "my-forcing-flag",
-                    'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                     'form_factors': [],
                   }
               ]
@@ -127,11 +123,118 @@ class FieldTrialToStruct(unittest.TestCase):
     self.maxDiff = None
     self.assertEqual(expected, result)
 
+  def test_FieldTrialToDescriptionInvert(self):
+    config = {
+        'Trial1': [{
+            'platforms': ['windows'],
+            'experiments': [
+                {
+                    'name': 'Group1',
+                    'params': {
+                        'x': '1',
+                        'y': '2'
+                    },
+                    'enable_features': ['A', 'B'],
+                    'disable_features': ['C']
+                },
+                {
+                    'name': 'Group2',
+                    'params': {
+                        'x': '3',
+                        'y': '4'
+                    },
+                    'enable_features': ['D', 'E'],
+                    'disable_features': ['F']
+                },
+            ]
+        }],
+        'Trial2': [{
+            'platforms': ['windows'],
+            'experiments': [{
+                'name': 'OtherGroup'
+            }]
+        }],
+        'TrialWithForcingFlag': [{
+            'platforms': ['windows'],
+            'experiments': [{
+                'name': 'ForcedGroup',
+                'forcing_flag': "my-forcing-flag"
+            }]
+        }]
+    }
+    result = fieldtrial_to_struct._FieldTrialConfigToDescription(
+        config, ['windows'], True)
+    expected = {
+        'elements': {
+            'kFieldTrialConfig': {
+                'studies': [
+                    {
+                        'name':
+                        'Trial1',
+                        'experiments': [
+                            {
+                                'name':
+                                'Group1',
+                                'platforms': ['Study::PLATFORM_WINDOWS'],
+                                'params': [{
+                                    'key': 'x',
+                                    'value': '1'
+                                }, {
+                                    'key': 'y',
+                                    'value': '2'
+                                }],
+                                'enable_features': ['C'],
+                                'disable_features': ['A', 'B'],
+                                'form_factors': [],
+                            },
+                            {
+                                'name':
+                                'Group2',
+                                'platforms': ['Study::PLATFORM_WINDOWS'],
+                                'params': [{
+                                    'key': 'x',
+                                    'value': '3'
+                                }, {
+                                    'key': 'y',
+                                    'value': '4'
+                                }],
+                                'enable_features': ['F'],
+                                'disable_features': ['D', 'E'],
+                                'form_factors': [],
+                            },
+                        ],
+                    },
+                    {
+                        'name':
+                        'Trial2',
+                        'experiments': [{
+                            'name': 'OtherGroup',
+                            'platforms': ['Study::PLATFORM_WINDOWS'],
+                            'form_factors': [],
+                        }]
+                    },
+                    {
+                        'name':
+                        'TrialWithForcingFlag',
+                        'experiments': [{
+                            'name': 'ForcedGroup',
+                            'platforms': ['Study::PLATFORM_WINDOWS'],
+                            'forcing_flag': "my-forcing-flag",
+                            'form_factors': [],
+                        }]
+                    },
+                ]
+            }
+        }
+    }
+    self.maxDiff = None
+    self.assertEqual(expected, result)
+
   _MULTIPLE_PLATFORM_CONFIG = {
     'Trial1': [
       {
         'platforms': ['windows', 'ios'],
-        'is_low_end_device': True,
+        'is_low_end_device': 'true',
         'experiments': [
           {
             'name': 'Group1',
@@ -172,7 +275,7 @@ class FieldTrialToStruct(unittest.TestCase):
 
   def test_FieldTrialToDescriptionMultipleSinglePlatformMultipleTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_PLATFORM_CONFIG, ['ios'])
+        self._MULTIPLE_PLATFORM_CONFIG, ['ios'], False)
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -189,7 +292,7 @@ class FieldTrialToStruct(unittest.TestCase):
                   ],
                   'enable_features': ['A', 'B'],
                   'disable_features': ['C'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_TRUE',
+                  'is_low_end_device': 'true',
                   'form_factors': [],
                 },
                 {
@@ -201,13 +304,12 @@ class FieldTrialToStruct(unittest.TestCase):
                   ],
                   'enable_features': ['D', 'E'],
                   'disable_features': ['F'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_TRUE',
+                  'is_low_end_device': 'true',
                   'form_factors': [],
                 },
                 {
                   'name': 'IOSOnly',
                   'platforms': ['Study::PLATFORM_IOS'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 },
               ],
@@ -221,7 +323,7 @@ class FieldTrialToStruct(unittest.TestCase):
 
   def test_FieldTrialToDescriptionMultipleSinglePlatformSingleTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_PLATFORM_CONFIG, ['mac'])
+        self._MULTIPLE_PLATFORM_CONFIG, ['mac'], False)
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -232,7 +334,6 @@ class FieldTrialToStruct(unittest.TestCase):
                 {
                   'name': 'OtherGroup',
                   'platforms': ['Study::PLATFORM_MAC'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 },
               ],
@@ -263,7 +364,7 @@ class FieldTrialToStruct(unittest.TestCase):
 
   def test_FieldTrialToDescriptionMultipleFormFactorsTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_FORM_FACTORS_CONFIG, ['windows'])
+        self._MULTIPLE_FORM_FACTORS_CONFIG, ['windows'], False)
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -274,7 +375,6 @@ class FieldTrialToStruct(unittest.TestCase):
                 {
                   'name': 'Group1',
                   'platforms': ['Study::PLATFORM_WINDOWS'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': ['Study::DESKTOP', 'Study::PHONE'],
                 },
               ],
@@ -285,7 +385,6 @@ class FieldTrialToStruct(unittest.TestCase):
                 {
                   'name': 'OtherGroup',
                   'platforms': ['Study::PLATFORM_WINDOWS'],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': ['Study::TABLET'],
                 },
               ],
@@ -329,7 +428,7 @@ class FieldTrialToStruct(unittest.TestCase):
 
   def test_FieldTrialToDescriptionMultipleOverrideUIStringTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_OVERRIDE_UI_STRING_CONFIG, ['windows'])
+        self._MULTIPLE_OVERRIDE_UI_STRING_CONFIG, ['windows'], False)
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -352,7 +451,6 @@ class FieldTrialToStruct(unittest.TestCase):
                       'value': 'test2'
                     },
                   ],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 },
               ],
@@ -370,7 +468,6 @@ class FieldTrialToStruct(unittest.TestCase):
                       'value': 'test3'
                     },
                   ],
-                  'is_low_end_device': 'Study::OPTIONAL_BOOL_MISSING',
                   'form_factors': [],
                 },
               ],

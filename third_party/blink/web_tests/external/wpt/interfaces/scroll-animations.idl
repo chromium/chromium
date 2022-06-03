@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Scroll-linked Animations (https://drafts.csswg.org/scroll-animations-1/)
 
 enum ScrollDirection {
@@ -12,22 +12,35 @@ enum ScrollDirection {
 
 enum ScrollTimelineAutoKeyword { "auto" };
 
+typedef (CSSNumericValue or CSSKeywordish) ContainerBasedOffset;
+typedef (ContainerBasedOffset or ElementBasedOffset) ScrollTimelineOffset;
+
 dictionary ScrollTimelineOptions {
-  Element? scrollSource = null;
+  Element? source;
   ScrollDirection orientation = "block";
-  DOMString startScrollOffset = "auto";
-  DOMString endScrollOffset = "auto";
-  (double or ScrollTimelineAutoKeyword) timeRange = "auto";
-  FillMode fill = "none";
+  sequence<ScrollTimelineOffset> scrollOffsets = [];
 };
 
-[Exposed=Window,
- Constructor(optional ScrollTimelineOptions options = {})]
+[Exposed=Window]
 interface ScrollTimeline : AnimationTimeline {
-  readonly attribute Element scrollSource;
+  constructor(optional ScrollTimelineOptions options = {});
+  readonly attribute Element? source;
   readonly attribute ScrollDirection orientation;
-  readonly attribute DOMString startScrollOffset;
-  readonly attribute DOMString endScrollOffset;
-  readonly attribute (double or ScrollTimelineAutoKeyword) timeRange;
-  readonly attribute FillMode fill;
+  readonly attribute FrozenArray<ScrollTimelineOffset> scrollOffsets;
+};
+
+enum Edge { "start", "end" };
+
+dictionary ElementBasedOffset {
+  Element target;
+  Edge edge = "start";
+  double threshold = 0.0;
+};
+
+[Exposed=Window]
+interface CSSScrollTimelineRule : CSSRule {
+  readonly attribute CSSOMString name;
+  readonly attribute CSSOMString source;
+  readonly attribute CSSOMString orientation;
+  readonly attribute CSSOMString scrollOffsets;
 };

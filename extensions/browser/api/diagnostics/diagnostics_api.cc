@@ -32,7 +32,7 @@ bool ParseResult(const std::string& status, std::string* ip, double* latency) {
     return false;
 
   base::DictionaryValue* result = NULL;
-  if (!parsed_value->GetAsDictionary(&result) || result->size() != 1)
+  if (!parsed_value->GetAsDictionary(&result) || result->DictSize() != 1)
     return false;
 
   // Returns the first item.
@@ -42,8 +42,10 @@ bool ParseResult(const std::string& status, std::string* ip, double* latency) {
   if (!iterator.value().GetAsDictionary(&info))
     return false;
 
-  if (!info->GetDouble("avg", latency))
+  absl::optional<double> avg = info->FindDoubleKey("avg");
+  if (!avg)
     return false;
+  *latency = *avg;
 
   *ip = iterator.key();
   return true;
@@ -57,7 +59,7 @@ DiagnosticsSendPacketFunction::DiagnosticsSendPacketFunction() = default;
 DiagnosticsSendPacketFunction::~DiagnosticsSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
-  auto params = api::diagnostics::SendPacket::Params::Create(*args_);
+  auto params = api::diagnostics::SendPacket::Params::Create(args());
 
   std::map<std::string, std::string> config;
   config[kCount] = kDefaultCount;
@@ -79,7 +81,7 @@ ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
 }
 
 void DiagnosticsSendPacketFunction::OnTestICMPCompleted(
-    base::Optional<std::string> status) {
+    absl::optional<std::string> status) {
   std::string ip;
   double latency;
   if (!status.has_value() || !ParseResult(status.value(), &ip, &latency)) {
@@ -90,7 +92,7 @@ void DiagnosticsSendPacketFunction::OnTestICMPCompleted(
   api::diagnostics::SendPacketResult result;
   result.ip = ip;
   result.latency = latency;
-  Respond(OneArgument(SendPacket::Results::Create(result)));
+  Respond(OneArgument(base::Value(SendPacket::Results::Create(result))));
 }
 
 }  // namespace extensions

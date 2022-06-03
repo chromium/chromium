@@ -10,10 +10,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.util.concurrent.Callable;
 
@@ -23,7 +22,6 @@ import java.util.concurrent.Callable;
  * Most callbacks do no go through here, but get forwarded to AwContentsClient directly. The
  * messages processed here may originate from the IO or UI thread.
  */
-@VisibleForTesting
 public class AwContentsClientCallbackHelper {
     /**
      * Interface to tell CallbackHelper to cancel posted callbacks.
@@ -91,10 +89,10 @@ public class AwContentsClientCallbackHelper {
 
     private static class OnReceivedHttpErrorInfo {
         final AwContentsClient.AwWebResourceRequest mRequest;
-        final AwWebResourceResponse mResponse;
+        final WebResourceResponseInfo mResponse;
 
         OnReceivedHttpErrorInfo(
-                AwContentsClient.AwWebResourceRequest request, AwWebResourceResponse response) {
+                AwContentsClient.AwWebResourceRequest request, WebResourceResponseInfo response) {
             mRequest = request;
             mResponse = response;
         }
@@ -320,8 +318,8 @@ public class AwContentsClientCallbackHelper {
                     Float.floatToIntBits(oldScale), Float.floatToIntBits(newScale)));
     }
 
-    public void postOnReceivedHttpError(AwContentsClient.AwWebResourceRequest request,
-            AwWebResourceResponse response) {
+    public void postOnReceivedHttpError(
+            AwContentsClient.AwWebResourceRequest request, WebResourceResponseInfo response) {
         OnReceivedHttpErrorInfo info =
                 new OnReceivedHttpErrorInfo(request, response);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_HTTP_ERROR, info));

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <chrome/browser/android/contextualsearch/ctr_suppression.h>
+#include "chrome/browser/android/contextualsearch/ctr_suppression.h"
+
+#include <memory>
 #include <set>
 
 #include "base/android/jni_string.h"
@@ -22,7 +24,7 @@ CtrSuppression::CtrSuppression(JNIEnv* env, jobject obj)
   // NOTE: Creating the aggregator needs to be done after setting up the Java
   // object because the constructor will call back through the Java object
   // to access storage.
-  aggregator_.reset(new CtrAggregator(*this));
+  aggregator_ = std::make_unique<CtrAggregator>(*this);
   DCHECK(aggregator_);
 }
 

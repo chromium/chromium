@@ -27,7 +27,7 @@ class CORE_EXPORT BrowserControls final
  public:
   explicit BrowserControls(const Page&);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   // The height the top controls are hidden; used for viewport adjustments
   // while the controls are resizing.
@@ -41,6 +41,7 @@ class CORE_EXPORT BrowserControls final
   float BottomHeight() const { return params_.bottom_controls_height; }
   float BottomMinHeight() const { return params_.bottom_controls_min_height; }
   float TotalHeight() const { return TopHeight() + BottomHeight(); }
+  float TotalMinHeight() const { return TopMinHeight() + BottomMinHeight(); }
   bool ShrinkViewport() const {
     return params_.browser_controls_shrink_blink_size;
   }
@@ -55,14 +56,15 @@ class CORE_EXPORT BrowserControls final
   void SetShownRatio(float top_ratio, float bottom_ratio);
 
   void UpdateConstraintsAndState(cc::BrowserControlsState constraints,
-                                 cc::BrowserControlsState current,
-                                 bool animate);
+                                 cc::BrowserControlsState current);
 
   void ScrollBegin();
 
   // Scrolls browser controls vertically if possible and returns the remaining
   // scroll amount.
   FloatSize ScrollBy(FloatSize scroll_delta);
+
+  void ScrollEnd();
 
   cc::BrowserControlsState PermittedState() const { return permitted_state_; }
 

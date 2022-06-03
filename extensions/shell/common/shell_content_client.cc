@@ -82,13 +82,13 @@ void ShellContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->csp_bypassing_schemes.push_back(kExtensionScheme);
 }
 
-base::string16 ShellContentClient::GetLocalizedString(int message_id) {
+std::u16string ShellContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
 base::StringPiece ShellContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }

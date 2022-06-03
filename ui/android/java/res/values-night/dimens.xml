@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<resources>
+    <!-- Chips default measures -->
+    <dimen name="chip_background_selected_alpha">@dimen/chip_background_selected_alpha_dark</dimen>
+
+    <!-- TODO(crbug.com/1236215): Remove once dynamic color is ready for all cards -->
+    <dimen name="card_elevation">@dimen/default_elevation_2</dimen>
+</resources>

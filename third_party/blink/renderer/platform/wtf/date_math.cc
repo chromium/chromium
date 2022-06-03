@@ -79,9 +79,8 @@
 #include <limits>
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -656,14 +655,14 @@ static double ParseDateFromNullTerminatedCharacters(const char* date_string,
          kMsPerSecond;
 }
 
-base::Optional<base::Time> ParseDateFromNullTerminatedCharacters(
+absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     const char* date_string) {
   bool have_tz;
   int offset;
   double ms =
       ParseDateFromNullTerminatedCharacters(date_string, have_tz, offset);
   if (std::isnan(ms))
-    return base::nullopt;
+    return absl::nullopt;
 
   // fall back to local timezone
   if (!have_tz) {
@@ -672,12 +671,9 @@ base::Optional<base::Time> ParseDateFromNullTerminatedCharacters(
     UErrorCode status = U_ZERO_ERROR;
     // Handle the conversion of localtime to UTC the same way as the
     // latest ECMA 262 spec for Javascript (v8 does that, too).
-    // TODO(jshin): Once http://bugs.icu-project.org/trac/ticket/13705
-    // is fixed, no casting would be necessary.
     static_cast<const icu::BasicTimeZone*>(timezone.get())
-        ->getOffsetFromLocal(ms, icu::BasicTimeZone::kFormer,
-                             icu::BasicTimeZone::kFormer, raw_offset,
-                             dst_offset, status);
+        ->getOffsetFromLocal(ms, UCAL_TZ_LOCAL_FORMER, UCAL_TZ_LOCAL_FORMER,
+                             raw_offset, dst_offset, status);
     DCHECK(U_SUCCESS(status));
     offset = static_cast<int>((raw_offset + dst_offset) / kMsPerMinute);
   }
@@ -722,8 +718,7 @@ base::TimeDelta ConvertToLocalTime(base::Time time) {
   UErrorCode status = U_ZERO_ERROR;
   timezone->getOffset(ms, false, raw_offset, dst_offset, status);
   DCHECK(U_SUCCESS(status));
-  return base::TimeDelta::FromMillisecondsD(
-      ms + static_cast<double>(raw_offset + dst_offset));
+  return base::Milliseconds(ms + static_cast<double>(raw_offset + dst_offset));
 }
 
 }  // namespace WTF

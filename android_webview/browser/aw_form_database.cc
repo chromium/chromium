@@ -7,7 +7,6 @@
 #include "android_webview/browser/aw_form_database_service.h"
 #include "android_webview/browser_jni_headers/AwFormDatabase_jni.h"
 #include "base/android/jni_android.h"
-#include "base/logging.h"
 #include "base/time/time.h"
 
 using base::android::JavaParamRef;

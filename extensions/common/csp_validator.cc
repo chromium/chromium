@@ -15,15 +15,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -42,10 +43,9 @@ const char kChildSrc[] = "child-src";
 const char kWorkerSrc[] = "worker-src";
 const char kSelfSource[] = "'self'";
 const char kNoneSource[] = "'none'";
+const char kWasmEvalSource[] = "'wasm-eval'";
 
 const char kDirectiveSeparator = ';';
-
-const char kPluginTypes[] = "plugin-types";
 
 const char kObjectSrcDefaultDirective[] = "object-src 'self';";
 const char kScriptSrcDefaultDirective[] = "script-src 'self';";
@@ -57,14 +57,6 @@ const char kAppSandboxScriptSrcDefaultDirective[] =
 const char kSandboxDirectiveName[] = "sandbox";
 const char kAllowSameOriginToken[] = "allow-same-origin";
 const char kAllowTopNavigation[] = "allow-top-navigation";
-
-// This is the list of plugin types which are fully sandboxed and are safe to
-// load up in an extension, regardless of the URL they are navigated to.
-const char* const kSandboxedPluginTypes[] = {
-  "application/pdf",
-  "application/x-google-chrome-pdf",
-  "application/x-pnacl"
-};
 
 // List of CSP hash-source prefixes that are accepted. Blink is a bit more
 // lenient, but we only accept standard hashes to be forward-compatible.
@@ -123,7 +115,10 @@ class DirectiveStatus {
   DirectiveStatus(std::initializer_list<const char*> directives)
       : directive_names_(directives.begin(), directives.end()) {}
 
+  DirectiveStatus(const DirectiveStatus&) = delete;
   DirectiveStatus(DirectiveStatus&&) = default;
+
+  DirectiveStatus& operator=(const DirectiveStatus&) = delete;
   DirectiveStatus& operator=(DirectiveStatus&&) = default;
 
   // Returns true if |directive_name| matches this DirectiveStatus.
@@ -148,8 +143,6 @@ class DirectiveStatus {
   std::vector<std::string> directive_names_;
   // Whether or not we've seen any directive name that matches |this|.
   bool seen_in_policy_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectiveStatus);
 };
 
 // Returns whether |url| starts with |scheme_and_separator| and does not have a
@@ -248,7 +241,7 @@ std::string GetSecureDirectiveValues(
 
     // We might need to relax this whitelist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
-        source_lower == "'wasm-eval'" || source_lower == "blob:" ||
+        source_lower == kWasmEvalSource || source_lower == "blob:" ||
         source_lower == "filesystem:" ||
         isNonWildcardTLD(source_lower, "https://", true) ||
         isNonWildcardTLD(source_lower, "chrome://", false) ||
@@ -266,17 +259,17 @@ std::string GetSecureDirectiveValues(
     if (is_secure_csp_token) {
       sane_csp_parts.push_back(source_literal);
     } else if (warnings) {
-      warnings->push_back(InstallWarning(
-          ErrorUtils::FormatErrorMessage(
-              manifest_errors::kInvalidCSPInsecureValueIgnored, manifest_key,
-              source_literal.as_string(), directive_name),
-          manifest_key));
+      warnings->push_back(
+          InstallWarning(ErrorUtils::FormatErrorMessage(
+                             manifest_errors::kInvalidCSPInsecureValueIgnored,
+                             manifest_key, source_literal, directive_name),
+                         manifest_key));
     }
   }
   // End of CSP directive that was started at the beginning of this method. If
   // none of the values are secure, the policy will be empty and default to
   // 'none', which is secure.
-  std::string last_part = sane_csp_parts.back().as_string();
+  std::string last_part(sane_csp_parts.back());
   last_part.push_back(kDirectiveSeparator);
   sane_csp_parts.back() = last_part;
   return base::JoinString(sane_csp_parts, " ");
@@ -304,11 +297,11 @@ std::string GetAppSandboxSecureDirectiveValues(
       seen_self_or_none |= source_lower == "'none'" || source_lower == "'self'";
       sane_csp_parts.push_back(source_lower);
     } else if (warnings) {
-      warnings->push_back(InstallWarning(
-          ErrorUtils::FormatErrorMessage(
-              manifest_errors::kInvalidCSPInsecureValueIgnored, manifest_key,
-              source_literal.as_string(), directive_name),
-          manifest_key));
+      warnings->push_back(
+          InstallWarning(ErrorUtils::FormatErrorMessage(
+                             manifest_errors::kInvalidCSPInsecureValueIgnored,
+                             manifest_key, source_literal, directive_name),
+                         manifest_key));
     }
   }
 
@@ -321,38 +314,7 @@ std::string GetAppSandboxSecureDirectiveValues(
   return base::JoinString(sane_csp_parts, " ");
 }
 
-// Returns true if the |plugin_type| is one of the fully sandboxed plugin types.
-bool PluginTypeAllowed(base::StringPiece plugin_type) {
-  for (size_t i = 0; i < base::size(kSandboxedPluginTypes); ++i) {
-    if (plugin_type == kSandboxedPluginTypes[i])
-      return true;
-  }
-  return false;
-}
-
-// Returns true if the policy is allowed to contain an insecure object-src
-// directive. This requires OPTIONS_ALLOW_INSECURE_OBJECT_SRC to be specified
-// as an option and the plugin-types that can be loaded must be restricted to
-// the set specified in kSandboxedPluginTypes.
-bool AllowedToHaveInsecureObjectSrc(int options,
-                                    const DirectiveList& directives) {
-  if (!(options & OPTIONS_ALLOW_INSECURE_OBJECT_SRC))
-    return false;
-
-  auto it = std::find_if(directives.begin(), directives.end(),
-                         [](const Directive& directive) {
-                           return directive.directive_name == kPluginTypes;
-                         });
-
-  // plugin-types not specified.
-  if (it == directives.end())
-    return false;
-
-  return std::all_of(it->directive_values.begin(), it->directive_values.end(),
-                     PluginTypeAllowed);
-}
-
-using SecureDirectiveValueFunction = base::Callback<std::string(
+using SecureDirectiveValueFunction = base::RepeatingCallback<std::string(
     const std::string& directive_name,
     const std::vector<base::StringPiece>& directive_values,
     const std::string& manifest_key,
@@ -366,6 +328,9 @@ class CSPDirectiveToken {
   // |this|.
   explicit CSPDirectiveToken(const Directive& directive)
       : directive_(directive) {}
+
+  CSPDirectiveToken(const CSPDirectiveToken&) = delete;
+  CSPDirectiveToken& operator=(const CSPDirectiveToken&) = delete;
 
   // Returns true if this token affects |status|. In that case, the token's
   // directive values are secured by |secure_function|.
@@ -393,14 +358,12 @@ class CSPDirectiveToken {
     if (secure_value_)
       return secure_value_.value();
     // This token didn't require modification.
-    return directive_.directive_string.as_string() + kDirectiveSeparator;
+    return std::string(directive_.directive_string) + kDirectiveSeparator;
   }
 
  private:
   const Directive& directive_;
-  base::Optional<std::string> secure_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPDirectiveToken);
+  absl::optional<std::string> secure_value_;
 };
 
 // Class responsible for parsing a given CSP string |policy|, and enforcing
@@ -418,6 +381,10 @@ class CSPEnforcer {
       : manifest_key_(std::move(manifest_key)),
         show_missing_csp_warnings_(show_missing_csp_warnings),
         secure_function_(secure_function) {}
+
+  CSPEnforcer(const CSPEnforcer&) = delete;
+  CSPEnforcer& operator=(const CSPEnforcer&) = delete;
+
   virtual ~CSPEnforcer() {}
 
   // Returns the enforced CSP.
@@ -439,8 +406,6 @@ class CSPEnforcer {
   const std::string manifest_key_;
   const bool show_missing_csp_warnings_;
   const SecureDirectiveValueFunction secure_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPEnforcer);
 };
 
 std::string CSPEnforcer::Enforce(const DirectiveList& directives,
@@ -514,11 +479,14 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
                        int options)
       : CSPEnforcer(std::move(manifest_key),
                     true,
-                    base::Bind(&GetSecureDirectiveValues, options)) {
+                    base::BindRepeating(&GetSecureDirectiveValues, options)) {
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
     if (!allow_insecure_object_src)
       secure_directives_.emplace_back(new DirectiveStatus({kObjectSrc}));
   }
+
+  ExtensionCSPEnforcer(const ExtensionCSPEnforcer&) = delete;
+  ExtensionCSPEnforcer& operator=(const ExtensionCSPEnforcer&) = delete;
 
  protected:
   std::string GetDefaultCSPValue(const DirectiveStatus& status) override {
@@ -527,9 +495,6 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
     DCHECK(status.Matches(kScriptSrc));
     return kScriptSrcDefaultDirective;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCSPEnforcer);
 };
 
 class AppSandboxPageCSPEnforcer : public CSPEnforcer {
@@ -537,11 +502,15 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
   AppSandboxPageCSPEnforcer(std::string manifest_key)
       : CSPEnforcer(std::move(manifest_key),
                     false,
-                    base::Bind(&GetAppSandboxSecureDirectiveValues)) {
+                    base::BindRepeating(&GetAppSandboxSecureDirectiveValues)) {
     secure_directives_.emplace_back(
         new DirectiveStatus({kChildSrc, kFrameSrc}));
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
   }
+
+  AppSandboxPageCSPEnforcer(const AppSandboxPageCSPEnforcer&) = delete;
+  AppSandboxPageCSPEnforcer& operator=(const AppSandboxPageCSPEnforcer&) =
+      delete;
 
  protected:
   std::string GetDefaultCSPValue(const DirectiveStatus& status) override {
@@ -550,9 +519,6 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
     DCHECK(status.Matches(kScriptSrc));
     return kAppSandboxScriptSrcDefaultDirective;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppSandboxPageCSPEnforcer);
 };
 
 }  //  namespace
@@ -619,9 +585,7 @@ std::string SanitizeContentSecurityPolicy(
     std::vector<InstallWarning>* warnings) {
   CSPParser csp_parser(policy);
 
-  bool allow_insecure_object_src =
-      AllowedToHaveInsecureObjectSrc(options, csp_parser.directives());
-
+  bool allow_insecure_object_src = options & OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
   ExtensionCSPEnforcer csp_enforcer(std::move(manifest_key),
                                     allow_insecure_object_src, options);
   return csp_enforcer.Enforce(csp_parser.directives(), warnings);
@@ -665,7 +629,7 @@ bool ContentSecurityPolicyIsSandboxed(
 
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               base::string16* error) {
+                               std::u16string* error) {
   DCHECK(error);
 
   struct DirectiveMapping {
@@ -725,7 +689,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   fallback_if_necessary(&worker_src_mapping, script_src_mapping);
 
   auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
-                                            base::string16* error) {
+                                            std::u16string* error) {
     if (!mapping.directive) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,
@@ -738,8 +702,18 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
         directive_values.begin(), directive_values.end(),
         [](base::StringPiece source) {
           std::string source_lower = base::ToLowerASCII(source);
-          return source_lower == kSelfSource || source_lower == kNoneSource ||
-                 IsLocalHostSource(source_lower);
+          if (source_lower == kSelfSource || source_lower == kNoneSource ||
+              IsLocalHostSource(source_lower)) {
+            return true;
+          }
+
+          if (source_lower == kWasmEvalSource &&
+              base::FeatureList::IsEnabled(
+                  extensions_features::kAllowWasmInMV3)) {
+            return true;
+          }
+
+          return false;
         });
 
     if (it == directive_values.end())

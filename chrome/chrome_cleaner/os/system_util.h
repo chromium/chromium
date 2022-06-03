@@ -7,9 +7,9 @@
 
 #include <windows.h>
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/os/scoped_service_handle.h"
 
 namespace chrome_cleaner {
@@ -17,8 +17,8 @@ namespace chrome_cleaner {
 // Based on ENUM_SERVICE_STATUS_PROCESSW from
 // https://docs.microsoft.com/en-us/windows/desktop/api/winsvc/ns-winsvc-_enum_service_status_processw
 struct ServiceStatus {
-  base::string16 service_name;
-  base::string16 display_name;
+  std::wstring service_name;
+  std::wstring display_name;
   SERVICE_STATUS_PROCESS service_status_process;
 };
 

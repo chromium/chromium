@@ -11,13 +11,15 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/delayed_animation_observer.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/macros.h"
+#include "ash/wm/overview/overview_types.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -29,15 +31,21 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
                                       public ::wm::ActivationChangeObserver {
  public:
   OverviewController();
+
+  OverviewController(const OverviewController&) = delete;
+  OverviewController& operator=(const OverviewController&) = delete;
+
   ~OverviewController() override;
 
-  // Starts/Ends overview with |type|. Returns true if enter or exit overview
-  // successful. Depending on |type| the enter/exit animation will look
-  // different.
-  bool StartOverview(OverviewSession::EnterExitOverviewType type =
-                         OverviewSession::EnterExitOverviewType::kNormal);
-  bool EndOverview(OverviewSession::EnterExitOverviewType type =
-                       OverviewSession::EnterExitOverviewType::kNormal);
+  // Starts/Ends overview with `type`. Returns true if enter or exit overview
+  // successful. Depending on `type` the enter/exit animation will look
+  // different. `action` is used by UMA to record the reasons that trigger
+  // overview starts or ends. E.g, pressing the overview button.
+  bool StartOverview(
+      OverviewStartAction action,
+      OverviewEnterExitType type = OverviewEnterExitType::kNormal);
+  bool EndOverview(OverviewEndAction action,
+                   OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
   // Returns true if overview mode is active.
   bool InOverviewSession() const;
@@ -48,12 +56,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Accepts current selection if any. Returns true if a selection was made,
   // false otherwise.
   bool AcceptSelection();
-
-  // Called when the overview button tray has been long pressed. Enters
-  // splitview mode if the active window is snappable. Also enters overview mode
-  // if device is not currently in overview mode.
-  // TODO(sammiequon): Move this function to SplitViewController.
-  void OnOverviewButtonTrayLongPressed(const gfx::Point& event_location);
 
   // Returns true if we're in start-overview animation.
   bool IsInStartAnimation();
@@ -90,8 +92,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override {}
-  void OnAttemptToReactivateWindow(aura::Window* request_active,
-                                   aura::Window* actual_active) override;
 
   OverviewSession* overview_session() { return overview_session_.get(); }
 
@@ -109,23 +109,18 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Gets the windows list that are shown in the overview windows grids if the
   // overview mode is active for testing.
   std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
-  std::vector<aura::Window*> GetItemWindowListInOverviewGridsForTest();
 
  private:
-  friend class OverviewSessionTest;
-  FRIEND_TEST_ALL_PREFIXES(TabletModeControllerTest,
-                           DisplayDisconnectionDuringOverview);
-
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.
-  void ToggleOverview(OverviewSession::EnterExitOverviewType type =
-                          OverviewSession::EnterExitOverviewType::kNormal);
+  void ToggleOverview(
+      OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
   // Returns true if it's possible to enter or exit overview mode in the current
   // configuration. This can be false at certain times, such as when the lock
   // screen is visible we can't overview mode.
   bool CanEnterOverview();
-  bool CanEndOverview(OverviewSession::EnterExitOverviewType type);
+  bool CanEndOverview(OverviewEnterExitType type);
 
   void OnStartingAnimationComplete(bool canceled);
   void OnEndingAnimationComplete(bool canceled);
@@ -167,9 +162,9 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
 
   base::ObserverList<OverviewObserver> observers_;
 
-  base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
+  std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(OverviewController);
+  base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/policy",
+  "+components/prefs",
+  "+components/pref_registry",
+]

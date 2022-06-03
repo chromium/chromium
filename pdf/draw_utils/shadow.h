@@ -9,10 +9,11 @@
 
 #include <vector>
 
-namespace pp {
-class ImageData;
+class SkBitmap;
+
+namespace gfx {
 class Rect;
-}  // namespace pp
+}  // namespace gfx
 
 namespace chrome_pdf {
 namespace draw_utils {
@@ -46,10 +47,10 @@ class ShadowMatrix {
 // shadow_rc - rectangle occupied by shadow
 // object_rc - rectangle that drops the shadow
 // clip_rc - clipping region
-void DrawShadow(pp::ImageData* image,
-                const pp::Rect& shadow_rc,
-                const pp::Rect& object_rc,
-                const pp::Rect& clip_rc,
+void DrawShadow(SkBitmap& image,
+                const gfx::Rect& shadow_rc,
+                const gfx::Rect& object_rc,
+                const gfx::Rect& clip_rc,
                 const ShadowMatrix& matrix);
 
 }  // namespace draw_utils

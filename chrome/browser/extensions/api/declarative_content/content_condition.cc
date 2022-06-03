@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/declarative_content/content_condition.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -40,7 +41,7 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
   const base::DictionaryValue* api_condition_dict = nullptr;
   if (!api_condition.GetAsDictionary(&api_condition_dict)) {
     *error = kExpectedDictionary;
-    return std::unique_ptr<ContentCondition>();
+    return nullptr;
   }
 
   // Verify that we are dealing with a Condition whose type we understand.
@@ -48,11 +49,11 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
   if (!api_condition_dict->GetString(
           declarative_content_constants::kInstanceType, &instance_type)) {
     *error = kConditionWithoutInstanceType;
-    return std::unique_ptr<ContentCondition>();
+    return nullptr;
   }
   if (instance_type != declarative_content_constants::kPageStateMatcherType) {
     *error = kExpectedOtherConditionType;
-    return std::unique_ptr<ContentCondition>();
+    return nullptr;
   }
 
   std::vector<std::unique_ptr<const ContentPredicate>> predicates;
@@ -73,11 +74,10 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
                                   predicate_name.c_str());
 
     if (!error->empty())
-      return std::unique_ptr<ContentCondition>();
+      return nullptr;
   }
 
-  return std::unique_ptr<ContentCondition>(
-      new ContentCondition(std::move(predicates)));
+  return std::make_unique<ContentCondition>(std::move(predicates));
 }
 
 }  // namespace extensions

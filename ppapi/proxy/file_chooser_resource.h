@@ -32,6 +32,10 @@ class PPAPI_PROXY_EXPORT FileChooserResource
                       PP_Instance instance,
                       PP_FileChooserMode_Dev mode,
                       const std::string& accept_types);
+
+  FileChooserResource(const FileChooserResource&) = delete;
+  FileChooserResource& operator=(const FileChooserResource&) = delete;
+
   ~FileChooserResource() override;
 
   // Resource overrides.
@@ -78,8 +82,6 @@ class PPAPI_PROXY_EXPORT FileChooserResource
   base::queue<PP_Resource> file_queue_;
 
   scoped_refptr<TrackedCallback> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileChooserResource);
 };
 
 }  // namespace proxy

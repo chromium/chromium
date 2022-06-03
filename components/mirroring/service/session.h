@@ -7,8 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
@@ -16,10 +15,10 @@
 #include "components/mirroring/service/media_remoter.h"
 #include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/receiver_setup_querier.h"
 #include "components/mirroring/service/rtp_stream.h"
-#include "components/mirroring/service/session_monitor.h"
-#include "components/mirroring/service/wifi_status_monitor.h"
 #include "gpu/config/gpu_info.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
@@ -45,16 +44,18 @@ class Gpu;
 
 namespace mirroring {
 
-struct ReceiverResponse;
+class ReceiverResponse;
 class VideoCaptureClient;
-class SessionMonitor;
+class ReceiverSetupQuerier;
 
 // Controls a mirroring session, including audio/video capturing, Cast
 // Streaming, and the switching to/from media remoting. When constructed, it
 // does OFFER/ANSWER exchange with the mirroring receiver. Mirroring starts when
 // the exchange succeeds and stops when this class is destructed or error
-// occurs. |observer| will get notified when status changes. |outbound_channel|
-// is responsible for sending messages to the mirroring receiver through Cast
+// occurs. Specifically, a session is torn down when (1) a new session starts,
+// (2) the mirroring service note a disconnection.
+// |observer| will get notified when status changes. |outbound_channel| is
+// responsible for sending messages to the mirroring receiver through Cast
 // Channel. |inbound_channel| receives message sent from the mirroring receiver.
 class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
     : public RtpStreamClient,
@@ -74,17 +75,18 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   void OnError(const std::string& message) override;
   void RequestRefreshFrame() override;
   void CreateVideoEncodeAccelerator(
-      const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback)
-      override;
-  void CreateVideoEncodeMemory(
-      size_t size,
-      const media::cast::ReceiveVideoEncodeMemoryCallback& callback) override;
+      media::cast::ReceiveVideoEncodeAcceleratorCallback callback) override;
 
   // Callbacks by media::cast::CastTransport::Client.
   void OnTransportStatusChanged(media::cast::CastTransportStatus status);
   void OnLoggingEventsReceived(
       std::unique_ptr<std::vector<media::cast::FrameEvent>> frame_events,
       std::unique_ptr<std::vector<media::cast::PacketEvent>> packet_events);
+
+  // Helper method for setting constraints from the ANSWER response.
+  void SetConstraints(const openscreen::cast::Answer& answer,
+                      media::cast::FrameSenderConfig* audio_config,
+                      media::cast::FrameSenderConfig* video_config);
 
   // Callback for ANSWER response. If the ANSWER is invalid, |observer_| will
   // get notified with error, and session is stopped. Otherwise, capturing and
@@ -130,11 +132,18 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   // Notify |observer_| that error occurred and close the session.
   void ReportError(mojom::SessionError error);
 
+  // Send logging messages to |observer_|.
+  void LogInfoMessage(const std::string& message);
+  void LogErrorMessage(const std::string& message);
+
   // Callback by Audio/VideoSender to indicate encoder status change.
   void OnEncoderStatusChange(media::cast::OperationalStatus status);
 
   // Callback by media::cast::VideoSender to set a new target playout delay.
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+
+  // Callback by media::cast::VideoSender to report resource utilization.
+  void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
   media::VideoEncodeAccelerator::SupportedProfiles GetSupportedVeaProfiles();
 
@@ -161,26 +170,26 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   mojo::Remote<mojom::ResourceProvider> resource_provider_;
   MirrorSettings mirror_settings_;
 
-  MessageDispatcher message_dispatcher_;
+  std::unique_ptr<MessageDispatcher> message_dispatcher_;
 
   mojo::Remote<network::mojom::NetworkContext> network_context_;
 
-  base::Optional<SessionMonitor> session_monitor_;
+  std::unique_ptr<ReceiverSetupQuerier> setup_querier_;
 
   // Created after OFFER/ANSWER exchange succeeds.
   std::unique_ptr<AudioRtpStream> audio_stream_;
   std::unique_ptr<VideoRtpStream> video_stream_;
   std::unique_ptr<VideoCaptureClient> video_capture_client_;
-  scoped_refptr<media::cast::CastEnvironment> cast_environment_ = nullptr;
+  scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   std::unique_ptr<media::cast::CastTransport> cast_transport_;
-  scoped_refptr<base::SingleThreadTaskRunner> audio_encode_thread_ = nullptr;
-  scoped_refptr<base::SingleThreadTaskRunner> video_encode_thread_ = nullptr;
+  scoped_refptr<base::SingleThreadTaskRunner> audio_encode_thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> video_encode_thread_;
   std::unique_ptr<AudioCapturingCallback> audio_capturing_callback_;
   scoped_refptr<media::AudioInputDevice> audio_input_device_;
   std::unique_ptr<MediaRemoter> media_remoter_;
   std::unique_ptr<viz::Gpu> gpu_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
-  gpu::VideoEncodeAcceleratorSupportedProfiles supported_profiles_;
+  media::VideoEncodeAccelerator::SupportedProfiles supported_profiles_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
 
   base::WeakPtrFactory<Session> weak_factory_{this};

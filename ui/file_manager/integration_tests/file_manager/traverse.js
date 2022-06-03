@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addEntries, ENTRIES, RootPath} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openNewWindow, remoteCall} from './background.js';
+import {NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * Test utility for traverse tests.

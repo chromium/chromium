@@ -5,19 +5,15 @@
 #ifndef DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
 #define DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
 
-#include <memory>
-
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "device/vr/vr_device.h"
-#include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/display/display.h"
 
 namespace device {
 
@@ -27,7 +23,7 @@ class VROrientationDevice;
 // that exposes device orientation sensors.
 // VROrientationSession objects are owned by their respective
 // VROrientationDevice instances.
-class DEVICE_VR_EXPORT VROrientationSession
+class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationSession
     : public mojom::XRFrameDataProvider,
       public mojom::XRSessionController {
  public:

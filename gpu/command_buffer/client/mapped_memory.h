@@ -16,6 +16,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
 #include "gpu/command_buffer/common/buffer.h"
+#include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -28,6 +29,10 @@ class GPU_EXPORT MemoryChunk {
   MemoryChunk(int32_t shm_id,
               scoped_refptr<gpu::Buffer> shm,
               CommandBufferHelper* helper);
+
+  MemoryChunk(const MemoryChunk&) = delete;
+  MemoryChunk& operator=(const MemoryChunk&) = delete;
+
   ~MemoryChunk();
 
   // Gets the size of the largest free block that is available without waiting.
@@ -111,8 +116,6 @@ class GPU_EXPORT MemoryChunk {
   int32_t shm_id_;
   scoped_refptr<gpu::Buffer> shm_;
   FencedAllocatorWrapper allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryChunk);
 };
 
 // Manages MemoryChunks.
@@ -126,6 +129,9 @@ class GPU_EXPORT MappedMemoryManager {
   // to be reclaimed before allocating more memory.
   MappedMemoryManager(CommandBufferHelper* helper,
                       size_t unused_memory_reclaim_limit);
+
+  MappedMemoryManager(const MappedMemoryManager&) = delete;
+  MappedMemoryManager& operator=(const MappedMemoryManager&) = delete;
 
   ~MappedMemoryManager();
 
@@ -150,9 +156,17 @@ class GPU_EXPORT MappedMemoryManager {
   //   size: size of memory to allocate.
   //   shm_id: pointer to variable to receive the shared memory id.
   //   shm_offset: pointer to variable to receive the shared memory offset.
+  //   option: defaults to kLoseContextOnOOM, but may be kReturnNullOnOOM.
+  //           Passing kReturnNullOnOOM will gracefully fail and return nullptr
+  //           on OOM instead of losing the context. Callers should be careful
+  //           to check error conditions.
   // Returns:
   //   pointer to allocated block of memory. nullptr if failure.
-  void* Alloc(uint32_t size, int32_t* shm_id, uint32_t* shm_offset);
+  void* Alloc(uint32_t size,
+              int32_t* shm_id,
+              uint32_t* shm_offset,
+              TransferBufferAllocationOption option =
+                  TransferBufferAllocationOption::kLoseContextOnOOM);
 
   // Frees a block of memory.
   //
@@ -211,8 +225,6 @@ class GPU_EXPORT MappedMemoryManager {
   // A process-unique ID used for disambiguating memory dumps from different
   // mapped memory manager.
   int tracing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MappedMemoryManager);
 };
 
 // A class that will manage the lifetime of a mapped memory allocation
@@ -230,6 +242,9 @@ class GPU_EXPORT ScopedMappedMemoryPtr {
         mapped_memory_manager_(mapped_memory_manager) {
     Reset(size);
   }
+
+  ScopedMappedMemoryPtr(const ScopedMappedMemoryPtr&) = delete;
+  ScopedMappedMemoryPtr& operator=(const ScopedMappedMemoryPtr&) = delete;
 
   ~ScopedMappedMemoryPtr() {
     Release();
@@ -269,7 +284,6 @@ class GPU_EXPORT ScopedMappedMemoryPtr {
   bool flush_after_release_;
   CommandBufferHelper* helper_;
   MappedMemoryManager* mapped_memory_manager_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedMappedMemoryPtr);
 };
 
 }  // namespace gpu

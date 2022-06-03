@@ -4,9 +4,12 @@
 
 #import "ui/gfx/path_mac.h"
 
+#include <ostream>
+
 #import <Cocoa/Cocoa.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 

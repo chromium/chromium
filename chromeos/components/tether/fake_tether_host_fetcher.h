@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/tether_host_fetcher.h"
 
@@ -21,6 +20,10 @@ class FakeTetherHostFetcher : public TetherHostFetcher {
   explicit FakeTetherHostFetcher(
       const multidevice::RemoteDeviceRefList& tether_hosts);
   FakeTetherHostFetcher();
+
+  FakeTetherHostFetcher(const FakeTetherHostFetcher&) = delete;
+  FakeTetherHostFetcher& operator=(const FakeTetherHostFetcher&) = delete;
+
   ~FakeTetherHostFetcher() override;
 
   void set_tether_hosts(const multidevice::RemoteDeviceRefList& tether_hosts) {
@@ -32,15 +35,12 @@ class FakeTetherHostFetcher : public TetherHostFetcher {
   // TetherHostFetcher:
   bool HasSyncedTetherHosts() override;
   void FetchAllTetherHosts(
-      const TetherHostFetcher::TetherHostListCallback& callback) override;
-  void FetchTetherHost(
-      const std::string& device_id,
-      const TetherHostFetcher::TetherHostCallback& callback) override;
+      TetherHostFetcher::TetherHostListCallback callback) override;
+  void FetchTetherHost(const std::string& device_id,
+                       TetherHostFetcher::TetherHostCallback callback) override;
 
  private:
   multidevice::RemoteDeviceRefList tether_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherHostFetcher);
 };
 
 }  // namespace tether

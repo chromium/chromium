@@ -13,10 +13,10 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 class DataDecoder;
@@ -59,13 +59,19 @@ class JsonFileSanitizer {
   static std::unique_ptr<JsonFileSanitizer> CreateAndStart(
       data_decoder::DataDecoder* decoder,
       const std::set<base::FilePath>& file_paths,
-      Callback callback);
+      Callback callback,
+      const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
+
+  JsonFileSanitizer(const JsonFileSanitizer&) = delete;
+  JsonFileSanitizer& operator=(const JsonFileSanitizer&) = delete;
 
   ~JsonFileSanitizer();
 
  private:
-  JsonFileSanitizer(const std::set<base::FilePath>& file_paths,
-                    Callback callback);
+  JsonFileSanitizer(
+      const std::set<base::FilePath>& file_paths,
+      Callback callback,
+      const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
 
   void Start(data_decoder::DataDecoder* decoder);
 
@@ -73,8 +79,8 @@ class JsonFileSanitizer {
                     std::tuple<std::string, bool, bool> read_and_delete_result);
 
   void JsonParsingDone(const base::FilePath& file_path,
-                       base::Optional<base::Value> json_value,
-                       const base::Optional<std::string>& error);
+                       absl::optional<base::Value> json_value,
+                       const absl::optional<std::string>& error);
 
   void JsonFileWritten(const base::FilePath& file_path,
                        int expected_size,
@@ -86,10 +92,9 @@ class JsonFileSanitizer {
 
   std::set<base::FilePath> file_paths_;
   Callback callback_;
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
   base::WeakPtrFactory<JsonFileSanitizer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsonFileSanitizer);
 };
 
 }  // namespace extensions

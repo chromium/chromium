@@ -19,28 +19,34 @@ namespace android {
 jlong JNI_PaymentHandlerHost_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& web_contents,
-    const base::android::JavaParamRef<jobject>& delegate) {
+    const base::android::JavaParamRef<jobject>& listener) {
   return reinterpret_cast<intptr_t>(
-      new PaymentHandlerHost(web_contents, delegate));
+      new PaymentHandlerHost(web_contents, listener));
+}
+
+// static
+base::WeakPtr<payments::PaymentHandlerHost>
+PaymentHandlerHost::FromJavaPaymentHandlerHost(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& payment_handler_host) {
+  return reinterpret_cast<PaymentHandlerHost*>(
+             Java_PaymentHandlerHost_getNativeBridge(env, payment_handler_host))
+      ->payment_handler_host_.AsWeakPtr();
 }
 
 PaymentHandlerHost::PaymentHandlerHost(
     const base::android::JavaParamRef<jobject>& web_contents,
-    const base::android::JavaParamRef<jobject>& delegate)
-    : delegate_(delegate),
+    const base::android::JavaParamRef<jobject>& listener)
+    : listener_(listener),
       payment_handler_host_(
           content::WebContents::FromJavaWebContents(web_contents),
-          /*delegate=*/this) {}
+          /*delegate=*/listener_.AsWeakPtr()) {}
 
 PaymentHandlerHost::~PaymentHandlerHost() {}
 
 jboolean PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(
     JNIEnv* env) const {
   return payment_handler_host_.is_waiting_for_payment_details_update();
-}
-
-jlong PaymentHandlerHost::GetNativePaymentHandlerHost(JNIEnv* env) {
-  return reinterpret_cast<intptr_t>(&payment_handler_host_);
 }
 
 void PaymentHandlerHost::Destroy(JNIEnv* env) {
@@ -60,50 +66,6 @@ void PaymentHandlerHost::UpdateWith(
 
 void PaymentHandlerHost::OnPaymentDetailsNotUpdated(JNIEnv* env) {
   payment_handler_host_.OnPaymentDetailsNotUpdated();
-}
-
-bool PaymentHandlerHost::ChangePaymentMethod(
-    const std::string& method_name,
-    const std::string& stringified_data) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_PaymentHandlerHostDelegate_changePaymentMethodFromPaymentHandler(
-      env, delegate_, base::android::ConvertUTF8ToJavaString(env, method_name),
-      base::android::ConvertUTF8ToJavaString(env, stringified_data));
-}
-
-bool PaymentHandlerHost::ChangeShippingOption(
-    const std::string& shipping_option_id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_PaymentHandlerHostDelegate_changeShippingOptionFromPaymentHandler(
-      env, delegate_,
-      base::android::ConvertUTF8ToJavaString(env, shipping_option_id));
-}
-
-bool PaymentHandlerHost::ChangeShippingAddress(
-    mojom::PaymentAddressPtr shipping_address) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> jshipping_address =
-      Java_PaymentHandlerHost_createShippingAddress(
-          env,
-          base::android::ConvertUTF8ToJavaString(env,
-                                                 shipping_address->country),
-          base::android::ToJavaArrayOfStrings(env,
-                                              shipping_address->address_line),
-          base::android::ConvertUTF8ToJavaString(env, shipping_address->region),
-          base::android::ConvertUTF8ToJavaString(env, shipping_address->city),
-          base::android::ConvertUTF8ToJavaString(
-              env, shipping_address->dependent_locality),
-          base::android::ConvertUTF8ToJavaString(env,
-                                                 shipping_address->postal_code),
-          base::android::ConvertUTF8ToJavaString(
-              env, shipping_address->sorting_code),
-          base::android::ConvertUTF8ToJavaString(
-              env, shipping_address->organization),
-          base::android::ConvertUTF8ToJavaString(env,
-                                                 shipping_address->recipient),
-          base::android::ConvertUTF8ToJavaString(env, shipping_address->phone));
-  return Java_PaymentHandlerHostDelegate_changeShippingAddressFromPaymentHandler(
-      env, delegate_, jshipping_address);
 }
 
 }  // namespace android

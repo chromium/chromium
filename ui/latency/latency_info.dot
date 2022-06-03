@@ -1,40 +1,101 @@
-# dot -Tpdf ui/latency/latency_info.dot > latency_info.pdf
+// dot -Tpdf ui/latency/latency_info.dot > latency_info.pdf
 
-digraph g {
-  node [shape=box];
+digraph LatencyInfo {
+  node[shape=box];
 
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT ->
-  INPUT_EVENT_LATENCY_UI_COMPONENT [label="Event.Latency.OS.*"]
-  INPUT_EVENT_LATENCY_UI_COMPONENT -> INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT [label="Event.Latency.Browser.INPUT_MODALITYUI"];
+  // Set shape and label of metric names.
+  {
+    node[style="dotted,rounded"];
 
-  INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT -> INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT [label="Event.Latency.Browser.INPUT_MODALITYAcked"];
-
-  INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT -> INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_COMPONENT;
-
-  INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_COMPONENT -> INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT [label="Event.Latency.SCROLL.INPUT_MODALITY.HandledToRendererSwap2_THREAD"];
-
-  INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT -> INPUT_EVENT_BROWSER_RECEIVED_RENDERER_SWAP_COMPONENT [label="Event.Latency.SCROLL.INPUT_MODALITY.RendererSwapToBrowserNotified2"];
-  INPUT_EVENT_BROWSER_RECEIVED_RENDERER_SWAP_COMPONENT -> INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT [label="Event.Latency.SCROLL.INPUT_MODALITY.BrowserNotifiedToBeforeGpuSwap2"];
-  INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT -> INPUT_EVENT_LATENCY_TERMINATED_FRAME_SWAP_COMPONENT [label="Event.Latency.SCROLL.INPUT_MODALITY.GpuSwap2"];
-
-  edge[style="dashed"];
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT -> INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT [label="Event.Latency.SCROLL.INPUT_MODALITY.TimeToScrollUpdateSwapBegin2"];
-
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT -> INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_COMPONENT [label="Event.Latency.SCROLL.INPUT_MODALITY.TimeToHandled2_THREAD"];
-
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT[label="\
-EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT\l\
-EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT\l\
-INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT \l"];
-  INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_COMPONENT[label="INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_(MAIN | IMPL)_COMPONENT"];
-
-
-  subgraph cluster_01 {
-    style=invis;
-    node [shape=plaintext];
-    key [label="\
-INPUT_MODALITY = (Wheel | Touch\l\
-THREAD = (Main | Impl)\l\
-SCROLL = (ScrollBegin | ScrollUpdate)\l"]
+    "Event.Latency.EventToRender.TouchpadPinch";
+    end_to_end_metrics
+      [label="\
+Event.Latency.EndToEnd.KeyPress\n\
+Event.Latency.EndToEnd.Mouse\n\
+Event.Latency.EndToEnd.TouchpadPinch\n"];
+    scroll_to_gpu_swap_metrics
+      [label="\
+Event.Latency.<scroll_name>.TimeToScrollUpdateSwapBegin2\n\
+Event.Latency.<scroll_name>.<input_modality>.TimeToScrollUpdateSwapBegin4\n\
+UKM: Event.<scroll_name>.<input_modality>.TimeToScrollUpdateSwapBegin\n"]
+    scroll_to_schedule_metrics
+      [label="\
+Event.Latency.<scroll_name>.<input_modality>.TimeToHandled2_<thread_name>\n\
+Event.Latency.Scroll.Wheel.TimeToHandled2_<thread_name>\n\
+UKM: Event.<scroll_name>.<input_modality>.TimeToHandled\n"];
+    "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>";
+    "Event.Latency.<scroll_name>.<input_modality>.RendererSwapToBrowserNotified2";
+    "Event.Latency.<scroll_name>.<input_modality>.BrowserNotifiedToBeforeGpuSwap2";
+    "Event.Latency.<scroll_name>.Touch.EventTimeToRAFTime";
+    "Event.Latency.<scroll_name>.Touch.RAFTimeToFrameSwapEnd";
+    "Event.Latency.<scroll_name>.<input_modality>.GpuSwap2";
   }
+
+  // Set labels for nodes with multiple components.
+  scroll_original
+    [label="\
+INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT\n\
+INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT"];
+  rendering_scheduled
+    [label="\
+INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_MAIN_COMPONENT\n\
+INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT"];
+
+  // Layout "original" components at the top.
+  {
+    rank=same;
+    edge[style=dotted,minlen=8];
+    INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT->
+    scroll_original->
+    INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT;
+  }
+
+  // Layout the rest of the components.
+  INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT->
+  "Event.Latency.EventToRender.TouchpadPinch"->
+  INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT
+    [weight=3];
+
+  INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT->
+  end_to_end_metrics->
+  INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT;
+
+  scroll_original->
+  scroll_to_gpu_swap_metrics->
+  INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT;
+
+  scroll_original->
+  scroll_to_schedule_metrics->
+  rendering_scheduled;
+
+  INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT->
+  "Event.Latency.<scroll_name>.Touch.EventTimeToRAFTime"->
+  rendering_scheduled;
+
+  rendering_scheduled->
+  "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>"->
+  INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT->
+  "Event.Latency.<scroll_name>.<input_modality>.RendererSwapToBrowserNotified2"->
+  DISPLAY_COMPOSITOR_RECEIVED_FRAME_COMPONENT->
+  "Event.Latency.<scroll_name>.<input_modality>.BrowserNotifiedToBeforeGpuSwap2"->
+  INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT->
+  "Event.Latency.<scroll_name>.<input_modality>.GpuSwap2"->
+  INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT
+    [weight=4];
+
+  rendering_scheduled->
+  "Event.Latency.<scroll_name>.Touch.RAFTimeToFrameSwapEnd"->
+  INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT;
+
+  // Add legend and position it under INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT.
+  legend
+    [shape=plaintext,label="\
+LEGEND:\l\
+  <default_action_status> = (DefaultPrevented | DefaultAllowed)\l\
+  <input_modality> = (Wheel | Touch)\l\
+  <scroll_name> = (ScrollBegin | ScrollUpdate)\l\
+  <thread_name> = (Main | Impl)\l"];
+  INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT->
+  legend
+    [style=invis,minlen=7];
 }

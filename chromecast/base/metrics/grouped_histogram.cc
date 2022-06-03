@@ -7,11 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -99,6 +99,9 @@ class GroupedHistogram : public base::Histogram {
         maximum_(maximum),
         bucket_count_(ranges->bucket_count()) {}
 
+  GroupedHistogram(const GroupedHistogram&) = delete;
+  GroupedHistogram& operator=(const GroupedHistogram&) = delete;
+
   ~GroupedHistogram() override {
   }
 
@@ -127,8 +130,6 @@ class GroupedHistogram : public base::Histogram {
   Sample minimum_;
   Sample maximum_;
   uint32_t bucket_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(GroupedHistogram);
 };
 
 // Registers a GroupedHistogram with StatisticsRecorder.  Must be called

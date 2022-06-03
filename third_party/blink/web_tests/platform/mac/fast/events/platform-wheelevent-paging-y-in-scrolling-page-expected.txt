@@ -1,8 +1,0 @@
-PASS event.wheelDeltaY is window.givenScrollTop * -3
-PASS event.wheelDeltaX is 0
-PASS event.wheelDelta is window.givenScrollTop * -3
-FAIL document.scrollingElement.scrollTop == window.expectedScrollTop && document.scrollingElement.scrollLeft == window.expectedScrollLeft failed to change to true in 0.5 seconds.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

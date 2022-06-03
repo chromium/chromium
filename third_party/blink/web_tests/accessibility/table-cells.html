@@ -3,7 +3,7 @@
     if (window.testRunner)
         testRunner.dumpAsText();
 </script>
-<body id="body">
+<body>
     
     
     <table id="testTable" align="center" border="1" cellpadding="5" cellspacing="0">
@@ -54,9 +54,7 @@
         if (window.accessibilityController) {
             var result = document.getElementById("result");
 
-            var body = document.getElementById("body");
-            body.focus();
-            var table = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(0);
+            var table = accessibilityController.accessibleElementById("testTable");
             
             result.innerText += "------------------------\n"; 
             result.innerText += "[0,0]\n" + table.cellForColumnAndRow(0,0).allAttributes() + "\n";

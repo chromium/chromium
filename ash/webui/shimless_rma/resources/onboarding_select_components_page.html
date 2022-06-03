@@ -1,0 +1,23 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <h1>[[i18n('selectComponentsTitleText')]]</h1>
+    <div>
+      <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
+    </div>
+  </div>
+  <div slot="body">
+    <div>
+      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+        <repair-component-chip id="[[component.id]]"
+          checked="{{component.checked}}"
+          disabled$="[[component.disabled]]"
+          component-name="[[component.name]]"
+          component-id="[[component.uniqueId]]">
+        </repair-component-chip>
+      </template>
+    </div>
+  </div>
+</base-page>

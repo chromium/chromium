@@ -7,6 +7,7 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
+import io
 import logging
 import os
 import re
@@ -19,15 +20,13 @@ import diff_util
 import path_util
 
 import histogram_paths
-import histograms_print_style
+import histogram_configuration_model
 
 
 ENUMS_PATH = histogram_paths.ENUMS_XML
 
 
 class UserError(Exception):
-  def __init__(self, message):
-    Exception.__init__(self, message)
 
   @property
   def message(self):
@@ -61,13 +60,13 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
           'k' should be stripped.
 
   Returns:
-      A boolean indicating wheather the histograms.xml file would be changed.
+      A dictionary from enum value to enum label.
 
   Raises:
       DuplicatedValue: An error when two enum labels share the same value.
   """
   # Read the file as a list of lines
-  with open(path_util.GetInputFile(filename)) as f:
+  with io.open(path_util.GetInputFile(filename)) as f:
     content = f.readlines()
 
   START_REGEX = re.compile(start_marker)
@@ -179,7 +178,7 @@ def UpdateHistogramDefinitions(histogram_enum_name, source_enum_values,
              else '')))
 
   # Create item nodes for each of the enum values.
-  for value, label in source_enum_values.iteritems():
+  for value, label in source_enum_values.items():
     new_item_nodes[value] = CreateEnumItemNode(document, value, label)
 
   # Scan existing nodes in |enum_node| for old values and preserve them.
@@ -207,7 +206,7 @@ def UpdateHistogramDefinitions(histogram_enum_name, source_enum_values,
     enum_node.appendChild(comment)
 
   # Add in the new enums.
-  for value in sorted(new_item_nodes.iterkeys()):
+  for value in sorted(new_item_nodes.keys()):
     enum_node.appendChild(new_item_nodes[value])
 
 
@@ -218,7 +217,7 @@ def _GetOldAndUpdatedXml(histogram_enum_name, source_enum_values,
   and returns both in XML format.
   """
   Log('Reading existing histograms from "{0}".'.format(ENUMS_PATH))
-  with open(ENUMS_PATH, 'rb') as f:
+  with io.open(ENUMS_PATH, 'r', encoding='utf-8') as f:
     histograms_doc = minidom.parse(f)
     f.seek(0)
     xml = f.read()
@@ -228,8 +227,7 @@ def _GetOldAndUpdatedXml(histogram_enum_name, source_enum_values,
                              source_enum_path, caller_script_name,
                              histograms_doc)
 
-  new_xml = histograms_print_style.GetPrintStyle().PrettyPrintXml(
-      histograms_doc)
+  new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
   return (xml, new_xml)
 
 
@@ -303,14 +301,18 @@ def UpdateHistogramFromDict(histogram_enum_name, source_enum_values,
     Log('Cancelled.')
     return
 
-  with open(ENUMS_PATH, 'wb') as f:
+  with io.open(ENUMS_PATH, 'w', encoding='utf-8') as f:
     f.write(new_xml)
 
   Log('Done.')
 
 
-def UpdateHistogramEnum(histogram_enum_name, source_enum_path,
-                        start_marker, end_marker, strip_k_prefix = False):
+def UpdateHistogramEnum(histogram_enum_name,
+                        source_enum_path,
+                        start_marker,
+                        end_marker,
+                        strip_k_prefix=False,
+                        calling_script=None):
   """Reads a C++ enum from a .h file and updates histograms.xml to match.
 
   Args:
@@ -328,7 +330,7 @@ def UpdateHistogramEnum(histogram_enum_name, source_enum_path,
       start_marker, end_marker, strip_k_prefix)
 
   UpdateHistogramFromDict(histogram_enum_name, source_enum_values,
-      source_enum_path, None)
+                          source_enum_path, calling_script)
 
 
 def UpdateHistogramEnumFromXML(histogram_enum_name, source_enum_path,

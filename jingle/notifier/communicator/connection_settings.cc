@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
 #include "net/base/host_port_pair.h"
 
 #include "third_party/libjingle_xmpp/xmpp/xmppclientsettings.h"

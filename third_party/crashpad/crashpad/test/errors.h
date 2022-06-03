@@ -24,12 +24,12 @@ namespace test {
 
 // These functions format messages in a similar way to the PLOG and PCHECK
 // family of logging macros in base/logging.h. They exist to interoperate with
-// gtest assertions, which don’t interoperate with logging but can be streamed
-// to.
+// Google Test assertions, which don’t interoperate with logging but can be
+// streamed to.
 //
 // Where non-test code could do:
 //   PCHECK(rv == 0) << "close";
-// gtest-based test code can do:
+// Google Test-based test code can do:
 //   EXPECT_EQ(rv, 0) << ErrnoMessage("close");
 
 //! \brief Formats an error message using an `errno` value.

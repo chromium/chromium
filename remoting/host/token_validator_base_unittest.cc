@@ -4,12 +4,14 @@
 
 #include "remoting/host/token_validator_base.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/ssl/test_ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +33,8 @@ std::unique_ptr<net::FakeClientCertIdentity> CreateFakeCert(
       &rsa_private_key, &cert_der);
 
   scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBytes(cert_der.data(), cert_der.size());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(cert_der)));
   if (!cert)
     return nullptr;
 
@@ -110,30 +113,26 @@ void TokenValidatorBaseTest::SetUp() {
   config.token_url = GURL(kTokenUrl);
   config.token_validation_url = GURL(kTokenValidationUrl);
   config.token_validation_cert_issuer = kTokenValidationCertIssuer;
-  token_validator_.reset(new TestTokenValidator(config));
+  token_validator_ = std::make_unique<TestTokenValidator>(config);
 }
 
 TEST_F(TokenValidatorBaseTest, TestSelectCertificate) {
   base::Time now = base::Time::Now();
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_expired_5_minutes_ago =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(10),
-                     now - base::TimeDelta::FromMinutes(5));
+      CreateFakeCert(now - base::Minutes(10), now - base::Minutes(5));
   ASSERT_TRUE(cert_expired_5_minutes_ago);
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_start_5min_expire_5min =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(5),
-                     now + base::TimeDelta::FromMinutes(5));
+      CreateFakeCert(now - base::Minutes(5), now + base::Minutes(5));
   ASSERT_TRUE(cert_start_5min_expire_5min);
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_start_10min_expire_5min =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(10),
-                     now + base::TimeDelta::FromMinutes(5));
+      CreateFakeCert(now - base::Minutes(10), now + base::Minutes(5));
   ASSERT_TRUE(cert_start_10min_expire_5min);
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_start_5min_expire_10min =
-      CreateFakeCert(now - base::TimeDelta::FromMinutes(5),
-                     now + base::TimeDelta::FromMinutes(10));
+      CreateFakeCert(now - base::Minutes(5), now + base::Minutes(10));
   ASSERT_TRUE(cert_start_5min_expire_10min);
 
   // No certificate.

@@ -7,13 +7,15 @@
 #include <memory>
 
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/mojom/assistant_state_controller.mojom.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/language/core/browser/pref_names.h"
@@ -24,11 +26,14 @@
 class AssistantStateClientTest : public ChromeAshTestBase {
  public:
   AssistantStateClientTest()
-      : fake_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~AssistantStateClientTest() override = default;
 
   void SetUp() override {
+    // Need to initialize DBusThreadManager before ArcSessionManager's
+    // constructor calls DBusThreadManager::Get().
+    chromeos::DBusThreadManager::Initialize();
+    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ChromeAshTestBase::SetUp();
 
     // Setup test profile.
@@ -39,7 +44,7 @@ class AssistantStateClientTest : public ChromeAshTestBase {
     profile_ = profile_builder.Build();
 
     // Setup dependencies
-    arc_session_manager_ = std::make_unique<arc::ArcSessionManager>(
+    arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
@@ -57,6 +62,8 @@ class AssistantStateClientTest : public ChromeAshTestBase {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
     ChromeAshTestBase::TearDown();
+    chromeos::ConciergeClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   AssistantStateClient* assistant_state_client() {
@@ -70,8 +77,8 @@ class AssistantStateClientTest : public ChromeAshTestBase {
   }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

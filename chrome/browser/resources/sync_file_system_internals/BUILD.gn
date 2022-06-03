@@ -1,0 +1,111 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions, "enable extensions check failed")
+
+preprocess_manifest = "preprocessed_manifest.json"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/sync_file_system_internals_resources.h",
+    "grit/sync_file_system_internals_resources_map.h",
+    "grit/sync_file_system_internals_resources_map.cc",
+    "sync_file_system_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "sync_file_system_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "dump_database.js",
+    "extension_statuses.js",
+    "file_metadata.js",
+    "main.html",
+    "sync_service.js",
+    "task_log.js",
+    "utils.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  deps = [ ":preprocess" ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/preprocessed"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "main.css" ]
+}
+
+js_type_check("closure_compile") {
+  deps = [
+    ":dump_database",
+    ":extension_statuses",
+    ":file_metadata",
+    ":sync_service",
+    ":task_log",
+    ":utils",
+  ]
+}
+
+js_library("dump_database") {
+  deps = [
+    ":utils",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("extension_statuses") {
+  deps = [
+    ":utils",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("file_metadata") {
+  deps = [
+    ":utils",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:icon",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("sync_service") {
+  deps = [
+    ":utils",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:tabs",
+  ]
+}
+
+js_library("task_log") {
+  deps = [
+    ":utils",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("utils") {
+}

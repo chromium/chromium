@@ -8,12 +8,12 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "content/public/browser/browser_thread.h"
 
-base::LazyInstance<base::string16>::Leaky
+base::LazyInstance<std::u16string>::Leaky
     SearchTermsDataAndroid::rlz_parameter_value_ = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<std::string>::Leaky
     SearchTermsDataAndroid::search_client_ = LAZY_INSTANCE_INITIALIZER;
 
-base::string16 UIThreadSearchTermsData::GetRlzParameterValue(
+std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!content::BrowserThread::IsThreadInitialized(
              content::BrowserThread::UI) ||

@@ -28,7 +28,6 @@ class MediaDrmStorageBridge {
     /**
      * Information that need to be persistent on the device. Exposed to JNI.
      */
-    @MainDex
     static class PersistentInfo {
         // EME session ID, which is generated randomly.
         private final byte[] mEmeId;

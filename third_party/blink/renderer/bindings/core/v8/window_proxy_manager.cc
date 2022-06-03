@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/remote_window_proxy.h"
+#include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-void WindowProxyManager::Trace(blink::Visitor* visitor) {
+void WindowProxyManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(window_proxy_);
   visitor->Trace(isolated_worlds_);
@@ -57,6 +61,29 @@ void WindowProxyManager::SetGlobalProxies(
     const GlobalProxyVector& global_proxies) {
   for (const auto& entry : global_proxies)
     WindowProxyMaybeUninitialized(*entry.first)->SetGlobalProxy(entry.second);
+
+  // Any transferred global proxies must now be reinitialized to ensure any
+  // preexisting JS references to global proxies don't break.
+
+  // For local frames, the global proxies cannot be reinitialized yet. Blink is
+  // in the midst of committing a navigation and swapping in the new frame.
+  // Instead, the global proxies will be reinitialized after this via a call to
+  // `UpdateDocument()` when the new `Document` is installed: this will happen
+  // before committing the navigation completes and yields back to the event
+  // loop.
+  if (frame_type_ == FrameType::kLocal)
+    return;
+
+  for (const auto& entry : global_proxies) {
+    WindowProxyMaybeUninitialized(*entry.first)->InitializeIfNeeded();
+  }
+}
+
+void WindowProxyManager::ResetIsolatedWorldsForTesting() {
+  for (auto& world_info : isolated_worlds_) {
+    world_info.value->ClearForClose();
+  }
+  isolated_worlds_.clear();
 }
 
 WindowProxyManager::WindowProxyManager(Frame& frame, FrameType frame_type)
@@ -105,17 +132,37 @@ WindowProxy* WindowProxyManager::WindowProxyMaybeUninitialized(
   return window_proxy;
 }
 
+void LocalWindowProxyManager::UpdateDocument() {
+  MainWorldProxyMaybeUninitialized()->UpdateDocument();
+
+  for (auto& entry : isolated_worlds_) {
+    To<LocalWindowProxy>(entry.value.Get())->UpdateDocument();
+  }
+}
+
 void LocalWindowProxyManager::UpdateSecurityOrigin(
     const SecurityOrigin* security_origin) {
-  static_cast<LocalWindowProxy*>(window_proxy_.Get())
+  To<LocalWindowProxy>(window_proxy_.Get())
       ->UpdateSecurityOrigin(security_origin);
 
   for (auto& entry : isolated_worlds_) {
-    auto* isolated_window_proxy =
-        static_cast<LocalWindowProxy*>(entry.value.Get());
-    const SecurityOrigin* isolated_security_origin =
-        isolated_window_proxy->World().IsolatedWorldSecurityOrigin();
-    isolated_window_proxy->UpdateSecurityOrigin(isolated_security_origin);
+    auto* isolated_window_proxy = To<LocalWindowProxy>(entry.value.Get());
+    scoped_refptr<SecurityOrigin> isolated_security_origin =
+        isolated_window_proxy->World().IsolatedWorldSecurityOrigin(
+            security_origin->AgentClusterId());
+    isolated_window_proxy->UpdateSecurityOrigin(isolated_security_origin.get());
+  }
+}
+
+void LocalWindowProxyManager::SetAbortScriptExecution(
+    v8::Context::AbortScriptExecutionCallback callback) {
+  v8::HandleScope handle_scope(GetIsolate());
+
+  static_cast<LocalWindowProxy*>(window_proxy_.Get())
+      ->SetAbortScriptExecution(callback);
+
+  for (auto& entry : isolated_worlds_) {
+    To<LocalWindowProxy>(entry.value.Get())->SetAbortScriptExecution(callback);
   }
 }
 

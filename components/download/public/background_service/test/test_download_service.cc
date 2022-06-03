@@ -5,11 +5,12 @@
 #include "components/download/public/background_service/test/test_download_service.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/download/public/background_service/service_config.h"
 #include "components/download/public/background_service/test/empty_logger.h"
 
@@ -22,6 +23,10 @@ namespace {
 class TestServiceConfig : public ServiceConfig {
  public:
   TestServiceConfig() = default;
+
+  TestServiceConfig(const TestServiceConfig&) = delete;
+  TestServiceConfig& operator=(const TestServiceConfig&) = delete;
+
   ~TestServiceConfig() override = default;
 
   // ServiceConfig implementation.
@@ -33,8 +38,6 @@ class TestServiceConfig : public ServiceConfig {
 
  private:
   base::TimeDelta time_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServiceConfig);
 };
 
 }  // namespace
@@ -60,21 +63,22 @@ bool TestDownloadService::OnStopScheduledTask(DownloadTaskType task_type) {
   return true;
 }
 
-DownloadService::ServiceStatus TestDownloadService::GetStatus() {
-  return is_ready_ ? DownloadService::ServiceStatus::READY
-                   : DownloadService::ServiceStatus::STARTING_UP;
+BackgroundDownloadService::ServiceStatus TestDownloadService::GetStatus() {
+  return is_ready_ ? BackgroundDownloadService::ServiceStatus::READY
+                   : BackgroundDownloadService::ServiceStatus::STARTING_UP;
 }
 
-void TestDownloadService::StartDownload(const DownloadParams& params) {
+void TestDownloadService::StartDownload(DownloadParams params) {
   if (!failed_download_id_.empty() && fail_at_start_) {
-    params.callback.Run(params.guid,
-                        DownloadParams::StartResult::UNEXPECTED_GUID);
+    std::move(params.callback)
+        .Run(params.guid, DownloadParams::StartResult::UNEXPECTED_GUID);
     return;
   }
 
   // The download will be accepted and queued even if the service is not ready.
-  params.callback.Run(params.guid, DownloadParams::StartResult::ACCEPTED);
-  downloads_.push_back(params);
+  std::move(params.callback)
+      .Run(params.guid, DownloadParams::StartResult::ACCEPTED);
+  downloads_.emplace_back(std::move(params));
 
   if (!is_ready_)
     return;
@@ -90,7 +94,7 @@ void TestDownloadService::ResumeDownload(const std::string& guid) {}
 
 void TestDownloadService::CancelDownload(const std::string& guid) {
   for (auto iter = downloads_.begin(); iter != downloads_.end(); ++iter) {
-    if (iter->guid == guid) {
+    if (iter->value().guid == guid) {
       downloads_.erase(iter);
       return;
     }
@@ -105,13 +109,14 @@ Logger* TestDownloadService::GetLogger() {
   return logger_.get();
 }
 
-base::Optional<DownloadParams> TestDownloadService::GetDownload(
+const absl::optional<DownloadParams>& TestDownloadService::GetDownload(
     const std::string& guid) const {
   for (const auto& download : downloads_) {
-    if (download.guid == guid)
-      return base::Optional<DownloadParams>(download);
+    if (download.value().guid == guid)
+      return download;
   }
-  return base::Optional<DownloadParams>();
+  static base::NoDestructor<absl::optional<DownloadParams>> none;
+  return *none;
 }
 
 void TestDownloadService::SetFailedDownload(
@@ -136,7 +141,7 @@ void TestDownloadService::ProcessDownload() {
   if (!is_ready_ || downloads_.empty())
     return;
 
-  DownloadParams params = downloads_.front();
+  DownloadParams params = std::move(downloads_.front().value());
   downloads_.pop_front();
 
   if (!failed_download_id_.empty() && params.guid == failed_download_id_) {

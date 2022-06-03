@@ -30,6 +30,10 @@ class JavaCanvasHolder : public SoftwareCanvasHolder {
   JavaCanvasHolder(JNIEnv* env,
                    jobject java_canvas,
                    const gfx::Vector2d& scroll_correction);
+
+  JavaCanvasHolder(const JavaCanvasHolder&) = delete;
+  JavaCanvasHolder& operator=(const JavaCanvasHolder&) = delete;
+
   ~JavaCanvasHolder() override;
 
   SkCanvas* GetCanvas() override;
@@ -37,7 +41,6 @@ class JavaCanvasHolder : public SoftwareCanvasHolder {
  private:
   AwPixelInfo* pixels_;
   std::unique_ptr<SkCanvas> canvas_;
-  DISALLOW_COPY_AND_ASSIGN(JavaCanvasHolder);
 };
 
 JavaCanvasHolder::JavaCanvasHolder(JNIEnv* env,
@@ -79,6 +82,10 @@ class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
                         jobject java_canvas,
                         const gfx::Vector2d& scroll_correction,
                         const gfx::Size size);
+
+  AuxiliaryCanvasHolder(const AuxiliaryCanvasHolder&) = delete;
+  AuxiliaryCanvasHolder& operator=(const AuxiliaryCanvasHolder&) = delete;
+
   ~AuxiliaryCanvasHolder() override;
 
   SkCanvas* GetCanvas() override;
@@ -89,7 +96,6 @@ class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
   gfx::Vector2d scroll_;
   std::unique_ptr<SkBitmap> bitmap_;
   std::unique_ptr<SkCanvas> canvas_;
-  DISALLOW_COPY_AND_ASSIGN(AuxiliaryCanvasHolder);
 };
 
 AuxiliaryCanvasHolder::AuxiliaryCanvasHolder(
@@ -119,7 +125,7 @@ AuxiliaryCanvasHolder::AuxiliaryCanvasHolder(
 
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(bitmap_info.width, bitmap_info.height);
-  bitmap_.reset(new SkBitmap);
+  bitmap_ = std::make_unique<SkBitmap>();
   bitmap_->installPixels(info, pixels, bitmap_info.stride);
   canvas_ = std::make_unique<SkCanvas>(*bitmap_);
 }
@@ -156,12 +162,13 @@ std::unique_ptr<SoftwareCanvasHolder> SoftwareCanvasHolder::Create(
   JNIEnv* env = base::android::AttachCurrentThread();
   std::unique_ptr<SoftwareCanvasHolder> holder;
   if (!force_auxiliary_bitmap) {
-    holder.reset(new JavaCanvasHolder(env, java_canvas, scroll_correction));
+    holder =
+        std::make_unique<JavaCanvasHolder>(env, java_canvas, scroll_correction);
   }
   if (!holder.get() || !holder->GetCanvas()) {
     holder.reset();
-    holder.reset(new AuxiliaryCanvasHolder(env, java_canvas, scroll_correction,
-                                           auxiliary_bitmap_size));
+    holder = std::make_unique<AuxiliaryCanvasHolder>(
+        env, java_canvas, scroll_correction, auxiliary_bitmap_size);
   }
   if (!holder->GetCanvas()) {
     holder.reset();

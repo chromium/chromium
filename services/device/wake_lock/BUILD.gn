@@ -21,7 +21,5 @@ source_set("wake_lock") {
     "//ui/gfx",
   ]
 
-  deps = [
-    "//services/device/wake_lock/power_save_blocker",
-  ]
+  deps = [ "//services/device/wake_lock/power_save_blocker" ]
 }

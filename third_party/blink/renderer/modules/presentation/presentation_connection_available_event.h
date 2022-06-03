@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace WTF {
+class AtomicString;
+}  // namespace WTF
+
 namespace blink {
 
 class PresentationConnectionAvailableEventInit;
@@ -44,20 +48,11 @@ class PresentationConnectionAvailableEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<PresentationConnection> connection_;
 };
-
-DEFINE_TYPE_CASTS(
-    PresentationConnectionAvailableEvent,
-    Event,
-    event,
-    event->InterfaceName() ==
-        event_interface_names::kPresentationConnectionAvailableEvent,
-    event.InterfaceName() ==
-        event_interface_names::kPresentationConnectionAvailableEvent);
 
 }  // namespace blink
 

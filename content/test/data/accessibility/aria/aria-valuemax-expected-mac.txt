@@ -1,6 +1,5 @@
 AXWebArea
-++AXProgressIndicator AXValue='51' AXMaxValue='101'
-++AXScrollBar AXValue='52' AXMaxValue='102'
-++AXSlider AXValue='53' AXMaxValue='103'
-++AXIncrementor AXValue='54' AXMaxValue='104'
-++++AXStaticText AXValue='Spin'
+++AXProgressIndicator AXMaxValue=101 AXValue=51
+++AXScrollBar AXMaxValue=102 AXValue=52
+++AXSlider AXMaxValue=103 AXValue=53
+++AXIncrementor AXMaxValue=104 AXValue=54

@@ -1,0 +1,5 @@
+[document web]
+++[heading] name='[ Foo ]'
+++++[static] name='[ '
+++++[static] name='Foo'
+++++[static] name=' ]'

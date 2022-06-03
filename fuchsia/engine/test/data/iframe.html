@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>this page has an iframe</title>
+  </head>
+  <body>
+    <iframe id="iframeId" title="iframe title"></iframe>
+    <script>
+      window.addEventListener("message", (event) => {
+        if (event.data.title) {
+          document.title = event.data.title;
+        }
+      }, false);
+
+      var iframe = document.getElementById("iframeId");
+
+      if (typeof iframePermissionPolicy != 'undefined') {
+        iframe.allow = iframePermissionPolicy;
+      }
+
+      iframe.src = iframeSrc;
+      iframe.onload = () => {
+        document.title = "iframe loaded";
+      }
+    </script>
+  </body>
+</html>

@@ -6,18 +6,18 @@ package org.chromium.chrome.browser.util;
 
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.base.test.util.Batch;
 
 import java.io.FileNotFoundException;
 
@@ -28,10 +28,8 @@ import java.io.FileNotFoundException;
  * not work correctly.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ChromeFileProviderTest {
-    @Rule
-    public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
-
     private ParcelFileDescriptor openFileFromProvider(Uri uri) {
         ChromeFileProvider provider = new ChromeFileProvider();
         ParcelFileDescriptor file = null;

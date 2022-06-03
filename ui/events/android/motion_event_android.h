@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gesture_detection/motion_event.h"
@@ -65,6 +64,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
                      jint history_size,
                      jint action_index,
                      jint android_action_button,
+                     jint android_gesture_classification,
                      jint android_button_state,
                      jint meta_state,
                      jfloat raw_offset_x_pixels,
@@ -117,6 +117,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   int GetFlags() const override;
 
   int GetActionButton() const;
+  Classification GetClassification() const override;
   float ticks_x() const { return ticks_x_; }
   float ticks_y() const { return ticks_y_; }
   float time_sec() const { return time_sec_; }
@@ -162,6 +163,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   const size_t cached_history_size_;
   const int cached_action_index_;
   const int cached_action_button_;
+  const int cached_gesture_classification_;
   const int cached_button_state_;
   const int cached_flags_;
   const gfx::Vector2dF cached_raw_position_offset_;

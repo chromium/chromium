@@ -12,7 +12,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"
@@ -23,10 +22,6 @@ namespace display {
 class Display;
 class DisplayAndroidManager;
 }  // namespace display
-
-namespace viz {
-class BeginFrameSource;
-}  // namespace viz
 
 namespace ui {
 
@@ -48,6 +43,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
                 float scroll_factor,
                 bool window_is_wide_color_gamut);
 
+  WindowAndroid(const WindowAndroid&) = delete;
+  WindowAndroid& operator=(const WindowAndroid&) = delete;
+
   ~WindowAndroid() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -64,29 +62,15 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   void RemoveObserver(WindowAndroidObserver* observer);
 
   WindowAndroidCompositor* GetCompositor() { return compositor_; }
-  viz::BeginFrameSource* GetBeginFrameSource();
   float GetRefreshRate();
   std::vector<float> GetSupportedRefreshRates();
   void SetPreferredRefreshRate(float refresh_rate);
 
-  // Runs the provided callback as soon as the current vsync was handled.
-  // This call is only allowed from inside the OnBeginFrame call from the
-  // BeginFrameSource of this window.
-  void AddBeginFrameCompletionCallback(base::OnceClosure callback);
-
   void SetNeedsAnimate();
   void Animate(base::TimeTicks begin_frame_time);
-  void OnVSync(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& obj,
-               jlong time_micros,
-               jlong period_micros);
   void OnVisibilityChanged(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            bool visible);
-  void OnFallbackCursorModeToggled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      bool is_on);
   void OnActivityStopped(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
   void OnActivityStarted(JNIEnv* env,
@@ -94,10 +78,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   void SetVSyncPaused(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& obj,
                       bool paused);
-  void OnCursorVisibilityChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      bool visible);
   void OnUpdateRefreshRate(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            float refresh_rate);
@@ -124,7 +104,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   // See comment on WindowAndroid.getWindowIsWideColorGamut for details.
   display::Display GetDisplayWithWindowColorSpace();
 
-  void SetForce60HzRefreshRate();
+  void SetWideColorEnabled(bool enabled);
 
   class TestHooks {
    public:
@@ -149,8 +129,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   friend class DisplayAndroidManager;
   friend class WindowBeginFrameSource;
 
-  void SetNeedsBeginFrames(bool needs_begin_frames);
-  void RequestVSyncUpdate();
   void Force60HzRefreshRateIfNeeded();
 
   // ViewAndroid overrides.
@@ -166,17 +144,12 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   base::ObserverList<WindowAndroidObserver>::Unchecked observer_list_;
 
-  std::unique_ptr<WindowBeginFrameSource> begin_frame_source_;
-  bool needs_begin_frames_;
   float mouse_wheel_scroll_factor_;
   bool vsync_paused_ = false;
 
   TestHooks* test_hooks_ = nullptr;
-  bool force_60hz_refresh_rate_ = false;
 
   int selection_handles_active_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowAndroid);
 };
 
 }  // namespace ui

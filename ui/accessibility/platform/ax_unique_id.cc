@@ -7,8 +7,9 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 
 namespace ui {
 
@@ -45,7 +46,7 @@ int32_t AXUniqueId::GetNextAXUniqueId(const int32_t max_id) {
 
   const int32_t prev_id = current_id;
   do {
-    if (current_id == max_id) {
+    if (current_id >= max_id) {
       current_id = 1;
       has_wrapped = true;
     } else {

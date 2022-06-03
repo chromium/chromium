@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -40,7 +40,7 @@ class HostScannerOperation : public MessageTransferOperation {
  public:
   class Factory {
    public:
-    static std::unique_ptr<HostScannerOperation> NewInstance(
+    static std::unique_ptr<HostScannerOperation> Create(
         const multidevice::RemoteDeviceRefList& devices_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
@@ -48,16 +48,17 @@ class HostScannerOperation : public MessageTransferOperation {
         TetherHostResponseRecorder* tether_host_response_recorder,
         ConnectionPreserver* connection_preserver);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<HostScannerOperation> BuildInstance(
+    virtual ~Factory();
+    virtual std::unique_ptr<HostScannerOperation> CreateInstance(
         const multidevice::RemoteDeviceRefList& devices_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
         HostScanDevicePrioritizer* host_scan_device_prioritizer,
         TetherHostResponseRecorder* tether_host_response_recorder,
-        ConnectionPreserver* connection_preserver);
+        ConnectionPreserver* connection_preserver) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -89,6 +90,9 @@ class HostScannerOperation : public MessageTransferOperation {
             gms_core_notifications_disabled_devices,
         bool is_final_scan_result) = 0;
   };
+
+  HostScannerOperation(const HostScannerOperation&) = delete;
+  HostScannerOperation& operator=(const HostScannerOperation&) = delete;
 
   ~HostScannerOperation() override;
 
@@ -147,8 +151,6 @@ class HostScannerOperation : public MessageTransferOperation {
       device_id_to_tether_availability_request_start_time_map_;
 
   base::WeakPtrFactory<HostScannerOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostScannerOperation);
 };
 
 }  // namespace tether

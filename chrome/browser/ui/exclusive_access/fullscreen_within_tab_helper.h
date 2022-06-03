@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_WITHIN_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_WITHIN_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 // Helper used by FullscreenController to track the state of a WebContents that
@@ -22,6 +21,10 @@
 class FullscreenWithinTabHelper
     : public content::WebContentsUserData<FullscreenWithinTabHelper> {
  public:
+  FullscreenWithinTabHelper(const FullscreenWithinTabHelper&) = delete;
+  FullscreenWithinTabHelper& operator=(const FullscreenWithinTabHelper&) =
+      delete;
+
   ~FullscreenWithinTabHelper() override;
 
   bool is_fullscreen_within_tab() const { return is_fullscreen_within_tab_; }
@@ -41,8 +44,6 @@ class FullscreenWithinTabHelper
   bool is_fullscreen_within_tab_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWithinTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_WITHIN_TAB_HELPER_H_

@@ -6,44 +6,51 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_codes.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+static const TabGroupEditorBubbleView::Colors kTestColors({
+    {tab_groups::TabGroupColorId::kRed, u"Red"},
+    {tab_groups::TabGroupColorId::kGreen, u"Green"},
+    {tab_groups::TabGroupColorId::kBlue, u"Blue"},
+});
+
+}  // namespace
+
 class ColorPickerViewTest : public ChromeViewsTestBase {
  protected:
-  static const std::array<std::pair<SkColor, base::string16>, 3> kTestColors;
-
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    views::Widget::InitParams widget_params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    widget_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    widget_ = std::make_unique<views::Widget>();
-    widget_->Init(std::move(widget_params));
+    widget_ = CreateTestWidget();
+    bubble_view_ = std::make_unique<views::BubbleDialogDelegateView>();
 
-    color_picker_ =
-        new ColorPickerView(kTestColors, SK_ColorWHITE, SK_ColorCYAN,
-                            color_selected_callback_.Get());
-    widget_->SetContentsView(color_picker_);
-
-    color_picker_->SizeToPreferredSize();
+    auto color_picker = std::make_unique<ColorPickerView>(
+        bubble_view(), kTestColors, tab_groups::TabGroupColorId::kBlue,
+        color_selected_callback_.Get());
+    color_picker->SizeToPreferredSize();
+    color_picker_ = widget_->SetContentsView(std::move(color_picker));
+    widget_->Show();
   }
 
   void TearDown() override {
@@ -72,6 +79,10 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
     ClickColorElement(color_picker_->GetElementAtIndexForTesting(index));
   }
 
+  const views::BubbleDialogDelegateView* bubble_view() {
+    return bubble_view_.get();
+  }
+
   ::testing::NiceMock<
       base::MockCallback<ColorPickerView::ColorSelectedCallback>>
       color_selected_callback_;
@@ -79,55 +90,36 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<views::BubbleDialogDelegateView> bubble_view_;
 };
 
-// static
-const std::array<std::pair<SkColor, base::string16>, 3>
-    ColorPickerViewTest::kTestColors{{
-        {SK_ColorRED, base::ASCIIToUTF16("Red")},
-        {SK_ColorGREEN, base::ASCIIToUTF16("Green")},
-        {SK_ColorBLUE, base::ASCIIToUTF16("Blue")},
-    }};
-
-TEST_F(ColorPickerViewTest, NoColorSelectedByDefaultIfNotMatching) {
-  EXPECT_FALSE(color_picker_->GetSelectedColor().has_value());
-}
-
 TEST_F(ColorPickerViewTest, ColorSelectedByDefaultIfMatching) {
-  SkColor initial_color = SK_ColorRED;
-
-  views::Widget::InitParams widget_params =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
-  widget->Init(std::move(widget_params));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   ColorPickerView* color_picker =
-      new ColorPickerView(kTestColors, SK_ColorWHITE, initial_color,
-                          color_selected_callback_.Get());
-  widget->SetContentsView(color_picker);
+      widget->SetContentsView(std::make_unique<ColorPickerView>(
+          bubble_view(), kTestColors, tab_groups::TabGroupColorId::kRed,
+          color_selected_callback_.Get()));
 
   color_picker->SizeToPreferredSize();
 
-  EXPECT_TRUE(color_picker->GetSelectedColor().has_value());
-  EXPECT_EQ(color_picker->GetSelectedColor().value(), initial_color);
-
-  widget.reset();
+  EXPECT_TRUE(color_picker->GetSelectedElement().has_value());
+  // Expect the index to match that of TabGroupId::kRed.
+  EXPECT_EQ(color_picker->GetSelectedElement().value(), 0);
 }
 
 TEST_F(ColorPickerViewTest, ClickingSelectsColor) {
   ClickColorAtIndex(0);
-  EXPECT_EQ(kTestColors[0].first, color_picker_->GetSelectedColor());
+  EXPECT_EQ(0, color_picker_->GetSelectedElement());
 
   ClickColorAtIndex(1);
-  EXPECT_EQ(kTestColors[1].first, color_picker_->GetSelectedColor());
+  EXPECT_EQ(1, color_picker_->GetSelectedElement());
 }
 
 TEST_F(ColorPickerViewTest, ColorNotDeselected) {
   ClickColorAtIndex(0);
   ClickColorAtIndex(0);
-  EXPECT_EQ(kTestColors[0].first, color_picker_->GetSelectedColor());
+  EXPECT_EQ(0, color_picker_->GetSelectedElement());
 }
 
 TEST_F(ColorPickerViewTest, SelectingColorNotifiesCallback) {
@@ -147,9 +139,9 @@ TEST_F(ColorPickerViewTest, CallbackNotifiedOnce) {
 TEST_F(ColorPickerViewTest, KeyboardFocusBehavesLikeRadioButtons) {
   views::FocusManager* focus_manager = color_picker_->GetFocusManager();
 
-  // When no color is selected, focus should start on the first.
+  // Focus should start at the selected element.
   focus_manager->AdvanceFocus(false);
-  EXPECT_EQ(color_picker_->GetElementAtIndexForTesting(0),
+  EXPECT_EQ(color_picker_->GetElementAtIndexForTesting(2),
             focus_manager->GetFocusedView());
 
   // Pressing arrow keys should cycle through the elements.
@@ -158,7 +150,7 @@ TEST_F(ColorPickerViewTest, KeyboardFocusBehavesLikeRadioButtons) {
       ui::DomCodeToUsLayoutKeyboardCode(ui::DomCode::ARROW_RIGHT),
       ui::DomCode::ARROW_RIGHT, ui::EF_NONE);
   EXPECT_FALSE(focus_manager->OnKeyEvent(arrow_event));
-  EXPECT_EQ(color_picker_->GetElementAtIndexForTesting(1),
+  EXPECT_EQ(color_picker_->GetElementAtIndexForTesting(0),
             focus_manager->GetFocusedView());
 
   focus_manager->ClearFocus();

@@ -12,64 +12,38 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
 
-// DevToolsConsoleHelper is a class that holds a WebContents in order to be able
-// to send a message to the WebContents' main frame. It is used so
-// ManifestIconDownloader and the callers do not have to worry about
-// |web_contents| lifetime. If the |web_contents| is invalidated before the
-// message can be sent, the message will simply be ignored.
-class ManifestIconDownloader::DevToolsConsoleHelper
-    : public WebContentsObserver {
- public:
-  explicit DevToolsConsoleHelper(WebContents* web_contents);
-  ~DevToolsConsoleHelper() override = default;
-
-  void AddMessage(blink::mojom::ConsoleMessageLevel level,
-                  const std::string& message);
-};
-
-ManifestIconDownloader::DevToolsConsoleHelper::DevToolsConsoleHelper(
-    WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
-
-void ManifestIconDownloader::DevToolsConsoleHelper::AddMessage(
-    blink::mojom::ConsoleMessageLevel level,
-    const std::string& message) {
-  if (!web_contents())
-    return;
-  web_contents()->GetMainFrame()->AddMessageToConsole(level, message);
-}
-
-bool ManifestIconDownloader::Download(WebContents* web_contents,
-                                      const GURL& icon_url,
-                                      int ideal_icon_size_in_px,
-                                      int minimum_icon_size_in_px,
-                                      IconFetchCallback callback,
-                                      bool square_only /* = true */) {
+bool ManifestIconDownloader::Download(
+    WebContents* web_contents,
+    const GURL& icon_url,
+    int ideal_icon_size_in_px,
+    int minimum_icon_size_in_px,
+    int maximum_icon_size_in_px,
+    IconFetchCallback callback,
+    bool square_only,
+    const GlobalRenderFrameHostId& initiator_frame_routing_id) {
   DCHECK(minimum_icon_size_in_px <= ideal_icon_size_in_px);
   if (!web_contents || !icon_url.is_valid())
     return false;
 
-  web_contents->DownloadImage(
-      icon_url,
-      false,                  // is_favicon
-      ideal_icon_size_in_px,  // preferred_size
-      0,                      // max_bitmap_size - 0 means no maximum size.
-      false,                  // bypass_cache
+  const gfx::Size preferred_size(ideal_icon_size_in_px, ideal_icon_size_in_px);
+  web_contents->DownloadImageInFrame(
+      initiator_frame_routing_id, icon_url,
+      false,                    // is_favicon
+      preferred_size,           // preferred_size
+      maximum_icon_size_in_px,  // max_bitmap_size - 0 means no maximum size.
+      false,                    // bypass_cache
       base::BindOnce(&ManifestIconDownloader::OnIconFetched,
                      ideal_icon_size_in_px, minimum_icon_size_in_px,
-                     square_only,
-                     base::Owned(new DevToolsConsoleHelper(web_contents)),
+                     square_only, web_contents->GetWeakPtr(),
                      std::move(callback)));
   return true;
 }
@@ -78,7 +52,7 @@ void ManifestIconDownloader::OnIconFetched(
     int ideal_icon_size_in_px,
     int minimum_icon_size_in_px,
     bool square_only,
-    DevToolsConsoleHelper* console_helper,
+    base::WeakPtr<WebContents> web_contents,
     IconFetchCallback callback,
     int id,
     int http_status_code,
@@ -88,10 +62,12 @@ void ManifestIconDownloader::OnIconFetched(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (bitmaps.empty()) {
-    console_helper->AddMessage(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Error while trying to use the following icon from the Manifest: " +
-            url.spec() + " (Download error or resource isn't a valid image)");
+    if (web_contents) {
+      web_contents->GetMainFrame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Error while trying to use the following icon from the Manifest: " +
+              url.spec() + " (Download error or resource isn't a valid image)");
+    }
 
     std::move(callback).Run(SkBitmap());
     return;
@@ -101,11 +77,13 @@ void ManifestIconDownloader::OnIconFetched(
       ideal_icon_size_in_px, minimum_icon_size_in_px, square_only, bitmaps);
 
   if (closest_index == -1) {
-    console_helper->AddMessage(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "Error while trying to use the following icon from the Manifest: " +
-            url.spec() +
-            " (Resource size is not correct - typo in the Manifest?)");
+    if (web_contents) {
+      web_contents->GetMainFrame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Error while trying to use the following icon from the Manifest: " +
+              url.spec() +
+              " (Resource size is not correct - typo in the Manifest?)");
+    }
 
     std::move(callback).Run(SkBitmap());
     return;
@@ -124,8 +102,8 @@ void ManifestIconDownloader::OnIconFetched(
   // webapp storage system as well.
   if (chosen.height() > ideal_icon_size_in_px ||
       chosen.width() > ideal_icon_width_in_px) {
-    base::PostTask(FROM_HERE, {BrowserThread::IO},
-                   base::BindOnce(&ManifestIconDownloader::ScaleIcon,
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ManifestIconDownloader::ScaleIcon,
                                   ideal_icon_width_in_px, ideal_icon_size_in_px,
                                   chosen, std::move(callback)));
     return;
@@ -144,8 +122,8 @@ void ManifestIconDownloader::ScaleIcon(int ideal_icon_width_in_px,
       bitmap, skia::ImageOperations::RESIZE_BEST, ideal_icon_width_in_px,
       ideal_icon_height_in_px);
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(std::move(callback), scaled));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), scaled));
 }
 
 int ManifestIconDownloader::FindClosestBitmapIndex(

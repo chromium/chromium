@@ -1,0 +1,12 @@
+-APIPermissionSetTest.IPC
+-APIRequestHandlerTest.AddPendingRequestCallback
+-APIRequestHandlerTest.AddPendingRequestPromise
+-CompositeMatcherTest.HostPermissionsAlwaysRequired
+-CompositeMatcherTest.RulePlacement
+-ExtensionMessageTypesTest.TestLoadedParams
+-Lazy/EventRouterFilterTest.URLBasedFilteredEventListener/0
+-MimeHandlerServiceImplTest.SetPdfPluginAttributesInvalidBackgroundColor
+-MimeHandlerServiceImplTest.SetValidPdfPluginAttributes
+-ServiceWorker/EventRouterFilterTest.URLBasedFilteredEventListener/0
+-SocketPermissionTest.IPC
+-SocketsManifestPermissionTest.IPC

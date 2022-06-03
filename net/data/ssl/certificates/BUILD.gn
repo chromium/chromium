@@ -8,8 +8,6 @@ action_foreach("generate_fuzzer_cert_includes") {
     "spdy_pooling.pem",
     "wildcard.pem",
   ]
-  outputs = [
-    "$target_gen_dir/{{source_name_part}}.inc",
-  ]
+  outputs = [ "$target_gen_dir/{{source_name_part}}.inc" ]
   args = [ "{{source}}" ] + rebase_path(outputs, root_build_dir)
 }

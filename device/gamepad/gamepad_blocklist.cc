@@ -66,6 +66,8 @@ constexpr struct VendorProductPair {
     {kVendorMicrosoft, 0x07cd},
     // Surface Keyboard.
     {kVendorMicrosoft, 0x0922},
+    // Surface Type Cover.
+    {kVendorMicrosoft, 0x09c0},
 };
 
 // Devices from these vendors are always blocked.

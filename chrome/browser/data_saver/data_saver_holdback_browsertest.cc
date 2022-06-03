@@ -13,6 +13,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -29,25 +30,22 @@ class DataSaverHoldbackBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    InProcessBrowserTest::SetUpCommandLine(cmd);
     cmd->AppendSwitch(
         data_reduction_proxy::switches::kEnableDataReductionProxy);
   }
 
   void VerifySaveDataHeader(const std::string& expected_header_value) {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/echoheader?Save-Data"));
-    std::string header_value;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send(document.body.textContent);",
-        &header_value));
-    EXPECT_EQ(expected_header_value, header_value);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/echoheader?Save-Data")));
+    EXPECT_EQ(
+        expected_header_value,
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.body.textContent;"));
   }
 
   void VerifySaveDataAPI(bool expected_header_set) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 test_server_.GetURL("/net_info.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), test_server_.GetURL("/net_info.html")));
     EXPECT_EQ(expected_header_set, RunScriptExtractBool("getSaveData()"));
   }
 
@@ -60,10 +58,9 @@ class DataSaverHoldbackBrowserTest : public InProcessBrowserTest,
 
  private:
   bool RunScriptExtractBool(const std::string& script) {
-    bool data;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
-    return data;
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   net::EmbeddedTestServer test_server_;

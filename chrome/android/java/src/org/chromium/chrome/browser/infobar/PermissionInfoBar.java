@@ -5,30 +5,42 @@
 package org.chromium.chrome.browser.infobar;
 
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ResourceId;
-import org.chromium.chrome.browser.permissions.AndroidPermissionRequester;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.website.SingleCategoryPreferences;
-import org.chromium.chrome.browser.settings.website.SiteSettingsCategory;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.infobars.ConfirmInfoBar;
+import org.chromium.components.infobars.InfoBarCompactLayout;
+import org.chromium.components.infobars.InfoBarLayout;
+import org.chromium.components.permissions.AndroidPermissionRequester;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
 
 /**
  * An infobar used for prompting the user to grant a web API permission.
  */
 public class PermissionInfoBar
         extends ConfirmInfoBar implements AndroidPermissionRequester.RequestDelegate {
-
-    /** The tab which this infobar will be displayed upon. */
-    protected final Tab mTab;
+    /** The window which this infobar will be displayed upon. */
+    protected final WindowAndroid mWindow;
 
     /** The content settings types corresponding to the permission requested in this infobar. */
     protected int[] mContentSettingsTypes;
 
-    /** Whether the last clicked button was the "Manage" (secondary) button. */
-    protected boolean mManageButtonLastClicked;
+    /** Whether the secondary button should act as a "Manage" button to open settings. */
+    protected boolean mSecondaryButtonShouldOpenSettings;
+
+    /**
+     * Whether the last clicked button opened settings, requiring the dialog to stay interactive
+     * when the user switches back.
+     */
+    protected boolean mLastClickOpenedSettings;
 
     /** Whether the infobar should be shown as a compact mini-infobar or a classic expanded one. */
     private boolean mIsExpanded;
@@ -42,18 +54,24 @@ public class PermissionInfoBar
     /** The secondary text shown below the message in the expanded state. */
     private String mDescription;
 
-    protected PermissionInfoBar(Tab tab, int[] contentSettingsTypes, int iconDrawableId,
-            String compactMessage, String compactLinkText, String message, String description,
-            String primaryButtonText, String secondaryButtonText) {
+    /** The text of the `Learn more` link shown in the expanded state after the description. */
+    private String mLearnMoreLinkText;
+
+    protected PermissionInfoBar(WindowAndroid window, int[] contentSettingsTypes,
+            int iconDrawableId, String compactMessage, String compactLinkText, String message,
+            String description, String learnMoreLinktext, String primaryButtonText,
+            String secondaryButtonText, boolean secondaryButtonShouldOpenSettings) {
         super(iconDrawableId, R.color.infobar_icon_drawable_color, null /* iconBitmap */, message,
                 null /* linkText */, primaryButtonText, secondaryButtonText);
-        mTab = tab;
+        mWindow = window;
         mContentSettingsTypes = contentSettingsTypes;
-        mManageButtonLastClicked = false;
+        mSecondaryButtonShouldOpenSettings = secondaryButtonShouldOpenSettings;
+        mLastClickOpenedSettings = false;
         mIsExpanded = false;
         mCompactLinkText = compactLinkText;
         mCompactMessage = compactMessage;
         mDescription = description;
+        mLearnMoreLinkText = learnMoreLinktext;
     }
 
     @Override
@@ -73,12 +91,12 @@ public class PermissionInfoBar
     public boolean areControlsEnabled() {
         // The controls need to be enbled after the user clicks `manage` since they will return to
         // the page and the infobar still needs to be kept active.
-        return super.areControlsEnabled() || mManageButtonLastClicked;
+        return super.areControlsEnabled() || mLastClickOpenedSettings;
     }
 
     @Override
     public void onButtonClicked(final boolean isPrimaryButton) {
-        mManageButtonLastClicked = !isPrimaryButton;
+        mLastClickOpenedSettings = false;
         if (getContext() == null) {
             onButtonClickedInternal(isPrimaryButton);
             return;
@@ -88,12 +106,13 @@ public class PermissionInfoBar
             // requestAndroidPermissions will call back into this class to finalize the action if it
             // returns true.
             if (AndroidPermissionRequester.requestAndroidPermissions(
-                        mTab, mContentSettingsTypes.clone(), this)) {
+                        mWindow, mContentSettingsTypes.clone(), this)) {
                 return;
             }
-        } else {
+        } else if (mSecondaryButtonShouldOpenSettings) {
             launchNotificationsSettingsPage();
         }
+
         onButtonClickedInternal(isPrimaryButton);
     }
 
@@ -110,7 +129,16 @@ public class PermissionInfoBar
     @Override
     public void createContent(InfoBarLayout layout) {
         super.createContent(layout);
-        layout.getMessageLayout().addDescription(mDescription);
+
+        SpannableStringBuilder descriptionMessage = new SpannableStringBuilder(mDescription);
+        if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
+            SpannableString link = new SpannableString(mLearnMoreLinkText);
+            link.setSpan(
+                    new NoUnderlineClickableSpan(layout.getResources(), view -> onLinkClicked()), 0,
+                    link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            descriptionMessage.append(" ").append(link);
+        }
+        layout.getMessageLayout().addDescription(descriptionMessage);
     }
 
     @Override
@@ -128,35 +156,38 @@ public class PermissionInfoBar
     }
 
     private void launchNotificationsSettingsPage() {
+        mLastClickOpenedSettings = true;
         Bundle fragmentArguments = new Bundle();
-        fragmentArguments.putString(SingleCategoryPreferences.EXTRA_CATEGORY,
+        fragmentArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-        SettingsLauncher.launchSettingsPage(
-                getContext(), SingleCategoryPreferences.class, fragmentArguments);
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(
+                getContext(), SingleCategorySettings.class, fragmentArguments);
     }
 
     /**
      * Creates and begins the process for showing a PermissionInfoBar.
-     * @param tab                   The owning tab for the infobar.
+     * @param window                The window this infobar will be displayed upon.
      * @param contentSettingsTypes  The list of ContentSettingTypes being requested by this infobar.
-     * @param enumeratedIconId      ID corresponding to the icon that will be shown for the infobar.
-     *                              The ID must have been mapped using the ResourceMapper class
-     *                              before passing it to this function.
+     * @param iconId                ID corresponding to the icon that will be shown for the infobar.
      * @param compactMessage        Message to show in the compact state.
      * @param compactLinkText       Text of link displayed right to the message in compact state.
      * @param message               Primary message in the extended state.
      * @param description           Secondary message (description) in the expanded state.
-     * @param buttonOk              String to display on the OK button.
-     * @param buttonManage          String to display on the Manage button.
+     * @param learnMoreLinkText     String to display on the `Learn more` link.
+     * @param primaryButtonText     String to display on the primary button.
+     * @param secondaryButtonText   String to display on the secondary button.
+     * @param secondaryButtonShouldOpenSettings  Whether the secondary button should open site
+     *         settings.
      */
     @CalledByNative
-    private static PermissionInfoBar create(Tab tab, int[] contentSettingsTypes,
-            int enumeratedIconId, String compactMessage, String compactLinkText, String message,
-            String description, String buttonOk, String buttonManage) {
-        int drawableId = ResourceId.mapToDrawableId(enumeratedIconId);
-
-        PermissionInfoBar infoBar = new PermissionInfoBar(tab, contentSettingsTypes, drawableId,
-                compactMessage, compactLinkText, message, description, buttonOk, buttonManage);
+    private static PermissionInfoBar create(WindowAndroid window, int[] contentSettingsTypes,
+            int iconId, String compactMessage, String compactLinkText, String message,
+            String description, String learnMoreLinkText, String primaryButtonText,
+            String secondaryButtonText, boolean secondaryButtonShouldOpenSettings) {
+        PermissionInfoBar infoBar = new PermissionInfoBar(window, contentSettingsTypes, iconId,
+                compactMessage, compactLinkText, message, description, learnMoreLinkText,
+                primaryButtonText, secondaryButtonText, secondaryButtonShouldOpenSettings);
 
         return infoBar;
     }

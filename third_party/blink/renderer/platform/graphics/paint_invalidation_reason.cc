@@ -4,9 +4,14 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace blink {
+
+static_assert(static_cast<uint8_t>(PaintInvalidationReason::kMax) < (1 << 7),
+              "PaintInvalidationReason must fit in 7 bits");
 
 const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
   switch (reason) {
@@ -14,8 +19,6 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
       return "none";
     case PaintInvalidationReason::kIncremental:
       return "incremental";
-    case PaintInvalidationReason::kRectangle:
-      return "invalidate paint rectangle";
     case PaintInvalidationReason::kHitTest:
       return "hit testing change";
     case PaintInvalidationReason::kFull:

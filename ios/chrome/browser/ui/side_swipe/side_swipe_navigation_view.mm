@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,10 +68,9 @@ const CGFloat kSelectionAnimationScale = 26;
 // The duration of the animations played when the threshold is met.
 const CGFloat kSelectionAnimationDuration = 0.5;
 
-UIColor* const kPageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
-UIColor* const kSelectionCircleColor =
-    [UIColor colorNamed:kTextfieldBackgroundColor];
-UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
+UIColor* SelectionCircleColor() {
+  return [UIColor colorNamed:kTextfieldBackgroundColor];
+}
 }
 
 @interface SideSwipeNavigationView () {
@@ -107,14 +106,14 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
                         image:(UIImage*)image {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = kPageBackgroundColor;
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
     _canNavigate = canNavigate;
     if (canNavigate) {
       image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       const CGRect imageSize = CGRectMake(0, 0, 24, 24);
       _arrowView = [[UIImageView alloc] initWithImage:image];
-      _arrowView.tintColor = kArrowColor;
+      _arrowView.tintColor = [UIColor colorNamed:kToolbarButtonColor];
       _selectionCircleLayer = [self newSelectionCircleLayer];
       [_arrowView setFrame:imageSize];
     }
@@ -163,12 +162,10 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      _selectionCircleLayer.fillColor = kSelectionCircleColor.CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    _selectionCircleLayer.fillColor = SelectionCircleColor().CGColor;
   }
 }
 
@@ -208,8 +205,17 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
   [_arrowView setTransform:CGAffineTransformScale(rotation, scale, scale)];
 
   // Animate selection bubbles dpending on distance.
-  [UIView beginAnimations:@"transform" context:NULL];
-  [UIView setAnimationDuration:kSelectionSnappingAnimationDuration];
+  __weak SideSwipeNavigationView* weakSelf = self;
+  [UIView animateWithDuration:kSelectionSnappingAnimationDuration
+                   animations:^{
+                     [weakSelf animateSelectionBubblesByDistance:distance
+                                                           width:width];
+                   }
+                   completion:nil];
+}
+
+- (void)animateSelectionBubblesByDistance:(CGFloat)distance
+                                    width:(CGFloat)width {
   if (distance < (width * kSwipeThreshold)) {
     // Scale selection down.
     _selectionCircleLayer.transform =
@@ -221,31 +227,21 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
     _selectionCircleLayer.transform = CATransform3DMakeScale(1, 1, 1);
     _selectionCircleLayer.opacity = 1;
     [_arrowView setAlpha:1];
-    // Trigger a small haptic blip when exceeding the threshold and mark
-    // such that only one blip gets triggered.
+    // Trigger a small haptic blip when exceeding the
+    // threshold and mark such that only one blip gets
+    // triggered.
     if (!_thresholdTriggered) {
       TriggerHapticFeedbackForSelectionChange();
       _thresholdTriggered = YES;
     }
   }
-  [UIView commitAnimations];
 }
 
 - (void)explodeSelection:(void (^)(void))block {
+  __weak SideSwipeNavigationView* weakSelf = self;
   [CATransaction begin];
   [CATransaction setCompletionBlock:^{
-    // Note that the animations below may complete at slightly different times
-    // resulting in frame(s) between animation completion and the transaction's
-    // completion handler that show the original state. To avoid this flicker,
-    // the animations use a fillMode forward and are not removed until the
-    // transaction completion handler is executed.
-    [_selectionCircleLayer removeAnimationForKey:@"opacity"];
-    [_selectionCircleLayer removeAnimationForKey:@"transform"];
-    [_selectionCircleLayer setOpacity:0];
-    [_arrowView setAlpha:0];
-    self.backgroundColor = kSelectionCircleColor;
-    block();
-
+    [weakSelf handleCATransactionComplete:block];
   }];
 
   CAMediaTimingFunction* timing =
@@ -292,8 +288,26 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
   [_arrowView setAlpha:1];
   [UIView animateWithDuration:kSelectionAnimationDuration
                    animations:^{
-                     [_arrowView setAlpha:0];
+                     [weakSelf setArrowViewAlpha:0];
                    }];
+}
+
+- (void)handleCATransactionComplete:(void (^)(void))block {
+  // Note that the animations below may complete at slightly different times
+  // resulting in frame(s) between animation completion and the transaction's
+  // completion handler that show the original state. To avoid this flicker,
+  // the animations use a fillMode forward and are not removed until the
+  // transaction completion handler is executed.
+  [_selectionCircleLayer removeAnimationForKey:@"opacity"];
+  [_selectionCircleLayer removeAnimationForKey:@"transform"];
+  [_selectionCircleLayer setOpacity:0];
+  [_arrowView setAlpha:0];
+  self.backgroundColor = SelectionCircleColor();
+  block();
+}
+
+- (void)setArrowViewAlpha:(CGFloat)alpha {
+  [_arrowView setAlpha:alpha];
 }
 
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
@@ -378,46 +392,60 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
 - (void)animateTargetViewCompleted:(BOOL)completed
                      withDirection:(UISwipeGestureRecognizerDirection)direction
                       withDuration:(CGFloat)duration {
-  void (^animationBlock)(void) = ^{
-    CGRect targetFrame = self.targetView.frame;
-    CGRect frame = self.frame;
-    CGFloat width = CGRectGetWidth(self.targetView.bounds);
-    // Animate self.targetFrame to the side if completed and to the center if
-    // not. Animate self.view to the center if completed or to the size if not.
-    if (completed) {
-      frame.origin.x = 0;
-      frame.size.width = width;
-      self.frame = frame;
-      targetFrame.origin.x =
-          direction == UISwipeGestureRecognizerDirectionRight ? width : -width;
-      self.targetView.frame = targetFrame;
-    } else {
-      targetFrame.origin.x = 0;
-      self.targetView.frame = targetFrame;
-      frame.origin.x =
-          direction == UISwipeGestureRecognizerDirectionLeft ? width : 0;
-      frame.size.width = 0;
-      self.frame = frame;
-    }
-    CGRect bounds = self.bounds;
-    CGPoint center = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
-    [_arrowView setCenter:AlignPointToPixel(center)];
-  };
+  __weak SideSwipeNavigationView* weakSelf = self;
   CGFloat cleanUpDelay = completed ? kSelectionAnimationDuration - duration : 0;
   [UIView animateWithDuration:duration
-                   animations:animationBlock
-                   completion:^(BOOL finished) {
-                     // Give the other animations time to complete.
-                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                                  cleanUpDelay * NSEC_PER_SEC),
-                                    dispatch_get_main_queue(), ^{
-                                      // Reset target frame.
-                                      CGRect frame = self.targetView.frame;
-                                      frame.origin.x = 0;
-                                      self.targetView.frame = frame;
-                                      [self removeFromSuperview];
-                                    });
-                   }];
+      animations:^{
+        [weakSelf handleTargetViewAnimationWithCompleted:completed
+                                           withDirection:direction
+                                            withDuration:duration];
+      }
+      completion:^(BOOL finished) {
+        // Give the other animations time to complete.
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, cleanUpDelay * NSEC_PER_SEC),
+            dispatch_get_main_queue(), ^{
+              [weakSelf handleTargetViewAnimationCompletion];
+            });
+      }];
+}
+
+- (void)handleTargetViewAnimationWithCompleted:(BOOL)completed
+                                 withDirection:
+                                     (UISwipeGestureRecognizerDirection)
+                                         direction
+                                  withDuration:(CGFloat)duration {
+  CGRect targetFrame = self.targetView.frame;
+  CGRect frame = self.frame;
+  CGFloat width = CGRectGetWidth(self.targetView.bounds);
+  // Animate self.targetFrame to the side if completed and to the center if
+  // not. Animate self.view to the center if completed or to the size if not.
+  if (completed) {
+    frame.origin.x = 0;
+    frame.size.width = width;
+    self.frame = frame;
+    targetFrame.origin.x =
+        direction == UISwipeGestureRecognizerDirectionRight ? width : -width;
+    self.targetView.frame = targetFrame;
+  } else {
+    targetFrame.origin.x = 0;
+    self.targetView.frame = targetFrame;
+    frame.origin.x =
+        direction == UISwipeGestureRecognizerDirectionLeft ? width : 0;
+    frame.size.width = 0;
+    self.frame = frame;
+  }
+  CGRect bounds = self.bounds;
+  CGPoint center = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+  [_arrowView setCenter:AlignPointToPixel(center)];
+}
+
+- (void)handleTargetViewAnimationCompletion {
+  // Reset target frame.
+  CGRect frame = self.targetView.frame;
+  frame.origin.x = 0;
+  self.targetView.frame = frame;
+  [self removeFromSuperview];
 }
 
 - (CAShapeLayer*)newSelectionCircleLayer {
@@ -425,13 +453,9 @@ UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
   CAShapeLayer* selectionCircleLayer = [[CAShapeLayer alloc] init];
   selectionCircleLayer.bounds = bounds;
   selectionCircleLayer.backgroundColor = UIColor.clearColor.CGColor;
-  if (@available(iOS 13, *)) {
-    UIColor* resolvedColor = [kSelectionCircleColor
-        resolvedColorWithTraitCollection:self.traitCollection];
-    selectionCircleLayer.fillColor = resolvedColor.CGColor;
-  } else {
-    selectionCircleLayer.fillColor = kSelectionCircleColor.CGColor;
-  }
+  UIColor* resolvedColor = [SelectionCircleColor()
+      resolvedColorWithTraitCollection:self.traitCollection];
+  selectionCircleLayer.fillColor = resolvedColor.CGColor;
   selectionCircleLayer.opacity = 0;
   selectionCircleLayer.transform =
       CATransform3DMakeScale(kSelectionDownScale, kSelectionDownScale, 1);

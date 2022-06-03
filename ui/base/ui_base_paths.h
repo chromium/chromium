@@ -5,8 +5,8 @@
 #ifndef UI_BASE_UI_BASE_PATHS_H_
 #define UI_BASE_UI_BASE_PATHS_H_
 
+#include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_export.h"
 
 // This file declares path keys for various special directories. These can be
 // used with the PathService to access these directories and files.
@@ -31,7 +31,7 @@ enum {
 };
 
 // Call once to register the provider for the path keys defined above.
-UI_BASE_EXPORT void RegisterPathProvider();
+COMPONENT_EXPORT(UI_BASE) void RegisterPathProvider();
 
 }  // namespace ui
 

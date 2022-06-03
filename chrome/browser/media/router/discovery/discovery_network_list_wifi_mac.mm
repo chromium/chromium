@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
 // TODO(crbug.com/841631): This file uses the deprecated CWInterface interface;

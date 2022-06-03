@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -193,6 +192,51 @@ TEST(VersionTest, IsValidWildcardString) {
   for (const auto& i : cases) {
     EXPECT_EQ(base::Version::IsValidWildcardString(i.version), i.expected)
         << i.version << "?" << i.expected;
+  }
+}
+
+TEST(VersionTest, LeadingZeros) {
+  {
+    // Leading zeros in the first component are not allowed.
+    base::Version v("01.1");
+    EXPECT_FALSE(v.IsValid());
+  }
+
+  {
+    // Leading zeros in subsequent components are allowed (and this behavior is
+    // now important for compatibility with existing modules, like extensions),
+    // but are ignored because the value is parsed as an integer...
+    base::Version v1("1.01");
+    EXPECT_TRUE(v1.IsValid());
+    // ...and as a result, v1.01 == v1.1.
+    EXPECT_EQ("1.1", v1.GetString());
+    base::Version v2("1.1");
+    EXPECT_EQ(v1, v2);
+  }
+
+  // Similarly, since leading zeros are ignored, v1.02 > v1.1 (because
+  // v1.02 is translated to 1.2).
+  EXPECT_GT(base::Version("1.02"), base::Version("1.1"));
+}
+
+TEST(VersionTest, GetString) {
+  static const struct version_compare {
+    const char* version;
+    bool valid;
+    const char* string;
+  } cases[] = {
+      {"", false, "invalid"},
+      {"1", true, "1"},
+      {"1.0", true, "1.0"},
+      {"0.0.1.0", true, "0.0.1.0"},
+      {"1.2.3.4.5.6", true, "1.2.3.4.5.6"},
+      {"1.*.3", false, "invalid"},
+  };
+
+  for (const auto& i : cases) {
+    base::Version v(i.version);
+    EXPECT_EQ(v.IsValid(), i.valid);
+    EXPECT_EQ(v.GetString(), i.string);
   }
 }
 

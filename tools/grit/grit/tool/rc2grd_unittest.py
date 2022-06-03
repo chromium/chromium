@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -18,6 +18,7 @@ import unittest
 from six import StringIO
 
 from grit import grd_reader
+from grit import util
 from grit.node import base
 from grit.tool import rc2grd
 
@@ -134,6 +135,29 @@ The installation will not proceed if you choose to cancel.
       result.children[2].children[2].children[1].children[1].attrs['name'] == 'ADMINNAME')
     self.failUnless(
       result.children[2].children[2].children[2].children[0].attrs['name'] == 'LIST_OF_PROGRAMS')
+
+  def testRunOutput(self):
+    """Verify basic correct Run behavior."""
+    tool = rc2grd.Rc2Grd()
+    class DummyOpts(object):
+      verbose = False
+      extra_verbose = False
+    with util.TempDir({}) as output_dir:
+      rcfile = os.path.join(output_dir.GetPath(), 'foo.rc')
+      open(rcfile, 'w').close()
+      self.assertIsNone(tool.Run(DummyOpts(), [rcfile]))
+      self.assertTrue(os.path.exists(os.path.join(output_dir.GetPath(), 'foo.grd')))
+
+  def testMissingOutput(self):
+    """Verify failure with no args."""
+    tool = rc2grd.Rc2Grd()
+    class DummyOpts(object):
+      verbose = False
+      extra_verbose = False
+    ret = tool.Run(DummyOpts(), [])
+    self.assertIsNotNone(ret)
+    self.assertGreater(ret, 0)
+
 
 if __name__ == '__main__':
   unittest.main()

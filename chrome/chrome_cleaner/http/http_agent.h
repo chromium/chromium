@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace chrome_cleaner {
@@ -35,11 +34,11 @@ class HttpAgent {
   // @returns NULL if the request fails for any reason. Otherwise, returns an
   //     HttpResponse that may be used to access the HTTP response.
   virtual std::unique_ptr<HttpResponse> Post(
-      const base::string16& host,
+      const std::wstring& host,
       uint16_t port,
-      const base::string16& path,
+      const std::wstring& path,
       bool secure,
-      const base::string16& extra_headers,
+      const std::wstring& extra_headers,
       const std::string& body,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 
@@ -55,11 +54,11 @@ class HttpAgent {
   // @returns NULL if the request fails for any reason. Otherwise, returns an
   //     HttpResponse that may be used to access the HTTP response.
   virtual std::unique_ptr<HttpResponse> Get(
-      const base::string16& host,
+      const std::wstring& host,
       uint16_t port,
-      const base::string16& path,
+      const std::wstring& path,
       bool secure,
-      const base::string16& extra_headers,
+      const std::wstring& extra_headers,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 };
 

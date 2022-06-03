@@ -31,10 +31,16 @@
  */
 
 // TODO(crbug.com/992795) Merge with cr-view-manager.
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
+import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-dom-switch',
 
-  behaviors: [Polymer.Templatizer],
+  behaviors: [Templatizer],
 
   properties: {
     /**
@@ -48,7 +54,7 @@ Polymer({
 
     /**
      * The template instance.
-     * @private {?Element}
+     * @private {?Element|?TemplateInstanceBase}
      */
     instance_: {
       type: Object,
@@ -78,15 +84,15 @@ Polymer({
 
   firstRenderForTesting_: new PromiseResolver(),
 
-  attached: function() {
+  attached() {
     const template = this.getContentChildren()[0];
-    this.templatize(template);
+    this.templatize(/** @type {!HTMLTemplateElement} */ (template));
 
     // This call stamps all the child elements of the dom-switch at once
     // (calling their created Polymer lifecycle callbacks). If optimisations
     // are required in the future, it may be possible to only stamp children
     // on demand as they are rendered.
-    this.instance_ = this.stamp({});
+    this.instance_ = (this.stamp({}));
 
     const children = this.instance_.root.children;
     for (const child of children) {
@@ -103,7 +109,7 @@ Polymer({
   /**
    * @param {?string} newRouteId
    */
-  onRouteChanged_: function(newRouteId) {
+  onRouteChanged_(newRouteId) {
     if (!this.instance_) {
       return;
     }
@@ -137,7 +143,7 @@ Polymer({
    * @param {string} prop
    * @param {Object} value
    */
-  _forwardHostPropV2: function(prop, value) {
+  _forwardHostPropV2(prop, value) {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }

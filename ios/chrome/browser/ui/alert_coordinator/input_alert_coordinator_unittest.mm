@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/alert_coordinator/input_alert_coordinator.h"
 
+#include "base/test/task_environment.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
@@ -16,9 +18,12 @@ using InputAlertCoordinatorTest = PlatformTest;
 
 TEST_F(InputAlertCoordinatorTest, AddTextField) {
   // Setup.
+  base::test::TaskEnvironment task_environment_;
   UIViewController* viewController = [[UIViewController alloc] init];
+  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
   InputAlertCoordinator* alertCoordinator =
       [[InputAlertCoordinator alloc] initWithBaseViewController:viewController
+                                                        browser:browser_.get()
                                                           title:@"Test"
                                                         message:nil];
 
@@ -37,9 +42,12 @@ TEST_F(InputAlertCoordinatorTest, AddTextField) {
 
 TEST_F(InputAlertCoordinatorTest, GetTextFields) {
   // Setup.
+  base::test::TaskEnvironment task_environment_;
   UIViewController* viewController = [[UIViewController alloc] init];
+  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
   InputAlertCoordinator* alertCoordinator =
       [[InputAlertCoordinator alloc] initWithBaseViewController:viewController
+                                                        browser:browser_.get()
                                                           title:@"Test"
                                                         message:nil];
 

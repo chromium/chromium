@@ -4,6 +4,9 @@
 
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
+#include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
+#include "components/autofill_assistant/browser/service.pb.h"
+
 namespace autofill_assistant {
 
 ClientStatus UnexpectedErrorStatus(const std::string& file, int line) {
@@ -47,11 +50,12 @@ ClientStatus JavaScriptErrorStatus(
   return status;
 }
 
-ClientStatus FillAutofillErrorStatus(ClientStatus status) {
-  status.mutable_details()
-      ->mutable_autofill_error_info()
-      ->set_autofill_error_status(status.proto_status());
-  return status;
+void FillWebControllerErrorInfo(
+    WebControllerErrorInfoProto::WebAction failed_web_action,
+    ClientStatus* status) {
+  status->mutable_details()
+      ->mutable_web_controller_error_info()
+      ->set_failed_web_action(failed_web_action);
 }
 
 bool SafeGetObjectId(const runtime::RemoteObject* result, std::string* out) {
@@ -86,6 +90,13 @@ bool SafeGetBool(const runtime::RemoteObject* result, bool* out) {
   }
   *out = false;
   return false;
+}
+
+void AddRuntimeCallArgumentObjectId(
+    const std::string& object_id,
+    std::vector<std::unique_ptr<runtime::CallArgument>>* arguments) {
+  arguments->emplace_back(
+      runtime::CallArgument::Builder().SetObjectId(object_id).Build());
 }
 
 }  //  namespace autofill_assistant

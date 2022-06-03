@@ -32,14 +32,14 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAgentManagerClient
   void RemoveObserver(Observer* observer) override;
   void RegisterAgent(const dbus::ObjectPath& agent_path,
                      const std::string& capability,
-                     const base::Closure& callback,
-                     const ErrorCallback& error_callback) override;
+                     base::OnceClosure callback,
+                     ErrorCallback error_callback) override;
   void UnregisterAgent(const dbus::ObjectPath& agent_path,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override;
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override;
   void RequestDefaultAgent(const dbus::ObjectPath& agent_path,
-                           const base::Closure& callback,
-                           const ErrorCallback& error_callback) override;
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override;
 
   // Register, unregister and retrieve pointers to agent service providers.
   void RegisterAgentServiceProvider(

@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -21,14 +21,7 @@
 #define DRIVE
 #endif
 
-using storage::FileSystemMountOption;
-using storage::FileSystemURL;
-using storage::IsolatedContext;
-using storage::kFileSystemTypeDragged;
-using storage::kFileSystemTypeIsolated;
-using storage::kFileSystemTypeNativeLocal;
-
-namespace content {
+namespace storage {
 
 using FileInfo = IsolatedContext::MountPointInfo;
 
@@ -58,6 +51,9 @@ class IsolatedContextTest : public testing::Test {
       fileset_.insert(path.NormalizePathSeparators());
   }
 
+  IsolatedContextTest(const IsolatedContextTest&) = delete;
+  IsolatedContextTest& operator=(const IsolatedContextTest&) = delete;
+
   void SetUp() override {
     IsolatedContext::FileInfoSet files;
     for (const auto& path : kTestPaths) {
@@ -82,9 +78,6 @@ class IsolatedContextTest : public testing::Test {
   std::string id_;
   std::multiset<base::FilePath> fileset_;
   std::vector<std::string> names_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedContextTest);
 };
 
 TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
@@ -105,7 +98,7 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
     std::string cracked_id;
     base::FilePath cracked_path;
     std::string cracked_inner_id;
-    storage::FileSystemType cracked_type;
+    FileSystemType cracked_type;
     FileSystemMountOption cracked_option;
     ASSERT_TRUE(isolated_context()->CrackVirtualPath(
         virtual_path, &cracked_id, &cracked_type, &cracked_inner_id,
@@ -127,7 +120,7 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
 
   IsolatedContext::ScopedFSHandle fs2 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(),
+          kFileSystemTypeLocal, std::string(),
           base::FilePath(DRIVE FPL("/foo")), nullptr);
 
   // Make sure the GetDraggedFileInfo returns false for both ones.
@@ -141,13 +134,13 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
   // Try registering three more file systems for the same path as id2.
   IsolatedContext::ScopedFSHandle fs3 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(), path, nullptr);
+          kFileSystemTypeLocal, std::string(), path, nullptr);
   IsolatedContext::ScopedFSHandle fs4 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(), path, nullptr);
+          kFileSystemTypeLocal, std::string(), path, nullptr);
   IsolatedContext::ScopedFSHandle fs5 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(), path, nullptr);
+          kFileSystemTypeLocal, std::string(), path, nullptr);
 
   // Remove file system for id4.
   fs4 = IsolatedContext::ScopedFSHandle();
@@ -209,7 +202,7 @@ TEST_F(IsolatedContextTest, CrackWithRelativePaths) {
                                         .Append(relatives[j].path);
       std::string cracked_id;
       base::FilePath cracked_path;
-      storage::FileSystemType cracked_type;
+      FileSystemType cracked_type;
       std::string cracked_inner_id;
       FileSystemMountOption cracked_option;
       if (!relatives[j].valid) {
@@ -262,7 +255,7 @@ TEST_F(IsolatedContextTest, CrackURLWithRelativePaths) {
                                         .Append(relatives[j].path);
 
       FileSystemURL cracked = isolated_context()->CreateCrackedFileSystemURL(
-          url::Origin::Create(GURL("http://chromium.org")),
+          blink::StorageKey::CreateFromStringForTesting("http://chromium.org"),
           kFileSystemTypeIsolated, virtual_path);
 
       ASSERT_EQ(relatives[j].valid, cracked.is_valid());
@@ -312,37 +305,36 @@ TEST_F(IsolatedContextTest, CanHandleURL) {
   const base::FilePath test_path(FPL("/mount"));
 
   // Should handle isolated file system.
-  EXPECT_TRUE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeIsolated));
+  EXPECT_TRUE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeIsolated));
 
   // Shouldn't handle the rest.
+  EXPECT_FALSE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeExternal));
+  EXPECT_FALSE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeTemporary));
   EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeExternal));
-  EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeTemporary));
-  EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypePersistent));
-  EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeTest));
+      kFileSystemTypePersistent));
+  EXPECT_FALSE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeTest));
   // Not even if it's isolated subtype.
+  EXPECT_FALSE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeLocal));
+  EXPECT_FALSE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeDragged));
   EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeNativeLocal));
+      kFileSystemTypeLocalMedia));
   EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeDragged));
-  EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeNativeMedia));
-  EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      storage::kFileSystemTypeDeviceMedia));
+      kFileSystemTypeDeviceMedia));
 }
 
 TEST_F(IsolatedContextTest, VirtualFileSystemTests) {
   // Should be able to register empty and non-absolute paths
   std::string empty_fsid = isolated_context()->RegisterFileSystemForVirtualPath(
-      storage::kFileSystemTypeIsolated, "_", base::FilePath());
+      kFileSystemTypeIsolated, "_", base::FilePath());
   std::string relative_fsid =
       isolated_context()->RegisterFileSystemForVirtualPath(
-          storage::kFileSystemTypeIsolated, "_",
-          base::FilePath(FPL("relpath")));
+          kFileSystemTypeIsolated, "_", base::FilePath(FPL("relpath")));
   ASSERT_FALSE(empty_fsid.empty());
   ASSERT_FALSE(relative_fsid.empty());
 
@@ -350,7 +342,7 @@ TEST_F(IsolatedContextTest, VirtualFileSystemTests) {
   base::FilePath database_root = base::FilePath(DRIVE FPL("/database_path"));
   std::string database_fsid =
       isolated_context()->RegisterFileSystemForVirtualPath(
-          storage::kFileSystemTypeIsolated, "_", database_root);
+          kFileSystemTypeIsolated, "_", database_root);
 
   base::FilePath test_virtual_path =
       base::FilePath().AppendASCII("virtualdir").AppendASCII("virtualfile.txt");
@@ -372,4 +364,4 @@ TEST_F(IsolatedContextTest, VirtualFileSystemTests) {
   EXPECT_TRUE(cracked_inner_id.empty());
 }
 
-}  // namespace content
+}  // namespace storage

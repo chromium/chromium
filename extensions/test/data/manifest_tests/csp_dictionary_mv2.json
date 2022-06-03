@@ -1,0 +1,8 @@
+{
+  "name": "test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "content_security_policy": {
+    "extension_pages" : "default-src 'none'"
+  }
+}

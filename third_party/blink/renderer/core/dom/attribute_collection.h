@@ -35,6 +35,7 @@
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -67,8 +68,56 @@ class AttributeCollectionGeneric {
   wtf_size_t FindIndex(const QualifiedName&) const;
   wtf_size_t FindIndex(const AtomicString& name) const;
 
+  // FindHinted() and FindIndexHinted() have subtle semantics.
+  //
+  // The |hint| is a WeakResult that represents whether or not an AtomicString
+  // exists for the AttributeCollectionGeneric version of |name| which has two
+  // odd quirks:
+  //
+  //  1) In an HTML context, the hint will be from a lookup of the ASCII
+  //     lowercased version of the attribute |name| as is required by spec.
+  //  2) The |hint| is a snapshot of a membership query of the
+  //     AtomicStringTable from a specific point in time.
+  //
+  // For (1), the HTML spec says that attribute names without prefixes should
+  // be lowercased before comparison. However, if an attribute is added with
+  // a namespace using the *NS() attribute APIs then lookup becomes case
+  // sensitive. Therefore the API require both non-lowercased |name| and a
+  // lowercased |hint|.
+  //
+  // For (2), the caller must ensure that its logic is robust to changes in
+  // the AtomicStringTable between the creation of the |hint| and its use with
+  // this API. In particular, one should not modify |collection| between
+  // creation of |hint| and execution of any hinted function.
+  //
+  // A concrete example of a valid usage pattern is:
+  //
+  // WTF::AtomicStringTable::WeakResult hint =
+  //     WTF::AtomicStringTable::WeakFindLowercased(name);
+  //   .... Mutate |WTF::AtomicStringTable| but not |collection| ....
+  // collection.FindHinted(name, hint);
+  //
+  // Because FindHinted() is an existence check, as long as collection is not
+  // mutated between the hint creation and the lookup, we know that
+  //
+  //  (a) If hint.IsNull(), it cannot ever be in |collection| since
+  //      then the corresponding AtomicString would be found in
+  //      the AtomicStringTable.
+  //  (b) If !hint.IsNull() and hint is in |collection| then the table
+  //      has a reference to the corresponding AtomicString meaning
+  //      it will not be removed from the AtomicString.
+  //  (c) If the !hint.IsNull() and it is not in |collection|, then it is
+  //      possible that the underlying memory buffer for the AtomicString
+  //      corresponding to the him can  be reallocated to a different string
+  //      making the |hint| semantically invalid. However, because the
+  //      |collection| is not mutated, |hint| will not match anything.
+  iterator FindHinted(const StringView& name,
+                      WTF::AtomicStringTable::WeakResult hint) const;
+  wtf_size_t FindIndexHinted(const StringView& name,
+                             WTF::AtomicStringTable::WeakResult hint) const;
+
  protected:
-  wtf_size_t FindSlowCase(const AtomicString& name) const;
+  wtf_size_t FindWithPrefix(const StringView& name) const;
 
   ContainerMemberType attributes_;
 };
@@ -134,6 +183,16 @@ AttributeCollectionGeneric<Container, ContainerMemberType>::Find(
 }
 
 template <typename Container, typename ContainerMemberType>
+inline typename AttributeCollectionGeneric<Container,
+                                           ContainerMemberType>::iterator
+AttributeCollectionGeneric<Container, ContainerMemberType>::FindHinted(
+    const StringView& name,
+    WTF::AtomicStringTable::WeakResult hint) const {
+  wtf_size_t index = FindIndexHinted(name, hint);
+  return index != kNotFound ? &at(index) : nullptr;
+}
+
+template <typename Container, typename ContainerMemberType>
 inline wtf_size_t
 AttributeCollectionGeneric<Container, ContainerMemberType>::FindIndex(
     const QualifiedName& name) const {
@@ -150,7 +209,17 @@ template <typename Container, typename ContainerMemberType>
 inline wtf_size_t
 AttributeCollectionGeneric<Container, ContainerMemberType>::FindIndex(
     const AtomicString& name) const {
-  bool do_slow_check = false;
+  return FindIndexHinted(name, WTF::AtomicStringTable::WeakResult(name.Impl()));
+}
+
+template <typename Container, typename ContainerMemberType>
+inline wtf_size_t
+AttributeCollectionGeneric<Container, ContainerMemberType>::FindIndexHinted(
+    const StringView& name,
+    WTF::AtomicStringTable::WeakResult hint) const {
+  // A slow check is required if there are any attributes with prefixes
+  // and no unprefixed name matches.
+  bool has_attributes_with_prefixes = false;
 
   // Optimize for the case where the attribute exists and its name exactly
   // matches.
@@ -160,15 +229,17 @@ AttributeCollectionGeneric<Container, ContainerMemberType>::FindIndex(
     // FIXME: Why check the prefix? Namespaces should be all that matter.
     // Most attributes (all of HTML and CSS) have no namespace.
     if (!it->GetName().HasPrefix()) {
-      if (name == it->LocalName())
+      if (hint == it->LocalName())
         return index;
     } else {
-      do_slow_check = true;
+      has_attributes_with_prefixes = true;
     }
   }
 
-  if (do_slow_check)
-    return FindSlowCase(name);
+  // Note that if the attribute has a prefix, the match has to be case
+  // sensitive therefore |name| must be used.
+  if (has_attributes_with_prefixes)
+    return FindWithPrefix(name);
   return kNotFound;
 }
 
@@ -187,17 +258,18 @@ AttributeCollectionGeneric<Container, ContainerMemberType>::Find(
 
 template <typename Container, typename ContainerMemberType>
 wtf_size_t
-AttributeCollectionGeneric<Container, ContainerMemberType>::FindSlowCase(
-    const AtomicString& name) const {
-  // Continue to checking case-insensitively and/or full namespaced names if
-  // necessary:
+AttributeCollectionGeneric<Container, ContainerMemberType>::FindWithPrefix(
+    const StringView& name) const {
+  // Check all attributes with prefixes. This is a case sensitive check.
+  // Attributes with empty prefixes are expected to be handled outside this
+  // function.
   iterator end = this->end();
   wtf_size_t index = 0;
   for (iterator it = begin(); it != end; ++it, ++index) {
     if (!it->GetName().HasPrefix()) {
       // Skip attributes with no prefixes because they must be checked in
       // FindIndex(const AtomicString&).
-      DCHECK_NE(name, it->LocalName());
+      DCHECK(!(name == it->LocalName()));
     } else {
       // FIXME: Would be faster to do this comparison without calling ToString,
       // which generates a temporary string by concatenation. But this branch is

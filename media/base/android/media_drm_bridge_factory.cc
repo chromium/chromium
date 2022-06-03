@@ -9,15 +9,13 @@
 #include "media/base/cdm_config.h"
 #include "media/base/content_decryption_module.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
-#include "url/origin.h"
 
 namespace media {
 
-MediaDrmBridgeFactory::MediaDrmBridgeFactory(
-    const CreateFetcherCB& create_fetcher_cb,
-    const CreateStorageCB& create_storage_cb)
-    : create_fetcher_cb_(create_fetcher_cb),
-      create_storage_cb_(create_storage_cb) {
+MediaDrmBridgeFactory::MediaDrmBridgeFactory(CreateFetcherCB create_fetcher_cb,
+                                             CreateStorageCB create_storage_cb)
+    : create_fetcher_cb_(std::move(create_fetcher_cb)),
+      create_storage_cb_(std::move(create_storage_cb)) {
   DCHECK(create_fetcher_cb_);
   DCHECK(create_storage_cb_);
 }
@@ -29,16 +27,14 @@ MediaDrmBridgeFactory::~MediaDrmBridgeFactory() {
 
 void MediaDrmBridgeFactory::Create(
     const std::string& key_system,
-    const url::Origin& security_origin,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb,
-    const CdmCreatedCB& cdm_created_cb) {
+    CdmCreatedCB cdm_created_cb) {
   DCHECK(MediaDrmBridge::IsKeySystemSupported(key_system));
   DCHECK(MediaDrmBridge::IsAvailable());
-  DCHECK(!security_origin.opaque());
   DCHECK(scheme_uuid_.empty()) << "This factory can only be used once.";
 
   scheme_uuid_ = MediaDrmBridge::GetUUID(key_system);
@@ -56,7 +52,7 @@ void MediaDrmBridgeFactory::Create(
         key_system +
         " may require use_video_overlay_for_embedded_encrypted_video";
     NOTREACHED() << error_message;
-    cdm_created_cb.Run(nullptr, error_message);
+    std::move(cdm_created_cb).Run(nullptr, error_message);
     return;
   }
 
@@ -64,7 +60,7 @@ void MediaDrmBridgeFactory::Create(
   session_closed_cb_ = session_closed_cb;
   session_keys_change_cb_ = session_keys_change_cb;
   session_expiration_update_cb_ = session_expiration_update_cb;
-  cdm_created_cb_ = cdm_created_cb;
+  cdm_created_cb_ = std::move(cdm_created_cb);
 
   // MediaDrmStorage may be lazy created in MediaDrmStorageBridge.
   storage_ = std::make_unique<MediaDrmStorageBridge>();

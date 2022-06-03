@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/gesture_detection/gesture_provider.h"
 #include "ui/events/gesture_detection/touch_disposition_gesture_filter.h"
@@ -18,7 +17,7 @@ namespace ui {
 
 // Provides filtered gesture detection and dispatch given a sequence of touch
 // events and touch event acks.
-class GESTURE_DETECTION_EXPORT FilteredGestureProvider
+class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
     : public ui::TouchDispositionGestureFilterClient,
       public ui::GestureProviderClient {
  public:
@@ -26,6 +25,10 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider
   // and allowed by the |gesture_filter_|.
   FilteredGestureProvider(const GestureProvider::Config& config,
                           GestureProviderClient* client);
+
+  FilteredGestureProvider(const FilteredGestureProvider&) = delete;
+  FilteredGestureProvider& operator=(const FilteredGestureProvider&) = delete;
+
   ~FilteredGestureProvider() final;
 
   void UpdateConfig(const GestureProvider::Config& config);
@@ -47,9 +50,12 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider
   // forwarded after a successful call to |OnTouchEvent()|.
   void OnTouchEventAck(uint32_t unique_event_id,
                        bool event_consumed,
-                       bool is_source_touch_event_set_non_blocking);
+                       bool is_source_touch_event_set_blocking);
 
   void ResetGestureHandlingState();
+
+  // Synthesizes and propagates gesture end events.
+  void SendSynthesizedEndEvents();
 
   // Methods delegated to |gesture_provider_|.
   void ResetDetection();
@@ -74,8 +80,6 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider
   bool handling_event_;
   bool any_touch_moved_beyond_slop_region_;
   ui::GestureEventDataPacket pending_gesture_packet_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteredGestureProvider);
 };
 
 }  // namespace ui

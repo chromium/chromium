@@ -16,6 +16,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -35,8 +36,8 @@ std::string BuildResponse(bool is_porn) {
     classification_dict->SetBoolean("pornography", is_porn);
   auto classifications_list = std::make_unique<base::ListValue>();
   classifications_list->Append(std::move(classification_dict));
-  dict.SetWithoutPathExpansion("classifications",
-                               std::move(classifications_list));
+  dict.SetKey("classifications",
+              base::Value::FromUniquePtrValue(std::move(classifications_list)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;

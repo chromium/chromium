@@ -28,7 +28,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 
@@ -38,6 +37,10 @@ class DictionaryBuilder {
  public:
   DictionaryBuilder();
   explicit DictionaryBuilder(const base::DictionaryValue& init);
+
+  DictionaryBuilder(const DictionaryBuilder&) = delete;
+  DictionaryBuilder& operator=(const DictionaryBuilder&) = delete;
+
   ~DictionaryBuilder();
 
   // Can only be called once, after which it's invalid to use the builder.
@@ -66,14 +69,15 @@ class DictionaryBuilder {
 
  private:
   std::unique_ptr<base::DictionaryValue> dict_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryBuilder);
 };
 
 class ListBuilder {
  public:
   ListBuilder();
-  explicit ListBuilder(const base::ListValue& init);
+
+  ListBuilder(const ListBuilder&) = delete;
+  ListBuilder& operator=(const ListBuilder&) = delete;
+
   ~ListBuilder();
 
   // Can only be called once, after which it's invalid to use the builder.
@@ -82,6 +86,15 @@ class ListBuilder {
   template <typename T>
   ListBuilder& Append(T in_value) {
     list_->Append(in_value);
+    return *this;
+  }
+
+  // Utility for appending a collection. Is this templating simplistic? Yes.
+  // But if it's good enough for the STL, it's good enough for this class.
+  template <typename InputIt>
+  ListBuilder& Append(InputIt first, InputIt last) {
+    for (; first != last; ++first)
+      list_->Append(*first);
     return *this;
   }
 
@@ -94,8 +107,6 @@ class ListBuilder {
 
  private:
   std::unique_ptr<base::ListValue> list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListBuilder);
 };
 
 }  // namespace extensions

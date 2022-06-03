@@ -6,68 +6,60 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
 #include "build/build_config.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace content {
 
-WebCursor::~WebCursor() {
-  CleanupPlatformData();
+WebCursor::WebCursor() = default;
+
+WebCursor::~WebCursor() = default;
+
+WebCursor::WebCursor(const ui::Cursor& cursor) {
+  SetCursor(cursor);
 }
 
-WebCursor::WebCursor(const CursorInfo& info) {
-  SetInfo(info);
-}
+WebCursor::WebCursor(const WebCursor& other) = default;
 
-WebCursor::WebCursor(const WebCursor& other) {
-  CopyAllData(other);
-}
-
-WebCursor& WebCursor::operator=(const WebCursor& other) {
-  CleanupPlatformData();
-  CopyAllData(other);
-  return *this;
-}
-
-bool WebCursor::SetInfo(const CursorInfo& info) {
+bool WebCursor::SetCursor(const ui::Cursor& cursor) {
   static constexpr int kMaxSize = 1024;
-  if (info.image_scale_factor < 0.01f || info.image_scale_factor > 100.f ||
-      info.custom_image.width() > kMaxSize ||
-      info.custom_image.height() > kMaxSize ||
-      info.custom_image.width() / info.image_scale_factor > kMaxSize ||
-      info.custom_image.height() / info.image_scale_factor > kMaxSize) {
+  if (cursor.image_scale_factor() < 0.01f ||
+      cursor.image_scale_factor() > 100.f ||
+      (cursor.type() == ui::mojom::CursorType::kCustom &&
+       (cursor.custom_bitmap().width() > kMaxSize ||
+        cursor.custom_bitmap().height() > kMaxSize ||
+        cursor.custom_bitmap().width() / cursor.image_scale_factor() >
+            kMaxSize ||
+        cursor.custom_bitmap().height() / cursor.image_scale_factor() >
+            kMaxSize))) {
     return false;
   }
 
   CleanupPlatformData();
-  info_ = info;
+  cursor_ = cursor;
 
   // Clamp the hotspot to the custom image's dimensions.
-  if (info_.type == ui::CursorType::kCustom) {
-    info_.hotspot.set_x(std::max(
-        0, std::min(info_.custom_image.width() - 1, info_.hotspot.x())));
-    info_.hotspot.set_y(std::max(
-        0, std::min(info_.custom_image.height() - 1, info_.hotspot.y())));
+  if (cursor_.type() == ui::mojom::CursorType::kCustom) {
+    cursor_.set_custom_hotspot(
+        gfx::Point(std::max(0, std::min(cursor_.custom_bitmap().width() - 1,
+                                        cursor_.custom_hotspot().x())),
+                   std::max(0, std::min(cursor_.custom_bitmap().height() - 1,
+                                        cursor_.custom_hotspot().y()))));
   }
 
   return true;
 }
 
 bool WebCursor::operator==(const WebCursor& other) const {
-  return info_ == other.info_ &&
+  return
 #if defined(USE_AURA) || defined(USE_OZONE)
-         rotation_ == other.rotation_ &&
+      rotation_ == other.rotation_ &&
 #endif
-         IsPlatformDataEqual(other);
+      cursor_ == other.cursor_;
 }
 
 bool WebCursor::operator!=(const WebCursor& other) const {
   return !(*this == other);
-}
-
-void WebCursor::CopyAllData(const WebCursor& other) {
-  SetInfo(other.info_);
-  CopyPlatformData(other);
 }
 
 }  // namespace content

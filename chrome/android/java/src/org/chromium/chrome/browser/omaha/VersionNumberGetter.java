@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.ChromeFeatureList;
 
 /**
  * Stubbed class for getting version numbers from the rest of Chrome.  Override the functions for
@@ -97,13 +96,7 @@ public class VersionNumberGetter {
      * @return Whether the current Android OS version is supported.
      */
     public static boolean isCurrentOsVersionSupported() {
-        // By default, only Android KitKat and above is supported.
-        int oldestSupportedVersion = Build.VERSION_CODES.KITKAT;
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.JELLY_BEAN_SUPPORTED)) {
-            oldestSupportedVersion = Build.VERSION_CODES.JELLY_BEAN;
-        }
-        return Build.VERSION.SDK_INT >= oldestSupportedVersion;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     /**

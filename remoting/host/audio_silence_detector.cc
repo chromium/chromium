@@ -6,6 +6,8 @@
 
 #include <stdlib.h>
 
+#include "base/check_op.h"
+
 namespace remoting {
 
 namespace {

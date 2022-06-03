@@ -24,6 +24,11 @@ class TestDnsConfigChangeManagerClient
     manager_remote->RequestNotifications(receiver_.BindNewPipeAndPassRemote());
   }
 
+  TestDnsConfigChangeManagerClient(const TestDnsConfigChangeManagerClient&) =
+      delete;
+  TestDnsConfigChangeManagerClient& operator=(
+      const TestDnsConfigChangeManagerClient&) = delete;
+
   void OnDnsConfigChanged() override {
     num_notifications_++;
     if (num_notifications_ >= num_notifications_expected_)
@@ -43,13 +48,15 @@ class TestDnsConfigChangeManagerClient
   int num_notifications_expected_ = INT_MAX;
   base::RunLoop run_loop_;
   mojo::Receiver<mojom::DnsConfigChangeManagerClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDnsConfigChangeManagerClient);
 };
 
 class DnsConfigChangeManagerTest : public testing::Test {
  public:
   DnsConfigChangeManagerTest() {}
+
+  DnsConfigChangeManagerTest(const DnsConfigChangeManagerTest&) = delete;
+  DnsConfigChangeManagerTest& operator=(const DnsConfigChangeManagerTest&) =
+      delete;
 
   DnsConfigChangeManager* manager() { return &manager_; }
   TestDnsConfigChangeManagerClient* client() { return &client_; }
@@ -60,8 +67,6 @@ class DnsConfigChangeManagerTest : public testing::Test {
       net::NetworkChangeNotifier::CreateMockIfNeeded();
   DnsConfigChangeManager manager_;
   TestDnsConfigChangeManagerClient client_{&manager_};
-
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigChangeManagerTest);
 };
 
 TEST_F(DnsConfigChangeManagerTest, Notification) {

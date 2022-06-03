@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <script>
-    if (!window.eventSender)
+    if (!window.testRunner) {
         document.write("Automatic zoom-in does not work in manual mode. Try zooming in manually and refresh.");
-    else
-        while(!matchMedia("screen and (min-resolution: 2dppx)").matches)
-        eventSender.zoomPageIn();
+    } else {
+        while (!matchMedia("screen and (min-resolution: 2dppx)").matches)
+            testRunner.zoomPageIn();
+    }
 </script>
 <script src="../../resources/js-test.js"></script>
 <script>

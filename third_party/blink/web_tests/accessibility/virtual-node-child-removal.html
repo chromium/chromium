@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="main">main</div>
+
+<script>
+test(function() {
+    var main = document.getElementById("main");
+
+    var button_accNode = new AccessibleNode();
+    button_accNode.role = "button";
+    main.accessibleNode.appendChild(button_accNode);
+
+    var axMain = accessibilityController.accessibleElementById("main");
+    var axButton = axMain.childAtIndex(0);
+    button_accNode.role = "radio";
+    // Upon removing button_accNode, we should make sure it is detached from
+    // document and all reference in cache is cleared so no DCHECK or crash
+    // occurs.
+    main.accessibleNode.removeChild(button_accNode);
+});
+</script>
+
+</body>
+</html>

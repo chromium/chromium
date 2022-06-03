@@ -3,7 +3,5 @@
 # found in the LICENSE file.
 
 group("interfaces") {
-  deps = [
-    "bindings",
-  ]
+  deps = [ "bindings" ]
 }

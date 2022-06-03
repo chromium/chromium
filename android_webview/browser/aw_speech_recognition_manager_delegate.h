@@ -20,6 +20,12 @@ class AwSpeechRecognitionManagerDelegate
       public content::SpeechRecognitionEventListener {
  public:
   AwSpeechRecognitionManagerDelegate();
+
+  AwSpeechRecognitionManagerDelegate(
+      const AwSpeechRecognitionManagerDelegate&) = delete;
+  AwSpeechRecognitionManagerDelegate& operator=(
+      const AwSpeechRecognitionManagerDelegate&) = delete;
+
   ~AwSpeechRecognitionManagerDelegate() override;
 
  protected:
@@ -51,14 +57,12 @@ class AwSpeechRecognitionManagerDelegate
   bool FilterProfanities(int render_process_id) override;
 
  private:
-  // Checks for VIEW_TYPE_TAB_CONTENTS host in the UI thread and notifies back
-  // the result in the IO thread through |callback|.
+  // Checks for mojom::ViewType::kTabContents host in the UI thread and notifies
+  // back the result in the IO thread through |callback|.
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
       int render_process_id,
       int render_frame_id);
-
-  DISALLOW_COPY_AND_ASSIGN(AwSpeechRecognitionManagerDelegate);
 };
 
 }  // namespace android_webview

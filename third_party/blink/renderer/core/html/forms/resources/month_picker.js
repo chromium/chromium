@@ -10,7 +10,10 @@
 function initializeMonthPicker(config) {
   global.picker = new MonthPicker(config);
   main.append(global.picker);
-  main.style.border = '1px solid transparent';
+  main.style.border = '1px solid #bfbfbf';
+  if (global.params.isBorderTransparent) {
+    main.style.borderColor = 'transparent';
+  }
   main.style.height = (MonthPicker.Height - 2) + 'px';
   main.style.width = (MonthPicker.Width - 2) + 'px';
   resizeWindow(MonthPicker.Width, MonthPicker.Height);
@@ -29,15 +32,20 @@ class MonthPicker extends HTMLElement {
     this.initializeFromConfig_(config);
 
     this.yearListView_ =
-        new YearListView(this.minimumMonth_, this.maximumMonth_);
+        new YearListView(this.minimumMonth_, this.maximumMonth_, config);
     this.append(this.yearListView_.element);
     this.initializeYearListView_();
+
+    this.clearButton_ = new ClearButton();
+    this.append(this.clearButton_.element);
+    this.initializeClearButton_();
 
     this.todayButton_ = new CalendarNavigationButton();
     this.append(this.todayButton_.element);
     this.initializeTodayButton_();
 
     window.addEventListener('resize', this.onWindowResize_);
+    this.addEventListener('keydown', this.onKeyDown_);
   }
 
   initializeFromConfig_ = (config) => {
@@ -49,20 +57,6 @@ class MonthPicker extends HTMLElement {
         Month.Maximum;
     this.minimumMonth_ = Month.createFromDay(minimum.firstDay());
     this.maximumMonth_ = Month.createFromDay(maximum.lastDay());
-
-    const initialSelection = parseDateString(config.currentValue);
-    const initialSelectedMonth = initialSelection ?
-        Month.createFromDay(initialSelection.middleDay()) :
-        Month.createFromToday();
-    this.initialValidSelection_ = false;
-    if (initialSelectedMonth < this.minimumMonth_) {
-      this.selectedMonth_ = this.minimumMonth_;
-    } else if (initialSelectedMonth > this.maximumMonth_) {
-      this.selectedMonth_ = this.maximumMonth_;
-    } else {
-      this.selectedMonth_ = initialSelectedMonth;
-      this.initialValidSelection_ = initialSelection != null;
-    }
   };
 
   initializeYearListView_ = () => {
@@ -78,26 +72,33 @@ class MonthPicker extends HTMLElement {
           MonthPicker.YearWidth + 'px';
     }
     this.yearListView_.element.style.top = MonthPicker.YearPadding + 'px';
-    if (this.initialValidSelection_) {
-      this.yearListView_.setSelectedMonth(this.selectedMonth_);
-    }
-    this.yearListView_.show(this.selectedMonth_);
+
+    let yearForInitialScroll = this.selectedMonth ?
+        this.selectedMonth.year - 1 :
+        Month.createFromToday().year - 1;
+    this.yearListView_.scrollToRow(yearForInitialScroll, false);
+    this.yearListView_.selectWithoutAnimating(yearForInitialScroll);
+
     this.yearListView_.on(
         YearListView.EventTypeYearListViewDidSelectMonth,
         this.onYearListViewDidSelectMonth_);
-    this.yearListView_.on(
-        YearListView.EventTypeYearListViewDidHide, this.onYearListViewDidHide_);
-  };
-
-  onYearListViewDidHide_ = (sender) => {
-    const selectedValue = this.selectedMonth_.toString();
-    window.setTimeout(function() {
-      window.pagePopupController.setValueAndClosePopup(0, selectedValue);
-    }, 100);
   };
 
   onYearListViewDidSelectMonth_ = (sender, month) => {
-    this.selectedMonth_ = month;
+    const selectedValue = month.toString();
+    window.pagePopupController.setValueAndClosePopup(0, selectedValue);
+  };
+
+  initializeClearButton_ = () => {
+    this.clearButton_.element.textContent = global.params.clearLabel;
+    this.clearButton_.element.setAttribute(
+        'aria-label', global.params.clearLabel);
+    this.clearButton_.on(
+        ClearButton.EventTypeButtonClick, this.onClearButtonClick_);
+  };
+
+  onClearButtonClick_ = () => {
+    window.pagePopupController.setValueAndClosePopup(0, '');
   };
 
   initializeTodayButton_ = () => {
@@ -107,8 +108,7 @@ class MonthPicker extends HTMLElement {
     this.todayButton_.element.classList.add(MonthPicker.ClassNameTodayButton);
     const monthContainingToday = Month.createFromToday();
     this.todayButton_.setDisabled(
-        monthContainingToday < this.minimumMonth_ ||
-        monthContainingToday > this.maximumMonth_);
+        !this.yearListView_.isValid(monthContainingToday));
     this.todayButton_.on(
         CalendarNavigationButton.EventTypeButtonClick,
         this.onTodayButtonClick_);
@@ -116,14 +116,71 @@ class MonthPicker extends HTMLElement {
 
   onTodayButtonClick_ = (sender) => {
     const selectedValue = Month.createFromToday().toString();
-    window.setTimeout(function() {
-      window.pagePopupController.setValueAndClosePopup(0, selectedValue);
-    }, 100);
+    window.pagePopupController.setValueAndClosePopup(0, selectedValue);
+  };
+
+  onKeyDown_ = (event) => {
+    switch (event.key) {
+      case 'Enter':
+        // Don't do anything here if user has hit Enter on 'Clear' or
+        // 'This month' buttons. We'll handle that respectively in
+        // this.onClearButtonClick_ and this.onTodayButtonClick_.
+        if (!event.target.matches(
+                '.calendar-navigation-button, .clear-button')) {
+          if (this.selectedMonth) {
+            window.pagePopupController.setValueAndClosePopup(
+                0, this.selectedMonth.toString());
+          } else {
+            window.pagePopupController.closePopup();
+          }
+        }
+        break;
+      case 'Escape':
+        if (!this.selectedMonth ||
+            (this.selectedMonth.equals(this.initialSelectedMonth))) {
+          window.pagePopupController.closePopup();
+        } else {
+          this.resetToInitialValue_();
+          window.pagePopupController.setValue(
+              this.hadValidValueWhenOpened ?
+                  this.initialSelectedMonth.toString() :
+                  '');
+        }
+        break;
+      case 'ArrowUp':
+      case 'ArrowDown':
+      case 'ArrowLeft':
+      case 'ArrowRight':
+      case 'PageUp':
+      case 'PageDown':
+      case 'Home':
+      case 'End':
+        if (this.selectedMonth) {
+          window.pagePopupController.setValue(this.selectedMonth.toString());
+        }
+        break;
+    }
+  };
+
+  resetToInitialValue_ = () => {
+    this.yearListView_.setSelectedMonthAndUpdateView(this.initialSelectedMonth);
   };
 
   onWindowResize_ = (event) => {
     window.removeEventListener('resize', this.onWindowResize_);
     this.yearListView_.element.focus();
+  };
+
+  get selectedMonth() {
+    return this.yearListView_._selectedMonth;
+  };
+
+  get initialSelectedMonth() {
+    return this.yearListView_._initialSelectedMonth;
+  };
+
+  get hadValidValueWhenOpened() {
+    return this.yearListView_._hadValidValueWhenOpened;
   };
 }
 MonthPicker.Width = 232;
@@ -131,5 +188,5 @@ MonthPicker.YearWidth = 194;
 MonthPicker.YearHeight = 128;
 MonthPicker.YearPadding = 12;
 MonthPicker.Height = 182;
-MonthPicker.ClassNameTodayButton = 'today-button-refresh';
+MonthPicker.ClassNameTodayButton = 'today-button';
 window.customElements.define('month-picker', MonthPicker);

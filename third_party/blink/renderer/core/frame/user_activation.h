@@ -23,7 +23,7 @@ class UserActivation final : public ScriptWrappable {
   UserActivation(bool has_been_active, bool is_active);
   ~UserActivation() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   bool hasBeenActive() const;
   bool isActive() const;

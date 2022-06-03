@@ -34,6 +34,10 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   // Creates BackgroundLoaderContents with specified |browser_context|. Uses
   // default session storage space.
   explicit BackgroundLoaderContents(content::BrowserContext* browser_context);
+
+  BackgroundLoaderContents(const BackgroundLoaderContents&) = delete;
+  BackgroundLoaderContents& operator=(const BackgroundLoaderContents&) = delete;
+
   ~BackgroundLoaderContents() override;
 
   // Loads the URL in a WebContents. Will call observe on all current observers
@@ -48,7 +52,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
   // content::WebContentsDelegate implementation:
-  bool IsNeverVisible(content::WebContents* web_contents) override;
+  bool IsNeverComposited(content::WebContents* web_contents) override;
   void CloseContents(content::WebContents* source) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
   bool ShouldFocusPageAfterCrash() override;
@@ -65,6 +69,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
 
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
@@ -83,7 +88,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
                                   blink::mojom::MediaStreamType type) override;
   void AdjustPreviewsStateForNavigation(
       content::WebContents* web_contents,
-      content::PreviewsState* previews_state) override;
+      blink::PreviewsState* previews_state) override;
   bool ShouldAllowLazyLoad() override;
 
  private:
@@ -95,8 +100,6 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   std::unique_ptr<content::WebContents> web_contents_;
   content::BrowserContext* browser_context_;
   Delegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderContents);
 };
 
 }  // namespace background_loader

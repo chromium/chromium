@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/clipboard_filter.h"
 #include "remoting/protocol/connection_to_host.h"
@@ -33,6 +33,10 @@ class WebrtcConnectionToHost : public ConnectionToHost,
                                public ChannelDispatcherBase::EventHandler {
  public:
   WebrtcConnectionToHost();
+
+  WebrtcConnectionToHost(const WebrtcConnectionToHost&) = delete;
+  WebrtcConnectionToHost& operator=(const WebrtcConnectionToHost&) = delete;
+
   ~WebrtcConnectionToHost() override;
 
   // ConnectionToHost interface.
@@ -60,6 +64,7 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   void OnWebrtcTransportConnecting() override;
   void OnWebrtcTransportConnected() override;
   void OnWebrtcTransportError(ErrorCode error) override;
+  void OnWebrtcTransportProtocolChanged() override;
   void OnWebrtcTransportIncomingDataChannel(
       const std::string& name,
       std::unique_ptr<MessagePipe> pipe) override;
@@ -67,6 +72,7 @@ class WebrtcConnectionToHost : public ConnectionToHost,
       scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnWebrtcTransportMediaStreamRemoved(
       scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+  void OnWebrtcTransportRouteChanged(const TransportRoute& route) override;
 
   // ChannelDispatcherBase::EventHandler interface.
   void OnChannelInitialized(ChannelDispatcherBase* channel_dispatcher) override;
@@ -108,8 +114,6 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   // Internal state of the connection.
   State state_ = INITIALIZING;
   ErrorCode error_ = OK;
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcConnectionToHost);
 };
 
 }  // namespace protocol

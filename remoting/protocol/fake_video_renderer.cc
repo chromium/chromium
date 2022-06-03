@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -17,7 +17,8 @@ namespace protocol {
 FakeVideoStub::FakeVideoStub() = default;
 FakeVideoStub::~FakeVideoStub() = default;
 
-void FakeVideoStub::set_on_frame_callback(base::Closure on_frame_callback) {
+void FakeVideoStub::set_on_frame_callback(
+    const base::RepeatingClosure& on_frame_callback) {
   CHECK(thread_checker_.CalledOnValidThread());
   on_frame_callback_ = on_frame_callback;
 }
@@ -36,7 +37,8 @@ void FakeVideoStub::ProcessVideoPacket(
 FakeFrameConsumer::FakeFrameConsumer() = default;
 FakeFrameConsumer::~FakeFrameConsumer() = default;
 
-void FakeFrameConsumer::set_on_frame_callback(base::Closure on_frame_callback) {
+void FakeFrameConsumer::set_on_frame_callback(
+    const base::RepeatingClosure& on_frame_callback) {
   CHECK(thread_checker_.CalledOnValidThread());
   on_frame_callback_ = on_frame_callback;
 }
@@ -48,12 +50,12 @@ std::unique_ptr<webrtc::DesktopFrame> FakeFrameConsumer::AllocateFrame(
 }
 
 void FakeFrameConsumer::DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
-                                  const base::Closure& done) {
+                                  base::OnceClosure done) {
   CHECK(thread_checker_.CalledOnValidThread());
   received_frames_.push_back(std::move(frame));
-  if (!done.is_null())
-    done.Run();
-  if (!on_frame_callback_.is_null())
+  if (done)
+    std::move(done).Run();
+  if (on_frame_callback_)
     on_frame_callback_.Run();
 }
 
@@ -66,7 +68,7 @@ FakeFrameStatsConsumer::FakeFrameStatsConsumer() = default;
 FakeFrameStatsConsumer::~FakeFrameStatsConsumer() = default;
 
 void FakeFrameStatsConsumer::set_on_stats_callback(
-    base::Closure on_stats_callback) {
+    const base::RepeatingClosure& on_stats_callback) {
   on_stats_callback_ = on_stats_callback;
 }
 

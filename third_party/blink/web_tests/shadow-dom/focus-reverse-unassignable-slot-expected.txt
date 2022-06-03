@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Verifies that focusing backwards from an input inside a slot which has no shadow root goes to the previous focusable element in light DOM. assert_equals: expected Element node <input id="input1"></input> but got Element node <input id="input2"></input>
+Harness: the test ran to completion.
+

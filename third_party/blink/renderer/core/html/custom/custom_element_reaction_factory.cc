@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_factory.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/file_or_usv_string_or_form_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
@@ -14,29 +14,20 @@ namespace blink {
 
 class CustomElementUpgradeReaction final : public CustomElementReaction {
  public:
-  CustomElementUpgradeReaction(CustomElementDefinition& definition,
-                               bool upgrade_invisible_elements)
-      : CustomElementReaction(definition),
-        upgrade_invisible_elements_(upgrade_invisible_elements) {}
+  explicit CustomElementUpgradeReaction(CustomElementDefinition& definition)
+      : CustomElementReaction(definition) {}
+  CustomElementUpgradeReaction(const CustomElementUpgradeReaction&) = delete;
+  CustomElementUpgradeReaction& operator=(const CustomElementUpgradeReaction&) =
+      delete;
 
  private:
   void Invoke(Element& element) override {
     // Don't call Upgrade() if it's already upgraded. Multiple upgrade reactions
     // could be enqueued because the state changes in step 10 of upgrades.
     // https://html.spec.whatwg.org/C/#upgrades
-    if (element.GetCustomElementState() == CustomElementState::kUndefined) {
-      // Don't upgrade elements inside an invisible-static tree, unless it was
-      // triggered by CustomElementRegistry::upgrade.
-      if (!RuntimeEnabledFeatures::InvisibleDOMEnabled() ||
-          !element.IsInsideInvisibleStaticSubtree() ||
-          upgrade_invisible_elements_)
-        definition_->Upgrade(element);
-    }
+    if (element.GetCustomElementState() == CustomElementState::kUndefined)
+      definition_->Upgrade(element);
   }
-
-  bool upgrade_invisible_elements_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementUpgradeReaction);
 };
 
 // ----------------------------------------------------------------
@@ -48,13 +39,15 @@ class CustomElementConnectedCallbackReaction final
       : CustomElementReaction(definition) {
     DCHECK(definition.HasConnectedCallback());
   }
+  CustomElementConnectedCallbackReaction(
+      const CustomElementConnectedCallbackReaction&) = delete;
+  CustomElementConnectedCallbackReaction& operator=(
+      const CustomElementConnectedCallbackReaction&) = delete;
 
  private:
   void Invoke(Element& element) override {
     definition_->RunConnectedCallback(element);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementConnectedCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -66,13 +59,15 @@ class CustomElementDisconnectedCallbackReaction final
       : CustomElementReaction(definition) {
     DCHECK(definition.HasDisconnectedCallback());
   }
+  CustomElementDisconnectedCallbackReaction(
+      const CustomElementDisconnectedCallbackReaction&) = delete;
+  CustomElementDisconnectedCallbackReaction& operator=(
+      const CustomElementDisconnectedCallbackReaction&) = delete;
 
  private:
   void Invoke(Element& element) override {
     definition_->RunDisconnectedCallback(element);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementDisconnectedCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -89,7 +84,12 @@ class CustomElementAdoptedCallbackReaction final
     DCHECK(definition.HasAdoptedCallback());
   }
 
-  void Trace(Visitor* visitor) override {
+  CustomElementAdoptedCallbackReaction(
+      const CustomElementAdoptedCallbackReaction&) = delete;
+  CustomElementAdoptedCallbackReaction& operator=(
+      const CustomElementAdoptedCallbackReaction&) = delete;
+
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(old_owner_);
     visitor->Trace(new_owner_);
     CustomElementReaction::Trace(visitor);
@@ -102,8 +102,6 @@ class CustomElementAdoptedCallbackReaction final
 
   Member<Document> old_owner_;
   Member<Document> new_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementAdoptedCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -123,6 +121,11 @@ class CustomElementAttributeChangedCallbackReaction final
     DCHECK(definition.HasAttributeChangedCallback(name));
   }
 
+  CustomElementAttributeChangedCallbackReaction(
+      const CustomElementAttributeChangedCallbackReaction&) = delete;
+  CustomElementAttributeChangedCallbackReaction& operator=(
+      const CustomElementAttributeChangedCallbackReaction&) = delete;
+
  private:
   void Invoke(Element& element) override {
     definition_->RunAttributeChangedCallback(element, name_, old_value_,
@@ -132,8 +135,6 @@ class CustomElementAttributeChangedCallbackReaction final
   QualifiedName name_;
   AtomicString old_value_;
   AtomicString new_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementAttributeChangedCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -148,7 +149,12 @@ class CustomElementFormAssociatedCallbackReaction final
     DCHECK(definition.HasFormAssociatedCallback());
   }
 
-  void Trace(Visitor* visitor) override {
+  CustomElementFormAssociatedCallbackReaction(
+      const CustomElementFormAssociatedCallbackReaction&) = delete;
+  CustomElementFormAssociatedCallbackReaction& operator=(
+      const CustomElementFormAssociatedCallbackReaction&) = delete;
+
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(form_);
     CustomElementReaction::Trace(visitor);
   }
@@ -159,8 +165,6 @@ class CustomElementFormAssociatedCallbackReaction final
   }
 
   Member<HTMLFormElement> form_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementFormAssociatedCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -173,12 +177,15 @@ class CustomElementFormResetCallbackReaction final
     DCHECK(definition.HasFormResetCallback());
   }
 
+  CustomElementFormResetCallbackReaction(
+      const CustomElementFormResetCallbackReaction&) = delete;
+  CustomElementFormResetCallbackReaction& operator=(
+      const CustomElementFormResetCallbackReaction&) = delete;
+
  private:
   void Invoke(Element& element) override {
     definition_->RunFormResetCallback(element);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementFormResetCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -192,14 +199,17 @@ class CustomElementFormDisabledCallbackReaction final
     DCHECK(definition.HasFormDisabledCallback());
   }
 
+  CustomElementFormDisabledCallbackReaction(
+      const CustomElementFormDisabledCallbackReaction&) = delete;
+  CustomElementFormDisabledCallbackReaction& operator=(
+      const CustomElementFormDisabledCallbackReaction&) = delete;
+
  private:
   void Invoke(Element& element) override {
     definition_->RunFormDisabledCallback(element, is_disabled_);
   }
 
   bool is_disabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementFormDisabledCallbackReaction);
 };
 
 // ----------------------------------------------------------------
@@ -209,14 +219,19 @@ class CustomElementFormStateRestoreCallbackReaction final
  public:
   CustomElementFormStateRestoreCallbackReaction(
       CustomElementDefinition& definition,
-      const FileOrUSVStringOrFormData& value,
+      const V8ControlValue* value,
       const String& mode)
       : CustomElementReaction(definition), value_(value), mode_(mode) {
     DCHECK(definition.HasFormStateRestoreCallback());
     DCHECK(mode == "restore" || mode == "autocomplete");
   }
 
-  void Trace(Visitor* visitor) override {
+  CustomElementFormStateRestoreCallbackReaction(
+      const CustomElementFormStateRestoreCallbackReaction&) = delete;
+  CustomElementFormStateRestoreCallbackReaction& operator=(
+      const CustomElementFormStateRestoreCallbackReaction&) = delete;
+
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(value_);
     CustomElementReaction::Trace(visitor);
   }
@@ -226,19 +241,15 @@ class CustomElementFormStateRestoreCallbackReaction final
     definition_->RunFormStateRestoreCallback(element, value_, mode_);
   }
 
-  FileOrUSVStringOrFormData value_;
+  Member<const V8ControlValue> value_;
   String mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementFormStateRestoreCallbackReaction);
 };
 
 // ----------------------------------------------------------------
 
 CustomElementReaction& CustomElementReactionFactory::CreateUpgrade(
-    CustomElementDefinition& definition,
-    bool upgrade_invisible_elements) {
-  return *MakeGarbageCollected<CustomElementUpgradeReaction>(
-      definition, upgrade_invisible_elements);
+    CustomElementDefinition& definition) {
+  return *MakeGarbageCollected<CustomElementUpgradeReaction>(definition);
 }
 
 CustomElementReaction& CustomElementReactionFactory::CreateConnected(
@@ -292,7 +303,7 @@ CustomElementReaction& CustomElementReactionFactory::CreateFormDisabled(
 
 CustomElementReaction& CustomElementReactionFactory::CreateFormStateRestore(
     CustomElementDefinition& definition,
-    const FileOrUSVStringOrFormData& value,
+    const V8ControlValue* value,
     const String& mode) {
   return *MakeGarbageCollected<CustomElementFormStateRestoreCallbackReaction>(
       definition, value, mode);

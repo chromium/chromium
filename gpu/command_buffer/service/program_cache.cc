@@ -11,7 +11,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "gpu/command_buffer/service/shader_manager.h"
-#include "third_party/angle/src/common/version.h"
+#include "third_party/angle/src/common/angle_version_info.h"
 
 namespace gpu {
 namespace gles2 {
@@ -155,7 +155,7 @@ void ProgramCache::ComputeProgramHash(
     char* result) const {
   const size_t shader0_size = kHashLength;
   const size_t shader1_size = kHashLength;
-  const size_t angle_commit_size = ANGLE_COMMIT_HASH_SIZE;
+  const size_t angle_commit_size = angle::GetANGLECommitHashSize();
   const size_t map_size = CalculateMapSize(bind_attrib_location_map);
   const size_t var_size = CalculateVaryingsSize(transform_feedback_varyings);
   const size_t total_size = shader0_size + shader1_size + angle_commit_size
@@ -165,7 +165,7 @@ void ProgramCache::ComputeProgramHash(
   memcpy(buffer.get(), hashed_shader_0, shader0_size);
   memcpy(&buffer[shader0_size], hashed_shader_1, shader1_size);
   size_t current_pos = shader0_size + shader1_size;
-  memcpy(&buffer[current_pos], ANGLE_COMMIT_HASH, angle_commit_size);
+  memcpy(&buffer[current_pos], angle::GetANGLECommitHash(), angle_commit_size);
   current_pos += angle_commit_size;
   if (map_size != 0) {
     // copy our map
@@ -200,9 +200,10 @@ void ProgramCache::ComputeProgramHash(
 
 void ProgramCache::HandleMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  // This is only called with moderate or critical pressure.
-  DCHECK_NE(memory_pressure_level,
-            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  if (memory_pressure_level ==
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
 
   // Set a low limit on cache size for MEMORY_PRESSURE_LEVEL_MODERATE.
   size_t limit = max_size_bytes_ / 4;
@@ -211,12 +212,7 @@ void ProgramCache::HandleMemoryPressure(
     limit = 0;
   }
 
-  size_t bytes_freed = Trim(limit);
-  if (bytes_freed > 0) {
-    UMA_HISTOGRAM_COUNTS_100000(
-        "GPU.ProgramCache.MemoryReleasedOnPressure",
-        static_cast<base::HistogramBase::Sample>(bytes_freed) / 1024);
-  }
+  Trim(limit);
 }
 
 }  // namespace gles2

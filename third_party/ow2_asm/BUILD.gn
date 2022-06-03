@@ -14,32 +14,24 @@ java_prebuilt("asm_tree_java") {
   # Not "testonly" because //build/android/bytecode:java_bytecode_rewriter
   # depends on it.
   jar_path = "lib/asm-tree.jar"
-  deps = [
-    ":asm_java",
-  ]
+  deps = [ ":asm_java" ]
 }
 
 java_prebuilt("asm_analysis_java") {
   testonly = true
   jar_path = "lib/asm-analysis.jar"
-  deps = [
-    ":asm_tree_java",
-  ]
+  deps = [ ":asm_tree_java" ]
 }
 
 java_prebuilt("asm_commons_java") {
-  testonly = true
+  # Not "testonly" because of com_android_tools_build_jetifier_jetifier_processor
   jar_path = "lib/asm-commons.jar"
-  deps = [
-    ":asm_tree_java",
-  ]
+  deps = [ ":asm_tree_java" ]
 }
 
 java_prebuilt("asm_util_java") {
   # Not "testonly" because //build/android/bytecode:java_bytecode_rewriter
   # depends on it.
   jar_path = "lib/asm-util.jar"
-  deps = [
-    ":asm_tree_java",
-  ]
+  deps = [ ":asm_tree_java" ]
 }

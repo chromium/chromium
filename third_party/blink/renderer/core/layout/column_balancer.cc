@@ -70,7 +70,7 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
       continue;
     }
 
-    const LayoutBox& child_box = ToLayoutBox(*child);
+    const auto& child_box = To<LayoutBox>(*child);
 
     LayoutUnit border_edge_offset;
     LayoutUnit logical_top = child_box.LogicalTop();
@@ -109,7 +109,7 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
     // Tables are wicked. Both table rows and table cells are relative to their
     // table section.
     LayoutUnit offset_for_this_child =
-        child_box.IsTableRow() ? LayoutUnit() : logical_top;
+        child_box.IsLegacyTableRow() ? LayoutUnit() : logical_top;
 
     // Include this child's offset in the flow thread offset. Note that rather
     // than subtracting the offset again when done, we set it back to the old
@@ -121,16 +121,17 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
                             previous_break_after_value);
     // Unless the child is unsplittable, or if the child establishes an inner
     // multicol container, we descend into its subtree for further examination.
-    auto* chlid_block_flow = DynamicTo<LayoutBlockFlow>(child_box);
-    if (child_box.GetPaginationBreakability() != LayoutBox::kForbidBreaks &&
-        (!chlid_block_flow || !chlid_block_flow->MultiColumnFlowThread())) {
+    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child_box);
+    if (child_box.GetLegacyPaginationBreakability() !=
+            LayoutBox::kForbidBreaks &&
+        (!child_block_flow || !child_block_flow->MultiColumnFlowThread())) {
       // We need to get to the border edge before processing content inside
       // this child. If the child is floated, we're currently at the margin
       // edge.
-      auto old_flow_thread_offset = flow_thread_offset_;
+      auto old_flow_thread_child_offset = flow_thread_offset_;
       flow_thread_offset_ += border_edge_offset;
       TraverseSubtree(child_box);
-      flow_thread_offset_ = old_flow_thread_offset;
+      flow_thread_offset_ = old_flow_thread_child_offset;
     }
     previous_break_after_value = child_box.BreakAfter();
     ExamineBoxBeforeLeaving(child_box, logical_height);
@@ -204,7 +205,7 @@ void InitialColumnHeightFinder::ExamineBoxAfterEntering(
     }
   }
 
-  if (box.GetPaginationBreakability() != LayoutBox::kAllowAnyBreaks) {
+  if (box.GetLegacyPaginationBreakability() != LayoutBox::kAllowAnyBreaks) {
     tallest_unbreakable_logical_height_ =
         std::max(tallest_unbreakable_logical_height_, child_logical_height);
     return;
@@ -321,9 +322,9 @@ unsigned InitialColumnHeightFinder::ContentRunIndexWithTallestColumns() const {
   unsigned index_with_largest_height = 0;
   LayoutUnit largest_height;
   LayoutUnit previous_offset = LogicalTopInFlowThread();
-  size_t run_count = content_runs_.size();
+  wtf_size_t run_count = content_runs_.size();
   DCHECK(run_count);
-  for (size_t i = FirstContentRunIndexInLastRow(); i < run_count; i++) {
+  for (unsigned i = FirstContentRunIndexInLastRow(); i < run_count; i++) {
     const ContentRun& run = content_runs_[i];
     LayoutUnit height = run.ColumnLogicalHeight(previous_offset);
     if (largest_height < height) {
@@ -385,7 +386,7 @@ void MinimumSpaceShortageFinder::ExamineBoxAfterEntering(
     LayoutUnit child_logical_height,
     EBreakBetween previous_break_after_value) {
   LayoutBox::PaginationBreakability breakability =
-      box.GetPaginationBreakability();
+      box.GetLegacyPaginationBreakability();
 
   // Look for breaks before the child box.
   if (IsLogicalTopWithinBounds(FlowThreadOffset() - box.PaginationStrut())) {
@@ -460,7 +461,7 @@ void MinimumSpaceShortageFinder::ExamineBoxBeforeLeaving(
     const LayoutBox& box,
     LayoutUnit child_logical_height) {
   if (pending_strut_ == LayoutUnit::Min() ||
-      box.GetPaginationBreakability() != LayoutBox::kForbidBreaks)
+      box.GetLegacyPaginationBreakability() != LayoutBox::kForbidBreaks)
     return;
 
   // The previous break was before a breakable block. Here's the first piece of

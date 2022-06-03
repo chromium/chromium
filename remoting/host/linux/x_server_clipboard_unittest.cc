@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -9,22 +10,30 @@
 #include "remoting/base/constants.h"
 #include "remoting/host/linux/x_server_clipboard.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/connection.h"
 
 namespace remoting {
 
 namespace {
 
-class ClipboardTestClient {
+class ClipboardTestClient : public x11::EventObserver {
  public:
-  ClipboardTestClient() : display_(nullptr) {}
-  ~ClipboardTestClient() = default;
+  ClipboardTestClient() = default;
 
-  void Init(Display* display) {
-    display_ = display;
-    clipboard_.Init(display,
-                    base::Bind(&ClipboardTestClient::OnClipboardChanged,
-                               base::Unretained(this)));
+  ClipboardTestClient(const ClipboardTestClient&) = delete;
+  ClipboardTestClient& operator=(const ClipboardTestClient&) = delete;
+
+  ~ClipboardTestClient() override {
+    DCHECK(connection_);
+    connection_->RemoveEventObserver(this);
+  }
+
+  void Init(x11::Connection* connection) {
+    connection_ = connection;
+    connection_->AddEventObserver(this);
+    clipboard_.Init(connection, base::BindRepeating(
+                                    &ClipboardTestClient::OnClipboardChanged,
+                                    base::Unretained(this)));
   }
 
   void SetClipboardData(const std::string& clipboard_data) {
@@ -40,25 +49,25 @@ class ClipboardTestClient {
   // Process X events on the connection, returning true if any events were
   // processed.
   bool PumpXEvents() {
-    bool result = false;
-    while (XPending(display_)) {
-      XEvent event;
-      XNextEvent(display_, &event);
-      clipboard_.ProcessXEvent(&event);
-      result = true;
-    }
-    return result;
+    dispatched_event_ = false;
+    connection_->Sync();
+    connection_->DispatchAll();
+    return dispatched_event_;
+  }
+
+  void OnEvent(const x11::Event& event) override {
+    dispatched_event_ = true;
+    clipboard_.ProcessXEvent(event);
   }
 
   const std::string& clipboard_data() const { return clipboard_data_; }
-  Display* display() const { return display_; }
+  x11::Connection* connection() const { return connection_; }
 
  private:
   std::string clipboard_data_;
   XServerClipboard clipboard_;
-  Display* display_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardTestClient);
+  x11::Connection* connection_ = nullptr;
+  bool dispatched_event_ = false;
 };
 
 }  // namespace
@@ -66,29 +75,30 @@ class ClipboardTestClient {
 class XServerClipboardTest : public testing::Test {
  public:
   void SetUp() override {
-    // XSynchronize() ensures that PumpXEvents() fully processes all X server
-    // requests and responses before returning to the caller.
-    Display* display1 = XOpenDisplay(nullptr);
-    XSynchronize(display1, x11::True);
-    client1_.Init(display1);
-    Display* display2 = XOpenDisplay(nullptr);
-    XSynchronize(display2, x11::True);
-    client2_.Init(display2);
+    // SynchronizeForTest() ensures that PumpXEvents() fully processes all X
+    // server requests and responses before returning to the caller.
+    connection1_ = std::make_unique<x11::Connection>();
+    connection1_->SynchronizeForTest(true);
+    client1_.Init(connection1_.get());
+    connection2_ = std::make_unique<x11::Connection>();
+    connection2_->SynchronizeForTest(true);
+    client2_.Init(connection2_.get());
   }
 
   void TearDown() override {
-    XCloseDisplay(client1_.display());
-    XCloseDisplay(client2_.display());
+    connection1_.reset();
+    connection2_.reset();
   }
 
   void PumpXEvents() {
     while (true) {
-      if (!client1_.PumpXEvents() && !client2_.PumpXEvents()) {
+      if (!client1_.PumpXEvents() && !client2_.PumpXEvents())
         break;
-      }
     }
   }
 
+  std::unique_ptr<x11::Connection> connection1_;
+  std::unique_ptr<x11::Connection> connection2_;
   ClipboardTestClient client1_;
   ClipboardTestClient client2_;
 };

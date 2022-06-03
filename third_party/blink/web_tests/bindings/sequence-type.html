@@ -14,10 +14,10 @@
  test(() => {
    let sequenceTest = internals.sequenceTest();
 
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(null) },
-                 "Converting null to sequence must throw a type error");
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(undefined) },
-                 "Converting undefined to sequence must throw a type error");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(null) },
+                    "Converting null to sequence must throw a type error");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(undefined) },
+                    "Converting undefined to sequence must throw a type error");
    assert_equals(sequenceTest.identityOctetSequenceOrNull(null), null,
                  "Converting null to a nullable sequence works");
    assert_equals(sequenceTest.identityOctetSequenceOrNull(undefined), null,
@@ -90,16 +90,16 @@
 
    let doubleArray = [34, 42.5];
    doubleArray[9] = 2;  // The elements inbetween are all undefined.
-   assert_throws(new TypeError, () => { sequenceTest.identityDoubleSequence(doubleArray) },
-                 "Converting an undefined value to double throws a TypeError and " +
-                 "causes the sequence -> C++ conversion to fail");
+   assert_throws_js(TypeError, () => { sequenceTest.identityDoubleSequence(doubleArray) },
+                    "Converting an undefined value to double throws a TypeError and " +
+                    "causes the sequence -> C++ conversion to fail");
 
    let byteStringSequenceSequence = [
      ["foo"],
      ["bar"]
    ];
    byteStringSequenceSequence[7] = ["baz"];
-   assert_throws(new TypeError, () => {
+   assert_throws_js(TypeError, () => {
      sequenceTest.identityByteStringSequenceSequence(byteStringSequenceSequence);
    }, "Converting an undefined to a sequence<> throws a TypeError and causes the " +
       "entire conversion to fail");
@@ -108,46 +108,46 @@
  test(() => {
    let sequenceTest = internals.sequenceTest();
 
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence({}) },
-                 "Objects without Symbol.iterator cannot be converted");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence({}) },
+                    "Objects without Symbol.iterator cannot be converted");
 
    let obj = {
      [Symbol.iterator]: 42
    };
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(obj) },
-                 "Symbol.iterator must be callable");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(obj) },
+                    "Symbol.iterator must be callable");
 
    obj = {
      [Symbol.iterator]() {
        return 42;
      }
    }
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(obj) },
-                 "Symbol.iterator must return an object");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(obj) },
+                    "Symbol.iterator must return an object");
 
    obj = {
      [Symbol.iterator]() {
        return {}
      }
    }
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(obj) },
-                 "Symbol.iterator must return an object with a 'next' callable");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(obj) },
+                    "Symbol.iterator must return an object with a 'next' callable");
 
    obj = {
      [Symbol.iterator]() {
        return {'next': 42}
      }
    }
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(obj) },
-                 "Symbol.iterator must return an object with a 'next' callable");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(obj) },
+                    "Symbol.iterator must return an object with a 'next' callable");
 
    obj = {
      [Symbol.iterator]() {
        return {'next': () => { return 42 }}
      }
    }
-   assert_throws(new TypeError, () => { sequenceTest.identityLongSequence(obj) },
-                 "'next' must return an object");
+   assert_throws_js(TypeError, () => { sequenceTest.identityLongSequence(obj) },
+                    "'next' must return an object");
  }, "Invalid iterable protocols");
 
  test(() => {
@@ -172,8 +172,8 @@
    let sequenceTest = internals.sequenceTest();
 
    let foods = ["Sushi", "Beer"];
-   assert_throws(new TypeError, () => { sequenceTest.identityFoodEnumSequence(foods) },
-                 "Invalid enum type must throw a type error");
+   assert_throws_js(TypeError, () => { sequenceTest.identityFoodEnumSequence(foods) },
+                    "Invalid enum type must throw a type error");
 
    foods = createIterable([{done: false, value: "Spaghetti"},
                            {done: false, value: "Bread"},

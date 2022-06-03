@@ -13,6 +13,7 @@ class LayoutObject;
 class LayoutNGTableInterface;
 class LayoutNGTableSectionInterface;
 class LayoutNGTableCellInterface;
+class LayoutTableRow;
 
 // Abstract class defining table row methods.
 // Used for Legacy/NG interoperability.

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+    <title>Max Pay Payment Handler Test</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+  </head>
+  <style>
+    #controllers button {
+      font-size: medium;
+      height: 3em;
+      width: auto;
+    }
+    #log
+    {
+      font-size: small;
+      height: 100%;
+      overflow-x: scroll;
+      width: 100%;
+    }
+  </style>
+  <body>
+    <script>
+      async function onInstallClicked() {
+        const result = await install();
+        updateLogView(result);
+      }
+      async function onUninstallClicked() {
+        const result = await uninstall();
+        updateLogView(result);
+      }
+      async function onLaunchClicked(url) {
+        const result = await launchAndWaitUntilReady(url);
+        updateLogView(result);
+        if (result !== 'app_is_ready') return;
+        updateLogView(await getResult());
+      }
+    </script>
+    <h1>Use Max Pay</h1>
+    <div id="controllers">
+      <button onclick="onInstallClicked()">Install</button>
+      <button onclick="onUninstallClicked()">Uninstall</button>
+      <button onclick="onLaunchClicked()">Launch</button>
+      <button onclick="onLaunchClicked('http://info.cern.ch')">Launch http app</button>
+    </div>
+    <div>
+      <div>Installation Status: <span id="installationStatus"></span></div>
+      <div>Messages:</div>
+      <pre id="log"></pre>
+    </div>
+    <script src="./installer.js"></script>
+  </body>
+</html>

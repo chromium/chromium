@@ -7,6 +7,6 @@
     <corners
         android:topLeftRadius="0dp"
         android:topRightRadius="0dp"
-        android:bottomLeftRadius="@dimen/tab_list_card_radius"
-        android:bottomRightRadius="@dimen/tab_list_card_radius" />
+        android:bottomLeftRadius="?attr/tabGridDialogCornerRadius"
+        android:bottomRightRadius="?attr/tabGridDialogCornerRadius" />
 </shape>

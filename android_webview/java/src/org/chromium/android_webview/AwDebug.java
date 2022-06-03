@@ -4,12 +4,15 @@
 
 package org.chromium.android_webview;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Provides Android WebView debugging entrypoints.
@@ -20,51 +23,59 @@ import java.io.IOException;
 @JNINamespace("android_webview")
 @UsedByReflection("")
 public class AwDebug {
+    private static final String TAG = "AwDebug";
+
     /**
-     * Dump webview state (predominantly a minidump for all threads,
-     * but including other information) to the file descriptor fd.
+     * Previously requested to dump WebView state as a minidump.
      *
-     * It is expected that this method is found by reflection, as it
-     * is not currently exposed by the android framework, and thus it
-     * needs to be protected from the unwanted attention of ProGuard.
-     *
-     * The File argument must refer to a pre-existing file, which must
-     * be able to be re-opened for reading and writing via its
-     * canonical path. The file will be truncated upon re-opening.
+     * This is no longer supported as it doesn't include renderer state in
+     * multiprocess mode, significantly limiting its usefulness.
      */
     @UsedByReflection("")
     public static boolean dumpWithoutCrashing(File dumpFile) {
-        String dumpPath;
-        try {
-            dumpPath = dumpFile.getCanonicalPath();
-        } catch (IOException e) {
-            return false;
-        }
-        return AwDebugJni.get().dumpWithoutCrashing(dumpPath);
-    }
-
-    public static void initCrashKeysForTesting() {
-        AwDebugJni.get().initCrashKeysForWebViewTesting();
-    }
-
-    public static void setWhiteListedKeyForTesting() {
-        AwDebugJni.get().setWhiteListedKeyForTesting();
-    }
-
-    public static void setNonWhiteListedKeyForTesting() {
-        AwDebugJni.get().setNonWhiteListedKeyForTesting();
+        Log.e(TAG, "AwDebug.dumpWithoutCrashing is no longer supported.");
+        return false;
     }
 
     public static void setSupportLibraryWebkitVersionCrashKey(String version) {
         AwDebugJni.get().setSupportLibraryWebkitVersionCrashKey(version);
     }
 
+    // Used to record the UMA histogram Android.WebView.AwDebugCall. Since these values are
+    // persisted to logs, they should never be renumbered or reused.
+    @IntDef({AwDebugCall.SET_CPU_AFFINITY_TO_LITTLE_CORES, AwDebugCall.ENABLE_IDLE_THROTTLING})
+    @interface AwDebugCall {
+        int SET_CPU_AFFINITY_TO_LITTLE_CORES = 0;
+        int ENABLE_IDLE_THROTTLING = 1;
+        int ENABLE_POWER_SCHEDULER = 2;
+        int COUNT = 3;
+    }
+
+    @UsedByReflection("")
+    public static void setCpuAffinityToLittleCores() {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
+                AwDebugCall.SET_CPU_AFFINITY_TO_LITTLE_CORES, AwDebugCall.COUNT);
+        AwDebugJni.get().setCpuAffinityToLittleCores();
+    }
+
+    @UsedByReflection("")
+    public static void enableIdleThrottling() {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
+                AwDebugCall.ENABLE_IDLE_THROTTLING, AwDebugCall.COUNT);
+        AwDebugJni.get().enableIdleThrottling(3, 500, 0.5f);
+    }
+
+    @UsedByReflection("")
+    public static void enablePowerScheduler(int policy, int minTimeMs, float minCputimeRatio) {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.AwDebugCall",
+                AwDebugCall.ENABLE_POWER_SCHEDULER, AwDebugCall.COUNT);
+        AwDebugJni.get().enableIdleThrottling(policy, minTimeMs, minCputimeRatio);
+    }
+
     @NativeMethods
     interface Natives {
-        boolean dumpWithoutCrashing(String dumpPath);
-        void initCrashKeysForWebViewTesting();
-        void setWhiteListedKeyForTesting();
-        void setNonWhiteListedKeyForTesting();
         void setSupportLibraryWebkitVersionCrashKey(String version);
+        void setCpuAffinityToLittleCores();
+        void enableIdleThrottling(int policy, int minTimeMs, float minCputimeRatio);
     }
 }

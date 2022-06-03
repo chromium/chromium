@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+var device;
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('DisconnectingHealthThermometerAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['health_thermometer']}],
+      optionalServices: [request_disconnection_service_uuid]
+    }))
+    .then(requestedDevice => {
+      device = requestedDevice;
+      return Promise.all([device.gatt.connect(), device.gatt.connect()]);
+    })
+    .then(gattServers => get_request_disconnection(gattServers[0]))
+    .then(requestDisconnection => {
+      // This promise hangs unless gattserverdisconnected is fired.
+      let disconnected = eventPromise(device, 'gattserverdisconnected');
+      return Promise.all([requestDisconnection(), disconnected]);
+    });
+}, 'A device disconnecting after two consecutive connect requests should fire an event.');
+</script>

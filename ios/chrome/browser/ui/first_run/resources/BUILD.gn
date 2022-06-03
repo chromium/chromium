@@ -25,3 +25,69 @@ imageset("checkbox_checked") {
     "checkbox_checked.imageset/checkbox_checked~ipad.png",
   ]
 }
+
+imageset("default_browser_screen_banner") {
+  sources = [
+    "default_browser_screen_banner.imageset/Contents.json",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@3x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("signin_screen_banner") {
+  sources = [
+    "signin_screen_banner.imageset/Contents.json",
+    "signin_screen_banner.imageset/signin_screen_banner_dark@2x.png",
+    "signin_screen_banner.imageset/signin_screen_banner_dark@3x.png",
+    "signin_screen_banner.imageset/signin_screen_banner_light@2x.png",
+    "signin_screen_banner.imageset/signin_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("forced_signin_screen_banner") {
+  sources = [
+    "forced_signin_screen_banner.imageset/Contents.json",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@2x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@3x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@2x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("sync_screen_banner") {
+  sources = [
+    "sync_screen_banner.imageset/Contents.json",
+    "sync_screen_banner.imageset/sync_screen_banner_dark@2x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_dark@3x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_light@2x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("read_more_arrow") {
+  sources = [
+    "read_more_arrow.imageset/Contents.json",
+    "read_more_arrow.imageset/read_more_arrow@2x.png",
+    "read_more_arrow.imageset/read_more_arrow@3x.png",
+  ]
+}
+
+imageset("welcome_screen_banner") {
+  sources = [
+    "welcome_screen_banner.imageset/Contents.json",
+    "welcome_screen_banner.imageset/welcome_screen_banner_dark@2x.png",
+    "welcome_screen_banner.imageset/welcome_screen_banner_dark@3x.png",
+    "welcome_screen_banner.imageset/welcome_screen_banner_light@2x.png",
+    "welcome_screen_banner.imageset/welcome_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("welcome_metrics_checkmark") {
+  sources = [
+    "welcome_metrics_checkmark.imageset/Contents.json",
+    "welcome_metrics_checkmark.imageset/welcome_metrics_checkmark@2x.png",
+    "welcome_metrics_checkmark.imageset/welcome_metrics_checkmark@3x.png",
+  ]
+}

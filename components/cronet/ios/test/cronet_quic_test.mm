@@ -103,7 +103,8 @@ TEST_F(QuicTest, RequestWithSocketOptimizationEnabled) {
   if (@available(iOS 10.2, *)) {
     NSURLSessionTaskTransactionMetrics* metrics =
         delegate_.taskMetrics.transactionMetrics[0];
-    EXPECT_TRUE([metrics.networkProtocolName containsString:@"quic"])
+    EXPECT_TRUE([metrics.networkProtocolName containsString:@"quic"] ||
+                [metrics.networkProtocolName containsString:@"h3"])
         << base::SysNSStringToUTF8(metrics.networkProtocolName);
   }
 }

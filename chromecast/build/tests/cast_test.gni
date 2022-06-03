@@ -216,9 +216,7 @@ template("cast_test_group") {
     _test_name = get_label_info(_test, "name")
     group(_test_name + "_cast_runtime_deps") {
       testonly = true
-      data_deps = [
-        _test,
-      ]
+      data_deps = [ _test ]
       write_runtime_deps =
           "${_shared_dir}/runtime_deps/${_test_name}_runtime_deps.txt"
     }
@@ -230,9 +228,7 @@ template("cast_test_group") {
   action(target_name + "_create_list") {
     script = "//chromecast/tools/build/generate_test_lists.py"
 
-    outputs = [
-      "$_output_prefix.tests",
-    ]
+    outputs = [ "$_output_prefix.tests" ]
 
     args = [
       "-o",
@@ -256,9 +252,7 @@ template("cast_test_group") {
   action(target_name + "_filters") {
     script = "//chromecast/tools/build/generate_test_lists.py"
 
-    outputs = [
-      "$_output_prefix.filters",
-    ]
+    outputs = [ "$_output_prefix.filters" ]
 
     args = [
       "-o",
@@ -389,9 +383,7 @@ template("cast_test_group_list") {
   action(_pack_build_action) {
     script = "//chromecast/tools/build/generate_test_lists.py"
 
-    outputs = [
-      invoker.build_list_path,
-    ]
+    outputs = [ invoker.build_list_path ]
 
     args = [
       "-o",
@@ -437,9 +429,7 @@ template("cast_test_group_list") {
     }
 
     # Depend first on the "pack_build" step, so that the build lists are created.
-    deps = [
-      ":$_pack_build_action",
-    ]
+    deps = [ ":$_pack_build_action" ]
 
     # Next, depend on the filter steps, such that they are created before this
     # script executes.
@@ -512,9 +502,7 @@ template("cast_test_deps_archive") {
     testonly = true
 
     script = "//chromecast/tools/build/package_test_deps.py"
-    outputs = [
-      invoker.output,
-    ]
+    outputs = [ invoker.output ]
 
     # Generate a comma separated list of filters.
     _exclude_deps = ""

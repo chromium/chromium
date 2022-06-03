@@ -3,5 +3,5 @@ CREDIT_CARD_NUMBER | paymentMethodForm.cardNumber | Card number* |  | credit-car
 CREDIT_CARD_VERIFICATION_CODE | paymentMethodForm.cardVerificationNumber | Security code* |  | credit-card-cc
 CREDIT_CARD_EXP_MONTH | paymentMethodForm.expirationMonth | 04 |  | credit-card-cc
 CREDIT_CARD_EXP_4_DIGIT_YEAR | paymentMethodForm.expirationYear | 2018 |  | credit-card-cc
-ADDRESS_HOME_ZIP | paymentMethodForm.zip | Card billing ZIP Code* |  | paymentMethodForm.newCreditCardCustomerName_1-default
-UNKNOWN_TYPE | paymentMethodForm.custCode | Customer code |  | paymentMethodForm.newCreditCardCustomerName_1-default
+ADDRESS_HOME_ZIP | paymentMethodForm.zip | Card billing ZIP Code* |  | paymentMethodForm.newCreditCardCustomerName_2-default
+UNKNOWN_TYPE | paymentMethodForm.custCode | Customer code |  | paymentMethodForm.newCreditCardCustomerName_2-default

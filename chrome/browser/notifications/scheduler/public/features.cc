@@ -8,7 +8,7 @@ namespace notifications {
 namespace features {
 
 const base::Feature kNotificationScheduleService{
-    "NotificationScheduleService", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NotificationScheduleService", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 

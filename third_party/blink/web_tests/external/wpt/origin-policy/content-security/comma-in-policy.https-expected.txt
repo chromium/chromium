@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Prerequisite check: running on HTTPS
+PASS Test setup of the iframe
+FAIL eval must be allowed Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
+Harness: the test ran to completion.
+

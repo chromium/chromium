@@ -29,10 +29,9 @@ import org.chromium.ui.base.WindowAndroid;
 public class ContentViewRenderView extends FrameLayout {
     // The native side of this object.
     private long mNativeContentViewRenderView;
-    private SurfaceHolder.Callback mSurfaceCallback;
     private WindowAndroid mWindowAndroid;
 
-    private final SurfaceView mSurfaceView;
+    protected SurfaceBridge mSurfaceBridge;
     protected WebContents mWebContents;
 
     private int mWidth;
@@ -48,14 +47,12 @@ public class ContentViewRenderView extends FrameLayout {
     public ContentViewRenderView(Context context) {
         super(context);
 
-        mSurfaceView = createSurfaceView(getContext());
-        mSurfaceView.setZOrderMediaOverlay(true);
+        mSurfaceBridge = createSurfaceBridge();
+        mSurfaceBridge.initialize(this);
+    }
 
-        setSurfaceViewBackgroundColor(Color.WHITE);
-        addView(mSurfaceView,
-                new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT));
-        mSurfaceView.setVisibility(GONE);
+    protected SurfaceBridge createSurfaceBridge() {
+        return new SurfaceBridge();
     }
 
     /**
@@ -64,14 +61,14 @@ public class ContentViewRenderView extends FrameLayout {
      * @param rootWindow The {@link WindowAndroid} this render view should be linked to.
      */
     public void onNativeLibraryLoaded(WindowAndroid rootWindow) {
-        assert !mSurfaceView.getHolder().getSurface().isValid()
+        assert !getSurfaceView().getHolder().getSurface().isValid()
             : "Surface created before native library loaded.";
         assert rootWindow != null;
         mNativeContentViewRenderView =
                 ContentViewRenderViewJni.get().init(ContentViewRenderView.this, rootWindow);
         assert mNativeContentViewRenderView != 0;
         mWindowAndroid = rootWindow;
-        mSurfaceCallback = new SurfaceHolder.Callback() {
+        SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 assert mNativeContentViewRenderView != 0;
@@ -91,11 +88,11 @@ public class ContentViewRenderView extends FrameLayout {
                         mNativeContentViewRenderView, ContentViewRenderView.this);
 
                 // On pre-M Android, layers start in the hidden state until a relayout happens.
-                // There is a bug that manifests itself when entering overlay mode on pre-M devices,
-                // where a relayout never happens. This bug is out of Chromium's control, but can be
-                // worked around by forcibly re-setting the visibility of the surface view.
-                // Otherwise, the screen stays black, and some tests fail.
-                mSurfaceView.setVisibility(mSurfaceView.getVisibility());
+                // There is a bug that manifests itself when entering overlay mode on pre-M
+                // devices, where a relayout never happens. This bug is out of Chromium's
+                // control, but can be worked around by forcibly re-setting the visibility of
+                // the surface view. Otherwise, the screen stays black, and some tests fail.
+                getSurfaceView().setVisibility(getSurfaceView().getVisibility());
 
                 onReadyToRender();
             }
@@ -107,8 +104,7 @@ public class ContentViewRenderView extends FrameLayout {
                         mNativeContentViewRenderView, ContentViewRenderView.this);
             }
         };
-        mSurfaceView.getHolder().addCallback(mSurfaceCallback);
-        mSurfaceView.setVisibility(VISIBLE);
+        mSurfaceBridge.connect(surfaceCallback);
     }
 
     @Override
@@ -141,8 +137,8 @@ public class ContentViewRenderView extends FrameLayout {
      * @param color The color of the background.
      */
     public void setSurfaceViewBackgroundColor(int color) {
-        if (mSurfaceView != null) {
-            mSurfaceView.setBackgroundColor(color);
+        if (getSurfaceView() != null) {
+            getSurfaceView().setBackgroundColor(color);
         }
     }
 
@@ -150,7 +146,7 @@ public class ContentViewRenderView extends FrameLayout {
      * Gets the SurfaceView for this ContentViewRenderView
      */
     public SurfaceView getSurfaceView() {
-        return mSurfaceView;
+        return mSurfaceBridge.getSurfaceView();
     }
 
     /**
@@ -158,7 +154,7 @@ public class ContentViewRenderView extends FrameLayout {
      * native resource can be freed.
      */
     public void destroy() {
-        mSurfaceView.getHolder().removeCallback(mSurfaceCallback);
+        mSurfaceBridge.disconnect();
         mWindowAndroid = null;
         ContentViewRenderViewJni.get().destroy(
                 mNativeContentViewRenderView, ContentViewRenderView.this);
@@ -199,7 +195,7 @@ public class ContentViewRenderView extends FrameLayout {
      * @return whether the surface view is initialized and ready to render.
      */
     public boolean isInitialized() {
-        return mSurfaceView.getHolder().getSurface() != null;
+        return getSurfaceView().getHolder().getSurface() != null;
     }
 
     /**
@@ -208,20 +204,50 @@ public class ContentViewRenderView extends FrameLayout {
      */
     public void setOverlayVideoMode(boolean enabled) {
         int format = enabled ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE;
-        mSurfaceView.getHolder().setFormat(format);
+        getSurfaceView().getHolder().setFormat(format);
         ContentViewRenderViewJni.get().setOverlayVideoMode(
                 mNativeContentViewRenderView, ContentViewRenderView.this, enabled);
     }
 
     @CalledByNative
     private void didSwapFrame() {
-        if (mSurfaceView.getBackground() != null) {
+        if (getSurfaceView().getBackground() != null) {
             post(new Runnable() {
                 @Override
                 public void run() {
-                    mSurfaceView.setBackgroundResource(0);
+                    getSurfaceView().setBackgroundResource(0);
                 }
             });
+        }
+    }
+
+    protected static class SurfaceBridge {
+        private SurfaceView mSurfaceView;
+        private SurfaceHolder.Callback mSurfaceCallback;
+
+        protected SurfaceView getSurfaceView() {
+            return mSurfaceView;
+        }
+
+        protected void initialize(ContentViewRenderView renderView) {
+            mSurfaceView = renderView.createSurfaceView(renderView.getContext());
+            mSurfaceView.setZOrderMediaOverlay(true);
+
+            renderView.setSurfaceViewBackgroundColor(Color.WHITE);
+            renderView.addView(mSurfaceView,
+                    new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT));
+            mSurfaceView.setVisibility(GONE);
+        }
+
+        protected void connect(SurfaceHolder.Callback surfaceCallback) {
+            mSurfaceCallback = surfaceCallback;
+            mSurfaceView.getHolder().addCallback(mSurfaceCallback);
+            mSurfaceView.setVisibility(VISIBLE);
+        }
+
+        protected void disconnect() {
+            mSurfaceView.getHolder().removeCallback(mSurfaceCallback);
         }
     }
 

@@ -5,23 +5,55 @@
 #ifndef DEVICE_FIDO_WIN_FAKE_WEBAUTHN_API_H_
 #define DEVICE_FIDO_WIN_FAKE_WEBAUTHN_API_H_
 
+#include <stdint.h>
+#include <map>
+#include <memory>
+#include <vector>
+
 #include "base/component_export.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/virtual_fido_device.h"
 #include "device/fido/win/webauthn_api.h"
 
 namespace device {
 
+// FakeWinWebAuthnApi is a test fake to use instead of the real Windows WebAuthn
+// API implemented by webauthn.dll.
+//
+// The fake supports injecting discoverable and non-discoverable credentials
+// that can be challenged via AuthenticatorGetAssertion().
+// AuthenticatorMakeCredential() returns a mock response and does not actually
+// create a credential.
+//
+// Tests can inject a FakeWinWebAuthnApi via VirtualFidoDeviceFactory.
 class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
  public:
+  using RegistrationData = VirtualFidoDevice::RegistrationData;
+
   FakeWinWebAuthnApi();
   ~FakeWinWebAuthnApi() override;
+
+  // Injects a non-discoverable credential that can be challenged with
+  // AuthenticatorGetAssertion().
+  bool InjectNonDiscoverableCredential(base::span<const uint8_t> credential_id,
+                                       const std::string& relying_party_id);
+
+  // Injects a discoverable credential that can be challenged with
+  // AuthenticatorGetAssertion().
+  bool InjectDiscoverableCredential(base::span<const uint8_t> credential_id,
+                                    device::PublicKeyCredentialRpEntity rp,
+                                    device::PublicKeyCredentialUserEntity user);
 
   // Inject the return value for WinWebAuthnApi::IsAvailable().
   void set_available(bool available) { is_available_ = available; }
 
-  void set_hresult(HRESULT result) { result_ = result; }
+  // Injects an HRESULT to return from AuthenticatorMakeCredential() and
+  // AuthenticatorGetAssertion(). If set to anything other than |S_OK|,
+  // AuthenticatorGetAssertion() will immediately terminate the request with
+  // that value and not return a WEBAUTHN_ASSERTION.
+  void set_hresult(HRESULT result) { result_override_ = result; }
 
   // Inject the return value for
   // WinWebAuthnApi::IsUserverifyingPlatformAuthenticatorAvailable().
@@ -54,15 +86,24 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   int Version() override;
 
  private:
+  struct WebAuthnAssertionEx;
+
   static WEBAUTHN_CREDENTIAL_ATTESTATION FakeAttestation();
-  static WEBAUTHN_ASSERTION FakeAssertion();
 
   bool is_available_ = true;
   bool is_uvpaa_ = false;
   int version_ = WEBAUTHN_API_VERSION_2;
-  WEBAUTHN_CREDENTIAL_ATTESTATION attestation_ = FakeAttestation();
-  WEBAUTHN_ASSERTION assertion_ = FakeAssertion();
-  HRESULT result_ = S_OK;
+  HRESULT result_override_ = S_OK;
+
+  // Owns the attestations returned by AuthenticatorMakeCredential().
+  std::vector<WEBAUTHN_CREDENTIAL_ATTESTATION> returned_attestations_;
+
+  // Owns assertions returned by AuthenticatorGetAssertion().
+  std::vector<WebAuthnAssertionEx> returned_assertions_;
+
+  std::
+      map<std::vector<uint8_t>, RegistrationData, fido_parsing_utils::RangeLess>
+          registrations_;
 };
 
 }  // namespace device

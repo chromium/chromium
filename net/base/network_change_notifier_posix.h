@@ -5,10 +5,7 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_POSIX_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_POSIX_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -29,6 +26,9 @@ class NET_EXPORT NetworkChangeNotifierPosix : public NetworkChangeNotifier {
   NetworkChangeNotifierPosix(
       NetworkChangeNotifier::ConnectionType initial_connection_type,
       NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype);
+  NetworkChangeNotifierPosix(const NetworkChangeNotifierPosix&) = delete;
+  NetworkChangeNotifierPosix& operator=(const NetworkChangeNotifierPosix&) =
+      delete;
   ~NetworkChangeNotifierPosix() override;
 
   // These methods are used to notify this object that a network property has
@@ -71,8 +71,6 @@ class NET_EXPORT NetworkChangeNotifierPosix : public NetworkChangeNotifier {
   NetworkChangeNotifier::ConnectionType
       connection_type_;        // Guarded by |lock_|.
   double max_bandwidth_mbps_;  // Guarded by |lock_|.
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierPosix);
 };
 
 }  // namespace net

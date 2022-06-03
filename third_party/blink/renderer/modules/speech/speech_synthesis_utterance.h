@@ -28,10 +28,11 @@
 
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -39,10 +40,9 @@ class SpeechSynthesis;
 
 class SpeechSynthesisUtterance final
     : public EventTargetWithInlineData,
-      public ContextClient,
+      public ExecutionContextClient,
       public mojom::blink::SpeechSynthesisClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SpeechSynthesisUtterance);
 
  public:
   static SpeechSynthesisUtterance* Create(ExecutionContext*);
@@ -62,17 +62,17 @@ class SpeechSynthesisUtterance final
 
   float volume() const { return mojom_utterance_->volume; }
   void setVolume(float volume) {
-    mojom_utterance_->volume = clampTo(volume, 0.0f, 1.0f);
+    mojom_utterance_->volume = ClampTo(volume, 0.0f, 1.0f);
   }
 
   float rate() const { return mojom_utterance_->rate; }
   void setRate(float rate) {
-    mojom_utterance_->rate = clampTo(rate, 0.1f, 10.0f);
+    mojom_utterance_->rate = ClampTo(rate, 0.1f, 10.0f);
   }
 
   float pitch() const { return mojom_utterance_->pitch; }
   void setPitch(float pitch) {
-    mojom_utterance_->pitch = clampTo(pitch, 0.0f, 2.0f);
+    mojom_utterance_->pitch = ClampTo(pitch, 0.0f, 2.0f);
   }
 
   double StartTime() const { return start_time_; }
@@ -87,10 +87,10 @@ class SpeechSynthesisUtterance final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(boundary, kBoundary)
 
   ExecutionContext* GetExecutionContext() const override {
-    return ContextClient::GetExecutionContext();
+    return ExecutionContextClient::GetExecutionContext();
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // mojom::blink::SpeechSynthesisClient
   void OnStartedSpeaking() override;
@@ -111,7 +111,9 @@ class SpeechSynthesisUtterance final
   // EventTarget
   const AtomicString& InterfaceName() const override;
 
-  mojo::Receiver<mojom::blink::SpeechSynthesisClient> receiver_{this};
+  HeapMojoReceiver<mojom::blink::SpeechSynthesisClient,
+                   SpeechSynthesisUtterance>
+      receiver_;
   mojom::blink::SpeechSynthesisUtterancePtr mojom_utterance_;
   Member<SpeechSynthesis> synthesis_;
   Member<SpeechSynthesisVoice> voice_;

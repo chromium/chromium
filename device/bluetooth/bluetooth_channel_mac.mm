@@ -6,7 +6,7 @@
 
 #import <IOBluetooth/IOBluetooth.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 
 namespace device {

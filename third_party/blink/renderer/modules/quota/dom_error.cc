@@ -28,7 +28,7 @@
 namespace blink {
 
 // static
-DOMError* DOMError::Create(mojom::QuotaStatusCode status_code) {
+DOMError* DOMError::Create(mojom::blink::QuotaStatusCode status_code) {
   ExceptionCode exception_code = static_cast<ExceptionCode>(status_code);
   if (IsDOMExceptionCode(exception_code)) {
     DOMExceptionCode code = static_cast<DOMExceptionCode>(exception_code);

@@ -15,9 +15,9 @@ ExtensionCommandsGlobalRegistry::ExtensionCommandsGlobalRegistry(
     content::BrowserContext* context)
     : ExtensionKeybindingRegistry(context,
                                   ExtensionKeybindingRegistry::ALL_EXTENSIONS,
-                                  NULL),
+                                  nullptr),
       browser_context_(context),
-      registry_for_active_window_(NULL) {
+      registry_for_active_window_(nullptr) {
   Init();
 }
 

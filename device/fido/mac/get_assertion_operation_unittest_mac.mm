@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/mac/get_assertion_operation.h"
-
 #include <array>
 
 #include <Foundation/Foundation.h>
@@ -14,6 +12,9 @@
 #include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/mac/authenticator_config.h"
+#include "device/fido/mac/credential_store.h"
+#include "device/fido/mac/get_assertion_operation.h"
 #include "device/fido/mac/make_credential_operation.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,7 +38,7 @@ CtapGetAssertionRequest MakeTestRequest() {
 
 bool MakeCredential() API_AVAILABLE(macos(10.12.2)) {
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       base::Optional<AuthenticatorMakeCredentialResponse>>
+                       absl::optional<AuthenticatorMakeCredentialResponse>>
       callback_receiver;
   auto request = CtapMakeCredentialRequest(
       test_data::kClientDataJson, PublicKeyCredentialRpEntity(kRpId),
@@ -45,7 +46,9 @@ bool MakeCredential() API_AVAILABLE(macos(10.12.2)) {
       PublicKeyCredentialParams(
           {{PublicKeyCredentialParams::
                 CredentialInfo() /* defaults to ES-256 */}}));
-  MakeCredentialOperation op(request, "test-profile", kKeychainAccessGroup,
+  TouchIdCredentialStore credential_store(
+      AuthenticatorConfig{"test-profile", kKeychainAccessGroup});
+  MakeCredentialOperation op(request, &credential_store,
                              callback_receiver.callback());
 
   op.Run();
@@ -65,10 +68,12 @@ API_AVAILABLE(macos(10.12.2)) {
   ASSERT_TRUE(MakeCredential());
 
   TestCallbackReceiver<CtapDeviceResponseCode,
-                       base::Optional<AuthenticatorGetAssertionResponse>>
+                       absl::optional<AuthenticatorGetAssertionResponse>>
       callback_receiver;
   auto request = MakeTestRequest();
-  GetAssertionOperation op(request, "test-profile", kKeychainAccessGroup,
+  TouchIdCredentialStore credential_store(
+      AuthenticatorConfig{"test-profile", kKeychainAccessGroup});
+  GetAssertionOperation op(request, &credential_store,
                            callback_receiver.callback());
 
   op.Run();
@@ -78,8 +83,8 @@ API_AVAILABLE(macos(10.12.2)) {
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess, error);
   auto opt_response = std::move(std::get<1>(result));
   ASSERT_TRUE(opt_response);
-  ASSERT_TRUE(opt_response->credential());
-  EXPECT_FALSE(opt_response->credential()->id().empty());
+  ASSERT_TRUE(opt_response->credential);
+  EXPECT_FALSE(opt_response->credential->id().empty());
 }
 }  // namespace
 }  // namespace mac

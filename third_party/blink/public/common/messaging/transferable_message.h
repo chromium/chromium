@@ -7,12 +7,11 @@
 
 #include <vector>
 
-#include "base/containers/span.h"
-#include "base/macros.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -39,19 +38,8 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
   // The state of user activation.
   mojom::UserActivationSnapshotPtr user_activation;
 
-  // Whether the state of user activation should be transferred to the
-  // destination frame.
-  bool transfer_user_activation = false;
-
-  // Whether the destination frame is allowed to autoplay.
-  //
-  // TODO(mustaq): Ideally the |transfer_user_activation| field above should be
-  // replaced by bits specific to "safe-to-delegate" capabilities, like the
-  // autoplay bit below.  See crbug.com/985914.
-  bool allow_autoplay = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransferableMessage);
+  // Whether payment request capability is delegated to the destination frame.
+  bool delegate_payment_request = false;
 };
 
 }  // namespace blink

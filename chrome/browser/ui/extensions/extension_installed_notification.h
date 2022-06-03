@@ -19,9 +19,14 @@ class ExtensionInstalledNotification
   ExtensionInstalledNotification(const extensions::Extension* extension,
                                  Profile* profile);
 
+  ExtensionInstalledNotification(const ExtensionInstalledNotification&) =
+      delete;
+  ExtensionInstalledNotification& operator=(
+      const ExtensionInstalledNotification&) = delete;
+
   // NotificationDelegate override:
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  protected:
   // This class is ref-counted.
@@ -30,8 +35,6 @@ class ExtensionInstalledNotification
  private:
   const std::string extension_id_;
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstalledNotification);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_NOTIFICATION_H_

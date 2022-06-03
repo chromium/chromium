@@ -1,18 +1,21 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<p>This places the caret before the 'b' in 'bar' and Deletes.  'foo' and 'bar' should end up on the same line, but neither should change style.</p>
-<div contenteditable="true">
-<div>foo</div>
-<div id="test" style="font-weight:bold">bar</div>
-</div>
-
-<script>
-var s = window.getSelection();
-var e = document.getElementById("test");
-s.collapse(e, 0);
-document.execCommand("Delete");
+// This places the caret before the 'b' in 'bar' and Deletes. 'foo' and 'bar'
+// should end up on the same line, but neither should change style.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>foo</div>',
+            '<div style="font-weight: bold;">|bar</div>',
+        '</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable>',
+            '<div>foo|<span style="font-weight: bold;">bar</span></div>',
+        '</div>',
+    ]);
 </script>

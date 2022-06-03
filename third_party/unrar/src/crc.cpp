@@ -77,7 +77,7 @@ uint CRC32(uint StartCRC,const void *Addr,size_t Size)
                crc_tables[5][(byte)(StartCRC >> 16)] ^
                crc_tables[4][(byte)(StartCRC >> 24)] ^
                crc_tables[3][(byte) NextData       ] ^
-               crc_tables[2][(byte)(NextData >>8 ) ] ^
+               crc_tables[2][(byte)(NextData >> 8) ] ^
                crc_tables[1][(byte)(NextData >> 16)] ^
                crc_tables[0][(byte)(NextData >> 24)];
   }

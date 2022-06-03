@@ -16,14 +16,17 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
-      "bounds": [262, 200],
-      "backgroundColor": "#00FF00",
-      "paintInvalidations": [
-        {
-          "object": "LayoutImage (positioned) IMG id='repaintdiv' class='repaintdiv'",
-          "rect": [80, 80, 182, 29],
-          "reason": "background"
-        }
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG id='repaintdiv' class='repaintdiv'",
+      "position": [260, 260],
+      "bounds": [182, 120],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 182, 29]
       ]
     }
   ],

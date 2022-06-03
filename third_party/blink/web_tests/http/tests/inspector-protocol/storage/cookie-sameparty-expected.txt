@@ -1,0 +1,14 @@
+Verifies that the sameParty field will be handled correctly.
+
+sameParty_true: true
+sameParty_false: false
+sameParty_false_InsecureShouldSet: false
+{
+    error : {
+        code : -32602
+        message : Invalid cookie fields
+    }
+    id : <number>
+    sessionId : <string>
+}
+

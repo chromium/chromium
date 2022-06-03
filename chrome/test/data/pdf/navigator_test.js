@@ -2,42 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PdfNavigator} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/navigator.js';
-import {OpenPdfParamsParser} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/open_pdf_params_parser.js';
-import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
+import {TestBrowserProxy} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_browser_proxy.js';
+import {NavigatorDelegate, OpenPdfParamsParser, PdfNavigator, PDFScriptingAPI, WindowOpenDisposition} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-import {getZoomableViewport, MockDocumentDimensions, MockSizer, MockViewportChangedCallback, MockWindow} from './test_util.js';
+import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
-class MockNavigatorDelegate {
+/** @implements {NavigatorDelegate} */
+class MockNavigatorDelegate extends TestBrowserProxy {
   constructor() {
-    this.navigateInCurrentTabCalled = false;
-    this.navigateInNewTabCalled = false;
-    this.navigateInNewWindowCalled = false;
-    this.url = undefined;
+    super([
+      'navigateInCurrentTab',
+      'navigateInNewTab',
+      'navigateInNewWindow',
+    ]);
   }
 
-  /** @param {?string} url */
+  /** @override */
   navigateInCurrentTab(url) {
-    this.navigateInCurrentTabCalled = true;
-    this.url = url || '<called, but no url set>';
+    this.methodCalled('navigateInCurrentTab', url);
   }
 
-  /** @param {?string} url */
+  /** @override */
   navigateInNewTab(url) {
-    this.navigateInNewTabCalled = true;
-    this.url = url || '<called, but no url set>';
+    this.methodCalled('navigateInNewTab', url);
   }
 
+  /** @override */
   navigateInNewWindow(url) {
-    this.navigateInNewWindowCalled = true;
-    this.url = url || '<called, but no url set>';
-  }
-
-  reset() {
-    this.navigateInCurrentTabCalled = false;
-    this.navigateInNewTabCalled = false;
-    this.navigateInNewWindowCalled = false;
-    this.url = undefined;
+    this.methodCalled('navigateInNewWindow', url);
   }
 }
 
@@ -46,61 +38,74 @@ class MockNavigatorDelegate {
  * a new window depending on the value of |disposition|. Use
  * |viewportChangedCallback| and |navigatorDelegate| to check the callbacks,
  * and that the navigation to |expectedResultUrl| happened.
+ * @param {!PdfNavigator} navigator
+ * @param {string} url
+ * @param {!WindowOpenDisposition} disposition
+ * @param {(string|undefined)} expectedResultUrl
+ * @param {!MockViewportChangedCallback} viewportChangedCallback
+ * @param {!MockNavigatorDelegate} navigatorDelegate
  */
-function doNavigationUrlTest(
+async function doNavigationUrlTest(
     navigator, url, disposition, expectedResultUrl, viewportChangedCallback,
     navigatorDelegate) {
   viewportChangedCallback.reset();
   navigatorDelegate.reset();
-  navigator.navigate(url, disposition);
+  await navigator.navigate(url, disposition);
   chrome.test.assertFalse(viewportChangedCallback.wasCalled);
-  chrome.test.assertEq(expectedResultUrl, navigatorDelegate.url);
   if (expectedResultUrl === undefined) {
     return;
   }
+
+  let actualUrl = null;
   switch (disposition) {
-    case PdfNavigator.WindowOpenDisposition.CURRENT_TAB:
-      chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
+    case WindowOpenDisposition.CURRENT_TAB:
+      actualUrl = await navigatorDelegate.whenCalled('navigateInCurrentTab');
       break;
-    case PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB:
-      chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
+    case WindowOpenDisposition.NEW_BACKGROUND_TAB:
+      actualUrl = await navigatorDelegate.whenCalled('navigateInNewTab');
       break;
-    case PdfNavigator.WindowOpenDisposition.NEW_WINDOW:
-      chrome.test.assertTrue(navigatorDelegate.navigateInNewWindowCalled);
+    case WindowOpenDisposition.NEW_WINDOW:
+      actualUrl = await navigatorDelegate.whenCalled('navigateInNewWindow');
       break;
     default:
       break;
   }
+
+  chrome.test.assertEq(expectedResultUrl, actualUrl);
 }
 
 /**
  * Helper function to run doNavigationUrlTest() for the current tab, a new
  * tab, and a new window.
+ * @param {string} originalUrl
+ * @param {string} url
+ * @param {(string|undefined)} expectedResultUrl
  */
-function doNavigationUrlTests(originalUrl, url, expectedResultUrl) {
-  const mockWindow = new MockWindow(100, 100);
+async function doNavigationUrlTests(originalUrl, url, expectedResultUrl) {
+  const mockWindow = new MockElement(100, 100, null);
   const mockSizer = new MockSizer();
   const mockViewportChangedCallback = new MockViewportChangedCallback();
-  const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1, 0);
+  const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
   viewport.setViewportChangedCallback(mockViewportChangedCallback.callback);
 
   const paramsParser = new OpenPdfParamsParser(function(name) {
-    paramsParser.onNamedDestinationReceived(-1);
+    return Promise.resolve(
+        {messageId: 'getNamedDestination_1', pageNumber: -1});
   });
 
   const navigatorDelegate = new MockNavigatorDelegate();
   const navigator =
       new PdfNavigator(originalUrl, viewport, paramsParser, navigatorDelegate);
 
-  doNavigationUrlTest(
-      navigator, url, PdfNavigator.WindowOpenDisposition.CURRENT_TAB,
+  await doNavigationUrlTest(
+      navigator, url, WindowOpenDisposition.CURRENT_TAB, expectedResultUrl,
+      mockViewportChangedCallback, navigatorDelegate);
+  await doNavigationUrlTest(
+      navigator, url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
       expectedResultUrl, mockViewportChangedCallback, navigatorDelegate);
-  doNavigationUrlTest(
-      navigator, url, PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB,
-      expectedResultUrl, mockViewportChangedCallback, navigatorDelegate);
-  doNavigationUrlTest(
-      navigator, url, PdfNavigator.WindowOpenDisposition.NEW_WINDOW,
-      expectedResultUrl, mockViewportChangedCallback, navigatorDelegate);
+  await doNavigationUrlTest(
+      navigator, url, WindowOpenDisposition.NEW_WINDOW, expectedResultUrl,
+      mockViewportChangedCallback, navigatorDelegate);
 }
 
 const tests = [
@@ -108,20 +113,23 @@ const tests = [
    * Test navigation within the page, opening a url in the same tab and
    * opening a url in a new tab.
    */
-  function testNavigate() {
-    const mockWindow = new MockWindow(100, 100);
+  async function testNavigate() {
+    const mockWindow = new MockElement(100, 100, null);
     const mockSizer = new MockSizer();
     const mockCallback = new MockViewportChangedCallback();
-    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1, 0);
+    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
     viewport.setViewportChangedCallback(mockCallback.callback);
 
     const paramsParser = new OpenPdfParamsParser(function(destination) {
-      if (destination == 'US') {
-        paramsParser.onNamedDestinationReceived(0);
-      } else if (destination == 'UY') {
-        paramsParser.onNamedDestinationReceived(2);
+      if (destination === 'US') {
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_1', pageNumber: 0});
+      } else if (destination === 'UY') {
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_2', pageNumber: 2});
       } else {
-        paramsParser.onNamedDestinationReceived(-1);
+        return Promise.resolve(
+            {messageId: 'getNamedDestination_3', pageNumber: -1});
       }
     });
     const url = 'http://xyz.pdf';
@@ -139,8 +147,7 @@ const tests = [
 
     mockCallback.reset();
     // This should move viewport to page 0.
-    navigator.navigate(
-        url + '#US', PdfNavigator.WindowOpenDisposition.CURRENT_TAB);
+    await navigator.navigate(url + '#US', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertTrue(mockCallback.wasCalled);
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(0, viewport.position.y);
@@ -149,17 +156,16 @@ const tests = [
     navigatorDelegate.reset();
     // This should open "http://xyz.pdf#US" in a new tab. So current tab
     // viewport should not update and viewport position should remain same.
-    navigator.navigate(
-        url + '#US', PdfNavigator.WindowOpenDisposition.NEW_BACKGROUND_TAB);
+    await navigator.navigate(
+        url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
     chrome.test.assertFalse(mockCallback.wasCalled);
-    chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
+    await navigatorDelegate.whenCalled('navigateInNewTab');
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(0, viewport.position.y);
 
     mockCallback.reset();
     // This should move viewport to page 2.
-    navigator.navigate(
-        url + '#UY', PdfNavigator.WindowOpenDisposition.CURRENT_TAB);
+    await navigator.navigate(url + '#UY', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertTrue(mockCallback.wasCalled);
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(300, viewport.position.y);
@@ -167,15 +173,13 @@ const tests = [
     mockCallback.reset();
     navigatorDelegate.reset();
     // #ABC is not a named destination in the page so viewport should not
-    // update and viewport position should remain same. As this link will open
-    // in the same tab.
-    navigator.navigate(
-        url + '#ABC', PdfNavigator.WindowOpenDisposition.CURRENT_TAB);
+    // update, and the viewport position should remain same as testNavigate3's
+    // navigating results, as this link will open in the same tab.
+    await navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
     chrome.test.assertFalse(mockCallback.wasCalled);
-    chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
+    await navigatorDelegate.whenCalled('navigateInCurrentTab');
     chrome.test.assertEq(0, viewport.position.x);
     chrome.test.assertEq(300, viewport.position.y);
-
     chrome.test.succeed();
   },
   /**
@@ -184,44 +188,45 @@ const tests = [
    * a valid scheme, so the navigator must determine the url by following
    * similar heuristics as Adobe Acrobat Reader.
    */
-  function testNavigateForLinksWithoutScheme() {
+  async function testNavigateForLinksWithoutScheme() {
     const url = 'http://www.example.com/subdir/xyz.pdf';
 
     // Sanity check.
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'https://www.foo.com/bar.pdf', 'https://www.foo.com/bar.pdf');
 
     // Open relative links.
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'foo/bar.pdf', 'http://www.example.com/subdir/foo/bar.pdf');
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'foo.com/bar.pdf',
         'http://www.example.com/subdir/foo.com/bar.pdf');
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, '../www.foo.com/bar.pdf',
         'http://www.example.com/www.foo.com/bar.pdf');
 
     // Open an absolute link.
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, '/foodotcom/bar.pdf', 'http://www.example.com/foodotcom/bar.pdf');
 
     // Open a http url without a scheme.
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'www.foo.com/bar.pdf', 'http://www.foo.com/bar.pdf');
 
     // Test three dots.
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, '.../bar.pdf', 'http://www.example.com/subdir/.../bar.pdf');
 
     // Test forward slashes.
-    doNavigationUrlTests(url, '..\\bar.pdf', 'http://www.example.com/bar.pdf');
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
+        url, '..\\bar.pdf', 'http://www.example.com/bar.pdf');
+    await doNavigationUrlTests(
         url, '.\\bar.pdf', 'http://www.example.com/subdir/bar.pdf');
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, '\\bar.pdf', 'http://www.example.com/subdir//bar.pdf');
 
     // Regression test for https://crbug.com/569040
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'http://something.else/foo#page=5',
         'http://something.else/foo#page=5');
 
@@ -231,37 +236,37 @@ const tests = [
    * Test opening a url in the same tab, in a new tab, and in a new window with
    * a file:/// url as the current location.
    */
-  function testNavigateFromLocalFile() {
+  async function testNavigateFromLocalFile() {
     const url = 'file:///some/path/to/myfile.pdf';
 
     // Open an absolute link.
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, '/foodotcom/bar.pdf', 'file:///foodotcom/bar.pdf');
 
     chrome.test.succeed();
   },
 
-  function testNavigateInvalidUrls() {
+  async function testNavigateInvalidUrls() {
     const url = 'https://example.com/some-web-document.pdf';
 
     // From non-file: to file:
-    doNavigationUrlTests(url, 'file:///bar.pdf', undefined);
+    await doNavigationUrlTests(url, 'file:///bar.pdf', undefined);
 
-    doNavigationUrlTests(url, 'chrome://version', undefined);
+    await doNavigationUrlTests(url, 'chrome://version', undefined);
 
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'javascript:// this is not a document.pdf', undefined);
 
-    doNavigationUrlTests(
+    await doNavigationUrlTests(
         url, 'this-is-not-a-valid-scheme://path.pdf', undefined);
 
-    doNavigationUrlTests(url, '', undefined);
+    await doNavigationUrlTests(url, '', undefined);
 
     chrome.test.succeed();
   }
 ];
 
 const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCallback(function() {
+scriptingAPI.setLoadCompleteCallback(function() {
   chrome.test.runTests(tests);
 });

@@ -7,16 +7,12 @@ source_set("json_parser") {
     "in_process_json_parser.cc",
     "in_process_json_parser.h",
   ]
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "in_process_json_parser_unittest.cc",
-  ]
+  sources = [ "in_process_json_parser_unittest.cc" ]
   deps = [
     ":json_parser",
     "//base",

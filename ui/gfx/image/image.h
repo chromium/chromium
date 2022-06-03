@@ -31,7 +31,7 @@
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 typedef struct CGColorSpace* CGColorSpaceRef;
 #endif
 
@@ -70,7 +70,7 @@ class GFX_EXPORT Image {
 #if defined(OS_IOS)
   // Retains |image|.
   explicit Image(UIImage* image);
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   // Retains |image|.
   explicit Image(NSImage* image);
 #endif
@@ -92,6 +92,9 @@ class GFX_EXPORT Image {
   // Deletes the image and, if the only owner of the storage, all of its cached
   // representations.
   ~Image();
+
+  // True iff both images are backed by the same storage.
+  bool operator==(const Image& other) const;
 
   // Creates an image from the passed in 1x bitmap.
   // WARNING: The resulting image will be pixelated when painted on a high
@@ -117,7 +120,7 @@ class GFX_EXPORT Image {
   const ImageSkia* ToImageSkia() const;
 #if defined(OS_IOS)
   UIImage* ToUIImage() const;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   NSImage* ToNSImage() const;
 #endif
 
@@ -135,7 +138,7 @@ class GFX_EXPORT Image {
   ImageSkia AsImageSkia() const;
 
   // Same as ToNSImage(), but returns nil if this image is empty.
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   NSImage* AsNSImage() const;
 #endif
 
@@ -153,12 +156,12 @@ class GFX_EXPORT Image {
   int Height() const;
   gfx::Size Size() const;
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   // Set the default representation's color space. This is used for converting
   // to NSImage. This is used to compensate for PNGCodec not writing or reading
   // colorspace ancillary chunks. (sRGB, iCCP).
   void SetSourceColorSpace(CGColorSpaceRef color_space);
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
  private:
   // Returns the type of the default representation.

@@ -3,6 +3,8 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
+
 var xmlDocument  = (new DOMParser()).parseFromString('<outer />', 'text/xml');
 
 var inner1 = xmlDocument.createElementNS(null, 'inner1');

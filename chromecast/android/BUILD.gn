@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/abi.gni")
+import("//build/config/sysroot.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
@@ -9,9 +11,11 @@ import("//media/media_options.gni")
 assert(is_android)
 
 cast_shared_library("libcast_shell_android") {
-  sources = [
-    "//chromecast/app/android/cast_jni_loader.cc",
-  ]
+  # TODO: Remove the ldflags after migrating away from protobuf_lite to
+  # protobuf_full.
+  ldflags = [ "-Wl,-z,muldefs" ]
+
+  sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
 
   deps = [
     "//base",
@@ -28,7 +32,7 @@ cast_shared_library("libcast_shell_android") {
     "//chromecast/media/cma/backend/android:cast_media_android",
     "//components/crash/android:crash_android",
     "//components/minidump_uploader",
-    "//content/public/app:both",
+    "//content/public/app",
     "//content/public/browser",
     "//skia",
   ]
@@ -44,5 +48,47 @@ cast_shared_library("libcast_shell_android") {
       "//ui/events/devices",
       "//ui/shell_dialogs",
     ]
+  }
+}
+
+# These are all known //third_party/android_deps targets that chromecast
+# internal code depends on. Reference these targets so if anyone wants to
+# remove these targets upstream, they need to at least add someone from
+# //chromecast OWNERS as a reviewer to make sure it's safe.
+#
+# This list was generated from chromecast/internal using:
+#
+# find | grep BUILD.gn | xargs grep -hi '//third_party/android_deps:' | \
+# grep -v "deps =" | sed 's/ *//g' | sort | uniq
+group("internal_android_deps") {
+  testonly = true
+  public_deps = [
+    "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_design_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_leanback_leanback_preference_java",
+    "//third_party/androidx:androidx_legacy_legacy_support_v4_java",
+    "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_slice_slice_builders_java",
+    "//third_party/androidx:androidx_slice_slice_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_tvprovider_tvprovider_java",
+  ]
+}
+
+# Util to copy libc++_shared.so to APK.
+copy("copy_libcxx_shared") {
+  sources = [ "${sysroot}/usr/lib/${android_abi_target}/libc++_shared.so" ]
+  outputs = [ "${root_out_dir}/libc++_shared.so" ]
+  metadata = {
+    shared_libraries = [ "${root_out_dir}/libc++_shared.so" ]
   }
 }

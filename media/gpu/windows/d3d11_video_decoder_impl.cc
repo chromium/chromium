@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/service/gpu_channel.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 
@@ -25,16 +26,12 @@ D3D11VideoDecoderImpl::~D3D11VideoDecoderImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void D3D11VideoDecoderImpl::Initialize(
-    InitCB init_cb,
-    ReturnPictureBufferCB return_picture_buffer_cb) {
+void D3D11VideoDecoderImpl::Initialize(InitCB init_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  return_picture_buffer_cb_ = std::move(return_picture_buffer_cb);
 
   // If have a helper, then we're as initialized as we need to be.
   if (helper_) {
-    std::move(init_cb).Run(true);
+    std::move(init_cb).Run(true, release_mailbox_cb_);
     return;
   }
   helper_ = get_helper_cb_.Run();
@@ -43,35 +40,39 @@ void D3D11VideoDecoderImpl::Initialize(
   if (!helper_ || !helper_->MakeContextCurrent()) {
     const char* reason = "Failed to make context current.";
     DLOG(ERROR) << reason;
-    if (media_log_) {
-      media_log_->AddEvent(media_log_->CreateStringEvent(
-          MediaLogEvent::MEDIA_ERROR_LOG_ENTRY, "error", reason));
-    }
-    std::move(init_cb).Run(false);
+    if (media_log_)
+      MEDIA_LOG(ERROR, media_log_) << reason;
+
+    std::move(init_cb).Run(false, ReleaseMailboxCB());
     return;
   }
 
-  std::move(init_cb).Run(true);
+  release_mailbox_cb_ = BindToCurrentLoop(base::BindRepeating(
+      &D3D11VideoDecoderImpl::OnMailboxReleased, GetWeakPtr()));
+
+  std::move(init_cb).Run(true, release_mailbox_cb_);
 }
 
 void D3D11VideoDecoderImpl::OnMailboxReleased(
-    scoped_refptr<D3D11PictureBuffer> buffer,
+    base::OnceClosure wait_complete_cb,
     const gpu::SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!helper_)
+  if (!helper_) {
+    std::move(wait_complete_cb).Run();
     return;
+  }
 
   helper_->WaitForSyncToken(
       sync_token, base::BindOnce(&D3D11VideoDecoderImpl::OnSyncTokenReleased,
-                                 GetWeakPtr(), std::move(buffer)));
+                                 GetWeakPtr(), std::move(wait_complete_cb)));
 }
 
 void D3D11VideoDecoderImpl::OnSyncTokenReleased(
-    scoped_refptr<D3D11PictureBuffer> buffer) {
+    base::OnceClosure wait_complete_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  return_picture_buffer_cb_.Run(std::move(buffer));
+  std::move(wait_complete_cb).Run();
 }
 
 base::WeakPtr<D3D11VideoDecoderImpl> D3D11VideoDecoderImpl::GetWeakPtr() {

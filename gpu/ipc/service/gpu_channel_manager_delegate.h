@@ -5,7 +5,9 @@
 #ifndef GPU_IPC_SERVICE_GPU_CHANNEL_MANAGER_DELEGATE_H_
 #define GPU_IPC_SERVICE_GPU_CHANNEL_MANAGER_DELEGATE_H_
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/display_context.h"
 
@@ -34,6 +36,11 @@ class GpuChannelManagerDelegate {
 
   // Notification from GPU that the channel is destroyed.
   virtual void DidDestroyChannel(int client_id) = 0;
+
+  // Notification that all GPU channels are shutdown properly.
+  // Note this is NOT called in error conditions such as losing channel due to
+  // context loss, or from debug messages.
+  virtual void DidDestroyAllChannels() = 0;
 
   // Tells the delegate that an offscreen context was destroyed for the provided
   // |active_url|.
@@ -64,6 +71,12 @@ class GpuChannelManagerDelegate {
   virtual gpu::Scheduler* GetGpuScheduler() = 0;
 
 #if defined(OS_WIN)
+  // Tells the delegate that overlay info was updated.
+  virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
+
+  // Tells the delegate that HDR status was updated.
+  virtual void DidUpdateHDRStatus(bool hdr_enabled) = 0;
+
   // Tells the delegate that |child_window| was created in the GPU process and
   // to send an IPC to make SetParent() syscall. This syscall is blocked by the
   // GPU sandbox and must be made in the browser process.

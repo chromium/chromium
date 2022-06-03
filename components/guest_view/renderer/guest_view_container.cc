@@ -4,9 +4,10 @@
 
 #include "components/guest_view/renderer/guest_view_container.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/common/guest_view_messages.h"
 #include "components/guest_view/renderer/guest_view_request.h"
@@ -14,6 +15,10 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_view.h"
 #include "ui/gfx/geometry/size.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-primitive.h"
 
 namespace {
 
@@ -31,13 +36,15 @@ class GuestViewContainer::RenderFrameLifetimeObserver
   RenderFrameLifetimeObserver(GuestViewContainer* container,
                               content::RenderFrame* render_frame);
 
+  RenderFrameLifetimeObserver(const RenderFrameLifetimeObserver&) = delete;
+  RenderFrameLifetimeObserver& operator=(const RenderFrameLifetimeObserver&) =
+      delete;
+
   // content::RenderFrameObserver overrides.
   void OnDestruct() override;
 
  private:
   GuestViewContainer* container_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameLifetimeObserver);
 };
 
 GuestViewContainer::RenderFrameLifetimeObserver::RenderFrameLifetimeObserver(
@@ -51,14 +58,13 @@ void GuestViewContainer::RenderFrameLifetimeObserver::OnDestruct() {
 }
 
 GuestViewContainer::GuestViewContainer(content::RenderFrame* render_frame)
-    : ready_(false),
-      element_instance_id_(guest_view::kInstanceIDNone),
+    : element_instance_id_(guest_view::kInstanceIDNone),
       render_frame_(render_frame),
       in_destruction_(false),
       destruction_isolate_(nullptr),
       element_resize_isolate_(nullptr) {
-  render_frame_lifetime_observer_.reset(
-      new RenderFrameLifetimeObserver(this, render_frame_));
+  render_frame_lifetime_observer_ =
+      std::make_unique<RenderFrameLifetimeObserver>(this, render_frame_);
 }
 
 GuestViewContainer::~GuestViewContainer() {
@@ -142,7 +148,7 @@ void GuestViewContainer::EnqueueRequest(
 }
 
 void GuestViewContainer::PerformPendingRequest() {
-  if (!ready_ || pending_requests_.empty() || pending_response_.get())
+  if (pending_requests_.empty() || pending_response_.get())
     return;
 
   std::unique_ptr<GuestViewRequest> pending_request =
@@ -186,7 +192,7 @@ void GuestViewContainer::RunDestructionCallback(bool embedder_frame_destroyed) {
 }
 
 void GuestViewContainer::OnHandleCallback(const IPC::Message& message) {
-  base::WeakPtr<content::BrowserPluginDelegate> weak_ptr(GetWeakPtr());
+  base::WeakPtr<GuestViewContainer> weak_ptr(weak_ptr_factory_.GetWeakPtr());
 
   // Handle the callback for the current request with a pending response.
   HandlePendingResponseCallback(message);
@@ -211,16 +217,6 @@ bool GuestViewContainer::OnMessageReceived(const IPC::Message& message) {
   return true;
 }
 
-void GuestViewContainer::Ready() {
-  ready_ = true;
-  CHECK(!pending_response_);
-  PerformPendingRequest();
-
-  // Give the derived type an opportunity to perform some actions when the
-  // container acquires a geometry.
-  OnReady();
-}
-
 void GuestViewContainer::SetElementInstanceID(int element_instance_id) {
   DCHECK_EQ(element_instance_id_, guest_view::kInstanceIDNone);
   element_instance_id_ = element_instance_id;
@@ -228,10 +224,6 @@ void GuestViewContainer::SetElementInstanceID(int element_instance_id) {
   DCHECK(!g_guest_view_container_map.Get().count(element_instance_id));
   g_guest_view_container_map.Get().insert(
       std::make_pair(element_instance_id, this));
-}
-
-void GuestViewContainer::DidDestroyElement() {
-  Destroy(false);
 }
 
 void GuestViewContainer::RegisterElementResizeCallback(
@@ -272,10 +264,6 @@ void GuestViewContainer::CallElementResizeCallback(
 
   callback->Call(context, context->Global(), argc, argv)
       .FromMaybe(v8::Local<v8::Value>());
-}
-
-base::WeakPtr<content::BrowserPluginDelegate> GuestViewContainer::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace guest_view

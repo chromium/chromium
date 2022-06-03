@@ -1,5 +1,5 @@
-document
-++group IsControlElement=false
-++++description Name='One word is '
-++++description Name='emphasized'
-++++description Name='.'
+Document
+++Group IsControlElement=false
+++++Text Name='One word is '
+++++Text Name='emphasized'
+++++Text Name='.'

@@ -1,0 +1,219 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//chromeos/assistant/assistant.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+# Most consumers of sandbox::policy should depend on this target.
+component("policy") {
+  sources = [
+    "export.h",
+    "features.cc",
+    "features.h",
+    "sandbox.cc",
+    "sandbox.h",
+    "sandbox_delegate.h",
+    "sandbox_type.cc",
+    "sandbox_type.h",
+    "switches.cc",
+    "switches.h",
+  ]
+  defines = [ "SANDBOX_POLICY_IMPL" ]
+  deps = [
+    ":sanitizer_buildflags",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//ppapi/buildflags",
+    "//printing/buildflags",
+    "//sandbox:common",
+    "//sandbox/policy/mojom",
+  ]
+  public_deps = []
+  if (is_linux || is_chromeos) {
+    sources += [
+      "linux/bpf_audio_policy_linux.cc",
+      "linux/bpf_audio_policy_linux.h",
+      "linux/bpf_base_policy_linux.cc",
+      "linux/bpf_base_policy_linux.h",
+      "linux/bpf_broker_policy_linux.cc",
+      "linux/bpf_broker_policy_linux.h",
+      "linux/bpf_cdm_policy_linux.cc",
+      "linux/bpf_cdm_policy_linux.h",
+      "linux/bpf_cros_amd_gpu_policy_linux.cc",
+      "linux/bpf_cros_amd_gpu_policy_linux.h",
+      "linux/bpf_cros_arm_gpu_policy_linux.cc",
+      "linux/bpf_cros_arm_gpu_policy_linux.h",
+      "linux/bpf_gpu_policy_linux.cc",
+      "linux/bpf_gpu_policy_linux.h",
+      "linux/bpf_network_policy_linux.cc",
+      "linux/bpf_network_policy_linux.h",
+      "linux/bpf_ppapi_policy_linux.cc",
+      "linux/bpf_ppapi_policy_linux.h",
+      "linux/bpf_print_compositor_policy_linux.cc",
+      "linux/bpf_print_compositor_policy_linux.h",
+      "linux/bpf_renderer_policy_linux.cc",
+      "linux/bpf_renderer_policy_linux.h",
+      "linux/bpf_service_policy_linux.cc",
+      "linux/bpf_service_policy_linux.h",
+      "linux/bpf_speech_recognition_policy_linux.cc",
+      "linux/bpf_speech_recognition_policy_linux.h",
+      "linux/bpf_utility_policy_linux.cc",
+      "linux/bpf_utility_policy_linux.h",
+      "linux/sandbox_debug_handling_linux.cc",
+      "linux/sandbox_debug_handling_linux.h",
+      "linux/sandbox_linux.cc",
+      "linux/sandbox_linux.h",
+      "linux/sandbox_seccomp_bpf_linux.cc",
+      "linux/sandbox_seccomp_bpf_linux.h",
+    ]
+    if (enable_oop_printing) {
+      sources += [
+        "linux/bpf_print_backend_policy_linux.cc",
+        "linux/bpf_print_backend_policy_linux.h",
+      ]
+    }
+    configs += [
+      "//media:media_config",
+      "//media/audio:platform_config",
+    ]
+    deps += [
+      ":chromecast_sandbox_allowlist_buildflags",
+      "//sandbox:sandbox_buildflags",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/linux:seccomp_bpf",
+      "//sandbox/linux:suid_sandbox_client",
+    ]
+  }
+  if (is_chromeos_ash) {
+    sources += [
+      "linux/bpf_ime_policy_linux.cc",
+      "linux/bpf_ime_policy_linux.h",
+      "linux/bpf_tts_policy_linux.cc",
+      "linux/bpf_tts_policy_linux.h",
+    ]
+    deps += [ "//chromeos/assistant:buildflags" ]
+
+    if (enable_cros_libassistant) {
+      sources += [
+        "linux/bpf_libassistant_policy_linux.cc",
+        "linux/bpf_libassistant_policy_linux.h",
+      ]
+    }
+  }
+  if (is_mac) {
+    sources += [
+      "mac/sandbox_mac.h",
+      "mac/sandbox_mac.mm",
+    ]
+    deps += [ "//sandbox/mac:seatbelt" ]
+    public_deps += [ "mac:packaged_sb_files" ]
+    frameworks = [
+      "AppKit.framework",
+      "CoreFoundation.framework",
+      "CoreGraphics.framework",
+      "Foundation.framework",
+      "IOSurface.framework",
+    ]
+  }
+  if (is_win) {
+    sources += [
+      "win/lpac_capability.cc",
+      "win/lpac_capability.h",
+      "win/sandbox_diagnostics.cc",
+      "win/sandbox_diagnostics.h",
+      "win/sandbox_win.cc",
+      "win/sandbox_win.h",
+    ]
+    deps += [ "//sandbox/win:sandbox" ]
+  }
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/sandbox_policy_fuchsia.cc",
+      "fuchsia/sandbox_policy_fuchsia.h",
+    ]
+
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+    ]
+  }
+}
+
+buildflag_header("sanitizer_buildflags") {
+  header = "sanitizer_buildflags.h"
+  flags = [ "USING_SANITIZER=$using_sanitizer" ]
+}
+
+buildflag_header("chromecast_sandbox_allowlist_buildflags") {
+  header = "chromecast_sandbox_allowlist_buildflags.h"
+  flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_chromecast" ]
+}
+
+# TODO(crbug.com/1097376): Figure out a better organization for //sandbox
+# tests.
+source_set("tests") {
+  testonly = true
+
+  sources = [ "sandbox_type_unittest.cc" ]
+
+  deps = [
+    ":policy",
+    "//base",
+    "//base/test:test_support",
+    "//ppapi/buildflags:buildflags",
+    "//printing/buildflags",
+    "//sandbox/policy/mojom",
+    "//testing/gtest",
+  ]
+
+  if (is_win) {
+    sources += [
+      "win/mf_cdm_sandbox_type_unittest.cc",
+      "win/sandbox_win_unittest.cc",
+    ]
+    deps += [
+      ":sandbox_test_utils",
+      "//sandbox/win:sandbox",
+    ]
+    data = [
+      "//base/test/data/pe_image/pe_image_test_32.dll",
+      "//base/test/data/pe_image/pe_image_test_64.dll",
+      "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("sandbox_test_utils") {
+  testonly = true
+
+  if (is_win) {
+    sources = [
+      "win/sandbox_test_utils.cc",
+      "win/sandbox_test_utils.h",
+    ]
+
+    deps = [
+      "//sandbox/win:sandbox",
+      "//testing/gtest",
+    ]
+  }
+}

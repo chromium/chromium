@@ -5,17 +5,10 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl INPUT",
-          "rect": [8, 72, 181, 22],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutDetailsMarker DIV id='details-marker'",
-          "rect": [8, 56, 11, 11],
-          "reason": "full"
-        }
+      "invalidations": [
+        [8, 72, 185, 22],
+        [24, 52, 59, 19],
+        [8, 52, 11, 19]
       ]
     }
   ]

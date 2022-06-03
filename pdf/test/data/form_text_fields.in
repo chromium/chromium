@@ -1,0 +1,105 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm <<
+    /Fields [ 7 0 R 8 0 R 9 0 R 10 0 R ]
+    /DR 4 0 R
+  >>
+>>
+endobj
+{{object 2 0}} <<
+  /Count 1
+  /Kids [ 3 0 R ]
+  /Type /Pages
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources 4 0 R
+  /MediaBox [ 0 0 300 300 ]
+  /Contents 6 0 R
+  /Annots [ 7 0 R 8 0 R 9 0 R 10 0 R ]
+>>
+endobj
+{{object 4 0}} <<
+  /Font <<
+    /F1 5 0 R
+  >>
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 6 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 12 Tf
+100 200 Td
+(Test Form) Tj
+/F1 12 Tf
+-80 -40 Td
+(Read Only:) Tj
+/F1 12 Tf
+0 -50 Td
+(Sample Text) Tj
+/F1 12 Tf
+200 -55 Td
+(*required field) Tj
+/F1 12 Tf
+-200 -35 Td
+(Password:) Tj
+ET
+endstream
+endobj
+{{object 7 0}} <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (Text Box)
+  /V (Text)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [ 100 100 200 130 ]
+>>
+endobj
+{{object 8 0}} <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /Ff 1
+  /T (ReadOnly)
+  /V (Elephant)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [ 100 150 200 180 ]
+>>
+endobj
+{{object 9 0}} <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /Ff 2
+  /T (Required)
+  /V (Required Field)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [ 100 50 200 75 ]
+>>
+{{object 10 0}} <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /Ff 8192
+  /T (Password)
+  /DA (0 0 0 rg /F1 12 Tf)
+  /Rect [ 100 10 200 35 ]
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

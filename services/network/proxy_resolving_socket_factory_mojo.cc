@@ -17,21 +17,20 @@ namespace network {
 
 ProxyResolvingSocketFactoryMojo::ProxyResolvingSocketFactoryMojo(
     net::URLRequestContext* request_context)
-    : factory_impl_(request_context),
-      tls_socket_factory_(request_context,
-                          &factory_impl_.network_session()->context()) {}
+    : factory_impl_(request_context), tls_socket_factory_(request_context) {}
 
 ProxyResolvingSocketFactoryMojo::~ProxyResolvingSocketFactoryMojo() {}
 
 void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
     const GURL& url,
+    const net::NetworkIsolationKey& network_isolation_key,
     mojom::ProxyResolvingSocketOptionsPtr options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,
     mojo::PendingRemote<mojom::SocketObserver> observer,
     CreateProxyResolvingSocketCallback callback) {
-  std::unique_ptr<net::StreamSocket> net_socket =
-      factory_impl_.CreateSocket(url, options && options->use_tls);
+  std::unique_ptr<net::StreamSocket> net_socket = factory_impl_.CreateSocket(
+      url, network_isolation_key, options && options->use_tls);
   if (options && options->fake_tls_handshake) {
     DCHECK(!options->use_tls);
     net_socket = std::make_unique<jingle_glue::FakeSSLClientSocket>(

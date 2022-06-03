@@ -5,6 +5,9 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_AX_TREE_SOURCE_VIEWS_H_
 #define UI_VIEWS_ACCESSIBILITY_AX_TREE_SOURCE_VIEWS_H_
 
+#include <string>
+#include <vector>
+
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/views/views_export.h"
@@ -13,7 +16,7 @@ namespace ui {
 struct AXActionData;
 struct AXNodeData;
 struct AXTreeData;
-}
+}  // namespace ui
 
 namespace views {
 
@@ -26,8 +29,7 @@ class AXAuraObjWrapper;
 // (for example to create the "desktop" node for the extension API call
 // chrome.automation.getDesktop()).
 class VIEWS_EXPORT AXTreeSourceViews
-    : public ui::
-          AXTreeSource<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData> {
+    : public ui::AXTreeSource<AXAuraObjWrapper*> {
  public:
   AXTreeSourceViews(AXAuraObjWrapper* root,
                     const ui::AXTreeID& tree_id,
@@ -51,11 +53,14 @@ class VIEWS_EXPORT AXTreeSourceViews
   bool IsValid(AXAuraObjWrapper* node) const override;
   bool IsEqual(AXAuraObjWrapper* node1, AXAuraObjWrapper* node2) const override;
   AXAuraObjWrapper* GetNull() const override;
+  std::string GetDebugString(AXAuraObjWrapper* node) const override;
   void SerializeNode(AXAuraObjWrapper* node,
                      ui::AXNodeData* out_data) const override;
 
   // Useful for debugging.
   std::string ToString(views::AXAuraObjWrapper* root, std::string prefix);
+
+  const ui::AXTreeID tree_id() const { return tree_id_; }
 
  private:
   // The top-level object to use for the AX tree. See class comment.

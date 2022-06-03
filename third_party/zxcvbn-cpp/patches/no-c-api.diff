@@ -1,0 +1,21 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+index b0ff8eae2786..31e2f7fa937c 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+@@ -1,7 +1,6 @@
+ #ifndef __ZXCVBN__COMMON_HPP
+ #define __ZXCVBN__COMMON_HPP
+ 
+-#include <zxcvbn/zxcvbn.h>
+ #include <zxcvbn/frequency_lists.hpp>
+ #include <zxcvbn/adjacency_graphs.hpp>
+ 
+@@ -12,7 +11,7 @@
+ 
+ namespace zxcvbn {
+ 
+-using guesses_t = zxcvbn_guesses_t;
++using guesses_t = double;
+ using guesses_log10_t = int;
+ using score_t = unsigned;
+ using idx_t = std::string::size_type;

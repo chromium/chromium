@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/mac/foundation_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -21,6 +22,10 @@ namespace {
 class DomKeyboardLayoutMapMac : public ui::DomKeyboardLayoutMapBase {
  public:
   DomKeyboardLayoutMapMac();
+
+  DomKeyboardLayoutMapMac(const DomKeyboardLayoutMapMac&) = delete;
+  DomKeyboardLayoutMapMac& operator=(const DomKeyboardLayoutMapMac&) = delete;
+
   ~DomKeyboardLayoutMapMac() override;
 
   // ui::DomKeyboardLayoutMapBase implementation.
@@ -28,9 +33,6 @@ class DomKeyboardLayoutMapMac : public ui::DomKeyboardLayoutMapBase {
   ui::DomKey GetDomKeyFromDomCodeForLayout(
       ui::DomCode dom_code,
       uint32_t keyboard_layout_index) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomKeyboardLayoutMapMac);
 };
 
 DomKeyboardLayoutMapMac::DomKeyboardLayoutMapMac() = default;

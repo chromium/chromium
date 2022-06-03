@@ -9,11 +9,11 @@
     Exposed=(Window,Worker)
 ] interface Cache {
     [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]
-    Promise<any> match(RequestInfo request, optional CacheQueryOptions options);
+    Promise<any> match(RequestInfo request, optional CacheQueryOptions options = {});
 
     [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]
     Promise<sequence<Response>> matchAll(optional RequestInfo request,
-                                         optional CacheQueryOptions options);
+                                         optional CacheQueryOptions options = {});
 
     [CallWith=ScriptState, MeasureAs=CacheStorageWrite, RaisesException]
     Promise<void> add(RequestInfo request);
@@ -30,9 +30,9 @@
       MeasureAs=CacheStorageWrite,
       RaisesException
     ] Promise<boolean> delete(RequestInfo request,
-                              optional CacheQueryOptions options);
+                              optional CacheQueryOptions options = {});
 
     [CallWith=ScriptState, MeasureAs=CacheStorageRead, RaisesException]
     Promise<sequence<Request>> keys(optional RequestInfo request,
-                                    optional CacheQueryOptions options);
+                                    optional CacheQueryOptions options = {});
 };

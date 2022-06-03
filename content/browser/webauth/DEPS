@@ -4,6 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   "authenticator_impl_unittest\.cc": [
-    "+components/autofill/content/browser/webauthn/internal_authenticator_impl.h"
+    "+components/webauthn/content/browser/internal_authenticator_impl.h",
+    "+third_party/zlib/google/compression_utils.h",
   ]
 }

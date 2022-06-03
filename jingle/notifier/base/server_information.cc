@@ -4,7 +4,7 @@
 
 #include "jingle/notifier/base/server_information.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace notifier {
 

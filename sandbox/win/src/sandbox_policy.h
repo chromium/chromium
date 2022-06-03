@@ -16,7 +16,8 @@
 
 namespace sandbox {
 
-class AppContainerProfile;
+class AppContainer;
+class PolicyInfo;
 
 class TargetPolicy {
  public:
@@ -31,7 +32,8 @@ class TargetPolicy {
     SUBSYS_REGISTRY,         // Creation and opening of registry keys.
     SUBSYS_SYNC,             // Creation of named sync objects.
     SUBSYS_WIN32K_LOCKDOWN,  // Win32K Lockdown related policy.
-    SUBSYS_SIGNED_BINARY     // Signed binary policy.
+    SUBSYS_SIGNED_BINARY,    // Signed binary policy.
+    SUBSYS_SOCKET            // Socket brokering policy.
   };
 
   // Allowable semantics when a rule is matched.
@@ -58,10 +60,8 @@ class TargetPolicy {
     FAKE_USER_GDI_INIT,     // Fakes user32 and gdi32 initialization. This can
                             // be used to allow the DLLs to load and initialize
                             // even if the process cannot access that subsystem.
-    IMPLEMENT_OPM_APIS,     // Implements FAKE_USER_GDI_INIT and also exposes
-                            // IPC calls to handle Output Protection Manager
-                            // APIs.
-    SIGNED_ALLOW_LOAD       // Allows loading the module when CIG is enabled.
+    SIGNED_ALLOW_LOAD,      // Allows loading the module when CIG is enabled.
+    SOCKET_ALLOW_BROKER     // Allows brokering of sockets.
   };
 
   // Increments the reference count of this object. The reference count must
@@ -252,10 +252,9 @@ class TargetPolicy {
   // resources.
   virtual void SetLockdownDefaultDacl() = 0;
 
-  // Enable OPM API redirection when in Win32k lockdown.
-  virtual void SetEnableOPMRedirection() = 0;
-  // Enable OPM API emulation when in Win32k lockdown.
-  virtual bool GetEnableOPMRedirection() = 0;
+  // Adds a restricting random SID to the restricted SIDs list as well as
+  // the default DACL.
+  virtual void AddRestrictingRandomSid() = 0;
 
   // Configure policy to use an AppContainer profile. |package_name| is the
   // name of the profile to use. Specifying True for |create_profile| ensures
@@ -264,13 +263,23 @@ class TargetPolicy {
   virtual ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                             bool create_profile) = 0;
 
-  // Get the configured AppContainerProfile.
-  virtual scoped_refptr<AppContainerProfile> GetAppContainerProfile() = 0;
+  // Get the configured AppContainer.
+  virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
 
   // Set effective token that will be used for creating the initial and
   // lockdown tokens. The token the caller passes must remain valid for the
   // lifetime of the policy object.
   virtual void SetEffectiveToken(HANDLE token) = 0;
+
+  // Returns a snapshot of the policy configuration.
+  virtual std::unique_ptr<PolicyInfo> GetPolicyInfo() = 0;
+
+  // Allows the launch of the the target process to proceed even if no job can
+  // be created.
+  virtual void SetAllowNoSandboxJob() = 0;
+
+  // Returns true if target process launch should proceed if job creation fails.
+  virtual bool GetAllowNoSandboxJob() = 0;
 
  protected:
   ~TargetPolicy() {}

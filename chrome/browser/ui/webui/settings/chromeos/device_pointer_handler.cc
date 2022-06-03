@@ -16,7 +16,7 @@ PointerHandler::PointerHandler() {}
 PointerHandler::~PointerHandler() {}
 
 void PointerHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializePointerSettings",
       base::BindRepeating(&PointerHandler::HandleInitialize,
                           base::Unretained(this)));
@@ -42,6 +42,10 @@ void PointerHandler::TouchpadExists(bool exists) {
 
 void PointerHandler::MouseExists(bool exists) {
   FireWebUIListener("has-mouse-changed", base::Value(exists));
+}
+
+void PointerHandler::PointingStickExists(bool exists) {
+  FireWebUIListener("has-pointing-stick-changed", base::Value(exists));
 }
 
 void PointerHandler::HandleInitialize(const base::ListValue* args) {

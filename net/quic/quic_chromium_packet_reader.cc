@@ -7,13 +7,20 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_clock.h"
+#include "net/third_party/quiche/src/quic/core/quic_clock.h"
 
 namespace net {
+
+namespace {
+// Add 1 because some of our UDP socket implementations do not read successfully
+// when the packet length is equal to the read buffer size.
+const size_t kReadBufferSize =
+    static_cast<size_t>(quic::kMaxIncomingPacketSize + 1);
+}  // namespace
 
 QuicChromiumPacketReader::QuicChromiumPacketReader(
     DatagramClientSocket* socket,
@@ -30,8 +37,7 @@ QuicChromiumPacketReader::QuicChromiumPacketReader(
       yield_after_packets_(yield_after_packets),
       yield_after_duration_(yield_after_duration),
       yield_after_(quic::QuicTime::Infinite()),
-      read_buffer_(base::MakeRefCounted<IOBufferWithSize>(
-          static_cast<size_t>(quic::kMaxIncomingPacketSize))),
+      read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
       net_log_(net_log) {}
 
 QuicChromiumPacketReader::~QuicChromiumPacketReader() {}
@@ -73,18 +79,24 @@ void QuicChromiumPacketReader::StartReading() {
   }
 }
 
-size_t QuicChromiumPacketReader::EstimateMemoryUsage() const {
-  return read_buffer_->size();
-}
-
 bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   read_pending_ = false;
-  if (result == 0)
-    result = ERR_CONNECTION_CLOSED;
-
+  if (result <= 0 && net_log_.IsCapturing()) {
+    net_log_.AddEventWithIntParams(NetLogEventType::QUIC_READ_ERROR,
+                                   "net_error", result);
+  }
+  if (result == 0) {
+    // 0-length UDP packets are legal but useless, ignore them.
+    return true;
+  }
+  if (result == ERR_MSG_TOO_BIG) {
+    // This indicates that we received a UDP packet larger than our receive
+    // buffer, ignore it.
+    return true;
+  }
   if (result < 0) {
-    visitor_->OnReadError(result, socket_);
-    return false;
+    // Report all other errors to the visitor.
+    return visitor_->OnReadError(result, socket_);
   }
 
   quic::QuicReceivedPacket packet(read_buffer_->data(), result, clock_->Now());

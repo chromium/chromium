@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_registrar.h"
 #include "base/android/jni_utils.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 #include "third_party/gvr-android-sdk/display_synchronizer_jni.h"
 #include "third_party/gvr-android-sdk/gvr_api_jni.h"

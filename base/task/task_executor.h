@@ -9,10 +9,10 @@
 
 #include "base/base_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -63,11 +63,6 @@ class BASE_EXPORT TaskExecutor {
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) = 0;
 #endif  // defined(OS_WIN)
-
-  // Returns the sequence the current task was posted on, if any, or null
-  // otherwise (e.g. for parallel tasks).
-  virtual const scoped_refptr<SequencedTaskRunner>&
-  GetContinuationTaskRunner() = 0;
 };
 
 // Register a TaskExecutor with the //base/task/post_task.h API in the current

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that content-box and border-box content area dimensions are handled property by the Metrics pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -73,7 +73,7 @@
         'padding: ' + getChildTextByClassName(paddingElement, 'top') + ' ' +
         getChildTextByClassName(paddingElement, 'right') + ' ' + getChildTextByClassName(paddingElement, 'bottom') +
         ' ' + getChildTextByClassName(paddingElement, 'left'));
-    TestRunner.addResult('content: ' + contentDimensions[0].textContent + ' x ' + contentDimensions[1].textContent);
+    TestRunner.addResult('content: ' + contentDimensions[0].textContent + ' x ' + contentDimensions[2].textContent);
   }
 
   function createDoubleClickEvent() {
@@ -82,7 +82,7 @@
     return event;
   }
 
-  var section = UI.panels.elements._metricsWidget;
+  var section = UI.panels.elements.metricsWidget;
 
   TestRunner.runTestSuite([
     function testBorderBoxInit1(next) {

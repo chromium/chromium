@@ -10,6 +10,7 @@
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/focus_rules.h"
 #include "ui/wm/core/window_util.h"
@@ -37,7 +38,10 @@ void StackTransientParentsBelowModalWindow(aura::Window* window) {
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, public:
 
-FocusController::FocusController(FocusRules* rules) : rules_(rules) {
+FocusController::FocusController(FocusRules* rules)
+    : rules_(rules),
+      focus_follows_cursor_(
+          base::FeatureList::IsEnabled(features::kFocusFollowsCursor)) {
   DCHECK(rules);
 }
 
@@ -59,8 +63,14 @@ void FocusController::ActivateWindow(aura::Window* window) {
 }
 
 void FocusController::DeactivateWindow(aura::Window* window) {
-  if (window)
+  if (window) {
+    // FocusController implements deactivation by way of activating another
+    // window. Don't deactivate |window| if it's not active to avoid attempting
+    // to activate another window.
+    if (window != GetActiveWindow())
+      return;
     FocusWindow(rules_->GetNextActivatableWindow(window));
+  }
 }
 
 const aura::Window* FocusController::GetActiveWindow() const {
@@ -84,8 +94,7 @@ bool FocusController::CanActivateWindow(const aura::Window* window) const {
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, aura::client::FocusClient implementation:
 
-void FocusController::AddObserver(
-    aura::client::FocusChangeObserver* observer) {
+void FocusController::AddObserver(aura::client::FocusChangeObserver* observer) {
   focus_observers_.AddObserver(observer);
 }
 
@@ -96,7 +105,8 @@ void FocusController::RemoveObserver(
 
 void FocusController::FocusWindow(aura::Window* window) {
   FocusAndActivateWindow(
-      ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT, window);
+      ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT, window,
+      /*no_stacking=*/false);
 }
 
 void FocusController::ResetFocusWithinActiveWindow(aura::Window* window) {
@@ -114,28 +124,30 @@ aura::Window* FocusController::GetFocusedWindow() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, ui::EventHandler implementation:
-void FocusController::OnKeyEvent(ui::KeyEvent* event) {
-}
+void FocusController::OnKeyEvent(ui::KeyEvent* event) {}
 
 void FocusController::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED && !event->handled())
+  if ((event->type() == ui::ET_MOUSE_PRESSED ||
+       (event->type() == ui::ET_MOUSE_ENTERED && focus_follows_cursor_)) &&
+      !event->handled())
     WindowFocusedFromInputEvent(static_cast<aura::Window*>(event->target()),
                                 event);
 }
 
-void FocusController::OnScrollEvent(ui::ScrollEvent* event) {
-}
+void FocusController::OnScrollEvent(ui::ScrollEvent* event) {}
 
-void FocusController::OnTouchEvent(ui::TouchEvent* event) {
-}
+void FocusController::OnTouchEvent(ui::TouchEvent* event) {}
 
 void FocusController::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_BEGIN &&
-      event->details().touch_points() == 1 &&
-      !event->handled()) {
+      event->details().touch_points() == 1 && !event->handled()) {
     WindowFocusedFromInputEvent(static_cast<aura::Window*>(event->target()),
                                 event);
   }
+}
+
+base::StringPiece FocusController::GetLogContext() const {
+  return "FocusController";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,14 +164,20 @@ void FocusController::OnWindowDestroying(aura::Window* window) {
   // destruction.
   window->ClearProperty(aura::client::kModalKey);
   WindowLostFocusFromDispositionChange(window, window->parent());
+
+  // We may have already stopped observing |window| if `SetActiveWindow()` was
+  // called inside `WindowLostFocusFromDispositionChange()`.
+  if (observation_manager_.IsObservingSource(window))
+    observation_manager_.RemoveObservation(window);
 }
 
 void FocusController::OnWindowHierarchyChanging(
     const HierarchyChangeParams& params) {
   if (params.receiver == active_window_ &&
-      params.target->Contains(params.receiver) && (!params.new_parent ||
-      aura::client::GetFocusClient(params.new_parent) !=
-          aura::client::GetFocusClient(params.receiver))) {
+      params.target->Contains(params.receiver) &&
+      (!params.new_parent ||
+       aura::client::GetFocusClient(params.new_parent) !=
+           aura::client::GetFocusClient(params.receiver))) {
     WindowLostFocusFromDispositionChange(params.receiver, params.old_parent);
   }
 }
@@ -167,9 +185,10 @@ void FocusController::OnWindowHierarchyChanging(
 void FocusController::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.receiver == focused_window_ &&
-      params.target->Contains(params.receiver) && (!params.new_parent ||
-      aura::client::GetFocusClient(params.new_parent) !=
-          aura::client::GetFocusClient(params.receiver))) {
+      params.target->Contains(params.receiver) &&
+      (!params.new_parent ||
+       aura::client::GetFocusClient(params.new_parent) !=
+           aura::client::GetFocusClient(params.receiver))) {
     WindowLostFocusFromDispositionChange(params.receiver, params.old_parent);
   }
 }
@@ -179,10 +198,13 @@ void FocusController::OnWindowHierarchyChanged(
 
 void FocusController::FocusAndActivateWindow(
     ActivationChangeObserver::ActivationReason reason,
-    aura::Window* window) {
+    aura::Window* window,
+    bool no_stacking) {
   if (window &&
       (window->Contains(focused_window_) || window->Contains(active_window_))) {
-    StackActiveWindow();
+    if (!no_stacking) {
+      StackActiveWindow();
+    }
     return;
   }
 
@@ -208,7 +230,10 @@ void FocusController::FocusAndActivateWindow(
       focusable_window_tracker.Add(focusable);
       focusable = nullptr;
     }
-    SetActiveWindow(reason, window, activatable);
+
+    if (!SetActiveWindow(reason, window, activatable, no_stacking))
+      return;
+
     if (!focusable_window_tracker.windows().empty())
       focusable = focusable_window_tracker.Pop();
   } else {
@@ -250,13 +275,15 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
   aura::WindowTracker window_tracker;
   if (lost_focus)
     window_tracker.Add(lost_focus);
-  if (focused_window_ && observer_manager_.IsObserving(focused_window_) &&
+  if (focused_window_ &&
+      observation_manager_.IsObservingSource(focused_window_) &&
       focused_window_ != active_window_) {
-    observer_manager_.Remove(focused_window_);
+    observation_manager_.RemoveObservation(focused_window_);
   }
   focused_window_ = window;
-  if (focused_window_ && !observer_manager_.IsObserving(focused_window_))
-    observer_manager_.Add(focused_window_);
+  if (focused_window_ &&
+      !observation_manager_.IsObservingSource(focused_window_))
+    observation_manager_.AddObservation(focused_window_);
 
   for (auto& observer : focus_observers_) {
     observer.OnWindowFocused(
@@ -278,27 +305,38 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
   }
 }
 
-void FocusController::SetActiveWindow(
+// Defines a macro that is meant to be called from SetActiveWindow(), which
+// checks whether the activation was interrupted by checking whether
+// |pending_activation_| has a value or not. In this case, it early-outs from
+// the SetActiveWindow() stack.
+// clang-format off
+#define MAYBE_ACTIVATION_INTERRUPTED() \
+  if (!pending_activation_)            \
+    return false
+// clang-format on
+
+bool FocusController::SetActiveWindow(
     ActivationChangeObserver::ActivationReason reason,
     aura::Window* requested_window,
-    aura::Window* window) {
+    aura::Window* window,
+    bool no_stacking) {
   if (pending_activation_)
-    return;
+    return false;
 
   if (window == active_window_) {
     if (requested_window) {
       for (auto& observer : activation_observers_)
         observer.OnAttemptToReactivateWindow(requested_window, active_window_);
     }
-    return;
+    return true;
   }
 
   DCHECK(rules_->CanActivateWindow(window));
   if (window)
     DCHECK_EQ(window, rules_->GetActivatableWindow(window));
 
-  base::AutoReset<base::Optional<aura::Window*>> updating_activation(
-      &pending_activation_, base::make_optional(window));
+  base::AutoReset<absl::optional<aura::Window*>> updating_activation(
+      &pending_activation_, absl::make_optional(window));
   aura::Window* lost_activation = active_window_;
   // Allow for the window losing activation to be deleted during dispatch. If
   // it is deleted pass NULL to observers instead of a deleted window.
@@ -306,18 +344,29 @@ void FocusController::SetActiveWindow(
   if (lost_activation)
     window_tracker.Add(lost_activation);
 
-  for (auto& observer : activation_observers_)
+  // Start observing the window gaining activation at this point since it maybe
+  // destroyed at an early stage, e.g. the activating phase.
+  if (window && !observation_manager_.IsObservingSource(window))
+    observation_manager_.AddObservation(window);
+
+  for (auto& observer : activation_observers_) {
     observer.OnWindowActivating(reason, window, active_window_);
 
-  if (active_window_ && observer_manager_.IsObserving(active_window_) &&
-      focused_window_ != active_window_) {
-    observer_manager_.Remove(active_window_);
+    MAYBE_ACTIVATION_INTERRUPTED();
   }
+
+  if (active_window_ &&
+      observation_manager_.IsObservingSource(active_window_) &&
+      focused_window_ != active_window_) {
+    observation_manager_.RemoveObservation(active_window_);
+  }
+
   active_window_ = window;
-  if (active_window_ && !observer_manager_.IsObserving(active_window_))
-    observer_manager_.Add(active_window_);
-  if (active_window_)
+
+  if (active_window_ && !no_stacking)
     StackActiveWindow();
+
+  MAYBE_ACTIVATION_INTERRUPTED();
 
   ActivationChangeObserver* observer = nullptr;
   if (window_tracker.Contains(lost_activation)) {
@@ -325,17 +374,27 @@ void FocusController::SetActiveWindow(
     if (observer)
       observer->OnWindowActivated(reason, active_window_, lost_activation);
   }
+
+  MAYBE_ACTIVATION_INTERRUPTED();
+
   observer = GetActivationChangeObserver(active_window_);
   if (observer) {
     observer->OnWindowActivated(
         reason, active_window_,
         window_tracker.Contains(lost_activation) ? lost_activation : nullptr);
   }
-  for (auto& observer : activation_observers_) {
-    observer.OnWindowActivated(
+
+  MAYBE_ACTIVATION_INTERRUPTED();
+
+  for (auto& activation_observer : activation_observers_) {
+    activation_observer.OnWindowActivated(
         reason, active_window_,
         window_tracker.Contains(lost_activation) ? lost_activation : nullptr);
+
+    MAYBE_ACTIVATION_INTERRUPTED();
   }
+
+  return true;
 }
 
 void FocusController::StackActiveWindow() {
@@ -345,21 +404,51 @@ void FocusController::StackActiveWindow() {
   }
 }
 
-void FocusController::WindowLostFocusFromDispositionChange(
-    aura::Window* window,
-    aura::Window* next) {
+void FocusController::WindowLostFocusFromDispositionChange(aura::Window* window,
+                                                           aura::Window* next) {
   // TODO(beng): See if this function can be replaced by a call to
   //             FocusWindow().
   // Activation adjustments are handled first in the event of a disposition
   // changed. If an activation change is necessary, focus is reset as part of
   // that process so there's no point in updating focus independently.
-  if (window == active_window_) {
+  const bool is_active_window_losing_focus = window == active_window_;
+  const bool is_pending_window_losing_focus =
+      pending_activation_ && (window == pending_activation_.value());
+  if (is_active_window_losing_focus || is_pending_window_losing_focus) {
+    if (pending_activation_) {
+      // We're in the middle of an on-going activation. We need to determine
+      // whether we need to abort this activation. This happens when the window
+      // gaining activation is destroyed at any point of the activation process.
+      if (is_pending_window_losing_focus) {
+        // Abort this on-going activation. The below call to SetActiveWindow()
+        // will attempt activating the next activatable window.
+        pending_activation_.reset();
+      } else if (is_active_window_losing_focus) {
+        // The window losing activation may have been destroyed before the
+        // window gaining active is set as the active window. We need to clear
+        // the active and focused windows temporarily, since querying the active
+        // window now should not return a dangling pointer.
+        active_window_ = nullptr;
+        SetFocusedWindow(nullptr);
+
+        // We should continue the on-going activation and leave
+        // |pending_activation_| unchanged.
+        return;
+      }
+    }
+
     aura::Window* next_activatable = rules_->GetNextActivatableWindow(window);
-    SetActiveWindow(
-        ActivationChangeObserver::ActivationReason::WINDOW_DISPOSITION_CHANGED,
-        nullptr, next_activatable);
-    if (!(active_window_ && active_window_->Contains(focused_window_)))
+    if (!SetActiveWindow(ActivationChangeObserver::ActivationReason::
+                             WINDOW_DISPOSITION_CHANGED,
+                         nullptr, next_activatable,
+                         /*no_stacking=*/false)) {
+      return;
+    }
+
+    if (window == focused_window_ || !active_window_ ||
+        !active_window_->Contains(focused_window_)) {
       SetFocusedWindow(next_activatable);
+    }
   } else if (window->Contains(focused_window_)) {
     if (pending_activation_) {
       // We're in the process of updating activation, most likely
@@ -377,12 +466,20 @@ void FocusController::WindowLostFocusFromDispositionChange(
 
 void FocusController::WindowFocusedFromInputEvent(aura::Window* window,
                                                   const ui::Event* event) {
+  // For focus follows cursor: avoid activating when `window` is a child of the
+  // currently active window.
+  if (event->type() == ui::ET_MOUSE_ENTERED && active_window_ &&
+      active_window_->Contains(window)) {
+    return;
+  }
+
   // Only focus |window| if it or any of its parents can be focused. Otherwise
   // FocusWindow() will focus the topmost window, which may not be the
   // currently focused one.
   if (rules_->CanFocusWindow(GetToplevelWindow(window), event)) {
     FocusAndActivateWindow(
-        ActivationChangeObserver::ActivationReason::INPUT_EVENT, window);
+        ActivationChangeObserver::ActivationReason::INPUT_EVENT, window,
+        event->type() == ui::ET_MOUSE_ENTERED);
   }
 }
 

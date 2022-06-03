@@ -16,7 +16,7 @@ def test_get_status_no_session(http):
         value = parsed_obj["value"]
 
         assert value["ready"] in [True, False]
-        assert isinstance(value["message"], basestring)
+        assert isinstance(value["message"], str)
 
 
 def test_status_with_session_running_on_endpoint_node(session):

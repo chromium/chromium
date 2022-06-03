@@ -160,28 +160,38 @@
             }
           }
         }
-     }
+      },
+      {
+        "id": "UninstallOptions",
+        "description": "Options for how to handle the extension's uninstallation.",
+        "type": "object",
+        "properties": {
+          "showConfirmDialog": {
+            "type": "boolean",
+            "optional": true,
+            "description": "Whether or not a confirm-uninstall dialog should prompt the user. Defaults to false for self uninstalls. If an extension uninstalls another extension, this parameter is ignored and the dialog is always shown."
+          }
+        }
+      }
     ],
     "functions": [
       {
         "name": "getAll",
         "description": "Returns a list of information about installed extensions and apps.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "type": "array",
-                "name": "result",
-                "items": {
-                  "$ref": "ExtensionInfo"
-                }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "type": "array",
+              "name": "result",
+              "items": {
+                "$ref": "ExtensionInfo"
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "get",
@@ -191,36 +201,33 @@
             "name": "id",
             "type": "string",
             "description": "The ID from an item of $(ref:management.ExtensionInfo)."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "ExtensionInfo"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "ExtensionInfo"
+            }
+          ]
+        }
       },
       {
         "name": "getSelf",
         "description": "Returns information about the calling extension, app, or theme. Note: This function can be used without requesting the 'management' permission in the manifest.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "ExtensionInfo"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "ExtensionInfo"
+            }
+          ]
+        }
       },
       {
         "name": "getPermissionWarningsById",
@@ -229,20 +236,19 @@
           { "name": "id",
             "type": "string",
             "description": "The ID of an already installed extension."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "permissionWarnings",
-                "type": "array",
-                "items": { "type": "string" }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "permissionWarnings",
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          ]
+        }
       },
       {
         "name": "getPermissionWarningsByManifest",
@@ -252,20 +258,19 @@
             "name": "manifestStr",
             "type": "string",
             "description": "Extension manifest JSON string."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "permissionWarnings",
-                "type": "array",
-                "items": { "type": "string" }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "permissionWarnings",
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          ]
+        }
       },
       {
         "name": "setEnabled",
@@ -280,18 +285,17 @@
             "name": "enabled",
             "type": "boolean",
             "description": "Whether this item should be enabled or disabled."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "uninstall",
-        "description": "Uninstalls a currently installed app or extension.",
+        "description": "Uninstalls a currently installed app or extension. Note: This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
         "parameters": [
           {
             "name": "id",
@@ -299,48 +303,32 @@
             "description": "This should be the id from an item of $(ref:management.ExtensionInfo)."
           },
           {
-            "type": "object",
             "name": "options",
-            "optional": true,
-            "properties": {
-              "showConfirmDialog": {
-                "type": "boolean",
-                "optional": true,
-                "description": "Whether or not a confirm-uninstall dialog should prompt the user. Defaults to false for self uninstalls. If an extension uninstalls another extension, this parameter is ignored and the dialog is always shown."
-              }
-            }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
+            "$ref": "UninstallOptions",
+            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "uninstallSelf",
-        "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest.",
+        "description": "Uninstalls the calling extension. Note: This function can be used without requesting the 'management' permission in the manifest. This function does not work in managed environments when the user is not allowed to uninstall the specified extension/app.",
         "parameters": [
           {
-            "type": "object",
             "name": "options",
-            "optional": true,
-            "properties": {
-              "showConfirmDialog": {
-                "type": "boolean",
-                "optional": true,
-                "description": "Whether or not a confirm-uninstall dialog should prompt the user. Defaults to false."
-              }
-            }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
+            "$ref": "UninstallOptions",
+            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "launchApp",
@@ -350,14 +338,13 @@
             "name": "id",
             "type": "string",
             "description": "The extension id of the application."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "createAppShortcut",
@@ -367,14 +354,13 @@
             "name": "id",
             "type": "string",
             "description": "This should be the id from an app item of $(ref:management.ExtensionInfo)."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "setLaunchType",
@@ -389,14 +375,14 @@
             "name": "launchType",
             "$ref": "LaunchType",
             "description": "The target launch type. Always check and make sure this launch type is in $(ref:ExtensionInfo.availableLaunchTypes), because the available launch types vary on different platforms and configurations."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "type": "function",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "generateAppForLink",
@@ -411,59 +397,52 @@
             "name": "title",
             "type": "string",
             "description": "The title of the generated app."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters":  [
-              {
-                "name": "result",
-                "$ref": "ExtensionInfo"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters":  [
+            {
+              "name": "result",
+              "$ref": "ExtensionInfo"
+            }
+          ]
+        }
       },
       {
         "name": "canInstallReplacementAndroidApp",
         "description": "Checks if the replacement android app can be installed. Errors generated by this API are reported by setting $(ref:runtime.lastError) and executing the function's regular callback.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "boolean"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "installReplacementAndroidApp",
         "description": "Prompts the user to install the replacement Android app from the manifest. Errors generated by this API are reported by setting $(ref:runtime.lastError) and executing the function's regular callback.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "installReplacementWebApp",
         "description": "Launches the replacement_web_app specified in the manifest. Prompts the user to install if not already installed.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters":  []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters":  []
+        }
       }
     ],
     "events": [

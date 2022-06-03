@@ -241,8 +241,8 @@ uint GetDigits(uint Number)
 
 bool LowAscii(const char *Str)
 {
-  for (int I=0;Str[I]!=0;I++)
-    if ((byte)Str[I]<32 || (byte)Str[I]>127)
+  for (size_t I=0;Str[I]!=0;I++)
+    if (/*(byte)Str[I]<32 || */(byte)Str[I]>127)
       return false;
   return true;
 }
@@ -250,11 +250,11 @@ bool LowAscii(const char *Str)
 
 bool LowAscii(const wchar *Str)
 {
-  for (int I=0;Str[I]!=0;I++)
+  for (size_t I=0;Str[I]!=0;I++)
   {
     // We convert wchar_t to uint just in case if some compiler
     // uses signed wchar_t.
-    if ((uint)Str[I]<32 || (uint)Str[I]>127)
+    if (/*(uint)Str[I]<32 || */(uint)Str[I]>127)
       return false;
   }
   return true;

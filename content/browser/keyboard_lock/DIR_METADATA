@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Input>KeyboardShortcuts"
+}
+team_email: "chromium-dev@chromium.org"

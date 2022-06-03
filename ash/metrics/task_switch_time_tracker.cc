@@ -67,10 +67,9 @@ base::HistogramBase* TaskSwitchTimeTracker::GetHistogram() {
     // its bucket construction then you must rename all of the histograms using
     // the TaskSwitchTimeTracker mechanism.
     histogram_ = base::Histogram::FactoryGet(
-        histogram_name_,
-        base::TimeDelta::FromSeconds(kMinBucketSizeInSeconds).InSeconds(),
-        base::TimeDelta::FromSeconds(kMaxBucketSizeInSeconds).InSeconds(),
-        kBucketCount, base::HistogramBase::kUmaTargetedHistogramFlag);
+        histogram_name_, base::Seconds(kMinBucketSizeInSeconds).InSeconds(),
+        base::Seconds(kMaxBucketSizeInSeconds).InSeconds(), kBucketCount,
+        base::HistogramBase::kUmaTargetedHistogramFlag);
   }
 
 #if DCHECK_IS_ON()

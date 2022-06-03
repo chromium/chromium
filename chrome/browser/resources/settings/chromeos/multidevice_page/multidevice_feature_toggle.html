@@ -1,0 +1,18 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="multidevice_browser_proxy.html">
+<link rel="import" href="multidevice_constants.html">
+<link rel="import" href="multidevice_feature_behavior.html">
+
+<dom-module id="settings-multidevice-feature-toggle">
+  <template>
+    <cr-toggle id="toggle"
+        aria-label$="[[getToggleA11yLabel_(feature)]]"
+        checked="{{checked_}}"
+        disabled="[[!isFeatureStateEditable(feature, pageContentData)]]"
+        on-change="toggleFeature">
+    </cr-toggle>
+  </template>
+  <script src="multidevice_feature_toggle.js"></script>
+</dom-module>

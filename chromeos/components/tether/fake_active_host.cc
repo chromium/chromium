@@ -8,10 +8,10 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -46,20 +46,21 @@ void FakeActiveHost::SetActiveHostConnected(
 }
 
 void FakeActiveHost::GetActiveHost(
-    const ActiveHost::ActiveHostCallback& active_host_callback) {
-  base::Optional<multidevice::RemoteDeviceRef> remote_device;
+    ActiveHost::ActiveHostCallback active_host_callback) {
+  absl::optional<multidevice::RemoteDeviceRef> remote_device;
   if (GetActiveHostStatus() != ActiveHost::ActiveHostStatus::DISCONNECTED) {
     // Convert the active host ID to a public key.
     std::string public_key;
     ASSERT_TRUE(base::Base64Decode(GetActiveHostDeviceId(), &public_key));
 
     // Create a new RemoteDevice and set its public key.
-    remote_device = base::make_optional<multidevice::RemoteDeviceRef>(
+    remote_device = absl::make_optional<multidevice::RemoteDeviceRef>(
         multidevice::RemoteDeviceRefBuilder().SetPublicKey(public_key).Build());
   }
 
-  active_host_callback.Run(GetActiveHostStatus(), remote_device,
-                           GetTetherNetworkGuid(), GetWifiNetworkGuid());
+  std::move(active_host_callback)
+      .Run(GetActiveHostStatus(), remote_device, GetTetherNetworkGuid(),
+           GetWifiNetworkGuid());
 }
 
 ActiveHost::ActiveHostStatus FakeActiveHost::GetActiveHostStatus() const {
@@ -100,9 +101,10 @@ void FakeActiveHost::SetActiveHost(ActiveHostStatus active_host_status,
   tether_network_guid_ = tether_network_guid;
   wifi_network_guid_ = wifi_network_guid;
 
-  GetActiveHost(base::Bind(&FakeActiveHost::SendActiveHostChangedUpdate,
-                           base::Unretained(this), old_status, old_device_id,
-                           old_tether_network_guid, old_wifi_network_guid));
+  GetActiveHost(base::BindOnce(&FakeActiveHost::SendActiveHostChangedUpdate,
+                               base::Unretained(this), old_status,
+                               old_device_id, old_tether_network_guid,
+                               old_wifi_network_guid));
 }
 
 }  // namespace tether

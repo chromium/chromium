@@ -28,7 +28,7 @@ PositionWithAffinityTemplate<Strategy>::~PositionWithAffinityTemplate() =
     default;
 
 template <typename Strategy>
-void PositionWithAffinityTemplate<Strategy>::Trace(Visitor* visitor) {
+void PositionWithAffinityTemplate<Strategy>::Trace(Visitor* visitor) const {
   visitor->Trace(position_);
 }
 

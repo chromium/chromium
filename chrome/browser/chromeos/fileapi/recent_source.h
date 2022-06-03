@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_SOURCE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -35,6 +34,14 @@ class RecentSource {
   using GetRecentFilesCallback =
       base::OnceCallback<void(std::vector<RecentFile> files)>;
 
+  // File types to filter the results of GetRecentFiles().
+  enum class FileType {
+    kAll,
+    kAudio,
+    kImage,
+    kVideo,
+  };
+
   // Parameters passed to GetRecentFiles().
   class Params {
    public:
@@ -42,6 +49,7 @@ class RecentSource {
            const GURL& origin,
            size_t max_files,
            const base::Time& cutoff_time,
+           FileType file_type,
            GetRecentFilesCallback callback);
 
     Params(const Params& other) = delete;
@@ -68,6 +76,10 @@ class RecentSource {
     // requested here, but they will be filtered out by RecentModel.
     const base::Time& cutoff_time() const { return cutoff_time_; }
 
+    // File type to filter the results from RecentSource. RecentSource is
+    // expected to return files which matches the specified file type.
+    FileType file_type() const { return file_type_; }
+
     // Callback to be called for the result of GetRecentFiles().
     GetRecentFilesCallback& callback() { return callback_; }
 
@@ -76,6 +88,7 @@ class RecentSource {
     GURL origin_;
     size_t max_files_;
     base::Time cutoff_time_;
+    FileType file_type_;
     GetRecentFilesCallback callback_;
   };
 

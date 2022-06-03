@@ -7,9 +7,11 @@ import("//build/config/android/rules.gni")
 # Upstream ImageEditor implementation which does nothing. Actual implementation
 # lives downstream.
 android_library("java") {
-  java_files = [ "android/java/src/org/chromium/chrome/browser/image_editor/ImageEditorCoordinatorImpl.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/image_editor/ImageEditorDialogCoordinatorImpl.java" ]
 
   deps = [
     "//chrome/browser/image_editor/public:java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
   ]
 }

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/ppapi_test_utils.h"
@@ -19,9 +20,10 @@
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
+#include "third_party/blink/public/common/switches.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/audio/cras_audio_handler.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #endif
 
@@ -56,13 +58,19 @@ void PPAPITestBase::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kDisableSmoothScrolling);
 
   // Allow manual garbage collection.
-  command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose_gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose_gc");
 
   command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
 
   command_line->AppendSwitchASCII(
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
+
+  // This doesn't test what we ship, but is needed by some tests (like
+  // TestMessageHandler::TestExceptions, fileSystem-related tests) and given
+  // PPAPI deprecation it doesn't seem worth fixing the tests now.
+  command_line->AppendSwitch(switches::kAllowFileAccessFromFiles);
 }
 
 GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {
@@ -108,6 +116,7 @@ void PPAPITestBase::RunTestURL(const GURL& test_url) {
   PPAPITestMessageHandler handler;
   JavascriptTestObserver observer(shell()->web_contents(), &handler);
   shell()->LoadURL(test_url);
+  shell()->web_contents()->Focus();
 
   ASSERT_TRUE(observer.Run()) << handler.error_message();
   EXPECT_STREQ("PASS", handler.message().c_str());
@@ -134,17 +143,17 @@ OutOfProcessPPAPITest::OutOfProcessPPAPITest() {
 }
 
 void OutOfProcessPPAPITest::SetUp() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::CrasAudioClient::InitializeFake();
-  chromeos::CrasAudioHandler::InitializeForTesting();
+  ash::CrasAudioHandler::InitializeForTesting();
 #endif
   ContentBrowserTest::SetUp();
 }
 
 void OutOfProcessPPAPITest::TearDown() {
   ContentBrowserTest::TearDown();
-#if defined(OS_CHROMEOS)
-  chromeos::CrasAudioHandler::Shutdown();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::CrasAudioHandler::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
 #endif
 }

@@ -1,7 +1,7 @@
 Name: LevelDB: A Fast Persistent Key-Value Store
 Short Name: leveldb
 URL: https://github.com/google/leveldb.git
-Version: 1.22.git.4bd052d7e8b0469b2b87664388e2a99cb212ecdb
+Version: 1.23
 License: New BSD
 License File: src/LICENSE
 Security Critical: yes
@@ -20,8 +20,6 @@ Local Additions:
   etc. env_chromium.h allows re-use of some utility functions.
 * chromium_logger.h was copied from src/util/posix_logger.h and updated to use
   chrome primitives in place of some posix primitives
-* Logging of uma statistics. Can be overridden by derived class to redirect to
-  different histogram.
 * TRACE macros/thread name for chrome://tracing diagnostics
 * Handle in-process exclusive file locks, based on src/util/env_posix.cc
 * Unit tests for the Chromium environment.

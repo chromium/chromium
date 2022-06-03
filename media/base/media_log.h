@@ -13,15 +13,17 @@
 #include <string>
 #include <utility>
 
+#include "base/gtest_prod_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_export.h"
-#include "media/base/media_log_event.h"
+#include "media/base/media_log_events.h"
+#include "media/base/media_log_message_levels.h"
 #include "media/base/media_log_properties.h"
-#include "media/base/pipeline_impl.h"
+#include "media/base/media_log_record.h"
 #include "media/base/pipeline_status.h"
 #include "url/gurl.h"
 
@@ -31,55 +33,68 @@ namespace media {
 //
 // To provide a logging implementation, derive from MediaLog instead.
 //
-// Implementations only need to implement AddEventLocked(), which must be thread
-// safe in the sense that it may be called from multiple threads, though it will
-// not be called concurrently.  See below for more details.
+// Implementations only need to implement AddLogRecordLocked(), which must be
+// thread safe in the sense that it may be called from multiple threads, though
+// it will not be called concurrently.  See below for more details.
 //
 // Implementations should also call InvalidateLog during destruction, to signal
 // to any child logs that the underlying log is no longer available.
 class MEDIA_EXPORT MediaLog {
  public:
-  enum MediaLogLevel {
-    // Fatal error, e.g. cause of playback failure. Since this is also used to
-    // form MediaError.message, do NOT use this for non-fatal errors to avoid
-    // contaminating MediaError.message.
-    MEDIALOG_ERROR,
+  static const char kEventKey[];
+  static const char kStatusText[];
 
-    // Warning about non-fatal issues, e.g. quality of playback issues such as
-    // audio/video out of sync.
-    MEDIALOG_WARNING,
+// Maximum limit for the total number of logs kept per renderer. At the time of
+// writing, 512 events of the kind: { "property": value } together consume ~88kb
+// of memory on linux.
+#if defined(OS_ANDROID)
+  static constexpr size_t kLogLimit = 128;
+#else
+  static constexpr size_t kLogLimit = 512;
+#endif
 
-    // General info useful for Chromium and/or web developers, testers and even
-    // users, e.g. audio/video codecs used in a playback instance.
-    MEDIALOG_INFO,
-
-    // Misc debug info for Chromium developers.
-    MEDIALOG_DEBUG,
-  };
-
-  // Convert various enums to strings.
-  static std::string MediaLogLevelToString(MediaLogLevel level);
-  static MediaLogEvent::Type MediaLogLevelToEventType(MediaLogLevel level);
-  static std::string EventTypeToString(MediaLogEvent::Type type);
-
-  static std::string BufferingStateToString(
-      BufferingState state,
-      BufferingStateChangeReason reason = BUFFERING_CHANGE_REASON_UNKNOWN);
-
-  static std::string MediaEventToLogString(const MediaLogEvent& event);
-
-  // Returns a string usable as part of a MediaError.message, for only
-  // PIPELINE_ERROR or MEDIA_ERROR_LOG_ENTRY events, with any newlines replaced
-  // with whitespace in the latter kind of events.
-  static std::string MediaEventToMessageString(const MediaLogEvent& event);
+  MediaLog(const MediaLog&) = delete;
+  MediaLog& operator=(const MediaLog&) = delete;
 
   // Constructor is protected, see below.
-
   virtual ~MediaLog();
 
-  // Add an event to this log.  Inheritors should override AddEventLocked to
-  // do something.
-  void AddEvent(std::unique_ptr<MediaLogEvent> event);
+  // Report a log message at the specified log level.
+  void AddMessage(MediaLogMessageLevel level, std::string message);
+
+  // Typechecked property setter, since all properties must take values.
+  // For example, MediaLogProperty::kResolution supports only gfx::Size as
+  // an argument (see media_log_properties.h for this), so calling
+  // media_log->SetProperty<MediaLogProperty::kResolution>(1);
+  // would lead to a compile error, while
+  // gfx::Size rect = {100, 100};
+  // media_log->SetProperty<MediaLogProperty::kResolution>(rect);
+  // is correct.
+  template <MediaLogProperty P, typename T>
+  void SetProperty(const T& value) {
+    AddLogRecord(CreatePropertyRecord<P, T>(value));
+  }
+
+  // TODO(tmathmeyer) add the ability to report events with a separated
+  // start and end time.
+  // Send an event to the media log that may or may not have attached data.
+  // For example, MediaLogEvent::kPlay takes no arguments, while
+  // MediaLogEvent::kSeek takes a double as an argument, representing the time.
+  // A proper way to add either of these events would be
+  // media_log->AddEvent<MediaLogEvent::kPlay>();
+  // media_log->AddEvent<MediaLogEvent::kSeek>(1.99);
+  template <MediaLogEvent E, typename... T>
+  void AddEvent(const T&... value) {
+    std::unique_ptr<MediaLogRecord> record = CreateEventRecord<E, T...>();
+    MediaLogEventTypeSupport<E, T...>::AddExtraData(&record->params, value...);
+    AddLogRecord(std::move(record));
+  }
+
+  // TODO(tmathmeyer) replace with Status when that's ready.
+  void NotifyError(PipelineStatus status);
+
+  // Notify a non-ok Status. This method Should _not_ be given an OK status.
+  void NotifyError(Status status);
 
   // Notify the media log that the player is destroyed. Some implementations
   // will want to change event handling based on this.
@@ -91,54 +106,23 @@ class MEDIA_EXPORT MediaLog {
   // Note: The base class definition only produces empty messages. See
   // RenderMediaLog for where this method is meaningful.
   // Inheritors should override GetErrorMessageLocked().
+  // TODO(tmathmeyer) Use a media::Status when that is ready.
   std::string GetErrorMessage();
 
-  // Helper methods to create events and their parameters.
-  std::unique_ptr<MediaLogEvent> CreateEvent(MediaLogEvent::Type type);
-  std::unique_ptr<MediaLogEvent> CreateBooleanEvent(MediaLogEvent::Type type,
-                                                    const std::string& property,
-                                                    bool value);
-  std::unique_ptr<MediaLogEvent> CreateCreatedEvent(
-      const std::string& origin_url);
-  std::unique_ptr<MediaLogEvent> CreateStringEvent(MediaLogEvent::Type type,
-                                                   const std::string& property,
-                                                   const std::string& value);
-  std::unique_ptr<MediaLogEvent> CreateTimeEvent(MediaLogEvent::Type type,
-                                                 const std::string& property,
-                                                 base::TimeDelta value);
-  std::unique_ptr<MediaLogEvent> CreateTimeEvent(MediaLogEvent::Type type,
-                                                 const std::string& property,
-                                                 double value);
-  std::unique_ptr<MediaLogEvent> CreateLoadEvent(const std::string& url);
-  std::unique_ptr<MediaLogEvent> CreatePipelineStateChangedEvent(
-      PipelineImpl::State state);
-  std::unique_ptr<MediaLogEvent> CreatePipelineErrorEvent(PipelineStatus error);
-  std::unique_ptr<MediaLogEvent> CreateVideoSizeSetEvent(size_t width,
-                                                         size_t height);
-  std::unique_ptr<MediaLogEvent> CreateBufferingStateChangedEvent(
-      const std::string& property,
-      BufferingState state,
-      BufferingStateChangeReason reason);
-
-  // Report a log message at the specified log level.
-  void AddLogEvent(MediaLogLevel level, const std::string& message);
-
-  // Only way to access the MediaLogEvent::PROPERTY_CHANGE event type,
-  // so that parameter types can be checked from media_log_properties.h.
-  template <MediaLogProperty P, typename T>
-  void SetProperty(const T& value) {
-    AddEvent(CreatePropertyEvent<P, T>(value));
-  }
-
-  // Getter for |id_|. Used by MojoMediaLogService to construct MediaLogEvents
+  // Getter for |id_|. Used by MojoMediaLogService to construct MediaLogRecords
   // to log into this MediaLog. Also used in trace events to associate each
   // event with a specific media playback.
-  int32_t id() const { return id_; }
+  int32_t id() const { return parent_log_record_->id; }
+
+  // Add a record to this log.  Inheritors should override AddLogRecordLocked to
+  // do something. This needs to be public for MojoMediaLogService to use it.
+  void AddLogRecord(std::unique_ptr<MediaLogRecord> event);
 
   // Provide a MediaLog which can have a separate lifetime from this one, but
-  // still write to the same log.  It is not guaranteed that this will log
-  // forever; it might start silently discarding log messages if the original
-  // log is closed by whoever owns it.
+  // still write to the same player's log.  It is not guaranteed that this will
+  // log forever; it might start silently discarding log messages if the
+  // original log is closed by whoever owns it.  However, it's safe to use it
+  // even if this occurs, in the "won't crash" sense.
   virtual std::unique_ptr<MediaLog> Clone();
 
  protected:
@@ -150,28 +134,42 @@ class MEDIA_EXPORT MediaLog {
   // any other thread, and with any parent log invalidation.
   //
   // Please see the documentation for the corresponding public methods.
-  virtual void AddEventLocked(std::unique_ptr<MediaLogEvent> event);
+  virtual void AddLogRecordLocked(std::unique_ptr<MediaLogRecord> event);
   virtual void OnWebMediaPlayerDestroyedLocked();
   virtual std::string GetErrorMessageLocked();
 
   // MockMediaLog also needs to call this method.
   template <MediaLogProperty P, typename T>
-  std::unique_ptr<MediaLogEvent> CreatePropertyEvent(const T& value) {
-    auto event = CreateEvent(MediaLogEvent::PROPERTY_CHANGE);
-    event->params.SetKey(MediaLogPropertyKeyToString(P),
-                         MediaLogPropertyTypeSupport<P, T>::Convert(value));
-    return event;
+  std::unique_ptr<MediaLogRecord> CreatePropertyRecord(const T& value) {
+    auto record = CreateRecord(MediaLogRecord::Type::kMediaPropertyChange);
+    record->params.SetKey(MediaLogPropertyKeyToString(P),
+                          MediaLogPropertyTypeSupport<P, T>::Convert(value));
+    return record;
+  }
+  template <MediaLogEvent E, typename... Opt>
+  std::unique_ptr<MediaLogRecord> CreateEventRecord() {
+    std::unique_ptr<MediaLogRecord> record(
+        CreateRecord(MediaLogRecord::Type::kMediaEventTriggered));
+    record->params.SetString(MediaLog::kEventKey,
+                             MediaLogEventTypeSupport<E, Opt...>::TypeName());
+    return record;
   }
 
   // Notify all child logs that they should stop working.  This should be called
-  // to guarantee that no further calls into AddEvent should be allowed.
+  // to guarantee that no further calls into AddLogRecord should be allowed.
   // Further, since calls into this log may happen on any thread, it's important
   // to call this while the log is still in working order.  For example, calling
   // it immediately during destruction is a good idea.
   void InvalidateLog();
 
   struct ParentLogRecord : base::RefCountedThreadSafe<ParentLogRecord> {
-    ParentLogRecord(MediaLog* log);
+    explicit ParentLogRecord(MediaLog* log);
+
+    ParentLogRecord(const ParentLogRecord&) = delete;
+    ParentLogRecord& operator=(const ParentLogRecord&) = delete;
+
+    // A unique (to this process) id for this MediaLog.
+    int32_t id;
 
     // |lock_| protects the rest of this structure.
     base::Lock lock;
@@ -182,12 +180,7 @@ class MEDIA_EXPORT MediaLog {
    protected:
     friend class base::RefCountedThreadSafe<ParentLogRecord>;
     virtual ~ParentLogRecord();
-
-    DISALLOW_COPY_AND_ASSIGN(ParentLogRecord);
   };
-
-  // Use |parent_log_record| instead of making a new one.
-  MediaLog(scoped_refptr<ParentLogRecord> parent_log_record);
 
  private:
   // Allows MediaLogTest to construct MediaLog directly for testing.
@@ -195,44 +188,37 @@ class MEDIA_EXPORT MediaLog {
   FRIEND_TEST_ALL_PREFIXES(MediaLogTest, EventsAreForwarded);
   FRIEND_TEST_ALL_PREFIXES(MediaLogTest, EventsAreNotForwardedAfterInvalidate);
 
-  enum : size_t {
-    // Max length of URLs in Created/Load events. Exceeding triggers truncation.
-    kMaxUrlLength = 1000,
-  };
+  // Use |parent_log_record| instead of making a new one.
+  explicit MediaLog(scoped_refptr<ParentLogRecord> parent_log_record);
 
-  // URLs (for Created and Load events) may be of arbitrary length from the
-  // untrusted renderer. This method truncates to |kMaxUrlLength| before storing
-  // the event, and sets the last 3 characters to an ellipsis.
-  static std::string TruncateUrlString(std::string log_string);
+  // Helper methods to create events and their parameters.
+  std::unique_ptr<MediaLogRecord> CreateRecord(MediaLogRecord::Type type);
 
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;
-
-  // A unique (to this process) id for this MediaLog.
-  int32_t id_;
-  DISALLOW_COPY_AND_ASSIGN(MediaLog);
 };
 
 // Helper class to make it easier to use MediaLog like DVLOG().
 class MEDIA_EXPORT LogHelper {
  public:
-  LogHelper(MediaLog::MediaLogLevel level, MediaLog* media_log);
-  LogHelper(MediaLog::MediaLogLevel level,
+  LogHelper(MediaLogMessageLevel level, MediaLog* media_log);
+  LogHelper(MediaLogMessageLevel level,
             const std::unique_ptr<MediaLog>& media_log);
   ~LogHelper();
 
   std::ostream& stream() { return stream_; }
 
  private:
-  const MediaLog::MediaLogLevel level_;
+  const MediaLogMessageLevel level_;
   MediaLog* const media_log_;
   std::stringstream stream_;
 };
 
 // Provides a stringstream to collect a log entry to pass to the provided
 // MediaLog at the requested level.
-#define MEDIA_LOG(level, media_log) \
-  LogHelper((MediaLog::MEDIALOG_##level), (media_log)).stream()
+#define MEDIA_LOG(level, media_log)                                      \
+  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log)) \
+      .stream()
 
 // Logs only while |count| < |max|, increments |count| for each log, and warns
 // in the log if |count| has just reached |max|.

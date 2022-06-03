@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
+#include "extensions/browser/computed_hashes.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/common/extension_id.h"
 
@@ -25,28 +26,39 @@ class ContentHash;
 // use in ContentVerifyJob's.
 class ContentHashReader {
  public:
+  enum class InitStatus {
+    // Extension has no hashes for resources verification.
+    HASHES_MISSING,
+
+    // Extension has hashes files, but they are unreadable or corrupted.
+    HASHES_DAMAGED,
+
+    // Resource doesn't have entry in hashes, and this is as expected since
+    // extension doesn't have such resource.
+    NO_HASHES_FOR_NON_EXISTING_RESOURCE,
+
+    // Resource doesn't have entry in hashes, but it should be there.
+    NO_HASHES_FOR_RESOURCE,
+
+    // Ready to verify resource's content.
+    SUCCESS
+  };
+
+  ContentHashReader(const ContentHashReader&) = delete;
+  ContentHashReader& operator=(const ContentHashReader&) = delete;
+
   ~ContentHashReader();
 
   // Factory to create ContentHashReader to get expected hashes for the file at
   // |relative_path| within an extension.
   // Must be called on a thread that is allowed to do file I/O. Returns an
-  // instance whose succees/failure can be determined by calling succeeded()
-  // method. On failure, this object should likely be discarded.
+  // instance whose success or failure type can be determined by calling
+  // status() method. On failure, this object should likely be discarded.
   static std::unique_ptr<const ContentHashReader> Create(
       const base::FilePath& relative_path,
       const scoped_refptr<const ContentHash>& content_hash);
 
-  bool succeeded() const { return status_ == SUCCESS; }
-
-  // Returns true if we found valid verified_contents.json and
-  // computed_hashes.json files. Note that this can be true even if we didn't
-  // find an entry for |relative_path| in them.
-  bool has_content_hashes() const { return has_content_hashes_; }
-  // Returns whether or not this resource's entry exists in
-  // verified_contents.json (given that |has_content_hashes_| is true.
-  bool file_missing_from_verified_contents() const {
-    return file_missing_from_verified_contents_;
-  }
+  InitStatus status() const { return status_; }
 
   // Return the number of blocks and block size, respectively. Only valid after
   // calling Init().
@@ -58,21 +70,14 @@ class ContentHashReader {
   bool GetHashForBlock(int block_index, const std::string** result) const;
 
  private:
-  enum InitStatus { SUCCESS, FAILURE };
+  explicit ContentHashReader(InitStatus status);
 
-  ContentHashReader();
-
-  InitStatus status_ = FAILURE;
-
-  bool has_content_hashes_ = false;
-  bool file_missing_from_verified_contents_ = false;
+  InitStatus status_;
 
   // The blocksize used for generating the hashes.
   int block_size_ = 0;
 
   std::vector<std::string> hashes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHashReader);
 };
 
 }  // namespace extensions

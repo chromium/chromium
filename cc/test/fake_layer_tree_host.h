@@ -5,6 +5,8 @@
 #ifndef CC_TEST_FAKE_LAYER_TREE_HOST_H_
 #define CC_TEST_FAKE_LAYER_TREE_HOST_H_
 
+#include <memory>
+
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_client.h"
@@ -18,7 +20,23 @@ namespace cc {
 class MutatorHost;
 class TestTaskGraphRunner;
 
-class FakeLayerTreeHost : public LayerTreeHost {
+// FakeImplTaskRunnerProvider uses DebugScopedSetImplThread to set its task
+// runner to look like the impl thread. This means it needs to outlive the
+// LayerTreeHost so that the task runner remains impl-thread bound. This helper
+// class is inherited before LayerTreeHost to ensure it's constructed first and
+// destructed last.
+class TaskRunnerProviderHolder {
+ public:
+  FakeImplTaskRunnerProvider& task_runner_provider() {
+    return task_runner_provider_;
+  }
+
+ private:
+  FakeImplTaskRunnerProvider task_runner_provider_;
+};
+
+class FakeLayerTreeHost : private TaskRunnerProviderHolder,
+                          public LayerTreeHost {
  public:
   static std::unique_ptr<FakeLayerTreeHost> Create(
       FakeLayerTreeHostClient* client,
@@ -47,12 +65,29 @@ class FakeLayerTreeHost : public LayerTreeHost {
   void SetNeedsCommit() override;
   void SetNeedsUpdateLayers() override {}
 
+  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
+      LayerTreeHostImplClient* client) override;
+
+  // This method is exposed for tests that don't use a Proxy (the
+  // initialization of which would call the overridden CreateLayerTreeHostImpl
+  // above). This method will create a FakeLayerTreeHostImpl which is owned by
+  // this object and can be accessed via host_impl(). This classs ensures that
+  // the FakeLayerTreeHost doesn't then try to create a second
+  // FakeLayerTreeHostImpl via a proxy.
+  void CreateFakeLayerTreeHostImpl();
+
   LayerImpl* CommitAndCreateLayerImplTree();
   LayerImpl* CommitAndCreatePendingTree();
 
-  FakeLayerTreeHostImpl* host_impl() { return &host_impl_; }
-  LayerTreeImpl* active_tree() { return host_impl_.active_tree(); }
-  LayerTreeImpl* pending_tree() { return host_impl_.pending_tree(); }
+  FakeLayerTreeHostImpl* host_impl() { return host_impl_; }
+  LayerTreeImpl* active_tree() {
+    DCHECK(host_impl_);
+    return host_impl_->active_tree();
+  }
+  LayerTreeImpl* pending_tree() {
+    DCHECK(host_impl_);
+    return host_impl_->pending_tree();
+  }
 
   using LayerTreeHost::ScheduleMicroBenchmark;
   using LayerTreeHost::SendMessageToMicroBenchmark;
@@ -74,11 +109,21 @@ class FakeLayerTreeHost : public LayerTreeHost {
                     LayerTreeHost::InitParams params,
                     CompositorMode mode);
 
+ protected:
+  FakeLayerTreeHostClient* client_ = nullptr;
+  FakeLayerTreeHostImpl* host_impl_ = nullptr;
+
+  bool needs_commit_ = false;
+
  private:
-  FakeImplTaskRunnerProvider task_runner_provider_;
-  FakeLayerTreeHostClient* client_;
-  FakeLayerTreeHostImpl host_impl_;
-  bool needs_commit_;
+  // Used only if created via CreateFakeLayerTreeHostImpl to provide ownership
+  // and lifetime management. Normally the Proxy object owns the LTHI which
+  // will be the case if the test initializes a Proxy and the Impl is created
+  // via the overriden CreateLayerTreeHostImpl. Tests without a Proxy that
+  // manually create an Impl will call CreateFakeLayerTreeHostImpl and this
+  // class will own that object. Calls should be made on the |host_impl_|
+  // pointer as that'll always be set to the correct object.
+  std::unique_ptr<FakeLayerTreeHostImpl> owned_host_impl_;
 };
 
 }  // namespace cc

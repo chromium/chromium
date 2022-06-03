@@ -35,8 +35,8 @@
     const unsigned short DOCUMENT_TYPE_NODE = 10;
     const unsigned short DOCUMENT_FRAGMENT_NODE = 11;
     const unsigned short NOTATION_NODE = 12; // historical
-    [Affects=Nothing, ImplementedAs=getNodeType] readonly attribute unsigned short nodeType;
-    [Affects=Nothing, RuntimeCallStatsCounter=NodeName] readonly attribute DOMString nodeName;
+    [ImplementedAs=getNodeType] readonly attribute unsigned short nodeType;
+    [RuntimeCallStatsCounter=NodeName] readonly attribute DOMString nodeName;
 
     readonly attribute USVString baseURI;
 
@@ -44,24 +44,24 @@
     [RuntimeEnabled=ScrollCustomization] void setApplyScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
     [RuntimeEnabled=ScrollCustomization] void setDistributeScroll(ScrollStateCallback scrollStateCallback, NativeScrollBehavior nativeScrollBehavior);
 
-    [Affects=Nothing, Measure] readonly attribute boolean isConnected;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Document? ownerDocument;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Node? parentNode;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Element? parentElement;
+    [Measure] readonly attribute boolean isConnected;
+    [PerWorldBindings] readonly attribute Document? ownerDocument;
+    [PerWorldBindings] readonly attribute Node? parentNode;
+    [PerWorldBindings] readonly attribute Element? parentElement;
     [Affects=Nothing, ImplementedAs=hasChildren] boolean hasChildNodes();
-    [Affects=Nothing, SameObject, PerWorldBindings] readonly attribute NodeList childNodes;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Node? firstChild;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Node? lastChild;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Node? previousSibling;
-    [Affects=Nothing, PerWorldBindings] readonly attribute Node? nextSibling;
-    [MeasureAs=NodeGetRootNode] Node getRootNode(optional GetRootNodeOptions options);
+    [SameObject, PerWorldBindings] readonly attribute NodeList childNodes;
+    [PerWorldBindings] readonly attribute Node? firstChild;
+    [PerWorldBindings] readonly attribute Node? lastChild;
+    [PerWorldBindings] readonly attribute Node? previousSibling;
+    [PerWorldBindings] readonly attribute Node? nextSibling;
+    [MeasureAs=NodeGetRootNode] Node getRootNode(optional GetRootNodeOptions options = {});
 
-    [Affects=Nothing, CEReactions, CustomElementCallbacks] attribute DOMString? nodeValue;
+    [CEReactions] attribute DOMString? nodeValue;
 
-    [Affects=Nothing, CEReactions, CustomElementCallbacks, RaisesException=Setter] attribute ScriptString? textContent;
-    [CEReactions, CustomElementCallbacks] void normalize();
+    [CEReactions, ImplementedAs=textContentForBinding, RaisesException=Setter] attribute (DOMString or TrustedScript)? textContent;
+    [CEReactions] void normalize();
 
-    [NewObject, DoNotTestNewObject, CEReactions, CustomElementCallbacks, RaisesException] Node cloneNode(optional boolean deep = false);
+    [NewObject, DoNotTestNewObject, CEReactions, RaisesException] Node cloneNode(optional boolean deep = false);
     boolean isEqualNode(Node? otherNode);
     boolean isSameNode(Node? otherNode); // historical alias of ===
 
@@ -78,8 +78,8 @@
     DOMString? lookupNamespaceURI(DOMString? prefix);
     boolean isDefaultNamespace(DOMString? namespaceURI);
 
-    [CEReactions, CustomElementCallbacks, PerWorldBindings, RaisesException] Node insertBefore(Node node, Node? child);
-    [CEReactions, CustomElementCallbacks, PerWorldBindings, RaisesException, RuntimeCallStatsCounter=NodeAppendChild] Node appendChild(Node node);
-    [CEReactions, CustomElementCallbacks, PerWorldBindings, RaisesException] Node replaceChild(Node node, Node child);
-    [CEReactions, CustomElementCallbacks, RaisesException, RuntimeCallStatsCounter=NodeRemoveChild] Node removeChild(Node child);
+    [CEReactions, PerWorldBindings, RaisesException] Node insertBefore(Node node, Node? child);
+    [CEReactions, PerWorldBindings, RaisesException, RuntimeCallStatsCounter=NodeAppendChild] Node appendChild(Node node);
+    [CEReactions, PerWorldBindings, RaisesException] Node replaceChild(Node node, Node child);
+    [CEReactions, RaisesException, RuntimeCallStatsCounter=NodeRemoveChild] Node removeChild(Node child);
 };

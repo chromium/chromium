@@ -8,6 +8,9 @@
 <script src="../resources/slow-script.pl?delay=200"></script>
 <script>
     window.addEventListener("load", t.step_func(function() {
+        for (let x of performance.getEntriesByType("resource")) {
+          console.log(x.name)
+        }
         assert_equals(performance.getEntriesByType("resource").length, 5);
         t.done();
     }));

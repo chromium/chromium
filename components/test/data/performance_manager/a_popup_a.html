@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html language="en">
+  <head>
+    <title>a.com</title>
+    <script language="javascript">
+      function onLoad() {
+        console.log("a_popup_a.html loaded");
+        setTimeout(
+            function () {
+              let l = window.location;
+              let url = `${l.protocol}//a.com:${l.port}/a.html`;
+              console.log(`loading popup [${url}]`);
+              let w = window.open(url);
+            },
+            100);
+      }
+    </script>
+  </head>
+  <body onload="onLoad();">
+    Welcome to a.com, with a popup of a.com!
+  </body>
+</html>

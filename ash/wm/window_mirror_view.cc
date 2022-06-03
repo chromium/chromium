@@ -15,6 +15,7 @@
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -32,9 +33,11 @@ void EnsureAllChildrenAreVisible(ui::Layer* layer) {
 }  // namespace
 
 WindowMirrorView::WindowMirrorView(aura::Window* source,
-                                   bool trilinear_filtering_on_init)
+                                   bool trilinear_filtering_on_init,
+                                   bool show_non_client_view)
     : source_(source),
-      trilinear_filtering_on_init_(trilinear_filtering_on_init) {
+      trilinear_filtering_on_init_(trilinear_filtering_on_init),
+      show_non_client_view_(show_non_client_view) {
   source_->AddObserver(this);
   DCHECK(source);
 }
@@ -63,7 +66,8 @@ void WindowMirrorView::OnWindowDestroying(aura::Window* window) {
 }
 
 gfx::Size WindowMirrorView::CalculatePreferredSize() const {
-  return GetClientAreaBounds().size();
+  return show_non_client_view_ ? source_->bounds().size()
+                               : GetClientAreaBounds().size();
 }
 
 void WindowMirrorView::Layout() {
@@ -73,6 +77,11 @@ void WindowMirrorView::Layout() {
 
   // Position at 0, 0.
   GetMirrorLayer()->SetBounds(gfx::Rect(GetMirrorLayer()->bounds().size()));
+
+  if (show_non_client_view_) {
+    GetMirrorLayer()->SetTransform(gfx::Transform());
+    return;
+  }
 
   gfx::Transform transform;
   gfx::Rect client_area_bounds = GetClientAreaBounds();
@@ -117,8 +126,13 @@ void WindowMirrorView::RemovedFromWidget() {
   target_ = nullptr;
 }
 
+ui::Layer* WindowMirrorView::GetMirrorLayerForTesting() {
+  return GetMirrorLayer();
+}
+
 void WindowMirrorView::InitLayerOwner() {
-  layer_owner_ = ::wm::MirrorLayers(source_, false /* sync_bounds */);
+  layer_owner_ = wm::MirrorLayers(source_, /*sync_bounds=*/false);
+  layer_owner_->root()->SetOpacity(1.f);
 
   SetPaintToLayer();
 
@@ -147,6 +161,8 @@ ui::Layer* WindowMirrorView::GetMirrorLayer() {
 }
 
 gfx::Rect WindowMirrorView::GetClientAreaBounds() const {
+  DCHECK(!show_non_client_view_);
+
   const int inset = source_->GetProperty(aura::client::kTopViewInset);
   if (inset > 0) {
     gfx::Rect bounds(source_->bounds().size());

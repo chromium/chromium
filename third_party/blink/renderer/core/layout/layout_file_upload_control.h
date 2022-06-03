@@ -23,11 +23,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
 
 namespace blink {
-
-class HTMLInputElement;
 
 // Each LayoutFileUploadControl contains a LayoutButton (for opening the file
 // chooser), and sufficient space to draw a file icon and filename. The
@@ -36,50 +33,41 @@ class HTMLInputElement;
 
 class CORE_EXPORT LayoutFileUploadControl final : public LayoutBlockFlow {
  public:
-  LayoutFileUploadControl(HTMLInputElement*);
+  explicit LayoutFileUploadControl(Element*);
   ~LayoutFileUploadControl() override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectFileUploadControl ||
            LayoutBlockFlow::IsOfType(type);
   }
 
-  String ButtonValue();
   String FileTextValue() const;
 
   HTMLInputElement* UploadButton() const;
-  int UploadButtonWidth();
-
-  bool HasControlClip() const override { return true; }
-  PhysicalRect ControlClipRect(const PhysicalOffset&) const override;
-  PhysicalRect OverflowClipRect(const PhysicalOffset&,
-                                OverlayScrollbarClipBehavior) const override;
-
-  bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override {
-    return false;
-  }
 
   static const int kAfterButtonSpacing = 4;
 
-  const char* GetName() const override { return "LayoutFileUploadControl"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutFileUploadControl";
+  }
 
  private:
-  void UpdateFromElement() override;
-  void ComputeIntrinsicLogicalWidths(
-      LayoutUnit& min_logical_width,
-      LayoutUnit& max_logical_width) const override;
-  void ComputePreferredLogicalWidths() override;
+  bool IsChildAllowed(LayoutObject* child,
+                      const ComputedStyle& style) const override;
   void PaintObject(const PaintInfo&,
                    const PhysicalOffset& paint_offset) const override;
 
   int MaxFilenameWidth() const;
-
-  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
-
-  bool can_receive_dropped_files_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutFileUploadControl, IsFileUploadControl());
+template <>
+struct DowncastTraits<LayoutFileUploadControl> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsFileUploadControl();
+  }
+};
 
 }  // namespace blink
 

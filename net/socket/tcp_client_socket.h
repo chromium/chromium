@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -24,10 +25,9 @@
 #include "net/socket/transport_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-// PowerMonitor exists on Android, but doesn't get suspend mode signals. It
-// doesn't exist in NaCl, so don't use it to watch for suspend events on those
-// platforms.
-#if !defined(OS_ANDROID) && !defined(OS_NACL)
+// PowerMonitor doesn't get suspend mode signals on Android, so don't use it to
+// watch for suspend events.
+#if !defined(OS_ANDROID)
 // Define SOCKETS_OBSERVE_SUSPEND if sockets should watch for suspend events so
 // they can fail pending socket operations on suspend. Otherwise, connections
 // hang for varying lengths of time when leaving suspend mode before failing
@@ -44,10 +44,11 @@ class IPEndPoint;
 class NetLog;
 struct NetLogSource;
 class SocketPerformanceWatcher;
+class NetworkQualityEstimator;
 
 // A client socket that uses TCP as the transport layer.
 class NET_EXPORT TCPClientSocket : public TransportClientSocket,
-                                   public base::PowerObserver {
+                                   public base::PowerSuspendObserver {
  public:
   // The IP address(es) and port number to connect to.  The TCP socket will try
   // each IP address in the list until it succeeds in establishing a
@@ -55,6 +56,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   TCPClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
       const net::NetLogSource& source);
 
@@ -67,7 +69,11 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   static std::unique_ptr<TCPClientSocket> CreateFromBoundSocket(
       std::unique_ptr<TCPSocket> bound_socket,
       const AddressList& addresses,
-      const IPEndPoint& bound_address);
+      const IPEndPoint& bound_address,
+      NetworkQualityEstimator* network_quality_estimator);
+
+  TCPClientSocket(const TCPClientSocket&) = delete;
+  TCPClientSocket& operator=(const TCPClientSocket&) = delete;
 
   ~TCPClientSocket() override;
 
@@ -117,7 +123,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // release ownership of the descriptor.
   SocketDescriptor SocketDescriptorForTesting() const;
 
-  // base::PowerObserver methods:
+  // base::PowerSuspendObserver methods:
   void OnSuspend() override;
 
  private:
@@ -135,7 +141,8 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   TCPClientSocket(std::unique_ptr<TCPSocket> socket,
                   const AddressList& addresses,
                   int current_address_index,
-                  std::unique_ptr<IPEndPoint> bind_address);
+                  std::unique_ptr<IPEndPoint> bind_address,
+                  NetworkQualityEstimator* network_quality_estimator);
 
   // A helper method shared by Read() and ReadIfReady(). If |read_if_ready| is
   // set to true, ReadIfReady() will be used instead of Read().
@@ -148,6 +155,8 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   int DoConnectLoop(int result);
   int DoConnect();
   int DoConnectComplete(int result);
+
+  void OnConnectAttemptTimeout();
 
   // Calls the connect method of |socket_|. Used in tests, to ensure a socket
   // never connects.
@@ -167,6 +176,16 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // Emits histograms for TCP metrics, at the time the socket is
   // disconnected.
   void EmitTCPMetricsHistogramsOnDisconnect();
+
+  // Emits histograms for the TCP connect attempt that just completed with
+  // |result|.
+  void EmitConnectAttemptHistograms(int result);
+
+  // Gets the timeout to use for the next TCP connect attempt. This is an
+  // experimentally controlled value based on the estimated transport round
+  // trip time. If no timeout is to be enforced, returns
+  // base::TimeDelta::Max().
+  base::TimeDelta GetConnectAttemptTimeout();
 
   std::unique_ptr<TCPSocket> socket_;
 
@@ -207,9 +226,16 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // Connect() or Disconnect() is called.
   bool was_disconnected_on_suspend_;
 
-  base::WeakPtrFactory<TCPClientSocket> weak_ptr_factory_{this};
+  // The time when the latest connect attempt was started.
+  absl::optional<base::TimeTicks> start_connect_attempt_;
 
-  DISALLOW_COPY_AND_ASSIGN(TCPClientSocket);
+  // The NetworkQualityEstimator for the context this socket is associated with.
+  // Can be nullptr.
+  NetworkQualityEstimator* network_quality_estimator_;
+
+  base::OneShotTimer connect_attempt_timer_;
+
+  base::WeakPtrFactory<TCPClientSocket> weak_ptr_factory_{this};
 };
 
 }  // namespace net

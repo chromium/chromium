@@ -1,0 +1,61 @@
+/*
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Protocol buffer definitions for OLD VBA extraction.
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/ole/excel4/ast.proto";
+
+// Contains Excel 4.0 macros parsed into an AST.
+message Excel4Ast {
+  repeated XlCellFormula formulas = 1;
+  repeated XlDefinition definitions = 2;
+  repeated XlExternalDefinition external_definitions = 3;
+  repeated XlSheet sheets = 4;
+}
+
+// Contains the parsed Excel 4.0 macro AST and/or a human-readable report on the
+// extracted and parsed macros.
+message Excel4Macros {
+  // Don't use due to limit on nesting depth in ParseFromString(). Use ast_str
+  // for now.
+  optional Excel4Ast ast = 1 [deprecated = true];
+  // Human-readable Excel4 macros and defined names.
+  optional string report = 2;
+  // Errors that occurred during extraction. Note: in addition to the errors
+  // reported here, errors are also reported in each XlCellFormula,
+  // XlDefinition, and XlExternalDefinition. i.e. the absence of errors reported
+  // here does not mean there were no extraction errors.
+  repeated XlExtractionError extraction_errors = 3;
+  // The AST report with all the possible sensitive strings removed.
+  optional string cleaned_report = 4;
+  // True if the workbook the Excel 4.0 macros are contained in is encrypted
+  // (password-protected).
+  optional bool is_encrypted = 5;
+  // AST as a string, Use
+  // https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.text_format
+  // to convert from proto to text, setting recusion limit as needed.
+  optional bytes ast_str = 6;
+  // If set, an upperbound of the recursion depth of text parser for ast_str.
+  // This is an advisory field, and if set too low, the parser might choose a
+  // larger number.
+  optional int32 max_ast_recursion_depth = 7;
+}

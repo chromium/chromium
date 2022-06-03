@@ -32,10 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GC_TASK_RUNNER_H_
 
 #include <memory>
-#include "base/location.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -43,26 +41,17 @@ class GCTaskObserver final : public Thread::TaskObserver {
   USING_FAST_MALLOC(GCTaskObserver);
 
  public:
-  GCTaskObserver() : nesting_(0) {}
+  GCTaskObserver() = default;
+  ~GCTaskObserver() final = default;
 
-  ~GCTaskObserver() override {
-    // m_nesting can be 1 if this was unregistered in a task and
-    // didProcessTask was not called.
-    DCHECK(!nesting_ || nesting_ == 1);
-  }
+  void WillProcessTask(const base::PendingTask&, bool) final { nesting_++; }
 
-  void WillProcessTask(const base::PendingTask&, bool) override { nesting_++; }
-
-  void DidProcessTask(const base::PendingTask&) override {
-    // In the production code WebKit::initialize is called from inside the
-    // message loop so we can get didProcessTask() without corresponding
-    // willProcessTask once. This is benign.
-    if (nesting_)
-      nesting_--;
-
-    ThreadState::Current()->SafePoint(nesting_
-                                          ? BlinkGC::kHeapPointersOnStack
-                                          : BlinkGC::kNoHeapPointersOnStack);
+  void DidProcessTask(const base::PendingTask&) final {
+    CHECK(nesting_);
+    nesting_--;
+    ThreadState::Current()->SafePoint(
+        nesting_ ? ThreadState::StackState::kMayContainHeapPointers
+                 : ThreadState::StackState::kNoHeapPointers);
   }
 
  private:
@@ -87,4 +76,4 @@ class GCTaskRunner final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GC_TASK_RUNNER_H_

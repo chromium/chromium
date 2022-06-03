@@ -82,11 +82,18 @@ svg-root{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "svg",
     "idValue": "svg-root",
     "nodeWidth": "280",
-    "nodeHeight": "380"
+    "nodeHeight": "380",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "",
+    "layoutObjectName": "LayoutSVGRoot",
+    "showAccessibilityInfo": true
   }
 }
 

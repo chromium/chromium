@@ -8,9 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/common/chrome_switches.h"

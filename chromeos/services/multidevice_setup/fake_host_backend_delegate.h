@@ -5,14 +5,9 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_BACKEND_DELEGATE_H_
 
-#include <utility>
-#include <vector>
-
-#include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -22,12 +17,16 @@ namespace multidevice_setup {
 class FakeHostBackendDelegate : public HostBackendDelegate {
  public:
   FakeHostBackendDelegate();
+
+  FakeHostBackendDelegate(const FakeHostBackendDelegate&) = delete;
+  FakeHostBackendDelegate& operator=(const FakeHostBackendDelegate&) = delete;
+
   ~FakeHostBackendDelegate() override;
 
   // Changes the backend host to |host_device_on_backend| and notifies
   // observers.
   void NotifyHostChangedOnBackend(
-      const base::Optional<multidevice::RemoteDeviceRef>&
+      const absl::optional<multidevice::RemoteDeviceRef>&
           host_device_on_backend);
 
   void NotifyBackendRequestFailed();
@@ -36,26 +35,30 @@ class FakeHostBackendDelegate : public HostBackendDelegate {
 
   // HostBackendDelegate:
   void AttemptToSetMultiDeviceHostOnBackend(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) override;
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) override;
   bool HasPendingHostRequest() override;
-  base::Optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
+  absl::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
       const override;
-  base::Optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
+  absl::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
       const override;
 
  private:
   size_t num_attempt_to_set_calls_ = 0u;
-  base::Optional<base::Optional<multidevice::RemoteDeviceRef>>
+  absl::optional<absl::optional<multidevice::RemoteDeviceRef>>
       pending_host_request_;
-  base::Optional<multidevice::RemoteDeviceRef> host_device_on_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostBackendDelegate);
+  absl::optional<multidevice::RemoteDeviceRef> host_device_on_backend_;
 };
 
 // Test HostBackendDelegate::Observer implementation.
 class FakeHostBackendDelegateObserver : public HostBackendDelegate::Observer {
  public:
   FakeHostBackendDelegateObserver();
+
+  FakeHostBackendDelegateObserver(const FakeHostBackendDelegateObserver&) =
+      delete;
+  FakeHostBackendDelegateObserver& operator=(
+      const FakeHostBackendDelegateObserver&) = delete;
+
   ~FakeHostBackendDelegateObserver() override;
 
   size_t num_changes_on_backend() const { return num_changes_on_backend_; }
@@ -75,8 +78,6 @@ class FakeHostBackendDelegateObserver : public HostBackendDelegate::Observer {
   size_t num_changes_on_backend_ = 0u;
   size_t num_failed_backend_requests_ = 0u;
   size_t num_pending_host_request_changes_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostBackendDelegateObserver);
 };
 
 }  // namespace multidevice_setup

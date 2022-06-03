@@ -6,6 +6,7 @@
 #define CHROME_INSTALLER_MINI_INSTALLER_REGKEY_H_
 
 #include <windows.h>
+
 #include <stddef.h>
 
 namespace mini_installer {
@@ -14,7 +15,7 @@ namespace mini_installer {
 // return Windows last-error codes a la Win32 registry API.
 class RegKey {
  public:
-  RegKey() : key_(NULL) { }
+  RegKey() : key_(nullptr) {}
   ~RegKey() { Close(); }
 
   // Opens the key named |sub_key| with given |access| rights.  Returns
@@ -22,7 +23,7 @@ class RegKey {
   LONG Open(HKEY key, const wchar_t* sub_key, REGSAM access);
 
   // Returns true if a key is open.
-  bool is_valid() const { return key_ != NULL; }
+  bool is_valid() const { return key_ != nullptr; }
 
   // Read a value from the registry into the memory indicated by |value|
   // (of |value_size| wchar_t units).  Returns ERROR_SUCCESS,
@@ -44,8 +45,10 @@ class RegKey {
   // Helper function to read a value from registry.  Returns true if value
   // is read successfully and stored in parameter value. Returns false
   // otherwise. |size| is measured in wchar_t units.
-  static bool ReadSZValue(HKEY root_key, const wchar_t *sub_key,
-                          const wchar_t *value_name, wchar_t *value,
+  static bool ReadSZValue(HKEY root_key,
+                          const wchar_t* sub_key,
+                          const wchar_t* value_name,
+                          wchar_t* value,
                           size_t value_size);
 
  private:

@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
@@ -20,7 +22,7 @@ std::unique_ptr<SyncWebSocket> CreateSyncWebSocket(
 }
 
 std::unique_ptr<SyncWebSocket> CreateReplayWebSocket(base::FilePath log_path) {
-  return std::unique_ptr<LogReplaySocket>(new LogReplaySocket(log_path));
+  return std::make_unique<LogReplaySocket>(log_path);
 }
 
 }  // namespace

@@ -14,11 +14,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -65,11 +65,10 @@ constexpr uint8_t kLossyWebPFileHeader[] = {
 };
 // clang-format on
 
-constexpr base::span<const uint8_t> kJpegEncodedData(kJpegPFileHeader, 3u);
+constexpr base::span<const uint8_t, 3u> kJpegEncodedData = kJpegPFileHeader;
 
-constexpr base::span<const uint8_t> kLossyWebPEncodedData(
-    kLossyWebPFileHeader,
-    kWebPFileAndVp8ChunkHeaderSizeInBytes);
+constexpr base::span<const uint8_t, kWebPFileAndVp8ChunkHeaderSizeInBytes>
+    kLossyWebPEncodedData = kLossyWebPFileHeader;
 
 class MockNativePixmapDmaBuf : public gfx::NativePixmapDmaBuf {
  public:
@@ -113,7 +112,7 @@ class MockVaapiImageDecoder : public VaapiImageDecoder {
     return gpu::ImageDecodeAcceleratorSupportedProfile();
   }
 
-  MOCK_METHOD1(Initialize, bool(const base::RepeatingClosure&));
+  MOCK_METHOD1(Initialize, bool(const ReportErrorToUMACB&));
   MOCK_METHOD1(Decode, VaapiImageDecodeStatus(base::span<const uint8_t>));
   MOCK_CONST_METHOD0(GetScopedVASurface, const ScopedVASurface*());
   MOCK_METHOD1(
@@ -144,6 +143,11 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
         new VaapiImageDecodeAcceleratorWorker(std::move(decoders)));
   }
 
+  VaapiImageDecodeAcceleratorWorkerTest(
+      const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
+  VaapiImageDecodeAcceleratorWorkerTest& operator=(
+      const VaapiImageDecodeAcceleratorWorkerTest&) = delete;
+
   MockVaapiImageDecoder* GetJpegDecoder() const {
     auto result =
         worker_->decoders_.find(gpu::ImageDecodeAcceleratorType::kJpeg);
@@ -168,8 +172,6 @@ class VaapiImageDecodeAcceleratorWorkerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<VaapiImageDecodeAcceleratorWorker> worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiImageDecodeAcceleratorWorkerTest);
 };
 
 ACTION_P2(ExportAsNativePixmapDmaBufSuccessfully,
@@ -185,10 +187,10 @@ ACTION_P2(ExportAsNativePixmapDmaBufSuccessfully,
 }
 
 TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeSucceeds) {
-  std::vector<uint8_t> jpeg_encoded_data(kJpegEncodedData.cbegin(),
-                                         kJpegEncodedData.cend());
-  std::vector<uint8_t> webp_encoded_data(kLossyWebPEncodedData.cbegin(),
-                                         kLossyWebPEncodedData.cend());
+  std::vector<uint8_t> jpeg_encoded_data(kJpegEncodedData.begin(),
+                                         kJpegEncodedData.end());
+  std::vector<uint8_t> webp_encoded_data(kLossyWebPEncodedData.begin(),
+                                         kLossyWebPEncodedData.end());
   {
     InSequence sequence;
     MockVaapiImageDecoder* jpeg_decoder = GetJpegDecoder();
@@ -235,10 +237,10 @@ TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeSucceeds) {
 }
 
 TEST_F(VaapiImageDecodeAcceleratorWorkerTest, ImageDecodeFails) {
-  std::vector<uint8_t> jpeg_encoded_data(kJpegEncodedData.cbegin(),
-                                         kJpegEncodedData.cend());
-  std::vector<uint8_t> webp_encoded_data(kLossyWebPEncodedData.cbegin(),
-                                         kLossyWebPEncodedData.cend());
+  std::vector<uint8_t> jpeg_encoded_data(kJpegEncodedData.begin(),
+                                         kJpegEncodedData.end());
+  std::vector<uint8_t> webp_encoded_data(kLossyWebPEncodedData.begin(),
+                                         kLossyWebPEncodedData.end());
   {
     InSequence sequence;
     MockVaapiImageDecoder* jpeg_decoder = GetJpegDecoder();

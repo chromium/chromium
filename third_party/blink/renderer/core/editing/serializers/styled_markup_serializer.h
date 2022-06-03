@@ -59,10 +59,10 @@ class StyledMarkupSerializer final {
 
   const PositionTemplate<Strategy> start_;
   const PositionTemplate<Strategy> end_;
-  const Member<Node> highest_node_to_be_serialized_;
+  Node* const highest_node_to_be_serialized_;
   const CreateMarkupOptions options_;
-  Member<Node> last_closed_;
-  Member<EditingStyle> wrapping_style_;
+  Node* last_closed_;
+  EditingStyle* wrapping_style_;
 };
 
 extern template class StyledMarkupSerializer<EditingStrategy>;

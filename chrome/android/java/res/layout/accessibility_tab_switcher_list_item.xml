@@ -8,31 +8,20 @@
 
 <org.chromium.chrome.browser.accessibility_tab_switcher.AccessibilityTabModelListItem
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_item_frame"
     android:layout_width="match_parent"
     android:layout_height="@dimen/accessibility_tab_height">
-    <LinearLayout
-        android:id="@+id/tab_contents_modern"
-        style="@style/ListItemContainer" >
 
-        <include layout="@layout/modern_list_item_view" />
-
-        <!-- TODO(huayinz): Remove custom padding after https://crbug.com/746712 is fixed. -->
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/close_btn_modern"
-            style="@style/ListItemEndIconSmall"
-            android:paddingStart="23dp"
-            android:paddingEnd="13dp"
-            android:src="@drawable/btn_delete_24dp" />
-    </LinearLayout>
+    <include layout="@layout/modern_list_item_view" />
 
     <LinearLayout
         android:id="@+id/undo_contents"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible" >
+        android:visibility="invisible"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/undo_button"

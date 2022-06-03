@@ -5,6 +5,7 @@
 #include "chrome/chrome_cleaner/os/inheritable_event.h"
 
 #include <windows.h>
+#include "base/logging.h"
 
 namespace chrome_cleaner {
 

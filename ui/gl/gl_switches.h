@@ -28,18 +28,28 @@ GL_EXPORT extern const char kANGLEImplementationD3D9Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11on12Name[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLName[];
+GL_EXPORT extern const char kANGLEImplementationOpenGLEGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLESName[];
+GL_EXPORT extern const char kANGLEImplementationOpenGLESEGLName[];
 GL_EXPORT extern const char kANGLEImplementationNullName[];
 GL_EXPORT extern const char kANGLEImplementationVulkanName[];
 GL_EXPORT extern const char kANGLEImplementationSwiftShaderName[];
+GL_EXPORT extern const char kANGLEImplementationSwiftShaderForWebGLName[];
+GL_EXPORT extern const char kANGLEImplementationMetalName[];
+GL_EXPORT extern const char kANGLEImplementationNoneName[];
 
 GL_EXPORT extern const char kANGLEImplementationD3D11NULLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLNULLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLESNULLName[];
 GL_EXPORT extern const char kANGLEImplementationVulkanNULLName[];
+GL_EXPORT extern const char kANGLEImplementationMetalNULLName[];
 
 GL_EXPORT extern const char kCmdDecoderValidatingName[];
 GL_EXPORT extern const char kCmdDecoderPassthroughName[];
+
+GL_EXPORT extern const char kSwapChainFormatNV12[];
+GL_EXPORT extern const char kSwapChainFormatYUY2[];
+GL_EXPORT extern const char kSwapChainFormatBGRA[];
 
 }  // namespace gl
 
@@ -67,10 +77,17 @@ GL_EXPORT extern const char kEnableSwapBuffersWithBounds[];
 GL_EXPORT extern const char kDisableDirectComposition[];
 GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kDisableDirectCompositionVideoOverlays[];
+GL_EXPORT extern const char kUseAdapterLuid[];
+
+GL_EXPORT extern const char kDirectCompositionForceFullDamageForTesting[];
+GL_EXPORT extern const char kDirectCompositionVideoSwapChainFormat[];
 
 // These flags are used by the test harness code, not passed in by users.
 GL_EXPORT extern const char kDisableGLDrawingForTests[];
 GL_EXPORT extern const char kOverrideUseSoftwareGLForTests[];
+
+// This flag is used when not enabling GPU hardware in headless mode
+GL_EXPORT extern const char kOverrideUseSoftwareGLForHeadless[];
 
 GL_EXPORT extern const char* const kGLSwitchesCopiedFromGpuProcessHost[];
 GL_EXPORT extern const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
@@ -78,15 +95,20 @@ GL_EXPORT extern const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
 }  // namespace switches
 
 namespace features {
-GL_EXPORT extern const base::Feature kDirectCompositionComplexOverlays;
+
+GL_EXPORT extern const base::Feature kDCompTripleBufferRootSwapChain;
+GL_EXPORT extern const base::Feature kDCompTripleBufferVideoSwapChain;
+GL_EXPORT extern const base::Feature kDirectCompositionForceFullDamage;
 GL_EXPORT extern const base::Feature kDirectCompositionGpuVSync;
 GL_EXPORT extern const base::Feature kDirectCompositionLowLatencyPresentation;
-GL_EXPORT extern const base::Feature kDirectCompositionNonrootOverlays;
-GL_EXPORT extern const base::Feature kDirectCompositionPreferNV12Overlays;
-GL_EXPORT extern const base::Feature kDirectCompositionPresentationFeedback;
-GL_EXPORT extern const base::Feature kDirectCompositionUseNV12DecodeSwapChain;
+GL_EXPORT extern const base::Feature kDirectCompositionSoftwareOverlays;
 GL_EXPORT extern const base::Feature kDefaultANGLEOpenGL;
-extern const base::Feature kTrackCurrentShaders;
+GL_EXPORT extern const base::Feature kDefaultANGLEMetal;
+GL_EXPORT extern const base::Feature kDefaultANGLEVulkan;
+GL_EXPORT extern const base::Feature kTrackCurrentShaders;
+GL_EXPORT extern const base::Feature kVulkanFromANGLE;
+
+GL_EXPORT bool IsDefaultANGLEVulkan();
 
 }  // namespace features
 

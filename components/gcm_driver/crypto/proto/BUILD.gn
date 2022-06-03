@@ -10,7 +10,5 @@ proto_library("proto") {
     "//components/gcm_driver/crypto:unit_tests",
   ]
 
-  sources = [
-    "gcm_encryption_data.proto",
-  ]
+  sources = [ "gcm_encryption_data.proto" ]
 }

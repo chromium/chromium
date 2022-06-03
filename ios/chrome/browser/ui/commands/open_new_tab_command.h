@@ -15,8 +15,9 @@ struct Referrer;
 
 // Describes the intended position for a new tab.
 enum OpenPosition {
-  kCurrentTab,  // Relative to currently selected tab.
-  kLastTab      // Always at end of tab model.
+  kCurrentTab,     // Relative to currently selected tab.
+  kLastTab,        // Always at end of tab model.
+  kSpecifiedIndex  // Index is specified elsewhere.
 };
 
 // Command sent to open a new tab, optionally including a point (in UIWindow
@@ -44,6 +45,11 @@ enum OpenPosition {
 - (instancetype)init NS_UNAVAILABLE;
 
 // Convenience initializers
+
+// Initializes a command intended to open a URL from browser chrome (e.g.,
+// settings).
++ (instancetype)commandWithURLFromChrome:(const GURL&)URL
+                             inIncognito:(BOOL)inIncognito;
 
 // Initializes a command intended to open a URL from browser chrome (e.g.,
 // settings). This will always open in a new foreground tab in non-incognito

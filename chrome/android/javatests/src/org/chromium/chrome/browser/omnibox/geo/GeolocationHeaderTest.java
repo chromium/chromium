@@ -7,24 +7,30 @@ package org.chromium.chrome.browser.omnibox.geo;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.SystemClock;
-import android.support.test.filters.SmallTest;
 import android.util.Base64;
 
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.settings.website.ContentSettingValues;
-import org.chromium.chrome.browser.settings.website.PermissionInfo;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import androidx.test.filters.SmallTest;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for GeolocationHeader and GeolocationTracker.
@@ -33,8 +39,7 @@ import org.junit.runner.RunWith;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GeolocationHeaderTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String SEARCH_URL_1 = "https://www.google.com/search?q=potatoes";
     private static final String SEARCH_URL_2 = "https://www.google.co.jp/webhp?#q=dinosaurs";
@@ -55,6 +60,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
     public void testConsistentHeader() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs.
@@ -81,7 +87,8 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
-    public void testPermission() {
+    @DisableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
+    public void testPermissionWithAutogrant() {
         long now = setMockLocationNow();
 
         // X-Geo shouldn't be sent when location is disallowed for the origin.
@@ -96,7 +103,23 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    @EnableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
+    public void testPermissionWithoutAutogrant() {
+        long now = setMockLocationNow();
+
+        // X-Geo should be sent if DSE autogrant is enabled only if the user has explicitly allowed
+        // geolocation.
+        checkHeaderWithPermission(ContentSettingValues.ALLOW, now, false);
+        checkHeaderWithPermission(ContentSettingValues.BLOCK, now, true);
+        checkHeaderWithPermission(ContentSettingValues.DEFAULT, now, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Location"})
     public void testProtoEncoding() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs using proto encoding.
@@ -107,6 +130,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallback() {
+        setPermission(ContentSettingValues.ALLOW);
         // Only GPS location, should be sent when flag is on.
         long now = System.currentTimeMillis();
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
@@ -119,6 +143,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallbackYounger() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = System.currentTimeMillis();
         // GPS location is younger.
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now + 100);
@@ -134,6 +159,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallbackOlder() {
+        setPermission(ContentSettingValues.ALLOW);
         long now = System.currentTimeMillis();
         // GPS location is older.
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now - 100);
@@ -149,8 +175,8 @@ public class GeolocationHeaderTest {
             final long locationTime, final boolean shouldBeNull) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PermissionInfo infoHttps =
-                    new PermissionInfo(PermissionInfo.Type.GEOLOCATION, SEARCH_URL_1, null, false);
-            infoHttps.setContentSetting(httpsPermission);
+                    new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
+            infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), httpsPermission);
             String header = GeolocationHeader.getGeoHeader(
                     SEARCH_URL_1, mActivityTestRule.getActivity().getActivityTab());
             assertHeaderState(header, locationTime, shouldBeNull);
@@ -240,5 +266,13 @@ public class GeolocationHeaderTest {
                 locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
         String expectedHeader = "X-Geo: w " + locationProto;
         Assert.assertEquals(expectedHeader, header);
+    }
+
+    private void setPermission(final @ContentSettingValues int setting) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PermissionInfo infoHttps =
+                    new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
+            infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+        });
     }
 }

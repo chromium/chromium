@@ -4,43 +4,48 @@
 
 package org.chromium.chrome.test;
 
+import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * JUnit test rule that takes care of important initialization for Chrome-specific tests, such as
  * initializing the AccountManagerFacade.
  */
-public class ChromeBrowserTestRule extends NativeLibraryTestRule {
-    private void setUp() {
-        SigninTestUtil.setUpAuthForTest();
-        loadNativeLibraryAndInitBrowserProcess();
-    }
+public class ChromeBrowserTestRule implements TestRule {
+    private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
+        Statement statement = new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 /**
-                 * Loads the native library on the activity UI thread (must not be called from the
-                 * UI thread).  After loading the library, this will initialize the browser process
-                 * if necessary.
+                 * Loads the native library on the activity UI thread.  After loading the library,
+                 * this will initialize the browser process if necessary.
                  */
-                setUp();
-                try {
-                    base.evaluate();
-                } finally {
-                    tearDown();
-                }
+                NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
+                base.evaluate();
             }
-        }, description);
+        };
+        return mAccountManagerTestRule.apply(statement, description);
     }
 
-    private void tearDown() {
-        SigninTestUtil.tearDownAuthForTest();
+    /**
+     * Adds an account of the given accountName to the fake AccountManagerFacade.
+     */
+    public CoreAccountInfo addAccount(String accountName) {
+        return mAccountManagerTestRule.addAccount(accountName);
+    }
+
+    /**
+     * Add and sign in an account with the default name.
+     */
+    public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
+        return mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
     }
 }

@@ -10,8 +10,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
@@ -34,20 +34,23 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       : encoder_(NewTextCodec(WTF::TextEncoding("utf-8"))),
         script_state_(script_state) {}
 
+  Transformer(const Transformer&) = delete;
+  Transformer& operator=(const Transformer&) = delete;
+
   // Implements the "encode and enqueue a chunk" algorithm. For efficiency, only
   // the characters at the end of chunks are special-cased.
   ScriptPromise Transform(v8::Local<v8::Value> chunk,
                           TransformStreamDefaultController* controller,
                           ExceptionState& exception_state) override {
-    V8StringResource<> input_resource = chunk;
+    V8StringResource<> input_resource{chunk};
     if (!input_resource.Prepare(script_state_->GetIsolate(), exception_state))
       return ScriptPromise();
     const String input = input_resource;
     if (input.IsEmpty())
       return ScriptPromise::CastUndefined(script_state_);
 
-    const base::Optional<UChar> high_surrogate = pending_high_surrogate_;
-    pending_high_surrogate_ = base::nullopt;
+    const absl::optional<UChar> high_surrogate = pending_high_surrogate_;
+    pending_high_surrogate_ = absl::nullopt;
     std::string prefix;
     std::string result;
     if (input.Is8Bit()) {
@@ -95,16 +98,13 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
 
   ScriptState* GetScriptState() override { return script_state_; }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
     TransformStreamTransformer::Trace(visitor);
   }
 
  private:
-  static std::string ReplacementCharacterInUtf8() {
-    constexpr char kRawBytes[] = {0xEF, 0xBF, 0xBD};
-    return std::string(kRawBytes, sizeof(kRawBytes));
-  }
+  static std::string ReplacementCharacterInUtf8() { return "\ufffd"; }
 
   static DOMUint8Array* CreateDOMUint8ArrayFromTwoStdStringsConcatenated(
       const std::string& string1,
@@ -122,7 +122,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   // Returns true if either |*prefix| or |*result| have been set to a non-empty
   // value.
   bool Encode16BitString(const String& input,
-                         base::Optional<UChar> high_surrogate,
+                         absl::optional<UChar> high_surrogate,
                          std::string* prefix,
                          std::string* result) {
     const UChar* begin = input.Characters16();
@@ -162,9 +162,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
   // There is no danger of ScriptState leaking across worlds because a
   // TextEncoderStream can only be accessed from the world that created it.
   Member<ScriptState> script_state_;
-  base::Optional<UChar> pending_high_surrogate_;
-
-  DISALLOW_COPY_AND_ASSIGN(Transformer);
+  absl::optional<UChar> pending_high_surrogate_;
 };
 
 TextEncoderStream* TextEncoderStream::Create(ScriptState* script_state,
@@ -186,7 +184,7 @@ WritableStream* TextEncoderStream::writable() const {
   return transform_->Writable();
 }
 
-void TextEncoderStream::Trace(Visitor* visitor) {
+void TextEncoderStream::Trace(Visitor* visitor) const {
   visitor->Trace(transform_);
   ScriptWrappable::Trace(visitor);
 }

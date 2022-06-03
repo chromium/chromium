@@ -17,19 +17,22 @@ source_set("mac") {
     "//base",
     "//chrome/common/safe_browsing:archive_analyzer_results",
     "//chrome/common/safe_browsing:binary_feature_extractor",
-    "//components/safe_browsing:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
   ]
 }
 
 config("dmg_public_config") {
-  libs = [
-    "bz2",
-    "CoreFoundation.framework",
-  ]
+  libs = [ "bz2" ]
+  frameworks = [ "CoreFoundation.framework" ]
 }
 
 source_set("dmg_common") {
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+
+    # Unit tests directly use some of the utilities in this target.
+    "//chrome/test:unit_tests",
+  ]
 
   sources = [
     "convert_big_endian.h",
@@ -55,9 +58,7 @@ source_set("dmg_common") {
 }
 
 executable("crdmg") {
-  sources = [
-    "crdmg.cc",
-  ]
+  sources = [ "crdmg.cc" ]
 
   deps = [
     ":dmg_common",
@@ -67,9 +68,7 @@ executable("crdmg") {
 }
 
 fuzzer_test("safe_browsing_dmg_fuzzer") {
-  sources = [
-    "dmg_fuzzer.cc",
-  ]
+  sources = [ "dmg_fuzzer.cc" ]
 
   deps = [
     ":dmg_common",
@@ -78,9 +77,7 @@ fuzzer_test("safe_browsing_dmg_fuzzer") {
 }
 
 fuzzer_test("safe_browsing_hfs_fuzzer") {
-  sources = [
-    "hfs_fuzzer.cc",
-  ]
+  sources = [ "hfs_fuzzer.cc" ]
 
   deps = [
     ":dmg_common",

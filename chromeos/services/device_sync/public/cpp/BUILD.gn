@@ -16,6 +16,25 @@ source_set("cpp") {
   ]
 
   public_deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/components/multidevice",
+    "//chromeos/components/multidevice/logging",
+    "//chromeos/services/device_sync:feature_status_change",
+    "//chromeos/services/device_sync/public/mojom",
+  ]
+
+  deps = [ "//mojo/public/cpp/bindings" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "device_sync_prefs.cc",
+    "device_sync_prefs.h",
+  ]
+
+  public_deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
@@ -24,7 +43,8 @@ source_set("cpp") {
   ]
 
   deps = [
-    "//mojo/public/cpp/bindings",
+    "//chromeos/services/device_sync",
+    "//components/prefs",
   ]
 }
 
@@ -40,24 +60,19 @@ static_library("test_support") {
     "fake_gcm_device_info_provider.h",
   ]
 
-  public_deps = [
-    ":cpp",
-  ]
+  public_deps = [ ":cpp" ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "device_sync_client_impl_unittest.cc",
-  ]
+  sources = [ "device_sync_client_impl_unittest.cc" ]
 
   deps = [
     ":cpp",
+    ":prefs",
     ":test_support",
     "//base",
     "//base/test:test_support",

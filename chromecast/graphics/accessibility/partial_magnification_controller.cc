@@ -11,7 +11,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/widget/widget.h"
@@ -85,6 +85,9 @@ class PartialMagnificationController::ContentMask : public ui::LayerDelegate {
     layer_.SetBounds(gfx::Rect(mask_bounds));
   }
 
+  ContentMask(const ContentMask&) = delete;
+  ContentMask& operator=(const ContentMask&) = delete;
+
   ~ContentMask() override { layer_.set_delegate(nullptr); }
 
   ui::Layer* layer() { return &layer_; }
@@ -122,7 +125,6 @@ class PartialMagnificationController::ContentMask : public ui::LayerDelegate {
 
   ui::Layer layer_;
   bool is_border_;
-  DISALLOW_COPY_AND_ASSIGN(ContentMask);
 };
 
 // The border renderer draws the border as well as outline on both the outer and
@@ -138,6 +140,9 @@ class PartialMagnificationController::BorderRenderer
     magnifier_shadows_.push_back(gfx::ShadowValue(
         gfx::Vector2d(0, 0), kShadowThickness, kTopShadowColor));
   }
+
+  BorderRenderer(const BorderRenderer&) = delete;
+  BorderRenderer& operator=(const BorderRenderer&) = delete;
 
   ~BorderRenderer() override = default;
 
@@ -188,8 +193,6 @@ class PartialMagnificationController::BorderRenderer
 
   gfx::Rect magnifier_window_bounds_;
   std::vector<gfx::ShadowValue> magnifier_shadows_;
-
-  DISALLOW_COPY_AND_ASSIGN(BorderRenderer);
 };
 
 PartialMagnificationController::PartialMagnificationController(
@@ -202,6 +205,7 @@ PartialMagnificationController::PartialMagnificationController(
 PartialMagnificationController::~PartialMagnificationController() {
   CloseMagnifierWindow();
   root_window_->RemovePreTargetHandler(this);
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void PartialMagnificationController::SetEnabled(bool enabled) {
@@ -308,7 +312,7 @@ void PartialMagnificationController::CreateMagnifierWindow(
   host_widget_ = new views::Widget;
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.bounds = GetBounds(mouse);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
@@ -32,6 +31,9 @@ class DictionaryValueUpdate {
   DictionaryValueUpdate(UpdateCallback report_update,
                         base::DictionaryValue* value,
                         std::vector<std::string> path);
+
+  DictionaryValueUpdate(const DictionaryValueUpdate&) = delete;
+  DictionaryValueUpdate& operator=(const DictionaryValueUpdate&) = delete;
 
   ~DictionaryValueUpdate();
   bool HasKey(base::StringPiece key) const;
@@ -65,7 +67,7 @@ class DictionaryValueUpdate {
   void SetInteger(base::StringPiece path, int in_value);
   void SetDouble(base::StringPiece path, double in_value);
   void SetString(base::StringPiece path, base::StringPiece in_value);
-  void SetString(base::StringPiece path, const base::string16& in_value);
+  void SetString(base::StringPiece path, const std::u16string& in_value);
   std::unique_ptr<DictionaryValueUpdate> SetDictionary(
       base::StringPiece path,
       std::unique_ptr<base::DictionaryValue> in_value);
@@ -91,7 +93,7 @@ class DictionaryValueUpdate {
   // doubles.
   bool GetDouble(base::StringPiece path, double* out_value) const;
   bool GetString(base::StringPiece path, std::string* out_value) const;
-  bool GetString(base::StringPiece path, base::string16* out_value) const;
+  bool GetString(base::StringPiece path, std::u16string* out_value) const;
   bool GetDictionary(base::StringPiece path,
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(base::StringPiece path,
@@ -110,7 +112,7 @@ class DictionaryValueUpdate {
   bool GetStringWithoutPathExpansion(base::StringPiece key,
                                      std::string* out_value) const;
   bool GetStringWithoutPathExpansion(base::StringPiece key,
-                                     base::string16* out_value) const;
+                                     std::u16string* out_value) const;
   bool GetDictionaryWithoutPathExpansion(
       base::StringPiece key,
       const base::DictionaryValue** out_value) const;
@@ -124,11 +126,9 @@ class DictionaryValueUpdate {
 
   // Removes the Value with the specified path from this dictionary (or one
   // of its child dictionaries, if the path is more than just a local key).
-  // If |out_value| is non-NULL, the removed Value will be passed out via
-  // |out_value|.  If |out_value| is NULL, the removed value will be deleted.
   // This method returns true if |path| is a valid path; otherwise it will
   // return false and the DictionaryValue object will be unchanged.
-  bool Remove(base::StringPiece path, std::unique_ptr<base::Value>* out_value);
+  bool Remove(base::StringPiece path);
 
   // Like Remove(), but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.
@@ -158,8 +158,6 @@ class DictionaryValueUpdate {
   UpdateCallback report_update_;
   base::DictionaryValue* const value_;
   const std::vector<std::string> path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryValueUpdate);
 };
 
 }  // namespace prefs

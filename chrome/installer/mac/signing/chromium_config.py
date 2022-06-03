@@ -9,15 +9,8 @@ class ChromiumCodeSignConfig(BuildPropsCodeSignConfig):
     """A CodeSignConfig used for signing non-official Chromium builds.
 
     This is primarily used for testing, so it does not include certain
-    signing elements like provisioning profiles. It also omits internal-only
-    resources.
+    signing elements like provisioning profiles.
     """
-
-    @property
-    def optional_parts(self):
-        # This part requires src-internal, so it is not required for a Chromium
-        # build signing.
-        return set(('libwidevinecdm.dylib',))
 
     @property
     def provisioning_profile_basename(self):

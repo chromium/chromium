@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/evdev/event_thread_evdev.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -80,12 +81,12 @@ void EventThreadEvdev::Start(
     CursorDelegateEvdev* cursor,
     EventThreadStartCallback callback) {
   TRACE_EVENT0("evdev", "EventThreadEvdev::Start");
-  thread_.reset(
-      new EvdevThread(std::move(dispatcher), cursor, std::move(callback)));
+  thread_ = std::make_unique<EvdevThread>(std::move(dispatcher), cursor,
+                                          std::move(callback));
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::UI;
   thread_options.priority = base::ThreadPriority::DISPLAY;
-  if (!thread_->StartWithOptions(thread_options))
+  if (!thread_->StartWithOptions(std::move(thread_options)))
     LOG(FATAL) << "Failed to create input thread";
 }
 

@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/modules/badging/navigator_badge.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/workers/worker_navigator.h"
 
 namespace blink {
 
@@ -25,41 +28,81 @@ NavigatorBadge& NavigatorBadge::From(ScriptState* script_state) {
   return *supplement;
 }
 
-NavigatorBadge::NavigatorBadge(ExecutionContext* context) {
-  context->GetBrowserInterfaceBroker().GetInterface(
-      badge_service_.BindNewPipeAndPassReceiver());
-  DCHECK(badge_service_);
-}
+NavigatorBadge::NavigatorBadge(ExecutionContext* context)
+    : Supplement(*context) {}
 
 // static
 ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
                                           Navigator& /*navigator*/) {
-  From(script_state)
-      .badge_service_->SetBadge(mojom::blink::BadgeValue::NewFlag(0));
-  return ScriptPromise::CastUndefined(script_state);
+  return SetAppBadgeHelper(script_state, mojom::blink::BadgeValue::NewFlag(0));
 }
 
 // static
 ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
-                                          Navigator& navigator,
-                                          uint64_t content) {
-  if (content == 0)
-    return NavigatorBadge::clearAppBadge(script_state, navigator);
+                                          WorkerNavigator& /*navigator*/) {
+  return SetAppBadgeHelper(script_state, mojom::blink::BadgeValue::NewFlag(0));
+}
 
-  From(script_state)
-      .badge_service_->SetBadge(mojom::blink::BadgeValue::NewNumber(content));
-  return ScriptPromise::CastUndefined(script_state);
+// static
+ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
+                                          Navigator& /*navigator*/,
+                                          uint64_t content) {
+  return SetAppBadgeHelper(script_state,
+                           mojom::blink::BadgeValue::NewNumber(content));
+}
+
+// static
+ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
+                                          WorkerNavigator& /*navigator*/,
+                                          uint64_t content) {
+  return SetAppBadgeHelper(script_state,
+                           mojom::blink::BadgeValue::NewNumber(content));
 }
 
 // static
 ScriptPromise NavigatorBadge::clearAppBadge(ScriptState* script_state,
                                             Navigator& /*navigator*/) {
-  From(script_state).badge_service_->ClearBadge();
+  return ClearAppBadgeHelper(script_state);
+}
+
+// static
+ScriptPromise NavigatorBadge::clearAppBadge(ScriptState* script_state,
+                                            WorkerNavigator& /*navigator*/) {
+  return ClearAppBadgeHelper(script_state);
+}
+
+void NavigatorBadge::Trace(Visitor* visitor) const {
+  Supplement<ExecutionContext>::Trace(visitor);
+}
+
+// static
+ScriptPromise NavigatorBadge::SetAppBadgeHelper(
+    ScriptState* script_state,
+    mojom::blink::BadgeValuePtr badge_value) {
+  if (badge_value->is_number() && badge_value->get_number() == 0)
+    return ClearAppBadgeHelper(script_state);
+
+#if !defined(OS_ANDROID)
+  From(script_state).badge_service()->SetBadge(std::move(badge_value));
+#endif
   return ScriptPromise::CastUndefined(script_state);
 }
 
-void NavigatorBadge::Trace(blink::Visitor* visitor) {
-  Supplement<ExecutionContext>::Trace(visitor);
+// static
+ScriptPromise NavigatorBadge::ClearAppBadgeHelper(ScriptState* script_state) {
+#if !defined(OS_ANDROID)
+  From(script_state).badge_service()->ClearBadge();
+#endif
+  return ScriptPromise::CastUndefined(script_state);
+}
+
+mojo::Remote<mojom::blink::BadgeService> NavigatorBadge::badge_service() {
+  mojo::Remote<mojom::blink::BadgeService> badge_service;
+  GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
+      badge_service.BindNewPipeAndPassReceiver());
+  DCHECK(badge_service);
+
+  return badge_service;
 }
 
 }  // namespace blink

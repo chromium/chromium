@@ -57,7 +57,17 @@ void WontCompile() {
   UMA_HISTOGRAM_ENUMERATION("", 0, TypeA::A);
 }
 
-#elif defined(NCTEST_FUNCTION_INT)  // [r"Non enum passed to UmaHistogramEnumeration"]
+#elif defined(NCTEST_FUNCTION_ENUM_NO_MAXVALUE)  // [r"no member named 'kMaxValue' in 'base::NoMaxValue'"]
+
+enum class NoMaxValue {
+  kMoo,
+};
+
+void WontCompile() {
+  UmaHistogramEnumeration("", NoMaxValue::kMoo);
+}
+
+#elif defined(NCTEST_FUNCTION_INT_AS_ENUM)  // [r"static_assert failed due to requirement 'std::is_enum<int>::value'"]
 
 void WontCompile() {
   UmaHistogramEnumeration("", 1, 2);

@@ -38,8 +38,8 @@
 namespace blink {
 
 class Document;
-class DoubleOrAutoKeyword;
 class ExecutionContext;
+class V8UnionAutoKeywordOrDouble;
 class VTTCue;
 class VTTRegion;
 class VTTScanner;
@@ -80,7 +80,7 @@ class VTTCueBackgroundBox final : public HTMLDivElement {
   explicit VTTCueBackgroundBox(Document&);
   bool IsVTTCueBackgroundBox() const override { return true; }
   void SetTrack(TextTrack*);
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   const TextTrack* GetTrack() const { return track_; }
 
@@ -95,7 +95,7 @@ struct DowncastTraits<VTTCueBackgroundBox> {
   }
 };
 
-class VTTCue final : public TextTrackCue {
+class CORE_EXPORT VTTCue final : public TextTrackCue {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -118,11 +118,12 @@ class VTTCue final : public TextTrackCue {
   bool snapToLines() const { return snap_to_lines_; }
   void setSnapToLines(bool);
 
-  void line(DoubleOrAutoKeyword&) const;
-  void setLine(const DoubleOrAutoKeyword&);
+  V8UnionAutoKeywordOrDouble* line() const;
+  void setLine(const V8UnionAutoKeywordOrDouble* position);
 
-  void position(DoubleOrAutoKeyword&) const;
-  void setPosition(const DoubleOrAutoKeyword&, ExceptionState&);
+  V8UnionAutoKeywordOrDouble* position() const;
+  void setPosition(const V8UnionAutoKeywordOrDouble* position,
+                   ExceptionState& exception_state);
 
   double size() const { return cue_size_; }
   void setSize(double, ExceptionState&);
@@ -143,6 +144,8 @@ class VTTCue final : public TextTrackCue {
   void UpdateDisplay(HTMLDivElement& container) override;
 
   void UpdatePastAndFutureNodes(double movie_time) override;
+
+  absl::optional<double> GetNextIntraCueTime(double movie_time) const override;
 
   void RemoveDisplayTree(RemovalNotification) override;
 
@@ -172,7 +175,7 @@ class VTTCue final : public TextTrackCue {
   String ToString() const override;
 #endif
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Document& GetDocument() const;
@@ -218,9 +221,6 @@ class VTTCue final : public TextTrackCue {
   bool snap_to_lines_ : 1;
   bool display_tree_should_change_ : 1;
 };
-
-// VTTCue is currently the only TextTrackCue subclass.
-DEFINE_TYPE_CASTS(VTTCue, TextTrackCue, cue, true, true);
 
 }  // namespace blink
 

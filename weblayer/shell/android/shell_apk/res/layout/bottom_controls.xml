@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- The background of the bottom-view must be opaque, otherwise it bleeds through to the
+     cc::Layer that mirrors the contents of the top-view. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText"
+    android:id="@+id/bottom_controls_id"
+    android:background="#FFc9c9c9"
+    android:textSize="24sp"
+    android:text="I am the bottom view" />

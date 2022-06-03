@@ -21,7 +21,7 @@ class AffiliationFetchThrottlerDelegate {
   virtual bool OnCanSendNetworkRequest() = 0;
 
  protected:
-  virtual ~AffiliationFetchThrottlerDelegate() {}
+  virtual ~AffiliationFetchThrottlerDelegate() = default;
 };
 
 }  // namespace password_manager

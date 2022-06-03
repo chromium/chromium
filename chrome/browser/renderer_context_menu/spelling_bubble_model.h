@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 class Profile;
@@ -21,14 +21,16 @@ class SpellingBubbleModel : public ConfirmBubbleModel {
  public:
   SpellingBubbleModel(Profile* profile, content::WebContents* web_contents);
   ~SpellingBubbleModel() override;
+  SpellingBubbleModel(const SpellingBubbleModel&) = delete;
+  SpellingBubbleModel& operator=(const SpellingBubbleModel&) = delete;
 
   // ConfirmBubbleModel implementation.
-  base::string16 GetTitle() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(BubbleButton button) const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(ui::DialogButton button) const override;
   void Accept() override;
   void Cancel() override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetHelpPageURL() const override;
   void OpenHelpPage() override;
 
@@ -36,10 +38,10 @@ class SpellingBubbleModel : public ConfirmBubbleModel {
   // Set the profile preferences to enable or disable the feature.
   void SetPref(bool enabled);
 
+  // Unowned.
   Profile* profile_;
-  content::WebContents* web_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(SpellingBubbleModel);
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_

@@ -1,36 +1,29 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 1895],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='ul'",
-          "rect": [677, 52, 100, 100],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [677, 52, 100, 100]
       ],
       "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='scrollpanel'",
       "bounds": [100, 100],
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV id='scrollpanel'",
-          "rect": [0, 0, 100, 100],
-          "reason": "full layer"
-        }
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "invalidations": [
+        [0, 0, 100, 100]
       ],
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

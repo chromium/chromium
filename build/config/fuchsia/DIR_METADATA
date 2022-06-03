@@ -1,0 +1,3 @@
+mixins: "//build/fuchsia/COMMON_METADATA"
+
+os: FUCHSIA

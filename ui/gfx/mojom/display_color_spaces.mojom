@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/hdr_static_metadata.mojom";
+
+// See the typemapped enum gfx::ContentColorUsage.
+enum ContentColorUsage {
+  kSRGB,
+  kWideColorGamut,
+  kHDR,
+};
+
+
+// See the typemapped class gfx::DisplayColorSpaces.
+struct DisplayColorSpaces {
+  // The arrays of length 6 correspond to the 6 configurations in the
+  // cross-product of (SRGB, WCG, HDR) x (opaque, transparent). The order
+  // corresponds to the order in gfx::DisplayColorSpaces.
+  array<ColorSpace, 6> color_spaces;
+  array<BufferFormat, 6> buffer_formats;
+
+  // The SDR white level is used to composite SDR and HDR content on Windows.
+  float sdr_white_level;
+
+  gfx.mojom.HDRStaticMetadata? hdr_static_metadata;
+};

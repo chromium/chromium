@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/document_statistics_collector.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_distillability.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -169,7 +170,7 @@ bool HasOpenGraphArticle(const Element& head) {
 
     if (meta->GetName() == og_type ||
         meta->getAttribute(property_attr) == og_type) {
-      if (DeprecatedEqualIgnoringCase(meta->Content(), "article")) {
+      if (EqualIgnoringASCIICase(meta->Content(), "article")) {
         return true;
       }
     }

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,10 +24,14 @@ namespace metrics {
 class DriveMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit DriveMetricsProvider(int local_state_path_key);
+
+  DriveMetricsProvider(const DriveMetricsProvider&) = delete;
+  DriveMetricsProvider& operator=(const DriveMetricsProvider&) = delete;
+
   ~DriveMetricsProvider() override;
 
   // metrics::MetricsDataProvider:
-  void AsyncInit(const base::Closure& done_callback) override;
+  void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
 
@@ -65,7 +68,7 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
   // Called when metrics are done being gathered asynchronously.
   // |done_callback| is the callback that should be called once all metrics are
   // gathered.
-  void GotDriveMetrics(const base::Closure& done_callback,
+  void GotDriveMetrics(base::OnceClosure done_callback,
                        const DriveMetrics& metrics);
 
   // Fills |drive| with information from successful |response|s.
@@ -81,8 +84,6 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveMetricsProvider);
 };
 
 }  // namespace metrics

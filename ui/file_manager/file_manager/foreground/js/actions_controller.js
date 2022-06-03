@@ -2,10 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {Action, ActionsModel} from './actions_model.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+
 /**
  * Manages actions for the current selection.
  */
-class ActionsController {
+export class ActionsController {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!MetadataModel} metadataModel
@@ -75,12 +87,15 @@ class ActionsController {
 
     // Attach listeners to events based on user action to show the menu, which
     // updates the DOM.
-    cr.ui.contextMenuHandler.addEventListener(
+    contextMenuHandler.addEventListener(
         'show', this.onContextMenuShow_.bind(this));
     this.ui_.selectionMenuButton.addEventListener(
         'menushow', this.onMenuShow_.bind(this));
     this.ui_.gearButton.addEventListener(
         'menushow', this.onMenuShow_.bind(this));
+
+    this.metadataModel_.addEventListener(
+        'update', this.onMetadataUpdated_.bind(this));
   }
 
   /**
@@ -214,6 +229,27 @@ class ActionsController {
   }
 
   /**
+   * @param {?Event} event
+   * @private
+   */
+  onMetadataUpdated_(event) {
+    if (!event || !event.names.has('pinned')) {
+      return;
+    }
+
+    for (const key of this.readyModels_.keys()) {
+      if (key.split(';').some(url => event.entriesMap.has(url))) {
+        this.readyModels_.delete(key);
+      }
+    }
+    for (const key of this.initializingdModels_.keys()) {
+      if (key.split(';').some(url => event.entriesMap.has(url))) {
+        this.initializingdModels_.delete(key);
+      }
+    }
+  }
+
+  /**
    * @param {!Array<Entry|FileEntry>} entries
    * @return {?ActionsModel}
    */
@@ -233,7 +269,7 @@ class ActionsController {
     }
 
     // If it's still initializing, return the cached promise.
-    let promise = this.initializingdModels_.get(key);
+    const promise = this.initializingdModels_.get(key);
     if (promise) {
       return promise;
     }
@@ -248,8 +284,10 @@ class ActionsController {
         this.volumeManager_, this.metadataModel_, this.shortcutsModel_,
         this.driveSyncHandler_, this.ui_, entries);
 
-    actionsModel.addEventListener(
-        'invalidated', this.clearLocalCache_.bind(this, key), {once: true});
+    actionsModel.addEventListener('invalidated', () => {
+      this.clearLocalCache_(key);
+      this.selectionHandler_.onFileSelectionChanged();
+    }, {once: true});
 
     // Once it's initialized, move to readyModels_ so we don't have to construct
     // and initialized again.

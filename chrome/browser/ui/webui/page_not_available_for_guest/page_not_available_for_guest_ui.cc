@@ -21,7 +21,7 @@ content::WebUIDataSource* CreateHTMLSource(Profile* profile,
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(host_name);
 
-  base::string16 page_title;
+  std::u16string page_title;
   if (host_name == chrome::kChromeUIBookmarksHost)
     page_title = l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE);
   else if (host_name == chrome::kChromeUIHistoryHost)
@@ -32,7 +32,7 @@ content::WebUIDataSource* CreateHTMLSource(Profile* profile,
     page_title = base::UTF8ToUTF16(host_name);
 
   source->AddString("pageTitle", page_title);
-  base::string16 page_heading = l10n_util::GetStringFUTF16(
+  std::u16string page_heading = l10n_util::GetStringFUTF16(
       IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING, page_title);
   source->AddString("pageHeading", page_heading);
 

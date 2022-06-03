@@ -1,0 +1,40 @@
+FAIL: Unexpected paint invalidations: {"LayoutNGBlockFlow (relative positioned) DIV id='target2' class='parent'":true,"LayoutImage IMG id='imgForAdvanceImageAnimation'":true}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 1008],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        {
+          "rect": [12, 162, 150, 150],
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='target2' class='parent'",
+          "reason": "background"
+        },
+        {
+          "rect": [12, 162, 150, 150],
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='target2' class='parent'",
+          "reason": "background"
+        },
+        {
+          "rect": [12, 810, 75, 75],
+          "object": "LayoutImage IMG id='imgForAdvanceImageAnimation'",
+          "reason": "uncacheable"
+        },
+        {
+          "rect": [12, 810, 75, 75],
+          "object": "LayoutImage IMG id='imgForAdvanceImageAnimation'",
+          "reason": "uncacheable"
+        }
+      ]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ]
+}
+

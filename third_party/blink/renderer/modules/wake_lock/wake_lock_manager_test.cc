@@ -7,8 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -20,7 +20,7 @@ namespace {
 
 WakeLockManager* MakeManager(WakeLockTestingContext& context,
                              WakeLockType type) {
-  return MakeGarbageCollected<WakeLockManager>(context.GetDocument(), type);
+  return MakeGarbageCollected<WakeLockManager>(context.DomWindow(), type);
 }
 
 }  // namespace
@@ -193,6 +193,7 @@ TEST(WakeLockManagerTest, WakeLockConnectionError) {
   context.WaitForPromiseFulfillment(promise1);
   context.WaitForPromiseFulfillment(promise2);
 
+  EXPECT_TRUE(manager->wake_lock_.is_bound());
   EXPECT_EQ(2U, manager->wake_lock_sentinels_.size());
 
   // Unbind and wait for the disconnection to reach |wake_lock_|'s
@@ -201,7 +202,7 @@ TEST(WakeLockManagerTest, WakeLockConnectionError) {
   manager->wake_lock_.FlushForTesting();
 
   EXPECT_EQ(0U, manager->wake_lock_sentinels_.size());
-  EXPECT_FALSE(manager->wake_lock_);
+  EXPECT_FALSE(manager->wake_lock_.is_bound());
   EXPECT_FALSE(system_lock.is_acquired());
 }
 

@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_encoding.h"
 
@@ -53,8 +52,7 @@ CallStackProfileBuilder::CallStackProfileBuilder(
     const CallStackProfileParams& profile_params,
     const WorkIdRecorder* work_id_recorder,
     base::OnceClosure completed_callback)
-    : work_id_recorder_(work_id_recorder),
-      profile_start_time_(base::TimeTicks::Now()) {
+    : work_id_recorder_(work_id_recorder) {
   completed_callback_ = std::move(completed_callback);
   sampled_profile_.set_process(
       ToExecutionContextProcess(profile_params.process));
@@ -73,7 +71,7 @@ base::ModuleCache* CallStackProfileBuilder::GetModuleCache() {
 // suspended so must not take any locks, including indirectly through use of
 // heap allocation, LOG, CHECK, or DCHECK.
 void CallStackProfileBuilder::RecordMetadata(
-    base::ProfileBuilder::MetadataProvider* metadata_provider) {
+    const base::MetadataRecorder::MetadataProvider& metadata_provider) {
   if (work_id_recorder_) {
     unsigned int work_id = work_id_recorder_->RecordWorkId();
     // A work id of 0 indicates that the message loop has not yet started.
@@ -86,14 +84,52 @@ void CallStackProfileBuilder::RecordMetadata(
   metadata_.RecordMetadata(metadata_provider);
 }
 
-void CallStackProfileBuilder::OnSampleCompleted(
-    std::vector<base::Frame> frames) {
-  OnSampleCompleted(std::move(frames), 1, 1);
+void CallStackProfileBuilder::ApplyMetadataRetrospectively(
+    base::TimeTicks period_start,
+    base::TimeTicks period_end,
+    const base::MetadataRecorder::Item& item) {
+  DCHECK_LE(period_start, period_end);
+  DCHECK_LE(period_end, base::TimeTicks::Now());
+
+  // We don't set metadata if the period extends before the start of the
+  // sampling, to avoid biasing against the unobserved execution. This will
+  // introduce bias due to dropping periods longer than the sampling time, but
+  // that bias is easier to reason about and account for.
+  if (period_start < profile_start_time_)
+    return;
+
+  CallStackProfile* call_stack_profile =
+      sampled_profile_.mutable_call_stack_profile();
+  google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>* samples =
+      call_stack_profile->mutable_stack_sample();
+
+  DCHECK_EQ(sample_timestamps_.size(), static_cast<size_t>(samples->size()));
+
+  const ptrdiff_t start_offset =
+      std::lower_bound(sample_timestamps_.begin(), sample_timestamps_.end(),
+                       period_start) -
+      sample_timestamps_.begin();
+  const ptrdiff_t end_offset =
+      std::upper_bound(sample_timestamps_.begin(), sample_timestamps_.end(),
+                       period_end) -
+      sample_timestamps_.begin();
+
+  metadata_.ApplyMetadata(item, samples->begin() + start_offset,
+                          samples->begin() + end_offset, samples,
+                          call_stack_profile->mutable_metadata_name_hash());
 }
 
-void CallStackProfileBuilder::OnSampleCompleted(std::vector<base::Frame> frames,
-                                                size_t weight,
-                                                size_t count) {
+void CallStackProfileBuilder::OnSampleCompleted(
+    std::vector<base::Frame> frames,
+    base::TimeTicks sample_timestamp) {
+  OnSampleCompleted(std::move(frames), sample_timestamp, 1, 1);
+}
+
+void CallStackProfileBuilder::OnSampleCompleted(
+    std::vector<base::Frame> frames,
+    base::TimeTicks sample_timestamp,
+    size_t weight,
+    size_t count) {
   // Write CallStackProfile::Stack protobuf message.
   CallStackProfile::Stack stack;
 
@@ -113,10 +149,25 @@ void CallStackProfileBuilder::OnSampleCompleted(std::vector<base::Frame> frames,
     }
 
     // Write CallStackProfile::Location protobuf message.
+    uintptr_t instruction_pointer = frame.instruction_pointer;
+#if defined(OS_IOS)
+#if !TARGET_IPHONE_SIMULATOR
+    // Some iOS devices enable pointer authentication, which uses the
+    // higher-order bits of pointers to store a signature. Strip that signature
+    // off before computing the module_offset.
+    // TODO(crbug.com/1084272): Use the ptrauth_strip() macro once it is
+    // available.
+    instruction_pointer &= 0xFFFFFFFFF;
+#endif  // !TARGET_IPHONE_SIMULATOR
+#endif  // defined(OS_IOS)
+
     ptrdiff_t module_offset =
-        reinterpret_cast<const char*>(frame.instruction_pointer) -
+        reinterpret_cast<const char*>(instruction_pointer) -
         reinterpret_cast<const char*>(frame.module->GetBaseAddress());
-    DCHECK_GE(module_offset, 0);
+    // Temporarily disable this DCHECK as there's likely bug in ModuleCache 
+    // that causes this to fail. This results in bad telemetry data but no 
+    // functional effect. https://crbug.com/1240645.
+    // DCHECK_GE(module_offset, 0);
     location->set_address(static_cast<uint64_t>(module_offset));
     location->set_module_id_index(module_loc->second);
   }
@@ -150,6 +201,11 @@ void CallStackProfileBuilder::OnSampleCompleted(std::vector<base::Frame> frames,
 
   *stack_sample_proto->mutable_metadata() = metadata_.CreateSampleMetadata(
       call_stack_profile->mutable_metadata_name_hash());
+
+  if (profile_start_time_.is_null())
+    profile_start_time_ = sample_timestamp;
+
+  sample_timestamps_.push_back(sample_timestamp);
 }
 
 void CallStackProfileBuilder::OnProfileCompleted(
@@ -171,7 +227,8 @@ void CallStackProfileBuilder::OnProfileCompleted(
         HashModuleFilename(module->GetDebugBasename()));
   }
 
-  PassProfilesToMetricsProvider(std::move(sampled_profile_));
+  PassProfilesToMetricsProvider(profile_start_time_,
+                                std::move(sampled_profile_));
 
   // Run the completed callback if there is one.
   if (!completed_callback_.is_null())
@@ -199,13 +256,14 @@ void CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
 }
 
 void CallStackProfileBuilder::PassProfilesToMetricsProvider(
+    base::TimeTicks profile_start_time,
     SampledProfile sampled_profile) {
   if (sampled_profile.process() == BROWSER_PROCESS) {
-    GetBrowserProcessReceiverCallbackInstance().Run(profile_start_time_,
+    GetBrowserProcessReceiverCallbackInstance().Run(profile_start_time,
                                                     std::move(sampled_profile));
   } else {
     g_child_call_stack_profile_collector.Get()
-        .ChildCallStackProfileCollector::Collect(profile_start_time_,
+        .ChildCallStackProfileCollector::Collect(profile_start_time,
                                                  std::move(sampled_profile));
   }
 }

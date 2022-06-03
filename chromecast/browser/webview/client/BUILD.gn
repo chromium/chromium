@@ -1,0 +1,26 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("wayland_webview_client") {
+  sources = [
+    "webview.cc",
+    "webview.h",
+    "webview_main.cc",
+  ]
+  configs += [ "//third_party/grpc:grpc_config" ]
+  deps = [
+    "//base",
+    "//chromecast/browser/webview/proto",
+    "//components/exo/wayland:client_support",
+    "//skia",
+    "//third_party/wayland:wayland_client",
+    "//ui/events:dom_keyboard_layout",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:event_constants",
+    "//ui/events:events_base",
+    "//ui/events/types:headers",
+    "//ui/gl",
+    "//third_party/grpc:grpc++",
+  ]
+}

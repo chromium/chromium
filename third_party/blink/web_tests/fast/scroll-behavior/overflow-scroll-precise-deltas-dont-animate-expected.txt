@@ -1,9 +1,0 @@
-Tests that overflow scrolls with precise deltas aren't animated.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS element.scrollTop is 800
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

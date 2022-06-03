@@ -36,6 +36,7 @@ div#cookie-info {
 }
 
 table.signin-details {
+  white-space: pre;
   width: 100%;
 }
 

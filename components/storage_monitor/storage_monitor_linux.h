@@ -10,7 +10,9 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_LINUX_H_
 #define COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_LINUX_H_
 
-#if defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Use the ChromeOS-specific implementation instead."
 #endif
 
@@ -20,12 +22,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/storage_monitor/mtab_watcher_linux.h"
 #include "components/storage_monitor/storage_monitor.h"
 
@@ -41,6 +42,10 @@ class StorageMonitorLinux : public StorageMonitor {
   // Use StorageMonitor::GetInstance() instead.
   // |mtab_file_path| is the path to a mtab file to watch for mount points.
   explicit StorageMonitorLinux(const base::FilePath& mtab_file_path);
+
+  StorageMonitorLinux(const StorageMonitorLinux&) = delete;
+  StorageMonitorLinux& operator=(const StorageMonitorLinux&) = delete;
+
   ~StorageMonitorLinux() override;
 
   // Must be called for StorageMonitorLinux to work.
@@ -127,8 +132,6 @@ class StorageMonitorLinux : public StorageMonitor {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StorageMonitorLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorLinux);
 };
 
 }  // namespace storage_monitor

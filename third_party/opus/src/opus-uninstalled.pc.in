@@ -8,5 +8,5 @@ Description: Opus IETF audio codec (not installed, @PC_BUILD@)
 Version: @VERSION@
 Requires:
 Conflicts:
-Libs: ${libdir}/libopus.a @LIBM@
+Libs: ${libdir}/libopus.la @LIBM@
 Cflags: -I${pcfiledir}/@top_srcdir@/include

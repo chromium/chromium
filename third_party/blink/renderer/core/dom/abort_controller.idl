@@ -5,10 +5,9 @@
 // https://dom.spec.whatwg.org/#interface-abortcontroller
 
 [
-    Exposed=(Window,Worker),
-    Measure
+    Exposed=(Window,Worker)
 ] interface AbortController {
-    [CallWith=ExecutionContext] constructor();
+    [CallWith=ExecutionContext, Measure] constructor();
     [SameObject] readonly attribute AbortSignal signal;
 
     void abort();

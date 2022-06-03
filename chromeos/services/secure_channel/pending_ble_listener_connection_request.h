@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_ble_connection_request_base.h"
@@ -23,19 +22,32 @@ class PendingBleListenerConnectionRequest
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<PendingConnectionRequest<BleListenerFailureType>>
+    Create(std::unique_ptr<ClientConnectionParameters>
+               client_connection_parameters,
+           ConnectionPriority connection_priority,
+           PendingConnectionRequestDelegate* delegate,
+           scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
     virtual std::unique_ptr<PendingConnectionRequest<BleListenerFailureType>>
-    BuildInstance(std::unique_ptr<ClientConnectionParameters>
-                      client_connection_parameters,
-                  ConnectionPriority connection_priority,
-                  PendingConnectionRequestDelegate* delegate,
-                  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+    CreateInstance(
+        std::unique_ptr<ClientConnectionParameters>
+            client_connection_parameters,
+        ConnectionPriority connection_priority,
+        PendingConnectionRequestDelegate* delegate,
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  PendingBleListenerConnectionRequest(
+      const PendingBleListenerConnectionRequest&) = delete;
+  PendingBleListenerConnectionRequest& operator=(
+      const PendingBleListenerConnectionRequest&) = delete;
 
   ~PendingBleListenerConnectionRequest() override;
 
@@ -48,8 +60,6 @@ class PendingBleListenerConnectionRequest
 
   // PendingConnectionRequest<BleListenerFailureType>:
   void HandleConnectionFailure(BleListenerFailureType failure_detail) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingBleListenerConnectionRequest);
 };
 
 }  // namespace secure_channel

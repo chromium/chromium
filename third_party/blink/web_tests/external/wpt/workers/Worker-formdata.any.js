@@ -1,4 +1,4 @@
-// META: global=!default,dedicatedworker
+// META: global=dedicatedworker
 test(() => {
   assert_own_property(self, 'FormData');
   assert_equals(FormData.length, 0);
@@ -13,7 +13,7 @@ test(() => {
   formData.append('key', blob);
   formData.append('key', blob, 'filename');
 
-  assert_throws("DataCloneError",
-                function() { postMessage(formData) },
-                "Trying to clone formdata inside a postMessage results in an exception." );
+  assert_throws_dom("DataCloneError",
+                    function() { postMessage(formData) },
+                    "Trying to clone formdata inside a postMessage results in an exception." );
 },'Test FormData interface object');

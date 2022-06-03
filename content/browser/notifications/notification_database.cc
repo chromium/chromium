@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "content/browser/notifications/notification_database_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -273,14 +272,17 @@ NotificationDatabase::Status NotificationDatabase::ForEachNotificationData(
     ReadAllNotificationsCallback callback) const {
   return ForEachNotificationDataInternal(
       GURL() /* origin */, blink::mojom::kInvalidServiceWorkerRegistrationId,
-      std::move(callback));
+      absl::nullopt /* is_shown_by_browser */, std::move(callback));
 }
 
-NotificationDatabase::Status NotificationDatabase::ReadAllNotificationData(
-    std::vector<NotificationDatabaseData>* notification_data_vector) const {
-  return ReadAllNotificationDataInternal(
-      GURL() /* origin */, blink::mojom::kInvalidServiceWorkerRegistrationId,
-      notification_data_vector);
+NotificationDatabase::Status
+NotificationDatabase::ForEachNotificationDataForServiceWorkerRegistration(
+    const GURL& origin,
+    int64_t service_worker_registration_id,
+    ReadAllNotificationsCallback callback) const {
+  return ForEachNotificationDataInternal(
+      origin, service_worker_registration_id,
+      absl::nullopt /* is_shown_by_browser */, std::move(callback));
 }
 
 NotificationDatabase::Status
@@ -289,15 +291,17 @@ NotificationDatabase::ReadAllNotificationDataForOrigin(
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   return ReadAllNotificationDataInternal(
       origin, blink::mojom::kInvalidServiceWorkerRegistrationId,
-      notification_data_vector);
+      absl::nullopt /* is_shown_by_browser */, notification_data_vector);
 }
 
 NotificationDatabase::Status
 NotificationDatabase::ReadAllNotificationDataForServiceWorkerRegistration(
     const GURL& origin,
     int64_t service_worker_registration_id,
+    absl::optional<bool> is_shown_by_browser,
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   return ReadAllNotificationDataInternal(origin, service_worker_registration_id,
+                                         is_shown_by_browser,
                                          notification_data_vector);
 }
 
@@ -350,8 +354,8 @@ NotificationDatabase::Status NotificationDatabase::DeleteNotificationData(
   NotificationDatabaseData data;
   Status status = ReadNotificationData(notification_id, origin, &data);
   if (status == STATUS_OK && record_notification_to_ukm_callback_) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(record_notification_to_ukm_callback_, data));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(record_notification_to_ukm_callback_, data));
   }
 
   leveldb::WriteBatch batch;
@@ -379,9 +383,11 @@ NotificationDatabase::Status
 NotificationDatabase::DeleteAllNotificationDataForOrigin(
     const GURL& origin,
     const std::string& tag,
+    absl::optional<bool> is_shown_by_browser,
     std::set<std::string>* deleted_notification_ids) {
   return DeleteAllNotificationDataInternal(
-      origin, tag, blink::mojom::kInvalidServiceWorkerRegistrationId,
+      origin, tag, is_shown_by_browser,
+      blink::mojom::kInvalidServiceWorkerRegistrationId,
       deleted_notification_ids);
 }
 
@@ -390,9 +396,9 @@ NotificationDatabase::DeleteAllNotificationDataForServiceWorkerRegistration(
     const GURL& origin,
     int64_t service_worker_registration_id,
     std::set<std::string>* deleted_notification_ids) {
-  return DeleteAllNotificationDataInternal(origin, "" /* tag */,
-                                           service_worker_registration_id,
-                                           deleted_notification_ids);
+  return DeleteAllNotificationDataInternal(
+      origin, "" /* tag */, absl::nullopt /* is_shown_by_browser */,
+      service_worker_registration_id, deleted_notification_ids);
 }
 
 NotificationDatabase::Status NotificationDatabase::Destroy() {
@@ -417,12 +423,13 @@ NotificationDatabase::Status
 NotificationDatabase::ReadAllNotificationDataInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
+    absl::optional<bool> is_shown_by_browser,
     std::vector<NotificationDatabaseData>* notification_data_vector) const {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(notification_data_vector);
 
   return ForEachNotificationDataInternal(
-      origin, service_worker_registration_id,
+      origin, service_worker_registration_id, is_shown_by_browser,
       base::BindRepeating(
           [](std::vector<NotificationDatabaseData>* datas,
              const NotificationDatabaseData& data) { datas->push_back(data); },
@@ -433,6 +440,7 @@ NotificationDatabase::Status
 NotificationDatabase::ForEachNotificationDataInternal(
     const GURL& origin,
     int64_t service_worker_registration_id,
+    absl::optional<bool> is_shown_by_browser,
     ReadAllNotificationsCallback callback) const {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
@@ -459,6 +467,11 @@ NotificationDatabase::ForEachNotificationDataInternal(
       continue;
     }
 
+    if (is_shown_by_browser && notification_database_data.is_shown_by_browser !=
+                                   *is_shown_by_browser) {
+      continue;
+    }
+
     callback.Run(notification_database_data);
   }
 
@@ -469,6 +482,7 @@ NotificationDatabase::Status
 NotificationDatabase::DeleteAllNotificationDataInternal(
     const GURL& origin,
     const std::string& tag,
+    absl::optional<bool> is_shown_by_browser,
     int64_t service_worker_registration_id,
     std::set<std::string>* deleted_notification_ids) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -498,6 +512,11 @@ NotificationDatabase::DeleteAllNotificationDataInternal(
       continue;
     }
 
+    if (is_shown_by_browser && notification_database_data.is_shown_by_browser !=
+                                   *is_shown_by_browser) {
+      continue;
+    }
+
     if (service_worker_registration_id !=
             blink::mojom::kInvalidServiceWorkerRegistrationId &&
         notification_database_data.service_worker_registration_id !=
@@ -506,8 +525,8 @@ NotificationDatabase::DeleteAllNotificationDataInternal(
     }
 
     if (record_notification_to_ukm_callback_) {
-      base::PostTask(FROM_HERE, {BrowserThread::UI},
-                     base::BindOnce(record_notification_to_ukm_callback_,
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(record_notification_to_ukm_callback_,
                                     notification_database_data));
     }
 

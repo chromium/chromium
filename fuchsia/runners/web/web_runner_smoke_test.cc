@@ -8,13 +8,12 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/bind.h"
-#include "base/fuchsia/default_context.h"
+#include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/service_provider_impl.h"
-#include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -28,21 +27,17 @@ namespace {
 
 class WebRunnerSmokeTest : public testing::Test {
  public:
-  WebRunnerSmokeTest()
-      : run_timeout_(TestTimeouts::action_timeout(),
-                     base::MakeExpectedNotRunClosure(FROM_HERE)) {}
+  WebRunnerSmokeTest() = default;
+
+  WebRunnerSmokeTest(const WebRunnerSmokeTest&) = delete;
+  WebRunnerSmokeTest& operator=(const WebRunnerSmokeTest&) = delete;
+
   void SetUp() final {
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &WebRunnerSmokeTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
-
-    fidl::InterfaceHandle<fuchsia::io::Directory> directory;
-    outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
-        directory.NewRequest().TakeChannel());
-
-    service_provider_ = std::make_unique<base::fuchsia::ServiceProviderImpl>(
-        std::move(directory));
+    service_provider_ = base::ServiceProviderImpl::CreateForOutgoingDirectory(
+        &outgoing_directory_);
   }
 
   fuchsia::sys::LaunchInfo LaunchInfoWithServices() {
@@ -82,8 +77,6 @@ class WebRunnerSmokeTest : public testing::Test {
   }
 
  protected:
-  const base::RunLoop::ScopedRunTimeoutForTest run_timeout_;
-
   bool test_html_requested_ = false;
   bool test_image_requested_ = false;
 
@@ -91,21 +84,26 @@ class WebRunnerSmokeTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   sys::OutgoingDirectory outgoing_directory_;
-  std::unique_ptr<base::fuchsia::ServiceProviderImpl> service_provider_;
+  std::unique_ptr<base::ServiceProviderImpl> service_provider_;
 
   net::EmbeddedTestServer test_server_;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRunnerSmokeTest);
 };
 
 // Verify that the Component loads and fetches the desired page.
-TEST_F(WebRunnerSmokeTest, RequestHtmlAndImage) {
+// TODO(https://crbug.com/1073823): Flakes due to raciness between test
+// completion and GPU process failure on bots which lack GPU emulation.
+#if defined(ARCH_CPU_ARM64)
+#define MAYBE_RequestHtmlAndImage DISABLED_RequestHtmlAndImage
+#else
+#define MAYBE_RequestHtmlAndImage RequestHtmlAndImage
+#endif
+TEST_F(WebRunnerSmokeTest, MAYBE_RequestHtmlAndImage) {
   fuchsia::sys::LaunchInfo launch_info = LaunchInfoWithServices();
   launch_info.url = test_server_.GetURL("/test.html").spec();
 
-  auto launcher = base::fuchsia::ComponentContextForCurrentProcess()
+  auto launcher = base::ComponentContextForProcess()
                       ->svc()
                       ->Connect<fuchsia::sys::Launcher>();
 
@@ -126,7 +124,7 @@ TEST_F(WebRunnerSmokeTest, LifecycleTerminate) {
   launch_info.url = test_server_.GetURL("/test.html").spec();
   launch_info.directory_request = directory.NewRequest().TakeChannel();
 
-  auto launcher = base::fuchsia::ComponentContextForCurrentProcess()
+  auto launcher = base::ComponentContextForProcess()
                       ->svc()
                       ->Connect<fuchsia::sys::Launcher>();
 
@@ -155,7 +153,7 @@ TEST_F(WebRunnerSmokeTest, ComponentExitOnFrameClose) {
   fuchsia::sys::LaunchInfo launch_info = LaunchInfoWithServices();
   launch_info.url = test_server_.GetURL("/window_close.html").spec();
 
-  auto launcher = base::fuchsia::ComponentContextForCurrentProcess()
+  auto launcher = base::ComponentContextForProcess()
                       ->svc()
                       ->Connect<fuchsia::sys::Launcher>();
 
@@ -179,6 +177,10 @@ class MockModuleContext
     : public fuchsia::modular::testing::ModuleContext_TestBase {
  public:
   MockModuleContext() = default;
+
+  MockModuleContext(const MockModuleContext&) = delete;
+  MockModuleContext& operator=(const MockModuleContext&) = delete;
+
   ~MockModuleContext() override = default;
 
   MOCK_METHOD0(RemoveSelfFromStory, void());
@@ -186,8 +188,6 @@ class MockModuleContext
   void NotImplemented_(const std::string& name) override {
     NOTIMPLEMENTED() << name;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MockModuleContext);
 };
 
 // Verify that Modular's RemoveSelfFromStory() is called on teardown.
@@ -197,12 +197,12 @@ TEST_F(WebRunnerSmokeTest, RemoveSelfFromStoryOnFrameClose) {
 
   MockModuleContext module_context;
   EXPECT_CALL(module_context, RemoveSelfFromStory);
-  base::fuchsia::ScopedServiceBinding<fuchsia::modular::ModuleContext> binding(
+  base::ScopedServiceBinding<fuchsia::modular::ModuleContext> binding(
       &outgoing_directory_, &module_context);
   launch_info.additional_services->names.emplace_back(
       fuchsia::modular::ModuleContext::Name_);
 
-  auto launcher = base::fuchsia::ComponentContextForCurrentProcess()
+  auto launcher = base::ComponentContextForProcess()
                       ->svc()
                       ->Connect<fuchsia::sys::Launcher>();
 

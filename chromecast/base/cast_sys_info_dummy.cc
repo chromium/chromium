@@ -4,7 +4,38 @@
 
 #include "chromecast/base/cast_sys_info_dummy.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/logging.h"
+
 namespace chromecast {
+
+namespace {
+const char kJsonKeyProductName[] = "product_name";
+const char kJsonKeySerialNumber[] = "serial_number";
+const char kJsonKeyDeviceModel[] = "device_model";
+const char kJsonKeyManufacture[] = "manufacturer";
+
+const char kDefaultProductName[] = "cast_shell";
+const char kDefaultSerialNumber[] = "dummy.serial.number";
+const char kDefaultDeviceModel[] = "dummy model";
+const char kDefaultManufacturer[] = "google";
+
+std::string GetStringValue(const base::Value& sys_info_file,
+                           const std::string& key,
+                           const std::string& default_val) {
+  DCHECK(sys_info_file.is_dict());
+
+  const base::Value* val =
+      sys_info_file.FindKeyOfType(key, base::Value::Type::STRING);
+  if (!val) {
+    LOG(WARNING) << "Json key not found: " << key;
+    return default_val;
+  }
+  return val->GetString();
+}
+}  // namespace
 
 CastSysInfoDummy::CastSysInfoDummy()
     : build_type_(BUILD_ENG),
@@ -15,11 +46,34 @@ CastSysInfoDummy::CastSysInfoDummy()
       manufacturer_("google"),
       system_build_number_(__DATE__ " - " __TIME__),
       factory_country_("US"),
-      factory_locale_list_({"en-US"}) {
+      factory_locale_list_({"en-US"}) {}
+
+CastSysInfoDummy::CastSysInfoDummy(const std::string& sys_info_file)
+    : CastSysInfoDummy() {
+  std::string content;
+  if (!base::ReadFileToString(base::FilePath(sys_info_file), &content)) {
+    LOG(ERROR) << "Failed to read sys info file: " << sys_info_file;
+    return;
+  }
+
+  auto value = base::JSONReader::Read(content);
+  if (!value || !value->is_dict()) {
+    LOG(ERROR)
+        << "Invaild sys info json file, using the default values instead.";
+    return;
+  }
+
+  product_name_ =
+      GetStringValue(*value, kJsonKeyProductName, kDefaultProductName);
+  serial_number_ =
+      GetStringValue(*value, kJsonKeySerialNumber, kDefaultSerialNumber);
+  device_model_ =
+      GetStringValue(*value, kJsonKeyDeviceModel, kDefaultDeviceModel);
+  manufacturer_ =
+      GetStringValue(*value, kJsonKeyManufacture, kDefaultManufacturer);
 }
 
-CastSysInfoDummy::~CastSysInfoDummy() {
-}
+CastSysInfoDummy::~CastSysInfoDummy() {}
 
 CastSysInfo::BuildType CastSysInfoDummy::GetBuildType() {
   return build_type_;
@@ -71,6 +125,10 @@ std::string CastSysInfoDummy::GetWifiInterface() {
 
 std::string CastSysInfoDummy::GetApInterface() {
   return ap_interface_;
+}
+
+std::string CastSysInfoDummy::GetProductSsidSuffix() {
+  return ssid_suffix_;
 }
 
 void CastSysInfoDummy::SetBuildTypeForTesting(
@@ -135,6 +193,11 @@ void CastSysInfoDummy::SetWifiInterfaceForTesting(
 void CastSysInfoDummy::SetApInterfaceForTesting(
     const std::string& ap_interface) {
   ap_interface_ = ap_interface;
+}
+
+void CastSysInfoDummy::SetProductSsidSuffixForTesting(
+    const std::string& ssid_suffix) {
+  ssid_suffix_ = ssid_suffix;
 }
 
 }  // namespace chromecast

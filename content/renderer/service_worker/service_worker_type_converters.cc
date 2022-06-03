@@ -4,38 +4,36 @@
 
 #include "content/renderer/service_worker/service_worker_type_converters.h"
 
-#include "base/logging.h"
+#include <utility>
+
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
 
 namespace mojo {
 
 blink::WebServiceWorkerObjectInfo
 TypeConverter<blink::WebServiceWorkerObjectInfo,
               blink::mojom::ServiceWorkerObjectInfoPtr>::
-    Convert(const blink::mojom::ServiceWorkerObjectInfoPtr& input) {
+    Convert(blink::mojom::ServiceWorkerObjectInfoPtr input) {
   if (!input) {
     return blink::WebServiceWorkerObjectInfo(
         blink::mojom::kInvalidServiceWorkerVersionId,
         blink::mojom::ServiceWorkerState::kParsed, blink::WebURL(),
-        mojo::ScopedInterfaceEndpointHandle() /* host_remote */,
-        mojo::ScopedInterfaceEndpointHandle() /* receiver */);
+        {} /* host_remote */, {} /* receiver */);
   }
   return blink::WebServiceWorkerObjectInfo(
       input->version_id, input->state, input->url,
-      input->host_remote.PassHandle(), input->receiver.PassHandle());
+      std::move(input->host_remote), std::move(input->receiver));
 }
 
 blink::WebServiceWorkerRegistrationObjectInfo
 TypeConverter<blink::WebServiceWorkerRegistrationObjectInfo,
               blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>::
-    Convert(const blink::mojom::ServiceWorkerRegistrationObjectInfoPtr& input) {
+    Convert(blink::mojom::ServiceWorkerRegistrationObjectInfoPtr input) {
   if (!input) {
     return blink::WebServiceWorkerRegistrationObjectInfo(
         blink::mojom::kInvalidServiceWorkerRegistrationId, blink::WebURL(),
         blink::mojom::ServiceWorkerUpdateViaCache::kImports,
-        mojo::ScopedInterfaceEndpointHandle() /* host_remote */,
-        mojo::ScopedInterfaceEndpointHandle() /* receiver */,
+        {} /* host_remote */, {} /* receiver */,
         blink::mojom::ServiceWorkerObjectInfoPtr()
             .To<blink::WebServiceWorkerObjectInfo>() /* installing */,
         blink::mojom::ServiceWorkerObjectInfoPtr()
@@ -45,10 +43,10 @@ TypeConverter<blink::WebServiceWorkerRegistrationObjectInfo,
   }
   return blink::WebServiceWorkerRegistrationObjectInfo(
       input->registration_id, input->scope, input->update_via_cache,
-      input->host_remote.PassHandle(), input->receiver.PassHandle(),
-      input->installing.To<blink::WebServiceWorkerObjectInfo>(),
-      input->waiting.To<blink::WebServiceWorkerObjectInfo>(),
-      input->active.To<blink::WebServiceWorkerObjectInfo>());
+      std::move(input->host_remote), std::move(input->receiver),
+      std::move(input->installing).To<blink::WebServiceWorkerObjectInfo>(),
+      std::move(input->waiting).To<blink::WebServiceWorkerObjectInfo>(),
+      std::move(input->active).To<blink::WebServiceWorkerObjectInfo>());
 }
 
 }  // namespace mojo

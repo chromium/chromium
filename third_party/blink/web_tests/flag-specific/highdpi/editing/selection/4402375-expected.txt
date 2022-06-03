@@ -1,0 +1,27 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {P} at (0,0) size 1176x54
+        LayoutText {#text} at (0,0) size 204x26
+          text run at (0,0) width 204: "This is a testcase for "
+        LayoutInline {A} at (204,0) size 232x26 [color=#0000EE]
+          LayoutText {#text} at (204,0) size 232x26
+            text run at (204,0) width 232: "rdar://problem/4402375"
+        LayoutText {#text} at (0,0) size 1171x53
+          text run at (436,0) width 735: " \"REGRESSION (417.8-TOT): finding text sometimes also selects previous"
+          text run at (0,27) width 210: "image (5127) (6451)\""
+      LayoutNGBlockFlow {P} at (0,105) size 1176x54
+        LayoutText {#text} at (0,0) size 1153x53
+          text run at (0,0) width 1153: "This test uses a right aligned image next to some left aligned text. The image should not be selected, and should not be"
+          text run at (0,27) width 928: "included in the selection rect (you won't see the selection rect when you run this test manually)."
+      LayoutNGBlockFlow {DIV} at (0,183) size 1176x27
+        LayoutImage (floating) {IMG} at (1062,0) size 114x154.50
+        LayoutText {#text} at (0,0) size 276x26
+          text run at (0,0) width 276: "This text should be selected."
+layer at (12,90) size 1176x3 clip at (0,0) size 0x0
+  LayoutNGBlockFlow {HR} at (0,78) size 1176x3 [border: (1.50px inset #EEEEEE)]
+selection start: position 0 of child 1 {#text} of child 6 {DIV} of body
+selection end:   position 29 of child 1 {#text} of child 6 {DIV} of body

@@ -1,0 +1,30 @@
+<!--
+@AURALINUX-DENY:STATE-CHANGE:DEFUNCT*
+-->
+<!DOCTYPE html>
+<html>
+<body id="body">
+<div class="ignore-me-1">
+  <div class="ignore-me-2">
+    <div id="search" role="search">
+      <input id="input" readonly aria-label="Search all issues">
+    </div>
+  </div>
+</div>
+<script>
+  function go() {
+    setTimeout(() => {
+      var div = document.createElement("div");
+      div.setAttribute("tabindex", 0);
+
+      var body = document.getElementById("body");
+      body.insertBefore(div, body.childNodes[0]);
+
+      var subtree = document.getElementsByClassName("ignore-me-1")[0];
+      div.appendChild(subtree);
+      document.getElementById("input").focus();
+    }, 1000);
+  }
+</script>
+</body>
+</html>

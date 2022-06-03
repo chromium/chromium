@@ -1,0 +1,101 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/json_schema_compiler/json_schema_api.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("api") {
+  sources = [
+    "base_telemetry_extension_api_guard_function.cc",
+    "base_telemetry_extension_api_guard_function.h",
+    "diagnostics_api.cc",
+    "diagnostics_api.h",
+    "diagnostics_api_converters.cc",
+    "diagnostics_api_converters.h",
+    "hardware_info_delegate.cc",
+    "hardware_info_delegate.h",
+    "telemetry_api.cc",
+    "telemetry_api.h",
+  ]
+
+  deps = [
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//ash/webui/telemetry_extension_ui/services:telemetry_services",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common/chromeos/extensions",
+    "//chrome/common/chromeos/extensions/api",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//url",
+  ]
+}
+
+function_registration("api_registration") {
+  sources = chromeos_system_extensions_api_schema_sources
+  impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api"
+  configs = [ "//build/config:precompiled_headers" ]
+  bundle_name = "ChromeOS"
+  root_namespace = chromeos_system_extensions_api_root_namespace
+  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
+
+  deps = [
+    ":api",
+    "//base",
+    "//extensions/common",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "base_telemetry_extension_api_guard_function_browsertest.cc",
+    "base_telemetry_extension_browser_test.cc",
+    "base_telemetry_extension_browser_test.h",
+    "diagnostics_api_browsertest.cc",
+    "fake_hardware_info_delegate.cc",
+    "fake_hardware_info_delegate.h",
+    "telemetry_api_browsertest.cc",
+    "telemetry_extension_capabilities_browser_test.cc",
+  ]
+
+  deps = [
+    ":api",
+    "//base",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chrome/common/chromeos/extensions",
+    "//chrome/test:test_support",
+    "//chromeos/dbus",
+    "//chromeos/dbus/cros_healthd",
+    "//chromeos/dbus/debug_daemon",
+    "//chromeos/services/cros_healthd/public/cpp",
+    "//chromeos/services/cros_healthd/public/mojom",
+    "//extensions:test_support",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "diagnostics_api_converters_unittest.cc" ]
+
+  deps = [
+    ":api",
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//base",
+    "//chrome/common/chromeos/extensions/api",
+    "//chrome/test:test_support",
+  ]
+}

@@ -13,10 +13,10 @@ namespace blink {
 
 class EventTarget;
 class ExceptionState;
+class PostMessageOptions;
 class ScriptState;
 class ScriptValue;
 class SecurityOrigin;
-class WindowPostMessageOptions;
 struct BlinkTransferableMessage;
 
 class CORE_EXPORT PortalPostMessageHelper {
@@ -26,14 +26,13 @@ class CORE_EXPORT PortalPostMessageHelper {
   static BlinkTransferableMessage CreateMessage(
       ScriptState* script_state,
       const ScriptValue& message,
-      const WindowPostMessageOptions* options,
+      const PostMessageOptions* options,
       ExceptionState& exception_state);
 
   static void CreateAndDispatchMessageEvent(
       EventTarget* target,
       BlinkTransferableMessage message,
-      scoped_refptr<const SecurityOrigin> source_origin,
-      scoped_refptr<const SecurityOrigin> target_origin);
+      scoped_refptr<const SecurityOrigin> source_origin);
 };
 
 }  // namespace blink

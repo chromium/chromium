@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/events/animation_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
@@ -36,7 +37,7 @@ AnimationEvent::AnimationEvent(const AtomicString& type,
     : Event(type, initializer),
       animation_name_(initializer->animationName()),
       elapsed_time_(
-          AnimationTimeDelta::FromSecondsD(initializer->elapsedTime())),
+          ANIMATION_TIME_DELTA_FROM_SECONDS(initializer->elapsedTime())),
       pseudo_element_(initializer->pseudoElement()) {}
 
 AnimationEvent::AnimationEvent(const AtomicString& type,
@@ -66,7 +67,7 @@ const AtomicString& AnimationEvent::InterfaceName() const {
   return event_interface_names::kAnimationEvent;
 }
 
-void AnimationEvent::Trace(blink::Visitor* visitor) {
+void AnimationEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 

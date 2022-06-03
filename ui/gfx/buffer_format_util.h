@@ -18,6 +18,9 @@ namespace gfx {
 // Returns a vector containing all buffer formats.
 GFX_EXPORT std::vector<BufferFormat> GetBufferFormatsForTesting();
 
+// Returns the number of bits of alpha for the specified format.
+GFX_EXPORT size_t AlphaBitsForBufferFormat(BufferFormat format);
+
 // Returns the number of planes for |format|.
 GFX_EXPORT size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format);
 
@@ -51,6 +54,15 @@ GFX_EXPORT size_t BufferOffsetForBufferFormat(const Size& size,
 
 // Returns the name of |format| as a string.
 GFX_EXPORT const char* BufferFormatToString(BufferFormat format);
+
+// Returns the name of |plane| as a string.
+GFX_EXPORT const char* BufferPlaneToString(BufferPlane plane);
+
+// Multiplanar buffer formats (e.g, YUV_420_BIPLANAR, YVU_420, P010) can be
+// tricky when the size of the primary plane is odd, because the subsampled
+// planes will have a size that is not a divisor of the primary plane's size.
+// This indicates that odd height multiplanar formats are supported.
+GFX_EXPORT bool AllowOddHeightMultiPlanarBuffers();
 
 }  // namespace gfx
 

@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace base {

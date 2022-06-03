@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
 #include "services/device/geolocation/location_api_adapter_android.h"
 
 namespace device {
 
-// LocationProviderAndroid
-LocationProviderAndroid::LocationProviderAndroid() {}
+class GeolocationManager;
+
+LocationProviderAndroid::LocationProviderAndroid() = default;
 
 LocationProviderAndroid::~LocationProviderAndroid() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -57,9 +57,10 @@ void LocationProviderAndroid::OnPermissionGranted() {
   // Nothing to do here.
 }
 
-// static
-std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
-  return base::WrapUnique(new LocationProviderAndroid);
+std::unique_ptr<LocationProvider> NewSystemLocationProvider(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    GeolocationManager* geolocation_manager) {
+  return std::make_unique<LocationProviderAndroid>();
 }
 
 }  // namespace device

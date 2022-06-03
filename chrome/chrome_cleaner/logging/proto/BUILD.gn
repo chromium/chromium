@@ -8,39 +8,29 @@ import("//third_party/protobuf/proto_library.gni")
 visibility = [ "//chrome/chrome_cleaner/*" ]
 
 proto_library("shared_data_proto") {
-  sources = [
-    "shared_data.proto",
-  ]
+  sources = [ "shared_data.proto" ]
 
   link_deps = [ ":removal_status_proto" ]
 }
 
 proto_library("chrome_cleaner_report_proto") {
-  sources = [
-    "chrome_cleaner_report.proto",
-  ]
+  sources = [ "chrome_cleaner_report.proto" ]
 
   link_deps = [ ":shared_data_proto" ]
 }
 
 proto_library("removal_status_proto") {
-  sources = [
-    "removal_status.proto",
-  ]
+  sources = [ "removal_status.proto" ]
 }
 
 proto_library("reporter_logs_proto") {
-  sources = [
-    "reporter_logs.proto",
-  ]
+  sources = [ "reporter_logs.proto" ]
 
   link_deps = [ ":shared_data_proto" ]
 }
 
 proto_library("interface_logger_proto") {
-  sources = [
-    "interface_logger.proto",
-  ]
+  sources = [ "interface_logger.proto" ]
 }
 
 # A target that depends on all the protos and protobuf libs imported directly

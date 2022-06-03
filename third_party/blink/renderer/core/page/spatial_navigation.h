@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SPATIAL_NAVIGATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SPATIAL_NAVIGATION_H_
 
-#include "third_party/blink/public/platform/web_focus_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
@@ -40,7 +39,7 @@ constexpr double kMaxDistance = std::numeric_limits<double>::max();
 
 CORE_EXPORT bool IsSpatialNavigationEnabled(const LocalFrame*);
 
-struct FocusCandidate {
+struct CORE_EXPORT FocusCandidate {
   STACK_ALLOCATED();
 
  public:
@@ -58,14 +57,16 @@ struct FocusCandidate {
   // areas of imagemaps, where visibleNode would represent the image element and
   // focusableNode would represent the area element.  In all other cases,
   // visibleNode and focusableNode are one and the same.
-  Member<Node> visible_node;
-  Member<Node> focusable_node;
+  Node* visible_node;
+  Node* focusable_node;
   PhysicalRect rect_in_root_frame;
   bool is_offscreen;
 };
 
 CORE_EXPORT bool HasRemoteFrame(const Node*);
-CORE_EXPORT bool IsFragmentedInline(Node& node);
+CORE_EXPORT int LineBoxes(const LayoutObject& layout_object);
+CORE_EXPORT
+bool IsFragmentedInline(const LayoutObject& layout_object);
 CORE_EXPORT FloatRect RectInViewport(const Node&);
 CORE_EXPORT bool IsOffscreen(const Node*);
 CORE_EXPORT bool IsUnobscured(const FocusCandidate&);
@@ -87,6 +88,12 @@ CORE_EXPORT PhysicalRect RootViewport(const LocalFrame*);
 PhysicalRect StartEdgeForAreaElement(const HTMLAreaElement&,
                                      SpatialNavigationDirection);
 HTMLFrameOwnerElement* FrameOwnerElement(const FocusCandidate&);
+
+CORE_EXPORT PhysicalRect
+ShrinkInlineBoxToLineBox(const LayoutObject& layout_object,
+                         PhysicalRect visible_part,
+                         int line_boxes = -1);
+
 CORE_EXPORT PhysicalRect
 SearchOriginFragment(const PhysicalRect& visible_part,
                      const LayoutObject& fragmented,

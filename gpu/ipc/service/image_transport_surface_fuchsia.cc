@@ -4,7 +4,6 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
-#include "base/logging.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_stub.h"

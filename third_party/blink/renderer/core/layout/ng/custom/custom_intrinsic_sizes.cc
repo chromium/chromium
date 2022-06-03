@@ -21,7 +21,7 @@ const NGLayoutInputNode& CustomIntrinsicSizes::GetLayoutNode() const {
   return child_->GetLayoutNode();
 }
 
-void CustomIntrinsicSizes::Trace(Visitor* visitor) {
+void CustomIntrinsicSizes::Trace(Visitor* visitor) const {
   visitor->Trace(child_);
   visitor->Trace(token_);
   ScriptWrappable::Trace(visitor);

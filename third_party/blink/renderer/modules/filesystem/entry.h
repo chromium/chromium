@@ -76,7 +76,7 @@ class MODULES_EXPORT Entry : public EntryBase {
                  V8ErrorCallback* = nullptr) const;
   String toURL(ScriptState*) const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

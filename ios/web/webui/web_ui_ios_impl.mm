@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -29,20 +30,19 @@ const char kCommandPrefix[] = "webui";
 namespace web {
 
 // static
-base::string16 WebUIIOS::GetJavascriptCall(
+std::u16string WebUIIOS::GetJavascriptCall(
     const std::string& function_name,
     const std::vector<const base::Value*>& arg_list) {
-  base::string16 parameters;
+  std::u16string parameters;
   std::string json;
   for (size_t i = 0; i < arg_list.size(); ++i) {
     if (i > 0)
-      parameters += base::char16(',');
+      parameters += u',';
 
     base::JSONWriter::Write(*arg_list[i], &json);
     parameters += base::UTF8ToUTF16(json);
   }
-  return base::ASCIIToUTF16(function_name) + base::char16('(') + parameters +
-         base::char16(')') + base::char16(';');
+  return base::ASCIIToUTF16(function_name) + u'(' + parameters + u");";
 }
 
 WebUIIOSImpl::WebUIIOSImpl(WebState* web_state) : web_state_(web_state) {
@@ -97,12 +97,29 @@ void WebUIIOSImpl::RejectJavascriptCallback(const base::Value& callback_id,
   ExecuteJavascript(GetJavascriptCall("cr.webUIResponse", args));
 }
 
-void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
-                                           const MessageCallback& callback) {
-  message_callbacks_.insert(std::make_pair(message, callback));
+void WebUIIOSImpl::FireWebUIListener(
+    const std::string& event_name,
+    const std::vector<const base::Value*>& args) {
+  base::Value callback_arg(event_name);
+  std::vector<const base::Value*> modified_args;
+  modified_args.push_back(&callback_arg);
+  modified_args.insert(modified_args.end(), args.begin(), args.end());
+  ExecuteJavascript(
+      GetJavascriptCall("cr.webUIListenerCallback", modified_args));
 }
 
-void WebUIIOSImpl::OnJsMessage(const base::DictionaryValue& message,
+void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
+                                           MessageCallback callback) {
+  message_callbacks_.emplace(message, std::move(callback));
+}
+
+void WebUIIOSImpl::RegisterDeprecatedMessageCallback(
+    const std::string& message,
+    const DeprecatedMessageCallback& callback) {
+  deprecated_message_callbacks_.emplace(message, callback);
+}
+
+void WebUIIOSImpl::OnJsMessage(const base::Value& message,
                                const GURL& page_url,
                                bool user_is_interacting,
                                web::WebFrame* sender_frame) {
@@ -114,23 +131,24 @@ void WebUIIOSImpl::OnJsMessage(const base::DictionaryValue& message,
       web::URLVerificationTrustLevel::kNone;
   const GURL current_url = web_state_->GetCurrentURL(&trust_level);
   if (web::GetWebClient()->IsAppSpecificURL(current_url)) {
-    std::string message_content;
-    const base::ListValue* arguments = nullptr;
-    if (!message.GetString("message", &message_content)) {
+    const std::string* message_content = message.FindStringKey("message");
+    if (!message_content) {
       DLOG(WARNING) << "JS message parameter not found: message";
       return;
     }
-    if (!message.GetList("arguments", &arguments)) {
+    const base::Value* arguments = message.FindListKey("arguments");
+    if (!arguments) {
       DLOG(WARNING) << "JS message parameter not found: arguments";
       return;
     }
-    ProcessWebUIIOSMessage(current_url, message_content, *arguments);
+    ProcessWebUIIOSMessage(current_url, *message_content, *arguments);
   }
 }
 
 void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
                                           const std::string& message,
-                                          const base::ListValue& args) {
+                                          const base::Value& args) {
+  DCHECK(args.is_list());
   if (controller_->OverrideHandleWebUIIOSMessage(source_url, message, args))
     return;
 
@@ -139,7 +157,15 @@ void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
       message_callbacks_.find(message);
   if (callback != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback->second.Run(&args);
+    callback->second.Run(args.GetList());
+  }
+
+  // Look up the deprecated callback for this message.
+  DeprecatedMessageCallbackMap::const_iterator deprecated_callback =
+      deprecated_message_callbacks_.find(message);
+  if (deprecated_callback != deprecated_message_callbacks_.end()) {
+    // Forward this message and content on.
+    deprecated_callback->second.Run(&base::Value::AsListValue(args));
   }
 }
 
@@ -154,7 +180,7 @@ void WebUIIOSImpl::AddMessageHandler(
   handlers_.push_back(std::move(handler));
 }
 
-void WebUIIOSImpl::ExecuteJavascript(const base::string16& javascript) {
+void WebUIIOSImpl::ExecuteJavascript(const std::u16string& javascript) {
   web_state_->ExecuteJavaScript(javascript);
 }
 

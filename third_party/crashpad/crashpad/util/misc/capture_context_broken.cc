@@ -14,7 +14,9 @@
 
 #include "util/misc/capture_context.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 
 namespace crashpad {
 

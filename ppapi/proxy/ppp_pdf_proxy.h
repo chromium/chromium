@@ -18,6 +18,10 @@ namespace proxy {
 class PPP_Pdf_Proxy : public InterfaceProxy {
  public:
   explicit PPP_Pdf_Proxy(Dispatcher* dispatcher);
+
+  PPP_Pdf_Proxy(const PPP_Pdf_Proxy&) = delete;
+  PPP_Pdf_Proxy& operator=(const PPP_Pdf_Proxy&) = delete;
+
   ~PPP_Pdf_Proxy() override;
 
   static const PPP_Pdf* GetProxyInterface();
@@ -41,6 +45,9 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
                                      const PP_FloatPoint& extent);
   void OnPluginMsgCanEditText(PP_Instance instance, PP_Bool* result);
   void OnPluginMsgHasEditableText(PP_Instance instance, PP_Bool* result);
+  void OnPluginMsgReplaceSelection(PP_Instance instance,
+                                   const std::string& text);
+  void OnPluginMsgSelectAll(PP_Instance instance);
   void OnPluginMsgCanUndo(PP_Instance instance, PP_Bool* result);
   void OnPluginMsgCanRedo(PP_Instance instance, PP_Bool* result);
   void OnPluginMsgUndo(PP_Instance instance);
@@ -48,8 +55,6 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
   void OnPluginMsgHandleAccessibilityAction(
       PP_Instance instance,
       const PP_PdfAccessibilityActionData& action_data);
-  void OnPluginMsgReplaceSelection(PP_Instance instance,
-                                   const std::string& text);
   void OnPluginMsgPrintBegin(PP_Instance instance,
                              const PP_PrintSettings_Dev& print_settings,
                              const PP_PdfPrintSettings_Dev& pdf_print_settings,
@@ -59,8 +64,6 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_Pdf* ppp_pdf_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Pdf_Proxy);
 };
 
 }  // namespace proxy

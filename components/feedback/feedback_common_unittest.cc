@@ -5,12 +5,12 @@
 #include "components/feedback/feedback_common.h"
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/proto/common.pb.h"
 #include "components/feedback/proto/dom.pb.h"
 #include "components/feedback/proto/extension.pb.h"
 #include "components/feedback/proto/math.pb.h"
-#include "content/public/test/test_browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -23,18 +23,16 @@ constexpr char kLongLog[] = TEN_LINES TEN_LINES TEN_LINES TEN_LINES TEN_LINES;
 constexpr char kLogsAttachmentName[] = "system_logs.zip";
 constexpr int kTestProductId = 3490;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr int kDefaultProductId = 208;  // ChromeOS default product ID.
 #else
 constexpr int kDefaultProductId = 237;  // Chrome default product ID.
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 class FeedbackCommonTest : public testing::Test {
  protected:
-  FeedbackCommonTest()
-      : feedback_(new FeedbackCommon()) {
-  }
+  FeedbackCommonTest() : feedback_(new FeedbackCommon()) {}
 
   ~FeedbackCommonTest() override {}
 
@@ -117,4 +115,16 @@ TEST_F(FeedbackCommonTest, TestAllCrashIdsRetention) {
   feedback_->PrepareReport(&report_);
 
   EXPECT_EQ(1, report_.web_data().product_specific_data_size());
+}
+
+TEST_F(FeedbackCommonTest, IncludeInSystemLogs) {
+  bool google_email = true;
+  EXPECT_TRUE(FeedbackCommon::IncludeInSystemLogs(kOne, google_email));
+  EXPECT_TRUE(FeedbackCommon::IncludeInSystemLogs(
+      feedback::FeedbackReport::kAllCrashReportIdsKey, google_email));
+
+  google_email = false;
+  EXPECT_TRUE(FeedbackCommon::IncludeInSystemLogs(kOne, google_email));
+  EXPECT_FALSE(FeedbackCommon::IncludeInSystemLogs(
+      feedback::FeedbackReport::kAllCrashReportIdsKey, google_email));
 }

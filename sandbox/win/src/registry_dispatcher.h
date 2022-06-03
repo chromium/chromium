@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_REGISTRY_DISPATCHER_H_
-#define SANDBOX_SRC_REGISTRY_DISPATCHER_H_
+#ifndef SANDBOX_WIN_SRC_REGISTRY_DISPATCHER_H_
+#define SANDBOX_WIN_SRC_REGISTRY_DISPATCHER_H_
 
 #include <stdint.h>
 
@@ -20,6 +20,10 @@ namespace sandbox {
 class RegistryDispatcher : public Dispatcher {
  public:
   explicit RegistryDispatcher(PolicyBase* policy_base);
+
+  RegistryDispatcher(const RegistryDispatcher&) = delete;
+  RegistryDispatcher& operator=(const RegistryDispatcher&) = delete;
+
   ~RegistryDispatcher() override {}
 
   // Dispatcher interface.
@@ -43,9 +47,8 @@ class RegistryDispatcher : public Dispatcher {
                  uint32_t desired_access);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(RegistryDispatcher);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_REGISTRY_DISPATCHER_H_
+#endif  // SANDBOX_WIN_SRC_REGISTRY_DISPATCHER_H_

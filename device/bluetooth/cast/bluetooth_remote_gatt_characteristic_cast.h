@@ -34,6 +34,12 @@ class BluetoothRemoteGattCharacteristicCast
       BluetoothRemoteGattServiceCast* service,
       scoped_refptr<chromecast::bluetooth::RemoteCharacteristic>
           characteristic);
+
+  BluetoothRemoteGattCharacteristicCast(
+      const BluetoothRemoteGattCharacteristicCast&) = delete;
+  BluetoothRemoteGattCharacteristicCast& operator=(
+      const BluetoothRemoteGattCharacteristicCast&) = delete;
+
   ~BluetoothRemoteGattCharacteristicCast() override;
 
   // BluetoothGattCharacteristic implementation:
@@ -45,11 +51,15 @@ class BluetoothRemoteGattCharacteristicCast
   // BluetoothRemoteGattCharacteristic implementation:
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattService* GetService() const override;
-  void ReadRemoteCharacteristic(ValueCallback callback,
-                                ErrorCallback error_callback) override;
+  void ReadRemoteCharacteristic(ValueCallback callback) override;
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+                                 WriteType write_type,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) override;
+  void DeprecatedWriteRemoteCharacteristic(
+      const std::vector<uint8_t>& value,
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override;
 
   // Called by BluetoothAdapterCast to set the value when a new notification
   // comes in.
@@ -65,13 +75,13 @@ class BluetoothRemoteGattCharacteristicCast
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
 
-  // Called when the remote characteristic has been read or the operation has
-  // failed. If the former, |success| will be true, and |result| will be
-  // valid. In this case, |value_| is updated and |callback| is run with
-  // |result|. If |success| is false, |result| is ignored and |error_callback|
-  // is run.
+  // Called upon completation of a read (success or failure) of a remote
+  // characteristic. When successful |success| will be true and |result|
+  // will contain the characteristic value. In this case |value_| is updated
+  // and |callback| is run with |result| and no error code. Upon failure
+  // |success| is false, |result| is undefined, and |callback| is run with an
+  // appropriate error code and the value is invalid.
   void OnReadRemoteCharacteristic(ValueCallback callback,
-                                  ErrorCallback error_callback,
                                   bool success,
                                   const std::vector<uint8_t>& result);
 
@@ -90,8 +100,6 @@ class BluetoothRemoteGattCharacteristicCast
   std::vector<uint8_t> value_;
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicCast> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicCast);
 };
 
 }  // namespace device

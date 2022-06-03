@@ -1,0 +1,403 @@
+This test verifies the position and size of the highlight rectangles overlayed on an inspected CSS grid div.
+
+{
+  "gridHighlights": [
+    {
+      "rotationAngle": -90,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 173,
+          "y": 383,
+          "computedSize": 50,
+          "authoredSize": "50px"
+        },
+        {
+          "x": 173,
+          "y": 233,
+          "computedSize": 200,
+          "authoredSize": "20%"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 185.5,
+          "y": 408,
+          "computedSize": 25
+        },
+        {
+          "x": 225.5,
+          "y": 408,
+          "computedSize": 25
+        }
+      ],
+      "rows": [
+        "M",
+        173,
+        408,
+        "L",
+        173,
+        133,
+        "M",
+        198,
+        133,
+        "L",
+        198,
+        408,
+        "M",
+        213,
+        408,
+        "L",
+        213,
+        133,
+        "M",
+        238,
+        133,
+        "L",
+        238,
+        408
+      ],
+      "rowGaps": [
+        "M",
+        198,
+        408,
+        "L",
+        198,
+        133,
+        "L",
+        213,
+        133,
+        "L",
+        213,
+        408,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        173,
+        408,
+        "L",
+        238,
+        408,
+        "M",
+        238,
+        358,
+        "L",
+        173,
+        358,
+        "M",
+        173,
+        333,
+        "L",
+        238,
+        333,
+        "M",
+        238,
+        133,
+        "L",
+        173,
+        133
+      ],
+      "columnGaps": [
+        "M",
+        173,
+        358,
+        "L",
+        173,
+        333,
+        "L",
+        238,
+        333,
+        "L",
+        238,
+        358,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 173,
+          "y": 408
+        },
+        {
+          "x": 205.5,
+          "y": 408
+        },
+        {
+          "x": 238,
+          "y": 408
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 173,
+          "y": 408
+        },
+        {
+          "x": 173,
+          "y": 345.5
+        },
+        {
+          "x": 173,
+          "y": 133
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 173,
+          "y": 133
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 238,
+          "y": 408
+        },
+        {
+          "x": 238,
+          "y": 345.5
+        },
+        {
+          "x": 238,
+          "y": 133
+        }
+      ],
+      "areaNames": {},
+      "rowLineNameOffsets": [],
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        173,
+        408,
+        "L",
+        173,
+        133,
+        "L",
+        238,
+        133,
+        "L",
+        238,
+        408,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    },
+    {
+      "rotationAngle": -90,
+      "writingMode": "horizontal-tb",
+      "columnTrackSizes": [
+        {
+          "x": 108,
+          "y": 1183,
+          "computedSize": 50,
+          "authoredSize": "50px"
+        },
+        {
+          "x": 108,
+          "y": 508,
+          "computedSize": 1200,
+          "authoredSize": "1200px"
+        }
+      ],
+      "rowTrackSizes": [
+        {
+          "x": 158,
+          "y": 1208,
+          "computedSize": 100
+        },
+        {
+          "x": 278,
+          "y": 1208,
+          "computedSize": 100
+        }
+      ],
+      "rows": [
+        "M",
+        108,
+        1208,
+        "L",
+        108,
+        -92,
+        "M",
+        208,
+        -92,
+        "L",
+        208,
+        1208,
+        "M",
+        228,
+        1208,
+        "L",
+        228,
+        -92,
+        "M",
+        328,
+        -92,
+        "L",
+        328,
+        1208
+      ],
+      "rowGaps": [
+        "M",
+        208,
+        1208,
+        "L",
+        208,
+        -92,
+        "L",
+        228,
+        -92,
+        "L",
+        228,
+        1208,
+        "Z"
+      ],
+      "columns": [
+        "M",
+        108,
+        1208,
+        "L",
+        328,
+        1208,
+        "M",
+        328,
+        1158,
+        "L",
+        108,
+        1158,
+        "M",
+        108,
+        1108,
+        "L",
+        328,
+        1108,
+        "M",
+        328,
+        -92,
+        "L",
+        108,
+        -92
+      ],
+      "columnGaps": [
+        "M",
+        108,
+        1158,
+        "L",
+        108,
+        1108,
+        "L",
+        328,
+        1108,
+        "L",
+        328,
+        1158,
+        "Z"
+      ],
+      "positiveRowLineNumberPositions": [
+        {
+          "x": 108,
+          "y": 1208
+        },
+        {
+          "x": 218,
+          "y": 1208
+        },
+        {
+          "x": 328,
+          "y": 1208
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 108,
+          "y": 1208
+        },
+        {
+          "x": 108,
+          "y": 1133
+        },
+        {
+          "x": 108,
+          "y": -92
+        }
+      ],
+      "negativeRowLineNumberPositions": [
+        {
+          "x": 108,
+          "y": -92
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 328,
+          "y": 1208
+        },
+        {
+          "x": 328,
+          "y": 1133
+        },
+        {
+          "x": 328,
+          "y": -92
+        }
+      ],
+      "areaNames": {},
+      "rowLineNameOffsets": [],
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        108,
+        1208,
+        "L",
+        108,
+        -92,
+        "L",
+        328,
+        -92,
+        "L",
+        328,
+        1208,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      },
+      "isPrimaryGrid": true
+    }
+  ]
+}
+

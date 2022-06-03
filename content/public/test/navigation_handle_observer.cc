@@ -27,15 +27,17 @@ void NavigationHandleObserver::DidStartNavigation(
   is_error_ = false;
   page_transition_ = ui::PAGE_TRANSITION_LINK;
   last_committed_url_ = GURL();
+  response_headers_.reset();
 
   is_main_frame_ = navigation_handle->IsInMainFrame();
-  is_parent_main_frame_ = navigation_handle->IsParentMainFrame();
   is_renderer_initiated_ = navigation_handle->IsRendererInitiated();
   is_same_document_ = navigation_handle->IsSameDocument();
   was_redirected_ = navigation_handle->WasServerRedirect();
   frame_tree_node_id_ = navigation_handle->GetFrameTreeNodeId();
   navigation_id_ = navigation_handle->GetNavigationId();
   navigation_start_ = navigation_handle->NavigationStart();
+  reload_type_ = navigation_handle->GetReloadType();
+  next_page_ukm_source_id_ = navigation_handle->GetNextPageUkmSourceId();
 }
 
 void NavigationHandleObserver::DidFinishNavigation(
@@ -44,7 +46,6 @@ void NavigationHandleObserver::DidFinishNavigation(
     return;
 
   DCHECK_EQ(is_main_frame_, navigation_handle->IsInMainFrame());
-  DCHECK_EQ(is_parent_main_frame_, navigation_handle->IsParentMainFrame());
   DCHECK_EQ(is_same_document_, navigation_handle->IsSameDocument());
   DCHECK_EQ(is_renderer_initiated_, navigation_handle->IsRendererInitiated());
   DCHECK_EQ(frame_tree_node_id_, navigation_handle->GetFrameTreeNodeId());
@@ -53,12 +54,14 @@ void NavigationHandleObserver::DidFinishNavigation(
   net_error_code_ = navigation_handle->GetNetErrorCode();
   is_download_ = navigation_handle->IsDownload();
   auth_challenge_info_ = navigation_handle->GetAuthChallengeInfo();
+  resolve_error_info_ = navigation_handle->GetResolveErrorInfo();
 
   if (navigation_handle->HasCommitted()) {
     has_committed_ = true;
     if (!navigation_handle->IsErrorPage()) {
       page_transition_ = navigation_handle->GetPageTransition();
       last_committed_url_ = navigation_handle->GetURL();
+      response_headers_ = navigation_handle->GetResponseHeaders();
     } else {
       is_error_ = true;
     }
@@ -67,7 +70,16 @@ void NavigationHandleObserver::DidFinishNavigation(
     is_error_ = true;
   }
 
+  navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
+
   handle_ = nullptr;
+}
+
+std::string NavigationHandleObserver::GetNormalizedResponseHeader(
+    const std::string& key) const {
+  std::string value;
+  response_headers_->GetNormalizedHeader(key, &value);
+  return value;
 }
 
 }  // namespace content

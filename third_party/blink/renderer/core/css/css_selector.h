@@ -61,10 +61,8 @@ class CSSSelectorList;
 //   (http://www.w3.org/TR/css3-selectors/#combinators), such as descendant,
 //   sibling, etc., are parsed right-to-left (in the example above, this is why
 //   #c is earlier in the tagHistory() chain than .a.b).
-// * SubSelector relations are parsed left-to-right in most cases (such as the
-//   .a.b example above); a counter-example is the
-//   ::content pseudo-element. Most (all?) other pseudo elements and pseudo
-//   classes are parsed left-to-right.
+// * SubSelector relations are parsed left-to-right, such as the .a.b example
+//   above.
 // * ShadowPseudo relations are parsed right-to-left. Example:
 //   summary::-webkit-details-marker is parsed as: selectorText():
 //   summary::-webkit-details-marker --> (relation == ShadowPseudo)
@@ -131,17 +129,42 @@ class CORE_EXPORT CSSSelector {
   };
 
   enum RelationType {
-    kSubSelector,       // No combinator
-    kDescendant,        // "Space" combinator
-    kChild,             // > combinator
-    kDirectAdjacent,    // + combinator
-    kIndirectAdjacent,  // ~ combinator
-    // Special cases for shadow DOM related selectors.
-    kShadowDeep,                // /deep/ combinator
-    kShadowDeepAsDescendant,    // /deep/ as an alias for descendant
-    kShadowPseudo,              // ::shadow pseudo element
-    kShadowSlot,                // ::slotted() pseudo element
-    kShadowPart,                // ::part() pseudo element
+    // No combinator. Used between simple selectors within the same compound.
+    kSubSelector,
+    // "Space" combinator
+    kDescendant,
+    // > combinator
+    kChild,
+    // + combinator
+    kDirectAdjacent,
+    // ~ combinator
+    kIndirectAdjacent,
+    // The relation types below are implicit combinators inserted at parse time
+    // before pseudo elements which match another flat tree element than the
+    // rest of the compound.
+    //
+    // Implicit combinator inserted before pseudo elements matching an element
+    // inside a UA shadow tree. This combinator allows the selector matching to
+    // cross a shadow root.
+    //
+    // Examples:
+    // input::placeholder, video::cue(i), video::--webkit-media-controls-panel
+    kUAShadow,
+    // Implicit combinator inserted before ::slotted() selectors.
+    kShadowSlot,
+    // Implicit combinator inserted before ::part() selectors which allows
+    // matching a ::part in shadow-including descendant tree for #host in
+    // "#host::part(button)".
+    kShadowPart,
+
+    // leftmost "Space" combinator of relative selector
+    kRelativeDescendant,
+    // leftmost > combinator of relative selector
+    kRelativeChild,
+    // leftmost + combinator of relative selector
+    kRelativeDirectAdjacent,
+    // leftmost ~ combinator of relative selector
+    kRelativeIndirectAdjacent
   };
 
   enum PseudoType {
@@ -169,6 +192,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoAnyLink,
     kPseudoWebkitAnyLink,
     kPseudoAutofill,
+    kPseudoWebKitAutofill,
     kPseudoAutofillPreviewed,
     kPseudoAutofillSelected,
     kPseudoHover,
@@ -194,10 +218,12 @@ class CORE_EXPORT CSSSelector {
     kPseudoBefore,
     kPseudoAfter,
     kPseudoMarker,
+    kPseudoModal,
     kPseudoBackdrop,
     kPseudoLang,
     kPseudoNot,
     kPseudoPlaceholder,
+    kPseudoFileSelectorButton,
     kPseudoResizer,
     kPseudoRoot,
     kPseudoScope,
@@ -228,37 +254,50 @@ class CORE_EXPORT CSSSelector {
     kPseudoFullScreen,
     kPseudoFullScreenAncestor,
     kPseudoFullscreen,
+    kPseudoPaused,
     kPseudoPictureInPicture,
+    kPseudoPlaying,
     kPseudoInRange,
     kPseudoOutOfRange,
+    kPseudoXrOverlay,
     // Pseudo elements in UA ShadowRoots. Available in any stylesheets.
     kPseudoWebKitCustomElement,
-    // Pseudo elements in UA ShadowRoots. Availble only in UA stylesheets.
+    // Pseudo elements in UA ShadowRoots. Available only in UA stylesheets.
     kPseudoBlinkInternalElement,
     kPseudoCue,
     kPseudoFutureCue,
     kPseudoPastCue,
-    kPseudoUnresolved,
     kPseudoDefined,
-    kPseudoContent,
+    kPseudoHasDatalist,
     kPseudoHost,
     kPseudoHostContext,
-    kPseudoShadow,
     kPseudoSpatialNavigationFocus,
     kPseudoSpatialNavigationInterest,
     kPseudoIsHtml,
     kPseudoListBox,
     kPseudoMultiSelectFocus,
     kPseudoHostHasAppearance,
+    kPseudoPopupOpen,
     kPseudoSlotted,
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
-    kPseudoXrImmersiveDomOverlay,
+    kPseudoTargetText,
+    kPseudoDir,
+    kPseudoHighlight,
+    kPseudoSpellingError,
+    kPseudoGrammarError,
+    kPseudoHas,
+    // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
+    // selector definition.
+    // - spec : https://www.w3.org/TR/selectors-4/#relative
+    // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
+    kPseudoRelativeLeftmost,
   };
 
-  enum AttributeMatchType {
+  enum class AttributeMatchType {
     kCaseSensitive,
     kCaseInsensitive,
+    kCaseSensitiveAlways,
   };
 
   PseudoType GetPseudoType() const {
@@ -270,9 +309,7 @@ class CORE_EXPORT CSSSelector {
                         bool has_arguments,
                         CSSParserMode);
   void UpdatePseudoPage(const AtomicString&);
-
-  static PseudoType ParsePseudoType(const AtomicString&, bool has_arguments);
-  static PseudoId ParsePseudoId(const String&);
+  static PseudoType NameToPseudoType(const AtomicString&, bool has_arguments);
   static PseudoId GetPseudoId(PseudoType);
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
@@ -303,6 +340,9 @@ class CORE_EXPORT CSSSelector {
   const CSSSelectorList* SelectorList() const {
     return has_rare_data_ ? data_.rare_data_->selector_list_.get() : nullptr;
   }
+  const Vector<AtomicString>* PartNames() const {
+    return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
+  }
 
 #ifndef NDEBUG
   void Show() const;
@@ -314,6 +354,7 @@ class CORE_EXPORT CSSSelector {
   void SetAttribute(const QualifiedName&, AttributeMatchType);
   void SetArgument(const AtomicString&);
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
+  void SetPartNames(std::unique_ptr<Vector<AtomicString>>);
 
   void SetNth(int a, int b);
   bool MatchNth(unsigned count) const;
@@ -321,9 +362,7 @@ class CORE_EXPORT CSSSelector {
   bool IsAdjacentSelector() const {
     return relation_ == kDirectAdjacent || relation_ == kIndirectAdjacent;
   }
-  bool IsShadowSelector() const {
-    return relation_ == kShadowPseudo || relation_ == kShadowDeep;
-  }
+  bool IsUAShadowSelector() const { return relation_ == kUAShadow; }
   bool IsAttributeSelector() const {
     return match_ >= kFirstAttributeSelectorMatch;
   }
@@ -331,9 +370,6 @@ class CORE_EXPORT CSSSelector {
     return pseudo_type_ == kPseudoHost || pseudo_type_ == kPseudoHostContext;
   }
   bool IsUserActionPseudoClass() const;
-  bool IsV0InsertionPointCrossing() const {
-    return pseudo_type_ == kPseudoHostContext || pseudo_type_ == kPseudoContent;
-  }
   bool IsIdClassOrAttributeSelector() const;
 
   RelationType Relation() const { return static_cast<RelationType>(relation_); }
@@ -362,9 +398,6 @@ class CORE_EXPORT CSSSelector {
   bool IsLastInTagHistory() const { return is_last_in_tag_history_; }
   void SetLastInTagHistory(bool is_last) { is_last_in_tag_history_ = is_last; }
 
-  bool IgnoreSpecificity() const { return ignore_specificity_; }
-  void SetIgnoreSpecificity(bool ignore) { ignore_specificity_ = ignore; }
-
   // https://drafts.csswg.org/selectors/#compound
   bool IsCompound() const;
 
@@ -373,30 +406,24 @@ class CORE_EXPORT CSSSelector {
     kMatchVisited = 2,
     kMatchAll = kMatchLink | kMatchVisited
   };
-  unsigned ComputeLinkMatchType(unsigned link_match_type) const;
+
+  // True if :link or :visited pseudo-classes are found anywhere in
+  // the selector.
+  bool HasLinkOrVisited() const;
 
   bool IsForPage() const { return is_for_page_; }
   void SetForPage() { is_for_page_ = true; }
-
-  bool RelationIsAffectedByPseudoContent() const {
-    return relation_is_affected_by_pseudo_content_;
-  }
-  void SetRelationIsAffectedByPseudoContent() {
-    relation_is_affected_by_pseudo_content_ = true;
-  }
 
   bool MatchesPseudoElement() const;
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
 
-  bool HasContentPseudo() const;
-  bool HasSlottedPseudo() const;
-  bool HasDeepCombinatorOrShadowPseudo() const;
   // Returns true if the immediately preceeding simple selector is ::part.
   bool FollowsPart() const;
-  bool NeedsUpdatedDistribution() const;
-  bool HasPseudoIs() const;
-  bool HasPseudoWhere() const;
+  // Returns true if the immediately preceeding simple selector is ::slotted.
+  bool FollowsSlotted() const;
+
+  static String FormatPseudoTypeForDebugging(PseudoType);
 
  private:
   unsigned relation_ : 4;     // enum RelationType
@@ -407,9 +434,7 @@ class CORE_EXPORT CSSSelector {
   unsigned has_rare_data_ : 1;
   unsigned is_for_page_ : 1;
   unsigned tag_is_implicit_ : 1;
-  unsigned relation_is_affected_by_pseudo_content_ : 1;
   unsigned is_last_in_original_list_ : 1;
-  unsigned ignore_specificity_ : 1;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -448,6 +473,8 @@ class CORE_EXPORT CSSSelector {
     AtomicString argument_;    // Used for :contains, :lang, :nth-*
     std::unique_ptr<CSSSelectorList>
         selector_list_;  // Used for :-webkit-any and :not
+    std::unique_ptr<Vector<AtomicString>>
+        part_names_;  // Used for ::part() selectors.
 
    private:
     RareData(const AtomicString& value);
@@ -532,9 +559,7 @@ inline CSSSelector::CSSSelector()
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(false),
-      relation_is_affected_by_pseudo_content_(false),
       is_last_in_original_list_(false),
-      ignore_specificity_(false),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -547,9 +572,7 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(tag_is_implicit),
-      relation_is_affected_by_pseudo_content_(false),
       is_last_in_original_list_(false),
-      ignore_specificity_(false),
       data_(tag_q_name) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
@@ -561,10 +584,7 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       has_rare_data_(o.has_rare_data_),
       is_for_page_(o.is_for_page_),
       tag_is_implicit_(o.tag_is_implicit_),
-      relation_is_affected_by_pseudo_content_(
-          o.relation_is_affected_by_pseudo_content_),
       is_last_in_original_list_(o.is_last_in_original_list_),
-      ignore_specificity_(o.ignore_specificity_),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);

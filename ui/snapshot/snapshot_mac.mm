@@ -7,9 +7,8 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 

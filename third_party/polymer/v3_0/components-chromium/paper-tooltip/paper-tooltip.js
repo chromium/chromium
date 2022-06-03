@@ -311,12 +311,16 @@ Polymer({
 
   /**
    * Returns the target element that this tooltip is anchored to. It is
-   * either the element given by the `for` attribute, or the immediate parent
-   * of the tooltip.
+   * either the element given by the `for` attribute, the element manually
+   * specified through the `target` attribute, or the immediate parent of
+   * the tooltip.
    *
    * @type {Node}
    */
   get target() {
+    if (this._manualTarget)
+      return this._manualTarget;
+
     var parentNode = dom(this).parentNode;
     // If the parentNode is a document fragment, then we need to use the host.
     var ownerRoot = dom(this).getOwnerRoot();
@@ -329,6 +333,15 @@ Polymer({
           parentNode;
     }
     return target;
+  },
+
+  /**
+   * Sets the target element that this tooltip will be anchored to.
+   * @param {Node} target
+   */
+  set target(target) {
+    this._manualTarget = target;
+    this._findTarget();
   },
 
   /**
@@ -429,13 +442,16 @@ Polymer({
    * @return {void}
    */
   updatePosition: function() {
-    if (!this._target || !this.offsetParent)
+    if (!this._target)
+      return;
+    var offsetParent = this._composedOffsetParent();
+    if (!offsetParent)
       return;
     var offset = this.offset;
     // If a marginTop has been provided by the user (pre 1.0.3), use it.
     if (this.marginTop != 14 && this.offset == 14)
       offset = this.marginTop;
-    var parentRect = this.offsetParent.getBoundingClientRect();
+    var parentRect = offsetParent.getBoundingClientRect();
     var targetRect = this._target.getBoundingClientRect();
     var thisRect = this.getBoundingClientRect();
     var horizontalCenterOffset = (targetRect.width - thisRect.width) / 2;
@@ -581,5 +597,44 @@ Polymer({
     }
     this.unlisten(this.$.tooltip, 'animationend', '_onAnimationEnd');
     this.unlisten(this, 'mouseenter', 'hide');
+  },
+
+  /**
+   * Polyfills the old offsetParent behavior from before the spec was changed:
+   * https://github.com/w3c/csswg-drafts/issues/159
+   */
+  _composedOffsetParent: function() {
+    let offsetParent = this.offsetParent;
+    let ancestor = this;
+    let foundInsideSlot = false;
+    while (ancestor && ancestor !== offsetParent) {
+      const assignedSlot = ancestor.assignedSlot;
+      if (assignedSlot) {
+        let newOffsetParent = assignedSlot.offsetParent;
+
+        if (getComputedStyle(assignedSlot)['display'] === 'contents') {
+          const hadStyleAttribute = assignedSlot.hasAttribute('style');
+          const oldDisplay = assignedSlot.style.display;
+          assignedSlot.style.display = getComputedStyle(ancestor).display;
+
+          newOffsetParent = assignedSlot.offsetParent;
+
+          assignedSlot.style.display = oldDisplay;
+          if (!hadStyleAttribute) {
+            assignedSlot.removeAttribute('style');
+          }
+        }
+
+        ancestor = assignedSlot;
+        if (offsetParent !== newOffsetParent) {
+          offsetParent = newOffsetParent;
+          foundInsideSlot = true;
+        }
+      } else if (ancestor.host && foundInsideSlot) {
+        break;
+      }
+      ancestor = ancestor.host || ancestor.parentNode;
+    }
+    return offsetParent;
   }
 });

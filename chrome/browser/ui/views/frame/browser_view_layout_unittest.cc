@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 
+#include <memory>
+
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -27,11 +29,13 @@ constexpr int kToolbarHeight = 30 - views::Separator::kThickness;
 class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
  public:
   MockBrowserViewLayoutDelegate() = default;
+
+  MockBrowserViewLayoutDelegate(const MockBrowserViewLayoutDelegate&) = delete;
+  MockBrowserViewLayoutDelegate& operator=(
+      const MockBrowserViewLayoutDelegate&) = delete;
+
   ~MockBrowserViewLayoutDelegate() override = default;
 
-  void set_download_shelf_needs_layout(bool layout) {
-    download_shelf_needs_layout_ = layout;
-  }
   void set_tab_strip_visible(bool visible) {
     tab_strip_visible_ = visible;
   }
@@ -63,10 +67,6 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool IsContentsSeparatorEnabled() const override {
     return content_separator_enabled_;
   }
-  bool DownloadShelfNeedsLayout() const override {
-    return download_shelf_needs_layout_;
-  }
-
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() const override {
     return nullptr;
   }
@@ -84,11 +84,13 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
             Browser::FEATURE_TOOLBAR,
             Browser::FEATURE_LOCATIONBAR,
             Browser::FEATURE_BOOKMARKBAR,
-            Browser::FEATURE_DOWNLOADSHELF,
         });
     return base::Contains(*supported_features, feature);
   }
   gfx::NativeView GetHostView() const override { return nullptr; }
+  bool BrowserIsSystemWebApp() const override { return false; }
+  bool BrowserIsWebApp() const override { return false; }
+  bool BrowserIsTypeApp() const override { return false; }
   bool BrowserIsTypeNormal() const override { return true; }
   bool HasFindBarController() const override { return false; }
   void MoveWindowForFindBarIfNecessary() const override {}
@@ -98,17 +100,14 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool toolbar_visible_ = true;
   bool bookmark_bar_visible_ = true;
   bool content_separator_enabled_ = true;
-  bool download_shelf_needs_layout_ = false;
   bool top_controls_slide_enabled_ = false;
   float top_controls_shown_ratio_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowserViewLayoutDelegate);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-views::View* CreateFixedSizeView(const gfx::Size& size) {
-  auto* view = new views::View;
+std::unique_ptr<views::View> CreateFixedSizeView(const gfx::Size& size) {
+  auto view = std::make_unique<views::View>();
   view->SetPreferredSize(size);
   view->SizeToPreferredSize();
   return view;
@@ -153,6 +152,10 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         contents_container_(nullptr),
         contents_web_view_(nullptr),
         devtools_web_view_(nullptr) {}
+
+  BrowserViewLayoutTest(const BrowserViewLayoutTest&) = delete;
+  BrowserViewLayoutTest& operator=(const BrowserViewLayoutTest&) = delete;
+
   ~BrowserViewLayoutTest() override {}
 
   BrowserViewLayout* layout() { return layout_.get(); }
@@ -169,50 +172,54 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    root_view_.reset(CreateFixedSizeView(gfx::Size(800, 600)));
+    root_view_ = CreateFixedSizeView(gfx::Size(800, 600));
 
     immersive_mode_controller_ =
         std::make_unique<MockImmersiveModeController>();
 
-    top_container_ = CreateFixedSizeView(gfx::Size(800, 60));
-    views::View* tab_strip_region_view = new TabStripRegionView();
-    tab_strip_ = new TabStrip(std::make_unique<FakeBaseTabStripController>());
-    top_container_->AddChildView(tab_strip_region_view);
-    tab_strip_region_view->AddChildView(tab_strip_);
-    webui_tab_strip_ = CreateFixedSizeView(gfx::Size(800, 200));
+    top_container_ =
+        root_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 60)));
+    auto tab_strip = std::make_unique<TabStrip>(
+        std::make_unique<FakeBaseTabStripController>());
+    tab_strip_ = tab_strip.get();
+    TabStripRegionView* tab_strip_region_view = top_container_->AddChildView(
+        std::make_unique<TabStripRegionView>(std::move(tab_strip)));
+    webui_tab_strip_ =
+        top_container_->AddChildView(CreateFixedSizeView(gfx::Size(800, 200)));
     webui_tab_strip_->SetVisible(false);
-    top_container_->AddChildView(webui_tab_strip_);
-    toolbar_ = CreateFixedSizeView(gfx::Size(800, kToolbarHeight));
-    top_container_->AddChildView(toolbar_);
+    toolbar_ = top_container_->AddChildView(
+        CreateFixedSizeView(gfx::Size(800, kToolbarHeight)));
     separator_ =
         top_container_->AddChildView(std::make_unique<views::Separator>());
-    root_view_->AddChildView(top_container_);
 
-    infobar_container_ = new InfoBarContainerView(nullptr);
-    root_view_->AddChildView(infobar_container_);
+    infobar_container_ = root_view_->AddChildView(
+        std::make_unique<InfoBarContainerView>(nullptr));
 
-    contents_web_view_ = CreateFixedSizeView(gfx::Size(800, 600));
-    devtools_web_view_ = CreateFixedSizeView(gfx::Size(800, 600));
+    contents_container_ =
+        root_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 600)));
+    devtools_web_view_ = contents_container_->AddChildView(
+        CreateFixedSizeView(gfx::Size(800, 600)));
     devtools_web_view_->SetVisible(false);
-
-    contents_container_ = CreateFixedSizeView(gfx::Size(800, 600));
-    contents_container_->AddChildView(devtools_web_view_);
-    contents_container_->AddChildView(contents_web_view_);
+    contents_web_view_ = contents_container_->AddChildView(
+        CreateFixedSizeView(gfx::Size(800, 600)));
     contents_container_->SetLayoutManager(
         std::make_unique<ContentsLayoutManager>(devtools_web_view_,
                                                 contents_web_view_));
 
-    root_view_->AddChildView(contents_container_);
-
     // TODO(jamescook): Attach |layout_| to |root_view_|?
-    delegate_ = new MockBrowserViewLayoutDelegate();
+    auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>();
+    delegate_ = delegate.get();
     layout_ = std::make_unique<BrowserViewLayout>(
-        std::unique_ptr<BrowserViewLayoutDelegate>(delegate_),
-        nullptr,  // NativeView.
-        nullptr,  // BrowserView.
-        top_container_, tab_strip_region_view, tab_strip_, toolbar_,
-        infobar_container_, contents_container_,
-        immersive_mode_controller_.get(), nullptr, separator_);
+        std::move(delegate),
+        /*host_view=*/nullptr,
+        /*browser_view=*/nullptr, top_container_, tab_strip_region_view,
+        tab_strip_, toolbar_, infobar_container_, contents_container_,
+        /*left_aligned_side_panel=*/nullptr,
+        /*left_aligned_side_panel_separator=*/nullptr,
+        /*right_aligned_side_panel=*/nullptr,
+        /*right_aligned_side_panel_separator=*/nullptr,
+        /*lens_side_panel=*/nullptr, immersive_mode_controller_.get(),
+        separator_);
     layout_->set_webui_tab_strip(webui_tab_strip());
   }
 
@@ -233,8 +240,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   views::View* devtools_web_view_;
 
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewLayoutTest);
 };
 
 // Test basic construction and initialization.
@@ -285,21 +290,21 @@ TEST_F(BrowserViewLayoutTest, Layout) {
 }
 
 TEST_F(BrowserViewLayoutTest, LayoutDownloadShelf) {
-  std::unique_ptr<views::View> download_shelf(
-      CreateFixedSizeView(gfx::Size(800, 50)));
+  constexpr int kHeight = 50;
+  std::unique_ptr<views::View> download_shelf =
+      CreateFixedSizeView(gfx::Size(800, kHeight));
   layout()->set_download_shelf(download_shelf.get());
 
-  // If download shelf doesn't need layout, it doesn't move the bottom edge.
-  delegate()->set_download_shelf_needs_layout(false);
-  const int kBottom = 500;
+  // If the download shelf isn't visible, it doesn't move the bottom edge.
+  download_shelf->SetVisible(false);
+  constexpr int kBottom = 500;
   EXPECT_EQ(kBottom, layout()->LayoutDownloadShelf(kBottom));
 
-  // Download shelf layout moves up the bottom edge and sets visibility.
-  delegate()->set_download_shelf_needs_layout(true);
-  download_shelf->SetVisible(false);
-  EXPECT_EQ(450, layout()->LayoutDownloadShelf(kBottom));
-  EXPECT_TRUE(download_shelf->GetVisible());
-  EXPECT_EQ(gfx::Rect(0, 450, 0, 50), download_shelf->bounds());
+  // A visible download shelf moves the bottom edge up.
+  download_shelf->SetVisible(true);
+  constexpr int kTop = kBottom - kHeight;
+  EXPECT_EQ(kTop, layout()->LayoutDownloadShelf(kBottom));
+  EXPECT_EQ(gfx::Rect(0, kTop, 0, kHeight), download_shelf->bounds());
 }
 
 TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {

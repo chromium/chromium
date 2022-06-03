@@ -9,8 +9,9 @@
 </head>
 <body>
 
-<dt>dt</dt>
-<p>End of test</p>
+<div id="container">
+  <dt>dt</dt>
+</div>
 <p id="description"></p>
 <div id="console"></div>
 
@@ -23,7 +24,7 @@
     if (window.accessibilityController) {
         // Build up full accessibility tree.
         document.body.focus();
-        buildAccessibilityTree(accessibilityController.focusedElement, 0);
+        buildAccessibilityTree(accessibilityController.accessibleElementById("container"), 0);
     }
 
 </script>

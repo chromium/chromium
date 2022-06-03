@@ -7,8 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/task/task.h"
@@ -26,6 +25,12 @@ using InitializationStatus = ExploreSitesStore::InitializationStatus;
 class ExploreSitesGetVersionTaskTest : public TaskTestBase {
  public:
   ExploreSitesGetVersionTaskTest() = default;
+
+  ExploreSitesGetVersionTaskTest(const ExploreSitesGetVersionTaskTest&) =
+      delete;
+  ExploreSitesGetVersionTaskTest& operator=(
+      const ExploreSitesGetVersionTaskTest&) = delete;
+
   ~ExploreSitesGetVersionTaskTest() override = default;
 
   void SetUp() override {
@@ -65,8 +70,6 @@ class ExploreSitesGetVersionTaskTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesGetVersionTaskTest);
 };
 
 TEST_F(ExploreSitesGetVersionTaskTest, StoreFailure) {

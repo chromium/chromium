@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="subtitle"
+        android:title="@string/safe_browsing_standard_protection_subtitle"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:summary="@string/safe_browsing_standard_protection_bullet_one"
+        android:icon="@drawable/ic_security_grey"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:summary="@string/safe_browsing_standard_protection_bullet_two"
+        android:icon="@drawable/ic_data_viz_grey"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="extended_reporting"
+        android:title="@string/safe_browsing_standard_protection_extended_reporting_title"
+        android:summary="@string/safe_browsing_standard_protection_extended_reporting_summary"
+        android:persistent="false"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="password_leak_detection"
+        android:title="@string/passwords_leak_detection_switch_title"
+        android:persistent="false"
+        app:allowDividerBelow="false" />
+</PreferenceScreen>

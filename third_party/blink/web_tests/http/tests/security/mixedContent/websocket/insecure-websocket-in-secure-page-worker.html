@@ -6,8 +6,7 @@
 <script>
 
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
-    testRunner.setCloseRemainingWindowsWhenComplete(true);
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.overridePreference("WebKitAllowRunningInsecureContent", false);
 }
 

@@ -1,0 +1,92 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr-Latn">
+<translation id="1075622780330595106">Imate više kartica (<ph name="NUMBER_OF_TABS" />) koje niste koristili u skorije vreme. Želite li da ih zatvorite?</translation>
+<translation id="1181037720776840403">Ukloni</translation>
+<translation id="125153950246128346">Dodirnite da biste videli neku drugu karticu</translation>
+<translation id="1302104331113804646">Podešavanja praćenja cene</translation>
+<translation id="1378979118429748177">Dobijajte obaveštenja o sniženjima</translation>
+<translation id="1657719826150349398">Premestite karticu nadole</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
+<translation id="2118649612461486615">Detalji o prodavnici</translation>
+<translation id="2162620598375156287">Cena je sada <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
+<translation id="2277224997687551299">Izmenite ime grupe</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Uklonite <ph name="TABS_COUNT_ONE" /> izabranu karticu iz grupe.}one{Uklonite <ph name="TABS_COUNT_MANY" /> izabranu karticu iz grupe.}few{Uklonite <ph name="TABS_COUNT_MANY" /> izabrane kartice iz grupe.}other{Uklonite <ph name="TABS_COUNT_MANY" /> izabranih kartica iz grupe.}}</translation>
+<translation id="2479148705183875116">Idi u Podešavanja</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
+<translation id="2569352796411618312">Predlog: Imate više kartica (<ph name="NUMBER_OF_TABS" />) koje niste koristili u skorije vreme. Želite li da ih zatvorite?</translation>
+<translation id="257674075312929031">Grupa</translation>
+<translation id="2613747923081026172">Napravi grupu</translation>
+<translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Poseti sajt</translation>
+<translation id="2671423594960767771">Deli grupu</translation>
+<translation id="2759453070259087442">Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> dodatnim karticama (<ph name="NUMBER_OF_TABS" />).</translation>
+<translation id="2801787514987684416">Želite da pregledate informacije o prodavnici?</translation>
+<translation id="2928243913527329289">Google | O ovoj prodavnici</translation>
+<translation id="2977480621796371840">Ukloni iz grupe</translation>
+<translation id="3052964831964880138">Sniženje od <ph name="PRICE_DROP" /> za:<ph name="PRODUCT_NAME" /></translation>
+<translation id="3194464645767632461">ocena</translation>
+<translation id="3267416433995960648">Isključi obaveštenje</translation>
+<translation id="3291470810748040983">Dobićete obaveštenje kada postoji niža cena na otvorenoj kartici</translation>
+<translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
+<translation id="3652027618765638838"><ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
+<translation id="3882834874697329510">Da biste dobili obaveštenje kada postoji niža cena na otvorenoj kartici, uključite obaveštenja u Podešavanjima.</translation>
+<translation id="3940195383040445971">Prati cene na karticama</translation>
+<translation id="3996880007329611795">Obaveštavaj me</translation>
+<translation id="4133493477912226187">Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
+<translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
+<translation id="4450893287417543264">Ne prikazuj ponovo</translation>
+<translation id="4648718555153979859">Kartice su grupisane zajedno ovde</translation>
+<translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
+<translation id="4850886885716139402">Prikaz</translation>
+<translation id="492284538114688557">Uočeno je sniženje</translation>
+<translation id="5007392906805964215">Pregledaj</translation>
+<translation id="5073204694187207510">Sakrijte prikaz mreže na celom ekranu</translation>
+<translation id="5082793167783849073">Napravite grupu da biste brzo upoređivali stranice. Za početak dodirnite i zadržite link.</translation>
+<translation id="5490235265819901748">Grupa kartica je proširena</translation>
+<translation id="5533021382642990449">Prikaži kasnije</translation>
+<translation id="5556417849629758491">Pregledajte informacije o prodavnici, opciju koja je dostupna u vrhu ekrana</translation>
+<translation id="5558362125926932819">Zatvorite grupu od kartica: <ph name="NUMBER_OF_TABS" /></translation>
+<translation id="5580090775658607195">Kartice su grupisane (<ph name="TAB_COUNT" />)</translation>
+<translation id="575494663145460764">Želite da dobijate obaveštenja za sniženja?</translation>
+<translation id="58326064309361797">Prevucite kartice da biste ih grupisali</translation>
+<translation id="5846292395804797011">Zatvorite grupu <ph name="TITLE_OF_GROUP" /> sa kartica: <ph name="NUMBER_OF_TABS" /></translation>
+<translation id="6040143037577758943">Zatvori</translation>
+<translation id="6054741997831917303">Cena ove stavke je nedavno snižena sa <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
+<translation id="6193448654517602979">Izaberite kartice</translation>
+<translation id="6228793724645064692">(ocena prodavnice)</translation>
+<translation id="6333260925957816943">Informacije o ovoj prodavnici</translation>
+<translation id="6510648526783655549">Zatvorite traku sa karticama</translation>
+<translation id="6549021453810473782">Prikaži detalje o prodavnici</translation>
+<translation id="6562820390860419811">Premestite karticu ulevo</translation>
+<translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="6840760312327750441">Da biste grupisali kartice, dodirnite karticu i zadržite je. Zatim je prevucite na drugu karticu.</translation>
+<translation id="6856809498882026482">Sakrijte režim višestrukog izbora</translation>
+<translation id="7129458170538955174">Informacije o ovoj prodavnici su otvorene do polovine ekrana</translation>
+<translation id="7151209024774799310">Ukloni kartice iz grupe</translation>
+<translation id="7204204600596740190">Režim višestrukog izbora</translation>
+<translation id="7326879924029668159">Pogledajte smernice za vraćanje i drugo</translation>
+<translation id="7352298686197644113">Pogledajte koja stavka na otvorenim karticama ima nižu cenu</translation>
+<translation id="753732157349120914">Prebacivač kartica</translation>
+<translation id="7559245342362162951">Prikazuje kartice grupe u mreži na celom ekranu</translation>
+<translation id="7792771145871471484">Pregledajte predloge.</translation>
+<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Dodajte <ph name="TABS_COUNT_ONE" /> izabranu karticu u grupu}one{Dodajte <ph name="TABS_COUNT_MANY" /> izabranu karticu u grupu}few{Dodajte <ph name="TABS_COUNT_MANY" /> izabrane kartice u grupu}other{Dodajte <ph name="TABS_COUNT_MANY" /> izabranih kartica u grupu}}</translation>
+<translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzija}one{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}few{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzije}other{Ocena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzija}}</translation>
+<translation id="7885132941432959125">Premestite karticu udesno</translation>
+<translation id="7966321538264951561">Odbacite predloge.</translation>
+<translation id="8029301326595421733">Informacije o ovoj prodavnici su otvorene na celom ekranu</translation>
+<translation id="814503310257431685">Prikaži sve</translation>
+<translation id="8205266828577616993">Premesti karticu nagore</translation>
+<translation id="8304833501377495048">Želite li da se traka sa karticama više ne prikazuje?</translation>
+<translation id="83556505225171773">{TABS_COUNT,plural, =1{Zatvorite <ph name="TABS_COUNT_ONE" /> izabranu karticu}one{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranu karticu}few{Zatvorite <ph name="TABS_COUNT_MANY" /> izabrane kartice}other{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranih kartica}}</translation>
+<translation id="8557923272772633250">Proširite grupu sa kartica: <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="860282621117673749">Obaveštenja o sniženjima</translation>
+<translation id="8714939927607906138">Niža cena</translation>
+<translation id="8749939518995770034">Zatvorena traka sa karticama</translation>
+<translation id="8820741577754260431">Pregledajte sniženja na karticama</translation>
+<translation id="9090098097337832354">Informacije o ovoj prodavnici su zatvorene</translation>
+<translation id="9150694013019234766">Prelazite sa jedne kartice na drugu u grupi kartica u dnu ekrana</translation>
+<translation id="9169594135889675189">Dodajte novu karticu u grupu</translation>
+<translation id="959682366969460160">Bolja organizacija</translation>
+</translationbundle>

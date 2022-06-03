@@ -16,21 +16,22 @@
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -53,21 +54,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+// For ::GetTickCount()
+#include <windows.h>
+
 namespace component_updater {
 
 namespace {
 
 using safe_browsing::SwReporterInvocation;
 using safe_browsing::SwReporterInvocationSequence;
-
-// These values are used to send UMA information and are replicated in the
-// histograms.xml file, so the order MUST NOT CHANGE.
-enum SRTCompleted {
-  SRT_COMPLETED_NOT_YET = 0,
-  SRT_COMPLETED_YES = 1,
-  SRT_COMPLETED_LATER = 2,
-  SRT_COMPLETED_MAX,
-};
 
 // CRX hash. The extension id is: gkmgaooipdjhmangpemjhigmamcehddo. The hash was
 // generated in Python with something like this:
@@ -90,47 +85,23 @@ bool is_sw_reporter_enabled = false;
 
 // Callback function to be called once the registration of the component
 // is complete.  This is used only in tests.
-base::OnceClosure* registration_cb_for_testing = new base::OnceClosure();
-
-void SRTHasCompleted(SRTCompleted value) {
-  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.Cleaner.HasCompleted", value,
-                            SRT_COMPLETED_MAX);
+base::OnceClosure& GetRegistrationCBForTesting() {
+  static base::NoDestructor<base::OnceClosure> registration_cb_for_testing;
+  return *registration_cb_for_testing;
 }
 
-void ReportUploadsWithUma(const base::string16& upload_results) {
-  base::String16Tokenizer tokenizer(upload_results, STRING16_LITERAL(";"));
-  int failure_count = 0;
-  int success_count = 0;
-  int longest_failure_run = 0;
-  int current_failure_run = 0;
+void ReportUploadsWithUma(const std::u16string& upload_results) {
+  base::String16Tokenizer tokenizer(upload_results, u";");
   bool last_result = false;
   while (tokenizer.GetNext()) {
-    if (tokenizer.token_piece() == STRING16_LITERAL("0")) {
-      ++failure_count;
-      ++current_failure_run;
-      last_result = false;
-    } else {
-      ++success_count;
-      current_failure_run = 0;
-      last_result = true;
-    }
-
-    if (current_failure_run > longest_failure_run)
-      longest_failure_run = current_failure_run;
+    last_result = (tokenizer.token_piece() != u"0");
   }
 
-  UMA_HISTOGRAM_COUNTS_100("SoftwareReporter.UploadFailureCount",
-                           failure_count);
-  UMA_HISTOGRAM_COUNTS_100("SoftwareReporter.UploadSuccessCount",
-                           success_count);
-  UMA_HISTOGRAM_COUNTS_100("SoftwareReporter.UploadLongestFailureRun",
-                           longest_failure_run);
   UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.LastUploadResult", last_result);
 }
 
-void ReportExperimentError(SoftwareReporterExperimentError error) {
-  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.ExperimentErrors", error,
-                            SW_REPORTER_EXPERIMENT_ERROR_MAX);
+void ReportConfigurationError(SoftwareReporterConfigurationError error) {
+  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.ConfigurationErrors", error);
 }
 
 // Ensures |str| contains only alphanumeric characters and characters from
@@ -155,7 +126,7 @@ std::string GenerateSessionId() {
 // Add |behaviour_flag| to |supported_behaviours| if |behaviour_name| is found
 // in the dictionary. Returns false on error.
 bool GetOptionalBehaviour(
-    const base::DictionaryValue* invocation_params,
+    const base::Value* invocation_params,
     base::StringPiece behaviour_name,
     SwReporterInvocation::Behaviours behaviour_flag,
     SwReporterInvocation::Behaviours* supported_behaviours) {
@@ -164,14 +135,13 @@ bool GetOptionalBehaviour(
 
   // Parameters enabling behaviours are optional, but if present must be
   // boolean.
-  const base::Value* value = nullptr;
-  if (invocation_params->Get(behaviour_name, &value)) {
-    bool enable_behaviour = false;
-    if (!value->GetAsBoolean(&enable_behaviour)) {
-      ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS);
+  const base::Value* value = invocation_params->FindPath(behaviour_name);
+  if (value) {
+    if (!value->is_bool()) {
+      ReportConfigurationError(kBadParams);
       return false;
     }
-    if (enable_behaviour)
+    if (value->GetBool())
       *supported_behaviours |= behaviour_flag;
   }
   return true;
@@ -182,16 +152,13 @@ bool GetOptionalBehaviour(
 // Returns whether the manifest was successfully read.
 bool ExtractInvocationSequenceFromManifest(
     const base::FilePath& exe_path,
-    std::unique_ptr<base::DictionaryValue> manifest,
+    base::Value manifest,
     safe_browsing::SwReporterInvocationSequence* out_sequence) {
-  const base::ListValue* parameter_list = nullptr;
-
-  // Allow an empty or missing launch_params list, but log an error if
-  // launch_params cannot be parsed as a list.
-  base::Value* launch_params = nullptr;
-  if (manifest->Get("launch_params", &launch_params) &&
-      !launch_params->GetAsList(&parameter_list)) {
-    ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS);
+  // Allow an empty or missing |parameter_list| list, but log an error if
+  // |parameter_list| cannot be parsed as a list.
+  base::Value* parameter_list = manifest.FindPath("launch_params");
+  if (parameter_list && !parameter_list->is_list()) {
+    ReportConfigurationError(kBadParams);
     return false;
   }
 
@@ -200,7 +167,7 @@ bool ExtractInvocationSequenceFromManifest(
 
   // If there are no launch parameters, create a single invocation with default
   // behaviour.
-  if (!parameter_list || parameter_list->empty()) {
+  if (!parameter_list || parameter_list->GetList().empty()) {
     base::CommandLine command_line(exe_path);
     command_line.AppendSwitchASCII(chrome_cleaner::kSessionIdSwitch,
                                    session_id);
@@ -211,10 +178,9 @@ bool ExtractInvocationSequenceFromManifest(
     return true;
   }
 
-  for (const auto& iter : *parameter_list) {
-    const base::DictionaryValue* invocation_params = nullptr;
-    if (!iter.GetAsDictionary(&invocation_params)) {
-      ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS);
+  for (const auto& invocation_params : parameter_list->GetList()) {
+    if (!invocation_params.is_dict()) {
+      ReportConfigurationError(kBadParams);
       return false;
     }
 
@@ -225,31 +191,30 @@ bool ExtractInvocationSequenceFromManifest(
 
     // The suffix must be an alphanumeric string. (Empty is fine as long as the
     // "suffix" key is present.)
-    std::string suffix;
-    if (!invocation_params->GetString("suffix", &suffix) ||
-        !ValidateString(suffix, std::string(), kMaxSuffixLength)) {
-      ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS);
+    const std::string* suffix = invocation_params.FindStringPath("suffix");
+    if (!suffix || !ValidateString(*suffix, std::string(), kMaxSuffixLength)) {
+      ReportConfigurationError(kBadParams);
       return false;
     }
 
     // Build a command line for the reporter out of the executable path and the
     // arguments from the manifest. (The "arguments" key must be present, but
     // it's ok if it's an empty list or a list of empty strings.)
-    const base::ListValue* arguments = nullptr;
-    if (!invocation_params->GetList("arguments", &arguments)) {
-      ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS);
+    const base::Value* arguments = invocation_params.FindListPath("arguments");
+    if (!arguments) {
+      ReportConfigurationError(kBadParams);
       return false;
     }
 
-    std::vector<base::string16> argv = {exe_path.value()};
-    for (const auto& value : *arguments) {
-      base::string16 argument;
-      if (!value.GetAsString(&argument)) {
-        ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_PARAMS);
+    std::vector<std::wstring> argv = {exe_path.value()};
+    for (const auto& value : arguments->GetList()) {
+      if (!value.is_string()) {
+        ReportConfigurationError(kBadParams);
         return false;
       }
+      std::string argument = value.GetString();
       if (!argument.empty())
-        argv.push_back(argument);
+        argv.push_back(base::UTF8ToWide(argument));
     }
 
     base::CommandLine command_line(argv);
@@ -259,12 +224,12 @@ bool ExtractInvocationSequenceFromManifest(
     // Add the histogram suffix to the command-line as well, so that the
     // reporter will add the same suffix to registry keys where it writes
     // metrics.
-    if (!suffix.empty())
+    if (!suffix->empty())
       command_line.AppendSwitchASCII(chrome_cleaner::kRegistrySuffixSwitch,
-                                     suffix);
+                                     *suffix);
 
     SwReporterInvocation::Behaviours supported_behaviours = 0;
-    if (!GetOptionalBehaviour(invocation_params, "prompt",
+    if (!GetOptionalBehaviour(&invocation_params, "prompt",
                               SwReporterInvocation::BEHAVIOUR_TRIGGER_PROMPT,
                               &supported_behaviours)) {
       return false;
@@ -272,7 +237,7 @@ bool ExtractInvocationSequenceFromManifest(
 
     out_sequence->PushInvocation(
         SwReporterInvocation(command_line)
-            .WithSuffix(suffix)
+            .WithSuffix(*suffix)
             .WithSupportedBehaviours(supported_behaviours));
   }
 
@@ -286,13 +251,13 @@ void ReportOnDemandUpdateSucceededHistogram(bool value) {
 }  // namespace
 
 SwReporterInstallerPolicy::SwReporterInstallerPolicy(
-    const OnComponentReadyCallback& on_component_ready_callback)
+    OnComponentReadyCallback on_component_ready_callback)
     : on_component_ready_callback_(on_component_ready_callback) {}
 
 SwReporterInstallerPolicy::~SwReporterInstallerPolicy() = default;
 
 bool SwReporterInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& dir) const {
   return base::PathExists(dir.Append(kSwReporterExeName));
 }
@@ -307,7 +272,7 @@ bool SwReporterInstallerPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result SwReporterInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -317,7 +282,7 @@ void SwReporterInstallerPolicy::OnCustomUninstall() {}
 void SwReporterInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   safe_browsing::SwReporterInvocationSequence invocations(version);
   const base::FilePath exe_path(install_dir.Append(kSwReporterExeName));
   if (ExtractInvocationSequenceFromManifest(exe_path, std::move(manifest),
@@ -361,17 +326,13 @@ SwReporterInstallerPolicy::GetInstallerAttributes() const {
     constexpr char kTagParam[] = "tag";
     if (tag.empty() ||
         !ValidateString(tag, kExtraAttributeChars, kMaxAttributeLength)) {
-      ReportExperimentError(SW_REPORTER_EXPERIMENT_ERROR_BAD_TAG);
+      ReportConfigurationError(kBadTag);
       attributes[kTagParam] = "missing_tag";
     } else {
       attributes[kTagParam] = tag;
     }
   }
   return attributes;
-}
-
-std::vector<std::string> SwReporterInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
 }
 
 SwReporterOnDemandFetcher::SwReporterOnDemandFetcher(
@@ -404,7 +365,7 @@ void SwReporterOnDemandFetcher::OnEvent(Events event, const std::string& id) {
 }
 
 void RegisterSwReporterComponent(ComponentUpdateService* cus) {
-  base::ScopedClosureRunner runner(std::move(*registration_cb_for_testing));
+  base::ScopedClosureRunner runner(std::move(GetRegistrationCBForTesting()));
 
   // Don't install the component if not allowed by policy.  This prevents
   // downloads and background scans.
@@ -416,14 +377,14 @@ void RegisterSwReporterComponent(ComponentUpdateService* cus) {
   // Once the component is ready and browser startup is complete, run
   // |safe_browsing::OnSwReporterReady|.
   auto lambda = [](safe_browsing::SwReporterInvocationSequence&& invocations) {
-    base::PostTask(
-        FROM_HERE,
-        {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            &safe_browsing::ChromeCleanerController::OnSwReporterReady,
-            base::Unretained(
-                safe_browsing::ChromeCleanerController::GetInstance()),
-            base::Passed(&invocations)));
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &safe_browsing::ChromeCleanerController::OnSwReporterReady,
+                base::Unretained(
+                    safe_browsing::ChromeCleanerController::GetInstance()),
+                std::move(invocations)));
   };
 
   // Install the component.
@@ -435,7 +396,7 @@ void RegisterSwReporterComponent(ComponentUpdateService* cus) {
 void SetRegisterSwReporterComponentCallbackForTesting(
     base::OnceClosure registration_cb) {
   is_sw_reporter_enabled = true;
-  *registration_cb_for_testing = std::move(registration_cb);
+  GetRegistrationCBForTesting() = std::move(registration_cb);
 }
 
 void RegisterPrefsForSwReporter(PrefRegistrySimple* registry) {
@@ -453,7 +414,7 @@ void RegisterProfilePrefsForSwReporter(
 }
 
 void ReportUMAForLastCleanerRun() {
-  base::string16 cleaner_key_name =
+  std::wstring cleaner_key_name =
       chrome_cleaner::kSoftwareRemovalToolRegistryKey;
   cleaner_key_name.append(1, L'\\').append(chrome_cleaner::kCleanerSubKey);
   base::win::RegKey cleaner_key(HKEY_CURRENT_USER, cleaner_key_name.c_str(),
@@ -461,30 +422,22 @@ void ReportUMAForLastCleanerRun() {
   // Cleaner is assumed to have run if we have a start time.
   if (cleaner_key.Valid()) {
     if (cleaner_key.HasValue(chrome_cleaner::kStartTimeValueName)) {
-      // Get version number.
-      if (cleaner_key.HasValue(chrome_cleaner::kVersionValueName)) {
-        DWORD version = {};
-        cleaner_key.ReadValueDW(chrome_cleaner::kVersionValueName, &version);
-        base::UmaHistogramSparse("SoftwareReporter.Cleaner.Version", version);
-        cleaner_key.DeleteValue(chrome_cleaner::kVersionValueName);
-      }
       // Get start & end time. If we don't have an end time, we can assume the
       // cleaner has not completed.
       int64_t start_time_value = {};
       cleaner_key.ReadInt64(chrome_cleaner::kStartTimeValueName,
                             &start_time_value);
       const base::Time start_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(start_time_value));
+          base::Microseconds(start_time_value));
 
       const bool completed =
           cleaner_key.HasValue(chrome_cleaner::kEndTimeValueName);
-      SRTHasCompleted(completed ? SRT_COMPLETED_YES : SRT_COMPLETED_NOT_YET);
       if (completed) {
         int64_t end_time_value = {};
         cleaner_key.ReadInt64(chrome_cleaner::kEndTimeValueName,
                               &end_time_value);
         const base::Time end_time = base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(end_time_value));
+            base::Microseconds(end_time_value));
 
         cleaner_key.DeleteValue(chrome_cleaner::kEndTimeValueName);
         UMA_HISTOGRAM_LONG_TIMES("SoftwareReporter.Cleaner.RunningTime",
@@ -506,20 +459,16 @@ void ReportUMAForLastCleanerRun() {
         // Check if we are running after the user has rebooted.
         const base::TimeDelta elapsed = base::Time::Now() - start_time;
         DCHECK_GT(elapsed.InMilliseconds(), 0);
-        UMA_HISTOGRAM_BOOLEAN(
-            "SoftwareReporter.Cleaner.HasRebooted",
-            static_cast<uint64_t>(elapsed.InMilliseconds()) > ::GetTickCount());
       }
 
       if (cleaner_key.HasValue(chrome_cleaner::kUploadResultsValueName)) {
-        base::string16 upload_results;
+        std::wstring upload_results;
         cleaner_key.ReadValue(chrome_cleaner::kUploadResultsValueName,
                               &upload_results);
-        ReportUploadsWithUma(upload_results);
+        ReportUploadsWithUma(base::WideToUTF16(upload_results));
       }
     } else {
       if (cleaner_key.HasValue(chrome_cleaner::kEndTimeValueName)) {
-        SRTHasCompleted(SRT_COMPLETED_LATER);
         cleaner_key.DeleteValue(chrome_cleaner::kEndTimeValueName);
       }
     }

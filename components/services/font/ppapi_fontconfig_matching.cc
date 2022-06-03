@@ -16,7 +16,6 @@
 
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
-
 #include "ppapi/c/private/pp_private_font_charset.h"
 #include "ppapi/c/trusted/ppb_browser_font_trusted.h"
 
@@ -203,20 +202,13 @@ int MatchFontFaceWithFallback(const std::string& face,
       // very good way of detecting this so we'll filter based on the
       // filename.
       bool is_sfnt = false;
-      static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc",
-                                                ""};
-      for (size_t j = 0;; j++) {
-        if (kSFNTExtensions[j][0] == 0) {
-          // None of the extensions matched.
-          break;
-        }
-        if (base::EndsWith(filename, kSFNTExtensions[j],
-                           base::CompareCase::SENSITIVE)) {
+      static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc"};
+      for (const char* extension : kSFNTExtensions) {
+        if (base::EndsWith(filename, extension, base::CompareCase::SENSITIVE)) {
           is_sfnt = true;
           break;
         }
       }
-
       if (!is_sfnt)
         continue;
 

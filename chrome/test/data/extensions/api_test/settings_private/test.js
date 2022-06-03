@@ -13,6 +13,14 @@ var kTestPrefValue = true;
 // settings_private_apitest.cc.
 var kTestEnforcedPrefName = 'homepage_is_newtabpage';
 
+// Content settings are set in setting_private_apitest.cc such that this
+// preference is disabled.
+var kTestDisabledPrefName = 'generated.cookie_session_only';
+// Device policies are applied in setting_private_apitest.cc such that this
+// preference is partially managed.
+var kPartiallyManagedPrefName = 'generated.cookie_primary_setting';
+var kUserSelectableValues = [0, 1, 2];
+
 var kTestPageId = 'pageId';
 
 function callbackResult(result) {
@@ -92,6 +100,25 @@ var availableTests = [
           });
     });
   },
+  function getDisabledPref() {
+    chrome.settingsPrivate.getPref(kTestDisabledPrefName, function(value) {
+      chrome.test.assertEq('object', typeof value);
+      callbackResult(true);
+      chrome.test.assertTrue(value.userControlDisabled);
+      chrome.test.succeed();
+    });
+  },
+  function getPartiallyManagedPref() {
+    chrome.settingsPrivate.getPref(kPartiallyManagedPrefName, function(value) {
+      chrome.test.assertEq('object', typeof value);
+      callbackResult(true);
+      chrome.test.assertEq(
+          chrome.settingsPrivate.Enforcement.ENFORCED, value.enforcement);
+      value.userSelectableValues.sort();
+      chrome.test.assertEq(kUserSelectableValues, value.userSelectableValues);
+      chrome.test.succeed();
+    });
+  },
   function getPref_CrOSSetting() {
     chrome.settingsPrivate.getPref(
         'cros.accounts.allowBWSI',
@@ -141,7 +168,8 @@ var availableTests = [
   },
 ];
 
-var testToRun = window.location.search.substring(1);
-chrome.test.runTests(availableTests.filter(function(op) {
-  return op.name == testToRun;
-}));
+chrome.test.getConfig(function(config) {
+  chrome.test.runTests(availableTests.filter(function(op) {
+    return op.name == config.customArg;
+  }));
+});

@@ -17,7 +17,8 @@ class VideoPainter {
   STACK_ALLOCATED();
 
  public:
-  VideoPainter(const LayoutVideo& layout_video) : layout_video_(layout_video) {}
+  explicit VideoPainter(const LayoutVideo& layout_video)
+      : layout_video_(layout_video) {}
 
   void PaintReplaced(const PaintInfo&, const PhysicalOffset& paint_offset);
 

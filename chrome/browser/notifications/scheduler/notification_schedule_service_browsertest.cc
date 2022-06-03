@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
 
 using ::testing::_;
 
@@ -38,6 +38,8 @@ const base::FilePath::CharType kTestDir[] =
 class TestClient : public NotificationSchedulerClient {
  public:
   TestClient() {}
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
   ~TestClient() override = default;
 
   const std::vector<NotificationData>& shown_notification_data() const {
@@ -61,15 +63,20 @@ class TestClient : public NotificationSchedulerClient {
 
   void OnUserAction(const UserActionData& action_data) override {}
 
+  void GetThrottleConfig(ThrottleConfigCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
   // Any NotificationData received before showing the notification.
   std::vector<NotificationData> shown_notification_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 class TestBackgroundTaskScheduler : public NotificationBackgroundTaskScheduler {
  public:
   TestBackgroundTaskScheduler() = default;
+  TestBackgroundTaskScheduler(const TestBackgroundTaskScheduler&) = delete;
+  TestBackgroundTaskScheduler& operator=(const TestBackgroundTaskScheduler&) =
+      delete;
   ~TestBackgroundTaskScheduler() override = default;
 
   // Waits until a background task has been updated.
@@ -106,8 +113,6 @@ class TestBackgroundTaskScheduler : public NotificationBackgroundTaskScheduler {
 
   // Delegates to a mock to setup call expectations.
   test::MockNotificationBackgroundTaskScheduler mock_background_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBackgroundTaskScheduler);
 };
 
 // Browser test for notification scheduling system. Uses real database
@@ -118,6 +123,10 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kNotificationScheduleService}, {});
   }
+  NotificationScheduleServiceTest(const NotificationScheduleServiceTest&) =
+      delete;
+  NotificationScheduleServiceTest& operator=(
+      const NotificationScheduleServiceTest&) = delete;
 
   ~NotificationScheduleServiceTest() override {}
 
@@ -147,27 +156,21 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
         std::make_unique<TestBackgroundTaskScheduler>();
     task_scheduler_ = background_task_scheduler.get();
     auto* db_provider =
-        content::BrowserContext::GetDefaultStoragePartition(profile)
-            ->GetProtoDatabaseProvider();
-    NotificationScheduleService* service =
-        static_cast<NotificationScheduleService*>(
-            CreateNotificationScheduleService(
-                std::move(client_registrar),
-                std::move(background_task_scheduler), std::move(display_agent),
-                db_provider, tmp_dir_.GetPath().Append(kTestDir),
-                profile->IsOffTheRecord()));
-    service_ = std::unique_ptr<NotificationScheduleService>(service);
+        profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
+    service_ = CreateNotificationScheduleService(
+        std::move(client_registrar), std::move(background_task_scheduler),
+        std::move(display_agent), db_provider,
+        tmp_dir_.GetPath().Append(kTestDir), profile->IsOffTheRecord());
   }
 
   // Helper function to schedule a notification immediately to show.
   void ScheduleNotification() {
     ScheduleParams schedule_params;
     schedule_params.deliver_time_start = base::Time::Now();
-    schedule_params.deliver_time_end =
-        base::Time::Now() + base::TimeDelta::FromMinutes(5);
+    schedule_params.deliver_time_end = base::Time::Now() + base::Minutes(5);
     NotificationData data;
-    data.title = base::UTF8ToUTF16("title");
-    data.message = base::UTF8ToUTF16("message");
+    data.title = u"title";
+    data.message = u"message";
     auto params = std::make_unique<notifications::NotificationParams>(
         notifications::SchedulerClientType::kTest1, std::move(data),
         std::move(schedule_params));
@@ -187,7 +190,9 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
     loop.Run();
   }
 
-  NotificationScheduleService* schedule_service() { return service_.get(); }
+  NotificationScheduleService* schedule_service() {
+    return static_cast<NotificationScheduleService*>(service_.get());
+  }
 
   TestBackgroundTaskScheduler* task_scheduler() {
     DCHECK(task_scheduler_);
@@ -202,11 +207,9 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir tmp_dir_;
-  std::unique_ptr<NotificationScheduleService> service_;
+  std::unique_ptr<KeyedService> service_;
   TestBackgroundTaskScheduler* task_scheduler_;
   std::map<SchedulerClientType, TestClient*> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationScheduleServiceTest);
 };
 
 // Test to schedule a notification.

@@ -15,12 +15,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/websockets/mock_websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
-#include "third_party/blink/renderer/modules/websockets/websocket_close_info.h"
-#include "third_party/blink/renderer/modules/websockets/websocket_stream_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -199,7 +199,6 @@ TEST_F(WebSocketStreamTest, ConnectWithFailedHandshake) {
 
 TEST_F(WebSocketStreamTest, ConnectWithSuccessfulHandshake) {
   V8TestingScope scope;
-  Checkpoint checkpoint;
 
   {
     InSequence s;
@@ -207,8 +206,6 @@ TEST_F(WebSocketStreamTest, ConnectWithSuccessfulHandshake) {
     EXPECT_CALL(Channel(),
                 Connect(KURL("ws://example.com/chat"), String("chat")))
         .WillOnce(Return(true));
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(Channel(), Close(1001, String()));
   }
 
   auto* options = WebSocketStreamOptions::Create();
@@ -238,9 +235,6 @@ TEST_F(WebSocketStreamTest, ConnectWithSuccessfulHandshake) {
   EXPECT_EQ(PropertyAsString(script_state, value, "protocol"), "chat");
   EXPECT_EQ(PropertyAsString(script_state, value, "extensions"),
             "permessage-deflate");
-
-  // Destruction of V8TestingScope causes Close() to be called.
-  checkpoint.Call(1);
 }
 
 TEST_F(WebSocketStreamTest, ConnectThenCloseCleanly) {

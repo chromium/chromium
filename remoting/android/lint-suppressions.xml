@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<lint>
+  <!-- Ignore all lint errors in chrome code. -->
+  <issue id="all">
+    <ignore regexp="../../base/"/>
+    <ignore regexp="../../net/"/>
+    <ignore regexp="../../ui/"/>
+  </issue>
+  <!-- The following remoting-specific suppressions have been migrated from
+       //build/android/lint/suppressions.xml -->
+  <issue id="ButtonStyle" severity="Error">
+    <ignore regexp="remoting/android/host/res/layout/main.xml"/>
+  </issue>
+  <issue id="HandlerLeak">
+    <ignore regexp="remoting/android/java/src/org/chromium/chromoting/TapGestureDetector.java"/>
+  </issue>
+  <issue id="HardcodedText" severity="Error">
+    <ignore regexp="remoting/android/host/res/layout/main.xml"/>
+  </issue>
+  <issue id="MissingSuperCall" severity="Error">
+    <!-- TODO(wnwen): File bug to fix -->
+    <ignore regexp="remoting/android/java/src/org/chromium/chromoting/Chromoting.java"/>
+  </issue>
+  <issue id="MissingTranslation">
+    <ignore regexp="remoting/resources/strings_java.resources.zip"/>
+  </issue>
+  <issue id="UnusedResources">
+    <!-- 1: raw resources are accessed by URL in various places -->
+    <ignore regexp="gen/remoting/android/.*/res/raw/credits.*"/>
+  </issue>
+</lint>

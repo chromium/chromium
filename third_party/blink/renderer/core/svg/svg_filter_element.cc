@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_filter_element.h"
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -77,7 +78,7 @@ SVGFilterElement::SVGFilterElement(Document& document)
 
 SVGFilterElement::~SVGFilterElement() = default;
 
-void SVGFilterElement::Trace(blink::Visitor* visitor) {
+void SVGFilterElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
   visitor->Trace(y_);
   visitor->Trace(width_);
@@ -88,7 +89,9 @@ void SVGFilterElement::Trace(blink::Visitor* visitor) {
   SVGURIReference::Trace(visitor);
 }
 
-void SVGFilterElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGFilterElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool is_xywh =
       attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
@@ -102,7 +105,7 @@ void SVGFilterElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 LocalSVGResource* SVGFilterElement::AssociatedResource() const {
@@ -113,27 +116,19 @@ LocalSVGResource* SVGFilterElement::AssociatedResource() const {
 void SVGFilterElement::PrimitiveAttributeChanged(
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
-  if (LayoutObject* layout_object = GetLayoutObject()) {
-    ToLayoutSVGResourceFilter(layout_object)
-        ->PrimitiveAttributeChanged(primitive, attribute);
-  } else if (LocalSVGResource* resource = AssociatedResource()) {
-    resource->NotifyContentChanged(SVGResourceClient::kPaintInvalidation);
-  }
+  if (LocalSVGResource* resource = AssociatedResource())
+    resource->NotifyFilterPrimitiveChanged(primitive, attribute);
 }
 
 void SVGFilterElement::InvalidateFilterChain() {
-  if (LayoutObject* layout_object = GetLayoutObject()) {
-    ToLayoutSVGResourceFilter(layout_object)->RemoveAllClientsFromCache();
-  } else if (LocalSVGResource* resource = AssociatedResource()) {
-    resource->NotifyContentChanged(SVGResourceClient::kLayoutInvalidation |
-                                   SVGResourceClient::kBoundariesInvalidation);
-  }
+  if (LocalSVGResource* resource = AssociatedResource())
+    resource->NotifyContentChanged();
 }
 
 void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
-  if (change.by_parser)
+  if (change.ByParser())
     return;
 
   if (LayoutObject* object = GetLayoutObject()) {
@@ -145,7 +140,7 @@ void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGFilterElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return new LayoutSVGResourceFilter(this);
+  return MakeGarbageCollected<LayoutSVGResourceFilter>(this);
 }
 
 bool SVGFilterElement::SelfHasRelativeLengths() const {

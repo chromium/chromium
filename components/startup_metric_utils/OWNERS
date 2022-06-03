@@ -2,5 +2,3 @@ fdoray@chromium.org
 
 # To increase bus factor but prefer above OWNERS :).
 gab@chromium.org
-# COMPONENT: Internals>Metrics
-# TEAM: catan-team@chromium.org

@@ -42,7 +42,7 @@ class PLATFORM_EXPORT TransformOperations {
   DISALLOW_NEW();
 
  public:
-  explicit TransformOperations(bool make_identity = false);
+  TransformOperations() = default;
   TransformOperations(const EmptyTransformOperations&) {}
 
   bool operator==(const TransformOperations& o) const;
@@ -91,6 +91,14 @@ class PLATFORM_EXPORT TransformOperations {
     return true;
   }
 
+  bool IsIdentityOrTranslation() const {
+    for (auto& operation : operations_) {
+      if (!operation->IsIdentityOrTranslation())
+        return false;
+    }
+    return true;
+  }
+
   // Returns true if any operation has a non-trivial component in the Z axis.
   bool HasNonTrivial3DComponent() const {
     for (auto& operation : operations_) {
@@ -109,13 +117,8 @@ class PLATFORM_EXPORT TransformOperations {
     return false;
   }
 
-  bool DependsOnBoxSize() const {
-    for (auto& operation : operations_) {
-      if (operation->DependsOnBoxSize())
-        return true;
-    }
-    return false;
-  }
+  TransformOperation::BoxSizeDependency BoxSizeDependencies(
+      wtf_size_t start = 0) const;
 
   wtf_size_t MatchingPrefixLength(const TransformOperations&) const;
 

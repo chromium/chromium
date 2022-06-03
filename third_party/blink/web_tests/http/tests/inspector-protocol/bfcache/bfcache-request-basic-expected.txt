@@ -1,0 +1,5 @@
+Tests that no network requests are logged for a BFCache navigation
+request for https://devtools.oopif.test:8443/inspector-protocol/resources/iframe.html will be sent
+response code: 200
+BackForwardCacheRestore
+

@@ -6,8 +6,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,9 +14,11 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/embedder_support/pref_names.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "components/unified_consent/unified_consent_service.h"
+#include "content/public/test/browser_test.h"
 
 namespace unified_consent {
 namespace {
@@ -25,6 +26,11 @@ namespace {
 class UnifiedConsentBrowserTest : public SyncTest {
  public:
   UnifiedConsentBrowserTest() : SyncTest(TWO_CLIENT) {}
+
+  UnifiedConsentBrowserTest(const UnifiedConsentBrowserTest&) = delete;
+  UnifiedConsentBrowserTest& operator=(const UnifiedConsentBrowserTest&) =
+      delete;
+
   ~UnifiedConsentBrowserTest() override = default;
 
   void EnableSync(int client_id) {
@@ -55,6 +61,8 @@ class UnifiedConsentBrowserTest : public SyncTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+  const std::string histogram_name_ =
+      "UnifiedConsent.MakeSearchesAndBrowsingBetter.OnStartup";
 
  private:
   void InitializeSyncClientsIfNeeded() {
@@ -63,16 +71,12 @@ class UnifiedConsentBrowserTest : public SyncTest {
   }
 
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentBrowserTest);
 };
 
 // Tests that the settings histogram is recorded if unified consent is enabled.
 // The histogram is recorded during profile initialization.
 IN_PROC_BROWSER_TEST_F(UnifiedConsentBrowserTest, SettingsHistogram_None) {
-  histogram_tester_.ExpectUniqueSample(
-      "UnifiedConsent.SyncAndGoogleServicesSettings",
-      metrics::SettingsHistogramValue::kNone, 1);
+  histogram_tester_.ExpectUniqueSample(histogram_name_, false, 1);
 }
 
 // Tests that all service entries in the settings histogram are recorded after
@@ -81,26 +85,25 @@ IN_PROC_BROWSER_TEST_F(
     UnifiedConsentBrowserTest,
     PRE_SettingsHistogram_UrlKeyedAnonymizedDataCollectionEnabled) {
   EnableSync(0);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros only supports syncing profiles for now.
+  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles
+  // are allowed.
+  EnableSync(1);
+#endif
   consent_service()->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 }
 
 IN_PROC_BROWSER_TEST_F(
     UnifiedConsentBrowserTest,
     SettingsHistogram_UrlKeyedAnonymizedDataCollectionEnabled) {
-  histogram_tester_.ExpectBucketCount(
-      "UnifiedConsent.SyncAndGoogleServicesSettings",
-      metrics::SettingsHistogramValue::kNone, 0);
-  histogram_tester_.ExpectBucketCount(
-      "UnifiedConsent.SyncAndGoogleServicesSettings",
-      metrics::SettingsHistogramValue::kUrlKeyedAnonymizedDataCollection, 1);
-  histogram_tester_.ExpectTotalCount(
-      "UnifiedConsent.SyncAndGoogleServicesSettings", 1);
+  histogram_tester_.ExpectUniqueSample(histogram_name_, true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(UnifiedConsentBrowserTest,
                        SettingsOptInTakeOverServicePrefChanges) {
   std::string pref_A = prefs::kSearchSuggestEnabled;
-  std::string pref_B = prefs::kAlternateErrorPagesEnabled;
+  std::string pref_B = embedder_support::kAlternateErrorPagesEnabled;
 
   // First client: Enable sync.
   EnableSync(0);

@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/layer_impl.h"
@@ -35,7 +35,6 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -51,7 +50,7 @@ namespace {
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks TicksFromMicroseconds(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 // These tests deal with losing the 3d graphics context.
@@ -468,8 +467,8 @@ class MultipleCompositeDoesNotCreateLayerTreeFrameSink
   }
 
   void BeginTest() override {
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
-    layer_tree_host()->Composite(TicksFromMicroseconds(2), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false);
   }
 
   void DidInitializeLayerTreeFrameSink() override { EXPECT_TRUE(false); }
@@ -510,12 +509,12 @@ class FailedCreateDoesNotCreateExtraLayerTreeFrameSink
 
   void BeginTest() override {
     // First composite tries to create a surface.
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
     EXPECT_EQ(num_requests_, 2);
     EXPECT_TRUE(has_failed_);
 
     // Second composite should not request or fail.
-    layer_tree_host()->Composite(TicksFromMicroseconds(2), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false);
     EXPECT_EQ(num_requests_, 2);
     EndTest();
   }
@@ -534,77 +533,6 @@ class FailedCreateDoesNotCreateExtraLayerTreeFrameSink
 
 // This test uses Composite() which only exists for single thread.
 SINGLE_THREAD_TEST_F(FailedCreateDoesNotCreateExtraLayerTreeFrameSink);
-
-class LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink
-    : public LayerTreeHostContextTest {
- public:
-  LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink()
-      : LayerTreeHostContextTest(), creating_output_(false) {}
-
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->single_thread_proxy_scheduler = false;
-    settings->use_zero_copy = true;
-  }
-
-  void RequestNewLayerTreeFrameSink() override {
-    MainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink::
-                CreateAndSetLayerTreeFrameSink,
-            base::Unretained(this)));
-  }
-
-  void CreateAndSetLayerTreeFrameSink() {
-    creating_output_ = true;
-    LayerTreeHostContextTest::RequestNewLayerTreeFrameSink();
-  }
-
-  void BeginTest() override {
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
-  }
-
-  void ScheduleComposite() override {
-    if (creating_output_)
-      EndTest();
-  }
-
-  bool creating_output_;
-};
-
-// This test uses Composite() which only exists for single thread.
-SINGLE_THREAD_TEST_F(
-    LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink);
-
-class LayerTreeHostContextTestAvoidUnnecessaryComposite
-    : public LayerTreeHostContextTest {
- public:
-  LayerTreeHostContextTestAvoidUnnecessaryComposite()
-      : LayerTreeHostContextTest(), in_composite_(false) {}
-
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->single_thread_proxy_scheduler = false;
-    settings->use_zero_copy = true;
-  }
-
-  void RequestNewLayerTreeFrameSink() override {
-    LayerTreeHostContextTest::RequestNewLayerTreeFrameSink();
-    EndTest();
-  }
-
-  void BeginTest() override {
-    in_composite_ = true;
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
-    in_composite_ = false;
-  }
-
-  void ScheduleComposite() override { EXPECT_FALSE(in_composite_); }
-
-  bool in_composite_;
-};
-
-// This test uses Composite() which only exists for single thread.
-SINGLE_THREAD_TEST_F(LayerTreeHostContextTestAvoidUnnecessaryComposite);
 
 // This test uses PictureLayer to check for a working context.
 class LayerTreeHostContextTestLostContextSucceedsWithContent
@@ -922,9 +850,8 @@ class LayerTreeHostContextTestDontUseLostResources
         mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
         false /* is_overlay_candidate */);
     texture->SetTransferableResource(
-        resource, viz::SingleReleaseCallback::Create(base::BindOnce(
-                      &LayerTreeHostContextTestDontUseLostResources::
-                          EmptyReleaseCallback)));
+        resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
+                                     EmptyReleaseCallback));
     root->AddChild(texture);
 
     scoped_refptr<PictureLayer> mask = PictureLayer::Create(&client_);
@@ -1216,7 +1143,8 @@ class UIResourceLostAfterCommit : public UIResourceLostTestSimple {
     switch (time_step_) {
       case 1:
         // The resource should have been created on LTHI after the commit.
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         PostSetNeedsCommitToMainThread();
         break;
       case 2:
@@ -1228,7 +1156,8 @@ class UIResourceLostAfterCommit : public UIResourceLostTestSimple {
         EXPECT_EQ(1, ui_resource_->lost_resource_count);
         // Resource Id on the impl-side have been recreated as well. Note
         // that the same UIResourceId persists after the context lost.
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         PostSetNeedsCommitToMainThread();
         break;
     }
@@ -1319,9 +1248,11 @@ class UIResourceLostBeforeCommit : public UIResourceLostTestSimple {
       case 3:
         // Sequence 2 (continued):
         // The previous resource should have been deleted.
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(test_id0_));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(test_id0_));
         // The second resource should have been created.
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(test_id1_));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(test_id1_));
         // The second resource was not actually uploaded before the context
         // was lost, so it only got created once.
         EXPECT_EQ(1, ui_resource_->resource_create_count);
@@ -1334,7 +1265,8 @@ class UIResourceLostBeforeCommit : public UIResourceLostTestSimple {
         // No "resource lost" callbacks.
         EXPECT_EQ(0, ui_resource_->lost_resource_count);
         // The UI resource id should not be valid
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(test_id0_));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(test_id0_));
         break;
     }
   }
@@ -1394,7 +1326,8 @@ class UIResourceLostBeforeActivateTree : public UIResourceLostTest {
         // The resource is not yet lost (sanity check).
         EXPECT_EQ(0, ui_resource_->lost_resource_count);
         // The resource should not have been created yet on the impl-side.
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         LoseContext();
         break;
       case 3:
@@ -1410,7 +1343,8 @@ class UIResourceLostBeforeActivateTree : public UIResourceLostTest {
         // The pending requests on the impl-side should not have been processed
         // since the context was lost. But we should have marked the resource as
         // evicted instead.
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_TRUE(impl->EvictedUIResourcesExist());
         break;
       case 2:
@@ -1418,13 +1352,15 @@ class UIResourceLostBeforeActivateTree : public UIResourceLostTest {
         // should have gotten recreated now and shouldn't be marked as evicted
         // anymore.
         EXPECT_EQ(1, ui_resource_->lost_resource_count);
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_FALSE(impl->EvictedUIResourcesExist());
         break;
       case 4:
         // The resource is deleted and should not be in the manager.  Use
         // test_id_ since ui_resource_ has been deleted.
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(test_id_));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(test_id_));
         break;
     }
 
@@ -1476,9 +1412,12 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
     if (!visible) {
       // All resources should have been evicted.
       ASSERT_EQ(0u, sii_->shared_image_count());
-      EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
-      EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource2_->id()));
-      EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource3_->id()));
+      EXPECT_EQ(viz::kInvalidResourceId,
+                impl->ResourceIdForUIResource(ui_resource_->id()));
+      EXPECT_EQ(viz::kInvalidResourceId,
+                impl->ResourceIdForUIResource(ui_resource2_->id()));
+      EXPECT_EQ(viz::kInvalidResourceId,
+                impl->ResourceIdForUIResource(ui_resource3_->id()));
       EXPECT_EQ(2, ui_resource_->resource_create_count);
       EXPECT_EQ(1, ui_resource_->lost_resource_count);
       // Drawing is disabled both because of the evicted resources and
@@ -1496,16 +1435,20 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         // The first two resources should have been created on LTHI after the
         // commit.
         ASSERT_EQ(2u, sii_->shared_image_count());
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource2_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource2_->id()));
         EXPECT_EQ(1, ui_resource_->resource_create_count);
         EXPECT_EQ(0, ui_resource_->lost_resource_count);
         EXPECT_TRUE(impl->CanDraw());
         // Evict all UI resources. This will trigger a commit.
         impl->EvictAllUIResources();
         ASSERT_EQ(0u, sii_->shared_image_count());
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource2_->id()));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource2_->id()));
         EXPECT_EQ(1, ui_resource_->resource_create_count);
         EXPECT_EQ(0, ui_resource_->lost_resource_count);
         EXPECT_FALSE(impl->CanDraw());
@@ -1513,10 +1456,12 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
       case 2:
         // The first two resources should have been recreated.
         ASSERT_EQ(2u, sii_->shared_image_count());
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_EQ(2, ui_resource_->resource_create_count);
         EXPECT_EQ(1, ui_resource_->lost_resource_count);
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource2_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource2_->id()));
         EXPECT_EQ(2, ui_resource2_->resource_create_count);
         EXPECT_EQ(1, ui_resource2_->lost_resource_count);
         EXPECT_TRUE(impl->CanDraw());
@@ -1525,17 +1470,20 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         // The first resource should have been recreated after visibility was
         // restored.
         ASSERT_EQ(2u, sii_->shared_image_count());
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_EQ(3, ui_resource_->resource_create_count);
         EXPECT_EQ(2, ui_resource_->lost_resource_count);
 
         // This resource was deleted.
-        EXPECT_EQ(0u, impl->ResourceIdForUIResource(ui_resource2_->id()));
+        EXPECT_EQ(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource2_->id()));
         EXPECT_EQ(2, ui_resource2_->resource_create_count);
         EXPECT_EQ(1, ui_resource2_->lost_resource_count);
 
         // This resource should have been created now.
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource3_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource3_->id()));
         EXPECT_EQ(1, ui_resource3_->resource_create_count);
         EXPECT_EQ(0, ui_resource3_->lost_resource_count);
         EXPECT_TRUE(impl->CanDraw());
@@ -1565,7 +1513,8 @@ class UIResourceFreedIfLostWhileExported : public LayerTreeHostContextTest {
     switch (impl->active_tree()->source_frame_number()) {
       case 0:
         // The UIResource has been created and a gpu resource made for it.
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_EQ(1u, sii_->shared_image_count());
         // Lose the LayerTreeFrameSink connection. The UI resource should
         // be replaced and the old texture should be destroyed.
@@ -1574,7 +1523,8 @@ class UIResourceFreedIfLostWhileExported : public LayerTreeHostContextTest {
       case 1:
         // The UIResource has been recreated, the old texture is not kept
         // around.
-        EXPECT_NE(0u, impl->ResourceIdForUIResource(ui_resource_->id()));
+        EXPECT_NE(viz::kInvalidResourceId,
+                  impl->ResourceIdForUIResource(ui_resource_->id()));
         EXPECT_EQ(1u, sii_->shared_image_count());
         MainThreadTaskRunner()->PostTask(
             FROM_HERE,
@@ -1714,7 +1664,7 @@ class SoftwareTileResourceFreedIfLostWhileExported : public LayerTreeTest {
   }
 
   FakeContentLayerClient client_;
-  viz::ResourceId exported_resource_id_ = 0;
+  viz::ResourceId exported_resource_id_ = viz::kInvalidResourceId;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTileResourceFreedIfLostWhileExported);

@@ -6,15 +6,12 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
-  deps = [
-    ":cr_icon_button",
-  ]
+  uses_legacy_modules = true
+  deps = [ ":cr_icon_button" ]
 }
 
 js_library("cr_icon_button") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
-  ]
+  deps = [ "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted" ]
 }
 
 polymer_modulizer("cr_icon_button") {
@@ -25,15 +22,11 @@ polymer_modulizer("cr_icon_button") {
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [
-    ":cr_icon_button.m",
-  ]
+  deps = [ ":cr_icon_button.m" ]
 }
 
 js_library("cr_icon_button.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/cr_icon_button/cr_icon_button.m.js",
-  ]
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_icon_button/cr_icon_button.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

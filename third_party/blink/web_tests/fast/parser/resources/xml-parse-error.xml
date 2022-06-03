@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <script>parent.moveIframe(document);</script>
+  <!-- the duplicate "a" attribute cause a parsing error -->
+  <element a="1" a="2"/>
+</svg>

@@ -1,8 +1,8 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXSubrole=AXTabPanel AXRoleDescription='tabpanel'
-++++AXRadioButton AXRoleDescription='tab' AXTitle='Item' AXValue='0'
-++++++AXHeading AXRoleDescription='heading' AXTitle='Item' AXValue='3'
+++++AXRadioButton AXRoleDescription='tab' AXTitle='Item' AXValue=0
+++++++AXHeading AXRoleDescription='heading' AXTitle='Item' AXValue=3
 ++++++++AXStaticText AXRoleDescription='text' AXValue='Item'
-++++AXRadioButton AXRoleDescription='tab' AXTitle='Prices' AXValue='0'
-++++++AXHeading AXRoleDescription='heading' AXTitle='Prices' AXValue='3'
+++++AXRadioButton AXRoleDescription='tab' AXTitle='Prices' AXValue=0
+++++++AXHeading AXRoleDescription='heading' AXTitle='Prices' AXValue=3
 ++++++++AXStaticText AXRoleDescription='text' AXValue='Prices'

@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("audio_input") {
   output_name = "ppapi_example_audio_input"
-  sources = [
-    "audio_input.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "audio_input.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

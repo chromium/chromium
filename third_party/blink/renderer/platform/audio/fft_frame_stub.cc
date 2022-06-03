@@ -27,7 +27,7 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_MACOSX) && !defined(WTF_USE_WEBAUDIO_FFMPEG) && \
+#if !defined(OS_MAC) && !defined(WTF_USE_WEBAUDIO_FFMPEG) && \
     !defined(WTF_USE_WEBAUDIO_PFFFT)
 
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
@@ -70,5 +70,5 @@ void FFTFrame::Cleanup() {
 
 }  // namespace blink
 
-#endif  // !defined(OS_MACOSX) && !defined(WTF_USE_WEBAUDIO_FFMPEG) &&
+#endif  // !defined(OS_MAC) && !defined(WTF_USE_WEBAUDIO_FFMPEG) &&
         // !defined(WTF_USE_WEBAUDIO_OPENMAX_DL_FFT)

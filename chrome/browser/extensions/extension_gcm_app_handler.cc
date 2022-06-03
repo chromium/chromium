@@ -4,10 +4,12 @@
 
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
@@ -19,6 +21,7 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -33,7 +36,8 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<ExtensionGCMAppHandler>>::
         LAZY_INSTANCE_INITIALIZER;
 
 bool IsGCMPermissionEnabled(const Extension* extension) {
-  return extension->permissions_data()->HasAPIPermission(APIPermission::kGcm);
+  return extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kGcm);
 }
 
 }  // namespace
@@ -47,8 +51,8 @@ ExtensionGCMAppHandler::GetFactoryInstance() {
 
 ExtensionGCMAppHandler::ExtensionGCMAppHandler(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
-  js_event_router_.reset(new extensions::GcmJsEventRouter(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+  js_event_router_ = std::make_unique<extensions::GcmJsEventRouter>(profile_);
 }
 
 ExtensionGCMAppHandler::~ExtensionGCMAppHandler() = default;
@@ -147,10 +151,10 @@ void ExtensionGCMAppHandler::OnExtensionUninstalled(
   if (IsGCMPermissionEnabled(extension)) {
     // Let's first remove InstanceID data. GCM unregistration will be triggered
     // after the asynchronous call is returned in OnDeleteIDCompleted.
-    GetInstanceIDDriver()->GetInstanceID(extension->id())->DeleteID(
-        base::Bind(&ExtensionGCMAppHandler::OnDeleteIDCompleted,
-                   weak_factory_.GetWeakPtr(),
-                   extension->id()));
+    GetInstanceIDDriver()
+        ->GetInstanceID(extension->id())
+        ->DeleteID(base::BindOnce(&ExtensionGCMAppHandler::OnDeleteIDCompleted,
+                                  weak_factory_.GetWeakPtr(), extension->id()));
   }
 }
 
@@ -180,10 +184,8 @@ void ExtensionGCMAppHandler::OnUnregisterCompleted(
 void ExtensionGCMAppHandler::OnDeleteIDCompleted(
     const std::string& app_id, instance_id::InstanceID::Result result) {
   GetGCMDriver()->Unregister(
-      app_id,
-      base::Bind(&ExtensionGCMAppHandler::OnUnregisterCompleted,
-                 weak_factory_.GetWeakPtr(),
-                 app_id));
+      app_id, base::BindOnce(&ExtensionGCMAppHandler::OnUnregisterCompleted,
+                             weak_factory_.GetWeakPtr(), app_id));
 
   // InstanceIDDriver::RemoveInstanceID will delete the InstanceID itself.
   // Postpone to do it outside this calling context to avoid any risk to

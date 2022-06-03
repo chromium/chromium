@@ -12,8 +12,8 @@
 #include "base/guid.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -55,11 +55,14 @@ GURL GetTestUrl(const char* dir, const char* file) {
   return net::FilePathToFileURL(GetTestFilePath(dir, file));
 }
 
-void NavigateToURLBlockUntilNavigationsComplete(Shell* window,
-                                                const GURL& url,
-                                                int number_of_navigations) {
+void NavigateToURLBlockUntilNavigationsComplete(
+    Shell* window,
+    const GURL& url,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations) {
   NavigateToURLBlockUntilNavigationsComplete(window->web_contents(), url,
-                                             number_of_navigations);
+                                             number_of_navigations,
+                                             ignore_uncommitted_navigations);
 }
 
 void ReloadBlockUntilNavigationsComplete(Shell* window,
@@ -93,47 +96,46 @@ bool NavigateToURL(Shell* window,
   return NavigateToURL(window->web_contents(), url, expected_commit_url);
 }
 
-bool NavigateToURLFromRenderer(const ToRenderFrameHost& adapter,
-                               const GURL& url) {
-  RenderFrameHost* rfh = adapter.render_frame_host();
-  TestFrameNavigationObserver nav_observer(rfh);
-  if (!ExecJs(rfh, JsReplace("location = $1", url)))
-    return false;
-  nav_observer.Wait();
-  return nav_observer.last_committed_url() == url &&
-         nav_observer.last_navigation_succeeded();
-}
-
-bool NavigateToURLFromRendererWithoutUserGesture(
-    const ToRenderFrameHost& adapter,
-    const GURL& url) {
-  RenderFrameHost* rfh = adapter.render_frame_host();
-  TestFrameNavigationObserver nav_observer(rfh);
-  if (!ExecJs(rfh, JsReplace("location = $1", url),
-              EXECUTE_SCRIPT_NO_USER_GESTURE)) {
-    return false;
-  }
-  nav_observer.Wait();
-  return nav_observer.last_committed_url() == url;
-}
-
 bool NavigateToURLAndExpectNoCommit(Shell* window, const GURL& url) {
   NavigationEntry* old_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();
-  NavigateToURLBlockUntilNavigationsComplete(window, url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(
+      window->web_contents(), url,
+      /*number_of_navigations=*/1,
+      /*ignore_uncommitted_navigations=*/false);
   NavigationEntry* new_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();
   return old_entry == new_entry;
 }
 
-void WaitForAppModalDialog(Shell* window) {
+AppModalDialogWaiter::AppModalDialogWaiter(Shell* shell) : shell_(shell) {
+  Restart();
+}
+
+void AppModalDialogWaiter::Restart() {
+  was_dialog_request_callback_called_ = false;
   ShellJavaScriptDialogManager* dialog_manager =
       static_cast<ShellJavaScriptDialogManager*>(
-          window->GetJavaScriptDialogManager(window->web_contents()));
+          shell_->GetJavaScriptDialogManager(shell_->web_contents()));
+  dialog_manager->set_dialog_request_callback(base::BindOnce(
+      &AppModalDialogWaiter::EarlyCallback, base::Unretained(this)));
+}
 
-  base::RunLoop runner;
-  dialog_manager->set_dialog_request_callback(runner.QuitClosure());
-  runner.Run();
+void AppModalDialogWaiter::Wait() {
+  if (!was_dialog_request_callback_called_) {
+    ShellJavaScriptDialogManager* dialog_manager =
+        static_cast<ShellJavaScriptDialogManager*>(
+            shell_->GetJavaScriptDialogManager(shell_->web_contents()));
+
+    base::RunLoop runner;
+    dialog_manager->set_dialog_request_callback(runner.QuitClosure());
+    runner.Run();
+    was_dialog_request_callback_called_ = true;
+  }
+}
+
+void AppModalDialogWaiter::EarlyCallback() {
+  was_dialog_request_callback_called_ = true;
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(Shell* shell) {
@@ -145,8 +147,8 @@ void LookupAndLogNameAndIdOfFirstCamera() {
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
   base::RunLoop run_loop;
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           [](MediaStreamManager* media_stream_manager,
              base::OnceClosure quit_closure) {
@@ -204,7 +206,7 @@ void IsolateOriginsForTesting(
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       origins_to_isolate,
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
 
@@ -230,9 +232,11 @@ void IsolateOriginsForTesting(
       new_site_instance->IsRelatedSiteInstance(old_site_instance.get()));
   for (const url::Origin& origin : origins_to_isolate) {
     EXPECT_FALSE(policy->IsIsolatedOrigin(
-        old_site_instance->GetIsolationContext(), origin));
+        old_site_instance->GetIsolationContext(), origin,
+        false /* origin_requests_isolation */));
     EXPECT_TRUE(policy->IsIsolatedOrigin(
-        new_site_instance->GetIsolationContext(), origin));
+        new_site_instance->GetIsolationContext(), origin,
+        false /* origin_requests_isolation */));
   }
 }
 

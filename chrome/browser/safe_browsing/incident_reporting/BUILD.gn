@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("state_store_data_proto") {
-  sources = [
-    "state_store_data.proto",
-  ]
+  sources = [ "state_store_data.proto" ]
 }

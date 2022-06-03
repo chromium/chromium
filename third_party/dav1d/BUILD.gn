@@ -14,7 +14,8 @@ enable_nasm = (current_cpu == "x86" || current_cpu == "x64") && !is_msan
 if (is_win) {
   platform_config_root = "config/win/$current_cpu"
 } else if (is_msan) {
-  assert(current_cpu == "x64" && is_linux, "Only Linux X64 MSAN is supported")
+  assert(current_cpu == "x64" && (is_linux || is_chromeos),
+         "Only Linux X64 MSAN is supported")
   platform_config_root = "config/linux-noasm/$current_cpu"
 } else {
   # Linux configuration files seem to work on Mac, so just reuse them.
@@ -113,6 +114,11 @@ if (is_win) {
   if (is_mac) {
     dav1d_copts += [ "-D_DARWIN_C_SOURCE" ]
   }
+  if (is_linux || is_chromeos || is_android || current_os == "aix") {
+    if (!is_clang) {
+      dav1d_copts += [ "-D_GNU_SOURCE" ]
+    }
+  }
 }
 
 if (enable_nasm) {
@@ -134,8 +140,9 @@ if (enable_nasm) {
       rebase_path("$platform_config_root/config.asm", root_build_dir),
     ]
 
+    defines = []
     if (needs_stack_alignment) {
-      defines = [ "STACK_ALIGNMENT=$stack_alignment" ]
+      defines += [ "STACK_ALIGNMENT=$stack_alignment" ]
     }
 
     # Necessary to ensure macOS symbols end up with a _ prefix.
@@ -143,6 +150,16 @@ if (enable_nasm) {
       defines += [ "PREFIX" ]
     }
   }
+}
+
+source_set("dav1d_headers") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":dav1d_config",
+  ]
+
+  sources = c_headers
 }
 
 static_library("dav1d_entrypoints") {
@@ -161,6 +178,8 @@ static_library("dav1d_entrypoints") {
   if (needs_stack_alignment) {
     cflags += [ stackrealign_flag ]
   }
+
+  deps = [ ":dav1d_headers" ]
 }
 
 static_library("dav1d_8bit") {
@@ -181,6 +200,8 @@ static_library("dav1d_8bit") {
 
   cflags = dav1d_copts
   cflags += [ "-DBITDEPTH=8" ]
+
+  deps = [ ":dav1d_headers" ]
 }
 
 static_library("dav1d_10bit") {
@@ -209,6 +230,8 @@ static_library("dav1d_10bit") {
 
   cflags = dav1d_copts
   cflags += [ "-DBITDEPTH=16" ]
+
+  deps = [ ":dav1d_headers" ]
 }
 
 if (current_cpu == "x86" || current_cpu == "x64") {
@@ -216,19 +239,31 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/x86/cpu.c",
       "libdav1d/src/x86/cpu.h",
+      "libdav1d/src/x86/refmvs_init.c",
     ]
+
+    # x86/msac.h redefines macros in msac.h if x86/msac.h is included and
+    # HAVE_ASM is 0, so we must exclude msac_init.c if !enable_nasm. Also, it
+    # is only used for x64.
+    if (enable_nasm && current_cpu == "x64") {
+      sources += [ "libdav1d/src/x86/msac_init.c" ]
+    }
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
       ":dav1d_config",
     ]
     cflags = dav1d_copts
+
+    deps = [ ":dav1d_headers" ]
+    allow_circular_includes_from = [ ":dav1d_headers" ]
   }
 } else if (current_cpu == "arm" || current_cpu == "arm64") {
   static_library("dav1d_arm") {
     sources = [
       "libdav1d/src/arm/cpu.c",
       "libdav1d/src/arm/cpu.h",
+      "libdav1d/src/arm/refmvs_init.c",
     ]
 
     # These are not template based so should only be built once.
@@ -244,7 +279,15 @@ if (current_cpu == "x86" || current_cpu == "x64") {
       ":dav1d_config",
     ]
 
+    # Necessary to ensure macOS symbols end up with a _ prefix.
+    if (is_mac) {
+      defines = [ "PREFIX" ]
+    }
+
     cflags = dav1d_copts
+
+    deps = [ ":dav1d_headers" ]
+    allow_circular_includes_from = [ ":dav1d_headers" ]
   }
 }
 
@@ -262,6 +305,7 @@ static_library("dav1d") {
     ":dav1d_10bit",
     ":dav1d_8bit",
     ":dav1d_entrypoints",
+    ":dav1d_headers",
   ]
 
   public_configs = [ ":public_dav1d_config" ]

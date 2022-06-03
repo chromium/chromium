@@ -5,9 +5,8 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS gotStream was called.
 PASS gotStream done.
 PASS onNegotiationNeeded was called.
-PASS onNegotiationNeeded done.
-PASS onStateChange was called.
 PASS pc.signalingState is 'closed'
+PASS onNegotiationNeeded done.
 PASS successfullyParsed is true
 
 TEST COMPLETE

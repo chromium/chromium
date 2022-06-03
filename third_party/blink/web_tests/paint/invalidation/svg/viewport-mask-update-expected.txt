@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 8: Uncaught SyntaxError: Unexpected token ','
-CONSOLE ERROR: line 11: Uncaught ReferenceError: repaintTest is not defined

@@ -21,11 +21,11 @@
 
   <!-- Subtitles of the Chrome OS version of the management page -->
  <if expr="chromeos">
-    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by unknown organization">
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by an unknown manager">
       Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> is managed
     </message>
-    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, shows when device managed by known organization">
-      Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, shows when device managed by a known manager. MANAGER can be a domain or an email address.">
+      Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="MANAGER">$2<ex>example.com</ex></ph>
     </message>
     <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Message indicating that the device is not managed">
       Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is not managed
@@ -37,8 +37,8 @@
       <message name="IDS_MANAGEMENT_SUBTITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
       Your browser is managed
     </message>
-    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
-      Your browser is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment. MANAGER can be a domain or an email address.">
+      Your browser is managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>
     </message>
     <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Title of chrome://management page for a browser that is not managed">
       Your browser is not managed
@@ -47,12 +47,22 @@
 
   <!-- Browser managed status section -->
   <if expr="not chromeos">
-    <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the browser is managed, it indicates what the administrator can do on the browser.">
-      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
-    <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the browser is not managed">
-      This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
+    <if expr="_google_chrome">
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (Google-branded) Chrome browser is managed, it indicates what the administrator can do on the browser.">
+      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the (Google-branded) Chrome browser is not managed">
+       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the (non-Google-branded) Chromium browser is managed, it indicates what the administrator can do on the browser.">
+      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the (non-Google-branded) Chromium browser is not managed">
+       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chromium. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+    </if>
   </if>
 
   <!-- Chrome OS managed status section -->
@@ -60,14 +70,14 @@
     <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device and account are not managed">
       This device and account are not managed by a company or other organization.
     </message>
-    <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator, from a specific domain. And account is managed by an administrator, from another specific domain.">
-      Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> and your account is managed by <ph name="ACCOUNT_DOMAIN">$2<ex>example.com</ex></ph>.
+    <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by one administrator and the account is managed by another administrator. DEVICE_MANAGER and ACCOUNT_MANAGER can each be a domain or an email address.">
+      Your device is managed by <ph name="DEVICE_MANAGER">$1<ex>example.com</ex></ph> and your account is managed by <ph name="ACCOUNT_MANAGER">$2<ex>example.com</ex></ph>.
     </message>
-    <message name="IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY" desc="Message indicating that the device and account are enterprise enrolled to be managed by an administrator, from a specific domain">
-      Your device and account are managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>.
+    <message name="IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY" desc="Message indicating that the device and account are enterprise enrolled to be managed by an administrator. MANAGER can be a domain or an email address.">
+      Your device and account are managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>.
     </message>
-    <message name="IDS_MANAGEMENT_ACCOUNT_MANAGED_BY" desc="Message indicating that the account is enterprise enrolled to be managed by an administrator">
-      Your account is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>.
+    <message name="IDS_MANAGEMENT_ACCOUNT_MANAGED_BY" desc="Message indicating that the account is enterprise enrolled to be managed by an administrator. MANAGER can be a domain or an email address.">
+      Your account is managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>.
     </message>
   </if>
 
@@ -82,6 +92,9 @@
     <!-- Strings related to device reporting section of the management page -->
     <message name="IDS_MANAGEMENT_DEVICE_REPORTING" desc="Title of the types of device reporting section of the page">
       Device
+    </message>
+    <message name="IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE" desc="Message stating that administrators can see user's traffic when connected to a proxy server.">
+      Administrators of this device have configured your network connection, which may allow them to see your network traffic, including which websites you visit.
     </message>
     <message name="IDS_MANAGEMENT_DEVICE_CONFIGURATION" desc="Message telling users that their administrator has set some specific policies on their device">
       Your administrator can see:
@@ -98,14 +111,54 @@
     <message name="IDS_MANAGEMENT_LOG_UPLOAD_ENABLED" desc="Message stating that administrators have access to system logs on user's device.">
       Detailed system logs
     </message>
-    <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_INTERFACES" desc="Message stating that administrators see device network interfaces.">
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA" desc="Message stating that administrators see device network interfaces.">
       Network addresses
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_DATA" desc="Message stating that administrators see device hardware status.">
+      Device statistics such as CPU/RAM usage and hardware specifications
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_CRASH_REPORTS" desc="Message stating that administrators see the numbers and causes of the crashes that occurred on the device recently.">
+      Numbers and causes of the crashes that occurred recently
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY" desc="Message stating that administrators see application install information and activity times.">
+      Apps installed and how often they are used
     </message>
     <message name="IDS_MANAGEMENT_REPORT_PRINTING" desc="Message stating that administrators can see names of printed files.">
       Names of files that you print
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_PRINT_JOBS" desc="Message stating that administrators can see printing history associated with user, device, and printer.">
+      Printing history
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message stating that administrators can see attempts at prohibited actions on restricted data. Also shows the number of actions reported since login, and provides a 'Learn more' link.">
+      {COUNT, plural,
+      =1 {Actions taken with data flagged as confidential (1 action since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=chromeos_datacontrols"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}
+      other {Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=chromeos_datacontrols"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}}
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
+      Device login/logout history, including timestamps and failed attempts
+    </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
+    </message>
+    <message name="IDS_MANAGEMENT_CROSTINI_CONTAINER_CONFIGURATION" desc="Message stating that administrators can see Crostini usage">
+      Linux activity within the container, and can install and run Linux apps within the container
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_EXTENSIONS" desc="Message stating that administrators can see user's extensions.">
+      Which extensions you have installed
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_ANDROID_APPLICATIONS" desc="Message stating that administrators can see user's installed Android applications.">
+      Which Google Play apps you have installed
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_PLUGIN_VM" desc="Message telling users that Plugin VM can collect data.">
+      Your administrator has allowed <ph name="APP_NAME">$1<ex>Plugin VM</ex></ph> to collect diagnostics data to improve the product experience. See <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://www.parallels.com/pcep"&gt;</ph>https://www.parallels.com/pcep<ph name="END_LINK">&lt;/a&gt;</ph> for more information.
+    </message>
+
+    <!-- Chrome OS update required end-of-life reached section -->
+    <message name="IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE" desc="Message indicating that the device needs to be returned back before the deadline because the device has reached end-of-life and an update is required as per policy.">
+      <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
+    </message>
+    <message name="IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE_TITLE" desc="Message indicating return instructions from the device administrator because the device cannot be updated as it has reached its end of life.">
+      Instructions from your device administrator:
     </message>
   </if>
 
@@ -119,12 +172,24 @@
   <message name="IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY" desc="Message describing that the administrator has installed some powerful extensions on the managed user's browser from a specific domain">
     <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has installed extensions for additional functions. Extensions have access to some of your data.
   </message>
-  <message name="IDS_MANAGEMENT_EXTENSIONS_NAME" desc="Title of a column of the extension table showing the name of the extension">
+  <message name="IDS_MANAGEMENT_EXTENSIONS_NAME" desc="Title of a column of the extension table showing the name of the extension" meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_MANAGEMENT_EXTENSIONS_PERMISSIONS" desc="Title of a column of the extension table showing the permissions of the extension">
     Permissions
   </message>
+
+  <!-- Strings related to website managed configuration of the management page -->
+  <message name="IDS_MANAGEMENT_MANAGED_WEBSITES" desc="Title of the configured websites section of the page">
+    Websites with info from your organization
+  </message>
+  <message name="IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION" desc="Message describing that administrator has set some preset organization data to be sent to the following websites">
+    The administrator of this device has sent some info to the following websites, like settings or policies.
+  </message>
+  <message name="IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION" desc="Message describing that administrator has set some preset organization data to be sent to the following websites">
+    Your organization, <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>, has sent some info to the following websites, like settings or policies.
+  </message>
+
 
   <!-- Strings related to browser reporting section of the management page -->
   <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page">
@@ -146,10 +211,7 @@
     Version information about your device and browser
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_EXTENSIONS_PLUGINS" desc="Message explaining that an extension currently reports the user's exensions and plugins">
-    Information about installed extensions and plugins
-  </message>
-  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_SAFE_BROWSING_WARNINGS" desc="Message explaining that an extension currently reports the user's Safe Browsing warnings and ignored warnings">
-    <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;<ex>&lt;a target="_blank" href="https://example.com"&gt;</ex></ph>Safe Browsing<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> warnings
+    Which extensions and plugins you have installed
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_USER_BROWSING_DATA" desc="Message explaining that an extension currently reports the user's browsing data">
     Websites you visit and time spent on them
@@ -158,32 +220,50 @@
     Performance data and crash reports
   </message>
 
-  <!-- Strings related to Chrome Enterprise User Protect -->
-  <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise User Protect section of the page">
-    Chrome Enterprise User Protect
+  <!-- Strings related to Chrome Enterprise Connectors -->
+  <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise Connectors section of the page">
+    Chrome Enterprise Connectors
   </message>
-  <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION" desc="Description of the Chrome Enterprise User Protect section of the page">
-    Your administrator has enabled Chrome Enterprise User Protect on your browser. Chrome Enterprise User Protect has access to some of your data.
+  <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION" desc="Description of the Chrome Enterprise Connectors section of the page">
+    Your administrator has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.
   </message>
-  <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY" desc="Description of the Chrome Enterprise User Protect section of the page">
-    <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has enabled Chrome Enterprise User Protect on your browser. Chrome Enterprise User Protect has access to some of your data.
+  <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY" desc="Description of the Chrome Enterprise Connectors section of the page">
+    <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.
   </message>
-  <message name="IDS_MANAGEMENT_DATA_LOSS_PREVENTION_NAME" desc="Name for the data loss prevention feature">
-    Data Loss Prevention
+  <message name="IDS_MANAGEMENT_CONNECTORS_EVENT" desc="Title of a column of the Connectors table showing the event that triggers a Connector">
+    Event
   </message>
-  <message name="IDS_MANAGEMENT_DATA_LOSS_PREVENTION_PERMISSIONS" desc="Permissions description for the data loss prevention feature">
-    Scan the contents of the files that you download or upload in Chrome.
+  <message name="IDS_MANAGEMENT_CONNECTORS_VISIBLE_DATA" desc="Title of a column of the Connectors table showing the data visible to a Connector">
+    Visible data
   </message>
-  <message name="IDS_MANAGEMENT_MALWARE_SCANNING_NAME" desc="Name for the malware scanning feature">
-    Malware Scanning
+  <message name="IDS_MANAGEMENT_FILE_ATTACHED_EVENT" desc="Event for the file attachment scanning feature.">
+    File is attached
   </message>
-  <message name="IDS_MANAGEMENT_MALWARE_SCANNING_PERMISSIONS" desc="Permissions description for the malware scanning feature">
-    Scan files that you download or upload in Chrome.
+  <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_EVENT" desc="Event for the file download scanning feature.">
+    File is downloaded
   </message>
-  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_NAME" desc="Name for the enterprise reporting feature">
-    Enterprise Reporting
+  <message name="IDS_MANAGEMENT_TEXT_ENTERED_EVENT" desc="Event for the text entry scanning feature.">
+    Text is entered
   </message>
-  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_PERMISSIONS" desc="Permissions description for the enterprise reporting feature">
-    Share data about security events that have been flagged by Chrome Enterprise User Protect with your Administrator. This may include URLs of pages you visit, file names or metadata, and the username you use to sign in to your device and Chrome.
+  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature">
+    Security event occurs
+  </message>
+  <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature.">
+    Page is visited
+  </message>
+  <message name="IDS_MANAGEMENT_FILE_ATTACHED_VISIBLE_DATA" desc="Description of the visible data for the file attachment scanning feature.">
+    Files you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.
+  </message>
+  <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_VISIBLE_DATA" desc="Description of the visible data for the file download scanning feature.">
+    Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.
+  </message>
+  <message name="IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA" desc="Description of the visible data for the text entry scanning feature.">
+    Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
+  </message>
+  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature">
+    When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, and the username that you use to sign in to web based applications, your device and Chrome.
+  </message>
+  <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature.">
+    URLs of pages you visit are sent to Google Cloud or third parties for analysis. For example, they might be scanned to detect unsafe websites.
   </message>
 </grit-part>

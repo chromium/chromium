@@ -1,5 +1,0 @@
-mvanouwerkerk@chromium.org
-amalova@chromium.org
-per-file *.aidl=set noparent
-per-file *.aidl=file://ipc/SECURITY_OWNERS
-# COMPONENT: UI>Browser>Mobile>CustomTabs

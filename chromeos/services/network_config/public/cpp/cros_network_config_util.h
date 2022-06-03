@@ -25,6 +25,10 @@ bool StateIsConnected(mojom::ConnectionStateType connection_state);
 // Returns the signal strength for wireless network types or 0 for other types.
 int GetWirelessSignalStrength(const mojom::NetworkStateProperties* network);
 
+// Returns true if the device state InhibitReason property is set to anything
+// but kNotInhibited.
+bool IsInhibited(const mojom::DeviceStateProperties* device);
+
 }  // namespace network_config
 }  // namespace chromeos
 

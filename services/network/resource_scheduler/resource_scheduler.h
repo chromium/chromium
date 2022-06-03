@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
+#include "net/http/http_cache.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/resource_scheduler/resource_scheduler_params_manager.h"
 
@@ -84,12 +85,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   };
 
   explicit ResourceScheduler(const base::TickClock* tick_clock = nullptr);
-  ~ResourceScheduler();
+
+  ResourceScheduler(const ResourceScheduler&) = delete;
+  ResourceScheduler& operator=(const ResourceScheduler&) = delete;
+
+  virtual ~ResourceScheduler();
 
   // Requests that this ResourceScheduler schedule, and eventually loads, the
   // specified |url_request|. Caller should delete the returned ResourceThrottle
   // when the load completes or is canceled, before |url_request| is deleted.
-  std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
+  virtual std::unique_ptr<ScheduledResourceRequest> ScheduleRequest(
       int child_id,
       int route_id,
       bool is_async,
@@ -99,22 +104,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
 
   // Called when a renderer is created. |network_quality_estimator| is allowed
   // to be null.
-  void OnClientCreated(int child_id,
-                       int route_id,
-                       net::NetworkQualityEstimator* network_quality_estimator);
+  virtual void OnClientCreated(
+      int child_id,
+      int route_id,
+      net::NetworkQualityEstimator* network_quality_estimator);
 
   // Called when a renderer is destroyed.
-  void OnClientDeleted(int child_id, int route_id);
+  virtual void OnClientDeleted(int child_id, int route_id);
 
   // Counts the number of active resource scheduler clients.
   // A client is active when it has at least one request either in the pending
   // request queue owned by the client or in flight.
   // Note: the counter is expected to be 0 for the most of time.
-  size_t ActiveSchedulerClientsCounter() const;
+  virtual size_t ActiveSchedulerClientsCounter() const;
 
   // Records the metrics related to number of in-flight requests that are
   // observed by the global resource scheduler.
-  void RecordGlobalRequestCountMetrics() const;
+  virtual void RecordGlobalRequestCountMetrics() const;
 
   // Client functions:
 
@@ -122,17 +128,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // start the request loading if it wasn't already started.
   // If the scheduler does not know about the request, |new_priority| is set but
   // |intra_priority_value| is ignored.
-  void ReprioritizeRequest(net::URLRequest* request,
-                           net::RequestPriority new_priority,
-                           int intra_priority_value);
+  virtual void ReprioritizeRequest(net::URLRequest* request,
+                                   net::RequestPriority new_priority,
+                                   int intra_priority_value);
   // Same as above, but keeps the existing intra priority value.
-  void ReprioritizeRequest(net::URLRequest* request,
-                           net::RequestPriority new_priority);
+  virtual void ReprioritizeRequest(net::URLRequest* request,
+                                   net::RequestPriority new_priority);
 
   // Returns true if the timer that dispatches long queued requests is running.
-  bool IsLongQueuedRequestsDispatchTimerRunning() const;
+  virtual bool IsLongQueuedRequestsDispatchTimerRunning() const;
 
-  base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
+  virtual base::SequencedTaskRunner* task_runner();
 
   // Testing setters
   void SetTaskRunnerForTesting(
@@ -145,6 +151,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
 
   // Dispatch requests that have been queued for too long to network.
   void DispatchLongQueuedRequestsForTesting();
+
+  // Fire the timer to check cache for long queued requests.
+  void FireQueuedRequestsCacheCheckTimerForTesting();
 
  private:
   class Client;
@@ -176,6 +185,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // pending requests that can be started.
   void OnLongQueuedRequestsDispatchTimerFired();
 
+  // This timer regularly checks to see if there are any pending requests that
+  // have been queued long enough and have been cached. If yes, they can be
+  // started because they may not contend for network.
+  void StartCacheCheckForQueuedRequestsTimer();
+  void OnCacheCheckForQueuedRequestsTimerFired();
+
   ClientMap client_map_;
   RequestSet unowned_requests_;
 
@@ -188,14 +203,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   // Duration after which the timer to dispatch queued requests should fire.
   const base::TimeDelta queued_requests_dispatch_periodicity_;
 
+  base::OneShotTimer check_cache_for_queued_request_timer_;
+
   ResourceSchedulerParamsManager resource_scheduler_params_manager_;
 
   // The TaskRunner to post tasks on. Can be overridden for tests.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceScheduler);
 };
 
 }  // namespace network

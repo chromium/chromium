@@ -30,8 +30,12 @@ let AppMap;
 /**
  * @typedef {{
  *   apps: !AppMap,
- *   arcSupported: boolean,
  *   selectedAppId: ?string,
  * }}
  */
 let AppManagementPageState;
+
+/**
+ * @typedef {apps.mojom.WindowMode}
+ */
+let WindowMode;

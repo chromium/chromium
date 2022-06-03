@@ -15,9 +15,12 @@ class TestContextProvider;
 
 namespace blink {
 
-void InitializeSharedGpuContext(viz::TestContextProvider* context_provider,
-                                cc::ImageDecodeCache* cache = nullptr);
+enum class SetIsContextLost { kNotModifyValue, kSetToTrue, kSetToFalse };
 
+void InitializeSharedGpuContext(
+    viz::TestContextProvider* context_provider,
+    cc::ImageDecodeCache* cache = nullptr,
+    SetIsContextLost set_context_lost = SetIsContextLost::kNotModifyValue);
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_TEST_UTILS_H_

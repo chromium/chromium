@@ -1,46 +1,108 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style settings-shared iron-flex">
+  cr-input {
+    --cr-input-error-display: none;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/shadow.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="manage_profile_browser_proxy.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
+  .cr-row.manage-profile-section {
+    display: block;
+    padding-bottom: 24px;
+  }
 
-<dom-module id="settings-manage-profile">
-  <template>
-    <style include="settings-shared">
-      cr-input {
-        --cr-input-error-display: none;
-      }
+  .cr-row:not(.first) {
+    padding-top: 4px;
+  }
 
-      #selector {
-        margin: 16px 48px;
-      }
-    </style>
-    <div class="settings-box first">
-      <cr-input id="name" value="[[profileName]]" pattern=".*\S.*"
-          on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
-          disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
-          auto-validate required spellcheck="false">
-      </cr-input>
-    </div>
-    <template is="dom-if" if="[[isProfileShortcutSettingVisible_]]">
-      <div class="settings-box first">
-        <div id="showShortcutLabel" class="start">$i18n{showShortcutLabel}</div>
-        <cr-toggle id="hasShortcutToggle"
-            checked="{{hasProfileShortcut_}}"
-            on-change="onHasProfileShortcutChange_"
-            aria-labelledby="showShortcutLabel">
-        </cr-toggle>
-      </div>
-    </template>
-    <cr-profile-avatar-selector id="selector" avatars="[[availableIcons]]"
+  .content {
+    padding-inline-start: var(--cr-section-indent-width);
+    padding-top: 4px;
+  }
+
+  #name {
+    width: 288px;
+  }
+
+  .grid-container {
+    --icon-grid-gap: 25px;
+    --icon-size: 72px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  cr-customize-themes,
+  cr-profile-avatar-selector {
+    margin-bottom: 10px;
+  }
+
+  #themeSelector {
+    --selected-border: 9px; /* Selected border per side: 4.5px*/
+    --cr-customize-themes-grid-gap: calc(var(--icon-grid-gap) -
+        var(--selected-border));
+    --cr-customize-themes-icon-size: calc(var(--icon-size) +
+        var(--selected-border));
+  }
+
+  #profileAvatarSelector {
+    --avatar-size: var(--icon-size);
+    --avatar-spacing: var(--icon-grid-gap);
+    --avatar-grid-columns: 6;
+    padding: 4px;
+    width: calc(var(--avatar-size) * var(--avatar-grid-columns) +
+        var(--avatar-spacing) * (var(--avatar-grid-columns) - 1));
+
+  }
+
+  #outerRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--settings-row-two-line-min-height);
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #labelWrapper {
+    padding: var(--cr-section-vertical-padding) 0;
+  }
+</style>
+
+<div class="cr-row first manage-profile-section">
+  <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
+  <div class="content">
+    <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
+        on-change="onProfileNameChanged_"
+        on-keydown="onProfileNameKeydown_"
+        disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
+        aria-label="$i18n{nameInputLabel}" auto-validate required
+        spellcheck="false">
+    </cr-input>
+  </div>
+</div>
+<div class="cr-row manage-profile-section">
+  <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
+  <div class="content grid-container">
+    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+    </cr-customize-themes>
+ </div>
+</div>
+<div class="cr-row manage-profile-section">
+  <h1 class="cr-title-text">$i18n{pickAvatar}</h1>
+  <div class="content grid-container">
+    <cr-profile-avatar-selector
+        id="profileAvatarSelector" avatars="[[availableIcons]]"
         selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>
     </cr-profile-avatar-selector>
-  </template>
-  <script src="manage_profile.js"></script>
-</dom-module>
+ </div>
+</div>
+<template is="dom-if" if="[[isProfileShortcutSettingVisible_]]">
+  <div id="outerRow" class="hr">
+    <div class="flex" id="labelWrapper">
+      <div>$i18n{createShortcutTitle}</div>
+      <div class="secondary">$i18n{createShortcutSubtitle}</div>
+    </div>
+    <cr-toggle id="hasShortcutToggle"
+        checked="{{hasProfileShortcut_}}"
+        on-change="onHasProfileShortcutChange_"
+        aria-labelledby="labelWrapper">
+    </cr-toggle>
+  </div>
+  <div class="hr"></div>
+</template>

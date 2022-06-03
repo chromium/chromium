@@ -7,20 +7,28 @@
 #include <cctype>
 #include <limits>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/policy_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/zlib/zlib.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 namespace webrtc_event_logging {
 
@@ -97,7 +105,7 @@ constexpr size_t kWebAppIdLength = 2;
 class Budget {
  public:
   // If !max.has_value(), the budget is unlimited.
-  explicit Budget(base::Optional<size_t> max) : max_(max), current_(0) {}
+  explicit Budget(absl::optional<size_t> max) : max_(max), current_(0) {}
 
   // Check whether the budget allows consuming an additional |consumed| of
   // the resource.
@@ -129,7 +137,7 @@ class Budget {
   }
 
  private:
-  const base::Optional<size_t> max_;
+  const absl::optional<size_t> max_;
   size_t current_;
 };
 
@@ -139,7 +147,7 @@ class BaseLogFileWriter : public LogFileWriter {
   // If !max_file_size_bytes.has_value(), an unlimited writer is created.
   // If it has a value, it must be at least MinFileSizeBytes().
   BaseLogFileWriter(const base::FilePath& path,
-                    base::Optional<size_t> max_file_size_bytes);
+                    absl::optional<size_t> max_file_size_bytes);
 
   ~BaseLogFileWriter() override;
 
@@ -199,7 +207,7 @@ class BaseLogFileWriter : public LogFileWriter {
 };
 
 BaseLogFileWriter::BaseLogFileWriter(const base::FilePath& path,
-                                     base::Optional<size_t> max_file_size_bytes)
+                                     absl::optional<size_t> max_file_size_bytes)
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
       path_(path),
       state_(State::PRE_INIT),
@@ -232,7 +240,7 @@ bool BaseLogFileWriter::Init() {
   file_.Initialize(path_, file_flags);
   if (!file_.IsValid() || !file_.created()) {
     LOG(WARNING) << "Couldn't create remote-bound WebRTC event log file.";
-    if (!base::DeleteFile(path_, /*recursive=*/false)) {
+    if (!base::DeleteFile(path_)) {
       LOG(ERROR) << "Failed to delete " << path_ << ".";
     }
     SetState(State::ERRORED);
@@ -305,7 +313,7 @@ void BaseLogFileWriter::Delete() {
     file_.Close();
   }
 
-  if (!base::DeleteFile(path_, /*recursive=*/false)) {
+  if (!base::DeleteFile(path_)) {
     LOG(ERROR) << "Failed to delete " << path_ << ".";
   }
 
@@ -357,7 +365,7 @@ bool BaseLogFileWriter::Finalize() {
 class GzippedLogFileWriter : public BaseLogFileWriter {
  public:
   GzippedLogFileWriter(const base::FilePath& path,
-                       base::Optional<size_t> max_file_size_bytes,
+                       absl::optional<size_t> max_file_size_bytes,
                        std::unique_ptr<LogCompressor> compressor);
 
   ~GzippedLogFileWriter() override = default;
@@ -377,7 +385,7 @@ class GzippedLogFileWriter : public BaseLogFileWriter {
 
 GzippedLogFileWriter::GzippedLogFileWriter(
     const base::FilePath& path,
-    base::Optional<size_t> max_file_size_bytes,
+    absl::optional<size_t> max_file_size_bytes,
     std::unique_ptr<LogCompressor> compressor)
     : BaseLogFileWriter(path, max_file_size_bytes),
       compressor_(std::move(compressor)) {
@@ -471,7 +479,7 @@ bool GzippedLogFileWriter::Finalize() {
 class GzipLogCompressor : public LogCompressor {
  public:
   GzipLogCompressor(
-      base::Optional<size_t> max_size_bytes,
+      absl::optional<size_t> max_size_bytes,
       std::unique_ptr<CompressedSizeEstimator> compressed_size_estimator);
 
   ~GzipLogCompressor() override;
@@ -497,8 +505,8 @@ class GzipLogCompressor : public LogCompressor {
   // Returns the budget left after reserving the GZIP overhead.
   // Optionals without a value, both in the parameters as well as in the
   // return value of the function, signal an unlimited amount.
-  static base::Optional<size_t> SizeAfterOverheadReservation(
-      base::Optional<size_t> max_size_bytes);
+  static absl::optional<size_t> SizeAfterOverheadReservation(
+      absl::optional<size_t> max_size_bytes);
 
   // Compresses |input| into |output|, while observing the budget (unless
   // !budgeted). If |last|, also closes the stream.
@@ -517,7 +525,7 @@ class GzipLogCompressor : public LogCompressor {
 };
 
 GzipLogCompressor::GzipLogCompressor(
-    base::Optional<size_t> max_size_bytes,
+    absl::optional<size_t> max_size_bytes,
     std::unique_ptr<CompressedSizeEstimator> compressed_size_estimator)
     : state_(State::PRE_HEADER),
       budget_(SizeAfterOverheadReservation(max_size_bytes)),
@@ -603,10 +611,10 @@ bool GzipLogCompressor::CreateFooter(std::string* output) {
   return true;
 }
 
-base::Optional<size_t> GzipLogCompressor::SizeAfterOverheadReservation(
-    base::Optional<size_t> max_size_bytes) {
+absl::optional<size_t> GzipLogCompressor::SizeAfterOverheadReservation(
+    absl::optional<size_t> max_size_bytes) {
   if (!max_size_bytes.has_value()) {
-    return base::Optional<size_t>();
+    return absl::optional<size_t>();
   } else {
     DCHECK_GE(max_size_bytes.value(), kGzipHeaderBytes + kGzipFooterBytes);
     return max_size_bytes.value() - (kGzipHeaderBytes + kGzipFooterBytes);
@@ -768,7 +776,7 @@ base::FilePath::StringPieceType BaseLogFileWriterFactory::Extension() const {
 
 std::unique_ptr<LogFileWriter> BaseLogFileWriterFactory::Create(
     const base::FilePath& path,
-    base::Optional<size_t> max_file_size_bytes) const {
+    absl::optional<size_t> max_file_size_bytes) const {
   if (max_file_size_bytes.has_value() &&
       max_file_size_bytes.value() < MinFileSizeBytes()) {
     LOG(WARNING) << "Max size (" << max_file_size_bytes.value()
@@ -811,7 +819,7 @@ size_t GzipLogCompressorFactory::MinSizeBytes() const {
 }
 
 std::unique_ptr<LogCompressor> GzipLogCompressorFactory::Create(
-    base::Optional<size_t> max_size_bytes) const {
+    absl::optional<size_t> max_size_bytes) const {
   if (max_size_bytes.has_value() && max_size_bytes.value() < MinSizeBytes()) {
     LOG(WARNING) << "Max size (" << max_size_bytes.value()
                  << ") below minimum size (" << MinSizeBytes() << ").";
@@ -838,7 +846,7 @@ base::FilePath::StringPieceType GzippedLogFileWriterFactory::Extension() const {
 
 std::unique_ptr<LogFileWriter> GzippedLogFileWriterFactory::Create(
     const base::FilePath& path,
-    base::Optional<size_t> max_file_size_bytes) const {
+    absl::optional<size_t> max_file_size_bytes) const {
   if (max_file_size_bytes.has_value() &&
       max_file_size_bytes.value() < MinFileSizeBytes()) {
     LOG(WARNING) << "Size below allowed minimum.";
@@ -1008,6 +1016,43 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
   base::StringPiece id_str(&filename[kPrefixLength + 1], kWebAppIdLength);
 
   return ExtractWebAppId(id_str);
+}
+
+bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
+// For Chrome OS, exclude special profiles and users.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  // We do not log an error here since this can happen in several cases,
+  // e.g. for signin profiles or lock screen app profiles.
+  if (!user) {
+    return false;
+  }
+  const user_manager::UserType user_type = user->GetType();
+  if (user_type != user_manager::USER_TYPE_REGULAR) {
+    return false;
+  }
+  if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+    return false;
+  }
+#endif
+
+  // We only want a default of true for regular (i.e. logged-in) profiles
+  // receiving cloud-based user-level enterprise policies. Supervised (child)
+  // profiles are considered regular and can also receive cloud policies in some
+  // cases (e.g. on Chrome OS). Although currently this should be covered by the
+  // other checks, let's explicitly check to anticipate edge cases and make the
+  // requirement explicit.
+  if (profile->IsOffTheRecord() || profile->IsSupervised()) {
+    return false;
+  }
+
+  const policy::ProfilePolicyConnector* const policy_connector =
+      profile->GetProfilePolicyConnector();
+
+  return policy_connector->policy_service()->IsInitializationComplete(
+             policy::POLICY_DOMAIN_CHROME) &&
+         policy_connector->IsManaged();
 }
 
 }  // namespace webrtc_event_logging

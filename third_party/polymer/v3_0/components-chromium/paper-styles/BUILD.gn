@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -7,37 +7,9 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("color") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
-}
-
-js_library("default-theme") {
-  deps = [
-    ".:color",
-    "../polymer:polymer_bundled",
-  ]
-}
-
-js_library("demo-pages") {
-  deps = [
-    ".:color",
-    ".:shadow",
-    ".:typography",
-    "../iron-flex-layout:iron-flex-layout",
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }
 
 js_library("shadow") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
-}
-
-js_library("typography") {
-  deps = [
-    "../font-roboto:roboto",
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }

@@ -1,0 +1,57 @@
+<link rel="import" href="../../../html/polymer.html">
+
+<link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="base_page.html">
+<link rel="import" href="cellular_setup_delegate.html">
+<link rel="import" href="../../../cr_elements/hidden_style_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+
+<dom-module id="setup-loading-page">
+  <template>
+    <style include="iron-flex cr-hidden-style">
+      #animationContainer {
+        align-items: flex-end;
+        display: flex;
+        height: 216px;
+        justify-content: center;
+        margin-bottom: 54px;
+      }
+
+      #simDetectError {
+        background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/sim_detect_error.svg);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        height: 100%;
+        width: 100%;
+      }
+
+      #pageBody {
+        height: 222px;
+      }
+
+      cr-lottie {
+        height: 85%;
+      }
+
+      base-page {
+        --base-page-message-height: 40px;
+      }
+    </style>
+    <base-page title="[[loadingTitle]]" message="[[loadingMessage]]">
+      <div slot="page-body" id="pageBody" class="layout vertical center-center">
+        <template is="dom-if" if="[[!isSimDetectError]]" restamp>
+          <div id="animationContainer">
+            <cr-lottie id="spinner" animation-url="spinner.json" autoplay>
+            </cr-lottie>
+          </div>
+        </template>
+        <div id="simDetectError" hidden$="[[!isSimDetectError]]">
+        </div>
+      </div>
+    </base-page>
+  </template>
+  <script src="setup_loading_page.js"></script>
+</dom-module>

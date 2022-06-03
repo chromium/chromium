@@ -27,7 +27,8 @@ class PasswordManagerDialogProperties {
     static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>();
 
     // Multiline explanation text displayed under the illustration.
-    static final ReadableObjectPropertyKey<String> DETAILS = new ReadableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<CharSequence> DETAILS =
+            new ReadableObjectPropertyKey<>();
 
     private PasswordManagerDialogProperties() {}
 

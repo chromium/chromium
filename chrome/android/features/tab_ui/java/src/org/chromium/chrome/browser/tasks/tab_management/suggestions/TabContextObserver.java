@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.suggestions;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelObserver;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -31,9 +31,9 @@ public abstract class TabContextObserver {
             }
         };
 
-        mTabModelObserver = new EmptyTabModelObserver() {
+        mTabModelObserver = new TabModelObserver() {
             @Override
-            public void didAddTab(Tab tab, int type) {
+            public void didAddTab(Tab tab, int type, @TabCreationState int creationState) {
                 onTabContextChanged(TabContextChangeReason.TAB_ADDED);
             }
 
@@ -43,7 +43,12 @@ public abstract class TabContextObserver {
             }
 
             @Override
-            public void didCloseTab(int tabId, boolean incognito) {
+            public void tabClosureUndone(Tab tab) {
+                onTabContextChanged(TabContextChangeReason.TAB_CLOSURE_UNDONE);
+            }
+
+            @Override
+            public void willCloseTab(Tab tab, boolean animate) {
                 onTabContextChanged(TabContextChangeReason.TAB_CLOSED);
             }
         };
@@ -62,6 +67,7 @@ public abstract class TabContextObserver {
         int TAB_ADDED = 1;
         int TAB_CLOSED = 2;
         int FIRST_VISUALLY_NON_EMPTY_PAINT = 3;
+        int TAB_CLOSURE_UNDONE = 4;
     }
 
     /**

@@ -4,10 +4,27 @@
 
 #include "media/base/audio_parameters.h"
 
-#include "base/logging.h"
+#include <sstream>
+
 #include "media/base/limits.h"
 
 namespace media {
+
+const char* FormatToString(AudioParameters::Format format) {
+  switch (format) {
+    case AudioParameters::AUDIO_PCM_LINEAR:
+      return "PCM_LINEAR";
+    case AudioParameters::AUDIO_PCM_LOW_LATENCY:
+      return "PCM_LOW_LATENCY";
+    case AudioParameters::AUDIO_BITSTREAM_AC3:
+      return "BITSTREAM_AC3";
+    case AudioParameters::AUDIO_BITSTREAM_EAC3:
+      return "BITSTREAM_EAC3";
+    case AudioParameters::AUDIO_FAKE:
+      return "FAKE";
+  }
+  return "INVALID";
+}
 
 base::CheckedNumeric<uint32_t> ComputeAudioInputBufferSizeChecked(
     const AudioParameters& parameters,
@@ -117,8 +134,9 @@ bool AudioParameters::IsValid() const {
 
 std::string AudioParameters::AsHumanReadableString() const {
   std::ostringstream s;
-  s << "format: " << format() << ", channel_layout: " << channel_layout()
-    << ", channels: " << channels() << ", sample_rate: " << sample_rate()
+  s << "format: " << FormatToString(format())
+    << ", channel_layout: " << channel_layout() << ", channels: " << channels()
+    << ", sample_rate: " << sample_rate()
     << ", frames_per_buffer: " << frames_per_buffer()
     << ", effects: " << effects()
     << ", mic_positions: " << PointsToString(mic_positions_);
@@ -144,7 +162,7 @@ double AudioParameters::GetMicrosecondsPerFrame() const {
 }
 
 base::TimeDelta AudioParameters::GetBufferDuration() const {
-  return base::TimeDelta::FromMicroseconds(static_cast<int64_t>(
+  return base::Microseconds(static_cast<int64_t>(
       frames_per_buffer_ * base::Time::kMicrosecondsPerSecond /
       static_cast<float>(sample_rate_)));
 }

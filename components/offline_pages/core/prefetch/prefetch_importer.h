@@ -18,6 +18,10 @@ class PrefetchDispatcher;
 class PrefetchImporter {
  public:
   explicit PrefetchImporter(PrefetchDispatcher* dispatcher);
+
+  PrefetchImporter(const PrefetchImporter&) = delete;
+  PrefetchImporter& operator=(const PrefetchImporter&) = delete;
+
   virtual ~PrefetchImporter() = default;
 
   // Imports the downloaded archive by moving the file into archive directory
@@ -43,8 +47,6 @@ class PrefetchImporter {
 
  private:
   PrefetchDispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchImporter);
 };
 
 }  // namespace offline_pages

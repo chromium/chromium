@@ -8,11 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
@@ -29,6 +29,7 @@
 #include "sandbox/win/src/registry_policy.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/sandbox_policy.h"
+#include "sandbox/win/src/sandbox_policy_diagnostic.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/signed_policy.h"
@@ -43,7 +44,7 @@ namespace {
 constexpr size_t kOneMemPage = 4096;
 // The IPC and Policy shared memory sizes.
 constexpr size_t kIPCMemSize = kOneMemPage * 2;
-constexpr size_t kPolMemSize = kOneMemPage * 14;
+constexpr size_t kPolMemSize = kOneMemPage * 6;
 
 // Helper function to allocate space (on the heap) for policy.
 sandbox::PolicyGlobal* MakeBrokerPolicyMemory() {
@@ -107,35 +108,30 @@ PolicyBase::PolicyBase()
       is_csrss_connected_(true),
       policy_maker_(nullptr),
       policy_(nullptr),
-      lowbox_sid_(nullptr),
       lockdown_default_dacl_(false),
-      enable_opm_redirection_(false),
-      effective_token_(nullptr) {
+      add_restricting_random_sid_(false),
+      effective_token_(nullptr),
+      allow_no_sandbox_job_(false) {
   ::InitializeCriticalSection(&lock_);
-  dispatcher_.reset(new TopLevelDispatcher(this));
+  dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
 
 PolicyBase::~PolicyBase() {
-  TargetSet::iterator it;
-  for (it = targets_.begin(); it != targets_.end(); ++it) {
-    TargetProcess* target = (*it);
-    delete target;
-  }
   delete policy_maker_;
   delete policy_;
-
-  if (lowbox_sid_)
-    ::LocalFree(lowbox_sid_);
 
   ::DeleteCriticalSection(&lock_);
 }
 
 void PolicyBase::AddRef() {
-  ::InterlockedIncrement(&ref_count);
+  // ref_count starts at 1 so cannot increase from 0 to 1.
+  CHECK(::InterlockedIncrement(&ref_count) > 1);
 }
 
 void PolicyBase::Release() {
-  if (0 == ::InterlockedDecrement(&ref_count))
+  LONG result = ::InterlockedDecrement(&ref_count);
+  CHECK(result >= 0);
+  if (result == 0)
     delete this;
 }
 
@@ -275,7 +271,7 @@ void PolicyBase::DestroyAlternateDesktop() {
 }
 
 ResultCode PolicyBase::SetIntegrityLevel(IntegrityLevel integrity_level) {
-  if (app_container_profile_)
+  if (app_container_)
     return SBOX_ERROR_BAD_PARAMS;
   integrity_level_ = integrity_level;
   return SBOX_ALL_OK;
@@ -296,10 +292,11 @@ ResultCode PolicyBase::SetLowBox(const wchar_t* sid) {
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(sid);
-  if (lowbox_sid_ || app_container_profile_)
+  if (app_container_)
     return SBOX_ERROR_BAD_PARAMS;
 
-  if (!ConvertStringSidToSid(sid, &lowbox_sid_))
+  app_container_ = AppContainerBase::CreateLowbox(sid);
+  if (!app_container_)
     return SBOX_ERROR_INVALID_LOWBOX_SID;
 
   return SBOX_ALL_OK;
@@ -309,7 +306,7 @@ ResultCode PolicyBase::SetProcessMitigations(MitigationFlags flags) {
   // Prior to Win10 RS5 CreateProcess fails when AppContainer and mitigation
   // flags are enabled. Return an error on downlevel platforms if trying to
   // set new mitigations.
-  if (app_container_profile_ &&
+  if (app_container_ &&
       base::win::GetVersion() < base::win::Version::WIN10_RS5) {
     return SBOX_ERROR_BAD_PARAMS;
   }
@@ -389,6 +386,10 @@ void PolicyBase::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
+void PolicyBase::AddRestrictingRandomSid() {
+  add_restricting_random_sid_ = true;
+}
+
 const base::HandlesToInheritVector& PolicyBase::GetHandlesBeingShared() {
   return handles_to_share_;
 }
@@ -410,14 +411,29 @@ ResultCode PolicyBase::MakeJobObject(base::win::ScopedHandle* job) {
   return SBOX_ALL_OK;
 }
 
+ResultCode PolicyBase::DropActiveProcessLimit(base::win::ScopedHandle* job) {
+  if (job_level_ >= JOB_INTERACTIVE)
+    return SBOX_ALL_OK;
+
+  if (ERROR_SUCCESS != Job::SetActiveProcessLimit(job, 0))
+    return SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT;
+
+  return SBOX_ALL_OK;
+}
+
 ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
                                   base::win::ScopedHandle* lockdown,
                                   base::win::ScopedHandle* lowbox) {
+  Sid random_sid = Sid::GenerateRandomSid();
+  PSID random_sid_ptr = nullptr;
+  if (add_restricting_random_sid_)
+    random_sid_ptr = random_sid.GetPSID();
+
   // Create the 'naked' token. This will be the permanent token associated
   // with the process and therefore with any thread that is not impersonating.
-  DWORD result =
-      CreateRestrictedToken(effective_token_, lockdown_level_, integrity_level_,
-                            PRIMARY, lockdown_default_dacl_, lockdown);
+  DWORD result = CreateRestrictedToken(
+      effective_token_, lockdown_level_, integrity_level_, PRIMARY,
+      lockdown_default_dacl_, random_sid_ptr, lockdown);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
 
@@ -456,62 +472,43 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
     }
   }
 
-  if (lowbox_sid_) {
-    if (!lowbox_directory_.IsValid()) {
-      result =
-          CreateLowBoxObjectDirectory(lowbox_sid_, true, &lowbox_directory_);
-      DCHECK(result == ERROR_SUCCESS);
-    }
+  if (app_container_ &&
+      app_container_->GetAppContainerType() == AppContainerType::kLowbox) {
+    ResultCode result_code = app_container_->BuildLowBoxToken(lowbox, lockdown);
 
-    // The order of handles isn't important in the CreateLowBoxToken call.
-    // The kernel will maintain a reference to the object directory handle.
-    HANDLE saved_handles[1] = {lowbox_directory_.Get()};
-    DWORD saved_handles_count = lowbox_directory_.IsValid() ? 1 : 0;
-
-    Sid package_sid(lowbox_sid_);
-    SecurityCapabilities caps(package_sid);
-    if (CreateLowBoxToken(lockdown->Get(), PRIMARY, &caps, saved_handles,
-                          saved_handles_count, lowbox) != ERROR_SUCCESS) {
-      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
-    }
-
-    if (!ReplacePackageSidInDacl(lowbox->Get(), SE_KERNEL_OBJECT, package_sid,
-                                 TOKEN_ALL_ACCESS)) {
-      return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
-    }
+    if (result_code != SBOX_ALL_OK)
+      return result_code;
   }
 
   // Create the 'better' token. We use this token as the one that the main
   // thread uses when booting up the process. It should contain most of
   // what we need (before reaching main( ))
-  result =
-      CreateRestrictedToken(effective_token_, initial_level_, integrity_level_,
-                            IMPERSONATION, lockdown_default_dacl_, initial);
+  result = CreateRestrictedToken(
+      effective_token_, initial_level_, integrity_level_, IMPERSONATION,
+      lockdown_default_dacl_, random_sid_ptr, initial);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
 
   return SBOX_ALL_OK;
 }
 
-PSID PolicyBase::GetLowBoxSid() const {
-  return lowbox_sid_;
-}
-
-ResultCode PolicyBase::AddTarget(TargetProcess* target) {
-  if (policy_)
-    policy_maker_->Done();
+ResultCode PolicyBase::AddTarget(std::unique_ptr<TargetProcess> target) {
+  if (policy_) {
+    if (!policy_maker_->Done())
+      return SBOX_ERROR_NO_SPACE;
+  }
 
   if (!ApplyProcessMitigationsToSuspendedProcess(target->Process(),
                                                  mitigations_)) {
     return SBOX_ERROR_APPLY_ASLR_MITIGATIONS;
   }
 
-  ResultCode ret = SetupAllInterceptions(target);
+  ResultCode ret = SetupAllInterceptions(*target);
 
   if (ret != SBOX_ALL_OK)
     return ret;
 
-  if (!SetupHandleCloser(target))
+  if (!SetupHandleCloser(*target))
     return SBOX_ERROR_SETUP_HANDLE_CLOSER;
 
   DWORD win_error = ERROR_SUCCESS;
@@ -545,23 +542,26 @@ ResultCode PolicyBase::AddTarget(TargetProcess* target) {
     return ret;
 
   AutoLock lock(&lock_);
-  targets_.push_back(target);
+  targets_.push_back(std::move(target));
   return SBOX_ALL_OK;
 }
 
 bool PolicyBase::OnJobEmpty(HANDLE job) {
   AutoLock lock(&lock_);
-  TargetSet::iterator it;
-  for (it = targets_.begin(); it != targets_.end(); ++it) {
-    if ((*it)->Job() == job)
-      break;
-  }
-  if (it == targets_.end()) {
-    return false;
-  }
-  TargetProcess* target = *it;
-  targets_.erase(it);
-  delete target;
+  targets_.erase(
+      std::remove_if(targets_.begin(), targets_.end(),
+                     [&](auto&& p) -> bool { return p->Job() == job; }),
+      targets_.end());
+  return true;
+}
+
+bool PolicyBase::OnProcessFinished(DWORD process_id) {
+  AutoLock lock(&lock_);
+  targets_.erase(std::remove_if(targets_.begin(), targets_.end(),
+                                [&](auto&& p) -> bool {
+                                  return p->ProcessId() == process_id;
+                                }),
+                 targets_.end());
   return true;
 }
 
@@ -612,33 +612,24 @@ HANDLE PolicyBase::GetStderrHandle() {
   return stderr_handle_;
 }
 
-void PolicyBase::SetEnableOPMRedirection() {
-  enable_opm_redirection_ = true;
-}
-
-bool PolicyBase::GetEnableOPMRedirection() {
-  return enable_opm_redirection_;
-}
-
 ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
                                               bool create_profile) {
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(package_name);
-  if (lowbox_sid_ || app_container_profile_ ||
-      integrity_level_ != INTEGRITY_LEVEL_LAST) {
+  if (app_container_ || integrity_level_ != INTEGRITY_LEVEL_LAST) {
     return SBOX_ERROR_BAD_PARAMS;
   }
 
   if (create_profile) {
-    app_container_profile_ = AppContainerProfileBase::Create(
+    app_container_ = AppContainerBase::CreateProfile(
         package_name, L"Chrome Sandbox", L"Profile for Chrome Sandbox");
   } else {
-    app_container_profile_ = AppContainerProfileBase::Open(package_name);
+    app_container_ = AppContainerBase::Open(package_name);
   }
-  if (!app_container_profile_)
-    return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE;
+  if (!app_container_)
+    return SBOX_ERROR_CREATE_APPCONTAINER;
 
   // A bug exists in CreateProcess where enabling an AppContainer profile and
   // passing a set of mitigation flags will generate ERROR_INVALID_PARAMETER.
@@ -656,8 +647,8 @@ ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
   return SBOX_ALL_OK;
 }
 
-scoped_refptr<AppContainerProfile> PolicyBase::GetAppContainerProfile() {
-  return GetAppContainerProfileBase();
+scoped_refptr<AppContainer> PolicyBase::GetAppContainer() {
+  return GetAppContainerBase();
 }
 
 void PolicyBase::SetEffectiveToken(HANDLE token) {
@@ -665,12 +656,11 @@ void PolicyBase::SetEffectiveToken(HANDLE token) {
   effective_token_ = token;
 }
 
-scoped_refptr<AppContainerProfileBase>
-PolicyBase::GetAppContainerProfileBase() {
-  return app_container_profile_;
+scoped_refptr<AppContainerBase> PolicyBase::GetAppContainerBase() {
+  return app_container_;
 }
 
-ResultCode PolicyBase::SetupAllInterceptions(TargetProcess* target) {
+ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
   InterceptionManager manager(target, relaxed_interceptions_);
 
   if (policy_) {
@@ -698,7 +688,7 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess* target) {
   return SBOX_ALL_OK;
 }
 
-bool PolicyBase::SetupHandleCloser(TargetProcess* target) {
+bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
   return handle_closer_.InitializeTargetHandles(target);
 }
 
@@ -791,11 +781,33 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
+    case SUBSYS_SOCKET: {
+      // Only one semantic is supported for this subsystem; to allow socket
+      // brokering.
+      DCHECK_EQ(SOCKET_ALLOW_BROKER, semantics);
+      // A very simple policy that just allows socket brokering if present.
+      PolicyRule socket_policy(ASK_BROKER);
+      policy_maker_->AddRule(IpcTag::WS2SOCKET, &socket_policy);
+      break;
+    }
 
     default: { return SBOX_ERROR_UNSUPPORTED; }
   }
 
   return SBOX_ALL_OK;
+}
+
+std::unique_ptr<PolicyInfo> PolicyBase::GetPolicyInfo() {
+  auto diagnostic = std::make_unique<PolicyDiagnostic>(this);
+  return diagnostic;
+}
+
+void PolicyBase::SetAllowNoSandboxJob() {
+  allow_no_sandbox_job_ = true;
+}
+
+bool PolicyBase::GetAllowNoSandboxJob() {
+  return allow_no_sandbox_job_;
 }
 
 }  // namespace sandbox

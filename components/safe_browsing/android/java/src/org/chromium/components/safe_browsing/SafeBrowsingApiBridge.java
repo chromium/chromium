@@ -8,7 +8,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -57,16 +56,8 @@ public final class SafeBrowsingApiBridge {
                         SafeBrowsingApiBridgeJni.get().onUrlCheckDone(
                                 callbackId, resultStatus, metadata, checkDelta);
                     }
-                }, SafeBrowsingApiBridgeJni.get().areLocalBlacklistsEnabled());
+                });
         return initSuccesssful ? handler : null;
-    }
-
-    /**
-     * Get the SafetyNet ID of the device.
-     */
-    @CalledByNative
-    private static String getSafetyNetId(SafeBrowsingApiHandler handler) {
-        return handler.getSafetyNetId();
     }
 
     /**
@@ -93,21 +84,11 @@ public final class SafeBrowsingApiBridge {
     @CalledByNative
     private static boolean startAllowlistLookup(
             SafeBrowsingApiHandler handler, String uri, int threatType) {
-        long allowlistLookupStartTime = System.currentTimeMillis();
-        boolean matched = handler.startAllowlistLookup(uri, threatType);
-        recordAllowlistLookupTimeInMs(System.currentTimeMillis() - allowlistLookupStartTime);
-        return matched;
-    }
-
-    // Histograms
-    private static void recordAllowlistLookupTimeInMs(long lookupTimeInMs) {
-        RecordHistogram.recordTimesHistogram(
-                "SB2.RemoteCall.LocalAllowlistLookupTime", lookupTimeInMs);
+        return handler.startAllowlistLookup(uri, threatType);
     }
 
     @NativeMethods
     interface Natives {
-        boolean areLocalBlacklistsEnabled();
         void onUrlCheckDone(long callbackId, int resultStatus, String metadata, long checkDelta);
     }
 }

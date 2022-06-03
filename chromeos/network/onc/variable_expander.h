@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include <base/macros.h>
 #include "base/component_export.h"
 
 namespace base {
@@ -36,6 +35,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) VariableExpander {
   // Takes a map of variables to values.
   explicit VariableExpander(std::map<std::string, std::string> variables);
 
+  VariableExpander(const VariableExpander&) = delete;
+  VariableExpander& operator=(const VariableExpander&) = delete;
+
   ~VariableExpander();
 
   // Expands all variables in |str|. Returns true if no error has occurred.
@@ -52,10 +54,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) VariableExpander {
  private:
   // Maps variable -> value.
   const std::map<std::string, std::string> variables_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariableExpander);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when chromeos/network is moved to
+// ash.
+namespace ash {
+using ::chromeos::VariableExpander;
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_ONC_VARIABLE_EXPANDER_H_

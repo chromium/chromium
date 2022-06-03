@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "remoting_service.cc": [
+    "+chrome/browser/browser_process.h",
+    "+content/public/browser/browser_task_traits.h",
+    "+content/public/browser/browser_thread.h",
+    "+content/public/browser/storage_partition.h",
+  ],
+}

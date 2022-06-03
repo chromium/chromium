@@ -1,0 +1,8 @@
+buganizer {
+  component_id: 690873
+}
+monorail {
+  component: "Platform>Apps>Default"
+}
+os: CHROME_OS
+team_email: "cros-essential-apps-dev@chromium.org"

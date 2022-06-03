@@ -1,4 +1,3 @@
-
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -8,11 +7,12 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/command_line.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -154,9 +154,6 @@ class TestSearchResult : public ChromeSearchResult {
     // set_id is protected in chromesearchresult.
     ChromeSearchResult::set_id(str);
   }
-  ash::SearchResultType GetSearchResultType() const override {
-    return ash::SEARCH_RESULT_TYPE_BOUNDARY;
-  }
 };
 }  // namespace
 
@@ -233,12 +230,12 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
 
   // Test that we set to 0 results when having a query, or when arc is turned
   // off.
-  app_provider_->Start(base::UTF8ToUTF16("non empty query"));
+  app_provider_->Start(u"non empty query");
   EXPECT_EQ(0u, app_provider_->results().size());
   // Verify that all icons are still loaded.
   EXPECT_EQ(2u, app_provider_->icon_urls_.size());
   EXPECT_EQ(0u, app_provider_->loading_icon_urls_.size());
-  app_provider_->Start(base::string16());
+  app_provider_->Start(std::u16string());
   EXPECT_EQ(2u, app_provider_->results().size());
 
   app_instance()->SendInstallationStarted("com.package.fakepackage1");
@@ -380,24 +377,24 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestShouldShowAnything) {
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
   SetStateTime(profile_.get(), fake_package2,
                app_list::ArcAppReinstallSearchProvider::kInstallTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   // Expect this to now say we shouldn't show, since a package was installed
   // well within an install grace.
   EXPECT_FALSE(app_provider_->ShouldShowAnything());
   SetStateTime(profile_.get(), fake_package2,
                app_list::ArcAppReinstallSearchProvider::kInstallTime,
-               base::Time::Now() - base::TimeDelta::FromDays(30));
+               base::Time::Now() - base::Days(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 
   // Testing for opens: if an a recommendation is opened within the grace
   // period, we won't show anything. That's 72 hours (per configuration here).
   SetStateTime(profile_.get(), fake_package3,
                app_list::ArcAppReinstallSearchProvider::kOpenTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   EXPECT_FALSE(app_provider_->ShouldShowAnything());
   SetStateTime(profile_.get(), fake_package3,
                app_list::ArcAppReinstallSearchProvider::kOpenTime,
-               base::Time::Now() - base::TimeDelta::FromDays(30));
+               base::Time::Now() - base::Days(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 
   // Testing for impression counts: If we've shown a result more than the
@@ -410,12 +407,12 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestShouldShowAnything) {
   // shown recently.
   SetStateTime(profile_.get(), fake_package4,
                app_list::ArcAppReinstallSearchProvider::kImpressionTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   EXPECT_FALSE(app_provider_->ShouldShowAnything());
   // shown long ago.
   SetStateTime(profile_.get(), fake_package4,
                app_list::ArcAppReinstallSearchProvider::kImpressionTime,
-               base::Time::Now() - base::TimeDelta::FromDays(30));
+               base::Time::Now() - base::Days(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 
   // Shown recently, but not frequently.
@@ -423,7 +420,7 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestShouldShowAnything) {
                 app_list::ArcAppReinstallSearchProvider::kImpressionCount, 3);
   SetStateTime(profile_.get(), fake_package4,
                app_list::ArcAppReinstallSearchProvider::kImpressionTime,
-               base::Time::Now() - base::TimeDelta::FromSeconds(30));
+               base::Time::Now() - base::Seconds(30));
   EXPECT_TRUE(app_provider_->ShouldShowAnything());
 }
 
@@ -437,9 +434,9 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultListComparison) {
   b.emplace_back(new TestSearchResult);
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
   // Different Titles.
-  a[0]->SetTitle(base::UTF8ToUTF16("fake_title"));
+  a[0]->SetTitle(u"fake_title");
   EXPECT_FALSE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
-  b[0]->SetTitle(base::UTF8ToUTF16("fake_title"));
+  b[0]->SetTitle(u"fake_title");
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
 
   // Different ID.
@@ -468,9 +465,9 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultListComparison) {
                      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                          IDR_EXTENSION_DEFAULT_ICON);
   ASSERT_FALSE(aimg.BackedBySameObjectAs(bimg));
-  a[0]->SetIcon(aimg);
-  b[0]->SetIcon(bimg);
+  a[0]->SetIcon(ChromeSearchResult::IconInfo(aimg));
+  b[0]->SetIcon(ChromeSearchResult::IconInfo(bimg));
   EXPECT_FALSE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
-  b[0]->SetIcon(aimg);
+  b[0]->SetIcon(ChromeSearchResult::IconInfo(aimg));
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
 }

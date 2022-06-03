@@ -4,6 +4,7 @@
 
 #include "services/video_capture/public/uma/video_capture_service_event.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace video_capture {
@@ -20,7 +21,7 @@ void LogDurationFromLastConnectToClosingConnectionAfterEnumerationOnly(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.VideoCaptureService."
       "DurationFromLastConnectToClosingConnectionAfterEnumerationOnly",
-      duration, base::TimeDelta(), base::TimeDelta::FromMinutes(1), 50);
+      duration, base::TimeDelta(), base::Minutes(1), 50);
   DVLOG(4) << "Logged "
               "DurationFromLastConnectToClosingConnectionAfterEnumerationOnl"
               "y";
@@ -31,32 +32,32 @@ void LogDurationFromLastConnectToClosingConnectionAfterCapture(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.VideoCaptureService."
       "DurationFromLastConnectToClosingConnectionAfterCapture",
-      duration, base::TimeDelta(), base::TimeDelta::FromDays(21), 50);
+      duration, base::TimeDelta(), base::Days(21), 50);
   DVLOG(4) << "Logged DurationFromLastConnectToClosingConnectionAfterCapture";
 }
 
 void LogDurationFromLastConnectToConnectionLost(base::TimeDelta duration) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.VideoCaptureService.DurationFromLastConnectToConnectionLost",
-      duration, base::TimeDelta(), base::TimeDelta::FromDays(21), 50);
+      duration, base::TimeDelta(), base::Days(21), 50);
   DVLOG(4) << "Logged DurationFromLastConnectToConnectionLost";
 }
 
 void LogDurationUntilReconnectAfterEnumerationOnly(base::TimeDelta duration) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.VideoCaptureService.DurationUntilReconnectAfterEnumerationOnly",
-      duration, base::TimeDelta(), base::TimeDelta::FromDays(7), 50);
+      duration, base::TimeDelta(), base::Days(7), 50);
   DVLOG(4) << "Logged DurationUntilReconnectAfterEnumerationOnly";
 }
 
 void LogDurationUntilReconnectAfterCapture(base::TimeDelta duration) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.VideoCaptureService.DurationUntilReconnectAfterCapture", duration,
-      base::TimeDelta(), base::TimeDelta::FromDays(7), 50);
+      base::TimeDelta(), base::Days(7), 50);
   DVLOG(4) << "Logged DurationUntilReconnectAfterCapture";
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event) {
   UMA_HISTOGRAM_ENUMERATION(
       "Media.VideoCapture.MacBook.RetryGetDeviceInfosEvent", event,

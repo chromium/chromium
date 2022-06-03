@@ -6,6 +6,8 @@
 
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/referrer_policy.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -55,7 +57,7 @@ AccountAvatarFetcher::~AccountAvatarFetcher() = default;
 
 void AccountAvatarFetcher::Start(
     network::mojom::URLLoaderFactory* loader_factory) {
-  fetcher_.Init(std::string(), net::URLRequest::NEVER_CLEAR_REFERRER,
+  fetcher_.Init(std::string(), net::ReferrerPolicy::NEVER_CLEAR,
                 network::mojom::CredentialsMode::kOmit);
   fetcher_.Start(loader_factory);
 }

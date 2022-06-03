@@ -53,7 +53,13 @@ class CC_EXPORT TilingSetRasterQueueAll {
     void AdvanceToNextTile(TilingIteratorType* iterator);
     template <typename TilingIteratorType>
     bool GetFirstTileAndCheckIfValid(TilingIteratorType* iterator);
-    bool IsTileValid(const Tile* tile) const;
+
+    enum IsTileValidResult {
+      kTileNotValid,
+      kTileNeedsRaster,
+      kTileNeedsCheckerImageReraster
+    };
+    IsTileValidResult IsTileValid(const Tile* tile) const;
 
     PrioritizedTile current_tile_;
     PictureLayerTiling* tiling_;

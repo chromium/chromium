@@ -35,9 +35,9 @@ void DrmWindowProxy::SchedulePageFlip(
       std::move(planes), CreateSafeOnceCallback(std::move(submission_callback)),
       CreateSafeOnceCallback(std::move(presentation_callback)));
   drm_thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DrmThread::RunTaskAfterWindowReady,
-                                base::Unretained(drm_thread_), widget_,
-                                std::move(task), nullptr));
+      FROM_HERE,
+      base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
+                     base::Unretained(drm_thread_), std::move(task), nullptr));
 }
 
 bool DrmWindowProxy::SupportsGpuFences() const {
@@ -45,12 +45,18 @@ bool DrmWindowProxy::SupportsGpuFences() const {
   base::OnceClosure task =
       base::BindOnce(&DrmThread::IsDeviceAtomic, base::Unretained(drm_thread_),
                      widget_, &is_atomic);
-  PostSyncTask(
-      drm_thread_->task_runner(),
-      base::BindOnce(&DrmThread::RunTaskAfterWindowReady,
-                     base::Unretained(drm_thread_), widget_, std::move(task)));
+  PostSyncTask(drm_thread_->task_runner(),
+               base::BindOnce(&DrmThread::RunTaskAfterDeviceReady,
+                              base::Unretained(drm_thread_), std::move(task)));
   return is_atomic && !base::CommandLine::ForCurrentProcess()->HasSwitch(
                           switches::kDisableExplicitDmaFences);
+}
+
+void DrmWindowProxy::SetColorSpace(const gfx::ColorSpace& color_space) const {
+  drm_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DrmThread::SetColorSpace, base::Unretained(drm_thread_),
+                     widget_, color_space));
 }
 
 }  // namespace ui

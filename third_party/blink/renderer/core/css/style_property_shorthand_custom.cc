@@ -21,38 +21,14 @@
 
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace blink {
 
-const StylePropertyShorthand& animationShorthandForParsing() {
-  // When we parse the animation shorthand we need to look for animation-name
-  // last because otherwise it might match against the keywords for fill mode,
-  // timing functions and infinite iteration. This means that animation names
-  // that are the same as keywords (e.g. 'forwards') won't always match in the
-  // shorthand. In that case the authors should be using longhands (or
-  // reconsidering their approach). This is covered by the animations spec
-  // bug: https://www.w3.org/Bugs/Public/show_bug.cgi?id=14790
-  // And in the spec (editor's draft) at:
-  // https://drafts.csswg.org/css-animations/#animation-shorthand-property
-  static const CSSProperty* kAnimationPropertiesForParsing[] = {
-      &GetCSSPropertyAnimationDuration(),
-      &GetCSSPropertyAnimationTimingFunction(),
-      &GetCSSPropertyAnimationDelay(),
-      &GetCSSPropertyAnimationIterationCount(),
-      &GetCSSPropertyAnimationDirection(),
-      &GetCSSPropertyAnimationFillMode(),
-      &GetCSSPropertyAnimationPlayState(),
-      &GetCSSPropertyAnimationName()};
-  static constexpr StylePropertyShorthand
-      webkit_animation_longhands_for_parsing(
-          CSSPropertyID::kAnimation, kAnimationPropertiesForParsing,
-          base::size(kAnimationPropertiesForParsing));
-  return webkit_animation_longhands_for_parsing;
-}
-
-// Similar to animations, we have property after timing-function and delay after
-// duration
+// The transition-property longhand appears last during parsing to prevent it
+// from matching against transition-timing-function keywords. Ideally we would
+// change the spec to use this order, see:
+// https://github.com/w3c/csswg-drafts/issues/4223
 const StylePropertyShorthand& transitionShorthandForParsing() {
   static const CSSProperty* kTransitionProperties[] = {
       &GetCSSPropertyTransitionDuration(),

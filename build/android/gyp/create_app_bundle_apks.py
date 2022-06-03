@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -32,18 +32,21 @@ def main():
       '--minimal',
       action='store_true',
       help='Create APKs archive with minimal language support.')
+  parser.add_argument('--local-testing',
+                      action='store_true',
+                      help='Create APKs archive with local testing support.')
 
   args = parser.parse_args()
 
-  app_bundle_utils.GenerateBundleApks(
-      args.bundle,
-      args.output,
-      args.aapt2_path,
-      args.keystore_path,
-      args.keystore_password,
-      args.keystore_name,
-      minimal=args.minimal,
-      check_for_noop=False)
+  app_bundle_utils.GenerateBundleApks(args.bundle,
+                                      args.output,
+                                      args.aapt2_path,
+                                      args.keystore_path,
+                                      args.keystore_password,
+                                      args.keystore_name,
+                                      local_testing=args.local_testing,
+                                      minimal=args.minimal,
+                                      check_for_noop=False)
 
 
 if __name__ == '__main__':

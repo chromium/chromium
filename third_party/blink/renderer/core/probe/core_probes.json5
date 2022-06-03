@@ -24,6 +24,12 @@
         "ExecuteScript",
       ]
     },
+    InspectorIssueReporter: {
+      probes: [
+        "DidFailLoading",
+        "DomContentLoadedEventFired",
+      ]
+    },
     InspectorAnimationAgent: {
       probes: [
         "AnimationPlayStateChanged",
@@ -31,30 +37,33 @@
         "DidCreateAnimation",
       ]
     },
-    InspectorApplicationCacheAgent: {
+    InspectorAuditsAgent: {
       probes: [
-        "NetworkStateChanged",
-        "UpdateApplicationCacheStatus",
+        "InspectorIssueAdded"
       ]
     },
     InspectorCSSAgent: {
       probes: [
         "ActiveStyleSheetsUpdated",
+        "DidMutateStyleSheet",
         "DocumentDetached",
         "FontsUpdated",
         "ForcePseudoState",
         "MediaQueryResultChanged",
         "WillChangeStyleElement",
+        "LocalFontsEnabled",
+        "DidUpdateComputedStyle",
+        "RecalculateStyle",
       ]
     },
     InspectorDOMAgent: {
       probes: [
         "CharacterDataModified",
         "DidCommitLoad",
+        'DidRestoreFromBackForwardCache',
         "DidInsertDOMNode",
         "DidInvalidateStyleAttr",
         "DidModifyDOMAttr",
-        "DidPerformElementShadowDistribution",
         "DidPerformSlotDistribution",
         "DidPushShadowRoot",
         "DidRemoveDOMAttr",
@@ -73,6 +82,7 @@
     InspectorDOMDebuggerAgent: {
       probes: [
         "BreakableLocation",
+        "CharacterDataModified",
         "DidCreateCanvasContext",
         "DidFireWebGLError",
         "DidFireWebGLErrorOrWarning",
@@ -84,12 +94,12 @@
         "UserCallback",
         "WillInsertDOMNode",
         "WillModifyDOMAttr",
-        "WillRemoveDOMNode",
         "WillSendXMLHttpOrFetchNetworkRequest",
         "DidCreateAudioContext",
         "DidCloseAudioContext",
         "DidResumeAudioContext",
         "DidSuspendAudioContext",
+        "OnContentSecurityPolicyViolation",
       ]
     },
     InspectorDOMSnapshotAgent: {
@@ -102,8 +112,11 @@
       probes: [
         "ApplyAcceptLanguageOverride",
         "ApplyUserAgentOverride",
+        "ApplyUserAgentMetadataOverride",
         "FrameStartedLoading",
         "PrepareRequest",
+        "GetDisabledImageTypes",
+        "WillCommitLoad",
       ]
     },
     InspectorLayerTreeAgent: {
@@ -119,7 +132,9 @@
     },
     InspectorMediaAgent: {
       probes: [
+        "PlayerErrorsRaised",
         "PlayerEventsAdded",
+        "PlayerMessagesLogged",
         "PlayerPropertiesChanged",
         "PlayersCreated"
       ]
@@ -130,7 +145,6 @@
         "DidChangeResourcePriority",
         "DidCloseWebSocket",
         "DidCommitLoad",
-        "DidCreateWebSocket",
         "DidFailLoading",
         "DidFinishLoading",
         "DidFinishXHR",
@@ -152,24 +166,32 @@
         "ShouldBlockRequest",
         "ShouldBypassServiceWorker",
         "ShouldForceCorsPreflight",
+        "WebTransportCreated",
+        "WebTransportConnectionEstablished",
+        "WebTransportClosed",
+        "WillCreateWebSocket",
         "WillDispatchEventSourceEvent",
         "WillLoadXHR",
         "WillSendEventSourceRequest",
         "WillSendRequest",
         "WillSendNavigationRequest",
         "WillSendWebSocketHandshakeRequest",
+        "SetDevToolsIds",
+        "IsCacheDisabled",
       ]
     },
     InspectorPageAgent: {
       probes: [
-        "ConsumeCompilationCache",
+        "ApplyCompilationModeOverride",
         "DidChangeViewport",
         "DidClearDocumentOfWindowObject",
         "DidNavigateWithinDocument",
         "WillCommitLoad",
+        "DidRestoreFromBackForwardCache",
         "DidResizeMainFrame",
         "DidRunJavaScriptDialog",
         "DomContentLoadedEventFired",
+        "DidOpenDocument",
         "FileChooserOpened",
         "FrameAttachedToParent",
         "FrameClearedScheduledNavigation",
@@ -181,7 +203,7 @@
         "LifecycleEvent",
         "LoadEventFired",
         "PaintTiming",
-        "ProduceCompilationCache",
+        "DidProduceCompilationCache",
         "RecalculateStyle",
         "UpdateLayout",
         "WillRunJavaScriptDialog",
@@ -208,6 +230,13 @@
         "RecalculateStyle",
         "UpdateLayout",
         "V8Compile",
+        "WillStartDebuggerTask",
+        "DidFinishDebuggerTask",
+      ]
+    },
+    InspectorPerformanceTimelineAgent: {
+      probes: [
+        "PerformanceEntryAdded",
       ]
     },
     InspectorTraceEvents: {
@@ -231,6 +260,8 @@
         "DidStartProvisionalLoad",
         "DidFailProvisionalLoad",
         "DidCommitLoad",
+        "PaintTiming",
+        "DomContentLoadedEventFired",
       ]
     },
   }

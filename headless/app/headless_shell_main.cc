@@ -7,26 +7,26 @@
 
 #if defined(OS_WIN)
 #include "content/public/app/sandbox_helper_win.h"
-#include "sandbox/win/src/sandbox_types.h"
-#elif defined(OS_MACOSX)
-#include "base/logging.h"
+#include "sandbox/win/src/sandbox_types.h"  // nogncheck
+#elif defined(OS_MAC)
+#include "base/check.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
 int main(int argc, const char** argv) {
 #if defined(OS_WIN)
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   return headless::HeadlessShellMain(0, &sandbox_info);
 #else
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
       sandbox::SeatbeltExecServer::CreateFromArguments(
           argv[0], argc, const_cast<char**>(argv));
   if (seatbelt.sandbox_required) {
     CHECK(seatbelt.server->InitializeSandbox());
   }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
   return headless::HeadlessShellMain(argc, argv);
 #endif  // defined(OS_WIN)

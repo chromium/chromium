@@ -1,0 +1,12 @@
+
+================================================================================
+AXSelection from AX text position in "StaticText": "Some text.", 0 to AX object anchored position in "Main": "", 2
+================================================================================
+++<GenericContainer>
+++++<GenericContainer>
+++++++<Main>
+^++++++++<StaticText: ^Some text.>
+++++++++<GenericContainer>
+|++++++++<Paragraph>
+++++++++<Paragraph>
+++++++++++<StaticText: After presentational paragraph.>

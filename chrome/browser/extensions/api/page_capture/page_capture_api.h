@@ -10,8 +10,9 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/page_capture.h"
+#include "extensions/browser/extension_function.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 
 namespace base {
@@ -24,32 +25,40 @@ class WebContents;
 
 namespace extensions {
 
-class PageCaptureSaveAsMHTMLFunction : public ChromeAsyncExtensionFunction {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PermissionIDSet;
+#endif
+
+class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
  public:
   PageCaptureSaveAsMHTMLFunction();
 
   // Test specific delegate used to test that the temporary file gets deleted.
   class TestDelegate {
    public:
-    // Called on the UI thread when the temporary file that contains the
+    // Called on the IO thread when the temporary file that contains the
     // generated data has been created.
-    virtual void OnTemporaryFileCreated(const base::FilePath& temp_file) = 0;
+    virtual void OnTemporaryFileCreated(
+        scoped_refptr<storage::ShareableFileReference> temp_file) = 0;
   };
   static void SetTestDelegate(TestDelegate* delegate);
 
+  // ExtensionFunction:
+  void OnServiceWorkerAck() override;
+
  private:
   ~PageCaptureSaveAsMHTMLFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
   bool OnMessageReceived(const IPC::Message& message) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Resolves the API permission request in Public Sessions.
   void ResolvePermissionRequest(const PermissionIDSet& allowed_permissions);
 #endif
 
   // Returns whether or not the extension has permission to capture the current
-  // page.
-  bool CanCaptureCurrentPage();
+  // page. Sets |*error| to an error value on failure.
+  bool CanCaptureCurrentPage(std::string* error);
 
   // Called on the file thread.
   void CreateTemporaryFile();

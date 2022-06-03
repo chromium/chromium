@@ -6,6 +6,6 @@ description('importNode should throw informative errors for unsupported node typ
 var doc = document.implementation.createHTMLDocument('');
 shouldThrow("document.importNode(doc)")
 
-var shadow = document.createElement('div').createShadowRoot();
+var shadow = document.createElement('div').attachShadow({mode: 'open'});
 shouldThrow("document.importNode(shadow)")
 </script>

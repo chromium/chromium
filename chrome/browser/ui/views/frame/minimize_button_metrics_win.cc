@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/minimize_button_metrics_win.h"
 
+#include "base/check.h"
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
 #include "base/win/windows_version.h"
 #include "dwmapi.h"
 #include "ui/base/win/shell.h"

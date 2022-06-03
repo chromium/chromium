@@ -21,6 +21,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.PatternMatcher;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,6 +91,12 @@ public class CastWebContentsServiceTest {
             return mMediaSessionImpl;
         });
         mShadowService = Shadows.shadowOf(mService);
+    }
+
+    @After
+    public void tearDown() {
+        mServiceLifecycle.unbind();
+        mServiceLifecycle.destroy();
     }
 
     @Test

@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/proto/audio.pb.h"
@@ -50,6 +50,9 @@ class AudioPipeReader
   static scoped_refptr<AudioPipeReader> Create(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::FilePath& pipe_path);
+
+  AudioPipeReader(const AudioPipeReader&) = delete;
+  AudioPipeReader& operator=(const AudioPipeReader&) = delete;
 
   // Register or unregister an observer. Each observer receives data on the
   // thread on which it was registered and guaranteed not to be called after
@@ -103,8 +106,6 @@ class AudioPipeReader
 
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       pipe_watch_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPipeReader);
 };
 
 // Destroys |audio_pipe_reader| on the audio thread.

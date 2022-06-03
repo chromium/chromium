@@ -8,7 +8,7 @@
     - When an object has just one retainer it must be expanded automatically until
       there's an object having two or more retainers.
     - Test the expansion of a long retainment chain is limited by a certain level.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 25;
@@ -97,19 +97,19 @@
 
       function step4(retainersRoot) {
         retainersRoot.dataGrid.addEventListener(
-            Profiler.HeapSnapshotRetainmentDataGrid.Events.ExpandRetainersComplete, step5.bind(this, retainersRoot));
+            Profiler.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
       }
 
       function step5(retainersRoot) {
         var l3 = retainersRoot;
         TestRunner.assertEquals(1, l3.children.length, 'One retainer of L3');
         var l2 = l3.children[0];
-        TestRunner.assertEquals('y', l2._referenceName);
+        TestRunner.assertEquals('y', l2.referenceName);
         TestRunner.assertEquals(1, l2.children.length, 'One retainer of L2');
         var l1 = l2.children[0];
-        TestRunner.assertEquals('x', l1._referenceName);
+        TestRunner.assertEquals('x', l1.referenceName);
         TestRunner.assertEquals(2, l1.children.length, 'Two retainers of L1');
-        var l1retainers = [l1.children[0]._referenceName, l1.children[1]._referenceName];
+        var l1retainers = [l1.children[0].referenceName, l1.children[1].referenceName];
         l1retainers.sort();
         TestRunner.assertEquals('l1a', l1retainers[0]);
         TestRunner.assertEquals('l1b', l1retainers[1]);
@@ -168,7 +168,7 @@
 
       function step4(retainersRoot) {
         retainersRoot.dataGrid.addEventListener(
-            Profiler.HeapSnapshotRetainmentDataGrid.Events.ExpandRetainersComplete, step5.bind(this, retainersRoot));
+            Profiler.HeapSnapshotRetainmentDataGridEvents.ExpandRetainersComplete, step5.bind(this, retainersRoot));
       }
 
       function step5(retainersRoot) {

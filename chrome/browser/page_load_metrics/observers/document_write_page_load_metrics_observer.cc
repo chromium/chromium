@@ -101,7 +101,7 @@ void DocumentWritePageLoadMetricsObserver::OnLoadingBehaviorObserved(
              blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock));
     UMA_HISTOGRAM_COUNTS_1M(internal::kHistogramDocWriteBlockReloadCount, 1);
     LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_RELOAD,
-                              GetDelegate().GetSourceId());
+                              GetDelegate().GetPageUkmSourceId());
     doc_write_block_reload_observed_ = true;
   }
   if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
@@ -109,7 +109,7 @@ void DocumentWritePageLoadMetricsObserver::OnLoadingBehaviorObserved(
       !doc_write_block_observed_) {
     UMA_HISTOGRAM_BOOLEAN(internal::kHistogramDocWriteBlockCount, true);
     LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_BLOCK,
-                              GetDelegate().GetSourceId());
+                              GetDelegate().GetPageUkmSourceId());
     doc_write_block_observed_ = true;
   }
   if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
@@ -117,7 +117,7 @@ void DocumentWritePageLoadMetricsObserver::OnLoadingBehaviorObserved(
            kLoadingBehaviorDocumentWriteBlockDifferentScheme) &&
       !doc_write_same_site_diff_scheme_) {
     LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_SAME_SITE_DIFF_SCHEME,
-                              GetDelegate().GetSourceId());
+                              GetDelegate().GetPageUkmSourceId());
     doc_write_same_site_diff_scheme_ = true;
   }
 }
@@ -183,7 +183,7 @@ void DocumentWritePageLoadMetricsObserver::LogDocumentWriteBlockParseStop(
             .value());
 
     ukm::builders::Intervention_DocumentWrite_ScriptBlock(
-        GetDelegate().GetSourceId())
+        GetDelegate().GetPageUkmSourceId())
         .SetParseTiming_ParseBlockedOnScriptLoadFromDocumentWrite(
             timing.parse_timing
                 ->parse_blocked_on_script_load_from_document_write_duration

@@ -19,9 +19,21 @@ using data_util::bit_field_type_groups::kName;
 using data_util::bit_field_type_groups::kPhone;
 
 TEST(AutofillDataUtilTest, DetermineGroupsForHomeNameAndAddress) {
-  const std::vector<ServerFieldType> field_types{
-      NAME_FIRST,        NAME_LAST,          ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
+  const std::vector<ServerFieldType> field_types{NAME_HONORIFIC_PREFIX,
+                                                 NAME_FULL,
+                                                 NAME_FIRST,
+                                                 NAME_MIDDLE,
+                                                 NAME_MIDDLE_INITIAL,
+                                                 NAME_LAST,
+                                                 NAME_LAST_FIRST,
+                                                 NAME_LAST_CONJUNCTION,
+                                                 NAME_LAST_SECOND,
+                                                 NAME_FIRST,
+                                                 NAME_LAST,
+                                                 ADDRESS_HOME_LINE1,
+                                                 ADDRESS_HOME_CITY,
+                                                 ADDRESS_HOME_STATE,
+                                                 ADDRESS_HOME_ZIP};
 
   const uint32_t expected_group_bitmask = kName | kAddress;
   const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
@@ -195,15 +207,14 @@ INSTANTIATE_TEST_SUITE_P(
                          "황목"},  // Korean name, Hangul
 
         // It occasionally happens that a full name is 2 characters, 1/1.
-        FullNameTestCase{"이도", "도", "", "이"},  // Korean name, Hangul
-        FullNameTestCase{"孫文", "文", "", "孫"}   // Chinese name, Unihan
-        ));
+        FullNameTestCase{"이도", "도", "", "이"},    // Korean name, Hangul
+        FullNameTestCase{"孫文", "文", "", "孫"}));  // Chinese name, Unihan
 
 class JoinNamePartsTest : public testing::TestWithParam<FullNameTestCase> {};
 
 TEST_P(JoinNamePartsTest, JoinNameParts) {
   auto test_case = GetParam();
-  base::string16 joined =
+  std::u16string joined =
       JoinNameParts(base::UTF8ToUTF16(test_case.given_name),
                     base::UTF8ToUTF16(test_case.middle_name),
                     base::UTF8ToUTF16(test_case.family_name));
@@ -229,9 +240,7 @@ INSTANTIATE_TEST_SUITE_P(
         // These are no CJK names for us, they're just bogus.
         FullNameTestCase{"Homer シンプソン", "Homer", "", "シンプソン"},
         FullNameTestCase{"ホーマー Simpson", "ホーマー", "", "Simpson"},
-        FullNameTestCase{"반 기 문", "반", "기", "문"}
-        // Has a middle-name, too unusual
-        ));
+        FullNameTestCase{"반 기 문", "반", "기", "문"}));
 
 struct ValidCountryCodeTestCase {
   std::string country_code;

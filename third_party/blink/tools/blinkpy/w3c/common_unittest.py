@@ -7,17 +7,12 @@ import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
-from blinkpy.w3c.common import (
-    read_credentials,
-    is_testharness_baseline,
-    is_basename_skipped,
-    is_file_exportable,
-    CHROMIUM_WPT_DIR
-)
+from blinkpy.w3c.common import (read_credentials, is_testharness_baseline,
+                                is_disallowed_ini, is_basename_skipped,
+                                is_file_exportable, CHROMIUM_WPT_DIR)
 
 
 class CommonTest(unittest.TestCase):
-
     def test_get_credentials_empty(self):
         host = MockHost()
         host.filesystem.write_text_file('/tmp/credentials.json', '{}')
@@ -36,8 +31,7 @@ class CommonTest(unittest.TestCase):
             'UNUSED_VALUE': 'foo',
         })
         self.assertEqual(
-            read_credentials(host, None),
-            {
+            read_credentials(host, None), {
                 'GH_USER': 'user-github',
                 'GH_TOKEN': 'pass-github',
                 'GERRIT_USER': 'user-gerrit',
@@ -55,8 +49,7 @@ class CommonTest(unittest.TestCase):
                 'GERRIT_TOKEN': 'pass-gerrit',
             }))
         self.assertEqual(
-            read_credentials(host, '/tmp/credentials.json'),
-            {
+            read_credentials(host, '/tmp/credentials.json'), {
                 'GH_USER': 'user-github',
                 'GH_TOKEN': 'pass-github',
                 'GERRIT_USER': 'user-gerrit',
@@ -78,35 +71,60 @@ class CommonTest(unittest.TestCase):
                 'GH_TOKEN': 'pass-github-from-json',
             }))
         self.assertEqual(
-            read_credentials(host, '/tmp/credentials.json'),
-            {
+            read_credentials(host, '/tmp/credentials.json'), {
                 'GH_USER': 'user-github-from-json',
                 'GH_TOKEN': 'pass-github-from-json',
             })
 
     def test_is_testharness_baseline(self):
         self.assertTrue(is_testharness_baseline('fake-test-expected.txt'))
-        self.assertTrue(is_testharness_baseline('external/wpt/fake-test-expected.txt'))
-        self.assertTrue(is_testharness_baseline('/tmp/wpt/fake-test-expected.txt'))
+        self.assertTrue(
+            is_testharness_baseline('external/wpt/fake-test-expected.txt'))
+        self.assertTrue(
+            is_testharness_baseline('/tmp/wpt/fake-test-expected.txt'))
         self.assertFalse(is_testharness_baseline('fake-test-expected.html'))
-        self.assertFalse(is_testharness_baseline('external/wpt/fake-test-expected.html'))
+        self.assertFalse(
+            is_testharness_baseline('external/wpt/fake-test-expected.html'))
 
     def test_is_basename_skipped(self):
         self.assertTrue(is_basename_skipped('MANIFEST.json'))
+        self.assertTrue(is_basename_skipped('DIR_METADATA'))
         self.assertTrue(is_basename_skipped('OWNERS'))
         self.assertTrue(is_basename_skipped('reftest.list'))
         self.assertTrue(is_basename_skipped('.gitignore'))
         self.assertFalse(is_basename_skipped('something.json'))
+
+    def test_is_disallowed_ini(self):
+        self.assertFalse(is_disallowed_ini('tox.ini'))
+        self.assertFalse(is_disallowed_ini("wptrunner.default.ini"))
+        self.assertTrue(is_disallowed_ini('test.html.ini'))
+        self.assertTrue(is_disallowed_ini('__dir__.ini'))
 
     def test_is_basename_skipped_asserts_basename(self):
         with self.assertRaises(AssertionError):
             is_basename_skipped('third_party/fake/OWNERS')
 
     def test_is_file_exportable(self):
-        self.assertTrue(is_file_exportable(CHROMIUM_WPT_DIR + 'html/fake-test.html'))
-        self.assertFalse(is_file_exportable(CHROMIUM_WPT_DIR + 'html/fake-test-expected.txt'))
-        self.assertFalse(is_file_exportable(CHROMIUM_WPT_DIR + 'MANIFEST.json'))
+        self.assertTrue(
+            is_file_exportable(CHROMIUM_WPT_DIR + 'html/fake-test.html'))
+        self.assertFalse(
+            is_file_exportable(CHROMIUM_WPT_DIR +
+                               'html/fake-test-expected.txt'))
+        self.assertFalse(
+            is_file_exportable(CHROMIUM_WPT_DIR + 'MANIFEST.json'))
         self.assertFalse(is_file_exportable(CHROMIUM_WPT_DIR + 'dom/OWNERS'))
+        self.assertFalse(
+            is_file_exportable(CHROMIUM_WPT_DIR + 'dom/DIR_METADATA'))
+        self.assertTrue(
+            is_file_exportable(CHROMIUM_WPT_DIR +
+                               'tools/wptrunner/wptrunner.default.ini'))
+        self.assertFalse(
+            is_file_exportable(
+                CHROMIUM_WPT_DIR +
+                'infrastructure/metadata/infrastructure/expected-fail/timeout.html.ini'
+            ))
+        self.assertFalse(
+            is_file_exportable(CHROMIUM_WPT_DIR + 'dom/historical.html.ini'))
 
     def test_is_file_exportable_asserts_path(self):
         # Rejects basenames.
@@ -117,4 +135,5 @@ class CommonTest(unittest.TestCase):
             is_file_exportable('third_party/fake/OWNERS')
         # Rejects absolute paths.
         with self.assertRaises(AssertionError):
-            is_file_exportable('/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt/OWNERS')
+            is_file_exportable('/mock-checkout/' + RELATIVE_WEB_TESTS +
+                               'external/wpt/OWNERS')

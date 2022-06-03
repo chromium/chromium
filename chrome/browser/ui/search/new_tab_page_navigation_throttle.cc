@@ -34,8 +34,7 @@ NewTabPageNavigationThrottle::MaybeCreateThrottleFor(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (web_contents->GetVisibleURL() != chrome::kChromeUINewTabURL ||
-      !search::IsInstantNTPURL(handle->GetURL(), profile) ||
-      handle->GetURL() == chrome::kChromeSearchLocalNtpUrl) {
+      !search::IsInstantNTPURL(handle->GetURL(), profile)) {
     return nullptr;
   }
 
@@ -65,7 +64,7 @@ content::NavigationThrottle::ThrottleCheckResult
 NewTabPageNavigationThrottle::OpenLocalNewTabPage() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
-  params.url = GURL(chrome::kChromeSearchLocalNtpUrl);
+  params.url = GURL(chrome::kChromeUINewTabPageThirdPartyURL);
   params.is_renderer_initiated = false;
   navigation_handle()->GetWebContents()->OpenURL(std::move(params));
   return content::NavigationThrottle::CANCEL_AND_IGNORE;

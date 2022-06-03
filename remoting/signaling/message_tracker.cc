@@ -4,13 +4,12 @@
 
 #include "remoting/signaling/message_tracker.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 
 namespace remoting {
 
 // static
-const base::TimeDelta MessageTracker::kCleanupInterval =
-    base::TimeDelta::FromMinutes(2);
+const base::TimeDelta MessageTracker::kCleanupInterval = base::Minutes(2);
 
 MessageTracker::MessageTracker() = default;
 

@@ -6,18 +6,21 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/resource_type.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
-#include "services/network/loader_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace content {
 
@@ -62,7 +65,7 @@ SignedExchangeValidityPinger::CreateAndStart(
     const GURL& validity_url,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id,
     base::OnceClosure callback) {
   auto pinger = base::WrapUnique<SignedExchangeValidityPinger>(
       new SignedExchangeValidityPinger(std::move(callback)));
@@ -79,7 +82,7 @@ void SignedExchangeValidityPinger::Start(
     const GURL& validity_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-    const base::Optional<base::UnguessableToken>& throttling_profile_id) {
+    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
   DCHECK(
       base::FeatureList::IsEnabled(features::kSignedHTTPExchangePingValidity));
 
@@ -87,7 +90,8 @@ void SignedExchangeValidityPinger::Start(
   resource_request->url = validity_url;
   resource_request->method = "HEAD";
   resource_request->resource_type =
-      static_cast<int>(ResourceType::kSubResource);
+      static_cast<int>(blink::mojom::ResourceType::kSubResource);
+  resource_request->destination = network::mojom::RequestDestination::kEmpty;
   // Set empty origin as the initiator and attach no cookies.
   resource_request->request_initiator = url::Origin();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -95,17 +99,19 @@ void SignedExchangeValidityPinger::Start(
   // (While we don't check the result yet)
   resource_request->load_flags |=
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
-  resource_request->render_frame_id = MSG_ROUTING_NONE;
   resource_request->throttling_profile_id = throttling_profile_id;
 
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(url_loader_factory), std::move(throttles), 0 /* routing_id */,
+      std::move(url_loader_factory), std::move(throttles),
       signed_exchange_utils::MakeRequestID() /* request_id */,
       network::mojom::kURLLoadOptionNone, resource_request.get(), this,
       kValidityPingerTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
 }
 
 SignedExchangeValidityPinger::~SignedExchangeValidityPinger() = default;
+
+void SignedExchangeValidityPinger::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
 
 void SignedExchangeValidityPinger::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {}

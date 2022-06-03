@@ -5,7 +5,7 @@
 #include "media/test/test_media_source.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/test_data_util.h"
 #include "media/base/timestamp_constants.h"
@@ -53,7 +53,8 @@ TestMediaSource::TestMediaSource(const std::string& filename,
       initial_sequence_mode_(initial_sequence_mode),
       mimetype_(mimetype),
       chunk_demuxer_(new ChunkDemuxer(
-          base::Bind(&TestMediaSource::DemuxerOpened, base::Unretained(this)),
+          base::BindOnce(&TestMediaSource::DemuxerOpened,
+                         base::Unretained(this)),
           base::DoNothing(),
           base::BindRepeating(&TestMediaSource::OnEncryptedMediaInitData,
                               base::Unretained(this)),
@@ -86,7 +87,8 @@ TestMediaSource::TestMediaSource(scoped_refptr<DecoderBuffer> data,
       initial_sequence_mode_(initial_sequence_mode),
       mimetype_(mimetype),
       chunk_demuxer_(new ChunkDemuxer(
-          base::Bind(&TestMediaSource::DemuxerOpened, base::Unretained(this)),
+          base::BindOnce(&TestMediaSource::DemuxerOpened,
+                         base::Unretained(this)),
           base::DoNothing(),
           base::BindRepeating(&TestMediaSource::OnEncryptedMediaInitData,
                               base::Unretained(this)),
@@ -208,7 +210,7 @@ void TestMediaSource::Shutdown() {
   chunk_demuxer_->ResetParserState(kSourceId, base::TimeDelta(),
                                    kInfiniteDuration, &last_timestamp_offset_);
   chunk_demuxer_->Shutdown();
-  chunk_demuxer_ = NULL;
+  chunk_demuxer_ = nullptr;
 }
 
 void TestMediaSource::DemuxerOpened() {
@@ -225,12 +227,12 @@ void TestMediaSource::DemuxerOpenedTask() {
     return;
   }
   chunk_demuxer_->SetTracksWatcher(
-      kSourceId, base::Bind(&TestMediaSource::InitSegmentReceived,
-                            base::Unretained(this)));
+      kSourceId, base::BindRepeating(&TestMediaSource::InitSegmentReceived,
+                                     base::Unretained(this)));
 
   chunk_demuxer_->SetParseWarningCallback(
-      kSourceId,
-      base::Bind(&TestMediaSource::OnParseWarningMock, base::Unretained(this)));
+      kSourceId, base::BindRepeating(&TestMediaSource::OnParseWarningMock,
+                                     base::Unretained(this)));
 
   SetSequenceMode(initial_sequence_mode_);
   AppendData(initial_append_size_);

@@ -7,8 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -34,22 +32,37 @@ StreamPromiseResolver* StreamPromiseResolver::CreateRejected(
   return promise;
 }
 
-// The constructor crashes if a v8::Promise::Resolver object cannot be created.
-// TODO(ricea): If necessary change this to make all the methods no-op instead.
-StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state)
-    : resolver_(script_state->GetIsolate(),
-                v8::Promise::Resolver::New(script_state->GetContext())
-                    .ToLocalChecked()) {}
+StreamPromiseResolver* StreamPromiseResolver::CreateRejectedAndSilent(
+    ScriptState* script_state,
+    v8::Local<v8::Value> reason) {
+  auto* promise = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  promise->MarkAsSilent(script_state->GetIsolate());
+  promise->Reject(script_state, reason);
+  return promise;
+}
+
+StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
+  v8::Local<v8::Promise::Resolver> resolver;
+  if (v8::Promise::Resolver::New(script_state->GetContext())
+          .ToLocal(&resolver)) {
+    resolver_.Reset(script_state->GetIsolate(), resolver);
+  }
+}
 
 void StreamPromiseResolver::Resolve(ScriptState* script_state,
                                     v8::Local<v8::Value> value) {
-  DCHECK(!resolver_.IsEmpty());
+  if (resolver_.IsEmpty()) {
+    return;
+  }
   if (is_settled_) {
     return;
   }
   is_settled_ = true;
-  auto result = resolver_.NewLocal(script_state->GetIsolate())
-                    ->Resolve(script_state->GetContext(), value);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  auto result =
+      resolver_.Get(isolate)->Resolve(script_state->GetContext(), value);
   if (result.IsNothing()) {
     DVLOG(3) << "Assuming JS shutdown and ignoring failed Resolve";
   }
@@ -61,13 +74,18 @@ void StreamPromiseResolver::ResolveWithUndefined(ScriptState* script_state) {
 
 void StreamPromiseResolver::Reject(ScriptState* script_state,
                                    v8::Local<v8::Value> reason) {
-  DCHECK(!resolver_.IsEmpty());
+  if (resolver_.IsEmpty()) {
+    return;
+  }
   if (is_settled_) {
     return;
   }
   is_settled_ = true;
-  auto result = resolver_.NewLocal(script_state->GetIsolate())
-                    ->Reject(script_state->GetContext(), reason);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+  auto result =
+      resolver_.Get(isolate)->Reject(script_state->GetContext(), reason);
   if (result.IsNothing()) {
     DVLOG(3) << "Assuming JS shutdown and ignoring failed Reject";
   }
@@ -80,20 +98,38 @@ ScriptPromise StreamPromiseResolver::GetScriptPromise(
 
 v8::Local<v8::Promise> StreamPromiseResolver::V8Promise(
     v8::Isolate* isolate) const {
-  DCHECK(!resolver_.IsEmpty());
-  return resolver_.NewLocal(isolate)->GetPromise();
+  if (resolver_.IsEmpty()) {
+    return v8::Local<v8::Promise>();
+  }
+  return resolver_.Get(isolate)->GetPromise();
 }
 
 void StreamPromiseResolver::MarkAsHandled(v8::Isolate* isolate) {
-  V8Promise(isolate)->MarkAsHandled();
+  v8::Local<v8::Promise> promise = V8Promise(isolate);
+  if (promise.IsEmpty()) {
+    return;
+  }
+  promise->MarkAsHandled();
+}
+
+void StreamPromiseResolver::MarkAsSilent(v8::Isolate* isolate) {
+  v8::Local<v8::Promise> promise = V8Promise(isolate);
+  if (promise.IsEmpty()) {
+    return;
+  }
+  promise->MarkAsSilent();
 }
 
 v8::Promise::PromiseState StreamPromiseResolver::State(
     v8::Isolate* isolate) const {
-  return V8Promise(isolate)->State();
+  v8::Local<v8::Promise> promise = V8Promise(isolate);
+  if (promise.IsEmpty()) {
+    return v8::Promise::PromiseState::kPending;
+  }
+  return promise->State();
 }
 
-void StreamPromiseResolver::Trace(Visitor* visitor) {
+void StreamPromiseResolver::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
 }
 

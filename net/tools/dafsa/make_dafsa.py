@@ -192,6 +192,7 @@ The bytes in the generated array has the following meaning:
 10: 0x82 <return_value> 0x82 & 0x0F -> return 2
 """
 
+import argparse
 import sys
 
 class InputError(Exception):
@@ -438,7 +439,7 @@ def words_to_cxx(words):
   return to_cxx(encode(dafsa))
 
 
-def parse_gperf(infile):
+def parse_gperf(infile, reverse):
   """Parses gperf file and extract strings and return code"""
   lines = [line.strip() for line in infile]
   # Extract strings after the first '%%' and before the second '%%'.
@@ -453,15 +454,22 @@ def parse_gperf(infile):
     if not line.endswith(('0', '1', '2', '3', '4', '5', '6', '7')):
       raise InputError('Expected value to be in the range of 0-7, found "%s"' %
                        line[-1])
-  return [line[:-3] + line[-1] for line in lines]
+  if reverse:
+    return [line[-4::-1] + line[-1] for line in lines]
+  else:
+    return [line[:-3] + line[-1] for line in lines]
 
 
 def main():
-  if len(sys.argv) != 3:
-    print('usage: %s infile outfile' % sys.argv[0])
-    return 1
-  with open(sys.argv[1], 'r') as infile, open(sys.argv[2], 'w') as outfile:
-    outfile.write(words_to_cxx(parse_gperf(infile)))
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--reverse', action='store_const', const=True,
+                      default=False)
+  parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
+                      default=sys.stdin)
+  parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
+                      default=sys.stdout)
+  args = parser.parse_args()
+  args.outfile.write(words_to_cxx(parse_gperf(args.infile, args.reverse)))
   return 0
 
 

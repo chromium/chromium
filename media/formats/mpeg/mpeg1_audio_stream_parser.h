@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/formats/mpeg/mpeg_audio_stream_parser_base.h"
 
@@ -20,9 +19,7 @@ namespace media {
 class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
  public:
   // Size of an MPEG-1 frame header in bytes.
-  enum {
-    kHeaderSize = 4,
-  };
+  static constexpr int kHeaderSize = 4;
 
   // Versions and layers as defined in ISO/IEC 11172-3.
   enum Version {
@@ -65,10 +62,15 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
   // Assumption: size of array |data| should be at least |kHeaderSize|.
   // Returns false if the header is not valid.
   static bool ParseHeader(MediaLog* media_log,
+                          size_t* media_log_limit,
                           const uint8_t* data,
                           Header* header);
 
   MPEG1AudioStreamParser();
+
+  MPEG1AudioStreamParser(const MPEG1AudioStreamParser&) = delete;
+  MPEG1AudioStreamParser& operator=(const MPEG1AudioStreamParser&) = delete;
+
   ~MPEG1AudioStreamParser() override;
 
  private:
@@ -80,9 +82,9 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
                        ChannelLayout* channel_layout,
                        int* sample_count,
                        bool* metadata_frame,
-                       std::vector<uint8_t>* extra_data) const override;
+                       std::vector<uint8_t>* extra_data) override;
 
-  DISALLOW_COPY_AND_ASSIGN(MPEG1AudioStreamParser);
+  size_t mp3_parse_error_limit_ = 0;
 };
 
 }  // namespace media

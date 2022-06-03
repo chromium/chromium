@@ -6,17 +6,26 @@
 
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "content/browser/renderer_host/input/gesture_event_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/fling_booster.h"
+#include "ui/events/gestures/physics_based_fling_curve.h"
+
+#if defined(OS_WIN)
+#include "ui/display/win/test/scoped_screen_win.h"
+#endif
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebMouseWheelEvent;
+using ui::PhysicsBasedFlingCurve;
 
 namespace {
 constexpr double kFrameDelta = 1000.0 / 60.0;
@@ -40,6 +49,9 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   FlingControllerTest()
       : needs_begin_frame_for_fling_progress_(GetParam()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  FlingControllerTest(const FlingControllerTest&) = delete;
+  FlingControllerTest& operator=(const FlingControllerTest&) = delete;
 
   ~FlingControllerTest() override {}
 
@@ -90,7 +102,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
                           bool wait_before_processing = true) {
     scheduled_next_fling_progress_ = false;
     sent_scroll_gesture_count_ = 0;
-    WebGestureEvent fling_start(WebInputEvent::kGestureFlingStart, 0,
+    WebGestureEvent fling_start(WebInputEvent::Type::kGestureFlingStart, 0,
                                 NowTicks(), source_device);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
@@ -105,14 +117,14 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 
   void SimulateScrollBegin(blink::WebGestureDevice source_device,
                            const gfx::Vector2dF& delta) {
-    WebGestureEvent scroll_begin(WebInputEvent::kGestureScrollBegin, 0,
+    WebGestureEvent scroll_begin(WebInputEvent::Type::kGestureScrollBegin, 0,
                                  NowTicks(), source_device);
     scroll_begin.data.scroll_begin.delta_x_hint = delta.x();
     scroll_begin.data.scroll_begin.delta_y_hint = delta.y();
     scroll_begin.data.scroll_begin.inertial_phase =
         WebGestureEvent::InertialPhaseState::kNonMomentum;
     scroll_begin.data.scroll_begin.delta_hint_units =
-        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+        ui::ScrollGranularity::kScrollByPrecisePixel;
     GestureEventWithLatencyInfo scroll_begin_with_latency(scroll_begin);
 
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
@@ -121,7 +133,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 
   void SimulateScrollUpdate(blink::WebGestureDevice source_device,
                             const gfx::Vector2dF& delta) {
-    WebGestureEvent scroll_update(WebInputEvent::kGestureScrollUpdate, 0,
+    WebGestureEvent scroll_update(WebInputEvent::Type::kGestureScrollUpdate, 0,
                                   NowTicks(), source_device);
     scroll_update.data.scroll_update.delta_x = delta.x();
     scroll_update.data.scroll_update.delta_y = delta.y();
@@ -130,7 +142,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
     scroll_update.data.scroll_update.inertial_phase =
         WebGestureEvent::InertialPhaseState::kNonMomentum;
     scroll_update.data.scroll_update.delta_units =
-        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+        ui::ScrollGranularity::kScrollByPrecisePixel;
     GestureEventWithLatencyInfo scroll_update_with_latency(scroll_update);
 
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
@@ -139,7 +151,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
 
   void SimulateFlingCancel(blink::WebGestureDevice source_device) {
     notified_client_after_fling_stop_ = false;
-    WebGestureEvent fling_cancel(WebInputEvent::kGestureFlingCancel, 0,
+    WebGestureEvent fling_cancel(WebInputEvent::Type::kGestureFlingCancel, 0,
                                  NowTicks(), source_device);
     // autoscroll fling cancel doesn't allow fling boosting.
     if (source_device == blink::WebGestureDevice::kSyntheticAutoscroll)
@@ -158,10 +170,41 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool FlingInProgress() { return fling_controller_->fling_in_progress(); }
 
   void AdvanceTime(double time_delta_ms = kFrameDelta) {
-    mock_clock_.Advance(base::TimeDelta::FromMillisecondsD(time_delta_ms));
+    mock_clock_.Advance(base::Milliseconds(time_delta_ms));
   }
 
   base::TimeTicks NowTicks() const { return mock_clock_.NowTicks(); }
+
+  float CompleteFlingAndAccumulateScrollDelta() {
+    float total_scroll_delta = 0.f;
+
+    // Sometimes SendGeneratedGestureScrollEvents is not run because fling is
+    // not advanced. This is due to the first |FlingScheduler::OnAnimationStep|
+    // call having the time of the last frame before AddAnimationObserver.
+    // Please see comment in |FlingController::ProgressFling|. This leaves the
+    // last_sent_gesture as a GSE. We therefore don't accrue delta in this case
+    if (last_sent_gesture_.GetType() !=
+        WebInputEvent::Type::kGestureScrollEnd) {
+      DCHECK(last_sent_gesture_.GetType() ==
+             WebInputEvent::Type::kGestureScrollUpdate);
+      total_scroll_delta += last_sent_gesture_.data.scroll_update.delta_x;
+    }
+
+    while (true) {
+      AdvanceTime();
+      ProgressFling(NowTicks());
+      if (last_sent_gesture_.GetType() ==
+          WebInputEvent::Type::kGestureScrollEnd) {
+        break;
+      } else {
+        DCHECK(last_sent_gesture_.GetType() ==
+               WebInputEvent::Type::kGestureScrollUpdate);
+        total_scroll_delta += last_sent_gesture_.data.scroll_update.delta_x;
+      }
+    }
+
+    return total_scroll_delta;
+  }
 
  protected:
   std::unique_ptr<FakeFlingController> fling_controller_;
@@ -172,6 +215,9 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool notified_client_after_fling_stop_ = false;
   bool first_wheel_event_sent_ = false;
   int sent_scroll_gesture_count_ = 0;
+#if defined(OS_WIN)
+  display::win::test::ScopedScreenWin scoped_screen_win_;
+#endif
 
  private:
   base::SimpleTestTickClock mock_clock_;
@@ -183,7 +229,6 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   // https://crrev.com/c/1181521.
   bool needs_begin_frame_for_fling_progress_;
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(FlingControllerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FlingControllerTest, testing::Bool());
@@ -204,7 +249,8 @@ TEST_P(FlingControllerTest,
   SimulateFlingStart(blink::WebGestureDevice::kTouchscreen, gfx::Vector2dF());
   // The controller doesn't start a fling and sends a GSE immediately.
   EXPECT_FALSE(FlingInProgress());
-  EXPECT_EQ(WebInputEvent::kGestureScrollEnd, last_sent_gesture_.GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            last_sent_gesture_.GetType());
 }
 
 TEST_P(FlingControllerTest, ControllerHandlesTouchpadGestureFling) {
@@ -258,7 +304,8 @@ TEST_P(FlingControllerTest, FlingStartsAtLastScrollUpdate) {
   // significant amount of delta (~0.030sec * 1000pixels/sec) since we should
   // be measuring the time since the last GSU.
   EXPECT_EQ(1, sent_scroll_gesture_count_);
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_NEAR(last_sent_gesture_.data.scroll_update.delta_x, 30.0, 5);
 }
 
@@ -319,7 +366,8 @@ TEST_P(FlingControllerTest, ControllerHandlesTouchscreenGestureFling) {
   // The fling progress will generate and send GSU events with inertial state.
   AdvanceTime();
   ProgressFling(NowTicks());
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
             last_sent_gesture_.data.scroll_update.inertial_phase);
   EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
@@ -330,7 +378,8 @@ TEST_P(FlingControllerTest, ControllerHandlesTouchscreenGestureFling) {
 
   // Cancellation should send a GSE.
   EXPECT_FALSE(FlingInProgress());
-  EXPECT_EQ(WebInputEvent::kGestureScrollEnd, last_sent_gesture_.GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            last_sent_gesture_.GetType());
 }
 
 TEST_P(FlingControllerTest, ControllerSendsWheelEndWhenTouchpadFlingIsOver) {
@@ -375,7 +424,7 @@ TEST_P(FlingControllerTest, ControllerSendsGSEWhenTouchscreenFlingIsOver) {
   AdvanceTime();
   ProgressFling(NowTicks());
   while (FlingInProgress()) {
-    ASSERT_EQ(WebInputEvent::kGestureScrollUpdate,
+    ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
               last_sent_gesture_.GetType());
     EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
               last_sent_gesture_.data.scroll_update.inertial_phase);
@@ -384,7 +433,8 @@ TEST_P(FlingControllerTest, ControllerSendsGSEWhenTouchscreenFlingIsOver) {
     ProgressFling(NowTicks());
   }
 
-  EXPECT_EQ(WebInputEvent::kGestureScrollEnd, last_sent_gesture_.GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            last_sent_gesture_.GetType());
 }
 
 TEST_P(FlingControllerTest, EarlyTouchpadFlingCancelationOnFlingStop) {
@@ -421,14 +471,16 @@ TEST_P(FlingControllerTest, EarlyTouchscreenFlingCancelationOnFlingStop) {
   // progress fling must send GSU events.
   AdvanceTime();
   ProgressFling(NowTicks());
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
             last_sent_gesture_.data.scroll_update.inertial_phase);
   EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
 
   fling_controller_->StopFling();
   EXPECT_FALSE(FlingInProgress());
-  EXPECT_EQ(WebInputEvent::kGestureScrollEnd, last_sent_gesture_.GetType());
+  EXPECT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            last_sent_gesture_.GetType());
 }
 
 TEST_P(FlingControllerTest, GestureFlingCancelOutsideFling) {
@@ -471,7 +523,8 @@ TEST_P(FlingControllerTest, GestureFlingNotCancelledBySmallTimeDelta) {
   ProgressFling(NowTicks());
   EXPECT_EQ(blink::WebGestureDevice::kTouchscreen,
             last_sent_gesture_.SourceDevice());
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
             last_sent_gesture_.data.scroll_update.inertial_phase);
   EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
@@ -496,7 +549,8 @@ TEST_P(FlingControllerTest, GestureFlingWithNegativeTimeDelta) {
   ProgressFling(NowTicks());
   EXPECT_EQ(blink::WebGestureDevice::kTouchscreen,
             last_sent_gesture_.SourceDevice());
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
             last_sent_gesture_.data.scroll_update.inertial_phase);
   EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
@@ -510,8 +564,8 @@ TEST_P(FlingControllerTest, TouchpadFlingWithOldEvent) {
 
   // Create a fling start event.
   base::TimeTicks event_time = NowTicks();
-  WebGestureEvent fling_start(WebInputEvent::kGestureFlingStart, 0, event_time,
-                              blink::WebGestureDevice::kTouchpad);
+  WebGestureEvent fling_start(WebInputEvent::Type::kGestureFlingStart, 0,
+                              event_time, blink::WebGestureDevice::kTouchpad);
   fling_start.data.fling_start.velocity_x = 0.f;
   fling_start.data.fling_start.velocity_y = -1000.f;
   GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
@@ -588,7 +642,8 @@ TEST_P(FlingControllerTest, ControllerBoostsTouchscreenFling) {
   // Fling progress must send GSU events.
   AdvanceTime();
   ProgressFling(NowTicks());
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
             last_sent_gesture_.data.scroll_update.inertial_phase);
   EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
@@ -617,7 +672,8 @@ TEST_P(FlingControllerTest, ControllerDoesntBoostFinishedFling) {
   double time_to_advance_ms = 1000.0;
   AdvanceTime(time_to_advance_ms);
   ProgressFling(NowTicks());
-  ASSERT_EQ(WebInputEvent::kGestureScrollEnd, last_sent_gesture_.GetType())
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            last_sent_gesture_.GetType())
       << "Unexpected Last Sent Gesture: "
       << WebInputEvent::GetName(last_sent_gesture_.GetType());
   EXPECT_EQ(fling_controller_->CurrentFlingVelocity().x(), 0);
@@ -651,7 +707,8 @@ TEST_P(FlingControllerTest, MiddleClickAutoScrollFling) {
 
   AdvanceTime();
   ProgressFling(NowTicks());
-  ASSERT_EQ(WebInputEvent::kGestureScrollUpdate, last_sent_gesture_.GetType());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
   EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
             last_sent_gesture_.data.scroll_update.inertial_phase);
   EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
@@ -673,9 +730,10 @@ TEST_P(FlingControllerTest, MiddleClickAutoScrollFling) {
 // wheel event was consumed.
 TEST_P(FlingControllerTest, NoFlingStartAfterWheelEventConsumed) {
   // First ensure that a fling can start after a not consumed wheel event.
-  fling_controller_->OnWheelEventAck(MouseWheelEventWithLatencyInfo(),
-                                     InputEventAckSource::COMPOSITOR_THREAD,
-                                     INPUT_EVENT_ACK_STATE_NOT_CONSUMED);
+  fling_controller_->OnWheelEventAck(
+      MouseWheelEventWithLatencyInfo(),
+      blink::mojom::InputEventResultSource::kCompositorThread,
+      blink::mojom::InputEventResultState::kNotConsumed);
 
   SimulateFlingStart(blink::WebGestureDevice::kTouchpad,
                      gfx::Vector2dF(1000, 0));
@@ -686,13 +744,136 @@ TEST_P(FlingControllerTest, NoFlingStartAfterWheelEventConsumed) {
   EXPECT_FALSE(FlingInProgress());
 
   // Now test that a consumed touchpad wheel event results in no fling.
-  fling_controller_->OnWheelEventAck(MouseWheelEventWithLatencyInfo(),
-                                     InputEventAckSource::COMPOSITOR_THREAD,
-                                     INPUT_EVENT_ACK_STATE_CONSUMED);
+  fling_controller_->OnWheelEventAck(
+      MouseWheelEventWithLatencyInfo(),
+      blink::mojom::InputEventResultSource::kCompositorThread,
+      blink::mojom::InputEventResultState::kConsumed);
 
   SimulateFlingStart(blink::WebGestureDevice::kTouchpad,
                      gfx::Vector2dF(1000, 0));
   EXPECT_FALSE(FlingInProgress());
+}
+
+class FlingControllerWithPhysicsBasedFlingTest : public FlingControllerTest {
+ public:
+  // testing::Test
+  FlingControllerWithPhysicsBasedFlingTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kExperimentalFlingAnimation);
+  }
+
+  FlingControllerWithPhysicsBasedFlingTest(
+      const FlingControllerWithPhysicsBasedFlingTest&) = delete;
+  FlingControllerWithPhysicsBasedFlingTest& operator=(
+      const FlingControllerWithPhysicsBasedFlingTest&) = delete;
+
+  ~FlingControllerWithPhysicsBasedFlingTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FlingControllerWithPhysicsBasedFlingTest,
+                         testing::Bool());
+
+// Ensure the bounding distance for boosted physics based flings is increased
+// by a factor of the boost_multiplier and default multiplier
+TEST_P(FlingControllerWithPhysicsBasedFlingTest,
+       ControllerBoostsTouchscreenFling) {
+  // We use a velocity of 4500 in this test because it yields a scroll delta
+  // that is greater than viewport * boost_multiplier * kDefaultBoundsMultiplier
+
+  // Android and Chromecast use Mobile fling curve so they are ignored
+  // for this test
+  bool use_mobile_fling_curve = false;
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+  use_mobile_fling_curve = true;
+#endif
+  if (use_mobile_fling_curve)
+    return;
+
+  SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
+                     gfx::Vector2dF(4500, 0));
+  EXPECT_TRUE(FlingInProgress());
+  // Fling progress must send GSU events.
+  AdvanceTime();
+  ProgressFling(NowTicks());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
+            last_sent_gesture_.GetType());
+  EXPECT_EQ(WebGestureEvent::InertialPhaseState::kMomentum,
+            last_sent_gesture_.data.scroll_update.inertial_phase);
+  EXPECT_GT(last_sent_gesture_.data.scroll_update.delta_x, 0.f);
+
+  // Now cancel the fling.
+  SimulateFlingCancel(blink::WebGestureDevice::kTouchscreen);
+  EXPECT_FALSE(FlingInProgress());
+
+  // The second GFS can be boosted so it should boost the just deactivated
+  // fling. To test that the correct bounds scale is used, the scroll delta
+  // is accumulated after each frame.
+  SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
+                     gfx::Vector2dF(4500, 0));
+  EXPECT_TRUE(FlingInProgress());
+  if (NeedsBeginFrameForFlingProgress())
+    ProgressFling(NowTicks());
+
+  float total_scroll_delta = CompleteFlingAndAccumulateScrollDelta();
+
+  // We expect the scroll delta to be the viewport * [boost_multiplier = 2] *
+  // multiplier
+  float expected_delta =
+      2 * PhysicsBasedFlingCurve::default_bounds_multiplier_for_testing() *
+      GetRootWidgetViewportSize().width();
+  EXPECT_EQ(ceilf(total_scroll_delta), roundf(expected_delta));
+}
+
+// Ensure that once a fling finishes, the next fling has a boost_multiplier of 1
+TEST_P(FlingControllerWithPhysicsBasedFlingTest,
+       ControllerDoesntBoostFinishedFling) {
+  // Android and Chromecast use Mobile fling curve so they are ignored
+  // for this test
+  bool use_mobile_fling_curve = false;
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+  use_mobile_fling_curve = true;
+#endif
+  if (use_mobile_fling_curve)
+    return;
+  SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
+                     gfx::Vector2dF(1000, 0), /*wait_before_processing=*/true);
+  EXPECT_TRUE(FlingInProgress());
+  AdvanceTime();
+  ProgressFling(NowTicks());
+
+  // Fast forward so that the fling ends.
+  double time_to_advance_ms = 1000.0;
+  AdvanceTime(time_to_advance_ms);
+  ProgressFling(NowTicks());
+  ASSERT_EQ(WebInputEvent::Type::kGestureScrollEnd,
+            last_sent_gesture_.GetType())
+      << "Unexpected Last Sent Gesture: "
+      << WebInputEvent::GetName(last_sent_gesture_.GetType());
+  EXPECT_EQ(fling_controller_->CurrentFlingVelocity().x(), 0);
+  EXPECT_FALSE(FlingInProgress());
+
+  // Now send a new fling, ensure boost_multiplier is 1
+  AdvanceTime();
+  SimulateFlingCancel(blink::WebGestureDevice::kTouchscreen);
+
+  SimulateFlingStart(blink::WebGestureDevice::kTouchscreen,
+                     gfx::Vector2dF(10000, 0));
+  EXPECT_TRUE(FlingInProgress());
+  if (NeedsBeginFrameForFlingProgress())
+    ProgressFling(NowTicks());
+
+  float total_scroll_delta = CompleteFlingAndAccumulateScrollDelta();
+
+  // We expect the scroll delta to be the viewport * [boost_multiplier = 1] *
+  // multiplier
+  float expected_delta =
+      PhysicsBasedFlingCurve::default_bounds_multiplier_for_testing() *
+      GetRootWidgetViewportSize().width();
+  EXPECT_EQ(ceilf(total_scroll_delta), roundf(expected_delta));
 }
 
 }  // namespace content

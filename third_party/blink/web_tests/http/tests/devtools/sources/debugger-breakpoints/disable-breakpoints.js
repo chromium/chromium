@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests disabling breakpoints.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -30,9 +30,9 @@
             .then(() => SourcesTestRunner.runTestFunction());
       }
 
-      function didPause(callFrames) {
+      async function didPause(callFrames) {
         TestRunner.addResult('Script execution paused.');
-        SourcesTestRunner.captureStackTrace(callFrames);
+        await SourcesTestRunner.captureStackTrace(callFrames);
         SourcesTestRunner.dumpBreakpointSidebarPane();
         ConsoleTestRunner.addConsoleSniffer(testFunctionFinishedForTheFirstTime);
         SourcesTestRunner.resumeExecution(didResume);
@@ -71,9 +71,9 @@
         SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
       }
 
-      function didPause(callFrames) {
+      async function didPause(callFrames) {
         TestRunner.addResult('Script execution paused.');
-        SourcesTestRunner.captureStackTrace(callFrames);
+        await SourcesTestRunner.captureStackTrace(callFrames);
         SourcesTestRunner.dumpBreakpointSidebarPane();
         ConsoleTestRunner.addConsoleSniffer(testFunctionFinished);
         SourcesTestRunner.resumeExecution(didResume);

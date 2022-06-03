@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_EXTENSION_INSTALL_STATUS_H_
 
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest.h"
 
 class Profile;
 
 namespace extensions {
+
+class PermissionSet;
 
 enum ExtensionInstallStatus {
   // Extension is blocked by policy but can be requested.
@@ -26,17 +29,31 @@ enum ExtensionInstallStatus {
   kDisabled,
   // Extension has been installed but it's terminated.
   kTerminated,
-  // Extension is blacklisted.
-  kBlacklisted,
+  // Extension is blocklisted.
+  kBlocklisted,
   // Extension requires custodian approval to enable.
-  kCustodianApprovalRequired
+  kCustodianApprovalRequired,
+  // Extension is force installed or recommended by policy.
+  kForceInstalled
 };
 
-// Returns the Extension install status for an Chrome web store extension with
-// |extension_id| in |profile|.
+// Returns the Extension install status for a Chrome web store extension with
+// |extension_id| in |profile|. Note that this function won't check whether the
+// extension's manifest type or required permissions are blocked by enterprise
+// policy. type blocking or permission blocking. Please use this function only
+// if manifest file is not available.
 ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     const ExtensionId& extension_id,
     Profile* profile);
+
+// Returns the Extension install status for a Chrome web store extension with
+// |extension_id| in |profile|. Also check if |manifest_type| or any permission
+// in |required_permission_set| is blocked by enterprise policy.
+ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
+    const ExtensionId& extension_id,
+    Profile* profile,
+    const Manifest::Type manifest_type,
+    const PermissionSet& required_permission_set);
 
 }  // namespace extensions
 

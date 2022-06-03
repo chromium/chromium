@@ -8,6 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 // TODO(crbug/507665): Once MetricsProvider/SystemProfileProto are moved into
 // //services/metrics, then //components/variations can depend on them, and
@@ -22,6 +23,10 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   // |registry| must outlive this metrics provider.
   FieldTrialsProvider(SyntheticTrialRegistry* registry,
                       base::StringPiece suffix);
+
+  FieldTrialsProvider(const FieldTrialsProvider&) = delete;
+  FieldTrialsProvider& operator=(const FieldTrialsProvider&) = delete;
+
   ~FieldTrialsProvider() override;
 
   // metrics::MetricsProvider:
@@ -30,18 +35,30 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   void ProvideSystemProfileMetricsWithLogCreationTime(
       base::TimeTicks log_creation_time,
       metrics::SystemProfileProto* system_profile_proto) override;
+  void ProvideCurrentSessionData(
+      metrics::ChromeUserMetricsExtension* uma_proto) override;
+
+  // Sets |log_creation_time_| to |time|.
+  void SetLogCreationTimeForTesting(base::TimeTicks time);
 
  private:
   // Overrideable for testing.
   virtual void GetFieldTrialIds(
       std::vector<ActiveGroupId>* field_trial_ids) const;
 
+  // Gets active FieldTrials and SyntheticFieldTrials and populates
+  // |system_profile_proto| with them.
+  void GetAndWriteFieldTrials(
+      metrics::SystemProfileProto* system_profile_proto) const;
+
+  // The most recent time passed to
+  // ProvideSystemProfileMetricsWithLogCreationTime().
+  base::TimeTicks log_creation_time_;
+
   SyntheticTrialRegistry* registry_;
 
   // Suffix used for the field trial names before they are hashed for uploads.
   std::string suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialsProvider);
 };
 
 }  // namespace variations

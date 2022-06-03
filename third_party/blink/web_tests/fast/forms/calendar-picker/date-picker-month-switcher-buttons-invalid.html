@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" id="date-0" value="2019-05-22" max="2019-06-15">
+<input type="date" id="date-1" value="2019-11-20" min="2019-10-29">
+<input type="date" id="date-2" value="2019-03-15" step="7">
+<input type="date" id="date-3" value="2019-03-15" step="8">
+<input type="date" id="date-4" value="2019-08-02" step="7">
+<script>
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-0');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateElement.value, "2019-06-15", "Month chooser button should have changed month and stopped at max date");
+
+    clickDayCellAt(2, 2);
+    assert_equals(dateElement.value, "2019-06-11", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Clicking date should have dismissed popup");
+  });
+}, "Date picker: Next month button should advance to next month and clip selection to max date.");
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-1');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickPrevMonthButton();
+    assert_equals(dateElement.value, "2019-10-29", "Month chooser button should have changed month and stopped at min date");
+
+    clickDayCellAt(4, 4);
+    assert_equals(dateElement.value, "2019-10-31", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Clicking date should have dismissed popup");
+  });
+}, "Date picker: Previous month button should advance to previous month and clip selection to min date.");
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-2');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateElement.value, "2019-04-12", "Closest valid date to 4-15 should have been selected");
+
+    clickDayCellAt(5, 0);
+    assert_equals(dateElement.value, "2019-04-05", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Clicking date should have dismissed popup");
+  });
+}, "Date picker: If same date in next month is invalid, next month button should choose closest value -- smaller date case");
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-3');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateElement.value, "2019-04-16", "Closest valid date to 4-15 should have been selected");
+
+    clickDayCellAt(3, 3);
+    assert_equals(dateElement.value, "2019-04-24", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Clicking date should have dismissed popup");
+  });
+}, "Date picker: If same date in next month is invalid, next month button should choose closest value -- larger date case");
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-4');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateElement.value, "2019-09-06", "Date in new month should be selected even though previous valid date is closer");
+
+    clickDayCellAt(5, 2);
+    assert_equals(dateElement.value, "2019-09-20", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Clicking date should have dismissed popup");
+  });
+}, "Date picker: If closest target date is back in the current month, still jump to the value in the next month");
+
+</script>
+</body>
+</html>

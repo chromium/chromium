@@ -4,7 +4,7 @@
 
 #include "net/socket/stream_socket.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace net {
 
@@ -13,15 +13,15 @@ void StreamSocket::SetBeforeConnectCallback(
   NOTREACHED();
 }
 
+absl::optional<base::StringPiece> StreamSocket::GetPeerApplicationSettings()
+    const {
+  return absl::nullopt;
+}
+
 void StreamSocket::GetSSLCertRequestInfo(
     SSLCertRequestInfo* cert_request_info) const {
   NOTREACHED();
 }
-
-StreamSocket::SocketMemoryStats::SocketMemoryStats()
-    : total_size(0), buffer_size(0), cert_count(0), cert_size(0) {}
-
-StreamSocket::SocketMemoryStats::~SocketMemoryStats() = default;
 
 int StreamSocket::ConfirmHandshake(CompletionOnceCallback callback) {
   return OK;

@@ -4,20 +4,28 @@
 
 #include "services/device/geolocation/win/location_provider_winrt.h"
 
+#include <windows.devices.enumeration.h>
 #include <windows.foundation.h>
 #include <wrl/event.h>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+
+class GeolocationManager;
+
 namespace {
+using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
+using ABI::Windows::Devices::Enumeration::DeviceClass;
+using ABI::Windows::Devices::Enumeration::IDeviceAccessInformation;
+using ABI::Windows::Devices::Enumeration::IDeviceAccessInformationStatics;
 using ABI::Windows::Devices::Geolocation::Geolocator;
 using ABI::Windows::Devices::Geolocation::IGeocoordinate;
 using ABI::Windows::Devices::Geolocation::IGeolocator;
@@ -28,7 +36,6 @@ using ABI::Windows::Devices::Geolocation::PositionAccuracy;
 using ABI::Windows::Devices::Geolocation::PositionChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::PositionStatus;
 using ABI::Windows::Devices::Geolocation::StatusChangedEventArgs;
-using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::IReference;
 using ABI::Windows::Foundation::ITypedEventHandler;
 using ABI::Windows::Foundation::TimeSpan;
@@ -65,24 +72,51 @@ bool IsWinRTSupported() {
 }
 
 template <typename F>
-base::Optional<DOUBLE> GetOptionalDouble(F&& getter) {
+absl::optional<DOUBLE> GetOptionalDouble(F&& getter) {
   DOUBLE value = 0;
   HRESULT hr = getter(&value);
   if (SUCCEEDED(hr))
     return value;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 template <typename F>
-base::Optional<DOUBLE> GetReferenceOptionalDouble(F&& getter) {
+absl::optional<DOUBLE> GetReferenceOptionalDouble(F&& getter) {
   IReference<DOUBLE>* reference_value;
   HRESULT hr = getter(&reference_value);
   if (!SUCCEEDED(hr) || !reference_value)
-    return base::nullopt;
+    return absl::nullopt;
   return GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
     return reference_value->get_Value(value);
   });
 }
+
+bool IsSystemLocationSettingEnabled() {
+  ComPtr<IDeviceAccessInformationStatics> dev_access_info_statics;
+  HRESULT hr = base::win::GetActivationFactory<
+      IDeviceAccessInformationStatics,
+      RuntimeClass_Windows_Devices_Enumeration_DeviceAccessInformation>(
+      &dev_access_info_statics);
+  if (FAILED(hr)) {
+    VLOG(1) << "IDeviceAccessInformationStatics failed: " << hr;
+    return true;
+  }
+
+  ComPtr<IDeviceAccessInformation> dev_access_info;
+  hr = dev_access_info_statics->CreateFromDeviceClass(
+      DeviceClass::DeviceClass_Location, &dev_access_info);
+  if (FAILED(hr)) {
+    VLOG(1) << "IDeviceAccessInformation failed: " << hr;
+    return true;
+  }
+
+  auto status = DeviceAccessStatus::DeviceAccessStatus_Unspecified;
+  dev_access_info->get_CurrentStatus(&status);
+
+  return !(status == DeviceAccessStatus::DeviceAccessStatus_DeniedBySystem ||
+           status == DeviceAccessStatus::DeviceAccessStatus_DeniedByUser);
+}
+
 }  // namespace
 
 // LocationProviderWinrt
@@ -330,9 +364,8 @@ void LocationProviderWinrt::OnPositionChanged(
         base::TimeTicks::Now() - position_callback_initialized_time_;
 
     UmaHistogramCustomTimes("Windows.RT.LocationRequest.TimeToFirstPosition",
-                            time_to_first_position,
-                            base::TimeDelta::FromMilliseconds(1),
-                            base::TimeDelta::FromSeconds(10), 100);
+                            time_to_first_position, base::Milliseconds(1),
+                            base::Seconds(10), 100);
     position_received_ = true;
   }
   RecordUmaEvent(WindowsRTLocationRequestEvent::
@@ -425,11 +458,12 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
   return hr;
 }
 
-// static
-std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
+std::unique_ptr<LocationProvider> NewSystemLocationProvider(
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    GeolocationManager* geolocation_manager) {
   if (!base::FeatureList::IsEnabled(
           features::kWinrtGeolocationImplementation) ||
-      !IsWinRTSupported()) {
+      !IsWinRTSupported() || !IsSystemLocationSettingEnabled()) {
     return nullptr;
   }
 

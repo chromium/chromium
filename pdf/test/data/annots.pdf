@@ -1,0 +1,95 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm [5 0 R 6 0 R]
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Annots [5 0 R 6 0 R 7 0 R 8 0 R]
+  /Contents 4 0 R
+  /Tabs /R
+>>
+endobj
+4 0 obj <<
+  /Length 42
+>>
+stream
+BT
+70 340 Td
+14 Tf
+(External Link ) Tj
+ET
+endstream
+endobj
+5 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /Parent 3 0 R
+  /T (TextField)
+  /Rect [69 670 220 690]
+>>
+endobj
+6 0 obj <<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Btn
+  /Rect [69 360 220 380]
+  /A <<
+    /URI (https://www.google.com)
+    /S /URI
+  >>
+  /F 4
+  /T (button)
+  /Ff 65536
+>>
+endobj
+7 0 obj <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [69 338 180 358]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.google.com/)
+  >>
+  /F 4
+>>
+endobj
+8 0 obj <<
+  /Type /Annot
+  /Subtype /Highlight
+  /F 4
+  /QuadPoints [120 358 150 358 120 338 150 338]
+  /C [1 0.90196 0]
+  /Rect [120 338 150 358]
+>>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000094 00000 n 
+0000000157 00000 n 
+0000000273 00000 n 
+0000000366 00000 n 
+0000000489 00000 n 
+0000000672 00000 n 
+0000000835 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 9
+>>
+startxref
+993
+%%EOF

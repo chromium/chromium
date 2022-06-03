@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/gfx/range/range.h"
@@ -22,42 +22,55 @@ class TestOmniboxView : public OmniboxView {
   explicit TestOmniboxView(OmniboxEditController* controller)
       : OmniboxView(controller, nullptr) {}
 
+  TestOmniboxView(const TestOmniboxView&) = delete;
+  TestOmniboxView& operator=(const TestOmniboxView&) = delete;
+
   void SetModel(std::unique_ptr<OmniboxEditModel> model);
 
-  const base::string16& inline_autocomplete_text() const {
-    return inline_autocomplete_text_;
+  const std::u16string& inline_autocompletion() const {
+    return inline_autocompletion_;
   }
+
+  static State CreateState(std::string text,
+                           size_t sel_start,
+                           size_t sel_end,
+                           size_t all_sel_length);
 
   // OmniboxView:
   void Update() override {}
   void OpenMatch(const AutocompleteMatch& match,
                  WindowOpenDisposition disposition,
                  const GURL& alternate_nav_url,
-                 const base::string16& pasted_text,
+                 const std::u16string& pasted_text,
                  size_t selected_line,
                  base::TimeTicks match_selection_timestamp) override {}
-  base::string16 GetText() const override;
-  void SetWindowTextAndCaretPos(const base::string16& text,
+  std::u16string GetText() const override;
+  void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,
                                 bool update_popup,
                                 bool notify_text_changed) override;
   void SetCaretPos(size_t caret_pos) override {}
+  void SetAdditionalText(const std::u16string& text) override {}
   void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
   void GetSelectionBounds(size_t* start, size_t* end) const override;
+  size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override;
   void RevertAll() override {}
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}
-  void OnTemporaryTextMaybeChanged(const base::string16& display_text,
+  void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
-  bool OnInlineAutocompleteTextMaybeChanged(const base::string16& display_text,
-                                            size_t user_text_length) override;
+  void OnInlineAutocompleteTextMaybeChanged(
+      const std::u16string& display_text,
+      std::vector<gfx::Range> selections,
+      const std::u16string& prefix_autocompletion,
+      const std::u16string& inline_autocompletion) override;
   void OnInlineAutocompleteTextCleared() override;
-  void OnRevertTemporaryText(const base::string16& display_text,
+  void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override {}
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
@@ -68,14 +81,13 @@ class TestOmniboxView : public OmniboxView {
   void EmphasizeURLComponents() override {}
   void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
   void UpdateSchemeStyle(const gfx::Range& range) override {}
+  using OmniboxView::GetStateChanges;
 
  private:
-  base::string16 text_;
-  base::string16 inline_autocomplete_text_;
+  std::u16string text_;
+  std::u16string inline_autocompletion_;
   gfx::Range selection_;
   gfx::Range saved_temporary_selection_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOmniboxView);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_VIEW_H_

@@ -10,12 +10,12 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Service {
   // default implementation of |OnDisconnected()|.
   //
   // This should really only be called on a Service instance that has a bound
-  // connection to the Service Manager, e.g. a functioning ServiceBinding. If
+  // connection to the Service Manager, e.g. a functioning ServiceReceiver. If
   // the service never calls |Terminate()|, it will effectively leak.
   //
   // If |callback| is non-null, it will be invoked after |service| is destroyed.
@@ -84,9 +84,9 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Service {
   // is created, |callback| should be invoked with the new instance's PID (which
   // may be the same as this service's PID if they will share a process). If the
   // requested service is not launched, |callback| should be invoked with
-  // |base::nullopt|.
+  // |absl::nullopt|.
   using CreatePackagedServiceInstanceCallback =
-      base::OnceCallback<void(base::Optional<base::ProcessId>)>;
+      base::OnceCallback<void(absl::optional<base::ProcessId>)>;
   virtual void CreatePackagedServiceInstance(
       const std::string& service_name,
       mojo::PendingReceiver<mojom::Service> service_receiver,

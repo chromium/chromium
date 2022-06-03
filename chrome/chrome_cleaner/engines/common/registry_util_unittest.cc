@@ -28,14 +28,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "sandbox/win/src/win_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
 using base::WaitableEvent;
 using chrome_cleaner::MojoTaskRunner;
-using chrome_cleaner::String16EmbeddedNulls;
+using chrome_cleaner::WStringEmbeddedNulls;
 using chrome_cleaner::mojom::TestWindowsHandle;
 
 namespace chrome_cleaner_sandbox {
@@ -62,7 +61,7 @@ class TestWindowsHandleImpl : public TestWindowsHandle {
     std::move(callback).Run(handle);
   }
 
-  void EchoRawHandle(mojo::ScopedHandle handle,
+  void EchoRawHandle(mojo::PlatformHandle handle,
                      EchoRawHandleCallback callback) override {
     std::move(callback).Run(std::move(handle));
   }
@@ -129,13 +128,13 @@ class SandboxChildProcess : public chrome_cleaner::ChildProcess {
   }
 
   HANDLE EchoRawHandle(HANDLE input_handle) {
-    mojo::ScopedHandle scoped_handle = mojo::WrapPlatformFile(input_handle);
-    mojo::ScopedHandle output_handle;
+    mojo::PlatformHandle scoped_handle((base::win::ScopedHandle(input_handle)));
+    mojo::PlatformHandle output_handle;
     WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                         WaitableEvent::InitialState::NOT_SIGNALED);
     auto callback = base::BindOnce(
-        [](mojo::ScopedHandle* handle_holder, WaitableEvent* event,
-           mojo::ScopedHandle handle) {
+        [](mojo::PlatformHandle* handle_holder, WaitableEvent* event,
+           mojo::PlatformHandle handle) {
           *handle_holder = std::move(handle);
           event->Signal();
         },
@@ -144,20 +143,16 @@ class SandboxChildProcess : public chrome_cleaner::ChildProcess {
     mojo_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(
                        [](mojo::Remote<TestWindowsHandle>* remote,
-                          mojo::ScopedHandle handle,
+                          mojo::PlatformHandle handle,
                           TestWindowsHandle::EchoRawHandleCallback callback) {
                          (*remote)->EchoRawHandle(std::move(handle),
                                                   std::move(callback));
                        },
                        base::Unretained(test_windows_handle_.get()),
-                       base::Passed(&scoped_handle), std::move(callback)));
+                       std::move(scoped_handle), std::move(callback)));
     event.Wait();
 
-    HANDLE raw_output_handle;
-    CHECK_EQ(
-        mojo::UnwrapPlatformFile(std::move(output_handle), &raw_output_handle),
-        MOJO_RESULT_OK);
-    return raw_output_handle;
+    return output_handle.ReleaseHandle();
   }
 
  private:
@@ -168,14 +163,14 @@ class SandboxChildProcess : public chrome_cleaner::ChildProcess {
             [](std::unique_ptr<mojo::Remote<TestWindowsHandle>> remote) {
               remote.reset();
             },
-            base::Passed(&test_windows_handle_)));
+            std::move(test_windows_handle_)));
   }
 
   std::unique_ptr<mojo::Remote<TestWindowsHandle>> test_windows_handle_;
 };
 
-base::string16 HandlePath(HANDLE handle) {
-  base::string16 full_path;
+std::wstring HandlePath(HANDLE handle) {
+  std::wstring full_path;
   // The size parameter of GetFinalPathNameByHandle does NOT include the null
   // terminator.
   DWORD result = ::GetFinalPathNameByHandleW(
@@ -186,7 +181,7 @@ base::string16 HandlePath(HANDLE handle) {
   }
   if (!result) {
     PLOG(ERROR) << "Could not get full path for handle " << handle;
-    return base::string16();
+    return std::wstring();
   }
   return full_path;
 }
@@ -194,11 +189,11 @@ base::string16 HandlePath(HANDLE handle) {
 ::testing::AssertionResult HandlesAreEqual(HANDLE handle1, HANDLE handle2) {
   // The best way to check this is CompareObjectHandles, but it isn't available
   // until Windows 10. So just check that both refer to the same path.
-  base::string16 path1 = HandlePath(handle1);
-  base::string16 path2 = HandlePath(handle2);
+  std::wstring path1 = HandlePath(handle1);
+  std::wstring path2 = HandlePath(handle2);
 
   if (path1.empty() || path2.empty() || path1 != path2) {
-    auto format_message = [](HANDLE handle, const base::string16& path) {
+    auto format_message = [](HANDLE handle, const std::wstring& path) {
       std::ostringstream s;
       s << handle;
       if (path.empty())
@@ -226,7 +221,7 @@ MULTIPROCESS_TEST_MAIN(HandleWrappingIPCMain) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
   mojo_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&SandboxChildProcess::BindToPipe, child_process,
-                                base::Passed(&message_pipe_handle), &event));
+                                std::move(message_pipe_handle), &event));
   event.Wait();
 
   // Check that this test is actually testing what it thinks it is: when
@@ -240,7 +235,12 @@ MULTIPROCESS_TEST_MAIN(HandleWrappingIPCMain) {
   // make sure the test connection actually causes the error with
   // mojo::ScopedHandle. If not, the tests of WindowsHandle will trivially
   // succeed without demonstrating that WindowsHandle avoids the error.
-  CHECK_EQ(nullptr, child_process->EchoRawHandle(HKEY_CLASSES_ROOT));
+  //
+  // TODO(crbug.com/1239934): Re-enable this check when some relevant temporary
+  // assertions are removed from Mojo internals. As long as they're present,
+  // this call will crash.
+  //
+  // CHECK_EQ(nullptr, child_process->EchoRawHandle(HKEY_CLASSES_ROOT));
 
   CHECK_EQ(INVALID_HANDLE_VALUE,
            child_process->EchoHandle(INVALID_HANDLE_VALUE));
@@ -250,11 +250,6 @@ MULTIPROCESS_TEST_MAIN(HandleWrappingIPCMain) {
   CHECK_EQ(HKEY_CURRENT_USER, child_process->EchoHandle(HKEY_CURRENT_USER));
   CHECK_EQ(HKEY_LOCAL_MACHINE, child_process->EchoHandle(HKEY_LOCAL_MACHINE));
   CHECK_EQ(HKEY_USERS, child_process->EchoHandle(HKEY_USERS));
-
-  // mojo::ScopedHandle CHECKS if given an invalid handle, so pass this handle
-  // raw and ensure it is marked as invalid.
-  HANDLE fake_handle = base::win::Uint32ToHandle(0x12345678);
-  CHECK_EQ(nullptr, child_process->EchoRawHandle(fake_handle));
 
   TestFile test_file;
   HANDLE test_handle = test_file.GetPlatformFile();
@@ -276,14 +271,14 @@ TEST(SandboxUtil, HandleWrappingIPC) {
 
 TEST(SandboxUtil, NativeQueryValueKey) {
   std::vector<wchar_t> key_name{L'a', L'b', L'c', L'\0'};
-  String16EmbeddedNulls value_name1{L'f', L'o', L'o', L'1', L'\0'};
-  String16EmbeddedNulls value_name2{L'f', L'o', L'o', L'2', L'\0'};
-  String16EmbeddedNulls value_name3{L'f', L'o', L'o', L'3', L'\0'};
-  String16EmbeddedNulls value_name4{L'f', L'o', L'o', L'4', L'\0'};
-  String16EmbeddedNulls value{L'b', L'a', L'r', L'\0'};
+  WStringEmbeddedNulls value_name1{L'f', L'o', L'o', L'1', L'\0'};
+  WStringEmbeddedNulls value_name2{L'f', L'o', L'o', L'2', L'\0'};
+  WStringEmbeddedNulls value_name3{L'f', L'o', L'o', L'3', L'\0'};
+  WStringEmbeddedNulls value_name4{L'f', L'o', L'o', L'4', L'\0'};
+  WStringEmbeddedNulls value{L'b', L'a', L'r', L'\0'};
 
   struct TestCases {
-    const String16EmbeddedNulls& value_name;
+    const WStringEmbeddedNulls& value_name;
     ULONG reg_type;
   } test_cases[] = {
       {value_name1, REG_SZ},
@@ -305,7 +300,7 @@ TEST(SandboxUtil, NativeQueryValueKey) {
               NativeSetValueKey(subkey_handle, test_case.value_name,
                                 test_case.reg_type, value));
     DWORD actual_reg_type = 0;
-    String16EmbeddedNulls actual_value;
+    WStringEmbeddedNulls actual_value;
     EXPECT_TRUE(NativeQueryValueKey(subkey_handle, test_case.value_name,
                                     &actual_reg_type, &actual_value));
     EXPECT_EQ(test_case.reg_type, actual_reg_type);
@@ -317,43 +312,43 @@ TEST(SandboxUtil, NativeQueryValueKey) {
 }
 
 TEST(SandboxUtil, ValidateRegistryValueChange) {
-  String16EmbeddedNulls eq{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls eq{L'a', L'b', L'\0', L'c'};
   EXPECT_TRUE(ValidateRegistryValueChange(eq, eq));
 
-  String16EmbeddedNulls subset1{L'a', L'b', L'\0', L'c'};
-  String16EmbeddedNulls subset2{L'a', L'\0', L'c'};
+  WStringEmbeddedNulls subset1{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls subset2{L'a', L'\0', L'c'};
   EXPECT_TRUE(ValidateRegistryValueChange(subset1, subset2));
 
-  String16EmbeddedNulls prefix1{L'a', L'b', L'\0', L'c'};
-  String16EmbeddedNulls prefix2{L'b', L'\0', L'c'};
+  WStringEmbeddedNulls prefix1{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls prefix2{L'b', L'\0', L'c'};
   EXPECT_TRUE(ValidateRegistryValueChange(prefix1, prefix2));
 
-  String16EmbeddedNulls suffix1{L'a', L'b', L'\0', L'c'};
-  String16EmbeddedNulls suffix2{L'a', L'b', L'\0'};
+  WStringEmbeddedNulls suffix1{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls suffix2{L'a', L'b', L'\0'};
   EXPECT_TRUE(ValidateRegistryValueChange(suffix1, suffix2));
 
-  String16EmbeddedNulls empty1{L'a', L'b', L'\0', L'c'};
-  String16EmbeddedNulls empty2;
+  WStringEmbeddedNulls empty1{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls empty2;
   EXPECT_TRUE(ValidateRegistryValueChange(empty1, empty2));
 
-  String16EmbeddedNulls super_empty1;
-  String16EmbeddedNulls super_empty2{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls super_empty1;
+  WStringEmbeddedNulls super_empty2{L'a', L'b', L'\0', L'c'};
   EXPECT_FALSE(ValidateRegistryValueChange(super_empty1, super_empty2));
 
-  String16EmbeddedNulls superset1{L'a', L'\0', L'c'};
-  String16EmbeddedNulls superset2{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls superset1{L'a', L'\0', L'c'};
+  WStringEmbeddedNulls superset2{L'a', L'b', L'\0', L'c'};
   EXPECT_FALSE(ValidateRegistryValueChange(superset1, superset2));
 
-  String16EmbeddedNulls bad_prefix1{L'b', L'\0', L'c'};
-  String16EmbeddedNulls bad_prefix2{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls bad_prefix1{L'b', L'\0', L'c'};
+  WStringEmbeddedNulls bad_prefix2{L'a', L'b', L'\0', L'c'};
   EXPECT_FALSE(ValidateRegistryValueChange(bad_prefix1, bad_prefix2));
 
-  String16EmbeddedNulls bad_suffix1{L'a', L'b', L'\0'};
-  String16EmbeddedNulls bad_suffix2{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls bad_suffix1{L'a', L'b', L'\0'};
+  WStringEmbeddedNulls bad_suffix2{L'a', L'b', L'\0', L'c'};
   EXPECT_FALSE(ValidateRegistryValueChange(bad_suffix1, bad_suffix2));
 
-  String16EmbeddedNulls different1{L'a', L'b', L'\0', L'c'};
-  String16EmbeddedNulls different2{L'd', L'e', L'f'};
+  WStringEmbeddedNulls different1{L'a', L'b', L'\0', L'c'};
+  WStringEmbeddedNulls different2{L'd', L'e', L'f'};
   EXPECT_FALSE(ValidateRegistryValueChange(different1, different2));
 }
 
@@ -392,7 +387,7 @@ TEST(SandboxUtil, ValidateFailureOfNtQueryValueKeyOnNull) {
   // behaviour remains consistent.
   std::vector<wchar_t> key_name{L'a', L'b', L'c', L'\0'};
 
-  String16EmbeddedNulls value{L'b', L'a', L'r', L'\0'};
+  WStringEmbeddedNulls value{L'b', L'a', L'r', L'\0'};
 
   ScopedTempRegistryKey temp_key;
 
@@ -404,7 +399,7 @@ TEST(SandboxUtil, ValidateFailureOfNtQueryValueKeyOnNull) {
 
   // Create a default value.
   EXPECT_EQ(STATUS_SUCCESS,
-            NativeSetValueKey(subkey_handle, String16EmbeddedNulls(nullptr),
+            NativeSetValueKey(subkey_handle, WStringEmbeddedNulls(nullptr),
                               REG_SZ, value));
 
   static NtQueryValueKeyFunction NtQueryValueKey = nullptr;

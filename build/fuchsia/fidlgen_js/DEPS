@@ -1,4 +1,0 @@
-include_rules = [
-  "+gin",
-  "+v8/include",
-]

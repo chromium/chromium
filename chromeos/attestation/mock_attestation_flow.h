@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
 #define CHROMEOS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
 
+#include <string>
+
 #include "chromeos/attestation/attestation_flow.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class AccountId;
@@ -16,10 +17,15 @@ class AccountId;
 namespace chromeos {
 namespace attestation {
 
-// A fake server proxy which just appends "_response" to every request.
+// A fake server proxy which just appends "_response" to every request if no
+// response specified.
 class FakeServerProxy : public ServerProxy {
  public:
   FakeServerProxy();
+
+  FakeServerProxy(const FakeServerProxy&) = delete;
+  FakeServerProxy& operator=(const FakeServerProxy&) = delete;
+
   ~FakeServerProxy() override;
 
   void set_result(bool result) {
@@ -27,28 +33,40 @@ class FakeServerProxy : public ServerProxy {
   }
 
   void SendEnrollRequest(const std::string& request,
-                         const DataCallback& callback) override;
+                         DataCallback callback) override;
 
   void SendCertificateRequest(const std::string& request,
-                              const DataCallback& callback) override;
+                              DataCallback callback) override;
+
+  void CheckIfAnyProxyPresent(ProxyPresenceCallback callback) override;
+
+  void set_enroll_response(const std::string& response) {
+    enroll_response_ = response;
+  }
+
+  void set_cert_response(const std::string& response) {
+    cert_response_ = response;
+  }
 
  private:
   bool result_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeServerProxy);
+  std::string enroll_response_;
+  std::string cert_response_;
 };
 
-class MockServerProxy : public ServerProxy {
+class MockServerProxy : public FakeServerProxy {
  public:
   MockServerProxy();
   virtual ~MockServerProxy();
 
   void DeferToFake(bool result);
-  MOCK_METHOD2(SendEnrollRequest,
-               void(const std::string&, const DataCallback&));
-  MOCK_METHOD2(SendCertificateRequest,
-               void(const std::string&, const DataCallback&));
+  MOCK_METHOD2(SendEnrollRequest, void(const std::string&, DataCallback));
+  MOCK_METHOD2(SendCertificateRequest, void(const std::string&, DataCallback));
   MOCK_METHOD0(GetType, PrivacyCAType());
+  MOCK_METHOD1(CheckIfAnyProxyPresent, void(ProxyPresenceCallback));
+
+  FakeServerProxy* fake() { return &fake_; }
 
  private:
   FakeServerProxy fake_;
@@ -75,10 +93,18 @@ class MockAttestationFlow : public AttestationFlow {
                     const std::string&,
                     bool,
                     const std::string&, /* key_name */
-                    const CertificateCallback&));
+                    CertificateCallback));
 };
 
 }  // namespace attestation
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/attestation
+// moved to ash
+namespace ash {
+namespace attestation {
+using ::chromeos::attestation::MockAttestationFlow;
+}  // namespace attestation
+}  // namespace ash
 
 #endif  // CHROMEOS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_

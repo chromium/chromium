@@ -1,0 +1,5 @@
+[document web]
+++[section] name='description' description='Text-description' description:Text-description description-from:aria-description
+++[section] name='both' description='Description from describedby' described-by description-from:tooltip
+++[tool tip] name='Description from describedby' description-for
+++++[static] name='Description from describedby'

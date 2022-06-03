@@ -133,7 +133,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             new HashMap<RequestFinishedInfo.Listener,
                     VersionSafeCallbacks.RequestFinishedInfoListener>();
 
-    private volatile ConditionVariable mStopNetLogCompleted;
+    private final ConditionVariable mStopNetLogCompleted = new ConditionVariable();
 
     /** Set of storage paths currently in use. */
     @GuardedBy("sInUseStoragePaths")
@@ -148,8 +148,16 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     @GuardedBy("mLock")
     private boolean mIsLogging;
 
+    /**
+     * True if NetLog is being shutdown.
+     */
+    @GuardedBy("mLock")
+    private boolean mIsStoppingNetLog;
+
     @UsedByReflection("CronetEngine.java")
     public CronetUrlRequestContext(final CronetEngineBuilderImpl builder) {
+        mRttListenerList.disableThreadAsserts();
+        mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
         CronetLibraryLoader.ensureInitialized(builder.getContext(), builder);
         if (!IntegratedModeState.INTEGRATED_MODE_ENABLED) {
@@ -223,13 +231,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             int priority, Collection<Object> requestAnnotations, boolean disableCache,
             boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener) {
+            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
+            int idempotency) {
         synchronized (mLock) {
             checkHaveAdapter();
             return new CronetUrlRequest(this, url, priority, callback, executor, requestAnnotations,
                     disableCache, disableConnectionMigration, allowDirectExecutor,
                     trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet, trafficStatsUid,
-                    requestFinishedListener);
+                    requestFinishedListener, idempotency);
         }
     }
 
@@ -294,6 +303,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public void startNetLogToFile(String fileName, boolean logAll) {
         synchronized (mLock) {
             checkHaveAdapter();
+            if (mIsLogging) {
+                return;
+            }
             if (!CronetUrlRequestContextJni.get().startNetLogToFile(mUrlRequestContextAdapter,
                         CronetUrlRequestContext.this, fileName, logAll)) {
                 throw new RuntimeException("Unable to start NetLog");
@@ -306,6 +318,9 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public void startNetLogToDisk(String dirPath, boolean logAll, int maxSize) {
         synchronized (mLock) {
             checkHaveAdapter();
+            if (mIsLogging) {
+                return;
+            }
             CronetUrlRequestContextJni.get().startNetLogToDisk(mUrlRequestContextAdapter,
                     CronetUrlRequestContext.this, dirPath, logAll, maxSize);
             mIsLogging = true;
@@ -315,16 +330,20 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     @Override
     public void stopNetLog() {
         synchronized (mLock) {
-            if (!mIsLogging) {
+            checkHaveAdapter();
+            if (!mIsLogging || mIsStoppingNetLog) {
                 return;
             }
-            checkHaveAdapter();
-            mStopNetLogCompleted = new ConditionVariable();
             CronetUrlRequestContextJni.get().stopNetLog(
                     mUrlRequestContextAdapter, CronetUrlRequestContext.this);
-            mIsLogging = false;
+            mIsStoppingNetLog = true;
         }
         mStopNetLogCompleted.block();
+        mStopNetLogCompleted.close();
+        synchronized (mLock) {
+            mIsStoppingNetLog = false;
+            mIsLogging = false;
+        }
     }
 
     @CalledByNative

@@ -23,10 +23,7 @@
 - (instancetype)initWithDataSource:(id<LanguageSettingsDataSource>)dataSource
                     commandHandler:(id<LanguageSettingsCommands>)commandHandler
     NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_LANGUAGE_LANGUAGE_SETTINGS_TABLE_VIEW_CONTROLLER_H_

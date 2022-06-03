@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests stepping out from custom element callbacks.\n`);
 
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.evaluateInPagePromise(`
@@ -17,29 +17,31 @@
 
     function testFunction()
     {
-        var proto = Object.create(HTMLElement.prototype);
-        proto.createdCallback = function createdCallback()
-        {
-            debugger;
-            output('Invoked createdCallback.');
-        };
-        proto.attachedCallback = function attachedCallback()
-        {
-            output('Invoked attachedCallback.');
-        };
-        proto.detachedCallback = function detachedCallback()
-        {
-            output('Invoked detachedCallback.');
-        };
-        proto.attributeChangedCallback = function attributeChangedCallback()
-        {
-            output('Invoked attributeChangedCallback.');
-        };
-        var FooElement = document.registerElement('x-foo', { prototype: proto });
-        var foo = new FooElement();
-        foo.setAttribute('a', 'b');
-        document.body.appendChild(foo);
-        foo.remove();
+      class FooElement extends HTMLElement {
+        constructor() {
+          super();
+          debugger;
+          output('Invoked constructor.');
+        }
+        connectedCallback() {
+          output('Invoked connectedCallback.');
+        }
+        disconnectedCallback() {
+          output('Invoked disconnectedCallback.');
+        }
+        adoptedCallback() {
+          output('Invoked adoptedCallback.');
+        }
+        attributeChangedCallback() {
+          output('Invoked attributeChangedCallback.');
+        }
+        static get observedAttributes() { return ['x']; }
+      }
+      customElements.define('x-foo', FooElement);
+      var foo = new FooElement();
+      foo.setAttribute('x', 'b');
+      document.body.appendChild(foo);
+      foo.remove();
     }
   `);
 
@@ -52,13 +54,13 @@
   function step2() {
     // clang-format off
     var actions = [
-      'Print',              // debugger; in createdCallback
+      'Print',              // debugger; in FooElement constructor
       'StepOut', 'Print',   // at foo.setAttribute()
       'StepInto', 'Print',  // at attributeChangedCallback
       'StepOut', 'Print',   // at document.body.appendChild()
-      'StepInto', 'Print',  // at attachedCallback
+      'StepInto', 'Print',  // at connectedCallback
       'StepOut', 'Print',   // at foo.remove()
-      'StepInto', 'Print',  // at detachedCallback
+      'StepInto', 'Print',  // at disconnectedCallback
       'StepOut', 'Print',   // at testFunction() return point
     ];
     // clang-format on

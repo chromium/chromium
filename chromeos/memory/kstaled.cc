@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
@@ -16,14 +17,14 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kKstaledRatioFile[] = "/sys/kernel/mm/kstaled/ratio";
+constexpr char kMGLRUEnableFile[] = "/sys/kernel/mm/lru_gen/enabled";
 
-// KernelSupportsKstaled will check if the kernel supports kstaled this is as
-// easy as checking for the kstaled sysfs node.
+// KernelSupportsKstaled will check if the kernel supports mg lru, this is as
+// easy as looking for the presences of the enable file.
 bool KernelSupportsKstaled() {
-  static const bool supported =
-      base::PathExists(base::FilePath(kKstaledRatioFile));
-  return supported;
+  static const bool supported_mglru =
+      base::PathExists(base::FilePath(kMGLRUEnableFile));
+  return supported_mglru;
 }
 
 void OnRatioSet(bool success) {
@@ -39,7 +40,7 @@ void OnRatioSet(bool success) {
 
 const base::Feature kKstaled{"KstaledSwap", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", 4};
+const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", -1};
 
 // InitializeKstaled will attempt to configure kstaled with the experimental
 // parameters for this user.
@@ -51,14 +52,16 @@ void InitializeKstaled() {
   }
 
   if (!KernelSupportsKstaled()) {
-    LOG(ERROR) << "Unable to configure kstaled: no kernel support";
+    // Only log an error when we're running on REAL CrOS without kernel
+    // support.
+    LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
+        << "Unable to configure kstaled: no kernel support";
     return;
   }
 
   int feature_ratio = kKstaledRatio.Get();
-  if (feature_ratio <= 0 || feature_ratio > 255) {
-    LOG(ERROR) << "Configuring kstaled with a ratio of 0 disables the "
-                  "feature, the valid range is 1-255.";
+  if (feature_ratio < 0 || feature_ratio > 1) {
+    LOG(ERROR) << "Invalid value set for feature ratio, it can be 0 or 1 only";
     return;
   }
 

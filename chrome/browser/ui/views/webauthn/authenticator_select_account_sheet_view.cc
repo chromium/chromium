@@ -12,13 +12,16 @@ AuthenticatorSelectAccountSheetView::AuthenticatorSelectAccountSheetView(
     std::unique_ptr<AuthenticatorSelectAccountSheetModel> sheet_model)
     : AuthenticatorRequestSheetView(std::move(sheet_model)) {}
 
-AuthenticatorSelectAccountSheetView::~AuthenticatorSelectAccountSheetView() {}
+AuthenticatorSelectAccountSheetView::~AuthenticatorSelectAccountSheetView() =
+    default;
 
-std::unique_ptr<views::View>
+std::pair<std::unique_ptr<views::View>,
+          AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorSelectAccountSheetView::BuildStepSpecificContent() {
-  return std::make_unique<HoverListView>(
-      std::make_unique<AccountHoverListModel>(
-          &model()->dialog_model()->responses(), this));
+  return std::make_pair(
+      std::make_unique<HoverListView>(std::make_unique<AccountHoverListModel>(
+          &model()->dialog_model()->users(), this)),
+      AutoFocus::kYes);
 }
 
 void AuthenticatorSelectAccountSheetView::OnItemSelected(int index) {

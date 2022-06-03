@@ -25,11 +25,11 @@ Cursor Info: type=Custom hotSpot=0,0 image=25x25 scale=1.5
 
 
 TEST CASE: Invalid tiny scale with fallback to pointer
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 
 
 TEST CASE: Over-large image with fallback to pointer
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 
 
 TEST CASE: 200x200 image at 4x (not over-large in UI pixels)
@@ -71,11 +71,11 @@ Cursor Info: type=Custom hotSpot=0,0 image=30x30 scale=5
 
 
 TEST CASE: Invalid tiny scale with fallback to pointer
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 
 
 TEST CASE: Over-large image with fallback to pointer
-Cursor Info: type=Hand hotSpot=0,0
+Cursor Info: type=Hand
 
 
 TEST CASE: 200x200 image at 4x (not over-large in UI pixels)

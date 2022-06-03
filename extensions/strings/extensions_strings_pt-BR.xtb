@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Ops! Falha ao gerar a chave privada RSA aleatória.</translation>
 <translation id="1445572445564823378">Esta extensão está deixando <ph name="PRODUCT_NAME" /> mais lento. Você deve desativá-lo para restaurar o desempenho de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">O WebGL não é suportado.</translation>
-<translation id="149347756975725155">Não foi possível carregar o ícone de extensão "<ph name="ICON" />".</translation>
 <translation id="1803557475693955505">Não foi possível carregar a página de fundo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Não foi possível decodificar a imagem: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Localização utilizada, mas default_locale não foi especificada no manifesto.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Falha ao ler a chave privada.</translation>
 <translation id="6391538222494443604">O diretório de entrada deve existir.</translation>
 <translation id="641087317769093025">Não foi possível descompactar a extensão</translation>
-<translation id="6413453408918378296">O ícone "<ph name="ICON" />" não está suficientemente visível.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" está solicitando acesso a um ou mais dos seus dispositivos:</translation>
 <translation id="657064425229075395">Não foi possível carregar o script de plano de fundo "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>

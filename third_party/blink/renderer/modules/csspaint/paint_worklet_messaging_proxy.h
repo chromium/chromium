@@ -20,15 +20,14 @@ class WorkerThread;
 class PaintWorkletMessagingProxy final : public ThreadedWorkletMessagingProxy {
  public:
   explicit PaintWorkletMessagingProxy(ExecutionContext*);
-
-  void Trace(blink::Visitor*) override;
-
- private:
   ~PaintWorkletMessagingProxy() override;
 
+  void Trace(Visitor*) const override;
+
+ private:
   std::unique_ptr<WorkerThread> CreateWorkerThread() override;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_OFF_THREAD_PAINT_WORKLET_MESSAGING_PROXY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_MESSAGING_PROXY_H_

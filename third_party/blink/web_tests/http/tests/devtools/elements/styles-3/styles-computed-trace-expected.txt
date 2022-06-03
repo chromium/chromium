@@ -23,8 +23,6 @@ background-repeat-y: ;
     initial - #id1 <style>
 background-size: auto;
     initial - #id1 <style>
-color: rgb(0, 0, 0);
-    -internal-root-color - html user agent stylesheet
 display: block;
     block - div user agent stylesheet
 font-family: Courier;
@@ -37,14 +35,14 @@ text-decoration-line: underline;
     underline - div <style>
 text-decoration-style: solid;
     initial - div <style>
+text-decoration-thickness: auto;
+    initial - div <style>
 [expanded] 
 element.style { ()
 
 ==== Computed style for ID2 ====
 background-color: rgb(0, 0, 255);
     blue - #id2 <style>
-color: rgb(0, 0, 0);
-    -internal-root-color - html user agent stylesheet
 display: block;
     block - div user agent stylesheet
 font-family: Courier;
@@ -57,6 +55,8 @@ text-decoration-color: rgb(0, 0, 0);
 text-decoration-line: underline;
     underline - div <style>
 text-decoration-style: solid;
+    initial - div <style>
+text-decoration-thickness: auto;
     initial - div <style>
 [expanded] 
 element.style { ()

@@ -1,8 +1,8 @@
-document
-++group IsControlElement=false
-++++description Name='before selection'
-++group IsControlElement=false
-++++description Name='this text is not ignored'
-++group IsControlElement=false
-++++description Name='after selection'
-++description Name='Done'
+Document
+++Group IsControlElement=false
+++++Text Name='before selection'
+++Group IsControlElement=false
+++++Text Name='this text is not ignored'
+++Group IsControlElement=false
+++++Text Name='after selection'
+++Text Name='Done'

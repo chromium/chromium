@@ -8,22 +8,11 @@
 #include <iosfwd>
 #include <string>
 
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 class GURL;
 
 namespace password_manager {
-
-// Enum used for histogram tracking PSL Domain triggering.
-// New entries should only be added to the end of the enum (before *_COUNT) so
-// as to not disrupt existing data.
-enum PSLDomainMatchMetric {
-  PSL_DOMAIN_MATCH_NOT_USED = 0,
-  PSL_DOMAIN_MATCH_NONE,
-  PSL_DOMAIN_MATCH_FOUND,
-  PSL_DOMAIN_MATCH_FOUND_FEDERATED,
-  PSL_DOMAIN_MATCH_COUNT
-};
 
 enum class MatchResult {
   NO_MATCH,
@@ -51,8 +40,8 @@ bool IsFederatedPSLMatch(const std::string& form_signon_realm,
 #endif
 
 // Returns what type of match applies to |form| and |form_digest|.
-MatchResult GetMatchResult(const autofill::PasswordForm& form,
-                           const PasswordStore::FormDigest& form_digest);
+MatchResult GetMatchResult(const PasswordForm& form,
+                           const PasswordFormDigest& form_digest);
 
 // Two URLs are considered a Public Suffix Domain match if they have the same
 // scheme, ports, and their registry controlled domains are equal. If one or

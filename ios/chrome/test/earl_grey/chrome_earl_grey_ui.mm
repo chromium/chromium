@@ -7,7 +7,9 @@
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/table_view/table_view_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,21 +53,35 @@ id<GREYAction> ScrollDown() {
 }
 
 bool IsAppCompactWidth() {
-#if defined(CHROME_EARL_GREY_1)
-  UIApplication* application = [UIApplication sharedApplication];
-  UIWindow* keyWindow = application.keyWindow;
   UIUserInterfaceSizeClass sizeClass =
-      keyWindow.traitCollection.horizontalSizeClass;
-#elif defined(CHROME_EARL_GREY_2)
-  UIApplication* remoteApplication =
-      [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication];
-  UIWindow* remoteKeyWindow = remoteApplication.keyWindow;
-  UIUserInterfaceSizeClass sizeClass =
-      remoteKeyWindow.traitCollection.horizontalSizeClass;
-#endif
+      chrome_test_util::GetAnyKeyWindow().traitCollection.horizontalSizeClass;
 
   return sizeClass == UIUserInterfaceSizeClassCompact;
 }
+
+// Helper class to disable EarlGrey's NSTimer tracking.
+// TODO(crbug.com/1101608): This is a workaround that should be removed once a
+// proper fix lands in EarlGrey.
+class ScopedDisableTimerTracking {
+ public:
+  ScopedDisableTimerTracking() {
+    original_interval_ =
+        GREY_CONFIG_DOUBLE(kGREYConfigKeyNSTimerMaxTrackableInterval);
+    [[GREYConfiguration sharedConfiguration]
+            setValue:@0
+        forConfigKey:kGREYConfigKeyNSTimerMaxTrackableInterval];
+  }
+
+  ~ScopedDisableTimerTracking() {
+    [[GREYConfiguration sharedConfiguration]
+            setValue:[NSNumber numberWithDouble:original_interval_]
+        forConfigKey:kGREYConfigKeyNSTimerMaxTrackableInterval];
+  }
+
+ private:
+  // The original NSTimer max trackable interval.
+  double original_interval_;
+};
 
 }  // namespace
 
@@ -84,12 +100,34 @@ bool IsAppCompactWidth() {
   // to always find it.
 }
 
+- (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
+  [EarlGrey setRootMatcherForSubsequentInteractions:
+                chrome_test_util::WindowWithNumber(windowNumber)];
+  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // state, for example DCHECK if no tabs are displayed.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
+      onElementWithMatcher:chrome_test_util::
+                               WebStateScrollViewMatcherInWindowWithNumber(
+                                   windowNumber)] performAction:grey_tap()];
+  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // to always find it.
+}
+
 - (void)openSettingsMenu {
   [self openToolsMenu];
   [self tapToolsMenuButton:SettingsMenuButton()];
 }
 
+- (void)openSettingsMenuInWindowWithNumber:(int)windowNumber {
+  [self openToolsMenuInWindowWithNumber:windowNumber];
+  [self tapToolsMenuButton:SettingsMenuButton()];
+}
+
 - (void)tapToolsMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
@@ -98,6 +136,7 @@ bool IsAppCompactWidth() {
 }
 
 - (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
@@ -107,6 +146,7 @@ bool IsAppCompactWidth() {
 }
 
 - (void)tapClearBrowsingDataMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
@@ -147,12 +187,24 @@ bool IsAppCompactWidth() {
 }
 
 - (void)assertHistoryHasNoEntries {
-  id<GREYMatcher> noHistoryMessageMatcher =
-      grey_allOf(grey_text(l10n_util::GetNSString(IDS_HISTORY_NO_RESULTS)),
+  // Make sure the empty state illustration, title and subtitle are present.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewIllustratedEmptyViewID)]
+      assertWithMatcher:grey_notNil()];
+
+  id<GREYMatcher> noHistoryTitleMatcher =
+      grey_allOf(grey_text(l10n_util::GetNSString(IDS_IOS_HISTORY_EMPTY_TITLE)),
                  grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:noHistoryTitleMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  id<GREYMatcher> noHistoryMessageMatcher = grey_allOf(
+      grey_text(l10n_util::GetNSString(IDS_IOS_HISTORY_EMPTY_MESSAGE)),
+      grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:noHistoryMessageMatcher]
       assertWithMatcher:grey_notNil()];
 
+  // Make sure there are no history entry cells.
   id<GREYMatcher> historyEntryMatcher =
       grey_allOf(grey_kindOfClassName(@"TableViewURLCell"),
                  grey_sufficientlyVisible(), nil);
@@ -161,6 +213,7 @@ bool IsAppCompactWidth() {
 }
 
 - (void)tapPrivacyMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
@@ -170,6 +223,7 @@ bool IsAppCompactWidth() {
 }
 
 - (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
          usingSearchAction:ScrollDown()
       onElementWithMatcher:chrome_test_util::SettingsAccountsCollectionView()]
@@ -197,7 +251,7 @@ bool IsAppCompactWidth() {
       grey_accessibilityID(kToolsMenuNewTabId);
   [[EarlGrey selectElementWithMatcher:newTabButtonMatcher]
       performAction:grey_tap()];
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  [self waitForAppToIdle];
 }
 
 - (void)openNewIncognitoTab {
@@ -206,7 +260,7 @@ bool IsAppCompactWidth() {
       grey_accessibilityID(kToolsMenuNewIncognitoTabId);
   [[EarlGrey selectElementWithMatcher:newIncognitoTabMatcher]
       performAction:grey_tap()];
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  [self waitForAppToIdle];
 }
 
 - (void)reload {
@@ -219,7 +273,7 @@ bool IsAppCompactWidth() {
 }
 
 - (void)openShareMenu {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShareButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
 }
 
@@ -240,6 +294,21 @@ bool IsAppCompactWidth() {
   EG_TEST_HELPER_ASSERT_TRUE(toolbarVisibility, errorMessage);
 }
 
+- (void)waitForAppToIdle {
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+- (void)openPageInfo {
+  [self openToolsMenu];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kToolsMenuSiteInformation),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
+      performAction:grey_tap()];
+}
+
 #pragma mark - Private
 
 // Clears all browsing data from the device. This method needs to be called when
@@ -249,14 +318,20 @@ bool IsAppCompactWidth() {
   // default.
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(ClearAutofillButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 
   // Set 'Time Range' to 'All Time'.
-  [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE)]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(ButtonWithAccessibilityLabelId(
+                         IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE),
+                     grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:
           ButtonWithAccessibilityLabelId(
@@ -273,13 +348,16 @@ bool IsAppCompactWidth() {
 
   // Wait until activity indicator modal is cleared, meaning clearing browsing
   // data has been finished.
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  [self waitForAppToIdle];
 
   // Recheck "Saved Passwords" and "Autofill Data".
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ClearAutofillButton()]
-      performAction:grey_tap()];
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(ClearAutofillButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 }
 
 @end

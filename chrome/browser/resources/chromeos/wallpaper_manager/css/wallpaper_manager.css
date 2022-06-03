@@ -43,10 +43,20 @@ body {
   -webkit-box-align: center;
   display: block;
   height: 100%;
-  overflow: visible;
+  overflow-x: visible;
+  overflow-y: auto;
   padding: unset;
   position: relative;
   width: 192px;
+}
+
+.dialog-topbar::-webkit-scrollbar-thumb {
+  background: #888;
+  display: none;
+}
+
+.dialog-topbar.show-scroll-bar::-webkit-scrollbar-thumb {
+  display: block;
 }
 
 .dialog-topbar .spacer {
@@ -68,7 +78,7 @@ body {
   color: #777;
   display: -webkit-box;
   height: 31px;
-  margin-top: 8px;
+  margin-top: 4px;
   overflow: hidden;
   pointer-events: auto;
   position: relative;
@@ -116,6 +126,7 @@ body {
 
 #categories-list:focus > li[selected] {
   background-color: rgb(210, 227, 252);
+  border: 1px solid rgb(6, 115, 232); /* google-blue-600 */
 }
 
 .preview-animation #categories-list > li {
@@ -441,6 +452,7 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
   font-family: 'Roboto';
   font-size: 13px;
   font-weight: 500;
+  line-height: 13px;
 }
 
 :not(.no-images) .top-header-contents {
@@ -481,7 +493,7 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
 }
 
 .top-header-contents #wallpaper-description {
-  color: rgb(128, 134, 139);
+  color: rgb(95, 99, 104); /* google-grey-700 */
   max-width: 312px;
   min-width: 132px;
   overflow: hidden;
@@ -794,7 +806,7 @@ html[dir='rtl'] .daily-refresh-label {
 }
 
 #currently-set-message {
-  color: rgb(128, 134, 139);
+  color: rgb(95, 99, 104); /* google-grey-700 */
   font-size: 13px;
 }
 

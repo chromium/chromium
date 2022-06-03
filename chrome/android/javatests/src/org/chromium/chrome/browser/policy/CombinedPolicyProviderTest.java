@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.policy;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,23 +14,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.policy.CombinedPolicyProvider;
+import org.chromium.components.policy.PolicyProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.CombinedPolicyProvider;
-import org.chromium.policy.PolicyProvider;
 
 /** Instrumentation tests for {@link CombinedPolicyProvider} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CombinedPolicyProviderTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String DATA_URI = "data:text/plain;charset=utf-8;base64,dGVzdA==";
 
@@ -46,7 +43,6 @@ public class CombinedPolicyProviderTest {
     @Test
     @Feature({"Policy"})
     @SmallTest
-    @RetryOnFailure
     public void testTerminateIncognitoSon() {
         final boolean incognitoMode = true;
 

@@ -5,9 +5,10 @@
 #ifndef UI_GFX_MOJOM_COLOR_SPACE_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_COLOR_SPACE_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/mojom/color_space.mojom.h"
+#include "ui/gfx/mojom/color_space.mojom-shared.h"
 
 namespace mojo {
 
@@ -156,14 +157,16 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
         return gfx::mojom::ColorSpaceTransferID::SMPTEST428_1;
       case gfx::ColorSpace::TransferID::ARIB_STD_B67:
         return gfx::mojom::ColorSpaceTransferID::ARIB_STD_B67;
-      case gfx::ColorSpace::TransferID::SMPTEST2084_NON_HDR:
-        return gfx::mojom::ColorSpaceTransferID::SMPTEST2084_NON_HDR;
       case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
         return gfx::mojom::ColorSpaceTransferID::IEC61966_2_1_HDR;
       case gfx::ColorSpace::TransferID::LINEAR_HDR:
         return gfx::mojom::ColorSpaceTransferID::LINEAR_HDR;
       case gfx::ColorSpace::TransferID::CUSTOM:
         return gfx::mojom::ColorSpaceTransferID::CUSTOM;
+      case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+        return gfx::mojom::ColorSpaceTransferID::CUSTOM_HDR;
+      case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
+        return gfx::mojom::ColorSpaceTransferID::PIECEWISE_HDR;
     }
     NOTREACHED();
     return gfx::mojom::ColorSpaceTransferID::INVALID;
@@ -232,9 +235,6 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
       case gfx::mojom::ColorSpaceTransferID::ARIB_STD_B67:
         *out = gfx::ColorSpace::TransferID::ARIB_STD_B67;
         return true;
-      case gfx::mojom::ColorSpaceTransferID::SMPTEST2084_NON_HDR:
-        *out = gfx::ColorSpace::TransferID::SMPTEST2084_NON_HDR;
-        return true;
       case gfx::mojom::ColorSpaceTransferID::IEC61966_2_1_HDR:
         *out = gfx::ColorSpace::TransferID::IEC61966_2_1_HDR;
         return true;
@@ -243,6 +243,12 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
         return true;
       case gfx::mojom::ColorSpaceTransferID::CUSTOM:
         *out = gfx::ColorSpace::TransferID::CUSTOM;
+        return true;
+      case gfx::mojom::ColorSpaceTransferID::CUSTOM_HDR:
+        *out = gfx::ColorSpace::TransferID::CUSTOM_HDR;
+        return true;
+      case gfx::mojom::ColorSpaceTransferID::PIECEWISE_HDR:
+        *out = gfx::ColorSpace::TransferID::PIECEWISE_HDR;
         return true;
     }
     NOTREACHED();
@@ -368,7 +374,8 @@ struct EnumTraits<gfx::mojom::ColorSpaceRangeID, gfx::ColorSpace::RangeID> {
 };
 
 template <>
-struct StructTraits<gfx::mojom::ColorSpaceDataView, gfx::ColorSpace> {
+struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
+    StructTraits<gfx::mojom::ColorSpaceDataView, gfx::ColorSpace> {
   static gfx::ColorSpace::PrimaryID primaries(const gfx::ColorSpace& input) {
     return input.primaries_;
   }
@@ -390,9 +397,8 @@ struct StructTraits<gfx::mojom::ColorSpaceDataView, gfx::ColorSpace> {
     return input.custom_primary_matrix_;
   }
 
-  static base::span<const float> custom_transfer_params(
-      const gfx::ColorSpace& input) {
-    return input.custom_transfer_params_;
+  static base::span<const float> transfer_params(const gfx::ColorSpace& input) {
+    return input.transfer_params_;
   }
 
   static bool Read(gfx::mojom::ColorSpaceDataView data, gfx::ColorSpace* out);

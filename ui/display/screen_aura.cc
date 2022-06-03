@@ -4,7 +4,7 @@
 
 #include "ui/display/screen.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace display {
 

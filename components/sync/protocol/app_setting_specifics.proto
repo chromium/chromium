@@ -18,7 +18,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "extension_setting_specifics.proto";
+import "components/sync/protocol/extension_setting_specifics.proto";
 
 // Properties of app setting sync objects; just an extension setting.
 message AppSettingSpecifics {

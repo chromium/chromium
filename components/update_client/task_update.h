@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/update_client/task.h"
 #include "components/update_client/update_client.h"
@@ -36,12 +36,14 @@ class TaskUpdate : public Task {
              bool is_foreground,
              const std::vector<std::string>& ids,
              UpdateClient::CrxDataCallback crx_data_callback,
+             UpdateClient::CrxStateChangeCallback crx_state_change_callback,
              Callback callback);
+  TaskUpdate(const TaskUpdate&) = delete;
+  TaskUpdate& operator=(const TaskUpdate&) = delete;
 
+  // Overrides for Task.
   void Run() override;
-
   void Cancel() override;
-
   std::vector<std::string> GetIds() const override;
 
  private:
@@ -51,14 +53,16 @@ class TaskUpdate : public Task {
   // it has been canceled.
   void TaskComplete(Error error);
 
+  // Runs the task update callback.
+  void RunCallback(Error error);
+
   base::ThreadChecker thread_checker_;
   scoped_refptr<UpdateEngine> update_engine_;
   const bool is_foreground_;
   const std::vector<std::string> ids_;
   UpdateClient::CrxDataCallback crx_data_callback_;
+  UpdateClient::CrxStateChangeCallback crx_state_change_callback_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskUpdate);
 };
 
 }  // namespace update_client

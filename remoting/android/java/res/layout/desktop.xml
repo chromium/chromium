@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:elevation="4dp">
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:alpha="0.85"
             android:layout_width="match_parent"

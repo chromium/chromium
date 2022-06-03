@@ -6,7 +6,7 @@ syntax = "proto2";
 
 package mojo_fuzzer;
 
-import "mach_message.proto";
+import "testing/libfuzzer/fuzzers/mach/mach_message.proto";
 
 // Extension to MachMessage that enables fuzzing the internal structure of
 // the Mojo message data.

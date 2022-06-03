@@ -1,28 +1,45 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTableRow TR",
-      "position": [8, 28],
-      "bounds": [234, 102],
-      "backgroundColor": "#0000FF"
+      "name": "LayoutNGTableRow TR",
+      "bounds": [102, 102],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 1
     },
     {
-      "name": "LayoutTableRow TR class='shadow-inset'",
-      "position": [8, 140],
-      "bounds": [234, 102],
-      "backgroundColor": "#0000FF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGTableCell TD id='target'",
-          "rect": [10, 0, 102, 102],
-          "reason": "background"
-        }
+      "name": "LayoutNGTableRow TR class='shadow-inset'",
+      "bounds": [214, 102],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 102, 102]
+      ],
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 28, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 140, 0, 1]
       ]
     }
   ]

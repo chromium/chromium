@@ -6,15 +6,13 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/memory/singleton.h"
+#include "base/callback_helpers.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/branding_buildflags.h"
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -28,11 +26,12 @@
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
-  internal::SystemMediaControlsLinux* service =
-      internal::SystemMediaControlsLinux::GetInstance();
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
+  auto service =
+      std::make_unique<internal::SystemMediaControlsLinux>(product_name);
   service->StartService();
-  return service;
+  return std::move(service);
 }
 
 namespace internal {
@@ -43,25 +42,17 @@ constexpr int kNumMethodsToExport = 11;
 
 }  // namespace
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kMprisAPIServiceNamePrefix[] =
-    "org.mpris.MediaPlayer2.chrome.instance";
-#else
-const char kMprisAPIServiceNamePrefix[] =
-    "org.mpris.MediaPlayer2.chromium.instance";
-#endif
+const char kMprisAPIServiceNameFormatString[] =
+    "org.mpris.MediaPlayer2.chromium.instance%i";
 const char kMprisAPIObjectPath[] = "/org/mpris/MediaPlayer2";
 const char kMprisAPIInterfaceName[] = "org.mpris.MediaPlayer2";
 const char kMprisAPIPlayerInterfaceName[] = "org.mpris.MediaPlayer2.Player";
 
-// static
-SystemMediaControlsLinux* SystemMediaControlsLinux::GetInstance() {
-  return base::Singleton<SystemMediaControlsLinux>::get();
-}
-
-SystemMediaControlsLinux::SystemMediaControlsLinux()
-    : service_name_(std::string(kMprisAPIServiceNamePrefix) +
-                    base::NumberToString(base::Process::Current().Pid())) {}
+SystemMediaControlsLinux::SystemMediaControlsLinux(
+    const std::string& product_name)
+    : product_name_(product_name),
+      service_name_(base::StringPrintf(kMprisAPIServiceNameFormatString,
+                                       base::Process::Current().Pid())) {}
 
 SystemMediaControlsLinux::~SystemMediaControlsLinux() {
   if (bus_) {
@@ -123,26 +114,26 @@ void SystemMediaControlsLinux::SetPlaybackStatus(PlaybackStatus value) {
                            status());
 }
 
-void SystemMediaControlsLinux::SetTitle(const base::string16& value) {
+void SystemMediaControlsLinux::SetTitle(const std::u16string& value) {
   SetMetadataPropertyInternal(
       "xesam:title", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
 }
 
-void SystemMediaControlsLinux::SetArtist(const base::string16& value) {
+void SystemMediaControlsLinux::SetArtist(const std::u16string& value) {
   SetMetadataPropertyInternal(
       "xesam:artist",
       MakeDbusVariant(MakeDbusArray(DbusString(base::UTF16ToUTF8(value)))));
 }
 
-void SystemMediaControlsLinux::SetAlbum(const base::string16& value) {
+void SystemMediaControlsLinux::SetAlbum(const std::u16string& value) {
   SetMetadataPropertyInternal(
       "xesam:album", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
 }
 
 void SystemMediaControlsLinux::ClearMetadata() {
-  SetTitle(base::string16());
-  SetArtist(base::string16());
-  SetAlbum(base::string16());
+  SetTitle(std::u16string());
+  SetArtist(std::u16string());
+  SetAlbum(std::u16string());
 }
 
 std::string SystemMediaControlsLinux::GetServiceName() const {
@@ -153,17 +144,13 @@ void SystemMediaControlsLinux::InitializeProperties() {
   // org.mpris.MediaPlayer2 interface properties.
   auto set_property = [&](const std::string& property_name, auto&& value) {
     properties_->SetProperty(kMprisAPIInterfaceName, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_property("CanQuit", DbusBoolean(false));
   set_property("CanRaise", DbusBoolean(false));
   set_property("HasTrackList", DbusBoolean(false));
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  set_property("Identity", DbusString("Chrome"));
-#else
-  set_property("Identity", DbusString("Chromium"));
-#endif
+  set_property("Identity", DbusString(product_name_));
   set_property("SupportedUriSchemes", DbusArray<DbusString>());
   set_property("SupportedMimeTypes", DbusArray<DbusString>());
 
@@ -171,7 +158,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
   auto set_player_property = [&](const std::string& property_name,
                                  auto&& value) {
     properties_->SetProperty(kMprisAPIPlayerInterfaceName, property_name,
-                             std::move(value), false);
+                             std::forward<decltype(value)>(value), false);
   };
   set_player_property("PlaybackStatus", DbusString("Stopped"));
   set_player_property("Rate", DbusDouble(1.0));
@@ -185,7 +172,7 @@ void SystemMediaControlsLinux::InitializeProperties() {
   set_player_property("CanPlay", DbusBoolean(false));
   set_player_property("CanPause", DbusBoolean(false));
   set_player_property("CanSeek", DbusBoolean(false));
-  set_player_property("CanControl", DbusBoolean(false));
+  set_player_property("CanControl", DbusBoolean(true));
 }
 
 void SystemMediaControlsLinux::InitializeDbusInterface() {

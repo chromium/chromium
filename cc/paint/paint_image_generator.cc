@@ -7,7 +7,6 @@
 #include "cc/paint/paint_image_generator.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/logging.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSize.h"
 

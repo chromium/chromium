@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-
 namespace blink {
 
 void WebHTTPBody::Initialize() {
@@ -66,44 +65,41 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
   if (index >= private_->Elements().size())
     return false;
 
-  const FormDataElement& element = private_->Elements()[index];
+  const FormDataElement& element =
+      private_->Elements()[static_cast<wtf_size_t>(index)];
 
   result.data.Reset();
   result.file_path.Reset();
   result.file_start = 0;
   result.file_length = 0;
-  result.modification_time = base::nullopt;
-  result.blob_uuid.Reset();
+  result.modification_time = absl::nullopt;
 
   switch (element.type_) {
     case FormDataElement::kData:
-      result.type = Element::kTypeData;
+      result.type = HTTPBodyElementType::kTypeData;
       result.data.Assign(element.data_.data(), element.data_.size());
       break;
     case FormDataElement::kEncodedFile:
-      result.type = Element::kTypeFile;
+      result.type = HTTPBodyElementType::kTypeFile;
       result.file_path = element.filename_;
       result.file_start = element.file_start_;
       result.file_length = element.file_length_;
       result.modification_time = element.expected_file_modification_time_;
       break;
     case FormDataElement::kEncodedBlob:
-      result.type = Element::kTypeBlob;
-      result.blob_uuid = element.blob_uuid_;
+      result.type = HTTPBodyElementType::kTypeBlob;
       result.blob_length = std::numeric_limits<uint64_t>::max();
-      if (element.optional_blob_data_handle_) {
-        result.optional_blob_handle =
-            element.optional_blob_data_handle_->CloneBlobRemote().PassPipe();
-        result.blob_length = element.optional_blob_data_handle_->size();
-      }
+      result.optional_blob =
+          element.optional_blob_data_handle_->CloneBlobRemote();
+      result.blob_length = element.optional_blob_data_handle_->size();
       break;
     case FormDataElement::kDataPipe:
-      result.type = Element::kTypeDataPipe;
+      result.type = HTTPBodyElementType::kTypeDataPipe;
       mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
           data_pipe_getter;
       element.data_pipe_getter_->GetDataPipeGetter()->Clone(
           data_pipe_getter.InitWithNewPipeAndPassReceiver());
-      result.data_pipe_getter = data_pipe_getter.PassPipe();
+      result.data_pipe_getter = std::move(data_pipe_getter);
       break;
   }
 
@@ -114,18 +110,18 @@ void WebHTTPBody::AppendData(const WebData& data) {
   EnsureMutable();
   // FIXME: FormDataElement::m_data should be a SharedBuffer<char>.  Then we
   // could avoid this buffer copy.
-  data.ForEachSegment(
-      [this](const char* segment, size_t segment_size, size_t segment_offset) {
-        private_->AppendData(segment, segment_size);
-        return true;
-      });
+  data.ForEachSegment([this](const char* segment, size_t segment_size,
+                             size_t segment_offset) {
+    private_->AppendData(segment, base::checked_cast<wtf_size_t>(segment_size));
+    return true;
+  });
 }
 
 void WebHTTPBody::AppendFileRange(
     const WebString& file_path,
     int64_t file_start,
     int64_t file_length,
-    const base::Optional<base::Time>& modification_time) {
+    const absl::optional<base::Time>& modification_time) {
   EnsureMutable();
   private_->AppendFileRange(file_path, file_start, file_length,
                             modification_time);
@@ -136,24 +132,20 @@ void WebHTTPBody::AppendBlob(const WebString& uuid) {
   private_->AppendBlob(uuid, nullptr);
 }
 
-void WebHTTPBody::AppendBlob(const WebString& uuid,
-                             uint64_t length,
-                             mojo::ScopedMessagePipeHandle blob_handle) {
+void WebHTTPBody::AppendBlob(
+    const WebString& uuid,
+    uint64_t length,
+    CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob) {
   EnsureMutable();
-  mojo::PendingRemote<mojom::blink::Blob> blob_remote(
-      std::move(blob_handle), mojom::blink::Blob::Version_);
   private_->AppendBlob(
       uuid, BlobDataHandle::Create(uuid, "" /* type is not necessary */, length,
-                                   std::move(blob_remote)));
+                                   std::move(blob)));
 }
 
-void WebHTTPBody::AppendDataPipe(mojo::ScopedMessagePipeHandle message_pipe) {
+void WebHTTPBody::AppendDataPipe(
+    CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>
+        data_pipe_getter) {
   EnsureMutable();
-
-  // Convert the raw message pipe to
-  // mojo::Remote<network::mojom::blink::DataPipeGetter>.
-  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter(
-      std::move(message_pipe), 0u);
 
   auto wrapped =
       base::MakeRefCounted<WrappedDataPipeGetter>(std::move(data_pipe_getter));

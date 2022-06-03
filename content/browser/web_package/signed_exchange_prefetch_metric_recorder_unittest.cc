@@ -42,13 +42,13 @@ TEST_F(SignedExchangePrefetchMetricRecorderTest, PrecisionRecall) {
   metric_recorder_->OnSignedExchangePrefetchFinished(
       GURL("https://example.org/success.sxg"), response_time);
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  FastForwardBy(base::Milliseconds(100));
 
   const base::Time response_time2 = test_clock_.Now();
   metric_recorder_->OnSignedExchangePrefetchFinished(
       GURL("https://example.org/prefetch_unused.sxg"), response_time2);
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  FastForwardBy(base::Milliseconds(100));
 
   histogram_tester_.ExpectTotalCount(
       "SignedExchange.Prefetch.Precision.30Seconds", 0);
@@ -72,7 +72,7 @@ TEST_F(SignedExchangePrefetchMetricRecorderTest, PrecisionRecall) {
   histogram_tester_.ExpectBucketCount(
       "SignedExchange.Prefetch.Recall.30Seconds", false, 1);
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(35000));
+  FastForwardBy(base::Milliseconds(35000));
 
   histogram_tester_.ExpectBucketCount(
       "SignedExchange.Prefetch.Precision.30Seconds", true, 1);
@@ -86,15 +86,15 @@ TEST_F(SignedExchangePrefetchMetricRecorderTest, DuplicatePrefetch) {
 
   metric_recorder_->OnSignedExchangePrefetchFinished(url, response_time);
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  FastForwardBy(base::Milliseconds(100));
 
   metric_recorder_->OnSignedExchangePrefetchFinished(url, response_time);
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  FastForwardBy(base::Milliseconds(100));
 
   metric_recorder_->OnSignedExchangeNonPrefetch(url, response_time);
 
-  FastForwardBy(base::TimeDelta::FromMilliseconds(35000));
+  FastForwardBy(base::Milliseconds(35000));
 
   histogram_tester_.ExpectUniqueSample(
       "SignedExchange.Prefetch.Precision.30Seconds", true, 1);

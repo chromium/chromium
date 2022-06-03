@@ -28,14 +28,14 @@
 [
     Exposed=Window
 ] interface DOMTokenList {
-    [Affects=Nothing] readonly attribute unsigned long length;
+    readonly attribute unsigned long length;
     [Affects=Nothing] getter DOMString? item(unsigned long index);
     [Affects=Nothing] boolean contains(DOMString token);
-    [RaisesException, CEReactions, CustomElementCallbacks] void add(DOMString... tokens);
-    [RaisesException, CEReactions, CustomElementCallbacks] void remove(DOMString... tokens);
-    [RaisesException, CEReactions, CustomElementCallbacks] boolean toggle(DOMString token, optional boolean force);
+    [RaisesException, CEReactions] void add(DOMString... tokens);
+    [RaisesException, CEReactions] void remove(DOMString... tokens);
+    [RaisesException, CEReactions] boolean toggle(DOMString token, optional boolean force);
     [RaisesException, CEReactions] boolean replace(DOMString token, DOMString newToken);
-    [RaisesException, CustomElementCallbacks] boolean supports(DOMString token);
+    [RaisesException] boolean supports(DOMString token);
     [CEReactions] attribute DOMString value;
     stringifier;
     iterable<DOMString>;

@@ -31,8 +31,6 @@ const wchar_t kTempPrefix[] = L"CR_";
 // ap value suffix to force subsequent updates to use the full rather than
 // differential updater.
 const wchar_t kFullInstallerSuffix[] = L"-full";
-// ap value tag for a multi-install product.
-const wchar_t kMultiInstallTag[] = L"-multi";
 
 // The resource types that would be unpacked from the mini installer.
 // Uncompressed binary.
@@ -68,8 +66,7 @@ const wchar_t kClientsKeyBase[] = L"Software\\Google\\Update\\Clients\\";
 const wchar_t kClientStateKeyBase[] =
     L"Software\\Google\\Update\\ClientState\\";
 // The path to the key in which kCleanupRegistryValue is found.
-const wchar_t kCleanupRegistryKey[] =
-    L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome";
+const wchar_t kCleanupRegistryKey[] = L"Software\\Google";
 #else
 // The path to the key containing each app's Clients registry key.
 // No trailing slash on this one because the app's GUID is not appended.

@@ -18,7 +18,8 @@
 #undef PostMessage
 #endif
 
-// This is a simple C++ Pepper plugin that enables Plugin Power Saver tests.
+// This is a simple C++ Pepper plugin that enables some NetworkService/CORB
+// tests (e.g. NetworkServiceRestartBrowserTest.Plugin).
 class CorbTestInstance : public pp::Instance {
  public:
   explicit CorbTestInstance(PP_Instance instance) : pp::Instance(instance) {}
@@ -49,6 +50,13 @@ class CorbTestInstance : public pp::Instance {
     pp::URLRequestInfo request(this);
     request.SetURL(url);
     request.SetAllowCrossOriginRequests(true);
+
+    // Set the |request_initiator| in the same way as the PDF plugin.
+    //
+    // (The PDF plugin is currently the only plugin that depends on relaxing
+    // `request_initiator_origin_lock` enforcement via
+    // network::mojom::NetworkService::AddAllowedRequestInitiatorForPlugin.)
+    request.SetCustomReferrerURL(url);
 
     std::ostringstream msg_builder;
     std::string response_body;

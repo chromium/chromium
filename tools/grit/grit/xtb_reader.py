@@ -116,7 +116,7 @@ def Parse(xtb_file, callback_function, defs=None, debug=False,
   (if is_placeholder is True).
 
   Args:
-    xtb_file:           open('fr.xtb')
+    xtb_file:           open('fr.xtb', 'rb')
     callback_function:  def Callback(msg_id, parts): pass
     defs:               None, or a dictionary of preprocessor definitions.
     debug:              Default False. Set True for verbose debug output.
@@ -131,7 +131,7 @@ def Parse(xtb_file, callback_function, defs=None, debug=False,
   # TODO(joi) Remove this ugly hack by getting the TC gang to change the
   # XTB files somehow?
   front_of_file = xtb_file.read(1024)
-  xtb_file.seek(front_of_file.find('<translationbundle'))
+  xtb_file.seek(front_of_file.find(b'<translationbundle'))
 
   handler = XtbContentHandler(callback=callback_function, defs=defs,
                               debug=debug, target_platform=target_platform)

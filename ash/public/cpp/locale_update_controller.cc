@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/locale_update_controller.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 
@@ -16,7 +16,7 @@ LocaleUpdateController* g_instance = nullptr;
 
 LocaleInfo::LocaleInfo() = default;
 LocaleInfo::LocaleInfo(const std::string& iso_code,
-                       const base::string16& display_name)
+                       const std::u16string& display_name)
     : iso_code(iso_code), display_name(display_name) {}
 LocaleInfo::LocaleInfo(const LocaleInfo& rhs) = default;
 LocaleInfo::LocaleInfo(LocaleInfo&& rhs) = default;

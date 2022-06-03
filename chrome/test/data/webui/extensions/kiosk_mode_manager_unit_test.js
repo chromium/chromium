@@ -35,12 +35,12 @@ suite(extension_manager_unit_tests.suiteName, function() {
 
   setup(function() {
     browserProxy = new TestKioskBrowserProxy();
-    KioskBrowserProxyImpl.instance_ = browserProxy;
+    KioskBrowserProxyImpl.setInstance(browserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     service = new TestService();
-    Service.instance_ = service;
+    Service.setInstance(service);
 
     manager = document.createElement('extensions-manager');
     document.body.appendChild(manager);
@@ -54,13 +54,16 @@ suite(extension_manager_unit_tests.suiteName, function() {
   });
 
   test(assert(extension_manager_unit_tests.TestNames.KioskMode), function() {
-    expectFalse(!!manager.$$('extensions-kiosk-dialog'));
+    expectFalse(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
 
     return browserProxy.whenCalled('initializeKioskAppSettings').then(() => {
-      expectTrue(manager.$$('extensions-toolbar').kioskEnabled);
-      manager.$$('extensions-toolbar').fire('kiosk-tap');
+      expectTrue(
+          manager.shadowRoot.querySelector('extensions-toolbar').kioskEnabled);
+      manager.shadowRoot.querySelector('extensions-toolbar')
+          .dispatchEvent(
+              new CustomEvent('kiosk-tap', {bubbles: true, composed: true}));
       flush();
-      expectTrue(!!manager.$$('extensions-kiosk-dialog'));
+      expectTrue(!!manager.shadowRoot.querySelector('extensions-kiosk-dialog'));
     });
   });
 });

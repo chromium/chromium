@@ -9,9 +9,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_controller.h"
+#include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/openxr/openxr_util.h"
 
 namespace device {
 
@@ -19,27 +21,37 @@ class OpenXRInputHelper {
  public:
   static XrResult CreateOpenXRInputHelper(
       XrInstance instance,
+      XrSystemId system,
+      const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace local_space,
       std::unique_ptr<OpenXRInputHelper>* helper);
 
   OpenXRInputHelper(XrSession session, XrSpace local_space);
 
+  OpenXRInputHelper(const OpenXRInputHelper&) = delete;
+  OpenXRInputHelper& operator=(const OpenXRInputHelper&) = delete;
+
   ~OpenXRInputHelper();
 
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
+      bool hand_input_enabled,
       XrTime predicted_display_time);
 
-  void OnInteractionProfileChanged(XrResult* xr_result);
-
-  base::WeakPtr<OpenXRInputHelper> GetWeakPtr();
+  XrResult OnInteractionProfileChanged();
 
  private:
-  base::Optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
+  absl::optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
 
-  XrResult Initialize(XrInstance instance);
+  XrResult Initialize(XrInstance instance,
+                      XrSystemId system,
+                      const OpenXrExtensionHelper& extension_helper);
 
   XrResult SyncActions(XrTime predicted_display_time);
+
+  XrSpace GetMojomSpace() const {
+    return local_space_;  // Mojom space is currently defined as local space
+  }
 
   XrSession session_;
   XrSpace local_space_;
@@ -47,17 +59,13 @@ class OpenXRInputHelper {
   struct OpenXrControllerState {
     OpenXrController controller;
     bool primary_button_pressed;
+    bool squeeze_button_pressed;
   };
   std::array<OpenXrControllerState,
              static_cast<size_t>(OpenXrHandednessType::kCount)>
       controller_states_;
 
   std::unique_ptr<OpenXRPathHelper> path_helper_;
-
-  // This must be the last member
-  base::WeakPtrFactory<OpenXRInputHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXRInputHelper);
 };
 
 }  // namespace device

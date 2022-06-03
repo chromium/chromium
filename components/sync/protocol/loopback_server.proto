@@ -13,7 +13,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "sync.proto";
+import "components/sync/protocol/sync_entity.proto";
 
 // Serialization of the LoopbackServerEntity and its ancestors.
 message LoopbackServerEntity {
@@ -41,7 +41,7 @@ message LoopbackServerProto {
   repeated LoopbackServerEntity entities = 3;
 
   // All Keystore keys known to the server.
-  repeated string keystore_keys = 4;
+  repeated bytes keystore_keys = 4;
 
   // The last entity ID that was assigned to an entity.
   optional int64 last_version_assigned = 5;

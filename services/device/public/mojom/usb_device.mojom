@@ -4,8 +4,18 @@
 
 module device.mojom;
 
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
+
+// USB interface classes.
+const uint8 kUsbAudioClass = 0x01;
+const uint8 kUsbHidClass = 0x03;
+const uint8 kUsbMassStorageClass = 0x08;
+const uint8 kUsbSmartCardClass = 0x0B;
+const uint8 kUsbVideoClass = 0x0E;
+const uint8 kUsbAudioVideoClass = 0x10;
+const uint8 kUsbWirelessClass = 0xE0;
 
 enum UsbOpenDeviceError {
   // Opening the device succeeded.
@@ -16,6 +26,18 @@ enum UsbOpenDeviceError {
 
   // The device is already open.
   ALREADY_OPEN,
+};
+
+enum UsbClaimInterfaceResult {
+  // Claiming the interface succeeded.
+  kSuccess,
+
+  // Claiming the interface failed because the interface implements a protected
+  // class.
+  kProtectedClass,
+
+  // Claiming the interface failed due to another error.
+  kFailure,
 };
 
 // Corresponds to the USBDirection WebIDL type.
@@ -132,6 +154,15 @@ struct UsbControlTransferParams {
   uint8 request;
   uint16 value;
   uint16 index;
+
+  // Unless the USB device was opened with |GetSecurityKeyDevice| then control
+  // transfers to attempt to configure an AOA[1] model with the following
+  // prefix will be rejected. These requests are blocked because they instruct
+  // an Android phone to act as a security key and this should not be exposed
+  // to, e.g., WebUSB.
+  //
+  // [1] https://source.android.com/devices/accessories/aoa
+  const string kSecurityKeyAOAModel = "12eba9f901039b36";
 };
 
 // This enum is exposed through the chrome.usb extension API so existing values
@@ -185,7 +216,7 @@ interface UsbDevice {
   SetConfiguration(uint8 value) => (bool success);
 
   // Claims a single interface in the current device configuration.
-  ClaimInterface(uint8 interface_number) => (bool success);
+  ClaimInterface(uint8 interface_number) => (UsbClaimInterfaceResult result);
 
   // Releases a claimed interface in the current device configuration.
   ReleaseInterface(uint8 interface_number) => (bool success);
@@ -198,7 +229,8 @@ interface UsbDevice {
   Reset() => (bool success);
 
   // Clear the halt/stall condition for an endpoint.
-  ClearHalt(uint8 endpoint) => (bool success);
+  ClearHalt(UsbTransferDirection direction, uint8 endpoint_number)
+      => (bool success);
 
   // Initiates an inbound control transfer request. |params| determine the
   // details of the request. Transfers to recipients other than DEVICE require a
@@ -214,7 +246,7 @@ interface UsbDevice {
   ControlTransferIn(UsbControlTransferParams params,
                     uint32 length,
                     uint32 timeout)
-      => (UsbTransferStatus status, array<uint8> data);
+      => (UsbTransferStatus status, mojo_base.mojom.ReadOnlyBuffer data);
 
   // Initiates an inbound control transfer request. |params| determine the
   // details of the request. Transfers to recipients other than DEVICE require a
@@ -226,7 +258,7 @@ interface UsbDevice {
   // indicates no timeout: the request will remain pending indefinitely until
   // completed or otherwise terminated.
   ControlTransferOut(UsbControlTransferParams params,
-                     array<uint8> data,
+                     mojo_base.mojom.ReadOnlyBuffer data,
                      uint32 timeout)
       => (UsbTransferStatus status);
 
@@ -244,7 +276,7 @@ interface UsbDevice {
   // indicates no timeout: the request will remain pending indefinitely until
   // completed or otherwise terminated.
   GenericTransferIn(uint8 endpoint_number, uint32 length, uint32 timeout)
-      => (UsbTransferStatus status, array<uint8> data);
+      => (UsbTransferStatus status, mojo_base.mojom.ReadOnlyBuffer data);
 
   // Initiates an outbound generic transfer request on a specific endpoint. The
   // interface to which |endpoint_number| belongs must be claimed, and the
@@ -257,7 +289,9 @@ interface UsbDevice {
   // |timeout| specifies the request timeout in milliseconds. A timeout of 0
   // indicates no timeout: the request will remain pending indefinitely until
   // completed or otherwise terminated.
-  GenericTransferOut(uint8 endpoint_number, array<uint8> data, uint32 timeout)
+  GenericTransferOut(uint8 endpoint_number,
+                     mojo_base.mojom.ReadOnlyBuffer data,
+                     uint32 timeout)
       => (UsbTransferStatus status);
 
   // Initiates an inbound isochronous transfer request on a specific endpoint.
@@ -281,7 +315,8 @@ interface UsbDevice {
   IsochronousTransferIn(uint8 endpoint_number,
                         array<uint32> packet_lengths,
                         uint32 timeout)
-      => (array<uint8> data, array<UsbIsochronousPacket> packets);
+      => (mojo_base.mojom.ReadOnlyBuffer data,
+          array<UsbIsochronousPacket> packets);
 
   // Initiates an outbound isochronous transfer request on a specific endpoint.
   // The interface to which |endpoint_number| belongs must be claimed, and the
@@ -300,7 +335,7 @@ interface UsbDevice {
 
   // |packets| contains the status of each packet sent to the device, in order.
   IsochronousTransferOut(uint8 endpoint_number,
-                         array<uint8> data,
+                         mojo_base.mojom.ReadOnlyBuffer data,
                          array<uint32> packet_lengths,
                          uint32 timeout)
       => (array<UsbIsochronousPacket> packets);

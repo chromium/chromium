@@ -11,17 +11,18 @@
 <translation id="3273951168350045122">Teclado (<ph name="ADDRESS" />)</translation>
 <translation id="3689300613247337921"><ph name="DEVICE_NAME" />, ordenador</translation>
 <translation id="4287283380557401002">Audio do coche (<ph name="ADDRESS" />)</translation>
-<translation id="430326050669417502">Joystick (<ph name="ADDRESS" />)</translation>
+<translation id="430326050669417502">Panca de control (<ph name="ADDRESS" />)</translation>
 <translation id="4698630591226285015"><ph name="DEVICE_NAME" />, dispositivo de audio</translation>
 <translation id="4986357476502426173"><ph name="DEVICE_NAME" />, dispositivo de vídeo</translation>
 <translation id="5271696982761495740">Tableta (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">Dispositivo descoñecido ou non compatible (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618"><ph name="DEVICE_NAME" />, módem</translation>
 <translation id="6459740836740815150"><ph name="DEVICE_NAME" />, dispositivo de audio para coche</translation>
 <translation id="6542922424766292144"><ph name="DEVICE_NAME" />, teclado</translation>
 <translation id="654594702871184195">Audio (<ph name="ADDRESS" />)</translation>
 <translation id="6744468237221042970">Ordenador (<ph name="ADDRESS" />)</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, joystick</translation>
+<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, panca de control</translation>
 <translation id="7501330106833014351">Mando (<ph name="ADDRESS" />)</translation>
 <translation id="8613368722576151038"><ph name="DEVICE_NAME" />, mando</translation>
 <translation id="8866374292072238753">Vídeo (<ph name="ADDRESS" />)</translation>

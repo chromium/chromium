@@ -1,7 +1,2 @@
-per-file *password*=dvadym@chromium.org
-per-file *password*=kolos@chromium.org
-per-file *password*=vasilii@chromium.org
-
-per-file *username*=dvadym@chromium.org
-per-file *username*=kolos@chromium.org
-per-file *username*=vasilii@chromium.org
+per-file *password*=file://components/password_manager/OWNERS
+per-file *username*=file://components/password_manager/OWNERS

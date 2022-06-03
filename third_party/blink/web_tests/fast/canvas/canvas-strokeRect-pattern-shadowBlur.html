@@ -1,0 +1,51 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+test(function(t) {
+  var STROKE_WIDTH = 20;
+  var SHADOW_OFFSET = 15;
+
+  // Do not start at (0, 0)
+  // otherwise half of the stroke on top left will be hidden
+  var POSITION = 20;
+  var SIDE_LENGTH = 100;
+
+  var image = new Image();
+  image.src = "resources/html5.png";
+  image.onload = function() {
+    var canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    canvas.setAttribute('width', '1000');
+    canvas.setAttribute('height', '1000');
+    var ctx = canvas.getContext('2d');
+
+    var pattern = ctx.createPattern(image, 'repeat');
+    ctx.beginPath();
+    ctx.strokeStyle = pattern;
+    ctx.lineWidth = STROKE_WIDTH;
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = SHADOW_OFFSET;
+    ctx.shadowOffsetY = SHADOW_OFFSET;
+
+    // colored pixels of html5.png starts at 3 pixels away from the border of
+    // the image, they must be taken into account since the shadow is applied
+    // to the colored pixels.
+    const squareBorder = POSITION + SIDE_LENGTH + STROKE_WIDTH / 2 + SHADOW_OFFSET + 3 * 2;
+    var imgDataBefore = [];
+    for (var i = 25; i < squareBorder; i += 10)
+      imgDataBefore.push(ctx.getImageData(squareBorder, i, 1, 1).data)
+
+    ctx.strokeRect(POSITION, POSITION, SIDE_LENGTH, SIDE_LENGTH);
+
+    var imgDataAfter = [];
+    for (var i = 25; i < squareBorder; i += 10)
+      imgDataAfter.push(ctx.getImageData(squareBorder, i, 1, 1).data)
+
+    for (var i = 0; i < imgDataAfter.length; i++)
+      assert_array_equals(imgDataAfter[i], imgDataBefore[i]);
+  };
+}, 'Test that the drop shadow properly falls off when a rect is stroked with a pattern.');
+
+</script>

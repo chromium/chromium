@@ -14,10 +14,19 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-date.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace content {
 
@@ -81,6 +90,9 @@ class V8ValueConverterImpl::FromV8ValueState {
       : max_recursion_depth_(kMaxRecursionDepth),
         avoid_identity_hash_for_testing_(avoid_identity_hash_for_testing) {}
 
+  FromV8ValueState(const FromV8ValueState&) = delete;
+  FromV8ValueState& operator=(const FromV8ValueState&) = delete;
+
   // If |handle| is not in |unique_map_|, then add it to |unique_map_| and
   // return true.
   //
@@ -135,8 +147,6 @@ class V8ValueConverterImpl::FromV8ValueState {
   int max_recursion_depth_;
 
   bool avoid_identity_hash_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromV8ValueState);
 };
 
 // A class to ensure that objects/arrays that are being converted by
@@ -151,6 +161,10 @@ class V8ValueConverterImpl::ScopedUniquenessGuard {
       : state_(state),
         value_(value),
         is_valid_(state_->AddToUniquenessCheck(value_)) {}
+
+  ScopedUniquenessGuard(const ScopedUniquenessGuard&) = delete;
+  ScopedUniquenessGuard& operator=(const ScopedUniquenessGuard&) = delete;
+
   ~ScopedUniquenessGuard() {
     if (is_valid_) {
       bool removed = state_->RemoveFromUniquenessCheck(value_);
@@ -165,8 +179,6 @@ class V8ValueConverterImpl::ScopedUniquenessGuard {
   V8ValueConverterImpl::FromV8ValueState* state_;
   v8::Local<v8::Object> value_;
   bool is_valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUniquenessGuard);
 };
 
 std::unique_ptr<V8ValueConverter> V8ValueConverter::Create() {
@@ -233,29 +245,22 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     case base::Value::Type::NONE:
       return v8::Null(isolate);
 
-    case base::Value::Type::BOOLEAN: {
-      bool val = false;
-      CHECK(value->GetAsBoolean(&val));
-      return v8::Boolean::New(isolate, val);
-    }
+    case base::Value::Type::BOOLEAN:
+      return v8::Boolean::New(isolate, value->GetBool());
 
     case base::Value::Type::INTEGER: {
-      int val = 0;
-      CHECK(value->GetAsInteger(&val));
-      return v8::Integer::New(isolate, val);
+      return v8::Integer::New(isolate, value->GetInt());
     }
 
     case base::Value::Type::DOUBLE: {
-      double val = 0.0;
-      CHECK(value->GetAsDouble(&val));
-      return v8::Number::New(isolate, val);
+      return v8::Number::New(isolate, value->GetDouble());
     }
 
     case base::Value::Type::STRING: {
-      std::string val;
-      CHECK(value->GetAsString(&val));
-      return v8::String::NewFromUtf8(isolate, val.c_str(),
-                                     v8::NewStringType::kNormal, val.length())
+      const std::string* val = value->GetIfString();
+      CHECK(val);
+      return v8::String::NewFromUtf8(isolate, val->c_str(),
+                                     v8::NewStringType::kNormal, val->length())
           .ToLocalChecked();
     }
 
@@ -282,12 +287,12 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const base::ListValue* val) const {
-  v8::Local<v8::Array> result(v8::Array::New(isolate, val->GetSize()));
+  v8::Local<v8::Array> result(v8::Array::New(isolate, val->GetList().size()));
 
   // TODO(robwu): Callers should pass in the context.
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-  for (size_t i = 0; i < val->GetSize(); ++i) {
+  for (size_t i = 0; i < val->GetList().size(); ++i) {
     const base::Value* child = nullptr;
     CHECK(val->Get(i, &child));
 
@@ -340,7 +345,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
   DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value->GetBlob().size());
-  memcpy(buffer->GetContents().Data(), value->GetBlob().data(),
+  memcpy(buffer->GetBackingStore()->Data(), value->GetBlob().data(),
          value->GetBlob().size());
   return buffer;
 }
@@ -447,7 +452,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
   // that context, but change back after val is converted.
   if (!val->CreationContext().IsEmpty() &&
       val->CreationContext() != isolate->GetCurrentContext())
-    scope.reset(new v8::Context::Scope(val->CreationContext()));
+    scope = std::make_unique<v8::Context::Scope>(val->CreationContext());
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -496,19 +501,21 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
   }
 
   if (val->IsArrayBuffer()) {
-    auto contents = val.As<v8::ArrayBuffer>()->GetContents();
-    return base::Value::CreateWithCopiedBuffer(
-        static_cast<const char*>(contents.Data()), contents.ByteLength());
-  } else if (val->IsArrayBufferView()) {
+    auto backing_store = val.As<v8::ArrayBuffer>()->GetBackingStore();
+    const auto* data = static_cast<const uint8_t*>(backing_store->Data());
+    return base::Value::ToUniquePtrValue(
+        base::Value(base::make_span(data, backing_store->ByteLength())));
+  }
+  if (val->IsArrayBufferView()) {
     v8::Local<v8::ArrayBufferView> view = val.As<v8::ArrayBufferView>();
     size_t byte_length = view->ByteLength();
     std::vector<char> buffer(byte_length);
     view->CopyContents(buffer.data(), buffer.size());
     return std::make_unique<base::Value>(std::move(buffer));
-  } else {
-    NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
-    return nullptr;
   }
+
+  NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
@@ -524,7 +531,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   // that context, but change back after val is converted.
   if (!val->CreationContext().IsEmpty() &&
       val->CreationContext() != isolate->GetCurrentContext())
-    scope.reset(new v8::Context::Scope(val->CreationContext()));
+    scope = std::make_unique<v8::Context::Scope>(val->CreationContext());
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -610,8 +617,8 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
     if (strip_null_from_objects_ && child->is_none())
       continue;
 
-    result->SetWithoutPathExpansion(std::string(*name_utf8, name_utf8.length()),
-                                    std::move(child));
+    result->SetKey(std::string(*name_utf8, name_utf8.length()),
+                   base::Value::FromUniquePtrValue(std::move(child)));
   }
 
   return std::move(result);

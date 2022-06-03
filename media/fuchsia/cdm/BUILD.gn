@@ -19,13 +19,13 @@ source_set("cdm") {
   ]
 
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk:fuchsia-media-drm",
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
   ]
 
   configs += [ "//media:subcomponent_config" ]
 
   deps = [
-    "//fuchsia/base",
     "//media/base",
     "//media/cdm",
     "//media/fuchsia/common",

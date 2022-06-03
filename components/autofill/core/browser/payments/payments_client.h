@@ -8,18 +8,21 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 class IdentityManager;
@@ -48,11 +51,6 @@ typedef base::OnceCallback<void(
     const std::string& display_text)>
     MigrateCardsCallback;
 
-// Callback type for GetUnmaskDetails callback.
-typedef base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                AutofillClient::UnmaskDetails&)>
-    GetUnmaskDetailsCallback;
-
 // Billable service number is defined in Payments server to distinguish
 // different requests.
 const int kUnmaskCardBillableServiceNumber = 70154;
@@ -74,19 +72,44 @@ class PaymentsClient {
   static const char kRecipientName[];
   static const char kPhoneNumber[];
 
+  // Details for card unmasking, such as the suggested method of authentication,
+  // along with any information required to facilitate the authentication.
+  struct UnmaskDetails {
+    UnmaskDetails();
+    ~UnmaskDetails();
+    UnmaskDetails& operator=(const UnmaskDetails& other);
+
+    // The type of authentication method suggested for card unmask.
+    AutofillClient::UnmaskAuthMethod unmask_auth_method =
+        AutofillClient::UnmaskAuthMethod::kUnknown;
+    // Set to true if the user should be offered opt-in for FIDO Authentication.
+    bool offer_fido_opt_in = false;
+    // Public Key Credential Request Options required for authentication.
+    // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
+    absl::optional<base::Value> fido_request_options;
+    // Set of credit cards ids that are eligible for FIDO Authentication.
+    std::set<std::string> fido_eligible_card_ids;
+  };
+
   // A collection of the information required to make a credit card unmask
   // request.
   struct UnmaskRequestDetails {
     UnmaskRequestDetails();
     UnmaskRequestDetails(const UnmaskRequestDetails& other);
+    UnmaskRequestDetails& operator=(const UnmaskRequestDetails& other);
     ~UnmaskRequestDetails();
 
     int64_t billing_customer_number = 0;
-    AutofillClient::UnmaskCardReason reason;
     CreditCard card;
     std::string risk_data;
     CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
-    base::Value fido_assertion_info;
+    absl::optional<base::Value> fido_assertion_info;
+    std::u16string otp;
+    // An opaque token used to chain consecutive payments requests together.
+    std::string context_token;
+    // The url origin of the website where the unmasking happened. Should be
+    // populated when the unmasking is for a virtual card.
+    absl::optional<GURL> last_committed_url_origin;
   };
 
   // Information retrieved from an UnmaskRequest.
@@ -108,15 +131,34 @@ class PaymentsClient {
 
     std::string real_pan;
     std::string dcvv;
+    // The expiration month of the card. It falls in between 1 - 12. Should be
+    // populated when the card is a virtual card which does not necessarily have
+    // the same expiration date as its related actual card.
+    std::string expiration_month;
+    // The four-digit expiration year of the card. Should be populated when the
+    // card is a virtual card which does not necessarily have the same
+    // expiration date as its related actual card.
+    std::string expiration_year;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
-    base::Optional<base::Value> fido_creation_options = base::nullopt;
+    absl::optional<base::Value> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    base::Optional<base::Value> fido_request_options = base::nullopt;
+    absl::optional<base::Value> fido_request_options;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
-    std::string card_authorization_token = std::string();
+    std::string card_authorization_token;
+    // Available card unmask challenge options.
+    std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
+    // An opaque token used to chain consecutive payments requests together.
+    // Client should not update or modify this token.
+    std::string context_token;
+    // An intermediate status in cases other than immediate success or failure.
+    std::string flow_status;
+
+    // The type of the returned credit card.
+    AutofillClient::PaymentsRpcCardType card_type =
+        AutofillClient::PaymentsRpcCardType::kUnknown;
   };
 
   // Information required to either opt-in or opt-out a user for FIDO
@@ -145,7 +187,7 @@ class PaymentsClient {
     Reason reason;
     // Signature required for enrolling user into FIDO authentication for future
     // card unmasking.
-    base::Value fido_authenticator_response;
+    absl::optional<base::Value> fido_authenticator_response;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token = std::string();
@@ -159,13 +201,13 @@ class PaymentsClient {
 
     // Unset if response failed. True if user is opted-in for FIDO
     // authentication for card unmasking. False otherwise.
-    base::Optional<bool> user_is_opted_in;
+    absl::optional<bool> user_is_opted_in;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
-    base::Optional<base::Value> fido_creation_options;
+    absl::optional<base::Value> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    base::Optional<base::Value> fido_request_options;
+    absl::optional<base::Value> fido_request_options;
   };
 
   // A collection of the information required to make a credit card upload
@@ -178,9 +220,9 @@ class PaymentsClient {
     int64_t billing_customer_number = 0;
     int detected_values;
     CreditCard card;
-    base::string16 cvc;
+    std::u16string cvc;
     std::vector<AutofillProfile> profiles;
-    base::string16 context_token;
+    std::u16string context_token;
     std::string risk_data;
     std::string app_locale;
     std::vector<const char*> active_experiments;
@@ -194,9 +236,23 @@ class PaymentsClient {
     ~MigrationRequestDetails();
 
     int64_t billing_customer_number = 0;
-    base::string16 context_token;
+    std::u16string context_token;
     std::string risk_data;
     std::string app_locale;
+  };
+
+  // A collection of the information required to make select challenge option
+  // request.
+  struct SelectChallengeOptionRequestDetails {
+    SelectChallengeOptionRequestDetails();
+    SelectChallengeOptionRequestDetails(
+        const SelectChallengeOptionRequestDetails& other);
+    ~SelectChallengeOptionRequestDetails();
+
+    CardUnmaskChallengeOption selected_challenge_option;
+    // An opaque token used to chain consecutive payments requests together.
+    std::string context_token;
+    int64_t billing_customer_number = 0;
   };
 
   // An enum set in the GetUploadDetailsRequest indicating the source of the
@@ -230,6 +286,9 @@ class PaymentsClient {
       AccountInfoGetter* const account_info_getter,
       bool is_off_the_record = false);
 
+  PaymentsClient(const PaymentsClient&) = delete;
+  PaymentsClient& operator=(const PaymentsClient&) = delete;
+
   virtual ~PaymentsClient();
 
   // Starts fetching the OAuth2 token in anticipation of future Payments
@@ -242,21 +301,22 @@ class PaymentsClient {
   // The user has interacted with a credit card form and may attempt to unmask a
   // card. This request returns what method of authentication is suggested,
   // along with any information to facilitate the authentication.
-  virtual void GetUnmaskDetails(GetUnmaskDetailsCallback callback,
-                                const std::string& app_locale);
+  virtual void GetUnmaskDetails(
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              UnmaskDetails&)> callback,
+      const std::string& app_locale);
 
   // The user has attempted to unmask a card with the given cvc.
-  void UnmaskCard(const UnmaskRequestDetails& request_details,
-                  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                          UnmaskResponseDetails&)> callback);
+  virtual void UnmaskCard(
+      const UnmaskRequestDetails& request_details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              UnmaskResponseDetails&)> callback);
 
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.
-  void OptChange(
-      const OptChangeRequestDetails request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              PaymentsClient::OptChangeResponseDetails&)>
-          callback);
+  void OptChange(const OptChangeRequestDetails request_details,
+                 base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                         OptChangeResponseDetails&)> callback);
 
   // Determine if the user meets the Payments service's conditions for upload.
   // The service uses |addresses| (from which names and phone numbers are
@@ -276,7 +336,7 @@ class PaymentsClient {
       const std::vector<const char*>& active_experiments,
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const base::string16&,
+                              const std::u16string&,
                               std::unique_ptr<base::Value>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
@@ -298,6 +358,13 @@ class PaymentsClient {
       const MigrationRequestDetails& details,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrateCardsCallback callback);
+
+  // The user has chosen one of the available challenge options. Send the
+  // selected challenge option to server to continue the unmask flow.
+  virtual void SelectChallengeOption(
+      const SelectChallengeOptionRequestDetails& details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const std::string&)> callback);
 
   // Cancels and clears the current |request_|.
   void CancelRequest();
@@ -373,8 +440,6 @@ class PaymentsClient {
   bool has_retried_authorization_;
 
   base::WeakPtrFactory<PaymentsClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentsClient);
 };
 
 }  // namespace payments

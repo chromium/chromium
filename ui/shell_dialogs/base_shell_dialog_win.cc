@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/win/scoped_com_initializer.h"
 
 namespace ui {
@@ -19,8 +21,8 @@ namespace {
 // have a situation where a modal dialog in one window blocks the appearance
 // of a modal dialog in another.
 scoped_refptr<base::SingleThreadTaskRunner> CreateDialogTaskRunner() {
-  return CreateCOMSTATaskRunner(
-      {base::ThreadPool(), base::TaskPriority::USER_BLOCKING,
+  return base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
@@ -37,7 +39,6 @@ BaseShellDialogImpl::RunState::RunState() = default;
 BaseShellDialogImpl::RunState::~RunState() = default;
 
 // static
-BaseShellDialogImpl::Owners BaseShellDialogImpl::owners_;
 int BaseShellDialogImpl::instance_count_ = 0;
 
 BaseShellDialogImpl::BaseShellDialogImpl() {
@@ -47,7 +48,13 @@ BaseShellDialogImpl::BaseShellDialogImpl() {
 BaseShellDialogImpl::~BaseShellDialogImpl() {
   // All runs should be complete by the time this is called!
   if (--instance_count_ == 0)
-    DCHECK(owners_.empty());
+    DCHECK(GetOwners().empty());
+}
+
+// static
+BaseShellDialogImpl::Owners& BaseShellDialogImpl::GetOwners() {
+  static base::NoDestructor<BaseShellDialogImpl::Owners> owners;
+  return *owners;
 }
 
 // static
@@ -66,7 +73,7 @@ std::unique_ptr<BaseShellDialogImpl::RunState> BaseShellDialogImpl::BeginRun(
   run_state->dialog_task_runner = CreateDialogTaskRunner();
   run_state->owner = owner;
   if (owner) {
-    owners_.insert(owner);
+    GetOwners().insert(owner);
     DisableOwner(owner);
   }
   return run_state;
@@ -76,13 +83,13 @@ void BaseShellDialogImpl::EndRun(std::unique_ptr<RunState> run_state) {
   if (run_state->owner) {
     DCHECK(IsRunningDialogForOwner(run_state->owner));
     SetOwnerEnabled(run_state->owner, true);
-    DCHECK(owners_.find(run_state->owner) != owners_.end());
-    owners_.erase(run_state->owner);
+    DCHECK(GetOwners().find(run_state->owner) != GetOwners().end());
+    GetOwners().erase(run_state->owner);
   }
 }
 
 bool BaseShellDialogImpl::IsRunningDialogForOwner(HWND owner) const {
-  return (owner && owners_.find(owner) != owners_.end());
+  return (owner && GetOwners().find(owner) != GetOwners().end());
 }
 
 }  // namespace ui

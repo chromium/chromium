@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILES_FORCE_SAFE_SEARCH_POLICY_HANDLER_H_
 #define CHROME_BROWSER_PROFILES_FORCE_SAFE_SEARCH_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -22,15 +21,17 @@ class PolicyMap;
 class ForceSafeSearchPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   ForceSafeSearchPolicyHandler();
+
+  ForceSafeSearchPolicyHandler(const ForceSafeSearchPolicyHandler&) = delete;
+  ForceSafeSearchPolicyHandler& operator=(const ForceSafeSearchPolicyHandler&) =
+      delete;
+
   ~ForceSafeSearchPolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForceSafeSearchPolicyHandler);
 };
 
 }  // namespace policy

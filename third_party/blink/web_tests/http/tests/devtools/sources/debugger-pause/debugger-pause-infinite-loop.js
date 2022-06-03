@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that we can break infinite loop started from console.`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise('a = true');
 
@@ -21,7 +21,7 @@
   await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
   await new Promise(resolve => SourcesTestRunner.resumeExecution(resolve));
   await ConsoleTestRunner.waitForConsoleMessagesPromise(4);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.addResult('Infinite loop finished');
   SourcesTestRunner.completeDebuggerTest();
 })();

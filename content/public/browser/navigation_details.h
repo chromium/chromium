@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 
-#include <string>
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_type.h"
 #include "url/gurl.h"
@@ -20,7 +19,8 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   // By default, the entry will be filled according to a new main frame
   // navigation.
   LoadCommittedDetails();
-  LoadCommittedDetails(const LoadCommittedDetails& other);
+  LoadCommittedDetails(const LoadCommittedDetails&);
+  LoadCommittedDetails& operator=(const LoadCommittedDetails&);
 
   // The committed entry. This will be the active entry in the controller.
   NavigationEntry* entry;
@@ -36,10 +36,11 @@ struct CONTENT_EXPORT LoadCommittedDetails {
 
   // The previous main frame URL that the user was on. This may be empty if
   // there was no last committed entry.
-  GURL previous_url;
+  GURL previous_main_frame_url;
 
-  // True if the committed entry has replaced the exisiting one.
-  // A non-user initiated redirect causes such replacement.
+  // True if the committed entry has replaced the existing one. Note that in
+  // case of subrames, the NavigationEntry and FrameNavigationEntry objects
+  // don't actually get replaced - they're reused, but with updated attributes.
   bool did_replace_entry;
 
   // Whether the navigation happened without changing document. Examples of
@@ -52,6 +53,9 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   // True when the main frame was navigated. False means the navigation was a
   // sub-frame.
   bool is_main_frame;
+
+  // True when the navigation triggered a prerender activation.
+  bool is_prerender_activation = false;
 
   // Returns whether the main frame navigated to a different page (e.g., not
   // scrolling to a fragment inside the current page). We often need this logic

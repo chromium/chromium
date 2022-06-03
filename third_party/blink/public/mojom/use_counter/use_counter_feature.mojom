@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This enum defines feature types that can be counted by UseCounter
+// infrastructure.
+enum UseCounterFeatureType {
+  // Blink.UseCounter.Features
+  kWebFeature,
+  // Blink.UseCounter.CSSProperties
+  kCssProperty,
+  // Blink.UseCounter.AnimatedCSSProperties
+  kAnimatedCssProperty,
+  // Blink.UseCounter.PermissionsPolicy.Violation.Enforce
+  kPermissionsPolicyViolationEnforce,
+  // Blink.UseCounter.PermissionsPolicy.Allow
+  kPermissionsPolicyIframeAttribute,
+  // Blink.UseCounter.PermissionsPolicy.Header
+  kPermissionsPolicyHeader,
+};
+
+// This struct corresponds to `blink::UseCounterFeature`.
+// Note: Not using union type here as the conversion to
+// `blink::UseCounterFeature` would be more complicated.
+struct UseCounterFeature {
+  UseCounterFeatureType type;
+  uint32 value;
+};

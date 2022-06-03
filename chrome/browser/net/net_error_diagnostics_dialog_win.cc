@@ -10,19 +10,18 @@
 #include <windows.h>   // NOLINT
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
@@ -35,12 +34,17 @@ namespace {
 class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
  public:
   NetErrorDiagnosticsDialog() {}
+
+  NetErrorDiagnosticsDialog(const NetErrorDiagnosticsDialog&) = delete;
+  NetErrorDiagnosticsDialog& operator=(const NetErrorDiagnosticsDialog&) =
+      delete;
+
   ~NetErrorDiagnosticsDialog() override {}
 
   // NetErrorDiagnosticsDialog implementation.
   void Show(content::WebContents* web_contents,
             const std::string& failed_url,
-            const base::Closure& callback) {
+            base::OnceClosure callback) {
     DCHECK(!callback.is_null());
 
     HWND parent =
@@ -57,13 +61,14 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
         base::BindOnce(&NetErrorDiagnosticsDialog::ShowDialogOnPrivateThread,
                        base::Unretained(this), parent, failed_url),
         base::BindOnce(&NetErrorDiagnosticsDialog::DiagnosticsDone,
-                       base::Unretained(this), std::move(run_state), callback));
+                       base::Unretained(this), std::move(run_state),
+                       std::move(callback)));
   }
 
  private:
   void ShowDialogOnPrivateThread(HWND parent, const std::string& failed_url) {
     NDFHANDLE incident_handle;
-    base::string16 failed_url_wide = base::UTF8ToUTF16(failed_url);
+    std::wstring failed_url_wide = base::UTF8ToWide(failed_url);
     if (!SUCCEEDED(NdfCreateWebIncident(failed_url_wide.c_str(),
                                         &incident_handle))) {
       return;
@@ -73,12 +78,10 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
   }
 
   void DiagnosticsDone(std::unique_ptr<RunState> run_state,
-                       const base::Closure& callback) {
+                       base::OnceClosure callback) {
     EndRun(std::move(run_state));
-    callback.Run();
+    std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorDiagnosticsDialog);
 };
 
 }  // namespace
@@ -88,7 +91,7 @@ bool CanShowNetworkDiagnosticsDialog(content::WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // The Windows diagnostic tool logs URLs it's run with, so it shouldn't be
   // used with incognito or guest profiles.  See https://crbug.com/929141
-  return !profile->IsOffTheRecord() && !profile->IsGuestSession();
+  return !profile->IsIncognitoProfile() && !profile->IsGuestSession();
 }
 
 void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
@@ -98,5 +101,5 @@ void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
   NetErrorDiagnosticsDialog* dialog = new NetErrorDiagnosticsDialog();
   dialog->Show(
       web_contents, failed_url,
-      base::Bind(&base::DeletePointer<NetErrorDiagnosticsDialog>, dialog));
+      base::BindOnce(&base::DeletePointer<NetErrorDiagnosticsDialog>, dialog));
 }

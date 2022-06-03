@@ -17,9 +17,9 @@ SkewedTickClock::SkewedTickClock(const base::TickClock* clock)
       skew_clock_at_last_set_(last_skew_set_time_) {}
 
 base::TimeTicks SkewedTickClock::SkewTicks(base::TimeTicks now) const {
-  return base::TimeDelta::FromMicroseconds(
-      (now - last_skew_set_time_).InMicroseconds() * skew_) +
-      skew_clock_at_last_set_;
+  return base::Microseconds((now - last_skew_set_time_).InMicroseconds() *
+                            skew_) +
+         skew_clock_at_last_set_;
 }
 
 void SkewedTickClock::SetSkew(double skew, base::TimeDelta offset) {

@@ -54,6 +54,7 @@ PlayerUtils.registerEMEEventListeners = function(player) {
         player.video.receivedKeyMessage = true;
         if (message.messageType == 'license-request' ||
             message.messageType == 'license-renewal' ||
+            message.messageType == 'license-release' ||
             message.messageType == 'individualization-request') {
           player.video.receivedMessageTypes.add(message.messageType);
         } else {
@@ -148,11 +149,11 @@ PlayerUtils.registerEMEEventListeners = function(player) {
               // As the tests run with a different origin every time, there is
               // no way currently to create a session in one test and then load
               // it in a subsequent test (https://crbug.com/715349).
-              // So if |sessionToLoad| is 'LoadableSession', create a session
+              // So if |sessionToLoad| is 'PersistentLicense', create a session
               // that can be loaded and use that session to load. Otherwise
               // use the name provided (which allows for testing load() on a
               // session which doesn't exist).
-              if (player.testConfig.sessionToLoad == 'LoadableSession') {
+              if (player.testConfig.sessionToLoad == 'PersistentLicense') {
                 return Utils.createSessionToLoad(
                     mediaKeys, player.testConfig.sessionToLoad);
               } else {
@@ -190,9 +191,10 @@ PlayerUtils.registerEMEEventListeners = function(player) {
           Utils.failTest(error, UNIT_TEST_FAILURE);
         });
       } else {
-        Utils.timeLog('Creating new media key session for initDataType: ' +
-                      message.initDataType + ', initData: ' +
-                      Utils.getHexString(new Uint8Array(message.initData)));
+        Utils.timeLog(
+            'Creating new media key session for initDataType: ' +
+            message.initDataType + ', initData: ' +
+            Utils.getHexString(new Uint8Array(message.initData)));
         player.session = message.target.mediaKeys.createSession();
         addMediaKeySessionListeners(player.session);
         player.session.generateRequest(message.initDataType, message.initData)
@@ -309,7 +311,6 @@ PlayerUtils.createPlayer = function(video, testConfig) {
         return WidevinePlayer;
       case CLEARKEY:
       case EXTERNAL_CLEARKEY:
-      case EXTERNAL_CLEARKEY_CDM_PROXY:
       case MESSAGE_TYPE_TEST_KEYSYSTEM:
       case CRASH_TEST_KEYSYSTEM:
         return ClearKeyPlayer;
@@ -327,3 +328,22 @@ PlayerUtils.createPlayer = function(video, testConfig) {
   var Player = getPlayerType(testConfig.keySystem);
   return new Player(video, testConfig);
 };
+
+PlayerUtils.removeSession = async function(player) {
+  // Once remove() is called, another 'keystatuseschange' and 'message' events
+  // will happen.
+  const waitForKeyStatusChangePromise =
+      Utils.waitForEvent(player.session, 'keystatuseschange');
+
+  const waitForMessagePromise = Utils.waitForEvent(
+      player.session, 'message', function(e, resolve, reject) {
+        Utils.timeLog(e.messageType);
+        resolve();
+      });
+
+  Utils.timeLog('Calling remove()');
+  const removePromise = player.session.remove();
+
+  return Promise.all(
+      [removePromise, waitForKeyStatusChangePromise, waitForMessagePromise]);
+}

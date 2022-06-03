@@ -36,6 +36,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothInputClient
   };
 
   FakeBluetoothInputClient();
+
+  FakeBluetoothInputClient(const FakeBluetoothInputClient&) = delete;
+  FakeBluetoothInputClient& operator=(const FakeBluetoothInputClient&) = delete;
+
   ~FakeBluetoothInputClient() override;
 
   // BluetoothInputClient overrides
@@ -58,8 +62,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothInputClient
 
   // List of observers interested in event notifications from us.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothInputClient);
 };
 
 }  // namespace bluez

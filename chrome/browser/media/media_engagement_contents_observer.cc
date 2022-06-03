@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_session.h"
@@ -47,7 +47,7 @@ const gfx::Size MediaEngagementContentsObserver::kSignificantSize =
     gfx::Size(200, 140);
 
 const base::TimeDelta MediaEngagementContentsObserver::kMaxShortPlaybackTime =
-    base::TimeDelta::FromSeconds(3);
+    base::Seconds(3);
 
 const char* const
     MediaEngagementContentsObserver::kHistogramScoreAtPlaybackName =
@@ -71,7 +71,7 @@ const int MediaEngagementContentsObserver::kMaxInsignificantPlaybackReason =
 
 const base::TimeDelta
     MediaEngagementContentsObserver::kSignificantMediaPlaybackTime =
-        base::TimeDelta::FromSeconds(7);
+        base::Seconds(7);
 
 MediaEngagementContentsObserver::MediaEngagementContentsObserver(
     content::WebContents* web_contents,
@@ -154,7 +154,10 @@ void MediaEngagementContentsObserver::RegisterAudiblePlayersWithSession() {
 
 void MediaEngagementContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage()) {
     return;
@@ -258,6 +261,13 @@ void MediaEngagementContentsObserver::MediaResized(
        size.height() >= kSignificantSize.height());
   MaybeInsertRemoveSignificantPlayer(id);
   UpdatePlayerTimer(id);
+}
+
+void MediaEngagementContentsObserver::MediaDestroyed(
+    const content::MediaPlayerId& id) {
+  player_states_.erase(id);
+  audible_players_.erase(id);
+  significant_players_.erase(id);
 }
 
 void MediaEngagementContentsObserver::MediaStoppedPlaying(
@@ -490,9 +500,9 @@ void MediaEngagementContentsObserver::UpdatePlayerTimer(
     new_timer->Start(
         FROM_HERE,
         MediaEngagementContentsObserver::kSignificantMediaPlaybackTime,
-        base::Bind(&MediaEngagementContentsObserver::
-                       OnSignificantMediaPlaybackTimeForPlayer,
-                   base::Unretained(this), id));
+        base::BindOnce(&MediaEngagementContentsObserver::
+                           OnSignificantMediaPlaybackTimeForPlayer,
+                       base::Unretained(this), id));
 
     audible_row->second.second = std::move(new_timer);
   } else if (audible_row->second.second) {
@@ -522,9 +532,9 @@ void MediaEngagementContentsObserver::UpdatePageTimer() {
     playback_timer_.Start(
         FROM_HERE,
         MediaEngagementContentsObserver::kSignificantMediaPlaybackTime,
-        base::Bind(&MediaEngagementContentsObserver::
-                       OnSignificantMediaPlaybackTimeForPage,
-                   base::Unretained(this)));
+        base::BindOnce(&MediaEngagementContentsObserver::
+                           OnSignificantMediaPlaybackTimeForPage,
+                       base::Unretained(this)));
   } else {
     if (!playback_timer_.IsRunning())
       return;
@@ -556,9 +566,9 @@ void MediaEngagementContentsObserver::UpdateAudioContextTimer() {
     audio_context_timer_.Start(
         FROM_HERE,
         MediaEngagementContentsObserver::kSignificantMediaPlaybackTime,
-        base::Bind(&MediaEngagementContentsObserver::
-                       OnSignificantAudioContextPlaybackTimeForPage,
-                   base::Unretained(this)));
+        base::BindOnce(&MediaEngagementContentsObserver::
+                           OnSignificantAudioContextPlaybackTimeForPage,
+                       base::Unretained(this)));
   } else if (audio_context_timer_.IsRunning()) {
     audio_context_timer_.Stop();
   }
@@ -574,8 +584,11 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
   // If the navigation is occuring in the main frame we should use the URL
   // provided by |handle| as the navigation has not committed yet. If the
   // navigation is in a sub frame then use the URL from the main frame.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   url::Origin origin = url::Origin::Create(
-      handle->IsInMainFrame()
+      handle->IsInPrimaryMainFrame()
           ? handle->GetURL()
           : handle->GetWebContents()->GetLastCommittedURL());
   MediaEngagementScore score = service_->CreateEngagementScore(origin);
@@ -605,7 +618,7 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
 content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
 #if !defined(OS_ANDROID)
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (!browser->profile()->IsSameProfileAndType(service_->profile()))
+    if (browser->profile() != service_->profile())
       continue;
 
     int index =
@@ -642,7 +655,7 @@ MediaEngagementContentsObserver::GetOrCreateSession(
   }
 
   MediaEngagementSession::RestoreType restore_type =
-      navigation_handle->GetRestoreType() == content::RestoreType::NONE
+      navigation_handle->GetRestoreType() == content::RestoreType::kNotRestored
           ? MediaEngagementSession::RestoreType::kNotRestored
           : MediaEngagementSession::RestoreType::kRestored;
 

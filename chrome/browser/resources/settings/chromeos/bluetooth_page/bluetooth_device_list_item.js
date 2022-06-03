@@ -6,10 +6,25 @@
  * @fileoverview Polymer element for displaying a bluetooth device in a list.
  */
 
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../os_icons.m.js';
+import '../../settings_shared_css.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BluetoothPageBrowserProxy, BluetoothPageBrowserProxyImpl} from './bluetooth_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'bluetooth-device-list-item',
 
-  behaviors: [I18nBehavior, cr.ui.FocusRowBehavior],
+  behaviors: [I18nBehavior, FocusRowBehavior],
 
   properties: {
     /**
@@ -18,6 +33,7 @@ Polymer({
      */
     device: {
       type: Object,
+      observer: 'onDeviceChanged_',
     },
 
     /**
@@ -29,22 +45,45 @@ Polymer({
       notify: true,
       computed: 'getAriaLabel_(device)',
     },
+
+    // TODO(crbug.com/1208155) Add managed policy icon that is shown when this
+    // flag is true.
+    /** @private */
+    shouldShowManagedIcon_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   hostAttributes: {role: 'button'},
+
+  /** @private {?BluetoothPageBrowserProxy} */
+  browserProxy_: null,
+
+  /** @override */
+  ready() {
+    this.browserProxy_ = BluetoothPageBrowserProxyImpl.getInstance();
+  },
+
+  /** @override */
+  detached() {
+    // Fire an event in case the tooltip was previously showing for the managed
+    // icon in this item and this item is being removed.
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+  },
 
   /**
    * @param {!Event} event
    * @private
    */
-  ignoreEnterKey_: function(event) {
-    if (event.key == 'Enter') {
+  ignoreEnterKey_(event) {
+    if (event.key === 'Enter') {
       event.stopPropagation();
     }
   },
 
   /** @private */
-  tryConnect_: function() {
+  tryConnect_() {
     if (!this.isDisconnected_(this.device)) {
       return;
     }
@@ -56,7 +95,7 @@ Polymer({
   },
 
   /** @private */
-  onClick_: function() {
+  onClick_() {
     this.tryConnect_();
   },
 
@@ -64,8 +103,8 @@ Polymer({
    * @param {!KeyboardEvent} e
    * @private
    */
-  onKeyDown_: function(e) {
-    if (e.key == 'Enter' || e.key == ' ') {
+  onKeyDown_(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
       this.tryConnect_();
       e.preventDefault();
     }
@@ -75,7 +114,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onMenuButtonTap_: function(event) {
+  onMenuButtonTap_(event) {
     const button = /** @type {!HTMLElement} */ (event.target);
     const menu = /** @type {!CrActionMenuElement} */ (this.$.dotsMenu);
     menu.showAt(button);
@@ -83,7 +122,7 @@ Polymer({
   },
 
   /** @private */
-  onConnectActionTap_: function() {
+  onConnectActionTap_() {
     const action = this.isDisconnected_(this.device) ? 'connect' : 'disconnect';
     this.fire('device-event', {
       action: action,
@@ -93,7 +132,7 @@ Polymer({
   },
 
   /** @private */
-  onRemoveTap_: function() {
+  onRemoveTap_() {
     this.fire('device-event', {
       action: 'remove',
       device: this.device,
@@ -106,7 +145,7 @@ Polymer({
    * @return {string} The text to display for the connect/disconnect menu item.
    * @private
    */
-  getConnectActionText_: function(connected) {
+  getConnectActionText_(connected) {
     return this.i18n(connected ? 'bluetoothDisconnect' : 'bluetoothConnect');
   },
 
@@ -115,7 +154,7 @@ Polymer({
    * @return {string} The text to display for |device| in the device list.
    * @private
    */
-  getDeviceName_: function(device) {
+  getDeviceName_(device) {
     return device.name || device.address;
   },
 
@@ -125,17 +164,23 @@ Polymer({
    * device name and device type if known.
    * @private
    */
-  getAriaLabel_: function(device) {
-    // We need to turn the device name and type into a single localized string.
+  getAriaLabel_(device) {
+    // We need to turn the device name, connection status and type into a single
+    // localized string.
     // The possible device type enum values can be seen here:
     // https://developer.chrome.com/apps/bluetooth#type-Device.
     // The localization id is computed dynamically to avoid maintaining a
     // mapping from the enum string value to the localization id.
     // if device.type is not defined, we fall back to an unknown device string.
     const deviceName = this.getDeviceName_(device);
-    return (device.type) ?
+    const deviceStatus = this.getConnectionStatusText_(device);
+
+    const a11ydeviceNameAndType = (device.type) ?
         this.i18n('bluetoothDeviceType_' + device.type, deviceName) :
         this.i18n('bluetoothDeviceType_unknown', deviceName);
+    return this.i18n(
+        'bluetoothDeviceWithConnectionStatus', a11ydeviceNameAndType,
+        deviceStatus);
   },
 
   /**
@@ -143,7 +188,7 @@ Polymer({
    * @return {string} The text to display the connection status of |device|.
    * @private
    */
-  getConnectionStatusText_: function(device) {
+  getConnectionStatusText_(device) {
     if (!this.hasConnectionStatusText_(device)) {
       return '';
     }
@@ -164,7 +209,7 @@ Polymer({
    *     secondary text of the |device| in device list.
    * @private
    */
-  hasConnectionStatusText_: function(device) {
+  hasConnectionStatusText_(device) {
     return !!(device.paired || device.connecting);
   },
 
@@ -173,7 +218,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isDisconnected_: function(device) {
+  isDisconnected_(device) {
     return !device.connected && !device.connecting;
   },
 
@@ -186,7 +231,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getDeviceIcon_: function(device) {
+  getDeviceIcon_(device) {
     switch (device.type) {
       case 'computer':
         return 'cr:computer';
@@ -211,5 +256,43 @@ Polymer({
         return device.connected ? 'os-settings:bluetooth-connected' :
                                   'cr:bluetooth';
     }
+  },
+
+  /**
+   * @param {?chrome.bluetooth.Device} newValue
+   * @param {?chrome.bluetooth.Device} oldValue
+   * @private
+   */
+  onDeviceChanged_(newValue, oldValue) {
+    if (!newValue) {
+      this.shouldShowManagedIcon_ = false;
+      return;
+    }
+
+    this.browserProxy_.isDeviceBlockedByPolicy(newValue.address)
+        .then((isBlocked) => {
+          this.shouldShowManagedIcon_ = isBlocked;
+          if (!this.shouldShowManagedIcon_) {
+            // Fire an event in case the tooltip was previously showing for this
+            // icon and this icon now is hidden.
+            this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+          }
+        });
+  },
+
+  /** @private */
+  onShowTooltip_: function() {
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
+  },
+
+  /**
+   * @param {boolean} showTooltip
+   */
+  fireTooltipStateChangeEvent_(showTooltip) {
+    this.fire('blocked-tooltip-state-change', {
+      address: this.device.address,
+      show: showTooltip,
+      element: showTooltip ? this.$$('#managedIcon') : undefined,
+    });
   },
 });

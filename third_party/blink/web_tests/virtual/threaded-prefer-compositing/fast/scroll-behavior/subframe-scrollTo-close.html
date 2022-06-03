@@ -13,7 +13,7 @@
 var asyncHandle = async_test("Test that closing window with ongoing scrollTo animation doesn't crash");
 
 if (window.testRunner)
-  testRunner.setCanOpenWindows();
+  testRunner.setPopupBlockingEnabled(false);
 
 var wnd = window.open("../../../../fast/scroll-behavior/resources/subframe-with-scroll.html");
 

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing Reporting API.</p>
+</div>
+
+<script type="module">
+import {ReportingServiceProxy, ReportingServiceProxyReceiver} from '/gen/third_party/blink/public/mojom/reporting/reporting.mojom.m.js';
+
+// Mock implementation of ReportingServiceProxy.
+// |promise| property is always a promise for the next report to be queued.
+class MockReportingServiceProxy {
+  constructor() {
+    this.receiver = new ReportingServiceProxyReceiver(this);
+    this.resetPromise();
+  }
+
+  bind(handle) {
+    this.receiver.$.bindHandle(handle);
+  }
+
+  resetPromise() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+    });
+  }
+
+  // Interface implementation.
+  async queueDeprecationReport(url, id, anticipatedRemoval, message, sourceFile, lineNumber, columnNumber) {
+    this.resolve([url, id, anticipatedRemoval, message, sourceFile, lineNumber, columnNumber]);
+    this.resetPromise();
+  }
+
+  async queueInterventionReport(url, id, message, sourceFile, lineNumber, columnNumber) {
+    this.resolve([url, id, message, sourceFile, lineNumber, columnNumber]);
+    this.resetPromise();
+  }
+
+  queueCspViolationReport() {}
+  queuePermissionsPolicyViolationReport() {}
+  queueDocumentPolicyViolationReport() {}
+}
+
+// Make an instance and have it receive the request.
+var proxy = new MockReportingServiceProxy();
+var interceptor = new MojoInterfaceInterceptor(
+    ReportingServiceProxy.$interfaceName);
+interceptor.oninterfacerequest = e => proxy.bind(e.handle);
+interceptor.start();
+
+promise_test(async () => {
+  let promise = proxy.promise;
+
+  // Use a deprecated feature.
+  window.webkitStorageInfo;
+
+  // Ensure the deprecation report is generated and routed to the reporting mojo
+  // interface.
+  let [url, id, anticipatedRemoval, message, sourceFile, lineNumber, columnNumber] = await promise;
+  assert_true(url.url.endsWith("reporting/reporting-api.html"));
+  assert_equals(typeof id, "string");
+  assert_equals(typeof anticipatedRemoval, "object");
+  assert_equals(typeof message, "string");
+  assert_true(sourceFile.endsWith("reporting/reporting-api.html"));
+  assert_equals(typeof lineNumber, "number");
+  assert_equals(typeof columnNumber, "number");
+}, "Deprecation report");
+
+promise_test(async () => {
+  // Cause and wait for an intervention.
+  let promise = proxy.promise;
+  causeIntervention();
+
+  // Ensure the intervention report is generated and routed to the reporting
+  // mojo interface.
+  let [url, id, message, sourceFile, lineNumber, columnNumber] = await promise;
+  assert_true(url.url.endsWith("reporting/reporting-api.html"));
+  assert_equals(typeof id, "string");
+  assert_equals(typeof message, "string");
+  assert_true(sourceFile.endsWith("reporting/resources/intervention.js"));
+  assert_equals(typeof lineNumber, "number");
+  assert_equals(typeof columnNumber, "number");
+}, "Intervention report");
+</script>

@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace {
@@ -48,9 +50,7 @@ class ProfileErrorBrowserTest : public InProcessBrowserTest,
     // Write either an empty or an invalid string to the user profile as
     // determined by the boolean parameter.
     const std::string kUserProfileData(do_corrupt_ ? "invalid json" : "{}");
-    if (base::WriteFile(pref_file, kUserProfileData.c_str(),
-                        kUserProfileData.size()) !=
-        static_cast<int>(kUserProfileData.size())) {
+    if (!base::WriteFile(pref_file, kUserProfileData)) {
       ADD_FAILURE();
       return false;
     }
@@ -72,7 +72,7 @@ class ProfileErrorBrowserTest : public InProcessBrowserTest,
   const bool do_corrupt_;
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Disable the test on chromos since kernel controls the user profile thus we
 // won't be able to corrupt it.
 #define MAYBE_CorruptedProfile DISABLED_CorruptedProfile
@@ -82,10 +82,11 @@ class ProfileErrorBrowserTest : public InProcessBrowserTest,
 #endif
 
 IN_PROC_BROWSER_TEST_P(ProfileErrorBrowserTest, MAYBE_CorruptedProfile) {
-  const char kPaintHistogram[] = "Startup.FirstWebContents.NonEmptyPaint2";
+  const char kPaintHistogram[] = "Startup.FirstWebContents.NonEmptyPaint3";
 
   // Navigate to a URL so the first non-empty paint is registered.
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/")));
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

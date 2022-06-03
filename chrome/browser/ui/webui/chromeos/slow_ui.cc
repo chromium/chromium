@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -51,7 +50,7 @@ content::WebUIDataSource* CreateSlowUIHTMLSource() {
       {"slowDescription", IDS_SLOW_DESCRIPTION},
       {"slowWarning", IDS_SLOW_WARNING},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddResourcePath("slow.js", IDR_SLOW_JS);
   source->AddResourcePath("slow.css", IDR_SLOW_CSS);
@@ -63,6 +62,10 @@ content::WebUIDataSource* CreateSlowUIHTMLSource() {
 class SlowHandler : public WebUIMessageHandler {
  public:
   explicit SlowHandler(Profile* profile);
+
+  SlowHandler(const SlowHandler&) = delete;
+  SlowHandler& operator=(const SlowHandler&) = delete;
+
   ~SlowHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -78,8 +81,6 @@ class SlowHandler : public WebUIMessageHandler {
 
   Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowHandler);
 };
 
 // SlowHandler ------------------------------------------------------------
@@ -91,21 +92,21 @@ SlowHandler::~SlowHandler() {
 }
 
 void SlowHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiDisableTracing,
       base::BindRepeating(&SlowHandler::HandleDisable, base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiEnableTracing,
       base::BindRepeating(&SlowHandler::HandleEnable, base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kJsApiLoadComplete,
       base::BindRepeating(&SlowHandler::LoadComplete, base::Unretained(this)));
 
   user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
   user_pref_registrar_->Init(profile_->GetPrefs());
-  user_pref_registrar_->Add(prefs::kPerformanceTracingEnabled,
-                            base::Bind(&SlowHandler::UpdatePage,
-                                       base::Unretained(this)));
+  user_pref_registrar_->Add(
+      prefs::kPerformanceTracingEnabled,
+      base::BindRepeating(&SlowHandler::UpdatePage, base::Unretained(this)));
 }
 
 void SlowHandler::HandleDisable(const base::ListValue* args) {
@@ -141,4 +142,3 @@ SlowUI::SlowUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 }  // namespace chromeos
-

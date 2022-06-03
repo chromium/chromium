@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -30,26 +29,30 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
  public:
   class Factory {
    public:
-    static std::unique_ptr<CryptAuthGCMManager> NewInstance(
+    static std::unique_ptr<CryptAuthGCMManager> Create(
         gcm::GCMDriver* gcm_driver,
         PrefService* pref_service);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
     virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthGCMManager> BuildInstance(
+    virtual std::unique_ptr<CryptAuthGCMManager> CreateInstance(
         gcm::GCMDriver* gcm_driver,
-        PrefService* pref_service);
+        PrefService* pref_service) = 0;
 
    private:
     static Factory* factory_instance_;
   };
 
+  CryptAuthGCMManagerImpl(const CryptAuthGCMManagerImpl&) = delete;
+  CryptAuthGCMManagerImpl& operator=(const CryptAuthGCMManagerImpl&) = delete;
+
   ~CryptAuthGCMManagerImpl() override;
 
   // CryptAuthGCMManager:
   void StartListening() override;
+  bool IsListening() override;
   void RegisterWithGCM() override;
   std::string GetRegistrationId() override;
   void AddObserver(Observer* observer) override;
@@ -99,8 +102,6 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CryptAuthGCMManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGCMManagerImpl);
 };
 
 }  // namespace device_sync

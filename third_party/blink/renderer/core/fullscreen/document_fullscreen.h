@@ -36,13 +36,13 @@ namespace blink {
 class Document;
 class Element;
 
-class DocumentFullscreen {
+class CORE_EXPORT DocumentFullscreen {
   STATIC_ONLY(DocumentFullscreen);
 
  public:
   static bool fullscreenEnabled(Document&);
   static Element* fullscreenElement(Document&);
-  static ScriptPromise exitFullscreen(ScriptState*, Document&);
+  static ScriptPromise exitFullscreen(ScriptState*, Document&, ExceptionState&);
   static void webkitExitFullscreen(Document&);
 
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(fullscreenchange, kFullscreenchange)

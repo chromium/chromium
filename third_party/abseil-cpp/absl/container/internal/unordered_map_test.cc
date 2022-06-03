@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <memory>
 #include <unordered_map>
 
 #include "absl/container/internal/unordered_map_constructor_test.h"
@@ -20,6 +21,7 @@
 #include "absl/container/internal/unordered_map_modifiers_test.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 namespace {
 
@@ -35,6 +37,14 @@ INSTANTIATE_TYPED_TEST_SUITE_P(UnorderedMap, LookupTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(UnorderedMap, MembersTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(UnorderedMap, ModifiersTest, MapTypes);
 
+using UniquePtrMapTypes = ::testing::Types<std::unordered_map<
+    int, std::unique_ptr<int>, StatefulTestingHash, StatefulTestingEqual,
+    Alloc<std::pair<const int, std::unique_ptr<int>>>>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(UnorderedMap, UniquePtrModifiersTest,
+                               UniquePtrMapTypes);
+
 }  // namespace
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

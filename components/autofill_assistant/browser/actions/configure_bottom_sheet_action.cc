@@ -42,8 +42,7 @@ void ConfigureBottomSheetAction::InternalProcessAction(
     if (expect_resize) {
       callback_ = std::move(callback);
 
-      timer_.Start(FROM_HERE,
-                   base::TimeDelta::FromMilliseconds(proto.resize_timeout_ms()),
+      timer_.Start(FROM_HERE, base::Milliseconds(proto.resize_timeout_ms()),
                    base::BindOnce(&ConfigureBottomSheetAction::OnTimeout,
                                   weak_ptr_factory_.GetWeakPtr()));
 
@@ -71,6 +70,11 @@ void ConfigureBottomSheetAction::InternalProcessAction(
     delegate_->SetPeekMode(proto.peek_mode());
   }
 
+  if (proto.has_expand() && proto.expand())
+    delegate_->ExpandBottomSheet();
+  if (proto.has_collapse() && proto.collapse())
+    delegate_->CollapseBottomSheet();
+
   if (callback) {
     UpdateProcessedAction(OkClientStatus());
     std::move(callback).Run(std::move(processed_action_proto_));
@@ -91,9 +95,8 @@ void ConfigureBottomSheetAction::OnTimeout() {
   if (!callback_)
     return;
 
-  DVLOG(2)
-      << __func__
-      << " Timed out waiting for window height change. Continuing anyways.";
+  VLOG(2) << __func__
+          << " Timed out waiting for window height change. Continuing anyways.";
   UpdateProcessedAction(OkClientStatus());
   processed_action_proto_->mutable_status_details()->set_original_status(
       ProcessedActionStatusProto::TIMED_OUT);

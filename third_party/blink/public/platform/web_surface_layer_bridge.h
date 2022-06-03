@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
 #include "cc/layers/surface_layer.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -33,19 +32,23 @@ class BLINK_PLATFORM_EXPORT WebSurfaceLayerBridgeObserver {
 // Maintains and exposes the SurfaceLayer.
 class BLINK_PLATFORM_EXPORT WebSurfaceLayerBridge {
  public:
+  enum class ContainsVideo { kYes, kNo };
+
   // |parent_frame_sink_id| identifies the local root widget's FrameSinkId.
   static std::unique_ptr<WebSurfaceLayerBridge> Create(
       viz::FrameSinkId parent_frame_sink_id,
+      ContainsVideo contains_video,
       WebSurfaceLayerBridgeObserver*,
       cc::UpdateSubmissionStateCB);
   virtual ~WebSurfaceLayerBridge();
   virtual cc::Layer* GetCcLayer() const = 0;
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;
   virtual const viz::SurfaceId& GetSurfaceId() const = 0;
-  virtual base::TimeTicks GetLocalSurfaceIdAllocationTime() const = 0;
   virtual void SetContentsOpaque(bool) = 0;
   virtual void CreateSurfaceLayer() = 0;
   virtual void ClearObserver() = 0;
+  virtual void RegisterFrameSinkHierarchy() = 0;
+  virtual void UnregisterFrameSinkHierarchy() = 0;
 };
 
 }  // namespace blink

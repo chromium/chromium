@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0.0",
+  "manifest_version": 2,
+  "name": "removeCSS test",
+  "description": "Test extension API: removeCSS",
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": true
+  },
+  "permissions": ["tabs", "webNavigation", "http://example.com/"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["content.js"],
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ]
+}

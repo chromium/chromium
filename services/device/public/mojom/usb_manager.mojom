@@ -21,8 +21,16 @@ interface UsbDeviceManager {
   GetDevices(UsbEnumerationOptions? options) => (array<UsbDeviceInfo> results);
 
   // Requests a device by guid.
-  GetDevice(string guid, pending_receiver<UsbDevice> device_receiver,
+  GetDevice(string guid, array<uint8> blocked_interface_classes,
+            pending_receiver<UsbDevice> device_receiver,
             pending_remote<UsbDeviceClient>? device_client);
+
+  // Requests a device by guid. The returned device will be permitted to send
+  // control transfers that attempt to configure an AOA[1] version that
+  // indicates a security key request. See comment in
+  // |UsbControlTransferParams|.
+  GetSecurityKeyDevice(string guid, pending_receiver<UsbDevice> device_receiver,
+                       pending_remote<UsbDeviceClient>? device_client);
 
   // Check Android permissions to access the device identified by |guid|. If
   // necessary the user is prompted to grant this access. If access is granted
@@ -37,9 +45,14 @@ interface UsbDeviceManager {
   CheckAccess(string guid) => (bool success);
 
   // Attempt to open a USB device using permission_broker and return
-  // a file descriptor.
+  // a file descriptor. Allow access only to interfaces specified in
+  // |allowed_interfaces_mask|. The |lifeline_fd| should be the remote end of
+  // a pipe created locally, and when this pipe is closed permission_broker
+  // reattaches any kernel drivers that may have been detached when opening.
   [EnableIf=is_chromeos]
-  OpenFileDescriptor(string guid) => (mojo_base.mojom.File? fd);
+  OpenFileDescriptor(string guid, uint32 allowed_interfaces_mask,
+                     handle<platform> lifeline_fd)
+      => (mojo_base.mojom.File? fd);
 
   // Sets the client for this DeviceManager service. The service will notify its
   // client of device events such as connection and disconnection.

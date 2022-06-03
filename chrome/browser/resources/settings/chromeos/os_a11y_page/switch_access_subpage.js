@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,41 +7,66 @@
  * Switch Access settings.
  */
 
-(function() {
+import '//resources/cr_elements/md_select_css.m.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import './switch_access_action_assignment_dialog.js';
+import './switch_access_setup_guide_dialog.js';
+import './switch_access_setup_guide_warning_dialog.js';
+
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
+import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
- * Available switch assignment values.
- * @enum {number}
+ * The portion of the setting name common to all Switch Access preferences.
  * @const
  */
-const SwitchAccessAssignmentValue = {
-  NONE: 0,
-  SPACE: 1,
-  ENTER: 2,
-};
+const PREFIX = 'settings.a11y.switch_access.';
 
 /** @type {!Array<number>} */
-const AUTO_SCAN_SPEED_RANGE_MS = [
-  500,  600,  700,  800,  900,  1000, 1100, 1200, 1300, 1400, 1500, 1600,
-  1700, 1800, 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800,
-  2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000
-];
+const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
 
 /**
  * @param {!Array<number>} ticksInMs
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
   return ticksInMs.map(x => ({label: `${x / 1000}`, value: x}));
 }
 
+/**
+ * @param {!Array<number>} ticks
+ * @return {!Array<!SliderTick>}
+ */
+function ticksWithCountingLabels(ticks) {
+  return ticks.map((x, i) => ({label: i + 1, value: x}));
+}
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-switch-access-subpage',
 
   behaviors: [
+    DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
+    RouteObserverBehavior,
+    WebUIListenerBehavior,
   ],
 
   properties: {
@@ -53,6 +78,27 @@ Polymer({
       notify: true,
     },
 
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
+    selectAssignments_: {
+      type: Array,
+      value: [],
+      notify: true,
+    },
+
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
+    nextAssignments_: {
+      type: Array,
+      value: [],
+      notify: true,
+    },
+
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
+    previousAssignments_: {
+      type: Array,
+      value: [],
+      notify: true,
+    },
+
     /** @private {Array<number>} */
     autoScanSpeedRangeMs_: {
       readOnly: true,
@@ -60,10 +106,17 @@ Polymer({
       value: ticksWithLabelsInSec(AUTO_SCAN_SPEED_RANGE_MS),
     },
 
+    /** @private {Array<number>} */
+    pointScanSpeedRangeDipsPerSecond_: {
+      readOnly: true,
+      type: Array,
+      value: ticksWithCountingLabels(POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND),
+    },
+
     /** @private {Object} */
     formatter_: {
       type: Object,
-      value: function() {
+      value() {
         // navigator.language actually returns a locale, not just a language.
         const locale = window.navigator.language;
         const options = {minimumFractionDigits: 1, maximumFractionDigits: 1};
@@ -72,62 +125,230 @@ Polymer({
     },
 
     /** @private {number} */
-    maxScanSpeedMs_: {readOnly: true, type: Number, value: 4000},
+    maxScanSpeedMs_: {
+      readOnly: true,
+      type: Number,
+      value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
+    },
 
     /** @private {string} */
     maxScanSpeedLabelSec_: {
       readOnly: true,
       type: String,
-      value: function() {
+      value() {
         return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
       },
     },
 
     /** @private {number} */
-    minScanSpeedMs_: {readOnly: true, type: Number, value: 500},
+    minScanSpeedMs_:
+        {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
 
     /** @private {string} */
     minScanSpeedLabelSec_: {
       readOnly: true,
       type: String,
-      value: function() {
+      value() {
         return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
       },
     },
 
-    /** @private {Array<Object>} */
-    switchAssignOptions_: {
+    /** @private {number} */
+    maxPointScanSpeed_: {
       readOnly: true,
-      type: Array,
-      value: function() {
-        return [
-          {
-            value: SwitchAccessAssignmentValue.NONE,
-            name: this.i18n('switchAssignOptionNone')
-          },
-          {
-            value: SwitchAccessAssignmentValue.SPACE,
-            name: this.i18n('switchAssignOptionSpace')
-          },
-          {
-            value: SwitchAccessAssignmentValue.ENTER,
-            name: this.i18n('switchAssignOptionEnter')
-          },
-        ];
-      },
+      type: Number,
+      value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length
+    },
+
+    /** @private {number} */
+    minPointScanSpeed_: {readOnly: true, type: Number, value: 1},
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kSwitchActionAssignment,
+        chromeos.settings.mojom.Setting.kSwitchActionAutoScan,
+        chromeos.settings.mojom.Setting.kSwitchActionAutoScanKeyboard,
+      ]),
+    },
+
+    /** @private */
+    showSwitchAccessActionAssignmentDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    showSwitchAccessSetupGuideDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    showSwitchAccessSetupGuideWarningDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {?SwitchAccessCommand} */
+    action_: {
+      type: String,
+      value: null,
+      notify: true,
     },
   },
 
+  /** @private {?SwitchAccessSubpageBrowserProxy} */
+  switchAccessBrowserProxy_: null,
+
+  /** @override */
+  created() {
+    this.switchAccessBrowserProxy_ =
+        SwitchAccessSubpageBrowserProxyImpl.getInstance();
+  },
+
+  /** @override */
+  ready() {
+    this.addWebUIListener(
+        'switch-access-assignments-changed',
+        value => this.onAssignmentsChanged_(value));
+    this.switchAccessBrowserProxy_.refreshAssignmentsFromPrefs();
+  },
+
   /**
+   * @param {!Route} route
+   * @param {!Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
+      return;
+    }
+
+    this.attemptDeepLink();
+  },
+
+  /** @private */
+  onSetupGuideRerunClick_() {
+    if (this.showSetupGuide_()) {
+      this.showSwitchAccessSetupGuideWarningDialog_ = true;
+    }
+  },
+
+  /** @private */
+  onSetupGuideWarningDialogCancel_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = false;
+  },
+
+  /** @private */
+  onSetupGuideWarningDialogClose_() {
+    // The on_cancel is followed by on_close, so check cancel didn't happen
+    // first.
+    if (this.showSwitchAccessSetupGuideWarningDialog_) {
+      this.openSetupGuide_();
+      this.showSwitchAccessSetupGuideWarningDialog_ = false;
+    }
+  },
+
+  /** @private */
+  openSetupGuide_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = false;
+    if (this.showSetupGuide_()) {
+      this.showSwitchAccessSetupGuideDialog_ = true;
+    }
+  },
+
+  /** @private */
+  onSelectAssignClick_() {
+    this.action_ = SwitchAccessCommand.SELECT;
+    this.showSwitchAccessActionAssignmentDialog_ = true;
+    this.focusAfterDialogClose_ = this.$.selectLinkRow;
+  },
+
+  /** @private */
+  onNextAssignClick_() {
+    this.action_ = SwitchAccessCommand.NEXT;
+    this.showSwitchAccessActionAssignmentDialog_ = true;
+    this.focusAfterDialogClose_ = this.$.nextLinkRow;
+  },
+
+  /** @private */
+  onPreviousAssignClick_() {
+    this.action_ = SwitchAccessCommand.PREVIOUS;
+    this.showSwitchAccessActionAssignmentDialog_ = true;
+    this.focusAfterDialogClose_ = this.$.previousLinkRow;
+  },
+
+  /** @private */
+  onSwitchAccessSetupGuideDialogClose_() {
+    this.showSwitchAccessSetupGuideDialog_ = false;
+    this.$.setupGuideLink.focus();
+  },
+
+  /** @private */
+  onSwitchAccessActionAssignmentDialogClose_() {
+    this.showSwitchAccessActionAssignmentDialog_ = false;
+    this.focusAfterDialogClose_.focus();
+  },
+
+  /**
+   * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
+   *     !SwitchAccessDeviceType}>>} value
+   * @private
+   */
+  onAssignmentsChanged_(value) {
+    this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
+    this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
+    this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
+
+    // Any complete assignment will have at least one switch assigned to SELECT.
+    // If this method is called with no SELECT switches, then the page has just
+    // loaded, and we should open the setup guide.
+    if (Object.keys(this.selectAssignments_).length === 0 &&
+        this.showSetupGuide_()) {
+      this.openSetupGuide_();
+    }
+  },
+
+  /**
+   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
    * @return {string}
    * @private
    */
-  currentSpeed_: function() {
-    const speed = this.get('prefs.switch_access.auto_scan.speed_ms.value');
-    if (typeof speed != 'number') {
-      return '';
+  getLabelForAssignment_(assignment) {
+    return getLabelForAssignment(assignment);
+  },
+
+  /**
+   * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
+   *     List of assignments
+   * @return {string} (e.g. 'Alt (USB), Backspace, Enter, and 4 more switches')
+   * @private
+   */
+  getAssignSwitchSubLabel_(assignments) {
+    const switches =
+        assignments.map(assignment => this.getLabelForAssignment_(assignment));
+    switch (switches.length) {
+      case 0:
+        return this.i18n('assignSwitchSubLabel0Switches');
+      case 1:
+        return this.i18n('assignSwitchSubLabel1Switch', switches[0]);
+      case 2:
+        return this.i18n('assignSwitchSubLabel2Switches', ...switches);
+      case 3:
+        return this.i18n('assignSwitchSubLabel3Switches', ...switches);
+      case 4:
+        return this.i18n(
+            'assignSwitchSubLabel4Switches', ...switches.slice(0, 3));
+      default:
+        return this.i18n(
+            'assignSwitchSubLabel5OrMoreSwitches', ...switches.slice(0, 3),
+            switches.length - 3);
     }
-    return this.scanSpeedStringInSec_(speed);
   },
 
   /**
@@ -135,45 +356,21 @@ Polymer({
    *     keyboard.
    * @private
    */
-  showKeyboardScanSettings_: function() {
+  showKeyboardScanSettings_() {
     const improvedTextInputEnabled = loadTimeData.getBoolean(
         'showExperimentalAccessibilitySwitchAccessImprovedTextInput');
     const autoScanEnabled = /** @type {boolean} */
-        (this.getPref('switch_access.auto_scan.enabled').value);
+        (this.getPref(PREFIX + 'auto_scan.enabled').value);
     return improvedTextInputEnabled && autoScanEnabled;
   },
 
   /**
-   * @param {string} command
+   * @return {boolean} Whether to show the Switch Access setup guide.
+   * @private
    */
-  onSwitchAssigned_: function(command) {
-    const pref = 'prefs.switch_access.' + command;
-    const keyCodeSuffix = '.key_codes.value';
-    const settingSuffix = '.setting.value';
-
-    switch (this.get(pref + settingSuffix)) {
-      case SwitchAccessAssignmentValue.NONE:
-        this.set(pref + keyCodeSuffix, []);
-        break;
-      case SwitchAccessAssignmentValue.SPACE:
-        this.set(pref + keyCodeSuffix, [32]);
-        break;
-      case SwitchAccessAssignmentValue.ENTER:
-        this.set(pref + keyCodeSuffix, [13]);
-        break;
-    }
-  },
-
-  onNextAssigned_: function() {
-    this.onSwitchAssigned_('next');
-  },
-
-  onPreviousAssigned_: function() {
-    this.onSwitchAssigned_('previous');
-  },
-
-  onSelectAssigned_: function() {
-    this.onSwitchAssigned_('select');
+  showSetupGuide_() {
+    return loadTimeData.getBoolean('showSwitchAccessSetupGuide') &&
+        !this.showSwitchAccessActionAssignmentDialog_;
   },
 
   /**
@@ -181,10 +378,9 @@ Polymer({
    * @return {string} a string representing the scan speed in seconds.
    * @private
    */
-  scanSpeedStringInSec_: function(scanSpeedValueMs) {
+  scanSpeedStringInSec_(scanSpeedValueMs) {
     const scanSpeedValueSec = scanSpeedValueMs / 1000;
     return this.i18n(
         'durationInSeconds', this.formatter_.format(scanSpeedValueSec));
   },
 });
-})();

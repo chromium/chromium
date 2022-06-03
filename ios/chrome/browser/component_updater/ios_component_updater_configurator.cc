@@ -17,6 +17,7 @@
 #include "components/services/patch/in_process_file_patcher.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/patcher.h"
@@ -25,8 +26,8 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_query_params.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/common/channel_info.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace component_updater {
@@ -38,7 +39,7 @@ class IOSConfigurator : public update_client::Configurator {
   explicit IOSConfigurator(const base::CommandLine* cmdline);
 
   // update_client::Configurator overrides.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -53,6 +54,8 @@ class IOSConfigurator : public update_client::Configurator {
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
+      override;
+  scoped_refptr<update_client::CrxDownloaderFactory> GetCrxDownloaderFactory()
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
@@ -71,10 +74,11 @@ class IOSConfigurator : public update_client::Configurator {
 
   ConfiguratorImpl configurator_impl_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
 
-  ~IOSConfigurator() override {}
+  ~IOSConfigurator() override = default;
 };
 
 // Allows the component updater to use non-encrypted communication with the
@@ -84,7 +88,7 @@ IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          false) {}
 
-int IOSConfigurator::InitialDelay() const {
+double IOSConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 
@@ -122,9 +126,7 @@ std::string IOSConfigurator::GetChannel() const {
 }
 
 std::string IOSConfigurator::GetBrand() const {
-  std::string brand;
-  ios::google_brand::GetBrand(&brand);
-  return brand;
+  return ios::provider::GetBrandCode();
 }
 
 std::string IOSConfigurator::GetLang() const {
@@ -154,6 +156,15 @@ IOSConfigurator::GetNetworkFetcherFactory() {
             base::BindRepeating([](const GURL& url) { return false; }));
   }
   return network_fetcher_factory_;
+}
+
+scoped_refptr<update_client::CrxDownloaderFactory>
+IOSConfigurator::GetCrxDownloaderFactory() {
+  if (!crx_downloader_factory_) {
+    crx_downloader_factory_ =
+        update_client::MakeCrxDownloaderFactory(GetNetworkFetcherFactory());
+  }
+  return crx_downloader_factory_;
 }
 
 scoped_refptr<update_client::UnzipperFactory>

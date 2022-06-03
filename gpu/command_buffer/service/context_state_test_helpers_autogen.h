@@ -83,21 +83,6 @@ void ContextStateTestHelpers::SetupInitStateExpectations(
         .RetiresOnSaturation();
   }
   SetupInitStateManualExpectationsForDoLineWidth(gl, 1.0f);
-  if (feature_info->feature_flags().chromium_path_rendering) {
-    EXPECT_CALL(*gl, MatrixLoadfEXT(GL_PATH_MODELVIEW_CHROMIUM, _))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
-  if (feature_info->feature_flags().chromium_path_rendering) {
-    EXPECT_CALL(*gl, MatrixLoadfEXT(GL_PATH_PROJECTION_CHROMIUM, _))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
-  if (feature_info->feature_flags().chromium_path_rendering) {
-    EXPECT_CALL(*gl, PathStencilFuncNV(GL_ALWAYS, 0, 0xFFFFFFFFU))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
   EXPECT_CALL(*gl, PixelStorei(GL_PACK_ALIGNMENT, 4))
       .Times(1)
       .RetiresOnSaturation();

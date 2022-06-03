@@ -6,6 +6,10 @@
 </body>
 <script>
 
+// From web_feature.mojom
+const kFeatureClassicSharedWorker = 3148;
+const kFeatureModuleSharedWorker = 3149;
+
 const kFeature = 675;  // From UseCounter.h
 const kDeprecatedFeature = 166;  // From Deprecation.h
 
@@ -28,9 +32,35 @@ function openWindow(url) {
     });
 }
 
-promise_test(t => {
-  const kWindowUrl = 'resources/shared-worker-usecounter-window.html';
+const kWindowUrl = 'resources/shared-worker-usecounter-window.html';
 
+promise_test(async t => {
+  // Start a shared worker using classic scripts.
+  const win1 = await openWindow(kWindowUrl);
+  assert_false(isUseCounted(win1, kFeatureClassicSharedWorker));
+  win1.connectToWorkerWithScriptType('classic');
+  await observeUseCounter(win1, kFeatureClassicSharedWorker);
+  assert_true(isUseCounted(win1, kFeatureClassicSharedWorker));
+  assert_false(isUseCounted(win1, kFeatureModuleSharedWorker));
+
+  // Start a shared worker using module scripts.
+  const win2 = await openWindow(kWindowUrl);
+  assert_false(isUseCounted(win2, kFeatureModuleSharedWorker));
+  win2.connectToWorkerWithScriptType('module');
+  await observeUseCounter(win2, kFeatureModuleSharedWorker);
+  assert_true(isUseCounted(win2, kFeatureModuleSharedWorker));
+  assert_false(isUseCounted(win2, kFeatureClassicSharedWorker));
+
+  // Start a shared worker without type attribute.
+  const win3 = await openWindow(kWindowUrl);
+  assert_false(isUseCounted(win3, kFeatureClassicSharedWorker));
+  win3.connectToWorkerWithoutScriptType();
+  await observeUseCounter(win3, kFeatureClassicSharedWorker);
+  assert_true(isUseCounted(win3, kFeatureClassicSharedWorker));
+  assert_false(isUseCounted(win3, kFeatureModuleSharedWorker));
+}, 'UseCounter for script types on a shared worker');
+
+promise_test(t => {
   let win1;
   let win2;
   let win3;

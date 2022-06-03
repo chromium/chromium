@@ -61,11 +61,11 @@ TEST_F(PrefetchPrefsTest, LimitlessPrefetchingEnabled) {
   // expected.
   base::TimeDelta enabled_duration;
   if (version_info::IsOfficialBuild())
-    enabled_duration = base::TimeDelta::FromDays(1);
+    enabled_duration = base::Days(1);
   else
-    enabled_duration = base::TimeDelta::FromDays(365);
+    enabled_duration = base::Days(365);
 
-  base::TimeDelta advance_delta = base::TimeDelta::FromHours(2);
+  base::TimeDelta advance_delta = base::Hours(2);
   base::Time now = OfflineTimeNow();
 
   prefetch_prefs::SetLimitlessPrefetchingEnabled(prefs(), true);
@@ -114,7 +114,7 @@ TEST_F(PrefetchPrefsTest, ForbiddenCheck) {
   EXPECT_FALSE(prefetch_prefs::IsForbiddenCheckDue(prefs()));
 
   TestScopedOfflineClock test_clock;
-  base::Time later = OfflineTimeNow() + base::TimeDelta::FromDays(8);
+  base::Time later = OfflineTimeNow() + base::Days(8);
   test_clock.SetNow(later);
 
   prefetch_prefs::SetPrefetchingEnabledInSettings(prefs(), false);
@@ -148,7 +148,7 @@ TEST_F(PrefetchPrefsTest, FirstForbiddenCheck) {
 
   // Jump ahead in time so that a check should be due.
   TestScopedOfflineClock test_clock;
-  test_clock.SetNow(OfflineTimeNow() + base::TimeDelta::FromDays(8));
+  test_clock.SetNow(OfflineTimeNow() + base::Days(8));
 
   EXPECT_TRUE(prefetch_prefs::IsForbiddenCheckDue(prefs()));
   EXPECT_FALSE(prefetch_prefs::IsEnabledByServerUnknown(prefs()));

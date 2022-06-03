@@ -1,0 +1,11 @@
+noparent = True
+
+include_rules = [
+  "+base/android",
+
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+
+  # Leaf node, not dependent on other chrome/browser/ code.
+  "-chrome/browser",
+]

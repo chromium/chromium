@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusReportFilter
  public:
   explicit NeuralStylusReportFilter(
       SharedPalmDetectionFilterState* shared_palm_state);
+
+  NeuralStylusReportFilter(const NeuralStylusReportFilter&) = delete;
+  NeuralStylusReportFilter& operator=(const NeuralStylusReportFilter&) = delete;
+
   ~NeuralStylusReportFilter() override;
 
   static bool CompatibleWithNeuralStylusReportFilter(
@@ -43,7 +47,6 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusReportFilter
 
  private:
   bool previous_update_ = false;
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusReportFilter);
 };
 
 }  // namespace ui

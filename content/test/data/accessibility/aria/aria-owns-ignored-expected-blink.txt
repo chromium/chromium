@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++splitter horizontal name='Ordinary presentation element with id'
+++++++splitter horizontal name='An aria-owned element is never ignored'
+++++++group
+++++++++none ignored
+++++++++++button name='button-in-owned-tree'
+++++++++++++staticText name='button-in-owned-tree'
+++++++++++++++inlineTextBox name='button-in-owned-tree'
+++++++splitter horizontal name='Element with aria-owns is never ignored'
+++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++splitter horizontal name='Owning an element with an ignored parent serializes cleanly'
+++++++group
+++++++++checkBox checkedState=false
+++++++splitter horizontal name='All the above in one'
+++++++genericContainer
+++++++++none ignored
+++++++++++slider horizontal valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00

@@ -24,6 +24,9 @@
 // Tell location bar has taken focus.
 - (void)locationBarBecomesFirstResponder;
 
+// Sets whether voice search is currently enabled.
+- (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NTP_HOME_CONSUMER_H_

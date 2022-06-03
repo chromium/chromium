@@ -10,7 +10,6 @@ include_rules = [
   "+third_party/webrtc/common_video",
   "+ui/base",
   "+ui/display/display_switches.h",
-  "+ui/display/manager",
   "+ui/display/types",
   "+ui/platform_window",
   "+components/viz/common/gpu/vulkan_context_provider.h",
@@ -25,4 +24,7 @@ include_rules = [
   # Chrome OS specific JEA/MJDA.
   "+components/chromeos_camera/jpeg_encode_accelerator.h",
   "+components/chromeos_camera/mjpeg_decode_accelerator.h",
+
+  # video_decode_accelerator_perf_tests uses it.
+  "+sandbox/linux/services/resource_limits.h"
 ]

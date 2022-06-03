@@ -50,9 +50,6 @@ class DataReductionProxySettingsTestBase : public testing::Test {
   void ResetSettings(base::Clock* clock);
   virtual void ResetSettings(base::Clock* clock) = 0;
 
-  void ExpectSetProxyPrefs(bool expected_enabled,
-                           bool expected_at_startup);
-
   void CheckMaybeActivateDataReductionProxy(bool initially_enabled,
                                             bool request_succeeded,
                                             bool expected_enabled,

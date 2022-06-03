@@ -6,7 +6,7 @@
 import {OptionsDialogMaxHeight, OptionsDialogMinWidth, Service} from 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 window.extension_options_dialog_tests = {};
 extension_options_dialog_tests.suiteName = 'ExtensionOptionsDialogTests';
@@ -23,7 +23,7 @@ suite(extension_options_dialog_tests.suiteName, function() {
   let data;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     optionsDialog = document.createElement('extensions-options-dialog');
     document.body.appendChild(optionsDialog);
 
@@ -61,7 +61,8 @@ suite(extension_options_dialog_tests.suiteName, function() {
 
           assertEquals(
               data.name,
-              assert(optionsDialog.$$('#icon-and-name-wrapper span'))
+              assert(optionsDialog.shadowRoot.querySelector(
+                         '#icon-and-name-wrapper span'))
                   .textContent.trim());
         });
   });

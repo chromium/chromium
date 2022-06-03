@@ -1,0 +1,130 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "printing/backend/mojom/print_backend.mojom";
+import "printing/mojom/print.mojom";
+import "printing/mojom/printing_context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// The default printer name, or the `ResultCode` if there was an error when
+// trying to retrieve this data.
+union DefaultPrinterNameResult {
+  string default_printer_name;
+  ResultCode result_code;
+};
+
+// The list of installed printers, or the `ResultCode` if there was an error
+// when trying to retrieve this data.
+union PrinterListResult {
+  array<PrinterBasicInfo> printer_list;
+  ResultCode result_code;
+};
+
+// The capabilities and defaults of a printer, or the `ResultCode` if there was
+// an error when trying to retrieve this data.
+union PrinterSemanticCapsAndDefaultsResult {
+  PrinterSemanticCapsAndDefaults printer_caps;
+  ResultCode result_code;
+};
+
+// The set of basic info, paper details, and capabilities/defaults for a
+// printer.
+struct PrinterCapsAndInfo {
+  PrinterBasicInfo printer_info;
+  array<Paper> user_defined_papers;
+  PrinterSemanticCapsAndDefaults printer_caps;
+};
+
+// The set of basic info, paper details, and capabilities/defaults for a
+// printer, or the `ResultCode` if there was an error when trying to retrieve
+// this data.
+union PrinterCapsAndInfoResult {
+  PrinterCapsAndInfo printer_caps_and_info;
+  ResultCode result_code;
+};
+
+// The print settings for a job, or the `ResultCode` if there was an error when
+// trying to update this data.
+union PrintSettingsResult {
+  PrintSettings settings;
+  ResultCode result_code;
+};
+
+// The type of printing interface to target.
+enum PrintTargetType {
+  kDirectToDevice,
+  kSystemDialog,
+  [EnableIf=is_mac]
+  kExternalPreview,
+};
+
+// Hosts the PrintBackendService but does so without sandboxing the service -
+// this is required if print drivers need UI access or cannot otherwise
+// operate in the normal sandbox. There is a 1:1 relationship and `service`
+// should only be bound once.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface UnsandboxedPrintBackendHost {
+  // Binds the underlying implementation.
+  BindBackend(pending_receiver<PrintBackendService> service);
+};
+
+// Hosts the PrintBackendService in a sandbox. There is a 1:1 relationship
+// and `service` should only be bound once.
+[ServiceSandbox=sandbox.mojom.Sandbox.kPrintBackend]
+interface SandboxedPrintBackendHost {
+  // Binds the underlying implementation.
+  BindBackend(pending_receiver<PrintBackendService> service);
+};
+
+// The main interface to Chrome's Print Backend Service, which performs
+// printer queries and commands to operating system printer drivers in an
+// isolated process.
+interface PrintBackendService {
+  // Establish the locale to be used for calls with this service and the
+  // interface to the underlying data source.
+  Init(string locale);
+
+  // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
+  // useful to ensure that an idle timeout change takes effect.
+  Poke();
+
+  // Enumerates the list of installed local and network printers.
+  EnumeratePrinters()
+    => (PrinterListResult printer_list);
+
+  // Gets the default printer name from the data source.
+  GetDefaultPrinterName()
+    => (DefaultPrinterNameResult printer_name);
+
+  // Gets the semantic capabilities and defaults for a specific printer.
+  GetPrinterSemanticCapsAndDefaults(string printer_name)
+    => (PrinterSemanticCapsAndDefaultsResult printer_caps);
+
+  // Gets the basic info, paper sizes, and semantic capabilities and defaults
+  // for a specific printer.
+  FetchCapabilities(string printer_name)
+    => (PrinterCapsAndInfoResult printer_caps_and_info);
+
+  // Generates a print settings object based upon the job settings used with
+  // the device settings.  The driver to be used is expected to be identified
+  // in the `job_settings` map by an entry with key
+  // `printing::kSettingDeviceName`.
+  UpdatePrintSettings(map<string, mojo_base.mojom.Value> job_settings)
+    => (PrintSettingsResult settings);
+
+  // Submit the document identified by `document_cookie` to be printed.
+  // Starting the device initialization may be delayed if it needs to wait for
+  // prior print jobs to complete before a connection to the system to become
+  // available.
+  StartPrinting(int32 document_cookie,
+                mojo_base.mojom.String16 document_name,
+                PrintTargetType target_type,
+                int32 page_count,
+                PrintSettings settings)
+    => (ResultCode result_code);
+};

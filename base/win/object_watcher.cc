@@ -15,7 +15,7 @@ namespace win {
 
 //-----------------------------------------------------------------------------
 
-ObjectWatcher::ObjectWatcher() {}
+ObjectWatcher::ObjectWatcher() = default;
 
 ObjectWatcher::~ObjectWatcher() {
   StopWatching();

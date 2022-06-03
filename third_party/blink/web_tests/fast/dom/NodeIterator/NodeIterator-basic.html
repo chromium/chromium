@@ -51,11 +51,11 @@ test(function ()
 
 test(function ()
 {
-    assert_throws(new TypeError(), function () { document.createNodeIterator(); });
-    assert_throws(new TypeError(), function () { document.createNodeIterator(null); });
-    assert_throws(new TypeError(), function () { document.createNodeIterator(undefined); });
-    assert_throws(new TypeError(), function () { document.createNodeIterator(new Object()); });
-    assert_throws(new TypeError(), function () { document.createNodeIterator(1); });
+    assert_throws_js(TypeError, function () { document.createNodeIterator(); });
+    assert_throws_js(TypeError, function () { document.createNodeIterator(null); });
+    assert_throws_js(TypeError, function () { document.createNodeIterator(undefined); });
+    assert_throws_js(TypeError, function () { document.createNodeIterator(new Object()); });
+    assert_throws_js(TypeError, function () { document.createNodeIterator(1); });
 }, 'Give an invalid root node to document.createNodeIterator().');
 
 // |expected| should be an object indicating the expected type of node.

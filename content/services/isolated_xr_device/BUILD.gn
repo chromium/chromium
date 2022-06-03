@@ -1,0 +1,35 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//device/vr/buildflags/buildflags.gni")
+
+source_set("lib") {
+  sources = [
+    "xr_device_service.cc",
+    "xr_device_service.h",
+    "xr_runtime_provider.cc",
+    "xr_runtime_provider.h",
+    "xr_service_test_hook.cc",
+    "xr_service_test_hook.h",
+    "xr_test_hook_wrapper.cc",
+    "xr_test_hook_wrapper.h",
+  ]
+
+  configs += [ "//content:content_implementation" ]
+
+  if (enable_openxr) {
+    configs += [ "//third_party/openxr:config" ]
+  }
+
+  deps = [
+    "//base",
+    "//content/public/common:common_sources",
+    "//device/base",
+    "//device/vr:vr",
+    "//device/vr:vr_base",
+    "//device/vr/public/mojom:isolated_xr_service",
+    "//device/vr/public/mojom:test_mojom",
+    "//services/viz/public/cpp/gpu",
+  ]
+}

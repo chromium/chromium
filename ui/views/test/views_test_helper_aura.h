@@ -7,38 +7,38 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "ui/aura/test/aura_test_helper.h"
 #include "ui/views/test/views_test_helper.h"
-
-namespace aura {
-namespace client {
-class ScreenPositionClient;
-}
-namespace test {
-class AuraTestHelper;
-}
-}
 
 namespace views {
 
 class ViewsTestHelperAura : public ViewsTestHelper {
  public:
-  ViewsTestHelperAura(ui::ContextFactory* context_factory,
-                      ui::ContextFactoryPrivate* context_factory_private);
+  using AuraTestHelperFactory =
+      std::unique_ptr<aura::test::AuraTestHelper> (*)();
+  using TestViewsDelegateFactory = std::unique_ptr<TestViewsDelegate> (*)();
+
+  ViewsTestHelperAura();
+  ViewsTestHelperAura(const ViewsTestHelperAura&) = delete;
+  ViewsTestHelperAura& operator=(const ViewsTestHelperAura&) = delete;
   ~ViewsTestHelperAura() override;
 
-  // Overridden from ViewsTestHelper:
+  // ViewsTestHelper:
+  std::unique_ptr<TestViewsDelegate> GetFallbackTestViewsDelegate() override;
   void SetUp() override;
-  void TearDown() override;
   gfx::NativeWindow GetContext() override;
 
- private:
-  ui::ContextFactory* context_factory_;
-  ui::ContextFactoryPrivate* context_factory_private_;
-  std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
-  std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
+  // Provides a way for test bases to customize what test helper will be used
+  // for |aura_test_helper_|.
+  static void SetAuraTestHelperFactory(AuraTestHelperFactory factory);
 
-  DISALLOW_COPY_AND_ASSIGN(ViewsTestHelperAura);
+  // Provides a way for test helpers to customize what delegate will be used
+  // if one is not provided by the test/framework.
+  static void SetFallbackTestViewsDelegateFactory(
+      TestViewsDelegateFactory factory);
+
+ private:
+  std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
 };
 
 }  // namespace views

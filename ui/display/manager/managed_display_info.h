@@ -40,6 +40,7 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayMode {
   ~ManagedDisplayMode();
   ManagedDisplayMode(const ManagedDisplayMode& other);
   ManagedDisplayMode& operator=(const ManagedDisplayMode& other);
+  bool operator==(const ManagedDisplayMode& other) const;
 
   // Returns the size in DIP which is visible to the user.
   gfx::Size GetSizeInDIP() const;
@@ -65,15 +66,6 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayMode {
   bool native_ = false;         // True if mode is native mode of the display.
   float device_scale_factor_ = 1.0f;  // The device scale factor of the mode.
 };
-
-inline bool operator==(const ManagedDisplayMode& lhs,
-                       const ManagedDisplayMode& rhs) {
-  return lhs.size() == rhs.size() &&
-         lhs.is_interlaced() == rhs.is_interlaced() &&
-         lhs.refresh_rate() == rhs.refresh_rate() &&
-         lhs.native() == rhs.native() &&
-         lhs.device_scale_factor() == rhs.device_scale_factor();
-}
 
 inline bool operator!=(const ManagedDisplayMode& lhs,
                        const ManagedDisplayMode& rhs) {
@@ -210,10 +202,6 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // Returns the rotation set by a given |source|.
   Display::Rotation GetRotation(Display::RotationSource source) const;
 
-  // Returns a measure of density relative to a display with 1.0 DSF. Unlike the
-  // effective DSF, this is independent from the UI scale.
-  float GetDensityRatio() const;
-
   // Returns the ui scale and device scale factor actually used to create
   // display that chrome sees. This is |device_scale_factor| x |zoom_factor_|.
   // TODO(oshima): Rename to |GetDeviceScaleFactor()|.
@@ -257,9 +245,12 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // empty size.
   gfx::Size GetNativeModeSize() const;
 
-  const gfx::ColorSpace& color_space() const { return color_space_; }
-  void set_color_space(const gfx::ColorSpace& color_space) {
-    color_space_ = color_space;
+  const gfx::DisplayColorSpaces& display_color_spaces() const {
+    return display_color_spaces_;
+  }
+  void set_display_color_spaces(
+      const gfx::DisplayColorSpaces& display_color_spaces) {
+    display_color_spaces_ = display_color_spaces;
   }
 
   uint32_t bits_per_channel() const { return bits_per_channel_; }
@@ -366,9 +357,9 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // Maximum cursor size.
   gfx::Size maximum_cursor_size_;
 
-  // Colorimetry information of the Display (if IsValid()), including e.g.
-  // transfer and primaries information, retrieved from its EDID.
-  gfx::ColorSpace color_space_;
+  // Colorimetry information of the Display.
+  gfx::DisplayColorSpaces display_color_spaces_;
+
   // Bit depth of every channel, extracted from its EDID, usually 8, but can be
   // 0 if EDID says so or if the EDID (retrieval) was faulty.
   uint32_t bits_per_channel_;
@@ -379,6 +370,10 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 // Resets the synthesized display id for testing. This
 // is necessary to avoid overflowing the output index.
 void DISPLAY_MANAGER_EXPORT ResetDisplayIdForTest();
+
+// Generates a fake, synthesized display ID that will be used when the
+// |kInvalidDisplayId| is passed to |ManagedDisplayInfo| constructor.
+int64_t DISPLAY_MANAGER_EXPORT GetNextSynthesizedDisplayId(int64_t id);
 
 }  // namespace display
 

@@ -7,38 +7,30 @@
 // these tests the browser must be run with these options:
 //
 //   --enable-blink-features=MojoJS,MojoJSTest
-let loadChromiumResources = Promise.resolve().then(() => {
-  if (!window.MojoInterfaceInterceptor) {
-    // Do nothing on non-Chromium-based browsers or when the Mojo bindings are
-    // not present in the global namespace.
-    return;
-  }
 
-  let chain = Promise.resolve();
-  [
-    '/gen/layout_test_data/mojo/public/js/mojo_bindings.js',
-    '/gen/services/device/public/mojom/nfc.mojom.js',
-    '/resources/chromium/nfc-mock.js',
-  ].forEach(path => {
-    let script = document.createElement('script');
-    script.src = path;
-    script.async = false;
-    chain = chain.then(() => new Promise(resolve => {
-      script.onload = resolve;
-    }));
-    document.head.appendChild(script);
-  });
-
-  return chain;
-});
+async function loadChromiumResources() {
+  await loadScript('/resources/testdriver.js');
+  await loadScript('/resources/testdriver-vendor.js');
+  await import('/resources/chromium/nfc-mock.js');
+}
 
 async function initialize_nfc_tests() {
   if (typeof WebNFCTest === 'undefined') {
-    await loadChromiumResources;
+    const script = document.createElement('script');
+    script.src = '/resources/test-only-api.js';
+    script.async = false;
+    const p = new Promise((resolve, reject) => {
+      script.onload = () => { resolve(); };
+      script.onerror = e => { reject(e); };
+    })
+    document.head.appendChild(script);
+    await p;
+
+    if (isChromiumBased) {
+      await loadChromiumResources();
+    }
   }
-  assert_true(
-      typeof WebNFCTest !== 'undefined',
-      'WebNFC testing interface is not available.');
+  assert_implements( WebNFCTest, 'WebNFC testing interface is unavailable.');
   let NFCTest = new WebNFCTest();
   await NFCTest.initialize();
   return NFCTest;
@@ -73,6 +65,33 @@ NFCHWStatus.ENABLED = 1;
 NFCHWStatus.NOT_SUPPORTED = NFCHWStatus.ENABLED + 1;
 // OS-level NFC setting OFF
 NFCHWStatus.DISABLED = NFCHWStatus.NOT_SUPPORTED + 1;
+
+function encodeTextToArrayBuffer(string, encoding) {
+  // Only support 'utf-8', 'utf-16', 'utf-16be', and 'utf-16le'.
+  assert_true(
+      encoding === 'utf-8' || encoding === 'utf-16' ||
+      encoding === 'utf-16be' || encoding === 'utf-16le');
+
+  if (encoding === 'utf-8') {
+    return new TextEncoder().encode(string).buffer;
+  }
+
+  if (encoding === 'utf-16') {
+    let uint16array = new Uint16Array(string.length);
+    for (let i = 0; i < string.length; i++) {
+      uint16array[i] = string.codePointAt(i);
+    }
+    return uint16array.buffer;
+  }
+
+  const littleEndian = encoding === 'utf-16le';
+  const buffer = new ArrayBuffer(string.length * 2);
+  const view = new DataView(buffer);
+  for (let i = 0; i < string.length; i++) {
+    view.setUint16(i * 2, string.codePointAt(i), littleEndian);
+  }
+  return buffer;
+}
 
 function createMessage(records) {
   if (records !== undefined) {
@@ -125,12 +144,8 @@ function createUrlRecord(url, isAbsUrl) {
   return createRecord('url', url, test_record_id);
 }
 
-function createNDEFPushOptions(target, ignoreRead) {
-  return {target, ignoreRead};
-}
-
 // Compares NDEFMessageSource that was provided to the API
-// (e.g. NDEFWriter.push), and NDEFMessage that was received by the
+// (e.g. NDEFReader.write), and NDEFMessage that was received by the
 // mock NFC service.
 function assertNDEFMessagesEqual(providedMessage, receivedMessage) {
   // If simple data type is passed, e.g. String or ArrayBuffer or
@@ -154,7 +169,7 @@ function assertNDEFMessagesEqual(providedMessage, receivedMessage) {
 }
 
 // Used to compare two NDEFMessage, one that is received from
-// NDEFWriter.onreading() EventHandler and another that is provided to mock NFC
+// NDEFReader.onreading() EventHandler and another that is provided to mock NFC
 // service.
 function assertWebNDEFMessagesEqual(message, expectedMessage) {
   assert_equals(message.records.length, expectedMessage.records.length);
@@ -165,7 +180,8 @@ function assertWebNDEFMessagesEqual(message, expectedMessage) {
     assert_equals(record.recordType, expectedRecord.recordType);
     assert_equals(record.mediaType, expectedRecord.mediaType);
     assert_equals(record.id, expectedRecord.id);
-
+    assert_equals(record.encoding, expectedRecord.encoding);
+    assert_equals(record.lang, expectedRecord.lang);
     // Compares record data
     assert_array_equals(new Uint8Array(record.data),
           new Uint8Array(expectedRecord.data));
@@ -174,22 +190,22 @@ function assertWebNDEFMessagesEqual(message, expectedMessage) {
 
 function testMultiScanOptions(message, scanOptions, unmatchedScanOptions, desc) {
   nfc_test(async (t, mockNFC) => {
-    const reader1 = new NDEFReader();
-    const reader2 = new NDEFReader();
+    const ndef1 = new NDEFReader();
+    const ndef2 = new NDEFReader();
     const controller = new AbortController();
 
-    // Reading from unmatched reader will not be triggered
-    reader1.onreading = t.unreached_func("reading event should not be fired.");
+    // Reading from unmatched ndef will not be triggered
+    ndef1.onreading = t.unreached_func("reading event should not be fired.");
     unmatchedScanOptions.signal = controller.signal;
-    await reader1.scan(unmatchedScanOptions);
+    await ndef1.scan(unmatchedScanOptions);
 
-    const readerWatcher = new EventWatcher(t, reader2, ["reading", "error"]);
-    const promise = readerWatcher.wait_for("reading").then(event => {
+    const ndefWatcher = new EventWatcher(t, ndef2, ["reading", "readingerror"]);
+    const promise = ndefWatcher.wait_for("reading").then(event => {
       controller.abort();
       assertWebNDEFMessagesEqual(event.message, new NDEFMessage(message));
     });
     scanOptions.signal = controller.signal;
-    await reader2.scan(scanOptions);
+    await ndef2.scan(scanOptions);
 
     mockNFC.setReadingMessage(message);
     await promise;
@@ -198,15 +214,15 @@ function testMultiScanOptions(message, scanOptions, unmatchedScanOptions, desc) 
 
 function testMultiMessages(message, scanOptions, unmatchedMessage, desc) {
   nfc_test(async (t, mockNFC) => {
-    const reader = new NDEFReader();
+    const ndef = new NDEFReader();
     const controller = new AbortController();
-    const readerWatcher = new EventWatcher(t, reader, ["reading", "error"]);
-    const promise = readerWatcher.wait_for("reading").then(event => {
+    const ndefWatcher = new EventWatcher(t, ndef, ["reading", "readingerror"]);
+    const promise = ndefWatcher.wait_for("reading").then(event => {
       controller.abort();
       assertWebNDEFMessagesEqual(event.message, new NDEFMessage(message));
     });
     scanOptions.signal = controller.signal;
-    await reader.scan(scanOptions);
+    await ndef.scan(scanOptions);
 
     // Unmatched message will not be read
     mockNFC.setReadingMessage(unmatchedMessage);

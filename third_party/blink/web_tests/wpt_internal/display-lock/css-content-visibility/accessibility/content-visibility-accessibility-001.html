@@ -1,0 +1,95 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility auto subtree is exposed to accessibility">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+.auto {
+  content-visibility: auto;
+}
+</style>
+<div id=spacer style="height: 3000px"></div>
+<div id="container">
+  <div role="group" id="target" class=auto aria-labelledby="target_label">
+    target
+    <div id="child">
+      child
+    </div>
+    <div id="displayNone" style="display:none;">
+      display:none text
+    </div>
+    <div id="hidden" style="visibility:hidden;">
+      hidden text
+    </div>
+    <div id="target_label">Label</div>
+  </div>
+</div>
+
+<script>
+
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test((t) => {
+  const target = document.getElementById("target");
+  let axTarget = axElementById("target");
+  t.step(() => { assert_false(axTarget.isIgnored); });
+
+  // Expect 9 children: 5 text nodes ("target" text and whitespace between the divs) and 4 div children.
+  // This is because #target is locked, and thus is saved as an AXNodeObject instead of an AXLayoutObject,
+  // so we have the separate <newline> text children because AXNodeObject does not do whitespace
+  // collapsing (though this might change in the future).
+  // TODO(rakina): Make display:none, visiblity:hidden be ignored/not included in tree even when
+  // display target, and make sure whitespace collapsing happen.
+  t.step(() => { assert_equals(axTarget.childrenCount, 9, "Children count when locked"); });
+
+  // These children are special because their "isVisible" should be false.
+  const displayNoneIndex = 3;
+  t.step(() => { assert_equals(axTarget.childAtIndex(displayNoneIndex), axElementById("displayNone"));});
+  const visibilityHiddenIndex = 5;
+  t.step(() => { assert_equals(axTarget.childAtIndex(visibilityHiddenIndex), axElementById("hidden"));});
+
+  // Check all children are not ignored, and visibility:hidden & display:none child are marked as not visible.
+  for (let i = 0; i < axTarget.childrenCount; ++i) {
+    const axChild = axTarget.childAtIndex(i);
+    t.step(() => { assert_false(axChild.isIgnored, "After acquire, isIgnored is false on child #" + i); });
+    t.step(() => { assert_true(axChild.isVisible, "After acquire, isVisible is false on child #" + i); });
+  }
+
+  // Check that nodes in content-visibility:auto are available for aria-labelledby.
+  t.step(() => { assert_equals(axTarget.name, "Label"); });
+
+  // Remove content-visibility and force a layout recalc, causing #target to get unlocked.
+  target.classList.remove("auto");
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    target.getBoundingClientRect();
+    axTarget = axElementById("target");
+
+    // Now that #target is not locked, it is saved as a normal AXLayout object and has  4 children:
+    // the text node "target" and 4 div children (#child, #displayNone, #hidden, and #target_label).
+    t.step(() => { assert_equals(axTarget.childrenCount, 5, "Children count when not locked"); });
+
+    for (let i = 0; i < axTarget.childrenCount; ++i) {
+      const axChild = axTarget.childAtIndex(i);
+      if (axChild == axElementById("hidden") || axChild == axElementById("displayNone")) {
+        t.step(() => { assert_true(axChild.isIgnored, "After commit, isIgnored is true on child #" + i); });
+        t.step(() => { assert_false(axChild.isVisible, "After commit, isVisible is false on child #" + i); });
+      } else {
+        t.step(() => { assert_false(axChild.isIgnored, "After update, isIgnored is false on child #" + i); });
+        t.step(() => { assert_true(axChild.isVisible, "After commit, isVisible is true on child #" + i); });
+      }
+    }
+
+    // Check that nodes in content-visibility:auto are available for aria-labelledby.
+    t.step(() => assert_equals(axTarget.name, "Label"));
+    t.done();
+  }));
+}, "Nodes in a content-visibility auto tree are exposed to accessibility tree");
+</script>

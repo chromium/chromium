@@ -15,7 +15,6 @@ component("platform") {
   ]
 
   sources = [
-    "named_platform_channel_win.cc",
     "platform_channel.cc",
     "platform_channel_endpoint.cc",
     "platform_channel_server_endpoint.cc",
@@ -40,14 +39,16 @@ component("platform") {
     sources += [ "named_platform_channel_mac.cc" ]
   }
 
-  if (is_fuchsia) {
-    public_deps += [
-      "//third_party/fuchsia-sdk/sdk:fdio",
-      "//third_party/fuchsia-sdk/sdk:zx",
-    ]
+  if (is_win) {
+    sources += [ "named_platform_channel_win.cc" ]
   }
 
-  if (!is_fuchsia) {
+  if (is_fuchsia) {
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+  } else {
     sources += [ "named_platform_channel.cc" ]
     public += [ "named_platform_channel.h" ]
   }

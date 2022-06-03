@@ -8,10 +8,11 @@
 
 #include <vector>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
@@ -120,11 +121,17 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
 #if !defined(OS_ANDROID)
-  map->GetSettingsForOneType(ContentSettingsType::IMAGES, ResourceIdentifier(),
+  map->GetSettingsForOneType(ContentSettingsType::IMAGES,
                              &(rules->image_rules));
   map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT,
-                             ResourceIdentifier(),
                              &(rules->mixed_content_rules));
+  // Auto dark web content settings is available only for Android, so ALLOW rule
+  // is added for all origins.
+  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      base::Value::FromUniquePtrValue(
+          ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      std::string(), map->IsOffTheRecord()));
 #else
   // Android doesn't use image content settings, so ALLOW rule is added for
   // all origins.
@@ -140,13 +147,12 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
       base::Value::FromUniquePtrValue(
           ContentSettingToValue(CONTENT_SETTING_BLOCK)),
       std::string(), map->IsOffTheRecord()));
+  map->GetSettingsForOneType(ContentSettingsType::AUTO_DARK_WEB_CONTENT,
+                             &(rules->auto_dark_content_rules));
 #endif
   map->GetSettingsForOneType(ContentSettingsType::JAVASCRIPT,
-                             ResourceIdentifier(), &(rules->script_rules));
-  map->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
-                             ResourceIdentifier(),
-                             &(rules->client_hints_rules));
-  map->GetSettingsForOneType(ContentSettingsType::POPUPS, ResourceIdentifier(),
+                             &(rules->script_rules));
+  map->GetSettingsForOneType(ContentSettingsType::POPUPS,
                              &(rules->popup_redirect_rules));
 }
 
@@ -161,6 +167,20 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
   }
   NOTREACHED();
   return true;
+}
+
+// Currently only SessionModel::Durable constraints need to be persistent
+// as they are only bounded by time and can persist through multiple browser
+// sessions.
+bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
+  return constraints.session_model == SessionModel::Durable;
+}
+
+// Convenience helper to calculate the expiration time of a constraint given a
+// desired |duration|
+base::Time GetConstraintExpiration(const base::TimeDelta duration) {
+  DCHECK(!duration.is_zero());
+  return base::Time::Now() + duration;
 }
 
 }  // namespace content_settings

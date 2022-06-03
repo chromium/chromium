@@ -5,5 +5,5 @@
 // https://w3c.github.io/clipboard-apis/#clipboard-interface
 
 dictionary ClipboardItemOptions {
-  boolean raw = false;
+  [RuntimeEnabled=ClipboardCustomFormats] sequence<DOMString> unsanitized;
 };

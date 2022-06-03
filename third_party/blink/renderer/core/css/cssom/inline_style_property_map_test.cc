@@ -16,7 +16,7 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
   // Test that trying to reify any longhands with a CSSPendingSubstitutionValue
   // does not cause a crash.
 
-  Document* document = MakeGarbageCollected<Document>();
+  Document* document = Document::CreateForTest();
   Element* div = document->CreateRawElement(html_names::kDivTag);
   InlineStylePropertyMap map(div);
 
@@ -26,10 +26,12 @@ TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
     const CSSProperty& shorthand = CSSProperty::Get(property_id);
     if (!shorthand.IsShorthand())
       continue;
+    if (shorthand.Exposure() == CSSExposure::kNone)
+      continue;
     div->SetInlineStyleProperty(property_id, "var(--dummy)");
     const StylePropertyShorthand& longhands = shorthandForProperty(property_id);
     for (unsigned i = 0; i < longhands.length(); i++) {
-      map.get(document,
+      map.get(document->GetExecutionContext(),
               longhands.properties()[i]->GetCSSPropertyName().ToAtomicString(),
               ASSERT_NO_EXCEPTION);
     }

@@ -5,14 +5,17 @@
 #include "net/url_request/url_fetcher_core.h"
 
 #include <stdint.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
@@ -22,7 +25,9 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
+#include "net/cert/x509_certificate.h"
 #include "net/http/http_response_headers.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_fetcher_delegate.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -79,7 +84,7 @@ URLFetcherCore::URLFetcherCore(
       delegate_(d),
       delegate_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       load_flags_(LOAD_NORMAL),
-      allow_credentials_(base::nullopt),
+      allow_credentials_(absl::nullopt),
       response_code_(URLFetcher::RESPONSE_CODE_INVALID),
       url_request_data_key_(nullptr),
       was_cached_(false),
@@ -89,7 +94,7 @@ URLFetcherCore::URLFetcherCore(
       upload_range_offset_(0),
       upload_range_length_(0),
       referrer_policy_(
-          URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
+          ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),
       is_chunked_upload_(false),
       was_cancelled_(false),
       stop_on_redirect_(false),
@@ -215,7 +220,7 @@ void URLFetcherCore::SetLoadFlags(int load_flags) {
 }
 
 void URLFetcherCore::SetAllowCredentials(bool allow_credentials) {
-  allow_credentials_ = base::make_optional<bool>(allow_credentials);
+  allow_credentials_ = absl::make_optional<bool>(allow_credentials);
 }
 
 int URLFetcherCore::GetLoadFlags() const {
@@ -226,19 +231,17 @@ void URLFetcherCore::SetReferrer(const std::string& referrer) {
   referrer_ = referrer;
 }
 
-void URLFetcherCore::SetReferrerPolicy(
-    URLRequest::ReferrerPolicy referrer_policy) {
+void URLFetcherCore::SetReferrerPolicy(ReferrerPolicy referrer_policy) {
   referrer_policy_ = referrer_policy;
 }
 
-void URLFetcherCore::SetExtraRequestHeaders(
-    const std::string& extra_request_headers) {
+void URLFetcherCore::ClearExtraRequestHeaders() {
   extra_request_headers_.Clear();
-  extra_request_headers_.AddHeadersFromString(extra_request_headers);
 }
 
-void URLFetcherCore::AddExtraRequestHeader(const std::string& header_line) {
-  extra_request_headers_.AddHeaderFromString(header_line);
+void URLFetcherCore::AddExtraRequestHeader(const std::string& name,
+                                           const std::string& value) {
+  extra_request_headers_.SetHeader(name, value);
 }
 
 void URLFetcherCore::SetRequestContext(
@@ -249,7 +252,7 @@ void URLFetcherCore::SetRequestContext(
 }
 
 void URLFetcherCore::SetInitiator(
-    const base::Optional<url::Origin>& initiator) {
+    const absl::optional<url::Origin>& initiator) {
   DCHECK(!initiator_.has_value());
   initiator_ = initiator;
 }
@@ -343,8 +346,8 @@ const GURL& URLFetcherCore::GetURL() const {
   return url_;
 }
 
-const URLRequestStatus& URLFetcherCore::GetStatus() const {
-  return status_;
+Error URLFetcherCore::GetError() const {
+  return error_;
 }
 
 int URLFetcherCore::GetResponseCode() const {
@@ -406,6 +409,7 @@ void URLFetcherCore::OnReceivedRedirect(URLRequest* request,
     stopped_on_redirect_ = true;
     url_ = redirect_info.new_url;
     response_code_ = request_->GetResponseCode();
+    response_headers_ = request_->response_headers();
     proxy_server_ = request_->proxy_server();
     was_cached_ = request_->was_cached();
     total_received_bytes_ += request_->GetTotalReceivedBytes();
@@ -474,7 +478,7 @@ void URLFetcherCore::OnReadCompleted(URLRequest* request,
 
   // See comments re: HEAD requests in ReadResponse().
   if (bytes_read != ERR_IO_PENDING || request_type_ == URLFetcher::HEAD) {
-    status_ = URLRequestStatus::FromError(bytes_read);
+    error_ = static_cast<Error>(bytes_read);
     received_response_content_length_ =
         request_->received_response_content_length();
     total_received_bytes_ += request_->GetTotalReceivedBytes();
@@ -519,12 +523,12 @@ void URLFetcherCore::StartOnIOThread() {
   // appending data.  Have to do it here because StartURLRequest() may be called
   // asynchonously.
   if (is_chunked_upload_) {
-    chunked_stream_.reset(new ChunkedUploadDataStream(0));
+    chunked_stream_ = std::make_unique<ChunkedUploadDataStream>(0);
     chunked_stream_writer_ = chunked_stream_->CreateWriter();
   }
 
   if (!response_writer_)
-    response_writer_.reset(new URLFetcherStringWriter);
+    response_writer_ = std::make_unique<URLFetcherStringWriter>();
 
   const int result = response_writer_->Initialize(
       base::BindOnce(&URLFetcherCore::DidInitializeWriter, this));
@@ -615,11 +619,9 @@ void URLFetcherCore::StartURLRequest() {
       current_upload_bytes_ = -1;
       // TODO(kinaba): http://crbug.com/118103. Implement upload callback in the
       //  layer and avoid using timer here.
-      upload_progress_checker_timer_.reset(new base::RepeatingTimer());
+      upload_progress_checker_timer_ = std::make_unique<base::RepeatingTimer>();
       upload_progress_checker_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kUploadProgressTimerInterval),
-          this,
+          FROM_HERE, base::Milliseconds(kUploadProgressTimerInterval), this,
           &URLFetcherCore::InformDelegateUploadProgress);
       break;
     }
@@ -678,7 +680,7 @@ void URLFetcherCore::StartURLRequestWhenAppropriate() {
       if (delay != 0) {
         network_task_runner_->PostDelayedTask(
             FROM_HERE, base::BindOnce(&URLFetcherCore::StartURLRequest, this),
-            base::TimeDelta::FromMilliseconds(delay));
+            base::Milliseconds(delay));
         return;
       }
     }
@@ -694,14 +696,7 @@ void URLFetcherCore::CancelURLRequest(int error) {
     request_->CancelWithError(error);
     ReleaseRequest();
   }
-
-  // Set the error manually.
-  // Normally, calling URLRequest::CancelWithError() results in calling
-  // OnReadCompleted() with bytes_read = -1 via an asynchronous task posted by
-  // URLRequestJob::NotifyDone(). But, because the request was released
-  // immediately after being canceled, the request could not call
-  // OnReadCompleted() which overwrites |status_| with the error status.
-  status_ = URLRequestStatus(URLRequestStatus::CANCELED, error);
+  error_ = static_cast<Error>(error);
 
   // Release the reference to the request context. There could be multiple
   // references to URLFetcher::Core at this point so it may take a while to
@@ -761,8 +756,7 @@ void URLFetcherCore::RetryOrCompleteUrlFetch() {
   base::TimeDelta backoff_delay;
 
   // Checks the response from server.
-  if (response_code_ >= 500 ||
-      status_.error() == ERR_TEMPORARILY_THROTTLED) {
+  if (response_code_ >= 500 || error_ == ERR_TEMPORARILY_THROTTLED) {
     // When encountering a server error, we will send the request again
     // after backoff time.
     ++num_retries_on_5xx_;
@@ -774,7 +768,7 @@ void URLFetcherCore::RetryOrCompleteUrlFetch() {
     // have a throttler manager.
     base::TimeTicks backoff_release_time = GetBackoffReleaseTime();
     backoff_delay = backoff_release_time - base::TimeTicks::Now();
-    if (backoff_delay < base::TimeDelta())
+    if (backoff_delay.is_negative())
       backoff_delay = base::TimeDelta();
 
     if (automatically_retry_on_5xx_ &&
@@ -787,7 +781,7 @@ void URLFetcherCore::RetryOrCompleteUrlFetch() {
   }
 
   // Retry if the request failed due to network changes.
-  if (status_.error() == ERR_NETWORK_CHANGED &&
+  if (error_ == ERR_NETWORK_CHANGED &&
       num_retries_on_network_changes_ < max_retries_on_network_changes_) {
     ++num_retries_on_network_changes_;
 

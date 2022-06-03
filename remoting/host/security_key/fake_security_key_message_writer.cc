@@ -17,7 +17,7 @@
 namespace remoting {
 
 FakeSecurityKeyMessageWriter::FakeSecurityKeyMessageWriter(
-    const base::Closure& write_callback)
+    const base::RepeatingClosure& write_callback)
     : write_callback_(write_callback) {
   DCHECK(!write_callback_.is_null());
 }

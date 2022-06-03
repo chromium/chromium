@@ -25,7 +25,7 @@ class MockLibcurlWrapper : public google_breakpad::LibcurlWrapper {
   MOCK_METHOD5(SendRequest,
                bool(const std::string& url,
                     const std::map<std::string, std::string>& parameters,
-                    int* http_status_code,
+                    long* http_status_code,
                     std::string* http_header_data,
                     std::string* http_response_data));
 };

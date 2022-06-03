@@ -1,5 +1,5 @@
 wheel: <
-  name: "infra/python/wheels/google_api_python_client-py2_py3"
+  name: "infra/python/wheels/google-api-python-client-py2_py3"
   version: "version:1.6.2"
 >
 
@@ -36,4 +36,11 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/six-py2_py3"
   version: "version:1.10.0"
+>
+
+# Not directly used by wpt_import, but required by
+# //third_party/catapult/third_party/typ, which is one of its dependencies.
+wheel: <
+  name: "infra/python/wheels/requests-py2_py3"
+  version: "version:2.13.0"
 >

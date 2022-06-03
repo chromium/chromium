@@ -10,14 +10,14 @@
 ] interface DOMPointReadOnly {
     constructor(optional unrestricted double x = 0, optional unrestricted double y = 0,
                 optional unrestricted double z = 0, optional unrestricted double w = 1);
-    [NewObject] static DOMPointReadOnly fromPoint(optional DOMPointInit other);
+    [NewObject] static DOMPointReadOnly fromPoint(optional DOMPointInit other = {});
 
     readonly attribute unrestricted double x;
     readonly attribute unrestricted double y;
     readonly attribute unrestricted double z;
     readonly attribute unrestricted double w;
 
-    [RaisesException, NewObject] DOMPoint matrixTransform(optional DOMMatrixInit matrix);
+    [RaisesException, NewObject] DOMPoint matrixTransform(optional DOMMatrixInit matrix = {});
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

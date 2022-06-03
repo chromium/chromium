@@ -35,13 +35,13 @@ typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
     Exposed=(Window,Worker),
     Serializable
 ] interface Blob {
-    [CallWith=ExecutionContext] constructor(optional sequence<BlobPart> blobParts, optional BlobPropertyBag options);
+    [CallWith=ExecutionContext] constructor(optional sequence<BlobPart> blobParts, optional BlobPropertyBag options = {});
     readonly attribute unsigned long long size;
     readonly attribute DOMString type;
 
     // TODO(jsbell): start and end arguments should be [Clamp]
     [RaisesException] Blob slice(optional long long start, optional long long end, optional DOMString contentType);
-    [CallWith=ScriptState, RuntimeEnabled=BlobReadMethods] ReadableStream stream();
-    [CallWith=ScriptState, RuntimeEnabled=BlobReadMethods] Promise<USVString> text();
-    [CallWith=ScriptState, RuntimeEnabled=BlobReadMethods] Promise<ArrayBuffer> arrayBuffer();
+    [CallWith=ScriptState] ReadableStream stream();
+    [CallWith=ScriptState] Promise<USVString> text();
+    [CallWith=ScriptState] Promise<ArrayBuffer> arrayBuffer();
 };

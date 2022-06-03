@@ -11,51 +11,57 @@ namespace password_manager {
 
 password_manager::FakeAffiliationFetcher::FakeAffiliationFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::vector<FacetURI>& facet_ids,
     AffiliationFetcherDelegate* delegate)
-    : AffiliationFetcher(std::move(url_loader_factory), facet_ids, delegate) {}
+    : delegate_(delegate) {}
 
-password_manager::FakeAffiliationFetcher::~FakeAffiliationFetcher() {
-}
+password_manager::FakeAffiliationFetcher::~FakeAffiliationFetcher() = default;
 
 void password_manager::FakeAffiliationFetcher::SimulateSuccess(
     std::unique_ptr<AffiliationFetcherDelegate::Result> fake_result) {
-  delegate()->OnFetchSucceeded(std::move(fake_result));
+  delegate_->OnFetchSucceeded(this, std::move(fake_result));
 }
 
 void password_manager::FakeAffiliationFetcher::SimulateFailure() {
-  delegate()->OnFetchFailed();
+  delegate_->OnFetchFailed(this);
 }
 
-password_manager::ScopedFakeAffiliationFetcherFactory::
-    ScopedFakeAffiliationFetcherFactory() {
-  AffiliationFetcher::SetFactoryForTesting(this);
+void password_manager::FakeAffiliationFetcher::StartRequest(
+    const std::vector<FacetURI>& facet_uris,
+    RequestInfo request_info) {
+  facets_ = facet_uris;
+}
+const std::vector<FacetURI>&
+password_manager::FakeAffiliationFetcher::GetRequestedFacetURIs() const {
+  return facets_;
 }
 
-password_manager::ScopedFakeAffiliationFetcherFactory::
-    ~ScopedFakeAffiliationFetcherFactory() {
-  AffiliationFetcher::SetFactoryForTesting(nullptr);
+password_manager::FakeAffiliationFetcherFactory::
+    FakeAffiliationFetcherFactory() = default;
+
+password_manager::FakeAffiliationFetcherFactory::
+    ~FakeAffiliationFetcherFactory() {
+  CHECK(pending_fetchers_.empty());
 }
 
-FakeAffiliationFetcher* ScopedFakeAffiliationFetcherFactory::PopNextFetcher() {
+FakeAffiliationFetcher* FakeAffiliationFetcherFactory::PopNextFetcher() {
   DCHECK(!pending_fetchers_.empty());
   FakeAffiliationFetcher* first = pending_fetchers_.front();
   pending_fetchers_.pop();
   return first;
 }
 
-FakeAffiliationFetcher* ScopedFakeAffiliationFetcherFactory::PeekNextFetcher() {
+FakeAffiliationFetcher* FakeAffiliationFetcherFactory::PeekNextFetcher() {
   DCHECK(!pending_fetchers_.empty());
   return pending_fetchers_.front();
 }
 
-AffiliationFetcher* ScopedFakeAffiliationFetcherFactory::CreateInstance(
+std::unique_ptr<AffiliationFetcherInterface>
+FakeAffiliationFetcherFactory::CreateInstance(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::vector<FacetURI>& facet_ids,
     AffiliationFetcherDelegate* delegate) {
-  FakeAffiliationFetcher* fetcher = new FakeAffiliationFetcher(
-      std::move(url_loader_factory), facet_ids, delegate);
-  pending_fetchers_.push(fetcher);
+  auto fetcher = std::make_unique<FakeAffiliationFetcher>(
+      std::move(url_loader_factory), delegate);
+  pending_fetchers_.push(fetcher.get());
   return fetcher;
 }
 

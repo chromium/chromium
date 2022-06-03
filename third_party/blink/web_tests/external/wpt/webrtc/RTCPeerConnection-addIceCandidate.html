@@ -2,6 +2,7 @@
 <title>Test RTCPeerConnection.prototype.addIceCandidate</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
 
@@ -128,7 +129,7 @@ a=rtcp-rsize
 
     t.add_cleanup(() => pc.close());
 
-    return promise_rejects(t, 'InvalidStateError',
+    return promise_rejects_dom(t, 'InvalidStateError',
       pc.addIceCandidate({
         candidate: candidateStr1,
         sdpMid: sdpMid1,
@@ -157,18 +158,28 @@ a=rtcp-rsize
     null,
     // Members in the dictionary take their default values
     {}
-  ].forEach(init => promise_test(async t => {
-    const pc = new RTCPeerConnection();
+  ].forEach(init => {
+    promise_test(async t => {
+      const pc = new RTCPeerConnection();
 
-    t.add_cleanup(() => pc.close());
+      t.add_cleanup(() => pc.close());
 
-    await pc.setRemoteDescription(sessionDesc);
-    await pc.addIceCandidate(init);
-    assert_candidate_line_between(pc.remoteDescription.sdp,
-      mediaLine1, endOfCandidateLine, mediaLine2);
-    assert_candidate_line_after(pc.remoteDescription.sdp,
-      mediaLine2, endOfCandidateLine);
-  }, `addIceCandidate(${JSON.stringify(init)}) should work, and add a=end-of-candidates to both m-sections`));
+      await pc.setRemoteDescription(sessionDesc);
+      await pc.addIceCandidate(init);
+    }, `addIceCandidate(${JSON.stringify(init)}) works`);
+    promise_test(async t => {
+      const pc = new RTCPeerConnection();
+
+      t.add_cleanup(() => pc.close());
+
+      await pc.setRemoteDescription(sessionDesc);
+      await pc.addIceCandidate(init);
+      assert_candidate_line_between(pc.remoteDescription.sdp,
+        mediaLine1, endOfCandidateLine, mediaLine2);
+      assert_candidate_line_after(pc.remoteDescription.sdp,
+        mediaLine2, endOfCandidateLine);
+    }, `addIceCandidate(${JSON.stringify(init)}) adds a=end-of-candidates to both m-sections`);
+  });
 
   promise_test(async t => {
     const pc = new RTCPeerConnection();
@@ -220,22 +231,24 @@ a=rtcp-rsize
     t.add_cleanup(() => pc.close());
 
     await pc.setRemoteDescription(sessionDesc);
-    await promise_rejects(t, 'OperationError',
+    await promise_rejects_dom(t, 'OperationError',
       pc.addIceCandidate({usernameFragment: "no such ufrag"}));
   }, 'addIceCandidate({usernameFragment: "no such ufrag"}) should not work');
 
-  promise_test(t => {
+  promise_test(async t => {
     const pc = new RTCPeerConnection();
 
     t.add_cleanup(() => pc.close());
 
-    return pc.setRemoteDescription(sessionDesc)
-    .then(() => pc.addIceCandidate({
+    await pc.setRemoteDescription(sessionDesc)
+    await pc.addIceCandidate({
       candidate: candidateStr1,
       sdpMid: sdpMid1,
       sdpMLineIndex: sdpMLineIndex1,
       usernameFragement: usernameFragment1
-    }));
+    });
+    assert_candidate_line_after(pc.remoteDescription.sdp,
+                                mediaLine1, candidateStr1);
   }, 'Add ICE candidate after setting remote description should succeed');
 
   promise_test(t => {
@@ -256,7 +269,6 @@ a=rtcp-rsize
     const pc = new RTCPeerConnection();
 
     t.add_cleanup(() => pc.close());
-
     return pc.setRemoteDescription(sessionDesc)
       .then(() => pc.addIceCandidate({
         candidate: candidateStr1,
@@ -416,7 +428,7 @@ a=rtcp-rsize
       assert_candidate_line_between(pc.remoteDescription.sdp,
         mediaLine1, endOfCandidateLine, mediaLine2);
     });
-  }, 'Add with empty candidate string (end of candidate) should succeed');
+  }, 'Add with empty candidate string (end of candidates) should succeed');
 
   /*
     4.4.2.  addIceCandidate
@@ -430,13 +442,22 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, new TypeError(),
+      promise_rejects_js(t, TypeError,
         pc.addIceCandidate({
           candidate: candidateStr1,
           sdpMid: null,
           sdpMLineIndex: null
         })));
   }, 'Add candidate with both sdpMid and sdpMLineIndex manually set to null should reject with TypeError');
+
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+
+    await pc.setRemoteDescription(sessionDesc);
+    promise_rejects_js(t, TypeError,
+      pc.addIceCandidate({candidate: candidateStr1}));
+  }, 'addIceCandidate with a candidate and neither sdpMid nor sdpMLineIndex should reject with TypeError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -445,7 +466,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, new TypeError(),
+      promise_rejects_js(t, TypeError,
         pc.addIceCandidate({
           candidate: candidateStr1
         })));
@@ -458,7 +479,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, new TypeError(),
+      promise_rejects_js(t, TypeError,
         pc.addIceCandidate({
           candidate: invalidCandidateStr,
           sdpMid: null,
@@ -480,7 +501,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, 'OperationError',
+      promise_rejects_dom(t, 'OperationError',
         pc.addIceCandidate({
           candidate: candidateStr1,
           sdpMid: 'invalid',
@@ -504,7 +525,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, 'OperationError',
+      promise_rejects_dom(t, 'OperationError',
         pc.addIceCandidate({
           candidate: candidateStr1,
           sdpMLineIndex: 2,
@@ -560,7 +581,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, 'OperationError',
+      promise_rejects_dom(t, 'OperationError',
         pc.addIceCandidate({
           candidate: candidateStr1,
           sdpMid: sdpMid1,
@@ -583,7 +604,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, 'OperationError',
+      promise_rejects_dom(t, 'OperationError',
         pc.addIceCandidate({
           candidate: invalidCandidateStr,
           sdpMid: sdpMid1,
@@ -599,7 +620,7 @@ a=rtcp-rsize
 
     return pc.setRemoteDescription(sessionDesc)
     .then(() =>
-      promise_rejects(t, 'OperationError',
+      promise_rejects_dom(t, 'OperationError',
         pc.addIceCandidate({
           candidate: candidateStr2,
           sdpMid: sdpMid2,
@@ -607,5 +628,4 @@ a=rtcp-rsize
           usernameFragment: usernameFragment1
         })));
   }, 'Add candidate with sdpMid belonging to different usernameFragment should reject with OperationError');
-
 </script>

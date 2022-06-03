@@ -4,17 +4,19 @@
 
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 
+#include <string>
+
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,6 +52,10 @@ class TetherNotificationDelegate
                              base::RepeatingClosure close)
       : HandleNotificationClickDelegate(click), close_callback_(close) {}
 
+  TetherNotificationDelegate(const TetherNotificationDelegate&) = delete;
+  TetherNotificationDelegate& operator=(const TetherNotificationDelegate&) =
+      delete;
+
   // NotificationDelegate:
   void Close(bool by_user) override {
     if (!close_callback_.is_null())
@@ -60,8 +66,6 @@ class TetherNotificationDelegate
   ~TetherNotificationDelegate() override = default;
 
   base::RepeatingClosure close_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherNotificationDelegate);
 };
 
 class SettingsUiDelegateImpl
@@ -82,8 +86,7 @@ class SettingsUiDelegateImpl
 const gfx::ImageSkia GetImageForSignalStrength(int signal_strength) {
   // Convert the [0, 100] range to [0, 4], since there are 5 distinct signal
   // strength icons (0 bars to 4 bars).
-  int normalized_signal_strength =
-      base::ClampToRange(signal_strength / 25, 0, 4);
+  int normalized_signal_strength = base::clamp(signal_strength / 25, 0, 4);
 
   return gfx::CanvasImageSource::MakeImageSkia<
       ash::network_icon::SignalStrengthImageSource>(
@@ -189,14 +192,18 @@ void TetherNotificationPresenter::NotifySetupRequired(
   PA_LOG(VERBOSE) << "Displaying \"setup required\" notification. Notification "
                   << "ID = " << kSetupRequiredNotificationId;
 
+  // Persist this notification until acted upon or dismissed, so that the user
+  // is aware that they need to complete setup on their phone.
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.never_timeout = true;
+
   ShowNotification(CreateNotification(
       kSetupRequiredNotificationId,
       l10n_util::GetStringFUTF16(IDS_TETHER_NOTIFICATION_SETUP_REQUIRED_TITLE,
                                  base::ASCIIToUTF16(device_name)),
       l10n_util::GetStringFUTF16(IDS_TETHER_NOTIFICATION_SETUP_REQUIRED_MESSAGE,
                                  base::ASCIIToUTF16(device_name)),
-      GetImageForSignalStrength(signal_strength),
-      {} /* rich_notification_data */));
+      GetImageForSignalStrength(signal_strength), rich_notification_data));
 }
 
 void TetherNotificationPresenter::RemoveSetupRequiredNotification() {
@@ -214,7 +221,7 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE),
-      base::string16() /* display_source */, GURL() /* origin_url */,
+      std::u16string() /* display_source */, GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierTether),
       {} /* rich_notification_data */,
@@ -231,7 +238,7 @@ void TetherNotificationPresenter::RemoveConnectionToHostFailedNotification() {
 
 void TetherNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
-    base::Optional<int> button_index) {
+    absl::optional<int> button_index) {
   if (button_index) {
     DCHECK_EQ(kPotentialHotspotNotificationId, notification_id);
     DCHECK_EQ(0, *button_index);
@@ -252,8 +259,9 @@ void TetherNotificationPresenter::OnNotificationClicked(
       GetMetricValueForClickOnNotificationBody(notification_id),
       TetherNotificationPresenter::NOTIFICATION_INTERACTION_TYPE_MAX);
 
-  OpenSettingsAndRemoveNotification(chrome::kTetherSettingsSubPage,
-                                    notification_id);
+  OpenSettingsAndRemoveNotification(
+      chromeos::settings::mojom::kMobileDataNetworksSubpagePath,
+      notification_id);
 }
 
 TetherNotificationPresenter::NotificationInteractionType
@@ -289,13 +297,13 @@ void TetherNotificationPresenter::OnNotificationClosed(
 std::unique_ptr<message_center::Notification>
 TetherNotificationPresenter::CreateNotification(
     const std::string& id,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     const gfx::ImageSkia& small_image,
     const message_center::RichNotificationData& rich_notification_data) {
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
-      message, gfx::Image() /* image */, base::string16() /* display_source */,
+      message, gfx::Image() /* image */, std::u16string() /* display_source */,
       GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierTether),

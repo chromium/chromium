@@ -8,59 +8,42 @@
 
 #include "base/memory/singleton.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
-
-namespace {
-
-bool IsXI2Available() {
-#if defined(USE_AURA)
-  return ui::DeviceDataManagerX11::GetInstance()->IsXInput2Available();
-#else
-  return false;
-#endif
-}
-
-}
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/future.h"
 
 namespace ui {
 
-DeviceListCacheX11::DeviceListCacheX11() {
-}
+DeviceListCacheX11::DeviceListCacheX11() = default;
 
-DeviceListCacheX11::~DeviceListCacheX11() {
-}
+DeviceListCacheX11::~DeviceListCacheX11() = default;
 
 DeviceListCacheX11* DeviceListCacheX11::GetInstance() {
   return base::Singleton<DeviceListCacheX11>::get();
 }
 
-void DeviceListCacheX11::UpdateDeviceList(Display* display) {
-  XDeviceList& new_x_dev_list = x_dev_list_;
-  new_x_dev_list.devices.reset(
-      XListInputDevices(display, &new_x_dev_list.count));
-
-  XIDeviceList& new_xi_dev_list = xi_dev_list_;
-  new_xi_dev_list.devices.reset(
-      IsXI2Available()
-          ? XIQueryDevice(display, XIAllDevices, &new_xi_dev_list.count)
-          : nullptr);
+void DeviceListCacheX11::UpdateDeviceList(x11::Connection* connection) {
+  auto x_future = connection->xinput().ListInputDevices();
+  auto xi_future = connection->xinput().XIQueryDevice();
+  connection->Flush();
+  if (auto reply = x_future.Sync())
+    x_dev_list_ = reply->devices;
+  if (auto reply = xi_future.Sync())
+    xi_dev_list_ = reply->infos;
+  updated_ = true;
 }
 
-const XDeviceList& DeviceListCacheX11::GetXDeviceList(Display* display) {
-  XDeviceList& x_dev_list = x_dev_list_;
-  // Note that the function can be called before any update has taken place.
-  if (!x_dev_list.devices && !x_dev_list.count)
-    x_dev_list.devices.reset(XListInputDevices(display, &x_dev_list.count));
-  return x_dev_list;
+const XDeviceList& DeviceListCacheX11::GetXDeviceList(
+    x11::Connection* connection) {
+  if (!updated_)
+    UpdateDeviceList(connection);
+  return x_dev_list_;
 }
 
-const XIDeviceList& DeviceListCacheX11::GetXI2DeviceList(Display* display) {
-  XIDeviceList& xi_dev_list = xi_dev_list_;
-  if (!xi_dev_list.devices && !xi_dev_list.count) {
-    xi_dev_list.devices.reset(
-        XIQueryDevice(display, XIAllDevices, &xi_dev_list.count));
-  }
-  return xi_dev_list;
+const XIDeviceList& DeviceListCacheX11::GetXI2DeviceList(
+    x11::Connection* connection) {
+  if (!updated_)
+    UpdateDeviceList(connection);
+  return xi_dev_list_;
 }
 
 }  // namespace ui
-

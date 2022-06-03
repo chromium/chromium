@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -28,6 +29,9 @@ class AddressSorterWin : public AddressSorter {
   AddressSorterWin() {
     EnsureWinsockInit();
   }
+
+  AddressSorterWin(const AddressSorterWin&) = delete;
+  AddressSorterWin& operator=(const AddressSorterWin&) = delete;
 
   ~AddressSorterWin() override {}
 
@@ -44,12 +48,15 @@ class AddressSorterWin : public AddressSorter {
    public:
     static void Start(const AddressList& list, CallbackType callback) {
       auto job = base::WrapRefCounted(new Job(list, std::move(callback)));
-      base::PostTaskAndReply(FROM_HERE,
-                             {base::ThreadPool(), base::MayBlock(),
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                             base::BindOnce(&Job::Run, job),
-                             base::BindOnce(&Job::OnComplete, job));
+      base::ThreadPool::PostTaskAndReply(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&Job::Run, job),
+          base::BindOnce(&Job::OnComplete, job));
     }
+
+    Job(const Job&) = delete;
+    Job& operator=(const Job&) = delete;
 
    private:
     friend class base::RefCountedThreadSafe<Job>;
@@ -133,11 +140,7 @@ class AddressSorterWin : public AddressSorter {
     std::unique_ptr<SOCKET_ADDRESS_LIST, base::FreeDeleter> input_buffer_;
     std::unique_ptr<SOCKET_ADDRESS_LIST, base::FreeDeleter> output_buffer_;
     bool success_;
-
-    DISALLOW_COPY_AND_ASSIGN(Job);
   };
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSorterWin);
 };
 
 }  // namespace

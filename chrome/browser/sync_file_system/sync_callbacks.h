@@ -18,24 +18,19 @@ namespace sync_file_system {
 
 class SyncFileMetadata;
 
-typedef base::Callback<void(SyncStatusCode status)>
-    SyncStatusCallback;
+using SyncStatusCallback = base::OnceCallback<void(SyncStatusCode status)>;
 
-typedef base::Callback<
-    void(SyncStatusCode status, const storage::FileSystemURL& url)>
-    SyncFileCallback;
+using SyncFileCallback =
+    base::OnceCallback<void(SyncStatusCode status,
+                            const storage::FileSystemURL& url)>;
 
-typedef base::Callback<void(SyncStatusCode status,
-                            const SyncFileMetadata& metadata)>
-    SyncFileMetadataCallback;
+using SyncFileMetadataCallback =
+    base::OnceCallback<void(SyncStatusCode status,
+                            const SyncFileMetadata& metadata)>;
 
-typedef base::Callback<
-    void(SyncStatusCode status, const storage::FileSystemURLSet& urls)>
-    SyncFileSetCallback;
-
-typedef base::Callback<void(SyncStatusCode status,
-                            SyncFileStatus sync_file_status)>
-    SyncFileStatusCallback;
+using SyncFileStatusCallback =
+    base::OnceCallback<void(SyncStatusCode status,
+                            SyncFileStatus sync_file_status)>;
 
 }  // namespace sync_file_system
 

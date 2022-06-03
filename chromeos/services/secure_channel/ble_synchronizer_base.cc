@@ -12,21 +12,21 @@ namespace secure_channel {
 
 BleSynchronizerBase::RegisterArgs::RegisterArgs(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
-    const device::BluetoothAdapter::CreateAdvertisementCallback& callback,
-    const device::BluetoothAdapter::AdvertisementErrorCallback& error_callback)
+    device::BluetoothAdapter::CreateAdvertisementCallback callback,
+    device::BluetoothAdapter::AdvertisementErrorCallback error_callback)
     : advertisement_data(std::move(advertisement_data)),
-      callback(callback),
-      error_callback(error_callback) {}
+      callback(std::move(callback)),
+      error_callback(std::move(error_callback)) {}
 
 BleSynchronizerBase::RegisterArgs::~RegisterArgs() = default;
 
 BleSynchronizerBase::UnregisterArgs::UnregisterArgs(
     scoped_refptr<device::BluetoothAdvertisement> advertisement,
-    const device::BluetoothAdvertisement::SuccessCallback& callback,
-    const device::BluetoothAdvertisement::ErrorCallback& error_callback)
+    device::BluetoothAdvertisement::SuccessCallback callback,
+    device::BluetoothAdvertisement::ErrorCallback error_callback)
     : advertisement(std::move(advertisement)),
-      callback(callback),
-      error_callback(error_callback) {}
+      callback(std::move(callback)),
+      error_callback(std::move(error_callback)) {}
 
 BleSynchronizerBase::UnregisterArgs::~UnregisterArgs() = default;
 
@@ -40,11 +40,11 @@ BleSynchronizerBase::StartDiscoveryArgs::~StartDiscoveryArgs() = default;
 
 BleSynchronizerBase::StopDiscoveryArgs::StopDiscoveryArgs(
     base::WeakPtr<device::BluetoothDiscoverySession> discovery_session,
-    const base::Closure& callback,
-    const device::BluetoothDiscoverySession::ErrorCallback& error_callback)
+    base::OnceClosure callback,
+    device::BluetoothDiscoverySession::ErrorCallback error_callback)
     : discovery_session(discovery_session),
-      callback(callback),
-      error_callback(error_callback) {}
+      callback(std::move(callback)),
+      error_callback(std::move(error_callback)) {}
 
 BleSynchronizerBase::StopDiscoveryArgs::~StopDiscoveryArgs() = default;
 
@@ -76,22 +76,23 @@ BleSynchronizerBase::~BleSynchronizerBase() = default;
 
 void BleSynchronizerBase::RegisterAdvertisement(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
-    const device::BluetoothAdapter::CreateAdvertisementCallback& callback,
-    const device::BluetoothAdapter::AdvertisementErrorCallback&
-        error_callback) {
-  command_queue_.emplace_back(
+    device::BluetoothAdapter::CreateAdvertisementCallback callback,
+    device::BluetoothAdapter::AdvertisementErrorCallback error_callback) {
+  command_queue_.push_back(
       std::make_unique<Command>(std::make_unique<RegisterArgs>(
-          std::move(advertisement_data), callback, error_callback)));
+          std::move(advertisement_data), std::move(callback),
+          std::move(error_callback))));
   ProcessQueue();
 }
 
 void BleSynchronizerBase::UnregisterAdvertisement(
     scoped_refptr<device::BluetoothAdvertisement> advertisement,
-    const device::BluetoothAdvertisement::SuccessCallback& callback,
-    const device::BluetoothAdvertisement::ErrorCallback& error_callback) {
-  command_queue_.emplace_back(
+    device::BluetoothAdvertisement::SuccessCallback callback,
+    device::BluetoothAdvertisement::ErrorCallback error_callback) {
+  command_queue_.push_back(
       std::make_unique<Command>(std::make_unique<UnregisterArgs>(
-          std::move(advertisement), callback, error_callback)));
+          std::move(advertisement), std::move(callback),
+          std::move(error_callback))));
   ProcessQueue();
 }
 
@@ -106,11 +107,11 @@ void BleSynchronizerBase::StartDiscoverySession(
 
 void BleSynchronizerBase::StopDiscoverySession(
     base::WeakPtr<device::BluetoothDiscoverySession> discovery_session,
-    const base::Closure& callback,
-    const device::BluetoothDiscoverySession::ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    device::BluetoothDiscoverySession::ErrorCallback error_callback) {
   command_queue_.emplace_back(
       std::make_unique<Command>(std::make_unique<StopDiscoveryArgs>(
-          discovery_session, callback, error_callback)));
+          discovery_session, std::move(callback), std::move(error_callback))));
   ProcessQueue();
 }
 

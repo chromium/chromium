@@ -10,4 +10,7 @@
 // Accessibility identifier for the Switch to Open Tab button.
 extern NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier;
 
+// A11y identifier for the table view containing suggestions.
+extern NSString* const kOmniboxPopupTableViewAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_ACCESSIBILITY_IDENTIFIER_CONSTANTS_H_

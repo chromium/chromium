@@ -1,0 +1,15 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {P} at (0,0) size 1176x54
+        LayoutText {#text} at (0,0) size 987x53
+          text run at (0,0) width 987: "This tests that the selection tint is grey when the WebView is not focused (using the pixel output from"
+          text run at (0,27) width 188: "DumpRenderTree)."
+      LayoutNGBlockFlow {DIV} at (0,78) size 1176x27
+        LayoutText {#text} at (0,0) size 276x26
+          text run at (0,0) width 276: "This text should be selected."
+selection start: position 0 of child 0 {#text} of child 3 {DIV} of body
+selection end:   position 29 of child 0 {#text} of child 3 {DIV} of body

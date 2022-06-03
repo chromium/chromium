@@ -26,7 +26,7 @@ using content::Referrer;
 
 @implementation HistoryMenuCocoaController
 
-- (id)initWithBridge:(HistoryMenuBridge*)bridge {
+- (instancetype)initWithBridge:(HistoryMenuBridge*)bridge {
   if ((self = [super init])) {
     _bridge = bridge;
     DCHECK(_bridge);

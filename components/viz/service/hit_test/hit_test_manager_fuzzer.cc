@@ -109,7 +109,7 @@ void SubmitHitTestRegionList(
     return;
   }
 
-  base::Optional<viz::HitTestRegionList> hit_test_region_list;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list;
   if (fuzz->ConsumeBool()) {
     hit_test_region_list.emplace();
     hit_test_region_list->flags = fuzz->ConsumeIntegral<uint32_t>();
@@ -142,7 +142,8 @@ void SubmitHitTestRegionList(
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t num_bytes) {
   FuzzedDataProvider fuzz(data, num_bytes);
   viz::ServerSharedBitmapManager shared_bitmap_manager;
-  viz::FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
+  viz::FrameSinkManagerImpl frame_sink_manager{
+      viz::FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   viz::TestLatestLocalSurfaceIdLookupDelegate delegate;
   viz::TestLatestLocalSurfaceIdLookupDelegate* lsi_delegate =
       fuzz.ConsumeBool() ? &delegate : nullptr;

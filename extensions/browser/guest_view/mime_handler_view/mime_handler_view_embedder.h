@@ -34,76 +34,67 @@ namespace extensions {
 //.  - the embedder or the <iframe> are removed from DOM.
 class MimeHandlerViewEmbedder : public content::WebContentsObserver {
  public:
-  // Returns the instances associated with an ongoing navigation in a frame
-  // identified by |frame_tree_node_id|.
+  // Returns the instance associated with an ongoing navigation in a frame
+  // identified by |frame_tree_node_id| if it exists.
   static MimeHandlerViewEmbedder* Get(int32_t frame_tree_node_id);
 
   static void Create(int32_t frame_tree_node_id,
                      const GURL& resource_url,
-                     const std::string& mime_type,
                      const std::string& stream_id,
                      const std::string& internal_id);
 
   ~MimeHandlerViewEmbedder() override;
+  MimeHandlerViewEmbedder(const MimeHandlerViewEmbedder&) = delete;
+  MimeHandlerViewEmbedder& operator=(const MimeHandlerViewEmbedder&) = delete;
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   void ReadyToCreateMimeHandlerView(bool result);
 
+  // Called when we've finished calculating the sandbox flags for the frame
+  // associated with this MimeHandlerViewEmbedder and found that it's sandboxed.
+  // This signals that the navigation to the resource will fail.
+  void OnFrameSandboxed();
+
  private:
   MimeHandlerViewEmbedder(int32_t frame_tree_node_id,
                           const GURL& resource_url,
-                          const std::string& mime_type,
                           const std::string& stream_id,
                           const std::string& internal_id);
+  void DestroySelf();
   void CreateMimeHandlerViewGuest(
       mojo::PendingRemote<mime_handler::BeforeUnloadControl>
           before_unload_control_remote);
-  void DidCreateMimeHandlerViewGuest(content::WebContents* guest_web_contents);
+  void DidCreateMimeHandlerViewGuest(
+      mojo::PendingRemote<mime_handler::BeforeUnloadControl>
+          before_unload_control_remote,
+      content::WebContents* guest_web_contents);
   // Returns null before |render_frame_host_| is known.
   mojom::MimeHandlerViewContainerManager* GetContainerManager();
 
-  // Checks the sandbox state of |render_frame_host_|. If the frame is sandboxed
-  // it will send an IPC to renderer to show an empty page and immediately
-  // deletes |this|.
-  void CheckSandboxFlags();
-
   // The ID for the embedder frame of MimeHandlerViewGuest.
-  int32_t frame_tree_node_id_;
+  const int32_t frame_tree_node_id_;
   const GURL resource_url_;
-  const std::string mime_type_;
   const std::string stream_id_;
-  // This will be initialized to the RenderFrameHost corresponding to the
-  // <iframe> in the HTML page.
-  int32_t outer_contents_frame_tree_node_id_ =
-      content::RenderFrameHost::kNoFrameTreeNodeId;
+  const std::string internal_id_;
+
   // The frame associated with |frame_tree_node_id_|. Known to MHVE after the
   // navigation commits.
   content::RenderFrameHost* render_frame_host_ = nullptr;
-  // Used in attaching the GuestView. Will be initialized to the routing ID of
-  // the child frame which will be used to attach the GuestView to its outer
-  // WebContents.
-  int32_t element_instance_id_ = -1;
-  // Initialized before creating MimeHandlerViewGuest and will be passed on to
-  // to after it is created.
-  mojo::PendingRemote<mime_handler::BeforeUnloadControl>
-      pending_before_unload_control_;
-
   mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
       container_manager_;
 
-  const std::string internal_id_;
+  // The child frame of the template page at which we attach the guest contents.
+  content::RenderFrameHost* outer_contents_rfh_ = nullptr;
 
   bool ready_to_create_mime_handler_view_ = false;
 
   base::WeakPtrFactory<MimeHandlerViewEmbedder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewEmbedder);
 };
 
 }  // namespace extensions

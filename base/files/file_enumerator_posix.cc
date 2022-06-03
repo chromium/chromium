@@ -24,11 +24,31 @@ void GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
   if (res < 0) {
     // Print the stat() error message unless it was ENOENT and we're following
     // symlinks.
-    if (!(errno == ENOENT && !show_links))
-      DPLOG(ERROR) << "Couldn't stat" << path.value();
+    DPLOG_IF(ERROR, errno != ENOENT || show_links)
+        << "Cannot stat '" << path << "'";
     memset(st, 0, sizeof(*st));
   }
 }
+
+#if defined(OS_FUCHSIA)
+bool ShouldShowSymLinks(int file_type) {
+  return false;
+}
+#else
+bool ShouldShowSymLinks(int file_type) {
+  return file_type & FileEnumerator::SHOW_SYM_LINKS;
+}
+#endif  // defined(OS_FUCHSIA)
+
+#if defined(OS_FUCHSIA)
+bool ShouldTrackVisitedDirectories(int file_type) {
+  return false;
+}
+#else
+bool ShouldTrackVisitedDirectories(int file_type) {
+  return !(file_type & FileEnumerator::SHOW_SYM_LINKS);
+}
+#endif  // defined(OS_FUCHSIA)
 
 }  // namespace
 
@@ -80,16 +100,30 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
                                int file_type,
                                const FilePath::StringType& pattern,
                                FolderSearchPolicy folder_search_policy)
+    : FileEnumerator(root_path,
+                     recursive,
+                     file_type,
+                     pattern,
+                     folder_search_policy,
+                     ErrorPolicy::IGNORE_ERRORS) {}
+
+FileEnumerator::FileEnumerator(const FilePath& root_path,
+                               bool recursive,
+                               int file_type,
+                               const FilePath::StringType& pattern,
+                               FolderSearchPolicy folder_search_policy,
+                               ErrorPolicy error_policy)
     : current_directory_entry_(0),
       root_path_(root_path),
       recursive_(recursive),
       file_type_(file_type),
       pattern_(pattern),
-      folder_search_policy_(folder_search_policy) {
+      folder_search_policy_(folder_search_policy),
+      error_policy_(error_policy) {
   // INCLUDE_DOT_DOT must not be specified if recursive.
   DCHECK(!(recursive && (INCLUDE_DOT_DOT & file_type_)));
 
-  if (recursive && !(file_type & SHOW_SYM_LINKS)) {
+  if (recursive && ShouldTrackVisitedDirectories(file_type_)) {
     stat_wrapper_t st;
     GetStat(root_path, false, &st);
     visited_directories_.insert(st.st_ino);
@@ -115,8 +149,12 @@ FilePath FileEnumerator::Next() {
     pending_paths_.pop();
 
     DIR* dir = opendir(root_path_.value().c_str());
-    if (!dir)
-      continue;
+    if (!dir) {
+      if (errno == 0 || error_policy_ == ErrorPolicy::IGNORE_ERRORS)
+        continue;
+      error_ = File::OSErrorToFileError(errno);
+      return FilePath();
+    }
 
     directory_entries_.clear();
 
@@ -137,7 +175,11 @@ FilePath FileEnumerator::Next() {
 
     current_directory_entry_ = 0;
     struct dirent* dent;
-    while ((dent = readdir(dir))) {
+    // NOTE: Per the readdir() documentation, when the end of the directory is
+    // reached with no errors, null is returned and errno is not changed.
+    // Therefore we must reset errno to zero before calling readdir() if we
+    // wish to know whether a null result indicates an error condition.
+    while (errno = 0, dent = readdir(dir)) {
       FileInfo info;
       info.filename_ = FilePath(dent->d_name);
 
@@ -160,15 +202,14 @@ FilePath FileEnumerator::Next() {
         continue;
 
       const FilePath full_path = root_path_.Append(info.filename_);
-      const bool show_sym_links = file_type_ & SHOW_SYM_LINKS;
-      GetStat(full_path, show_sym_links, &info.stat_);
+      GetStat(full_path, ShouldShowSymLinks(file_type_), &info.stat_);
 
       const bool is_dir = info.IsDirectory();
 
       // Recursive mode: schedule traversal of a directory if either
       // SHOW_SYM_LINKS is on or we haven't visited the directory yet.
       if (recursive_ && is_dir &&
-          (show_sym_links ||
+          (!ShouldTrackVisitedDirectories(file_type_) ||
            visited_directories_.insert(info.stat_.st_ino).second)) {
         pending_paths_.push(full_path);
       }
@@ -176,7 +217,12 @@ FilePath FileEnumerator::Next() {
       if (is_pattern_matched && IsTypeMatched(is_dir))
         directory_entries_.push_back(std::move(info));
     }
+    int readdir_errno = errno;
     closedir(dir);
+    if (readdir_errno != 0 && error_policy_ != ErrorPolicy::IGNORE_ERRORS) {
+      error_ = File::OSErrorToFileError(readdir_errno);
+      return FilePath();
+    }
 
     // MATCH_ONLY policy enumerates files in matched subfolders by "*" pattern.
     // ALL policy enumerates files in all subfolders by origin pattern.

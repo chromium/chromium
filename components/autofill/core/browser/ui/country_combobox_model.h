@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace autofill {
@@ -24,6 +23,10 @@ class CountryComboboxModel : public ui::ComboboxModel {
   using CountryVector = std::vector<std::unique_ptr<AutofillCountry>>;
 
   CountryComboboxModel();
+
+  CountryComboboxModel(const CountryComboboxModel&) = delete;
+  CountryComboboxModel& operator=(const CountryComboboxModel&) = delete;
+
   ~CountryComboboxModel() override;
 
   // |filter| is passed each known country's country code. If |filter| returns
@@ -36,8 +39,8 @@ class CountryComboboxModel : public ui::ComboboxModel {
 
   // ui::ComboboxModel implementation:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) override;
-  bool IsItemSeparatorAt(int index) override;
+  std::u16string GetItemAt(int index) const override;
+  bool IsItemSeparatorAt(int index) const override;
 
   // The list of countries always has the default country at the top as well as
   // within the sorted vector.
@@ -50,8 +53,6 @@ class CountryComboboxModel : public ui::ComboboxModel {
   // The countries to show in the model, including NULL for entries that are
   // not countries (the separator entry).
   CountryVector countries_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountryComboboxModel);
 };
 
 }  // namespace autofill

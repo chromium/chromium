@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/status_item.h"
 
+#import <MaterialComponents/MaterialActivityIndicator.h>
+
 #include "base/mac/foundation_util.h"
-#import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MaterialActivityIndicator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"

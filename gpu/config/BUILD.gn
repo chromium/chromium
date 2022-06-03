@@ -4,19 +4,21 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
+import("//skia/features.gni")
+import("//ui/gl/features.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 group("config") {
   if (is_component_build) {
-    public_deps = [
-      "//gpu",
-    ]
+    public_deps = [ "//gpu" ]
   } else {
-    public_deps = [
-      ":config_sources",
-    ]
+    public_deps = [ ":config_sources" ]
   }
 }
 
@@ -55,7 +57,7 @@ action("process_json") {
     args += [ "macosx" ]
   } else if (is_android) {
     args += [ "android" ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     args += [ "chromeos" ]
   } else if (is_fuchsia) {
     args += [ "fuchsia" ]
@@ -63,9 +65,7 @@ action("process_json") {
     args += [ "linux" ]
   }
 
-  public_deps = [
-    ":workaround_list",
-  ]
+  public_deps = [ ":workaround_list" ]
 }
 
 action("workaround_list") {
@@ -77,9 +77,7 @@ action("workaround_list") {
     skia_workaround_list,
   ]
 
-  outputs = [
-    "$target_gen_dir/gpu_driver_bug_workaround_autogen.h",
-  ]
+  outputs = [ "$target_gen_dir/gpu_driver_bug_workaround_autogen.h" ]
 
   args = [
     "--output-file",
@@ -99,11 +97,11 @@ if (enable_vulkan) {
 
     configs += [ "//gpu:gpu_implementation" ]
 
-    deps = [
-      "//gpu/ipc/common:vulkan_interface",
+    deps = [ "//gpu/ipc/common:vulkan_interface" ]
+    public_deps = [
+      "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers",
+      "//ui/gfx",
     ]
-
-    all_dependent_configs = [ "//third_party/vulkan:vulkan_config" ]
 
     # surpass linke error 4217. It is because vulkan_info depends on
     # //gpu/ipc/common:vulkan_interface and //gpu/ipc/common:vulkan_interface"
@@ -115,12 +113,14 @@ if (enable_vulkan) {
   }
 }
 
-jumbo_source_set("config_sources") {
+source_set("config_sources") {
   # External code should depend on this via //gpu/config above rather than
   # depending on this directly or the component build will break.
   visibility = [ "//gpu/*" ]
 
   sources = [
+    "device_perf_info.cc",
+    "device_perf_info.h",
     "dx_diag_node.cc",
     "dx_diag_node.h",
     "gpu_blocklist.cc",
@@ -135,9 +135,6 @@ jumbo_source_set("config_sources") {
     "gpu_driver_bug_workaround_type.h",
     "gpu_driver_bug_workarounds.cc",
     "gpu_driver_bug_workarounds.h",
-    "gpu_dx_diagnostics_win.cc",
-    "gpu_extra_info.cc",
-    "gpu_extra_info.h",
     "gpu_feature_info.cc",
     "gpu_feature_info.h",
     "gpu_feature_type.h",
@@ -147,10 +144,6 @@ jumbo_source_set("config_sources") {
     "gpu_info.h",
     "gpu_info_collector.cc",
     "gpu_info_collector.h",
-    "gpu_info_collector_android.cc",
-    "gpu_info_collector_linux.cc",
-    "gpu_info_collector_mac.mm",
-    "gpu_info_collector_win.cc",
     "gpu_mode.h",
     "gpu_preferences.cc",
     "gpu_preferences.h",
@@ -164,6 +157,8 @@ jumbo_source_set("config_sources") {
     "gpu_test_expectations_parser.h",
     "gpu_util.cc",
     "gpu_util.h",
+    "skia_limits.cc",
+    "skia_limits.h",
   ]
 
   if (is_fuchsia) {
@@ -174,9 +169,7 @@ jumbo_source_set("config_sources") {
 
   configs += [ "//gpu:gpu_implementation" ]
 
-  public_deps = [
-    "//components/crash/core/common:crash_key",
-  ]
+  public_deps = [ "//components/crash/core/common:crash_key" ]
 
   if (enable_vulkan) {
     public_deps += [ ":vulkan_info" ]
@@ -186,14 +179,30 @@ jumbo_source_set("config_sources") {
     ":process_json",
     "//base",
     "//build:branding_buildflags",
+    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
+    "//gpu/command_buffer/common:common_sources",
     "//gpu/ipc/common:gpu_preferences_interface",
     "//gpu/vulkan:buildflags",
     "//media:media_buildflags",
+    "//skia:buildflags",
     "//third_party/re2",
+    "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers",
+    "//ui/gfx",
     "//ui/gl",
     "//ui/gl:buildflags",
     "//ui/gl/init",
   ]
+
+  if (use_dawn || skia_use_dawn) {
+    public_deps += [ "//third_party/dawn/src/dawn:dawn_headers" ]
+
+    deps += [
+      "//third_party/dawn/src/dawn:dawn_proc",
+      "//third_party/dawn/src/dawn:dawncpp",
+      "//third_party/dawn/src/dawn_native",
+    ]
+  }
 
   # GpuPreferences is using its own mojo bindings which creates a
   # cycle between this target and gpu_preferences_interface.
@@ -203,7 +212,14 @@ jumbo_source_set("config_sources") {
   # Prefer mesa GL headers to system headers, which cause problems on Win.
   include_dirs = [ "//third_party/mesa_headers" ]
 
+  if (is_android) {
+    sources += [ "gpu_info_collector_android.cc" ]
+  }
   if (is_win) {
+    sources += [
+      "gpu_dx_diagnostics_win.cc",
+      "gpu_info_collector_win.cc",
+    ]
     libs = [
       "dxgi.lib",
       "dxguid.lib",
@@ -217,9 +233,41 @@ jumbo_source_set("config_sources") {
     }
   }
   if (is_mac) {
-    libs = [ "OpenGL.framework" ]
+    sources += [ "gpu_info_collector_mac.mm" ]
+    frameworks = [ "OpenGL.framework" ]
   }
-  if (is_linux || is_mac) {
+  if (is_linux || is_chromeos) {
+    sources += [ "gpu_info_collector_linux.cc" ]
+  }
+  if (is_linux || is_chromeos || is_mac) {
     deps += [ "//third_party/angle:angle_gpu_info_util" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_strings("java_switches_srcjar") {
+    # External code should depend on ":config_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "gpu_switches.cc" ]
+    template = "android/java/src/org/chromium/gpu/config/GpuSwitches.java.tmpl"
+  }
+
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":config_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "gpu_finch_features.cc" ]
+    template = "android/java/src/org/chromium/gpu/config/GpuFeatures.java.tmpl"
+  }
+
+  android_library("config_java") {
+    # Right now, this only includes the Java switches/features. But if we need
+    # more Java files, they should be added here as necessary.
+    srcjar_deps = [
+      ":java_features_srcjar",
+      ":java_switches_srcjar",
+    ]
   }
 }

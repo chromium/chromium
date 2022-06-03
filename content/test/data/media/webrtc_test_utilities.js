@@ -46,6 +46,16 @@ function cancelTestTimeout() {
   gPendingTimeout = null;
 }
 
+function detectVideoPlayingWithExpectedResolution(
+    videoElementName, video_width, video_height, alignment) {
+  return detectVideo(
+      videoElementName, function(pixels, previous_pixels, videoElement) {
+        return hasExpectedResolution(
+                   videoElement, video_width, video_height, alignment) &&
+            isVideoPlaying(pixels, previous_pixels);
+      });
+}
+
 function detectVideoPlaying(videoElementName) {
   return detectVideo(videoElementName, isVideoPlaying);
 }
@@ -110,7 +120,8 @@ function detectVideoWithDimension(
       // that case.
       // There's a failure(?) mode here where the video generated claims to
       // have size 2x2. Don't consider that a valid video.
-      if (oldPixels.length == pixels.length && predicate(pixels, oldPixels)) {
+      if (oldPixels.length == pixels.length &&
+          predicate(pixels, oldPixels, videoElement)) {
         console.log('Done looking at video in element ' + videoElementName);
         console.log('DEBUG: video.width = ' + videoElement.videoWidth);
         console.log('DEBUG: video.height = ' + videoElement.videoHeight);
@@ -155,6 +166,22 @@ function waitForConnectionToStabilizeIfNeeded(peerConnection) {
   });
 }
 
+function hasExpectedResolution(
+    videoElement, expected_width, expected_height, alignment) {
+  if (videoElement.videoWidth == expected_width &&
+      videoElement.videoHeight == expected_height) {
+    return true;
+  }
+
+  if (!alignment)
+    return false;
+
+  expected_width -= expected_width % alignment;
+  expected_height -= expected_height % alignment;
+  return videoElement.videoWidth == expected_width &&
+      videoElement.videoHeight == expected_height;
+}
+
 // This very basic video verification algorithm will be satisfied if any
 // pixels are changed.
 function isVideoPlaying(pixels, previousPixels) {
@@ -173,7 +200,7 @@ function isVideoBlack(pixels) {
   var accumulatedLuma = 0;
   for (var i = 0; i < pixels.length; i += 4) {
     // Ignore the alpha channel.
-    accumulatedLuma += rec702Luma_(pixels[i], pixels[i + 1], pixels[i + 2]);
+    accumulatedLuma += rec709Luma_(pixels[i], pixels[i + 1], pixels[i + 2]);
     if (accumulatedLuma > threshold * (i / 4 + 1))
       return false;
   }
@@ -219,7 +246,7 @@ function isAlmostBackgroundGreen(color) {
 
 // Use Luma as in Rec. 709: Y′709 = 0.2126R + 0.7152G + 0.0722B;
 // See http://en.wikipedia.org/wiki/Rec._709.
-function rec702Luma_(r, g, b) {
+function rec709Luma_(r, g, b) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 

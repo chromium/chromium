@@ -43,7 +43,7 @@ TEST_F(FirewallHoleTest, GrantTcpPortAccess) {
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
   FirewallHole::Open(FirewallHole::PortType::TCP, 1234, "foo0",
-                     base::Bind(&CopyFirewallHole, &run_loop, &hole));
+                     base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_TRUE(hole.get());
   EXPECT_TRUE(FakePermissionBrokerClient::Get()->HasTcpHole(1234, "foo0"));
@@ -57,7 +57,7 @@ TEST_F(FirewallHoleTest, DenyTcpPortAccess) {
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
   FirewallHole::Open(FirewallHole::PortType::TCP, 1234, "foo0",
-                     base::Bind(&CopyFirewallHole, &run_loop, &hole));
+                     base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_FALSE(hole.get());
 }
@@ -66,7 +66,7 @@ TEST_F(FirewallHoleTest, GrantUdpPortAccess) {
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
   FirewallHole::Open(FirewallHole::PortType::UDP, 1234, "foo0",
-                     base::Bind(&CopyFirewallHole, &run_loop, &hole));
+                     base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_TRUE(hole.get());
   EXPECT_TRUE(FakePermissionBrokerClient::Get()->HasUdpHole(1234, "foo0"));
@@ -80,7 +80,7 @@ TEST_F(FirewallHoleTest, DenyUdpPortAccess) {
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
   FirewallHole::Open(FirewallHole::PortType::UDP, 1234, "foo0",
-                     base::Bind(&CopyFirewallHole, &run_loop, &hole));
+                     base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_FALSE(hole.get());
 }

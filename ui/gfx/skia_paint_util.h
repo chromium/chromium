@@ -55,4 +55,4 @@ GFX_EXPORT sk_sp<SkDrawLooper> CreateShadowDrawLooper(
 
 }  // namespace gfx
 
-#endif  // UI_GFX_SKIA_UTIL_H_
+#endif  // UI_GFX_SKIA_PAINT_UTIL_H_

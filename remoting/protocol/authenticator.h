@@ -68,7 +68,7 @@ class Authenticator {
     INVALID_CREDENTIALS,
 
     // The client JID was not valid (i.e. violated a policy or was malformed).
-    INVALID_ACCOUNT,
+    INVALID_ACCOUNT_ID,
 
     // Generic error used when something goes wrong establishing a session.
     PROTOCOL_ERROR,
@@ -78,12 +78,16 @@ class Authenticator {
 
     // Multiple, valid connection requests were received for the same session.
     TOO_MANY_CONNECTIONS,
+
+    // The client is not authorized to connect to this device due to a policy
+    // defined by the third party auth service.
+    AUTHORIZATION_POLICY_CHECK_FAILED,
   };
 
   // Callback used for layered Authenticator implementations, particularly
   // third-party and pairing authenticators. They use this callback to create
   // base SPAKE2 authenticators.
-  typedef base::Callback<std::unique_ptr<Authenticator>(
+  typedef base::RepeatingCallback<std::unique_ptr<Authenticator>(
       const std::string& shared_secret,
       Authenticator::State initial_state)>
       CreateBaseAuthenticatorCallback;
@@ -119,7 +123,7 @@ class Authenticator {
   // finished. The implementation must guarantee that |resume_callback| is not
   // called after the Authenticator is destroyed.
   virtual void ProcessMessage(const jingle_xmpp::XmlElement* message,
-                              const base::Closure& resume_callback) = 0;
+                              base::OnceClosure resume_callback) = 0;
 
   // Must be called when in MESSAGE_READY state. Returns next
   // authentication message that needs to be sent to the peer.

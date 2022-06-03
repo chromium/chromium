@@ -7,14 +7,13 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
-#include "content/public/common/input_event_ack_source.h"
-#include "content/public/common/input_event_ack_state.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace content {
 
@@ -27,39 +26,59 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
     TRACE_EVENT_ASYNC_BEGIN0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
 
+  QueuedWebMouseWheelEvent(const QueuedWebMouseWheelEvent&) = delete;
+  QueuedWebMouseWheelEvent& operator=(const QueuedWebMouseWheelEvent&) = delete;
+
   ~QueuedWebMouseWheelEvent() {
     TRACE_EVENT_ASYNC_END0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueuedWebMouseWheelEvent);
 };
 
 // Interface with which MouseWheelEventQueue can forward mouse wheel events,
 // and dispatch mouse wheel event responses.
 class CONTENT_EXPORT MouseWheelEventQueueClient {
  public:
+  using MouseWheelEventHandledCallback =
+      base::OnceCallback<void(const MouseWheelEventWithLatencyInfo& ack_event,
+                              blink::mojom::InputEventResultSource ack_source,
+                              blink::mojom::InputEventResultState ack_result)>;
   virtual ~MouseWheelEventQueueClient() {}
-
   virtual void SendMouseWheelEventImmediately(
-      const MouseWheelEventWithLatencyInfo& event) = 0;
+      const MouseWheelEventWithLatencyInfo& event,
+      MouseWheelEventHandledCallback callback) = 0;
+  virtual void OnMouseWheelEventAck(
+      const MouseWheelEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) = 0;
   virtual void ForwardGestureEventWithLatencyInfo(
       const blink::WebGestureEvent& event,
       const ui::LatencyInfo& latency_info) = 0;
-  virtual void OnMouseWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
-                                    InputEventAckSource ack_source,
-                                    InputEventAckState ack_result) = 0;
   virtual bool IsWheelScrollInProgress() = 0;
   virtual bool IsAutoscrollInProgress() = 0;
 };
 
-// A queue for throttling and coalescing mouse wheel events.
+// A queue for throttling and coalescing mouse wheel events. This class tracks
+// wheel events sent to the renderer and receives their ACKs. If the ACK
+// reports the event went unconsumed by the renderer, this class will generate
+// a sequence of gesture scroll events.
+//
+// Within a sequence, wheel events are initially forwarded using a blocking
+// dispatch. This means that further wheel events are queued and scroll event
+// generation will wait (i.e.  block) until the in-flight wheel event is ACKed.
+// Once a wheel event goes unconsumed, and scrolling begins, dispatch of
+// subsequent wheel events becomes non-blocking. This means the wheel event
+// will be ACKed by the browser immediately after being dispatched. This will
+// cause scroll events to follow the wheel immediately and new wheel events
+// will be dispatched immediately rather than queueing.
 class CONTENT_EXPORT MouseWheelEventQueue {
  public:
   // The |client| must outlive the MouseWheelEventQueue.
   // |IsWheelScrollInProgress| indicates whether mouse wheel events should
   // generate Scroll[Begin|Update|End] on unhandled acknowledge events.
   MouseWheelEventQueue(MouseWheelEventQueueClient* client);
+
+  MouseWheelEventQueue(const MouseWheelEventQueue&) = delete;
+  MouseWheelEventQueue& operator=(const MouseWheelEventQueue&) = delete;
 
   ~MouseWheelEventQueue();
 
@@ -68,12 +87,6 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   // single mouse-wheel event). The event may also be immediately forwarded to
   // the renderer (e.g. when there are no other queued mouse-wheel event).
   void QueueEvent(const MouseWheelEventWithLatencyInfo& event);
-
-  // Notifies the queue that a mouse wheel event has been processed by the
-  // renderer.
-  void ProcessMouseWheelAck(InputEventAckSource ack_source,
-                            InputEventAckState ack_result,
-                            const MouseWheelEventWithLatencyInfo& ack_event);
 
   // When GestureScrollBegin is received, and it is a different source
   // than mouse wheels terminate the current GestureScroll if there is one.
@@ -90,20 +103,22 @@ class CONTENT_EXPORT MouseWheelEventQueue {
     return event_sent_for_gesture_ack_ != nullptr;
   }
 
-  blink::WebMouseWheelEvent get_wheel_event_awaiting_ack_for_testing() {
-    return event_sent_for_gesture_ack_->event;
-  }
-
  private:
+  // Notifies the queue that a mouse wheel event has been processed by the
+  // renderer.
+  void ProcessMouseWheelAck(const MouseWheelEventWithLatencyInfo& ack_event,
+                            blink::mojom::InputEventResultSource ack_source,
+                            blink::mojom::InputEventResultState ack_result);
+
   void TryForwardNextEventToRenderer();
   void SendScrollEnd(blink::WebGestureEvent update_event, bool synthetic);
   void SendScrollBegin(const blink::WebGestureEvent& gesture_update,
                        bool synthetic);
-  void RecordLatchingUmaMetric(bool latched);
 
   // True if gesture scroll events can be generated for the wheel event sent for
   // ack.
-  bool CanGenerateGestureScroll(InputEventAckState ack_result) const;
+  bool CanGenerateGestureScroll(
+      blink::mojom::InputEventResultState ack_result) const;
 
   MouseWheelEventQueueClient* client_;
 
@@ -116,8 +131,6 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   bool send_wheel_events_async_;
 
   blink::WebGestureDevice scrolling_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelEventQueue);
 };
 
 }  // namespace content

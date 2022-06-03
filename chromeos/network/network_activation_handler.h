@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
 namespace chromeos {
@@ -17,19 +16,10 @@ namespace chromeos {
 // calls required for activation on mobile networks.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandler {
  public:
-  virtual ~NetworkActivationHandler() = default;
+  NetworkActivationHandler(const NetworkActivationHandler&) = delete;
+  NetworkActivationHandler& operator=(const NetworkActivationHandler&) = delete;
 
-  // ActivateNetwork() will start an asynchronous activation attempt.
-  // |carrier| may be empty or may specify a carrier to activate.
-  // On success, |success_callback| will be called.
-  // On failure, |error_callback| will be called with |error_name| one of:
-  //  kErrorNotFound if no network matching |service_path| is found.
-  //  kErrorShillError if a DBus or Shill error occurred.
-  virtual void Activate(
-      const std::string& service_path,
-      const std::string& carrier,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) = 0;
+  virtual ~NetworkActivationHandler() = default;
 
   // CompleteActivation() will start an asynchronous activation completion
   // attempt.
@@ -39,14 +29,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandler {
   //  kErrorShillError if a DBus or Shill error occurred.
   virtual void CompleteActivation(
       const std::string& service_path,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) = 0;
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback) = 0;
 
  protected:
   NetworkActivationHandler() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkActivationHandler);
 };
 
 }  // namespace chromeos

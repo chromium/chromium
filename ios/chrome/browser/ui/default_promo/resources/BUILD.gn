@@ -1,0 +1,32 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
+
+group("resources") {
+  deps = [
+    ":all_your_tabs",
+    ":default_browser_illustration",
+  ]
+}
+
+imageset("all_your_tabs") {
+  sources = [
+    "all_your_tabs.imageset/Contents.json",
+    "all_your_tabs.imageset/all_your_tabs.png",
+    "all_your_tabs.imageset/all_your_tabs@2x.png",
+    "all_your_tabs.imageset/all_your_tabs@3x.png",
+  ]
+}
+
+imageset("default_browser_illustration") {
+  sources = [
+    "default_browser_illustration.imageset/Contents.json",
+    "default_browser_illustration.imageset/default_browser_dark@2x.png",
+    "default_browser_illustration.imageset/default_browser_dark@3x.png",
+    "default_browser_illustration.imageset/default_browser_light@2x.png",
+    "default_browser_illustration.imageset/default_browser_light@3x.png",
+  ]
+}

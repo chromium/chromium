@@ -5,45 +5,88 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_OBSERVER_DELEGATE_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_OBSERVER_DELEGATE_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/scoped_visibility_tracker.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+namespace blink {
+struct MobileFriendliness;
+}  // namespace blink
+
 namespace page_load_metrics {
 
 namespace mojom {
-class PageLoadMetadata;
+class FrameMetadata;
 }  // namespace mojom
 
 struct UserInitiatedInfo;
 struct PageRenderData;
+struct NormalizedCLSData;
 
 // This class tracks global state for the page load that should be accessible
 // from any PageLoadMetricsObserver.
 class PageLoadMetricsObserverDelegate {
  public:
+  // States when the page is restored from the back-forward cache.
+  struct BackForwardCacheRestore {
+    explicit BackForwardCacheRestore(bool was_in_foreground,
+                                     base::TimeTicks navigation_start_time);
+    BackForwardCacheRestore(const BackForwardCacheRestore&);
+
+    // The first time when the page becomes backgrounded after the page is
+    // restored. The time is relative to the navigation start of bfcache restore
+    // navigation.
+    absl::optional<base::TimeDelta> first_background_time;
+
+    // The navigation start time for this back-forward cache restore.
+    base::TimeTicks navigation_start_time;
+
+    // True if the page was in foreground when the page is restored.
+    bool was_in_foreground = false;
+  };
+
+  // Distinguishes metric variants by how they react to bfcache events.
+  enum class BfcacheStrategy {
+    // Accumulate the metric over the lifetime of the PageLoadTracker.
+    ACCUMULATE,
+    // Reset the metric when the page enters the bfcache.
+    RESET
+  };
+
   virtual content::WebContents* GetWebContents() const = 0;
 
   // The time the navigation was initiated.
   virtual base::TimeTicks GetNavigationStart() const = 0;
 
-  // The first time that the page was backgrounded since the navigation started.
-  virtual const base::Optional<base::TimeDelta>& GetFirstBackgroundTime()
-      const = 0;
+  // The duration until the first time that the page was backgrounded since the
+  // navigation started. Will be nullopt if the page has never been
+  // backgrounded.
+  virtual absl::optional<base::TimeDelta> GetTimeToFirstBackground() const = 0;
 
-  // The first time that the page was foregrounded since the navigation started.
-  virtual const base::Optional<base::TimeDelta>& GetFirstForegroundTime()
-      const = 0;
+  // The duration until the first time that the page was foregrounded since the
+  // navigation started. Will be nullopt if the page has never been in the
+  // foreground.
+  virtual absl::optional<base::TimeDelta> GetTimeToFirstForeground() const = 0;
+
+  // The state of index-th restore from the back-forward cache.
+  virtual const BackForwardCacheRestore& GetBackForwardCacheRestore(
+      size_t index) const = 0;
 
   // True if the page load started in the foreground.
   virtual bool StartedInForeground() const = 0;
+
+  // True if the page load was a prerender, that was later activated by a
+  // navigation that started in the foreground.
+  virtual bool WasPrerenderedThenActivatedInForeground() const = 0;
 
   // Whether the page load was initiated by a user.
   virtual const UserInitiatedInfo& GetUserInitiatedInfo() const = 0;
@@ -87,21 +130,48 @@ class PageLoadMetricsObserverDelegate {
   // * a new navigation which later commits is initiated in the same tab
   // This field will not be set if the page is still active and hasn't yet
   // finished.
-  virtual base::Optional<base::TimeDelta> GetPageEndTime() const = 0;
+  virtual absl::optional<base::TimeDelta> GetTimeToPageEnd() const = 0;
+
+  // The absolute time at which the page's lifetime ended. See the comment
+  // on GetTimeToPageEnd for the definition of when a page's lifetime ends.
+  virtual const base::TimeTicks& GetPageEndTime() const = 0;
 
   // Extra information supplied to the page load metrics system from the
   // renderer for the main frame.
-  virtual const mojom::PageLoadMetadata& GetMainFrameMetadata() const = 0;
+  virtual const mojom::FrameMetadata& GetMainFrameMetadata() const = 0;
 
-  // PageLoadMetadata for subframes of the current page load.
-  virtual const mojom::PageLoadMetadata& GetSubframeMetadata() const = 0;
+  // FrameMetadata for subframes of the current page load. This contains
+  // aggregate information across all subframes. Non-aggregatable information
+  // such as subframe intersections is initialized to defaults.
+  virtual const mojom::FrameMetadata& GetSubframeMetadata() const = 0;
   virtual const PageRenderData& GetPageRenderData() const = 0;
+  virtual const NormalizedCLSData& GetNormalizedCLSData(
+      BfcacheStrategy bfcache_strategy) const = 0;
+  // Returns normalized responsiveness metrics data. Currently we normalize
+  // user interaction latencies from all renderer frames in a few different
+  // ways.
+  virtual const NormalizedResponsivenessMetrics&
+  GetNormalizedResponsivenessMetrics() const = 0;
+  // InputTiming data accumulated across all frames.
+  virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
+  virtual const absl::optional<blink::MobileFriendliness>&
+  GetMobileFriendliness() const = 0;
   virtual const PageRenderData& GetMainFrameRenderData() const = 0;
   virtual const ui::ScopedVisibilityTracker& GetVisibilityTracker() const = 0;
   virtual const ResourceTracker& GetResourceTracker() const = 0;
 
-  // UKM SourceId for the current page load.
-  virtual ukm::SourceId GetSourceId() const = 0;
+  // Returns a shared LargestContentfulPaintHandler for page load metrics.
+  virtual const LargestContentfulPaintHandler&
+  GetLargestContentfulPaintHandler() const = 0;
+  // Returns a LargestContentfulPaintHandler for the experimental version of
+  // LCP. Note that currently this 'experimental version' is the version that is
+  // being deprecated.
+  virtual const LargestContentfulPaintHandler&
+  GetExperimentalLargestContentfulPaintHandler() const = 0;
+
+  // UKM source ID for the current page load. For prerendered page loads, this
+  // returns ukm::kInvalidSourceId until activation navigation.
+  virtual ukm::SourceId GetPageUkmSourceId() const = 0;
 
   // Whether the associated navigation is the first navigation in its associated
   // WebContents. Note that, for newly opened tabs that display the New Tab

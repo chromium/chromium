@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 18: Uncaught TypeError: document.registerElement is not a function
-Tests that we can recurse up to 43 times between V8 and Blink. You should see PASS below, and no stack size exceeded RangeError.

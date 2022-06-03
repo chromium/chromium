@@ -17,7 +17,7 @@ namespace api {
 
 class DeviceId {
  public:
-  typedef base::Callback<void(const std::string&)> IdCallback;
+  typedef base::OnceCallback<void(const std::string&)> IdCallback;
 
   // Calls |callback| with a unique device identifier as argument. The device
   // identifier has the following characteristics:
@@ -31,12 +31,11 @@ class DeviceId {
   // running on the UI thread).
   // The returned value is HMAC_SHA256(|raw_device_id|, |extension_id|), so that
   // the actual device identifier value is not exposed directly to the caller.
-  static void GetDeviceId(const std::string& extension_id,
-                          const IdCallback& callback);
+  static void GetDeviceId(const std::string& extension_id, IdCallback callback);
 
  private:
   // Platform specific implementation of "raw" machine ID retrieval.
-  static void GetRawDeviceId(const IdCallback& callback);
+  static void GetRawDeviceId(IdCallback callback);
 
   // On some platforms, part of the machine ID is the MAC address. This function
   // is shared across platforms to filter out MAC addresses that have been
@@ -44,15 +43,13 @@ class DeviceId {
   // new MAC addresses at each reboot.
   static bool IsValidMacAddress(const void* bytes, size_t size);
 
-  // The traits of the task that retrieves the device id.
+  // The traits of the task on base::ThreadPool that retrieves the device id.
   //
-  // ThreadPool(): This should run on a background thread.
   // MayBlock(): Since this requires fetching disk.
   // TaskPriority: USER_VISIBLE. Though this might be conservative, depending
   //   on how GetDeviceId() is used.
   static constexpr base::TaskTraits traits() {
-    return {base::ThreadPool(), base::MayBlock(),
-            base::TaskPriority::USER_VISIBLE};
+    return {base::MayBlock(), base::TaskPriority::USER_VISIBLE};
   }
 };
 

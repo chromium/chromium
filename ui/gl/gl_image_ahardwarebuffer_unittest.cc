@@ -10,7 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
+#include "ui/gl/test/gl_image_bind_test_template.h"
 #include "ui/gl/test/gl_image_test_template.h"
+#include "ui/gl/test/gl_image_zero_initialize_test_template.h"
 
 namespace gl {
 namespace {

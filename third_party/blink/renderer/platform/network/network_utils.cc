@@ -52,11 +52,6 @@ bool IsReservedIPAddress(const String& host) {
   return !address.IsPubliclyRoutable();
 }
 
-bool IsLocalHostname(const String& host, bool* is_local6) {
-  StringUTF8Adaptor utf8(host);
-  return net::IsLocalHostname(utf8.AsStringPiece(), is_local6);
-}
-
 String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
   StringUTF8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
@@ -67,10 +62,6 @@ String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
     const KURL& url,
     const String& method) {
-  // The following code contains duplication of GetInfoFromDataURL() and
-  // WebURLLoaderImpl::PopulateURLResponse() in
-  // content/child/web_url_loader_impl.cc. Merge them once content/child is
-  // moved to platform/.
   std::string utf8_mime_type;
   std::string utf8_charset;
   std::string data_string;
@@ -138,7 +129,8 @@ Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {
                                   &had_charset, &boundary);
   base::TrimString(boundary, " \"", &boundary);
   Vector<char> result;
-  result.Append(boundary.data(), boundary.size());
+  result.Append(boundary.data(),
+                base::checked_cast<wtf_size_t>(boundary.size()));
   return result;
 }
 

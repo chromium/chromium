@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_REF_COUNTED_PROPERTY_TREE_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_REF_COUNTED_PROPERTY_TREE_STATE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 
 namespace blink {
@@ -15,25 +16,31 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
   USING_FAST_MALLOC(RefCountedPropertyTreeState);
 
  public:
-  RefCountedPropertyTreeState(const PropertyTreeState& property_tree_state)
+  explicit RefCountedPropertyTreeState(
+      const PropertyTreeStateOrAlias& property_tree_state)
       : transform_(&property_tree_state.Transform()),
         clip_(&property_tree_state.Clip()),
         effect_(&property_tree_state.Effect()) {}
 
-  bool HasDirectCompositingReasons() const;
-
-  const TransformPaintPropertyNode& Transform() const { return *transform_; }
-  const ClipPaintPropertyNode& Clip() const { return *clip_; }
-  const EffectPaintPropertyNode& Effect() const { return *effect_; }
-
-  PropertyTreeState GetPropertyTreeState() const {
-    return PropertyTreeState(Transform(), Clip(), Effect());
+  RefCountedPropertyTreeState& operator=(
+      const PropertyTreeStateOrAlias& property_tree_state) {
+    return *this = RefCountedPropertyTreeState(property_tree_state);
   }
 
-  void ClearChangedToRoot() const {
-    Transform().ClearChangedToRoot();
-    Clip().ClearChangedToRoot();
-    Effect().ClearChangedToRoot();
+  const TransformPaintPropertyNodeOrAlias& Transform() const {
+    return *transform_;
+  }
+  const ClipPaintPropertyNodeOrAlias& Clip() const { return *clip_; }
+  const EffectPaintPropertyNodeOrAlias& Effect() const { return *effect_; }
+
+  PropertyTreeStateOrAlias GetPropertyTreeState() const {
+    return PropertyTreeStateOrAlias(Transform(), Clip(), Effect());
+  }
+
+  void ClearChangedTo(const PropertyTreeStateOrAlias& to) const {
+    Transform().ClearChangedTo(&to.Transform());
+    Clip().ClearChangedTo(&to.Clip());
+    Effect().ClearChangedTo(&to.Effect());
   }
 
   String ToString() const { return GetPropertyTreeState().ToString(); }
@@ -43,9 +50,9 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
 #endif
 
  private:
-  scoped_refptr<const TransformPaintPropertyNode> transform_;
-  scoped_refptr<const ClipPaintPropertyNode> clip_;
-  scoped_refptr<const EffectPaintPropertyNode> effect_;
+  scoped_refptr<const TransformPaintPropertyNodeOrAlias> transform_;
+  scoped_refptr<const ClipPaintPropertyNodeOrAlias> clip_;
+  scoped_refptr<const EffectPaintPropertyNodeOrAlias> effect_;
 };
 
 inline bool operator==(const RefCountedPropertyTreeState& a,
@@ -55,6 +62,27 @@ inline bool operator==(const RefCountedPropertyTreeState& a,
 }
 
 inline bool operator!=(const RefCountedPropertyTreeState& a,
+                       const RefCountedPropertyTreeState& b) {
+  return !(a == b);
+}
+
+inline bool operator==(const RefCountedPropertyTreeState& a,
+                       const PropertyTreeStateOrAlias& b) {
+  return &a.Transform() == &b.Transform() && &a.Clip() == &b.Clip() &&
+         &a.Effect() == &b.Effect();
+}
+
+inline bool operator!=(const RefCountedPropertyTreeState& a,
+                       const PropertyTreeStateOrAlias& b) {
+  return !(a == b);
+}
+
+inline bool operator==(const PropertyTreeStateOrAlias& a,
+                       const RefCountedPropertyTreeState& b) {
+  return b == a;
+}
+
+inline bool operator!=(const PropertyTreeStateOrAlias& a,
                        const RefCountedPropertyTreeState& b) {
   return !(a == b);
 }

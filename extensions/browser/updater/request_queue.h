@@ -40,7 +40,7 @@ class RequestQueue {
   class iterator;
 
   RequestQueue(const net::BackoffEntry::Policy* backoff_policy,
-               const base::Closure& start_request_callback);
+               const base::RepeatingClosure& start_request_callback);
   ~RequestQueue();
 
   // Returns the request that is currently being processed.
@@ -99,7 +99,7 @@ class RequestQueue {
   const net::BackoffEntry::Policy* backoff_policy_;
 
   // Callback to call when a new request has become the active request.
-  base::Closure start_request_callback_;
+  base::RepeatingClosure start_request_callback_;
 
   // Priority queue of pending requests. Not using std::priority_queue since
   // the code needs to be able to iterate over all pending requests.
@@ -119,7 +119,7 @@ class RequestQueue {
 template <typename T>
 class RequestQueue<T>::iterator {
  public:
-  iterator() {}
+  iterator() = default;
 
   T* operator*() { return it_->request.get(); }
   T* operator->() { return it_->request.get(); }

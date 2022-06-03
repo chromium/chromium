@@ -50,7 +50,7 @@ constexpr double kWeakMagnitude = 0.5;    // 50% intensity
 constexpr double kZeroMagnitude = 0.0;
 
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 
 class FakeHidWriter : public HidWriter {
  public:
@@ -85,6 +85,9 @@ class HidHapticGamepadTest : public testing::Test {
     gamepad_ = std::make_unique<HidHapticGamepad>(kHapticReportData,
                                                   std::move(fake_hid_writer));
   }
+
+  HidHapticGamepadTest(const HidHapticGamepadTest&) = delete;
+  HidHapticGamepadTest& operator=(const HidHapticGamepadTest&) = delete;
 
   void TearDown() override { gamepad_->Shutdown(); }
 
@@ -130,8 +133,6 @@ class HidHapticGamepadTest : public testing::Test {
   std::unique_ptr<HidHapticGamepad> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(HidHapticGamepadTest);
 };
 
 TEST_F(HidHapticGamepadTest, PlayEffectTest) {

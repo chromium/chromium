@@ -41,13 +41,11 @@ namespace blink {
 DragData::DragData(DataObject* data,
                    const FloatPoint& client_position,
                    const FloatPoint& global_position,
-                   DragOperation source_operation_mask,
-                   DragApplicationFlags flags)
+                   DragOperationsMask source_operation_mask)
     : client_position_(client_position),
       global_position_(global_position),
       platform_drag_data_(data),
-      dragging_source_operation_mask_(source_operation_mask),
-      application_flags_(flags) {}
+      dragging_source_operation_mask_(source_operation_mask) {}
 
 bool DragData::ContainsHTML() const {
   return platform_drag_data_->Types().Contains(kMimeTypeTextHTML);

@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/dual_gpu_state_mac.h"
@@ -51,12 +51,8 @@ static CGLPixelFormatObj GetPixelFormat() {
     g_support_renderer_switching = false;
   }
   if (GetGLImplementation() == kGLImplementationDesktopGLCoreProfile) {
-    // These constants don't exist in the 10.6 SDK against which
-    // Chromium currently compiles.
-    const int kOpenGLProfile = 99;
-    const int kOpenGL3_2Core = 0x3200;
-    attribs.push_back(static_cast<CGLPixelFormatAttribute>(kOpenGLProfile));
-    attribs.push_back(static_cast<CGLPixelFormatAttribute>(kOpenGL3_2Core));
+    attribs.push_back(kCGLPFAOpenGLProfile);
+    attribs.push_back((CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core);
   }
 
   attribs.push_back((CGLPixelFormatAttribute) 0);
@@ -89,7 +85,7 @@ bool GLContextCGL::Initialize(GLSurface* compatible_surface,
          attribs.bind_generates_resource);
 
   GpuPreference gpu_preference =
-      GLContext::AdjustGpuPreference(attribs.gpu_preference);
+      GLSurface::AdjustGpuPreference(attribs.gpu_preference);
 
   GLContextCGL* share_context = share_group() ?
       static_cast<GLContextCGL*>(share_group()->GetContext()) : nullptr;
@@ -210,7 +206,7 @@ YUVToRGBConverter* GLContextCGL::GetYUVToRGBConverter(
   return yuv_to_rgb_converter.get();
 }
 
-bool GLContextCGL::MakeCurrent(GLSurface* surface) {
+bool GLContextCGL::MakeCurrentImpl(GLSurface* surface) {
   DCHECK(context_);
 
   if (!ForceGpuSwitchIfNeeded())

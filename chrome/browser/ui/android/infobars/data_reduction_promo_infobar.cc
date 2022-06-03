@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/logging.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_promo_infobar_delegate_android.h"
 #include "content/public/browser/web_contents.h"
@@ -18,13 +17,15 @@
 
 DataReductionPromoInfoBar::DataReductionPromoInfoBar(
     std::unique_ptr<DataReductionPromoInfoBarDelegateAndroid> delegate)
-    : ConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 DataReductionPromoInfoBar::~DataReductionPromoInfoBar() {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-DataReductionPromoInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+DataReductionPromoInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   return GetDelegate()->CreateRenderInfoBar(env);
 }
 

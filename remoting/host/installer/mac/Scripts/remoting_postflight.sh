@@ -107,9 +107,6 @@ else
   logger PAM config has local edits. Not updating.
 fi
 
-# Run the config-upgrade tool.
-"$HOST_EXE" --upgrade-token --host-config="$CONFIG_FILE" || true
-
 # Create a symlink from the legacy .bundle name to the new .app name. This
 # allows existing references to the legacy name to continue to work, and means
 # that no changes are required to the launchd script.

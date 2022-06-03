@@ -24,8 +24,7 @@ class SettingsRootTableViewControllerTest : public PlatformTest {
  public:
   SettingsRootTableViewController* Controller() {
     return [[SettingsRootTableViewController alloc]
-        initWithTableViewStyle:UITableViewStylePlain
-                   appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+        initWithStyle:UITableViewStylePlain];
   }
 
   SettingsNavigationController* NavigationController() {

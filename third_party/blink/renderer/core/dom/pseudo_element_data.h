@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_DATA_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -14,12 +13,18 @@ namespace blink {
 class PseudoElementData final : public GarbageCollected<PseudoElementData> {
  public:
   PseudoElementData() = default;
+  PseudoElementData(const PseudoElementData&) = delete;
+  PseudoElementData& operator=(const PseudoElementData&) = delete;
 
   void SetPseudoElement(PseudoId, PseudoElement*);
   PseudoElement* GetPseudoElement(PseudoId) const;
+
+  using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
+  PseudoElementVector GetPseudoElements() const;
+
   bool HasPseudoElements() const;
   void ClearPseudoElements();
-  void Trace(Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(generated_before_);
     visitor->Trace(generated_after_);
     visitor->Trace(generated_marker_);
@@ -33,7 +38,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData> {
   Member<PseudoElement> generated_marker_;
   Member<PseudoElement> generated_first_letter_;
   Member<PseudoElement> backdrop_;
-  DISALLOW_COPY_AND_ASSIGN(PseudoElementData);
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {
@@ -51,35 +55,34 @@ inline void PseudoElementData::ClearPseudoElements() {
 
 inline void PseudoElementData::SetPseudoElement(PseudoId pseudo_id,
                                                 PseudoElement* element) {
+  PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
     case kPseudoIdBefore:
-      if (generated_before_)
-        generated_before_->Dispose();
+      previous_element = generated_before_;
       generated_before_ = element;
       break;
     case kPseudoIdAfter:
-      if (generated_after_)
-        generated_after_->Dispose();
+      previous_element = generated_after_;
       generated_after_ = element;
       break;
     case kPseudoIdMarker:
-      if (generated_marker_)
-        generated_marker_->Dispose();
+      previous_element = generated_marker_;
       generated_marker_ = element;
       break;
     case kPseudoIdBackdrop:
-      if (backdrop_)
-        backdrop_->Dispose();
+      previous_element = backdrop_;
       backdrop_ = element;
       break;
     case kPseudoIdFirstLetter:
-      if (generated_first_letter_)
-        generated_first_letter_->Dispose();
+      previous_element = generated_first_letter_;
       generated_first_letter_ = element;
       break;
     default:
       NOTREACHED();
   }
+
+  if (previous_element)
+    previous_element->Dispose();
 }
 
 inline PseudoElement* PseudoElementData::GetPseudoElement(
@@ -100,6 +103,22 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdFirstLetter == pseudo_id)
     return generated_first_letter_;
   return nullptr;
+}
+
+inline PseudoElementData::PseudoElementVector
+PseudoElementData::GetPseudoElements() const {
+  PseudoElementData::PseudoElementVector result;
+  if (generated_before_)
+    result.push_back(generated_before_);
+  if (generated_after_)
+    result.push_back(generated_after_);
+  if (generated_marker_)
+    result.push_back(generated_marker_);
+  if (generated_first_letter_)
+    result.push_back(generated_first_letter_);
+  if (backdrop_)
+    result.push_back(backdrop_);
+  return result;
 }
 
 }  // namespace blink

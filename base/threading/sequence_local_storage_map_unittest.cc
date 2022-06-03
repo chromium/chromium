@@ -23,6 +23,10 @@ class SetOnDestroy {
     DCHECK(was_destroyed_ptr_);
     DCHECK(!(*was_destroyed_ptr_));
   }
+
+  SetOnDestroy(const SetOnDestroy&) = delete;
+  SetOnDestroy& operator=(const SetOnDestroy&) = delete;
+
   ~SetOnDestroy() {
     DCHECK(!(*was_destroyed_ptr_));
     *was_destroyed_ptr_ = true;
@@ -30,8 +34,6 @@ class SetOnDestroy {
 
  private:
   bool* const was_destroyed_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetOnDestroy);
 };
 
 template <typename T, typename... Args>

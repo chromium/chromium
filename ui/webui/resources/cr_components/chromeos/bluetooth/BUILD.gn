@@ -1,0 +1,176 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+assert(is_chromeos, "Bluetooth dialog is Chrome OS only.")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":bluetooth_base_page",
+    ":bluetooth_device_battery_info",
+    ":bluetooth_dialog",
+    ":bluetooth_icon",
+    ":bluetooth_icons",
+    ":bluetooth_metrics_utils",
+    ":bluetooth_pairing_confirm_code_page",
+    ":bluetooth_pairing_device_item",
+    ":bluetooth_pairing_device_selection_page",
+    ":bluetooth_pairing_enter_code_page",
+    ":bluetooth_pairing_request_code_page",
+    ":bluetooth_pairing_ui",
+    ":bluetooth_spinner_page",
+    ":bluetooth_types",
+    ":bluetooth_utils",
+    ":cros_bluetooth_config",
+  ]
+}
+
+js_library("bluetooth_metrics_utils") {
+  externs_list = chrome_extension_public_externs + [
+                   "$externs_path/metrics_private.js",
+                   "$externs_path/bluetooth.js",
+                   "$externs_path/bluetooth_private.js",
+                 ]
+}
+
+js_library("bluetooth_utils") {
+}
+
+js_library("bluetooth_icons") {
+}
+
+js_library("bluetooth_types") {
+}
+
+js_library("bluetooth_icon") {
+  deps = [
+    ":bluetooth_icons",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("bluetooth_pairing_device_item") {
+  deps = [
+    ":bluetooth_icon",
+    ":bluetooth_types",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("bluetooth_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  externs_list = chrome_extension_public_externs + [
+                   "$externs_path/bluetooth.js",
+                   "$externs_path/bluetooth_private.js",
+                 ]
+  extra_sources = [
+    "$interfaces_path/bluetooth_interface.js",
+    "$interfaces_path/bluetooth_private_interface.js",
+  ]
+}
+
+js_library("bluetooth_pairing_device_selection_page") {
+  deps = [
+    ":bluetooth_base_page",
+    ":bluetooth_pairing_device_item",
+    ":bluetooth_types",
+    "../localized_link:localized_link",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
+  ]
+}
+
+js_library("bluetooth_pairing_request_code_page") {
+  deps = [
+    ":bluetooth_base_page",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+  ]
+}
+
+js_library("bluetooth_pairing_confirm_code_page") {
+  deps = [
+    ":bluetooth_base_page",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("bluetooth_pairing_enter_code_page") {
+  deps = [
+    ":bluetooth_base_page",
+    ":bluetooth_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("bluetooth_pairing_ui") {
+  deps = [
+    ":bluetooth_pairing_confirm_code_page",
+    ":bluetooth_pairing_device_selection_page",
+    ":bluetooth_pairing_request_code_page",
+    ":cros_bluetooth_config",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("bluetooth_base_page") {
+  deps = [
+    ":bluetooth_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("bluetooth_device_battery_info") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
+  ]
+}
+
+js_library("cros_bluetooth_config") {
+  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
+}
+
+js_library("bluetooth_spinner_page") {
+  deps = [
+    ":bluetooth_base_page",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+html_to_js("polymer3_elements") {
+  js_files = [
+    "bluetooth_dialog.js",
+    "bluetooth_icon.js",
+    "bluetooth_icons.js",
+    "bluetooth_pairing_confirm_code_page.js",
+    "bluetooth_pairing_enter_code_page.js",
+    "bluetooth_pairing_device_selection_page.js",
+    "bluetooth_pairing_request_code_page.js",
+    "bluetooth_pairing_device_item.js",
+    "bluetooth_pairing_ui.js",
+    "bluetooth_base_page.js",
+    "bluetooth_device_battery_info.js",
+    "bluetooth_spinner_page.js",
+  ]
+}

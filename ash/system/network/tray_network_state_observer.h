@@ -17,6 +17,9 @@ class TrayNetworkStateObserver : public base::CheckedObserver {
   // The list of networks changed. The frequency of this event is limited.
   virtual void NetworkListChanged() {}
 
+  // The list of devices changed or a device property changed.
+  virtual void DeviceStateListChanged() {}
+
   // The list of VPN providers changed.
   virtual void VpnProvidersChanged() {}
 };

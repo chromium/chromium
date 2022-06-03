@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grit latest_public_release="1" current_release="1">
+  <translations>
+      <file path="unlisted_en-GB.xtb" lang="en-GB" />
+  </translations>
+  <release seq="1">
+    <messages>
+    </messages>
+  </release>
+</grit>

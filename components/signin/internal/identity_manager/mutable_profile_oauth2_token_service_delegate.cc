@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -21,11 +20,11 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -49,30 +48,6 @@ enum class LoadTokenFromDBStatus {
 
   NUM_LOAD_TOKEN_FROM_DB_STATUS
 };
-
-// Used to record events related to token revocation requests in histograms.
-// Do not change existing values, new values can only be added at the end.
-enum class TokenRevocationRequestProgress {
-  // The request was created.
-  kRequestCreated = 0,
-  // The request was sent over the network.
-  kRequestStarted = 1,
-  // The network request completed with a failure.
-  kRequestFailed = 2,
-  // The network request completed with a success.
-  kRequestSucceeded = 3,
-
-  kMaxValue = kRequestSucceeded
-};
-
-// Adds a sample to the TokenRevocationRequestProgress histogram. Encapsuled in
-// a function to reduce executable size, because histogram macros may generate a
-// lot of code.
-void RecordRefreshTokenRevocationRequestEvent(
-    TokenRevocationRequestProgress event) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevocationRequestProgress",
-                            event);
-}
 
 std::string ApplyAccountIdPrefix(const std::string& account_id) {
   return kAccountIdPrefix + account_id;
@@ -134,6 +109,10 @@ class MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken
       SigninClient* client,
       const std::string& refresh_token,
       int attempt);
+
+  RevokeServerRefreshToken(const RevokeServerRefreshToken&) = delete;
+  RevokeServerRefreshToken& operator=(const RevokeServerRefreshToken&) = delete;
+
   ~RevokeServerRefreshToken() override;
 
  private:
@@ -150,8 +129,6 @@ class MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken
   std::string refresh_token_;
   int attempt_;
   base::WeakPtrFactory<RevokeServerRefreshToken> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RevokeServerRefreshToken);
 };
 
 MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
@@ -166,8 +143,6 @@ MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
                token_service_delegate_->GetURLLoaderFactory()),
       refresh_token_(refresh_token),
       attempt_(attempt) {
-  RecordRefreshTokenRevocationRequestEvent(
-      TokenRevocationRequestProgress::kRequestCreated);
   client->DelayNetworkCall(
       base::BindRepeating(&MutableProfileOAuth2TokenServiceDelegate::
                               RevokeServerRefreshToken::Start,
@@ -176,8 +151,6 @@ MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
 
 void MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
     Start() {
-  RecordRefreshTokenRevocationRequestEvent(
-      TokenRevocationRequestProgress::kRequestStarted);
   fetcher_.StartRevokeOAuth2Token(refresh_token_);
 }
 
@@ -207,18 +180,11 @@ bool MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
 void MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
     OnOAuth2RevokeTokenCompleted(
         GaiaAuthConsumer::TokenRevocationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevocationStatus", status);
   if (ShouldRetry(status)) {
     token_service_delegate_->server_revokes_.push_back(
         std::make_unique<RevokeServerRefreshToken>(
             token_service_delegate_, token_service_delegate_->client_,
             refresh_token_, attempt_ + 1));
-  } else {
-    RecordRefreshTokenRevocationRequestEvent(
-        (status == GaiaAuthConsumer::TokenRevocationStatus::kSuccess)
-            ? TokenRevocationRequestProgress::kRequestSucceeded
-            : TokenRevocationRequestProgress::kRequestFailed);
-    UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevocationCompleted", status);
   }
   // |this| pointer will be deleted when removed from the vector, so don't
   // access any members after call to erase().
@@ -300,8 +266,9 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
   }
   std::string refresh_token = GetRefreshToken(account_id);
   DCHECK(!refresh_token.empty());
-  return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-      consumer, url_loader_factory, refresh_token);
+  return GaiaAccessTokenFetcher::
+      CreateExchangeRefreshTokenForAccessTokenInstance(
+          consumer, url_loader_factory, refresh_token);
 }
 
 GoogleServiceAuthError MutableProfileOAuth2TokenServiceDelegate::GetAuthError(
@@ -725,12 +692,9 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS) {
     VLOG(1) << "MutablePO2TS::RevokeAllCredentials before tokens are loaded.";
     // If |RevokeAllCredentials| is called while credentials are being loaded,
-    // then the load must be cancelled and the load credentials state updated.
-    DCHECK_NE(0, web_data_service_request_);
-    CancelWebTokenFetch();
-    set_load_credentials_state(
-        signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
-    FinishLoadingCredentials();
+    // then the tokens should be revoked on load.
+    revoke_all_tokens_on_load_ = true;
+    loading_primary_account_id_ = CoreAccountId();
   }
 
   // Make a temporary copy of the account ids.

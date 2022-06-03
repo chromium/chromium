@@ -29,26 +29,20 @@
 
 namespace blink {
 
-struct CSSPropertyValueMetadata {
+struct CORE_EXPORT CSSPropertyValueMetadata {
   DISALLOW_NEW();
-  CSSPropertyValueMetadata(const CSSProperty& property,
+  CSSPropertyValueMetadata(const CSSPropertyName&,
                            bool is_set_from_shorthand,
                            int index_in_shorthands_vector,
                            bool important,
-                           bool implicit,
-                           bool inherited)
-      : property_(&property),
-        is_set_from_shorthand_(is_set_from_shorthand),
-        index_in_shorthands_vector_(index_in_shorthands_vector),
-        important_(important),
-        implicit_(implicit),
-        inherited_(inherited) {}
+                           bool implicit);
 
   CSSPropertyID ShorthandID() const;
-  const CSSProperty& Property() const { return *property_; }
+  CSSPropertyID PropertyID() const;
+  CSSPropertyName Name() const;
 
-  const CSSProperty* property_;
-
+  AtomicString custom_name_;
+  unsigned property_id_ : kCSSPropertyIDBitLength;
   unsigned is_set_from_shorthand_ : 1;
   // If this property was set as part of an ambiguous shorthand, gives the index
   // in the shorthands vector.
@@ -57,37 +51,34 @@ struct CSSPropertyValueMetadata {
   // Whether or not the property was set implicitly as the result of a
   // shorthand.
   unsigned implicit_ : 1;
-  unsigned inherited_ : 1;
 };
 
 class CORE_EXPORT CSSPropertyValue {
   DISALLOW_NEW();
 
  public:
-  CSSPropertyValue(const CSSProperty& property,
+  CSSPropertyValue(const CSSPropertyName& name,
                    const CSSValue& value,
                    bool important = false,
                    bool is_set_from_shorthand = false,
                    int index_in_shorthands_vector = 0,
                    bool implicit = false)
-      : metadata_(property,
+      : metadata_(name,
                   is_set_from_shorthand,
                   index_in_shorthands_vector,
                   important,
-                  implicit,
-                  property.IsInherited()),
+                  implicit),
         value_(value) {}
 
   // FIXME: Remove this.
   CSSPropertyValue(CSSPropertyValueMetadata metadata, const CSSValue& value)
       : metadata_(metadata), value_(value) {}
 
-  CSSPropertyID Id() const { return metadata_.Property().PropertyID(); }
-  const CSSProperty& Property() const { return metadata_.Property(); }
+  CSSPropertyID Id() const { return metadata_.PropertyID(); }
   bool IsSetFromShorthand() const { return metadata_.is_set_from_shorthand_; }
   CSSPropertyID ShorthandID() const { return metadata_.ShorthandID(); }
   bool IsImportant() const { return metadata_.important_; }
-  CSSPropertyName Name() const;
+  CSSPropertyName Name() const { return metadata_.Name(); }
 
   const CSSValue* Value() const { return value_.Get(); }
 
@@ -95,7 +86,7 @@ class CORE_EXPORT CSSPropertyValue {
 
   bool operator==(const CSSPropertyValue& other) const;
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(value_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
  private:
   CSSPropertyValueMetadata metadata_;

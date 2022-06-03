@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 // Disable the whole test case when executing on a computer that has no printer
 // installed.

@@ -1,0 +1,32 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul><li>one</li><li>two</li><li>three|</li></ul>',
+        '</div>',
+    ],
+    'insertText X',
+    [
+        '<div contenteditable>',
+            '<ul><li>one</li><li>two</li><li>threeX|</li></ul>',
+        '</div>',
+    ],
+    'Typing after end of last list item');
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul><li>|one</li><li>two</li><li>three</li></ul>',
+        '</div>',
+    ],
+    'insertText X',
+    [
+        '<div contenteditable>',
+            '<ul><li>X|one</li><li>two</li><li>three</li></ul>',
+        '</div>',
+    ],
+    'Typing before start of first list item');
+</script>

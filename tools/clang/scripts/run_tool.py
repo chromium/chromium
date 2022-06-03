@@ -157,7 +157,8 @@ def _GetEntriesFromCompileDB(build_directory, source_filenames):
   ]
 
 
-def _UpdateCompileCommandsIfNeeded(compile_commands, files_list):
+def _UpdateCompileCommandsIfNeeded(compile_commands, files_list,
+                                   target_os=None):
   """ Filters compile database to only include required files, and makes it
   more clang-tool friendly on Windows.
 
@@ -179,7 +180,8 @@ def _UpdateCompileCommandsIfNeeded(compile_commands, files_list):
   else:
     filtered_compile_commands = compile_commands
 
-  return compile_db.ProcessCompileDatabaseIfNeeded(filtered_compile_commands)
+  return compile_db.ProcessCompileDatabase(filtered_compile_commands, [],
+                                           target_os)
 
 
 def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
@@ -221,7 +223,7 @@ def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
         # /showIncludes is used by Ninja to track header file dependencies on
         # Windows. We don't need to do this here, and it results in lots of spam
         # and a massive log file, so we strip it.
-        and a != '/showIncludes'
+        and a != '/showIncludes' and a != '/showIncludes:user'
         # -MMD has the same purpose on non-Windows. It may have a corresponding
         # '-MF <filename>', which we strip below.
         and a != '-MMD'
@@ -340,6 +342,11 @@ def main():
       required=True,
       help='path to the directory that contains the compile database')
   parser.add_argument(
+      '--target_os',
+      choices=['android', 'chromeos', 'ios', 'linux', 'nacl', 'mac', 'win'],
+      help='Target OS - see `gn help target_os`. Set to "win" when ' +
+      'cross-compiling Windows from Linux or another host')
+  parser.add_argument(
       'path_filter',
       nargs='*',
       help='optional paths to filter what files the tool is run on')
@@ -357,6 +364,9 @@ def main():
     tool_path = os.path.abspath(os.path.join(
           os.path.dirname(__file__),
           '../../../third_party/llvm-build/Release+Asserts/bin'))
+  if not os.path.exists(tool_path):
+    sys.stderr.write('tool not found: %s\n' % tool_path)
+    return -1
 
   if args.all:
     # Reading source files is postponed to after possible regeneration of
@@ -372,8 +382,9 @@ def main():
 
   if args.generate_compdb:
     compile_commands = compile_db.GenerateWithNinja(args.p)
-    compile_commands = _UpdateCompileCommandsIfNeeded(
-        compile_commands, source_filenames)
+    compile_commands = _UpdateCompileCommandsIfNeeded(compile_commands,
+                                                      source_filenames,
+                                                      args.target_os)
     with open(os.path.join(args.p, 'compile_commands.json'), 'w') as f:
       f.write(json.dumps(compile_commands, indent=2))
 

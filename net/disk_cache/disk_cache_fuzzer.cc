@@ -22,6 +22,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/base/interval.h"
@@ -91,6 +92,10 @@ struct InitGlobals {
 
     print_comms_ = ::getenv("LPM_DUMP_NATIVE_INPUT");
 
+    // TaskEnvironment requires TestTimeouts initialization to watch for
+    // problematic long-running tasks.
+    TestTimeouts::Initialize();
+
     // Mark this thread as an IO_THREAD with MOCK_TIME, and ensure that Now()
     // is driven from the same mock clock.
     task_environment_ = std::make_unique<base::test::TaskEnvironment>(
@@ -144,10 +149,12 @@ class DiskCacheLPMFuzzer {
  private:
   struct EntryInfo {
     EntryInfo() = default;
+
+    EntryInfo(const EntryInfo&) = delete;
+    EntryInfo& operator=(const EntryInfo&) = delete;
+
     disk_cache::Entry* entry_ptr = nullptr;
     std::unique_ptr<TestEntryResultCompletionCallback> tcb;
-
-    DISALLOW_COPY_AND_ASSIGN(EntryInfo);
   };
   void RunTaskForTest(base::OnceClosure closure);
 
@@ -856,9 +863,9 @@ void DiskCacheLPMFuzzer::RunCommands(
         break;
       }
       case disk_cache_fuzzer::FuzzCommand::kFastForwardBy: {
-        base::TimeDelta to_wait = base::TimeDelta::FromMilliseconds(
-            command.fast_forward_by().capped_num_millis() %
-            kMaxNumMillisToWait);
+        base::TimeDelta to_wait =
+            base::Milliseconds(command.fast_forward_by().capped_num_millis() %
+                               kMaxNumMillisToWait);
         MAYBE_PRINT << "FastForwardBy(" << to_wait << ")" << std::endl;
         init_globals->task_environment_->FastForwardBy(to_wait);
 
@@ -980,21 +987,14 @@ void DiskCacheLPMFuzzer::RunCommands(
         uint32_t offset = gar.offset() % kMaxEntrySize;
         uint32_t len = gar.len() % kMaxEntrySize;
         bool async = gar.async();
-        auto start = base::MakeRefCounted<base::RefCountedData<int64_t>>();
-        // Raw pointer will stay alive until the end of this command for sure,
-        // as we hold a reference to the object.
-        int64_t* start_tmp = &start->data;
 
         auto result_checker = base::BindRepeating(
-            [](net::CompletionOnceCallback callback,
-               scoped_refptr<base::RefCountedData<int64_t>> start,
-               uint32_t offset, uint32_t len, int rv) {
-              std::move(callback).Run(rv);
+            [](net::CompletionOnceCallback callback, uint32_t offset,
+               uint32_t len, const disk_cache::RangeResult& result) {
+              std::move(callback).Run(result.net_error);
 
-              if (rv <= 0)
+              if (result.net_error <= 0)
                 return;
-
-              int64_t* start_tmp = &start->data;
 
               // Make sure that the result is contained in what was
               // requested. It doesn't have to be the same even if there was
@@ -1005,41 +1005,45 @@ void DiskCacheLPMFuzzer::RunCommands(
               net::Interval<uint32_t> requested(offset, offset + len);
 
               uint32_t range_start, range_end;
-              base::CheckedNumeric<uint64_t> range_start64(*start_tmp);
+              base::CheckedNumeric<uint64_t> range_start64(result.start);
               CHECK(range_start64.AssignIfValid(&range_start));
-              base::CheckedNumeric<uint64_t> range_end64 = range_start + rv;
+              base::CheckedNumeric<uint64_t> range_end64 =
+                  range_start + result.available_len;
               CHECK(range_end64.AssignIfValid(&range_end));
               net::Interval<uint32_t> gotten(range_start, range_end);
 
               CHECK(requested.Contains(gotten));
             },
-            GetIOCallback(IOType::GetAvailableRange), start, offset, len);
+            GetIOCallback(IOType::GetAvailableRange), offset, len);
 
-        net::TestCompletionCallback tcb;
-        net::CompletionOnceCallback cb =
+        TestRangeResultCompletionCallback tcb;
+        disk_cache::RangeResultCallback cb =
             !async ? tcb.callback() : result_checker;
 
         MAYBE_PRINT << "GetAvailableRange(\"" << entry->GetKey() << "\", "
                     << offset << ", " << len << ")" << std::flush;
-        int rv =
-            entry->GetAvailableRange(offset, len, start_tmp, std::move(cb));
+        disk_cache::RangeResult result =
+            entry->GetAvailableRange(offset, len, std::move(cb));
 
-        if (rv != net::ERR_IO_PENDING) {
+        if (result.net_error != net::ERR_IO_PENDING) {
           // Run the checker callback ourselves.
-          result_checker.Run(rv);
+          result_checker.Run(result);
         } else if (!async) {
           // In this case the callback will be run by the backend, so we don't
           // need to do it manually.
-          rv = tcb.GetResult(rv);
+          result = tcb.GetResult(result);
         }
 
         // Finally, take care of printing.
-        if (async && rv == net::ERR_IO_PENDING) {
+        if (async && result.net_error == net::ERR_IO_PENDING) {
           MAYBE_PRINT << " = net::ERR_IO_PENDING (async)" << std::endl;
         } else {
-          MAYBE_PRINT << " = " << rv << ", *start = " << *start_tmp;
-          if (rv < 0) {
-            MAYBE_PRINT << ", error to string: " << net::ErrorToShortString(rv)
+          MAYBE_PRINT << " = " << result.net_error
+                      << ", start = " << result.start
+                      << ", available_len = " << result.available_len;
+          if (result.net_error < 0) {
+            MAYBE_PRINT << ", error to string: "
+                        << net::ErrorToShortString(result.net_error)
                         << std::endl;
           } else {
             MAYBE_PRINT << std::endl;
@@ -1111,7 +1115,7 @@ void DiskCacheLPMFuzzer::RunCommands(
           continue;
 
         MAYBE_PRINT << "AddRealDelay(1ms)" << std::endl;
-        base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+        base::PlatformThread::Sleep(base::Milliseconds(1));
         break;
       }
       case disk_cache_fuzzer::FuzzCommand::FUZZ_COMMAND_ONEOF_NOT_SET: {

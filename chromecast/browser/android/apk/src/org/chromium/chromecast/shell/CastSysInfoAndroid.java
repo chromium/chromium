@@ -5,8 +5,13 @@
 package org.chromium.chromecast.shell;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.core.content.ContextCompat;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -16,11 +21,21 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("chromecast")
 public final class CastSysInfoAndroid {
     private static final String TAG = "CastSysInfoAndroid";
+    private static final String READ_PRIVILEGED_PHONE_STATE_PERMISSION =
+        "android.permission.READ_PRIVILEGED_PHONE_STATE";
 
-    @SuppressLint("HardwareIds")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
     @CalledByNative
     public static String getSerialNumber() {
-        if (!Build.SERIAL.equals(Build.UNKNOWN)) return Build.SERIAL;
+        String serialNumber = Build.SERIAL;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Context context = ContextUtils.getApplicationContext();
+            if (ContextCompat.checkSelfPermission(context, READ_PRIVILEGED_PHONE_STATE_PERMISSION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                serialNumber = Build.getSerial();
+            }
+        }
+        if (!Build.UNKNOWN.equals(serialNumber)) return serialNumber;
         return CastSerialGenerator.getGeneratedSerial();
     }
 

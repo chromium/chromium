@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
@@ -19,9 +20,8 @@ void ScopedPaintState::AdjustForPaintOffsetTranslation(
     // are painting table row background behind a cell having paint offset
     // translation.
     input_paint_info_.context.Save();
-    FloatSize translation = paint_offset_translation.Translation2D();
-    input_paint_info_.context.Translate(translation.Width(),
-                                        translation.Height());
+    gfx::Vector2dF translation = paint_offset_translation.Translation2D();
+    input_paint_info_.context.Translate(translation.x(), translation.y());
     paint_offset_translation_as_drawing_ = true;
   } else {
     chunk_properties_.emplace(
@@ -54,19 +54,35 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
                             fragment_to_paint_->ContentsProperties(), box,
                             input_paint_info_.DisplayItemTypeForClipping());
 
-  // Then adjust paint offset and cull rect for scroll translation.
   const auto* properties = fragment_to_paint_->PaintProperties();
-  if (!properties)
-    return;
-  const auto* scroll_translation = properties->ScrollTranslation();
-  if (!scroll_translation)
-    return;
+  const auto* scroll_translation =
+      properties ? properties->ScrollTranslation() : nullptr;
 
   // See comments for ScrollTranslation in object_paint_properties.h
-  // for the reason of adding ScrollOrigin(). contents_paint_offset will
+  // for the reason of adding ScrollOrigin(). The paint offset will
   // be used only for the scrolling contents that are not painted through
   // descendant objects' Paint() method, e.g. inline boxes.
-  paint_offset_ += PhysicalOffset(box.ScrollOrigin());
+  if (scroll_translation)
+    paint_offset_ += PhysicalOffset(box.ScrollOrigin());
+
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    // We calculated cull rects for PaintLayers only.
+    if (!box.HasLayer())
+      return;
+    adjusted_paint_info_.emplace(input_paint_info_);
+    adjusted_paint_info_->SetCullRect(
+        fragment_to_paint_->GetContentsCullRect());
+    if (box.Layer()->PreviousPaintResult() == kFullyPainted) {
+      PhysicalRect contents_visual_rect =
+          box.PhysicalContentsVisualOverflowRect();
+      contents_visual_rect.Move(fragment_to_paint_->PaintOffset());
+      if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
+               .Contains(contents_visual_rect)) {
+        box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
+      }
+    }
+    return;
+  }
 
   // If a LayoutView is using infinite cull rect, we are painting with viewport
   // clip disabled, so don't cull the scrolling contents. This is just for
@@ -74,11 +90,13 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
   // with a smaller cull rect, and the scrolling document contents are under the
   // layer of document element which will use infinite cull rect calculated in
   // PaintLayerPainter::AdjustForPaintProperties().
-  if (box.IsLayoutView() && input_paint_info_.GetCullRect().IsInfinite())
+  if (IsA<LayoutView>(box) && input_paint_info_.GetCullRect().IsInfinite())
     return;
 
-  adjusted_paint_info_.emplace(input_paint_info_);
-  adjusted_paint_info_->TransformCullRect(*scroll_translation);
+  if (scroll_translation) {
+    adjusted_paint_info_.emplace(input_paint_info_);
+    adjusted_paint_info_->TransformCullRect(*scroll_translation);
+  }
 }
 
 }  // namespace blink

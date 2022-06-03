@@ -6,8 +6,8 @@
 
 #include <cmath>
 
+#include "base/check_op.h"
 #include "base/guid.h"
-#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace device {

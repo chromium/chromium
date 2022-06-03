@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to load 'http://localhost:8000/plugins/resources/mock-plugin.pl' (MIME type 'application/x-blink-test-plugin') because it violates the following Content Security Policy Directive: 'plugin-types text/plain'.
-
-This tests a scenario where an iframe element's src attribute points to a cross-site URI that loads a plugin. In this test the plugin is disallowed by the plugin-types Content Security Policy directive, therefore the test passes if 1) there is no "Blink Test Plugin: initializing" console message 2) there is a console message indicating CSP violation

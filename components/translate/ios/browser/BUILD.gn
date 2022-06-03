@@ -9,8 +9,6 @@ source_set("browser") {
   sources = [
     "ios_translate_driver.h",
     "ios_translate_driver.mm",
-    "js_language_detection_manager.h",
-    "js_language_detection_manager.mm",
     "js_translate_manager.h",
     "js_translate_manager.mm",
     "language_detection_controller.h",
@@ -32,7 +30,6 @@ source_set("browser") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/web/common",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//net",
     "//net/traffic_annotation:traffic_annotation",
@@ -44,9 +41,12 @@ source_set("browser") {
 
 js_compile_checked("injected_js") {
   visibility = [ ":browser" ]
-  sources = [
-    "resources/language_detection.js",
-    "resources/translate_ios.js",
+  sources = [ "resources/translate_ios.js" ]
+
+  js_modules = [
+    "//ios/web/web_state/js/resources/base.js",
+    "//ios/web/web_state/js/resources/common.js",
+    "//ios/web/js_messaging/resources/message.js",
   ]
 }
 
@@ -55,7 +55,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "js_translate_manager_unittest.mm",
-    "language_detection_controller_unittest.mm",
     "string_clipping_util_unittest.cc",
     "translate_controller_unittest.mm",
   ]
@@ -63,16 +62,11 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base",
+    "//base/test:test_support",
     "//components/language/ios/browser",
-    "//components/prefs:test_support",
     "//components/resources",
-    "//components/translate/core/browser",
-    "//components/translate/core/common",
-    "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/test",
-    "//net:net",
     "//testing/gtest",
-    "//third_party/ocmock",
     "//ui/base",
     "//url",
   ]

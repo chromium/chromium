@@ -17,6 +17,9 @@ MojoSharedMemory::Factory::CreateSharedMemory(size_t size) {
 
 MojoSharedMemory::MojoSharedMemory(size_t size) {
   shared_buffer_ = mojo::SharedBufferHandle::Create(size);
+  // DCHECK rather than CHECK as we handle SMB creation failures as
+  // DumpWithoutCrashing in ProducerClient on release builds.
+  DCHECK(shared_buffer_.is_valid());
   mapping_ = shared_buffer_->Map(size);
   DCHECK(mapping_);
 }
@@ -24,6 +27,8 @@ MojoSharedMemory::MojoSharedMemory(size_t size) {
 MojoSharedMemory::MojoSharedMemory(mojo::ScopedSharedBufferHandle shared_memory)
     : shared_buffer_(std::move(shared_memory)) {
   mapping_ = shared_buffer_->Map(shared_buffer_->GetSize());
+  // DCHECK rather than CHECK as we handle SMB mapping failures in ProducerHost
+  // on release builds.
   DCHECK(mapping_);
 }
 

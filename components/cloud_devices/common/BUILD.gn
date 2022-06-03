@@ -20,6 +20,7 @@ static_library("common") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//google_apis",
     "//net",
     "//url",
@@ -36,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//base",
+    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
   ]

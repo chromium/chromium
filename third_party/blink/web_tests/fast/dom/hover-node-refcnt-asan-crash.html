@@ -25,7 +25,7 @@ div0.addEventListener("DOMNodeRemoved", function () {
 });
 
 // hovered element (<img>) will disappear.
-div1.createShadowRoot();
+div1.attachShadow({mode: 'open'});
 div0.appendChild(p0);
 // This causes synchronous DOMNodeRemoved event
 div0.replaceChild(span0, p0);

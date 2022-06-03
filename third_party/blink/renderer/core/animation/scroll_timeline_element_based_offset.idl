@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Experimental IDL of element-based offsets based on this proposal:
+// https://github.com/w3c/csswg-drafts/issues/4337
+
+enum Edge {"start", "end"};
+
+dictionary ScrollTimelineElementBasedOffset {
+    Element target;
+    double threshold = 0.0;
+    Edge edge = "start";
+    // TODO(majidvp): Add other values from proposal. http://crbug.com/1023375
+    // DOMString rootMargin;
+};

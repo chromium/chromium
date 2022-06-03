@@ -8,7 +8,4 @@ element.style {
 div {
    display: block
 }
-html {
-   color: -internal-root-color
-}
 

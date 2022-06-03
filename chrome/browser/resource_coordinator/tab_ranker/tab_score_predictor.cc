@@ -107,7 +107,7 @@ TabRankerResult TabScorePredictor::ScoreTab(const TabFeatures& tab,
 }
 
 std::map<int32_t, float> TabScorePredictor::ScoreTabs(
-    const std::map<int32_t, base::Optional<TabFeatures>>& tabs) {
+    const std::map<int32_t, absl::optional<TabFeatures>>& tabs) {
   if (type_ != kPairwiseScorer) {
     std::map<int32_t, float> reactivation_scores;
     for (const auto& pair : tabs) {
@@ -219,7 +219,7 @@ TabRankerResult TabScorePredictor::ScoreTabsPairs(const TabFeatures& tab1,
 }
 
 std::map<int32_t, float> TabScorePredictor::ScoreTabsWithPairwiseScorer(
-    const std::map<int32_t, base::Optional<TabFeatures>>& tabs) {
+    const std::map<int32_t, absl::optional<TabFeatures>>& tabs) {
   const int N = tabs.size();
 
   std::vector<int32_t> ids;

@@ -2,51 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/build.gni")
-import("//third_party/abseil-cpp/abseil_clients.gni")
+import("//third_party/abseil-cpp/absl.gni")
 
-# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
-# adding projects to this list please reach out to cxx@chromium.org and CC:
-# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
-#
-# More information can be found at:
-# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
-if (build_with_chromium) {
-  visibility = absl_visibility
-} else {
-  visibility = [ "*" ]
-}
-
-source_set("includes") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  public = [
-    "include/cctz/civil_time.h",
-    "include/cctz/civil_time_detail.h",
-    "include/cctz/time_zone.h",
-  ]
-  visibility = []
-  visibility += [ "../time:*" ]
-}
-
-source_set("civil_time") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "src/civil_time_detail.cc",
-  ]
+absl_source_set("civil_time") {
+  sources = [ "src/civil_time_detail.cc" ]
   public = [
     "include/cctz/civil_time.h",
     "include/cctz/civil_time_detail.h",
   ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
-source_set("time_zone") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+absl_source_set("time_zone") {
   sources = [
     "src/time_zone_fixed.cc",
     "src/time_zone_fixed.h",
@@ -69,10 +36,20 @@ source_set("time_zone") {
     "include/cctz/time_zone.h",
     "include/cctz/zone_info_source.h",
   ]
-  if (is_mac || is_ios) {
-    libs = [ "Foundation.framework" ]
+  if (is_apple) {
+    frameworks = [ "Foundation.framework" ]
   }
   deps = [
     ":civil_time",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
+  if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+      "//third_party/fuchsia-sdk/sdk/pkg/async",
+      "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+  }
 }

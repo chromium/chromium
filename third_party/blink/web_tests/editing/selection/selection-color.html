@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<p>This tests that selected text retains its color.</p>
+
+<div id=selectme>
+	<p>Text no styling</p>
+	<p style="color:red">Text color: red</p>
+	<p style="color:red;background-color:gray;">Text color: red, background: gray</p>
+	<p class="customSelection">color: red, ::selection background:gray</p>
+</div>
+
+<style>
+.customSelection {
+  color: red;
+}
+.customSelection::selection {
+  background-color: gray;
+}
+</style>
+
+<script>
+    window.getSelection().selectAllChildren(selectme);
+</script>

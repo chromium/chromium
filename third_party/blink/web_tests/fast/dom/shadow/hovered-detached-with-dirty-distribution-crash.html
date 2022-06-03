@@ -15,6 +15,6 @@ var x = target.offsetLeft + target.offsetWidth / 2;
 var y = target.offsetTop + target.offsetHeight / 2;
 eventSender.mouseMoveTo(x, y);
 document.body.offsetLeft;
-host.createShadowRoot();
+host.attachShadow({mode: 'open'});
 host.removeChild(target);
 </script>

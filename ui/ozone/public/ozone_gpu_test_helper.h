@@ -2,46 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
-#define UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
+#ifndef UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_
+#define UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_
 
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-class Thread;
-}
 
 namespace ui {
 
-class FakeGpuProcess;
-class FakeGpuProcessHost;
+class FakeGpuConnection;
 
 // Helper class for applications that do not have a dedicated GPU channel.
 //
-// This sets up message forwarding between the "gpu" and "ui" threads.
+// This sets up mojo pipe between the "gpu" and "ui" threads. It is not needed
+// if in Mojo single-thread mode.
 class COMPONENT_EXPORT(OZONE) OzoneGpuTestHelper {
  public:
   OzoneGpuTestHelper();
+
+  OzoneGpuTestHelper(const OzoneGpuTestHelper&) = delete;
+  OzoneGpuTestHelper& operator=(const OzoneGpuTestHelper&) = delete;
+
   virtual ~OzoneGpuTestHelper();
 
-  // Start processing gpu messages. The "gpu" process will be using the
-  // |ui_task_runner| to post messages intended for the "ui" thread.
-  bool Initialize(
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+  // Binds mojo endpoints on "gpu" and "ui".
+  bool Initialize();
 
  private:
-  std::unique_ptr<FakeGpuProcess> fake_gpu_process_;
-  std::unique_ptr<FakeGpuProcessHost> fake_gpu_process_host_;
-  std::unique_ptr<base::Thread> io_helper_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzoneGpuTestHelper);
+  std::unique_ptr<FakeGpuConnection> fake_gpu_connection_;
 };
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
+#endif  // UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_

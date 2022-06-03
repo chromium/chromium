@@ -5,23 +5,27 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_WAKE_LOCK_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_WAKE_LOCK_INSTANCE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
 class FakeWakeLockInstance : public mojom::WakeLockInstance {
  public:
   FakeWakeLockInstance();
+
+  FakeWakeLockInstance(const FakeWakeLockInstance&) = delete;
+  FakeWakeLockInstance& operator=(const FakeWakeLockInstance&) = delete;
+
   ~FakeWakeLockInstance() override;
 
   // mojom::WakeLockInstance overrides:
-  void Init(mojom::WakeLockHostPtr host_ptr, InitCallback callback) override;
+  void Init(mojo::PendingRemote<mojom::WakeLockHost> host_remote,
+            InitCallback callback) override;
 
  private:
-  mojom::WakeLockHostPtr host_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWakeLockInstance);
+  mojo::Remote<mojom::WakeLockHost> host_remote_;
 };
 
 }  // namespace arc

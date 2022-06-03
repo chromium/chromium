@@ -45,7 +45,7 @@ class DatasetDOMStringMap final : public DOMStringMap {
                ExceptionState&) override;
   bool DeleteItem(const String& name) override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Element> element_;

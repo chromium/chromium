@@ -47,7 +47,7 @@ class MODULES_EXPORT BackgroundFetchEvent : public ExtendableEvent {
   // ExtendableEvent interface.
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  protected:
   // Corresponds to the 'registration' attribute in the idl.

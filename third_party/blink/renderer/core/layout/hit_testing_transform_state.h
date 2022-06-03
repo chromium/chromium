@@ -50,37 +50,29 @@ class HitTestingTransformState {
                            const FloatQuad& area)
       : last_planar_point_(p),
         last_planar_quad_(quad),
-        last_planar_area_(area),
-        accumulating_transform_(false) {}
+        last_planar_area_(area) {}
 
-  HitTestingTransformState(const HitTestingTransformState& other)
-      : last_planar_point_(other.last_planar_point_),
-        last_planar_quad_(other.last_planar_quad_),
-        last_planar_area_(other.last_planar_area_),
-        accumulated_transform_(other.accumulated_transform_),
-        accumulating_transform_(other.accumulating_transform_) {}
+  HitTestingTransformState(const HitTestingTransformState&) = default;
+  HitTestingTransformState& operator=(const HitTestingTransformState&) =
+      default;
 
-  enum TransformAccumulation { kFlattenTransform, kAccumulateTransform };
-  void Translate(int x, int y, TransformAccumulation);
-  void ApplyTransform(const TransformationMatrix& transform_from_container,
-                      TransformAccumulation);
+  void Translate(int x, int y);
+  void ApplyTransform(const TransformationMatrix& transform_from_container);
 
   FloatPoint MappedPoint() const;
   FloatQuad MappedQuad() const;
-  FloatQuad MappedArea() const;
   PhysicalRect BoundsOfMappedQuad() const;
   PhysicalRect BoundsOfMappedArea() const;
   void Flatten();
+  const TransformationMatrix AccumulatedTransform() const {
+    return accumulated_transform_;
+  }
 
+ private:
   FloatPoint last_planar_point_;
   FloatQuad last_planar_quad_;
   FloatQuad last_planar_area_;
   TransformationMatrix accumulated_transform_;
-  bool accumulating_transform_;
-
- private:
-
-  void FlattenWithTransform(const TransformationMatrix&);
 };
 
 }  // namespace blink

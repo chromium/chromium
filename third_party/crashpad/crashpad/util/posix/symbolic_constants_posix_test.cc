@@ -17,7 +17,7 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -63,10 +63,10 @@ constexpr struct {
     {SIGVTALRM, "SIGVTALRM", "VTALRM"},
     {SIGWINCH, "SIGWINCH", "WINCH"},
     {SIGXCPU, "SIGXCPU", "XCPU"},
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     {SIGEMT, "SIGEMT", "EMT"},
     {SIGINFO, "SIGINFO", "INFO"},
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     {SIGPWR, "SIGPWR", "PWR"},
 #if !defined(ARCH_CPU_MIPS_FAMILY)
     {SIGSTKFLT, "SIGSTKFLT", "STKFLT"},
@@ -123,7 +123,7 @@ TEST(SymbolicConstantsPOSIX, SignalToString) {
                        kSignalTestData[index].short_name);
   }
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // NSIG is 64 to account for real-time signals.
   constexpr int kSignalCount = 32;
 #else

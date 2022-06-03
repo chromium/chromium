@@ -4,7 +4,7 @@
 <script src="../resources/js-test.js"></script>
 </head>
 
-<body id="body">
+<body>
 <table id="testTable" summary="A summary to make sure this is always exposed as an AXTable">
   <tr><td>foo</td></tr>
   <tr><td>bar</td></tr>
@@ -19,10 +19,7 @@ if (window.testRunner) {
   testRunner.dumpAsText();
 
   if (window.accessibilityController) {
-    document.getElementById("body").focus();
-    var axBody = accessibilityController.focusedElement;
-
-    var axTable = axBody.childAtIndex(0).childAtIndex(0);
+      var axTable = accessibilityController.accessibleElementById("testTable");
     shouldBe("axTable.role", "'AXRole: AXTable'");
 
     // Trying to reference the same cell for the table

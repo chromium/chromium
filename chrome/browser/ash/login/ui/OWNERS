@@ -1,0 +1,2 @@
+per-file login_display_host*.*=set noparent
+per-file login_display_host*.*=file://ash/login/LOGIN_LOCK_OWNERS

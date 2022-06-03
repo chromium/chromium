@@ -13,7 +13,5 @@ source_set("kiosk") {
     "kiosk_delegate.h",
   ]
 
-  deps = [
-    "//extensions/common",
-  ]
+  deps = [ "//extensions/common" ]
 }

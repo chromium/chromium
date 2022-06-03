@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/pepper/pepper_security_helper.h"
 
-#include "base/logging.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "ppapi/c/ppb_file_io.h"
 

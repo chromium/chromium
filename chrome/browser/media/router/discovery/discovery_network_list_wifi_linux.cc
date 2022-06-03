@@ -11,8 +11,8 @@
 
 #include <linux/wireless.h>
 
+#include "base/check.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "net/base/network_interfaces_linux.h"
 
 namespace media_router {

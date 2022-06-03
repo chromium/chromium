@@ -31,12 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_STRING_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_STRING_H_
 
+#include <cstring>
+#include <limits>
 #include <string>
+
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/latin1_string_conversions.h"
-#include "base/strings/nullable_string16.h"
-#include "base/strings/string16.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
@@ -55,9 +56,9 @@ namespace blink {
 // * WebString::FromASCII(const std::string& ascii)
 // * WebString::FromLatin1(const std::string& latin1)
 // * WebString::FromUTF8(const std::string& utf8)
-// * WebString::FromUTF16(const base::string16& utf16)
-// * WebString::FromUTF16(const base::NullableString16& utf16)
-// * WebString::FromUTF16(const base::Optional<base::string16>& utf16)
+// * WebString::FromUTF16(const char16_t* utf16)
+// * WebString::FromUTF16(const std::u16string& utf16)
+// * WebString::FromUTF16(const absl::optional<std::u16string>& utf16)
 //
 // Similarly, use either of following methods to convert WebString to
 // ASCII, Latin1, UTF-8 or UTF-16:
@@ -66,7 +67,6 @@ namespace blink {
 // * webstring.Latin1()
 // * webstring.Utf8()
 // * webstring.Utf16()
-// * WebString::ToNullableString16(webstring)
 // * WebString::ToOptionalString16(webstring)
 //
 // Note that if you need to convert the UTF8 string converted from WebString
@@ -112,7 +112,7 @@ class WebString {
   BLINK_PLATFORM_EXPORT bool Equals(const WebString&) const;
   BLINK_PLATFORM_EXPORT bool Equals(const char* characters, size_t len) const;
   bool Equals(const char* characters) const {
-    return Equals(characters, characters ? strlen(characters) : 0);
+    return Equals(characters, characters ? std::strlen(characters) : 0);
   }
 
   BLINK_PLATFORM_EXPORT size_t length() const;
@@ -123,28 +123,26 @@ class WebString {
   BLINK_PLATFORM_EXPORT std::string Utf8(
       UTF8ConversionMode = UTF8ConversionMode::kLenient) const;
 
+  BLINK_PLATFORM_EXPORT WebString
+  Substring(size_t pos, size_t len = std::numeric_limits<size_t>::max()) const;
+
   BLINK_PLATFORM_EXPORT static WebString FromUTF8(const char* data,
                                                   size_t length);
   static WebString FromUTF8(const std::string& s) {
     return FromUTF8(s.data(), s.length());
   }
 
-  base::string16 Utf16() const {
+  std::u16string Utf16() const {
     return base::Latin1OrUTF16ToUTF16(length(), Data8(), Data16());
   }
 
-  BLINK_PLATFORM_EXPORT static WebString FromUTF16(const base::string16&);
+  BLINK_PLATFORM_EXPORT static WebString FromUTF16(const char16_t*);
+  BLINK_PLATFORM_EXPORT static WebString FromUTF16(const std::u16string&);
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(
-      const base::NullableString16&);
-  BLINK_PLATFORM_EXPORT static WebString FromUTF16(
-      const base::Optional<base::string16>&);
+      const absl::optional<std::u16string>&);
 
-  static base::NullableString16 ToNullableString16(const WebString& s) {
-    return base::NullableString16(ToOptionalString16(s));
-  }
-
-  static base::Optional<base::string16> ToOptionalString16(const WebString& s) {
-    return s.IsNull() ? base::nullopt : base::make_optional(s.Utf16());
+  static absl::optional<std::u16string> ToOptionalString16(const WebString& s) {
+    return s.IsNull() ? absl::nullopt : absl::make_optional(s.Utf16());
   }
 
   BLINK_PLATFORM_EXPORT std::string Latin1() const;
@@ -166,6 +164,10 @@ class WebString {
 
   // Does same as FromLatin1 but asserts if the given string has non-ascii char.
   BLINK_PLATFORM_EXPORT static WebString FromASCII(const std::string&);
+
+  // Makes a deep copy. Use this when you need to pass a WebString to another
+  // thread.
+  BLINK_PLATFORM_EXPORT WebString IsolatedCopy() const;
 
   template <int N>
   WebString(const char (&data)[N]) : WebString(FromUTF8(data, N - 1)) {}
@@ -222,4 +224,4 @@ inline bool operator!=(const WebString& a, const WebString& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_STRING_H_

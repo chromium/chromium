@@ -4,7 +4,7 @@
 
 #include "skia/ext/platform_canvas.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -34,10 +34,6 @@ bool GetWritablePixels(SkCanvas* canvas, SkPixmap* result) {
 
   result->reset(info, pixels, row_bytes);
   return true;
-}
-
-size_t PlatformCanvasStrideForWidth(unsigned width) {
-  return 4 * width;
 }
 
 #if !defined(WIN32)

@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -19,14 +20,12 @@ namespace {
 // Time delta to create test data.
 base::TimeDelta DeletableUseDateDelta(
     const base::TimeDelta& cc_deletion_delta) {
-  static base::TimeDelta delta =
-      cc_deletion_delta + base::TimeDelta::FromDays(5);
+  static base::TimeDelta delta = cc_deletion_delta + base::Days(5);
   return delta;
 }
 base::TimeDelta DeletableExpiryDateDelta(
     const base::TimeDelta& cc_deletion_delta) {
-  static base::TimeDelta delta =
-      cc_deletion_delta + base::TimeDelta::FromDays(45);
+  static base::TimeDelta delta = cc_deletion_delta + base::Days(45);
   return delta;
 }
 }  // namespace
@@ -77,78 +76,62 @@ std::vector<CreditCard> TestDataCreator::GetTestCreditCards() {
 }
 
 AutofillProfile TestDataCreator::CreateBasicTestAddress() {
-  const base::Time use_date =
-      AutofillClock::Now() - base::TimeDelta::FromDays(20);
+  const base::Time use_date = AutofillClock::Now() - base::Days(20);
   AutofillProfile profile;
-  profile.SetInfo(NAME_FULL, base::UTF8ToUTF16("John McTester"), app_locale_);
-  profile.SetInfo(COMPANY_NAME, base::UTF8ToUTF16("Test Inc."), app_locale_);
-  profile.SetInfo(EMAIL_ADDRESS,
-                  base::UTF8ToUTF16("jmctester@fake.chromium.org"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("123 Invented Street"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_LINE2, base::UTF8ToUTF16("Suite A"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Mountain View"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("California"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("94043"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16("US"), app_locale_);
-  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16("844-555-0173"),
-                  app_locale_);
+  profile.SetInfo(NAME_FULL, u"John McTester", app_locale_);
+  profile.SetInfo(COMPANY_NAME, u"Test Inc.", app_locale_);
+  profile.SetInfo(EMAIL_ADDRESS, u"jmctester@fake.chromium.org", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"123 Invented Street", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_LINE2, u"Suite A", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Mountain View", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_STATE, u"California", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"94043", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", app_locale_);
+  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"844-555-0173", app_locale_);
   profile.set_use_date(use_date);
   return profile;
 }
 
 AutofillProfile TestDataCreator::CreateDisusedTestAddress() {
-  const base::Time use_date =
-      AutofillClock::Now() - base::TimeDelta::FromDays(185);
+  const base::Time use_date = AutofillClock::Now() - base::Days(185);
   AutofillProfile profile;
-  profile.SetInfo(NAME_FULL, base::UTF8ToUTF16("Polly Disused"), app_locale_);
+  profile.SetInfo(NAME_FULL, u"Polly Disused", app_locale_);
   profile.SetInfo(COMPANY_NAME,
                   base::UTF8ToUTF16(base::StringPrintf(
                       "%" PRIu64 " Inc.",
                       use_date.ToDeltaSinceWindowsEpoch().InMicroseconds())),
                   app_locale_);
-  profile.SetInfo(EMAIL_ADDRESS,
-                  base::UTF8ToUTF16("polly.disused@fake.chromium.org"),
+  profile.SetInfo(EMAIL_ADDRESS, u"polly.disused@fake.chromium.org",
                   app_locale_);
-  profile.SetInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("456 Disused Lane"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_LINE2, base::UTF8ToUTF16("Apt. B"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Austin"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("Texas"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("73301"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16("US"), app_locale_);
-  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16("844-555-0174"),
-                  app_locale_);
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"456 Disused Lane", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_LINE2, u"Apt. B", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Austin", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_STATE, u"Texas", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"73301", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", app_locale_);
+  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"844-555-0174", app_locale_);
   profile.set_use_date(use_date);
   return profile;
 }
 
 AutofillProfile TestDataCreator::CreateDisusedDeletableTestAddress() {
-  const base::Time use_date =
-      AutofillClock::Now() - base::TimeDelta::FromDays(400);
+  const base::Time use_date = AutofillClock::Now() - base::Days(400);
   AutofillProfile profile;
-  profile.SetInfo(NAME_FULL, base::UTF8ToUTF16("Polly Deletable"), app_locale_);
+  profile.SetInfo(NAME_FULL, u"Polly Deletable", app_locale_);
   profile.SetInfo(COMPANY_NAME,
                   base::UTF8ToUTF16(base::StringPrintf(
                       "%" PRIu64 " Inc.",
                       use_date.ToDeltaSinceWindowsEpoch().InMicroseconds())),
                   app_locale_);
-  profile.SetInfo(EMAIL_ADDRESS,
-                  base::UTF8ToUTF16("polly.deletable@fake.chromium.org"),
+  profile.SetInfo(EMAIL_ADDRESS, u"polly.deletable@fake.chromium.org",
                   app_locale_);
-  profile.SetInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("459 Deletable Lane"),
-                  app_locale_);
-  profile.SetInfo(ADDRESS_HOME_LINE2, base::UTF8ToUTF16("Apt. B"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Austin"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("Texas"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("73301"), app_locale_);
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16("US"), app_locale_);
-  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16("844-555-0274"),
-                  app_locale_);
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"459 Deletable Lane", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_LINE2, u"Apt. B", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_CITY, u"Austin", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_STATE, u"Texas", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_ZIP, u"73301", app_locale_);
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"US", app_locale_);
+  profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"844-555-0274", app_locale_);
   profile.set_use_date(use_date);
   return profile;
 }
@@ -156,15 +139,13 @@ AutofillProfile TestDataCreator::CreateDisusedDeletableTestAddress() {
 // Create a card expiring 500 days from now which was last used 10 days ago.
 CreditCard TestDataCreator::CreateBasicTestCreditCard() {
   const base::Time now = AutofillClock::Now();
-  const base::Time use_date = now - base::TimeDelta::FromDays(10);
+  const base::Time use_date = now - base::Days(10);
   base::Time::Exploded expiry_date;
-  (now + base::TimeDelta::FromDays(500)).LocalExplode(&expiry_date);
+  (now + base::Days(500)).LocalExplode(&expiry_date);
 
   CreditCard credit_card;
-  credit_card.SetInfo(CREDIT_CARD_NAME_FULL,
-                      base::UTF8ToUTF16("Alice Testerson"), app_locale_);
-  credit_card.SetInfo(CREDIT_CARD_NUMBER, base::UTF8ToUTF16("4545454545454545"),
-                      app_locale_);
+  credit_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Alice Testerson", app_locale_);
+  credit_card.SetInfo(CREDIT_CARD_NUMBER, u"4545454545454545", app_locale_);
   credit_card.SetExpirationMonth(expiry_date.month);
   credit_card.SetExpirationYear(expiry_date.year);
   credit_card.set_use_date(use_date);
@@ -173,15 +154,13 @@ CreditCard TestDataCreator::CreateBasicTestCreditCard() {
 
 CreditCard TestDataCreator::CreateDisusedTestCreditCard() {
   const base::Time now = AutofillClock::Now();
-  const base::Time use_date = now - base::TimeDelta::FromDays(185);
+  const base::Time use_date = now - base::Days(185);
   base::Time::Exploded expiry_date;
-  (now - base::TimeDelta::FromDays(200)).LocalExplode(&expiry_date);
+  (now - base::Days(200)).LocalExplode(&expiry_date);
 
   CreditCard credit_card;
-  credit_card.SetInfo(CREDIT_CARD_NAME_FULL, base::UTF8ToUTF16("Bob Disused"),
-                      app_locale_);
-  credit_card.SetInfo(CREDIT_CARD_NUMBER, base::UTF8ToUTF16("4111111111111111"),
-                      app_locale_);
+  credit_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Bob Disused", app_locale_);
+  credit_card.SetInfo(CREDIT_CARD_NUMBER, u"4111111111111111", app_locale_);
   credit_card.SetExpirationMonth(expiry_date.month);
   credit_card.SetExpirationYear(expiry_date.year);
   credit_card.set_use_date(use_date);
@@ -196,10 +175,8 @@ CreditCard TestDataCreator::CreateDisusedDeletableTestCreditCard() {
       .LocalExplode(&expiry_date);
 
   CreditCard credit_card;
-  credit_card.SetInfo(CREDIT_CARD_NAME_FULL,
-                      base::UTF8ToUTF16("Charlie Deletable"), app_locale_);
-  credit_card.SetInfo(CREDIT_CARD_NUMBER, base::UTF8ToUTF16("378282246310005"),
-                      app_locale_);
+  credit_card.SetInfo(CREDIT_CARD_NAME_FULL, u"Charlie Deletable", app_locale_);
+  credit_card.SetInfo(CREDIT_CARD_NUMBER, u"378282246310005", app_locale_);
   credit_card.SetExpirationMonth(expiry_date.month);
   credit_card.SetExpirationYear(expiry_date.year);
   credit_card.set_use_date(use_date);

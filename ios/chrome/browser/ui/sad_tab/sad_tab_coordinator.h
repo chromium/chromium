@@ -8,14 +8,10 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper_delegate.h"
 
-@protocol ApplicationCommands;
-@protocol BrowserCommands;
 @protocol OverscrollActionsControllerDelegate;
 
 // Coordinator that displays a SadTab view.
 @interface SadTabCoordinator : ChromeCoordinator<SadTabTabHelperDelegate>
-
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
 
 // Required to support Overscroll Actions UI, which is displayed when Sad Tab is
 // pulled down.

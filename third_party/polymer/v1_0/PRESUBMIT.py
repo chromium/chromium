@@ -11,6 +11,7 @@ for more details on the presubmit API built into depot_tools.
 import os
 import json
 
+USE_PYTHON3 = True
 
 def _CheckBowerDependencies(input_api, output_api):
   os_path = input_api.os_path

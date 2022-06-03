@@ -24,11 +24,8 @@
 
     #test2 .child {
         background-color: green;
-        position: relative;
-        left: 25px;
-        top: 25px;
-        height: 50px;
-        width: 50px;
+        height: 75px;
+        width: 75px;
     }
     #test3 img {
         background-image: url(../svg/resources/animated-svg-fixed-size.svg)
@@ -51,12 +48,17 @@
     }
 
     function finish() {
-        var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_DETAILED_INVALIDATIONS);
         var invalidatedObjects = {};
         for (var layer of JSON.parse(layerTree).layers) {
-            if (layer.paintInvalidations) {
-                for (var invalidation of layer.paintInvalidations)
+            if (layer.invalidations) {
+                for (var invalidation of layer.invalidations) {
+                    // Ok to invalidate the IFC of block-in-inline.
+                    // See |LayoutBox::ForegroundIsKnownToBeOpaqueInRect|.
+                    if (invalidation.object.includes("id='target4'"))
+                        continue;
                     invalidatedObjects[invalidation.object] = true;
+                }
             }
         }
         // Passes if there is no invalidations other than imgForAdvanceImageAnimation.

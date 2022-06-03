@@ -100,13 +100,13 @@ TEST(WindowSizerTest, DefaultSizeCase) {
      // On all platforms except the Mac, for this size monitor the WindowSizer
      // returns a width that allows side-by-side positioning of two browser
      // windows.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     const int expected_window_width = WindowSizer::kWindowMaxDefaultWidth;
 #else
     const int window_width = 1680;
     const int expected_window_width =
         window_width / 2 - static_cast<int>(kWindowTilePixels * 1.5);
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1680x1050, p1680x1050, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
@@ -120,13 +120,13 @@ TEST(WindowSizerTest, DefaultSizeCase) {
      // On all platforms except the Mac, for this size monitor the WindowSizer
      // returns a width that allows side-by-side positioning of two browser
      // windows.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     const int expected_window_width = WindowSizer::kWindowMaxDefaultWidth;
 #else
     const int window_width = 1920;
     const int expected_window_width =
         window_width / 2 - static_cast<int>(kWindowTilePixels * 1.5);
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1920x1200, p1920x1200, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
@@ -276,7 +276,7 @@ TEST(WindowSizerTest, PersistedBoundsCase) {
               window_bounds);
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   { // Saved state is too tall to possibly be resized.  Mac resizers
     // are at the bottom of the window, and no piece of a window can
     // be moved higher than the menubar.  (Perhaps the user changed
@@ -288,7 +288,7 @@ TEST(WindowSizerTest, PersistedBoundsCase) {
         PERSISTED, NULL, gfx::Rect(), &window_bounds);
     EXPECT_EQ(p1024x768.height(), window_bounds.height());
   }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -297,7 +297,7 @@ TEST(WindowSizerTest, PersistedBoundsCase) {
 // are run on Mac, and the *WithNonAggressiveRepositioning tests are run on
 // other platforms.
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 TEST(WindowSizerTest, LastWindowOffscreenWithAggressiveRepositioning) {
   { // taskbar on left.  The new window overlaps slightly with the taskbar, so
     // it is moved to be flush with the left edge of the work area.
@@ -498,7 +498,7 @@ TEST(WindowSizerTest, LastWindowOffscreenWithNonAggressiveRepositioning) {
   }
 
   // Linux does not tile windows, so tile adjustment tests don't make sense.
-#if !defined(OS_POSIX) || defined(OS_MACOSX)
+#if !defined(OS_POSIX) || defined(OS_MAC)
   { // offset would put the new window offscreen at the bottom but the minimum
     // visibility condition is barely satisfied without relocation.
     gfx::Rect window_bounds;
@@ -547,7 +547,7 @@ TEST(WindowSizerTest, LastWindowOffscreenWithNonAggressiveRepositioning) {
     EXPECT_EQ(gfx::Rect(994 /* not 995 */, 738 /* not 739 */, 500, 400),
               window_bounds);
   }
-#endif  // !defined(OS_POSIX) || defined(OS_MACOSX)
+#endif  // !defined(OS_POSIX) || defined(OS_MAC)
 }
 
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)

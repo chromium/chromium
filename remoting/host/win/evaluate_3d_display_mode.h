@@ -5,9 +5,6 @@
 #ifndef REMOTING_HOST_WIN_EVALUATE_3D_DISPLAY_MODE_H_
 #define REMOTING_HOST_WIN_EVALUATE_3D_DISPLAY_MODE_H_
 
-#include <string>
-#include <vector>
-
 namespace remoting {
 
 // Evaluates the Stereoscopic 3D capability of the system.

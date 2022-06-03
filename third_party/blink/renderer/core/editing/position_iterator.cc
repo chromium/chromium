@@ -39,6 +39,11 @@ bool ShouldTraverseChildren(const Node& node) {
   return Strategy::HasChildren(node) && !IsUserSelectContain(node);
 }
 
+template <typename Strategy>
+int LastOffsetForPositionIterator(const Node* node) {
+  return IsUserSelectContain(*node) ? 1 : Strategy::LastOffsetForEditing(node);
+}
+
 // TODO(editing-dev): We should replace usages of |parent()| in
 // |PositionIterator| to |selectableParentOf()|.
 template <typename Strategy>
@@ -75,7 +80,11 @@ PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
 template <typename Strategy>
 PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
     const PositionTemplate<Strategy>& pos)
-    : PositionIteratorAlgorithm(pos.AnchorNode(), pos.ComputeEditingOffset()) {}
+    : PositionIteratorAlgorithm(
+          pos.IsNull()
+              ? PositionIteratorAlgorithm()
+              : PositionIteratorAlgorithm(pos.AnchorNode(),
+                                          pos.ComputeEditingOffset())) {}
 
 template <typename Strategy>
 PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm()
@@ -91,6 +100,7 @@ PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
   // TODO(yoichio): Share code to check domTreeVersion with EphemeralRange.
   DCHECK(IsValid());
   if (node_after_position_in_anchor_) {
+    DCHECK(anchor_node_);
     DCHECK_EQ(Strategy::Parent(*node_after_position_in_anchor_), anchor_node_);
     DCHECK_NE(offsets_in_anchor_node_[depth_to_anchor_node_], kInvalidOffset);
     // FIXME: This check is inadaquete because any ancestor could be ignored by
@@ -101,6 +111,8 @@ PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
     return PositionTemplate<Strategy>(
         anchor_node_, offsets_in_anchor_node_[depth_to_anchor_node_]);
   }
+  if (!anchor_node_)
+    return PositionTemplate<Strategy>();
   if (Strategy::HasChildren(*anchor_node_)) {
     return PositionTemplate<Strategy>::LastPositionInOrAfterNode(*anchor_node_);
   }
@@ -124,6 +136,7 @@ PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
   //   +-H
   if (node_after_position_in_anchor_) {
     // For example, position is before E, F.
+    DCHECK(anchor_node_);
     DCHECK_EQ(Strategy::Parent(*node_after_position_in_anchor_), anchor_node_);
     DCHECK_NE(offsets_in_anchor_node_[depth_to_anchor_node_], kInvalidOffset);
     // TODO(yoichio): This should be equivalent to PositionTemplate<Strategy>(
@@ -131,6 +144,8 @@ PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
     return PositionTemplate<Strategy>(
         anchor_node_, offsets_in_anchor_node_[depth_to_anchor_node_]);
   }
+  if (!anchor_node_)
+    return PositionTemplate<Strategy>();
   if (ShouldTraverseChildren<Strategy>(*anchor_node_)) {
     // For example, position is the end of B.
     return PositionTemplate<Strategy>::LastPositionInOrAfterNode(*anchor_node_);
@@ -187,7 +202,8 @@ void PositionIteratorAlgorithm<Strategy>::Increment() {
 
   if (anchor_node_->GetLayoutObject() &&
       !ShouldTraverseChildren<Strategy>(*anchor_node_) &&
-      offset_in_anchor_ < Strategy::LastOffsetForEditing(anchor_node_)) {
+      offset_in_anchor_ <
+          LastOffsetForPositionIterator<Strategy>(anchor_node_)) {
     // Case #2. This is the next of Case #1 or #2 itself.
     // Position is (|anchor|, |offset_in_anchor_|).
     // In this case |anchor| is a leaf(E,F,C,G or H) and
@@ -249,9 +265,10 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
       // Let |anchor| is B and |child| is F,
       // next |anchor| is E and |child| is null.
       node_after_position_in_anchor_ = nullptr;
-      offset_in_anchor_ = ShouldTraverseChildren<Strategy>(*anchor_node_)
-                              ? 0
-                              : Strategy::LastOffsetForEditing(anchor_node_);
+      offset_in_anchor_ =
+          ShouldTraverseChildren<Strategy>(*anchor_node_)
+              ? 0
+              : LastOffsetForPositionIterator<Strategy>(anchor_node_);
       // Decrement offset of |child| or initialize if it have never been
       // used.
       if (offsets_in_anchor_node_[depth_to_anchor_node_] == kInvalidOffset)
@@ -293,9 +310,10 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
     // Case #2. This is a reverse of increment()::Case3-b.
     // Let |anchor| is B, next |anchor| is F.
     anchor_node_ = Strategy::LastChild(*anchor_node_);
-    offset_in_anchor_ = ShouldTraverseChildren<Strategy>(*anchor_node_)
-                            ? 0
-                            : Strategy::LastOffsetForEditing(anchor_node_);
+    offset_in_anchor_ =
+        ShouldTraverseChildren<Strategy>(*anchor_node_)
+            ? 0
+            : LastOffsetForPositionIterator<Strategy>(anchor_node_);
     // Decrement depth initializing with -1 because
     // |node_after_position_in_anchor_| is null so still unneeded.
     if (depth_to_anchor_node_ >= offsets_in_anchor_node_.size())

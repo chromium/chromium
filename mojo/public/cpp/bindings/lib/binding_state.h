@@ -11,22 +11,23 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/component_export.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
+#include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/core.h"
 
@@ -46,8 +47,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
   void PauseIncomingMethodCallProcessing();
   void ResumeIncomingMethodCallProcessing();
 
-  bool WaitForIncomingMethodCall(
-      MojoDeadline deadline = MOJO_DEADLINE_INDEFINITE);
+  bool WaitForIncomingMethodCall();
+
+  void PauseRemoteCallbacksUntilFlushCompletes(PendingFlush flush);
+  void FlushAsync(AsyncFlusher flusher);
 
   void Close();
   void CloseWithReason(uint32_t custom_reason, const std::string& description);
@@ -108,6 +111,9 @@ class BindingState : public BindingStateBase {
     stub_.set_sink(std::move(impl));
   }
 
+  BindingState(const BindingState&) = delete;
+  BindingState& operator=(const BindingState&) = delete;
+
   ~BindingState() { Close(); }
 
   void Bind(PendingReceiverState* receiver_state,
@@ -129,15 +135,13 @@ class BindingState : public BindingStateBase {
 
   Interface* impl() { return ImplRefTraits::GetRawPointer(&stub_.sink()); }
   ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
-    Interface* old_impl = impl();
-    stub_.set_sink(std::move(new_impl));
-    return old_impl;
+    using std::swap;
+    swap(new_impl, stub_.sink());
+    return new_impl;
   }
 
  private:
   typename Interface::template Stub_<ImplRefTraits> stub_;
-
-  DISALLOW_COPY_AND_ASSIGN(BindingState);
 };
 
 }  // namespace internal

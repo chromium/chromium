@@ -10,11 +10,12 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase_list.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -28,16 +29,6 @@ namespace {
 typedef std::list<URLRequestTestJob*> URLRequestJobList;
 base::LazyInstance<URLRequestJobList>::Leaky
     g_pending_jobs = LAZY_INSTANCE_INITIALIZER;
-
-class TestJobProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
- public:
-  // URLRequestJobFactory::ProtocolHandler implementation:
-  URLRequestJob* MaybeCreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new URLRequestTestJob(request, network_delegate);
-  }
-};
 
 }  // namespace
 
@@ -136,20 +127,8 @@ std::string URLRequestTestJob::test_error_headers() {
   return std::string(kHeaders, base::size(kHeaders));
 }
 
-// static
-std::unique_ptr<URLRequestJobFactory::ProtocolHandler>
-URLRequestTestJob::CreateProtocolHandler() {
-  return std::make_unique<TestJobProtocolHandler>();
-}
-
-URLRequestTestJob::URLRequestTestJob(URLRequest* request,
-                                     NetworkDelegate* network_delegate)
-    : URLRequestTestJob(request, network_delegate, false) {}
-
-URLRequestTestJob::URLRequestTestJob(URLRequest* request,
-                                     NetworkDelegate* network_delegate,
-                                     bool auto_advance)
-    : URLRequestJob(request, network_delegate),
+URLRequestTestJob::URLRequestTestJob(URLRequest* request, bool auto_advance)
+    : URLRequestJob(request),
       auto_advance_(auto_advance),
       stage_(WAITING),
       priority_(DEFAULT_PRIORITY),
@@ -160,11 +139,10 @@ URLRequestTestJob::URLRequestTestJob(URLRequest* request,
       async_reads_(false) {}
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request,
-                                     NetworkDelegate* network_delegate,
                                      const std::string& response_headers,
                                      const std::string& response_data,
                                      bool auto_advance)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       auto_advance_(auto_advance),
       stage_(WAITING),
       priority_(DEFAULT_PRIORITY),
@@ -223,13 +201,8 @@ void URLRequestTestJob::StartAsync() {
     } else {
       AdvanceJob();
 
-      // unexpected url, return error
-      // FIXME(brettw) we may want to use WININET errors or have some more types
-      // of errors
-      NotifyStartError(
-          URLRequestStatus(URLRequestStatus::FAILED, ERR_INVALID_URL));
-      // FIXME(brettw): this should emulate a network error, and not just fail
-      // initiating a connection
+      // Return an error on unexpected urls.
+      NotifyStartError(ERR_INVALID_URL);
       return;
     }
   }

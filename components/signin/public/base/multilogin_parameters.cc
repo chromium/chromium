@@ -6,6 +6,8 @@
 
 namespace signin {
 
+MultiloginParameters::MultiloginParameters() = default;
+
 MultiloginParameters::MultiloginParameters(
     const gaia::MultiloginMode mode,
     const std::vector<CoreAccountId>& accounts_to_send)

@@ -6,10 +6,12 @@ include_rules = [
   "+components/spellcheck/common",
   "+components/viz/common",
   "+content/public",
+  "+device/base/features.h",
   "+gin/public",
   "+gin/v8_initializer.h",
   "+media/base/media_switches.h",  # For media command line switches.
   "+mojo/core/embedder/embedder.h",
+  "+third_party/blink/public/common/features.h",
   "+ui/events/gesture_detection",
   "+ui/gl",
 ]

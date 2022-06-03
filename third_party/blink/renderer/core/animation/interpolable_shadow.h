@@ -50,7 +50,7 @@ class InterpolableShadow : public InterpolableValue {
                         double underlying_fraction,
                         const InterpolableValue&,
                         const NonInterpolableValue*);
-
+  ShadowStyle GetShadowStyle() const { return shadow_style_; }
   // Convert this InterpolableShadow back into a ShadowData class, usually to be
   // applied to the style after interpolating it.
   ShadowData CreateShadowData(const StyleResolverState&) const;

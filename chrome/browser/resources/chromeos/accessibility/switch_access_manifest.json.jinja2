@@ -1,0 +1,40 @@
+{
+{% if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 2,
+  "name": "__MSG_SWITCH_ACCESS_NAME__",
+  "version": "{{set_version}}",
+  "description": "__MSG_SWITCH_ACCESS_DESCRIPTION__",
+{% if is_guest_manifest == '1' %}
+  "incognito": "split",
+{% endif %}
+  "background": {
+    "page": "switch_access/background.html"
+  },
+  "permissions": [
+    "accessibilityPrivate",
+    "clipboard",
+    "clipboardRead",
+    "commandLinePrivate",
+    "metricsPrivate",
+    "settingsPrivate",
+    "tabs",
+    "virtualKeyboardPrivate"
+  ],
+  "automation": {
+    "desktop": true
+  },
+  "default_locale": "en",
+  "content_scripts": [
+    {
+      "matches": [ "https://docs.google.com/document*",
+                   "https://docs.sandbox.google.com/document*" ],
+      "all_frames": true,
+      "js": [
+        "common/gdocs_script.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

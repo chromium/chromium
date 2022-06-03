@@ -8,13 +8,10 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +24,7 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "content/public/browser/plugin_service.h"
+#include "content/public/common/webplugininfo.h"
 #endif
 
 namespace {
@@ -55,7 +53,7 @@ class PdfWebContentsLifetimeHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Returns true if the PDF plugin for |navigation_handle| is enabled. Optionally
@@ -118,9 +116,6 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
 
   ReportPDFLoadStatus(PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer);
 
-  if (!base::FeatureList::IsEnabled(features::kClickToOpenPDFPlaceholder))
-    return content::NavigationThrottle::PROCEED;
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   bool is_stale = false;
   bool pdf_plugin_enabled = IsPDFPluginEnabled(navigation_handle(), &is_stale);
@@ -169,11 +164,14 @@ void PDFIFrameNavigationThrottle::LoadPlaceholderHTML() {
   // an antipattern. Use a helper object scoped to the WebContents lifetime to
   // scope the navigation task to the WebContents lifetime.
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  if (!web_contents)
+    return;
+
   PdfWebContentsLifetimeHelper::CreateForWebContents(web_contents);
   PdfWebContentsLifetimeHelper* helper =
       PdfWebContentsLifetimeHelper::FromWebContents(web_contents);
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
       base::BindOnce(&PdfWebContentsLifetimeHelper::NavigateIFrameToPlaceholder,
                      helper->GetWeakPtr(), std::move(params)));
 }

@@ -24,10 +24,10 @@ interface WallpaperHost {
 // Next method ID: 4
 interface WallpaperInstance {
   // DEPRECATED: Please use Init@3 instead.
-  InitDeprecated@0(WallpaperHost host_ptr);
+  InitDeprecated@0(pending_remote<WallpaperHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=3] Init@3(WallpaperHost host_ptr) => ();
+  [MinVersion=3] Init@3(pending_remote<WallpaperHost> host_remote) => ();
 
   // Notifies ArcWallpaperManagerService that wallpaper is changed.
   [MinVersion=1] OnWallpaperChanged@1([MinVersion=2] int32 wallpaper_id);

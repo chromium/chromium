@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/browser-payment-api/#paymentdetailsinit-dictionary
+// https://w3c.github.io/payment-request/#paymentdetailsinit-dictionary
 
 dictionary PaymentDetailsInit : PaymentDetailsBase {
     DOMString id;
-    required PaymentItem total;
+    PaymentItem total;
 };

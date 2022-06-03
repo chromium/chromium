@@ -6,7 +6,7 @@
 
 namespace views {
 
-TestMenuItemView::TestMenuItemView() : MenuItemView(nullptr) {}
+TestMenuItemView::TestMenuItemView() = default;
 
 TestMenuItemView::TestMenuItemView(MenuDelegate* delegate)
     : MenuItemView(delegate) {}

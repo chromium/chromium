@@ -4,6 +4,7 @@
 
 #include "ios/chrome/app/startup/provider_registration.h"
 
+#include "base/check.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,7 +18,11 @@
       ios::CreateChromeBrowserProvider();
 
   // Leak the providers.
-  ios::SetChromeBrowserProvider(provider.release());
+  ios::ChromeBrowserProvider* previous_provider =
+      ios::SetChromeBrowserProvider(provider.release());
+
+  DCHECK(!previous_provider)
+      << "-registerProviders with an existing ChromeBrowserProvider registered";
 }
 
 @end

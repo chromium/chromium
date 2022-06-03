@@ -12,18 +12,18 @@ namespace blink {
 class DoesNeedFinalizer : public GarbageCollected<DoesNeedFinalizer> {
  public:
   ~DoesNeedFinalizer() { ; }
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 };
 
 class DoesNotNeedFinalizer : public GarbageCollected<DoesNotNeedFinalizer> {
  public:
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 };
 
 class DoesNotNeedFinalizer2 : public GarbageCollected<DoesNotNeedFinalizer2> {
  public:
   ~DoesNotNeedFinalizer2();
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 };
 
 class HasEmptyDtor {
@@ -36,7 +36,7 @@ public:
 class DoesNeedFinalizer2 : public GarbageCollected<DoesNeedFinalizer2>,
                            public HasEmptyDtor {
  public:
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 };
 }
 

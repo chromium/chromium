@@ -6,7 +6,8 @@ package org.chromium.content.browser.accessibility.captioning;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;

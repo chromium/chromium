@@ -2,10 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionManager} from '../action_manager.js';
+import {FocusRingManager} from '../focus_ring_manager.js';
+import {MenuManager} from '../menu_manager.js';
+import {Navigator} from '../navigator.js';
+import {SwitchAccess} from '../switch_access.js';
+import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
+
+import {SAChildNode, SARootNode} from './switch_access_node.js';
+
+const AutomationNode = chrome.automation.AutomationNode;
+
 /**
  * This class handles the behavior of the back button.
  */
-class BackButtonNode extends SAChildNode {
+export class BackButtonNode extends SAChildNode {
   /**
    * @param {!SARootNode} group
    */
@@ -17,26 +28,34 @@ class BackButtonNode extends SAChildNode {
      */
     this.group_ = group;
 
-    /** @private {chrome.automation.AutomationNode} */
-    this.node_ = SwitchAccess.get().getBackButtonAutomationNode();
+    /** @private {!RepeatedEventHandler} */
+    this.locationChangedHandler_;
   }
 
   // ================= Getters and setters =================
 
   /** @override */
   get actions() {
-    return [SAConstants.MenuAction.SELECT];
+    return [SwitchAccessMenuAction.SELECT];
   }
 
   /** @override */
   get automationNode() {
-    return this.node_;
+    return BackButtonNode.automationNode_;
+  }
+
+  /** @override */
+  get group() {
+    return this.group_;
   }
 
   /** @override */
   get location() {
-    if (this.node_) {
-      return this.node_.location;
+    if (BackButtonNode.locationForTesting) {
+      return BackButtonNode.locationForTesting;
+    }
+    if (this.automationNode) {
+      return this.automationNode.location;
     }
   }
 
@@ -59,7 +78,7 @@ class BackButtonNode extends SAChildNode {
 
   /** @override */
   isEquivalentTo(node) {
-    return this.node_ === node;
+    return node instanceof BackButtonNode || this.automationNode === node;
   }
 
   /** @override */
@@ -68,33 +87,106 @@ class BackButtonNode extends SAChildNode {
   }
 
   /** @override */
+  isValidAndVisible() {
+    return this.group_.isValidGroup();
+  }
+
+  /** @override */
   onFocus() {
-    chrome.accessibilityPrivate.setSwitchAccessMenuState(
-        true, this.group_.location, 0 /* num_actions */);
+    super.onFocus();
+    chrome.accessibilityPrivate.updateSwitchAccessBubble(
+        chrome.accessibilityPrivate.SwitchAccessBubble.BACK_BUTTON,
+        true /* show */, this.group_.location);
+    BackButtonNode.findAutomationNode_();
+
+    this.locationChangedHandler_ = new RepeatedEventHandler(
+        this.group_.automationNode,
+        chrome.automation.EventType.LOCATION_CHANGED,
+        () => FocusRingManager.setFocusedNode(this),
+        {exactMatch: true, allAncestors: true});
   }
 
   /** @override */
   onUnfocus() {
-    chrome.accessibilityPrivate.setSwitchAccessMenuState(
-        false, RectHelper.ZERO_RECT, 0 /* num_actions */);
+    super.onUnfocus();
+    chrome.accessibilityPrivate.updateSwitchAccessBubble(
+        chrome.accessibilityPrivate.SwitchAccessBubble.BACK_BUTTON,
+        false /* show */);
+
+    if (this.locationChangedHandler_) {
+      this.locationChangedHandler_.stop();
+    }
   }
 
   /** @override */
   performAction(action) {
-    if (action !== SAConstants.MenuAction.SELECT) {
-      return false;
+    if (action === SwitchAccessMenuAction.SELECT && this.automationNode) {
+      BackButtonNode.onClick_();
+      return SAConstants.ActionResponse.CLOSE_MENU;
     }
+    return SAConstants.ActionResponse.NO_ACTION_TAKEN;
+  }
 
-    if (this.node_) {
-      this.node_.doDefault();
-    }
+  /** @override */
+  ignoreWhenComputingUnionOfBoundingBoxes() {
     return true;
   }
 
   // ================= Debug methods =================
 
   /** @override */
-  debugString() {
-    return 'BackButtonNode';
+  debugString(wholeTree, prefix = '', currentNode = null) {
+    if (!this.automationNode) {
+      return 'BackButtonNode';
+    }
+    return super.debugString(wholeTree, prefix, currentNode);
+  }
+
+  // ================= Static methods =================
+
+  /**
+   * Looks for the back button automation node.
+   * @private
+   */
+  static findAutomationNode_() {
+    if (BackButtonNode.automationNode_ && BackButtonNode.automationNode_.role) {
+      return;
+    }
+    SwitchAccess.findNodeMatching(
+        {
+          role: chrome.automation.RoleType.BUTTON,
+          attributes: {className: 'SwitchAccessBackButtonView'}
+        },
+        BackButtonNode.saveAutomationNode_);
+  }
+
+  /**
+   * This function defines the behavior that should be taken when the back
+   * button is pressed.
+   * @private
+   */
+  static onClick_() {
+    if (MenuManager.isMenuOpen()) {
+      ActionManager.exitCurrentMenu();
+    } else {
+      Navigator.byItem.exitGroupUnconditionally();
+    }
+  }
+
+  /**
+   * Saves the back button automation node.
+   * @param {!AutomationNode} automationNode
+   * @private
+   */
+  static saveAutomationNode_(automationNode) {
+    BackButtonNode.automationNode_ = automationNode;
+
+    if (BackButtonNode.clickHandler_) {
+      BackButtonNode.clickHandler_.setNodes(automationNode);
+    } else {
+      BackButtonNode.clickHandler_ = new EventHandler(
+          automationNode, chrome.automation.EventType.CLICKED,
+          BackButtonNode.onClick_);
+    }
   }
 }

@@ -14,12 +14,12 @@
 #include "base/files/file_path.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/storage_monitor/storage_info.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/device/public/mojom/mtp_manager.mojom-forward.h"
 #endif
 
@@ -116,11 +116,11 @@ class StorageMonitor {
   // persistent across sessions.
   virtual bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
-      base::string16* device_location,
-      base::string16* storage_object_id) const = 0;
+      std::wstring* device_location,
+      std::wstring* storage_object_id) const = 0;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual device::mojom::MtpManager* media_transfer_protocol_manager() = 0;
 #endif
 

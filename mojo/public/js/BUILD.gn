@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -41,44 +42,79 @@ action("bindings") {
   script = "//mojo/public/tools/bindings/concatenate-files.py"
 
   sources = bindings_js_files
-  outputs = [
-    compiled_file,
-  ]
+  outputs = [ compiled_file ]
 
   args = rebase_path(bindings_js_files, root_build_dir)
   args += [ rebase_path(compiled_file, root_build_dir) ]
 
-  deps = [
-    "//mojo/public/interfaces/bindings:bindings_js__generator",
-  ]
+  deps = [ "//mojo/public/interfaces/bindings:bindings_js__generator" ]
 }
 
-bindings_lite_sources = [
-  "bindings_lite.js",
-  "interface_support.js",
-]
+template("concatenate_files") {
+  action(target_name) {
+    script = "//mojo/public/tools/bindings/concatenate-files.py"
+    inputs = invoker.inputs
+    output = "$target_gen_dir/${invoker.output}"
+    outputs = [ output ]
+    args = rebase_path(inputs, root_build_dir) +
+           [ rebase_path(output, root_build_dir) ]
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}
 
-bindings_lite_compiled_file = "$target_gen_dir/mojo_bindings_lite.js"
+concatenate_files("generate_mojo_internal_js") {
+  inputs = [
+    "mojo_internal_preamble.js.part",
+    "bindings_lite.js",
+  ]
+  output = "mojo_internal.js"
+}
+
+concatenate_files("generate_interface_support_js") {
+  inputs = [
+    "interface_support_preamble.js.part",
+    "interface_support.js",
+  ]
+  output = "interface_support.js"
+}
 
 js_library("bindings_lite_sources") {
-  sources = [ "compile_preamble.js" ] + bindings_lite_sources
-  deps = [
-    "//mojo/public/interfaces/bindings:bindings_js_library_for_compile",
+  sources = [
+    "$target_gen_dir/interface_support.js",
+    "$target_gen_dir/mojo_internal.js",
+    "compile_preamble.js",
+  ]
+  deps = [ "//mojo/public/interfaces/bindings:bindings_js_library_for_compile" ]
+  extra_deps = [
+    ":generate_interface_support_js",
+    ":generate_mojo_internal_js",
   ]
 }
 
-if (enable_mojom_closure_compile || closure_compile) {
+# All generated mojom JS modules consume the API defined by this module. The
+# uncompiled source is simply a concatenation of the various pieces listed
+# below.
+concatenate_files("bindings_uncompiled_module") {
+  inputs = [
+    "bindings_uncompiled_module_preamble.js.part",
+    "bindings_lite.js",
+    "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite.js",
+    "$root_gen_dir/mojo/public/interfaces/bindings/pipe_control_messages.mojom-lite.js",
+    "interface_support.js",
+    "bindings_uncompiled_module_export.js.part",
+  ]
+  output = "bindings_uncompiled.js"
+  deps = [ "//mojo/public/interfaces/bindings:bindings_js_library" ]
+}
+
+if (enable_mojom_closure_compile || enable_js_type_check) {
   js_binary("bindings_lite") {
-    outputs = [
-      bindings_lite_compiled_file,
-    ]
-    deps = [
-      ":bindings_lite_sources",
-    ]
-    externs_list = [
-      "$externs_path/mojo_core.js",
-      "$externs_path/pending.js",
-    ]
+    outputs = [ "$target_gen_dir/mojo_bindings_lite.js" ]
+    sources = []
+    deps = [ ":bindings_lite_sources" ]
+    externs_list = [ "$externs_path/mojo_core.js" ]
     closure_flags = strict_error_checking_closure_args + [
                       "compilation_level=ADVANCED_OPTIMIZATIONS",
                       "language_in=ECMASCRIPT_2017",
@@ -88,27 +124,62 @@ if (enable_mojom_closure_compile || closure_compile) {
                       "isolation_mode=IIFE",
                     ]
   }
+
+  concatenate_files("bindings_compiled_module") {
+    inputs = [
+      "bindings_module_preamble.js.part",
+      "$target_gen_dir/mojo_bindings_lite.js",
+      "bindings_module_export.js.part",
+    ]
+    output = "bindings_compiled.js"
+    deps = [ ":bindings_lite" ]
+  }
+
+  copy("bindings_module") {
+    sources = [ "$target_gen_dir/bindings_compiled.js" ]
+    outputs = [ "$target_gen_dir/bindings.js" ]
+    deps = [ ":bindings_compiled_module" ]
+  }
 } else {
   action("bindings_lite") {
-    all_sources = bindings_lite_sources + [ "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite.js" ]
-    script = "//mojo/public/tools/bindings/concatenate_and_replace_closure_exports.py"
-    sources = all_sources
-    outputs = [
-      bindings_lite_compiled_file,
+    inputs = [
+      "$target_gen_dir/mojo_internal.js",
+      "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite-for-compile.js",
+      "$root_gen_dir/mojo/public/interfaces/bindings/pipe_control_messages.mojom-lite-for-compile.js",
+      "$target_gen_dir/interface_support.js",
     ]
-    args = rebase_path(all_sources, root_build_dir) +
-           [ rebase_path(bindings_lite_compiled_file, root_build_dir) ]
+    script = "//mojo/public/tools/bindings/concatenate_and_replace_closure_exports.py"
+    sources = inputs
+    outputs = [ "$target_gen_dir/mojo_bindings_lite.js" ]
+    args =
+        rebase_path(inputs, root_build_dir) +
+        [ rebase_path("$target_gen_dir/mojo_bindings_lite.js", root_build_dir) ]
     deps = [
+      ":generate_interface_support_js",
+      ":generate_mojo_internal_js",
       "//mojo/public/interfaces/bindings:bindings_js__generator",
     ]
   }
+
+  copy("bindings_module") {
+    sources = [ "$target_gen_dir/bindings_uncompiled.js" ]
+    outputs = [ "$target_gen_dir/bindings.js" ]
+    deps = [ ":bindings_uncompiled_module" ]
+  }
+}
+
+# This is the library target used in the dependency tree of any JS libraries
+# or binaries compiling against mojom JS bindings. This library is functionally
+# equivalent to the bindings.js generated by the ":bindings_module" target and
+# used at runtime by all consumers, except that this module includes all type
+# annotations and is suitable for Closure compilation and type checking.
+js_library("bindings_uncompiled") {
+  sources = [ "$target_gen_dir/bindings_uncompiled.js" ]
+  extra_deps = [ ":bindings_uncompiled_module" ]
 }
 
 grit("resources") {
   source = "mojo_bindings_resources.grd"
-
-  # The .grd contains references to generated files.
-  source_is_generated = true
 
   outputs = [
     "grit/mojo_bindings_resources.h",
@@ -117,20 +188,14 @@ grit("resources") {
     "mojo_bindings_resources.pak",
   ]
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
   deps = [
     ":bindings",
     ":bindings_lite",
+    ":bindings_module",
     "//mojo/public/mojom/base:base_js",
   ]
 }
 
 group("tests") {
-  deps = [
-    "//mojo/public/js/test:compile_test",
-  ]
+  deps = [ "//mojo/public/js/test:compile_test" ]
 }

@@ -8,14 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/quota/open_file_handle.h"
@@ -25,17 +25,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using storage::kFileSystemTypeTemporary;
-using storage::OpenFileHandle;
-using storage::QuotaReservation;
-using storage::QuotaReservationManager;
-
-namespace content {
+namespace storage {
 
 namespace {
 
-const url::Origin kOrigin(url::Origin::Create(GURL("http://example.com")));
-const storage::FileSystemType kType = kFileSystemTypeTemporary;
+const FileSystemType kType = kFileSystemTypeTemporary;
 const int64_t kInitialFileSize = 1;
 
 using ReserveQuotaCallback = QuotaReservationManager::ReserveQuotaCallback;
@@ -54,15 +48,18 @@ void SetFileSize(const base::FilePath& path, int64_t size) {
 
 class FakeBackend : public QuotaReservationManager::QuotaBackend {
  public:
-  FakeBackend()
-      : on_memory_usage_(kInitialFileSize), on_disk_usage_(kInitialFileSize) {}
+  FakeBackend() = default;
+
+  FakeBackend(const FakeBackend&) = delete;
+  FakeBackend& operator=(const FakeBackend&) = delete;
+
   ~FakeBackend() override = default;
 
   void ReserveQuota(const url::Origin& origin,
-                    storage::FileSystemType type,
+                    FileSystemType type,
                     int64_t delta,
                     ReserveQuotaCallback callback) override {
-    EXPECT_EQ(kOrigin, origin);
+    EXPECT_EQ(this->origin(), origin);
     EXPECT_EQ(kType, type);
     on_memory_usage_ += delta;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -71,36 +68,36 @@ class FakeBackend : public QuotaReservationManager::QuotaBackend {
   }
 
   void ReleaseReservedQuota(const url::Origin& origin,
-                            storage::FileSystemType type,
+                            FileSystemType type,
                             int64_t size) override {
     EXPECT_LE(0, size);
-    EXPECT_EQ(kOrigin, origin);
+    EXPECT_EQ(this->origin(), origin);
     EXPECT_EQ(kType, type);
     on_memory_usage_ -= size;
   }
 
   void CommitQuotaUsage(const url::Origin& origin,
-                        storage::FileSystemType type,
+                        FileSystemType type,
                         int64_t delta) override {
-    EXPECT_EQ(kOrigin, origin);
+    EXPECT_EQ(this->origin(), origin);
     EXPECT_EQ(kType, type);
     on_disk_usage_ += delta;
     on_memory_usage_ += delta;
   }
 
   void IncrementDirtyCount(const url::Origin& origin,
-                           storage::FileSystemType type) override {}
+                           FileSystemType type) override {}
   void DecrementDirtyCount(const url::Origin& origin,
-                           storage::FileSystemType type) override {}
+                           FileSystemType type) override {}
 
+  url::Origin origin() const { return origin_; }
   int64_t on_memory_usage() { return on_memory_usage_; }
   int64_t on_disk_usage() { return on_disk_usage_; }
 
  private:
-  int64_t on_memory_usage_;
-  int64_t on_disk_usage_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBackend);
+  const url::Origin origin_ = url::Origin::Create(GURL("http://example.com"));
+  int64_t on_memory_usage_ = kInitialFileSize;
+  int64_t on_disk_usage_ = kInitialFileSize;
 };
 
 class FakeWriter {
@@ -186,6 +183,11 @@ void RefreshReservation(QuotaReservation* reservation, int64_t size) {
 class QuotaReservationManagerTest : public testing::Test {
  public:
   QuotaReservationManagerTest() = default;
+
+  QuotaReservationManagerTest(const QuotaReservationManagerTest&) = delete;
+  QuotaReservationManagerTest& operator=(const QuotaReservationManagerTest&) =
+      delete;
+
   ~QuotaReservationManagerTest() override = default;
 
   void SetUp() override {
@@ -193,15 +195,20 @@ class QuotaReservationManagerTest : public testing::Test {
     file_path_ = work_dir_.GetPath().Append(FILE_PATH_LITERAL("hoge"));
     SetFileSize(file_path_, kInitialFileSize);
 
-    std::unique_ptr<QuotaReservationManager::QuotaBackend> backend(
-        new FakeBackend);
-    reservation_manager_.reset(new QuotaReservationManager(std::move(backend)));
+    auto backend = std::make_unique<FakeBackend>();
+    reservation_manager_ =
+        std::make_unique<QuotaReservationManager>(std::move(backend));
   }
 
   void TearDown() override { reservation_manager_.reset(); }
 
   FakeBackend* fake_backend() {
     return static_cast<FakeBackend*>(reservation_manager_->backend_.get());
+  }
+
+  url::Origin origin() const {
+    return static_cast<const FakeBackend*>(reservation_manager_->backend_.get())
+        ->origin();
   }
 
   QuotaReservationManager* reservation_manager() {
@@ -215,13 +222,11 @@ class QuotaReservationManagerTest : public testing::Test {
   base::ScopedTempDir work_dir_;
   base::FilePath file_path_;
   std::unique_ptr<QuotaReservationManager> reservation_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservationManagerTest);
 };
 
 TEST_F(QuotaReservationManagerTest, BasicTest) {
   scoped_refptr<QuotaReservation> reservation =
-      reservation_manager()->CreateReservation(kOrigin, kType);
+      reservation_manager()->CreateReservation(origin(), kType);
 
   {
     RefreshReservation(reservation.get(), 10 + 20 + 3);
@@ -262,7 +267,7 @@ TEST_F(QuotaReservationManagerTest, BasicTest) {
 
 TEST_F(QuotaReservationManagerTest, MultipleWriter) {
   scoped_refptr<QuotaReservation> reservation =
-      reservation_manager()->CreateReservation(kOrigin, kType);
+      reservation_manager()->CreateReservation(origin(), kType);
 
   {
     RefreshReservation(reservation.get(), 10 + 20 + 30 + 40 + 5);
@@ -296,12 +301,12 @@ TEST_F(QuotaReservationManagerTest, MultipleWriter) {
 
 TEST_F(QuotaReservationManagerTest, MultipleClient) {
   scoped_refptr<QuotaReservation> reservation1 =
-      reservation_manager()->CreateReservation(kOrigin, kType);
+      reservation_manager()->CreateReservation(origin(), kType);
   RefreshReservation(reservation1.get(), 10);
   int64_t cached_reserved_quota1 = reservation1->remaining_quota();
 
   scoped_refptr<QuotaReservation> reservation2 =
-      reservation_manager()->CreateReservation(kOrigin, kType);
+      reservation_manager()->CreateReservation(origin(), kType);
   RefreshReservation(reservation2.get(), 20);
   int64_t cached_reserved_quota2 = reservation2->remaining_quota();
 
@@ -342,11 +347,11 @@ TEST_F(QuotaReservationManagerTest, MultipleClient) {
 
 TEST_F(QuotaReservationManagerTest, ClientCrash) {
   scoped_refptr<QuotaReservation> reservation1 =
-      reservation_manager()->CreateReservation(kOrigin, kType);
+      reservation_manager()->CreateReservation(origin(), kType);
   RefreshReservation(reservation1.get(), 15);
 
   scoped_refptr<QuotaReservation> reservation2 =
-      reservation_manager()->CreateReservation(kOrigin, kType);
+      reservation_manager()->CreateReservation(origin(), kType);
   RefreshReservation(reservation2.get(), 20);
 
   {
@@ -367,4 +372,4 @@ TEST_F(QuotaReservationManagerTest, ClientCrash) {
   EXPECT_EQ(kInitialFileSize + 10, fake_backend()->on_memory_usage());
 }
 
-}  // namespace content
+}  // namespace storage

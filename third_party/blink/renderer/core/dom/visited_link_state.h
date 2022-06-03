@@ -53,7 +53,7 @@ class VisitedLinkState final : public GarbageCollected<VisitedLinkState> {
     return EInsideLink::kNotInsideLink;
   }
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   const Document& GetDocument() const { return *document_; }
@@ -66,4 +66,4 @@ class VisitedLinkState final : public GarbageCollected<VisitedLinkState> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_VISITED_LINK_STATE_H_

@@ -18,10 +18,10 @@ class WebRTCInternalsUIObserver {
  public:
   virtual ~WebRTCInternalsUIObserver() {}
 
-  // This is called on the browser IO thread. |args| can be NULL if there are no
-  // arguments.
-  virtual void OnUpdate(const char* command,
-                        const base::Value* args) = 0;
+  // This is called on the browser IO thread. |event_data| can be NULL if there
+  // are no arguments.
+  virtual void OnUpdate(const std::string& event_name,
+                        const base::Value* event_data) = 0;
 };
 
 }  // namespace content

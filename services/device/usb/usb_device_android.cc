@@ -41,25 +41,27 @@ scoped_refptr<UsbDeviceAndroid> UsbDeviceAndroid::Create(
   if (build_info->sdk_int() >= base::android::SDK_VERSION_MARSHMALLOW)
     device_version = Java_ChromeUsbDevice_getDeviceVersion(env, wrapper);
 
-  base::string16 manufacturer_string, product_string, serial_number;
-  if (build_info->sdk_int() >= base::android::SDK_VERSION_LOLLIPOP) {
-    ScopedJavaLocalRef<jstring> manufacturer_jstring =
-        Java_ChromeUsbDevice_getManufacturerName(env, wrapper);
-    if (!manufacturer_jstring.is_null())
-      manufacturer_string = ConvertJavaStringToUTF16(env, manufacturer_jstring);
-    ScopedJavaLocalRef<jstring> product_jstring =
-        Java_ChromeUsbDevice_getProductName(env, wrapper);
-    if (!product_jstring.is_null())
-      product_string = ConvertJavaStringToUTF16(env, product_jstring);
+  std::u16string manufacturer_string;
+  ScopedJavaLocalRef<jstring> manufacturer_jstring =
+      Java_ChromeUsbDevice_getManufacturerName(env, wrapper);
+  if (!manufacturer_jstring.is_null())
+    manufacturer_string = ConvertJavaStringToUTF16(env, manufacturer_jstring);
 
-    // Reading the serial number requires device access permission when
-    // targeting the Q SDK.
-    if (service->HasDevicePermission(wrapper) || !build_info->is_at_least_q()) {
-      ScopedJavaLocalRef<jstring> serial_jstring =
-          Java_ChromeUsbDevice_getSerialNumber(env, wrapper);
-      if (!serial_jstring.is_null())
-        serial_number = ConvertJavaStringToUTF16(env, serial_jstring);
-    }
+  std::u16string product_string;
+  ScopedJavaLocalRef<jstring> product_jstring =
+      Java_ChromeUsbDevice_getProductName(env, wrapper);
+  if (!product_jstring.is_null())
+    product_string = ConvertJavaStringToUTF16(env, product_jstring);
+
+  // Reading the serial number requires device access permission when
+  // targeting the Q SDK.
+  std::u16string serial_number;
+  if (service->HasDevicePermission(wrapper) ||
+      build_info->sdk_int() < base::android::SDK_VERSION_Q) {
+    ScopedJavaLocalRef<jstring> serial_jstring =
+        Java_ChromeUsbDevice_getSerialNumber(env, wrapper);
+    if (!serial_jstring.is_null())
+      serial_number = ConvertJavaStringToUTF16(env, serial_jstring);
   }
 
   return base::WrapRefCounted(new UsbDeviceAndroid(
@@ -111,9 +113,9 @@ UsbDeviceAndroid::UsbDeviceAndroid(JNIEnv* env,
                                    uint16_t vendor_id,
                                    uint16_t product_id,
                                    uint16_t device_version,
-                                   const base::string16& manufacturer_string,
-                                   const base::string16& product_string,
-                                   const base::string16& serial_number,
+                                   const std::u16string& manufacturer_string,
+                                   const std::u16string& product_string,
+                                   const std::u16string& serial_number,
                                    const JavaRef<jobject>& wrapper)
     : UsbDevice(usb_version,
                 device_class,
@@ -134,33 +136,12 @@ UsbDeviceAndroid::UsbDeviceAndroid(JNIEnv* env,
       device_id_(Java_ChromeUsbDevice_getDeviceId(env, wrapper)),
       service_(service),
       j_object_(wrapper) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_LOLLIPOP) {
-    JavaObjectArrayReader<jobject> configurations(
-        Java_ChromeUsbDevice_getConfigurations(env, j_object_));
-    device_info_->configurations.reserve(configurations.size());
-    for (auto config : configurations) {
-      device_info_->configurations.push_back(
-          UsbConfigurationAndroid::Convert(env, config));
-    }
-  } else {
-    // Pre-lollipop only the first configuration was supported. Build a basic
-    // configuration out of the available interfaces.
-    mojom::UsbConfigurationInfoPtr config = BuildUsbConfigurationInfoPtr(
-        1,      // Configuration value, reasonable guess.
-        false,  // Self powered, arbitrary default.
-        false,  // Remote wakeup, rbitrary default.
-        0);     // Maximum power, aitrary default.
-
-    JavaObjectArrayReader<jobject> interfaces(
-        Java_ChromeUsbDevice_getInterfaces(env, wrapper));
-    config->interfaces.reserve(interfaces.size());
-    for (auto interface : interfaces) {
-      config->interfaces.push_back(
-          UsbInterfaceAndroid::Convert(env, interface));
-    }
-    AggregateInterfacesForConfig(config.get());
-    device_info_->configurations.push_back(std::move(config));
+  JavaObjectArrayReader<jobject> configs(
+      Java_ChromeUsbDevice_getConfigurations(env, j_object_));
+  device_info_->configurations.reserve(configs.size());
+  for (auto config : configs) {
+    device_info_->configurations.push_back(
+        UsbConfigurationAndroid::Convert(env, config));
   }
 
   if (configurations().size() > 0)

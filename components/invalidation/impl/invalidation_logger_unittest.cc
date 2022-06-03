@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/invalidation/impl/invalidation_logger.h"
-#include "components/invalidation/impl/invalidation_logger_observer.h"
 
+#include "components/invalidation/impl/invalidation_logger_observer.h"
+#include "components/invalidation/public/invalidation.h"
+#include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace invalidation {
@@ -20,7 +22,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     debug_message_received = false;
     invalidation_received = false;
     detailed_status_received = false;
-    update_id_replicated = std::map<std::string, syncer::ObjectIdCountMap>();
+    updated_topics_replicated = std::map<std::string, TopicCountMap>();
     registered_handlers = std::multiset<std::string>();
   }
 
@@ -30,23 +32,22 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
     registration_change_received = true;
   }
 
-  void OnStateChange(const syncer::InvalidatorState& new_state,
+  void OnStateChange(const InvalidatorState& new_state,
                      const base::Time& last_change_timestamp) override {
     state_received = true;
   }
 
-  void OnUpdateIds(const std::string& handler,
-                   const syncer::ObjectIdCountMap& details) override {
+  void OnUpdatedTopics(const std::string& handler,
+                       const TopicCountMap& topics_counts) override {
     update_id_received = true;
-    update_id_replicated[handler] = details;
+    updated_topics_replicated[handler] = topics_counts;
   }
 
   void OnDebugMessage(const base::DictionaryValue& details) override {
     debug_message_received = true;
   }
 
-  void OnInvalidation(
-      const syncer::ObjectIdInvalidationMap& new_invalidations) override {
+  void OnInvalidation(const TopicInvalidationMap& new_invalidations) override {
     invalidation_received = true;
   }
 
@@ -60,7 +61,7 @@ class InvalidationLoggerObserverTest : public InvalidationLoggerObserver {
   bool debug_message_received;
   bool invalidation_received;
   bool detailed_status_received;
-  std::map<std::string, syncer::ObjectIdCountMap> update_id_replicated;
+  std::map<std::string, TopicCountMap> updated_topics_replicated;
   std::multiset<std::string> registered_handlers;
 };
 
@@ -71,7 +72,7 @@ TEST(InvalidationLoggerTest, TestCallbacks) {
   InvalidationLoggerObserverTest observer_test;
 
   log.RegisterObserver(&observer_test);
-  log.OnStateChange(syncer::INVALIDATIONS_ENABLED);
+  log.OnStateChange(INVALIDATIONS_ENABLED);
   EXPECT_TRUE(observer_test.state_received);
   EXPECT_FALSE(observer_test.update_id_received);
   EXPECT_FALSE(observer_test.registration_change_received);
@@ -81,7 +82,7 @@ TEST(InvalidationLoggerTest, TestCallbacks) {
 
   observer_test.ResetStates();
 
-  log.OnInvalidation(syncer::ObjectIdInvalidationMap());
+  log.OnInvalidation(TopicInvalidationMap());
   EXPECT_TRUE(observer_test.invalidation_received);
   EXPECT_FALSE(observer_test.state_received);
   EXPECT_FALSE(observer_test.update_id_received);
@@ -102,12 +103,12 @@ TEST(InvalidationLoggerTest, TestReleaseOfObserver) {
   log.RegisterObserver(&observer_test);
   log.UnregisterObserver(&observer_test);
 
-  log.OnInvalidation(syncer::ObjectIdInvalidationMap());
-  log.OnStateChange(syncer::INVALIDATIONS_ENABLED);
+  log.OnInvalidation(TopicInvalidationMap());
+  log.OnStateChange(INVALIDATIONS_ENABLED);
   log.OnRegistration(std::string());
   log.OnUnregistration(std::string());
   log.OnDebugMessage(base::DictionaryValue());
-  log.OnUpdateIds(std::map<std::string, syncer::ObjectIdSet>());
+  log.OnUpdatedTopics(std::map<std::string, Topics>());
   EXPECT_FALSE(observer_test.registration_change_received);
   EXPECT_FALSE(observer_test.update_id_received);
   EXPECT_FALSE(observer_test.invalidation_received);
@@ -135,9 +136,9 @@ TEST(InvalidationLoggerTest, TestEmitContent) {
   EXPECT_FALSE(observer_test.detailed_status_received);
 
   observer_test.ResetStates();
-  std::map<std::string, syncer::ObjectIdSet> test_map;
-  test_map["Test"] = syncer::ObjectIdSet();
-  log.OnUpdateIds(test_map);
+  std::map<std::string, Topics> test_map;
+  test_map["Test"] = Topics();
+  log.OnUpdatedTopics(test_map);
   EXPECT_TRUE(observer_test.update_id_received);
   observer_test.ResetStates();
 
@@ -152,66 +153,66 @@ TEST(InvalidationLoggerTest, TestEmitContent) {
   log.UnregisterObserver(&observer_test);
 }
 
-// Test that the updateId notification actually sends the same ObjectId that
-// was sent to the Observer.
+// Test that the OnUpdatedTopics() notification actually sends the same Topic
+// that was sent to the Observer.
 // The ObserverTest rebuilds the map that was sent in pieces by the logger.
-TEST(InvalidationLoggerTest, TestUpdateIdsMap) {
+TEST(InvalidationLoggerTest, TestUpdatedTopicsMap) {
   InvalidationLogger log;
   InvalidationLoggerObserverTest observer_test;
-  std::map<std::string, syncer::ObjectIdSet> send_test_map;
-  std::map<std::string, syncer::ObjectIdCountMap> expected_received_map;
+  std::map<std::string, Topics> send_test_map;
+  std::map<std::string, TopicCountMap> expected_received_map;
   log.RegisterObserver(&observer_test);
 
-  syncer::ObjectIdSet sync_set_A;
-  syncer::ObjectIdCountMap counted_sync_set_A;
+  Topics topics_a;
+  TopicCountMap topics_counts_a;
 
-  ObjectId o1(1000, "DataType1");
-  sync_set_A.insert(o1);
-  counted_sync_set_A[o1] = 0;
+  Topic t1 = "Topic1";
+  topics_a.emplace(t1, TopicMetadata{/*is_public=*/false});
+  topics_counts_a[t1] = 0;
 
-  ObjectId o2(1000, "DataType2");
-  sync_set_A.insert(o2);
-  counted_sync_set_A[o2] = 0;
+  Topic t2 = "Topic2";
+  topics_a.emplace(t2, TopicMetadata{/*is_public=*/false});
+  topics_counts_a[t2] = 0;
 
-  syncer::ObjectIdSet sync_set_B;
-  syncer::ObjectIdCountMap counted_sync_set_B;
+  Topics topics_b;
+  TopicCountMap topics_counts_b;
 
-  ObjectId o3(1020, "DataTypeA");
-  sync_set_B.insert(o3);
-  counted_sync_set_B[o3] = 0;
+  Topic t3 = "Topic3";
+  topics_b.emplace(t3, TopicMetadata{/*is_public=*/false});
+  topics_counts_b[t3] = 0;
 
-  send_test_map["TestA"] = sync_set_A;
-  send_test_map["TestB"] = sync_set_B;
-  expected_received_map["TestA"] = counted_sync_set_A;
-  expected_received_map["TestB"] = counted_sync_set_B;
+  send_test_map["TestA"] = topics_a;
+  send_test_map["TestB"] = topics_b;
+  expected_received_map["TestA"] = topics_counts_a;
+  expected_received_map["TestB"] = topics_counts_b;
 
-  // Send the objects ids registered for the two different handler name.
-  log.OnUpdateIds(send_test_map);
-  EXPECT_EQ(expected_received_map, observer_test.update_id_replicated);
+  // Send the topics registered for the two different handler name.
+  log.OnUpdatedTopics(send_test_map);
+  EXPECT_EQ(expected_received_map, observer_test.updated_topics_replicated);
 
-  syncer::ObjectIdSet sync_set_B2;
-  syncer::ObjectIdCountMap counted_sync_set_B2;
+  Topics topics_b2;
+  TopicCountMap topics_counts_b2;
 
-  ObjectId o4(1020, "DataTypeF");
-  sync_set_B2.insert(o4);
-  counted_sync_set_B2[o4] = 0;
+  Topic t4 = "Topic4";
+  topics_b2.emplace(t4, TopicMetadata{/*is_public=*/false});
+  topics_counts_b2[t4] = 0;
 
-  ObjectId o5(1020, "DataTypeG");
-  sync_set_B2.insert(o5);
-  counted_sync_set_B2[o5] = 0;
+  Topic t5 = "Topic5";
+  topics_b2.emplace(t5, TopicMetadata{/*is_public=*/false});
+  topics_counts_b2[t5] = 0;
 
-  send_test_map["TestB"] = sync_set_B2;
-  expected_received_map["TestB"] = counted_sync_set_B2;
+  send_test_map["TestB"] = topics_b2;
+  expected_received_map["TestB"] = topics_counts_b2;
 
-  // Test now that if we replace the registered datatypes for TestB, the
+  // Test now that if we replace the registered topics for TestB, the
   // original don't show up again.
-  log.OnUpdateIds(send_test_map);
-  EXPECT_EQ(expected_received_map, observer_test.update_id_replicated);
+  log.OnUpdatedTopics(send_test_map);
+  EXPECT_EQ(expected_received_map, observer_test.updated_topics_replicated);
 
   // The emit content should return the same map too.
   observer_test.ResetStates();
   log.EmitContent();
-  EXPECT_EQ(expected_received_map, observer_test.update_id_replicated);
+  EXPECT_EQ(expected_received_map, observer_test.updated_topics_replicated);
   log.UnregisterObserver(&observer_test);
 }
 
@@ -222,36 +223,35 @@ TEST(InvalidationLoggerTest, TestInvalidtionsTotalCount) {
   InvalidationLoggerObserverTest observer_test;
   log.RegisterObserver(&observer_test);
 
-  std::map<std::string, syncer::ObjectIdSet> send_test_map;
-  std::map<std::string, syncer::ObjectIdCountMap> expected_received_map;
-  syncer::ObjectIdSet sync_set;
-  syncer::ObjectIdCountMap counted_sync_set;
+  std::map<std::string, Topics> send_test_map;
+  std::map<std::string, TopicCountMap> expected_received_map;
+  Topics topics;
+  TopicCountMap topics_counts;
 
-  ObjectId o1(1020, "DataTypeA");
-  sync_set.insert(o1);
-  counted_sync_set[o1] = 1;
+  Topic t1 = "Topic1";
+  topics.emplace(t1, TopicMetadata{/*is_public=*/false});
+  topics_counts[t1] = 1;
 
-  // Generate invalidation for datatype A only.
-  syncer::ObjectIdInvalidationMap fake_invalidations =
-      syncer::ObjectIdInvalidationMap::InvalidateAll(sync_set);
+  // Generate invalidation for |t1| only.
+  TopicInvalidationMap fake_invalidations;
+  fake_invalidations.Insert(Invalidation::InitUnknownVersion(t1));
 
-  ObjectId o2(1040, "DataTypeB");
-  sync_set.insert(o2);
-  counted_sync_set[o2] = 0;
+  Topic t2 = "Topic2";
+  topics.emplace(t2, TopicMetadata{/*is_public=*/false});
+  topics_counts[t2] = 0;
 
-  // Registed the two objectIds and send an invalidation only for the
-  // Datatype A.
-  send_test_map["Test"] = sync_set;
-  log.OnUpdateIds(send_test_map);
+  // Register the two Topics and send an invalidation only for |t1|.
+  send_test_map["Test"] = topics;
+  log.OnUpdatedTopics(send_test_map);
   log.OnInvalidation(fake_invalidations);
 
-  expected_received_map["Test"] = counted_sync_set;
+  expected_received_map["Test"] = topics_counts;
 
-  // Reset the state of the observer to receive the ObjectIds with the
-  // count of invalidations received (1 and 0).
+  // Reset the state of the observer to receive the Topics with the count of
+  // invalidations received (1 and 0).
   observer_test.ResetStates();
   log.EmitContent();
-  EXPECT_EQ(expected_received_map, observer_test.update_id_replicated);
+  EXPECT_EQ(expected_received_map, observer_test.updated_topics_replicated);
 
   log.UnregisterObserver(&observer_test);
 }
@@ -282,4 +282,5 @@ TEST(InvalidationLoggerTest, TestRegisteredHandlers) {
 
   log.UnregisterObserver(&observer_test);
 }
+
 }  // namespace invalidation

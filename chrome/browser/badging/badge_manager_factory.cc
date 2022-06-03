@@ -11,6 +11,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
@@ -30,7 +31,9 @@ BadgeManagerFactory* BadgeManagerFactory::GetInstance() {
 BadgeManagerFactory::BadgeManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "BadgeManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(web_app::WebAppProviderFactory::GetInstance());
+}
 
 BadgeManagerFactory::~BadgeManagerFactory() {}
 

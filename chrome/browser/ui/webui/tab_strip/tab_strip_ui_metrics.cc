@@ -21,6 +21,5 @@ void RecordTabStripUIOpenDurationHistogram(base::TimeDelta duration) {
   // closing it. Hence it's a reasonable lower bound. 1 minute is a
   // fairly arbitrary upper bound.
   UMA_HISTOGRAM_CUSTOM_TIMES("WebUITabStrip.OpenDuration", duration,
-                             base::TimeDelta::FromMilliseconds(500),
-                             base::TimeDelta::FromMinutes(1), 50);
+                             base::Milliseconds(500), base::Minutes(1), 50);
 }

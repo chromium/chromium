@@ -1,0 +1,37 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  app-header {
+    background-color: rgb(0, 134, 179);
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  iron-pages {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  iron-pages > * {
+    display: block;
+    height: 100%;
+    overflow: auto;
+  }
+
+</style>
+<app-header>
+  <app-toolbar>MultiDevice Internals</app-toolbar>
+</app-header>
+<iron-location path="{{path_}}"></iron-location>
+<cr-tabs selected="{{selectedTabIndex_}}" tab-names="[[tabNames_]]"></cr-tabs>
+<iron-pages selected="[[selectedTabIndex_]]">
+  <logging-tab></logging-tab>
+  <phonehub-tab></phonehub-tab>
+</iron-pages>

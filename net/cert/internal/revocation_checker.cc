@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "crypto/sha2.h"
 #include "net/cert/cert_net_fetcher.h"

@@ -135,8 +135,8 @@
   same-site rel=noopener and target=foo</a><br>
 <a href="navigate_opener.html" id="samesite_targeted_link" target="foo">
   same-site target=foo</a><br>
-<a href="title2.html" id="samesite_tblank_link" target="_blank">
-  same-site target=_blank</a><br>
+<a href="title2.html" id="samesite_tblank_link" rel="opener" target="_blank">
+  same-site rel=opener target=_blank</a><br>
 <a href="about:blank" id="blank_targeted_link" target="foo">
   blank_targeted_link=foo</a><br>
 
@@ -151,7 +151,7 @@
    id="noopener_and_tblank_link" rel="noopener" target="_blank">
   rel=noopener and target=_blank</a><br>
 <a href="http://REPLACE/title2.html" id="tblank_link"
-   target="_blank">target=_blank</a><br>
+   rel="opener" target="_blank">rel=opener target=_blank</a><br>
 <a href="http://REPLACE/title2.html" id="noref_link"
    rel="noreferrer">rel=noreferrer</a><br>
 <a href="http://REPLACE/title2.html" id="noopener_link"

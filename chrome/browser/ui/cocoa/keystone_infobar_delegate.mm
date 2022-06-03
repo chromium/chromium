@@ -10,10 +10,9 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +23,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -36,10 +36,10 @@ class SkBitmap;
 // static
 void KeystonePromotionInfoBarDelegate::Create(
     content::WebContents* webContents) {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(webContents);
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(webContents);
+  infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new KeystonePromotionInfoBarDelegate(
               Profile::FromBrowserContext(webContents->GetBrowserContext())
                   ->GetPrefs()))));
@@ -51,8 +51,7 @@ KeystonePromotionInfoBarDelegate::KeystonePromotionInfoBarDelegate(
       prefs_(prefs),
       can_expire_(false),
       weak_ptr_factory_(this) {
-  const base::TimeDelta kCanExpireOnNavigationAfterDelay =
-      base::TimeDelta::FromSeconds(8);
+  const base::TimeDelta kCanExpireOnNavigationAfterDelay = base::Seconds(8);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KeystonePromotionInfoBarDelegate::SetCanExpire,
@@ -77,12 +76,12 @@ bool KeystonePromotionInfoBarDelegate::ShouldExpire(
   return can_expire_ && ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
-base::string16 KeystonePromotionInfoBarDelegate::GetMessageText() const {
+std::u16string KeystonePromotionInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringFUTF16(IDS_PROMOTE_INFOBAR_TEXT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 }
 
-base::string16 KeystonePromotionInfoBarDelegate::GetButtonLabel(
+std::u16string KeystonePromotionInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ?
       IDS_PROMOTE_INFOBAR_PROMOTE_BUTTON : IDS_PROMOTE_INFOBAR_DONT_ASK_BUTTON);
@@ -156,7 +155,7 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
 - (void)updateStatus:(NSNotification*)notification {
   NSDictionary* dictionary = [notification userInfo];
   AutoupdateStatus status = static_cast<AutoupdateStatus>(
-      [[dictionary objectForKey:kAutoupdateStatusStatus] intValue]);
+      [dictionary[kAutoupdateStatusStatus] intValue]);
 
   if (status == kAutoupdateNone || status == kAutoupdateRegistering) {
     return;

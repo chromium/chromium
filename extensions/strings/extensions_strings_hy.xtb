@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Չհաջողվեց ստեղծել պատահական RSA մասնավոր բանալին:</translation>
 <translation id="1445572445564823378">Այս ընդլայնումը ծանրացնում է <ph name="PRODUCT_NAME" />-ը: Դուք պետք է անջատեք այն՝ <ph name="PRODUCT_NAME" />-ի կատարողականությունը վերականգնելու համար:</translation>
 <translation id="1468038450257740950">WebGL-ը չի աջակցվում:</translation>
-<translation id="149347756975725155">Չհաջողվեց բեռնել ընդլայնման «<ph name="ICON" />» պատկերակը:</translation>
 <translation id="1803557475693955505">Չհաջողվեց բեռնել հետնաշերտի էջը` «<ph name="BACKGROUND_PAGE" />»:</translation>
 <translation id="2159915644201199628">Չհաջողվեց ապակոդավորել պատկերը` «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">Տեղայնացումն օգտագործվում է, սակայն մանիֆեստում նշված չէ default_locale հատկանիշը:</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Չհաջողվեց կարդալ մասնավոր բանալին:</translation>
 <translation id="6391538222494443604">Մուտքային գրացուցակը պետք է առկա լինի:</translation>
 <translation id="641087317769093025">Չհաջողվեց դուրս բերել ընդլայնումը</translation>
-<translation id="6413453408918378296">«<ph name="ICON" />» պատկերակը բավականաչափ տեսանելի չէ։</translation>
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» հավելվածը մուտքի թույլտվություն է խնդրում ձեր սարքերից մեկի կամ մի քանիսի համար՝</translation>
 <translation id="657064425229075395">Չհաջողվեց բեռնել «<ph name="BACKGROUND_SCRIPT" />» հետնաշերտի սկրիպտը:</translation>
 <translation id="6580950983454333167">Արտադրանք՝ <ph name="PRODUCT_NAME" />, վաճառող՝ <ph name="VENDOR_NAME" /> (սերիական համարը՝ <ph name="SERIAL_NUMBER" />)</translation>

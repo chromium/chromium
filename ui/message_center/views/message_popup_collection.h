@@ -6,13 +6,21 @@
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_COLLECTION_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/notification_view_controller.h"
+#include "ui/message_center/views/message_view.h"
 #include "ui/views/widget/widget.h"
+
+namespace base {
+class OneShotTimer;
+}  // namespace base
 
 namespace gfx {
 class LinearAnimation;
@@ -32,9 +40,13 @@ class PopupAlignmentDelegate;
 // screen. Manages animation state and updates these popup widgets.
 class MESSAGE_CENTER_EXPORT MessagePopupCollection
     : public MessageCenterObserver,
+      public NotificationViewController,
       public gfx::AnimationDelegate {
  public:
   MessagePopupCollection();
+  MessagePopupCollection(const MessagePopupCollection& other) = delete;
+  MessagePopupCollection& operator=(const MessagePopupCollection& other) =
+      delete;
   ~MessagePopupCollection() override;
 
   // Update popups based on current |state_|.
@@ -48,7 +60,17 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   void NotifyPopupResized();
 
   // Notify the popup is closed. Called from MessagePopupView.
-  void NotifyPopupClosed(MessagePopupView* popup);
+  virtual void NotifyPopupClosed(MessagePopupView* popup);
+
+  // NotificationViewController:
+  MessageView* GetMessageViewForNotificationId(
+      const std::string& notification_id) override;
+  void ConvertNotificationViewToGroupedNotificationView(
+      const std::string& ungrouped_notification_id,
+      const std::string& new_grouped_notification_id) override;
+  void ConvertGroupedNotificationViewToNotificationView(
+      const std::string& grouped_notification_id,
+      const std::string& new_single_notification_id) override;
 
   // MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
@@ -104,8 +126,32 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // display.
   virtual bool IsPrimaryDisplayForNotification() const = 0;
 
-  // virtual for testing.
+  // Returns true if |notification| should be blocked because this display to
+  // show the notification is fullscreen. If all (1 of 1, or n of n) displays
+  // are fullscreen, the notification will already be blocked by the associated
+  // FullscreenNotificationBlocker, but this function is required for the case
+  // where there are multiple displays, and the notification should be blocked
+  // on those that are fullscreen, but displayed on the others.
+  //
+  // This function can return false when only a single display is supported
+  // since FullscreenNotificationBlocker will have already blocked anything.
+  virtual bool BlockForMixedFullscreen(
+      const Notification& notification) const = 0;
+
+  // Called when a new popup item is added.
+  virtual void NotifyPopupAdded(MessagePopupView* popup) {}
+  // Called with |notification_id| when a popup is marked to be removed.
+  virtual void NotifyPopupRemoved(const std::string& notification_id) {}
+
+  // Called when popup animation is started/finished.
+  virtual void AnimationStarted() {}
+  virtual void AnimationFinished() {}
+
+  // TODO(crbug/1241602): std::unique_ptr can be used here and multiple other
+  // places.
   virtual MessagePopupView* CreatePopup(const Notification& notification);
+
+  // virtual for testing.
   virtual void RestartPopupTimers();
   virtual void PausePopupTimers();
 
@@ -178,6 +224,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Update bounds and opacity of popups during animation.
   void UpdateByAnimation();
 
+  // Get popup notifications in sort order from MessageCenter, filtered for any
+  // that should not show on this display.
+  std::vector<Notification*> GetPopupNotifications() const;
+
   // Add a new popup to |popup_items_| for FADE_IN animation.
   // Return true if a popup is actually added. It may still return false when
   // HasAddedPopup() return true by the lack of work area to show popup.
@@ -207,6 +257,11 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   void ClosePopupsOutsideWorkArea();
   void RemoveClosedPopupItems();
 
+  // Returns true if all the animating popups are at the beginning of the
+  // collection or the queue is empty. Returns false only if there is an
+  // animating popup after a non-animating one.
+  bool AreAllAnimatingPopupsFirst() const;
+
   // Stops all the animation and closes all the popups immediately.
   void CloseAllPopupsNow();
 
@@ -221,12 +276,16 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   // Return true if any popup is hovered by mouse.
   bool IsAnyPopupHovered() const;
-  // Return true if any popup is activated.
-  bool IsAnyPopupActive() const;
+  // Return true if any popup is focused.
+  bool IsAnyPopupFocused() const;
 
   // Returns the popup which is visually |index_from_top|-th from the top.
   // When |inverse_| is false, it's same as popup_items_[i].
   PopupItem* GetPopupItem(size_t index_from_top);
+
+  // Reset |recently_closed_by_user_| to false. Used by
+  // |recently_closed_by_user_timer_|
+  void ResetRecentlyClosedByUser();
 
   // Animation state. See the comment of State.
   State state_ = State::IDLE;
@@ -252,6 +311,14 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   // Hot mode related variables. See StartHotMode() and ResetHotMode().
 
+  // True if a notification is just closed by an user and hot mode should start.
+  // After a brief moment, this boolean will be set to false by the timer.
+  bool recently_closed_by_user_ = false;
+
+  // Timer that fires to reset |recently_closed_by_user_| to false, indicating
+  // that we should not start hot mode.
+  std::unique_ptr<base::OneShotTimer> recently_closed_by_user_timer_;
+
   // True if the close button of the popup at |hot_index_| is hot.
   bool is_hot_ = false;
 
@@ -273,9 +340,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   //   * a notification comes out: FADE_OUT
   bool inverse_ = false;
 
-  base::WeakPtrFactory<MessagePopupCollection> weak_ptr_factory_{this};
+  base::ScopedObservation<MessageCenter, MessageCenterObserver>
+      message_center_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupCollection);
+  base::WeakPtrFactory<MessagePopupCollection> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

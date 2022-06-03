@@ -1,3 +1,0 @@
-This test verifies that children can be removed by their parent element's onscroll event handler. The test succeeds if this is the only text remaining after the two scroll events are dispatched. The test fails if the inner div remains in the output or if WebKit crashes.
-
-

@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/menu/menu_pre_target_handler_aura.h"
 
+#include <memory>
+
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/views/controls/menu/menu_controller.h"

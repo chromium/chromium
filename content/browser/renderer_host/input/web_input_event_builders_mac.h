@@ -6,11 +6,11 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_WEB_INPUT_EVENT_BUILDERS_MAC_H_
 
 #include "content/common/content_export.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/platform/web_keyboard_event.h"
-#include "third_party/blink/public/platform/web_mouse_wheel_event.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 
 @class NSEvent;
 @class NSView;
@@ -19,7 +19,15 @@ namespace content {
 
 class CONTENT_EXPORT WebKeyboardEventBuilder {
  public:
-  static blink::WebKeyboardEvent Build(NSEvent* event);
+  // TODO(bokan): Temporarily added the |record_debug_uma| param to help debug
+  // https://crbug.com/1039833. This parameter controls whether
+  // Event.Latency.OS_NO_VALIDATION metrics are collected for the key event.
+  // The purpose is to limit this to only those events that are being handled
+  // synchronously from the OS message loop since we can reinject the same
+  // NSEvent back into the app multiple times; we want to record this stat only
+  // the first time the event was received.
+  static blink::WebKeyboardEvent Build(NSEvent* event,
+                                       bool record_debug_uma = false);
 };
 
 class CONTENT_EXPORT WebMouseEventBuilder {
@@ -28,7 +36,8 @@ class CONTENT_EXPORT WebMouseEventBuilder {
       NSEvent* event,
       NSView* view,
       blink::WebPointerProperties::PointerType pointerType =
-          blink::WebPointerProperties::PointerType::kMouse);
+          blink::WebPointerProperties::PointerType::kMouse,
+      bool unacceleratedMovement = false);
 };
 
 class CONTENT_EXPORT WebMouseWheelEventBuilder {

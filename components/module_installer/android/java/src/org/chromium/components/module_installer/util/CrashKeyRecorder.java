@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
 import android.text.TextUtils;
 
 import com.google.android.play.core.splitinstall.SplitInstallManager;
@@ -34,17 +33,14 @@ class CrashKeyRecorder {
         // Get modules that are fully installed as split APKs (excluding base which is always
         // installed). Tree set to have ordered and, thus, deterministic results.
         Set<String> fullyInstalledModules = new TreeSet<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Split APKs are only supported on Android L+.
-            try {
-                PackageManager pm = context.getPackageManager();
-                PackageInfo packageInfo = pm.getPackageInfo(BuildInfo.getInstance().packageName, 0);
-                if (packageInfo.splitNames != null) {
-                    fullyInstalledModules.addAll(Arrays.asList(packageInfo.splitNames));
-                }
-            } catch (NameNotFoundException e) {
-                throw new RuntimeException(e);
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(BuildInfo.getInstance().packageName, 0);
+            if (packageInfo.splitNames != null) {
+                fullyInstalledModules.addAll(Arrays.asList(packageInfo.splitNames));
             }
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException(e);
         }
 
         // Create temporary split install manager to retrieve both fully installed and emulated

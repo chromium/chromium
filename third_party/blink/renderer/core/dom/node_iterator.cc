@@ -199,7 +199,7 @@ void NodeIterator::UpdateForNodeRemoval(Node& removed_node,
   }
 }
 
-void NodeIterator::Trace(Visitor* visitor) {
+void NodeIterator::Trace(Visitor* visitor) const {
   visitor->Trace(reference_node_);
   visitor->Trace(candidate_node_);
   ScriptWrappable::Trace(visitor);

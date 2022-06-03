@@ -21,7 +21,7 @@ class TestChannelListener : public Listener {
   static const size_t kLongMessageStringNumBytes = 50000;
   static void SendOneMessage(Sender* sender, const char* text);
 
-  TestChannelListener() : sender_(NULL), messages_left_(50) {}
+  TestChannelListener() : sender_(nullptr), messages_left_(50) {}
   ~TestChannelListener() override {}
 
   bool OnMessageReceived(const Message& message) override;

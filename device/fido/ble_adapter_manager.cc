@@ -7,16 +7,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/fido/ble/fido_ble_device.h"
 
 namespace device {
 
 BleAdapterManager::BleAdapterManager(FidoRequestHandlerBase* request_handler)
     : request_handler_(request_handler) {
-  BluetoothAdapterFactory::Get().GetAdapter(
+  BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&BleAdapterManager::Start, weak_factory_.GetWeakPtr()));
 }
 
@@ -26,7 +24,6 @@ BleAdapterManager::~BleAdapterManager() {
 
   if (adapter_) {
     adapter_->RemoveObserver(this);
-    pairing_delegate_.CancelPairingOnAllKnownDevices(adapter_.get());
   }
 }
 
@@ -37,55 +34,9 @@ void BleAdapterManager::SetAdapterPower(bool set_power_on) {
   adapter_->SetPowered(set_power_on, base::DoNothing(), base::DoNothing());
 }
 
-void BleAdapterManager::InitiatePairing(std::string authenticator_id,
-                                        base::Optional<std::string> pin_code,
-                                        base::OnceClosure success_callback,
-                                        base::OnceClosure error_callback) {
-  DCHECK(adapter_);
-  auto device_list = adapter_->GetDevices();
-  auto device_it = std::find_if(
-      device_list.begin(), device_list.end(),
-      [&authenticator_id](const auto& bluetooth_device) {
-        return FidoBleDevice::GetIdForAddress(bluetooth_device->GetAddress()) ==
-               authenticator_id;
-      });
-
-  if (device_it == device_list.end() ||
-      !request_handler_->HasAuthenticator(authenticator_id)) {
-    std::move(error_callback).Run();
-    return;
-  }
-
-  // Devices that pair using the 'Just Works' method may expect a passkey set
-  // to zero.
-  const std::string pin = pin_code ? std::move(*pin_code) : "0";
-
-  pairing_delegate_.StoreBlePinCodeForDevice(std::move(authenticator_id),
-                                             std::move(pin));
-
-  BluetoothDevice::ConnectErrorCallback failure_callback = base::BindOnce(
-      [](base::OnceClosure callback,
-         BluetoothDevice::ConnectErrorCode error_code) {
-        std::move(callback).Run();
-      },
-      std::move(error_callback));
-
-  (*device_it)
-      ->Pair(&pairing_delegate_, std::move(success_callback),
-             std::move(failure_callback));
-}
-
 void BleAdapterManager::AdapterPoweredChanged(BluetoothAdapter* adapter,
                                               bool powered) {
   request_handler_->OnBluetoothAdapterPowerChanged(powered);
-}
-
-void BleAdapterManager::DeviceAddressChanged(BluetoothAdapter* adapter,
-                                             BluetoothDevice* device,
-                                             const std::string& old_address) {
-  pairing_delegate_.ChangeStoredDeviceAddress(
-      FidoBleDevice::GetIdForAddress(old_address),
-      FidoBleDevice::GetIdForAddress(device->GetAddress()));
 }
 
 void BleAdapterManager::Start(scoped_refptr<BluetoothAdapter> adapter) {
@@ -95,7 +46,8 @@ void BleAdapterManager::Start(scoped_refptr<BluetoothAdapter> adapter) {
   adapter_->AddObserver(this);
 
   request_handler_->OnBluetoothAdapterEnumerated(
-      adapter_->IsPresent(), adapter_->IsPowered(), adapter_->CanPower());
+      adapter_->IsPresent(), adapter_->IsPowered(), adapter_->CanPower(),
+      adapter_->IsPeripheralRoleSupported());
 }
 
 }  // namespace device

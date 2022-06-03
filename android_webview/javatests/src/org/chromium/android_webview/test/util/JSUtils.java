@@ -6,12 +6,14 @@ package org.chromium.android_webview.test.util;
 
 import android.app.Instrumentation;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
@@ -33,20 +35,16 @@ public class JSUtils {
             final AwContents awContents,
             final OnEvaluateJavaScriptResultHelper onEvaluateJavaScriptResultHelper,
             final String linkId) {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                try {
-                    String linkIsNotNull = executeJavaScriptAndWaitForResult(instrumentation,
-                            awContents, onEvaluateJavaScriptResultHelper,
-                            "document.getElementById('" + linkId + "') != null");
-                    return linkIsNotNull.equals("true");
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                    Assert.fail("Failed to check if DOM is loaded: " + t.toString());
-                    return false;
-                }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            String linkIsNotNull = null;
+            try {
+                linkIsNotNull = executeJavaScriptAndWaitForResult(instrumentation, awContents,
+                        onEvaluateJavaScriptResultHelper,
+                        "document.getElementById('" + linkId + "') != null");
+            } catch (Throwable t) {
+                throw new CriteriaNotSatisfiedException(t);
             }
+            Criteria.checkThat(linkIsNotNull, Matchers.is("true"));
         }, WAIT_TIMEOUT_MS, CHECK_INTERVAL);
 
         // clang-format off

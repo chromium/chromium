@@ -25,9 +25,9 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
@@ -48,6 +48,10 @@ class RendererDnsPrefetch {
   // expected to outlive instances of this class. It is safe to delete
   // instances of this class when |batch_handler| is called.
   explicit RendererDnsPrefetch(BatchHandler batch_handler);
+
+  RendererDnsPrefetch(const RendererDnsPrefetch&) = delete;
+  RendererDnsPrefetch& operator=(const RendererDnsPrefetch&) = delete;
+
   ~RendererDnsPrefetch();
 
   // Push a name into the queue to be resolved.
@@ -118,8 +122,6 @@ class RendererDnsPrefetch {
   int numeric_ip_discard_count_;
 
   base::WeakPtrFactory<RendererDnsPrefetch> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererDnsPrefetch);
 };  // class RendererDnsPrefetch
 
 }  // namespace network_hints

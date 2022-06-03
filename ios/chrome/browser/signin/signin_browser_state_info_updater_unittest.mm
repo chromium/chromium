@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -64,7 +63,7 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
             browser_state_path()) {
     browser_state_info()->AddBrowserState(browser_state_path(),
                                           /*gaia_id=*/std::string(),
-                                          /*username=*/base::string16());
+                                          /*username=*/std::u16string());
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -104,8 +103,8 @@ TEST_F(SigninBrowserStateInfoUpdaterTest, SigninSignout) {
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
 
   // Signin.
-  AccountInfo account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(kEmail);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
@@ -130,8 +129,8 @@ TEST_F(SigninBrowserStateInfoUpdaterTest, AuthError) {
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));
 
   // Signin.
-  AccountInfo account_info =
-      identity_test_env()->MakePrimaryAccountAvailable(kEmail);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(
       browser_state_info()->BrowserStateIsAuthenticatedAtIndex(cache_index));

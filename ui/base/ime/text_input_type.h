@@ -7,8 +7,9 @@
 
 namespace ui {
 
-// Intentionally keep sync with blink::WebTextInputType defined in:
-// third_party/WebKit/public/platform/WebTextInputType.h
+// TextInputType is the enum type representing every type of text input fields.
+// TextInputType should include all types defined in blink::WebTextInputType
+// defined in: third_party/WebKit/public/platform/WebTextInputType.h
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base.ime
@@ -44,7 +45,14 @@ enum TextInputType {
   // for on-screen keyboard.
   TEXT_INPUT_TYPE_DATE_TIME_FIELD,
 
-  TEXT_INPUT_TYPE_MAX = TEXT_INPUT_TYPE_DATE_TIME_FIELD,
+  // Input caret is in an editable node which doesn't support rich editing.
+  // It means that the editable node cannot support the features like candidate
+  // texts and retrieving text around cursor.
+  // However, it still can process raw key events and needs the on-screen
+  // keyboard if it wants.
+  TEXT_INPUT_TYPE_NULL,
+
+  TEXT_INPUT_TYPE_MAX = TEXT_INPUT_TYPE_NULL,
 };
 
 }  // namespace ui

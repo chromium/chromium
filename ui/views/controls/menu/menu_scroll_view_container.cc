@@ -4,11 +4,22 @@
 
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 
-#include "base/macros.h"
+#include <algorithm>
+#include <memory>
+#include <utility>
+
+#include "base/callback_helpers.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
@@ -19,9 +30,8 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/round_rect_painter.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-
-using ui::NativeTheme;
 
 namespace views {
 
@@ -37,16 +47,23 @@ static constexpr int kBorderPaddingDueToRoundedCorners = 1;
 
 class MenuScrollButton : public View {
  public:
+  METADATA_HEADER(MenuScrollButton);
   MenuScrollButton(SubmenuView* host, bool is_up)
       : host_(host),
         is_up_(is_up),
         // Make our height the same as that of other MenuItemViews.
-        pref_height_(MenuItemView::pref_menu_height()) {
-  }
+        pref_height_(MenuItemView::pref_menu_height()) {}
+  MenuScrollButton(const MenuScrollButton&) = delete;
+  MenuScrollButton& operator=(const MenuScrollButton&) = delete;
 
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(MenuConfig::instance().scroll_arrow_height * 2 - 1,
                      pref_height_);
+  }
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    arrow_color_ = GetColorProvider()->GetColor(ui::kColorMenuItemForeground);
   }
 
   bool CanDrop(const OSExchangeData& data) override {
@@ -69,8 +86,13 @@ class MenuScrollButton : public View {
     host_->GetMenuItem()->GetMenuController()->OnDragExitedScrollButton(host_);
   }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
-    return ui::DragDropTypes::DRAG_NONE;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override {
+    return ui::mojom::DragOperation::kNone;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return base::DoNothing();
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -78,10 +100,10 @@ class MenuScrollButton : public View {
 
     // The background.
     gfx::Rect item_bounds(0, 0, width(), height());
-    NativeTheme::ExtraParams extra;
+    ui::NativeTheme::ExtraParams extra;
     GetNativeTheme()->Paint(canvas->sk_canvas(),
-                            NativeTheme::kMenuItemBackground,
-                            NativeTheme::kNormal, item_bounds, extra);
+                            ui::NativeTheme::kMenuItemBackground,
+                            ui::NativeTheme::kNormal, item_bounds, extra);
 
     // Then the arrow.
     int x = width() / 2;
@@ -106,7 +128,7 @@ class MenuScrollButton : public View {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(config.arrow_color);
+    flags.setColor(arrow_color_);
     canvas->DrawPath(path, flags);
   }
 
@@ -120,8 +142,12 @@ class MenuScrollButton : public View {
   // Preferred height.
   int pref_height_;
 
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollButton);
+  // Color for the arrow to scroll.
+  SkColor arrow_color_;
 };
+
+BEGIN_METADATA(MenuScrollButton, View)
+END_METADATA
 
 }  // namespace
 
@@ -137,9 +163,12 @@ class MenuScrollButton : public View {
 
 class MenuScrollViewContainer::MenuScrollView : public View {
  public:
-  explicit MenuScrollView(View* child) {
+  METADATA_HEADER(MenuScrollView);
+  MenuScrollView(View* child, MenuScrollViewContainer* owner) : owner_(owner) {
     AddChildView(child);
   }
+  MenuScrollView(const MenuScrollView&) = delete;
+  MenuScrollView& operator=(const MenuScrollView&) = delete;
 
   void ScrollRectToVisible(const gfx::Rect& rect) override {
     // NOTE: this assumes we only want to scroll in the y direction.
@@ -158,17 +187,36 @@ class MenuScrollViewContainer::MenuScrollView : public View {
     // Convert rect.y() to view's coordinates and make sure we don't show past
     // the bottom of the view.
     View* child = GetContents();
-    child->SetY(-std::max(0, std::min(
-        child->GetPreferredSize().height() - this->height(),
-        dy - child->y())));
+    int old_y = child->y();
+    int y = -std::max(
+        0, std::min(child->GetPreferredSize().height() - this->height(),
+                    dy - child->y()));
+    child->SetY(y);
+
+    const int min_y = 0;
+    const int max_y = -(child->GetPreferredSize().height() - this->height());
+
+    if (old_y == min_y && old_y != y)
+      owner_->DidScrollAwayFromTop();
+    if (old_y == max_y && old_y != y)
+      owner_->DidScrollAwayFromBottom();
+
+    if (y == min_y)
+      owner_->DidScrollToTop();
+    if (y == max_y)
+      owner_->DidScrollToBottom();
   }
 
   // Returns the contents, which is the SubmenuView.
   View* GetContents() { return children().front(); }
+  const View* GetContents() const { return children().front(); }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollView);
+  MenuScrollViewContainer* owner_;
 };
+
+BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
+END_METADATA
 
 // MenuScrollViewContainer ----------------------------------------------------
 
@@ -180,11 +228,12 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   scroll_up_button_ =
       AddChildView(std::make_unique<MenuScrollButton>(content_view, true));
 
-  scroll_view_ = AddChildView(std::make_unique<MenuScrollView>(content_view));
-  scroll_view_->SetProperty(views::kFlexBehaviorKey,
-                            views::FlexSpecification::ForSizeRule(
-                                views::MinimumFlexSizeRule::kScaleToMinimum,
-                                views::MaximumFlexSizeRule::kUnbounded));
+  scroll_view_ =
+      AddChildView(std::make_unique<MenuScrollView>(content_view, this));
+  scroll_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   scroll_down_button_ =
       AddChildView(std::make_unique<MenuScrollButton>(content_view, false));
@@ -192,6 +241,9 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   arrow_ = BubbleBorderTypeFromAnchor(
       content_view_->GetMenuItem()->GetMenuController()->GetAnchorPosition());
 
+  // The correct insets must be set before returning, since the menu creation
+  // code needs to know the final size of the menu.  Calling CreateBorder() is
+  // the easiest way to do that.
   CreateBorder();
 }
 
@@ -212,14 +264,16 @@ gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
   prefsize.Enlarge(insets.width(), insets.height());
   const MenuConfig& config = MenuConfig::instance();
   // Leave space for the menu border, below the footnote.
-  if (GetFootnote() && config.use_outer_border && !HasBubbleBorder())
+  if (GetFootnote() && config.use_outer_border && !HasBubbleBorder() &&
+      !config.win11_style_menus) {
     prefsize.Enlarge(0, 1);
+  }
   return prefsize;
 }
 
 void MenuScrollViewContainer::OnThemeChanged() {
-  if (!HasBubbleBorder())
-    CreateDefaultBorder();
+  View::OnThemeChanged();
+  CreateBorder();
 }
 
 void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
@@ -229,30 +283,62 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
   }
 
   gfx::Rect bounds(0, 0, width(), height());
-  NativeTheme::ExtraParams extra;
+  ui::NativeTheme::ExtraParams extra;
   const MenuConfig& menu_config = MenuConfig::instance();
   extra.menu_background.corner_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
   GetNativeTheme()->Paint(canvas->sk_canvas(),
-      NativeTheme::kMenuPopupBackground, NativeTheme::kNormal, bounds, extra);
+                          ui::NativeTheme::kMenuPopupBackground,
+                          ui::NativeTheme::kNormal, bounds, extra);
 }
 
 void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Get the name from the submenu view.
   content_view_->GetAccessibleNodeData(node_data);
+
+  // On macOS, NSMenus are not supposed to have anything wrapped around them. To
+  // allow VoiceOver to recognize this as a menu and to read aloud the total
+  // number of items inside it, we ignore the MenuScrollViewContainer (which
+  // holds the menu itself: the SubmenuView).
+#if defined(OS_MAC)
+  node_data->role = ax::mojom::Role::kNone;
+#else
   node_data->role = ax::mojom::Role::kMenuBar;
+#endif
 }
 
 void MenuScrollViewContainer::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
-  const bool scroll_buttons_visible =
-      scroll_view_->GetContents()->GetPreferredSize().height() > height();
-  scroll_up_button_->SetVisible(scroll_buttons_visible);
-  scroll_down_button_->SetVisible(scroll_buttons_visible);
+  // When the bounds on the MenuScrollViewContainer itself change, the scroll
+  // offset is always reset to 0, so always hide the scroll-up control, and only
+  // show the scroll-down control if it's going to be useful.
+  scroll_up_button_->SetVisible(false);
+  scroll_down_button_->SetVisible(
+      scroll_view_->GetContents()->GetPreferredSize().height() > height());
+
+  const bool any_scroll_button_visible =
+      scroll_up_button_->GetVisible() || scroll_down_button_->GetVisible();
+
   MenuItemView* const footnote = GetFootnote();
   if (footnote)
-    footnote->SetCornerRadius(scroll_buttons_visible ? 0 : corner_radius_);
+    footnote->SetCornerRadius(any_scroll_button_visible ? 0 : corner_radius_);
   InvalidateLayout();
+}
+
+void MenuScrollViewContainer::DidScrollToTop() {
+  scroll_up_button_->SetVisible(false);
+}
+
+void MenuScrollViewContainer::DidScrollToBottom() {
+  scroll_down_button_->SetVisible(false);
+}
+
+void MenuScrollViewContainer::DidScrollAwayFromTop() {
+  scroll_up_button_->SetVisible(true);
+}
+
+void MenuScrollViewContainer::DidScrollAwayFromBottom() {
+  scroll_down_button_->SetVisible(true);
 }
 
 void MenuScrollViewContainer::CreateBorder() {
@@ -264,16 +350,11 @@ void MenuScrollViewContainer::CreateBorder() {
 
 void MenuScrollViewContainer::CreateDefaultBorder() {
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
-  bubble_border_ = nullptr;
 
   const MenuConfig& menu_config = MenuConfig::instance();
-  const ui::NativeTheme* native_theme = GetNativeTheme();
-  bool use_outer_border =
-      menu_config.use_outer_border ||
-      (native_theme && native_theme->UsesHighContrastColors());
   corner_radius_ = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
-  int padding = use_outer_border && corner_radius_ > 0
+  int padding = menu_config.use_outer_border && corner_radius_ > 0
                     ? kBorderPaddingDueToRoundedCorners
                     : 0;
 
@@ -286,15 +367,20 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
-  if (use_outer_border) {
-    SkColor color = GetNativeTheme()
-                        ? GetNativeTheme()->GetSystemColor(
-                              ui::NativeTheme::kColorId_MenuBorderColor)
-                        : gfx::kPlaceholderColor;
-    SetBorder(views::CreateBorderPainter(
-        std::make_unique<views::RoundRectPainter>(color, corner_radius_),
-        gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
-                    horizontal_inset)));
+  if (menu_config.use_outer_border) {
+    if (menu_config.win11_style_menus &&
+        menu_config.CornerRadiusForMenu(
+            content_view_->GetMenuItem()->GetMenuController())) {
+      CreateBubbleBorder();
+    } else {
+      SkColor color = GetWidget()
+                          ? GetColorProvider()->GetColor(ui::kColorMenuBorder)
+                          : gfx::kPlaceholderColor;
+      SetBorder(views::CreateBorderPainter(
+          std::make_unique<views::RoundRectPainter>(color, corner_radius_),
+          gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
+                      horizontal_inset)));
+    }
   } else {
     SetBorder(CreateEmptyBorder(vertical_inset, horizontal_inset, bottom_inset,
                                 horizontal_inset));
@@ -302,15 +388,20 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
-  const SkColor color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_MenuBorderColor);
-  bubble_border_ = new BubbleBorder(arrow_, BubbleBorder::SMALL_SHADOW, color);
+  const MenuConfig& menu_config = MenuConfig::instance();
+  const int border_radius = menu_config.CornerRadiusForMenu(
+      content_view_->GetMenuItem()->GetMenuController());
+  const SkColor color =
+      GetWidget() ? GetColorProvider()->GetColor(ui::kColorMenuBackground)
+                  : gfx::kPlaceholderColor;
+  auto bubble_border = std::make_unique<BubbleBorder>(
+      arrow_, BubbleBorder::STANDARD_SHADOW, color);
   if (content_view_->GetMenuItem()
           ->GetMenuController()
-          ->use_touchable_layout()) {
-    const MenuConfig& menu_config = MenuConfig::instance();
-    bubble_border_->SetCornerRadius(menu_config.touchable_corner_radius);
-    bubble_border_->set_md_shadow_elevation(
+          ->use_touchable_layout() ||
+      border_radius > 0) {
+    bubble_border->SetCornerRadius(border_radius);
+    bubble_border->set_md_shadow_elevation(
         menu_config.touchable_menu_shadow_elevation);
     gfx::Insets insets(menu_config.vertical_touchable_menu_item_padding, 0);
     if (GetFootnote())
@@ -318,26 +409,30 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     scroll_view_->GetContents()->SetBorder(CreateEmptyBorder(insets));
   }
 
-  corner_radius_ = bubble_border_->corner_radius();
+  corner_radius_ = bubble_border->corner_radius();
 
-  SetBorder(std::unique_ptr<Border>(bubble_border_));
-  SetBackground(std::make_unique<BubbleBackground>(bubble_border_));
+  SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
+  SetBorder(std::move(bubble_border));
 }
 
 BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(
     MenuAnchorPosition anchor) {
   switch (anchor) {
-    case MenuAnchorPosition::kBubbleAbove:
+    case MenuAnchorPosition::kTopLeft:
+    case MenuAnchorPosition::kTopRight:
+    case MenuAnchorPosition::kBottomCenter:
+      return BubbleBorder::NONE;
+    case MenuAnchorPosition::kBubbleTopLeft:
+    case MenuAnchorPosition::kBubbleTopRight:
     case MenuAnchorPosition::kBubbleLeft:
     case MenuAnchorPosition::kBubbleRight:
+    case MenuAnchorPosition::kBubbleBottomLeft:
+    case MenuAnchorPosition::kBubbleBottomRight:
       return BubbleBorder::FLOAT;
-    default:
-      return BubbleBorder::NONE;
   }
 }
 
-BEGIN_METADATA(MenuScrollViewContainer)
-METADATA_PARENT_CLASS(View)
-END_METADATA()
+BEGIN_METADATA(MenuScrollViewContainer, View)
+END_METADATA
 
 }  // namespace views

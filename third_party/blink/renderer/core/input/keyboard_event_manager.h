@@ -5,10 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_KEYBOARD_EVENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_KEYBOARD_EVENT_MANAGER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/platform/web_focus_type.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -19,6 +17,7 @@ namespace blink {
 
 class KeyboardEvent;
 class LocalFrame;
+class Node;
 class ScrollManager;
 class WebKeyboardEvent;
 
@@ -29,14 +28,16 @@ class CORE_EXPORT KeyboardEventManager final
  public:
   static const int kAccessKeyModifiers =
 // TODO(crbug.com/618397): Add a settings to control this behavior.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       WebInputEvent::kControlKey | WebInputEvent::kAltKey;
 #else
       WebInputEvent::kAltKey;
 #endif
 
   KeyboardEventManager(LocalFrame&, ScrollManager&);
-  void Trace(blink::Visitor*);
+  KeyboardEventManager(const KeyboardEventManager&) = delete;
+  KeyboardEventManager& operator=(const KeyboardEventManager&) = delete;
+  void Trace(Visitor*) const;
 
   bool HandleAccessKey(const WebKeyboardEvent&);
   WebInputEventResult KeyEvent(const WebKeyboardEvent&);
@@ -45,6 +46,8 @@ class CORE_EXPORT KeyboardEventManager final
   void CapsLockStateMayHaveChanged();
   static WebInputEvent::Modifiers GetCurrentModifierState();
   static bool CurrentCapsLockState();
+
+  bool is_handling_key_event() const { return is_handling_key_event_; }
 
  private:
   friend class Internals;
@@ -58,13 +61,12 @@ class CORE_EXPORT KeyboardEventManager final
   void DefaultEnterEventHandler(KeyboardEvent*);
   void DefaultImeSubmitHandler(KeyboardEvent*);
   void DefaultArrowEventHandler(KeyboardEvent*, Node*);
-  bool DefaultSpatNavBackEventHandler(KeyboardEvent*);
 
   const Member<LocalFrame> frame_;
 
   Member<ScrollManager> scroll_manager_;
 
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEventManager);
+  bool is_handling_key_event_ = false;
 };
 
 }  // namespace blink

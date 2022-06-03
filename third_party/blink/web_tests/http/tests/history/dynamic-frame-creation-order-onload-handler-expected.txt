@@ -7,6 +7,8 @@ This page dynamically (e.g. from javascript) creates 2 subframes:
     
 The tricky part is that the order of subframe creation changes at each load (via sessionStorage.pageLoadCount). This can confuse the browser into restoring (after back navigation) green.htm into left frame and red.htm into right frame.
 
+This test expects to reset and reload iframes on main frame's back navigation. Back-forward cache needs to be disabled to run this test.
+
 Frame creation order during this page load:
 
 Created <iframe class="left" src="resources/red.html"></iframe>

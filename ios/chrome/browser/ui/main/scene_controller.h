@@ -7,15 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-
-@protocol MainControllerGuts;
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
 // The controller object for a scene. Reacts to scene state changes.
-@interface SceneController
-    : NSObject <SceneStateObserver, ApplicationCommands, BrowsingDataCommands>
+@interface SceneController : NSObject <SceneStateObserver,
+                                       ApplicationCommands,
+                                       TabSwitching,
+                                       ConnectionInformation,
+                                       TabOpening,
+                                       WebStateListObserving>
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithSceneState:(SceneState*)sceneState
@@ -24,12 +29,24 @@
 // The state of the scene controlled by this object.
 @property(nonatomic, weak, readonly) SceneState* sceneState;
 
-// Returns whether the scene is showing or partially showing the
-// incognito panel.
-@property(nonatomic, assign, readonly) BOOL incognitoContentVisible;
+// The interface provider for this scene.
+@property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
+    interfaceProvider;
 
-// A temporary pointer to MainController.
-@property(nonatomic, weak) id<MainControllerGuts> mainController;
+// YES if incognito mode is forced by enterprise policy.
+@property(nonatomic, readonly, getter=isIncognitoForced) BOOL incognitoForced;
+
+// YES if the scene is presenting the signin view.
+@property(nonatomic, readonly) BOOL isPresentingSigninView;
+
+// The view controller that is active. Can be either a BrowserViewController or
+// TabGridViewController.
+@property(nonatomic, readonly) UIViewController* activeViewController;
+
+// Handler for the UIWindowSceneDelegate callback with the same selector.
+- (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
+                   completionHandler:
+                       (void (^)(BOOL succeeded))completionHandler;
 
 @end
 

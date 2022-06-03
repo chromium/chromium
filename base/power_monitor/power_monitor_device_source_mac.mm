@@ -23,11 +23,16 @@ void ProcessPowerEventHelper(PowerMonitorSource::PowerEvent event) {
   PowerMonitorSource::ProcessPowerEvent(event);
 }
 
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   base::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
+  if (!info)
+    return false;
   base::ScopedCFTypeRef<CFArrayRef> power_sources_list(
       IOPSCopyPowerSourcesList(info));
+  if (!power_sources_list)
+    return false;
 
+  bool found_battery = false;
   const CFIndex count = CFArrayGetCount(power_sources_list);
   for (CFIndex i = 0; i < count; ++i) {
     const CFDictionaryRef description = IOPSGetPowerSourceDescription(
@@ -37,122 +42,119 @@ bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
 
     CFStringRef current_state = base::mac::GetValueFromDictionary<CFStringRef>(
         description, CFSTR(kIOPSPowerSourceStateKey));
-
     if (!current_state)
       continue;
 
     // We only report "on battery power" if no source is on AC power.
-    if (CFStringCompare(current_state, CFSTR(kIOPSBatteryPowerValue), 0) !=
+    if (CFStringCompare(current_state, CFSTR(kIOPSOffLineValue), 0) ==
         kCFCompareEqualTo) {
+      continue;
+    } else if (CFStringCompare(current_state, CFSTR(kIOPSACPowerValue), 0) ==
+               kCFCompareEqualTo) {
       return false;
     }
+
+    DCHECK_EQ(CFStringCompare(current_state, CFSTR(kIOPSBatteryPowerValue), 0),
+              kCFCompareEqualTo)
+        << "Power source state is not one of 3 documented values";
+
+    found_battery = true;
   }
 
-  return true;
+  // At this point, either there were no readable batteries found, in which case
+  // this Mac is not on battery power, or all the readable batteries were on
+  // battery power, in which case, count this as being on battery power.
+  return found_battery;
+}
+
+PowerThermalObserver::DeviceThermalState
+PowerMonitorDeviceSource::GetCurrentThermalState() {
+  return thermal_state_observer_->GetCurrentThermalState();
+}
+
+int PowerMonitorDeviceSource::GetCurrentSpeedLimit() {
+  return thermal_state_observer_->GetCurrentSpeedLimit();
 }
 
 namespace {
-
-io_connect_t g_system_power_io_port = 0;
-IONotificationPortRef g_notification_port_ref = 0;
-io_object_t g_notifier_object = 0;
-CFRunLoopSourceRef g_battery_status_ref = 0;
 
 void BatteryEventCallback(void*) {
   ProcessPowerEventHelper(PowerMonitorSource::POWER_STATE_EVENT);
 }
 
-void SystemPowerEventCallback(void*,
-                              io_service_t service,
-                              natural_t message_type,
-                              void* message_argument) {
+}  // namespace
+
+void PowerMonitorDeviceSource::PlatformInit() {
+  power_manager_port_ = IORegisterForSystemPower(
+      this,
+      mac::ScopedIONotificationPortRef::Receiver(notification_port_).get(),
+      &SystemPowerEventCallback, &notifier_);
+  DCHECK_NE(power_manager_port_, IO_OBJECT_NULL);
+
+  // Add the sleep/wake notification event source to the runloop.
+  CFRunLoopAddSource(
+      CFRunLoopGetCurrent(),
+      IONotificationPortGetRunLoopSource(notification_port_.get()),
+      kCFRunLoopCommonModes);
+
+  // Create and add the power-source-change event source to the runloop.
+  power_source_run_loop_source_.reset(
+      IOPSNotificationCreateRunLoopSource(&BatteryEventCallback, nullptr));
+  // Verify that the source was created. This may fail if the sandbox does not
+  // permit the process to access the underlying system service. See
+  // https://crbug.com/897557 for an example of such a configuration bug.
+  DCHECK(power_source_run_loop_source_);
+
+  CFRunLoopAddSource(CFRunLoopGetCurrent(), power_source_run_loop_source_,
+                     kCFRunLoopDefaultMode);
+
+  thermal_state_observer_ = std::make_unique<ThermalStateObserverMac>(
+      BindRepeating(&PowerMonitorSource::ProcessThermalEvent),
+      BindRepeating(&PowerMonitorSource::ProcessSpeedLimitEvent));
+}
+
+void PowerMonitorDeviceSource::PlatformDestroy() {
+  CFRunLoopRemoveSource(
+      CFRunLoopGetCurrent(),
+      IONotificationPortGetRunLoopSource(notification_port_.get()),
+      kCFRunLoopCommonModes);
+
+  CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
+                        power_source_run_loop_source_.get(),
+                        kCFRunLoopDefaultMode);
+
+  // Deregister for system power notifications.
+  IODeregisterForSystemPower(&notifier_);
+
+  // Close the connection to the IOPMrootDomain that was opened in
+  // PlatformInit().
+  IOServiceClose(power_manager_port_);
+  power_manager_port_ = IO_OBJECT_NULL;
+}
+
+void PowerMonitorDeviceSource::SystemPowerEventCallback(
+    void* refcon,
+    io_service_t service,
+    natural_t message_type,
+    void* message_argument) {
+  auto* thiz = static_cast<PowerMonitorDeviceSource*>(refcon);
+
   switch (message_type) {
     // If this message is not handled the system may delay sleep for 30 seconds.
     case kIOMessageCanSystemSleep:
-      IOAllowPowerChange(g_system_power_io_port,
-          reinterpret_cast<intptr_t>(message_argument));
+      IOAllowPowerChange(thiz->power_manager_port_,
+                         reinterpret_cast<intptr_t>(message_argument));
       break;
     case kIOMessageSystemWillSleep:
-      ProcessPowerEventHelper(base::PowerMonitorSource::SUSPEND_EVENT);
-      IOAllowPowerChange(g_system_power_io_port,
-          reinterpret_cast<intptr_t>(message_argument));
+      ProcessPowerEventHelper(PowerMonitorSource::SUSPEND_EVENT);
+      IOAllowPowerChange(thiz->power_manager_port_,
+                         reinterpret_cast<intptr_t>(message_argument));
       break;
 
     case kIOMessageSystemWillPowerOn:
       ProcessPowerEventHelper(PowerMonitorSource::RESUME_EVENT);
       break;
   }
-}
-
-}  // namespace
-
-// The reason we can't include this code in the constructor is because
-// PlatformInit() requires an active runloop and the IO port needs to be
-// allocated at sandbox initialization time, before there's a runloop.
-// See crbug.com/83783 .
-
-// static
-void PowerMonitorDeviceSource::AllocateSystemIOPorts() {
-  DCHECK_EQ(g_system_power_io_port, 0u);
-
-  // Notification port allocated by IORegisterForSystemPower.
-  g_system_power_io_port = IORegisterForSystemPower(
-      NULL, &g_notification_port_ref, SystemPowerEventCallback,
-      &g_notifier_object);
-
-  DCHECK_NE(g_system_power_io_port, 0u);
-}
-
-void PowerMonitorDeviceSource::PlatformInit() {
-  // Need to call AllocateSystemIOPorts() before creating a PowerMonitor
-  // object.
-  DCHECK_NE(g_system_power_io_port, 0u);
-  if (g_system_power_io_port == 0)
-    return;
-
-  // Add the notification port and battery monitor to the application runloop
-  CFRunLoopAddSource(
-      CFRunLoopGetCurrent(),
-      IONotificationPortGetRunLoopSource(g_notification_port_ref),
-      kCFRunLoopCommonModes);
-
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> battery_status_ref(
-      IOPSNotificationCreateRunLoopSource(BatteryEventCallback, nullptr));
-  DCHECK(battery_status_ref);  // crbug.com/897557
-
-  CFRunLoopAddSource(CFRunLoopGetCurrent(), battery_status_ref,
-                     kCFRunLoopDefaultMode);
-  g_battery_status_ref = battery_status_ref.release();
-}
-
-void PowerMonitorDeviceSource::PlatformDestroy() {
-  DCHECK_NE(g_system_power_io_port, 0u);
-  if (g_system_power_io_port == 0)
-    return;
-
-  // Remove the sleep notification port from the application runloop
-  CFRunLoopRemoveSource(
-      CFRunLoopGetCurrent(),
-      IONotificationPortGetRunLoopSource(g_notification_port_ref),
-      kCFRunLoopCommonModes);
-
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> battery_status_ref(
-      g_battery_status_ref);
-  CFRunLoopRemoveSource(CFRunLoopGetCurrent(), g_battery_status_ref,
-                        kCFRunLoopDefaultMode);
-  g_battery_status_ref = 0;
-
-  // Deregister for system sleep notifications
-  IODeregisterForSystemPower(&g_notifier_object);
-
-  // IORegisterForSystemPower implicitly opens the Root Power Domain IOService,
-  // so we close it here.
-  IOServiceClose(g_system_power_io_port);
-
-  g_system_power_io_port = 0;
-
-  // Destroy the notification port allocated by IORegisterForSystemPower.
-  IONotificationPortDestroy(g_notification_port_ref);
 }
 
 }  // namespace base

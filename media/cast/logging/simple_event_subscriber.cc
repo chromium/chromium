@@ -4,7 +4,7 @@
 
 #include "media/cast/logging/simple_event_subscriber.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace media {
 namespace cast {

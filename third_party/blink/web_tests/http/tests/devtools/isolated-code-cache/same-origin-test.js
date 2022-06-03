@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for javascript resources\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   // Clear browser cache to avoid any existing entries for the fetched
@@ -27,37 +27,54 @@
   TestRunner.addResult('--- Trace events related to code caches ------');
   await PerformanceTestRunner.startTimeline();
 
-  // Load [A] thrice. With the current V8 heuristics (defined
-  // in third_party/blink/renderer/bindings/core/v8/v8_code_cache.cc) we produce
+  async function stopAndPrintTimeline() {
+    await PerformanceTestRunner.stopTimeline();
+    await PerformanceTestRunner.printTimelineRecordsWithDetails(
+        TimelineModel.TimelineModel.RecordType.CompileScript,
+        TimelineModel.TimelineModel.RecordType.CacheScript);
+  }
+
+  async function expectationComment(msg) {
+    await stopAndPrintTimeline();
+    TestRunner.addResult(msg);
+    await PerformanceTestRunner.startTimeline();
+  }
+
+  // Load [A] thrice. With the current V8 heuristics (defined in
+  // third_party/blink/renderer/bindings/core/v8/v8_code_cache.cc) we produce
   // cache on second fetch and consume it in the third fetch. This tests these
   // heuristics.
   // Note that addIframe() waits for iframe's load event, which waits for the
   // <script> loading.
-  await TestRunner.addIframe(scope);
-  await TestRunner.addIframe(scope);
+  await expectationComment('Load [A] 1st time. Produce timestamp. -->');
   await TestRunner.addIframe(scope);
 
-  // Load [B]. Should not use the cached code.
+  await expectationComment('Load [A] 2nd time. Produce code cache. -->');
+  await TestRunner.addIframe(scope);
+
+  await expectationComment('Load [A] 3rd time. Consume code cache. -->');
+  await TestRunner.addIframe(scope);
+
+  await expectationComment('Load [B]. Should not use the cached code. -->');
   await TestRunner.addIframe(scopeCrossOrigin);
 
-  // Load [A] again from MemoryCache. Should use cached code.
+  await expectationComment('Load [A] again from MemoryCache. ' +
+      'Should use the cached code. -->');
   await TestRunner.addIframe(scope);
 
-  // Clear [A] from MemoryCache. Blink evicts previous Resource when a
-  // new request to the same URL but with different resource type is started.
-  // We fetch() to the URL of [A], and thus evicts the previous ScriptResource
-  // of [A].
+  await expectationComment('Clear [A] from MemoryCache. -->');
+  // Blink evicts previous Resource when a new request to the same URL but with
+  // different resource type is started.  We fetch() to the URL of [A], and thus
+  // evicts the previous ScriptResource of [A].
   await TestRunner.evaluateInPageAsync(
       `fetch('/devtools/resources/v8-cache-script.cgi')`);
 
-  // Load [A] from Disk Cache. As we cleared [A] from MemoryCache, this
-  // doesn't hit MemoryCache, but still hits Disk Cache.
+  await expectationComment('Load [A] from Disk Cache. -->');
+  // As we cleared [A] from MemoryCache, this doesn't hit MemoryCache, but still
+  // hits Disk Cache.
   await TestRunner.addIframe(scope);
 
-  await PerformanceTestRunner.stopTimeline();
-  PerformanceTestRunner.printTimelineRecordsWithDetails(
-      TimelineModel.TimelineModel.RecordType.CompileScript);
-
+  await stopAndPrintTimeline();
   TestRunner.addResult('-----------------------------------------------');
   TestRunner.completeTest();
 })();

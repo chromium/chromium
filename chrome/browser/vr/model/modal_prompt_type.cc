@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/model/modal_prompt_type.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace vr {
 

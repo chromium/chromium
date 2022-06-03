@@ -18,9 +18,9 @@ try:
   app.connect(title_re='.*Chrome|.*Chromium')
   app.top_window().child_window(title="Bookmarks", control_type="ToolBar") \
       .print_control_identifiers()
-  print "Bookmarkbar is found"
+  print("Bookmarkbar is found")
 except ElementNotFoundError as error:
-  print error
-  print "Bookmarkbar is missing"
+  print(error)
+  print("Bookmarkbar is missing")
 finally:
   driver.quit()

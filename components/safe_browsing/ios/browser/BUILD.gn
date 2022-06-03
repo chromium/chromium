@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("allow_list") {
+  sources = [
+    "safe_browsing_url_allow_list.h",
+    "safe_browsing_url_allow_list.mm",
+  ]
+
+  deps = [
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/web/public",
+    "//url",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+# As parts of components/safe_browsing become buildable on iOS, they will
+# be added here.
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:ping_manager_unittest",
+    "//components/safe_browsing/core/browser:safe_browsing_url_checker_unittest",
+    "//components/safe_browsing/core/browser:user_population_unittest",
+    "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
+    "//components/safe_browsing/core/browser/db:unit_tests_local_db",
+    "//components/safe_browsing/core/browser/realtime:unit_tests",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:unit_tests",
+  ]
+}

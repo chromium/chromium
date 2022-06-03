@@ -152,21 +152,32 @@ No. Chromium once contained a reflected XSS filter called the [XSSAuditor](https
 that was a best-effort second line of defense against reflected XSS flaws found
 in web sites. The XSS Auditor was [removed in Chrome 78](https://groups.google.com/a/chromium.org/forum/#!msg/blink-dev/TuYw-EZhO9g/blGViehIAwAJ).
 
+<a name="TOC-What-if-a-Chrome-component-breaks-an-OS-security-boundary-"></a>
+## What if a Chrome component breaks an OS security boundary?
+
+If Chrome or any of its components (e.g. updater) can be abused to
+perform a local privilege escalation, then it may be treated as a
+valid security vulnerability.
+
+Running any Chrome component with higher privileges than intended is
+not a security bug and we do not recommend running Chrome as an
+Administrator on Windows, or as root on POSIX.
+
 <a name="TOC-Why-aren-t-physically-local-attacks-in-Chrome-s-threat-model-"></a>
 ## Why aren't physically-local attacks in Chrome's threat model?
 
 People sometimes report that they can compromise Chrome by installing a
 malicious DLL in a place where Chrome will load it, by hooking APIs (e.g. [Issue
 130284](https://crbug.com/130284)), or by otherwise altering the configuration
-of the PC.
+of the device.
 
 We consider these attacks outside Chrome's threat model, because there is no way
 for Chrome (or any application) to defend against a malicious user who has
-managed to log into your computer as you, or who can run software with the
+managed to log into your device as you, or who can run software with the
 privileges of your operating system user account. Such an attacker can modify
 executables and DLLs, change environment variables like `PATH`, change
 configuration files, read any data your user account owns, email it to
-themselves, and so on. Such an attacker has total control over your computer,
+themselves, and so on. Such an attacker has total control over your device,
 and nothing Chrome can do would provide a serious guarantee of defense. This
 problem is not special to Chrome ­— all applications must trust the
 physically-local user.
@@ -209,10 +220,14 @@ computer.
 <a name="TOC-Why-aren-t-compromised-infected-machines-in-Chrome-s-threat-model-"></a>
 ## Why aren't compromised/infected machines in Chrome's threat model?
 
-This is essentially the same situation as with physically-local attacks. The
-attacker's code, when it runs as your user account on your machine, can do
-anything you can do. (See also [Microsoft's Ten Immutable Laws Of
+Although the attacker may now be remote, the consequences are essentially the
+same as with physically-local attacks. The attacker's code, when it runs as
+your user account on your machine, can do anything you can do. (See also
+[Microsoft's Ten Immutable Laws Of
 Security](https://web.archive.org/web/20160311224620/https://technet.microsoft.com/en-us/library/hh278941.aspx).)
+
+Other cases covered by this section include leaving a debugger port open to
+the world, remote shells, and so forth.
 
 <a name="TOC-What-about-unmasking-of-passwords-with-the-developer-tools-"></a>
 ## What about unmasking of passwords with the developer tools?
@@ -245,9 +260,20 @@ URLs in the URL bar (to limit
 but users are otherwise free to invoke script against pages using either the URL
 bar or the DevTools console.
 
-Similarly, users may create bookmarks pointed at JavaScript URLs that will run
+<a name="TOC-Does-executing-JavaScript-from-a-bookmark-mean-there-s-an-XSS-vulnerability-"></a>
+## Does executing JavaScript from a bookmark mean there's an XSS vulnerability?
+
+No. Chromium allows users to create bookmarks to JavaScript URLs that will run
 on the currently-loaded page when the user clicks the bookmark; these are called
 [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
+
+<a name="TOC-Does-executing-JavaScript-in-a-PDF-file-mean-there-s-an-XSS-vulnerability-"></a>
+## Does executing JavaScript in a PDF file mean there's an XSS vulnerability?
+
+No. PDF files have the ability to run JavaScript, usually to facilitate field
+validation during form fill-out. Note that the set of bindings provided to
+the PDF are more limited than those provided by the DOM to HTML documents (e.g.
+no document.cookie).
 
 <a name="TOC-Is-Chrome-s-support-for-userinfo-in-HTTP-URLs-e.g.-http:-user:password-example.com-considered-a-vulnerability-"></a>
 ## Is Chrome's support for userinfo in HTTP URLs (e.g. http://user:password@example.com) considered a vulnerability?
@@ -545,7 +571,7 @@ users to have unique and more complex passwords for websites. As it was
 originally implemented, autocomplete='off' for password fields took control away
 from the user and gave control to the web site developer, which was also a
 violation of the [priority of
-constituencies](http://www.schemehostport.com/2011/10/priority-of-constituencies.html).
+constituencies](https://www.schemehostport.com/2011/10/priority-of-constituencies.html).
 For a longer discussion on this, see the [mailing list
 announcement](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/zhhj7hCip5c).
 
@@ -611,6 +637,20 @@ specific:
      strong guarantees about only Chrome being able to access its storage. See
      [Issue 520437](https://crbug.com/520437) to follow this migration.
 
+<a name="TOC-If-theres-a-way-to-see-stored-passwords-without-entering-a-password--is-this-a-security-bug-"></a>
+## If there's a way to see stored passwords without entering a password, is this a security bug?
+
+No. If an attacker has control of your login on your device, they can get to
+your passwords by inspecting Chrome disk files or memory. (See
+[why aren't physically-local attacks in Chrome's threat
+model](#TOC-Why-aren-t-physically-local-attacks-in-Chrome-s-threat-model-)).
+
+On some platforms we ask for a password before revealing stored passwords,
+but this is not considered a robust defense. It’s historically to stop
+users inadvertently revealing their passwords on screen, for example if
+they’re screen sharing. We don’t do this on all platforms because we consider
+such risks greater on some than on others.
+
 <a name="TOC-I-found-a-phishing-or-malware-site-not-blocked-by-Safe-Browsing.-Is-this-a-security-vulnerability-"></a>
 ## I found a phishing or malware site not blocked by Safe Browsing. Is this a security vulnerability?
 
@@ -635,7 +675,12 @@ vulnerability in the relevant feature, not Safe Browsing itself.
 ## What is the security story for Service Workers?
 
 See our dedicated [Service Worker Security
-FAQ](https://chromium.googlesource.com/chromium/src/+/master/docs/security/service-worker-security-faq.md).
+FAQ](https://chromium.googlesource.com/chromium/src/+/main/docs/security/service-worker-security-faq.md).
+
+<a name="TOC-What-is-the-security-story-for-Extensions-"></a>
+## What is the security story for Extensions?
+
+See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
 
 <a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
 ## What about URL spoofs using Internationalized Domain Names (IDN)?
@@ -646,9 +691,78 @@ IDN display issues we are still working on.
 
 *    Please see [this document](https://docs.google.com/document/d/1_xJz3J9kkAPwk3pma6K3X12SyPTyyaJDSCxTfF8Y5sU)
 for a list of known issues and how we handle them.
-*    [This document](https://www.chromium.org/developers/design-documents/idn-in-google-chrome)
+*    [This document](https://chromium.googlesource.com/chromium/src/+/main/docs/idn.md)
 describes Chrome's IDN policy in detail.
 
-## TODO
+<a name="TOC-Chrome-silently-syncs-extensions-across-devices.-Is-this-a-security-vulnerability-"></a>
+## Chrome silently syncs extensions across devices. Is this a security vulnerability?
 
-*    https://dev.chromium.org/Home/chromium-security/client-identification-mechanisms
+This topic has been moved to the [Extensions Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/security_faq.md).
+
+<a name="TOC-Are-PDF-files-static-content-in-Chromium-"></a>
+## Are PDF files static content in Chromium?
+
+No. PDF files have some powerful capabilities including invoking printing or
+posting form data. To mitigate abuse of these capabiliies, such as beaconing
+upon document open, we require interaction with the document (a "user gesture")
+before allowing their use.
+
+<a name="TOC-Why-arent-null-pointer-dereferences-considered-security-bugs-"></a>
+## Why aren't null pointer dereferences considered security bugs?
+
+Null pointer dereferences with consistent, small, fixed offsets are not considered
+security bugs. A read or write to the NULL page results in a non-exploitable crash.
+If the offset is larger than a page, or if there's uncertainty about whether the
+offset is controllable, it is considered a security bug.
+
+<a name="TOC-Are-stack-overflows-considered-security-bugs-"></a>
+## Are stack overflows considered security bugs?
+
+No. Guard pages mean that stack overflows are considered unexploitable, and
+are regarded as [denial of service bugs](#TOC-Are-denial-of-service-issues-considered-security-bugs-).
+The only exception is if an attacker can jump over the guard pages allocated by
+the operating system and avoid accessing them, e.g.:
+
+*    A frame with a very large stack allocation.
+*    C variable length array with an attacker-controlled size.
+*    A call to `alloca()` with an attacker-controlled size.
+
+<a name="TOC-Are-enterprise-admins-considered-privileged-"></a>
+## Are enterprise admins considered privileged?
+
+Chrome [can't guard against local
+attacks](#TOC-Why-aren-t-physically-local-attacks-in-Chrome-s-threat-model-).
+Enterprise administrators often have full control over the device. Does Chrome
+assume that enterprise administrators are as privileged and powerful as other
+local users? It depends:
+
+* On a fully managed machine, for example a [domain-joined Windows
+  machine](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/deployment/join-a-computer-to-a-domain),
+  a device managed via a Mobile Device Management product, or a device with
+  Chrome managed via machine-level [Chrome Browser Cloud
+  Management](https://support.google.com/chrome/?p=cloud_management),
+  the administrator effectively has privileges to view and mutate any state on
+  the device. Chrome [policy implementations](../enterprise/add_new_policy.md)
+  should still guide enterprise admins to the most user-respectful defaults
+  and policy description text should clearly describe the nature of the
+  capabilities and the user impact of them being granted.
+* On an unmanaged machine, Chrome profiles [can be managed via cloud
+  policy](https://support.google.com/chrome/?p=manage_profiles)
+  if users sign into Chrome using a managed account. These policies are called
+  *user policies*. In this scenario, the Chrome enterprise administrator should
+  have privileges only to *view and mutate state within the profile that they
+  administer*. Any access outside that profile requires end-user consent.
+
+Chrome administrators can force-install Chrome extensions without permissions
+prompts, so the same restrictions must apply to the Chrome extension APIs.
+
+Chrome has a long history of policy support with many hundreds of policies. We
+recognize that there may exist policies or policy combinations that can provide
+capabilities outside of the guidance provided here. In cases of clear violation
+of user expectations, we will attempt to remedy these policies and we will apply
+the guidance laid out in this document to any newly added policies.
+
+<a name="TOC-Which-bugs-are-valid-for-rewards-under-the-Chrome-Vulnerability-Rewards-program-"></a>
+## Which bugs are valid for rewards under the Chrome Vulnerability Rewards program?
+
+Please see [the VRP FAQ page](vrp-faq.md).

@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -19,6 +18,8 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
@@ -40,13 +41,13 @@ const int kScrollAreaHeight = 192;
 // This container has the right Layout() impl to use within a ScrollView.
 class ScrollableView : public views::View {
  public:
-  ScrollableView() {}
-  ~ScrollableView() override {}
+  METADATA_HEADER(ScrollableView);
+  ScrollableView() = default;
+  ScrollableView(const ScrollableView&) = delete;
+  ScrollableView& operator=(const ScrollableView&) = delete;
+  ~ScrollableView() override = default;
 
   void Layout() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollableView);
 };
 
 void ScrollableView::Layout() {
@@ -62,13 +63,8 @@ void ScrollableView::Layout() {
   views::View::Layout();
 }
 
-std::unique_ptr<views::LabelButton> CreateAuxiliaryButton(
-    views::ButtonListener* listener,
-    const base::string16& label) {
-  return label.empty()
-             ? nullptr
-             : views::MdTextButton::CreateSecondaryUiButton(listener, label);
-}
+BEGIN_METADATA(ScrollableView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -79,10 +75,30 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
       auxiliary_button_(nullptr),
       confirm_available_(false),
       accepted_(false) {
-  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
-                                   controller_->GetAcceptButtonText());
-  auxiliary_button_ = DialogDelegate::SetExtraView(
-      CreateAuxiliaryButton(this, controller_->GetAuxiliaryButtonText()));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetAcceptButtonText());
+  SetAcceptCallback(base::BindOnce(
+      [](MediaGalleriesDialogViews* dialog) { dialog->accepted_ = true; },
+      base::Unretained(this)));
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  SetTitle(controller_->GetHeader());
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](MediaGalleriesDialogViews* dialog) {
+        dialog->controller_->DialogFinished(dialog->accepted_);
+      },
+      this));
+
+  std::u16string label = controller_->GetAuxiliaryButtonText();
+  if (!label.empty()) {
+    auxiliary_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(
+            &MediaGalleriesDialogViews::ButtonPressed, base::Unretained(this),
+            base::BindRepeating(
+                &MediaGalleriesDialogController::DidClickAuxiliaryButton,
+                base::Unretained(controller_))),
+        label));
+  }
 
   InitChildViews();
   if (ControllerHasWebContents()) {
@@ -109,12 +125,14 @@ void MediaGalleriesDialogViews::AcceptDialogForTesting() {
 
 void MediaGalleriesDialogViews::InitChildViews() {
   // Outer dialog layout.
-  contents_->RemoveAllChildViews(true);
+  contents_->RemoveAllChildViews();
   checkbox_map_.clear();
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  contents_->SetBorder(views::CreateEmptyBorder(
-      provider->GetDialogInsetsForContentType(views::TEXT, views::CONTROL)));
+  contents_->SetBorder(
+      views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
+          views::DialogContentType::kText,
+          views::DialogContentType::kControl)));
 
   const int dialog_content_width = views::Widget::GetLocalizedContentsWidth(
       IDS_MEDIA_GALLERIES_DIALOG_CONTENT_WIDTH_CHARS);
@@ -124,7 +142,8 @@ void MediaGalleriesDialogViews::InitChildViews() {
   int column_set_id = 0;
   views::ColumnSet* columns = layout->AddColumnSet(column_set_id);
   columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     1.0, views::GridLayout::FIXED, dialog_content_width, 0);
+                     1.0, views::GridLayout::ColumnSize::kFixed,
+                     dialog_content_width, 0);
 
   // Message text.
   const int vertical_padding =
@@ -151,7 +170,7 @@ void MediaGalleriesDialogViews::InitChildViews() {
   scroll_container->SetBorder(
       views::CreateEmptyBorder(vertical_padding, 0, vertical_padding, 0));
 
-  std::vector<base::string16> section_headers =
+  std::vector<std::u16string> section_headers =
       controller_->GetSectionHeaders();
   for (size_t i = 0; i < section_headers.size(); i++) {
     MediaGalleriesDialogController::Entries entries =
@@ -210,31 +229,26 @@ bool MediaGalleriesDialogViews::AddOrUpdateGallery(
     checkbox->SetChecked(gallery.selected);
     checkbox->SetText(gallery.pref_info.GetGalleryDisplayName());
     checkbox->SetTooltipText(gallery.pref_info.GetGalleryTooltip());
-    base::string16 details = gallery.pref_info.GetGalleryAdditionalDetails();
+    std::u16string details = gallery.pref_info.GetGalleryAdditionalDetails();
     iter->second->secondary_text()->SetText(details);
     iter->second->secondary_text()->SetVisible(details.length() > 0);
     return false;
   }
 
-  MediaGalleryCheckboxView* gallery_view = new MediaGalleryCheckboxView(
-      gallery.pref_info, trailing_vertical_space, this, this);
+  auto* gallery_view =
+      container->AddChildView(std::make_unique<MediaGalleryCheckboxView>(
+          gallery.pref_info, trailing_vertical_space, this));
+  gallery_view->checkbox()->SetCallback(base::BindRepeating(
+      &MediaGalleriesDialogViews::ButtonPressed, base::Unretained(this),
+      base::BindRepeating(
+          [](MediaGalleriesDialogController* controller,
+             MediaGalleryPrefId pref_id, views::Checkbox* checkbox) {
+            controller->DidToggleEntry(pref_id, checkbox->GetChecked());
+          },
+          controller_, gallery.pref_info.pref_id, gallery_view->checkbox())));
   gallery_view->checkbox()->SetChecked(gallery.selected);
-  container->AddChildView(gallery_view);
   checkbox_map_[gallery.pref_info.pref_id] = gallery_view;
-
   return true;
-}
-
-base::string16 MediaGalleriesDialogViews::GetWindowTitle() const {
-  return controller_->GetHeader();
-}
-
-bool MediaGalleriesDialogViews::ShouldShowCloseButton() const {
-  return false;
-}
-
-void MediaGalleriesDialogViews::DeleteDelegate() {
-  controller_->DialogFinished(accepted_);
 }
 
 views::Widget* MediaGalleriesDialogViews::GetWidget() {
@@ -252,41 +266,6 @@ views::View* MediaGalleriesDialogViews::GetContentsView() {
 bool MediaGalleriesDialogViews::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button != ui::DIALOG_BUTTON_OK || confirm_available_;
-}
-
-ui::ModalType MediaGalleriesDialogViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-bool MediaGalleriesDialogViews::Cancel() {
-  return true;
-}
-
-bool MediaGalleriesDialogViews::Accept() {
-  accepted_ = true;
-  return true;
-}
-
-void MediaGalleriesDialogViews::ButtonPressed(views::Button* sender,
-                                              const ui::Event& /* event */) {
-  confirm_available_ = true;
-
-  if (ControllerHasWebContents())
-    DialogModelChanged();
-
-  if (sender == auxiliary_button_) {
-    controller_->DidClickAuxiliaryButton();
-    return;
-  }
-
-  for (CheckboxMap::const_iterator iter = checkbox_map_.begin();
-       iter != checkbox_map_.end(); ++iter) {
-    if (sender == iter->second->checkbox()) {
-      controller_->DidToggleEntry(iter->first,
-                                  iter->second->checkbox()->GetChecked());
-      return;
-    }
-  }
 }
 
 void MediaGalleriesDialogViews::ShowContextMenuForViewImpl(
@@ -319,6 +298,15 @@ void MediaGalleriesDialogViews::ShowContextMenu(const gfx::Point& point,
 
 bool MediaGalleriesDialogViews::ControllerHasWebContents() const {
   return controller_->WebContents() != nullptr;
+}
+
+void MediaGalleriesDialogViews::ButtonPressed(base::RepeatingClosure closure) {
+  confirm_available_ = true;
+
+  if (ControllerHasWebContents())
+    DialogModelChanged();
+
+  closure.Run();
 }
 
 void MediaGalleriesDialogViews::OnMenuClosed() {

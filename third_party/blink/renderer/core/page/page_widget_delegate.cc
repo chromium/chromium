@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -60,18 +59,16 @@ void PageWidgetDelegate::PostAnimate(Page& page) {
   page.Animator().PostAnimate();
 }
 
-void PageWidgetDelegate::UpdateLifecycle(
-    Page& page,
-    LocalFrame& root,
-    WebWidget::LifecycleUpdate requested_update,
-    WebWidget::LifecycleUpdateReason reason) {
-  if (requested_update == WebWidget::LifecycleUpdate::kLayout) {
-    page.Animator().UpdateLifecycleToLayoutClean(root);
-  } else if (requested_update == WebWidget::LifecycleUpdate::kPrePaint) {
-    page.Animator().UpdateAllLifecyclePhasesExceptPaint(root);
+void PageWidgetDelegate::UpdateLifecycle(Page& page,
+                                         LocalFrame& root,
+                                         WebLifecycleUpdate requested_update,
+                                         DocumentUpdateReason reason) {
+  if (requested_update == WebLifecycleUpdate::kLayout) {
+    page.Animator().UpdateLifecycleToLayoutClean(root, reason);
+  } else if (requested_update == WebLifecycleUpdate::kPrePaint) {
+    page.Animator().UpdateLifecycleToPrePaintClean(root, reason);
   } else {
-    page.Animator().UpdateAllLifecyclePhases(
-        root, static_cast<DocumentLifecycle::LifecycleUpdateReason>(reason));
+    page.Animator().UpdateAllLifecyclePhases(root, reason);
   }
 }
 
@@ -122,66 +119,66 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
     // interested in whether keyboard events are processed).
     // FIXME: Why do we return HandleSuppressed when there is no root or
     // the root is detached?
-    case WebInputEvent::kMouseMove:
+    case WebInputEvent::Type::kMouseMove:
       if (!root || !root->View())
         return WebInputEventResult::kHandledSuppressed;
       handler.HandleMouseMove(*root, static_cast<const WebMouseEvent&>(event),
                               coalesced_event.GetCoalescedEventsPointers(),
                               coalesced_event.GetPredictedEventsPointers());
       return WebInputEventResult::kHandledSystem;
-    case WebInputEvent::kMouseLeave:
+    case WebInputEvent::Type::kMouseLeave:
       if (!root || !root->View())
         return WebInputEventResult::kHandledSuppressed;
       handler.HandleMouseLeave(*root, static_cast<const WebMouseEvent&>(event));
       return WebInputEventResult::kHandledSystem;
-    case WebInputEvent::kMouseDown:
+    case WebInputEvent::Type::kMouseDown:
       if (!root || !root->View())
         return WebInputEventResult::kHandledSuppressed;
       handler.HandleMouseDown(*root, static_cast<const WebMouseEvent&>(event));
       return WebInputEventResult::kHandledSystem;
-    case WebInputEvent::kMouseUp:
+    case WebInputEvent::Type::kMouseUp:
       if (!root || !root->View())
         return WebInputEventResult::kHandledSuppressed;
       return handler.HandleMouseUp(*root,
                                    static_cast<const WebMouseEvent&>(event));
-    case WebInputEvent::kMouseWheel:
+    case WebInputEvent::Type::kMouseWheel:
       if (!root || !root->View())
         return WebInputEventResult::kNotHandled;
       return handler.HandleMouseWheel(
           *root, static_cast<const WebMouseWheelEvent&>(event));
 
-    case WebInputEvent::kRawKeyDown:
-    case WebInputEvent::kKeyDown:
-    case WebInputEvent::kKeyUp:
+    case WebInputEvent::Type::kRawKeyDown:
+    case WebInputEvent::Type::kKeyDown:
+    case WebInputEvent::Type::kKeyUp:
       return handler.HandleKeyEvent(
           static_cast<const WebKeyboardEvent&>(event));
 
-    case WebInputEvent::kChar:
+    case WebInputEvent::Type::kChar:
       return handler.HandleCharEvent(
           static_cast<const WebKeyboardEvent&>(event));
-    case WebInputEvent::kGestureScrollBegin:
-    case WebInputEvent::kGestureScrollEnd:
-    case WebInputEvent::kGestureScrollUpdate:
-    case WebInputEvent::kGestureFlingStart:
-    case WebInputEvent::kGestureFlingCancel:
-    case WebInputEvent::kGestureTap:
-    case WebInputEvent::kGestureTapUnconfirmed:
-    case WebInputEvent::kGestureTapDown:
-    case WebInputEvent::kGestureShowPress:
-    case WebInputEvent::kGestureTapCancel:
-    case WebInputEvent::kGestureDoubleTap:
-    case WebInputEvent::kGestureTwoFingerTap:
-    case WebInputEvent::kGestureLongPress:
-    case WebInputEvent::kGestureLongTap:
+    case WebInputEvent::Type::kGestureScrollBegin:
+    case WebInputEvent::Type::kGestureScrollEnd:
+    case WebInputEvent::Type::kGestureScrollUpdate:
+    case WebInputEvent::Type::kGestureFlingStart:
+    case WebInputEvent::Type::kGestureFlingCancel:
+    case WebInputEvent::Type::kGestureTap:
+    case WebInputEvent::Type::kGestureTapUnconfirmed:
+    case WebInputEvent::Type::kGestureTapDown:
+    case WebInputEvent::Type::kGestureShowPress:
+    case WebInputEvent::Type::kGestureTapCancel:
+    case WebInputEvent::Type::kGestureDoubleTap:
+    case WebInputEvent::Type::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGestureLongPress:
+    case WebInputEvent::Type::kGestureLongTap:
       return handler.HandleGestureEvent(
           static_cast<const WebGestureEvent&>(event));
 
-    case WebInputEvent::kPointerDown:
-    case WebInputEvent::kPointerUp:
-    case WebInputEvent::kPointerMove:
-    case WebInputEvent::kPointerRawUpdate:
-    case WebInputEvent::kPointerCancel:
-    case WebInputEvent::kPointerCausedUaAction:
+    case WebInputEvent::Type::kPointerDown:
+    case WebInputEvent::Type::kPointerUp:
+    case WebInputEvent::Type::kPointerMove:
+    case WebInputEvent::Type::kPointerRawUpdate:
+    case WebInputEvent::Type::kPointerCancel:
+    case WebInputEvent::Type::kPointerCausedUaAction:
       if (!root || !root->View())
         return WebInputEventResult::kNotHandled;
       return handler.HandlePointerEvent(
@@ -189,20 +186,20 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
           coalesced_event.GetCoalescedEventsPointers(),
           coalesced_event.GetPredictedEventsPointers());
 
-    case WebInputEvent::kTouchStart:
-    case WebInputEvent::kTouchMove:
-    case WebInputEvent::kTouchEnd:
-    case WebInputEvent::kTouchCancel:
-    case WebInputEvent::kTouchScrollStarted:
+    case WebInputEvent::Type::kTouchStart:
+    case WebInputEvent::Type::kTouchMove:
+    case WebInputEvent::Type::kTouchEnd:
+    case WebInputEvent::Type::kTouchCancel:
+    case WebInputEvent::Type::kTouchScrollStarted:
       NOTREACHED();
       return WebInputEventResult::kNotHandled;
 
-    case WebInputEvent::kGesturePinchBegin:
+    case WebInputEvent::Type::kGesturePinchBegin:
       // Gesture pinch events are handled entirely on the compositor.
       DLOG(INFO) << "Gesture pinch ignored by main thread.";
       FALLTHROUGH;
-    case WebInputEvent::kGesturePinchEnd:
-    case WebInputEvent::kGesturePinchUpdate:
+    case WebInputEvent::Type::kGesturePinchEnd:
+    case WebInputEvent::Type::kGesturePinchUpdate:
       return WebInputEventResult::kNotHandled;
     default:
       return WebInputEventResult::kNotHandled;
@@ -213,60 +210,60 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
 // Default handlers for PageWidgetEventHandler
 
 void PageWidgetEventHandler::HandleMouseMove(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebMouseEvent& event,
-    const WebVector<const WebInputEvent*>& coalesced_events,
-    const WebVector<const WebInputEvent*>& predicted_events) {
+    const std::vector<std::unique_ptr<WebInputEvent>>& coalesced_events,
+    const std::vector<std::unique_ptr<WebInputEvent>>& predicted_events) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  main_frame.GetEventHandler().HandleMouseMoveEvent(
+      TransformWebMouseEvent(local_root.View(), event);
+  local_root.GetEventHandler().HandleMouseMoveEvent(
       transformed_event,
-      TransformWebMouseEventVector(main_frame.View(), coalesced_events),
-      TransformWebMouseEventVector(main_frame.View(), predicted_events));
+      TransformWebMouseEventVector(local_root.View(), coalesced_events),
+      TransformWebMouseEventVector(local_root.View(), predicted_events));
 }
 
-void PageWidgetEventHandler::HandleMouseLeave(LocalFrame& main_frame,
+void PageWidgetEventHandler::HandleMouseLeave(LocalFrame& local_root,
                                               const WebMouseEvent& event) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  main_frame.GetEventHandler().HandleMouseLeaveEvent(transformed_event);
+      TransformWebMouseEvent(local_root.View(), event);
+  local_root.GetEventHandler().HandleMouseLeaveEvent(transformed_event);
 }
 
-void PageWidgetEventHandler::HandleMouseDown(LocalFrame& main_frame,
+void PageWidgetEventHandler::HandleMouseDown(LocalFrame& local_root,
                                              const WebMouseEvent& event) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  main_frame.GetEventHandler().HandleMousePressEvent(transformed_event);
+      TransformWebMouseEvent(local_root.View(), event);
+  local_root.GetEventHandler().HandleMousePressEvent(transformed_event);
 }
 
 WebInputEventResult PageWidgetEventHandler::HandleMouseUp(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebMouseEvent& event) {
   WebMouseEvent transformed_event =
-      TransformWebMouseEvent(main_frame.View(), event);
-  return main_frame.GetEventHandler().HandleMouseReleaseEvent(
+      TransformWebMouseEvent(local_root.View(), event);
+  return local_root.GetEventHandler().HandleMouseReleaseEvent(
       transformed_event);
 }
 
 WebInputEventResult PageWidgetEventHandler::HandleMouseWheel(
-    LocalFrame& frame,
+    LocalFrame& local_root,
     const WebMouseWheelEvent& event) {
   WebMouseWheelEvent transformed_event =
-      TransformWebMouseWheelEvent(frame.View(), event);
-  return frame.GetEventHandler().HandleWheelEvent(transformed_event);
+      TransformWebMouseWheelEvent(local_root.View(), event);
+  return local_root.GetEventHandler().HandleWheelEvent(transformed_event);
 }
 
 WebInputEventResult PageWidgetEventHandler::HandlePointerEvent(
-    LocalFrame& main_frame,
+    LocalFrame& local_root,
     const WebPointerEvent& event,
-    const WebVector<const WebInputEvent*>& coalesced_events,
-    const WebVector<const WebInputEvent*>& predicted_events) {
+    const std::vector<std::unique_ptr<WebInputEvent>>& coalesced_events,
+    const std::vector<std::unique_ptr<WebInputEvent>>& predicted_events) {
   WebPointerEvent transformed_event =
-      TransformWebPointerEvent(main_frame.View(), event);
-  return main_frame.GetEventHandler().HandlePointerEvent(
+      TransformWebPointerEvent(local_root.View(), event);
+  return local_root.GetEventHandler().HandlePointerEvent(
       transformed_event,
-      TransformWebPointerEventVector(main_frame.View(), coalesced_events),
-      TransformWebPointerEventVector(main_frame.View(), predicted_events));
+      TransformWebPointerEventVector(local_root.View(), coalesced_events),
+      TransformWebPointerEventVector(local_root.View(), predicted_events));
 }
 
 }  // namespace blink

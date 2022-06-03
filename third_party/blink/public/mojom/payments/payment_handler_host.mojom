@@ -20,7 +20,7 @@ struct PaymentHandlerMethodData {
   // object, so more specific types cannot be used. A simple example:
   //
   // {"supportedNetworks": ["visa"]}
-  string stringified_data;
+  string? stringified_data;
 };
 
 struct PaymentHandlerModifier {

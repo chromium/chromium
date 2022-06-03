@@ -4,8 +4,8 @@
 
 #include "chrome_site_per_process_test.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test_utils.h"

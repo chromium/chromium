@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80d9ff'>
+<script>
+'use strict';
+
+promise_test(() => {
+  let colorControl = document.getElementById('color');
+  return openPickerWithPromise(colorControl)
+  .then(() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
+    const colorWell = popupDocument.querySelector('color-well');
+    const colorWellRect = colorWell.getBoundingClientRect();
+    eventSender.mouseMoveTo(colorWellRect.left, colorWellRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(colorWellRect.left + (colorWellRect.width * 4 / 10), colorWellRect.top + (colorWellRect.height * 6 / 10));
+    eventSender.mouseUp();
+    assert_equals(colorControl.value, '#3d5a66', 'Expected color value to change from mouse input.');
+    eventSender.keyDown('Escape');
+    assert_equals(colorControl.value, '#80d9ff', 'Color control value should have reverted back after pressing escape.');
+    assert_not_equals(internals.pagePopupWindow, null, 'Popup should still be open after escape that reverted color value.');
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, 'Popup should close after second escape.');
+  });
+}, "Color picker: Pressing escape once discards color selection but keeps popup open, pressing again closes popup");
+
+</script>
+</body>
+</html>

@@ -7,11 +7,9 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_float_size.h"
 #include "third_party/blink/public/platform/web_gesture_curve.h"
 #include "ui/events/gestures/fling_curve.h"
 
-using blink::WebFloatSize;
 using blink::WebGestureCurve;
 
 namespace ui {

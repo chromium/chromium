@@ -8,17 +8,16 @@
 
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
 <script>
   var numCallsScroll = 0;
   var numCallsResize = 0;
   var pageScaleFactor = 2;
+  var source = GestureSourceType.MOUSE_INPUT;
 
   var t = async_test('verify that the scroll and resize events get fired on window.visualViewport');
 
-  window.onload = t.step_func(function() {
-    // Turn off smooth scrolling.
-    internals.settings.setScrollAnimatorEnabled(false);
-
+  window.onload = async () => {
     window.visualViewport.addEventListener('scroll', function(e) {
       numCallsScroll++;
     });
@@ -27,15 +26,15 @@
       numCallsResize++;
     });
 
-    // Scroll both viewports.
-    eventSender.mouseMoveTo(100, 100);
-    eventSender.continuousMouseScrollBy(100, 100);
-    assert_equals(numCallsScroll, 0);
-    assert_equals(numCallsResize, 0);
+    // Register the event handlers after the waitForCompositorCommit.
+    await waitForCompositorCommit();
+    numCallsScroll = 0;
+    numCallsResize = 0;
 
-    // TODO(ymalik): Remove hook to internals to pinch-zoom here and browser
-    // zoom below. This will be required to upstream to w3c repo.
-    internals.setPageScaleFactor(pageScaleFactor);
+    // Scroll both viewports.
+    await smoothScroll(100, 100, 100, source, 'downright', SPEED_INSTANT);
+
+    chrome.gpuBenchmarking.setPageScaleFactor(pageScaleFactor);
 
     // Verify viewport dimensions exclude scrollbar.
     requestAnimationFrame(function() {
@@ -52,5 +51,5 @@
         t.done();
       });
     });
-  });
+  }
 </script>

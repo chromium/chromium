@@ -43,6 +43,7 @@ function writeBlob() {
   var put_request = put_tx.objectStore(store_name).put(put_blob, blob_key);
   put_request.onerror = unexpectedErrorCallback;
   put_tx.oncomplete = function () {
+    debug('Write complete');
     var get_tx = db.transaction(store_name);
 
     var get_request1 = get_tx.objectStore(store_name).get(blob_key);
@@ -69,6 +70,7 @@ function writeBlob() {
 }
 
 function writeFile() {
+  debug('Writing file.');
   put_file = new File([''], 'somefile', {
       type: 'application/x-special-snowflake',
       lastModified: new Date('1999-12-31T23:59:59Z')

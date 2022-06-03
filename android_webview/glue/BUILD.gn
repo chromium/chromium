@@ -7,31 +7,31 @@ import("//android_webview/variables.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
-android_library("glue") {
+android_library("glue_java") {
   deps = [
     "//android_webview:android_webview_product_config_java",
     "//android_webview:browser_java",
-    "//android_webview:common_commandline_java",
     "//android_webview:common_java",
     "//android_webview/nonembedded:system_webview_manifest",
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//android_webview/support_library/callback:callback_java",
     "//base:base_java",
-    "//base:jni_java",
-    "//components/autofill/android:autofill_java",
-    "//components/autofill/android:provider_java",
     "//components/content_capture/android:java",
     "//components/embedder_support/android:application_java",
+    "//components/embedder_support/android:util_java",
+    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
     "//net/android:net_java",
-    "//ui/android:ui_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   alternative_android_sdk_dep =
       "//third_party/android_sdk:public_framework_system_java"
 
-  java_files = [
+  sources = [
     "java/src/com/android/webview/chromium/CallbackConverter.java",
     "java/src/com/android/webview/chromium/ContentSettingsAdapter.java",
     "java/src/com/android/webview/chromium/CookieManagerAdapter.java",
@@ -44,8 +44,9 @@ android_library("glue") {
     "java/src/com/android/webview/chromium/GlueApiHelperForOMR1.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForP.java",
     "java/src/com/android/webview/chromium/GlueApiHelperForQ.java",
+    "java/src/com/android/webview/chromium/GlueApiHelperForR.java",
     "java/src/com/android/webview/chromium/GraphicsUtils.java",
-    "java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
+    "java/src/com/android/webview/chromium/PacProcessorImpl.java",
     "java/src/com/android/webview/chromium/SafeBrowsingResponseAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerClientAdapter.java",
     "java/src/com/android/webview/chromium/ServiceWorkerControllerAdapter.java",
@@ -71,14 +72,14 @@ android_library("glue") {
     "java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForOMR1.java",
     "java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForP.java",
     "java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForQ.java",
+    "java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForR.java",
+    "java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForS.java",
     "java/src/com/android/webview/chromium/WebViewContentsClientAdapter.java",
     "java/src/com/android/webview/chromium/WebViewDatabaseAdapter.java",
     "java/src/com/android/webview/chromium/WebViewDelegateFactory.java",
+    "java/src/com/android/webview/chromium/WebViewLibraryPreloader.java",
     "java/src/com/android/webview/chromium/WebViewRenderProcessAdapter.java",
     "java/src/com/android/webview/chromium/WebViewRenderProcessClientAdapter.java",
     "java/src/com/android/webview/chromium/WebkitToSharedGlueConverter.java",
   ]
-
-  android_manifest_for_lint = system_webview_android_manifest
-  min_sdk_version = 21
 }

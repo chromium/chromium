@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_AUTO_ENROLLMENT_CHECK_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "chrome/browser/chromeos/login/enrollment/auto_enrollment_check_screen_view.h"
+#include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "content/public/browser/web_ui.h"
 
 namespace chromeos {
 
@@ -21,6 +19,12 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
 
   explicit AutoEnrollmentCheckScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  AutoEnrollmentCheckScreenHandler(const AutoEnrollmentCheckScreenHandler&) =
+      delete;
+  AutoEnrollmentCheckScreenHandler& operator=(
+      const AutoEnrollmentCheckScreenHandler&) = delete;
+
   ~AutoEnrollmentCheckScreenHandler() override;
 
   // AutoEnrollmentCheckScreenActor implementation:
@@ -40,11 +44,14 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentCheckScreenHandler);
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_AUTO_ENROLLMENT_CHECK_SCREEN_HANDLER_H_
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AutoEnrollmentCheckScreenHandler;
+}
 
+#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_AUTO_ENROLLMENT_CHECK_SCREEN_HANDLER_H_

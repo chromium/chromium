@@ -62,11 +62,9 @@ std::string VisibleSelectionTest::GetWordSelectionText(
     const std::string& selection_text) {
   const PositionInFlatTree position =
       ToPositionInFlatTree(SetSelectionTextToBody(selection_text).Base());
-  return GetSelectionTextInFlatTreeFromBody(
-      CreateVisibleSelectionWithGranularity(
-          SelectionInFlatTree::Builder().Collapse(position).Build(),
-          TextGranularity::kWord)
-          .AsSelection());
+  return GetSelectionTextInFlatTreeFromBody(ExpandWithGranularity(
+      SelectionInFlatTree::Builder().Collapse(position).Build(),
+      TextGranularity::kWord));
 }
 
 static void TestFlatTreePositionsToEqualToDOMTreePositions(
@@ -88,20 +86,38 @@ template <typename Strategy>
 VisibleSelectionTemplate<Strategy> ExpandUsingGranularity(
     const VisibleSelectionTemplate<Strategy>& selection,
     TextGranularity granularity) {
-  return CreateVisibleSelectionWithGranularity(
+  return CreateVisibleSelection(ExpandWithGranularity(
       typename SelectionTemplate<Strategy>::Builder()
           .SetBaseAndExtent(selection.Base(), selection.Extent())
           .Build(),
-      granularity);
+      granularity));
+}
+
+// For "editing/deleting/delete_after_block_image.html"
+TEST_F(VisibleSelectionTest, AnonymousPlaceholder) {
+  InsertStyleElement("img { display:block; width: 10px; height: 10px;");
+  SetBodyContent("<div><img id=i><br id=b></div>");
+  Element& img = *GetElementById("i");
+  Element& br = *GetElementById("b");
+
+  // Note: After:<img>, Before:<br>, DIV@1 are equivalent.
+  const VisibleSelection& selection =
+      CreateVisibleSelection(SelectionInDOMTree::Builder()
+                                 .Collapse(Position::BeforeNode(br))
+                                 .Extend(Position::AfterNode(img))
+                                 .Build());
+  EXPECT_TRUE(selection.IsCaret());
+  EXPECT_EQ(Position::BeforeNode(br), selection.Base());
+  EXPECT_EQ(Position::BeforeNode(br), selection.Extent());
 }
 
 TEST_F(VisibleSelectionTest, expandUsingGranularity) {
   const char* body_content =
-      "<span id=host><a id=one>1</a><a id=two>22</a></span>";
+      "<span id=host><a slot='#one' id=one>1</a><a slot='#two' "
+      "id=two>22</a></span>";
   const char* shadow_content =
-      "<p><b id=three>333</b><content select=#two></content><b "
-      "id=four>4444</b><span id=space>  </span><content "
-      "select=#one></content><b id=five>55555</b></p>";
+      "<p><b id=three>333</b><slot name=#two></slot><b id=four>4444</b><span "
+      "id=space>  </span><slot name=#one></slot><b id=five>55555</b></p>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -228,16 +244,15 @@ TEST_F(VisibleSelectionTest, ExpandUsingGranularityWithEmptyCell) {
       "<td id='first' width='50' height='25pt'>|</td>"
       "<td id='second' width='50' height='25pt'></td>"
       "</tr></table></div>");
-  const VisibleSelectionInFlatTree& selection =
-      CreateVisibleSelectionWithGranularity(
-          ConvertToSelectionInFlatTree(selection_in_dom_tree),
-          TextGranularity::kWord);
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(ConvertToSelectionInFlatTree(selection_in_dom_tree),
+                            TextGranularity::kWord);
   EXPECT_EQ(
       "<div contenteditable><table cellspacing=\"0\"><tbody><tr>"
       "<td height=\"25pt\" id=\"first\" width=\"50\">|</td>"
       "<td height=\"25pt\" id=\"second\" width=\"50\"></td>"
       "</tr></tbody></table></div>",
-      GetSelectionTextInFlatTreeFromBody(selection.AsSelection()));
+      GetSelectionTextInFlatTreeFromBody(selection));
 }
 
 TEST_F(VisibleSelectionTest, Initialisation) {
@@ -421,11 +436,11 @@ TEST_F(VisibleSelectionTest, GetWordSelectionTextWithTextSecurity) {
 
 TEST_F(VisibleSelectionTest, ShadowCrossing) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content =
-      "<a><span id='s4'>44</span><content select=#two></content><span "
-      "id='s5'>55</span><content select=#one></content><span "
-      "id='s6'>66</span></a>";
+      "<a><span id='s4'>44</span><slot name=#two></slot><span "
+      "id='s5'>55</span><slot name=#one></slot><span id='s6'>66</span></a>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -447,56 +462,23 @@ TEST_F(VisibleSelectionTest, ShadowCrossing) {
 
   EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor),
             selection.Start());
-  EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor), selection.End());
+  EXPECT_EQ(Position(one->firstChild(), 0), selection.End());
   EXPECT_EQ(PositionInFlatTree(one->firstChild(), 0),
             selection_in_flat_tree.Start());
   EXPECT_EQ(PositionInFlatTree(six->firstChild(), 2),
             selection_in_flat_tree.End());
 }
 
-TEST_F(VisibleSelectionTest, ShadowV0DistributedNodes) {
-  const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
-  const char* shadow_content =
-      "<a><span id='s4'>44</span><content select=#two></content><span "
-      "id='s5'>55</span><content select=#one></content><span "
-      "id='s6'>66</span></a>";
-  SetBodyContent(body_content);
-  ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-
-  Element* body = GetDocument().body();
-  Element* one = body->QuerySelector("#one");
-  Element* two = body->QuerySelector("#two");
-  Element* five = shadow_root->QuerySelector("#s5");
-
-  VisibleSelection selection =
-      CreateVisibleSelection(SelectionInDOMTree::Builder()
-                                 .Collapse(Position::FirstPositionInNode(*one))
-                                 .Extend(Position::LastPositionInNode(*two))
-                                 .Build());
-  VisibleSelectionInFlatTree selection_in_flat_tree = CreateVisibleSelection(
-      SelectionInFlatTree::Builder()
-          .Collapse(PositionInFlatTree::FirstPositionInNode(*one))
-          .Extend(PositionInFlatTree::LastPositionInNode(*two))
-          .Build());
-
-  EXPECT_EQ(Position(one->firstChild(), 0), selection.Start());
-  EXPECT_EQ(Position(two->firstChild(), 2), selection.End());
-  EXPECT_EQ(PositionInFlatTree(five->firstChild(), 0),
-            selection_in_flat_tree.Start());
-  EXPECT_EQ(PositionInFlatTree(five->firstChild(), 2),
-            selection_in_flat_tree.End());
-}
 
 TEST_F(VisibleSelectionTest, ShadowNested) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content =
-      "<a><span id='s4'>44</span><content select=#two></content><span "
-      "id='s5'>55</span><content select=#one></content><span "
-      "id='s6'>66</span></a>";
+      "<a><span id='s4'>44</span><slot name=#two></slot><span "
+      "id='s5'>55</span><slot name=#one></slot><span id='s6'>66</span></a>";
   const char* shadow_content2 =
-      "<span id='s7'>77</span><content></content><span id='s8'>88</span>";
+      "<span id='s7'>77</span><slot></slot><span id='s8'>88</span>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   ShadowRoot* shadow_root2 = CreateShadowRootForElementWithIDAndSetInnerHTML(
@@ -528,7 +510,7 @@ TEST_F(VisibleSelectionTest, ShadowNested) {
 
   EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor),
             selection.Start());
-  EXPECT_EQ(Position(host, PositionAnchorType::kBeforeAnchor), selection.End());
+  EXPECT_EQ(Position(one->firstChild(), 0), selection.End());
   EXPECT_EQ(PositionInFlatTree(eight->firstChild(), 2),
             selection_in_flat_tree.Start());
   EXPECT_EQ(PositionInFlatTree(eight->firstChild(), 2),
@@ -662,19 +644,18 @@ TEST_F(VisibleSelectionTest, WordGranularity) {
 TEST_F(VisibleSelectionTest, WordGranularityAfterTextControl) {
   const PositionInFlatTree position =
       ToPositionInFlatTree(SetCaretTextToBody("foo<input value=\"bla\">b|ar"));
-  const VisibleSelectionInFlatTree selection =
-      CreateVisibleSelectionWithGranularity(
-          SelectionInFlatTree::Builder().Collapse(position).Build(),
-          TextGranularity::kWord);
+  const SelectionInFlatTree selection = ExpandWithGranularity(
+      SelectionInFlatTree::Builder().Collapse(position).Build(),
+      TextGranularity::kWord);
   EXPECT_EQ("foo<input value=\"bla\"><div>bla</div></input>^bar|",
-            GetSelectionTextInFlatTreeFromBody(selection.AsSelection()));
+            GetSelectionTextInFlatTreeFromBody(selection));
 }
 
 // This is for crbug.com/627783, simulating restoring selection
 // in undo stack.
 TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   SetBodyContent("<div id=host></div><div id=sample>foo</div>");
-  SetShadowContent("<content>", "host");
+  SetShadowContent("<slot>", "host");
   Element* sample = GetDocument().getElementById("sample");
 
   // Simulates saving selection in undo stack.
@@ -687,7 +668,7 @@ TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   // Simulates modifying DOM tree to invalidate distribution.
   Element* host = GetDocument().getElementById("host");
   host->AppendChild(sample);
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Simulates to restore selection from undo stack.
   selection = CreateVisibleSelection(selection.AsSelection());
@@ -699,7 +680,7 @@ TEST_F(VisibleSelectionTest, BackwardSelectionWithMultipleEmptyBodies) {
   Element* body = GetDocument().body();
   Element* new_body = GetDocument().CreateRawElement(html_names::kBodyTag);
   body->appendChild(new_body);
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   const SelectionInDOMTree selection =
       SelectionInDOMTree::Builder()

@@ -44,23 +44,6 @@ test(function(t) {
 }, "AccessibleNode.activeDescendant");
 </script>
 
-<input id="input1">
-<div id="details">Details</div>
-
-<script>
-test(function(t) {
-    var input1 = document.getElementById("input1");
-    var details = document.getElementById("details");
-    var axInput1 = accessibilityController.accessibleElementById("input1");
-    var axDetails = accessibilityController.accessibleElementById("details");
-    assert_equals(axInput1.ariaDetailsElement(), undefined);
-
-    input1.accessibleNode.details = details.accessibleNode;
-
-    assert_equals(axInput1.ariaDetailsElement(), undefined);
-}, "AccessibleNode.details");
-</script>
-
 <input id="input2">
 <div id="errorMessage">ErrorMessage</div>
 

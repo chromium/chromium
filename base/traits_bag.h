@@ -10,8 +10,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/parameter_pack.h"
+#include "base/template_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A bag of Traits (structs / enums / etc...) can be an elegant alternative to
 // the builder pattern and multiple default arguments for configuring things.
@@ -74,14 +75,14 @@ template <typename... TraitsToExclude>
 struct Exclude {
   template <typename T,
             std::enable_if_t<ParameterPack<
-                TraitsToExclude...>::template HasType<T>()>* = nullptr>
+                TraitsToExclude...>::template HasType<T>::value>* = nullptr>
   static constexpr EmptyTrait Filter(T t) {
     return EmptyTrait();
   }
 
   template <typename T,
             std::enable_if_t<!ParameterPack<
-                TraitsToExclude...>::template HasType<T>()>* = nullptr>
+                TraitsToExclude...>::template HasType<T>::value>* = nullptr>
   static constexpr T Filter(T t) {
     return t;
   }
@@ -181,11 +182,11 @@ struct EnumTraitFilter : public BasicTraitFilter<ArgType> {
 
 template <typename ArgType>
 struct OptionalEnumTraitFilter
-    : public BasicTraitFilter<ArgType, Optional<ArgType>> {
+    : public BasicTraitFilter<ArgType, absl::optional<ArgType>> {
   constexpr OptionalEnumTraitFilter()
-      : BasicTraitFilter<ArgType, Optional<ArgType>>(nullopt) {}
+      : BasicTraitFilter<ArgType, absl::optional<ArgType>>(absl::nullopt) {}
   constexpr OptionalEnumTraitFilter(ArgType arg)
-      : BasicTraitFilter<ArgType, Optional<ArgType>>(arg) {}
+      : BasicTraitFilter<ArgType, absl::optional<ArgType>>(arg) {}
 };
 
 // Tests whether multiple given argtument types are all valid traits according
@@ -198,10 +199,8 @@ struct RequiredEnumTraitFilter : public BasicTraitFilter<ArgType> {
 
 // Note EmptyTrait is always regarded as valid to support filtering.
 template <class ValidTraits, class T>
-inline constexpr bool IsValidTrait() {
-  return std::is_constructible<ValidTraits, T>::value ||
-         std::is_same<T, EmptyTrait>::value;
-}
+using IsValidTrait = disjunction<std::is_constructible<ValidTraits, T>,
+                                 std::is_same<T, EmptyTrait>>;
 
 // Tests whether a given trait type is valid or invalid by testing whether it is
 // convertible to the provided ValidTraits type. To use, define a ValidTraits
@@ -220,11 +219,8 @@ inline constexpr bool IsValidTrait() {
 //   ...
 // };
 template <class ValidTraits, class... ArgTypes>
-struct AreValidTraits
-    : std::integral_constant<bool,
-                             all_of(
-                                 {IsValidTrait<ValidTraits, ArgTypes>()...})> {
-};
+using AreValidTraits =
+    bool_constant<all_of({IsValidTrait<ValidTraits, ArgTypes>::value...})>;
 
 // Helper to make getting an enum from a trait more readable.
 template <typename Enum, typename... Args>
@@ -241,18 +237,17 @@ static constexpr Enum GetEnum(Args... args) {
 // Helper to make getting an optional enum from a trait with a default more
 // readable.
 template <typename Enum, typename... Args>
-static constexpr Optional<Enum> GetOptionalEnum(Args... args) {
+static constexpr absl::optional<Enum> GetOptionalEnum(Args... args) {
   return GetTraitFromArgList<OptionalEnumTraitFilter<Enum>>(args...);
 }
 
 // Helper to make checking for the presence of a trait more readable.
 template <typename Trait, typename... Args>
-static constexpr bool HasTrait() {
+struct HasTrait : ParameterPack<Args...>::template HasType<Trait> {
   static_assert(
       count({std::is_constructible<Trait, Args>::value...}, true) <= 1,
       "The traits bag contains multiple traits of the same type.");
-  return ParameterPack<Args...>::template HasType<Trait>();
-}
+};
 
 // If you need a template vararg constructor to delegate to a private
 // constructor, you may need to add this to the private constructor to ensure

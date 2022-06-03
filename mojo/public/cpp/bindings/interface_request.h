@@ -10,19 +10,22 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
 
+// DEPRECATED: Do not introduce new uses of this type. Instead use the
+// PendingReceiver type defined in pending_receiver.h. Mojom files which pass
+// interface requests (i.e. "Interface&" syntax) should be updated to pass
+// a "pending_receiver<Interface>" instead.
+//
 // Represents a request from a remote client for an implementation of Interface
 // over a specified message pipe. The implementor of the interface should
 // remove the message pipe by calling PassMessagePipe() and bind it to the
@@ -39,6 +42,9 @@ class InterfaceRequest {
 
   explicit InterfaceRequest(ScopedMessagePipeHandle handle)
       : state_(std::move(handle)) {}
+
+  InterfaceRequest(const InterfaceRequest&) = delete;
+  InterfaceRequest& operator=(const InterfaceRequest&) = delete;
 
   // Takes the message pipe from another InterfaceRequest.
   InterfaceRequest(InterfaceRequest&& other) = default;
@@ -75,7 +81,7 @@ class InterfaceRequest {
 
     Message message =
         PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
-            kMasterInterfaceId, DisconnectReason(custom_reason, description));
+            kPrimaryInterfaceId, DisconnectReason(custom_reason, description));
     MojoResult result =
         WriteMessageNew(state_.pipe.get(), message.TakeMojoMessage(),
                         MOJO_WRITE_MESSAGE_FLAG_NONE);
@@ -105,8 +111,6 @@ class InterfaceRequest {
 
  private:
   internal::PendingReceiverState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceRequest);
 };
 
 // Creates a new message pipe over which Interface is to be served. Binds the

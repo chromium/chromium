@@ -10,33 +10,34 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 
 namespace base {
-class ListValue;
-class DictionaryValue;
+class Value;
 }
 
 class Profile;
 
 class DevToolsTargetsUIHandler {
  public:
-  typedef base::Callback<void(const std::string&,
-                              const base::ListValue&)> Callback;
+  using Callback =
+      base::RepeatingCallback<void(const std::string&, const base::Value&)>;
 
-  DevToolsTargetsUIHandler(const std::string& source_id,
-                           const Callback& callback);
+  DevToolsTargetsUIHandler(const std::string& source_id, Callback callback);
+
+  DevToolsTargetsUIHandler(const DevToolsTargetsUIHandler&) = delete;
+  DevToolsTargetsUIHandler& operator=(const DevToolsTargetsUIHandler&) = delete;
+
   virtual ~DevToolsTargetsUIHandler();
 
   std::string source_id() const { return source_id_; }
 
   static std::unique_ptr<DevToolsTargetsUIHandler> CreateForLocal(
-      const Callback& callback,
+      Callback callback,
       Profile* profile);
 
   static std::unique_ptr<DevToolsTargetsUIHandler> CreateForAdb(
-      const Callback& callback,
+      Callback callback,
       Profile* profile);
 
   scoped_refptr<content::DevToolsAgentHost> GetTarget(
@@ -50,9 +51,8 @@ class DevToolsTargetsUIHandler {
   virtual void ForceUpdate();
 
  protected:
-  std::unique_ptr<base::DictionaryValue> Serialize(
-      content::DevToolsAgentHost* host);
-  void SendSerializedTargets(const base::ListValue& list);
+  base::Value Serialize(content::DevToolsAgentHost* host);
+  void SendSerializedTargets(const base::Value& list);
 
   using TargetMap =
       std::map<std::string, scoped_refptr<content::DevToolsAgentHost>>;
@@ -61,14 +61,12 @@ class DevToolsTargetsUIHandler {
  private:
   const std::string source_id_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTargetsUIHandler);
 };
 
 class PortForwardingStatusSerializer
     : private DevToolsAndroidBridge::PortForwardingListener {
  public:
-  typedef base::Callback<void(const base::Value&)> Callback;
+  using Callback = base::RepeatingCallback<void(base::Value)>;
 
   PortForwardingStatusSerializer(const Callback& callback, Profile* profile);
   ~PortForwardingStatusSerializer() override;

@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -34,7 +35,9 @@ void ReadableStreamDefaultControllerWithScriptScope::Close() {
 
   ScriptState::Scope scope(script_state_);
 
-  ReadableStreamDefaultController::Close(script_state_, controller_);
+  if (ReadableStreamDefaultController::CanCloseOrEnqueue(controller_)) {
+    ReadableStreamDefaultController::Close(script_state_, controller_);
+  }
   controller_ = nullptr;
 }
 
@@ -42,7 +45,7 @@ double ReadableStreamDefaultControllerWithScriptScope::DesiredSize() const {
   if (!controller_)
     return 0.0;
 
-  base::Optional<double> desired_size = controller_->GetDesiredSize();
+  absl::optional<double> desired_size = controller_->GetDesiredSize();
   DCHECK(desired_size.has_value());
   return desired_size.value();
 }
@@ -52,10 +55,17 @@ void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
   if (!controller_)
     return;
 
+  if (!ReadableStreamDefaultController::CanCloseOrEnqueue(controller_)) {
+    return;
+  }
+
   ScriptState::Scope scope(script_state_);
 
-  ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext, "",
+                                 "");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   ReadableStreamDefaultController::Enqueue(script_state_, controller_, js_chunk,
                                            exception_state);
   if (exception_state.HadException()) {
@@ -75,7 +85,8 @@ void ReadableStreamDefaultControllerWithScriptScope::Error(
   controller_ = nullptr;
 }
 
-void ReadableStreamDefaultControllerWithScriptScope::Trace(Visitor* visitor) {
+void ReadableStreamDefaultControllerWithScriptScope::Trace(
+    Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(controller_);
 }

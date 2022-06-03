@@ -54,7 +54,7 @@ Polymer({
 
   observers: ['updateSelected_(items, value)'],
 
-  focus: function() {
+  focus() {
     this.$$('select').focus();
   },
 
@@ -62,11 +62,11 @@ Polymer({
    * Ensure that the <select> value is updated when |items| or |value| changes.
    * @private
    */
-  updateSelected_: function() {
+  updateSelected_() {
     // Wait for the dom-repeat to populate the <option> entries.
     this.async(function() {
       const select = this.$$('select');
-      if (select.value != this.value) {
+      if (select.value !== this.value) {
         select.value = this.value;
       }
     });
@@ -80,10 +80,11 @@ Polymer({
    * @return {string}
    * @private
    */
-  getItemLabel_: function(item) {
+  getItemLabel_(item) {
     if (this.certList) {
       return this.getCertificateName_(
-          /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (item));
+          /** @type {!chromeos.networkConfig.mojom.NetworkCertificate}*/ (
+              item));
     }
     let value;
     if (this.key) {
@@ -106,17 +107,18 @@ Polymer({
   },
 
   /**
-   * @param {string|!chromeos.networkConfig.mojom.NetworkCertificate} item
-   * @return {string}
+   * @param {string|number|!chromeos.networkConfig.mojom.NetworkCertificate}
+   *     item
+   * @return {string|number}
    * @private
    */
-  getItemValue_: function(item) {
+  getItemValue_(item) {
     if (this.certList) {
       return /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (
                  item)
           .hash;
     }
-    return /** @type {string} */ (item);
+    return /** @type {string|number}*/ (item);
   },
 
   /**
@@ -124,7 +126,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  getItemEnabled_: function(item) {
+  getItemEnabled_(item) {
     if (this.certList) {
       const cert =
           /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (item);
@@ -141,7 +143,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getCertificateName_: function(certificate) {
+  getCertificateName_(certificate) {
     if (certificate.hardwareBacked) {
       return this.i18n(
           'networkCertificateNameHardwareBacked', certificate.issuedBy,

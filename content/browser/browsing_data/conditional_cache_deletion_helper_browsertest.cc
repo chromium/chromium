@@ -21,14 +21,14 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_cache.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
 
@@ -43,7 +43,6 @@ class ConditionalCacheDeletionHelperBrowserTest : public ContentBrowserTest {
 
   bool TestCacheEntry(const GURL& url) {
     return LoadBasicRequest(storage_partition()->GetNetworkContext(), url,
-                            0 /* process_id */, 0 /* render_frame_id */,
                             net::LOAD_ONLY_FROM_CACHE |
                                 net::LOAD_SKIP_CACHE_VALIDATION) == net::OK;
   }
@@ -100,7 +99,7 @@ class ConditionalCacheDeletionHelperBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* storage_partition() {
-    return BrowserContext::GetDefaultStoragePartition(browser_context());
+    return browser_context()->GetDefaultStoragePartition();
   }
 
  private:

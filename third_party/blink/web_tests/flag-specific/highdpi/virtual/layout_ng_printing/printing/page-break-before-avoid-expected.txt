@@ -1,0 +1,21 @@
+Test for page-break-before:avoid
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+FAIL: expected page number of "page1" is 1. Was 0
+FAIL: expected page number of "page2-1" is 2. Was 1
+FAIL: expected page number of "page2-2" is 2. Was 1
+FAIL: expected page number of "page3-1" is 3. Was 2
+PASS: page number of "page3-2" is 3
+PASS: page number of "page3-3" is 3
+FAIL: expected page number of "page5" is 5. Was 4
+FAIL: expected page number of "page6-1" is 6. Was 4
+FAIL: expected page number of "page6-7" is 6. Was 5
+FAIL: expected page number of "page7" is 7. Was 6
+FAIL: expected page number of "page10" is 10. Was 9
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

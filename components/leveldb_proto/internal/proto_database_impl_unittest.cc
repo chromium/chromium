@@ -8,9 +8,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/internal/leveldb_proto_feature_list.h"
+#include "components/leveldb_proto/internal/proto_database_selector.h"
 #include "components/leveldb_proto/internal/shared_proto_database_provider.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/testing/proto/test_db.pb.h"
@@ -31,6 +33,10 @@ struct ClientStruct {
     id_ = std::move(other.id_);
     data_ = std::move(other.data_);
   }
+
+  ClientStruct(const ClientStruct&) = delete;
+  ClientStruct& operator=(const ClientStruct&) = delete;
+
   ~ClientStruct() = default;
 
   // The methods below are convenience methods to have a similar API as protocol
@@ -41,9 +47,6 @@ struct ClientStruct {
 
   std::string id_;
   std::string data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientStruct);
 };
 
 void CreateData(const std::string& key,
@@ -107,9 +110,11 @@ class TestSharedProtoDatabaseClient : public SharedProtoDatabaseClient {
   using SharedProtoDatabaseClient::set_migration_status;
   using SharedProtoDatabaseClient::SharedProtoDatabaseClient;
 
-  TestSharedProtoDatabaseClient(scoped_refptr<SharedProtoDatabase> shared_db)
+  explicit TestSharedProtoDatabaseClient(
+      scoped_refptr<SharedProtoDatabase> shared_db)
       : SharedProtoDatabaseClient::SharedProtoDatabaseClient(
-            nullptr,
+            std::make_unique<ProtoLevelDBWrapper>(shared_db->task_runner_,
+                                                  shared_db->db_.get()),
             ProtoDbType::TEST_DATABASE1,
             shared_db) {}
 
@@ -117,11 +122,18 @@ class TestSharedProtoDatabaseClient : public SharedProtoDatabaseClient {
       SharedDBMetadataProto::MigrationStatus migration_status) override {
     set_migration_status(migration_status);
   }
+
+  void UpdateEntriesWithRemoveFilter(
+      std::unique_ptr<KeyValueVector> entries_to_save,
+      const KeyFilter& delete_key_filter,
+      Callbacks::UpdateCallback callback) override {
+    std::move(callback).Run(true);
+  }
 };
 
 class TestProtoDatabaseProvider : public ProtoDatabaseProvider {
  public:
-  TestProtoDatabaseProvider(const base::FilePath& profile_dir)
+  explicit TestProtoDatabaseProvider(const base::FilePath& profile_dir)
       : ProtoDatabaseProvider(profile_dir) {}
   TestProtoDatabaseProvider(const base::FilePath& profile_dir,
                             const scoped_refptr<SharedProtoDatabase>& shared_db)
@@ -155,11 +167,12 @@ class ProtoDatabaseImplTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(shared_db_temp_dir_.CreateUniqueTempDir());
-    test_task_runner_ =
-        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
     shared_db_ = base::WrapRefCounted(new SharedProtoDatabase(
         kDefaultClientName, shared_db_temp_dir_.GetPath()));
+    test_task_runner_ = shared_db_->database_task_runner_for_testing();
   }
+
+  void TearDown() override { shared_db_->Shutdown(); }
 
   void SetUpExperimentParams(std::map<std::string, std::string> params) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -272,16 +285,19 @@ class ProtoDatabaseImplTest : public testing::Test {
     scoped_refptr<ProtoDatabaseSelector> selector(new ProtoDatabaseSelector(
         ProtoDbType::TEST_DATABASE1, GetTestThreadTaskRunner(), nullptr));
 
-    selector->OnGetSharedDBClient(
-        std::move(unique_db), unique_db_status, use_shared_db,
+    GetTestThreadTaskRunner()->PostTask(
+        FROM_HERE,
         base::BindOnce(
-            [](base::OnceClosure closure, Enums::InitStatus expect_status,
-               Enums::InitStatus status) {
-              ASSERT_EQ(status, expect_status);
-              std::move(closure).Run();
-            },
-            init_loop.QuitClosure(), expect_status),
-        std::move(shared_db_client), shared_db_status);
+            &ProtoDatabaseSelector::OnGetSharedDBClient, selector,
+            std::move(unique_db), unique_db_status, use_shared_db,
+            base::BindOnce(
+                [](base::OnceClosure closure, Enums::InitStatus expect_status,
+                   Enums::InitStatus status) {
+                  ASSERT_EQ(status, expect_status);
+                  std::move(closure).Run();
+                },
+                init_loop.QuitClosure(), expect_status),
+            std::move(shared_db_client), shared_db_status));
 
     init_loop.Run();
 
@@ -520,6 +536,42 @@ TYPED_TEST(ProtoDatabaseImplTest,
 }
 
 TYPED_TEST(ProtoDatabaseImplTest,
+           SucceedsWithShared_UseShared_HasSharedDB_MigratedUniqueWasDeleted) {
+  auto shared_db_client = this->GetSharedClient();
+
+  // Database has been migrated to Unique.
+  shared_db_client->set_migration_status(
+      SharedDBMetadataProto::MIGRATE_TO_UNIQUE_SUCCESSFUL);
+
+  // If we request a shared DB, the unique DB fails does not exist and
+  // the data has been migrated to the unique DB then we return shared db.
+  this->CallOnGetSharedDBClientAndWait(
+      nullptr,                               // Unique DB fails to open.
+      Enums::InitStatus::kInvalidOperation,  // Unique DB missing.
+      true,                                  // We should be using a shared DB.
+      std::move(shared_db_client),           // Shared DB opens fine.
+      Enums::InitStatus::kOK,
+      Enums::InitStatus::kOK);  // Returns shared db.
+
+  shared_db_client = this->GetSharedClient();
+
+  // Data has been migrated to Unique, but data still exists in Shared DB that
+  // should be removed.
+  shared_db_client->set_migration_status(
+      SharedDBMetadataProto::MIGRATE_TO_UNIQUE_SHARED_TO_BE_DELETED);
+
+  // This second scenario occurs when the Shared DB still contains data, we
+  // should still clear shared and return it.
+  this->CallOnGetSharedDBClientAndWait(
+      nullptr,                               // Unique DB fails to open.
+      Enums::InitStatus::kInvalidOperation,  // Unique DB missing.
+      true,                                  // We should be using a shared DB.
+      std::move(shared_db_client),           // Shared DB opens fine.
+      Enums::InitStatus::kOK,
+      Enums::InitStatus::kOK);  // Returns shared db
+}
+
+TYPED_TEST(ProtoDatabaseImplTest,
            Fails_UseShared_HasSharedDB_DataWasMigratedToUnique) {
   auto shared_db_client = this->GetSharedClient();
 
@@ -531,10 +583,10 @@ TYPED_TEST(ProtoDatabaseImplTest,
   // the data has been migrated to the unique DB then we throw an error, as the
   // unique database may contain data.
   this->CallOnGetSharedDBClientAndWait(
-      nullptr,                               // Unique DB fails to open.
-      Enums::InitStatus::kInvalidOperation,  // Unique DB doesn't exist.
-      true,                                  // We should be using a shared DB.
-      std::move(shared_db_client),           // Shared DB opens fine.
+      nullptr,                      // Unique DB fails to open.
+      Enums::InitStatus::kError,    // Unique DB failure.
+      true,                         // We should be using a shared DB.
+      std::move(shared_db_client),  // Shared DB opens fine.
       Enums::InitStatus::kOK,
       Enums::InitStatus::kError);  // Then the DB impl should throw an error.
 

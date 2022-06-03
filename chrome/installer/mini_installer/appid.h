@@ -11,7 +11,6 @@
 namespace google_update {
 
 extern const wchar_t kAppGuid[];
-extern const wchar_t kMultiInstallAppGuid[];
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const wchar_t kBetaAppGuid[];

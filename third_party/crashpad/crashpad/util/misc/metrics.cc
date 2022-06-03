@@ -19,13 +19,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #define METRICS_OS_NAME "Mac"
 #elif defined(OS_WIN)
 #define METRICS_OS_NAME "Win"
 #elif defined(OS_ANDROID)
 #define METRICS_OS_NAME "Android"
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define METRICS_OS_NAME "Linux"
 #elif defined(OS_FUCHSIA)
 #define METRICS_OS_NAME "Fuchsia"
@@ -37,18 +37,23 @@ namespace {
 
 //! \brief Metrics values used to track the start and completion of a crash
 //!     handling. These are used as metrics values directly, so
-//!     enumeration values so new values should always be added at the end.
+//!     enumeration values so new values should always be added at the end,
+//!     before kMaxValue.
 enum class ExceptionProcessingState {
   //! \brief Logged when exception processing is started.
   kStarted = 0,
 
   //! \brief Logged when exception processing completes.
   kFinished = 1,
+
+  //! \brief An invalid value.
+  kMaxValue,
 };
 
 void ExceptionProcessing(ExceptionProcessingState state) {
-  UMA_HISTOGRAM_COUNTS("Crashpad.ExceptionEncountered",
-                       static_cast<int32_t>(state));
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.ExceptionEncountered",
+                            state,
+                            ExceptionProcessingState::kMaxValue);
 }
 
 }  // namespace
@@ -70,7 +75,7 @@ void Metrics::CrashReportSize(FileOffset size) {
 
 // static
 void Metrics::CrashUploadAttempted(bool successful) {
-  UMA_HISTOGRAM_COUNTS("Crashpad.CrashUpload.AttemptSuccessful", successful);
+  UMA_HISTOGRAM_BOOLEAN("Crashpad.CrashUpload.AttemptSuccessful", successful);
 }
 
 // static
@@ -109,5 +114,23 @@ void Metrics::HandlerCrashed(uint32_t exception_code) {
   base::UmaHistogramSparse(
       "Crashpad.HandlerCrash.ExceptionCode." METRICS_OS_NAME, exception_code);
 }
+
+#if defined(OS_IOS)
+// static
+void Metrics::MissingIntermediateDumpKey(
+    const internal::IntermediateDumpKey& key) {
+  base::UmaHistogramSparse("Crashpad.IntermediateDump.Reader.MissingKey",
+                           static_cast<uint16_t>(key));
+}
+
+// static
+void Metrics::InvalidIntermediateDumpKeySize(
+    const internal::IntermediateDumpKey& key) {
+  base::UmaHistogramSparse("Crashpad.IntermediateDump.Reader.InvalidKeySize",
+                           static_cast<uint16_t>(key));
+}
+#endif
+
+// static
 
 }  // namespace crashpad

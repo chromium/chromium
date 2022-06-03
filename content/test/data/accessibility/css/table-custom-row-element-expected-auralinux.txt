@@ -1,0 +1,23 @@
+[document web]
+++[section]
+++++[section]
+++++++[section] name='a'
+++++++++[static] name='a'
+++++++[section] name='b'
+++++++++[static] name='b'
+++++++[section] name='c'
+++++++++[static] name='c'
+++++[section]
+++++++[section] name='a'
+++++++++[static] name='a'
+++++++[section] name='b'
+++++++++[static] name='b'
+++++++[section] name='c'
+++++++++[static] name='c'
+++++[section]
+++++++[section] name='a'
+++++++++[static] name='a'
+++++++[section] name='b'
+++++++++[static] name='b'
+++++++[section] name='c'
+++++++++[static] name='c'

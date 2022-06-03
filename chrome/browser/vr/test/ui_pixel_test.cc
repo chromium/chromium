@@ -4,6 +4,7 @@
 
 #include "chrome/browser/vr/test/ui_pixel_test.h"
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/model/model.h"
@@ -14,13 +15,24 @@
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace vr {
 
-UiPixelTest::UiPixelTest() : frame_buffer_size_(kPixelHalfScreen) {}
+UiPixelTest::UiPixelTest() : frame_buffer_size_(kPixelHalfScreen) {
+#if defined(OS_WIN)
+  // VR is not supported on Windows 7.
+  os_supported_ = base::win::GetVersion() > base::win::Version::WIN7;
+#endif
+}
 
 UiPixelTest::~UiPixelTest() = default;
 
 void UiPixelTest::SetUp() {
+  if (!os_supported_)
+    return;
   gl_test_environment_ =
       std::make_unique<GlTestEnvironment>(frame_buffer_size_);
 
@@ -36,6 +48,8 @@ void UiPixelTest::SetUp() {
 }
 
 void UiPixelTest::TearDown() {
+  if (!os_supported_)
+    return;
   ui_.reset();
   glDeleteTextures(1, &content_texture_);
   gl_test_environment_.reset();
@@ -43,6 +57,7 @@ void UiPixelTest::TearDown() {
 
 void UiPixelTest::MakeUi(const UiInitialState& ui_initial_state,
                          const LocationBarState& location_bar_state) {
+  DCHECK(os_supported_);
   ui_ = std::make_unique<Ui>(browser_.get(), nullptr, nullptr, nullptr, nullptr,
                              ui_initial_state);
   ui_->OnGlInitialized(kGlTextureLocationLocal, content_texture_,
@@ -57,6 +72,7 @@ void UiPixelTest::DrawUi(const gfx::Vector3dF& laser_direction,
                          const gfx::Transform& controller_transform,
                          const gfx::Transform& view_matrix,
                          const gfx::Transform& proj_matrix) {
+  DCHECK(os_supported_);
   ControllerModel controller_model;
   controller_model.laser_direction = kForwardVector;
   controller_model.transform = controller_transform;
@@ -78,8 +94,8 @@ void UiPixelTest::DrawUi(const gfx::Vector3dF& laser_direction,
   InputEventList input_event_list;
   ReticleModel reticle_model;
   EXPECT_TRUE(ui_->OnBeginFrame(base::TimeTicks(), render_info.head_pose));
-  ui_->HandleInput(MsToTicks(1), render_info, controller_model, &reticle_model,
-                   &input_event_list);
+  ui_->HandleInput(gfx::MsToTicks(1), render_info, controller_model,
+                   &reticle_model, &input_event_list);
   std::vector<ControllerModel> controllers;
   controllers.push_back(controller_model);
   ui_->OnControllersUpdated(controllers, reticle_model);
@@ -93,6 +109,7 @@ void UiPixelTest::DrawUi(const gfx::Vector3dF& laser_direction,
 }
 
 std::unique_ptr<SkBitmap> UiPixelTest::SaveCurrentFrameBufferToSkBitmap() {
+  DCHECK(os_supported_);
   // Create buffer.
   std::unique_ptr<SkBitmap> bitmap = std::make_unique<SkBitmap>();
   if (!bitmap->tryAllocN32Pixels(frame_buffer_size_.width(),
@@ -126,6 +143,7 @@ std::unique_ptr<SkBitmap> UiPixelTest::SaveCurrentFrameBufferToSkBitmap() {
 
 bool UiPixelTest::SaveSkBitmapToPng(const SkBitmap& bitmap,
                                     const std::string& filename) {
+  DCHECK(os_supported_);
   SkFILEWStream stream(filename.c_str());
   if (!stream.isValid()) {
     return false;

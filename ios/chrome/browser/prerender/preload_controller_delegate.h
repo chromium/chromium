@@ -16,8 +16,8 @@
 // This web state will be replaced on successful preload.
 - (web::WebState*)webStateToReplace;
 
-// Should preload controller request a desktop site.
-- (BOOL)preloadShouldUseDesktopUserAgent;
+// Returns the UIView used to contain the WebView for sizing purposes.
+- (UIView*)webViewContainer;
 
 @end
 

@@ -33,10 +33,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class LocalFrame;
 
 class CORE_EXPORT SmartClipData {
   STACK_ALLOCATED();
@@ -80,7 +82,7 @@ class CORE_EXPORT SmartClip {
       HeapVector<Member<Node>>& overlapping_node_info_table);
   String ExtractTextFromNode(Node*);
 
-  Member<LocalFrame> frame_;
+  LocalFrame* frame_;
 };
 
 }  // namespace blink

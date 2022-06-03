@@ -5,10 +5,10 @@
 
 #include "components/update_client/updater_state.h"
 
+#include <string>
 #include <utility>
 
 #include "base/enterprise_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -24,11 +24,11 @@ const char UpdaterState::kIsEnterpriseManaged[] = "domainjoined";
 
 UpdaterState::UpdaterState(bool is_machine) : is_machine_(is_machine) {}
 
-UpdaterState::~UpdaterState() {}
+UpdaterState::~UpdaterState() = default;
 
 std::unique_ptr<UpdaterState::Attributes> UpdaterState::GetState(
     bool is_machine) {
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN) || defined(OS_MAC)
   UpdaterState updater_state(is_machine);
   updater_state.ReadState();
   return std::make_unique<Attributes>(updater_state.BuildAttributes());
@@ -37,7 +37,7 @@ std::unique_ptr<UpdaterState::Attributes> UpdaterState::GetState(
 #endif  // OS_WIN or Mac
 }
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN) || defined(OS_MAC)
 void UpdaterState::ReadState() {
   is_enterprise_managed_ = base::IsMachineExternallyManaged();
 
@@ -83,14 +83,14 @@ UpdaterState::Attributes UpdaterState::BuildAttributes() const {
 }
 
 std::string UpdaterState::NormalizeTimeDelta(const base::TimeDelta& delta) {
-  const base::TimeDelta two_weeks = base::TimeDelta::FromDays(14);
-  const base::TimeDelta two_months = base::TimeDelta::FromDays(60);
+  const base::TimeDelta two_weeks = base::Days(14);
+  const base::TimeDelta two_months = base::Days(56);
 
   std::string val;  // Contains the value to return in hours.
   if (delta <= two_weeks) {
     val = "0";
   } else if (two_weeks < delta && delta <= two_months) {
-    val = "408";  // 2 weeks in hours.
+    val = "336";  // 2 weeks in hours.
   } else {
     val = "1344";  // 2*28 days in hours.
   }

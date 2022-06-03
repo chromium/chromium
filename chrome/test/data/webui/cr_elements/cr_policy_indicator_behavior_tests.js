@@ -3,6 +3,17 @@
 // found in the LICENSE file.
 
 /** @fileoverview Suite of tests for CrPolicyIndicatorBehavior. */
+
+// clang-format off
+import './cr_policy_strings.js';
+
+import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+// clang-format on
+
 suite('CrPolicyIndicatorBehavior', function() {
   suiteSetup(function() {
     Polymer({
@@ -12,10 +23,13 @@ suite('CrPolicyIndicatorBehavior', function() {
     });
   });
 
+  /** @type {!TestIndicatorElement} */
   let indicator;
+
   setup(function() {
-    PolymerTest.clearBody();
-    indicator = document.createElement('test-indicator');
+    document.body.innerHTML = '';
+    indicator = /** @type {!TestIndicatorElement} */ (
+        document.createElement('test-indicator'));
     document.body.appendChild(indicator);
   });
 
@@ -96,7 +110,7 @@ suite('CrPolicyIndicatorBehavior', function() {
             indicator.indicatorType, indicator.indicatorSourceName));
   });
 
-  if (cr.isChromeOS) {
+  if (isChromeOS) {
     test('primary-user controlled indicator', function() {
       indicator.indicatorType = CrPolicyIndicatorType.PRIMARY_USER;
       indicator.indicatorSourceName = 'user@example.com';

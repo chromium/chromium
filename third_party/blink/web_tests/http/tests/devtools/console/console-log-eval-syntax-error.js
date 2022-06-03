@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that syntax errors in eval are logged into console, contains correct link and doesn't cause browser crash.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function foo()
@@ -24,8 +24,8 @@
     TestRunner.evaluateInPage('setTimeout(boo, 0);', ConsoleTestRunner.waitUntilMessageReceived.bind(this, step3));
   }
 
-  function step3() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step3() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

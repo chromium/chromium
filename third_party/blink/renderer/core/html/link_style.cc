@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
@@ -39,18 +38,12 @@ LinkStyle::LinkStyle(HTMLLinkElement* owner)
     : LinkResource(owner),
       disabled_state_(kUnset),
       pending_sheet_type_(kNone),
+      render_blocking_behavior_(RenderBlockingBehavior::kUnset),
       loading_(false),
       fired_load_(false),
       loaded_sheet_(false) {}
 
 LinkStyle::~LinkStyle() = default;
-
-enum StyleSheetCacheStatus {
-  kStyleSheetNewEntry,
-  kStyleSheetInDiskCache,
-  kStyleSheetInMemoryCache,
-  kStyleSheetCacheStatusCount,
-};
 
 void LinkStyle::NotifyFinished(Resource* resource) {
   if (!owner_->isConnected()) {
@@ -64,7 +57,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
     return;
   }
 
-  CSSStyleSheetResource* cached_style_sheet = ToCSSStyleSheetResource(resource);
+  auto* cached_style_sheet = To<CSSStyleSheetResource>(resource);
   // See the comment in pending_script.cc about why this check is necessary
   // here, instead of in the resource fetcher. https://crbug.com/500701.
   if ((!cached_style_sheet->ErrorOccurred() &&
@@ -75,7 +68,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
         cached_style_sheet->IntegrityDisposition();
 
     SubresourceIntegrityHelper::DoReport(
-        GetDocument(), cached_style_sheet->IntegrityReportInfo());
+        *GetExecutionContext(), cached_style_sheet->IntegrityReportInfo());
 
     if (disposition == ResourceIntegrityDisposition::kFailed) {
       loading_ = false;
@@ -89,19 +82,26 @@ void LinkStyle::NotifyFinished(Resource* resource) {
   auto* parser_context = MakeGarbageCollected<CSSParserContext>(
       GetDocument(), cached_style_sheet->GetResponse().ResponseUrl(),
       cached_style_sheet->GetResponse().IsCorsSameOrigin(),
-      cached_style_sheet->GetReferrerPolicy(), cached_style_sheet->Encoding());
+      Referrer(cached_style_sheet->GetResponse().ResponseUrl(),
+               cached_style_sheet->GetReferrerPolicy()),
+      cached_style_sheet->Encoding());
+  if (cached_style_sheet->GetResourceRequest().IsAdResource()) {
+    parser_context->SetIsAdRelated();
+  }
 
   if (StyleSheetContents* parsed_sheet =
           cached_style_sheet->CreateParsedStyleSheetFromCache(parser_context)) {
     if (sheet_)
       ClearSheet();
     sheet_ = MakeGarbageCollected<CSSStyleSheet>(parsed_sheet, *owner_);
-    sheet_->SetMediaQueries(MediaQuerySet::Create(owner_->Media()));
+    sheet_->SetMediaQueries(
+        MediaQuerySet::Create(owner_->Media(), GetExecutionContext()));
     if (owner_->IsInDocumentTree())
       SetSheetTitle(owner_->title());
 
     loading_ = false;
     parsed_sheet->CheckLoaded();
+    parsed_sheet->SetRenderBlocking(render_blocking_behavior_);
 
     return;
   }
@@ -113,12 +113,13 @@ void LinkStyle::NotifyFinished(Resource* resource) {
     ClearSheet();
 
   sheet_ = MakeGarbageCollected<CSSStyleSheet>(style_sheet, *owner_);
-  sheet_->SetMediaQueries(MediaQuerySet::Create(owner_->Media()));
+  sheet_->SetMediaQueries(
+      MediaQuerySet::Create(owner_->Media(), GetExecutionContext()));
   if (owner_->IsInDocumentTree())
     SetSheetTitle(owner_->title());
 
-  style_sheet->ParseAuthorStyleSheet(cached_style_sheet,
-                                     GetDocument().GetSecurityOrigin());
+  style_sheet->SetRenderBlocking(render_blocking_behavior_);
+  style_sheet->ParseAuthorStyleSheet(cached_style_sheet);
 
   loading_ = false;
   style_sheet->NotifyLoadedSheet(cached_style_sheet);
@@ -198,6 +199,10 @@ void LinkStyle::RemovePendingSheet() {
 void LinkStyle::SetDisabledState(bool disabled) {
   LinkStyle::DisabledState old_disabled_state = disabled_state_;
   disabled_state_ = disabled ? kDisabled : kEnabledViaScript;
+  // Whenever the disabled attribute is removed, set the link element's
+  // explicitly enabled attribute to true.
+  if (!disabled)
+    explicitly_enabled_ = true;
   if (old_disabled_state == disabled_state_)
     return;
 
@@ -227,7 +232,10 @@ void LinkStyle::SetDisabledState(bool disabled) {
   }
 
   if (sheet_) {
-    sheet_->setDisabled(disabled);
+    DCHECK(disabled) << "If link is being enabled, sheet_ shouldn't exist yet";
+    ClearSheet();
+    GetDocument().GetStyleEngine().SetNeedsActiveStyleUpdate(
+        owner_->GetTreeScope());
     return;
   }
 
@@ -262,25 +270,37 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
   bool media_query_matches = true;
   LocalFrame* frame = LoadingFrame();
   if (!owner_->Media().IsEmpty() && frame) {
-    scoped_refptr<MediaQuerySet> media = MediaQuerySet::Create(owner_->Media());
+    scoped_refptr<MediaQuerySet> media =
+        MediaQuerySet::Create(owner_->Media(), GetExecutionContext());
     MediaQueryEvaluator evaluator(frame);
     media_query_matches = evaluator.Eval(*media);
   }
 
+  bool is_in_body = owner_->IsDescendantOf(owner_->GetDocument().body());
+
   // Don't hold up layout tree construction and script execution on
   // stylesheets that are not needed for the layout at the moment.
-  bool blocking = media_query_matches && !owner_->IsAlternate() &&
-                  owner_->IsCreatedByParser();
-  AddPendingSheet(blocking ? kBlocking : kNonBlocking);
+  bool critical_style = media_query_matches && !owner_->IsAlternate();
+  bool render_blocking = critical_style && owner_->IsCreatedByParser();
+
+  AddPendingSheet(render_blocking ? kBlocking : kNonBlocking);
 
   // Load stylesheets that are not needed for the layout immediately with low
   // priority.  When the link element is created by scripts, load the
   // stylesheets asynchronously but in high priority.
   FetchParameters::DeferOption defer_option =
-      !media_query_matches || owner_->IsAlternate() ? FetchParameters::kLazyLoad
-                                                    : FetchParameters::kNoDefer;
+      !critical_style ? FetchParameters::kLazyLoad : FetchParameters::kNoDefer;
 
-  owner_->LoadStylesheet(params, charset, defer_option, this);
+  render_blocking_behavior_ =
+      !critical_style
+          ? RenderBlockingBehavior::kNonBlocking
+          : (render_blocking
+                 ? (is_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
+                               : RenderBlockingBehavior::kBlocking)
+                 : RenderBlockingBehavior::kNonBlockingDynamic);
+
+  owner_->LoadStylesheet(params, charset, defer_option, this,
+                         render_blocking_behavior_);
 
   if (loading_ && !GetResource()) {
     // Fetch() synchronous failure case.
@@ -311,19 +331,23 @@ void LinkStyle::Process() {
 
   WTF::TextEncoding charset = GetCharset();
 
-  if (owner_->RelAttribute().GetIconType() != kInvalidIcon &&
+  if (owner_->RelAttribute().GetIconType() !=
+          mojom::blink::FaviconIconType::kInvalid &&
       params.href.IsValid() && !params.href.IsEmpty()) {
     if (!owner_->ShouldLoadLink())
       return;
-    if (!GetDocument().GetSecurityOrigin()->CanDisplay(params.href))
+    if (!GetExecutionContext())
       return;
-    if (!GetDocument().GetContentSecurityPolicy()->AllowImageFromSource(
-            params.href))
+    if (!GetExecutionContext()->GetSecurityOrigin()->CanDisplay(params.href))
       return;
-    if (GetDocument().GetFrame() && GetDocument().GetFrame()->Client()) {
-      GetDocument().GetFrame()->Client()->DispatchDidChangeIcons(
-          owner_->RelAttribute().GetIconType());
+    if (!GetExecutionContext()
+             ->GetContentSecurityPolicy()
+             ->AllowImageFromSource(params.href, params.href,
+                                    RedirectStatus::kNoRedirect)) {
+      return;
     }
+    if (GetDocument().GetFrame())
+      GetDocument().GetFrame()->UpdateFaviconURL();
   }
 
   if (!sheet_ && !owner_->LoadLink(params))
@@ -360,7 +384,7 @@ void LinkStyle::OwnerRemoved() {
     ClearSheet();
 }
 
-void LinkStyle::Trace(Visitor* visitor) {
+void LinkStyle::Trace(Visitor* visitor) const {
   visitor->Trace(sheet_);
   LinkResource::Trace(visitor);
   ResourceClient::Trace(visitor);

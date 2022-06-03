@@ -8,21 +8,21 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/feature_list.h"
+#include "base/notreached.h"
 #include "components/domain_reliability/baked_in_configs.h"
+#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/google_configs.h"
-#include "components/domain_reliability/header.h"
 #include "components/domain_reliability/quic_error_mapping.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
 
 namespace domain_reliability {
 
@@ -32,7 +32,7 @@ namespace {
 // chrome_error, and server_ip fields based on the endpoint and result of
 // |attempt|.
 //
-// If there is no matching status for the result, returns false (which
+// If there is no matching status for the result, returns nullptr (which
 // means the attempt should not result in a beacon being reported).
 std::unique_ptr<DomainReliabilityBeacon> CreateBeaconFromAttempt(
     const DomainReliabilityBeacon& beacon_template,
@@ -40,11 +40,10 @@ std::unique_ptr<DomainReliabilityBeacon> CreateBeaconFromAttempt(
   std::string status;
   if (!GetDomainReliabilityBeaconStatus(
           attempt.result, beacon_template.http_response_code, &status)) {
-    return std::unique_ptr<DomainReliabilityBeacon>();
+    return nullptr;
   }
 
-  std::unique_ptr<DomainReliabilityBeacon> beacon(
-      new DomainReliabilityBeacon(beacon_template));
+  auto beacon = std::make_unique<DomainReliabilityBeacon>(beacon_template);
   beacon->status = status;
   beacon->chrome_error = attempt.result;
   if (!attempt.endpoint.address().empty())
@@ -54,60 +53,40 @@ std::unique_ptr<DomainReliabilityBeacon> CreateBeaconFromAttempt(
   return beacon;
 }
 
-const char* kDomainReliabilityHeaderName = "NEL";
-
 }  // namespace
 
 DomainReliabilityMonitor::DomainReliabilityMonitor(
+    net::URLRequestContext* url_request_context,
     const std::string& upload_reporter_string,
     const DomainReliabilityContext::UploadAllowedCallback&
         upload_allowed_callback)
-    : time_(new ActualTime()),
-      upload_reporter_string_(upload_reporter_string),
-      upload_allowed_callback_(upload_allowed_callback),
-      scheduler_params_(
-          DomainReliabilityScheduler::Params::GetFromFieldTrialsOrDefaults()),
-      dispatcher_(time_.get()),
-      context_manager_(this),
-      discard_uploads_set_(false) {
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-}
+    : DomainReliabilityMonitor(url_request_context,
+                               upload_reporter_string,
+                               upload_allowed_callback,
+                               std::make_unique<ActualTime>()) {}
 
 DomainReliabilityMonitor::DomainReliabilityMonitor(
+    net::URLRequestContext* url_request_context,
     const std::string& upload_reporter_string,
     const DomainReliabilityContext::UploadAllowedCallback&
         upload_allowed_callback,
     std::unique_ptr<MockableTime> time)
     : time_(std::move(time)),
-      upload_reporter_string_(upload_reporter_string),
-      upload_allowed_callback_(upload_allowed_callback),
-      scheduler_params_(
-          DomainReliabilityScheduler::Params::GetFromFieldTrialsOrDefaults()),
       dispatcher_(time_.get()),
-      context_manager_(this),
+      context_manager_(time_.get(),
+                       upload_reporter_string,
+                       upload_allowed_callback,
+                       &dispatcher_),
       discard_uploads_set_(false) {
+  DCHECK(url_request_context);
+  uploader_ =
+      DomainReliabilityUploader::Create(time_.get(), url_request_context);
+  context_manager_.SetUploader(uploader_.get());
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
 DomainReliabilityMonitor::~DomainReliabilityMonitor() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-}
-
-void DomainReliabilityMonitor::InitURLRequestContext(
-    net::URLRequestContext* url_request_context) {
-  DCHECK(url_request_context);
-
-  scoped_refptr<net::URLRequestContextGetter> url_request_context_getter =
-      new net::TrivialURLRequestContextGetter(
-          url_request_context, base::ThreadTaskRunnerHandle::Get());
-  InitURLRequestContext(url_request_context_getter);
-}
-
-void DomainReliabilityMonitor::InitURLRequestContext(
-    const scoped_refptr<net::URLRequestContextGetter>&
-        url_request_context_getter) {
-  uploader_ = DomainReliabilityUploader::Create(time_.get(),
-                                                url_request_context_getter);
 }
 
 void DomainReliabilityMonitor::Shutdown() {
@@ -119,18 +98,10 @@ void DomainReliabilityMonitor::AddBakedInConfigs() {
     base::StringPiece json(kBakedInJsonConfigs[i]);
     std::unique_ptr<const DomainReliabilityConfig> config =
         DomainReliabilityConfig::FromJSON(json);
-    if (!config) {
-      DLOG(WARNING) << "Baked-in Domain Reliability config failed to parse: "
-                    << json;
-      continue;
-    }
+    // Guard against accidentally checking in malformed JSON configs.
+    DCHECK(config->IsValid());
     context_manager_.AddContextForConfig(std::move(config));
   }
-
-  std::vector<std::unique_ptr<DomainReliabilityConfig>> google_configs;
-  GetAllGoogleConfigs(&google_configs);
-  for (auto& google_config : google_configs)
-    context_manager_.AddContextForConfig(std::move(google_config));
 }
 
 void DomainReliabilityMonitor::SetDiscardUploads(bool discard_uploads) {
@@ -167,12 +138,12 @@ void DomainReliabilityMonitor::OnCompleted(net::URLRequest* request,
 
 void DomainReliabilityMonitor::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
-  last_network_change_time_ = time_->NowTicks();
+  context_manager_.OnNetworkChanged(time_->NowTicks());
 }
 
 void DomainReliabilityMonitor::ClearBrowsingData(
     DomainReliabilityClearMode mode,
-    const base::Callback<bool(const GURL&)>& origin_filter) {
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
   switch (mode) {
     case CLEAR_BEACONS:
       context_manager_.ClearBeacons(origin_filter);
@@ -185,15 +156,15 @@ void DomainReliabilityMonitor::ClearBrowsingData(
   }
 }
 
-std::unique_ptr<base::Value> DomainReliabilityMonitor::GetWebUIData() const {
-  std::unique_ptr<base::DictionaryValue> data_value(
-      new base::DictionaryValue());
-  data_value->Set("contexts", context_manager_.GetWebUIData());
-  return std::move(data_value);
+base::Value DomainReliabilityMonitor::GetWebUIData() const {
+  base::Value data_value(base::Value::Type::DICTIONARY);
+  data_value.SetKey("contexts", context_manager_.GetWebUIData());
+  return data_value;
 }
 
-DomainReliabilityContext* DomainReliabilityMonitor::AddContextForTesting(
+const DomainReliabilityContext* DomainReliabilityMonitor::AddContextForTesting(
     std::unique_ptr<const DomainReliabilityConfig> config) {
+  DCHECK(config);
   return context_manager_.AddContextForConfig(std::move(config));
 }
 
@@ -201,27 +172,29 @@ void DomainReliabilityMonitor::ForceUploadsForTesting() {
   dispatcher_.RunAllTasksForTesting();
 }
 
-std::unique_ptr<DomainReliabilityContext>
-DomainReliabilityMonitor::CreateContextForConfig(
-    std::unique_ptr<const DomainReliabilityConfig> config) {
-  DCHECK(config);
-  DCHECK(config->IsValid());
-
-  return std::make_unique<DomainReliabilityContext>(
-      time_.get(), scheduler_params_, upload_reporter_string_,
-      &last_network_change_time_, upload_allowed_callback_, &dispatcher_,
-      uploader_.get(), std::move(config));
+void DomainReliabilityMonitor::OnRequestLegCompleteForTesting(
+    const RequestInfo& request) {
+  OnRequestLegComplete(request);
 }
 
-DomainReliabilityMonitor::RequestInfo::RequestInfo() {}
+const DomainReliabilityContext*
+DomainReliabilityMonitor::LookupContextForTesting(
+    const std::string& hostname) const {
+  return context_manager_.GetContext(hostname);
+}
+
+DomainReliabilityMonitor::RequestInfo::RequestInfo() = default;
 
 DomainReliabilityMonitor::RequestInfo::RequestInfo(
     const net::URLRequest& request,
     int net_error)
     : url(request.url()),
+      network_isolation_key(request.isolation_info().network_isolation_key()),
       net_error(net_error),
       response_info(request.response_info()),
-      load_flags(request.load_flags()),
+      // This ignores cookie blocking by the NetworkDelegate, but probably
+      // should not. Unclear if it's worth fixing.
+      allow_credentials(request.allow_credentials()),
       upload_depth(
           DomainReliabilityUploader::GetURLRequestUploadDepth(request)) {
   request.GetLoadTimingInfo(&load_timing_info);
@@ -239,12 +212,14 @@ DomainReliabilityMonitor::RequestInfo::~RequestInfo() {}
 // static
 bool DomainReliabilityMonitor::RequestInfo::ShouldReportRequest(
     const DomainReliabilityMonitor::RequestInfo& request) {
-  // Always report upload requests, even though they have DO_NOT_SEND_COOKIES.
+  // Always report DR upload requests, even though they don't allow credentials.
+  // Note: They are reported (i.e. generate a beacon) but do not necessarily
+  // trigger an upload by themselves.
   if (request.upload_depth > 0)
     return true;
 
-  // Don't report requests that weren't supposed to send cookies.
-  if (request.load_flags & net::LOAD_DO_NOT_SEND_COOKIES)
+  // Don't report requests that weren't supposed to send credentials.
+  if (!request.allow_credentials)
     return false;
 
   // Report requests that accessed the network or failed with an error code
@@ -263,8 +238,6 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
     const RequestInfo& request) {
   // Check these again because unit tests call this directly.
   DCHECK(discard_uploads_set_);
-
-  MaybeHandleHeader(request);
 
   if (!RequestInfo::ShouldReportRequest(request))
     return;
@@ -298,6 +271,10 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
   beacon_template.elapsed = time_->NowTicks() - beacon_template.start_time;
   beacon_template.was_proxied = request.response_info.was_fetched_via_proxy;
   beacon_template.url = request.url;
+  if (base::FeatureList::IsEnabled(
+          features::kPartitionDomainReliabilityByNetworkIsolationKey)) {
+    beacon_template.network_isolation_key = request.network_isolation_key;
+  }
   beacon_template.upload_depth = request.upload_depth;
   beacon_template.details = request.details;
 
@@ -324,56 +301,6 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
       CreateBeaconFromAttempt(beacon_template, url_request_attempt);
   if (beacon)
     context_manager_.RouteBeacon(std::move(beacon));
-}
-
-void DomainReliabilityMonitor::MaybeHandleHeader(
-    const RequestInfo& request) {
-  if (!request.response_info.headers)
-    return;
-
-  size_t iter = 0;
-  std::string kHeaderNameString(kDomainReliabilityHeaderName);
-
-  std::string header_value;
-  if (!request.response_info.headers->EnumerateHeader(
-          &iter, kHeaderNameString, &header_value)) {
-    // No header found.
-    return;
-  }
-
-  std::string ignored_header_value;
-  if (request.response_info.headers->EnumerateHeader(
-          &iter, kHeaderNameString, &ignored_header_value)) {
-    DLOG(WARNING) << "Request to " << request.url << " had (at least) two "
-                  << kHeaderNameString << " headers: \"" << header_value
-                  << "\" and \"" << ignored_header_value << "\".";
-    return;
-  }
-
-  std::unique_ptr<DomainReliabilityHeader> parsed =
-      DomainReliabilityHeader::Parse(header_value);
-  GURL origin = request.url.GetOrigin();
-  switch (parsed->status()) {
-    case DomainReliabilityHeader::PARSE_SET_CONFIG:
-      {
-        base::TimeDelta max_age = parsed->max_age();
-        context_manager_.SetConfig(origin, parsed->ReleaseConfig(), max_age);
-      }
-      break;
-    case DomainReliabilityHeader::PARSE_CLEAR_CONFIG:
-      context_manager_.ClearConfig(origin);
-      break;
-    case DomainReliabilityHeader::PARSE_ERROR:
-      DLOG(WARNING) << "Request to " << request.url << " had invalid "
-                    << kHeaderNameString << " header \"" << header_value
-                    << "\".";
-      break;
-  }
-}
-
-base::WeakPtr<DomainReliabilityMonitor>
-DomainReliabilityMonitor::MakeWeakPtr() {
-  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace domain_reliability

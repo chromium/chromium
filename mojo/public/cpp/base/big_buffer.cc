@@ -4,22 +4,14 @@
 
 #include "mojo/public/cpp/base/big_buffer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace mojo_base {
 
-namespace {
-
-// In the case of shared memory allocation failure, we still attempt to fall
-// back onto inline bytes unless the buffer size exceeds a very large threshold,
-// given by this constant.
-constexpr size_t kMaxFallbackInlineBytes = 127 * 1024 * 1024;
-
-}  // namespace
-
 namespace internal {
 
-BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion() = default;
+BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion() : size_(0) {}
 
 BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion(
     mojo::ScopedSharedBufferHandle buffer_handle,
@@ -49,7 +41,7 @@ namespace {
 void TryCreateSharedMemory(
     size_t size,
     BigBuffer::StorageType* storage_type,
-    base::Optional<internal::BigBufferSharedMemoryRegion>* shared_memory) {
+    absl::optional<internal::BigBufferSharedMemoryRegion>* shared_memory) {
   if (size > BigBuffer::kMaxInlineBytes) {
     auto buffer = mojo::SharedBufferHandle::Create(size);
     if (buffer.is_valid()) {
@@ -60,17 +52,10 @@ void TryCreateSharedMemory(
         return;
       }
     }
-
-    if (size > kMaxFallbackInlineBytes) {
-      // The data is too large to even bother with inline fallback, so we
-      // instead produce an invalid buffer. This will always fail validation on
-      // the receiving end.
-      *storage_type = BigBuffer::StorageType::kInvalidBuffer;
-      return;
-    }
   }
 
-  // We can use inline memory.
+  // We can use inline memory, either because the data was small or shared
+  // memory allocation failed.
   *storage_type = BigBuffer::StorageType::kBytes;
 }
 

@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -23,6 +22,16 @@ class AudioBus;
 // https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
 class MEDIA_EXPORT WavAudioHandler {
  public:
+  // Supported audio format.
+  enum class AudioFormat : uint16_t {
+    kAudioFormatPCM = 0x0001,
+    kAudioFormatFloat = 0x0003,
+    kAudioFormatExtensible = 0xfffe
+  };
+
+  WavAudioHandler(const WavAudioHandler&) = delete;
+  WavAudioHandler& operator=(const WavAudioHandler&) = delete;
+
   virtual ~WavAudioHandler();
 
   // Create a WavAudioHandler using |wav_data|. If |wav_data| cannot be parsed
@@ -42,10 +51,11 @@ class MEDIA_EXPORT WavAudioHandler {
 
   // Accessors.
   const base::StringPiece& data() const { return data_; }
-  uint16_t num_channels() const { return num_channels_; }
-  uint32_t sample_rate() const { return sample_rate_; }
-  uint16_t bits_per_sample() const { return bits_per_sample_; }
-  uint32_t total_frames() const { return total_frames_; }
+  int num_channels() const { return static_cast<int>(num_channels_); }
+  int sample_rate() const { return static_cast<int>(sample_rate_); }
+  int bits_per_sample() const { return static_cast<int>(bits_per_sample_); }
+  AudioFormat audio_format() const { return audio_format_; }
+  int total_frames() const { return static_cast<int>(total_frames_); }
 
   // Returns the duration of the entire audio chunk.
   base::TimeDelta GetDuration() const;
@@ -55,16 +65,16 @@ class MEDIA_EXPORT WavAudioHandler {
   WavAudioHandler(base::StringPiece audio_data,
                   uint16_t num_channels,
                   uint32_t sample_rate,
-                  uint16_t bits_per_sample);
+                  uint16_t bits_per_sample,
+                  AudioFormat audio_format);
 
   // Data part of the |wav_data_|.
   const base::StringPiece data_;
   const uint16_t num_channels_;
   const uint32_t sample_rate_;
   const uint16_t bits_per_sample_;
+  const AudioFormat audio_format_;
   uint32_t total_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(WavAudioHandler);
 };
 
 }  // namespace media

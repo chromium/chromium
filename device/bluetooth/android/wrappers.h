@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_ANDROID_BLUETOOTH_ADAPTER_WRAPPER_H_
-#define DEVICE_BLUETOOTH_ANDROID_BLUETOOTH_ADAPTER_WRAPPER_H_
+#ifndef DEVICE_BLUETOOTH_ANDROID_WRAPPERS_H_
+#define DEVICE_BLUETOOTH_ANDROID_WRAPPERS_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -19,4 +19,4 @@ BluetoothAdapterWrapper_CreateWithDefaultAdapter();
 
 }  // namespace device
 
-#endif  // DEVICE_BLUETOOTH_ANDROID_BLUETOOTH_ADAPTER_WRAPPER_H_
+#endif  // DEVICE_BLUETOOTH_ANDROID_WRAPPERS_H_

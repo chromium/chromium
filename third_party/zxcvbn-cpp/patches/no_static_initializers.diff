@@ -1,0 +1,336 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
+index d22c29618897..08198d740a48 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
+@@ -9,14 +9,6 @@
+ 
+ namespace zxcvbn {
+ 
+-const Feedback DEFAULT_FEEDBACK = {
+-  "",
+-  {
+-    "Use a few words, avoid common phrases",
+-    "No need for symbols, digits, or uppercase letters",
+-  },
+-};
+-
+ static
+ optional::optional<Feedback> get_match_feedback(const Match & match, bool is_sole_match);
+ 
+@@ -26,7 +18,15 @@ Feedback get_dictionary_match_feedback(const Match & match, bool is_sole_match);
+ Feedback get_feedback(score_t score,
+                       const std::vector<Match> & sequence) {
+   // starting feedback
+-  if (!sequence.size()) return DEFAULT_FEEDBACK;
++  if (!sequence.size()) {
++    return {
++        "",
++        {
++            "Use a few words, avoid common phrases",
++            "No need for symbols, digits, or uppercase letters",
++        },
++    };
++  }
+ 
+   // no feedback if score is good or great.
+   if (score > 2) return {"", {}};
+@@ -151,12 +151,11 @@ Feedback get_dictionary_match_feedback(const Match & match_, bool is_sole_match)
+ 
+   std::vector<std::string> suggestions;
+   auto & word = match_.token;
+-  if (std::regex_search(word, START_UPPER)) {
++  if (std::regex_search(word, START_UPPER())) {
+     suggestions.push_back("Capitalization doesn't help very much");
+-  }
+-  else if (std::regex_search(word, ALL_UPPER) and
+-           // XXX: UTF-8
+-           util::ascii_lower(word) == word) {
++  } else if (std::regex_search(word, ALL_UPPER()) and
++             // XXX: UTF-8
++             util::ascii_lower(word) == word) {
+     suggestions.push_back("All-uppercase is almost as easy to guess as all-lowercase");
+   }
+ 
+@@ -171,4 +170,3 @@ Feedback get_dictionary_match_feedback(const Match & match_, bool is_sole_match)
+ }
+ 
+ }
+-
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+index c14e02618ec2..6d43cd2dc20b 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+@@ -19,28 +19,41 @@
+ #include <utility>
+ #include <unordered_set>
+ 
++#include "base/no_destructor.h"
++
+ namespace zxcvbn {
+ 
+ // TODO: make this a constexpr
+-extern const std::vector<std::pair<std::string, std::vector<std::string>>> L33T_TABLE = {
+-  {"a", {"4", "@"}},
+-  {"b", {"8"}},
+-  {"c", {"(", "{", "[", "<"}},
+-  {"e", {"3"}},
+-  {"g", {"6", "9"}},
+-  {"i", {"1", "!", "|"}},
+-  {"l", {"1", "|", "7"}},
+-  {"o", {"0"}},
+-  {"s", {"$", "5"}},
+-  {"t", {"+", "7"}},
+-  {"x", {"%"}},
+-  {"z", {"2"}},
+-};
++const std::vector<std::pair<std::string, std::vector<std::string>>>&
++L33T_TABLE() {
++  static base::NoDestructor<
++      std::vector<std::pair<std::string, std::vector<std::string>>>>
++      leet_table({
++          {"a", {"4", "@"}},
++          {"b", {"8"}},
++          {"c", {"(", "{", "[", "<"}},
++          {"e", {"3"}},
++          {"g", {"6", "9"}},
++          {"i", {"1", "!", "|"}},
++          {"l", {"1", "|", "7"}},
++          {"o", {"0"}},
++          {"s", {"$", "5"}},
++          {"t", {"+", "7"}},
++          {"x", {"%"}},
++          {"z", {"2"}},
++      });
++
++  return *leet_table;
++}
+ 
+ // TODO: make this constexpr
+-extern const std::vector<std::pair<RegexTag, std::regex>> REGEXEN = {
+-  {RegexTag::RECENT_YEAR, std::regex(R"(19\d\d|200\d|201\d)")},
+-};
++const std::vector<std::pair<RegexTag, std::regex>>& REGEXEN() {
++  static base::NoDestructor<std::vector<std::pair<RegexTag, std::regex>>>
++      regexen({
++          {RegexTag::RECENT_YEAR, std::regex(R"(19\d\d|200\d|201\d)")},
++      });
++  return *regexen;
++}
+ 
+ const auto DATE_MAX_YEAR = 2050;
+ const auto DATE_MIN_YEAR = 1000;
+@@ -115,19 +128,18 @@ std::vector<Match> omnimatch(const std::string & password,
+                                             std::cref(ranked_dict)));
+ 
+   std::vector<Match> matches;
+-  std::function<std::vector<Match>(const std::string &)> matchers[] = {
+-    std::bind(dictionary_match, std::placeholders::_1,
+-              std::cref(ranked_dictionaries)),
+-    std::bind(reverse_dictionary_match, std::placeholders::_1,
+-              std::cref(ranked_dictionaries)),
+-    std::bind(l33t_match, std::placeholders::_1,
+-              std::cref(ranked_dictionaries), std::cref(L33T_TABLE)),
+-    std::bind(spatial_match, std::placeholders::_1,
+-              std::cref(graphs())),
+-    repeat_match,
+-    sequence_match,
+-    std::bind(regex_match, std::placeholders::_1, std::cref(REGEXEN)),
+-    date_match,
++  std::function<std::vector<Match>(const std::string&)> matchers[] = {
++      std::bind(dictionary_match, std::placeholders::_1,
++                std::cref(ranked_dictionaries)),
++      std::bind(reverse_dictionary_match, std::placeholders::_1,
++                std::cref(ranked_dictionaries)),
++      std::bind(l33t_match, std::placeholders::_1,
++                std::cref(ranked_dictionaries), std::cref(L33T_TABLE())),
++      std::bind(spatial_match, std::placeholders::_1, std::cref(graphs())),
++      repeat_match,
++      sequence_match,
++      std::bind(regex_match, std::placeholders::_1, std::cref(REGEXEN())),
++      date_match,
+   };
+   for (const auto & matcher : matchers) {
+     auto ret = matcher(password);
+@@ -344,12 +356,13 @@ std::vector<Match> spatial_match(const std::string & password,
+   return matches;
+ }
+ 
+-const auto SHIFTED_RX = std::regex("[~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?]");
+-
+ static
+ std::vector<Match> spatial_match_helper(const std::string & password,
+                                         const Graph & graph,
+                                         GraphTag graph_tag) {
++  const auto SHIFTED_RX =
++      std::regex("[~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?]");
++
+   std::vector<Match> matches;
+   if (!password.length()) return matches;
+   idx_t idx = 0;
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
+index 7ded5d89573f..ba73b909157c 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
+@@ -10,8 +10,8 @@
+ 
+ namespace zxcvbn {
+ 
+-extern const std::vector<std::pair<std::string, std::vector<std::string>>> L33T_TABLE;
+-extern const std::vector<std::pair<RegexTag, std::regex>> REGEXEN;
++const std::vector<std::pair<std::string, std::vector<std::string>>>& L33T_TABLE();
++const std::vector<std::pair<RegexTag, std::regex>>& REGEXEN();
+ 
+ std::vector<Match> dictionary_match(const std::string & password,
+                                     const RankedDicts & ranked_dictionaries);
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
+index 1dfcb53bc42d..1664a27b277c 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching_js_bindings.cpp
+@@ -66,7 +66,7 @@ emscripten::val _dictionary_match(const std::wstring & wpassword,
+       std::vector<std::pair<std::string, std::vector<std::string>>> _store;
+       auto & ret2 = [&] () -> const std::vector<std::pair<std::string, std::vector<std::string>>> & {
+         if (l33t_table.isUndefined()) {
+-          return zxcvbn::L33T_TABLE;
++          return zxcvbn::L33T_TABLE();
+         }
+         else {
+           auto ret = val_converter<std::unordered_map<std::string, std::vector<std::string>>>::from(l33t_table);
+@@ -198,7 +198,7 @@ emscripten::val repeat_match(const std::wstring & wpassword) {
+ 
+ static
+ emscripten::val regex_match(const std::wstring & wpassword) {
+-  return to_val(zxcvbn::regex_match(to_utf8(wpassword), zxcvbn::REGEXEN));
++  return to_val(zxcvbn::regex_match(to_utf8(wpassword), zxcvbn::REGEXEN()));
+ }
+ 
+ static
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+index 96c4c76d1e65..fe2a2ec8cb8b 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+@@ -9,6 +9,8 @@
+ 
+ #include <cmath>
+ 
++#include "base/no_destructor.h"
++
+ namespace std {
+ 
+ template<class T, class U>
+@@ -27,6 +29,26 @@ const auto MIN_GUESSES_BEFORE_GROWING_SEQUENCE = static_cast<guesses_t>(10000);
+ const auto MIN_SUBMATCH_GUESSES_SINGLE_CHAR = static_cast<guesses_t>(10);
+ const auto MIN_SUBMATCH_GUESSES_MULTI_CHAR = static_cast<guesses_t>(50);
+ 
++const std::regex& START_UPPER() {
++  static base::NoDestructor<std::regex> start_upper(R"(^[A-Z][^A-Z]+$)");
++  return *start_upper;
++}
++
++const std::regex& END_UPPER() {
++  static base::NoDestructor<std::regex> end_upper(R"(^[^A-Z]+[A-Z]$)");
++  return *end_upper;
++}
++
++const std::regex& ALL_UPPER() {
++  static base::NoDestructor<std::regex> all_upper(R"(^[^a-z]+$)");
++  return *all_upper;
++}
++
++const std::regex& ALL_LOWER() {
++  static base::NoDestructor<std::regex> all_lower(R"(^[^A-Z]+$)");
++  return *all_lower;
++}
++
+ template<class Tret, class Tin>
+ Tret factorial(Tin n) {
+   // unoptimized, called only on small n
+@@ -441,11 +463,12 @@ guesses_t dictionary_guesses(const Match & match) {
+ 
+ guesses_t uppercase_variations(const Match & match) {
+   auto & word = match.token;
+-  if (std::regex_match(word, ALL_LOWER) || !word.size()) return 1;
++  if (std::regex_match(word, ALL_LOWER()) || !word.size())
++    return 1;
+   // a capitalized word is the most common capitalization scheme,
+   // so it only doubles the search space (uncapitalized + capitalized).
+   // allcaps and end-capitalized are common enough too, underestimate as 2x factor to be safe.
+-  for (const auto & regex : {START_UPPER, END_UPPER, ALL_UPPER}) {
++  for (const auto& regex : {START_UPPER(), END_UPPER(), ALL_UPPER()}) {
+     if (std::regex_match(word, regex)) return 2;
+   }
+   // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
+index ec9fd22d8e18..1038ee34587c 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp
+@@ -11,10 +11,10 @@
+ 
+ namespace zxcvbn {
+ 
+-const auto START_UPPER = std::regex(R"(^[A-Z][^A-Z]+$)");
+-const auto END_UPPER = std::regex(R"(^[^A-Z]+[A-Z]$)");
+-const auto ALL_UPPER = std::regex(R"(^[^a-z]+$)");
+-const auto ALL_LOWER = std::regex(R"(^[^A-Z]+$)");
++const std::regex& START_UPPER();
++const std::regex& END_UPPER();
++const std::regex& ALL_UPPER();
++const std::regex& ALL_LOWER();
+ 
+ const guesses_t MIN_YEAR_SPACE = 20;
+ const auto REFERENCE_YEAR = 2016;
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+index 084d3cc0cd7c..107bce0af064 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+@@ -8,6 +8,8 @@
+ 
+ #include <cassert>
+ 
++#include "base/no_destructor.h"
++
+ namespace zxcvbn {
+ 
+ namespace util {
+@@ -32,7 +34,10 @@ std::string reverse_string(const std::string & in) {
+   return conv.to_bytes(ret);
+ }
+ 
+-const std::codecvt_utf8<char32_t> char32_conv;
++const std::codecvt_utf8<char32_t>& char32_conv() {
++  static base::NoDestructor<std::codecvt_utf8<char32_t>> char32_conv;
++  return *char32_conv;
++}
+ 
+ bool utf8_valid(std::string::const_iterator start,
+                 std::string::const_iterator end) {
+@@ -46,8 +51,8 @@ bool utf8_valid(std::string::const_iterator start,
+     char32_t new_char;
+     char32_t *to_next;
+ 
+-    auto res = char32_conv.in(st, from, from_end, from_next,
+-                              &new_char, &new_char + 1, to_next);
++    auto res = char32_conv().in(st, from, from_end, from_next, &new_char,
++                                &new_char + 1, to_next);
+     if (!((res == std::codecvt_utf8<char32_t>::result::partial &&
+            from_next != from_end) ||
+           (res == std::codecvt_utf8<char32_t>::result::ok &&
+@@ -67,7 +72,7 @@ template<class It>
+ It _utf8_iter(It start, It end) {
+   assert(start != end);
+   std::mbstate_t st;
+-  auto amt = char32_conv.length(st, &*start, &*end, 1);
++  auto amt = char32_conv().length(st, &*start, &*end, 1);
+   return start + amt;
+ }
+ 
+@@ -110,8 +115,8 @@ std::pair<char32_t, It> _utf8_decode(It it, It end) {
+   const char *from = &*it;
+   const char *from_end = &*end;
+   const char *from_next;
+-  auto res = char32_conv.in(st, from, from_end, from_next,
+-                            &new_char, &new_char + 1, to_next);
++  auto res = char32_conv().in(st, from, from_end, from_next, &new_char,
++                              &new_char + 1, to_next);
+   assert((res == std::codecvt_utf8<char32_t>::result::partial &&
+           from_next != from_end) ||
+          (res == std::codecvt_utf8<char32_t>::result::ok &&

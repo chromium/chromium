@@ -30,8 +30,7 @@ TEST_F(DiskCacheDirPolicyTest, Default) {
 TEST_F(DiskCacheDirPolicyTest, SetPolicyInvalid) {
   // DiskCacheDir policy expects a string; give it a boolean.
   policy_.Set(key::kDiskCacheDir, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-              POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(false),
-              nullptr);
+              POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   handler_.ApplyPolicySettings(policy_, &prefs_);
   EXPECT_FALSE(prefs_.GetValue(prefs::kDiskCacheDir, NULL));
 }
@@ -40,7 +39,7 @@ TEST_F(DiskCacheDirPolicyTest, SetPolicyValid) {
   // Use a variable in the value. It should be expanded by the handler.
   const std::string in = "${user_name}/foo";
   policy_.Set(key::kDiskCacheDir, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-              POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(in), nullptr);
+              POLICY_SOURCE_CLOUD, base::Value(in), nullptr);
   handler_.ApplyPolicySettings(policy_, &prefs_);
 
   const base::Value* value;

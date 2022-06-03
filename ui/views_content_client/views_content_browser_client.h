@@ -7,9 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
-#include "storage/browser/quota/quota_settings.h"
 
 namespace ui {
 
@@ -19,20 +17,19 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit ViewsContentBrowserClient(
       ViewsContentClient* views_content_client);
+
+  ViewsContentBrowserClient(const ViewsContentBrowserClient&) = delete;
+  ViewsContentBrowserClient& operator=(const ViewsContentBrowserClient&) =
+      delete;
+
   ~ViewsContentBrowserClient() override;
 
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
-  void GetQuotaSettings(
-      content::BrowserContext* context,
-      content::StoragePartition* partition,
-      storage::OptionalQuotaSettingsCallback callback) override;
+      content::MainFunctionParams parameters) override;
 
  private:
   ViewsContentClient* views_content_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentBrowserClient);
 };
 
 }  // namespace ui

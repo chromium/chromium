@@ -10,13 +10,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -159,17 +160,18 @@ TEST_F(FileProxyTest, CreateOrOpen_OpenNonExistent) {
 }
 
 TEST_F(FileProxyTest, CreateOrOpen_AbandonedCreate) {
-  bool prev = ThreadRestrictions::SetIOAllowed(false);
-  RunLoop run_loop;
   {
-    FileProxy proxy(file_task_runner());
-    proxy.CreateOrOpen(
-        TestPath(), File::FLAG_CREATE | File::FLAG_READ,
-        BindOnce(&FileProxyTest::DidCreateOrOpen, weak_factory_.GetWeakPtr(),
-                 run_loop.QuitWhenIdleClosure()));
+    base::ScopedDisallowBlocking disallow_blocking;
+    RunLoop run_loop;
+    {
+      FileProxy proxy(file_task_runner());
+      proxy.CreateOrOpen(
+          TestPath(), File::FLAG_CREATE | File::FLAG_READ,
+          BindOnce(&FileProxyTest::DidCreateOrOpen, weak_factory_.GetWeakPtr(),
+                   run_loop.QuitWhenIdleClosure()));
+    }
+    run_loop.Run();
   }
-  run_loop.Run();
-  ThreadRestrictions::SetIOAllowed(prev);
 
   EXPECT_TRUE(PathExists(TestPath()));
 }
@@ -229,7 +231,16 @@ TEST_F(FileProxyTest, CreateTemporary) {
   EXPECT_EQ("test", data);
 
   // Make sure we can & do delete the created file to prevent leaks on the bots.
-  EXPECT_TRUE(base::DeleteFile(path_, false));
+  // Try a few times because files may be locked by anti-virus or other.
+  bool deleted_temp_file = false;
+  for (int i = 0; !deleted_temp_file && i < 3; ++i) {
+    if (base::DeleteFile(path_))
+      deleted_temp_file = true;
+    else
+      // Wait one second and then try again
+      PlatformThread::Sleep(Seconds(1));
+  }
+  EXPECT_TRUE(deleted_temp_file);
 }
 
 TEST_F(FileProxyTest, SetAndTake) {
@@ -360,8 +371,8 @@ TEST_F(FileProxyTest, MAYBE_SetTimes) {
       File::FLAG_CREATE | File::FLAG_WRITE | File::FLAG_WRITE_ATTRIBUTES,
       &proxy);
 
-  Time last_accessed_time = Time::Now() - TimeDelta::FromDays(12345);
-  Time last_modified_time = Time::Now() - TimeDelta::FromHours(98765);
+  Time last_accessed_time = Time::Now() - Days(12345);
+  Time last_modified_time = Time::Now() - Hours(98765);
 
   RunLoop run_loop;
   proxy.SetTimes(last_accessed_time, last_modified_time,

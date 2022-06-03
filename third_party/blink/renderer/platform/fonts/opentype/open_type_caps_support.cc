@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
-
-#include <hb-aat.h>
+// clang-format off
 #include <hb.h>
+#include <hb-aat.h>
+// clang-format on
+
+#include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
+#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 namespace blink {
 
@@ -37,7 +40,6 @@ bool activationSelectorPresent(
 
 OpenTypeCapsSupport::OpenTypeCapsSupport()
     : harfbuzz_face_(nullptr),
-      requested_caps_(FontDescription::kCapsNormal),
       font_support_(FontSupport::kFull),
       caps_synthesis_(CapsSynthesis::kNone),
       font_format_(FontFormat::kUndetermined) {}
@@ -45,9 +47,11 @@ OpenTypeCapsSupport::OpenTypeCapsSupport()
 OpenTypeCapsSupport::OpenTypeCapsSupport(
     const HarfBuzzFace* harfbuzz_face,
     FontDescription::FontVariantCaps requested_caps,
+    FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps,
     hb_script_t script)
     : harfbuzz_face_(harfbuzz_face),
       requested_caps_(requested_caps),
+      font_synthesis_small_caps_(font_synthesis_small_caps),
       font_support_(FontSupport::kFull),
       caps_synthesis_(CapsSynthesis::kNone),
       font_format_(FontFormat::kUndetermined) {
@@ -76,7 +80,8 @@ FontDescription::FontVariantCaps OpenTypeCapsSupport::FontFeatureToUse(
 bool OpenTypeCapsSupport::NeedsRunCaseSplitting() {
   // Lack of titling case support is ignored, titling case is not synthesized.
   return font_support_ != FontSupport::kFull &&
-         requested_caps_ != FontDescription::kTitlingCaps;
+         requested_caps_ != FontDescription::kTitlingCaps &&
+         SyntheticSmallCapsAllowed();
 }
 
 bool OpenTypeCapsSupport::NeedsSyntheticFont(
@@ -85,6 +90,9 @@ bool OpenTypeCapsSupport::NeedsSyntheticFont(
     return false;
 
   if (requested_caps_ == FontDescription::kTitlingCaps)
+    return false;
+
+  if (!SyntheticSmallCapsAllowed())
     return false;
 
   if (font_support_ == FontSupport::kNone) {
@@ -107,7 +115,7 @@ CaseMapIntend OpenTypeCapsSupport::NeedsCaseChange(
     SmallCapsIterator::SmallCapsBehavior run_case) {
   CaseMapIntend case_map_intend = CaseMapIntend::kKeepSameCase;
 
-  if (font_support_ == FontSupport::kFull)
+  if (font_support_ == FontSupport::kFull || !SyntheticSmallCapsAllowed())
     return case_map_intend;
 
   switch (run_case) {
@@ -135,15 +143,13 @@ CaseMapIntend OpenTypeCapsSupport::NeedsCaseChange(
 
 OpenTypeCapsSupport::FontFormat OpenTypeCapsSupport::GetFontFormat() const {
   if (font_format_ == FontFormat::kUndetermined) {
-    hb_face_t* hb_face = hb_font_get_face(
-        harfbuzz_face_->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout));
+    hb_face_t* hb_face = hb_font_get_face(harfbuzz_face_->GetScaledFont(
+        nullptr, HarfBuzzFace::kNoVerticalLayout));
 
-    std::unique_ptr<hb_blob_t, decltype(&hb_blob_destroy)> morx_blob(
-        hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 'x')),
-        hb_blob_destroy);
-    std::unique_ptr<hb_blob_t, decltype(&hb_blob_destroy)> mort_blob(
-        hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 't')),
-        hb_blob_destroy);
+    HbScoped<hb_blob_t> morx_blob(
+        hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 'x')));
+    HbScoped<hb_blob_t> mort_blob(
+        hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 't')));
 
     // TODO(crbug.com/911149): Use hb_aat_layout_has_substitution() for
     // has_morx_or_mort and hb_ot_layout_has_substitution() for has_gsub once is
@@ -151,9 +157,8 @@ OpenTypeCapsSupport::FontFormat OpenTypeCapsSupport::GetFontFormat() const {
     bool has_morx_or_mort = hb_blob_get_length(morx_blob.get()) ||
                             hb_blob_get_length(mort_blob.get());
     bool has_gsub = hb_ot_layout_has_substitution(hb_face);
-    font_format_ = has_morx_or_mort&& !has_gsub
-                       ? font_format_ = FontFormat::kAat
-                       : font_format_ = FontFormat::kOpenType;
+    font_format_ = has_morx_or_mort && !has_gsub ? FontFormat::kAat
+                                                 : FontFormat::kOpenType;
   }
   return font_format_;
 }
@@ -173,7 +178,7 @@ bool OpenTypeCapsSupport::SupportsAatFeature(uint32_t tag) const {
   }
 
   hb_face_t* hb_face = hb_font_get_face(
-      harfbuzz_face_->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout));
+      harfbuzz_face_->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout));
 
   Vector<hb_aat_layout_feature_type_t> aat_features;
   unsigned feature_count =
@@ -278,6 +283,11 @@ void OpenTypeCapsSupport::DetermineFontSupport(hb_script_t script) {
     default:
       NOTREACHED();
   }
+}
+
+bool OpenTypeCapsSupport::SyntheticSmallCapsAllowed() const {
+  return font_synthesis_small_caps_ ==
+         FontDescription::kAutoFontSynthesisSmallCaps;
 }
 
 }  // namespace blink

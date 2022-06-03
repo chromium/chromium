@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 
 #include <algorithm>
 #include <map>
@@ -10,53 +10,49 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
-#include "base/values.h"
+#include "base/time/default_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_helper.h"
-#include "chrome/browser/engagement/site_engagement_metrics.h"
-#include "chrome/browser/engagement/site_engagement_observer.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
+#include "chrome/browser/engagement/history_aware_site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_metrics.h"
+#include "components/site_engagement/content/site_engagement_observer.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/core/pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::NavigationSimulator;
+
+namespace site_engagement {
 
 namespace {
 
 base::FilePath g_temp_history_dir;
 
-const int kMoreAccumulationsThanNeededToMaxDailyEngagement = 40;
-const int kMoreDaysThanNeededToMaxTotalEngagement = 40;
-const int kMorePeriodsThanNeededToDecayMaxScore = 40;
 const double kMaxRoundingDeviation = 0.0001;
 
 // Waits until a change is observed in site engagement content settings.
@@ -65,6 +61,11 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
   explicit SiteEngagementChangeWaiter(Profile* profile) : profile_(profile) {
     HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
   }
+
+  SiteEngagementChangeWaiter(const SiteEngagementChangeWaiter&) = delete;
+  SiteEngagementChangeWaiter& operator=(const SiteEngagementChangeWaiter&) =
+      delete;
+
   ~SiteEngagementChangeWaiter() override {
     HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
         this);
@@ -74,9 +75,8 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const std::string& resource_identifier) override {
-    if (content_type == ContentSettingsType::SITE_ENGAGEMENT)
+      ContentSettingsTypeSet content_type_set) override {
+    if (content_type_set.Contains(ContentSettingsType::SITE_ENGAGEMENT))
       Proceed();
   }
 
@@ -87,8 +87,6 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
 
   Profile* profile_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementChangeWaiter);
 };
 
 base::Time GetReferenceTime() {
@@ -110,10 +108,14 @@ base::Time GetReferenceTime() {
 
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     content::BrowserContext* context) {
-  std::unique_ptr<history::HistoryService> service(
-      new history::HistoryService());
-  service->Init(history::TestHistoryDatabaseParamsForPath(g_temp_history_dir));
-  return std::move(service);
+  auto history = std::make_unique<history::HistoryService>();
+  history->Init(history::TestHistoryDatabaseParamsForPath(g_temp_history_dir));
+  return std::move(history);
+}
+
+std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
+    content::BrowserContext* context) {
+  return std::make_unique<SiteEngagementService>(context);
 }
 
 }  // namespace
@@ -124,7 +126,7 @@ class ObserverTester : public SiteEngagementObserver {
                  content::WebContents* web_contents,
                  const GURL& url,
                  double score,
-                 SiteEngagementService::EngagementType type)
+                 EngagementType type)
       : SiteEngagementObserver(service),
         web_contents_(web_contents),
         url_(url),
@@ -133,10 +135,13 @@ class ObserverTester : public SiteEngagementObserver {
         callback_called_(false),
         run_loop_() {}
 
+  ObserverTester(const ObserverTester&) = delete;
+  ObserverTester& operator=(const ObserverTester&) = delete;
+
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
-                         SiteEngagementService::EngagementType type) override {
+                         EngagementType type) override {
     EXPECT_EQ(web_contents_, web_contents);
     EXPECT_EQ(url_, url);
     EXPECT_DOUBLE_EQ(score_, score);
@@ -156,11 +161,9 @@ class ObserverTester : public SiteEngagementObserver {
   content::WebContents* web_contents_;
   GURL url_;
   double score_;
-  SiteEngagementService::EngagementType type_;
+  EngagementType type_;
   bool callback_called_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverTester);
 };
 
 class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
@@ -173,17 +176,21 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
         profile(), base::BindRepeating(&BuildTestHistoryService));
     SiteEngagementScore::SetParamValuesForTesting();
 
-    // Ensure that we have just one SiteEngagementService: no service created
-    // with TestingProfile.
+    SiteEngagementServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildTestSiteEngagementService));
+
+    // Ensure that we have just one SiteEngagementService: any service created
+    // with TestingProfile has been shut down.
     // (See KeyedServiceBaseFactory::ServiceIsCreatedWithContext).
     DCHECK(!SiteEngagementServiceFactory::GetForProfileIfExists(profile()));
 
-    service_ = base::WrapUnique(new SiteEngagementService(profile(), &clock_));
+    service_ = SiteEngagementServiceFactory::GetForProfile(profile());
+    service_->SetClockForTesting(&clock_);
+    clock_.SetNow(GetReferenceTime());
   }
 
   void TearDown() override {
     service_->Shutdown();
-    service_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -225,20 +232,17 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
       const GURL& url) {
     double score = 0;
     base::RunLoop run_loop;
-    base::CreateSingleThreadTaskRunner({thread_id})
-        ->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
-                           base::Unretained(this),
-                           base::RetainedRef(settings_map), url, &score),
-            run_loop.QuitClosure());
+    content::BrowserThread::GetTaskRunnerForThread(thread_id)->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
+                       base::Unretained(this), base::RetainedRef(settings_map),
+                       url, &score),
+        run_loop.QuitClosure());
     run_loop.Run();
     return score;
   }
 
-  void CheckMedian(SiteEngagementService* service,
-                   size_t expected_size,
-                   double expected_median) {
+  double GetMedian(SiteEngagementService* service) {
     std::vector<mojom::SiteEngagementDetails> details =
         service->GetAllDetails();
     std::sort(details.begin(), details.end(),
@@ -246,9 +250,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
                  const mojom::SiteEngagementDetails& rhs) {
                 return lhs.total_score < rhs.total_score;
               });
-    EXPECT_EQ(expected_size, details.size());
-    EXPECT_DOUBLE_EQ(expected_median,
-                     service->GetMedianEngagementFromSortedDetails(details));
+    return service->GetMedianEngagementFromSortedDetails(details);
   }
 
   std::map<GURL, double> GetScoreMap(SiteEngagementService* service) {
@@ -270,14 +272,11 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<SiteEngagementService> service_;
+  SiteEngagementService* service_;
   base::SimpleTestClock clock_;
 };
 
 TEST_F(SiteEngagementServiceTest, GetMedianEngagement) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   GURL url1("http://www.google.com/");
   GURL url2("https://www.google.com/");
   GURL url3("https://drive.google.com/");
@@ -286,145 +285,133 @@ TEST_F(SiteEngagementServiceTest, GetMedianEngagement) {
   GURL url6("https://images.google.com/");
 
   // For zero total sites, the median is 0.
-  CheckMedian(service, 0, 0);
+  EXPECT_EQ(0u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(0, GetMedian(service_));
 
   // For odd total sites, the median is the middle score.
-  service->AddPoints(url1, 1);
-  CheckMedian(service, 1, 1);
+  service_->AddPointsForTesting(url1, 1);
+  EXPECT_EQ(1u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(1, GetMedian(service_));
 
   // For even total sites, the median is the mean of the middle two scores.
-  service->AddPoints(url2, 2);
-  CheckMedian(service, 2, 1.5);
+  service_->AddPointsForTesting(url2, 2);
+  EXPECT_EQ(2u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(1.5, GetMedian(service_));
 
-  service->AddPoints(url3, 1.4);
-  CheckMedian(service, 3, 1.4);
+  service_->AddPointsForTesting(url3, 1.4);
+  EXPECT_EQ(3u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(1.4, GetMedian(service_));
 
-  service->AddPoints(url4, 1.8);
-  CheckMedian(service, 4, 1.6);
+  service_->AddPointsForTesting(url4, 1.8);
+  EXPECT_EQ(4u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(1.6, GetMedian(service_));
 
-  service->AddPoints(url5, 2.5);
-  CheckMedian(service, 5, 1.8);
+  service_->AddPointsForTesting(url5, 2.5);
+  EXPECT_EQ(5u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(1.8, GetMedian(service_));
 
-  service->AddPoints(url6, 3);
-  CheckMedian(service, 6, 1.9);
+  service_->AddPointsForTesting(url6, 3);
+  EXPECT_EQ(6u, service_->GetAllDetails().size());
+  EXPECT_DOUBLE_EQ(1.9, GetMedian(service_));
 }
 
 // Tests that the Site Engagement service is hooked up properly to navigations
 // by performing two navigations and checking the engagement score increases
 // both times.
 TEST_F(SiteEngagementServiceTest, ScoreIncrementsOnPageRequest) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   // Create the helper manually since it isn't present when a tab isn't created.
   SiteEngagementService::Helper::CreateForWebContents(web_contents());
 
   GURL url("http://www.google.com/");
-  EXPECT_EQ(0, service->GetScore(url));
-  NavigateWithTransitionAndExpectHigherScore(service, url,
+  EXPECT_EQ(0, service_->GetScore(url));
+  NavigateWithTransitionAndExpectHigherScore(service_, url,
                                              ui::PAGE_TRANSITION_TYPED);
-  NavigateWithTransitionAndExpectHigherScore(service, url,
+  NavigateWithTransitionAndExpectHigherScore(service_, url,
                                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 }
 
 // Expect that site engagement scores for several sites are correctly
 // aggregated during navigation events.
 TEST_F(SiteEngagementServiceTest, GetTotalNavigationPoints) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   // The https and http versions of www.google.com should be separate.
   GURL url1("https://www.google.com/");
   GURL url2("http://www.google.com/");
   GURL url3("http://drive.google.com/");
 
-  EXPECT_EQ(0, service->GetScore(url1));
-  EXPECT_EQ(0, service->GetScore(url2));
-  EXPECT_EQ(0, service->GetScore(url3));
+  EXPECT_EQ(0, service_->GetScore(url1));
+  EXPECT_EQ(0, service_->GetScore(url2));
+  EXPECT_EQ(0, service_->GetScore(url3));
 
   NavigateAndCommit(url1);
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
-  EXPECT_EQ(0.5, service->GetScore(url1));
-  EXPECT_EQ(0.5, service->GetTotalEngagementPoints());
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
+  EXPECT_EQ(0.5, service_->GetScore(url1));
+  EXPECT_EQ(0.5, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url2);
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
-  service->HandleNavigation(web_contents(),
-                            ui::PAGE_TRANSITION_KEYWORD_GENERATED);
-  EXPECT_EQ(1, service->GetScore(url2));
-  EXPECT_EQ(1.5, service->GetTotalEngagementPoints());
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
+  service_->HandleNavigation(web_contents(),
+                             ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  EXPECT_EQ(1, service_->GetScore(url2));
+  EXPECT_EQ(1.5, service_->GetTotalEngagementPoints());
 
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  EXPECT_EQ(1.5, service->GetScore(url2));
-  EXPECT_EQ(2, service->GetTotalEngagementPoints());
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  EXPECT_EQ(1.5, service_->GetScore(url2));
+  EXPECT_EQ(2, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url3);
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
-  EXPECT_EQ(0.5, service->GetScore(url3));
-  EXPECT_EQ(2.5, service->GetTotalEngagementPoints());
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
+  EXPECT_EQ(0.5, service_->GetScore(url3));
+  EXPECT_EQ(2.5, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url1);
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
-  EXPECT_EQ(1.5, service->GetScore(url1));
-  EXPECT_EQ(3.5, service->GetTotalEngagementPoints());
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
+  EXPECT_EQ(1.5, service_->GetScore(url1));
+  EXPECT_EQ(3.5, service_->GetTotalEngagementPoints());
 }
 
 TEST_F(SiteEngagementServiceTest, GetTotalUserInputPoints) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   // The https and http versions of www.google.com should be separate.
   GURL url1("https://www.google.com/");
   GURL url2("http://www.google.com/");
   GURL url3("http://drive.google.com/");
 
-  EXPECT_EQ(0, service->GetScore(url1));
-  EXPECT_EQ(0, service->GetScore(url2));
-  EXPECT_EQ(0, service->GetScore(url3));
+  EXPECT_EQ(0, service_->GetScore(url1));
+  EXPECT_EQ(0, service_->GetScore(url2));
+  EXPECT_EQ(0, service_->GetScore(url3));
 
   NavigateAndCommit(url1);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_MOUSE);
-  EXPECT_DOUBLE_EQ(0.05, service->GetScore(url1));
-  EXPECT_DOUBLE_EQ(0.05, service->GetTotalEngagementPoints());
+  service_->HandleUserInput(web_contents(), EngagementType::kMouse);
+  EXPECT_DOUBLE_EQ(0.05, service_->GetScore(url1));
+  EXPECT_DOUBLE_EQ(0.05, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url2);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_MOUSE);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_KEYPRESS);
-  EXPECT_DOUBLE_EQ(0.1, service->GetScore(url2));
-  EXPECT_DOUBLE_EQ(0.15, service->GetTotalEngagementPoints());
+  service_->HandleUserInput(web_contents(), EngagementType::kMouse);
+  service_->HandleUserInput(web_contents(), EngagementType::kKeypress);
+  EXPECT_DOUBLE_EQ(0.1, service_->GetScore(url2));
+  EXPECT_DOUBLE_EQ(0.15, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url3);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_KEYPRESS);
-  EXPECT_DOUBLE_EQ(0.05, service->GetScore(url3));
-  EXPECT_DOUBLE_EQ(0.2, service->GetTotalEngagementPoints());
+  service_->HandleUserInput(web_contents(), EngagementType::kKeypress);
+  EXPECT_DOUBLE_EQ(0.05, service_->GetScore(url3));
+  EXPECT_DOUBLE_EQ(0.2, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url1);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_KEYPRESS);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_MOUSE);
-  EXPECT_DOUBLE_EQ(0.15, service->GetScore(url1));
-  EXPECT_DOUBLE_EQ(0.3, service->GetTotalEngagementPoints());
+  service_->HandleUserInput(web_contents(), EngagementType::kKeypress);
+  service_->HandleUserInput(web_contents(), EngagementType::kMouse);
+  EXPECT_DOUBLE_EQ(0.15, service_->GetScore(url1));
+  EXPECT_DOUBLE_EQ(0.3, service_->GetTotalEngagementPoints());
 
   NavigateAndCommit(url2);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_SCROLL);
+  service_->HandleUserInput(web_contents(), EngagementType::kScroll);
   NavigateAndCommit(url3);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE);
-  EXPECT_DOUBLE_EQ(0.15, service->GetScore(url2));
-  EXPECT_DOUBLE_EQ(0.1, service->GetScore(url3));
-  EXPECT_DOUBLE_EQ(0.4, service->GetTotalEngagementPoints());
+  service_->HandleUserInput(web_contents(), EngagementType::kTouchGesture);
+  EXPECT_DOUBLE_EQ(0.15, service_->GetScore(url2));
+  EXPECT_DOUBLE_EQ(0.1, service_->GetScore(url3));
+  EXPECT_DOUBLE_EQ(0.4, service_->GetTotalEngagementPoints());
 }
 
 TEST_F(SiteEngagementServiceTest, GetTotalNotificationPoints) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
   base::HistogramTester histograms;
 
   // The https and http versions of www.google.com should be separate.
@@ -432,73 +419,64 @@ TEST_F(SiteEngagementServiceTest, GetTotalNotificationPoints) {
   GURL url2("http://www.google.com/");
   GURL url3("http://drive.google.com/");
 
-  EXPECT_EQ(0, service->GetScore(url1));
-  EXPECT_EQ(0, service->GetScore(url2));
-  EXPECT_EQ(0, service->GetScore(url3));
+  EXPECT_EQ(0, service_->GetScore(url1));
+  EXPECT_EQ(0, service_->GetScore(url2));
+  EXPECT_EQ(0, service_->GetScore(url3));
 
-  service->HandleNotificationInteraction(url1);
-  EXPECT_DOUBLE_EQ(1.0, service->GetScore(url1));
-  EXPECT_DOUBLE_EQ(1.0, service->GetTotalEngagementPoints());
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_NOTIFICATION_INTERACTION, 1);
+  service_->HandleNotificationInteraction(url1);
+  EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
+  EXPECT_DOUBLE_EQ(1.0, service_->GetTotalEngagementPoints());
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kNotificationInteraction, 1);
 
-  service->HandleNotificationInteraction(url2);
-  EXPECT_DOUBLE_EQ(1.0, service->GetScore(url2));
-  EXPECT_DOUBLE_EQ(2.0, service->GetTotalEngagementPoints());
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_NOTIFICATION_INTERACTION, 2);
+  service_->HandleNotificationInteraction(url2);
+  EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url2));
+  EXPECT_DOUBLE_EQ(2.0, service_->GetTotalEngagementPoints());
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kNotificationInteraction, 2);
 
-  service->HandleNotificationInteraction(url1);
-  EXPECT_DOUBLE_EQ(2.0, service->GetScore(url1));
-  EXPECT_DOUBLE_EQ(3.0, service->GetTotalEngagementPoints());
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_NOTIFICATION_INTERACTION, 3);
+  service_->HandleNotificationInteraction(url1);
+  EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
+  EXPECT_DOUBLE_EQ(3.0, service_->GetTotalEngagementPoints());
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kNotificationInteraction, 3);
 
-  service->HandleNotificationInteraction(url3);
-  EXPECT_DOUBLE_EQ(1.0, service->GetScore(url3));
-  EXPECT_DOUBLE_EQ(4.0, service->GetTotalEngagementPoints());
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_NOTIFICATION_INTERACTION, 4);
+  service_->HandleNotificationInteraction(url3);
+  EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url3));
+  EXPECT_DOUBLE_EQ(4.0, service_->GetTotalEngagementPoints());
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kNotificationInteraction, 4);
 }
 
 TEST_F(SiteEngagementServiceTest, RestrictedToHTTPAndHTTPS) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   // The https and http versions of www.google.com should be separate.
   GURL url1("ftp://www.google.com/");
   GURL url2("file://blah");
-  GURL url3("chrome://");
-  GURL url4("about://config");
+  GURL url3("chrome://version/");
+  GURL url4("chrome://config");
 
   NavigateAndCommit(url1);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_MOUSE);
-  EXPECT_EQ(0, service->GetScore(url1));
+  service_->HandleUserInput(web_contents(), EngagementType::kMouse);
+  EXPECT_EQ(0, service_->GetScore(url1));
 
   NavigateAndCommit(url2);
-  service->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
-  EXPECT_EQ(0, service->GetScore(url2));
+  service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
+  EXPECT_EQ(0, service_->GetScore(url2));
 
   NavigateAndCommit(url3);
-  service->HandleMediaPlaying(web_contents(), true);
-  EXPECT_EQ(0, service->GetScore(url3));
+  service_->HandleMediaPlaying(web_contents(), true);
+  EXPECT_EQ(0, service_->GetScore(url3));
 
   NavigateAndCommit(url4);
-  service->HandleUserInput(web_contents(),
-                           SiteEngagementService::ENGAGEMENT_KEYPRESS);
-  EXPECT_EQ(0, service->GetScore(url4));
+  service_->HandleUserInput(web_contents(), EngagementType::kKeypress);
+  EXPECT_EQ(0, service_->GetScore(url4));
 }
 
 TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   base::HistogramTester histograms;
 
   base::Time current_day = GetReferenceTime();
-  clock_.SetNow(current_day - base::TimeDelta::FromDays(5));
+  clock_.SetNow(current_day - base::Days(5));
 
   // The https and http versions of www.google.com should be separate. But
   // different paths on the same origin should be treated the same.
@@ -513,12 +491,11 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   service_->SetLastShortcutLaunchTime(web_contents(), url2);
   histograms.ExpectTotalCount(
       SiteEngagementMetrics::kDaysSinceLastShortcutLaunchHistogram, 0);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH, 1);
+  histograms.ExpectUniqueSample(SiteEngagementMetrics::kEngagementTypeHistogram,
+                                EngagementType::kWebappShortcutLaunch, 1);
 
-  service_->AddPoints(url1, 2.0);
-  service_->AddPoints(url2, 2.0);
+  service_->AddPointsForTesting(url1, 2.0);
+  service_->AddPointsForTesting(url2, 2.0);
   clock_.SetNow(current_day);
   service_->SetLastShortcutLaunchTime(web_contents(), url2);
 
@@ -526,35 +503,40 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
       SiteEngagementMetrics::kDaysSinceLastShortcutLaunchHistogram, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               4);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH, 2);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 2);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kWebappShortcutLaunch, 2);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 2);
 
   EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(7.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(1));
+  clock_.SetNow(GetReferenceTime() + base::Days(1));
   EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(7.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(7));
+  clock_.SetNow(GetReferenceTime() + base::Days(7));
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(5.0, service_->GetScore(url2));
 
-  service_->AddPoints(url1, 1.0);
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(10));
+  service_->AddPointsForTesting(url1, 1.0);
+  clock_.SetNow(GetReferenceTime() + base::Days(10));
   EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(5.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(11));
+  clock_.SetNow(GetReferenceTime() + base::Days(11));
   EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url2));
 }
 
-TEST_F(SiteEngagementServiceTest, CheckHistograms) {
+// Disabled due to flakiness on Builder Linux Tests. crbug.com/1137759
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_CheckHistograms DISABLED_CheckHistograms
+#else
+#define MAYBE_CheckHistograms CheckHistograms
+#endif
+
+TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
   base::HistogramTester histograms;
 
   base::Time current_day = GetReferenceTime();
@@ -575,8 +557,6 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0);
   histograms.ExpectTotalCount(
       SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0);
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kPercentOriginsWithMaxEngagementHistogram, 0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
 
@@ -595,8 +575,6 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
       SiteEngagementMetrics::kMedianEngagementHistogram, 0, 1);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 1);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kPercentOriginsWithMaxEngagementHistogram, 0, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
 
@@ -606,7 +584,7 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
   for (const std::string& histogram_name : engagement_bucket_histogram_names)
     histograms.ExpectTotalCount(histogram_name, 0);
 
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(60));
+  clock_.SetNow(clock_.Now() + base::Minutes(60));
 
   // The https and http versions of www.google.com should be separate.
   GURL url1("https://www.google.com/");
@@ -615,10 +593,8 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
 
   NavigateAndCommit(url1);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
-  service_->HandleUserInput(web_contents(),
-                            SiteEngagementService::ENGAGEMENT_KEYPRESS);
-  service_->HandleUserInput(web_contents(),
-                            SiteEngagementService::ENGAGEMENT_MOUSE);
+  service_->HandleUserInput(web_contents(), EngagementType::kKeypress);
+  service_->HandleUserInput(web_contents(), EngagementType::kMouse);
   NavigateAndCommit(url2);
   service_->HandleMediaPlaying(web_contents(), true);
 
@@ -643,25 +619,21 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 2);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 2);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kPercentOriginsWithMaxEngagementHistogram, 0, 2);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               6);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 1);
+                               EngagementType::kNavigation, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_KEYPRESS, 1);
+                               EngagementType::kKeypress, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MOUSE, 1);
+                               EngagementType::kMouse, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN,
-                               1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 2);
+                               EngagementType::kMediaHidden, 1);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 2);
 
   // Navigations are still logged within the 1 hour refresh period
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(59));
+  clock_.SetNow(clock_.Now() + base::Minutes(59));
 
   NavigateAndCommit(url2);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
@@ -670,27 +642,24 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               8);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 3);
+                               EngagementType::kNavigation, 3);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_KEYPRESS, 1);
+                               EngagementType::kKeypress, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MOUSE, 1);
+                               EngagementType::kMouse, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN,
-                               1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 2);
+                               EngagementType::kMediaHidden, 1);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 2);
 
   // Update the hourly histograms again.
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(1));
+  clock_.SetNow(clock_.Now() + base::Minutes(1));
 
   NavigateAndCommit(url3);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
   service_->HandleMediaPlaying(web_contents(), false);
   NavigateAndCommit(url2);
-  service_->HandleUserInput(web_contents(),
-                            SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE);
+  service_->HandleUserInput(web_contents(), EngagementType::kTouchGesture);
 
   // Wait until the background metrics recording happens.
   content::RunAllTasksUntilIdle();
@@ -714,58 +683,47 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 3);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kPercentOriginsWithMaxEngagementHistogram, 0, 3);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               12);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 4);
+                               EngagementType::kNavigation, 4);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_KEYPRESS, 1);
+                               EngagementType::kKeypress, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MOUSE, 1);
+                               EngagementType::kMouse, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE,
-                               1);
+                               EngagementType::kTouchGesture, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE,
-                               1);
+                               EngagementType::kMediaVisible, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN,
-                               1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 3);
+                               EngagementType::kMediaHidden, 1);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 3);
 
   NavigateAndCommit(url1);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
   NavigateAndCommit(url2);
-  service_->HandleUserInput(web_contents(),
-                            SiteEngagementService::ENGAGEMENT_SCROLL);
+  service_->HandleUserInput(web_contents(), EngagementType::kScroll);
   NavigateAndCommit(url1);
-  service_->HandleUserInput(web_contents(),
-                            SiteEngagementService::ENGAGEMENT_KEYPRESS);
+  service_->HandleUserInput(web_contents(), EngagementType::kKeypress);
   NavigateAndCommit(url3);
-  service_->HandleUserInput(web_contents(),
-                            SiteEngagementService::ENGAGEMENT_MOUSE);
+  service_->HandleUserInput(web_contents(), EngagementType::kMouse);
 
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               17);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 6);
+                               EngagementType::kNavigation, 6);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_KEYPRESS, 2);
+                               EngagementType::kKeypress, 2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MOUSE, 2);
+                               EngagementType::kMouse, 2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE,
-                               1);
+                               EngagementType::kTouchGesture, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_SCROLL, 1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 3);
+                               EngagementType::kScroll, 1);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 3);
 
   // Advance an origin to the max for a day and advance the clock an hour before
   // the last increment before max. Expect the histogram to be updated.
@@ -773,7 +731,7 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
   for (int i = 0; i < 6; ++i)
     service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
 
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(60));
+  clock_.SetNow(clock_.Now() + base::Minutes(60));
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
 
   // Wait until the background metrics recording happens.
@@ -799,16 +757,12 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
       SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
   histograms.ExpectBucketCount(
       SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 1, 1);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kPercentOriginsWithMaxEngagementHistogram, 0, 4);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               24);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION,
-                               13);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 3);
+                               EngagementType::kNavigation, 13);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 3);
 
   for (const std::string& histogram_name : engagement_bucket_histogram_names)
     histograms.ExpectTotalCount(histogram_name, 3);
@@ -826,10 +780,10 @@ TEST_F(SiteEngagementServiceTest, CheckHistograms) {
 TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
   // Set the base time to be 3 weeks past the stale period in the past.
   // Use a 1 second offset to make sure scores don't yet decay.
-  base::TimeDelta one_second = base::TimeDelta::FromSeconds(1);
-  base::TimeDelta one_day = base::TimeDelta::FromDays(1);
+  base::TimeDelta one_second = base::Seconds(1);
+  base::TimeDelta one_day = base::Days(1);
   base::TimeDelta decay_period =
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours());
+      base::Hours(SiteEngagementScore::GetDecayPeriodInHours());
   base::TimeDelta shorter_than_decay_period = decay_period - one_second;
 
   base::Time max_decay_time =
@@ -850,54 +804,54 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
   EXPECT_EQ(0, service_->GetScore(url4));
 
   // Add some points
-  service_->AddPoints(url1, 1.0);
-  service_->AddPoints(url2, 5.0);
+  service_->AddPointsForTesting(url1, 1.0);
+  service_->AddPointsForTesting(url2, 5.0);
   EXPECT_EQ(1.0, service_->GetScore(url1));
   EXPECT_EQ(5.0, service_->GetScore(url2));
 
   // Add more to url2 over the next few days. Leave it completely alone after
   // this.
   clock_.SetNow(base_time + one_day);
-  service_->AddPoints(url2, 5.0);
+  service_->AddPointsForTesting(url2, 5.0);
   EXPECT_EQ(10.0, service_->GetScore(url2));
 
   clock_.SetNow(base_time + 2 * one_day);
-  service_->AddPoints(url2, 5.0);
+  service_->AddPointsForTesting(url2, 5.0);
   EXPECT_EQ(15.0, service_->GetScore(url2));
 
   clock_.SetNow(base_time + 3 * one_day);
-  service_->AddPoints(url2, 2.0);
+  service_->AddPointsForTesting(url2, 2.0);
   EXPECT_EQ(17.0, service_->GetScore(url2));
   base::Time url2_last_modified = clock_.Now();
 
   // Move to (3 * shorter_than_decay_period) before the stale period.
   base_time += shorter_than_decay_period;
   clock_.SetNow(base_time);
-  service_->AddPoints(url1, 1.0);
-  service_->AddPoints(url3, 5.0);
+  service_->AddPointsForTesting(url1, 1.0);
+  service_->AddPointsForTesting(url3, 5.0);
   EXPECT_EQ(2.0, service_->GetScore(url1));
   EXPECT_EQ(5.0, service_->GetScore(url3));
 
   // Add more to url3, and then leave it alone.
   clock_.SetNow(base_time + one_day);
-  service_->AddPoints(url1, 5.0);
-  service_->AddPoints(url3, 5.0);
+  service_->AddPointsForTesting(url1, 5.0);
+  service_->AddPointsForTesting(url3, 5.0);
   EXPECT_EQ(7.0, service_->GetScore(url1));
   EXPECT_EQ(10.0, service_->GetScore(url3));
 
   // Move to (2 * shorter_than_decay_period) before the stale period.
   base_time += shorter_than_decay_period;
   clock_.SetNow(base_time);
-  service_->AddPoints(url1, 5.0);
-  service_->AddPoints(url4, 5.0);
+  service_->AddPointsForTesting(url1, 5.0);
+  service_->AddPointsForTesting(url4, 5.0);
   EXPECT_EQ(12.0, service_->GetScore(url1));
   EXPECT_EQ(5.0, service_->GetScore(url4));
 
   // Move to shorter_than_decay_period before the stale period.
   base_time += shorter_than_decay_period;
   clock_.SetNow(base_time);
-  service_->AddPoints(url1, 1.5);
-  service_->AddPoints(url4, 2.0);
+  service_->AddPointsForTesting(url1, 1.5);
+  service_->AddPointsForTesting(url4, 2.0);
   EXPECT_EQ(13.5, service_->GetScore(url1));
   EXPECT_EQ(7.0, service_->GetScore(url4));
 
@@ -917,7 +871,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
     service_->CleanupEngagementScores(true);
     ASSERT_FALSE(service_->IsLastEngagementStale());
 
-    std::map<GURL, double> score_map = GetScoreMap(service_.get());
+    std::map<GURL, double> score_map = GetScoreMap(service_);
     EXPECT_EQ(3u, score_map.size());
     EXPECT_EQ(8.5, score_map[url1]);
     EXPECT_EQ(2.0, score_map[url2]);
@@ -940,7 +894,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
     clock_.SetNow(base_time);
     ASSERT_TRUE(service_->IsLastEngagementStale());
 
-    std::map<GURL, double> score_map = GetScoreMap(service_.get());
+    std::map<GURL, double> score_map = GetScoreMap(service_);
     EXPECT_EQ(3u, score_map.size());
     EXPECT_EQ(8.5, score_map[url1]);
     EXPECT_EQ(2.0, score_map[url2]);
@@ -958,11 +912,11 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
 
   {
     // Add points to commit the decay.
-    service_->AddPoints(url1, 0.5);
-    service_->AddPoints(url2, 0.5);
-    service_->AddPoints(url4, 1);
+    service_->AddPointsForTesting(url1, 0.5);
+    service_->AddPointsForTesting(url2, 0.5);
+    service_->AddPointsForTesting(url4, 1);
 
-    std::map<GURL, double> score_map = GetScoreMap(service_.get());
+    std::map<GURL, double> score_map = GetScoreMap(service_);
     EXPECT_EQ(3u, score_map.size());
     EXPECT_EQ(9.0, score_map[url1]);
     EXPECT_EQ(2.5, score_map[url2]);
@@ -983,7 +937,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
     clock_.SetNow(base_time);
     ASSERT_FALSE(service_->IsLastEngagementStale());
 
-    std::map<GURL, double> score_map = GetScoreMap(service_.get());
+    std::map<GURL, double> score_map = GetScoreMap(service_);
     EXPECT_EQ(3u, score_map.size());
     EXPECT_EQ(4, score_map[url1]);
     EXPECT_EQ(0, score_map[url2]);
@@ -992,7 +946,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
     service_->CleanupEngagementScores(false);
     ASSERT_FALSE(service_->IsLastEngagementStale());
 
-    score_map = GetScoreMap(service_.get());
+    score_map = GetScoreMap(service_);
     EXPECT_EQ(1u, score_map.size());
     EXPECT_EQ(4, score_map[url1]);
     EXPECT_EQ(0, service_->GetScore(url2));
@@ -1004,9 +958,9 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
 
   {
     // Add points to commit the decay.
-    service_->AddPoints(url1, 0.5);
+    service_->AddPointsForTesting(url1, 0.5);
 
-    std::map<GURL, double> score_map = GetScoreMap(service_.get());
+    std::map<GURL, double> score_map = GetScoreMap(service_);
     EXPECT_EQ(1u, score_map.size());
     EXPECT_EQ(4.5, score_map[url1]);
     EXPECT_EQ(clock_.Now(),
@@ -1019,7 +973,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
     clock_.SetNow(clock_.Now() + decay_period);
     ASSERT_FALSE(service_->IsLastEngagementStale());
 
-    std::map<GURL, double> score_map = GetScoreMap(service_.get());
+    std::map<GURL, double> score_map = GetScoreMap(service_);
     EXPECT_EQ(1u, score_map.size());
     EXPECT_EQ(0, score_map[url1]);
     EXPECT_EQ(clock_.Now() - decay_period,
@@ -1029,7 +983,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
     service_->CleanupEngagementScores(false);
     ASSERT_FALSE(service_->IsLastEngagementStale());
 
-    score_map = GetScoreMap(service_.get());
+    score_map = GetScoreMap(service_);
     EXPECT_EQ(0u, score_map.size());
     EXPECT_EQ(0, service_->GetScore(url1));
     EXPECT_EQ(clock_.Now() - decay_period, service_->GetLastEngagementTime());
@@ -1047,18 +1001,18 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresProportional) {
   GURL url1("https://www.google.com/");
   GURL url2("https://www.somewhereelse.com/");
 
-  service_->AddPoints(url1, 1.0);
-  service_->AddPoints(url2, 1.2);
+  service_->AddPointsForTesting(url1, 1.0);
+  service_->AddPointsForTesting(url2, 1.2);
 
-  current_day += base::TimeDelta::FromDays(7);
+  current_day += base::Days(7);
   clock_.SetNow(current_day);
-  std::map<GURL, double> score_map = GetScoreMap(service_.get());
+  std::map<GURL, double> score_map = GetScoreMap(service_);
   EXPECT_EQ(2u, score_map.size());
   AssertInRange(0.5, service_->GetScore(url1));
   AssertInRange(0.6, service_->GetScore(url2));
 
   service_->CleanupEngagementScores(false);
-  score_map = GetScoreMap(service_.get());
+  score_map = GetScoreMap(service_);
   EXPECT_EQ(1u, score_map.size());
   EXPECT_EQ(0, service_->GetScore(url1));
   AssertInRange(0.6, service_->GetScore(url2));
@@ -1067,30 +1021,27 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresProportional) {
 TEST_F(SiteEngagementServiceTest, NavigationAccumulation) {
   GURL url("https://www.google.com/");
 
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   // Create the helper manually since it isn't present when a tab isn't created.
   SiteEngagementService::Helper::CreateForWebContents(web_contents());
 
   // Only direct navigation should trigger engagement.
-  NavigateWithTransitionAndExpectHigherScore(service, url,
+  NavigateWithTransitionAndExpectHigherScore(service_, url,
                                              ui::PAGE_TRANSITION_TYPED);
-  NavigateWithTransitionAndExpectHigherScore(service, url,
+  NavigateWithTransitionAndExpectHigherScore(service_, url,
                                              ui::PAGE_TRANSITION_GENERATED);
-  NavigateWithTransitionAndExpectHigherScore(service, url,
+  NavigateWithTransitionAndExpectHigherScore(service_, url,
                                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   NavigateWithTransitionAndExpectHigherScore(
-      service, url, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
-  NavigateWithTransitionAndExpectHigherScore(service, url,
+      service_, url, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  NavigateWithTransitionAndExpectHigherScore(service_, url,
                                              ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   // Other transition types should not accumulate engagement.
-  NavigateWithTransitionAndExpectEqualScore(service, url,
+  NavigateWithTransitionAndExpectEqualScore(service_, url,
                                             ui::PAGE_TRANSITION_LINK);
-  NavigateWithTransitionAndExpectEqualScore(service, url,
+  NavigateWithTransitionAndExpectEqualScore(service_, url,
                                             ui::PAGE_TRANSITION_RELOAD);
-  NavigateWithTransitionAndExpectEqualScore(service, url,
+  NavigateWithTransitionAndExpectEqualScore(service_, url,
                                             ui::PAGE_TRANSITION_FORM_SUBMIT);
 }
 
@@ -1103,17 +1054,29 @@ TEST_F(SiteEngagementServiceTest, IsBootstrapped) {
 
   EXPECT_FALSE(service_->IsBootstrapped());
 
-  service_->AddPoints(url1, 5.0);
+  service_->AddPointsForTesting(url1, 5.0);
   EXPECT_FALSE(service_->IsBootstrapped());
 
-  service_->AddPoints(url2, 5.0);
+  service_->AddPointsForTesting(url2, 5.0);
   EXPECT_TRUE(service_->IsBootstrapped());
 
-  clock_.SetNow(current_day + base::TimeDelta::FromDays(8));
+  clock_.SetNow(current_day + base::Days(8));
   EXPECT_FALSE(service_->IsBootstrapped());
 }
 
 TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
+  SiteEngagementServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        history::HistoryService* history = HistoryServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(context),
+            ServiceAccessType::IMPLICIT_ACCESS);
+        return std::make_unique<HistoryAwareSiteEngagementService>(context,
+                                                                   history);
+      }));
+  service_ = SiteEngagementServiceFactory::GetForProfile(profile());
+  service_->SetClockForTesting(&clock_);
   // Enable proportional decay to ensure that the undecay that happens to
   // balance out history deletion also accounts for the proportional decay.
   SetParamValue(SiteEngagementScore::DECAY_PROPORTION, 0.5);
@@ -1128,11 +1091,10 @@ TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
   GURL origin4a("http://decayed.com/index.html");
 
   base::Time today = GetReferenceTime();
-  base::Time yesterday = GetReferenceTime() - base::TimeDelta::FromDays(1);
-  base::Time yesterday_afternoon = GetReferenceTime() -
-                                   base::TimeDelta::FromDays(1) +
-                                   base::TimeDelta::FromHours(4);
-  base::Time yesterday_week = GetReferenceTime() - base::TimeDelta::FromDays(8);
+  base::Time yesterday = GetReferenceTime() - base::Days(1);
+  base::Time yesterday_afternoon =
+      GetReferenceTime() - base::Days(1) + base::Hours(4);
+  base::Time yesterday_week = GetReferenceTime() - base::Days(8);
   clock_.SetNow(today);
 
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
@@ -1141,18 +1103,18 @@ TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
   history->AddPage(origin1, yesterday_afternoon, history::SOURCE_BROWSED);
   history->AddPage(origin1a, yesterday_week, history::SOURCE_BROWSED);
   history->AddPage(origin1b, today, history::SOURCE_BROWSED);
-  service_->AddPoints(origin1, 3.0);
+  service_->AddPointsForTesting(origin1, 3.0);
 
   history->AddPage(origin2, yesterday_afternoon, history::SOURCE_BROWSED);
   history->AddPage(origin2a, yesterday_afternoon, history::SOURCE_BROWSED);
-  service_->AddPoints(origin2, 5.0);
+  service_->AddPointsForTesting(origin2, 5.0);
 
   history->AddPage(origin3, today, history::SOURCE_BROWSED);
-  service_->AddPoints(origin3, 5.0);
+  service_->AddPointsForTesting(origin3, 5.0);
 
   history->AddPage(origin4, yesterday_week, history::SOURCE_BROWSED);
   history->AddPage(origin4a, yesterday_afternoon, history::SOURCE_BROWSED);
-  service_->AddPoints(origin4, 5.0);
+  service_->AddPointsForTesting(origin4, 5.0);
 
   AssertInRange(3.0, service_->GetScore(origin1));
   AssertInRange(5.0, service_->GetScore(origin2));
@@ -1269,7 +1231,7 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
       service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MINIMAL engagement.
-  service_->AddPoints(url2, 0.5);
+  service_->AddPointsForTesting(url2, 0.5);
   EXPECT_EQ(blink::mojom::EngagementLevel::NONE,
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
@@ -1288,7 +1250,7 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
       service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url1 to LOW engagement.
-  service_->AddPoints(url1, 1.0);
+  service_->AddPointsForTesting(url1, 1.0);
   EXPECT_EQ(blink::mojom::EngagementLevel::LOW,
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
@@ -1307,7 +1269,7 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
       service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MEDIUM engagement.
-  service_->AddPoints(url2, 4.5);
+  service_->AddPointsForTesting(url2, 4.5);
   EXPECT_EQ(blink::mojom::EngagementLevel::LOW,
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MEDIUM,
@@ -1327,9 +1289,9 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
 
   // Bring url2 to HIGH engagement.
   for (int i = 0; i < 9; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
+    current_day += base::Days(1);
     clock_.SetNow(current_day);
-    service_->AddPoints(url2, 5.0);
+    service_->AddPointsForTesting(url2, 5.0);
   }
   EXPECT_EQ(blink::mojom::EngagementLevel::HIGH,
             service_->GetEngagementLevel(url2));
@@ -1349,9 +1311,9 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
 
   // Bring url2 to MAX engagement.
   for (int i = 0; i < 10; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
+    current_day += base::Days(1);
     clock_.SetNow(current_day);
-    service_->AddPoints(url2, 5.0);
+    service_->AddPointsForTesting(url2, 5.0);
   }
   EXPECT_EQ(blink::mojom::EngagementLevel::MAX,
             service_->GetEngagementLevel(url2));
@@ -1378,9 +1340,8 @@ TEST_F(SiteEngagementServiceTest, Observers) {
   GURL url_not_called("https://www.google.com/");
 
   // Create an observer and Observe(nullptr).
-  ObserverTester tester_not_called(service_.get(), web_contents(),
-                                   url_not_called, 1,
-                                   SiteEngagementService::ENGAGEMENT_LAST);
+  ObserverTester tester_not_called(service_, web_contents(), url_not_called, 1,
+                                   EngagementType::kLast);
   tester_not_called.Observe(nullptr);
 
   base::Time current_day = GetReferenceTime();
@@ -1388,8 +1349,8 @@ TEST_F(SiteEngagementServiceTest, Observers) {
 
   {
     // Create an observer for navigation.
-    ObserverTester tester(service_.get(), web_contents(), url_score_1, 0.5,
-                          SiteEngagementService::ENGAGEMENT_NAVIGATION);
+    ObserverTester tester(service_, web_contents(), url_score_1, 0.5,
+                          EngagementType::kNavigation);
     NavigateAndCommit(url_score_1);
     service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
     tester.Wait();
@@ -1400,11 +1361,10 @@ TEST_F(SiteEngagementServiceTest, Observers) {
 
   {
     // Update observer for a user input.
-    ObserverTester tester(service_.get(), web_contents(), url_score_2, 0.55,
-                          SiteEngagementService::ENGAGEMENT_MOUSE);
+    ObserverTester tester(service_, web_contents(), url_score_2, 0.55,
+                          EngagementType::kMouse);
     NavigateAndCommit(url_score_2);
-    service_->HandleUserInput(web_contents(),
-                              SiteEngagementService::ENGAGEMENT_MOUSE);
+    service_->HandleUserInput(web_contents(), EngagementType::kMouse);
     tester.Wait();
     EXPECT_TRUE(tester.callback_called());
     EXPECT_FALSE(tester_not_called.callback_called());
@@ -1413,10 +1373,10 @@ TEST_F(SiteEngagementServiceTest, Observers) {
 
   // Add two observers for media playing in the foreground.
   {
-    ObserverTester tester_1(service_.get(), web_contents(), url_score_3, 0.57,
-                            SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE);
-    ObserverTester tester_2(service_.get(), web_contents(), url_score_3, 0.57,
-                            SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE);
+    ObserverTester tester_1(service_, web_contents(), url_score_3, 0.57,
+                            EngagementType::kMediaVisible);
+    ObserverTester tester_2(service_, web_contents(), url_score_3, 0.57,
+                            EngagementType::kMediaVisible);
     NavigateAndCommit(url_score_3);
     service_->HandleMediaPlaying(web_contents(), false);
     tester_1.Wait();
@@ -1431,8 +1391,8 @@ TEST_F(SiteEngagementServiceTest, Observers) {
 
   // Add an observer for media playing in the background.
   {
-    ObserverTester tester(service_.get(), web_contents(), url_score_3, 0.58,
-                          SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN);
+    ObserverTester tester(service_, web_contents(), url_score_3, 0.58,
+                          EngagementType::kMediaHidden);
     service_->HandleMediaPlaying(web_contents(), true);
     tester.Wait();
 
@@ -1443,9 +1403,8 @@ TEST_F(SiteEngagementServiceTest, Observers) {
 
   // Add an observer for notifications.
   {
-    ObserverTester tester(
-        service_.get(), nullptr, url_score_4, 1.0,
-        SiteEngagementService::ENGAGEMENT_NOTIFICATION_INTERACTION);
+    ObserverTester tester(service_, nullptr, url_score_4, 1.0,
+                          EngagementType::kNotificationInteraction);
     service_->HandleNotificationInteraction(url_score_4);
     tester.Wait();
 
@@ -1456,9 +1415,8 @@ TEST_F(SiteEngagementServiceTest, Observers) {
 
   // Add an observer for web app launch.
   {
-    ObserverTester tester(
-        service_.get(), web_contents(), url_score_5, 5.0,
-        SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH);
+    ObserverTester tester(service_, web_contents(), url_score_5, 5.0,
+                          EngagementType::kWebappShortcutLaunch);
     service_->SetLastShortcutLaunchTime(web_contents(), url_score_5);
     tester.Wait();
 
@@ -1466,101 +1424,6 @@ TEST_F(SiteEngagementServiceTest, Observers) {
     EXPECT_FALSE(tester_not_called.callback_called());
     tester.Observe(nullptr);
   }
-}
-
-TEST_F(SiteEngagementServiceTest, ScoreDecayHistograms) {
-  base::Time current_day = GetReferenceTime();
-  clock_.SetNow(current_day);
-  base::HistogramTester histograms;
-  GURL origin1("http://www.google.com/");
-  GURL origin2("http://drive.google.com/");
-
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedFromHistogram,
-                              0);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                              0);
-
-  service_->AddPoints(origin2, SiteEngagementScore::GetNavigationPoints());
-
-  // Max the score for origin1.
-  for (int i = 0; i < kMoreDaysThanNeededToMaxTotalEngagement; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
-    clock_.SetNow(current_day);
-
-    for (int j = 0; j < kMoreAccumulationsThanNeededToMaxDailyEngagement; ++j)
-      service_->AddPoints(origin1, SiteEngagementScore::GetNavigationPoints());
-  }
-
-  EXPECT_EQ(SiteEngagementScore::kMaxPoints, service_->GetScore(origin1));
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedFromHistogram,
-                              0);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                              0);
-
-  // Check histograms after one decay period.
-  clock_.SetNow(
-      current_day +
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours()));
-
-  // Trigger decay and histogram hit.
-  service_->AddPoints(origin1, 0.01);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kScoreDecayedFromHistogram,
-      SiteEngagementScore::kMaxPoints, 1);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kScoreDecayedToHistogram,
-      SiteEngagementScore::kMaxPoints - SiteEngagementScore::GetDecayPoints(),
-      1);
-
-  // Check histograms after another decay period.
-  clock_.SetNow(current_day +
-                base::TimeDelta::FromHours(
-                    2 * SiteEngagementScore::GetDecayPeriodInHours()));
-  // Trigger decay and histogram hit.
-  service_->AddPoints(origin1, 0.01);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedFromHistogram,
-                              2);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                              2);
-
-  // Check decay to zero. Start at the 3rd decay period (we have had two
-  // already). This will be 40 decays in total.
-  for (int i = 3; i <= kMorePeriodsThanNeededToDecayMaxScore; ++i) {
-    clock_.SetNow(current_day +
-                  base::TimeDelta::FromHours(
-                      i * SiteEngagementScore::GetDecayPeriodInHours()));
-    // Trigger decay and histogram hit.
-    service_->AddPoints(origin1, 0.01);
-  }
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedFromHistogram,
-                              kMorePeriodsThanNeededToDecayMaxScore);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                              kMorePeriodsThanNeededToDecayMaxScore);
-  // It should have taken (20 - 3) = 17 of the 38 decays to get to zero, since
-  // we started from 95. Expect the remaining 21 decays to be to bucket 0 (and
-  // hence 20 from bucket 0).
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kScoreDecayedFromHistogram, 0, 20);
-  histograms.ExpectBucketCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                               0, 21);
-  // Trigger decay and histogram hit for origin2, checking an independent decay.
-  service_->AddPoints(origin2, 0.01);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedFromHistogram,
-                              kMorePeriodsThanNeededToDecayMaxScore + 1);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                              kMorePeriodsThanNeededToDecayMaxScore + 1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kScoreDecayedFromHistogram, 0, 21);
-  histograms.ExpectBucketCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                               0, 22);
-
-  // Add more points and ensure no more samples are present.
-  service_->AddPoints(origin1, 0.01);
-  service_->AddPoints(origin2, 0.01);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedFromHistogram,
-                              kMorePeriodsThanNeededToDecayMaxScore + 1);
-  histograms.ExpectTotalCount(SiteEngagementMetrics::kScoreDecayedToHistogram,
-                              kMorePeriodsThanNeededToDecayMaxScore + 1);
 }
 
 TEST_F(SiteEngagementServiceTest, LastEngagementTime) {
@@ -1577,7 +1440,7 @@ TEST_F(SiteEngagementServiceTest, LastEngagementTime) {
   // Add points should set the last engagement time in the service, and persist
   // it to disk.
   GURL origin("http://www.google.com/");
-  service_->AddPoints(origin, 1);
+  service_->AddPointsForTesting(origin, 1);
 
   last_engagement_time = base::Time::FromInternalValue(
       profile()->GetPrefs()->GetInt64(prefs::kSiteEngagementLastUpdateTime));
@@ -1599,9 +1462,9 @@ TEST_F(SiteEngagementServiceTest, LastEngagementTime) {
   EXPECT_EQ(rebased_time, service_->GetLastEngagementTime());
 
   // Adding 0 points shouldn't update the last engagement time.
-  base::Time later_in_day = current_day + base::TimeDelta::FromSeconds(30);
+  base::Time later_in_day = current_day + base::Seconds(30);
   clock_.SetNow(later_in_day);
-  service_->AddPoints(origin, 0);
+  service_->AddPointsForTesting(origin, 0);
 
   last_engagement_time = base::Time::FromInternalValue(
       profile()->GetPrefs()->GetInt64(prefs::kSiteEngagementLastUpdateTime));
@@ -1609,7 +1472,7 @@ TEST_F(SiteEngagementServiceTest, LastEngagementTime) {
   EXPECT_EQ(rebased_time, service_->GetLastEngagementTime());
 
   // Add some more points and ensure the value is persisted.
-  service_->AddPoints(origin, 3);
+  service_->AddPointsForTesting(origin, 3);
 
   last_engagement_time = base::Time::FromInternalValue(
       profile()->GetPrefs()->GetInt64(prefs::kSiteEngagementLastUpdateTime));
@@ -1623,7 +1486,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
   clock_.SetNow(current_day);
 
   GURL origin("http://www.google.com/");
-  service_->AddPoints(origin, 1);
+  service_->AddPointsForTesting(origin, 1);
   EXPECT_EQ(1, service_->GetScore(origin));
   EXPECT_EQ(current_day, service_->GetLastEngagementTime());
 
@@ -1635,7 +1498,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
   clock_.SetNow(before_stale_period);
 
   GURL origin1("http://maps.google.com/");
-  service_->AddPoints(origin1, 1);
+  service_->AddPointsForTesting(origin1, 1);
 
   EXPECT_EQ(before_stale_period,
             service_->CreateEngagementScore(origin).last_engagement_time());
@@ -1645,24 +1508,24 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
 
   // Advance within a decay period and add points.
   base::TimeDelta less_than_decay_period =
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours()) -
-      base::TimeDelta::FromSeconds(30);
+      base::Hours(SiteEngagementScore::GetDecayPeriodInHours()) -
+      base::Seconds(30);
   base::Time origin1_last_updated = clock_.Now() + less_than_decay_period;
   clock_.SetNow(origin1_last_updated);
-  service_->AddPoints(origin, 1);
-  service_->AddPoints(origin1, 5);
+  service_->AddPointsForTesting(origin, 1);
+  service_->AddPointsForTesting(origin1, 5);
   EXPECT_EQ(2, service_->GetScore(origin));
   EXPECT_EQ(6, service_->GetScore(origin1));
 
   clock_.SetNow(clock_.Now() + less_than_decay_period);
-  service_->AddPoints(origin, 5);
+  service_->AddPointsForTesting(origin, 5);
   EXPECT_EQ(7, service_->GetScore(origin));
 
   // Move forward to the max number of decays per score. This is within the
   // stale period so no cleanup should be run.
   for (int i = 0; i < SiteEngagementScore::GetMaxDecaysPerScore(); ++i) {
     clock_.SetNow(clock_.Now() + less_than_decay_period);
-    service_->AddPoints(origin, 5);
+    service_->AddPointsForTesting(origin, 5);
     EXPECT_EQ(clock_.Now(), service_->GetLastEngagementTime());
   }
   EXPECT_EQ(12, service_->GetScore(origin));
@@ -1673,8 +1536,8 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
   // triggers a cleanup. Ensure that |last_engagement_time| is moved back
   // appropriately, while origin1 is decayed correctly (once).
   clock_.SetNow(origin1_last_updated + less_than_decay_period +
-                base::TimeDelta::FromSeconds(30));
-  service_->AddPoints(origin1, 1);
+                base::Seconds(30));
+  service_->AddPointsForTesting(origin1, 1);
 
   EXPECT_EQ(clock_.Now(),
             service_->CreateEngagementScore(origin).last_engagement_time());
@@ -1689,7 +1552,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToRebase) {
 
   GURL origin("http://www.google.com/");
   service_->ResetBaseScoreForURL(origin, 5);
-  service_->AddPoints(origin, 5);
+  service_->AddPointsForTesting(origin, 5);
   EXPECT_EQ(10, service_->GetScore(origin));
   EXPECT_EQ(current_day, service_->GetLastEngagementTime());
 
@@ -1700,15 +1563,14 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToRebase) {
   clock_.SetNow(before_stale_period);
 
   GURL origin1("http://maps.google.com/");
-  service_->AddPoints(origin1, 1);
+  service_->AddPointsForTesting(origin1, 1);
 
   EXPECT_EQ(before_stale_period, service_->GetLastEngagementTime());
 
   // Set the clock such that |origin|'s last engagement time is between
   // last_engagement_time and rebase_time.
   clock_.SetNow(current_day + service_->GetStalePeriod() +
-                service_->GetMaxDecayPeriod() -
-                base::TimeDelta::FromSeconds((30)));
+                service_->GetMaxDecayPeriod() - base::Seconds((30)));
   base::Time rebased_time = clock_.Now() - service_->GetMaxDecayPeriod();
   service_->CleanupEngagementScores(true);
 
@@ -1725,39 +1587,37 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
   base::Time current_day = GetReferenceTime();
   clock_.SetNow(current_day);
 
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-
   GURL url1("http://www.google.com/");
   GURL url2("https://www.google.com/");
   GURL url3("https://drive.google.com/");
   GURL url4("https://maps.google.com/");
 
-  service->AddPoints(url1, 1);
-  service->AddPoints(url2, 2);
+  service_->AddPointsForTesting(url1, 1);
+  service_->AddPointsForTesting(url2, 2);
 
-  auto incognito_service = base::WrapUnique(
-      new SiteEngagementService(profile()->GetOffTheRecordProfile(), &clock_));
+  auto incognito_service = std::make_unique<SiteEngagementService>(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  incognito_service->SetClockForTesting(&clock_);
   EXPECT_EQ(1, incognito_service->GetScore(url1));
   EXPECT_EQ(2, incognito_service->GetScore(url2));
   EXPECT_EQ(0, incognito_service->GetScore(url3));
 
-  incognito_service->AddPoints(url3, 1);
+  incognito_service->AddPointsForTesting(url3, 1);
   EXPECT_EQ(1, incognito_service->GetScore(url3));
-  EXPECT_EQ(0, service->GetScore(url3));
+  EXPECT_EQ(0, service_->GetScore(url3));
 
-  incognito_service->AddPoints(url2, 1);
+  incognito_service->AddPointsForTesting(url2, 1);
   EXPECT_EQ(3, incognito_service->GetScore(url2));
-  EXPECT_EQ(2, service->GetScore(url2));
+  EXPECT_EQ(2, service_->GetScore(url2));
 
-  service->AddPoints(url3, 2);
+  service_->AddPointsForTesting(url3, 2);
   EXPECT_EQ(1, incognito_service->GetScore(url3));
-  EXPECT_EQ(2, service->GetScore(url3));
+  EXPECT_EQ(2, service_->GetScore(url3));
 
   EXPECT_EQ(0, incognito_service->GetScore(url4));
-  service->AddPoints(url4, 2);
+  service_->AddPointsForTesting(url4, 2);
   EXPECT_EQ(2, incognito_service->GetScore(url4));
-  EXPECT_EQ(2, service->GetScore(url4));
+  EXPECT_EQ(2, service_->GetScore(url4));
 
   // Engagement should never become stale in incognito.
   current_day += incognito_service->GetStalePeriod();
@@ -1771,6 +1631,7 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
 }
 
 TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
+  service_->SetClockForTesting(base::DefaultClock::GetInstance());
   GURL url1("http://www.google.com/");
   GURL url2("https://www.google.com/");
 
@@ -1778,7 +1639,7 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
       HostContentSettingsMapFactory::GetForProfile(profile());
   HostContentSettingsMap* incognito_settings_map =
       HostContentSettingsMapFactory::GetForProfile(
-          profile()->GetOffTheRecordProfile());
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // All scores are 0 to start.
   EXPECT_EQ(0, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
@@ -1790,10 +1651,8 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
   EXPECT_EQ(0, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
                                               incognito_settings_map, url2));
 
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
-  ASSERT_TRUE(service);
-  service->AddPoints(url1, 1);
-  service->AddPoints(url2, 2);
+  service_->AddPointsForTesting(url1, 1);
+  service_->AddPointsForTesting(url2, 2);
 
   EXPECT_EQ(1, CheckScoreFromSettingsOnThread(content::BrowserThread::UI,
                                               settings_map, url1));
@@ -1804,11 +1663,11 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
   EXPECT_EQ(2, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
                                               incognito_settings_map, url2));
 
-  SiteEngagementService* incognito_service =
-      SiteEngagementService::Get(profile()->GetOffTheRecordProfile());
+  SiteEngagementService* incognito_service = SiteEngagementService::Get(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ASSERT_TRUE(incognito_service);
-  incognito_service->AddPoints(url1, 3);
-  incognito_service->AddPoints(url2, 1);
+  incognito_service->AddPointsForTesting(url1, 3);
+  incognito_service->AddPointsForTesting(url2, 1);
 
   EXPECT_EQ(1, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
                                               settings_map, url1));
@@ -1819,8 +1678,8 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
   EXPECT_EQ(3, CheckScoreFromSettingsOnThread(content::BrowserThread::UI,
                                               incognito_settings_map, url2));
 
-  service->AddPoints(url1, 2);
-  service->AddPoints(url2, 1);
+  service_->AddPointsForTesting(url1, 2);
+  service_->AddPointsForTesting(url2, 1);
 
   EXPECT_EQ(3, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
                                               settings_map, url1));
@@ -1833,8 +1692,6 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
 }
 
 TEST_F(SiteEngagementServiceTest, GetAllDetailsIncludesBonusOnlyScores) {
-  clock_.SetNow(GetReferenceTime());
-
   GURL url1("http://www.google.com/");
   GURL url2("https://www.google.com/");
 
@@ -1852,3 +1709,5 @@ TEST_F(SiteEngagementServiceTest, GetAllDetailsIncludesBonusOnlyScores) {
   details = service_->GetAllDetails();
   EXPECT_EQ(2u, details.size());
 }
+
+}  // namespace site_engagement

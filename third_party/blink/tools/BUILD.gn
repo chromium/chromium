@@ -6,23 +6,30 @@
 group("wpt_tests_isolate") {
   testonly = true
   data = [
-    "//testing/scripts/common.py",
-    "//testing/scripts/run_wpt_tests.py",
-    "//testing/xvfb.py",
+    "//testing/scripts/wpt_common.py",
+
+    # WPT tooling
+    "//third_party/wpt_tools/",
 
     # Include blinkpy tools for setting up expectations.
     "//third_party/blink/tools/build_wpt_metadata.py",
-    "//third_party/blink/tools/update_wpt_output.py",
     "//third_party/blink/tools/blinkpy/",
+    "//third_party/catapult/third_party/typ/",
 
     # The web_tests/external directory contains all WPT components including
     # the test runner codebase, manifest file, and the tests themselves.
     "//third_party/blink/web_tests/external/",
 
+    # The web_tests/platform directory contains platform specific WPT baselines.
+    "//third_party/blink/web_tests/platform/",
+
     # Include a single file from wpt_internal only to initialize that directory.
     # We don't need to run these tests but still need to create a MANIFEST here.
     # See crbug.com/1018829 for more details.
-    "//third_party/blink/web_tests/wpt_internal/README",
+    "//third_party/blink/web_tests/wpt_internal/README.md",
+
+    # Include the results viewer
+    "//third_party/blink/web_tests/fast/harness/results.html",
 
     # Include the various Test Expectations files.
     "//third_party/blink/web_tests/ASANExpectations",
@@ -34,5 +41,59 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/TestExpectations",
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/WPTOverrideExpectations",
+  ]
+  data_deps = [
+    ":wpt_tests_mojo_bindings",
+    "//testing:test_scripts_shared",
+  ]
+  if (is_win) {
+    data_deps += [ "//build/win:copy_cdb_to_output" ]
+  }
+  if (is_android) {
+    data += [ "//testing/scripts/wpt_android_lib.py" ]
+  } else {
+    data += [ "//testing/scripts/run_wpt_tests.py" ]
+  }
+}
+
+group("wpt_tests_android_isolate") {
+  testonly = true
+  data_deps = [ "//third_party/blink/tools:wpt_tests_isolate" ]
+  data = [
+    "//third_party/blink/web_tests/android/WebLayerWPTOverrideExpectations",
+    "//third_party/blink/web_tests/android/ChromeWPTOverrideExpectations",
+    "//third_party/blink/web_tests/android/WebviewWPTExpectations",
+    "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
+    "//third_party/blink/web_tests/android/WPTSmokeTestCases",
+  ]
+}
+
+group("wpt_tests_base_mojo_bindings") {
+  testonly = true
+  data_deps = [
+    "//:layout_test_data_mojo_bindings",
+    "//:layout_test_data_mojo_bindings_lite",
+    "//content/test:mojo_bindings_web_test_mojom_js_data_deps",
+    "//content/test:mojo_web_test_bindings_js_data_deps",
+    "//mojo/public/interfaces/bindings/tests:test_data_deps",
+    "//mojo/public/js/ts/bindings/tests:test_interfaces_js_data_deps",
+    "//mojo/public/mojom/base:base_js_data_deps",
+  ]
+}
+
+group("wpt_tests_mojo_bindings") {
+  testonly = true
+  data_deps = [
+    ":wpt_tests_base_mojo_bindings",
+    "//device/bluetooth/public/mojom:fake_bluetooth_interfaces_js_data_deps",
+    "//device/vr/public/mojom:vr_service_js_data_deps",
+    "//media/capture/mojom:image_capture_js_data_deps",
+    "//media/midi:mojo_js_data_deps",
+    "//services/device/public/mojom:generic_sensor_js_data_deps",
+    "//services/device/public/mojom:mojom_js_data_deps",
+    "//services/device/public/mojom:usb_js_data_deps",
+    "//services/shape_detection/public/mojom:mojom_js_data_deps",
+    "//skia/public/mojom:mojom_js_data_deps",
+    "//third_party/blink/public/mojom:mojom_platform_js_data_deps",
   ]
 }

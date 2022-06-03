@@ -23,7 +23,7 @@ class XRInputSourceArray : public ScriptWrappable {
   void RemoveWithSourceId(uint32_t source_id);
   void SetWithSourceId(uint32_t source_id, XRInputSource* input_source);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapHashMap<uint32_t, Member<XRInputSource>> input_sources_;

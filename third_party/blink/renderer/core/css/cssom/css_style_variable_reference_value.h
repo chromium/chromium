@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_STYLE_VARIABLE_REFERENCE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_STYLE_VARIABLE_REFERENCE_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -35,6 +34,10 @@ class CORE_EXPORT CSSStyleVariableReferenceValue final
   CSSStyleVariableReferenceValue(const String& variable,
                                  CSSUnparsedValue* fallback)
       : variable_(variable), fallback_(fallback) {}
+  CSSStyleVariableReferenceValue(const CSSStyleVariableReferenceValue&) =
+      delete;
+  CSSStyleVariableReferenceValue& operator=(
+      const CSSStyleVariableReferenceValue&) = delete;
 
   const String& variable() const { return variable_; }
   void setVariable(const String&, ExceptionState&);
@@ -42,7 +45,7 @@ class CORE_EXPORT CSSStyleVariableReferenceValue final
   CSSUnparsedValue* fallback() { return fallback_.Get(); }
   const CSSUnparsedValue* fallback() const { return fallback_.Get(); }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(fallback_);
     ScriptWrappable::Trace(visitor);
   }
@@ -50,11 +53,8 @@ class CORE_EXPORT CSSStyleVariableReferenceValue final
  protected:
   String variable_;
   Member<CSSUnparsedValue> fallback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CSSStyleVariableReferenceValue);
 };
 
 }  // namespace blink
 
-#endif  // CSSStyleVariableReference_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_STYLE_VARIABLE_REFERENCE_VALUE_H_

@@ -32,7 +32,7 @@ class ElementFragmentAnchorTest : public SimTest {
     // Focus handlers aren't run unless the page is focused.
     GetDocument().GetPage()->GetFocusController().SetFocused(true);
 
-    WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 };
 
@@ -53,43 +53,54 @@ TEST_F(ElementFragmentAnchorTest, FocusHandlerRunBeforeRaf) {
           background-color: red;
         }
       </style>
-      <link rel="stylesheet" type="text/css" href="sheet.css">
       <a id="anchorlink" href="#bottom">Link to bottom of the page</a>
       <div style="height: 1000px;"></div>
+      <link rel="stylesheet" type="text/css" href="sheet.css">
       <input id="bottom">Bottom of the page</input>
+      <script>
+        document.getElementById("bottom").addEventListener('focus', () => {
+          requestAnimationFrame(() => {
+            document.body.style.backgroundColor = '#00FF00';
+          });
+        });
+      </script>
     )HTML");
 
-  MainFrame().ExecuteScript(WebScriptSource(R"HTML(
-      document.getElementById("bottom").addEventListener('focus', () => {
-        requestAnimationFrame(() => {
-          document.body.style.backgroundColor = '#00FF00';
-        });
-      });
-  )HTML"));
-
   // We're still waiting on the stylesheet to load so the load event shouldn't
-  // yet dispatch and rendering is deferred.
-  ASSERT_FALSE(GetDocument().HaveRenderBlockingResourcesLoaded());
+  // yet dispatch.
   ASSERT_FALSE(GetDocument().IsLoadCompleted());
 
   // Click on the anchor element. This will cause a synchronous same-document
-  // navigation.
+  // navigation. The fragment shouldn't activate yet as parsing will be blocked
+  // due to the unloaded stylesheet.
   auto* anchor =
       To<HTMLAnchorElement>(GetDocument().getElementById("anchorlink"));
   anchor->click();
   ASSERT_EQ(GetDocument().body(), GetDocument().ActiveElement())
       << "Active element changed while rendering is blocked";
 
-  // Complete the CSS stylesheet load so the document can finish loading. The
-  // fragment should be activated at that point.
+  // Complete the CSS stylesheet load so the document can finish parsing.
   css_resource.Complete("");
+  test::RunPendingTasks();
+
+  // Now that the document has fully parsed the anchor should invoke at this
+  // point.
+  ASSERT_EQ(GetDocument().getElementById("bottom"),
+            GetDocument().ActiveElement());
+
+  // The background color shouldn't yet be updated.
+  ASSERT_EQ(GetDocument()
+                .body()
+                ->GetLayoutObject()
+                ->Style()
+                ->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+                .NameForLayoutTreeAsText(),
+            Color(255, 0, 0).NameForLayoutTreeAsText());
+
   Compositor().BeginFrame();
 
-  ASSERT_FALSE(GetDocument().IsLoadCompleted());
-  ASSERT_TRUE(GetDocument().HaveRenderBlockingResourcesLoaded());
-  ASSERT_EQ(GetDocument().getElementById("bottom"),
-            GetDocument().ActiveElement())
-      << "Active element wasn't changed after rendering was unblocked.";
+  // Make sure the background color is updated from the rAF without requiring a
+  // second BeginFrame.
   EXPECT_EQ(GetDocument()
                 .body()
                 ->GetLayoutObject()
@@ -139,8 +150,8 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentNoLayoutUntilLoad) {
 
   IntRect fragment_rect_in_frame(
       fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(IntPoint(),
-                        child_viewport->VisibleContentRect().Size());
+  IntRect viewport_rect(gfx::Point(),
+                        child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
       << "Fragment element at [" << fragment_rect_in_frame.ToString()
@@ -200,8 +211,8 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentDirtyLayoutAfterLoad) {
 
   IntRect fragment_rect_in_frame(
       fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(IntPoint(),
-                        child_viewport->VisibleContentRect().Size());
+  IntRect viewport_rect(gfx::Point(),
+                        child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
       << "Fragment element at [" << fragment_rect_in_frame.ToString()
@@ -221,45 +232,39 @@ TEST_F(ElementFragmentAnchorTest, AnchorRemovedBeforeBeginFrameCrash) {
   LoadURL("https://example.com/test.html#anchor");
 
   main_resource.Complete(R"HTML(
-      <!DOCTYPE html>
-      <link rel="stylesheet" type="text/css" href="sheet.css">
-      <div style="height: 1000px;"></div>
-      <input id="anchor">Bottom of the page</input>
-    )HTML");
+        <!DOCTYPE html>
+        <link rel="stylesheet" type="text/css" href="sheet.css">
+        <div style="height: 1000px;"></div>
+        <input id="anchor">Bottom of the page</input>
+      )HTML");
 
   // We're still waiting on the stylesheet to load so the load event shouldn't
-  // yet dispatch and rendering is deferred. This will avoid invoking or
-  // focusing the fragment when it's first installed.
-  ASSERT_FALSE(GetDocument().HaveRenderBlockingResourcesLoaded());
+  // yet dispatch and parsing is deferred. This will install the anchor.
   ASSERT_FALSE(GetDocument().IsLoadCompleted());
 
   ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
   ASSERT_TRUE(static_cast<ElementFragmentAnchor*>(
                   GetDocument().View()->GetFragmentAnchor())
-                  ->anchor_node_);
+                  ->anchor_node_.Get());
 
   // Remove the fragment anchor from the DOM and perform GC.
   GetDocument().getElementById("anchor")->remove();
-  v8::Isolate* isolate = ToIsolate(GetDocument().GetFrame());
-  isolate->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
+  ThreadState::Current()->CollectAllGarbageForTesting();
 
-  // Now that the element has been removed and GC'd, unblock rendering so we can
-  // produce a frame.
-  css_resource.Complete("");
-
-  ASSERT_TRUE(GetDocument().HaveRenderBlockingResourcesLoaded());
-
-  // We should still have a fragment anchor but its node pointer shoulld be
-  // gone since it's a WeakMember.
-  ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
-  ASSERT_FALSE(static_cast<ElementFragmentAnchor*>(
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_FALSE(static_cast<ElementFragmentAnchor*>(
                    GetDocument().View()->GetFragmentAnchor())
-                   ->anchor_node_);
+                   ->anchor_node_.Get());
 
-  // We'd normally focus the fragment during BeginFrame. Make sure we don't
-  // crash since it's been GC'd.
-  Compositor().BeginFrame();
+  // Now that the element has been removed and GC'd, unblock parsing. The
+  // anchor should be installed at this point. When parsing finishes, a
+  // synchronous layout update will run, which will invoke the fragment anchor.
+  css_resource.Complete("");
+  test::RunPendingTasks();
+
+  // When the document finishes loading, it does a synchronous layout update,
+  // which should clear LocalFrameView::fragment_anchor_ ...
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 
   // Non-crash is considered a pass.
 }
@@ -291,7 +296,7 @@ TEST_F(ElementFragmentAnchorTest, SVGDocumentDoesntCreateFragment) {
     )SVG");
 
   auto* img = To<HTMLImageElement>(GetDocument().getElementById("image"));
-  SVGImage* svg = ToSVGImage(img->CachedImage()->GetImage());
+  auto* svg = To<SVGImage>(img->CachedImage()->GetImage());
   auto* view =
       DynamicTo<LocalFrameView>(svg->GetPageForTesting()->MainFrame()->View());
 
@@ -304,6 +309,43 @@ TEST_F(ElementFragmentAnchorTest, SVGDocumentDoesntCreateFragment) {
   Compositor().BeginFrame();
   ASSERT_EQ(ScrollOffset(), view->GetScrollableArea()->GetScrollOffset());
   ASSERT_FALSE(view->GetFragmentAnchor());
+}
+
+// This test ensures that we correctly scroll the fragment into view in the
+// case that the fragment has characters which need to be URL encoded.
+TEST_F(ElementFragmentAnchorTest, HasURLEncodedCharacters) {
+  SimRequest main_resource(u"https://example.com/t.html#\u00F6", "text/html");
+  LoadURL(u"https://example.com/t.html#\u00F6");
+
+  main_resource.Complete(
+      u"<html>\n"
+      // SimRequest sends UTF-8 to parser but the parser defaults to UTF-16.
+      u"    <head><meta charset=\"UTF-8\"></head>\n"
+      u"    <body>\n"
+      u"        <div style=\"height: 50cm;\">blank space</div>\n"
+      u"        <h1 id=\"\u00F6\">\u00D6</h1>\n"
+      // TODO(1117212): The escaped version currently takes precedence.
+      // u"     <div style=\"height: 50cm;\">blank space</div>\n"
+      // u"     <h1 id=\"%C3%B6\">\u00D62</h1>\n"
+      u"        <div style=\"height: 50cm;\">blank space</div>\n"
+      u"        <h1 id=\"non-umlaut\">non-umlaut</h1>\n"
+      u"    </body>\n"
+      u"</html>");
+
+  Compositor().BeginFrame();
+
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  Element* fragment = GetDocument().getElementById(u"\u00F6");
+  ASSERT_NE(nullptr, fragment);
+
+  IntRect fragment_rect_in_frame(
+      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  IntRect viewport_rect(gfx::Point(), viewport->VisibleContentRect().size());
+
+  EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
+      << "Fragment element at [" << fragment_rect_in_frame.ToString()
+      << "] was not scrolled into viewport rect [" << viewport_rect.ToString()
+      << "]";
 }
 
 }  // namespace blink

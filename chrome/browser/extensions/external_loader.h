@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
@@ -32,6 +31,8 @@ class ExternalProviderImpl;
 class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  public:
   ExternalLoader();
+  ExternalLoader(const ExternalLoader&) = delete;
+  ExternalLoader& operator=(const ExternalLoader&) = delete;
 
   // Specifies the provider that owns this object.
   void Init(ExternalProviderImpl* owner);
@@ -67,9 +68,7 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  private:
   friend class base::RefCountedThreadSafe<ExternalLoader>;
 
-  ExternalProviderImpl* owner_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalLoader);
+  ExternalProviderImpl* owner_ = nullptr;  // weak
 };
 
 }  // namespace extensions

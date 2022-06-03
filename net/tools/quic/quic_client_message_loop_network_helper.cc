@@ -4,6 +4,7 @@
 
 #include "net/tools/quic/quic_client_message_loop_network_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -27,7 +28,6 @@
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 
 using std::string;
@@ -88,11 +88,11 @@ bool QuicClientMessageLooplNetworkHelper::CreateUDPSocketAndBind(
   client_address_ = ToQuicSocketAddress(address);
 
   socket_.swap(socket);
-  packet_reader_.reset(new QuicChromiumPacketReader(
+  packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
       socket_.get(), clock_, this, kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      NetLogWithSource()));
+      NetLogWithSource());
 
   if (socket != nullptr) {
     socket->Close();
@@ -131,11 +131,12 @@ QuicClientMessageLooplNetworkHelper::CreateQuicPacketWriter() {
       socket_.get(), base::ThreadTaskRunnerHandle::Get().get());
 }
 
-void QuicClientMessageLooplNetworkHelper::OnReadError(
+bool QuicClientMessageLooplNetworkHelper::OnReadError(
     int result,
     const DatagramClientSocket* socket) {
   LOG(ERROR) << "QuicSimpleClient read failed: " << ErrorToShortString(result);
   client_->Disconnect();
+  return false;
 }
 
 quic::QuicSocketAddress

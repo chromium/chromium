@@ -97,6 +97,7 @@ void DoubleToStringConverter::CreateExponentialRepresentation(
     return;
   }
   DOUBLE_CONVERSION_ASSERT(exponent < 1e4);
+  // Changing this constant requires updating the comment of DoubleToStringConverter constructor
   const int kMaxExponentLength = 5;
   char buffer[kMaxExponentLength + 1];
   buffer[kMaxExponentLength] = '\0';
@@ -104,6 +105,11 @@ void DoubleToStringConverter::CreateExponentialRepresentation(
   while (exponent > 0) {
     buffer[--first_char_pos] = '0' + (exponent % 10);
     exponent /= 10;
+  }
+  // Add prefix '0' to make exponent width >= min(min_exponent_with_, kMaxExponentLength)
+  // For example: convert 1e+9 -> 1e+09, if min_exponent_with_ is set to 2
+  while(kMaxExponentLength - first_char_pos < std::min(min_exponent_width_, kMaxExponentLength)) {
+    buffer[--first_char_pos] = '0';
   }
   result_builder->AddSubstring(&buffer[first_char_pos],
                                kMaxExponentLength - first_char_pos);

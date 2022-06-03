@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -30,8 +30,7 @@ namespace browsing_data_counter_utils {
 
 class BrowsingDataCounterUtilsTest : public testing::Test {
  public:
-  BrowsingDataCounterUtilsTest() {}
-  ~BrowsingDataCounterUtilsTest() override {}
+  ~BrowsingDataCounterUtilsTest() override = default;
 
   TestingProfile* GetProfile() { return &profile_; }
 
@@ -57,15 +56,17 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
       {42, false, true,
        "Frees up less than 1 MB. Some sites may load more slowly on your next "
        "visit."},
-      {2.312 * kBytesInAMegabyte, false, false, "2.3 MB"},
-      {2.312 * kBytesInAMegabyte, false, true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, false, "2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, true,
        "Frees up 2.3 MB. Some sites may load more slowly on your next visit."},
-      {2.312 * kBytesInAMegabyte, true, false, "Less than 2.3 MB"},
-      {2.312 * kBytesInAMegabyte, true, true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, false,
+       "Less than 2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, true,
        "Frees up less than 2.3 MB. Some sites may load more slowly on your "
        "next visit."},
-      {500.2 * kBytesInAMegabyte, false, false, "500 MB"},
-      {500.2 * kBytesInAMegabyte, true, false, "Less than 500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), false, false, "500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), true, false,
+       "Less than 500 MB"},
   };
 
   for (const TestCase& test_case : kTestCases) {
@@ -74,14 +75,14 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
         test_case.is_basic_tab ? browsing_data::ClearBrowsingDataTab::BASIC
                                : browsing_data::ClearBrowsingDataTab::ADVANCED;
     counter.Init(GetProfile()->GetPrefs(), tab,
-                 browsing_data::BrowsingDataCounter::Callback());
+                 browsing_data::BrowsingDataCounter::ResultCallback());
     CacheCounter::CacheResult result(&counter, test_case.bytes,
                                      test_case.is_upper_limit);
     SCOPED_TRACE(base::StringPrintf(
         "Test params: %d bytes, %d is_upper_limit, %d is_basic_tab.",
         test_case.bytes, test_case.is_upper_limit, test_case.is_basic_tab));
 
-    base::string16 output =
+    std::u16string output =
         GetChromeCounterTextFromResult(&result, GetProfile());
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
@@ -122,7 +123,7 @@ TEST_F(BrowsingDataCounterUtilsTest, HostedAppsCounterResult) {
 
     HostedAppsCounter::HostedAppsResult result(&counter, apps.size(), examples);
 
-    base::string16 output =
+    std::u16string output =
         GetChromeCounterTextFromResult(&result, GetProfile());
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
@@ -137,66 +138,70 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
 
   auto password_store =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
+  password_store->Init(GetProfile()->GetPrefs(),
+                       /*affiliated_match_helper=*/nullptr);
 
   // This counter does not really count anything; we just need a reference to
   // pass to the SigninDataResult ctor.
   browsing_data::SigninDataCounter counter(
-      password_store, ProfileSyncServiceFactory::GetForProfile(GetProfile()),
+      password_store, nullptr, SyncServiceFactory::GetForProfile(GetProfile()),
       nullptr);
 
-  const struct TestCase {
+  // Use a separate struct for input to make test cases easier to read after
+  // auto formatting.
+  struct TestInput {
     int num_passwords;
+    int num_account_passwords;
     int num_webauthn_credentials;
     bool sync_enabled;
     std::vector<std::string> domain_examples;
+    std::vector<std::string> account_domain_examples;
+  };
+  const struct TestCase {
+    TestInput input;
     std::string expected_output;
   } kTestCases[] = {
-      {0, 0, false, {}, "None"},
-      {0, 0, true, {}, "None"},
-      {1, 0, false, {"a.com"}, "1 password (for a.com)"},
-      {1, 0, true, {"a.com"}, "1 password (for a.com, synced)"},
-      {2, 0, false, {"a.com"}, "2 passwords (for a.com)"},
-      {2, 0, false, {"a.com", "b.com"}, "2 passwords (for a.com, b.com)"},
-      {2,
-       0,
-       true,
-       {"a.com", "b.com"},
+      {{0, 0, 0, false, {}, {}}, "None"},
+      {{0, 0, 0, true, {}, {}}, "None"},
+      {{1, 0, 0, false, {"a.com"}, {}}, "1 password (for a.com)"},
+      {{1, 0, 0, true, {"a.com"}, {}}, "1 password (for a.com, synced)"},
+      {{2, 0, 0, false, {"a.com"}, {}}, "2 passwords (for a.com)"},
+      {{2, 0, 0, false, {"a.com", "b.com"}, {}},
+       "2 passwords (for a.com, b.com)"},
+      {{2, 0, 0, true, {"a.com", "b.com"}, {}},
        "2 passwords (for a.com, b.com, synced)"},
-      {0, 1, false, {}, "sign-in data for 1 account"},
-      {0, 1, true, {}, "sign-in data for 1 account"},
-      {0, 2, false, {}, "sign-in data for 2 accounts"},
-      {0, 2, true, {}, "sign-in data for 2 accounts"},
-      {1,
-       2,
-       false,
-       {"a.de"},
+      {{0, 2, 0, false, {}, {"x.com", "y.com"}},
+       "2 passwords in your account (for x.com, y.com)"},
+      {{0, 0, 1, false, {}, {}}, "sign-in data for 1 account"},
+      {{0, 0, 1, true, {}, {}}, "sign-in data for 1 account"},
+      {{0, 0, 2, false, {}, {}}, "sign-in data for 2 accounts"},
+      {{0, 0, 2, true, {}, {}}, "sign-in data for 2 accounts"},
+      {{1, 0, 2, false, {"a.de"}, {}},
        "1 password (for a.de); sign-in data for 2 accounts"},
-      {2,
-       1,
-       false,
-       {"a.de", "b.de"},
+      {{2, 0, 1, false, {"a.de", "b.de"}, {}},
        "2 passwords (for a.de, b.de); sign-in data for 1 account"},
-      {2,
-       3,
-       true,
-       {"a.de", "b.de"},
+      {{2, 0, 3, true, {"a.de", "b.de"}, {}},
        "2 passwords (for a.de, b.de, synced); sign-in data for 3 "
        "accounts"},
-      {4,
-       2,
-       false,
-       {"a.de", "b.de"},
+      {{4, 0, 2, false, {"a.de", "b.de"}, {}},
        "4 passwords (for a.de, b.de, and 2 more); sign-in data for 2 "
        "accounts"},
-      {8,
-       0,
-       true,
-       {"a.de", "b.de", "c.de", "d.de", "e.de", "f.de", "g.de", "h.de"},
-       "8 passwords (for a.de, b.de, and 6 more, synced)"}};
+      {{6, 0, 0, true, {"a.de", "b.de", "c.de", "d.de", "e.de", "f.de"}, {}},
+       "6 passwords (for a.de, b.de, and 4 more, synced)"},
+      {{2, 1, 1, false, {"a.de", "b.de"}, {"c.de"}},
+       "2 passwords (for a.de, b.de); 1 password in your account (for c.de); "
+       "sign-in data for 1 account"},
+  };
   for (const auto& test_case : kTestCases) {
+    auto& input = test_case.input;
     browsing_data::SigninDataCounter::SigninDataResult result(
-        &counter, test_case.num_passwords, test_case.num_webauthn_credentials,
-        test_case.sync_enabled, test_case.domain_examples);
+        &counter, input.num_passwords, input.num_account_passwords,
+        input.num_webauthn_credentials, input.sync_enabled,
+        input.domain_examples, input.account_domain_examples);
+    SCOPED_TRACE(base::StringPrintf(
+        "Test params: %d password(s), %d account password(s), %d data, %d sync",
+        input.num_passwords, input.num_account_passwords,
+        input.num_webauthn_credentials, input.sync_enabled));
     std::string output = base::UTF16ToASCII(
         GetChromeCounterTextFromResult(&result, GetProfile()));
     EXPECT_EQ(test_case.expected_output, output);

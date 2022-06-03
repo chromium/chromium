@@ -13,9 +13,7 @@ config("google_toolbox_for_mac_public_config") {
 }
 
 component("google_toolbox_for_mac") {
-  sources = [
-    "src/GTMDefines.h",
-  ]
+  sources = [ "src/GTMDefines.h" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -33,7 +31,7 @@ component("google_toolbox_for_mac") {
       "src/DebugUtils/GTMTypeCasting.h",
     ]
 
-    libs = [
+    frameworks = [
       "AppKit.framework",
       "Carbon.framework",
       "Cocoa.framework",

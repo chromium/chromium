@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 
@@ -27,11 +26,11 @@ class RuleParser {
       NONE,  // Parsing was successful.
 
       EMPTY_RULE,             // The parsed line does not contain any rule.
-      BAD_WHITELIST_SYNTAX,   // Used wrong sytnax for a whitelist rule.
+      BAD_ALLOWLIST_SYNTAX,   // Used wrong syntax for an allowlist rule.
       UNKNOWN_OPTION,         // Using of unknown option in a URL rule.
       NOT_A_TRISTATE_OPTION,  // Used negation for a non-tristate option.
       DEPRECATED_OPTION,      // Used a deprecated option.
-      WHITELIST_ONLY_OPTION,  // The option applies to whitelist rules only.
+      ALLOWLIST_ONLY_OPTION,  // The option applies to allowlist rules only.
       NO_VALUE_PROVIDED,      // A valued option is used without a value.
 
       WRONG_CSS_RULE_DELIM,  // Using of a wrong delimiter in a CSS rule.
@@ -61,6 +60,10 @@ class RuleParser {
   };
 
   RuleParser();
+
+  RuleParser(const RuleParser&) = delete;
+  RuleParser& operator=(const RuleParser&) = delete;
+
   ~RuleParser();
 
   // Returns a human-readable detailed explanation of a parsing error.
@@ -117,8 +120,6 @@ class RuleParser {
   RuleType rule_type_;
   UrlRule url_rule_;
   CssRule css_rule_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuleParser);
 };
 
 // Pretty-prints the parsing |error| to |out|, e.g. like this:

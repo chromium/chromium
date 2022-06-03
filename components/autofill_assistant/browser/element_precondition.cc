@@ -8,91 +8,168 @@
 
 #include "base/bind.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
-#include "components/autofill_assistant/browser/selector.h"
+#include "components/autofill_assistant/browser/web/element.h"
 
 namespace autofill_assistant {
 
-ElementPrecondition::ElementPrecondition(
-    const google::protobuf::RepeatedPtrField<ElementReferenceProto>&
-        element_exists,
-    const google::protobuf::RepeatedPtrField<FormValueMatchProto>&
-        form_value_match)
-    : form_value_match_(form_value_match.begin(), form_value_match.end()) {
-  for (const auto& element : element_exists) {
-    // TODO(crbug.com/806868): Check if we shouldn't skip the script when this
-    // happens.
-    if (element.selectors_size() == 0) {
-      DVLOG(3) << "Ignored empty selectors in script precondition.";
-      continue;
-    }
-
-    elements_exist_.emplace_back(Selector(element));
-  }
+ElementPrecondition::ElementPrecondition(const ElementConditionProto& proto)
+    : proto_(proto) {
+  AddResults(proto_);
 }
 
 ElementPrecondition::~ElementPrecondition() = default;
 
+ElementPrecondition::Result::Result() = default;
+
+ElementPrecondition::Result::~Result() = default;
+
+ElementPrecondition::Result::Result(const Result&) = default;
+
 void ElementPrecondition::Check(BatchElementChecker* batch_checks,
-                                base::OnceCallback<void(bool)> callback) {
-  pending_check_count_ = elements_exist_.size() + form_value_match_.size();
-  if (pending_check_count_ == 0) {
-    std::move(callback).Run(true);
+                                Callback callback) {
+  if (results_.empty()) {
+    OnAllElementChecksDone(std::move(callback));
     return;
   }
 
-  callback_ = std::move(callback);
-  for (const auto& selector : elements_exist_) {
-    base::OnceCallback<void(const ClientStatus&)> callback =
+  for (size_t i = 0; i < results_.size(); i++) {
+    Result& result = results_[i];
+    result.match = false;
+    if (result.selector.empty()) {
+      // Empty selectors never match.
+      continue;
+    }
+    batch_checks->AddElementCheck(
+        result.selector, result.strict,
         base::BindOnce(&ElementPrecondition::OnCheckElementExists,
-                       weak_ptr_factory_.GetWeakPtr());
-    batch_checks->AddElementCheck(selector, std::move(callback));
-  }
-  for (size_t i = 0; i < form_value_match_.size(); i++) {
-    const auto& value_match = form_value_match_[i];
-    DCHECK(!value_match.element().selectors().empty());
-    batch_checks->AddFieldValueCheck(
-        Selector(value_match.element()),
-        base::BindOnce(&ElementPrecondition::OnGetFieldValue,
                        weak_ptr_factory_.GetWeakPtr(), i));
   }
+  batch_checks->AddAllDoneCallback(
+      base::BindOnce(&ElementPrecondition::OnAllElementChecksDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ElementPrecondition::OnCheckElementExists(
-    const ClientStatus& element_status) {
-  ReportCheckResult(element_status.ok());
+    size_t result_index,
+    const ClientStatus& element_status,
+    const ElementFinder::Result& element_reference) {
+  if (result_index >= results_.size()) {
+    NOTREACHED();
+    return;
+  }
+  Result& result = results_[result_index];
+  result.match = element_status.ok();
+  // TODO(szermatt): Consider reporting element_status as an unexpected error
+  // right away if it is neither success nor ELEMENT_RESOLUTION_FAILED.
+  if (element_status.ok() && result.client_id.has_value()) {
+    elements_[*result.client_id] = element_reference.dom_object;
+  }
 }
 
-void ElementPrecondition::OnGetFieldValue(int index,
-                                          const ClientStatus& element_status,
-                                          const std::string& value) {
-  if (!element_status.ok()) {
-    ReportCheckResult(false);
-    return;
-  }
-
-  // TODO(crbug.com/806868): Differentiate between empty value and failure.
-  const auto& value_match = form_value_match_[index];
-  if (value_match.has_value()) {
-    ReportCheckResult(value == value_match.value());
-    return;
-  }
-
-  ReportCheckResult(!value.empty());
+void ElementPrecondition::OnAllElementChecksDone(Callback callback) {
+  size_t next_result_index = 0;
+  std::vector<std::string> payloads;
+  bool match = EvaluateResults(proto_, &next_result_index, &payloads);
+  DCHECK_EQ(next_result_index, results_.size());
+  std::move(callback).Run(match ? ClientStatus(ACTION_APPLIED)
+                                : ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                          payloads, elements_);
 }
 
-void ElementPrecondition::ReportCheckResult(bool success) {
-  if (!callback_)
-    return;
+bool ElementPrecondition::EvaluateResults(const ElementConditionProto& proto_,
+                                          size_t* next_result_index,
+                                          std::vector<std::string>* payloads) {
+  bool match = false;
+  switch (proto_.type_case()) {
+    case ElementConditionProto::kAllOf: {
+      match = true;
+      for (const ElementConditionProto& condition :
+           proto_.all_of().conditions()) {
+        if (!EvaluateResults(condition, next_result_index, payloads)) {
+          match = false;
+        }
+      }
+      break;
+    }
+    case ElementConditionProto::kAnyOf: {
+      for (const ElementConditionProto& condition :
+           proto_.any_of().conditions()) {
+        if (EvaluateResults(condition, next_result_index, payloads)) {
+          match = true;
+        }
+      }
+      break;
+    }
 
-  if (!success) {
-    std::move(callback_).Run(false);
-    return;
+    case ElementConditionProto::kNoneOf: {
+      match = true;
+      for (const ElementConditionProto& condition :
+           proto_.none_of().conditions()) {
+        if (EvaluateResults(condition, next_result_index, payloads)) {
+          match = false;
+        }
+      }
+      break;
+    }
+
+    case ElementConditionProto::kMatch: {
+      if (*next_result_index >= results_.size()) {
+        NOTREACHED();
+        break;
+      }
+      const Result& result = results_[*next_result_index];
+      DCHECK_EQ(Selector(proto_.match()), result.selector);
+      match = result.match;
+      (*next_result_index)++;
+      break;
+    }
+
+    case ElementConditionProto::TYPE_NOT_SET:
+      match = true;  // An empty condition is true
+      break;
   }
+  if (match && !proto_.payload().empty()) {
+    payloads->emplace_back(proto_.payload());
+  }
+  return match;
+}
 
-  --pending_check_count_;
-  if (pending_check_count_ <= 0) {
-    DCHECK_EQ(pending_check_count_, 0);
-    std::move(callback_).Run(true);
+void ElementPrecondition::AddResults(const ElementConditionProto& proto_) {
+  switch (proto_.type_case()) {
+    case ElementConditionProto::kAllOf:
+      for (const ElementConditionProto& condition :
+           proto_.all_of().conditions()) {
+        AddResults(condition);
+      }
+      break;
+
+    case ElementConditionProto::kAnyOf:
+      for (const ElementConditionProto& condition :
+           proto_.any_of().conditions()) {
+        AddResults(condition);
+      }
+      break;
+
+    case ElementConditionProto::kNoneOf:
+      for (const ElementConditionProto& condition :
+           proto_.none_of().conditions()) {
+        AddResults(condition);
+      }
+      break;
+
+    case ElementConditionProto::kMatch: {
+      Result result;
+      result.selector = Selector(proto_.match());
+      if (proto_.has_client_id()) {
+        result.client_id = proto_.client_id().identifier();
+      }
+      result.strict = proto_.require_unique_element();
+      results_.emplace_back(result);
+      break;
+    }
+
+    case ElementConditionProto::TYPE_NOT_SET:
+      break;
   }
 }
 

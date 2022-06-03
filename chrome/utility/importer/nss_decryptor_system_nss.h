@@ -9,13 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-
 struct FirefoxRawPasswordInfo;
 
-namespace autofill {
-struct PasswordForm;
+namespace importer {
+struct ImportedPasswordForm;
 }
 
 namespace base {
@@ -26,6 +23,10 @@ class FilePath;
 class NSSDecryptor {
  public:
   NSSDecryptor();
+
+  NSSDecryptor(const NSSDecryptor&) = delete;
+  NSSDecryptor& operator=(const NSSDecryptor&) = delete;
+
   ~NSSDecryptor();
 
   // Initializes NSS if it hasn't already been initialized.
@@ -33,25 +34,13 @@ class NSSDecryptor {
 
   // Decrypts Firefox stored passwords. Before using this method,
   // make sure Init() returns true.
-  base::string16 Decrypt(const std::string& crypt) const;
-
-  // Parses the Firefox password file content, decrypts the
-  // username/password and reads other related information.
-  // The result will be stored in |forms|.
-  void ParseSignons(const base::FilePath& signon_file,
-                    std::vector<autofill::PasswordForm>* forms);
-
-  // Reads and parses the Firefox password sqlite db, decrypts the
-  // username/password and reads other related information.
-  // The result will be stored in |forms|.
-  bool ReadAndParseSignons(const base::FilePath& sqlite_file,
-                           std::vector<autofill::PasswordForm>* forms);
+  std::u16string Decrypt(const std::string& crypt) const;
 
   // Reads and parses the Firefox password file logins.json, decrypts the
   // username/password and reads other related information.
   // The result will be stored in |forms|.
   bool ReadAndParseLogins(const base::FilePath& json_file,
-                          std::vector<autofill::PasswordForm>* forms);
+                          std::vector<importer::ImportedPasswordForm>* forms);
 
  private:
   // Does not actually free the slot, since we'll free it when NSSDecryptor is
@@ -59,10 +48,10 @@ class NSSDecryptor {
   void FreeSlot(PK11SlotInfo* slot) const {}
 
   // Turns unprocessed information extracted from Firefox's password file
-  // into PasswordForm.
+  // into ImportedPasswordForm.
   bool CreatePasswordFormFromRawInfo(
       const FirefoxRawPasswordInfo& raw_password_info,
-      autofill::PasswordForm* form);
+      importer::ImportedPasswordForm* form);
 
   PK11SlotInfo* GetKeySlotForDB() const { return db_slot_; }
 
@@ -71,8 +60,6 @@ class NSSDecryptor {
 
   bool is_nss_initialized_;
   PK11SlotInfo* db_slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(NSSDecryptor);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_NSS_DECRYPTOR_SYSTEM_NSS_H_

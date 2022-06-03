@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
@@ -22,6 +24,10 @@ bool StubDevToolsClient::WasCrashed() {
 }
 
 Status StubDevToolsClient::ConnectIfNecessary() {
+  return Status(kOk);
+}
+
+Status StubDevToolsClient::SetUpDevTools() {
   return Status(kOk);
 }
 
@@ -56,7 +62,7 @@ Status StubDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
     const base::DictionaryValue& params,
     std::unique_ptr<base::DictionaryValue>* result) {
-  result->reset(new base::DictionaryValue());
+  *result = std::make_unique<base::DictionaryValue>();
   return Status(kOk);
 }
 
@@ -91,3 +97,11 @@ Status StubDevToolsClient::HandleReceivedEvents() {
 void StubDevToolsClient::SetDetached() {}
 
 void StubDevToolsClient::SetOwner(WebViewImpl* owner) {}
+
+WebViewImpl* StubDevToolsClient::GetOwner() const {
+  return nullptr;
+}
+
+DevToolsClient* StubDevToolsClient::GetRootClient() {
+  return this;
+}

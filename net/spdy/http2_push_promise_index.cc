@@ -113,16 +113,6 @@ void Http2PushPromiseIndex::ClaimPushedStream(
   }
 }
 
-size_t Http2PushPromiseIndex::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(unclaimed_pushed_streams_);
-}
-
-size_t Http2PushPromiseIndex::UnclaimedPushedStream::EstimateMemoryUsage()
-    const {
-  return base::trace_event::EstimateMemoryUsage(url) +
-         sizeof(spdy::SpdyStreamId) + sizeof(Delegate*);
-}
-
 bool Http2PushPromiseIndex::CompareByUrl::operator()(
     const UnclaimedPushedStream& a,
     const UnclaimedPushedStream& b) const {

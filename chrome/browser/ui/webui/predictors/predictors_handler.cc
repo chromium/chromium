@@ -17,7 +17,6 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/resource_type.h"
 
 using predictors::AutocompleteActionPredictor;
 using predictors::ResourcePrefetchPredictor;
@@ -33,12 +32,12 @@ PredictorsHandler::PredictorsHandler(Profile* profile) {
 PredictorsHandler::~PredictorsHandler() { }
 
 void PredictorsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestAutocompleteActionPredictorDb",
       base::BindRepeating(
           &PredictorsHandler::RequestAutocompleteActionPredictorDb,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestResourcePrefetchPredictorDb",
       base::BindRepeating(
           &PredictorsHandler::RequestResourcePrefetchPredictorDb,
@@ -47,7 +46,8 @@ void PredictorsHandler::RegisterMessages() {
 
 void PredictorsHandler::RequestAutocompleteActionPredictorDb(
     const base::ListValue* args) {
-  const bool enabled = (autocomplete_action_predictor_ != NULL);
+  AllowJavascript();
+  const bool enabled = !!autocomplete_action_predictor_;
   base::DictionaryValue dict;
   dict.SetBoolean("enabled", enabled);
   if (enabled) {
@@ -61,19 +61,20 @@ void PredictorsHandler::RequestAutocompleteActionPredictorDb(
       entry->SetString("url", it->first.url.spec());
       entry->SetInteger("hit_count", it->second.number_of_hits);
       entry->SetInteger("miss_count", it->second.number_of_misses);
-      entry->SetDouble("confidence",
+      entry->SetDoubleKey(
+          "confidence",
           autocomplete_action_predictor_->CalculateConfidenceForDbEntry(it));
       db->Append(std::move(entry));
     }
     dict.Set("db", std::move(db));
   }
 
-  web_ui()->CallJavascriptFunctionUnsafe("updateAutocompleteActionPredictorDb",
-                                         dict);
+  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */, dict);
 }
 
 void PredictorsHandler::RequestResourcePrefetchPredictorDb(
     const base::ListValue* args) {
+  AllowJavascript();
   const bool enabled = (loading_predictor_ != nullptr);
   base::DictionaryValue dict;
   dict.SetBoolean("enabled", enabled);
@@ -91,13 +92,12 @@ void PredictorsHandler::RequestResourcePrefetchPredictorDb(
       // Origin table cache.
       auto db = std::make_unique<base::ListValue>();
       AddOriginDataMapToListValue(
-          *resource_prefetch_predictor->origin_data_->data_cache_, db.get());
+          resource_prefetch_predictor->origin_data_->GetAllCached(), db.get());
       dict.Set("origin_db", std::move(db));
     }
   }
 
-  web_ui()->CallJavascriptFunctionUnsafe("updateResourcePrefetchPredictorDb",
-                                         dict);
+  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */, dict);
 }
 
 void PredictorsHandler::AddOriginDataMapToListValue(
@@ -113,11 +113,11 @@ void PredictorsHandler::AddOriginDataMapToListValue(
       origin->SetInteger("number_of_hits", o.number_of_hits());
       origin->SetInteger("number_of_misses", o.number_of_misses());
       origin->SetInteger("consecutive_misses", o.consecutive_misses());
-      origin->SetDouble("position", o.average_position());
+      origin->SetDoubleKey("position", o.average_position());
       origin->SetBoolean("always_access_network", o.always_access_network());
       origin->SetBoolean("accessed_network", o.accessed_network());
-      origin->SetDouble("score",
-                        ResourcePrefetchPredictorTables::ComputeOriginScore(o));
+      origin->SetDoubleKey(
+          "score", ResourcePrefetchPredictorTables::ComputeOriginScore(o));
       origins->Append(std::move(origin));
     }
     main->Set("origins", std::move(origins));

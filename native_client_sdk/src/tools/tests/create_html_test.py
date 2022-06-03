@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,10 +11,8 @@ import tempfile
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(SCRIPT_DIR)
 CHROME_SRC = os.path.dirname(os.path.dirname(os.path.dirname(PARENT_DIR)))
-MOCK_DIR = os.path.join(CHROME_SRC, 'third_party', 'pymock')
 
 sys.path.append(PARENT_DIR)
-sys.path.append(MOCK_DIR)
 
 import create_html
 import mock

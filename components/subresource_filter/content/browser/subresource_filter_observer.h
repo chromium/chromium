@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_H_
 
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -23,6 +23,12 @@ class ActivationState;
 
 // Class to receive notifications of subresource filter events for a given
 // WebContents. Registered with a SubresourceFilterObserverManager.
+// !!!WARNING!!!: This observer will receive notifications from all pages
+// within a WebContents. This includes non-primary pages like those that are
+// prerendering which is probably not what clients expect. Clients should
+// make sure they're manually scoping observations to the relevant page.
+// TODO(bokan): We should probably refactor this and the manager class
+// to register against a single Page/FrameTree. #MPArch
 class SubresourceFilterObserver {
  public:
   virtual ~SubresourceFilterObserver() = default;
@@ -41,7 +47,7 @@ class SubresourceFilterObserver {
   // threat types.
   virtual void OnSafeBrowsingChecksComplete(
       content::NavigationHandle* navigation_handle,
-      const SafeBrowsingCheckResults& results) {}
+      const SubresourceFilterSafeBrowsingClient::CheckResult& result) {}
 
   // Called at most once per navigation when page activation is computed. This
   // will be called before ReadyToCommitNavigation.
@@ -50,21 +56,18 @@ class SubresourceFilterObserver {
       const mojom::ActivationState& activation_state) {}
 
   // Called before navigation commit, either at the WillStartRequest stage or
-  // WillRedirectRequest stage. |is_ad_subframe| is true if |load_policy| is
-  // ALLOW or WOULD_DISALLOW or if ad tagging has determined that the frame is
-  // an ad.
+  // WillRedirectRequest stage.
   virtual void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) {}
+      LoadPolicy load_policy) {}
 
-  // Use this to detect ad frames that never navigate beyond about:blank (e.g.,
-  // doc.written frames). Called when a frame is first created and navigated to
-  // about:blank and its already known that the frame is an ad. E.g., because
-  // the script that created the frame is ad script or the frame is a child of
-  // an ad frame.
-  virtual void OnAdSubframeDetected(
-      content::RenderFrameHost* render_frame_host) {}
+  // Called when a frame is tagged or untagged as an ad, along with the frame's
+  // current status as an ad subframe and the evidence which resulted in the
+  // change. This will be called prior to commit time in the case of an initial
+  // synchronous load or at ReadyToCommitNavigation otherwise.
+  virtual void OnIsAdSubframeChanged(
+      content::RenderFrameHost* render_frame_host,
+      bool is_ad_subframe) {}
 };
 
 }  // namespace subresource_filter

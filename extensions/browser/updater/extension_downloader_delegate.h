@@ -12,7 +12,9 @@
 #include "base/time/time.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
+#include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -62,7 +64,10 @@ class ExtensionDownloaderDelegate {
   // DOWNLOADING_CRX_RETRY -> DOWNLOADING_CRX -> FINISHED.
   // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
   // update enums.xml (name: ExtensionInstallationDownloadingStage) when adding
-  // new entries.
+  // new entries. Don't forget to update device_management_backend.proto (name:
+  // ExtensionInstallReportLogEvent::DownloadingStage) when adding new entries.
+  // Don't forget to update ConvertDownloadingStageToProto method in
+  // ExtensionInstallEventLogCollector.
   enum class Stage {
     // Downloader just received extension download request.
     PENDING = 0,
@@ -103,9 +108,14 @@ class ExtensionDownloaderDelegate {
 
   // Passes as an argument to OnExtensionDownloadCacheStatusRetrieved to inform
   // delegate about cache status.
-  // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
-  // update enums.xml (name: ExtensionInstallationCacheStatus) when adding new
+  // Note: enum used for UMA. Do NOT reorder or remove entries.
+  // 1) Don't forget to update enums.xml (name:
+  // ExtensionInstallationDownloadingCacheStatus) when adding new entries.
+  // 2) Don't forget to update device_management_backend.proto (name:
+  // ExtensionInstallReportLogEvent::DownloadCacheStatus) when adding new
   // entries.
+  // 3) Don't forget to update ConvertDownloadCacheStatusToProto method in
+  // ExtensionInstallEventLogCollector.
   enum class CacheStatus {
     // No information about cache status. This is never reported by
     // ExtensionDownloader, but may be used later in statistics.
@@ -123,9 +133,13 @@ class ExtensionDownloaderDelegate {
     // Cache entry is good and will be used.
     CACHE_HIT = 4,
 
+    // Cache entry will be used in case we fail to fetch the manifest for the
+    // extension.
+    CACHE_HIT_ON_MANIFEST_FETCH_FAILURE = 5,
+
     // Magic constant used by the histogram macros.
     // Always update it to the max value.
-    kMaxValue = CACHE_HIT,
+    kMaxValue = CACHE_HIT_ON_MANIFEST_FETCH_FAILURE,
   };
 
   // Passed as an argument to the completion callbacks to signal whether
@@ -142,9 +156,48 @@ class ExtensionDownloaderDelegate {
     base::Time day_start;
   };
 
+  // Additional information in case of force installed extension install failure
+  // due to CRX_FETCH_FAILED, MANIFEST_FETCH_FAILED, MANIFEST_INVALID,
+  // CRX_FETCH_URL_EMPTY.
+  struct FailureData {
+    FailureData();
+    FailureData(const FailureData& other);
+    static FailureData CreateFromNetworkResponse(int net_error,
+                                                 int response_code,
+                                                 int failure_count);
+    FailureData(const int net_error_code, const int fetch_attempts);
+    FailureData(const int net_error_code,
+                const absl::optional<int> response,
+                const int fetch_attempts);
+    explicit FailureData(ManifestInvalidError manifest_invalid_error);
+    FailureData(ManifestInvalidError manifest_invalid_error,
+                const std::string& app_status_error);
+    explicit FailureData(const std::string& additional_info);
+    ~FailureData();
+
+    // Network error code in case of CRX_FETCH_FAILED or MANIFEST_FETCH_FAILED.
+    const absl::optional<int> network_error_code;
+    // Response code in case of CRX_FETCH_FAILED or MANIFEST_FETCH_FAILED.
+    const absl::optional<int> response_code;
+    // Number of fetch attempts made in case of CRX_FETCH_FAILED or
+    // MANIFEST_FETCH_FAILED.
+    const absl::optional<int> fetch_tries;
+    // Type of error occurred when fetched manifest was invalid. This includes
+    // errors occurred while parsing the update manifest and the errors in the
+    // internal details of the parsed manifest.
+    const absl::optional<ManifestInvalidError> manifest_invalid_error;
+    // Info field in the update manifest returned by the server. Currently it is
+    // only set when no update is available and install fails with the error
+    // CRX_FETCH_URL_EMPTY.
+    const absl::optional<std::string> additional_info;
+    // Type of app status error returned by update server on fetching the update
+    // manifest.
+    const absl::optional<std::string> app_status_error;
+  };
+
   // A callback that is called to indicate if ExtensionDownloader should ignore
   // the cached entry and download a new .crx file.
-  typedef base::Callback<void(bool should_download)> InstallCallback;
+  using InstallCallback = base::OnceCallback<void(bool should_download)>;
 
   // One of the following 3 methods is always invoked for a given extension
   // id, if AddExtension() or AddPendingExtension() returned true when that
@@ -176,7 +229,13 @@ class ExtensionDownloaderDelegate {
   virtual void OnExtensionDownloadFailed(const ExtensionId& id,
                                          Error error,
                                          const PingResult& ping_result,
-                                         const std::set<int>& request_ids);
+                                         const std::set<int>& request_ids,
+                                         const FailureData& data);
+
+  // Invoked when an manifest or CRX of extension fails to download, but a retry
+  // is triggered.
+  virtual void OnExtensionDownloadRetry(const ExtensionId& id,
+                                        const FailureData& data);
 
   // Invoked if the extension had an update available and its crx was
   // successfully downloaded to |path|. |ownership_passed| is true if delegate
@@ -195,10 +254,9 @@ class ExtensionDownloaderDelegate {
   virtual void OnExtensionDownloadFinished(const CRXFileInfo& file,
                                            bool file_ownership_passed,
                                            const GURL& download_url,
-                                           const std::string& version,
                                            const PingResult& ping_result,
                                            const std::set<int>& request_ids,
-                                           const InstallCallback& callback) = 0;
+                                           InstallCallback callback) = 0;
 
   // Invoked when an extension fails to load, but a retry is triggered.
   // It allows unittests to easily set up and verify resourse request and
@@ -213,10 +271,6 @@ class ExtensionDownloaderDelegate {
   // (this is the default).
   virtual bool GetPingDataForExtension(const ExtensionId& id,
                                        ManifestFetchData::PingData* ping);
-
-  // Invoked to get the update url data for this extension's update url, if
-  // there is any. The default implementation returns an empty string.
-  virtual std::string GetUpdateUrlData(const ExtensionId& id);
 
   // Invoked to determine whether extension |id| is currently
   // pending installation.

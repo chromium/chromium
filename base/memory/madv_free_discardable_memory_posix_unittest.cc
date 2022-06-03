@@ -9,14 +9,12 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
-#include "base/process/process_metrics.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/process_memory_dump.h"
+#include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

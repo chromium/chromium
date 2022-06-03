@@ -45,7 +45,7 @@ CHROME_REQUIRED_FILES = {
         'chrome_100_percent.pak',
         'chrome_200_percent.pak',
         'chromedriver',
-        'crashpad_handler',
+        'chrome_crashpad_handler',
         'default_apps/',
         'icudtl.dat',
         'ClearKeyCdm/',
@@ -97,7 +97,7 @@ CHROME_WHITELIST_FILES = {
 CHROME_STRIP_LIST = {
     'linux': [
         'chrome',
-        'crashpad_handler',
+        'chrome_crashpad_handler',
         'nacl_helper'
     ]
 }

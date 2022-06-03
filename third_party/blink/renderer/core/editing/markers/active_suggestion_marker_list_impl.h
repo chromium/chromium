@@ -19,6 +19,10 @@ class CORE_EXPORT ActiveSuggestionMarkerListImpl final
     : public DocumentMarkerList {
  public:
   ActiveSuggestionMarkerListImpl() = default;
+  ActiveSuggestionMarkerListImpl(const ActiveSuggestionMarkerListImpl&) =
+      delete;
+  ActiveSuggestionMarkerListImpl& operator=(
+      const ActiveSuggestionMarkerListImpl&) = delete;
 
   // DocumentMarkerList implementations
   DocumentMarker::MarkerType MarkerType() const final;
@@ -42,12 +46,10 @@ class CORE_EXPORT ActiveSuggestionMarkerListImpl final
                     unsigned old_length,
                     unsigned new_length) final;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<DocumentMarker>> markers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveSuggestionMarkerListImpl);
 };
 
 }  // namespace blink

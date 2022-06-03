@@ -5,10 +5,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::Hash(data, size);
+  base::PersistentHash(base::make_span(data, size));
+  base::FastHash(base::make_span(data, size));
   return 0;
 }

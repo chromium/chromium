@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
 #include "ppapi/c/pp_size.h"
@@ -26,6 +25,9 @@ class PepperCameraDeviceHost : public ppapi::host::ResourceHost {
   PepperCameraDeviceHost(RendererPpapiHostImpl* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperCameraDeviceHost(const PepperCameraDeviceHost&) = delete;
+  PepperCameraDeviceHost& operator=(const PepperCameraDeviceHost&) = delete;
 
   ~PepperCameraDeviceHost() override;
 
@@ -62,8 +64,6 @@ class PepperCameraDeviceHost : public ppapi::host::ResourceHost {
   ppapi::host::ReplyMessageContext open_reply_context_;
 
   ppapi::host::ReplyMessageContext video_capture_formats_reply_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperCameraDeviceHost);
 };
 
 }  // namespace content

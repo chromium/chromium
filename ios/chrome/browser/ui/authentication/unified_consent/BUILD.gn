@@ -16,8 +16,13 @@ source_set("unified_consent") {
     ":unified_consent_ui",
     "//base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/public/provider/chrome/browser/signin",
   ]
 }
@@ -25,32 +30,30 @@ source_set("unified_consent") {
 source_set("unified_consent_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "identity_picker_view.h",
-    "identity_picker_view.mm",
     "unified_consent_view_controller.h",
     "unified_consent_view_controller.mm",
     "unified_consent_view_controller_delegate.h",
   ]
   deps = [
     "resources:identity_picker_view_arrow_down",
+    "resources:identity_picker_view_arrow_right",
     "resources:unified_consent_header",
     "//base",
     "//components/google/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
+    "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
-    "//ios/third_party/material_components_ios",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-  public_deps = [
-    ":constants",
-  ]
+  public_deps = [ ":constants" ]
 }
 
 source_set("constants") {
@@ -59,5 +62,33 @@ source_set("constants") {
     "unified_consent_constants.h",
     "unified_consent_constants.mm",
   ]
-  libs = [ "Foundation.framework" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "unified_consent_mediator_unittest.mm",
+    "unified_consent_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":unified_consent",
+    ":unified_consent_ui",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
 }

@@ -4,7 +4,7 @@
 
 #include "net/tools/huffman_trie/bit_writer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace net {
 

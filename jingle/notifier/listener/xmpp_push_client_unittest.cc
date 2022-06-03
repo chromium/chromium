@@ -45,7 +45,7 @@ class XmppPushClientTest : public testing::Test {
   ~XmppPushClientTest() override {}
 
   void SetUp() override {
-    xmpp_push_client_.reset(new XmppPushClient(notifier_options_));
+    xmpp_push_client_ = std::make_unique<XmppPushClient>(notifier_options_);
     xmpp_push_client_->AddObserver(&mock_observer_);
   }
 

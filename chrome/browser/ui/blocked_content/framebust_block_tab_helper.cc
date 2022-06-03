@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -41,7 +41,10 @@ FramebustBlockTabHelper::FramebustBlockTabHelper(
 
 void FramebustBlockTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;
@@ -52,4 +55,4 @@ void FramebustBlockTabHelper::DidFinishNavigation(
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockTabHelper);

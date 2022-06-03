@@ -38,9 +38,8 @@ class CORE_EXPORT CharacterData : public Node {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Makes the data either Parkable or Atomic. This enables de-duplication in
-  // both cases, the first one allowing compression as well.
-  void MakeParkableOrAtomize();
+  // Makes the data Parkable. This enables de-duplication and compression.
+  void MakeParkable();
   const String& data() const {
     return is_parkable_ ? parkable_data_.ToString() : data_;
   }

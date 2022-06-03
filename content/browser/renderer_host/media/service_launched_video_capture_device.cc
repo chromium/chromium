@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace content {
 
@@ -75,6 +78,14 @@ void ServiceLaunchedVideoCaptureDevice::ResumeDevice() {
   subscription_->Resume();
 }
 
+void ServiceLaunchedVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  // TODO(crbug.com/1247761): Implement if necessary.
+  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
+}
+
 void ServiceLaunchedVideoCaptureDevice::RequestRefreshFrame() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // Nothing to do here. The video capture service does not support refresh
@@ -92,10 +103,12 @@ void ServiceLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
 
 void ServiceLaunchedVideoCaptureDevice::OnUtilizationReport(
     int frame_feedback_id,
-    double utilization) {
+    media::VideoCaptureFeedback feedback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  // Nothing to do here. The video capture service does not support utilization
-  // reporting.
+  if (feedback != last_feedback_) {
+    subscription_->ProcessFeedback(feedback);
+    last_feedback_ = feedback;
+  }
 }
 
 void ServiceLaunchedVideoCaptureDevice::

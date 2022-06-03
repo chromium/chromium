@@ -12,27 +12,32 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 
 namespace gl {
 class DCLayerTree;
-class GLImageDXGI;
 class GLImageMemory;
 
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
 // associated resources for a single overlay layer.  It is updated by calling
 // PresentToSwapChain(), and can update or recreate resources as necessary.
-class SwapChainPresenter : public base::PowerObserver {
+class SwapChainPresenter : public base::PowerStateObserver {
  public:
   SwapChainPresenter(DCLayerTree* layer_tree,
+                     HWND window,
                      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
                      Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device);
+
+  SwapChainPresenter(const SwapChainPresenter&) = delete;
+  SwapChainPresenter& operator=(const SwapChainPresenter&) = delete;
+
   ~SwapChainPresenter() override;
 
   // Present the given overlay to swap chain.  Returns true on success.
-  bool PresentToSwapChain(const ui::DCRendererLayerParams& overlay);
+  bool PresentToSwapChain(ui::DCRendererLayerParams& overlay);
 
   const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
     return swap_chain_;
@@ -40,6 +45,16 @@ class SwapChainPresenter : public base::PowerObserver {
 
   const Microsoft::WRL::ComPtr<IDCompositionVisual2>& visual() const {
     return clip_visual_;
+  }
+
+  void SetFrameRate(float frame_rate);
+
+  void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
+                                        gfx::Point* offset,
+                                        gfx::Rect* clip_rect) const {
+    *transform = visual_info_.transform;
+    *offset = visual_info_.offset;
+    *clip_rect = visual_info_.clip_rect.value_or(gfx::Rect());
   }
 
  private:
@@ -72,6 +87,10 @@ class SwapChainPresenter : public base::PowerObserver {
     static const int kPresentsToStore = 30;
 
     PresentationHistory();
+
+    PresentationHistory(const PresentationHistory&) = delete;
+    PresentationHistory& operator=(const PresentationHistory&) = delete;
+
     ~PresentationHistory();
 
     void AddSample(DXGI_FRAME_PRESENTATION_MODE mode);
@@ -83,8 +102,6 @@ class SwapChainPresenter : public base::PowerObserver {
    private:
     base::circular_deque<DXGI_FRAME_PRESENTATION_MODE> presents_;
     int composed_count_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(PresentationHistory);
   };
 
   // Upload given YUV buffers to an NV12 texture that can be used to create
@@ -100,13 +117,13 @@ class SwapChainPresenter : public base::PowerObserver {
   // |use_yuv_swap_chain| is true, or BGRA otherwise.  Sets flags based on
   // |protected_video_type|. Returns true on success.
   bool ReallocateSwapChain(const gfx::Size& swap_chain_size,
-                           bool use_yuv_swap_chain,
-                           gfx::ProtectedVideoType protected_video_type,
-                           bool z_order);
+                           DXGI_FORMAT swap_chain_format,
+                           gfx::ProtectedVideoType protected_video_type);
 
-  // Returns true if YUV swap chain should be preferred over BGRA swap chain.
+  // Returns DXGI format that swap chain uses.
   // This changes over time based on stats recorded in |presentation_history|.
-  bool ShouldUseYUVSwapChain(gfx::ProtectedVideoType protected_video_type);
+  DXGI_FORMAT GetSwapChainFormat(gfx::ProtectedVideoType protected_video_type,
+                                 bool content_is_hdr);
 
   // Perform a blit using video processor from given input texture to swap chain
   // backbuffer. |input_texture| is the input texture (array), and |input_level|
@@ -114,30 +131,55 @@ class SwapChainPresenter : public base::PowerObserver {
   // optional, and is used to lock the resource for reading.  |content_rect| is
   // subrectangle of the input texture that should be blitted to swap chain, and
   // |src_color_space| is the color space of the video.
-  bool VideoProcessorBlt(Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
-                         UINT input_level,
-                         Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
-                         const gfx::Rect& content_rect,
-                         const gfx::ColorSpace& src_color_space);
+  bool VideoProcessorBlt(
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture,
+      UINT input_level,
+      Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex,
+      const gfx::Rect& content_rect,
+      const gfx::ColorSpace& src_color_space,
+      bool content_is_hdr,
+      absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
+
+  gfx::Size GetMonitorSize();
+
+  // If the swap chain size is very close to the screen size but not exactly the
+  // same, the swap chain should be adjusted to fit the screen size in order to
+  // get the fullscreen DWM optimizations.
+  void AdjustSwapChainToFullScreenSizeIfNeeded(
+      const ui::DCRendererLayerParams& params,
+      const gfx::Rect& overlay_onscreen_rect,
+      gfx::Size* swap_chain_size,
+      gfx::Transform* transform,
+      gfx::Rect* clip_rect);
 
   // Returns optimal swap chain size for given layer.
-  gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params);
+  gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params,
+                                   gfx::Transform* transform,
+                                   gfx::Rect* clip_rect);
 
   // Update direct composition visuals for layer with given swap chain size.
   void UpdateVisuals(const ui::DCRendererLayerParams& params,
-                     const gfx::Size& swap_chain_size);
+                     const gfx::Size& swap_chain_size,
+                     const gfx::Transform& transform,
+                     const gfx::Rect& clip_rect);
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
   // Returns true on success.  See PresentToDecodeSwapChain() for more info.
-  bool TryPresentToDecodeSwapChain(GLImageDXGI* nv12_image,
-                                   const gfx::Rect& content_rect,
-                                   const gfx::Size& swap_chain_size);
+  bool TryPresentToDecodeSwapChain(
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+      unsigned array_slice,
+      const gfx::ColorSpace& color_space,
+      const gfx::Rect& content_rect,
+      const gfx::Size& swap_chain_size,
+      DXGI_FORMAT swap_chain_format);
 
   // Present to a decode swap chain created from compatible video decoder
   // buffers using given |nv12_image| with destination size |swap_chain_size|.
   // Returns true on success.
-  bool PresentToDecodeSwapChain(GLImageDXGI* nv12_image,
+  bool PresentToDecodeSwapChain(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+                                unsigned array_slice,
+                                const gfx::ColorSpace& color_space,
                                 const gfx::Rect& content_rect,
                                 const gfx::Size& swap_chain_size);
 
@@ -146,21 +188,43 @@ class SwapChainPresenter : public base::PowerObserver {
   // decode swap chain.
   void RecordPresentationStatistics();
 
-  // base::PowerObserver
+  // base::PowerStateObserver
   void OnPowerStateChange(bool on_battery_power) override;
 
   // If connected with a power source, let the Intel video processor to do
   // the upscaling because it produces better results.
   bool ShouldUseVideoProcessorScaling();
 
+  // This is called when a new swap chain is created, or when a new frame
+  // rate is received.
+  void SetSwapChainPresentDuration();
+
+  // Returns swap chain media for either |swap_chain_| or |decode_swap_chain_|,
+  // whichever is currently used.
+  Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
+
+  // Present the Direct Compositon surface from MediaFoundationRenderer.
+  bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay);
+
+  // Release resources related to `PresentDCOMPSurface()`.
+  void ReleaseDCOMPSurfaceResourcesIfNeeded();
+
+  // The Direct Composition surface handle from MediaFoundationRenderer.
+  HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
+
   // Layer tree instance that owns this swap chain presenter.
   DCLayerTree* layer_tree_ = nullptr;
+
+  const HWND window_;
 
   // Current size of swap chain.
   gfx::Size swap_chain_size_;
 
-  // Whether the current swap chain is using the preferred YUV format.
-  bool is_yuv_swapchain_ = false;
+  // Current swap chain format.
+  DXGI_FORMAT swap_chain_format_ = DXGI_FORMAT_B8G8R8A8_UNORM;
+
+  // Last time tick when switching to BGRA8888 format.
+  base::TimeTicks switched_to_BGRA8888_time_tick_;
 
   // Whether the swap chain was reallocated, and next present will be the first.
   bool first_present_ = false;
@@ -181,18 +245,16 @@ class SwapChainPresenter : public base::PowerObserver {
   // which we won't attempt to use decode swap chain again.
   bool failed_to_present_decode_swapchain_ = false;
 
-  // Number of frames since we switched from YUV to BGRA swap chain, or
-  // vice-versa.
-  int frames_since_color_space_change_ = 0;
-
   // This struct is used to cache information about what visuals are currently
   // being presented so that properties that aren't changed aren't sent to
   // DirectComposition.
   struct VisualInfo {
+    VisualInfo();
+    ~VisualInfo();
+
     gfx::Point offset;
     gfx::Transform transform;
-    bool is_clipped = false;
-    gfx::Rect clip_rect;
+    absl::optional<gfx::Rect> clip_rect;
     int z_order = 0;
   } visual_info_;
 
@@ -231,7 +293,8 @@ class SwapChainPresenter : public base::PowerObserver {
   Microsoft::WRL::ComPtr<IUnknown> decode_surface_;
   bool is_on_battery_power_;
 
-  DISALLOW_COPY_AND_ASSIGN(SwapChainPresenter);
+  // Number of frames per second.
+  float frame_rate_ = 0.f;
 };
 
 }  // namespace gl

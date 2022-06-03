@@ -30,14 +30,21 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -51,12 +58,12 @@ class ResourceRequest;
 class ResourceResponse;
 class ExecutionContext;
 class TextResourceDecoder;
+struct WorkerMainScriptLoadParameters;
 
 class CORE_EXPORT WorkerClassicScriptLoader final
     : public GarbageCollected<WorkerClassicScriptLoader>,
-      public ThreadableLoaderClient {
-  USING_GARBAGE_COLLECTED_MIXIN(WorkerClassicScriptLoader);
-
+      public ThreadableLoaderClient,
+      public WorkerMainScriptLoaderClient {
  public:
   WorkerClassicScriptLoader();
 
@@ -64,7 +71,7 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void LoadSynchronously(ExecutionContext&,
                          ResourceFetcher* fetch_client_settings_object_fetcher,
                          const KURL&,
-                         mojom::RequestContextType,
+                         mojom::blink::RequestContextType,
                          network::mojom::RequestDestination);
 
   // Note that callbacks could be invoked before
@@ -72,16 +79,27 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   //
   // |fetch_client_settings_object_fetcher| is different from
   // ExecutionContext::Fetcher() in off-the-main-thread fetch.
+  // TODO(crbug.com/1064920): Remove |reject_coep_unsafe_none| and
+  // |blob_url_loader_factory| when PlzDedicatedWorker ships.
+  //
+  // |worker_main_script_load_params| is valid for dedicated workers (when
+  // PlzDedicatedWorker is enabled) and shared workers.
   void LoadTopLevelScriptAsynchronously(
       ExecutionContext&,
       ResourceFetcher* fetch_client_settings_object_fetcher,
       const KURL&,
-      mojom::RequestContextType,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
+      mojom::blink::RequestContextType,
       network::mojom::RequestDestination,
       network::mojom::RequestMode,
       network::mojom::CredentialsMode,
       base::OnceClosure response_callback,
-      base::OnceClosure finished_callback);
+      base::OnceClosure finished_callback,
+      RejectCoepUnsafeNone reject_coep_unsafe_none =
+          RejectCoepUnsafeNone(false),
+      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+          blob_url_loader_factory = {});
 
   // This will immediately invoke |finishedCallback| if
   // LoadTopLevelScriptAsynchronously() is in progress.
@@ -93,7 +111,6 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   bool Failed() const { return failed_; }
   bool Canceled() const { return canceled_; }
   uint64_t Identifier() const { return identifier_; }
-  int64_t AppCacheID() const { return app_cache_id_; }
 
   std::unique_ptr<Vector<uint8_t>> ReleaseCachedMetadata() {
     return std::move(cached_metadata_);
@@ -117,12 +134,19 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   void DidReceiveResponse(uint64_t /*identifier*/,
                           const ResourceResponse&) override;
   void DidReceiveData(const char* data, unsigned data_length) override;
-  void DidReceiveCachedMetadata(const char*, int /*dataLength*/) override;
+  void DidReceiveCachedMetadata(mojo_base::BigBuffer) override;
   void DidFinishLoading(uint64_t identifier) override;
-  void DidFail(const ResourceError&) override;
-  void DidFailRedirectCheck() override;
+  void DidFail(uint64_t, const ResourceError&) override;
+  void DidFailRedirectCheck(uint64_t) override;
 
-  void Trace(Visitor*) override;
+  // WorkerMainScriptLoaderClient
+  // These will be called for dedicated workers (when PlzDedicatedWorker is
+  // enabled) and shared workers.
+  void DidReceiveData(base::span<const char> span) override;
+  void OnFinishedLoadingWorkerMainScript() override;
+  void OnFailedLoadingWorkerMainScript() override;
+
+  void Trace(Visitor*) const override;
 
  private:
   void NotifyError();
@@ -135,6 +159,10 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   base::OnceClosure finished_callback_;
 
   Member<ThreadableLoader> threadable_loader_;
+
+  // These are used for dedicated workers (when PlzDedicatedWorker is enabled)
+  // and shared workers.
+  Member<WorkerMainScriptLoader> worker_main_script_loader_;
   String response_encoding_;
   std::unique_ptr<TextResourceDecoder> decoder_;
   StringBuilder source_text_;
@@ -151,7 +179,6 @@ class CORE_EXPORT WorkerClassicScriptLoader final
   bool is_top_level_script_ = false;
 
   uint64_t identifier_ = 0;
-  int64_t app_cache_id_ = 0;
   std::unique_ptr<Vector<uint8_t>> cached_metadata_;
   Member<ContentSecurityPolicy> content_security_policy_;
   network::mojom::IPAddressSpace response_address_space_;

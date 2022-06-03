@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
 
@@ -29,6 +30,9 @@ struct Alias;
 // methods for accessing them.
 class PermissionsInfo {
  public:
+  PermissionsInfo(const PermissionsInfo&) = delete;
+  PermissionsInfo& operator=(const PermissionsInfo&) = delete;
+
   static PermissionsInfo* GetInstance();
 
   // Registers the permissions specified by |infos| along with the
@@ -37,7 +41,7 @@ class PermissionsInfo {
                            base::span<const Alias> aliases);
 
   // Returns the permission with the given |id|, and NULL if it doesn't exist.
-  const APIPermissionInfo* GetByID(APIPermission::ID id) const;
+  const APIPermissionInfo* GetByID(mojom::APIPermissionID id) const;
 
   // Returns the permission with the given |name|, and NULL if none
   // exists.
@@ -71,7 +75,7 @@ class PermissionsInfo {
   void RegisterPermission(std::unique_ptr<APIPermissionInfo> permission);
 
   // Maps permission ids to permissions. Owns the permissions.
-  typedef std::unordered_map<APIPermission::ID,
+  typedef std::unordered_map<mojom::APIPermissionID,
                              std::unique_ptr<APIPermissionInfo>>
       IDMap;
 
@@ -82,8 +86,6 @@ class PermissionsInfo {
   NameMap name_map_;
 
   size_t permission_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsInfo);
 };
 
 }  // namespace extensions

@@ -16,4 +16,8 @@ public interface ModuleDescriptor {
      * Returns the list of PAK resources files this module contains.
      */
     String[] getPaks();
+    /**
+     * Returns whether to auto-load native libraries / resources on getImpl().
+     */
+    boolean getLoadNativeOnGetImpl();
 }

@@ -40,7 +40,7 @@ class NativeMessagingHostManifestTest : public ::testing::Test {
       const std::string& name,
       const std::string& path,
       const std::string& origin,
-      base::Optional<std::string> supports_native_initiated_connections) {
+      absl::optional<std::string> supports_native_initiated_connections) {
     std::string supports_native_initiated_connections_snippet;
     if (supports_native_initiated_connections) {
       supports_native_initiated_connections_snippet = base::StrCat({
@@ -65,9 +65,7 @@ class NativeMessagingHostManifestTest : public ::testing::Test {
   }
 
   bool WriteManifest(const std::string& manifest_content) {
-    return base::WriteFile(manifest_path_, manifest_content.data(),
-                           manifest_content.size()) ==
-           static_cast<int>(manifest_content.size());
+    return base::WriteFile(manifest_path_, manifest_content);
   }
 
   base::ScopedTempDir temp_dir_;
@@ -91,7 +89,7 @@ TEST_F(NativeMessagingHostManifestTest, HostNameValidation) {
 
 TEST_F(NativeMessagingHostManifestTest, LoadValid) {
   ASSERT_TRUE(
-      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, base::nullopt));
+      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, absl::nullopt));
 
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =
@@ -103,7 +101,7 @@ TEST_F(NativeMessagingHostManifestTest, LoadValid) {
   EXPECT_EQ(manifest->description(), "Native Messaging Test");
   EXPECT_EQ(manifest->host_interface(),
             NativeMessagingHostManifest::HOST_INTERFACE_STDIO);
-  EXPECT_EQ(manifest->path(), base::FilePath::FromUTF8Unsafe(kTestHostPath));
+  EXPECT_EQ(manifest->path(), base::FilePath::FromASCII(kTestHostPath));
   EXPECT_TRUE(manifest->allowed_origins().MatchesSecurityOrigin(
       GURL("chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/")));
   EXPECT_FALSE(manifest->allowed_origins().MatchesSecurityOrigin(
@@ -159,7 +157,7 @@ TEST_F(NativeMessagingHostManifestTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kOnConnectNative);
   ASSERT_TRUE(
-      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, base::nullopt));
+      WriteManifest(kTestHostName, kTestHostPath, kTestOrigin, absl::nullopt));
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =
       NativeMessagingHostManifest::Load(manifest_path_, &error_message);
@@ -184,7 +182,7 @@ TEST_F(NativeMessagingHostManifestTest,
 
 TEST_F(NativeMessagingHostManifestTest, InvalidName) {
   ASSERT_TRUE(WriteManifest(".com.chrome.test.native_host", kTestHostPath,
-                            kTestOrigin, base::nullopt));
+                            kTestOrigin, absl::nullopt));
 
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =
@@ -196,7 +194,7 @@ TEST_F(NativeMessagingHostManifestTest, InvalidName) {
 // Verify that match-all origins are rejected.
 TEST_F(NativeMessagingHostManifestTest, MatchAllOrigin) {
   ASSERT_TRUE(WriteManifest(kTestHostName, kTestHostPath,
-                            "chrome-extension://*/", base::nullopt));
+                            "chrome-extension://*/", absl::nullopt));
 
   std::string error_message;
   std::unique_ptr<NativeMessagingHostManifest> manifest =

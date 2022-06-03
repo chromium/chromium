@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace media {
@@ -103,9 +103,9 @@ void SerialRunner::RunNextInSeries(PipelineStatus last_status) {
 
   BoundPipelineStatusCallback bound_fn = bound_fns_.Pop();
   std::move(bound_fn).Run(
-      base::BindRepeating(&RunOnTaskRunner, task_runner_,
-                          base::BindRepeating(&SerialRunner::RunNextInSeries,
-                                              weak_factory_.GetWeakPtr())));
+      base::BindOnce(&RunOnTaskRunner, task_runner_,
+                     base::BindRepeating(&SerialRunner::RunNextInSeries,
+                                         weak_factory_.GetWeakPtr())));
 }
 
 }  // namespace media

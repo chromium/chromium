@@ -35,39 +35,42 @@ class LayoutButton final : public LayoutFlexibleBox {
  public:
   explicit LayoutButton(Element*);
   ~LayoutButton() override;
+  void Trace(Visitor*) const override;
 
-  const char* GetName() const override { return "LayoutButton"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutButton";
+  }
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectLayoutButton ||
-           LayoutFlexibleBox::IsOfType(type);
+    NOT_DESTROYED();
+    return type == kLayoutObjectButton || LayoutFlexibleBox::IsOfType(type);
   }
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {}
-  bool CreatesAnonymousWrapper() const override { return true; }
-
-  bool HasControlClip() const override;
-  PhysicalRect ControlClipRect(const PhysicalOffset&) const override;
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override { NOT_DESTROYED(); }
+  bool CreatesAnonymousWrapper() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 
   LayoutUnit BaselinePosition(FontBaseline,
                               bool first_line,
                               LineDirectionMode,
                               LinePositionMode) const override;
 
+  static void UpdateAnonymousChildStyle(const ComputedStyle& parent_sytle,
+                                        ComputedStyle& child_style);
+  static bool ShouldCountWrongBaseline(const ComputedStyle& style,
+                                       const ComputedStyle* parent_style);
+
  private:
   void UpdateAnonymousChildStyle(const LayoutObject* child,
                                  ComputedStyle& child_style) const override;
 
-  bool HasLineIfEmpty() const override {
-    return IsA<HTMLInputElement>(GetNode());
-  }
-
-  LayoutBlock* inner_;
+  Member<LayoutBlock> inner_;
 };
-
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutButton, IsLayoutButton());
 
 }  // namespace blink
 

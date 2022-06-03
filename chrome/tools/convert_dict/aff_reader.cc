@@ -10,6 +10,7 @@
 
 #include "base/files/file_util.h"
 #include "base/i18n/icu_string_conversions.h"
+#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,17 +46,6 @@ void CollapseDuplicateSpaces(std::string* str) {
       prev_space = false;
     }
   }
-}
-
-// Print an error message and terminate execution
-void Panic(const char* fmt, ...) {
-  va_list ap;
-  printf("ERROR: ");
-  va_start(ap, fmt);
-  vprintf(fmt, ap);
-  va_end(ap);
-  printf("\n");
-  exit(1);
 }
 
 }  // namespace
@@ -130,11 +120,13 @@ bool AffReader::Read() {
                StringBeginsWith(line, "MAP ")) {
       HandleEncodedCommand(line);
     } else if (StringBeginsWith(line, "IGNORE ")) {
-      Panic("We don't support the IGNORE command yet. This would change how "
-        "we would insert things in our lookup table.");
+      LOG(FATAL)
+          << "We don't support the IGNORE command yet. This would change how "
+             "we would insert things in our lookup table.";
     } else if (StringBeginsWith(line, "COMPLEXPREFIXES ")) {
-      Panic("We don't support the COMPLEXPREFIXES command yet. This would "
-        "mean we have to insert words backwards as well (I think)");
+      LOG(FATAL)
+          << "We don't support the COMPLEXPREFIXES command yet. This would "
+             "mean we have to insert words backwards as well (I think)";
     } else {
       // All other commands get stored in the other commands list.
       HandleRawCommand(line);
@@ -146,7 +138,7 @@ bool AffReader::Read() {
 
 bool AffReader::EncodingToUTF8(const std::string& encoded,
                                std::string* utf8) const {
-  base::string16 word;
+  std::u16string word;
   if (!base::CodepageToUTF16(encoded, encoding(),
                              base::OnStringConversionError::FAIL, &word))
     return false;
@@ -261,14 +253,12 @@ void AffReader::AddAffix(std::string* rule) {
               part.substr(slash_index + 1), " ",
               base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
           if (after_slash.size() == 0) {
-            Panic("Found 0 terms after slash in affix rule '%s', "
-                      "but need at least 2.",
-                   part.c_str());
+            LOG(FATAL) << "Found 0 terms after slash in affix rule '" << part
+                       << "' but need at least 2.";
           }
           if (after_slash.size() == 1) {
-            printf("WARNING: Found 1 term after slash in affix rule '%s', "
-                      "but expected at least 2. Adding '.'.\n",
-                   part.c_str());
+            LOG(WARNING) << "Found 1 term after slash in affix rule '" << part
+                         << "', but expected at least 2. Adding '.'.";
             after_slash.push_back(".");
           }
           // Note that we may get a third term here which is the morphological
@@ -281,10 +271,12 @@ void AffReader::AddAffix(std::string* rule) {
                                     after_slash[1].c_str());
         }
 
-        // Reencode from here
+        // Re-encode from here
         std::string reencoded;
-        if (!EncodingToUTF8(part, &reencoded))
-          Panic("Cannot encode affix rule part '%s' to utf8.", part.c_str());
+        if (!EncodingToUTF8(part, &reencoded)) {
+          LOG(FATAL) << "Cannot encode affix rule part '" << part
+                     << "' to utf8.";
+        }
 
         *rule = rule->substr(0, part_start) + reencoded;
         break;
@@ -303,13 +295,15 @@ void AffReader::AddReplacement(std::string* rule) {
   CollapseDuplicateSpaces(rule);
 
   std::string utf8rule;
-  if (!EncodingToUTF8(*rule, &utf8rule))
-    Panic("Cannot encode replacement rule '%s' to utf8.", rule->c_str());
+  if (!EncodingToUTF8(*rule, &utf8rule)) {
+    LOG(FATAL) << "Cannot encode replacement rule '" << rule << "' to utf8.";
+  }
 
   // The first space separates key and value.
   size_t space_index = utf8rule.find(' ');
-  if (space_index == std::string::npos)
-    Panic("Did not find a space in '%s'.", utf8rule.c_str());
+  if (space_index == std::string::npos) {
+    LOG(FATAL) << "Did not find a space in '" << utf8rule << "'.";
+  }
 
   std::vector<std::string> split;
   split.push_back(utf8rule.substr(0, space_index));
@@ -329,8 +323,9 @@ void AffReader::HandleRawCommand(const std::string& line) {
 
 void AffReader::HandleEncodedCommand(const std::string& line) {
   std::string utf8;
-  if (!EncodingToUTF8(line, &utf8))
-    Panic("Cannot encode command '%s' to utf8.", line.c_str());
+  if (!EncodingToUTF8(line, &utf8)) {
+    LOG(FATAL) << "Cannot encode command '" << line << "' to utf8.";
+  }
   other_commands_.push_back(utf8);
 }
 

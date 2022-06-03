@@ -1,0 +1,1 @@
+smb://username:password@server/printersharename

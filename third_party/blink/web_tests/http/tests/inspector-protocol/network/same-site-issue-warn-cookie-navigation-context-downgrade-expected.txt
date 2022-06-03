@@ -1,0 +1,30 @@
+Verifies that accessing a SameSite=Strict cookie across schemes triggers a context downgrade inspector issue.
+
+Inspector issue:{
+    issue : {
+        code : SameSiteCookieIssue
+        details : {
+            sameSiteCookieIssueDetails : {
+                cookie : {
+                    domain : cookie.test
+                    name : name
+                    path : /inspector-protocol/network/resources
+                }
+                cookieExclusionReasons : [
+                    [0] : ExcludeSameSiteStrict
+                ]
+                cookieUrl : https://cookie.test:8443/inspector-protocol/network/resources/hello-world.html
+                cookieWarningReasons : [
+                    [0] : WarnSameSiteStrictLaxDowngradeStrict
+                ]
+                operation : ReadCookie
+                request : {
+                    requestId : <string>
+                    url : https://cookie.test:8443/inspector-protocol/network/resources/hello-world.html
+                }
+                siteForCookies : https://cookie.test/
+            }
+        }
+    }
+}
+

@@ -11,7 +11,7 @@
 #include <initializer_list>
 #include <type_traits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {

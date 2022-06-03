@@ -8,7 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
+#include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom-forward.h"
 #include "device/bluetooth/test/fake_central.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

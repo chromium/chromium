@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/component_updater",
+  "+components/services/patch",
+  "+components/services/unzip",
+  "+components/update_client",
+]

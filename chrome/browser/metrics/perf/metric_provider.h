@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
@@ -18,6 +17,9 @@
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+class ProfileManager;
+class Profile;
 
 namespace metrics {
 
@@ -30,7 +32,11 @@ class SampledProfile;
 // on its dedicated sequence, via PostTask messages.
 class MetricProvider {
  public:
-  explicit MetricProvider(std::unique_ptr<internal::MetricCollector> collector);
+  MetricProvider(std::unique_ptr<internal::MetricCollector> collector,
+                 ProfileManager* profile_manager);
+
+  MetricProvider(const MetricProvider&) = delete;
+  MetricProvider& operator=(const MetricProvider&) = delete;
 
   virtual ~MetricProvider();
 
@@ -53,10 +59,33 @@ class MetricProvider {
   // Called when a session restore has finished.
   void OnSessionRestoreDone(int num_tabs_restored);
 
+  // Enables the collector to save profiles to the local cache.
+  void EnableRecording();
+
+  // Disables the collector to save profiles to the local cache.
+  void DisableRecording();
+
   void OnJankStarted();
   void OnJankStopped();
 
  protected:
+  // Enumeration representing the various outcomes of saving the collected
+  // profile to local cache. These values are persisted to logs. Entries should
+  // not be renumbererd and numeric values should never be reused.
+  enum class RecordAttemptStatus {
+    kRecordingDisabled = 0,
+    kProfileManagerUnset = 1,
+    kNoLoadedProfile = 2,
+    kAppSyncDisabled = 3,
+    kAppSyncEnabled = 4,
+    kSyncServiceUnavailable = 5,
+    kChromeSyncFeatureDisabled = 6,
+    kChromeAppSyncDisabled = 7,
+    kOSSyncFeatureDisabled = 8,
+    kOSAppSyncDisabled = 9,
+    kMaxValue = kOSAppSyncDisabled,
+  };
+
   // For testing.
   void set_cache_updated_callback(base::RepeatingClosure callback) {
     cache_updated_callback_ = std::move(callback);
@@ -68,14 +97,27 @@ class MetricProvider {
   static void OnProfileDone(base::WeakPtr<MetricProvider> provider,
                             std::unique_ptr<SampledProfile> sampled_profile);
 
+  // Check the state of App Sync for the given user profile.
+  RecordAttemptStatus AppSyncStateForUserProfile(Profile* profile);
+
+  // Check the state of App Sync in the current session.
+  RecordAttemptStatus GetAppSyncState();
+
   // Saves a profile to the local cache.
   void AddProfileToCache(std::unique_ptr<SampledProfile> sampled_profile);
+
+  // Indicates if collected profiles can be saved to the local cache.
+  bool recording_enabled_ = true;
 
   // Vector of SampledProfile protobufs containing perf profiles.
   std::vector<SampledProfile> cached_profile_data_;
 
   // Name of the histogram that counts the number of uploaded reports.
   const std::string upload_uma_histogram_;
+
+  // Name of the histogram that tracks the various outcomes of saving the
+  // collected profile to local cache.
+  const std::string record_uma_histogram_;
 
   // Use a dedicated sequence for the collector. Thread safe. Initialized at
   // construction time, then immutable.
@@ -86,12 +128,14 @@ class MetricProvider {
   // have executed.
   std::unique_ptr<internal::MetricCollector> metric_collector_;
 
+  // The profile manager that manages user profiles with their sync settings, we
+  // do not own this object and only hold a reference to it.
+  ProfileManager* profile_manager_;
+
   // Called when |cached_profile_data_| is populated.
   base::RepeatingClosure cache_updated_callback_;
 
   base::WeakPtrFactory<MetricProvider> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProvider);
 };
 
 }  // namespace metrics

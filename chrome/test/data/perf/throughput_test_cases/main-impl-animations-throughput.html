@@ -50,8 +50,14 @@ Press any key to toggle animation.
 <script>
 
 const targetMainFps =
-  window.location.hash.length > 1 ? +window.location.hash.substr(1) : 0;
+  window.location.hash.length > 1 ? + window.location.hash.substr(1) : 0;
 const skipEvery = targetMainFps > 0 ? parseInt(60 / targetMainFps) : 0;
+
+const query = window.location.search.substr(1).split('&');
+const shouldJank = query.indexOf('jank') >= 0;
+// Delay the start of the main thread animation by 1 seconds to test the
+// aggregation of the main and compositor thread throughput.
+const shouldDelay = query.indexOf('delay') >= 0;
 
 var currentValue = 0;
 const maxValue = 150;
@@ -63,9 +69,12 @@ const setProp = (v) => 'translateX(' + v + 'px)';
 var animating = false;
 var incrementing = false;
 var frameCount = 0;
+var startTime;
 
 function animateStep() {
-  if (skipEvery && ++frameCount % skipEvery == 0) {
+  const shouldStart = (skipEvery && ++frameCount % skipEvery == 0) &&
+    (!shouldDelay || (new Date() - startTime) >= 1000);
+  if (shouldStart) {
     if (incrementing) {
       currentValue += valueChange;
       if (currentValue >= maxValue)
@@ -75,6 +84,10 @@ function animateStep() {
       if (currentValue <= minValue)
         incrementing = true;
     }
+    if (shouldJank) {
+      const now = new Date();
+      while ((new Date() - now) < 16) {}
+    }
     mainanim.style[attributeName] = setProp(currentValue);
   }
   if (animating)
@@ -83,6 +96,7 @@ function animateStep() {
 
 function startAnimation() {
   animating = true;
+  startTime = new Date();
   requestAnimationFrame(animateStep);
   cssanim.classList.remove('paused');
 }

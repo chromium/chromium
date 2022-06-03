@@ -7,12 +7,14 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+class GURL;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -22,7 +24,7 @@ namespace content {
 
 class ServiceWorkerCacheWriter;
 class ServiceWorkerContextCore;
-class ServiceWorkerProviderHost;
+class ServiceWorkerHost;
 
 // Created per one running service worker for loading its scripts. This is kept
 // alive while the WebServiceWorkerNetworkProvider in the renderer process is
@@ -50,15 +52,20 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   // error.
   ServiceWorkerScriptLoaderFactory(
       base::WeakPtr<ServiceWorkerContextCore> context,
-      base::WeakPtr<ServiceWorkerProviderHost> provider_host,
+      base::WeakPtr<ServiceWorkerHost> worker_host,
       scoped_refptr<network::SharedURLLoaderFactory>
           loader_factory_for_new_scripts);
+
+  ServiceWorkerScriptLoaderFactory(const ServiceWorkerScriptLoaderFactory&) =
+      delete;
+  ServiceWorkerScriptLoaderFactory& operator=(
+      const ServiceWorkerScriptLoaderFactory&) = delete;
+
   ~ServiceWorkerScriptLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
@@ -74,8 +81,6 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   bool CheckIfScriptRequestIsValid(
       const network::ResourceRequest& resource_request);
 
-  // Used only when ServiceWorkerImportedScriptUpdateCheck is enabled.
-  //
   // The callback is called once the copy is done. It normally runs
   // asynchronously, and would be synchronous if the operation completes
   // synchronously. The first parameter of the callback is the new resource id
@@ -83,7 +88,8 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   // success.
   void CopyScript(const GURL& url,
                   int64_t resource_id,
-                  base::OnceCallback<void(int64_t, net::Error)> callback);
+                  base::OnceCallback<void(int64_t, net::Error)> callback,
+                  int64_t new_resource_id);
 
   // This method is called to notify that the operation triggered by
   // CopyScript() completed.
@@ -98,8 +104,17 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
       int64_t new_resource_id,
       net::Error error);
 
+  void OnResourceIdAssignedForNewScriptLoader(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      int64_t resource_id);
+
   base::WeakPtr<ServiceWorkerContextCore> context_;
-  base::WeakPtr<ServiceWorkerProviderHost> provider_host_;
+  base::WeakPtr<ServiceWorkerHost> worker_host_;
   // Can be null if this factory is for an installed service worker.
   scoped_refptr<network::SharedURLLoaderFactory>
       loader_factory_for_new_scripts_;
@@ -110,8 +125,6 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   std::unique_ptr<ServiceWorkerCacheWriter> cache_writer_;
 
   base::WeakPtrFactory<ServiceWorkerScriptLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerScriptLoaderFactory);
 };
 
 }  // namespace content

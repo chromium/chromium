@@ -6,16 +6,17 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import android.support.test.filters.MediumTest;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +25,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -33,8 +36,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccessorySheetTabViewTest {
-    private final AccessorySheetTabModel mModel = new AccessorySheetTabModel();
+    private AccessorySheetTabModel mModel;
     private AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule
@@ -64,6 +65,7 @@ public class AccessorySheetTabViewTest {
     private void openLayoutInAccessorySheet(
             @LayoutRes int layout, KeyboardAccessoryData.Tab.Listener listener) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = new AccessorySheetTabModel();
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
                             R.id.keyboard_accessory_sheet_stub));
@@ -97,7 +99,7 @@ public class AccessorySheetTabViewTest {
                     @Override
                     public void onTabShown() {}
                 });
-        CriteriaHelper.pollUiThread(Criteria.equals(true, () -> mView.get() != null));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get(), notNullValue()));
     }
 
     @After
@@ -113,7 +115,7 @@ public class AccessorySheetTabViewTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mModel.add(new AccessorySheetDataPiece("Passwords", Type.TITLE)); });
 
-        CriteriaHelper.pollUiThread(Criteria.equals(1, () -> mView.get().getChildCount()));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
         assertThat(mView.get().getChildAt(0), instanceOf(LinearLayout.class));
         LinearLayout layout = (LinearLayout) mView.get().getChildAt(0);
         assertThat(layout.getChildCount(), is(3));
@@ -136,7 +138,7 @@ public class AccessorySheetTabViewTest {
                     Type.FOOTER_COMMAND));
         });
 
-        CriteriaHelper.pollUiThread(Criteria.equals(1, () -> mView.get().getChildCount()));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(1)));
         assertThat(mView.get().getChildAt(0), instanceOf(TextView.class));
         TextView btn = (TextView) mView.get().getChildAt(0);
 

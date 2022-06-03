@@ -35,7 +35,7 @@
   await TestRunner.evaluateInPagePromise(`
       function initializeShadowDOM()
       {
-          var shadow = document.querySelector('#shadow-host').createShadowRoot();
+          var shadow = document.querySelector('#shadow-host').attachShadow({mode: 'open'});
           var template = document.querySelector('#shadow-dom-template');
 
           // Avoid matching this function

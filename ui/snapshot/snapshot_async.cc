@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -38,7 +39,8 @@ void SnapshotAsync::ScaleCopyOutputResult(
     GrabWindowSnapshotAsyncCallback callback,
     const gfx::Size& target_size,
     std::unique_ptr<viz::CopyOutputResult> result) {
-  const SkBitmap bitmap = result->AsSkBitmap();
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  auto bitmap = scoped_bitmap.GetOutScopedBitmap();
   if (!bitmap.readyToDraw()) {
     std::move(callback).Run(gfx::Image());
     return;
@@ -48,9 +50,8 @@ void SnapshotAsync::ScaleCopyOutputResult(
   // from GPU. Image scaling is implemented in content::GlHelper, but it's can't
   // be used here because it's not in content/public. Move the scaling code
   // somewhere so that it can be reused here.
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(ScaleBitmap, bitmap, target_size),
       base::BindOnce(&OnFrameScalingFinished, std::move(callback)));
 }
@@ -58,7 +59,8 @@ void SnapshotAsync::ScaleCopyOutputResult(
 void SnapshotAsync::RunCallbackWithCopyOutputResult(
     GrabWindowSnapshotAsyncCallback callback,
     std::unique_ptr<viz::CopyOutputResult> result) {
-  const SkBitmap bitmap = result->AsSkBitmap();
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  auto bitmap = scoped_bitmap.GetOutScopedBitmap();
   if (!bitmap.readyToDraw()) {
     std::move(callback).Run(gfx::Image());
     return;

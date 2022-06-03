@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_page_transition_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
@@ -56,7 +57,7 @@ const AtomicString& PageTransitionEvent::InterfaceName() const {
   return event_interface_names::kPageTransitionEvent;
 }
 
-void PageTransitionEvent::Trace(blink::Visitor* visitor) {
+void PageTransitionEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 

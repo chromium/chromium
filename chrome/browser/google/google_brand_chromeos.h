@@ -27,7 +27,7 @@ void ClearBrandForCurrentSession();
 // Reads the brand code from a board-specific data file and stores it to
 // Local State. |callback| is invoked on the calling thread upon success, and
 // is not invoked if the brand code is not found or is empty.
-void InitBrand(const base::Closure& callback);
+void InitBrand(base::OnceClosure callback);
 
 }  // namespace chromeos
 }  // namespace google_brand

@@ -5,11 +5,13 @@
 #ifndef CC_TREES_IMAGE_ANIMATION_CONTROLLER_H_
 #define CC_TREES_IMAGE_ANIMATION_CONTROLLER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/paint/discardable_image_map.h"
@@ -141,8 +143,10 @@ class CC_EXPORT ImageAnimationController {
     AnimationState& operator=(AnimationState&& other);
 
     bool ShouldAnimate() const;
+    bool ShouldAnimate(int repetitions_completed, size_t pending_index) const;
     bool AdvanceFrame(const viz::BeginFrameArgs& args,
-                      bool enable_image_animation_resync);
+                      bool enable_image_animation_resync,
+                      bool use_resume_behavior);
     void UpdateMetadata(const DiscardableImageMap::AnimatedImageMetadata& data);
     void PushPendingToActive();
 
@@ -151,10 +155,10 @@ class CC_EXPORT ImageAnimationController {
     void UpdateStateFromDrivers();
     bool has_drivers() const { return !drivers_.empty(); }
 
-    size_t pending_index() const { return pending_index_; }
+    size_t pending_index() const { return current_state_.pending_index; }
     size_t active_index() const { return active_index_; }
     base::TimeTicks next_desired_tick_time() const {
-      return next_desired_tick_time_;
+      return current_state_.next_desired_tick_time;
     }
     const base::flat_set<AnimationDriver*>& drivers_for_testing() const {
       return drivers_;
@@ -165,12 +169,42 @@ class CC_EXPORT ImageAnimationController {
     std::string ToString() const;
 
    private:
+    struct AnimationAdvancementState {
+      // The index being displayed on the pending tree.
+      size_t pending_index = PaintImage::kDefaultFrameIndex;
+
+      // The time at which we would like to display the next frame. This can be
+      // in the past, for instance, if we pause the animation from the image
+      // becoming invisible. This time is updated based on either the animation
+      // timeline provided by the image (when using Catch-up behavior) or the
+      // next displayed frame (when using Resume behavior). Here, "displayed
+      // frame" means an animation that updates faster than the display's
+      // refresh rate and might skip frames to maintain display speed. See
+      // kAnimatedImageResume.
+      base::TimeTicks next_desired_frame_time;
+
+      // The time of the next tick at which we want to invalidate and update the
+      // current frame.
+      base::TimeTicks next_desired_tick_time;
+
+      // The number of loops the animation has finished so far.
+      int repetitions_completed = 0;
+      size_t num_of_frames_advanced = 0u;
+    };
+
+    AnimationAdvancementState AdvanceAnimationState(
+        AnimationAdvancementState animation_advancement_state,
+        const viz::BeginFrameArgs& args,
+        base::TimeTicks start,
+        bool enable_image_animation_resync) const;
     void ResetAnimation();
-    size_t NextFrameIndex() const;
+    size_t NextFrameIndex(size_t pending_index) const;
     bool is_complete() const {
       return completion_state_ == PaintImage::CompletionState::DONE;
     }
-    bool needs_invalidation() const { return pending_index_ != active_index_; }
+    bool needs_invalidation() const {
+      return current_state_.pending_index != active_index_;
+    }
 
     PaintImage::Id paint_image_id_ = PaintImage::kInvalidId;
 
@@ -184,8 +218,7 @@ class CC_EXPORT ImageAnimationController {
     // cc/paint/image_animation_count.h
     int requested_repetitions_ = kAnimationNone;
 
-    // The number of loops the animation has finished so far.
-    int repetitions_completed_ = 0;
+    AnimationAdvancementState current_state_;
 
     // A set of drivers interested in animating this image.
     base::flat_set<AnimationDriver*> drivers_;
@@ -193,19 +226,6 @@ class CC_EXPORT ImageAnimationController {
     // The index being used on the active tree, if a recording with this image
     // is still present.
     size_t active_index_ = PaintImage::kDefaultFrameIndex;
-
-    // The index being displayed on the pending tree.
-    size_t pending_index_ = PaintImage::kDefaultFrameIndex;
-
-    // The time at which we would like to display the next frame. This can be in
-    // the past, for instance, if we pause the animation from the image becoming
-    // invisible. This time is updated strictly based on the animation timeline
-    // provided by the image.
-    base::TimeTicks next_desired_frame_time_;
-
-    // The time of the next tick at which we want to invalidate and update the
-    // current frame.
-    base::TimeTicks next_desired_tick_time_;
 
     // Set if there is at least one driver interested in animating this image,
     // cached from the last update.
@@ -287,6 +307,7 @@ class CC_EXPORT ImageAnimationController {
   InvalidationScheduler scheduler_;
 
   const bool enable_image_animation_resync_;
+  const bool use_resume_behavior_;
 
   bool did_navigate_ = false;
 };

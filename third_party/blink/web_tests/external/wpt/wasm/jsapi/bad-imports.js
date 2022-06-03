@@ -2,7 +2,7 @@
  * `t` should be a function that takes at least three arguments:
  *
  * - the name of the test;
- * - the expected error (to be passed to `assert_throws` or similar);
+ * - the expected error (to be passed to `assert_throws_js`);
  * - a function that takes a `WasmModuleBuilder` and initializes it;
  * - (optionally) an options object.
  *
@@ -11,9 +11,19 @@
  * (if any) yields the correct error.
  */
 function test_bad_imports(t) {
+  function value_type(type) {
+    switch (type) {
+      case "i32": return kWasmI32;
+      case "i64": return kWasmI64;
+      case "f32": return kWasmF32;
+      case "f64": return kWasmF64;
+      default: throw new TypeError(`Unexpected type ${type}`);
+    }
+  }
+
   for (const value of [null, true, "", Symbol(), 1, 0.1, NaN]) {
     t(`Non-object imports argument: ${format_value(value)}`,
-      new TypeError(),
+      TypeError,
       builder => {},
       value);
   }
@@ -23,7 +33,7 @@ function test_bad_imports(t) {
       "module": value,
     };
     t(`Non-object module: ${format_value(value)}`,
-      new TypeError(),
+      TypeError,
       builder => {
         builder.addImport("module", "fn", kSig_v_v);
       },
@@ -31,34 +41,23 @@ function test_bad_imports(t) {
   }
 
   t(`Missing imports argument`,
-    new TypeError(),
+    TypeError,
     builder => {
       builder.addImport("module", "fn", kSig_v_v);
     });
 
   for (const [value, name] of [[undefined, "undefined"], [{}, "empty object"], [{ "module\0": null }, "wrong property"]]) {
     t(`Imports argument with missing property: ${name}`,
-      new TypeError(),
+      TypeError,
       builder => {
         builder.addImport("module", "fn", kSig_v_v);
       },
       value);
   }
 
-  t(`Importing an i64 global`,
-    new WebAssembly.LinkError(),
-    builder => {
-      builder.addImportedGlobal("module", "global", kWasmI64);
-    },
-    {
-      "module": {
-        "global": 0,
-      },
-    });
-
   for (const value of [undefined, null, true, "", Symbol(), 1, 0.1, NaN, {}]) {
     t(`Importing a function with an incorrectly-typed value: ${format_value(value)}`,
-      new WebAssembly.LinkError(),
+      WebAssembly.LinkError,
       builder => {
         builder.addImport("module", "fn", kSig_v_v);
       },
@@ -81,15 +80,47 @@ function test_bad_imports(t) {
     [Object.create(WebAssembly.Global.prototype), "Object.create(WebAssembly.Global.prototype)"],
   ];
 
-  for (const [value, name = format_value(value)] of nonGlobals) {
-    t(`Importing a global with an incorrectly-typed value: ${name}`,
-      new WebAssembly.LinkError(),
+  for (const type of ["i32", "i64", "f32", "f64"]) {
+    const extendedNonGlobals = nonGlobals.concat([
+      type === "i64" ? [0, "Number"] : [0n, "BigInt"],
+      [new WebAssembly.Global({value: type === "f32" ? "f64" : "f32"}), "WebAssembly.Global object (wrong value type)"],
+    ]);
+    for (const [value, name = format_value(value)] of extendedNonGlobals) {
+      t(`Importing an ${type} global with an incorrectly-typed value: ${name}`,
+        WebAssembly.LinkError,
+        builder => {
+          builder.addImportedGlobal("module", "global", value_type(type));
+        },
+        {
+          "module": {
+            "global": value,
+          },
+        });
+    }
+  }
+
+  for (const type of ["i32", "i64", "f32", "f64"]) {
+    const value = type === "i64" ? 0n : 0;
+    t(`Importing an ${type} mutable global with a primitive value`,
+      WebAssembly.LinkError,
       builder => {
-        builder.addImportedGlobal("module", "global", kWasmI32);
+        builder.addImportedGlobal("module", "global", value_type(type), true);
       },
       {
         "module": {
           "global": value,
+        },
+      });
+
+    const global = new WebAssembly.Global({ "value": type }, value);
+    t(`Importing an ${type} mutable global with an immutable Global object`,
+      WebAssembly.LinkError,
+      builder => {
+        builder.addImportedGlobal("module", "global", value_type(type), true);
+      },
+      {
+        "module": {
+          "global": global,
         },
       });
   }
@@ -107,11 +138,12 @@ function test_bad_imports(t) {
     [WebAssembly.Memory, "WebAssembly.Memory"],
     [WebAssembly.Memory.prototype, "WebAssembly.Memory.prototype"],
     [Object.create(WebAssembly.Memory.prototype), "Object.create(WebAssembly.Memory.prototype)"],
+    [new WebAssembly.Memory({"initial": 256}), "WebAssembly.Memory object (too large)"],
   ];
 
   for (const [value, name = format_value(value)] of nonMemories) {
     t(`Importing memory with an incorrectly-typed value: ${name}`,
-      new WebAssembly.LinkError(),
+      WebAssembly.LinkError,
       builder => {
         builder.addImportedMemory("module", "memory", 0, 128);
       },
@@ -135,11 +167,12 @@ function test_bad_imports(t) {
     [WebAssembly.Table, "WebAssembly.Table"],
     [WebAssembly.Table.prototype, "WebAssembly.Table.prototype"],
     [Object.create(WebAssembly.Table.prototype), "Object.create(WebAssembly.Table.prototype)"],
+    [new WebAssembly.Table({"element": "anyfunc", "initial": 256}), "WebAssembly.Table object (too large)"],
   ];
 
   for (const [value, name = format_value(value)] of nonTables) {
     t(`Importing table with an incorrectly-typed value: ${name}`,
-      new WebAssembly.LinkError(),
+      WebAssembly.LinkError,
       builder => {
         builder.addImportedTable("module", "table", 0, 128);
       },

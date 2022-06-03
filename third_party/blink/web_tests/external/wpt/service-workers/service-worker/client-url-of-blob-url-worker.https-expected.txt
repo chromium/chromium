@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Client.url of a blob URL worker should be a blob URL. assert_not_equals: worker client should exist got disallowed value "one worker client should exist"
+Harness: the test ran to completion.
+

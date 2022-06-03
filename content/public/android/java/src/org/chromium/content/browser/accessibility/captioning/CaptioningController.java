@@ -4,9 +4,6 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
-import android.annotation.TargetApi;
-import android.os.Build;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -21,7 +18,7 @@ public class CaptioningController implements SystemCaptioningBridge.SystemCaptio
     private long mNativeCaptioningController;
 
     public CaptioningController(WebContents webContents) {
-        mSystemCaptioningBridge = CaptioningBridgeFactory.getSystemCaptioningBridge();
+        mSystemCaptioningBridge = CaptioningBridge.getInstance();
         mNativeCaptioningController =
                 CaptioningControllerJni.get().init(CaptioningController.this, webContents);
     }
@@ -39,7 +36,6 @@ public class CaptioningController implements SystemCaptioningBridge.SystemCaptio
         mSystemCaptioningBridge.syncToListener(this);
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onSystemCaptioningChanged(TextTrackSettings settings) {
         if (mNativeCaptioningController == 0) return;

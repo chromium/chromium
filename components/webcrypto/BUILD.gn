@@ -26,6 +26,7 @@ static_library("webcrypto") {
     "algorithms/ec.h",
     "algorithms/ecdh.cc",
     "algorithms/ecdsa.cc",
+    "algorithms/ed25519.cc",
     "algorithms/hkdf.cc",
     "algorithms/hmac.cc",
     "algorithms/pbkdf2.cc",
@@ -41,6 +42,7 @@ static_library("webcrypto") {
     "algorithms/sha.cc",
     "algorithms/util.cc",
     "algorithms/util.h",
+    "algorithms/x25519.cc",
     "blink_key_handle.cc",
     "blink_key_handle.h",
     "crypto_data.cc",
@@ -116,9 +118,7 @@ source_set("fuzzer_support") {
 
 # Tests the import of PKCS8 formatted EC keys.
 fuzzer_test("webcrypto_ec_import_key_pkcs8_fuzzer") {
-  sources = [
-    "ec_import_key_pkcs8_fuzzer.cc",
-  ]
+  sources = [ "ec_import_key_pkcs8_fuzzer.cc" ]
   deps = [
     ":fuzzer_support",
     ":webcrypto",
@@ -128,9 +128,7 @@ fuzzer_test("webcrypto_ec_import_key_pkcs8_fuzzer") {
 
 # Tests the import of SPKI formatted EC keys.
 fuzzer_test("webcrypto_ec_import_key_spki_fuzzer") {
-  sources = [
-    "ec_import_key_spki_fuzzer.cc",
-  ]
+  sources = [ "ec_import_key_spki_fuzzer.cc" ]
   deps = [
     ":fuzzer_support",
     ":webcrypto",
@@ -140,9 +138,7 @@ fuzzer_test("webcrypto_ec_import_key_spki_fuzzer") {
 
 # Tests the import of raw (X9.62) formatted EC keys.
 fuzzer_test("webcrypto_ec_import_key_raw_fuzzer") {
-  sources = [
-    "ec_import_key_raw_fuzzer.cc",
-  ]
+  sources = [ "ec_import_key_raw_fuzzer.cc" ]
   deps = [
     ":fuzzer_support",
     ":webcrypto",
@@ -152,9 +148,7 @@ fuzzer_test("webcrypto_ec_import_key_raw_fuzzer") {
 
 # Tests the import of PKCS8 formatted RSA keys.
 fuzzer_test("webcrypto_rsa_import_key_pkcs8_fuzzer") {
-  sources = [
-    "rsa_import_key_pkcs8_fuzzer.cc",
-  ]
+  sources = [ "rsa_import_key_pkcs8_fuzzer.cc" ]
   deps = [
     ":fuzzer_support",
     ":webcrypto",
@@ -164,9 +158,7 @@ fuzzer_test("webcrypto_rsa_import_key_pkcs8_fuzzer") {
 
 # Tests the import of SPKI formatted RSA keys.
 fuzzer_test("webcrypto_rsa_import_key_spki_fuzzer") {
-  sources = [
-    "rsa_import_key_spki_fuzzer.cc",
-  ]
+  sources = [ "rsa_import_key_spki_fuzzer.cc" ]
   deps = [
     ":fuzzer_support",
     ":webcrypto",

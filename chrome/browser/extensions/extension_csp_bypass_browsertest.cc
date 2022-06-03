@@ -10,6 +10,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
@@ -32,6 +33,9 @@ bool WasFrameWithScriptLoaded(content::RenderFrameHost* rfh) {
 class ExtensionCSPBypassTest : public ExtensionBrowserTest {
  public:
   ExtensionCSPBypassTest() {}
+
+  ExtensionCSPBypassTest(const ExtensionCSPBypassTest&) = delete;
+  ExtensionCSPBypassTest& operator=(const ExtensionCSPBypassTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("same-origin.com", "127.0.0.1");
@@ -103,13 +107,12 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
 
   content::RenderFrameHost* GetFrameByName(const std::string& name) {
     return content::FrameMatchingPredicate(
-        web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+        web_contents()->GetPrimaryPage(),
+        base::BindRepeating(&content::FrameMatchesName, name));
   }
 
  private:
   std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCSPBypassTest);
 };
 
 }  // namespace
@@ -122,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, LoadWebAccessibleScript) {
 
   // chrome-extension:-URLs can always bypass CSP in normal pages.
   GURL non_webui_url(embedded_test_server()->GetURL("/empty.html"));
-  ui_test_utils::NavigateToURL(browser(), non_webui_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_webui_url));
 
   EXPECT_TRUE(CanLoadScript(component_ext_with_permission));
   EXPECT_TRUE(CanLoadScript(component_ext_without_permission));
@@ -130,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, LoadWebAccessibleScript) {
   EXPECT_TRUE(CanLoadScript(ext_without_permission));
 
   // chrome-extension:-URLs can never bypass CSP in WebUI.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
 
   EXPECT_FALSE(CanLoadScript(component_ext_with_permission));
   EXPECT_FALSE(CanLoadScript(component_ext_without_permission));
@@ -176,6 +180,53 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   frame = GetFrameByName("added-by-extension");
   ASSERT_TRUE(frame);
   EXPECT_TRUE(WasFrameWithScriptLoaded(frame));
+}
+
+// CSP:frame-ancestor is not bypassed by extensions.
+IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
+  std::string manifest = R"(
+    {
+      "name": "CSP frame-ancestors",
+      "manifest_version": 2,
+      "version": "0.1",
+      "browser_action": {
+       "default_popup": "popup.html"
+      }
+    }
+  )";
+
+  std::string popup = R"(
+    <!doctype html>
+    <html>
+      <iframe src = "$1"></iframe>
+    </html>
+  )";
+
+  GURL iframe_url = embedded_test_server()->GetURL(
+      "/extensions/csp/frame-ancestors-none.html");
+  popup = base::ReplaceStringPlaceholders(popup, {iframe_url.spec()}, nullptr);
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(manifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), popup);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Refused to frame * because an ancestor violates *");
+
+  GURL popup_url = extension->GetResourceURL("popup.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), popup_url));
+
+  // The iframe must be blocked because of CSP.
+  console_observer.Wait();
+  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+  EXPECT_EQ(popup_url, main_frame->GetLastCommittedURL());
+  EXPECT_EQ(iframe_url, child_frame->GetLastCommittedURL());
+  EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
 }  // namespace extensions

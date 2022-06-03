@@ -7,36 +7,65 @@ module blink.mojom;
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
+import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 
 // The Manifest structure is an internal representation of the Manifest file
 // described in the "Manifest for Web Application" document:
 // http://w3c.github.io/manifest/
+// All fields will be their default constructed values (optional types nullopt)
+// if the manifest failed to parse.
 [JavaClassName="WebManifest"]
 struct Manifest {
   mojo_base.mojom.String16? name;
 
   mojo_base.mojom.String16? short_name;
 
+  mojo_base.mojom.String16? description;
+
+  // Defaults to start_url with origin stripped when id field is not present.
+  mojo_base.mojom.String16? id;
+
   url.mojom.Url start_url;
 
   DisplayMode display;
+
+  array<DisplayMode> display_override;
 
   device.mojom.ScreenOrientationLockType orientation;
 
   array<ManifestImageResource> icons;
 
+  array<ManifestImageResource> screenshots;
+
   array<ManifestShortcutItem> shortcuts;
 
   ManifestShareTarget? share_target;
 
-  // TODO(harrisjay): This field is non-standard and part of a Chrome
+  // TODO(crbug.com/829689): This field is non-standard and part of a Chrome
   // experiment. See:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md
-  // As such, this field should not be exposed to the drive-by web.
+  // https://github.com/WICG/file-handling/blob/main/explainer.md
+  // As such, this field should not be exposed by default.
   array<ManifestFileHandler> file_handlers;
+
+  // TODO(crbug.com/1019239): This is going into the mainline manifest spec,
+  // remove the TODO once that PR goes in.
+  // The URLProtocolHandler explainer can be found here:
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
+  array<ManifestProtocolHandler> protocol_handlers;
+
+  // TODO(crbug.com/1072058): This field is non-standard and part of an
+  // experiment. See:
+  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
+  array<ManifestUrlHandler> url_handlers;
+
+  // TODO(crbug.com/1185678): This field is non-standard and part of a manifest
+  // incubation. See:
+  // https://wicg.github.io/manifest-incubations/index.html#dfn-note_taking
+  ManifestNoteTaking? note_taking;
 
   array<ManifestRelatedApplication> related_applications;
 
@@ -55,7 +84,30 @@ struct Manifest {
 
   mojo_base.mojom.String16? gcm_sender_id;
 
+  // Defaults to the start URL (or document URL if start URL isn't present) with
+  // filename, query, and fragment removed if not present.
   url.mojom.Url scope;
+
+  // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/sw-launch/blob/main/declarative_link_capturing.md#proposal
+  // As such, this field should not be exposed by default.
+  CaptureLinks capture_links;
+
+  // TODO(crbug.com/1212263): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
+  bool isolated_storage;
+
+  // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+  ManifestLaunchHandler? launch_handler;
+
+  // TODO(crbug.com/1259777): This field is non-standard and part of a Chrome
+  // experiment. See: https://github.com/w3c/manifest/issues/676#issuecomment-810628993
+  // A mapping of locales to their translations.
+  map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -81,7 +133,7 @@ struct ManifestShortcutItem {
 struct ManifestImageResource {
   enum Purpose {
     ANY = 0,
-    BADGE,
+    MONOCHROME,
     MASKABLE,
   };
 
@@ -108,6 +160,27 @@ struct ManifestFileFilter {
 
   // A sequence of accepted MIME types.
   array<mojo_base.mojom.String16> accept;
+};
+
+// Structure representing a URL protocol handler.
+struct ManifestProtocolHandler {
+  mojo_base.mojom.String16 protocol;
+  url.mojom.Url url;
+};
+
+struct ManifestUrlHandler {
+  url.mojom.Origin origin;
+  // A boolean that is used to show if a wildcard is present for the origin.
+  // If true, the application indicates that it wants to handle all subdomains
+  // of |origin|. If false, the application only wants to handle |origin|.
+  bool has_origin_wildcard;
+};
+
+// Structure representing note-taking application capabilities.
+struct ManifestNoteTaking {
+  // A URL for taking a new note in the web application. If valid, this web
+  // application is a note-taking application.
+  url.mojom.Url new_note_url;
 };
 
 // Structure representing a related application.
@@ -172,9 +245,48 @@ struct ManifestShareTarget {
 struct ManifestFileHandler {
   // The URL that will be opened when the file handler is invoked.
   url.mojom.Url action;
-  mojo_base.mojom.String16? name;
+  // Human-readable name for the file handler. May be displayed in file manager.
+  mojo_base.mojom.String16 name;
+  // Icon representing the file handler. May be displayed in file manager.
+  array<ManifestImageResource> icons;
   // A mapping of a MIME types to a corresponding list of file extensions.
   map<mojo_base.mojom.String16, array<mojo_base.mojom.String16>> accept;
+};
+
+// Represents how web app launches should be handled with regard to opening
+// windows or recycling existing ones.
+// Spec: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+struct ManifestLaunchHandler {
+  // The client to use for app launches.
+  enum RouteTo {
+    // Use whatever the platform would do by default.
+    kAuto,
+    // Create a new client for each app launch.
+    kNewClient,
+    // Use an existing client if available, otherwise create a new one to use.
+    kExistingClient,
+  };
+  RouteTo route_to;
+
+  // When routing to an existing client this specifies whether to navigate it to
+  // the launch URL or just pass the URL in the enqueued LaunchParams.
+  enum NavigateExistingClient {
+    kAlways,
+    kNever,
+  };
+  NavigateExistingClient navigate_existing_client;
+};
+
+// Structure representing the translated manifest fields. Each field corresponds
+// to a translatable field in the Web App Manifest and contains a translation of
+// that field. Each field is optional as there is no mandatory field which must
+// be translated in any locale.
+struct ManifestTranslationItem {
+  mojo_base.mojom.String16? name;
+
+  mojo_base.mojom.String16? short_name;
+
+  mojo_base.mojom.String16? description;
 };
 
 // Debug information for a parsed manifest.

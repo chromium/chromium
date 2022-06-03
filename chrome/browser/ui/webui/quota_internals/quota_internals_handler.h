@@ -11,12 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
-class Value;
 class ListValue;
 }
 
@@ -33,6 +31,10 @@ typedef std::map<std::string, std::string> Statistics;
 class QuotaInternalsHandler : public content::WebUIMessageHandler {
  public:
   QuotaInternalsHandler();
+
+  QuotaInternalsHandler(const QuotaInternalsHandler&) = delete;
+  QuotaInternalsHandler& operator=(const QuotaInternalsHandler&) = delete;
+
   ~QuotaInternalsHandler() override;
   void RegisterMessages() override;
 
@@ -42,14 +44,13 @@ class QuotaInternalsHandler : public content::WebUIMessageHandler {
   void ReportPerHostInfo(const std::vector<PerHostStorageInfo>& hosts);
   void ReportPerOriginInfo(const std::vector<PerOriginStorageInfo>& origins);
   void ReportStatistics(const Statistics& stats);
+  void ReportStoragePressureFlag();
 
  private:
   void OnRequestInfo(const base::ListValue*);
-  void SendMessage(const std::string& message, const base::Value& value);
+  void OnTriggerStoragePressure(const base::ListValue*);
 
   scoped_refptr<QuotaInternalsProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaInternalsHandler);
 };
 }  // namespace quota_internals
 

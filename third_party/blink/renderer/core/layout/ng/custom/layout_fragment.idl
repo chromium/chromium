@@ -16,5 +16,7 @@ interface LayoutFragment {
   attribute double inlineOffset;
   attribute double blockOffset;
 
+  readonly attribute double? baseline;
+
   [CallWith=ScriptState] readonly attribute any data;
 };

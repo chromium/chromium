@@ -1,0 +1,201 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocessed_dir = "preprocessed"
+preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+
+polymer_element_files = [
+  "accelerator_edit_dialog.js",
+  "accelerator_edit_view.js",
+  "accelerator_row.js",
+  "accelerator_subsection.js",
+  "accelerator_view.js",
+  "icons.js",
+  "input_key.js",
+  "shortcut_customization_fonts_css.js",
+  "shortcut_customization_shared_css.js",
+  "shortcut_customization_app.js",
+  "shortcut_input.js",
+  "shortcuts_page.js",
+]
+
+generate_grd("build_grd") {
+  input_files = [
+    "accelerator_lookup_manager.js",
+    "app_icon_192.png",
+    "fake_data.js",
+    "fake_shortcut_provider.js",
+    "index.html",
+    "mojo_interface_provider.js",
+    "shortcut_types.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocessed_gen_manifest" ]
+  grd_prefix = "ash_shortcut_customization_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":accelerator_edit_dialog",
+    ":accelerator_edit_view",
+    ":accelerator_lookup_manager",
+    ":accelerator_row",
+    ":accelerator_subsection",
+    ":accelerator_view",
+    ":fake_shortcut_provider",
+    ":icons",
+    ":input_key",
+    ":mojo_interface_provider",
+    ":shortcut_customization_app",
+    ":shortcut_customization_fonts_css",
+    ":shortcut_input",
+    ":shortcut_types",
+    ":shortcuts_page",
+  ]
+}
+
+js_library("accelerator_edit_dialog") {
+  deps = [
+    ":accelerator_view",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+}
+
+js_library("accelerator_edit_view") {
+  deps = [
+    ":accelerator_lookup_manager",
+    ":accelerator_view",
+    ":icons",
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("accelerator_lookup_manager") {
+  deps = [
+    ":fake_data",
+    ":shortcut_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("accelerator_row") {
+  deps = [
+    ":accelerator_view",
+    ":icons",
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("accelerator_view") {
+  deps = [
+    ":input_key",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("accelerator_subsection") {
+  deps = [
+    ":accelerator_lookup_manager",
+    ":accelerator_row",
+    ":fake_data",
+    ":shortcut_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("fake_data") {
+  deps = [ ":shortcut_types" ]
+}
+
+js_library("fake_shortcut_provider") {
+  deps = [
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("input_key") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    ":fake_data",
+    ":fake_shortcut_provider",
+    ":shortcut_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("shortcut_customization_app") {
+  deps = [
+    ":accelerator_edit_dialog",
+    ":accelerator_lookup_manager",
+    ":mojo_interface_provider",
+    ":shortcut_customization_fonts_css",
+    ":shortcut_input",
+    ":shortcut_types",
+    "//ash/webui/common/resources:navigation_view_panel",
+    "//ash/webui/common/resources:page_toolbar",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shortcut_customization_fonts_css") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shortcut_input") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shortcut_types") {
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+  in_files = polymer_element_files
+}
+
+js_library("shortcuts_page") {
+  deps = [
+    ":accelerator_lookup_manager",
+    ":shortcut_input",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}

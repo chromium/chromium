@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -27,8 +27,11 @@ DelayBasedTimeSource::DelayBasedTimeSource(
       timebase_(base::TimeTicks()),
       interval_(BeginFrameArgs::DefaultInterval()),
       last_tick_time_(base::TimeTicks() - interval_),
-      next_tick_time_(base::TimeTicks()),
-      task_runner_(task_runner) {}
+      task_runner_(task_runner),
+      tick_closure_(base::BindRepeating(&DelayBasedTimeSource::OnTimerTick,
+                                        base::Unretained(this))) {
+  timer_.SetTaskRunner(task_runner_);
+}
 
 DelayBasedTimeSource::~DelayBasedTimeSource() = default;
 
@@ -43,9 +46,9 @@ void DelayBasedTimeSource::SetActive(bool active) {
   if (active_) {
     PostNextTickTask(Now());
   } else {
+    timer_.AbandonAndStop();
     last_tick_time_ = base::TimeTicks();
     next_tick_time_ = base::TimeTicks();
-    tick_closure_.Cancel();
   }
 }
 
@@ -154,10 +157,7 @@ void DelayBasedTimeSource::PostNextTickTask(base::TimeTicks now) {
       next_tick_time_ += interval_;
     DCHECK_GT(next_tick_time_, now);
   }
-  tick_closure_.Reset(base::BindOnce(&DelayBasedTimeSource::OnTimerTick,
-                                     weak_factory_.GetWeakPtr()));
-  task_runner_->PostDelayedTask(FROM_HERE, tick_closure_.callback(),
-                                next_tick_time_ - now);
+  timer_.Start(FROM_HERE, next_tick_time_ - now, tick_closure_);
 }
 
 std::string DelayBasedTimeSource::TypeString() const {
@@ -168,11 +168,11 @@ void DelayBasedTimeSource::AsValueInto(
     base::trace_event::TracedValue* state) const {
   state->SetString("type", TypeString());
   state->SetDouble("last_tick_time_us",
-                   LastTickTime().since_origin().InMicroseconds());
+                   LastTickTime().since_origin().InMicrosecondsF());
   state->SetDouble("next_tick_time_us",
-                   NextTickTime().since_origin().InMicroseconds());
-  state->SetDouble("interval_us", interval_.InMicroseconds());
-  state->SetDouble("timebase_us", timebase_.since_origin().InMicroseconds());
+                   NextTickTime().since_origin().InMicrosecondsF());
+  state->SetDouble("interval_us", interval_.InMicrosecondsF());
+  state->SetDouble("timebase_us", timebase_.since_origin().InMicrosecondsF());
   state->SetBoolean("active", active_);
 }
 

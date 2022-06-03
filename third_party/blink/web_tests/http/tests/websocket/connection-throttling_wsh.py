@@ -1,4 +1,4 @@
-import cgi
+from six.moves.urllib import parse
 import time
 import threading
 
@@ -11,7 +11,7 @@ def web_socket_do_extra_handshake(request):
     query_string = request.ws_resource.split('?', 1)
     if len(query_string) == 1:
         return
-    params = cgi.parse_qs(query_string[1])
+    params = parse.parse_qs(query_string[1])
     mode = params['mode'][0]
     if mode == 'new_test':
         new_test(request)

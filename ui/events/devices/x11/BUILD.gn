@@ -2,13 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
-import("//ui/ozone/ozone.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
-jumbo_component("x11") {
+component("x11") {
   output_name = "events_devices_x11"
 
   sources = [
@@ -19,15 +18,15 @@ jumbo_component("x11") {
     "events_devices_x11_export.h",
     "touch_factory_x11.cc",
     "touch_factory_x11.h",
+    "xinput_util.h",
   ]
-
-  configs += [ "//build/config/linux:x11" ]
 
   defines = [ "EVENTS_DEVICES_X11_IMPLEMENTATION" ]
 
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/display",
     "//ui/events:events_base",

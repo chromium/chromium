@@ -31,7 +31,13 @@ iron-icon[icon='notification-card:done'] {
 }
 
 a {
-  color: var(--google-blue-500);
+  color: rgb(17, 85, 204); /* #1155CC */
+  cursor: pointer;
   text-decoration: none;
+}
+
+a:focus {
+  outline-color: rgb(77, 144, 254); /* #4D90FE */
+  transition: outline-color 200ms;
 }
 

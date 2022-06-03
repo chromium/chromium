@@ -1,15 +1,16 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="../../../html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/button_bar.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/mojo_api.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/password_page.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/start_setup_page.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="button_bar.html">
+<link rel="import" href="fake_mojo_service.html">
+<link rel="import" href="mojo_api.html">
+<link rel="import" href="multidevice_setup_delegate.html">
+<link rel="import" href="multidevice_setup_shared_css.html">
+<link rel="import" href="password_page.html">
+<link rel="import" href="setup_succeeded_page.html">
+<link rel="import" href="start_setup_page.html">
+<link rel="import" href="../../../html/cr.html">
+<link rel="import" href="../../../html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
 
 <dom-module id="multidevice-setup">
@@ -23,49 +24,30 @@
       }
 
       #container {
-        @apply --layout-vertical;
+        background-color: var(--cr-card-background-color);
         box-sizing: border-box;
-        color: var(--google-grey-700);
+        color: var(--cros-text-color-secondary);
+        display: flex;
+        flex-direction: column;
         font-size: 13px;
         height: 100%;
         line-height: 16px;
         margin: auto;
-        max-width: var(--multidevice-setup-width, var(--default-ui-width));
-        padding: 32px;
       }
 
       iron-pages {
+        height: 100%;
         overflow: var(--iron-pages-overflow, visible);
-        padding: 0 32px;
       }
 
-      @media screen and (max-width: 767px) {
-        /* On narrow screens, decrease width/padding. */
-        #container {
-          height: auto;
-          /* Add height of buttons plus padding on top and bottom of buttons. */
-          margin-bottom: calc(var(--narrow-button-bar-height) +
-                              calc(2 * var(--narrow-button-bar-spacing)));
-          padding: 32px 32px 0 32px;
-        }
+      button-bar {
+        padding: 24px;
+      }
 
-        iron-pages {
-          padding: 0;
-        }
-
-        /*
-         * Fix the button bar to the bottom of the window. Some content may be
-         * beneath the button bar, so make the background slightly transparent
-         * so that the content can be seen.
-         */
-        button-bar {
-          background: rgba(255, 255, 255, 0.9);
-          bottom: 0;
-          height: var(--narrow-button-bar-height);
-          left: 0;
-          padding: var(--narrow-button-bar-spacing);
-          position: absolute;
-          right: 0;
+      @media screen and (orientation: portrait) {
+        :host-context([screen=oobe]) button-bar,
+        :host-context([screen=gaia-signin]) button-bar {
+          align-items: center;
         }
       }
     </style>
@@ -89,7 +71,7 @@
         </template>
         <start-setup-page class="ui-page"
             devices="[[devices_]]"
-            selected-device-id="{{selectedDeviceId_}}"
+            selected-instance-id-or-legacy-device-id="{{selectedInstanceIdOrLegacyDeviceId_}}"
             delegate="[[delegate]]">
         </start-setup-page>
       </iron-pages>
@@ -104,6 +86,5 @@
       </button-bar>
     </div>
   </template>
-  <script src="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.js">
-  </script>
+  <script src="multidevice_setup.js"></script>
 </dom-module>

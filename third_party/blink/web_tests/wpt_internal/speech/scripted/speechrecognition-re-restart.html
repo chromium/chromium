@@ -1,0 +1,20 @@
+<!doctype html>
+<title>Verify that multiple overlapping start() calls is well-behaved.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+
+const mock = new MockSpeechRecognizer();
+
+async_test(t => {
+  const r1 = new webkitSpeechRecognition();
+  r1.onend = () => r1.start();
+  r1.start();
+
+  const r2 = new webkitSpeechRecognition();
+  r2.onend = () => setTimeout(() => t.done());
+  r2.start();
+});
+
+</script>

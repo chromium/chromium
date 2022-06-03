@@ -8,8 +8,6 @@ dictionary InternalDictionary {
     long longMember;
     [Clamp] long longMemberWithClamp;
     [EnforceRange] long longMemberWithEnforceRange;
-    // We don't want to add a UseCounter feature for testing, so using PrefixedStorageInfo.
-    [DeprecateAs=PrefixedStorageInfo, ImplementedAs=longMember] long deprecateLongMember;
     long longMemberWithDefault = 42;
     long? longOrNullMember;
     long? longOrNullMemberWithDefault = null;
@@ -33,7 +31,6 @@ dictionary InternalDictionary {
     (double or DOMString) doubleOrStringMember;
     sequence<(double or DOMString)> doubleOrStringSequenceMember;
     EventTarget? eventTargetOrNullMember = null;
-    Dictionary dictionaryMember;
     (InternalEnum or sequence<InternalEnum>) internalEnumOrInternalEnumSequenceMember;
     any anyMember;
     TestCallback callbackFunctionMember;

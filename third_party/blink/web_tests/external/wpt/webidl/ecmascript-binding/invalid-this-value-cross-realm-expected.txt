@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Cross-realm getter throws when called on incompatible object
+FAIL Cross-realm setter throws when called on incompatible object assert_throws_js: function "() => { Object.create(other.element).innerHTML = ""; }" threw object "TypeError: Illegal invocation" ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+FAIL Cross-realm operation throws when called on incompatible object assert_throws_js: function "() => { Object.create(other.element).click(); }" threw object "TypeError: Illegal invocation" ("TypeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+Harness: the test ran to completion.
+

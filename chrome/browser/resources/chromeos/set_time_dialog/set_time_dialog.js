@@ -14,7 +14,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_page_host_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
@@ -137,7 +137,8 @@ Polymer({
     isTimezoneVisible_: {
       type: Boolean,
       readonly: true,
-      value: () => loadTimeData.getValue('currentTimezoneId') != '',
+      value: () =>
+          /** @type {boolean} */ (loadTimeData.getValue('showTimezone')),
     },
 
     /**
@@ -188,17 +189,17 @@ Polymer({
   browserProxy_: null,
 
   /** @override */
-  created: function() {
+  created() {
     this.browserProxy_ = SetTimeBrowserProxyImpl.getInstance();
   },
 
   /** @override */
-  ready: function() {
+  ready() {
     this.updateTime_(new Date());
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     // Register listeners for updates from C++ code.
     this.addWebUIListener(
         'system-clock-updated', this.updateTime_.bind(this, new Date()));
@@ -215,7 +216,7 @@ Polymer({
    * @return {!Date} The date that is currently displayed on the dialog.
    * @private
    */
-  getInputTime_: function() {
+  getInputTime_() {
     // Midnight of the current day in GMT.
     const date = this.$.dateInput.valueAsDate;
     // Add hours and minutes as set on the time input field.
@@ -233,7 +234,7 @@ Polymer({
    *     inputs.
    * @private
    */
-  getInputTimeSinceEpoch_: function() {
+  getInputTimeSinceEpoch_() {
     const now = this.getInputTime_();
 
     if (this.isTimezoneVisible_) {
@@ -254,10 +255,12 @@ Polymer({
    * @param {string} timezoneId The timezone ID to select.
    * @private
    */
-  setTimezone_: function(timezoneId) {
-    const timezoneSelect = this.$$('#timezoneSelect');
-    assert(timezoneSelect.childElementCount > 0);
-    timezoneSelect.value = timezoneId;
+  setTimezone_(timezoneId) {
+    if (this.isTimezoneVisible_) {
+      const timezoneSelect = this.$$('#timezoneSelect');
+      assert(timezoneSelect.childElementCount > 0);
+      timezoneSelect.value = timezoneId;
+    }
 
     const now = this.getInputTime_();
     const timezoneDelta = getTimezoneDelta(timezoneId, this.selectedTimezone_);
@@ -273,7 +276,7 @@ Polymer({
    * @param {!Date} newTime Time used to update the date/time controls.
    * @private
    */
-  updateTime_: function(newTime) {
+  updateTime_(newTime) {
     // Only update time controls if neither is focused.
     if (document.activeElement.id != 'dateInput' &&
         document.activeElement.id != 'timeInput') {
@@ -298,7 +301,7 @@ Polymer({
    * Sets the system time from the UI.
    * @private
    */
-  applyTime_: function() {
+  applyTime_() {
     this.browserProxy_.setTimeInSeconds(this.getInputTimeSinceEpoch_());
   },
 
@@ -307,7 +310,7 @@ Polymer({
    * @param {!Event} e The blur event.
    * @private
    */
-  onTimeBlur_: function(e) {
+  onTimeBlur_(e) {
     if (e.target.validity.valid && e.target.value) {
       // Make this the new fallback time in case of future invalid input.
       this.prevValues_[e.target.id] = e.target.value;
@@ -324,7 +327,7 @@ Polymer({
    * @param {!Event} e The change event.
    * @private
    */
-  onTimezoneChange_: function(e) {
+  onTimezoneChange_(e) {
     this.setTimezone_(e.currentTarget.value);
   },
 
@@ -337,12 +340,12 @@ Polymer({
    * skipped and saveAndClose_ is called immediately after the button click.
    * @private
    */
-  onDoneClick_: function() {
+  onDoneClick_() {
     this.browserProxy_.doneClicked(this.getInputTimeSinceEpoch_());
   },
 
   /** @private */
-  saveAndClose_: function() {
+  saveAndClose_() {
     this.applyTime_();
     // Timezone change should only be applied when the UI displays timezone
     // setting. Otherwise |selectedTimezone_| will be empty/invalid.

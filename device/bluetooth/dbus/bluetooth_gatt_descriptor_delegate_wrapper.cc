@@ -15,11 +15,9 @@ BluetoothGattDescriptorDelegateWrapper::BluetoothGattDescriptorDelegateWrapper(
 
 void BluetoothGattDescriptorDelegateWrapper::GetValue(
     const dbus::ObjectPath& device_path,
-    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback) {
   service()->GetDelegate()->OnDescriptorReadRequest(
-      GetDeviceWithPath(device_path), descriptor_, 0, std::move(callback),
-      std::move(error_callback));
+      GetDeviceWithPath(device_path), descriptor_, 0, std::move(callback));
 }
 
 void BluetoothGattDescriptorDelegateWrapper::SetValue(

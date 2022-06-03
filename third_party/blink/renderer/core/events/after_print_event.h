@@ -12,10 +12,6 @@ namespace blink {
 
 class AfterPrintEvent final : public Event {
  public:
-  static AfterPrintEvent* Create() {
-    return MakeGarbageCollected<AfterPrintEvent>();
-  }
-
   AfterPrintEvent()
       : Event(event_type_names::kAfterprint, Bubbles::kNo, Cancelable::kNo) {}
   ~AfterPrintEvent() override = default;

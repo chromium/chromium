@@ -3,33 +3,36 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
-    ":add_supervision",
     ":add_supervision_api_server",
-    ":post_message_api",
+    ":add_supervision_ui",
+    "//ui/webui/resources/js:post_message_api_server.m",
   ]
-}
-
-js_library("post_message_api") {
-  deps = []
 }
 
 js_library("add_supervision_api_server") {
   deps = [
-    ":post_message_api",
     "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:post_message_api_server.m",
   ]
 }
 
-js_library("add_supervision") {
+js_library("add_supervision_ui") {
   deps = [
     ":add_supervision_api_server",
-    "//ui/webui/resources/js:load_time_data",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "add_supervision_ui.js" ]
 }

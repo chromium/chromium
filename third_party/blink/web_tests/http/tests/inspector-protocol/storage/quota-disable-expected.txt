@@ -1,0 +1,21 @@
+Tests that withdrawing maintains the quota.
+
+Initial storage
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+Applying overrides from two sessions
+{
+  "usage": 0,
+  "quota": 9000,
+  "overrideActive": true
+}
+Disabling the override
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+

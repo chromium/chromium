@@ -13,10 +13,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/dragdrop/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "url/gurl.h"
+
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace ui {
 
@@ -32,48 +37,63 @@ class OSExchangeDataTest : public PlatformTest {
 };
 
 TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+#endif  // OS_MAC
+
   OSExchangeData data;
-  base::string16 input = base::ASCIIToUTF16("I can has cheezburger?");
+  std::u16string input = u"I can has cheezburger?";
   EXPECT_FALSE(data.HasString());
   data.SetString(input);
   EXPECT_TRUE(data.HasString());
 
   OSExchangeData data2(
-      std::unique_ptr<OSExchangeData::Provider>(data.provider().Clone()));
-  base::string16 output;
+      std::unique_ptr<OSExchangeDataProvider>(data.provider().Clone()));
+  std::u16string output;
   EXPECT_TRUE(data2.HasString());
   EXPECT_TRUE(data2.GetString(&output));
   EXPECT_EQ(input, output);
   std::string url_spec = "http://www.goats.com/";
   GURL url(url_spec);
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(data2.GetURLAndTitle(
-      OSExchangeData::DO_NOT_CONVERT_FILENAMES, &url, &title));
+      FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
   // No URLs in |data|, so url should be untouched.
   EXPECT_EQ(url_spec, url.spec());
 }
 
 TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+#endif  // OS_MAC
+
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 url_title = base::ASCIIToUTF16("www.google.com");
-  EXPECT_FALSE(data.HasURL(OSExchangeData::DO_NOT_CONVERT_FILENAMES));
+  std::u16string url_title = u"www.google.com";
+  EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
   data.SetURL(url, url_title);
-  EXPECT_TRUE(data.HasURL(OSExchangeData::DO_NOT_CONVERT_FILENAMES));
+  EXPECT_TRUE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
 
   OSExchangeData data2(
-      std::unique_ptr<OSExchangeData::Provider>(data.provider().Clone()));
+      std::unique_ptr<OSExchangeDataProvider>(data.provider().Clone()));
 
   // URL spec and title should match
   GURL output_url;
-  base::string16 output_title;
-  EXPECT_TRUE(data2.HasURL(OSExchangeData::DO_NOT_CONVERT_FILENAMES));
-  EXPECT_TRUE(data2.GetURLAndTitle(
-      OSExchangeData::DO_NOT_CONVERT_FILENAMES, &output_url, &output_title));
+  std::u16string output_title;
+  EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
+  EXPECT_TRUE(
+      data2.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
+                           &output_url, &output_title));
   EXPECT_EQ(url_spec, output_url.spec());
   EXPECT_EQ(url_title, output_title);
-  base::string16 output_string;
+  std::u16string output_string;
 
   // URL should be the raw text response
   EXPECT_TRUE(data2.GetString(&output_string));
@@ -82,30 +102,44 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
 
 // Test that setting the URL does not overwrite a previously set custom string.
 TEST_F(OSExchangeDataTest, URLAndString) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+#endif  // OS_MAC
+
   OSExchangeData data;
-  base::string16 string = base::ASCIIToUTF16("I can has cheezburger?");
+  std::u16string string = u"I can has cheezburger?";
   data.SetString(string);
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 url_title = base::ASCIIToUTF16("www.google.com");
+  std::u16string url_title = u"www.google.com";
   data.SetURL(url, url_title);
 
-  base::string16 output_string;
+  std::u16string output_string;
   EXPECT_TRUE(data.GetString(&output_string));
   EXPECT_EQ(string, output_string);
 
   GURL output_url;
-  base::string16 output_title;
-  EXPECT_TRUE(data.GetURLAndTitle(
-      OSExchangeData::DO_NOT_CONVERT_FILENAMES, &output_url, &output_title));
+  std::u16string output_title;
+  EXPECT_TRUE(data.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
+                                  &output_url, &output_title));
   EXPECT_EQ(url_spec, output_url.spec());
   EXPECT_EQ(url_title, output_title);
 }
 
 TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+#endif  // OS_MAC
+
   OSExchangeData data;
-  EXPECT_FALSE(data.HasURL(OSExchangeData::DO_NOT_CONVERT_FILENAMES));
-  EXPECT_FALSE(data.HasURL(OSExchangeData::CONVERT_FILENAMES));
+  EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
+  EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   EXPECT_FALSE(data.HasFile());
 
   base::FilePath current_directory;
@@ -114,26 +148,27 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
   data.SetFilename(current_directory);
 
   {
-    EXPECT_FALSE(data.HasURL(OSExchangeData::DO_NOT_CONVERT_FILENAMES));
+    EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
     GURL actual_url;
-    base::string16 actual_title;
-    EXPECT_FALSE(data.GetURLAndTitle(
-        OSExchangeData::DO_NOT_CONVERT_FILENAMES, &actual_url, &actual_title));
+    std::u16string actual_title;
+    EXPECT_FALSE(
+        data.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
+                            &actual_url, &actual_title));
     EXPECT_EQ(GURL(), actual_url);
-    EXPECT_EQ(base::string16(), actual_title);
+    EXPECT_EQ(std::u16string(), actual_title);
   }
 
   {
-    EXPECT_TRUE(data.HasURL(OSExchangeData::CONVERT_FILENAMES));
+    EXPECT_TRUE(data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
     GURL actual_url;
-    base::string16 actual_title;
-    EXPECT_TRUE(data.GetURLAndTitle(OSExchangeData::CONVERT_FILENAMES,
+    std::u16string actual_title;
+    EXPECT_TRUE(data.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
                                     &actual_url, &actual_title));
     // Some Mac OS versions return the URL in file://localhost form instead
     // of file:///, so we compare the url's path not its absolute string.
     EXPECT_EQ(net::FilePathToFileURL(current_directory).path(),
               actual_url.path());
-    EXPECT_EQ(base::string16(), actual_title);
+    EXPECT_EQ(std::u16string(), actual_title);
   }
   EXPECT_TRUE(data.HasFile());
   base::FilePath actual_path;
@@ -142,8 +177,15 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
 }
 
 TEST_F(OSExchangeDataTest, TestPickledData) {
-  const ui::ClipboardFormatType kTestFormat =
-      ui::ClipboardFormatType::GetType("application/vnd.chromium.test");
+#if defined(OS_MAC)
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+#endif  // OS_MAC
+
+  const ClipboardFormatType kTestFormat =
+      ClipboardFormatType::GetType("application/vnd.chromium.test");
 
   base::Pickle saved_pickle;
   saved_pickle.WriteInt(1);
@@ -152,7 +194,7 @@ TEST_F(OSExchangeDataTest, TestPickledData) {
   data.SetPickledData(kTestFormat, saved_pickle);
 
   OSExchangeData copy(
-      std::unique_ptr<OSExchangeData::Provider>(data.provider().Clone()));
+      std::unique_ptr<OSExchangeDataProvider>(data.provider().Clone()));
   EXPECT_TRUE(copy.HasCustomFormat(kTestFormat));
 
   base::Pickle restored_pickle;
@@ -166,6 +208,13 @@ TEST_F(OSExchangeDataTest, TestPickledData) {
 }
 
 TEST_F(OSExchangeDataTest, TestFilenames) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+#endif  // OS_MAC
+
 #if defined(OS_WIN)
   const std::vector<FileInfo> kTestFilenames = {
       {base::FilePath(FILE_PATH_LITERAL("C:\\tmp\\test_file1")),
@@ -193,15 +242,15 @@ TEST_F(OSExchangeDataTest, TestFilenames) {
 TEST_F(OSExchangeDataTest, TestHTML) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  base::string16 html = base::ASCIIToUTF16(
-      "<HTML>\n<BODY>\n"
-      "<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
-      "</BODY>\n</HTML>");
+  std::u16string html =
+      u"<HTML>\n<BODY>\n"
+      u"<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
+      u"</BODY>\n</HTML>";
   data.SetHtml(html, url);
 
   OSExchangeData copy(
-      std::unique_ptr<OSExchangeData::Provider>(data.provider().Clone()));
-  base::string16 read_html;
+      std::unique_ptr<OSExchangeDataProvider>(data.provider().Clone()));
+  std::u16string read_html;
   EXPECT_TRUE(copy.HasHtml());
   EXPECT_TRUE(copy.GetHtml(&read_html, &url));
   EXPECT_EQ(html, read_html);

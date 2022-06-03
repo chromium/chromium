@@ -8,13 +8,11 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -46,6 +44,9 @@ class LocalFileChangeTracker::TrackerDB {
   TrackerDB(const base::FilePath& base_path,
             leveldb::Env* env_override);
 
+  TrackerDB(const TrackerDB&) = delete;
+  TrackerDB& operator=(const TrackerDB&) = delete;
+
   SyncStatusCode MarkDirty(const std::string& url);
   SyncStatusCode ClearDirty(const std::string& url);
   SyncStatusCode GetDirtyEntries(base::queue<FileSystemURL>* dirty_files);
@@ -66,8 +67,6 @@ class LocalFileChangeTracker::TrackerDB {
   leveldb::Env* env_override_;
   std::unique_ptr<leveldb::DB> db_;
   SyncStatusCode db_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerDB);
 };
 
 LocalFileChangeTracker::ChangeInfo::ChangeInfo() : change_seq(-1) {}
@@ -359,7 +358,7 @@ SyncStatusCode LocalFileChangeTracker::CollectLastDirtyChanges(
       file_system_context->sandbox_delegate()->sync_file_util();
   DCHECK(file_util);
   std::unique_ptr<FileSystemOperationContext> context(
-      new FileSystemOperationContext(file_system_context));
+      std::make_unique<FileSystemOperationContext>(file_system_context));
 
   base::File::Info file_info;
   base::FilePath platform_path;
@@ -487,9 +486,6 @@ SyncStatusCode LocalFileChangeTracker::TrackerDB::Init(
   if (env_override_)
     options.env = env_override_;
   leveldb::Status status = leveldb_env::OpenDB(options, path, &db_);
-  UMA_HISTOGRAM_ENUMERATION("SyncFileSystem.TrackerDB.Open",
-                            leveldb_env::GetLevelDBStatusUMAValue(status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   if (status.ok()) {
     return SYNC_STATUS_OK;
   }

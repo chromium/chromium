@@ -1,58 +1,66 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <style>
-    #container {
-      width: 200px;
-      height: 200px;
-      overflow: scroll;
+<!-- This is an expanded version of external/wpt/css/cssom-view/background-change-during-smooth-scroll.html,
+     to ensure the test actually exercises the code path to be covered. -->
+<style>
+#container {
+  width: 200px;
+  height: 200px;
+  overflow: scroll;
+  background: white;
+}
+
+#content {
+  width: 7500px;
+  height: 7500px;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+// Disable PreferCompositingToLCDText so that changing background opaqueness
+// can change composited scrolling status.
+if (window.internals)
+  internals.settings.setPreferCompositingToLCDTextEnabled(false);
+
+var t = async_test('overflow-scroll-loses-composited-scrolling');
+
+function startSmoothScroll() {
+  t.step(() => {
+    if (window.internals) {
+      assert_true(internals.layerTreeAsText(document).includes('container'),
+                  'container should be composited');
     }
+  });
+  var scrollToOptions = {behavior: "smooth", top: 6000};
+  container.scrollTo(scrollToOptions);
+  requestAnimationFrame(preventCompositedScrolling);
+}
 
-    #content {
-      width: 7500px;
-      height: 7500px;
-      background-color: blue;
-    }
-  </style>
-  <script src="../../resources/js-test.js"></script>
-  <script type="text/javascript">
-    jsTestIsAsync = true;
-    description("This test checks that a smooth scroll finishes even when composited scrolling " +
-                "is lost during the animation.");
+function preventCompositedScrolling() {
+  container.style.background = "transparent";
+  requestAnimationFrame(() => {
+    t.step(() => {
+      if (window.internals) {
+        assert_false(internals.layerTreeAsText(document).includes('container'),
+                     'container should not be composited');
+      }
+    });
+    waitForSmoothScrollEnd();
+  });
+}
 
-    function startSmoothScroll() {
-        var scrollToOptions = {behavior: "smooth", top: 6000};
-        document.getElementById("container").scrollTo(scrollToOptions);
-        window.requestAnimationFrame(preventCompositedScrolling);
-    }
+function waitForSmoothScrollEnd() {
+  if (container.scrollTop == 6000) {
+    t.done();
+  } else {
+    window.requestAnimationFrame(waitForSmoothScrollEnd);
+  }
+}
 
-    function preventCompositedScrolling() {
-        document.getElementById("container").style.borderRadius = "4px";
-        window.requestAnimationFrame(waitForSmoothScrollEnd);
-    }
-
-    function waitForSmoothScrollEnd() {
-        if (document.getElementById("container").scrollTop == 6000) {
-            testPassed("Scroll destination reached.");
-            finishJSTest();
-        } else {
-            window.requestAnimationFrame(waitForSmoothScrollEnd);
-        }
-    }
-
-    window.onload = function() {
-        if (window.internals) {
-            internals.settings.setPreferCompositingToLCDTextEnabled(true);
-        }
-
-        window.requestAnimationFrame(startSmoothScroll);
-    }
-  </script>
-</head>
-
-<body>
-  <div id="container">
-    <div id="content"></div>
-  </div>
-</body>
-</html>
+onload = () => {
+  requestAnimationFrame(startSmoothScroll);
+}
+</script>
+<div id="container">
+  <div id="content">Content</div>
+</div>

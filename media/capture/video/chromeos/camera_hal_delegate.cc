@@ -11,18 +11,22 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/system/system_monitor.h"
-#include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
+#include "base/unguessable_token.h"
+#include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/video_capture_device_chromeos_delegate.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 
 namespace media {
@@ -30,15 +34,24 @@ namespace media {
 namespace {
 
 constexpr int32_t kDefaultFps = 30;
+constexpr char kVirtualPrefix[] = "VIRTUAL_";
 
-constexpr base::TimeDelta kEventWaitTimeoutSecs =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
 class LocalCameraClientObserver : public CameraClientObserver {
  public:
+  LocalCameraClientObserver() = delete;
+
   explicit LocalCameraClientObserver(
-      scoped_refptr<CameraHalDelegate> camera_hal_delegate)
-      : camera_hal_delegate_(std::move(camera_hal_delegate)) {}
+      scoped_refptr<CameraHalDelegate> camera_hal_delegate,
+      cros::mojom::CameraClientType type,
+      base::UnguessableToken auth_token)
+      : CameraClientObserver(type, std::move(auth_token)),
+        camera_hal_delegate_(std::move(camera_hal_delegate)) {}
+
+  LocalCameraClientObserver(const LocalCameraClientObserver&) = delete;
+  LocalCameraClientObserver& operator=(const LocalCameraClientObserver&) =
+      delete;
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -47,7 +60,6 @@ class LocalCameraClientObserver : public CameraClientObserver {
 
  private:
   scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LocalCameraClientObserver);
 };
 
 // chromeos::system::StatisticsProvider::IsRunningOnVM() is not available in
@@ -86,9 +98,9 @@ void NotifyVideoCaptureDevicesChanged() {
   }
 }
 
-std::vector<int32_t> GetPossibleConstantFramerates(
+base::flat_set<int32_t> GetAvailableFramerates(
     const cros::mojom::CameraInfoPtr& camera_info) {
-  std::vector<int32_t> candidates;
+  base::flat_set<int32_t> candidates;
   auto available_fps_ranges = GetMetadataEntryAsSpan<int32_t>(
       camera_info->static_camera_characteristics,
       cros::mojom::CameraMetadataTag::
@@ -98,21 +110,16 @@ std::vector<int32_t> GetPossibleConstantFramerates(
     // default fps as candidate.
     LOG(WARNING) << "No available fps ranges in metadata. Set default fps as "
                     "candidate.";
-    candidates.push_back(kDefaultFps);
+    candidates.insert(kDefaultFps);
     return candidates;
   }
 
   // The available target fps ranges are stored as pairs int32s: (min, max) x n.
-  const size_t kRangeMinOffset = 0;
   const size_t kRangeMaxOffset = 1;
   const size_t kRangeSize = 2;
 
   for (size_t i = 0; i < available_fps_ranges.size(); i += kRangeSize) {
-    int32_t range_min = available_fps_ranges[i + kRangeMinOffset];
-    int32_t range_max = available_fps_ranges[i + kRangeMaxOffset];
-    if (range_min == range_max) {
-      candidates.push_back(range_min);
-    }
+    candidates.insert(available_fps_ranges[i + kRangeMaxOffset]);
   }
   return candidates;
 }
@@ -121,7 +128,8 @@ std::vector<int32_t> GetPossibleConstantFramerates(
 
 CameraHalDelegate::CameraHalDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
-    : camera_module_has_been_set_(
+    : authenticated_(false),
+      camera_module_has_been_set_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       builtin_camera_info_updated_(
@@ -142,9 +150,27 @@ CameraHalDelegate::CameraHalDelegate(
 
 CameraHalDelegate::~CameraHalDelegate() = default;
 
-void CameraHalDelegate::RegisterCameraClient() {
-  CameraHalDispatcherImpl::GetInstance()->AddClientObserver(
-      std::make_unique<LocalCameraClientObserver>(this));
+bool CameraHalDelegate::RegisterCameraClient() {
+  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
+  auto type = cros::mojom::CameraClientType::CHROME;
+  dispatcher->AddClientObserver(
+      std::make_unique<LocalCameraClientObserver>(
+          this, type, dispatcher->GetTokenForTrustedClient(type)),
+      base::BindOnce(&CameraHalDelegate::OnRegisteredCameraHalClient,
+                     base::Unretained(this)));
+  camera_hal_client_registered_.Wait();
+  return authenticated_;
+}
+
+void CameraHalDelegate::OnRegisteredCameraHalClient(int32_t result) {
+  if (result != 0) {
+    LOG(ERROR) << "Failed to register camera HAL client";
+    camera_hal_client_registered_.Signal();
+    return;
+  }
+  CAMERA_LOG(EVENT) << "Registered camera HAL client";
+  authenticated_ = true;
+  camera_hal_client_registered_.Signal();
 }
 
 void CameraHalDelegate::SetCameraModule(
@@ -162,8 +188,7 @@ void CameraHalDelegate::Reset() {
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer,
-    const VideoCaptureDeviceDescriptor& device_descriptor,
-    CameraAppDeviceBridgeImpl* camera_app_device_bridge) {
+    const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!UpdateBuiltInCameraInfo()) {
     return nullptr;
@@ -174,46 +199,19 @@ std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
     return nullptr;
   }
 
-  if (camera_app_device_bridge) {
-    auto* camera_app_device = camera_app_device_bridge->GetCameraAppDevice(
-        device_descriptor.device_id);
-    // Since the cleanup callback will be triggered when VideoCaptureDevice died
-    // and |camera_app_device_bridge| is actually owned by
-    // VideoCaptureServiceImpl, it should be safe to assume
-    // |camera_app_device_bridge| is still valid here.
-    auto cleanup_callback = base::BindOnce(
-        [](const std::string& device_id, CameraAppDeviceBridgeImpl* bridge) {
-          bridge->OnDeviceClosed(device_id);
-        },
-        device_descriptor.device_id, camera_app_device_bridge);
-    return std::make_unique<VideoCaptureDeviceChromeOSHalv3>(
-        std::move(task_runner_for_screen_observer), device_descriptor, this,
-        camera_app_device, std::move(cleanup_callback));
-  } else {
-    return std::make_unique<VideoCaptureDeviceChromeOSHalv3>(
-        std::move(task_runner_for_screen_observer), device_descriptor, this,
-        nullptr, base::DoNothing());
-  }
+  auto* delegate =
+      GetVCDDelegate(task_runner_for_screen_observer, device_descriptor);
+  return std::make_unique<VideoCaptureDeviceChromeOSHalv3>(delegate,
+                                                           device_descriptor);
 }
 
 void CameraHalDelegate::GetSupportedFormats(
-    const VideoCaptureDeviceDescriptor& device_descriptor,
+    const cros::mojom::CameraInfoPtr& camera_info,
     VideoCaptureFormats* supported_formats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!UpdateBuiltInCameraInfo()) {
-    return;
-  }
-  base::AutoLock lock(camera_info_lock_);
-  int camera_id = GetCameraIdFromDeviceId(device_descriptor.device_id);
-  if (camera_id == -1 || camera_info_[camera_id].is_null()) {
-    LOG(ERROR) << "Invalid camera device: " << device_descriptor.device_id;
-    return;
-  }
-  const cros::mojom::CameraInfoPtr& camera_info = camera_info_[camera_id];
-
-  std::vector<int32_t> candidate_fps_set =
-      GetPossibleConstantFramerates(camera_info);
+  base::flat_set<int32_t> candidate_fps_set =
+      GetAvailableFramerates(camera_info);
 
   const cros::mojom::CameraMetadataEntryPtr* min_frame_durations =
       GetMetadataEntry(camera_info->static_camera_characteristics,
@@ -254,8 +252,13 @@ void CameraHalDelegate::GetSupportedFormats(
     }
     float max_fps = 1.0 * 1000000000LL / duration;
 
+    // There's no consumer information here to determine the buffer usage, so
+    // hard-code the usage that all the clients should be using.
+    constexpr gfx::BufferUsage kClientBufferUsage =
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
     const ChromiumPixelFormat cr_format =
-        camera_buffer_factory_->ResolveStreamBufferFormat(hal_format);
+        camera_buffer_factory_->ResolveStreamBufferFormat(hal_format,
+                                                          kClientBufferUsage);
     if (cr_format.video_format == PIXEL_FORMAT_UNKNOWN) {
       continue;
     }
@@ -265,19 +268,21 @@ void CameraHalDelegate::GetSupportedFormats(
         continue;
       }
 
-      VLOG(1) << "Supported format: " << width << "x" << height
-              << " fps=" << fps << " format=" << cr_format.video_format;
+      CAMERA_LOG(DEBUG) << "Supported format: " << width << "x" << height
+                        << " fps=" << fps
+                        << " format=" << cr_format.video_format;
       supported_formats->emplace_back(gfx::Size(width, height), fps,
                                       cr_format.video_format);
     }
   }
 }
 
-void CameraHalDelegate::GetDeviceDescriptors(
-    VideoCaptureDeviceDescriptors* device_descriptors) {
+void CameraHalDelegate::GetDevicesInfo(
+    VideoCaptureDeviceFactory::GetDevicesInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!UpdateBuiltInCameraInfo()) {
+    std::move(callback).Run({});
     return;
   }
 
@@ -289,69 +294,134 @@ void CameraHalDelegate::GetDeviceDescriptors(
     has_camera_connected_.TimedWait(kEventWaitTimeoutSecs);
   }
 
-  base::AutoLock info_lock(camera_info_lock_);
-  base::AutoLock id_map_lock(device_id_to_camera_id_lock_);
-  for (const auto& it : camera_info_) {
-    int camera_id = it.first;
-    const cros::mojom::CameraInfoPtr& camera_info = it.second;
-    if (!camera_info) {
-      continue;
-    }
-    VideoCaptureDeviceDescriptor desc;
-    desc.capture_api = VideoCaptureApi::ANDROID_API2_LIMITED;
-    desc.transport_type = VideoCaptureTransportType::OTHER_TRANSPORT;
-    switch (camera_info->facing) {
-      case cros::mojom::CameraFacing::CAMERA_FACING_BACK:
-        desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_ENVIRONMENT;
-        desc.device_id = base::NumberToString(camera_id);
-        desc.set_display_name("Back Camera");
-        break;
-      case cros::mojom::CameraFacing::CAMERA_FACING_FRONT:
-        desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_USER;
-        desc.device_id = base::NumberToString(camera_id);
-        desc.set_display_name("Front Camera");
-        break;
-      case cros::mojom::CameraFacing::CAMERA_FACING_EXTERNAL: {
-        desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
+  std::vector<VideoCaptureDeviceInfo> devices_info;
 
-        auto get_vendor_string = [&](const std::string& key) -> const char* {
-          const VendorTagInfo* info =
-              vendor_tag_ops_delegate_.GetInfoByName(key);
-          if (info == nullptr) {
-            return nullptr;
-          }
-          auto val = GetMetadataEntryAsSpan<char>(
-              camera_info->static_camera_characteristics, info->tag);
-          return val.empty() ? nullptr : val.data();
-        };
+  {
+    base::AutoLock info_lock(camera_info_lock_);
+    base::AutoLock id_map_lock(device_id_to_camera_id_lock_);
+    base::AutoLock virtual_lock(enable_virtual_device_lock_);
+    for (const auto& it : camera_info_) {
+      int camera_id = it.first;
+      const cros::mojom::CameraInfoPtr& camera_info = it.second;
+      if (!camera_info) {
+        continue;
+      }
 
-        // The webcam_private api expects that |device_id| to be set as the
-        // corresponding device path for external cameras used in GVC system.
-        auto* path = get_vendor_string("com.google.usb.devicePath");
-        desc.device_id =
-            path != nullptr ? path : base::NumberToString(camera_id);
-
-        auto* name = get_vendor_string("com.google.usb.modelName");
-        desc.set_display_name(name != nullptr ? name : "External Camera");
-
-        auto* vid = get_vendor_string("com.google.usb.vendorId");
-        auto* pid = get_vendor_string("com.google.usb.productId");
-        if (vid != nullptr && pid != nullptr) {
-          desc.model_id = base::StrCat({vid, ":", pid});
+      auto get_vendor_string = [&](const std::string& key) -> const char* {
+        const VendorTagInfo* info = vendor_tag_ops_delegate_.GetInfoByName(key);
+        if (info == nullptr) {
+          return nullptr;
         }
-        break;
-        // Mojo validates the input parameters for us so we don't need to worry
-        // about malformed values.
+        auto val = GetMetadataEntryAsSpan<char>(
+            camera_info->static_camera_characteristics, info->tag);
+        return val.empty() ? nullptr : val.data();
+      };
+
+      VideoCaptureDeviceDescriptor desc;
+      desc.capture_api = VideoCaptureApi::ANDROID_API2_LIMITED;
+      desc.transport_type = VideoCaptureTransportType::OTHER_TRANSPORT;
+      switch (camera_info->facing) {
+        case cros::mojom::CameraFacing::CAMERA_FACING_BACK:
+          desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_ENVIRONMENT;
+          desc.device_id = base::NumberToString(camera_id);
+          desc.set_display_name("Back Camera");
+          break;
+        case cros::mojom::CameraFacing::CAMERA_FACING_FRONT:
+          desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_USER;
+          desc.device_id = base::NumberToString(camera_id);
+          desc.set_display_name("Front Camera");
+          break;
+        case cros::mojom::CameraFacing::CAMERA_FACING_EXTERNAL: {
+          desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
+
+          // The webcam_private api expects that |device_id| to be set as the
+          // corresponding device path for external cameras used in GVC system.
+          auto* path = get_vendor_string("com.google.usb.devicePath");
+          desc.device_id =
+              path != nullptr ? path : base::NumberToString(camera_id);
+
+          auto* name = get_vendor_string("com.google.usb.modelName");
+          desc.set_display_name(name != nullptr ? name : "External Camera");
+
+          break;
+          // Mojo validates the input parameters for us so we don't need to
+          // worry about malformed values.
+        }
+        case cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_BACK:
+        case cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_FRONT:
+        case cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_EXTERNAL:
+          // |camera_info_| should not have these facing types.
+          LOG(ERROR) << "Invalid facing type: " << camera_info->facing;
+          break;
+      }
+      auto* vid = get_vendor_string("com.google.usb.vendorId");
+      auto* pid = get_vendor_string("com.google.usb.productId");
+      if (vid != nullptr && pid != nullptr) {
+        desc.model_id = base::StrCat({vid, ":", pid});
+      }
+      desc.set_control_support(GetControlSupport(camera_info));
+      device_id_to_camera_id_[desc.device_id] = camera_id;
+      devices_info.emplace_back(desc);
+      GetSupportedFormats(camera_info_[camera_id],
+                          &devices_info.back().supported_formats);
+
+      // Create a virtual device when multiple streams are enabled.
+      if (enable_virtual_device_[camera_id]) {
+        desc.facing = VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
+        desc.device_id =
+            std::string(kVirtualPrefix) + base::NumberToString(camera_id);
+        desc.set_display_name("Virtual Camera");
+        device_id_to_camera_id_[desc.device_id] = camera_id;
+        devices_info.emplace_back(desc);
+        GetSupportedFormats(camera_info_[camera_id],
+                            &devices_info.back().supported_formats);
       }
     }
-    device_id_to_camera_id_[desc.device_id] = camera_id;
-    device_descriptors->push_back(desc);
   }
   // TODO(shik): Report external camera first when lid is closed.
   // TODO(jcliang): Remove this after JS API supports query camera facing
   // (http://crbug.com/543997).
-  std::sort(device_descriptors->begin(), device_descriptors->end());
-  DVLOG(1) << "Number of device descriptors: " << device_descriptors->size();
+  std::sort(
+      devices_info.begin(), devices_info.end(),
+      [](const VideoCaptureDeviceInfo& a, const VideoCaptureDeviceInfo& b) {
+        return a.descriptor < b.descriptor;
+      });
+  DVLOG(1) << "Number of devices: " << devices_info.size();
+
+  std::move(callback).Run(std::move(devices_info));
+}
+
+VideoCaptureControlSupport CameraHalDelegate::GetControlSupport(
+    const cros::mojom::CameraInfoPtr& camera_info) {
+  VideoCaptureControlSupport control_support;
+
+  auto is_vendor_range_valid = [&](const std::string& key) -> bool {
+    const VendorTagInfo* info = vendor_tag_ops_delegate_.GetInfoByName(key);
+    if (info == nullptr)
+      return false;
+    auto range = GetMetadataEntryAsSpan<int32_t>(
+        camera_info->static_camera_characteristics, info->tag);
+    return range.size() == 3 && range[0] < range[1];
+  };
+
+  if (is_vendor_range_valid("com.google.control.panRange"))
+    control_support.pan = true;
+
+  if (is_vendor_range_valid("com.google.control.tiltRange"))
+    control_support.tilt = true;
+
+  if (is_vendor_range_valid("com.google.control.zoomRange"))
+    control_support.zoom = true;
+
+  auto max_digital_zoom = GetMetadataEntryAsSpan<float>(
+      camera_info->static_camera_characteristics,
+      cros::mojom::CameraMetadataTag::
+          ANDROID_SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+  if (max_digital_zoom.size() == 1 && max_digital_zoom[0] > 1) {
+    control_support.zoom = true;
+  }
+
+  return control_support;
 }
 
 cros::mojom::CameraInfoPtr CameraHalDelegate::GetCameraInfoFromDeviceId(
@@ -365,7 +435,48 @@ cros::mojom::CameraInfoPtr CameraHalDelegate::GetCameraInfoFromDeviceId(
   if (it == camera_info_.end()) {
     return {};
   }
-  return it->second.Clone();
+  auto info = it->second.Clone();
+  if (base::StartsWith(device_id, std::string(kVirtualPrefix))) {
+    switch (it->second->facing) {
+      case cros::mojom::CameraFacing::CAMERA_FACING_BACK:
+        info->facing = cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_BACK;
+        break;
+      case cros::mojom::CameraFacing::CAMERA_FACING_FRONT:
+        info->facing = cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_FRONT;
+        break;
+      case cros::mojom::CameraFacing::CAMERA_FACING_EXTERNAL:
+        info->facing =
+            cros::mojom::CameraFacing::CAMERA_FACING_VIRTUAL_EXTERNAL;
+        break;
+      default:
+        break;
+    }
+  }
+  return info;
+}
+
+void CameraHalDelegate::EnableVirtualDevice(const std::string& device_id,
+                                            bool enable) {
+  if (base::StartsWith(device_id, std::string(kVirtualPrefix))) {
+    return;
+  }
+  auto camera_id = GetCameraIdFromDeviceId(device_id);
+  if (camera_id != -1) {
+    base::AutoLock lock(enable_virtual_device_lock_);
+    enable_virtual_device_[camera_id] = enable;
+  }
+}
+
+void CameraHalDelegate::DisableAllVirtualDevices() {
+  base::AutoLock lock(enable_virtual_device_lock_);
+  for (auto& it : enable_virtual_device_) {
+    it.second = false;
+  }
+}
+
+const VendorTagInfo* CameraHalDelegate::GetVendorTagInfoByName(
+    const std::string& full_name) {
+  return vendor_tag_ops_delegate_.GetInfoByName(full_name);
 }
 
 void CameraHalDelegate::OpenDevice(
@@ -390,6 +501,27 @@ int CameraHalDelegate::GetCameraIdFromDeviceId(const std::string& device_id) {
     return -1;
   }
   return it->second;
+}
+
+VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer,
+    const VideoCaptureDeviceDescriptor& device_descriptor) {
+  auto camera_id = GetCameraIdFromDeviceId(device_descriptor.device_id);
+  auto it = vcd_delegate_map_.find(camera_id);
+  if (it == vcd_delegate_map_.end() || it->second->HasDeviceClient() == 0) {
+    auto cleanup_callback = base::BindOnce(
+        [](int camera_id,
+           base::flat_map<int,
+                          std::unique_ptr<VideoCaptureDeviceChromeOSDelegate>>*
+               vcd_delegate_map) { vcd_delegate_map->erase(camera_id); },
+        camera_id, &vcd_delegate_map_);
+    auto delegate = std::make_unique<VideoCaptureDeviceChromeOSDelegate>(
+        std::move(task_runner_for_screen_observer), device_descriptor, this,
+        std::move(cleanup_callback));
+    vcd_delegate_map_[camera_id] = std::move(delegate);
+    return vcd_delegate_map_[camera_id].get();
+  }
+  return it->second.get();
 }
 
 void CameraHalDelegate::SetCameraModuleOnIpcThread(
@@ -418,6 +550,7 @@ void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   external_camera_info_updated_.Signal();
 
   // Clear all cached camera info, especially external cameras.
+  base::AutoLock lock(camera_info_lock_);
   camera_info_.clear();
   pending_external_camera_info_.clear();
 }
@@ -451,18 +584,20 @@ void CameraHalDelegate::UpdateBuiltInCameraInfoOnIpcThread() {
 
 void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(camera_info_lock_);
   if (num_cameras < 0) {
     builtin_camera_info_updated_.Signal();
     LOG(ERROR) << "Failed to get number of cameras: " << num_cameras;
     return;
   }
-  VLOG(1) << "Number of built-in cameras: " << num_cameras;
+  CAMERA_LOG(EVENT) << "Number of built-in cameras: " << num_cameras;
   num_builtin_cameras_ = num_cameras;
   // Per camera HAL v3 specification SetCallbacks() should be called after the
   // first time GetNumberOfCameras() is called, and before other CameraModule
   // functions are called.
-  camera_module_->SetCallbacks(
-      camera_module_callbacks_.BindNewPipeAndPassRemote(),
+  camera_module_->SetCallbacksAssociated(
+      camera_module_callbacks_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&CameraHalDelegate::OnSetCallbacksOnIpcThread, this));
 
   camera_module_->GetVendorTagOps(
@@ -472,6 +607,8 @@ void CameraHalDelegate::OnGotNumberOfCamerasOnIpcThread(int32_t num_cameras) {
 
 void CameraHalDelegate::OnSetCallbacksOnIpcThread(int32_t result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(camera_info_lock_);
   if (result) {
     num_builtin_cameras_ = 0;
     builtin_camera_info_updated_.Signal();
@@ -513,6 +650,7 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
   DVLOG(1) << "Got camera info of camera " << camera_id;
   if (result) {
     LOG(ERROR) << "Failed to get camera info. Camera id: " << camera_id;
+    return;
   }
   SortCameraMetadata(&camera_info->static_camera_characteristics);
 
@@ -523,6 +661,7 @@ void CameraHalDelegate::OnGotCameraInfoOnIpcThread(
     // |camera_info_| might contain some entries for external cameras as well,
     // we should check all built-in cameras explicitly.
     bool all_updated = [&]() {
+      camera_info_lock_.AssertAcquired();
       for (size_t i = 0; i < num_builtin_cameras_; i++) {
         if (camera_info_.find(i) == camera_info_.end()) {
           return false;
@@ -562,7 +701,8 @@ void CameraHalDelegate::CameraDeviceStatusChange(
     int32_t camera_id,
     cros::mojom::CameraDeviceStatus new_status) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  VLOG(1) << "camera_id = " << camera_id << ", new_status = " << new_status;
+  CAMERA_LOG(EVENT) << "camera_id = " << camera_id
+                    << ", new_status = " << new_status;
   base::AutoLock lock(camera_info_lock_);
   auto it = camera_info_.find(camera_id);
   switch (new_status) {

@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -33,6 +31,7 @@ class LegalMessageLine {
     gfx::Range range;
     GURL url;
   };
+  using Links = std::vector<Link>;
 
   LegalMessageLine();
   LegalMessageLine(const LegalMessageLine& other);
@@ -74,16 +73,16 @@ class LegalMessageLine {
                     LegalMessageLines* out,
                     bool escape_apostrophes = false);
 
-  const base::string16& text() const { return text_; }
-  const std::vector<Link>& links() const { return links_; }
+  const std::u16string& text() const { return text_; }
+  const Links& links() const { return links_; }
 
  private:
   friend class TestLegalMessageLine;
 
   bool ParseLine(const base::Value& line, bool escape_apostrophes);
 
-  base::string16 text_;
-  std::vector<Link> links_;
+  std::u16string text_;
+  Links links_;
 };
 
 }  // namespace autofill

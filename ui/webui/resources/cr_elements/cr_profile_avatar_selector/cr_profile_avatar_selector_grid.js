@@ -7,25 +7,42 @@
  * profile avatar icons that allows keyboard navigation with all arrow keys.
  */
 
-Polymer({
-  is: 'cr-profile-avatar-selector-grid',
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    ignoreModifiedKeyEvents: {
-      type: Boolean,
-      value: false,
-    },
-  },
+import {assert} from '../../js/assert.m.js';
+import {hasKeyModifiers} from '../../js/util.m.js';
 
-  listeners: {
-    keydown: 'onKeyDown_',
-  },
+/** @polymer */
+class CrProfileAvatarSelectorGridElement extends PolymerElement {
+  static get is() {
+    return 'cr-profile-avatar-selector-grid';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      ignoreModifiedKeyEvents: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+  }
 
   /**
    * @param {!KeyboardEvent} e
    * @private
    */
-  onKeyDown_: function(e) {
+  onKeyDown_(e) {
     const items = this.querySelectorAll('.avatar');
     switch (e.key) {
       case 'ArrowDown':
@@ -44,7 +61,7 @@ Polymer({
         e.preventDefault();
         return;
     }
-  },
+  }
 
   /**
    * Moves focus up/down/left/right according to the given direction. Wraps
@@ -54,9 +71,9 @@ Polymer({
    *     'ArrowUp', 'ArrowDown'.
    * @private
    */
-  moveFocusRow_: function(items, direction) {
+  moveFocusRow_(items, direction) {
     let offset =
-        (direction == 'ArrowDown' || direction == 'ArrowRight') ? 1 : -1;
+        (direction === 'ArrowDown' || direction === 'ArrowRight') ? 1 : -1;
     const style = getComputedStyle(this);
     const avatarSpacing =
         parseInt(style.getPropertyValue('--avatar-spacing'), 10);
@@ -65,13 +82,12 @@ Polymer({
     const rows = Math.ceil(items.length / rowSize);
     const gridSize = rows * rowSize;
 
-    const focusIndex =
-        Array.prototype.slice.call(items).findIndex(function(item) {
-          return Polymer.dom(item).getOwnerRoot().activeElement == item;
-        });
+    const focusIndex = Array.prototype.slice.call(items).findIndex(item => {
+      return this.parentNode.activeElement === item;
+    });
 
     let nextItem = null;
-    if (direction == 'ArrowDown' || direction == 'ArrowUp') {
+    if (direction === 'ArrowDown' || direction === 'ArrowUp') {
       for (let i = offset; Math.abs(i) <= rows; i += offset) {
         nextItem = items[(focusIndex + i * rowSize + gridSize) % gridSize];
         if (nextItem) {
@@ -82,7 +98,7 @@ Polymer({
         // end.
       }
     } else {
-      if (style.direction == 'rtl') {
+      if (style.direction === 'rtl') {
         offset *= -1;
       }
       let nextIndex = (focusIndex + offset) % items.length;
@@ -93,6 +109,9 @@ Polymer({
     }
 
     nextItem.focus();
-    assert(Polymer.dom(nextItem).getOwnerRoot().activeElement == nextItem);
+    assert(this.parentNode.activeElement === nextItem);
   }
-});
+}
+
+customElements.define(
+    CrProfileAvatarSelectorGridElement.is, CrProfileAvatarSelectorGridElement);

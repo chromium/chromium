@@ -1,38 +1,26 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+<!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-</head>
-<body id="static_eventTarget">
+<script src="../resources/run-after-layout-and-paint.js"></script>
 
-<textarea id="textarea">textarea</textarea>
+<textarea autofocus id="textarea">textarea</textarea>
 
-<div id="console"></div>
 <script>
-async_test((t) => {
-    // This forces building the accessibility tree, because selection change
-    // events only fire on elements that already exist.
-    accessibilityController.accessibleElementById('dummy');
+'use strict';
 
-    var element = document.getElementById('textarea');
-    var axElement = accessibilityController.accessibleElementById('textarea');
-    element.focus();
+async_test_after_layout_and_paint((t) => {
+  const axElement = accessibilityController.accessibleElementById('textarea');
+  axElement.setNotificationListener(t.step_func((notification, intents) => {
+    if (notification == 'SelectedTextChanged') {
+      assert_array_equals(intents,
+                          ['AXEventIntent(setSelection,none,character,forward)']);
+      axElement.unsetNotificationListener();
+      t.done();
+    }
+  }));
 
-    axElement.addNotificationListener(t.step_func((notification) => {
-        if (notification == 'SelectedTextChanged') {
-            axElement.removeNotificationListener();
-            t.done();
-        }
-    }));
-
-    element.setSelectionRange(0, 1);
-
-    // Fail rather than time out.
-    window.setTimeout(() => { assert_unreached('Did not receive notification after 1000ms'); }, 1000);
-}, "Tests that a 'selected text changed' notification fires on an textarea element when the user moves the cursor.");
+  const element = document.getElementById('textarea');
+  element.setSelectionRange(0, 1);
+});
 
 </script>
-
-</body>
-</html>

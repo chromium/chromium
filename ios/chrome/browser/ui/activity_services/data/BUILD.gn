@@ -1,0 +1,69 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("data") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_activity_image_source.h",
+    "chrome_activity_image_source.mm",
+    "chrome_activity_item_source.h",
+    "chrome_activity_item_thumbnail_generator.h",
+    "chrome_activity_item_thumbnail_generator.mm",
+    "chrome_activity_text_source.h",
+    "chrome_activity_text_source.mm",
+    "chrome_activity_url_source.h",
+    "chrome_activity_url_source.mm",
+    "share_image_data.h",
+    "share_image_data.mm",
+    "share_to_data.h",
+    "share_to_data.mm",
+    "share_to_data_builder.h",
+    "share_to_data_builder.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/send_tab_to_self",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:url_with_title",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/navigation",
+    "//net",
+    "//url",
+  ]
+  frameworks = [
+    "LinkPresentation.framework",
+    "MobileCoreServices.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "chrome_activity_item_thumbnail_generator_unittest.mm",
+    "share_to_data_builder_unittest.mm",
+  ]
+  deps = [
+    ":data",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/download",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/snapshots:test_utils",
+    "//ios/testing:ocmock_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+  ]
+}

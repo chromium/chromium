@@ -19,7 +19,8 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
-import org.chromium.chrome.browser.widget.prefeditor.EditableOption;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.OptionModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,20 @@ import java.util.List;
  * @param <T> The type of |EditableOption| that a concrete instance of this class is created for,
  * such as |AutofillContact|, |AutofillPaymentMethod|, etc.
  */
-public abstract class AssistantCollectUserDataSection<T extends EditableOption> {
+public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
+    private class Item {
+        View mFullView;
+        T mOption;
+
+        Item(View fullView, T option) {
+            this.mFullView = fullView;
+            this.mOption = option;
+        }
+    }
+
     private final @Nullable View mTitleAddButton;
-    protected final AssistantVerticalExpander mSectionExpander;
-    protected final AssistantChoiceList mItemsView;
+    private final AssistantVerticalExpander mSectionExpander;
+    private final AssistantChoiceList mItemsView;
     private final View mSummaryView;
     private final int mFullViewResId;
     private final int mTitleToContentPadding;
@@ -46,15 +57,6 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
     private Callback<T> mListener;
     private int mTopPadding;
     private int mBottomPadding;
-
-    private class Item {
-        Item(View fullView, T option) {
-            this.mFullView = fullView;
-            this.mOption = option;
-        }
-        View mFullView;
-        T mOption;
-    }
 
     /**
      *
@@ -76,7 +78,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         mItems = new ArrayList<>();
         mTitleToContentPadding = titleToContentPadding;
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         mSectionExpander = new AssistantVerticalExpander(context, null);
         View sectionTitle =
                 inflater.inflate(R.layout.autofill_assistant_payment_request_section_title, null);
@@ -127,7 +129,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         mSectionExpander.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    void setListener(Callback<T> listener) {
+    void setListener(@Nullable Callback<T> listener) {
         mListener = listener;
     }
 
@@ -158,9 +160,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         updateVisibility();
 
         if (initiallySelectedItem != null) {
-            mIgnoreItemSelectedNotifications = true;
-            selectItem(initiallySelectedItem);
-            mIgnoreItemSelectedNotifications = false;
+            selectItem(initiallySelectedItem, false);
         }
     }
 
@@ -176,12 +176,26 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
     }
 
     /**
+     * Manually updates the summary and all full views. Should be called by subclasses after a
+     * change to how items are displayed in summary or full views.
+     */
+    void updateViews() {
+        if (mSelectedOption != null) {
+            updateSummaryView(mSummaryView, mSelectedOption);
+        }
+        for (int i = 0; i < mItems.size(); i++) {
+            updateFullView(mItems.get(i).mFullView, mItems.get(i).mOption);
+        }
+    }
+
+    /**
      * Adds a new item to the list, or updates an item in-place if it is already in the list.
      *
      * @param option The item to add or update.
      * @param select Whether to select the new/updated item or not.
+     * @param notify Whether to notify the controller of this change or not.
      */
-    void addOrUpdateItem(@Nullable T option, boolean select) {
+    void addOrUpdateItem(@Nullable T option, boolean select, boolean notify) {
         if (option == null) {
             return;
         }
@@ -205,9 +219,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         }
 
         if (select) {
-            mIgnoreItemSelectedNotifications = true;
-            selectItem(item);
-            mIgnoreItemSelectedNotifications = false;
+            selectItem(item, notify);
         }
     }
 
@@ -218,9 +230,11 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
     }
 
     private AssistantChoiceList createChoiceList(@Nullable String addButtonText) {
-        AssistantChoiceList list = new AssistantChoiceList(mContext, null, addButtonText, 0,
+        AssistantChoiceList list = new AssistantChoiceList(mContext, /* attrs= */ null,
+                addButtonText, /* rowSpacingInPixels= */ 0,
                 mContext.getResources().getDimensionPixelSize(
-                        R.dimen.autofill_assistant_payment_request_column_spacing));
+                        R.dimen.autofill_assistant_payment_request_column_spacing),
+                /* layoutHasEditButton= */ true);
         int verticalPadding = mContext.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_payment_request_choice_top_bottom_padding);
         list.setPadding(mContext.getResources().getDimensionPixelSize(
@@ -229,9 +243,8 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
                 mContext.getResources().getDimensionPixelSize(
                         R.dimen.autofill_assistant_payment_request_choice_list_padding_end),
                 verticalPadding);
-        // TODO(b/144417635): Change to omnibox_bg_color once available.
         list.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.default_bg_color_elev_0));
+                mContext.getResources(), R.color.omnibox_bg_color));
         list.setTag(AssistantTagsForTesting.COLLECT_USER_DATA_CHOICE_LIST);
         if (addButtonText != null) {
             list.setOnAddButtonClickedListener(() -> createOrEditItem(null));
@@ -262,7 +275,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
      * Creates a new item from {@code option}.
      */
     private Item createItem(T option) {
-        View fullView = LayoutInflater.from(mContext).inflate(mFullViewResId, null);
+        View fullView = LayoutUtils.createInflater(mContext).inflate(mFullViewResId, null);
         updateFullView(fullView, option);
         Item item = new Item(fullView, option);
         return item;
@@ -287,10 +300,8 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
                     if (mIgnoreItemSelectedNotifications || !selected) {
                         return;
                     }
-                    mIgnoreItemSelectedNotifications = true;
-                    selectItem(item);
-                    mIgnoreItemSelectedNotifications = false;
-                    if (item.mOption.isComplete()) {
+                    selectItem(item, /*notify=*/true);
+                    if (item.mOption.mOption.isComplete()) {
                         // Workaround for Android bug: a layout transition may cause the newly
                         // checked radiobutton to not render properly.
                         mSectionExpander.post(() -> mSectionExpander.setExpanded(false));
@@ -305,15 +316,16 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         updateVisibility();
     }
 
-    private void selectItem(Item item) {
+    private void selectItem(Item item, boolean notify) {
         mSelectedOption = item.mOption;
+        mIgnoreItemSelectedNotifications = true;
         mItemsView.setCheckedItem(item.mFullView);
+        mIgnoreItemSelectedNotifications = false;
         updateSummaryView(mSummaryView, item.mOption);
         updateVisibility();
 
-        if (mListener != null) {
-            mListener.onResult(
-                    item.mOption != null && item.mOption.isComplete() ? item.mOption : null);
+        if (mListener != null && notify) {
+            mListener.onResult(item.mOption);
         }
     }
 

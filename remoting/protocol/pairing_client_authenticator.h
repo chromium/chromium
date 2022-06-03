@@ -19,6 +19,11 @@ class PairingClientAuthenticator : public PairingAuthenticatorBase {
       const ClientAuthenticationConfig& client_auth_config,
       const CreateBaseAuthenticatorCallback&
           create_base_authenticator_callback);
+
+  PairingClientAuthenticator(const PairingClientAuthenticator&) = delete;
+  PairingClientAuthenticator& operator=(const PairingClientAuthenticator&) =
+      delete;
+
   ~PairingClientAuthenticator() override;
 
   // Start() or StartPaired() must be called after the authenticator is created.
@@ -28,7 +33,7 @@ class PairingClientAuthenticator : public PairingAuthenticatorBase {
   // initialize the authenticator synchronously in
   // NegotiatingClientAuthentitcator, while Start() may be executed
   // asynchronously to fetch the PIN.
-  void Start(State initial_state, const base::Closure& resume_callback);
+  void Start(State initial_state, base::OnceClosure resume_callback);
   void StartPaired(State initial_state);
 
   // Authenticator interface.
@@ -38,10 +43,10 @@ class PairingClientAuthenticator : public PairingAuthenticatorBase {
   // PairingAuthenticatorBase overrides.
   void CreateSpakeAuthenticatorWithPin(
       State initial_state,
-      const base::Closure& resume_callback) override;
+      base::OnceClosure resume_callback) override;
 
   void OnPinFetched(State initial_state,
-                    const base::Closure& resume_callback,
+                    base::OnceClosure resume_callback,
                     const std::string& pin);
 
   ClientAuthenticationConfig client_auth_config_;
@@ -52,11 +57,9 @@ class PairingClientAuthenticator : public PairingAuthenticatorBase {
   bool waiting_for_pin_ = false;
 
   base::WeakPtrFactory<PairingClientAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PairingClientAuthenticator);
 };
 
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_PAIRING_AUTHENTICATOR_H_
+#endif  // REMOTING_PROTOCOL_PAIRING_CLIENT_AUTHENTICATOR_H_

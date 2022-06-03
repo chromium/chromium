@@ -10,13 +10,15 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "components/security_state/content/content_utils.h"
-#include "components/security_state/core/security_state.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -27,6 +29,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/bindings_policy.h"
@@ -38,16 +41,35 @@
 #include "headless/lib/browser/protocol/headless_handler.h"
 #include "headless/public/internal/headless_devtools_client_impl.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "headless/lib/browser/headless_print_manager.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
 #endif
 
 namespace headless {
+
+namespace {
+
+void UpdatePrefsFromSystemSettings(blink::RendererPreferences* prefs) {
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN)
+  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
+#endif
+
+  // The values were copied from chrome/browser/renderer_preferences_util.cc.
+#if defined(OS_MAC)
+  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
+#else
+  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
+#endif
+}
+
+}  // namespace
 
 // static
 HeadlessWebContentsImpl* HeadlessWebContentsImpl::From(
@@ -71,27 +93,17 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   explicit Delegate(HeadlessWebContentsImpl* headless_web_contents)
       : headless_web_contents_(headless_web_contents) {}
 
-#if !defined(CHROME_MULTIPLE_DLL_CHILD)
-  // Return the security style of the given |web_contents|, populating
-  // |security_style_explanations| to explain why the SecurityStyle was chosen.
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents,
-      content::SecurityStyleExplanations* security_style_explanations)
-      override {
-    std::unique_ptr<security_state::VisibleSecurityState>
-        visible_security_state =
-            security_state::GetVisibleSecurityState(web_contents);
-    return security_state::GetSecurityStyle(
-        security_state::GetSecurityLevel(
-            *visible_security_state.get(),
-            false /* used_policy_installed_certificate */,
-            base::BindRepeating(&content::IsOriginSecure)),
-        *visible_security_state.get(), security_style_explanations);
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
+  void BeforeUnloadFired(content::WebContents* web_contents,
+                         bool proceed,
+                         bool* proceed_to_fire_unload) override {
+    *proceed_to_fire_unload = proceed;
   }
-#endif  // !defined(CHROME_MULTIPLE_DLL_CHILD)
 
   void ActivateContents(content::WebContents* contents) override {
-    contents->GetRenderViewHost()->GetWidget()->Focus();
+    contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->Focus();
   }
 
   void CloseContents(content::WebContents* source) override {
@@ -103,6 +115,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
@@ -171,11 +184,17 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         ->block_new_web_contents();
   }
 
+  void RequestToLockMouse(content::WebContents* web_contents,
+                          bool user_gesture,
+                          bool last_unlocked_by_target) override {
+    web_contents->GotResponseToLockMouseRequest(
+        blink::mojom::PointerLockResult::kSuccess);
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
   HeadlessWebContentsImpl* headless_web_contents_;  // Not owned.
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 namespace {
@@ -188,6 +207,9 @@ class HeadlessWebContentsImpl::PendingFrame
  public:
   PendingFrame(uint64_t sequence_number, FrameFinishedCallback callback)
       : sequence_number_(sequence_number), callback_(std::move(callback)) {}
+
+  PendingFrame(const PendingFrame&) = delete;
+  PendingFrame& operator=(const PendingFrame&) = delete;
 
   void OnFrameComplete(const viz::BeginFrameAck& ack) {
     DCHECK_EQ(kBeginFrameSourceId, ack.frame_id.source_id);
@@ -218,8 +240,6 @@ class HeadlessWebContentsImpl::PendingFrame
   FrameFinishedCallback callback_;
   bool has_damage_ = false;
   std::unique_ptr<SkBitmap> bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingFrame);
 };
 
 // static
@@ -252,11 +272,18 @@ HeadlessWebContentsImpl::CreateForChildContents(
   child->begin_frame_control_enabled_ = parent->begin_frame_control_enabled_;
   child->InitializeWindow(child->web_contents_->GetContainerBounds());
 
-  // There may already be frames, so make sure they also have our services.
-  for (content::RenderFrameHost* frame_host :
-       child->web_contents_->GetAllFrames()) {
-    child->RenderFrameCreated(frame_host);
-  }
+  // There may already be frames and we may have missed the RenderFrameCreated
+  // callback so make sure they also have our services.
+  // We want to iterate all frame trees because RenderFrameCreated gets called
+  // for any RenderFrame created. base::Unretained is safe here because
+  // ForEachRenderFrameHost is synchronous.
+  child->web_contents_->ForEachRenderFrameHost(base::BindRepeating(
+      [](HeadlessWebContentsImpl* child,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive())
+          child->RenderFrameCreated(render_frame_host);
+      },
+      child.get()));
 
   return child;
 }
@@ -279,16 +306,17 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
     std::unique_ptr<content::WebContents> web_contents,
     HeadlessBrowserContextImpl* browser_context)
     : content::WebContentsObserver(web_contents.get()),
+      browser_context_(browser_context),
+      render_process_host_(web_contents->GetMainFrame()->GetProcess()),
       web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
       web_contents_(std::move(web_contents)),
       agent_host_(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get())),
-      browser_context_(browser_context),
-      render_process_host_(web_contents_->GetMainFrame()->GetProcess()) {
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(CHROME_MULTIPLE_DLL_CHILD)
-  HeadlessPrintManager::CreateForWebContents(web_contents_.get());
+          content::DevToolsAgentHost::GetOrCreateFor(web_contents_.get())) {
+#if BUILDFLAG(ENABLE_PRINTING)
+  print_to_pdf::PdfPrintManager::CreateForWebContents(web_contents_.get());
 // TODO(weili): Add support for printing OOPIFs.
 #endif
+  UpdatePrefsFromSystemSettings(web_contents_->GetMutableRendererPrefs());
   web_contents_->GetMutableRendererPrefs()->accept_languages =
       browser_context->options()->accept_language();
   web_contents_->GetMutableRendererPrefs()->hinting =
@@ -304,6 +332,10 @@ HeadlessWebContentsImpl::~HeadlessWebContentsImpl() {
   agent_host_->RemoveObserver(this);
   if (render_process_host_)
     render_process_host_->RemoveObserver(this);
+  // Defer destruction of WindowTreeHost, as it does sync mojo calls
+  // in the destructor of ui::Compositor.
+  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(
+      FROM_HERE, std::move(window_tree_host_));
 }
 
 void HeadlessWebContentsImpl::RenderFrameCreated(
@@ -406,6 +438,7 @@ void HeadlessWebContentsImpl::RenderProcessExited(
 void HeadlessWebContentsImpl::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   DCHECK_EQ(render_process_host_, host);
+  render_process_host_->RemoveObserver(this);
   render_process_host_ = nullptr;
 }
 
@@ -483,8 +516,8 @@ void HeadlessWebContentsImpl::BeginFrame(
 
   ui::Compositor* compositor = browser()->PlatformGetCompositor(this);
   CHECK(compositor);
-  compositor->context_factory_private()->IssueExternalBeginFrame(
-      compositor, args, /* force= */ true,
+  compositor->IssueExternalBeginFrame(
+      args, /*force=*/true,
       base::BindOnce(&PendingFrame::OnFrameComplete, pending_frame));
 }
 

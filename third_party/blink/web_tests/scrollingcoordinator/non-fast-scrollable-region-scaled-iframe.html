@@ -14,7 +14,14 @@
   }
 </style>
 
-<iframe src="data:text/html;charset=utf-8,<html><body style='width:1000px;height:1000px;'>Should be covered by a green overlay.</body></html>"></iframe>
+<script>
+  // Prefer non-composited scrolling because this is a test of non-composited
+  // scrollers.
+  if (window.internals)
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+</script>
+
+<iframe src="resources/large-body.html"></iframe>
 <div id="console"></div>
 <div class="spacer"></div>
 

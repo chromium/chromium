@@ -1,9 +1,0 @@
-Tests that shadow roots are displayed correctly in breadcrumbs.
-
-User-agent shadow root breadcrumb:
-html > body > input > #shadow-root
-Open shadow root breadcrumb:
-html > body > div#host > #shadow-root
-Closed shadow root breadcrumb:
-html > body > div#hostClosed > #shadow-root
-

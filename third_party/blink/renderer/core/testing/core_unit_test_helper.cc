@@ -4,36 +4,59 @@
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "ui/events/blink/blink_event_util.h"
 
 namespace blink {
 
 LocalFrame* SingleChildLocalFrameClient::CreateFrame(
     const AtomicString& name,
     HTMLFrameOwnerElement* owner_element) {
-  DCHECK(!child_) << "This test helper only supports one child frame.";
 
   LocalFrame* parent_frame = owner_element->GetDocument().GetFrame();
   auto* child_client =
       MakeGarbageCollected<LocalFrameClientWithParent>(parent_frame);
-  child_ = MakeGarbageCollected<LocalFrame>(
-      child_client, *parent_frame->GetPage(), owner_element,
+  LocalFrame* child = MakeGarbageCollected<LocalFrame>(
+      child_client, *parent_frame->GetPage(), owner_element, parent_frame,
+      nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       &parent_frame->window_agent_factory(), nullptr);
-  child_->CreateView(IntSize(500, 500), Color::kTransparent);
-  child_->Init();
+  child->CreateView(IntSize(500, 500), Color::kTransparent);
+  child->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
-  return child_.Get();
+  return child;
 }
 
 void LocalFrameClientWithParent::Detached(FrameDetachType) {
-  static_cast<SingleChildLocalFrameClient*>(Parent()->Client())
-      ->DidDetachChild();
+  parent_->RemoveChild(parent_->FirstChild());
+}
+
+void RenderingTestChromeClient::InjectGestureScrollEvent(
+    LocalFrame& local_frame,
+    WebGestureDevice device,
+    const gfx::Vector2dF& delta,
+    ScrollGranularity granularity,
+    CompositorElementId scrollable_area_element_id,
+    WebInputEvent::Type injected_type) {
+  // Directly handle injected gesture scroll events. In a real browser, these
+  // would be added to the event queue and handled asynchronously but immediate
+  // handling is sufficient to test scrollbar dragging.
+  std::unique_ptr<WebGestureEvent> gesture_event =
+      WebGestureEvent::GenerateInjectedScrollGesture(
+          injected_type, base::TimeTicks::Now(), device, gfx::PointF(0, 0),
+          delta, granularity);
+  if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
+    gesture_event->data.scroll_begin.scrollable_area_element_id =
+        scrollable_area_element_id.GetStableId();
+  }
+  local_frame.GetEventHandler().HandleGestureEvent(*gesture_event);
 }
 
 RenderingTestChromeClient& RenderingTest::GetChromeClient() const {
@@ -68,11 +91,9 @@ HitTestResult::NodeSet RenderingTest::RectBasedHitTest(
 }
 
 void RenderingTest::SetUp() {
-  Page::PageClients page_clients;
-  FillWithEmptyClients(page_clients);
   GetChromeClient().SetUp();
-  page_clients.chrome_client = &GetChromeClient();
-  SetupPageWithClients(&page_clients, local_frame_client_, SettingOverrider());
+  SetupPageWithClients(&GetChromeClient(), local_frame_client_,
+                       SettingOverrider());
   EXPECT_TRUE(
       GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
 
@@ -99,13 +120,11 @@ void RenderingTest::TearDown() {
 
 void RenderingTest::SetChildFrameHTML(const String& html) {
   ChildDocument().SetBaseURLOverride(KURL("http://test.com"));
-  ChildDocument().body()->SetInnerHTMLFromString(html, ASSERT_NO_EXCEPTION);
+  ChildDocument().body()->setInnerHTML(html, ASSERT_NO_EXCEPTION);
 
   // Setting HTML implies the frame loads contents, so we need to advance the
   // state machine to leave the initial empty document state.
-  auto* state_machine = ChildDocument().GetFrame()->Loader().StateMachine();
-  if (state_machine->IsDisplayingInitialEmptyDocument())
-    state_machine->AdvanceTo(FrameLoaderStateMachine::kCommittedFirstRealLoad);
+  ChildDocument().OverrideIsInitialEmptyDocument();
   // And let the frame view exit the initial throttled state.
   ChildDocument().View()->BeginLifecycleUpdates();
 }

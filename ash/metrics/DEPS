@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/login/login_state",
+  "+chromeos/metrics",
+]

@@ -15,6 +15,15 @@ class
         final : public PlatformSensorFusionAlgorithm {
  public:
   RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope();
+
+  RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope(
+      const RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope&) =
+      delete;
+  RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope&
+  operator=(
+      const RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope&) =
+      delete;
+
   ~RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope()
       override;
 
@@ -30,9 +39,6 @@ class
   double beta_;
   double gamma_;
   const double kBias = 0.98;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope);
 };
 
 }  // namespace device

@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * The crash keys will only be included in browser process crash reports.
  */
 public class CrashKeys {
-    private static final String[] KEYS =
-            new String[] {"loaded_dynamic_module", "active_dynamic_module", "application_status",
-                    "installed_modules", "emulated_modules", "dynamic_module_dex_name"};
+    private static final String[] KEYS = new String[] {"loaded_dynamic_module",
+            "active_dynamic_module", "application_status", "installed_modules", "emulated_modules",
+            "dynamic_module_dex_name", "partner_customization_config"};
 
     private final AtomicReferenceArray<String> mValues = new AtomicReferenceArray<>(KEYS.length);
 

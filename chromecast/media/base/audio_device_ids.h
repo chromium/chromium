@@ -25,6 +25,10 @@ extern const char kTtsAudioDeviceId[];
 // post-processors.
 extern const char kBypassAudioDeviceId[];
 
+extern const char kDefaultDeviceId[];
+
+extern const char kLowLatencyDeviceId[];
+
 }  // namespace media
 }  // namespace chromecast
 

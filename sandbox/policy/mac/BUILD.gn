@@ -1,0 +1,60 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//printing/buildflags/buildflags.gni")
+
+sb_files = [
+  "audio.sb",
+  "cdm.sb",
+  "common.sb",
+  "gpu.sb",
+  "mirroring.sb",
+  "nacl_loader.sb",
+  "network.sb",
+  "ppapi.sb",
+  "print_compositor.sb",
+  "renderer.sb",
+  "speech_recognition.sb",
+  "utility.sb",
+]
+
+if (enable_oop_printing) {
+  sb_files += [ "print_backend.sb" ]
+}
+
+action_foreach("package_sb_files") {
+  script = "package_sb_file.py"
+  sources = sb_files
+  outputs = [
+    "$target_gen_dir/{{source_name_part}}.sb.h",
+    "$target_gen_dir/{{source_name_part}}.sb.cc",
+  ]
+  args = [
+    "{{source}}",
+    rebase_path(target_gen_dir, root_build_dir),
+  ]
+}
+
+action("generate_params") {
+  script = "generate_params.py"
+  sources = sb_files
+  _filename_prefix = "$target_gen_dir/params"
+  outputs = [
+    "${_filename_prefix}.cc",
+    "${_filename_prefix}.h",
+  ]
+  args = [ rebase_path(_filename_prefix, root_build_dir) ] +
+         rebase_path(sb_files, root_build_dir)
+}
+
+source_set("packaged_sb_files") {
+  sources = get_target_outputs(":package_sb_files") +
+            get_target_outputs(":generate_params")
+  defines = [ "SANDBOX_POLICY_IMPL" ]
+  deps = [
+    ":generate_params",
+    ":package_sb_files",
+  ]
+}

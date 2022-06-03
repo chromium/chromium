@@ -17,13 +17,15 @@ namespace test {
 class FakeBatteryStatusListener : public BatteryStatusListenerImpl {
  public:
   FakeBatteryStatusListener() : BatteryStatusListenerImpl(base::TimeDelta()) {}
+
+  FakeBatteryStatusListener(const FakeBatteryStatusListener&) = delete;
+  FakeBatteryStatusListener& operator=(const FakeBatteryStatusListener&) =
+      delete;
+
   ~FakeBatteryStatusListener() override = default;
 
   // BatteryStatusListener implementation.
   int GetBatteryPercentageInternal() override { return 100; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeBatteryStatusListener);
 };
 
 TestDeviceStatusListener::TestDeviceStatusListener()

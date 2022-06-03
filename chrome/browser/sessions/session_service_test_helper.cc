@@ -5,9 +5,10 @@
 #include "chrome/browser/sessions/session_service_test_helper.h"
 
 #include "chrome/browser/sessions/session_service.h"
-#include "components/sessions/core/base_session_service_test_helper.h"
+#include "chrome/browser/sessions/session_service_factory.h"
+#include "components/sessions/core/command_storage_backend.h"
+#include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
-#include "components/sessions/core/session_backend.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "content/public/browser/browser_thread.h"
@@ -16,40 +17,49 @@
 
 using base::Time;
 
-SessionServiceTestHelper::SessionServiceTestHelper() {}
+SessionServiceTestHelper::SessionServiceTestHelper()
+    : SessionServiceTestHelper(static_cast<SessionService*>(nullptr)) {}
+
+SessionServiceTestHelper::SessionServiceTestHelper(Profile* profile)
+    : SessionServiceTestHelper(
+          SessionServiceFactory::GetForProfileForSessionRestore(profile)) {}
 
 SessionServiceTestHelper::SessionServiceTestHelper(SessionService* service)
     : service_(service) {}
 
 SessionServiceTestHelper::~SessionServiceTestHelper() {}
 
+void SessionServiceTestHelper::SaveNow() {
+  return service_->GetCommandStorageManagerForTest()->Save();
+}
+
 void SessionServiceTestHelper::PrepareTabInWindow(const SessionID& window_id,
                                                   const SessionID& tab_id,
                                                   int visual_index,
                                                   bool select) {
-  service()->SetTabWindow(window_id, tab_id);
-  service()->SetTabIndexInWindow(window_id, tab_id, visual_index);
+  service_->SetTabWindow(window_id, tab_id);
+  service_->SetTabIndexInWindow(window_id, tab_id, visual_index);
   if (select)
-    service()->SetSelectedTabInWindow(window_id, visual_index);
+    service_->SetSelectedTabInWindow(window_id, visual_index);
 }
 
 void SessionServiceTestHelper::SetTabExtensionAppID(
     const SessionID& window_id,
     const SessionID& tab_id,
     const std::string& extension_app_id) {
-  service()->SetTabExtensionAppID(window_id, tab_id, extension_app_id);
+  service_->SetTabExtensionAppID(window_id, tab_id, extension_app_id);
 }
 
 void SessionServiceTestHelper::SetTabUserAgentOverride(
     const SessionID& window_id,
     const SessionID& tab_id,
-    const std::string& user_agent_override) {
-  service()->SetTabUserAgentOverride(window_id, tab_id, user_agent_override);
+    const sessions::SerializedUserAgentOverride& user_agent_override) {
+  service_->SetTabUserAgentOverride(window_id, tab_id, user_agent_override);
 }
 
 void SessionServiceTestHelper::SetForceBrowserNotAliveWithNoWindows(
     bool force_browser_not_alive_with_no_windows) {
-  service()->force_browser_not_alive_with_no_windows_ =
+  service_->force_browser_not_alive_with_no_windows_ =
       force_browser_not_alive_with_no_windows;
 }
 
@@ -57,12 +67,12 @@ void SessionServiceTestHelper::SetForceBrowserNotAliveWithNoWindows(
 void SessionServiceTestHelper::ReadWindows(
     std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
     SessionID* active_window_id) {
-  std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands;
-  sessions::BaseSessionServiceTestHelper test_helper(
-      service_->GetBaseSessionServiceForTest());
-  test_helper.ReadLastSessionCommands(&read_commands);
+  sessions::CommandStorageManagerTestHelper test_helper(
+      service_->GetCommandStorageManagerForTest());
+  std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands =
+      test_helper.ReadLastSessionCommands();
   RestoreSessionFromCommands(read_commands, windows, active_window_id);
-  service()->RemoveUnusedRestoreWindows(windows);
+  service_->RemoveUnusedRestoreWindows(windows);
 }
 
 void SessionServiceTestHelper::AssertTabEquals(
@@ -105,21 +115,24 @@ void SessionServiceTestHelper::AssertSingleWindowWithSingleTab(
 }
 
 void SessionServiceTestHelper::SetService(SessionService* service) {
-  service_.reset(service);
+  service_ = service;
   // Execute IO tasks posted by the SessionService.
   content::RunAllTasksUntilIdle();
 }
 
-SessionService* SessionServiceTestHelper::ReleaseService() {
-  return service_.release();
-}
-
 void SessionServiceTestHelper::RunTaskOnBackendThread(
     const base::Location& from_here,
-    const base::Closure& task) {
-  sessions::BaseSessionServiceTestHelper test_helper(
-      service_->GetBaseSessionServiceForTest());
-  test_helper.RunTaskOnBackendThread(from_here, task);
+    base::OnceClosure task) {
+  sessions::CommandStorageManagerTestHelper test_helper(
+      service_->GetCommandStorageManagerForTest());
+  test_helper.RunTaskOnBackendThread(from_here, std::move(task));
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+SessionServiceTestHelper::GetBackendTaskRunner() {
+  return sessions::CommandStorageManagerTestHelper(
+             service_->GetCommandStorageManagerForTest())
+      .GetBackendTaskRunner();
 }
 
 void SessionServiceTestHelper::SetAvailableRange(
@@ -131,4 +144,25 @@ void SessionServiceTestHelper::SetAvailableRange(
 bool SessionServiceTestHelper::GetAvailableRange(const SessionID& tab_id,
                                                  std::pair<int, int>* range) {
   return service_->GetAvailableRangeForTest(tab_id, range);
+}
+
+void SessionServiceTestHelper::SetHasOpenTrackableBrowsers(
+    bool has_open_trackable_browsers) {
+  service_->has_open_trackable_browser_for_test_ = has_open_trackable_browsers;
+}
+
+bool SessionServiceTestHelper::GetHasOpenTrackableBrowsers() {
+  return service_->has_open_trackable_browsers_;
+}
+
+void SessionServiceTestHelper::SetIsOnlyOneTabLeft(bool is_only_one_tab_left) {
+  service_->is_only_one_tab_left_for_test_ = is_only_one_tab_left;
+}
+
+bool SessionServiceTestHelper::HasPendingReset() {
+  return service_->GetCommandStorageManagerForTest()->pending_reset();
+}
+
+bool SessionServiceTestHelper::HasPendingSave() {
+  return service_->GetCommandStorageManagerForTest()->HasPendingSave();
 }

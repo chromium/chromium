@@ -12,12 +12,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
@@ -144,7 +144,7 @@ uint32_t ScanForUwSWithId(
       continue;
 
     // Each subdirectory under Users is a user name.
-    base::string16 user_name(file_info.cFileName);
+    std::wstring user_name(file_info.cFileName);
     if (user_name == L"." || user_name == L"..")
       continue;
     base::FilePath folder = base_folder.Append(user_name)

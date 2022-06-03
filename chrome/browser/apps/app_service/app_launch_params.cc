@@ -4,21 +4,40 @@
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 
+#include "chrome/browser/apps/app_service/launch_utils.h"
+
 namespace apps {
 
 AppLaunchParams::AppLaunchParams(const std::string& app_id,
                                  apps::mojom::LaunchContainer container,
                                  WindowOpenDisposition disposition,
-                                 apps::mojom::AppLaunchSource source,
+                                 apps::mojom::LaunchSource launch_source,
                                  int64_t display_id)
     : app_id(app_id),
       container(container),
       disposition(disposition),
       command_line(base::CommandLine::NO_PROGRAM),
-      source(source),
+      launch_source(launch_source),
       display_id(display_id) {}
 
-AppLaunchParams::AppLaunchParams(const AppLaunchParams& other) = default;
+AppLaunchParams::AppLaunchParams(const std::string& app_id,
+                                 apps::mojom::LaunchContainer container,
+                                 WindowOpenDisposition disposition,
+                                 apps::mojom::LaunchSource launch_source,
+                                 int64_t display_id,
+                                 const std::vector<base::FilePath>& files,
+                                 const apps::mojom::IntentPtr& intentPtr)
+    : app_id(app_id),
+      container(container),
+      disposition(disposition),
+      command_line(base::CommandLine::NO_PROGRAM),
+      launch_source(launch_source),
+      display_id(display_id),
+      launch_files(files),
+      intent(intentPtr ? intentPtr.Clone() : nullptr) {}
+
+AppLaunchParams::AppLaunchParams(AppLaunchParams&&) = default;
+AppLaunchParams& AppLaunchParams::operator=(AppLaunchParams&&) = default;
 
 AppLaunchParams::~AppLaunchParams() = default;
 

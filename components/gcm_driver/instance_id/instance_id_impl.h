@@ -5,12 +5,10 @@
 #ifndef COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_IMPL_H_
 #define COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -28,14 +26,18 @@ namespace instance_id {
 class InstanceIDImpl : public InstanceID {
  public:
   InstanceIDImpl(const std::string& app_id, gcm::GCMDriver* gcm_driver);
+
+  InstanceIDImpl(const InstanceIDImpl&) = delete;
+  InstanceIDImpl& operator=(const InstanceIDImpl&) = delete;
+
   ~InstanceIDImpl() override;
 
   // InstanceID:
-  void GetID(const GetIDCallback& callback) override;
-  void GetCreationTime(const GetCreationTimeCallback& callback) override;
+  void GetID(GetIDCallback callback) override;
+  void GetCreationTime(GetCreationTimeCallback callback) override;
   void GetToken(const std::string& authorized_entity,
                 const std::string& scope,
-                const std::map<std::string, std::string>& options,
+                base::TimeDelta time_to_live,
                 std::set<Flags> flags,
                 GetTokenCallback callback) override;
   void ValidateToken(const std::string& authorized_entity,
@@ -60,11 +62,11 @@ class InstanceIDImpl : public InstanceID {
   void GetInstanceIDDataCompleted(const std::string& instance_id,
                                   const std::string& extra_data);
 
-  void DoGetID(const GetIDCallback& callback);
-  void DoGetCreationTime(const GetCreationTimeCallback& callback);
+  void DoGetID(GetIDCallback callback);
+  void DoGetCreationTime(GetCreationTimeCallback callback);
   void DoGetToken(const std::string& authorized_entity,
                   const std::string& scope,
-                  const std::map<std::string, std::string>& options,
+                  base::TimeDelta time_to_live,
                   GetTokenCallback callback);
   void DoValidateToken(const std::string& authorized_entity,
                        const std::string& scope,
@@ -89,8 +91,6 @@ class InstanceIDImpl : public InstanceID {
   base::Time creation_time_;
 
   base::WeakPtrFactory<InstanceIDImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDImpl);
 };
 
 }  // namespace instance_id

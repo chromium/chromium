@@ -15,17 +15,23 @@ NGBidiParagraph::~NGBidiParagraph() {
 
 bool NGBidiParagraph::SetParagraph(const String& text,
                                    const ComputedStyle& block_style) {
+  if (UNLIKELY(block_style.GetUnicodeBidi() == UnicodeBidi::kPlaintext))
+    return SetParagraph(text, absl::nullopt);
+  return SetParagraph(text, block_style.Direction());
+}
+
+bool NGBidiParagraph::SetParagraph(
+    const String& text,
+    absl::optional<TextDirection> base_direction) {
   DCHECK(!ubidi_);
   ubidi_ = ubidi_open();
 
-  bool use_heuristic_base_direction =
-      block_style.GetUnicodeBidi() == UnicodeBidi::kPlaintext;
   UBiDiLevel para_level;
-  if (use_heuristic_base_direction) {
-    para_level = UBIDI_DEFAULT_LTR;
-  } else {
-    base_direction_ = block_style.Direction();
+  if (base_direction) {
+    base_direction_ = *base_direction;
     para_level = IsLtr(base_direction_) ? UBIDI_LTR : UBIDI_RTL;
+  } else {
+    para_level = UBIDI_DEFAULT_LTR;
   }
 
   ICUError error;
@@ -38,7 +44,7 @@ bool NGBidiParagraph::SetParagraph(const String& text,
     return false;
   }
 
-  if (use_heuristic_base_direction)
+  if (!base_direction)
     base_direction_ = DirectionFromLevel(ubidi_getParaLevel(ubidi_));
 
   return true;
@@ -58,6 +64,17 @@ unsigned NGBidiParagraph::GetLogicalRun(unsigned start,
   int32_t end;
   ubidi_getLogicalRun(ubidi_, start, &end, level);
   return end;
+}
+
+void NGBidiParagraph::GetLogicalRuns(const String& text, Runs* runs) const {
+  DCHECK(runs->IsEmpty());
+  for (unsigned start = 0; start < text.length();) {
+    UBiDiLevel level;
+    unsigned end = GetLogicalRun(start, &level);
+    DCHECK_GT(end, start);
+    runs->emplace_back(start, end, level);
+    start = end;
+  }
 }
 
 void NGBidiParagraph::IndicesInVisualOrder(

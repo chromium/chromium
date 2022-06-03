@@ -1,25 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import <UIKit/UIKit.h>
+
+#import "base/mac/foundation_util.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_overlay.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_factory.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
+#import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,66 +29,88 @@
 
 // Test fixture for BrowserContainerCoordinator.
 class BrowserContainerCoordinatorTest : public PlatformTest {
+ public:
+  BrowserContainerCoordinatorTest() {
+    mocked_handler_ = OCMStrictProtocolMock(@protocol(ActivityServiceCommands));
+    [browser_.GetCommandDispatcher()
+        startDispatchingToTarget:mocked_handler_
+                     forProtocol:@protocol(ActivityServiceCommands)];
+  }
+
+  BrowserContainerCoordinator* CreateAndStartCoordinator() {
+    BrowserContainerCoordinator* coordinator =
+        [[BrowserContainerCoordinator alloc]
+            initWithBaseViewController:nil
+                               browser:&browser_];
+    [coordinator start];
+    [scoped_key_window_.Get() setRootViewController:coordinator.viewController];
+    return coordinator;
+  }
+
  protected:
-  BrowserContainerCoordinatorTest()
-      : web_state_list_(&web_state_list_delegate_),
-        base_view_controller_([[UIViewController alloc] init]) {
-    // Create the Browser and coordinator.
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    browser_state_ = test_browser_state_builder.Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
-    coordinator_ = [[BrowserContainerCoordinator alloc]
-        initWithBaseViewController:base_view_controller_
-                           browser:browser_.get()];
+  base::test::TaskEnvironment task_environment_;
 
-    // Add a WebState to the Browser.
-    web_state_list_.InsertWebState(0, std::make_unique<web::TestWebState>(),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
-
-    // Set up the view hierarchy so that overlay presentation can occur.
-    scoped_window_.Get().rootViewController = base_view_controller_;
-    [coordinator_ start];
-    [base_view_controller_ addChildViewController:coordinator_.viewController];
-    [base_view_controller_.view addSubview:coordinator_.viewController.view];
-    AddSameConstraints(base_view_controller_.view,
-                       coordinator_.viewController.view);
-    [coordinator_.viewController
-        didMoveToParentViewController:base_view_controller_];
-  }
-  ~BrowserContainerCoordinatorTest() override { [coordinator_ stop]; }
-
-  // Accessors:
-  FullscreenController* fullscreen_controller() {
-    return FullscreenControllerFactory::GetForBrowserState(
-        browser_state_.get());
-  }
-  web::WebState* active_web_state() {
-    return web_state_list_.GetActiveWebState();
-  }
-
-  web::WebTaskEnvironment task_environment_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<Browser> browser_;
-  ScopedKeyWindow scoped_window_;
-  UIViewController* base_view_controller_;
-  BrowserContainerCoordinator* coordinator_;
+  TestBrowser browser_;
+  id mocked_handler_;
+  ScopedKeyWindow scoped_key_window_;
 };
 
-// Tests that the FullscreenController is disabled when an overlay is shown over
-// OverlayModality::kWebContentArea.
-TEST_F(BrowserContainerCoordinatorTest, DisableFullscreenForWebContentOverlay) {
-  ASSERT_TRUE(fullscreen_controller()->IsEnabled());
-  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      active_web_state(), OverlayModality::kWebContentArea);
-  const GURL kUrl("http://chromium.test");
-  JavaScriptDialogSource source(active_web_state(), kUrl, true);
-  const std::string kMessage("message");
-  queue->AddRequest(
-      OverlayRequest::CreateWithConfig<JavaScriptAlertOverlayRequestConfig>(
-          source, kMessage));
-  ASSERT_FALSE(fullscreen_controller()->IsEnabled());
+// Tests that the coordinator properly handles link-to-text payload updates.
+TEST_F(BrowserContainerCoordinatorTest, LinkToTextConsumerGeneratePayload) {
+  BrowserContainerCoordinator* coordinator = CreateAndStartCoordinator();
+
+  LinkToTextPayload* test_payload =
+      [[LinkToTextPayload alloc] initWithURL:GURL("https://google.com")
+                                       title:@"Some title"
+                                selectedText:@"Selected on page"
+                                  sourceView:[[UIView alloc] init]
+                                  sourceRect:CGRectMake(0, 1, 2, 3)];
+  [[mocked_handler_ expect]
+      shareHighlight:[OCMArg checkWithBlock:^BOOL(
+                                 ShareHighlightCommand* command) {
+        EXPECT_EQ(test_payload.URL, command.URL);
+        EXPECT_TRUE([test_payload.title isEqualToString:command.title]);
+        EXPECT_TRUE(
+            [test_payload.selectedText isEqualToString:command.selectedText]);
+        EXPECT_EQ(test_payload.sourceView, command.sourceView);
+        EXPECT_TRUE(
+            CGRectEqualToRect(test_payload.sourceRect, command.sourceRect));
+        return YES;
+      }]];
+
+  id<LinkToTextConsumer> consumer =
+      static_cast<id<LinkToTextConsumer>>(coordinator);
+  [consumer generatedPayload:test_payload];
+
+  [mocked_handler_ verify];
+}
+
+// Tests that the coordinator displays an alert when getting an update about how
+// a link-to-text link generation failed.
+TEST_F(BrowserContainerCoordinatorTest,
+       LinkToTextConsumerLinkGenerationFailed) {
+  BrowserContainerCoordinator* coordinator = CreateAndStartCoordinator();
+
+  id<LinkToTextConsumer> consumer =
+      static_cast<id<LinkToTextConsumer>>(coordinator);
+  [consumer linkGenerationFailed];
+
+  EXPECT_TRUE([coordinator.viewController.presentedViewController
+      isKindOfClass:[UIAlertController class]]);
+  UIAlertController* alert_controller =
+      base::mac::ObjCCastStrict<UIAlertController>(
+          coordinator.viewController.presentedViewController);
+  ASSERT_EQ(2LU, alert_controller.actions.count);
+
+  // First action should be the OK button.
+  UIAlertAction* ok_action = alert_controller.actions[0];
+  EXPECT_TRUE(
+      [l10n_util::GetNSString(IDS_APP_OK) isEqualToString:ok_action.title]);
+  EXPECT_EQ(UIAlertActionStyleCancel, ok_action.style);
+
+  // Second action should the Share button.
+  UIAlertAction* share_action = alert_controller.actions[1];
+  EXPECT_TRUE([l10n_util::GetNSString(IDS_IOS_SHARE_PAGE_BUTTON_LABEL)
+      isEqualToString:share_action.title]);
+  EXPECT_EQ(UIAlertActionStyleDefault, share_action.style);
 }

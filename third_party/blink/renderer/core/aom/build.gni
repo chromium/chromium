@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_aom = [
+  "accessible_node.cc",
+  "accessible_node.h",
+  "accessible_node_list.cc",
+  "accessible_node_list.h",
+  "computed_accessible_node.cc",
+  "computed_accessible_node.h",
+]

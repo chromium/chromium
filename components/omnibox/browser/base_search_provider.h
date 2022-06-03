@@ -16,8 +16,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -42,6 +40,9 @@ class BaseSearchProvider : public AutocompleteProvider {
   BaseSearchProvider(AutocompleteProvider::Type type,
                      AutocompleteProviderClient* client);
 
+  BaseSearchProvider(const BaseSearchProvider&) = delete;
+  BaseSearchProvider& operator=(const BaseSearchProvider&) = delete;
+
   // Returns whether |match| is flagged as a query that should be prefetched.
   static bool ShouldPrefetch(const AutocompleteMatch& match);
 
@@ -50,7 +51,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   // that may or may not be appropriate for your needs.
   // NOTE: Use with care. Most likely you want the other CreateSearchSuggestion.
   static AutocompleteMatch CreateSearchSuggestion(
-      const base::string16& suggestion,
+      const std::u16string& suggestion,
       AutocompleteMatchType::Type type,
       bool from_keyword_provider,
       const TemplateURL* template_url,
@@ -87,7 +88,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   static AutocompleteMatch CreateOnDeviceSearchSuggestion(
       AutocompleteProvider* autocomplete_provider,
       const AutocompleteInput& input,
-      const base::string16& suggestion,
+      const std::u16string& suggestion,
       int relevance,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data,
@@ -104,6 +105,9 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   // Returns whether the provided classification indicates some sort of NTP.
   static bool IsNTPPage(
+      metrics::OmniboxEventProto::PageClassification classification);
+  // Returns whether the provided classification indicates Search Results Page.
+  static bool IsSearchResultsPage(
       metrics::OmniboxEventProto::PageClassification classification);
 
   // AutocompleteProvider:
@@ -137,7 +141,7 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   ~BaseSearchProvider() override;
 
-  typedef std::pair<base::string16, std::string> MatchKey;
+  typedef std::pair<std::u16string, std::string> MatchKey;
   typedef std::map<MatchKey, AutocompleteMatch> MatchMap;
   typedef std::vector<std::unique_ptr<SuggestionDeletionHandler>>
       SuggestionDeletionHandlers;
@@ -146,7 +150,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   // AutcompleteMatch. The result consists of the suggestion text from
   // |suggest_result|, optionally prepended by the keyword from |template_url|
   // if |suggest_result| is from the keyword provider.
-  static base::string16 GetFillIntoEdit(
+  static std::u16string GetFillIntoEdit(
       const SearchSuggestionParser::SuggestResult& suggest_result,
       const TemplateURL* template_url);
 
@@ -272,8 +276,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   // that a server delete a personalized suggestion. Making this a vector of
   // unique_ptr causes us to auto-cancel all such requests on shutdown.
   SuggestionDeletionHandlers deletion_handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseSearchProvider);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BASE_SEARCH_PROVIDER_H_

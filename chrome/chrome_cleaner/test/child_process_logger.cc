@@ -11,6 +11,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 
+#include <windows.h>
+
 namespace chrome_cleaner {
 
 ChildProcessLogger::ChildProcessLogger() = default;

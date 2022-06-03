@@ -1,0 +1,7 @@
+# JS Conformance rules for ChromeOS Essential Apps.
+# See https://github.com/google/closure-compiler/wiki/JS-Conformance-Framework
+
+requirement: {
+  java_class: "com.google.javascript.jscomp.ConformanceRules$BanNullDeref"
+  error_message: "Attempt to dereference null or undefined."
+}

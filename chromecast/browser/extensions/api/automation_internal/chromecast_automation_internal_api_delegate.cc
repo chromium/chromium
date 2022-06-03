@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chromecast/browser/extensions/api/tabs/tabs_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/api/automation.h"
@@ -64,6 +64,11 @@ ChromecastAutomationInternalApiDelegate::GetActiveWebContents(
   return nullptr;
 }
 
+bool ChromecastAutomationInternalApiDelegate::EnableTree(
+    const ui::AXTreeID& tree_id) {
+  return false;
+}
+
 void ChromecastAutomationInternalApiDelegate::EnableDesktop() {
   AutomationManagerAura::GetInstance()->Enable();
 }
@@ -72,9 +77,10 @@ ui::AXTreeID ChromecastAutomationInternalApiDelegate::GetAXTreeID() {
   return AutomationManagerAura::GetInstance()->ax_tree_id();
 }
 
-void ChromecastAutomationInternalApiDelegate::SetEventBundleSink(
-    ui::AXEventBundleSink* sink) {
-  AutomationManagerAura::GetInstance()->set_event_bundle_sink(sink);
+void ChromecastAutomationInternalApiDelegate::SetAutomationEventRouterInterface(
+    AutomationEventRouterInterface* sink) {
+  AutomationManagerAura::GetInstance()->set_automation_event_router_interface(
+      sink);
 }
 
 content::BrowserContext*

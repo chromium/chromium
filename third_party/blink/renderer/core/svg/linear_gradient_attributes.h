@@ -70,7 +70,7 @@ struct LinearGradientAttributes : GradientAttributes {
   bool HasX2() const { return x2_set_; }
   bool HasY2() const { return y2_set_; }
 
-  void Trace(blink::Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(x1_);
     visitor->Trace(y1_);
     visitor->Trace(x2_);
@@ -101,7 +101,7 @@ class LinearGradientAttributesWrapper final
   void Set(const LinearGradientAttributes& attributes) {
     attributes_ = attributes;
   }
-  void Trace(blink::Visitor* visitor) { visitor->Trace(attributes_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(attributes_); }
 
  private:
   LinearGradientAttributes attributes_;

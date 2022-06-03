@@ -25,13 +25,15 @@ class XPathContext {
 
  public:
   XPathContext()
-      : document_(MakeGarbageCollected<Document>()), context_(*document_) {}
+      : document_(Document::CreateForTest()),
+        context_(*document_, had_type_conversion_error_) {}
 
   xpath::EvaluationContext& Context() { return context_; }
   Document& GetDocument() { return *document_; }
 
  private:
-  const Member<Document> document_;
+  Document* const document_;
+  bool had_type_conversion_error_ = false;
   xpath::EvaluationContext context_;
 };
 

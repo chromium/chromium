@@ -49,7 +49,7 @@ def _PackageChecks(input_api, output_api):
   impl_package_pattern = input_api.re.compile(r'^package org.chromium.net;')
 
   source_filter = lambda path: input_api.FilterSourceFile(path,
-      white_list=[r'^components/cronet/android/.*\.(java|template)$'])
+      files_to_check=[r'^components/cronet/android/.*\.(java|template)$'])
 
   problems = []
   for f in input_api.AffectedSourceFiles(source_filter):

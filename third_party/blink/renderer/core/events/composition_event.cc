@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/events/composition_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_composition_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 
@@ -77,7 +78,7 @@ bool CompositionEvent::IsCompositionEvent() const {
   return true;
 }
 
-void CompositionEvent::Trace(blink::Visitor* visitor) {
+void CompositionEvent::Trace(Visitor* visitor) const {
   UIEvent::Trace(visitor);
 }
 

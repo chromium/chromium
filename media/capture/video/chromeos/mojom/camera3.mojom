@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 3
+// Next min version: 5
 
 module cros.mojom;
 
@@ -16,6 +16,7 @@ const uint32 GRALLOC_USAGE_SW_READ_OFTEN = 0x00000003;
 const uint32 GRALLOC_USAGE_SW_WRITE_NEVER = 0x00000000;
 const uint32 GRALLOC_USAGE_SW_WRITE_OFTEN = 0x00000030;
 const uint32 GRALLOC_USAGE_HW_COMPOSER = 0x00000800;
+const uint32 GRALLOC_USAGE_HW_VIDEO_ENCODER = 0x00010000;
 const uint32 GRALLOC_USAGE_HW_CAMERA_WRITE = 0x00020000;
 const uint32 GRALLOC_USAGE_HW_CAMERA_READ = 0x00040000;
 // A private gralloc usage flag to force allocation of YUV420 buffer.  This
@@ -85,11 +86,15 @@ struct Camera3Stream {
   uint32 data_space;
   Camera3StreamRotation rotation;
   [MinVersion=1] CropRotateScaleInfo? crop_rotate_scale_info;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] string? physical_camera_id;
 };
 
 struct Camera3StreamConfiguration {
   array<Camera3Stream> streams;
   Camera3StreamConfigurationMode operation_mode;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] CameraMetadata? session_parameters;
 };
 
 enum Camera3BufferStatus {
@@ -97,7 +102,8 @@ enum Camera3BufferStatus {
   CAMERA3_BUFFER_STATUS_ERROR = 1,
 };
 
-// Structure that contains needed information about a camera buffer.
+// Structure that contains needed information about a camera buffer that could
+// be used to map in userspace.
 struct CameraBufferHandle {
   uint64 buffer_id;
   array<handle> fds;
@@ -107,6 +113,7 @@ struct CameraBufferHandle {
   uint32 height;
   array<uint32> strides;
   array<uint32> offsets;
+  [MinVersion=3] array<uint32>? sizes;
 };
 
 struct Camera3StreamBuffer {
@@ -164,11 +171,21 @@ enum Camera3RequestTemplate {
   CAMERA3_TEMPLATE_COUNT,
 };
 
+struct Camera3PhyscamMetadata {
+  // |id| is the camera ID of the physical camera, and comes from
+  // CameraCharacteristics.getPhysicalCameraIds(). All values are guaranteed to
+  // be integers.
+  int32 id;
+  CameraMetadata metadata;
+};
+
 struct Camera3CaptureRequest {
   uint32 frame_number;
   CameraMetadata settings;
   Camera3StreamBuffer? input_buffer;
   array<Camera3StreamBuffer> output_buffers;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] array<Camera3PhyscamMetadata>? physcam_settings;
 };
 
 struct Camera3CaptureResult {
@@ -177,6 +194,8 @@ struct Camera3CaptureResult {
   array<Camera3StreamBuffer>? output_buffers;
   Camera3StreamBuffer? input_buffer;
   uint32 partial_result;
+  // Required for camera HAL device API versions >= 3.5.
+  [MinVersion=4] array<Camera3PhyscamMetadata>? physcam_metadata;
 };
 
 // Camera3CallbackOps is a translation of the camera3_callback_ops_t API
@@ -248,7 +267,7 @@ interface Camera3CallbackOps {
 //
 //    7. Close() closes the camera device.
 //
-// Next method ID: 8
+// Next method ID: 9
 interface Camera3DeviceOps {
   // Initialize() is called once after the camera device is opened to register
   // the Camera3CallbackOps handle.
@@ -281,12 +300,11 @@ interface Camera3DeviceOps {
   // [Deprecated in version 2]
   //
   // The type of buffers the CrOS camera service currently supports.
-  // GRALLOC is for the platform-specific gralloc buffer allocated by Android.
-  // SHM is for the shared memory buffer allocated by Chrome.
+  // DMABUF is for the DMA buffer allocated through GBM.
+  // SHM is for the shared memory buffer allocated by Chrome. Deprecated.
   enum BufferType {
-    GRALLOC = 0,  // gralloc buffer. Needs to be imported through GBM.
-    SHM = 1,      // shared memory buffer. Can be mmapped directly.
-    // Add DMABUF when needed.
+    DMABUF = 0,   // DMA buffer. Needs to be imported through GBM.
+    SHM = 1,      // Shared memory buffer. Deprecated and not used.
   };
 
   // [Deprecated in version 2]
@@ -304,4 +322,12 @@ interface Camera3DeviceOps {
 
   // Close() is called to close the camera device.
   Close@7() => (int32 result);
+
+  // ConfigureStreamsAndGetAllocatedBuffers() is called every time the client
+  // needs to set up new set of streams. Also allocated buffers for clients that
+  // do not have capabilities to allocate DMA-bufs.
+  [MinVersion=3]
+  ConfigureStreamsAndGetAllocatedBuffers@8(Camera3StreamConfiguration config) =>
+      (int32 result, Camera3StreamConfiguration? updated_config,
+       map<uint64, array<Camera3StreamBuffer>> allocated_buffers);
 };

@@ -10,17 +10,17 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/lazy_task_runner.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/crash/content/app/crashpad.h"
+#include "components/crash/core/app/crashpad.h"
 
 namespace {
 
-base::LazySequencedTaskRunner g_collect_stats_consent_task_runner =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
+base::LazyThreadPoolSequencedTaskRunner g_collect_stats_consent_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(),
                          base::TaskPriority::USER_VISIBLE,
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
@@ -33,7 +33,7 @@ base::LazyInstance<base::Lock>::Leaky g_posix_client_id_lock =
 const char kConsentToSendStats[] = "Consent To Send Stats";
 
 void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The consent file needs to be world readable. See http://crbug.com/383003
   int permissions;
   if (base::GetPosixFilePermissions(consent_file, &permissions) &&
@@ -49,8 +49,8 @@ void SetConsentFilePermissionIfNeeded(const base::FilePath& consent_file) {
 // static
 base::SequencedTaskRunner*
 GoogleUpdateSettings::CollectStatsConsentTaskRunner() {
-  // TODO(fdoray): Use LazySequencedTaskRunner::GetRaw() here instead of
-  // .Get().get() when it's added to the API, http://crbug.com/730170.
+  // TODO(fdoray): Use LazyThreadPoolSequencedTaskRunner::GetRaw() here instead
+  // of .Get().get() when it's added to the API, http://crbug.com/730170.
   return g_collect_stats_consent_task_runner.Get().get();
 }
 
@@ -76,9 +76,11 @@ bool GoogleUpdateSettings::GetCollectStatsConsent() {
 
 // static
 bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   crash_reporter::SetUploadConsent(consented);
-#elif defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (crash_reporter::IsCrashpadEnabled()) {
     crash_reporter::SetUploadConsent(consented);
   }
@@ -94,7 +96,7 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
   base::FilePath consent_file = consent_dir.AppendASCII(kConsentToSendStats);
   if (!consented) {
     g_posix_client_id.Get().clear();
-    return base::DeleteFile(consent_file, false);
+    return base::DeleteFile(consent_file);
   }
 
   const std::string& client_id = g_posix_client_id.Get();

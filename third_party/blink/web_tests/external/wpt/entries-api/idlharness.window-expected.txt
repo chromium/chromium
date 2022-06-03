@@ -1,0 +1,71 @@
+This is a testharness.js-based test.
+Found 67 tests; 24 PASS, 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface File: original interface defined
+PASS Partial interface File: member names are unique
+PASS Partial interface HTMLInputElement: original interface defined
+PASS Partial interface HTMLInputElement: member names are unique
+PASS Partial interface DataTransferItem: original interface defined
+PASS Partial interface DataTransferItem: member names are unique
+PASS Partial interface HTMLInputElement[2]: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+FAIL FileSystemEntry interface: existence and properties of interface object assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface object length assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface object name assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: attribute isFile assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: attribute isDirectory assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: attribute name assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: attribute fullPath assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: attribute filesystem assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemEntry interface: operation getParent(optional FileSystemEntryCallback, optional ErrorCallback) assert_own_property: self does not have own property "FileSystemEntry" expected property "FileSystemEntry" missing
+FAIL FileSystemDirectoryEntry interface: existence and properties of interface object assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface object length assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface object name assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface: operation createReader() assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface: operation getFile(optional USVString?, optional FileSystemFlags, optional FileSystemEntryCallback, optional ErrorCallback) assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryEntry interface: operation getDirectory(optional USVString?, optional FileSystemFlags, optional FileSystemEntryCallback, optional ErrorCallback) assert_own_property: self does not have own property "FileSystemDirectoryEntry" expected property "FileSystemDirectoryEntry" missing
+FAIL FileSystemDirectoryReader interface: existence and properties of interface object assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemDirectoryReader interface object length assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemDirectoryReader interface object name assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemDirectoryReader interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemDirectoryReader interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemDirectoryReader interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemDirectoryReader interface: operation readEntries(FileSystemEntriesCallback, optional ErrorCallback) assert_own_property: self does not have own property "FileSystemDirectoryReader" expected property "FileSystemDirectoryReader" missing
+FAIL FileSystemFileEntry interface: existence and properties of interface object assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystemFileEntry interface object length assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystemFileEntry interface object name assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystemFileEntry interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystemFileEntry interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystemFileEntry interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystemFileEntry interface: operation file(FileCallback, optional ErrorCallback) assert_own_property: self does not have own property "FileSystemFileEntry" expected property "FileSystemFileEntry" missing
+FAIL FileSystem interface: existence and properties of interface object assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface object length assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface object name assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface: attribute name assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+FAIL FileSystem interface: attribute root assert_own_property: self does not have own property "FileSystem" expected property "FileSystem" missing
+PASS File interface: attribute webkitRelativePath
+PASS File interface: new File([], "example.txt") must inherit property "webkitRelativePath" with the proper type
+PASS HTMLInputElement interface: attribute webkitdirectory
+PASS HTMLInputElement interface: attribute webkitEntries
+PASS HTMLInputElement interface: document.createElement("input") must inherit property "webkitdirectory" with the proper type
+PASS HTMLInputElement interface: document.createElement("input") must inherit property "webkitEntries" with the proper type
+PASS DataTransferItem interface: operation webkitGetAsEntry()
+Harness: the test ran to completion.
+

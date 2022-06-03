@@ -28,6 +28,12 @@ class StartSyncFlareMock {
 
 class SyncSessionsWebContentsRouterTest
     : public ChromeRenderViewHostTestHarness {
+ public:
+  SyncSessionsWebContentsRouterTest(const SyncSessionsWebContentsRouterTest&) =
+      delete;
+  SyncSessionsWebContentsRouterTest& operator=(
+      const SyncSessionsWebContentsRouterTest&) = delete;
+
  protected:
   SyncSessionsWebContentsRouterTest() = default;
   ~SyncSessionsWebContentsRouterTest() override = default;
@@ -43,8 +49,6 @@ class SyncSessionsWebContentsRouterTest
 
  private:
   SyncSessionsWebContentsRouter* router_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsWebContentsRouterTest);
 };
 
 // Disabled on android due to complexity of creating a full TabAndroid object
@@ -53,8 +57,8 @@ class SyncSessionsWebContentsRouterTest
 #if !defined(OS_ANDROID)
 TEST_F(SyncSessionsWebContentsRouterTest, FlareNotRun) {
   StartSyncFlareMock mock;
-  router()->InjectStartSyncFlare(
-      base::Bind(&StartSyncFlareMock::StartSyncFlare, base::Unretained(&mock)));
+  router()->InjectStartSyncFlare(base::BindRepeating(
+      &StartSyncFlareMock::StartSyncFlare, base::Unretained(&mock)));
 
   // There's no delegate for the tab, so the flare shouldn't run.
   router()->NotifyTabModified(web_contents(), false);
@@ -78,8 +82,8 @@ TEST_F(SyncSessionsWebContentsRouterTest, FlareRunsForLoadCompleted) {
   BrowserSyncedTabDelegate::CreateForWebContents(web_contents());
 
   StartSyncFlareMock mock;
-  router()->InjectStartSyncFlare(
-      base::Bind(&StartSyncFlareMock::StartSyncFlare, base::Unretained(&mock)));
+  router()->InjectStartSyncFlare(base::BindRepeating(
+      &StartSyncFlareMock::StartSyncFlare, base::Unretained(&mock)));
 
   // There's a delegate for the tab, and it's a load completed event, so the
   // flare should run.

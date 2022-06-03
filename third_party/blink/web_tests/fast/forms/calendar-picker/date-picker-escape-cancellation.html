@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" id="date0" value="2019-02-14">
+
+<script>
+promise_test(() => {
+  let dateElement = document.getElementById("date0");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "First escape should close popup if there were no changes.");
+    assert_equals(dateElement.value, "2019-02-14", "Control should remain at original value.");
+  });
+}, "Date picker: Single escape should close popup if there were no modifications.");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date0");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    assert_equals(dateElement.value, "2019-02-22", "Using arrow keys to navigate date picker should update in-page control.");
+
+    eventSender.keyDown('Escape');
+    assert_not_equals(internals.pagePopupWindow, null, "First escape keypress should not close popup.");
+    assert_equals(dateElement.value, "2019-02-14", "First escape keypress should reset control back to original value.");
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Second escape keypress should close popup.");
+    assert_equals(dateElement.value, "2019-02-14", "Control should remain at original value.");
+  });
+}, "Date picker: After modification, first escape should reset value and second escape should close picker.");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date0");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    assert_equals(dateElement.value, "2019-02-22", "Using arrow keys to navigate date picker should update in-page control.");
+
+    eventSender.keyDown('ArrowUp');
+    eventSender.keyDown('ArrowLeft');
+    assert_equals(dateElement.value, "2019-02-14", "Expected to be back at the original value.");
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Escape keypress should close popup.");
+    assert_equals(dateElement.value, "2019-02-14", "Control should remain at original value.");
+  });
+}, "Date picker: After modification, single escape should close popup if it was changed back to the initial value.");
+
+</script>
+</body>
+</html>

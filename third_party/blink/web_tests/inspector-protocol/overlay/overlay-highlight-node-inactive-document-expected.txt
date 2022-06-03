@@ -1,0 +1,10 @@
+Makes sure that nodes in inactive documents cannot be highlighted.
+{
+    error : {
+        code : -32600
+        message : The node's document is not active
+    }
+    id : <number>
+    sessionId : <string>
+}
+

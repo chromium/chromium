@@ -1,0 +1,21 @@
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+source_set("fuzzy_finder") {
+  sources = [
+    "fuzzy_finder.cc",
+    "fuzzy_finder.h",
+  ]
+  deps = [
+    "//base:base",
+    "//base:i18n",
+    "//ui/gfx/range",
+  ]
+}
+
+fuzzer_test("fuzzy_finder_fuzzer") {
+  sources = [ "fuzzy_finder_fuzzer.cc" ]
+  deps = [
+    ":fuzzy_finder",
+    "//base:base",
+  ]
+}

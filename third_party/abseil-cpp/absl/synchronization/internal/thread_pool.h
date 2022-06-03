@@ -26,6 +26,7 @@
 #include "absl/synchronization/mutex.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace synchronization_internal {
 
 // A simple ThreadPool implementation for tests.
@@ -86,6 +87,7 @@ class ThreadPool {
 };
 
 }  // namespace synchronization_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_SYNCHRONIZATION_INTERNAL_THREAD_POOL_H_

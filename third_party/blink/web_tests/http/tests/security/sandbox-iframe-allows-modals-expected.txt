@@ -1,0 +1,10 @@
+ALERT: Yay!
+CONFIRM: Question?
+PROMPT: Question?, default text: 
+This is a testharness.js-based test.
+PASS alert() is shown.
+PASS print() does get called.
+PASS confirm() returns 'true' (in our test environment).
+PASS prompt() returns a result.
+Harness: the test ran to completion.
+

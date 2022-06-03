@@ -2,11 +2,11 @@ Tests that Command Line API doesn't override defined on window methods and can b
 Check that CommandLineAPI isn't enumerable on window object:
 non enumerable
 Override dir:
-function dir(value) { [Command Line API] } -> 239
+function dir() { [native code] } -> 239
 CommandLineAPI doesn't override dir:
 239
 CommandLineAPI is presented after removing override variable:
-function dir(value) { [Command Line API] } -> 239
+function dir() { [native code] } -> 239
 Override $_:
 42 -> 239
 CommandLineAPI doesn't override $_:

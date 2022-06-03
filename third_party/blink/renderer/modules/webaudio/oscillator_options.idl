@@ -7,5 +7,5 @@ dictionary OscillatorOptions : AudioNodeOptions {
     OscillatorType type = "sine";
     float detune = 0;
     float frequency = 440;
-    PeriodicWave? periodicWave;
+    PeriodicWave periodicWave;
 };

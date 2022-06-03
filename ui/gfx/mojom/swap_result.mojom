@@ -12,5 +12,6 @@ module gfx.mojom;
 enum SwapResult {
   ACK,
   FAILED,
+  SKIPPED,
   NAK_RECREATE_BUFFERS,
 };

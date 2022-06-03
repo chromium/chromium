@@ -1,0 +1,68 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+source_set("app_service") {
+  sources = [
+    "link_capturing_migration_manager.cc",
+    "link_capturing_migration_manager.h",
+    "web_app_publisher_helper.cc",
+    "web_app_publisher_helper.h",
+  ]
+
+  if (!is_chromeos_lacros) {
+    sources += [
+      "web_apps.cc",
+      "web_apps.h",
+    ]
+  }
+
+  allow_circular_includes_from = [ "//chrome/browser/ui" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//components/content_settings/core/browser",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:icon_types",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:publisher",
+    "//components/services/app_service/public/cpp:types",
+    "//components/sessions",
+    "//components/webapps/browser",
+    "//url",
+  ]
+
+  if (is_chromeos_ash) {
+    assert(enable_system_notifications)
+
+    deps += [
+      "//ash/public/cpp",
+      "//ash/webui/projector_app/public/cpp",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/chromeos",
+      "//components/app_restore",
+      "//components/arc:arc_base",
+      "//components/services/app_service/public/cpp:instance_update",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    assert(enable_system_notifications)
+    sources += [
+      "web_apps_publisher_host.cc",
+      "web_apps_publisher_host.h",
+    ]
+
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+}

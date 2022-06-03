@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_OBSERVABLE_PROVIDER_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_OBSERVABLE_PROVIDER_H_
 
-#include <string>
-
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -26,8 +24,7 @@ class ObservableProvider : public ProviderInterface {
  protected:
   void NotifyObservers(const ContentSettingsPattern& primary_pattern,
                        const ContentSettingsPattern& secondary_pattern,
-                       ContentSettingsType content_type,
-                       const std::string& resource_identifier);
+                       ContentSettingsType content_type);
   void RemoveAllObservers();
   bool CalledOnValidThread();
 

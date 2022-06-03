@@ -26,6 +26,9 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
    public:
     explicit FdWatchController(const Location& from_here);
 
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     // Implicitly calls StopWatchingFileDescriptor.
     ~FdWatchController() override;
 
@@ -57,11 +60,13 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
     base::ScopedCFTypeRef<CFRunLoopSourceRef> fd_source_;
     base::WeakPtr<MessagePumpIOSForIO> pump_;
     FdWatcher* watcher_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpIOSForIO();
+
+  MessagePumpIOSForIO(const MessagePumpIOSForIO&) = delete;
+  MessagePumpIOSForIO& operator=(const MessagePumpIOSForIO&) = delete;
+
   ~MessagePumpIOSForIO() override;
 
   bool WatchFileDescriptor(int fd,
@@ -82,8 +87,6 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
   ThreadChecker watch_file_descriptor_caller_checker_;
 
   base::WeakPtrFactory<MessagePumpIOSForIO> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpIOSForIO);
 };
 
 }  // namespace base

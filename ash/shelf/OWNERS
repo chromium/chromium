@@ -1,6 +1,6 @@
-manucornet@chromium.org
 msw@chromium.org
 skuhne@chromium.org
+tbarzic@chromium.org
 xiyuan@chromium.org
 
-# COMPONENT: UI>Shell>Shelf
+per-file *login*=file://ash/login/OWNERS

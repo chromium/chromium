@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_OUTPUT_STREAM_FUCHSIA_H_
-#define CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_OUTPUT_STREAM_FUCHSIA_H_
+#ifndef CHROMECAST_MEDIA_CMA_BACKEND_FUCHSIA_MIXER_OUTPUT_STREAM_FUCHSIA_H_
+#define CHROMECAST_MEDIA_CMA_BACKEND_FUCHSIA_MIXER_OUTPUT_STREAM_FUCHSIA_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 
@@ -18,6 +18,10 @@ namespace media {
 class MixerOutputStreamFuchsia : public MixerOutputStream {
  public:
   MixerOutputStreamFuchsia();
+
+  MixerOutputStreamFuchsia(const MixerOutputStreamFuchsia&) = delete;
+  MixerOutputStreamFuchsia& operator=(const MixerOutputStreamFuchsia&) = delete;
+
   ~MixerOutputStreamFuchsia() override;
 
   // MixerOutputStream implementation:
@@ -62,12 +66,10 @@ class MixerOutputStreamFuchsia : public MixerOutputStream {
   // Current min lead time for the stream. This value is updated by
   // AudioRenderer::OnMinLeadTimeChanged event. Assume 50ms until we get the
   // first OnMinLeadTimeChanged event.
-  base::TimeDelta min_lead_time_ = base::TimeDelta::FromMilliseconds(50);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerOutputStreamFuchsia);
+  base::TimeDelta min_lead_time_ = base::Milliseconds(50);
 };
 
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_OUTPUT_STREAM_FUCHSIA_H_
+#endif  // CHROMECAST_MEDIA_CMA_BACKEND_FUCHSIA_MIXER_OUTPUT_STREAM_FUCHSIA_H_

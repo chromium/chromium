@@ -129,5 +129,5 @@ TEST(ChromeLocatorTest, GetChromeBundleInfoWithPreviousVersion) {
   EXPECT_TRUE(base::DirectoryExists(framework_path));
   EXPECT_TRUE(base::PathExists(framework_dylib_path));
 
-  base::DeleteFile(fake_version_directory, false);
+  base::DeleteFile(fake_version_directory);
 }

@@ -20,7 +20,7 @@ from .make_copy import make_copy
 class Constant(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
                WithExposure, WithOwner, WithOwnerMixin, WithComponent,
                WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-constants"""
+    """https://webidl.spec.whatwg.org/#idl-constants"""
 
     class IR(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):
@@ -65,6 +65,14 @@ class Constant(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
     def idl_type(self):
         """Returns the type"""
         return self._idl_type
+
+    @property
+    def is_static(self):
+        return True
+
+    @property
+    def is_readonly(self):
+        return True
 
     @property
     def value(self):

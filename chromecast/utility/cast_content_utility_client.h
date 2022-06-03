@@ -6,9 +6,13 @@
 #define CHROMECAST_UTILITY_CAST_CONTENT_UTILITY_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "content/public/utility/content_utility_client.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace chromecast {
 namespace shell {
@@ -19,8 +23,17 @@ class CastContentUtilityClient : public content::ContentUtilityClient {
 
   CastContentUtilityClient();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastContentUtilityClient);
+  CastContentUtilityClient(const CastContentUtilityClient&) = delete;
+  CastContentUtilityClient& operator=(const CastContentUtilityClient&) = delete;
+
+  // cast::ContentUtilityClient:
+  bool HandleServiceRequestDeprecated(
+      const std::string& service_name,
+      mojo::ScopedMessagePipeHandle service_pipe) override;
+
+  virtual bool HandleServiceRequest(
+      const std::string& service_name,
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
 };
 
 }  // namespace shell

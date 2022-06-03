@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_dataavail.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -20,6 +19,8 @@ class DocumentLoader;
 class PDFiumDocument {
  public:
   explicit PDFiumDocument(DocumentLoader* doc_loader);
+  PDFiumDocument(const PDFiumDocument&) = delete;
+  PDFiumDocument& operator=(const PDFiumDocument&) = delete;
   ~PDFiumDocument();
 
   FPDF_FILEACCESS& file_access() { return *file_access_; }
@@ -56,17 +57,15 @@ class PDFiumDocument {
   ScopedFPDFAvail fpdf_availability_;
 
   // The PDFium wrapper object for the document. Must come after
-  // |fpdf_availability_| to prevent outliving it.
+  // `fpdf_availability_` to prevent outliving it.
   ScopedFPDFDocument doc_handle_;
 
   // The PDFium wrapper for form data.  Used even if there are no form controls
-  // on the page. Must come after |doc_handle_| to prevent outliving it.
+  // on the page. Must come after `doc_handle_` to prevent outliving it.
   ScopedFPDFFormHandle form_handle_;
 
   // Current form availability status.
   int form_status_ = PDF_FORM_NOTAVAIL;
-
-  DISALLOW_COPY_AND_ASSIGN(PDFiumDocument);
 };
 
 }  // namespace chrome_pdf

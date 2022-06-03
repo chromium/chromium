@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Performance.h"
+#include "third_party/blink/renderer/core/inspector/protocol/performance.h"
 
 namespace blink {
 
@@ -25,19 +24,24 @@ class UpdateLayout;
 class V8Compile;
 }  // namespace probe
 
+using blink::protocol::Maybe;
+
 class CORE_EXPORT InspectorPerformanceAgent final
     : public InspectorBaseAgent<protocol::Performance::Metainfo>,
       public base::sequence_manager::TaskTimeObserver {
  public:
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   explicit InspectorPerformanceAgent(InspectedFrames*);
+  InspectorPerformanceAgent(const InspectorPerformanceAgent&) = delete;
+  InspectorPerformanceAgent& operator=(const InspectorPerformanceAgent&) =
+      delete;
   ~InspectorPerformanceAgent() override;
 
   void Restore() override;
 
   // Performance protocol domain implementation.
-  protocol::Response enable() override;
+  protocol::Response enable(Maybe<String> time_domain) override;
   protocol::Response disable() override;
   protocol::Response setTimeDomain(const String& time_domain) override;
   protocol::Response getMetrics(
@@ -56,6 +60,8 @@ class CORE_EXPORT InspectorPerformanceAgent final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::V8Compile&);
   void Did(const probe::V8Compile&);
+  void WillStartDebuggerTask();
+  void DidFinishDebuggerTask();
 
   // TaskTimeObserver implementation.
   void WillProcessTask(base::TimeTicks start_time) override;
@@ -68,6 +74,8 @@ class CORE_EXPORT InspectorPerformanceAgent final
   void InnerEnable();
   base::TimeTicks GetTimeTicksNow();
   base::TimeTicks GetThreadTimeNow();
+  bool HasTimeDomain(const String& time_domain);
+  protocol::Response InnerSetTimeDomain(const String& time_domain);
 
   Member<InspectedFrames> inspected_frames_;
   base::TimeDelta layout_duration_;
@@ -80,6 +88,8 @@ class CORE_EXPORT InspectorPerformanceAgent final
   base::TimeTicks task_start_ticks_;
   base::TimeDelta v8compile_duration_;
   base::TimeTicks v8compile_start_ticks_;
+  base::TimeDelta devtools_command_duration_;
+  base::TimeTicks devtools_command_start_ticks_;
   base::TimeTicks thread_time_origin_;
   uint64_t layout_count_ = 0;
   uint64_t recalc_style_count_ = 0;
@@ -87,7 +97,6 @@ class CORE_EXPORT InspectorPerformanceAgent final
   int layout_depth_ = 0;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean use_thread_ticks_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorPerformanceAgent);
 };
 
 }  // namespace blink

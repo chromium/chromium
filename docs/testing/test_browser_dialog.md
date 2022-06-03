@@ -175,9 +175,8 @@ Even discovering the full set of UI present for each platform in Chrome is
 
 *   An alternative is to maintain a working end-to-end build target executable
     to do this, but this has additional costs (and is hard).
-    *    E.g. setup/teardown of low-level functions (
-         `InitializeGLOneOffPlatform()`,
-         `MaterialDesignController::Initialize()`, etc.).
+    *    E.g. setup/teardown of low-level functions
+         (`InitializeGLOneOffPlatform()`, etc.).
 
 *   Why not chrome.exe?
     *   E.g. a scrappy chrome:// page with links to invoke UI would be great!

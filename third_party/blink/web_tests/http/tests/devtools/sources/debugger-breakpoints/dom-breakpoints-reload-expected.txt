@@ -1,0 +1,43 @@
+Tests DOM breakpoints.
+
+Running: testReload
+Test that DOM breakpoints are persisted between page reloads.
+Set 'Subtree Modified' DOM breakpoint on rootElement.
+Page reloaded.
+Append childElement to rootElement.
+Script execution paused.
+Call stack:
+    0) appendElement (dom-breakpoints.html:5)
+    1)  (:1)
+    [setTimeout]
+    0)  (:1)
+Paused on subtree modificationsdiv#rootElementChild div#rootElement added
+Script execution resumed.
+
+Running: testInsertChildIntoAuthorShadowTree
+Test that 'Subtree Modified' breakpoint on author shadow root is hit when appending a child.
+Set 'Subtree Modified' DOM breakpoint on author shadow root.
+Append childElement to author shadow root.
+Script execution paused.
+Call stack:
+    0) appendElementToOpenShadowRoot (dom-breakpoints.html:61)
+    1)  (:1)
+    [setTimeout]
+    0)  (:1)
+Paused on subtree modifications#shadow-root (open)Child #shadow-root (open) added
+Script execution resumed.
+
+Running: testReloadWithShadowElementBreakpoint
+Test that shadow DOM breakpoints are persisted between page reloads.
+Set 'Subtree Modified' DOM breakpoint on outerElement.
+Page reloaded.
+Append childElement to outerElement.
+Script execution paused.
+Call stack:
+    0) appendElementToAuthorShadowTree (dom-breakpoints.html:55)
+    1)  (:1)
+    [setTimeout]
+    0)  (:1)
+Paused on subtree modificationsdiv#outerElementChild div#outerElement added
+Script execution resumed.
+

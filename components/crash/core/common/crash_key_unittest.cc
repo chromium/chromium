@@ -4,9 +4,9 @@
 
 #include "components/crash/core/common/crash_key.h"
 
+#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

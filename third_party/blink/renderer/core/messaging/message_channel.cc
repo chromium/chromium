@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 
@@ -34,12 +35,12 @@ namespace blink {
 MessageChannel::MessageChannel(ExecutionContext* context)
     : port1_(MakeGarbageCollected<MessagePort>(*context)),
       port2_(MakeGarbageCollected<MessagePort>(*context)) {
-  mojo::MessagePipe pipe;
-  port1_->Entangle(std::move(pipe.handle0));
-  port2_->Entangle(std::move(pipe.handle1));
+  MessagePortDescriptorPair pipe;
+  port1_->Entangle(pipe.TakePort0());
+  port2_->Entangle(pipe.TakePort1());
 }
 
-void MessageChannel::Trace(blink::Visitor* visitor) {
+void MessageChannel::Trace(Visitor* visitor) const {
   visitor->Trace(port1_);
   visitor->Trace(port2_);
   ScriptWrappable::Trace(visitor);

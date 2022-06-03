@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_COOKIES_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_COOKIES_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,10 @@ class ChromeExtensionCookies;
 
 class ChromeExtensionCookiesFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ChromeExtensionCookiesFactory(const ChromeExtensionCookiesFactory&) = delete;
+  ChromeExtensionCookiesFactory& operator=(
+      const ChromeExtensionCookiesFactory&) = delete;
+
   static ChromeExtensionCookies* GetForBrowserContext(
       content::BrowserContext* context);
   static ChromeExtensionCookiesFactory* GetInstance();
@@ -30,8 +33,6 @@ class ChromeExtensionCookiesFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionCookiesFactory);
 };
 
 }  // namespace extensions

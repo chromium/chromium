@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/media/router/media_sinks_observer.h"
+#include "components/media_router/browser/media_sinks_observer.h"
 
 namespace media_router {
 

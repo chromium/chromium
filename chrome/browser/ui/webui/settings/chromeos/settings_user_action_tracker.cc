@@ -1,0 +1,102 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/settings/chromeos/settings_user_action_tracker.h"
+
+#include <memory>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
+#include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
+
+namespace chromeos {
+namespace settings {
+
+SettingsUserActionTracker::SettingsUserActionTracker(
+    Hierarchy* hierarchy,
+    OsSettingsSections* sections)
+    : hierarchy_(hierarchy), sections_(sections) {}
+
+SettingsUserActionTracker::~SettingsUserActionTracker() = default;
+
+void SettingsUserActionTracker::BindInterface(
+    mojo::PendingReceiver<mojom::UserActionRecorder> pending_receiver) {
+  // Only one user session should be active at a time.
+  EndCurrentSession();
+  receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&SettingsUserActionTracker::OnBindingDisconnected,
+                     base::Unretained(this)));
+
+  // New session started, so create a new per session tracker.
+  per_session_tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>();
+}
+
+void SettingsUserActionTracker::EndCurrentSession() {
+  // Session ended, so delete the per session tracker.
+  per_session_tracker_.reset();
+  receiver_.reset();
+}
+
+void SettingsUserActionTracker::OnBindingDisconnected() {
+  EndCurrentSession();
+}
+
+void SettingsUserActionTracker::RecordPageFocus() {
+  per_session_tracker_->RecordPageFocus();
+}
+
+void SettingsUserActionTracker::RecordPageBlur() {
+  per_session_tracker_->RecordPageBlur();
+}
+
+void SettingsUserActionTracker::RecordClick() {
+  per_session_tracker_->RecordClick();
+}
+
+void SettingsUserActionTracker::RecordNavigation() {
+  per_session_tracker_->RecordNavigation();
+}
+
+void SettingsUserActionTracker::RecordSearch() {
+  per_session_tracker_->RecordSearch();
+}
+
+// TODO(https://crbug.com/1133553): remove this once migration is complete.
+void SettingsUserActionTracker::RecordSettingChange() {
+  per_session_tracker_->RecordSettingChange();
+}
+
+void SettingsUserActionTracker::RecordSettingChangeWithDetails(
+    mojom::Setting setting,
+    mojom::SettingChangeValuePtr value) {
+  per_session_tracker_->RecordSettingChange();
+
+  // Get the primary section location of the changed setting and log the metric.
+  mojom::Section section_id =
+      hierarchy_->GetSettingMetadata(setting).primary.first;
+  const OsSettingsSection* section = sections_->GetSection(section_id);
+  // new_value is initialized as null. Null value is used in cases that don't
+  // require extra metadata.
+  base::Value new_value;
+  if (value) {
+    if (value->is_bool_value()) {
+      new_value = base::Value(value->get_bool_value());
+    } else if (value->is_int_value()) {
+      new_value = base::Value(value->get_int_value());
+    } else if (value->is_string_value()) {
+      new_value = base::Value(value->get_string_value());
+    }
+  }
+  section->LogMetric(setting, new_value);
+
+  base::UmaHistogramSparse("ChromeOS.Settings.SettingChanged",
+                           static_cast<int>(setting));
+}
+
+}  // namespace settings
+}  // namespace chromeos

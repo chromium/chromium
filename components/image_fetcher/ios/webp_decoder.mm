@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,6 +20,9 @@ namespace {
 class WebpDecoderDelegate : public webp_transcode::WebpDecoder::Delegate {
  public:
   WebpDecoderDelegate() = default;
+
+  WebpDecoderDelegate(const WebpDecoderDelegate&) = delete;
+  WebpDecoderDelegate& operator=(const WebpDecoderDelegate&) = delete;
 
   NSData* data() const { return decoded_image_; }
 
@@ -44,8 +46,6 @@ class WebpDecoderDelegate : public webp_transcode::WebpDecoder::Delegate {
  private:
   ~WebpDecoderDelegate() override {}
   NSMutableData* decoded_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebpDecoderDelegate);
 };
 
 // Content-type header for WebP images.
@@ -79,14 +79,15 @@ void WriteTiffHeader(uint8_t* dst,
   // For non-alpha case, we omit tag 0x152 (ExtraSamples).
   const uint8_t num_ifd_entries =
       has_alpha ? kNumIfdEntries : kNumIfdEntries - 1;
+  uint8_t bytes_per_px_u8 = bytes_per_px;
   uint8_t tiff_header[kHeaderSize] = {
       0x49, 0x49, 0x2a, 0x00,  // little endian signature
       8, 0, 0, 0,              // offset to the unique IFD that follows
       // IFD (offset = 8). Entries must be written in increasing tag order.
       num_ifd_entries, 0,  // Number of entries in the IFD (12 bytes each).
-      0x00, 0x01, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0,  //  10: Width  (TBD)
-      0x01, 0x01, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0,  //  22: Height (TBD)
-      0x02, 0x01, 3, 0, bytes_per_px, 0, 0, 0,   //  34: BitsPerSample: 8888
+      0x00, 0x01, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0,    //  10: Width  (TBD)
+      0x01, 0x01, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0,    //  22: Height (TBD)
+      0x02, 0x01, 3, 0, bytes_per_px_u8, 0, 0, 0,  //  34: BitsPerSample: 8888
       kExtraDataOffset + 0, 0, 0, 0, 0x03, 0x01, 3, 0, 1, 0, 0, 0, 1, 0, 0,
       0,                                         //  46: Compression: none
       0x06, 0x01, 3, 0, 1, 0, 0, 0, 2, 0, 0, 0,  //  58: Photometric: RGB
@@ -94,7 +95,7 @@ void WriteTiffHeader(uint8_t* dst,
       kHeaderSize, 0, 0, 0,                      //      data follows header
       0x12, 0x01, 3, 0, 1, 0, 0, 0, 1, 0, 0, 0,  //  82: Orientation: topleft
       0x15, 0x01, 3, 0, 1, 0, 0, 0,              //  94: SamplesPerPixels
-      bytes_per_px, 0, 0, 0, 0x16, 0x01, 3, 0, 1, 0, 0, 0, 0, 0, 0,
+      bytes_per_px_u8, 0, 0, 0, 0x16, 0x01, 3, 0, 1, 0, 0, 0, 0, 0, 0,
       0,                                         // 106: Rows per strip (TBD)
       0x17, 0x01, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0,  // 118: StripByteCount (TBD)
       0x1a, 0x01, 5, 0, 1, 0, 0, 0,              // 130: X-resolution
@@ -190,7 +191,7 @@ void WebpDecoder::DoReadFeatures(NSData* data) {
   if (features_)
     [features_ appendData:data];
   else
-    features_.reset([[NSMutableData alloc] initWithData:data]);
+    features_ = [[NSMutableData alloc] initWithData:data];
   VP8StatusCode status =
       WebPGetFeatures(static_cast<const uint8_t*>([features_ bytes]),
                       [features_ length], &config_.input);
@@ -217,16 +218,16 @@ void WebpDecoder::DoReadFeatures(NSData* data) {
         break;
       }
       WriteTiffHeader(dst, width, height, bytes_per_px, has_alpha_);
-      output_buffer_.reset([[NSData alloc] initWithBytesNoCopy:dst
-                                                        length:total_size
-                                                  freeWhenDone:YES]);
+      output_buffer_ = [[NSData alloc] initWithBytesNoCopy:dst
+                                                    length:total_size
+                                              freeWhenDone:YES];
       config_.output.is_external_memory = 1;
       config_.output.u.RGBA.rgba = dst + kHeaderSize;
       // Start decoding.
       state_ = READING_DATA;
       incremental_decoder_.reset(WebPINewDecoder(&config_.output));
       DoReadData(features_);
-      features_.reset();
+      features_ = nil;
       break;
     }
     case VP8_STATUS_NOT_ENOUGH_DATA:
@@ -276,34 +277,31 @@ bool WebpDecoder::DoSendData() {
     return false;
   DCHECK_EQ(static_cast<const uint8_t*>([output_buffer_ bytes]) + kHeaderSize,
             data_ptr);
-  base::scoped_nsobject<NSData> result_data;
+  NSData* result_data = nil;
   // When the WebP image is larger than |kRecompressionThreshold| it is
   // compressed to JPEG or PNG. Otherwise, the uncompressed TIFF is used.
   DecodedImageFormat format = TIFF;
   if (width * height > kRecompressionThreshold) {
-    base::scoped_nsobject<UIImage> tiff_image(
-        [[UIImage alloc] initWithData:output_buffer_]);
+    UIImage* tiff_image = [[UIImage alloc] initWithData:output_buffer_];
     if (!tiff_image)
       return false;
     // Compress to PNG if the image is transparent, JPEG otherwise.
     // TODO(droger): Use PNG instead of JPEG if the WebP image is lossless.
     if (has_alpha_) {
-      result_data.reset(UIImagePNGRepresentation(tiff_image));
+      result_data = UIImagePNGRepresentation(tiff_image);
       format = PNG;
     } else {
-      result_data.reset(UIImageJPEGRepresentation(tiff_image, kJpegQuality));
+      result_data = UIImageJPEGRepresentation(tiff_image, kJpegQuality);
       format = JPEG;
     }
     if (!result_data)
       return false;
   } else {
-    result_data.reset(output_buffer_);
+    result_data = output_buffer_;
   }
-  UMA_HISTOGRAM_ENUMERATION("WebP.DecodedImageFormat", format,
-                            DECODED_FORMAT_COUNT);
   delegate_->SetImageFeatures([result_data length], format);
   delegate_->OnDataDecoded(result_data);
-  output_buffer_.reset();
+  output_buffer_ = nil;
   return true;
 }
 

@@ -16,7 +16,8 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Base class for Java UrlRequest implementations of UploadDataSink. Handles asynchronicity and
  * manages the executors for this upload.
@@ -34,8 +35,7 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
 
     public static final int DEFAULT_UPLOAD_BUFFER_SIZE = 8192;
 
-    private final AtomicReference<Integer /*SinkState*/> mSinkState =
-            new AtomicReference<>(SinkState.NOT_STARTED);
+    private final AtomicInteger /*SinkState*/ mSinkState = new AtomicInteger(SinkState.NOT_STARTED);
     private final Executor mUserUploadExecutor;
     private final Executor mExecutor;
     private final UploadDataProvider mUploadProvider;

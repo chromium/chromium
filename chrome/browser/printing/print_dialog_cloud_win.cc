@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/printing/print_dialog_cloud.h"
+#include "chrome/browser/printing/print_dialog_cloud_win.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -13,11 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,8 +44,8 @@ class PrintDataSetter : public content::WebContentsObserver {
  public:
   PrintDataSetter(content::WebContents* web_contents,
                   scoped_refptr<base::RefCountedMemory> data,
-                  const base::string16& print_job_title,
-                  const base::string16& print_ticket,
+                  const std::wstring& print_job_title,
+                  const std::wstring& print_ticket,
                   const std::string& file_type)
       : WebContentsObserver(web_contents) {
     DCHECK_NE(data->size(), 0u);
@@ -59,34 +59,37 @@ class PrintDataSetter : public content::WebContentsObserver {
 
     base::DictionaryValue message_data;
     message_data.SetString("type", "dataUrl");
-    message_data.SetString("title", print_job_title);
+    message_data.SetString("title", base::AsString16(print_job_title));
     message_data.SetString("content", base64_data);
     std::string json_data;
     base::JSONWriter::Write(message_data, &json_data);
-    message_data_ = L"cp-dialog-set-print-document::";
+    message_data_ = u"cp-dialog-set-print-document::";
     message_data_.append(base::UTF8ToUTF16(json_data));
   }
+
+  PrintDataSetter(const PrintDataSetter&) = delete;
+  PrintDataSetter& operator=(const PrintDataSetter&) = delete;
 
  private:
   // Overridden from content::WebContentsObserver:
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
     GURL url = web_contents()->GetURL();
     if (cloud_devices::IsCloudPrintURL(url)) {
-      base::string16 origin = base::UTF8ToUTF16(url.GetOrigin().spec());
+      std::u16string origin =
+          base::UTF8ToUTF16(url.DeprecatedGetOriginAsURL().spec());
       content::MessagePortProvider::PostMessageToFrame(
-          web_contents(), origin, origin, message_data_);
+          web_contents()->GetPrimaryPage(), origin, origin, message_data_);
     }
   }
 
   void WebContentsDestroyed() override { delete this; }
 
-  base::string16 message_data_;
-  DISALLOW_COPY_AND_ASSIGN(PrintDataSetter);
+  std::u16string message_data_;
 };
 
 void CreatePrintDialog(content::BrowserContext* browser_context,
-                       const base::string16& print_job_title,
-                       const base::string16& print_ticket,
+                       const std::wstring& print_job_title,
+                       const std::wstring& print_ticket,
                        const std::string& file_type,
                        scoped_refptr<base::RefCountedMemory> data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -119,19 +122,18 @@ scoped_refptr<base::RefCountedMemory> ReadFile(
     if (base::ReadFileToString(path_to_file, &file_data))
       data = base::RefCountedString::TakeString(&file_data);
   }
-  base::DeleteFile(path_to_file, false);
+  base::DeleteFile(path_to_file);
   return data;
 }
 
 void CreatePrintDialogForFile(content::BrowserContext* browser_context,
                               const base::FilePath& path_to_file,
-                              const base::string16& print_job_title,
-                              const base::string16& print_ticket,
+                              const std::wstring& print_job_title,
+                              const std::wstring& print_ticket,
                               const std::string& file_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&ReadFile, path_to_file),
       base::BindOnce(&CreatePrintDialog, browser_context, print_job_title,
                      print_ticket, file_type));
@@ -146,9 +148,9 @@ bool CreatePrintDialogFromCommandLine(Profile* profile,
   DCHECK(!cloud_print_file.empty());
   if (cloud_print_file.empty())
     return false;
-  base::string16 print_job_title =
+  std::wstring print_job_title =
       command_line.GetSwitchValueNative(switches::kCloudPrintJobTitle);
-  base::string16 print_job_print_ticket =
+  std::wstring print_job_print_ticket =
       command_line.GetSwitchValueNative(switches::kCloudPrintPrintTicket);
   std::string file_type =
       command_line.GetSwitchValueASCII(switches::kCloudPrintFileType);

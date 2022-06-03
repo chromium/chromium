@@ -4,7 +4,7 @@
 
 #include "ui/gfx/animation/animation_runner.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +19,7 @@ TEST(AnimationRunnerTest, StopDuringStep) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   auto runner = AnimationRunner::CreateDefaultAnimationRunner();
-  constexpr auto kDelay = base::TimeDelta::FromMilliseconds(20);
+  constexpr auto kDelay = base::Milliseconds(20);
   int call_count = 0;
   runner->Start(kDelay, base::TimeDelta(),
                 base::BindLambdaForTesting([&](base::TimeTicks ticks) {

@@ -19,7 +19,7 @@ namespace client {
 class AURA_EXPORT EventClient {
  public:
   // Returns true if events can be processed by |window| or any of its children.
-  virtual bool CanProcessEventsWithinSubtree(const Window* window) const = 0;
+  virtual bool GetCanProcessEventsWithinSubtree(const Window* window) const = 0;
 
   // Returns the top level EventTarget for the current environment.
   virtual ui::EventTarget* GetToplevelEventTarget() = 0;

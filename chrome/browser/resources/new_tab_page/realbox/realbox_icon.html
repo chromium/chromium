@@ -1,0 +1,75 @@
+<style>
+  :host {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    width: 32px;
+  }
+
+  #container {
+    align-items: center;
+    border-radius: 8px;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    overflow: hidden;
+    width: 32px;
+  }
+
+  /* Entity matches feature a dominant color background until image loads. */
+  :host-context(ntp-realbox-match[is-rich-suggestion][has-image]) #container {
+    background-color: var(--container-bg-color);
+  }
+
+  /* Calculator answer and suggestion answer icons feature a blue background. */
+  :host-context(ntp-realbox-match[is-rich-suggestion]:not([has-image])) #container {
+    background-color: var(--google-blue-600);
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+  }
+
+  #image {
+    display: none;
+    max-height: 32px;
+    max-width: 32px;
+  }
+
+  :host-context(ntp-realbox-match[has-image]) #image {
+    display: initial;
+  }
+
+  #icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 16px;
+    background-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    height: 24px;
+    width: 24px;
+  }
+
+  :host-context(ntp-realbox-match[has-image]) #icon {
+    display: none;
+  }
+
+  :host-context(ntp-realbox-match[is-rich-suggestion]) #icon {
+    background-color: white;
+  }
+
+  :host([in-searchbox][background-image='google_g.png']) #icon {
+    background-size: 12px;
+  }
+
+  :host([in-searchbox][mask-image='search.svg']) #icon {
+    -webkit-mask-size: 20px;  /* Loupe in realbox is larger than in matches. */
+  }
+</style>
+<div id="container" style="--container-bg-color:
+    [[containerBgColor_(imageSrc_, match.imageDominantColor)]];">
+  <image id="image" src="[[imageSrc_]]"></image>
+  <div id="icon" style="[[iconStyle_]]"></div>
+</div>

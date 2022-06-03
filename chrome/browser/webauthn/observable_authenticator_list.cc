@@ -41,32 +41,6 @@ void ObservableAuthenticatorList::RemoveAllAuthenticators() {
   authenticator_list_.clear();
 }
 
-void ObservableAuthenticatorList::ChangeAuthenticatorId(
-    base::StringPiece previous_id,
-    std::string new_id) {
-  auto* authenticator = GetAuthenticator(previous_id);
-  if (!authenticator)
-    return;
-
-  authenticator->authenticator_id = std::move(new_id);
-  if (observer_)
-    observer_->OnAuthenticatorIdChanged(*authenticator, previous_id);
-}
-
-void ObservableAuthenticatorList::ChangeAuthenticatorPairingMode(
-    base::StringPiece authenticator_id,
-    bool is_in_pairing_mode,
-    base::string16 display_name) {
-  auto it = GetAuthenticatorIterator(authenticator_id);
-  if (it == authenticator_list_.end())
-    return;
-
-  it->is_in_pairing_mode = is_in_pairing_mode;
-  it->authenticator_display_name = std::move(display_name);
-  if (observer_)
-    observer_->OnAuthenticatorPairingModeChanged(*it);
-}
-
 AuthenticatorReference* ObservableAuthenticatorList::GetAuthenticator(
     base::StringPiece authenticator_id) {
   auto it = GetAuthenticatorIterator(authenticator_id);

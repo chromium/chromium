@@ -5,6 +5,8 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUDeviceDescriptor : GPUObjectDescriptorBase {
-    GPUExtensions extensions = {};
-    GPULimits limits = {};
+    sequence<GPUFeatureName> requiredFeatures = [];
+
+    // Should have a default of {}, but Blink doesn't seem to support that yet.
+    record<DOMString, GPUSize64> requiredLimits;
 };

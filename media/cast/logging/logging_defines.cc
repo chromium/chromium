@@ -4,7 +4,7 @@
 
 #include "media/cast/logging/logging_defines.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 #define ENUM_TO_STRING(enum) \
   case enum:                 \

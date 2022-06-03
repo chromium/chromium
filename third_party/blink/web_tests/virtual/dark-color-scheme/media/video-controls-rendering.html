@@ -1,0 +1,19 @@
+<html>
+<script src="../../../media/media-file.js"></script>
+<script src="../../../media/video-paint-test.js"></script>
+<script src="../../../media/media-controls.js"></script>
+<meta name="color-scheme" content="dark">
+
+<video controls>
+</video>
+
+<script>
+    const videos = document.getElementsByTagName('video');
+    for (var i = 0; i < videos.length; ++i) {
+        enableTestMode(videos[i]);
+    }
+    init();
+    setSrcByTagName('video', '../../../media/content/test.ogv');
+</script>
+
+</html>

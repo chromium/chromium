@@ -1,0 +1,69 @@
+diff --git a/src/BUILD b/src/BUILD
+index b4298d2..7ce779f 100644
+--- a/src/BUILD
++++ b/src/BUILD
+@@ -71,9 +71,6 @@ cc_library(
+             ":common",
+             ":sentencepiece_cc_proto",
+             ":sentencepiece_model_cc_proto",
+-            "@com_github_gflags_gflags//:gflags",
+-            "@com_google_glog//:glog",
+-            "@com_google_googletest//:gtest",
+             "@com_google_absl//absl/memory",
+             "@com_google_absl//absl/strings",
+             "@com_google_absl//absl/container:flat_hash_map",
+@@ -81,7 +78,20 @@ cc_library(
+             "//third_party/darts_clone",
+             "//src/deps:threadpool",
+             "//src/deps:status",
+-        ],
++        ] + select({
++            "@org_tensorflow//tensorflow:android": [
++              "@org_tensorflow//tensorflow/core:tflite_portable_logging",
++           ],
++            "@org_tensorflow//tensorflow:ios": [
++              "@org_tensorflow//tensorflow/core:tflite_portable_logging",
++            ],
++            "//conditions:default": [
++              "@local_config_tf//:libtensorflow_framework",
++              "@local_config_tf//:tf_header_lib",
++              "@com_google_absl//absl/functional:function_ref",
++              "@com_google_absl//absl/strings:cord",
++            ],
++        }),
+ )
+ 
+ cc_library(
+diff --git a/src/common.h b/src/common.h
+index f1f51ec..339316a 100644
+--- a/src/common.h
++++ b/src/common.h
+@@ -21,7 +21,7 @@
+ #include <utility>
+ #include <vector>
+ 
+-#include <glog/logging.h>
++#include "tensorflow/core/platform/logging.h"
+ #include "src/deps/basic_types.h"
+ #include "src/deps/canonical_errors.h"
+ #include "src/deps/status.h"
+diff --git a/src/normalizer.h b/src/normalizer.h
+index c16ac16..2af58be 100644
+--- a/src/normalizer.h
++++ b/src/normalizer.h
+@@ -21,7 +21,6 @@
+ #include <utility>
+ #include <vector>
+ 
+-#include "gtest/gtest_prod.h"
+ #include "absl/strings/string_view.h"
+ #include "third_party/darts_clone/include/darts.h"
+ #include "src/common.h"
+@@ -97,7 +96,6 @@ class Normalizer {
+   friend class Builder;
+ 
+  private:
+-  FRIEND_TEST(NormalizerTest, EncodeDecodePrecompiledCharsMapTest);
+ 
+   void Init();
+ 

@@ -29,108 +29,123 @@ class ViewsTextServicesContextMenuMac
     : public ViewsTextServicesContextMenuBase,
       public ui::TextServicesContextMenu::Delegate {
  public:
-  ViewsTextServicesContextMenuMac(ui::SimpleMenuModel* menu, Textfield* client)
-      : ViewsTextServicesContextMenuBase(menu, client),
-        text_services_menu_(this) {
-    // Insert the "Look up" item in the first position.
-    base::string16 text = GetSelectedText();
-    if (!text.empty()) {
-      menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
-      menu->InsertItemAt(
-          0, IDS_CONTENT_CONTEXT_LOOK_UP,
-          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP, text));
-    }
-
-    text_services_menu_.AppendToContextMenu(menu);
-    text_services_menu_.AppendEditableItems(menu);
-  }
-
+  ViewsTextServicesContextMenuMac(ui::SimpleMenuModel* menu, Textfield* client);
+  ViewsTextServicesContextMenuMac(const ViewsTextServicesContextMenuMac&) =
+      delete;
+  ViewsTextServicesContextMenuMac& operator=(
+      const ViewsTextServicesContextMenuMac&) = delete;
   ~ViewsTextServicesContextMenuMac() override = default;
 
   // ViewsTextServicesContextMenu:
-  bool SupportsCommand(int command_id) const override {
-    return text_services_menu_.SupportsCommand(command_id) ||
-           command_id == IDS_CONTENT_CONTEXT_LOOK_UP ||
-           ViewsTextServicesContextMenuBase::SupportsCommand(command_id);
-  }
-
-  bool IsCommandIdEnabled(int command_id) const override {
-    if (text_services_menu_.SupportsCommand(command_id))
-      return text_services_menu_.IsCommandIdEnabled(command_id);
-
-    switch (command_id) {
-      case IDS_CONTENT_CONTEXT_LOOK_UP:
-        return true;
-
-      default:
-        return ViewsTextServicesContextMenuBase::IsCommandIdEnabled(command_id);
-    }
-  }
-
-  void ExecuteCommand(int command_id) override {
-    switch (command_id) {
-      case IDS_CONTENT_CONTEXT_LOOK_UP:
-        LookUpInDictionary();
-        break;
-
-      default:
-        ViewsTextServicesContextMenuBase::ExecuteCommand(command_id);
-        break;
-    }
-  }
+  bool IsCommandIdChecked(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
+  bool SupportsCommand(int command_id) const override;
 
   // TextServicesContextMenu::Delegate:
-  base::string16 GetSelectedText() const override {
-    if (client()->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD)
-      return base::string16();
-
-    return client()->GetSelectedText();
-  }
-
+  std::u16string GetSelectedText() const override;
   bool IsTextDirectionEnabled(
-      base::i18n::TextDirection direction) const override {
-    return direction != base::i18n::UNKNOWN_DIRECTION;
-  }
-
+      base::i18n::TextDirection direction) const override;
   bool IsTextDirectionChecked(
-      base::i18n::TextDirection direction) const override {
-    return direction != base::i18n::UNKNOWN_DIRECTION &&
-           client()->GetTextDirection() == direction;
-  }
-
-  void UpdateTextDirection(base::i18n::TextDirection direction) override {
-    DCHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION);
-
-    base::i18n::TextDirection text_direction =
-        direction == base::i18n::LEFT_TO_RIGHT ? base::i18n::LEFT_TO_RIGHT
-                                               : base::i18n::RIGHT_TO_LEFT;
-    client()->ChangeTextDirectionAndLayoutAlignment(text_direction);
-  }
+      base::i18n::TextDirection direction) const override;
+  void UpdateTextDirection(base::i18n::TextDirection direction) override;
 
  private:
   // Handler for the "Look Up" menu item.
-  void LookUpInDictionary() {
-    gfx::Point baseline_point;
-    gfx::DecoratedText text;
-    if (client()->GetWordLookupDataFromSelection(&text, &baseline_point)) {
-      Widget* widget = client()->GetWidget();
-      NSView* view = widget->GetNativeView().GetNativeNSView();
-      views::View::ConvertPointToTarget(client(), widget->GetRootView(),
-                                        &baseline_point);
+  void LookUpInDictionary();
 
-      NSPoint lookup_point = NSMakePoint(
-          baseline_point.x(), NSHeight([view frame]) - baseline_point.y());
-      [view showDefinitionForAttributedString:
-                gfx::GetAttributedStringFromDecoratedText(text)
-                                      atPoint:lookup_point];
-    }
+  ui::TextServicesContextMenu text_services_menu_{this};
+};
+
+ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
+    ui::SimpleMenuModel* menu,
+    Textfield* client)
+    : ViewsTextServicesContextMenuBase(menu, client) {
+  // Insert the "Look up" item in the first position.
+  const std::u16string text = GetSelectedText();
+  if (!text.empty()) {
+    menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
+    menu->InsertItemAt(
+        0, IDS_CONTENT_CONTEXT_LOOK_UP,
+        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP, text));
+
+    text_services_menu_.AppendToContextMenu(menu);
   }
 
-  // Appends and handles the text service menu.
-  ui::TextServicesContextMenu text_services_menu_;
+  text_services_menu_.AppendEditableItems(menu);
+}
 
-  DISALLOW_COPY_AND_ASSIGN(ViewsTextServicesContextMenuMac);
-};
+bool ViewsTextServicesContextMenuMac::IsCommandIdChecked(int command_id) const {
+  return text_services_menu_.SupportsCommand(command_id)
+             ? text_services_menu_.IsCommandIdChecked(command_id)
+             : ViewsTextServicesContextMenuBase::IsCommandIdChecked(command_id);
+}
+
+bool ViewsTextServicesContextMenuMac::IsCommandIdEnabled(int command_id) const {
+  if (text_services_menu_.SupportsCommand(command_id))
+    return text_services_menu_.IsCommandIdEnabled(command_id);
+  return (command_id == IDS_CONTENT_CONTEXT_LOOK_UP) ||
+         ViewsTextServicesContextMenuBase::IsCommandIdEnabled(command_id);
+}
+
+void ViewsTextServicesContextMenuMac::ExecuteCommand(int command_id,
+                                                     int event_flags) {
+  if (text_services_menu_.SupportsCommand(command_id))
+    text_services_menu_.ExecuteCommand(command_id, event_flags);
+  else if (command_id == IDS_CONTENT_CONTEXT_LOOK_UP)
+    LookUpInDictionary();
+  else
+    ViewsTextServicesContextMenuBase::ExecuteCommand(command_id, event_flags);
+}
+
+bool ViewsTextServicesContextMenuMac::SupportsCommand(int command_id) const {
+  return text_services_menu_.SupportsCommand(command_id) ||
+         command_id == IDS_CONTENT_CONTEXT_LOOK_UP ||
+         ViewsTextServicesContextMenuBase::SupportsCommand(command_id);
+}
+
+std::u16string ViewsTextServicesContextMenuMac::GetSelectedText() const {
+  return (client()->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD)
+             ? std::u16string()
+             : client()->GetSelectedText();
+}
+
+bool ViewsTextServicesContextMenuMac::IsTextDirectionEnabled(
+    base::i18n::TextDirection direction) const {
+  if (client()->force_text_directionality())
+    return false;
+  return direction != base::i18n::UNKNOWN_DIRECTION;
+}
+
+bool ViewsTextServicesContextMenuMac::IsTextDirectionChecked(
+    base::i18n::TextDirection direction) const {
+  if (client()->force_text_directionality())
+    return direction == base::i18n::UNKNOWN_DIRECTION;
+  return IsTextDirectionEnabled(direction) &&
+         client()->GetTextDirection() == direction;
+}
+
+void ViewsTextServicesContextMenuMac::UpdateTextDirection(
+    base::i18n::TextDirection direction) {
+  DCHECK(IsTextDirectionEnabled(direction));
+  client()->ChangeTextDirectionAndLayoutAlignment(direction);
+}
+
+void ViewsTextServicesContextMenuMac::LookUpInDictionary() {
+  gfx::DecoratedText text;
+  gfx::Point baseline_point;
+  if (client()->GetWordLookupDataFromSelection(&text, &baseline_point)) {
+    Widget* widget = client()->GetWidget();
+    views::View::ConvertPointToTarget(client(), widget->GetRootView(),
+                                      &baseline_point);
+    NSView* view = widget->GetNativeView().GetNativeNSView();
+    NSPoint lookup_point = NSMakePoint(
+        baseline_point.x(), NSHeight([view frame]) - baseline_point.y());
+    [view showDefinitionForAttributedString:
+              gfx::GetAttributedStringFromDecoratedText(text)
+                                    atPoint:lookup_point];
+  }
+}
 
 }  // namespace
 
@@ -141,11 +156,4 @@ ViewsTextServicesContextMenu::Create(ui::SimpleMenuModel* menu,
   return std::make_unique<ViewsTextServicesContextMenuMac>(menu, client);
 }
 
-// static
-bool ViewsTextServicesContextMenu::IsTextDirectionCheckedForTesting(
-    ViewsTextServicesContextMenu* menu,
-    base::i18n::TextDirection direction) {
-  return static_cast<views::ViewsTextServicesContextMenuMac*>(menu)
-      ->IsTextDirectionChecked(direction);
-}
 }  // namespace views

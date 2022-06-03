@@ -1,2 +1,0 @@
-SVG Performance test.
-Test completed

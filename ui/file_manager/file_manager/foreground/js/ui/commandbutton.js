@@ -6,26 +6,37 @@
  * @fileoverview This implements a common button control, bound to command.
  */
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+
 /**
  * Creates a new button element.
  * @extends {HTMLButtonElement}
  */
-class CommandButton {
+export class CommandButton {
   constructor() {
     /**
      * Associated command.
-     * @private {cr.ui.Command}
+     * @private {Command}
      */
     this.command_ = null;
   }
 
   /**
-   * Decorates the given element as a progress item.
+   * Decorates the given element.
    * @param {!Element} element Item to be decorated.
    * @return {!CommandButton} Decorated item.
    */
   static decorate(element) {
-    element.__proto__ = CommandButton.prototype;
+    // Add the CommandButton methods to the element we're
+    // decorating, leaving it's prototype chain intact.
+    Object.getOwnPropertyNames(CommandButton.prototype).forEach(name => {
+      if (name !== 'constructor') {
+        element[name] = CommandButton.prototype[name];
+      }
+    });
     element = /** @type {!CommandButton} */ (element);
     element.decorate();
     return element;
@@ -45,7 +56,7 @@ class CommandButton {
 
   /**
    * Returns associated command.
-   * @return {cr.ui.Command} associated command.
+   * @return {Command} associated command.
    */
   getCommand() {
     return this.command_;
@@ -53,7 +64,7 @@ class CommandButton {
 
   /**
    * Associates command with this button.
-   * @param {string|cr.ui.Command} command Command id, or command object to
+   * @param {string|Command} command Command id, or command object to
    * associate with this button.
    */
   setCommand(command) {
@@ -71,9 +82,9 @@ class CommandButton {
 
     if (typeof command == 'string') {
       assert(command[0] == '#');
-      command = /** @type {!cr.ui.Command} */
+      command = /** @type {!Command} */
           (this.ownerDocument.body.querySelector(command));
-      cr.ui.decorate(command, cr.ui.Command);
+      decorate(command, Command);
     }
 
     this.command_ = command;
@@ -154,16 +165,16 @@ class CommandButton {
   }
 }
 
-CommandButton.prototype.__proto__ = HTMLButtonElement.prototype;
-
 /**
  * Whether the button is disabled or not.
  * @type {boolean}
  */
-cr.defineProperty(CommandButton, 'disabled', cr.PropertyKind.BOOL_ATTR);
+CommandButton.prototype.disabled;
 
 /**
  * Whether the button is hidden or not.
  * @type {boolean}
  */
-cr.defineProperty(CommandButton, 'hidden', cr.PropertyKind.BOOL_ATTR);
+CommandButton.prototype.hidden;
+
+CommandButton.prototype.__proto__ = HTMLButtonElement.prototype;

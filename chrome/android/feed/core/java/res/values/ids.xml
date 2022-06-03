@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<resources>
+  <!-- Id to use for content which encapsulates a single card. -->
+  <item type="id" name="feed_content_card" />
+  <!-- Id to use for root RecyclerView used in Stream. -->
+  <item type="id" name="feed_stream_recycler_view" />
+  <!-- Tag id for storing the contentId of the content on a view for view reporting. -->
+  <item type="id" name="tag_view_actions_content_id" />
+</resources>

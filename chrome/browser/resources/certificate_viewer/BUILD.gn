@@ -1,0 +1,20 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [ ":certificate_viewer" ]
+}
+
+js_library("certificate_viewer") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr/ui:tabs",
+    "//ui/webui/resources/js/cr/ui:tree",
+  ]
+}

@@ -10,7 +10,7 @@
 namespace wm {
 
 ScopedTooltipDisabler::ScopedTooltipDisabler(aura::Window* window)
-    : root_(window ? window->GetRootWindow() : NULL) {
+    : root_(window ? window->GetRootWindow() : nullptr) {
   if (root_) {
     root_->AddObserver(this);
     TooltipClient* client = GetTooltipClient(root_);
@@ -30,7 +30,7 @@ void ScopedTooltipDisabler::EnableTooltips() {
   if (client)
     client->SetTooltipsEnabled(true);
   root_->RemoveObserver(this);
-  root_ = NULL;
+  root_ = nullptr;
 }
 
 void ScopedTooltipDisabler::OnWindowDestroying(aura::Window* window) {

@@ -1,4 +1,4 @@
-document
-++group IsControlElement=false
-++++description Name='Web Browser'
-++++description Name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'
+Document
+++Group IsControlElement=false
+++++Text Name='Web Browser'
+++++Text Name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

@@ -23,16 +23,14 @@ class RemoteDOMWindow final : public DOMWindow {
   ExecutionContext* GetExecutionContext() const override;
 
   // DOMWindow overrides:
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
   void blur() override;
 
   void FrameDetached();
 
  protected:
   // Protected DOMWindow overrides:
-  void SchedulePostMessage(MessageEvent*,
-                           scoped_refptr<const SecurityOrigin> target,
-                           Document* source) override;
+  void SchedulePostMessage(PostedMessage*) override;
 
  private:
   // Intentionally private to prevent redundant checks when the type is
@@ -40,9 +38,7 @@ class RemoteDOMWindow final : public DOMWindow {
   bool IsLocalDOMWindow() const override { return false; }
   bool IsRemoteDOMWindow() const override { return true; }
 
-  void ForwardPostMessage(MessageEvent*,
-                          scoped_refptr<const SecurityOrigin> target,
-                          Document* source);
+  void ForwardPostMessage(PostedMessage*);
 };
 
 template <>
@@ -54,4 +50,4 @@ struct DowncastTraits<RemoteDOMWindow> {
 
 }  // namespace blink
 
-#endif  // DOMWindow_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_DOM_WINDOW_H_

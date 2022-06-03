@@ -12,16 +12,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -37,6 +37,7 @@ mojom::DocumentPtr MakeDocument(const FakeFileSystemInstance::Document& doc) {
   document->supports_delete = doc.supports_delete;
   document->supports_rename = doc.supports_rename;
   document->dir_supports_create = doc.dir_supports_create;
+  document->supports_thumbnail = doc.supports_thumbnail;
   return document;
 }
 
@@ -62,11 +63,26 @@ constexpr size_t kMaxBytesToReadFromPipe = 8 * 1024;  // 8KB;
 
 }  // namespace
 
+constexpr base::FilePath::CharType FakeFileSystemInstance::kFakeAndroidPath[];
+
+constexpr gfx::Size FakeFileSystemInstance::kDefaultThumbnailSize;
+
 FakeFileSystemInstance::File::File(const std::string& url,
                                    const std::string& content,
                                    const std::string& mime_type,
                                    Seekable seekable)
     : url(url), content(content), mime_type(mime_type), seekable(seekable) {}
+
+FakeFileSystemInstance::File::File(const std::string& url,
+                                   const std::string& content,
+                                   const std::string& mime_type,
+                                   Seekable seekable,
+                                   int64_t size_override)
+    : url(url),
+      content(content),
+      mime_type(mime_type),
+      seekable(seekable),
+      size_override(size_override) {}
 
 FakeFileSystemInstance::File::File(const File& that) = default;
 
@@ -89,7 +105,8 @@ FakeFileSystemInstance::Document::Document(
                last_modified,
                true,
                true,
-               true) {}
+               true,
+               false) {}
 
 FakeFileSystemInstance::Document::Document(
     const std::string& authority,
@@ -101,7 +118,8 @@ FakeFileSystemInstance::Document::Document(
     uint64_t last_modified,
     bool supports_delete,
     bool supports_rename,
-    bool dir_supports_create)
+    bool dir_supports_create,
+    bool supports_thumbnail)
     : authority(authority),
       document_id(document_id),
       parent_document_id(parent_document_id),
@@ -111,7 +129,8 @@ FakeFileSystemInstance::Document::Document(
       last_modified(last_modified),
       supports_delete(supports_delete),
       supports_rename(supports_rename),
-      dir_supports_create(dir_supports_create) {}
+      dir_supports_create(dir_supports_create),
+      supports_thumbnail(supports_thumbnail) {}
 
 FakeFileSystemInstance::Document::Document(const Document& that) = default;
 
@@ -120,11 +139,15 @@ FakeFileSystemInstance::Document::~Document() = default;
 FakeFileSystemInstance::Root::Root(const std::string& authority,
                                    const std::string& root_id,
                                    const std::string& document_id,
-                                   const std::string& title)
+                                   const std::string& title,
+                                   int64_t available_bytes,
+                                   int64_t capacity_bytes)
     : authority(authority),
       root_id(root_id),
       document_id(document_id),
-      title(title) {}
+      title(title),
+      available_bytes(available_bytes),
+      capacity_bytes(capacity_bytes) {}
 
 FakeFileSystemInstance::Root::Root(const Root& that) = default;
 
@@ -140,7 +163,7 @@ FakeFileSystemInstance::~FakeFileSystemInstance() {
 }
 
 bool FakeFileSystemInstance::InitCalled() {
-  return host_.is_bound();
+  return host_remote_.is_bound();
 }
 
 void FakeFileSystemInstance::AddFile(const File& file) {
@@ -171,7 +194,27 @@ void FakeFileSystemInstance::AddRecentDocument(const std::string& root_id,
 
 void FakeFileSystemInstance::AddRoot(const Root& root) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  roots_.push_back(root);
+  roots_list_.push_back(root);
+  RootKey key(root.authority, root.root_id);
+  DCHECK_EQ(0u, roots_.count(key));
+  roots_.insert(std::make_pair(key, root));
+}
+
+void FakeFileSystemInstance::SetGetLastChangeTimeCallback(
+    GetLastChangeTimeCallback ctime_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ctime_callback_ = ctime_callback;
+}
+
+void FakeFileSystemInstance::SetCrosDir(const base::FilePath& cros_dir) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  cros_dir_ = cros_dir;
+}
+
+void FakeFileSystemInstance::SetMediaStore(
+    const std::map<base::FilePath, base::Time>& media_store) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  media_store_ = media_store;
 }
 
 void FakeFileSystemInstance::TriggerWatchers(
@@ -179,7 +222,7 @@ void FakeFileSystemInstance::TriggerWatchers(
     const std::string& document_id,
     storage::WatcherManager::ChangeType type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!host_) {
+  if (!host_remote_) {
     LOG(ERROR) << "FileSystemHost is not available.";
     return;
   }
@@ -187,7 +230,7 @@ void FakeFileSystemInstance::TriggerWatchers(
   if (iter == document_to_watchers_.end())
     return;
   for (int64_t watcher_id : iter->second) {
-    host_->OnDocumentChanged(watcher_id, type);
+    host_remote_->OnDocumentChanged(watcher_id, type);
   }
 }
 
@@ -207,6 +250,13 @@ bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
   std::string document_id =
       FindChildDocumentId(authority, root_document_id, path_components);
   return DocumentExists(authority, document_id);
+}
+
+bool FakeFileSystemInstance::RootExists(const std::string& authority,
+                                        const std::string& root_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RootKey key(authority, root_id);
+  return roots_.find(key) != roots_.end();
 }
 
 FakeFileSystemInstance::Document FakeFileSystemInstance::GetDocument(
@@ -293,7 +343,7 @@ void FakeFileSystemInstance::GetFileSize(const std::string& url,
   }
   const File& file = iter->second;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), file.content.size()));
+      FROM_HERE, base::BindOnce(std::move(callback), file.size()));
 }
 
 void FakeFileSystemInstance::GetMimeType(const std::string& url,
@@ -302,7 +352,7 @@ void FakeFileSystemInstance::GetMimeType(const std::string& url,
   auto iter = files_.find(url);
   if (iter == files_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   const File& file = iter->second;
@@ -356,6 +406,41 @@ void FakeFileSystemInstance::OpenFileToWrite(const std::string& url,
       base::BindOnce(std::move(callback), std::move(wrapped_handle)));
 }
 
+void FakeFileSystemInstance::OpenThumbnail(const std::string& url,
+                                           const gfx::Size& size_hint,
+                                           OpenThumbnailCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = files_.find(url);
+  if (iter == files_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  const File& file = iter->second;
+  if (file.thumbnail_content.empty()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  // This validates that size_hint parameter is propagated properly from the
+  // client, so OpenThumbnail should always be called with same default value in
+  // tests.
+  if (size_hint != kDefaultThumbnailSize) {
+    LOG(ERROR) << "Unexpected thumbnail size hint: " << size_hint.width() << "x"
+               << size_hint.height();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  base::ScopedFD fd = CreateStreamFileDescriptorToRead(file.thumbnail_content);
+  mojo::ScopedHandle wrapped_handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
+  DCHECK(wrapped_handle.is_valid());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(wrapped_handle)));
+}
+
 void FakeFileSystemInstance::GetDocument(const std::string& authority,
                                          const std::string& document_id,
                                          GetDocumentCallback callback) {
@@ -381,7 +466,7 @@ void FakeFileSystemInstance::GetChildDocuments(
       child_documents_.find(DocumentKey(authority, parent_document_id));
   if (child_iter == child_documents_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   std::vector<mojom::DocumentPtr> children;
@@ -392,7 +477,7 @@ void FakeFileSystemInstance::GetChildDocuments(
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                base::make_optional(std::move(children))));
+                                absl::make_optional(std::move(children))));
 }
 
 void FakeFileSystemInstance::GetRecentDocuments(
@@ -403,7 +488,7 @@ void FakeFileSystemInstance::GetRecentDocuments(
   auto recent_iter = recent_documents_.find(RootKey(authority, root_id));
   if (recent_iter == recent_documents_.end()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
   std::vector<mojom::DocumentPtr> recents;
@@ -411,17 +496,35 @@ void FakeFileSystemInstance::GetRecentDocuments(
     recents.emplace_back(MakeDocument(document));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                base::make_optional(std::move(recents))));
+                                absl::make_optional(std::move(recents))));
 }
 
 void FakeFileSystemInstance::GetRoots(GetRootsCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::vector<mojom::RootPtr> roots;
-  for (const Root& root : roots_)
+  for (const Root& root : roots_list_)
     roots.emplace_back(MakeRoot(root));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
-                                base::make_optional(std::move(roots))));
+                                absl::make_optional(std::move(roots))));
+}
+
+void FakeFileSystemInstance::GetRootSize(const std::string& authority,
+                                         const std::string& root_id,
+                                         GetRootSizeCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = roots_.find(RootKey(authority, root_id));
+  if (iter == roots_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::RootSizePtr()));
+    return;
+  }
+  const Root& root = iter->second;
+  mojom::RootSizePtr root_size = mojom::RootSize::New();
+  root_size->available_bytes = root.available_bytes;
+  root_size->capacity_bytes = root.capacity_bytes;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(root_size)));
 }
 
 void FakeFileSystemInstance::DeleteDocument(const std::string& authority,
@@ -527,16 +630,18 @@ void FakeFileSystemInstance::MoveDocument(
       base::BindOnce(std::move(callback), MakeDocument(iter->second)));
 }
 
-void FakeFileSystemInstance::InitDeprecated(mojom::FileSystemHostPtr host) {
-  Init(std::move(host), base::DoNothing());
+void FakeFileSystemInstance::InitDeprecated(
+    mojo::PendingRemote<mojom::FileSystemHost> host_remote) {
+  Init(std::move(host_remote), base::DoNothing());
 }
 
-void FakeFileSystemInstance::Init(mojom::FileSystemHostPtr host,
-                                  InitCallback callback) {
+void FakeFileSystemInstance::Init(
+    mojo::PendingRemote<mojom::FileSystemHost> host_remote,
+    InitCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(host);
-  DCHECK(!host_);
-  host_ = std::move(host);
+  DCHECK(host_remote);
+  DCHECK(!host_remote_);
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 
@@ -555,14 +660,77 @@ void FakeFileSystemInstance::RemoveWatcher(int64_t watcher_id,
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
+// TODO(risan): "Added" directory might not be handled. Please double check
+// this.
 void FakeFileSystemInstance::RequestMediaScan(
     const std::vector<std::string>& paths) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // Do nothing and pretend we scaned them.
+  // TODO(risan): This is to prevent crashing other tests that expect nothing
+  // from RequestMediaScan, e.g., the following:
+  // FilesAppBrowserTest.Test/dirContextMenuDocumentsProvider_DocumentsProvider
+  if (cros_dir_.empty())
+    return;
+  for (const auto& path : paths) {
+    base::FilePath file_path = base::FilePath(path);
+    base::FilePath cros_path = GetCrosPath(file_path);
+    if (PathExists(cros_path)) {
+      // For each existing path, index itself and all parent directories of
+      // it.
+      base::Time ctime;
+      if (!DirectoryExists(cros_path))
+        ctime = ctime_callback_.Run(cros_path);
+      media_store_[file_path] = ctime;
+      file_path = file_path.DirName();
+      while (file_path != base::FilePath(kFakeAndroidPath).DirName()) {
+        media_store_[file_path] = base::Time();
+        file_path = file_path.DirName();
+      }
+    } else {
+      // When a file or directory does not exist, it means it has been
+      // deleted. So we need to erase its index entry in |media_store_|, and
+      // also the entries of all files/directories underneath it if it is a
+      // directory.
+      for (auto it = media_store_.begin(); it != media_store_.end();) {
+        if (it->first == file_path || file_path.IsParent(it->first))
+          media_store_.erase(it++);
+        else
+          ++it;
+      }
+    }
+  }
+}
+
+void FakeFileSystemInstance::RequestFileRemovalScan(
+    const std::vector<std::string>& directory_paths) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ReindexDirectory(kFakeAndroidPath);
+}
+
+void FakeFileSystemInstance::ReindexDirectory(
+    const std::string& directory_path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::vector<std::string> paths = {directory_path};
+  base::FilePath directory_file_path(directory_path);
+  for (const auto& entry : media_store_) {
+    base::FilePath entry_path = entry.first;
+    if (!directory_file_path.IsParent(entry_path)) {
+      continue;
+    }
+    paths.push_back(entry_path.value());
+  }
+  RequestMediaScan(paths);
 }
 
 void FakeFileSystemInstance::OpenUrlsWithPermission(
     mojom::OpenUrlsRequestPtr request,
+    OpenUrlsWithPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  handled_url_requests_.emplace_back(std::move(request));
+}
+
+void FakeFileSystemInstance::OpenUrlsWithPermissionAndWindowInfo(
+    mojom::OpenUrlsRequestPtr request,
+    mojom::WindowInfoPtr window_info,
     OpenUrlsWithPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   handled_url_requests_.emplace_back(std::move(request));
@@ -620,8 +788,7 @@ base::ScopedFD FakeFileSystemInstance::CreateStreamFileDescriptorToRead(
   DCHECK_EQ(0, ret);
   base::ScopedFD fd_read(fds[0]);
   base::ScopedFD fd_write(fds[1]);
-  bool write_success =
-      base::WriteFileDescriptor(fd_write.get(), content.data(), content.size());
+  bool write_success = base::WriteFileDescriptor(fd_write.get(), content);
   DCHECK(write_success);
   return fd_read;
 }
@@ -635,6 +802,14 @@ base::ScopedFD FakeFileSystemInstance::CreateStreamFileDescriptorToWrite(
   base::ScopedFD fd_write(fds[1]);
   pipe_read_ends_.emplace(url, std::move(fd_read));
   return fd_write;
+}
+
+base::FilePath FakeFileSystemInstance::GetCrosPath(
+    const base::FilePath& android_path) const {
+  base::FilePath cros_path(cros_dir_);
+  base::FilePath android_dir(kFakeAndroidPath);
+  android_dir.AppendRelativePath(android_path, &cros_path);
+  return cros_path;
 }
 
 }  // namespace arc

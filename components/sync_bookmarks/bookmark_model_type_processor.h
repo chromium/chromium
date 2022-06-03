@@ -7,11 +7,9 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/engine/model_type_processor.h"
@@ -38,6 +36,11 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // |bookmark_undo_service| must not be nullptr and must outlive this object.
   explicit BookmarkModelTypeProcessor(
       BookmarkUndoService* bookmark_undo_service);
+
+  BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
+  BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
+      delete;
+
   ~BookmarkModelTypeProcessor() override;
 
   // ModelTypeProcessor implementation.
@@ -47,7 +50,8 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                        GetLocalChangesCallback callback) override;
   void OnCommitCompleted(
       const sync_pb::ModelTypeState& type_state,
-      const syncer::CommitResponseDataList& response_list) override;
+      const syncer::CommitResponseDataList& committed_response_list,
+      const syncer::FailedCommitResponseDataList& error_response_list) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
                         syncer::UpdateResponseDataList updates) override;
 
@@ -56,7 +60,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                       StartCallback start_callback) override;
   void OnSyncStopping(syncer::SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
-  void GetStatusCountersForDebugging(StatusCountersCallback callback) override;
+  void GetTypeEntitiesCountForDebugging(
+      base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
+      const override;
   void RecordMemoryUsageAndCountsHistograms() override;
 
   // Encodes all sync metadata into a string, representing a state that can be
@@ -108,9 +114,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
 
   // Instantiates the required objects to track metadata and starts observing
   // changes from the bookmark model.
-  void StartTrackingMetadata(
-      std::vector<NodeMetadataPair> nodes_metadata,
-      std::unique_ptr<sync_pb::ModelTypeState> model_type_state);
+  void StartTrackingMetadata();
   void StopTrackingMetadata();
 
   // Creates a DictionaryValue for local and remote debugging information about
@@ -175,8 +179,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // WeakPtrFactory for this processor which will be sent to sync thread.
   base::WeakPtrFactory<BookmarkModelTypeProcessor> weak_ptr_factory_for_worker_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelTypeProcessor);
 };
 
 }  // namespace sync_bookmarks

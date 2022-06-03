@@ -2,21 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
-
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See build/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
 
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
-jumbo_component("animation") {
+component("animation") {
   sources = [
     "animation.cc",
     "animation.h",
@@ -51,6 +45,14 @@ jumbo_component("animation") {
     sources += [ "animation_win.cc" ]
   }
 
+  if (is_linux || is_chromeos_lacros) {
+    sources += [
+      "animation_linux.cc",
+      "animation_settings_provider_linux.cc",
+      "animation_settings_provider_linux.h",
+    ]
+  }
+
   if (!is_android) {
     sources += [
       "throb_animation.cc",
@@ -59,7 +61,7 @@ jumbo_component("animation") {
   }
 
   if (is_mac) {
-    libs = [
+    frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
@@ -70,11 +72,12 @@ jumbo_component("animation") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//skia",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx:gfx_export",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   if (is_android) {

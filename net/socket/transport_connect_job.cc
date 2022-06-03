@@ -5,19 +5,23 @@
 #include "net/socket/transport_connect_job.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -28,6 +32,8 @@
 #include "net/socket/socket_performance_watcher_factory.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/websocket_transport_connect_job.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -43,19 +49,44 @@ bool AddressListOnlyContainsIPv6(const AddressList& list) {
   return true;
 }
 
+// TODO(crbug.com/1206799): Delete once endpoint usage is converted to using
+// url::SchemeHostPort when available.
+HostPortPair ToLegacyDestinationEndpoint(
+    const TransportSocketParams::Endpoint& endpoint) {
+  if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
+    return HostPortPair::FromSchemeHostPort(
+        absl::get<url::SchemeHostPort>(endpoint));
+  }
+
+  DCHECK(absl::holds_alternative<HostPortPair>(endpoint));
+  return absl::get<HostPortPair>(endpoint);
+}
+
 }  // namespace
 
 TransportSocketParams::TransportSocketParams(
-    const HostPortPair& host_port_pair,
-    const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
-    const OnHostResolutionCallback& host_resolution_callback)
-    : destination_(host_port_pair),
-      network_isolation_key_(network_isolation_key),
-      disable_secure_dns_(disable_secure_dns),
-      host_resolution_callback_(host_resolution_callback) {}
+    Endpoint destination,
+    NetworkIsolationKey network_isolation_key,
+    SecureDnsPolicy secure_dns_policy,
+    OnHostResolutionCallback host_resolution_callback)
+    : destination_(std::move(destination)),
+      network_isolation_key_(std::move(network_isolation_key)),
+      secure_dns_policy_(secure_dns_policy),
+      host_resolution_callback_(std::move(host_resolution_callback)) {}
 
 TransportSocketParams::~TransportSocketParams() = default;
+
+std::unique_ptr<TransportConnectJob> TransportConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    const scoped_refptr<TransportSocketParams>& params,
+    Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<TransportConnectJob>(priority, socket_tag,
+                                               common_connect_job_params,
+                                               params, delegate, net_log);
+}
 
 // TODO(eroman): The use of this constant needs to be re-evaluated. The time
 // needed for TCPClientSocketXXX::Connect() can be arbitrarily long, since
@@ -174,42 +205,36 @@ void TransportConnectJob::HistogramDuration(
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta total_duration = now - connect_timing.dns_start;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.DNS_Resolution_And_TCP_Connection_Latency2",
-                             total_duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             total_duration, base::Milliseconds(1),
+                             base::Minutes(10), 100);
 
   base::TimeDelta connect_duration = now - connect_timing.connect_start;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency", connect_duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(10), 100);
+                             base::Milliseconds(1), base::Minutes(10), 100);
 
   switch (race_result) {
     case RACE_IPV4_WINS:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv4_Wins_Race",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     case RACE_IPV4_SOLO:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv4_No_Race",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     case RACE_IPV6_WINS:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv6_Raceable",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     case RACE_IPV6_SOLO:
       UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv6_Solo",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(10), 100);
+                                 connect_duration, base::Milliseconds(1),
+                                 base::Minutes(10), 100);
       break;
 
     default:
@@ -220,7 +245,7 @@ void TransportConnectJob::HistogramDuration(
 
 // static
 base::TimeDelta TransportConnectJob::ConnectionTimeout() {
-  return base::TimeDelta::FromSeconds(TransportConnectJob::kTimeoutInSeconds);
+  return base::Seconds(TransportConnectJob::kTimeoutInSeconds);
 }
 
 void TransportConnectJob::OnIOComplete(int result) {
@@ -267,11 +292,16 @@ int TransportConnectJob::DoResolveHost() {
 
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
-  if (params_->disable_secure_dns())
-    parameters.secure_dns_mode_override = DnsConfig::SecureDnsMode::OFF;
-  request_ = host_resolver()->CreateRequest(params_->destination(),
-                                            params_->network_isolation_key(),
-                                            net_log(), parameters);
+  parameters.secure_dns_policy = params_->secure_dns_policy();
+  if (absl::holds_alternative<url::SchemeHostPort>(params_->destination())) {
+    request_ = host_resolver()->CreateRequest(
+        absl::get<url::SchemeHostPort>(params_->destination()),
+        params_->network_isolation_key(), net_log(), parameters);
+  } else {
+    request_ = host_resolver()->CreateRequest(
+        absl::get<HostPortPair>(params_->destination()),
+        params_->network_isolation_key(), net_log(), parameters);
+  }
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,
                                         base::Unretained(this)));
@@ -298,7 +328,8 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
   if (!params_->host_resolution_callback().is_null()) {
     OnHostResolutionCallbackResult callback_result =
         params_->host_resolution_callback().Run(
-            params_->destination(), request_->GetAddressResults().value());
+            ToLegacyDestinationEndpoint(params_->destination()),
+            request_->GetAddressResults().value());
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,
@@ -322,8 +353,8 @@ int TransportConnectJob::DoTransportConnect() {
   }
   transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
       request_->GetAddressResults().value(),
-      std::move(socket_performance_watcher), net_log().net_log(),
-      net_log().source());
+      std::move(socket_performance_watcher), network_quality_estimator(),
+      net_log().net_log(), net_log().source());
 
   // If the list contains IPv6 and IPv4 addresses, and the first address
   // is IPv6, the IPv4 addresses will be tried as fallback addresses, per
@@ -338,9 +369,9 @@ int TransportConnectJob::DoTransportConnect() {
   int rv = transport_socket_->Connect(base::BindOnce(
       &TransportConnectJob::OnIOComplete, base::Unretained(this)));
   if (rv == ERR_IO_PENDING && try_ipv6_connect_with_ipv4_fallback) {
-    fallback_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(kIPv6FallbackTimerInMs),
-        this, &TransportConnectJob::DoIPv6FallbackTransportConnect);
+    fallback_timer_.Start(FROM_HERE, base::Milliseconds(kIPv6FallbackTimerInMs),
+                          this,
+                          &TransportConnectJob::DoIPv6FallbackTransportConnect);
   }
   return rv;
 }
@@ -368,7 +399,8 @@ int TransportConnectJob::DoTransportConnectComplete(int result) {
       race_result = RACE_IPV6_WINS;
     HistogramDuration(connect_timing_, race_result);
 
-    SetSocket(std::move(transport_socket_));
+    DCHECK(request_);
+    SetSocket(std::move(transport_socket_), request_->GetDnsAliasResults());
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save
     // connection attempts from both sockets for use there.
@@ -395,8 +427,8 @@ void TransportConnectJob::DoIPv6FallbackTransportConnect() {
   DCHECK(!fallback_transport_socket_.get());
   DCHECK(!fallback_addresses_.get());
 
-  fallback_addresses_.reset(
-      new AddressList(request_->GetAddressResults().value()));
+  fallback_addresses_ =
+      std::make_unique<AddressList>(request_->GetAddressResults().value());
   MakeAddressListStartWithIPv4(fallback_addresses_.get());
 
   // Create a |SocketPerformanceWatcher|, and pass the ownership.
@@ -411,7 +443,7 @@ void TransportConnectJob::DoIPv6FallbackTransportConnect() {
   fallback_transport_socket_ =
       client_socket_factory()->CreateTransportClientSocket(
           *fallback_addresses_, std::move(socket_performance_watcher),
-          net_log().net_log(), net_log().source());
+          network_quality_estimator(), net_log().net_log(), net_log().source());
   fallback_connect_start_time_ = base::TimeTicks::Now();
   int rv = fallback_transport_socket_->Connect(base::BindOnce(
       &TransportConnectJob::DoIPv6FallbackTransportConnectComplete,
@@ -446,7 +478,9 @@ void TransportConnectJob::DoIPv6FallbackTransportConnectComplete(int result) {
 
     connect_timing_.connect_start = fallback_connect_start_time_;
     HistogramDuration(connect_timing_, RACE_IPV4_WINS);
-    SetSocket(std::move(fallback_transport_socket_));
+    DCHECK(request_);
+    SetSocket(std::move(fallback_transport_socket_),
+              request_->GetDnsAliasResults());
     next_state_ = STATE_NONE;
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save

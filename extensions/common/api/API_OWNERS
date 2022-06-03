@@ -7,13 +7,15 @@
 # exposure of the API to different extensions, public documentation,
 # externs, and more. These changes should be reviewed by a core member of
 # the apps or extensions team.
+# Such changes also require going through the extension API proposal process.
+# Please see //extensions/docs/new_api_proposal.md for details.
 
 # For Extensions and Apps APIs.
 lazyboy@chromium.org
 rdevlin.cronin@chromium.org
-karandeepb@chromium.org
 
 # For Chrome OS apps APIs.
-benwells@chromium.org
-stevenjb@chromium.org
 tbarzic@chromium.org
+mukai@chromium.org
+xiyuan@chromium.org
+benwells@chromium.org

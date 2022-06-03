@@ -32,7 +32,11 @@ import sys
 import jinja2
 
 
-def apply_template(template_path, params, filters=None, tests=None, template_cache=None):
+def apply_template(template_path,
+                   params,
+                   filters=None,
+                   tests=None,
+                   template_cache=None):
     template = None
 
     if filters is None and tests is None and template_cache is not None:
@@ -62,8 +66,14 @@ def use_jinja(template_path, filters=None, tests=None, template_cache=None):
     def real_decorator(generator):
         def generator_internal(*args, **kwargs):
             parameters = generator(*args, **kwargs)
-            return apply_template(template_path, parameters, filters=filters,
-                                  tests=tests, template_cache=template_cache)
-        generator_internal.func_name = generator.func_name
+            return apply_template(
+                template_path,
+                parameters,
+                filters=filters,
+                tests=tests,
+                template_cache=template_cache)
+
+        generator_internal.__name__ = generator.__name__
         return generator_internal
+
     return real_decorator

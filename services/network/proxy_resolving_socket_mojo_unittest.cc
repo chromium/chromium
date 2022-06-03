@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "jingle/glue/fake_ssl_client_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,9 +19,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
@@ -42,10 +43,11 @@ class TestURLRequestContextWithProxy : public net::TestURLRequestContext {
   explicit TestURLRequestContextWithProxy(const std::string& pac_result)
       : TestURLRequestContext(true) {
     context_storage_.set_proxy_resolution_service(
-        net::ProxyResolutionService::CreateFixedFromPacResult(
+        net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
             pac_result, TRAFFIC_ANNOTATION_FOR_TESTS));
-    // net::MockHostResolver maps all hosts to localhost.
-    auto host_resolver = std::make_unique<net::MockHostResolver>();
+    auto host_resolver = std::make_unique<net::MockHostResolver>(
+        /*default_result=*/net::MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
     context_storage_.set_host_resolver(std::move(host_resolver));
   }
 
@@ -60,6 +62,10 @@ class ProxyResolvingSocketTestBase {
       : use_tls_(use_tls),
         fake_tls_handshake_(false),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  ProxyResolvingSocketTestBase(const ProxyResolvingSocketTestBase&) = delete;
+  ProxyResolvingSocketTestBase& operator=(const ProxyResolvingSocketTestBase&) =
+      delete;
 
   ~ProxyResolvingSocketTestBase() {}
 
@@ -123,12 +129,12 @@ class ProxyResolvingSocketTestBase {
     options->use_tls = use_tls_;
     options->fake_tls_handshake = fake_tls_handshake_;
     factory_remote_->CreateProxyResolvingSocket(
-        url, std::move(options),
+        url, net::NetworkIsolationKey(), std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(receiver), std::move(socket_observer),
         base::BindLambdaForTesting(
-            [&](int result, const base::Optional<net::IPEndPoint>& local_addr,
-                const base::Optional<net::IPEndPoint>& peer_addr,
+            [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
+                const absl::optional<net::IPEndPoint>& peer_addr,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
               net_error = result;
@@ -165,8 +171,6 @@ class ProxyResolvingSocketTestBase {
   std::unique_ptr<mojo::Receiver<mojom::ProxyResolvingSocketFactory>>
       factory_receiver_;
   std::unique_ptr<ProxyResolvingSocketFactoryMojo> factory_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketTestBase);
 };
 
 class ProxyResolvingSocketTest : public ProxyResolvingSocketTestBase,
@@ -174,13 +178,13 @@ class ProxyResolvingSocketTest : public ProxyResolvingSocketTestBase,
  public:
   ProxyResolvingSocketTest() : ProxyResolvingSocketTestBase(GetParam()) {}
 
-  ~ProxyResolvingSocketTest() override {}
+  ProxyResolvingSocketTest(const ProxyResolvingSocketTest&) = delete;
+  ProxyResolvingSocketTest& operator=(const ProxyResolvingSocketTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketTest);
+  ~ProxyResolvingSocketTest() override {}
 };
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+INSTANTIATE_TEST_SUITE_P(All,
                          ProxyResolvingSocketTest,
                          ::testing::Bool());
 
@@ -341,10 +345,11 @@ class ProxyResolvingSocketMojoTest : public ProxyResolvingSocketTestBase,
  public:
   ProxyResolvingSocketMojoTest() : ProxyResolvingSocketTestBase(false) {}
 
-  ~ProxyResolvingSocketMojoTest() override {}
+  ProxyResolvingSocketMojoTest(const ProxyResolvingSocketMojoTest&) = delete;
+  ProxyResolvingSocketMojoTest& operator=(const ProxyResolvingSocketMojoTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketMojoTest);
+  ~ProxyResolvingSocketMojoTest() override {}
 };
 
 TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
@@ -402,13 +407,13 @@ TEST_F(ProxyResolvingSocketMojoTest, SocketDestroyedBeforeConnectCompletes) {
   base::RunLoop run_loop;
   int net_error = net::OK;
   factory()->CreateProxyResolvingSocket(
-      kDestination, nullptr,
+      kDestination, net::NetworkIsolationKey(), nullptr,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       socket.InitWithNewPipeAndPassReceiver(),
       mojo::NullRemote() /* observer */,
       base::BindLambdaForTesting(
-          [&](int result, const base::Optional<net::IPEndPoint>& local_addr,
-              const base::Optional<net::IPEndPoint>& peer_addr,
+          [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
+              const absl::optional<net::IPEndPoint>& peer_addr,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
             net_error = result;

@@ -14,7 +14,7 @@
 
 #include "util/win/scoped_handle.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "util/file/file_io.h"
 
 namespace crashpad {

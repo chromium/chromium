@@ -70,24 +70,6 @@ onload = function() {
     });
     shouldBeTrue('triggeredLayout');
 
-    debug('Sending GestureScrollBegin');
-    triggeredLayout = triggersLayout(function() {
-        eventSender.gestureScrollBegin(targetX, targetY);
-    });
-    shouldBeTrue('triggeredLayout');
-
-    debug('Sending GestureScrollUpdate');
-    triggeredLayout = triggersLayout(function() {
-        eventSender.gestureScrollUpdate(0, 5);
-    });
-    shouldBeTrue('triggeredLayout');
-
-    debug('Sending GestureScrollEnd');
-    triggeredLayout = triggersLayout(function() {
-        eventSender.gestureScrollEnd(0, 5);
-    });
-    shouldBeFalse('triggeredLayout');
-
     finishJSTest();
 }
 

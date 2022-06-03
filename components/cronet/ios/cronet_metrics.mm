@@ -329,21 +329,17 @@ std::unique_ptr<Metrics> CronetMetricsDelegate::MetricsForTask(
 }
 
 void CronetMetricsDelegate::OnStartNetRequest(NSURLSessionTask* task) {
-  if (@available(iOS 10, *)) {
-    base::AutoLock auto_lock(gTaskMetricsMapLock.Get());
-    if ([task state] == NSURLSessionTaskStateRunning) {
-      gTaskMetricsMap.Get()[task] = nullptr;
-    }
+  base::AutoLock auto_lock(gTaskMetricsMapLock.Get());
+  if ([task state] == NSURLSessionTaskStateRunning) {
+    gTaskMetricsMap.Get()[task] = nullptr;
   }
 }
 
 void CronetMetricsDelegate::OnStopNetRequest(std::unique_ptr<Metrics> metrics) {
-  if (@available(iOS 10, *)) {
-    base::AutoLock auto_lock(gTaskMetricsMapLock.Get());
-    auto metrics_search = gTaskMetricsMap.Get().find(metrics->task);
-    if (metrics_search != gTaskMetricsMap.Get().end())
-      metrics_search->second = std::move(metrics);
-  }
+  base::AutoLock auto_lock(gTaskMetricsMapLock.Get());
+  auto metrics_search = gTaskMetricsMap.Get().find(metrics->task);
+  if (metrics_search != gTaskMetricsMap.Get().end())
+    metrics_search->second = std::move(metrics);
 }
 
 size_t CronetMetricsDelegate::GetMetricsMapSize() {

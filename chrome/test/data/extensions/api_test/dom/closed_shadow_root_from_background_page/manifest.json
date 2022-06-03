@@ -1,0 +1,9 @@
+{
+  "name": "chrome.dom shadow root test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "tests that a background script from an extension can access the closed shadow root via chrome.dom",
+  "background": {
+    "page": "background.html"
+  }
+}

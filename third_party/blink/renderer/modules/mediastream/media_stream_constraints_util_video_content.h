@@ -10,7 +10,7 @@
 
 namespace blink {
 
-class WebMediaConstraints;
+class MediaConstraints;
 class VideoCaptureSettings;
 
 MODULES_EXPORT extern const int kMinScreenCastDimension;
@@ -24,7 +24,7 @@ MODULES_EXPORT extern const double kDefaultScreenCastFrameRate;
 // This function performs source, source-settings and track-settings selection
 // for content video capture based on the given |constraints|.
 VideoCaptureSettings MODULES_EXPORT
-SelectSettingsVideoContentCapture(const WebMediaConstraints& constraints,
+SelectSettingsVideoContentCapture(const MediaConstraints& constraints,
                                   mojom::MediaStreamType stream_type,
                                   int screen_width,
                                   int screen_height);

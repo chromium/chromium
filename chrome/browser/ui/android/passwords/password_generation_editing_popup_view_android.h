@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "ui/android/view_android.h"
 
@@ -26,6 +25,11 @@ class PasswordGenerationEditingPopupViewAndroid
   explicit PasswordGenerationEditingPopupViewAndroid(
       PasswordGenerationPopupController* controller);
 
+  PasswordGenerationEditingPopupViewAndroid(
+      const PasswordGenerationEditingPopupViewAndroid&) = delete;
+  PasswordGenerationEditingPopupViewAndroid& operator=(
+      const PasswordGenerationEditingPopupViewAndroid&) = delete;
+
   // Called from JNI when the popup was dismissed.
   void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
@@ -34,12 +38,11 @@ class PasswordGenerationEditingPopupViewAndroid
   virtual ~PasswordGenerationEditingPopupViewAndroid();
 
   // PasswordGenerationPopupView implementation.
-  void Show() override;
+  bool Show() override;
   void Hide() override;
   void UpdateState() override;
-  void UpdateBoundsAndRedrawPopup() override;
+  bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
-  bool IsPointInPasswordBounds(const gfx::Point& point) override;
 
   // Weak pointer to the controller.
   PasswordGenerationPopupController* controller_;
@@ -49,8 +52,6 @@ class PasswordGenerationEditingPopupViewAndroid
 
   // Popup view to be anchored to the container.
   ui::ViewAndroid::ScopedAnchorView popup_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationEditingPopupViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_PASSWORD_GENERATION_EDITING_POPUP_VIEW_ANDROID_H_

@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Oj! Det gick inte att generera en slumpmässig privat RSA-nyckel.</translation>
 <translation id="1445572445564823378">Detta tillägg gör <ph name="PRODUCT_NAME" /> långsammare. Om du vill utnyttja den fulla prestandan i <ph name="PRODUCT_NAME" /> bör du inaktivera tillägget.</translation>
 <translation id="1468038450257740950">WebGL stöds inte.</translation>
-<translation id="149347756975725155">Det gick inte att läsa in tilläggsikonen <ph name="ICON" />.</translation>
 <translation id="1803557475693955505">Det gick inte att läsa in bakgrundssidan <ph name="BACKGROUND_PAGE" />.</translation>
 <translation id="2159915644201199628">Det gick inte att avkoda bilden: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalisering används, men default_locale specificeras inte i manifestet.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Det gick inte att läsa den privata nyckeln.</translation>
 <translation id="6391538222494443604">Indatakatalog måste finnas.</translation>
 <translation id="641087317769093025">Det gick inte att packa upp tillägget</translation>
-<translation id="6413453408918378296">Ikonen syns inte tillräckligt <ph name="ICON" />.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> begär åtkomst till en eller flera av dina enheter:</translation>
 <translation id="657064425229075395">Det gick inte att läsa in bakgrundsskriptet <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> från <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>

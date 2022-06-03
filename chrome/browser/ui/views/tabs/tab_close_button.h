@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CLOSE_BUTTON_H_
 
 #include "base/callback_forward.h"
-#include "ui/gfx/color_palette.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/masked_targeter_delegate.h"
 
@@ -17,34 +18,45 @@
 class TabCloseButton : public views::ImageButton,
                        public views::MaskedTargeterDelegate {
  public:
+  METADATA_HEADER(TabCloseButton);
+
   using MouseEventCallback =
-      base::Callback<void(views::View*, const ui::MouseEvent&)>;
+      base::RepeatingCallback<void(views::View*, const ui::MouseEvent&)>;
 
   // The mouse_event callback will be called for every mouse event to allow
   // middle clicks to be handled by the parent.
   //
   // See note on SetTabColor.
-  TabCloseButton(views::ButtonListener* listener,
+  TabCloseButton(PressedCallback pressed_callback,
                  MouseEventCallback mouse_event_callback);
+  TabCloseButton(const TabCloseButton&) = delete;
+  TabCloseButton& operator=(const TabCloseButton&) = delete;
   ~TabCloseButton() override;
 
-  // Returns the width of the tab close button.
-  static int GetWidth();
+  // Returns the width/height of the tab close button, sans insets/padding.
+  static int GetGlyphSize();
 
+  TabStyle::TabColors GetColors() const;
   // This function must be called before the tab is painted so it knows what
   // colors to use. It must also be called when the background color of the tab
   // changes (this class does not track tab activation state), and when the
   // theme changes.
-  void SetIconColors(SkColor foreground_color, SkColor background_color);
+  void SetColors(TabStyle::TabColors colors);
+
+  // Sets the desired padding around the icon. Only the icon is a target for
+  // mouse clicks, but the entire button is a target for touch events, since the
+  // button itself is small. Note that this is cheaper than, for example,
+  // installing a new EmptyBorder every time we want to change the padding
+  // around the icon.
+  void SetButtonPadding(const gfx::Insets& padding);
 
   // views::ImageButton:
-  const char* GetClassName() const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
+  gfx::Insets GetInsets() const override;
 
  protected:
   // views::ImageButton:
@@ -58,9 +70,7 @@ class TabCloseButton : public views::ImageButton,
 
   MouseEventCallback mouse_event_callback_;
 
-  SkColor icon_color_ = gfx::kPlaceholderColor;
-
-  DISALLOW_COPY_AND_ASSIGN(TabCloseButton);
+  TabStyle::TabColors colors_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CLOSE_BUTTON_H_

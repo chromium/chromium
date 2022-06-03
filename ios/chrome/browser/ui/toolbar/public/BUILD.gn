@@ -6,7 +6,6 @@ source_set("public") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "fakebox_focuser.h",
-    "omnibox_focuser.h",
     "side_swipe_toolbar_interacting.h",
     "side_swipe_toolbar_snapshot_providing.h",
     "toolbar_coordinating.h",
@@ -14,18 +13,15 @@ source_set("public") {
     "toolbar_utils.mm",
   ]
   deps = [
-    ":feature_flags",
     "//base",
     "//ios/chrome/browser/ui/activity_services/requirements",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/util",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/components/ui_util",
   ]
-  public_deps = [
-    ":constants",
-  ]
+  public_deps = [ ":constants" ]
 }
 
 source_set("constants") {
@@ -34,15 +30,4 @@ source_set("constants") {
     "toolbar_constants.h",
     "toolbar_constants.mm",
   ]
-}
-
-source_set("feature_flags") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [
-    "//base",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
 }

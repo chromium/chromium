@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/instance_handle.h"
 

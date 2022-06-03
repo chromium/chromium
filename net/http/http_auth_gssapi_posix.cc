@@ -9,10 +9,10 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -62,6 +62,9 @@ class ScopedBuffer {
     DCHECK(gssapi_lib_);
   }
 
+  ScopedBuffer(const ScopedBuffer&) = delete;
+  ScopedBuffer& operator=(const ScopedBuffer&) = delete;
+
   ~ScopedBuffer() {
     if (buffer_ != GSS_C_NO_BUFFER) {
       OM_uint32 minor_status = 0;
@@ -77,8 +80,6 @@ class ScopedBuffer {
  private:
   gss_buffer_t buffer_;
   GSSAPILibrary* gssapi_lib_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBuffer);
 };
 
 // ScopedName releases a gss_name_t when it goes out of scope.
@@ -88,6 +89,9 @@ class ScopedName {
       : name_(name), gssapi_lib_(gssapi_lib) {
     DCHECK(gssapi_lib_);
   }
+
+  ScopedName(const ScopedName&) = delete;
+  ScopedName& operator=(const ScopedName&) = delete;
 
   ~ScopedName() {
     if (name_ != GSS_C_NO_NAME) {
@@ -106,8 +110,6 @@ class ScopedName {
  private:
   gss_name_t name_;
   GSSAPILibrary* gssapi_lib_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedName);
 };
 
 bool OidEquals(const gss_OID left, const gss_OID right) {
@@ -365,7 +367,7 @@ base::NativeLibrary GSSAPISharedLibrary::LoadSharedLibrary(
     num_lib_names = 1;
   } else {
     static const char* const kDefaultLibraryNames[] = {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
       "/System/Library/Frameworks/GSS.framework/GSS"
 #elif defined(OS_OPENBSD)
       "libgssapi.so"          // Heimdal - OpenBSD
@@ -434,7 +436,6 @@ void* BindUntypedMethod(base::NativeLibrary lib,
                         const NetLogWithSource& net_log) {
   void* ptr = base::GetFunctionPointerFromNativeLibrary(lib, method);
   if (ptr == nullptr) {
-    std::string method_string = method.as_string();
     net_log.AddEvent(NetLogEventType::AUTH_LIBRARY_BIND_FAILED,
                      [&] { return BindFailureParams(library_name, method); });
   }

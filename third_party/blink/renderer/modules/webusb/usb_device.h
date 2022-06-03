@@ -6,14 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBUSB_USB_DEVICE_H_
 
 #include <bitset>
+
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -23,8 +25,8 @@ class ScriptState;
 class USBConfiguration;
 class USBControlTransferParameters;
 
-class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(USBDevice);
+class USBDevice : public ScriptWrappable,
+                  public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -76,7 +78,7 @@ class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
                                    const USBControlTransferParameters* setup);
   ScriptPromise controlTransferOut(ScriptState*,
                                    const USBControlTransferParameters* setup,
-                                   const ArrayBufferOrArrayBufferView& data);
+                                   const DOMArrayPiece& data);
   ScriptPromise clearHalt(ScriptState*,
                           String direction,
                           uint8_t endpoint_number);
@@ -85,20 +87,20 @@ class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
                            unsigned length);
   ScriptPromise transferOut(ScriptState*,
                             uint8_t endpoint_number,
-                            const ArrayBufferOrArrayBufferView& data);
+                            const DOMArrayPiece& data);
   ScriptPromise isochronousTransferIn(ScriptState*,
                                       uint8_t endpoint_number,
                                       Vector<unsigned> packet_lengths);
   ScriptPromise isochronousTransferOut(ScriptState*,
                                        uint8_t endpoint_number,
-                                       const ArrayBufferOrArrayBufferView& data,
+                                       const DOMArrayPiece& data,
                                        Vector<unsigned> packet_lengths);
   ScriptPromise reset(ScriptState*);
 
-  // ContextLifecycleObserver interface.
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver interface.
+  void ContextDestroyed() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   static const size_t kEndpointsBitsNumber = 16;
@@ -107,8 +109,6 @@ class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
   wtf_size_t FindInterfaceIndex(uint8_t interface_number) const;
   wtf_size_t FindAlternateIndex(wtf_size_t interface_index,
                                 uint8_t alternate_setting) const;
-  bool IsProtectedInterfaceClass(wtf_size_t interface_index) const;
-  bool IsClassWhitelistedForExtension(uint8_t class_code) const;
   bool EnsureNoDeviceChangeInProgress(ScriptPromiseResolver*) const;
   bool EnsureNoDeviceOrInterfaceChangeInProgress(ScriptPromiseResolver*) const;
   bool EnsureDeviceConfigured(ScriptPromiseResolver*) const;
@@ -131,9 +131,10 @@ class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
                                 ScriptPromiseResolver*,
                                 bool success);
   void OnConfigurationSelected(bool success, wtf_size_t configuration_index);
-  void AsyncClaimInterface(wtf_size_t interface_index,
-                           ScriptPromiseResolver*,
-                           bool success);
+  void AsyncClaimInterface(
+      wtf_size_t interface_index,
+      ScriptPromiseResolver*,
+      device::mojom::blink::UsbClaimInterfaceResult result);
   void AsyncReleaseInterface(wtf_size_t interface_index,
                              ScriptPromiseResolver*,
                              bool success);
@@ -144,20 +145,20 @@ class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
                                      bool success);
   void AsyncControlTransferIn(ScriptPromiseResolver*,
                               device::mojom::blink::UsbTransferStatus,
-                              const Vector<uint8_t>&);
-  void AsyncControlTransferOut(unsigned,
+                              base::span<const uint8_t> data);
+  void AsyncControlTransferOut(uint32_t transfer_length,
                                ScriptPromiseResolver*,
                                device::mojom::blink::UsbTransferStatus);
   void AsyncClearHalt(ScriptPromiseResolver*, bool success);
   void AsyncTransferIn(ScriptPromiseResolver*,
                        device::mojom::blink::UsbTransferStatus,
-                       const Vector<uint8_t>&);
-  void AsyncTransferOut(unsigned,
+                       base::span<const uint8_t> data);
+  void AsyncTransferOut(uint32_t transfer_length,
                         ScriptPromiseResolver*,
                         device::mojom::blink::UsbTransferStatus);
   void AsyncIsochronousTransferIn(
       ScriptPromiseResolver*,
-      const Vector<uint8_t>&,
+      base::span<const uint8_t> data,
       Vector<device::mojom::blink::UsbIsochronousPacketPtr>);
   void AsyncIsochronousTransferOut(
       ScriptPromiseResolver*,
@@ -168,7 +169,7 @@ class USBDevice : public ScriptWrappable, public ContextLifecycleObserver {
   bool MarkRequestComplete(ScriptPromiseResolver*);
 
   device::mojom::blink::UsbDeviceInfoPtr device_info_;
-  mojo::Remote<device::mojom::blink::UsbDevice> device_;
+  HeapMojoRemote<device::mojom::blink::UsbDevice> device_;
   HeapHashSet<Member<ScriptPromiseResolver>> device_requests_;
   bool opened_;
   bool device_state_change_in_progress_;

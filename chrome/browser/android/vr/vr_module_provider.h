@@ -20,7 +20,7 @@ class VrModuleProvider {
   explicit VrModuleProvider(TabAndroid* tab);
   ~VrModuleProvider();
 
-  bool ModuleInstalled();
+  bool ModuleInstalled() const;
   void InstallModule(base::OnceCallback<void(bool)> on_finished);
 
   // Called by Java.

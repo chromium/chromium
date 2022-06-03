@@ -1,0 +1,5 @@
+Test that Inspector.targetReloadedAfterCrash is not fired when service worker just created(not restarted)
+Started and attached to service_worker target
+Stopped service worker and received Inspector.targetCrashed event
+
+

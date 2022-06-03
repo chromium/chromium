@@ -13,6 +13,8 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.core.view.inputmethod.EditorInfoCompat;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.blink_public.web.WebTextInputFlags;
 import org.chromium.blink_public.web.WebTextInputMode;
@@ -38,7 +40,8 @@ public class ImeUtils {
      * @param outAttrs An instance of {@link EditorInfo} that we are going to change.
      */
     public static void computeEditorInfo(int inputType, int inputFlags, int inputMode,
-            int inputAction, int initialSelStart, int initialSelEnd, EditorInfo outAttrs) {
+            int inputAction, int initialSelStart, int initialSelEnd, String lastText,
+            EditorInfo outAttrs) {
         outAttrs.inputType =
                 EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT;
 
@@ -75,7 +78,6 @@ public class ImeUtils {
             } else if (inputType == TextInputType.NUMBER) {
                 // Number
                 outAttrs.inputType = InputType.TYPE_CLASS_NUMBER
-                        | InputType.TYPE_NUMBER_VARIATION_NORMAL
                         | InputType.TYPE_NUMBER_FLAG_DECIMAL;
             }
         } else {
@@ -101,8 +103,10 @@ public class ImeUtils {
                             | InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
                     break;
                 case WebTextInputMode.NUMERIC:
-                    outAttrs.inputType =
-                            InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL;
+                    outAttrs.inputType = InputType.TYPE_CLASS_NUMBER;
+                    if (inputType == TextInputType.PASSWORD) {
+                        outAttrs.inputType |= InputType.TYPE_NUMBER_VARIATION_PASSWORD;
+                    }
                     break;
                 case WebTextInputMode.DECIMAL:
                     outAttrs.inputType =
@@ -126,13 +130,19 @@ public class ImeUtils {
             outAttrs.inputType |= InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
         }
 
-        if ((inputFlags & WebTextInputFlags.HAS_BEEN_PASSWORD_FIELD) != 0) {
+        if ((inputFlags & WebTextInputFlags.HAS_BEEN_PASSWORD_FIELD) != 0
+                && (outAttrs.inputType & InputType.TYPE_NUMBER_VARIATION_PASSWORD) == 0) {
             outAttrs.inputType =
                     InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
         }
 
         outAttrs.initialSelStart = initialSelStart;
         outAttrs.initialSelEnd = initialSelEnd;
+        // Note: Android's internal implementation trims the text up to 2048 chars before
+        // sending it to the IMM service. In the future, if we consider limiting the number of
+        // chars between renderer and browser, then consider calling
+        // setInitialSurroundingSubText() instead.
+        EditorInfoCompat.setInitialSurroundingText(outAttrs, lastText);
     }
 
     private static int getImeAction(int inputType, int inputFlags, int inputMode, int inputAction,

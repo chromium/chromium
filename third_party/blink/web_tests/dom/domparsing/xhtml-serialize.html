@@ -5,6 +5,8 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
+
 var doc = (new DOMParser()).parseFromString('<input xmlns="http://www.w3.org/1999/xhtml">123</input>', 'text/xml');
 var str = (new XMLSerializer()).serializeToString(doc);
 

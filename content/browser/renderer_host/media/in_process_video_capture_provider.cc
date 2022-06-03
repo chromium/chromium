@@ -23,6 +23,11 @@ InProcessVideoCaptureProvider::InProcessVideoCaptureProvider(
 
 InProcessVideoCaptureProvider::~InProcessVideoCaptureProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (video_capture_system_ && !device_task_runner_->BelongsToCurrentThread()) {
+    device_task_runner_->DeleteSoon(FROM_HERE,
+                                    std::move(video_capture_system_));
+  }
 }
 
 // static

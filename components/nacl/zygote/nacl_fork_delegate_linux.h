@@ -11,8 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "services/service_manager/zygote/common/zygote_fork_delegate_linux.h"
+#include "content/public/common/zygote/zygote_fork_delegate_linux.h"
 
 namespace base {
 struct LaunchOptions;
@@ -22,17 +21,20 @@ namespace nacl {
 
 // Appends any ZygoteForkDelegate instances needed by NaCl to |*delegates|.
 void AddNaClZygoteForkDelegates(
-    std::vector<std::unique_ptr<service_manager::ZygoteForkDelegate>>*
-        delegates);
+    std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates);
 
 // The NaClForkDelegate is created during Chrome linux zygote initialization,
 // and provides "fork()" functionality with NaCl specific process
 // characteristics (specifically address space layout) as an alternative to
 // forking the zygote. A new delegate is passed in as an argument to
 // ZygoteMain().
-class NaClForkDelegate : public service_manager::ZygoteForkDelegate {
+class NaClForkDelegate : public content::ZygoteForkDelegate {
  public:
   explicit NaClForkDelegate(bool nonsfi_mode);
+
+  NaClForkDelegate(const NaClForkDelegate&) = delete;
+  NaClForkDelegate& operator=(const NaClForkDelegate&) = delete;
+
   ~NaClForkDelegate() override;
 
   void Init(int sandboxdesc, bool enable_layer1_sandbox) override;
@@ -72,8 +74,6 @@ class NaClForkDelegate : public service_manager::ZygoteForkDelegate {
   int fd_;
 
   FRIEND_TEST_ALL_PREFIXES(NaClForkDelegateLinuxTest, EnvPassthrough);
-
-  DISALLOW_COPY_AND_ASSIGN(NaClForkDelegate);
 };
 
 }  // namespace nacl

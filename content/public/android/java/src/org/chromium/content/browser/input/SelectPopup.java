@@ -153,11 +153,11 @@ public class SelectPopup implements HideablePopup, ViewAndroidDelegate.Container
         WebContentsAccessibilityImpl wcax =
                 WebContentsAccessibilityImpl.fromWebContents(mWebContents);
         if (DeviceFormFactor.isTablet() && !multiple && !wcax.isTouchExplorationEnabled()) {
-            mPopupView = new SelectPopupDropdown(this, context, anchorView, popupItems,
-                    selectedIndices, rightAligned, mWebContents);
+            mPopupView = new SelectPopupDropdown(context, this::selectMenuItems, anchorView,
+                    popupItems, selectedIndices, rightAligned, mWebContents);
         } else {
-            mPopupView =
-                    new SelectPopupDialog(this, context, popupItems, multiple, selectedIndices);
+            mPopupView = new SelectPopupDialog(
+                    context, this::selectMenuItems, popupItems, multiple, selectedIndices);
         }
         mNativeSelectPopupSourceFrame = nativeSelectPopupSourceFrame;
         mPopupView.show();

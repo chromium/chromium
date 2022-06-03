@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
+
+import {ByteReader} from './byte_reader.js';
+import {MetadataParser} from './metadata_parser.js';
+
 /** @final */
-class MpegParser extends MetadataParser {
+export class MpegParser extends MetadataParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */

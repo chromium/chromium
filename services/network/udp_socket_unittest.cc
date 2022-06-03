@@ -11,8 +11,9 @@
 #include "services/network/udp_socket.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -25,7 +26,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/socket_factory.h"
-#include "services/network/udp_socket_test_util.h"
+#include "services/network/test/udp_socket_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -37,6 +38,10 @@ const size_t kDatagramSize = 255;
 class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
  public:
   SocketWrapperTestImpl() {}
+
+  SocketWrapperTestImpl(const SocketWrapperTestImpl&) = delete;
+  SocketWrapperTestImpl& operator=(const SocketWrapperTestImpl&) = delete;
+
   ~SocketWrapperTestImpl() override {}
 
   int Connect(const net::IPEndPoint& remote_addr,
@@ -95,9 +100,6 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
     NOTREACHED();
     return net::ERR_NOT_IMPLEMENTED;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SocketWrapperTestImpl);
 };
 
 net::IPEndPoint GetLocalHostWithAnyPort() {
@@ -192,6 +194,10 @@ class UDPSocketTest : public testing::Test {
   UDPSocketTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         factory_(nullptr /*netlog*/, &url_request_context_) {}
+
+  UDPSocketTest(const UDPSocketTest&) = delete;
+  UDPSocketTest& operator=(const UDPSocketTest&) = delete;
+
   ~UDPSocketTest() override {}
 
   void SetWrappedSocket(
@@ -210,8 +216,6 @@ class UDPSocketTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   net::TestURLRequestContext url_request_context_;
   SocketFactory factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketTest);
 };
 
 TEST_F(UDPSocketTest, Settings) {
@@ -666,14 +670,18 @@ TEST_F(UDPSocketTest, TestReadZeroByte) {
   EXPECT_EQ(std::vector<uint8_t>(), result.data.value());
 }
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC) || \
+    defined(OS_FUCHSIA)
 // Some Android devices do not support multicast socket.
 // The ones supporting multicast need WifiManager.MulticastLock to enable it.
 // https://developer.android.com/reference/android/net/wifi/WifiManager.MulticastLock.html
+// TODO(crbug.com/1215667): Fails on iOS running on Mac 11 machines. Flaky on
+// Mac 11 machines.
+// TODO(crbug.com/1255191): Fails on Fuchsia running with run-test-component.
 #define MAYBE_JoinMulticastGroup DISABLED_JoinMulticastGroup
 #else
 #define MAYBE_JoinMulticastGroup JoinMulticastGroup
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_IOS) || defined(OS_MAC)
 TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   const char kGroup[] = "237.132.100.17";
 
@@ -688,16 +696,9 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   test::UDPSocketTestHelper helper(&socket_remote);
 
   mojom::UDPSocketOptionsPtr options = mojom::UDPSocketOptions::New();
-#if defined(OS_FUCHSIA)
-  // Fuchsia currently doesn't support automatic interface selection for
-  // multicast, so interface index needs to be set explicitly.
-  // See https://fuchsia.atlassian.net/browse/NET-195 .
-  options->multicast_interface = 1;
-#endif  // defined(OS_FUCHSIA)
   options->allow_address_sharing_for_multicast = true;
 
-  net::IPAddress bind_ip_address;
-  EXPECT_TRUE(bind_ip_address.AssignFromIPLiteral("0.0.0.0"));
+  net::IPAddress bind_ip_address = net::IPAddress::AllZeros(group_ip.size());
   net::IPEndPoint socket_address(bind_ip_address, 0);
   ASSERT_EQ(net::OK, helper.BindSync(socket_address, std::move(options),
                                      &socket_address));
@@ -746,10 +747,14 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
 
   // No longer can receive messages from itself or from second socket.
   EXPECT_EQ(net::OK, helper.SendToSync(group_alias, test_msg));
-  ASSERT_EQ(net::OK, second_socket_helper.SendToSync(group_alias, test_msg));
   socket_remote->ReceiveMore(1);
   socket_remote.FlushForTesting();
-  ASSERT_EQ(2u, listener.results().size());
+  EXPECT_EQ(2u, listener.results().size());
+
+  EXPECT_EQ(net::OK, second_socket_helper.SendToSync(group_alias, test_msg));
+  socket_remote->ReceiveMore(1);
+  socket_remote.FlushForTesting();
+  EXPECT_EQ(2u, listener.results().size());
 }
 
 TEST_F(UDPSocketTest, ErrorHappensDuringSocketOptionsConfiguration) {
@@ -777,8 +782,8 @@ TEST_F(UDPSocketTest, ErrorHappensDuringSocketOptionsConfiguration) {
   // It's legal to retry Connect() with valid options.
   mojom::UDPSocketOptionsPtr valid_options = mojom::UDPSocketOptions::New();
   valid_options->multicast_time_to_live = 255;
-  ASSERT_EQ(net::OK,
-            helper.ConnectSync(server_addr, std::move(options), &local_addr));
+  ASSERT_EQ(net::OK, helper.ConnectSync(server_addr, std::move(valid_options),
+                                        &local_addr));
   EXPECT_NE(0, local_addr.port());
 }
 

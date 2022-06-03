@@ -32,7 +32,7 @@ TEST(MultiDeviceMojomStructTraitsTest, BeaconSeed) {
 
   chromeos::multidevice::BeaconSeed output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              chromeos::multidevice::mojom::BeaconSeed>(&input, &output));
+              chromeos::multidevice::mojom::BeaconSeed>(input, output));
 
   EXPECT_EQ(kTestBeaconSeedData, output.data());
   EXPECT_EQ(kTestBeaconSeedStartTimeMillis, output.start_time().ToJavaTime());
@@ -62,10 +62,11 @@ TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
   input.last_update_time_millis = 3L;
   input.software_features = software_features;
   input.beacon_seeds = {CreateTestBeaconSeed()};
+  input.bluetooth_public_address = "01:23:45:67:89:AB";
 
   chromeos::multidevice::RemoteDevice output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              chromeos::multidevice::mojom::RemoteDevice>(&input, &output));
+              chromeos::multidevice::mojom::RemoteDevice>(input, output));
 
   EXPECT_EQ("userEmail", output.user_email);
   EXPECT_EQ("instanceId", output.instance_id);
@@ -81,6 +82,7 @@ TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
             output.beacon_seeds[0].start_time().ToJavaTime());
   EXPECT_EQ(kTestBeaconSeedEndTimeMillis,
             output.beacon_seeds[0].end_time().ToJavaTime());
+  EXPECT_EQ("01:23:45:67:89:AB", output.bluetooth_public_address);
 }
 
 TEST(DeviceSyncMojomEnumTraitsTest, SoftwareFeature) {
@@ -93,7 +95,15 @@ TEST(DeviceSyncMojomEnumTraitsTest, SoftwareFeature) {
           chromeos::multidevice::SoftwareFeature::kInstantTetheringHost,
           chromeos::multidevice::SoftwareFeature::kInstantTetheringClient,
           chromeos::multidevice::SoftwareFeature::kMessagesForWebHost,
-          chromeos::multidevice::SoftwareFeature::kMessagesForWebClient};
+          chromeos::multidevice::SoftwareFeature::kMessagesForWebClient,
+          chromeos::multidevice::SoftwareFeature::kPhoneHubHost,
+          chromeos::multidevice::SoftwareFeature::kPhoneHubClient,
+          chromeos::multidevice::SoftwareFeature::kWifiSyncHost,
+          chromeos::multidevice::SoftwareFeature::kWifiSyncClient,
+          chromeos::multidevice::SoftwareFeature::kEcheHost,
+          chromeos::multidevice::SoftwareFeature::kEcheClient,
+          chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+          chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollClient};
 
   for (auto feature_in : kTestSoftwareFeatures) {
     chromeos::multidevice::SoftwareFeature feature_out;

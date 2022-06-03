@@ -11,25 +11,25 @@ namespace blink {
 
 class X : public GarbageCollected<X> {
  public:
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 };
 
 template <typename T>
 class Base : public GarbageCollected<Base<T> > {
  public:
-  virtual void Trace(Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 template <typename T>
 class Derived : public Base<T> {
  public:
-  void Trace(Visitor* visitor) override { Base<T>::Trace(visitor); }
+  void Trace(Visitor* visitor) const override { Base<T>::Trace(visitor); }
 };
 
 template <typename T>
 class DerivedMissingTrace : public Base<T> {
  public:
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     // Missing Base<T>::Trace(visitor).
   }
 };

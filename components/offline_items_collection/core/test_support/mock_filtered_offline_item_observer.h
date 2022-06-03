@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,28 +21,33 @@ class MockFilteredOfflineItemObserver {
     // FilteredOfflineItemObserver::Observer implementation.
     MOCK_METHOD1(OnItemRemoved, void(const ContentId&));
     MOCK_METHOD2(OnItemUpdated,
-                 void(const OfflineItem&, const base::Optional<UpdateDelta>&));
+                 void(const OfflineItem&, const absl::optional<UpdateDelta>&));
   };
 
   class ScopedMockObserver : public MockObserver {
    public:
     ScopedMockObserver(FilteredOfflineItemObserver* observer,
                        const ContentId& id);
+
+    ScopedMockObserver(const ScopedMockObserver&) = delete;
+    ScopedMockObserver& operator=(const ScopedMockObserver&) = delete;
+
     ~ScopedMockObserver() override;
 
    private:
     ContentId id_;
     FilteredOfflineItemObserver* observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedMockObserver);
   };
+
+  MockFilteredOfflineItemObserver(const MockFilteredOfflineItemObserver&) =
+      delete;
+  MockFilteredOfflineItemObserver& operator=(
+      const MockFilteredOfflineItemObserver&) = delete;
 
  private:
   // Do not allow instantiation.
   MockFilteredOfflineItemObserver() = default;
   ~MockFilteredOfflineItemObserver() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFilteredOfflineItemObserver);
 };
 
 }  // namespace offline_items_collection

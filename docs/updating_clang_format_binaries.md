@@ -27,25 +27,23 @@ Windows step-by-step:
 ```shell
 # [double check you have the tools you need]
 where cmake.exe  # You need to install this.
-where svn.exe  # Maybe fix with: set PATH=%PATH%;D:\src\depot_tools\svn_bin
-"c:\Program Files (x86)\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" amd64_x86
 
-set CLANG_REV=198831  # You must change this value (see above)
-
-[from a clean directory, check out and build]
-rmdir /S /Q llvm
-rmdir /S /Q llvm-build
-mkdir llvm
-mkdir llvm-build
-svn co http://llvm.org/svn/llvm-project/llvm/trunk@%CLANG_REV% llvm
-cd llvm\tools
-svn co http://llvm.org/svn/llvm-project/cfe/trunk@%CLANG_REV% clang
-cd ..\..\llvm-build
-set CC=cl
-set CXX=cl
+# In chromium/src
+tools\win\setenv amd64_x86
+set CLANG_REV=56ac9d30d35632969baa39829ebc8465ed5937ef  # You must change this value (see above)
+rmdir /S /Q llvm-project
+git clone https://github.com/llvm/llvm-project
+cd llvm-project
+git checkout %CLANG_REV%
+mkdir build
+cd build
+set CC=..\..\third_party\llvm-build\Release+Asserts\bin\clang-cl.exe
+set CXX=..\..\third_party\llvm-build\Release+Asserts\bin\clang-cl.exe
+set CFLAGS=-m32
+set CXXFLAGS=-m32
 cmake -G Ninja ..\llvm -DCMAKE_BUILD_TYPE=Release -DLLVM_USE_CRT_RELEASE=MT ^
     -DLLVM_ENABLE_ASSERTIONS=NO -DLLVM_ENABLE_THREADS=NO ^
-    -DPYTHON_EXECUTABLE=d:\src\depot_tools\python276_bin\python.exe
+    -DLLVM_ENABLE_PROJECTS=clang
 ninja clang-format
 bin\clang-format.exe --version
 ```
@@ -54,29 +52,45 @@ Mac & Linux step-by-step:
 
 ```shell
 # Check out.
-export CLANG_REV=198831   # You must change this value (see above)
-rm -rf llvm
-rm -rf llvm-build
-mkdir llvm
-mkdir llvm-build
-svn co http://llvm.org/svn/llvm-project/llvm/trunk@$CLANG_REV llvm
-cd llvm/tools
-svn co http://llvm.org/svn/llvm-project/cfe/trunk@$CLANG_REV clang
-cd ../../llvm-build
+export CLANG_REV=56ac9d30d35632969baa39829ebc8465ed5937ef   # You must change this value (see above)
+git clone https://github.com/llvm/llvm-project
+cd llvm-project
+git checkout $CLANG_REV
+mkdir build
+cd build
 
 # On Mac, do the following:
-MACOSX_DEPLOYMENT_TARGET=10.9 cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
-    -DLLVM_ENABLE_ASSERTIONS=NO -DLLVM_ENABLE_THREADS=NO ../llvm/
-time caffeinate ninja clang-format
-strip bin/clang-format
+MACOSX_DEPLOYMENT_TARGET=10.9 cmake -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_PROJECTS=clang \
+    -DLLVM_ENABLE_ASSERTIONS=NO \
+    -DLLVM_ENABLE_TERMINFO=OFF \
+    -DLLVM_ENABLE_THREADS=NO \
+    -DLLVM_ENABLE_ZLIB=OFF \
+    '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
+    ../llvm/
 
-#On Linux, do the following:
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
-    -DLLVM_ENABLE_ASSERTIONS=NO -DLLVM_ENABLE_THREADS=NO \
-    -DCMAKE_C_COMPILER=$PWD/../chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
-    -DCMAKE_CXX_COMPILER=$PWD/../chrome/src/third_party/llvm-build/Release+Asserts/bin/clang++ \
-    -DCMAKE_ASM_COMPILER=$PWD/../chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
-    -DLLVM_ENABLE_TERMINFO=OFF -DCMAKE_CXX_STANDARD_LIBRARIES="-static-libgcc -static-libstdc++" ../llvm/
+# On Linux, do the following:
+# Note the relative paths that point to your local Chromium checkout.
+# TODO(thakis): Remove DLLVM_ENABLE_Z3_SOLVER in the next roll. At the pinned
+# revision, Z3 detection does not work with a sysroot, but at LLVM trunk it's
+# already fixed.
+cmake -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_ENABLE_PROJECTS=clang \
+    -DLLVM_ENABLE_ASSERTIONS=NO \
+    -DLLVM_ENABLE_TERMINFO=OFF \
+    -DLLVM_ENABLE_THREADS=NO \
+    -DLLVM_ENABLE_ZLIB=OFF \
+    -DLLVM_ENABLE_Z3_SOLVER=NO \
+    -DCMAKE_C_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
+    -DCMAKE_CXX_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang++ \
+    -DCMAKE_ASM_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
+    -DCMAKE_CXX_STANDARD_LIBRARIES="-static-libgcc -static-libstdc++" \
+    -DCMAKE_SYSROOT=$HOME/src/chrome/src/build/linux/debian_sid_amd64-sysroot \
+    ../llvm/
+
+# Finally, build the actual clang-format binary with Ninja
 ninja clang-format
 strip bin/clang-format
 
@@ -97,8 +111,8 @@ Platform specific notes:
 
 Copy the binaries into your chromium checkout (under
 `src/buildtools/(win|linux64|mac)/clang-format(.exe?)`). For each binary, you'll
-need to run upload_to_google_storage.py according to the instructions in
-[README.txt](https://chromium.googlesource.com/chromium/src/+/master/buildtools/clang_format/README.txt).
+need to run `upload_to_google_storage.py` according to the instructions in
+[README.txt](https://chromium.googlesource.com/chromium/src/+/main/buildtools/clang_format/README.txt).
 This will upload the binary into a publicly accessible google storage bucket,
 and update `.sha1` file in your Chrome checkout. You'll check in the `.sha1`
 file (but NOT the clang-format binary) into source control. In order to be able
@@ -108,7 +122,7 @@ to upload, you'll need write permission to the bucket -- see the prerequisites.
 
 There are some auxiliary scripts that ought to be kept updated in lockstep with
 the clang-format binary. These get copied into
-third_party/clang_format/scripts in your Chromium checkout.
+`buildtools/clang_format/script` in your Chromium checkout.
 
 The `README.chromium` file ought to be updated with version and date info.
 
@@ -117,11 +131,11 @@ The `README.chromium` file ought to be updated with version and date info.
     Update clang-format binaries and scripts for all platforms.
 
     I followed these instructions:
-    https://chromium.googlesource.com/chromium/src/+/master/docs/updating_clang_format_binaries.md
+    https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang_format_binaries.md
 
     The binaries were built at clang revision ####### on ####DATETIME####.
 
-    BUG=
+    Bug:
 
 The change should **always** include new `.sha1` files for each platform (we
 want to keep these in lockstep), should **never** include `clang-format`

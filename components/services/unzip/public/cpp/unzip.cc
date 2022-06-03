@@ -4,6 +4,7 @@
 
 #include "components/services/unzip/public/cpp/unzip.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -12,9 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/filesystem/directory_impl.h"
 #include "components/services/filesystem/lock_table.h"
@@ -34,6 +35,9 @@ class UnzipFilter : public unzip::mojom::UnzipFilter {
       : receiver_(this, std::move(receiver)),
         filter_callback_(filter_callback) {}
 
+  UnzipFilter(const UnzipFilter&) = delete;
+  UnzipFilter& operator=(const UnzipFilter&) = delete;
+
  private:
   // unzip::mojom::UnzipFilter implementation:
   void ShouldUnzipFile(const base::FilePath& path,
@@ -43,8 +47,6 @@ class UnzipFilter : public unzip::mojom::UnzipFilter {
 
   mojo::Receiver<unzip::mojom::UnzipFilter> receiver_;
   UnzipFilterCallback filter_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnzipFilter);
 };
 
 class UnzipParams : public base::RefCounted<UnzipParams> {
@@ -59,6 +61,9 @@ class UnzipParams : public base::RefCounted<UnzipParams> {
         callback_task_runner_(callback_task_runner),
         callback_(std::move(callback)),
         background_task_runner_keep_alive_(background_task_runner_keep_alive) {}
+
+  UnzipParams(const UnzipParams&) = delete;
+  UnzipParams& operator=(const UnzipParams&) = delete;
 
   mojo::Remote<mojom::Unzipper>& unzipper() { return unzipper_; }
 
@@ -87,8 +92,6 @@ class UnzipParams : public base::RefCounted<UnzipParams> {
   UnzipCallback callback_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnzipParams);
 };
 
 void UnzipDone(scoped_refptr<UnzipParams> params, bool success) {
@@ -162,9 +165,9 @@ void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
   DCHECK(!result_callback.is_null());
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
-           base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   background_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&DoUnzipWithFilter, std::move(unzipper), zip_path,

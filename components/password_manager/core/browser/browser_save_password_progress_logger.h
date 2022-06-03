@@ -7,19 +7,19 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "url/gurl.h"
 
 namespace autofill {
-struct FormData;
 class FormStructure;
 class LogManager;
 }
 
 namespace password_manager {
+
+struct PasswordForm;
 
 // This is the SavePasswordProgressLogger specialization for the browser code,
 // where the LogManager can be directly called.
@@ -28,6 +28,10 @@ class BrowserSavePasswordProgressLogger
  public:
   explicit BrowserSavePasswordProgressLogger(
       const autofill::LogManager* log_manager);
+  BrowserSavePasswordProgressLogger(const BrowserSavePasswordProgressLogger&) =
+      delete;
+  BrowserSavePasswordProgressLogger& operator=(
+      const BrowserSavePasswordProgressLogger&) = delete;
   ~BrowserSavePasswordProgressLogger() override;
 
   // Browser-specific addition to the base class' Log* methods. The input is
@@ -48,9 +52,13 @@ class BrowserSavePasswordProgressLogger
   void LogSuccessfulSubmissionIndicatorEvent(
       autofill::mojom::SubmissionIndicatorEvent event);
 
-  // Browser-specific addition to the base class' Log* methods. The input is
-  // sanitized and passed to SendLog for display.
-  void LogFormData(StringID label, const autofill::FormData& form);
+  void LogPasswordForm(StringID label, const PasswordForm& form);
+
+  // Log password requirements.
+  void LogPasswordRequirements(const GURL& origin,
+                               autofill::FormSignature form_signature,
+                               autofill::FieldSignature field_signature,
+                               const autofill::PasswordRequirementsSpec& spec);
 
  protected:
   // autofill::SavePasswordProgressLogger:
@@ -76,8 +84,6 @@ class BrowserSavePasswordProgressLogger
   // Returns the string representation of a binary password attribute.
   std::string BinaryPasswordAttributeLogString(StringID string_id,
                                                bool attribute_value);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSavePasswordProgressLogger);
 };
 
 }  // namespace password_manager

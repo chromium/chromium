@@ -1,0 +1,41 @@
+Document::nodesFromRect : Rect-based hit-testing on tables - bug 86605
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Check area hits fully inside table cells
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+Check area hits across table border
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+Check area hits crossing neighbouring table cells
+FAIL Unexpected node #0 for rect [170,165], [41,21] - TD#td22
+FAIL Unexpected node #0 for rect [240,265], [41,21] - TD#td43
+FAIL Unexpected node #0 for rect [165,170], [21,41] - TD#td22
+FAIL Unexpected node #0 for rect [265,240], [21,41] - TD#td34
+FAIL Unexpected node #0 for rect [170,170], [41,41] - TD#td22
+Check area hits crossing entire table cells
+FAIL Unexpected node #0 for rect [110,165], [181,21] - TD#td21
+FAIL Unexpected node #0 for rect [165,110], [21,181] - TD#td12
+FAIL Unexpected node #0 for rect [90,90], [121,121] - TD#td11
+FAIL Unexpected node #0 for rect [115,230], [21,131] - TD#td31
+FAIL Unexpected node #0 for rect [230,140], [131,21] - TD#td13
+Check area hits on right-to-left table
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+FAIL Unexpected node #0 for rect [165,170], [21,41] - TD#td23
+Check area hits on flipped (tb-lr) table
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+FAIL Unexpected node #0 for rect [110,165], [181,21] - TD#td12
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+			
+			
+			
+			

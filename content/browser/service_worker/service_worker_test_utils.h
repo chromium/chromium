@@ -10,58 +10,39 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
+#include "base/run_loop.h"
+#include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
-#include "content/browser/service_worker/service_worker_database.h"
-#include "content/browser/service_worker/service_worker_disk_cache.h"
-#include "content/browser/service_worker/service_worker_provider_host.h"
+#include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/completion_once_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
-namespace net {
-
-class HttpResponseInfo;
-
-}  // namespace net
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
 class EmbeddedWorkerTestHelper;
 class ServiceWorkerContextCore;
-class ServiceWorkerProviderHost;
+class ServiceWorkerHost;
+class ServiceWorkerRegistry;
 class ServiceWorkerStorage;
 class ServiceWorkerVersion;
 
-template <typename Arg>
-void ReceiveResult(BrowserThread::ID run_quit_thread,
-                   base::OnceClosure quit,
-                   base::Optional<Arg>* out,
-                   Arg actual) {
-  *out = actual;
-  if (!quit.is_null())
-    base::PostTask(FROM_HERE, {run_quit_thread}, std::move(quit));
-}
-
-template <typename Arg>
-base::OnceCallback<void(Arg)> CreateReceiver(BrowserThread::ID run_quit_thread,
-                                             base::OnceClosure quit,
-                                             base::Optional<Arg>* out) {
-  return base::BindOnce(&ReceiveResult<Arg>, run_quit_thread, std::move(quit),
-                        out);
-}
-
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
-ReceiveServiceWorkerStatus(base::Optional<blink::ServiceWorkerStatusCode>* out,
+ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure);
 
 blink::ServiceWorkerStatusCode StartServiceWorker(
@@ -69,16 +50,22 @@ blink::ServiceWorkerStatusCode StartServiceWorker(
 
 void StopServiceWorker(ServiceWorkerVersion* version);
 
-// Container for keeping the Mojo connection to the service worker provider on
+// Container for keeping the Mojo connection to the service worker container on
 // the renderer alive.
-class ServiceWorkerRemoteProviderEndpoint {
+class ServiceWorkerRemoteContainerEndpoint {
  public:
-  ServiceWorkerRemoteProviderEndpoint();
-  ServiceWorkerRemoteProviderEndpoint(
-      ServiceWorkerRemoteProviderEndpoint&& other);
-  ~ServiceWorkerRemoteProviderEndpoint();
+  ServiceWorkerRemoteContainerEndpoint();
+  ServiceWorkerRemoteContainerEndpoint(
+      ServiceWorkerRemoteContainerEndpoint&& other);
 
-  void BindForWindow(blink::mojom::ServiceWorkerProviderInfoForClientPtr info);
+  ServiceWorkerRemoteContainerEndpoint(
+      const ServiceWorkerRemoteContainerEndpoint&) = delete;
+  ServiceWorkerRemoteContainerEndpoint& operator=(
+      const ServiceWorkerRemoteContainerEndpoint&) = delete;
+
+  ~ServiceWorkerRemoteContainerEndpoint();
+
+  void BindForWindow(blink::mojom::ServiceWorkerContainerInfoForClientPtr info);
   void BindForServiceWorker(
       blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr info);
 
@@ -100,166 +87,186 @@ class ServiceWorkerRemoteProviderEndpoint {
   // blink::mojom::EmbeddedWorkerInstanceClient connection if in the future we
   // really need to make |host_remote_| and |client_receiver_| usable for it.
   mojo::Remote<mojom::NavigationClient> navigation_client_;
-  // Bound with content::ServiceWorkerProviderHost. The provider host will be
+  // Bound with content::ServiceWorkerContainerHost. The container host will be
   // removed asynchronously when this remote is closed.
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainerHost> host_remote_;
   // This is the other end of
   // mojo::PendingAssociatedRemote<ServiceWorkerContainer> owned by
-  // content::ServiceWorkerProviderHost.
+  // content::ServiceWorkerContainerHost.
   mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainer>
       client_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRemoteProviderEndpoint);
 };
 
-struct ServiceWorkerProviderHostAndInfo {
-  ServiceWorkerProviderHostAndInfo(
-      base::WeakPtr<ServiceWorkerProviderHost> host,
-      blink::mojom::ServiceWorkerProviderInfoForClientPtr);
-  ~ServiceWorkerProviderHostAndInfo();
+struct ServiceWorkerContainerHostAndInfo {
+  ServiceWorkerContainerHostAndInfo(
+      base::WeakPtr<ServiceWorkerContainerHost> host,
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr);
 
-  base::WeakPtr<ServiceWorkerProviderHost> host;
-  blink::mojom::ServiceWorkerProviderInfoForClientPtr info;
+  ServiceWorkerContainerHostAndInfo(const ServiceWorkerContainerHostAndInfo&) =
+      delete;
+  ServiceWorkerContainerHostAndInfo& operator=(
+      const ServiceWorkerContainerHostAndInfo&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerProviderHostAndInfo);
+  ~ServiceWorkerContainerHostAndInfo();
+
+  base::WeakPtr<ServiceWorkerContainerHost> host;
+  blink::mojom::ServiceWorkerContainerInfoForClientPtr info;
 };
 
-// Creates a provider host that finished navigation. Test code can typically use
-// this function, but if more control is required
-// CreateProviderHostAndInfoForWindow() can be used instead.
-base::WeakPtr<ServiceWorkerProviderHost> CreateProviderHostForWindow(
-    int process_id,
+// Creates a container host that finished navigation. Test code can typically
+// use this function, but if more control is required
+// CreateContainerHostAndInfoForWindow() can be used instead.
+base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
+    const GlobalRenderFrameHostId& render_frame_host_id,
     bool is_parent_frame_secure,
     base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerRemoteProviderEndpoint* output_endpoint);
+    ServiceWorkerRemoteContainerEndpoint* output_endpoint);
 
-// Creates a provider host that can be used for a navigation.
-std::unique_ptr<ServiceWorkerProviderHostAndInfo>
-CreateProviderHostAndInfoForWindow(
+// Creates a container host that can be used for a navigation.
+std::unique_ptr<ServiceWorkerContainerHostAndInfo>
+CreateContainerHostAndInfoForWindow(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool are_ancestors_secure);
 
-base::WeakPtr<ServiceWorkerProviderHost>
-CreateProviderHostForServiceWorkerContext(
+std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
     int process_id,
     bool is_parent_frame_secure,
     ServiceWorkerVersion* hosted_version,
     base::WeakPtr<ServiceWorkerContextCore> context,
-    ServiceWorkerRemoteProviderEndpoint* output_endpoint);
+    ServiceWorkerRemoteContainerEndpoint* output_endpoint);
+
+// Calls CreateNewRegistration() synchronously.
+scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
+    ServiceWorkerRegistry* registry,
+    const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key);
+
+// Calls CreateNewVersion() synchronously.
+scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
+    ServiceWorkerRegistry* registry,
+    scoped_refptr<ServiceWorkerRegistration> registration,
+    const GURL& script_url,
+    blink::mojom::ScriptType script_type);
 
 // Creates a registration with a waiting version in INSTALLED state.
+// |resource_id| is used as ID to represent script resource (|script|) and
+// should be unique for each test.
 scoped_refptr<ServiceWorkerRegistration>
 CreateServiceWorkerRegistrationAndVersion(ServiceWorkerContextCore* context,
                                           const GURL& scope,
-                                          const GURL& script);
+                                          const GURL& script,
+                                          const blink::StorageKey& key,
+                                          int64_t resource_id);
 
 // Writes the script down to |storage| synchronously. This should not be used in
 // base::RunLoop since base::RunLoop is used internally to wait for completing
 // all of tasks. If it's in another base::RunLoop, consider to use
 // WriteToDiskCacheAsync().
-ServiceWorkerDatabase::ResourceRecord WriteToDiskCacheSync(
-    ServiceWorkerStorage* storage,
+storage::mojom::ServiceWorkerResourceRecordPtr WriteToDiskCacheWithIdSync(
+    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     const GURL& script_url,
     int64_t resource_id,
     const std::vector<std::pair<std::string, std::string>>& headers,
     const std::string& body,
     const std::string& meta_data);
 
-// Writes the script with custom net::HttpResponseInfo down to |storage|
-// synchronously. This should not be used in base::RunLoop since base::RunLoop
-// is used internally to wait for completing all of tasks. If it's in another
-// base::RunLoop, consider to use WriteToDiskCacheWithCustomResponseInfoAsync().
-ServiceWorkerDatabase::ResourceRecord
-WriteToDiskCacheWithCustomResponseInfoSync(
-    ServiceWorkerStorage* storage,
+// Similar to WriteToDiskCacheWithIdSync() but instead of taking a resource id,
+// this assigns a new resource ID internally.
+storage::mojom::ServiceWorkerResourceRecordPtr WriteToDiskCacheSync(
+    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     const GURL& script_url,
-    int64_t resource_id,
-    std::unique_ptr<net::HttpResponseInfo> http_info,
+    const std::vector<std::pair<std::string, std::string>>& headers,
     const std::string& body,
     const std::string& meta_data);
+
+using WriteToDiskCacheCallback = base::OnceCallback<void(
+    storage::mojom::ServiceWorkerResourceRecordPtr record)>;
 
 // Writes the script down to |storage| asynchronously. When completing tasks,
 // |callback| will be called. You must wait for |callback| instead of
 // base::RunUntilIdle because wiriting to the storage might happen on another
 // thread and base::RunLoop could get idle before writes has not finished yet.
-ServiceWorkerDatabase::ResourceRecord WriteToDiskCacheAsync(
-    ServiceWorkerStorage* storage,
+void WriteToDiskCacheAsync(
+    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     const GURL& script_url,
-    int64_t resource_id,
     const std::vector<std::pair<std::string, std::string>>& headers,
     const std::string& body,
     const std::string& meta_data,
-    base::OnceClosure callback);
+    WriteToDiskCacheCallback callback);
 
-// Writes the script with custom net::HttpResponseInfo down to |storage|
-// asynchronously. When completing tasks, |callback| will be called. You must
-// wait for |callback| instead of base::RunUntilIdle because wiriting to the
-// storage might happen on another thread and base::RunLoop could get idle
-// before writes has not finished yet.
-ServiceWorkerDatabase::ResourceRecord
-WriteToDiskCacheWithCustomResponseInfoAsync(
-    ServiceWorkerStorage* storage,
-    const GURL& script_url,
-    int64_t resource_id,
-    std::unique_ptr<net::HttpResponseInfo> http_info,
-    const std::string& body,
-    const std::string& meta_data,
-    base::OnceClosure callback);
+// Calls ServiceWorkerStorageControl::GetNewResourceId() synchronously.
+int64_t GetNewResourceIdSync(
+    mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage);
 
-// A test implementation of ServiceWorkerResponseReader.
+// A test implementation of ServiceWorkerResourceReader.
 //
 // This class exposes the ability to expect reads (see ExpectRead*() below).
-// Each call to ReadInfo() or ReadData() consumes another expected read, in the
-// order those reads were expected, so:
-//    reader->ExpectReadInfoOk(5, false);
-//    reader->ExpectReadDataOk("abcdef", false);
-//    reader->ExpectReadDataOk("ghijkl", false);
+// Each call to ReadResponseHead() or ReadData() consumes another expected read,
+// in the order those reads were expected, so:
+//    reader->ExpectReadResponseHeadOk(5);
+//    reader->ExpectReadDataOk("abcdef");
+//    reader->ExpectReadDataOk("ghijkl");
 // Expects these calls, in this order:
-//    reader->ReadInfo(...);  // reader writes 5 into
-//                            // |info_buf->response_data_size|
-//    reader->ReadData(...);  // reader writes "abcdef" into |buf|
-//    reader->ReadData(...);  // reader writes "ghijkl" into |buf|
+//    reader->ReadResponseHead(...);  // reader writes 5 into
+//                                    // |response_head->content_length|
+//    reader->ReadData(...);          // reader writes "abcdef" into |buf|
+//    reader->ReadData(...);          // reader writes "ghijkl" into |buf|
 // If an unexpected call happens, this class DCHECKs.
-// If an expected read is marked "async", it will not complete immediately, but
-// must be completed by the test using CompletePendingRead().
-// These is a convenience method AllExpectedReadsDone() which returns whether
-// there are any expected reads that have not yet happened.
-class MockServiceWorkerResponseReader : public ServiceWorkerResponseReader {
+// An expected read will not complete immediately. It  must be completed by the
+// test using CompletePendingRead(). These is a convenience method
+// AllExpectedReadsDone() which returns whether there are any expected reads
+// that have not yet happened.
+class MockServiceWorkerResourceReader
+    : public storage::mojom::ServiceWorkerResourceReader {
  public:
-  MockServiceWorkerResponseReader();
-  ~MockServiceWorkerResponseReader() override;
+  MockServiceWorkerResourceReader();
 
-  // ServiceWorkerResponseReader overrides
-  void ReadInfo(HttpResponseInfoIOBuffer* info_buf,
-                OnceCompletionCallback callback) override;
-  void ReadData(net::IOBuffer* buf,
-                int buf_len,
-                OnceCompletionCallback callback) override;
+  MockServiceWorkerResourceReader(const MockServiceWorkerResourceReader&) =
+      delete;
+  MockServiceWorkerResourceReader& operator=(
+      const MockServiceWorkerResourceReader&) = delete;
 
-  // Test helpers. ExpectReadInfo() and ExpectReadData() give precise control
-  // over both the data to be written and the result to return.
-  // ExpectReadInfoOk() and ExpectReadDataOk() are convenience functions for
-  // expecting successful reads, which always have their length as their result.
+  ~MockServiceWorkerResourceReader() override;
 
-  // Expect a call to ReadInfo() on this reader. For these functions, |len| will
-  // be used as |response_data_size|, not as the length of this particular read.
-  void ExpectReadInfo(size_t len, bool async, int result);
-  void ExpectReadInfoOk(size_t len, bool async);
+  mojo::PendingRemote<storage::mojom::ServiceWorkerResourceReader>
+  BindNewPipeAndPassRemote(base::OnceClosure disconnect_handler);
+
+  // storage::mojom::ServiceWorkerResourceReader overrides:
+  void ReadResponseHead(
+      storage::mojom::ServiceWorkerResourceReader::ReadResponseHeadCallback
+          callback) override;
+  void ReadData(
+      int64_t,
+      mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
+          notifier,
+      ReadDataCallback callback) override;
+
+  // Test helpers. ExpectReadResponseHead() and ExpectReadData() give precise
+  // control over both the data to be written and the result to return.
+  // ExpectReadResponseHeadOk() and ExpectReadDataOk() are convenience functions
+  // for expecting successful reads, which always have their length as their
+  // result.
+
+  // Expect a call to ReadResponseHead() on this reader. For these functions,
+  // |len| will be used as |response_data_size|, not as the length of this
+  // particular read.
+  void ExpectReadResponseHead(size_t len, int result);
+  void ExpectReadResponseHeadOk(size_t len);
 
   // Expect a call to ReadData() on this reader. For these functions, |len| is
   // the length of the data to be written back; in ExpectReadDataOk(), |len| is
   // implicitly the length of |data|.
-  void ExpectReadData(const char* data, size_t len, bool async, int result);
-  void ExpectReadDataOk(const std::string& data, bool async);
+  void ExpectReadData(const char* data, size_t len, int result);
+  void ExpectReadDataOk(const std::string& data);
 
-  // Convenient method for calling ExpectReadInfoOk() with the length being
-  // |bytes_stored|, and ExpectReadDataOk() for each element of |stored_data|.
+  // Convenient method for calling ExpectReadResponseHeadOk() with the length
+  // being |bytes_stored|, and ExpectReadDataOk() for each element of
+  // |stored_data|.
   void ExpectReadOk(const std::vector<std::string>& stored_data,
-                    const size_t bytes_stored,
-                    const bool async);
+                    const size_t bytes_stored);
 
   // Complete a pending async read. It is an error to call this function without
-  // a pending async read (ie, a previous call to ReadInfo() or ReadData()
+  // a pending read (ie, a previous call to ReadResponseHead() or ReadData()
   // having not run its callback yet).
   void CompletePendingRead();
 
@@ -268,67 +275,77 @@ class MockServiceWorkerResponseReader : public ServiceWorkerResponseReader {
 
  private:
   struct ExpectedRead {
-    ExpectedRead(size_t len, bool async, int result)
-        : data(nullptr), len(len), info(true), async(async), result(result) {}
-    ExpectedRead(const char* data, size_t len, bool async, int result)
-        : data(data), len(len), info(false), async(async), result(result) {}
+    ExpectedRead(size_t len, int result)
+        : data(nullptr), len(len), is_head(true), result(result) {}
+    ExpectedRead(const char* data, size_t len, int result)
+        : data(data), len(len), is_head(false), result(result) {}
     const char* data;
     size_t len;
-    bool info;
-    bool async;
+    bool is_head;
     int result;
   };
 
   base::queue<ExpectedRead> expected_reads_;
-  scoped_refptr<net::IOBuffer> pending_buffer_;
-  size_t pending_buffer_len_;
-  scoped_refptr<HttpResponseInfoIOBuffer> pending_info_;
-  OnceCompletionCallback pending_callback_;
+  size_t expected_max_data_bytes_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerResponseReader);
+  mojo::Receiver<storage::mojom::ServiceWorkerResourceReader> receiver_{this};
+  storage::mojom::ServiceWorkerResourceReader::ReadResponseHeadCallback
+      pending_read_response_head_callback_;
+  storage::mojom::ServiceWorkerResourceReader::ReadDataCallback
+      pending_read_data_callback_;
+  mojo::ScopedDataPipeProducerHandle body_;
 };
 
-// A test implementation of ServiceWorkerResponseWriter.
+// A test implementation of ServiceWorkerResourceWriter.
 //
 // This class exposes the ability to expect writes (see ExpectWrite*Ok() below).
-// Each write to this class via WriteInfo() or WriteData() consumes another
-// expected write, in the order they were added, so:
-//   writer->ExpectWriteInfoOk(5, false);
-//   writer->ExpectWriteDataOk(6, false);
-//   writer->ExpectWriteDataOk(6, false);
+// Each write to this class via WriteResponseHead() or WriteData() consumes
+// another expected write, in the order they were added, so:
+//   writer->ExpectWriteResponseHeadOk(5);
+//   writer->ExpectWriteDataOk(6);
+//   writer->ExpectWriteDataOk(6);
 // Expects these calls, in this order:
-//   writer->WriteInfo(...);  // checks that |buf->response_data_size| == 5
+//   writer->WriteResponseHead(...);  // checks that
+//                                    // |response_head->content_length| == 5
 //   writer->WriteData(...);  // checks that 6 bytes are being written
 //   writer->WriteData(...);  // checks that another 6 bytes are being written
-// If this class receives an unexpected call to WriteInfo() or WriteData(), it
-// DCHECKs.
-// Expected writes marked async do not complete synchronously, but rather return
-// without running their callback and need to be completed with
-// CompletePendingWrite().
+// If this class receives an unexpected call to WriteResponseHead() or
+// WriteData(), it DCHECKs.
+// Expected writes do not complete synchronously, but rather return without
+// running their callback and need to be completed with CompletePendingWrite().
 // A convenience method AllExpectedWritesDone() is exposed so tests can ensure
 // that all expected writes have been consumed by matching calls to WriteInfo()
 // or WriteData().
-class MockServiceWorkerResponseWriter : public ServiceWorkerResponseWriter {
+class MockServiceWorkerResourceWriter
+    : public storage::mojom::ServiceWorkerResourceWriter {
  public:
-  MockServiceWorkerResponseWriter();
-  ~MockServiceWorkerResponseWriter() override;
+  MockServiceWorkerResourceWriter();
 
-  // ServiceWorkerResponseWriter overrides
-  void WriteInfo(HttpResponseInfoIOBuffer* info_buf,
-                 OnceCompletionCallback callback) override;
-  void WriteData(net::IOBuffer* buf,
-                 int buf_len,
-                 OnceCompletionCallback callback) override;
+  MockServiceWorkerResourceWriter(const MockServiceWorkerResourceWriter&) =
+      delete;
+  MockServiceWorkerResourceWriter& operator=(
+      const MockServiceWorkerResourceWriter&) = delete;
+
+  ~MockServiceWorkerResourceWriter() override;
+
+  mojo::PendingRemote<storage::mojom::ServiceWorkerResourceWriter>
+  BindNewPipeAndPassRemote(base::OnceClosure disconnect_handler);
+
+  // ServiceWorkerResourceWriter overrides:
+  void WriteResponseHead(network::mojom::URLResponseHeadPtr response_head,
+                         WriteResponseHeadCallback callback) override;
+  void WriteData(mojo_base::BigBuffer data,
+                 WriteDataCallback callback) override;
 
   // Enqueue expected writes.
-  void ExpectWriteInfoOk(size_t len, bool async);
-  void ExpectWriteInfo(size_t len, bool async, int result);
-  void ExpectWriteDataOk(size_t len, bool async);
-  void ExpectWriteData(size_t len, bool async, int result);
+  void ExpectWriteResponseHeadOk(size_t len);
+  void ExpectWriteResponseHead(size_t len, int result);
+  void ExpectWriteDataOk(size_t len);
+  void ExpectWriteData(size_t len, int result);
 
   // Complete a pending asynchronous write. This method DCHECKs unless there is
-  // a pending write (a write for which WriteInfo() or WriteData() has been
-  // called but the callback has not yet been run).
+  // a pending write (a write for which WriteResponseHead() or WriteData() has
+  // been called but the callback has not yet been run).
   void CompletePendingWrite();
 
   // Returns whether all expected reads have been consumed.
@@ -336,22 +353,43 @@ class MockServiceWorkerResponseWriter : public ServiceWorkerResponseWriter {
 
  private:
   struct ExpectedWrite {
-    ExpectedWrite(bool is_info, size_t length, bool async, int result)
-        : is_info(is_info), length(length), async(async), result(result) {}
-    bool is_info;
+    ExpectedWrite(bool is_head, size_t length, int result)
+        : is_head(is_head), length(length), result(result) {}
+    bool is_head;
     size_t length;
-    bool async;
     int result;
   };
 
   base::queue<ExpectedWrite> expected_writes_;
 
-  size_t info_written_;
-  size_t data_written_;
+  size_t head_written_ = 0;
+  size_t data_written_ = 0;
 
-  OnceCompletionCallback pending_callback_;
+  net::CompletionOnceCallback pending_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerResponseWriter);
+  mojo::Receiver<storage::mojom::ServiceWorkerResourceWriter> receiver_{this};
+};
+
+// A test implementation of ServiceWorkerDataPipeStateNotifier.
+class MockServiceWorkerDataPipeStateNotifier
+    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
+ public:
+  MockServiceWorkerDataPipeStateNotifier();
+  ~MockServiceWorkerDataPipeStateNotifier() override;
+
+  mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
+  BindNewPipeAndPassRemote();
+
+  int32_t WaitUntilComplete();
+
+ private:
+  // storage::mojom::ServiceWorkerDataPipeStateNotifier implementations:
+  void OnComplete(int32_t status) override;
+
+  absl::optional<int32_t> complete_status_;
+  base::OnceClosure on_complete_callback_;
+  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
+      this};
 };
 
 class ServiceWorkerUpdateCheckTestUtils {
@@ -362,13 +400,16 @@ class ServiceWorkerUpdateCheckTestUtils {
   // Creates a cache writer in the paused state (a difference was found between
   // the old and new script data). |bytes_compared| is the length compared
   // until the difference was found. |new_headers| is the new script's headers.
-  // |diff_data_block| is the first block of new script data that differs from
-  // the old data.
+  // |pending_network_buffer| is a buffer that has the first block of new script
+  // data that differs from the old data. |concumsed_size| is the number of
+  // bytes of the data consumed from the Mojo data pipe kept in
+  // |pending_network_buffer|.
   static std::unique_ptr<ServiceWorkerCacheWriter> CreatePausedCacheWriter(
       EmbeddedWorkerTestHelper* worker_test_helper,
       size_t bytes_compared,
       const std::string& new_headers,
-      const std::string& diff_data_block,
+      scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
+      uint32_t consumed_size,
       int64_t old_resource_id,
       int64_t new_resource_id);
 
@@ -377,7 +418,8 @@ class ServiceWorkerUpdateCheckTestUtils {
       std::unique_ptr<ServiceWorkerCacheWriter> cache_writer,
       ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state,
       ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state,
-      mojo::ScopedDataPipeConsumerHandle network_consumer);
+      scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
+      uint32_t consumed_size);
 
   static void SetComparedScriptInfoForVersion(
       const GURL& script_url,
@@ -399,17 +441,24 @@ class ServiceWorkerUpdateCheckTestUtils {
       EmbeddedWorkerTestHelper* worker_test_helper,
       ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state,
       ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state,
-      mojo::ScopedDataPipeConsumerHandle network_consumer,
       ServiceWorkerSingleScriptUpdateChecker::Result compare_result,
-      ServiceWorkerVersion* version);
+      ServiceWorkerVersion* version,
+      mojo::ScopedDataPipeProducerHandle* out_body_handle);
 
   // Returns false if the entry for |resource_id| doesn't exist in the storage.
   // Returns true when response status is "OK" and response body is same as
   // expected if body exists.
-  static bool VerifyStoredResponse(int64_t resource_id,
-                                   ServiceWorkerStorage* storage,
-                                   const std::string& expected_body);
+  static bool VerifyStoredResponse(
+      int64_t resource_id,
+      mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
+      const std::string& expected_body);
 };
+
+// Reads all data from the given |handle| and returns data as a string.
+// This is similar to mojo::BlockingCopyToString() but a bit different. This
+// doesn't wait synchronously but keep posting a task when |handle| returns
+// MOJO_RESULT_SHOULD_WAIT.
+std::string ReadDataPipe(mojo::ScopedDataPipeConsumerHandle handle);
 
 }  // namespace content
 

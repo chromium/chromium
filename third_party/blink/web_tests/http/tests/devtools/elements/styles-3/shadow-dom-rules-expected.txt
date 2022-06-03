@@ -15,9 +15,4 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from body ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 

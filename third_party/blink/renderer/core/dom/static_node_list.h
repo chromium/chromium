@@ -46,7 +46,7 @@ class StaticNodeTypeList final : public NodeList {
   unsigned length() const override;
   NodeType* item(unsigned index) const override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<NodeType>> nodes_;
@@ -79,7 +79,7 @@ NodeType* StaticNodeTypeList<NodeType>::item(unsigned index) const {
 }
 
 template <typename NodeType>
-void StaticNodeTypeList<NodeType>::Trace(Visitor* visitor) {
+void StaticNodeTypeList<NodeType>::Trace(Visitor* visitor) const {
   visitor->Trace(nodes_);
   NodeList::Trace(visitor);
 }

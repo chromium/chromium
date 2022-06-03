@@ -10,10 +10,10 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -32,8 +32,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -66,8 +66,8 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
   std::unique_ptr<base::DictionaryValue> value = LoadManifestFile(path, error);
   if (!value)
     return nullptr;
-  return Extension::Create(path.DirName(), Manifest::UNPACKED, *value,
-                           Extension::NO_FLAGS, error);
+  return Extension::Create(path.DirName(), mojom::ManifestLocation::kUnpacked,
+                           *value, Extension::NO_FLAGS, error);
 }
 
 }  // namespace
@@ -80,9 +80,9 @@ class UserScriptListenerTest : public testing::Test {
             new TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
 
   void SetUp() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 #endif
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("test-profile");
@@ -140,7 +140,7 @@ class UserScriptListenerTest : public testing::Test {
   ExtensionService* service_ = nullptr;
   bool was_navigation_resumed_ = false;
   std::unique_ptr<content::WebContents> web_contents_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
 };

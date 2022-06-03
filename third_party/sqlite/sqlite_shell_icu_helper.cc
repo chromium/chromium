@@ -4,8 +4,8 @@
 
 #include "third_party/sqlite/sqlite_shell_icu_helper.h"
 
+#include "base/check.h"
 #include "base/i18n/icu_util.h"
-#include "base/logging.h"
 
 void InitializeICUForSqliteShell() {
   CHECK(base::i18n::InitializeICU());

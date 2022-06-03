@@ -14,7 +14,7 @@
 #include <set>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 TextureGenerator::TextureGenerator(RenderNode* root)
     : stage_(DiscoveryStage),

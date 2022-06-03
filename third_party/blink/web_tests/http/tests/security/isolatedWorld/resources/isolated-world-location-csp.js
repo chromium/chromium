@@ -68,13 +68,9 @@ const tests = [
   },
   function() {
     console.log('Testing isolated world with strict csp.');
-    console.log(
-        'internals.runtimeFlags.isolatedWorldCSPEnabled is ' +
-        internals.runtimeFlags.isolatedWorldCSPEnabled);
-    const expectBlocked = internals.runtimeFlags.isolatedWorldCSPEnabled;
     testRunner.setIsolatedWorldInfo(
         isolatedWorldId, isolatedWorldSecurityOrigin, 'script-src \'none\'');
-    testJavascriptUrlInIsolatedWorld(expectBlocked);
+    testJavascriptUrlInIsolatedWorld(true);
 
     // Clear the isolated world data.
     testRunner.setIsolatedWorldInfo(1, null, null);

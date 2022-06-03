@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -32,7 +33,7 @@ StringType UTF8ToNative(base::StringPiece src) {
 #if defined(OS_WIN)
   return base::UTF8ToWide(src);
 #elif defined(OS_POSIX)
-  return src.as_string();
+  return std::string(src);
 #else
 #error "Invalid platform for browser_switcher"
 #endif
@@ -103,10 +104,10 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsUrl) {
 TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
 #if defined(OS_WIN)
   std::string expected = "Internet Explorer";
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   std::string expected = "Safari";
 #else
-  std::string expected = "";
+  std::string expected;
 #endif
   std::string actual = driver()->GetBrowserName();
   EXPECT_EQ(expected, actual);
@@ -119,12 +120,17 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
   SetBrowserPath("${ie}");
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Internet Explorer", actual);
+
 #endif
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   SetBrowserPath("${safari}");
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Safari", actual);
+
+  SetBrowserPath("${edge}");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("Microsoft Edge", actual);
 #endif
 
   SetBrowserPath("${firefox}");
@@ -134,6 +140,64 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
   SetBrowserPath("${opera}");
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Opera", actual);
+}
+
+TEST_F(AlternativeBrowserDriverTest, GetBrowserType) {
+#if defined(OS_WIN)
+  BrowserType expected = BrowserType::kIE;
+#elif defined(OS_MAC)
+  BrowserType expected = BrowserType::kSafari;
+#else
+  BrowserType expected = BrowserType::kUnknown;
+#endif
+  auto actual = driver()->GetBrowserType();
+  EXPECT_EQ(expected, actual);
+
+  SetBrowserPath("bogus.exe");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kUnknown, actual);
+
+#if defined(OS_WIN)
+  SetBrowserPath("${ie}");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kIE, actual);
+
+  SetBrowserPath("C:\\Program Files (x86)\\Internet Explorer\\IExplore.exe");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kIE, actual);
+
+  SetBrowserPath("C:\\Program Files\\Mozilla Firefox\\firefox.exe");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kFirefox, actual);
+
+  SetBrowserPath(
+      "C:\\users\\HongGilDong\\AppData\\Local\\Programs\\Opera\\launcher.exe");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kOpera, actual);
+
+  SetBrowserPath(
+      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kChrome, actual);
+#endif
+
+#if defined(OS_WIN) || defined(OS_MAC)
+  SetBrowserPath("${safari}");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kSafari, actual);
+
+  SetBrowserPath("${edge}");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kEdge, actual);
+#endif
+
+  SetBrowserPath("${firefox}");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kFirefox, actual);
+
+  SetBrowserPath("${opera}");
+  actual = driver()->GetBrowserType();
+  EXPECT_EQ(BrowserType::kOpera, actual);
 }
 
 #if defined(OS_WIN)
@@ -175,7 +239,7 @@ TEST_F(AlternativeBrowserDriverTest,
 }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineUsesOpen) {
   // Use `open(1)' to launch browser paths that aren't absolute.
 
@@ -240,7 +304,7 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineContainsUrl) {
   EXPECT_EQ("http://example.com/", cmd_line.argv()[5]);
   EXPECT_EQ("def", cmd_line.argv()[6]);
 }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #if defined(OS_POSIX)
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsTilde) {

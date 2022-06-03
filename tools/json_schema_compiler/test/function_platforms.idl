@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Tests the ability to restrict platform availability for a function through an
+// idl schema.
+namespace function_platforms {
+  interface Functions {
+    [platforms=("win", "linux")]
+    static void function_win_linux();
+
+    static void function_all();
+
+    [platforms=("chromeos")]
+    static void function_cros();
+  };
+};

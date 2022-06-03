@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+enum RendererType {
+  // Media playback uses RendererImpl, which is the same as other
+  // platforms. For video codec supported by v4l2 (e.g. h264), it's still
+  // accelerated by hardware. Video will be rendererd on graphics plane.
+  DEFAULT_RENDERER = 0,
+
+  // Enables Mojo Renderer (MojoRenderer) for media playback.
+  // On Chromecast, CMA renderer is enabled here.
+  MOJO_RENDERER = 1,
+
+  // Enables RemotingRenderer for playing remoting media in
+  // blink::WebMediaPlayer.
+  REMOTING_RENDERER = 2,
+};

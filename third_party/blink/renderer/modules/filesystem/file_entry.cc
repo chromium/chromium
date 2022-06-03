@@ -72,7 +72,7 @@ void FileEntry::file(V8FileCallback* success_callback,
                            std::move(error_callback_wrapper));
 }
 
-void FileEntry::Trace(blink::Visitor* visitor) {
+void FileEntry::Trace(Visitor* visitor) const {
   Entry::Trace(visitor);
 }
 

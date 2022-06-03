@@ -19,14 +19,15 @@ namespace {
 class DisconnectWindowAura : public HostWindow {
  public:
   DisconnectWindowAura();
+
+  DisconnectWindowAura(const DisconnectWindowAura&) = delete;
+  DisconnectWindowAura& operator=(const DisconnectWindowAura&) = delete;
+
   ~DisconnectWindowAura() override;
 
   // HostWindow interface.
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowAura);
 };
 
 DisconnectWindowAura::DisconnectWindowAura() = default;
@@ -39,10 +40,10 @@ void DisconnectWindowAura::Start(
     const base::WeakPtr<ClientSessionControl>& client_session_control) {
   // TODO(kelvinp): Clean up the NotifyScreenShareStart interface when we
   // completely retire Hangout Remote Desktop v1.
-  base::string16 helper_name;
+  std::u16string helper_name;
   ash::Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
-      base::Bind(&ClientSessionControl::DisconnectSession,
-                 client_session_control, protocol::OK),
+      base::BindRepeating(&ClientSessionControl::DisconnectSession,
+                          client_session_control, protocol::OK),
       helper_name);
 }
 

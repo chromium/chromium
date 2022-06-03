@@ -5,9 +5,7 @@
 group("all") {
   testonly = true
 
-  deps = [
-    ":display",
-  ]
+  deps = [ ":display" ]
 }
 
 group("all_test") {
@@ -39,7 +37,7 @@ source_set("display") {
 
   include_dirs = [ "//third_party/protobuf/src" ]
 
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "GLKit.framework",
     "OpenGLES.framework",

@@ -12,7 +12,15 @@
   <release seq="1">
     <structures fallback_to_low_resolution="true">
       <!-- Badge for Chrome Apps if Arc is enabled. -->
-      <structure type="chrome_scaled_image" name="IDR_ARC_DUAL_ICON_BADGE" file="arc/dual-icon-badge.png" />
+      <structure type="chrome_scaled_image" name="IDR_CHROME_ICON_BADGE" file="badges/chrome-icon-badge.png" />
+      <!-- Badge for disabled apps. -->
+      <structure type="chrome_scaled_image" name="IDR_BLOCK_ICON_BADGE" file="badges/block-icon-badge.png" />
+      <!-- Badge for apps that used their daily time limit. -->
+      <structure type="chrome_scaled_image" name="IDR_HOURGLASS_ICON_BADGE" file="badges/hourglass-icon-badge.png" />
+      <!-- Mask for standard icons. -->
+      <structure type="chrome_scaled_image" name="IDR_ICON_MASK" file="mask/mask.png" />
+
+      <structure type="chrome_scaled_image" name="IDR_ICON_BADGE_MASK" file="mask/badge-mask.png" />
 
       <!-- Default user profile images. -->
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER" file="default_user_images/avatar_anonymous.png" />
@@ -86,15 +94,37 @@
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_68" file="default_user_images/geo/avatar_geo3.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_69" file="default_user_images/geo/avatar_geo4.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_70" file="default_user_images/geo/avatar_geo5.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_71" file="default_user_images/imaginary/avatar_botanist.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_72" file="default_user_images/imaginary/avatar_burger.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_73" file="default_user_images/imaginary/avatar_graduate.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_74" file="default_user_images/imaginary/avatar_guitar.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_75" file="default_user_images/imaginary/avatar_waving.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_76" file="default_user_images/imaginary/avatar_lion.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_77" file="default_user_images/imaginary/avatar_planet.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_78" file="default_user_images/imaginary/avatar_instant_camera.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_79" file="default_user_images/imaginary/avatar_robot.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_80" file="default_user_images/imaginary/avatar_sneaker.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_81" file="default_user_images/imaginary/avatar_van.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_82" file="default_user_images/imaginary/avatar_watermelon.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_83" file="default_user_images/material_design/avatar_person_watering_plants.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_84" file="default_user_images/material_design/avatar_person_daydreaming.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_85" file="default_user_images/material_design/avatar_person_with_flowers.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_86" file="default_user_images/material_design/avatar_person_with_cats.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_87" file="default_user_images/material_design/avatar_artist.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_88" file="default_user_images/material_design/avatar_person_doing_taichi.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_89" file="default_user_images/material_design/avatar_signing_thankyou.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_90" file="default_user_images/material_design/avatar_person_with_coffee.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_91" file="default_user_images/material_design/avatar_dog_wagging_tail.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_92" file="default_user_images/material_design/avatar_nurse.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_93" file="default_user_images/material_design/avatar_gamer.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_94" file="default_user_images/material_design/avatar_bookworm.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_95" file="default_user_images/material_design/avatar_biking.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_96" file="default_user_images/material_design/avatar_person_in_snow.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_97" file="default_user_images/material_design/avatar_person_with_megaphone.png" />
 
       <!-- Print Job Notification images. -->
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_CANCEL" file="print_notification/cancel.png" />
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_HELP" file="print_notification/help.png" />
-
-      <!-- Fingerprint images. -->
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_RIGHT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_bottom_right.png" />
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_TOP_RIGHT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_top_right.png" />
-      <structure type="chrome_html" name="IDR_LOGIN_FINGER_PRINT_TABLET_ANIMATION" file="vector/finger_print.json" compress="gzip" />
 
       <!-- Kerberos. -->
       <structure type="chrome_scaled_image" name="IDR_KERBEROS_ICON_KEY" file="kerberos/vpn_key_grey600_24dp.png" />
@@ -103,6 +133,7 @@
       <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ANIMATION" file="vector/voice_laptop.json" compress="gzip" />
       <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION" file="vector/connecting_loop.json" compress="gzip" />
 
+      <structure type="chrome_html" name="IDR_LOGIN_WELCOME_SCREEN_ANIMATION" file="vector/welcome_screen_animation.json" compress="gzip" />
     </structures>
   </release>
 </grit>

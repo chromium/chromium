@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_list_observer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
@@ -86,7 +86,7 @@ void FullscreenWebStateListObserver::WebStateActivatedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int active_index,
-    int reason) {
+    ActiveWebStateChangeReason reason) {
   WebStateWasActivated(new_web_state);
 }
 

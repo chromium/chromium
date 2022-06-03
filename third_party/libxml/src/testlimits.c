@@ -1403,7 +1403,7 @@ static limitDesc limitDescriptions[] = {
 typedef struct testDesc testDesc;
 typedef testDesc *testDescPtr;
 struct testDesc {
-    const char *desc; /* descripton of the test */
+    const char *desc; /* description of the test */
     functest    func; /* function implementing the test */
 };
 

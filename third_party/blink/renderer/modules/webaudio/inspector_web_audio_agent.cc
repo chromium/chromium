@@ -74,20 +74,20 @@ void InspectorWebAudioAgent::Restore() {
 
 Response InspectorWebAudioAgent::enable() {
   if (enabled_.Get())
-    return Response::OK();
+    return Response::Success();
   enabled_.Set(true);
   AudioGraphTracer* graph_tracer = AudioGraphTracer::FromPage(page_);
   graph_tracer->SetInspectorAgent(this);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorWebAudioAgent::disable() {
   if (!enabled_.Get())
-    return Response::OK();
+    return Response::Success();
   enabled_.Clear();
   AudioGraphTracer* graph_tracer = AudioGraphTracer::FromPage(page_);
   graph_tracer->SetInspectorAgent(nullptr);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorWebAudioAgent::getRealtimeData(
@@ -95,14 +95,14 @@ Response InspectorWebAudioAgent::getRealtimeData(
     std::unique_ptr<ContextRealtimeData>* out_data) {
   auto* const graph_tracer = AudioGraphTracer::FromPage(page_);
   if (!enabled_.Get())
-    return Response::Error("Enable agent first.");
+    return Response::ServerError("Enable agent first.");
 
   BaseAudioContext* context = graph_tracer->GetContextById(contextId);
   if (!context)
-    return Response::Error("Cannot find BaseAudioContext with such id.");
+    return Response::ServerError("Cannot find BaseAudioContext with such id.");
 
   if (!context->HasRealtimeConstraint()) {
-    return Response::Error(
+    return Response::ServerError(
         "ContextRealtimeData is only avaliable for an AudioContext.");
   }
 
@@ -115,7 +115,7 @@ Response InspectorWebAudioAgent::getRealtimeData(
           .setCallbackIntervalMean(metric.mean_callback_interval)
           .setCallbackIntervalVariance(metric.variance_callback_interval)
           .build();
-  return Response::OK();
+  return Response::Success();
 }
 
 void InspectorWebAudioAgent::DidCreateBaseAudioContext(
@@ -243,7 +243,7 @@ InspectorWebAudioAgent::BuildProtocolContext(BaseAudioContext* context) {
       .build();
 }
 
-void InspectorWebAudioAgent::Trace(blink::Visitor* visitor) {
+void InspectorWebAudioAgent::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
   InspectorBaseAgent::Trace(visitor);
 }

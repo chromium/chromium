@@ -8,19 +8,24 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewStub;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.FrameLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout;
-import org.chromium.chrome.browser.util.ViewUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * The New Tab Page for use in the incognito profile.
  */
-public class IncognitoNewTabPageView extends HistoryNavigationLayout {
+public class IncognitoNewTabPageView extends FrameLayout {
     private IncognitoNewTabPageManager mManager;
     private boolean mFirstShow = true;
     private NewTabPageScrollView mScrollView;
+    private IncognitoDescriptionView mDescriptionView;
 
     private int mSnapshotWidth;
     private int mSnapshotHeight;
@@ -32,6 +37,21 @@ public class IncognitoNewTabPageView extends HistoryNavigationLayout {
     interface IncognitoNewTabPageManager {
         /** Loads a page explaining details about incognito mode in the current tab. */
         void loadIncognitoLearnMore();
+
+        /**
+         * Initializes the cookie controls manager for interaction with the cookie controls toggle.
+         * */
+        void initCookieControlsManager();
+
+        /**
+         * Tells the caller whether a new snapshot is required or not.
+         * */
+        boolean shouldCaptureThumbnail();
+
+        /**
+         * Cleans up the manager after it is finished being used.
+         * */
+        void destroy();
 
         /**
          * Called when the NTP has completely finished loading (all views will be inflated
@@ -59,11 +79,17 @@ public class IncognitoNewTabPageView extends HistoryNavigationLayout {
         // any shortcut causes the UrlBar to be focused. See ViewRootImpl.leaveTouchMode().
         mScrollView.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
 
-        IncognitoDescriptionView descriptionView =
-                (IncognitoDescriptionView) findViewById(R.id.new_tab_incognito_container);
-        descriptionView.setLearnMoreOnclickListener(new OnClickListener() {
+        ViewStub viewStub = findViewById(R.id.incognito_description_layout_stub);
+        if (shouldShowRevampedIncognitoNTP()) {
+            viewStub.setLayoutResource(R.layout.revamped_incognito_description_layout);
+        } else {
+            viewStub.setLayoutResource(R.layout.incognito_description_layout);
+        }
+
+        mDescriptionView = (IncognitoDescriptionView) viewStub.inflate();
+        mDescriptionView.setLearnMoreOnclickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 mManager.loadIncognitoLearnMore();
             }
         });
@@ -85,6 +111,7 @@ public class IncognitoNewTabPageView extends HistoryNavigationLayout {
      */
     void initialize(IncognitoNewTabPageManager manager) {
         mManager = manager;
+        mManager.initCookieControlsManager();
     }
 
     /** @return The IncognitoNewTabPageManager associated with this IncognitoNewTabPageView. */
@@ -99,9 +126,12 @@ public class IncognitoNewTabPageView extends HistoryNavigationLayout {
     boolean shouldCaptureThumbnail() {
         if (getWidth() == 0 || getHeight() == 0) return false;
 
-        return getWidth() != mSnapshotWidth
-                || getHeight() != mSnapshotHeight
-                || mScrollView.getScrollY() != mSnapshotScrollY;
+        return mManager.shouldCaptureThumbnail() || getWidth() != mSnapshotWidth
+                || getHeight() != mSnapshotHeight || mScrollView.getScrollY() != mSnapshotScrollY;
+    }
+
+    boolean shouldShowRevampedIncognitoNTP() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP);
     }
 
     /**
@@ -113,5 +143,37 @@ public class IncognitoNewTabPageView extends HistoryNavigationLayout {
         mSnapshotWidth = getWidth();
         mSnapshotHeight = getHeight();
         mSnapshotScrollY = mScrollView.getScrollY();
+    }
+
+    /**
+     * Set the toggle on the cookie controls card.
+     * @param isChecked Whether it's checked or not.
+     */
+    void setIncognitoCookieControlsToggleChecked(boolean isChecked) {
+        mDescriptionView.setCookieControlsToggle(isChecked);
+    }
+
+    /**
+     * Set the incognito cookie controls toggle checked change listener.
+     * @param listener The given checked change listener.
+     */
+    void setIncognitoCookieControlsToggleCheckedListener(OnCheckedChangeListener listener) {
+        mDescriptionView.setCookieControlsToggleOnCheckedChangeListener(listener);
+    }
+
+    /**
+     * Set the enforcement rule for the incognito cookie controls toggle.
+     * @param enforcement The enforcement enum to set.
+     */
+    void setIncognitoCookieControlsToggleEnforcement(@CookieControlsEnforcement int enforcement) {
+        mDescriptionView.setCookieControlsEnforcement(enforcement);
+    }
+
+    /**
+     * Set the incognito cookie controls icon click listener.
+     * @param listener The given onclick listener.
+     */
+    void setIncognitoCookieControlsIconOnclickListener(OnClickListener listener) {
+        mDescriptionView.setCookieControlsIconOnclickListener(listener);
     }
 }

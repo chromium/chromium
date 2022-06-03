@@ -1,61 +1,38 @@
-<html>
-    <head>
-        <script src="../../resources/js-test.js"></script>
-        <script>
-            var givenScrollTop = 2;
-            var givenScrollLeft = 0;
-            var expectedScrollTop = 0;
-            var expectedScrollLeft = 0;
-            var event;
-            var div;
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+<div style="height:200px;width:2400px">
+  <div style="background-color:red;height:200px;width:1200px;position:relative;left:0px;top:0px"></div>
+  <div style="background-color:green;height:200px;width:1200px;position:relative;left:1200px;top:-200px"></div>
+</div>
+<div style="height:200px;width:2400px">
+  <div style="background-color:blue;height:200px;width:1200px;position:relative;left:0px;top:0px"></div>
+  <div style="background-color:yellow;height:200px;width:1200px;position:relative;left:1200px;top:-200px"></div>
+</div>
 
-            if (window.testRunner)
-                testRunner.waitUntilDone();
+<script>
+    const scrollDelta = 2;
+    var last_event = null;
+    var source = GestureSourceType.MOUSE_INPUT;
+    const numTicksY = scrollDelta / pixelsPerTick();
+    const expectedWheelDeltaY = numTicksY * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
 
-            function dispatchWheelEvent()
-            {
-                document.body.addEventListener("mousewheel", mousewheelHandler, false);
+    function mousewheelHandler(e)
+    {
+        last_event = e;
+    }
 
-                if (window.eventSender) {
-                    eventSender.mouseMoveTo(100, 110);
-                    eventSender.continuousMouseScrollBy(-window.givenScrollLeft, -window.givenScrollTop, true);
-                }
+    promise_test(async () => {
+      document.body.addEventListener("mousewheel", mousewheelHandler, false);
 
-                setTimeout('checkOffsets();', 100);
-            }
-
-            function checkOffsets()
-            {
-                shouldBe("document.scrollingElement.scrollTop", "window.expectedScrollTop");
-                shouldBe("document.scrollingElement.scrollLeft", "window.expectedScrollLeft");
-
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }
-
-            function mousewheelHandler(e)
-            {
-				event = e;
-				shouldBe("event.wheelDeltaY", "window.givenScrollTop * -3");
-				shouldBe("event.wheelDeltaX", "0");
-
-				if (e.wheelDeltaY)
-					shouldBe("event.wheelDelta", "window.givenScrollTop * -3");
-				else
-					shouldBe("event.wheelDelta", "0");
-            }
-        </script>
-    </head>
-
-    <body style="margin:0" onload="setTimeout('dispatchWheelEvent();', 100)">
-        <div style="height:200px;width:2400px">
-          <div style="background-color:red;height:200px;width:1200px;position:relative;left:0px;top:0px"></div>
-          <div style="background-color:green;height:200px;width:1200px;position:relative;left:1200px;top:-200px"></div>
-        </div>
-        <div style="height:200px;width:2400px">
-          <div style="background-color:blue;height:200px;width:1200px;position:relative;left:0px;top:0px"></div>
-          <div style="background-color:yellow;height:200px;width:1200px;position:relative;left:1200px;top:-200px"></div>
-        </div>
-        <div id="console"></div>
-    </body>
-</html>
+      await smoothScroll(scrollDelta, 100, 110, source, 'down', SPEED_INSTANT, false /* precise_scrolling_deltas */, true /* scroll_by_page */);
+      await conditionHolds( () => {
+          return document.scrollingElement.scrollTop == 0;
+      });
+      assert_equals(last_event.wheelDeltaY, -Math.floor(expectedWheelDeltaY));
+      assert_equals(last_event.wheelDeltaX, 0);
+      assert_equals(last_event.wheelDelta, -Math.floor(expectedWheelDeltaY));
+    }, "Page-based wheel scrolls provide correct delta in event handler, don't scroll if there's no " +
+       "overflow in direction when scrolling on document.");
+</script>

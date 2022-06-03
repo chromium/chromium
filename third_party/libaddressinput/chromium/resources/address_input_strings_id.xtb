@@ -17,7 +17,7 @@
 <translation id="5095208057601539847">Provinsi</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5937097533660449554">Oblast</translation>
-<translation id="6132429659673988671">Pinggiran Kota</translation>
+<translation id="6132429659673988671">Suburb</translation>
 <translation id="6207937957461833379">Negara/Wilayah</translation>
 <translation id="6247152910634872706">Organisasi</translation>
 <translation id="6271429879296260742">Kode PIN</translation>
@@ -30,13 +30,13 @@
 <translation id="6839929833149231406">Wilayah</translation>
 <translation id="684852933191805996">Townland</translation>
 <translation id="6970216967273061347">Distrik</translation>
-<translation id="7087282848513945231">Wilayah</translation>
+<translation id="7087282848513945231">County</translation>
 <translation id="7139724024395191329">Emirat</translation>
 <translation id="7393381084163773901">Alamat</translation>
 <translation id="7602447984296396718">Tampaknya kode pos ini tidak cocok dengan sisa alamat ini.</translation>
 <translation id="7738983109397305830">Kode pos ini tampaknya tidak cocok dengan bagian lain dari alamat ini Tidak tahu kode pos Anda? Temukan <ph name="BEGIN_LINK" />di sini<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">Prefektur</translation>
-<translation id="7805765407568469194">Desa/Kecamatan</translation>
+<translation id="7805765407568469194">Kampung/Pekan</translation>
 <translation id="8184169487503545976">Format kode pos ini tidak dikenal.</translation>
 <translation id="820600307078153032">Format kode pos ini tidak dikenal. Contoh kode pos yang valid: <ph name="EXAMPLE" />.</translation>
 <translation id="8446364922515257065">Do/Si</translation>

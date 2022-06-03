@@ -5,16 +5,22 @@
 #ifndef CONTENT_BROWSER_URL_LOADER_FACTORY_PARAMS_HELPER_H_
 #define CONTENT_BROWSER_URL_LOADER_FACTORY_PARAMS_HELPER_H_
 
-#include "net/base/network_isolation_key.h"
+#include "base/strings/string_piece.h"
+#include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/early_hints.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "url/origin.h"
 
 namespace net {
-class NetworkIsolationKey;
+class IsolationInfo;
 }  // namespace net
 
 namespace content {
 
+class NavigationRequest;
 class RenderFrameHostImpl;
 class RenderProcessHost;
 
@@ -39,34 +45,60 @@ class URLLoaderFactoryParamsHelper {
   // |process| is exposed as a separate parameter, to accommodate creating
   // factories for dedicated workers (where the |process| hosting the worker
   // might be different from the process hosting the |frame|).
-  static network::mojom::URLLoaderFactoryParamsPtr CreateForFrame(
+  CONTENT_EXPORT static network::mojom::URLLoaderFactoryParamsPtr
+  CreateForFrame(
       RenderFrameHostImpl* frame,
       const url::Origin& origin,
-      RenderProcessHost* process);
+      const net::IsolationInfo& isolation_info,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter,
+      RenderProcessHost* process,
+      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+      base::StringPiece debug_tag);
 
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted
   // within the |frame|.
+  //
+  // TODO(https://crbug.com/1098410): Remove the CreateForIsolatedWorld method
+  // once Chrome Platform Apps are gone.
   static network::mojom::URLLoaderFactoryParamsPtr CreateForIsolatedWorld(
       RenderFrameHostImpl* frame,
       const url::Origin& isolated_world_origin,
-      const url::Origin& main_world_origin);
+      const url::Origin& main_world_origin,
+      const net::IsolationInfo& isolation_info,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy);
 
   static network::mojom::URLLoaderFactoryParamsPtr CreateForPrefetch(
-      RenderFrameHostImpl* frame);
+      RenderFrameHostImpl* frame,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Creates URLLoaderFactoryParams for either fetching the worker script or for
   // fetches initiated from a worker.
   static network::mojom::URLLoaderFactoryParamsPtr CreateForWorker(
       RenderProcessHost* process,
       const url::Origin& request_initiator,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter,
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      base::StringPiece debug_tag);
 
-  // TODO(kinuko, lukasza): https://crbug.com/891872: Remove, once all
-  // URLLoaderFactories vended to a renderer process are associated with a
-  // specific origin and an execution context (e.g. a frame, a service worker or
-  // any other kind of worker).
-  static network::mojom::URLLoaderFactoryParamsPtr CreateForRendererProcess(
-      RenderProcessHost* process);
+  // Creates URLLoaderFactoryParams for Early Hints preload.
+  // When a redirect happens, a URLLoaderFactory created from the
+  // URLLoaderFactoryParams must be destroyed since some parameters are
+  // calculated from speculative state of `navigation_request`.
+  static network::mojom::URLLoaderFactoryParamsPtr CreateForEarlyHintsPreload(
+      RenderProcessHost* process,
+      const url::Origin& tentative_origin,
+      NavigationRequest& navigation_request,
+      const network::mojom::EarlyHints& early_hints,
+      mojo::PendingRemote<network::mojom::CookieAccessObserver>
+          cookie_observer);
 
  private:
   // Only static methods.

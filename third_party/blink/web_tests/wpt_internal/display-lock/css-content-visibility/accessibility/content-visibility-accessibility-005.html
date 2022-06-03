@@ -1,0 +1,59 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility scrollToMakeVisible()</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility auto subtrees are exposed by accessibility scrollToMakeVisible">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div style="height:10000px;">
+  spacer so that everything below will be offscreen (and won't get viewport-activated)
+</div>
+<div id="hidden" style="content-visibility: auto">
+  foo
+  <div id="child" tabindex="0">
+    bar
+  </div>
+</div>
+<div class=spacer></div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test((t) => {
+  let axHidden = axElementById("hidden");
+  // #hidden is locked, and thus is saved as an AXNodeObject instead of an AXLayoutObject,
+  // and has 3 child nodes: "foo" text, "<newline>" text, and #child node.
+  // Note that we have the separate <newline> text because it's an AXNodeObject and does
+  // not do whitespace collapsing (though this might change in the future)..
+  t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count when locked"); });
+
+  // Scroll the #child into view. When that is done,
+  // the element will become unlocked and AXNodeObjects will be replaced with
+  // AXLayoutObjects, causing <newline> to be collapsed, so we expect to see
+  // two children.
+  axElementById("child").scrollToMakeVisible();
+
+  // If this is frame 1, then during frame 2, we will determine that we're
+  // visible and issue notifications of viewport intersection. However, the
+  // visibility notification is delayed to frame 3 past the rAF callbacks. So,
+  // check the result in frame 4.
+  requestAnimationFrame(() => { // Frame 2.
+    requestAnimationFrame(() => { // Frame 3.
+      requestAnimationFrame(() => { // Frame 4.
+        axHidden = axElementById("hidden");
+        t.step(() => {
+          assert_equals(axHidden.childrenCount, 2, "Child count after activation");
+        });
+        t.done();
+      });
+    });
+  });
+}, "Accessiblility scrollToMakeVisible() causes activatable hidden tree to activate");
+
+</script>

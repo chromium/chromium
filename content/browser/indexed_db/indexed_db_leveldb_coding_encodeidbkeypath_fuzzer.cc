@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -33,7 +34,7 @@ IndexedDBKeyPath GetKeyPath(FuzzedDataProvider* fuzzed_data) {
 
   // Create and add string16s to |paths| until |vector_size| is reached or the
   // end of |data| is reached.
-  std::vector<base::string16> paths;
+  std::vector<std::u16string> paths;
   for (size_t i = 0; i < vector_size && fuzzed_data->remaining_bytes() > 0;
        ++i) {
     // Consume sizeof(size_t) bytes to determine the size of the string to

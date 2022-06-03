@@ -22,4 +22,4 @@ enum class AudioWorkletProcessorErrorState : unsigned {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_PROCESSOR_ERROR_STATE_H_

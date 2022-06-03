@@ -12,7 +12,7 @@
 ShortcutsExtensionsManager::ShortcutsExtensionsManager(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
-  registry_observer_.Add(extensions::ExtensionRegistry::Get(profile_));
+  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
 }
 
 ShortcutsExtensionsManager::~ShortcutsExtensionsManager() {}
@@ -33,5 +33,5 @@ void ShortcutsExtensionsManager::OnExtensionUnloaded(
 
 void ShortcutsExtensionsManager::OnShutdown(
     extensions::ExtensionRegistry* registry) {
-  registry_observer_.RemoveAll();
+  registry_observation_.Reset();
 }

@@ -1,0 +1,16 @@
+<body>
+PASS if no crash.
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var xsltp = new XSLTProcessor();
+var xml = '<?xml version="1.0" encoding="UTF-8"?>';
+var style = '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"> \
+             </xsl:stylesheet>';
+var xmlDoc = new DOMParser().parseFromString(xml, "text/xml");
+var xslDoc = new DOMParser().parseFromString(style, "text/xml");
+xsltp.importStylesheet(xslDoc);
+xsltp.transformToDocument(xmlDoc).addressSpace;
+</script>
+</body>

@@ -67,8 +67,9 @@ TEST_F(ShellSystemLogsFetcherTest, TestLogSources) {
 
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildShellSystemLogsFetcher(browser_context());
-  fetcher->Fetch(base::Bind(&ShellSystemLogsFetcherTest::OnSystemLogsResponse,
-                            base::Unretained(this)));
+  fetcher->Fetch(
+      base::BindOnce(&ShellSystemLogsFetcherTest::OnSystemLogsResponse,
+                     base::Unretained(this)));
 
   wait_for_logs_response_run_loop_.Run();
 

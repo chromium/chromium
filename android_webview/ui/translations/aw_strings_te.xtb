@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
-<translation id="6106989379647458772"><ph name="PAGE" />లోని వెబ్‌పేజీ తాత్కాలికంగా నిలిపివేయబడి ఉండవచ్చు లేదా ఇది శాశ్వతంగా కొత్త వెబ్ చిరునామాకు తరలించబడి ఉండవచ్చు.</translation>
-<translation id="6312113039770857350">వెబ్‌పేజీ అందుబాటులో లేదు</translation>
-<translation id="8681531050781943054"><ph name="PAGE" />లోని వెబ్‌పేజీ ఈ కారణంగా లోడ్ కాలేదు:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />సూచనలు:<ph name="MARKUP_2" />మీకు డేటా కనెక్షన్ ఉందని నిర్ధారించుకోండి<ph name="MARKUP_3" />ఈ వెబ్‌పేజీని తర్వాత మళ్లీ లోడ్ చేయండి<ph name="MARKUP_4" />మీరు నమోదు చేసిన చిరునామా తనిఖీ చేయండి<ph name="MARKUP_5" /></translation>
 </translationbundle>

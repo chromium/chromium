@@ -1,0 +1,16 @@
+Tests that browser.Target.setAutoAttach() attaches to pages opened by click on noopener link.
+
+Clicking on body > a[rel]
+Attached to new window
+Resumed
+New window content:
+HTTP_USER_AGENT: Overridden value
+
+
+Clicking on body > a:not([rel])
+Attached to new window
+Resumed
+New window content:
+HTTP_USER_AGENT: Overridden value
+
+

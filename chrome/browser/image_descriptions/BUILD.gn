@@ -1,0 +1,93 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsController.java",
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsControllerDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialog.java",
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsSettings.java",
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/RadioButtonGroupAccessibilityPreference.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/device:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_full_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  resources_package = "org.chromium.chrome.browser.image_descriptions"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsController.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "android/java/res/layout/image_descriptions_dialog.xml",
+    "android/java/res/layout/radio_button_group_accessibility_preference.xml",
+    "android/java/res/xml/image_descriptions_preference.xml",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsControllerTest.java",
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialogTest.java",
+    "android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsSettingsTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/device:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}

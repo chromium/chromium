@@ -45,9 +45,7 @@ source_set("service") {
 source_set("tests") {
   testonly = true
 
-  sources = [
-    "annotator_unittest.cc",
-  ]
+  sources = [ "annotator_unittest.cc" ]
 
   deps = [
     ":lib",

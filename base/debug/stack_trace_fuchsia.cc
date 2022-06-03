@@ -11,7 +11,6 @@
 #include <unwind.h>
 #include <zircon/process.h>
 #include <zircon/syscalls.h>
-#include <zircon/syscalls/definitions.h>
 #include <zircon/syscalls/port.h>
 #include <zircon/types.h>
 
@@ -22,10 +21,10 @@
 #include <type_traits>
 
 #include "base/atomic_sequence_num.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/elf_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 
 namespace base {
 namespace debug {
@@ -91,6 +90,10 @@ class SymbolMap {
   };
 
   SymbolMap();
+
+  SymbolMap(const SymbolMap&) = delete;
+  SymbolMap& operator=(const SymbolMap&) = delete;
+
   ~SymbolMap() = default;
 
   // Gets all entries for the symbol map.
@@ -108,8 +111,6 @@ class SymbolMap {
 
   size_t count_ = 0;
   bool valid_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SymbolMap);
 };
 
 SymbolMap::SymbolMap() {
@@ -121,9 +122,10 @@ void SymbolMap::Populate() {
 
   // Try to fetch the name of the process' main executable, which was set as the
   // name of the |process| kernel object.
-  // TODO(wez): Object names can only have up to ZX_MAX_NAME_LEN characters, so
-  // if we keep hitting problems with truncation, find a way to plumb argv[0]
-  // through to here instead, e.g. using CommandLine::GetProgramName().
+  // TODO(crbug.com/1131250): Object names can only have up to ZX_MAX_NAME_LEN
+  // characters, so if we keep hitting problems with truncation, find a way to
+  // plumb argv[0] through to here instead, e.g. using
+  // CommandLine::GetProgramName().
   char app_name[std::extent<decltype(SymbolMap::Module::name)>()];
   zx_status_t status =
       zx_object_get_property(process, ZX_PROP_NAME, app_name, sizeof(app_name));
@@ -196,7 +198,7 @@ void SymbolMap::Populate() {
 
     // Get the human-readable library name from the ELF header, falling back on
     // using names from the link map for binaries that aren't shared libraries.
-    Optional<StringPiece> elf_library_name =
+    absl::optional<StringPiece> elf_library_name =
         ReadElfLibraryName(next_entry.addr);
     if (elf_library_name) {
       strlcpy(next_entry.name, elf_library_name->data(),
@@ -256,7 +258,6 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
   SymbolMap map;
 
   int module_id = 0;
-  *os << "{{{reset}}}\n";
   for (const SymbolMap::Module& entry : map.GetModules()) {
     *os << "{{{module:" << module_id << ":" << entry.name
         << ":elf:" << entry.build_id << "}}}\n";
@@ -278,6 +279,8 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
 
   for (size_t i = 0; i < count_; ++i)
     *os << "{{{bt:" << i << ":" << trace_[i] << "}}}\n";
+
+  *os << "{{{reset}}}\n";
 }
 
 }  // namespace debug

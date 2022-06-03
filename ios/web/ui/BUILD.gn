@@ -5,11 +5,10 @@
 source_set("ui") {
   deps = [
     "//base",
+    "//ios/web/public",
   ]
 
-  sources = [
-    "page_display_state.mm",
-  ]
+  sources = [ "page_display_state.mm" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

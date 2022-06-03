@@ -1,16 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "HorizontalScrollbar",
-          "rect": [8, 293, 285, 15],
-          "reason": "scroll control"
-        }
+      "invalidations": [
+        [8, 293, 285, 15]
       ]
     },
     {
@@ -18,12 +14,8 @@
       "bounds": [600, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='inner'",
-          "rect": [0, 0, 600, 600],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [0, 0, 600, 600]
       ],
       "transform": 3
     }

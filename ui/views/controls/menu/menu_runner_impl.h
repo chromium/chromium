@@ -7,11 +7,10 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/controls/menu/menu_controller_delegate.h"
@@ -38,13 +37,17 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
  public:
   explicit MenuRunnerImpl(MenuItemView* menu);
 
+  MenuRunnerImpl(const MenuRunnerImpl&) = delete;
+  MenuRunnerImpl& operator=(const MenuRunnerImpl&) = delete;
+
   bool IsRunning() const override;
   void Release() override;
   void RunMenuAt(Widget* parent,
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
-                 int32_t run_types) override;
+                 int32_t run_types,
+                 gfx::NativeView native_view_for_gestures) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 
@@ -95,8 +98,6 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
 
   // Used to detect deletion of |this| when notifying delegate of success.
   base::WeakPtrFactory<MenuRunnerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerImpl);
 };
 
 }  // namespace internal

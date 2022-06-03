@@ -10,8 +10,8 @@
 // The task is deleted automatically by the jingle_xmpp::XmppClient. This occurs in the
 // destructor of TaskRunner, which is a superclass of jingle_xmpp::XmppClient.
 
-#ifndef JINGLE_NOTIFIER_PUSH_NOTIFICATIONS_LISTENER_LISTEN_TASK_H_
-#define JINGLE_NOTIFIER_PUSH_NOTIFICATIONS_LISTENER_LISTEN_TASK_H_
+#ifndef JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_
+#define JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -37,6 +37,11 @@ class PushNotificationsListenTask : public jingle_xmpp::XmppTask {
 
   PushNotificationsListenTask(jingle_xmpp::XmppTaskParentInterface* parent,
                               Delegate* delegate);
+
+  PushNotificationsListenTask(const PushNotificationsListenTask&) = delete;
+  PushNotificationsListenTask& operator=(const PushNotificationsListenTask&) =
+      delete;
+
   ~PushNotificationsListenTask() override;
 
   // Overriden from jingle_xmpp::XmppTask.
@@ -48,8 +53,6 @@ class PushNotificationsListenTask : public jingle_xmpp::XmppTask {
   bool IsValidNotification(const jingle_xmpp::XmlElement* stanza);
 
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushNotificationsListenTask);
 };
 
 typedef PushNotificationsListenTask::Delegate
@@ -57,4 +60,4 @@ typedef PushNotificationsListenTask::Delegate
 
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_PUSH_NOTIFICATIONS_LISTENER_LISTEN_TASK_H_
+#endif  // JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_

@@ -19,7 +19,7 @@ class SerialDeviceEnumeratorTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
   ~SerialDeviceEnumeratorTest() override = default;
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -27,7 +27,8 @@ TEST_F(SerialDeviceEnumeratorTest, GetDevices) {
   // There is no guarantee that a test machine will have a serial device
   // available. The purpose of this test is to ensure that the process of
   // attempting to enumerate devices does not cause a crash.
-  auto enumerator = SerialDeviceEnumerator::Create();
+  auto enumerator = SerialDeviceEnumerator::Create(
+      task_environment_.GetMainThreadTaskRunner());
   ASSERT_TRUE(enumerator);
   std::vector<mojom::SerialPortInfoPtr> devices = enumerator->GetDevices();
 }

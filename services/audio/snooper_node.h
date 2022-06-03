@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -17,6 +16,7 @@
 #include "media/base/multi_channel_resampler.h"
 #include "services/audio/delay_buffer.h"
 #include "services/audio/loopback_group_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioBus;
@@ -54,7 +54,7 @@ namespace audio {
 // because the inbound audio is from a source that pre-renders audio for playout
 // in the near future, while the outbound audio is audio that would have been
 // played-out in the recent past.
-class SnooperNode : public LoopbackGroupMember::Snooper {
+class SnooperNode final : public LoopbackGroupMember::Snooper {
  public:
   // Use sample counts as a precise measure of audio signal position and time
   // duration.
@@ -65,9 +65,10 @@ class SnooperNode : public LoopbackGroupMember::Snooper {
   SnooperNode(const media::AudioParameters& input_params,
               const media::AudioParameters& output_params);
 
-  ~SnooperNode() final;
+  SnooperNode(const SnooperNode&) = delete;
+  SnooperNode& operator=(const SnooperNode&) = delete;
 
-  const media::AudioParameters& input_params() const { return input_params_; }
+  ~SnooperNode() final;
 
   // GroupMember::Snooper implementation. Inserts more data into the delay
   // buffer.
@@ -78,9 +79,9 @@ class SnooperNode : public LoopbackGroupMember::Snooper {
   // Given the timing of recent OnData() calls and the |duration| of output that
   // would be requested in a call to Render(), determine the latest possible
   // |reference_time| for a Render() call that won't result in an underrun.
-  // Returns base::nullopt while current conditions prohibit making a reliable
+  // Returns absl::nullopt while current conditions prohibit making a reliable
   // suggestion.
-  base::Optional<base::TimeTicks> SuggestLatestRenderTime(FrameTicks duration);
+  absl::optional<base::TimeTicks> SuggestLatestRenderTime(FrameTicks duration);
 
   // Renders more audio that was recorded from the GroupMember until
   // |output_bus| is filled, resampling and remixing the channels if necessary.
@@ -172,8 +173,6 @@ class SnooperNode : public LoopbackGroupMember::Snooper {
 
   // The frame position where recording into the delay buffer always starts.
   static constexpr FrameTicks kWriteStartPosition = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SnooperNode);
 };
 
 }  // namespace audio

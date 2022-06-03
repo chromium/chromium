@@ -49,8 +49,11 @@ FileRef::FileRef(const FileSystem& file_system,
   }
 }
 
-FileRef::FileRef(const FileRef& other)
-    : Resource(other) {
+FileRef::FileRef(const FileRef& other) : Resource(other) {}
+
+FileRef& FileRef::operator=(const FileRef& other) {
+  Resource::operator=(other);
+  return *this;
 }
 
 PP_FileSystemType FileRef::GetFileSystemType() const {

@@ -8,6 +8,7 @@
 #include "ash/keyboard/ui/keyboard_export.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "ui/display/display.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -38,6 +39,8 @@ class KEYBOARD_EXPORT ContainerBehavior {
     virtual void MoveKeyboardWindow(const gfx::Rect& new_bounds) = 0;
     virtual void MoveKeyboardWindowToDisplay(const display::Display& display,
                                              const gfx::Rect& new_bounds) = 0;
+    // Needed for ContainerFullWidthBehavior to forward gestures to the shelf.
+    virtual void TransferGestureEventToShelf(const ui::GestureEvent& event) = 0;
   };
 
   explicit ContainerBehavior(Delegate* delegate);
@@ -85,6 +88,8 @@ class KEYBOARD_EXPORT ContainerBehavior {
 
   virtual bool HandlePointerEvent(const ui::LocatedEvent& event,
                                   const display::Display& current_display) = 0;
+  virtual bool HandleGestureEvent(const ui::GestureEvent& event,
+                                  const gfx::Rect& bounds_in_screen) = 0;
 
   virtual ContainerType GetType() const = 0;
 

@@ -41,7 +41,7 @@ std::unique_ptr<favicon_base::LargeIconResult> LargeIconCache::GetCachedResult(
     return CloneLargeIconResult(*iter->second->result.get());
   }
 
-  return std::unique_ptr<favicon_base::LargeIconResult>();
+  return nullptr;
 }
 
 std::unique_ptr<favicon_base::LargeIconResult>

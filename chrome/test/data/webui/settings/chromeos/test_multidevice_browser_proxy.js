@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
+// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDevicePageContentData} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
+// clang-format on
+
 cr.define('multidevice', function() {
   /**
    * Default Host device for PageContentData.
    */
-  const HOST_DEVICE = 'Pixel XL';
+  /* #export */ const HOST_DEVICE = 'Pixel XL';
 
   /**
    * Test value for messages for web permissions origin.
    */
-  const TEST_ANDROID_SMS_ORIGIN = 'http://foo.com';
+  /* #export */ const TEST_ANDROID_SMS_ORIGIN = 'http://foo.com';
 
   /**
    * Builds fake pageContentData for the specified mode. If it is a mode
@@ -22,7 +28,7 @@ cr.define('multidevice', function() {
    *     to a set host.
    * @return {!MultiDevicePageContentData}
    */
-  function createFakePageContentData(mode, opt_hostDeviceName) {
+  /* #export */ function createFakePageContentData(mode, opt_hostDeviceName) {
     const pageContentData = {mode: mode};
     if ([
           settings.MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER,
@@ -39,7 +45,7 @@ cr.define('multidevice', function() {
    * Note: Only showMultiDeviceSetupDialog is used by the multidevice-page
    * element.
    */
-  class TestMultideviceBrowserProxy extends TestBrowserProxy {
+  /* #export */ class TestMultideviceBrowserProxy extends TestBrowserProxy {
     constructor() {
       super([
         'showMultiDeviceSetupDialog',
@@ -50,6 +56,8 @@ cr.define('multidevice', function() {
         'setSmartLockSignInEnabled',
         'getSmartLockSignInAllowed',
         'getAndroidSmsInfo',
+        'attemptNotificationSetup',
+        'cancelNotificationSetup',
       ]);
       this.data = createFakePageContentData(
           settings.MultiDeviceSettingsMode.NO_HOST_SET);
@@ -107,8 +115,29 @@ cr.define('multidevice', function() {
       this.methodCalled('getAndroidSmsInfo');
       return Promise.resolve(this.androidSmsInfo);
     }
+
+    /** @override */
+    attemptNotificationSetup() {
+      this.methodCalled('attemptNotificationSetup');
+    }
+
+    /** @override */
+    cancelNotificationSetup() {
+      this.methodCalled('cancelNotificationSetup');
+    }
+
+    /**
+     * @param {settings.MultiDeviceFeature} state
+     */
+    setInstantTetheringStateForTest(state) {
+      this.data.instantTetheringState = state;
+      cr.webUIListenerCallback(
+          'settings.updateMultidevicePageContentData',
+          Object.assign({}, this.data));
+    }
   }
 
+  // #cr_define_end
   return {
     TestMultideviceBrowserProxy: TestMultideviceBrowserProxy,
     createFakePageContentData: createFakePageContentData,

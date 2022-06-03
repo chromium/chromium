@@ -10,9 +10,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
+#include "cc/raster/task_category.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -206,9 +207,9 @@ TYPED_TEST_P(TaskGraphRunnerTest, Dependencies) {
   }
 }
 
-TYPED_TEST_P(TaskGraphRunnerTest, Categorys) {
+TYPED_TEST_P(TaskGraphRunnerTest, Categories) {
   const int kNamespaceCount = TaskGraphRunnerTestBase::kNamespaceCount;
-  const unsigned kCategoryCount = 3;
+  const unsigned kCategoryCount = LAST_TASK_CATEGORY + 1;
   using TaskInfo = TaskGraphRunnerTestBase::TaskInfo;
 
   for (int i = 0; i < kNamespaceCount; ++i) {
@@ -262,7 +263,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Categorys) {
 REGISTER_TYPED_TEST_SUITE_P(TaskGraphRunnerTest,
                             Basic,
                             Dependencies,
-                            Categorys);
+                            Categories);
 
 template <typename TaskRunnerTestDelegate>
 using SingleThreadTaskGraphRunnerTest =

@@ -1,35 +1,27 @@
-<html>
-    <head>
-        <script>
-            if (window.testRunner) {
-                testRunner.dumpAsText();
-                testRunner.waitUntilDone();
-            }
-            function timeoutFired()
-            {
-                document.getElementById('console').innerHTML = "Not scrolled by WheelEvent: SUCCESS";
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }
-            function scrollEventFired()
-            {
-                document.getElementById('console').innerHTML = "Scrolled by WheelEvent: FAILED (Should not be scrolled).";
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }
-            function runTest()
-            {
-                window.frames[0].onscroll = scrollEventFired;
-                if (window.frames[0].eventSender) {
-                    window.frames[0].eventSender.mouseScrollBy(0, -1);
-                }
-                setTimeout("timeoutFired()", 1000);
-            }
-        </script>
-    </head>
-    <body>
-        <div id="console"></div>
-        <iframe onload="runTest();" scrolling="no" style="width:200px;height:200px;" src="resources/scrollable-iframe.html"> 
-    </body>
-</html>
+<!DOCTYPE html>
+<script src="../resources/gesture-util.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+var receivedScrollEvent = false;
+var t = async_test('The iframe cannot be scolled by WheelEvent.');
 
+function scrollEventFired() {
+    receivedScrollEvent = true;
+}
+
+async function runTest() {
+    window.frames[0].onscroll = scrollEventFired;
+    var doc = window.frames[0].document;
+    var fillDiv = doc.getElementById("fillDIV");
+    var center = elementCenter(fillDiv);
+    await wheelTick(0, 1, center);
+    await conditionHolds( () => {
+        return window.frames[0].scrollY == 0;
+    });
+    assert_false(receivedScrollEvent, "no scroll event is received");
+    t.done();
+}
+</script>
+
+<iframe onload="runTest();" scrolling="no" style="width:200px;height:200px;" src="resources/scrollable-iframe.html">

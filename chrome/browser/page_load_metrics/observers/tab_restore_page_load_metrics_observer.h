@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace content {
@@ -20,6 +19,12 @@ class TabRestorePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   TabRestorePageLoadMetricsObserver();
+
+  TabRestorePageLoadMetricsObserver(const TabRestorePageLoadMetricsObserver&) =
+      delete;
+  TabRestorePageLoadMetricsObserver& operator=(
+      const TabRestorePageLoadMetricsObserver&) = delete;
+
   ~TabRestorePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -50,8 +55,6 @@ class TabRestorePageLoadMetricsObserver
   // the page.
   int64_t cache_bytes_;
   int64_t network_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestorePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_TAB_RESTORE_PAGE_LOAD_METRICS_OBSERVER_H_

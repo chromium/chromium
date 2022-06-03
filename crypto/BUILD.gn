@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//testing/test.gni")
 
@@ -10,11 +11,6 @@ component("crypto") {
   sources = [
     "aead.cc",
     "aead.h",
-    "apple_keychain.h",
-    "apple_keychain_ios.mm",
-    "apple_keychain_mac.mm",
-    "capi_util.cc",
-    "capi_util.h",
     "crypto_export.h",
     "ec_private_key.cc",
     "ec_private_key.h",
@@ -28,25 +24,8 @@ component("crypto") {
     "hkdf.h",
     "hmac.cc",
     "hmac.h",
-    "mac_security_services_lock.cc",
-    "mac_security_services_lock.h",
-
-    # TODO(brettw) these mocks should be moved to a test_support_crypto target
-    # if possible.
-    "mock_apple_keychain.cc",
-    "mock_apple_keychain.h",
-    "mock_apple_keychain_ios.cc",
-    "mock_apple_keychain_mac.cc",
-    "nss_crypto_module_delegate.h",
-    "nss_key_util.cc",
-    "nss_key_util.h",
-    "nss_util.cc",
-    "nss_util.h",
-    "nss_util_internal.h",
     "openssl_util.cc",
     "openssl_util.h",
-    "p224.cc",
-    "p224.h",
     "p224_spake.cc",
     "p224_spake.h",
     "random.cc",
@@ -67,6 +46,8 @@ component("crypto") {
     "signature_verifier.h",
     "symmetric_key.cc",
     "symmetric_key.h",
+    "unexportable_key.cc",
+    "unexportable_key.h",
   ]
 
   deps = [
@@ -75,56 +56,83 @@ component("crypto") {
     "//base/third_party/dynamic_annotations",
   ]
 
-  public_deps = [
-    "//third_party/boringssl",
-  ]
+  public_deps = [ "//third_party/boringssl" ]
 
-  if (!is_mac && !is_ios) {
-    sources -= [
+  if (is_apple) {
+    sources += [
       "apple_keychain.h",
+
+      # TODO(brettw): these mocks should be moved to a test_support_crypto
+      # target if possible.
       "mock_apple_keychain.cc",
       "mock_apple_keychain.h",
     ]
-  } else {
-    libs = [
+
+    if (is_mac) {
+      sources += [
+        "apple_keychain_mac.mm",
+
+        # TODO(brettw): these mocks should be moved to a test_support_crypto
+        # target if possible.
+        "mock_apple_keychain_mac.cc",
+      ]
+    }
+    if (is_ios) {
+      sources += [
+        "apple_keychain_ios.mm",
+
+        # TODO(brettw): these mocks should be moved to a test_support_crypto
+        # target if possible.
+        "mock_apple_keychain_ios.cc",
+      ]
+    }
+
+    frameworks = [
       "CoreFoundation.framework",
       "Security.framework",
     ]
   }
 
-  if (!is_mac) {
-    sources -= [
+  if (is_mac) {
+    sources += [
       "mac_security_services_lock.cc",
       "mac_security_services_lock.h",
     ]
   }
-  if (!is_win) {
-    sources -= [
+  if (is_win) {
+    sources += [
       "capi_util.cc",
       "capi_util.h",
+      "unexportable_key_win.cc",
     ]
+    libs = [ "ncrypt.lib" ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
-  if (!use_nss_certs) {
-    sources -= [
+  if (use_nss_certs) {
+    sources += [
+      "nss_crypto_module_delegate.h",
       "nss_key_util.cc",
       "nss_key_util.h",
       "nss_util.cc",
       "nss_util.h",
       "nss_util_internal.h",
     ]
+    deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "nss_util_chromeos.cc" ]
   }
 
-  defines = [ "CRYPTO_IMPLEMENTATION" ]
-
-  if (is_nacl) {
-    deps += [ "//native_client_sdk/src/libraries/nacl_io" ]
+  if (is_chromeos || is_chromeos_lacros) {
+    sources += [
+      "chaps_support.cc",
+      "chaps_support.h",
+    ]
   }
+
+  defines = [ "CRYPTO_IMPLEMENTATION" ]
 }
 
 test("crypto_unittests") {
@@ -134,10 +142,7 @@ test("crypto_unittests") {
     "ec_signature_creator_unittest.cc",
     "encryptor_unittest.cc",
     "hmac_unittest.cc",
-    "nss_key_util_unittest.cc",
-    "nss_util_unittest.cc",
     "p224_spake_unittest.cc",
-    "p224_unittest.cc",
     "random_unittest.cc",
     "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",
@@ -145,11 +150,12 @@ test("crypto_unittests") {
     "signature_creator_unittest.cc",
     "signature_verifier_unittest.cc",
     "symmetric_key_unittest.cc",
+    "unexportable_key_unittest.cc",
   ]
 
   # Some files are built when NSS is used for the platform certificate library.
-  if (!use_nss_certs) {
-    sources -= [
+  if (use_nss_certs) {
+    sources += [
       "nss_key_util_unittest.cc",
       "nss_util_unittest.cc",
     ]
@@ -167,10 +173,12 @@ test("crypto_unittests") {
   ]
 }
 
-# This has no sources in some cases so can't be a static library.
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
-  sources = []
+  sources = [
+    "scoped_mock_unexportable_key_provider.cc",
+    "scoped_mock_unexportable_key_provider.h",
+  ]
 
   if (use_nss_certs) {
     sources += [
@@ -179,7 +187,7 @@ source_set("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "scoped_test_nss_chromeos_user.cc",
       "scoped_test_nss_chromeos_user.h",
@@ -195,26 +203,15 @@ source_set("test_support") {
   ]
 }
 
-config("platform_config") {
-  if (use_nss_certs && is_clang) {
-    # There is a broken header guard in /usr/include/nss/secmod.h:
-    # https://bugzilla.mozilla.org/show_bug.cgi?id=884072
-    cflags = [ "-Wno-header-guard" ]
-  }
-}
-
 # This is a meta-target that forwards to NSS's SSL library or OpenSSL,
 # according to the state of the crypto flags. A target just wanting to depend
 # on the current SSL library should just depend on this.
 group("platform") {
-  public_deps = [
-    "//third_party/boringssl",
-  ]
+  public_deps = [ "//third_party/boringssl" ]
 
   # Link in NSS if it is used for the platform certificate library
   # (use_nss_certs).
   if (use_nss_certs) {
-    public_configs = [ ":platform_config" ]
-    public_configs += [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
+    public_configs = [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
   }
 }

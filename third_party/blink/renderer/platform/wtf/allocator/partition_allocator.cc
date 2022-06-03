@@ -13,11 +13,7 @@ void* PartitionAllocator::AllocateBacking(size_t size, const char* type_name) {
   return Partitions::BufferMalloc(size, type_name);
 }
 
-void PartitionAllocator::FreeVectorBacking(void* address) {
-  Partitions::BufferFree(address);
-}
-
-void PartitionAllocator::FreeHashTableBacking(void* address) {
+void PartitionAllocator::FreeBacking(void* address) {
   Partitions::BufferFree(address);
 }
 

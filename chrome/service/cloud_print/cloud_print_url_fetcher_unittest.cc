@@ -4,28 +4,29 @@
 
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/service/service_process.h"
+#include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_status.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/url_request/url_request_throttler_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace cloud_print {
 
@@ -46,7 +47,7 @@ class TrackingTestURLRequestContextGetter
 
   net::TestURLRequestContext* GetURLRequestContext() override {
     if (!context_.get()) {
-      context_.reset(new net::TestURLRequestContext(true));
+      context_ = std::make_unique<net::TestURLRequestContext>(true);
       context_->set_throttler_manager(throttler_manager_);
       context_->Init();
     }
@@ -98,6 +99,9 @@ class CloudPrintURLFetcherTest : public testing::Test,
         fetcher_(nullptr),
         quit_run_loop_(run_loop_.QuitClosure()) {}
 
+  CloudPrintURLFetcherTest(const CloudPrintURLFetcherTest&) = delete;
+  CloudPrintURLFetcherTest& operator=(const CloudPrintURLFetcherTest&) = delete;
+
   // Creates a URLFetcher, using the program's main thread to do IO.
   virtual void CreateFetcher(const GURL& url, int max_retries);
 
@@ -105,7 +109,7 @@ class CloudPrintURLFetcherTest : public testing::Test,
   CloudPrintURLFetcher::ResponseAction HandleRawResponse(
       const net::URLFetcher* source,
       const GURL& url,
-      const net::URLRequestStatus& status,
+      net::Error error,
       int response_code,
       const std::string& data) override;
 
@@ -114,7 +118,9 @@ class CloudPrintURLFetcherTest : public testing::Test,
     return CloudPrintURLFetcher::STOP_PROCESSING;
   }
 
-  std::string GetAuthHeader() override { return std::string(); }
+  std::string GetAuthHeaderValue() override { return auth_header_; }
+
+  void SetAuthHeaderValue(const std::string& value) { auth_header_ = value; }
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() {
     return io_task_runner_;
@@ -143,13 +149,12 @@ class CloudPrintURLFetcherTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  std::string auth_header_;
   int max_retries_;
   Time start_time_;
   scoped_refptr<TestCloudPrintURLFetcher> fetcher_;
   base::RunLoop run_loop_;
   base::OnceClosure quit_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintURLFetcherTest);
 };
 
 class CloudPrintURLFetcherBasicTest : public CloudPrintURLFetcherTest {
@@ -161,7 +166,7 @@ class CloudPrintURLFetcherBasicTest : public CloudPrintURLFetcherTest {
   CloudPrintURLFetcher::ResponseAction HandleRawResponse(
       const net::URLFetcher* source,
       const GURL& url,
-      const net::URLRequestStatus& status,
+      net::Error error,
       int response_code,
       const std::string& data) override;
 
@@ -182,10 +187,12 @@ class CloudPrintURLFetcherBasicTest : public CloudPrintURLFetcherTest {
   void SetHandleRawData(bool handle_raw_data) {
     handle_raw_data_ = handle_raw_data;
   }
+  void SetExpectedData(const std::string& data) { expected_data_ = data; }
 
  private:
   bool handle_raw_response_;
   bool handle_raw_data_;
+  std::string expected_data_;
 };
 
 // Version of CloudPrintURLFetcherTest that tests overload protection.
@@ -235,31 +242,28 @@ void CloudPrintURLFetcherTest::CreateFetcher(const GURL& url, int max_retries) {
 
   max_retries_ = max_retries;
   start_time_ = Time::Now();
-  fetcher_->StartGetRequest(CloudPrintURLFetcher::REQUEST_MAX, url, this,
-                            max_retries_, std::string());
+  fetcher_->StartGetRequest(url, this, max_retries_);
 }
 
 CloudPrintURLFetcher::ResponseAction
-CloudPrintURLFetcherTest::HandleRawResponse(
-    const net::URLFetcher* source,
-    const GURL& url,
-    const net::URLRequestStatus& status,
-    int response_code,
-    const std::string& data) {
-  EXPECT_TRUE(status.is_success());
+CloudPrintURLFetcherTest::HandleRawResponse(const net::URLFetcher* source,
+                                            const GURL& url,
+                                            net::Error error,
+                                            int response_code,
+                                            const std::string& data) {
+  EXPECT_EQ(net::OK, error);
   EXPECT_EQ(200, response_code);  // HTTP OK
   EXPECT_FALSE(data.empty());
   return CloudPrintURLFetcher::CONTINUE_PROCESSING;
 }
 
 CloudPrintURLFetcher::ResponseAction
-CloudPrintURLFetcherBasicTest::HandleRawResponse(
-    const net::URLFetcher* source,
-    const GURL& url,
-    const net::URLRequestStatus& status,
-    int response_code,
-    const std::string& data) {
-  EXPECT_TRUE(status.is_success());
+CloudPrintURLFetcherBasicTest::HandleRawResponse(const net::URLFetcher* source,
+                                                 const GURL& url,
+                                                 net::Error error,
+                                                 int response_code,
+                                                 const std::string& data) {
+  EXPECT_EQ(net::OK, error);
   EXPECT_EQ(200, response_code);  // HTTP OK
   EXPECT_FALSE(data.empty());
 
@@ -280,6 +284,9 @@ CloudPrintURLFetcherBasicTest::HandleRawData(
   // We should never get here if we returned true in HandleRawResponse
   EXPECT_FALSE(handle_raw_response_);
   if (handle_raw_data_) {
+    if (!expected_data_.empty()) {
+      EXPECT_EQ(expected_data_, data);
+    }
     std::move(quit_run_loop_).Run();
     return CloudPrintURLFetcher::STOP_PROCESSING;
   }
@@ -303,11 +310,10 @@ CloudPrintURLFetcherOverloadTest::HandleRawData(
     const net::URLFetcher* source,
     const GURL& url,
     const std::string& data) {
-  const TimeDelta one_second = TimeDelta::FromMilliseconds(1000);
+  const base::TimeDelta one_second = base::Milliseconds(1000);
   response_count_++;
   if (response_count_ < 20) {
-    fetcher_->StartGetRequest(CloudPrintURLFetcher::REQUEST_MAX, url, this,
-                              max_retries_, std::string());
+    fetcher_->StartGetRequest(url, this, max_retries_);
   } else {
     // We have already sent 20 requests continuously. And we expect that
     // it takes more than 1 second due to the overload protection settings.
@@ -330,7 +336,7 @@ CloudPrintURLFetcherRetryBackoffTest::HandleRawData(
 
 void CloudPrintURLFetcherRetryBackoffTest::OnRequestGiveUp() {
   // It takes more than 200 ms to finish all 11 requests.
-  EXPECT_TRUE(Time::Now() - start_time_ >= TimeDelta::FromMilliseconds(200));
+  EXPECT_TRUE(Time::Now() - start_time_ >= base::Milliseconds(200));
   std::move(quit_run_loop_).Run();
 }
 
@@ -351,6 +357,19 @@ TEST_F(CloudPrintURLFetcherBasicTest, HandleRawData) {
 
   SetHandleRawData(true);
   CreateFetcher(test_server.GetURL("/echo"), 0);
+  run_loop_.Run();
+}
+
+TEST_F(CloudPrintURLFetcherBasicTest, AuthorizationHeader) {
+  const char kAuthHeaderValue[] = "OAuth abcdefg";
+  net::EmbeddedTestServer test_server;
+  SetAuthHeaderValue(kAuthHeaderValue);
+  test_server.AddDefaultHandlers(base::FilePath(kDocRoot));
+  ASSERT_TRUE(test_server.Start());
+
+  SetHandleRawData(true);
+  SetExpectedData(kAuthHeaderValue);
+  CreateFetcher(test_server.GetURL("/echoheader?Authorization"), 0);
   run_loop_.Run();
 }
 

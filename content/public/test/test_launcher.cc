@@ -13,17 +13,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,13 +34,16 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/tracing/common/tracing_switches.h"
+#include "content/common/url_schemes.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_delegate.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandbox_init.h"
-#include "content/public/test/browser_test.h"
 #include "gpu/config/gpu_switches.h"
 #include "net/base/escape.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_features.h"
@@ -53,10 +55,13 @@
 #if defined(OS_WIN)
 #include "base/base_switches.h"
 #include "content/public/app/sandbox_helper_win.h"
+#include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "services/service_manager/sandbox/win/sandbox_win.h"
-#elif defined(OS_MACOSX)
+
+// To avoid conflicts with the macro from the Windows SDK...
+#undef GetCommandLine
+#elif defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
@@ -73,10 +78,12 @@ const char kPreTestPrefix[] = "PRE_";
 const char kManualTestPrefix[] = "MANUAL_";
 
 TestLauncherDelegate* g_launcher_delegate = nullptr;
-#if !defined(OS_ANDROID)
+
 // ContentMain is not run on Android in the test process, and is run via
 // java for child processes. So ContentMainParams does not exist there.
-ContentMainParams* g_params = nullptr;
+#if !defined(OS_ANDROID)
+// The global ContentMainParams config to be copied in each test.
+const ContentMainParams* g_params = nullptr;
 #endif
 
 void PrintUsage() {
@@ -97,7 +104,7 @@ void PrintUsage() {
           "  --test-launcher-jobs=N\n"
           "    Sets the number of parallel test jobs to N.\n"
           "\n"
-          "  --single_process\n"
+          "  --single-process-tests\n"
           "    Runs the tests and the launcher in the same process. Useful\n"
           "    for debugging a specific test in a debugger.\n"
           "\n"
@@ -116,7 +123,11 @@ void PrintUsage() {
           "    Sets the total number of shards to N.\n"
           "\n"
           "  --test-launcher-shard-index=N\n"
-          "    Sets the shard index to run to N (from 0 to TOTAL - 1).\n");
+          "    Sets the shard index to run to N (from 0 to TOTAL - 1).\n"
+          "\n"
+          "  --test-launcher-print-temp-leaks\n"
+          "    Prints information about leaked files and/or directories in\n"
+          "    child process's temporary directories (Windows and macOS).\n");
 }
 
 // Implementation of base::TestLauncherDelegate. This is also a test launcher,
@@ -129,6 +140,10 @@ class WrapperTestLauncherDelegate : public base::TestLauncherDelegate {
     run_manual_tests_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kRunManualTestsFlag);
   }
+
+  WrapperTestLauncherDelegate(const WrapperTestLauncherDelegate&) = delete;
+  WrapperTestLauncherDelegate& operator=(const WrapperTestLauncherDelegate&) =
+      delete;
 
   // base::TestLauncherDelegate:
   bool GetTests(std::vector<base::TestIdentifier>* output) override;
@@ -159,8 +174,6 @@ class WrapperTestLauncherDelegate : public base::TestLauncherDelegate {
   content::TestLauncherDelegate* launcher_delegate_;
 
   bool run_manual_tests_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperTestLauncherDelegate);
 };
 
 bool WrapperTestLauncherDelegate::GetTests(
@@ -189,8 +202,10 @@ base::CommandLine WrapperTestLauncherDelegate::GetCommandLine(
   CreateDirectory(user_data_dir);
   base::CommandLine cmd_line(*base::CommandLine::ForCurrentProcess());
   launcher_delegate_->PreRunTest();
-  CHECK(launcher_delegate_->AdjustChildProcessCommandLine(&cmd_line,
-                                                          user_data_dir));
+  const std::string user_data_dir_switch =
+      launcher_delegate_->GetUserDataDirectoryCommandLineSwitch();
+  if (!user_data_dir_switch.empty())
+    cmd_line.AppendSwitchPath(user_data_dir_switch, user_data_dir);
   base::CommandLine new_cmd_line(cmd_line.GetProgram());
   base::CommandLine::SwitchMap switches = cmd_line.GetSwitches();
   // Strip out gtest_output flag because otherwise we would overwrite results
@@ -205,6 +220,25 @@ base::CommandLine WrapperTestLauncherDelegate::GetCommandLine(
   *output_file = output_file->AppendASCII("test_results.xml");
 
   new_cmd_line.AppendSwitchPath(switches::kTestLauncherOutput, *output_file);
+
+  // Selecting sample tests to enable switches::kEnableTracing.
+  if (switches.find(switches::kEnableTracingFraction) != switches.end()) {
+    double enable_tracing_fraction = 0;
+    if (!base::StringToDouble(switches[switches::kEnableTracingFraction],
+                              &enable_tracing_fraction) ||
+        enable_tracing_fraction > 1 || enable_tracing_fraction <= 0) {
+      LOG(ERROR) << switches::kEnableTracingFraction
+                 << " should have range (0,1].";
+    } else {
+      // Assuming the hash of all tests are uniformly distributed across the
+      // domain of the hash result.
+      if (base::PersistentHash(test_name) <=
+          UINT32_MAX * enable_tracing_fraction) {
+        new_cmd_line.AppendSwitch(switches::kEnableTracing);
+      }
+    }
+    switches.erase(switches::kEnableTracingFraction);
+  }
 
   for (base::CommandLine::SwitchMap::const_iterator iter = switches.begin();
        iter != switches.end(); ++iter) {
@@ -256,16 +290,25 @@ bool WrapperTestLauncherDelegate::ShouldRunTest(
                            base::CompareCase::SENSITIVE);
 }
 
-}  // namespace
-
 void AppendCommandLineSwitches() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  // Always disable the unsandbox GPU process for DX12 and Vulkan Info
-  // collection to avoid interference. This GPU process is launched 120
-  // seconds after chrome starts.
-  command_line->AppendSwitch(
-      switches::kDisableGpuProcessForDX12VulkanInfoCollection);
+  // Always disable the unsandbox GPU process for DX12 Info collection to avoid
+  // interference. This GPU process is launched 120 seconds after chrome starts.
+  command_line->AppendSwitch(switches::kDisableGpuProcessForDX12InfoCollection);
+}
+
+}  // namespace
+
+class ContentClientCreator {
+ public:
+  static void Create(ContentMainDelegate* delegate) {
+    SetContentClient(delegate->CreateContentClient());
+  }
+};
+
+std::string TestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
+  return std::string();
 }
 
 int LaunchTests(TestLauncherDelegate* launcher_delegate,
@@ -277,8 +320,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 
   base::CommandLine::Init(argc, argv);
   AppendCommandLineSwitches();
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // TODO(tluk) Remove deprecation warning after a few releases. Deprecation
   // warning issued version 79.
@@ -297,18 +339,23 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   // browser test target and is not created by the |launcher_delegate|.
   std::unique_ptr<ContentMainDelegate> content_main_delegate(
       launcher_delegate->CreateContentMainDelegate());
+  ContentClientCreator::Create(content_main_delegate.get());
+  // Many tests use GURL during setup, so we need to register schemes early in
+  // test launching.
+  RegisterContentSchemes();
+
   // ContentMain is not run on Android in the test process, and is run via
   // java for child processes.
   ContentMainParams params(content_main_delegate.get());
 #endif
 
 #if defined(OS_WIN)
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   InitializeSandboxInfo(&sandbox_info);
 
   params.instance = GetModuleHandle(NULL);
   params.sandbox_info = &sandbox_info;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   sandbox::SeatbeltExecServer::CreateFromArgumentsResult seatbelt =
       sandbox::SeatbeltExecServer::CreateFromArguments(
           command_line->GetProgram().value().c_str(), argc, argv);
@@ -320,12 +367,22 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   params.argv = const_cast<const char**>(argv);
 #endif  // defined(OS_WIN)
 
+  // Disable system tracing for browser tests by default. This prevents breakage
+  // of tests that spin the run loop until idle on platforms with system tracing
+  // (e.g. Chrome OS). Browser tests exercising this feature re-enable it with a
+  // custom system tracing service.
+  tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
+
 #if !defined(OS_ANDROID)
   // This needs to be before trying to run tests as otherwise utility processes
   // end up being launched as a test, which leads to rerunning the test.
   if (command_line->HasSwitch(switches::kProcessType) ||
       command_line->HasSwitch(switches::kLaunchAsBrowser)) {
-    return ContentMain(params);
+    // The main test process has this initialized by the base::TestSuite. But
+    // child processes don't have a TestSuite, and must initialize this
+    // explicitly before ContentMain.
+    TestTimeouts::Initialize();
+    return ContentMain(std::move(params));
   }
 #endif
 
@@ -336,12 +393,29 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
       command_line->HasSwitch(base::kGTestHelpFlag)) {
 #if !defined(OS_ANDROID)
     g_params = &params;
+    // The call to RunTestSuite() below bypasses TestLauncher, which creates
+    // a temporary directory that is used as the user-data-dir. Create a
+    // temporary directory now so that the test doesn't use the users home
+    // directory as it's data dir.
+    base::ScopedTempDir tmp_dir;
+    const std::string user_data_dir_switch =
+        launcher_delegate->GetUserDataDirectoryCommandLineSwitch();
+    if (!user_data_dir_switch.empty() &&
+        !command_line->HasSwitch(user_data_dir_switch)) {
+      CHECK(tmp_dir.CreateUniqueTempDir());
+      command_line->AppendSwitchPath(user_data_dir_switch, tmp_dir.GetPath());
+    }
 #endif
     return launcher_delegate->RunTestSuite(argc, argv);
   }
 
   base::AtExitManager at_exit;
   testing::InitGoogleTest(&argc, argv);
+
+  // The main test process has this initialized by the base::TestSuite. But
+  // this process is just sharding the test off to each main test process, and
+  // doesn't have a TestSuite, so must initialize this explicitly as the
+  // timeouts are used in the TestLauncher.
   TestTimeouts::Initialize();
 
   fprintf(stdout,
@@ -374,8 +448,8 @@ TestLauncherDelegate* GetCurrentTestLauncherDelegate() {
 }
 
 #if !defined(OS_ANDROID)
-ContentMainParams* GetContentMainParams() {
-  return g_params;
+ContentMainParams CopyContentMainParams() {
+  return g_params->ShallowCopyForTesting();
 }
 #endif
 

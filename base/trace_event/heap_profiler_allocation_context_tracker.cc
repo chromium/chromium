@@ -4,15 +4,19 @@
 
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 
+#include <string.h>
+
 #include <algorithm>
 #include <iterator>
 
 #include "base/atomicops.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
@@ -22,15 +26,16 @@
 #include "base/trace_event/cfi_backtrace_android.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <sys/prctl.h>
 #endif
 
 namespace base {
 namespace trace_event {
 
-subtle::Atomic32 AllocationContextTracker::capture_mode_ =
-    static_cast<int32_t>(AllocationContextTracker::CaptureMode::DISABLED);
+std::atomic<AllocationContextTracker::CaptureMode>
+    AllocationContextTracker::capture_mode_{
+        AllocationContextTracker::CaptureMode::DISABLED};
 
 namespace {
 
@@ -58,7 +63,7 @@ ThreadLocalStorage::Slot& AllocationContextTrackerTLS() {
 // are used to tag allocations even after the thread dies.
 const char* GetAndLeakThreadName() {
   char name[16];
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // If the thread name is not set, try to get it from prctl. Thread name might
   // not be set in cases where the thread started before heap profiling was
   // enabled.
@@ -66,7 +71,7 @@ const char* GetAndLeakThreadName() {
   if (!err) {
     return strdup(name);
   }
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
   // Use tid if we don't have a thread name.
   snprintf(name, sizeof(name), "%lu",
@@ -93,8 +98,7 @@ AllocationContextTracker::GetInstanceForCurrentThread() {
   return tracker;
 }
 
-AllocationContextTracker::AllocationContextTracker()
-    : thread_name_(nullptr), ignore_scope_depth_(0) {
+AllocationContextTracker::AllocationContextTracker() {
   tracked_stack_.reserve(kMaxStackDepth);
   task_contexts_.reserve(kMaxTaskDepth);
   task_contexts_.push_back("UntrackedTask");
@@ -112,30 +116,7 @@ void AllocationContextTracker::SetCurrentThreadName(const char* name) {
 void AllocationContextTracker::SetCaptureMode(CaptureMode mode) {
   // Release ordering ensures that when a thread observes |capture_mode_| to
   // be true through an acquire load, the TLS slot has been initialized.
-  subtle::Release_Store(&capture_mode_, static_cast<int32_t>(mode));
-}
-
-void AllocationContextTracker::PushPseudoStackFrame(
-    AllocationContextTracker::PseudoStackFrame stack_frame) {
-  // Impose a limit on the height to verify that every push is popped, because
-  // in practice the pseudo stack never grows higher than ~20 frames.
-  if (tracked_stack_.size() < kMaxStackDepth) {
-    tracked_stack_.push_back(
-        StackFrame::FromTraceEventName(stack_frame.trace_event_name));
-  } else {
-    NOTREACHED();
-  }
-}
-
-void AllocationContextTracker::PopPseudoStackFrame(
-    AllocationContextTracker::PseudoStackFrame stack_frame) {
-  // Guard for stack underflow. If tracing was started with a TRACE_EVENT in
-  // scope, the frame was never pushed, so it is possible that pop is called
-  // on an empty stack.
-  if (tracked_stack_.empty())
-    return;
-
-  tracked_stack_.pop_back();
+  capture_mode_.store(mode, std::memory_order_release);
 }
 
 void AllocationContextTracker::PushNativeStackFrame(const void* pc) {
@@ -177,11 +158,12 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
   if (ignore_scope_depth_)
     return false;
 
-  CaptureMode mode = static_cast<CaptureMode>(
-      subtle::NoBarrier_Load(&capture_mode_));
+  CaptureMode mode = capture_mode_.load(std::memory_order_relaxed);
 
   auto* backtrace = std::begin(ctx->backtrace.frames);
+#if !defined(OS_NACL)
   auto* backtrace_end = std::end(ctx->backtrace.frames);
+#endif
 
   if (!thread_name_) {
     // Ignore the string allocation made by GetAndLeakThreadName to avoid
@@ -201,16 +183,6 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
   switch (mode) {
     case CaptureMode::DISABLED:
       {
-        break;
-      }
-    case CaptureMode::PSEUDO_STACK:
-    case CaptureMode::MIXED_STACK:
-      {
-        for (const StackFrame& stack_frame : tracked_stack_) {
-          if (backtrace == backtrace_end)
-            break;
-          *backtrace++ = stack_frame;
-        }
         break;
       }
     case CaptureMode::NATIVE_STACK:
@@ -248,7 +220,7 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
         int32_t starting_frame_index = frame_count;
         if (frame_count > backtrace_capacity) {
           starting_frame_index = backtrace_capacity - 1;
-          *backtrace++ = StackFrame::FromTraceEventName("<truncated>");
+          *backtrace++ = StackFrame::FromProgramCounter(nullptr);
         }
         for (int32_t i = starting_frame_index - 1; i >= 0; --i) {
           const void* frame = frames[i];

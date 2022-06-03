@@ -11,12 +11,12 @@ import optparse
 import os
 import sys
 import logging
+from six.moves import input  # pylint: disable=redefined-builtin
 
 from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
 from core import path_util
 from py_utils import cloud_storage
-
 
 def _FetchDependenciesIfNeeded(story_set):
   """ Download files needed by a user story set. """
@@ -86,6 +86,10 @@ def main(args):
                       help=('Force fetching all the benchmarks when '
                             'benchmark_name is not specified'),
                       action='store_true', default=False)
+  parser.add_argument('--platform', '-p',
+                      help=('Only fetch benchmarks for the specified platform '
+                            '(win, linux, mac, android)'),
+                      default=None)
   # Flag --output-deps: output the dependencies to a json file, CrOS autotest
   # telemetry_runner parses the output to upload the dependencies to the DUT.
   # Example output, fetch_benchmark_deps.py --output-deps=deps octane:
@@ -93,7 +97,7 @@ def main(args):
   parser.add_argument('--output-deps',
                       help=('Output dependencies to a json file'))
   parser.add_argument(
-        '-v', '--verbose', action='count', dest='verbosity',
+        '-v', '--verbose', action='count', dest='verbosity', default=0,
         help='Increase verbosity level (repeat as needed)')
 
   options = parser.parse_args(args)
@@ -118,11 +122,14 @@ def main(args):
     deps[benchmark.Name()] = _FetchDepsForBenchmark(benchmark)
   else:
     if not options.force:
-      raw_input(
-          'No benchmark name is specified. Fetching all benchmark deps. '
-          'Press enter to continue...')
+      input('No benchmark name is specified. Fetching all benchmark deps. '
+            'Press enter to continue...')
     for b in benchmark_finders.GetOfficialBenchmarks():
-      deps[b.Name()] = _FetchDepsForBenchmark(b)
+      supported_platforms = b.GetSupportedPlatformNames(b.SUPPORTED_PLATFORMS)
+      if(not options.platform or
+         options.platform in supported_platforms or
+         'all' in supported_platforms):
+        deps[b.Name()] = _FetchDepsForBenchmark(b)
 
   if options.output_deps:
     with open(options.output_deps, 'w') as outfile:

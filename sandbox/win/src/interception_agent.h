@@ -6,8 +6,8 @@
 // from the inside of the sandboxed process. For more details see
 // http://dev.chromium.org/developers/design-documents/sandbox .
 
-#ifndef SANDBOX_SRC_INTERCEPTION_AGENT_H__
-#define SANDBOX_SRC_INTERCEPTION_AGENT_H__
+#ifndef SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
+#define SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
 
 #include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -35,8 +35,13 @@ class ResolverThunk;
 // loader lock.
 class InterceptionAgent {
  public:
+  InterceptionAgent() = delete;
+
   // Returns the single InterceptionAgent object for this process.
   static InterceptionAgent* GetInterceptionAgent();
+
+  InterceptionAgent(const InterceptionAgent&) = delete;
+  InterceptionAgent& operator=(const InterceptionAgent&) = delete;
 
   // This method should be invoked whenever a new dll is loaded to perform the
   // required patches. If the return value is false, this dll should not be
@@ -78,10 +83,8 @@ class InterceptionAgent {
   // is allocated with a placement new with enough space to hold the complete
   // array of pointers, not just the first element.
   DllInterceptionData* dlls_[1];
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InterceptionAgent);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_INTERCEPTION_AGENT_H__
+#endif  // SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_

@@ -13,21 +13,13 @@ namespace mini_installer {
 // command line used to invoke it.
 class Configuration {
  public:
-  enum Operation {
-    INSTALL_PRODUCT,
-    CLEANUP,
-  };
-
   Configuration();
   ~Configuration();
 
   // Initializes this instance on the basis of the process's command line.
   bool Initialize(HMODULE module);
 
-  // Returns the desired operation dictated by the command line options.
-  Operation operation() const { return operation_; }
-
-  // Returns the program portion of the command line, or NULL if it cannot be
+  // Returns the program portion of the command line, or nullptr if it cannot be
   // determined (e.g., by misuse).
   const wchar_t* program() const;
 
@@ -46,37 +38,35 @@ class Configuration {
   // GoogleUpdateIsMachine=1 is set in the process's environment.
   bool is_system_level() const { return is_system_level_; }
 
-  // Returns true if an existing multi-install Chrome is being updated (Google
-  // Chrome only).
-  bool is_updating_multi_chrome() const { return is_updating_multi_chrome_; }
-
   // Returns true if any invalid switch is found on the command line.
   bool has_invalid_switch() const { return has_invalid_switch_; }
 
   // Returns the previous version contained in the image's resource.
   const wchar_t* previous_version() const { return previous_version_; }
 
+  // Returns true if extracted files should be deleted prior to exit.
+  bool should_delete_extracted_files() const {
+    return should_delete_extracted_files_;
+  }
+
  protected:
   void Clear();
   bool ParseCommandLine(const wchar_t* command_line);
   void ReadResources(HMODULE module);
+  void ReadRegistry();
 
   wchar_t** args_;
   const wchar_t* chrome_app_guid_;
   const wchar_t* command_line_;
   int argument_count_;
-  Operation operation_;
   bool is_system_level_;
-  bool is_updating_multi_chrome_;
   bool has_invalid_switch_;
+  bool should_delete_extracted_files_;
   const wchar_t* previous_version_;
 
  private:
   Configuration(const Configuration&) = delete;
   Configuration& operator=(const Configuration&) = delete;
-
-  // Returns true if multi-install Chrome is already present on the machine.
-  bool IsUpdatingMultiChrome() const;
 };
 
 }  // namespace mini_installer

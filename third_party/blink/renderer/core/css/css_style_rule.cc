@@ -100,7 +100,7 @@ String CSSStyleRule::cssText() const {
   if (!decls.IsEmpty())
     result.Append(' ');
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSStyleRule::Reattach(StyleRuleBase* rule) {
@@ -110,7 +110,7 @@ void CSSStyleRule::Reattach(StyleRuleBase* rule) {
     properties_cssom_wrapper_->Reattach(style_rule_->MutableProperties());
 }
 
-void CSSStyleRule::Trace(blink::Visitor* visitor) {
+void CSSStyleRule::Trace(Visitor* visitor) const {
   visitor->Trace(style_rule_);
   visitor->Trace(properties_cssom_wrapper_);
   visitor->Trace(style_map_);

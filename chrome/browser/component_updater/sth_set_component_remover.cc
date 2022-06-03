@@ -5,48 +5,19 @@
 #include "chrome/browser/component_updater/sth_set_component_remover.h"
 
 #include "base/bind.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/task/post_task.h"
-#include "base/version.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/component_updater/component_updater_utils.h"
 
 namespace component_updater {
 
-namespace {
-
-void CleanupOnWorker(const base::FilePath& sth_directory) {
-  const base::FilePath base_dir = sth_directory.DirName();
-  base::FileEnumerator file_enumerator(base_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    base::Version version(path.BaseName().MaybeAsASCII());
-
-    // Ignore folders that don't have valid version names. These folders are
-    // not managed by the component installer, so don't try to remove them.
-    if (!version.IsValid())
-      continue;
-
-    if (!base::DeleteFileRecursively(path)) {
-      DLOG(ERROR) << "Couldn't delete " << path.value();
-    }
-  }
-
-  if (base::IsDirectoryEmpty(base_dir)) {
-    if (!base::DeleteFile(base_dir, false)) {
-      DLOG(ERROR) << "Couldn't delete " << base_dir.value();
-    }
-  }
-}
-
-}  // namespace
-
 void DeleteLegacySTHSet(const base::FilePath& user_data_dir) {
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&CleanupOnWorker, user_data_dir.Append(FILE_PATH_LITERAL(
-                                           "CertificateTransparency"))));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          &DeleteFilesAndParentDirectory,
+          user_data_dir.Append(FILE_PATH_LITERAL("CertificateTransparency"))));
 }
 
 }  // namespace component_updater

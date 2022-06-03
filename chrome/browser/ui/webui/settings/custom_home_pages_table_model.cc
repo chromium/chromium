@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,7 +26,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #endif
 
@@ -36,7 +37,7 @@ struct CustomHomePagesTableModel::Entry {
   GURL url;
 
   // Page title.  If this is empty, we'll display the URL as the entry.
-  base::string16 title;
+  std::u16string title;
 
   // If not |base::CancelableTaskTracker::kBadTaskId|, indicates we're loading
   // the title for the page.
@@ -45,9 +46,8 @@ struct CustomHomePagesTableModel::Entry {
 
 CustomHomePagesTableModel::CustomHomePagesTableModel(Profile* profile)
     : profile_(profile),
-      observer_(NULL),
-      num_outstanding_title_lookups_(0) {
-}
+      observer_(nullptr),
+      num_outstanding_title_lookups_(0) {}
 
 CustomHomePagesTableModel::~CustomHomePagesTableModel() {
 }
@@ -189,15 +189,15 @@ int CustomHomePagesTableModel::RowCount() {
   return static_cast<int>(entries_.size());
 }
 
-base::string16 CustomHomePagesTableModel::GetText(int row, int column_id) {
+std::u16string CustomHomePagesTableModel::GetText(int row, int column_id) {
   DCHECK(column_id == 0);
   DCHECK(row >= 0 && row < RowCount());
   return entries_[row].title.empty() ? FormattedURL(row) : entries_[row].title;
 }
 
-base::string16 CustomHomePagesTableModel::GetTooltip(int row) {
+std::u16string CustomHomePagesTableModel::GetTooltip(int row) {
   return entries_[row].title.empty()
-             ? base::string16()
+             ? std::u16string()
              : l10n_util::GetStringFUTF16(IDS_SETTINGS_ON_STARTUP_PAGE_TOOLTIP,
                                           entries_[row].title,
                                           FormattedURL(row));
@@ -211,7 +211,7 @@ bool CustomHomePagesTableModel::ShouldIncludeBrowser(Browser* browser) {
   // Do not include incognito browsers.
   if (browser->profile() != profile_)
     return false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not include the Settings window.
   if (chrome::SettingsWindowManager::GetInstance()->IsSettingsBrowser(
           browser)) {
@@ -245,11 +245,9 @@ void CustomHomePagesTableModel::LoadAllTitles() {
   for (Entry& entry : entries_) {
     if (history_service) {
       entry.task_id = history_service->QueryURL(
-          entry.url,
-          false,
-          base::Bind(&CustomHomePagesTableModel::OnGotOneOfManyTitles,
-                     base::Unretained(this),
-                     entry.url),
+          entry.url, false,
+          base::BindOnce(&CustomHomePagesTableModel::OnGotOneOfManyTitles,
+                         base::Unretained(this), entry.url),
           &task_tracker_);
     }
   }
@@ -290,8 +288,8 @@ void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
   }
 }
 
-base::string16 CustomHomePagesTableModel::FormattedURL(int row) const {
-  base::string16 url = url_formatter::FormatUrl(entries_[row].url);
+std::u16string CustomHomePagesTableModel::FormattedURL(int row) const {
+  std::u16string url = url_formatter::FormatUrl(entries_[row].url);
   url = base::i18n::GetDisplayStringInLTRDirectionality(url);
   return url;
 }

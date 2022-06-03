@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.ui.modelutil.ListModel;

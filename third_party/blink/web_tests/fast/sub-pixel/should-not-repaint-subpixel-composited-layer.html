@@ -33,7 +33,7 @@ function runTest() {
     document.getElementById('layer').style.left = left + 'px';
     if (window.internals) {
         document.getElementById('console').textContent += left + ':\n'
-            + internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+            + internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
     }
 

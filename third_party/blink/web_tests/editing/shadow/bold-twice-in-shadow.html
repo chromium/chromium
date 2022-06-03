@@ -17,11 +17,11 @@
 if (window.testRunner)
     testRunner.dumpAsText();
 
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = '<div id="shadow-host"><span contenteditable>shadow before</span><shadow></shadow>shadow (after)</div>';
 
 var nestedShadowHost = shadowRoot.getElementById('shadow-host');
-var nestedShadowRoot = nestedShadowHost.createShadowRoot();
+var nestedShadowRoot = nestedShadowHost.attachShadow({mode: 'open'});
 nestedShadowRoot.innerHTML = '<div id="inner" contenteditable>nested before<shadow></shadow>nested after</div>';
 
 if (window.eventSender) {

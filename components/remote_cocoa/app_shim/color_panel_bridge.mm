@@ -39,7 +39,7 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
 @end
 
 @implementation ColorPanelListener
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     NSColorPanel* panel = [NSColorPanel sharedColorPanel];
     [[NSNotificationCenter defaultCenter]

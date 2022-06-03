@@ -34,6 +34,11 @@ class SingleSampleMetricsFactoryImplTest : public testing::Test {
         base::SingleSampleMetricsFactory::Get());
   }
 
+  SingleSampleMetricsFactoryImplTest(
+      const SingleSampleMetricsFactoryImplTest&) = delete;
+  SingleSampleMetricsFactoryImplTest& operator=(
+      const SingleSampleMetricsFactoryImplTest&) = delete;
+
   ~SingleSampleMetricsFactoryImplTest() override {
     factory_->DestroyProviderForTesting();
     if (thread_.IsRunning())
@@ -81,9 +86,6 @@ class SingleSampleMetricsFactoryImplTest : public testing::Test {
   SingleSampleMetricsFactoryImpl* factory_;
   base::Thread thread_;
   size_t provider_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleSampleMetricsFactoryImplTest);
 };
 
 }  // namespace
@@ -140,8 +142,11 @@ TEST_F(SingleSampleMetricsFactoryImplTest, DefaultSingleSampleMetricWithValue) {
                 base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-// TODO(crbug.com/1009360). Flaky timeouts.
-TEST_F(SingleSampleMetricsFactoryImplTest, DISABLED_MultithreadedMetrics) {
+TEST_F(SingleSampleMetricsFactoryImplTest, MultithreadedMetrics) {
+  // Allow EXPECT_DCHECK_DEATH for multiple threads.
+  // https://github.com/google/googletest/blob/master/docs/advanced.md#death-tests-and-threads
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
+
   base::HistogramTester tester;
   std::unique_ptr<base::SingleSampleMetric> metric =
       factory_->CreateCustomCountsMetric(kMetricName, kMin, kMax, kBucketCount);

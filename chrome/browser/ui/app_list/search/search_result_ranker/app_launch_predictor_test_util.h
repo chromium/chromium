@@ -7,12 +7,10 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.pb.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/mathutil.h"
 
 namespace app_list {
 
@@ -66,7 +64,8 @@ template <>
 class EquivToProtoLiteImpl<float> {
  public:
   bool operator()(const float p1, const float p2) {
-    return google::protobuf::MathUtil::AlmostEquals(p1, p2);
+    static float kTolerance = 1e-5;
+    return abs(p1 - p2) < kTolerance;
   }
 };
 

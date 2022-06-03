@@ -1,0 +1,59 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.proto";
+option java_multiple_files = true;
+
+package autofill_assistant;
+
+enum KeyboardValueFillStrategy {
+  UNSPECIFIED_KEYBAORD_STRATEGY = 0;
+
+  // Send a `node.value = "<value>"` JS command.
+  SET_VALUE = 1;
+
+  // Send a `node.value = ""` JS command to clear the field, then click the
+  // field to focus it and send single key strokes.
+  SIMULATE_KEY_PRESSES = 2;
+
+  // Send a `node.select()` JS command to select the current field value, then
+  // send single key strokes overwriting the current value.
+  SIMULATE_KEY_PRESSES_SELECT_VALUE = 3;
+
+  // Send a `node.value = ""` JS command to clear the field, then send a
+  // `node.focus()` JS command to focus the field and send single key strokes.
+  SIMULATE_KEY_PRESSES_FOCUS = 4;
+}
+
+// Note: On multiple matches, the first one will be selected.
+enum DropdownSelectStrategy {
+  UNSPECIFIED_SELECT_STRATEGY = 0;
+
+  // Match by the option's value, case insensitive.
+  VALUE_MATCH = 1;
+
+  // Match by the option's label, case insensitive.
+  LABEL_MATCH = 2;
+
+  // Match by the option's label by `label.startsWith`, case insensitive.
+  LABEL_STARTS_WITH = 3;
+}
+
+// This type disambiguates the term "clicking" on a node in the DOM by defining
+// what strategy should be used to execute the "click".
+enum ClickType {
+  NOT_SET = 0;
+
+  // Send a tap event to the node.
+  TAP = 1;
+
+  // Use JavaScript's `node.click()` to click the element.
+  JAVASCRIPT = 2;
+
+  // Send a click event to the node.
+  CLICK = 3;
+}

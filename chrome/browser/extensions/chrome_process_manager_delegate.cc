@@ -4,9 +4,10 @@
 
 #include "chrome/browser/extensions/chrome_process_manager_delegate.h"
 
+#include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,10 +22,10 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/extensions/component_extensions_whitelist/whitelist.h"
-#include "chromeos/constants/chromeos_switches.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #endif
 
 namespace extensions {
@@ -70,7 +71,7 @@ bool ChromeProcessManagerDelegate::AreBackgroundPagesAllowedForContext(
 bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
     content::BrowserContext* context,
     const Extension& extension) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(context);
 
   const bool is_signin_profile =
@@ -90,15 +91,15 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
             ->GetForceInstallList();
 
     // For the ChromeOS login profile, only allow apps installed by device
-    // policy or that are explicitly whitelisted.
+    // policy or that are explicitly allowlisted.
     return login_screen_apps_list->HasKey(extension.id()) ||
-           IsComponentExtensionWhitelistedForSignInProfile(extension.id());
+           IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
   if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
       !profile->IsOffTheRecord()) {
     return extension.permissions_data()->HasAPIPermission(
-        APIPermission::kLockScreen);
+        mojom::APIPermissionID::kLockScreen);
   }
 #endif
 
@@ -114,17 +115,8 @@ bool ChromeProcessManagerDelegate::DeferCreatingStartupBackgroundHosts(
   // Background hosts will be loaded later via OnProfileAdded.
   // http://crbug.com/222473
   // Unit tests may not have a profile manager.
-  if (g_browser_process->profile_manager() &&
-      !g_browser_process->profile_manager()->IsValidProfile(profile)) {
-    return true;
-  }
-
-  // There are no browser windows open and the browser process was
-  // started to show the app launcher. Background hosts will be loaded later
-  // via OnBrowserAdded(). http://crbug.com/178260
-  return chrome::GetBrowserCount(profile) == 0 &&
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kShowAppList);
+  return (g_browser_process->profile_manager() &&
+          !g_browser_process->profile_manager()->IsValidProfile(profile));
 }
 
 void ChromeProcessManagerDelegate::OnBrowserAdded(Browser* browser) {
@@ -147,7 +139,7 @@ void ChromeProcessManagerDelegate::OnBrowserAdded(Browser* browser) {
 }
 
 void ChromeProcessManagerDelegate::OnProfileAdded(Profile* profile) {
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
 
   // The profile might have been initialized asynchronously (in parallel with
   // extension system startup). Now that initialization is complete the
@@ -157,11 +149,11 @@ void ChromeProcessManagerDelegate::OnProfileAdded(Profile* profile) {
 
 void ChromeProcessManagerDelegate::OnOffTheRecordProfileCreated(
     Profile* off_the_record_profile) {
-  observed_profiles_.Add(off_the_record_profile);
+  observed_profiles_.AddObservation(off_the_record_profile);
 }
 
 void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
 
   // Close background hosts when the last profile is closed so that they
   // have time to shutdown various objects on different threads. The
@@ -179,11 +171,11 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   // If this profile owns an incognito profile, but it is destroyed before the
   // incognito profile is destroyed, then close the incognito background hosts
   // as well. This happens in a few tests. http://crbug.com/138843
-  if (!profile->IsOffTheRecord() && profile->HasOffTheRecordProfile()) {
-    Profile* otr = profile->GetOffTheRecordProfile();
+  if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
+    Profile* otr = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     close_background_hosts(otr);
-    if (observed_profiles_.IsObserving(otr))
-      observed_profiles_.Remove(otr);
+    if (observed_profiles_.IsObservingSource(otr))
+      observed_profiles_.RemoveObservation(otr);
   }
 }
 

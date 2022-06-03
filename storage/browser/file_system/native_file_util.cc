@@ -11,9 +11,14 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+
+#if defined(OS_WIN)
+#include "windows.h"
+#endif  // defined(OS_WIN)
 
 namespace storage {
 
@@ -24,7 +29,7 @@ namespace {
 //
 // TODO(benchan): Find a better place outside webkit to host this function.
 bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // System daemons on Chrome OS may run as a user different than the Chrome
   // process but need to access files under the directories created here.
   // Because of that, grant the execute permission on the created directory
@@ -147,6 +152,10 @@ base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
     // If its parent does not exist, should return NOT_FOUND error.
     return base::File::FILE_ERROR_NOT_FOUND;
 
+  // If |path| is a directory, return an error.
+  if (base::DirectoryExists(path))
+    return base::File::FILE_ERROR_NOT_A_FILE;
+
   // Tries to create the |path| exclusively.  This should fail
   // with base::File::FILE_ERROR_EXISTS if the path already exists.
   base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ);
@@ -180,7 +189,7 @@ base::File::Error NativeFileUtil::CreateDirectory(const base::FilePath& path,
 
   // If file exists at the path.
   if (path_exists && !base::DirectoryExists(path))
-    return base::File::FILE_ERROR_EXISTS;
+    return base::File::FILE_ERROR_NOT_A_DIRECTORY;
 
   if (!base::CreateDirectory(path))
     return base::File::FILE_ERROR_FAILED;
@@ -244,7 +253,7 @@ bool NativeFileUtil::DirectoryExists(const base::FilePath& path) {
 base::File::Error NativeFileUtil::CopyOrMoveFile(
     const base::FilePath& src_path,
     const base::FilePath& dest_path,
-    FileSystemOperation::CopyOrMoveOption option,
+    FileSystemOperation::CopyOrMoveOptionSet options,
     CopyOrMoveMode mode) {
   base::File::Info info;
   base::File::Error error = NativeFileUtil::GetFileInfo(src_path, &info);
@@ -277,6 +286,25 @@ base::File::Error NativeFileUtil::CopyOrMoveFile(
       return base::File::FILE_ERROR_NOT_FOUND;
   }
 
+  // Cache permissions of dest file before copy/move overwrites the file.
+  bool should_retain_file_permissions = false;
+#if defined(OS_POSIX)
+  int dest_mode;
+  if (options.Has(FileSystemOperation::CopyOrMoveOption::
+                      kPreserveDestinationPermissions)) {
+    // Will be false if the destination file doesn't exist.
+    should_retain_file_permissions =
+        base::GetPosixFilePermissions(dest_path, &dest_mode);
+  }
+#elif defined(OS_WIN)
+  DWORD dest_attributes;
+  if (options.Has(FileSystemOperation::CopyOrMoveOption::
+                      kPreserveDestinationPermissions)) {
+    dest_attributes = ::GetFileAttributes(dest_path.value().c_str());
+    should_retain_file_permissions = dest_attributes != INVALID_FILE_ATTRIBUTES;
+  }
+#endif  // defined(OS_POSIX)
+
   switch (mode) {
     case COPY_NOSYNC:
       if (!base::CopyFile(src_path, dest_path))
@@ -294,8 +322,18 @@ base::File::Error NativeFileUtil::CopyOrMoveFile(
 
   // Preserve the last modified time. Do not return error here even if
   // the setting is failed, because the copy itself is successfully done.
-  if (option == FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED)
+  if (options.Has(
+          FileSystemOperation::CopyOrMoveOption::kPreserveLastModified)) {
     base::TouchFile(dest_path, last_modified, last_modified);
+  }
+
+  if (should_retain_file_permissions) {
+#if defined(OS_POSIX)
+    base::SetPosixFilePermissions(dest_path, dest_mode);
+#elif defined(OS_WIN)
+    ::SetFileAttributes(dest_path.value().c_str(), dest_attributes);
+#endif  // defined(OS_POSIX)
+  }
 
   return base::File::FILE_OK;
 }
@@ -305,7 +343,7 @@ base::File::Error NativeFileUtil::DeleteFile(const base::FilePath& path) {
     return base::File::FILE_ERROR_NOT_FOUND;
   if (base::DirectoryExists(path))
     return base::File::FILE_ERROR_NOT_A_FILE;
-  if (!base::DeleteFile(path, false))
+  if (!base::DeleteFile(path))
     return base::File::FILE_ERROR_FAILED;
   return base::File::FILE_OK;
 }
@@ -317,7 +355,7 @@ base::File::Error NativeFileUtil::DeleteDirectory(const base::FilePath& path) {
     return base::File::FILE_ERROR_NOT_A_DIRECTORY;
   if (!base::IsDirectoryEmpty(path))
     return base::File::FILE_ERROR_NOT_EMPTY;
-  if (!base::DeleteFile(path, false))
+  if (!base::DeleteFile(path))
     return base::File::FILE_ERROR_FAILED;
   return base::File::FILE_OK;
 }

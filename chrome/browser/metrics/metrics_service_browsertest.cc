@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,11 +36,13 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
-#include "services/service_manager/embedder/switches.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -51,7 +54,7 @@
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 namespace {
 
 // Check CrashExitCodes.Renderer histogram for a single bucket entry and then
@@ -69,7 +72,7 @@ void VerifyRendererExitCodeIsSignal(
 }
 
 }  // namespace
-#endif  // OS_MACOSX || OS_LINUX
+#endif  // defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // This test class verifies that metrics reporting works correctly for various
 // renderer behaviors such as page loads, recording crashed tabs, and browser
@@ -84,9 +87,13 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
  public:
   MetricsServiceBrowserTest() {}
 
+  MetricsServiceBrowserTest(const MetricsServiceBrowserTest&) = delete;
+  MetricsServiceBrowserTest& operator=(const MetricsServiceBrowserTest&) =
+      delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable the metrics service for testing (in recording-only mode).
-    command_line->AppendSwitch(metrics::switches::kMetricsRecordingOnly);
+    metrics::EnableMetricsRecordingOnlyForTesting(command_line);
   }
 
   void SetUp() override {
@@ -106,7 +113,7 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
     // Opens one tab.
-    ui_test_utils::NavigateToURL(browser(), GURL(crashy_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(crashy_url)));
     observer.Wait();
 
     // The MetricsService listens for the same notification, so the |observer|
@@ -130,7 +137,7 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
   void OpenThreeTabs() {
     const int kBrowserTestFlags =
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION;
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP;
 
     base::FilePath test_directory;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_directory));
@@ -148,8 +155,6 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
 
  private:
   bool metrics_consent_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
@@ -165,9 +170,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
 // Flaky on Linux. See http://crbug.com/131094
 // Child crashes fail the process on ASan (see crbug.com/411251,
 // crbug.com/368525).
-// Flaky timeouts on Win7 Tests (dbg)(1); see https://crbug.com/985255.
-#if defined(OS_LINUX) || defined(ADDRESS_SANITIZER) || \
-    (defined(OS_WIN) && !defined(NDEBUG))
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashRenderers DISABLED_CrashRenderers
 #define MAYBE_CheckCrashRenderers DISABLED_CheckCrashRenderers
 #else
@@ -178,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUICrashURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICrashURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -193,17 +196,26 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
       std::abs(static_cast<int32_t>(STATUS_ACCESS_VIOLATION)), 1);
-#elif defined(OS_MACOSX) || defined(OS_LINUX)
+#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
 #endif
   histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
 }
 
+// Test is disabled on Windows AMR64 because
+// TerminateWithHeapCorruption() isn't expected to work there.
+// See: https://crbug.com/1054423
 #if defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, HeapCorruptionInRenderer) {
+#if defined(ARCH_CPU_ARM64)
+#define MAYBE_HeapCorruptionInRenderer DISABLED_HeapCorruptionInRenderer
+#else
+#define MAYBE_HeapCorruptionInRenderer HeapCorruptionInRenderer
+#endif
+IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
+                       MAYBE_HeapCorruptionInRenderer) {
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUIHeapCorruptionCrashURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIHeapCorruptionCrashURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -223,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, HeapCorruptionInRenderer) {
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUICheckCrashURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUICheckCrashURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -239,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
       std::abs(static_cast<int32_t>(STATUS_BREAKPOINT)), 1);
-#elif defined(OS_MACOSX) || defined(OS_LINUX)
+#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
 #endif
   histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
@@ -251,11 +263,11 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
   // Disable stack traces during this test since DbgHelp is unreliable in
   // low-memory conditions (see crbug.com/692564).
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      service_manager::switches::kDisableInProcessStackTraces);
+      switches::kDisableInProcessStackTraces);
 
   base::HistogramTester histogram_tester;
 
-  OpenTabsAndNavigateToCrashyUrl(content::kChromeUIMemoryExhaustURL);
+  OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIMemoryExhaustURL);
 
   // Verify that the expected stability metrics were recorded.
   const PrefService* prefs = g_browser_process->local_state();
@@ -297,6 +309,11 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
 
  public:
   MetricsServiceBrowserFilesTest() {}
+
+  MetricsServiceBrowserFilesTest(const MetricsServiceBrowserFilesTest&) =
+      delete;
+  MetricsServiceBrowserFilesTest& operator=(
+      const MetricsServiceBrowserFilesTest&) = delete;
 
   bool SetUpUserDataDirectory() override {
     if (!super::SetUpUserDataDirectory())
@@ -369,8 +386,6 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
  private:
   bool metrics_consent_ = true;
   base::FilePath upload_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserFilesTest);
 };
 
 // Specific class for testing when metrics upload is fully enabled.
@@ -378,6 +393,11 @@ class MetricsServiceBrowserDoUploadTest
     : public MetricsServiceBrowserFilesTest {
  public:
   MetricsServiceBrowserDoUploadTest() {}
+
+  MetricsServiceBrowserDoUploadTest(const MetricsServiceBrowserDoUploadTest&) =
+      delete;
+  MetricsServiceBrowserDoUploadTest& operator=(
+      const MetricsServiceBrowserDoUploadTest&) = delete;
 
   void SetUp() override {
     set_metrics_consent(true);
@@ -388,8 +408,6 @@ class MetricsServiceBrowserDoUploadTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserDoUploadTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserDoUploadTest, FilesRemain) {
@@ -403,6 +421,11 @@ class MetricsServiceBrowserNoUploadTest
  public:
   MetricsServiceBrowserNoUploadTest() {}
 
+  MetricsServiceBrowserNoUploadTest(const MetricsServiceBrowserNoUploadTest&) =
+      delete;
+  MetricsServiceBrowserNoUploadTest& operator=(
+      const MetricsServiceBrowserNoUploadTest&) = delete;
+
   void SetUp() override {
     set_metrics_consent(false);
     feature_list_.InitAndEnableFeature(
@@ -412,8 +435,6 @@ class MetricsServiceBrowserNoUploadTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserNoUploadTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
@@ -427,6 +448,11 @@ class MetricsServiceBrowserSampledOutTest
  public:
   MetricsServiceBrowserSampledOutTest() {}
 
+  MetricsServiceBrowserSampledOutTest(
+      const MetricsServiceBrowserSampledOutTest&) = delete;
+  MetricsServiceBrowserSampledOutTest& operator=(
+      const MetricsServiceBrowserSampledOutTest&) = delete;
+
   void SetUp() override {
     set_metrics_consent(true);
     feature_list_.InitAndDisableFeature(
@@ -436,8 +462,6 @@ class MetricsServiceBrowserSampledOutTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceBrowserSampledOutTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest, FilesRemoved) {

@@ -9,13 +9,20 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
-#include "net/dns/dns_config.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class BigEndianReader;
+}  // namespace base
 
 namespace net {
 
@@ -57,26 +64,37 @@ NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(
 // service records (initial _), and non-compliant but attested hostnames that
 // include _. These looser rules also allow Punycode and hence IDN.
 //
-// TODO(palmer): In the future, when we can remove support for invalid names,
-// this can be a private implementation detail of |DNSDomainFromDot|, and need
-// not be NET_EXPORT_PRIVATE.
+// TODO(crbug.com/1065133): In the future, when we can remove support for
+// invalid names, this can be a private implementation detail of
+// |DNSDomainFromDot|, and need not be NET_EXPORT_PRIVATE.
 NET_EXPORT_PRIVATE bool IsValidHostLabelCharacter(char c, bool is_first_char);
 
-// DNSDomainToString converts a domain in DNS format to a dotted string.
-// Excludes the dot at the end.
-NET_EXPORT std::string DNSDomainToString(const base::StringPiece& domain);
+// Converts a domain in DNS format to a dotted string. Excludes the dot at the
+// end.  Returns nullopt on malformed input.
+//
+// If `require_complete` is true, input will be considered malformed if it does
+// not contain a terminating zero-length label. If false, assumes the standard
+// terminating zero-length label at the end if not included in the input.
+//
+// DNS name compression (see RFC 1035, section 4.1.4) is disallowed and
+// considered malformed. To handle a potentially compressed name, in a
+// DnsResponse object, use DnsRecordParser::ReadName().
+NET_EXPORT absl::optional<std::string> DnsDomainToString(
+    base::StringPiece dns_name,
+    bool require_complete = false);
+NET_EXPORT absl::optional<std::string> DnsDomainToString(
+    base::BigEndianReader& reader,
+    bool require_complete = false);
 
 // Return the expanded template when no variables have corresponding values.
 NET_EXPORT_PRIVATE std::string GetURLFromTemplateWithoutParameters(
     const std::string& server_template);
 
-#if !defined(OS_NACL)
 NET_EXPORT_PRIVATE
 base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
     const char* field_trial_name,
     base::TimeDelta default_delta,
     NetworkChangeNotifier::ConnectionType connection_type);
-#endif  // !defined(OS_NACL)
 
 // How similar or different two AddressLists are (see values for details).
 // Used in histograms; do not modify existing values.
@@ -114,7 +132,7 @@ AddressFamilyToDnsQueryType(AddressFamily address_family);
 // Uses the hardcoded upgrade mapping to discover DoH service(s) associated
 // with a DoT hostname. Providers listed in |excluded_providers| are not
 // eligible for upgrade.
-NET_EXPORT_PRIVATE std::vector<DnsConfig::DnsOverHttpsServerConfig>
+NET_EXPORT_PRIVATE std::vector<DnsOverHttpsServerConfig>
 GetDohUpgradeServersFromDotHostname(
     const std::string& dot_server,
     const std::vector<std::string>& excluded_providers);
@@ -123,7 +141,7 @@ GetDohUpgradeServersFromDotHostname(
 // with a list of insecure DNS servers. Server ordering is preserved across
 // the mapping. Providers listed in |excluded_providers| are not
 // eligible for upgrade.
-NET_EXPORT_PRIVATE std::vector<DnsConfig::DnsOverHttpsServerConfig>
+NET_EXPORT_PRIVATE std::vector<DnsOverHttpsServerConfig>
 GetDohUpgradeServersFromNameservers(
     const std::vector<IPEndPoint>& dns_servers,
     const std::vector<std::string>& excluded_providers);
@@ -131,7 +149,7 @@ GetDohUpgradeServersFromNameservers(
 // Returns the provider id to use in UMA histogram names. If there is no
 // provider id that matches |doh_server|, returns "Other".
 NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromDohConfig(
-    const DnsConfig::DnsOverHttpsServerConfig& doh_server);
+    const DnsOverHttpsServerConfig& doh_server);
 
 // Returns the provider id to use in UMA histogram names. If there is no
 // provider id that matches |nameserver|, returns "Other".
@@ -139,7 +157,16 @@ NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver);
 
 NET_EXPORT_PRIVATE std::string SecureDnsModeToString(
-    const DnsConfig::SecureDnsMode secure_dns_mode);
+    const SecureDnsMode secure_dns_mode);
+
+// std::map-compliant Compare for two dotted-format domain names. Returns true
+// iff `lhs` is before `rhs` in strict weak ordering.
+class NET_EXPORT_PRIVATE DomainNameComparator {
+ public:
+  bool operator()(base::StringPiece lhs, base::StringPiece rhs) const {
+    return base::CompareCaseInsensitiveASCII(lhs, rhs) < 0;
+  }
+};
 
 }  // namespace net
 

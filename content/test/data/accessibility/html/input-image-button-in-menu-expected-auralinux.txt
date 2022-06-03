@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[push button] name='Bullet'
-++[menu]
-++++[push button] name='Bullet'

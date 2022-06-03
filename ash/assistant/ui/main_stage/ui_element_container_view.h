@@ -12,50 +12,61 @@
 
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
 
-class AssistantResponse;
-class AssistantCardElement;
-class AssistantTextElement;
+class AssistantUiElementViewFactory;
 class AssistantViewDelegate;
 
 // UiElementContainerView is the child of AssistantMainView concerned with
-// laying out text views and embedded card views in response to Assistant
-// interaction model UI element events.
+// laying out Assistant UI element views in response to Assistant interaction
+// model events.
 class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
     : public AnimatedContainerView {
  public:
   explicit UiElementContainerView(AssistantViewDelegate* delegate);
+
+  UiElementContainerView(const UiElementContainerView&) = delete;
+  UiElementContainerView& operator=(const UiElementContainerView&) = delete;
+
   ~UiElementContainerView() override;
+
+  void OnOverflowIndicatorVisibilityChanged(bool is_visible);
 
   // AnimatedContainerView:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;
-  void OnContentsPreferredSizeChanged(views::View* content_view) override;
+  void Layout() override;
   void OnCommittedQueryChanged(const AssistantQuery& query) override;
+
+  // views::View:
+  void OnThemeChanged() override;
+
+  // AssistantScrollView::Observer:
+  void OnContentsPreferredSizeChanged(views::View* content_view) override;
 
  private:
   void InitLayout();
 
+  SkColor GetOverflowIndicatorBackgroundColor() const;
+
   // AnimatedContainerView:
-  void HandleResponse(const AssistantResponse& response) override;
-  void OnAllViewsRemoved() override;
+  std::unique_ptr<ElementAnimator> HandleUiElement(
+      const AssistantUiElement* ui_element) override;
   void OnAllViewsAnimatedIn() override;
 
-  void OnCardElementAdded(const AssistantCardElement* card_element);
-  void OnTextElementAdded(const AssistantTextElement* text_element);
+  views::View* scroll_indicator_ = nullptr;  // Owned by view hierarchy.
 
-  // Whether or not the card we are adding is the first card for the current
-  // Assistant response. The first card requires the addition of a top margin.
-  bool is_first_card_ = true;
+  // Factory instance used to construct views for modeled UI elements.
+  std::unique_ptr<AssistantUiElementViewFactory> view_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(UiElementContainerView);
+  // Whether to use dark/light mode colors, which default to dark.
+  const bool use_dark_light_mode_colors_;
 };
 
 }  // namespace ash

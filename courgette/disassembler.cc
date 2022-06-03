@@ -4,7 +4,7 @@
 
 #include "courgette/disassembler.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "courgette/assembly_program.h"
 #include "courgette/encoded_program.h"

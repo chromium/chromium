@@ -12,19 +12,20 @@
 namespace media {
 namespace learning {
 
+namespace tasknames {
+constexpr char kWillPlay[] = "MediaLearningWillPlay";
+constexpr char kConsecutiveBadWindows[] = "MediaLearningConsecutiveBadWindows";
+constexpr char kConsecutiveNNRs[] = "MediaLearningConsecutiveNNRs";
+}  // namespace tasknames
+
 // All learning experiments for media/ .
 // TODO(liberato): This should be in media/ somewhere, since the learning
 // framework doesn't care about it.  For now, this is simpler to make deps
 // easier to handle.
 class COMPONENT_EXPORT(LEARNING_COMMON) MediaLearningTasks {
  public:
-  // Ids for each LearningTask.
-  enum class Id {
-    kWillPlay,
-  };
-
-  // Return the LearningTask for |id|.
-  static const learning::LearningTask& Get(Id id);
+  // Return the LearningTask for |name|.
+  static const learning::LearningTask& Get(const char* task_name);
 
   // Register all tasks by calling |registration_cb| repeatedly.
   static void Register(

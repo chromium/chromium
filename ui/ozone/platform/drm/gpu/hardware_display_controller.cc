@@ -7,18 +7,26 @@
 #include <drm.h>
 #include <string.h>
 #include <xf86drm.h>
+#include <ios>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -29,18 +37,25 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 
+// Vendor ID for downstream, interim ChromeOS specific modifiers.
+#define DRM_FORMAT_MOD_VENDOR_CHROMEOS 0xf0
+// TODO(gurchetansingh) Remove once DRM_FORMAT_MOD_ARM_AFBC is used by all
+// kernels and allocators.
+#define DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC fourcc_mod_code(CHROMEOS, 1)
+
 namespace ui {
 
 namespace {
 
 void CompletePageFlip(
     base::WeakPtr<HardwareDisplayController> hardware_display_controller_,
+    int modeset_sequence,
     PresentationOnceCallback callback,
     DrmOverlayPlaneList plane_list,
     const gfx::PresentationFeedback& presentation_feedback) {
   if (hardware_display_controller_) {
-    hardware_display_controller_->OnPageFlipComplete(std::move(plane_list),
-                                                     presentation_feedback);
+    hardware_display_controller_->OnPageFlipComplete(
+        modeset_sequence, std::move(plane_list), presentation_feedback);
   }
   std::move(callback).Run(presentation_feedback);
 }
@@ -52,7 +67,17 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
   // Clear to transparent in case |image| is smaller than the canvas.
   SkCanvas* canvas = cursor->GetCanvas();
   canvas->clear(SK_ColorTRANSPARENT);
-  canvas->drawBitmapRect(image, damage, NULL);
+  canvas->drawImageRect(image.asImage(), damage, SkSamplingOptions());
+}
+
+template <typename T>
+std::string NumberToHexString(const T value) {
+  static_assert(std::is_unsigned<T>::value,
+                "Can only convert unsigned ints to hex");
+
+  std::stringstream ss;
+  ss << "0x" << std::hex << std::uppercase << value;
+  return ss.str();
 }
 
 }  // namespace
@@ -60,52 +85,79 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
 HardwareDisplayController::HardwareDisplayController(
     std::unique_ptr<CrtcController> controller,
     const gfx::Point& origin)
-    : origin_(origin), is_disabled_(controller->is_disabled()) {
+    : origin_(origin) {
   AddCrtc(std::move(controller));
   AllocateCursorBuffers();
 }
 
-HardwareDisplayController::~HardwareDisplayController() {
+HardwareDisplayController::~HardwareDisplayController() = default;
+
+void HardwareDisplayController::GetModesetProps(
+    CommitRequest* commit_request,
+    const DrmOverlayPlaneList& modeset_planes,
+    const drmModeModeInfo& mode) {
+  GetModesetPropsForCrtcs(commit_request, modeset_planes,
+                          /*use_current_crtc_mode=*/false, mode);
 }
 
-bool HardwareDisplayController::Modeset(const DrmOverlayPlane& primary,
-                                        drmModeModeInfo mode) {
-  TRACE_EVENT0("drm", "HDC::Modeset");
-  DCHECK(primary.buffer.get());
-  bool status = true;
-  for (const auto& controller : crtc_controllers_)
-    status &= controller->Modeset(primary, mode);
-
-  is_disabled_ = false;
-  ResetCursor();
-  OnModesetComplete(primary);
-  return status;
+void HardwareDisplayController::GetEnableProps(
+    CommitRequest* commit_request,
+    const DrmOverlayPlaneList& modeset_planes) {
+  // TODO(markyacoub): Simplify and remove the use of empty_mode.
+  drmModeModeInfo empty_mode = {};
+  GetModesetPropsForCrtcs(commit_request, modeset_planes,
+                          /*use_current_crtc_mode=*/true, empty_mode);
 }
 
-bool HardwareDisplayController::Enable(const DrmOverlayPlane& primary) {
-  TRACE_EVENT0("drm", "HDC::Enable");
-  DCHECK(primary.buffer.get());
-  bool status = true;
-  for (const auto& controller : crtc_controllers_)
-    status &= controller->Modeset(primary, controller->mode());
+void HardwareDisplayController::GetModesetPropsForCrtcs(
+    CommitRequest* commit_request,
+    const DrmOverlayPlaneList& modeset_planes,
+    bool use_current_crtc_mode,
+    const drmModeModeInfo& mode) {
+  DCHECK(commit_request);
 
-  is_disabled_ = false;
-  ResetCursor();
-  OnModesetComplete(primary);
-  return status;
+  GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
+
+  for (const auto& controller : crtc_controllers_) {
+    drmModeModeInfo modeset_mode =
+        use_current_crtc_mode ? controller->mode() : mode;
+
+    DrmOverlayPlaneList overlays = DrmOverlayPlane::Clone(modeset_planes);
+
+    CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
+        controller->crtc(), controller->connector(), modeset_mode, origin_,
+        &owned_hardware_planes_, std::move(overlays));
+    commit_request->push_back(std::move(request));
+  }
 }
 
-void HardwareDisplayController::Disable() {
-  TRACE_EVENT0("drm", "HDC::Disable");
+void HardwareDisplayController::GetDisableProps(CommitRequest* commit_request) {
+  for (const auto& controller : crtc_controllers_) {
+    CrtcCommitRequest request = CrtcCommitRequest::DisableCrtcRequest(
+        controller->crtc(), controller->connector(), &owned_hardware_planes_);
+    commit_request->push_back(std::move(request));
+  }
+}
 
-  for (const auto& controller : crtc_controllers_)
-    controller->Disable();
+void HardwareDisplayController::UpdateState(
+    const CrtcCommitRequest& crtc_request) {
+  if (crash_gpu_timer_.IsRunning()) {
+    crash_gpu_timer_.AbandonAndStop();
+    SYSLOG(INFO)
+        << "Detected a modeset attempt after " << failed_page_flip_counter_
+        << " failed page flips. Aborting GPU process self-destruct with "
+        << crash_gpu_timer_.desired_run_time() - base::TimeTicks::Now()
+        << " to spare.";
+    failed_page_flip_counter_ = 0;
+  }
 
-  bool ret = GetDrmDevice()->plane_manager()->DisableOverlayPlanes(
-      &owned_hardware_planes_);
-  LOG_IF(ERROR, !ret) << "Can't disable overlays when disabling HDC.";
-
-  is_disabled_ = true;
+  // Verify that the current state matches the requested state.
+  if (crtc_request.should_enable() && IsEnabled()) {
+    DCHECK(!crtc_request.overlays().empty());
+    // TODO(markyacoub): This should be absorbed in the commit request.
+    ResetCursor();
+    OnModesetComplete(crtc_request.overlays());
+  }
 }
 
 void HardwareDisplayController::SchedulePageFlip(
@@ -115,28 +167,70 @@ void HardwareDisplayController::SchedulePageFlip(
   DCHECK(!page_flip_request_);
   scoped_refptr<PageFlipRequest> page_flip_request =
       base::MakeRefCounted<PageFlipRequest>(GetRefreshInterval());
-  std::unique_ptr<gfx::GpuFence> out_fence;
+  gfx::GpuFenceHandle release_fence;
 
   bool status =
-      ScheduleOrTestPageFlip(plane_list, page_flip_request, &out_fence);
-  CHECK(status) << "SchedulePageFlip failed";
+      ScheduleOrTestPageFlip(plane_list, page_flip_request, &release_fence);
+  if (!status) {
+    for (const auto& plane : plane_list) {
+      // If the page flip failed and we see that the buffer has been allocated
+      // before the latest modeset, it could mean it was an in-flight buffer
+      // carrying an obsolete configuration.
+      // Request a buffer reallocation to reflect the new change.
+      if (plane.buffer &&
+          plane.buffer->modeset_sequence_id_at_allocation() <
+              plane.buffer->drm_device()->modeset_sequence_id()) {
+        std::move(submission_callback)
+            .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
+                 /*release_fence=*/gfx::GpuFenceHandle());
+        std::move(presentation_callback)
+            .Run(gfx::PresentationFeedback::Failure());
+        return;
+      }
+    }
 
+    // No outdated buffers detected which makes this a true page flip failure.
+    // Start the GPU self-destruct timer if needed and report the failure.
+    failed_page_flip_counter_++;
+    if (!crash_gpu_timer_.IsRunning()) {
+      DCHECK_EQ(1, failed_page_flip_counter_);
+      LOG(WARNING) << "Initiating GPU process self-destruct in "
+                   << kWaitForModesetTimeout
+                   << " unless a modeset attempt is detected.";
+
+      crash_gpu_timer_.Start(
+          FROM_HERE, kWaitForModesetTimeout, base::BindOnce([] {
+            LOG(FATAL) << "Failed to modeset within " << kWaitForModesetTimeout
+                       << " of the first page flip failure. Crashing GPU "
+                          "process. Goodbye.";
+          }));
+    }
+
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_FAILED,
+             /*release_fence=*/gfx::GpuFenceHandle());
+    std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
+    return;
+  }
   if (page_flip_request->page_flip_count() == 0) {
     // Apparently, there was nothing to do. This probably should not be
     // able to happen but both CrtcController::AssignOverlayPlanes and
     // HardwareDisplayPlaneManagerLegacy::Commit appear to have cases
     // where we ACK without actually scheduling a page flip.
-    std::move(submission_callback).Run(gfx::SwapResult::SWAP_ACK, nullptr);
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_ACK,
+             /*release_fence=*/gfx::GpuFenceHandle());
     std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
     return;
   }
 
   std::move(submission_callback)
-      .Run(gfx::SwapResult::SWAP_ACK, std::move(out_fence));
+      .Run(gfx::SwapResult::SWAP_ACK, std::move(release_fence));
 
   // Everything was submitted successfully, wait for asynchronous completion.
   page_flip_request->TakeCallback(
       base::BindOnce(&CompletePageFlip, weak_ptr_factory_.GetWeakPtr(),
+                     GetDrmDevice()->modeset_sequence_id(),
                      std::move(presentation_callback), std::move(plane_list)));
   page_flip_request_ = std::move(page_flip_request);
 }
@@ -149,9 +243,9 @@ bool HardwareDisplayController::TestPageFlip(
 bool HardwareDisplayController::ScheduleOrTestPageFlip(
     const DrmOverlayPlaneList& plane_list,
     scoped_refptr<PageFlipRequest> page_flip_request,
-    std::unique_ptr<gfx::GpuFence>* out_fence) {
+    gfx::GpuFenceHandle* release_fence) {
   TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
-  DCHECK(!is_disabled_);
+  DCHECK(IsEnabled());
 
   // Ignore requests with no planes to schedule.
   if (plane_list.empty())
@@ -166,28 +260,27 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
 
   bool status = true;
   for (const auto& controller : crtc_controllers_) {
-    status &= controller->AssignOverlayPlanes(&owned_hardware_planes_,
-                                              pending_planes);
+    status &= controller->AssignOverlayPlanes(
+        &owned_hardware_planes_, pending_planes, /*is_modesetting=*/false);
   }
 
   status &= GetDrmDevice()->plane_manager()->Commit(
-      &owned_hardware_planes_, page_flip_request, out_fence);
+      &owned_hardware_planes_, page_flip_request, release_fence);
 
   return status;
 }
 
 std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
-    uint32_t format) const {
-  std::vector<uint64_t> modifiers;
-
+    uint32_t fourcc_format) const {
   if (crtc_controllers_.empty())
-    return modifiers;
+    return std::vector<uint64_t>();
 
-  modifiers = crtc_controllers_[0]->GetFormatModifiers(format);
+  std::vector<uint64_t> modifiers =
+      crtc_controllers_[0]->GetFormatModifiers(fourcc_format);
 
   for (size_t i = 1; i < crtc_controllers_.size(); ++i) {
     std::vector<uint64_t> other =
-        crtc_controllers_[i]->GetFormatModifiers(format);
+        crtc_controllers_[i]->GetFormatModifiers(fourcc_format);
     std::vector<uint64_t> intersection;
 
     std::set_intersection(modifiers.begin(), modifiers.end(), other.begin(),
@@ -198,21 +291,46 @@ std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
   return modifiers;
 }
 
-std::vector<uint64_t>
-HardwareDisplayController::GetFormatModifiersForModesetting(
-    uint32_t fourcc_format) const {
-  const auto& modifiers = GetFormatModifiers(fourcc_format);
-  std::vector<uint64_t> filtered_modifiers;
-  for (auto modifier : modifiers) {
+std::vector<uint64_t> HardwareDisplayController::GetSupportedModifiers(
+    uint32_t fourcc_format,
+    bool is_modeset) const {
+  if (preferred_format_modifier_.empty())
+    return std::vector<uint64_t>();
+
+  auto it = preferred_format_modifier_.find(fourcc_format);
+  if (it != preferred_format_modifier_.end()) {
+    uint64_t supported_modifier = it->second;
     // AFBC for modeset buffers doesn't work correctly, as we can't fill it with
-    // a valid AFBC buffer. For now, don't use AFBC for modeset buffers.
-    // TODO: Use AFBC for modeset buffers if it is available.
-    // See https://crbug.com/852675.
-    if (modifier != DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
-      filtered_modifiers.push_back(modifier);
+    // a valid AFBC buffer (crbug.com/852675).
+    // For now, don't use AFBC for modeset buffers.
+    if (is_modeset &&
+        supported_modifier == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
+      supported_modifier = DRM_FORMAT_MOD_LINEAR;
     }
+    return std::vector<uint64_t>{supported_modifier};
   }
-  return filtered_modifiers;
+
+  return GetFormatModifiers(fourcc_format);
+}
+
+std::vector<uint64_t>
+HardwareDisplayController::GetFormatModifiersForTestModeset(
+    uint32_t fourcc_format) {
+  // If we're about to test, clear the current preferred modifier.
+  preferred_format_modifier_.clear();
+  return GetFormatModifiers(fourcc_format);
+}
+
+void HardwareDisplayController::UpdatePreferredModiferForFormat(
+    gfx::BufferFormat buffer_format,
+    uint64_t modifier) {
+  uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(buffer_format);
+  base::InsertOrAssign(preferred_format_modifier_, fourcc_format, modifier);
+
+  uint32_t opaque_fourcc_format =
+      GetFourCCFormatForOpaqueFramebuffer(buffer_format);
+  base::InsertOrAssign(preferred_format_modifier_, opaque_fourcc_format,
+                       modifier);
 }
 
 void HardwareDisplayController::MoveCursor(const gfx::Point& location) {
@@ -300,8 +418,13 @@ bool HardwareDisplayController::IsMirrored() const {
   return crtc_controllers_.size() > 1;
 }
 
-bool HardwareDisplayController::IsDisabled() const {
-  return is_disabled_;
+bool HardwareDisplayController::IsEnabled() const {
+  bool is_enabled = true;
+
+  for (const auto& controller : crtc_controllers_)
+    is_enabled &= controller->is_enabled();
+
+  return is_enabled;
 }
 
 gfx::Size HardwareDisplayController::GetModeSize() const {
@@ -313,8 +436,7 @@ gfx::Size HardwareDisplayController::GetModeSize() const {
 base::TimeDelta HardwareDisplayController::GetRefreshInterval() const {
   // If there are multiple CRTCs they should all have the same refresh rate.
   float vrefresh = ModeRefreshRate(crtc_controllers_[0]->mode());
-  return vrefresh ? base::TimeDelta::FromSeconds(1) / vrefresh
-                  : base::TimeDelta();
+  return vrefresh ? base::Seconds(1) / vrefresh : base::TimeDelta();
 }
 
 base::TimeTicks HardwareDisplayController::GetTimeOfLastFlip() const {
@@ -329,26 +451,66 @@ scoped_refptr<DrmDevice> HardwareDisplayController::GetDrmDevice() const {
 }
 
 void HardwareDisplayController::OnPageFlipComplete(
+    int modeset_sequence,
     DrmOverlayPlaneList pending_planes,
     const gfx::PresentationFeedback& presentation_feedback) {
   if (!page_flip_request_)
     return;  // Modeset occured during this page flip.
+
   time_of_last_flip_ = presentation_feedback.timestamp;
   current_planes_ = std::move(pending_planes);
-  for (const auto& controller : crtc_controllers_)
-    controller->OnPageFlipComplete();
+
+  for (const auto& controller : crtc_controllers_) {
+    // Only reset the modeset buffer of the crtcs for pageflips that were
+    // committed after the modeset.
+    if (modeset_sequence == GetDrmDevice()->modeset_sequence_id()) {
+      GetDrmDevice()->plane_manager()->ResetModesetStateForCrtc(
+          controller->crtc());
+    }
+  }
   page_flip_request_ = nullptr;
 }
 
+void HardwareDisplayController::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  using base::trace_event::ValueToString;
+
+  value->SetString("origin", ValueToString(origin_));
+  value->SetString("cursor_location", ValueToString(cursor_location_));
+  value->SetInteger("failed_page_flip_counter", failed_page_flip_counter_);
+  value->SetBoolean("is_crash_timer_running", crash_gpu_timer_.IsRunning());
+  value->SetBoolean("has_page_flip_request", page_flip_request_ != nullptr);
+
+  {
+    auto scoped_dict = value->BeginDictionaryScoped("owned_hardware_planes");
+    owned_hardware_planes_.AsValueInto(value);
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("crtc_controllers");
+    for (const auto& crtc : crtc_controllers_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      crtc->AsValueInto(value);
+    }
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("preferred_format_modifiers");
+    for (const auto& format_modifier : preferred_format_modifier_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      value->SetString("format", NumberToHexString(format_modifier.first));
+      value->SetString("modifier", NumberToHexString(format_modifier.second));
+    }
+  }
+}
+
 void HardwareDisplayController::OnModesetComplete(
-    const DrmOverlayPlane& primary) {
-  // drmModeSetCrtc has an immediate effect, so we can assume that the current
-  // planes have been updated. However if a page flip is still pending, set the
-  // pending planes to the same values so that the callback keeps the correct
-  // state.
+    const DrmOverlayPlaneList& modeset_planes) {
+  // Modesetting is blocking so it has an immediate effect. We can assume that
+  // the current planes have been updated. However, if a page flip is still
+  // pending, set the pending planes to the same values so that the callback
+  // keeps the correct state.
   page_flip_request_ = nullptr;
-  current_planes_.clear();
-  current_planes_.push_back(primary.Clone());
+  owned_hardware_planes_.legacy_page_flips.clear();
+  current_planes_ = DrmOverlayPlane::Clone(modeset_planes);
   time_of_last_flip_ = base::TimeTicks::Now();
 }
 

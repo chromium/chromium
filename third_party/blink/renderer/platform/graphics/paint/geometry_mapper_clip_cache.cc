@@ -31,28 +31,23 @@ void GeometryMapperClipCache::InvalidateCacheIfNeeded() {
   }
 }
 
-const FloatClipRect* GeometryMapperClipCache::GetCachedClip(
+const GeometryMapperClipCache::ClipCacheEntry*
+GeometryMapperClipCache::GetCachedClip(
     const ClipAndTransform& clip_and_transform) {
   InvalidateCacheIfNeeded();
   for (const auto& entry : clip_cache_) {
     if (entry.clip_and_transform == clip_and_transform) {
-      return &entry.clip_rect;
+      return &entry;
     }
   }
   return nullptr;
 }
 
-void GeometryMapperClipCache::SetCachedClip(
-    const ClipAndTransform& clip_and_transform,
-    const FloatClipRect& clip) {
+void GeometryMapperClipCache::SetCachedClip(const ClipCacheEntry& entry) {
   InvalidateCacheIfNeeded();
-#if DCHECK_IS_ON()
-  for (const auto& entry : clip_cache_) {
-    if (entry.clip_and_transform == clip_and_transform)
-      DCHECK(false);  // There should be no existing entry.
-  }
-#endif
-  clip_cache_.push_back(ClipCacheEntry(clip_and_transform, clip));
+  // There should be no existing entry.
+  DCHECK(!GetCachedClip(entry.clip_and_transform));
+  clip_cache_.push_back(entry);
 }
 
 }  // namespace blink

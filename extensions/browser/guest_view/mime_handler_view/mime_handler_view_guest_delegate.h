@@ -10,7 +10,7 @@
 #include "base/macros.h"
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 struct ContextMenuParams;
 }  // namespace content
 
@@ -20,17 +20,23 @@ namespace extensions {
 class MimeHandlerViewGuestDelegate {
  public:
   MimeHandlerViewGuestDelegate() {}
+
+  MimeHandlerViewGuestDelegate(const MimeHandlerViewGuestDelegate&) = delete;
+  MimeHandlerViewGuestDelegate& operator=(const MimeHandlerViewGuestDelegate&) =
+      delete;
+
   virtual ~MimeHandlerViewGuestDelegate() {}
 
   // Handles context menu, or returns false if unhandled.
-  virtual bool HandleContextMenu(content::WebContents* web_contents,
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params);
   // Called when MimeHandlerViewGuest has an associated embedder frame.
   virtual void RecordLoadMetric(bool in_main_frame,
                                 const std::string& mime_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewGuestDelegate);
 };
 
 }  // namespace extensions

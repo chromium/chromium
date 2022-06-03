@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/legacy_autofill_edit_item.h"
 
+#import <MaterialComponents/MaterialTypography.h>
+
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,15 +28,13 @@ const CGFloat kLabelAndFieldGap = 5;
 }  // namespace
 
 @interface LegacyAutofillEditCell ()
-// Updates the cell's fonts and colors for the given |cellStyle| and uses
-// dynamic font types if they are available (iOS 11+).
-- (void)updateForStyle:(CollectionViewCellStyle)cellStyle
-       withFontScaling:(BOOL)withFontScaling;
+// Updates the cell's fonts and colors and uses dynamic font types if they are
+// available (iOS 11+).
+- (void)updateWithFontScaling:(BOOL)withFontScaling;
 @end
 
 @implementation LegacyAutofillEditItem
 
-@synthesize cellStyle = _cellStyle;
 @synthesize textFieldName = _textFieldName;
 @synthesize textFieldValue = _textFieldValue;
 @synthesize identifyingIcon = _identifyingIcon;
@@ -53,7 +51,6 @@ const CGFloat kLabelAndFieldGap = 5;
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [LegacyAutofillEditCell class];
-    _cellStyle = CollectionViewCellStyle::kMaterial;
     _returnKeyType = UIReturnKeyNext;
     _keyboardType = UIKeyboardTypeDefault;
     _autoCapitalizationType = UITextAutocapitalizationTypeWords;
@@ -67,7 +64,7 @@ const CGFloat kLabelAndFieldGap = 5;
   [super configureCell:cell];
 
   // Update fonts and colors before changing anything else.
-  [cell updateForStyle:self.cellStyle withFontScaling:self.useScaledFont];
+  [cell updateWithFontScaling:self.useScaledFont];
 
   NSString* textLabelFormat = self.required ? @"%@*" : @"%@";
   cell.textLabel.text =
@@ -172,22 +169,14 @@ const CGFloat kLabelAndFieldGap = 5;
   return self;
 }
 
-- (void)updateForStyle:(CollectionViewCellStyle)cellStyle
-       withFontScaling:(BOOL)withFontScaling {
-  if (cellStyle == CollectionViewCellStyle::kUIKit) {
-    self.textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-    self.textLabel.textColor = UIColor.cr_labelColor;
-    self.textField.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-    self.textField.textColor = UIColor.cr_secondaryLabelColor;
-  } else {
-    MaybeSetUILabelScaledFont(withFontScaling, self.textLabel,
-                              [[MDCTypography fontLoader] mediumFontOfSize:14]);
-    self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    MaybeSetUITextFieldScaledFont(
-        withFontScaling, self.textField,
-        [[MDCTypography fontLoader] lightFontOfSize:16]);
-    self.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  }
+- (void)updateWithFontScaling:(BOOL)withFontScaling {
+  MaybeSetUILabelScaledFont(withFontScaling, self.textLabel,
+                            [[MDCTypography fontLoader] mediumFontOfSize:14]);
+  self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  MaybeSetUITextFieldScaledFont(
+      withFontScaling, self.textField,
+      [[MDCTypography fontLoader] lightFontOfSize:16]);
+  self.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
 #pragma mark - UIView

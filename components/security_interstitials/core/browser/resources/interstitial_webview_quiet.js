@@ -15,21 +15,19 @@ function onResize() {
   if (window.matchMedia(mediaQuery).matches) {
     const hiddenDetails = $('details').classList.add(HIDDEN_CLASS);
     $('main-content').classList.remove(HIDDEN_CLASS);
+    $('icon').setAttribute('aria-label', loadTimeData.getString('heading'));
+  } else {
+    $('icon').removeAttribute('aria-label');
   }
 }
 
 function initPage() {
   const isGiantWebView = loadTimeData.getBoolean('is_giant');
-  const darkModeAvailable = loadTimeData.getBoolean('darkModeAvailable');
   const interstitialType = loadTimeData.getString('type');
-  const safebrowsing = interstitialType == "SAFEBROWSING";
-  const heavyAd = interstitialType == "HEAVYAD";
+  const safebrowsing = interstitialType === 'SAFEBROWSING';
+  const heavyAd = interstitialType === 'HEAVYAD';
 
   document.body.className = isGiantWebView ? 'giant' : '';
-
-  if (darkModeAvailable) {
-    document.body.classList.add('dark-mode-available');
-  }
 
   if (heavyAd) {
     document.body.classList.add('heavy-ad');

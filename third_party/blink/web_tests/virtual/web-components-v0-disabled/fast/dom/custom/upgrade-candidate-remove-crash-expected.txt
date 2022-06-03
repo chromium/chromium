@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 19: Uncaught TypeError: document.registerElement is not a function
-Tests that an element is not upgraded after being destroyed
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

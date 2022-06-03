@@ -34,7 +34,8 @@ class BrowserTestDriver(Driver):
 
     def __init__(self, port, worker_number, no_timeout=False):
         """Invokes the constructor of Driver."""
-        super(BrowserTestDriver, self).__init__(port, worker_number, no_timeout)
+        super(BrowserTestDriver, self).__init__(port, worker_number,
+                                                no_timeout)
 
     def start(self, per_test_args, deadline):
         """Same as Driver.start() however, it has an extra step. It waits for
@@ -77,7 +78,9 @@ class BrowserTestDriver(Driver):
         """Command line arguments to run the browser test."""
         cmd = self._command_wrapper(self._port.get_option('wrapper'))
         cmd.append(self._port._path_to_driver())
-        cmd.append('--gtest_filter=PrintPreviewPdfGeneratedBrowserTest.MANUAL_LayoutTestDriver')
+        cmd.append(
+            '--gtest_filter=PrintPreviewPdfGeneratedBrowserTest.MANUAL_LayoutTestDriver'
+        )
         cmd.append('--run-manual')
         cmd.append('--single-process-tests')
         cmd.extend(per_test_args)

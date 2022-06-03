@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL linebreak only ₩２４ assert_equals: expected 73 but got 79
+FAIL spaces linebreak ₩２４ assert_equals: expected 73 but got 79
+FAIL linebreak spaces ₩２４ assert_equals: expected 73 but got 79
+FAIL spaces linebreak spaces ₩２４ assert_equals: expected 73 but got 79
+FAIL multiple linebreaks ₩２４ assert_equals: expected 73 but got 79
+FAIL multiple linebreaks + spaces ₩２４ assert_equals: expected 73 but got 79
+FAIL linebreak only ２４₩ assert_equals: expected 73 but got 79
+FAIL spaces linebreak ２４₩ assert_equals: expected 73 but got 79
+FAIL linebreak spaces ２４₩ assert_equals: expected 73 but got 79
+FAIL spaces linebreak spaces ２４₩ assert_equals: expected 73 but got 79
+FAIL multiple linebreaks ２４₩ assert_equals: expected 73 but got 79
+FAIL multiple linebreaks + spaces ２４₩ assert_equals: expected 73 but got 79
+Harness: the test ran to completion.
+

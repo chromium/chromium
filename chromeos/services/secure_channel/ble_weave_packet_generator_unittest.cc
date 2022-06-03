@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +19,12 @@ namespace weave {
 
 class SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest
     : public testing::Test {
+ public:
+  SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest(
+      const SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest&) = delete;
+  SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest& operator=(
+      const SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest&) = delete;
+
  protected:
   SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest() {}
 
@@ -46,10 +50,6 @@ class SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest
   uint8_t GetCounterFromHeader(uint8_t header) { return (header >> 4) & 7; }
 
   uint8_t GetPacketType(uint8_t header) { return (header >> 7) & 1; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest);
 };
 
 TEST_F(SecureChannelBluetoothLowEnergyWeavePacketGeneratorTest,

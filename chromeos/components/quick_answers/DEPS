@@ -1,5 +1,0 @@
-include_rules = [
-  "+ash/public",
-  "+services/data_decoder/public",
-  "+third_party/re2/src/re2/re2.h",
-]

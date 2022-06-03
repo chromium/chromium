@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/drop_data.h"
@@ -32,6 +31,26 @@ class DraggingInfo;
 }  // namespace remote_cocoa
 
 namespace content {
+class WebContentsViewDelegate;
+
+// A structure used to keep drop context for asynchronously finishing a drop
+// operation. This is required because some drop event data can change before
+// completeDropAsync is called.
+struct DropContext {
+  DropContext(const content::DropData drop_data,
+              const gfx::PointF client_pt,
+              const gfx::PointF screen_pt,
+              int modifier_flags,
+              base::WeakPtr<content::RenderWidgetHostImpl> target_rwh);
+  DropContext(const DropContext& other);
+  ~DropContext();
+
+  const content::DropData drop_data;
+  const gfx::PointF client_pt;
+  const gfx::PointF screen_pt;
+  const int modifier_flags;
+  base::WeakPtr<content::RenderWidgetHostImpl> target_rwh;
+};
 
 // Given |data|, which should not be nil, fill it in using the contents of the
 // given pasteboard. The types handled by this method should be kept in sync
@@ -106,7 +125,11 @@ CONTENT_EXPORT
 - (void)draggingExited;
 - (NSDragOperation)draggingUpdated:
     (const remote_cocoa::mojom::DraggingInfo*)info;
-- (BOOL)performDragOperation:(const remote_cocoa::mojom::DraggingInfo*)info;
+- (BOOL)performDragOperation:(const remote_cocoa::mojom::DraggingInfo*)info
+    withWebContentsViewDelegate:
+        (content::WebContentsViewDelegate*)webContentsViewDelegate;
+- (void)completeDropAsync:(BOOL)success
+              withContext:(const content::DropContext)context;
 
 // Helper to call WebWidgetHostInputEventRouter::GetRenderWidgetHostAtPoint().
 - (content::RenderWidgetHostImpl*)

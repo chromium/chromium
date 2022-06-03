@@ -1,0 +1,10 @@
+PASS matchMedia("(resolution: " + initialResolution + "dppx)").matches is true
+PASS matchMedia("(-webkit-device-pixel-ratio: " + initialResolution + ")").matches is true
+FAIL matchMedia("(resolution: " + initialResolution * 1.2 + "dppx)").matches should be true. Was false.
+FAIL matchMedia("(-webkit-device-pixel-ratio: " + initialResolution * 1.2 + ")").matches should be true. Was false.
+PASS matchMedia("(resolution: " + initialResolution / 1.2 + "dppx)").matches is true
+PASS matchMedia("(-webkit-device-pixel-ratio: " + initialResolution / 1.2 + ")").matches is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -110,6 +110,10 @@ void FindTestWebContentsDelegate::FindReply(WebContents* web_contents,
   }
 }
 
+bool FindTestWebContentsDelegate::IsBackForwardCacheSupported() {
+  return true;
+}
+
 void FindTestWebContentsDelegate::WaitFor(WaitingFor wait_for) {
   ASSERT_EQ(NOTHING, waiting_for_);
   ASSERT_NE(NOTHING, wait_for);

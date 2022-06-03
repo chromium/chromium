@@ -17,6 +17,7 @@ include_rules = [
   "+components/unified_consent",
   "+components/url_formatter",
   "+components/variations",
+  "+components/feed/core/shared_prefs",
   "+components/version_info",
   "+components/web_resource",
   "+grit/components_strings.h",

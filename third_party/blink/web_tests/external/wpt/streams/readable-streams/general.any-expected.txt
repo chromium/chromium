@@ -1,19 +1,18 @@
 This is a testharness.js-based test.
 PASS ReadableStream can be constructed with no errors
 PASS ReadableStream can't be constructed with garbage
-PASS ReadableStream can't be constructed with an invalid type
-FAIL ReadableStream instances should have the correct list of properties assert_array_equals: should have all the correct properties lengths differ, expected 8 got 7
+FAIL ReadableStream can't be constructed with an invalid type assert_throws_js: constructor should throw when the type is null function "() => new ReadableStream({ type: null })" threw object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified" ("RangeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 PASS ReadableStream constructor should throw for non-function start arguments
 PASS ReadableStream constructor will not tolerate initial garbage as cancel argument
 PASS ReadableStream constructor will not tolerate initial garbage as pull argument
-FAIL ReadableStream start should be called with the proper parameters assert_equals: enqueue should have 1 parameter expected 1 but got 0
+PASS ReadableStream start should be called with the proper thisArg
 PASS ReadableStream start controller parameter should be extensible
 PASS default ReadableStream getReader() should only accept mode:undefined
 PASS ReadableStream should be able to call start method within prototype chain of its source
 PASS ReadableStream start should be able to return a promise
 PASS ReadableStream start should be able to return a promise and reject it
 PASS ReadableStream should be able to enqueue different objects.
-PASS ReadableStream: if pull rejects, it should error the stream
+FAIL ReadableStream: if pull rejects, it should error the stream assert_true: expected true got false
 PASS ReadableStream: should only call pull once upon starting the stream
 PASS ReadableStream: should call pull when trying to read from a started, empty stream
 PASS ReadableStream: should only call pull once on a non-empty stream read from before start fulfills

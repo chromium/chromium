@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/metrics_hashes.h"
@@ -14,8 +15,9 @@
 #include "base/metrics/sample_map.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/pickle.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/values.h"
 
 namespace base {
 
@@ -30,7 +32,7 @@ HistogramBase* SparseHistogram::FactoryGet(const std::string& name,
     // TODO(gayane): |HashMetricName| is called again in Histogram constructor.
     // Refactor code to avoid the additional call.
     bool should_record =
-        StatisticsRecorder::ShouldRecordHistogram(HashMetricName(name));
+        StatisticsRecorder::ShouldRecordHistogram(HashMetricNameAs32Bits(name));
     if (!should_record)
       return DummyHistogram::GetInstance();
     // Try to create the histogram using a "persistent" allocator. As of
@@ -118,7 +120,7 @@ void SparseHistogram::AddCount(Sample value, int count) {
   }
 
   if (UNLIKELY(StatisticsRecorder::have_active_callbacks()))
-    FindAndRunCallback(value);
+    FindAndRunCallbacks(value);
 }
 
 std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotSamples() const {
@@ -163,14 +165,9 @@ bool SparseHistogram::AddSamplesFromPickle(PickleIterator* iter) {
   return unlogged_samples_->AddFromPickle(iter);
 }
 
-void SparseHistogram::WriteHTMLGraph(std::string* output) const {
-  output->append("<PRE>");
-  WriteAsciiImpl(true, "<br>", output);
-  output->append("</PRE>");
-}
-
-void SparseHistogram::WriteAscii(std::string* output) const {
-  WriteAsciiImpl(true, "\n", output);
+base::Value SparseHistogram::ToGraphDict() const {
+  std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
+  return snapshot->ToGraphDict(histogram_name(), flags());
 }
 
 void SparseHistogram::SerializeInfoImpl(Pickle* pickle) const {
@@ -217,75 +214,12 @@ HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter) {
   return SparseHistogram::FactoryGet(histogram_name, flags);
 }
 
-void SparseHistogram::GetParameters(DictionaryValue* params) const {
-  // TODO(kaiwang): Implement. (See HistogramBase::WriteJSON.)
-}
-
-void SparseHistogram::GetCountAndBucketData(Count* count,
-                                            int64_t* sum,
-                                            ListValue* buckets) const {
-  // TODO(kaiwang): Implement. (See HistogramBase::WriteJSON.)
-}
-
-void SparseHistogram::WriteAsciiImpl(bool graph_it,
-                                     const std::string& newline,
-                                     std::string* output) const {
-  // Get a local copy of the data so we are consistent.
-  std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
-  Count total_count = snapshot->TotalCount();
-  double scaled_total_count = total_count / 100.0;
-
-  WriteAsciiHeader(total_count, output);
-  output->append(newline);
-
-  // Determine how wide the largest bucket range is (how many digits to print),
-  // so that we'll be able to right-align starts for the graphical bars.
-  // Determine which bucket has the largest sample count so that we can
-  // normalize the graphical bar-width relative to that sample count.
-  Count largest_count = 0;
-  Sample largest_sample = 0;
-  std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
-  while (!it->Done()) {
-    Sample min;
-    int64_t max;
-    Count count;
-    it->Get(&min, &max, &count);
-    if (min > largest_sample)
-      largest_sample = min;
-    if (count > largest_count)
-      largest_count = count;
-    it->Next();
-  }
-  size_t print_width = GetSimpleAsciiBucketRange(largest_sample).size() + 1;
-
-  // iterate over each item and display them
-  it = snapshot->Iterator();
-  while (!it->Done()) {
-    Sample min;
-    int64_t max;
-    Count count;
-    it->Get(&min, &max, &count);
-
-    // value is min, so display it
-    std::string range = GetSimpleAsciiBucketRange(min);
-    output->append(range);
-    for (size_t j = 0; range.size() + j < print_width + 1; ++j)
-      output->push_back(' ');
-
-    if (graph_it)
-      WriteAsciiBucketGraph(count, largest_count, output);
-    WriteAsciiBucketValue(count, scaled_total_count, output);
-    output->append(newline);
-    it->Next();
-  }
-}
-
-void SparseHistogram::WriteAsciiHeader(const Count total_count,
-                                       std::string* output) const {
-  StringAppendF(output, "Histogram: %s recorded %d samples", histogram_name(),
-                total_count);
-  if (flags())
-    StringAppendF(output, " (flags = 0x%x)", flags());
+Value SparseHistogram::GetParameters() const {
+  // Unlike Histogram::GetParameters, only set the type here, and no other
+  // params. The other params do not make sense for sparse histograms.
+  Value params(Value::Type::DICTIONARY);
+  params.SetStringKey("type", HistogramTypeToString(GetHistogramType()));
+  return params;
 }
 
 }  // namespace base

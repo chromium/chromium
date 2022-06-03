@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_VIEW_HELPERS_H_
 
 #include <type_traits>
+
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -13,105 +14,115 @@
 namespace blink {
 
 // A wrapper template type that is used to ensure that a TypedArray is not
-// backed by a SharedArrayBuffer.
-//
-// Typically this is used as an annotation on C++ functions that are called by
-// the bindings layer, e.g.:
+// backed by a SharedArrayBuffer.  It is usable like a smart pointer.
 //
 //   void Foo(NotShared<DOMUint32Array> param) {
-//     DOMUint32Array* array = param.View();
+//     size_t length = param->length();
 //     ...
 //   }
 template <typename T>
 class NotShared {
+  DISALLOW_NEW();
   static_assert(WTF::IsSubclass<typename std::remove_const<T>::type,
                                 DOMArrayBufferView>::value,
                 "NotShared<T> must have T as subclass of DOMArrayBufferView");
-  STACK_ALLOCATED();
 
  public:
   using TypedArrayType = T;
 
   NotShared() = default;
+  NotShared(const NotShared<T>& other) = default;
+  // Allow implicit upcasts if U inherits from T.
+  template <typename U, std::enable_if_t<std::is_base_of<T, U>::value, int> = 0>
+  NotShared(const NotShared<U>& other) : typed_array_(other.Get()) {}
 
-  explicit NotShared(T* typedArray) : typed_array_(typedArray) {
-    DCHECK(!(typedArray && typedArray->View()->IsShared()));
+  explicit NotShared(std::nullptr_t) {}
+  explicit NotShared(T* typed_array) : typed_array_(typed_array) {
+    DCHECK(!typed_array || !typed_array->IsShared());
   }
-  NotShared(const NotShared& other) = default;
   template <typename U>
-  NotShared(const NotShared<U>& other) : typed_array_(other.View()) {}
-  template <typename U>
-  NotShared(const Member<U>& other) {
-    DCHECK(!other->View()->IsShared());
-    typed_array_ = other.Get();
+  explicit NotShared(const Member<U>& other) : typed_array_(other.Get()) {
+    DCHECK(!other || !other->IsShared());
   }
 
   NotShared& operator=(const NotShared& other) = default;
   template <typename U>
   NotShared& operator=(const NotShared<U>& other) {
-    typed_array_ = other.View();
+    typed_array_ = static_cast<T*>(other.Get());
     return *this;
   }
 
-  T* View() const { return typed_array_.Get(); }
+  T* Get() const { return GetRaw(); }
+  void Clear() { typed_array_ = nullptr; }
 
-  bool operator!() const { return !typed_array_; }
-  explicit operator bool() const { return !!typed_array_; }
+  // Returns true if this object represents IDL null.
+  bool IsNull() const { return !GetRaw(); }
+
+  explicit operator bool() const { return GetRaw(); }
+  T* operator->() const { return GetRaw(); }
+  T& operator*() const { return *GetRaw(); }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(typed_array_); }
 
  private:
-  // Must use an untraced member here since this object may be constructed on a
-  // thread without a ThreadState (e.g. an Audio worklet). It is safe in that
-  // case because the pointed-to ArrayBuffer is being kept alive another way
-  // (e.g. CrossThreadPersistent).
-  //
-  // TODO(binji): update to using Member, see crbug.com/710295.
-  UntracedMember<T> typed_array_;
+  T* GetRaw() const { return typed_array_; }
+
+  Member<T> typed_array_;
 };
 
-// A wrapper template type that specifies that a TypedArray may be backed by a
-// SharedArrayBuffer.
-//
-// Typically this is used as an annotation on C++ functions that are called by
-// the bindings layer, e.g.:
+// A wrapper template type that specifies that a TypedArray *may* be backed by
+// a SharedArrayBuffer.  It is usable like a smart pointer.
 //
 //   void Foo(MaybeShared<DOMUint32Array> param) {
-//     DOMUint32Array* array = param.View();
+//     DOMArrayBuffer* buffer = param->buffer();
 //     ...
 //   }
 template <typename T>
 class MaybeShared {
+  DISALLOW_NEW();
   static_assert(WTF::IsSubclass<typename std::remove_const<T>::type,
                                 DOMArrayBufferView>::value,
                 "MaybeShared<T> must have T as subclass of DOMArrayBufferView");
-  STACK_ALLOCATED();
 
  public:
   using TypedArrayType = T;
 
   MaybeShared() = default;
-
-  explicit MaybeShared(T* typedArray) : typed_array_(typedArray) {}
   MaybeShared(const MaybeShared& other) = default;
+  // Allow implicit upcasts if U inherits from T.
+  template <typename U, std::enable_if_t<std::is_base_of<T, U>::value, int> = 0>
+  MaybeShared(const MaybeShared<U>& other) : typed_array_(other.Get()) {}
+
+  explicit MaybeShared(std::nullptr_t) {}
+  // [AllowShared] array buffer view may be a view of non-shared array buffer,
+  // so we don't check if the buffer is SharedArrayBuffer or not.
+  // https://webidl.spec.whatwg.org/#AllowShared
+  explicit MaybeShared(T* typed_array) : typed_array_(typed_array) {}
   template <typename U>
-  MaybeShared(const MaybeShared<U>& other) : typed_array_(other.View()) {}
-  template <typename U>
-  MaybeShared(const Member<U>& other) {
-    typed_array_ = other.Get();
-  }
+  explicit MaybeShared(const Member<U>& other) : typed_array_(other.Get()) {}
 
   MaybeShared& operator=(const MaybeShared& other) = default;
   template <typename U>
   MaybeShared& operator=(const MaybeShared<U>& other) {
-    typed_array_ = other.View();
+    typed_array_ = static_cast<T*>(other.Get());
     return *this;
   }
 
-  T* View() const { return typed_array_.Get(); }
+  T* Get() const { return GetRaw(); }
+  void Clear() { typed_array_ = nullptr; }
 
-  bool operator!() const { return !typed_array_; }
-  explicit operator bool() const { return !!typed_array_; }
+  // Returns true if this object represents IDL null.
+  bool IsNull() const { return !GetRaw(); }
+
+  explicit operator bool() const { return GetRaw(); }
+  T* operator->() const { return GetRaw(); }
+  T& operator*() const { return *GetRaw(); }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(typed_array_); }
 
  private:
+  T* GetRaw() const { return typed_array_; }
+
   Member<T> typed_array_;
 };
 

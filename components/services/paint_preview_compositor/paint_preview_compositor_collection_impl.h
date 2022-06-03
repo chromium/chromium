@@ -9,8 +9,10 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
@@ -19,7 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #endif
@@ -43,6 +45,11 @@ class PaintPreviewCompositorCollectionImpl
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~PaintPreviewCompositorCollectionImpl() override;
 
+  PaintPreviewCompositorCollectionImpl(
+      const PaintPreviewCompositorCollectionImpl&) = delete;
+  PaintPreviewCompositorCollectionImpl& operator=(
+      const PaintPreviewCompositorCollectionImpl&) = delete;
+
   // PaintPreviewCompositorCollection implementation.
   void SetDiscardableSharedMemoryManager(
       mojo::PendingRemote<
@@ -51,6 +58,8 @@ class PaintPreviewCompositorCollectionImpl
   void CreateCompositor(
       mojo::PendingReceiver<mojom::PaintPreviewCompositor> compositor,
       CreateCompositorCallback callback) override;
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
+                            memory_pressure_level) override;
   void ListCompositors(ListCompositorsCallback callback) override;
 
  private:
@@ -60,22 +69,23 @@ class PaintPreviewCompositorCollectionImpl
 
   mojo::Receiver<mojom::PaintPreviewCompositorCollection> receiver_{this};
 
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  std::unique_ptr<discardable_memory::ClientDiscardableSharedMemoryManager>
-      discardable_shared_memory_manager_;
-
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<PaintPreviewCompositorImpl>>
       compositors_;
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader_;
 #endif
 
-  PaintPreviewCompositorCollectionImpl(
-      const PaintPreviewCompositorCollectionImpl&) = delete;
-  PaintPreviewCompositorCollectionImpl& operator=(
-      const PaintPreviewCompositorCollectionImpl&) = delete;
+  const bool initialize_environment_;
+
+  // Ensure the discardable memory manager is the last thing to get destructed.
+  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
+
+  base::WeakPtrFactory<PaintPreviewCompositorCollectionImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace paint_preview

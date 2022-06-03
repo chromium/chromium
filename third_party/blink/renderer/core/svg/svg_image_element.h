@@ -23,8 +23,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/html/canvas/image_element_base.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_image_loader.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
@@ -32,18 +30,20 @@
 
 namespace blink {
 
+class SVGAnimatedLength;
+class SVGAnimatedPreserveAspectRatio;
+
 class CORE_EXPORT SVGImageElement final
     : public SVGGraphicsElement,
       public ImageElementBase,
       public SVGURIReference,
       public ActiveScriptWrappable<SVGImageElement> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGImageElement);
 
  public:
   explicit SVGImageElement(Document&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   bool CurrentFrameHasSingleSecurityOrigin() const;
 
@@ -53,10 +53,6 @@ class CORE_EXPORT SVGImageElement final
   SVGAnimatedLength* height() const { return height_.Get(); }
   SVGAnimatedPreserveAspectRatio* preserveAspectRatio() {
     return preserve_aspect_ratio_.Get();
-  }
-
-  IntSize GetOverriddenIntrinsicSize() const {
-    return overridden_intrinsic_size_;
   }
 
   bool HasPendingActivity() const final {
@@ -88,7 +84,7 @@ class CORE_EXPORT SVGImageElement final
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
 
   void AttachLayoutTree(AttachContext&) override;
@@ -104,7 +100,6 @@ class CORE_EXPORT SVGImageElement final
   void DidMoveToNewDocument(Document& old_document) override;
   SVGImageLoader& GetImageLoader() const override { return *image_loader_; }
 
-  IntSize overridden_intrinsic_size_;
   bool is_default_overridden_intrinsic_size_;
 
   Member<SVGAnimatedLength> x_;

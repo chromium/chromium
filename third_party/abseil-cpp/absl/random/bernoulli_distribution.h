@@ -24,6 +24,7 @@
 #include "absl/random/internal/iostream_state_saver.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // absl::bernoulli_distribution is a drop in replacement for
 // std::bernoulli_distribution. It guarantees that (given a perfect
@@ -193,6 +194,7 @@ bool bernoulli_distribution::Generate(double p,
   }
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_BERNOULLI_DISTRIBUTION_H_

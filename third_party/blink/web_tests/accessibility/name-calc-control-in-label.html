@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div class="container">
+  <input type="checkbox" id="checkbox">
+  <label for="checkbox">Activate the button
+    <input type="text" id="textfield" value="5" aria-label="Number of times to activate the button">
+    times
+  </label>
+
+  <input type="radio" id="radio">
+  <label for="radio">Befriend
+    <select size="1" id="combo" title="Animal exterior">
+      <option>furry</option>
+      <option selected>scaly</option>
+    </select>
+    animals
+  </label>
+
+  <div id="switch-label">Add
+    <div role="slider" id="slider" aria-valuenow="10" aria-valuetext="ten" tabindex="0" aria-label="kilograms"></div>
+    kg of kibble to cart
+  </div>
+ <div tabindex="0" role="switch" id="switch" aria-labelledby="switch-label">
+<script>
+test(function(t) {
+    var axCheckbox = accessibilityController.accessibleElementById("checkbox");
+    assert_equals(axCheckbox.name, "Activate the button 5 times");
+    document.getElementById('textfield').value = '20';
+    assert_equals(axCheckbox.name, "Activate the button 20 times");
+    var axTextfield = accessibilityController.accessibleElementById("textfield");
+    assert_equals(axTextfield.name, "Number of times to activate the button");
+}, "Checkbox with input inside");
+
+test(function(t) {
+    var axRadio = accessibilityController.accessibleElementById("radio");
+    assert_equals(axRadio.name, "Befriend scaly animals");
+    document.getElementById('combo').selectedIndex = 0;
+    assert_equals(axRadio.name, "Befriend furry animals");
+    document.getElementById('combo').selectedIndex = -1;
+    assert_equals(axRadio.name, "Befriend animals");
+    var axCombo = accessibilityController.accessibleElementById("combo");
+    assert_equals(axCombo.name, "Animal exterior");
+}, "Radio with select inside");
+
+test(function(t) {
+    var axSwitch = accessibilityController.accessibleElementById("switch");
+    assert_equals(axSwitch.name, "Add ten kg of kibble to cart");
+    document.getElementById('slider').removeAttribute('aria-valuetext');
+    assert_equals(axSwitch.name, "Add 10 kg of kibble to cart");
+    var axSlider = accessibilityController.accessibleElementById("slider");
+    assert_equals(axSlider.name, "kilograms");
+}, "Switch with slider inside");
+</script>

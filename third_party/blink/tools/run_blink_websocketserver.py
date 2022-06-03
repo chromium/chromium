@@ -26,7 +26,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Runs a WebSocket server for WebSocket tests.
 
 Some tests require both an HTTP server and WebSocket server. You can start
@@ -38,9 +37,15 @@ For example, to run a test http/tests/websocket/binary-type.html which depends
 on WebSocket, you can navigate to:
     http://127.0.0.1:8000/websocket/close-unref-websocket.html
 """
+import sys
+import optparse
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.web_tests.servers import cli_wrapper
 from blinkpy.web_tests.servers import pywebsocket
 
-cli_wrapper.main(pywebsocket.PyWebSocket, description=__doc__)
+option, args = cli_wrapper.parse_python_server_options()
+cli_wrapper.main(
+    pywebsocket.PyWebSocket,
+    argv=args,
+    description=__doc__,
+    python_executable=option.python_executable)

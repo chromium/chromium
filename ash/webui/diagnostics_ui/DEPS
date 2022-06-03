@@ -1,0 +1,22 @@
+include_rules = [
+  "+ash/grit/ash_diagnostics_app_resources.h",
+  "+chromeos/login/login_state",
+  "+chromeos/strings/grit/chromeos_strings.h",
+  "+components",
+  "+ui/base",
+  "+ui/chromeos/strings",
+  "+ui/events/ozone",
+  "+ui/gfx",
+  "+ui/resources",
+  "+ui/shell_dialogs",
+  "+ui/web_dialogs",
+
+  # TODO(https://crbug.com/1164001): Remove when migrated to ash.
+  "+chromeos/dbus/cros_healthd",
+  "+chromeos/services/cros_healthd/public/cpp",
+  "+chromeos/services/cros_healthd/public/mojom",
+  "+chromeos/services/network_config",
+
+  # SFUL Metrics DEPS
+  "+chromeos/components/feature_usage",
+]

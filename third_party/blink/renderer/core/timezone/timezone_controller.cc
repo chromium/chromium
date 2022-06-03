@@ -6,15 +6,20 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/icu/source/common/unicode/char16ptr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "v8/include/v8.h"
@@ -32,6 +37,11 @@ void NotifyTimezoneChangeToV8(v8::Isolate* isolate) {
 void NotifyTimezoneChangeOnWorkerThread(WorkerThread* worker_thread) {
   DCHECK(worker_thread->IsCurrentThread());
   NotifyTimezoneChangeToV8(worker_thread->GlobalScope()->GetIsolate());
+  if (RuntimeEnabledFeatures::TimeZoneChangeEventEnabled() &&
+      worker_thread->GlobalScope()->IsWorkerGlobalScope()) {
+    worker_thread->GlobalScope()->DispatchEvent(
+        *Event::Create(event_type_names::kTimezonechange));
+  }
 }
 
 String GetTimezoneId(const icu::TimeZone& timezone) {
@@ -45,6 +55,21 @@ String GetCurrentTimezoneId() {
   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createDefault());
   CHECK(timezone);
   return GetTimezoneId(*timezone.get());
+}
+
+void DispatchTimeZoneChangeEventToFrames() {
+  if (!RuntimeEnabledFeatures::TimeZoneChangeEventEnabled())
+    return;
+
+  for (const Page* page : Page::OrdinaryPages()) {
+    for (Frame* frame = page->MainFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      if (auto* main_local_frame = DynamicTo<LocalFrame>(frame)) {
+        main_local_frame->DomWindow()->DispatchEvent(
+            *Event::Create(event_type_names::kTimezonechange));
+      }
+    }
+  }
 }
 
 bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
@@ -61,6 +86,7 @@ bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
   NotifyTimezoneChangeToV8(V8PerIsolateData::MainThreadIsolate());
   WorkerThread::CallOnAllWorkerThreads(&NotifyTimezoneChangeOnWorkerThread,
                                        TaskType::kInternalDefault);
+  DispatchTimeZoneChangeEventToFrames();
   return true;
 }
 
@@ -75,12 +101,16 @@ TimeZoneController::~TimeZoneController() = default;
 
 // static
 void TimeZoneController::Init() {
-  // Some unit tests may have no message loop ready, so we can't initialize the
-  // mojo stuff here. They can initialize those mojo stuff they're interested in
-  // later after they got a message loop ready.
+  // TODO(crbug.com/660274): The unit tests should not require this exception.
+  // Currently some unit tests have no message loop ready, so we can't
+  // initialize the mojo stuff here. They can initialize those mojo stuff
+  // they're interested in later after they got a message loop ready.
   if (!CanInitializeMojo())
     return;
 
+  // monitor must not use HeapMojoRemote. TimeZoneController is not managed by
+  // Oilpan. monitor is only used to bind receiver_ here and never used
+  // again.
   mojo::Remote<device::mojom::blink::TimeZoneMonitor> monitor;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       monitor.BindNewPipeAndPassReceiver());
@@ -93,40 +123,82 @@ TimeZoneController& TimeZoneController::instance() {
   return instance;
 }
 
+bool CanonicalEquals(const String& time_zone_a, const String& time_zone_b) {
+  if (time_zone_a == time_zone_b) {
+    return true;
+  }
+  icu::UnicodeString canonical_a, canonical_b;
+  UErrorCode status = U_ZERO_ERROR;
+  UBool dummy;
+  icu::TimeZone::getCanonicalID(
+      icu::UnicodeString(time_zone_a.Ascii().data(), -1, US_INV), canonical_a,
+      dummy, status);
+  icu::TimeZone::getCanonicalID(
+      icu::UnicodeString(time_zone_b.Ascii().data(), -1, US_INV), canonical_b,
+      dummy, status);
+  if (U_FAILURE(status)) {
+    return false;
+  }
+  return canonical_a == canonical_b;
+}
+
 // static
 std::unique_ptr<TimeZoneController::TimeZoneOverride>
 TimeZoneController::SetTimeZoneOverride(const String& timezone_id) {
   DCHECK(!timezone_id.IsEmpty());
-  if (instance().has_timezone_id_override_) {
+  if (HasTimeZoneOverride()) {
     VLOG(1) << "Cannot override existing timezone override.";
     return nullptr;
   }
 
-  if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
-    VLOG(1) << "Invalid override timezone id: " << timezone_id;
-    return nullptr;
+  // Only notify if the override and the host are different.
+  if (!CanonicalEquals(timezone_id, instance().host_timezone_id_)) {
+    if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
+      VLOG(1) << "Invalid override timezone id: " << timezone_id;
+      return nullptr;
+    }
   }
-
-  instance().has_timezone_id_override_ = true;
+  instance().override_timezone_id_ = timezone_id;
 
   return std::unique_ptr<TimeZoneOverride>(new TimeZoneOverride());
 }
 
 // static
 bool TimeZoneController::HasTimeZoneOverride() {
-  return instance().has_timezone_id_override_;
+  return !instance().override_timezone_id_.IsEmpty();
 }
 
 // static
 void TimeZoneController::ClearTimeZoneOverride() {
-  DCHECK(instance().has_timezone_id_override_);
+  DCHECK(HasTimeZoneOverride());
 
-  instance().has_timezone_id_override_ = false;
-
-  // Restore remembered timezone request.
-  SetIcuTimeZoneAndNotifyV8(instance().host_timezone_id_);
+  if (!CanonicalEquals(instance().host_timezone_id_,
+                       instance().override_timezone_id_)) {
+    // Restore remembered timezone request.
+    // Only do so if the host timezone is now different.
+    SetIcuTimeZoneAndNotifyV8(instance().host_timezone_id_);
+  }
+  instance().override_timezone_id_ = String();
 }
 
+// static
+void TimeZoneController::ChangeTimeZoneOverride(const String& timezone_id) {
+  DCHECK(!timezone_id.IsEmpty());
+  if (!HasTimeZoneOverride()) {
+    VLOG(1) << "Cannot change if there are no existing timezone override.";
+    return;
+  }
+
+  if (CanonicalEquals(instance().override_timezone_id_, timezone_id)) {
+    return;
+  }
+
+  if (!SetIcuTimeZoneAndNotifyV8(timezone_id)) {
+    VLOG(1) << "Invalid override timezone id: " << timezone_id;
+    return;
+  }
+  instance().override_timezone_id_ = timezone_id;
+}
 void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
   DCHECK(IsMainThread());
 
@@ -134,8 +206,12 @@ void TimeZoneController::OnTimeZoneChange(const String& timezone_id) {
   // override is removed.
   instance().host_timezone_id_ = timezone_id;
 
-  if (!instance().has_timezone_id_override_)
+  if (!HasTimeZoneOverride())
     SetIcuTimeZoneAndNotifyV8(timezone_id);
 }
 
+// static
+void TimeZoneController::ChangeTimeZoneForTesting(const String& timezone) {
+  instance().OnTimeZoneChange(timezone);
+}
 }  // namespace blink

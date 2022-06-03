@@ -1,0 +1,15 @@
+# The rules in this file are only applied at compile time. If you can modify the
+# source in question, consider function attributes to disable instrumentation.
+#
+# Please think twice before you add or remove these rules.
+
+# False positive in ffmpeg due to assembly code. http://crbug.com/344505
+fun:ff_get_cpu_flags_x86
+
+# False positives due to use of linux_syscall_support. http://crbug.com/394028
+src:*/third_party/breakpad/breakpad/src/*
+src:*/components/crash/core/app/breakpad_linux.cc
+
+# Reports from sigaltstack instrumentation. https://crbug.com/1050279
+fun:NaClSignalStackRegister
+fun:NaClSignalStackUnregister

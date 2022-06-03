@@ -12,10 +12,18 @@
 #include "base/macros.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
+class ChromeAccountManagerService;
+
 // Implementation of DeviceAccountsProvider.
 class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
  public:
-  DeviceAccountsProviderImpl();
+  explicit DeviceAccountsProviderImpl(
+      ChromeAccountManagerService* account_manager_service);
+
+  DeviceAccountsProviderImpl(const DeviceAccountsProviderImpl&) = delete;
+  DeviceAccountsProviderImpl& operator=(const DeviceAccountsProviderImpl&) =
+      delete;
+
   ~DeviceAccountsProviderImpl() override;
 
   // ios::DeviceAccountsProvider
@@ -29,7 +37,7 @@ class DeviceAccountsProviderImpl : public DeviceAccountsProvider {
       NSError* error) const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceAccountsProviderImpl);
+  ChromeAccountManagerService* account_manager_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_DEVICE_ACCOUNTS_PROVIDER_IMPL_H_

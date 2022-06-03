@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/mojom/font_render_params.mojom";
+import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 
 const int64 kDefaultCaretBlinkIntervalInMilliseconds = 500;
 
@@ -40,7 +41,7 @@ struct RendererPreferences {
   // positions for glyphs.  Currently only used by Linux.
   bool use_subpixel_positioning = false;
 
-  // The color of the focus ring. Currently only used on Linux.
+  // The color of the focus ring.
   uint32 focus_ring_color = 0xFFE59700;
 
   // The colors used in selection text. Currently only used on Linux and Ash.
@@ -89,19 +90,22 @@ struct RendererPreferences {
 
   array<string> webrtc_local_ips_allowed_urls;
 
+  // Whether WebRTC peer connections are allowed to use legacy versions of the
+  // TLS/DTLS protocols.
+  bool webrtc_allow_legacy_tls_protocols = false;
+
   // The user agent given to WebKit when it requests one and the user agent is
   // being overridden for the current navigation.
-  string user_agent_override;
+  UserAgentOverride user_agent_override;
 
   // The accept-languages of the browser, comma-separated.
   string accept_languages;
 
-  // Disables rendering default error page when client choses to block a page.
-  // Corresponds to net::ERR_BLOCKED_BY_CLIENT.
-  bool disable_client_blocked_error_page = false;
-
   // Determines whether plugins are allowed to enter fullscreen mode.
   bool plugin_fullscreen_allowed = true;
+
+  // Whether or not caret browsing is enabled.
+  bool caret_browsing_enabled = false;
 
   [EnableIf=renderer_pref_system_font_family_name]
   string system_font_family_name;
@@ -150,4 +154,11 @@ struct RendererPreferences {
   // The width of the arrow bitmap on a horizontal scroll bar in dips.
   [EnableIf=is_win]
   int32 arrow_bitmap_width_horizontal_scroll_bar_in_dips = 0;
+
+  // Whether the selection clipboard buffer is available.  Linux environments
+  // may support this.
+  [EnableIf=is_selection_clipboard_buffer_possible]
+  bool selection_clipboard_buffer_available = false;
+
+  array<uint16> explicitly_allowed_network_ports;
 };

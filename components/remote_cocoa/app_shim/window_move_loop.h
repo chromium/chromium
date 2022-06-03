@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/mac/scoped_cocoa_disable_screen_updates.h"
 
 namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
@@ -18,6 +19,10 @@ class CocoaWindowMoveLoop {
  public:
   CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
                       const NSPoint& initial_mouse_in_screen);
+
+  CocoaWindowMoveLoop(const CocoaWindowMoveLoop&) = delete;
+  CocoaWindowMoveLoop& operator=(const CocoaWindowMoveLoop&) = delete;
+
   ~CocoaWindowMoveLoop();
 
   // Initiates the drag until a mouse up event is observed, or End() is called.
@@ -42,10 +47,10 @@ class CocoaWindowMoveLoop {
   LoopExitReason* exit_reason_ref_ = nullptr;
   base::OnceClosure quit_closure_;
 
+  std::unique_ptr<gfx::ScopedCocoaDisableScreenUpdates> screen_disabler_;
+
   // WeakPtrFactory for event monitor safety.
   base::WeakPtrFactory<CocoaWindowMoveLoop> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaWindowMoveLoop);
 };
 
 }  // namespace remote_cocoa

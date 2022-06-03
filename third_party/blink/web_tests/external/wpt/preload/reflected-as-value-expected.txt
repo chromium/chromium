@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Make sure that the `as` value reflects only known values assert_true: expected true got false
+FAIL Make sure that the `as` value reflects only known values assert_equals: expected "video" but got ""
 Harness: the test ran to completion.
 

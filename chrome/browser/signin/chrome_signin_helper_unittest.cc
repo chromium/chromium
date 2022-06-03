@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,12 +26,11 @@
 
 namespace {
 
-#if BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
 const char kMirrorAction[] = "action=ADDSESSION";
 #endif
-
-const GURL kGaiaUrl("https://accounts.google.com");
 
 // URLRequestInterceptor adding a account consistency response header to Gaia
 // responses.
@@ -42,14 +42,13 @@ class TestRequestInterceptor : public net::URLRequestInterceptor {
   ~TestRequestInterceptor() override = default;
 
  private:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     std::string response_headers =
         base::StringPrintf("HTTP/1.1 200 OK\n\n%s: %s\n", header_name_.c_str(),
                            header_value_.c_str());
-    return new net::URLRequestTestJob(request, network_delegate,
-                                      response_headers, "", true);
+    return std::make_unique<net::URLRequestTestJob>(request, response_headers,
+                                                    "", true);
   }
 
   const std::string header_name_;
@@ -64,8 +63,11 @@ class TestResponseAdapter : public signin::ResponseAdapter,
                       bool is_main_frame)
       : is_main_frame_(is_main_frame),
         headers_(new net::HttpResponseHeaders(std::string())) {
-    headers_->AddHeader(header_name + ": " + header_value);
+    headers_->SetHeader(header_name, header_value);
   }
+
+  TestResponseAdapter(const TestResponseAdapter&) = delete;
+  TestResponseAdapter& operator=(const TestResponseAdapter&) = delete;
 
   ~TestResponseAdapter() override {}
 
@@ -74,7 +76,9 @@ class TestResponseAdapter : public signin::ResponseAdapter,
         []() -> content::WebContents* { return nullptr; });
   }
   bool IsMainFrame() const override { return is_main_frame_; }
-  GURL GetOrigin() const override { return GURL(kGaiaUrl); }
+  GURL GetOrigin() const override {
+    return GURL("https://accounts.google.com");
+  }
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_.get();
   }
@@ -96,8 +100,6 @@ class TestResponseAdapter : public signin::ResponseAdapter,
  private:
   bool is_main_frame_;
   scoped_refptr<net::HttpResponseHeaders> headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResponseAdapter);
 };
 
 }  // namespace
@@ -107,7 +109,7 @@ class ChromeSigninHelperTest : public testing::Test {
   ChromeSigninHelperTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-  ~ChromeSigninHelperTest() override {}
+  ~ChromeSigninHelperTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<net::TestDelegate> test_request_delegate_;
@@ -127,7 +129,8 @@ TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that user data is set on Mirror requests.
 TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
   // Process the header.
@@ -156,4 +159,27 @@ TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
   EXPECT_FALSE(response_adapter.GetUserData(
       signin::kManageAccountsHeaderReceivedUserDataKey));
 }
-#endif  // BUILDFLAG(ENABLE_MIRROR) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+TEST_F(ChromeSigninHelperTest,
+       ParseGaiaIdFromRemoveLocalAccountResponseHeader) {
+  EXPECT_EQ("123456",
+            signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+                TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
+                                    "obfuscatedid=\"123456\"",
+                                    /*is_main_frame=*/false)
+                    .GetHeaders()));
+  EXPECT_EQ("123456",
+            signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+                TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
+                                    "obfuscatedid=\"123456\",foo=\"bar\"",
+                                    /*is_main_frame=*/false)
+                    .GetHeaders()));
+  EXPECT_EQ(
+      "",
+      signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+          TestResponseAdapter("Google-Accounts-RemoveLocalAccount", "malformed",
+                              /*is_main_frame=*/false)
+              .GetHeaders()));
+}

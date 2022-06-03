@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HIGHLIGHT_H_
 
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class TabGroupViews;
@@ -15,14 +16,15 @@ class TabGroupViews;
 // positioned across all tabs in the group and painted by the tab strip.
 class TabGroupHighlight : public views::View {
  public:
+  METADATA_HEADER(TabGroupHighlight);
   TabGroupHighlight(TabGroupViews* tab_group_views,
-                    tab_groups::TabGroupId group);
-
-  tab_groups::TabGroupId group() const { return group_; }
+                    const tab_groups::TabGroupId& group);
+  TabGroupHighlight(const TabGroupHighlight&) = delete;
+  TabGroupHighlight& operator=(const TabGroupHighlight&) = delete;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  bool CanProcessEventsWithinSubtree() const override;
+  bool GetCanProcessEventsWithinSubtree() const override;
 
  private:
   // Returns the highlight shape, which immitates the tab highlight shape.
@@ -30,8 +32,6 @@ class TabGroupHighlight : public views::View {
 
   TabGroupViews* const tab_group_views_;
   const tab_groups::TabGroupId group_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabGroupHighlight);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HIGHLIGHT_H_

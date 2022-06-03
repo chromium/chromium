@@ -2,6 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {metrics} from '../../common/js/metrics.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner} from './directory_contents.js';
+import {FileListModel} from './file_list_model.js';
+import {FileWatcher} from './file_watcher.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
+
 // If directory files changes too often, don't rescan directory more than once
 // per specified interval
 const SIMULTANEOUS_RESCAN_INTERVAL = 500;
@@ -11,7 +34,7 @@ const SHORT_RESCAN_INTERVAL = 100;
 /**
  * Data model of the file manager.
  */
-class DirectoryModel extends cr.EventTarget {
+export class DirectoryModel extends EventTarget {
   /**
    * @param {boolean} singleSelection True if only one file could be selected
    *                                  at the time.
@@ -48,6 +71,13 @@ class DirectoryModel extends cr.EventTarget {
     this.ignoreCurrentDirectoryDeletion_ = false;
 
     this.directoryChangeQueue_ = new AsyncUtil.Queue();
+
+    /**
+     * Number of running directory change trackers.
+     * @private {number}
+     */
+    this.numChangeTrackerRunning_ = 0;
+
     this.rescanAggregator_ =
         new AsyncUtil.Aggregator(this.rescanSoon.bind(this, true), 500);
 
@@ -57,8 +87,11 @@ class DirectoryModel extends cr.EventTarget {
 
     this.currentFileListContext_ =
         new FileListContext(fileFilter, metadataModel, volumeManager);
-    this.currentDirContents_ = DirectoryContents.createForDirectory(
-        this.currentFileListContext_, null);
+    this.currentDirContents_ =
+        new DirectoryContents(this.currentFileListContext_, false, null, () => {
+          return new DirectoryContentScanner(null);
+        });
+
     /**
      * Empty file list which is used as a dummy for inactive view of file list.
      * @private {!FileListModel}
@@ -174,6 +207,20 @@ class DirectoryModel extends cr.EventTarget {
   }
 
   /**
+   * @return {boolean} True if entries in the current directory can be deleted.
+   *     Similar to !isReadOnly() except that we allow items in the read-only
+   *     Trash root to be deleted. If there is no entry set, then returns false.
+   */
+  canDeleteEntries() {
+    const currentDirEntry = this.getCurrentDirEntry();
+    if (currentDirEntry &&
+        currentDirEntry.rootType === VolumeManagerCommon.RootType.TRASH) {
+      return true;
+    }
+    return !this.isReadOnly();
+  }
+
+  /**
    * @return {boolean} True if the a scan is active.
    */
   isScanning() {
@@ -202,6 +249,16 @@ class DirectoryModel extends cr.EventTarget {
   }
 
   /**
+   * @return {boolean} True if it's on a Linux native volume.
+   */
+  isOnNative() {
+    const rootType = this.getCurrentRootType();
+    return rootType != null && !util.isRecentRootType(rootType) &&
+        VolumeManagerCommon.VolumeType.isNative(
+            VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
+  }
+
+  /**
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume Type
    * @return {boolean} True if current root volume type is equal to specified
    *     volume type.
@@ -209,8 +266,7 @@ class DirectoryModel extends cr.EventTarget {
    */
   isCurrentRootVolumeType_(volumeType) {
     const rootType = this.getCurrentRootType();
-    return rootType != null &&
-        rootType != VolumeManagerCommon.RootType.RECENT &&
+    return rootType != null && !util.isRecentRootType(rootType) &&
         VolumeManagerCommon.getVolumeTypeFromRootType(rootType) === volumeType;
   }
 
@@ -219,7 +275,7 @@ class DirectoryModel extends cr.EventTarget {
    * If updateFunc returns true, it force to dispatch the change event even if
    * the selection index is not changed.
    *
-   * @param {cr.ui.ListSelectionModel|cr.ui.ListSingleSelectionModel} selection
+   * @param {ListSelectionModel|ListSingleSelectionModel} selection
    *     Selection to be updated.
    * @param {function(): boolean} updateFunc Function updating the selection.
    * @private
@@ -509,7 +565,7 @@ class DirectoryModel extends cr.EventTarget {
     const successCallback = () => {
       if (sequence === this.changeDirectorySequence_) {
         this.replaceDirectoryContents_(dirContents);
-        cr.dispatchSimpleEvent(this, 'rescan-completed');
+        dispatchSimpleEvent(this, 'rescan-completed');
       }
     };
 
@@ -555,7 +611,7 @@ class DirectoryModel extends cr.EventTarget {
         return;
       }
 
-      cr.dispatchSimpleEvent(this, 'scan-completed');
+      dispatchSimpleEvent(this, 'scan-completed');
       callback(true);
     };
 
@@ -578,12 +634,12 @@ class DirectoryModel extends cr.EventTarget {
 
       if (this.changeDirectorySequence_ !== sequence) {
         cancelled = true;
-        cr.dispatchSimpleEvent(this, 'scan-cancelled');
+        dispatchSimpleEvent(this, 'scan-cancelled');
         callback(false);
         return;
       }
 
-      cr.dispatchSimpleEvent(this, 'scan-updated');
+      dispatchSimpleEvent(this, 'scan-updated');
     };
 
     const onCancelled = () => {
@@ -592,14 +648,14 @@ class DirectoryModel extends cr.EventTarget {
       }
 
       cancelled = true;
-      cr.dispatchSimpleEvent(this, 'scan-cancelled');
+      dispatchSimpleEvent(this, 'scan-cancelled');
       callback(false);
     };
 
     // Clear metadata information for the old (no longer visible) items in the
     // file list.
     const fileList = this.getFileList();
-    let removedUrls = [];
+    const removedUrls = [];
     for (let i = 0; i < fileList.length; i++) {
       removedUrls.push(fileList.item(i).toURL());
     }
@@ -614,7 +670,7 @@ class DirectoryModel extends cr.EventTarget {
     }
 
     // Clear the table, and start scanning.
-    cr.dispatchSimpleEvent(this, 'scan-started');
+    dispatchSimpleEvent(this, 'scan-started');
     fileList.splice(0, fileList.length);
     this.scan_(
         this.currentDirContents_, false, onDone, onFailed, onUpdated,
@@ -660,7 +716,7 @@ class DirectoryModel extends cr.EventTarget {
 
     const onCompleted = () => {
       onFinish();
-      cr.dispatchSimpleEvent(this, 'rescan-completed');
+      dispatchSimpleEvent(this, 'rescan-completed');
     };
 
     const onFailure = () => {
@@ -754,7 +810,7 @@ class DirectoryModel extends cr.EventTarget {
       }
 
       // Do not rescan for crostini errors.
-      if (event.error.name === DirectoryModel.CROSTINI_CONNECT_ERR) {
+      if (event.error.name === constants.CROSTINI_CONNECT_ERR) {
         return;
       }
 
@@ -786,7 +842,7 @@ class DirectoryModel extends cr.EventTarget {
     console.assert(
         this.currentDirContents_ !== dirContents,
         'Give directory contents instance must be different from current one.');
-    cr.dispatchSimpleEvent(this, 'begin-update-files');
+    dispatchSimpleEvent(this, 'begin-update-files');
     this.updateSelectionAndPublishEvent_(this.fileListSelection_, () => {
       const selectedEntries = this.getSelectedEntries_();
       const selectedIndices = this.fileListSelection_.selectedIndexes;
@@ -824,7 +880,7 @@ class DirectoryModel extends cr.EventTarget {
       return forceChangeEvent;
     });
 
-    cr.dispatchSimpleEvent(this, 'end-update-files');
+    dispatchSimpleEvent(this, 'end-update-files');
   }
 
   /**
@@ -1127,6 +1183,7 @@ class DirectoryModel extends cr.EventTarget {
 
       start: function() {
         if (!this.active_) {
+          this.dm_.numChangeTrackerRunning_++;
           this.dm_.addEventListener(
               'directory-changed', this.onDirectoryChange_);
           this.active_ = true;
@@ -1136,6 +1193,7 @@ class DirectoryModel extends cr.EventTarget {
 
       stop: function() {
         if (this.active_) {
+          this.dm_.numChangeTrackerRunning_--;
           this.dm_.removeEventListener(
               'directory-changed', this.onDirectoryChange_);
           this.active_ = false;
@@ -1212,7 +1270,7 @@ class DirectoryModel extends cr.EventTarget {
     // its contents.
     const currentDir = this.getCurrentDirEntry();
     const affectedVolumes = event.added.concat(event.removed);
-    for (let volume of affectedVolumes) {
+    for (const volume of affectedVolumes) {
       if (util.isSameEntry(currentDir, volume.prefixEntry)) {
         this.rescan(false);
         break;
@@ -1253,8 +1311,11 @@ class DirectoryModel extends cr.EventTarget {
       // asynchronous call.
       event.added[0].resolveDisplayRoot().then((displayRoot) => {
         // Only change directory if "currentDir" hasn't changed during the
-        // display root resolution.
-        if (currentDir === this.getCurrentDirEntry()) {
+        // display root resolution and if there isn't a directory change in
+        // progress, because other part of the system will eventually change the
+        // directory.
+        if (currentDir === this.getCurrentDirEntry() &&
+            this.numChangeTrackerRunning_ === 0) {
           this.changeDirectoryEntry(event.added[0].displayRoot);
         }
       });
@@ -1292,15 +1353,46 @@ class DirectoryModel extends cr.EventTarget {
   }
 
   /**
-   * Creates directory contents for the entry and query.
+   * Returns true if directory search should be used for the entry and query.
    *
-   * @param {FileListContext} context File list context.
-   * @param {!DirectoryEntry|!FilesAppEntry} entry Current directory.
+   * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
    * @param {string=} opt_query Search query string.
-   * @return {DirectoryContents} Directory contents.
-   * @private
+   * @return {boolean} True if directory search should be used for the entry
+   *     and query.
    */
-  createDirectoryContents_(context, entry, opt_query) {
+  isSearchDirectory(entry, opt_query) {
+    if (util.isRecentRootType(entry.rootType) ||
+        entry.rootType == VolumeManagerCommon.RootType.CROSTINI ||
+        entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+      return true;
+    }
+    if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {
+      return false;
+    }
+
+    const query = (opt_query || '').trimLeft();
+    if (query) {
+      return true;
+    }
+
+    const locationInfo = this.volumeManager_.getLocationInfo(entry);
+    if (locationInfo &&
+        (locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW ||
+         locationInfo.isSpecialSearchRoot)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Creates scanner factory for the entry and query.
+   *
+   * @param {!DirectoryEntry|!FilesAppEntry} entry Directory entry.
+   * @param {string=} opt_query Search query string.
+   * @return {function():ContentScanner} The factory to create ContentScanner
+   *     instance.
+   */
+  createScannerFactory(entry, opt_query) {
     const query = (opt_query || '').trimLeft();
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const canUseDriveSearch =
@@ -1308,69 +1400,91 @@ class DirectoryModel extends cr.EventTarget {
             chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
         (locationInfo && locationInfo.isDriveBased);
 
-    if (entry.rootType == VolumeManagerCommon.RootType.RECENT) {
-      return DirectoryContents.createForRecent(
-          context, /** @type {!FakeEntry} */ (entry), query);
+    if (util.isRecentRootType(entry.rootType)) {
+      return () => {
+        const fakeEntry = /** @type {!FakeEntry} */ (entry);
+        return new RecentContentScanner(
+            query, fakeEntry.sourceRestriction, fakeEntry.recentFileType);
+      };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.CROSTINI) {
-      return DirectoryContents.createForCrostiniMounter(
-          context, /** @type {!FakeEntry} */ (entry));
+      return () => {
+        return new CrostiniMounter();
+      };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {
-      return DirectoryContents.createForDirectory(
-          context, /** @type {!FilesAppDirEntry} */ (entry));
+      return () => {
+        return new DirectoryContentScanner(
+            /** @type {!FilesAppDirEntry} */ (entry));
+      };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
-      return DirectoryContents.createForFakeDrive(
-          context, /** @type {!FakeEntry} */ (entry));
+      return () => {
+        return new ContentScanner();
+      };
     }
     if (query && canUseDriveSearch) {
       // Drive search.
-      return DirectoryContents.createForDriveSearch(
-          context, /** @type {!DirectoryEntry} */ (entry), query);
+      return () => {
+        return new DriveSearchContentScanner(query);
+      };
     }
     if (query) {
-      // Local search.
-      return DirectoryContents.createForLocalSearch(
-          context, /** @type {!DirectoryEntry} */ (entry), query);
+      // Local search for local files and DocumentsProvider files.
+      return () => {
+        return new LocalSearchContentScanner(
+            /** @type {!DirectoryEntry} */ (entry), query);
+      };
     }
-
-    if (!locationInfo) {
-      return null;
+    if (locationInfo &&
+        locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW) {
+      return () => {
+        return new MediaViewContentScanner(
+            /** @type {!DirectoryEntry} */ (entry));
+      };
     }
-
-    if (locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW) {
-      return DirectoryContents.createForMediaView(
-          context, /** @type {!DirectoryEntry} */ (entry));
-    }
-
-    if (locationInfo.isSpecialSearchRoot) {
+    if (locationInfo && locationInfo.isRootEntry &&
+        locationInfo.isSpecialSearchRoot) {
       // Drive special search.
       let searchType;
       switch (locationInfo.rootType) {
         case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
-          searchType =
-              DriveMetadataSearchContentScanner.SearchType.SEARCH_OFFLINE;
+          searchType = chrome.fileManagerPrivate.SearchType.OFFLINE;
           break;
         case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
-          searchType = DriveMetadataSearchContentScanner.SearchType
-                           .SEARCH_SHARED_WITH_ME;
+          searchType = chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME;
           break;
         case VolumeManagerCommon.RootType.DRIVE_RECENT:
-          searchType =
-              DriveMetadataSearchContentScanner.SearchType.SEARCH_RECENT_FILES;
+          searchType = chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES;
           break;
         default:
           // Unknown special search entry.
           throw new Error('Unknown special search type.');
       }
-      return DirectoryContents.createForDriveMetadataSearch(
-          context,
-          /** @type {!FakeEntry} */ (entry), searchType);
+      return () => {
+        return new DriveMetadataSearchContentScanner(searchType);
+      };
     }
     // Local fetch or search.
-    return DirectoryContents.createForDirectory(
-        context, /** @type {!DirectoryEntry} */ (entry));
+    return () => {
+      return new DirectoryContentScanner(
+          /** @type {!DirectoryEntry} */ (entry));
+    };
+  }
+
+  /**
+   * Creates directory contents for the entry and query.
+   *
+   * @param {FileListContext} context File list context.
+   * @param {!DirectoryEntry|!FilesAppDirEntry} entry Current directory.
+   * @param {string=} opt_query Search query string.
+   * @return {DirectoryContents} Directory contents.
+   * @private
+   */
+  createDirectoryContents_(context, entry, opt_query) {
+    const isSearch = this.isSearchDirectory(entry, opt_query);
+    const scannerFactory = this.createScannerFactory(entry, opt_query);
+    return new DirectoryContents(context, isSearch, entry, scannerFactory);
   }
 
   /**
@@ -1463,9 +1577,3 @@ class DirectoryModel extends cr.EventTarget {
     }
   }
 }
-
-/**
- * DOMError type for crostini connection failure.
- * @const {string}
- */
-DirectoryModel.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';

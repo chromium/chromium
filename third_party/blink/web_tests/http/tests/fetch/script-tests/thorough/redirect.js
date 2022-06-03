@@ -3,6 +3,9 @@ if (self.importScripts) {
   importScripts('/fetch/resources/thorough-util.js');
 }
 
+var {BASE_ORIGIN, BASE_URL, REDIRECT_URL, OTHER_BASE_URL, OTHER_REDIRECT_URL} =
+    get_thorough_test_options();
+
 var TEST_TARGETS = [
   // Redirect: same origin -> same origin
   [REDIRECT_URL + encodeURIComponent(BASE_URL) +

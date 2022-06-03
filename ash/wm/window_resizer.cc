@@ -9,7 +9,9 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -17,15 +19,19 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/views/window/window_resize_utils.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
+
+using ::chromeos::FrameHeader;
 
 // Returns true for resize components along the right edge, where a drag in
 // positive x will make the window larger.
@@ -34,28 +40,29 @@ bool IsRightEdge(int window_component) {
          window_component == HTBOTTOMRIGHT || window_component == HTGROWBOX;
 }
 
-// Convert |window_component| to the HitTest used in views::WindowResizeUtils.
-views::HitTest GetWindowResizeHitTest(int window_component) {
+// Convert |window_component| to the ResizeEdge used in
+// gfx::SizeRectToAspectRatio().
+gfx::ResizeEdge GetWindowResizeEdge(int window_component) {
   switch (window_component) {
     case HTBOTTOM:
-      return views::HitTest::kBottom;
+      return gfx::ResizeEdge::kBottom;
     case HTTOP:
-      return views::HitTest::kTop;
+      return gfx::ResizeEdge::kTop;
     case HTLEFT:
-      return views::HitTest::kLeft;
+      return gfx::ResizeEdge::kLeft;
     case HTRIGHT:
-      return views::HitTest::kRight;
+      return gfx::ResizeEdge::kRight;
     case HTTOPLEFT:
-      return views::HitTest::kTopLeft;
+      return gfx::ResizeEdge::kTopLeft;
     case HTTOPRIGHT:
-      return views::HitTest::kTopRight;
+      return gfx::ResizeEdge::kTopRight;
     case HTBOTTOMLEFT:
-      return views::HitTest::kBottomLeft;
+      return gfx::ResizeEdge::kBottomLeft;
     case HTBOTTOMRIGHT:
-      return views::HitTest::kBottomRight;
+      return gfx::ResizeEdge::kBottomRight;
     default:
       NOTREACHED();
-      return views::HitTest::kBottomRight;
+      return gfx::ResizeEdge::kBottomRight;
   }
 }
 
@@ -77,7 +84,7 @@ const int WindowResizer::kBoundsChangeDirection_Vertical = 2;
 
 WindowResizer::WindowResizer(WindowState* window_state)
     : window_state_(window_state) {
-  recorder_ = ash::CreatePresentationTimeHistogramRecorder(
+  recorder_ = CreatePresentationTimeHistogramRecorder(
       GetTarget()->layer()->GetCompositor(),
       "Ash.InteractiveWindowResize.TimeToPresent",
       "Ash.InteractiveWindowResize.TimeToPresent.MaxLatency");
@@ -146,11 +153,11 @@ aura::Window* WindowResizer::GetTarget() const {
 }
 
 gfx::Rect WindowResizer::CalculateBoundsForDrag(
-    const gfx::Point& passed_location) {
+    const gfx::PointF& passed_location) {
   if (!details().is_resizable)
     return details().initial_bounds_in_parent;
 
-  gfx::Point location = passed_location;
+  gfx::PointF location = passed_location;
   int delta_x = location.x() - details().initial_location_in_parent.x();
   int delta_y = location.y() - details().initial_location_in_parent.y();
 
@@ -160,7 +167,7 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   // position.  For example, dragging the left edge to the right should stop
   // repositioning the window when the minimize size is reached.
   gfx::Size size = GetSizeForDrag(&delta_x, &delta_y);
-  gfx::Point origin = GetOriginForDrag(delta_x, delta_y);
+  gfx::Point origin = GetOriginForDrag(delta_x, delta_y, passed_location);
   gfx::Rect new_bounds(origin, size);
 
   gfx::SizeF* aspect_ratio_size =
@@ -218,24 +225,14 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   }
 
   if (details().bounds_change & kBoundsChange_Repositions) {
-    // When we might want to reposition a window which is also restored to its
-    // previous size, to keep the cursor within the dragged window.
-    if (!details().restore_bounds.IsEmpty()) {
-      // However - it is not desirable to change the origin if the window would
-      // be still hit by the cursor.
-      if (details().initial_location_in_parent.x() >
-          details().initial_bounds_in_parent.x() +
-              details().restore_bounds.width())
-        new_bounds.set_x(location.x() - details().restore_bounds.width() / 2);
-    }
-
     // Make sure that |new_bounds| doesn't leave any of the displays.  Note that
     // the |work_area| above isn't good for this check since it is the work area
     // for the current display but the window can move to a different one.
     aura::Window* parent = GetTarget()->parent();
-    gfx::Point passed_location_in_screen(passed_location);
+    gfx::PointF passed_location_in_screen(passed_location);
     ::wm::ConvertPointToScreen(parent, &passed_location_in_screen);
-    gfx::Rect near_passed_location(passed_location_in_screen, gfx::Size());
+    gfx::Rect near_passed_location(
+        gfx::ToRoundedPoint(passed_location_in_screen), gfx::Size());
     // Use a pointer location (matching the logic in DragWindowResizer) to
     // calculate the target display after the drag.
     const display::Display& display =
@@ -305,16 +302,79 @@ void WindowResizer::AdjustDeltaForTouchResize(int* delta_x, int* delta_y) {
   }
 }
 
-gfx::Point WindowResizer::GetOriginForDrag(int delta_x, int delta_y) {
+gfx::Point WindowResizer::GetOriginForDrag(int delta_x,
+                                           int delta_y,
+                                           const gfx::PointF& event_location) {
   gfx::Point origin = details().initial_bounds_in_parent.origin();
-  if (details().bounds_change & kBoundsChange_Repositions) {
-    int pos_change_direction = GetPositionChangeDirectionForWindowComponent(
-        details().window_component);
-    if (pos_change_direction & kBoundsChangeDirection_Horizontal)
-      origin.Offset(delta_x, 0);
-    if (pos_change_direction & kBoundsChangeDirection_Vertical)
-      origin.Offset(0, delta_y);
-  }
+  if (!(details().bounds_change & kBoundsChange_Repositions))
+    return origin;
+
+  int pos_change_direction =
+      GetPositionChangeDirectionForWindowComponent(details().window_component);
+  if (pos_change_direction & kBoundsChangeDirection_Horizontal)
+    origin.Offset(delta_x, 0);
+  if (pos_change_direction & kBoundsChangeDirection_Vertical)
+    origin.Offset(0, delta_y);
+
+  // If the window gets respoitioned and changes to it's restored bounds,
+  // modify the origin so that the cursor remains within the dragged window.
+  // The ratio of the new origin to the new location should match the ratio
+  // from the initial origin to the initial location.
+  const gfx::Rect restore_bounds = details().restore_bounds_in_parent;
+  if (restore_bounds.IsEmpty())
+    return origin;
+
+  // The ratios that should match is the (drag location x - bounds origin x) /
+  // bounds width.
+  const float ratio =
+      (details().initial_location_in_parent.x() -
+       static_cast<float>(details().initial_bounds_in_parent.x())) /
+      details().initial_bounds_in_parent.width();
+  int new_origin_x =
+      base::ClampRound(event_location.x() - ratio * restore_bounds.width());
+  origin.set_x(new_origin_x);
+
+  // Windows may not have a widget in tests.
+  auto* widget = views::Widget::GetWidgetForNativeWindow(GetTarget());
+  if (!widget)
+    return origin;
+
+  // |widget| may have a custom frame, |header| will be null in this case.
+  auto* header = FrameHeader::Get(widget);
+  if (!header)
+    return origin;
+
+  // Compute the available bounds based on the header local bounds. These bounds
+  // are from the previous layout and do not match |restore_bounds| yet.
+  gfx::Rect header_bounds = header->view()->GetLocalBounds();
+  header_bounds.set_height(header->GetHeaderHeight());
+  gfx::Rect available_bounds = header_bounds;
+  auto* back_button = header->GetBackButton();
+  auto* caption_button_container = header->caption_button_container();
+  if (back_button)
+    available_bounds.Subtract(back_button->bounds());
+  if (caption_button_container)
+    available_bounds.Subtract(caption_button_container->bounds());
+
+  // Calculate the new expected available header left and right bounds. The new
+  // header will still are |new_origin_x| with width |restore_bounds.width()|.
+  // The available region subtracts the control buttons.
+  const int header_left =
+      new_origin_x + (available_bounds.x() - header_bounds.x());
+  const int header_right = new_origin_x + restore_bounds.width() -
+                           (header_bounds.right() - available_bounds.right());
+
+  // If |event_location| x falls outside |available_bounds|, shift
+  // |new_origin_x| so that the new window bounds will not land on the any of
+  // the header buttons.
+  int shift = 0;
+  if (event_location.x() > header_right)
+    shift = event_location.x() - header_right;
+  else if (event_location.x() < header_left)
+    shift = event_location.x() - header_left;
+  new_origin_x += shift;
+
+  origin.set_x(new_origin_x);
   return origin;
 }
 
@@ -326,8 +386,8 @@ gfx::Size WindowResizer::GetSizeForDrag(int* delta_x, int* delta_y) {
                              : gfx::Size();
     size.SetSize(GetWidthForDrag(min_size.width(), delta_x),
                  GetHeightForDrag(min_size.height(), delta_y));
-  } else if (!details().restore_bounds.IsEmpty()) {
-    size = details().restore_bounds.size();
+  } else if (!details().restore_bounds_in_parent.IsEmpty()) {
+    size = details().restore_bounds_in_parent.size();
   }
   return size;
 }
@@ -411,11 +471,8 @@ void WindowResizer::CalculateBoundsWithAspectRatio(float aspect_ratio,
   DCHECK(!min_size.IsEmpty());
   DCHECK(!max_size.IsEmpty());
 
-  views::WindowResizeUtils::SizeMinMaxToAspectRatio(aspect_ratio, &min_size,
-                                                    &max_size);
-  views::WindowResizeUtils::SizeRectToAspectRatio(
-      GetWindowResizeHitTest(details().window_component), aspect_ratio,
-      min_size, max_size, new_bounds);
+  gfx::SizeRectToAspectRatio(GetWindowResizeEdge(details().window_component),
+                             aspect_ratio, min_size, max_size, new_bounds);
 }
 
 }  // namespace ash

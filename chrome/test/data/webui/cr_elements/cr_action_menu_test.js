@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
-// #import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-//
-// #import {eventToPromise, flushTasks} from '../test_util.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
-// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+
+import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {eventToPromise, flushTasks} from '../test_util.js';
 // clang-format on
 
 /**
@@ -18,17 +21,17 @@
  * test, since many of these tests check focus behavior.
  */
 suite('CrActionMenu', function() {
-  /** @type {?CrActionMenuElement} */
-  let menu = null;
+  /** @type {!CrActionMenuElement} */
+  let menu;
 
-  /** @type {?HTMLDialogElement} */
-  let dialog = null;
+  /** @type {!HTMLDialogElement} */
+  let dialog;
 
-  /** @type {?NodeList<HTMLElement>} */
-  let items = null;
+  /** @type {!NodeList<!Element>} */
+  let items;
 
-  /** @type {HTMLElement} */
-  let dots = null;
+  /** @type {!HTMLElement} */
+  let dots;
 
   /** @type {HTMLElement} */
   let container = null;
@@ -38,14 +41,10 @@ suite('CrActionMenu', function() {
 
   /** @override */
   suiteSetup(() => {
-    /* #ignore */ return PolymerTest.importHtml(
-        /* #ignore */ 'chrome://resources/cr_elements/cr_checkbox/' +
-        /* #ignore */ 'cr_checkbox.html');
   });
 
   setup(function() {
-    PolymerTest.clearBody();
-
+    FocusOutlineManager.forDocument(document).visible = false;
     document.body.innerHTML = `
       <button id="dots">...</button>
       <cr-action-menu>
@@ -56,11 +55,13 @@ suite('CrActionMenu', function() {
       </cr-action-menu>
     `;
 
-    menu = document.querySelector('cr-action-menu');
+    menu = /** @type {!CrActionMenuElement} */ (
+        document.querySelector('cr-action-menu'));
     dialog = menu.getDialog();
     items = menu.querySelectorAll('.dropdown-item');
-    checkboxFocusableElement = items[2].getFocusableElement();
-    dots = document.querySelector('#dots');
+    checkboxFocusableElement =
+        /** @type {!CrCheckboxElement} */ (items[2]).getFocusableElement();
+    dots = /** @type {!HTMLElement} */ (document.querySelector('#dots'));
     assertEquals(3, items.length);
   });
 
@@ -73,20 +74,32 @@ suite('CrActionMenu', function() {
   });
 
   function down() {
-    MockInteractions.keyDownOn(menu, 'ArrowDown', [], 'ArrowDown');
+    keyDownOn(menu, 0, [], 'ArrowDown');
   }
 
   function up() {
-    MockInteractions.keyDownOn(menu, 'ArrowUp', [], 'ArrowUp');
+    keyDownOn(menu, 0, [], 'ArrowUp');
   }
 
   function enter() {
-    MockInteractions.keyDownOn(menu, 'Enter', [], 'Enter');
+    keyDownOn(menu, 0, [], 'Enter');
   }
+
+  test('open-changed event fires', async function() {
+    let whenFired = eventToPromise('open-changed', menu);
+    menu.showAt(dots);
+    let event = await whenFired;
+    assertTrue(event.detail.value);
+
+    whenFired = eventToPromise('open-changed', menu);
+    menu.close();
+    event = await whenFired;
+    assertFalse(event.detail.value);
+  });
 
   test('close event bubbles', function() {
     menu.showAt(dots);
-    const whenFired = test_util.eventToPromise('close', menu);
+    const whenFired = eventToPromise('close', menu);
     menu.close();
     return whenFired;
   });
@@ -179,7 +192,7 @@ suite('CrActionMenu', function() {
   });
 
   test('pressing enter when no focus', function() {
-    if (cr.isWindows || cr.isMac) {
+    if (isWindows || isMac) {
       return testFocusAfterClosing('Enter');
     }
 
@@ -203,7 +216,7 @@ suite('CrActionMenu', function() {
     item.classList.add('dropdown-item');
     menu.insertBefore(item, items[0]);
     menu.showAt(dots);
-    await test_util.flushTasks();
+    await flushTasks();
 
     down();
     assertEquals(item, getDeepActiveElement());
@@ -247,10 +260,31 @@ suite('CrActionMenu', function() {
       menu.showAt(dots);
       assertTrue(dialog.open);
 
+      let anchorHasFocus = false;
+      let tabkeyCloseEventFired = false;
+
+      const checkTestDone = () => {
+        assertFalse(dialog.open);
+        if (key !== 'Tab') {
+          resolve();
+        } else if (anchorHasFocus && tabkeyCloseEventFired) {
+          resolve();
+        }
+      };
+
       // Check that focus returns to the anchor element.
-      dots.addEventListener('focus', resolve);
-      MockInteractions.keyDownOn(menu, key, [], key);
-      assertFalse(dialog.open);
+      dots.addEventListener('focus', () => {
+        anchorHasFocus = true;
+        checkTestDone();
+      });
+
+      // Check that a Tab key close fires a custom event.
+      menu.addEventListener('tabkeyclose', () => {
+        tabkeyCloseEventFired = true;
+        checkTestDone();
+      });
+
+      keyDownOn(menu, 0, [], key);
     });
   }
 
@@ -301,12 +335,12 @@ suite('CrActionMenu', function() {
     items[1].setAttribute('role', 'checkbox');
     menu.showAt(dots);
 
-    await test_util.flushTasks();
+    await flushTasks();
     assertEquals('menuitem', items[0].getAttribute('role'));
     assertEquals('checkbox', items[1].getAttribute('role'));
 
     menu.insertBefore(newItem, items[0]);
-    await test_util.flushTasks();
+    await flushTasks();
     assertEquals('menuitem', newItem.getAttribute('role'));
   });
 
@@ -329,9 +363,10 @@ suite('CrActionMenu', function() {
     menu.close();
 
     // Center the menu horizontally.
-    menu.showAtPosition(Object.assign({}, config, {
-      anchorAlignmentX: AnchorAlignment.CENTER,
-    }));
+    menu.showAtPosition(
+        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
+          anchorAlignmentX: AnchorAlignment.CENTER,
+        })));
     const menuWidth = dialog.offsetWidth;
     const menuHeight = dialog.offsetHeight;
     assertEquals(`${120 - menuWidth / 2}px`, dialog.style.left);
@@ -339,30 +374,33 @@ suite('CrActionMenu', function() {
     menu.close();
 
     // Center the menu in both axes.
-    menu.showAtPosition(Object.assign({}, config, {
-      anchorAlignmentX: AnchorAlignment.CENTER,
-      anchorAlignmentY: AnchorAlignment.CENTER,
-    }));
+    menu.showAtPosition(
+        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
+          anchorAlignmentX: AnchorAlignment.CENTER,
+          anchorAlignmentY: AnchorAlignment.CENTER,
+        })));
     assertEquals(`${120 - menuWidth / 2}px`, dialog.style.left);
     assertEquals(`${255 - menuHeight / 2}px`, dialog.style.top);
     menu.close();
 
     // Left and top align the menu.
-    menu.showAtPosition(Object.assign({}, config, {
-      anchorAlignmentX: AnchorAlignment.BEFORE_END,
-      anchorAlignmentY: AnchorAlignment.BEFORE_END,
-    }));
+    menu.showAtPosition(
+        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
+          anchorAlignmentX: AnchorAlignment.BEFORE_END,
+          anchorAlignmentY: AnchorAlignment.BEFORE_END,
+        })));
     assertEquals(`${140 - menuWidth}px`, dialog.style.left);
     assertEquals(`${260 - menuHeight}px`, dialog.style.top);
     menu.close();
 
     // Being left and top aligned at (0, 0) should anchor to the bottom right.
-    menu.showAtPosition(Object.assign({}, config, {
-      anchorAlignmentX: AnchorAlignment.BEFORE_END,
-      anchorAlignmentY: AnchorAlignment.BEFORE_END,
-      left: 0,
-      top: 0,
-    }));
+    menu.showAtPosition(
+        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
+          anchorAlignmentX: AnchorAlignment.BEFORE_END,
+          anchorAlignmentY: AnchorAlignment.BEFORE_END,
+          left: 0,
+          top: 0,
+        })));
     assertEquals(`0px`, dialog.style.left);
     assertEquals(`0px`, dialog.style.top);
     menu.close();
@@ -400,46 +438,49 @@ suite('CrActionMenu', function() {
     menu.close();
   });
 
-  // TODO(dpapad): fix flakiness and re-enable this test.
-  test.skip(
-      '[auto-reposition] enables repositioning if content changes',
-      function(done) {
-        menu.autoReposition = true;
+  /** @suppress {missingProperties} */
+  (function() {
+    // TODO(dpapad): fix flakiness and re-enable this test.
+    test.skip(
+        '[auto-reposition] enables repositioning if content changes',
+        function(done) {
+          menu.autoReposition = true;
 
-        dots.style.marginLeft = '800px';
+          dots.style.marginLeft = '800px';
 
-        const dotsRect = dots.getBoundingClientRect();
+          const dotsRect = dots.getBoundingClientRect();
 
-        // Anchored at right-top by default.
-        menu.showAt(dots);
-        assertTrue(dialog.open);
-        let menuRect = menu.getBoundingClientRect();
-        assertEquals(
-            Math.round(dotsRect.left + dotsRect.width),
-            Math.round(menuRect.left + menuRect.width));
-        assertEquals(dotsRect.top, menuRect.top);
-
-        const lastMenuLeft = menuRect.left;
-        const lastMenuWidth = menuRect.width;
-
-        menu.addEventListener('cr-action-menu-repositioned', () => {
+          // Anchored at right-top by default.
+          menu.showAt(dots);
           assertTrue(dialog.open);
-          menuRect = menu.getBoundingClientRect();
-          // Test that menu width got larger.
-          assertTrue(menuRect.width > lastMenuWidth);
-          // Test that menu upper-left moved further left.
-          assertTrue(menuRect.left < lastMenuLeft);
-          // Test that right and top did not move since it is anchored there.
+          let menuRect = menu.getBoundingClientRect();
           assertEquals(
               Math.round(dotsRect.left + dotsRect.width),
               Math.round(menuRect.left + menuRect.width));
           assertEquals(dotsRect.top, menuRect.top);
-          done();
-        });
 
-        // Still anchored at the right place after content size changes.
-        items[0].textContent = 'this is a long string to make menu wide';
-      });
+          const lastMenuLeft = menuRect.left;
+          const lastMenuWidth = menuRect.width;
+
+          menu.addEventListener('cr-action-menu-repositioned', () => {
+            assertTrue(dialog.open);
+            menuRect = menu.getBoundingClientRect();
+            // Test that menu width got larger.
+            assertTrue(menuRect.width > lastMenuWidth);
+            // Test that menu upper-left moved further left.
+            assertTrue(menuRect.left < lastMenuLeft);
+            // Test that right and top did not move since it is anchored there.
+            assertEquals(
+                Math.round(dotsRect.left + dotsRect.width),
+                Math.round(menuRect.left + menuRect.width));
+            assertEquals(dotsRect.top, menuRect.top);
+            done();
+          });
+
+          // Still anchored at the right place after content size changes.
+          items[0].textContent = 'this is a long string to make menu wide';
+        });
+  })();
 
   suite('offscreen scroll positioning', function() {
     const bodyHeight = 10000;
@@ -535,8 +576,10 @@ suite('CrActionMenu', function() {
     // overridden so that no scrolling happens.
     test('onscreen forces anchor change', function() {
       const rect = dots.getBoundingClientRect();
-      document.body.scrollLeft = rect.right - document.body.clientWidth + 10;
-      document.body.scrollTop = rect.bottom - document.body.clientHeight + 10;
+      document.documentElement.scrollLeft =
+          rect.right - document.documentElement.clientWidth + 10;
+      document.documentElement.scrollTop =
+          rect.bottom - document.documentElement.clientHeight + 10;
 
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
       const buttonWidth = dots.offsetWidth;
@@ -549,8 +592,8 @@ suite('CrActionMenu', function() {
     });
 
     test('scroll position maintained for showAtPosition', function() {
-      document.body.scrollLeft = 500;
-      document.body.scrollTop = 1000;
+      document.documentElement.scrollLeft = 500;
+      document.documentElement.scrollTop = 1000;
       menu.showAtPosition({top: 50, left: 50});
       assertEquals(550, dialog.offsetLeft);
       assertEquals(1050, dialog.offsetTop);
@@ -566,6 +609,14 @@ suite('CrActionMenu', function() {
           container.offsetLeft + containerWidth - menuWidth, dialog.offsetLeft);
       assertEquals(containerTop, dialog.offsetTop);
       menu.close();
+    });
+
+    test('FocusFirstItemWhenOpenedWithKeyboard', async () => {
+      FocusOutlineManager.forDocument(document).visible = true;
+      menu.showAtPosition({top: 50, left: 50});
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      assertEquals(
+          menu.querySelector('.dropdown-item'), getDeepActiveElement());
     });
   });
 });

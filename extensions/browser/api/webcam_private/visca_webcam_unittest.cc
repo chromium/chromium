@@ -7,95 +7,46 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "content/public/test/browser_task_environment.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 namespace {
 
-class TestSerialConnection : public SerialConnection {
+using ::base::test::RunCallback;
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Return;
+
+class MockSerialConnection : public SerialConnection {
  public:
-  explicit TestSerialConnection(
-      mojo::PendingRemote<device::mojom::SerialPort> port)
-      : SerialConnection("dummy_id", std::move(port)) {}
-  ~TestSerialConnection() override {}
-
-  void SetReceiveBuffer(const std::vector<uint8_t>& receive_buffer) {
-    receive_buffer_ = receive_buffer;
+  explicit MockSerialConnection() : SerialConnection("dummy_id") {
+    InitSerialPortForTesting();
   }
+  ~MockSerialConnection() override = default;
 
-  void CheckSendBufferAndClear(const std::vector<uint8_t>& expectations) {
-    EXPECT_EQ(send_buffer_, expectations);
-    send_buffer_.clear();
-  }
+  MockSerialConnection(const MockSerialConnection&) = delete;
+  MockSerialConnection& operator=(const MockSerialConnection&) = delete;
 
- private:
-  // SerialConnection:
-  void Open(const api::serial::ConnectionOptions& options,
-            OpenCompleteCallback callback) override {
-    NOTREACHED();
-  }
-
-  void StartPolling(const ReceiveEventCallback& callback) override {
-    SetPaused(false);
-    callback.Run(std::move(receive_buffer_), api::serial::RECEIVE_ERROR_NONE);
-    receive_buffer_.clear();
-  }
-
-  bool Send(const std::vector<uint8_t>& data,
-            SendCompleteCallback callback) override {
-    send_buffer_.insert(send_buffer_.end(), data.begin(), data.end());
-    std::move(callback).Run(data.size(), api::serial::SEND_ERROR_NONE);
-    return true;
-  }
-
-  std::vector<uint8_t> receive_buffer_;
-  std::vector<uint8_t> send_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSerialConnection);
-};
-
-class GetPTZExpectations {
- public:
-  GetPTZExpectations(bool expected_success, int expected_value)
-      : expected_success_(expected_success), expected_value_(expected_value) {}
-
-  void OnCallback(bool success, int value, int min_value, int max_value) {
-    EXPECT_EQ(expected_success_, success);
-    EXPECT_EQ(expected_value_, value);
-
-    // TODO(pbos): min/max values aren't currently supported. These expectations
-    // should be updated when we do.
-    EXPECT_EQ(0, min_value);
-    EXPECT_EQ(0, max_value);
-  }
-
- private:
-  const bool expected_success_;
-  const int expected_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetPTZExpectations);
-};
-
-class SetPTZExpectations {
- public:
-  explicit SetPTZExpectations(bool expected_success)
-      : expected_success_(expected_success) {}
-
-  void OnCallback(bool success) { EXPECT_EQ(expected_success_, success); }
-
- private:
-  const bool expected_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetPTZExpectations);
+  MOCK_METHOD4(Open,
+               void(api::SerialPortManager* port_manager,
+                    const std::string& path,
+                    const api::serial::ConnectionOptions& options,
+                    OpenCompleteCallback callback));
+  MOCK_METHOD1(StartPolling, void(const ReceiveEventCallback& callback));
+  MOCK_METHOD2(Send,
+               void(const std::vector<uint8_t>& data,
+                    SendCompleteCallback callback));
 };
 
 template <size_t N>
-std::vector<uint8_t> ToByteVector(const char (&array)[N]) {
+std::vector<uint8_t> ToByteVector(const uint8_t (&array)[N]) {
   return std::vector<uint8_t>(array, array + N);
 }
 
@@ -104,18 +55,15 @@ std::vector<uint8_t> ToByteVector(const char (&array)[N]) {
 class ViscaWebcamTest : public testing::Test {
  protected:
   ViscaWebcamTest() {
-    mojo::PendingRemote<device::mojom::SerialPort> port;
-    ignore_result(port.InitWithNewPipeAndPassReceiver());
     webcam_ = new ViscaWebcam;
-    webcam_->OpenForTesting(
-        std::make_unique<TestSerialConnection>(std::move(port)));
+    webcam_->OpenForTesting(std::make_unique<MockSerialConnection>());
   }
   ~ViscaWebcamTest() override {}
 
   Webcam* webcam() { return webcam_.get(); }
 
-  TestSerialConnection* serial_connection() {
-    return static_cast<TestSerialConnection*>(
+  MockSerialConnection* serial_connection() {
+    return static_cast<MockSerialConnection*>(
         webcam_->GetSerialConnectionForTesting());
   }
 
@@ -126,29 +74,54 @@ class ViscaWebcamTest : public testing::Test {
 
 TEST_F(ViscaWebcamTest, Zoom) {
   // Check getting the zoom.
-  const char kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
-  const char kGetZoomResponse[] = {0x00, 0x50, 0x01, 0x02, 0x03, 0x04, 0xFF};
-  serial_connection()->SetReceiveBuffer(ToByteVector(kGetZoomResponse));
-  Webcam::GetPTZCompleteCallback receive_callback =
-      base::Bind(&GetPTZExpectations::OnCallback,
-                 base::Owned(new GetPTZExpectations(true, 0x1234)));
-  webcam()->GetZoom(receive_callback);
-  base::RunLoop().RunUntilIdle();
-  serial_connection()->CheckSendBufferAndClear(ToByteVector(kGetZoomCommand));
+  const uint8_t kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
+  const uint8_t kGetZoomResponse[] = {0x00, 0x50, 0x01, 0x02, 0x03, 0x04, 0xFF};
+
+  EXPECT_CALL(*serial_connection(), Send(ToByteVector(kGetZoomCommand), _))
+      .WillOnce(RunOnceCallback<1>(sizeof(kGetZoomCommand),
+                                   api::serial::SEND_ERROR_NONE));
+  EXPECT_CALL(*serial_connection(), StartPolling(_))
+      .WillOnce(RunCallback<0>(ToByteVector(kGetZoomResponse),
+                               api::serial::RECEIVE_ERROR_NONE));
+
+  {
+    base::RunLoop loop;
+    webcam()->GetZoom(base::BindLambdaForTesting(
+        [&](bool success, int value, int min_value, int max_value) {
+          EXPECT_TRUE(success);
+          EXPECT_EQ(0x1234, value);
+
+          // TODO(pbos): min/max values aren't currently supported. These
+          // expectations should be updated when we do.
+          EXPECT_EQ(0, min_value);
+          EXPECT_EQ(0, max_value);
+
+          loop.Quit();
+        }));
+    loop.Run();
+  }
 
   // Check setting the zoom.
-  const char kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x06,
-                                  0x02, 0x05, 0x03, 0xFF};
+  const uint8_t kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x06,
+                                     0x02, 0x05, 0x03, 0xFF};
   // Note: this is a valid, but empty value because nothing is checking it.
-  const char kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF};
-  serial_connection()->SetReceiveBuffer(ToByteVector(kSetZoomResponse));
-  Webcam::SetPTZCompleteCallback send_callback =
-      base::Bind(&SetPTZExpectations::OnCallback,
-                 base::Owned(new SetPTZExpectations(true)));
-  serial_connection()->SetReceiveBuffer(ToByteVector(kSetZoomResponse));
-  webcam()->SetZoom(0x6253, send_callback);
-  base::RunLoop().RunUntilIdle();
-  serial_connection()->CheckSendBufferAndClear(ToByteVector(kSetZoomCommand));
+  const uint8_t kSetZoomResponse[] = {0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0xFF};
+
+  EXPECT_CALL(*serial_connection(), Send(ToByteVector(kSetZoomCommand), _))
+      .WillOnce(RunOnceCallback<1>(sizeof(kSetZoomCommand),
+                                   api::serial::SEND_ERROR_NONE));
+  EXPECT_CALL(*serial_connection(), StartPolling(_))
+      .WillOnce(RunCallback<0>(ToByteVector(kSetZoomResponse),
+                               api::serial::RECEIVE_ERROR_NONE));
+
+  {
+    base::RunLoop loop;
+    webcam()->SetZoom(0x6253, base::BindLambdaForTesting([&](bool success) {
+                        EXPECT_TRUE(success);
+                        loop.Quit();
+                      }));
+    loop.Run();
+  }
 }
 
 }  // namespace extensions

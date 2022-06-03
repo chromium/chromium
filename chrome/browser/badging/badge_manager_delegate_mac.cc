@@ -4,8 +4,9 @@
 
 #include "chrome/browser/badging/badge_manager_delegate_mac.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
-#include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,20 +19,22 @@ BadgeManagerDelegateMac::BadgeManagerDelegateMac(Profile* profile,
     : BadgeManagerDelegate(profile, badge_manager) {}
 
 void BadgeManagerDelegateMac::OnAppBadgeUpdated(const web_app::AppId& app_id) {
-  const base::Optional<BadgeManager::BadgeValue>& badge =
+  const absl::optional<BadgeManager::BadgeValue>& badge =
       badge_manager()->GetBadgeValue(app_id);
   SetAppBadgeLabel(app_id, badge ? badging::GetBadgeString(badge.value()) : "");
 }
 
 void BadgeManagerDelegateMac::SetAppBadgeLabel(const std::string& app_id,
                                                const std::string& badge_label) {
-  auto* shim_handler = apps::ExtensionAppShimHandler::Get();
-  if (!shim_handler)
+  auto* shim_manager = apps::AppShimManager::Get();
+  if (!shim_manager)
     return;
 
   // On macOS all app instances share a dock icon, so we only need to set the
   // badge label once.
-  AppShimHost* shim_host = shim_handler->FindHost(profile(), app_id);
+  // We only get the app shim host when the app is running. If Badging API is
+  // called when the app is not running this will fail as expected.
+  AppShimHost* shim_host = shim_manager->FindHost(profile(), app_id);
   if (!shim_host)
     return;
 

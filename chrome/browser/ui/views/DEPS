@@ -1,28 +1,30 @@
 include_rules = [
  "+chrome/browser/ui/views",
- "+chrome/services/app_service/public",
+ "+components/fullscreen_control",
+ "+components/live_caption",
+ "+components/services/app_service/public",
  "+third_party/libaddressinput",
  "+services/tracing/public",
 ]
 
 specific_include_rules = {
   "chrome_views_delegate_chromeos\.cc": [
-    # TODO(mash): Fix. https://crbug.com/826456
     "+ash/shell.h",
-    "+ash/wm/window_state.h",
   ],
-  # mash-ok
+  "qrcode_generator\.*": [
+    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
+    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+  ],
   "screen_capture_notification_ui_views\.cc": [
     "+ash/shell.h",
   ],
-  # mash-ok
   "status_bubble_views\.cc": [
     "+ash/shell.h",
     "+ash/wm/window_state.h",
   ],
   ".*test.*": [
    "!ash",
+   "+ash/constants",
    "+ash/public",
-   "+ash/keyboard/ui/public",
   ],
 }

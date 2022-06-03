@@ -41,7 +41,7 @@ source_set("motion_transitioning_objc") {
     "src/src/UIViewController+TransitionController.h",
   ]
 
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "Foundation.framework",
   ]

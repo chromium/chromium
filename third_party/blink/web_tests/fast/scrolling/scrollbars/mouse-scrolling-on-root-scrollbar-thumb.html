@@ -35,17 +35,29 @@ window.onload = () => {
      // Scroll down
     for (var i = 0; i < 5; i++){
       y += asc_increments[i];
-      await mouseMoveTo(x, y);
+      await mouseMoveTo(x, y, Buttons.LEFT);
       const offset = onMacPlatform ? asc_offsets_mac[i] : asc_offsets[i];
-      assert_equals(window.scrollY, offset, "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+        assert_approx_equals(window.scrollY, offset, 1,
+          "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+      } else {
+        assert_equals(window.scrollY, offset,
+          "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+      }
     };
 
     // Scroll up
     for (var i = 0; i < 5; i++){
       y -= desc_increments[i];
-      await mouseMoveTo(x, y);
+      await mouseMoveTo(x, y, Buttons.LEFT);
       const offset = onMacPlatform ? desc_offsets_mac[i] : desc_offsets[i];
-      assert_equals(window.scrollY, offset, "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+        assert_approx_equals(window.scrollY, offset, 1,
+          "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+      } else {
+        assert_equals(window.scrollY, offset,
+          "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+      }
     };
 
     await mouseUpAt(x, y);
@@ -53,10 +65,6 @@ window.onload = () => {
 
     // Since the horizontal scrolling is essentially the same codepath as vertical,
     // this need not be tested in the interest of making the test run faster.
-
-    // TODO(sahir.vellani): Performing mouse interactions beyond this point 
-    // without calling resetScrollOffset may lead to test failures on linux.
-    // (probably due to crbug.com/979408)
   }, "Test mouse drags in increments on non-custom composited root scrollbar thumb.");
 }
 </script>

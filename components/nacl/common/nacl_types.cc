@@ -51,14 +51,7 @@ NaClResourcePrefetchRequest::NaClResourcePrefetchRequest(
 NaClResourcePrefetchRequest::~NaClResourcePrefetchRequest() {
 }
 
-NaClLaunchParams::NaClLaunchParams()
-    : nexe_file(IPC::InvalidPlatformFileForTransit()),
-      nexe_token_lo(0),
-      nexe_token_hi(0),
-      render_view_id(0),
-      permission_bits(0),
-      process_type(kUnknownNaClProcessType) {
-}
+NaClLaunchParams::NaClLaunchParams() = default;
 
 NaClLaunchParams::NaClLaunchParams(
     const std::string& manifest_url,
@@ -67,7 +60,7 @@ NaClLaunchParams::NaClLaunchParams(
     uint64_t nexe_token_hi,
     const std::vector<NaClResourcePrefetchRequest>&
         resource_prefetch_request_list,
-    int render_view_id,
+    int render_frame_id,
     uint32_t permission_bits,
     bool uses_nonsfi_mode,
     NaClAppProcessType process_type)
@@ -76,7 +69,7 @@ NaClLaunchParams::NaClLaunchParams(
       nexe_token_lo(nexe_token_lo),
       nexe_token_hi(nexe_token_hi),
       resource_prefetch_request_list(resource_prefetch_request_list),
-      render_view_id(render_view_id),
+      render_frame_id(render_frame_id),
       permission_bits(permission_bits),
       uses_nonsfi_mode(uses_nonsfi_mode),
       process_type(process_type) {}

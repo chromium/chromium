@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL default-src-wasm-unsafe-eval-allows-wasm promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): Wasm code generation disallowed by embedder"
+Harness: the test ran to completion.
+

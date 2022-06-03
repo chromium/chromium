@@ -5,13 +5,16 @@
 #ifndef EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 #define EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/api/extension_types.h"
-#include "extensions/common/extension_l10n_util.h"
-#include "extensions/common/host_id.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -21,6 +24,9 @@ namespace extensions {
 class ExecuteCodeFunction : public ExtensionFunction {
  public:
   ExecuteCodeFunction();
+
+  ExecuteCodeFunction(const ExecuteCodeFunction&) = delete;
+  ExecuteCodeFunction& operator=(const ExecuteCodeFunction&) = delete;
 
  protected:
   ~ExecuteCodeFunction() override;
@@ -46,6 +52,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // fatal (VALIDATION_FAILURE).
   virtual InitResult Init() = 0;
   virtual bool ShouldInsertCSS() const = 0;
+  virtual bool ShouldRemoveCSS() const = 0;
   virtual bool CanExecuteScriptOnPage(std::string* error) = 0;
   virtual ScriptExecutor* GetScriptExecutor(std::string* error) = 0;
   virtual bool IsWebView() const = 0;
@@ -54,11 +61,11 @@ class ExecuteCodeFunction : public ExtensionFunction {
 
   // Called when contents from the loaded file have been localized.
   void DidLoadAndLocalizeFile(const std::string& file,
-                              bool success,
-                              std::unique_ptr<std::string> data);
+                              std::vector<std::unique_ptr<std::string>> data,
+                              absl::optional<std::string> load_error);
 
-  const HostID& host_id() const { return host_id_; }
-  void set_host_id(const HostID& host_id) { host_id_ = host_id; }
+  const mojom::HostID& host_id() const { return host_id_; }
+  void set_host_id(const mojom::HostID& host_id) { host_id_ = host_id; }
 
   InitResult set_init_result(InitResult init_result) {
     init_result_ = init_result;
@@ -70,57 +77,31 @@ class ExecuteCodeFunction : public ExtensionFunction {
   }
 
   // The injection details.
+  // Note that for tabs.removeCSS we still use |InjectDetails| rather than
+  // |DeleteInjectionDetails|, since the two types are compatible; the value
+  // of |run_at| defaults to |RUN_AT_NONE|.
   std::unique_ptr<api::extension_types::InjectDetails> details_;
-  base::Optional<InitResult> init_result_;
+  absl::optional<InitResult> init_result_;
   // Set iff |init_result_| == FAILURE, holds the error string.
-  base::Optional<std::string> init_error_;
+  absl::optional<std::string> init_error_;
 
  private:
-  void OnExecuteCodeFinished(const std::string& error,
-                             const GURL& on_url,
-                             const base::ListValue& result);
-
-  // Retrieves the file url for the given |extension_path| and optionally
-  // localizes |data|.
-  // Localization depends on whether |might_require_localization| was specified.
-  // Only CSS file content needs to be localized.
-  void GetFileURLAndMaybeLocalizeInBackground(
-      const std::string& extension_id,
-      const base::FilePath& extension_path,
-      const std::string& extension_default_locale,
-      extension_l10n_util::GzippedMessagesPermission gzip_permission,
-      bool might_require_localization,
-      std::string* data);
-
-  // Retrieves the file url for the given |extension_path| and optionally
-  // localizes |data|.
-  // Similar to GetFileURLAndMaybeLocalizeInBackground, but only applies
-  // to component extension resource.
-  std::unique_ptr<std::string>
-  GetFileURLAndLocalizeComponentResourceInBackground(
-      std::unique_ptr<std::string> data,
-      const std::string& extension_id,
-      const base::FilePath& extension_path,
-      const std::string& extension_default_locale,
-      extension_l10n_util::GzippedMessagesPermission gzip_permission,
-      bool might_require_localization);
+  void OnExecuteCodeFinished(std::vector<ScriptExecutor::FrameResult> results);
 
   // Run in UI thread.  Code string contains the code to be executed. Returns
   // true on success. If true is returned, this does an AddRef. Returns false on
   // failure and sets |error|.
   bool Execute(const std::string& code_string, std::string* error);
 
-  // Contains extension resource built from path of file which is
-  // specified in JSON arguments.
-  ExtensionResource resource_;
-
-  // The URL of the file being injected into the page.
-  GURL file_url_;
+  // The URL of the file being injected into the page, in the
+  // chrome-extension: scheme.
+  GURL script_url_;
 
   // The ID of the injection host.
-  HostID host_id_;
+  mojom::HostID host_id_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExecuteCodeFunction);
+  // The ID of the root frame to inject into.
+  int root_frame_id_ = -1;
 };
 
 }  // namespace extensions

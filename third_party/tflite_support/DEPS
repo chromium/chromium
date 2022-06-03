@@ -1,0 +1,16 @@
+include_rules = [
+    "+absl",
+    "+base",
+    "+flatbuffers",
+    "+include",
+    "+knowledge",
+    "+lib",
+    "+libutf",
+    "+pybind11",
+    "+re2",
+    "+src",
+    "+tensorflow",
+    "+tensorflow_lite_support",
+    "+tensorflow_text",
+    "+tflite",
+]

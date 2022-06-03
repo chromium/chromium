@@ -6,16 +6,17 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
 
@@ -40,8 +41,8 @@ class MockCDQualityAudioSource : public MediaStreamAudioSource {
         media::AudioParameters::kAudioCDSampleRate / 100));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCDQualityAudioSource);
+  MockCDQualityAudioSource(const MockCDQualityAudioSource&) = delete;
+  MockCDQualityAudioSource& operator=(const MockCDQualityAudioSource&) = delete;
 };
 
 }  // namespace
@@ -49,55 +50,55 @@ class MockCDQualityAudioSource : public MediaStreamAudioSource {
 MockMediaStreamRegistry::MockMediaStreamRegistry() {}
 
 void MockMediaStreamRegistry::Init() {
-  const WebVector<WebMediaStreamTrack> webkit_audio_tracks;
-  const WebVector<WebMediaStreamTrack> webkit_video_tracks;
-  const WebString label(kTestStreamLabel);
-  test_stream_.Initialize(label, webkit_audio_tracks, webkit_video_tracks);
+  MediaStreamComponentVector audio_descriptions, video_descriptions;
+  String label(kTestStreamLabel);
+  descriptor_ = MakeGarbageCollected<MediaStreamDescriptor>(
+      label, audio_descriptions, video_descriptions);
 }
 
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
-    const std::string& track_id,
+    const String& track_id,
     const VideoTrackAdapterSettings& adapter_settings,
-    const base::Optional<bool>& noise_reduction,
+    const absl::optional<bool>& noise_reduction,
     bool is_screencast,
     double min_frame_rate) {
-  WebMediaStreamSource blink_source;
-  blink_source.Initialize("mock video source id",
-                          WebMediaStreamSource::kTypeVideo,
-                          "mock video source name", false /* remote */);
-  MockMediaStreamVideoSource* native_source = new MockMediaStreamVideoSource();
-  blink_source.SetPlatformSource(base::WrapUnique(native_source));
-  WebMediaStreamTrack blink_track;
-  blink_track.Initialize(WebString::FromUTF8(track_id), blink_source);
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      "mock video source id", MediaStreamSource::kTypeVideo,
+      "mock video source name", false /* remote */);
+  auto native_source = std::make_unique<MockMediaStreamVideoSource>();
+  auto* native_source_ptr = native_source.get();
+  source->SetPlatformSource(std::move(native_source));
 
-  blink_track.SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
-      native_source, adapter_settings, noise_reduction, is_screencast,
-      min_frame_rate, MediaStreamVideoSource::ConstraintsOnceCallback(),
-      true /* enabled */));
-  test_stream_.AddTrack(blink_track);
-  return native_source;
+  auto* component =
+      MakeGarbageCollected<MediaStreamComponent>(track_id, source);
+  component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
+      native_source_ptr, adapter_settings, noise_reduction, is_screencast,
+      min_frame_rate, absl::nullopt /* pan */, absl::nullopt /* tilt */,
+      absl::nullopt /* zoom */, false /* pan_tilt_zoom_allowed */,
+      MediaStreamVideoSource::ConstraintsOnceCallback(), true /* enabled */));
+  descriptor_->AddRemoteTrack(component);
+  return native_source_ptr;
 }
 
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
-    const std::string& track_id) {
+    const String& track_id) {
   return AddVideoTrack(track_id, VideoTrackAdapterSettings(),
-                       base::Optional<bool>(), false /* is_screncast */,
+                       absl::optional<bool>(), false /* is_screncast */,
                        0.0 /* min_frame_rate */);
 }
 
-void MockMediaStreamRegistry::AddAudioTrack(const std::string& track_id) {
-  WebMediaStreamSource blink_source;
-  blink_source.Initialize("mock audio source id",
-                          WebMediaStreamSource::kTypeAudio,
-                          "mock audio source name", false /* remote */);
-  MediaStreamAudioSource* const source = new MockCDQualityAudioSource();
-  blink_source.SetPlatformSource(base::WrapUnique(source));  // Takes ownership.
+void MockMediaStreamRegistry::AddAudioTrack(const String& track_id) {
+  auto* source = MakeGarbageCollected<MediaStreamSource>(
+      "mock audio source id", MediaStreamSource::kTypeAudio,
+      "mock audio source name", false /* remote */);
+  auto audio_source = std::make_unique<MockCDQualityAudioSource>();
+  auto* audio_source_ptr = audio_source.get();
+  source->SetPlatformSource(std::move(audio_source));
 
-  WebMediaStreamTrack blink_track;
-  blink_track.Initialize(blink_source);
-  CHECK(source->ConnectToTrack(blink_track));
+  auto* component = MakeGarbageCollected<MediaStreamComponent>(source);
+  CHECK(audio_source_ptr->ConnectToTrack(component));
 
-  test_stream_.AddTrack(blink_track);
+  descriptor_->AddRemoteTrack(component);
 }
 
 }  // namespace blink

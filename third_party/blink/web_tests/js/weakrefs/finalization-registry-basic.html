@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="module">
+
+// Keep FinalizationRegistry global to avoid it being reclaimed by garbage
+// collections that may happen until the registry is processed in microtasks.
+let fr;
+
+async_test(t => {
+  let called = false;
+  const callback = t.step_func_done(function(holdings) {
+    called = true;
+    assert_equals(holdings, 'holdings',
+                  'holdings should be initialized correctly');
+  });
+
+  fr = new FinalizationRegistry(callback);
+
+  // The following is an IIFE to ensure that garbage becomes unreachable after
+  // the function returns.
+  (function() {
+    let garbage = {};
+    fr.register(garbage, 'holdings');
+    garbage = null;
+  })();
+
+  assert_false(called, 'finalizer should not be called in the same turn');
+
+  gc();
+
+  assert_false(called, 'finalizer should not be called in the same turn');
+
+}, 'FinalizationRegistry registers an object and calls finalizer');
+</script>

@@ -2,20 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":search_page",
-  ]
-}
-
-js_library("search_page") {
-  deps = [
-    "..:route",
-    "../prefs",
-    "../search_engines_page:search_engines_browser_proxy",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:cr",
-  ]
+html_to_js("web_components") {
+  js_files = [ "search_page.ts" ]
 }

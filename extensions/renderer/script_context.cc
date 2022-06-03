@@ -5,9 +5,11 @@
 #include "extensions/renderer/script_context.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -15,6 +17,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
@@ -27,11 +30,85 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-debug.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
 namespace {
+
+class WebLocalFrameAdapter
+    : public ContentScriptInjectionUrlGetter::FrameAdapter {
+ public:
+  explicit WebLocalFrameAdapter(const blink::WebLocalFrame* frame)
+      : frame_(frame) {}
+
+  ~WebLocalFrameAdapter() override = default;
+
+  std::unique_ptr<FrameAdapter> Clone() const override {
+    return std::make_unique<WebLocalFrameAdapter>(frame_);
+  }
+
+  std::unique_ptr<FrameAdapter> GetLocalParentOrOpener() const override {
+    blink::WebFrame* parent_or_opener = nullptr;
+    if (frame_->Parent())
+      parent_or_opener = frame_->Parent();
+    else
+      parent_or_opener = frame_->Opener();
+    if (!parent_or_opener || !parent_or_opener->IsWebLocalFrame())
+      return nullptr;
+
+    blink::WebLocalFrame* local_parent_or_opener =
+        parent_or_opener->ToWebLocalFrame();
+    if (local_parent_or_opener->GetDocument().IsNull())
+      return nullptr;
+
+    return std::make_unique<WebLocalFrameAdapter>(local_parent_or_opener);
+  }
+
+  GURL GetUrl() const override { return frame_->GetDocument().Url(); }
+
+  url::Origin GetOrigin() const override { return frame_->GetSecurityOrigin(); }
+
+  bool CanAccess(const url::Origin& target) const override {
+    return frame_->GetSecurityOrigin().CanAccess(target);
+  }
+
+  bool CanAccess(const FrameAdapter& target) const override {
+    // It is important that below `web_security_origin` wraps the security
+    // origin of the `target_frame` (rather than a new origin created via
+    // url::Origin round-trip - such an origin wouldn't be 100% equivalent -
+    // e.g. `disallowdocumentaccess` information might be lost).  FWIW, this
+    // scenario is execised by ScriptContextTest.GetEffectiveDocumentURL.
+    const blink::WebLocalFrame* target_frame =
+        static_cast<const WebLocalFrameAdapter&>(target).frame_;
+    blink::WebSecurityOrigin web_security_origin =
+        target_frame->GetDocument().GetSecurityOrigin();
+
+    return frame_->GetSecurityOrigin().CanAccess(web_security_origin);
+  }
+
+  uintptr_t GetId() const override {
+    return reinterpret_cast<uintptr_t>(frame_);
+  }
+
+ private:
+  const blink::WebLocalFrame* const frame_;
+};
+
+GURL GetEffectiveDocumentURL(
+    blink::WebLocalFrame* frame,
+    const GURL& document_url,
+    MatchOriginAsFallbackBehavior match_origin_as_fallback,
+    bool allow_inaccessible_parents) {
+  return ContentScriptInjectionUrlGetter::Get(
+      WebLocalFrameAdapter(frame), document_url, match_origin_as_fallback,
+      allow_inaccessible_parents);
+}
 
 std::string GetContextTypeDescriptionString(Feature::Context context_type) {
   switch (context_type) {
@@ -49,6 +126,8 @@ std::string GetContextTypeDescriptionString(Feature::Context context_type) {
       return "BLESSED_WEB_PAGE";
     case Feature::WEBUI_CONTEXT:
       return "WEBUI";
+    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+      return "WEBUI_UNTRUSTED";
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
       return "LOCK_SCREEN_EXTENSION";
   }
@@ -199,7 +278,7 @@ void ScriptContext::SafeCallFunction(
     const v8::Local<v8::Function>& function,
     int argc,
     v8::Local<v8::Value> argv[],
-    const ScriptInjectionCallback::CompleteCallback& callback) {
+    ScriptInjectionCallback::CompleteCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   v8::HandleScope handle_scope(isolate());
   v8::Context::Scope scope(v8_context());
@@ -210,7 +289,7 @@ void ScriptContext::SafeCallFunction(
     ScriptInjectionCallback* wrapper_callback = nullptr;
     if (!callback.is_null()) {
       // ScriptInjectionCallback manages its own lifetime.
-      wrapper_callback = new ScriptInjectionCallback(callback);
+      wrapper_callback = new ScriptInjectionCallback(std::move(callback));
     }
     web_frame_->RequestExecuteV8Function(v8_context(), function, global, argc,
                                          argv, wrapper_callback);
@@ -220,7 +299,7 @@ void ScriptContext::SafeCallFunction(
     v8::Local<v8::Value> result;
     if (!callback.is_null() && maybe_result.ToLocal(&result)) {
       std::vector<v8::Local<v8::Value>> results(1, result);
-      callback.Run(results);
+      std::move(callback).Run(results);
     }
   }
 }
@@ -317,102 +396,39 @@ GURL ScriptContext::GetAccessCheckedFrameURL(
 }
 
 // static
-GURL ScriptContext::GetEffectiveDocumentURL(blink::WebLocalFrame* frame,
-                                            const GURL& document_url,
-                                            bool match_about_blank) {
-  // Common scenario. If |match_about_blank| is false (as is the case in most
-  // extensions), or if the frame is not an about:-page, just return
-  // |document_url| (supposedly the URL of the frame).
-  if (!match_about_blank || !document_url.SchemeIs(url::kAboutScheme))
-    return document_url;
-
-  blink::WebSecurityOrigin web_frame_origin = frame->GetSecurityOrigin();
-  url::Origin frame_origin = web_frame_origin;
-  // Check the origin of the frame, including whether it is an opaque origin
-  // (like about:blank) that has a non-opaque opener.
-  // Unfortunately, we still have to traverse the frame tree, because match
-  // patterns are associated with paths as well, not just origins. For instance,
-  // if an extension wants to run on google.com/maps/* with match_about_blank
-  // true, then it should run on about:blank frames created by google.com/maps,
-  // but not about:blank frames created by google.com (which is what the
-  // precursor tuple origin would be).
-  const url::SchemeHostPort& tuple_or_precursor_tuple_origin =
-      frame_origin.GetTupleOrPrecursorTupleIfOpaque();
-
-  // There is no valid tuple origin (which can happen in the case of e.g. a
-  // browser-initiated navigation to an opaque URL). Bail.
-  if (tuple_or_precursor_tuple_origin.IsInvalid())
-    return document_url;
-
-  url::Origin precursor_origin =
-      url::Origin::Create(tuple_or_precursor_tuple_origin.GetURL());
-  // The frame can't access its precursor. Bail.
-  if (!web_frame_origin.CanAccess(blink::WebSecurityOrigin(precursor_origin)))
-    return document_url;
-
-  // Non-sandboxed about:blank and about:srcdoc pages inherit their security
-  // origin from their parent frame/window. So, traverse the frame/window
-  // hierarchy to find the closest non-about:-page and return its URL.
-  blink::WebFrame* parent = frame;
-  blink::WebDocument parent_document;
-  base::flat_set<blink::WebFrame*> already_visited_frames;
-  do {
-    already_visited_frames.insert(parent);
-    if (parent->Parent())
-      parent = parent->Parent();
-    else
-      parent = parent->Opener();
-
-    // Avoid an infinite loop - see https://crbug.com/568432 and
-    // https://crbug.com/883526.
-    if (base::Contains(already_visited_frames, parent))
-      return document_url;
-
-    parent_document = parent && parent->IsWebLocalFrame()
-                          ? parent->ToWebLocalFrame()->GetDocument()
-                          : blink::WebDocument();
-
-    // We reached the end of the ancestral chain without finding a valid parent.
-    // Bail and use the original URL.
-    if (parent_document.IsNull())
-      return document_url;
-
-    url::SchemeHostPort parent_tuple_origin =
-        url::Origin(parent->GetSecurityOrigin())
-            .GetTupleOrPrecursorTupleIfOpaque();
-    if (parent_tuple_origin.IsInvalid() ||
-        parent_tuple_origin != tuple_or_precursor_tuple_origin) {
-      // The parent has a different tuple origin than frame; this could happen
-      // in edge cases where a parent navigates an iframe or popup of a child
-      // frame at a different origin. [1] In this case, bail, since we can't
-      // find a full URL (i.e., one including the path) with the same security
-      // origin to use for the frame in question.
-      // [1] Consider a frame tree like:
-      // <html> <!--example.com-->
-      //   <iframe id="a" src="a.com">
-      //     <iframe id="b" src="b.com"></iframe>
-      //   </iframe>
-      // </html>
-      // Frame "a" is cross-origin from the top-level frame, and so the
-      // example.com top-level frame can't directly access frame "b". However,
-      // it can navigate it through
-      // window.frames[0].frames[0].location.href = 'about:blank';
-      // In that case, the precursor origin tuple origin of frame "b" would be
-      // example.com, but the parent tuple origin is a.com.
-      return document_url;
-    }
-  } while (GURL(parent_document.Url()).SchemeIs(url::kAboutScheme));
-
-  DCHECK(!parent_document.IsNull());
-
-  // We should know that the frame can access the parent document, since it
-  // has the same tuple origin as the frame, and we checked the frame access
-  // above.
-  DCHECK(web_frame_origin.CanAccess(parent_document.GetSecurityOrigin()));
-  return parent_document.Url();
+GURL ScriptContext::GetEffectiveDocumentURLForContext(
+    blink::WebLocalFrame* frame,
+    const GURL& document_url,
+    bool match_about_blank) {
+  // Note: Do not allow matching inaccessible parent frames here; frames like
+  // sandboxed frames should not inherit the privilege of their parents.
+  constexpr bool allow_inaccessible_parents = false;
+  // TODO(devlin): Determine if this could use kAlways instead of
+  // kMatchForAboutSchemeAndClimbTree.
+  auto match_origin_as_fallback =
+      match_about_blank
+          ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
+          : MatchOriginAsFallbackBehavior::kNever;
+  return GetEffectiveDocumentURL(frame, document_url, match_origin_as_fallback,
+                                 allow_inaccessible_parents);
 }
 
-bool ScriptContext::HasAPIPermission(APIPermission::ID permission) const {
+// static
+GURL ScriptContext::GetEffectiveDocumentURLForInjection(
+    blink::WebLocalFrame* frame,
+    const GURL& document_url,
+    MatchOriginAsFallbackBehavior match_origin_as_fallback) {
+  // We explicitly allow inaccessible parents here. Extensions should still be
+  // able to inject into a sandboxed iframe if it has access to the embedding
+  // origin.
+  constexpr bool allow_inaccessible_parents = true;
+  return GetEffectiveDocumentURL(frame, document_url, match_origin_as_fallback,
+                                 allow_inaccessible_parents);
+}
+
+// Grants a set of content capabilities to this context.
+
+bool ScriptContext::HasAPIPermission(mojom::APIPermissionID permission) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (effective_extension_.get()) {
     return effective_extension_->permissions_data()->HasAPIPermission(
@@ -506,7 +522,7 @@ std::string ScriptContext::GetStackTraceAsString() const {
 v8::Local<v8::Value> ScriptContext::RunScript(
     v8::Local<v8::String> name,
     v8::Local<v8::String> code,
-    const RunScriptExceptionHandler& exception_handler,
+    RunScriptExceptionHandler exception_handler,
     v8::ScriptCompiler::NoCacheReason no_cache_reason) {
   DCHECK(thread_checker_.CalledOnValidThread());
   v8::EscapableHandleScope handle_scope(isolate());
@@ -526,21 +542,21 @@ v8::Local<v8::Value> ScriptContext::RunScript(
       isolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::TryCatch try_catch(isolate());
   try_catch.SetCaptureMessage(true);
-  v8::ScriptOrigin origin(
-      v8_helpers::ToV8StringUnsafe(isolate(), internal_name.c_str()));
+  v8::ScriptOrigin origin(isolate(), v8_helpers::ToV8StringUnsafe(
+                                         isolate(), internal_name.c_str()));
   v8::ScriptCompiler::Source script_source(code, origin);
   v8::Local<v8::Script> script;
   if (!v8::ScriptCompiler::Compile(v8_context(), &script_source,
                                    v8::ScriptCompiler::kNoCompileOptions,
                                    no_cache_reason)
            .ToLocal(&script)) {
-    exception_handler.Run(try_catch);
+    std::move(exception_handler).Run(try_catch);
     return v8::Undefined(isolate());
   }
 
   v8::Local<v8::Value> result;
   if (!script->Run(v8_context()).ToLocal(&result)) {
-    exception_handler.Run(try_catch);
+    std::move(exception_handler).Run(try_catch);
     return v8::Undefined(isolate());
   }
 

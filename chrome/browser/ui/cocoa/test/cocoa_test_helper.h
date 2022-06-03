@@ -9,6 +9,12 @@
 
 #import "ui/base/test/cocoa_helper.h"
 
+class CocoaTestHelper : public ui::CocoaTestHelper {
+ public:
+  CocoaTestHelper();
+  ~CocoaTestHelper() override;
+};
+
 // A test class that all tests that depend on AppKit should inherit from.
 // Sets up paths correctly, and makes sure that any windows created in the test
 // are closed down properly by the test. If you need to inherit from a

@@ -5,42 +5,32 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_DATA_SOURCE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_DATA_SOURCE_H_
 
-#include <wayland-server-protocol-core.h>
+#include <wayland-server-protocol.h>
 
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 struct wl_resource;
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace wl {
 
 extern const struct wl_data_source_interface kTestDataSourceImpl;
 
-class TestDataSource : public ServerObject {
+class TestDataSource : public TestSelectionSource {
  public:
   explicit TestDataSource(wl_resource* resource);
+
+  TestDataSource(const TestDataSource&) = delete;
+  TestDataSource& operator=(const TestDataSource&) = delete;
+
   ~TestDataSource() override;
 
-  void Offer(const std::string& mime_type);
+  void SetActions(uint32_t dnd_actions);
 
-  using ReadDataCallback = base::OnceCallback<void(std::vector<uint8_t>&&)>;
-  void ReadData(const std::string& mime_type, ReadDataCallback callback);
-
-  void OnCancelled();
+  uint32_t actions() const { return actions_; }
 
  private:
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataSource);
+  uint32_t actions_ = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
 };
 
 }  // namespace wl

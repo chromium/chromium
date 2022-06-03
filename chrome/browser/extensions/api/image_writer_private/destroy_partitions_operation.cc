@@ -28,7 +28,7 @@ DestroyPartitionsOperation::DestroyPartitionsOperation(
                 storage_unit_id,
                 download_folder) {}
 
-DestroyPartitionsOperation::~DestroyPartitionsOperation() {}
+DestroyPartitionsOperation::~DestroyPartitionsOperation() = default;
 
 void DestroyPartitionsOperation::StartImpl() {
   DCHECK(IsRunningInCorrectSequence());
@@ -46,9 +46,9 @@ void DestroyPartitionsOperation::StartImpl() {
     return;
   }
 
-  PostTask(
-      base::BindOnce(&DestroyPartitionsOperation::Write, this,
-                     base::Bind(&DestroyPartitionsOperation::Finish, this)));
+  PostTask(base::BindOnce(
+      &DestroyPartitionsOperation::Write, this,
+      base::BindOnce(&DestroyPartitionsOperation::Finish, this)));
 }
 
 }  // namespace image_writer

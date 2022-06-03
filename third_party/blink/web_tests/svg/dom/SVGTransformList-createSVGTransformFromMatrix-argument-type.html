@@ -11,13 +11,13 @@ test(function() {
   var transform = rectElement.transform.baseVal;
 
   // Check passing invalid arguments to 'createSVGTransformFromMatrix'.
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(svgElement.createSVGTransform()); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(svgElement); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix('aString'); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(1); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(true); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(undefined); });
-  assert_throws(new TypeError(), function() { transform.createSVGTransformFromMatrix(null); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(svgElement.createSVGTransform()); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(svgElement); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix('aString'); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(1); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(true); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(undefined); });
+  assert_throws_js(TypeError, function() { transform.createSVGTransformFromMatrix(null); });
 });
 </script>

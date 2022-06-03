@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL z-index on non-positioned div assert_equals: Computed style expected "20" but got "auto"
-PASS z-index on positioned div
-Harness: the test ran to completion.
-

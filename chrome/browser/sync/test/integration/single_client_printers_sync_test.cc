@@ -4,20 +4,22 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "content/public/test/browser_test.h"
 
 using printers_helper::AddPrinter;
 using printers_helper::CreateTestPrinter;
+using printers_helper::CreateTestPrinterSpecifics;
 using printers_helper::EditPrinterDescription;
-using printers_helper::GetVerifierPrinterCount;
-using printers_helper::GetVerifierPrinterStore;
 using printers_helper::GetPrinterCount;
 using printers_helper::GetPrinterStore;
+using printers_helper::GetVerifierPrinterCount;
+using printers_helper::GetVerifierPrinterStore;
 using printers_helper::ProfileContainsSamePrintersAsVerifier;
 using printers_helper::RemovePrinter;
 
@@ -26,10 +28,12 @@ namespace {
 class SingleClientPrintersSyncTest : public SyncTest {
  public:
   SingleClientPrintersSyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SingleClientPrintersSyncTest() override {}
+  ~SingleClientPrintersSyncTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientPrintersSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137770): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 // Verify that printers aren't added with a sync call.
@@ -91,10 +95,32 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddBeforeSetup) {
   EXPECT_TRUE(SetupSync()) << "SetupSync() failed.";
 }
 
-// Tests for SplitSettingsSync.
-class SingleClientPrintersOsSyncTest : public OsSyncTest {
+// Verify that adding a print server printer retains the print server URI.
+IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
+  ASSERT_TRUE(SetupClients());
+  const char kServerAddress[] = "ipp://192.168.1.1:631";
+
+  // Initialize sync bridge with test printer.
+  auto printer = CreateTestPrinterSpecifics(0);
+  const std::string spec_printer_id = printer->id();
+  printer->set_print_server_uri(kServerAddress);
+  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  bridge->AddPrinter(std::move(printer));
+
+  // Start the sync.
+  ASSERT_TRUE(SetupSync());
+  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  ASSERT_TRUE(spec_printer);
+
+  // Verify that the print server address was saved correctly.
+  EXPECT_EQ(kServerAddress, spec_printer->print_server_uri());
+}
+
+// Tests for SyncConsentOptional.
+class SingleClientPrintersOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientPrintersOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientPrintersOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientPrintersOsSyncTest() override = default;
 };
 
@@ -104,11 +130,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersOsSyncTest,
   syncer::SyncService* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
-  EXPECT_TRUE(settings->GetOsSyncFeatureEnabled());
+  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::PRINTERS));
 
   settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->GetOsSyncFeatureEnabled());
+  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::PRINTERS));
 }
 

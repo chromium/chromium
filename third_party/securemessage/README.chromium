@@ -1,0 +1,9 @@
+Name: Secure Message
+Short Name: Secure Message
+URL: https://github.com/google/securemessage
+Version: fa07beb12babc3b25e0c5b1f38c16aa8cb6b8f84
+License: Apache 2.0
+License File: LICENSE
+Security Critical: yes
+Description:
+Secure Message library

@@ -29,11 +29,11 @@ TEST(ExperimentLabels, GetValueForLabel) {
       L"name2=value2|Fri, 14 Aug 2015 16:13:03 GMT";
   ExperimentLabels labels(kDummyValue);
 
-  base::StringPiece16 value = labels.GetValueForLabel(L"name");
-  EXPECT_THAT(value.as_string().c_str(), StrEq(L"value"));
+  base::WStringPiece value = labels.GetValueForLabel(L"name");
+  EXPECT_EQ(value, L"value");
 
   value = labels.GetValueForLabel(L"name2");
-  EXPECT_THAT(value.as_string().c_str(), StrEq(L"value2"));
+  EXPECT_EQ(value, L"value2");
 
   value = labels.GetValueForLabel(L"name3");
   EXPECT_TRUE(value.empty());
@@ -42,21 +42,19 @@ TEST(ExperimentLabels, GetValueForLabel) {
 TEST(ExperimentLabels, SetValueForLabel) {
   ExperimentLabels label(L"");
 
-  label.SetValueForLabel(L"name", L"value", base::TimeDelta::FromSeconds(1));
-  base::StringPiece16 value = label.GetValueForLabel(L"name");
-  EXPECT_THAT(value.as_string().c_str(), StrEq(L"value"));
+  label.SetValueForLabel(L"name", L"value", base::Seconds(1));
+  base::WStringPiece value = label.GetValueForLabel(L"name");
+  EXPECT_EQ(value, L"value");
   EXPECT_THAT(label.value(), StartsWith(L"name=value|"));
 
-  label.SetValueForLabel(L"name", L"othervalue",
-                         base::TimeDelta::FromSeconds(1));
+  label.SetValueForLabel(L"name", L"othervalue", base::Seconds(1));
   value = label.GetValueForLabel(L"name");
-  EXPECT_THAT(value.as_string().c_str(), StrEq(L"othervalue"));
+  EXPECT_EQ(value, L"othervalue");
   EXPECT_THAT(label.value(), StartsWith(L"name=othervalue|"));
 
-  label.SetValueForLabel(L"othername", L"somevalue",
-                         base::TimeDelta::FromSeconds(1));
+  label.SetValueForLabel(L"othername", L"somevalue", base::Seconds(1));
   value = label.GetValueForLabel(L"othername");
-  EXPECT_THAT(value.as_string().c_str(), StrEq(L"somevalue"));
+  EXPECT_EQ(value, L"somevalue");
   EXPECT_THAT(label.value(), HasSubstr(L"name=othervalue|"));
   EXPECT_THAT(label.value(), HasSubstr(L"othername=somevalue|"));
 }

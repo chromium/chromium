@@ -1,0 +1,23 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests selection preservation during an indent operation. The selection
+// should start and end in the same parts of the words 'foo' and 'bar' before
+// and after the indent operation.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<span id="foo">f^oo</span><br><span id="bar">ba|r</span>',
+        '</div>',
+    ],
+    'indent',
+    [
+        '<div contenteditable>',
+            '<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">',
+                '<span id="foo">f^oo<br></span><span id="bar">ba|r</span>',
+            '</blockquote>',
+        '</div>',
+    ]);
+</script>

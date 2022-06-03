@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_constants.h"
 
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -27,7 +28,6 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
       return @"";
-      break;
   }
 }
 

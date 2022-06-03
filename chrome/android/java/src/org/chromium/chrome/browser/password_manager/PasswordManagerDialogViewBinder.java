@@ -28,6 +28,9 @@ class PasswordManagerDialogViewBinder {
         } else if (ILLUSTRATION_VISIBLE == propertyKey) {
             dialogView.updateIllustrationVisibility(model.get(ILLUSTRATION_VISIBLE));
             dialogView.updateHelpIcon(!model.get(ILLUSTRATION_VISIBLE));
+            // TODO(crbug.com/1092444): Depending on feature status, remove this or inline the
+            //  cropping into password_manager_dialog_with_help_button.xml.
+            dialogView.cropImageToText();
         } else if (TITLE == propertyKey) {
             dialogView.setTitle(model.get(TITLE));
         } else if (DETAILS == propertyKey) {

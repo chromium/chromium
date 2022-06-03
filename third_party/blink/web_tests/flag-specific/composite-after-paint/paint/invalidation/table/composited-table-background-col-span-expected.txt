@@ -5,24 +5,18 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableSection TBODY",
-          "rect": [8, 28, 186, 134],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [8, 28, 186, 134]
       ]
     },
     {
       "name": "LayoutNGTableCell TD",
-      "position": [24, 22],
-      "bounds": [10, 19],
+      "bounds": [59, 64],
       "transform": 1
     },
     {
       "name": "LayoutNGTableCell TD",
-      "position": [24, 22],
-      "bounds": [9, 19],
+      "bounds": [59, 64],
       "transform": 2
     }
   ],

@@ -1,0 +1,39 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_VIEWS_EXAMPLES_EXAMPLES_SKIA_GOLD_PIXEL_DIFF_H_
+#define UI_VIEWS_EXAMPLES_EXAMPLES_SKIA_GOLD_PIXEL_DIFF_H_
+
+#include "ui/base/test/skia_gold_pixel_diff.h"
+
+#include "base/run_loop.h"
+#include "ui/gfx/image/image.h"
+#include "ui/views/examples/examples_exit_code.h"
+#include "ui/views/widget/widget.h"
+
+namespace views {
+namespace examples {
+
+class ExamplesSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
+ public:
+  ExamplesSkiaGoldPixelDiff();
+  ~ExamplesSkiaGoldPixelDiff() override;
+
+  void OnExamplesWindowShown(views::Widget* widget);
+
+  ExamplesExitCode get_result() const { return result_; }
+
+ private:
+  ExamplesExitCode CompareScreenshot(const std::string& screenshot_name,
+                                     const views::Widget* widget) const;
+  void DoScreenshot(views::Widget* widget);
+
+  mutable gfx::Image screenshot_;
+  ExamplesExitCode result_ = ExamplesExitCode::kNone;
+};
+
+}  // namespace examples
+}  // namespace views
+
+#endif  // UI_VIEWS_EXAMPLES_EXAMPLES_SKIA_GOLD_PIXEL_DIFF_H_

@@ -59,6 +59,10 @@ class RootWindowController : public aura::client::WindowParentingClient,
   RootWindowController(DesktopDelegate* desktop_delegate,
                        const gfx::Rect& bounds,
                        content::BrowserContext* browser_context);
+
+  RootWindowController(const RootWindowController&) = delete;
+  RootWindowController& operator=(const RootWindowController&) = delete;
+
   ~RootWindowController() override;
 
   // Attaches a NativeAppWindow's window to our root window.
@@ -104,8 +108,6 @@ class RootWindowController : public aura::client::WindowParentingClient,
   // when |host_| is closed or |this| is destroyed.
   // Note: Pointers are unowned. NativeAppWindow::Close() will delete them.
   std::list<AppWindow*> app_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowController);
 };
 
 }  // namespace extensions

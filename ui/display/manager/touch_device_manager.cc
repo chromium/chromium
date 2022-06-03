@@ -9,9 +9,10 @@
 #include <string>
 #include <tuple>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -49,11 +50,11 @@ bool IsDeviceConnectedViaUsb(const base::FilePath& path) {
   return false;
 }
 
-// Returns the UDL association score between |display| and |device|. A score <=
+// Returns the USB association score between |display| and |device|. A score <=
 // 0 means that there is no association.
-int GetUdlAssociationScore(const ManagedDisplayInfo* display,
+int GetUsbAssociationScore(const ManagedDisplayInfo* display,
                            const ui::TouchscreenDevice& device) {
-  // If the devices are not both connected via USB, then there cannot be a UDL
+  // If the devices are not both connected via USB, then there cannot be a USB
   // association score.
   if (!IsDeviceConnectedViaUsb(display->sys_path()) ||
       !IsDeviceConnectedViaUsb(device.sys_path))
@@ -75,16 +76,16 @@ int GetUdlAssociationScore(const ManagedDisplayInfo* display,
   return largest_idx;
 }
 
-// Tries to find a UDL device that best matches |display|. Returns
+// Tries to find a USB device that best matches |display|. Returns
 // |devices.end()| if one is not found.
-DeviceList::const_iterator GuessBestUdlDevice(const ManagedDisplayInfo* display,
+DeviceList::const_iterator GuessBestUsbDevice(const ManagedDisplayInfo* display,
                                               const DeviceList& devices) {
   int best_score = 0;
   DeviceList::const_iterator best_device_it = devices.end();
 
   // TODO(malaykeshav): Migrate to std::max_element in the future.
   for (auto it = devices.begin(); it != devices.end(); it++) {
-    int score = GetUdlAssociationScore(display, *it);
+    int score = GetUsbAssociationScore(display, *it);
     if (score > best_score) {
       best_score = score;
       best_device_it = it;
@@ -198,6 +199,8 @@ uint32_t TouchDeviceIdentifier::GenerateIdentifier(std::string name,
 // static
 TouchDeviceIdentifier TouchDeviceIdentifier::FromDevice(
     const ui::TouchscreenDevice& touch_device) {
+  if (!touch_device.id)
+    return GetFallbackTouchDeviceIdentifier();
   return TouchDeviceIdentifier(
       GenerateIdentifier(touch_device.name, touch_device.vendor_id,
                          touch_device.product_id),
@@ -252,7 +255,7 @@ bool TouchCalibrationData::CalibrationPointPairCompare(
   return pair_1.first < pair_2.first;
 }
 
-TouchCalibrationData::TouchCalibrationData() {}
+TouchCalibrationData::TouchCalibrationData() = default;
 
 TouchCalibrationData::TouchCalibrationData(
     const TouchCalibrationData::CalibrationPointPairQuad& point_pairs,
@@ -260,9 +263,10 @@ TouchCalibrationData::TouchCalibrationData(
     : point_pairs(point_pairs), bounds(bounds) {}
 
 TouchCalibrationData::TouchCalibrationData(
-    const TouchCalibrationData& calibration_data)
-    : point_pairs(calibration_data.point_pairs),
-      bounds(calibration_data.bounds) {}
+    const TouchCalibrationData& calibration_data) = default;
+
+TouchCalibrationData& TouchCalibrationData::operator=(
+    const TouchCalibrationData& calibration_data) = default;
 
 bool TouchCalibrationData::operator==(const TouchCalibrationData& other) const {
   if (bounds != other.bounds)
@@ -327,7 +331,7 @@ void TouchDeviceManager::AssociateTouchscreens(
   AssociateInternalDevices(&displays, &devices);
   AssociateDevicesWithCollision(&displays, &devices);
   AssociateFromHistoricalData(&displays, &devices);
-  AssociateUdlDevices(&displays, &devices);
+  AssociateUsbDevices(&displays, &devices);
   AssociateSameSizeDevices(&displays, &devices);
   AssociateToSingleDisplay(&displays, &devices);
   AssociateAnyRemainingDevices(&displays, &devices);
@@ -454,21 +458,21 @@ void TouchDeviceManager::AssociateFromHistoricalData(
   }
 }
 
-void TouchDeviceManager::AssociateUdlDevices(ManagedDisplayInfoList* displays,
+void TouchDeviceManager::AssociateUsbDevices(ManagedDisplayInfoList* displays,
                                              DeviceList* devices) {
-  VLOG(2) << "Trying to match udl devices (" << displays->size()
+  VLOG(2) << "Trying to match usb devices (" << displays->size()
           << " displays and " << devices->size() << " devices to match)";
 
   for (auto display_it = displays->begin(); display_it != displays->end();
        display_it++) {
     ManagedDisplayInfo* display = *display_it;
-    auto device_it = GuessBestUdlDevice(display, *devices);
+    auto device_it = GuessBestUsbDevice(display, *devices);
 
     if (device_it != devices->end()) {
       const ui::TouchscreenDevice& device = *device_it;
       VLOG(2) << "=> Matched device " << device.name << " to display "
               << display->name()
-              << " (score=" << GetUdlAssociationScore(display, device) << ")";
+              << " (score=" << GetUsbAssociationScore(display, device) << ")";
       Associate(display, device);
       devices->erase(device_it);
     }
@@ -594,9 +598,11 @@ void TouchDeviceManager::Associate(ManagedDisplayInfo* display,
 // Managing Touch device calibration data
 
 void TouchDeviceManager::AddTouchCalibrationData(
-    const TouchDeviceIdentifier& identifier,
+    const ui::TouchscreenDevice& device,
     int64_t display_id,
     const TouchCalibrationData& data) {
+  const TouchDeviceIdentifier identifier =
+      TouchDeviceIdentifier::FromDevice(device);
   if (!base::Contains(touch_associations_, identifier))
     touch_associations_.emplace(identifier, AssociationInfoMap());
 
@@ -627,8 +633,10 @@ void TouchDeviceManager::AddTouchCalibrationData(
 }
 
 void TouchDeviceManager::ClearTouchCalibrationData(
-    const TouchDeviceIdentifier& identifier,
+    const ui::TouchscreenDevice& device,
     int64_t display_id) {
+  const TouchDeviceIdentifier identifier =
+      TouchDeviceIdentifier::FromDevice(device);
   if (base::Contains(touch_associations_, identifier)) {
     ClearCalibrationDataInMap(touch_associations_.at(identifier), display_id);
   }
@@ -681,27 +689,36 @@ TouchCalibrationData TouchDeviceManager::GetCalibrationData(
 
 bool TouchDeviceManager::DisplayHasTouchDevice(
     int64_t display_id,
-    const TouchDeviceIdentifier& identifier) const {
+    const ui::TouchscreenDevice& device) const {
+  const TouchDeviceIdentifier identifier =
+      TouchDeviceIdentifier::FromDevice(device);
   return base::Contains(active_touch_associations_, identifier) &&
          active_touch_associations_.at(identifier) == display_id;
 }
 
 int64_t TouchDeviceManager::GetAssociatedDisplay(
-    const TouchDeviceIdentifier& identifier) const {
+    const ui::TouchscreenDevice& device) const {
+  const TouchDeviceIdentifier identifier =
+      TouchDeviceIdentifier::FromDevice(device);
   if (base::Contains(active_touch_associations_, identifier))
     return active_touch_associations_.at(identifier);
   return kInvalidDisplayId;
 }
 
-std::vector<TouchDeviceIdentifier>
+std::vector<ui::TouchscreenDevice>
 TouchDeviceManager::GetAssociatedTouchDevicesForDisplay(
     int64_t display_id) const {
-  std::vector<TouchDeviceIdentifier> identifiers;
-  for (const auto& association : active_touch_associations_) {
-    if (association.second == display_id)
-      identifiers.push_back(association.first);
+  std::vector<ui::TouchscreenDevice> result;
+  for (const auto& device :
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
+    const TouchDeviceIdentifier identifier =
+        TouchDeviceIdentifier::FromDevice(device);
+
+    const auto it = active_touch_associations_.find(identifier);
+    if (it != active_touch_associations_.end() && it->second == display_id)
+      result.push_back(device);
   }
-  return identifiers;
+  return result;
 }
 
 void TouchDeviceManager::RegisterTouchAssociations(
@@ -725,17 +742,6 @@ bool HasExternalTouchscreenDevice() {
       return true;
     }
   }
-  return false;
-}
-
-bool IsInternalTouchscreenDevice(const TouchDeviceIdentifier& identifier) {
-  for (const auto& device :
-       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
-    if (TouchDeviceIdentifier::FromDevice(device) == identifier)
-      return device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
-  }
-  VLOG(1) << "Touch device identified by " << identifier << " is currently"
-          << " not connected to the device or is an invalid device.";
   return false;
 }
 

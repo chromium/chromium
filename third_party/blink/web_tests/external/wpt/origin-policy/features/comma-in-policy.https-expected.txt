@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Prerequisite check: running on HTTPS
+PASS Test setup of the iframe
+FAIL Origin policy subframe assert_equals: camera expected false but got true
+Harness: the test ran to completion.
+

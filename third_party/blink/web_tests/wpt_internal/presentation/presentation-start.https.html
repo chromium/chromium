@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+async function testPresentationRequestStart(requestArgument, connectionUrl) {
+  await waitForClick(button);
+  const connection =
+      await new PresentationRequest(requestArgument).start();
+  assert_equals(connection.url, connectionUrl);
+  assert_equals(connection.state, 'connecting');
+};
+
+promise_test(async _ => {
+  const presentationUrl = "https://example.com/example.html";
+  await testPresentationRequestStart(presentationUrl, presentationUrl);
+}, "Test that the PresentationRequest.start() with single URL resolves with correct PresentationConnection object.");
+
+promise_test(async _ => {
+  const presentationUrls = ["https://example.com/example.html", "cast://google.com/app_id=deadbeef"];
+  await testPresentationRequestStart(presentationUrls, presentationUrls[0]);
+}, "Test that the PresentationRequest.start() with multiple URLs resolves with correct PresentationConnection object.");
+
+promise_test(async _ => {
+  const presentationUrl = "https://example.com/\ud801/example.html";
+  const connectionUrl = "https://example.com/" + encodeURIComponent('\ufffd') + "/example.html"
+
+  await testPresentationRequestStart(presentationUrl, connectionUrl);
+}, "Test that the PresentationRequest.start() with single URL containing special symbol resolves with correct PresentationConnection object.");
+
+</script>
+</body>
+</html>

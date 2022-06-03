@@ -9,13 +9,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
-#include "gpu/command_buffer/service/gl_stream_texture_image_stub.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/image_manager.h"
@@ -331,13 +330,12 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
 
   // Attach a stream image, and verify that the image changes and the service_id
   // matches the one we provide.
-  scoped_refptr<gpu::gles2::GLStreamTextureImage> stream_image(
-      new gpu::gles2::GLStreamTextureImageStub);
+  scoped_refptr<gl::GLImage> stream_image(new gl::GLImageStub);
   const GLuint surface_texture_service_id = service_id + 1;
   abstract_texture->BindStreamTextureImage(stream_image.get(),
                                            surface_texture_service_id);
   EXPECT_EQ(texture->SafeToRenderFrom(), true);
-  EXPECT_EQ(texture->GetLevelStreamTextureImage(target, 0), stream_image.get());
+  EXPECT_EQ(texture->GetLevelImage(target, 0), stream_image.get());
   EXPECT_EQ(abstract_texture->service_id(), surface_texture_service_id);
 
   // Deleting |abstract_texture| should delete the platform texture as well,
@@ -398,14 +396,15 @@ TEST_P(GLES2DecoderTest, AbstractTextureIsDestroyedWhenMadeCurrent) {
   context_->ReleaseCurrent(surface_.get());
   abstract_texture.reset();
   // Make the context current again, |context_| overrides it with a mock.
-  context_->GLContextStub::MakeCurrent(surface_.get());
+  context_->GLContextStub::MakeCurrentImpl(surface_.get());
 
   // Having textures to delete should signal idle work.
   EXPECT_EQ(GetDecoder()->HasMoreIdleWork(), true);
   EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
 
   // Allow the context to be made current.
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
   GetDecoder()->MakeCurrent();
 }
 
@@ -1883,15 +1882,6 @@ void GLES3DecoderWithShaderTest::SetUp() {
   SetupDefaultProgram();
 }
 
-void GLES3DecoderRGBBackbufferTest::SetUp() {
-  InitState init;
-  init.gl_version = "OpenGL ES 3.0";
-  init.bind_generates_resource = true;
-  init.context_type = CONTEXT_TYPE_OPENGLES3;
-  InitDecoder(init);
-  SetupDefaultProgram();
-}
-
 INSTANTIATE_TEST_SUITE_P(Service, GLES2DecoderTest, ::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(Service,
@@ -1924,10 +1914,6 @@ INSTANTIATE_TEST_SUITE_P(Service,
 
 INSTANTIATE_TEST_SUITE_P(Service,
                          GLES3DecoderManualInitTest,
-                         ::testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(Service,
-                         GLES3DecoderRGBBackbufferTest,
                          ::testing::Bool());
 
 }  // namespace gles2

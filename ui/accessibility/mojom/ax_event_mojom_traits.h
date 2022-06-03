@@ -5,8 +5,13 @@
 #ifndef UI_ACCESSIBILITY_MOJOM_AX_EVENT_MOJOM_TRAITS_H_
 #define UI_ACCESSIBILITY_MOJOM_AX_EVENT_MOJOM_TRAITS_H_
 
+#include <vector>
+
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/mojom/ax_event.mojom-shared.h"
+#include "ui/accessibility/ax_event_intent.h"
+#include "ui/accessibility/mojom/ax_event.mojom.h"
+#include "ui/accessibility/mojom/ax_event_intent.mojom.h"
+#include "ui/accessibility/mojom/ax_event_intent_mojom_traits.h"
 
 namespace mojo {
 
@@ -18,6 +23,12 @@ struct StructTraits<ax::mojom::AXEventDataView, ui::AXEvent> {
   static int32_t id(const ui::AXEvent& p) { return p.id; }
   static ax::mojom::EventFrom event_from(const ui::AXEvent& p) {
     return p.event_from;
+  }
+  static ax::mojom::Action event_from_action(const ui::AXEvent& p) {
+    return p.event_from_action;
+  }
+  static std::vector<ui::AXEventIntent> event_intents(const ui::AXEvent& p) {
+    return p.event_intents;
   }
   static int32_t action_request_id(const ui::AXEvent& p) {
     return p.action_request_id;

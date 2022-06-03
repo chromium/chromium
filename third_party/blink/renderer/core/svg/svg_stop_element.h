@@ -21,13 +21,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_STOP_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_STOP_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class Color;
+class SVGAnimatedNumber;
 
 class SVGStopElement final : public SVGElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -39,13 +39,13 @@ class SVGStopElement final : public SVGElement {
 
   SVGAnimatedNumber* offset() const { return offset_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   void DidRecalcStyle(const StyleRecalcChange) override;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   // Stop elements don't have associated layout objects.
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {

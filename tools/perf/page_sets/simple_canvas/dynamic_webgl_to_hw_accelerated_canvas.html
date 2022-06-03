@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var canvas2D = document.createElement("canvas");
+var ctx2D = canvas2D.getContext("2d");
+var canvas3D = document.createElement('canvas');
+var gl = canvas3D.getContext('webgl');
+document.body.appendChild(canvas2D);
+document.body.appendChild(canvas3D);
+
+if (!gl)
+    CanvasRunner.logFatalError("WebGL is not supported or enabled on this platform!");
+
+var dummyCanvas2D = document.createElement("canvas");
+var dummyCtx2D = dummyCanvas2D.getContext("2d");
+
+function setSize(canvas2DWidth, canvas2DHeight, webglWidth, webglHeight) {
+    canvas2D.width = canvas2DWidth;
+    canvas2D.height = canvas2DHeight;
+    dummyCanvas2D.width = canvas2DWidth;
+    dummyCanvas2D.height = canvas2DWidth;
+    canvas3D.width = webglWidth;
+    canvas3D.height = webglHeight;
+}
+
+function rand(range) {
+    return Math.floor(Math.random() * range);
+}
+
+function renderWebGL(gl) {
+    gl.disable(gl.SCISSOR_TEST);
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(rand(1024), rand(1024), rand(1024), rand(1024));
+    gl.clearColor(Math.random(), Math.random(), Math.random(), 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+function doRun() {
+    renderWebGL(gl);
+    // draw dynamic WebGL
+    ctx2D.drawImage(canvas3D, 0, 0);
+}
+
+function ensureComplete() {
+    // Using destCanvas2D as a source image is just to flush out the content when
+    // accelerated 2D canvas is in use.
+    dummyCtx2D.drawImage(canvas2D, 0, 0, 1, 1, 0, 0, 1, 1);
+}
+
+function completeRun() {
+    doRun();
+    ensureComplete();
+    requestAnimationFrame(completeRun);
+}
+
+window.onload = function () {
+    setSize(1024, 1024, 1024, 1024);
+    completeRun();
+}
+
+</script>
+</body>
+</html>

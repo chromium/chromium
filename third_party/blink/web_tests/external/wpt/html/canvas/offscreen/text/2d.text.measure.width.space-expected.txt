@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Space characters are converted to U+0020 and collapsed (per CSS) for OffscreenCanvas assert_equals: ctx.measureText('A \x09\x0a\x0c\x0d  \x09\x0a\x0c\x0dB').width === 150 (got 650[number], expected 150[number]) expected 150 but got 650
+Harness: the test ran to completion.
+

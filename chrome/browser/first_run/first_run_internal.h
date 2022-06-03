@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FIRST_RUN_FIRST_RUN_INTERNAL_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 class Profile;
 
@@ -14,7 +15,7 @@ class FilePath;
 }
 
 namespace installer {
-class MasterPreferences;
+class InitialPreferences;
 }
 
 namespace first_run {
@@ -29,23 +30,14 @@ enum FirstRunState {
   FIRST_RUN_FALSE,
 };
 
-// Sets up master preferences by preferences passed by installer.
-void SetupMasterPrefsFromInstallPrefs(
-    const installer::MasterPreferences& install_prefs,
+// Sets up initial preferences by preferences passed by installer.
+void SetupInitialPrefsFromInstallPrefs(
+    const installer::InitialPreferences& install_prefs,
     MasterPrefs* out_prefs);
-
-// Get the file path of the first run sentinel; returns false on failure.
-bool GetFirstRunSentinelFilePath(base::FilePath* path);
-
-// Create the first run sentinel file; returns false on failure.
-bool CreateSentinel();
 
 // -- Platform-specific functions --
 
 void DoPostImportPlatformSpecificTasks(Profile* profile);
-
-// Returns true if the sentinel file exists (or the path cannot be obtained).
-bool IsFirstRunSentinelPresent();
 
 // This function has a common implementationin for all non-linux platforms, and
 // a linux specific implementation.
@@ -54,23 +46,26 @@ bool IsOrganicFirstRun();
 // Shows the EULA dialog if required. Returns true if the EULA is accepted,
 // returns false if the EULA has not been accepted, in which case the browser
 // should exit.
-bool ShowPostInstallEULAIfNeeded(installer::MasterPreferences* install_prefs);
+bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs);
 
-// Returns the path for the master preferences file.
-base::FilePath MasterPrefsPath();
+// Returns the path for the initial preferences file.
+base::FilePath InitialPrefsPath();
 
 // Helper for IsChromeFirstRun. Exposed for testing.
 FirstRunState DetermineFirstRunState(bool has_sentinel,
                                      bool force_first_run,
                                      bool no_first_run);
 
-#if defined(OS_MACOSX) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // For testing, forces the first run dialog to either be shown or not. If not
 // called, the decision to show the dialog or not will be made by Chrome based
 // on a number of factors (such as install type, whether it's a Chrome-branded
 // build, etc).
 void ForceFirstRunDialogShownForTesting(bool shown);
-#endif  // defined(OS_MACOSX) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#endif  // defined(OS_MAC) || (defined(OS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 }  // namespace internal
 }  // namespace first_run

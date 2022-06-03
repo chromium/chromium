@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+// This struct represents a set of whitelist URL matching conditions used by
+// the Activity URL filter logic. Each string is a regular expression that
+// matching URL requests are passed through. If none of the condition
+// matches, the URL request is blocked.
+struct ActivityUrlFilterCriteria {
+  array<string> criteria;
+};
+
+// This interface is used to configure the Activity URL filter with an
+// ActivityUrlFilterCriteria.
+interface ActivityUrlFilterConfiguration {
+  // Set the criteria used by the URL filter in the renderer.
+  SetFilter(ActivityUrlFilterCriteria filter);
+};

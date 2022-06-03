@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.management.ManagementView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/default_bg_color"
+    android:padding="@dimen/fre_vertical_spacing">
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="start"
+        android:src="@drawable/enterprise_icon"
+        android:contentDescription="@string/close" />
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fre_margin"
+        android:gravity="start"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+    <TextView
+        android:id="@+id/description_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fre_margin"
+        android:gravity="start"
+        android:text="@string/management_browser_notice"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <TextView
+        android:id="@+id/learn_more"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/fre_margin"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+</org.chromium.chrome.browser.management.ManagementView>

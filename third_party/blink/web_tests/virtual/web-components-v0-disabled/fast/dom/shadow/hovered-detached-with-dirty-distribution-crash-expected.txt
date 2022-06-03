@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 18: Uncaught TypeError: host.createShadowRoot is not a function
-Tests that detaching a hovered node with dirty distributuion doesn't crash.
-Hovered

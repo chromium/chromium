@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/apps/titlebar_background_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "skia/ext/skia_utils_mac.h"
 
 @interface TitlebarBackgroundView ()

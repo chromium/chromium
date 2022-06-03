@@ -1,0 +1,218 @@
+Tests that DOMSnapshot properly descends into the shadow tree
+{
+    documents : [
+        [0] : {
+            baseURL : 0
+            contentHeight : 900
+            contentLanguage : -1
+            contentWidth : 1200
+            documentURL : <number>
+            encodingName : 1
+            frameId : <number>
+            layout : {
+                bounds : <object>
+                nodeIndex : [
+                    [0] : 0
+                    [1] : 1
+                    [2] : 6
+                    [3] : 8
+                    [4] : 10
+                ]
+                stackingContexts : {
+                    index : [
+                        [0] : 0
+                        [1] : 1
+                    ]
+                }
+                styles : [
+                    [0] : [
+                    ]
+                    [1] : [
+                    ]
+                    [2] : [
+                    ]
+                    [3] : [
+                    ]
+                    [4] : [
+                    ]
+                ]
+                text : [
+                    [0] : -1
+                    [1] : -1
+                    [2] : -1
+                    [3] : -1
+                    [4] : 17
+                ]
+            }
+            nodes : {
+                attributes : [
+                    [0] : [
+                    ]
+                    [1] : [
+                    ]
+                    [2] : [
+                    ]
+                    [3] : [
+                    ]
+                    [4] : [
+                    ]
+                    [5] : [
+                    ]
+                    [6] : [
+                    ]
+                    [7] : [
+                    ]
+                    [8] : [
+                        [0] : 12
+                        [1] : 13
+                        [2] : 14
+                        [3] : 15
+                    ]
+                    [9] : [
+                    ]
+                    [10] : [
+                    ]
+                ]
+                backendNodeId : <object>
+                contentDocumentIndex : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                currentSourceURL : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                inputChecked : {
+                    index : [
+                    ]
+                }
+                inputValue : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                isClickable : {
+                    index : [
+                    ]
+                }
+                nodeName : [
+                    [0] : 3
+                    [1] : 4
+                    [2] : 5
+                    [3] : 6
+                    [4] : 7
+                    [5] : 7
+                    [6] : 10
+                    [7] : 7
+                    [8] : 11
+                    [9] : 7
+                    [10] : 7
+                ]
+                nodeType : [
+                    [0] : 9
+                    [1] : 1
+                    [2] : 1
+                    [3] : 1
+                    [4] : 3
+                    [5] : 3
+                    [6] : 1
+                    [7] : 3
+                    [8] : 1
+                    [9] : 3
+                    [10] : 3
+                ]
+                nodeValue : [
+                    [0] : -1
+                    [1] : -1
+                    [2] : -1
+                    [3] : -1
+                    [4] : 8
+                    [5] : 9
+                    [6] : -1
+                    [7] : 9
+                    [8] : -1
+                    [9] : 16
+                    [10] : 17
+                ]
+                optionSelected : {
+                    index : [
+                    ]
+                }
+                originURL : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                parentIndex : [
+                    [0] : -1
+                    [1] : 0
+                    [2] : 1
+                    [3] : 2
+                    [4] : 3
+                    [5] : 2
+                    [6] : 1
+                    [7] : 6
+                    [8] : 6
+                    [9] : 8
+                    [10] : 6
+                ]
+                pseudoType : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                shadowRootType : <object>
+                textValue : {
+                    index : [
+                        [0] : 8
+                    ]
+                    value : [
+                        [0] : 16
+                    ]
+                }
+            }
+            publicId : -1
+            scrollOffsetX : 0
+            scrollOffsetY : 0
+            systemId : -1
+            textBoxes : {
+                bounds : <object>
+                layoutIndex : [
+                ]
+                length : [
+                ]
+                start : [
+                ]
+            }
+            title : -1
+        }
+    ]
+    strings : [
+        [0] : 
+        [1] : windows-1252
+        [2] : 
+        [3] : #document
+        [4] : HTML
+        [5] : HEAD
+        [6] : STYLE
+        [7] : #text
+        [8] :     body { font: 10px Ahem; }   
+        [9] :    
+        [10] : BODY
+        [11] : TEXTAREA
+        [12] : rows
+        [13] : 10
+        [14] : cols
+        [15] : 30
+        [16] : We apologize for the inconvenience.
+        [17] :       
+    ]
+}
+

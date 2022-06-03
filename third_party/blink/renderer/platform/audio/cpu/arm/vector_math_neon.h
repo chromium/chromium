@@ -47,6 +47,35 @@ static ALWAYS_INLINE void Vadd(const float* source1p,
                dest_stride, n);
 }
 
+static ALWAYS_INLINE void Vsub(const float* source1p,
+                               int source_stride1,
+                               const float* source2p,
+                               int source_stride2,
+                               float* dest_p,
+                               int dest_stride,
+                               uint32_t frames_to_process) {
+  int n = frames_to_process;
+
+  if (source_stride1 == 1 && source_stride2 == 1 && dest_stride == 1) {
+    int tail_frames = n % 4;
+    const float* end_p = dest_p + n - tail_frames;
+
+    while (dest_p < end_p) {
+      float32x4_t source1 = vld1q_f32(source1p);
+      float32x4_t source2 = vld1q_f32(source2p);
+      vst1q_f32(dest_p, vsubq_f32(source1, source2));
+
+      source1p += 4;
+      source2p += 4;
+      dest_p += 4;
+    }
+    n = tail_frames;
+  }
+
+  scalar::Vsub(source1p, source_stride1, source2p, source_stride2, dest_p,
+               dest_stride, n);
+}
+
 static ALWAYS_INLINE void Vclip(const float* source_p,
                                 int source_stride,
                                 const float* low_threshold_p,
@@ -186,6 +215,32 @@ static ALWAYS_INLINE void Vsmul(const float* source_p,
   }
 
   scalar::Vsmul(source_p, source_stride, scale, dest_p, dest_stride, n);
+}
+
+static ALWAYS_INLINE void Vsadd(const float* source_p,
+                                int source_stride,
+                                const float* addend,
+                                float* dest_p,
+                                int dest_stride,
+                                uint32_t frames_to_process) {
+  int n = frames_to_process;
+
+  if (source_stride == 1 && dest_stride == 1) {
+    float32x4_t k = vld1q_dup_f32(addend);
+    int tail_frames = n % 4;
+    const float* end_p = dest_p + n - tail_frames;
+
+    while (dest_p < end_p) {
+      float32x4_t source = vld1q_f32(source_p);
+      vst1q_f32(dest_p, vaddq_f32(source, k));
+
+      source_p += 4;
+      dest_p += 4;
+    }
+    n = tail_frames;
+  }
+
+  scalar::Vsadd(source_p, source_stride, addend, dest_p, dest_stride, n);
 }
 
 static ALWAYS_INLINE void Vsvesq(const float* source_p,

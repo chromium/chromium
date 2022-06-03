@@ -49,11 +49,11 @@
 
     // The number of frames that have been decoded and made available for
     // playback.
-    [MeasureAs=PrefixedVideoDecodedFrameCount] readonly attribute unsigned long webkitDecodedFrameCount;
+    [HighEntropy=Direct, MeasureAs=PrefixedVideoDecodedFrameCount] readonly attribute unsigned long webkitDecodedFrameCount;
 
     // The number of decoded frames that have been dropped by the player
     // for performance reasons during playback.
-    [MeasureAs=PrefixedVideoDroppedFrameCount] readonly attribute unsigned long webkitDroppedFrameCount;
+    [HighEntropy=Direct, MeasureAs=PrefixedVideoDroppedFrameCount] readonly attribute unsigned long webkitDroppedFrameCount;
 
     [CEReactions, Reflect] attribute boolean playsInline;
 };

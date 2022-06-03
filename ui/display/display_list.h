@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <vector>
 
 #include "base/observer_list.h"
@@ -16,24 +15,7 @@
 
 namespace display {
 
-class Display;
-class DisplayList;
 class DisplayObserver;
-
-// See description in DisplayLock::SuspendObserverUpdates.
-class DISPLAY_EXPORT DisplayListObserverLock {
- public:
-  ~DisplayListObserverLock();
-
- private:
-  friend class DisplayList;
-
-  explicit DisplayListObserverLock(DisplayList* display_list);
-
-  DisplayList* display_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayListObserverLock);
-};
 
 // Maintains an ordered list of Displays as well as operations to add, remove
 // and update said list. Additionally maintains DisplayObservers and updates
@@ -50,6 +32,9 @@ class DISPLAY_EXPORT DisplayList {
   DisplayList();
   ~DisplayList();
 
+  DisplayList(const DisplayList&) = delete;
+  DisplayList& operator=(const DisplayList&) = delete;
+
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
 
@@ -57,12 +42,10 @@ class DISPLAY_EXPORT DisplayList {
 
   Displays::const_iterator FindDisplayById(int64_t id) const;
 
+  // Get an iterator for the primary display. This returns an invalid iterator
+  // if no such display is available. Callers must check the returned value
+  // against `displays().end()` before dereferencing.
   Displays::const_iterator GetPrimaryDisplayIterator() const;
-
-  // Internally increments a counter that while non-zero results in observers
-  // not being called for any changes to the displays. It is assumed once
-  // callers release the last lock they call the observers appropriately.
-  std::unique_ptr<DisplayListObserverLock> SuspendObserverUpdates();
 
   void AddOrUpdateDisplay(const Display& display, Type type);
 
@@ -82,28 +65,22 @@ class DISPLAY_EXPORT DisplayList {
   // Removes the Display with the specified id.
   void RemoveDisplay(int64_t id);
 
+  // Checks for general struct validity. This permits empty lists, but non-empty
+  // lists must specify a primary display and the displays must not use repeated
+  // or invalid ids.
+  bool IsValid() const;
+
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
 
  private:
-  friend class DisplayListObserverLock;
-
-  bool should_notify_observers() const {
-    return observer_suspend_lock_count_ == 0;
-  }
-  void IncrementObserverSuspendLockCount();
-  void DecrementObserverSuspendLockCount();
-
-  Type GetTypeByDisplayId(int64_t display_id) const;
-
+  // A non-const version of FindDisplayById.
   Displays::iterator FindDisplayByIdInternal(int64_t id);
 
+  // The list of displays tracked by the display::Screen or other client.
   std::vector<Display> displays_;
-  int primary_display_index_ = -1;
+  // The id of the primary Display in `displays_` for the display::Screen.
+  int64_t primary_id_ = kInvalidDisplayId;
   base::ObserverList<DisplayObserver> observers_;
-
-  int observer_suspend_lock_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayList);
 };
 
 }  // namespace display

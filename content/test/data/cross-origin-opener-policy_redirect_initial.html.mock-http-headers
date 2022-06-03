@@ -1,0 +1,4 @@
+HTTP/1.1 301 Moved Permanently
+Location: cross-origin-opener-policy_redirect_final.html
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp

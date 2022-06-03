@@ -13,6 +13,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_client.h"
@@ -22,6 +23,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -32,7 +34,11 @@ namespace {
 
 class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
  public:
-  explicit DeviceInfoSyncClient(PrefService* prefs) : prefs_(prefs) {}
+  DeviceInfoSyncClient(
+      PrefService* prefs,
+      syncer::SyncInvalidationsService* sync_invalidations_service)
+      : prefs_(prefs),
+        sync_invalidations_service_(sync_invalidations_service) {}
   ~DeviceInfoSyncClient() override = default;
 
   // syncer::DeviceInfoSyncClient:
@@ -46,20 +52,53 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
+  absl::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
+
+  // syncer::DeviceInfoSyncClient:
+  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  GetPhoneAsASecurityKeyInfo() const override {
+    return absl::nullopt;
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  absl::optional<std::string> GetFCMRegistrationToken() const override {
+    if (sync_invalidations_service_) {
+      return sync_invalidations_service_->GetFCMRegistrationToken();
+    }
+    // If the service is not enabled, then the registration token must be empty,
+    // not unknown (absl::nullopt). This is needed to reset previous token if
+    // the invalidations have been turned off.
+    return std::string();
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  absl::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+    if (sync_invalidations_service_) {
+      return sync_invalidations_service_->GetInterestedDataTypes();
+    }
+    // If the service is not enabled, then the list of types must be empty, not
+    // unknown (absl::nullopt). This is needed to reset previous types if the
+    // invalidations have been turned off.
+    return syncer::ModelTypeSet();
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  // Returns false since we only care about Chrome OS devices
+  bool IsUmaEnabledOnCrOSDevice() const override { return false; }
 
  private:
   PrefService* const prefs_;
+  syncer::SyncInvalidationsService* const sync_invalidations_service_;
 };
 
 }  // namespace
 
 // static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<syncer::DeviceInfoSyncService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -73,11 +112,11 @@ DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
 void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
     std::vector<const syncer::DeviceInfoTracker*>* trackers) {
   DCHECK(trackers);
-  std::vector<ios::ChromeBrowserState*> browser_state_list =
+  std::vector<ChromeBrowserState*> browser_state_list =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
           ->GetLoadedBrowserStates();
-  for (ios::ChromeBrowserState* browser_state : browser_state_list) {
+  for (ChromeBrowserState* browser_state : browser_state_list) {
     syncer::DeviceInfoSyncService* service =
         DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
     if (service != nullptr) {
@@ -95,6 +134,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
           "DeviceInfoSyncService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
 DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
@@ -102,11 +142,13 @@ DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
 std::unique_ptr<KeyedService>
 DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
 
-  auto device_info_sync_client =
-      std::make_unique<DeviceInfoSyncClient>(browser_state->GetPrefs());
+  syncer::SyncInvalidationsService* const sync_invalidations_service =
+      SyncInvalidationsServiceFactory::GetForBrowserState(browser_state);
+  auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
+      browser_state->GetPrefs(), sync_invalidations_service);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           ::GetChannel(), ::GetVersionString(), device_info_sync_client.get());
@@ -117,5 +159,5 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
-      std::move(device_info_sync_client));
+      std::move(device_info_sync_client), sync_invalidations_service);
 }

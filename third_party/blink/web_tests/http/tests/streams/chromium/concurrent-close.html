@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+performMicrotaskCheckpoint = () => {
+  document.createNodeIterator(document, -1, {
+    acceptNode() {
+      return NodeFilter.FILTER_ACCEPT;
+  } }).nextNode();
+}
+
+runOutsideMicrotasksScope = func => {
+  window.addEventListener("load", { get handleEvent() {
+    func();
+  } });
+}
+
+async_test(t => {
+  runOutsideMicrotasksScope(t.step_func_done(() => {
+    let controller;
+    let stream = new ReadableStream({ start(c) { controller = c; } });
+    let reader = stream.tee()[0].getReader();
+    reader.read();
+    reader.read();
+    Object.defineProperty(Object.prototype, "then", { get() {
+      controller.close();
+      performMicrotaskCheckpoint();
+    }});
+    reader.cancel();
+  }));
+}, "should not trigger DCHECK in ReadableStream controller");
+</script>

@@ -6,8 +6,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
@@ -63,6 +64,9 @@ authpolicy::ErrorType GetErrorAndProto(
 class AuthPolicyClientImpl : public AuthPolicyClient {
  public:
   AuthPolicyClientImpl() {}
+
+  AuthPolicyClientImpl(const AuthPolicyClientImpl&) = delete;
+  AuthPolicyClientImpl& operator=(const AuthPolicyClientImpl&) = delete;
 
   ~AuthPolicyClientImpl() override = default;
 
@@ -228,8 +232,6 @@ class AuthPolicyClientImpl : public AuthPolicyClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<AuthPolicyClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyClientImpl);
 };
 
 }  // namespace

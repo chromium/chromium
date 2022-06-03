@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Intrinsic contribution of outside symbol marker
+PASS Intrinsic contribution of outside decimal marker
+PASS Intrinsic contribution of outside string marker
+PASS Intrinsic contribution of outside content marker
+PASS Intrinsic contribution of inside symbol marker
+FAIL Intrinsic contribution of inside decimal marker assert_equals: clientWidth expected 30 but got 20
+PASS Intrinsic contribution of inside string marker
+PASS Intrinsic contribution of inside content marker
+Harness: the test ran to completion.
+

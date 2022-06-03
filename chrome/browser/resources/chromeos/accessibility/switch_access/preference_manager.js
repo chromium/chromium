@@ -1,0 +1,174 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {AutoScanManager} from './auto_scan_manager.js';
+import {SAConstants} from './switch_access_constants.js';
+
+/**
+ * Class to manage user preferences.
+ */
+export class PreferenceManager {
+  /** @private */
+  constructor() {
+    /**
+     * User preferences, initially set to the default preference values.
+     * @private {!Map<SAConstants.Preference,
+     *                chrome.settingsPrivate.PrefObject>}
+     */
+    this.preferences_ = new Map();
+
+    this.init_();
+  }
+
+  // =============== Static Methods ==============
+
+  static initialize() {
+    PreferenceManager.instance = new PreferenceManager();
+  }
+
+  // =============== Private Methods ==============
+
+  /**
+   * Get the boolean value for the given name, or |null| if the value is not a
+   * boolean or does not exist.
+   *
+   * @param  {SAConstants.Preference} name
+   * @return {boolean|null}
+   * @private
+   */
+  getBoolean_(name) {
+    const pref = this.preferences_.get(name);
+    if (pref && pref.type === chrome.settingsPrivate.PrefType.BOOLEAN) {
+      return /** @type {boolean} */ (pref.value);
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Get the number value for the given name, or |null| if the value is not a
+   * number or does not exist.
+   *
+   * @param {SAConstants.Preference} name
+   * @return {number|null}
+   * @private
+   */
+  getNumber_(name) {
+    const pref = this.preferences_.get(name);
+    if (pref && pref.type === chrome.settingsPrivate.PrefType.NUMBER) {
+      return /** @type {number} */ (pref.value);
+    }
+    return null;
+  }
+
+  /**
+   * Get the preference value for the given name, or |null| if the value is not
+   * a dictionary or does not exist.
+   *
+   * @param {SAConstants.Preference} name
+   * @return {Object|null}
+   * @private
+   */
+  getDict_(name) {
+    const pref = this.preferences_.get(name);
+    if (pref && pref.type === chrome.settingsPrivate.PrefType.DICTIONARY) {
+      return /** @type {Object} */ (pref.value);
+    }
+    return null;
+  }
+
+  /** @private */
+  init_() {
+    chrome.settingsPrivate.onPrefsChanged.addListener(
+        (prefs) => this.updateFromSettings_(prefs));
+    chrome.settingsPrivate.getAllPrefs(
+        (prefs) => this.updateFromSettings_(prefs, true /* isFirstLoad */));
+  }
+
+  /**
+   * Whether the current settings configuration is reasonably usable;
+   * specifically, whether there is a way to select and a way to navigate.
+   * @return {boolean}
+   * @private
+   */
+  settingsAreConfigured_() {
+    const selectPref =
+        this.getDict_(SAConstants.Preference.SELECT_DEVICE_KEY_CODES);
+    const selectSet = selectPref ? Object.keys(selectPref).length : false;
+
+    const nextPref =
+        this.getDict_(SAConstants.Preference.NEXT_DEVICE_KEY_CODES);
+    const nextSet = nextPref ? Object.keys(nextPref).length : false;
+
+    const previousPref =
+        this.getDict_(SAConstants.Preference.PREVIOUS_DEVICE_KEY_CODES);
+    const previousSet = previousPref ? Object.keys(previousPref).length : false;
+
+    const autoScanEnabled =
+        !!this.getBoolean_(SAConstants.Preference.AUTO_SCAN_ENABLED);
+
+    if (!selectSet) {
+      return false;
+    }
+
+    if (nextSet || previousSet) {
+      return true;
+    }
+
+    return autoScanEnabled;
+  }
+
+  /**
+   * Updates the cached preferences.
+   * @param {!Array<chrome.settingsPrivate.PrefObject>} preferences
+   * @param {boolean} isFirstLoad
+   * @private
+   */
+  updateFromSettings_(preferences, isFirstLoad = false) {
+    for (const pref of preferences) {
+      // Ignore preferences that are not used by Switch Access.
+      if (!this.usesPreference_(pref)) {
+        continue;
+      }
+
+      const key = /** @type {SAConstants.Preference} */ (pref.key);
+      const oldPrefObject = this.preferences_.get(key);
+      if (!oldPrefObject || oldPrefObject.value !== pref.value) {
+        this.preferences_.set(key, pref);
+        switch (key) {
+          case SAConstants.Preference.AUTO_SCAN_ENABLED:
+            if (pref.type === chrome.settingsPrivate.PrefType.BOOLEAN) {
+              AutoScanManager.setEnabled(/** @type {boolean} */ (pref.value));
+            }
+            break;
+          case SAConstants.Preference.AUTO_SCAN_TIME:
+            if (pref.type === chrome.settingsPrivate.PrefType.NUMBER) {
+              AutoScanManager.setPrimaryScanTime(
+                  /** @type {number} */ (pref.value));
+            }
+            break;
+          case SAConstants.Preference.AUTO_SCAN_KEYBOARD_TIME:
+            if (pref.type === chrome.settingsPrivate.PrefType.NUMBER) {
+              AutoScanManager.setKeyboardScanTime(
+                  /** @type {number} */ (pref.value));
+            }
+            break;
+        }
+      }
+    }
+
+    if (isFirstLoad && !this.settingsAreConfigured_()) {
+      chrome.accessibilityPrivate.openSettingsSubpage(
+          'manageAccessibility/switchAccess');
+    }
+  }
+
+  /**
+   * @param {!chrome.settingsPrivate.PrefObject} pref
+   * @return {boolean}
+   */
+  usesPreference_(pref) {
+    return Object.values(SAConstants.Preference).includes(pref.key);
+  }
+}

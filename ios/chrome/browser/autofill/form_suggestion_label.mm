@@ -15,13 +15,12 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#include "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#include "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -50,7 +49,10 @@ struct IconImageMap {
 UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   UILabel* label = [[UILabel alloc] init];
   [label setText:text];
-  CGFloat fontSize = IsIPadIdiom() ? kIpadFontSize : kIphoneFontSize;
+  CGFloat fontSize =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIpadFontSize
+          : kIphoneFontSize;
   UIFont* font = bold ? [UIFont boldSystemFontOfSize:fontSize]
                       : [UIFont systemFontOfSize:fontSize];
   [label setFont:font];
@@ -63,18 +65,18 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
 @implementation FormSuggestionLabel {
   // Client of this view.
-  __weak id<FormSuggestionClient> _client;
+  __weak id<FormSuggestionLabelDelegate> _delegate;
   FormSuggestion* _suggestion;
 }
 
 - (id)initWithSuggestion:(FormSuggestion*)suggestion
-                     index:(NSUInteger)index
-            numSuggestions:(NSUInteger)numSuggestions
-                    client:(id<FormSuggestionClient>)client {
+                   index:(NSUInteger)index
+          numSuggestions:(NSUInteger)numSuggestions
+                delegate:(id<FormSuggestionLabelDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _suggestion = suggestion;
-    _client = client;
+    _delegate = delegate;
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
     stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -131,20 +133,28 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   self.layer.cornerRadius = self.bounds.size.height / 2.0;
 }
 
-#pragma mark -
-#pragma mark UIResponder
+#pragma mark - UIResponder
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
+- (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [self setBackgroundColor:[UIColor colorNamed:kGrey300Color]];
 }
 
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
+- (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  // No op. This method implementation is needed per the UIResponder docs.
+}
+
+- (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
 }
 
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
+- (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
-  [_client didSelectSuggestion:_suggestion];
+
+  // Don't count touches ending outside the view as as taps.
+  CGPoint locationInView = [touches.anyObject locationInView:self];
+  if (CGRectContainsPoint(self.bounds, locationInView)) {
+    [_delegate didTapFormSuggestionLabel:self];
+  }
 }
 
 @end

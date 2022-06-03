@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
+
 /**
  * @typedef {{
  *   name: string,
@@ -71,7 +78,7 @@ const URL_EMPTY = 'missing';
  *     value is smaller than 32bit.
  */
 function as64Bit(num) {
-  if (num.length != 2) {
+  if (num.length !== 2) {
     return '0';
   }
   if (!num[0]) {
@@ -249,7 +256,7 @@ function addExpandToggleButton() {
   const toggleExpand = $('toggle_expand');
   toggleExpand.textContent = 'Expand';
   toggleExpand.addEventListener('click', () => {
-    if (toggleExpand.textContent == 'Expand') {
+    if (toggleExpand.textContent === 'Expand') {
       toggleExpand.textContent = 'Collapse';
       setDisplayStyle(document.getElementsByClassName('entries'), 'block');
     } else {
@@ -268,7 +275,7 @@ function addClearButton() {
   const clearButton = $('clear');
   clearButton.addEventListener('click', () => {
     // Note it won't be able to clear if UKM logs got cut during this call.
-    cr.sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
+    sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
       updateUkmCache(data);
       for (const s of CachedSources.values()) {
         ClearedSources.set(as64Bit(s.id), s.entries.length);
@@ -352,7 +359,7 @@ function updateUkmCache(data) {
  * list.
  */
 function updateUkmData() {
-  cr.sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
+  sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
     updateUkmCache(data);
     if ($('include_cache').checked) {
       data.sources = [...CachedSources.values()];

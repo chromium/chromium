@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_COUNTERS_BOOKMARK_COUNTER_H_
 #define COMPONENTS_BROWSING_DATA_CORE_COUNTERS_BOOKMARK_COUNTER_H_
 
-#include <memory>
-
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 namespace bookmarks {

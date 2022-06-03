@@ -21,11 +21,15 @@ namespace device {
 class DEVICE_BASE_EXPORT DeviceInfoQueryWin {
  public:
   DeviceInfoQueryWin();
+
+  DeviceInfoQueryWin(const DeviceInfoQueryWin&) = delete;
+  DeviceInfoQueryWin& operator=(const DeviceInfoQueryWin&) = delete;
+
   ~DeviceInfoQueryWin();
 
   // Add a device to |device_info_list_| using its |device_path| so that
   // its device info can be retrieved.
-  bool AddDevice(const std::string& device_path);
+  bool AddDevice(const std::wstring& device_path);
   // Get the device info and store it into |device_info_data_|, this function
   // should be called at most once.
   bool GetDeviceInfo();
@@ -41,8 +45,6 @@ class DEVICE_BASE_EXPORT DeviceInfoQueryWin {
   HDEVINFO device_info_list_ = INVALID_HANDLE_VALUE;
   // When device_info_data_.cbSize != 0, |device_info_data_| is valid.
   SP_DEVINFO_DATA device_info_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoQueryWin);
 };
 
 }  // namespace device

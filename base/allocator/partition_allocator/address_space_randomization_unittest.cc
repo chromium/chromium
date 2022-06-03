@@ -8,15 +8,15 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/random.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/win/windows_version.h"
-// VersionHelpers.h must be included after windows.h.
-#include <VersionHelpers.h>
+// versionhelpers.h must be included after windows.h.
+#include <versionhelpers.h>
 #endif
 
 namespace base {
@@ -24,12 +24,12 @@ namespace base {
 namespace {
 
 uintptr_t GetMask() {
-  uintptr_t mask = internal::kASLRMask;
+  uintptr_t mask = internal::ASLRMask();
 #if defined(ARCH_CPU_64_BITS)
-// Sanitizers use their own kASLRMask constant.
+// Sanitizers use their own ASLR mask constant.
 #if defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if (!IsWindows8Point1OrGreater()) {
-    mask = internal::kASLRMaskBefore8_10;
+    mask = internal::ASLRMaskBefore8_10();
   }
 #endif  // defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
 #elif defined(ARCH_CPU_32_BITS)
@@ -52,13 +52,13 @@ uintptr_t GetAddressBits() {
 }
 
 uintptr_t GetRandomBits() {
-  return GetAddressBits() - internal::kASLROffset;
+  return GetAddressBits() - internal::ASLROffset();
 }
 
 }  // namespace
 
 // Configurations without ASLR are tested here.
-TEST(AddressSpaceRandomizationTest, DisabledASLR) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   uintptr_t mask = GetMask();
   if (!mask) {
 #if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
@@ -71,24 +71,24 @@ TEST(AddressSpaceRandomizationTest, DisabledASLR) {
   }
 }
 
-TEST(AddressSpaceRandomizationTest, Alignment) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, Alignment) {
   uintptr_t mask = GetMask();
   if (!mask)
     return;
 
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
-    EXPECT_EQ(0ULL, (address & kPageAllocationGranularityOffsetMask));
+    EXPECT_EQ(0ULL, (address & PageAllocationGranularityOffsetMask()));
   }
 }
 
-TEST(AddressSpaceRandomizationTest, Range) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, Range) {
   uintptr_t mask = GetMask();
   if (!mask)
     return;
 
-  uintptr_t min = internal::kASLROffset;
-  uintptr_t max = internal::kASLROffset + internal::kASLRMask;
+  uintptr_t min = internal::ASLROffset();
+  uintptr_t max = internal::ASLROffset() + internal::ASLRMask();
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
     EXPECT_LE(min, address);
@@ -96,7 +96,7 @@ TEST(AddressSpaceRandomizationTest, Range) {
   }
 }
 
-TEST(AddressSpaceRandomizationTest, Predictable) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
   uintptr_t mask = GetMask();
   if (!mask)
     return;
@@ -194,9 +194,10 @@ void RandomBitCorrelation(int random_bit) {
 }
 
 // Tests are fairly slow, so give each random bit its own test.
-#define TEST_RANDOM_BIT(BIT)                                        \
-  TEST(AddressSpaceRandomizationTest, RandomBitCorrelations##BIT) { \
-    RandomBitCorrelation(BIT);                                      \
+#define TEST_RANDOM_BIT(BIT)                        \
+  TEST(PartitionAllocAddressSpaceRandomizationTest, \
+       RandomBitCorrelations##BIT) {                \
+    RandomBitCorrelation(BIT);                      \
   }
 
 // The first 12 bits on all platforms are always 0.

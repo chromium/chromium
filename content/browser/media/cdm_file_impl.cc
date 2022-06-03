@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/bind_to_current_loop.h"
@@ -26,6 +25,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -78,6 +78,10 @@ struct FileLockKey {
 class FileLockMap {
  public:
   FileLockMap() = default;
+
+  FileLockMap(const FileLockMap&) = delete;
+  FileLockMap& operator=(const FileLockMap&) = delete;
+
   ~FileLockMap() = default;
 
   // Acquire a lock on the file represented by |key|. Returns true if |key|
@@ -112,7 +116,6 @@ class FileLockMap {
   std::set<FileLockKey> file_lock_map_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FileLockMap);
 };
 
 // The FileLockMap is a global lock map shared by all CdmFileImpl instances.
@@ -158,6 +161,9 @@ class CdmFileImpl::FileReader {
       base::OnceCallback<void(bool result, std::vector<uint8_t> data)>;
 
   FileReader() = default;
+
+  FileReader(const FileReader&) = delete;
+  FileReader& operator=(const FileReader&) = delete;
 
   // Reads the contents of |file_url| and calls |callback| with the result
   // (file contents on success, empty data on error).
@@ -269,7 +275,6 @@ class CdmFileImpl::FileReader {
   std::unique_ptr<storage::FileStreamReader> file_stream_reader_;
 
   base::WeakPtrFactory<FileReader> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileReader);
 };
 
 class CdmFileImpl::FileWriter {
@@ -278,6 +283,9 @@ class CdmFileImpl::FileWriter {
   using WriteDoneCB = base::OnceCallback<void(bool)>;
 
   FileWriter() {}
+
+  FileWriter(const FileWriter&) = delete;
+  FileWriter& operator=(const FileWriter&) = delete;
 
   // Writes |buffer| as the contents of |file_url| and calls |callback| with
   // whether the write succeeded or not.
@@ -359,7 +367,6 @@ class CdmFileImpl::FileWriter {
   std::unique_ptr<storage::FileStreamWriter> file_stream_writer_;
 
   base::WeakPtrFactory<FileWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileWriter);
 };
 
 // static
@@ -454,10 +461,11 @@ void CdmFileImpl::Read(ReadCallback callback) {
   // the IO thread. Use of base::Unretained() is OK as the reader is owned by
   // |this|, and if |this| is destructed it will destroy the file reader on the
   // IO thread.
-  file_reader_ = base::SequenceBound<FileReader>(
-      base::CreateSequencedTaskRunner({BrowserThread::IO}));
-  file_reader_.Post(FROM_HERE, &FileReader::Read, file_system_context_,
-                    CreateFileSystemURL(file_name_), std::move(read_done_cb));
+  file_reader_ = base::SequenceBound<FileReader>(GetIOThreadTaskRunner({}));
+  // TODO(dcheng): Migrate this to use Then()?
+  file_reader_.AsyncCall(&FileReader::Read)
+      .WithArgs(file_system_context_, CreateFileSystemURL(file_name_),
+                std::move(read_done_cb));
 }
 
 void CdmFileImpl::ReadDone(bool success, std::vector<uint8_t> data) {
@@ -602,11 +610,11 @@ void CdmFileImpl::OnTempFileIsEmpty(scoped_refptr<net::IOBuffer> buffer,
   // on the IO thread to write |buffer| into the temporary file. Use of
   // base::Unretained() is OK as |file_writer_| is owned by |this|, and if
   // |this| is destructed it will destroy |file_writer_| on the IO thread.
-  file_writer_ = base::SequenceBound<FileWriter>(
-      base::CreateSequencedTaskRunner({BrowserThread::IO}));
-  file_writer_.Post(FROM_HERE, &FileWriter::Write, file_system_context_,
-                    CreateFileSystemURL(temp_file_name_), std::move(buffer),
-                    bytes_to_write, std::move(write_done_cb));
+  file_writer_ = base::SequenceBound<FileWriter>(GetIOThreadTaskRunner({}));
+  // TODO(dcheng): Migrate this to use Then()?
+  file_writer_.AsyncCall(&FileWriter::Write)
+      .WithArgs(file_system_context_, CreateFileSystemURL(temp_file_name_),
+                std::move(buffer), bytes_to_write, std::move(write_done_cb));
 }
 
 void CdmFileImpl::WriteDone(bool success) {
@@ -637,7 +645,7 @@ void CdmFileImpl::WriteDone(bool success) {
            << dest_file_url.DebugString();
   file_util->MoveFileLocal(
       std::move(operation_context), src_file_url, dest_file_url,
-      storage::FileSystemOperation::OPTION_NONE,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindOnce(&CdmFileImpl::OnFileRenamed, weak_factory_.GetWeakPtr()));
 }
 
@@ -706,8 +714,12 @@ void CdmFileImpl::OnFileDeleted(base::File::Error result) {
 
 storage::FileSystemURL CdmFileImpl::CreateFileSystemURL(
     const std::string& file_name) {
-  return file_system_context_->CrackURL(
-      GURL(file_system_root_uri_ + file_name));
+  const GURL crack_url = GURL(file_system_root_uri_ + file_name);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin
+  // private file system will be partitioned and use the appropriate StorageKey
+  const blink::StorageKey crack_storage_key =
+      blink::StorageKey(url::Origin::Create(crack_url));
+  return file_system_context_->CrackURL(crack_url, crack_storage_key);
 }
 
 bool CdmFileImpl::AcquireFileLock(const std::string& file_name) {

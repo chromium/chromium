@@ -10,10 +10,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/modules/payments/payment_details_init.h"
-#include "third_party/blink/renderer/modules/payments/payment_details_update.h"
-#include "third_party/blink/renderer/modules/payments/payment_item.h"
-#include "third_party/blink/renderer/modules/payments/payment_shipping_option.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -23,8 +23,6 @@
 namespace blink {
 
 class PaymentMethodData;
-class ScriptState;
-class ScriptValue;
 class V8TestingScope;
 
 enum PaymentTestDetailToChange {
@@ -93,31 +91,6 @@ class PaymentRequestV8TestingScope : public V8TestingScope {
 
  public:
   PaymentRequestV8TestingScope();
-};
-
-class PaymentRequestMockFunctionScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit PaymentRequestMockFunctionScope(ScriptState*);
-  ~PaymentRequestMockFunctionScope();
-
-  v8::Local<v8::Function> ExpectCall();
-  v8::Local<v8::Function> ExpectCall(String* captor);
-  v8::Local<v8::Function> ExpectNoCall();
-
- private:
-  class MockFunction : public ScriptFunction {
-   public:
-    explicit MockFunction(ScriptState*);
-    MockFunction(ScriptState*, String* captor);
-    v8::Local<v8::Function> Bind();
-    MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-    String* value_;
-  };
-
-  Member<ScriptState> script_state_;
-  Vector<Persistent<MockFunction>> mock_functions_;
 };
 
 }  // namespace blink

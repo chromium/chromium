@@ -9,18 +9,18 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -39,10 +39,16 @@ base::span<const uint8_t> MakeBytes(base::StringPiece str) {
   return base::as_bytes(base::make_span(str));
 }
 
+mojo::PendingRemote<blink::mojom::StorageAreaObserver> MakeStubObserver() {
+  mojo::PendingRemote<blink::mojom::StorageAreaObserver> observer;
+  ignore_result(observer.InitWithNewPipeAndPassReceiver());
+  return observer;
+}
+
 class MockListener : public SessionStorageDataMap::Listener {
  public:
-  MockListener() {}
-  ~MockListener() override {}
+  MockListener() = default;
+  ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
                void(const std::vector<uint8_t>& map_id,
                     SessionStorageDataMap* map));
@@ -50,53 +56,26 @@ class MockListener : public SessionStorageDataMap::Listener {
   MOCK_METHOD1(OnCommitResult, void(leveldb::Status status));
 };
 
-void GetAllDataCallback(bool* success_out,
+void GetAllDataCallback(base::OnceClosure callback,
                         std::vector<blink::mojom::KeyValuePtr>* data_out,
-                        bool success,
                         std::vector<blink::mojom::KeyValuePtr> data) {
-  *success_out = success;
   *data_out = std::move(data);
+  std::move(callback).Run();
 }
 
-base::OnceCallback<void(bool success,
-                        std::vector<blink::mojom::KeyValuePtr> data)>
-MakeGetAllCallback(bool* sucess_out,
-                   std::vector<blink::mojom::KeyValuePtr>* data_out) {
-  return base::BindOnce(&GetAllDataCallback, sucess_out, data_out);
+blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
+    base::OnceClosure callback,
+    std::vector<blink::mojom::KeyValuePtr>* data_out) {
+  return base::BindOnce(&GetAllDataCallback, std::move(callback), data_out);
 }
-
-class GetAllCallback : public blink::mojom::StorageAreaGetAllCallback {
- public:
-  static mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-  CreateAndBind(bool* result, base::OnceClosure callback) {
-    mojo::AssociatedRemote<blink::mojom::StorageAreaGetAllCallback> remote;
-    mojo::MakeSelfOwnedAssociatedReceiver(
-        base::WrapUnique(new GetAllCallback(result, std::move(callback))),
-        remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
-    return remote.Unbind();
-  }
-
- private:
-  GetAllCallback(bool* result, base::OnceClosure callback)
-      : result_(result), callback_(std::move(callback)) {}
-  void Complete(bool success) override {
-    *result_ = success;
-    if (callback_)
-      std::move(callback_).Run();
-  }
-
-  bool* result_;
-  base::OnceClosure callback_;
-};
 
 class SessionStorageDataMapTest : public testing::Test {
  public:
-  SessionStorageDataMapTest()
-      : test_origin_(url::Origin::Create(GURL("http://host1.com:1"))) {
+  SessionStorageDataMapTest() {
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::OpenInMemory(
-        base::nullopt, "SessionStorageDataMapTest",
-        base::CreateSequencedTaskRunner({base::MayBlock(), base::ThreadPool()}),
+        absl::nullopt, "SessionStorageDataMapTest",
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           ASSERT_TRUE(status.ok());
           loop.Quit();
@@ -104,7 +83,7 @@ class SessionStorageDataMapTest : public testing::Test {
     loop.Run();
 
     database_->database().PostTaskWithThisObject(
-        FROM_HERE, base::BindOnce([](const DomStorageDatabase& db) {
+        base::BindOnce([](const DomStorageDatabase& db) {
           // Should show up in first map.
           leveldb::Status status =
               db.Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
@@ -122,7 +101,6 @@ class SessionStorageDataMapTest : public testing::Test {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           leveldb::Status status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());
@@ -142,7 +120,8 @@ class SessionStorageDataMapTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   testing::StrictMock<MockListener> listener_;
-  url::Origin test_origin_;
+  const blink::StorageKey test_storage_key_ =
+      blink::StorageKey::CreateFromStringForTesting("http://host1.com:1");
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 };
 
@@ -156,20 +135,16 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
   scoped_refptr<SessionStorageDataMap> map =
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
-                                                                test_origin_),
+          base::MakeRefCounted<SessionStorageMetadata::MapData>(
+              1, test_storage_key_),
           database_.get());
 
-  bool success;
   std::vector<blink::mojom::KeyValuePtr> data;
-  bool done = false;
   base::RunLoop loop;
-  map->storage_area()->GetAll(
-      GetAllCallback::CreateAndBind(&done, loop.QuitClosure()),
-      MakeGetAllCallback(&success, &data));
+  map->storage_area()->GetAll(MakeStubObserver(),
+                              MakeGetAllCallback(loop.QuitClosure(), &data));
   loop.Run();
 
-  EXPECT_TRUE(done);
   ASSERT_EQ(1u, data.size());
   EXPECT_EQ(StdStringToUint8Vector("key1"), data[0]->key);
   EXPECT_EQ(StdStringToUint8Vector("data1"), data[0]->value);
@@ -189,19 +164,16 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 
   scoped_refptr<SessionStorageDataMap> map = SessionStorageDataMap::CreateEmpty(
       &listener_,
-      base::MakeRefCounted<SessionStorageMetadata::MapData>(1, test_origin_),
+      base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
+                                                            test_storage_key_),
       database_.get());
 
-  bool success;
   std::vector<blink::mojom::KeyValuePtr> data;
-  bool done = false;
   base::RunLoop loop;
-  map->storage_area()->GetAll(
-      GetAllCallback::CreateAndBind(&done, loop.QuitClosure()),
-      MakeGetAllCallback(&success, &data));
+  map->storage_area()->GetAll(MakeStubObserver(),
+                              MakeGetAllCallback(loop.QuitClosure(), &data));
   loop.Run();
 
-  EXPECT_TRUE(done);
   ASSERT_EQ(0u, data.size());
 
   EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
@@ -220,8 +192,8 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   scoped_refptr<SessionStorageDataMap> map1 =
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
-                                                                test_origin_),
+          base::MakeRefCounted<SessionStorageMetadata::MapData>(
+              1, test_storage_key_),
           database_.get());
 
   EXPECT_CALL(listener_,
@@ -233,20 +205,16 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   scoped_refptr<SessionStorageDataMap> map2 =
       SessionStorageDataMap::CreateClone(
           &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(2,
-                                                                test_origin_),
+          base::MakeRefCounted<SessionStorageMetadata::MapData>(
+              2, test_storage_key_),
           map1);
 
-  bool success;
   std::vector<blink::mojom::KeyValuePtr> data;
-  bool done = false;
   base::RunLoop loop;
-  map2->storage_area()->GetAll(
-      GetAllCallback::CreateAndBind(&done, loop.QuitClosure()),
-      MakeGetAllCallback(&success, &data));
+  map2->storage_area()->GetAll(MakeStubObserver(),
+                               MakeGetAllCallback(loop.QuitClosure(), &data));
   loop.Run();
 
-  EXPECT_TRUE(done);
   ASSERT_EQ(1u, data.size());
   EXPECT_EQ(StdStringToUint8Vector("key1"), data[0]->key);
   EXPECT_EQ(StdStringToUint8Vector("data1"), data[0]->value);

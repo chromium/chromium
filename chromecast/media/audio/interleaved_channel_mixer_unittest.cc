@@ -6,7 +6,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/logging.h"
 #include "chromecast/media/audio/interleaved_channel_mixer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -28,10 +27,12 @@ using TestParams = std::tuple<::media::ChannelLayout /* input layout */,
 class InterleavedChannelMixerTest : public testing::TestWithParam<TestParams> {
  public:
   InterleavedChannelMixerTest() = default;
-  ~InterleavedChannelMixerTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InterleavedChannelMixerTest);
+  InterleavedChannelMixerTest(const InterleavedChannelMixerTest&) = delete;
+  InterleavedChannelMixerTest& operator=(const InterleavedChannelMixerTest&) =
+      delete;
+
+  ~InterleavedChannelMixerTest() override = default;
 };
 
 TEST_P(InterleavedChannelMixerTest, Transform) {
@@ -63,7 +64,8 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
   original->ToInterleaved<::media::Float32SampleTypeTraits>(
       kNumFrames, original_interleaved.data());
 
-  InterleavedChannelMixer interleaved_mixer(input_layout, output_layout,
+  InterleavedChannelMixer interleaved_mixer(input_layout, num_input_channels,
+                                            output_layout, num_output_channels,
                                             kNumFrames);
   float* interleaved_mixed =
       interleaved_mixer.Transform(original_interleaved.data(), kNumFrames);

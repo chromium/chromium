@@ -6,6 +6,36 @@
     </output>
     <if expr="is_android">
       <output filename="components_locale_settings_af.pak" type="data_package" lang="af" />
+      <output filename="components_locale_settings_as.pak" type="data_package" lang="as" />
+      <output filename="components_locale_settings_az.pak" type="data_package" lang="az" />
+      <output filename="components_locale_settings_be.pak" type="data_package" lang="be" />
+      <output filename="components_locale_settings_bs.pak" type="data_package" lang="bs" />
+      <output filename="components_locale_settings_eu.pak" type="data_package" lang="eu" />
+      <output filename="components_locale_settings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="components_locale_settings_gl.pak" type="data_package" lang="gl" />
+      <output filename="components_locale_settings_hy.pak" type="data_package" lang="hy" />
+      <output filename="components_locale_settings_is.pak" type="data_package" lang="is" />
+      <output filename="components_locale_settings_ka.pak" type="data_package" lang="ka" />
+      <output filename="components_locale_settings_kk.pak" type="data_package" lang="kk" />
+      <output filename="components_locale_settings_km.pak" type="data_package" lang="km" />
+      <output filename="components_locale_settings_ky.pak" type="data_package" lang="ky" />
+      <output filename="components_locale_settings_lo.pak" type="data_package" lang="lo" />
+      <output filename="components_locale_settings_mk.pak" type="data_package" lang="mk" />
+      <output filename="components_locale_settings_mn.pak" type="data_package" lang="mn" />
+      <output filename="components_locale_settings_my.pak" type="data_package" lang="my" />
+      <output filename="components_locale_settings_ne.pak" type="data_package" lang="ne" />
+      <output filename="components_locale_settings_or.pak" type="data_package" lang="or" />
+      <output filename="components_locale_settings_pa.pak" type="data_package" lang="pa" />
+      <output filename="components_locale_settings_si.pak" type="data_package" lang="si" />
+      <output filename="components_locale_settings_sq.pak" type="data_package" lang="sq" />
+      <output filename="components_locale_settings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="components_locale_settings_ur.pak" type="data_package" lang="ur" />
+      <output filename="components_locale_settings_uz.pak" type="data_package" lang="uz" />
+      <output filename="components_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="components_locale_settings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="components_locale_settings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="components_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="components_locale_settings_ar.pak" type="data_package" lang="ar" />
@@ -28,7 +58,6 @@
     </if>
     <output filename="components_locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="components_locale_settings_fa.pak" type="data_package" lang="fa" />
-    <output filename="components_locale_settings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="components_locale_settings_fi.pak" type="data_package" lang="fi" />
     <output filename="components_locale_settings_fil.pak" type="data_package" lang="fil" />
     <output filename="components_locale_settings_fr.pak" type="data_package" lang="fr" />
@@ -82,8 +111,12 @@
       <output filename="java/res/values-af/components_locale_settings.xml" lang="af" type="android" context="android_java" />
       <output filename="java/res/values-am/components_locale_settings.xml" lang="am" type="android" context="android_java" />
       <output filename="java/res/values-ar/components_locale_settings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/components_locale_settings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/components_locale_settings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/components_locale_settings.xml" lang="be" type="android" context="android_java" />
       <output filename="java/res/values-bg/components_locale_settings.xml" lang="bg" type="android" context="android_java" />
       <output filename="java/res/values-bn/components_locale_settings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/components_locale_settings.xml" lang="bs" type="android" context="android_java" />
       <output filename="java/res/values-ca/components_locale_settings.xml" lang="ca" type="android" context="android_java" />
       <output filename="java/res/values-cs/components_locale_settings.xml" lang="cs" type="android" context="android_java" />
       <output filename="java/res/values-da/components_locale_settings.xml" lang="da" type="android" context="android_java" />
@@ -94,35 +127,54 @@
       <output filename="java/res/values-es/components_locale_settings.xml" lang="es" type="android" context="android_java" />
       <output filename="java/res/values-es-rUS/components_locale_settings.xml" lang="es-419" type="android" context="android_java" />
       <output filename="java/res/values-et/components_locale_settings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/components_locale_settings.xml" lang="eu" type="android" context="android_java" />
       <output filename="java/res/values-fa/components_locale_settings.xml" lang="fa" type="android" context="android_java" />
       <output filename="java/res/values-fi/components_locale_settings.xml" lang="fi" type="android" context="android_java" />
       <output filename="java/res/values-tl/components_locale_settings.xml" lang="fil" type="android" context="android_java" />
       <output filename="java/res/values-fr/components_locale_settings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/components_locale_settings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/components_locale_settings.xml" lang="gl" type="android" context="android_java" />
       <output filename="java/res/values-gu/components_locale_settings.xml" lang="gu" type="android" context="android_java" />
       <output filename="java/res/values-iw/components_locale_settings.xml" lang="he" type="android" context="android_java" />
       <output filename="java/res/values-hi/components_locale_settings.xml" lang="hi" type="android" context="android_java" />
       <output filename="java/res/values-hr/components_locale_settings.xml" lang="hr" type="android" context="android_java" />
       <output filename="java/res/values-hu/components_locale_settings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/components_locale_settings.xml" lang="hy" type="android" context="android_java" />
       <output filename="java/res/values-in/components_locale_settings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/components_locale_settings.xml" lang="is" type="android" context="android_java" />
       <output filename="java/res/values-it/components_locale_settings.xml" lang="it" type="android" context="android_java" />
       <output filename="java/res/values-ja/components_locale_settings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/components_locale_settings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/components_locale_settings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/components_locale_settings.xml" lang="km" type="android" context="android_java" />
       <output filename="java/res/values-kn/components_locale_settings.xml" lang="kn" type="android" context="android_java" />
       <output filename="java/res/values-ko/components_locale_settings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/components_locale_settings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/components_locale_settings.xml" lang="lo" type="android" context="android_java" />
       <output filename="java/res/values-lt/components_locale_settings.xml" lang="lt" type="android" context="android_java" />
       <output filename="java/res/values-lv/components_locale_settings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/components_locale_settings.xml" lang="mk" type="android" context="android_java" />
       <output filename="java/res/values-ml/components_locale_settings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/components_locale_settings.xml" lang="mn" type="android" context="android_java" />
       <output filename="java/res/values-mr/components_locale_settings.xml" lang="mr" type="android" context="android_java" />
       <output filename="java/res/values-ms/components_locale_settings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/components_locale_settings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/components_locale_settings.xml" lang="ne" type="android" context="android_java" />
       <output filename="java/res/values-nl/components_locale_settings.xml" lang="nl" type="android" context="android_java" />
       <output filename="java/res/values-nb/components_locale_settings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/components_locale_settings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/components_locale_settings.xml" lang="pa" type="android" context="android_java" />
       <output filename="java/res/values-pl/components_locale_settings.xml" lang="pl" type="android" context="android_java" />
       <output filename="java/res/values-pt-rBR/components_locale_settings.xml" lang="pt-BR" type="android" context="android_java" />
       <output filename="java/res/values-pt-rPT/components_locale_settings.xml" lang="pt-PT" type="android" context="android_java" />
       <output filename="java/res/values-ro/components_locale_settings.xml" lang="ro" type="android" context="android_java" />
       <output filename="java/res/values-ru/components_locale_settings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/components_locale_settings.xml" lang="si" type="android" context="android_java" />
       <output filename="java/res/values-sk/components_locale_settings.xml" lang="sk" type="android" context="android_java" />
       <output filename="java/res/values-sl/components_locale_settings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/components_locale_settings.xml" lang="sq" type="android" context="android_java" />
       <output filename="java/res/values-sr/components_locale_settings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/components_locale_settings.xml" lang="sr-Latn" type="android" context="android_java" />
       <output filename="java/res/values-sv/components_locale_settings.xml" lang="sv" type="android" context="android_java" />
       <output filename="java/res/values-sw/components_locale_settings.xml" lang="sw" type="android" context="android_java" />
       <output filename="java/res/values-ta/components_locale_settings.xml" lang="ta" type="android" context="android_java" />
@@ -130,11 +182,19 @@
       <output filename="java/res/values-th/components_locale_settings.xml" lang="th" type="android" context="android_java" />
       <output filename="java/res/values-tr/components_locale_settings.xml" lang="tr" type="android" context="android_java" />
       <output filename="java/res/values-uk/components_locale_settings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/components_locale_settings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/components_locale_settings.xml" lang="uz" type="android" context="android_java" />
       <output filename="java/res/values-vi/components_locale_settings.xml" lang="vi" type="android" context="android_java" />
       <output filename="java/res/values-zh-rCN/components_locale_settings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/components_locale_settings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/components_locale_settings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/components_locale_settings.xml" lang="zu" type="android" context="android_java" />
     </if>
 
+
+    <!-- Pseudolocales -->
+    <output filename="components_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="components_locale_settings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/components_locale_settings_am.xtb" lang="am" />
@@ -189,19 +249,14 @@
     <file path="strings/components_locale_settings_vi.xtb" lang="vi" />
     <file path="strings/components_locale_settings_zh-CN.xtb" lang="zh-CN" />
     <file path="strings/components_locale_settings_zh-TW.xtb" lang="zh-TW" />
-    <file path="strings/components_locale_settings_fake-bidi.xtb" lang="fake-bidi" />
+
+    <!-- ar-XB falls back to ar, but we want it to fall back to english -->
+    <file path="strings/components_locale_settings_ar-XB.xtb" lang="ar-XB" />
   </translations>
   <release seq="1" allow_pseudo="false">
     <includes>
       <!-- The HTML for the about:terms page -->
-      <if expr="chromeos and _google_chrome">
-        <include name="IDS_TERMS_HTML" file="resources/terms/chromeos/terms_en.html" type="BINDATA" />
-      </if>
-      <if expr="chromeos and not _google_chrome">
-        <include name="IDS_TERMS_HTML" file="resources/terms/terms_chromium.html" type="BINDATA" />
-      </if>
-
-      <if expr="not chromeos and not is_android and not is_ios and _google_chrome">
+      <if expr="not is_android and not is_ios and _google_chrome">
         <if expr="'am' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_am.html" type="BINDATA" /></if>
         <if expr="'ar' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_ar.html" type="BINDATA" /></if>
         <if expr="'bg' == lang">    <include name="IDS_TERMS_HTML" file="resources/terms/terms_bg.html" type="BINDATA" /></if>
@@ -256,7 +311,7 @@
         <if expr="'zh-TW' == lang"> <include name="IDS_TERMS_HTML" file="resources/terms/terms_zh-TW.html" type="BINDATA" /></if>
       </if>
 
-      <if expr="not chromeos and not is_android and not is_ios and not _google_chrome">
+      <if expr="not is_android and not is_ios and not _google_chrome">
         <include name="IDS_TERMS_HTML" file="resources/terms/terms_chromium.html" type="BINDATA" />
       </if>
     </includes>

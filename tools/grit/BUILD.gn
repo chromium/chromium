@@ -12,15 +12,11 @@ action("grit_sources") {
   depfile = "$target_out_dir/grit_sources.d"
   script = "stamp_grit_sources.py"
 
-  inputs = [
-    "grit.py",
-  ]
+  inputs = [ "grit.py" ]
 
   # Note that we can't call this "grit_sources.stamp" because that file is
   # implicitly created by GN for script actions.
-  outputs = [
-    "$target_out_dir/grit_sources.script.stamp",
-  ]
+  outputs = [ "$target_out_dir/grit_sources.script.stamp" ]
 
   args = [
     rebase_path("//tools/grit", root_build_dir),
@@ -32,12 +28,14 @@ action("grit_sources") {
 group("grit_python_unittests") {
   testonly = true
 
+  data_deps = [ "//testing:test_scripts_shared" ]
+
   data = [
-    "//testing/scripts/common.py",
     "//testing/scripts/run_isolated_script_test.py",
-    "//testing/xvfb.py",
     "//tools/grit/",
     "//third_party/catapult/third_party/typ/",
+    "//third_party/node/",
+    "//third_party/six/src/six.py",
   ]
 }
 
@@ -47,8 +45,6 @@ if (is_mac && is_asan) {
     bundle_root_dir = "$target_out_dir/$target_name"
     bundle_executable_dir = bundle_root_dir
 
-    public_deps = [
-      "//third_party/brotli:brotli($host_toolchain)",
-    ]
+    public_deps = [ "//third_party/brotli:brotli($host_toolchain)" ]
   }
 }

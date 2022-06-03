@@ -59,7 +59,7 @@ int WebGLRenderbuffer::UpdateMultisampleState(bool multisampled) {
   return result;
 }
 
-void WebGLRenderbuffer::Trace(blink::Visitor* visitor) {
+void WebGLRenderbuffer::Trace(Visitor* visitor) const {
   WebGLSharedPlatform3DObject::Trace(visitor);
 }
 

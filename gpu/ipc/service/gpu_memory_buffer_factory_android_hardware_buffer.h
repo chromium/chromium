@@ -26,26 +26,42 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryAndroidHardwareBuffer
       public ImageFactory {
  public:
   GpuMemoryBufferFactoryAndroidHardwareBuffer();
+
+  GpuMemoryBufferFactoryAndroidHardwareBuffer(
+      const GpuMemoryBufferFactoryAndroidHardwareBuffer&) = delete;
+  GpuMemoryBufferFactoryAndroidHardwareBuffer& operator=(
+      const GpuMemoryBufferFactoryAndroidHardwareBuffer&) = delete;
+
   ~GpuMemoryBufferFactoryAndroidHardwareBuffer() override;
 
   // Overridden from GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
       gfx::GpuMemoryBufferId id,
       const gfx::Size& size,
+      const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       int client_id,
       SurfaceHandle surface_handle) override;
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id) override;
+  bool FillSharedMemoryRegionWithBufferContents(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory) override;
   ImageFactory* AsImageFactory() override;
 
   // Overridden from ImageFactory:
-  // TODO(khushalsagar): Add support for anonymous images.
+  bool SupportsCreateAnonymousImage() const override;
+  scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
+                                                  gfx::BufferFormat format,
+                                                  gfx::BufferUsage usage,
+                                                  SurfaceHandle surface_handle,
+                                                  bool* is_cleared) override;
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override;
   unsigned RequiredTextureType() override;
@@ -58,8 +74,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryAndroidHardwareBuffer
 
   base::Lock lock_;
   BufferMap buffer_map_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferFactoryAndroidHardwareBuffer);
 };
 
 }  // namespace gpu

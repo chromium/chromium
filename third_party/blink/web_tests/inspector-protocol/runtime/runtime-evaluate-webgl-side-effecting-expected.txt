@@ -1,0 +1,14 @@
+Tests that Runtime.evaluate for WebGL2RenderingContext preview is side-effect free
+{
+    id : <number>
+    result : {
+        result : {
+            className : Function
+            description : function WebGL2RenderingContext() { [native code] }
+            objectId : <string>
+            type : function
+        }
+    }
+    sessionId : <string>
+}
+

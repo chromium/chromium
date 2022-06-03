@@ -5,11 +5,12 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
-#include "third_party/libyuv/include/libyuv/scale.h"
+#include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace {
@@ -63,16 +64,40 @@ gfx::Rect ScaleRectangle(const gfx::Rect& input_rect,
   result.Intersect(gfx::Rect(0, 0, scaled.width(), scaled.height()));
   return result;
 }
+
+webrtc::VideoRotation GetFrameRotation(const media::VideoFrame* frame) {
+  if (!frame->metadata().transformation) {
+    return webrtc::kVideoRotation_0;
+  }
+  switch (frame->metadata().transformation->rotation) {
+    case media::VIDEO_ROTATION_0:
+      return webrtc::kVideoRotation_0;
+    case media::VIDEO_ROTATION_90:
+      return webrtc::kVideoRotation_90;
+    case media::VIDEO_ROTATION_180:
+      return webrtc::kVideoRotation_180;
+    case media::VIDEO_ROTATION_270:
+      return webrtc::kVideoRotation_270;
+    default:
+      return webrtc::kVideoRotation_0;
+  }
+}
+
 }  // anonymous namespace
 
 namespace blink {
 
 WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     bool is_screencast,
-    absl::optional<bool> needs_denoising)
+    absl::optional<bool> needs_denoising,
+    media::VideoCaptureFeedbackCB callback,
+    media::GpuVideoAcceleratorFactories* gpu_factories)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
+      adapter_resources_(
+          new WebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
       is_screencast_(is_screencast),
-      needs_denoising_(needs_denoising) {
+      needs_denoising_(needs_denoising),
+      callback_(callback) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -81,6 +106,11 @@ WebRtcVideoTrackSource::~WebRtcVideoTrackSource() = default;
 void WebRtcVideoTrackSource::SetCustomFrameAdaptationParamsForTesting(
     const FrameAdaptationParams& params) {
   custom_frame_adaptation_params_for_testing_ = params;
+}
+
+void WebRtcVideoTrackSource::SetSinkWantsForTesting(
+    const rtc::VideoSinkWants& sink_wants) {
+  video_adapter()->OnSinkWants(sink_wants);
 }
 
 WebRtcVideoTrackSource::SourceState WebRtcVideoTrackSource::state() const {
@@ -100,16 +130,24 @@ absl::optional<bool> WebRtcVideoTrackSource::needs_denoising() const {
   return needs_denoising_;
 }
 
+void WebRtcVideoTrackSource::SendFeedback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (callback_.is_null()) {
+    return;
+  }
+  media::VideoCaptureFeedback feedback;
+  feedback.max_pixels = video_adapter()->GetTargetPixels();
+  feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
+  feedback.Combine(adapter_resources_->GetFeedback());
+  callback_.Run(feedback);
+}
+
 void WebRtcVideoTrackSource::OnFrameCaptured(
-    scoped_refptr<media::VideoFrame> frame) {
+    scoped_refptr<media::VideoFrame> frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("media", "WebRtcVideoSource::OnFrameCaptured");
-  if (!(frame->IsMappable() &&
-        (frame->format() == media::PIXEL_FORMAT_I420 ||
-         frame->format() == media::PIXEL_FORMAT_I420A)) &&
-      !(frame->storage_type() ==
-        media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
-      !frame->HasTextures()) {
+  if (!CanConvertToWebRtcVideoFrameBuffer(frame.get())) {
     // Since connecting sources and sinks do not check the format, we need to
     // just ignore formats that we can not handle.
     LOG(ERROR) << "We cannot send frame with storage type: "
@@ -118,32 +156,31 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     return;
   }
 
+  SendFeedback();
+
   // Compute what rectangular region has changed since the last frame
   // that we successfully delivered to the base class method
   // rtc::AdaptedVideoTrackSource::OnFrame(). This region is going to be
   // relative to the coded frame data, i.e.
   // [0, 0, frame->coded_size().width(), frame->coded_size().height()].
-  gfx::Rect update_rect;
-  int capture_counter = 0;
-  bool has_capture_counter = frame->metadata()->GetInteger(
-      media::VideoFrameMetadata::CAPTURE_COUNTER, &capture_counter);
-  bool has_update_rect = frame->metadata()->GetRect(
-      media::VideoFrameMetadata::CAPTURE_UPDATE_RECT, &update_rect);
+  absl::optional<int> capture_counter = frame->metadata().capture_counter;
+  absl::optional<gfx::Rect> update_rect = frame->metadata().capture_update_rect;
+
   const bool has_valid_update_rect =
-      has_update_rect && has_capture_counter &&
+      update_rect.has_value() && capture_counter.has_value() &&
       previous_capture_counter_.has_value() &&
-      (capture_counter == (previous_capture_counter_.value() + 1));
+      (*capture_counter == (*previous_capture_counter_ + 1));
   DVLOG(3) << "has_valid_update_rect = " << has_valid_update_rect;
-  if (has_capture_counter)
+  if (capture_counter)
     previous_capture_counter_ = capture_counter;
   if (has_valid_update_rect) {
     if (!accumulated_update_rect_) {
       accumulated_update_rect_ = update_rect;
     } else {
-      accumulated_update_rect_->Union(update_rect);
+      accumulated_update_rect_->Union(*update_rect);
     }
   } else {
-    accumulated_update_rect_ = base::nullopt;
+    accumulated_update_rect_ = absl::nullopt;
   }
 
   if (accumulated_update_rect_) {
@@ -177,13 +214,14 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
       frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     // The webrtc::VideoFrame::UpdateRect expected by WebRTC must
     // be relative to the |visible_rect()|. We need to translate.
-    base::Optional<gfx::Rect> cropped_rect;
+    absl::optional<gfx::Rect> cropped_rect;
     if (accumulated_update_rect_) {
       cropped_rect =
           CropRectangle(*accumulated_update_rect_, frame->visible_rect());
     }
 
-    DeliverFrame(std::move(frame), OptionalOrNullptr(cropped_rect),
+    DeliverFrame(std::move(frame), std::move(scaled_frames),
+                 base::OptionalOrNullptr(cropped_rect),
                  translated_camera_time_us);
     return;
   }
@@ -229,8 +267,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // The soft-applied cropping will be taken into account by the remainder
   // of the pipeline.
   if (video_frame->natural_size() == video_frame->visible_rect().size()) {
-    DeliverFrame(std::move(video_frame),
-                 OptionalOrNullptr(accumulated_update_rect_),
+    DeliverFrame(std::move(video_frame), std::move(scaled_frames),
+                 base::OptionalOrNullptr(accumulated_update_rect_),
                  translated_camera_time_us);
     return;
   }
@@ -241,50 +279,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
         video_frame->natural_size());
   }
 
-  // Delay scaling if |video_frame| is backed by GpuMemoryBuffer.
-  if (video_frame->storage_type() ==
-      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    DeliverFrame(std::move(video_frame),
-                 OptionalOrNullptr(accumulated_update_rect_),
-                 translated_camera_time_us);
-    return;
-  }
-
-  // Since scaling is required, hard-apply both the cropping and scaling before
-  // we hand the frame over to WebRTC.
-  const bool has_alpha = video_frame->format() == media::PIXEL_FORMAT_I420A;
-  scoped_refptr<media::VideoFrame> scaled_frame =
-      scaled_frame_pool_.CreateFrame(
-          has_alpha ? media::PIXEL_FORMAT_I420A : media::PIXEL_FORMAT_I420,
-          adapted_size, gfx::Rect(adapted_size), adapted_size,
-          video_frame->timestamp());
-  libyuv::I420Scale(
-      video_frame->visible_data(media::VideoFrame::kYPlane),
-      video_frame->stride(media::VideoFrame::kYPlane),
-      video_frame->visible_data(media::VideoFrame::kUPlane),
-      video_frame->stride(media::VideoFrame::kUPlane),
-      video_frame->visible_data(media::VideoFrame::kVPlane),
-      video_frame->stride(media::VideoFrame::kVPlane),
-      video_frame->visible_rect().width(), video_frame->visible_rect().height(),
-      scaled_frame->data(media::VideoFrame::kYPlane),
-      scaled_frame->stride(media::VideoFrame::kYPlane),
-      scaled_frame->data(media::VideoFrame::kUPlane),
-      scaled_frame->stride(media::VideoFrame::kUPlane),
-      scaled_frame->data(media::VideoFrame::kVPlane),
-      scaled_frame->stride(media::VideoFrame::kVPlane), adapted_size.width(),
-      adapted_size.height(), libyuv::kFilterBilinear);
-  if (has_alpha) {
-    libyuv::ScalePlane(video_frame->visible_data(media::VideoFrame::kAPlane),
-                       video_frame->stride(media::VideoFrame::kAPlane),
-                       video_frame->visible_rect().width(),
-                       video_frame->visible_rect().height(),
-                       scaled_frame->data(media::VideoFrame::kAPlane),
-                       scaled_frame->stride(media::VideoFrame::kAPlane),
-                       adapted_size.width(), adapted_size.height(),
-                       libyuv::kFilterBilinear);
-  }
-  DeliverFrame(std::move(scaled_frame),
-               OptionalOrNullptr(accumulated_update_rect_),
+  DeliverFrame(std::move(video_frame), std::move(scaled_frames),
+               base::OptionalOrNullptr(accumulated_update_rect_),
                translated_camera_time_us);
 }
 
@@ -304,6 +300,7 @@ WebRtcVideoTrackSource::ComputeAdaptationParams(int width,
 
 void WebRtcVideoTrackSource::DeliverFrame(
     scoped_refptr<media::VideoFrame> frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
     gfx::Rect* update_rect,
     int64_t timestamp_us) {
   if (update_rect) {
@@ -322,11 +319,14 @@ void WebRtcVideoTrackSource::DeliverFrame(
     update_rect = nullptr;
   }
 
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          frame, std::move(scaled_frames), adapter_resources_));
+
   webrtc::VideoFrame::Builder frame_builder =
       webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(
-              new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame))
-          .set_rotation(webrtc::kVideoRotation_0)
+          .set_video_frame_buffer(frame_adapter)
+          .set_rotation(GetFrameRotation(frame.get()))
           .set_timestamp_us(timestamp_us);
   if (update_rect) {
     frame_builder.set_update_rect(webrtc::VideoFrame::UpdateRect{

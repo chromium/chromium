@@ -1,0 +1,12 @@
+<!doctype HTML>
+<style>
+html::-webkit-scrollbar {
+    display:none;
+}
+</style>
+<!-- This is the same test as external/wpt/css/compositing/root-element-background-transparency.html.
+It is duplicated here because it's not clear how to make it a reftest successfully and avoid
+alpha-channel diffs, and fuzzy matching doesn't seem to work for that channel. -->
+<html style="background: rgba(45, 45, 45, 0.5);">
+  <div id=spacer style="width: 100px; height: 3000px"></div>
+</html>

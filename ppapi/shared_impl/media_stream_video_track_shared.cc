@@ -4,7 +4,6 @@
 
 #include "ppapi/shared_impl/media_stream_video_track_shared.h"
 
-#include "base/logging.h"
 
 namespace {
 

@@ -23,5 +23,5 @@ interface AppfuseHost {
 // Next Method ID: 1
 interface AppfuseInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(AppfuseHost host_ptr) => ();
+  Init@0(pending_remote<AppfuseHost> host_remote) => ();
 };

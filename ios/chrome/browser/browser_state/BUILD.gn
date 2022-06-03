@@ -2,8 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("browser_state") {
   sources = [
+    "browser_state_info_cache.cc",
+    "browser_state_info_cache.h",
+    "browser_state_info_cache_observer.h",
     "browser_state_otr_helper.cc",
     "browser_state_otr_helper.h",
     "chrome_browser_state.h",
@@ -27,7 +32,9 @@ source_set("browser_state") {
     "//components/variations/net",
     "//components/webdata_services",
     "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/net:net_types",
+    "//ios/components/webui:url_constants",
     "//ios/web/public/webui",
   ]
 
@@ -38,9 +45,6 @@ source_set("browser_state_impl") {
   sources = [
     "bookmark_model_loaded_observer.cc",
     "bookmark_model_loaded_observer.h",
-    "browser_state_info_cache.cc",
-    "browser_state_info_cache.h",
-    "browser_state_info_cache_observer.h",
     "browser_state_keyed_service_factories.h",
     "browser_state_keyed_service_factories.mm",
     "chrome_browser_state_impl.cc",
@@ -75,8 +79,10 @@ source_set("browser_state_impl") {
     "//components/metrics",
     "//components/net_log",
     "//components/password_manager/core/browser",
+    "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/proxy_config",
     "//components/proxy_config/ios",
     "//components/signin/ios/browser:active_state_manager",
@@ -91,12 +97,16 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/crash_report/breadcrumbs",
+    "//ios/chrome/browser/credential_provider:buildflags",
+    "//ios/chrome/browser/device_sharing",
+    "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/download",
+    "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/gcm",
-    "//ios/chrome/browser/google",
     "//ios/chrome/browser/google:google_logo",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
@@ -104,16 +114,21 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp_snippets",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/screen_time:buildflags",
+    "//ios/chrome/browser/search:search_factory",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
-    "//ios/chrome/browser/suggestions",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/translate",
@@ -125,11 +140,21 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/webdata_services",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/web/net/cookies",
     "//net",
     "//net:extras",
   ]
+  if (ios_enable_screen_time) {
+    deps += [
+      "//ios/chrome/browser/screen_time",
+      "//ios/chrome/browser/screen_time:feature_flags",
+    ]
+  }
+  if (ios_enable_credential_provider_extension) {
+    deps += [ "//ios/chrome/browser/credential_provider" ]
+  }
   allow_circular_includes_from = [
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state_metrics",
@@ -181,6 +206,7 @@ source_set("test_support") {
     "//components/history/ios/browser",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/profile_metrics",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/undo",
@@ -191,14 +217,15 @@ source_set("test_support") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/net",
+    "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/sync/glue",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/undo",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/web",
     "//net:test_support",
   ]

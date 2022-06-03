@@ -21,10 +21,7 @@ test.step(function() {
         assert_equals(reader.readyState, reader.LOADING,
                       "reader.readyState");
         assert_equals(reader.error, null, "reader.error");
-        assert_not_equals(reader.result, null, "reader.result");
-        assert_true(reader.result.byteLength >= 0 &&
-                    reader.result.byteLength <= 10,
-                    "reader.result.byteLength between 0 and 10 inclusive");
+        assert_equals(reader.result, null, "reader.result");
     });
     reader.onabort = test.step_func(function() {
         assert_unreached("onabort invoked on reader");

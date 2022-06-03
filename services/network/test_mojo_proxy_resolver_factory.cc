@@ -5,8 +5,8 @@
 #include "services/network/test_mojo_proxy_resolver_factory.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 
 namespace network {
 

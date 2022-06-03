@@ -1,0 +1,1 @@
+checkBox name='fancy fruit' nameFrom=relatedElement

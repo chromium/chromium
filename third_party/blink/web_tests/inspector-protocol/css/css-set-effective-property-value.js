@@ -1,7 +1,7 @@
 (async function(testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <link rel='stylesheet' href='${testRunner.url('resources/set-active-property-value.css')}'/>
-<div id='inspected' style='padding-top: 55px; margin-top: 33px !important;'></div>
+<div id='inspected' style='padding-top: 55px; margin-top: 33px !important; --x:foo'></div>
 <div id='append-test' style='padding-left: 10px'/>
   `, 'The test verifies functionality of protocol method CSS.setEffectivePropertyValueForNode.');
 
@@ -55,7 +55,12 @@
       testRunner.log('Resulting styles');
       await dp.CSS.setEffectivePropertyValueForNode({nodeId, propertyName: 'padding-right', value : '101px'});
       await cssHelper.loadAndDumpInlineAndMatchingRules(documentNodeId, '#append-test', true /* omitLog */);
+    },
+
+    async function testChangeCustomProperty() {
+      await updateProperty('--x', 'bar');
     }
+
   ]);
 });
 

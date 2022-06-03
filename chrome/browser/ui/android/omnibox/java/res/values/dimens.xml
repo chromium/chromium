@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Toolbar dimensions -->
+    <dimen name="toolbar_height_no_shadow">56dp</dimen>
+    <dimen name="toolbar_progress_bar_height">2dp</dimen>
+    <dimen name="toolbar_button_width">48dp</dimen>
+    <dimen name="toolbar_identity_disc_size">24dp</dimen>
+    <dimen name="toolbar_identity_disc_size_duet">32dp</dimen>
+    <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
+
+    <!-- Bottom Toolbar -->
+    <dimen name="split_toolbar_button_height">56dp</dimen>
+    <dimen name="split_toolbar_button_width">@dimen/split_toolbar_button_height</dimen>
+    <dimen name="bottom_toolbar_button_wrapper_width">56dp</dimen>
+
+    <dimen name="toolbar_edge_padding">8dp</dimen>
+    <dimen name="location_bar_vertical_margin">8dp</dimen>
+    <dimen name="location_bar_url_text_size">16sp</dimen>
+    <dimen name="location_bar_icon_width">28dp</dimen>
+    <dimen name="location_bar_action_icon_width">48dp</dimen>
+    <dimen name="location_bar_icon_margin_end">4dp</dimen>
+    <dimen name="location_bar_status_separator_width">1dp</dimen>
+    <dimen name="location_bar_status_separator_spacer">8dp</dimen>
+    <dimen name="location_bar_min_url_width">68dp</dimen>
+    <dimen name="location_bar_min_verbose_status_text_width">48dp</dimen>
+
+    <dimen name="location_bar_lateral_padding">8dp</dimen>
+    <dimen name="fake_search_box_lateral_padding">10dp</dimen>
+    <dimen name="location_bar_status_icon_width">24dp</dimen>
+    <dimen name="location_bar_icon_end_padding">4dp</dimen>
+    <dimen name="location_bar_icon_end_padding_focused">16dp</dimen>
+    <dimen name="location_bar_verbose_start_padding_verbose_text">4dp</dimen>
+    <dimen name="location_bar_status_extra_padding">4dp</dimen>
+    <dimen name="location_bar_url_action_offset">-8dp</dimen>
+
+    <dimen name="tablet_toolbar_start_padding">4dp</dimen>
+    <dimen name="toolbar_optional_button_animation_translation">10dp</dimen>
+
+    <!-- Omnibox suggestions -->
+    <dimen name="omnibox_suggestion_header_margin_start">
+        @dimen/omnibox_suggestion_24dp_icon_margin_start
+    </dimen>
+    <dimen name="omnibox_suggestion_header_height">48dp</dimen>
+    <dimen name="omnibox_suggestion_semicompact_height">56dp</dimen>
+    <dimen name="omnibox_suggestion_semicompact_padding">8dp</dimen>
+    <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
+    <dimen name="omnibox_suggestion_start_offset_without_icon">18dp</dimen>
+    <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
+    <dimen name="omnibox_carousel_icon_rounding_radius">4dp</dimen>
+
+    <dimen name="omnibox_suggestion_36dp_icon_size">36dp</dimen>
+    <dimen name="omnibox_suggestion_24dp_icon_size">24dp</dimen>
+    <dimen name="omnibox_suggestion_36dp_icon_margin_start">10dp</dimen>
+    <dimen name="omnibox_suggestion_36dp_icon_margin_end">10dp</dimen>
+    <dimen name="omnibox_suggestion_24dp_icon_margin_start">16dp</dimen>
+    <dimen name="omnibox_suggestion_24dp_icon_margin_end">16dp</dimen>
+    <dimen name="omnibox_suggestion_favicon_size">24dp</dimen>
+    <dimen name="omnibox_suggestion_decoration_image_size">36dp</dimen>
+    <dimen name="omnibox_suggestion_icon_area_size">56dp</dimen>
+
+    <dimen name="omnibox_suggestion_action_icon_width">48dp</dimen>
+    <dimen name="omnibox_suggestion_refine_view_modern_end_padding">4dp</dimen>
+    <dimen name="omnibox_suggestion_carousel_horizontal_spacing">8dp</dimen>
+
+    <!-- Adding search engine logo to the omnibox. -->
+    <!-- Max size which will fit completely in the composed/rounded bg. -->
+    <dimen name="omnibox_search_engine_logo_favicon_size">17dp</dimen>
+    <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
+</resources>

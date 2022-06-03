@@ -8,16 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_activity_getter.h"
-#include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/network_request_error.h"
-#include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -36,48 +33,50 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
   class Factory {
    public:
     static std::unique_ptr<CryptAuthDeviceActivityGetter> Create(
+        const std::string& instance_id,
+        const std::string& instance_id_token,
         CryptAuthClientFactory* client_factory,
-        ClientAppMetadataProvider* client_app_metadata_provider,
-        CryptAuthGCMManager* gcm_manager,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthDeviceActivityGetter> BuildInstance(
+    virtual std::unique_ptr<CryptAuthDeviceActivityGetter> CreateInstance(
+        const std::string& instance_id,
+        const std::string& instance_id_token,
         CryptAuthClientFactory* client_factory,
-        ClientAppMetadataProvider* client_app_metadata_provider,
-        CryptAuthGCMManager* gcm_manager,
         std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
 
+  CryptAuthDeviceActivityGetterImpl(const CryptAuthDeviceActivityGetterImpl&) =
+      delete;
+  CryptAuthDeviceActivityGetterImpl& operator=(
+      const CryptAuthDeviceActivityGetterImpl&) = delete;
+
   ~CryptAuthDeviceActivityGetterImpl() override;
 
  private:
   enum class State {
     kNotStarted,
-    kWaitingForClientAppMetadata,
     kWaitingForGetDevicesActivityStatusResponse,
     kFinished
   };
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  CryptAuthDeviceActivityGetterImpl(
-      CryptAuthClientFactory* client_factory,
-      ClientAppMetadataProvider* client_app_metadata_provider,
-      CryptAuthGCMManager* gcm_manager,
-      std::unique_ptr<base::OneShotTimer> timer);
+  CryptAuthDeviceActivityGetterImpl(const std::string& instance_id,
+                                    const std::string& instance_id_token,
+                                    CryptAuthClientFactory* client_factory,
+                                    std::unique_ptr<base::OneShotTimer> timer);
 
   // CryptAuthDeviceActivityGetter:
   void OnAttemptStarted() override;
-  void OnClientAppMetadataFetched(
-      const base::Optional<cryptauthv2::ClientAppMetadata>&
-          client_app_metadata);
 
-  static base::Optional<base::TimeDelta> GetTimeoutForState(State state);
+  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
   void SetState(State state);
   void OnTimeout();
 
@@ -93,14 +92,14 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
 
   State state_ = State::kNotStarted;
-  CryptAuthClientFactory* client_factory_ = nullptr;
-  ClientAppMetadataProvider* client_app_metadata_provider_ = nullptr;
-  CryptAuthGCMManager* gcm_manager_ = nullptr;
-  std::unique_ptr<base::OneShotTimer> timer_;
-  base::WeakPtrFactory<CryptAuthDeviceActivityGetterImpl>
-      callback_weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceActivityGetterImpl);
+  // The time of the last state change. Used for execution time metrics.
+  base::TimeTicks last_state_change_timestamp_;
+
+  std::string instance_id_;
+  std::string instance_id_token_;
+  CryptAuthClientFactory* client_factory_ = nullptr;
+  std::unique_ptr<base::OneShotTimer> timer_;
 };
 
 }  // namespace device_sync

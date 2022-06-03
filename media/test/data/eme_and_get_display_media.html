@@ -46,6 +46,9 @@
       for (let item of event.target.keyStatuses) {
         if (item[1] == 'output-restricted') {
           Utils.setResultInTitle(UNIT_TEST_SUCCESS);
+        } else if (item[1] == 'internal-error') {
+          // 'internal-error' is returned when QueryOutputProtection() fails.
+          Utils.setResultInTitle(UNIT_TEST_FAILURE);
         }
       }
     });

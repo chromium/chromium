@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Enables building a development / debugging binary.
+  enable_qr_print = false
+}
+
+source_set("qr_code_generator") {
+  sources = [
+    "dino_image.h",
+    "qr_code_generator.cc",
+    "qr_code_generator.h",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "qr_code_generator_unittest.cc" ]
+  deps = [
+    ":qr_code_generator",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
+if (enable_qr_print) {
+  executable("qr_print") {
+    sources = [ "qr_print.cc" ]
+    deps = [ ":qr_code_generator" ]
+  }
+}

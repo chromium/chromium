@@ -102,7 +102,7 @@ to be stable.
 ## crdtp_test_platform
 
 This platform library is only used by the tests. Upstream, it's setup to
-use mini_chromium and gtest. Downstream, Chromium uses it's //base libraries,
+use mini_chromium and gtest. Downstream, Chromium uses its //base libraries,
 and V8 uses theirs; and a small amount of tweaking is needed in each code
 base - e.g., Chromium, V8, and google3 each place `#include` declarations into
 test_platform.h that are specific to their code base, and they have their

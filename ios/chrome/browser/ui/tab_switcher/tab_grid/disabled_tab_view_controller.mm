@@ -1,0 +1,193 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
+
+#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#include "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+const CGFloat kVerticalMargin = 16.0;
+}  // namespace
+
+@interface DisabledTabViewController () <UITextViewDelegate>
+
+@property(nonatomic, strong) UIScrollView* scrollView;
+@property(nonatomic, strong) NSLayoutConstraint* scrollViewHeight;
+@property(nonatomic, assign) UIEdgeInsets scrollViewContentInsets;
+@property(nonatomic, assign) TabGridPage page;
+
+@end
+
+@implementation DisabledTabViewController
+
+namespace {
+// Create a NSString for the title based on |page|.
+NSString* GetTitleString(TabGridPage page) {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_INCOGNITO_TABS_UNAVAILABLE_TITLE);
+    case TabGridPageRegularTabs:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_REGULAR_TABS_UNAVAILABLE_TITLE);
+    case TabGridPageRemoteTabs:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_RECENT_TABS_UNAVAILABLE_TITLE);
+  }
+}
+
+// Creates an attribute string with link for the body message.
+NSAttributedString* GetBodyString(TabGridPage page) {
+  int messageID;
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      messageID = IDS_IOS_TAB_GRID_INCOGNITO_TABS_UNAVAILABLE_MESSAGE;
+      break;
+    case TabGridPageRegularTabs:
+      messageID = IDS_IOS_TAB_GRID_REGULAR_TABS_UNAVAILABLE_MESSAGE;
+      break;
+    case TabGridPageRemoteTabs:
+      messageID = IDS_IOS_TAB_GRID_RECENT_TABS_UNAVAILABLE_MESSAGE;
+      break;
+  }
+
+  NSString* fullText = l10n_util::GetNSString(messageID);
+
+  // Sets the styling to mimic a link.
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSLinkAttributeName :
+        [NSString stringWithUTF8String:kChromeUIManagementURL],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
+  };
+
+  return AttributedStringFromStringWithLink(fullText, @{}, linkAttributes);
+}
+
+}  // namespace
+
+- (instancetype)initWithPage:(TabGridPage)page {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _page = page;
+  }
+  return self;
+}
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.scrollView = scrollView;
+
+  UIView* container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UILabel* topLabel = [[UILabel alloc] init];
+  topLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  topLabel.text = GetTitleString(self.page);
+  topLabel.textColor = UIColorFromRGB(kTabGridEmptyStateTitleTextColor);
+  topLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+  topLabel.adjustsFontForContentSizeCategory = YES;
+  topLabel.numberOfLines = 0;
+  topLabel.textAlignment = NSTextAlignmentCenter;
+
+  UITextView* bottomTextView = [[UITextView alloc] init];
+  bottomTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  bottomTextView.attributedText = GetBodyString(self.page);
+  bottomTextView.scrollEnabled = NO;
+  bottomTextView.editable = NO;
+  bottomTextView.delegate = self;
+  bottomTextView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+  bottomTextView.textColor = UIColorFromRGB(kTabGridEmptyStateBodyTextColor);
+  bottomTextView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  bottomTextView.adjustsFontForContentSizeCategory = YES;
+  bottomTextView.textAlignment = NSTextAlignmentCenter;
+
+  [container addSubview:topLabel];
+  [container addSubview:bottomTextView];
+  [scrollView addSubview:container];
+  [self.view addSubview:scrollView];
+
+  self.scrollViewHeight = VerticalConstraintsWithInset(
+      container, scrollView,
+      self.scrollViewContentInsets.top + self.scrollViewContentInsets.bottom);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [topLabel.topAnchor constraintEqualToAnchor:container.topAnchor
+                                       constant:kVerticalMargin],
+    [topLabel.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
+    [topLabel.trailingAnchor constraintEqualToAnchor:container.trailingAnchor],
+    [topLabel.bottomAnchor
+        constraintEqualToAnchor:bottomTextView.topAnchor
+                       constant:-kTabGridEmptyStateVerticalMargin],
+
+    [bottomTextView.leadingAnchor
+        constraintEqualToAnchor:container.leadingAnchor],
+    [bottomTextView.trailingAnchor
+        constraintEqualToAnchor:container.trailingAnchor],
+    [bottomTextView.bottomAnchor constraintEqualToAnchor:container.bottomAnchor
+                                                constant:-kVerticalMargin],
+
+    [container.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
+    [container.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
+    [container.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                              .widthAnchor],
+    [container.centerXAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
+    [scrollView.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
+    [scrollView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.topAnchor],
+    [scrollView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor],
+    [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [scrollView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  if (URL) {
+    [self.delegate didTapLinkWithURL:net::GURLWithNSURL(URL)];
+  }
+  // Return NO as the app is handling the opening of the URL.
+  return NO;
+}
+
+#pragma mark - Accessor
+
+- (void)setScrollViewContentInsets:(UIEdgeInsets)scrollViewContentInsets {
+  _scrollViewContentInsets = scrollViewContentInsets;
+  self.scrollView.contentInset = scrollViewContentInsets;
+  self.scrollViewHeight.constant =
+      scrollViewContentInsets.top + scrollViewContentInsets.bottom;
+}
+
+@end

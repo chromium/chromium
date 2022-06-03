@@ -17,8 +17,28 @@ void TestMediaClient::HandleMediaPlayPause() {
   ++handle_media_play_pause_count_;
 }
 
+void TestMediaClient::HandleMediaPlay() {
+  ++handle_media_play_count_;
+}
+
+void TestMediaClient::HandleMediaPause() {
+  ++handle_media_pause_count_;
+}
+
+void TestMediaClient::HandleMediaStop() {
+  ++handle_media_stop_count_;
+}
+
 void TestMediaClient::HandleMediaPrevTrack() {
   ++handle_media_prev_track_count_;
+}
+
+void TestMediaClient::HandleMediaSeekBackward() {
+  ++handle_media_seek_backward_count_;
+}
+
+void TestMediaClient::HandleMediaSeekForward() {
+  ++handle_media_seek_forward_count_;
 }
 
 void TestMediaClient::RequestCaptureState() {}

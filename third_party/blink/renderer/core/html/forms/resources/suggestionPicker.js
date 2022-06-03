@@ -200,6 +200,9 @@ SuggestionPicker.prototype._layout = function() {
   if (this._config.isLocaleRTL)
     this._element.classList.add('locale-rtl');
   this._containerElement = createElement('ul', 'suggestion-list');
+  if (global.params.isBorderTransparent) {
+    this._containerElement.style.borderColor = 'transparent';
+  }
   this._containerElement.addEventListener(
       'click', this._handleEntryClick.bind(this), false);
   for (var i = 0; i < this._config.suggestionValues.length; ++i) {
@@ -208,12 +211,6 @@ SuggestionPicker.prototype._layout = function() {
         this._config.suggestionLabels[i], this._config.suggestionValues[i]));
   }
   if (this._config.showOtherDateEntry) {
-    // Add separator
-    if (!global.params.isFormControlsRefreshEnabled) {
-      var separator = createElement('div', 'separator');
-      this._containerElement.appendChild(separator);
-    }
-
     // Add "Other..." entry
     var otherEntry = this._createActionEntryElement(
         this._config.otherDateLabel,

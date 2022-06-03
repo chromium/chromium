@@ -46,8 +46,6 @@ Patch Generation
 
   - disassembler\_elf\_32\_x86.h defines the ELF 32-bit x86 disassembler
 
-  - disassembler\_elf\_32\_arm.h defines the ELF 32-bit arm disassembler
-
 - The Disassembler replaces the relocation table with a Courgette
   instruction that can regenerate the relocation table.
 

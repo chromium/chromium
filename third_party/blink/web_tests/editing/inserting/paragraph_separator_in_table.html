@@ -1,0 +1,34 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests InsertParagraphSeparator inside table cells.
+selection_test(
+    [
+        '<div contenteditable><table><tbody><tr>',
+            '<td>Cell One</td><td>Cell |Two</td>',
+        '</tr></tbody></table></div>',
+    ],
+    'InsertParagraph',
+    [
+        '<div contenteditable><table><tbody><tr>',
+            '<td>Cell One</td><td>Cell <br>|Two</td>',
+        '</tr></tbody></table></div>',
+    ],
+    'Insert newline in the cell');
+
+selection_test(
+    [
+        '<div contenteditable><table><tbody><tr>',
+            '<td>Cell ^One</td><td>Cell| Two</td>',
+        '</tr></tbody></table></div>',
+    ],
+    'InsertParagraph',
+    [
+        '<div contenteditable><table><tbody><tr>',
+            '<td>Cell\u00A0<br>|<br></td><td>\u00A0Two</td>',
+        '</tr></tbody></table></div>',
+    ],
+    'Replace range in cells with newline');
+</script>

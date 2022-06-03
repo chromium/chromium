@@ -10,8 +10,34 @@
 const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
     'collection/promotion_30023cb_stylus_apps';
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from './device_page_browser_proxy.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {routes} from '../os_route.m.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-stylus',
+
+  behaviors: [
+    DeepLinkingBehavior,
+    RouteObserverBehavior,
+  ],
 
   properties: {
     /** Preferences state. */
@@ -34,11 +60,11 @@ Polymer({
 
     /**
      * Note taking apps the user can pick between.
-     * @private {Array<!settings.NoteAppInfo>}
+     * @private {Array<!NoteAppInfo>}
      */
     appChoices_: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       }
     },
@@ -49,7 +75,7 @@ Polymer({
      */
     hasInternalStylus_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('hasInternalStylus');
       },
       readOnly: true,
@@ -57,7 +83,7 @@ Polymer({
 
     /**
      * Currently selected note taking app.
-     * @private {?settings.NoteAppInfo}
+     * @private {?NoteAppInfo}
      */
     selectedApp_: {
       type: Object,
@@ -72,6 +98,33 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kStylusToolsInShelf,
+        chromeos.settings.mojom.Setting.kStylusNoteTakingApp,
+        chromeos.settings.mojom.Setting.kStylusNoteTakingFromLockScreen,
+        chromeos.settings.mojom.Setting.kStylusLatestNoteOnLockScreen,
+      ]),
+    },
+  },
+
+  /**
+   * @param {!Route} route
+   * @param {Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== routes.STYLUS) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**
@@ -79,10 +132,10 @@ Polymer({
    *     by the selected note-taking app.
    * @private
    */
-  supportsLockScreen_: function() {
+  supportsLockScreen_() {
     return !!this.selectedApp_ &&
-        this.selectedApp_.lockScreenSupport !=
-        settings.NoteAppLockScreenSupport.NOT_SUPPORTED;
+        this.selectedApp_.lockScreenSupport !==
+        NoteAppLockScreenSupport.NOT_SUPPORTED;
   },
 
   /**
@@ -90,10 +143,10 @@ Polymer({
    *     actions from lock screen as a result of a user policy.
    * @private
    */
-  disallowedOnLockScreenByPolicy_: function() {
+  disallowedOnLockScreenByPolicy_() {
     return !!this.selectedApp_ &&
-        this.selectedApp_.lockScreenSupport ==
-        settings.NoteAppLockScreenSupport.NOT_ALLOWED_BY_POLICY;
+        this.selectedApp_.lockScreenSupport ===
+        NoteAppLockScreenSupport.NOT_ALLOWED_BY_POLICY;
   },
 
   /**
@@ -101,22 +154,22 @@ Polymer({
    *     handler on the lock screen.
    * @private
    */
-  lockScreenSupportEnabled_: function() {
+  lockScreenSupportEnabled_() {
     return !!this.selectedApp_ &&
-        this.selectedApp_.lockScreenSupport ==
-        settings.NoteAppLockScreenSupport.ENABLED;
+        this.selectedApp_.lockScreenSupport ===
+        NoteAppLockScreenSupport.ENABLED;
   },
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
-  created: function() {
-    this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
+  created() {
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
-  ready: function() {
+  ready() {
     this.browserProxy_.setNoteTakingAppsUpdatedCallback(
         this.onNoteAppsUpdated_.bind(this));
     this.browserProxy_.requestNoteTakingApps();
@@ -125,12 +178,12 @@ Polymer({
   /**
    * Finds note app info with the provided app id.
    * @param {!string} id
-   * @return {?settings.NoteAppInfo}
+   * @return {?NoteAppInfo}
    * @private
    */
-  findApp_: function(id) {
+  findApp_(id) {
     return this.appChoices_.find(function(app) {
-      return app.value == id;
+      return app.value === id;
     }) ||
         null;
   },
@@ -140,36 +193,38 @@ Polymer({
    * the lock screen.
    * @private
    */
-  toggleLockScreenSupport_: function() {
+  toggleLockScreenSupport_() {
     assert(this.selectedApp_);
-    if (this.selectedApp_.lockScreenSupport !=
-            settings.NoteAppLockScreenSupport.ENABLED &&
-        this.selectedApp_.lockScreenSupport !=
-            settings.NoteAppLockScreenSupport.SUPPORTED) {
+    if (this.selectedApp_.lockScreenSupport !==
+            NoteAppLockScreenSupport.ENABLED &&
+        this.selectedApp_.lockScreenSupport !==
+            NoteAppLockScreenSupport.SUPPORTED) {
       return;
     }
 
     this.browserProxy_.setPreferredNoteTakingAppEnabledOnLockScreen(
-        this.selectedApp_.lockScreenSupport ==
-        settings.NoteAppLockScreenSupport.SUPPORTED);
+        this.selectedApp_.lockScreenSupport ===
+        NoteAppLockScreenSupport.SUPPORTED);
+    recordSettingChange();
   },
 
   /** @private */
-  onSelectedAppChanged_: function() {
+  onSelectedAppChanged_() {
     const app = this.findApp_(this.$.selectApp.value);
     this.selectedApp_ = app;
 
     if (app && !app.preferred) {
       this.browserProxy_.setPreferredNoteTakingApp(app.value);
+      recordSettingChange();
     }
   },
 
   /**
-   * @param {Array<!settings.NoteAppInfo>} apps
+   * @param {Array<!NoteAppInfo>} apps
    * @param {boolean} waitingForAndroid
    * @private
    */
-  onNoteAppsUpdated_: function(apps, waitingForAndroid) {
+  onNoteAppsUpdated_(apps, waitingForAndroid) {
     this.waitingForAndroid_ = waitingForAndroid;
     this.appChoices_ = apps;
 
@@ -178,25 +233,25 @@ Polymer({
   },
 
   /**
-   * @param {Array<!settings.NoteAppInfo>} apps
+   * @param {Array<!NoteAppInfo>} apps
    * @param {boolean} waitingForAndroid
    * @private
    */
-  showNoApps_: function(apps, waitingForAndroid) {
-    return apps.length == 0 && !waitingForAndroid;
+  showNoApps_(apps, waitingForAndroid) {
+    return apps.length === 0 && !waitingForAndroid;
   },
 
   /**
-   * @param {Array<!settings.NoteAppInfo>} apps
+   * @param {Array<!NoteAppInfo>} apps
    * @param {boolean} waitingForAndroid
    * @private
    */
-  showApps_: function(apps, waitingForAndroid) {
+  showApps_(apps, waitingForAndroid) {
     return apps.length > 0 && !waitingForAndroid;
   },
 
   /** @private */
-  onFindAppsTap_: function() {
+  onFindAppsTap_() {
     this.browserProxy_.showPlayStore(FIND_MORE_APPS_URL);
   },
 });

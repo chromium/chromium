@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_state_restore_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_registry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_form_state_restore_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -106,7 +107,7 @@ ScriptCustomElementDefinition::ScriptCustomElementDefinition(
             .ToChecked());
 }
 
-void ScriptCustomElementDefinition::Trace(Visitor* visitor) {
+void ScriptCustomElementDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(constructor_);
   visitor->Trace(connected_callback_);
@@ -137,6 +138,7 @@ HTMLElement* ScriptCustomElementDefinition::HandleCreateElementSyncException(
 HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
     Document& document,
     const QualifiedName& tag_name) {
+  DCHECK(CustomElement::ShouldCreateCustomElement(tag_name)) << tag_name;
   if (!script_state_->ContextIsValid())
     return CustomElement::CreateFailedElement(document, tag_name);
   ScriptState::Scope scope(script_state_);
@@ -154,22 +156,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
   Element* element = nullptr;
   {
     v8::TryCatch try_catch(script_state_->GetIsolate());
-
-    if (document.IsHTMLImport()) {
-      // V8HTMLElement::constructorCustom() can only refer to
-      // window.document() which is not the import document. Create
-      // elements in import documents ahead of time so they end up in
-      // the right document. This subtly violates recursive
-      // construction semantics, but only in import documents.
-      element = CreateElementForConstructor(document);
-      DCHECK(!try_catch.HasCaught());
-
-      ConstructionStackScope construction_stack_scope(*this, *element);
-      element = CallConstructor();
-    } else {
-      element = CallConstructor();
-    }
-
+    element = CallConstructor();
     if (try_catch.HasCaught()) {
       exception_state.RethrowV8Exception(try_catch.Exception());
       return HandleCreateElementSyncException(document, tag_name, isolate,
@@ -213,21 +200,22 @@ bool ScriptCustomElementDefinition::RunConstructor(Element& element) {
     return false;
   }
 
+  // 8.1.new: set custom element state to kPreCustomized.
+  element.SetCustomElementState(CustomElementState::kPreCustomized);
+
   Element* result = CallConstructor();
 
   // To report exception thrown from callConstructor()
   if (try_catch.HasCaught())
     return false;
 
-  // To report InvalidStateError Exception, when the constructor returns some
-  // different object
+  // Report a TypeError Exception if the constructor returns a different object.
   if (result != &element) {
     const String& message =
         "custom element constructors must call super() first and must "
         "not return a different object";
-    v8::Local<v8::Value> exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-        message);
+    v8::Local<v8::Value> exception =
+        V8ThrowException::CreateTypeError(script_state_->GetIsolate(), message);
     if (!exception.IsEmpty())
       V8ScriptRunner::ReportException(isolate, exception);
     return false;
@@ -341,11 +329,12 @@ void ScriptCustomElementDefinition::RunFormDisabledCallback(Element& element,
 
 void ScriptCustomElementDefinition::RunFormStateRestoreCallback(
     Element& element,
-    const FileOrUSVStringOrFormData& value,
+    const V8ControlValue* value,
     const String& mode) {
   if (!form_state_restore_callback_)
     return;
-  form_state_restore_callback_->InvokeAndReportException(&element, value, mode);
+  form_state_restore_callback_->InvokeAndReportException(
+      &element, value, V8FormStateRestoreMode::Create(mode).value());
 }
 
 }  // namespace blink

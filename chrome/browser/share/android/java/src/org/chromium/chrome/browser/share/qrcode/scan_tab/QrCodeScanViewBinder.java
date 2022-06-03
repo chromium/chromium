@@ -16,6 +16,9 @@ class QrCodeScanViewBinder implements ViewBinder<PropertyModel, QrCodeScanView, 
                     model.get(QrCodeScanViewProperties.HAS_CAMERA_PERMISSION));
         } else if (QrCodeScanViewProperties.IS_ON_FOREGROUND == propertyKey) {
             view.onForegroundChanged(model.get(QrCodeScanViewProperties.IS_ON_FOREGROUND));
+        } else if (QrCodeScanViewProperties.CAN_PROMPT_FOR_PERMISSION == propertyKey) {
+            view.canPromptForPermissionChanged(
+                    model.get(QrCodeScanViewProperties.CAN_PROMPT_FOR_PERMISSION));
         }
     }
 }

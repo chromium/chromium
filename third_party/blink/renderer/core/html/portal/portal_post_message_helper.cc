@@ -7,11 +7,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/frame/window_post_message_options.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
@@ -27,7 +27,7 @@ namespace blink {
 BlinkTransferableMessage PortalPostMessageHelper::CreateMessage(
     ScriptState* script_state,
     const ScriptValue& message,
-    const WindowPostMessageOptions* options,
+    const PostMessageOptions* options,
     ExceptionState& exception_state) {
   BlinkTransferableMessage transferable_message;
   Transferables transferables;
@@ -67,16 +67,11 @@ BlinkTransferableMessage PortalPostMessageHelper::CreateMessage(
 void PortalPostMessageHelper::CreateAndDispatchMessageEvent(
     EventTarget* event_target,
     BlinkTransferableMessage message,
-    scoped_refptr<const SecurityOrigin> source_origin,
-    scoped_refptr<const SecurityOrigin> target_origin) {
+    scoped_refptr<const SecurityOrigin> source_origin) {
   DCHECK(event_target->ToPortalHost() ||
          IsA<HTMLPortalElement>(event_target->ToNode()));
-
-  if (target_origin &&
-      !target_origin->IsSameOriginWith(
-          event_target->GetExecutionContext()->GetSecurityOrigin())) {
-    return;
-  }
+  DCHECK(source_origin->IsSameOriginWith(
+      event_target->GetExecutionContext()->GetSecurityOrigin()));
 
   UserActivation* user_activation = nullptr;
   if (message.user_activation) {

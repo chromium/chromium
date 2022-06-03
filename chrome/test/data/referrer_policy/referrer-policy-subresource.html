@@ -3,24 +3,16 @@
 <head>
 <script>
 function run() {
-  const kPolicy = 1;
-  const kRedirect = 2;
-  const re = new RegExp("policy=(.*)&redirect=(.*)");
-  const matches = re.exec(document.location.search);
+  const params = new URLSearchParams(document.location.search);
+  const policy = params.get('policy');
+  const destination = params.get('redirect');
 
-  if (matches == null) {
-    document.body.innerText = "Could not parse parameters!";
-    return;
-  }
-
-  if (matches[kPolicy] != "no-meta") {
+  if (policy != "no-meta") {
     const meta = document.createElement("meta");
     meta.name = "referrer";
-    meta.content = matches[kPolicy];
+    meta.content = policy;
     document.head.appendChild(meta);
   }
-
-  const destination = matches[kRedirect];
 
   const image = document.createElement("img");
   image.src = destination;

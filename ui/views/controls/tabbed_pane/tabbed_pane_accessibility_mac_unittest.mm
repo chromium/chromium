@@ -44,6 +44,11 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
  public:
   TabbedPaneAccessibilityMacTest() = default;
 
+  TabbedPaneAccessibilityMacTest(const TabbedPaneAccessibilityMacTest&) =
+      delete;
+  TabbedPaneAccessibilityMacTest& operator=(
+      const TabbedPaneAccessibilityMacTest&) = delete;
+
   // WidgetTest:
   void SetUp() override {
     WidgetTest::SetUp();
@@ -53,8 +58,8 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
     tabbed_pane->SetSize(gfx::Size(100, 100));
 
     // Create two tabs and position/size them.
-    tabbed_pane->AddTab(base::ASCIIToUTF16("Tab 1"), std::make_unique<View>());
-    tabbed_pane->AddTab(base::ASCIIToUTF16("Tab 2"), std::make_unique<View>());
+    tabbed_pane->AddTab(u"Tab 1", std::make_unique<View>());
+    tabbed_pane->AddTab(u"Tab 2", std::make_unique<View>());
     tabbed_pane->Layout();
 
     tabbed_pane_ =
@@ -85,9 +90,6 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
  protected:
   Widget* widget_ = nullptr;
   TabbedPane* tabbed_pane_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabbedPaneAccessibilityMacTest);
 };
 
 // Test the Tab's a11y information compared to a Cocoa NSTabViewItem.

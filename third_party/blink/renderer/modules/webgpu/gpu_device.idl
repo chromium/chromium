@@ -7,33 +7,41 @@
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUDevice : EventTarget {
-    [SameObject] readonly attribute GPUAdapter adapter;
+    [SameObject] readonly attribute GPUSupportedFeatures features;
+    [SameObject] readonly attribute GPUSupportedLimits limits;
+
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
-    [SameObject] readonly attribute GPUQueue defaultQueue;
+    [SameObject] readonly attribute GPUQueue queue;
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
-    [CallWith=ScriptState, RaisesException] GPUMappedBuffer createBufferMapped(GPUBufferDescriptor descriptor);
-    [CallWith=ScriptState, RaisesException] Promise<GPUMappedBuffer> createBufferMappedAsync(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
+    [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLCanvasElement canvas, GPUTextureUsageFlags usage);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
+    [RaisesException] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
 
-    GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
-    GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
+    [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
+    [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
     GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
 
-    GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
+    [RaisesException] GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
-    GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
+    [RaisesException] GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
+
+    [CallWith=ScriptState] Promise<GPURenderPipeline?> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
+    [CallWith=ScriptState] Promise<GPUComputePipeline?> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
 
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});
     GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
+
+    GPUQuerySet createQuerySet(GPUQuerySetDescriptor descriptor);
 
     void pushErrorScope(GPUErrorFilter filter);
     [CallWith=ScriptState] Promise<GPUError?> popErrorScope();
 
     attribute EventHandler onuncapturederror;
 };
+GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
     "none",
@@ -41,5 +49,5 @@ enum GPUErrorFilter {
     "validation"
 };
 
-typedef sequence<any> GPUMappedBuffer;  // [GPUBuffer, ArrayBuffer]
+typedef sequence<(GPUBuffer or ArrayBuffer)> GPUMappedBuffer;
 typedef (GPUOutOfMemoryError or GPUValidationError) GPUError;

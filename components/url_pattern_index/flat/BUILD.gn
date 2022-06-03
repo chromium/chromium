@@ -5,7 +5,5 @@
 import("//third_party/flatbuffers/flatbuffer.gni")
 
 flatbuffer("url_pattern_index") {
-  sources = [
-    "url_pattern_index.fbs",
-  ]
+  sources = [ "url_pattern_index.fbs" ]
 }

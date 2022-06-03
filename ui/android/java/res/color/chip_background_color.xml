@@ -5,17 +5,45 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- disabled -->
     <item android:color="@color/chip_background_color_disabled"
         android:state_enabled="false" />
-    <item android:alpha="@dimen/chip_background_selected_focused_alpha"
-        android:color="@color/filled_button_bg_color"
+
+    <!-- hover -->
+    <item android:color="@color/chip_bg_color"
+        android:state_hovered="true"/>
+
+    <!-- focused -->
+    <item android:color="@color/chip_focused"
+        android:state_focused="true" />
+
+    <!-- hover & focused -->
+    <item android:color="@color/chip_hover_focused"
+        android:state_focused="true"
+        android:state_hovered="true" />
+
+    <!-- selected -->
+    <item android:color="@color/chip_selected"
+        android:state_selected="true" />
+
+    <!-- selected & hover -->
+    <item
+        android:color="@color/chip_selected_hover"
+        android:state_hovered="true"
+        android:state_selected="true" />
+
+    <!-- selected & focused -->
+    <item
+        android:color="@color/chip_selected_focused"
         android:state_selected="true"
         android:state_focused="true" />
-    <item android:alpha="@dimen/chip_background_selected_alpha"
-        android:color="@color/filled_button_bg_color"
+
+    <!-- selected & hover & focused -->
+    <item
+        android:color="@color/chip_selected_hover_and_focused"
+        android:state_focused="true"
+        android:state_hovered="true"
         android:state_selected="true" />
-    <item android:alpha="@dimen/default_focused_alpha"
-        android:color="@color/modern_grey_800"
-        android:state_focused="true" />
-    <item android:color="@android:color/transparent" />
+    <item android:color="@color/default_bg_color" />
 </selector>

@@ -8,19 +8,21 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -38,8 +40,9 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -125,8 +128,8 @@ PersistentIncidentState ComputeIncidentState(const Incident& incident) {
 
 // Returns a task runner for blocking tasks in the background.
 scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
-  return base::CreateTaskRunner(
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+  return base::ThreadPool::CreateTaskRunner(
+      {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});
 }
 
@@ -134,6 +137,10 @@ scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
 
 struct IncidentReportingService::ProfileContext {
   ProfileContext();
+
+  ProfileContext(const ProfileContext&) = delete;
+  ProfileContext& operator=(const ProfileContext&) = delete;
+
   ~ProfileContext();
 
   // Returns true if the profile has incidents to be uploaded or cleared.
@@ -151,9 +158,6 @@ struct IncidentReportingService::ProfileContext {
 
   // False until OnProfileAdded is called.
   bool added;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileContext);
 };
 
 class IncidentReportingService::UploadContext {
@@ -162,6 +166,10 @@ class IncidentReportingService::UploadContext {
       PersistentIncidentStateCollection;
 
   explicit UploadContext(std::unique_ptr<ClientIncidentReport> report);
+
+  UploadContext(const UploadContext&) = delete;
+  UploadContext& operator=(const UploadContext&) = delete;
+
   ~UploadContext();
 
   // The report being uploaded.
@@ -173,9 +181,6 @@ class IncidentReportingService::UploadContext {
   // A mapping of profile contexts to the data to be persisted upon successful
   // upload.
   PersistentIncidentStateCollection profiles_to_state;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UploadContext);
 };
 
 // An IncidentReceiver that is weakly-bound to the service and transparently
@@ -183,6 +188,10 @@ class IncidentReportingService::UploadContext {
 class IncidentReportingService::Receiver : public IncidentReceiver {
  public:
   explicit Receiver(const base::WeakPtr<IncidentReportingService>& service);
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
   ~Receiver() override;
 
   // IncidentReceiver methods:
@@ -203,8 +212,6 @@ class IncidentReportingService::Receiver : public IncidentReceiver {
 
   base::WeakPtr<IncidentReportingService> service_;
   scoped_refptr<base::SingleThreadTaskRunner> thread_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 IncidentReportingService::Receiver::Receiver(
@@ -303,17 +310,16 @@ IncidentReportingService::UploadContext::~UploadContext() {
 bool IncidentReportingService::IsEnabledForProfile(Profile* profile) {
   if (profile->IsOffTheRecord())
     return false;
-  if (!profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnabled))
+  if (!IsSafeBrowsingEnabled(*profile->GetPrefs()))
     return false;
   return IsExtendedReportingEnabled(*profile->GetPrefs());
 }
 
 IncidentReportingService::IncidentReportingService(
     SafeBrowsingService* safe_browsing_service)
-    : IncidentReportingService(
-          safe_browsing_service,
-          base::TimeDelta::FromMilliseconds(kDefaultCallbackIntervalMs),
-          GetBackgroundTaskRunner()) {
+    : IncidentReportingService(safe_browsing_service,
+                               base::Milliseconds(kDefaultCallbackIntervalMs),
+                               GetBackgroundTaskRunner()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DownloadProtectionService* download_protection_service =
       (safe_browsing_service
@@ -322,8 +328,9 @@ IncidentReportingService::IncidentReportingService(
   if (download_protection_service) {
     client_download_request_subscription_ =
         download_protection_service->RegisterClientDownloadRequestCallback(
-            base::Bind(&IncidentReportingService::OnClientDownloadRequest,
-                       base::Unretained(this)));
+            base::BindRepeating(
+                &IncidentReportingService::OnClientDownloadRequest,
+                base::Unretained(this)));
   }
 }
 
@@ -340,6 +347,12 @@ IncidentReportingService::~IncidentReportingService() {
 
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
+
+  for (const auto& profile_and_context : profiles_) {
+    Profile* profile = profile_and_context.first;
+    if (profile)
+      profile->RemoveObserver(this);
+  }
 }
 
 std::unique_ptr<IncidentReceiver>
@@ -352,19 +365,19 @@ IncidentReportingService::CreatePreferenceValidationDelegate(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (profile->IsOffTheRecord())
-    return std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>();
+    return nullptr;
   return std::make_unique<PreferenceValidationDelegate>(profile,
                                                         GetIncidentReceiver());
 }
 
 void IncidentReportingService::RegisterDelayedAnalysisCallback(
-    const DelayedAnalysisCallback& callback) {
+    DelayedAnalysisCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // |callback| will be run on the blocking pool. The receiver will bounce back
   // to the origin thread if needed.
   delayed_analysis_callbacks_.RegisterCallback(
-      base::Bind(callback, base::Passed(GetIncidentReceiver())));
+      base::BindOnce(std::move(callback), GetIncidentReceiver()));
 
   // Start running the callbacks if any profiles are participating in safe
   // browsing extended reporting. If none are now, running will commence if/when
@@ -382,16 +395,15 @@ IncidentReportingService::IncidentReportingService(
     SafeBrowsingService* safe_browsing_service,
     base::TimeDelta delayed_task_interval,
     const scoped_refptr<base::TaskRunner>& delayed_task_runner)
-    : url_loader_factory_(safe_browsing_service
-                              ? safe_browsing_service->GetURLLoaderFactory()
-                              : nullptr),
+    : url_loader_factory_(nullptr),
       collect_environment_data_fn_(&CollectEnvironmentData),
       environment_collection_task_runner_(GetBackgroundTaskRunner()),
       collation_timer_(FROM_HERE,
-                       base::TimeDelta::FromMilliseconds(kDefaultUploadDelayMs),
+                       base::Milliseconds(kDefaultUploadDelayMs),
                        this,
                        &IncidentReportingService::OnCollationTimeout),
       delayed_analysis_callbacks_(delayed_task_interval, delayed_task_runner) {
+  url_loader_factory_ = g_browser_process->shared_url_loader_factory();
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->AddObserver(this);
 }
@@ -473,21 +485,43 @@ void IncidentReportingService::OnProfileAdded(Profile* profile) {
   BeginDownloadCollection();
 }
 
+void IncidentReportingService::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  profile->RemoveObserver(this);
+
+  auto it = profiles_.find(profile);
+  DCHECK(it != profiles_.end());
+
+  // Take ownership of the context.
+  std::unique_ptr<ProfileContext> context = std::move(it->second);
+
+  // TODO(grt): Persist incidents for upload on future profile load.
+
+  // Remove the association with this profile context from all pending uploads.
+  for (const auto& upload : uploads_)
+    upload->profiles_to_state.erase(context.get());
+
+  // Forget about this profile. Incidents not yet sent for upload are lost.
+  // No new incidents will be accepted for it.
+  profiles_.erase(it);
+}
+
 std::unique_ptr<LastDownloadFinder>
 IncidentReportingService::CreateDownloadFinder(
-    const LastDownloadFinder::LastDownloadCallback& callback) {
+    LastDownloadFinder::LastDownloadCallback callback) {
   return LastDownloadFinder::Create(
-      base::Bind(&DownloadMetadataManager::GetDownloadDetails,
-                 base::Unretained(&download_metadata_manager_)),
-      callback);
+      base::BindRepeating(&DownloadMetadataManager::GetDownloadDetails,
+                          base::Unretained(&download_metadata_manager_)),
+      std::move(callback));
 }
 
 std::unique_ptr<IncidentReportUploader>
 IncidentReportingService::StartReportUpload(
-    const IncidentReportUploader::OnResultCallback& callback,
+    IncidentReportUploader::OnResultCallback callback,
     const ClientIncidentReport& report) {
-  return IncidentReportUploaderImpl::UploadReport(callback, url_loader_factory_,
-                                                  report);
+  return IncidentReportUploaderImpl::UploadReport(std::move(callback),
+                                                  url_loader_factory_, report);
 }
 
 bool IncidentReportingService::IsProcessingReport() const {
@@ -497,8 +531,11 @@ bool IncidentReportingService::IsProcessingReport() const {
 IncidentReportingService::ProfileContext*
 IncidentReportingService::GetOrCreateProfileContext(Profile* profile) {
   std::unique_ptr<ProfileContext>& context = profiles_[profile];
-  if (!context)
+  if (!context) {
     context = std::make_unique<ProfileContext>();
+    if (profile)
+      profile->AddObserver(this);
+  }
   return context.get();
 }
 
@@ -580,7 +617,7 @@ void IncidentReportingService::BeginReportProcessing() {
 
   // Creates a new report if needed.
   if (!report_)
-    report_.reset(new ClientIncidentReport());
+    report_ = std::make_unique<ClientIncidentReport>();
 
   // Ensure that collection tasks are running (calls are idempotent).
   BeginIncidentCollation();
@@ -671,7 +708,8 @@ void IncidentReportingService::OnEnvironmentDataCollected(
   environment_collection_pending_ = false;
 
 // Process::Current().CreationTime() is missing on some platforms.
-#if defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_LINUX)
+#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
   base::TimeDelta uptime =
       first_incident_time_ - base::Process::Current().CreationTime();
   environment_data->mutable_process()->set_uptime_msec(uptime.InMilliseconds());
@@ -698,8 +736,8 @@ void IncidentReportingService::BeginDownloadCollection() {
 
   last_download_begin_ = base::TimeTicks::Now();
   last_download_finder_ = CreateDownloadFinder(
-      base::Bind(&IncidentReportingService::OnLastDownloadFound,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&IncidentReportingService::OnLastDownloadFound,
+                     weak_ptr_factory_.GetWeakPtr()));
   // No instance is returned if there are no eligible loaded profiles. Another
   // search will be attempted in OnProfileAdded() if another profile appears on
   // the scene.
@@ -913,8 +951,8 @@ void IncidentReportingService::UploadReportIfUploadingEnabled(
 
   // Initiate the upload.
   context->uploader = StartReportUpload(
-      base::Bind(&IncidentReportingService::OnReportUploadResult,
-                 weak_ptr_factory_.GetWeakPtr(), context),
+      base::BindOnce(&IncidentReportingService::OnReportUploadResult,
+                     weak_ptr_factory_.GetWeakPtr(), context),
       *context->report);
   if (!context->uploader) {
     OnReportUploadResult(context,

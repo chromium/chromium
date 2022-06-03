@@ -1,0 +1,32 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tabList horizontal setSize=2
+++++++++tab name='Tab 1 of 2, level 1' setSize=2 posInSet=1 selected=false
+++++++++++staticText name='Tab 1 of 2, level 1'
+++++++++++++inlineTextBox name='Tab 1 of 2, level 1'
+++++++++tab name='Tab 2 of 2, level 1' setSize=2 posInSet=2 selected=false
+++++++++++staticText name='Tab 2 of 2, level 1'
+++++++++++++inlineTextBox name='Tab 2 of 2, level 1'
+++++++tabList horizontal setSize=3
+++++++++tab name='Tab 1 of 3, level 2' setSize=3 posInSet=1 selected=false
+++++++++++staticText name='Tab 1 of 3, level 2'
+++++++++++++inlineTextBox name='Tab 1 of 3, level 2'
+++++++++tab name='Tab 2 of 3, level 2' setSize=3 posInSet=2 selected=false
+++++++++++staticText name='Tab 2 of 3, level 2'
+++++++++++++inlineTextBox name='Tab 2 of 3, level 2'
+++++++++tabList horizontal setSize=1
+++++++++++tab name='Tab 1 of 1, level 3' setSize=1 posInSet=1 selected=false
+++++++++++++staticText name='Tab 1 of 1, level 3'
+++++++++++++++inlineTextBox name='Tab 1 of 1, level 3'
+++++++++tab name='Tab 3 of 3, level 2' setSize=3 posInSet=3 selected=false
+++++++++++staticText name='Tab 3 of 3, level 2'
+++++++++++++inlineTextBox name='Tab 3 of 3, level 2'
+++++++tabList horizontal setSize=1
+++++++++tab name='Tab 1 of 1, level 2' setSize=1 posInSet=1 selected=false
+++++++++++staticText name='Tab 1 of 1, level 2'
+++++++++++++inlineTextBox name='Tab 1 of 1, level 2'
+++++++tabList horizontal setSize=1
+++++++++tab name='Tab 1 of 1, level 1' setSize=1 posInSet=1 selected=false
+++++++++++staticText name='Tab 1 of 1, level 1'
+++++++++++++inlineTextBox name='Tab 1 of 1, level 1'

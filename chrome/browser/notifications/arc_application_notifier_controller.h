@@ -8,53 +8,56 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notifier_controller.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 
+class AppUpdate;
 class Profile;
 
 namespace arc {
 
 // TODO(hirono): Observe enabled flag change and notify it to message center.
-class ArcApplicationNotifierController : public NotifierController,
-                                         public ArcAppIcon::Observer,
-                                         public ArcAppListPrefs::Observer {
+class ArcApplicationNotifierController
+    : public NotifierController,
+      public apps::AppRegistryCache::Observer {
  public:
   explicit ArcApplicationNotifierController(
       NotifierController::Observer* observer);
 
+  ArcApplicationNotifierController(const ArcApplicationNotifierController&) =
+      delete;
+  ArcApplicationNotifierController& operator=(
+      const ArcApplicationNotifierController&) = delete;
   ~ArcApplicationNotifierController() override;
 
-  // TODO(hirono): Rewrite the function with new API to fetch package list.
   std::vector<ash::NotifierMetadata> GetNotifierList(Profile* profile) override;
   void SetNotifierEnabled(Profile* profile,
                           const message_center::NotifierId& notifier_id,
                           bool enabled) override;
 
  private:
-  // Overridden from ArcAppIcon::Observer.
-  void OnIconUpdated(ArcAppIcon* icon) override;
+  void CallLoadIcon(const std::string& app_id, bool allow_placeholder_icon);
+  void OnLoadIcon(const std::string& app_id,
+                  apps::mojom::IconValuePtr icon_value);
+  void SetIcon(const std::string& app_id, gfx::ImageSkia image);
 
-  // Overriden from ArcAppListPrefs::Observer.
-  void OnNotificationsEnabledChanged(const std::string& package_name,
-                                     bool enabled) override;
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
-  void StartObserving();
-  void StopObserving();
-
+  // Needed to load icons for ARC apps.
+  Profile* last_used_profile_ = nullptr;
   NotifierController::Observer* observer_;
-  std::vector<std::unique_ptr<ArcAppIcon>> icons_;
-  std::map<std::string, std::string> package_to_app_ids_;
-  Profile* last_profile_;
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      shutdown_notifier_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcApplicationNotifierController);
+  // Used to keep track of all PWA start URLs to prevent creation of duplicate
+  // notifier metadata.
+  std::map<std::string, std::string> package_to_app_ids_;
+
+  base::WeakPtrFactory<ArcApplicationNotifierController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace arc

@@ -5,10 +5,10 @@
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "net/filter/mock_source_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -58,9 +58,8 @@ class SourceStreamToDataPipeTest
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
         GetParam().pipe_capacity};
     mojo::ScopedDataPipeProducerHandle producer_end;
-    CHECK_EQ(MOJO_RESULT_OK,
-             mojo::CreateDataPipe(&data_pipe_options, &producer_end,
-                                  &consumer_end_));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
+                                                  producer_end, consumer_end_));
 
     adapter_ = std::make_unique<SourceStreamToDataPipe>(
         std::move(source), std::move(producer_end));
@@ -85,7 +84,7 @@ class SourceStreamToDataPipeTest
     while (result == MOJO_RESULT_OK || result == MOJO_RESULT_SHOULD_WAIT) {
       char buffer[16];
       uint32_t read_size = sizeof(buffer);
-      MojoResult result =
+      result =
           consumer_end().ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_FAILED_PRECONDITION)
         break;
@@ -107,7 +106,7 @@ class SourceStreamToDataPipeTest
 
   void CloseConsumerHandle() { consumer_end_.reset(); }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-  base::Optional<int> CallbackResult() { return callback_result_; }
+  absl::optional<int> CallbackResult() { return callback_result_; }
 
  private:
   void FinishedReading(int result) { callback_result_ = result; }
@@ -116,7 +115,7 @@ class SourceStreamToDataPipeTest
   net::MockSourceStream* source_;
   std::unique_ptr<SourceStreamToDataPipe> adapter_;
   mojo::ScopedDataPipeConsumerHandle consumer_end_;
-  base::Optional<int> callback_result_;
+  absl::optional<int> callback_result_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

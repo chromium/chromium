@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
@@ -42,6 +42,10 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
   // |debugging_id| is reported with crashes to help attribute the code that
   // created the WindowImpl.
   explicit WindowImpl(const std::string& debugging_id = std::string());
+
+  WindowImpl(const WindowImpl&) = delete;
+  WindowImpl& operator=(const WindowImpl&) = delete;
+
   virtual ~WindowImpl();
 
   // Causes all generated windows classes to be unregistered at exit.
@@ -122,9 +126,8 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
   // TODO(sky): nuke this when get crash data.
   bool got_create_ = false;
   bool got_valid_hwnd_ = false;
-  bool* destroyed_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowImpl);
+  // For tracking whether this object has been destroyed. Must be last.
+  base::WeakPtrFactory<WindowImpl> weak_factory_{this};
 };
 
 }  // namespace gfx

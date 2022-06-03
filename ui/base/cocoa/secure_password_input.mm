@@ -6,7 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace {
 
@@ -41,7 +41,7 @@ void SetPasswordInputEnabled(bool enabled) {
 namespace ui {
 
 ScopedPasswordInputEnabler::ScopedPasswordInputEnabler() {
-  if (!g_password_input_counter) {
+  if (!g_password_input_counter && !IsSecureEventInputEnabled()) {
     SetPasswordInputEnabled(true);
   }
   ++g_password_input_counter;

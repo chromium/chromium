@@ -12,16 +12,16 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
-import org.chromium.chrome.browser.notifications.PendingIntentProvider;
 import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
 import org.chromium.chrome.browser.sharing.SharingSendMessageResult;
 import org.chromium.chrome.browser.sharing.SharingServiceProxy;
-import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /**
  * Handles Shared Clipboard messages and notifications for Android.
@@ -30,8 +30,6 @@ public class SharedClipboardMessageHandler {
     private static final String EXTRA_DEVICE_GUID = "SharedClipboard.EXTRA_DEVICE_GUID";
     private static final String EXTRA_DEVICE_CLIENT_NAME =
             "SharedClipboard.EXTRA_DEVICE_CLIENT_NAME";
-    private static final String EXTRA_DEVICE_LAST_UPDATED_TIMESTAMP_MILLIS =
-            "SharedClipboard.EXTRA_DEVICE_LAST_UPDATED_TIMESTAMP_MILLIS";
 
     /**
      * Handles the tapping of an incoming notification when text is shared with current device.
@@ -54,11 +52,9 @@ public class SharedClipboardMessageHandler {
                     NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
             String guid = IntentUtils.safeGetStringExtra(intent, EXTRA_DEVICE_GUID);
             String name = IntentUtils.safeGetStringExtra(intent, EXTRA_DEVICE_CLIENT_NAME);
-            long lastUpdatedTimestampMillis = IntentUtils.safeGetLongExtra(
-                    intent, EXTRA_DEVICE_LAST_UPDATED_TIMESTAMP_MILLIS, /*defaultValue=*/0);
             String text = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_TEXT);
 
-            showSendingNotification(guid, name, lastUpdatedTimestampMillis, text);
+            showSendingNotification(guid, name, text);
         }
     }
 
@@ -68,12 +64,9 @@ public class SharedClipboardMessageHandler {
      * up.
      * @param guid The guid of the receiver device.
      * @param name The name of the receiver device.
-     * @param lastUpdatedTimestampMillis The last updated timestamp in milliseconds of the receiver
-     *         device.
      * @param text The text shared from the sender device.
      */
-    public static void showSendingNotification(
-            String guid, String name, long lastUpdatedTimestampMillis, String text) {
+    public static void showSendingNotification(String guid, String name, String text) {
         if (TextUtils.isEmpty(guid) || TextUtils.isEmpty(name) || TextUtils.isEmpty(text)) {
             return;
         }
@@ -92,44 +85,41 @@ public class SharedClipboardMessageHandler {
         // TODO(crbug.com/1015411): Wait for device info in a more central place.
         SharingServiceProxy.getInstance().addDeviceCandidatesInitializedObserver(() -> {
             SharingServiceProxy.getInstance().sendSharedClipboardMessage(
-                    guid, lastUpdatedTimestampMillis, text, result -> {
-                if (result == SharingSendMessageResult.SUCCESSFUL) {
-                    SharingNotificationUtil.dismissNotification(
-                            NotificationConstants.GROUP_SHARED_CLIPBOARD,
-                            NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
-                } else {
-                    String contentTitle = getErrorNotificationTitle(result);
-                    String contentText = getErrorNotificationText(result, name);
-                    PendingIntentProvider tryAgainIntent = null;
+                    guid, text, result -> {
+                        if (result == SharingSendMessageResult.SUCCESSFUL) {
+                            SharingNotificationUtil.dismissNotification(
+                                    NotificationConstants.GROUP_SHARED_CLIPBOARD,
+                                    NotificationConstants
+                                            .NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
+                        } else {
+                            String contentTitle = getErrorNotificationTitle(result);
+                            String contentText = getErrorNotificationText(result, name);
+                            PendingIntentProvider tryAgainIntent = null;
 
-                    if (result == SharingSendMessageResult.ACK_TIMEOUT
-                            || result == SharingSendMessageResult.NETWORK_ERROR) {
-                        Context context = ContextUtils.getApplicationContext();
-                        tryAgainIntent = PendingIntentProvider.getBroadcast(
-                                context, /*requestCode=*/0,
-                                new Intent(context, TryAgainReceiver.class)
-                                        .putExtra(Intent.EXTRA_TEXT, text)
-                                        .putExtra(EXTRA_DEVICE_GUID, guid)
-                                        .putExtra(EXTRA_DEVICE_CLIENT_NAME, name)
-                                        .putExtra(EXTRA_DEVICE_LAST_UPDATED_TIMESTAMP_MILLIS,
-                                                lastUpdatedTimestampMillis),
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-                    }
+                            if (result == SharingSendMessageResult.ACK_TIMEOUT
+                                    || result == SharingSendMessageResult.NETWORK_ERROR) {
+                                Context context = ContextUtils.getApplicationContext();
+                                tryAgainIntent = PendingIntentProvider.getBroadcast(context,
+                                        /*requestCode=*/0,
+                                        new Intent(context, TryAgainReceiver.class)
+                                                .putExtra(Intent.EXTRA_TEXT, text)
+                                                .putExtra(EXTRA_DEVICE_GUID, guid)
+                                                .putExtra(EXTRA_DEVICE_CLIENT_NAME, name),
+                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                            }
 
-                    SharingNotificationUtil.showSendErrorNotification(
-                            NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
-                            NotificationConstants.GROUP_SHARED_CLIPBOARD,
-                            NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
-                            contentTitle, contentText, tryAgainIntent);
-                }
-            });
+                            SharingNotificationUtil.showSendErrorNotification(
+                                    NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
+                                    NotificationConstants.GROUP_SHARED_CLIPBOARD,
+                                    NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
+                                    contentTitle, contentText, tryAgainIntent);
+                        }
+                    });
         });
     }
 
     /**
      * Return the title of error notification shown based on result of send message to other device.
-     * TODO(himanshujaju) - All text except PAYLOAD_TOO_LARGE are common across features. Extract
-     * them out when next feature is added.
      *
      * @param result The result of sending message to other device.
      * @return the title for error notification.
@@ -150,6 +140,7 @@ public class SharedClipboardMessageHandler {
                         R.string.browser_sharing_shared_clipboard_error_dialog_title_payload_too_large);
 
             case SharingSendMessageResult.INTERNAL_ERROR:
+            case SharingSendMessageResult.ENCRYPTION_ERROR:
                 return resources.getString(
                         R.string.browser_sharing_error_dialog_title_internal_error, contentType);
 
@@ -163,8 +154,6 @@ public class SharedClipboardMessageHandler {
     /**
      * Returns the text of the error notification shown based on the result of sending a message to
      * another device.
-     * TODO(himanshujaju) - All text except PAYLOAD_TOO_LARGE are common across features. Extract
-     * them out when next feature is added.
      *
      * @param result The result of sending a message to another device.
      * @param name The name of the receiver device.
@@ -192,6 +181,7 @@ public class SharedClipboardMessageHandler {
                         R.string.browser_sharing_error_dialog_text_device_ack_timeout, name);
 
             case SharingSendMessageResult.INTERNAL_ERROR:
+            case SharingSendMessageResult.ENCRYPTION_ERROR:
                 return resources.getString(
                         R.string.browser_sharing_error_dialog_text_internal_error);
 
@@ -222,8 +212,9 @@ public class SharedClipboardMessageHandler {
                 NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
                 NotificationConstants.GROUP_SHARED_CLIPBOARD,
                 NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_INCOMING, contentIntent,
+                /*deleteIntent=*/null, /*confirmIntent=*/null, /*cancelIntent=*/null,
                 notificationTitle, resources.getString(R.string.shared_clipboard_notification_text),
                 R.drawable.ic_devices_16dp, R.drawable.shared_clipboard_40dp,
-                R.color.default_icon_color_blue);
+                R.color.default_icon_color_accent1_baseline, /*startsActivity=*/false);
     }
 }

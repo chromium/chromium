@@ -7,8 +7,6 @@ FAIL Set HTTP URL frame location.protocol to file Failed to set the 'protocol' p
 PASS Set data URL frame location.protocol to file
 PASS Set HTTP URL frame location.protocol to ftp
 PASS Set data URL frame location.protocol to ftp
-PASS Set HTTP URL frame location.protocol to gopher
-PASS Set data URL frame location.protocol to gopher
 PASS Set HTTP URL frame location.protocol to http+x
 PASS Set data URL frame location.protocol to http+x
 Harness: the test ran to completion.

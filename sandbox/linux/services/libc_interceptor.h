@@ -32,11 +32,10 @@ namespace sandbox {
 //
 // Our replacement functions must handle both cases, and either proxy the call
 // to the parent over the IPC back-channel (see
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux_sandbox_ipc.md)
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/sandbox_ipc.md)
 // or use dlsym with RTLD_NEXT to resolve the symbol, ignoring any symbols in
-// the current module. Use SetUseLocaltimeOverride() and SetAmZygoteOrRenderer()
-// below to control the mode of operation, which defaults using the dlsym
-// approach.
+// the current module. Use SetAmZygoteOrRenderer() below to control the mode of
+// operation, which defaults using the dlsym approach.
 //
 // Other avenues:
 //
@@ -60,11 +59,6 @@ SANDBOX_EXPORT bool HandleInterceptedCall(
     int fd,
     base::PickleIterator iter,
     const std::vector<base::ScopedFD>& fds);
-
-// On Linux, localtime is overridden to use a synchronous IPC to the browser
-// process to determine the locale. This can be disabled, which causes
-// localtime to use UTC instead. https://crbug.com/772503.
-SANDBOX_EXPORT void SetUseLocaltimeOverride(bool enable);
 
 // Turns on/off the libc interception. Called by the zygote and inherited by it
 // children. |backchannel_fd| must be the fd to use for proxying calls.

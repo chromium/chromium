@@ -8,7 +8,7 @@
 
 web::BrowserState* GetBrowserStateRedirectedInIncognito(
     web::BrowserState* browser_state) {
-  return static_cast<ios::ChromeBrowserState*>(browser_state)
+  return static_cast<ChromeBrowserState*>(browser_state)
       ->GetOriginalChromeBrowserState();
 }
 

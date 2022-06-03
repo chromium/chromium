@@ -9,10 +9,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config_test_utils.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
@@ -58,10 +57,10 @@ void DataReductionProxySettingsTestBase::SetUp() {
   ListPrefUpdate received_update(test_context_->pref_service(),
                                  prefs::kDailyHttpReceivedContentLength);
   for (int64_t i = 0; i < kNumDaysInHistory; i++) {
-    original_update->Insert(
-        0, std::make_unique<base::Value>(base::NumberToString(2 * i)));
-    received_update->Insert(
-        0, std::make_unique<base::Value>(base::NumberToString(i)));
+    original_update->Insert(original_update->GetList().begin(),
+                            base::Value(base::NumberToString(2 * i)));
+    received_update->Insert(received_update->GetList().begin(),
+                            base::Value(base::NumberToString(i)));
   }
   last_update_time_ = base::Time::Now().LocalMidnight();
   pref_service->SetInt64(prefs::kDailyHttpContentLengthLastUpdateDate,
@@ -79,7 +78,6 @@ void DataReductionProxySettingsTestBase::ResetSettings(base::Clock* clock) {
     settings->data_reduction_proxy_service_ = test_context_->TakeService();
   }
   settings->data_reduction_proxy_service_->SetSettingsForTesting(settings);
-  settings->config_ = test_context_->config();
   settings->prefs_ = test_context_->pref_service();
   if (clock)
     settings->clock_ = clock;
@@ -96,21 +94,10 @@ void DataReductionProxySettingsTestBase::ResetSettings(base::Clock* clock) {
 template void DataReductionProxySettingsTestBase::ResetSettings<
     DataReductionProxySettings>(base::Clock* clock);
 
-void DataReductionProxySettingsTestBase::ExpectSetProxyPrefs(
-    bool expected_enabled,
-    bool expected_at_startup) {
-  MockDataReductionProxyService* mock_service =
-      static_cast<MockDataReductionProxyService*>(
-          settings_->data_reduction_proxy_service());
-  EXPECT_CALL(*mock_service,
-              SetProxyPrefs(expected_enabled, expected_at_startup));
-}
-
 void DataReductionProxySettingsTestBase::CheckOnPrefChange(
     bool enabled,
     bool expected_enabled,
     bool managed) {
-  ExpectSetProxyPrefs(expected_enabled, false);
   if (managed) {
     test_context_->pref_service()->SetManagedPref(
         prefs::kDataSaverEnabled, std::make_unique<base::Value>(enabled));
@@ -126,7 +113,7 @@ void DataReductionProxySettingsTestBase::InitDataReductionProxy(
   settings_->InitDataReductionProxySettings(
       test_context_->pref_service(),
       std::move(settings_->data_reduction_proxy_service_));
-  settings_->SetCallbackToRegisterSyntheticFieldTrial(base::Bind(
+  settings_->SetCallbackToRegisterSyntheticFieldTrial(base::BindRepeating(
       &DataReductionProxySettingsTestBase::OnSyntheticFieldTrialRegistration,
       base::Unretained(this)));
 
@@ -142,7 +129,7 @@ void DataReductionProxySettingsTestBase::CheckDataReductionProxySyntheticTrial(
 bool DataReductionProxySettingsTestBase::OnSyntheticFieldTrialRegistration(
     base::StringPiece trial_name,
     base::StringPiece group_name) {
-  synthetic_field_trials_[trial_name.as_string()] = group_name.as_string();
+  synthetic_field_trials_[std::string(trial_name)] = std::string(group_name);
   return true;
 }
 

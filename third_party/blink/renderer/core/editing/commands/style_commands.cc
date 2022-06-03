@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/editing/writing_direction.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_font_element.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -108,7 +108,7 @@ bool StyleCommands::ExecuteApplyStyle(LocalFrame& frame,
   auto* const style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   style->SetProperty(property_id, property_value, /* important */ false,
-                     frame.GetDocument()->GetSecureContextMode());
+                     frame.DomWindow()->GetSecureContextMode());
   return ApplyCommandToFrame(frame, source, input_type, style);
 }
 
@@ -162,8 +162,10 @@ bool StyleCommands::ExecuteFontSizeDelta(LocalFrame& frame,
                                          Event*,
                                          EditorCommandSource source,
                                          const String& value) {
+  // TODO(hjkim3323@gmail.com): Directly set EditingStyle::font_size_delta_
+  // instead of setting it via CSS property
   return ExecuteApplyStyle(frame, source, InputEvent::InputType::kNone,
-                           CSSPropertyID::kWebkitFontSizeDelta, value);
+                           CSSPropertyID::kInternalFontSizeDelta, value);
 }
 
 bool StyleCommands::ExecuteMakeTextWritingDirectionLeftToRight(
@@ -207,7 +209,7 @@ bool StyleCommands::SelectionStartHasStyle(LocalFrame& frame,
                                            CSSPropertyID property_id,
                                            const String& value) {
   const SecureContextMode secure_context_mode =
-      frame.GetDocument()->GetSecureContextMode();
+      frame.DomWindow()->GetSecureContextMode();
 
   EditingStyle* const style_to_check = MakeGarbageCollected<EditingStyle>(
       property_id, value, secure_context_mode);
@@ -216,7 +218,8 @@ bool StyleCommands::SelectionStartHasStyle(LocalFrame& frame,
           frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
           property_id == CSSPropertyID::kBackgroundColor,
           style_to_check->Style());
-  return style_to_check->TriStateOfStyle(style_at_start, secure_context_mode) !=
+  return style_to_check->TriStateOfStyle(frame.DomWindow(), style_at_start,
+                                         secure_context_mode) !=
          EditingTriState::kFalse;
 }
 
@@ -237,7 +240,7 @@ bool StyleCommands::ExecuteToggleStyle(LocalFrame& frame,
 
   EditingStyle* const style = MakeGarbageCollected<EditingStyle>(
       property_id, style_is_present ? off_value : on_value,
-      frame.GetDocument()->GetSecureContextMode());
+      frame.DomWindow()->GetSecureContextMode());
   return ApplyCommandToFrame(frame, source, input_type, style->Style());
 }
 
@@ -320,7 +323,7 @@ bool StyleCommands::ExecuteToggleStyleInList(LocalFrame& frame,
   auto* const new_mutable_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   new_mutable_style->SetProperty(property_id, new_style, /* important */ false,
-                                 frame.GetDocument()->GetSecureContextMode());
+                                 frame.DomWindow()->GetSecureContextMode());
   return ApplyCommandToFrame(frame, source, input_type, new_mutable_style);
 }
 
@@ -351,7 +354,7 @@ bool StyleCommands::ExecuteStyleWithCSS(LocalFrame& frame,
                                         EditorCommandSource,
                                         const String& value) {
   frame.GetEditor().SetShouldStyleWithCSS(
-      !DeprecatedEqualIgnoringCase(value, "false"));
+      !EqualIgnoringASCIICase(value, "false"));
   return true;
 }
 
@@ -360,7 +363,7 @@ bool StyleCommands::ExecuteUseCSS(LocalFrame& frame,
                                   EditorCommandSource,
                                   const String& value) {
   frame.GetEditor().SetShouldStyleWithCSS(
-      DeprecatedEqualIgnoringCase(value, "false"));
+      EqualIgnoringASCIICase(value, "false"));
   return true;
 }
 
@@ -368,7 +371,7 @@ bool StyleCommands::ExecuteUseCSS(LocalFrame& frame,
 EditingTriState StyleCommands::StateStyle(LocalFrame& frame,
                                           CSSPropertyID property_id,
                                           const char* desired_value) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (frame.GetEditor().Behavior().ShouldToggleStyleBasedOnStartOfSelection()) {
     return SelectionStartHasStyle(frame, property_id, desired_value)
                ? EditingTriState::kTrue
@@ -415,20 +418,20 @@ bool StyleCommands::IsUnicodeBidiNestedOrMultipleEmbeddings(
          value_id == CSSValueID::kPlaintext;
 }
 
-WritingDirection StyleCommands::TextDirectionForSelection(
+mojo_base::mojom::blink::TextDirection StyleCommands::TextDirectionForSelection(
     const VisibleSelection& selection,
     EditingStyle* typing_style,
     bool& has_nested_or_multiple_embeddings) {
   has_nested_or_multiple_embeddings = true;
 
   if (selection.IsNone())
-    return WritingDirection::kNatural;
+    return mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
 
   const Position position = MostForwardCaretPosition(selection.Start());
 
   const Node* anchor_node = position.AnchorNode();
   if (!anchor_node)
-    return WritingDirection::kNatural;
+    return mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
 
   Position end;
   if (selection.IsRange()) {
@@ -453,12 +456,12 @@ WritingDirection StyleCommands::TextDirectionForSelection(
       const CSSValueID unicode_bidi_value =
           unicode_bidi_identifier_value->GetValueID();
       if (IsUnicodeBidiNestedOrMultipleEmbeddings(unicode_bidi_value))
-        return WritingDirection::kNatural;
+        return mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
     }
   }
 
   if (selection.IsCaret()) {
-    WritingDirection direction;
+    mojo_base::mojom::blink::TextDirection direction;
     if (typing_style && typing_style->GetTextDirection(direction)) {
       has_nested_or_multiple_embeddings = false;
       return direction;
@@ -470,7 +473,8 @@ WritingDirection StyleCommands::TextDirectionForSelection(
   // The selection is either a caret with no typing attributes or a range in
   // which no embedding is added, so just use the start position to decide.
   const Node* block = EnclosingBlock(anchor_node);
-  WritingDirection found_direction = WritingDirection::kNatural;
+  mojo_base::mojom::blink::TextDirection found_direction =
+      mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
 
   for (Node& runner : NodeTraversal::InclusiveAncestorsOf(*anchor_node)) {
     if (runner == block)
@@ -494,7 +498,7 @@ WritingDirection StyleCommands::TextDirectionForSelection(
       continue;
 
     if (unicode_bidi_value == CSSValueID::kBidiOverride)
-      return WritingDirection::kNatural;
+      return mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
 
     DCHECK(EditingStyleUtilities::IsEmbedOrIsolate(unicode_bidi_value))
         << static_cast<int>(unicode_bidi_value);
@@ -509,17 +513,19 @@ WritingDirection StyleCommands::TextDirectionForSelection(
         direction_value != CSSValueID::kRtl)
       continue;
 
-    if (found_direction != WritingDirection::kNatural)
-      return WritingDirection::kNatural;
+    if (found_direction !=
+        mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION)
+      return mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
 
     // In the range case, make sure that the embedding element persists until
     // the end of the range.
     if (selection.IsRange() && !end.AnchorNode()->IsDescendantOf(element))
-      return WritingDirection::kNatural;
+      return mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION;
 
-    found_direction = direction_value == CSSValueID::kLtr
-                          ? WritingDirection::kLeftToRight
-                          : WritingDirection::kRightToLeft;
+    found_direction =
+        direction_value == CSSValueID::kLtr
+            ? mojo_base::mojom::blink::TextDirection::LEFT_TO_RIGHT
+            : mojo_base::mojom::blink::TextDirection::RIGHT_TO_LEFT;
   }
   has_nested_or_multiple_embeddings = false;
   return found_direction;
@@ -527,13 +533,14 @@ WritingDirection StyleCommands::TextDirectionForSelection(
 
 EditingTriState StyleCommands::StateTextWritingDirection(
     LocalFrame& frame,
-    WritingDirection direction) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+    mojo_base::mojom::blink::TextDirection direction) {
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   bool has_nested_or_multiple_embeddings;
-  WritingDirection selection_direction = TextDirectionForSelection(
-      frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
-      frame.GetEditor().TypingStyle(), has_nested_or_multiple_embeddings);
+  mojo_base::mojom::blink::TextDirection selection_direction =
+      TextDirectionForSelection(
+          frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
+          frame.GetEditor().TypingStyle(), has_nested_or_multiple_embeddings);
   // TODO(editing-dev): We should be returning MixedTriState when
   // selectionDirection == direction && hasNestedOrMultipleEmbeddings
   return (selection_direction == direction &&
@@ -545,19 +552,22 @@ EditingTriState StyleCommands::StateTextWritingDirection(
 EditingTriState StyleCommands::StateTextWritingDirectionLeftToRight(
     LocalFrame& frame,
     Event*) {
-  return StateTextWritingDirection(frame, WritingDirection::kLeftToRight);
+  return StateTextWritingDirection(
+      frame, mojo_base::mojom::blink::TextDirection::LEFT_TO_RIGHT);
 }
 
 EditingTriState StyleCommands::StateTextWritingDirectionNatural(
     LocalFrame& frame,
     Event*) {
-  return StateTextWritingDirection(frame, WritingDirection::kNatural);
+  return StateTextWritingDirection(
+      frame, mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION);
 }
 
 EditingTriState StyleCommands::StateTextWritingDirectionRightToLeft(
     LocalFrame& frame,
     Event*) {
-  return StateTextWritingDirection(frame, WritingDirection::kRightToLeft);
+  return StateTextWritingDirection(
+      frame, mojo_base::mojom::blink::TextDirection::RIGHT_TO_LEFT);
 }
 
 EditingTriState StyleCommands::StateUnderline(LocalFrame& frame, Event*) {
@@ -582,7 +592,7 @@ String StyleCommands::SelectionStartCSSPropertyValue(
 }
 
 String StyleCommands::ValueStyle(LocalFrame& frame, CSSPropertyID property_id) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // TODO(editing-dev): Rather than retrieving the style at the start of the
   // current selection, we should retrieve the style present throughout the
@@ -617,7 +627,7 @@ String StyleCommands::ValueFontSize(const EditorInternalCommand&,
 String StyleCommands::ValueFontSizeDelta(const EditorInternalCommand&,
                                          LocalFrame& frame,
                                          Event*) {
-  return ValueStyle(frame, CSSPropertyID::kWebkitFontSizeDelta);
+  return ValueStyle(frame, CSSPropertyID::kInternalFontSizeDelta);
 }
 
 }  // namespace blink

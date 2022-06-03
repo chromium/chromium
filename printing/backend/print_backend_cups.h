@@ -5,13 +5,15 @@
 #ifndef PRINTING_BACKEND_PRINT_BACKEND_CUPS_H_
 #define PRINTING_BACKEND_PRINT_BACKEND_CUPS_H_
 
+#include <cups/cups.h>
+
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
-#include "printing/backend/cups_helper.h"
+#include "base/component_export.h"
+#include "base/files/file_path.h"
 #include "printing/backend/print_backend.h"
-#include "printing/printing_export.h"
+#include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -23,10 +25,13 @@ class PrintBackendCUPS : public PrintBackend {
                    bool blocking,
                    const std::string& locale);
 
-  // This static function is exposed here for use in the tests.
-  PRINTING_EXPORT static bool PrinterBasicInfoFromCUPS(
+  // These static functions are exposed here for use in the tests.
+  COMPONENT_EXPORT(PRINT_BACKEND)
+  static mojom::ResultCode PrinterBasicInfoFromCUPS(
       const cups_dest_t& printer,
       PrinterBasicInfo* printer_info);
+  COMPONENT_EXPORT(PRINT_BACKEND)
+  static std::string PrinterDriverInfoFromCUPS(const cups_dest_t& printer);
 
  private:
   struct DestinationDeleter {
@@ -34,18 +39,21 @@ class PrintBackendCUPS : public PrintBackend {
   };
   using ScopedDestination = std::unique_ptr<cups_dest_t, DestinationDeleter>;
 
-  ~PrintBackendCUPS() override {}
+  ~PrintBackendCUPS() override;
 
   // PrintBackend implementation.
-  bool EnumeratePrinters(PrinterList* printer_list) override;
-  std::string GetDefaultPrinterName() override;
-  bool GetPrinterBasicInfo(const std::string& printer_name,
-                           PrinterBasicInfo* printer_info) override;
-  bool GetPrinterSemanticCapsAndDefaults(
+  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode GetDefaultPrinterName(
+      std::string& default_printer) override;
+  mojom::ResultCode GetPrinterBasicInfo(
+      const std::string& printer_name,
+      PrinterBasicInfo* printer_info) override;
+  mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
-  bool GetPrinterCapsAndDefaults(const std::string& printer_name,
-                                 PrinterCapsAndDefaults* printer_info) override;
+  mojom::ResultCode GetPrinterCapsAndDefaults(
+      const std::string& printer_name,
+      PrinterCapsAndDefaults* printer_info) override;
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 

@@ -8,9 +8,10 @@
 #include <limits>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -31,6 +32,10 @@ static const int kSampleRate = 48000;
 class AudioBusTest : public testing::Test {
  public:
   AudioBusTest() = default;
+
+  AudioBusTest(const AudioBusTest&) = delete;
+  AudioBusTest& operator=(const AudioBusTest&) = delete;
+
   ~AudioBusTest() override {
     for (size_t i = 0; i < data_.size(); ++i)
       base::AlignedFree(data_[i]);
@@ -124,8 +129,6 @@ class AudioBusTest : public testing::Test {
 
  protected:
   std::vector<float*> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBusTest);
 };
 
 // Verify basic Create(...) method works as advertised.
@@ -157,8 +160,16 @@ TEST_F(AudioBusTest, CreateWrapper) {
   for (int i = 0; i < bus->channels(); ++i)
     bus->SetChannelData(i, data_[i]);
 
+  bool deleted = false;
+  bus->SetWrappedDataDeleter(
+      base::BindLambdaForTesting([&]() { deleted = true; }));
+
   VerifyChannelAndFrameCount(bus.get());
   VerifyReadWriteAndAlignment(bus.get());
+
+  EXPECT_FALSE(deleted);
+  bus.reset();
+  EXPECT_TRUE(deleted);
 }
 
 // Verify an AudioBus created via wrapping a vector works as advertised.
@@ -335,40 +346,6 @@ TEST_F(AudioBusTest, FromInterleaved) {
            kTestVectorFrameCount * sizeof(*expected->channel(ch)));
   }
 
-  // Test deprecated version that takes |bytes_per_sample| as an input.
-  {
-    SCOPED_TRACE("uint8_t");
-    bus->Zero();
-    bus->FromInterleaved(kTestVectorUint8, kTestVectorFrameCount,
-                         sizeof(*kTestVectorUint8));
-
-    // Biased uint8_t calculations have poor precision, so the epsilon here is
-    // slightly more permissive than int16_t and int32_t calculations.
-    VerifyAreEqualWithEpsilon(bus.get(), expected.get(),
-                              1.0f / (std::numeric_limits<uint8_t>::max() - 1));
-  }
-  {
-    SCOPED_TRACE("int16_t");
-    bus->Zero();
-    bus->FromInterleaved(kTestVectorInt16, kTestVectorFrameCount,
-                         sizeof(*kTestVectorInt16));
-    VerifyAreEqualWithEpsilon(
-        bus.get(), expected.get(),
-        1.0f / (std::numeric_limits<uint16_t>::max() + 1.0f));
-  }
-  {
-    SCOPED_TRACE("int32_t");
-    bus->Zero();
-    bus->FromInterleaved(kTestVectorInt32, kTestVectorFrameCount,
-                         sizeof(*kTestVectorInt32));
-
-    VerifyAreEqualWithEpsilon(
-        bus.get(), expected.get(),
-        1.0f / (std::numeric_limits<uint32_t>::max() + 1.0f));
-  }
-
-  // Test non-deprecated version that takes SampleTypeTraits as a template
-  // parameter.
   {
     SCOPED_TRACE("UnsignedInt8SampleTypeTraits");
     bus->Zero();
@@ -386,7 +363,8 @@ TEST_F(AudioBusTest, FromInterleaved) {
                                                       kTestVectorFrameCount);
     VerifyAreEqualWithEpsilon(
         bus.get(), expected.get(),
-        1.0f / (std::numeric_limits<uint16_t>::max() + 1.0f));
+        1.0f /
+            (static_cast<float>(std::numeric_limits<uint16_t>::max()) + 1.0f));
   }
   {
     SCOPED_TRACE("SignedInt32SampleTypeTraits");
@@ -395,7 +373,7 @@ TEST_F(AudioBusTest, FromInterleaved) {
                                                       kTestVectorFrameCount);
     VerifyAreEqualWithEpsilon(
         bus.get(), expected.get(),
-        1.0f / (std::numeric_limits<uint32_t>::max() + 1.0f));
+        1.0f / static_cast<float>(std::numeric_limits<uint32_t>::max()));
   }
   {
     SCOPED_TRACE("Float32SampleTypeTraits");
@@ -424,18 +402,6 @@ TEST_F(AudioBusTest, FromInterleavedPartial) {
            kPartialFrames * sizeof(*expected->channel(ch)));
   }
 
-  // Test deprecated version that takes |bytes_per_sample| as an input.
-  {
-    SCOPED_TRACE("int32_t");
-    bus->Zero();
-    bus->FromInterleavedPartial(
-        kTestVectorInt32 + kPartialStart * bus->channels(), kPartialStart,
-        kPartialFrames, sizeof(*kTestVectorInt32));
-    VerifyAreEqual(bus.get(), expected.get());
-  }
-
-  // Test non-deprecated version that takes SampleTypeTraits as a template
-  // parameter.
   {
     SCOPED_TRACE("SignedInt32SampleTypeTraits");
     bus->Zero();
@@ -456,43 +422,6 @@ TEST_F(AudioBusTest, ToInterleaved) {
            kTestVectorFrameCount * sizeof(*bus->channel(ch)));
   }
 
-  // Test deprecated version that takes |bytes_per_sample| as an input.
-  {
-    SCOPED_TRACE("uint8_t");
-    uint8_t test_array[base::size(kTestVectorUint8)];
-    bus->ToInterleaved(bus->frames(), sizeof(*kTestVectorUint8), test_array);
-    ASSERT_EQ(0,
-              memcmp(test_array, kTestVectorUint8, sizeof(kTestVectorUint8)));
-  }
-  {
-    SCOPED_TRACE("int16_t");
-    int16_t test_array[base::size(kTestVectorInt16)];
-    bus->ToInterleaved(bus->frames(), sizeof(*kTestVectorInt16), test_array);
-    ASSERT_EQ(0,
-              memcmp(test_array, kTestVectorInt16, sizeof(kTestVectorInt16)));
-  }
-  {
-    SCOPED_TRACE("int32_t");
-    int32_t test_array[base::size(kTestVectorInt32)];
-    bus->ToInterleaved(bus->frames(), sizeof(*kTestVectorInt32), test_array);
-
-    // Some compilers get better precision than others on the half-max test, so
-    // let the test pass with an off by one check on the half-max.
-    int32_t alternative_acceptable_result[base::size(kTestVectorInt32)];
-    memcpy(alternative_acceptable_result, kTestVectorInt32,
-           sizeof(kTestVectorInt32));
-    ASSERT_EQ(alternative_acceptable_result[4],
-              std::numeric_limits<int32_t>::max() / 2);
-    alternative_acceptable_result[4]++;
-
-    ASSERT_TRUE(
-        memcmp(test_array, kTestVectorInt32, sizeof(kTestVectorInt32)) == 0 ||
-        memcmp(test_array, alternative_acceptable_result,
-               sizeof(alternative_acceptable_result)) == 0);
-  }
-
-  // Test non-deprecated version that takes SampleTypeTraits as a template
-  // parameter.
   {
     SCOPED_TRACE("UnsignedInt8SampleTypeTraits");
     uint8_t test_array[base::size(kTestVectorUint8)];

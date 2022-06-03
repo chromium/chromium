@@ -4,7 +4,8 @@
 
 #include "base/win/iat_patch_function.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/win/patch_util.h"
 #include "base/win/pe_image.h"
 

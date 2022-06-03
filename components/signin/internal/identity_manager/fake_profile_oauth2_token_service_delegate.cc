@@ -4,9 +4,11 @@
 
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
+#include <memory>
+
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 
 namespace {
 // Values used from |MutableProfileOAuth2TokenServiceDelegate|.
@@ -47,8 +49,9 @@ FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer) {
   auto it = refresh_tokens_.find(account_id);
   DCHECK(it != refresh_tokens_.end());
-  return std::make_unique<OAuth2AccessTokenFetcherImpl>(
-      consumer, url_loader_factory, it->second->refresh_token);
+  return GaiaAccessTokenFetcher::
+      CreateExchangeRefreshTokenForAccessTokenInstance(
+          consumer, url_loader_factory, it->second->refresh_token);
 }
 
 bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
@@ -111,7 +114,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     refresh_tokens_.erase(account_id);
     FireRefreshTokenRevoked(account_id);
   } else {
-    refresh_tokens_[account_id].reset(new AccountInfo(token));
+    refresh_tokens_[account_id] = std::make_unique<AccountInfo>(token);
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate
     // error in that case. This logic is essentially duplicated from

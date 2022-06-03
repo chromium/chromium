@@ -5,9 +5,9 @@
 #include "content/browser/devtools/protocol/tethering_handler.h"
 
 #include <map>
+#include <memory>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
@@ -288,10 +288,10 @@ TetheringHandler::TetheringImpl::~TetheringImpl() = default;
 void TetheringHandler::TetheringImpl::Bind(
     uint16_t port, std::unique_ptr<BindCallback> callback) {
   if (bound_sockets_.find(port) != bound_sockets_.end()) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&BindCallback::sendFailure, std::move(callback),
-                       Response::Error("Port already bound")));
+                       Response::ServerError("Port already bound")));
     return;
   }
 
@@ -300,16 +300,16 @@ void TetheringHandler::TetheringImpl::Bind(
   std::unique_ptr<BoundSocket> bound_socket = std::make_unique<BoundSocket>(
       std::move(accepted_callback), socket_callback_);
   if (!bound_socket->Listen(port)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&BindCallback::sendFailure, std::move(callback),
-                       Response::Error("Could not bind port")));
+                       Response::ServerError("Could not bind port")));
     return;
   }
 
   bound_sockets_[port] = std::move(bound_socket);
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&BindCallback::sendSuccess, std::move(callback)));
 }
 
@@ -317,23 +317,23 @@ void TetheringHandler::TetheringImpl::Unbind(
     uint16_t port, std::unique_ptr<UnbindCallback> callback) {
   auto it = bound_sockets_.find(port);
   if (it == bound_sockets_.end()) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&UnbindCallback::sendFailure, std::move(callback),
                        Response::InvalidParams("Port is not bound")));
     return;
   }
 
   bound_sockets_.erase(it);
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&UnbindCallback::sendSuccess, std::move(callback)));
 }
 
 void TetheringHandler::TetheringImpl::Accepted(uint16_t port,
                                                const std::string& name) {
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&TetheringHandler::Accepted, handler_, port, name));
 }
 
@@ -359,7 +359,7 @@ TetheringHandler::~TetheringHandler() {
 }
 
 void TetheringHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Tethering::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Tethering::Frontend>(dispatcher->channel());
   Tethering::Dispatcher::wire(dispatcher, this);
 }
 
@@ -386,7 +386,7 @@ void TetheringHandler::Bind(
 
   if (!Activate()) {
     callback->sendFailure(
-        Response::Error("Tethering is used by another connection"));
+        Response::ServerError("Tethering is used by another connection"));
     return;
   }
 
@@ -400,7 +400,7 @@ void TetheringHandler::Unbind(
     int port, std::unique_ptr<UnbindCallback> callback) {
   if (!Activate()) {
     callback->sendFailure(
-        Response::Error("Tethering is used by another connection"));
+        Response::ServerError("Tethering is used by another connection"));
     return;
   }
 

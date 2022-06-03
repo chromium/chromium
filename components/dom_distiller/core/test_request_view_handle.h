@@ -16,7 +16,7 @@ namespace dom_distiller {
 // point and viewed. This class is for testing only.
 class TestRequestViewHandle : public DomDistillerRequestViewBase {
  public:
-  TestRequestViewHandle(DistilledPagePrefs* prefs);
+  explicit TestRequestViewHandle(DistilledPagePrefs* prefs);
   ~TestRequestViewHandle() override;
 
   std::string GetJavaScriptBuffer();

@@ -4,8 +4,8 @@
 
 #include "media/midi/message_util.h"
 
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 
 namespace midi {
 

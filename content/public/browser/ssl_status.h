@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <vector>
-
 #include "content/common/content_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
@@ -24,20 +21,6 @@ namespace content {
 
 // Collects the SSL information for this NavigationEntry.
 struct CONTENT_EXPORT SSLStatus {
-  // SSLStatus consumers can attach instances of derived UserData classes to an
-  // SSLStatus. This allows an embedder to attach data to the NavigationEntry
-  // without SSLStatus having to know about it. Derived UserData classes have to
-  // be cloneable since NavigationEntrys are cloned during navigations.
-  class UserData {
-   public:
-    UserData() {}
-    virtual ~UserData() = default;
-    virtual std::unique_ptr<UserData> Clone() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UserData);
-  };
-
   // Flags used for the page security content status.
   enum ContentStatusFlags {
     // HTTP page, or HTTPS page with no insecure content.
@@ -70,10 +53,6 @@ struct CONTENT_EXPORT SSLStatus {
   bool initialized;
   scoped_refptr<net::X509Certificate> certificate;
   net::CertStatus cert_status;
-  // The hashes of the SubjectPublicKeyInfos from each certificate in
-  // |certificate|. This field is not necessarily populated, e.g. for responses
-  // served from disk cache.
-  net::HashValueVector public_key_hashes;
   uint16_t key_exchange_group;
   uint16_t peer_signature_algorithm;
   int connection_status;
@@ -85,10 +64,6 @@ struct CONTENT_EXPORT SSLStatus {
   // Whether the page's main resource complied with the Certificate Transparency
   // policy.
   net::ct::CTPolicyCompliance ct_policy_compliance;
-  // Embedder-specific data attached to the SSLStatus is cloned when an
-  // |SSLStatus| is assigned or copy-constructed, and is cleared when a
-  // navigation commits.
-  std::unique_ptr<UserData> user_data;
 
   // If you add new fields here, be sure to add them in the copy constructor and
   // copy assignment operator definitions in ssl_status.cc.

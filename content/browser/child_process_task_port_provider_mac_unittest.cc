@@ -8,10 +8,11 @@
 
 #include <vector>
 
-#include "base/clang_coverage_buildflags.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "content/common/child_process.mojom.h"
@@ -27,28 +28,28 @@ using testing::WithArgs;
 
 class MockChildProcess : public mojom::ChildProcess {
  public:
-  MOCK_METHOD1(Initialize,
-               void(mojo::PendingRemote<mojom::ChildProcessHostBootstrap>));
   MOCK_METHOD0(ProcessShutdown, void());
   MOCK_METHOD1(GetTaskPort, void(GetTaskPortCallback));
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
   MOCK_METHOD1(SetIPCLoggingEnabled, void(bool));
 #endif
-#if BUILDFLAG(CLANG_COVERAGE)
-  MOCK_METHOD1(SetCoverageFile, void(base::File));
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+  MOCK_METHOD1(SetProfilingFile, void(base::File));
+  MOCK_METHOD1(WriteClangProfilingProfile,
+               void(WriteClangProfilingProfileCallback));
 #endif
   MOCK_METHOD1(GetBackgroundTracingAgentProvider,
                void(mojo::PendingReceiver<
                     tracing::mojom::BackgroundTracingAgentProvider>));
   MOCK_METHOD0(CrashHungProcess, void());
-  MOCK_METHOD1(BootstrapLegacyIpc,
-               void(mojo::PendingReceiver<IPC::mojom::ChannelBootstrap>));
-  MOCK_METHOD2(RunService,
-               void(const std::string&,
-                    mojo::PendingReceiver<service_manager::mojom::Service>));
+  MOCK_METHOD2(RunServiceDeprecated,
+               void(const std::string&, mojo::ScopedMessagePipeHandle));
   MOCK_METHOD1(BindServiceInterface,
                void(mojo::GenericPendingReceiver receiver));
   MOCK_METHOD1(BindReceiver, void(mojo::GenericPendingReceiver receiver));
+  MOCK_METHOD1(EnableSystemTracingService,
+               void(mojo::PendingRemote<tracing::mojom::SystemTracingService>));
+  MOCK_METHOD1(SetPseudonymizationSalt, void(uint32_t salt));
 };
 
 class ChildProcessTaskPortProviderTest : public testing::Test,
@@ -131,7 +132,8 @@ TEST_F(ChildProcessTaskPortProviderTest, ChildLifecycle) {
   EXPECT_CALL(child_process, GetTaskPort(_))
       .WillOnce(WithArgs<0>(
           [&send_right](mojom::ChildProcess::GetTaskPortCallback callback) {
-            std::move(callback).Run(mojo::WrapMachPort(send_right.get()));
+            std::move(callback).Run(mojo::PlatformHandle(
+                base::mac::RetainMachSendRight(send_right.get())));
           }));
 
   provider()->OnChildProcessLaunched(99, &child_process);
@@ -170,15 +172,15 @@ TEST_F(ChildProcessTaskPortProviderTest, DeadTaskPort) {
   ASSERT_TRUE(base::mac::CreateMachPort(&receive_right, &send_right));
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool()});
+      base::ThreadPool::CreateSequencedTaskRunner({});
 
   MockChildProcess child_process;
   EXPECT_CALL(child_process, GetTaskPort(_))
       .WillOnce(
           WithArgs<0>([&task_runner, &receive_right, &send_right](
                           mojom::ChildProcess::GetTaskPortCallback callback) {
-            mojo::ScopedHandle mach_handle =
-                mojo::WrapMachPort(send_right.get());
+            mojo::PlatformHandle mach_handle(
+                base::mac::RetainMachSendRight(send_right.get()));
 
             // Destroy the receive right.
             task_runner->PostTask(
@@ -206,8 +208,10 @@ TEST_F(ChildProcessTaskPortProviderTest, DeadTaskPort) {
                           mojom::ChildProcess::GetTaskPortCallback callback) {
             task_runner->PostTask(
                 FROM_HERE,
-                base::BindOnce(std::move(callback),
-                               mojo::WrapMachPort(send_right2.get())));
+                base::BindOnce(
+                    std::move(callback),
+                    mojo::PlatformHandle(
+                        base::mac::RetainMachSendRight(send_right2.get()))));
           }));
 
   provider()->OnChildProcessLaunched(123, &child_contol2);
@@ -246,7 +250,8 @@ TEST_F(ChildProcessTaskPortProviderTest, ReplacePort) {
       .Times(2)
       .WillRepeatedly(WithArgs<0>(
           [&receive_right](mojom::ChildProcess::GetTaskPortCallback callback) {
-            std::move(callback).Run(mojo::WrapMachPort(receive_right.get()));
+            std::move(callback).Run(mojo::PlatformHandle(
+                base::mac::RetainMachSendRight(receive_right.get())));
           }));
 
   provider()->OnChildProcessLaunched(42, &child_process);
@@ -276,7 +281,8 @@ TEST_F(ChildProcessTaskPortProviderTest, ReplacePort) {
   EXPECT_CALL(child_process2, GetTaskPort(_))
       .WillOnce(
           [&send_right2](mojom::ChildProcess::GetTaskPortCallback callback) {
-            std::move(callback).Run(mojo::WrapMachPort(send_right2.get()));
+            std::move(callback).Run(mojo::PlatformHandle(
+                base::mac::RetainMachSendRight(send_right2.get())));
           });
 
   provider()->OnChildProcessLaunched(42, &child_process2);

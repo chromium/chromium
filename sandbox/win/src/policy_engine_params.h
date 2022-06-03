@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_ENGINE_PARAMS_H__
-#define SANDBOX_SRC_POLICY_ENGINE_PARAMS_H__
+#ifndef SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_
+#define SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_
 
 #include <stdint.h>
 
@@ -118,43 +118,49 @@ class ParameterSet {
 template <typename T>
 class ParameterSetEx : public ParameterSet {
  public:
-  ParameterSetEx(const void* address);
+  explicit ParameterSetEx(const void* address);
 };
 
 template <>
 class ParameterSetEx<void const*> : public ParameterSet {
  public:
-  ParameterSetEx(const void* address) : ParameterSet(VOIDPTR_TYPE, address) {}
+  explicit ParameterSetEx(const void* address)
+      : ParameterSet(VOIDPTR_TYPE, address) {}
 };
 
 template <>
 class ParameterSetEx<void*> : public ParameterSet {
  public:
-  ParameterSetEx(const void* address) : ParameterSet(VOIDPTR_TYPE, address) {}
+  explicit ParameterSetEx(const void* address)
+      : ParameterSet(VOIDPTR_TYPE, address) {}
 };
 
 template <>
 class ParameterSetEx<wchar_t*> : public ParameterSet {
  public:
-  ParameterSetEx(const void* address) : ParameterSet(WCHAR_TYPE, address) {}
+  explicit ParameterSetEx(const void* address)
+      : ParameterSet(WCHAR_TYPE, address) {}
 };
 
 template <>
 class ParameterSetEx<wchar_t const*> : public ParameterSet {
  public:
-  ParameterSetEx(const void* address) : ParameterSet(WCHAR_TYPE, address) {}
+  explicit ParameterSetEx(const void* address)
+      : ParameterSet(WCHAR_TYPE, address) {}
 };
 
 template <>
 class ParameterSetEx<uint32_t> : public ParameterSet {
  public:
-  ParameterSetEx(const void* address) : ParameterSet(UINT32_TYPE, address) {}
+  explicit ParameterSetEx(const void* address)
+      : ParameterSet(UINT32_TYPE, address) {}
 };
 
 template <>
 class ParameterSetEx<UNICODE_STRING> : public ParameterSet {
  public:
-  ParameterSetEx(const void* address) : ParameterSet(UNISTR_TYPE, address) {}
+  explicit ParameterSetEx(const void* address)
+      : ParameterSet(UNISTR_TYPE, address) {}
 };
 
 template <typename T>
@@ -187,4 +193,4 @@ struct CountedParameterSet {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_ENGINE_PARAMS_H__
+#endif  // SANDBOX_WIN_SRC_POLICY_ENGINE_PARAMS_H_

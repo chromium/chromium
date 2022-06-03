@@ -8,8 +8,8 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/platform/web_float_point.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace page_load_metrics {
 
@@ -22,6 +22,10 @@ const base::Feature kClickInputTracker{"ClickInputTracker",
 class ClickInputTracker {
  public:
   ClickInputTracker();
+
+  ClickInputTracker(const ClickInputTracker&) = delete;
+  ClickInputTracker& operator=(const ClickInputTracker&) = delete;
+
   ~ClickInputTracker();
 
   // Considers whether |event| is part of a user click burst. Must be called
@@ -65,9 +69,7 @@ class ClickInputTracker {
   base::TimeTicks last_click_timestamp_;
 
   // Position of the last click input.
-  blink::WebFloatPoint last_click_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickInputTracker);
+  gfx::PointF last_click_position_;
 };
 
 }  // namespace page_load_metrics

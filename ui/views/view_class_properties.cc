@@ -11,32 +11,45 @@
 #include "ui/views/layout/flex_layout_types.h"
 
 #if !defined(USE_AURA)
-// aura_constants.cc also declared the bool and int[32_t]
-// ClassProperty type.
+// aura_constants.cc also defines these types.
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, bool)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, int)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Size*)
 #endif
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, gfx::Insets*)
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
-                                       views::BubbleDialogDelegateView*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::DialogDelegate*)
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
                                        views::HighlightPathGenerator*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::FlexSpecification*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::LayoutAlignment*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, ui::ElementIdentifier)
 
 namespace views {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kHitTestComponentKey, HTNOWHERE)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kMarginsKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kInternalPaddingKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(views::BubbleDialogDelegateView*,
+DEFINE_UI_CLASS_PROPERTY_KEY(views::DialogDelegate*,
                              kAnchoredDialogKey,
                              nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(views::HighlightPathGenerator,
                                    kHighlightPathGeneratorKey,
                                    nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(FlexSpecification, kFlexBehaviorKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment,
+                                   kCrossAxisAlignmentKey,
+                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kTableColAndRowSpanKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment,
+                                   kTableHorizAlignKey,
+                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment, kTableVertAlignKey, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kViewIgnoredByLayoutKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(ui::ElementIdentifier,
+                             kElementIdentifierKey,
+                             ui::ElementIdentifier())
 
 }  // namespace views

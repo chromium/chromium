@@ -7,30 +7,25 @@
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/base/x/x11_display_util.h"
+#include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/gfx/vsync_provider.h"
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 
-X11CanvasSurface::X11CanvasSurface(
-    gfx::AcceleratedWidget widget,
-    scoped_refptr<base::SequencedTaskRunner> gpu_task_runner)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      x11_software_bitmap_presenter_(widget,
-                                     task_runner_.get(),
-                                     std::move(gpu_task_runner)) {}
+X11CanvasSurface::X11CanvasSurface(gfx::AcceleratedWidget widget)
+    : x11_software_bitmap_presenter_(x11::Connection::Get(), widget, true) {}
 
 X11CanvasSurface::~X11CanvasSurface() = default;
 
-sk_sp<SkSurface> X11CanvasSurface::GetSurface() {
-  DCHECK(surface_);
-  return surface_;
+SkCanvas* X11CanvasSurface::GetCanvas() {
+  return x11_software_bitmap_presenter_.GetSkCanvas();
 }
 
-void X11CanvasSurface::ResizeCanvas(const gfx::Size& viewport_size) {
+void X11CanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
+                                    float scale) {
   x11_software_bitmap_presenter_.Resize(viewport_size);
-  SkImageInfo info = SkImageInfo::MakeN32(
-      viewport_size.width(), viewport_size.height(), kOpaque_SkAlphaType);
-  surface_ = x11_software_bitmap_presenter_.GetSkCanvas()->makeSurface(info);
 }
 
 void X11CanvasSurface::PresentCanvas(const gfx::Rect& damage) {
@@ -38,9 +33,7 @@ void X11CanvasSurface::PresentCanvas(const gfx::Rect& damage) {
 }
 
 std::unique_ptr<gfx::VSyncProvider> X11CanvasSurface::CreateVSyncProvider() {
-  // TODO(https://crbug.com/1001498)
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return std::make_unique<XrandrIntervalOnlyVSyncProvider>();
 }
 
 bool X11CanvasSurface::SupportsAsyncBufferSwap() const {

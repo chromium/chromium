@@ -29,6 +29,8 @@
 
 #define HAVE_ASM 1
 
+#define HAVE_AVX512ICL 1
+
 #define HAVE_IO_H 1
 
 // #define STACK_ALIGNMENT 16 -- Stack alignment is controlled by Chromium

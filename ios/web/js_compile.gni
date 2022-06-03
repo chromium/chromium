@@ -2,15 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/util/java_action.gni")
-
 declare_args() {
   # Control whether the JavaScript files shipped with Chrome on iOS are
   # compiled with closure_compiler or not. Useful for debugging.
   compile_javascript = true
 }
 
-closure_compiler_path = "//third_party/closure_compiler/compiler/compiler.jar"
+closure_compiler_path = "//ios/third_party/native_closure_compiler/compiler"
 
 # Defines a target that create a JavaScript bundle using the closure compiler.
 #
@@ -23,6 +21,9 @@ closure_compiler_path = "//third_party/closure_compiler/compiler/compiler.jar"
 #
 #   deps (optional)
 #     List of targets required by this target.
+#
+#   suppressed_warnings (optional)
+#     List of warnings to suppress.
 #
 #   visibility (optional)
 #     Visibility restrictions.
@@ -42,22 +43,28 @@ template("js_compile_bundle") {
   _target_name = target_name
   compile_js_target_name = target_name + "_compile_js"
 
-  java_action(compile_js_target_name) {
+  action(compile_js_target_name) {
     visibility = [ ":$_target_name" ]
     forward_variables_from(invoker, [ "testonly" ])
-    script = closure_compiler_path
+    script = "//build/gn_run_binary.py"
     sources = invoker.sources
-    outputs = [
-      "$target_gen_dir/$_target_name.js",
-    ]
+    outputs = [ "$target_gen_dir/$_target_name.js" ]
 
-    args = [
+    _additional_args = []
+    if (defined(invoker.suppressed_warnings)) {
+      foreach(_suppressed_warning, invoker.suppressed_warnings) {
+        _additional_args += [ "--jscomp_off=$_suppressed_warning" ]
+      }
+    }
+
+    args = _additional_args + [
+             rebase_path(closure_compiler_path, root_build_dir),
              "--compilation_level",
              "SIMPLE_OPTIMIZATIONS",
              "--js_output_file",
              rebase_path("$target_gen_dir/$_target_name.js", root_build_dir),
-             "--only_closure_dependencies",
-             "--closure_entry_point",
+             "--dependency_mode=PRUNE",
+             "--entry_point",
              invoker.closure_entry_point,
              "--js",
            ] + rebase_path(sources, root_build_dir)
@@ -78,9 +85,7 @@ template("js_compile_bundle") {
     }
     public_deps += [ ":$compile_js_target_name" ]
     sources = get_target_outputs(":$compile_js_target_name")
-    outputs = [
-      "{{bundle_resources_dir}}/{{source_file_part}}",
-    ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }
 
@@ -114,25 +119,20 @@ template("js_compile_checked") {
     _target_name = target_name
     compile_js_target_name = target_name + "_compile_js"
 
-    java_action_foreach(compile_js_target_name) {
+    action_foreach(compile_js_target_name) {
       visibility = [ ":$_target_name" ]
       forward_variables_from(invoker, [ "testonly" ])
-      script = closure_compiler_path
+      script = "//build/gn_run_binary.py"
       sources = invoker.sources
-      _js_modules = [
-        "//ios/web/web_state/js/resources/base.js",
-        "//ios/web/web_state/js/resources/common.js",
-        "//ios/web/js_messaging/resources/message.js",
-      ]
+      _js_modules = []
       if (defined(invoker.js_modules)) {
         _js_modules += invoker.js_modules
       }
       inputs = _js_modules
-      outputs = [
-        "$target_gen_dir/{{source_file_part}}",
-      ]
+      outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 
       args = [
+        rebase_path(closure_compiler_path, root_build_dir),
         "--compilation_level",
         "SIMPLE_OPTIMIZATIONS",
         "--jscomp_error=checkTypes",
@@ -140,7 +140,6 @@ template("js_compile_checked") {
         "--jscomp_error=missingProperties",
         "--jscomp_error=undefinedVars",
         "--jscomp_error=accessControls",
-        "--jscomp_error=ambiguousFunctionDecl",
         "--jscomp_error=constantProperty",
         "--jscomp_error=deprecated",
         "--jscomp_error=externsValidation",
@@ -153,7 +152,7 @@ template("js_compile_checked") {
         "--jscomp_error=unknownDefines",
         "--jscomp_error=uselessCode",
         "--jscomp_error=visibility",
-        "--module_output_path_prefix",
+        "--chunk_output_path_prefix",
         rebase_path(target_gen_dir, root_build_dir) + "/",
       ]
       last_dependency = ""
@@ -162,7 +161,7 @@ template("js_compile_checked") {
         args += [
           "--js",
           rebase_path(_js_module, root_build_dir),
-          "--module",
+          "--chunk",
           "$_js_module_name:1$last_dependency",
         ]
         last_dependency = ":$_js_module_name"
@@ -170,7 +169,7 @@ template("js_compile_checked") {
       args += [
         "--js",
         "{{source}}",
-        "--module",
+        "--chunk",
         "{{source_name_part}}:1$last_dependency",
       ]
     }
@@ -190,9 +189,7 @@ template("js_compile_checked") {
       }
       public_deps += [ ":$compile_js_target_name" ]
       sources = get_target_outputs(":$compile_js_target_name")
-      outputs = [
-        "{{bundle_resources_dir}}/{{source_file_part}}",
-      ]
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     }
   } else {
     bundle_data(target_name) {
@@ -207,9 +204,7 @@ template("js_compile_checked") {
                              ])
 
       sources = invoker.sources
-      outputs = [
-        "{{bundle_resources_dir}}/{{source_file_part}}",
-      ]
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     }
   }
 }
@@ -237,16 +232,15 @@ template("js_compile_unchecked") {
     _target_name = target_name
     compile_js_target_name = target_name + "_compile_js"
 
-    java_action_foreach(compile_js_target_name) {
+    action_foreach(compile_js_target_name) {
       visibility = [ ":$_target_name" ]
       forward_variables_from(invoker, [ "testonly" ])
-      script = closure_compiler_path
+      script = "//build/gn_run_binary.py"
       sources = invoker.sources
-      outputs = [
-        "$target_gen_dir/{{source_file_part}}",
-      ]
+      outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 
       args = [
+        rebase_path(closure_compiler_path, root_build_dir),
         "--compilation_level",
         "SIMPLE_OPTIMIZATIONS",
         "--js",
@@ -271,9 +265,7 @@ template("js_compile_unchecked") {
       }
       public_deps += [ ":$compile_js_target_name" ]
       sources = get_target_outputs(":$compile_js_target_name")
-      outputs = [
-        "{{bundle_resources_dir}}/{{source_file_part}}",
-      ]
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     }
   } else {
     bundle_data(target_name) {
@@ -287,9 +279,7 @@ template("js_compile_unchecked") {
                              ])
 
       sources = invoker.sources
-      outputs = [
-        "{{bundle_resources_dir}}/{{source_file_part}}",
-      ]
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     }
   }
 }

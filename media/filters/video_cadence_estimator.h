@@ -10,9 +10,9 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -74,6 +74,10 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   // be dropped or repeated to compensate for reaching the maximum acceptable
   // drift; this time length is controlled by |minimum_time_until_max_drift|.
   explicit VideoCadenceEstimator(base::TimeDelta minimum_time_until_max_drift);
+
+  VideoCadenceEstimator(const VideoCadenceEstimator&) = delete;
+  VideoCadenceEstimator& operator=(const VideoCadenceEstimator&) = delete;
+
   ~VideoCadenceEstimator();
 
   // Clears stored cadence information.
@@ -96,7 +100,10 @@ class MEDIA_EXPORT VideoCadenceEstimator {
                              base::TimeDelta max_acceptable_drift);
 
   // Returns true if a useful cadence was found.
-  bool has_cadence() const { return !cadence_.empty(); }
+  bool has_cadence() const {
+    return bm_.use_bresenham_cadence_ ? bm_.perfect_cadence_.has_value()
+                                      : !cadence_.empty();
+  }
 
   // Given a |frame_number|, where zero is the most recently rendered frame,
   // returns the ideal cadence for that frame.
@@ -113,6 +120,7 @@ class MEDIA_EXPORT VideoCadenceEstimator {
     cadence_hysteresis_threshold_ = threshold;
   }
 
+  double avg_cadence_for_testing() const;
   size_t cadence_size_for_testing() const { return cadence_.size(); }
   std::string GetCadenceForTesting() const { return CadenceToString(cadence_); }
 
@@ -130,6 +138,9 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   // Converts a cadence vector into a human readable string of the form
   // "[a: b: ...: z]".
   std::string CadenceToString(const Cadence& cadence) const;
+
+  bool UpdateBresenhamCadenceEstimate(base::TimeDelta render_interval,
+                                      base::TimeDelta frame_duration);
 
   // The approximate best N-frame cadence for all frames seen thus far; updated
   // by UpdateCadenceEstimate().  Empty when no cadence has been detected.
@@ -160,7 +171,19 @@ class MEDIA_EXPORT VideoCadenceEstimator {
 
   bool is_variable_frame_rate_;
 
-  DISALLOW_COPY_AND_ASSIGN(VideoCadenceEstimator);
+  // Data members related to Bresenham cadence algorithm.
+  // No technical reason to have this struct except for grouping related fields.
+  struct {
+    bool use_bresenham_cadence_ = false;
+
+    // By how much to shift frame index before calculating Bresenham cadence.
+    int frame_index_shift_ = 0;
+
+    // In an ideal world, each video frame would be shown for this many display
+    // intervals. It equals (display frequency) divided by (video frame rate).
+    // Absent when a video has variable frame rate.
+    absl::optional<double> perfect_cadence_;
+  } bm_;
 };
 
 }  // namespace media

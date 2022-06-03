@@ -19,7 +19,7 @@ function testException(image) {
 
     // image is detached after calling transferFromImageBitmap,
     // so call transferFromImageBitmap(image) should throw InvalidStateError
-    assert_throws("InvalidStateError", function() {dstCtx.transferFromImageBitmap(image);});
+    assert_throws_dom("InvalidStateError", function() {dstCtx.transferFromImageBitmap(image);});
 }
 
 function testDrawCanvasWithImageBitamp(image) {  

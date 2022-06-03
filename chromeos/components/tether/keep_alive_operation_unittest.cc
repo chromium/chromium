@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -21,6 +20,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::_;
 using testing::Invoke;
@@ -36,6 +36,10 @@ namespace {
 class MockOperationObserver : public KeepAliveOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD2(OnOperationFinishedRaw,
@@ -45,14 +49,15 @@ class MockOperationObserver : public KeepAliveOperation::Observer {
                            std::unique_ptr<DeviceStatus> device_status) {
     OnOperationFinishedRaw(remote_device, device_status.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 }  // namespace
 
 class KeepAliveOperationTest : public testing::Test {
+ public:
+  KeepAliveOperationTest(const KeepAliveOperationTest&) = delete;
+  KeepAliveOperationTest& operator=(const KeepAliveOperationTest&) = delete;
+
  protected:
   KeepAliveOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -117,9 +122,6 @@ class KeepAliveOperationTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   MockOperationObserver mock_observer_;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveOperationTest);
 };
 
 // Tests that the KeepAliveTickle message is sent to the remote device once the
@@ -167,7 +169,7 @@ TEST_F(KeepAliveOperationTest, NotifiesObserversOnResponse) {
 
 TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
   static constexpr base::TimeDelta kKeepAliveTickleResponseTime =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   EXPECT_CALL(mock_observer_, OnOperationFinishedRaw(remote_device_, _));
 

@@ -4,8 +4,10 @@
 
 #include "net/filter/filter_source_stream_test_util.h"
 
+#include <cstring>
+
 #include "base/bit_cast.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "third_party/zlib/zlib.h"
 
 namespace net {

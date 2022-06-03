@@ -15,10 +15,6 @@ MockOfflineContentProvider::MockObserver::~MockObserver() = default;
 MockOfflineContentProvider::MockOfflineContentProvider() {}
 MockOfflineContentProvider::~MockOfflineContentProvider() = default;
 
-bool MockOfflineContentProvider::HasObserver(Observer* observer) {
-  return observers_.HasObserver(observer);
-}
-
 void MockOfflineContentProvider::SetItems(const OfflineItemList& items) {
   items_ = items;
 }
@@ -31,20 +27,17 @@ void MockOfflineContentProvider::SetVisuals(
 
 void MockOfflineContentProvider::NotifyOnItemsAdded(
     const OfflineItemList& items) {
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 }
 
 void MockOfflineContentProvider::NotifyOnItemRemoved(const ContentId& id) {
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
 void MockOfflineContentProvider::NotifyOnItemUpdated(
     const OfflineItem& item,
-    const base::Optional<UpdateDelta>& update_delta) {
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(item, update_delta);
+    const absl::optional<UpdateDelta>& update_delta) {
+  NotifyItemUpdated(item, update_delta);
 }
 
 void MockOfflineContentProvider::GetVisualsForItem(const ContentId& id,
@@ -70,7 +63,7 @@ void MockOfflineContentProvider::GetAllItems(MultipleItemCallback callback) {
 
 void MockOfflineContentProvider::GetItemById(const ContentId& id,
                                              SingleItemCallback callback) {
-  base::Optional<OfflineItem> result;
+  absl::optional<OfflineItem> result;
   for (auto item : items_) {
     if (item.id == id) {
       result = item;
@@ -80,14 +73,6 @@ void MockOfflineContentProvider::GetItemById(const ContentId& id,
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
-void MockOfflineContentProvider::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MockOfflineContentProvider::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 }  // namespace offline_items_collection

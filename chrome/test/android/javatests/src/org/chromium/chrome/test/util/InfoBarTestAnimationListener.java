@@ -5,8 +5,8 @@
 package org.chromium.chrome.test.util;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarAnimationListener;
-import org.chromium.chrome.browser.infobar.InfoBarContainerLayout.Item;
+import org.chromium.components.infobars.InfoBarAnimationListener;
+import org.chromium.components.infobars.InfoBarUiItem;
 
 import java.util.concurrent.TimeoutException;
 
@@ -47,7 +47,7 @@ public class InfoBarTestAnimationListener implements InfoBarAnimationListener {
     }
 
     @Override
-    public void notifyAllAnimationsFinished(Item frontInfoBar) {}
+    public void notifyAllAnimationsFinished(InfoBarUiItem frontInfoBar) {}
 
     public void addInfoBarAnimationFinished(String msg) throws TimeoutException {
         mAddAnimationFinished.waitForCallback(msg, mAddCallCount);

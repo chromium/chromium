@@ -4,7 +4,8 @@
 
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
 namespace {
@@ -14,40 +15,44 @@ namespace {
 class BrowsingDataTaskObserver : public content::BrowsingDataRemover::Observer {
  public:
   BrowsingDataTaskObserver(content::BrowsingDataRemover* remover,
-                           base::OnceClosure callback,
+                           base::OnceCallback<void(uint64_t)> callback,
                            int task_count);
+
+  BrowsingDataTaskObserver(const BrowsingDataTaskObserver&) = delete;
+  BrowsingDataTaskObserver& operator=(const BrowsingDataTaskObserver&) = delete;
+
   ~BrowsingDataTaskObserver() override;
 
-  void OnBrowsingDataRemoverDone() override;
+  void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
  private:
-  base::OnceClosure callback_;
-  ScopedObserver<content::BrowsingDataRemover,
-                 content::BrowsingDataRemover::Observer>
-      remover_observer_;
+  base::OnceCallback<void(uint64_t)> callback_;
+  base::ScopedObservation<content::BrowsingDataRemover,
+                          content::BrowsingDataRemover::Observer>
+      remover_observation_{this};
   int task_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataTaskObserver);
+  uint64_t failed_data_types_ = 0;
 };
 
 BrowsingDataTaskObserver::BrowsingDataTaskObserver(
     content::BrowsingDataRemover* remover,
-    base::OnceClosure callback,
+    base::OnceCallback<void(uint64_t)> callback,
     int task_count)
     : callback_(std::move(callback)),
-      remover_observer_(this),
       task_count_(task_count) {
-  remover_observer_.Add(remover);
+  remover_observation_.Observe(remover);
 }
 
-BrowsingDataTaskObserver::~BrowsingDataTaskObserver() {}
+BrowsingDataTaskObserver::~BrowsingDataTaskObserver() = default;
 
-void BrowsingDataTaskObserver::OnBrowsingDataRemoverDone() {
+void BrowsingDataTaskObserver::OnBrowsingDataRemoverDone(
+    uint64_t failed_data_types) {
   DCHECK(task_count_);
+  failed_data_types_ |= failed_data_types;
   if (--task_count_)
     return;
-  remover_observer_.RemoveAll();
-  std::move(callback_).Run();
+  remover_observation_.Reset();
+  std::move(callback_).Run(failed_data_types_);
   delete this;
 }
 
@@ -55,36 +60,25 @@ void BrowsingDataTaskObserver::OnBrowsingDataRemoverDone() {
 
 namespace browsing_data_important_sites_util {
 
-void Remove(int remove_mask,
-            int origin_mask,
+void Remove(uint64_t remove_mask,
+            uint64_t origin_mask,
             browsing_data::TimePeriod time_period,
             std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder,
             content::BrowsingDataRemover* remover,
-            base::OnceClosure callback) {
+            base::OnceCallback<void(uint64_t)> callback) {
   auto* observer =
       new BrowsingDataTaskObserver(remover, std::move(callback), 2);
 
-  int filterable_mask = 0;
-  int nonfilterable_mask = remove_mask;
+  uint64_t filterable_mask = 0;
+  uint64_t nonfilterable_mask = remove_mask;
 
-  if (!filter_builder->IsEmptyBlacklist()) {
+  if (!filter_builder->MatchesAllOriginsAndDomains()) {
     filterable_mask =
-        remove_mask &
-        ChromeBrowsingDataRemoverDelegate::IMPORTANT_SITES_DATA_TYPES;
+        remove_mask & chrome_browsing_data_remover::IMPORTANT_SITES_DATA_TYPES;
     nonfilterable_mask =
-        remove_mask &
-        ~ChromeBrowsingDataRemoverDelegate::IMPORTANT_SITES_DATA_TYPES;
+        remove_mask & ~chrome_browsing_data_remover::IMPORTANT_SITES_DATA_TYPES;
   }
   browsing_data::RecordDeletionForPeriod(time_period);
-
-  if (filterable_mask) {
-    remover->RemoveWithFilterAndReply(
-        browsing_data::CalculateBeginDeleteTime(time_period),
-        browsing_data::CalculateEndDeleteTime(time_period), filterable_mask,
-        origin_mask, std::move(filter_builder), observer);
-  } else {
-    observer->OnBrowsingDataRemoverDone();
-  }
 
   if (nonfilterable_mask) {
     remover->RemoveAndReply(
@@ -92,7 +86,18 @@ void Remove(int remove_mask,
         browsing_data::CalculateEndDeleteTime(time_period), nonfilterable_mask,
         origin_mask, observer);
   } else {
-    observer->OnBrowsingDataRemoverDone();
+    observer->OnBrowsingDataRemoverDone(/*failed_data_types=*/0);
+  }
+
+  // Cookie deletion could be deferred until all other data types are deleted.
+  // As cookie deletion may be filtered, this needs to happen last.
+  if (filterable_mask) {
+    remover->RemoveWithFilterAndReply(
+        browsing_data::CalculateBeginDeleteTime(time_period),
+        browsing_data::CalculateEndDeleteTime(time_period), filterable_mask,
+        origin_mask, std::move(filter_builder), observer);
+  } else {
+    observer->OnBrowsingDataRemoverDone(/*failed_data_types=*/0);
   }
 }
 

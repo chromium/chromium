@@ -12,58 +12,68 @@
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 using protocol::Response;
 
 namespace {
 
-String MessageSourceValue(mojom::ConsoleMessageSource source) {
-  DCHECK(source != mojom::ConsoleMessageSource::kConsoleApi);
+String MessageSourceValue(mojom::blink::ConsoleMessageSource source) {
+  DCHECK(source != mojom::blink::ConsoleMessageSource::kConsoleApi);
   switch (source) {
-    case mojom::ConsoleMessageSource::kXml:
+    case mojom::blink::ConsoleMessageSource::kXml:
       return protocol::Log::LogEntry::SourceEnum::Xml;
-    case mojom::ConsoleMessageSource::kJavaScript:
+    case mojom::blink::ConsoleMessageSource::kJavaScript:
       return protocol::Log::LogEntry::SourceEnum::Javascript;
-    case mojom::ConsoleMessageSource::kNetwork:
+    case mojom::blink::ConsoleMessageSource::kNetwork:
       return protocol::Log::LogEntry::SourceEnum::Network;
-    case mojom::ConsoleMessageSource::kStorage:
+    case mojom::blink::ConsoleMessageSource::kStorage:
       return protocol::Log::LogEntry::SourceEnum::Storage;
-    case mojom::ConsoleMessageSource::kAppCache:
+    case mojom::blink::ConsoleMessageSource::kAppCache:
       return protocol::Log::LogEntry::SourceEnum::Appcache;
-    case mojom::ConsoleMessageSource::kRendering:
+    case mojom::blink::ConsoleMessageSource::kRendering:
       return protocol::Log::LogEntry::SourceEnum::Rendering;
-    case mojom::ConsoleMessageSource::kSecurity:
+    case mojom::blink::ConsoleMessageSource::kSecurity:
       return protocol::Log::LogEntry::SourceEnum::Security;
-    case mojom::ConsoleMessageSource::kOther:
+    case mojom::blink::ConsoleMessageSource::kOther:
       return protocol::Log::LogEntry::SourceEnum::Other;
-    case mojom::ConsoleMessageSource::kDeprecation:
+    case mojom::blink::ConsoleMessageSource::kDeprecation:
       return protocol::Log::LogEntry::SourceEnum::Deprecation;
-    case mojom::ConsoleMessageSource::kWorker:
+    case mojom::blink::ConsoleMessageSource::kWorker:
       return protocol::Log::LogEntry::SourceEnum::Worker;
-    case mojom::ConsoleMessageSource::kViolation:
+    case mojom::blink::ConsoleMessageSource::kViolation:
       return protocol::Log::LogEntry::SourceEnum::Violation;
-    case mojom::ConsoleMessageSource::kIntervention:
+    case mojom::blink::ConsoleMessageSource::kIntervention:
       return protocol::Log::LogEntry::SourceEnum::Intervention;
-    case mojom::ConsoleMessageSource::kRecommendation:
+    case mojom::blink::ConsoleMessageSource::kRecommendation:
       return protocol::Log::LogEntry::SourceEnum::Recommendation;
     default:
       return protocol::Log::LogEntry::SourceEnum::Other;
   }
 }
 
-String MessageLevelValue(mojom::ConsoleMessageLevel level) {
+String MessageLevelValue(mojom::blink::ConsoleMessageLevel level) {
   switch (level) {
-    case mojom::ConsoleMessageLevel::kVerbose:
+    case mojom::blink::ConsoleMessageLevel::kVerbose:
       return protocol::Log::LogEntry::LevelEnum::Verbose;
-    case mojom::ConsoleMessageLevel::kInfo:
+    case mojom::blink::ConsoleMessageLevel::kInfo:
       return protocol::Log::LogEntry::LevelEnum::Info;
-    case mojom::ConsoleMessageLevel::kWarning:
+    case mojom::blink::ConsoleMessageLevel::kWarning:
       return protocol::Log::LogEntry::LevelEnum::Warning;
-    case mojom::ConsoleMessageLevel::kError:
+    case mojom::blink::ConsoleMessageLevel::kError:
       return protocol::Log::LogEntry::LevelEnum::Error;
   }
   return protocol::Log::LogEntry::LevelEnum::Info;
+}
+
+String MessageCategoryValue(mojom::blink::ConsoleMessageCategory category) {
+  switch (category) {
+    case mojom::blink::ConsoleMessageCategory::Cors:
+      return protocol::Log::LogEntry::CategoryEnum::Cors;
+  }
+  return WTF::g_empty_string;
 }
 
 }  // namespace
@@ -82,7 +92,7 @@ InspectorLogAgent::InspectorLogAgent(
 
 InspectorLogAgent::~InspectorLogAgent() = default;
 
-void InspectorLogAgent::Trace(blink::Visitor* visitor) {
+void InspectorLogAgent::Trace(Visitor* visitor) const {
   visitor->Trace(storage_);
   visitor->Trace(performance_monitor_);
   InspectorBaseAgent::Trace(visitor);
@@ -123,10 +133,10 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
     entry->setStackTrace(std::move(stack_trace));
   if (message->Location()->LineNumber())
     entry->setLineNumber(message->Location()->LineNumber() - 1);
-  if (message->Source() == mojom::ConsoleMessageSource::kWorker &&
+  if (message->Source() == mojom::blink::ConsoleMessageSource::kWorker &&
       !message->WorkerId().IsEmpty())
     entry->setWorkerId(message->WorkerId());
-  if (message->Source() == mojom::ConsoleMessageSource::kNetwork &&
+  if (message->Source() == mojom::blink::ConsoleMessageSource::kNetwork &&
       !message->RequestIdentifier().IsNull()) {
     entry->setNetworkRequestId(message->RequestIdentifier());
   }
@@ -137,7 +147,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
         protocol::Array<v8_inspector::protocol::Runtime::API::RemoteObject>>();
     for (DOMNodeId node_id : message->Nodes()) {
       std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
-          remote_object = nullptr;
+          remote_object;
       Node* node = DOMNodeIds::NodeForId(node_id);
       if (node) {
         remote_object =
@@ -156,6 +166,10 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
       }
     }
     entry->setArgs(std::move(remote_objects));
+  }
+
+  if (auto category = message->Category()) {
+    entry->setCategory(MessageCategoryValue(*category));
   }
 
   GetFrontend()->entryAdded(std::move(entry));
@@ -182,24 +196,24 @@ void InspectorLogAgent::InnerEnable() {
 
 Response InspectorLogAgent::enable() {
   if (enabled_.Get())
-    return Response::OK();
+    return Response::Success();
   enabled_.Set(true);
   InnerEnable();
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorLogAgent::disable() {
   if (!enabled_.Get())
-    return Response::OK();
+    return Response::Success();
   enabled_.Clear();
   stopViolationsReport();
   instrumenting_agents_->RemoveInspectorLogAgent(this);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorLogAgent::clear() {
   storage_->Clear();
-  return Response::OK();
+  return Response::Success();
 }
 
 static PerformanceMonitor::Violation ParseViolation(const String& name) {
@@ -223,9 +237,11 @@ static PerformanceMonitor::Violation ParseViolation(const String& name) {
 Response InspectorLogAgent::startViolationsReport(
     std::unique_ptr<protocol::Array<ViolationSetting>> settings) {
   if (!enabled_.Get())
-    return Response::Error("Log is not enabled");
-  if (!performance_monitor_)
-    return Response::Error("Violations are not supported for this target");
+    return Response::ServerError("Log is not enabled");
+  if (!performance_monitor_) {
+    return Response::ServerError(
+        "Violations are not supported for this target");
+  }
   performance_monitor_->UnsubscribeAll(this);
   violation_thresholds_.Clear();
   for (const std::unique_ptr<ViolationSetting>& setting : *settings) {
@@ -234,28 +250,30 @@ Response InspectorLogAgent::startViolationsReport(
     PerformanceMonitor::Violation violation = ParseViolation(name);
     if (violation == PerformanceMonitor::kAfterLast)
       continue;
-    performance_monitor_->Subscribe(
-        violation, base::TimeDelta::FromMillisecondsD(threshold), this);
+    performance_monitor_->Subscribe(violation, base::Milliseconds(threshold),
+                                    this);
     violation_thresholds_.Set(name, threshold);
   }
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorLogAgent::stopViolationsReport() {
   violation_thresholds_.Clear();
-  if (!performance_monitor_)
-    return Response::Error("Violations are not supported for this target");
+  if (!performance_monitor_) {
+    return Response::ServerError(
+        "Violations are not supported for this target");
+  }
   performance_monitor_->UnsubscribeAll(this);
-  return Response::OK();
+  return Response::Success();
 }
 
 void InspectorLogAgent::ReportLongLayout(base::TimeDelta duration) {
   String message_text = String::Format(
       "Forced reflow while executing JavaScript took %" PRId64 "ms",
       duration.InMilliseconds());
-  ConsoleMessage* message = ConsoleMessage::Create(
-      mojom::ConsoleMessageSource::kViolation,
-      mojom::ConsoleMessageLevel::kVerbose, message_text);
+  auto* message = MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kViolation,
+      mojom::blink::ConsoleMessageLevel::kVerbose, message_text);
   ConsoleMessageAdded(message);
 }
 
@@ -263,9 +281,9 @@ void InspectorLogAgent::ReportGenericViolation(PerformanceMonitor::Violation,
                                                const String& text,
                                                base::TimeDelta time,
                                                SourceLocation* location) {
-  ConsoleMessage* message = ConsoleMessage::Create(
-      mojom::ConsoleMessageSource::kViolation,
-      mojom::ConsoleMessageLevel::kVerbose, text, location->Clone());
+  auto* message = MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kViolation,
+      mojom::blink::ConsoleMessageLevel::kVerbose, text, location->Clone());
   ConsoleMessageAdded(message);
 }
 

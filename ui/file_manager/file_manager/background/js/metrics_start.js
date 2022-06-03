@@ -4,8 +4,9 @@
 
 /**
  * @fileoverview Metrics calls to start measurement of script loading.  Include
- * this as the first script in background_scripts.js (i.e. after the common
- * scripts that define the metrics namespace).
+ * this as the first script in main_background.js.
  */
+
+import {metrics} from '../../common/js/metrics.js';
 
 metrics.startInterval('Load.BackgroundScript');

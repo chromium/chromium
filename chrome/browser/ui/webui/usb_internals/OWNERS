@@ -2,6 +2,3 @@ per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 file://chrome/browser/usb/OWNERS
-
-# COMPONENT: Blink>USB
-# TEAM: webusb@chromium.org

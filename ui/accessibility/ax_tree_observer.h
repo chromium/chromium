@@ -8,11 +8,12 @@
 #include "base/observer_list_types.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
 
 class AXNode;
-struct AXNodeData;
 class AXTree;
 struct AXTreeData;
 
@@ -27,10 +28,14 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   ~AXTreeObserver() override;
 
   // Called before any tree modifications have occurred, notifying that a single
-  // node will change its data. Its id and data will be valid, but its links to
-  // parents and children are only valid within this callstack. Do not hold a
-  // reference to the node or any relative nodes such as ancestors or
-  // descendants described by the node data outside of this event.
+  // node will change its ignored state or its data. Its id and data will be
+  // valid, but its links to parents and children are only valid within this
+  // callstack. Do not hold a reference to the node or any relative nodes such
+  // as ancestors or descendants described by the node or its node data outside
+  // of these events.
+  virtual void OnIgnoredWillChange(AXTree* tree,
+                                   AXNode* node,
+                                   bool is_ignored_new_value) {}
   virtual void OnNodeDataWillChange(AXTree* tree,
                                     const AXNodeData& old_node_data,
                                     const AXNodeData& new_node_data) {}
@@ -50,6 +55,9 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
                              AXNode* node,
                              ax::mojom::Role old_role,
                              ax::mojom::Role new_role) {}
+  virtual void OnIgnoredChanged(AXTree* tree,
+                                AXNode* node,
+                                bool is_ignored_new_value) {}
   virtual void OnStateChanged(AXTree* tree,
                               AXNode* node,
                               ax::mojom::State state,
@@ -115,7 +123,7 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
 
   // Called after all tree mutations have occurred or during tree teardown,
   // notifying that a single node has been deleted from the tree.
-  virtual void OnNodeDeleted(AXTree* tree, int32_t node_id) {}
+  virtual void OnNodeDeleted(AXTree* tree, AXNodeID node_id) {}
 
   // Same as |OnNodeCreated|, but called for nodes that have been reparented.
   virtual void OnNodeReparented(AXTree* tree, AXNode* node) {}
@@ -125,6 +133,15 @@ class AX_EXPORT AXTreeObserver : public base::CheckedObserver {
   // children will all be valid, since the tree is in a stable state after
   // updating.
   virtual void OnNodeChanged(AXTree* tree, AXNode* node) {}
+
+  // Called just before a tree manager is removed from the AXTreeManagerMap.
+  //
+  // Why is this needed?
+  // In some cases, we update the tree id of an AXTree and need to update the
+  // map entry that corresponds to that tree. The observers maintained in the
+  // observers list of that AXTree might need to be notified of that change to
+  // remove themselves from the list, if needed.
+  virtual void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {}
 
   enum ChangeType {
     NODE_CREATED,

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -21,7 +22,9 @@
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/local_file_util.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "storage/browser/test/mock_file_change_observer.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -29,19 +32,16 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
-using storage::FileSystemOperation;
-using storage::FileSystemOperationRunner;
-using storage::FileSystemURL;
-using storage::ScopedTextBlob;
-
-namespace content {
+namespace storage {
 
 namespace {
 
-const GURL kOrigin("http://example.com");
-const storage::FileSystemType kFileSystemType = storage::kFileSystemTypeTest;
+const char kOrigin[] = "http://example.com";
+const FileSystemType kFileSystemType = kFileSystemTypeTest;
 
 void AssertStatusEq(base::File::Error expected, base::File::Error actual) {
   ASSERT_EQ(expected, actual);
@@ -57,22 +57,26 @@ class FileSystemOperationImplWriteTest : public testing::Test {
         cancel_status_(base::File::FILE_ERROR_FAILED),
         bytes_written_(0),
         complete_(false) {
-    change_observers_ =
-        storage::MockFileChangeObserver::CreateList(&change_observer_);
+    change_observers_ = MockFileChangeObserver::CreateList(&change_observer_);
   }
+
+  FileSystemOperationImplWriteTest(const FileSystemOperationImplWriteTest&) =
+      delete;
+  FileSystemOperationImplWriteTest& operator=(
+      const FileSystemOperationImplWriteTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
-    quota_manager_ =
-        new MockQuotaManager(false /* is_incognito */, dir_.GetPath(),
-                             base::ThreadTaskRunnerHandle::Get().get(),
-                             nullptr /* special storage policy */);
+    quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
+        /* is_incognito= */ false, dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get().get(),
+        /* special storage policy= */ nullptr);
     virtual_path_ = base::FilePath(FILE_PATH_LITERAL("temporary file"));
 
     file_system_context_ = CreateFileSystemContextForTesting(
         quota_manager_->proxy(), dir_.GetPath());
-    blob_storage_context_.reset(new storage::BlobStorageContext);
+    blob_storage_context_ = std::make_unique<BlobStorageContext>();
 
     file_system_context_->operation_runner()->CreateFile(
         URLForPath(virtual_path_), true /* exclusive */,
@@ -100,17 +104,16 @@ class FileSystemOperationImplWriteTest : public testing::Test {
   bool complete() const { return complete_; }
 
  protected:
-  const storage::ChangeObserverList& change_observers() const {
+  const ChangeObserverList& change_observers() const {
     return change_observers_;
   }
 
-  storage::MockFileChangeObserver* change_observer() {
-    return &change_observer_;
-  }
+  MockFileChangeObserver* change_observer() { return &change_observer_; }
 
   FileSystemURL URLForPath(const base::FilePath& path) const {
     return file_system_context_->CreateCrackedFileSystemURL(
-        kOrigin, kFileSystemType, path);
+        blink::StorageKey::CreateFromStringForTesting(kOrigin), kFileSystemType,
+        path);
   }
 
   // Callback function for recording test results.
@@ -141,13 +144,13 @@ class FileSystemOperationImplWriteTest : public testing::Test {
 
   void DidCancel(base::File::Error status) { cancel_status_ = status; }
 
-  storage::BlobStorageContext* blob_storage_context() const {
+  BlobStorageContext* blob_storage_context() const {
     return blob_storage_context_.get();
   }
 
   base::test::TaskEnvironment task_environment_;
 
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
+  scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
 
   base::ScopedTempDir dir_;
@@ -159,14 +162,12 @@ class FileSystemOperationImplWriteTest : public testing::Test {
   int64_t bytes_written_;
   bool complete_;
 
-  std::unique_ptr<storage::BlobStorageContext> blob_storage_context_;
+  std::unique_ptr<BlobStorageContext> blob_storage_context_;
 
-  storage::MockFileChangeObserver change_observer_;
-  storage::ChangeObserverList change_observers_;
+  MockFileChangeObserver change_observer_;
+  ChangeObserverList change_observers_;
 
   base::WeakPtrFactory<FileSystemOperationImplWriteTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationImplWriteTest);
 };
 
 TEST_F(FileSystemOperationImplWriteTest, TestWriteSuccess) {
@@ -199,7 +200,7 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteZero) {
 }
 
 TEST_F(FileSystemOperationImplWriteTest, TestWriteInvalidBlob) {
-  std::unique_ptr<storage::BlobDataHandle> null_handle;
+  std::unique_ptr<BlobDataHandle> null_handle;
   file_system_context_->operation_runner()->Write(URLForPath(virtual_path_),
                                                   std::move(null_handle), 0,
                                                   RecordWriteCallback());
@@ -254,9 +255,9 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteDir) {
 TEST_F(FileSystemOperationImplWriteTest, TestWriteFailureByQuota) {
   ScopedTextBlob blob(blob_storage_context(), "blob:success",
                       "Hello, world!\n");
-  quota_manager_->SetQuota(url::Origin::Create(kOrigin),
-                           FileSystemTypeToQuotaStorageType(kFileSystemType),
-                           10);
+  quota_manager_->SetQuota(
+      blink::StorageKey::CreateFromStringForTesting(kOrigin),
+      FileSystemTypeToQuotaStorageType(kFileSystemType), 10);
   file_system_context_->operation_runner()->Write(URLForPath(virtual_path_),
                                                   blob.GetBlobDataHandle(), 0,
                                                   RecordWriteCallback());
@@ -317,4 +318,4 @@ TEST_F(FileSystemOperationImplWriteTest, TestImmediateCancelFailingWrite) {
 
 // TODO(ericu,dmikurube,kinuko): Add more tests for cancel cases.
 
-}  // namespace content
+}  // namespace storage

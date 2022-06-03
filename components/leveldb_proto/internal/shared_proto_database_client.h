@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
  public:
   static std::string PrefixForDatabase(ProtoDbType db_type);
 
+  static bool HasPrefix(const std::string& key, const std::string& prefix);
   static std::string StripPrefix(const std::string& key,
                                  const std::string& prefix);
 
@@ -44,6 +45,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
   static bool KeyFilterStripPrefix(const KeyFilter& key_filter,
                                    const std::string& prefix,
                                    const std::string& key);
+  static Enums::KeyIteratorAction KeyIteratorControllerStripPrefix(
+      const KeyIteratorController& controller,
+      const std::string& prefix,
+      const std::string& key);
 
   static void GetSharedDatabaseInitStatusAsync(
       const std::string& client_db_id,
@@ -67,6 +72,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
   // call to DestroyObsoleteSharedProtoDatabaseClients(). |list| is list of dbs
   // with a |LAST| to mark the end of list.
   static void SetObsoleteClientListForTesting(const ProtoDbType* list);
+
+  SharedProtoDatabaseClient(const SharedProtoDatabaseClient&) = delete;
+  SharedProtoDatabaseClient& operator=(const SharedProtoDatabaseClient&) =
+      delete;
 
   ~SharedProtoDatabaseClient() override;
 
@@ -120,6 +129,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
       const std::string& start,
       const std::string& end,
       Callbacks::LoadKeysAndEntriesCallback callback) override;
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const leveldb_proto::KeyIteratorController& controller,
+      typename Callbacks::LoadKeysAndEntriesCallback callback) override;
 
   void GetEntry(const std::string& key,
                 Callbacks::GetCallback callback) override;
@@ -182,8 +195,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
   scoped_refptr<SharedProtoDatabase> parent_db_;
 
   base::WeakPtrFactory<SharedProtoDatabaseClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedProtoDatabaseClient);
 };
 
 }  // namespace leveldb_proto

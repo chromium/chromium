@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Constructing sheet with custom base URL ueses that URL for CSS rules assert_equals: expected "url(\"http://web-platform.test:8001/custom/path/example.png\")" but got "url(\"http://web-platform.test:8001/css/cssom/example.png\")"
+FAIL Constructing sheet with relative URL adds to the constructor document's base URL assert_equals: expected "url(\"http://web-platform.test:8001/css/cssom/custom/path/example.png\")" but got "url(\"http://web-platform.test:8001/css/cssom/example.png\")"
+FAIL Constructing sheet with invalid base URL throws a NotAllowedError assert_throws_dom: function "() => { new CSSStyleSheet({ baseURL: "chrome://"}) }" did not throw
+Harness: the test ran to completion.
+

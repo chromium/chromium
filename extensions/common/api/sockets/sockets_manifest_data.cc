@@ -4,6 +4,7 @@
 
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "extensions/common/api/sockets/sockets_manifest_permission.h"
@@ -39,14 +40,13 @@ bool SocketsManifestData::CheckRequest(
 // static
 std::unique_ptr<SocketsManifestData> SocketsManifestData::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<SocketsManifestPermission> permission =
       SocketsManifestPermission::FromValue(value, error);
   if (!permission)
-    return std::unique_ptr<SocketsManifestData>();
+    return nullptr;
 
-  return std::unique_ptr<SocketsManifestData>(
-      new SocketsManifestData(std::move(permission)));
+  return std::make_unique<SocketsManifestData>(std::move(permission));
 }
 
 }  // namespace extensions

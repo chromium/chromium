@@ -15,12 +15,12 @@ class CORE_EXPORT TextFragmentMarkerListImpl final
     : public TextMarkerBaseListImpl {
  public:
   TextFragmentMarkerListImpl() = default;
+  TextFragmentMarkerListImpl(const TextFragmentMarkerListImpl&) = delete;
+  TextFragmentMarkerListImpl& operator=(const TextFragmentMarkerListImpl&) =
+      delete;
 
   // DocumentMarkerList implementations
   DocumentMarker::MarkerType MarkerType() const final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextFragmentMarkerListImpl);
 };
 
 template <>

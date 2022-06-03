@@ -5,15 +5,11 @@
 #ifndef CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_URL_LOADER_THROTTLE_H_
 #define CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_URL_LOADER_THROTTLE_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/resource_type.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-
-namespace content {
-class NavigationUIData;
-}  // namespace content
 
 namespace signin {
 
@@ -28,19 +24,23 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
   // intercepted.
   static std::unique_ptr<URLLoaderThrottle> MaybeCreate(
       std::unique_ptr<HeaderModificationDelegate> delegate,
-      content::NavigationUIData* navigation_ui_data,
       content::WebContents::Getter web_contents_getter);
+
+  URLLoaderThrottle(const URLLoaderThrottle&) = delete;
+  URLLoaderThrottle& operator=(const URLLoaderThrottle&) = delete;
 
   ~URLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
-  void WillRedirectRequest(net::RedirectInfo* redirect_info,
-                           const network::mojom::URLResponseHead& response_head,
-                           bool* defer,
-                           std::vector<std::string>* headers_to_remove,
-                           net::HttpRequestHeaders* modified_headers) override;
+  void WillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer,
+      std::vector<std::string>* headers_to_remove,
+      net::HttpRequestHeaders* modified_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_headers) override;
   void WillProcessResponse(const GURL& response_url,
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
@@ -59,11 +59,12 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
   GURL request_url_;
   GURL request_referrer_;
   net::HttpRequestHeaders request_headers_;
-  content::ResourceType request_resource_type_;
+  net::HttpRequestHeaders request_cors_exempt_headers_;
+  network::mojom::RequestDestination request_destination_ =
+      network::mojom::RequestDestination::kEmpty;
+  bool request_is_fetch_like_api_ = false;
 
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderThrottle);
 };
 
 }  // namespace signin

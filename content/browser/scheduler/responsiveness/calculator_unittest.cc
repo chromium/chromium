@@ -4,6 +4,7 @@
 
 #include "content/browser/scheduler/responsiveness/calculator.h"
 
+#include "build/build_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,6 +13,8 @@ namespace content {
 namespace responsiveness {
 
 using JankType = Calculator::JankType;
+using StartupStage = Calculator::StartupStage;
+using ::testing::_;
 
 namespace {
 // Copied from calculator.cc.
@@ -20,9 +23,20 @@ constexpr int kJankThresholdInMs = 100;
 
 class FakeCalculator : public Calculator {
  public:
-  MOCK_METHOD2(EmitResponsiveness,
-               void(JankType jank_type, size_t janky_slices));
+  MOCK_METHOD3(EmitResponsiveness,
+               void(JankType jank_type,
+                    size_t janky_slices,
+                    StartupStage startup_stage));
 
+  MOCK_METHOD3(EmitJankyIntervalsMeasurementTraceEvent,
+               void(base::TimeTicks start_time,
+                    base::TimeTicks end_time,
+                    size_t amount_of_slices));
+
+  MOCK_METHOD2(EmitJankyIntervalsJankTraceEvent,
+               void(base::TimeTicks start_time, base::TimeTicks end_time));
+
+  using Calculator::EmitResponsivenessTraceEvents;
   using Calculator::GetLastCalculationTime;
 };
 
@@ -33,30 +47,31 @@ class ResponsivenessCalculatorTest : public testing::Test {
   void SetUp() override {
     calculator_ = std::make_unique<testing::StrictMock<FakeCalculator>>();
     last_calculation_time_ = calculator_->GetLastCalculationTime();
+#if defined(OS_ANDROID)
+    base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+        base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+    base::RunLoop().RunUntilIdle();
+#endif
   }
 
   void AddEventUI(int queue_time_in_ms,
                   int execution_start_time_in_ms,
                   int execution_finish_time_in_ms) {
     calculator_->TaskOrEventFinishedOnUIThread(
+        last_calculation_time_ + base::Milliseconds(queue_time_in_ms),
+        last_calculation_time_ + base::Milliseconds(execution_start_time_in_ms),
         last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(queue_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_start_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_finish_time_in_ms));
+            base::Milliseconds(execution_finish_time_in_ms));
   }
 
   void AddEventIO(int queue_time_in_ms,
                   int execution_start_time_in_ms,
                   int execution_finish_time_in_ms) {
     calculator_->TaskOrEventFinishedOnIOThread(
+        last_calculation_time_ + base::Milliseconds(queue_time_in_ms),
+        last_calculation_time_ + base::Milliseconds(execution_start_time_in_ms),
         last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(queue_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_start_time_in_ms),
-        last_calculation_time_ +
-            base::TimeDelta::FromMilliseconds(execution_finish_time_in_ms));
+            base::Milliseconds(execution_finish_time_in_ms));
   }
 
   void TriggerCalculation() {
@@ -74,12 +89,14 @@ class ResponsivenessCalculatorTest : public testing::Test {
   base::TimeTicks last_calculation_time_;
 };
 
-#define EXPECT_EXECUTION_JANKY_SLICES(num_slices) \
-  EXPECT_CALL(*calculator_,                       \
-              EmitResponsiveness(JankType::kExecution, num_slices));
-#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices) \
-  EXPECT_CALL(*calculator_,                                 \
-              EmitResponsiveness(JankType::kQueueAndExecution, num_slices));
+#define EXPECT_EXECUTION_JANKY_SLICES(num_slices)                  \
+  EXPECT_CALL(*calculator_,                                        \
+              EmitResponsiveness(JankType::kExecution, num_slices, \
+                                 StartupStage::kMessageLoopStarted));
+#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices)                \
+  EXPECT_CALL(*calculator_,                                                \
+              EmitResponsiveness(JankType::kQueueAndExecution, num_slices, \
+                                 StartupStage::kMessageLoopStarted));
 
 // A single event executing slightly longer than kJankThresholdInMs.
 TEST_F(ResponsivenessCalculatorTest, ShortExecutionJank) {
@@ -125,9 +142,8 @@ TEST_F(ResponsivenessCalculatorTest, LongExecutionJank) {
   constexpr int kFinishTime = kStartTime + 10 * kJankThresholdInMs + 5;
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 10U));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10U));
+  EXPECT_EXECUTION_JANKY_SLICES(10u);
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(10u);
   TriggerCalculation();
 }
 
@@ -139,8 +155,7 @@ TEST_F(ResponsivenessCalculatorTest, LongQueueJank) {
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_EXECUTION_JANKY_SLICES(0u);
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10U));
+  EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(10u);
   TriggerCalculation();
 }
 
@@ -339,7 +354,7 @@ TEST_F(ResponsivenessCalculatorTest, LongDelay) {
   base_time += 10 * kMeasurementIntervalInMs;
   AddEventUI(base_time, base_time, base_time + 1);
 
-  // No call to EmitResponsiveness is expected.
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
 }
 
 // A long event means that the machine likely went to sleep.
@@ -347,7 +362,70 @@ TEST_F(ResponsivenessCalculatorTest, LongEvent) {
   int base_time = 105;
   AddEventUI(base_time, base_time, base_time + 10 * kMeasurementIntervalInMs);
 
-  // No call to EmitResponsiveness is expected.
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
+}
+
+#if defined(OS_ANDROID)
+// Metric should not be recorded when application is in background.
+TEST_F(ResponsivenessCalculatorTest, ApplicationInBackground) {
+  constexpr int kQueueTime = 35;
+  constexpr int kStartTime = 40;
+  constexpr int kFinishTime = kStartTime + kJankThresholdInMs + 5;
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  base::RunLoop().RunUntilIdle();
+
+  AddEventUI(kQueueTime, kStartTime + 1, kFinishTime + 1);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
+  TriggerCalculation();
+}
+#endif
+
+TEST_F(ResponsivenessCalculatorTest, StartupStages) {
+  constexpr int kQueueTime = 35;
+  constexpr int kStartTime = kQueueTime + 10 * kJankThresholdInMs + 5;
+  constexpr int kFinishTime = kStartTime + 5;
+
+  // Regular event before OnFirstIdle().
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kMessageLoopStarted));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kMessageLoopStarted));
+  TriggerCalculation();
+
+  // OnFirstIdle() during a kMeasurementInterval.
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  calculator_->OnFirstIdle();
+  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 0,
+                                               StartupStage::kPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kPastFirstIdle));
+  TriggerCalculation();
+
+  // Events in intervals after OnFirstIdle();
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kRecordingPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kRecordingPastFirstIdle));
+  TriggerCalculation();
+  AddEventUI(kQueueTime, kStartTime, kFinishTime);
+
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kExecution, 0,
+                                 StartupStage::kRecordingPastFirstIdle));
+  EXPECT_CALL(*calculator_,
+              EmitResponsiveness(JankType::kQueueAndExecution, 10u,
+                                 StartupStage::kRecordingPastFirstIdle));
+  TriggerCalculation();
 }
 
 // An event execution that crosses a measurement interval boundary should count
@@ -448,6 +526,58 @@ TEST_F(ResponsivenessCalculatorTest, UnorderedEvents) {
   EXPECT_EXECUTION_JANKY_SLICES(3u);
   EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(6u);
   TriggerCalculation();
+}
+
+TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsEmpty) {
+  constexpr base::TimeTicks kStartTime = base::TimeTicks();
+  constexpr base::TimeTicks kFinishTime =
+      kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
+  const std::set<int> janky_slices;
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
+      .Times(0);
+
+  calculator_->EmitResponsivenessTraceEvents(
+      JankType::kQueueAndExecution, kStartTime, kFinishTime, janky_slices);
+}
+
+TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEventsWrongMetric) {
+  constexpr base::TimeTicks kStartTime = base::TimeTicks();
+  constexpr base::TimeTicks kFinishTime =
+      kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
+  const std::set<int> janky_slices = {1};
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(_, _, _))
+      .Times(0);
+
+  calculator_->EmitResponsivenessTraceEvents(JankType::kExecution, kStartTime,
+                                             kFinishTime, janky_slices);
+}
+
+TEST_F(ResponsivenessCalculatorTest, EmitResponsivenessTraceEvents) {
+  constexpr base::TimeDelta kSliceInterval =
+      base::Milliseconds(kJankThresholdInMs);
+  constexpr base::TimeTicks kStartTime = base::TimeTicks();
+  constexpr base::TimeTicks kFinishTime =
+      kStartTime + base::Milliseconds(kMeasurementIntervalInMs);
+
+  const std::set<int> janky_slices = {3, 4, 5, 12, 15};
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsMeasurementTraceEvent(
+                                kStartTime, kFinishTime, janky_slices.size()));
+
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+                                kStartTime + 3 * kSliceInterval,
+                                kStartTime + 6 * kSliceInterval));
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+                                kStartTime + 12 * kSliceInterval,
+                                kStartTime + 13 * kSliceInterval));
+  EXPECT_CALL(*calculator_, EmitJankyIntervalsJankTraceEvent(
+                                kStartTime + 15 * kSliceInterval,
+                                kStartTime + 16 * kSliceInterval));
+
+  calculator_->EmitResponsivenessTraceEvents(
+      JankType::kQueueAndExecution, kStartTime, kFinishTime, janky_slices);
 }
 
 }  // namespace responsiveness

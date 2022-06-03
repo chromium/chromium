@@ -130,10 +130,10 @@ class GLManager : private GpuControl {
   gl::GLContext* context() { return context_.get(); }
 
   ServiceDiscardableManager* discardable_manager() {
-    return &discardable_manager_;
+    return discardable_manager_.get();
   }
   PassthroughDiscardableManager* passthrough_discardable_manager() {
-    return &passthrough_discardable_manager_;
+    return passthrough_discardable_manager_.get();
   }
 
   const GpuDriverBugWorkarounds& workarounds() const;
@@ -183,8 +183,9 @@ class GLManager : private GpuControl {
   gles2::MailboxManagerImpl owned_mailbox_manager_;
   gles2::TraceOutputter outputter_;
   gles2::ImageManager image_manager_;
-  ServiceDiscardableManager discardable_manager_;
-  PassthroughDiscardableManager passthrough_discardable_manager_;
+  std::unique_ptr<ServiceDiscardableManager> discardable_manager_;
+  std::unique_ptr<PassthroughDiscardableManager>
+      passthrough_discardable_manager_;
   std::unique_ptr<gles2::ShaderTranslatorCache> translator_cache_;
   gles2::FramebufferCompletenessCache completeness_cache_;
   MailboxManager* mailbox_manager_ = nullptr;

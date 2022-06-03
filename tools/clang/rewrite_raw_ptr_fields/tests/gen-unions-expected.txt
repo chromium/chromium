@@ -1,0 +1,19 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-unions-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-unions-actual.cc:::1044:::11:::raw_ptr<SomeClass>
+r:::gen-unions-actual.cc:::1073:::11:::raw_ptr<SomeClass>
+r:::gen-unions-actual.cc:::1131:::11:::raw_ptr<SomeClass>
+r:::gen-unions-actual.cc:::810:::11:::raw_ptr<SomeClass>
+r:::gen-unions-actual.cc:::854:::11:::raw_ptr<SomeClass>
+r:::gen-unions-actual.cc:::899:::11:::raw_ptr<SomeClass>
+r:::gen-unions-actual.cc:::928:::12:::raw_ptr<const char>
+r:::gen-unions-actual.cc:::973:::11:::raw_ptr<SomeClass>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+my_namespace::MyNestedStruct::ptr_field  # union
+my_namespace::MyUnion1::char_ptr  # const-char, union
+my_namespace::MyUnion1::some_class_ptr  # union
+my_namespace::MyUnion2::some_class_ptr  # union
+my_namespace::MyUnion3::some_class_ptr  # union
+my_namespace::MyUnion3::some_class_ptr2  # union
+==== END FIELD FILTERS ====

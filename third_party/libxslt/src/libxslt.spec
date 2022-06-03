@@ -1,6 +1,6 @@
 Summary: Library providing the GNOME XSLT engine
 Name: libxslt
-Version: 1.1.33
+Version: 1.1.34
 Release: 1%{?dist}%{?extra_release}
 License: MIT
 Group: Development/Libraries
@@ -70,7 +70,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/%{name}{,-python}-%{version}
 
 %check
-make check
+make tests
 
 %clean
 rm -fr %{buildroot}
@@ -122,12 +122,11 @@ rm -fr %{buildroot}
 %doc AUTHORS ChangeLog.gz NEWS README Copyright FEATURES
 %{_libdir}/python*/site-packages/libxslt.py*
 %{_libdir}/python*/site-packages/libxsltmod*
-%doc python/TODO
 %doc python/libxsltclass.txt
 %doc python/tests/*.py
 %doc python/tests/*.xml
 %doc python/tests/*.xsl
 
 %changelog
-* Thu Apr 11 2019 Daniel Veillard <veillard@redhat.com>
-- upstream release 1.1.33 see http://xmlsoft.org/XSLT/news.html
+* Tue Aug  3 2021 Daniel Veillard <veillard@redhat.com>
+- upstream release 1.1.34 see http://xmlsoft.org/XSLT/news.html

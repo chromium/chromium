@@ -4,7 +4,6 @@
 
 #include "chromeos/network/managed_network_configuration_handler.h"
 
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
@@ -26,8 +25,9 @@ ManagedNetworkConfigurationHandler::InitializeForTesting(
     NetworkConfigurationHandler* network_configuration_handler,
     UIProxyConfigService* ui_proxy_config_service) {
   auto* handler = new ManagedNetworkConfigurationHandlerImpl();
-  handler->Init(network_state_handler, network_profile_handler,
-                network_configuration_handler, network_device_handler,
+  handler->Init(/*cellular_policy_handler=*/nullptr, network_state_handler,
+                network_profile_handler, network_configuration_handler,
+                network_device_handler,
                 /*prohibitied_technologies_handler=*/nullptr);
   handler->set_ui_proxy_config_service(ui_proxy_config_service);
   return base::WrapUnique(handler);

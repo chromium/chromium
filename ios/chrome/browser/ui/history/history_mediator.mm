@@ -28,7 +28,7 @@ const CGFloat kFaviconMinWidthHeight = 16;
 @synthesize browserState = _browserState;
 @synthesize faviconLoader = _faviconLoader;
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   self = [super init];
   if (self) {
     _browserState = browserState;

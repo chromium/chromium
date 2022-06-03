@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -31,6 +30,9 @@ class TabScrubber : public ui::EventHandler,
  public:
   enum Direction { LEFT, RIGHT };
 
+  TabScrubber(const TabScrubber&) = delete;
+  TabScrubber& operator=(const TabScrubber&) = delete;
+
   // Returns a the single instance of a TabScrubber.
   static TabScrubber* GetInstance();
 
@@ -42,6 +44,8 @@ class TabScrubber : public ui::EventHandler,
 
   int highlighted_tab() const { return highlighted_tab_; }
   bool IsActivationPending();
+
+  void SetEnabled(bool enabled);
 
  private:
   friend class TabScrubberTest;
@@ -76,6 +80,8 @@ class TabScrubber : public ui::EventHandler,
 
   void UpdateHighlightedTab(Tab* new_tab, int new_index);
 
+  bool GetEnabledForTesting() const { return enabled_; }
+
   // Are we currently scrubbing?.
   bool scrubbing_ = false;
   // The last browser we used for scrubbing, NULL if |scrubbing_| is false and
@@ -101,8 +107,11 @@ class TabScrubber : public ui::EventHandler,
   // The time at which scrubbing started. Needed for UMA reporting of scrubbing
   // duration.
   base::TimeTicks scrubbing_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabScrubber);
+  // If |enabled_|, tab scrubber takes events and determines whether tabs should
+  // scrub. If not |enabled_|, tab scrubber ignores events. Should be disabled
+  // when clashing interactions can occur, like window cycle list scrolling
+  // gesture.
+  bool enabled_ = true;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TAB_SCRUBBER_H_

@@ -85,6 +85,19 @@ class GPU_EXPORT GpuControlList {
     kVersionStyleUnknown
   };
 
+  enum VersionSchema {
+    // All digits are meaningful when distinguishing versions.
+    kVersionSchemaCommon,
+    // The version format of Intel graphics driver is AA.BB.CCC.DDDD.
+    // DDDD(old schema) or CCC.DDDD(new schema) is the build number.
+    // That is, indicates the actual driver number.
+    kVersionSchemaIntelDriver,
+    // The version format of Nvidia drivers is XX.XX.XXXA.AAAA where the X's
+    // can be any digits, and the A's are the actual version.  The workaround
+    // list specifies them as AAA.AA to match how Nvidia publishes them.
+    kVersionSchemaNvidiaDriver,
+  };
+
   enum SupportedOrNot {
     kSupported,
     kUnsupported,
@@ -94,6 +107,7 @@ class GPU_EXPORT GpuControlList {
   struct GPU_EXPORT Version {
     NumericOp op;
     VersionStyle style;
+    VersionSchema schema;
     const char* value1;
     const char* value2;
 
@@ -171,19 +185,24 @@ class GPU_EXPORT GpuControlList {
     static GLType GetDefaultGLType();
   };
 
+  struct GPU_EXPORT Device {
+    uint32_t device_id;
+    uint32_t revision = 0u;
+  };
+
   struct GPU_EXPORT Conditions {
     OsType os_type;
     Version os_version;
     uint32_t vendor_id;
-    size_t device_id_size;
-    const uint32_t* device_ids;
+    size_t device_size;
+    const Device* devices;
     MultiGpuCategory multi_gpu_category;
     MultiGpuStyle multi_gpu_style;
     const DriverInfo* driver_info;
     const GLStrings* gl_strings;
     const MachineModelInfo* machine_model_info;
-    size_t gpu_series_list_size;
-    const GpuSeriesType* gpu_series_list;
+    size_t intel_gpu_series_list_size;
+    const IntelGpuSeriesType* intel_gpu_series_list;
     Version intel_gpu_generation;
     const More* more;
 
@@ -191,7 +210,7 @@ class GPU_EXPORT GpuControlList {
                   const std::string& os_version,
                   const GPUInfo& gpu_info) const;
 
-    // Determines whether we needs more gpu info to make the blacklisting
+    // Determines whether we needs more gpu info to make the blocklisting
     // decision.  It should only be checked if Contains() returns true.
     bool NeedsMoreInfo(const GPUInfo& gpu_info) const;
   };
@@ -217,11 +236,11 @@ class GPU_EXPORT GpuControlList {
 
     bool AppliesToTestGroup(uint32_t target_test_group) const;
 
-    // Determines whether we needs more gpu info to make the blacklisting
+    // Determines whether we needs more gpu info to make the blocklisting
     // decision.  It should only be checked if Contains() returns true.
     bool NeedsMoreInfo(const GPUInfo& gpu_info, bool consider_exceptions) const;
 
-    void GetFeatureNames(base::ListValue* feature_names,
+    void GetFeatureNames(base::Value& feature_names,
                          const FeatureMap& feature_map) const;
 
     // Logs a control list match for this rule in the list identified by
@@ -268,7 +287,7 @@ class GPU_EXPORT GpuControlList {
   // }
   // The use case is we compute the entries from GPU process and send them to
   // browser process, and call GetReasons() in browser process.
-  void GetReasons(base::ListValue* problem_list,
+  void GetReasons(base::Value& problem_list,
                   const std::string& tag,
                   const std::vector<uint32_t>& entries) const;
 

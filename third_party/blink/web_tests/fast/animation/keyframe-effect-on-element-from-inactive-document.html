@@ -1,0 +1,12 @@
+<body>
+PASS if no crash.
+<iframe id="i"></iframe>    
+<animateColor id="a"/>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var div = i.contentDocument.createElement("div");
+i.remove();
+var var00411 = new KeyframeEffect(div, [ ], 0);
+</script>

@@ -16,6 +16,6 @@
 // elides the entire string from the front, which works well for English strings
 // that start with the origin, but not so well for other languages.
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
-    const base::string16& text);
+    const std::u16string& text);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TITLE_ORIGIN_LABEL_H_

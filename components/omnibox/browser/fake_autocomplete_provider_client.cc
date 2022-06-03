@@ -16,6 +16,8 @@
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/query_tiles/test/fake_tile_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 
@@ -29,15 +31,20 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient(
   history_service_ =
       history::CreateHistoryService(history_dir_.GetPath(), create_history_db);
 
-  in_memory_url_index_.reset(
-      new InMemoryURLIndex(bookmark_model_.get(), history_service_.get(),
-                           nullptr, history_dir_.GetPath(), SchemeSet()));
+  in_memory_url_index_ = std::make_unique<InMemoryURLIndex>(
+      bookmark_model_.get(), history_service_.get(), nullptr,
+      history_dir_.GetPath(), SchemeSet());
   in_memory_url_index_->Init();
+
+  pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+  local_state_ = std::make_unique<TestingPrefServiceSimple>();
 
   shortcuts_backend_ = base::MakeRefCounted<ShortcutsBackend>(
       GetTemplateURLService(), std::make_unique<SearchTermsData>(),
       GetHistoryService(), base::FilePath(), true);
   shortcuts_backend_->Init();
+
+  tile_service_ = std::make_unique<query_tiles::FakeTileService>();
 }
 
 FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
@@ -55,6 +62,14 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
   history_service->SetOnBackendDestroyTask(run_loop.QuitClosure());
   history_service->Shutdown();
   run_loop.Run();
+}
+
+PrefService* FakeAutocompleteProviderClient::GetPrefs() const {
+  return pref_service_.get();
+}
+
+PrefService* FakeAutocompleteProviderClient::GetLocalState() {
+  return local_state_.get();
 }
 
 const AutocompleteSchemeClassifier&
@@ -84,9 +99,11 @@ FakeAutocompleteProviderClient::GetShortcutsBackendIfExists() {
   return shortcuts_backend_;
 }
 
-bool FakeAutocompleteProviderClient::IsTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) {
-  return !substring_to_match_.empty() &&
-         url.spec().find(substring_to_match_) != std::string::npos;
+query_tiles::TileService* FakeAutocompleteProviderClient::GetQueryTileService()
+    const {
+  return tile_service_.get();
+}
+
+const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {
+  return fake_tab_matcher_;
 }

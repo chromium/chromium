@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+import 'chrome://resources/js/jstemplate_compiled.js';
+import './strings.m.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isIOS, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 let lastChanged = null;
 let lastFocused = null;
 const restartButton = $('experiment-restart-button');
@@ -9,8 +22,9 @@ const restartButton = $('experiment-restart-button');
 /** @type {?function():void} */
 let experimentalFeaturesResolver = null;
 
+// Exported on |window| since this is needed by tests.
 /** @type {!Promise} */
-const experimentalFeaturesReady = new Promise(resolve => {
+window.experimentalFeaturesReadyForTest = new Promise(resolve => {
   experimentalFeaturesResolver = resolve;
 });
 
@@ -84,7 +98,7 @@ function renderTemplate(experimentalFeaturesData) {
     };
   }
 
-  assert(restartButton || cr.isIOS);
+  assert(restartButton || isIOS);
   if (restartButton) {
     restartButton.onclick = restartBrowser;
   }
@@ -95,8 +109,8 @@ function renderTemplate(experimentalFeaturesData) {
     tabEls[i].addEventListener('click', function(e) {
       e.preventDefault();
       for (let j = 0; j < tabEls.length; ++j) {
-        tabEls[j].parentNode.classList.toggle('selected', tabEls[j] == this);
-        tabEls[j].setAttribute('aria-selected', tabEls[j] == this);
+        tabEls[j].parentNode.classList.toggle('selected', tabEls[j] === this);
+        tabEls[j].setAttribute('aria-selected', tabEls[j] === this);
       }
       FlagSearch.getInstance().announceSearchResults();
     });
@@ -112,6 +126,10 @@ function renderTemplate(experimentalFeaturesData) {
   }
 
   $('experiment-reset-all').onclick = resetAllFlags;
+  const crosUrlFlagsRedirectButton = $('os-link-href');
+  if (crosUrlFlagsRedirectButton) {
+    crosUrlFlagsRedirectButton.onclick = crosUrlFlagsRedirect;
+  }
 
   highlightReferencedFlag();
   const search = FlagSearch.getInstance();
@@ -126,7 +144,7 @@ function renderTemplate(experimentalFeaturesData) {
  */
 function registerFocusEvents(el) {
   el.addEventListener('keydown', function(e) {
-    if (lastChanged && e.key == 'Tab' && !e.shiftKey) {
+    if (lastChanged && e.key === 'Tab' && !e.shiftKey) {
       lastFocused = lastChanged;
       e.preventDefault();
       restartButton.focus();
@@ -171,7 +189,8 @@ function highlightReferencedFlag() {
  * |returnExperimentalFeatures()| will be called with reply.
  */
 function requestExperimentalFeaturesData() {
-  chrome.send('requestExperimentalFeatures');
+  sendWithPromise('requestExperimentalFeatures')
+      .then(returnExperimentalFeatures);
 }
 
 /** Restart browser and restore tabs. */
@@ -184,9 +203,9 @@ function restartBrowser() {
  * @param {string} text The text that should be announced.
 */
 function announceStatus(text) {
-  $('screen-reader-status-message').innerHTML = '';
+  $('screen-reader-status-message').textContent = '';
   setTimeout(function() {
-    $('screen-reader-status-message').innerHTML = text;
+    $('screen-reader-status-message').textContent = text;
   }, 100);
 }
 
@@ -197,6 +216,10 @@ function resetAllFlags() {
   announceStatus(loadTimeData.getString("reset-acknowledged"));
   showRestartToast(true);
   requestExperimentalFeaturesData();
+}
+
+function crosUrlFlagsRedirect() {
+  chrome.send('crosUrlFlagsRedirect');
 }
 
 /**
@@ -234,7 +257,8 @@ let Feature;
  *  needsRestart: boolean,
  *  showBetaChannelPromotion: boolean,
  *  showDevChannelPromotion: boolean,
- *  showOwnerWarning: boolean
+ *  showOwnerWarning: boolean,
+ *  showSystemFlagsLink: boolean
  * }}
  */
 let ExperimentalFeaturesData;
@@ -276,7 +300,8 @@ let ExperimentalFeaturesData;
  *     needsRestart: false,
  *     showBetaChannelPromotion: false,
  *     showDevChannelPromotion: false,
- *     showOwnerWarning: false
+ *     showOwnerWarning: false,
+ *     showSystemFlagsLink: false
  *   }
  */
 function returnExperimentalFeatures(experimentalFeaturesData) {
@@ -298,6 +323,11 @@ function returnExperimentalFeatures(experimentalFeaturesData) {
     ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
   }
 
+  const systemFlagsLinkDiv = $('os-link-container');
+  if (systemFlagsLinkDiv && !experimentalFeaturesData.showSystemFlagsLink) {
+    systemFlagsLinkDiv.style.display = 'none';
+  }
+
   experimentalFeaturesResolver();
 }
 
@@ -313,8 +343,8 @@ function experimentChangesUiUpdates(node, index) {
   /** @suppress {missingProperties} */
   const experimentContainerEl = $(node.internal_name).firstElementChild;
   const isDefault =
-      ("default" in selected.dataset && selected.dataset.default == "1") ||
-      (!("default" in selected.dataset) && index === 0);
+      ('default' in selected.dataset && selected.dataset.default === '1') ||
+      (!('default' in selected.dataset) && index === 0);
   experimentContainerEl.classList.toggle('experiment-default', isDefault);
   experimentContainerEl.classList.toggle('experiment-switched', !isDefault);
 
@@ -328,13 +358,24 @@ function experimentChangesUiUpdates(node, index) {
  * @suppress {missingProperties}
  */
 function handleEnableExperimentalFeature(node, enable) {
-  chrome.send('enableExperimentalFeature', [String(node.internal_name),
-                                            String(enable)]);
+  /* This function is an onchange handler, which can be invoked during page
+   * restore - see https://crbug.com/1038638. */
+  if (!node.internal_name) {
+    return;
+  }
+  chrome.send(
+      'enableExperimentalFeature',
+      [String(node.internal_name), String(enable)]);
   experimentChangesUiUpdates(node, enable ? 1 : 0);
 }
 
 /** @suppress {missingProperties} */
 function handleSetOriginListFlag(node, value) {
+  /* This function is an onchange handler, which can be invoked during page
+   * restore - see https://crbug.com/1038638. */
+  if (!node.internal_name) {
+    return;
+  }
   chrome.send('setOriginListFlag', [String(node.internal_name), String(value)]);
   showRestartToast(true);
 }
@@ -347,8 +388,14 @@ function handleSetOriginListFlag(node, value) {
  * @suppress {missingProperties}
  */
 function handleSelectExperimentalFeatureChoice(node, index) {
-  chrome.send('enableExperimentalFeature',
-              [String(node.internal_name) + '@' + index, 'true']);
+  /* This function is an onchange handler, which can be invoked during page
+   * restore - see https://crbug.com/1038638. */
+  if (!node.internal_name) {
+    return;
+  }
+  chrome.send(
+      'enableExperimentalFeature',
+      [String(node.internal_name) + '@' + index, 'true']);
   experimentChangesUiUpdates(node, index);
 }
 
@@ -413,7 +460,7 @@ FlagSearch.prototype = {
    * Initialises the in page search. Adding searchbox listeners and
    * collates the text elements used for string matching.
    */
-  init: function() {
+  init() {
     this.experiments_.link = /** @type {!NodeList<!HTMLElement>} */ (
         document.querySelectorAll('#tab-content-available .permalink'));
     this.experiments_.title = /** @type {!NodeList<!HTMLElement>} */ (
@@ -433,22 +480,22 @@ FlagSearch.prototype = {
     if (!this.initialized) {
       this.searchBox_.addEventListener('input', this.debounceSearch.bind(this));
 
-      document.querySelector('.clear-search').addEventListener('click',
-          this.clearSearch.bind(this));
+      document.querySelector('.clear-search')
+          .addEventListener('click', this.clearSearch.bind(this));
 
       window.addEventListener('keyup', function(e) {
-          if (document.activeElement.nodeName == "TEXTAREA") {
-            return;
-          }
-          switch(e.key) {
-            case '/':
-              this.searchBox_.focus();
-              break;
-            case 'Escape':
-            case 'Enter':
-              this.searchBox_.blur();
-              break;
-          }
+        if (document.activeElement.nodeName === 'TEXTAREA') {
+          return;
+        }
+        switch (e.key) {
+          case '/':
+            this.searchBox_.focus();
+            break;
+          case 'Escape':
+          case 'Enter':
+            this.searchBox_.blur();
+            break;
+        }
       }.bind(this));
       this.searchBox_.focus();
       this.initialized = true;
@@ -458,7 +505,7 @@ FlagSearch.prototype = {
   /**
    * Clears a search showing all experiments.
    */
-  clearSearch: function() {
+  clearSearch() {
     this.searchBox_.value = '';
     this.doSearch();
   },
@@ -468,7 +515,7 @@ FlagSearch.prototype = {
    * @param {HTMLElement} el The element to remove all highlighted mark up on.
    * @param {string} text Text to reset the element's textContent to.
    */
-  resetHighlights: function(el, text) {
+  resetHighlights(el, text) {
     if (el.children) {
       el.textContent = text;
     }
@@ -480,20 +527,20 @@ FlagSearch.prototype = {
    * @param {HTMLElement} el The node containing the text to match against.
    * @return {boolean} Whether there was a match.
    */
-  highlightMatchInElement: function(searchTerm, el) {
+  highlightMatchInElement(searchTerm, el) {
     // Experiment container.
     const parentEl = el.parentNode.parentNode.parentNode;
     const text = el.textContent;
     const match = text.toLowerCase().indexOf(searchTerm);
 
-    parentEl.classList.toggle('hidden', match == -1);
+    parentEl.classList.toggle('hidden', match === -1);
 
-    if (match == -1) {
+    if (match === -1) {
       this.resetHighlights(el, text);
       return false;
     }
 
-    if (searchTerm != '') {
+    if (searchTerm !== '') {
       // Clear all nodes.
       el.textContent = '';
 
@@ -528,33 +575,35 @@ FlagSearch.prototype = {
    * @param {string} searchTerm
    * @return {number} The number of matches found.
    */
-  highlightAllMatches: function(searchContent, searchTerm) {
+  highlightAllMatches(searchContent, searchTerm) {
     let matches = 0;
     for (let i = 0, j = searchContent.link.length; i < j; i++) {
       if (this.highlightMatchInElement(searchTerm, searchContent.title[i])) {
-        this.resetHighlights(searchContent.description[i],
+        this.resetHighlights(
+            searchContent.description[i],
             searchContent.description[i].textContent);
-        this.resetHighlights(searchContent.link[i],
-            searchContent.link[i].textContent);
+        this.resetHighlights(
+            searchContent.link[i], searchContent.link[i].textContent);
         matches++;
         continue;
       }
-      if (this.highlightMatchInElement(searchTerm,
-          searchContent.description[i])) {
-        this.resetHighlights(searchContent.title[i],
-            searchContent.title[i].textContent);
-        this.resetHighlights(searchContent.link[i],
-            searchContent.link[i].textContent);
+      if (this.highlightMatchInElement(
+              searchTerm, searchContent.description[i])) {
+        this.resetHighlights(
+            searchContent.title[i], searchContent.title[i].textContent);
+        this.resetHighlights(
+            searchContent.link[i], searchContent.link[i].textContent);
         matches++;
         continue;
       }
       // Match links, replace spaces with hyphens as flag names don't
       // have spaces.
-      if (this.highlightMatchInElement(searchTerm.replace(/\s/, '-'),
-          searchContent.link[i])) {
-        this.resetHighlights(searchContent.title[i],
-            searchContent.title[i].textContent);
-        this.resetHighlights(searchContent.description[i],
+      if (this.highlightMatchInElement(
+              searchTerm.replace(/\s/, '-'), searchContent.link[i])) {
+        this.resetHighlights(
+            searchContent.title[i], searchContent.title[i].textContent);
+        this.resetHighlights(
+            searchContent.description[i],
             searchContent.description[i].textContent);
         matches++;
       }
@@ -565,10 +614,10 @@ FlagSearch.prototype = {
   /**
    * Performs a search against the experiment title, description, permalink.
    */
-  doSearch: function() {
+  doSearch() {
     const searchTerm = this.searchBox_.value.trim().toLowerCase();
 
-    if (searchTerm || searchTerm == '') {
+    if (searchTerm || searchTerm === '') {
       document.body.classList.toggle('searching', searchTerm);
       // Available experiments
       this.noMatchMsg_[0].classList.toggle(
@@ -585,7 +634,7 @@ FlagSearch.prototype = {
     this.searchIntervalId_ = null;
   },
 
-  announceSearchResults: function() {
+  announceSearchResults() {
     const searchTerm = this.searchBox_.value.trim().toLowerCase();
     if (!searchTerm) {
       return;
@@ -595,7 +644,7 @@ FlagSearch.prototype = {
     const tabEls = document.getElementsByClassName('tab');
     for (let i = 0; i < tabEls.length; ++i) {
       if (tabEls[i].parentNode.classList.contains('selected')) {
-        tabAvailable = tabEls[i].id == 'tab-available';
+        tabAvailable = tabEls[i].id === 'tab-available';
       }
     }
     const seletedTabId =
@@ -603,9 +652,11 @@ FlagSearch.prototype = {
     const queryString = seletedTabId + ' .experiment:not(.hidden)';
     const total = document.querySelectorAll(queryString).length;
     if (total) {
-      announceStatus((total == 1) ?
-          loadTimeData.getStringF("searchResultsSingular", searchTerm) :
-          loadTimeData.getStringF("searchResultsPlural", total, searchTerm));
+      announceStatus(
+          total === 1 ?
+              loadTimeData.getStringF('searchResultsSingular', searchTerm) :
+              loadTimeData.getStringF(
+                  'searchResultsPlural', total, searchTerm));
     }
   },
 
@@ -613,12 +664,12 @@ FlagSearch.prototype = {
    * Debounces the search to improve performance and prevent too many searches
    * from being initiated.
    */
-  debounceSearch: function() {
+  debounceSearch() {
     if (this.searchIntervalId_) {
       clearTimeout(this.searchIntervalId_);
     }
-    this.searchIntervalId_ = setTimeout(this.doSearch.bind(this),
-        FlagSearch.SEARCH_DEBOUNCE_TIME_MS);
+    this.searchIntervalId_ = setTimeout(
+        this.doSearch.bind(this), FlagSearch.SEARCH_DEBOUNCE_TIME_MS);
   }
 };
 
@@ -628,7 +679,7 @@ FlagSearch.prototype = {
  */
 function setupRestartButton() {
   restartButton.addEventListener('keydown', function(e) {
-    if (e.shiftKey && e.key == 'Tab' && lastFocused) {
+    if (e.shiftKey && e.key === 'Tab' && lastFocused) {
       e.preventDefault();
       lastFocused.focus();
     }
@@ -642,7 +693,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Get and display the data upon loading.
   requestExperimentalFeaturesData();
   setupRestartButton();
-  cr.ui.FocusOutlineManager.forDocument(document);
+  FocusOutlineManager.forDocument(document);
 });
 
 // Update the highlighted flag when the hash changes.

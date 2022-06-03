@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/shader.h"
@@ -29,6 +28,10 @@ namespace viz {
 class VIZ_SERVICE_EXPORT ProgramBindingBase {
  public:
   ProgramBindingBase();
+
+  ProgramBindingBase(const ProgramBindingBase&) = delete;
+  ProgramBindingBase& operator=(const ProgramBindingBase&) = delete;
+
   ~ProgramBindingBase();
 
   bool Init(gpu::gles2::GLES2Interface* context,
@@ -55,9 +58,6 @@ class VIZ_SERVICE_EXPORT ProgramBindingBase {
   unsigned vertex_shader_id_;
   unsigned fragment_shader_id_;
   bool initialized_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProgramBindingBase);
 };
 
 enum ProgramType {
@@ -126,6 +126,8 @@ class VIZ_SERVICE_EXPORT ProgramKey {
   }
   TexCoordPrecision tex_coord_precision() const { return precision_; }
 
+  ProgramType type() const { return type_; }
+
  private:
   friend struct ProgramKeyHash;
   friend class Program;
@@ -183,6 +185,9 @@ struct ProgramKeyHash {
 class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
  public:
   Program() {}
+
+  Program(const Program&) = delete;
+  Program& operator=(const Program&) = delete;
 
   void Initialize(ContextProvider* context_provider, const ProgramKey& key) {
     // Set parameters that are common to all sub-classes.
@@ -305,10 +310,6 @@ class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
   int a_texture_location() const {
     return fragment_shader_.a_texture_location_;
   }
-  int lut_texture_location() const {
-    return fragment_shader_.lut_texture_location_;
-  }
-  int lut_size_location() const { return fragment_shader_.lut_size_location_; }
   int resource_multiplier_location() const {
     return fragment_shader_.resource_multiplier_location_;
   }
@@ -471,8 +472,6 @@ class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
 
   VertexShader vertex_shader_;
   FragmentShader fragment_shader_;
-
-  DISALLOW_COPY_AND_ASSIGN(Program);
 };
 
 }  // namespace viz

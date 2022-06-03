@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ANDROID_WEBVIEW_BROWSER_METRICS_VISIBILITY_METRICS_PROVIDER_H_
+#define ANDROID_WEBVIEW_BROWSER_METRICS_VISIBILITY_METRICS_PROVIDER_H_
+
+#include "components/metrics/metrics_provider.h"
+
+namespace android_webview {
+
+class VisibilityMetricsLogger;
+
+class VisibilityMetricsProvider : public metrics::MetricsProvider {
+ public:
+  explicit VisibilityMetricsProvider(VisibilityMetricsLogger* logger);
+  ~VisibilityMetricsProvider() override;
+
+  VisibilityMetricsProvider() = delete;
+  VisibilityMetricsProvider(const VisibilityMetricsProvider&) = delete;
+
+  // metrics::MetricsProvider
+  void ProvideCurrentSessionData(
+      metrics::ChromeUserMetricsExtension* uma_proto) override;
+
+ private:
+  VisibilityMetricsLogger* logger_;
+};
+
+}  // namespace android_webview
+
+#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_VISIBILITY_METRICS_PROVIDER_H_

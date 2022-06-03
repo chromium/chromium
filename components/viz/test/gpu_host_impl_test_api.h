@@ -14,6 +14,10 @@ class GpuHostImpl;
 class GpuHostImplTestApi {
  public:
   explicit GpuHostImplTestApi(GpuHostImpl* gpu_host);
+
+  GpuHostImplTestApi(const GpuHostImplTestApi&) = delete;
+  GpuHostImplTestApi& operator=(const GpuHostImplTestApi&) = delete;
+
   ~GpuHostImplTestApi();
 
   // Waits until all messages to the mojo::Remote<mojom::GpuService> have been
@@ -23,8 +27,6 @@ class GpuHostImplTestApi {
 
  private:
   GpuHostImpl* gpu_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuHostImplTestApi);
 };
 
 }  // namespace viz

@@ -1,23 +1,26 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @type {!Promise<void>} A promise which is fulfilled when HTML imports for
- *   custom elements for file manager UI are loaded.
- */
-window.importElementsPromise = new Promise((resolve, reject) => {
+/** @return {!Promise<void>} */
+export function importElements() {
   const startTime = Date.now();
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = './foreground/js/deferred_elements.m.js';
 
-  const link = document.createElement('link');
-  link.rel = 'import';
-  link.href = 'foreground/elements/elements_bundle.html';
-  link.setAttribute('async', '');
-  link.onload = () => {
-    chrome.metricsPrivate.recordTime(
-        'FileBrowser.Load.ImportElements', Date.now() - startTime);
-    resolve();
-  };
-  link.onerror = reject;
-  document.head.appendChild(link);
-});
+    script.onload = () => {
+      console.log('Elements imported.');
+      chrome.metricsPrivate.recordTime(
+          'FileBrowser.Load.ImportElements', Date.now() - startTime);
+      resolve();
+    };
+    script.onerror = (error) => {
+      console.error(error);
+      reject(error);
+    };
+
+    document.head.appendChild(script);
+  });
+}

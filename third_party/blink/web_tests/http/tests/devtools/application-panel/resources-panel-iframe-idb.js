@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel's handling of storages in iframes.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('resources');
 
   function createIndexedDBInMainFrame(callback) {
@@ -31,18 +31,22 @@
   }
 
   // create IndexedDB in iframe
-  await TestRunner.addIframe('http://localhost:8000/devtools/application-panel/resources/indexeddb-in-iframe.html', {'id': 'indexeddb_page'});
-  await TestRunner.addSnifferPromise(UI.panels.resources._sidebar.indexedDBListTreeElement, '_indexedDBLoadedForTest');
+  // We are enforcing OOPIFs here, so that we are sure that the bots on all platforms create an OOPIF.
+  // This would not be guaranteed otherwise and could potentially result in a different display name
+  // for the iframe in the frame tree.
+  await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/application-panel/resources/indexeddb-in-iframe.html', {'id': 'indexeddb_page'});
+
+  await TestRunner.addSnifferPromise(UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
 
   // create IndexedDB in main frame
   await new Promise(createIndexedDBInMainFrame);
-  await TestRunner.addSnifferPromise(UI.panels.resources._sidebar.indexedDBListTreeElement, '_indexedDBLoadedForTest');
+  await TestRunner.addSnifferPromise(UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
 
   const view = UI.panels.resources;
 
   TestRunner.addResult('Initial tree...\n');
 
-  dumpTree(view._sidebar._sidebarTree.rootElement(), 0);
+  dumpTree(view.sidebar.sidebarTree.rootElement(), 0);
 
   TestRunner.addResult('\nRemove iframe from page...\n');
   await TestRunner.evaluateInPageAsync(`
@@ -52,13 +56,13 @@
     })();
   `);
 
-  dumpTree(view._sidebar._sidebarTree.rootElement(), 0);
+  dumpTree(view.sidebar.sidebarTree.rootElement(), 0);
 
   TestRunner.addResult('\nAdd iframe to page again...\n');
-  await TestRunner.addIframe('http://localhost:8000/devtools/application-panel/resources/indexeddb-in-iframe.html', {'id': 'indexeddb_page'});
-  await TestRunner.addSnifferPromise(UI.panels.resources._sidebar.indexedDBListTreeElement, '_indexedDBLoadedForTest');
+  await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/application-panel/resources/indexeddb-in-iframe.html', {'id': 'indexeddb_page'});
+  await TestRunner.addSnifferPromise(UI.panels.resources.sidebar.indexedDBListTreeElement, 'indexedDBLoadedForTest');
 
-  dumpTree(view._sidebar._sidebarTree.rootElement(), 0);
+  dumpTree(view.sidebar.sidebarTree.rootElement(), 0);
 
   TestRunner.completeTest();
 })();

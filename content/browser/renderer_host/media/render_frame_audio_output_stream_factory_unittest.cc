@@ -9,15 +9,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -29,12 +29,12 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,9 +53,9 @@ class RenderFrameAudioOutputStreamFactoryTest
       : audio_manager_(std::make_unique<media::TestAudioThread>(),
                        &log_factory_),
         audio_system_(media::AudioSystemImpl::CreateInstance()),
-        media_stream_manager_(std::make_unique<MediaStreamManager>(
-            audio_system_.get(),
-            base::CreateSingleThreadTaskRunner({BrowserThread::UI}))) {}
+        media_stream_manager_(
+            std::make_unique<MediaStreamManager>(audio_system_.get(),
+                                                 GetUIThreadTaskRunner({}))) {}
 
   ~RenderFrameAudioOutputStreamFactoryTest() override {}
 
@@ -64,7 +64,7 @@ class RenderFrameAudioOutputStreamFactoryTest
     RenderFrameHostTester::For(main_rfh())->InitializeRenderFrameIfNeeded();
 
     // Set up the ForwardingAudioStreamFactory.
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::BindRepeating(
             &RenderFrameAudioOutputStreamFactoryTest::BindFactory,
             base::Unretained(this)));
@@ -73,15 +73,19 @@ class RenderFrameAudioOutputStreamFactoryTest
   }
 
   void TearDown() override {
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::NullCallback());
     audio_manager_.Shutdown();
     RenderViewHostTestHarness::TearDown();
   }
 
   void BindFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
     audio_service_stream_factory_.receiver_.Bind(std::move(receiver));
+  }
+
+  RenderFrameHostImpl* main_rfh_impl() {
+    return static_cast<RenderFrameHostImpl*>(main_rfh());
   }
 
   class MockStreamFactory : public audio::FakeStreamFactory {
@@ -97,7 +101,6 @@ class RenderFrameAudioOutputStreamFactoryTest
         const std::string& output_device_id,
         const media::AudioParameters& params,
         const base::UnguessableToken& group_id,
-        const base::Optional<base::UnguessableToken>& processing_id,
         CreateOutputStreamCallback created_callback) override {
       last_created_callback = std::move(created_callback);
     }
@@ -123,23 +126,25 @@ class RenderFrameAudioOutputStreamFactoryTest
 };
 
 TEST_F(RenderFrameAudioOutputStreamFactoryTest, ConstructDestruct) {
-  mojo::Remote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioOutputStreamFactory> factory_remote;
   RenderFrameAudioOutputStreamFactory factory(
-      main_rfh(), audio_system_.get(), media_stream_manager_.get(),
-      factory_remote.BindNewPipeAndPassReceiver());
+      main_rfh_impl(), audio_system_.get(), media_stream_manager_.get(),
+      factory_remote.BindNewPipeAndPassReceiver(),
+      /*restricted_callback=*/absl::nullopt);
 }
 
 TEST_F(RenderFrameAudioOutputStreamFactoryTest,
        RequestDeviceAuthorizationForDefaultDevice_StatusOk) {
-  mojo::Remote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioOutputStreamFactory> factory_remote;
   RenderFrameAudioOutputStreamFactory factory(
-      main_rfh(), audio_system_.get(), media_stream_manager_.get(),
-      factory_remote.BindNewPipeAndPassReceiver());
+      main_rfh_impl(), audio_system_.get(), media_stream_manager_.get(),
+      factory_remote.BindNewPipeAndPassReceiver(),
+      /*restricted_callback=*/absl::nullopt);
 
   mojo::Remote<media::mojom::AudioOutputStreamProvider> provider_remote;
   MockAuthorizationCallback mock_callback;
   factory_remote->RequestDeviceAuthorization(
-      provider_remote.BindNewPipeAndPassReceiver(), base::nullopt,
+      provider_remote.BindNewPipeAndPassReceiver(), absl::nullopt,
       kDefaultDeviceId, mock_callback.Get());
 
   EXPECT_CALL(mock_callback,
@@ -153,15 +158,16 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
 TEST_F(
     RenderFrameAudioOutputStreamFactoryTest,
     RequestDeviceAuthorizationForDefaultDeviceAndDestroyProviderPtr_CleansUp) {
-  mojo::Remote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioOutputStreamFactory> factory_remote;
   RenderFrameAudioOutputStreamFactory factory(
-      main_rfh(), audio_system_.get(), media_stream_manager_.get(),
-      factory_remote.BindNewPipeAndPassReceiver());
+      main_rfh_impl(), audio_system_.get(), media_stream_manager_.get(),
+      factory_remote.BindNewPipeAndPassReceiver(),
+      /*restricted_callback=*/absl::nullopt);
 
   mojo::Remote<media::mojom::AudioOutputStreamProvider> provider_remote;
   MockAuthorizationCallback mock_callback;
   factory_remote->RequestDeviceAuthorization(
-      provider_remote.BindNewPipeAndPassReceiver(), base::nullopt,
+      provider_remote.BindNewPipeAndPassReceiver(), absl::nullopt,
       kDefaultDeviceId, mock_callback.Get());
   provider_remote.reset();
 
@@ -176,15 +182,16 @@ TEST_F(
 TEST_F(
     RenderFrameAudioOutputStreamFactoryTest,
     RequestDeviceAuthorizationForNondefaultDeviceWithoutAuthorization_Fails) {
-  mojo::Remote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioOutputStreamFactory> factory_remote;
   RenderFrameAudioOutputStreamFactory factory(
-      main_rfh(), audio_system_.get(), media_stream_manager_.get(),
-      factory_remote.BindNewPipeAndPassReceiver());
+      main_rfh_impl(), audio_system_.get(), media_stream_manager_.get(),
+      factory_remote.BindNewPipeAndPassReceiver(),
+      /*restricted_callback=*/absl::nullopt);
 
   mojo::Remote<media::mojom::AudioOutputStreamProvider> provider_remote;
   MockAuthorizationCallback mock_callback;
   factory_remote->RequestDeviceAuthorization(
-      provider_remote.BindNewPipeAndPassReceiver(), base::nullopt, kDeviceId,
+      provider_remote.BindNewPipeAndPassReceiver(), absl::nullopt, kDeviceId,
       mock_callback.Get());
 
   EXPECT_CALL(mock_callback,
@@ -197,23 +204,24 @@ TEST_F(
 
 TEST_F(RenderFrameAudioOutputStreamFactoryTest,
        CreateStream_CreatesStreamAndFreesProvider) {
-  mojo::Remote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioOutputStreamFactory> factory_remote;
   RenderFrameAudioOutputStreamFactory factory(
-      main_rfh(), audio_system_.get(), media_stream_manager_.get(),
-      factory_remote.BindNewPipeAndPassReceiver());
+      main_rfh_impl(), audio_system_.get(), media_stream_manager_.get(),
+      factory_remote.BindNewPipeAndPassReceiver(),
+      /*restricted_callback=*/absl::nullopt);
 
   mojo::Remote<media::mojom::AudioOutputStreamProvider> provider_remote;
   MockAuthorizationCallback mock_callback;
   factory_remote->RequestDeviceAuthorization(
-      provider_remote.BindNewPipeAndPassReceiver(), base::nullopt,
+      provider_remote.BindNewPipeAndPassReceiver(), absl::nullopt,
       kDefaultDeviceId, mock_callback.Get());
   {
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
     ignore_result(client.InitWithNewPipeAndPassReceiver());
-    provider_remote->Acquire(kParams, std::move(client), base::nullopt);
+    provider_remote->Acquire(kParams, std::move(client));
   }
 
-  audio::mojom::StreamFactory::CreateOutputStreamCallback created_callback;
+  media::mojom::AudioStreamFactory::CreateOutputStreamCallback created_callback;
   EXPECT_CALL(mock_callback,
               Run(media::OUTPUT_DEVICE_STATUS_OK, _, std::string()));
 
@@ -229,16 +237,18 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
   MockAuthorizationCallback mock_callback;
 
   {
-    mojo::Remote<mojom::RendererAudioOutputStreamFactory> factory_remote;
+    mojo::Remote<blink::mojom::RendererAudioOutputStreamFactory> factory_remote;
     RenderFrameAudioOutputStreamFactory factory(
-        main_rfh(), audio_system_.get(), media_stream_manager_.get(),
-        factory_remote.BindNewPipeAndPassReceiver());
+        main_rfh_impl(), audio_system_.get(), media_stream_manager_.get(),
+        factory_remote.BindNewPipeAndPassReceiver(),
+        /*restricted_callback=*/absl::nullopt);
 
     factory_remote->RequestDeviceAuthorization(
-        provider_remote.BindNewPipeAndPassReceiver(), base::nullopt,
+        provider_remote.BindNewPipeAndPassReceiver(), absl::nullopt,
         kDefaultDeviceId, mock_callback.Get());
 
-    audio::mojom::StreamFactory::CreateOutputStreamCallback created_callback;
+    media::mojom::AudioStreamFactory::CreateOutputStreamCallback
+        created_callback;
     EXPECT_CALL(mock_callback,
                 Run(media::OUTPUT_DEVICE_STATUS_OK, _, std::string()));
     base::RunLoop().RunUntilIdle();
@@ -247,7 +257,7 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
   {
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
     ignore_result(client.InitWithNewPipeAndPassReceiver());
-    provider_remote->Acquire(kParams, std::move(client), base::nullopt);
+    provider_remote->Acquire(kParams, std::move(client));
   }
 
   base::RunLoop().RunUntilIdle();

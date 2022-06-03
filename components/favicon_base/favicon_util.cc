@@ -16,6 +16,7 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -23,9 +24,9 @@
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
 namespace favicon_base {
 namespace {
@@ -127,9 +128,10 @@ SkBitmap ResizeBitmapByDownsamplingIfPossible(
     if (!best_bitmap.isOpaque())
       bitmap.eraseARGB(0, 0, 0, 0);
 
-    SkCanvas canvas(bitmap);
-    canvas.drawBitmapRect(best_bitmap,
-                          SkRect::MakeIWH(desired_size, desired_size), nullptr);
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    canvas.drawImageRect(best_bitmap.asImage(),
+                         SkRect::MakeIWH(desired_size, desired_size),
+                         SkSamplingOptions());
     return bitmap;
   }
   return skia::ImageOperations::Resize(best_bitmap,
@@ -142,8 +144,8 @@ SkBitmap ResizeBitmapByDownsamplingIfPossible(
 
 std::vector<float> GetFaviconScales() {
   const float kScale1x = 1.0f;
-  std::vector<ui::ScaleFactor> resource_scale_factors =
-      ui::GetSupportedScaleFactors();
+  std::vector<ui::ResourceScaleFactor> resource_scale_factors =
+      ui::GetSupportedResourceScaleFactors();
 
   // TODO(ios): 1.0f should not be necessary on iOS retina devices. However
   // the sync service only supports syncing 100p favicons. Until sync supports
@@ -151,17 +153,17 @@ std::vector<float> GetFaviconScales() {
   // store the favicons in both 100p for sync and 200p for display. cr/160503.
   std::vector<float> favicon_scales(1, kScale1x);
   for (size_t i = 0; i < resource_scale_factors.size(); ++i) {
-    if (resource_scale_factors[i] != ui::SCALE_FACTOR_100P)
+    if (resource_scale_factors[i] != ui::k100Percent)
       favicon_scales.push_back(
-          ui::GetScaleForScaleFactor(resource_scale_factors[i]));
+          ui::GetScaleForResourceScaleFactor(resource_scale_factors[i]));
   }
   return favicon_scales;
 }
 
 void SetFaviconColorSpace(gfx::Image* image) {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   image->SetSourceColorSpace(base::mac::GetSystemColorSpace());
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 }
 
 gfx::Image SelectFaviconFramesFromPNGs(

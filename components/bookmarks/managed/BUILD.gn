@@ -8,6 +8,8 @@ static_library("managed") {
     "managed_bookmark_service.h",
     "managed_bookmark_util.cc",
     "managed_bookmark_util.h",
+    "managed_bookmarks_policy_handler.cc",
+    "managed_bookmarks_policy_handler.h",
     "managed_bookmarks_tracker.cc",
     "managed_bookmarks_tracker.h",
   ]
@@ -17,8 +19,11 @@ static_library("managed") {
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//components/prefs",
     "//components/strings",
+    "//components/url_formatter",
     "//ui/base",
     "//url",
   ]
@@ -27,10 +32,9 @@ static_library("managed") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "managed_bookmarks_policy_handler_unittest.cc",
     "managed_bookmarks_tracker_unittest.cc",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   deps = [
     ":managed",
@@ -39,6 +43,8 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//components/bookmarks/test",
+    "//components/policy/core/browser:test_support",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/strings",
     "//testing/gmock",

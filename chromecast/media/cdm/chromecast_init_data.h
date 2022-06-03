@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CDM_INIT_DATA_H_
-#define CHROMECAST_MEDIA_CDM_INIT_DATA_H_
+#ifndef CHROMECAST_MEDIA_CDM_CHROMECAST_INIT_DATA_H_
+#define CHROMECAST_MEDIA_CDM_CHROMECAST_INIT_DATA_H_
 
 #include <stdint.h>
 
@@ -38,4 +38,4 @@ bool FindChromecastInitData(const std::vector<uint8_t>& init_data,
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CDM_INIT_DATA_H_
+#endif  // CHROMECAST_MEDIA_CDM_CHROMECAST_INIT_DATA_H_

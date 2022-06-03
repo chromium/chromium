@@ -174,11 +174,6 @@ interface FileSystemManager {
   TruncateSync(url.mojom.Url file_path, int64 length) =>
       (mojo_base.mojom.FileError error_code);
 
-  TouchFile(url.mojom.Url path,
-            mojo_base.mojom.Time last_access_time,
-            mojo_base.mojom.Time last_modified_time) =>
-      (mojo_base.mojom.FileError error_code);
-
   // Creates a snapshot file for a given file specified by |file_path|. Returns
   // the metadata of the created snapshot file, which also includes a local
   // platform path to the snapshot image (|platform_path|).

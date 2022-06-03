@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
@@ -31,6 +30,10 @@ class FakeTextTrack : public TextTrack {
  public:
   FakeTextTrack(base::OnceClosure destroy_cb, const TextTrackConfig& config)
       : destroy_cb_(std::move(destroy_cb)), config_(config) {}
+
+  FakeTextTrack(const FakeTextTrack&) = delete;
+  FakeTextTrack& operator=(const FakeTextTrack&) = delete;
+
   ~FakeTextTrack() override { std::move(destroy_cb_).Run(); }
 
   MOCK_METHOD5(addWebVTTCue,
@@ -42,21 +45,22 @@ class FakeTextTrack : public TextTrack {
 
   base::OnceClosure destroy_cb_;
   const TextTrackConfig config_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeTextTrack);
 };
 
 class TextRendererTest : public testing::Test {
  public:
   TextRendererTest() = default;
 
+  TextRendererTest(const TextRendererTest&) = delete;
+  TextRendererTest& operator=(const TextRendererTest&) = delete;
+
   void CreateTextRenderer() {
     DCHECK(!text_renderer_);
 
-    text_renderer_.reset(new TextRenderer(
+    text_renderer_ = std::make_unique<TextRenderer>(
         task_environment_.GetMainThreadTaskRunner(),
-        base::Bind(&TextRendererTest::OnAddTextTrack, base::Unretained(this))));
+        base::BindRepeating(&TextRendererTest::OnAddTextTrack,
+                            base::Unretained(this)));
     text_renderer_->Initialize(
         base::BindRepeating(&TextRendererTest::OnEnd, base::Unretained(this)));
   }
@@ -144,7 +148,7 @@ class TextRendererTest : public testing::Test {
     FakeTextTrackStream* const text_stream = text_track_streams_[idx].get();
 
     const base::TimeDelta start;
-    const base::TimeDelta duration = base::TimeDelta::FromSeconds(42);
+    const base::TimeDelta duration = base::Seconds(42);
     const std::string id = "id";
     const std::string content = "subtitle";
     const std::string settings;
@@ -171,14 +175,14 @@ class TextRendererTest : public testing::Test {
 
   void Pause() {
     text_renderer_->Pause(
-        base::Bind(&TextRendererTest::OnPause, base::Unretained(this)));
+        base::BindOnce(&TextRendererTest::OnPause, base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
 
   void Flush() {
     EXPECT_CALL(*this, OnFlush());
     text_renderer_->Flush(
-        base::Bind(&TextRendererTest::OnFlush, base::Unretained(this)));
+        base::BindOnce(&TextRendererTest::OnFlush, base::Unretained(this)));
   }
 
   void ExpectRead(size_t idx) {
@@ -199,15 +203,13 @@ class TextRendererTest : public testing::Test {
   TextTracks text_tracks_;
 
   std::unique_ptr<TextRenderer> text_renderer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextRendererTest);
 };
 
 TEST_F(TextRendererTest, CreateTextRendererNoInit) {
-  text_renderer_.reset(new TextRenderer(
+  text_renderer_ = std::make_unique<TextRenderer>(
       task_environment_.GetMainThreadTaskRunner(),
-      base::Bind(&TextRendererTest::OnAddTextTrack, base::Unretained(this))));
+      base::BindRepeating(&TextRendererTest::OnAddTextTrack,
+                          base::Unretained(this)));
   text_renderer_.reset();
 }
 

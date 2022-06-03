@@ -26,12 +26,14 @@
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -51,7 +53,10 @@
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_transaction.h"
 #include "third_party/blink/renderer/modules/webdatabase/storage_log.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_host.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -104,11 +109,17 @@ class DatabaseVersionCache {
     mutex_.AssertAcquired();
     String string_id = origin + "/" + name;
     DCHECK(string_id.IsSafeToSendToAnotherThread());
-    DatabaseGuid guid = origin_name_to_guid_.at(string_id);
-    if (!guid) {
+
+    DatabaseGuid guid;
+    auto origin_name_to_guid_it = origin_name_to_guid_.find(string_id);
+    if (origin_name_to_guid_it == origin_name_to_guid_.end()) {
       guid = next_guid_++;
       origin_name_to_guid_.Set(string_id, guid);
+    } else {
+      guid = origin_name_to_guid_it->value;
+      DCHECK(guid);
     }
+
     count_.insert(guid);
     return guid;
   }
@@ -126,7 +137,14 @@ class DatabaseVersionCache {
   // The null string is returned only if the cached version has not been set.
   String GetVersion(DatabaseGuid guid) const EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
     mutex_.AssertAcquired();
-    return guid_to_version_.at(guid).IsolatedCopy();
+
+    String version;
+    auto guid_to_version_it = guid_to_version_.find(guid);
+    if (guid_to_version_it != guid_to_version_.end()) {
+      version = guid_to_version_it->value;
+      DCHECK(version);
+    }
+    return version.IsolatedCopy();
   }
 
   // Updates the cached version of a database.
@@ -219,19 +237,25 @@ static bool SetTextValueInDatabase(SQLiteDatabase& db,
 Database::Database(DatabaseContext* database_context,
                    const String& name,
                    const String& expected_version,
-                   const String& display_name,
-                   uint32_t estimated_size)
+                   const String& display_name)
     : database_context_(database_context),
       name_(name.IsolatedCopy()),
       expected_version_(expected_version.IsolatedCopy()),
       display_name_(display_name.IsolatedCopy()),
-      estimated_size_(estimated_size),
       guid_(0),
       opened_(false),
       new_(false),
       database_authorizer_(kInfoTableName),
       transaction_in_progress_(false),
-      is_transaction_queue_enabled_(true) {
+      is_transaction_queue_enabled_(true),
+      did_try_to_count_transaction_(false),
+      did_try_to_count_third_party_transaction_(false),
+      feature_handle_for_scheduler_(
+          database_context->GetExecutionContext()
+              ->GetScheduler()
+              ->RegisterFeature(
+                  SchedulingPolicy::Feature::kWebDatabase,
+                  {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(IsMainThread());
   context_thread_security_origin_ =
       database_context_->GetSecurityOrigin()->IsolatedCopy();
@@ -269,7 +293,7 @@ Database::~Database() {
   DCHECK(!Opened());
 }
 
-void Database::Trace(blink::Visitor* visitor) {
+void Database::Trace(Visitor* visitor) const {
   visitor->Trace(database_context_);
   ScriptWrappable::Trace(visitor);
 }
@@ -613,10 +637,6 @@ String Database::DisplayName() const {
   return display_name_.IsolatedCopy();
 }
 
-uint32_t Database::EstimatedSize() const {
-  return estimated_size_;
-}
-
 String Database::FileName() const {
   // Return a deep copy for ref counting thread safety
   return filename_.IsolatedCopy();
@@ -746,9 +766,9 @@ void Database::ReportSqliteError(int sqlite_error_code) {
 }
 
 void Database::LogErrorMessage(const String& message) {
-  GetExecutionContext()->AddConsoleMessage(
-      ConsoleMessage::Create(mojom::ConsoleMessageSource::kStorage,
-                             mojom::ConsoleMessageLevel::kError, message));
+  GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::ConsoleMessageSource::kStorage, mojom::ConsoleMessageLevel::kError,
+      message));
 }
 
 ExecutionContext* Database::GetExecutionContext() const {
@@ -817,6 +837,17 @@ void Database::RunTransaction(
     return;
 
   DCHECK(GetExecutionContext()->IsContextThread());
+
+  if (!did_try_to_count_transaction_) {
+    GetExecutionContext()->CountUse(WebFeature::kReadOrWriteWebDatabase);
+    did_try_to_count_transaction_ = true;
+  }
+  if (!did_try_to_count_third_party_transaction_) {
+    GetExecutionContext()->CountUseOnlyInCrossSiteIframe(
+        WebFeature::kReadOrWriteWebDatabaseThirdPartyContext);
+    did_try_to_count_third_party_transaction_ = true;
+  }
+
 // FIXME: Rather than passing errorCallback to SQLTransaction and then
 // sometimes firing it ourselves, this code should probably be pushed down
 // into Database so that we only create the SQLTransaction if we're
@@ -840,7 +871,7 @@ void Database::RunTransaction(
       GetDatabaseTaskRunner()->PostTask(
           FROM_HERE, WTF::Bind(&CallTransactionErrorCallback,
                                WrapPersistent(transaction_error_callback),
-                               WTF::Passed(std::move(error))));
+                               std::move(error)));
     }
   }
 }

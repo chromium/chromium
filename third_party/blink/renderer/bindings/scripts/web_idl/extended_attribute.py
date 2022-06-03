@@ -8,7 +8,7 @@ import itertools
 class ExtendedAttribute(object):
     """
     Represents a single extended attribute.
-    https://heycam.github.io/webidl/#dfn-extended-attribute
+    https://webidl.spec.whatwg.org/#dfn-extended-attribute
     """
 
     # [Key]
@@ -165,7 +165,7 @@ class ExtendedAttributes(object):
         'B': (ExtendedAttribute('B', value='baz')),
       }
 
-    https://heycam.github.io/webidl/#idl-extended-attributes
+    https://webidl.spec.whatwg.org/#idl-extended-attributes
     """
 
     def __init__(self, extended_attributes=None):
@@ -190,7 +190,7 @@ class ExtendedAttributes(object):
     def _on_ext_attrs_updated(self):
         self._keys = tuple(sorted(self._ext_attrs.keys()))
         self._length = 0
-        for ext_attrs in self._ext_attrs.itervalues():
+        for ext_attrs in self._ext_attrs.values():
             self._length += len(ext_attrs)
 
     @classmethod
@@ -280,5 +280,11 @@ class ExtendedAttributes(object):
 
 
 class ExtendedAttributesMutable(ExtendedAttributes):
+    def __getstate__(self):
+        assert False, "ExtendedAttributesMutable must not be pickled."
+
+    def __setstate__(self, state):
+        assert False, "ExtendedAttributesMutable must not be pickled."
+
     def append(self, ext_attr):
         self._append(ext_attr)

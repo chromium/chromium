@@ -12,12 +12,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_value_map.h"
 #include "url/gurl.h"
 
@@ -30,8 +30,6 @@ constexpr char kVendorIdKey[] = "vendor_id";
 constexpr char kProductIdKey[] = "product_id";
 constexpr char kUrlsKey[] = "urls";
 constexpr char kErrorPathTemplate[] = "items[%d].%s.items[%d]";
-constexpr char kInvalidUnsignedShortIntErrorTemplate[] =
-    "The %s must be an unsigned short integer";
 constexpr char kMissingVendorIdError[] = "A vendor_id must also be specified";
 constexpr char kInvalidNumberOfUrlsError[] =
     "Each urls string entry must contain between 1 to 2 URLs";
@@ -39,42 +37,12 @@ constexpr char kInvalidUrlError[] = "The urls item must contain valid URLs";
 
 }  // namespace
 
-// static
-std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
-WebUsbAllowDevicesForUrlsPolicyHandler::CreateForUserPolicy(
-    const Schema& chrome_schema) {
-  return std::make_unique<WebUsbAllowDevicesForUrlsPolicyHandler>(
-      key::kWebUsbAllowDevicesForUrls, prefs::kManagedWebUsbAllowDevicesForUrls,
-      chrome_schema);
-}
-
-#if defined(OS_CHROMEOS)
-// static
-std::unique_ptr<WebUsbAllowDevicesForUrlsPolicyHandler>
-WebUsbAllowDevicesForUrlsPolicyHandler::CreateForDevicePolicy(
-    const Schema& chrome_schema) {
-  return std::make_unique<WebUsbAllowDevicesForUrlsPolicyHandler>(
-      key::kDeviceLoginScreenWebUsbAllowDevicesForUrls,
-      prefs::kDeviceLoginScreenWebUsbAllowDevicesForUrls, chrome_schema);
-}
-
-// static
-void WebUsbAllowDevicesForUrlsPolicyHandler::RegisterPrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterListPref(
-      prefs::kDeviceLoginScreenWebUsbAllowDevicesForUrls);
-}
-#endif  // defined(OS_CHROMEOS)
-
 WebUsbAllowDevicesForUrlsPolicyHandler::WebUsbAllowDevicesForUrlsPolicyHandler(
-    const char* policy_name,
-    const char* pref_name,
     const Schema& chrome_schema)
     : SchemaValidatingPolicyHandler(
-          policy_name,
-          chrome_schema.GetKnownProperty(policy_name),
-          SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN),
-      pref_name_(pref_name) {}
+          key::kWebUsbAllowDevicesForUrls,
+          chrome_schema.GetKnownProperty(key::kWebUsbAllowDevicesForUrls),
+          SchemaOnErrorStrategy::SCHEMA_ALLOW_UNKNOWN) {}
 
 WebUsbAllowDevicesForUrlsPolicyHandler::
     ~WebUsbAllowDevicesForUrlsPolicyHandler() {}
@@ -105,34 +73,12 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
     for (const auto& device : devices_list->GetList()) {
       auto* vendor_id_value =
           device.FindKeyOfType(kVendorIdKey, base::Value::Type::INTEGER);
-      if (vendor_id_value) {
-        const int vendor_id = vendor_id_value->GetInt();
-        if (vendor_id > 0xFFFF || vendor_id < 0) {
-          error_path = base::StringPrintf(kErrorPathTemplate, item_index,
-                                          kDevicesKey, device_index);
-          error = base::StringPrintf(kInvalidUnsignedShortIntErrorTemplate,
-                                     kVendorIdKey);
-          result = false;
-          break;
-        }
-      }
-
       auto* product_id_value =
           device.FindKeyOfType(kProductIdKey, base::Value::Type::INTEGER);
       if (product_id_value) {
         // If a |product_id| is specified, then a |vendor_id| must also be
         // specified. Otherwise, the policy is invalid.
-        if (vendor_id_value) {
-          const int product_id = product_id_value->GetInt();
-          if (product_id > 0xFFFF || product_id < 0) {
-            error_path = base::StringPrintf(kErrorPathTemplate, item_index,
-                                            kDevicesKey, device_index);
-            error = base::StringPrintf(kInvalidUnsignedShortIntErrorTemplate,
-                                       kProductIdKey);
-            result = false;
-            break;
-          }
-        } else {
+        if (!vendor_id_value) {
           error_path = base::StringPrintf(kErrorPathTemplate, item_index,
                                           kDevicesKey, device_index);
           error = kMissingVendorIdError;
@@ -143,7 +89,7 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
       ++device_index;
     }
 
-    // The whitelisted URLs should be valid.
+    // The allowlisted URLs should be valid.
     int url_index = 0;
     auto* urls_list = item.FindKeyOfType(kUrlsKey, base::Value::Type::LIST);
     DCHECK(urls_list);
@@ -212,7 +158,7 @@ void WebUsbAllowDevicesForUrlsPolicyHandler::ApplyPolicySettings(
   if (!value || !value->is_list())
     return;
 
-  prefs->SetValue(pref_name_,
+  prefs->SetValue(prefs::kManagedWebUsbAllowDevicesForUrls,
                   base::Value::FromUniquePtrValue(std::move(value)));
 }
 

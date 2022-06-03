@@ -4,18 +4,24 @@
 #ifndef DEVICE_VR_UTIL_XR_STANDARD_GAMEPAD_BUILDER_H_
 #define DEVICE_VR_UTIL_XR_STANDARD_GAMEPAD_BUILDER_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/util/gamepad_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 // Centralizes the logic of properly ordering the buttons and input axes for
 // xr-standard Gamepads so that the various platforms don't have to worry about
 // it themselves.
-class XRStandardGamepadBuilder {
+class COMPONENT_EXPORT(DEVICE_VR_UTIL) XRStandardGamepadBuilder {
  public:
   XRStandardGamepadBuilder(device::mojom::XRHandedness handedness);
+
+  XRStandardGamepadBuilder(const XRStandardGamepadBuilder&) = delete;
+  XRStandardGamepadBuilder& operator=(const XRStandardGamepadBuilder&) = delete;
+
   virtual ~XRStandardGamepadBuilder();
   void SetPrimaryButton(const GamepadButton& button) {
     primary_button_ = button;
@@ -38,18 +44,18 @@ class XRStandardGamepadBuilder {
   void AddOptionalButtonData(const GamepadBuilder::ButtonData& data);
   void AddOptionalButtonData(const GamepadButton& button);
 
-  base::Optional<Gamepad> GetGamepad() const;
+  absl::optional<Gamepad> GetGamepad() const;
 
   bool HasSecondaryButton() const { return !!secondary_button_; }
   bool HasTouchpad() const { return !!touchpad_data_; }
   bool HasThumbstick() const { return !!thumbstick_data_; }
 
  private:
-  base::Optional<GamepadButton> primary_button_;
-  base::Optional<GamepadButton> secondary_button_;
+  absl::optional<GamepadButton> primary_button_;
+  absl::optional<GamepadButton> secondary_button_;
 
-  base::Optional<GamepadBuilder::ButtonData> touchpad_data_;
-  base::Optional<GamepadBuilder::ButtonData> thumbstick_data_;
+  absl::optional<GamepadBuilder::ButtonData> touchpad_data_;
+  absl::optional<GamepadBuilder::ButtonData> thumbstick_data_;
 
   std::vector<GamepadBuilder::ButtonData> optional_button_data_;
 
@@ -57,8 +63,6 @@ class XRStandardGamepadBuilder {
   bool has_optional_axes_ = false;
 
   device::mojom::XRHandedness handedness_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRStandardGamepadBuilder);
 };
 
 }  // namespace device

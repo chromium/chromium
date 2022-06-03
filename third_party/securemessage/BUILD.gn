@@ -1,0 +1,76 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+config("securemessage_config") {
+  include_dirs = [
+    "$root_gen_dir/third_party/securemessage",
+    "src/cpp/include",
+  ]
+}
+
+source_set("securemessage_openssl") {
+  public_configs = [ ":securemessage_config" ]
+
+  sources = [ "src/cpp/src/securemessage/crypto_ops_openssl.cc" ]
+
+  public_deps = [ ":securemessage" ]
+  deps = [ "//third_party/boringssl" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("securemessage") {
+  public_configs = [ ":securemessage_config" ]
+
+  sources = [
+    "src/cpp/include/securemessage/secure_message_wrapper.h",
+    "src/cpp/src/securemessage/byte_buffer.cc",
+    "src/cpp/src/securemessage/crypto_ops.cc",
+    "src/cpp/src/securemessage/raw_secure_message_parser.cc",
+    "src/cpp/src/securemessage/util.cc",
+  ]
+
+  public = [
+    "src/cpp/include/securemessage/byte_buffer.h",
+    "src/cpp/include/securemessage/common.h",
+    "src/cpp/include/securemessage/crypto_ops.h",
+    "src/cpp/include/securemessage/raw_secure_message_parser.h",
+    "src/cpp/include/securemessage/util.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+# The c++ protobuf specific code is separated out from the common code in order
+# to make it more clear that the common portion of the library is independent
+# of the c++ protobuf library.
+source_set("securemessage_cpp_protobuf") {
+  public_configs = [ ":securemessage_config" ]
+
+  sources = [
+    "src/cpp/src/securemessage/public_key_proto_util.cc",
+    "src/cpp/src/securemessage/secure_message_builder.cc",
+    "src/cpp/src/securemessage/secure_message_parser.cc",
+    "src/cpp/src/securemessage/secure_message_wrapper.cc",
+  ]
+
+  public = [
+    "src/cpp/include/securemessage/public_key_proto_util.h",
+    "src/cpp/include/securemessage/secure_message_builder.h",
+    "src/cpp/include/securemessage/secure_message_parser.h",
+    "src/cpp/include/securemessage/secure_message_wrapper.h",
+  ]
+
+  public_deps = [
+    ":securemessage",
+    "proto",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}

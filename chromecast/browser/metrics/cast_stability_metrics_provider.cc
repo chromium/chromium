@@ -6,12 +6,14 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/child_process_data.h"
@@ -153,6 +155,8 @@ void CastStabilityMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
   IncrementPrefValue(prefs::kStabilityChildProcessCrashCount);
+  ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
+      ::metrics::StabilityEventType::kChildProcessCrash);
 }
 
 void CastStabilityMetricsProvider::LogRendererCrash(
@@ -162,6 +166,8 @@ void CastStabilityMetricsProvider::LogRendererCrash(
   if (status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
       status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION) {
     IncrementPrefValue(prefs::kStabilityRendererCrashCount);
+    ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
+        ::metrics::StabilityEventType::kRendererCrash);
 
     base::UmaHistogramSparse("CrashExitCodes.Renderer",
                              MapCrashExitCodeForHistogram(exit_code));
@@ -175,11 +181,15 @@ void CastStabilityMetricsProvider::LogRendererCrash(
                               RENDERER_TYPE_RENDERER, RENDERER_TYPE_COUNT);
   } else if (status == base::TERMINATION_STATUS_LAUNCH_FAILED) {
     IncrementPrefValue(prefs::kStabilityRendererFailedLaunchCount);
+    ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
+        ::metrics::StabilityEventType::kRendererFailedLaunch);
   }
 }
 
 void CastStabilityMetricsProvider::LogRendererHang() {
   IncrementPrefValue(prefs::kStabilityRendererHangCount);
+  ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
+      ::metrics::StabilityEventType::kRendererHang);
 }
 
 void CastStabilityMetricsProvider::IncrementPrefValue(const char* path) {

@@ -7,15 +7,17 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/audio/audio_output_delegate.h"
 #include "media/base/audio_parameters.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,7 +77,7 @@ std::unique_ptr<AudioOutputDelegate> CreateFakeDelegate(
 TEST(MojoAudioOutputStreamProviderTest, AcquireTwice_BadMessage) {
   base::test::SingleThreadTaskEnvironment task_environment;
   bool got_bad_message = false;
-  mojo::core::SetDefaultProcessErrorCallback(
+  mojo::SetDefaultProcessErrorHandler(
       base::BindRepeating([](bool* got_bad_message,
                              const std::string& s) { *got_bad_message = true; },
                           &got_bad_message));
@@ -92,27 +94,26 @@ TEST(MojoAudioOutputStreamProviderTest, AcquireTwice_BadMessage) {
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_1;
   ignore_result(client_1.InitWithNewPipeAndPassReceiver());
   provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
-                           std::move(client_1), base::nullopt);
+                           std::move(client_1));
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_2;
   ignore_result(client_2.InitWithNewPipeAndPassReceiver());
   provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
-                           std::move(client_2), base::nullopt);
+                           std::move(client_2));
 
   EXPECT_CALL(deleter, Run(provider)).WillOnce(DeleteArg<0>());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(got_bad_message);
   Mock::VerifyAndClear(&deleter);
 
-  mojo::core::SetDefaultProcessErrorCallback(
-      mojo::core::ProcessErrorCallback());
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST(MojoAudioOutputStreamProviderTest,
      Bitstream_BadMessageOnNonAndoirdPlatforms) {
   base::test::SingleThreadTaskEnvironment task_environment;
   bool got_bad_message = false;
-  mojo::core::SetDefaultProcessErrorCallback(
+  mojo::SetDefaultProcessErrorHandler(
       base::BindRepeating([](bool* got_bad_message,
                              const std::string& s) { *got_bad_message = true; },
                           &got_bad_message));
@@ -130,7 +131,7 @@ TEST(MojoAudioOutputStreamProviderTest,
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client;
   ignore_result(client.InitWithNewPipeAndPassReceiver());
-  provider_remote->Acquire(params, std::move(client), base::nullopt);
+  provider_remote->Acquire(params, std::move(client));
 
 #if defined(OS_ANDROID)
   base::RunLoop().RunUntilIdle();
@@ -145,8 +146,7 @@ TEST(MojoAudioOutputStreamProviderTest,
   EXPECT_TRUE(got_bad_message);
   Mock::VerifyAndClear(&deleter);
 #endif
-  mojo::core::SetDefaultProcessErrorCallback(
-      mojo::core::ProcessErrorCallback());
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 }  // namespace media

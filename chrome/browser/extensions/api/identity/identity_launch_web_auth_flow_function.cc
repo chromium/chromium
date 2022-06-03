@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
@@ -27,14 +28,14 @@ IdentityLaunchWebAuthFlowFunction::~IdentityLaunchWebAuthFlowFunction() {
     auth_flow_.release()->DetachDelegateAndDelete();
 }
 
-bool IdentityLaunchWebAuthFlowFunction::RunAsync() {
-  if (GetProfile()->IsOffTheRecord()) {
-    error_ = identity_constants::kOffTheRecord;
-    return false;
+ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  if (profile->IsOffTheRecord()) {
+    return RespondNow(Error(identity_constants::kOffTheRecord));
   }
 
   std::unique_ptr<api::identity::LaunchWebAuthFlow::Params> params(
-      api::identity::LaunchWebAuthFlow::Params::Create(*args_));
+      api::identity::LaunchWebAuthFlow::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL auth_url(params->details.url);
@@ -48,9 +49,10 @@ bool IdentityLaunchWebAuthFlowFunction::RunAsync() {
 
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 
-  auth_flow_.reset(new WebAuthFlow(this, GetProfile(), auth_url, mode));
+  auth_flow_ = std::make_unique<WebAuthFlow>(this, profile, auth_url, mode,
+                                             WebAuthFlow::LAUNCH_WEB_AUTH_FLOW);
   auth_flow_->Start();
-  return true;
+  return RespondLater();
 }
 
 void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLPrefixForTest(
@@ -68,32 +70,32 @@ void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLPrefix(
 
 void IdentityLaunchWebAuthFlowFunction::OnAuthFlowFailure(
     WebAuthFlow::Failure failure) {
+  std::string error;
   switch (failure) {
     case WebAuthFlow::WINDOW_CLOSED:
-      error_ = identity_constants::kUserRejected;
+      error = identity_constants::kUserRejected;
       break;
     case WebAuthFlow::INTERACTION_REQUIRED:
-      error_ = identity_constants::kInteractionRequired;
+      error = identity_constants::kInteractionRequired;
       break;
     case WebAuthFlow::LOAD_FAILED:
-      error_ = identity_constants::kPageLoadFailure;
+      error = identity_constants::kPageLoadFailure;
       break;
     default:
       NOTREACHED() << "Unexpected error from web auth flow: " << failure;
-      error_ = identity_constants::kInvalidRedirect;
+      error = identity_constants::kInvalidRedirect;
       break;
   }
-  SendResponse(false);
+  Respond(Error(std::move(error)));
   if (auth_flow_)
     auth_flow_.release()->DetachDelegateAndDelete();
-  Release();  // Balanced in RunAsync.
+  Release();  // Balanced in Run.
 }
 
 void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
     const GURL& redirect_url) {
   if (redirect_url.GetWithEmptyPath() == final_url_prefix_) {
-    SetResult(std::make_unique<base::Value>(redirect_url.spec()));
-    SendResponse(true);
+    Respond(OneArgument(base::Value(redirect_url.spec())));
     if (auth_flow_)
       auth_flow_.release()->DetachDelegateAndDelete();
     Release();  // Balanced in RunAsync.

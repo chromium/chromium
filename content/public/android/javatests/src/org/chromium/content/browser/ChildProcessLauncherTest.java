@@ -7,9 +7,11 @@ package org.chromium.content.browser;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.MediumTest;
 
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +22,10 @@ import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.IChildProcessTest;
 
@@ -329,12 +331,8 @@ public class ChildProcessLauncherTest {
                 });
         Assert.assertNotNull(boundConnection);
 
-        CriteriaHelper.pollInstrumentationThread(new Criteria("Connection failed to connect") {
-            @Override
-            public boolean isSatisfied() {
-                return boundConnection.isConnected();
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                boundConnection::isConnected, "Connection failed to connect");
         testProcessLauncher(new AlreadyBoundConnection(boundConnection, serviceCallbackForwarder));
     }
 
@@ -488,41 +486,32 @@ public class ChildProcessLauncherTest {
 
     private static void waitForConnectionAllocatorState(
             final ChildConnectionAllocator connectionAllocator, final boolean emptyState) {
-        CriteriaHelper.pollInstrumentationThread(
-                new Criteria("Failed to wait for connection allocator.") {
-                    @Override
-                    public boolean isSatisfied() {
-                        return emptyState ? !connectionAllocator.anyConnectionAllocated()
-                                          : connectionAllocator.anyConnectionAllocated();
-                    }
-                });
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    connectionAllocator.anyConnectionAllocated(), Matchers.not(emptyState));
+        });
     }
 
     private static void waitForConnectionState(
             final ChildProcessConnection connection, final int connectionState) {
-        assert connectionState == CONNECTION_BLOCK_UNTIL_CONNECTED
-                || connectionState == CONNECTION_BLOCK_UNTIL_SETUP;
-        CriteriaHelper.pollInstrumentationThread(
-                new Criteria("Failed wait for connection to connect.") {
-                    @Override
-                    public boolean isSatisfied() {
-                        if (connectionState == CONNECTION_BLOCK_UNTIL_CONNECTED) {
-                            return connection.isConnected();
-                        }
-                        assert connectionState == CONNECTION_BLOCK_UNTIL_SETUP;
-                        return getConnectionPid(connection) != 0;
-                    }
-                });
+        Assert.assertThat(connectionState,
+                Matchers.anyOf(Matchers.equalTo(CONNECTION_BLOCK_UNTIL_CONNECTED),
+                        Matchers.equalTo(CONNECTION_BLOCK_UNTIL_SETUP)));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            if (connectionState == CONNECTION_BLOCK_UNTIL_CONNECTED) {
+                Criteria.checkThat(connection.isConnected(), Matchers.is(true));
+            } else {
+                Criteria.checkThat(connectionState, Matchers.is(CONNECTION_BLOCK_UNTIL_SETUP));
+                Criteria.checkThat(getConnectionPid(connection), Matchers.not(0));
+            }
+        });
     }
 
     private static void waitUntilLauncherSetup(final ChildProcessLauncher launcher) {
-        CriteriaHelper.pollInstrumentationThread(
-                new Criteria("Failed wait for launcher to connect.") {
-                    @Override
-                    public boolean isSatisfied() {
-                        return launcher.getConnection() != null;
-                    }
-                });
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("Failed wait for launcher to connect.", launcher.getConnection(),
+                    Matchers.notNullValue());
+        });
         waitForConnectionState(launcher.getConnection(), CONNECTION_BLOCK_UNTIL_SETUP);
     }
 

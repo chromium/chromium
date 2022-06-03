@@ -76,29 +76,18 @@ const tests = [
   },
   function() {
     console.log('Testing isolated world with strict csp.');
-    console.log(
-        'internals.runtimeFlags.isolatedWorldCSPEnabled is ' +
-        internals.runtimeFlags.isolatedWorldCSPEnabled);
-    const expectBlocked = internals.runtimeFlags.isolatedWorldCSPEnabled;
     testRunner.setIsolatedWorldInfo(
         isolatedWorldId, isolatedWorldSecurityOrigin, 'connect-src \'self\'');
-    testFetchInIsolatedWorld(expectBlocked);
+    testFetchInIsolatedWorld(true);
 
     // Clear the isolated world data.
     testRunner.setIsolatedWorldInfo(1, null, null);
   },
   function() {
     console.log('Testing fetch redirect in isolated world with strict csp.');
-    console.log(
-        'internals.runtimeFlags.isolatedWorldCSPEnabled is ' +
-        internals.runtimeFlags.isolatedWorldCSPEnabled);
-    const expectBlocked = internals.runtimeFlags.isolatedWorldCSPEnabled;
     testRunner.setIsolatedWorldInfo(
         isolatedWorldId, isolatedWorldSecurityOrigin, 'connect-src \'self\'');
-    testFetchInIsolatedWorld(expectBlocked, true /* redirect */);
-
-    // Clear the isolated world data.
-    testRunner.setIsolatedWorldInfo(1, null, null);
+    testFetchInIsolatedWorld(true, true /* redirect */);
   },
 ];
 

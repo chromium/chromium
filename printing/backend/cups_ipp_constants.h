@@ -5,32 +5,35 @@
 #ifndef PRINTING_BACKEND_CUPS_IPP_CONSTANTS_H_
 #define PRINTING_BACKEND_CUPS_IPP_CONSTANTS_H_
 
+#include "base/component_export.h"
+#include "build/chromeos_buildflags.h"
+
 namespace printing {
 
 // property names
-extern const char kIppCollate[];
-extern const char kIppCopies[];
-extern const char kIppColor[];
-extern const char kIppMedia[];
-extern const char kIppDuplex[];
-extern const char kIppRequestingUserName[];
-extern const char kIppResolution[];
-extern const char kIppPin[];
-extern const char kIppPinEncryption[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppCollate[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppCopies[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppColor[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMedia[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDuplex[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppRequestingUserName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppResolution[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPin[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPinEncryption[];
 
 // collation values
-extern const char kCollated[];
-extern const char kUncollated[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCollated[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kUncollated[];
 
 #if defined(OS_CHROMEOS)
 
-extern const char kIppDocumentAttributes[];
-extern const char kIppJobAttributes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDocumentAttributes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppJobAttributes[];
 
-extern const char kPinEncryptionNone[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPinEncryptionNone[];
 
-extern const char kOptionFalse[];
-extern const char kOptionTrue[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionFalse[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionTrue[];
 
 #endif  // defined(OS_CHROMEOS)
 

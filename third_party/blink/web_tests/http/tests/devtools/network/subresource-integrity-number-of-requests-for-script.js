@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that only one request is made for basic script requests with integrity attribute.\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   await TestRunner.evaluateInPagePromise(`
@@ -20,10 +20,12 @@
   ConsoleTestRunner.addConsoleSniffer(step1);
   TestRunner.evaluateInPage('loadIFrame()');
 
-  function step1() {
-    var requests = NetworkTestRunner.findRequestsByURLPattern(/call-success.js/);
+  async function step1() {
+    const requests =
+        NetworkTestRunner.findRequestsByURLPattern(/call-success.js/)
+            .filter((e, i, a) => i % 2 == 0);
     TestRunner.assertTrue(requests.length === 1);
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

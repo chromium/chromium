@@ -8,34 +8,38 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/db/test_database_manager.h"
-#include "content/public/common/resource_type.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class GURL;
 
-// Database manager that allows any URL to be configured as blacklisted for
+// Database manager that allows any URL to be configured as blocklisted for
 // testing.
 class FakeSafeBrowsingDatabaseManager
     : public safe_browsing::TestSafeBrowsingDatabaseManager {
  public:
   FakeSafeBrowsingDatabaseManager();
 
-  void AddBlacklistedUrl(const GURL& url,
+  FakeSafeBrowsingDatabaseManager(const FakeSafeBrowsingDatabaseManager&) =
+      delete;
+  FakeSafeBrowsingDatabaseManager& operator=(
+      const FakeSafeBrowsingDatabaseManager&) = delete;
+
+  void AddBlocklistedUrl(const GURL& url,
                          safe_browsing::SBThreatType threat_type,
                          const safe_browsing::ThreatMetadata& metadata);
-  void AddBlacklistedUrl(const GURL& url,
+  void AddBlocklistedUrl(const GURL& url,
                          safe_browsing::SBThreatType threat_type,
                          safe_browsing::ThreatPatternType pattern_type =
                              safe_browsing::ThreatPatternType::NONE);
-  void RemoveBlacklistedUrl(const GURL& url);
-  void RemoveAllBlacklistedUrls();
+  void RemoveBlocklistedUrl(const GURL& url);
+  void RemoveAllBlocklistedUrls();
 
   void SimulateTimeout();
 
   // If set, will synchronously fail from CheckUrlForSubresourceFilter rather
-  // than posting a task to fail if the URL does not match the blacklist.
+  // than posting a task to fail if the URL does not match the blocklist.
   void set_synchronous_failure() { synchronous_failure_ = true; }
 
  protected:
@@ -47,8 +51,9 @@ class FakeSafeBrowsingDatabaseManager
   bool IsSupported() const override;
   void CancelCheck(Client* client) override;
   bool ChecksAreAlwaysAsync() const override;
-  bool CanCheckResourceType(
-      content::ResourceType /* resource_type */) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination /* request_destination */)
+      const override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
@@ -65,8 +70,6 @@ class FakeSafeBrowsingDatabaseManager
   bool synchronous_failure_ = false;
 
   base::WeakPtrFactory<FakeSafeBrowsingDatabaseManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
 };
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_FAKE_SAFE_BROWSING_DATABASE_MANAGER_H_

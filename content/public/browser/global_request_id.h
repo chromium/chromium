@@ -8,6 +8,8 @@
 #include <atomic>
 #include <tuple>
 
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+
 namespace content {
 
 // Uniquely identifies a net::URLRequest.
@@ -44,6 +46,8 @@ struct GlobalRequestID {
     return child_id != other.child_id ||
         request_id != other.request_id;
   }
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 };
 
 }  // namespace content

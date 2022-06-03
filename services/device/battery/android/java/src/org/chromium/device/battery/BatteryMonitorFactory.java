@@ -58,8 +58,6 @@ public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
         if (mSubscribedMonitors.isEmpty() && !mManager.start()) {
             Log.e(TAG, "BatteryStatusManager failed to start.");
         }
-        // TODO(ppi): record the "BatteryStatus.StartAndroid" histogram here once we have a Java API
-        //            for UMA - http://crbug.com/442300.
 
         BatteryMonitorImpl monitor = new BatteryMonitorImpl(this);
         if (mHasStatusUpdate) {

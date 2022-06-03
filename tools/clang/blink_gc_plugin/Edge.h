@@ -63,6 +63,9 @@ class RecursiveEdgeVisitor : public EdgeVisitor {
   typedef std::deque<Edge*> Context;
   Context& context() { return context_; }
   Edge* Parent() { return context_.empty() ? 0 : context_.front(); }
+  Edge* GrandParent() {
+    return Parent() ? (context_.size() > 1 ? context_[1] : nullptr) : nullptr;
+  }
   void Enter(Edge* e) { return context_.push_front(e); }
   void Leave() { context_.pop_front(); }
 
@@ -158,14 +161,17 @@ class RawPtr : public PtrEdge {
 
 class RefPtr : public PtrEdge {
  public:
-  explicit RefPtr(Edge* ptr) : PtrEdge(ptr) { }
+  RefPtr(Edge* ptr, LivenessKind kind) : PtrEdge(ptr), kind_(kind) {}
   bool IsRefPtr() override { return true; }
-  LivenessKind Kind() override { return kStrong; }
+  LivenessKind Kind() override { return kind_; }
   bool NeedsFinalization() override { return true; }
   TracingStatus NeedsTracing(NeedsTracingOption) override {
     return TracingStatus::Illegal();
   }
   void Accept(EdgeVisitor* visitor) override { visitor->VisitRefPtr(this); }
+
+ private:
+  LivenessKind kind_;
 };
 
 class UniquePtr : public PtrEdge {
@@ -210,7 +216,7 @@ class Persistent : public PtrEdge {
   LivenessKind Kind() override { return kRoot; }
   bool NeedsFinalization() override { return true; }
   TracingStatus NeedsTracing(NeedsTracingOption) override {
-    return TracingStatus::Unneeded();
+    return TracingStatus::Illegal();
   }
   void Accept(EdgeVisitor* visitor) override { visitor->VisitPersistent(this); }
 };
@@ -283,8 +289,7 @@ class Collection : public Edge {
 // An iterator edge is a direct edge to some iterator type.
 class Iterator : public Edge {
  public:
-  Iterator(RecordInfo* info, bool on_heap, bool is_unsafe)
-      : info_(info), on_heap_(on_heap), is_unsafe_(is_unsafe) {}
+  Iterator(RecordInfo* info, bool on_heap) : info_(info), on_heap_(on_heap) {}
   ~Iterator() {}
 
   void Accept(EdgeVisitor* visitor) override { visitor->VisitIterator(this); }
@@ -292,18 +297,17 @@ class Iterator : public Edge {
   bool NeedsFinalization() override { return false; }
   TracingStatus NeedsTracing(NeedsTracingOption) override {
     if (on_heap_)
-      return TracingStatus::Needed();
+      return TracingStatus::Illegal();
     return TracingStatus::Unneeded();
   }
 
   RecordInfo* info() const { return info_; }
 
-  bool IsUnsafe() const { return is_unsafe_; }
+  bool on_heap() const { return on_heap_; }
 
  private:
   RecordInfo* info_;
   bool on_heap_;
-  bool is_unsafe_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_EDGE_H_

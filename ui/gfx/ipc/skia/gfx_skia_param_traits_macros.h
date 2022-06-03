@@ -10,7 +10,13 @@
 #include "ipc/ipc_message_macros.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
-IPC_ENUM_TRAITS_VALIDATE(SkColorType, kLastEnum_SkColorType)
-IPC_ENUM_TRAITS_VALIDATE(SkAlphaType, kLastEnum_SkAlphaType)
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT GFX_SKIA_IPC_EXPORT
+
+IPC_ENUM_TRAITS_MAX_VALUE(SkColorType, kLastEnum_SkColorType)
+IPC_ENUM_TRAITS_MAX_VALUE(SkAlphaType, kLastEnum_SkAlphaType)
+
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 #endif  // UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_MACROS_H_

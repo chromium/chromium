@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that links for URLs with spaces displayed properly for matched styles.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected"></div>
@@ -13,8 +13,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', onNodeSelected);
 
-  function onNodeSelected() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function onNodeSelected() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

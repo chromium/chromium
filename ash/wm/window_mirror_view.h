@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/view.h"
@@ -27,7 +26,13 @@ namespace ash {
 class ASH_EXPORT WindowMirrorView : public views::View,
                                     public aura::WindowObserver {
  public:
-  WindowMirrorView(aura::Window* source, bool trilinear_filtering_on_init);
+  WindowMirrorView(aura::Window* source,
+                   bool trilinear_filtering_on_init,
+                   bool show_non_client_view = false);
+
+  WindowMirrorView(const WindowMirrorView&) = delete;
+  WindowMirrorView& operator=(const WindowMirrorView&) = delete;
+
   ~WindowMirrorView() override;
 
   // Returns the source of the mirror.
@@ -46,6 +51,8 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   void OnVisibleBoundsChanged() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+
+  ui::Layer* GetMirrorLayerForTesting();
 
  protected:
   virtual void InitLayerOwner();
@@ -71,12 +78,13 @@ class ASH_EXPORT WindowMirrorView : public views::View,
 
   // True if trilinear filtering should be performed on the layer in
   // InitLayerOwner().
-  bool trilinear_filtering_on_init_;
+  const bool trilinear_filtering_on_init_;
+
+  // If true, shows the non client view in the mirror.
+  const bool show_non_client_view_;
 
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_occlusion_tracker_visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowMirrorView);
 };
 
 }  // namespace ash

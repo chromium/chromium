@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/base_export.h"
@@ -16,10 +17,15 @@
 
 class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {
  public:
+  JSONFileValueSerializer() = delete;
+
   // |json_file_path_| is the path of a file that will be destination of the
   // serialization. The serializer will attempt to create the file at the
   // specified location.
   explicit JSONFileValueSerializer(const base::FilePath& json_file_path);
+
+  JSONFileValueSerializer(const JSONFileValueSerializer&) = delete;
+  JSONFileValueSerializer& operator=(const JSONFileValueSerializer&) = delete;
 
   ~JSONFileValueSerializer() override;
 
@@ -41,16 +47,20 @@ class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {
   bool SerializeInternal(const base::Value& root, bool omit_binary_values);
 
   const base::FilePath json_file_path_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(JSONFileValueSerializer);
 };
 
 class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
  public:
+  JSONFileValueDeserializer() = delete;
+
   // |json_file_path_| is the path of a file that will be source of the
   // deserialization. |options| is a bitmask of JSONParserOptions.
   explicit JSONFileValueDeserializer(const base::FilePath& json_file_path,
                                      int options = 0);
+
+  JSONFileValueDeserializer(const JSONFileValueDeserializer&) = delete;
+  JSONFileValueDeserializer& operator=(const JSONFileValueDeserializer&) =
+      delete;
 
   ~JSONFileValueDeserializer() override;
 
@@ -67,7 +77,7 @@ class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
   // This enum is designed to safely overlap with JSONReader::JsonParseError.
   enum JsonFileError {
     JSON_NO_ERROR = 0,
-    JSON_ACCESS_DENIED = 1000,
+    JSON_ACCESS_DENIED = kErrorCodeFirstMetadataError,
     JSON_CANNOT_READ_FILE,
     JSON_FILE_LOCKED,
     JSON_NO_SUCH_FILE
@@ -94,9 +104,7 @@ class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
 
   const base::FilePath json_file_path_;
   const int options_;
-  size_t last_read_size_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(JSONFileValueDeserializer);
+  size_t last_read_size_ = 0u;
 };
 
 #endif  // BASE_JSON_JSON_FILE_VALUE_SERIALIZER_H_

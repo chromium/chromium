@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_PROFILE_SERVICE_PROVIDER_H_
 #define DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_PROFILE_SERVICE_PROVIDER_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
@@ -26,6 +24,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothProfileServiceProvider
  public:
   FakeBluetoothProfileServiceProvider(const dbus::ObjectPath& object_path,
                                       Delegate* delegate);
+
+  FakeBluetoothProfileServiceProvider(
+      const FakeBluetoothProfileServiceProvider&) = delete;
+  FakeBluetoothProfileServiceProvider& operator=(
+      const FakeBluetoothProfileServiceProvider&) = delete;
+
   ~FakeBluetoothProfileServiceProvider() override;
 
   // Each of these calls the equivalent
@@ -52,8 +56,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothProfileServiceProvider
   // passed to generate the reply. |delegate_| is generally the object that
   // owns this one, and must outlive it.
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothProfileServiceProvider);
 };
 
 }  // namespace bluez

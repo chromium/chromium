@@ -6,9 +6,9 @@
 
 #include <unordered_set>
 
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"

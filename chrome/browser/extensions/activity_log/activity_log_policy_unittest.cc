@@ -23,7 +23,7 @@ TEST_F(ActivityLogPolicyUtilTest, StripPrivacySensitive) {
                  base::Time::Now(),
                  Action::ACTION_API_CALL,
                  "tabs.executeScript");
-  action->mutable_args()->AppendString("woof");
+  action->mutable_args()->Append("woof");
   action->set_page_url(GURL("http://www.google.com/"));
   action->set_page_incognito(true);
   action->set_page_title("private");
@@ -61,25 +61,25 @@ TEST_F(ActivityLogPolicyUtilTest, StripPrivacySensitiveWebRequest) {
 
 // Test that argument values are stripped as appropriate.
 TEST_F(ActivityLogPolicyUtilTest, StripArguments) {
-  ActivityLogPolicy::Util::ApiSet whitelist;
-  whitelist.insert(
+  ActivityLogPolicy::Util::ApiSet allowlist;
+  allowlist.insert(
       std::make_pair(Action::ACTION_API_CALL, "tabs.executeScript"));
 
-  // API is in whitelist; not stripped.
+  // API is in allowlist; not stripped.
   scoped_refptr<Action> action =
       new Action("punky",
                  base::Time::Now(),
                  Action::ACTION_API_CALL,
                  "tabs.executeScript");
-  action->mutable_args()->AppendString("woof");
-  ActivityLogPolicy::Util::StripArguments(whitelist, action);
+  action->mutable_args()->Append("woof");
+  ActivityLogPolicy::Util::StripArguments(allowlist, action);
   ASSERT_EQ("[\"woof\"]", ActivityLogPolicy::Util::Serialize(action->args()));
 
-  // Not in whitelist: stripped.
+  // Not in allowlist: stripped.
   action = new Action(
       "punky", base::Time::Now(), Action::ACTION_API_CALL, "tabs.create");
-  action->mutable_args()->AppendString("woof");
-  ActivityLogPolicy::Util::StripArguments(whitelist, action);
+  action->mutable_args()->Append("woof");
+  ActivityLogPolicy::Util::StripArguments(allowlist, action);
   ASSERT_EQ("", ActivityLogPolicy::Util::Serialize(action->args()));
 }
 

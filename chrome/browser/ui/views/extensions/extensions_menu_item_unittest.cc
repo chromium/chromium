@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
@@ -19,10 +19,9 @@
 class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
  protected:
   ExtensionsMenuItemViewTest()
-      : initial_extension_name_(base::ASCIIToUTF16("Initial Extension Name")),
-        initial_tooltip_(base::ASCIIToUTF16("Initial tooltip")) {}
+      : initial_extension_name_(u"Initial Extension Name"),
+        initial_tooltip_(u"Initial tooltip") {}
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kExtensionsToolbarMenu);
     BrowserWithTestWindowTest::SetUp();
 
     widget_ = std::make_unique<views::Widget>();
@@ -30,7 +29,7 @@ class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
         views::Widget::InitParams::TYPE_POPUP);
     init_params.ownership =
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-#if !defined(OS_CHROMEOS) && !defined(OS_MACOSX)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
     // This was copied from BookmarkBarViewTest:
     // On Chrome OS, this always creates a NativeWidgetAura, but it should
     // create a DesktopNativeWidgetAura for Mash. We can get by without manually
@@ -47,11 +46,11 @@ class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
     controller_ = controller.get();
     controller_->SetActionName(initial_extension_name_);
     controller_->SetTooltip(initial_tooltip_);
-    menu_item_ = std::make_unique<ExtensionsMenuItemView>(
-        browser(), std::move(controller));
-    menu_item_->set_owned_by_client();
+    auto menu_item = std::make_unique<ExtensionsMenuItemView>(
+        browser(), std::move(controller), true);
+    primary_button_on_menu_ = menu_item->primary_action_button_for_testing();
 
-    widget_->SetContentsView(menu_item_.get());
+    widget_->SetContentsView(std::move(menu_item));
   }
 
   void TearDown() override {
@@ -61,15 +60,12 @@ class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  ExtensionsMenuButton* primary_button() {
-    return menu_item_->primary_action_button_for_testing();
-  }
+  ExtensionsMenuButton* primary_button() { return primary_button_on_menu_; }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-  const base::string16 initial_extension_name_;
-  const base::string16 initial_tooltip_;
+  const std::u16string initial_extension_name_;
+  const std::u16string initial_tooltip_;
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<ExtensionsMenuItemView> menu_item_;
+  ExtensionsMenuButton* primary_button_on_menu_ = nullptr;
   TestToolbarActionViewController* controller_ = nullptr;
 };
 
@@ -77,14 +73,18 @@ TEST_F(ExtensionsMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
   EXPECT_EQ(primary_button()->label_text_for_testing(),
             initial_extension_name_);
 
-  base::string16 extension_name = base::ASCIIToUTF16("Extension Name");
+  std::u16string extension_name = u"Extension Name";
   controller_->SetActionName(extension_name);
 
   EXPECT_EQ(primary_button()->label_text_for_testing(), extension_name);
 }
 
 TEST_F(ExtensionsMenuItemViewTest, NotifyClickExecutesAction) {
+  base::UserActionTester user_action_tester;
+  constexpr char kActivatedUserAction[] =
+      "Extensions.Toolbar.ExtensionActivatedFromMenu";
   EXPECT_EQ(0, controller_->execute_action_count());
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kActivatedUserAction));
 
   primary_button()->SetBounds(0, 0, 100, 100);
   ui::MouseEvent click_event(ui::ET_MOUSE_RELEASED,
@@ -94,12 +94,13 @@ TEST_F(ExtensionsMenuItemViewTest, NotifyClickExecutesAction) {
   primary_button()->button_controller()->OnMouseReleased(click_event);
 
   EXPECT_EQ(1, controller_->execute_action_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kActivatedUserAction));
 }
 
 TEST_F(ExtensionsMenuItemViewTest, UpdatesToDisplayTooltip) {
   EXPECT_EQ(primary_button()->GetTooltipText(gfx::Point()), initial_tooltip_);
 
-  base::string16 tooltip = base::ASCIIToUTF16("New Tooltip");
+  std::u16string tooltip = u"New Tooltip";
   controller_->SetTooltip(tooltip);
 
   EXPECT_EQ(primary_button()->GetTooltipText(gfx::Point()), tooltip);

@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

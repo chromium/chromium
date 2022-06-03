@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console copies tree outline messages properly.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -18,19 +18,21 @@
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
   var consoleView = Console.ConsoleView.instance();
-  var viewport = consoleView._viewport;
+  var viewport = consoleView.viewport;
 
-  TestRunner.runTestSuite([function testSelectAll(next) {
+  TestRunner.runTestSuite([async function testSelectAll(next) {
     viewport.forceScrollItemToBeFirst(0);
 
     // Set some initial selection in console.
     var base = consoleView.itemElement(0).element();
+    // Console messages contain live locations.
+    await TestRunner.waitForPendingLiveLocationUpdates();
     window.getSelection().setBaseAndExtent(base, 0, base, 1);
 
     // Try to select all messages.
     document.execCommand('selectAll');
 
-    var text = viewport._selectedText();
+    var text = viewport.selectedText();
     TestRunner.addResult('Selected text: ' + text);
     next();
   }]);

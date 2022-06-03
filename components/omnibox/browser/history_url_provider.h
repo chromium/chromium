@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/threading/thread_checker.h"
@@ -44,7 +43,7 @@ class URLDatabase;
 //   -----------                --------------
 //   AutocompleteController::Start
 //     -> HistoryURLProvider::Start
-//       -> SuggestExactInput
+//       -> VerbatimMatchForInput
 //       [params_ allocated]
 //       -> DoAutocomplete (for inline autocomplete)
 //         -> URLDatabase::AutocompleteForPrefix (on in-memory DB)
@@ -107,8 +106,11 @@ struct HistoryURLProviderParams {
                            bool trim_http,
                            const AutocompleteMatch& what_you_typed_match,
                            const TemplateURL* default_search_provider,
-                           const SearchTermsData* search_terms_data);
+                           const SearchTermsData* search_terms_data,
+                           bool allow_deleting_browser_history);
   ~HistoryURLProviderParams();
+  HistoryURLProviderParams(const HistoryURLProviderParams&) = delete;
+  HistoryURLProviderParams& operator=(const HistoryURLProviderParams&) = delete;
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -181,8 +183,9 @@ struct HistoryURLProviderParams {
   // snapshot of the SearchTermsData accessible from the history thread.
   std::unique_ptr<SearchTermsData> search_terms_data;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryURLProviderParams);
+  // True if the user is allowed to delete browser history. Stored here because
+  // we aren't allowed to read user preferences from the History sequence.
+  const bool allow_deleting_browser_history;
 };
 
 // This class is an autocomplete provider and is also a pseudo-internal
@@ -199,6 +202,9 @@ class HistoryURLProvider : public HistoryProvider {
   HistoryURLProvider(AutocompleteProviderClient* client,
                      AutocompleteProviderListener* listener);
 
+  HistoryURLProvider(const HistoryURLProvider&) = delete;
+  HistoryURLProvider& operator=(const HistoryURLProvider&) = delete;
+
   // HistoryProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
@@ -206,18 +212,6 @@ class HistoryURLProvider : public HistoryProvider {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
-
-  // Returns a match representing a navigation to |destination_url|, highlighted
-  // appropriately against |input|.  |trim_http| controls whether the match's
-  // |fill_into_edit| and |contents| should have any HTTP stripped off, and
-  // should not be set to true if the user's original input contains an http
-  // prefix.
-  // NOTES: This does not set the relevance of the returned match, as different
-  //        callers want different behavior. Callers must set this manually.
-  //        This function should only be called on the UI thread.
-  AutocompleteMatch SuggestExactInput(const AutocompleteInput& input,
-                                      const GURL& destination_url,
-                                      bool trim_http);
 
   // Runs the history query on the history thread, called by the history
   // system. The history database MAY BE NULL in which case it is not
@@ -258,8 +252,8 @@ class HistoryURLProvider : public HistoryProvider {
   // Returns a set of classifications that highlight all the occurrences of
   // |input_text| at word breaks in |description|.
   static ACMatchClassifications ClassifyDescription(
-      const base::string16& input_text,
-      const base::string16& description);
+      const std::u16string& input_text,
+      const std::u16string& description);
 
   // Actually runs the autocomplete job on the given database, which is
   // guaranteed not to be NULL.  Used by both autocomplete passes, and therefore
@@ -365,8 +359,6 @@ class HistoryURLProvider : public HistoryProvider {
   HUPScoringParams scoring_params_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryURLProvider);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_HISTORY_URL_PROVIDER_H_

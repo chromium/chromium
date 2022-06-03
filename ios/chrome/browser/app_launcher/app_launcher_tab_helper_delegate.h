@@ -5,29 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_DELEGATE_H_
 
-#include "ios/chrome/browser/procedural_block_types.h"
+#include "base/callback.h"
 
 class AppLauncherTabHelper;
 class GURL;
 
-// Protocol for handling application launching and presenting related UI.
-@protocol AppLauncherTabHelperDelegate
+// Interface for handling application launching from a tab helper.
+class AppLauncherTabHelperDelegate {
+ public:
+  AppLauncherTabHelperDelegate() = default;
+  virtual ~AppLauncherTabHelperDelegate() = default;
 
-// Launches application that has |URL| if possible (optionally after confirming
-// via dialog). Returns NO if there is no such application available.
-// TODO(crbug.com/850760): Change this method return to void, once the new
-// AppLauncherRefresh logic is always enabled.
-- (BOOL)appLauncherTabHelper:(AppLauncherTabHelper*)tabHelper
-            launchAppWithURL:(const GURL&)URL
-              linkTransition:(BOOL)linkTransition;
+  // Launches application that has |URL| if possible (optionally after
+  // confirming via dialog).
+  virtual void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
+                                     const GURL& url,
+                                     bool link_transition) = 0;
 
-// Alerts the user that there have been repeated attempts to launch
-// the application. |completionHandler| is called with the user's
-// response on whether to launch the application.
-- (void)appLauncherTabHelper:(AppLauncherTabHelper*)tabHelper
-    showAlertOfRepeatedLaunchesWithCompletionHandler:
-        (ProceduralBlockWithBool)completionHandler;
-
-@end
+  // Alerts the user that there have been repeated attempts to launch
+  // the application. |completionHandler| is called with the user's
+  // response on whether to launch the application.
+  virtual void ShowRepeatedAppLaunchAlert(
+      AppLauncherTabHelper* tab_helper,
+      base::OnceCallback<void(bool)> completion) = 0;
+};
 
 #endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_DELEGATE_H_

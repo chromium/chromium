@@ -2,15 +2,13 @@
 <html>
 <head>
 <script>
-window.enablePixelTesting = true;
+testRunner.waitUntilDone();
 </script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
-<body style="zoom: 2;">
-<p>Suggestion picker should respect zoom level.</p>
-<input type=color id=color value="#ff0000" list=gray focus>
-<datalist id=gray>
+<body style='zoom: 2;'>
+<input type='color' id='color' value='#ff0000' list='gray'>
+<datalist id='gray'>
     <option>#ffffff</option>
     <option>#eeeeee</option>
     <option>#dddddd</option>
@@ -30,26 +28,8 @@ window.enablePixelTesting = true;
     <option>#F00</option> <!--invalid-->
     <option>red</option> <!--invalid-->
 </datalist>
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
 <script>
-openPicker(document.getElementById('color'), test, function() {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-});
-
-function test() {
-    popupWindow.focus();
-    eventSender.keyDown('ArrowDown');
-    eventSender.keyDown('ArrowDown');
-    eventSender.keyDown('ArrowDown');
-    eventSender.keyDown('ArrowLeft');
-    eventSender.keyDown('ArrowUp');
-    eventSender.keyDown('ArrowRight');
-    finishJSTest();
-}
+openPickerAppearanceOnly(document.getElementById('color'), () => testRunner.notifyDone());
 </script>
 </body>
 </html>

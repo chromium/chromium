@@ -7,13 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/app/application_delegate/app_navigation.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/tab_opening.h"
-#import "ios/chrome/app/application_delegate/tab_switching.h"
-#import "ios/chrome/app/main_controller_guts.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 
 @class AppState;
@@ -26,16 +22,10 @@
 //
 // By design, it has no public API of its own. Anything interacting with
 // MainController should be doing so through a specific protocol.
-@interface MainController : NSObject <AppNavigation,
-                                      BrowserLauncher,
-                                      MainControllerGuts,
+@interface MainController : NSObject <BrowserLauncher,
                                       StartupInformation,
-                                      TabOpening,
-                                      TabSwitching,
-                                      BrowsingDataCommands>
-
-// The application window.
-@property(nonatomic, strong) UIWindow* window;
+                                      BrowsingDataCommands,
+                                      AppStateObserver>
 
 // Contains information about the application state, for example whether the
 // safe mode is activated.
@@ -44,10 +34,6 @@
 // This metrics mediator is used to check and update the metrics accordingly to
 // to the user preferences.
 @property(nonatomic, weak) MetricsMediator* metricsMediator;
-
-// For temporary plumbing only.
-@property(nonatomic, weak) id<ApplicationCommands, BrowsingDataCommands>
-    sceneController;
 
 @end
 

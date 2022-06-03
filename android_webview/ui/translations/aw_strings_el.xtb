@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
-<translation id="6106989379647458772">Η ιστοσελίδα στη διεύθυνση <ph name="PAGE" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε μια νέα διεύθυνση ιστού.</translation>
-<translation id="6312113039770857350">Η ιστοσελίδα δεν είναι διαθέσιμη</translation>
-<translation id="8681531050781943054">Η φόρτωση της ιστοσελίδας στη διεύθυνση <ph name="PAGE" /> δεν ήταν δυνατή επειδή:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Προτάσεις:<ph name="MARKUP_2" />Βεβαιωθείτε ότι έχετε μια σύνδεση δεδομένων<ph name="MARKUP_3" />Επαναλάβετε τη φόρτωση αυτής της ιστοσελίδας αργότερα<ph name="MARKUP_4" />Ελέγξτε τη διεύθυνση που έχετε εισαγάγει<ph name="MARKUP_5" /></translation>
 </translationbundle>

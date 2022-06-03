@@ -4,6 +4,8 @@
 
 #include "net/url_request/url_fetcher_response_writer.h"
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -29,7 +31,7 @@ const char kData[] = "Hello!";
 class URLFetcherStringWriterTest : public PlatformTest {
  protected:
   void SetUp() override {
-    writer_.reset(new URLFetcherStringWriter);
+    writer_ = std::make_unique<URLFetcherStringWriter>();
     buf_ = base::MakeRefCounted<StringIOBuffer>(kData);
   }
 
@@ -64,8 +66,8 @@ class URLFetcherFileWriterTest : public PlatformTest,
     PlatformTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test.txt");
-    writer_.reset(new URLFetcherFileWriter(base::ThreadTaskRunnerHandle::Get(),
-                                           file_path_));
+    writer_ = std::make_unique<URLFetcherFileWriter>(
+        base::ThreadTaskRunnerHandle::Get(), file_path_);
     buf_ = base::MakeRefCounted<StringIOBuffer>(kData);
   }
 
@@ -221,8 +223,8 @@ class URLFetcherFileWriterTemporaryFileTest : public PlatformTest,
                                               public WithTaskEnvironment {
  protected:
   void SetUp() override {
-    writer_.reset(new URLFetcherFileWriter(base::ThreadTaskRunnerHandle::Get(),
-                                           base::FilePath()));
+    writer_ = std::make_unique<URLFetcherFileWriter>(
+        base::ThreadTaskRunnerHandle::Get(), base::FilePath());
     buf_ = base::MakeRefCounted<StringIOBuffer>(kData);
   }
 

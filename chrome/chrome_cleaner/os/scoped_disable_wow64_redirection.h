@@ -5,8 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_OS_SCOPED_DISABLE_WOW64_REDIRECTION_H_
 #define CHROME_CHROME_CLEANER_OS_SCOPED_DISABLE_WOW64_REDIRECTION_H_
 
-#include "base/macros.h"
-
 namespace chrome_cleaner {
 
 // Scoper that switches off Wow64 File System Redirection during its lifetime.
@@ -14,6 +12,11 @@ namespace chrome_cleaner {
 class ScopedDisableWow64Redirection {
  public:
   ScopedDisableWow64Redirection();
+
+  ScopedDisableWow64Redirection(const ScopedDisableWow64Redirection&) = delete;
+  ScopedDisableWow64Redirection& operator=(
+      const ScopedDisableWow64Redirection&) = delete;
+
   ~ScopedDisableWow64Redirection();
 
   bool is_active() const { return active_; }
@@ -21,8 +24,6 @@ class ScopedDisableWow64Redirection {
  private:
   bool active_;
   void* previous_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisableWow64Redirection);
 };
 
 }  // namespace chrome_cleaner

@@ -6,7 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -1,16 +1,13 @@
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-frame "i" - didReceiveTitle: 
 frame "i" - BeginNavigation request to 'about:blank', http method GET
 frame "i" - DidStartNavigation
 frame "i" - ReadyToCommitNavigation
 frame "i" - didCommitLoadForFrame
-frame "i" - didReceiveTitle: 
 frame "i" - didFinishDocumentLoadForFrame
 frame "i" - didHandleOnloadEventsForFrame
 frame "i" - didFinishLoadForFrame
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame

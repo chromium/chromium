@@ -4,15 +4,18 @@
 
 #include "chrome/browser/android/vr/autocomplete_controller.h"
 
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
-#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/search_engines/util.h"
 
 namespace vr {
@@ -27,9 +30,15 @@ AutocompleteController::AutocompleteController(SuggestionCallback callback)
       suggestion_callback_(std::move(callback)) {
   auto client = std::make_unique<ChromeAutocompleteProviderClient>(profile_);
   client_ = client.get();
+
   autocomplete_controller_ = std::make_unique<::AutocompleteController>(
-      std::move(client), this,
-      AutocompleteClassifier::DefaultOmniboxProviders());
+      std::move(client), AutocompleteClassifier::DefaultOmniboxProviders());
+  autocomplete_controller_->AddObserver(this);
+
+  OmniboxControllerEmitter* emitter =
+      OmniboxControllerEmitter::GetForBrowserContext(profile_);
+  if (emitter)
+    autocomplete_controller_->AddObserver(emitter);
 }
 
 AutocompleteController::~AutocompleteController() = default;
@@ -54,10 +63,10 @@ void AutocompleteController::Stop() {
 }
 
 std::tuple<GURL, bool> AutocompleteController::GetUrlFromVoiceInput(
-    const base::string16& input) {
+    const std::u16string& input) {
   AutocompleteMatch match;
-  base::string16 culled_input;
-  base::RemoveChars(input, base::ASCIIToUTF16(" "), &culled_input);
+  std::u16string culled_input;
+  base::RemoveChars(input, u" ", &culled_input);
   client_->Classify(culled_input, false, false,
                     metrics::OmniboxEventProto::INVALID_SPEC, &match, nullptr);
   if (match.destination_url.is_valid() &&
@@ -71,7 +80,11 @@ std::tuple<GURL, bool> AutocompleteController::GetUrlFromVoiceInput(
           false};
 }
 
-void AutocompleteController::OnResultChanged(bool default_match_changed) {
+void AutocompleteController::OnResultChanged(
+    ::AutocompleteController* controller,
+    bool default_match_changed) {
+  DCHECK(controller == autocomplete_controller_.get());
+
   std::vector<OmniboxSuggestion> suggestions;
   for (const auto& match : autocomplete_controller_->result()) {
     const gfx::VectorIcon* icon = &match.GetVectorIcon(false);
@@ -85,11 +98,11 @@ void AutocompleteController::OnResultChanged(bool default_match_changed) {
   suggestions_timeout_.Cancel();
 
   if (suggestions.size() < kMaxNumberOfSuggestions) {
-    suggestions_timeout_.Reset(base::BindRepeating(
-        suggestion_callback_, base::Passed(std::move(suggestions))));
+    suggestions_timeout_.Reset(
+        base::BindOnce(suggestion_callback_, std::move(suggestions)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, suggestions_timeout_.callback(),
-        base::TimeDelta::FromMilliseconds(kSuggestionThrottlingDelayMs));
+        base::Milliseconds(kSuggestionThrottlingDelayMs));
   } else {
     suggestion_callback_.Run(std::move(suggestions));
   }

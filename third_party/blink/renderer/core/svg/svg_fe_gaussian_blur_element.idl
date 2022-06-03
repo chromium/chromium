@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEGaussianBlurElement
 
-interface SVGFEGaussianBlurElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEGaussianBlurElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber stdDeviationX;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber stdDeviationY;

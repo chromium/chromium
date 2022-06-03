@@ -22,7 +22,9 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -61,6 +63,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(LabelType, kLabelType, LabelType::kNone)
 // IDs of the colors to use for infobar elements.
 constexpr int kInfoBarLabelBackgroundColor = ThemeProperties::COLOR_INFOBAR;
 constexpr int kInfoBarLabelTextColor = ThemeProperties::COLOR_BOOKMARK_TEXT;
+
+constexpr int kSeparatorHeightDip = 1;
 
 bool SortViewsByDecreasingWidth(views::View* view_1, views::View* view_2) {
   return view_1->GetPreferredSize().width() >
@@ -116,7 +120,8 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   }
 
   if (this->delegate()->IsCloseable()) {
-    auto close_button = views::CreateVectorImageButton(this);
+    auto close_button = views::CreateVectorImageButton(base::BindRepeating(
+        &InfoBarView::CloseButtonPressed, base::Unretained(this)));
     // This is the wrong color, but allows the button's size to be computed
     // correctly.  We'll reset this with the correct color in OnThemeChanged().
     views::SetImageFromVectorIcon(close_button.get(),
@@ -124,7 +129,6 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
                                   gfx::kPlaceholderColor);
     close_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
-    close_button->SetFocusForPlatform();
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
     close_button->SetProperty(views::kMarginsKey,
                               gfx::Insets(close_button_spacing.top(), 0,
@@ -148,7 +152,7 @@ void InfoBarView::RecalculateHeight() {
     const int margin_height = margins ? margins->height() : 0;
     height = std::max(height, child->height() + margin_height);
   }
-  SetTargetHeight(height + GetSeparatorHeight());
+  SetTargetHeight(height + kSeparatorHeightDip);
 }
 
 void InfoBarView::Layout() {
@@ -159,7 +163,7 @@ void InfoBarView::Layout() {
     start_x = icon_->bounds().right();
   }
 
-  const int content_minimum_width = ContentMinimumWidth();
+  const int content_minimum_width = GetContentMinimumWidth();
   if (content_minimum_width > 0)
     start_x += spacing + content_minimum_width;
 
@@ -191,7 +195,7 @@ gfx::Size InfoBarView::CalculatePreferredSize() const {
   if (icon_)
     width += spacing + icon_->width();
 
-  const int content_width = ContentMinimumWidth();
+  const int content_width = GetContentMinimumWidth();
   if (content_width)
     width += spacing + content_width;
 
@@ -216,16 +220,16 @@ void InfoBarView::ViewHierarchyChanged(
 void InfoBarView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  if (ShouldDrawSeparator()) {
-    const SkColor color =
-        GetColor(ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR);
-    const gfx::Rect local_bounds = GetLocalBounds();
-    canvas->DrawSharpLine({local_bounds.x(), local_bounds.y()},
-                          {local_bounds.right(), local_bounds.y()}, color);
-  }
+  const SkColor color =
+      GetColor(ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR);
+  const gfx::RectF local_bounds(GetLocalBounds());
+  const gfx::Vector2d separator_offset(0, kSeparatorHeightDip);
+  canvas->DrawSharpLine(local_bounds.bottom_left() - separator_offset,
+                        local_bounds.bottom_right() - separator_offset, color);
 }
 
 void InfoBarView::OnThemeChanged() {
+  views::View::OnThemeChanged();
   const SkColor background_color = GetColor(kInfoBarLabelBackgroundColor);
   SetBackground(views::CreateSolidBackground(background_color));
 
@@ -249,16 +253,6 @@ void InfoBarView::OnThemeChanged() {
   RecalculateHeight();
 }
 
-void InfoBarView::ButtonPressed(views::Button* sender,
-                                const ui::Event& event) {
-  if (!owner())
-    return;  // We're closing; don't call anything, it might access the owner.
-  if (sender == close_button_) {
-    delegate()->InfoBarDismissed();
-    RemoveSelf();
-  }
-}
-
 void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   views::ExternalFocusTracker::OnWillChangeFocus(focused_before, focused_now);
 
@@ -270,19 +264,21 @@ void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   }
 }
 
-views::Label* InfoBarView::CreateLabel(const base::string16& text) const {
-  views::Label* label = new views::Label(text, CONTEXT_BODY_TEXT_LARGE);
+views::Label* InfoBarView::CreateLabel(const std::u16string& text) const {
+  views::Label* label =
+      new views::Label(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(label);
   label->SetEnabledColor(GetColor(kInfoBarLabelTextColor));
   label->SetProperty(kLabelType, LabelType::kLabel);
   return label;
 }
 
-views::Link* InfoBarView::CreateLink(const base::string16& text,
-                                     views::LinkListener* listener) const {
-  views::Link* link = new views::Link(text, CONTEXT_BODY_TEXT_LARGE);
+views::Link* InfoBarView::CreateLink(const std::u16string& text) {
+  views::Link* link =
+      new views::Link(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(link);
-  link->set_listener(listener);
+  link->SetCallback(
+      base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
   link->SetProperty(kLabelType, LabelType::kLink);
   return link;
 }
@@ -293,26 +289,25 @@ void InfoBarView::AssignWidths(Views* views, int available_width) {
   AssignWidthsSorted(views, available_width);
 }
 
-int InfoBarView::ContentMinimumWidth() const {
+int InfoBarView::GetContentMinimumWidth() const {
   return 0;
 }
 
-int InfoBarView::StartX() const {
-  // Ensure we don't return a value greater than EndX(), so children can safely
-  // set something's width to "EndX() - StartX()" without risking that being
-  // negative.
+int InfoBarView::GetStartX() const {
+  // Ensure we don't return a value greater than GetEndX(), so children can
+  // safely set something's width to "GetEndX() - GetStartX()" without risking
+  // that being negative.
   return std::min((icon_ ? icon_->bounds().right() : 0) + GetElementSpacing(),
-                  EndX());
+                  GetEndX());
 }
 
-int InfoBarView::EndX() const {
+int InfoBarView::GetEndX() const {
   return close_button_ ? close_button_->x() - GetCloseButtonSpacing().left()
                        : width() - GetElementSpacing();
 }
 
 int InfoBarView::OffsetY(views::View* view) const {
-  return GetSeparatorHeight() +
-         std::max((target_height() - view->height()) / 2, 0) -
+  return std::max((target_height() - view->height()) / 2, 0) -
          (target_height() - height());
 }
 
@@ -365,23 +360,6 @@ void InfoBarView::AssignWidthsSorted(Views* views, int available_width) {
   AssignWidthsSorted(views, available_width - back_view_size.width());
 }
 
-bool InfoBarView::ShouldDrawSeparator() const {
-  // There will be no parent when this infobar is not in a container, e.g. if
-  // it's in a background tab.  It's still possible to reach here in that case,
-  // e.g. if ElevationIconSetter triggers a Layout().
-  return parent() && parent()->children().front() != this;
-}
-
-int InfoBarView::GetSeparatorHeight() const {
-  // We only need a separator for infobars after the first; the topmost infobar
-  // uses the toolbar as its top separator.
-  //
-  // This only works because all infobars have padding at the top; if we
-  // actually draw all the way to the top, we'd risk drawing a separator atop
-  // some infobar content.
-  return ShouldDrawSeparator() ? 1 : 0;
-}
-
 SkColor InfoBarView::GetColor(int id) const {
   const auto* theme_provider = GetThemeProvider();
   // When there's no theme provider, this color will never be used; it will be
@@ -398,3 +376,23 @@ void InfoBarView::SetLabelDetails(views::Label* label) const {
                                      DISTANCE_TOAST_LABEL_VERTICAL),
                                  0));
 }
+
+void InfoBarView::LinkClicked(const ui::Event& event) {
+  if (!owner())
+    return;  // We're closing; don't call anything, it might access the owner.
+  if (delegate()->LinkClicked(ui::DispositionFromEventFlags(event.flags())))
+    RemoveSelf();
+}
+
+void InfoBarView::CloseButtonPressed() {
+  if (!owner())
+    return;  // We're closing; don't call anything, it might access the owner.
+  delegate()->InfoBarDismissed();
+  RemoveSelf();
+}
+
+BEGIN_METADATA(InfoBarView, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, ContentMinimumWidth)
+ADD_READONLY_PROPERTY_METADATA(int, StartX)
+ADD_READONLY_PROPERTY_METADATA(int, EndX)
+END_METADATA

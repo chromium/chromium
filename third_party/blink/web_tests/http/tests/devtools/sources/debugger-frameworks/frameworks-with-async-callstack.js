@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the async call stacks and framework black-boxing features working together.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">
@@ -53,10 +53,10 @@
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
   }
 
-  function didPause(callFrames, reason, breakpointIds, asyncStackTrace) {
-    SourcesTestRunner.captureStackTrace(callFrames, asyncStackTrace, {'dropFrameworkCallFrames': false});
+  async function didPause(callFrames, reason, breakpointIds, asyncStackTrace) {
+    await SourcesTestRunner.captureStackTrace(callFrames, asyncStackTrace, {'dropFrameworkCallFrames': false});
     TestRunner.addResult('\nPrinting visible call stack:');
-    SourcesTestRunner.captureStackTrace(callFrames, asyncStackTrace, {'dropFrameworkCallFrames': true});
+    await SourcesTestRunner.captureStackTrace(callFrames, asyncStackTrace, {'dropFrameworkCallFrames': true});
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

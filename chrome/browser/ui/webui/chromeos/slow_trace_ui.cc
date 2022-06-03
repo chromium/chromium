@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "components/feedback/tracing_manager.h"
+#include "components/feedback/content/content_tracing_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 
@@ -40,7 +40,7 @@ void SlowTraceSource::StartDataRequest(
   // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   size_t pos = path.find('#');
-  TracingManager* manager = TracingManager::Get();
+  ContentTracingManager* manager = ContentTracingManager::Get();
   if (!manager ||
       pos == std::string::npos ||
       !base::StringToInt(path.substr(pos + 1), &trace_id)) {

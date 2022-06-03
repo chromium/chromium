@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_CAST_RENDERER_BLOCK_DATA_H_
 #define CHROMECAST_BROWSER_CAST_RENDERER_BLOCK_DATA_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"

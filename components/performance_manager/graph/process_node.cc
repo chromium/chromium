@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/public/graph/process_node.h"
 
-#include "base/logging.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 
 namespace performance_manager {

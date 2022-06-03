@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
@@ -60,7 +61,7 @@ void SupervisedUserPrefStoreFixture::OnPrefValueChanged(
     const std::string& key) {
   const base::Value* value = nullptr;
   ASSERT_TRUE(pref_store_->GetValue(key, &value));
-  changed_prefs_.Set(key, std::make_unique<base::Value>(value->Clone()));
+  changed_prefs_.SetPath(key, value->Clone());
 }
 
 void SupervisedUserPrefStoreFixture::OnInitializationCompleted(bool succeeded) {
@@ -100,7 +101,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // activated yet.
   pref_store_->SetInitializationCompleted();
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
 
   service_.SetActive(true);
 
@@ -139,7 +140,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // Activating the service again should not change anything.
   fixture.changed_prefs()->Clear();
   service_.SetActive(true);
-  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
 
   // kSupervisedModeManualHosts can be configured by the custodian.
   base::Value hosts(base::Value::Type::DICTIONARY);
@@ -147,7 +148,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   hosts.SetBoolKey("moose.org", false);
   service_.SetLocalSetting(supervised_users::kContentPackManualBehaviorHosts,
                            std::make_unique<base::Value>(hosts.Clone()));
-  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
   ASSERT_TRUE(fixture.changed_prefs()->GetDictionary(
       prefs::kSupervisedUserManualHosts, &manual_hosts));
   EXPECT_TRUE(*manual_hosts == hosts);
@@ -157,7 +158,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   fixture.changed_prefs()->Clear();
   service_.SetLocalSetting(supervised_users::kForceSafeSearch,
                            std::make_unique<base::Value>(false));
-  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
   EXPECT_TRUE(fixture.changed_prefs()->GetBoolean(prefs::kForceGoogleSafeSearch,
                                                   &force_google_safesearch));
   EXPECT_TRUE(fixture.changed_prefs()->GetInteger(prefs::kForceYouTubeRestrict,
@@ -170,14 +171,39 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // Currently tested indirectly by enabling geolocation requests.
   // TODO(crbug/1024646): Update Kids Management server to set a new bit for
   // extension permissions and update this test.
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "SupervisedUsers.ExtensionsMayRequestPermissions", 0);
+
   fixture.changed_prefs()->Clear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
                            std::make_unique<base::Value>(false));
-  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
   EXPECT_TRUE(fixture.changed_prefs()->GetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions,
       &extensions_may_request_permissions));
   EXPECT_TRUE(extensions_may_request_permissions);
+
+  histogram_tester.ExpectUniqueSample(
+      "SupervisedUsers.ExtensionsMayRequestPermissions", /*enabled=*/true, 1);
+  histogram_tester.ExpectTotalCount(
+      "SupervisedUsers.ExtensionsMayRequestPermissions", 1);
+
+  fixture.changed_prefs()->Clear();
+  service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
+                           std::make_unique<base::Value>(true));
+  EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
+  EXPECT_TRUE(fixture.changed_prefs()->GetBoolean(
+      prefs::kSupervisedUserExtensionsMayRequestPermissions,
+      &extensions_may_request_permissions));
+  EXPECT_FALSE(extensions_may_request_permissions);
+
+  histogram_tester.ExpectBucketCount(
+      "SupervisedUsers.ExtensionsMayRequestPermissions", /*enabled=*/false, 1);
+  histogram_tester.ExpectTotalCount(
+      "SupervisedUsers.ExtensionsMayRequestPermissions", 2);
+
 #endif
 }
 
@@ -187,11 +213,11 @@ TEST_F(SupervisedUserPrefStoreTest, ActivateSettingsBeforeInitialization) {
 
   service_.SetActive(true);
   EXPECT_FALSE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
 
   pref_store_->SetInitializationCompleted();
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
 }
 
 TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
@@ -200,5 +226,5 @@ TEST_F(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
 
   SupervisedUserPrefStoreFixture fixture(&service_);
   EXPECT_TRUE(fixture.initialization_completed());
-  EXPECT_EQ(0u, fixture.changed_prefs()->size());
+  EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
 }

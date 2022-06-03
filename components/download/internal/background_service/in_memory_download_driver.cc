@@ -46,7 +46,7 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
   if (download.state() == InMemoryDownload::State::COMPLETE) {
     auto blob_handle = download.ResultAsBlob();
     if (blob_handle)
-      entry.blob_handle = base::Optional<storage::BlobDataHandle>(*blob_handle);
+      entry.blob_handle = absl::optional<storage::BlobDataHandle>(*blob_handle);
   }
   return entry;
 }
@@ -128,9 +128,9 @@ void InMemoryDownloadDriver::Resume(const std::string& guid) {
     it->second->Resume();
 }
 
-base::Optional<DriverEntry> InMemoryDownloadDriver::Find(
+absl::optional<DriverEntry> InMemoryDownloadDriver::Find(
     const std::string& guid) {
-  base::Optional<DriverEntry> entry;
+  absl::optional<DriverEntry> entry;
   auto it = downloads_.find(guid);
   if (it != downloads_.end())
     entry = CreateDriverEntry(*it->second);

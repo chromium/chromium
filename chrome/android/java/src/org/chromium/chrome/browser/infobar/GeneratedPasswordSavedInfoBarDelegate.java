@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.infobar;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.ResourceId;
+import org.chromium.components.infobars.InfoBar;
 
 /**
  * Provides JNI methods for the infobar to notify that the generated password was saved.
@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.ResourceId;
 public class GeneratedPasswordSavedInfoBarDelegate {
     /**
      * Creates and shows the infobar to notify that the generated password was saved.
-     * @param enumeratedIconId Enum ID corresponding to the icon that the infobar will show.
+     * @param iconId Enum ID corresponding to the icon that the infobar will show.
      * @param messageText Message to display in the infobar.
      * @param detailsMessageText Message containing additional details to be displayed in the
      * infobar.
@@ -22,10 +22,9 @@ public class GeneratedPasswordSavedInfoBarDelegate {
      * @param buttonLabel String to display on the button.
      */
     @CalledByNative
-    private static InfoBar show(int enumeratedIconId, String messageText, String detailsMessageText,
+    private static InfoBar show(int iconId, String messageText, String detailsMessageText,
             int inlineLinkRangeStart, int inlineLinkRangeEnd, String buttonLabel) {
-        return new GeneratedPasswordSavedInfoBar(ResourceId.mapToDrawableId(enumeratedIconId),
-                messageText, detailsMessageText, inlineLinkRangeStart, inlineLinkRangeEnd,
-                buttonLabel);
+        return new GeneratedPasswordSavedInfoBar(iconId, messageText, detailsMessageText,
+                inlineLinkRangeStart, inlineLinkRangeEnd, buttonLabel);
     }
 }

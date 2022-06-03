@@ -12,12 +12,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -26,6 +24,7 @@
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-test-utils.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace device {
@@ -47,8 +46,8 @@ constexpr const char kAlternateDeviceAddressStr[] = "AA:BB:CC:DD:EE:FF";
 constexpr const std::array<uint8_t, 6> kDefaultDeviceAddressArray = {
     0x00, 0x11, 0x22, 0xAA, 0xBB, 0xCC};
 
-bool GetValueAndReset(base::Optional<bool>* opt) {
-  base::Optional<bool> tmp;
+bool GetValueAndReset(absl::optional<bool>* opt) {
+  absl::optional<bool> tmp;
   tmp.swap(*opt);
   return tmp.value();
 }
@@ -62,9 +61,10 @@ struct FakeDeviceOptions {
 
   std::string address{kDefaultDeviceAddressStr};
   dbus::ObjectPath adapter_object_path{kDefaultAdapterObjectPathStr};
-  base::Optional<std::string> name;
+  absl::optional<std::string> name;
   bool paired = false;
   bool connected = false;
+  bool is_blocked_by_policy = false;
 };
 
 // Exposes high-level methods to simulate Bluetooth events e.g. a new adapter
@@ -128,8 +128,8 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     }
 
     size_t set_powered_call_count_ = 0;
-    base::Optional<bool> next_set_powered_response_;
-    base::Optional<bool> last_set_powered_value_;
+    absl::optional<bool> next_set_powered_response_;
+    absl::optional<bool> last_set_powered_value_;
 
     // Saved `Set('powered')` callbacks. If there is no next response set for a
     // `Set()` call, then the callback is saved here. TestBluetoothAdapterClient
@@ -347,7 +347,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     DCHECK(
         base::Contains(adapter_object_paths_to_next_responses_, object_path));
 
-    base::Optional<bool> response;
+    absl::optional<bool> response;
     response.swap(
         adapter_object_paths_to_next_responses_[object_path].start_discovery);
 
@@ -355,7 +355,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
       std::move(callback).Run(Error(kUnknownAdapterError, "Unknown error"));
       return;
     }
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 
   void StopDiscovery(const dbus::ObjectPath& object_path,
@@ -366,7 +366,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     DCHECK(
         base::Contains(adapter_object_paths_to_next_responses_, object_path));
 
-    base::Optional<bool> response;
+    absl::optional<bool> response;
     response.swap(
         adapter_object_paths_to_next_responses_[object_path].stop_discovery);
 
@@ -374,19 +374,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
       std::move(callback).Run(Error(kUnknownAdapterError, "Unknown error"));
       return;
     }
-    std::move(callback).Run(base::nullopt);
-  }
-
-  void PauseDiscovery(const dbus::ObjectPath& object_path,
-                      base::OnceClosure callback,
-                      ErrorCallback error_callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void UnpauseDiscovery(const dbus::ObjectPath& object_path,
-                        base::OnceClosure callback,
-                        ErrorCallback error_callback) override {
-    NOTIMPLEMENTED();
+    std::move(callback).Run(absl::nullopt);
   }
 
   void RemoveDevice(const dbus::ObjectPath& object_path,
@@ -417,9 +405,11 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     NOTIMPLEMENTED();
   }
 
-  void SetLongTermKeys(const dbus::ObjectPath& object_path,
-                       const std::vector<std::vector<uint8_t>>& long_term_keys,
-                       ErrorCallback error_callback) override {
+  void ConnectDevice(const dbus::ObjectPath& object_path,
+                     const std::string& address,
+                     const absl::optional<AddressType>& address_type,
+                     ConnectDeviceCallback callback,
+                     ErrorCallback error_callback) override {
     NOTIMPLEMENTED();
   }
 
@@ -435,8 +425,8 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     NextResponses() = default;
     ~NextResponses() = default;
 
-    base::Optional<bool> start_discovery;
-    base::Optional<bool> stop_discovery;
+    absl::optional<bool> start_discovery;
+    absl::optional<bool> stop_discovery;
   };
 
   void OnPropertyChanged(const dbus::ObjectPath& object_path,
@@ -526,6 +516,7 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothDeviceClient
     }
 
     properties->paired.ReplaceValue(options.paired);
+    properties->is_blocked_by_policy.ReplaceValue(options.is_blocked_by_policy);
     properties->connected.ReplaceValue(options.connected);
     properties->adapter.ReplaceValue(options.adapter_object_path);
 
@@ -568,9 +559,21 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothDeviceClient
     NOTIMPLEMENTED();
   }
 
+  void ConnectLE(const dbus::ObjectPath& object_path,
+                 base::OnceClosure callback,
+                 ErrorCallback error_callback) override {
+    NOTIMPLEMENTED();
+  }
+
   void Disconnect(const dbus::ObjectPath& object_path,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void DisconnectLE(const dbus::ObjectPath& object_path,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback) override {
     NOTIMPLEMENTED();
   }
 
@@ -645,6 +648,10 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
                             public mojom::BluetoothSystemClient {
  public:
   BluetoothSystemTest() = default;
+
+  BluetoothSystemTest(const BluetoothSystemTest&) = delete;
+  BluetoothSystemTest& operator=(const BluetoothSystemTest&) = delete;
+
   ~BluetoothSystemTest() override = default;
 
   void SetUp() override {
@@ -765,9 +772,6 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
   TestBluetoothDeviceClient* test_bluetooth_device_client_;
 
   mojo::Receiver<mojom::BluetoothSystemClient> system_client_receiver_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSystemTest);
 };
 
 // Tests that the Create method for BluetoothSystemFactory works.
@@ -1148,7 +1152,7 @@ TEST_F(BluetoothSystemTest, SetPoweredOn_AdapterRemovedWhilePending) {
 
   auto system = CreateBluetoothSystem();
 
-  base::Optional<mojom::BluetoothSystem::SetPoweredResult> result;
+  absl::optional<mojom::BluetoothSystem::SetPoweredResult> result;
 
   // Start a SetPowered call and wait for the state to change to kTransitioning.
   base::RunLoop set_powered_run_loop;
@@ -1190,7 +1194,7 @@ TEST_F(BluetoothSystemTest, SetPoweredOff_AdapterRemovedWhilePending) {
 
   auto system = CreateBluetoothSystem();
 
-  base::Optional<mojom::BluetoothSystem::SetPoweredResult> result;
+  absl::optional<mojom::BluetoothSystem::SetPoweredResult> result;
 
   // Start a SetPowered call and wait for the state to change to kTransitioning.
   base::RunLoop set_powered_run_loop;
@@ -1237,7 +1241,7 @@ TEST_F(BluetoothSystemTest, SetPoweredOff_PendingSetPoweredOff) {
   // Start powering off BT and wait for the state to change to
   // kTransitioning.
   base::RunLoop run_loop;
-  base::Optional<mojom::BluetoothSystem::SetPoweredResult>
+  absl::optional<mojom::BluetoothSystem::SetPoweredResult>
       set_powered_off_result;
   system->SetPowered(false,
                      base::BindLambdaForTesting(
@@ -1291,7 +1295,7 @@ TEST_F(BluetoothSystemTest, SetPoweredOff_PendingSetPoweredOn) {
   // Start powering on BT and wait for the state to change to
   // kTransitioning.
   base::RunLoop run_loop;
-  base::Optional<mojom::BluetoothSystem::SetPoweredResult>
+  absl::optional<mojom::BluetoothSystem::SetPoweredResult>
       set_powered_on_result;
   system->SetPowered(true, base::BindLambdaForTesting(
                                [&](mojom::BluetoothSystem::SetPoweredResult r) {
@@ -1344,7 +1348,7 @@ TEST_F(BluetoothSystemTest, SetPoweredOn_PendingSetPoweredOff) {
   // Start powering off BT and wait for the state to change to
   // kTransitioning.
   base::RunLoop run_loop;
-  base::Optional<mojom::BluetoothSystem::SetPoweredResult>
+  absl::optional<mojom::BluetoothSystem::SetPoweredResult>
       set_powered_off_result;
   system->SetPowered(false,
                      base::BindLambdaForTesting(
@@ -1398,7 +1402,7 @@ TEST_F(BluetoothSystemTest, SetPoweredOn_PendingSetPoweredOn) {
   // Start powering on BT and wait for the state to change to
   // kTransitioning.
   base::RunLoop run_loop;
-  base::Optional<mojom::BluetoothSystem::SetPoweredResult>
+  absl::optional<mojom::BluetoothSystem::SetPoweredResult>
       set_powered_on_result;
   system->SetPowered(true, base::BindLambdaForTesting(
                                [&](mojom::BluetoothSystem::SetPoweredResult r) {
@@ -1957,14 +1961,16 @@ TEST_F(BluetoothSystemTest, GetAvailableDevices) {
     fake_options.name = "Fake Device";
     fake_options.paired = true;
     fake_options.connected = true;
+    fake_options.is_blocked_by_policy = true;
     test_bluetooth_device_client_->SimulateDeviceAdded(fake_options);
   }
   {
     FakeDeviceOptions fake_options("2");
     fake_options.address = kAlternateDeviceAddressStr;
-    fake_options.name = base::nullopt;
+    fake_options.name = absl::nullopt;
     fake_options.paired = false;
     fake_options.connected = false;
+    fake_options.is_blocked_by_policy = false;
     test_bluetooth_device_client_->SimulateDeviceAdded(fake_options);
   }
 
@@ -1983,11 +1989,13 @@ TEST_F(BluetoothSystemTest, GetAvailableDevices) {
 
   EXPECT_EQ(device_with_name->name.value(), "Fake Device");
   EXPECT_TRUE(device_with_name->is_paired);
+  EXPECT_TRUE(device_with_name->is_blocked_by_policy);
   EXPECT_EQ(device_with_name->connection_state,
             mojom::BluetoothDeviceInfo::ConnectionState::kConnected);
 
   EXPECT_FALSE(!!device_without_name->name);
   EXPECT_FALSE(device_without_name->is_paired);
+  EXPECT_FALSE(device_without_name->is_blocked_by_policy);
   EXPECT_EQ(device_without_name->connection_state,
             mojom::BluetoothDeviceInfo::ConnectionState::kNotConnected);
 }

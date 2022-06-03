@@ -6,22 +6,22 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "services/preferences/tracked/tracked_persistent_pref_store_factory.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 #if defined(OS_WIN)
 #include "chrome/install_static/install_util.h"
@@ -32,8 +32,7 @@ namespace {
 #if defined(OS_WIN)
 // Forces a different registry key to be used for storing preference validation
 // MACs. See |SetPreferenceValidationRegistryPathForTesting|.
-const base::string16* g_preference_validation_registry_path_for_testing =
-    nullptr;
+const std::wstring* g_preference_validation_registry_path_for_testing = nullptr;
 #endif  // OS_WIN
 
 }  // namespace
@@ -41,7 +40,7 @@ const base::string16* g_preference_validation_registry_path_for_testing =
 // Preference tracking and protection is not required on platforms where other
 // apps do not have access to chrome's persistent storage.
 const bool ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking =
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     false;
 #else
     true;
@@ -55,7 +54,7 @@ ProfilePrefStoreManager::ProfilePrefStoreManager(
       seed_(seed),
       legacy_device_id_(legacy_device_id) {}
 
-ProfilePrefStoreManager::~ProfilePrefStoreManager() {}
+ProfilePrefStoreManager::~ProfilePrefStoreManager() = default;
 
 // static
 void ProfilePrefStoreManager::RegisterProfilePrefs(
@@ -76,7 +75,7 @@ void ProfilePrefStoreManager::ClearResetTime(PrefService* pref_service) {
 #if defined(OS_WIN)
 // static
 void ProfilePrefStoreManager::SetPreferenceValidationRegistryPathForTesting(
-    const base::string16* path) {
+    const std::wstring* path) {
   DCHECK(!path->empty());
   g_preference_validation_registry_path_for_testing = path;
 }
@@ -150,11 +149,11 @@ ProfilePrefStoreManager::CreateTrackedPrefStoreConfiguration(
       std::move(tracking_configuration), reporting_ids_count, seed_,
       legacy_device_id_, "ChromeRegistryHashStoreValidationSeed",
 #if defined(OS_WIN)
-      g_preference_validation_registry_path_for_testing
-          ? *g_preference_validation_registry_path_for_testing
-          : install_static::GetRegistryPath(),
+      base::AsString16(g_preference_validation_registry_path_for_testing
+                           ? *g_preference_validation_registry_path_for_testing
+                           : install_static::GetRegistryPath()),
 #else
-      base::string16(),
+      std::u16string(),
 #endif
       std::move(validation_delegate), std::move(reset_on_load_observer));
 }

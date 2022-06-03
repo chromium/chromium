@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

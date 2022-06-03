@@ -5,8 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_INSTALL_CRX_INSTALL_ERROR_H_
 #define EXTENSIONS_BROWSER_INSTALL_CRX_INSTALL_ERROR_H_
 
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include <string>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -28,7 +29,12 @@ enum class CrxInstallErrorType {
 
 // Extended error code that may help explain the error type.
 // Do not change the order of the entries or remove entries in this list.
-// Don't forget to update enums.xml when adding new entries.
+// 1) Don't forget to update enums.xml when adding new entries.
+// 2) Don't forget to update device_management_backend.proto (name:
+// ExtensionInstallReportLogEvent::CrxInstallErrorDetail) when adding new
+// entries.
+// 3) Don't forget to update ConvertCrxInstallErrorDetailToProto method in
+// ExtensionInstallEventLogCollector.
 enum class CrxInstallErrorDetail {
   NONE,                                     // 0
   CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED,  // 1
@@ -66,10 +72,10 @@ class CrxInstallError {
  public:
   CrxInstallError(CrxInstallErrorType type,
                   CrxInstallErrorDetail detail,
-                  const base::string16& message);
+                  const std::u16string& message);
   CrxInstallError(CrxInstallErrorType type, CrxInstallErrorDetail detail);
   CrxInstallError(SandboxedUnpackerFailureReason reason,
-                  const base::string16& message);
+                  const std::u16string& message);
   ~CrxInstallError();
 
   CrxInstallError(const CrxInstallError& other);
@@ -78,15 +84,17 @@ class CrxInstallError {
   CrxInstallError& operator=(CrxInstallError&& other);
 
   CrxInstallErrorType type() const { return type_; }
-  const base::string16& message() const { return message_; }
+  const std::u16string& message() const { return message_; }
   CrxInstallErrorDetail detail() const;
   SandboxedUnpackerFailureReason sandbox_failure_detail() const;
+  bool IsCrxVerificationFailedError() const;
+  bool IsCrxExpectationsFailedError() const;
 
  private:
   CrxInstallErrorType type_;
   CrxInstallErrorDetail detail_;
-  base::Optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
-  base::string16 message_;
+  absl::optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
+  std::u16string message_;
 };
 
 }  // namespace extensions

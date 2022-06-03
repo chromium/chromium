@@ -4,14 +4,14 @@
 
 #include "ash/system/unified/top_shortcuts_view.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/sign_out_button.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 
@@ -19,6 +19,10 @@ namespace ash {
 class TopShortcutsViewTest : public NoSessionAshTestBase {
  public:
   TopShortcutsViewTest() = default;
+
+  TopShortcutsViewTest(const TopShortcutsViewTest&) = delete;
+  TopShortcutsViewTest& operator=(const TopShortcutsViewTest&) = delete;
+
   ~TopShortcutsViewTest() override = default;
 
   void SetUp() override {
@@ -66,8 +70,6 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<TopShortcutsView> top_shortcuts_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutsViewTest);
 };
 
 // Settings button and lock button are hidden before login.
@@ -119,22 +121,6 @@ TEST_F(TopShortcutsViewTest, ButtonStatesAddingUser) {
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
-// Settings button and lock button are hidden when adding a supervised user.
-TEST_F(TopShortcutsViewTest, ButtonStatesSupervisedUserFlow) {
-  // Simulate the add supervised user flow, which is a regular user session but
-  // with web UI settings disabled.
-  const bool enable_settings = false;
-  GetSessionControllerClient()->AddUserSession(
-      "foo@example.com", user_manager::USER_TYPE_REGULAR, enable_settings);
-  SetUpView();
-  EXPECT_EQ(nullptr, GetUserAvatar());
-  EXPECT_EQ(nullptr, GetSignOutButton());
-  EXPECT_EQ(nullptr, GetLockButton());
-  EXPECT_EQ(nullptr, GetSettingsButton());
-  EXPECT_TRUE(GetPowerButton()->GetVisible());
-  EXPECT_TRUE(GetCollapseButton()->GetVisible());
-}
-
 // Try to layout buttons before login.
 TEST_F(TopShortcutsViewTest, ButtonLayoutNotLoggedIn) {
   SetUpView();
@@ -163,13 +149,20 @@ TEST_F(TopShortcutsViewTest, ButtonLayoutAddingUser) {
   Layout();
 }
 
-// Try to layout buttons when adding a supervised user.
-TEST_F(TopShortcutsViewTest, ButtonLayoutSupervisedUserFlow) {
-  const bool enable_settings = false;
-  GetSessionControllerClient()->AddUserSession(
-      "foo@example.com", user_manager::USER_TYPE_REGULAR, enable_settings);
+// Settings button is disabled when kSettingsIconDisabled is set.
+TEST_F(TopShortcutsViewTest, DisableSettingsIconPolicy) {
+  GetSessionControllerClient()->AddUserSession("foo@example.com",
+                                               user_manager::USER_TYPE_REGULAR);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
   SetUpView();
-  Layout();
+  EXPECT_EQ(views::Button::STATE_NORMAL, GetSettingsButton()->GetState());
+
+  local_state()->SetBoolean(prefs::kOsSettingsEnabled, false);
+  EXPECT_EQ(views::Button::STATE_DISABLED, GetSettingsButton()->GetState());
+
+  local_state()->SetBoolean(prefs::kOsSettingsEnabled, true);
+  EXPECT_EQ(views::Button::STATE_NORMAL, GetSettingsButton()->GetState());
 }
 
 }  // namespace ash

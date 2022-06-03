@@ -6,12 +6,11 @@
 #define EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_DELEGATE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/virtual_keyboard.h"
@@ -25,9 +24,12 @@ class VirtualKeyboardDelegate {
   virtual ~VirtualKeyboardDelegate() {}
 
   using OnKeyboardSettingsCallback =
-      base::Callback<void(std::unique_ptr<base::DictionaryValue> settings)>;
+      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue> settings)>;
 
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
+
+  using OnGetClipboardHistoryCallback =
+      base::OnceCallback<void(base::Value history)>;
 
   // Fetch information about the preferred configuration of the keyboard. On
   // exit, |settings| is populated with the keyboard configuration if execution
@@ -44,7 +46,7 @@ class VirtualKeyboardDelegate {
   virtual bool HideKeyboard() = 0;
 
   // Insert |text| verbatim into a text area. Returns true if successful.
-  virtual bool InsertText(const base::string16& text) = 0;
+  virtual bool InsertText(const std::u16string& text) = 0;
 
   // Notifiy system that keyboard loading is complete. Used in UMA stats to
   // track loading performance. Returns true if the notification was handled.
@@ -52,7 +54,7 @@ class VirtualKeyboardDelegate {
 
   // Indicate if settings are accessible and enabled based on current state.
   // For example, settings should be blocked when the session is locked.
-  virtual bool IsLanguageSettingsEnabled() = 0;
+  virtual bool IsSettingsEnabled() = 0;
 
   // Sets the state of the hotrod virtual keyboad.
   virtual void SetHotrodKeyboard(bool enable) = 0;
@@ -77,10 +79,13 @@ class VirtualKeyboardDelegate {
   // Launches the settings app. Returns true if successful.
   virtual bool ShowLanguageSettings() = 0;
 
+  // Launches Suggestions page in settings app. Retusn true is successful.
+  virtual bool ShowSuggestionSettings() = 0;
+
   // Sets virtual keyboard window mode.
   virtual bool SetVirtualKeyboardMode(
       int mode_enum,
-      base::Optional<gfx::Rect> target_bounds,
+      gfx::Rect target_bounds,
       OnSetModeCallback on_set_mode_callback) = 0;
 
   // Sets virtual keyboard draggable area bounds.
@@ -100,6 +105,25 @@ class VirtualKeyboardDelegate {
   // Sets the area of the keyboard window that should remain on screen
   // whenever the user moves the keyboard around their screen.
   virtual bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) = 0;
+
+  // Sets the bounds of the keyboard window in screen coordinates.
+  virtual bool SetWindowBoundsInScreen(const gfx::Rect& bounds_in_screen) = 0;
+
+  // Calls the |get_history_callback| function and passes a value containing the
+  // current cipboard history items. Only clipboard items which have an id in
+  // the |item_ids_filter| are included. If the filter is empty then all
+  // clipboard items are included.
+  virtual void GetClipboardHistory(
+      const std::set<std::string>& item_ids_filter,
+      OnGetClipboardHistoryCallback get_history_callback) = 0;
+
+  // Paste a clipboard item from the clipboard history. Returns whether the
+  // paste is successful.
+  virtual bool PasteClipboardItem(const std::string& clipboard_item_id) = 0;
+
+  // Delete a clipboard item from the clipboard history. Returns whether the
+  // deletion is successful.
+  virtual bool DeleteClipboardItem(const std::string& clipboard_item_id) = 0;
 
   // Restricts the virtual keyboard IME features.
   // Returns the values which were updated.

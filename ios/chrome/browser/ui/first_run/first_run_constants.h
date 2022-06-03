@@ -9,13 +9,22 @@
 
 namespace first_run {
 
-// The accessibility identifier for the sign in button shown in first run.
-extern NSString* const kSignInButtonAccessibilityIdentifier;
-// The accessibility identifier for the skip sign in button shown in first run.
-extern NSString* const kSignInSkipButtonAccessibilityIdentifier;
 // The accessibility identifier for the UMA collection checkbox shown in first
 // run.
 extern NSString* const kUMAMetricsButtonAccessibilityIdentifier;
+
+// The accessibility identifier for the Welcome screen shown in first run.
+extern NSString* const kFirstRunWelcomeScreenAccessibilityIdentifier;
+
+// The accessibility identifier for the Sign in screen shown in first run.
+extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
+
+// The accessibility identifier for the Sync screen shown in first run.
+extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
+
+// The accessibility identifier for the Default browser screen shown in first
+// run.
+extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
 
 }  // first_run
 

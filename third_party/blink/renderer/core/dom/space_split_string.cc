@@ -212,4 +212,8 @@ SpaceSplitString::Data::Data(const SpaceSplitString::Data& other)
   // there's nothing to be removed from the SharedDataMap().
 }
 
+std::ostream& operator<<(std::ostream& ostream, const SpaceSplitString& str) {
+  return ostream << str.SerializeToString();
+}
+
 }  // namespace blink

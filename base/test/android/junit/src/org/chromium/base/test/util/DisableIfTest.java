@@ -18,12 +18,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the DisableIf annotation and its SkipCheck implementation. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 21)
+@Config(manifest = Config.NONE, sdk = 29)
 public class DisableIfTest {
     @Test
     public void testSdkIsLessThanAndIsLessThan() {
         TestCase sdkIsLessThan = new TestCase("sdkIsLessThan") {
-            @DisableIf.Build(sdk_is_less_than = 22)
+            @DisableIf.Build(sdk_is_less_than = 30)
             public void sdkIsLessThan() {}
         };
         Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(sdkIsLessThan));
@@ -32,7 +32,7 @@ public class DisableIfTest {
     @Test
     public void testSdkIsLessThanButIsEqual() {
         TestCase sdkIsEqual = new TestCase("sdkIsEqual") {
-            @DisableIf.Build(sdk_is_less_than = 21)
+            @DisableIf.Build(sdk_is_less_than = 29)
             public void sdkIsEqual() {}
         };
         Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(sdkIsEqual));
@@ -41,7 +41,7 @@ public class DisableIfTest {
     @Test
     public void testSdkIsLessThanButIsGreaterThan() {
         TestCase sdkIsGreaterThan = new TestCase("sdkIsGreaterThan") {
-            @DisableIf.Build(sdk_is_less_than = 20)
+            @DisableIf.Build(sdk_is_less_than = 28)
             public void sdkIsGreaterThan() {}
         };
         Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(sdkIsGreaterThan));
@@ -50,7 +50,7 @@ public class DisableIfTest {
     @Test
     public void testSdkIsGreaterThanButIsLessThan() {
         TestCase sdkIsLessThan = new TestCase("sdkIsLessThan") {
-            @DisableIf.Build(sdk_is_greater_than = 22)
+            @DisableIf.Build(sdk_is_greater_than = 30)
             public void sdkIsLessThan() {}
         };
         Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(sdkIsLessThan));
@@ -59,7 +59,7 @@ public class DisableIfTest {
     @Test
     public void testSdkIsGreaterThanButIsEqual() {
         TestCase sdkIsEqual = new TestCase("sdkIsEqual") {
-            @DisableIf.Build(sdk_is_greater_than = 21)
+            @DisableIf.Build(sdk_is_greater_than = 29)
             public void sdkIsEqual() {}
         };
         Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(sdkIsEqual));
@@ -68,7 +68,7 @@ public class DisableIfTest {
     @Test
     public void testSdkIsGreaterThanAndIsGreaterThan() {
         TestCase sdkIsGreaterThan = new TestCase("sdkIsGreaterThan") {
-            @DisableIf.Build(sdk_is_greater_than = 20)
+            @DisableIf.Build(sdk_is_greater_than = 28)
             public void sdkIsGreaterThan() {}
         };
         Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(sdkIsGreaterThan));
@@ -186,6 +186,138 @@ public class DisableIfTest {
         try {
             ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", new String[] {"foo"});
             Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(sampleTestMethod));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoConditionsBothMet() {
+        TestCase twoConditionsBothMet = new TestCase("twoConditionsBothMet") {
+            @DisableIf.Build(sdk_is_greater_than = 28, supported_abis_includes = "foo")
+            public void twoConditionsBothMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(twoConditionsBothMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoConditionsFirstMet() {
+        TestCase twoConditionsFirstMet = new TestCase("twoConditionsFirstMet") {
+            @DisableIf.Build(sdk_is_greater_than = 28, supported_abis_includes = "baz")
+            public void twoConditionsFirstMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(twoConditionsFirstMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoConditionsSecondMet() {
+        TestCase twoConditionsSecondMet = new TestCase("twoConditionsSecondMet") {
+            @DisableIf.Build(sdk_is_greater_than = 30, supported_abis_includes = "foo")
+            public void twoConditionsSecondMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(twoConditionsSecondMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoConditionsNeitherMet() {
+        TestCase twoConditionsNeitherMet = new TestCase("twoConditionsNeitherMet") {
+            @DisableIf.Build(sdk_is_greater_than = 30, supported_abis_includes = "baz")
+            public void twoConditionsNeitherMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(twoConditionsNeitherMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoAnnotationsBothMet() {
+        TestCase twoAnnotationsBothMet = new TestCase("twoAnnotationsBothMet") {
+            @DisableIf.Build(supported_abis_includes = "foo")
+            @DisableIf.Build(sdk_is_greater_than = 28)
+            public void twoAnnotationsBothMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(twoAnnotationsBothMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoAnnotationsFirstMet() {
+        TestCase twoAnnotationsFirstMet = new TestCase("twoAnnotationsFirstMet") {
+            @DisableIf.Build(supported_abis_includes = "foo")
+            @DisableIf.Build(sdk_is_greater_than = 30)
+            public void twoAnnotationsFirstMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(twoAnnotationsFirstMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoAnnotationsSecondMet() {
+        TestCase twoAnnotationsSecondMet = new TestCase("twoAnnotationsSecondMet") {
+            @DisableIf.Build(supported_abis_includes = "baz")
+            @DisableIf.Build(sdk_is_greater_than = 28)
+            public void twoAnnotationsSecondMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertTrue(new DisableIfSkipCheck().shouldSkip(twoAnnotationsSecondMet));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
+        }
+    }
+
+    @Test
+    public void testTwoAnnotationsNeitherMet() {
+        TestCase testTwoAnnotationsNeitherMet = new TestCase("testTwoAnnotationsNeitherMet") {
+            @DisableIf.Build(supported_abis_includes = "baz")
+            @DisableIf.Build(sdk_is_greater_than = 30)
+            public void testTwoAnnotationsNeitherMet() {}
+        };
+        String[] originalAbis = Build.SUPPORTED_ABIS;
+        try {
+            ReflectionHelpers.setStaticField(
+                    Build.class, "SUPPORTED_ABIS", new String[] {"foo", "bar"});
+            Assert.assertFalse(new DisableIfSkipCheck().shouldSkip(testTwoAnnotationsNeitherMet));
         } finally {
             ReflectionHelpers.setStaticField(Build.class, "SUPPORTED_ABIS", originalAbis);
         }

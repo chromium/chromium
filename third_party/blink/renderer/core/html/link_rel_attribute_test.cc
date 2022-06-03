@@ -37,13 +37,13 @@ namespace blink {
 // TODO(dcheng): This is a bit gross. Refactor this to not take so many bools...
 static inline void TestLinkRelAttribute(const String& value,
                                         bool is_style_sheet,
-                                        IconType icon_type,
+                                        mojom::blink::FaviconIconType icon_type,
                                         bool is_alternate,
                                         bool is_dns_prefetch,
                                         bool is_link_prerender,
-                                        bool is_import = false,
                                         bool is_preconnect = false,
-                                        bool is_canonical = false) {
+                                        bool is_canonical = false,
+                                        bool is_web_bundle = false) {
   SCOPED_TRACE(value.Utf8());
   LinkRelAttribute link_rel_attribute(value);
   ASSERT_EQ(is_style_sheet, link_rel_attribute.IsStyleSheet());
@@ -51,64 +51,101 @@ static inline void TestLinkRelAttribute(const String& value,
   ASSERT_EQ(is_alternate, link_rel_attribute.IsAlternate());
   ASSERT_EQ(is_dns_prefetch, link_rel_attribute.IsDNSPrefetch());
   ASSERT_EQ(is_link_prerender, link_rel_attribute.IsLinkPrerender());
-  ASSERT_EQ(is_import, link_rel_attribute.IsImport());
   ASSERT_EQ(is_preconnect, link_rel_attribute.IsPreconnect());
   ASSERT_EQ(is_canonical, link_rel_attribute.IsCanonical());
+  ASSERT_EQ(is_web_bundle, link_rel_attribute.IsWebBundle());
 }
 
 TEST(LinkRelAttributeTest, Constructor) {
-  TestLinkRelAttribute("stylesheet", true, kInvalidIcon, false, false, false);
-  TestLinkRelAttribute("sTyLeShEeT", true, kInvalidIcon, false, false, false);
-
-  TestLinkRelAttribute("icon", false, kFavicon, false, false, false);
-  TestLinkRelAttribute("iCoN", false, kFavicon, false, false, false);
-  TestLinkRelAttribute("shortcut icon", false, kFavicon, false, false, false);
-  TestLinkRelAttribute("sHoRtCuT iCoN", false, kFavicon, false, false, false);
-
-  TestLinkRelAttribute("dns-prefetch", false, kInvalidIcon, false, true, false);
-  TestLinkRelAttribute("dNs-pReFeTcH", false, kInvalidIcon, false, true, false);
-  TestLinkRelAttribute("alternate dNs-pReFeTcH", false, kInvalidIcon, true,
-                       true, false);
-
-  TestLinkRelAttribute("apple-touch-icon", false, kTouchIcon, false, false,
+  TestLinkRelAttribute("stylesheet", true,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
                        false);
-  TestLinkRelAttribute("aPpLe-tOuCh-IcOn", false, kTouchIcon, false, false,
+  TestLinkRelAttribute("sTyLeShEeT", true,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false);
+
+  TestLinkRelAttribute("icon", false, mojom::blink::FaviconIconType::kFavicon,
+                       false, false, false);
+  TestLinkRelAttribute("iCoN", false, mojom::blink::FaviconIconType::kFavicon,
+                       false, false, false);
+  TestLinkRelAttribute("shortcut icon", false,
+                       mojom::blink::FaviconIconType::kFavicon, false, false,
+                       false);
+  TestLinkRelAttribute("sHoRtCuT iCoN", false,
+                       mojom::blink::FaviconIconType::kFavicon, false, false,
+                       false);
+
+  TestLinkRelAttribute("dns-prefetch", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, true,
+                       false);
+  TestLinkRelAttribute("dNs-pReFeTcH", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, true,
+                       false);
+  TestLinkRelAttribute("alternate dNs-pReFeTcH", false,
+                       mojom::blink::FaviconIconType::kInvalid, true, true,
+                       false);
+
+  TestLinkRelAttribute("apple-touch-icon", false,
+                       mojom::blink::FaviconIconType::kTouchIcon, false, false,
+                       false);
+  TestLinkRelAttribute("aPpLe-tOuCh-IcOn", false,
+                       mojom::blink::FaviconIconType::kTouchIcon, false, false,
                        false);
   TestLinkRelAttribute("apple-touch-icon-precomposed", false,
-                       kTouchPrecomposedIcon, false, false, false);
+                       mojom::blink::FaviconIconType::kTouchPrecomposedIcon,
+                       false, false, false);
   TestLinkRelAttribute("aPpLe-tOuCh-IcOn-pReCoMpOsEd", false,
-                       kTouchPrecomposedIcon, false, false, false);
+                       mojom::blink::FaviconIconType::kTouchPrecomposedIcon,
+                       false, false, false);
 
-  TestLinkRelAttribute("alternate stylesheet", true, kInvalidIcon, true, false,
+  TestLinkRelAttribute("alternate stylesheet", true,
+                       mojom::blink::FaviconIconType::kInvalid, true, false,
                        false);
-  TestLinkRelAttribute("stylesheet alternate", true, kInvalidIcon, true, false,
+  TestLinkRelAttribute("stylesheet alternate", true,
+                       mojom::blink::FaviconIconType::kInvalid, true, false,
                        false);
-  TestLinkRelAttribute("aLtErNaTe sTyLeShEeT", true, kInvalidIcon, true, false,
+  TestLinkRelAttribute("aLtErNaTe sTyLeShEeT", true,
+                       mojom::blink::FaviconIconType::kInvalid, true, false,
                        false);
-  TestLinkRelAttribute("sTyLeShEeT aLtErNaTe", true, kInvalidIcon, true, false,
+  TestLinkRelAttribute("sTyLeShEeT aLtErNaTe", true,
+                       mojom::blink::FaviconIconType::kInvalid, true, false,
                        false);
 
-  TestLinkRelAttribute("stylesheet icon prerender aLtErNaTe", true, kFavicon,
-                       true, false, true);
-  TestLinkRelAttribute("alternate icon stylesheet", true, kFavicon, true, false,
-                       false);
-
-  TestLinkRelAttribute("import", false, kInvalidIcon, false, false, false,
+  TestLinkRelAttribute("stylesheet icon prerender aLtErNaTe", true,
+                       mojom::blink::FaviconIconType::kFavicon, true, false,
                        true);
-  TestLinkRelAttribute("alternate import", false, kInvalidIcon, true, false,
-                       false, true);
-  TestLinkRelAttribute("stylesheet import", true, kInvalidIcon, false, false,
-                       false, false);
+  TestLinkRelAttribute("alternate icon stylesheet", true,
+                       mojom::blink::FaviconIconType::kFavicon, true, false,
+                       false);
 
-  TestLinkRelAttribute("preconnect", false, kInvalidIcon, false, false, false,
-                       false, true);
-  TestLinkRelAttribute("pReCoNnEcT", false, kInvalidIcon, false, false, false,
-                       false, true);
+  TestLinkRelAttribute("alternate import", false,
+                       mojom::blink::FaviconIconType::kInvalid, true, false,
+                       false);
+  TestLinkRelAttribute("stylesheet import", true,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false);
 
-  TestLinkRelAttribute("canonical", false, kInvalidIcon, false, false, false,
-                       false, false, true);
-  TestLinkRelAttribute("caNONiCAL", false, kInvalidIcon, false, false, false,
-                       false, false, true);
+  TestLinkRelAttribute("preconnect", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false, /*is_preconnect=*/true);
+  TestLinkRelAttribute("pReCoNnEcT", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false, /*is_preconnect=*/true);
+
+  TestLinkRelAttribute("canonical", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false, /*is_preconnect=*/false, /*is_canonical=*/true);
+  TestLinkRelAttribute("caNONiCAL", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false, /*is_preconnect=*/false, /*is_canonical=*/true);
+  TestLinkRelAttribute("webbundle", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false, /*is_preconnect=*/false, /*is_canonical=*/false,
+                       /*is_web_bundle=*/true);
+  TestLinkRelAttribute("wEbBundle", false,
+                       mojom::blink::FaviconIconType::kInvalid, false, false,
+                       false, /*is_preconnect=*/false, /*is_canonical=*/false,
+                       /*is_web_bundle=*/true);
 }
 
 }  // namespace blink

@@ -219,8 +219,8 @@ void MaybeResizeAndPad(const gfx::Size& required_size,
   }
 
   // Add padding.
-  gfx::Canvas canvas(required_size, 1, /* transparent */ false);
-  canvas.DrawImageInt(gfx::ImageSkia(gfx::ImageSkiaRep(resized, 1)),
+  gfx::Canvas canvas(required_size, 1, /*transparent=*/false);
+  canvas.DrawImageInt(gfx::ImageSkia::CreateFromBitmap(resized, 1),
                       padding.width(), padding.height());
   *bitmap_out = canvas.GetBitmap();
   return;
@@ -245,7 +245,7 @@ void MaybeResizeAndPadIconForMd(const gfx::Size& required_size_dip,
 
     if (required_size_px.width() != bitmap.width() ||
         required_size_px.height() != bitmap.height() ||
-        padding_px.width() != 0 || padding_px.width() != 0) {
+        padding_px.width() != 0 || padding_px.height() != 0) {
       transformation_required = true;
     }
   }

@@ -11,9 +11,6 @@
 
 // Subclass that allows setting up environments for multitasking tests.
 @interface MultitaskingTestApplicationDelegate : MainApplicationDelegate
-
-- (BOOL)application:(UIApplication*)application
-    didFinishLaunchingWithOptions:(NSDictionary*)launchOptions;
 @end
 
 #endif  // IOS_CHROME_APP_MULTITASKING_TEST_APPLICATION_DELEGATE_H_

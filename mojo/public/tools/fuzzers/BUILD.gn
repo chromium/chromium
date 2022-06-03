@@ -14,9 +14,7 @@ group("fuzzers") {
 }
 
 mojom("fuzz_mojom") {
-  sources = [
-    "fuzz.mojom",
-  ]
+  sources = [ "fuzz.mojom" ]
 }
 
 fuzzer_test("mojo_parse_message_fuzzer") {
@@ -61,7 +59,28 @@ fuzzer_test("mojo_parse_message_proto_fuzzer") {
 }
 
 proto_library("mojo_fuzzer_proto") {
+  sources = [ "mojo_fuzzer.proto" ]
+}
+
+proto_library("mojolpm_proto") {
+  # Work relative to src (//) instead of (by default) the BUILD file.
+  proto_in_dir = "//"
+
+  sources = [ "mojolpm.proto" ]
+  generate_python = false
+
+  testonly = true
+}
+
+static_library("mojolpm") {
   sources = [
-    "mojo_fuzzer.proto",
+    "mojolpm.cc",
+    "mojolpm.h",
   ]
+  deps = [
+    ":mojolpm_proto",
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+  testonly = true
 }

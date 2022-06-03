@@ -8,16 +8,17 @@
 #include <unordered_map>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/stringprintf.h"
+#include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_win.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_win.h"
 #include "device/bluetooth/bluetooth_service_record_win.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/bluetooth_socket_win.h"
 #include "device/bluetooth/bluetooth_task_manager_win.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
@@ -61,6 +62,11 @@ std::string BluetoothDeviceWin::GetAddress() const {
   return address_;
 }
 
+BluetoothDevice::AddressType BluetoothDeviceWin::GetAddressType() const {
+  NOTIMPLEMENTED();
+  return ADDR_TYPE_UNKNOWN;
+}
+
 BluetoothDevice::VendorIDSource
 BluetoothDeviceWin::GetVendorIDSource() const {
   return VENDOR_ID_UNKNOWN;
@@ -85,7 +91,7 @@ uint16_t BluetoothDeviceWin::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceWin::GetName() const {
+absl::optional<std::string> BluetoothDeviceWin::GetName() const {
   return name_;
 }
 
@@ -98,7 +104,9 @@ bool BluetoothDeviceWin::IsConnected() const {
 }
 
 bool BluetoothDeviceWin::IsGattConnected() const {
-  return gatt_connected_;
+  // If a BLE device is not GATT connected, Windows will automatically
+  // reconnect.
+  return is_low_energy_;
 }
 
 bool BluetoothDeviceWin::IsConnectable() const {
@@ -113,16 +121,16 @@ BluetoothDevice::UUIDSet BluetoothDeviceWin::GetUUIDs() const {
   return uuids_;
 }
 
-base::Optional<int8_t> BluetoothDeviceWin::GetInquiryRSSI() const {
+absl::optional<int8_t> BluetoothDeviceWin::GetInquiryRSSI() const {
   // In windows, we can only get connected devices and connected
   // devices don't have an Inquiry RSSI.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<int8_t> BluetoothDeviceWin::GetInquiryTxPower() const {
+absl::optional<int8_t> BluetoothDeviceWin::GetInquiryTxPower() const {
   // In windows, we can only get connected devices and connected
   // devices don't have an Inquiry Tx Power.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool BluetoothDeviceWin::ExpectingPinCode() const {
@@ -140,22 +148,20 @@ bool BluetoothDeviceWin::ExpectingConfirmation() const {
   return false;
 }
 
-void BluetoothDeviceWin::GetConnectionInfo(
-    const ConnectionInfoCallback& callback) {
+void BluetoothDeviceWin::GetConnectionInfo(ConnectionInfoCallback callback) {
   NOTIMPLEMENTED();
-  callback.Run(ConnectionInfo());
+  std::move(callback).Run(ConnectionInfo());
 }
 
 void BluetoothDeviceWin::SetConnectionLatency(
     ConnectionLatency connection_latency,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
 void BluetoothDeviceWin::Connect(PairingDelegate* pairing_delegate,
-                                 base::OnceClosure callback,
-                                 ConnectErrorCallback error_callback) {
+                                 ConnectCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -179,32 +185,32 @@ void BluetoothDeviceWin::CancelPairing() {
   NOTIMPLEMENTED();
 }
 
-void BluetoothDeviceWin::Disconnect(
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+void BluetoothDeviceWin::Disconnect(base::OnceClosure callback,
+                                    ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
-void BluetoothDeviceWin::Forget(const base::Closure& callback,
-                                const ErrorCallback& error_callback) {
+void BluetoothDeviceWin::Forget(base::OnceClosure callback,
+                                ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
 void BluetoothDeviceWin::ConnectToService(
     const BluetoothUUID& uuid,
-    const ConnectToServiceCallback& callback,
-    const ConnectToServiceErrorCallback& error_callback) {
+    ConnectToServiceCallback callback,
+    ConnectToServiceErrorCallback error_callback) {
   scoped_refptr<BluetoothSocketWin> socket(
       BluetoothSocketWin::CreateBluetoothSocket(
           ui_task_runner_, socket_thread_));
-  socket->Connect(this, uuid, base::Bind(callback, socket), error_callback);
+  socket->Connect(this, uuid, base::BindOnce(std::move(callback), socket),
+                  std::move(error_callback));
 }
 
 void BluetoothDeviceWin::ConnectToServiceInsecurely(
     const BluetoothUUID& uuid,
-    const ConnectToServiceCallback& callback,
-    const ConnectToServiceErrorCallback& error_callback) {
-  error_callback.Run(kApiUnavailable);
+    ConnectToServiceCallback callback,
+    ConnectToServiceErrorCallback error_callback) {
+  std::move(error_callback).Run(kApiUnavailable);
 }
 
 const BluetoothServiceRecordWin* BluetoothDeviceWin::GetServiceRecord(
@@ -222,7 +228,7 @@ bool BluetoothDeviceWin::IsEqual(
       bluetooth_class_ != device_state.bluetooth_class ||
       visible_ != device_state.visible ||
       connected_ != device_state.connected ||
-      gatt_connected_ == device_state.is_bluetooth_classic() ||
+      is_low_energy_ == device_state.is_bluetooth_classic() ||
       paired_ != device_state.authenticated) {
     return false;
   }
@@ -258,14 +264,12 @@ void BluetoothDeviceWin::Update(
     const BluetoothTaskManagerWin::DeviceState& device_state) {
   address_ = device_state.address;
   // Note: Callers are responsible for providing a canonicalized address.
-  DCHECK_EQ(address_, BluetoothDevice::CanonicalizeAddress(address_));
+  DCHECK_EQ(address_, CanonicalizeBluetoothAddress(address_));
   name_ = device_state.name;
   bluetooth_class_ = device_state.bluetooth_class;
   visible_ = device_state.visible;
   connected_ = device_state.connected;
-  // If a BLE device is not GATT connected, Windows will automatically
-  // reconnect.
-  gatt_connected_ = !device_state.is_bluetooth_classic();
+  is_low_energy_ = !device_state.is_bluetooth_classic();
   paired_ = device_state.authenticated;
   UpdateServices(device_state);
 }
@@ -285,7 +289,8 @@ void BluetoothDeviceWin::GattServiceDiscoveryComplete(
   adapter_->NotifyGattServicesDiscovered(this);
 }
 
-void BluetoothDeviceWin::CreateGattConnectionImpl() {
+void BluetoothDeviceWin::CreateGattConnectionImpl(
+    absl::optional<BluetoothUUID> service_uuid) {
   // Windows will create the Gatt connection as needed.  See:
   // https://docs.microsoft.com/en-us/windows/uwp/devices-sensors/gatt-client#connecting-to-the-device
 }

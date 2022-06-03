@@ -10,17 +10,19 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace net {
+class DhcpPacFileFetcher;
 class HostResolver;
 class NetLog;
 class NetworkDelegate;
@@ -38,6 +40,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
     : public net::URLRequestContextBuilder {
  public:
   URLRequestContextBuilderMojo();
+
+  URLRequestContextBuilderMojo(const URLRequestContextBuilderMojo&) = delete;
+  URLRequestContextBuilderMojo& operator=(const URLRequestContextBuilderMojo&) =
+      delete;
+
   ~URLRequestContextBuilderMojo() override;
 
   // Sets Mojo factory used to create ProxyResolvers. If not set, falls back to
@@ -46,11 +53,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
           mojo_proxy_resolver_factory);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetDhcpWpadUrlClient(
       mojo::PendingRemote<network::mojom::DhcpWpadUrlClient>
           dhcp_wpad_url_client);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   std::unique_ptr<net::ProxyResolutionService> CreateProxyResolutionService(
@@ -58,20 +65,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
       net::URLRequestContext* url_request_context,
       net::HostResolver* host_resolver,
       net::NetworkDelegate* network_delegate,
-      net::NetLog* net_log) override;
+      net::NetLog* net_log,
+      bool pac_quick_check_enabled) override;
 
   std::unique_ptr<net::DhcpPacFileFetcher> CreateDhcpPacFileFetcher(
       net::URLRequestContext* context);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If set, handles calls to get the PAC script URL from the browser process.
   // Only used if |mojo_proxy_resolver_factory_| is set.
   mojo::PendingRemote<network::mojom::DhcpWpadUrlClient> dhcp_wpad_url_client_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
       mojo_proxy_resolver_factory_;
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilderMojo);
 };
 
 }  // namespace network

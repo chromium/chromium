@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<body>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<script>
+function waitForMessage(data) {
+  return new Promise(
+      resolve => {
+        window.addEventListener('message', e => {
+          if (e.data == data) {
+            resolve();
+          }
+        }, {once: true});
+      });
+}
+
+promise_test(async _ => {
+  const w = window.open('resources/window-postmessage-open-close.html');
+  await waitForMessage('opened');
+
+  const nav = w.navigator;
+  let result = nav.getBattery();
+  assert_equals(typeof result, 'object');
+  assert_equals(result.constructor, w.Promise);
+
+  w.close();
+  await waitForMessage('closed');
+  result = nav.getBattery();
+  assert_equals(result, undefined);
+}, 'navigator.getBattery() does not operate on a closed window');
+</script>
+</body>

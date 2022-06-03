@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace ukm {
 namespace builders {
 class TabManager_LifecycleStateChange;
@@ -30,8 +28,8 @@ enum class DecisionFailureReason : int32_t {
   LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT,
   // A frame on the page opted itself out of the intervention via origin trial.
   ORIGIN_TRIAL_OPT_OUT,
-  // The origin was opted out of the intervention in the global blacklist.
-  GLOBAL_BLACKLIST,
+  // The origin was opted out of the intervention in the global disallowlist.
+  GLOBAL_DISALLOWLIST,
   // The local heuristic opted the origin out of the intervention due to its use
   // of audio while in the background.
   HEURISTIC_AUDIO,
@@ -86,6 +84,8 @@ enum class DecisionFailureReason : int32_t {
   // The tab is opted out of the intervention as it has the permission to use
   // notifications.
   LIVE_STATE_HAS_NOTIFICATIONS_PERMISSION,
+  // The tab is a standalone desktop PWA window.
+  LIVE_WEB_APP,
   // This must remain last.
   MAX,
 };
@@ -98,8 +98,8 @@ enum class DecisionSuccessReason : int32_t {
   INVALID = -1,
   // A frame on the page opted itself in the intervention via origin trial.
   ORIGIN_TRIAL_OPT_IN,
-  // The origin was opted into the intervention via the global whitelist.
-  GLOBAL_WHITELIST,
+  // The origin was opted into the intervention via the global allowlist.
+  GLOBAL_ALLOWLIST,
   // The origin has been observed to be safe for the intervention using local
   // database observations.
   HEURISTIC_OBSERVED_TO_BE_SAFE,
@@ -174,6 +174,10 @@ class DecisionDetails {
   };
 
   DecisionDetails();
+
+  DecisionDetails(const DecisionDetails&) = delete;
+  DecisionDetails& operator=(const DecisionDetails&) = delete;
+
   ~DecisionDetails();
 
   // Allow move assignment.
@@ -223,8 +227,6 @@ class DecisionDetails {
   // reasons after this toggle isn't very informative.
   bool toggled_;
   std::vector<Reason> reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecisionDetails);
 };
 
 }  // namespace resource_coordinator

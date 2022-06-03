@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>MediaSession Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {MediaSessionAction} from '/gen/services/media_session/public/mojom/media_session.mojom.m.js';
+
+var mock;
+
+var expectations = [
+  "play",
+  "pause",
+  "previoustrack",
+  "nexttrack",
+  "seekbackward",
+  "seekforward",
+];
+
+var nextExpectation = 0;
+
+function checkExpectation(t, action, e) {
+  assert_equals(e.action, action);
+
+  var expectedEvent = expectations[nextExpectation];
+  assert_equals(expectedEvent, action);
+  if (++nextExpectation >= expectations.length)
+    t.done();
+}
+
+function runTests(t) {
+  window.navigator.mediaSession.setActionHandler(
+      "play", t.step_func(checkExpectation.bind(null, t, "play")));
+  window.navigator.mediaSession.setActionHandler(
+      "pause", t.step_func(checkExpectation.bind(null, t, "pause")));
+  window.navigator.mediaSession.setActionHandler(
+      "previoustrack", t.step_func(checkExpectation.bind(null, t, "previoustrack")));
+  window.navigator.mediaSession.setActionHandler(
+      "nexttrack", t.step_func(checkExpectation.bind(null, t, "nexttrack")));
+  window.navigator.mediaSession.setActionHandler(
+      "seekbackward", t.step_func(checkExpectation.bind(null, t, "seekbackward")));
+  window.navigator.mediaSession.setActionHandler(
+      "seekforward", t.step_func(checkExpectation.bind(null, t, "seekforward")));
+
+  mock.getClient().didReceiveAction(MediaSessionAction.kPlay);
+  mock.getClient().didReceiveAction(MediaSessionAction.kPause);
+  mock.getClient().didReceiveAction(MediaSessionAction.kPreviousTrack);
+  mock.getClient().didReceiveAction(MediaSessionAction.kNextTrack);
+  mock.getClient().didReceiveAction(MediaSessionAction.kSeekBackward);
+  mock.getClient().didReceiveAction(MediaSessionAction.kSeekForward);
+}
+
+// Use async_test to do asynchronous setup since setup() only works for
+// synchronous setup.
+async_test(function(t) {
+  mock = new MediaSessionServiceMock();
+  mock.setClientCallback(t.step_func(runTests.bind(null, t)));
+  // Touch window.navigator.mediaSession to start the service.
+  window.navigator.mediaSession.metadata = null;
+}, "test that the mock service is setup");
+
+</script>

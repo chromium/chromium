@@ -27,14 +27,17 @@
 
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_observer_callback.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -42,13 +45,10 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_observer.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_observer_changes.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks_impl.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction_impl.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -56,8 +56,6 @@
 
 namespace blink {
 
-const char IDBDatabase::kCannotObserveVersionChangeTransaction[] =
-    "An observer cannot target a version change transaction.";
 const char IDBDatabase::kIndexDeletedErrorMessage[] =
     "The index or its object store has been deleted.";
 const char IDBDatabase::kIndexNameTakenErrorMessage[] =
@@ -93,23 +91,26 @@ const char IDBDatabase::kTransactionReadOnlyErrorMessage[] =
 const char IDBDatabase::kDatabaseClosedErrorMessage[] =
     "The database connection is closed.";
 
-IDBDatabase::IDBDatabase(ExecutionContext* context,
-                         std::unique_ptr<WebIDBDatabase> backend,
-                         IDBDatabaseCallbacks* callbacks,
-                         v8::Isolate* isolate)
-    : ContextLifecycleObserver(context),
+IDBDatabase::IDBDatabase(
+    ExecutionContext* context,
+    std::unique_ptr<WebIDBDatabase> backend,
+    mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
+        callbacks_receiver,
+    mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime)
+    : ExecutionContextLifecycleObserver(context),
       backend_(std::move(backend)),
+      connection_lifetime_(std::move(connection_lifetime)),
       event_queue_(
           MakeGarbageCollected<EventQueue>(context, TaskType::kDatabaseAccess)),
-      database_callbacks_(callbacks),
-      isolate_(isolate),
+      callbacks_receiver_(this, context),
       feature_handle_for_scheduler_(
           context
               ? context->GetScheduler()->RegisterFeature(
                     SchedulingPolicy::Feature::kIndexedDBConnection,
-                    {SchedulingPolicy::RecordMetricsForBackForwardCache()})
+                    {SchedulingPolicy::DisableBackForwardCache()})
               : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()) {
-  database_callbacks_->Connect(this);
+  callbacks_receiver_.Bind(std::move(callbacks_receiver),
+                           context->GetTaskRunner(TaskType::kDatabaseAccess));
 }
 
 IDBDatabase::~IDBDatabase() {
@@ -117,14 +118,13 @@ IDBDatabase::~IDBDatabase() {
     backend_->Close();
 }
 
-void IDBDatabase::Trace(blink::Visitor* visitor) {
+void IDBDatabase::Trace(Visitor* visitor) const {
   visitor->Trace(version_change_transaction_);
   visitor->Trace(transactions_);
-  visitor->Trace(observers_);
   visitor->Trace(event_queue_);
-  visitor->Trace(database_callbacks_);
+  visitor->Trace(callbacks_receiver_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 int64_t IDBDatabase::NextTransactionId() {
@@ -133,12 +133,6 @@ int64_t IDBDatabase::NextTransactionId() {
   // bits of the id.
   static base::AtomicSequenceNumber current_transaction_id;
   return current_transaction_id.GetNext() + 1;
-}
-
-int32_t IDBDatabase::NextObserverId() {
-  // Starts at 1, unlike AtomicSequenceNumber.
-  static base::AtomicSequenceNumber current_observer_id;
-  return current_observer_id.GetNext() + 1;
 }
 
 void IDBDatabase::SetMetadata(const IDBDatabaseMetadata& metadata) {
@@ -175,44 +169,46 @@ void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
     CloseConnection();
 }
 
-void IDBDatabase::OnAbort(int64_t transaction_id, DOMException* error) {
-  DCHECK(transactions_.Contains(transaction_id));
-  transactions_.at(transaction_id)->OnAbort(error);
+void IDBDatabase::ForcedClose() {
+  for (const auto& it : transactions_)
+    it.value->abort(IGNORE_EXCEPTION_FOR_TESTING);
+  this->close();
+  EnqueueEvent(Event::Create(event_type_names::kClose));
 }
 
-void IDBDatabase::OnComplete(int64_t transaction_id) {
+void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
+  IDB_TRACE("IDBDatabase::onVersionChange");
+  if (!GetExecutionContext())
+    return;
+
+  if (close_pending_) {
+    // If we're pending, that means there's a busy transaction. We won't
+    // fire 'versionchange' but since we're not closing immediately the
+    // back-end should still send out 'blocked'.
+    backend_->VersionChangeIgnored();
+    return;
+  }
+
+  absl::optional<uint64_t> new_version_nullable;
+  if (new_version != IDBDatabaseMetadata::kNoVersion) {
+    new_version_nullable = new_version;
+  }
+  EnqueueEvent(MakeGarbageCollected<IDBVersionChangeEvent>(
+      event_type_names::kVersionchange, old_version, new_version_nullable));
+}
+
+void IDBDatabase::Abort(int64_t transaction_id,
+                        mojom::blink::IDBException code,
+                        const WTF::String& message) {
+  DCHECK(transactions_.Contains(transaction_id));
+  transactions_.at(transaction_id)
+      ->OnAbort(MakeGarbageCollected<DOMException>(
+          static_cast<DOMExceptionCode>(code), message));
+}
+
+void IDBDatabase::Complete(int64_t transaction_id) {
   DCHECK(transactions_.Contains(transaction_id));
   transactions_.at(transaction_id)->OnComplete();
-}
-
-void IDBDatabase::OnChanges(
-    const WebIDBDatabaseCallbacks::ObservationIndexMap& observation_index_map,
-    Vector<Persistent<IDBObservation>> observations,
-    const WebIDBDatabaseCallbacks::TransactionMap& transactions) {
-  for (const auto& observation : observations) {
-    observation->SetIsolate(isolate_);
-  }
-
-  for (const auto& map_entry : observation_index_map) {
-    auto observer_lookup_result = observers_.find(map_entry.key);
-    if (observer_lookup_result != observers_.end()) {
-      IDBObserver* observer = observer_lookup_result->value;
-
-      auto transactions_lookup_result = transactions.find(map_entry.key);
-      if (transactions_lookup_result != transactions.end()) {
-        const std::pair<int64_t, Vector<int64_t>>& obs_txn =
-            transactions_lookup_result->value;
-        HashSet<String> stores;
-        for (int64_t store_id : obs_txn.second) {
-          stores.insert(metadata_.object_stores.at(store_id)->name);
-        }
-      }
-
-      observer->Callback()->InvokeAndReportException(
-          observer, MakeGarbageCollected<IDBObserverChanges>(
-                        this, nullptr, observations, map_entry.value));
-    }
-  }
 }
 
 DOMStringList* IDBDatabase::objectStoreNames() const {
@@ -227,25 +223,6 @@ const String& IDBDatabase::GetObjectStoreName(int64_t object_store_id) const {
   const auto& it = metadata_.object_stores.find(object_store_id);
   DCHECK(it != metadata_.object_stores.end());
   return it->value->name;
-}
-
-int32_t IDBDatabase::AddObserver(
-    IDBObserver* observer,
-    int64_t transaction_id,
-    bool include_transaction,
-    bool no_records,
-    bool values,
-    std::bitset<blink::kIDBOperationTypeCount> operation_types) {
-  int32_t observer_id = NextObserverId();
-  observers_.Set(observer_id, observer);
-  Backend()->AddObserver(transaction_id, observer_id, include_transaction,
-                         no_records, values, operation_types);
-  return observer_id;
-}
-
-void IDBDatabase::RemoveObservers(const Vector<int32_t>& observer_ids) {
-  observers_.RemoveAll(observer_ids);
-  Backend()->RemoveObservers(observer_ids);
 }
 
 IDBObjectStore* IDBDatabase::createObjectStore(
@@ -354,28 +331,22 @@ void IDBDatabase::deleteObjectStore(const String& name,
 
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
-    const StringOrStringSequence& store_names,
-    const String& mode,
-    ExceptionState& exception_state) {
-  return transaction(script_state, store_names, mode, nullptr, exception_state);
-}
-
-IDBTransaction* IDBDatabase::transaction(
-    ScriptState* script_state,
-    const StringOrStringSequence& store_names,
+    const V8UnionStringOrStringSequence* store_names,
     const String& mode_string,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
   IDB_TRACE("IDBDatabase::transaction");
 
   HashSet<String> scope;
-  if (store_names.IsString()) {
-    scope.insert(store_names.GetAsString());
-  } else if (store_names.IsStringSequence()) {
-    for (const String& name : store_names.GetAsStringSequence())
-      scope.insert(name);
-  } else {
-    NOTREACHED();
+  DCHECK(store_names);
+  switch (store_names->GetContentType()) {
+    case V8UnionStringOrStringSequence::ContentType::kString:
+      scope.insert(store_names->GetAsString());
+      break;
+    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+      for (const String& name : store_names->GetAsStringSequence())
+        scope.insert(name);
+      break;
   }
 
   if (version_change_transaction_) {
@@ -426,20 +397,18 @@ IDBTransaction* IDBDatabase::transaction(
 
   // TODO(cmp): Delete |transaction_id| once all users are removed.
   int64_t transaction_id = NextTransactionId();
-  auto transaction_backend = std::make_unique<WebIDBTransactionImpl>(
+  auto transaction_backend = std::make_unique<WebIDBTransaction>(
       ExecutionContext::From(script_state)
           ->GetTaskRunner(TaskType::kDatabaseAccess),
       transaction_id);
 
-  mojom::IDBTransactionDurability durability =
-      mojom::IDBTransactionDurability::Default;
-  if (options) {
-    DCHECK(RuntimeEnabledFeatures::IDBRelaxedDurabilityEnabled());
-    if (options->durability() == indexed_db_names::kRelaxed) {
-      durability = mojom::IDBTransactionDurability::Relaxed;
-    } else if (options->durability() == indexed_db_names::kStrict) {
-      durability = mojom::IDBTransactionDurability::Strict;
-    }
+  mojom::blink::IDBTransactionDurability durability =
+      mojom::blink::IDBTransactionDurability::Default;
+  DCHECK(options);
+  if (options->durability() == indexed_db_names::kRelaxed) {
+    durability = mojom::blink::IDBTransactionDurability::Relaxed;
+  } else if (options->durability() == indexed_db_names::kStrict) {
+    durability = mojom::blink::IDBTransactionDurability::Strict;
   }
 
   backend_->CreateTransaction(transaction_backend->CreateReceiver(),
@@ -451,18 +420,12 @@ IDBTransaction* IDBDatabase::transaction(
       durability, this);
 }
 
-void IDBDatabase::ForceClose() {
-  for (const auto& it : transactions_)
-    it.value->abort(IGNORE_EXCEPTION_FOR_TESTING);
-  this->close();
-  EnqueueEvent(Event::Create(event_type_names::kClose));
-}
-
 void IDBDatabase::close() {
   IDB_TRACE("IDBDatabase::close");
   if (close_pending_)
     return;
 
+  connection_lifetime_.reset();
   close_pending_ = true;
   feature_handle_for_scheduler_.reset();
 
@@ -479,8 +442,8 @@ void IDBDatabase::CloseConnection() {
     backend_.reset();
   }
 
-  if (database_callbacks_)
-    database_callbacks_->DetachWebCallbacks();
+  if (callbacks_receiver_.is_bound())
+    callbacks_receiver_.reset();
 
   if (!GetExecutionContext())
     return;
@@ -492,27 +455,6 @@ void IDBDatabase::CloseConnection() {
   event_queue_->CancelAllEvents();
 }
 
-void IDBDatabase::OnVersionChange(int64_t old_version, int64_t new_version) {
-  IDB_TRACE("IDBDatabase::onVersionChange");
-  if (!GetExecutionContext())
-    return;
-
-  if (close_pending_) {
-    // If we're pending, that means there's a busy transaction. We won't
-    // fire 'versionchange' but since we're not closing immediately the
-    // back-end should still send out 'blocked'.
-    backend_->VersionChangeIgnored();
-    return;
-  }
-
-  base::Optional<uint64_t> new_version_nullable;
-  if (new_version != IDBDatabaseMetadata::kNoVersion) {
-    new_version_nullable = new_version;
-  }
-  EnqueueEvent(MakeGarbageCollected<IDBVersionChangeEvent>(
-      event_type_names::kVersionchange, old_version, new_version_nullable));
-}
-
 void IDBDatabase::EnqueueEvent(Event* event) {
   DCHECK(GetExecutionContext());
   event->SetTarget(this);
@@ -521,10 +463,17 @@ void IDBDatabase::EnqueueEvent(Event* event) {
 
 DispatchEventResult IDBDatabase::DispatchEventInternal(Event& event) {
   IDB_TRACE("IDBDatabase::dispatchEvent");
-  if (!GetExecutionContext())
-    return DispatchEventResult::kCanceledBeforeDispatch;
+
+  event.SetTarget(this);
+
+  // If this event originated from script, it should have no side effects.
+  if (!event.isTrusted())
+    return EventTarget::DispatchEventInternal(event);
   DCHECK(event.type() == event_type_names::kVersionchange ||
          event.type() == event_type_names::kClose);
+
+  if (!GetExecutionContext())
+    return DispatchEventResult::kCanceledBeforeDispatch;
 
   DispatchEventResult dispatch_result =
       EventTarget::DispatchEventInternal(event);
@@ -593,7 +542,7 @@ bool IDBDatabase::HasPendingActivity() const {
   return !close_pending_ && GetExecutionContext() && HasEventListeners();
 }
 
-void IDBDatabase::ContextDestroyed(ExecutionContext*) {
+void IDBDatabase::ContextDestroyed() {
   // Immediately close the connection to the back end. Don't attempt a
   // normal close() since that may wait on transactions which require a
   // round trip to the back-end to abort.
@@ -602,8 +551,7 @@ void IDBDatabase::ContextDestroyed(ExecutionContext*) {
     backend_.reset();
   }
 
-  if (database_callbacks_)
-    database_callbacks_->DetachWebCallbacks();
+  connection_lifetime_.reset();
 }
 
 const AtomicString& IDBDatabase::InterfaceName() const {
@@ -611,7 +559,7 @@ const AtomicString& IDBDatabase::InterfaceName() const {
 }
 
 ExecutionContext* IDBDatabase::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
 STATIC_ASSERT_ENUM(mojom::blink::IDBException::kNoError,

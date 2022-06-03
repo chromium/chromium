@@ -1,0 +1,71 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+template("accessibility_strings") {
+  grit(target_name) {
+    source = "//chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.grd"
+    defines = chrome_grit_defines
+    outputs = [
+      "_locales/am/messages.json.gz",
+      "_locales/ar/messages.json.gz",
+      "_locales/bg/messages.json.gz",
+      "_locales/bn/messages.json.gz",
+      "_locales/ca/messages.json.gz",
+      "_locales/cs/messages.json.gz",
+      "_locales/da/messages.json.gz",
+      "_locales/de/messages.json.gz",
+      "_locales/el/messages.json.gz",
+      "_locales/en_GB/messages.json.gz",
+      "_locales/en/messages.json.gz",
+      "_locales/es/messages.json.gz",
+      "_locales/es_419/messages.json.gz",
+      "_locales/et/messages.json.gz",
+      "_locales/fa/messages.json.gz",
+      "_locales/fi/messages.json.gz",
+      "_locales/fil/messages.json.gz",
+      "_locales/fr/messages.json.gz",
+      "_locales/gu/messages.json.gz",
+      "_locales/he/messages.json.gz",
+      "_locales/hi/messages.json.gz",
+      "_locales/hr/messages.json.gz",
+      "_locales/hu/messages.json.gz",
+      "_locales/id/messages.json.gz",
+      "_locales/it/messages.json.gz",
+      "_locales/ja/messages.json.gz",
+      "_locales/kn/messages.json.gz",
+      "_locales/ko/messages.json.gz",
+      "_locales/lt/messages.json.gz",
+      "_locales/lv/messages.json.gz",
+      "_locales/ml/messages.json.gz",
+      "_locales/mr/messages.json.gz",
+      "_locales/ms/messages.json.gz",
+      "_locales/nl/messages.json.gz",
+      "_locales/nb/messages.json.gz",
+      "_locales/pl/messages.json.gz",
+      "_locales/pt_BR/messages.json.gz",
+      "_locales/pt_PT/messages.json.gz",
+      "_locales/ro/messages.json.gz",
+      "_locales/ru/messages.json.gz",
+      "_locales/sk/messages.json.gz",
+      "_locales/sl/messages.json.gz",
+      "_locales/sr/messages.json.gz",
+      "_locales/sv/messages.json.gz",
+      "_locales/sw/messages.json.gz",
+      "_locales/ta/messages.json.gz",
+      "_locales/te/messages.json.gz",
+      "_locales/th/messages.json.gz",
+      "_locales/tr/messages.json.gz",
+      "_locales/uk/messages.json.gz",
+      "_locales/vi/messages.json.gz",
+      "_locales/zh_CN/messages.json.gz",
+      "_locales/zh_TW/messages.json.gz",
+    ]
+    output_dir = invoker.out_dir
+
+    resource_ids = ""
+  }
+}

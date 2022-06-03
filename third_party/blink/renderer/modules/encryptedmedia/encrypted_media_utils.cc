@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 
 #include "media/base/eme_constants.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -13,7 +12,6 @@ namespace {
 
 const char kTemporary[] = "temporary";
 const char kPersistentLicense[] = "persistent-license";
-const char kPersistentUsageRecord[] = "persistent-usage-record";
 
 }  // namespace
 
@@ -56,11 +54,6 @@ WebEncryptedMediaSessionType EncryptedMediaUtils::ConvertToSessionType(
     return WebEncryptedMediaSessionType::kTemporary;
   if (session_type == kPersistentLicense)
     return WebEncryptedMediaSessionType::kPersistentLicense;
-  if (session_type == kPersistentUsageRecord &&
-      RuntimeEnabledFeatures::
-          EncryptedMediaPersistentUsageRecordSessionEnabled()) {
-    return WebEncryptedMediaSessionType::kPersistentUsageRecord;
-  }
 
   // |sessionType| is not restricted in the idl, so anything is possible.
   return WebEncryptedMediaSessionType::kUnknown;
@@ -74,12 +67,6 @@ String EncryptedMediaUtils::ConvertFromSessionType(
       return kTemporary;
     case WebEncryptedMediaSessionType::kPersistentLicense:
       return kPersistentLicense;
-    case WebEncryptedMediaSessionType::kPersistentUsageRecord:
-      if (RuntimeEnabledFeatures::
-              EncryptedMediaPersistentUsageRecordSessionEnabled()) {
-        return kPersistentUsageRecord;
-      }
-      FALLTHROUGH;
     case WebEncryptedMediaSessionType::kUnknown:
       // Unexpected session type from Chromium.
       NOTREACHED();
@@ -142,6 +129,45 @@ String EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
 
   NOTREACHED();
   return "not-allowed";
+}
+
+// static
+const char* EncryptedMediaUtils::GetInterfaceName(EmeApiType type) {
+  switch (type) {
+    case EmeApiType::kCreateMediaKeys:
+      return "MediaKeySystemAccess";
+    case EmeApiType::kSetServerCertificate:
+    case EmeApiType::kGetStatusForPolicy:
+      return "MediaKeys";
+    case EmeApiType::kGenerateRequest:
+    case EmeApiType::kLoad:
+    case EmeApiType::kUpdate:
+    case EmeApiType::kClose:
+    case EmeApiType::kRemove:
+      return "MediaKeySession";
+  }
+}
+
+// static
+const char* EncryptedMediaUtils::GetPropertyName(EmeApiType type) {
+  switch (type) {
+    case EmeApiType::kCreateMediaKeys:
+      return "createMediaKeys";
+    case EmeApiType::kSetServerCertificate:
+      return "setServerCertificate";
+    case EmeApiType::kGetStatusForPolicy:
+      return "getStatusForPolicy";
+    case EmeApiType::kGenerateRequest:
+      return "generateRequest";
+    case EmeApiType::kLoad:
+      return "load";
+    case EmeApiType::kUpdate:
+      return "update";
+    case EmeApiType::kClose:
+      return "close";
+    case EmeApiType::kRemove:
+      return "remove";
+  }
 }
 
 }  // namespace blink

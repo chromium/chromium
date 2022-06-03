@@ -1,0 +1,21 @@
+<!--
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:id:*
+@AURALINUX-ALLOW:tag:*
+@AURALINUX-ALLOW:roledescription:*
+@BLINK-ALLOW:className*
+@BLINK-ALLOW:htmlTag*
+-->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<body>
+<svg class="Symbol with role">
+  <symbol id="myRect" width="10" height="10" role="button" aria-roledescription="fancy button">
+    <rect x="10" y="10" width="50" height="30" />
+    <title>Click me!</title>
+  </symbol>
+  <use href="#myRect" x="5"  y="5" style="opacity:1.0" />
+  <use href="#myRect" x="20" y="5" style="opacity:0.5" />
+</svg>
+</body>
+</html>

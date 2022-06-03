@@ -70,10 +70,10 @@ void presentation_feedback(wl_client* client,
                          wl_resource_get_version(resource), id);
 
   // base::Unretained is safe as the resource owns the callback.
-  auto cancelable_callback = std::make_unique<
-      base::CancelableCallback<void(const gfx::PresentationFeedback&)>>(
-      base::Bind(&HandleSurfacePresentationCallback,
-                 base::Unretained(presentation_feedback_resource)));
+  auto cancelable_callback = std::make_unique<base::CancelableRepeatingCallback<
+      void(const gfx::PresentationFeedback&)>>(
+      base::BindRepeating(&HandleSurfacePresentationCallback,
+                          base::Unretained(presentation_feedback_resource)));
 
   GetUserDataAs<Surface>(surface_resource)
       ->RequestPresentationCallback(cancelable_callback->callback());

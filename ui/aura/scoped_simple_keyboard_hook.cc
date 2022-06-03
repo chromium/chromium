@@ -6,13 +6,13 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace aura {
 
 ScopedSimpleKeyboardHook::ScopedSimpleKeyboardHook(
-    base::Optional<base::flat_set<ui::DomCode>> dom_codes)
+    absl::optional<base::flat_set<ui::DomCode>> dom_codes)
     : dom_codes_(std::move(dom_codes)) {}
 
 ScopedSimpleKeyboardHook::~ScopedSimpleKeyboardHook() = default;

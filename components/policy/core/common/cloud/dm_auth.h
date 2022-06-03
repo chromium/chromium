@@ -7,10 +7,20 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
+
+// The enum type for the token used for authentication. Explicit values are
+// set to allow easy identification of value from the logs.
+enum class DMAuthTokenType {
+  kNoAuth = 0,
+  kGaia = 1,
+  kDm = 2,
+  kEnrollment = 3,
+  kOauth = 4,
+};
 
 // Class that encapsulates different authentication methods to interact with
 // device management service.
@@ -25,40 +35,61 @@ namespace policy {
 class POLICY_EXPORT DMAuth {
  public:
   // Static methods for creating DMAuth instances:
-  static std::unique_ptr<DMAuth> FromDMToken(const std::string& dm_token);
-  static std::unique_ptr<DMAuth> FromGaiaToken(const std::string& gaia_token);
-  static std::unique_ptr<DMAuth> FromOAuthToken(const std::string& oauth_token);
-  static std::unique_ptr<DMAuth> FromEnrollmentToken(const std::string& token);
-  static std::unique_ptr<DMAuth> NoAuth();
+  static DMAuth FromDMToken(const std::string& dm_token);
+  static DMAuth FromGaiaToken(const std::string& gaia_token);
+  static DMAuth FromOAuthToken(const std::string& oauth_token);
+  static DMAuth FromEnrollmentToken(const std::string& token);
+  static DMAuth NoAuth();
 
   DMAuth();
   ~DMAuth();
 
+  DMAuth(const DMAuth& other) = delete;
+  DMAuth& operator=(const DMAuth& other) = delete;
+
+  DMAuth(DMAuth&& other);
+  DMAuth& operator=(DMAuth&& other);
+
+  bool operator==(const DMAuth& other) const;
+  bool operator!=(const DMAuth& other) const;
+
   // Creates a copy of DMAuth.
-  std::unique_ptr<DMAuth> Clone() const;
+  DMAuth Clone() const;
 
   // Checks if no authentication is provided.
-  bool empty() const;
-  bool Equals(const DMAuth& other) const;
+  bool empty() const { return token_type_ == DMAuthTokenType::kNoAuth; }
 
-  std::string gaia_token() const { return gaia_token_; }
-  bool has_gaia_token() const { return !gaia_token_.empty(); }
-  std::string dm_token() const { return dm_token_; }
-  bool has_dm_token() const { return !dm_token_.empty(); }
-  std::string enrollment_token() const { return enrollment_token_; }
-  bool has_enrollment_token() const { return !enrollment_token_.empty(); }
-  std::string oauth_token() const { return oauth_token_; }
-  bool has_oauth_token() const { return !oauth_token_.empty(); }
+  std::string gaia_token() const {
+    DCHECK_EQ(DMAuthTokenType::kGaia, token_type_);
+    return token_;
+  }
+  bool has_gaia_token() const { return token_type_ == DMAuthTokenType::kGaia; }
+  std::string dm_token() const {
+    DCHECK_EQ(DMAuthTokenType::kDm, token_type_);
+    return token_;
+  }
+  bool has_dm_token() const { return token_type_ == DMAuthTokenType::kDm; }
+  std::string enrollment_token() const {
+    DCHECK_EQ(DMAuthTokenType::kEnrollment, token_type_);
+    return token_;
+  }
+  bool has_enrollment_token() const {
+    return token_type_ == DMAuthTokenType::kEnrollment;
+  }
+  std::string oauth_token() const {
+    DCHECK_EQ(DMAuthTokenType::kOauth, token_type_);
+    return token_;
+  }
+  bool has_oauth_token() const {
+    return token_type_ == DMAuthTokenType::kOauth;
+  }
+  DMAuthTokenType token_type() const { return token_type_; }
 
  private:
-  DMAuth& operator=(const DMAuth&) = default;
+  DMAuth(const std::string& token, DMAuthTokenType token_type);
 
-  std::string gaia_token_;
-  std::string dm_token_;
-  std::string enrollment_token_;
-  std::string oauth_token_;
-
-  DISALLOW_COPY(DMAuth);
+  std::string token_;
+  DMAuthTokenType token_type_ = DMAuthTokenType::kNoAuth;
 };
 
 }  // namespace policy

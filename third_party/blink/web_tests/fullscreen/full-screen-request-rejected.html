@@ -8,6 +8,6 @@
     });
     if (window.testRunner)
         testRunner.setPopupBlockingEnabled(true);
-    waitForEventAndEnd(document, 'webkitfullscreenerror');
+    waitForEventOnceAndEnd(document, 'webkitfullscreenerror');
     document.documentElement.webkitRequestFullScreen();
 </script>

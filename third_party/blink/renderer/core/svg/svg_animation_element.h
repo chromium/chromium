@@ -51,6 +51,9 @@ enum CalcMode {
   kCalcModeSpline
 };
 
+struct SMILAnimationEffectParameters;
+struct SMILAnimationValue;
+
 class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -69,41 +72,19 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEndEvent)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(repeat, kRepeatEvent)
 
-  virtual bool IsAdditive() const;
-  bool IsAccumulated() const;
-  AnimationMode GetAnimationMode() const { return animation_mode_; }
-  CalcMode GetCalcMode() const { return calc_mode_; }
+  virtual SMILAnimationValue CreateAnimationValue() const = 0;
+  void ApplyAnimation(SMILAnimationValue&);
+  virtual void ApplyResultsToTarget(const SMILAnimationValue&) = 0;
 
-  virtual void ResetAnimatedType() = 0;
-  virtual void ClearAnimatedType() = 0;
-  virtual void ApplyResultsToTarget() = 0;
+  virtual void ClearAnimationValue() = 0;
   // Returns true if this animation "sets" the value of the animation. Thus all
   // previous animations are rendered useless.
   bool OverwritesUnderlyingAnimationValue() const;
-  void ApplyAnimation(SVGAnimationElement* result_element);
-
-  void AnimateAdditiveNumber(float percentage,
-                             unsigned repeat_count,
-                             float from_number,
-                             float to_number,
-                             float to_at_end_of_duration_number,
-                             float& animated_number) const {
-    float number;
-    if (GetCalcMode() == kCalcModeDiscrete)
-      number = percentage < 0.5 ? from_number : to_number;
-    else
-      number = (to_number - from_number) * percentage + from_number;
-    if (GetAnimationMode() != kToAnimation) {
-      if (repeat_count && IsAccumulated())
-        number += to_at_end_of_duration_number * repeat_count;
-      if (IsAdditive())
-        number += animated_number;
-    }
-    animated_number = number;
-  }
 
  protected:
   SVGAnimationElement(const QualifiedName&, Document&);
+
+  SMILAnimationEffectParameters ComputeEffectParameters() const;
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
@@ -111,10 +92,13 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   void SetAnimationMode(AnimationMode animation_mode) {
     animation_mode_ = animation_mode;
   }
+  AnimationMode GetAnimationMode() const { return animation_mode_; }
   void SetCalcMode(CalcMode calc_mode) {
     use_paced_key_times_ = false;
     calc_mode_ = calc_mode;
   }
+  CalcMode GetCalcMode() const { return calc_mode_; }
+
   virtual bool HasValidAnimation() const = 0;
   void UnregisterAnimation(const QualifiedName& attribute_name);
   void RegisterAnimation(const QualifiedName& attribute_name);
@@ -132,6 +116,9 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
  private:
   bool IsValid() const final { return SVGTests::IsValid(); }
 
+  bool IsAdditive() const;
+  bool IsAccumulated() const;
+
   String ToValue() const;
   String ByValue() const;
   String FromValue() const;
@@ -143,9 +130,9 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
                                         const String& to_string) = 0;
   virtual bool CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
-  virtual void CalculateAnimatedValue(float percent,
-                                      unsigned repeat_count,
-                                      SVGSMILElement* result_element) const = 0;
+  virtual void CalculateAnimationValue(SMILAnimationValue&,
+                                       float percent,
+                                       unsigned repeat_count) const = 0;
   virtual float CalculateDistance(const String& /*fromString*/,
                                   const String& /*toString*/) {
     return -1.f;

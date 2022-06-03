@@ -41,7 +41,7 @@ test(function() {
 }, "delete() does nothing if the property isn't set");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.delete('lemons');
   });
 }, "Attempting to delete an invalid property throws");

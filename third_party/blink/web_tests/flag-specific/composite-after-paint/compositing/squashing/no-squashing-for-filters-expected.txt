@@ -16,7 +16,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='trysquashed'",
       "bounds": [100, 100],
-      "backgroundColor": "#D3D3D3"
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_style.h"
 
-#include "ui/base/material_design/material_design_controller.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -15,7 +15,7 @@ constexpr int kSeparatorThickness = 1;
 
 // Returns the height of the separator between tabs.
 int GetSeparatorHeight() {
-  return ui::MaterialDesignController::touch_ui() ? 24 : 20;
+  return ui::TouchUiController::Get()->touch_ui() ? 24 : 20;
 }
 
 }  // namespace
@@ -32,7 +32,7 @@ int TabStyle::GetStandardWidth() {
 
 // static
 int TabStyle::GetPinnedWidth() {
-  constexpr int kTabPinnedContentWidth = 23;
+  constexpr int kTabPinnedContentWidth = 24;
   return kTabPinnedContentWidth + GetContentsHorizontalInsetSize() * 2;
 }
 
@@ -66,7 +66,7 @@ gfx::Size TabStyle::GetPreviewImageSize() {
 // static
 int TabStyle::GetCornerRadius() {
   return views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_HIGH);
+      views::Emphasis::kHigh);
 }
 
 // static

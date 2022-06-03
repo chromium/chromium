@@ -44,7 +44,7 @@ bool RetrieveFolderInformation(const base::FilePath& folder_path,
   internal::FileInformation file_information;
   RetrievePathInformation(expanded_path, &file_information);
 
-  folder_information->set_path(base::UTF16ToUTF8(file_information.path));
+  folder_information->set_path(base::WideToUTF8(file_information.path));
   folder_information->set_creation_date(file_information.creation_date);
   folder_information->set_last_modified_date(
       file_information.last_modified_date);
@@ -78,7 +78,7 @@ UwS PUPToUwS(const PUPData::PUP* found_uws,
 
   UwS detected_uws;
   detected_uws.set_id(found_signature.id);
-  if (found_signature.name != nullptr)
+  if (found_signature.name)
     detected_uws.set_name(found_signature.name);
   UwS::DetailLevel* detail_level = detected_uws.mutable_detail_level();
   bool only_one_footprint = (flags & kUwSDetectedFlagsOnlyOneFootprint) != 0;
@@ -149,7 +149,7 @@ UwS PUPToUwS(const PUPData::PUP* found_uws,
        found_uws->expanded_scheduled_tasks) {
     ScheduledTask* reported_task =
         detected_uws.add_scheduled_tasks()->mutable_scheduled_task();
-    reported_task->set_name(base::UTF16ToUTF8(expanded_scheduled_task));
+    reported_task->set_name(base::WideToUTF8(expanded_scheduled_task));
   }
 
   // Collect trace locations.
@@ -170,7 +170,7 @@ void FileInformationToProtoObject(
   DCHECK(proto_file_information);
   if (file_information.path.empty())
     return;
-  proto_file_information->set_path(base::UTF16ToUTF8(file_information.path));
+  proto_file_information->set_path(base::WideToUTF8(file_information.path));
   if (!file_information.creation_date.empty())
     proto_file_information->set_creation_date(file_information.creation_date);
   if (!file_information.last_modified_date.empty()) {
@@ -182,35 +182,35 @@ void FileInformationToProtoObject(
   proto_file_information->set_size(file_information.size);
   if (!file_information.company_name.empty()) {
     proto_file_information->set_company_name(
-        base::UTF16ToUTF8(file_information.company_name));
+        base::WideToUTF8(file_information.company_name));
   }
   if (!file_information.company_short_name.empty()) {
     proto_file_information->set_company_short_name(
-        base::UTF16ToUTF8(file_information.company_short_name));
+        base::WideToUTF8(file_information.company_short_name));
   }
   if (!file_information.product_name.empty()) {
     proto_file_information->set_product_name(
-        base::UTF16ToUTF8(file_information.product_name));
+        base::WideToUTF8(file_information.product_name));
   }
   if (!file_information.product_short_name.empty()) {
     proto_file_information->set_product_short_name(
-        base::UTF16ToUTF8(file_information.product_short_name));
+        base::WideToUTF8(file_information.product_short_name));
   }
   if (!file_information.internal_name.empty()) {
     proto_file_information->set_internal_name(
-        base::UTF16ToUTF8(file_information.internal_name));
+        base::WideToUTF8(file_information.internal_name));
   }
   if (!file_information.original_filename.empty()) {
     proto_file_information->set_original_filename(
-        base::UTF16ToUTF8(file_information.original_filename));
+        base::WideToUTF8(file_information.original_filename));
   }
   if (!file_information.file_description.empty()) {
     proto_file_information->set_file_description(
-        base::UTF16ToUTF8(file_information.file_description));
+        base::WideToUTF8(file_information.file_description));
   }
   if (!file_information.file_version.empty()) {
     proto_file_information->set_file_version(
-        base::UTF16ToUTF8(file_information.file_version));
+        base::WideToUTF8(file_information.file_version));
   }
   proto_file_information->set_active_file(file_information.active_file);
 }

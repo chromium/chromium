@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL PaymentRequest <iframe allowpaymentrequest> in non-active document (cross-origin) assert_throws_dom: function "() => {
+        new grabbedPaymentRequest(...paymentArgs);
+      }" threw an exception from the wrong global
+Harness: the test ran to completion.
+

@@ -94,9 +94,9 @@ function testDataset(getTestElement) {
 		assert_true(testSet('2d', 'data-2d'));
 		assert_true(testSet('d-2', 'data-d-2'));
 		assert_true(testSet('A--S', 'data--a---s'));
-		assert_throws(new SyntaxError, function() { testSet('-foo', 'dummy'); }, '"SyntaxError: Failed to set the \'-foo\' property on \'DOMStringMap\': \'-foo\' is not a valid property name."');
-		assert_throws("InvalidCharacterError", function() { testSet('foo\x20', 'dummy'); }, '"InvalidCharacterError: Failed to set the \'foo\x20\' property on \'DOMStringMap\': \'data-foo\x20\' is not a valid attribute name."');
-		assert_throws("InvalidCharacterError", function() { testSet('foo\uF900', 'dummy'); }, '"InvalidCharacterError: Failed to set the \'foo\uF900\' property on \'DOMStringMap\': \'data-foo\uF900\' is not a valid attribute name."');
+		assert_throws_dom("SyntaxError", function() { testSet('-foo', 'dummy'); }, '"SyntaxError: Failed to set the \'-foo\' property on \'DOMStringMap\': \'-foo\' is not a valid property name."');
+		assert_throws_dom("InvalidCharacterError", function() { testSet('foo\x20', 'dummy'); }, '"InvalidCharacterError: Failed to set the \'foo\x20\' property on \'DOMStringMap\': \'data-foo\x20\' is not a valid attribute name."');
+		assert_throws_dom("InvalidCharacterError", function() { testSet('foo\uF900', 'dummy'); }, '"InvalidCharacterError: Failed to set the \'foo\uF900\' property on \'DOMStringMap\': \'data-foo\uF900\' is not a valid attribute name."');
 	},'Tests Set');
 
 

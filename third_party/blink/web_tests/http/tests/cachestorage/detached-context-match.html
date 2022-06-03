@@ -1,0 +1,12 @@
+<body>
+PASS if no crash.
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var cache = i.contentWindow.caches;
+i.remove();
+cache.match("/");
+</script>
+</body>

@@ -1,0 +1,175 @@
+diff --git a/third_party/tlslite/tlslite/constants.py b/third_party/tlslite/tlslite/constants.py
+index bac05c2f70cf..3f994e7e6f60 100644
+--- a/third_party/tlslite/tlslite/constants.py
++++ b/third_party/tlslite/tlslite/constants.py
+@@ -52,8 +52,9 @@ class CertificateStatusType:
+ class ExtensionType:    # RFC 6066 / 4366
+     server_name = 0     # RFC 6066 / 4366
+     status_request = 5  # RFC 6066 / 4366
+-    srp = 12            # RFC 5054  
++    srp = 12            # RFC 5054
+     cert_type = 9       # RFC 6091
++    signature_algorithms = 13 # RFC 5246
+     alpn = 16           # RFC 7301
+     signed_cert_timestamps = 18  # RFC 6962
+     extended_master_secret = 23  # RFC 7627
+diff --git a/third_party/tlslite/tlslite/messages.py b/third_party/tlslite/tlslite/messages.py
+index 90a3cec9f54e..ce4f1a6e15eb 100644
+--- a/third_party/tlslite/tlslite/messages.py
++++ b/third_party/tlslite/tlslite/messages.py
+@@ -142,6 +142,7 @@ class ClientHello(HandshakeMsg):
+         self.status_request = False
+         self.has_supported_versions = False
+         self.ri = False
++        self.signature_algorithms = []
+ 
+     def create(self, version, random, session_id, cipher_suites,
+                certificate_types=None, srpUsername=None,
+@@ -257,6 +258,14 @@ class ClientHello(HandshakeMsg):
+                         # intolerance simulation.
+                         self.has_supported_versions = True
+                         _ = p.getFixBytes(extLength)
++                    elif extType == ExtensionType.signature_algorithms:
++                        numBytes = p.get(2)
++                        if numBytes + 2 != extLength or numBytes % 2 != 0:
++                            raise SyntaxError()
++                        for _ in range(numBytes / 2):
++                            hashAlg = p.get(1)
++                            sigAlg = p.get(1)
++                            self.signature_algorithms.append((hashAlg, sigAlg))
+                     else:
+                         _ = p.getFixBytes(extLength)
+                     index2 = p.index
+@@ -605,6 +614,7 @@ class ServerKeyExchange(HandshakeMsg):
+         self.ecdhCurve = 0
+         self.ecdhPublic = bytearray(0)
+         self.signature = bytearray(0)
++        self.signature_algorithm = None
+ 
+     def createSRP(self, srp_N, srp_g, srp_s, srp_B):
+         self.srp_N = srp_N
+@@ -664,18 +674,13 @@ class ServerKeyExchange(HandshakeMsg):
+         w.bytes += self.write_params()
+         if self.cipherSuite in CipherSuite.certAllSuites:
+             if self.version >= (3,3):
+-                # TODO: Signature algorithm negotiation not supported.
+-                w.add(HashAlgorithm.sha1, 1)
+-                w.add(SignatureAlgorithm.rsa, 1)
++                w.add(self.signature_algorithm[0], 1)
++                w.add(self.signature_algorithm[1], 1)
+             w.addVarSeq(self.signature, 1, 2)
+         return self.postWrite(w)
+ 
+-    def hash(self, clientRandom, serverRandom):
+-        bytes = clientRandom + serverRandom + self.write_params()
+-        if self.version >= (3,3):
+-            # TODO: Signature algorithm negotiation not supported.
+-            return SHA1(bytes)
+-        return MD5(bytes) + SHA1(bytes)
++    def signingPayload(self, clientRandom, serverRandom):
++        return clientRandom + serverRandom + self.write_params()
+ 
+ class ServerHelloDone(HandshakeMsg):
+     def __init__(self):
+diff --git a/third_party/tlslite/tlslite/tlsconnection.py b/third_party/tlslite/tlslite/tlsconnection.py
+index efe2b9fefaa0..6d7c859884a4 100644
+--- a/third_party/tlslite/tlslite/tlsconnection.py
++++ b/third_party/tlslite/tlslite/tlsconnection.py
+@@ -17,7 +17,7 @@ from .utils.compat import formatExceptionTrace
+ from .tlsrecordlayer import TLSRecordLayer
+ from .session import Session
+ from .constants import *
+-from .utils.cryptomath import getRandomBytes
++from .utils.cryptomath import getRandomBytes, MD5, SHA1, SHA256
+ from .errors import *
+ from .messages import *
+ from .mathtls import *
+@@ -51,6 +51,24 @@ class KeyExchange(object):
+         """
+         raise NotImplementedError()
+ 
++    def sign(self, inpBytes):
++        algorithm = None
++        if self.serverHello.server_version >= (3, 3):
++            # Negotiate a signature algorithm.
++            peerPrefs = self.clientHello.signature_algorithms
++            if (HashAlgorithm.sha256, SignatureAlgorithm.rsa) in peerPrefs:
++                algorithm = (HashAlgorithm.sha256, SignatureAlgorithm.rsa)
++                inpBytes = RSAKey.addPKCS1SHA256Prefix(SHA256(inpBytes))
++            elif (HashAlgorithm.sha1, SignatureAlgorithm.rsa) in peerPrefs:
++                algorithm = (HashAlgorithm.sha1, SignatureAlgorithm.rsa)
++                inpBytes = RSAKey.addPKCS1SHA1Prefix(SHA1(inpBytes))
++            else:
++                raise TLSLocalAlert(AlertDescription.handshake_failure,
++                                   "no common signature algorithms")
++        else:
++            inpBytes = MD5(inpBytes) + SHA1(inpBytes)
++        return algorithm, self.privateKey.sign(inpBytes)
++
+ class RSAKeyExchange(KeyExchange):
+     def makeServerKeyExchange(self):
+         return None
+@@ -108,12 +126,9 @@ DE2BCBF6 95581718 3995497C EA956AE5 15D22618 98FA0510
+         version = self.serverHello.server_version
+         serverKeyExchange = ServerKeyExchange(self.cipherSuite, version)
+         serverKeyExchange.createDH(self.dh_p, self.dh_g, dh_Ys)
+-        hashBytes = serverKeyExchange.hash(self.clientHello.random,
+-                                           self.serverHello.random)
+-        if version >= (3,3):
+-            # TODO: Signature algorithm negotiation not supported.
+-            hashBytes = RSAKey.addPKCS1SHA1Prefix(hashBytes)
+-        serverKeyExchange.signature = self.privateKey.sign(hashBytes)
++        serverKeyExchange.signature_algorithm, serverKeyExchange.signature = \
++            self.sign(serverKeyExchange.signingPayload(self.clientHello.random,
++                                                       self.serverHello.random))
+         return serverKeyExchange
+ 
+     def processClientKeyExchange(self, clientKeyExchange):
+@@ -135,12 +150,9 @@ class ECDHE_RSAKeyExchange(KeyExchange):
+         version = self.serverHello.server_version
+         serverKeyExchange = ServerKeyExchange(self.cipherSuite, version)
+         serverKeyExchange.createECDH(NamedCurve.secp256r1, bytearray(public))
+-        hashBytes = serverKeyExchange.hash(self.clientHello.random,
+-                                           self.serverHello.random)
+-        if version >= (3,3):
+-            # TODO: Signature algorithm negotiation not supported.
+-            hashBytes = RSAKey.addPKCS1SHA1Prefix(hashBytes)
+-        serverKeyExchange.signature = self.privateKey.sign(hashBytes)
++        serverKeyExchange.signature_algorithm, serverKeyExchange.signature = \
++            self.sign(serverKeyExchange.signingPayload(self.clientHello.random,
++                                                       self.serverHello.random))
+         return serverKeyExchange
+ 
+     def processClientKeyExchange(self, clientKeyExchange):
+diff --git a/third_party/tlslite/tlslite/utils/cryptomath.py b/third_party/tlslite/tlslite/utils/cryptomath.py
+index 61fd1432d566..f7142c06ba23 100644
+--- a/third_party/tlslite/tlslite/utils/cryptomath.py
++++ b/third_party/tlslite/tlslite/utils/cryptomath.py
+@@ -73,6 +73,9 @@ def MD5(b):
+ def SHA1(b):
+     return bytearray(hashlib.sha1(compat26Str(b)).digest())
+ 
++def SHA256(b):
++    return bytearray(hashlib.sha256(compat26Str(b)).digest())
++
+ def HMAC_MD5(k, b):
+     k = compatHMAC(k)
+     b = compatHMAC(b)
+diff --git a/third_party/tlslite/tlslite/utils/rsakey.py b/third_party/tlslite/tlslite/utils/rsakey.py
+index fb022cc6445d..7e3f97881a10 100644
+--- a/third_party/tlslite/tlslite/utils/rsakey.py
++++ b/third_party/tlslite/tlslite/utils/rsakey.py
+@@ -240,6 +240,13 @@ class RSAKey(object):
+         prefixedBytes = prefixBytes + bytes
+         return prefixedBytes
+ 
++    @staticmethod
++    def addPKCS1SHA256Prefix(bytes):
++        prefixBytes = bytearray([
++            0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65,
++            0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20])
++        return prefixBytes + bytes
++
+     def _addPKCS1Padding(self, bytes, blockType):
+         padLength = (numBytes(self.n) - (len(bytes)+3))
+         if blockType == 1: #Signature padding

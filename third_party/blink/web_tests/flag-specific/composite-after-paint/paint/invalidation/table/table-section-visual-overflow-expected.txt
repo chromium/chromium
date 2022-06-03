@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableSection DIV id='test'",
-          "rect": [143, 0, 120, 118],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableSection DIV id='test'",
-          "rect": [0, 0, 118, 118],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [143, 0, 120, 118],
+        [0, 0, 118, 118]
       ]
     }
   ]

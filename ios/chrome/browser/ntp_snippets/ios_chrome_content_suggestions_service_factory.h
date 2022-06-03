@@ -11,27 +11,30 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
 
 namespace ntp_snippets {
 class ContentSuggestionsService;
 }  // namespace ntp_snippets
 
 // A factory to create a ContentSuggestionsService and associate it to
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class IOSChromeContentSuggestionsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static ntp_snippets::ContentSuggestionsService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   static IOSChromeContentSuggestionsServiceFactory* GetInstance();
 
   // Returns the default factory used to build ContentSuggestionsServices. Can
   // be registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
+
+  IOSChromeContentSuggestionsServiceFactory(
+      const IOSChromeContentSuggestionsServiceFactory&) = delete;
+  IOSChromeContentSuggestionsServiceFactory& operator=(
+      const IOSChromeContentSuggestionsServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeContentSuggestionsServiceFactory>;
@@ -44,8 +47,6 @@ class IOSChromeContentSuggestionsServiceFactory
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeContentSuggestionsServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_SNIPPETS_IOS_CHROME_CONTENT_SUGGESTIONS_SERVICE_FACTORY_H_

@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_utterance.h"
 #include "url/gurl.h"
@@ -41,6 +42,11 @@ struct CONTENT_EXPORT VoiceData {
   // TtsPlatformImpl. If false, this is implemented in a content embedder.
   bool native;
   std::string native_voice_identifier;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If true, the voice is from a remote tts engine.
+  bool from_crosapi = false;
+#endif
 };
 
 // Interface that delegates TTS requests to engines in content embedders.
@@ -48,8 +54,10 @@ class CONTENT_EXPORT TtsEngineDelegate {
  public:
   virtual ~TtsEngineDelegate() {}
 
-  // Return a list of all available voices registered.
+  // Return a list of all available voices registered. |source_url| will be used
+  // for policy decisions by engines to determine which voices to return.
   virtual void GetVoices(BrowserContext* browser_context,
+                         const GURL& source_url,
                          std::vector<VoiceData>* out_voices) = 0;
 
   // Speak the given utterance by sending an event to the given TTS engine.
@@ -66,7 +74,22 @@ class CONTENT_EXPORT TtsEngineDelegate {
   virtual void Resume(TtsUtterance* utterance) = 0;
 
   // Load the built-in TTS engine.
-  virtual bool LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
+  virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
+
+  // Returns whether the built in engine is initialized.
+  virtual bool IsBuiltInTtsEngineInitialized(
+      BrowserContext* browser_context) = 0;
+};
+
+// Interface that delegates TTS requests to a remote engine from another browser
+// process.
+class CONTENT_EXPORT RemoteTtsEngineDelegate {
+ public:
+  virtual ~RemoteTtsEngineDelegate() = default;
+
+  // Returns a list of voices from remote tts engine for |browser_context|.
+  virtual void GetVoices(BrowserContext* browser_context,
+                         std::vector<VoiceData>* out_voices) = 0;
 };
 
 // Class that wants to be notified when the set of
@@ -84,13 +107,16 @@ class CONTENT_EXPORT TtsController {
   // Get the single instance of this class.
   static TtsController* GetInstance();
 
+  static void SkipAddNetworkChangeObserverForTests(bool enabled);
+
   // Returns true if we're currently speaking an utterance.
   virtual bool IsSpeaking() = 0;
 
-  // Speak the given utterance. If the utterance's can_enqueue flag is true
-  // and another utterance is in progress, adds it to the end of the queue.
-  // Otherwise, interrupts any current utterance and speaks this one
-  // immediately.
+  // Speak the given utterance. If the utterance's should_flush_queue flag is
+  // true, clears the speech queue including the currently speaking utterance
+  // (if one exists), and starts processing the speech queue by speaking the new
+  // utterance immediately. Otherwise, enqueues the new utterance and triggers
+  // continued processing of the speech queue.
   virtual void SpeakOrEnqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
 
   // Stop all utterances and flush the queue. Implies leaving pause mode
@@ -119,8 +145,11 @@ class CONTENT_EXPORT TtsController {
                           const std::string& error_message) = 0;
 
   // Return a list of all available voices, including the native voice,
-  // if supported, and all voices registered by engines.
+  // if supported, and all voices registered by engines. |source_url|
+  // will be used for policy decisions by engines to determine which
+  // voices to return.
   virtual void GetVoices(BrowserContext* browser_context,
+                         const GURL& source_url,
                          std::vector<VoiceData>* out_voices) = 0;
 
   // Called by the content embedder or platform implementation when the
@@ -142,6 +171,10 @@ class CONTENT_EXPORT TtsController {
   // Set the delegate that processes TTS requests with engines in a content
   // embedder.
   virtual void SetTtsEngineDelegate(TtsEngineDelegate* delegate) = 0;
+
+  // Sets the delegate that processes TTS requests with the remote enigne.
+  virtual void SetRemoteTtsEngineDelegate(
+      RemoteTtsEngineDelegate* delegate) = 0;
 
   // Get the delegate that processes TTS requests with engines in a content
   // embedder.

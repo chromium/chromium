@@ -16,9 +16,13 @@
 
 namespace ui {
 
-class MockTSFBridge : public TSFBridge {
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
  public:
   MockTSFBridge();
+
+  MockTSFBridge(const MockTSFBridge&) = delete;
+  MockTSFBridge& operator=(const MockTSFBridge&) = delete;
+
   ~MockTSFBridge() override;
 
   // TSFBridge:
@@ -33,7 +37,6 @@ class MockTSFBridge : public TSFBridge {
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
   bool IsInputLanguageCJK() override;
-  void SetInputPanelPolicy(bool input_panel_policy_manual) override;
 
   // Resets MockTSFBridge state including function call counter.
   void Reset();
@@ -102,8 +105,6 @@ class MockTSFBridge : public TSFBridge {
   TextInputType latest_text_input_type_ = TEXT_INPUT_TYPE_NONE;
   Microsoft::WRL::ComPtr<ITfThreadMgr> thread_manager_;
   TSFTextStore* tsf_text_store_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTSFBridge);
 };
 
 }  // namespace ui

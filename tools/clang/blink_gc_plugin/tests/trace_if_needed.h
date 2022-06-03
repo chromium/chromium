@@ -14,7 +14,8 @@ class HeapObject : public GarbageCollected<HeapObject> { };
 template<typename T>
 class TemplatedObject : public GarbageCollected<TemplatedObject<T> > {
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
+
 private:
     T m_one;
     T m_two;

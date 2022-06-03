@@ -1,0 +1,28 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <title>$i18n{title}</title>
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  </head>
+  <style>
+    body,
+    html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    #content {
+      height: 100%;
+      overflow: auto;
+    }
+  </style>
+  <body>
+    <div id="content">
+      <internet-detail-dialog></internet-detail-dialog>
+      <script type="module" src="internet_detail_dialog_container.js"></script>
+    </div>
+  </body>
+</html>

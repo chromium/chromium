@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/math_constants.h"
 #include "base/win/core_winrt_util.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
@@ -56,10 +55,6 @@ using ABI::Windows::Foundation::DateTime;
 using ABI::Windows::Foundation::ITypedEventHandler;
 using Microsoft::WRL::Callback;
 using Microsoft::WRL::ComPtr;
-
-void RecordSensorStartResult(HRESULT result) {
-  base::UmaHistogramSparse("Sensors.Windows.WinRT.Start.Result", result);
-}
 
 double GetAngleBetweenOrientationSamples(SensorReading reading1,
                                          SensorReading reading2) {
@@ -173,7 +168,6 @@ bool PlatformSensorReaderWinrtBase<
 
   hr = sensor_statics->GetDefault(&sensor_);
   if (FAILED(hr)) {
-    base::UmaHistogramSparse("Sensors.Windows.WinRT.Activation.Result", hr);
     DLOG(ERROR) << "Failed to query default sensor: "
                 << logging::SystemErrorCodeToString(hr);
     return false;
@@ -181,16 +175,9 @@ bool PlatformSensorReaderWinrtBase<
 
   // GetDefault() returns null if the sensor does not exist
   if (!sensor_) {
-    // https://docs.microsoft.com/en-us/windows/win32/api/sensorsapi/nf-sensorsapi-isensormanager-getsensorsbytype
-    // The Win32 flavor returns HRESULT_FROM_WIN32(ERROR_NOT_FOUND) when the
-    // sensor is not found so log the same error result here as well.
-    base::UmaHistogramSparse("Sensors.Windows.WinRT.Activation.Result",
-                             HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
     VLOG(1) << "Sensor does not exist on system";
     return false;
   }
-
-  base::UmaHistogramSparse("Sensors.Windows.WinRT.Activation.Result", S_OK);
 
   minimum_report_interval_ = GetMinimumReportIntervalFromSensor();
 
@@ -223,7 +210,7 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMilliseconds(minimum_report_interval_ms);
+  return base::Milliseconds(minimum_report_interval_ms);
 }
 
 template <wchar_t const* runtime_class_id,
@@ -264,7 +251,6 @@ bool PlatformSensorReaderWinrtBase<runtime_class_id,
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to set report interval: "
                   << logging::SystemErrorCodeToString(hr);
-      RecordSensorStartResult(hr);
       return false;
     }
 
@@ -278,12 +264,10 @@ bool PlatformSensorReaderWinrtBase<runtime_class_id,
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to add reading callback handler: "
                   << logging::SystemErrorCodeToString(hr);
-      RecordSensorStartResult(hr);
       return false;
     }
 
     reading_callback_token_ = event_token;
-    RecordSensorStartResult(hr);
   }
 
   return true;
@@ -306,28 +290,13 @@ void PlatformSensorReaderWinrtBase<
     HRESULT hr =
         sensor_->remove_ReadingChanged(reading_callback_token_.value());
 
-    base::UmaHistogramSparse("Sensors.Windows.WinRT.Stop.Result", hr);
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to remove ALS reading callback handler: "
                   << logging::SystemErrorCodeToString(hr);
     }
 
-    reading_callback_token_ = base::nullopt;
+    reading_callback_token_ = absl::nullopt;
   }
-}
-
-template <wchar_t const* runtime_class_id,
-          class ISensorWinrtStatics,
-          class ISensorWinrtClass,
-          class ISensorReadingChangedHandler,
-          class ISensorReadingChangedEventArgs>
-PlatformSensorReaderWinrtBase<
-    runtime_class_id,
-    ISensorWinrtStatics,
-    ISensorWinrtClass,
-    ISensorReadingChangedHandler,
-    ISensorReadingChangedEventArgs>::~PlatformSensorReaderWinrtBase() {
-  StopSensor();
 }
 
 // static
@@ -375,6 +344,11 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
   if (!has_received_first_sample_ ||
       (abs(lux - last_reported_lux_) >=
        (last_reported_lux_ * kLuxPercentThreshold))) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.als.value = lux;
     reading.als.timestamp = timestamp_delta.InSecondsF();
@@ -448,6 +422,11 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kAxisThreshold) ||
       (abs(y - last_reported_y_) >= kAxisThreshold) ||
       (abs(z - last_reported_z_) >= kAxisThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     // Windows.Devices.Sensors.Accelerometer exposes acceleration as
     // proportional and in the same direction as the force of gravity.
     // The generic sensor interface exposes acceleration simply as
@@ -528,6 +507,11 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kDegreeThreshold) ||
       (abs(y - last_reported_y_) >= kDegreeThreshold) ||
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     // Windows.Devices.Sensors.Gyrometer exposes angular velocity as degrees,
     // but the generic sensor interface uses radians so the data must be
     // converted.
@@ -607,6 +591,11 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kMicroteslaThreshold) ||
       (abs(y - last_reported_y_) >= kMicroteslaThreshold) ||
       (abs(z - last_reported_z_) >= kMicroteslaThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.magn.x = x;
     reading.magn.y = y;
@@ -685,6 +674,11 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kDegreeThreshold) ||
       (abs(y - last_reported_y_) >= kDegreeThreshold) ||
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.orientation_euler.x = x;
     reading.orientation_euler.y = y;
@@ -793,6 +787,11 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   auto angle =
       abs(GetAngleBetweenOrientationSamples(reading, last_reported_sample));
   if (!has_received_first_sample_ || (angle >= kRadianThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     client_->OnReadingUpdated(reading);
 
     last_reported_sample = reading;

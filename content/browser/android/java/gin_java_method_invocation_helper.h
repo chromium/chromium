@@ -11,7 +11,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
@@ -30,17 +29,22 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   class DispatcherDelegate {
    public:
     DispatcherDelegate() {}
+
+    DispatcherDelegate(const DispatcherDelegate&) = delete;
+    DispatcherDelegate& operator=(const DispatcherDelegate&) = delete;
+
     virtual ~DispatcherDelegate() {}
     virtual JavaObjectWeakGlobalRef GetObjectWeakRef(
         GinJavaBoundObject::ObjectID object_id) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DispatcherDelegate);
   };
 
   class ObjectDelegate {
    public:
     ObjectDelegate() {}
+
+    ObjectDelegate(const ObjectDelegate&) = delete;
+    ObjectDelegate& operator=(const ObjectDelegate&) = delete;
+
     virtual ~ObjectDelegate() {}
     virtual base::android::ScopedJavaLocalRef<jobject> GetLocalRef(
         JNIEnv* env) = 0;
@@ -50,14 +54,16 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
                                          size_t num_parameters) = 0;
     virtual bool IsObjectGetClassMethod(const JavaMethod* method) = 0;
     virtual const base::android::JavaRef<jclass>& GetSafeAnnotationClass() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ObjectDelegate);
   };
 
   GinJavaMethodInvocationHelper(std::unique_ptr<ObjectDelegate> object,
                                 const std::string& method_name,
                                 const base::ListValue& arguments);
+
+  GinJavaMethodInvocationHelper(const GinJavaMethodInvocationHelper&) = delete;
+  GinJavaMethodInvocationHelper& operator=(
+      const GinJavaMethodInvocationHelper&) = delete;
+
   void Init(DispatcherDelegate* dispatcher);
 
   void Invoke();
@@ -103,8 +109,6 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   GinJavaBridgeError invocation_error_;
   base::android::ScopedJavaGlobalRef<jobject> object_result_;
   base::android::ScopedJavaGlobalRef<jclass> safe_annotation_clazz_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaMethodInvocationHelper);
 };
 
 }  // namespace content

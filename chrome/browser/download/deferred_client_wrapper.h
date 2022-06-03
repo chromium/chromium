@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/client.h"
@@ -26,9 +25,7 @@ using ClientFactory = base::OnceCallback<std::unique_ptr<Client>(Profile*)>;
 
 class DeferredClientWrapper : public Client {
  public:
-  DeferredClientWrapper(DownloadClient client_id,
-                        ClientFactory factory,
-                        SimpleFactoryKey* key);
+  DeferredClientWrapper(ClientFactory factory, SimpleFactoryKey* key);
   ~DeferredClientWrapper() override;
 
   // Client implementation.
@@ -90,7 +87,6 @@ class DeferredClientWrapper : public Client {
   // browser start while the browser is running in reduced mode. Reduced mode is
   // only on Android so it is ifdefed out on other platforms to prevent the
   // compiler from complaining that it is unused.
-  DownloadClient client_id_;
   bool full_browser_requested_;
   void LaunchFullBrowser();
 #endif

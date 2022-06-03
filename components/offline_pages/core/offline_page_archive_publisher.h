@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_OFFLINE_PAGE_ARCHIVE_PUBLISHER_H_
 
 #include <cstdint>
-#include <string>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"

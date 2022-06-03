@@ -1,0 +1,6 @@
+# crbug.com/1188310
+-FileUtilTest.FileToFILE
+-IcuUtilTest.InitializeExtraIcuFromFdSucceeds
+
+# crbug.com/1191029
+-ProcessMetricsTestLinux.GetPerThreadCumulativeCPUTimeInState

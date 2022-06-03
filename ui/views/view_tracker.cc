@@ -16,10 +16,10 @@ void ViewTracker::SetView(View* view) {
   if (view == view_)
     return;
 
-  observer_.RemoveAll();
+  observation_.Reset();
   view_ = view;
   if (view_)
-    observer_.Add(view_);
+    observation_.Observe(view_);
 }
 
 void ViewTracker::OnViewIsDeleting(View* observed_view) {

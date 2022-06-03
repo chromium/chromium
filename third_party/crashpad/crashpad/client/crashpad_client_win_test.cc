@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "gtest/gtest.h"
 #include "test/test_paths.h"
 #include "test/scoped_temp_dir.h"

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Ambient badge -->
+  <if expr="is_android">
+    <message name="IDS_AMBIENT_BADGE_INSTALL" desc="String for the ambient badge promoting an app installation">
+      Add <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> to Home screen
+    </message>
+    <message name="IDS_AMBIENT_BADGE_INSTALL_ALTERNATIVE" desc="String for the ambient badge promoting an app installation. Alternative used for experimentation.">
+      Install <ph name="APP_NAME">$1<ex>Google Maps</ex></ph>
+    </message>
+    <message name="IDS_AMBIENT_BADGE_INSTALL_ALTERNATIVE_NO_DOWNLOAD_REQUIRED" desc="String for the ambient badge promoting an app installation. Alternative used for experimentation.">
+      Install <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> (no download required)
+    </message>
+  </if>
+</grit-part>

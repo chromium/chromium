@@ -8,17 +8,24 @@
 #include <stddef.h>
 
 #include <map>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "components/omnibox/browser/search_suggestion_parser.h"
 #include "url/gurl.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/jni_array.h"
+#include "base/android/scoped_java_ref.h"
+#endif
 
 class AutocompleteInput;
 class AutocompleteProvider;
 class AutocompleteProviderClient;
+class PrefService;
 class TemplateURLService;
 
 // All matches from all providers for a particular query.  This also tracks
@@ -30,11 +37,56 @@ class AutocompleteResult {
   typedef ACMatches::iterator iterator;
   using MatchDedupComparator = std::pair<GURL, bool>;
 
-  // Max number of matches we'll show from the various providers.
+  // Max number of matches we'll show from the various providers. This limit
+  // may be different for zero suggest and non zero suggest. Does not take into
+  // account the boost conditionally provided by the
+  // omnibox::kDynamicMaxAutocomplete feature.
   static size_t GetMaxMatches(bool is_zero_suggest = false);
+  // Defaults to GetMaxMatches if omnibox::kDynamicMaxAutocomplete is disabled;
+  // otherwise returns the boosted dynamic limit.
+  static size_t GetDynamicMaxMatches();
 
   AutocompleteResult();
   ~AutocompleteResult();
+  AutocompleteResult(const AutocompleteResult&) = delete;
+  AutocompleteResult& operator=(const AutocompleteResult&) = delete;
+
+#if defined(OS_ANDROID)
+  // Returns a corresponding Java object, creating it if necessary.
+  // NOTE: Android specific methods are defined in autocomplete_match_android.cc
+  base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
+      JNIEnv* env) const;
+
+  // Notify the Java object that its native counterpart is about to be
+  // destroyed.
+  void DestroyJavaObject() const;
+
+  // Construct an array of AutocompleteMatch objects arranged in the exact same
+  // order as |matches_|.
+  base::android::ScopedJavaLocalRef<jobjectArray> BuildJavaMatches(
+      JNIEnv* env) const;
+
+  // Group suggestions in specified range by search vs url.
+  // The range used is [first_index, last_index), which contains all the
+  // elements between first_index and last_index, including the element pointed
+  // by first_index, but not the element pointed by last_index.
+  void GroupSuggestionsBySearchVsURL(JNIEnv* env,
+                                     int first_index,
+                                     int last_index);
+
+  // Compares the set of AutocompleteMatch references held by Java with the
+  // AutocompleteMatch objects held by this instance of the AutocompleteResult
+  // and returns true if the two sets are same.
+  // The |match_index|, when different than -1 (|kNoMatchIndex|), specifies the
+  // index of a match of particular interest; this index helps identify cases
+  // where an action is planned on suggestion at an index that falls outside of
+  // bounds of valid AutocompleteResult indices, where every other aspect of the
+  // AutocompleteResult is correct.
+  bool VerifyCoherency(JNIEnv* env,
+                       const base::android::JavaParamRef<jlongArray>& matches,
+                       jint match_index,
+                       jint verification_point);
+#endif
 
   // Moves matches from |old_matches| to provide a consistent result set.
   // |old_matches| is mutated during this, and should not be used afterwards.
@@ -43,7 +95,7 @@ class AutocompleteResult {
                           TemplateURLService* template_url_service);
 
   // Adds a new set of matches to the result set.  Does not re-sort.  Calls
-  // PossiblySwapContentsAndDescriptionForURLSuggestion(input)" on all added
+  // PossiblySwapContentsAndDescriptionForURLSuggestion(input) on all added
   // matches; see comments there for more information.
   void AppendMatches(const AutocompleteInput& input,
                      const ACMatches& matches);
@@ -63,11 +115,27 @@ class AutocompleteResult {
                    TemplateURLService* template_url_service,
                    const AutocompleteMatch* preserve_default_match = nullptr);
 
-  // Creates and adds any dedicated Pedal matches triggered by existing matches.
-  // This should be the only place where new Pedal suggestions are introduced
-  // because it doesn't dedupe; it just carefully avoids adding duplicates.
-  void AppendDedicatedPedalMatches(AutocompleteProviderClient* client,
-                                   const AutocompleteInput& input);
+  // Ensures that matches with headers, i.e., matches with a suggestion_group_id
+  // value, are grouped together at the bottom of result set based on their
+  // suggestion_group_id values and in the order the group IDs first appear.
+  // Certain types of remote zero-prefix matches need to appear under a header
+  // for transparency reasons. This information is sent to Chrome by the server.
+  // Also it is possible for zero-prefix matches from different providers (e.g.,
+  // local and remote) to mix and match. Hence, we group matches with the same
+  // headers and demote them to the bottom of the result set to ensure, one,
+  // matches without headers appear at the top of the result set, and two, there
+  // are no interleaving headers whether this is caused by bad server data or by
+  // mixing of local and remote zero-prefix suggestions.
+  // Note that prior to grouping and demoting the matches with headers, we strip
+  // all match group IDs that don't have an equivalent header string;
+  // essentially treating those matches as if they did not belong to any
+  // suggestion group.
+  // Called after matches are deduped and sorted and before they are culled.
+  void GroupAndDemoteMatchesWithHeaders();
+
+  // Sets |action| in matches that have Pedal-triggering text.
+  void AttachPedalsToMatches(const AutocompleteInput& input,
+                             const AutocompleteProviderClient& client);
 
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to
@@ -94,14 +162,8 @@ class AutocompleteResult {
   // Returns the default match if it exists, or nullptr otherwise.
   const AutocompleteMatch* default_match() const;
 
-  // Returns true if the top match is a verbatim search or URL match (see
-  // IsVerbatimType() in autocomplete_match.h), and the next match is not also
-  // some kind of verbatim match.
-  bool TopMatchIsStandaloneVerbatimMatch() const;
-
   // Returns the first match in |matches| which might be chosen as default.
-  // If |kOmniboxPreserveDefaultMatchScore| is enabled and the page is not
-  // the fake box, the scores are not demoted by type.
+  // If the page is not the fake box, the scores are not demoted by type.
   static ACMatches::const_iterator FindTopMatch(const AutocompleteInput& input,
                                                 const ACMatches& matches);
   static ACMatches::iterator FindTopMatch(const AutocompleteInput& input,
@@ -116,9 +178,21 @@ class AutocompleteResult {
   // matches to keep, with respect to configured maximums, URL limits,
   // and relevancies.
   static size_t CalculateNumMatches(
-      bool input_from_omnibox_focus,
+      bool is_zero_suggest,
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
+  // Determines how many matches to keep depending on how many URLs would be
+  // shown. CalculateNumMatches defers to CalculateNumMatchesPerUrlCount if the
+  // kDynamicMaxAutocomplete feature is enabled.
+  static size_t CalculateNumMatchesPerUrlCount(
+      const ACMatches& matches,
+      const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
+
+  const SearchSuggestionParser::HeadersMap& headers_map() const {
+    return headers_map_;
+  }
+
+  const std::set<int>& hidden_group_ids() const { return hidden_group_ids_; }
 
   // Clears the matches for this result set.
   void Reset();
@@ -135,8 +209,10 @@ class AutocompleteResult {
 
   // Returns a URL to offer the user as an alternative navigation when they
   // open |match| after typing in |input|.
-  static GURL ComputeAlternateNavUrl(const AutocompleteInput& input,
-                                     const AutocompleteMatch& match);
+  static GURL ComputeAlternateNavUrl(
+      const AutocompleteInput& input,
+      const AutocompleteMatch& match,
+      AutocompleteProviderClient* provider_client);
 
   // Prepend missing tail suggestion prefixes in results, if present.
   void InlineTailPrefixes();
@@ -146,7 +222,22 @@ class AutocompleteResult {
   size_t EstimateMemoryUsage() const;
 
   // Get a list of comparators used for deduping for the matches in this result.
+  // This is only used for logging.
   std::vector<MatchDedupComparator> GetMatchDedupComparators() const;
+
+  // Gets the header string associated with |suggestion_group_id|. Returns an
+  // empty string if no header is found.
+  std::u16string GetHeaderForGroupId(int suggestion_group_id) const;
+
+  // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
+  // This method takes into account both the user's stored |prefs| as well as
+  // the server-provided visibility hint for |suggestion_group_id|.
+  bool IsSuggestionGroupIdHidden(PrefService* prefs,
+                                 int suggestion_group_id) const;
+
+  void MergeHeadersMap(const SearchSuggestionParser::HeadersMap& headers_map);
+
+  void MergeHiddenGroupIds(const std::vector<int>& hidden_group_ids);
 
   // Logs metrics for when |new_result| replaces |old_result| asynchronously.
   // |old_result| a list of the comparators for the old matches.
@@ -154,14 +245,16 @@ class AutocompleteResult {
       const std::vector<MatchDedupComparator>& old_result,
       const AutocompleteResult& new_result);
 
+  // This value should be comfortably larger than any max-autocomplete-matches
+  // under consideration.
+  static constexpr size_t kMaxAutocompletePositionValue = 30;
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, ConvertsOpenTabsCorrectly);
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
-                           PedalSuggestionsRemainUnique);
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
-                           TestGroupSuggestionsBySearchVsURL);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutocompleteResultTest,
+      GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions);
   friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
@@ -177,9 +270,7 @@ class AutocompleteResult {
   // Modifies |matches| such that any duplicate matches are coalesced into
   // representative "best" matches. The erased matches are moved into the
   // |duplicate_matches| members of their representative matches.
-  static void DeduplicateMatches(
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      ACMatches* matches);
+  static void DeduplicateMatches(ACMatches* matches);
 
   // Returns true if |matches| contains a match with the same destination as
   // |match|.
@@ -201,10 +292,8 @@ class AutocompleteResult {
   // Moves matches into this result. |old_matches| gives the matches from the
   // last result, and |new_matches| the results from this result. |old_matches|
   // should not be used afterwards.
-  void MergeMatchesByProvider(
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      ACMatches* old_matches,
-      const ACMatches& new_matches);
+  void MergeMatchesByProvider(ACMatches* old_matches,
+                              const ACMatches& new_matches);
 
   // This pulls the relevant fields out of a match for comparison with other
   // matches for the purpose of deduping. It uses the stripped URL, so that we
@@ -218,6 +307,7 @@ class AutocompleteResult {
   // |max_url_matches| but will allow more if there are no other types to
   // replace them.
   void LimitNumberOfURLsShown(
+      size_t max_matches,
       size_t max_url_count,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
@@ -239,7 +329,23 @@ class AutocompleteResult {
 
   ACMatches matches_;
 
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteResult);
+  // The server supplied map of suggestion group IDs to header labels.
+  SearchSuggestionParser::HeadersMap headers_map_;
+
+  // The server supplied list of group IDs that should be hidden-by-default.
+  std::set<int> hidden_group_ids_;
+
+#if defined(OS_ANDROID)
+  // Corresponding Java object.
+  // This object should be ignored when AutocompleteResult is copied or moved.
+  // This object should never be accessed directly. To acquire a reference to
+  // java object, call the GetOrCreateJavaObject().
+  // Note that this object is lazily constructed to avoid creating Java matches
+  // for throw away AutocompleteMatch objects, eg. during Classify() or
+  // QualifyPartialUrlQuery() calls.
+  // See AutocompleteControllerAndroid for more details.
+  mutable base::android::ScopedJavaGlobalRef<jobject> java_result_;
+#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_RESULT_H_

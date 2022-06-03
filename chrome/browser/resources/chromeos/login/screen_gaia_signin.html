@@ -2,98 +2,103 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<dom-module id="gaia-signin">
-  <link rel="stylesheet" href="oobe_dialog_host.css">
-  <link rel="stylesheet" href="oobe_flex_layout.css">
-  <link rel="stylesheet" href="screen_gaia_signin.css">
+<link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="/components/oobe_icons.html">
+<link rel="import" href="/components/behaviors/login_screen_behavior.html">
+<link rel="import" href="/components/behaviors/multi_step_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/buttons/oobe_back_button.html">
+<link rel="import" href="/components/buttons/oobe_next_button.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="/components/throbber_notice/throbber_notice.html">
+
+<dom-module id="gaia-signin-element">
   <template>
-    <oobe-dialog id="signin-frame-dialog" class="gaia-dialog" role="dialog"
-        has-buttons no-header no-footer-padding
-        show-buttons-overlay="[[!navigationEnabled_]]"
-        hidden="[[!isStep_(step_, 'online-gaia', 'gaia-loading')]]">
-      <div slot="footer" class="flex layout vertical">
-        <div id="signin-frame-container"
-            class$="[[getSigninFrameContainerClass_(isLoadingUiShown_)]]">
-          <webview id="signin-frame" name="signin-frame"></webview>
-        </div>
-      </div>
-      <div id="gaia-screen-navigation-buttons"
-          slot="bottom-buttons" class="relative flex layout horizontal">
-        <div id="buttons-container" class="flex layout horizontal center">
-          <oobe-back-button id="signin-back-button"
-              disabled="[[!navigationEnabled_]]"></oobe-back-button>
-          <div class="flex">
-          </div>
-          <oobe-text-button id="secondary-action-button"
-              on-tap="onSecondaryActionButtonClicked_"
-              hidden="[[!secondaryActionButtonLabel_]]"
-              disabled="[[!secondaryActionButtonEnabled_]]"
-              >[[secondaryActionButtonLabel_]]</oobe-text-button>
-          <oobe-text-button id="primary-action-button"
-              on-tap="onPrimaryActionButtonClicked_"
-              hidden="[[!primaryActionButtonLabel_]]"
-              disabled="[[!primaryActionButtonEnabled_]]"
-              inverse
-              >[[primaryActionButtonLabel_]]</oobe-text-button>
-        </div>
-      </div>
-    </oobe-dialog>
-    <offline-gaia id="offline-gaia" class="gaia-dialog"
-        hidden="[[!isStep_(step_, 'offline-gaia')]]">
-    </offline-gaia>
-    <offline-ad-login id="offline-ad-auth" class="gaia-dialog"
-        hidden="[[!isStep_(step_, 'ad')]]"
-        i18n-values="ad-welcome-message:loginWelcomeMessage">
-    </offline-ad-login>
+    <style include="oobe-dialog-host-styles">
+      [transparent] {
+        opacity: 0;
+      }
+
+      [animated-transparency][transparent] {
+        transition: opacity 500ms ease-in;
+      }
+
+      [animated-transparency]:not([transparent]) {
+        transition: opacity 500ms ease-out;
+      }
+
+      .icon20 {
+        height: 20px;
+        width: 20px;
+      }
+    </style>
+    <gaia-dialog id="signin-frame-dialog"
+        transparent$="[[isLoadingUiShown_]]" class="flex"
+        for-step="online-gaia, gaia-loading"
+        is-saml-sso-visible="[[isSamlSsoVisible_]]"
+        video-enabled="{{videoEnabled_}}"
+        auth-flow="{{authFlow}}"
+        navigation-enabled="{{navigationEnabled_}}"
+        navigation-hidden="[[navigationButtonsHidden_]]"
+        webview-name="signin-frame"
+        can-go-back="{{canGaiaGoBack_}}"
+        on-authcompleted="onAuthCompletedMessage_"
+        on-backcancel="onBackButtonCancel_"
+        on-closesaml="closeSaml_"
+        on-identifierentered="onIdentifierEnteredMessage_"
+        on-webviewerror="onLoadAbortMessage_"
+        on-ready="onAuthReady_"
+        on-showview="onShowView_"
+        on-startenrollment="onStartEnrollment_"
+        on-exit="onExitMessage_"
+        on-removeuserbyemail="onRemoveUserByEmailMessage_">
+    </gaia-dialog>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
-        hidden="[[!isStep_(step_, 'pin')]]"
-        on-cancel="onPinDialogCanceled_" on-completed="onPinDialogCompleted_">
+        for-step="pin" on-cancel="onPinDialogCanceled_"
+        on-completed="onPinDialogCompleted_">
     </security-token-pin>
-    <oobe-dialog id="saml-interstitial" role="dialog" has-buttons
-        hidden="[[!isStep_(step_, 'saml-interstitial')]]">
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:googleg"
-          icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+    <oobe-adaptive-dialog id="saml-interstitial" role="dialog" has-buttons
+        for-step="saml-interstitial">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'loginWelcomeMessage')]]
       </h1>
-      <div slot="subtitle" hidden="[[isEmpty_(samlInterstitialDomain_)]]">
-        [[i18nDynamic(locale, 'enterpriseInfoMessage',
-                      samlInterstitialDomain_)]]
-      </div>
-      <div slot="footer" class="flex layout vertical">
-        <html-echo hidden="[[isEmpty_(samlInterstitialDomain_)]]"
-            content="[[samlInterstitialMessage_]]"></html-echo>
+      <div slot="subtitle" hidden="[[isEmpty_(samlInterstitialDomainManager_)]]">
+        <iron-icon class="icon20" icon="cr20:domain"></iron-icon>
+        [[i18nDynamic(locale, 'samlInterstitialMessage',
+                      samlInterstitialDomainManager_)]]
         <p>
-          <a href="#" class="oobe-local-link" on-tap="onSamlPageChangeAccount_"
-              id="interstitial-change-account">
+          <a class="oobe-local-link" on-click="onSamlPageChangeAccount_"
+              id="interstitial-change-account" is="action-link">
             [[i18nDynamic(locale, 'samlInterstitialChangeAccountLink')]]
           </a>
         </p>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
-        <oobe-next-button on-tap="onSamlInterstitialNext_"
+      <div slot="back-navigation">
+        <oobe-back-button id="interstitial-back"
+            on-click="onInterstitialBackButtonClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button on-click="onSamlInterstitialNext_"
             id="interstitial-next" class="focus-on-show"></oobe-next-button>
       </div>
-    </oobe-dialog>
-    <div id="gaia-loading" class="step-loading gaia-dialog"
-        hidden="[[!isStep_(step_, 'loading', 'gaia-loading')]]">
-      <throbber-notice i18n-values="text:gaiaLoading"></throbber-notice>
+    </oobe-adaptive-dialog>
+    <div id="gaia-loading" class="layout center center-justified vertical fit"
+        for-step="loading, gaia-loading">
+      <throbber-notice text-key="gaiaLoading"></throbber-notice>
     </div>
-    <notification-card id="gaia-whitelist-error" type="fail" class="gaia-dialog"
-        hidden="[[!isStep_(step_, 'whitelist-error')]]"
-        i18n-values="button-label:tryAgainButton;
-                     link-label:learnMoreButton">
+    <notification-card id="gaia-allowlist-error" type="fail" class="fit"
+        for-step="allowlist-error"
+        button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
+        link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
     </notification-card>
-    <div id="saml-notice-container"
-        hidden="[[!isSamlNoticeContainerVisible_(isSaml_,
-                                                 pinDialogParameters_)]]">
-      <span id="saml-notice-recording-indicator" hidden="[[!videoEnabled_]]">
-        <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR">
-      </span>
-      <span id="saml-notice-message"></span>
-    </div>
-
   </template>
 </dom-module>

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/hash/md5.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 
 namespace chromeos {
@@ -97,7 +98,7 @@ FakeSecureMessageDelegate::FakeSecureMessageDelegate()
 FakeSecureMessageDelegate::~FakeSecureMessageDelegate() = default;
 
 void FakeSecureMessageDelegate::GenerateKeyPair(
-    const GenerateKeyPairCallback& callback) {
+    GenerateKeyPairCallback callback) {
   std::string public_key = next_public_key_;
 
   // The private key is simply the public key prepended with "private_".
@@ -105,12 +106,12 @@ void FakeSecureMessageDelegate::GenerateKeyPair(
 
   next_public_key_ = std::string(kKeyPrefix) + base::MD5String(public_key);
 
-  callback.Run(public_key, private_key);
+  std::move(callback).Run(public_key, private_key);
 }
 
 void FakeSecureMessageDelegate::DeriveKey(const std::string& private_key,
                                           const std::string& public_key,
-                                          const DeriveKeyCallback& callback) {
+                                          DeriveKeyCallback callback) {
   // To ensure that the same symmetric key is derived for DeriveKey(private1,
   // public2) and DeriveKey(private2, public1), we remove the prefix from the
   // private key so it is equal to its corresponding public key.
@@ -124,14 +125,14 @@ void FakeSecureMessageDelegate::DeriveKey(const std::string& private_key,
   keys.push_back(normalized_private_key);
   keys.push_back(public_key);
   std::sort(keys.begin(), keys.end());
-  callback.Run(base::MD5String(keys[0] + "|" + keys[1]));
+  std::move(callback).Run(base::MD5String(keys[0] + "|" + keys[1]));
 }
 
 void FakeSecureMessageDelegate::CreateSecureMessage(
     const std::string& payload,
     const std::string& key,
     const CreateOptions& create_options,
-    const CreateSecureMessageCallback& callback) {
+    CreateSecureMessageCallback callback) {
   securemessage::Header header;
   header.set_signature_scheme(create_options.signature_scheme);
   header.set_encryption_scheme(create_options.encryption_scheme);
@@ -156,25 +157,25 @@ void FakeSecureMessageDelegate::CreateSecureMessage(
 
   std::string serialized_secure_message;
   secure_message.SerializeToString(&serialized_secure_message);
-  callback.Run(serialized_secure_message);
+  std::move(callback).Run(serialized_secure_message);
 }
 
 void FakeSecureMessageDelegate::UnwrapSecureMessage(
     const std::string& serialized_message,
     const std::string& key,
     const UnwrapOptions& unwrap_options,
-    const UnwrapSecureMessageCallback& callback) {
+    UnwrapSecureMessageCallback callback) {
   securemessage::SecureMessage secure_message;
   if (!secure_message.ParseFromString(serialized_message)) {
     LOG(ERROR) << "Failed to parse SecureMessage.";
-    callback.Run(false, std::string(), securemessage::Header());
+    std::move(callback).Run(false, std::string(), securemessage::Header());
     return;
   }
 
   securemessage::HeaderAndBody header_and_body;
   if (!header_and_body.ParseFromString(secure_message.header_and_body())) {
     LOG(ERROR) << "Failed to parse secure message HeaderAndBody.";
-    callback.Run(false, std::string(), securemessage::Header());
+    std::move(callback).Run(false, std::string(), securemessage::Header());
     return;
   }
 
@@ -186,9 +187,9 @@ void FakeSecureMessageDelegate::UnwrapSecureMessage(
                          unwrap_options.associated_data, key,
                          unwrap_options.signature_scheme);
   if (verified) {
-    callback.Run(true, payload, header);
+    std::move(callback).Run(true, payload, header);
   } else {
-    callback.Run(false, std::string(), securemessage::Header());
+    std::move(callback).Run(false, std::string(), securemessage::Header());
   }
 }
 
@@ -198,7 +199,7 @@ std::string FakeSecureMessageDelegate::GetPrivateKeyForPublicKey(
 }
 
 std::unique_ptr<multidevice::SecureMessageDelegate>
-FakeSecureMessageDelegateFactory::BuildInstance() {
+FakeSecureMessageDelegateFactory::CreateInstance() {
   auto instance = std::make_unique<multidevice::FakeSecureMessageDelegate>();
   instance_ = instance.get();
 

@@ -5,11 +5,9 @@
 package org.chromium.ui.base;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
-import android.content.IntentSender.SendIntentException;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -23,26 +21,56 @@ import java.lang.ref.WeakReference;
  * Only instantiate this class when you need the implemented features.
  */
 public class ActivityWindowAndroid
-        extends IntentWindowAndroid implements ApplicationStatus.ActivityStateListener {
-    private boolean mListenToActivityState;
+        extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
+    private final boolean mListenToActivityState;
+
+    // Just create one ImmutableWeakReference object to avoid gc churn.
+    private ImmutableWeakReference<Activity> mActivityWeakRefHolder;
 
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
-     * TODO(jdduke): Remove this overload when all callsites have been updated to
-     * indicate their activity state listening preference.
      * @param context Context wrapping an activity associated with the WindowAndroid.
+     * @param listenToActivityState Whether to listen to activity state changes.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ActivityWindowAndroid(Context context) {
-        this(context, true);
+    public ActivityWindowAndroid(Context context, boolean listenToActivityState,
+            IntentRequestTracker intentRequestTracker) {
+        this(context, listenToActivityState,
+                new ActivityAndroidPermissionDelegate(
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                new ActivityKeyboardVisibilityDelegate(
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                intentRequestTracker);
     }
 
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
      * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
+     * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ActivityWindowAndroid(Context context, boolean listenToActivityState) {
-        super(context);
+    public ActivityWindowAndroid(Context context, boolean listenToActivityState,
+            @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            IntentRequestTracker intentRequestTracker) {
+        this(context, listenToActivityState,
+                new ActivityAndroidPermissionDelegate(
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                keyboardVisibilityDelegate, intentRequestTracker);
+    }
+
+    /**
+     * Creates an Activity-specific WindowAndroid with associated intent functionality.
+     * @param context Context wrapping an activity associated with the WindowAndroid.
+     * @param listenToActivityState Whether to listen to activity state changes.
+     * @param activityAndroidPermissionDelegate Delegates which handles android permissions.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     */
+    private ActivityWindowAndroid(Context context, boolean listenToActivityState,
+            ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
+            ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
+            IntentRequestTracker intentRequestTracker) {
+        super(context, intentRequestTracker);
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             throw new IllegalArgumentException("Context is not and does not wrap an Activity");
@@ -52,16 +80,8 @@ public class ActivityWindowAndroid
             ApplicationStatus.registerStateListenerForActivity(this, activity);
         }
 
-        setKeyboardDelegate(createKeyboardVisibilityDelegate());
-        setAndroidPermissionDelegate(createAndroidPermissionDelegate());
-    }
-
-    protected ActivityAndroidPermissionDelegate createAndroidPermissionDelegate() {
-        return new ActivityAndroidPermissionDelegate(getActivity());
-    }
-
-    protected ActivityKeyboardVisibilityDelegate createKeyboardVisibilityDelegate() {
-        return new ActivityKeyboardVisibilityDelegate(getActivity());
+        setKeyboardDelegate(activityKeyboardVisibilityDelegate);
+        setAndroidPermissionDelegate(activityAndroidPermissionDelegate);
     }
 
     @Override
@@ -70,34 +90,12 @@ public class ActivityWindowAndroid
     }
 
     @Override
-    protected final boolean startIntentSenderForResult(IntentSender intentSender, int requestCode) {
-        Activity activity = getActivity().get();
-        if (activity == null) return false;
-
-        try {
-            activity.startIntentSenderForResult(intentSender, requestCode, new Intent(), 0, 0, 0);
-        } catch (SendIntentException e) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    protected final boolean startActivityForResult(Intent intent, int requestCode) {
-        Activity activity = getActivity().get();
-        if (activity == null) return false;
-
-        try {
-            activity.startActivityForResult(intent, requestCode);
-        } catch (ActivityNotFoundException e) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public WeakReference<Activity> getActivity() {
-        return new WeakReference<>(ContextUtils.activityFromContext(getContext().get()));
+        if (mActivityWeakRefHolder == null) {
+            mActivityWeakRefHolder = new ImmutableWeakReference<>(
+                    ContextUtils.activityFromContext(getContext().get()));
+        }
+        return mActivityWeakRefHolder;
     }
 
     @Override
@@ -110,6 +108,8 @@ public class ActivityWindowAndroid
             onActivityPaused();
         } else if (newState == ActivityState.RESUMED) {
             onActivityResumed();
+        } else if (newState == ActivityState.DESTROYED) {
+            onActivityDestroyed();
         }
     }
 

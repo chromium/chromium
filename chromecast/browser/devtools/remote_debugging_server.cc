@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -52,15 +52,19 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
       : socket_name_(socket_name) {}
 
+  UnixDomainServerSocketFactory(const UnixDomainServerSocketFactory&) = delete;
+  UnixDomainServerSocketFactory& operator=(
+      const UnixDomainServerSocketFactory&) = delete;
+
  private:
   // content::DevToolsSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
     std::unique_ptr<net::UnixDomainServerSocket> socket(
         new net::UnixDomainServerSocket(
-            base::Bind(&content::CanUserConnectToDevTools),
+            base::BindRepeating(&content::CanUserConnectToDevTools),
             true /* use_abstract_namespace */));
     if (socket->BindAndListen(socket_name_, kBackLog) != net::OK)
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
 
     return std::move(socket);
   }
@@ -71,14 +75,15 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   std::string socket_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocketFactory);
 };
 #else
 class TCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit TCPServerSocketFactory(const net::IPEndPoint& endpoint)
       : endpoint_(endpoint) {}
+
+  TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
+  TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
 
  private:
   // content::DevToolsSocketFactory.
@@ -87,7 +92,7 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
         new net::TCPServerSocket(nullptr, net::NetLogSource()));
 
     if (socket->Listen(endpoint_, kBackLog) != net::OK)
-      return std::unique_ptr<net::ServerSocket>();
+      return nullptr;
 
     return socket;
   }
@@ -98,8 +103,6 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   const net::IPEndPoint endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocketFactory);
 };
 #endif
 
@@ -147,6 +150,9 @@ class RemoteDebuggingServer::WebContentsObserver
     Observe(contents);
   }
 
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+
   ~WebContentsObserver() override {}
 
   // content::WebContentsObserver implementation:
@@ -158,8 +164,6 @@ class RemoteDebuggingServer::WebContentsObserver
 
  private:
   RemoteDebuggingServer* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };
 
 RemoteDebuggingServer::RemoteDebuggingServer(bool start_immediately)

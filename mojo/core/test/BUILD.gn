@@ -7,10 +7,13 @@ import("//third_party/protobuf/proto_library.gni")
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_node_channel_delegate.cc",
+    "mock_node_channel_delegate.h",
     "mojo_test_base.cc",
     "mojo_test_base.h",
+    "mojo_test_suite_base.cc",
+    "mojo_test_suite_base.h",
     "test_utils.h",
-    "test_utils_win.cc",
   ]
 
   if (!is_ios) {
@@ -20,6 +23,10 @@ static_library("test_support") {
     ]
   }
 
+  if (is_win) {
+    sources += [ "test_utils_win.cc" ]
+  }
+
   if (is_fuchsia || is_posix) {
     sources += [ "test_utils.cc" ]
   }
@@ -27,17 +34,17 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//base/test:test_support",
+    "//mojo/core:embedder_internal",
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
 
 source_set("run_all_unittests") {
   testonly = true
-  sources = [
-    "run_all_unittests.cc",
-  ]
+  sources = [ "run_all_unittests.cc" ]
 
   deps = [
     ":test_support",
@@ -49,7 +56,7 @@ source_set("run_all_unittests") {
     "//testing/gtest",
   ]
 
-  if (is_linux && !is_component_build) {
+  if ((is_linux || is_chromeos) && !is_component_build) {
     public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
   }
 }
@@ -65,11 +72,9 @@ source_set("run_all_perftests") {
     "//mojo/public/c/test_support",
   ]
 
-  sources = [
-    "run_all_perftests.cc",
-  ]
+  sources = [ "run_all_perftests.cc" ]
 
-  if (is_linux && !is_component_build) {
+  if ((is_linux || is_chromeos) && !is_component_build) {
     public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
   }
 }
@@ -91,12 +96,8 @@ static_library("test_support_impl") {
 
 if (is_mac) {
   proto_library("channel_mac_proto") {
-    sources = [
-      "data/channel_mac/channel_mac.proto",
-    ]
-    deps = [
-      "//testing/libfuzzer/fuzzers/mach:proto",
-    ]
-    import_dirs = [ "//testing/libfuzzer/fuzzers/mach" ]
+    proto_in_dir = "//"
+    sources = [ "data/channel_mac/channel_mac.proto" ]
+    link_deps = [ "//testing/libfuzzer/fuzzers/mach:proto" ]
   }
 }

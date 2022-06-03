@@ -7,11 +7,7 @@ package org.chromium.chrome.browser.share.qrcode;
 import android.app.Activity;
 import android.app.FragmentManager;
 
-import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
-import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanMediator;
-import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
-
-import java.util.ArrayList;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 
 /**
  * Creates and represents the QrCode main UI.
@@ -20,16 +16,15 @@ public class QrCodeCoordinator {
     private final QrCodeDialog mDialog;
     private final FragmentManager mFragmentManager;
 
-    public QrCodeCoordinator(Activity activity, QrCodeScanMediator.TabCreator tabCreator) {
-        QrCodeShareCoordinator shareCoordinator = new QrCodeShareCoordinator(activity);
-        QrCodeScanCoordinator scanCoordinator =
-                new QrCodeScanCoordinator(activity, this::dismiss, tabCreator);
-
-        ArrayList<QrCodeDialogTab> tabs = new ArrayList<QrCodeDialogTab>();
-        tabs.add(shareCoordinator);
-        tabs.add(scanCoordinator);
-
-        mDialog = new QrCodeDialog(tabs);
+    /**
+     * Constructor.
+     * @param activity The android activity.
+     * @param url the url to be shared.
+     * @param windowAndroid the AndroidPermissionDelegate to access system permissions.
+     */
+    public QrCodeCoordinator(
+            Activity activity, String url, AndroidPermissionDelegate windowAndroid) {
+        mDialog = QrCodeDialog.newInstance(url, windowAndroid);
 
         mFragmentManager = activity.getFragmentManager();
     }

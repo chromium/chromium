@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.accounts.Account;
 import android.accounts.AuthenticatorDescription;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,11 +16,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeImpl;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Unit Test for {@link FirstRunUtils}.
@@ -29,11 +33,6 @@ import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 public class FirstRunUtilsTest {
     private FakeAuthenticationAccountManager mAccountManager;
     private AdvancedMockContext mAccountTestingContext;
-    private Account mTestAccount;
-
-    public FirstRunUtilsTest() {
-        mTestAccount = AccountManagerFacade.createAccountFromName("Dummy");
-    }
 
     @Before
     public void setUp() {
@@ -46,8 +45,7 @@ public class FirstRunUtilsTest {
     private static class FakeAuthenticationAccountManager extends FakeAccountManagerDelegate {
         private final String mAccountType;
 
-        public FakeAuthenticationAccountManager(String accountType) {
-            super(FakeAccountManagerDelegate.DISABLE_PROFILE_DATA_SOURCE);
+        FakeAuthenticationAccountManager(String accountType) {
             mAccountType = accountType;
         }
 
@@ -62,58 +60,41 @@ public class FirstRunUtilsTest {
 
     private void setUpAccountManager(String accountType) {
         mAccountManager = new FakeAuthenticationAccountManager(accountType);
-        AccountManagerFacade.overrideAccountManagerFacadeForTests(mAccountManager);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccountManagerFacadeProvider.setInstanceForTests(
+                    new AccountManagerFacadeImpl(mAccountManager));
+        });
     }
 
     private void addTestAccount() {
-        mAccountManager.addAccountHolderBlocking(
-                AccountHolder.builder(mTestAccount).alwaysAccept(true).build());
+        mAccountManager.addAccount(AccountHolder.createFromEmail("dummy@gmail.com"));
     }
 
-    // This test previously flaked on the try bot: http://crbug.com/543160.
-    // Re-enabling this test since there has been related cleanup/refactoring
-    // during the time the test was disabled. If the test starts flaking again,
-    // re-open the bug.
-    // TODO(nyquist): Remove this if the test is not flaky anymore.
     @Test
     @SmallTest
-    @Feature({"FeatureUtilities", "GoogleAccounts"})
+    @Feature({"GoogleAccounts"})
     public void testHasGoogleAccountCorrectlyDetected() {
         // Set up an account manager mock that returns Google account types
         // when queried.
-        setUpAccountManager(AccountManagerFacade.GOOGLE_ACCOUNT_TYPE);
+        setUpAccountManager(AccountUtils.GOOGLE_ACCOUNT_TYPE);
         addTestAccount();
 
         ContextUtils.initApplicationContextForTests(mAccountTestingContext);
-        boolean hasAccounts = FirstRunUtils.hasGoogleAccounts();
-
-        Assert.assertTrue(hasAccounts);
-
-        boolean hasAuthenticator = FirstRunUtils.hasGoogleAccountAuthenticator();
-
-        Assert.assertTrue(hasAuthenticator);
+        CriteriaHelper.pollUiThread(FirstRunUtils::hasGoogleAccounts);
+        Assert.assertTrue(FirstRunUtils.hasGoogleAccountAuthenticator());
     }
 
-    // This test previously flaked on the try bot: http://crbug.com/543160.
-    // Re-enabling this test since there has been related cleanup/refactoring
-    // during the time the test was disabled. If the test starts flaking again,
-    // re-open the bug.
-    // TODO(nyquist): Remove this if the test is not flaky anymore.
     @Test
     @SmallTest
-    @Feature({"FeatureUtilities", "GoogleAccounts"})
+    @Feature({"GoogleAccounts"})
     public void testHasNoGoogleAccountCorrectlyDetected() {
         // Set up an account manager mock that doesn't have any accounts and doesn't have Google
         // account authenticator.
         setUpAccountManager("Not A Google Account");
 
         ContextUtils.initApplicationContextForTests(mAccountTestingContext);
-        boolean hasAccounts = FirstRunUtils.hasGoogleAccounts();
-
-        Assert.assertFalse(hasAccounts);
-
-        boolean hasAuthenticator = FirstRunUtils.hasGoogleAccountAuthenticator();
-
-        Assert.assertFalse(hasAuthenticator);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertFalse(FirstRunUtils.hasGoogleAccounts()); });
+        Assert.assertFalse(FirstRunUtils.hasGoogleAccountAuthenticator());
     }
 }

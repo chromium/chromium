@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 
 #include "media/base/decrypt_config.h"

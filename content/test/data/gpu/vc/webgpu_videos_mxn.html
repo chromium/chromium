@@ -1,0 +1,162 @@
+<!--
+Copyright(c) 2021 The Chromium Authors.All rights reserved.
+Use of this source code is governed by a BSD - style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>WebGpu MxN Video playbacks</title>
+  <style>
+    #message {
+      position: absolute;
+      width: 1600px;
+      height: 900px;
+      top: 200px;
+      left: 400px;
+    }
+  </style>
+  <script type="text/javascript" src="webgpu_video.js"></script>
+  <script>
+    const _defaultRows = 7;
+    const _defaultColumns = 7;
+    const _totalVideoWidth = 1600;
+    const _totalVideoHeight = 900;
+    var hasUIOnTop = true;
+    var useImportTextureApi = true;
+    var codec = 'vp9';
+
+    const parsedString = (function (names) {
+      const pairs = {};
+      for (let i = 0; i < names.length; ++i) {
+        var keyValue = names[i].split('=', 2);
+        if (keyValue.length == 1)
+          pairs[keyValue[0]] = '';
+        else
+          pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+      }
+      return pairs;
+    })(window.location.search.substr(1).split('&'));
+
+    function GetVideoSource(videoCount, index, codec) {
+      switch (codec) {
+        case 'vp8':
+          if (videoCount <= 4) {
+            return './teddy1_vp8_640x360_30fps.webm';
+          } else {
+            if (index < 4)
+              return './teddy3_vp8_320x180_30fps.webm';
+            else if (index < 16)
+              return './teddy2_vp8_320x180_15fps.webm';
+            else
+              return './teddy1_vp8_320x180_7fps.webm';
+          }
+          break;
+
+        case 'vp9':
+        default:
+          if (videoCount <= 4) {
+            return './teddy1_vp9_640x360_30fps.webm';
+          } else {
+            if (index < 4)
+              return './teddy3_vp9_320x180_30fps.webm';
+            else if (index < 16)
+              return './teddy2_vp9_320x180_15fps.webm';
+            else
+              return './teddy1_vp9_320x180_7fps.webm';
+          }
+          break;
+      }
+    }
+
+    async function startMxNVideos() {
+      const container = document.getElementById('container');
+      const p = document.getElementById('message');
+
+      // Initialize WebGpu
+      const gpuSetting = await webGpuInit(_totalVideoWidth, _totalVideoHeight);
+      if (!gpuSetting) {
+        p.innerHTML = "Webgpu not supported!" + "<br />" + "<br />" +
+          "Did you forget to add command line switch --enable-unsafe-webgpu?" +
+          "<br />" +
+          "Are you running on the latest Canary or Chromium build?"
+        return;
+      }
+
+      // Get the UI rendering options from the string.
+      const uiOption = parsedString['ui'];
+      if (uiOption == 'none')
+        hasUIOnTop = false;
+
+      const api = parsedString['import_texture_api']
+      if (api == '0')
+        useImportTextureApi = false;
+      else if (api == '1')
+        useImportTextureApi = true;
+
+      codecString = parsedString['codec']
+      if (codecString == 'vp8')
+        codec = 'vp8';
+      else if (codecString != 'vp9' && codecString != undefined)
+        console.warn('Unsupported video codec format! Switch to default VP9.');
+
+      // Get the number of video rows and columns from the string.
+      var videoRows = parsedString['rows'];
+      var videoColumns = parsedString['columns'];
+      if (videoRows == undefined)
+        videoRows = _defaultRows;
+      if (videoColumns == undefined)
+        videoColumns = _defaultColumns;
+
+      // Limite the number of videos to 20x20.
+      // The video will not load when the number is too big.
+      const maxColRow = Math.max(videoRows, videoColumns);
+      if (maxColRow > 20) {
+        p.innerHTML = "Cannot support videos more than 20 x 20 !" + "<br />" +
+          "Please change the number of rows/columns.";
+        return;
+      }
+
+      // Calculate the video onscreen size
+      const videoWidth = _totalVideoWidth / maxColRow;
+      const videoHeight = _totalVideoHeight / maxColRow;
+
+      // Create MxN videos and a small video (size = 89x50) at the upper right
+      // corner to similate the one from the local camera.
+      p.innerHTML = "Uploading videos...";
+      var videos = [];
+      const videoCount = videoRows * videoColumns;
+      for (let i = 0; i < videoCount + 1; i++) {
+        const video = document.createElement('video');
+        video.id = i;
+        video.loop = true;
+        video.autoplay = true;
+        video.muted = true;
+        video.display = "none";
+        video.src = GetVideoSource(videoCount, i, codec);
+        video.width = videoWidth;
+        video.height = videoHeight;
+        video.crossorigin = "anonymous";
+        videos.push(video);
+      }
+      // For the small video at the upper right corner.
+      videos[videoRows * videoColumns].width = videoWidth / 3;
+      videos[videoRows * videoColumns].height = videoHeight / 3;
+      // Use the 640x360 source to simulate the local camera.
+      videos[videoRows * videoColumns].src = GetVideoSource(1, 1, codec);
+
+      await Promise.all(videos.map(video => video.play()));
+      p.remove();
+
+      // Simulate video playback by WebGpu rendering.
+      webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
+        hasUIOnTop , useImportTextureApi);
+    }
+
+  </script>
+</head>
+<body onload="startMxNVideos()">
+  <div id="container" style="position:absolute; top:0px; left:0px">
+    <p id="message"></p>
+  </div>
+</body>
+</html>

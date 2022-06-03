@@ -5,8 +5,8 @@
 #include "services/proxy_resolver/mock_proxy_host_resolver.h"
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"

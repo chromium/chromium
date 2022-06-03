@@ -39,6 +39,9 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement {
   explicit HTMLBodyElement(Document&);
   ~HTMLBodyElement() override;
 
+  // HTMLElement override
+  bool IsHTMLBodyElement() const override { return true; }
+
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(focus, kFocus)

@@ -12,7 +12,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"

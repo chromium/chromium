@@ -4,13 +4,16 @@
 
 package org.chromium.weblayer.test;
 
-import android.app.Activity;
-import android.app.Instrumentation.ActivityMonitor;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.lifecycle.Stage;
+
+import androidx.fragment.app.Fragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,16 +22,17 @@ import org.junit.Rule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.weblayer.CookieManager;
+import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
-import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -37,7 +41,8 @@ import java.util.concurrent.TimeoutException;
  *
  * Test can use this ActivityTestRule to launch or get InstrumentationActivity.
  */
-public class InstrumentationActivityTestRule extends ActivityTestRule<InstrumentationActivity> {
+public class InstrumentationActivityTestRule
+        extends WebLayerActivityTestRule<InstrumentationActivity> {
     @Rule
     private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
@@ -55,7 +60,7 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
     }
 
     public InstrumentationActivityTestRule() {
-        super(InstrumentationActivity.class, false, false);
+        super(InstrumentationActivity.class);
     }
 
     @Override
@@ -64,10 +69,12 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
     }
 
     public WebLayer getWebLayer() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return WebLayer.loadSync(
-                    InstrumentationRegistry.getTargetContext().getApplicationContext());
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return WebLayer.loadSync(getContextForWebLayer()); });
+    }
+
+    public Context getContextForWebLayer() {
+        return InstrumentationRegistry.getTargetContext().getApplicationContext();
     }
 
     /**
@@ -82,7 +89,8 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
         intent.setComponent(
                 new ComponentName(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         InstrumentationActivity.class));
-        return launchActivity(intent);
+        launchActivity(intent);
+        return getActivity();
     }
 
     /**
@@ -94,7 +102,7 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
         Assert.assertNotNull(activity);
         try {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> activity.loadWebLayerSync(activity.getApplicationContext()));
+                    () -> activity.loadWebLayerSync(getContextForWebLayer()));
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
@@ -117,56 +125,38 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
         navigateAndWait(getActivity().getTab(), url, true /* waitForPaint */);
     }
 
-    public void navigateAndWait(Tab controller, String url, boolean waitForPaint) {
-        (new NavigationWaiter(url, controller, false /* expectFailure */, waitForPaint))
-                .navigateAndWait();
+    public void navigateAndWait(Tab tab, String url, boolean waitForPaint) {
+        (new NavigationWaiter(url, tab, false /* expectFailure */, waitForPaint)).navigateAndWait();
     }
 
     /**
      * Loads the given URL in the shell, expecting failure.
      */
     public void navigateAndWaitForFailure(String url) {
-        (new NavigationWaiter(
-                 url, getActivity().getTab(), true /* expectFailure */, true /* waitForPaint */))
-                .navigateAndWait();
+        navigateAndWaitForFailure(getActivity().getTab(), url, true /* waitForPaint */);
     }
 
-    /**
-     * Recreates the Activity, blocking until finished.
-     * After calling this, getActivity() returns the new Activity.
-     */
-    public void recreateActivity() {
-        Activity activity = getActivity();
+    public void navigateAndWaitForFailure(Tab tab, String url, boolean waitForPaint) {
+        (new NavigationWaiter(url, tab, true /* expectFailure */, waitForPaint)).navigateAndWait();
+    }
 
-        ActivityMonitor monitor =
-                new ActivityMonitor(InstrumentationActivity.class.getName(), null, false);
-        InstrumentationRegistry.getInstrumentation().addMonitor(monitor);
-
-        TestThreadUtils.runOnUiThreadBlocking(activity::recreate);
-
-        CriteriaHelper.pollUiThread(
-                () -> monitor.getLastActivity() != null && monitor.getLastActivity() != activity);
-        InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
-
-        // There is no way to rotate the activity using ActivityTestRule or even notify it.
-        // So we have to hack...
-        try {
-            Field field = ActivityTestRule.class.getDeclaredField("mActivity");
-            field.setAccessible(true);
-            field.set(this, monitor.getLastActivity());
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+    public void recreateByRotatingToLandscape() {
+        setActivity(ApplicationTestUtils.waitForActivityWithClass(
+                InstrumentationActivity.class, Stage.RESUMED, () -> {
+                    getActivity().setRequestedOrientation(
+                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }));
     }
 
     /**
      * Executes the script passed in and waits for the result.
      */
-    public JSONObject executeScriptSync(String script, boolean useSeparateIsolate) {
+    public JSONObject executeScriptSync(String script, boolean useSeparateIsolate, Tab tab) {
         JSONCallbackHelper callbackHelper = new JSONCallbackHelper();
         int count = callbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getActivity().getBrowser().getActiveTab().executeScript(script, useSeparateIsolate,
+            Tab scriptTab = tab == null ? getActivity().getBrowser().getActiveTab() : tab;
+            scriptTab.executeScript(script, useSeparateIsolate,
                     (JSONObject result) -> { callbackHelper.notifyCalled(result); });
         });
         try {
@@ -175,6 +165,10 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
             throw new RuntimeException(e);
         }
         return callbackHelper.getResult();
+    }
+
+    public JSONObject executeScriptSync(String script, boolean useSeparateIsolate) {
+        return executeScriptSync(script, useSeparateIsolate, null);
     }
 
     public int executeScriptAndExtractInt(String script) {
@@ -187,18 +181,24 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
     }
 
     public String executeScriptAndExtractString(String script) {
+        return executeScriptAndExtractString(script, true /* useSeparateIsolate */);
+    }
+
+    public String executeScriptAndExtractString(String script, boolean useSeparateIsolate) {
         try {
-            return executeScriptSync(script, true /* useSeparateIsolate */)
-                    .getString(Tab.SCRIPT_RESULT_KEY);
+            return executeScriptSync(script, useSeparateIsolate).getString(Tab.SCRIPT_RESULT_KEY);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
     public boolean executeScriptAndExtractBoolean(String script) {
+        return executeScriptAndExtractBoolean(script, true /* useSeparateIsolate */);
+    }
+
+    public boolean executeScriptAndExtractBoolean(String script, boolean useSeparateIsolate) {
         try {
-            return executeScriptSync(script, true /* useSeparateIsolate */)
-                    .getBoolean(Tab.SCRIPT_RESULT_KEY);
+            return executeScriptSync(script, useSeparateIsolate).getBoolean(Tab.SCRIPT_RESULT_KEY);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -215,7 +215,66 @@ public class InstrumentationActivityTestRule extends ActivityTestRule<Instrument
         return mTestServerRule.getServer();
     }
 
+    public EmbeddedTestServerRule getTestServerRule() {
+        return mTestServerRule;
+    }
+
     public String getTestDataURL(String path) {
         return getTestServer().getURL("/weblayer/test/data/" + path);
+    }
+
+    // Returns the URL that is currently being displayed to the user.
+    public String getCurrentDisplayUrl() {
+        InstrumentationActivity activity = getActivity();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            NavigationController navigationController =
+                    activity.getBrowser().getActiveTab().getNavigationController();
+
+            if (navigationController.getNavigationListSize() == 0) {
+                return null;
+            }
+
+            // TODO(crbug.com/1066382): This will not be correct in the case where the initial
+            // navigation in |tab| was a failed navigation and there have been no more navigations
+            // since then.
+            return navigationController
+                    .getNavigationEntryDisplayUri(
+                            navigationController.getNavigationListCurrentIndex())
+                    .toString();
+        });
+    }
+
+    public void setRetainInstance(boolean retain) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> getActivity().setRetainInstance(retain));
+    }
+
+    public Fragment getFragment() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> getActivity().getFragment());
+    }
+
+    public boolean setCookie(CookieManager cookieManager, Uri uri, String value) throws Exception {
+        Boolean[] resultHolder = new Boolean[1];
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            cookieManager.setCookie(uri, value, (Boolean result) -> {
+                resultHolder[0] = result;
+                callbackHelper.notifyCalled();
+            });
+        });
+        callbackHelper.waitForFirst();
+        return resultHolder[0];
+    }
+
+    public String getCookie(CookieManager cookieManager, Uri uri) throws Exception {
+        String[] resultHolder = new String[1];
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            cookieManager.getCookie(uri, (String result) -> {
+                resultHolder[0] = result;
+                callbackHelper.notifyCalled();
+            });
+        });
+        callbackHelper.waitForFirst();
+        return resultHolder[0];
     }
 }

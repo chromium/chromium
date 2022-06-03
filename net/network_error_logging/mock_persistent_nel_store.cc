@@ -16,12 +16,12 @@ MockPersistentNelStore::Command::Command(
 MockPersistentNelStore::Command::Command(
     Type type,
     const NetworkErrorLoggingService::NelPolicy& policy)
-    : type(type), origin(policy.origin) {}
+    : type(type), key(policy.key) {}
 
 MockPersistentNelStore::Command::Command(Type type) : type(type) {}
 
 MockPersistentNelStore::Command::Command(const Command& other)
-    : type(other.type), origin(other.origin) {}
+    : type(other.type), key(other.key) {}
 
 MockPersistentNelStore::Command::Command(Command&& other) = default;
 
@@ -37,11 +37,11 @@ bool operator==(const MockPersistentNelStore::Command& lhs,
     case MockPersistentNelStore::Command::Type::FLUSH:
       return true;
     // For ADD_NEL_POLICY, UPDATE_NEL_POLICY, and DELETE_NEL_POLICY,
-    // additionally check the policy's origin.
+    // additionally check the policy's key.
     case MockPersistentNelStore::Command::Type::ADD_NEL_POLICY:
     case MockPersistentNelStore::Command::Type::UPDATE_NEL_POLICY:
     case MockPersistentNelStore::Command::Type::DELETE_NEL_POLICY:
-      return (lhs.origin == rhs.origin);
+      return (lhs.key == rhs.key);
   }
 }
 
@@ -130,32 +130,6 @@ bool MockPersistentNelStore::VerifyCommands(
 MockPersistentNelStore::CommandList MockPersistentNelStore::GetAllCommands()
     const {
   return command_list_;
-}
-
-std::string MockPersistentNelStore::GetDebugString() const {
-  std::ostringstream s;
-
-  for (const Command& command : command_list_) {
-    switch (command.type) {
-      case Command::Type::LOAD_NEL_POLICIES:
-        s << "LOAD; ";
-        break;
-      case Command::Type::ADD_NEL_POLICY:
-        s << "ADD(" << command.origin.Serialize() << "); ";
-        break;
-      case Command::Type::UPDATE_NEL_POLICY:
-        s << "UPDATE(" << command.origin.Serialize() << "); ";
-        break;
-      case Command::Type::DELETE_NEL_POLICY:
-        s << "DELETE(" << command.origin.Serialize() << "); ";
-        break;
-      case Command::Type::FLUSH:
-        s << "FLUSH; ";
-        break;
-    }
-  }
-
-  return s.str();
 }
 
 }  // namespace net

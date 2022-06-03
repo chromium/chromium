@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests elements drag and drop operation internals, verifies post-move selection.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -43,9 +43,9 @@
 
       var child2 = ElementsTestRunner.expandedNodeWithId('child2');
       var child4 = ElementsTestRunner.expandedNodeWithId('child4');
-      treeOutline._treeElementBeingDragged = child2[treeOutline._treeElementSymbol];
-      var treeElementToDropOn = child4[treeOutline._treeElementSymbol];
-      treeOutline._doMove(treeElementToDropOn);
+      treeOutline.treeElementBeingDragged = treeOutline.treeElementByNode.get(child2);
+      var treeElementToDropOn = treeOutline.treeElementByNode.get(child4);
+      treeOutline.doMove(treeElementToDropOn);
     }
   ]);
 })();

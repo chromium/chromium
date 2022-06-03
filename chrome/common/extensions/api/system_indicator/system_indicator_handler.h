@@ -5,8 +5,8 @@
 #ifndef CHROME_COMMON_EXTENSIONS_API_SYSTEM_INDICATOR_SYSTEM_INDICATOR_HANDLER_H_
 #define CHROME_COMMON_EXTENSIONS_API_SYSTEM_INDICATOR_SYSTEM_INDICATOR_HANDLER_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -18,6 +18,10 @@ namespace extensions {
 class SystemIndicatorHandler : public ManifestHandler {
  public:
   SystemIndicatorHandler();
+
+  SystemIndicatorHandler(const SystemIndicatorHandler&) = delete;
+  SystemIndicatorHandler& operator=(const SystemIndicatorHandler&) = delete;
+
   ~SystemIndicatorHandler() override;
 
   // Returns the default system indicator icon for the given |extension|, if
@@ -28,12 +32,10 @@ class SystemIndicatorHandler : public ManifestHandler {
       const Extension& extension);
 
   // ManifestHandler:
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemIndicatorHandler);
 };
 
 }  // namespace extensions

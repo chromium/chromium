@@ -12,25 +12,7 @@ namespace blink {
 
 bool IsContextDestroyedForActiveScriptWrappable(
     const ExecutionContext* execution_context) {
-  if (!execution_context)
-    return true;
-
-  if (execution_context->IsContextDestroyed())
-    return true;
-
-  if (const auto* doc = DynamicTo<Document>(execution_context)) {
-    // Not all Document objects have an ExecutionContext that is actually
-    // destroyed. In such cases we defer to the ContextDocument if possible.
-    // If no such Document exists we consider the ExecutionContext as
-    // destroyed. This is needed to ensure that an ActiveScriptWrappable that
-    // always returns true in HasPendingActivity does not result in a memory
-    // leak.
-    if (const auto* context_doc = doc->ContextDocument())
-      return context_doc->IsContextDestroyed();
-    return true;
-  }
-
-  return false;
+  return !execution_context || execution_context->IsContextDestroyed();
 }
 
 }  // namespace blink

@@ -2,28 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://tab-strip/tab.js';
-
-import {getFavicon} from 'chrome://resources/js/icon.m.js';
+import {getFavicon} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {TabStripEmbedderProxy} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
-import {CloseTabAction, TabNetworkState, TabsApiProxy} from 'chrome://tab-strip/tabs_api_proxy.js';
+import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
+import {Tab, TabNetworkState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {CloseTabAction, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
-import {TestTabStripEmbedderProxy} from './test_tab_strip_embedder_proxy.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
 suite('Tab', function() {
+  /** @type {!TestTabsApiProxy} */
   let testTabsApiProxy;
-  let testTabStripEmbedderProxy;
+
+  /** @type {!TabElement} */
   let tabElement;
 
+  /** @type {!Tab} */
   const tab = {
     active: false,
     alertStates: [],
+    blocked: false,
+    crashed: false,
     id: 1001,
-    networkState: TabNetworkState.NONE,
+    index: 0,
+    isDefaultFavicon: false,
+    networkState: TabNetworkState.kNone,
+    pinned: false,
+    shouldHideThrobber: false,
+    showIcon: true,
     title: 'My title',
+    url: {url: 'http://foo'},
   };
+
+  /**
+   * Convenience function for creating a typed Tab object.
+   * @param {!Object=} overrides
+   * @return {!Tab}
+   */
+  function createTabData(overrides) {
+    return /** @type {!Tab} */ (Object.assign({}, tab, overrides));
+  }
 
   const strings = {
     closeTab: 'Close tab',
@@ -38,17 +58,16 @@ suite('Tab', function() {
     document.body.innerHTML = '';
 
     // Set CSS variable for animations
+    document.body.style.setProperty('--tabstrip-tab-height', '100px');
     document.body.style.setProperty('--tabstrip-tab-width', '280px');
     document.body.style.setProperty('--tabstrip-tab-spacing', '20px');
 
-    testTabStripEmbedderProxy = new TestTabStripEmbedderProxy();
-    TabStripEmbedderProxy.instance_ = testTabStripEmbedderProxy;
-
     testTabsApiProxy = new TestTabsApiProxy();
-    TabsApiProxy.instance_ = testTabsApiProxy;
+    TabsApiProxyImpl.instance_ = testTabsApiProxy;
 
-    tabElement = document.createElement('tabstrip-tab');
-    tabElement.tab = tab;
+    tabElement =
+        /** @type {!TabElement} */ (document.createElement('tabstrip-tab'));
+    tabElement.tab = createTabData({});
     document.body.appendChild(tabElement);
   });
 
@@ -60,13 +79,13 @@ suite('Tab', function() {
     const animationPromise = tabElement.slideIn();
     // Before animation completes.
     assertEquals('20px', tabElementStyle.paddingRight);
-    assertEquals('none', tabElementStyle.maxWidth);
+    assertEquals('280px', tabElementStyle.maxWidth);
     assertEquals('matrix(0, 0, 0, 0, 0, 0)', tabElementStyle.transform);
     await animationPromise;
     // After animation completes.
     assertEquals('100px', tabElementStyle.paddingRight);
     assertEquals('none', tabElementStyle.maxWidth);
-    assertEquals('matrix(1, 0, 0, 1, 0, 0)', tabElementStyle.transform);
+    assertEquals('none', tabElementStyle.transform);
   });
 
   test('slideIn animations for not the last tab', async () => {
@@ -87,7 +106,7 @@ suite('Tab', function() {
     // After animation completes.
     assertEquals('100px', tabElementStyle.paddingRight);
     assertEquals('none', tabElementStyle.maxWidth);
-    assertEquals('matrix(1, 0, 0, 1, 0, 0)', tabElementStyle.transform);
+    assertEquals('none', tabElementStyle.transform);
   });
 
   test('slideIn animations right to left for RTL languages', async () => {
@@ -108,11 +127,11 @@ suite('Tab', function() {
     // After animation completes.
     assertEquals('100px', tabElementStyle.paddingLeft);
     assertEquals('none', tabElementStyle.maxWidth);
-    assertEquals('matrix(1, 0, 0, 1, 0, 0)', tabElementStyle.transform);
+    assertEquals('none', tabElementStyle.transform);
   });
 
   test('slideOut animates out the element', async () => {
-    testTabStripEmbedderProxy.setVisible(true);
+    testTabsApiProxy.setVisible(true);
     const tabElementStyle = window.getComputedStyle(tabElement);
     const animationPromise = tabElement.slideOut();
     // Before animation completes.
@@ -126,7 +145,7 @@ suite('Tab', function() {
   });
 
   test('slideOut does not animate when tab strip is hidden', () => {
-    testTabStripEmbedderProxy.setVisible(false);
+    testTabsApiProxy.setVisible(false);
     assertTrue(tabElement.isConnected);
     tabElement.slideOut();
 
@@ -136,11 +155,11 @@ suite('Tab', function() {
   });
 
   test('slideOut resolves immediately when tab strip becomes hidden', () => {
-    testTabStripEmbedderProxy.setVisible(true);
+    testTabsApiProxy.setVisible(true);
     assertTrue(tabElement.isConnected);
     const animationPromise = tabElement.slideOut();
 
-    testTabStripEmbedderProxy.setVisible(false);
+    testTabsApiProxy.setVisible(false);
     document.dispatchEvent(new Event('visibilitychange'));
 
     // The tab should immediately be disconnected without waiting for the
@@ -149,19 +168,19 @@ suite('Tab', function() {
   });
 
   test('toggles an [active] attribute when active', () => {
-    tabElement.tab = Object.assign({}, tab, {active: true});
+    tabElement.tab = createTabData({active: true});
     assertTrue(tabElement.hasAttribute('active'));
-    tabElement.tab = Object.assign({}, tab, {active: false});
+    tabElement.tab = createTabData({active: false});
     assertFalse(tabElement.hasAttribute('active'));
   });
 
   test('sets [aria-selected] attribute when active', () => {
-    tabElement.tab = Object.assign({}, tab, {active: true});
+    tabElement.tab = createTabData({active: true});
     assertEquals(
         'true',
         tabElement.shadowRoot.querySelector('#tab').getAttribute(
             'aria-selected'));
-    tabElement.tab = Object.assign({}, tab, {active: false});
+    tabElement.tab = createTabData({active: false});
     assertEquals(
         'false',
         tabElement.shadowRoot.querySelector('#tab').getAttribute(
@@ -175,13 +194,13 @@ suite('Tab', function() {
     const faviconContainerStyle = window.getComputedStyle(
         tabElement.shadowRoot.querySelector('#faviconContainer'));
 
-    tabElement.tab = Object.assign({}, tab, {showIcon: true});
+    tabElement.tab = createTabData({showIcon: true});
     assertEquals(
         faviconContainerStyle.maxWidth,
         faviconContainerStyle.getPropertyValue('--favicon-size').trim());
     assertEquals(faviconContainerStyle.opacity, '1');
 
-    tabElement.tab = Object.assign({}, tab, {showIcon: false});
+    tabElement.tab = createTabData({showIcon: false});
     assertEquals(faviconContainerStyle.maxWidth, '0px');
     assertEquals(faviconContainerStyle.opacity, '0');
   });
@@ -191,13 +210,13 @@ suite('Tab', function() {
     const expectedSize = '100px';
     tabElement.style.setProperty('--tabstrip-pinned-tab-size', expectedSize);
 
-    tabElement.tab = Object.assign({}, tab, {pinned: true});
+    tabElement.tab = createTabData({pinned: true});
     assertEquals(expectedSize, tabElementStyle.width);
     assertEquals(expectedSize, tabElementStyle.height);
 
     tabElement.style.setProperty('--tabstrip-tab-width', '100px');
     tabElement.style.setProperty('--tabstrip-tab-height', '150px');
-    tabElement.tab = Object.assign({}, tab, {pinned: false});
+    tabElement.tab = createTabData({pinned: false});
     assertEquals('100px', tabElementStyle.width);
     assertEquals('150px', tabElementStyle.height);
   });
@@ -210,32 +229,29 @@ suite('Tab', function() {
       assertEquals(color, spinnerStyle.backgroundColor);
 
       // Also assert it becomes hidden when network state is NONE
-      tabElement.tab =
-          Object.assign({}, tab, {networkState: TabNetworkState.NONE});
+      tabElement.tab = createTabData({networkState: TabNetworkState.kNone});
       assertEquals('none', spinnerStyle.display);
     }
 
     tabElement.style.setProperty(
         '--tabstrip-tab-loading-spinning-color', 'rgb(255, 0, 0)');
-    tabElement.tab =
-        Object.assign({}, tab, {networkState: TabNetworkState.LOADING});
+    tabElement.tab = createTabData({networkState: TabNetworkState.kLoading});
     assertSpinnerVisible('rgb(255, 0, 0)');
 
     tabElement.style.setProperty(
         '--tabstrip-tab-waiting-spinning-color', 'rgb(0, 255, 0)');
-    tabElement.tab =
-        Object.assign({}, tab, {networkState: TabNetworkState.WAITING});
+    tabElement.tab = createTabData({networkState: TabNetworkState.kWaiting});
     assertSpinnerVisible('rgb(0, 255, 0)');
   });
 
   test('shows blocked indicator when tab is blocked', () => {
     const blockIndicatorStyle = window.getComputedStyle(
         tabElement.shadowRoot.querySelector('#blocked'));
-    tabElement.tab = Object.assign({}, tab, {blocked: true});
+    tabElement.tab = createTabData({blocked: true});
     assertEquals('block', blockIndicatorStyle.display);
-    tabElement.tab = Object.assign({}, tab, {blocked: true, active: true});
+    tabElement.tab = createTabData({blocked: true, active: true});
     assertEquals('none', blockIndicatorStyle.display);
-    tabElement.tab = Object.assign({}, tab, {blocked: false});
+    tabElement.tab = createTabData({blocked: false});
     assertEquals('none', blockIndicatorStyle.display);
   });
 
@@ -251,20 +267,19 @@ suite('Tab', function() {
         const crashedIconStyle = window.getComputedStyle(
             tabElement.shadowRoot.querySelector('#crashedIcon'));
 
-        tabElement.tab = Object.assign({}, tab, {crashed: true});
+        tabElement.tab = createTabData({crashed: true});
         assertEquals(faviconStyle.opacity, '0');
         assertEquals(crashedIconStyle.opacity, '1');
 
-        tabElement.tab = Object.assign({}, tab, {crashed: false});
+        tabElement.tab = createTabData({crashed: false});
         assertEquals(faviconStyle.opacity, '1');
         assertEquals(crashedIconStyle.opacity, '0');
       });
 
-  test('clicking on the element activates the tab', () => {
+  test('clicking on the element activates the tab', async () => {
     tabElement.shadowRoot.querySelector('#tab').click();
-    return testTabsApiProxy.whenCalled('activateTab', tabId => {
-      assertEquals(tabId, tab.id);
-    });
+    const tabId = await testTabsApiProxy.whenCalled('activateTab');
+    assertEquals(tabId, tab.id);
   });
 
   test('sets the title', () => {
@@ -273,8 +288,8 @@ suite('Tab', function() {
   });
 
   test('sets the loading title while loading', () => {
-    const loadingTabWithoutTitle = Object.assign({}, tab, {
-      networkState: TabNetworkState.WAITING,
+    const loadingTabWithoutTitle = createTabData({
+      networkState: TabNetworkState.kWaiting,
       shouldHideThrobber: false,
     });
     delete loadingTabWithoutTitle.title;
@@ -285,33 +300,29 @@ suite('Tab', function() {
   });
 
   test('exposes the tab ID to an attribute', () => {
-    tabElement.tab = Object.assign({}, tab, {id: 1001});
+    tabElement.tab = createTabData({id: 1001});
     assertEquals('1001', tabElement.getAttribute('data-tab-id'));
   });
 
-  test('closes the tab when clicking close button', () => {
+  test('closes the tab when clicking close button', async () => {
     tabElement.shadowRoot.querySelector('#close').click();
-    return testTabsApiProxy.whenCalled('closeTab').then(([
-                                                          tabId, closeTabAction
-                                                        ]) => {
-      assertEquals(tabId, tab.id);
-      assertEquals(closeTabAction, CloseTabAction.CLOSE_BUTTON);
-    });
+    const [tabId, closeTabAction] =
+        await testTabsApiProxy.whenCalled('closeTab');
+    assertEquals(tabId, tab.id);
+    assertEquals(closeTabAction, CloseTabAction.CLOSE_BUTTON);
   });
 
-  test('closes the tab on swipe', () => {
+  test('closes the tab on swipe', async () => {
     tabElement.dispatchEvent(new CustomEvent('swipe'));
-    return testTabsApiProxy.whenCalled('closeTab').then(([
-                                                          tabId, closeTabAction
-                                                        ]) => {
-      assertEquals(tabId, tab.id);
-      assertEquals(closeTabAction, CloseTabAction.SWIPED_TO_CLOSE);
-    });
+    const [tabId, closeTabAction] =
+        await testTabsApiProxy.whenCalled('closeTab');
+    assertEquals(tabId, tab.id);
+    assertEquals(closeTabAction, CloseTabAction.SWIPED_TO_CLOSE);
   });
 
   test('sets the favicon to the favicon URL', () => {
     const expectedFaviconUrl = 'data:mock-favicon';
-    tabElement.tab = Object.assign({}, tab, {favIconUrl: expectedFaviconUrl});
+    tabElement.tab = createTabData({faviconUrl: {url: expectedFaviconUrl}});
     const faviconElement = tabElement.shadowRoot.querySelector('#favicon');
     assertEquals(
         faviconElement.style.backgroundImage, `url("${expectedFaviconUrl}")`);
@@ -320,17 +331,17 @@ suite('Tab', function() {
   test(
       'sets the favicon to the default favicon URL if there is none provided',
       () => {
-        const updatedTab = Object.assign({}, tab);
-        delete updatedTab.favIconUrl;
+        const updatedTab = createTabData();
+        delete updatedTab.faviconUrl;
         tabElement.tab = updatedTab;
         const faviconElement = tabElement.shadowRoot.querySelector('#favicon');
         assertEquals(faviconElement.style.backgroundImage, getFavicon(''));
       });
 
   test('removes the favicon if the tab is waiting', () => {
-    tabElement.tab = Object.assign({}, tab, {
-      favIconUrl: 'data:mock-favicon',
-      networkState: TabNetworkState.WAITING,
+    tabElement.tab = createTabData({
+      faviconUrl: {url: 'data:mock-favicon'},
+      networkState: TabNetworkState.kWaiting,
     });
     const faviconElement = tabElement.shadowRoot.querySelector('#favicon');
     assertEquals(faviconElement.style.backgroundImage, 'none');
@@ -339,10 +350,10 @@ suite('Tab', function() {
   test(
       'removes the favicon if the tab is loading with a default favicon',
       () => {
-        tabElement.tab = Object.assign({}, tab, {
-          favIconUrl: 'data:mock-favicon',
+        tabElement.tab = createTabData({
+          faviconUrl: {url: 'data:mock-favicon'},
           hasDefaultFavicon: true,
-          networkState: TabNetworkState.WAITING,
+          networkState: TabNetworkState.kWaiting,
         });
         const faviconElement = tabElement.shadowRoot.querySelector('#favicon');
         assertEquals(faviconElement.style.backgroundImage, 'none');
@@ -375,39 +386,26 @@ suite('Tab', function() {
         tabElement.shadowRoot.querySelector('#dragImage'));
   });
 
-  test('has custom context menu', async () => {
-    let event = new Event('contextmenu');
-    event.clientX = 1;
-    event.clientY = 2;
-    tabElement.shadowRoot.querySelector('#tab').dispatchEvent(event);
-
-    const contextMenuArgs =
-        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
-    assertEquals(contextMenuArgs[0], tabElement.tab.id);
-    assertEquals(contextMenuArgs[1], 1);
-    assertEquals(contextMenuArgs[2], 2);
-  });
-
   test('activating closes WebUI container', () => {
-    assertEquals(testTabStripEmbedderProxy.getCallCount('closeContainer'), 0);
+    assertEquals(testTabsApiProxy.getCallCount('closeContainer'), 0);
     tabElement.shadowRoot.querySelector('#tab').click();
-    assertEquals(testTabStripEmbedderProxy.getCallCount('closeContainer'), 1);
+    assertEquals(testTabsApiProxy.getCallCount('closeContainer'), 1);
   });
 
   test('sets an accessible title', () => {
     const titleTextElement = tabElement.shadowRoot.querySelector('#titleText');
     assertEquals(titleTextElement.getAttribute('aria-label'), tab.title);
 
-    tabElement.tab = Object.assign({}, tab, {
+    tabElement.tab = createTabData({
       crashed: true,
       title: 'My tab',
     });
     assertEquals(
         titleTextElement.getAttribute('aria-label'), 'My tab has crashed');
 
-    tabElement.tab = Object.assign({}, tab, {
+    tabElement.tab = createTabData({
       crashed: false,
-      networkState: TabNetworkState.ERROR,
+      networkState: TabNetworkState.kError,
       title: 'My tab',
     });
     assertEquals(
@@ -431,5 +429,33 @@ suite('Tab', function() {
     innerTabElement.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
     assertEquals(await testTabsApiProxy.whenCalled('activateTab'), tab.id);
     testTabsApiProxy.reset();
+  });
+
+  test('DragImagePreservesAspectRatio', () => {
+    const originalBoundingBox = tabElement.$('#tab').getBoundingClientRect();
+    const originalAspectRatio =
+        originalBoundingBox.width / originalBoundingBox.height;
+    tabElement.setDragging(true);
+    const dragImageBoundingBox =
+        tabElement.getDragImage().querySelector('#tab').getBoundingClientRect();
+    const dragImageAspectRatio =
+        dragImageBoundingBox.width / dragImageBoundingBox.height;
+    // Check the Math.floor values of these values to prevent possible
+    // flakiness caused by comparing float values.
+    assertEquals(
+        Math.floor(originalAspectRatio), Math.floor(dragImageAspectRatio));
+  });
+
+  test('RightClickOpensContextMenu', async () => {
+    tabElement.$('#tab').dispatchEvent(new PointerEvent('pointerup', {
+      pointerType: 'mouse',
+      button: 2,
+      clientX: 50,
+      clientY: 100,
+    }));
+    const [id, x, y] = await testTabsApiProxy.whenCalled('showTabContextMenu');
+    assertEquals(tab.id, id);
+    assertEquals(50, x);
+    assertEquals(100, y);
   });
 });

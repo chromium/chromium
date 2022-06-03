@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
-
+GEN_INCLUDE(['../testing/chromevox_webui_test_base.js']);
 GEN_INCLUDE(['../testing/fake_objects.js']);
+
+GEN('#include "content/public/test/browser_test.h"');
 
 // Fake out the Chrome API namespace we depend on.
 var chrome = {};
@@ -29,33 +30,18 @@ chrome.metricsPrivate.recordUserAction = function() {};
 
 /**
  * Test fixture.
- * @constructor
- * @extends {ChromeVoxUnitTestBase}
  */
-function ChromeVoxBluetoothBrailleDisplayUIUnitTest() {
-  ChromeVoxUnitTestBase.call(this);
-}
-
-ChromeVoxBluetoothBrailleDisplayUIUnitTest.prototype = {
-  __proto__: ChromeVoxUnitTestBase.prototype,
-
+ChromeVoxBluetoothBrailleDisplayUIWebUITest =
+    class extends ChromeVoxWebUITestBase {
   /** @override */
-  closureModuleDeps: [
-    'BluetoothBrailleDisplayManager',
-    'BluetoothBrailleDisplayUI',
-    'TestMsgs',
-  ],
-
-  /** @override */
-  isAsync: true,
-
-  /** @override */
-  setUp: function() {
+  setUp() {
     Msgs = TestMsgs;
-  },
+  }
 
   /** Label of the select. @type {string} */
-  selectLabel: 'Select a bluetooth braille display',
+  get selectLabel() {
+    return 'Select a bluetooth braille display';
+  }
 
   /**
    * Builds an expected stringified version of the widget, inserting static
@@ -63,21 +49,31 @@ ChromeVoxBluetoothBrailleDisplayUIUnitTest.prototype = {
    * @param {string} controls The expected controls block.
    * @return {string} The final expectation.
    */
-  buildUIExpectation: function(controls) {
+  buildUIExpectation(controls) {
     return `
-      <div>
-        <h2>Bluetooth Braille Display</h2>
-        <div class="option">
-          <span id="bluetoothBrailleSelectLabel">${this.selectLabel}</span>
-          ${controls}
-        </div>
-      </div>`;
+        <div>
+          <h2>Bluetooth Braille Display</h2>
+          <div class="option">
+            <span id="bluetoothBrailleSelectLabel">${this.selectLabel}</span>
+            ${controls}
+          </div>
+        </div>`;
   }
 };
 
+
+/** @override */
+ChromeVoxBluetoothBrailleDisplayUIWebUITest.prototype.closureModuleDeps = [
+  'BluetoothBrailleDisplayManager',
+  'BluetoothBrailleDisplayUI',
+  'TestMsgs',
+];
+
+ChromeVoxBluetoothBrailleDisplayUIWebUITest.prototype.isAsync = true;
+
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIUnitTest', 'NoDisplays', function() {
-      var ui = new BluetoothBrailleDisplayUI();
+    'ChromeVoxBluetoothBrailleDisplayUIWebUITest', 'NoDisplays', function() {
+      const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
       assertEqualsDOM(
           this.buildUIExpectation(`
@@ -88,17 +84,17 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayUIWebUITest',
     'ControlStateUpdatesNotConnectedOrPaired', function() {
-      var ui = new BluetoothBrailleDisplayUI();
+      const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
 
-      var displays = [];
+      let displays = [];
 
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        var display = displays.find((display) => display.address == address);
+        const display = displays.find((display) => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };
@@ -119,17 +115,17 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIUnitTest',
+    'ChromeVoxBluetoothBrailleDisplayUIWebUITest',
     'ControlStateUpdatesPairedNotConnected', function() {
-      var ui = new BluetoothBrailleDisplayUI();
+      const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
 
-      var display = [];
+      const display = [];
 
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        var display = displays.find((display) => display.address == address);
+        const display = displays.find((display) => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };
@@ -191,9 +187,9 @@ SYNC_TEST_F(
 
       // The user picks the second display.
       // The manager has to ask for the device details.
-      var select = document.body.querySelector('select');
+      const select = document.body.querySelector('select');
       select.selectedIndex = 1;
-      var changeEvt = document.createEvent('HTMLEvents');
+      const changeEvt = document.createEvent('HTMLEvents');
       changeEvt.initEvent('change');
       select.dispatchEvent(changeEvt);
       // The controls update based on the newly selected display.
@@ -209,8 +205,9 @@ SYNC_TEST_F(
     });
 
 SYNC_TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIUnitTest', 'PincodeRequest', function() {
-      var ui = new BluetoothBrailleDisplayUI();
+    'ChromeVoxBluetoothBrailleDisplayUIWebUITest', 'PincodeRequest',
+    function() {
+      const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
 
       // Trigger pincode screen.
@@ -235,16 +232,16 @@ SYNC_TEST_F(
     });
 
 TEST_F(
-    'ChromeVoxBluetoothBrailleDisplayUIUnitTest', 'ClickControls', function() {
-      var ui = new BluetoothBrailleDisplayUI();
+    'ChromeVoxBluetoothBrailleDisplayUIWebUITest', 'ClickControls', function() {
+      const ui = new BluetoothBrailleDisplayUI();
       ui.attach(document.body);
 
-      var displays = [];
+      let displays = [];
 
       // Fake out getDevice using |display| as the backing source which changes
       // below.
       chrome.bluetooth.getDevice = (address, callback) => {
-        var display = displays.find((display) => display.address == address);
+        const display = displays.find((display) => display.address === address);
         assertNotNullNorUndefined(display);
         callback(display);
       };

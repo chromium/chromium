@@ -13,8 +13,8 @@ namespace blink {
 
 class Document;
 class ExceptionState;
-class UnrestrictedDoubleOrKeyframeAnimationOptions;
-class UnrestrictedDoubleOrKeyframeEffectOptions;
+class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
+class V8UnionKeyframeEffectOptionsOrUnrestrictedDouble;
 
 class CORE_EXPORT TimingInput {
   STATIC_ONLY(TimingInput);
@@ -24,17 +24,19 @@ class CORE_EXPORT TimingInput {
   // the 'options' parameter into timing information.
   //
   // https://drafts.csswg.org/web-animations-1/#dom-keyframeeffect-keyframeeffect
-  static Timing Convert(const UnrestrictedDoubleOrKeyframeEffectOptions&,
-                        Document*,
-                        ExceptionState&);
+  static Timing Convert(
+      const V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* options,
+      Document* document,
+      ExceptionState& exception_state);
 
   // Implements step 2 of the Animatable::animate() method, converting the
   // 'options' parameter into timing information.
   //
   // https://drafts.csswg.org/web-animations-1/#dom-animatable-animate
-  static Timing Convert(const UnrestrictedDoubleOrKeyframeAnimationOptions&,
-                        Document*,
-                        ExceptionState&);
+  static Timing Convert(
+      const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options,
+      Document* document,
+      ExceptionState& exception_state);
 
   // Implements the procedure to 'update the timing properties of an animation
   // effect'.
@@ -49,4 +51,4 @@ class CORE_EXPORT TimingInput {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_INPUT_H_

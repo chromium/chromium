@@ -6,6 +6,8 @@
 
 #include <numeric>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_numeric_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -226,6 +228,7 @@ CSSPrimitiveValue::UnitType CSSNumericValue::UnitFromName(const String& name) {
   return CSSPrimitiveValue::StringToUnitType(name);
 }
 
+// static
 CSSNumericValue* CSSNumericValue::parse(const String& css_text,
                                         ExceptionState& exception_state) {
   CSSTokenizer tokenizer(css_text);
@@ -251,10 +254,9 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
     case kFunctionToken:
       if (range.Peek().FunctionId() == CSSValueID::kCalc ||
           range.Peek().FunctionId() == CSSValueID::kWebkitCalc ||
-          (RuntimeEnabledFeatures::CSSComparisonFunctionsEnabled() &&
-           (range.Peek().FunctionId() == CSSValueID::kMin ||
-            range.Peek().FunctionId() == CSSValueID::kMax ||
-            range.Peek().FunctionId() == CSSValueID::kClamp))) {
+          range.Peek().FunctionId() == CSSValueID::kMin ||
+          range.Peek().FunctionId() == CSSValueID::kMax ||
+          range.Peek().FunctionId() == CSSValueID::kClamp) {
         CSSMathExpressionNode* expression =
             CSSMathExpressionNode::ParseCalc(range);
         if (expression)
@@ -270,6 +272,7 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
   return nullptr;
 }
 
+// static
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
     return CalcToNumericValue(
@@ -278,13 +281,22 @@ CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }
 
-/* static */
-CSSNumericValue* CSSNumericValue::FromNumberish(const CSSNumberish& value) {
-  if (value.IsDouble()) {
-    return CSSUnitValue::Create(value.GetAsDouble(),
+// static
+CSSNumericValue* CSSNumericValue::FromNumberish(const V8CSSNumberish* value) {
+  if (value->IsDouble()) {
+    return CSSUnitValue::Create(value->GetAsDouble(),
                                 CSSPrimitiveValue::UnitType::kNumber);
   }
-  return value.GetAsCSSNumericValue();
+  return value->GetAsCSSNumericValue();
+}
+
+// static
+CSSNumericValue* CSSNumericValue::FromPercentish(const V8CSSNumberish* value) {
+  if (value->IsDouble()) {
+    return CSSUnitValue::Create(value->GetAsDouble() * 100,
+                                CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  return value->GetAsCSSNumericValue();
 }
 
 CSSUnitValue* CSSNumericValue::to(const String& unit_string,
@@ -307,7 +319,7 @@ CSSUnitValue* CSSNumericValue::to(const String& unit_string,
 
 CSSUnitValue* CSSNumericValue::to(CSSPrimitiveValue::UnitType unit) const {
   const auto sum = SumValue();
-  if (!sum || sum->terms.size() != 1)
+  if (!sum.has_value() || sum->terms.size() != 1)
     return nullptr;
 
   CSSUnitValue* value = CSSNumericSumValueEntryToUnitValue(sum->terms[0]);
@@ -326,8 +338,8 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
     }
   }
 
-  const base::Optional<CSSNumericSumValue> sum = SumValue();
-  if (!sum) {
+  const absl::optional<CSSNumericSumValue> sum = SumValue();
+  if (!sum.has_value()) {
     exception_state.ThrowTypeError("Invalid value for conversion");
     return nullptr;
   }
@@ -385,12 +397,7 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
     return nullptr;
   }
 
-  CSSMathSum* value = CSSMathSum::Create(result);
-  if (!value) {
-    exception_state.ThrowTypeError("Can't create CSSMathSum");
-    return nullptr;
-  }
-  return value;
+  return CSSMathSum::Create(result, exception_state);
 }
 
 CSSNumericType* CSSNumericValue::type() const {
@@ -419,7 +426,7 @@ CSSNumericType* CSSNumericValue::type() const {
 }
 
 CSSNumericValue* CSSNumericValue::add(
-    const HeapVector<CSSNumberish>& numberishes,
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kSumType>(values, this);
@@ -428,11 +435,11 @@ CSSNumericValue* CSSNumericValue::add(
           MaybeSimplifyAsUnitValue(values, std::plus<double>())) {
     return unit_value;
   }
-  return CSSMathSum::Create(std::move(values));
+  return CSSMathSum::Create(std::move(values), exception_state);
 }
 
 CSSNumericValue* CSSNumericValue::sub(
-    const HeapVector<CSSNumberish>& numberishes,
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   std::transform(values.begin(), values.end(), values.begin(),
@@ -443,11 +450,11 @@ CSSNumericValue* CSSNumericValue::sub(
           MaybeSimplifyAsUnitValue(values, std::plus<double>())) {
     return unit_value;
   }
-  return CSSMathSum::Create(std::move(values));
+  return CSSMathSum::Create(std::move(values), exception_state);
 }
 
 CSSNumericValue* CSSNumericValue::mul(
-    const HeapVector<CSSNumberish>& numberishes,
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kProductType>(values, this);
@@ -458,7 +465,7 @@ CSSNumericValue* CSSNumericValue::mul(
 }
 
 CSSNumericValue* CSSNumericValue::div(
-    const HeapVector<CSSNumberish>& numberishes,
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   for (auto& v : values) {
@@ -478,7 +485,7 @@ CSSNumericValue* CSSNumericValue::div(
 }
 
 CSSNumericValue* CSSNumericValue::min(
-    const HeapVector<CSSNumberish>& numberishes,
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kMinType>(values, this);
@@ -491,7 +498,7 @@ CSSNumericValue* CSSNumericValue::min(
 }
 
 CSSNumericValue* CSSNumericValue::max(
-    const HeapVector<CSSNumberish>& numberishes,
+    const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
   PrependValueForArithmetic<kMaxType>(values, this);
@@ -503,8 +510,10 @@ CSSNumericValue* CSSNumericValue::max(
   return CSSMathMax::Create(std::move(values));
 }
 
-bool CSSNumericValue::equals(const HeapVector<CSSNumberish>& args) {
-  CSSNumericValueVector values = CSSNumberishesToNumericValues(args);
+bool CSSNumericValue::equals(
+    const HeapVector<Member<V8CSSNumberish>>& numberishes
+) {
+  CSSNumericValueVector values = CSSNumberishesToNumericValues(numberishes);
   return std::all_of(values.begin(), values.end(),
                      [this](const auto& v) { return this->Equals(*v); });
 }
@@ -512,7 +521,7 @@ bool CSSNumericValue::equals(const HeapVector<CSSNumberish>& args) {
 String CSSNumericValue::toString() const {
   StringBuilder result;
   BuildCSSText(Nested::kNo, ParenLess::kNo, result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 CSSNumericValue* CSSNumericValue::Negate() {
@@ -524,9 +533,9 @@ CSSNumericValue* CSSNumericValue::Invert() {
 }
 
 CSSNumericValueVector CSSNumberishesToNumericValues(
-    const HeapVector<CSSNumberish>& values) {
+    const HeapVector<Member<V8CSSNumberish>>& values) {
   CSSNumericValueVector result;
-  for (const CSSNumberish& value : values) {
+  for (const V8CSSNumberish* value : values) {
     result.push_back(CSSNumericValue::FromNumberish(value));
   }
   return result;

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    '<iframe></iframe>',
+    selection => {
+        assert_own_property(window, 'textInputController',
+                'this test requires window.textInputController.');
+        const document = selection.document;
+        const iframe = document.querySelector('iframe');
+        iframe.contentDocument.documentElement.contentEditable = true;
+        iframe.contentDocument.documentElement.addEventListener(
+            'beforeinput',
+            () => iframe.parentNode.removeChild(iframe));
+        iframe.contentDocument.documentElement.focus();
+        textInputController.setMarkedText('1', 0, 1);
+        textInputController.insertText('x');
+    },
+    '',
+    'Should not crash when beforeinput handler removes current frame when doing InsertText');
+</script>

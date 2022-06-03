@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console dir makes messages expandable only when necessary.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -20,9 +20,11 @@
   `);
 
   var consoleView = Console.ConsoleView.instance();
-  var viewMessages = consoleView._visibleViewMessages;
+  var viewMessages = consoleView.visibleViewMessages;
   for (var i = 0; i < viewMessages.length; ++i) {
     var messageElement = viewMessages[i].element();
+    // Console messages contain live locations.
+    await TestRunner.waitForPendingLiveLocationUpdates();
     TestRunner.addResult('Message text: ' + messageElement.deepTextContent());
     if (messageElement.querySelector('.console-view-object-properties-section'))
       TestRunner.addResult('Message is expandable');

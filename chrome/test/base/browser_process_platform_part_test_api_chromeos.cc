@@ -18,7 +18,7 @@ BrowserProcessPlatformPartTestApi::~BrowserProcessPlatformPartTestApi() {
 }
 
 void BrowserProcessPlatformPartTestApi::InitializeCrosComponentManager(
-    std::unique_ptr<component_updater::CrOSComponentManager>
+    scoped_refptr<component_updater::CrOSComponentManager>
         cros_component_manager) {
   DCHECK(!platform_part_->using_testing_cros_component_manager_);
   DCHECK(!platform_part_->cros_component_manager_);

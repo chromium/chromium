@@ -11,13 +11,14 @@ namespace chromecast {
 namespace bluetooth {
 
 // static
-std::map<bluetooth_v2_shlib::Uuid, scoped_refptr<RemoteCharacteristic>>
+std::map<bluetooth_v2_shlib::Uuid, scoped_refptr<RemoteCharacteristicImpl>>
 RemoteServiceImpl::CreateCharMap(
     RemoteDeviceImpl* remote_device,
     base::WeakPtr<GattClientManagerImpl> gatt_client_manager,
     const bluetooth_v2_shlib::Gatt::Service& service,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
-  std::map<bluetooth_v2_shlib::Uuid, scoped_refptr<RemoteCharacteristic>> ret;
+  std::map<bluetooth_v2_shlib::Uuid, scoped_refptr<RemoteCharacteristicImpl>>
+      ret;
   for (const auto& characteristic : service.characteristics) {
     ret[characteristic.uuid] = new RemoteCharacteristicImpl(
         remote_device, gatt_client_manager, &characteristic, io_task_runner);
@@ -64,7 +65,7 @@ scoped_refptr<RemoteCharacteristic> RemoteServiceImpl::GetCharacteristicByUuid(
 const bluetooth_v2_shlib::Uuid& RemoteServiceImpl::uuid() const {
   return service_.uuid;
 }
-uint16_t RemoteServiceImpl::handle() const {
+HandleId RemoteServiceImpl::handle() const {
   return service_.handle;
 }
 bool RemoteServiceImpl::primary() const {

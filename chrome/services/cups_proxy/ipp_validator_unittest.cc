@@ -10,10 +10,11 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "chrome/services/cups_proxy/fake_cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
-#include "printing/backend/cups_ipp_util.h"
+#include "printing/backend/cups_ipp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cups_proxy {
@@ -41,9 +42,9 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     known_printers_.insert(printer_id);
   }
 
-  base::Optional<Printer> GetPrinter(const std::string& id) override {
+  absl::optional<Printer> GetPrinter(const std::string& id) override {
     if (!base::Contains(known_printers_, id)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return Printer(id);
@@ -62,7 +63,7 @@ class IppValidatorTest : public testing::Test {
 
   ~IppValidatorTest() override = default;
 
-  base::Optional<IppRequest> RunValidateIppRequest(
+  absl::optional<IppRequest> RunValidateIppRequest(
       const IppRequestPtr& request) {
     return ipp_validator_->ValidateIppRequest(request.Clone());
   }
@@ -97,7 +98,8 @@ IppRequestPtr GetBasicIppRequest() {
   ret->http_version = "HTTP/1.1";
 
   // Map of Http headers.
-  ret->headers = std::vector<ipp_converter::HttpHeader>{
+  ret->headers = base::flat_map<ipp_converter::HttpHeader::first_type,
+                                ipp_converter::HttpHeader::second_type>{
       {"Content-Length", "72"},
       {"Content-Type", "application/ipp"},
       {"Date", "Thu, 04 Oct 2018 20:25:59 GMT"},

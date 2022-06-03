@@ -1,17 +1,30 @@
 # This is reserved for people that are comfortable with Chromium builders
 # and understand the implications of changing their configurations.
 
-agable@chromium.org
+set noparent
+
+# Troopers
 bpastene@chromium.org
-dpranke@chromium.org
+estaab@chromium.org
+gatong@chromium.org
 gbeaty@chromium.org
-hans@chromium.org
-jbudorick@chromium.org
-kbr@chromium.org
+hypan@google.com
+kimstephanie@google.com
 martiniss@chromium.org
+mmoss@chromium.org
+
+# Other folks who understand the infrastructure well.
+dpranke@google.com
+hans@chromium.org
+kbr@chromium.org
 thakis@chromium.org
 tikuta@chromium.org
 ynovikov@chromium.org
 
-# TEAM: infra-dev@chromium.org
-# COMPONENT: Infra>Client>Chrome
+# For code coverage and PGO related.
+liaoyuke@chromium.org
+
+# Specific OWNERS to review changes to the non-inclusive terms PRESUBMIT checks
+per-file inclusive_language_presubmit_exempt_dirs.txt=efoo@chromium.org
+per-file update_inclusive_language_presubmit_exempt_dirs.sh=efoo@chromium.org
+per-file update_inclusive_language_presubmit_exempt_dirs.sh=seanmccullough@chromium.org

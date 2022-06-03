@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
@@ -26,10 +27,12 @@ constexpr size_t kDefaultEntryLimit = 100'000;
 // Section 10.1.
 static const unsigned kZeroTTLSeconds = 1;
 
-MDnsCache::Key::Key(unsigned type, const std::string& name,
+MDnsCache::Key::Key(unsigned type,
+                    const std::string& name,
                     const std::string& optional)
-    : type_(type), name_(name), optional_(optional) {
-}
+    : type_(type),
+      name_lowercase_(base::ToLowerASCII(name)),
+      optional_(optional) {}
 
 MDnsCache::Key::Key(const MDnsCache::Key& other) = default;
 
@@ -39,12 +42,13 @@ MDnsCache::Key& MDnsCache::Key::operator=(const MDnsCache::Key& other) =
 MDnsCache::Key::~Key() = default;
 
 bool MDnsCache::Key::operator<(const MDnsCache::Key& other) const {
-  return std::tie(name_, type_, optional_) <
-         std::tie(other.name_, other.type_, other.optional_);
+  return std::tie(name_lowercase_, type_, optional_) <
+         std::tie(other.name_lowercase_, other.type_, other.optional_);
 }
 
 bool MDnsCache::Key::operator==(const MDnsCache::Key& key) const {
-  return type_ == key.type_ && name_ == key.name_ && optional_ == key.optional_;
+  return type_ == key.type_ && name_lowercase_ == key.name_lowercase_ &&
+         optional_ == key.optional_;
 }
 
 // static
@@ -133,9 +137,10 @@ void MDnsCache::FindDnsRecords(unsigned type,
   DCHECK(results);
   results->clear();
 
+  const std::string name_lowercase = base::ToLowerASCII(name);
   auto i = mdns_cache_.lower_bound(Key(type, name, ""));
   for (; i != mdns_cache_.end(); ++i) {
-    if (i->first.name() != name ||
+    if (i->first.name_lowercase() != name_lowercase ||
         (type != 0 && i->first.type() != type)) {
       break;
     }
@@ -160,7 +165,7 @@ std::unique_ptr<const RecordParsed> MDnsCache::RemoveRecord(
     return result;
   }
 
-  return std::unique_ptr<const RecordParsed>();
+  return nullptr;
 }
 
 bool MDnsCache::IsCacheOverfilled() const {
@@ -184,9 +189,9 @@ base::Time MDnsCache::GetEffectiveExpiration(const RecordParsed* record) {
   base::TimeDelta ttl;
 
   if (record->ttl()) {
-    ttl = base::TimeDelta::FromSeconds(record->ttl());
+    ttl = base::Seconds(record->ttl());
   } else {
-    ttl = base::TimeDelta::FromSeconds(kZeroTTLSeconds);
+    ttl = base::Seconds(kZeroTTLSeconds);
   }
 
   return record->time_created() + ttl;

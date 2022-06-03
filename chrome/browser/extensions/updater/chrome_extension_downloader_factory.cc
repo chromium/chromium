@@ -58,7 +58,7 @@ ChromeExtensionDownloaderFactory::CreateForProfile(
     Profile* profile,
     ExtensionDownloaderDelegate* delegate) {
   std::unique_ptr<ExtensionDownloader> downloader = CreateForURLLoaderFactory(
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       delegate, extensions::GetPolicyVerifierFormat(), profile->GetPath());
 

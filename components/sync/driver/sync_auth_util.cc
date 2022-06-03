@@ -4,8 +4,7 @@
 
 #include "components/sync/driver/sync_auth_util.h"
 
-#include <vector>
-
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -16,13 +15,15 @@ namespace syncer {
 SyncAccountInfo::SyncAccountInfo() = default;
 
 SyncAccountInfo::SyncAccountInfo(const CoreAccountInfo& account_info,
-                                 bool is_primary)
-    : account_info(account_info), is_primary(is_primary) {}
+                                 bool is_sync_consented)
+    : account_info(account_info), is_sync_consented(is_sync_consented) {}
 
 SyncAccountInfo DetermineAccountToUse(
     signin::IdentityManager* identity_manager) {
-  return SyncAccountInfo(identity_manager->GetUnconsentedPrimaryAccountInfo(),
-                         /*is_primary=*/identity_manager->HasPrimaryAccount());
+  return SyncAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+      /*is_sync_consented=*/identity_manager->HasPrimaryAccount(
+          signin::ConsentLevel::kSync));
 }
 
 bool IsWebSignout(const GoogleServiceAuthError& auth_error) {

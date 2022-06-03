@@ -12,7 +12,7 @@
 #include <ostream>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 

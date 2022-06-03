@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -42,6 +41,12 @@ class MutableProfileOAuth2TokenServiceDelegate
       signin::AccountConsistencyMethod account_consistency,
       bool revoke_all_tokens_on_load,
       FixRequestErrorCallback fix_request_error_callback);
+
+  MutableProfileOAuth2TokenServiceDelegate(
+      const MutableProfileOAuth2TokenServiceDelegate&) = delete;
+  MutableProfileOAuth2TokenServiceDelegate& operator=(
+      const MutableProfileOAuth2TokenServiceDelegate&) = delete;
+
   ~MutableProfileOAuth2TokenServiceDelegate() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -105,6 +110,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   FRIEND_TEST_ALL_PREFIXES(
       MutableProfileOAuth2TokenServiceDelegateTest,
       LoadCredentialsClearsTokenDBWhenNoPrimaryAccount_DiceDisabled);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           RevokeAllCredentialsDuringLoad);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            PersistenceLoadCredentials);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -228,13 +235,11 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Revokes all the tokens after loading them. Secondary accounts will be
   // completely removed, and the primary account will be kept in authentication
   // error state.
-  const bool revoke_all_tokens_on_load_;
+  bool revoke_all_tokens_on_load_;
 
   // Callback function that attempts to correct request errors.  Best effort
   // only.  Returns true if the error was fixed and retry should be reattempted.
   FixRequestErrorCallback fix_request_error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutableProfileOAuth2TokenServiceDelegate);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_MUTABLE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

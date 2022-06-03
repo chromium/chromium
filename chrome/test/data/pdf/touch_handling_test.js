@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
+import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 function sendTouchStart(touches) {
   let id = 0;
@@ -17,8 +17,10 @@ function sendTouchStart(touches) {
     return new window.Touch(touchInit);
   });
 
-  const target = document.getElementById('content');
+  const target = viewer.shadowRoot.querySelector('#content');
   target.dispatchEvent(new TouchEvent('touchstart', {
+    bubbles: true,
+    composed: true,
     touches: touchList,
     targetTouches: touchList,
     changedtouches: touchList
@@ -27,6 +29,8 @@ function sendTouchStart(touches) {
 
 function createContextMenuEvent() {
   return new MouseEvent('contextmenu', {
+    bubbles: true,
+    composed: true,
     cancelable: true,
     sourceCapabilities: new InputDeviceCapabilities({firesTouchEvents: true})
   });
@@ -76,6 +80,6 @@ const tests = [
 ];
 
 const scriptingAPI = new PDFScriptingAPI(window, window);
-scriptingAPI.setLoadCallback(function() {
+scriptingAPI.setLoadCompleteCallback(function() {
   chrome.test.runTests(tests);
 });

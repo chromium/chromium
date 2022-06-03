@@ -5,11 +5,18 @@
 #include "storage/browser/file_system/external_mount_points.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+
+class GURL;
+
+namespace storage {
 
 namespace {
 
@@ -31,9 +38,9 @@ base::FilePath NormalizeFilePath(const base::FilePath& path) {
   return base::FilePath(path_str).NormalizePathSeparators();
 }
 
-bool IsOverlappingMountPathForbidden(storage::FileSystemType type) {
-  return type != storage::kFileSystemTypeNativeMedia &&
-         type != storage::kFileSystemTypeDeviceMedia;
+bool IsOverlappingMountPathForbidden(FileSystemType type) {
+  return type != kFileSystemTypeLocalMedia &&
+         type != kFileSystemTypeDeviceMedia;
 }
 
 // Wrapper around ref-counted ExternalMountPoints that will be used to lazily
@@ -41,23 +48,20 @@ bool IsOverlappingMountPathForbidden(storage::FileSystemType type) {
 class SystemMountPointsLazyWrapper {
  public:
   SystemMountPointsLazyWrapper()
-      : system_mount_points_(storage::ExternalMountPoints::CreateRefCounted()) {
-  }
+      : system_mount_points_(ExternalMountPoints::CreateRefCounted()) {}
 
   ~SystemMountPointsLazyWrapper() = default;
 
-  storage::ExternalMountPoints* get() { return system_mount_points_.get(); }
+  ExternalMountPoints* get() { return system_mount_points_.get(); }
 
  private:
-  scoped_refptr<storage::ExternalMountPoints> system_mount_points_;
+  scoped_refptr<ExternalMountPoints> system_mount_points_;
 };
 
 base::LazyInstance<SystemMountPointsLazyWrapper>::Leaky
     g_external_mount_points = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
-
-namespace storage {
 
 class ExternalMountPoints::Instance {
  public:
@@ -67,6 +71,10 @@ class ExternalMountPoints::Instance {
       : type_(type),
         path_(path.StripTrailingSeparators()),
         mount_option_(mount_option) {}
+
+  Instance(const Instance&) = delete;
+  Instance& operator=(const Instance&) = delete;
+
   ~Instance() = default;
 
   FileSystemType type() const { return type_; }
@@ -77,8 +85,6 @@ class ExternalMountPoints::Instance {
   const FileSystemType type_;
   const base::FilePath path_;
   const FileSystemMountOption mount_option_;
-
-  DISALLOW_COPY_AND_ASSIGN(Instance);
 };
 
 //--------------------------------------------------------------------------
@@ -114,7 +120,7 @@ bool ExternalMountPoints::RegisterFileSystem(
 bool ExternalMountPoints::HandlesFileSystemMountType(
     FileSystemType type) const {
   return type == kFileSystemTypeExternal ||
-         type == kFileSystemTypeNativeForPlatformApp;
+         type == kFileSystemTypeLocalForPlatformApp;
 }
 
 bool ExternalMountPoints::RevokeFileSystem(const std::string& mount_name) {
@@ -185,18 +191,20 @@ bool ExternalMountPoints::CrackVirtualPath(
   return true;
 }
 
-FileSystemURL ExternalMountPoints::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url = FileSystemURL(url);
+FileSystemURL ExternalMountPoints::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  FileSystemURL filesystem_url = FileSystemURL(url, storage_key);
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);
 }
 
 FileSystemURL ExternalMountPoints::CreateCrackedFileSystemURL(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type,
-    const base::FilePath& path) const {
-  return CrackFileSystemURL(FileSystemURL(origin, type, path));
+    const base::FilePath& virtual_path) const {
+  return CrackFileSystemURL(FileSystemURL(storage_key, type, virtual_path));
 }
 
 void ExternalMountPoints::AddMountPointInfosTo(
@@ -232,11 +240,11 @@ base::FilePath ExternalMountPoints::CreateVirtualRootPath(
 }
 
 FileSystemURL ExternalMountPoints::CreateExternalFileSystemURL(
-    const GURL& origin,
+    const blink::StorageKey& storage_key,
     const std::string& mount_name,
     const base::FilePath& path) const {
   return CreateCrackedFileSystemURL(
-      url::Origin::Create(origin), storage::kFileSystemTypeExternal,
+      storage_key, kFileSystemTypeExternal,
       // Avoid using FilePath::Append as path may be an absolute path.
       base::FilePath(CreateVirtualRootPath(mount_name).value() +
                      base::FilePath::kSeparators[0] + path.value()));
@@ -263,16 +271,17 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
     return FileSystemURL();
 
   base::FilePath virtual_path = url.path();
-  if (url.type() == kFileSystemTypeNativeForPlatformApp) {
-#if defined(OS_CHROMEOS)
+  if (url.type() == kFileSystemTypeLocalForPlatformApp) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // On Chrome OS, find a mount point and virtual path for the external fs.
     if (!GetVirtualPath(url.path(), &virtual_path))
       return FileSystemURL();
 #else
     // On other OS, it is simply a native local path.
-    return FileSystemURL(url.origin(), url.mount_type(), url.virtual_path(),
-                         url.mount_filesystem_id(), kFileSystemTypeNativeLocal,
-                         url.path(), url.filesystem_id(), url.mount_option());
+    return FileSystemURL(url.storage_key(), url.mount_type(),
+                         url.virtual_path(), url.mount_filesystem_id(),
+                         kFileSystemTypeLocal, url.path(), url.filesystem_id(),
+                         url.mount_option());
 #endif
   }
 
@@ -288,7 +297,7 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
   }
 
   return FileSystemURL(
-      url.origin(), url.mount_type(), url.virtual_path(),
+      url.storage_key(), url.mount_type(), url.virtual_path(),
       !url.filesystem_id().empty() ? url.filesystem_id() : mount_name,
       cracked_type, cracked_path, cracked_id.empty() ? mount_name : cracked_id,
       cracked_mount_option);

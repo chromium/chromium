@@ -1,9 +1,0 @@
-Verify that UISourceCodeFrames are highlighted based on their network UISourceCode.
-
-Network UISourceCodeFrame highlighter type: text/javascript
-FileSystem UISourceCodeFrame highlighter type: text/plain
-Adding binding
-FileSystem UISourceCodeFrame highlighter type: text/javascript
-Remove binding
-FileSystem UISourceCodeFrame highlighter type: text/plain
-

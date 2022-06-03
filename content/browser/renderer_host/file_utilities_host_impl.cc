@@ -8,10 +8,14 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace content {
 
@@ -33,7 +37,7 @@ void FileUtilitiesHostImpl::GetFileInfo(const base::FilePath& path,
   // permission to read the file.
   auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (!security_policy->CanReadFile(process_id_, path)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -41,8 +45,24 @@ void FileUtilitiesHostImpl::GetFileInfo(const base::FilePath& path,
   if (base::GetFileInfo(path, &info)) {
     std::move(callback).Run(info);
   } else {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
   }
 }
+
+#if defined(OS_MAC)
+void FileUtilitiesHostImpl::SetLength(base::File file,
+                                      const int64_t length,
+                                      SetLengthCallback callback) {
+  if (base::mac::IsAtLeastOS10_15()) {
+    mojo::ReportBadMessage("SetLength() disabled on this OS.");
+    // No error message is specified as the ReportBadMessage() call should close
+    // the pipe and kill the renderer.
+    std::move(callback).Run(std::move(file), false);
+    return;
+  }
+  bool result = file.SetLength(length);
+  std::move(callback).Run(std::move(file), result);
+}
+#endif  // defined(OS_MAC)
 
 }  // namespace content

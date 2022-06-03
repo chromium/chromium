@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -46,7 +46,7 @@ AutofillProfileValidator::ValidationRequest::ValidationRequest(
                              weak_factory_.GetWeakPtr()));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, on_timeout_.callback(),
-      base::TimeDelta::FromSeconds(kRulesLoadingTimeoutSeconds));
+      base::Seconds(kRulesLoadingTimeoutSeconds));
 }
 
 AutofillProfileValidator::ValidationRequest::~ValidationRequest() {

@@ -8,13 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -101,8 +102,11 @@ class AddressNormalizerImpl::NormalizationRequest {
                        weak_ptr_factory_.GetWeakPtr(),
                        /*success=*/false,
                        /*address_validator=*/nullptr),
-        base::TimeDelta::FromSeconds(timeout_seconds));
+        base::Seconds(timeout_seconds));
   }
+
+  NormalizationRequest(const NormalizationRequest&) = delete;
+  NormalizationRequest& operator=(const NormalizationRequest&) = delete;
 
   ~NormalizationRequest() {}
 
@@ -140,8 +144,6 @@ class AddressNormalizerImpl::NormalizationRequest {
 
   bool has_responded_ = false;
   base::WeakPtrFactory<NormalizationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizationRequest);
 };
 
 AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,
@@ -156,9 +158,8 @@ AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,
   // shutdown. This is important to prevent an access race when the destructor
   // of |storage| accesses an ObserverList that lives on the current sequence.
   // https://crbug.com/829122
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &CreateAddressValidator, std::move(source),
           DeleteOnTaskRunnerStorageUniquePtr(

@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "chrome/common/media_galleries/metadata_types.h"
-#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom-shared.h"
 #include "mojo/public/cpp/bindings/array_traits_span.h"
 
 namespace mojo {

@@ -8,6 +8,7 @@ module mojo_base.mojom;
 //
 // One notable caveat is that Value supports arbitrary binary data, which JSON
 // does not support natively.
+[Stable]
 union Value {
   // Null type placeholder. This field is never used.
   uint8 null_value;
@@ -29,10 +30,12 @@ union Value {
 // declaration. Though both of these types are mapped to base::Value in C++,
 // the generated deserialization will guarantee that the method is only invoked
 // with a base::Value of the correct subtype.
+[Stable]
 struct DictionaryValue {
   map<string, Value> storage;
 };
 
+[Stable]
 struct ListValue {
   array<Value> storage;
 };

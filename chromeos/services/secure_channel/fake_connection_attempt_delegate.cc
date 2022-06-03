@@ -4,7 +4,7 @@
 
 #include "chromeos/services/secure_channel/fake_connection_attempt_delegate.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 
 namespace chromeos {

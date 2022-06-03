@@ -4,7 +4,7 @@
 
 // https://w3c.github.io/battery/#the-navigator-interface
 [
-    ImplementedAs=NavigatorBattery
+    ImplementedAs=BatteryManager
 ] partial interface Navigator {
     [CallWith=ScriptState, MeasureAs=BatteryStatusGetBattery] Promise<BatteryManager> getBattery();
 };

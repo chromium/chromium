@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Only <a>s, <area>s and <link>s that have a href attribute match ':link' assert_array_equals: lengths differ, expected 7 got 3
-FAIL ':link' doesn't match elements whos href attribute has been removed assert_array_equals: lengths differ, expected 6 got 3
-Harness: the test ran to completion.
-

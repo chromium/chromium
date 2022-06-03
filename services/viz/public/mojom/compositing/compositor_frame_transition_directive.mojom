@@ -1,0 +1,58 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
+import "services/viz/public/mojom/compositing/shared_element_resource_id.mojom";
+
+enum CompositorFrameTransitionDirectiveType {
+  kSave,
+  kAnimate,
+  kAnimateRenderer,
+  kRelease
+};
+
+enum CompositorFrameTransitionDirectiveEffect {
+  kNone,
+  kCoverDown,
+  kCoverLeft,
+  kCoverRight,
+  kCoverUp,
+  kExplode,
+  kFade,
+  kImplode,
+  kRevealDown,
+  kRevealLeft,
+  kRevealRight,
+  kRevealUp
+};
+
+// These values are currently limited to 5 seconds so no animation can run for
+// longer than 10 seconds.
+struct CompositorFrameTransitionDirectiveConfig {
+  mojo_base.mojom.TimeDelta duration;
+  mojo_base.mojom.TimeDelta delay;
+};
+
+struct CompositorFrameTransitionDirectiveSharedElement {
+  CompositorRenderPassId render_pass_id;
+  CompositorFrameTransitionDirectiveConfig config;
+  SharedElementResourceId shared_element_resource_id;
+};
+
+// See components/viz/common/quads/compositor_frame_transition_directive.h
+// for a description of this struct.
+struct CompositorFrameTransitionDirective {
+  uint32 sequence_id;
+
+  CompositorFrameTransitionDirectiveType type;
+
+  CompositorFrameTransitionDirectiveEffect effect;
+
+  CompositorFrameTransitionDirectiveConfig root_config;
+
+  array<CompositorFrameTransitionDirectiveSharedElement> shared_elements;
+};

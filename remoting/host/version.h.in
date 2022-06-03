@@ -9,7 +9,7 @@
 #ifndef REMOTING_VERSION_H_
 #define REMOTING_VERSION_H_
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 
 #define HOST_BUNDLE_NAME "@MAC_HOST_BUNDLE_NAME@"
 #define NATIVE_MESSAGING_HOST_BUNDLE_NAME \
@@ -17,6 +17,6 @@
 #define REMOTE_ASSISTANCE_HOST_BUNDLE_NAME \
   "@MAC_REMOTE_ASSISTANCE_HOST_BUNDLE_NAME@"
 
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
 #endif  // REMOTING_VERSION_H_

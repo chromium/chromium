@@ -5,12 +5,16 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 
-#include <base/stl_util.h>
-
+#include "base/containers/contains.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/camera_metadata.mojom.h"
 
 namespace media {
+
+struct Rational {
+  int32_t numerator;
+  int32_t denominator;
+};
 
 // Helper traits for converting native types to cros::mojom::EntryType.
 template <typename T, typename Enable = void>

@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-30 AVD with playstore (user build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "iyhul4Fb1wyCHoMUUxoRoy_8gaCnX2qhZ90-6c2bzd0C"  # 30.7.4
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-30/google_apis_playstore/x86"
+  version: "1ShvIJk3-tzuDO4Kui3Qtobt-6hkQd42qhV60Q_wNmUC" # version:9
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-30;google_apis_playstore;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-30/google_apis_playstore/x86"
+  version: "KZ8egkMqSIe0_DK_NmVoTaiVixqrMGklAp2a6F6xSYAC"  # created in bb_id 8840351132621657713
+  dest_path: ".android"
+}
+avd_name: "android_30_google_apis_playstore_x86"

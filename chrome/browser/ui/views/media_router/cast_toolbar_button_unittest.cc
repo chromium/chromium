@@ -6,8 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,10 +17,14 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -68,6 +71,10 @@ class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
 class CastToolbarButtonTest : public ChromeViewsTestBase {
  public:
   CastToolbarButtonTest() = default;
+
+  CastToolbarButtonTest(const CastToolbarButtonTest&) = delete;
+  CastToolbarButtonTest& operator=(const CastToolbarButtonTest&) = delete;
+
   ~CastToolbarButtonTest() override = default;
 
   void SetUp() override {
@@ -75,7 +82,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
 
     profile_ = std::make_unique<TestingProfile>();
 
-    MediaRouterFactory::GetInstance()->SetTestingFactory(
+    ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&MockMediaRouter::Create));
     MediaRouterUIServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildUIService));
@@ -83,41 +90,37 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams browser_params(profile_.get(), true);
     browser_params.window = window_.get();
-    browser_ = std::make_unique<Browser>(browser_params);
-    MediaRouter* media_router =
-        MediaRouterFactory::GetApiForBrowserContext(profile_.get());
+    browser_ = std::unique_ptr<Browser>(Browser::Create(browser_params));
+    MockMediaRouter* media_router = static_cast<MockMediaRouter*>(
+        MediaRouterFactory::GetApiForBrowserContext(profile_.get()));
+    logger_ = std::make_unique<LoggerImpl>();
+    ON_CALL(*media_router, GetLogger())
+        .WillByDefault(testing::Return(logger_.get()));
+
     auto context_menu = std::make_unique<MediaRouterContextualMenu>(
         browser_.get(), false, &context_menu_observer_);
-    button_ = std::make_unique<CastToolbarButton>(browser_.get(), media_router,
-                                                  std::move(context_menu));
 
     // Button needs to be in a widget to be able to access ThemeProvider.
-    widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    widget_->Init(std::move(params));
-    widget_->SetContentsView(button_.get());
+    widget_ = CreateTestWidget();
+    button_ = widget_->SetContentsView(std::make_unique<CastToolbarButton>(
+        browser_.get(), media_router, std::move(context_menu)));
 
-    ui::NativeTheme* native_theme = button_->GetNativeTheme();
+    const ui::ColorProvider* color_provider = button_->GetColorProvider();
     idle_icon_ = gfx::Image(
         gfx::CreateVectorIcon(vector_icons::kMediaRouterIdleIcon,
                               button_->GetThemeProvider()->GetColor(
                                   ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)));
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
-        native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityMedium)));
+        color_provider->GetColor(ui::kColorAlertMediumSeverity)));
     error_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterErrorIcon,
-        native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityHigh)));
+        color_provider->GetColor(ui::kColorAlertHighSeverity)));
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveIcon, gfx::kGoogleBlue500));
   }
 
   void TearDown() override {
-    button_.reset();
     widget_.reset();
     browser_.reset();
     window_.reset();
@@ -133,9 +136,10 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<CastToolbarButton> button_;
+  CastToolbarButton* button_ = nullptr;  // owned by |widget_|.
   MockContextMenuObserver context_menu_observer_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<LoggerImpl> logger_;
 
   gfx::Image idle_icon_;
   gfx::Image warning_icon_;
@@ -146,9 +150,6 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
       CreateLocalDisplayRoute()};
   const std::vector<MediaRoute> non_local_display_route_list_ = {
       CreateNonLocalDisplayRoute(), CreateLocalNonDisplayRoute()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastToolbarButtonTest);
 };
 
 TEST_F(CastToolbarButtonTest, ShowAndHideButton) {

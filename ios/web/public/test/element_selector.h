@@ -36,6 +36,11 @@
 // Returns an ElementSelector to retrieve an element by a xpath query.
 + (ElementSelector*)selectorWithXPathQuery:(const std::string&)query;
 
+// Returns an ElementSelector to retrieve an element described by
+// |selectorDescription| using |selectorScript|.
++ (ElementSelector*)selectorWithScript:(NSString*)selectorScript
+                   selectorDescription:(NSString*)selectorDescription;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

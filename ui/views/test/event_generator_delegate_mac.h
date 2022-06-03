@@ -22,7 +22,7 @@ namespace test {
 std::unique_ptr<ui::test::EventGeneratorDelegate>
 CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
                                 gfx::NativeWindow root_window,
-                                gfx::NativeWindow window);
+                                gfx::NativeWindow target_window);
 
 }  // namespace test
 }  // namespace views

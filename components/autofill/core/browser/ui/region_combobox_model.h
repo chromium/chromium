@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -31,11 +30,14 @@ class RegionDataLoader;
 class RegionComboboxModel : public ui::ComboboxModel {
  public:
   RegionComboboxModel();
+
+  RegionComboboxModel(const RegionComboboxModel&) = delete;
+  RegionComboboxModel& operator=(const RegionComboboxModel&) = delete;
+
   ~RegionComboboxModel() override;
 
   void LoadRegionData(const std::string& country_code,
-                      RegionDataLoader* region_data_loader,
-                      int64_t timeout_ms);
+                      RegionDataLoader* region_data_loader);
 
   bool IsPendingRegionDataLoad() const {
     return region_data_loader_ != nullptr;
@@ -49,8 +51,8 @@ class RegionComboboxModel : public ui::ComboboxModel {
 
   // ui::ComboboxModel implementation:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) override;
-  bool IsItemSeparatorAt(int index) override;
+  std::u16string GetItemAt(int index) const override;
+  bool IsItemSeparatorAt(int index) const override;
   void AddObserver(ui::ComboboxModelObserver* observer) override;
   void RemoveObserver(ui::ComboboxModelObserver* observer) override;
 
@@ -72,7 +74,8 @@ class RegionComboboxModel : public ui::ComboboxModel {
   // To be called when the data for the given country code was loaded.
   base::ObserverList<ui::ComboboxModelObserver> observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(RegionComboboxModel);
+  // Weak pointer factory.
+  base::WeakPtrFactory<RegionComboboxModel> weak_factory_{this};
 };
 
 }  // namespace autofill

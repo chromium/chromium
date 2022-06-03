@@ -10,9 +10,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
-import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * The activity that displays the bookmark UI on the phone. It keeps a {@link BookmarkManager}
@@ -28,7 +30,12 @@ public class BookmarkActivity extends SnackbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBookmarkManager = new BookmarkManager(this, true, getSnackbarManager());
+        boolean isIncognito = IntentUtils.safeGetBooleanExtra(
+                getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
+        mBookmarkManager = new BookmarkManager(this,
+                IntentUtils.safeGetParcelableExtra(
+                        getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
+                true, isIncognito, getSnackbarManager());
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManager.updateForUrl(url);
@@ -52,7 +59,7 @@ public class BookmarkActivity extends SnackbarActivity {
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
             BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(data.getStringExtra(
                     INTENT_VISIT_BOOKMARK_ID));
-            mBookmarkManager.openBookmark(bookmarkId, BookmarkLaunchLocation.BOOKMARK_EDITOR);
+            mBookmarkManager.openBookmark(bookmarkId);
         }
     }
 

@@ -13,8 +13,14 @@ import(
     "//chrome/android/features/start_surface/internal/junit/start_surface_junit_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
+import("//chrome/browser/commerce/price_tracking/android/test_java_sources.gni")
+import(
+    "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
+import("//chrome/browser/share/android/test_java_sources.gni")
+import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/omnibox/browser/test_java_sources.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 chrome_java_sources += public_autofill_assistant_java_sources
@@ -29,22 +35,27 @@ if (enable_offline_pages_harness) {
   chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/offlinepages/OfflinePageSavePageLaterEvaluationTest.java" ]
 }
 
-if (enable_feed_in_chrome) {
-  chrome_junit_test_java_sources += feed_junit_test_java_sources
-  chrome_test_java_sources += feed_test_java_sources
-}
-
+chrome_junit_test_java_sources += feed_junit_test_java_sources
+chrome_test_java_sources += feed_test_java_sources
 chrome_test_java_sources += start_surface_test_java_sources
 chrome_junit_test_java_sources += start_surface_junit_java_sources
 chrome_junit_test_java_sources += tab_management_junit_java_sources
+chrome_test_java_sources += omnibox_test_java_sources
+chrome_junit_test_java_sources += price_tracking_junit_test_java_sources
+chrome_test_java_sources += price_tracking_test_java_sources
 chrome_test_java_sources += tab_management_test_java_sources
+chrome_test_java_sources += share_test_java_sources
+chrome_junit_test_java_sources += share_junit_test_java_sources
+chrome_junit_test_java_deps = share_junit_test_java_deps
+chrome_junit_test_java_deps += feed_test_deps
+chrome_junit_test_java_sources += commerce_subscriptions_junit_test_sources
+chrome_junit_test_java_deps += commerce_subscriptions_junit_test_deps
+chrome_test_java_sources += commerce_subscriptions_java_test_sources
 
 if (enable_arcore) {
   chrome_java_sources += [
-    "java/src/org/chromium/chrome/browser/vr/ArCoreInstallUtils.java",
-    "java/src/org/chromium/chrome/browser/vr/ArCoreJavaUtils.java",
-    "java/src/org/chromium/chrome/browser/vr/ArCoreShim.java",
+    "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
     "java/src/org/chromium/chrome/browser/vr/ArDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/ArImmersiveOverlay.java",
   ]
 }

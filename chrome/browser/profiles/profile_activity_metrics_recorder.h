@@ -6,20 +6,27 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_ACTIVITY_METRICS_RECORDER_H_
 
 #include <stddef.h>
+#include <string>
 
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 class Browser;
-class Profile;
 
 class ProfileActivityMetricsRecorder
     : public BrowserListObserver,
-      public metrics::DesktopSessionDurationTracker::Observer {
+      public metrics::DesktopSessionDurationTracker::Observer,
+      public ProfileObserver {
  public:
+  ProfileActivityMetricsRecorder(const ProfileActivityMetricsRecorder&) =
+      delete;
+  ProfileActivityMetricsRecorder& operator=(
+      const ProfileActivityMetricsRecorder&) = delete;
   // Initializes a |ProfileActivityMetricsRecorder| object and starts
   // tracking/recording.
   static void Initialize();
@@ -34,18 +41,27 @@ class ProfileActivityMetricsRecorder
   void OnSessionEnded(base::TimeDelta session_length,
                       base::TimeTicks session_end) override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
  private:
   ProfileActivityMetricsRecorder();
   ~ProfileActivityMetricsRecorder() override;
 
-  void OnUserAction(const std::string& action);
+  void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
+  // The profile of the last active window.
   Profile* last_active_profile_ = nullptr;
-  base::TimeTicks profile_session_start_;
+
+  // Profile of the currently running session, if there is any. Reset after
+  // inactivity.
+  Profile* running_session_profile_ = nullptr;
+  base::TimeTicks running_session_start_;
+  base::TimeTicks last_session_end_;
 
   base::ActionCallback action_callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(ProfileActivityMetricsRecorder);
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_ACTIVITY_METRICS_RECORDER_H_

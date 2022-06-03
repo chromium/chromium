@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.password_manager;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -13,6 +13,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Class containing all data that customizes the contents displayed in the dialog.
  */
 public class PasswordManagerDialogContents {
+
     private final String mTitle;
     private final String mDetails;
     private final String mPrimaryButtonText;

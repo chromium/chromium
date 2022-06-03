@@ -8,13 +8,12 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/wallpaper_info.h"
+#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,6 +37,9 @@ class ASH_EXPORT WallpaperResizer {
                    const gfx::Size& target_size,
                    const WallpaperInfo& info,
                    scoped_refptr<base::TaskRunner> task_runner);
+
+  WallpaperResizer(const WallpaperResizer&) = delete;
+  WallpaperResizer& operator=(const WallpaperResizer&) = delete;
 
   ~WallpaperResizer();
 
@@ -79,8 +81,6 @@ class ASH_EXPORT WallpaperResizer {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<WallpaperResizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperResizer);
 };
 
 }  // namespace ash

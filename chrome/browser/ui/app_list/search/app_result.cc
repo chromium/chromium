@@ -16,10 +16,11 @@ AppResult::AppResult(Profile* profile,
     : profile_(profile),
       app_id_(app_id),
       controller_(controller) {
-  SetDisplayType(is_recommendation
-                     ? ash::SearchResultDisplayType::kRecommendation
-                     : ash::SearchResultDisplayType::kTile);
+  SetDisplayType(ash::SearchResultDisplayType::kTile);
   SetResultType(ash::AppListSearchResultType::kInstalledApp);
+  SetMetricsType(ash::SEARCH_RESULT_TYPE_BOUNDARY);
+  SetIsRecommendation(is_recommendation);
+  SetCategory(Category::kApps);
 }
 
 AppResult::~AppResult() {
@@ -35,16 +36,11 @@ void AppResult::UpdateFromLastLaunchedOrInstalledTime(
     return;
   }
 
-  base::TimeDelta delta = current_time - old_time;
-  const int kSecondsInWeek = 60 * 60 * 24 * 7;
+  const double weeks = (current_time - old_time) / base::Days(7);
 
   // Set the relevance to a value between 0 and 1. This function decays as the
   // time delta increases and reaches a value of 0.5 at 1 week.
-  set_relevance(1 / (1 + delta.InSecondsF() / kSecondsInWeek));
-}
-
-ash::SearchResultType AppResult::GetSearchResultType() const {
-  return ash::SEARCH_RESULT_TYPE_BOUNDARY;
+  set_relevance(1 / (weeks + 1));
 }
 
 }  // namespace app_list

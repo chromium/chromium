@@ -1,0 +1,5 @@
+Document
+++Button Name='Toggle button, pressed, collapsed' ExpandCollapse.ExpandCollapseState='Collapsed' Toggle.ToggleState='On'
+++Button Name='Toggle button, not pressed, collapsed' ExpandCollapse.ExpandCollapseState='Collapsed' Toggle.ToggleState='Off'
+++Button Name='Toggle button, pressed, expanded' ExpandCollapse.ExpandCollapseState='Expanded' Toggle.ToggleState='On'
+++Button Name='Toggle button, not pressed, collapsed"' ExpandCollapse.ExpandCollapseState='Expanded' Toggle.ToggleState='Off'

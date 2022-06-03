@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font_list.h"
@@ -48,13 +50,13 @@ TEST(TableUtilsTest, SetWidthHonored) {
   EXPECT_EQ("20,30", IntVectorToString(result));
 
   // Same with some padding, it should be ignored.
-  result = CalculateTableColumnSizes(
-      100, 0, font_list, font_list, 2, 0, columns, &model);
+  result = CalculateTableColumnSizes(100, 0, font_list, font_list, 2, 0,
+                                     columns, &model);
   EXPECT_EQ("20,30", IntVectorToString(result));
 
   // Same with not enough space, it shouldn't matter.
-  result = CalculateTableColumnSizes(
-      10, 0, font_list, font_list, 2, 0, columns, &model);
+  result = CalculateTableColumnSizes(10, 0, font_list, font_list, 2, 0, columns,
+                                     &model);
   EXPECT_EQ("20,30", IntVectorToString(result));
 }
 
@@ -92,8 +94,8 @@ TEST(TableUtilsTest, SingleResizableColumn) {
   EXPECT_EQ(500 - result[0] - result[1], result[2]);
 
   // The same with a slightly larger width passed in.
-  result = CalculateTableColumnSizes(
-      1000, 0, font_list, font_list, 0, 0, columns, &model);
+  result = CalculateTableColumnSizes(1000, 0, font_list, font_list, 0, 0,
+                                     columns, &model);
   EXPECT_EQ(result[0],
             WidthForContent(font_list, font_list, 0, 0, columns[0], &model));
   EXPECT_EQ(result[1],
@@ -101,21 +103,21 @@ TEST(TableUtilsTest, SingleResizableColumn) {
   EXPECT_EQ(1000 - result[0] - result[1], result[2]);
 
   // Verify padding for the first column is honored.
-  result = CalculateTableColumnSizes(
-      1000, 10, font_list, font_list, 0, 0, columns, &model);
-  EXPECT_EQ(result[0],
-            WidthForContent(font_list, font_list, 0, 0, columns[0], &model)
-                + 10);
+  result = CalculateTableColumnSizes(1000, 10, font_list, font_list, 0, 0,
+                                     columns, &model);
+  EXPECT_EQ(
+      result[0],
+      WidthForContent(font_list, font_list, 0, 0, columns[0], &model) + 10);
   EXPECT_EQ(result[1],
             WidthForContent(font_list, font_list, 0, 0, columns[1], &model));
   EXPECT_EQ(1000 - result[0] - result[1], result[2]);
 
   // Just enough space to show the first two columns. Should force last column
   // to min size.
-  result = CalculateTableColumnSizes(
-      1000, 0, font_list, font_list, 0, 0, columns, &model);
-  result = CalculateTableColumnSizes(
-      result[0] + result[1], 0, font_list, font_list, 0, 0, columns, &model);
+  result = CalculateTableColumnSizes(1000, 0, font_list, font_list, 0, 0,
+                                     columns, &model);
+  result = CalculateTableColumnSizes(result[0] + result[1], 0, font_list,
+                                     font_list, 0, 0, columns, &model);
   EXPECT_EQ(result[0],
             WidthForContent(font_list, font_list, 0, 0, columns[0], &model));
   EXPECT_EQ(result[1],

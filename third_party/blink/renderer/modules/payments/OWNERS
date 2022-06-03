@@ -1,12 +1,6 @@
-# TEAM: paymentrequest@chromium.org
-# COMPONENT: Blink>Payments
+file://components/payments/OWNERS
 
-jinho.bang@samsung.com
-mathp@chromium.org
-mek@chromium.org
-rouslan@chromium.org
-danyao@chromium.org
-sahel@chromium.org
+zino@chromium.org
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

@@ -248,6 +248,13 @@
     </Expand>
   </Type>
 
+  <Type Name="std::__1::priority_queue&lt;*&gt;">
+    <DisplayString>{c}</DisplayString>
+    <Expand>
+      <ExpandedItem>c</ExpandedItem>
+      <Item Name="[comp]">comp</Item>
+    </Expand>
+  </Type>
 
   <Type Name="std::__1::set&lt;*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
@@ -283,11 +290,81 @@
     </Expand>
   </Type>
 
-  <Type Name="std::__1::priority_queue&lt;*&gt;">
-    <DisplayString>{c}</DisplayString>
+  <Type Name="std::__1::__tuple_leaf&lt;*,*,0&gt;">
+    <DisplayString>{__value_}</DisplayString>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;&gt;">
+    <DisplayString>()</DisplayString>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_})</DisplayString>
+      <Expand>
+          <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      </Expand>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*,*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_})</DisplayString>
     <Expand>
-      <ExpandedItem>c</ExpandedItem>
-      <Item Name="[comp]">comp</Item>
+      <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*,*,*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_})</DisplayString>
+    <Expand>
+      <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*,*,*,*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_})</DisplayString>
+    <Expand>
+      <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*,*,*,*,*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;4,$T5,0&gt;)__base_})</DisplayString>
+    <Expand>
+      <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[4]">(std::__1::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*,*,*,*,*,*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;4,$T5,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;5,$T6,0&gt;)__base_})</DisplayString>
+    <Expand>
+      <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[4]">(std::__1::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
+      <Item Name="[5]">(std::__1::__tuple_leaf&lt;5,$T6,0&gt;)__base_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::tuple&lt;*,*,*,*,*,*,*&gt;">
+    <DisplayString>({(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;4,$T5,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;5,$T6,0&gt;)__base_}, {(std::__1::__tuple_leaf&lt;6,$T7,0&gt;)__base_})</DisplayString>
+    <Expand>
+      <Item Name="[0]">(std::__1::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__1::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__1::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__1::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[4]">(std::__1::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
+      <Item Name="[5]">(std::__1::__tuple_leaf&lt;5,$T6,0&gt;)__base_</Item>
+      <Item Name="[6]">(std::__1::__tuple_leaf&lt;6,$T7,0&gt;)__base_</Item>
     </Expand>
   </Type>
 

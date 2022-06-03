@@ -1,0 +1,242 @@
+<link rel="stylesheet"
+    href="chrome://resources/chromeos/colors/cros_styles.css">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+<link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+<template>
+  <style include="cr-shared-style diagnostics-fonts">
+    :host {
+      --diagnostics-box-shadow: var(--cr-card-shadow);
+      --diagnostics-box-shadow-elevation-2: var(--cr-elevation-2);
+
+      --diagnostics-card-icon: {
+        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        background-color: var(--google-blue-50);
+        border-radius: 50%;
+        padding: 8px;
+      };
+    }
+
+    html {
+      background-color: var(--cros-bg-color);
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--google-grey-200);
+      display: block;
+      height: 1px;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      top: 2px;
+    }
+
+    .card-width {
+      width: 100%;
+    }
+
+    .data-point-margin-end {
+      margin-right: 20px;
+    }
+
+    .data-point-margin-start {
+      margin-left: 20px;
+    }
+
+    data-point[orientation=horizontal] {
+      margin: 9px 0;
+    }
+
+    data-point[orientation=horizontal]:first-of-type {
+      margin-top: 8px;
+    }
+
+    data-point[orientation=horizontal]:last-of-type {
+      margin-bottom: 8px;
+    }
+
+    paper-tooltip {
+      --paper-tooltip-min-width: auto;
+      line-height: 18px;
+    }
+
+    .data-point-container {
+      display: flex;
+      flex-direction: column;
+      width: 40%;
+    }
+
+    .diagnostics-cards-container {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      width: var(--content-container-width);
+    }
+
+    .diagnostics-cards-container-nav {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      width: var(--container-max-width-nav);
+      max-width: var(--card-container-max-width);
+    }
+
+    .diagnostics-chip {
+      @apply --diagnostics-overview-font;
+      background-color: var(--google-grey-200);
+      border-radius: 16px;
+      height: 20px;
+      line-height: 20px;
+      padding: 0px 8px;
+    }
+
+    .divider {
+      border-left: 1px solid var(--google-grey-200);
+      height: 32px;
+      padding-inline: 16px;
+      position: relative;
+      top: 24%;
+    }
+
+    .divider-horizontal {
+      align-self: center;
+      border-left: 1px solid var(--google-grey-200);
+      height: var(--divider-horizontal-height, 94px);
+      margin: 10px 20px;
+    }
+
+    .grey-container {
+      background-color: rgba(var(--google-grey-200-rgb), .38);
+      border-radius: 4px;
+      padding: 8px 20px;
+    }
+
+    .horizontal-data-point-container {
+      display: grid;
+      margin: 20px 0;
+      grid-template-columns: 1fr 40px 1fr;
+    }
+
+    .horizontal-data-point-container .data-point-container {
+      width: max-content;
+    }
+
+    .link-text {
+      color: var(--google-blue-600);
+      cursor: pointer;
+    }
+
+    .spacing {
+      margin-bottom: 16px;
+      margin-top: 12px;
+      padding-inline: 20px;
+    }
+
+    @media (min-width:600px) {
+      :host {
+        --container-padding: 24px;
+        --content-container-width: 552px;
+        --chart-width: 452px;
+        --chart-width-nav: 452px;
+        --data-point-container-padding: 44px;
+        --card-container-max-width: 650px;
+        }
+    }
+
+    @media (min-width: 650px) {
+      :host {
+        --chart-width-nav: 502px;
+        }
+    }
+
+    @media (min-width:769px) {
+      :host {
+        --chart-width-nav: 420px;
+        }
+    }
+
+    @media (min-width: 789px) {
+      :host {
+        --chart-width-nav: 440px;
+        }
+    }
+
+    @media (min-width: 809px) {
+      :host {
+        --chart-width-nav: 460px;
+        }
+    }
+
+    @media (min-width: 829px) {
+      :host {
+        --chart-width-nav: 480px;
+        }
+    }
+
+    @media (min-width: 849px) {
+      :host {
+        --chart-width-nav: 500px;
+        }
+    }
+
+    @media (min-width: 869px) {
+      :host {
+        --chart-width-nav: 520px;
+        }
+    }
+
+    @media (min-width: 900px) {
+      :host {
+        --chart-width-nav: 540px;
+        }
+    }
+
+    @media (min-width: 925px) {
+      :host {
+        --chart-width-nav: 560px;
+        }
+    }
+
+    @media (min-width:768px) {
+      :host {
+        --container-padding: 64px;
+        --content-container-width: 640px;
+        --chart-width: 540px;
+        --data-point-container-padding: 64px;
+        }
+    }
+
+    @media (min-width:960px) {
+      :host {
+        --container-padding: 160px;
+        --content-container-width: 640px;
+        --chart-width: 540px;
+        --chart-width-nav: 540px;
+        --data-point-container-padding: 64px;
+      }
+    }
+
+    @media (min-width:1280px) {
+      :host {
+        --container-padding: 160px;
+        --content-container-width: 680px;
+        --chart-width: 580px;
+        --chart-width-nav: 620px;
+        --data-point-container-padding: 64px;
+        --card-container-max-width: 720px;
+      }
+    }
+
+    @media (min-width:1440px) {
+      :host {
+        --container-padding: 360px;
+        --content-container-width: 720px;
+        --chart-width: 620px;
+        --data-point-container-padding: 64px;
+      }
+    }
+  </style>
+</template>

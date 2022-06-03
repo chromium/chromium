@@ -68,4 +68,3 @@ Some line with 29 characters.
     }
   }
 });
-

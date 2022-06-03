@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("video_encode") {
   output_name = "ppapi_example_video_encode"
-  sources = [
-    "video_encode.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "video_encode.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

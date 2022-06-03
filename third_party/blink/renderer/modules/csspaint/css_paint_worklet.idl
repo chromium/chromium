@@ -7,6 +7,6 @@
 [
     ImplementedAs=CSSPaintWorklet,
     SecureContext
-] partial interface CSS {
-    [CallWith=ScriptState,MeasureAs=PaintWorklet] static readonly attribute Worklet paintWorklet;
+] partial namespace CSS {
+    [CallWith=ScriptState,MeasureAs=PaintWorklet] readonly attribute Worklet paintWorklet;
 };

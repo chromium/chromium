@@ -8,7 +8,7 @@
     Exposed=ServiceWorker,
     RuntimeEnabled=PushMessagingSubscriptionChange
 ] interface PushSubscriptionChangeEvent : ExtendableEvent {
-  constructor(DOMString type, optional PushSubscriptionChangeEventInit eventInitDict);
+  constructor(DOMString type, optional PushSubscriptionChangeEventInit eventInitDict = {});
   readonly attribute PushSubscription? newSubscription;
   readonly attribute PushSubscription? oldSubscription;
 };

@@ -9,8 +9,9 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace logging {
 
@@ -40,11 +41,13 @@ class BASE_EXPORT VlogInfo {
   VlogInfo(const std::string& v_switch,
            const std::string& vmodule_switch,
            int* min_log_level);
+  VlogInfo(const VlogInfo&) = delete;
+  VlogInfo& operator=(const VlogInfo&) = delete;
   ~VlogInfo();
 
   // Returns the vlog level for a given file (usually taken from
   // __FILE__).
-  int GetVlogLevel(const base::StringPiece& file) const;
+  int GetVlogLevel(base::StringPiece file);
 
  private:
   void SetMaxVlogLevel(int level);
@@ -53,10 +56,9 @@ class BASE_EXPORT VlogInfo {
   // VmodulePattern holds all the information for each pattern parsed
   // from |vmodule_switch|.
   struct VmodulePattern;
-  std::vector<VmodulePattern> vmodule_levels_;
+  base::Lock vmodule_levels_lock_;
+  std::vector<VmodulePattern> vmodule_levels_ GUARDED_BY(vmodule_levels_lock_);
   int* min_log_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(VlogInfo);
 };
 
 // Returns true if the string passed in matches the vlog pattern.  The
@@ -69,8 +71,8 @@ class BASE_EXPORT VlogInfo {
 //   "kh*n" matches "khn", "khan", or even "khaaaaan"
 //   "/foo\bar" matches "/foo/bar", "\foo\bar", or "/foo\bar"
 //     (disregarding C escaping rules)
-BASE_EXPORT bool MatchVlogPattern(const base::StringPiece& string,
-                                  const base::StringPiece& vlog_pattern);
+BASE_EXPORT bool MatchVlogPattern(base::StringPiece string,
+                                  base::StringPiece vlog_pattern);
 
 }  // namespace logging
 

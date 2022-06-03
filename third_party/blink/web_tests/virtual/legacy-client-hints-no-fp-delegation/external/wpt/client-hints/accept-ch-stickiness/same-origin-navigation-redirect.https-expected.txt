@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS redirect on navigation precondition: Test that the browser does not have client hints preferences cached
+FAIL redirect on navigation got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "DEVICE-MEMORY"
+Harness: the test ran to completion.
+

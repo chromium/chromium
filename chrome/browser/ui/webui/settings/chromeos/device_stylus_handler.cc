@@ -11,7 +11,9 @@
 
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 
@@ -36,37 +38,37 @@ void StylusHandler::RegisterMessages() {
 
   // Note: initializeStylusSettings must be called before observers will be
   // added.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeStylusSettings",
       base::BindRepeating(&StylusHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestNoteTakingApps",
       base::BindRepeating(&StylusHandler::HandleRequestApps,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setPreferredNoteTakingApp",
       base::BindRepeating(&StylusHandler::HandleSetPreferredNoteTakingApp,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setPreferredNoteTakingAppEnabledOnLockScreen",
       base::BindRepeating(
           &StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showPlayStoreApps",
       base::BindRepeating(&StylusHandler::HandleShowPlayStoreApps,
                           base::Unretained(this)));
 }
 
 void StylusHandler::OnJavascriptAllowed() {
-  note_observer_.Add(NoteTakingHelper::Get());
-  input_observer_.Add(ui::DeviceDataManager::GetInstance());
+  note_observation_.Observe(NoteTakingHelper::Get());
+  input_observation_.Observe(ui::DeviceDataManager::GetInstance());
 }
 
 void StylusHandler::OnJavascriptDisallowed() {
-  note_observer_.RemoveAll();
-  input_observer_.RemoveAll();
+  note_observation_.Reset();
+  input_observation_.Reset();
 }
 
 void StylusHandler::OnAvailableNoteTakingAppsUpdated() {
@@ -119,8 +121,7 @@ void StylusHandler::HandleRequestApps(const base::ListValue* unused_args) {
 
 void StylusHandler::HandleSetPreferredNoteTakingApp(
     const base::ListValue* args) {
-  std::string app_id;
-  CHECK(args->GetString(0, &app_id));
+  const std::string& app_id = args->GetList()[0].GetString();
 
   // Sanity check: make sure that the ID we got back from WebUI is in the
   // currently-available set.
@@ -136,7 +137,8 @@ void StylusHandler::HandleSetPreferredNoteTakingApp(
 void StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
     const base::ListValue* args) {
   bool enabled = false;
-  CHECK(args->GetBoolean(0, &enabled));
+  CHECK(args->GetList()[0].is_bool());
+  enabled = args->GetList()[0].GetBool();
 
   NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
       Profile::FromWebUI(web_ui()), enabled);
@@ -155,15 +157,19 @@ void StylusHandler::SendHasStylus() {
 }
 
 void StylusHandler::HandleShowPlayStoreApps(const base::ListValue* args) {
-  std::string apps_url;
-  args->GetString(0, &apps_url);
+  const std::string& apps_url =
+      !args->GetList().empty() ? args->GetList()[0].GetString() : "";
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!arc::IsArcAllowedForProfile(profile)) {
     VLOG(1) << "ARC is not enabled for this profile";
     return;
   }
 
-  arc::LaunchPlayStoreWithUrl(apps_url);
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithUrl(
+      arc::kPlayStoreAppId, ui::EF_NONE, GURL(apps_url),
+      apps::mojom::LaunchSource::kFromChromeInternal);
 }
 
 }  // namespace settings

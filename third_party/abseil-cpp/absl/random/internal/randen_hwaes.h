@@ -15,15 +15,18 @@
 #ifndef ABSL_RANDOM_INTERNAL_RANDEN_HWAES_H_
 #define ABSL_RANDOM_INTERNAL_RANDEN_HWAES_H_
 
+#include "absl/base/config.h"
+
 // HERMETIC NOTE: The randen_hwaes target must not introduce duplicate
 // symbols from arbitrary system and other headers, since it may be built
 // with different flags from other targets, using different levels of
 // optimization, potentially introducing ODR violations.
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
-// RANDen = RANDom generator or beetroots in Swiss German.
+// RANDen = RANDom generator or beetroots in Swiss High German.
 // 'Strong' (well-distributed, unpredictable, backtracking-resistant) random
 // generator, faster in some benchmarks than std::mt19937_64 and pcg64_c32.
 //
@@ -41,6 +44,7 @@ class RandenHwAes {
 bool HasRandenHwAesImplementation();
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_RANDEN_HWAES_H_

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// crbug.com/1047806
+selection_test(
+  '<div contenteditable style="font-size: 12px">|</div>',
+  selection => {
+    selection.setClipboardData('<meta charset="utf-8"><a href="http://example.com/">http://example.com/</a>');
+    selection.document.execCommand('paste');
+  },
+  '<div contenteditable style="font-size: 12px"><a href="http://example.com/">http://example.com/|</a></div>',
+  'Pasting should not add additional font-size inline styles to unstyled clipboard markup');
+</script>

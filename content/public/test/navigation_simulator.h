@@ -12,8 +12,10 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/referrer.mojom.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -26,6 +28,7 @@ class SSLInfo;
 
 namespace content {
 
+class NavigationController;
 class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
@@ -117,10 +120,13 @@ class NavigationSimulator {
 
   // Creates a NavigationSimulator that will be used to simulate a history
   // navigation to one of the |web_contents|'s navigation controller |offset|.
-  // E.g. offset -1 for back navigations and 1 for forward navigations.
+  // E.g. offset -1 for back navigations and 1 for forward navigations. If
+  // |is_renderer_initiated| is true, the navigation will simulate a history
+  // navigation initiated via JS.
   static std::unique_ptr<NavigationSimulator> CreateHistoryNavigation(
       int offset,
-      WebContents* web_contents);
+      WebContents* web_contents,
+      bool is_renderer_initiated);
 
   // Creates a NavigationSimulator that will be used to simulate a
   // renderer-initiated navigation to |original_url| started by
@@ -133,7 +139,7 @@ class NavigationSimulator {
   // LoadURL / Reload / GoToOffset / history.GoBack() scripts, etc. Can be used
   // to drive the navigation to completion.
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
-      WebContents* contents);
+      NavigationController& controller);
 
   virtual ~NavigationSimulator() {}
 
@@ -202,12 +208,6 @@ class NavigationSimulator {
   // Note: this is only valid for renderer-initiated navigations.
   virtual void AbortFromRenderer() = 0;
 
-  // Simulates the navigation failing with the error code |error_code| and
-  // response headers |response_headers|.
-  virtual void FailWithResponseHeaders(
-      int error_code,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
-
   // Simulates the navigation failing with the error code |error_code|.
   // IMPORTANT NOTE: This is simulating a network connection error and implies
   // we do not get a response. Error codes like 204 are not properly managed.
@@ -239,6 +239,15 @@ class NavigationSimulator {
 
   // The following parameters are constant during the navigation and may only be
   // specified before calling |Start|.
+  //
+  // Sets the frame that initiated the navigation. Should only be specified for
+  // renderer-initiated navigations. For now this frame must belong to the same
+  // process as the frame that is navigating.
+  //
+  // TODO(https://crbug.com/1072790): Support cross-process initiators here by
+  // using NavigationRequest::CreateBrowserInitiated() (like
+  // RenderFrameProxyHost does) for the navigation.
+  virtual void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) = 0;
   virtual void SetTransition(ui::PageTransition transition) = 0;
   virtual void SetHasUserGesture(bool has_user_gesture) = 0;
   // Note: ReloadType should only be specified for browser-initiated
@@ -250,9 +259,6 @@ class NavigationSimulator {
 
   // Sets whether this navigation originated as the result of a form submission.
   virtual void SetIsFormSubmission(bool is_form_submission) = 0;
-
-  // Sets whether this navigation originated as the result of a link click.
-  virtual void SetWasInitiatedByLinkClick(bool was_initiated_by_link_click) = 0;
 
   // The following parameters can change during redirects. They should be
   // specified before calling |Start| if they need to apply to the navigation to
@@ -271,21 +277,31 @@ class NavigationSimulator {
   virtual void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) = 0;
 
-  // Sets the InterfaceProvider interface receiver to pass in as an argument to
-  // DidCommitProvisionalLoad for cross-document navigations. If not called,
-  // a stub will be passed in (which will never receive any interface
-  // receivers).
-  //
-  // This interface connection would normally be created by the RenderFrame,
-  // with the client end bound to |remote_interfaces_| to allow the new document
-  // to access services exposed by the RenderFrameHost.
-  virtual void SetInterfaceProviderReceiver(
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
-          receiver) = 0;
+  // Simulate receiving Permissions-Policy headers.
+  virtual void SetPermissionsPolicyHeader(
+      blink::ParsedPermissionsPolicy permissions_policy_header) = 0;
 
   // Provides the contents mime type to be set at commit. It should be
-  // specified before calling |Commit|.
+  // specified before calling |ReadyToCommit| or |Commit|.
   virtual void SetContentsMimeType(const std::string& contents_mime_type) = 0;
+
+  // Provides the response headers that should be received during the next
+  // |Redirect| call. These headers will only be applied to the next
+  // |Redirect| call, and will be reset afterwards.
+  virtual void SetRedirectHeaders(
+      scoped_refptr<net::HttpResponseHeaders> redirect_headers) = 0;
+
+  // Provides the response headers received during |ReadyToCommit| specified
+  // before calling |ReadyToCommit| or |Commit|.
+  // Note that the mime type should be specified separately with
+  // |SectContentsMimeType|.
+  virtual void SetResponseHeaders(
+      scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
+
+  // Provides the response body received during |ReadyToCommit|. Must be
+  // specified before calling |ReadyToCommit| or |Commit|.
+  virtual void SetResponseBody(
+      mojo::ScopedDataPipeConsumerHandle response_body) = 0;
 
   // Whether or not the NavigationSimulator automatically advances the
   // navigation past the stage requested (e.g. through asynchronous
@@ -296,9 +312,23 @@ class NavigationSimulator {
   // in throttles deferring the navigation with a call to Wait().
   virtual void SetAutoAdvance(bool auto_advance) = 0;
 
+  // Sets the ResolveErrorInfo to be set on the URLLoaderCompletionStatus.
+  virtual void SetResolveErrorInfo(
+      const net::ResolveErrorInfo& resolve_error_info) = 0;
+
   // Sets the SSLInfo to be set on the response. This should be called before
   // Commit().
   virtual void SetSSLInfo(const net::SSLInfo& ssl_info) = 0;
+
+  // Sets the DNS aliases to be received in the URLResponseHead. The aliases
+  // are what would be read from DNS CNAME records, and the alias chain should
+  // be preserved in reverse order, from canonical name (i.e. address record
+  // name) through to query name. This method should be called before Commit().
+  virtual void SetResponseDnsAliases(std::vector<std::string> aliases) = 0;
+
+  // Sets whether preload Link headers were received via Early Hints responses
+  // during the navigation.
+  virtual void SetEarlyHintsPreloadLinkHeaderReceived(bool received) = 0;
 
   // --------------------------------------------------------------------------
 
@@ -327,11 +357,6 @@ class NavigationSimulator {
 
   // Simulate the ongoing load stopping successfully.
   virtual void StopLoading() = 0;
-
-  // Simulates the ongoing load stopping due to |error_code|.
-  virtual void FailLoading(const GURL& url,
-                           int error_code,
-                           const base::string16& error_description) = 0;
 
  private:
   // This interface should only be implemented inside content.

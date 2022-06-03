@@ -15,7 +15,6 @@
 #include "chrome/installer/util/delete_tree_work_item.h"
 #include "chrome/installer/util/logging_installer.h"
 #include "chrome/installer/util/move_tree_work_item.h"
-#include "chrome/installer/util/self_reg_work_item.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 
 WorkItemList::~WorkItemList() {
@@ -72,24 +71,22 @@ void WorkItemList::AddWorkItem(WorkItem* work_item) {
 }
 
 WorkItem* WorkItemList::AddCallbackWorkItem(
-    base::Callback<bool(const CallbackWorkItem&)> callback) {
-  WorkItem* item = WorkItem::CreateCallbackWorkItem(callback);
+    base::OnceCallback<bool(const CallbackWorkItem&)> do_action,
+    base::OnceCallback<void(const CallbackWorkItem&)> rollback_action) {
+  WorkItem* item = WorkItem::CreateCallbackWorkItem(std::move(do_action),
+                                                    std::move(rollback_action));
   AddWorkItem(item);
   return item;
 }
 
 WorkItem* WorkItemList::AddCopyTreeWorkItem(
-    const std::wstring& source_path,
-    const std::wstring& dest_path,
-    const std::wstring& temp_dir,
+    const base::FilePath& source_path,
+    const base::FilePath& dest_path,
+    const base::FilePath& temp_path,
     CopyOverWriteOption overwrite_option,
-    const std::wstring& alternative_path) {
+    const base::FilePath& alternative_path) {
   WorkItem* item = WorkItem::CreateCopyTreeWorkItem(
-      base::FilePath(source_path),
-      base::FilePath(dest_path),
-      base::FilePath(temp_dir),
-      overwrite_option,
-      base::FilePath(alternative_path));
+      source_path, dest_path, temp_path, overwrite_option, alternative_path);
   AddWorkItem(item);
   return item;
 }
@@ -136,14 +133,12 @@ WorkItem* WorkItemList::AddDeleteTreeWorkItem(const base::FilePath& root_path,
   return item;
 }
 
-WorkItem* WorkItemList::AddMoveTreeWorkItem(const std::wstring& source_path,
-                                            const std::wstring& dest_path,
-                                            const std::wstring& temp_dir,
+WorkItem* WorkItemList::AddMoveTreeWorkItem(const base::FilePath& source_path,
+                                            const base::FilePath& dest_path,
+                                            const base::FilePath& temp_path,
                                             MoveTreeOption duplicate_option) {
-  WorkItem* item = WorkItem::CreateMoveTreeWorkItem(base::FilePath(source_path),
-                                                    base::FilePath(dest_path),
-                                                    base::FilePath(temp_dir),
-                                                    duplicate_option);
+  WorkItem* item = WorkItem::CreateMoveTreeWorkItem(
+      source_path, dest_path, temp_path, duplicate_option);
   AddWorkItem(item);
   return item;
 }
@@ -154,12 +149,9 @@ WorkItem* WorkItemList::AddSetRegValueWorkItem(HKEY predefined_root,
                                                const std::wstring& value_name,
                                                const std::wstring& value_data,
                                                bool overwrite) {
-  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(predefined_root,
-                                                       key_path,
-                                                       wow64_access,
-                                                       value_name,
-                                                       value_data,
-                                                       overwrite);
+  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(
+      predefined_root, key_path, wow64_access, value_name, value_data,
+      overwrite);
   AddWorkItem(item);
   return item;
 }
@@ -170,12 +162,9 @@ WorkItem* WorkItemList::AddSetRegValueWorkItem(HKEY predefined_root,
                                                const std::wstring& value_name,
                                                DWORD value_data,
                                                bool overwrite) {
-  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(predefined_root,
-                                                       key_path,
-                                                       wow64_access,
-                                                       value_name,
-                                                       value_data,
-                                                       overwrite);
+  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(
+      predefined_root, key_path, wow64_access, value_name, value_data,
+      overwrite);
   AddWorkItem(item);
   return item;
 }
@@ -186,13 +175,9 @@ WorkItem* WorkItemList::AddSetRegValueWorkItem(HKEY predefined_root,
                                                const std::wstring& value_name,
                                                int64_t value_data,
                                                bool overwrite) {
-  WorkItem* item = reinterpret_cast<WorkItem*>(
-      WorkItem::CreateSetRegValueWorkItem(predefined_root,
-                                          key_path,
-                                          wow64_access,
-                                          value_name,
-                                          value_data,
-                                          overwrite));
+  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(
+      predefined_root, key_path, wow64_access, value_name, value_data,
+      overwrite);
   AddWorkItem(item);
   return item;
 }
@@ -202,21 +187,10 @@ WorkItem* WorkItemList::AddSetRegValueWorkItem(
     const std::wstring& key_path,
     REGSAM wow64_access,
     const std::wstring& value_name,
-    const WorkItem::GetValueFromExistingCallback& get_value_callback) {
-  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(predefined_root,
-                                                       key_path,
-                                                       wow64_access,
-                                                       value_name,
-                                                       get_value_callback);
-  AddWorkItem(item);
-  return item;
-}
-
-WorkItem* WorkItemList::AddSelfRegWorkItem(const std::wstring& dll_path,
-                                           bool do_register,
-                                           bool user_level_registration) {
-  WorkItem* item = WorkItem::CreateSelfRegWorkItem(dll_path, do_register,
-                                                   user_level_registration);
+    WorkItem::GetValueFromExistingCallback get_value_callback) {
+  WorkItem* item = WorkItem::CreateSetRegValueWorkItem(
+      predefined_root, key_path, wow64_access, value_name,
+      std::move(get_value_callback));
   AddWorkItem(item);
   return item;
 }

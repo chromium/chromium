@@ -2,7 +2,7 @@
   var {page, session, dp} = await testRunner.startURL('resources/dom-getFlattenedDocument.html', 'Tests DOM.getFlattenedDocument method.');
 
   await session.evaluate(() => {
-    var host = document.querySelector('#shadow-host').createShadowRoot();
+    var host = document.querySelector('#shadow-host').attachShadow({mode: 'open'});
     var template = document.querySelector('#shadow-template');
     host.appendChild(template.content);
     template.remove();

@@ -25,7 +25,7 @@ function onMessage(evt) {
   let agentIdB = evt.data;
   let message = [
     'cross-origin test',
-    internals.getDocumentAgentId(document),
+    internals.getAgentId(window),
     agentIdB
   ];
   window.parent.postMessage(message, '*');

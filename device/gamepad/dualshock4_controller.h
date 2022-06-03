@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/gamepad_export.h"
+#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
 namespace device {
@@ -20,15 +21,13 @@ class HidWriter;
 class DEVICE_GAMEPAD_EXPORT Dualshock4Controller final
     : public AbstractHapticGamepad {
  public:
-  Dualshock4Controller(uint16_t vendor_id,
-                       uint16_t product_id,
+  Dualshock4Controller(GamepadId gamepad_id,
                        GamepadBusType bus_type,
                        std::unique_ptr<HidWriter> hid_writer);
   ~Dualshock4Controller() override;
 
-  // Returns true if |vendor_id| and |product_id| match the device IDs for
-  // a Dualshock4 gamepad.
-  static bool IsDualshock4(uint16_t vendor_id, uint16_t product_id);
+  // Returns true if |gamepad_id| matches a Dualshock4 gamepad.
+  static bool IsDualshock4(GamepadId gamepad_id);
 
   // Detects the transport in use (USB or Bluetooth) given the bcdVersion value
   // reported by the device. Used on Windows where the platform HID API does not
@@ -57,8 +56,7 @@ class DEVICE_GAMEPAD_EXPORT Dualshock4Controller final
   // Dualshock4.
   void SetVibrationBluetooth(double strong_magnitude, double weak_magnitude);
 
-  uint16_t vendor_id_;
-  uint16_t product_id_;
+  GamepadId gamepad_id_;
   GamepadBusType bus_type_;
   std::unique_ptr<HidWriter> writer_;
   base::WeakPtrFactory<Dualshock4Controller> weak_factory_{this};

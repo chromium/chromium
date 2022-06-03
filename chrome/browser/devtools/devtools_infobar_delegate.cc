@@ -9,20 +9,20 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // static
-void DevToolsInfoBarDelegate::Create(const base::string16& message,
-                                     const Callback& callback) {
+void DevToolsInfoBarDelegate::Create(const std::u16string& message,
+                                     Callback callback) {
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
-      new DevToolsInfoBarDelegate(message, callback));
+      new DevToolsInfoBarDelegate(message, std::move(callback)));
   GlobalConfirmInfoBar::Show(std::move(delegate));
 }
 
-DevToolsInfoBarDelegate::DevToolsInfoBarDelegate(const base::string16& message,
-                                                 const Callback& callback)
-    : ConfirmInfoBarDelegate(), message_(message), callback_(callback) {}
+DevToolsInfoBarDelegate::DevToolsInfoBarDelegate(const std::u16string& message,
+                                                 Callback callback)
+    : message_(message), callback_(std::move(callback)) {}
 
 DevToolsInfoBarDelegate::~DevToolsInfoBarDelegate() {
   if (!callback_.is_null())
-    callback_.Run(false);
+    std::move(callback_).Run(false);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -30,11 +30,11 @@ DevToolsInfoBarDelegate::GetIdentifier() const {
   return DEV_TOOLS_INFOBAR_DELEGATE;
 }
 
-base::string16 DevToolsInfoBarDelegate::GetMessageText() const {
+std::u16string DevToolsInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
-base::string16 DevToolsInfoBarDelegate::GetButtonLabel(
+std::u16string DevToolsInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK)
                                        ? IDS_DEV_TOOLS_CONFIRM_ALLOW_BUTTON
@@ -42,13 +42,11 @@ base::string16 DevToolsInfoBarDelegate::GetButtonLabel(
 }
 
 bool DevToolsInfoBarDelegate::Accept() {
-  callback_.Run(true);
-  callback_.Reset();
+  std::move(callback_).Run(true);
   return true;
 }
 
 bool DevToolsInfoBarDelegate::Cancel() {
-  callback_.Run(false);
-  callback_.Reset();
+  std::move(callback_).Run(false);
   return true;
 }

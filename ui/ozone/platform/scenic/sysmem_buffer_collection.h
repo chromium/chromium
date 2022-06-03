@@ -6,23 +6,28 @@
 #define UI_OZONE_PLATFORM_SCENIC_SYSMEM_BUFFER_COLLECTION_H_
 
 #include <fuchsia/sysmem/cpp/fidl.h>
-#include <vulkan/vulkan.h>
+#include <lib/ui/scenic/cpp/session.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/ozone/platform/scenic/scenic_overlay_view.h"
 
 namespace gfx {
 class NativePixmap;
 }  // namespace gfx
 
 namespace ui {
+
+class ScenicSurfaceFactory;
 
 // SysmemBufferCollection keeps sysmem.BufferCollection interface along with the
 // corresponding VkBufferCollectionFUCHSIA. It allows to create either
@@ -39,19 +44,27 @@ class SysmemBufferCollection
   SysmemBufferCollection();
   explicit SysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 
+  SysmemBufferCollection(const SysmemBufferCollection&) = delete;
+  SysmemBufferCollection& operator=(const SysmemBufferCollection&) = delete;
+
+  // Initializes the buffer collection and registers it with Vulkan using the
+  // specified |vk_device|. If |token_handle| is null then a new collection
+  // collection is created. |size| may be empty. In that case |token_handle|
+  // must not be null and the image size is determined by the other sysmem
+  // participants.
+  // If |register_with_image_pipe| is true, new ScenicOverlayView instance is
+  // created and |token_handle| gets duplicated to be added to its ImagePipe.
   bool Initialize(fuchsia::sysmem::Allocator_Sync* allocator,
+                  ScenicSurfaceFactory* scenic_surface_factory,
+                  zx::channel token_handle,
                   gfx::Size size,
                   gfx::BufferFormat format,
                   gfx::BufferUsage usage,
                   VkDevice vk_device,
-                  size_t num_buffers);
+                  size_t min_buffer_count,
+                  bool register_with_image_pipe);
 
-  bool Initialize(fuchsia::sysmem::Allocator_Sync* allocator,
-                  VkDevice vk_device,
-                  zx::channel token);
-
-  // Must not be called more than once.
-  void SetOnDeletedCallback(base::OnceClosure on_deleted);
+  void AddOnDeletedCallback(base::OnceClosure on_deleted);
 
   // Creates a NativePixmap the buffer with the specified index. Returned
   // NativePixmap holds a reference to the collection, so the collection is not
@@ -66,14 +79,17 @@ class SysmemBufferCollection
                      VkImageCreateInfo* vk_image_info,
                      VkDeviceMemory* vk_device_memory,
                      VkDeviceSize* mem_allocation_size,
-                     base::Optional<gpu::VulkanYCbCrInfo>* ycbcr_info);
+                     absl::optional<gpu::VulkanYCbCrInfo>* ycbcr_info);
 
   gfx::SysmemBufferCollectionId id() const { return id_; }
   size_t num_buffers() const { return buffers_info_.buffer_count; }
-  gfx::Size size() const { return size_; }
+  gfx::Size size() const { return image_size_; }
   gfx::BufferFormat format() const { return format_; }
   size_t buffer_size() const {
     return buffers_info_.settings.buffer_settings.size_bytes;
+  }
+  ScenicOverlayView* scenic_overlay_view() {
+    return scenic_overlay_view_ ? scenic_overlay_view_.get() : nullptr;
   }
 
  private:
@@ -96,10 +112,11 @@ class SysmemBufferCollection
 
   const gfx::SysmemBufferCollectionId id_;
 
-  gfx::Size size_;
+  // Image size passed to vkSetBufferCollectionConstraintsFUCHSIA(). The actual
+  // buffers size may be larger depending on constraints set by other
+  // sysmem clients. Size of the image is passed to CreateVkImage().
+  gfx::Size min_size_;
 
-  // Valid only for owned buffer collections, i.e. those that  that were
-  // initialized using the first Initialize() methods.
   gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
   gfx::BufferUsage usage_ = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
@@ -111,19 +128,26 @@ class SysmemBufferCollection
 
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
-  VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
+  VkBufferCollectionFUCHSIAX vk_buffer_collection_ = VK_NULL_HANDLE;
+
+  // |scenic_overlay_view_| view should be used and deleted on the same thread
+  // as creation.
+  scoped_refptr<base::SingleThreadTaskRunner> overlay_view_task_runner_;
+  // If ScenicOverlayView is created and its ImagePipe is added as a participant
+  // in buffer allocation negotiations, the associated images can be displayed
+  // as overlays.
+  std::unique_ptr<ScenicOverlayView> scenic_overlay_view_;
 
   // Thread checker used to verify that CreateVkImage() is always called from
   // the same thread. It may be unsafe to use vk_buffer_collection_ on different
   // threads.
   THREAD_CHECKER(vulkan_thread_checker_);
 
+  gfx::Size image_size_;
   size_t buffer_size_ = 0;
   bool is_protected_ = false;
 
-  base::OnceClosure on_deleted_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferCollection);
+  std::vector<base::OnceClosure> on_deleted_;
 };
 
 }  // namespace ui

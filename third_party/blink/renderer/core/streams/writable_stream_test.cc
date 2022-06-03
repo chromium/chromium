@@ -1,5 +1,5 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this sink code is governed by a BSD-style license that can be
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -7,14 +7,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_extras_test_utils.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
+#include "third_party/blink/renderer/core/streams/test_utils.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -41,19 +41,13 @@ TEST(WritableStreamTest, GetWriter) {
   ASSERT_TRUE(stream);
 
   EXPECT_FALSE(stream->locked());
-  EXPECT_EQ(stream->IsLocked(script_state, ASSERT_NO_EXCEPTION),
-            base::make_optional(false));
 
   stream->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(stream->locked());
-  EXPECT_EQ(stream->IsLocked(script_state, ASSERT_NO_EXCEPTION),
-            base::make_optional(true));
 }
 
 TEST(WritableStreamTest, Serialize) {
-  ScopedTransferableStreamsForTest enable_transferable_streams(true);
-
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 
@@ -78,15 +72,17 @@ underlying_sink)JS";
   stream->Serialize(script_state, channel->port1(), ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(stream->locked());
 
-  auto* transferred = WritableStream::Deserialize(
-      script_state, channel->port2(), ASSERT_NO_EXCEPTION);
+  auto* transferred =
+      WritableStream::Deserialize(script_state, channel->port2(),
+                                  /*optimizer=*/nullptr, ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(transferred);
 
   WritableStreamDefaultWriter* writer =
       transferred->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
   auto* isolate = script_state->GetIsolate();
-  writer->write(script_state, ScriptValue(isolate, V8String(isolate, "a")));
+  writer->write(script_state, ScriptValue(isolate, V8String(isolate, "a")),
+                ASSERT_NO_EXCEPTION);
 
   // Run the message loop to allow messages to be delivered.
   test::RunPendingTasks();

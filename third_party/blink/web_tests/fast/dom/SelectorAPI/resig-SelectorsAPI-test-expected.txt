@@ -4,7 +4,7 @@ Testrunner by John Resig, tests by John Resig, Disruptive Innovations, W3C CSS W
 
  Show only failing tests.
 
-100.0%: 2163 passed, 1 failed
+100.0%: 2147 passed, 1 failed
 PASS Element supports querySelector
 PASS Element supports querySelectorAll
 PASS Element.querySelectorAll Empty String
@@ -555,10 +555,6 @@ PASS Syntax Error: Element.querySelector Empty String
 PASS Syntax Error: Element.querySelector null
 PASS Syntax Error: Element.querySelector undefined
 PASS Syntax Error: Element.querySelector no value
-PASS Syntax Error: Element.querySelectorAll: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Element.querySelector: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Element.querySelectorAll: div:not(:not(div))
-PASS Syntax Error: Element.querySelector: div:not(:not(div))
 PASS Syntax Error: Element.querySelectorAll: div,
 PASS Syntax Error: Element.querySelector: div,
 PASS Syntax Error: Element.querySelectorAll: .5cm
@@ -1153,10 +1149,6 @@ PASS Syntax Error: Disconnected Element.querySelector Empty String
 PASS Syntax Error: Disconnected Element.querySelector null
 PASS Syntax Error: Disconnected Element.querySelector undefined
 PASS Syntax Error: Disconnected Element.querySelector no value
-PASS Syntax Error: Disconnected Element.querySelectorAll: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Disconnected Element.querySelector: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Disconnected Element.querySelectorAll: div:not(:not(div))
-PASS Syntax Error: Disconnected Element.querySelector: div:not(:not(div))
 PASS Syntax Error: Disconnected Element.querySelectorAll: div,
 PASS Syntax Error: Disconnected Element.querySelector: div,
 PASS Syntax Error: Disconnected Element.querySelectorAll: .5cm
@@ -1634,10 +1626,6 @@ PASS Syntax Error: Fragment.querySelector Empty String
 PASS Syntax Error: Fragment.querySelector null
 PASS Syntax Error: Fragment.querySelector undefined
 PASS Syntax Error: Fragment.querySelector no value
-PASS Syntax Error: Fragment.querySelectorAll: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Fragment.querySelector: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Fragment.querySelectorAll: div:not(:not(div))
-PASS Syntax Error: Fragment.querySelector: div:not(:not(div))
 PASS Syntax Error: Fragment.querySelectorAll: div,
 PASS Syntax Error: Fragment.querySelector: div,
 PASS Syntax Error: Fragment.querySelectorAll: .5cm
@@ -1997,10 +1985,6 @@ PASS Syntax Error: Document.querySelector Empty String
 PASS Syntax Error: Document.querySelector null
 PASS Syntax Error: Document.querySelector undefined
 PASS Syntax Error: Document.querySelector no value
-PASS Syntax Error: Document.querySelectorAll: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Document.querySelector: .blox16:not(.blox15[foo="blox14"])
-PASS Syntax Error: Document.querySelectorAll: div:not(:not(div))
-PASS Syntax Error: Document.querySelector: div:not(:not(div))
 PASS Syntax Error: Document.querySelectorAll: div,
 PASS Syntax Error: Document.querySelector: div,
 PASS Syntax Error: Document.querySelectorAll: .5cm

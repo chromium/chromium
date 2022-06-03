@@ -2,6 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionController} from 'chrome://resources/js/cr/ui/list_selection_controller.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+
+import {FileType} from '../../../common/js/file_type.js';
+import {str, strf, util} from '../../../common/js/util.js';
+import {EntryLocation} from '../../../externs/entry_location.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
+
+import {A11yAnnounce} from './a11y_announce.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
+import {FileTapHandler} from './file_tap_handler.js';
+import {TableList} from './table/table_list.js';
+
 /**
  * Namespace for utility functions.
  */
@@ -10,7 +28,7 @@ const filelist = {};
 /**
  * File table list.
  */
-class FileTableList extends cr.ui.table.TableList {
+export class FileTableList extends TableList {
   constructor() {
     // To silence closure compiler.
     super();
@@ -75,7 +93,7 @@ class FileTableList extends cr.ui.table.TableList {
 
 /**
  * Decorates TableList as FileTableList.
- * @param {!cr.ui.table.TableList} self A tabel list element.
+ * @param {!TableList} self A table list element.
  */
 FileTableList.decorate = self => {
   self.__proto__ = FileTableList.prototype;
@@ -87,9 +105,9 @@ FileTableList.decorate = self => {
 /**
  * Selection controller for the file table list.
  */
-class FileListSelectionController extends cr.ui.ListSelectionController {
+class FileListSelectionController extends ListSelectionController {
   /**
-   * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
+   * @param {!ListSelectionModel} selectionModel The selection model to
    *     interact with.
    * @param {!FileTableList} tableList
    */
@@ -111,7 +129,7 @@ class FileListSelectionController extends cr.ui.ListSelectionController {
   /** @override */
   handleTouchEvents(e, index) {
     if (this.tapHandler_.handleTouchEvents(
-            e, index, filelist.handleTap.bind(this))) {
+            assert(e), index, filelist.handleTap.bind(this))) {
       // If a tap event is processed, FileTapHandler cancels the event to
       // prevent triggering click events. Then it results not moving the focus
       // to the list. So we do that here explicitly.
@@ -132,7 +150,7 @@ class FileListSelectionController extends cr.ui.ListSelectionController {
 
 /**
  * Common item decoration for table's and grid's items.
- * @param {cr.ui.ListItem} li List item.
+ * @param {ListItem} li List item.
  * @param {Entry|FilesAppEntry} entry The entry.
  * @param {!MetadataModel} metadataModel Cache to
  *     retrieve metadada.
@@ -144,7 +162,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
   // not on an external backend, externalProps is not available.
   const externalProps = metadataModel.getCache([entry], [
     'hosted', 'availableOffline', 'customIconUrl', 'shared', 'isMachineRoot',
-    'isExternalMedia'
+    'isExternalMedia', 'pinned'
   ])[0];
   filelist.updateListItemExternalProps(
       li, externalProps, util.isTeamDriveRoot(entry));
@@ -155,7 +173,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
 
   Object.defineProperty(li, 'selected', {
     /**
-     * @this {cr.ui.ListItem}
+     * @this {ListItem}
      * @return {boolean} True if the list item is selected.
      */
     get: function() {
@@ -163,7 +181,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
     },
 
     /**
-     * @this {cr.ui.ListItem}
+     * @this {ListItem}
      */
     set: function(v) {
       if (v) {
@@ -213,27 +231,29 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
+ * Renders the Drive pinned marker in the detail table.
+ * @return {!HTMLDivElement} Created element.
+ */
+filelist.renderPinned = (doc) => {
+  const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  icon.className = 'detail-pinned';
+  icon.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
+  return icon;
+};
+
+/**
  * Updates grid item or table row for the externalProps.
- * @param {cr.ui.ListItem} li List item.
+ * @param {ListItem} li List item.
  * @param {Object} externalProps Metadata.
  */
 filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
   if (li.classList.contains('file')) {
-    if (externalProps.availableOffline === false) {
-      li.classList.add('dim-offline');
-    } else {
-      li.classList.remove('dim-offline');
-    }
-    // TODO(mtomasz): Consider adding some vidual indication for files which
-    // are not cached on LTE. Currently we show them as normal files.
-    // crbug.com/246611.
-
-    if (externalProps.hosted === true) {
-      li.classList.add('dim-hosted');
-    } else {
-      li.classList.remove('dim-hosted');
-    }
+    li.classList.toggle(
+        'dim-offline', externalProps.availableOffline === false);
+    li.classList.toggle('dim-hosted', !!externalProps.hosted);
   }
+
+  li.classList.toggle('pinned', !!externalProps.pinned);
 
   const iconDiv = li.querySelector('.detail-icon');
   if (!iconDiv) {
@@ -264,7 +284,7 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
  * @param {!FileTapHandler.TapEvent} eventType
  * @return True if conducted any action. False when if did nothing special for
  *     tap.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handleTap = function(e, index, eventType) {
@@ -312,12 +332,13 @@ filelist.handleTap = function(e, index, eventType) {
   // Single finger tap.
   const isTap = eventType === FileTapHandler.TapEvent.TAP ||
       eventType === FileTapHandler.TapEvent.LONG_TAP;
-  // Revert to click handling for single tap on checkbox or tap during rename.
-  // Single tap on the checkbox in the list view mode should toggle select.
-  // Single tap on input for rename should focus on input.
-  const isCheckbox = e.target.classList.contains('detail-checkmark');
+  // Revert to click handling for single tap on the checkmark or rename input.
+  // Single tap on the item checkmark should toggle select the item.
+  // Single tap on rename input should focus on input.
+  const isCheckmark = e.target.classList.contains('detail-checkmark') ||
+      e.target.classList.contains('detail-icon');
   const isRename = e.target.localName === 'input';
-  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckbox || isRename)) {
+  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckmark || isRename)) {
     return false;
   }
 
@@ -370,7 +391,7 @@ filelist.handleTap = function(e, index, eventType) {
  * Handles mouseup/mousedown events on file list to change the selection state.
  *
  * Basically the content of this function is identical to
- * cr.ui.ListSelectionController's handlePointerDownUp(), but following
+ * ListSelectionController's handlePointerDownUp(), but following
  * handlings are inserted to control the check-select mode.
  *
  * 1) When checkmark area is clicked, toggle item selection and enable the
@@ -381,7 +402,7 @@ filelist.handleTap = function(e, index, eventType) {
  * @param {!Event} e The browser mouse event.
  * @param {number} index The index that was under the mouse pointer, -1 if
  *     none.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handlePointerDownUp = function(e, index) {
@@ -485,14 +506,14 @@ filelist.handlePointerDownUp = function(e, index) {
  * Handles key events on file list to change the selection state.
  *
  * Basically the content of this function is identical to
- * cr.ui.ListSelectionController's handleKeyDown(), but following handlings is
+ * ListSelectionController's handleKeyDown(), but following handlings is
  * inserted to control the check-select mode.
  *
  * 1) When pressing direction key results in a single selection, the
  *    check-select mode should be terminated.
  *
  * @param {Event} e The keydown event.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handleKeyDown = function(e) {
@@ -530,7 +551,7 @@ filelist.handleKeyDown = function(e) {
   // keyboard layout.
   const pressedKeyA = e.keyCode === 65 || e.key === 'a';
   if (sm.multiple && pressedKeyA &&
-      (cr.isMac && e.metaKey || !cr.isMac && e.ctrlKey)) {
+      (isMac && e.metaKey || !isMac && e.ctrlKey)) {
     this.filesView.a11y.speakA11yMessage(str('SELECTION_ALL_ENTRIES'));
     sm.setCheckSelectMode(true);
     sm.selectAll();
@@ -666,10 +687,12 @@ filelist.handleKeyDown = function(e) {
  */
 filelist.focusParentList = event => {
   let element = event.target;
-  while (element && !(element instanceof cr.ui.List)) {
+  while (element && !(element instanceof List)) {
     element = element.parentElement;
   }
   if (element) {
     element.focus();
   }
 };
+
+export {filelist};

@@ -8,9 +8,10 @@
 
 #include <map>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/var_serialization_rules.h"
 

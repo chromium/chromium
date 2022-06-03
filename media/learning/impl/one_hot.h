@@ -10,12 +10,11 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
 #include "media/learning/common/value.h"
 #include "media/learning/impl/model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -27,6 +26,10 @@ class COMPONENT_EXPORT(LEARNING_IMPL) OneHotConverter {
   // Build a one-hot converter for all nominal features |task|, using the values
   // found in |training_data|.
   OneHotConverter(const LearningTask& task, const TrainingData& training_data);
+
+  OneHotConverter(const OneHotConverter&) = delete;
+  OneHotConverter& operator=(const OneHotConverter&) = delete;
+
   ~OneHotConverter();
 
   // Return the LearningTask that has only nominal features.
@@ -53,9 +56,7 @@ class COMPONENT_EXPORT(LEARNING_IMPL) OneHotConverter {
 
   // [original task feature index] = optional converter for it.  If the feature
   // was kNumeric to begin with, then there will be no converter.
-  std::vector<base::Optional<ValueVectorIndexMap>> converters_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneHotConverter);
+  std::vector<absl::optional<ValueVectorIndexMap>> converters_;
 };
 
 // Model that uses |Converter| to convert instances before sending them to the
@@ -64,6 +65,10 @@ class COMPONENT_EXPORT(LEARNING_IMPL) ConvertingModel : public Model {
  public:
   ConvertingModel(std::unique_ptr<OneHotConverter> converter,
                   std::unique_ptr<Model> model);
+
+  ConvertingModel(const ConvertingModel&) = delete;
+  ConvertingModel& operator=(const ConvertingModel&) = delete;
+
   ~ConvertingModel() override;
 
   // Model
@@ -72,8 +77,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) ConvertingModel : public Model {
  private:
   std::unique_ptr<OneHotConverter> converter_;
   std::unique_ptr<Model> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConvertingModel);
 };
 
 }  // namespace learning

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -17,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/favicon/core/favicon_client.h"
 #include "components/favicon/core/favicon_service_impl.h"
 #include "components/favicon/core/favicon_util.h"
@@ -107,7 +109,7 @@ class IconCacherTestBase : public ::testing::Test {
     base::RunLoop loop;
     favicon::GetFaviconImageForPageURL(
         &favicon_service_, url, icon_type,
-        base::Bind(
+        base::BindOnce(
             [](gfx::Image* image, base::RunLoop* loop,
                const favicon_base::FaviconImageResult& result) {
               *image = result.image;
@@ -121,7 +123,7 @@ class IconCacherTestBase : public ::testing::Test {
 
   void WaitForHistoryThreadTasksToFinish() {
     base::RunLoop loop;
-    base::MockCallback<base::Closure> done;
+    base::MockOnceClosure done;
     EXPECT_CALL(done, Run()).WillOnce(Quit(&loop));
     history_service_.FlushForTest(done.Get());
     loop.Run();
@@ -141,7 +143,7 @@ class IconCacherTestBase : public ::testing::Test {
 class IconCacherTestPopularSites : public IconCacherTestBase {
  protected:
   IconCacherTestPopularSites()
-      : site_(base::string16(),  // title, unused
+      : site_(std::u16string(),  // title, unused
               GURL("http://url.google/"),
               GURL("http://url.google/icon.png"),
               GURL("http://url.google/favicon.ico"),
@@ -179,7 +181,7 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
 
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
   }
 
   PopularSites::Site site_;
@@ -190,7 +192,7 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
 
 TEST_F(IconCacherTestPopularSites, LargeCached) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   EXPECT_CALL(done, Run()).Times(0);
 
   PreloadIcon(site_.url, site_.large_icon_url,
@@ -204,7 +206,7 @@ TEST_F(IconCacherTestPopularSites, LargeCached) {
 
 TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchSucceeded) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   base::RunLoop loop;
   {
     InSequence s;
@@ -224,7 +226,7 @@ TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchSucceeded) {
 TEST_F(IconCacherTestPopularSites, SmallNotCachedAndFetchSucceeded) {
   site_.large_icon_url = GURL();
 
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   base::RunLoop loop;
   {
     InSequence s;
@@ -242,7 +244,7 @@ TEST_F(IconCacherTestPopularSites, SmallNotCachedAndFetchSucceeded) {
 
 TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchFailed) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   EXPECT_CALL(done, Run()).Times(0);
   {
     InSequence s;
@@ -263,7 +265,8 @@ TEST_F(IconCacherTestPopularSites, HandlesEmptyCallbacksNicely) {
   EXPECT_CALL(*image_fetcher_, FetchImageAndData_(_, _, _, _))
       .WillOnce(PassFetch(128, 128));
   IconCacherImpl cacher(&favicon_service_, nullptr, std::move(image_fetcher_));
-  cacher.StartFetchPopularSites(site_, base::Closure(), base::Closure());
+  cacher.StartFetchPopularSites(site_, base::NullCallback(),
+                                base::NullCallback());
   WaitForHistoryThreadTasksToFinish();  // Writing the icon into the DB.
   WaitForMainThreadTasksToFinish();     // Finishing tasks after the DB write.
   // Even though the callbacks are not called, the icon gets written out.
@@ -282,8 +285,8 @@ TEST_F(IconCacherTestPopularSites, ProvidesDefaultIconAndSucceedsWithFetching) {
   EXPECT_CALL(*image_fetcher_, GetImageDecoder())
       .WillOnce(Return(&image_decoder_));
   image_decoder_.SetDecodedImage(gfx::test::CreateImage(64, 64));
-  base::MockCallback<base::Closure> preliminary_icon_available;
-  base::MockCallback<base::Closure> icon_available;
+  base::MockOnceClosure preliminary_icon_available;
+  base::MockOnceClosure icon_available;
   base::RunLoop default_loop;
   base::RunLoop fetch_loop;
   {
@@ -317,7 +320,7 @@ TEST_F(IconCacherTestPopularSites, ProvidesDefaultIconAndSucceedsWithFetching) {
 }
 
 TEST_F(IconCacherTestPopularSites, LargeNotCachedAndFetchPerformedOnlyOnce) {
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   base::RunLoop loop;
   {
     InSequence s;
@@ -362,7 +365,7 @@ TEST_F(IconCacherTestMostLikely, Cached) {
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
                         std::move(fetcher_for_icon_cacher_));
 
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   EXPECT_CALL(done, Run()).Times(0);
   cacher.StartFetchMostLikely(page_url, done.Get());
   task_environment_.RunUntilIdle();
@@ -375,7 +378,7 @@ TEST_F(IconCacherTestMostLikely, NotCachedAndFetchSucceeded) {
   GURL page_url("http://www.site.com");
   base::HistogramTester histogram_tester;
 
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   base::RunLoop loop;
   {
     InSequence s;
@@ -408,7 +411,7 @@ TEST_F(IconCacherTestMostLikely, NotCachedAndFetchFailed) {
   GURL page_url("http://www.site.com");
   base::HistogramTester histogram_tester;
 
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   {
     InSequence s;
 
@@ -448,7 +451,7 @@ TEST_F(IconCacherTestMostLikely, HandlesEmptyCallbacksNicely) {
   IconCacherImpl cacher(&favicon_service_, &large_icon_service,
                         std::move(fetcher_for_icon_cacher_));
 
-  cacher.StartFetchMostLikely(page_url, base::Closure());
+  cacher.StartFetchMostLikely(page_url, base::NullCallback());
 
   // Finish the posted tasks on the main and the history thread to find out if
   // we can write the icon.
@@ -469,7 +472,7 @@ TEST_F(IconCacherTestMostLikely, HandlesEmptyCallbacksNicely) {
 TEST_F(IconCacherTestMostLikely, NotCachedAndFetchPerformedOnlyOnce) {
   GURL page_url("http://www.site.com");
 
-  base::MockCallback<base::Closure> done;
+  base::MockOnceClosure done;
   base::RunLoop loop;
   {
     InSequence s;

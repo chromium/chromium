@@ -15,8 +15,8 @@ namespace media {
 namespace mp2t {
 
 TsSectionCat::TsSectionCat(
-    const RegisterCencPidsCb& register_cenc_ids_cb,
-    const RegisterEncryptionSchemeCb& register_encryption_scheme_cb)
+    const RegisterCencPidsCB& register_cenc_ids_cb,
+    const RegisterEncryptionSchemeCB& register_encryption_scheme_cb)
     : register_cenc_ids_cb_(register_cenc_ids_cb),
       register_encryption_scheme_cb_(register_encryption_scheme_cb),
       version_number_(-1) {}

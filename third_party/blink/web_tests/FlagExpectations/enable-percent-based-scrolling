@@ -1,0 +1,60 @@
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Release Debug ]
+# results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# Scrolling tests that are failing when percent-based scrolling feature is enabled
+
+# external/wpt/css/css-overscroll-behavior
+crbug.com/1204176 external/wpt/css/css-overscroll-behavior/overscroll-behavior.html [ Failure ]
+
+# fast/events/wheel
+crbug.com/1204176 fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
+crbug.com/1204176 fast/events/wheel/wheelevent-ctrl.html [ Failure ]
+# Timeout only for compositor-threaded
+crbug.com/1204176 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Pass Timeout ]
+
+# fast/scrolling
+crbug.com/1204176 fast/scrolling/hover-during-scroll.html [ Failure ]
+crbug.com/1204176 fast/scrolling/overflow-scrollability.html [ Failure ]
+crbug.com/1204176 fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure ]
+crbug.com/1204176 fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
+crbug.com/1204176 fast/scrolling/no-hover-during-smooth-keyboard-scroll.html [ Failure ]
+crbug.com/1204176 fast/scrolling/scroll-animation-on-by-default.html [ Failure ]
+crbug.com/1204176 fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure ]
+
+# fast/scrolling/events
+crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
+crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
+crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
+crbug.com/1204176 fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
+
+# fast/scroll-snap/
+crbug.com/1204176 fast/scroll-snap/snaps-after-touchpad-scrolling.html [ Failure ]
+# Timeout only for main-threaded
+crbug.com/1204176 fast/scroll-snap/snaps-after-scrollbar-scrolling-arrow.html [ Timeout ]
+
+# http/tests/navigation
+crbug.com/1204176 http/tests/navigation/same-document-scroll-position-restore.html [ Timeout ]
+
+# paint/paintlayer
+crbug.com/1204176 paint/paintlayer/scrolling_issues.html [ Failure ]
+
+# synthetic_gestures
+crbug.com/1204176 synthetic_gestures/animated-wheel-tiny-delta.html [ Failure ]
+crbug.com/1204176 synthetic_gestures/smooth-scroll-tiny-delta.html [ Failure ]
+
+# virtual/percent-based-scrolling
+crbug.com/1204176 virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Timeout ]
+
+# fast/hidpi/static
+crbug.com/1204176 fast/hidpi/static/gesture-scroll-amount.html [ Failure ]
+crbug.com/1204176 fast/hidpi/static/mousewheel-scroll-amount.html [ Failure ]
+
+# virtual/threaded/fast/events/pinch
+crbug.com/1204176 virtual/threaded/fast/events/pinch/gesture-pinch-zoom-scroll-bubble.html [ Timeout ]
+crbug.com/1204176 virtual/threaded/fast/events/pinch/pinch-zoom-pan-position-fixed.html [ Failure ]
+crbug.com/1204176 virtual/threaded/fast/events/pinch/pinch-zoom-pan-within-zoomed-viewport.html [ Failure ]
+
+# virtual/threaded-prefer-compositing/fast/scroll-behavior
+# Failure only for main-threaded
+crbug.com/1204176 virtual/threaded-prefer-compositing/fast/scroll-behavior/first-scroll-runs-on-compositor.html [ Failure Pass ]

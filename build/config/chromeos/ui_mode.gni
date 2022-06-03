@@ -1,0 +1,40 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Deprecated, use is_lacros.
+  #
+  # This controls UI configuration for Chrome.
+  # If this flag is set, we assume Chrome runs on Chrome OS devices, using
+  # Wayland (instead of X11).
+  #
+  # TODO(crbug.com/1052397):
+  # Define chromeos_product instead, which takes either "browser" or "ash".
+  # Re-define the following variables as:
+  # is_lacros = chromeos_product == "browser"
+  # is_ash = chromeos_product == "ash"
+  chromeos_is_browser_only = false
+
+  # Setting this to true when building LaCrOS-chrome will cause it to
+  # *also* build ash-chrome in a subdirectory using an alternate toolchain.
+  # Don't set this unless you're sure you want it, because it'll double
+  # your build time.
+  also_build_ash_chrome = false
+
+  # Setting this to true when building ash-chrome will cause it to
+  # *also* build lacros-chrome in a subdirectory using an alternate toolchain.
+  also_build_lacros_chrome = false
+}
+
+# is_chromeos_{ash,lacros} is used to specify that it is specific to either
+# ash or lacros chrome for chromeos. For platform specific logic that
+# applies to both, use is_chromeos instead.
+# .gn files are evaluated multiple times for each toolchain.
+# is_chromeos_{ash,lacros} should be set true only for builds with target
+# toolchains.
+is_chromeos_ash = is_chromeos && !chromeos_is_browser_only
+is_chromeos_lacros = is_chromeos && chromeos_is_browser_only
+
+# also_build_ash_chrome and also_build_lacros_chrome cannot be both true.
+assert(!(also_build_ash_chrome && also_build_lacros_chrome))

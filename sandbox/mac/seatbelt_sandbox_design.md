@@ -1,5 +1,5 @@
 # **Mac Sandbox V2 Design Doc**
-*Status: Final, Authors: kerrnel@chromium.org,rsesek@chromium.org, Last Updated: 2017-07-10*
+*Status: Final, Authors: kerrnel@chromium.org, rsesek@chromium.org, Last Updated: 2020-05-14*
 
 # **Objective**
 
@@ -10,14 +10,14 @@ profile features.
 
 # **Background**
 
-Chromium currently runs an unsandboxed warm up routine to acquire
-system resources, before entering the sandbox. The design doc
+Chromium historically ran an unsandboxed warm up routine to acquire
+system resources, before entering the sandbox. This design doc
 provides a full implementation design and deployment strategy to
 sandbox the warmup phase. This document also provides a high level
 overview of the macOS provided sandbox.
 
-In the current warm up phase, Chromium calls system frameworks which
-acquires an unspecified number of resources before being sandboxed,
+In the warm up phase, Chromium called system frameworks which
+acquired an unspecified number of resources before being sandboxed,
 and those resources change with every new OS update from Apple.
 This [2009 Chromium blog
 post](https://blog.chromium.org/2009/06/google-chrome-sandboxing-and-mac-os-x.html&sa=D&ust=1492473048358000&usg=AFQjCNGEbmCLUqoH9-BeudDcNf5NmW-UcQ)
@@ -32,11 +32,11 @@ should read the [Apple Sandbox
 Guide](http://reverse.put.as/wp-content/uploads/2011/09/Apple-Sandbox-Guide-v1.0.pdf)
 from reverse.put.as, or see the Appendix of this doc.
 
-# **Current versus New Implementation**
+# **The V2 Sandbox Implementation**
 
-The new sandbox will continue to use the OS provided sandboxing
+The V2 sandbox continues to use the OS provided sandboxing
 framework and the "deny resource access by default" policy that the
-sandbox currently uses. The change introduced by the new implementation
+V1 sandbox used. The major difference under the V2 sandbox architecture
 is the removal of the unsandboxed warmup phase.
 
 # **Compatibility and Security Risk**
@@ -51,12 +51,12 @@ sandbox allowed access to dangerous resources.
 A more permissive sandbox profile reduces compatibility risk but
 increases security risk and vice versa. See
 [crbug.com/619981](https://bugs.chromium.org/p/chromium/issues/detail?id=619981)
-for an example of how the current sandbox implementation already
-incurs compatibility risk in favor of security risk.
+for an example of how even given the V1 unsandboxed warmup phase, the
+implementation already dealt with compatibility risk.
 
-The current sandbox also incurs a large security risk at the warmup
+The V1 sandbox also has greater security risk at the warmup
 time, since that phase is unsandboxed. Rather than incurring both
-compatibility and security risk during execution, the new sandbox
+compatibility and security risk during execution, the V2 sandbox
 shifts the risk profile to take on more compatibility risk, since
 the warmup phase is eliminated, but it eliminates security risk.
 
@@ -76,25 +76,43 @@ continue its execution into the ChromeMain function.
 
 # **Detailed Design**
 
+## Executable Structure
+
+Both the main Chromium executable and all of the bundled Chromium Helper
+executables contain [a minimal amount of
+code](https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/chrome_exe_main_mac.cc;drc=05219ddeb8130389da9ad634ba3e021a70bff393).
+The bulk of the code lives in the Chromium Framework library, which is
+`dlopen()`ed at runtime to call `ChromeMain()`, after applying the sandbox.
+
+This design choice has beneficial security properties: many system frameworks
+run static initializers, and some of these static initializers acquire and
+maintain access to files or Mach service ports. If the executables directly
+linked the Chromium Framework or the system frameworks, then those initializers
+would be able to run outside the sandbox, since static initializers run before
+`main()`. The Chromium and Helper executables instead only link
+`/usr/lib/libSystem.dylib` and the very small `//sandbox/mac` target, to bring
+in `/usr/lib/libsandbox.dylib`. After the executable applies the sandbox, the
+program then loads the Framework, which causes all the dependent system
+frameworks to load.
+
 ## Sandbox Profile Principles
 
 The sandbox profiles will use the following principles when
 implementing the profiles for each process type.
-*   The profiles deny resource access to anything not explicitly allowed.
-*   Processes may access all system libraries and frameworks.
-*   Explicitly list which system resources (files, folders, mach services, sysctls, IPC, IOKit calls) Chromium may access. Analyze each resource access for safety first.
+
+- The profiles deny resource access to anything not explicitly allowed.
+- Processes may access all system libraries and frameworks.
+- Explicitly list which system resources (files, folders, mach services,
+    sysctls, IPC, IOKit calls) Chromium may access. Analyze each resource access
+    for safety first.
 
 ## Sandbox Design
 
-The current sandbox code lives in content/common/sandbox_mac.mm.
-This file will continue to exist until the current sandbox is
-officially deprecated and removed for all process types. Chromium
-will use a switch to skip the current sandboxing code for each
-process type as it is ported to the new sandbox.
-
-The new sandbox will rewrite the Chromium code and profiles from
-scratch, in order to leverage the most modern OS APIs and constructs,
-which are easier to use and maintain.
+The V1 sandbox code lives in
+[sandbox_mac.mm](https://source.chromium.org/chromium/chromium/src/+/main:services/service_manager/sandbox/mac/sandbox_mac.mm;l=1;drc=efd8e880522dc1df3b8883648513016fab3d3956).
+This file will continue to exist until the V1 sandbox is removed for all process
+types. Chromium now uses the V2 sandbox for all process types except the GPU
+process.
 
 ## Code Structure
 
@@ -106,10 +124,10 @@ using the "Google Chromium Helper" executable. The browser passes
 command line flags to the Helper executable indicating what type
 of process it should execute as.
 
-The browser will now create a pipe to the Helper executable, and
-using that pipe, the Helper executable will read a protobuf message
-from the browser process. The profobuf message will contain the
-profile string and a map of the sandbox parameters, and using a
+The browser creates a pipe to the Helper executable, and
+using that pipe, the Helper executable reads a protobuf message
+from the browser process. The profobuf message contains the
+profile string and a map of the sandbox parameters. Using the
 lightweight protobuf prevents the error prone parsing code for a
 whole parameters list from being re-implemented. This must happen
 in the main executable itself, as the process must be sandboxed
@@ -117,7 +135,7 @@ before the framework is loaded.
 
 The Helper executable will immediately initialize the sandbox, using
 the profile and parameters, before continuing execution to the
-ChromiumMain function.
+`ChromeMain()` function.
 
 # **Design Alternatives**
 
@@ -130,9 +148,9 @@ a new OS release, and we would not know. The new explicit profiles
 make the attack surface very auditable and easy to understand.
 
 Another alternative would have been the [Bootstrap
-Sandbox](https://docs.google.com/presentation/d/1Npdbl7UF06wgKRsRWakiI3-qIlPDNN_-AT8H5tQjbYc/edit#slide=id.p)
+Sandbox](https://docs.google.com/document/d/108sr6gBxqdrnzVPsb_4_JbDyW1V4-DRQUC4R8YvM40M/view)
 plan, which proposed intercepting all mach connections to limit the
-attack surface. However, with the "new" launchd released in OS X
+attack surface. However, with the rewritten launchd released in macOS
 10.10 Yosemite, messages could no longer be intercepted and forward.
 This design solves the same problem by sandboxing the warmup phase,
 and allowing the existing system sandbox to enforce the security.

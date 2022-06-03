@@ -1,4 +1,5 @@
-markusheintz@chromium.org
+# Note: Please use only owners from this file for changes to the Sync protos.
+#       Don't use owners from higher-level folders, and *never* TBR changes!
 mastiz@chromium.org
 treib@chromium.org
 tschumann@chromium.org

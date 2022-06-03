@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/PrefetchBackgroundTask_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
@@ -27,7 +27,7 @@ namespace prefetch {
 static jboolean JNI_PrefetchBackgroundTask_StartPrefetchTask(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
-  ProfileKey* profile_key = ::android::GetLastUsedProfileKey();
+  ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
   DCHECK(profile_key);
 
   PrefetchService* prefetch_service =

@@ -4,374 +4,312 @@
 
 "use strict";
 
-var nodeParentPairs = [];
 var tree;
 
 function prepareWebKitXMLViewer()
 {
-    var html = createHTMLElement('html');
-    var head = createHTMLElement('head');
-    html.appendChild(head);
-    var style = createHTMLElement('style');
-    style.id = 'xml-viewer-style';
-    head.appendChild(style);
-    var body = createHTMLElement('body');
-    html.appendChild(body);
-    var sourceXML = createHTMLElement('div');
-    sourceXML.id = 'webkit-xml-viewer-source-xml';
-    body.appendChild(sourceXML);
+  var html = createHTMLElement('html');
+  var head = createHTMLElement('head');
+  html.appendChild(head);
+  var style = createHTMLElement('style');
+  style.id = 'xml-viewer-style';
+  head.appendChild(style);
+  var body = createHTMLElement('body');
+  html.appendChild(body);
+  var sourceXML = createHTMLElement('div');
+  sourceXML.id = 'webkit-xml-viewer-source-xml';
+  body.appendChild(sourceXML);
 
-    var child;
-    while (child = document.firstChild) {
-        document.removeChild(child);
-        if (child.nodeType != Node.DOCUMENT_TYPE_NODE)
-            sourceXML.appendChild(child);
-    }
-    document.appendChild(html);
+  var child;
+  while (child = document.firstChild) {
+    document.removeChild(child);
+    if (child.nodeType != Node.DOCUMENT_TYPE_NODE)
+      sourceXML.appendChild(child);
+  }
+  document.appendChild(html);
 
-    var header = createHTMLElement('div');
-    body.appendChild(header);
-    header.classList.add('header');
-    var headerSpan = createHTMLElement('span');
-    header.appendChild(headerSpan);
-    headerSpan.textContent = "This XML file does not appear to have any style information " +
-      "associated with it. The document tree is shown below.";
-    header.appendChild(createHTMLElement('br'));
+  var header = createHTMLElement('div');
+  body.appendChild(header);
+  header.classList.add('header');
+  var headerSpan = createHTMLElement('span');
+  header.appendChild(headerSpan);
+  headerSpan.textContent =
+      'This XML file does not appear to have any style information ' +
+      'associated with it. The document tree is shown below.';
+  header.appendChild(createHTMLElement('br'));
 
-    tree = createHTMLElement('div');
-    body.appendChild(tree);
-    tree.classList.add('pretty-print');
-    window.onload = sourceXMLLoaded;
+  tree = createHTMLElement('div');
+  body.appendChild(tree);
+  tree.classList.add('pretty-print');
+  window.onload = sourceXMLLoaded;
 }
 
 function sourceXMLLoaded()
 {
-    var sourceXML = document.getElementById('webkit-xml-viewer-source-xml');
-    if (!sourceXML)
-        return; // Stop if some XML tree extension is already processing this document
+  var sourceXML = document.getElementById('webkit-xml-viewer-source-xml');
+  if (!sourceXML)
+    return;  // Stop if some XML tree extension is already processing this
+             // document
 
-    for (var child = sourceXML.firstChild; child; child = child.nextSibling)
-        nodeParentPairs.push({parentElement: tree, node: child});
+  for (var child = sourceXML.firstChild; child; child = child.nextSibling)
+    processNode(tree, child);
 
-    for (var i = 0; i < nodeParentPairs.length; i++)
-        processNode(nodeParentPairs[i].parentElement, nodeParentPairs[i].node);
+  initButtons();
 
-    initButtons();
-
-    return false;
+  return false;
 }
 
 // Tree processing.
 
 function processNode(parentElement, node)
 {
-    var map = processNode.processorsMap;
-    if (!map) {
-        map = {};
-        processNode.processorsMap = map;
-        map[Node.PROCESSING_INSTRUCTION_NODE] = processProcessingInstruction;
-        map[Node.ELEMENT_NODE] = processElement;
-        map[Node.COMMENT_NODE] = processComment;
-        map[Node.TEXT_NODE] = processText;
-        map[Node.CDATA_SECTION_NODE] = processCDATA;
-    }
-    if (processNode.processorsMap[node.nodeType])
-        processNode.processorsMap[node.nodeType].call(this, parentElement, node);
+  switch (node.nodeType) {
+    case Node.PROCESSING_INSTRUCTION_NODE:
+      processProcessingInstruction(parentElement, node);
+      break;
+    case Node.ELEMENT_NODE:
+      processElement(parentElement, node);
+      break;
+    case Node.COMMENT_NODE:
+      processComment(parentElement, node);
+      break;
+    case Node.TEXT_NODE:
+      processText(parentElement, node);
+      break;
+    case Node.CDATA_SECTION_NODE:
+      processCDATA(parentElement, node);
+      break;
+    default:
+      // No-op for unsupported node types e.g. Node.DOCUMENT_FRAGMENT_NODE.
+  }
 }
 
 function processElement(parentElement, node)
 {
-    if (!node.firstChild)
-        processEmptyElement(parentElement, node);
-    else {
-        var child = node.firstChild;
-        if (child.nodeType == Node.TEXT_NODE && isShort(child.nodeValue) && !child.nextSibling)
-            processShortTextOnlyElement(parentElement, node);
-        else
-            processComplexElement(parentElement, node);
-    }
+  if (!node.firstChild)
+    processEmptyElement(parentElement, node);
+  else {
+    var child = node.firstChild;
+    if (child.nodeType == Node.TEXT_NODE && !child.nextSibling)
+      processShortTextOnlyElement(parentElement, node);
+    else
+      processComplexElement(parentElement, node);
+  }
 }
 
 function processEmptyElement(parentElement, node)
 {
-    var line = createLine();
-    line.appendChild(createTag(node, false, true));
-    parentElement.appendChild(line);
+  var line = createLine();
+  line.appendChild(createTag(node, false, true));
+  parentElement.appendChild(line);
 }
 
 function processShortTextOnlyElement(parentElement, node)
 {
-    var line = createLine();
-    line.appendChild(createTag(node, false, false));
-    for (var child = node.firstChild; child; child = child.nextSibling)
-        line.appendChild(createText(child.nodeValue));
-    line.appendChild(createTag(node, true, false));
-    parentElement.appendChild(line);
+  var line = createLine();
+  line.appendChild(createTag(node, false, false));
+  for (var child = node.firstChild; child; child = child.nextSibling)
+    line.appendChild(createText(child.nodeValue));
+  line.appendChild(createTag(node, true, false));
+  parentElement.appendChild(line);
 }
 
 function processComplexElement(parentElement, node)
 {
-    var collapsible = createCollapsible();
+  var folder = createFolder();
+  folder.start.appendChild(createTag(node, false, false));
 
-    collapsible.expanded.start.appendChild(createTag(node, false, false));
-    for (var child = node.firstChild; child; child = child.nextSibling)
-        nodeParentPairs.push({parentElement: collapsible.expanded.content, node: child});
-    collapsible.expanded.end.appendChild(createTag(node, true, false));
+  for (var child = node.firstChild; child; child = child.nextSibling)
+    processNode(folder.openedContent, child);
 
-    collapsible.collapsed.content.appendChild(createTag(node, false, false));
-    collapsible.collapsed.content.appendChild(createText('...'));
-    collapsible.collapsed.content.appendChild(createTag(node, true, false));
-    parentElement.appendChild(collapsible);
+  folder.end.appendChild(createTag(node, true, false));
+
+  parentElement.appendChild(folder);
 }
 
 function processComment(parentElement, node)
 {
-    if (isShort(node.nodeValue)) {
-        var line = createLine();
-        line.appendChild(createComment('<!-- ' + node.nodeValue + ' -->'));
-        parentElement.appendChild(line);
-    } else {
-        var collapsible = createCollapsible();
-
-        collapsible.expanded.start.appendChild(createComment('<!--'));
-        collapsible.expanded.content.appendChild(createComment(node.nodeValue));
-        collapsible.expanded.end.appendChild(createComment('-->'));
-
-        collapsible.collapsed.content.appendChild(createComment('<!--'));
-        collapsible.collapsed.content.appendChild(createComment('...'));
-        collapsible.collapsed.content.appendChild(createComment('-->'));
-        parentElement.appendChild(collapsible);
-    }
+  var line = createLine();
+  line.appendChild(createComment('<!-- ' + node.nodeValue + ' -->'));
+  parentElement.appendChild(line);
 }
 
 function processCDATA(parentElement, node)
 {
-    if (isShort(node.nodeValue)) {
-        var line = createLine();
-        line.appendChild(createText('<![CDATA[ ' + node.nodeValue + ' ]]>'));
-        parentElement.appendChild(line);
-    } else {
-        var collapsible = createCollapsible();
-
-        collapsible.expanded.start.appendChild(createText('<![CDATA['));
-        collapsible.expanded.content.appendChild(createText(node.nodeValue));
-        collapsible.expanded.end.appendChild(createText(']]>'));
-
-        collapsible.collapsed.content.appendChild(createText('<![CDATA['));
-        collapsible.collapsed.content.appendChild(createText('...'));
-        collapsible.collapsed.content.appendChild(createText(']]>'));
-        parentElement.appendChild(collapsible);
-    }
+  var line = createLine();
+  line.appendChild(createText('<![CDATA[ ' + node.nodeValue + ' ]]>'));
+  parentElement.appendChild(line);
 }
 
 function processProcessingInstruction(parentElement, node)
 {
-    if (isShort(node.nodeValue)) {
-        var line = createLine();
-        line.appendChild(createComment('<?' + node.nodeName + ' ' + node.nodeValue + '?>'));
-        parentElement.appendChild(line);
-    } else {
-        var collapsible = createCollapsible();
-
-        collapsible.expanded.start.appendChild(createComment('<?' + node.nodeName));
-        collapsible.expanded.content.appendChild(createComment(node.nodeValue));
-        collapsible.expanded.end.appendChild(createComment('?>'));
-
-        collapsible.collapsed.content.appendChild(createComment('<?' + node.nodeName));
-        collapsible.collapsed.content.appendChild(createComment('...'));
-        collapsible.collapsed.content.appendChild(createComment('?>'));
-        parentElement.appendChild(collapsible);
-    }
+  var line = createLine();
+  line.appendChild(
+      createComment('<?' + node.nodeName + ' ' + node.nodeValue + '?>'));
+  parentElement.appendChild(line);
 }
 
 function processText(parentElement, node)
 {
-    parentElement.appendChild(createText(node.nodeValue));
-}
-
-// Processing utils.
-
-function trim(value)
-{
-    return value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-}
-
-function isShort(value)
-{
-    return trim(value).length <= 50;
+  parentElement.appendChild(createText(node.nodeValue));
 }
 
 // Tree rendering.
 
 function createHTMLElement(elementName)
 {
-    return document.createElementNS('http://www.w3.org/1999/xhtml', elementName)
+  return document.createElementNS('http://www.w3.org/1999/xhtml', elementName)
 }
 
-function createCollapsible()
+function createFolder()
 {
-    var collapsible = createHTMLElement('div');
-    collapsible.classList.add('collapsible');
-    collapsible.expanded = createHTMLElement('div');
-    collapsible.expanded.classList.add('expanded');
-    collapsible.appendChild(collapsible.expanded);
+  var folder = createHTMLElement('div');
+  folder.classList.add('folder');
 
-    collapsible.expanded.start = createLine();
-    collapsible.expanded.start.appendChild(createCollapseButton());
-    collapsible.expanded.appendChild(collapsible.expanded.start);
+  folder.start = createLine();
+  folder.start.appendChild(createFolderButton());
+  folder.appendChild(folder.start);
 
-    collapsible.expanded.content = createHTMLElement('div');
-    collapsible.expanded.content.classList.add('collapsible-content');
-    collapsible.expanded.appendChild(collapsible.expanded.content);
+  folder.openedContent = createHTMLElement('div');
+  folder.openedContent.classList.add('opened');
+  folder.appendChild(folder.openedContent);
 
-    collapsible.expanded.end = createLine();
-    collapsible.expanded.appendChild(collapsible.expanded.end);
+  // Folded content.
+  folder.foldedContent = createText('...');
+  folder.foldedContent.classList.add('folded');
+  folder.foldedContent.classList.add('hidden');
+  folder.appendChild(folder.foldedContent);
 
-    collapsible.collapsed = createHTMLElement('div');
-    collapsible.collapsed.classList.add('collapsed');
-    collapsible.collapsed.classList.add('hidden');
-    collapsible.appendChild(collapsible.collapsed);
-    collapsible.collapsed.content = createLine();
-    collapsible.collapsed.content.appendChild(createExpandButton());
-    collapsible.collapsed.appendChild(collapsible.collapsed.content);
+  folder.end = createLine();
+  folder.appendChild(folder.end);
 
-    return collapsible;
+  return folder;
 }
 
-function createButton()
-{
-    var button = createHTMLElement('span');
-    button.classList.add('button');
-    return button;
-}
-
-function createCollapseButton(str)
-{
-    var button = createButton();
-    button.classList.add('collapse-button');
-    return button;
-}
-
-function createExpandButton(str)
-{
-    var button = createButton();
-    button.classList.add('expand-button');
-    return button;
+function createFolderButton(str) {
+  var button = createHTMLElement('span');
+  button.classList.add('folder-button');
+  button.classList.add('fold');
+  return button;
 }
 
 function createComment(commentString)
 {
-    var comment = createHTMLElement('span');
-    comment.classList.add('comment');
-    comment.classList.add('html-comment');
-    comment.textContent = commentString;
-    return comment;
+  var comment = createHTMLElement('span');
+  comment.classList.add('comment');
+  comment.classList.add('html-comment');
+  comment.textContent = commentString;
+  return comment;
 }
 
 function createText(value)
 {
-    var text = createHTMLElement('span');
-    text.textContent = value;
-    text.classList.add('text');
-    return text;
+  var text = createHTMLElement('span');
+  text.textContent = value;
+  return text;
 }
 
 function createLine()
 {
-    var line = createHTMLElement('div');
-    line.classList.add('line');
-    return line;
+  var line = createHTMLElement('div');
+  line.classList.add('line');
+  return line;
 }
 
 function createTag(node, isClosing, isEmpty)
 {
-    var tag = createHTMLElement('span');
-    tag.classList.add('html-tag');
+  var tag = createHTMLElement('span');
+  tag.classList.add('html-tag');
 
-    var stringBeforeAttrs = '<';
-    if (isClosing)
-        stringBeforeAttrs += '/';
-    stringBeforeAttrs += node.nodeName;
-    var textBeforeAttrs = document.createTextNode(stringBeforeAttrs);
-    tag.appendChild(textBeforeAttrs);
+  var stringBeforeAttrs = '<';
+  if (isClosing)
+    stringBeforeAttrs += '/';
+  stringBeforeAttrs += node.nodeName;
+  var textBeforeAttrs = document.createTextNode(stringBeforeAttrs);
+  tag.appendChild(textBeforeAttrs);
 
-    if (!isClosing) {
-        for (var i = 0; i < node.attributes.length; i++)
-            tag.appendChild(createAttribute(node.attributes[i]));
-    }
+  if (!isClosing) {
+    for (var i = 0; i < node.attributes.length; i++)
+      tag.appendChild(createAttribute(node.attributes[i]));
+  }
 
-    var stringAfterAttrs = '';
-    if (isEmpty)
-        stringAfterAttrs += '/';
-    stringAfterAttrs += '>';
-    var textAfterAttrs = document.createTextNode(stringAfterAttrs);
-    tag.appendChild(textAfterAttrs);
+  var stringAfterAttrs = '';
+  if (isEmpty)
+    stringAfterAttrs += '/';
+  stringAfterAttrs += '>';
+  var textAfterAttrs = document.createTextNode(stringAfterAttrs);
+  tag.appendChild(textAfterAttrs);
 
-    return tag;
+  return tag;
 }
 
 function createAttribute(attributeNode)
 {
-    var attribute = createHTMLElement('span');
-    attribute.classList.add('html-attribute');
+  var attribute = createHTMLElement('span');
+  attribute.classList.add('html-attribute');
 
-    var attributeName = createHTMLElement('span');
-    attributeName.classList.add('html-attribute-name');
-    attributeName.textContent = attributeNode.name;
+  var attributeName = createHTMLElement('span');
+  attributeName.classList.add('html-attribute-name');
+  attributeName.textContent = attributeNode.name;
 
-    var textBefore = document.createTextNode(' ');
-    var textBetween = document.createTextNode('="');
+  var textBefore = document.createTextNode(' ');
+  var textBetween = document.createTextNode('="');
 
-    var attributeValue = createHTMLElement('span');
-    attributeValue.classList.add('html-attribute-value');
-    attributeValue.textContent = attributeNode.value;
+  var attributeValue = createHTMLElement('span');
+  attributeValue.classList.add('html-attribute-value');
+  attributeValue.textContent = attributeNode.value;
 
-    var textAfter = document.createTextNode('"');
+  var textAfter = document.createTextNode('"');
 
-    attribute.appendChild(textBefore);
-    attribute.appendChild(attributeName);
-    attribute.appendChild(textBetween);
-    attribute.appendChild(attributeValue);
-    attribute.appendChild(textAfter);
-    return attribute;
+  attribute.appendChild(textBefore);
+  attribute.appendChild(attributeName);
+  attribute.appendChild(textBetween);
+  attribute.appendChild(attributeValue);
+  attribute.appendChild(textAfter);
+  return attribute;
 }
 
-function expandFunction(sectionId)
-{
-    return function()
-    {
-        document.querySelector('#' + sectionId + ' > .expanded').className = 'expanded';
-        document.querySelector('#' + sectionId + ' > .collapsed').className = 'collapsed hidden';
-    };
-}
+function toggleFunction(sectionId) {
+  return function() {
+    var foldedContent = document.querySelector('#' + sectionId + ' > .folded');
+    var openedContent = document.querySelector('#' + sectionId + ' > .opened');
+    var folderButton =
+        document.querySelector('#' + sectionId + ' > .line > .folder-button');
 
-function collapseFunction(sectionId)
-{
-    return function()
-    {
-        document.querySelector('#' + sectionId + ' > .expanded').className = 'expanded hidden';
-        document.querySelector('#' + sectionId + ' > .collapsed').className = 'collapsed';
-    };
+    if (foldedContent) {
+      if (foldedContent.className.includes('hidden'))
+        foldedContent.className = 'folded';
+      else
+        foldedContent.className = 'folded hidden';
+    }
+
+    if (openedContent) {
+      if (openedContent.className.includes('hidden'))
+        openedContent.className = 'opened';
+      else
+        openedContent.className = 'opened hidden';
+    }
+
+    if (folderButton) {
+      if (folderButton.className.includes('open'))
+        folderButton.className = 'folder-button fold';
+      else
+        folderButton.className = 'folder-button open';
+    }
+  };
 }
 
 function initButtons()
 {
-    var sections = document.querySelectorAll('.collapsible');
-    for (var i = 0; i < sections.length; i++) {
-        var sectionId = 'collapsible' + i;
-        sections[i].id = sectionId;
+  var sections = document.querySelectorAll('.folder');
+  for (var i = 0; i < sections.length; i++) {
+    var sectionId = 'folder' + i;
+    sections[i].id = sectionId;
 
-        var expandedPart = sections[i].querySelector('#' + sectionId + ' > .expanded');
-        var collapseButton = expandedPart.querySelector('.collapse-button');
-        collapseButton.onclick = collapseFunction(sectionId);
-        collapseButton.onmousedown = handleButtonMouseDown;
-
-        var collapsedPart = sections[i].querySelector('#' + sectionId + ' > .collapsed');
-        var expandButton = collapsedPart.querySelector('.expand-button');
-        expandButton.onclick = expandFunction(sectionId);
-        expandButton.onmousedown = handleButtonMouseDown;
-    }
-
+    var folderButton = sections[i].querySelector('.folder-button');
+    folderButton.onclick = toggleFunction(sectionId);
+    folderButton.onmousedown = handleButtonMouseDown;
+  }
 }
 
 function handleButtonMouseDown(e)

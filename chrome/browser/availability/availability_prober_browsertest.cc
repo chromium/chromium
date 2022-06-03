@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -13,16 +14,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/system_connector.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/service_names.mojom.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -65,11 +65,16 @@ class TestDelegate : public AvailabilityProber::Delegate {
 class AvailabilityProberBrowserTest : public InProcessBrowserTest {
  public:
   AvailabilityProberBrowserTest() = default;
+
+  AvailabilityProberBrowserTest(const AvailabilityProberBrowserTest&) = delete;
+  AvailabilityProberBrowserTest& operator=(
+      const AvailabilityProberBrowserTest&) = delete;
+
   ~AvailabilityProberBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &AvailabilityProberBrowserTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(https_server_->Start());
@@ -110,8 +115,6 @@ class AvailabilityProberBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityProberBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, OK) {
@@ -124,10 +127,9 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, OK) {
   AvailabilityProber prober(
       &delegate, browser()->profile()->GetURLLoaderFactory(),
       browser()->profile()->GetPrefs(),
-      AvailabilityProber::ClientName::kLitepages, url,
+      AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
   prober.SendNowIfInactive(false);
   WaitForCompletedProbe(&prober);
 
@@ -143,15 +145,14 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, Timeout) {
   retry_policy.max_retries = 0;
 
   AvailabilityProber::TimeoutPolicy timeout_policy;
-  timeout_policy.base_timeout = base::TimeDelta::FromMilliseconds(1);
+  timeout_policy.base_timeout = base::Milliseconds(1);
 
   AvailabilityProber prober(
       &delegate, browser()->profile()->GetURLLoaderFactory(),
       browser()->profile()->GetPrefs(),
-      AvailabilityProber::ClientName::kLitepages, url,
+      AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
   prober.SendNowIfInactive(false);
   WaitForCompletedProbe(&prober);
 
@@ -171,10 +172,9 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, NetworkChange) {
   AvailabilityProber prober(
       &delegate, browser()->profile()->GetURLLoaderFactory(),
       browser()->profile()->GetPrefs(),
-      AvailabilityProber::ClientName::kLitepages, url,
+      AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
 
   content::NetworkConnectionChangeSimulator().SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_4G);
@@ -193,10 +193,9 @@ IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, BadServer) {
   AvailabilityProber prober(
       &delegate, browser()->profile()->GetURLLoaderFactory(),
       browser()->profile()->GetPrefs(),
-      AvailabilityProber::ClientName::kLitepages, url,
+      AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
       AvailabilityProber::HttpMethod::kGet, headers, retry_policy,
-      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1,
-      base::TimeDelta::FromDays(1));
+      timeout_policy, TRAFFIC_ANNOTATION_FOR_TESTS, 1, base::Days(1));
   prober.SendNowIfInactive(false);
   WaitForCompletedProbe(&prober);
 

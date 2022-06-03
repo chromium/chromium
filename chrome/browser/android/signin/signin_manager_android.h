@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
@@ -38,6 +38,9 @@ class SigninManagerAndroid : public KeyedService {
  public:
   SigninManagerAndroid(Profile* profile,
                        signin::IdentityManager* identity_manager);
+
+  SigninManagerAndroid(const SigninManagerAndroid&) = delete;
+  SigninManagerAndroid& operator=(const SigninManagerAndroid&) = delete;
 
   ~SigninManagerAndroid() override;
 
@@ -91,7 +94,7 @@ class SigninManagerAndroid : public KeyedService {
   };
 
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
-      const base::Optional<ManagementCredentials>& credentials)>;
+      const absl::optional<ManagementCredentials>& credentials)>;
 
   // If required registers for policy with given account. callback will be
   // called with credentials if the account is managed.
@@ -101,7 +104,7 @@ class SigninManagerAndroid : public KeyedService {
   void OnPolicyRegisterDone(
       const CoreAccountInfo& account_id,
       base::OnceCallback<void()> policy_callback,
-      const base::Optional<ManagementCredentials>& credentials);
+      const absl::optional<ManagementCredentials>& credentials);
 
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
                                base::OnceCallback<void()> policy_callback,
@@ -130,8 +133,6 @@ class SigninManagerAndroid : public KeyedService {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SigninManagerAndroid> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SIGNIN_SIGNIN_MANAGER_ANDROID_H_

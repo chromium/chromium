@@ -43,6 +43,9 @@ class BlobReader : public blink::mojom::BlobReaderClient,
                    const std::string& blob_uuid,
                    BlobReadCallback callback);
 
+  BlobReader(const BlobReader&) = delete;
+  BlobReader& operator=(const BlobReader&) = delete;
+
   ~BlobReader() override;
 
  private:
@@ -54,10 +57,10 @@ class BlobReader : public blink::mojom::BlobReaderClient,
   static void Read(content::BrowserContext* browser_context,
                    const std::string& blob_uuid,
                    BlobReadCallback callback,
-                   base::Optional<BlobReader::Range> range);
+                   absl::optional<BlobReader::Range> range);
 
   BlobReader(mojo::PendingRemote<blink::mojom::Blob> blob,
-             base::Optional<Range> range);
+             absl::optional<Range> range);
   void Start(base::OnceClosure callback);
 
   // blink::mojom::BlobReaderClient:
@@ -74,16 +77,14 @@ class BlobReader : public blink::mojom::BlobReaderClient,
 
   base::OnceClosure callback_;
   mojo::Remote<blink::mojom::Blob> blob_;
-  base::Optional<Range> read_range_;
+  absl::optional<Range> read_range_;
 
   mojo::Receiver<blink::mojom::BlobReaderClient> receiver_{this};
   std::unique_ptr<mojo::DataPipeDrainer> data_pipe_drainer_;
 
-  base::Optional<uint64_t> blob_length_;
+  absl::optional<uint64_t> blob_length_;
   std::unique_ptr<std::string> blob_data_;
   bool data_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobReader);
 };
 
 #endif  // EXTENSIONS_BROWSER_BLOB_READER_H_

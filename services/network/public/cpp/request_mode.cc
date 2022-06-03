@@ -16,18 +16,10 @@ const char* RequestModeToString(network::mojom::RequestMode mode) {
     case network::mojom::RequestMode::kCorsWithForcedPreflight:
       return "cors";
     case network::mojom::RequestMode::kNavigate:
-    case network::mojom::RequestMode::kNavigateNestedFrame:
-    case network::mojom::RequestMode::kNavigateNestedObject:
       return "navigate";
   }
   NOTREACHED();
   return "";
-}
-
-bool IsNavigationRequestMode(network::mojom::RequestMode mode) {
-  return mode == network::mojom::RequestMode::kNavigate ||
-         mode == network::mojom::RequestMode::kNavigateNestedFrame ||
-         mode == network::mojom::RequestMode::kNavigateNestedObject;
 }
 
 }  // namespace network

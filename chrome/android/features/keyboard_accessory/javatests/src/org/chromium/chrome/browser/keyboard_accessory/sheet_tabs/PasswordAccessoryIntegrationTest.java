@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.AllOf.allOf;
@@ -19,8 +21,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHe
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
-import android.os.Build;
-import android.support.test.filters.SmallTest;
+import android.os.Build.VERSION_CODES;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -28,14 +31,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.TimeoutException;
 
@@ -43,8 +48,6 @@ import java.util.concurrent.TimeoutException;
  * Integration tests for password accessory views.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/958631")
-@RetryOnFailure
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordAccessoryIntegrationTest {
     @Rule
@@ -70,8 +73,11 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/958631")
-    public void testPasswordSheetDisplaysProvidedItems() throws TimeoutException {
+    @DisableIf.
+    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
+            message = "Flaky on Marshmallow https://crbug.com/1102302")
+    public void
+    testPasswordSheetDisplaysProvidedItems() throws TimeoutException {
         mHelper.loadTestPage(false);
         mHelper.cacheCredentials("mayapark@gmail.com", "SomeHiddenPassword");
 
@@ -104,6 +110,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1111770
     public void testFillsPasswordOnTap() throws TimeoutException {
         mHelper.loadTestPage(false);
         mHelper.cacheCredentials("mpark@abc.com", "ShorterPassword");
@@ -137,5 +144,28 @@ public class PasswordAccessoryIntegrationTest {
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.passwords_sheet));
         onView(withText(containsString("No saved passwords"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID,
+            ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    public void
+    testEnablesUndenylistingToggle() throws TimeoutException {
+        mHelper.loadTestPage(false);
+        mHelper.cacheCredentials(new String[0], new String[0], true);
+
+        // Focus the field to bring up the accessory.
+        mHelper.focusPasswordField();
+        mHelper.waitForKeyboardAccessoryToBeShown();
+        whenDisplayed(allOf(isDisplayed(), isKeyboardAccessoryTabLayout()))
+                .perform(selectTabAtPosition(0));
+
+        whenDisplayed(withId(R.id.option_toggle_switch)).check(matches(isNotChecked()));
+        onView(withId(R.id.option_toggle_subtitle)).check(matches(withText(R.string.text_off)));
+
+        whenDisplayed(withId(R.id.option_toggle_switch)).perform(click());
+        onView(withId(R.id.option_toggle_switch)).check(matches(isChecked()));
+        onView(withId(R.id.option_toggle_subtitle)).check(matches(withText(R.string.text_on)));
     }
 }

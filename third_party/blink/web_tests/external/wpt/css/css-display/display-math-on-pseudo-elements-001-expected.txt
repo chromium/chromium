@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS computed display on ::before and ::after for <div class="block">
+PASS computed display on ::before and ::after for <math class="block">
+PASS computed display on ::before and ::after for <mrow class="block">
+PASS computed display on ::before and ::after for <div class="inline">
+FAIL computed display on ::before and ::after for <math class="inline"> assert_equals: expected "inline" but got "block"
+FAIL computed display on ::before and ::after for <mrow class="inline"> assert_equals: expected "inline" but got "block"
+Harness: the test ran to completion.
+

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS window_exposed_functions
-PASS window_functions
-PASS window_properties
-FAIL window_properties_readonly assert_readonly: changing property "screen" succeeded
-Harness: the test ran to completion.
-

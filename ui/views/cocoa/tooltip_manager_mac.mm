@@ -10,6 +10,7 @@
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/gfx/font_list.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/platform_font_mac.h"
 
 namespace {
 
@@ -32,8 +33,10 @@ int TooltipManagerMac::GetMaxWidth(const gfx::Point& location) const {
 }
 
 const gfx::FontList& TooltipManagerMac::GetFontList() const {
-  static base::NoDestructor<gfx::FontList> font_list(
-      []() { return gfx::Font([NSFont toolTipsFontOfSize:0]); }());
+  static base::NoDestructor<gfx::FontList> font_list([]() {
+    return gfx::Font(new gfx::PlatformFontMac(
+        gfx::PlatformFontMac::SystemFontType::kToolTip));
+  }());
   return *font_list;
 }
 

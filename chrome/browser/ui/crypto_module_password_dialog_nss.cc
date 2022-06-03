@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -69,7 +69,7 @@ void SlotUnlocker::Start() {
       ShowCryptoModulePasswordDialog(
           PK11_GetTokenName(modules_[current_].get()), retry_, reason_,
           server_.host(), parent_,
-          base::Bind(&SlotUnlocker::GotPassword, base::Unretained(this)));
+          base::BindOnce(&SlotUnlocker::GotPassword, base::Unretained(this)));
       return;
     }
   }

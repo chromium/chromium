@@ -1,0 +1,1 @@
+image description='foo' descriptionFrom=relatedElement

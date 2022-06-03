@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/enterprise/common/proto/connectors.pb.h",
+  "+components/grit/components_resources.h",
+  "+components/password_manager/core/browser/hash_password_manager.h",
+  "+components/user_prefs",
+  "+components/strings/grit/components_strings.h",
+  "+components/grit/components_scaled_resources.h",
+  "+components/safe_browsing_db",
+  "+components/sync",
+  "+content/public/test",
+]

@@ -46,6 +46,7 @@ class RadioInputType final : public BaseCheckableInputType {
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
+  void WillUpdateCheckedness(bool new_checked) override;
   bool ValueMissing(const String&) const override;
   String ValueMissingText() const override;
   void HandleClickEvent(MouseEvent&) override;
@@ -59,6 +60,7 @@ class RadioInputType final : public BaseCheckableInputType {
 
   HTMLInputElement* FindNextFocusableRadioButtonInGroup(HTMLInputElement*,
                                                         bool);
+  HTMLInputElement* CheckedRadioButtonForGroup() const;
 };
 
 }  // namespace blink

@@ -5,17 +5,14 @@
 #ifndef CONTENT_UTILITY_SERVICES_H_
 #define CONTENT_UTILITY_SERVICES_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+namespace mojo {
+class ServiceFactory;
+}
 
 namespace content {
 
-void HandleServiceRequestOnIOThread(
-    mojo::GenericPendingReceiver receiver,
-    base::SequencedTaskRunner* main_thread_task_runner);
-
-void HandleServiceRequestOnMainThread(mojo::GenericPendingReceiver receiver);
+void RegisterIOThreadServices(mojo::ServiceFactory& services);
+void RegisterMainThreadServices(mojo::ServiceFactory& services);
 
 }  // namespace content
 

@@ -4,6 +4,8 @@
 
 #include "chromeos/components/proximity_auth/proximity_auth_system.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -17,7 +19,6 @@
 #include "chromeos/components/proximity_auth/mock_proximity_auth_client.h"
 #include "chromeos/components/proximity_auth/proximity_auth_profile_pref_manager.h"
 #include "chromeos/components/proximity_auth/unlock_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,14 +65,16 @@ chromeos::multidevice::RemoteDeviceRef CreateRemoteDevice(
 class MockUnlockManager : public UnlockManager {
  public:
   MockUnlockManager() {}
+
+  MockUnlockManager(const MockUnlockManager&) = delete;
+  MockUnlockManager& operator=(const MockUnlockManager&) = delete;
+
   ~MockUnlockManager() override {}
   MOCK_METHOD0(IsUnlockAllowed, bool());
   MOCK_METHOD1(SetRemoteDeviceLifeCycle, void(RemoteDeviceLifeCycle*));
   MOCK_METHOD1(OnAuthAttempted, void(mojom::AuthType));
   MOCK_METHOD0(CancelConnectionAttempt, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUnlockManager);
+  MOCK_METHOD0(GetLastRemoteStatusUnlockForLogging, std::string());
 };
 
 // Mock implementation of ProximityAuthProfilePrefManager.
@@ -82,11 +85,13 @@ class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
           fake_multidevice_setup_client)
       : ProximityAuthProfilePrefManager(nullptr,
                                         fake_multidevice_setup_client) {}
+
+  MockProximityAuthPrefManager(const MockProximityAuthPrefManager&) = delete;
+  MockProximityAuthPrefManager& operator=(const MockProximityAuthPrefManager&) =
+      delete;
+
   ~MockProximityAuthPrefManager() override {}
   MOCK_CONST_METHOD0(GetLastPasswordEntryTimestampMs, int64_t());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityAuthPrefManager);
 };
 
 // Harness for ProximityAuthSystem to make it testable.
@@ -98,6 +103,11 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
       ProximityAuthPrefManager* pref_manager)
       : ProximityAuthSystem(secure_channel_client, std::move(unlock_manager)),
         life_cycle_(nullptr) {}
+
+  TestableProximityAuthSystem(const TestableProximityAuthSystem&) = delete;
+  TestableProximityAuthSystem& operator=(const TestableProximityAuthSystem&) =
+      delete;
+
   ~TestableProximityAuthSystem() override {}
 
   FakeRemoteDeviceLifeCycle* life_cycle() { return life_cycle_; }
@@ -105,7 +115,7 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
  private:
   std::unique_ptr<RemoteDeviceLifeCycle> CreateRemoteDeviceLifeCycle(
       chromeos::multidevice::RemoteDeviceRef remote_device,
-      base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device)
+      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device)
       override {
     std::unique_ptr<FakeRemoteDeviceLifeCycle> life_cycle(
         new FakeRemoteDeviceLifeCycle(remote_device, local_device));
@@ -114,13 +124,15 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
   }
 
   FakeRemoteDeviceLifeCycle* life_cycle_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestableProximityAuthSystem);
 };
 
 }  // namespace
 
 class ProximityAuthSystemTest : public testing::Test {
+ public:
+  ProximityAuthSystemTest(const ProximityAuthSystemTest&) = delete;
+  ProximityAuthSystemTest& operator=(const ProximityAuthSystemTest&) = delete;
+
  protected:
   ProximityAuthSystemTest()
       : user1_local_device_(CreateRemoteDevice(kUser1, "user1_local_device")),
@@ -158,9 +170,9 @@ class ProximityAuthSystemTest : public testing::Test {
     fake_secure_channel_client_ =
         std::make_unique<chromeos::secure_channel::FakeSecureChannelClient>();
 
-    proximity_auth_system_.reset(new TestableProximityAuthSystem(
+    proximity_auth_system_ = std::make_unique<TestableProximityAuthSystem>(
         fake_secure_channel_client_.get(), std::move(unlock_manager),
-        pref_manager_.get()));
+        pref_manager_.get());
 
     proximity_auth_system_->SetRemoteDevicesForUser(
         AccountId::FromUserEmail(kUser1), user1_remote_devices_,
@@ -213,8 +225,6 @@ class ProximityAuthSystemTest : public testing::Test {
  private:
   chromeos::multidevice::ScopedDisableLoggingForTesting disable_logging_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthSystemTest);
 };
 
 TEST_F(ProximityAuthSystemTest, SetRemoteDevicesForUser_NotStarted) {

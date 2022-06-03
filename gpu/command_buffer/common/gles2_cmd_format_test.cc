@@ -11,8 +11,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,10 +53,7 @@ class GLES2FormatTest : public testing::Test {
   unsigned char buffer_[1024];
 };
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const unsigned char GLES2FormatTest::kInitialValue;
-#endif
 
 #include "gpu/command_buffer/common/gles2_cmd_format_test_autogen.h"
 

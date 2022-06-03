@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -30,9 +31,9 @@ SandboxStatusExtension::SandboxStatusExtension(content::RenderFrame* frame)
   // Don't do anything else for subframes.
   if (!frame->IsMainFrame())
     return;
-  frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::Bind(&SandboxStatusExtension::OnSandboxStatusExtensionRequest,
-                 base::RetainedRef(this)));
+  frame->GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
+      &SandboxStatusExtension::OnSandboxStatusExtensionRequest,
+      base::RetainedRef(this)));
 }
 
 SandboxStatusExtension::~SandboxStatusExtension() {}
@@ -80,7 +81,8 @@ void SandboxStatusExtension::Install() {
   v8::Local<v8::Function> function;
   bool success =
       gin::CreateFunctionTemplate(
-          isolate, base::Bind(&SandboxStatusExtension::GetSandboxStatus, this))
+          isolate,
+          base::BindRepeating(&SandboxStatusExtension::GetSandboxStatus, this))
           ->GetFunction(context)
           .ToLocal(&function);
   if (success) {
@@ -114,11 +116,11 @@ void SandboxStatusExtension::GetSandboxStatus(gin::Arguments* args) {
   auto global_callback =
       std::make_unique<v8::Global<v8::Function>>(args->isolate(), callback);
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
-      base::Bind(&SandboxStatusExtension::ReadSandboxStatus, this),
-      base::Bind(&SandboxStatusExtension::RunCallback, this,
-                 base::Passed(&global_callback)));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SandboxStatusExtension::ReadSandboxStatus, this),
+      base::BindOnce(&SandboxStatusExtension::RunCallback, this,
+                     std::move(global_callback)));
 }
 
 std::unique_ptr<base::Value> SandboxStatusExtension::ReadSandboxStatus() {

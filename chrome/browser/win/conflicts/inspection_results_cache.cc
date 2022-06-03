@@ -14,6 +14,7 @@
 #include "base/hash/md5.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 
 namespace {
 
@@ -77,6 +78,7 @@ bool DeserializeInspectionResult(uint32_t min_time_stamp,
   ModuleInspectionResult& inspection_result = value.second.first;
   uint32_t& time_stamp = value.second.second;
 
+  std::u16string location, basename;
   if (!pickle_iterator->ReadString16(&inspection_result.location) ||
       !pickle_iterator->ReadString16(&inspection_result.basename) ||
       !pickle_iterator->ReadString16(&inspection_result.product_name) ||
@@ -188,10 +190,10 @@ void AddInspectionResultToCache(
   DCHECK(insert_result.second);
 }
 
-base::Optional<ModuleInspectionResult> GetInspectionResultFromCache(
+absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache) {
-  base::Optional<ModuleInspectionResult> inspection_result;
+  absl::optional<ModuleInspectionResult> inspection_result;
 
   auto it = inspection_results_cache->find(module_key);
   if (it != inspection_results_cache->end()) {

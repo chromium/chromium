@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_
 
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -21,14 +23,13 @@ class WebBlobInfo {
   BLINK_EXPORT WebBlobInfo(const WebString& uuid,
                            const WebString& type,
                            uint64_t size,
-                           mojo::ScopedMessagePipeHandle);
+                           CrossVariantMojoRemote<mojom::BlobInterfaceBase>);
   BLINK_EXPORT WebBlobInfo(const WebString& uuid,
-                           const WebString& file_path,
                            const WebString& file_name,
                            const WebString& type,
-                           const base::Optional<base::Time>& last_modified,
+                           const absl::optional<base::Time>& last_modified,
                            uint64_t size,
-                           mojo::ScopedMessagePipeHandle);
+                           CrossVariantMojoRemote<mojom::BlobInterfaceBase>);
 
   // For testing purposes, these two methods create a WebBlobInfo connected to a
   // dangling mojo message pipe. This means that any operations that actually
@@ -38,7 +39,6 @@ class WebBlobInfo {
                                                  const WebString& type,
                                                  uint64_t size);
   BLINK_EXPORT static WebBlobInfo FileForTesting(const WebString& uuid,
-                                                 const WebString& file_path,
                                                  const WebString& file_name,
                                                  const WebString& type);
 
@@ -51,27 +51,25 @@ class WebBlobInfo {
   const WebString& Uuid() const { return uuid_; }
   const WebString& GetType() const { return type_; }
   uint64_t size() const { return size_; }
-  const WebString& FilePath() const { return file_path_; }
   const WebString& FileName() const { return file_name_; }
-  base::Optional<base::Time> LastModified() const { return last_modified_; }
-  BLINK_EXPORT mojo::ScopedMessagePipeHandle CloneBlobHandle() const;
+  absl::optional<base::Time> LastModified() const { return last_modified_; }
+  BLINK_EXPORT CrossVariantMojoRemote<mojom::BlobInterfaceBase>
+  CloneBlobRemote() const;
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>);
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
-                           const WebString& file_path,
                            const WebString& file_name,
-                           const base::Optional<base::Time>& last_modified);
+                           const absl::optional<base::Time>& last_modified);
   // TODO(mek): Get rid of these constructors after ensuring that the
   // BlobDataHandle always has the correct type and size.
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
                            const WebString& type,
                            uint64_t size);
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
-                           const WebString& file_path,
                            const WebString& file_name,
                            const WebString& type,
-                           const base::Optional<base::Time>& last_modified,
+                           const absl::optional<base::Time>& last_modified,
                            uint64_t size);
   BLINK_EXPORT scoped_refptr<BlobDataHandle> GetBlobHandle() const;
 #endif
@@ -82,11 +80,10 @@ class WebBlobInfo {
   WebString type_;  // MIME type
   uint64_t size_;
   WebPrivatePtr<BlobDataHandle> blob_handle_;
-  WebString file_path_;   // Only for File
   WebString file_name_;   // Only for File
-  base::Optional<base::Time> last_modified_;  // Only for File
+  absl::optional<base::Time> last_modified_;  // Only for File
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_

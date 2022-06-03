@@ -1,0 +1,14 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <circle id="rim" cx="0" cy="0" r="70"/>
+        <g id="loupePlus">
+            <use id="useRim" xlink:href="#rim" fill="#e33c31">
+                <set />
+            </use>
+        </g>
+    </defs>
+
+    <use id="zoomplus" xlink:href="#loupePlus" x="300" y="300" >
+    </use>
+</svg>

@@ -32,11 +32,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_DATA_LIST_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_DATA_LIST_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
-
-class HTMLDataListOptionsCollection;
 
 class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();

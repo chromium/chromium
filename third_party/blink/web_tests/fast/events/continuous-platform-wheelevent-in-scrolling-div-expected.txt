@@ -1,8 +1,0 @@
-PASS event.wheelDeltaY is window.expectedScrollTop*-3
-PASS event.wheelDeltaX is window.expectedScrollLeft*-3
-PASS event.wheelDelta is window.expectedScrollTop*-3
-PASS div.scrollTop == window.expectedScrollTop && div.scrollLeft == window.expectedScrollLeft became true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

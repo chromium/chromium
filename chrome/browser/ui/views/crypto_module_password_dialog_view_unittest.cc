@@ -6,43 +6,48 @@
 
 #include <string>
 
-#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 
-class CryptoModulePasswordDialogViewTest : public ChromeViewsTestBase {
- public:
-  CryptoModulePasswordDialogViewTest() {}
-  ~CryptoModulePasswordDialogViewTest() override {}
+using CryptoModulePasswordDialogViewTest = ChromeViewsTestBase;
 
-  void Capture(const std::string& text) {
-    text_ = text;
-  }
+std::unique_ptr<CryptoModulePasswordDialogView> CreateCryptoDialog(
+    CryptoModulePasswordCallback callback) {
+  return std::make_unique<CryptoModulePasswordDialogView>(
+      "slot", kCryptoModulePasswordCertEnrollment, "server",
+      std::move(callback));
+}
 
-  void CreateCryptoDialog(const CryptoModulePasswordCallback& callback) {
-    dialog_ = std::make_unique<CryptoModulePasswordDialogView>(
-        "slot", kCryptoModulePasswordCertEnrollment, "server", callback);
-  }
+TEST_F(CryptoModulePasswordDialogViewTest, AcceptUsesPassword) {
+  std::string password;
+  auto dialog = CreateCryptoDialog(base::BindLambdaForTesting(
+      [&](const std::string& text) { password = text; }));
+  EXPECT_EQ(dialog->password_entry_, dialog->GetInitiallyFocusedView());
+  EXPECT_TRUE(dialog->GetModalType() != ui::MODAL_TYPE_NONE);
 
-  std::string text_;
-  std::unique_ptr<CryptoModulePasswordDialogView> dialog_;
-};
-
-TEST_F(CryptoModulePasswordDialogViewTest, TestAccept) {
-  CryptoModulePasswordCallback cb(
-      base::Bind(&CryptoModulePasswordDialogViewTest::Capture,
-                 base::Unretained(this)));
-  CreateCryptoDialog(cb);
-  EXPECT_EQ(dialog_->password_entry_, dialog_->GetInitiallyFocusedView());
-  EXPECT_TRUE(dialog_->GetModalType() != ui::MODAL_TYPE_NONE);
   const std::string kPassword = "diAl0g";
-  dialog_->password_entry_->SetText(base::ASCIIToUTF16(kPassword));
-  EXPECT_TRUE(dialog_->Accept());
-  EXPECT_EQ(kPassword, text_);
-  const base::string16 empty;
-  EXPECT_EQ(empty, dialog_->password_entry_->GetText());
+  dialog->password_entry_->SetText(base::ASCIIToUTF16(kPassword));
+  EXPECT_TRUE(dialog->Accept());
+  EXPECT_EQ(kPassword, password);
+}
+
+TEST_F(CryptoModulePasswordDialogViewTest, CancelDoesntUsePassword) {
+  std::string password;
+  bool callback_run = false;
+  auto dialog = CreateCryptoDialog(
+      base::BindLambdaForTesting([&](const std::string& text) {
+        callback_run = true;
+        password = text;
+      }));
+
+  const std::string kPassword = "diAl0g";
+  dialog->password_entry_->SetText(base::ASCIIToUTF16(kPassword));
+  EXPECT_TRUE(dialog->Cancel());
+  EXPECT_TRUE(callback_run);
+  EXPECT_EQ("", password);
 }

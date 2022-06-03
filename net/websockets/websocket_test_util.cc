@@ -13,7 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_network_session.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -129,12 +129,12 @@ HttpRequestHeaders WebSocketCommonTestHeaders() {
   return request_headers;
 }
 
-spdy::SpdyHeaderBlock WebSocketHttp2Request(
+spdy::Http2HeaderBlock WebSocketHttp2Request(
     const std::string& path,
     const std::string& authority,
     const std::string& origin,
     const WebSocketExtraHeaders& extra_headers) {
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[spdy::kHttp2MethodHeader] = "CONNECT";
   request_headers[spdy::kHttp2AuthorityHeader] = authority;
   request_headers[spdy::kHttp2SchemeHeader] = "https";
@@ -155,9 +155,9 @@ spdy::SpdyHeaderBlock WebSocketHttp2Request(
   return request_headers;
 }
 
-spdy::SpdyHeaderBlock WebSocketHttp2Response(
+spdy::Http2HeaderBlock WebSocketHttp2Response(
     const WebSocketExtraHeaders& extra_headers) {
-  spdy::SpdyHeaderBlock response_headers;
+  spdy::Http2HeaderBlock response_headers;
   response_headers[spdy::kHttp2StatusHeader] = "200";
   for (const auto& header : extra_headers) {
     response_headers[base::ToLowerASCII(header.first)] = header.second;
@@ -228,7 +228,7 @@ void WebSocketMockClientSocketFactoryMaker::AddSSLSocketDataProvider(
 WebSocketTestURLRequestContextHost::WebSocketTestURLRequestContextHost()
     : url_request_context_(true), url_request_context_initialized_(false) {
   url_request_context_.set_client_socket_factory(maker_.factory());
-  auto params = std::make_unique<HttpNetworkSession::Params>();
+  auto params = std::make_unique<HttpNetworkSessionParams>();
   params->enable_spdy_ping_based_connection_checking = false;
   params->enable_quic = false;
   params->enable_websocket_over_http2 = true;
@@ -252,7 +252,7 @@ void WebSocketTestURLRequestContextHost::AddSSLSocketDataProvider(
 void WebSocketTestURLRequestContextHost::SetProxyConfig(
     const std::string& proxy_rules) {
   DCHECK(!url_request_context_initialized_);
-  proxy_resolution_service_ = ProxyResolutionService::CreateFixed(
+  proxy_resolution_service_ = ConfiguredProxyResolutionService::CreateFixed(
       proxy_rules, TRAFFIC_ANNOTATION_FOR_TESTS);
   url_request_context_.set_proxy_resolution_service(
       proxy_resolution_service_.get());
@@ -263,7 +263,7 @@ int DummyConnectDelegate::OnAuthRequired(
     scoped_refptr<HttpResponseHeaders> response_headers,
     const IPEndPoint& host_port_pair,
     base::OnceCallback<void(const AuthCredentials*)> callback,
-    base::Optional<AuthCredentials>* credentials) {
+    absl::optional<AuthCredentials>* credentials) {
   return OK;
 }
 

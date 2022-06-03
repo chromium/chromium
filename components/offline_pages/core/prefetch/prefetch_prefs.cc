@@ -19,7 +19,7 @@ const char kPrefetchTestingHeaderPref[] =
     "offline_prefetch.testing_header_value";
 const char kEnabledByServer[] = "offline_prefetch.enabled_by_server";
 const char kNextForbiddenCheckTimePref[] = "offline_prefetch.next_gpb_check";
-const base::TimeDelta kForbiddenCheckDelay = base::TimeDelta::FromDays(7);
+const base::TimeDelta kForbiddenCheckDelay = base::Days(7);
 const char kPrefetchCachedGCMToken[] = "offline_prefetch.gcm_token";
 
 }  // namespace
@@ -62,9 +62,9 @@ void SetLimitlessPrefetchingEnabled(PrefService* prefs, bool enabled) {
 bool IsLimitlessPrefetchingEnabled(PrefService* prefs) {
   base::TimeDelta max_duration;
   if (version_info::IsOfficialBuild())
-    max_duration = base::TimeDelta::FromDays(1);
+    max_duration = base::Days(1);
   else
-    max_duration = base::TimeDelta::FromDays(365);
+    max_duration = base::Days(365);
 
   DCHECK(prefs);
   const base::Time enabled_time =

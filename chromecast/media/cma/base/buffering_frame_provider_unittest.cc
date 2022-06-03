@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -36,6 +36,11 @@ namespace media {
 class BufferingFrameProviderTest : public testing::Test {
  public:
   BufferingFrameProviderTest();
+
+  BufferingFrameProviderTest(const BufferingFrameProviderTest&) = delete;
+  BufferingFrameProviderTest& operator=(const BufferingFrameProviderTest&) =
+      delete;
+
   ~BufferingFrameProviderTest() override;
 
   // Setup the test.
@@ -54,8 +59,6 @@ class BufferingFrameProviderTest : public testing::Test {
  private:
   void OnTestTimeout();
   void OnTestCompleted();
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingFrameProviderTest);
 };
 
 BufferingFrameProviderTest::BufferingFrameProviderTest() {
@@ -74,7 +77,7 @@ void BufferingFrameProviderTest::Configure(
   std::vector<FrameGeneratorForTest::FrameSpec> frame_specs(frame_count);
   for (size_t k = 0; k < frame_specs.size() - 1; k++) {
     frame_specs[k].has_config = (k == 0);
-    frame_specs[k].timestamp = base::TimeDelta::FromMilliseconds(40) * k;
+    frame_specs[k].timestamp = base::Milliseconds(40) * k;
     frame_specs[k].size = 512;
     frame_specs[k].has_decrypt_config = ((k % 3) == 0);
   }
@@ -102,14 +105,13 @@ void BufferingFrameProviderTest::Configure(
 }
 
 void BufferingFrameProviderTest::Start() {
-  frame_consumer_->Start(
-      base::Bind(&BufferingFrameProviderTest::OnTestCompleted,
-                 base::Unretained(this)));
+  frame_consumer_->Start(base::BindOnce(
+      &BufferingFrameProviderTest::OnTestCompleted, base::Unretained(this)));
 }
 
 void BufferingFrameProviderTest::OnTestTimeout() {
   ADD_FAILURE() << "Test timed out";
-  if (base::MessageLoopCurrent::Get())
+  if (base::CurrentThread::Get())
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 

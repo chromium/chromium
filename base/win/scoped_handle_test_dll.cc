@@ -25,14 +25,14 @@ struct ThreadParams {
 };
 
 // Note, this must use all native functions to avoid instantiating the
-// ActiveVerifier. e.g. can't use base::Thread or even base::PlatformThread.
+// HandleVerifier. e.g. can't use base::Thread or even base::PlatformThread.
 DWORD __stdcall ThreadFunc(void* params) {
   ThreadParams* thread_params = reinterpret_cast<ThreadParams*>(params);
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
 
   ::SetEvent(thread_params->ready_event);
   ::WaitForSingleObject(thread_params->start_event, INFINITE);
-  ScopedHandle handle_holder(handle);
+  CheckedScopedHandle handle_holder(handle);
   return 0;
 }
 
@@ -88,7 +88,7 @@ bool InternalRunLocationTest() {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   if (!handle)
     return false;
-  ScopedHandle handle_holder(handle);
+  CheckedScopedHandle handle_holder(handle);
 
   HMODULE verifier_module =
       base::win::internal::GetHandleVerifierModuleForTesting();
@@ -103,12 +103,12 @@ bool InternalRunLocationTest() {
   HMODULE main_module = ::GetModuleHandle(nullptr);
 
 #if BUILDFLAG(SINGLE_MODULE_MODE_HANDLE_VERIFIER)
-  // In a component build ActiveVerifier will always be created inside base.dll
+  // In a component build HandleVerifier will always be created inside base.dll
   // as the code always lives there.
   if (verifier_module == my_module || verifier_module == main_module)
     return false;
 #else
-  // In a non-component build, ActiveVerifier should always be created in the
+  // In a non-component build, HandleVerifier should always be created in the
   // version of base linked with the main executable.
   if (verifier_module == my_module || verifier_module != main_module)
     return false;

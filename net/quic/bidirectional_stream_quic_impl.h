@@ -34,6 +34,10 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   explicit BidirectionalStreamQuicImpl(
       std::unique_ptr<QuicChromiumClientSession::Handle> session);
 
+  BidirectionalStreamQuicImpl(const BidirectionalStreamQuicImpl&) = delete;
+  BidirectionalStreamQuicImpl& operator=(const BidirectionalStreamQuicImpl&) =
+      delete;
+
   ~BidirectionalStreamQuicImpl() override;
 
   // BidirectionalStreamImpl implementation:
@@ -95,8 +99,8 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   // received.
   LoadTimingInfo::ConnectTiming connect_timing_;
 
-  spdy::SpdyHeaderBlock initial_headers_;
-  spdy::SpdyHeaderBlock trailing_headers_;
+  spdy::Http2HeaderBlock initial_headers_;
+  spdy::Http2HeaderBlock trailing_headers_;
 
   // User provided read buffer for ReadData() response.
   scoped_refptr<IOBuffer> read_buffer_;
@@ -129,8 +133,6 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   bool may_invoke_callbacks_;
 
   base::WeakPtrFactory<BidirectionalStreamQuicImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamQuicImpl);
 };
 
 }  // namespace net

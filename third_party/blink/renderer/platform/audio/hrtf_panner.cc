@@ -41,9 +41,10 @@ const double kMaxDelayTimeSeconds = 0.002;
 
 const int kUninitializedAzimuth = -1;
 
-HRTFPanner::HRTFPanner(float sample_rate, HRTFDatabaseLoader* database_loader)
-    : Panner(kPanningModelHRTF),
-      database_loader_(database_loader),
+HRTFPanner::HRTFPanner(float sample_rate,
+                       unsigned render_quantum_frames,
+                       HRTFDatabaseLoader* database_loader)
+    : database_loader_(database_loader),
       sample_rate_(sample_rate),
       crossfade_selection_(kCrossfadeSelection1),
       azimuth_index1_(kUninitializedAzimuth),
@@ -56,18 +57,19 @@ HRTFPanner::HRTFPanner(float sample_rate, HRTFDatabaseLoader* database_loader)
       convolver_r1_(FftSizeForSampleRate(sample_rate)),
       convolver_l2_(FftSizeForSampleRate(sample_rate)),
       convolver_r2_(FftSizeForSampleRate(sample_rate)),
-      delay_line_l_(kMaxDelayTimeSeconds, sample_rate),
-      delay_line_r_(kMaxDelayTimeSeconds, sample_rate),
-      temp_l1_(audio_utilities::kRenderQuantumFrames),
-      temp_r1_(audio_utilities::kRenderQuantumFrames),
-      temp_l2_(audio_utilities::kRenderQuantumFrames),
-      temp_r2_(audio_utilities::kRenderQuantumFrames) {
+      delay_line_l_(kMaxDelayTimeSeconds, sample_rate, render_quantum_frames),
+      delay_line_r_(kMaxDelayTimeSeconds, sample_rate, render_quantum_frames),
+      temp_l1_(render_quantum_frames),
+      temp_r1_(render_quantum_frames),
+      temp_l2_(render_quantum_frames),
+      temp_r2_(render_quantum_frames),
+      render_quantum_frames_(render_quantum_frames) {
   DCHECK(database_loader);
 }
 
 HRTFPanner::~HRTFPanner() = default;
 
-size_t HRTFPanner::FftSizeForSampleRate(float sample_rate) {
+unsigned HRTFPanner::FftSizeForSampleRate(float sample_rate) {
   // The HRTF impulse responses (loaded as audio resources) are 512
   // sample-frames @44.1KHz.  Currently, we truncate the impulse responses to
   // half this size, but an FFT-size of twice impulse response size is needed
@@ -85,12 +87,13 @@ size_t HRTFPanner::FftSizeForSampleRate(float sample_rate) {
 
   // This is the size used for analysis frames in the HRTF kernel.  The
   // convolvers used by the kernel are twice this size.
-  int analysis_fft_size = 1 << static_cast<unsigned>(log2(resampled_length));
+  unsigned analysis_fft_size = 1u
+                               << static_cast<unsigned>(log2(resampled_length));
 
   // Don't let the analysis size be smaller than the supported size
   analysis_fft_size = std::max(analysis_fft_size, FFTFrame::MinFFTSize());
 
-  int convolver_fft_size = 2 * analysis_fft_size;
+  unsigned convolver_fft_size = 2 * analysis_fft_size;
 
   // Make sure this size of convolver is supported.
   DCHECK_LE(convolver_fft_size, FFTFrame::MaxFFTSize());
@@ -127,7 +130,7 @@ int HRTFPanner::CalculateDesiredAzimuthIndexAndBlend(double azimuth,
   // this index from the last index we rendered at.  This minimizes the clicks
   // and graininess for moving sources which occur otherwise.
   desired_azimuth_index =
-      clampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
+      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
   return desired_azimuth_index;
 }
 
@@ -216,12 +219,12 @@ void HRTFPanner::Pan(double desired_azimuth,
   }
 
   // This algorithm currently requires that we process in power-of-two size
-  // chunks at least audio_utilities::kRenderQuantumFrames.
+  // chunks of at least |RenderQuantumFrames()|.
   DCHECK_EQ(1UL << static_cast<int>(log2(frames_to_process)),
             frames_to_process);
-  DCHECK_GE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_GE(frames_to_process, RenderQuantumFrames());
 
-  const unsigned kFramesPerSegment = audio_utilities::kRenderQuantumFrames;
+  const unsigned kFramesPerSegment = RenderQuantumFrames();
   const unsigned number_of_segments = frames_to_process / kFramesPerSegment;
 
   for (unsigned segment = 0; segment < number_of_segments; ++segment) {

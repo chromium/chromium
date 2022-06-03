@@ -1,0 +1,46 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is a fork of ./metadata.mojom. The original file is in-use by the
+// down-stream clank repositories. The fork was created so that changes can be
+// made here iteratively without breaking clank. Once this file has become
+// fairly stable, the intent is to merge it back into the original with as few
+// changes as possible.
+
+module schema_org.improved.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// A property can have arrays of different types simultaneously. Non-array
+// values are converted to arrays of one element.
+struct Values {
+  array<bool> bool_values;
+  array<int64> long_values;
+  array<string> string_values;
+  array<double> double_values;
+  array<mojo_base.mojom.Time> date_time_values;
+  array<mojo_base.mojom.TimeDelta> time_values;
+  array<url.mojom.Url> url_values;
+  array<Entity> entity_values;
+};
+
+// Key-value pair for the attributes of an |Entity|.
+struct Property {
+  string name;
+  Values values;
+};
+
+// Top-level metadata entry using schema.org vocabulary.
+// Tree structure of entities is possible.
+// Ref: https://developers.google.com/schemas/formats/json-ld
+struct Entity {
+  // Corresponds to the "@type" key, defined in JSON-LD.
+  // See: https://w3c.github.io/json-ld-syntax/#specifying-the-type
+  string type;
+  // Corresponds to the "@id" key, defined in JSON-LD.
+  // See: https://w3c.github.io/json-ld-syntax/#node-identifiers
+  string id;
+  array<Property> properties;
+};

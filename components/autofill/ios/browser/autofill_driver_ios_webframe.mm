@@ -12,7 +12,8 @@ void AutofillDriverIOSWebFrameFactory::CreateForWebStateAndDelegate(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager) {
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager) {
   if (FromWebState(web_state))
     return;
 
@@ -27,7 +28,8 @@ AutofillDriverIOSWebFrameFactory::AutofillDriverIOSWebFrameFactory(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager)
     : web_state_(web_state),
       client_(client),
       bridge_(bridge),
@@ -52,7 +54,8 @@ void AutofillDriverIOSWebFrame::CreateForWebFrameAndDelegate(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager) {
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager) {
   if (FromWebFrame(web_frame))
     return;
 
@@ -68,7 +71,8 @@ AutofillDriverIOSRefCountable::AutofillDriverIOSRefCountable(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager)
 
     : AutofillDriverIOS(web_state,
                         web_frame,
@@ -83,7 +87,8 @@ AutofillDriverIOSWebFrame::AutofillDriverIOSWebFrame(
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
     const std::string& app_locale,
-    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    BrowserAutofillManager::AutofillDownloadManagerState
+        enable_download_manager)
     : driver_(base::MakeRefCounted<AutofillDriverIOSRefCountable>(
           web_state,
           web_frame,

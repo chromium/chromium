@@ -10,11 +10,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "dbus/bus.h"
@@ -60,7 +61,7 @@ TestService::~TestService() {
 bool TestService::StartService() {
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
-  return StartWithOptions(thread_options);
+  return StartWithOptions(std::move(thread_options));
 }
 
 void TestService::WaitUntilServiceIsStarted() {
@@ -112,7 +113,7 @@ void TestService::SendTestSignalFromRootInternal(const std::string& message) {
   bus_->RequestOwnership(
       service_name_, request_ownership_options_,
       base::BindOnce(&TestService::OnOwnership, base::Unretained(this),
-                     base::DoNothing::Once<bool>()));
+                     base::DoNothing()));
 
   // Use "/" just like dbus-send does.
   ExportedObject* root_object = bus_->GetExportedObject(ObjectPath("/"));
@@ -178,7 +179,7 @@ void TestService::OnExported(const std::string& interface_name,
     bus_->RequestOwnership(
         service_name_, request_ownership_options_,
         base::BindOnce(&TestService::OnOwnership, base::Unretained(this),
-                       base::DoNothing::Once<bool>()));
+                       base::DoNothing()));
   }
 }
 

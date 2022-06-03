@@ -5,7 +5,7 @@
 /**
  * Namespace for keyboard utility functions.
  */
-var keyboard = {};
+/* #export */ var keyboard = {};
 
 /**
  * keyboard_utils may be injected as content script. This variable gets and
@@ -83,7 +83,22 @@ keyboard.onKeyDown_ = function(event) {
   // See crbug.com/543865.
   if (document.activeElement ===
       // eslint-disable-next-line no-restricted-properties
-      document.getElementById('oauth-enroll-auth-view')) {
+      document.getElementById('authView')) {
+    return;
+  }
+
+  // The networks list in the Chrome OOBE has an iron-list which uses arrow
+  // keys to navigate elements. Tab events will remove focus from the list.
+  //
+  // $ is defined differently depending on how this file gets executed; we have
+  // to use document.getElementById to get consistent behavior.
+  //
+  // See crbug.com/1083145
+  // eslint-disable-next-line no-restricted-properties
+  if (document.activeElement === document.getElementById('network-selection') &&
+      document.activeElement.shadowRoot.activeElement.tagName ==
+      'NETWORK-SELECT-LOGIN' &&
+      (event.key == 'ArrowUp' || event.key == 'ArrowDown')) {
     return;
   }
 

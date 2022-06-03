@@ -18,7 +18,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "client/crash_report_database.h"
 #include "handler/linux/exception_handler_server.h"
 #include "handler/user_stream_data_source.h"
@@ -58,6 +57,11 @@ class CrosCrashReportExceptionHandler
       const std::map<std::string, std::string>* process_annotations,
       const UserStreamDataSources* user_stream_data_sources);
 
+  CrosCrashReportExceptionHandler(const CrosCrashReportExceptionHandler&) =
+      delete;
+  CrosCrashReportExceptionHandler& operator=(
+      const CrosCrashReportExceptionHandler&) = delete;
+
   ~CrosCrashReportExceptionHandler() override;
 
   // ExceptionHandlerServer::Delegate:
@@ -77,6 +81,7 @@ class CrosCrashReportExceptionHandler
       UUID* local_report_id = nullptr) override;
 
   void SetDumpDir(const base::FilePath& dump_dir) { dump_dir_ = dump_dir; }
+  void SetAlwaysAllowFeedback() { always_allow_feedback_ = true; }
  private:
   bool HandleExceptionWithConnection(
       PtraceConnection* connection,
@@ -90,8 +95,7 @@ class CrosCrashReportExceptionHandler
   const std::map<std::string, std::string>* process_annotations_;  // weak
   const UserStreamDataSources* user_stream_data_sources_;  // weak
   base::FilePath dump_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosCrashReportExceptionHandler);
+  bool always_allow_feedback_;
 };
 
 }  // namespace crashpad

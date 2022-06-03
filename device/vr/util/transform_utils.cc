@@ -4,34 +4,26 @@
 
 #include "device/vr/util/transform_utils.h"
 
-#include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 namespace vr_utils {
 
-gfx::Transform MakeTranslationTransform(float x, float y, float z) {
+gfx::Transform VrPoseToTransform(const device::mojom::VRPose* pose) {
   gfx::DecomposedTransform decomp;
-  decomp.translate[0] = x;
-  decomp.translate[1] = y;
-  decomp.translate[2] = z;
+  if (pose->orientation) {
+    decomp.quaternion =
+        gfx::Quaternion(pose->orientation->x(), pose->orientation->y(),
+                        pose->orientation->z(), pose->orientation->w());
+  }
+  if (pose->position) {
+    decomp.translate[0] = pose->position->x();
+    decomp.translate[1] = pose->position->y();
+    decomp.translate[2] = pose->position->z();
+  }
+
   return gfx::ComposeTransform(decomp);
-}
-
-gfx::Transform MakeTranslationTransform(const gfx::Vector3dF& translation) {
-  return MakeTranslationTransform(translation.x(), translation.y(),
-                                  translation.z());
-}
-
-constexpr float kDefaultIPD = 0.1f;  // 10cm
-
-gfx::Transform DefaultHeadFromLeftEyeTransform() {
-  return MakeTranslationTransform(-kDefaultIPD * 0.5, 0, 0);
-}
-
-gfx::Transform DefaultHeadFromRightEyeTransform() {
-  return MakeTranslationTransform(kDefaultIPD * 0.5, 0, 0);
 }
 
 }  // namespace vr_utils

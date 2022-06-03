@@ -8,10 +8,11 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/test/launcher/test_result.h"
 #include "base/threading/thread_checker.h"
 
@@ -32,6 +33,10 @@ class FilePath;
 class TestResultsTracker {
  public:
   TestResultsTracker();
+
+  TestResultsTracker(const TestResultsTracker&) = delete;
+  TestResultsTracker& operator=(const TestResultsTracker&) = delete;
+
   ~TestResultsTracker();
 
   // Initialize the result tracker. Must be called exactly once before
@@ -60,6 +65,10 @@ class TestResultsTracker {
 
   // Adds |result| to the stored test results.
   void AddTestResult(const TestResult& result);
+
+  // Adds to the current iteration the fact that |count| items were leaked by
+  // one or more tests in |test_names| in its temporary directory.
+  void AddLeakedItems(int count, const std::vector<std::string>& test_names);
 
   // Even when no iterations have occurred, we still want to generate output
   // data with "NOTRUN" status for each test. This method generates a
@@ -95,12 +104,15 @@ class TestResultsTracker {
   TestStatusMap GetTestStatusMapForAllIterations() const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TestResultsTrackerTest,
+                           SaveSummaryAsJSONWithLinkInResult);
   void GetTestStatusForIteration(int iteration, TestStatusMap* map) const;
 
   template<typename InputIterator>
   void PrintTests(InputIterator first,
                   InputIterator last,
                   const std::string& description) const;
+  void PrintLeaks(int count, const std::vector<std::string>& test_names) const;
 
   struct AggregateTestResult {
     AggregateTestResult();
@@ -118,6 +130,9 @@ class TestResultsTracker {
     // Aggregate test results grouped by full test name.
     typedef std::map<std::string, AggregateTestResult> ResultsMap;
     ResultsMap results;
+
+    // A sequence of tests that leaked files/dirs in their temp directory.
+    std::vector<std::pair<int, std::vector<std::string>>> leaked_temp_items;
   };
 
   struct CodeLocation {
@@ -129,6 +144,9 @@ class TestResultsTracker {
   };
 
   ThreadChecker thread_checker_;
+
+  // Print tests that leak files and/or directories in their temp dir.
+  bool print_temp_leaks_ = false;
 
   // Set of global tags, i.e. strings indicating conditions that apply to
   // the entire test run.
@@ -155,8 +173,6 @@ class TestResultsTracker {
 
   // File handle of output file (can be NULL if no file).
   FILE* out_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResultsTracker);
 };
 
 }  // namespace base

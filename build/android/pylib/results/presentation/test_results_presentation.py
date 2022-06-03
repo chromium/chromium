@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
+
 
 import argparse
 import collections
@@ -14,7 +14,12 @@ import logging
 import tempfile
 import os
 import sys
-import urllib
+try:
+  from urllib.parse import urlencode
+  from urllib.request import urlopen
+except ImportError:
+  from urllib import urlencode
+  from urllib2 import urlopen
 
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -104,9 +109,7 @@ def action_cell(action, data, html_class):
 
 
 def flakiness_dashbord_link(test_name, suite_name):
-  url_args = urllib.urlencode([
-      ('testType', suite_name),
-      ('tests', test_name)])
+  url_args = urlencode([('testType', suite_name), ('tests', test_name)])
   return ('https://test-results.appspot.com/'
          'dashboards/flakiness_dashboard.html#%s' % url_args)
 
@@ -131,7 +134,7 @@ def logs_cell(result, test_name, suite_name):
 def code_search(test, cs_base_url):
   """Returns URL for test on codesearch."""
   search = test.replace('#', '.')
-  return '%s/?q=%s&type=cs' % (cs_base_url, search)
+  return '%s/search/?q=%s&type=cs' % (cs_base_url, search)
 
 
 def status_class(status):
@@ -156,7 +159,7 @@ def create_test_table(results_dict, cs_base_url, suite_name):
   ]
 
   test_row_blocks = []
-  for test_name, test_results in results_dict.iteritems():
+  for test_name, test_results in results_dict.items():
     test_runs = []
     for index, result in enumerate(test_results):
       if index == 0:
@@ -215,7 +218,7 @@ def create_suite_table(results_dict):
   ]
 
   suite_row_dict = {}
-  for test_name, test_results in results_dict.iteritems():
+  for test_name, test_results in results_dict.items():
     # TODO(mikecase): This logic doesn't work if there are multiple test runs.
     # That is, if 'per_iteration_data' has multiple entries.
     # Since we only care about the result of the last test run.
@@ -250,10 +253,12 @@ def create_suite_table(results_dict):
       suite_row[FAIL_COUNT_INDEX]['data'] += 1
       footer_row[FAIL_COUNT_INDEX]['data'] += 1
 
-    suite_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
-    footer_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
+    # Some types of crashes can have 'null' values for elapsed_time_ms.
+    if result['elapsed_time_ms'] is not None:
+      suite_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
+      footer_row[TIME_INDEX]['data'] += result['elapsed_time_ms']
 
-  for suite in suite_row_dict.values():
+  for suite in list(suite_row_dict.values()):
     if suite[FAIL_COUNT_INDEX]['data'] > 0:
       suite[FAIL_COUNT_INDEX]['class'] += ' failure'
     else:
@@ -264,8 +269,8 @@ def create_suite_table(results_dict):
   else:
     footer_row[FAIL_COUNT_INDEX]['class'] += ' success'
 
-  return (header_row,
-          [[suite_row] for suite_row in suite_row_dict.values()],
+  return (header_row, [[suite_row]
+                       for suite_row in list(suite_row_dict.values())],
           footer_row)
 
 
@@ -278,7 +283,7 @@ def feedback_url(result_details_link):
   ]
   if result_details_link:
     url_args.append(('comment', 'Please check out: %s' % result_details_link))
-  url_args = urllib.urlencode(url_args)
+  url_args = urlencode(url_args)
   # pylint: enable=redefined-variable-type
   return 'https://bugs.chromium.org/p/chromium/issues/entry?%s' % url_args
 
@@ -349,7 +354,7 @@ def result_details(json_path, test_name, cs_base_url, bucket=None,
 
   results_dict = collections.defaultdict(list)
   for testsuite_run in json_object['per_iteration_data']:
-    for test, test_runs in testsuite_run.iteritems():
+    for test, test_runs in testsuite_run.items():
       results_dict[test].extend(test_runs)
   return results_to_html(results_dict, cs_base_url, bucket, test_name,
                          builder_name, build_number, local_output)
@@ -376,12 +381,12 @@ def ui_screenshot_set(json_path):
   ui_screenshots = []
   # pylint: disable=too-many-nested-blocks
   for testsuite_run in json_object['per_iteration_data']:
-    for _, test_runs in testsuite_run.iteritems():
+    for _, test_runs in testsuite_run.items():
       for test_run in test_runs:
         if 'ui screenshot' in test_run['links']:
           screenshot_link = test_run['links']['ui screenshot']
           if screenshot_link.startswith('file:'):
-            with contextlib.closing(urllib.urlopen(screenshot_link)) as f:
+            with contextlib.closing(urlopen(screenshot_link)) as f:
               test_screenshots = json.load(f)
           else:
             # Assume anything that isn't a file link is a google storage link
@@ -518,8 +523,7 @@ def main():
 
   if ui_screenshot_set_link:
     ui_catalog_url = 'https://chrome-ui-catalog.appspot.com/'
-    ui_catalog_query = urllib.urlencode(
-        {'screenshot_source': ui_screenshot_set_link})
+    ui_catalog_query = urlencode({'screenshot_source': ui_screenshot_set_link})
     ui_screenshot_link = '%s?%s' % (ui_catalog_url, ui_catalog_query)
 
   if args.output_json:

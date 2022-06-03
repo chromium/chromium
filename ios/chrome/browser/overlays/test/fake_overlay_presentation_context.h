@@ -33,10 +33,23 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
   // Returns the presentation state for the overlay UI.
   PresentationState GetPresentationState(OverlayRequest* request);
 
-  // Simulates the dismissal of overlay UI for |reason|.
+  // Whether dismissal calbacks are enabled.  If set to false, faked dismissals
+  // in this context will not trigger the request's dismissal callback.  If the
+  // presented request has been dismissed while callbacks are disabled, the
+  // presented request's dismissal callback will be executed upon being
+  // re-enabled.
+  void SetDismissalCallbacksEnabled(bool enabled);
+  bool AreDismissalCallbacksEnabled() const;
+
+  // Simulates the dismissal of overlay UI for |reason|.  If dismissal callbacks
+  // are enabled, triggers execution of |request|'s OverlayDismissalCallback.
   void SimulateDismissalForRequest(OverlayRequest* request,
                                    OverlayDismissalReason reason);
 
+  // Sets the presentation capabilities for the fake context.  Presentation does
+  // not actually occur with FakeOverlayPresentationContext, so the capabilities
+  // are set directly rather than updating them based on provided base
+  // UIViewControllers as is done in OverlayPresentationContextImpl.
   void SetPresentationCapabilities(UIPresentationCapabilities capabilities);
 
   // OverlayUIDelegate:
@@ -47,14 +60,14 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
       OverlayRequest* request,
       UIPresentationCapabilities capabilities) const override;
   bool CanShowUIForRequest(OverlayRequest* request) const override;
-  void ShowOverlayUI(OverlayPresenter* presenter,
-                     OverlayRequest* request,
+  bool IsShowingOverlayUI() const override;
+  void PrepareToShowOverlayUI(OverlayRequest* request) override;
+  void ShowOverlayUI(OverlayRequest* request,
                      OverlayPresentationCallback presentation_callback,
                      OverlayDismissalCallback dismissal_callback) override;
-  void HideOverlayUI(OverlayPresenter* presenter,
-                     OverlayRequest* request) override;
-  void CancelOverlayUI(OverlayPresenter* presenter,
-                       OverlayRequest* request) override;
+  void HideOverlayUI(OverlayRequest* request) override;
+  void CancelOverlayUI(OverlayRequest* request) override;
+  void SetUIDisabled(bool disabled) override;
 
  private:
   // Struct used to store state for the fake presentation context.
@@ -63,18 +76,26 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
     ~FakeUIState();
 
     PresentationState presentation_state = PresentationState::kNotPresented;
-    OverlayPresentationCallback presentation_callback;
+    OverlayDismissalReason dismissal_reason =
+        OverlayDismissalReason::kUserInteraction;
     OverlayDismissalCallback dismissal_callback;
   };
 
+  // Runs the dismissal callback for the presented request with the most recent
+  // dismissal reason stored in its FakeUIState.
+  void RunPresentedRequestDismissalCallback();
+
+  // Whether dismissal callback execution is enabled.
+  bool dismissal_callbacks_enabled_ = true;
+  // The presented request.  Null if no request is presented.
+  OverlayRequest* presented_request_ = nullptr;
   // The UI states for each request.
   std::map<OverlayRequest*, FakeUIState> states_;
-
+  // The capabilities of the context.
   UIPresentationCapabilities capabilities_ =
       static_cast<UIPresentationCapabilities>(
           UIPresentationCapabilities::kContained |
           UIPresentationCapabilities::kPresented);
-
   base::ObserverList<OverlayPresentationContextObserver,
                      /* check_empty= */ true>
       observers_;

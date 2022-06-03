@@ -19,7 +19,8 @@ TEST(GamepadIdTest, NoDuplicateIds) {
     uint16_t vendor = std::get<0>(item);
     uint16_t product = std::get<1>(item);
     uint32_t vendor_product_id = (vendor << 16) | product;
-    GamepadId gamepad_id = GamepadIdList::Get().GetGamepadId(vendor, product);
+    GamepadId gamepad_id =
+        GamepadIdList::Get().GetGamepadId(base::StringPiece(), vendor, product);
     seen_vendor_product_ids.insert(vendor_product_id);
     seen_gamepad_ids.insert(gamepad_id);
     EXPECT_NE(gamepad_id, GamepadId::kUnknownGamepad);

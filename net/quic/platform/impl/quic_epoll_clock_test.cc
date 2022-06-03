@@ -46,7 +46,6 @@ TEST_F(QuicEpollClockTest, NowInUsec) {
 }
 
 TEST_F(QuicEpollClockTest, MonotonicityWithRealEpollClock) {
-  SetQuicReloadableFlag(quic_monotonic_epoll_clock, true);
   epoll_server::SimpleEpollServer epoll_server;
   QuicEpollClock clock(&epoll_server);
 
@@ -70,11 +69,7 @@ TEST_F(QuicEpollClockTest, MonotonicityWithFakeEpollClock) {
   epoll_server.set_now_in_usec(90);
   quic::QuicTime now = clock.Now();
 
-  if (GetQuicReloadableFlag(quic_monotonic_epoll_clock)) {
-    ASSERT_EQ(last_now, now);
-  } else {
-    ASSERT_GT(last_now, now);
-  }
+  ASSERT_EQ(last_now, now);
 }
 
 }  // namespace test

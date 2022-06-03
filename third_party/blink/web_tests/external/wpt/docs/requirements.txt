@@ -1,0 +1,3 @@
+recommonmark==0.7.1
+sphinx==2.4.4  # Same major version as https://docs.python.org/3/
+sphinx-argparse==0.2.5

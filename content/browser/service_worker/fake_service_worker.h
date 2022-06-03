@@ -35,18 +35,21 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
     return host_;
   }
 
-  EmbeddedWorkerTestHelper* helper() { return helper_; }
-
   void Bind(mojo::PendingReceiver<blink::mojom::ServiceWorker> receiver);
 
   // Returns after InitializeGlobalScope() is called.
   void RunUntilInitializeGlobalScope();
 
-  bool is_zero_idle_timer_delay() const { return is_zero_idle_timer_delay_; }
+  const absl::optional<base::TimeDelta>& idle_delay() const {
+    return idle_delay_;
+  }
 
   FetchHandlerExistence fetch_handler_existence() const {
     return fetch_handler_existence_;
   }
+
+  // Flush messages in the message pipe.
+  void FlushForTesting();
 
  protected:
   // blink::mojom::ServiceWorker overrides:
@@ -55,7 +58,11 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
           service_worker_host,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
-      FetchHandlerExistence fetch_handler_existence) override;
+      FetchHandlerExistence fetch_handler_existence,
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          subresource_loader_factories,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          reporting_observer_receiver) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
   void DispatchActivateEvent(DispatchActivateEventCallback callback) override;
   void DispatchBackgroundFetchAbortEvent(
@@ -82,13 +89,13 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       int action_index,
-      const base::Optional<base::string16>& reply,
+      const absl::optional<std::u16string>& reply,
       DispatchNotificationClickEventCallback callback) override;
   void DispatchNotificationCloseEvent(
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       DispatchNotificationCloseEventCallback callback) override;
-  void DispatchPushEvent(const base::Optional<std::string>& payload,
+  void DispatchPushEvent(const absl::optional<std::string>& payload,
                          DispatchPushEventCallback callback) override;
   void DispatchPushSubscriptionChangeEvent(
       blink::mojom::PushSubscriptionPtr old_subscription,
@@ -123,7 +130,7 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       const std::string& id,
       DispatchContentDeleteEventCallback callback) override;
   void Ping(PingCallback callback) override;
-  void SetIdleTimerDelayToZero() override;
+  void SetIdleDelay(base::TimeDelta delay) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
 
@@ -144,7 +151,8 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
 
   mojo::Receiver<blink::mojom::ServiceWorker> receiver_{this};
 
-  bool is_zero_idle_timer_delay_ = false;
+  // absl::nullopt means SetIdleDelay() is not called.
+  absl::optional<base::TimeDelta> idle_delay_;
 };
 
 }  // namespace content

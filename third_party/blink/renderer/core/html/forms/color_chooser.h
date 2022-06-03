@@ -38,13 +38,17 @@ namespace blink {
 class AXObject;
 class Color;
 
+// This interface respresents a UI to choose a color.
 class CORE_EXPORT ColorChooser : public GarbageCollectedMixin {
  public:
   ColorChooser();
   virtual ~ColorChooser();
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
+  // Call to update the selection in the UI. Used to reflect value changes made
+  // by JS.
   virtual void SetSelectedColor(const Color&) {}
+  // Call to close the UI.
   virtual void EndChooser() {}
   // Returns a root AXObject in the ColorChooser if it's available.
   virtual AXObject* RootAXObject() = 0;

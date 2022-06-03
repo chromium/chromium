@@ -23,6 +23,7 @@ class Version;
 namespace update_client {
 
 class ActivityDataService;
+class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatcherFactory;
 class ProtocolHandlerFactory;
@@ -35,7 +36,7 @@ class UnzipperFactory;
 class Configurator : public base::RefCountedThreadSafe<Configurator> {
  public:
   // Delay in seconds from calling Start() to the first update check.
-  virtual int InitialDelay() const = 0;
+  virtual double InitialDelay() const = 0;
 
   // Delay in seconds to every subsequent update check. 0 means don't check.
   virtual int NextCheckDelay() const = 0;
@@ -95,6 +96,8 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
 
   virtual scoped_refptr<NetworkFetcherFactory> GetNetworkFetcherFactory() = 0;
 
+  virtual scoped_refptr<CrxDownloaderFactory> GetCrxDownloaderFactory() = 0;
+
   virtual scoped_refptr<UnzipperFactory> GetUnzipperFactory() = 0;
 
   virtual scoped_refptr<PatcherFactory> GetPatcherFactory() = 0;
@@ -146,7 +149,7 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
  protected:
   friend class base::RefCountedThreadSafe<Configurator>;
 
-  virtual ~Configurator() {}
+  virtual ~Configurator() = default;
 };
 
 }  // namespace update_client

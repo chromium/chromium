@@ -1,8 +1,8 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_PROPERTYPAGE xml-roles:tabpanel
 ++++ROLE_SYSTEM_PAGETAB name='Item' xml-roles:tab
-++++++IA2_ROLE_HEADING name='Item' xml-roles:heading
+++++++IA2_ROLE_HEADING name='Item'
 ++++++++ROLE_SYSTEM_STATICTEXT name='Item'
 ++++ROLE_SYSTEM_PAGETAB name='Prices' xml-roles:tab
-++++++IA2_ROLE_HEADING name='Prices' xml-roles:heading
+++++++IA2_ROLE_HEADING name='Prices'
 ++++++++ROLE_SYSTEM_STATICTEXT name='Prices'

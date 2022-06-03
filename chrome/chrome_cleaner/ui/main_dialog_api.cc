@@ -4,7 +4,12 @@
 
 #include "chrome/chrome_cleaner/ui/main_dialog_api.h"
 
+#include <string>
+#include <vector>
+
+#include "base/logging.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
+#include "chrome/chrome_cleaner/os/registry.h"
 #include "chrome/chrome_cleaner/pup_data/pup_cleaner_util.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
 
@@ -21,7 +26,7 @@ void MainDialogAPI::ConfirmCleanupIfNeeded(
     return;
   }
 
-  std::vector<base::string16> registry_keys;
+  std::vector<std::wstring> registry_keys;
   for (const auto& pup_id : found_pups) {
     const auto* pup = PUPData::GetPUP(pup_id);
     for (const auto& registry_footprint : pup->expanded_registry_footprints)

@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/system_export.h"
 #include "mojo/public/c/system/types.h"
 
@@ -26,12 +27,23 @@ extern "C" {
 //
 // |options| may be null.
 //
+// If the |MOJO_INITIALIZE_FLAG_LOAD_ONLY| flag is given in |options|, this only
+// partially initializes the library. Other Mojo APIs will remain unavailable
+// until the library is fully initialized by a subsequent call to
+// |MojoInitialize()| WITHOUT the flag. See documentation on
+// |MOJO_INITIALIZE_FLAG_LOAD_ONLY| in types.h for details.
+//
 // Returns:
 //   |MOJO_RESULT_OK| if Mojo initialization was successful.
+//   |MOJO_RESULT_NOT_FOUND| if the Mojo Core library could not be loaded or
+//       appears to be malformed.
+//   |MOJO_RESULT_FAILED_PRECONDITION| if the Mojo Core library AND full IPC
+//       support has already been initialized by some prior call(s) to
+//       |MojoInitialize()|.
+//   |MOJO_RESULT_ALREADY_EXISTS| if |MOJO_INITIALIZE_FLAG_LOAD_ONLY| was
+//       specified for this call but the library has already been successfully
+//       loaded and partially initialized by a previous call with the same flag.
 //   |MOJO_RESULT_INVALID_ARGUMENT| if |options| was non-null and invalid.
-//   |MOJO_RESULT_FAILED_PRECONDITION| if |MojoInitialize()| was already called
-//       once or if the application already explicitly initialized a Mojo Core
-//       environment as an embedder.
 MOJO_SYSTEM_EXPORT MojoResult
 MojoInitialize(const struct MojoInitializeOptions* options);
 

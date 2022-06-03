@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("prediction_service_messages_proto") {
+  sources = [ "prediction_service_messages.proto" ]
+}
+
+source_set("prediction_service") {
+  sources = [
+    "prediction_request_features.h",
+    "prediction_service.cc",
+    "prediction_service.h",
+    "prediction_service_base.h",
+    "prediction_service_common.cc",
+    "prediction_service_common.h",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/content",
+    "//components/permissions:permissions_common",
+    "//services/network/public/cpp:cpp",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+  public_deps = [ ":prediction_service_messages_proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "prediction_service_unittest.cc" ]
+  deps = [
+    ":prediction_service",
+    "//base/test:test_support",
+    "//components/permissions:permissions_common",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
+    "//ui/gfx",
+  ]
+}

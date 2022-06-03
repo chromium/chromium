@@ -14,21 +14,21 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.Locale;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -64,7 +64,10 @@ public class MultiWindowTestHelper {
         // Get the class name to use for the second ChromeTabbedActivity. This step is important
         // for initializing things in MultiWindowUtils.java.
         Class<? extends Activity> secondActivityClass =
-                MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(activity);
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        ()
+                                -> MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(
+                                        activity));
         Assert.assertEquals(
                 "ChromeTabbedActivity2 should be used as the 'open in other window' activity.",
                 ChromeTabbedActivity2.class, secondActivityClass);
@@ -82,12 +85,10 @@ public class MultiWindowTestHelper {
         activity.startActivity(intent);
 
         // Wait for ChromeTabbedActivity2 to be created.
-        CriteriaHelper.pollUiThread(Criteria.equals(numExpectedActivities, new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return ApplicationStatus.getRunningActivities().size();
-            }
-        }));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ApplicationStatus.getRunningActivities().size(),
+                    Matchers.is(numExpectedActivities));
+        });
 
         return waitForSecondChromeTabbedActivity();
     }
@@ -97,30 +98,25 @@ public class MultiWindowTestHelper {
      */
     public static ChromeTabbedActivity2 waitForSecondChromeTabbedActivity() {
         AtomicReference<ChromeTabbedActivity2> returnActivity = new AtomicReference<>();
-        CriteriaHelper.pollUiThread(new Criteria(
-                "Couldn't find instance of ChromeTabbedActivity2") {
-            @Override
-            public boolean isSatisfied() {
-                for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
-                    if (runningActivity.getClass().equals(ChromeTabbedActivity2.class)) {
-                        returnActivity.set((ChromeTabbedActivity2) runningActivity);
-                        return true;
-                    }
+        CriteriaHelper.pollUiThread(() -> {
+            for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+                if (runningActivity.getClass().equals(ChromeTabbedActivity2.class)) {
+                    returnActivity.set((ChromeTabbedActivity2) runningActivity);
+                    return;
                 }
-                return false;
             }
+            throw new CriteriaNotSatisfiedException(
+                    "Couldn't find instance of ChromeTabbedActivity2");
         });
         waitUntilActivityResumed(returnActivity.get());
         return returnActivity.get();
     }
 
     private static void waitUntilActivityResumed(final Activity activity) {
-        CriteriaHelper.pollUiThread(Criteria.equals(ActivityState.RESUMED, new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return ApplicationStatus.getStateForActivity(activity);
-            }
-        }));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ApplicationStatus.getStateForActivity(activity),
+                    Matchers.is(ActivityState.RESUMED));
+        });
     }
 
     /**
@@ -149,34 +145,16 @@ public class MultiWindowTestHelper {
      */
     public static void waitForTabs(final String tag, final ChromeTabbedActivity activity,
             final int expectedTotalTabCount, final int expectedActiveTabId) {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                int actualTotalTabCount = activity.getTabModelSelector().getTotalTabCount();
-                if (expectedTotalTabCount != actualTotalTabCount) {
-                    updateFailureReason(String.format((Locale) null,
-                            "%s: total tab count is wrong: %d (expected %d)", tag,
-                            actualTotalTabCount, expectedTotalTabCount));
-                    return false;
-                }
-                return true;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            int actualTotalTabCount = activity.getTabModelSelector().getTotalTabCount();
+            Criteria.checkThat(actualTotalTabCount, Matchers.is(expectedTotalTabCount));
         });
 
         if (expectedActiveTabId == Tab.INVALID_TAB_ID) return;
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                int actualActiveTabId = activity.getActivityTab().getId();
-                if (expectedActiveTabId != actualActiveTabId) {
-                    updateFailureReason(String.format((Locale) null,
-                            "%s: active tab ID is wrong: %d (expected %d)", tag, actualActiveTabId,
-                            expectedActiveTabId));
-                    return false;
-                }
-                return true;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            int actualActiveTabId = activity.getActivityTab().getId();
+            Criteria.checkThat(actualActiveTabId, Matchers.is(expectedActiveTabId));
         });
     }
 }

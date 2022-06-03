@@ -5,7 +5,6 @@
 #include "ui/aura/test/event_generator_delegate_aura.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/test/default_event_generator_delegate.h"
@@ -30,7 +29,7 @@ Window* WindowFromTarget(ui::EventTarget* event_target) {
 std::unique_ptr<ui::test::EventGeneratorDelegate>
 EventGeneratorDelegateAura::Create(ui::test::EventGenerator* owner,
                                    gfx::NativeWindow root_window,
-                                   gfx::NativeWindow window) {
+                                   gfx::NativeWindow target_window) {
   // Tests should not create event generators for a "root window" that's not
   // actually the root window.
   if (root_window)
@@ -47,6 +46,11 @@ client::ScreenPositionClient*
 EventGeneratorDelegateAura::GetScreenPositionClient(
     const Window* window) const {
   return client::GetScreenPositionClient(window->GetRootWindow());
+}
+
+void EventGeneratorDelegateAura::SetTargetWindow(
+    gfx::NativeWindow target_window) {
+  NOTIMPLEMENTED();
 }
 
 ui::EventSource* EventGeneratorDelegateAura::GetEventSource(
@@ -93,13 +97,6 @@ void EventGeneratorDelegateAura::ConvertPointFromHost(
     gfx::Point* point) const {
   const Window* window = WindowFromTarget(hosted_target);
   window->GetHost()->ConvertPixelsToDIP(point);
-}
-
-ui::EventDispatchDetails EventGeneratorDelegateAura::DispatchKeyEventToIME(
-    ui::EventTarget* target,
-    ui::KeyEvent* event) {
-  Window* const window = WindowFromTarget(target);
-  return window->GetHost()->GetInputMethod()->DispatchKeyEvent(event);
 }
 
 gfx::Point EventGeneratorDelegateAura::CenterOfWindow(

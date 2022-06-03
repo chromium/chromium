@@ -1,0 +1,2 @@
+# For Fuchsia related files
+per-file fuchsia.py=file://build/fuchsia/OWNERS

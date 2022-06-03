@@ -8,7 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 
 namespace gfx {
@@ -20,14 +20,14 @@ base::flat_set<int>& GetUsedHotKeyIDs() {
   return *used_hot_key_ids;
 }
 
-base::Optional<int> GetAvailableHotKeyID() {
+absl::optional<int> GetAvailableHotKeyID() {
   // Valid hot key IDs are in the range 0x0000 to 0xBFFF. See
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-registerhotkey
   for (int i = 0x0000; i < 0xBFFF; i++) {
     if (!GetUsedHotKeyIDs().contains(i))
       return i;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SetHotKeyIDUsed(int id) {
@@ -47,7 +47,7 @@ SingletonHwndHotKeyObserver::Create(
     const SingletonHwndObserver::WndProc& wnd_proc,
     UINT key_code,
     int modifiers) {
-  base::Optional<int> hot_key_id = GetAvailableHotKeyID();
+  absl::optional<int> hot_key_id = GetAvailableHotKeyID();
 
   // If there are no available hot key IDs, return null.
   if (!hot_key_id.has_value())

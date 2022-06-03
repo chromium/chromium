@@ -14,6 +14,8 @@ class MockHidConnection : public HidConnection {
   friend class base::RefCountedThreadSafe<MockHidConnection>;
 
   explicit MockHidConnection(scoped_refptr<HidDeviceInfo> device);
+  MockHidConnection(MockHidConnection&) = delete;
+  MockHidConnection& operator=(MockHidConnection&) = delete;
 
   // HidConnection implementation.
   void PlatformClose() override;
@@ -28,8 +30,6 @@ class MockHidConnection : public HidConnection {
 
  private:
   ~MockHidConnection() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockHidConnection);
 };
 
 }  // namespace device

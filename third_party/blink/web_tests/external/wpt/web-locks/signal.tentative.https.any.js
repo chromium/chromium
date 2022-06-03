@@ -4,19 +4,13 @@
 
 'use strict';
 
-function makePromiseAndResolveFunc() {
-  let resolve;
-  const promise = new Promise(r => { resolve = r; });
-  return [promise, resolve];
-}
-
 promise_test(async t => {
   const res = uniqueName(t);
 
   // These cases should not work:
   for (const signal of ['string', 12.34, false, {}, Symbol(), () => {}, self]) {
-    await promise_rejects(
-      t, new TypeError(),
+    await promise_rejects_js(
+      t, TypeError,
       navigator.locks.request(
         res, {signal}, t.unreached_func('callback should not run')),
       'Bindings should throw if the signal option is a not an AbortSignal');
@@ -28,7 +22,7 @@ promise_test(async t => {
   const controller = new AbortController();
   controller.abort();
 
-  await promise_rejects(
+  await promise_rejects_dom(
     t, 'AbortError',
     navigator.locks.request(res, {signal: controller.signal},
                             t.unreached_func('callback should not run')),
@@ -39,8 +33,7 @@ promise_test(async t => {
   const res = uniqueName(t);
 
   // Grab a lock and hold it until this subtest completes.
-  const never_settled = new Promise(resolve => t.add_cleanup(resolve));
-  navigator.locks.request(res, lock => never_settled);
+  requestLockAndHold(t, res);
 
   const controller = new AbortController();
 
@@ -55,7 +48,7 @@ promise_test(async t => {
   assert_equals(state.pending.filter(lock => lock.name === res).length, 1,
                 'Number of pending locks');
 
-  const rejected = promise_rejects(
+  const rejected = promise_rejects_dom(
     t, 'AbortError', promise, 'Request should reject with AbortError');
 
   controller.abort();
@@ -68,8 +61,7 @@ promise_test(async t => {
   const res = uniqueName(t);
 
   // Grab a lock and hold it until this subtest completes.
-  const never_settled = new Promise(resolve => t.add_cleanup(resolve));
-  navigator.locks.request(res, lock => never_settled);
+  requestLockAndHold(t, res);
 
   const controller = new AbortController();
 
@@ -83,7 +75,7 @@ promise_test(async t => {
   assert_equals(state.pending.filter(lock => lock.name === res).length, 1,
                 'Number of pending locks');
 
-  const rejected = promise_rejects(
+  const rejected = promise_rejects_dom(
     t, 'AbortError', promise, 'Request should reject with AbortError');
 
   let callback_called = false;
@@ -122,7 +114,7 @@ promise_test(async t => {
   // Even though lock is grantable, this abort should be processed synchronously.
   controller.abort();
 
-  await promise_rejects(t, 'AbortError', p, 'Request should abort');
+  await promise_rejects_dom(t, 'AbortError', p, 'Request should abort');
 
   assert_false(got_lock, 'Request should be aborted if signal is synchronous');
 
@@ -198,3 +190,19 @@ promise_test(async t => {
                 'Lock released promise should not reject');
 
 }, 'Abort signaled after lock released');
+
+promise_test(async t => {
+  const res = uniqueName(t);
+
+  const controller = new AbortController();
+  const first = requestLockAndHold(t, res, { signal: controller.signal });
+  const next = navigator.locks.request(res, () => "resolved");
+  controller.abort();
+
+  await promise_rejects_dom(t, "AbortError", first, "Request should abort");
+  assert_equals(
+    await next,
+    "resolved",
+    "The next request is processed after abort"
+  );
+}, "Abort should process the next pending lock request");

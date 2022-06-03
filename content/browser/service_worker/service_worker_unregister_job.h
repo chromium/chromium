@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,8 +32,17 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
                                   blink::ServiceWorkerStatusCode status)>
       UnregistrationCallback;
 
+  // If |is_immediate| is true, unregister clears the active worker from the
+  // registration without waiting for the controlled clients to unload.
   ServiceWorkerUnregisterJob(ServiceWorkerContextCore* context,
-                             const GURL& scope);
+                             const GURL& scope,
+                             const blink::StorageKey& key,
+                             bool is_immediate);
+
+  ServiceWorkerUnregisterJob(const ServiceWorkerUnregisterJob&) = delete;
+  ServiceWorkerUnregisterJob& operator=(const ServiceWorkerUnregisterJob&) =
+      delete;
+
   ~ServiceWorkerUnregisterJob() override;
 
   // Registers a callback to be called when the job completes (whether
@@ -43,7 +52,6 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   // ServiceWorkerRegisterJobBase implementation:
   void Start() override;
   void Abort() override;
-  void WillShutDown() override;
   bool Equals(ServiceWorkerRegisterJobBase* job) const override;
   RegistrationJobType GetType() const override;
 
@@ -60,11 +68,11 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
   const GURL scope_;
+  const blink::StorageKey key_;
+  const bool is_immediate_;
   std::vector<UnregistrationCallback> callbacks_;
-  bool is_promise_resolved_;
+  bool is_promise_resolved_ = false;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUnregisterJob);
 };
 }  // namespace content
 

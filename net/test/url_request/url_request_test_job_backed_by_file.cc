@@ -23,11 +23,9 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "net/base/file_stream.h"
@@ -55,10 +53,9 @@ URLRequestTestJobBackedByFile::FileMetaInfo::FileMetaInfo()
 
 URLRequestTestJobBackedByFile::URLRequestTestJobBackedByFile(
     URLRequest* request,
-    NetworkDelegate* network_delegate,
     const base::FilePath& file_path,
     const scoped_refptr<base::TaskRunner>& file_task_runner)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       file_path_(file_path),
       stream_(new FileStream(file_task_runner)),
       file_task_runner_(file_task_runner),
@@ -143,9 +140,8 @@ void URLRequestTestJobBackedByFile::GetResponseInfo(HttpResponseInfo* info) {
     return;
   auto headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  headers->AddHeader(base::StringPrintf("%s: %s",
-                                        net::HttpRequestHeaders::kContentType,
-                                        meta_info_.mime_type.c_str()));
+  headers->AddHeader(net::HttpRequestHeaders::kContentType,
+                     meta_info_.mime_type);
   info->headers = headers;
 }
 
@@ -163,7 +159,6 @@ URLRequestTestJobBackedByFile::SetUpSourceStream() {
   if (!base::LowerCaseEqualsASCII(file_path_.Extension(), ".svgz"))
     return source;
 
-  UMA_HISTOGRAM_BOOLEAN("Net.FileSVGZLoadCount", true);
   return GzipSourceStream::Create(std::move(source), SourceStream::TYPE_GZIP);
 }
 
@@ -211,7 +206,7 @@ void URLRequestTestJobBackedByFile::DidFetchMetaInfo(
 void URLRequestTestJobBackedByFile::DidOpen(int result) {
   OnOpenComplete(result);
   if (result != OK) {
-    NotifyStartError(URLRequestStatus(URLRequestStatus::FAILED, result));
+    NotifyStartError(result);
     return;
   }
 
@@ -245,8 +240,7 @@ void URLRequestTestJobBackedByFile::DidSeek(int64_t result) {
 
   OnSeekComplete(result);
   if (result < 0) {
-    NotifyStartError(URLRequestStatus(URLRequestStatus::FAILED,
-                                      ERR_REQUEST_RANGE_NOT_SATISFIABLE));
+    NotifyStartError(ERR_REQUEST_RANGE_NOT_SATISFIABLE);
     return;
   }
 

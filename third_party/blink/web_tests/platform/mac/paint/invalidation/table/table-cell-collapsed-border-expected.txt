@@ -1,46 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [3, 260, 441, 110],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [3, 162, 441, 108],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [3, 360, 441, 105],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 60, 436, 108],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutNGTableCell TD id='t3'",
-          "rect": [225, 265, 112, 100],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutNGTableCell TD id='t1'",
-          "rect": [225, 65, 112, 100],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutNGTableCell TD id='t2'",
-          "rect": [8, 265, 110, 100],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [3, 60, 441, 405]
       ]
     }
   ]

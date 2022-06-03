@@ -29,9 +29,7 @@ template("zip") {
                            ])
     script = "//build/android/gyp/zip.py"
     inputs = invoker.inputs
-    outputs = [
-      invoker.output,
-    ]
+    outputs = [ invoker.output ]
 
     args = [
       "--output",

@@ -1,71 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment ' eleifend'",
-          "rect": [8, 114, 200, 90],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'convallis.'",
-          "rect": [8, 114, 200, 90],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'lacus, at sagittis eros leo'",
-          "rect": [8, 114, 200, 90],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'pulvinar velit. Integer'",
-          "rect": [8, 114, 200, 90],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sollicitudin nisi ut urna blandit'",
-          "rect": [8, 114, 200, 90],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Cras faucibus. Nunc'",
-          "rect": [8, 78, 198, 54],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'adipiscing, enim in scelerisque'",
-          "rect": [8, 78, 198, 54],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'convallis, augue '",
-          "rect": [8, 78, 198, 54],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' eleifend lacus,'",
-          "rect": [8, 132, 192, 72],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutInline SPAN id='t'",
-          "rect": [115, 84, 37, 48],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'purus'",
-          "rect": [115, 114, 37, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'purus'",
-          "rect": [38, 132, 36, 18],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [8, 114, 200, 90],
+        [8, 78, 198, 54]
       ]
     }
   ]

@@ -12,7 +12,7 @@ function attempt(length, expected)
 {
     var buffer = new Uint8Array(new ArrayBuffer(length));
     for (var i = 0; i < buffer.length; ++i)
-        buffer[i] = i % 10;
+        buffer[i] = 0x30 + (i % 10);
     var testString = (new TextDecoder("utf-8")).decode(buffer);
 
     input.value = testString;

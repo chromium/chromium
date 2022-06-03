@@ -4,8 +4,7 @@
 
 #include "ui/views/win/pen_event_processor.h"
 
-#include <gtest/gtest.h>
-
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/sequential_id_generator.h"
 
 namespace views {
@@ -246,7 +245,7 @@ TEST(PenProcessorTest, PenEraserFlagDMEnabled) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsTouchEvent());
   EXPECT_EQ(ui::ET_TOUCH_PRESSED, event->AsTouchEvent()->type());
-  EXPECT_EQ(ui::EventPointerType::POINTER_TYPE_ERASER,
+  EXPECT_EQ(ui::EventPointerType::kEraser,
             event->AsTouchEvent()->pointer_details().pointer_type);
 
   pen_info.pointerInfo.pointerFlags = POINTER_FLAG_UP;
@@ -256,8 +255,46 @@ TEST(PenProcessorTest, PenEraserFlagDMEnabled) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsTouchEvent());
   EXPECT_EQ(ui::ET_TOUCH_RELEASED, event->AsTouchEvent()->type());
-  EXPECT_EQ(ui::EventPointerType::POINTER_TYPE_ERASER,
+  EXPECT_EQ(ui::EventPointerType::kEraser,
             event->AsTouchEvent()->pointer_details().pointer_type);
+}
+
+TEST(PenProcessorTest, MultiPenDMEnabled) {
+  ui::SequentialIDGenerator id_generator(0);
+  PenEventProcessor processor(&id_generator,
+                              /*direct_manipulation_enabled*/ true);
+
+  const int kPenCount = 3;
+  POINTER_PEN_INFO pen_info[kPenCount];
+  for (int i = 0; i < kPenCount; i++)
+    memset(&pen_info[i], 0, sizeof(POINTER_PEN_INFO));
+
+  gfx::Point point(100, 100);
+
+  for (int i = 0; i < kPenCount; i++) {
+    pen_info[i].pointerInfo.pointerFlags =
+        POINTER_FLAG_INCONTACT | POINTER_FLAG_FIRSTBUTTON;
+    pen_info[i].pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_DOWN;
+
+    int pointer_id = i;
+    std::unique_ptr<ui::Event> event =
+        processor.GenerateEvent(WM_POINTERDOWN, pointer_id, pen_info[i], point);
+    ASSERT_TRUE(event);
+    ASSERT_TRUE(event->IsTouchEvent());
+    EXPECT_EQ(ui::ET_TOUCH_PRESSED, event->AsTouchEvent()->type());
+  }
+
+  for (int i = 0; i < kPenCount; i++) {
+    pen_info[i].pointerInfo.pointerFlags = POINTER_FLAG_UP;
+    pen_info[i].pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_UP;
+
+    int pointer_id = i;
+    std::unique_ptr<ui::Event> event =
+        processor.GenerateEvent(WM_POINTERUP, pointer_id, pen_info[i], point);
+    ASSERT_TRUE(event);
+    ASSERT_TRUE(event->IsTouchEvent());
+    EXPECT_EQ(ui::ET_TOUCH_RELEASED, event->AsTouchEvent()->type());
+  }
 }
 
 }  // namespace views

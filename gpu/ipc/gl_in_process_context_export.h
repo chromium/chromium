@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GL_IN_PROCESS_CONTEXT_EXPORT_H_
-#define GL_IN_PROCESS_CONTEXT_EXPORT_H_
+#ifndef GPU_IPC_GL_IN_PROCESS_CONTEXT_EXPORT_H_
+#define GPU_IPC_GL_IN_PROCESS_CONTEXT_EXPORT_H_
 
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
@@ -26,4 +26,4 @@
 #define GL_IN_PROCESS_CONTEXT_EXPORT
 #endif
 
-#endif  // GL_IN_PROCESS_CONTEXT_EXPORT_H_
+#endif  // GPU_IPC_GL_IN_PROCESS_CONTEXT_EXPORT_H_

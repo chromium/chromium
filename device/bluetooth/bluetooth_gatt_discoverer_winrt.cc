@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/win/post_async_results.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_winrt.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -64,6 +66,46 @@ using ABI::Windows::Foundation::IReference;
 using ABI::Windows::Foundation::Collections::IVectorView;
 using Microsoft::WRL::ComPtr;
 
+std::string GattCommunicationStatusToString(GattCommunicationStatus status) {
+  switch (status) {
+    case GattCommunicationStatus_Success:
+      return "Success";
+    case ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+        GattCommunicationStatus_Unreachable:
+      return "Unreachable";
+    case ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+        GattCommunicationStatus_ProtocolError:
+      return "ProtocolError";
+    case GattCommunicationStatus_AccessDenied:
+      return "AccessDenied";
+    default:
+      return base::StringPrintf("Unknown (%d)", status);
+  }
+}
+
+std::string GattOpenStatusToString(GattOpenStatus status) {
+  switch (status) {
+    case ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+        GattOpenStatus_Unspecified:
+      return "Unspecified";
+    case GattOpenStatus_Success:
+      return "Success";
+    case GattOpenStatus_AlreadyOpened:
+      return "AlreadyOpened";
+    case ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+        GattOpenStatus_NotFound:
+      return "NotFound";
+    case ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+        GattOpenStatus_SharingViolation:
+      return "SharingViolation";
+    case ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+        GattOpenStatus_AccessDenied:
+      return "AccessDenied";
+    default:
+      return base::StringPrintf("Unknown (%d)", status);
+  }
+}
+
 template <typename IGattResult>
 bool CheckCommunicationStatus(IGattResult* gatt_result,
                               bool allow_access_denied = false) {
@@ -84,7 +126,8 @@ bool CheckCommunicationStatus(IGattResult* gatt_result,
     if (status == GattCommunicationStatus_AccessDenied) {
       BLUETOOTH_LOG(DEBUG) << "GATT access denied error";
     } else {
-      BLUETOOTH_LOG(DEBUG) << "Unexpected GattCommunicationStatus: " << status;
+      BLUETOOTH_LOG(DEBUG) << "Unexpected GattCommunicationStatus: "
+                           << GattCommunicationStatusToString(status);
     }
     BLUETOOTH_LOG(DEBUG)
         << "GATT Error Code: "
@@ -126,8 +169,10 @@ bool GetAsVector(IVectorView<T*>* view, std::vector<ComPtr<I>>* vector) {
 }  // namespace
 
 BluetoothGattDiscovererWinrt::BluetoothGattDiscovererWinrt(
-    ComPtr<IBluetoothLEDevice> ble_device)
-    : ble_device_(std::move(ble_device)) {}
+    ComPtr<IBluetoothLEDevice> ble_device,
+    absl::optional<BluetoothUUID> service_uuid)
+    : ble_device_(std::move(ble_device)),
+      service_uuid_(std::move(service_uuid)) {}
 
 BluetoothGattDiscovererWinrt::~BluetoothGattDiscovererWinrt() = default;
 
@@ -144,7 +189,14 @@ void BluetoothGattDiscovererWinrt::StartGattDiscovery(
   }
 
   ComPtr<IAsyncOperation<GattDeviceServicesResult*>> get_gatt_services_op;
-  hr = ble_device_3->GetGattServicesAsync(&get_gatt_services_op);
+  if (service_uuid_.has_value()) {
+    hr = ble_device_3->GetGattServicesForUuidAsync(
+        BluetoothUUID::GetCanonicalValueAsGUID(
+            service_uuid_->canonical_value()),
+        &get_gatt_services_op);
+  } else {
+    hr = ble_device_3->GetGattServicesAsync(&get_gatt_services_op);
+  }
   if (FAILED(hr)) {
     BLUETOOTH_LOG(DEBUG) << "BluetoothLEDevice::GetGattServicesAsync failed: "
                          << logging::SystemErrorCodeToString(hr);
@@ -253,12 +305,15 @@ void BluetoothGattDiscovererWinrt::OnServiceOpen(
     GattOpenStatus status) {
   if (status != GattOpenStatus_Success &&
       status != GattOpenStatus_AlreadyOpened) {
-    BLUETOOTH_LOG(DEBUG) << "Failed to open service "
-                         << service_attribute_handle << ": " << status;
-    std::move(callback_).Run(false);
+    BLUETOOTH_LOG(DEBUG) << "Ignoring failure to open service "
+                         << service_attribute_handle << ": "
+                         << GattOpenStatusToString(status);
+
+    // Enumerate no characteristics on services the browser is unable to access.
+    service_to_characteristics_map_.insert({service_attribute_handle, {}});
+    RunCallbackIfDone();
     return;
   }
-
 
   ComPtr<IAsyncOperation<GattCharacteristicsResult*>> get_characteristics_op;
   HRESULT hr = gatt_service_3->GetCharacteristicsAsync(&get_characteristics_op);
@@ -287,7 +342,8 @@ void BluetoothGattDiscovererWinrt::OnGetCharacteristics(
     ComPtr<IGattCharacteristicsResult> characteristics_result) {
   // A few GATT services like HID over GATT (short UUID 0x1812) are protected
   // by the OS, leading to an access denied error.
-  if (!CheckCommunicationStatus(characteristics_result.Get(), true)) {
+  if (!CheckCommunicationStatus(characteristics_result.Get(),
+                                /*allow_access_denied=*/true)) {
     BLUETOOTH_LOG(DEBUG) << "Failed to get characteristics for service "
                          << service_attribute_handle << ".";
     std::move(callback_).Run(false);

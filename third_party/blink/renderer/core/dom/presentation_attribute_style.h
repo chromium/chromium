@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PRESENTATION_ATTRIBUTE_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PRESENTATION_ATTRIBUTE_STYLE_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
-
 namespace blink {
 
 class Element;

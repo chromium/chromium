@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/browser/buildflags.gni")
+
+android_library("public_java") {
+  sources = [
+    "public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
+    "public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceState.java",
+    "public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/util:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/metrics_proto:metrics_proto_java",
+    "//url:gurl_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java" ]
+}

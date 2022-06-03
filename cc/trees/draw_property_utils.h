@@ -5,6 +5,7 @@
 #ifndef CC_TREES_DRAW_PROPERTY_UTILS_H_
 #define CC_TREES_DRAW_PROPERTY_UTILS_H_
 
+#include <vector>
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
 
@@ -67,6 +68,25 @@ void CC_EXPORT CalculateDrawProperties(
     RenderSurfaceList* output_render_surface_list,
     LayerImplList* output_update_layer_list_for_testing = nullptr);
 
+bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
+    LayerImpl* layer,
+    const PropertyTrees* property_trees);
+
+bool CC_EXPORT IsLayerBackFaceVisible(LayerImpl* layer,
+                                      int transform_tree_index,
+                                      const PropertyTrees* property_trees);
+
+bool CC_EXPORT IsLayerBackFaceVisible(Layer* layer,
+                                      int transform_tree_index,
+                                      const PropertyTrees* property_trees);
+
+#if DCHECK_IS_ON()
+// Checks and logs if double background blur exists in any layers. Returns
+// true if no double background blur is detected, false otherwise.
+bool CC_EXPORT
+LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
+                        const RenderSurfaceList& render_surface_list);
+#endif
 }  // namespace draw_property_utils
 }  // namespace cc
 

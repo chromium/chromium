@@ -8,7 +8,5 @@ source_set("sudden_motion_sensor") {
     "sudden_motion_sensor_mac.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

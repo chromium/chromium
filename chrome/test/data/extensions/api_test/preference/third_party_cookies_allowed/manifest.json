@@ -1,0 +1,11 @@
+{
+  "name" : "Preferences API Test Extension (thirdPartyCookiesAllowed)",
+  "version" : "0.1",
+  "manifest_version": 2,
+  "description" : "Preferences API Test Extension (thirdPartyCookiesAllowed)",
+  "permissions": [ "privacy" ],
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  }
+}

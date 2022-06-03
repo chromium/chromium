@@ -14,11 +14,9 @@
 #include "chromecast/ui/mojom/media_control_ui.mojom.h"
 #include "chromecast/ui/vector_icons.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromecast {
@@ -28,10 +26,13 @@ class CastWindowManager;
 // Provides a simple touch-based media UI for Aura platforms. This is used to
 // enable simple touch support for media apps which are not yet touch-enabled.
 // This class uses ui::views primitives to draw the UI.
-class MediaControlUi : public mojom::MediaControlUi,
-                       public views::ButtonListener {
+class MediaControlUi : public mojom::MediaControlUi {
  public:
   explicit MediaControlUi(CastWindowManager* window_manager);
+
+  MediaControlUi(const MediaControlUi&) = delete;
+  MediaControlUi& operator=(const MediaControlUi&) = delete;
+
   ~MediaControlUi() override;
 
   void SetBounds(const gfx::Rect& new_bounds);
@@ -46,8 +47,10 @@ class MediaControlUi : public mojom::MediaControlUi,
   void MaybeShowWidget();
   void ShowMediaControls(bool visible);
   bool visible() const;
+  void ButtonPressed(mojom::MediaCommand command);
   void OnTapped();
   std::unique_ptr<views::ImageButton> CreateImageButton(
+      mojom::MediaCommand command,
       const gfx::VectorIcon& icon,
       int height);
 
@@ -60,9 +63,6 @@ class MediaControlUi : public mojom::MediaControlUi,
   // Update the media time progress bar.
   void UpdateMediaTime();
 
-  // views::ButtonListener implementation:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
   CastWindowManager* const window_manager_;
   mojo::Remote<mojom::MediaControlClient> client_;
 
@@ -71,22 +71,21 @@ class MediaControlUi : public mojom::MediaControlUi,
 
   // UI components
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<views::View> touch_view_;
-  std::unique_ptr<views::View> view_;
+  views::View* view_;
 
   // Controls
-  std::unique_ptr<views::ImageButton> btn_previous_;
-  std::unique_ptr<views::ImageButton> btn_play_pause_;
-  std::unique_ptr<views::ImageButton> btn_next_;
-  std::unique_ptr<views::ImageButton> btn_replay30_;
-  std::unique_ptr<views::ImageButton> btn_forward30_;
+  views::ImageButton* btn_previous_;
+  views::ImageButton* btn_play_pause_;
+  views::ImageButton* btn_next_;
+  views::ImageButton* btn_replay30_;
+  views::ImageButton* btn_forward30_;
 
   // Labels
-  std::unique_ptr<views::Label> lbl_meta_;
-  std::unique_ptr<views::Label> lbl_title_;
+  views::Label* lbl_meta_;
+  views::Label* lbl_title_;
 
   // Progress
-  std::unique_ptr<views::ProgressBar> progress_bar_;
+  views::ProgressBar* progress_bar_;
 
   bool is_paused_;
 
@@ -99,12 +98,8 @@ class MediaControlUi : public mojom::MediaControlUi,
 
   base::RepeatingTimer media_time_update_timer_;
 
-  views::LayoutProvider layout_provider_;
-
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MediaControlUi> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlUi);
 };
 
 }  // namespace chromecast

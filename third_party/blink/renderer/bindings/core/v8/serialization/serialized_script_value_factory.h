@@ -16,6 +16,10 @@ class CORE_EXPORT SerializedScriptValueFactory {
   USING_FAST_MALLOC(SerializedScriptValueFactory);
 
  public:
+  SerializedScriptValueFactory(const SerializedScriptValueFactory&) = delete;
+  SerializedScriptValueFactory& operator=(const SerializedScriptValueFactory&) =
+      delete;
+
   // SerializedScriptValueFactory::initialize() should be invoked when Blink is
   // initialized, i.e. initialize() in WebKit.cpp.
   static void Initialize(SerializedScriptValueFactory* new_factory) {
@@ -27,13 +31,14 @@ class CORE_EXPORT SerializedScriptValueFactory {
   friend class SerializedScriptValue;
   friend class UnpackedSerializedScriptValue;
 
-  // Following 2 methods are expected to be called by SerializedScriptValue.
+  // Following methods are expected to be called by SerializedScriptValue.
+  // |object_index| is for use in exception messages.
+  virtual bool ExtractTransferable(v8::Isolate*,
+                                   v8::Local<v8::Value>,
+                                   wtf_size_t object_index,
+                                   Transferables&,
+                                   ExceptionState&);
 
-  // If a serialization error occurs (e.g., cyclic input value) this
-  // function returns an empty representation, schedules a V8 exception to
-  // be thrown using v8::ThrowException(), and sets |didThrow|. In this case
-  // the caller must not invoke any V8 operations until control returns to
-  // V8. When serialization is successful, |didThrow| is false.
   virtual scoped_refptr<SerializedScriptValue> Create(
       v8::Isolate*,
       v8::Local<v8::Value>,
@@ -64,8 +69,6 @@ class CORE_EXPORT SerializedScriptValueFactory {
   }
 
   static SerializedScriptValueFactory* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializedScriptValueFactory);
 };
 
 }  // namespace blink

@@ -1,14 +1,4 @@
-<if expr="chromeos">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/cros_color_overrides.html">
-</if>
-<link rel="import" href="chrome://resources/cr_elements/search_highlight_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="settings_vars_css.html">
-
-
-<!-- Common styles for Material Design settings. -->
-<dom-module id="settings-shared">
+  <!-- Common styles for Material Design settings. -->
   <template>
     <style include="cr-shared-style search-highlight-style
 <if expr='chromeos'>
@@ -79,7 +69,7 @@
       }
 
       span ~ a {
-        margin-inline-start: 4px;
+        margin-inline-start: var(--cr-subsequent-anchors-of-span-margin, 4px);
       }
 
       a[href] {
@@ -101,6 +91,7 @@
         color: var(--google-blue-500);
       }
 
+      collapse-radio-button,
       controlled-radio-button,
       cr-radio-button {
         min-height: var(--settings-row-min-height);
@@ -125,7 +116,9 @@
 
       /* See also: .no-min-width below. */
       .text-elide {
-        @apply --cr-text-elide;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       /* By default, flexbox children have min-width calculated to be the width
@@ -151,9 +144,11 @@
        * outside of a settings-box. A list-frame is likely to follow a
        * settings box. */
       .list-frame {
-        @apply --settings-list-frame-padding;
-        align-items: center;
         display: block;
+        padding-block-end: 0;
+        padding-block-start: 0;
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: var(--cr-section-indent-padding);
       }
 
       /* A list-item is intended to be contained within a list-frame. The list
@@ -211,16 +206,14 @@
         min-height: var(--settings-row-two-line-min-height);
       }
 
-      /* A row with three lines of text. Often the lower lines will be
-       * .secondary. */
-      .three-line {
-        min-height: var(--settings-row-three-line-min-height);
-      }
-
       /* A settings-box is a horizontal row of text or controls within a
        * setting section (page or subpage). */
       .settings-box {
-        @apply --cr-section;
+        align-items: center;
+        border-top: var(--cr-separator-line);
+        display: flex;
+        min-height: var(--cr-section-min-height);
+        padding: 0 var(--cr-section-padding);
       }
 
       .settings-box.no-padding {
@@ -237,10 +230,6 @@
 
       .settings-box.two-line {
         min-height: var(--settings-row-two-line-min-height);
-      }
-
-      .settings-box.three-line {
-        min-height: var(--settings-row-three-line-min-height);
       }
 
       .settings-box-text {
@@ -284,13 +273,15 @@
       }
 
       /* The lower line of text in a two-line row. */
+      /* TODO: Remove and merge with .cr-secondary-text. */
       .secondary {
-        @apply --cr-secondary-text;
+        color: var(--cr-secondary-text-color);
+        font-weight: 400;
       }
 
       /* The |:empty| CSS selector only works when there is no whitespace.
-       * E.g. <div>[[foo]]</div> will be |:empty| when foo == ""; and
-       * <div> [[foo]] </div> will not be |:empty| when foo == "". Ensure there
+       * E.g. <div>[[foo]]</div> will be |:empty| when foo === ""; and
+       * <div> [[foo]] </div> will not be |:empty| when foo === "". Ensure there
        * is no extra whitespace when the contents of .secondary may be "".
        */
       .secondary:empty {
@@ -382,4 +373,3 @@
       }
     </style>
   </template>
-</dom-module>

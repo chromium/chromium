@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,6 +63,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
     [self activateConstraints];
     [self setBackgroundColor:[UIColor colorNamed:kBlueHaloColor]];
     [self setAccessibilityLabel:self.label.text];
+    self.isAccessibilityElement = YES;
   }
   [super willMoveToSuperview:newSuperview];
 }

@@ -18,14 +18,14 @@
 
 // static
 ShareExtensionService* ShareExtensionServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<ShareExtensionService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
 ShareExtensionService* ShareExtensionServiceFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<ShareExtensionService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
@@ -49,8 +49,8 @@ ShareExtensionServiceFactory::~ShareExtensionServiceFactory() {}
 std::unique_ptr<KeyedService>
 ShareExtensionServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<ShareExtensionService>(
       ios::BookmarkModelFactory::GetForBrowserState(chrome_browser_state),
       ReadingListModelFactory::GetForBrowserState(chrome_browser_state));

@@ -37,7 +37,7 @@ test(() => {
 
 test(() => {
   for (const invalidEasing of gInvalidEasings) {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       new KeyframeEffect(target, { easing: invalidEasing });
     }, `TypeError is thrown for easing '${invalidEasing}'`);
   }
@@ -46,12 +46,35 @@ test(() => {
 
 test(() => {
   for (const invalidEasing of gInvalidEasings) {
-    assert_throws(new TypeError, () => {
+    assert_throws_js(TypeError, () => {
       new KeyframeEffect(target, [{ easing: invalidEasing }]);
     }, `TypeError is thrown for easing '${invalidEasing}'`);
   }
 }, 'Invalid easing values are correctly rejected when using a keyframe'
    + ' sequence');
+
+test(() => {
+  let readToEnd = false;
+  const keyframe_obj = {
+    *[Symbol.iterator]() {
+      yield { left: '100px', easing: '' };
+      yield { left: '200px' };
+      readToEnd = true;
+    },
+  };
+  assert_throws_js(
+    TypeError,
+    () => {
+      new KeyframeEffect(null, keyframe_obj);
+    },
+    'TypeError is thrown for an invalid easing'
+  );
+  assert_true(
+    readToEnd,
+    'Read all the keyframe properties before reporting invalid easing'
+  );
+}, 'Invalid easing values are correctly rejected after doing all the'
+   + ' iterating');
 
 test(() => {
   let propAccessCount = 0;
@@ -66,7 +89,7 @@ test(() => {
   addProp('width');
   keyframe.easing = 'easy-peasy';
 
-  assert_throws({ name: 'TypeError' }, () => {
+  assert_throws_js(TypeError, () => {
     new KeyframeEffect(target, keyframe);
   });
   assert_equals(propAccessCount, 2,
@@ -92,7 +115,7 @@ test(() => {
   addProp(kf2, 'height');
   addProp(kf2, 'width');
 
-  assert_throws({ name: 'TypeError' }, () => {
+  assert_throws_js(TypeError, () => {
     new KeyframeEffect(target, [ kf1, kf2 ]);
   });
   assert_equals(propAccessCount, 4,

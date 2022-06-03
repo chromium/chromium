@@ -13,20 +13,19 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_utils.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/buffer.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/types.h"
@@ -438,6 +437,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckPlatformHandleFile,
   return 0;
 }
 
+#if !defined(OS_ANDROID)
 class MultiprocessMessagePipeTestWithPipeCount
     : public MultiprocessMessagePipeTest,
       public testing::WithParamInterface<size_t> {};
@@ -452,8 +452,8 @@ TEST_P(MultiprocessMessagePipeTestWithPipeCount, PlatformHandlePassing) {
     size_t pipe_count = GetParam();
     for (size_t i = 0; i < pipe_count; ++i) {
       base::FilePath unused;
-      base::ScopedFILE fp(
-          CreateAndOpenTemporaryFileInDir(temp_dir.GetPath(), &unused));
+      base::ScopedFILE fp =
+          CreateAndOpenTemporaryStreamInDir(temp_dir.GetPath(), &unused);
       const std::string world("world");
       CHECK_EQ(fwrite(&world[0], 1, world.size(), fp.get()), world.size());
       fflush(fp.get());
@@ -483,7 +483,6 @@ TEST_P(MultiprocessMessagePipeTestWithPipeCount, PlatformHandlePassing) {
 }
 
 // Android multi-process tests are not executing the new process. This is flaky.
-#if !defined(OS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PipeCount,
                          MultiprocessMessagePipeTestWithPipeCount,
                          // TODO(rockot): Enable the 128 and 250 pipe cases when
@@ -1372,6 +1371,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MultiprocessMessagePipeTestWithPeerSupport,
     testing::Values(test::MojoTestBase::LaunchType::CHILD,
+                    test::MojoTestBase::LaunchType::CHILD_WITHOUT_CAPABILITIES,
                     test::MojoTestBase::LaunchType::PEER,
                     test::MojoTestBase::LaunchType::ASYNC
 #if !defined(OS_FUCHSIA)

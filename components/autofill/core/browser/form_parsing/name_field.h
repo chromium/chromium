@@ -6,13 +6,13 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_NAME_FIELD_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
+#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
@@ -23,25 +23,16 @@ class LogManager;
 class NameField : public FormField {
  public:
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const LanguageCode& page_language,
                                           LogManager* log_manager);
 
+  NameField(const NameField&) = delete;
+  NameField& operator=(const NameField&) = delete;
+
  protected:
-  NameField() {}
+  NameField() = default;
 
   void AddClassifications(FieldCandidatesMap* field_candidates) const override;
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstMiddleLast);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstMiddleLast2);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstLast);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstLast2);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstLastMiddleWithSpaces);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstLastEmpty);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, FirstMiddleLastEmpty);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, MiddleInitial);
-  FRIEND_TEST_ALL_PREFIXES(NameFieldTest, MiddleInitialAtEnd);
-
-  DISALLOW_COPY_AND_ASSIGN(NameField);
 };
 
 }  // namespace autofill

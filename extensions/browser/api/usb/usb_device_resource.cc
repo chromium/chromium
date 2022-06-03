@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
 #include "content/public/browser/browser_thread.h"

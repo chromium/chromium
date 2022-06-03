@@ -4,6 +4,7 @@
 
 #include "extensions/common/features/manifest_feature.h"
 
+#include "base/values.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {

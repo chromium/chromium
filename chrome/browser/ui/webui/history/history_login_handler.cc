@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/history/history_login_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,18 +17,18 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-HistoryLoginHandler::HistoryLoginHandler(const base::Closure& signin_callback)
-    : signin_callback_(signin_callback) {}
+HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
+    : signin_callback_(std::move(signin_callback)) {}
 
 HistoryLoginHandler::~HistoryLoginHandler() {}
 
 void HistoryLoginHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "otherDevicesInitialized",
       base::BindRepeating(&HistoryLoginHandler::HandleOtherDevicesInitialized,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startSignInFlow",
       base::BindRepeating(&HistoryLoginHandler::HandleStartSignInFlow,
                           base::Unretained(this)));
@@ -37,8 +37,8 @@ void HistoryLoginHandler::RegisterMessages() {
 void HistoryLoginHandler::OnJavascriptAllowed() {
   profile_info_watcher_ = std::make_unique<ProfileInfoWatcher>(
       Profile::FromWebUI(web_ui()),
-      base::Bind(&HistoryLoginHandler::ProfileInfoChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&HistoryLoginHandler::ProfileInfoChanged,
+                          base::Unretained(this)));
   ProfileInfoChanged();
 }
 

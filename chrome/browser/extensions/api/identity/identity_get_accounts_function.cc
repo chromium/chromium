@@ -37,7 +37,8 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   std::unique_ptr<base::ListValue> infos(new base::ListValue());
 
   if (accounts.empty()) {
-    return RespondNow(OneArgument(std::move(infos)));
+    return RespondNow(
+        OneArgument(base::Value::FromUniquePtrValue(std::move(infos))));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -51,8 +52,11 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   // Ensure that the primary account is inserted first; even though this
   // semantics isn't documented, the implementation has always ensured it and it
   // shouldn't be changed without determining that it is safe to do so.
-  if (identity_manager->HasPrimaryAccountWithRefreshToken()) {
-    account_info.id = identity_manager->GetPrimaryAccountInfo().gaia;
+  if (identity_manager->HasPrimaryAccountWithRefreshToken(
+          signin::ConsentLevel::kSync)) {
+    account_info.id =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .gaia;
     infos->Append(account_info.ToValue());
   }
 
@@ -60,14 +64,16 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   // well.
   if (!primary_account_only) {
     for (const auto& account : accounts) {
-      if (account.account_id == identity_manager->GetPrimaryAccountId())
+      if (account.account_id ==
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
         continue;
       account_info.id = account.gaia;
       infos->Append(account_info.ToValue());
     }
   }
 
-  return RespondNow(OneArgument(std::move(infos)));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(infos))));
 }
 
 }  // namespace extensions

@@ -36,6 +36,10 @@ class NET_EXPORT_PRIVATE HttpAuthFilter {
 class NET_EXPORT HttpAuthFilterAllowlist : public HttpAuthFilter {
  public:
   explicit HttpAuthFilterAllowlist(const std::string& server_allowlist);
+
+  HttpAuthFilterAllowlist(const HttpAuthFilterAllowlist&) = delete;
+  HttpAuthFilterAllowlist& operator=(const HttpAuthFilterAllowlist&) = delete;
+
   ~HttpAuthFilterAllowlist() override;
 
   // Adds an individual URL |filter| to the list, of the specified |target|.
@@ -54,8 +58,6 @@ class NET_EXPORT HttpAuthFilterAllowlist : public HttpAuthFilter {
   // We are using ProxyBypassRules because they have the functionality that we
   // want, but we are not using it for proxy bypass.
   ProxyBypassRules rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthFilterAllowlist);
 };
 
 }   // namespace net

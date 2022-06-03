@@ -30,7 +30,7 @@ Task::Type GuestTask::GetType() const {
   return Task::GUEST;
 }
 
-base::string16 GuestTask::GetCurrentTitle(
+std::u16string GuestTask::GetCurrentTitle(
     content::WebContents* web_contents) const {
   DCHECK(web_contents);
 
@@ -45,10 +45,9 @@ base::string16 GuestTask::GetCurrentTitle(
     return title();
   }
 
-  base::string16 title =
-      l10n_util::GetStringFUTF16(guest->GetTaskPrefix(),
-                                 RendererTask::GetTitleFromWebContents(
-                                     web_contents));
+  std::u16string title = l10n_util::GetStringFUTF16(
+      guest->GetTaskPrefix(),
+      RendererTask::GetTitleFromWebContents(web_contents));
 
   return title;
 }

@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "components/safe_browsing/base_blocking_page.h"
+#include "android_webview/browser/network_service/aw_web_resource_request.h"
+#include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 
 namespace security_interstitials {
@@ -26,20 +27,24 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
-  static void ShowBlockingPage(AwSafeBrowsingUIManager* ui_manager,
-                               const UnsafeResource& unsafe_resource);
-
   static AwSafeBrowsingBlockingPage* CreateBlockingPage(
       AwSafeBrowsingUIManager* ui_manager,
       content::WebContents* web_contents,
       const GURL& main_frame_url,
-      const UnsafeResource& unsafe_resource);
+      const UnsafeResource& unsafe_resource,
+      std::unique_ptr<AwWebResourceRequest> resource_request);
+
+  ~AwSafeBrowsingBlockingPage() override;
+
+  // safe_browsing::BaseBlockingPage:
+  void CreatedPostCommitErrorPageNavigation(
+      content::NavigationHandle* error_page_navigation_handle) override;
 
  protected:
   // Used to specify which BaseSafeBrowsingErrorUI to instantiate, and
   // parameters they require.
   // Note: these values are persisted in UMA logs, so they should never be
-  // renumbered nor reused.
+  // renumbered or reused.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
   enum class ErrorUiType { LOUD, QUIET_SMALL, QUIET_GIANT, COUNT };
 
@@ -53,7 +58,8 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
-      ErrorUiType errorUiType);
+      ErrorUiType errorUiType,
+      std::unique_ptr<AwWebResourceRequest> resource_request);
 
   // Called when the interstitial is going away. If there is a
   // pending threat details object, we look at the user's
@@ -63,9 +69,15 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
                            bool did_proceed,
                            int num_visits) override;
 
+  void OnInterstitialClosing() override;
+
   // Whether ThreatDetails collection is in progress as part of this
   // interstitial.
   bool threat_details_in_progress_;
+
+  // Holds a copy of the resource request that triggered this blocking page,
+  // only used with committed interstitials.
+  std::unique_ptr<AwWebResourceRequest> resource_request_;
 };
 
 }  // namespace android_webview

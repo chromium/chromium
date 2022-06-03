@@ -20,18 +20,20 @@ class MODULES_EXPORT MediaControlsTextTrackManager
  public:
   explicit MediaControlsTextTrackManager(HTMLMediaElement&);
 
+  MediaControlsTextTrackManager(const MediaControlsTextTrackManager&) = delete;
+  MediaControlsTextTrackManager& operator=(
+      const MediaControlsTextTrackManager&) = delete;
+
   // Returns the label for the track when a valid track is passed in and "Off"
   // when the parameter is null.
   String GetTextTrackLabel(TextTrack*) const;
   void ShowTextTrackAtIndex(unsigned);
   void DisableShowingTextTracks();
 
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   Member<HTMLMediaElement> media_element_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsTextTrackManager);
 };
 
 }  // namespace blink

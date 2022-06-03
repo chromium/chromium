@@ -76,7 +76,7 @@ void WorkerGlobalScopeFileSystem::webkitRequestFileSystem(
       AsyncCallbackHelper::SuccessCallback<DOMFileSystem>(success_callback);
 
   LocalFileSystem::From(worker)->RequestFileSystem(
-      &worker, file_system_type, size,
+      file_system_type, size,
       std::make_unique<FileSystemCallbacks>(std::move(success_callback_wrapper),
                                             std::move(error_callback_wrapper),
                                             &worker, file_system_type),
@@ -119,7 +119,7 @@ DOMFileSystemSync* WorkerGlobalScopeFileSystem::webkitRequestFileSystemSync(
       &worker, file_system_type);
 
   LocalFileSystem::From(worker)->RequestFileSystem(
-      &worker, file_system_type, size, std::move(callbacks),
+      file_system_type, size, std::move(callbacks),
       LocalFileSystem::kSynchronous);
   DOMFileSystem* file_system = sync_helper->GetResultOrThrow(exception_state);
   return file_system ? MakeGarbageCollected<DOMFileSystemSync>(file_system)
@@ -155,7 +155,7 @@ void WorkerGlobalScopeFileSystem::webkitResolveLocalFileSystemURL(
       AsyncCallbackHelper::SuccessCallback<Entry>(success_callback);
 
   LocalFileSystem::From(worker)->ResolveURL(
-      &worker, completed_url,
+      completed_url,
       std::make_unique<ResolveURICallbacks>(std::move(success_callback_wrapper),
                                             std::move(error_callback_wrapper),
                                             &worker),
@@ -195,8 +195,7 @@ EntrySync* WorkerGlobalScopeFileSystem::webkitResolveLocalFileSystemSyncURL(
                                             std::move(error_callback_wrapper),
                                             &worker);
 
-  LocalFileSystem::From(worker)->ResolveURL(&worker, completed_url,
-                                            std::move(callbacks),
+  LocalFileSystem::From(worker)->ResolveURL(completed_url, std::move(callbacks),
                                             LocalFileSystem::kSynchronous);
 
   Entry* entry = sync_helper->GetResultOrThrow(exception_state);

@@ -5,8 +5,15 @@
 //build/android/pylib/__init__.py
 //build/android/pylib/constants/__init__.py
 //build/android/pylib/constants/host_paths.py
+//build/android/pylib/local/__init__.py
+//build/android/pylib/local/emulator/__init__.py
+//build/android/pylib/local/emulator/avd.py
+//build/android/pylib/local/emulator/ini.py
+//build/android/pylib/local/emulator/proto/__init__.py
+//build/android/pylib/local/emulator/proto/avd_pb2.py
 //build/android/pylib/utils/__init__.py
 //build/android/pylib/utils/test_filter.py
+//build/gn_helpers.py
 //third_party/catapult/common/py_utils/py_utils/__init__.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage.py
 //third_party/catapult/common/py_utils/py_utils/cloud_storage_global_lock.py
@@ -29,7 +36,7 @@
 //third_party/catapult/devil/devil/android/constants/chrome.py
 //third_party/catapult/devil/devil/android/constants/file_system.py
 //third_party/catapult/devil/devil/android/decorators.py
-//third_party/catapult/devil/devil/android/device_blacklist.py
+//third_party/catapult/devil/devil/android/device_denylist.py
 //third_party/catapult/devil/devil/android/device_errors.py
 //third_party/catapult/devil/devil/android/device_signal.py
 //third_party/catapult/devil/devil/android/device_temp_file.py
@@ -68,4 +75,4 @@
 //third_party/catapult/devil/devil/utils/timeout_retry.py
 //third_party/catapult/devil/devil/utils/watchdog_timer.py
 //third_party/catapult/devil/devil/utils/zip_utils.py
-//third_party/catapult/third_party/zipfile/zipfile_2_7_13.py
+//third_party/catapult/third_party/six/six.py

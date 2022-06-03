@@ -66,6 +66,12 @@ v4l2_format V4L2FormatVideoOutputMplane(uint32_t width,
   return format;
 }
 
+static std::string ModifierToHexString(uint64_t modifier) {
+  std::stringstream stream;
+  stream << "0x" << std::hex << modifier;
+  return stream.str();
+}
+
 }  // namespace
 
 namespace media {
@@ -86,7 +92,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12) {
   std::ostringstream ostream;
   ostream << *layout;
   const std::string kNoModifierStr =
-      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+      ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(
       ostream.str(),
       "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 300x180, "
@@ -111,7 +117,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12M) {
   std::ostringstream ostream;
   ostream << *layout;
   const std::string kNoModifierStr =
-      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+      ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(
       ostream.str(),
       "VideoFrameLayout(format: PIXEL_FORMAT_NV12, coded_size: 300x180, "
@@ -135,7 +141,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutYUV420) {
   std::ostringstream ostream;
   ostream << *layout;
   const std::string kNoModifierStr =
-      std::to_string(gfx::NativePixmapHandle::kNoModifier);
+      ModifierToHexString(gfx::NativePixmapHandle::kNoModifier);
   EXPECT_EQ(ostream.str(),
             "VideoFrameLayout(format: PIXEL_FORMAT_I420, coded_size: 300x180, "
             "planes (stride, offset, size): [(320, 0, 86400), (160, 57600, "

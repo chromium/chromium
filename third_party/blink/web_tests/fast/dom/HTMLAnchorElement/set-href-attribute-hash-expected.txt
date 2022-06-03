@@ -9,7 +9,7 @@ PASS a.href is 'file:///path/testurl.html#hash_value'
 '?' in hash value
 PASS a.href is 'http://www.mydomain.com/path/testurl.html#hash?value'
 '#' in hash value, and illegal characters in hostname
-FAIL a.href should be https://www.my"d(){}|~om?ain#com/path/testurl.html#middle. Was https://www.my%22d%28%29%7B%7D%7C%7Eom/?ain#hash#value.
+PASS a.href is 'https://www.my%22d%28%29%7B%7D%7C%7Eom/?ain#com/path/testurl.html#middle'
 Set hash to null
 PASS a.href is 'https://www.mydomain.com/path/testurl.html#null'
 Set hash to empty string
@@ -19,7 +19,7 @@ FAIL a.href should be mailto:e-mail_address@goes_here#hash-value. Was mailto:e-m
 Add hash to file: protocol
 PASS a.href is 'file:///some%20path#hash%20value'
 Set hash to '#'
-PASS a.href is 'http://mydomain.com/'
+PASS a.href is 'http://mydomain.com/#'
 Add hash to non-standard protocol
 PASS a.href is 'foo:bar#hash'
 PASS successfullyParsed is true

@@ -20,7 +20,7 @@ runAfterLayoutAndPaint(function() {
     document.getElementById("foo").style.background = 'red';
     
     if (window.internals)
-        output += internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS) + ' ';
+        output += internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS) + ' ';
 
     if (window.internals)
         internals.stopTrackingRepaints(document);
@@ -33,7 +33,7 @@ runAfterLayoutAndPaint(function() {
     document.getElementById("foo").style.background = 'blue';
     
     if (window.internals)
-        output += internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        output += internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
 
     if (window.internals)
         internals.stopTrackingRepaints(document);

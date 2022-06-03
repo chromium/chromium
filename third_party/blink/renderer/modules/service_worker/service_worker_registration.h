@@ -14,9 +14,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/service_worker/navigation_preload_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -30,11 +31,10 @@ class ScriptState;
 class ServiceWorkerRegistration final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<ServiceWorkerRegistration>,
-      public ContextLifecycleObserver,
+      public ExecutionContextLifecycleObserver,
       public Supplementable<ServiceWorkerRegistration>,
       public mojom::blink::ServiceWorkerRegistrationObject {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistration);
   USING_PRE_FINALIZER(ServiceWorkerRegistration, Dispose);
 
  public:
@@ -65,7 +65,7 @@ class ServiceWorkerRegistration final
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override {
-    return ContextLifecycleObserver::GetExecutionContext();
+    return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
   ServiceWorker* installing() { return installing_; }
@@ -92,11 +92,11 @@ class ServiceWorkerRegistration final
 
   void Dispose();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  // ContextLifecycleObserver overrides.
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver overrides.
+  void ContextDestroyed() override;
 
   // Implements mojom::blink::ServiceWorkerRegistrationObject.
   void SetServiceWorkerObjects(

@@ -3,24 +3,18 @@ AXWebArea AXRoleDescription='HTML content'
 ++++AXDateField AXRoleDescription='date field' AXValue='2008-09-01'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='9' AXDescription='Month'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='09'
+++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=9
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='1' AXDescription='Day'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='01'
+++++++++++AXIncrementor AXDescription='Day' AXRoleDescription='stepper' AXValue=1
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='2008' AXDescription='Year'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='2008'
-++++++AXPopUpButton AXRoleDescription='pop up button' AXDescription='Show date picker'
-++++AXDateField AXRoleDescription='date field' AXValue='2008-09-01' AXDescription='When'
+++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=2008
+++++++AXPopUpButton AXDescription='Show date picker' AXRoleDescription='pop up button'
+++++AXDateField AXDescription='When' AXRoleDescription='date field' AXValue='2008-09-01'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='9' AXDescription='Month When'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='09'
+++++++++++AXIncrementor AXDescription='Month When' AXRoleDescription='stepper' AXValue=9
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='1' AXDescription='Day When'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='01'
+++++++++++AXIncrementor AXDescription='Day When' AXRoleDescription='stepper' AXValue=1
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='2008' AXDescription='Year When'
-++++++++++++AXStaticText AXRoleDescription='text' AXValue='2008'
-++++++AXPopUpButton AXRoleDescription='pop up button' AXDescription='Show date picker'
+++++++++++AXIncrementor AXDescription='Year When' AXRoleDescription='stepper' AXValue=2008
+++++++AXPopUpButton AXDescription='Show date picker' AXRoleDescription='pop up button'

@@ -1,0 +1,51 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=../../ash/webui/connectivity_diagnostics/resources/\"" ]
+  deps = [
+    ":fake_network_diagnostics_routines",
+    ":network_diagnostics_test",
+    ":network_health_test_utils",
+    ":routine_group_test",
+  ]
+}
+
+js_library("network_diagnostics_test") {
+  deps = [
+    ":fake_network_diagnostics_routines",
+    ":network_health_test_utils",
+    "../../..:chai_assert",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network_health:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("routine_group_test") {
+  deps = [
+    ":network_health_test_utils",
+    "../../..:chai_assert",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("network_health_test_utils") {
+  deps = [ "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m" ]
+}
+
+js_library("fake_network_diagnostics_routines") {
+  deps = [
+    ":network_health_test_utils",
+    "../../..:chai_assert",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+  ]
+}

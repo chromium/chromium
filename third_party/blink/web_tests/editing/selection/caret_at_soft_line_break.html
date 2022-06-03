@@ -1,0 +1,38 @@
+<!doctype html>
+<title>An upstream caret can be impossible to create</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This is a testcase for https://bugs.webkit.org/show_bug.cgi?id=6476. Creating
+// an upstream caret with the mouse was impossible if the upstream and
+// downstream carets were separated only by unrendered content.
+//
+// This test uses the eventSender to do mouse clicks. To run it manually, click
+// in the space after all the text on the first line in the above editable
+// region. Clicking should create a caret after the first space after the 'e'.
+selection_test(
+    [
+        '<div contenteditable style="width:250px;">',
+            'Try to create a caret after this lin<span id="clickme">e</span>',
+            ' <span></span>thisshouldbeonthesecondline',
+        '</div>',
+    ],
+    selection => {
+        if (!window.eventSender)
+            throw 'This test requires eventSender.';
+        const e = selection.document.getElementById('clickme');
+        const x = selection.computeLeft(e) + e.offsetWidth + 3;
+        const y = selection.computeTop(e) + e.offsetHeight / 2;
+
+        eventSender.mouseMoveTo(x, y);
+        eventSender.mouseDown();
+        eventSender.mouseUp();
+    },
+    [
+        '<div contenteditable style="width:250px;">',
+            'Try to create a caret after this lin<span id="clickme">e|</span>',
+            ' <span></span>thisshouldbeonthesecondline',
+        '</div>',
+    ]);
+</script>

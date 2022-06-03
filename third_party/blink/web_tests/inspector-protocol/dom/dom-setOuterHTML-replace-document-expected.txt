@@ -1,0 +1,5 @@
+Test replacing the whole document via setOuterHTML and ensure running an event handler in the new document does not crash
+{
+    outerHTML : <body><a href="#" id="a" onclick="void(0);"></a></body>
+}
+

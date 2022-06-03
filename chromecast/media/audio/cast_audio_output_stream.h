@@ -10,13 +10,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -26,7 +26,7 @@ namespace chromecast {
 namespace media {
 
 class CmaAudioOutputStream;
-class CastAudioManager;
+class CastAudioManagerHelper;
 
 // Chromecast implementation of AudioOutputStream.
 // This class forwards to MixerService if valid
@@ -103,11 +103,14 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   // the |device_id_| is set to kDefaultDeviceId. Valid device_id's are either
   // ::media::AudioDeviceDescription::kDefaultDeviceId or
   // ::media::AudioDeviceDescription::kCommunicationsId.
-  CastAudioOutputStream(CastAudioManager* audio_manager,
-                        chromecast::mojom::ServiceConnector* connector,
+  CastAudioOutputStream(CastAudioManagerHelper* audio_manager,
                         const ::media::AudioParameters& audio_params,
                         const std::string& device_id_or_group_id,
                         bool use_mixer_service);
+
+  CastAudioOutputStream(const CastAudioOutputStream&) = delete;
+  CastAudioOutputStream& operator=(const CastAudioOutputStream&) = delete;
+
   ~CastAudioOutputStream() override;
 
   // ::media::AudioOutputStream implementation.
@@ -135,8 +138,8 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
 
   double volume_;
   AudioOutputState audio_thread_state_;
-  CastAudioManager* const audio_manager_;
-  chromecast::mojom::ServiceConnector* connector_;
+  CastAudioManagerHelper* const audio_manager_;
+  external_service_support::ExternalConnector* const connector_;
   const ::media::AudioParameters audio_params_;
   // Valid |device_id_| are kDefaultDeviceId, and kCommunicationsDeviceId
   const std::string device_id_;
@@ -157,8 +160,6 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   THREAD_CHECKER(audio_thread_checker_);
   base::WeakPtr<CastAudioOutputStream> audio_weak_this_;
   base::WeakPtrFactory<CastAudioOutputStream> audio_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioOutputStream);
 };
 
 }  // namespace media

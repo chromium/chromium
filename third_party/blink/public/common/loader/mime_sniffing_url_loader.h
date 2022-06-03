@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -57,6 +57,8 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
     : public network::mojom::URLLoaderClient,
       public network::mojom::URLLoader {
  public:
+  MimeSniffingURLLoader(const MimeSniffingURLLoader&) = delete;
+  MimeSniffingURLLoader& operator=(const MimeSniffingURLLoader&) = delete;
   ~MimeSniffingURLLoader() override;
 
   // Start waiting for the body.
@@ -73,19 +75,19 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   CreateLoader(base::WeakPtr<MimeSniffingThrottle> throttle,
                const GURL& response_url,
                network::mojom::URLResponseHeadPtr response_head,
-               scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+               scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
-  MimeSniffingURLLoader(
-      base::WeakPtr<MimeSniffingThrottle> throttle,
-      const GURL& response_url,
-      network::mojom::URLResponseHeadPtr response_head,
-      mojo::PendingRemote<network::mojom::URLLoaderClient>
-          destination_url_loader_client,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  MimeSniffingURLLoader(base::WeakPtr<MimeSniffingThrottle> throttle,
+                        const GURL& response_url,
+                        network::mojom::URLResponseHeadPtr response_head,
+                        mojo::PendingRemote<network::mojom::URLLoaderClient>
+                            destination_url_loader_client,
+                        scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // network::mojom::URLLoaderClient implementation (called from the source of
   // the response):
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -102,9 +104,11 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
 
   // network::mojom::URLLoader implementation (called from the destination of
   // the response):
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers,
-                      const base::Optional<GURL>& new_url) override;
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -134,13 +138,13 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   // mime type is decided.
   network::mojom::URLResponseHeadPtr response_head_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   enum class State { kWaitForBody, kSniffing, kSending, kCompleted, kAborted };
   State state_ = State::kWaitForBody;
 
   // Set if OnComplete() is called during sniffing.
-  base::Optional<network::URLLoaderCompletionStatus> complete_status_;
+  absl::optional<network::URLLoaderCompletionStatus> complete_status_;
 
   std::vector<char> buffered_body_;
   size_t bytes_remaining_in_buffer_;
@@ -149,8 +153,6 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   mojo::ScopedDataPipeProducerHandle body_producer_handle_;
   mojo::SimpleWatcher body_consumer_watcher_;
   mojo::SimpleWatcher body_producer_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeSniffingURLLoader);
 };
 
 }  // namespace blink

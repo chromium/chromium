@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -28,7 +29,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
       : load_policy_(policy) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           mojom::RequestContextType) override {
+                           mojom::blink::RequestContextType) override {
     String resource_path = KURL(resource_url).GetPath();
     if (std::find(queried_subresource_paths_.begin(),
                   queried_subresource_paths_.end(),
@@ -36,7 +37,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
       queried_subresource_paths_.push_back(resource_path);
     }
     String resource_string = resource_url.GetString();
-    for (const String& suffix : blacklisted_suffixes_) {
+    for (const String& suffix : blocklisted_suffixes_) {
       if (resource_string.EndsWith(suffix))
         return load_policy_;
     }
@@ -51,8 +52,8 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
 
   bool ShouldLogToConsole() override { return false; }
 
-  void AddToBlacklist(const String& suffix) {
-    blacklisted_suffixes_.push_back(suffix);
+  void AddToBlocklist(const String& suffix) {
+    blocklisted_suffixes_.push_back(suffix);
   }
 
   const Vector<String>& QueriedSubresourcePaths() const {
@@ -62,21 +63,22 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
  private:
   // Using STL types for compatibility with gtest/gmock.
   Vector<String> queried_subresource_paths_;
-  Vector<String> blacklisted_suffixes_;
+  Vector<String> blocklisted_suffixes_;
   LoadPolicy load_policy_;
 };
 
 class SubresourceFilteringWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  void DidStartProvisionalLoad(WebDocumentLoader* data_source) override {
-    // Normally, the filter should be set when the load is committed. For
-    // the sake of this test, however, inject it earlier to verify that it
-    // is not consulted for the main resource load.
+  void DidCommitNavigation(
+      WebHistoryCommitType commit_type,
+      bool should_reset_browser_interface_broker,
+      const ParsedPermissionsPolicy& permissions_policy_header,
+      const DocumentPolicyFeatureState& document_policy_header) override {
     subresource_filter_ =
         new TestDocumentSubresourceFilter(load_policy_for_next_load_);
-    subresource_filter_->AddToBlacklist("1x1.png");
-    data_source->SetSubresourceFilter(subresource_filter_);
+    subresource_filter_->AddToBlocklist("1x1.png");
+    Frame()->GetDocumentLoader()->SetSubresourceFilter(subresource_filter_);
   }
 
   void SetLoadPolicyFromNextLoad(

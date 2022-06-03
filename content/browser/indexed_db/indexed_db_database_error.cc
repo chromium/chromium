@@ -18,7 +18,7 @@ IndexedDBDatabaseError::IndexedDBDatabaseError(blink::mojom::IDBException code,
     : code_(code), message_(base::ASCIIToUTF16(message)) {}
 
 IndexedDBDatabaseError::IndexedDBDatabaseError(blink::mojom::IDBException code,
-                                               const base::string16& message)
+                                               const std::u16string& message)
     : code_(code), message_(message) {}
 
 IndexedDBDatabaseError::~IndexedDBDatabaseError() = default;

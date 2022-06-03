@@ -45,8 +45,6 @@ namespace blink {
 class CORE_EXPORT CSSSelectorWatch final
     : public GarbageCollected<CSSSelectorWatch>,
       public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(CSSSelectorWatch);
-
  public:
   static const char kSupplementName[];
 
@@ -64,7 +62,7 @@ class CORE_EXPORT CSSSelectorWatch final
   void UpdateSelectorMatches(const Vector<String>& removed_selectors,
                              const Vector<String>& added_selectors);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void CallbackSelectorChangeTimerFired(TimerBase*);
@@ -79,7 +77,7 @@ class CORE_EXPORT CSSSelectorWatch final
   HashSet<String> added_selectors_;
   HashSet<String> removed_selectors_;
 
-  TaskRunnerTimer<CSSSelectorWatch> callback_selector_change_timer_;
+  HeapTaskRunnerTimer<CSSSelectorWatch> callback_selector_change_timer_;
 
   // When an element is reparented, the new location's style is evaluated after
   // the expriation of the relayout timer.  We don't want to send redundant

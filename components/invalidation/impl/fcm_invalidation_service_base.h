@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_BASE_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_BASE_H_
 
-#include "base/macros.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
@@ -21,40 +21,39 @@ namespace instance_id {
 class InstanceIDDriver;
 }
 
-namespace syncer {
-class FCMNetworkHandler;
-class PerUserTopicRegistrationManager;
-}  // namespace syncer
-
 namespace invalidation {
 
+class FCMNetworkHandler;
+class PerUserTopicSubscriptionManager;
+
 using FCMNetworkHandlerCallback =
-    base::RepeatingCallback<std::unique_ptr<syncer::FCMNetworkHandler>(
+    base::RepeatingCallback<std::unique_ptr<FCMNetworkHandler>(
         const std::string& sender_id,
         const std::string& app_id)>;
 
-using PerUserTopicRegistrationManagerCallback =
-    base::RepeatingCallback<std::unique_ptr<
-        syncer::PerUserTopicRegistrationManager>(const std::string& project_id,
-                                                 bool migrate_prefs)>;
+using PerUserTopicSubscriptionManagerCallback =
+    base::RepeatingCallback<std::unique_ptr<PerUserTopicSubscriptionManager>(
+        const std::string& project_id,
+        bool migrate_prefs)>;
 
 // This InvalidationService wraps the C++ Invalidation Client (FCM) library.
 // It provides invalidations for desktop platforms (Win, Mac, Linux).
 // Subclasses should implement Init to set up their initial state and call
 // StartInvalidator/StopInvalidator when they want to start/stop receiving
 // invalidations.
-class FCMInvalidationServiceBase
-    : public InvalidationService,
-      public syncer::FCMInvalidationListener::Delegate {
+class FCMInvalidationServiceBase : public InvalidationService,
+                                   public FCMInvalidationListener::Delegate {
  public:
   FCMInvalidationServiceBase(
       FCMNetworkHandlerCallback fcm_network_handler_callback,
-      PerUserTopicRegistrationManagerCallback
-          per_user_topic_registration_manager_callback,
+      PerUserTopicSubscriptionManagerCallback
+          per_user_topic_subscription_manager_callback,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* pref_service,
-      const std::string& sender_id = {});
-
+      const std::string& sender_id);
+  FCMInvalidationServiceBase(const FCMInvalidationServiceBase& other) = delete;
+  FCMInvalidationServiceBase& operator=(
+      const FCMInvalidationServiceBase& other) = delete;
   ~FCMInvalidationServiceBase() override;
 
   virtual void Init() = 0;
@@ -63,34 +62,27 @@ class FCMInvalidationServiceBase
 
   // InvalidationService implementation.
   // It is an error to have registered handlers when the service is destroyed.
-  void RegisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) override;
-  // TODO(crbug.com/1029698,crbug.com/1029481): This methods updates the set of
-  // *topics* that we're *subscribed* to. Once the legacy Tango implementation
-  // (i.e. TiclInvalidationService) is gone, rename accordingly.
-  bool UpdateRegisteredInvalidationIds(syncer::InvalidationHandler* handler,
-                                       const syncer::ObjectIdSet& ids) override;
-  void UnregisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) override;
-  syncer::InvalidatorState GetInvalidatorState() const override;
+  void RegisterInvalidationHandler(InvalidationHandler* handler) override;
+  bool UpdateInterestedTopics(InvalidationHandler* handler,
+                              const TopicSet& topics) override;
+  void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
+  InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;
   InvalidationLogger* GetInvalidationLogger() override;
   void RequestDetailedStatus(
       base::RepeatingCallback<void(const base::DictionaryValue&)> caller)
       const override;
 
-  // syncer::FCMInvalidationListener::Delegate implementation.
-  void OnInvalidate(
-      const syncer::TopicInvalidationMap& invalidation_map) override;
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // FCMInvalidationListener::Delegate implementation.
+  void OnInvalidate(const TopicInvalidationMap& invalidation_map) override;
+  void OnInvalidatorStateChange(InvalidatorState state) override;
 
  protected:
   // Initializes with an injected listener.
   void InitForTest(
-      std::unique_ptr<syncer::FCMInvalidationListener> invalidation_listener);
+      std::unique_ptr<FCMInvalidationListener> invalidation_listener);
 
   virtual base::DictionaryValue CollectDebugData() const;
-  void ReportInvalidatorState(syncer::InvalidatorState state);
 
   // Returns true if the service is currently started and able to receive
   // invalidations.
@@ -120,20 +112,20 @@ class FCMInvalidationServiceBase
   void PopulateClientID();
   void ResetClientID();
   void OnInstanceIDReceived(const std::string& instance_id);
-  void OnDeleteInstanceIDCompleted(instance_id::InstanceID::Result result);
+  void OnDeleteInstanceIDCompleted(instance_id::InstanceID::Result);
   void DoUpdateSubscribedTopicsIfNeeded();
   const std::string GetApplicationName();
 
   const std::string sender_id_;
-  syncer::InvalidatorRegistrarWithMemory invalidator_registrar_;
+  InvalidatorRegistrarWithMemory invalidator_registrar_;
 
   // The invalidation logger object we use to record state changes
   // and invalidations.
   InvalidationLogger logger_;
 
   FCMNetworkHandlerCallback fcm_network_handler_callback_;
-  PerUserTopicRegistrationManagerCallback
-      per_user_topic_registration_manager_callback_;
+  PerUserTopicSubscriptionManagerCallback
+      per_user_topic_subscription_manager_callback_;
 
   instance_id::InstanceIDDriver* const instance_id_driver_;
   // The invalidator client ID, aka instance ID.
@@ -145,11 +137,9 @@ class FCMInvalidationServiceBase
   Diagnostics diagnostic_info_;
 
   // The invalidation listener.
-  std::unique_ptr<syncer::FCMInvalidationListener> invalidation_listener_;
+  std::unique_ptr<FCMInvalidationListener> invalidation_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FCMInvalidationServiceBase);
 };
 
 }  // namespace invalidation

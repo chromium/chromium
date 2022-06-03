@@ -12,32 +12,17 @@
     </div>
   </div>
 </div>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <script>
-
-var t = async_test();
-
 function runTest() {
   var content = document.createElement("span");
   var div = document.createElement("div");
   div.appendChild(content);
   div.id = "child";
   target.replaceChild(div, child);
-  requestAnimationFrame(t.step_func_done(checkResult));
-}
-
-function checkResult() {
-  var clientRect = internals.visualRect(myspan.firstChild);
-  // Check that the visual rect for the child has been initialized
-  // to a non-zero (and hence presumably correct) size.
-  assert_true(clientRect.width > 0);
-  assert_true(clientRect.height > 0);
 }
 
 onload = function() {
-  requestAnimationFrame(function() {
-    requestAnimationFrame(t.step_func(runTest));
-  });
-}
+  runAfterLayoutAndPaint(runTest, true);
+};
 </script>

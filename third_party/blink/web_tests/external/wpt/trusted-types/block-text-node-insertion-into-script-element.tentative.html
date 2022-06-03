@@ -3,7 +3,7 @@
 <head>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <meta http-equiv="Content-Security-Policy" content="trusted-types *">
+  <meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
 </head>
 <body>
 <div id="container"></div>
@@ -156,12 +156,12 @@
 
   promise_test(t => {
     const inserted_script = document.getElementById("script1");
-    assert_throws(new TypeError(), _ => {
+    assert_throws_js(TypeError, _ => {
         inserted_script.innerHTML = "2+2";
     });
 
     let new_script = document.createElement("script");
-    assert_throws(new TypeError(), _ => {
+    assert_throws_js(TypeError, _ => {
       new_script.innerHTML = "2+2";
       container.appendChild(new_script);
     });
@@ -176,7 +176,7 @@
     container.appendChild(new_script);
     assert_equals(inserted_script.textContent, "3*4");
 
-    // We expect 3 SPV events: two for the two assert_throws cases, and one
+    // We expect 3 SPV events: two for the two assert_throws_js cases, and one
     // for script element, which will be rejected at the time of execution.
     return checkSecurityPolicyViolationEvent(3);
   }, "Spot tests around script + innerHTML interaction.");

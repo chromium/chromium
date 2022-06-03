@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-static String HitTestRectsAsString(const Vector<HitTestRect>& rects) {
+template <typename T>
+static String RectsAsString(const Vector<T>& rects) {
   StringBuilder sb;
   sb.Append("[");
   bool first = true;
@@ -18,7 +18,7 @@ static String HitTestRectsAsString(const Vector<HitTestRect>& rects) {
       sb.Append(", ");
     first = false;
     sb.Append("(");
-    sb.Append(rect.ToString());
+    sb.Append(String(rect.ToString()));
     sb.Append(")");
   }
   sb.Append("]");
@@ -32,27 +32,40 @@ String HitTestData::ToString() const {
   bool printed_top_level_field = false;
   if (!touch_action_rects.IsEmpty()) {
     sb.Append("touch_action_rects: ");
-    sb.Append(HitTestRectsAsString(touch_action_rects));
+    sb.Append(RectsAsString<TouchActionRect>(touch_action_rects));
     printed_top_level_field = true;
   }
 
-  if (scroll_hit_test) {
+  if (!wheel_event_rects.IsEmpty()) {
+    sb.Append("wheel_event_rects: ");
+    sb.Append(RectsAsString<gfx::Rect>(wheel_event_rects));
+    printed_top_level_field = true;
+  }
+
+  if (!scroll_hit_test_rect.IsEmpty()) {
     if (printed_top_level_field)
       sb.Append(", ");
-    sb.AppendFormat(
-        "scroll_hit_test: \"%s\" with offset %p",
-        scroll_hit_test->scroll_container_bounds.ToString().Utf8().data(),
-        scroll_hit_test->scroll_offset);
+    sb.Append("scroll_hit_test_rect: ");
+    sb.Append(String(scroll_hit_test_rect.ToString()));
     printed_top_level_field = true;
+  }
+
+  if (scroll_translation) {
+    if (printed_top_level_field)
+      sb.Append(", ");
+    sb.AppendFormat("scroll_translation: %p", scroll_translation.get());
   }
 
   sb.Append("}");
-
   return sb.ToString();
 }
 
 std::ostream& operator<<(std::ostream& os, const HitTestData& data) {
   return os << data.ToString().Utf8();
+}
+
+std::ostream& operator<<(std::ostream& os, const HitTestData* data) {
+  return os << (data ? data->ToString().Utf8() : "null");
 }
 
 }  // namespace blink

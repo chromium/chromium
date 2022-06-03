@@ -22,14 +22,14 @@ bool DoLoad(HMODULE module,
   HRSRC resource_info;
 
   resource_info = FindResource(module, name_or_id, type_name_or_id);
-  if (resource_info != NULL) {
+  if (resource_info != nullptr) {
     HGLOBAL loaded_resource;
 
     loaded_resource = LoadResource(module, resource_info);
-    if (loaded_resource != NULL) {
+    if (loaded_resource != nullptr) {
       resource_data->first =
           static_cast<const uint8_t*>(LockResource(loaded_resource));
-      if (resource_data->first != NULL) {
+      if (resource_data->first != nullptr) {
         resource_data->second = SizeofResource(module, resource_info);
         DPCHECK(resource_data->second != 0);
         loaded = true;
@@ -50,31 +50,30 @@ bool DoLoad(HMODULE module,
 
 namespace upgrade_test {
 
-ResourceLoader::ResourceLoader() : module_(NULL) {
-}
+ResourceLoader::ResourceLoader() : module_(nullptr) {}
 
 ResourceLoader::~ResourceLoader() {
-  if (module_ != NULL) {
+  if (module_ != nullptr) {
     BOOL result = FreeLibrary(module_);
     DPCHECK(result != 0) << "FreeLibrary failed";
   }
 }
 
 bool ResourceLoader::Initialize(const base::FilePath& pe_image_path) {
-  DCHECK(module_ == NULL);
-  module_ = LoadLibraryEx(pe_image_path.value().c_str(), NULL,
-                          (LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE |
-                           LOAD_LIBRARY_AS_IMAGE_RESOURCE));
-  DPLOG_IF(INFO, module_ == NULL)
+  DCHECK_EQ(module_, nullptr);
+  module_ = LoadLibraryEx(
+      pe_image_path.value().c_str(), nullptr,
+      (LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE | LOAD_LIBRARY_AS_IMAGE_RESOURCE));
+  DPLOG_IF(INFO, module_ == nullptr)
       << "Failed loading \"" << pe_image_path.value() << "\"";
-  return module_ != NULL;
+  return module_ != nullptr;
 }
 
 bool ResourceLoader::Load(const std::wstring& name,
                           const std::wstring& type,
                           std::pair<const uint8_t*, DWORD>* resource_data) {
-  DCHECK(resource_data != NULL);
-  DCHECK(module_ != NULL);
+  DCHECK_NE(resource_data, nullptr);
+  DCHECK_NE(module_, nullptr);
 
   return DoLoad(module_, name.c_str(), type.c_str(), resource_data);
 }
@@ -82,8 +81,8 @@ bool ResourceLoader::Load(const std::wstring& name,
 bool ResourceLoader::Load(WORD id,
                           WORD type,
                           std::pair<const uint8_t*, DWORD>* resource_data) {
-  DCHECK(resource_data != NULL);
-  DCHECK(module_ != NULL);
+  DCHECK_NE(resource_data, nullptr);
+  DCHECK_NE(module_, nullptr);
 
   return DoLoad(module_, MAKEINTRESOURCE(id), MAKEINTRESOURCE(type),
                 resource_data);

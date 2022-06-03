@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2011 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -218,7 +218,7 @@ END'''.strip()
     output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
 
-    file_contents = util.ReadFile(output_file, util.RAW_TEXT)
+    file_contents = util.ReadFile(output_file, 'utf-8')
 
     # Check for the content added by the <include> tag.
     self.failUnless(file_contents.find('Hello Include!') != -1)
@@ -254,7 +254,7 @@ END'''.strip()
     fr_file = struct.FileForLanguage('fr', output_dir)
     self.failUnless(fr_file == os.path.join(output_dir, 'fr_simple.html'))
 
-    contents = util.ReadFile(fr_file, util.RAW_TEXT)
+    contents = util.ReadFile(fr_file, 'utf-8')
 
     self.failUnless(contents.find('<p>') != -1)  # should contain the markup
     self.failUnless(contents.find('Hello!') == -1)  # should be translated
@@ -284,7 +284,7 @@ END'''.strip()
     output = re.sub(r'"[c-zC-Z]:', '"', output)
     self.assertEqual(expected, output)
 
-    file_contents = util.ReadFile(output_file, util.RAW_TEXT)
+    file_contents = util.ReadFile(output_file, 'utf-8')
 
     # Check for the content added by the <include> tag.
     self.failUnless(file_contents.find('Hello Include!') != -1)
@@ -314,7 +314,7 @@ END'''.strip()
     self.failUnless(ar_file == os.path.join(output_dir,
                                             'ar_toolbar_about.html'))
 
-    contents = util.ReadFile(ar_file, util.RAW_TEXT)
+    contents = util.ReadFile(ar_file, 'utf-8')
 
     self.failUnless(contents.find('dir="RTL"') != -1)
     os.remove(ar_file)

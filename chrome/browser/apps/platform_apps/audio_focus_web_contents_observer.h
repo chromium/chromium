@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_AUDIO_FOCUS_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_AUDIO_FOCUS_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,11 +17,13 @@ class AudioFocusWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AudioFocusWebContentsObserver> {
  public:
+  AudioFocusWebContentsObserver(const AudioFocusWebContentsObserver&) = delete;
+  AudioFocusWebContentsObserver& operator=(
+      const AudioFocusWebContentsObserver&) = delete;
   ~AudioFocusWebContentsObserver() override;
 
  private:
   friend class content::WebContentsUserData<AudioFocusWebContentsObserver>;
-  friend class AudioFocusWebContentsObserver;
   friend class AudioFocusWebContentsObserverBrowserTest;
 
   explicit AudioFocusWebContentsObserver(content::WebContents*);
@@ -34,8 +35,6 @@ class AudioFocusWebContentsObserver
   base::UnguessableToken audio_focus_group_id_ = base::UnguessableToken::Null();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusWebContentsObserver);
 };
 
 }  // namespace apps

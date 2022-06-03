@@ -4,8 +4,7 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -181,19 +180,15 @@ TEST(UTFStringConversionsTest, ConvertUTF32ToUTF8) {
 #endif  // defined(WCHAR_T_IS_UTF32)
 
 TEST(UTFStringConversionsTest, ConvertMultiString) {
-  static char16 multi16[] = {
-    'f', 'o', 'o', '\0',
-    'b', 'a', 'r', '\0',
-    'b', 'a', 'z', '\0',
-    '\0'
-  };
+  static char16_t multi16[] = {'f',  'o', 'o', '\0', 'b',  'a', 'r',
+                               '\0', 'b', 'a', 'z',  '\0', '\0'};
   static char multi[] = {
     'f', 'o', 'o', '\0',
     'b', 'a', 'r', '\0',
     'b', 'a', 'z', '\0',
     '\0'
   };
-  string16 multistring16;
+  std::u16string multistring16;
   memcpy(WriteInto(&multistring16, base::size(multi16)), multi16,
          sizeof(multi16));
   EXPECT_EQ(base::size(multi16) - 1, multistring16.length());

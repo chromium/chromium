@@ -6,10 +6,8 @@
 #define NET_ANDROID_NETWORK_CHANGE_NOTIFIER_DELEGATE_ANDROID_H_
 
 #include <map>
-#include <string>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -55,6 +53,10 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   //   // Creates Java NetworkChangeNotifierAutoDetect class instance.
   //   NetworkChangeNotifier.registerToReceiveNotificationsAlways();
   NetworkChangeNotifierDelegateAndroid();
+  NetworkChangeNotifierDelegateAndroid(
+      const NetworkChangeNotifierDelegateAndroid&) = delete;
+  NetworkChangeNotifierDelegateAndroid& operator=(
+      const NetworkChangeNotifierDelegateAndroid&) = delete;
   ~NetworkChangeNotifierDelegateAndroid();
 
   // Called from NetworkChangeNotifier.java on the JNI thread whenever
@@ -103,10 +105,14 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jlongArray>& active_networks);
 
-  // These methods can be called on any thread. Note that the provided observer
-  // will be notified on the thread AddObserver() is called on.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Registers/unregisters the observer which receives notifications from this
+  // delegate. Notifications may be dispatched to the observer from any thread.
+  // |observer| must not invoke (Register|Unregister)Observer() when receiving a
+  // notification, because it would cause a reentrant lock acquisition.
+  // |observer| must unregister itself before
+  // ~NetworkChangeNotifierDelegateAndroid().
+  void RegisterObserver(Observer* observer);
+  void UnregisterObserver(Observer* observer);
 
   // These methods are simply implementations of NetworkChangeNotifier APIs of
   // the same name. They can be called from any thread.
@@ -120,9 +126,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
 
   // Can only be called from the main (Java) thread.
   NetworkChangeNotifier::ConnectionSubtype GetCurrentConnectionSubtype() const;
-
-  // Is the current process bound to a specific network?
-  bool IsProcessBoundToNetwork();
 
   // Returns true if NetworkCallback failed to register, indicating that
   // network-specific callbacks will not be issued.
@@ -159,8 +162,11 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   void FakeDefaultNetwork(NetworkHandle network, ConnectionType type);
   void FakeConnectionSubtypeChanged(ConnectionSubtype subtype);
 
-  base::ThreadChecker thread_checker_;
-  scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
+  THREAD_CHECKER(thread_checker_);
+
+  base::Lock observer_lock_;
+  Observer* observer_ GUARDED_BY(observer_lock_) = nullptr;
+
   const base::android::ScopedJavaGlobalRef<jobject>
       java_network_change_notifier_;
   // True if NetworkCallback failed to register, indicating that
@@ -172,8 +178,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   double connection_max_bandwidth_;
   NetworkHandle default_network_;
   NetworkMap network_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierDelegateAndroid);
 };
 
 }  // namespace net

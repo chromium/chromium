@@ -13,13 +13,12 @@
 
 namespace gpu {
 enum GpuDataManagerTestingEntryEnum {
-  kGpuDataManagerImplPrivateTest_GpuSideBlacklisting_0 = 0,
-  kGpuDataManagerImplPrivateTest_GpuSideBlacklisting_1 = 1,
-  kGpuDataManagerImplPrivateTest_GpuSideBlacklistingWebGL_0 = 2,
-  kGpuDataManagerImplPrivateTest_GpuSideBlacklistingWebGL_1 = 3,
+  kGpuDataManagerImplPrivateTest_GpuSideBlocklisting_0 = 0,
+  kGpuDataManagerImplPrivateTest_GpuSideBlocklisting_1 = 1,
+  kGpuDataManagerImplPrivateTest_GpuSideBlocklistingWebGL_0 = 2,
+  kGpuDataManagerImplPrivateTest_GpuSideBlocklistingWebGL_1 = 3,
   kGpuDataManagerImplPrivateTest_GpuSideException = 4,
-  kGpuDataManagerImplPrivateTest_BlacklistAllFeatures = 5,
-  kGpuDataManagerImplPrivateTest_UpdateActiveGpu = 6,
+  kGpuDataManagerImplPrivateTest_BlocklistAllFeatures = 5,
 };
 }  // namespace gpu
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var imgHeight = 1024;
+var imgWidth = 1024;
+var canvas = document.createElement("canvas");
+canvas.width = imgWidth;
+canvas.height = imgHeight;
+var context = canvas.getContext('2d');
+var image = context.createImageData(imgWidth, imgHeight);
+document.body.appendChild(canvas);
+
+function rand(range) {
+  return Math.floor(Math.random() * range);
+}
+
+function initializeImageData() {
+  for(var i = 0; i < image.data.length; i++)
+    image.data[i] = rand(256);
+  context.putImageData(image, 0, 0);
+}
+
+function imageBitmapFromImageData() {
+  // The return Promise is not retained because this test is meant to only
+  // measure the immediate run time of createImageBitmap from an ImageData,
+  // which is known to be implemented in a way that does all the work
+  // synchronously, even though the API is technically async.
+  createImageBitmap(image, 0, 0, imgWidth, imgHeight);
+}
+
+function doRun() {
+  // Make and fill many canvases
+  initializeImageData();
+  imageBitmapFromImageData();
+  requestAnimationFrame(doRun);
+}
+
+window.onload = function () {
+  doRun();
+}
+
+</script>
+</body>
+</html>

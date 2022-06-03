@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {CrPicture} from 'chrome://resources/cr_elements/chromeos/cr_picture/cr_picture_types.js';
+// #import {down, up, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js'
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
+// #import {Router, routes, AccountManagerBrowserProxyImpl, ChangePictureBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 cr.define('settings_people_page_change_picture', function() {
   /** @implements {settings.ChangePictureBrowserProxy} */
   class TestChangePictureBrowserProxy extends TestBrowserProxy {
@@ -23,32 +35,20 @@ cr.define('settings_people_page_change_picture', function() {
           'profile-image-changed', 'fake-profile-image-url',
           false /* selected */);
 
-      const fakeDefaultImages = [
+      const fakeCurrentDefaultImages = [
         {
-          author: 'Author_Old',
-          index: 1,
-          title: 'Title1',
-          url: 'chrome://foo/1.png',
-          website: 'http://foo1.com',
-        },
-        {
-          author: 'Author1',
           index: 2,
           title: 'Title2',
           url: 'chrome://foo/2.png',
-          website: 'http://foo2.com',
         },
         {
-          author: 'Author2',
           index: 3,
           title: 'Title3',
           url: 'chrome://foo/3.png',
-          website: 'http://foo3.com',
         },
       ];
       cr.webUIListenerCallback('default-images-changed', {
-        images: fakeDefaultImages,
-        first: 1,
+        current_default_images: fakeCurrentDefaultImages,
       });
 
       this.methodCalled('initialize');
@@ -57,7 +57,7 @@ cr.define('settings_people_page_change_picture', function() {
     /** @override */
     selectDefaultImage(imageUrl) {
       cr.webUIListenerCallback('selected-image-changed', imageUrl);
-      this.methodCalled('selectDefaultImage', [imageUrl]);
+      this.methodCalled('selectDefaultImage', imageUrl);
     }
 
     /** @override */
@@ -124,7 +124,7 @@ cr.define('settings_people_page_change_picture', function() {
       });
     });
 
-    setup(function() {
+    setup(async function() {
       browserProxy = new TestChangePictureBrowserProxy();
       settings.ChangePictureBrowserProxyImpl.instance_ = browserProxy;
       PolymerTest.clearBody();
@@ -139,9 +139,8 @@ cr.define('settings_people_page_change_picture', function() {
 
       changePicture.currentRouteChanged(settings.routes.CHANGE_PICTURE);
 
-      return browserProxy.whenCalled('initialize').then(function() {
-        Polymer.dom.flush();
-      });
+      await browserProxy.whenCalled('initialize');
+      Polymer.dom.flush();
     });
 
     teardown(function() {
@@ -199,122 +198,119 @@ cr.define('settings_people_page_change_picture', function() {
       assertFalse(activeElementPath.includes(crPictureList));
     });
 
-    test('ChangePictureSelectCamera', function() {
+    test('ChangePictureSelectCamera', async function() {
       // Force the camera to be absent, even if it's actually present.
       cr.webUIListenerCallback('camera-presence-changed', false);
       Polymer.dom.flush();
 
-      return new Promise(function(resolve) {
-               changePicture.async(resolve);
-             })
-          .then(function() {
-            const camera = crPicturePane.$$('#camera');
-            expectFalse(crPicturePane.cameraPresent);
-            expectFalse(crPicturePane.cameraActive_);
-            expectFalse(!!camera && camera.hidden);
+      await new Promise(function(resolve) {
+        changePicture.async(resolve);
+      });
+      let camera = crPicturePane.$$('#camera');
+      expectFalse(crPicturePane.cameraPresent);
+      expectFalse(crPicturePane.cameraActive_);
+      expectFalse(!!camera && camera.hidden);
 
-            cr.webUIListenerCallback('camera-presence-changed', true);
-            Polymer.dom.flush();
-            return new Promise(function(resolve) {
-              changePicture.async(resolve);
-            });
-          })
-          .then(function() {
-            const camera = crPicturePane.$$('#camera');
-            expectTrue(crPicturePane.cameraPresent);
-            expectFalse(crPicturePane.cameraActive_);
-            expectFalse(!!camera && camera.hidden);
+      cr.webUIListenerCallback('camera-presence-changed', true);
+      Polymer.dom.flush();
+      await new Promise(function(resolve) {
+        changePicture.async(resolve);
+      });
+      camera = crPicturePane.$$('#camera');
+      expectTrue(crPicturePane.cameraPresent);
+      expectFalse(crPicturePane.cameraActive_);
+      expectFalse(!!camera && camera.hidden);
 
-            const cameraImage = crPictureList.$.cameraImage;
-            cameraImage.click();
-            Polymer.dom.flush();
-            return new Promise(function(resolve) {
-              changePicture.async(resolve);
-            });
-          })
-          .then(function() {
-            const camera = crPicturePane.$$('#camera');
-            expectTrue(crPicturePane.cameraActive_);
-            assertTrue(!!camera && !camera.hidden);
-            expectEquals(
-                CrPicture.SelectionTypes.CAMERA,
-                changePicture.selectedItem_.dataset.type);
-            const discard = crPicturePane.$$('#discard');
-            expectTrue(!discard || discard.hidden);
+      const cameraImage = crPictureList.$.cameraImage;
+      cameraImage.click();
+      Polymer.dom.flush();
+      await new Promise(function(resolve) {
+        changePicture.async(resolve);
+      });
+      camera = crPicturePane.$$('#camera');
+      expectTrue(crPicturePane.cameraActive_);
+      assertTrue(!!camera && !camera.hidden);
+      expectEquals(
+          CrPicture.SelectionTypes.CAMERA,
+          changePicture.selectedItem_.dataset.type);
+      const discard = crPicturePane.$$('#discard');
+      expectTrue(!discard || discard.hidden);
 
-            // Ensure that the camera is deactivated if user navigates away.
-            changePicture.currentRouteChanged(settings.routes.BASIC);
-            return new Promise(function(resolve) {
-              changePicture.async(resolve);
-            });
-          })
-          .then(function() {
-            expectFalse(crPicturePane.cameraActive_);
-          });
+      // Ensure that the camera is deactivated if user navigates away.
+      changePicture.currentRouteChanged(settings.routes.BASIC);
+      await new Promise(function(resolve) {
+        changePicture.async(resolve);
+      });
+      expectFalse(crPicturePane.cameraActive_);
     });
 
-    test('ChangePictureProfileImage', function() {
+    test('ChangePictureProfileImage', async function() {
       const profileImage = crPictureList.$.profileImage;
       assertTrue(!!profileImage);
 
       expectEquals(null, changePicture.selectedItem_);
       profileImage.click();
 
-      return browserProxy.whenCalled('selectProfileImage').then(function() {
-        Polymer.dom.flush();
+      await browserProxy.whenCalled('selectProfileImage');
+      Polymer.dom.flush();
 
-        expectEquals(
-            CrPicture.SelectionTypes.PROFILE,
-            changePicture.selectedItem_.dataset.type);
-        expectFalse(crPicturePane.cameraActive_);
-        const discard = crPicturePane.$$('#discard');
-        expectTrue(!discard || discard.hidden);
+      expectEquals(
+          CrPicture.SelectionTypes.PROFILE,
+          changePicture.selectedItem_.dataset.type);
+      expectFalse(crPicturePane.cameraActive_);
+      const discard = crPicturePane.$$('#discard');
+      expectTrue(!discard || discard.hidden);
 
-        // Ensure that the selection is restored after navigating away and
-        // then back to the subpage.
-        changePicture.currentRouteChanged(settings.routes.BASIC);
-        changePicture.currentRouteChanged(settings.routes.CHANGE_PICTURE);
-        expectEquals(null, changePicture.selectedItem_);
-      });
+      // Ensure that the selection is restored after navigating away and
+      // then back to the subpage.
+      changePicture.currentRouteChanged(settings.routes.BASIC);
+      changePicture.currentRouteChanged(settings.routes.CHANGE_PICTURE);
+      expectEquals(null, changePicture.selectedItem_);
     });
 
-    test('ChangePictureOldImage', function() {
-      assertFalse(!!changePicture.selectedItem_);
+    test('ChangePictureDeprecatedImage', async function() {
+      cr.webUIListenerCallback(
+          'preview-deprecated-image', {url: 'fake-old-image.jpg'});
+      Polymer.dom.flush();
 
-      // By default there is no old image and the element is hidden.
-      const oldImage = crPictureList.$.oldImage;
-      assertTrue(!!oldImage);
-      assertTrue(oldImage.hidden);
+      // Expect the deprecated image is presented in picture pane.
+      expectEquals(
+          CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
+      const image = crPicturePane.$$('#image');
+      assertTrue(!!image);
+      expectFalse(image.hidden);
+      const discard = crPicturePane.$$('#discard');
+      assertTrue(!!discard);
+      expectTrue(discard.hidden);
+    });
 
-      cr.webUIListenerCallback('old-image-changed', {
+    test('ChangePictureDeprecatedImageWithSourceInfo', async function() {
+      const fakeAuthor = 'FakeAuthor';
+      const fakeWebsite = 'http://foo1.com';
+      cr.webUIListenerCallback('preview-deprecated-image', {
         url: 'fake-old-image.jpg',
-        index: 1,
+        author: fakeAuthor,
+        website: fakeWebsite,
       });
       Polymer.dom.flush();
 
-      return new Promise(function(resolve) {
-               changePicture.async(resolve);
-             })
-          .then(function() {
-            assertTrue(!!changePicture.selectedItem_);
-            // Expect the old image to be selected once an old image is sent via
-            // the native interface.
-            expectEquals(
-                CrPicture.SelectionTypes.OLD,
-                changePicture.selectedItem_.dataset.type);
-            expectFalse(oldImage.hidden);
-            expectFalse(crPicturePane.cameraActive_);
-            const discard = crPicturePane.$$('#discard');
-            assertTrue(!!discard);
-            expectFalse(discard.hidden);
-            // Ensure the old image shows the author credit.
-            const credit = changePicture.$$('#authorCredit');
-            assertTrue(!!credit);
-            expectFalse(credit.hidden);
-          });
+      // Expect the deprecated image is presented in picture pane.
+      expectEquals(
+          CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
+      const image = crPicturePane.$$('#image');
+      assertTrue(!!image);
+      expectFalse(image.hidden);
+      const discard = crPicturePane.$$('#discard');
+      assertTrue(!!discard);
+      expectTrue(discard.hidden);
+      const sourceInfo = changePicture.$$('#sourceInfo');
+      assertTrue(!!sourceInfo);
+      assertFalse(sourceInfo.hidden);
+      assertEquals(changePicture.authorInfo_, 'Photo by ' + fakeAuthor);
+      assertEquals(changePicture.websiteInfo_, fakeWebsite);
     });
 
-    test('ChangePictureFileImage', function() {
+    test('ChangePictureFileImage', async function() {
       assertFalse(!!changePicture.selectedItem_);
 
       // By default there is no old image and the element is hidden.
@@ -322,92 +318,99 @@ cr.define('settings_people_page_change_picture', function() {
       assertTrue(!!oldImage);
       assertTrue(oldImage.hidden);
 
-      cr.webUIListenerCallback('old-image-changed', {
-        url: 'file-image.jpg',
-        index: -1,
-      });
+      cr.webUIListenerCallback('old-image-changed', 'file-image.jpg');
       Polymer.dom.flush();
 
-      return new Promise(function(resolve) {
-               changePicture.async(resolve);
-             })
-          .then(function() {
-            assertTrue(!!changePicture.selectedItem_);
-            // Expect the old image to be selected once an old image is sent via
-            // the native interface.
-            expectEquals(
-                CrPicture.SelectionTypes.OLD,
-                changePicture.selectedItem_.dataset.type);
-            expectFalse(oldImage.hidden);
-            expectFalse(crPicturePane.cameraActive_);
-            const discard = crPicturePane.$$('#discard');
-            assertTrue(!!discard);
-            expectFalse(discard.hidden);
-            // Ensure the file image does not show the author credit.
-            const credit = changePicture.$$('#authorCredit');
-            assertTrue(!credit || credit.hidden);
-          });
-    });
-
-    test('ChangePictureSelectFirstDefaultImage', function() {
-      const firstDefaultImage = crPictureList.$$('img[data-type="default"]');
-      assertTrue(!!firstDefaultImage);
-
-      firstDefaultImage.click();
-
-      return browserProxy.whenCalled('selectDefaultImage')
-          .then(function(args) {
-            expectEquals('chrome://foo/2.png', args[0]);
-
-            Polymer.dom.flush();
-            expectEquals(
-                CrPicture.SelectionTypes.DEFAULT,
-                changePicture.selectedItem_.dataset.type);
-            expectEquals(firstDefaultImage, changePicture.selectedItem_);
-            expectFalse(crPicturePane.cameraActive_);
-            const discard = crPicturePane.$$('#discard');
-            expectTrue(!discard || discard.hidden);
-
-            // Now verify that arrow keys actually select the new image.
-            browserProxy.resetResolver('selectDefaultImage');
-            MockInteractions.pressAndReleaseKeyOn(
-                changePicture.selectedItem_, RIGHT_KEY_CODE);
-            return browserProxy.whenCalled('selectDefaultImage');
-          })
-          .then(function(args) {
-            expectEquals('chrome://foo/3.png', args[0]);
-          });
-    });
-
-    test('ChangePictureRestoreImageAfterDiscard', function() {
-      const firstDefaultImage = crPictureList.$$('img[data-type="default"]');
-      assertTrue(!!firstDefaultImage);
-
-      firstDefaultImage.click();
-
-      return browserProxy.whenCalled('selectDefaultImage').then(function() {
-        Polymer.dom.flush();
-        expectEquals(firstDefaultImage, changePicture.selectedItem_);
-
-        cr.webUIListenerCallback('old-image-changed', {
-          url: 'fake-old-image.jpg',
-          index: 1,
-        });
-
-        Polymer.dom.flush();
-        expectEquals(
-            CrPicture.SelectionTypes.OLD,
-            changePicture.selectedItem_.dataset.type);
-
-        const discardButton = crPicturePane.$$('#discard cr-icon-button');
-        assertTrue(!!discardButton);
-        discardButton.click();
-
-        Polymer.dom.flush();
-        const profileImage = crPictureList.$.profileImage;
-        assertTrue(!!profileImage);
-        expectEquals(profileImage, changePicture.selectedItem_);
+      await new Promise(function(resolve) {
+        changePicture.async(resolve);
       });
+      assertTrue(!!changePicture.selectedItem_);
+      // Expect the old image to be selected once an old image is sent via
+      // the native interface.
+      expectEquals(
+          CrPicture.SelectionTypes.OLD,
+          changePicture.selectedItem_.dataset.type);
+      expectFalse(oldImage.hidden);
+      expectFalse(crPicturePane.cameraActive_);
+      const discard = crPicturePane.$$('#discard');
+      assertTrue(!!discard);
+      expectFalse(discard.hidden);
+      // Ensure the file image does not show the source info.
+      const sourceInfo = changePicture.$$('#sourceInfo');
+      assertTrue(!sourceInfo || sourceInfo.hidden);
+    });
+
+    test('ChangePictureSelectFirstDefaultImage', async function() {
+      const firstDefaultImage = crPictureList.$$('img[data-type="default"]');
+      assertTrue(!!firstDefaultImage);
+
+      firstDefaultImage.click();
+
+      let imageUrl = await browserProxy.whenCalled('selectDefaultImage');
+      expectEquals('chrome://foo/2.png', imageUrl);
+
+      Polymer.dom.flush();
+      expectEquals(
+          CrPicture.SelectionTypes.DEFAULT,
+          changePicture.selectedItem_.dataset.type);
+      expectEquals(firstDefaultImage, changePicture.selectedItem_);
+      expectFalse(crPicturePane.cameraActive_);
+      const discard = crPicturePane.$$('#discard');
+      expectTrue(!discard || discard.hidden);
+
+      // Now verify that arrow keys actually select the new image.
+      browserProxy.resetResolver('selectDefaultImage');
+      MockInteractions.pressAndReleaseKeyOn(
+          changePicture.selectedItem_, RIGHT_KEY_CODE);
+      imageUrl = await browserProxy.whenCalled('selectDefaultImage');
+      expectEquals('chrome://foo/3.png', imageUrl);
+    });
+
+    test('ChangePictureRestoreImageAfterDiscard', async function() {
+      const firstDefaultImage = crPictureList.$$('img[data-type="default"]');
+      assertTrue(!!firstDefaultImage);
+
+      firstDefaultImage.click();
+
+      await browserProxy.whenCalled('selectDefaultImage');
+      Polymer.dom.flush();
+      expectEquals(firstDefaultImage, changePicture.selectedItem_);
+
+      cr.webUIListenerCallback('old-image-changed', 'fake-old-image.jpg');
+
+      Polymer.dom.flush();
+      expectEquals(
+          CrPicture.SelectionTypes.OLD,
+          changePicture.selectedItem_.dataset.type);
+
+      const discardButton = crPicturePane.$$('#discard cr-icon-button');
+      assertTrue(!!discardButton);
+      discardButton.click();
+
+      Polymer.dom.flush();
+      const profileImage = crPictureList.$.profileImage;
+      assertTrue(!!profileImage);
+      expectEquals(profileImage, changePicture.selectedItem_);
+    });
+
+    test('ChangePictureImagePendingStateCheck', async function() {
+      // oldImagePending_ should be false when no camera photo pending.
+      expectFalse(changePicture.oldImagePending_);
+      expectEquals(crPictureList.oldImageUrl_, '');
+      // Simulate photo taken event.
+      crPicturePane.fire('photo-taken', {photoDataUrl: 'camera-image.jpg'});
+      Polymer.dom.flush();
+      // oldImagePending_ should be true due to pending camera image.
+      expectTrue(changePicture.oldImagePending_);
+
+      cr.webUIListenerCallback('old-image-changed', 'camera-image.jpg');
+      Polymer.dom.flush();
+      // oldImagePending_ should be false after the image has been received.
+      expectFalse(changePicture.oldImagePending_);
+      expectEquals(crPictureList.oldImageUrl_, 'camera-image.jpg');
     });
   });
+
+  // #cr_define_end
+  return {};
 });

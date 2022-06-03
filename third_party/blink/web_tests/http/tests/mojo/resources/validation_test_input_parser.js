@@ -10,18 +10,21 @@
   // Files and Lines represent the raw text from an input string
   // or ".data" file.
 
-  function InputError(message, line) {
-    this.name = "InputError";
-    this.message = message;
-    this.line = line;
-  }
+  class InputError extends Error {
+    constructor(message, line) {
+      super(message);
 
-  InputError.prototype.toString = function() {
-    var s = 'Error: ' + this.message;
-    if (this.line)
-      s += ', at line ' +
-           (this.line.number + 1) + ': "' + this.line.contents + '"';
-    return s;
+      this.name = "InputError";
+      this.line = line;
+    }
+
+    toString() {
+      var s = 'Error: ' + this.message;
+      if (this.line)
+        s += ', at line ' +
+             (this.line.number + 1) + ': "' + this.line.contents + '"';
+      return s;
+    }
   }
 
   function File(contents) {

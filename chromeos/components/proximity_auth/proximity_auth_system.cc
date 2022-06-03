@@ -58,14 +58,18 @@ void ProximityAuthSystem::Stop() {
 void ProximityAuthSystem::SetRemoteDevicesForUser(
     const AccountId& account_id,
     const chromeos::multidevice::RemoteDeviceRefList& remote_devices,
-    base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device) {
+    absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device) {
   PA_LOG(VERBOSE) << "Setting devices for user " << account_id.Serialize()
                   << ". Remote device count: " << remote_devices.size()
                   << ", Local device: ["
                   << (local_device.has_value() ? "present" : "absent") << "].";
 
   remote_devices_map_[account_id] = remote_devices;
-  local_device_map_.emplace(account_id, *local_device);
+  if (local_device) {
+    local_device_map_.emplace(account_id, *local_device);
+  } else {
+    local_device_map_.erase(account_id);
+  }
 
   if (started_) {
     const AccountId& focused_account_id =
@@ -116,7 +120,7 @@ void ProximityAuthSystem::CancelConnectionAttempt() {
 std::unique_ptr<RemoteDeviceLifeCycle>
 ProximityAuthSystem::CreateRemoteDeviceLifeCycle(
     chromeos::multidevice::RemoteDeviceRef remote_device,
-    base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device) {
+    absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device) {
   return std::make_unique<RemoteDeviceLifeCycleImpl>(
       remote_device, local_device, secure_channel_client_);
 }
@@ -167,7 +171,7 @@ void ProximityAuthSystem::OnFocusedUserChanged(const AccountId& account_id) {
   chromeos::multidevice::RemoteDeviceRef remote_device =
       remote_devices_map_[account_id][0];
 
-  base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device;
+  absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device;
   local_device = local_device_map_.at(account_id);
 
   if (!suspended_) {
@@ -181,6 +185,13 @@ void ProximityAuthSystem::OnFocusedUserChanged(const AccountId& account_id) {
     // powered.
     unlock_manager_->SetRemoteDeviceLifeCycle(remote_device_life_cycle_.get());
   }
+}
+
+std::string ProximityAuthSystem::GetLastRemoteStatusUnlockForLogging() {
+  if (unlock_manager_) {
+    return unlock_manager_->GetLastRemoteStatusUnlockForLogging();
+  }
+  return std::string();
 }
 
 }  // namespace proximity_auth

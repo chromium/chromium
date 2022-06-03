@@ -9,7 +9,7 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=PeriodicBackgroundSync
 ] interface PeriodicSyncManager {
-    [MeasureAs=PeriodicBackgroundSyncRegister,CallWith=ScriptState,RaisesException,ImplementedAs=registerPeriodicSync] Promise<void> register(DOMString tag, optional BackgroundSyncOptions options);
+    [MeasureAs=PeriodicBackgroundSyncRegister,CallWith=ScriptState,RaisesException,ImplementedAs=registerPeriodicSync] Promise<void> register(DOMString tag, optional BackgroundSyncOptions options = {});
     [MeasureAs=PeriodicBackgroundSyncGetTags, CallWith=ScriptState] Promise<sequence<DOMString>> getTags();
     [MeasureAs=PeriodicBackgroundSyncUnregister,CallWith=ScriptState] Promise<void> unregister(DOMString tag);
 };

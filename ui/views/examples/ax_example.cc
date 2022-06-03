@@ -4,6 +4,8 @@
 
 #include "ui/views/examples/ax_example.h"
 
+#include <memory>
+
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -27,13 +29,14 @@ void AxExample::CreateExampleView(View* container) {
   layout->SetMainAxisAlignment(LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(LayoutAlignment::kStart);
 
-  announce_button_ = container->AddChildView(
-      MdTextButton::Create(this, base::ASCIIToUTF16("AnnounceText")));
-}
+  auto announce_text = [](AxExample* example) {
+    example->announce_button_->GetViewAccessibility().AnnounceText(
+        u"Button pressed.");
+  };
 
-void AxExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  sender->GetViewAccessibility().AnnounceText(
-      base::ASCIIToUTF16("Button pressed."));
+  announce_button_ = container->AddChildView(std::make_unique<MdTextButton>(
+      base::BindRepeating(announce_text, base::Unretained(this)),
+      u"AnnounceText"));
 }
 
 }  // namespace examples

@@ -6,7 +6,7 @@
 
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.chromium.webview_shell"
+    package="{{manifest_package|default('org.chromium.webview_shell')}}"
     android:versionCode="1"
     android:versionName="1.0" >
 

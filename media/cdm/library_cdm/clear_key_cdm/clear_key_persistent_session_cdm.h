@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/content_decryption_module.h"
@@ -33,6 +32,10 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb);
+
+  ClearKeyPersistentSessionCdm(const ClearKeyPersistentSessionCdm&) = delete;
+  ClearKeyPersistentSessionCdm& operator=(const ClearKeyPersistentSessionCdm&) =
+      delete;
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
@@ -99,12 +102,18 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
 
   // When the session is closed, remove it from the list of open persistent
   // sessions if it was a persistent session.
-  void OnSessionClosed(const std::string& session_id);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
+
+  void OnSessionMessage(const std::string& session_id,
+                        CdmMessageType message_type,
+                        const std::vector<uint8_t>& message);
 
   scoped_refptr<AesDecryptor> cdm_;
   CdmHostProxy* const cdm_host_proxy_ = nullptr;
 
   // Callbacks for firing session events. Other events aren't intercepted.
+  SessionMessageCB session_message_cb_;
   SessionClosedCB session_closed_cb_;
 
   // Keep track of current open persistent sessions.
@@ -112,8 +121,6 @@ class ClearKeyPersistentSessionCdm : public ContentDecryptionModule {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<ClearKeyPersistentSessionCdm> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClearKeyPersistentSessionCdm);
 };
 
 }  // namespace media

@@ -58,7 +58,7 @@ test(() => {
 
     assert_selection(
         '<div contenteditable id="editable1">a|bc</div>',
-        selection => {
+        (selection, testRunner) => {
             const editable1 = selection.document.getElementById('editable1');
             editable1.addEventListener('beforeinput', event => {
                 event.preventDefault();
@@ -73,7 +73,7 @@ test(() => {
 
     assert_selection(
         '<div contenteditable id="editable1">a|bc</div>',
-        selection => {
+        (selection, testRunner) => {
             const editable1 = selection.document.getElementById('editable1');
             editable1.addEventListener('beforeinput', event => {
                 selection.collapse(editable1, 1); // End of first line.

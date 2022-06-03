@@ -74,6 +74,13 @@ class GEOMETRY_EXPORT PointF {
     SetPoint(x() * x_scale, y() * y_scale);
   }
 
+  void Transpose() { std::swap(x_, y_); }
+
+  // Uses the Pythagorean theorem to determine the straight line distance
+  // between the two points, and returns true if it is less than
+  // |allowed_distance|.
+  bool IsWithinDistance(const PointF& rhs, const float allowed_distance) const;
+
   // Returns a string representation of point.
   std::string ToString() const;
 
@@ -116,6 +123,10 @@ GEOMETRY_EXPORT PointF ScalePoint(const PointF& p,
 
 inline PointF ScalePoint(const PointF& p, float scale) {
   return ScalePoint(p, scale, scale);
+}
+
+inline PointF TransposePoint(const PointF& p) {
+  return PointF(p.y(), p.x());
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

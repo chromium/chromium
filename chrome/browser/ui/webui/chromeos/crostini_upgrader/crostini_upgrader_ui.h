@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_UI_H_
 
-#include "base/macros.h"
+#include "base/callback.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,14 +21,19 @@ class CrostiniUpgraderUI
     : public ui::MojoWebDialogUI,
       public chromeos::crostini_upgrader::mojom::PageHandlerFactory {
  public:
-  static bool IsEnabled();
-
   explicit CrostiniUpgraderUI(content::WebUI* web_ui);
+
+  CrostiniUpgraderUI(const CrostiniUpgraderUI&) = delete;
+  CrostiniUpgraderUI& operator=(const CrostiniUpgraderUI&) = delete;
+
   ~CrostiniUpgraderUI() override;
 
-  bool can_close() { return can_close_; }
-  void set_launch_closure(base::OnceClosure(launch_closure)) {
-    launch_closure_ = std::move(launch_closure);
+  // Send a close request to the web page. Return true if the page is already
+  // closed.
+  bool RequestClosePage();
+
+  void set_launch_callback(base::OnceCallback<void(bool)>(launch_callback)) {
+    launch_callback_ = std::move(launch_callback);
   }
 
   // Instantiates implementor of the
@@ -46,20 +51,18 @@ class CrostiniUpgraderUI
       mojo::PendingReceiver<chromeos::crostini_upgrader::mojom::PageHandler>
           pending_page_handler) override;
 
-  void OnWebUICloseDialog();
+  void OnPageClosed();
 
   std::unique_ptr<CrostiniUpgraderPageHandler> page_handler_;
   mojo::Receiver<chromeos::crostini_upgrader::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
   // Not owned. Passed to |page_handler_|
-  base::OnceClosure launch_closure_;
+  base::OnceCallback<void(bool)> launch_callback_;
 
-  bool can_close_ = false;
+  bool page_closed_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgraderUI);
 };
 
 }  // namespace chromeos

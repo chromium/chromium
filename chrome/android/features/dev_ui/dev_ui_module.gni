@@ -11,7 +11,12 @@ declare_args() {
 dev_ui_module_desc = {
   name = "dev_ui"
   java_deps = [ "//chrome/android/features/dev_ui:java" ]
-  android_manifest = "//chrome/android/features/dev_ui/java/AndroidManifest.xml"
+  android_manifest =
+      "//chrome/android/features/dev_ui/internal/java/AndroidManifest.xml"
   paks = [ "$root_gen_dir/chrome/dev_ui_resources.pak" ]
   pak_deps = [ "//chrome/browser/resources:dev_ui_paks" ]
+
+  # DevUI DFM does not need to call Module.getImpl(), and manages loading on
+  # install and on use. Therefore disable auto-load on Module.getImpl().
+  load_native_on_get_impl = false
 }

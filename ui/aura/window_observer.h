@@ -5,8 +5,8 @@
 #ifndef UI_AURA_WINDOW_OBSERVER_H_
 #define UI_AURA_WINDOW_OBSERVER_H_
 
+
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "ui/aura/aura_export.h"
 #include "ui/compositor/property_change_reason.h"
 
@@ -124,9 +124,18 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // Invoked when the alpha shape of the |window|'s layer is set.
   virtual void OnWindowAlphaShapeSet(Window* window) {}
 
-  // Invoked when whether |window|'s layer fills its bounds opaquely or not
-  // is changed.
-  virtual void OnWindowTransparentChanged(Window* window) {}
+  // Invoked when whether |window|'s layer fills its bounds opaquely or not is
+  // changed.  |reason| indicates whether the value was set directly or by a
+  // color animation. Color animation happens only on LAYER_SOLID_COLOR type,
+  // and this value will always be NOT_FROM_ANIMATION on other layer types.
+  // This won't necessarily be called at every step of an animation. However, it
+  // will always be called before the first frame of the animation is rendered
+  // and when the animation ends. The client can determine whether the animation
+  // is ending by calling
+  // window->layer()->GetAnimator()->IsAnimatingProperty(
+  // ui::LayerAnimationElement::COLOR).
+  virtual void OnWindowTransparentChanged(Window* window,
+                                          ui::PropertyChangeReason reason) {}
 
   // Invoked when |window|'s position among its siblings in the stacking order
   // has changed.
@@ -165,10 +174,6 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // window->layer()->GetAnimator()->
   // (is_animating|IsAnimatingProperty|IsAnimatingOnePropertyOf)() from it.
   virtual void OnWindowLayerRecreated(Window* window) {}
-
-  // Called when the app embedded in |window| disconnects (is no longer
-  // embedded).
-  virtual void OnEmbeddedAppDisconnected(Window* window) {}
 
   // Called when the occlusion state of |window| changes.
   virtual void OnWindowOcclusionChanged(Window* window) {}

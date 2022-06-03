@@ -1,0 +1,41 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_BREAK_TOKEN_DATA_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_BREAK_TOKEN_DATA_H_
+
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_geometry.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+
+namespace blink {
+
+struct GridItemOffsets {
+  GridItemOffsets(const LogicalOffset offset,
+                  const LogicalOffset relative_offset)
+      : offset(offset), relative_offset(relative_offset) {}
+
+  LogicalOffset offset;
+  LogicalOffset relative_offset;
+};
+
+struct NGGridBreakTokenData {
+  USING_FAST_MALLOC(NGGridBreakTokenData);
+
+ public:
+  NGGridBreakTokenData(const NGGridGeometry& grid_geometry,
+                       const Vector<GridItemOffsets>& offsets,
+                       LayoutUnit intrinsic_block_size)
+      : grid_geometry(grid_geometry),
+        offsets(offsets),
+        intrinsic_block_size(intrinsic_block_size) {}
+
+  NGGridGeometry grid_geometry;
+  Vector<GridItemOffsets> offsets;
+  LayoutUnit intrinsic_block_size;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_BREAK_TOKEN_DATA_H_

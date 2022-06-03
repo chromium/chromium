@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/extension.h"
 
 #if defined(OS_WIN)
@@ -54,6 +54,9 @@ class TestExtensionEnvironment {
   };
 
   explicit TestExtensionEnvironment(Type type = Type::kWithTaskEnvironment);
+
+  TestExtensionEnvironment(const TestExtensionEnvironment&) = delete;
+  TestExtensionEnvironment& operator=(const TestExtensionEnvironment&) = delete;
 
   ~TestExtensionEnvironment();
 
@@ -101,7 +104,7 @@ class TestExtensionEnvironment {
   // |profile_| and destroyed after |profile_|.
   const std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::unique_ptr<ChromeOSEnv> chromeos_env_;
 #endif
 
@@ -111,8 +114,6 @@ class TestExtensionEnvironment {
 
   std::unique_ptr<TestingProfile> profile_;
   ExtensionService* extension_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionEnvironment);
 };
 
 }  // namespace extensions

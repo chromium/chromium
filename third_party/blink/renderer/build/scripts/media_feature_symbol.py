@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 from blinkbuild.name_style_converter import NameStyleConverter
 
 
@@ -16,4 +15,5 @@ def mediaFeatureSymbol(entry, suffix):
 def getMediaFeatureSymbolWithSuffix(suffix):
     def returnedFunction(entry):
         return mediaFeatureSymbol(entry, suffix)
+
     return returnedFunction

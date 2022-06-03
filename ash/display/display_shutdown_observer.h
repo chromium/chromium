@@ -5,8 +5,7 @@
 #ifndef ASH_DISPLAY_DISPLAY_SHUTDOWN_OBSERVER_H_
 #define ASH_DISPLAY_DISPLAY_SHUTDOWN_OBSERVER_H_
 
-#include "ash/session/session_observer.h"
-#include "base/macros.h"
+#include "ash/public/cpp/session/session_observer.h"
 
 namespace display {
 class DisplayConfigurator;
@@ -20,6 +19,10 @@ class DisplayShutdownObserver : public SessionObserver {
  public:
   explicit DisplayShutdownObserver(
       display::DisplayConfigurator* display_configurator);
+
+  DisplayShutdownObserver(const DisplayShutdownObserver&) = delete;
+  DisplayShutdownObserver& operator=(const DisplayShutdownObserver&) = delete;
+
   ~DisplayShutdownObserver() override;
 
  private:
@@ -28,8 +31,6 @@ class DisplayShutdownObserver : public SessionObserver {
 
   display::DisplayConfigurator* const display_configurator_;
   ScopedSessionObserver scoped_session_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayShutdownObserver);
 };
 
 }  // namespace ash

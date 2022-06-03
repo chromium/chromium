@@ -5,6 +5,7 @@
 package org.chromium.ui.modelutil;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -19,6 +20,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
+
+import java.util.Arrays;
 
 /**
  * Basic test ensuring the {@link ListModel} notifies listeners properly.
@@ -57,6 +60,10 @@ public class ListModelBaseTest {
         verify(mObserver).onItemRangeInserted(mIntegerList, 3, 1);
         assertThat(mIntegerList.size(), is(4));
         assertThat(mIntegerList.get(3), is(55555));
+
+        // Adding multiple items also triggers event.
+        mIntegerList.addAll(Arrays.asList(333, 88888888, 22), 2);
+        verify(mObserver).onItemRangeInserted(mIntegerList, 2, 3);
     }
 
     @Test
@@ -126,5 +133,29 @@ public class ListModelBaseTest {
         // Replacing an empty list with another empty list is a no-op.
         mIntegerList.set(new Integer[] {});
         verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    public void testAddAllSimpleList() {
+        // Initialize the lists.
+        mIntegerList.set(new Integer[] {1, 2, 3});
+        ListModelBase<Integer, Integer> list = new ListModelBase<>();
+
+        // Test adding to the back.
+        list.set(new Integer[] {4, 5});
+        mIntegerList.addAll(list);
+        verify(mObserver).onItemRangeInserted(mIntegerList, 3, 2);
+        assertEquals("Wrong list size after insertion.", 5, mIntegerList.size());
+        assertThat("Wrong value found at index.", mIntegerList.get(3), is(4));
+        assertThat("Wrong value found at index.", mIntegerList.get(4), is(5));
+
+        // Test adding to somewhere in the middle.
+        list.set(new Integer[] {6, 7});
+        mIntegerList.addAll(list, 2);
+        verify(mObserver).onItemRangeInserted(mIntegerList, 2, 2);
+        assertEquals("Wrong list size after insertion.", 7, mIntegerList.size());
+        assertThat("Wrong value found at index.", mIntegerList.get(2), is(6));
+        assertThat("Wrong value found at index.", mIntegerList.get(3), is(7));
+        assertThat("Wrong value found at index.", mIntegerList.get(4), is(3));
     }
 }

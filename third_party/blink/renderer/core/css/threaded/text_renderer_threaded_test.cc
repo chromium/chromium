@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/paint/skottie_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
@@ -37,7 +38,6 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
     Font font = Font(font_description);
-    font.Update(nullptr);
 
     const SimpleFontData* font_data = font.PrimaryFont();
     ASSERT_TRUE(font_data);
@@ -53,15 +53,15 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
 
     // X direction.
     EXPECT_EQ(78, font.Width(text_run));
-    EXPECT_EQ(0, text_bounds.X());
-    EXPECT_EQ(78, text_bounds.MaxX());
+    EXPECT_EQ(0, text_bounds.x());
+    EXPECT_EQ(78, text_bounds.right());
 
     // Y direction.
     const FontMetrics& font_metrics = font_data->GetFontMetrics();
     EXPECT_EQ(11, font_metrics.FloatAscent());
     EXPECT_EQ(3, font_metrics.FloatDescent());
-    EXPECT_EQ(0, text_bounds.Y());
-    EXPECT_EQ(12, text_bounds.MaxY());
+    EXPECT_EQ(0, text_bounds.y());
+    EXPECT_EQ(12, text_bounds.bottom());
   });
 }
 
@@ -77,7 +77,6 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
     Font font = Font(font_description);
-    font.Update(nullptr);
 
     FloatPoint location(0, 0);
     TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
@@ -94,7 +93,8 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     EXPECT_CALL(mpc, restoreToCount(17)).WillOnce(Return());
 
     font.DrawBidiText(&mpc, text_run_paint_info, location,
-                      Font::kUseFallbackIfFontNotReady, 1.0, flags);
+                      Font::kUseFallbackIfFontNotReady, 1.0, flags,
+                      Font::DrawType::kGlyphsAndClusters);
   });
 }
 

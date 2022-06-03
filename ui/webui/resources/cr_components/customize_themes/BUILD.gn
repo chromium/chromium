@@ -1,0 +1,99 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+group("web_components") {
+  public_deps = [
+    ":mojom_webui_js",
+    ":web_components_local",
+  ]
+}
+
+mojom("mojom") {
+  sources = [ "customize_themes.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+  ]
+
+  webui_module_path = "chrome://resources/cr_components/customize_themes/"
+}
+
+html_to_js("web_components_local") {
+  js_files = [
+    "customize_themes.ts",
+    "theme_icon.ts",
+  ]
+}
+
+# Output folder used to hold preprocess_if_expr() output.
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes_tmp"
+
+# Output folder used to hold ts_library() output.
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder_tmp
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_proxy.ts",
+    "customize_themes.ts",
+    "customize_themes.mojom-webui.js",
+    "theme_icon.ts",
+  ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess_generated",
+    ":preprocess_src",
+  ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  in_folder = "./"
+  out_folder = preprocess_folder_tmp
+  in_files = [ "browser_proxy.ts" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components_local" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder_tmp
+  in_files = [
+    "customize_themes.ts",
+    "theme_icon.ts",
+  ]
+}
+
+copy("copy_mojom") {
+  deps = [ ":mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
+  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_customize_themes"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "colorize.svg",
+    "brush.svg",
+  ]
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components/customize_themes"
+}

@@ -7,43 +7,53 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "components/permissions/chooser_controller.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 
+namespace content {
+class RenderFrameHost;
+}
+
 class DevicePermissionsDialogController
-    : public ChooserController,
+    : public permissions::ChooserController,
       public extensions::DevicePermissionsPrompt::Prompt::Observer {
  public:
   DevicePermissionsDialogController(
       content::RenderFrameHost* owner,
       scoped_refptr<extensions::DevicePermissionsPrompt::Prompt> prompt);
+
+  DevicePermissionsDialogController(const DevicePermissionsDialogController&) =
+      delete;
+  DevicePermissionsDialogController& operator=(
+      const DevicePermissionsDialogController&) = delete;
+
   ~DevicePermissionsDialogController() override;
 
-  // ChooserController:
+  // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   bool AllowMultipleSelection() const override;
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
+      const override;
   size_t NumOptions() const override;
-  base::string16 GetOption(size_t index) const override;
+  std::u16string GetOption(size_t index) const override;
   void Select(const std::vector<size_t>& indices) override;
   void Cancel() override;
   void Close() override;
   void OpenHelpCenterUrl() const override;
 
   // extensions::DevicePermissionsPrompt::Prompt::Observer:
-  void OnDeviceAdded(size_t index, const base::string16& device_name) override;
+  void OnDevicesInitialized() override;
+  void OnDeviceAdded(size_t index, const std::u16string& device_name) override;
   void OnDeviceRemoved(size_t index,
-                       const base::string16& device_name) override;
+                       const std::u16string& device_name) override;
 
  private:
   scoped_refptr<extensions::DevicePermissionsPrompt::Prompt> prompt_;
   // Maps from device name to number of devices.
-  std::unordered_map<base::string16, int> device_name_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissionsDialogController);
+  std::unordered_map<std::u16string, int> device_name_map_;
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_DEVICE_PERMISSIONS_DIALOG_CONTROLLER_H_

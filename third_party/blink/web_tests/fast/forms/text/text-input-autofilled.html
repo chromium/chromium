@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<body>
+<style>
+    select {
+        width: 168px;
+        padding: 5px;
+        font-size: 16px;
+        height: 34px;
+        background: transparent;
+    }
+</style>
+<p>The background should be blue.</p>
+    <input id = "text_input"></input>
+<script>
+    var select = document.getElementById('text_input');
+    if (window.internals)
+        internals.setAutofilled(select, true);
+</script>
+</body>

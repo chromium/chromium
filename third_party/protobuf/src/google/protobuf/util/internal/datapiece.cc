@@ -30,13 +30,15 @@
 
 #include <google/protobuf/util/internal/datapiece.h>
 
+#include <cmath>
+#include <limits>
+
 #include <google/protobuf/struct.pb.h>
 #include <google/protobuf/type.pb.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/util/internal/utility.h>
-
+#include <google/protobuf/stubs/status.h>
 #include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/stubs/mathlimits.h>
 #include <google/protobuf/stubs/mathutil.h>
 
 namespace google {
@@ -44,9 +46,6 @@ namespace protobuf {
 namespace util {
 namespace converter {
 
-;
-;
-;
 using util::Status;
 using util::StatusOr;
 using util::error::Code;
@@ -100,9 +99,9 @@ StatusOr<double> FloatToDouble(float before) {
 }
 
 StatusOr<float> DoubleToFloat(double before) {
-  if (MathLimits<double>::IsNaN(before)) {
+  if (std::isnan(before)) {
     return std::numeric_limits<float>::quiet_NaN();
-  } else if (!MathLimits<double>::IsFinite(before)) {
+  } else if (!std::isfinite(before)) {
     // Converting a double +inf/-inf to float should just work.
     return static_cast<float>(before);
   } else if (before > std::numeric_limits<float>::max() ||
@@ -175,7 +174,7 @@ StatusOr<double> DataPiece::ToDouble() const {
     if (str_ == "-Infinity") return -std::numeric_limits<double>::infinity();
     if (str_ == "NaN") return std::numeric_limits<double>::quiet_NaN();
     StatusOr<double> value = StringToNumber<double>(safe_strtod);
-    if (value.ok() && !MathLimits<double>::IsFinite(value.ValueOrDie())) {
+    if (value.ok() && !std::isfinite(value.value())) {
       // safe_strtod converts out-of-range values to +inf/-inf, but we want
       // to report them as errors.
       return InvalidArgument(StrCat("\"", str_, "\""));
@@ -291,7 +290,7 @@ StatusOr<int> DataPiece::ToEnum(const google::protobuf::Enum* enum_type,
     StatusOr<int32> int_value = ToInt32();
     if (int_value.ok()) {
       if (const google::protobuf::EnumValue* enum_value =
-              FindEnumValueByNumberOrNull(enum_type, int_value.ValueOrDie())) {
+              FindEnumValueByNumberOrNull(enum_type, int_value.value())) {
         return enum_value->number();
       }
     }
@@ -319,7 +318,9 @@ StatusOr<int> DataPiece::ToEnum(const google::protobuf::Enum* enum_type,
     // If ignore_unknown_enum_values is true an unknown enum value is ignored.
     if (ignore_unknown_enum_values) {
       *is_unknown_enum_value = true;
-      return enum_type->enumvalue(0).number();
+      if (enum_type->enumvalue_size() > 0) {
+        return enum_type->enumvalue(0).number();
+      }
     }
   } else {
     // We don't need to check whether the value is actually declared in the
@@ -360,7 +361,7 @@ StatusOr<To> DataPiece::StringToNumber(bool (*func)(StringPiece,
   }
   To result;
   if (func(str_, &result)) return result;
-  return InvalidArgument(StrCat("\"", string(str_), "\""));
+  return InvalidArgument(StrCat("\"", std::string(str_), "\""));
 }
 
 bool DataPiece::DecodeBase64(StringPiece src, std::string* dest) const {
@@ -384,9 +385,8 @@ bool DataPiece::DecodeBase64(StringPiece src, std::string* dest) const {
   if (Base64Unescape(src, dest)) {
     if (use_strict_base64_decoding_) {
       std::string encoded;
-      Base64Escape(
-          reinterpret_cast<const unsigned char*>(dest->data()), dest->length(),
-          &encoded, false);
+      Base64Escape(reinterpret_cast<const unsigned char*>(dest->data()),
+                         dest->length(), &encoded, false);
       StringPiece src_no_padding = StringPiece(src).substr(
           0, HasSuffixString(src, "=") ? src.find_last_not_of('=') + 1
                                       : src.length());

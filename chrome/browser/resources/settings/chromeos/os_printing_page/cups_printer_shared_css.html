@@ -1,0 +1,83 @@
+<template>
+  <style include="settings-shared md-select">
+    [slot='dialog-body'] .settings-box {
+      border-top: none;
+      margin-bottom: 10px;
+    }
+
+    [slot='dialog-body'] .settings-box.two-line {
+      align-items: flex-start;
+    }
+
+    [slot='dialog-body'] .settings-box cr-input {
+      width: 100%;
+    }
+
+    /* The only input that has error-message are at the end, so we don't
+        need to allocate space for error-message under each input
+        for consistency. */
+    [slot='dialog-body'] .settings-box cr-input:not([error-message]) {
+      --cr-input-error-display: none;
+    }
+
+    [slot='dialog-body'] .settings-box .md-select {
+      width: 100%;
+    }
+
+    [slot='dialog-body'] .settings-box .printer-name-input {
+      width: 100%;
+    }
+
+    [slot='dialog-body'] .settings-box .browse-file-input {
+      flex: 1;
+      width: auto;
+    }
+
+    [slot='dialog-body'] .settings-box .browse-button {
+      margin-bottom: 8px;
+      margin-inline-start: 12px;
+    }
+
+    [slot='dialog-body'] .last {
+      margin-top: 20px;
+    }
+
+    [slot='dialog-body'] .center {
+      display: flex;
+      justify-content: center;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+    }
+
+    [slot='dialog-buttons'] {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    [slot='dialog-buttons'] .eula {
+      padding-top: 6px;
+    }
+
+    [slot='dialog-body'] {
+      height: 350px;
+    }
+
+    .flex-auto {
+      flex: 1 1 auto;
+    }
+
+    #search input[type='search'] {
+      font: inherit;
+    }
+
+    #ppdLabel {
+      padding-inline-start: 20px;
+    }
+
+    #no-search-results {
+      text-align: center;
+    }
+  </style>
+</template>

@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/tasks/download_completed_task.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -84,7 +85,7 @@ void DownloadCompletedTaskTest::SetUp() {
   item.client_id.id = kClientID2;
   EXPECT_TRUE(store_util()->InsertPrefetchItem(item2));
 
-  histogram_tester_.reset(new base::HistogramTester());
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
 
 TEST_F(DownloadCompletedTaskTest, StoreFailure) {

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -21,7 +20,7 @@ constexpr double kSourceAspectRatio =
 constexpr double kSourceFrameRate = 100.0;
 
 VideoTrackAdapterSettings SelectTrackSettings(
-    const WebMediaTrackConstraintSet& basic_constraint_set,
+    const MediaTrackConstraintSetPlatform& basic_constraint_set,
     const media_constraints::ResolutionSet& resolution_set,
     const media_constraints::NumericRangeSet<double>& frame_rate_set,
     bool enable_rescale = true) {
@@ -42,22 +41,21 @@ class MediaStreamConstraintsUtilTest : public testing::Test {
 };
 
 TEST_F(MediaStreamConstraintsUtilTest, BooleanConstraints) {
-  static const std::string kValueTrue = "true";
-  static const std::string kValueFalse = "false";
+  static const String kValueTrue = "true";
+  static const String kValueFalse = "false";
 
   MockConstraintFactory constraint_factory;
   // Mandatory constraints.
   constraint_factory.basic().echo_cancellation.SetExact(true);
   constraint_factory.basic().goog_echo_cancellation.SetExact(false);
-  WebMediaConstraints constraints =
-      constraint_factory.CreateWebMediaConstraints();
+  MediaConstraints constraints = constraint_factory.CreateMediaConstraints();
   bool value_true = false;
   bool value_false = false;
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &WebMediaTrackConstraintSet::echo_cancellation,
+      constraints, &MediaTrackConstraintSetPlatform::echo_cancellation,
       &value_true));
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &WebMediaTrackConstraintSet::goog_echo_cancellation,
+      constraints, &MediaTrackConstraintSetPlatform::goog_echo_cancellation,
       &value_false));
   EXPECT_TRUE(value_true);
   EXPECT_FALSE(value_false);
@@ -66,12 +64,12 @@ TEST_F(MediaStreamConstraintsUtilTest, BooleanConstraints) {
   constraint_factory.Reset();
   constraint_factory.AddAdvanced().echo_cancellation.SetExact(false);
   constraint_factory.AddAdvanced().goog_echo_cancellation.SetExact(true);
-  constraints = constraint_factory.CreateWebMediaConstraints();
+  constraints = constraint_factory.CreateMediaConstraints();
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &WebMediaTrackConstraintSet::echo_cancellation,
+      constraints, &MediaTrackConstraintSetPlatform::echo_cancellation,
       &value_false));
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &WebMediaTrackConstraintSet::goog_echo_cancellation,
+      constraints, &MediaTrackConstraintSetPlatform::goog_echo_cancellation,
       &value_true));
   EXPECT_TRUE(value_true);
   EXPECT_FALSE(value_false);
@@ -80,9 +78,9 @@ TEST_F(MediaStreamConstraintsUtilTest, BooleanConstraints) {
   constraint_factory.Reset();
   constraint_factory.AddAdvanced().echo_cancellation.SetExact(false);
   constraint_factory.basic().echo_cancellation.SetExact(true);
-  constraints = constraint_factory.CreateWebMediaConstraints();
+  constraints = constraint_factory.CreateMediaConstraints();
   EXPECT_TRUE(GetConstraintValueAsBoolean(
-      constraints, &WebMediaTrackConstraintSet::echo_cancellation,
+      constraints, &MediaTrackConstraintSetPlatform::echo_cancellation,
       &value_true));
   EXPECT_TRUE(value_true);
 }
@@ -92,14 +90,13 @@ TEST_F(MediaStreamConstraintsUtilTest, DoubleConstraints) {
   const double test_value = 0.01f;
 
   constraint_factory.basic().aspect_ratio.SetExact(test_value);
-  WebMediaConstraints constraints =
-      constraint_factory.CreateWebMediaConstraints();
+  MediaConstraints constraints = constraint_factory.CreateMediaConstraints();
 
   double value;
   EXPECT_FALSE(GetConstraintValueAsDouble(
-      constraints, &WebMediaTrackConstraintSet::frame_rate, &value));
+      constraints, &MediaTrackConstraintSetPlatform::frame_rate, &value));
   EXPECT_TRUE(GetConstraintValueAsDouble(
-      constraints, &WebMediaTrackConstraintSet::aspect_ratio, &value));
+      constraints, &MediaTrackConstraintSetPlatform::aspect_ratio, &value));
   EXPECT_EQ(test_value, value);
 }
 
@@ -108,20 +105,19 @@ TEST_F(MediaStreamConstraintsUtilTest, IntConstraints) {
   const int test_value = 327;
 
   constraint_factory.basic().width.SetExact(test_value);
-  WebMediaConstraints constraints =
-      constraint_factory.CreateWebMediaConstraints();
+  MediaConstraints constraints = constraint_factory.CreateMediaConstraints();
 
   int value;
   EXPECT_TRUE(GetConstraintValueAsInteger(
-      constraints, &WebMediaTrackConstraintSet::width, &value));
+      constraints, &MediaTrackConstraintSetPlatform::width, &value));
   EXPECT_EQ(test_value, value);
 
   // An exact value should also be reflected as min and max.
   EXPECT_TRUE(GetConstraintMaxAsInteger(
-      constraints, &WebMediaTrackConstraintSet::width, &value));
+      constraints, &MediaTrackConstraintSetPlatform::width, &value));
   EXPECT_EQ(test_value, value);
   EXPECT_TRUE(GetConstraintMinAsInteger(
-      constraints, &WebMediaTrackConstraintSet::width, &value));
+      constraints, &MediaTrackConstraintSetPlatform::width, &value));
   EXPECT_EQ(test_value, value);
 }
 
@@ -132,9 +128,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
   // No ideal values.
   {
     MockConstraintFactory constraint_factory;
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
@@ -147,9 +143,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     const int kIdealHeight = 400;
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().height.SetIdeal(kIdealHeight);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kIdealHeight, result.target_height());
     EXPECT_EQ(std::round(kIdealHeight * kSourceAspectRatio),
               result.target_width());
@@ -163,9 +159,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     const int kIdealWidth = 400;
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(std::round(kIdealWidth / kSourceAspectRatio),
               result.target_height());
     EXPECT_EQ(kIdealWidth, result.target_width());
@@ -179,9 +175,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     const double kIdealAspectRatio = 2.0;
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(std::round(kSourceHeight * kIdealAspectRatio),
               result.target_width());
@@ -195,9 +191,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     const double kIdealFrameRate = 33;
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
@@ -217,9 +213,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsUnconstrained) {
     // Ideal aspect ratio is ignored if ideal width and height are supplied.
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kIdealHeight, result.target_height());
     EXPECT_EQ(kIdealWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
@@ -247,9 +243,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
   // No ideal values.
   {
     MockConstraintFactory constraint_factory;
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -264,9 +260,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealHeight must be less than kMinHeight");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().height.SetIdeal(kIdealHeight);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kMinHeight, result.target_height());
     // kMinWidth > kMinHeight * kNativeAspectRatio
     EXPECT_EQ(kMinWidth, result.target_width());
@@ -284,9 +280,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealHeight must be less than kMaxHeight");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().height.SetIdeal(kIdealHeight);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kIdealHeight, result.target_height());
     EXPECT_EQ(std::round(kIdealHeight * kSourceAspectRatio),
               result.target_width());
@@ -302,9 +298,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealHeight must be greater than kMaxHeight");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().height.SetIdeal(kIdealHeight);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kMaxHeight, result.target_height());
     EXPECT_EQ(std::round(kMaxHeight * kSourceAspectRatio),
               result.target_width());
@@ -320,9 +316,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealWidth must be less than kMinWidth");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(std::round(kMinWidth / kSourceAspectRatio),
               result.target_height());
     EXPECT_EQ(kMinWidth, result.target_width());
@@ -340,9 +336,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealWidth must be less than kMaxWidth");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(std::round(kIdealWidth / kSourceAspectRatio),
               result.target_height());
     EXPECT_EQ(kIdealWidth, result.target_width());
@@ -358,9 +354,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealWidth must be greater than kMaxWidth");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     // kMaxHeight < kMaxWidth / kNativeAspectRatio
     EXPECT_EQ(kMaxHeight, result.target_height());
     EXPECT_EQ(kMaxWidth, result.target_width());
@@ -376,9 +372,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealAspectRatio must be less than kMinAspectRatio");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     // Desired point is (kNativeWidth/kMinAspectRatio, kNativeWidth), but it
     // is outside the size constraints. Closest to that while maintaining the
     // same aspect ratio is (kMaxHeight, kMaxHeight * kMinAspectRatio).
@@ -398,9 +394,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealAspectRatio must be less than kMaxAspectRatio");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(std::round(kSourceWidth / kIdealAspectRatio),
               result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
@@ -416,9 +412,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealAspectRatio must be greater than kMaxAspectRatio");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(std::round(kSourceHeight * kMaxAspectRatio),
               result.target_width());
@@ -434,9 +430,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealFrameRate must be less than kMinFrameRate");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -453,9 +449,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealFrameRate must be less than kMaxFrameRate");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -470,9 +466,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
                   "kIdealFrameRate must be greater than kMaxFrameRate");
     MockConstraintFactory constraint_factory;
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -501,9 +497,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
     constraint_factory.basic().height.SetIdeal(kIdealHeight);
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kIdealHeight, result.target_height());
     EXPECT_EQ(kIdealWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -526,9 +522,9 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
     constraint_factory.basic().height.SetIdeal(kIdealHeight);
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kMaxHeight, result.target_height());
     EXPECT_EQ(kMaxWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
@@ -538,37 +534,33 @@ TEST_F(MediaStreamConstraintsUtilTest, VideoTrackAdapterSettingsConstrained) {
 
   // Source frame rate.
   {
-    DoubleRangeSet frame_rate_set(kMinFrameRate, kSourceFrameRate);
+    DoubleRangeSet source_frame_rate_set(kMinFrameRate, kSourceFrameRate);
     MockConstraintFactory constraint_factory;
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, source_frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
     EXPECT_EQ(kMaxAspectRatio, result.max_aspect_ratio());
-    // No frame-rate adjustment because the track will use the same frame rate
-    // as the source.
-    EXPECT_EQ(0.0, result.max_frame_rate());
+    EXPECT_EQ(kSourceFrameRate, result.max_frame_rate());
   }
 
   // High frame rate.
   {
     constexpr double kHighFrameRate = 400.0;  // Greater than source.
-    DoubleRangeSet frame_rate_set(kMinFrameRate, kHighFrameRate);
+    DoubleRangeSet high_frame_rate_set(kMinFrameRate, kHighFrameRate);
     static_assert(kHighFrameRate > kSourceFrameRate,
                   "kIdealFrameRate must be greater than kSourceFrameRate");
     MockConstraintFactory constraint_factory;
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, high_frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(kMinAspectRatio, result.min_aspect_ratio());
     EXPECT_EQ(kMaxAspectRatio, result.max_aspect_ratio());
-    // No frame-rate adjustment because the track will use a frame rate that is
-    // greater than the source's.
-    EXPECT_EQ(0.0, result.max_frame_rate());
+    EXPECT_EQ(kHighFrameRate, result.max_frame_rate());
   }
 }
 
@@ -579,9 +571,9 @@ TEST_F(MediaStreamConstraintsUtilTest,
 
   {
     MockConstraintFactory constraint_factory;
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
@@ -591,9 +583,9 @@ TEST_F(MediaStreamConstraintsUtilTest,
 
   {
     MockConstraintFactory constraint_factory;
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kSourceHeight, result.target_height());
     EXPECT_EQ(kSourceWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
@@ -613,9 +605,9 @@ TEST_F(MediaStreamConstraintsUtilTest,
     // Ideal aspect ratio is ignored if ideal width and height are supplied.
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
-    auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
-        frame_rate_set);
+    auto result =
+        SelectTrackSettings(constraint_factory.CreateMediaConstraints().Basic(),
+                            resolution_set, frame_rate_set);
     EXPECT_EQ(kIdealHeight, result.target_height());
     EXPECT_EQ(kIdealWidth, result.target_width());
     EXPECT_EQ(0.0, result.min_aspect_ratio());
@@ -633,7 +625,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
   {
     MockConstraintFactory constraint_factory;
     auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
+        constraint_factory.CreateMediaConstraints().Basic(), resolution_set,
         frame_rate_set, false /* enable_rescale */);
     // No target resolution since rescaling is disabled.
     EXPECT_FALSE(result.target_size());
@@ -657,7 +649,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
     constraint_factory.basic().aspect_ratio.SetIdeal(kIdealAspectRatio);
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
     auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
+        constraint_factory.CreateMediaConstraints().Basic(), resolution_set,
         frame_rate_set, false /* enable_rescale */);
     // No target resolution since rescaling is disabled.
     EXPECT_FALSE(result.target_size());
@@ -690,7 +682,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
   {
     MockConstraintFactory constraint_factory;
     auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
+        constraint_factory.CreateMediaConstraints().Basic(), resolution_set,
         frame_rate_set, false /* enable_rescale */);
     // No target size since rescaling is disabled.
     EXPECT_FALSE(result.target_size());
@@ -711,7 +703,7 @@ TEST_F(MediaStreamConstraintsUtilTest,
     constraint_factory.basic().width.SetIdeal(kIdealWidth);
     constraint_factory.basic().frame_rate.SetIdeal(kIdealFrameRate);
     auto result = SelectTrackSettings(
-        constraint_factory.CreateWebMediaConstraints().Basic(), resolution_set,
+        constraint_factory.CreateMediaConstraints().Basic(), resolution_set,
         frame_rate_set, false /* enable_rescale */);
     // No target size since rescaling is disabled, despite ideal values.
     EXPECT_FALSE(result.target_size());

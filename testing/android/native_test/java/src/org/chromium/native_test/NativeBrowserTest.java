@@ -21,10 +21,7 @@ public class NativeBrowserTest {
     // browser tests Activity should ensure these are included.
     public static final String BROWSER_TESTS_FLAGS[] = {
             // switches::kSingleProcessTests
-            "--single-process-tests",
-
-            // switches::kUseFakeDeviceForMediaStream
-            "--use-fake-device-for-media-stream"};
+            "--single-process-tests"};
 
     /**
      * Deletes a file or directory along with any of its children.

@@ -1,0 +1,36 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+import "components/segmentation_platform/internal/proto/model_metadata.proto";
+import "components/optimization_guide/proto/models.proto";
+
+// Result from the model evaluation for a given segment.
+message PredictionResult {
+  // The result is the confidence rating from the model evaluation.
+  optional float result = 1;
+
+  // The time when the prediction was made, in terms of the number of
+  // microseconds since Windows epoch.
+  optional int64 timestamp_us = 2;
+}
+
+// Top level message for a segment. Contains both the model metadata and
+// prediction results.
+message SegmentInfo {
+  // Segment target.
+  optional optimization_guide.proto.OptimizationTarget segment_id = 1;
+
+  // Cached copy of the segment metadata which is important in case the metadata
+  // is temporarily not available in the future. It also contains the relevant
+  // information regarding things like the TTL for a prediction result.
+  optional SegmentationModelMetadata model_metadata = 2;
+
+  // The last prediction result for this segment.
+  optional PredictionResult prediction_result = 3;
+}

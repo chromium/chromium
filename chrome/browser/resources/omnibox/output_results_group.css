@@ -53,6 +53,14 @@ table {
   max-height: 28px;
 }
 
+.body tr.expanded {
+  height: 200px;
+}
+
+.body tr.expanded td > * {
+  max-height: 190px;
+}
+
 .body td {
   white-space: pre-wrap;
   word-break: break-all;
@@ -75,11 +83,6 @@ table {
 }
 
 .body tr td pre.json {
-  /* Browsers base rem font sizes on 16px, except for monospace fonts which use
-   a base size of 13px. Whereas the rest of the table has size set to .75rem
-   (.75 * 16px = 12px), pre's must have size 12/13rem (12/13 * 13px = 12px) in
-   order to have a consistent 12px across the table. */
-  font-size: .9231rem;
   margin: 0;
   white-space: pre-wrap;
 }
@@ -234,7 +237,8 @@ tbody.head th {
 }
 
 .cell-additional-info a {
-  background-image: url(../../../../third_party/blink/renderer/modules/media_controls/resources/ic_download.svg);
+  /* Inlined version of cr:file-download icon */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24" width="24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg>');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -259,11 +263,11 @@ tbody.head th {
 }
 
 .check-mark {
-  background-image: url(../../../../ui/webui/resources/images/check_circle_green.svg);
+  background-image: url(chrome://resources/images/check_circle_green.svg);
 }
 
 .x-mark {
-  background-image: url(../../../../ui/webui/resources/images/cancel_red.svg);
+  background-image: url(chrome://resources/images/cancel_red.svg);
 }
 
 /* json cells */

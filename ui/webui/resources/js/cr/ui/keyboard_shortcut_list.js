@@ -53,12 +53,12 @@ cr.define('cr.ui', function() {
      * @return {boolean} Whether we found a match or not.
      */
     matchesEvent(e) {
-      if ((this.useKeyCode_ && e.keyCode == this.keyCode_) ||
-          e.key == this.key_) {
+      if ((this.useKeyCode_ && e.keyCode === this.keyCode_) ||
+          e.key === this.key_) {
         // All keyboard modifiers need to match.
         const mods = this.mods_;
         return ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'].every(function(k) {
-          return e[k] == !!mods[k];
+          return e[k] === !!mods[k];
         });
       }
       return false;
@@ -91,6 +91,7 @@ cr.define('cr.ui', function() {
   }
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     KeyboardShortcutList: KeyboardShortcutList,
   };

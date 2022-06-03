@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`console.time / console.timeEnd tests.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function testFunction()
@@ -24,9 +24,9 @@
   ConsoleTestRunner.waitUntilNthMessageReceived(4, dumpMessagesAndCompleTest);
   TestRunner.evaluateInPage('testFunction()');
 
-  function dumpMessagesAndCompleTest() {
-    var messages = ConsoleTestRunner.dumpConsoleMessagesIntoArray();
-    messages = messages.map(message => message.replace(/\d+\.\d+ms/, '<time>'));
+  async function dumpMessagesAndCompleTest() {
+    var messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray();
+    messages = messages.map(message => message.replace(/\d+\.\d+ ?ms/, '<time>'));
     TestRunner.addResults(messages);
     TestRunner.completeTest();
   }

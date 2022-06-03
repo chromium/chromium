@@ -6,9 +6,10 @@
 
 #include <winerror.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"
@@ -32,7 +33,7 @@ void SetCurrentVersionCrashKey() {
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY);
 
   // Read from the Clients key.
-  base::string16 version_str;
+  std::wstring version_str;
   if (key.ReadValue(L"pv", &version_str) == ERROR_SUCCESS) {
     version_key.Set(base::WideToUTF8(version_str));
   }
@@ -47,7 +48,7 @@ base::FilePath GetSystemTempFolder() {
       L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",
       KEY_QUERY_VALUE);
 
-  base::string16 temp_string;
+  std::wstring temp_string;
   if (reg_key.ReadValue(L"TEMP", &temp_string) != ERROR_SUCCESS)
     return base::FilePath();
 

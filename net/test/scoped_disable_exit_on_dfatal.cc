@@ -6,14 +6,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
 #include "base/strings/string_piece.h"
 
 namespace net {
 namespace test {
 
 ScopedDisableExitOnDFatal::ScopedDisableExitOnDFatal()
-    : assert_handler_(base::Bind(LogAssertHandler)) {}
+    : assert_handler_(base::BindRepeating(LogAssertHandler)) {}
 
 ScopedDisableExitOnDFatal::~ScopedDisableExitOnDFatal() = default;
 

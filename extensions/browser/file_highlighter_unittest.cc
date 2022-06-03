@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

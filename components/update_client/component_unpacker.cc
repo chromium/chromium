@@ -15,10 +15,8 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/component_patcher.h"
@@ -29,7 +27,7 @@
 
 namespace update_client {
 
-ComponentUnpacker::Result::Result() {}
+ComponentUnpacker::Result::Result() = default;
 
 ComponentUnpacker::ComponentUnpacker(const std::vector<uint8_t>& pk_hash,
                                      const base::FilePath& path,
@@ -47,7 +45,7 @@ ComponentUnpacker::ComponentUnpacker(const std::vector<uint8_t>& pk_hash,
       error_(UnpackerError::kNone),
       extended_error_(0) {}
 
-ComponentUnpacker::~ComponentUnpacker() {}
+ComponentUnpacker::~ComponentUnpacker() = default;
 
 void ComponentUnpacker::Unpack(Callback callback) {
   callback_ = std::move(callback);
@@ -64,9 +62,9 @@ bool ComponentUnpacker::Verify() {
   std::vector<std::vector<uint8_t>> required_keys;
   if (!pk_hash_.empty())
     required_keys.push_back(pk_hash_);
-  const crx_file::VerifierResult result =
-      crx_file::Verify(path_, crx_format_, required_keys,
-                       std::vector<uint8_t>(), &public_key_, nullptr);
+  const crx_file::VerifierResult result = crx_file::Verify(
+      path_, crx_format_, required_keys, std::vector<uint8_t>(), &public_key_,
+      nullptr, /*compressed_verified_contents=*/nullptr);
   if (result != crx_file::VerifierResult::OK_FULL &&
       result != crx_file::VerifierResult::OK_DELTA) {
     error_ = UnpackerError::kInvalidFile;
@@ -138,9 +136,9 @@ void ComponentUnpacker::EndPatching(UnpackerError error, int extended_error) {
 
 void ComponentUnpacker::EndUnpacking() {
   if (!unpack_diff_path_.empty())
-    base::DeleteFileRecursively(unpack_diff_path_);
+    base::DeletePathRecursively(unpack_diff_path_);
   if (error_ != UnpackerError::kNone && !unpack_path_.empty())
-    base::DeleteFileRecursively(unpack_path_);
+    base::DeletePathRecursively(unpack_path_);
 
   Result result;
   result.error = error_;

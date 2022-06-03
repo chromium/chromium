@@ -11,17 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
+#include "components/printing/common/print.mojom-forward.h"
 #include "printing/image.h"
-#include "third_party/blink/public/web/web_print_scaling_option.h"
+#include "printing/mojom/print.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-struct PrintMsg_Print_Params;
-struct PrintMsg_PrintPages_Params;
-struct PrintHostMsg_DidPrintDocument_Params;
 
 // A class which represents an output page used in the MockPrinter class.
 // The MockPrinter class stores output pages in a vector, so, this class
@@ -32,6 +27,8 @@ class MockPrinterPage : public base::RefCounted<MockPrinterPage> {
   MockPrinterPage(const void* source_data,
                   uint32_t source_size,
                   const printing::Image& image);
+  MockPrinterPage(const MockPrinterPage&) = delete;
+  MockPrinterPage& operator=(const MockPrinterPage&) = delete;
 
   int width() const { return image_.size().width(); }
   int height() const { return image_.size().height(); }
@@ -46,8 +43,6 @@ class MockPrinterPage : public base::RefCounted<MockPrinterPage> {
   uint32_t source_size_;
   std::unique_ptr<uint8_t[]> source_data_;
   printing::Image image_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrinterPage);
 };
 
 // A class which implements a pseudo-printer object used by the RenderViewTest
@@ -67,29 +62,33 @@ class MockPrinter {
   };
 
   MockPrinter();
+  MockPrinter(const MockPrinter&) = delete;
+  MockPrinter& operator=(const MockPrinter&) = delete;
   ~MockPrinter();
 
   // Functions that changes settings of a pseudo printer.
   void ResetPrinter();
-  void SetDefaultPrintSettings(const PrintMsg_Print_Params& params);
+  void SetDefaultPrintSettings(const printing::mojom::PrintParams& params);
   void UseInvalidSettings();
   void UseInvalidPageSize();
   void UseInvalidContentSize();
 
+  // Functions that handle mojo messages.
+  printing::mojom::PrintParamsPtr GetDefaultPrintSettings();
+  void SetPrintedPagesCount(int cookie, uint32_t number_pages);
+
   // Functions that handles IPC events.
-  void GetDefaultPrintSettings(PrintMsg_Print_Params* params);
   void ScriptedPrint(int cookie,
-                     int expected_pages_count,
+                     uint32_t expected_pages_count,
                      bool has_selection,
-                     PrintMsg_PrintPages_Params* settings);
+                     printing::mojom::PrintPagesParams* settings);
   void UpdateSettings(int cookie,
-                      PrintMsg_PrintPages_Params* params,
-                      const std::vector<int>& page_range_array,
+                      printing::mojom::PrintPagesParams* params,
+                      const std::vector<uint32_t>& page_range_array,
                       int margins_type,
                       const gfx::Size& page_size,
                       int scale_factor);
-  void SetPrintedPagesCount(int cookie, int number_pages);
-  void PrintPage(const PrintHostMsg_DidPrintDocument_Params& params);
+  void PrintPage(printing::mojom::DidPrintDocumentParamsPtr params);
 
   // Functions that retrieve the output pages.
   Status GetPrinterStatus() const { return printer_status_; }
@@ -112,7 +111,7 @@ class MockPrinter {
 
  private:
   // Helper function to fill the fields in |params|.
-  void SetPrintParams(PrintMsg_Print_Params* params);
+  void SetPrintParams(printing::mojom::PrintParams* params);
 
   // In pixels according to dpi_x and dpi_y.
   gfx::Size page_size_;
@@ -138,8 +137,8 @@ class MockPrinter {
   Status printer_status_;
 
   // The output of a printing job.
-  int number_pages_;
-  int page_number_;
+  uint32_t number_pages_;
+  uint32_t page_number_;
 
   // Used only in the preview sequence.
   bool is_first_request_;
@@ -148,19 +147,17 @@ class MockPrinter {
 
   // Specifies whether to retain/crop/scale source page size to fit the
   // given printable area.
-  blink::WebPrintScalingOption print_scaling_option_;
+  printing::mojom::PrintScalingOption print_scaling_option_;
 
   // Used for displaying headers and footers.
   bool display_header_footer_;
-  base::string16 title_;
-  base::string16 url_;
+  std::u16string title_;
+  std::u16string url_;
 
   // Used for generating invalid settings.
   bool use_invalid_settings_;
 
   std::vector<scoped_refptr<MockPrinterPage>> pages_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrinter);
 };
 
 #endif  // COMPONENTS_PRINTING_TEST_MOCK_PRINTER_H_

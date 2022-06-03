@@ -2,8 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/allocator.gni")
+import("//build/apple/tweak_info_plist.gni")
 import("//build/config/features.gni")
 import("//build/config/ios/rules.gni")
+import("//ios/chrome/features.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -49,8 +52,6 @@ source_set("browser") {
     "ios_chrome_field_trials.h",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
-    "ios_first_run_field_trials.cc",
-    "ios_first_run_field_trials.h",
     "notification_promo.cc",
     "notification_promo.h",
   ]
@@ -74,20 +75,17 @@ source_set("browser") {
     "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//components/password_manager/core/common:common",
-    "//components/payments/core",
     "//components/pref_registry",
     "//components/prefs",
     "//components/proxy_config",
     "//components/proxy_config/ios",
     "//components/reading_list/ios",
     "//components/search_engines",
-    "//components/search_provider_logos",
     "//components/security_state/core",
     "//components/send_tab_to_self",
     "//components/strings",
     "//components/sync",
     "//components/translate/core/browser",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//components/url_formatter",
     "//components/variations/net",
@@ -98,28 +96,22 @@ source_set("browser") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/complex_tasks",
-    "//ios/chrome/browser/crash_report:flags",
     "//ios/chrome/browser/download",
-    "//ios/chrome/browser/drag_and_drop",
-    "//ios/chrome/browser/find_in_page:feature_flags",
+    "//ios/chrome/browser/download/background_service",
     "//ios/chrome/browser/itunes_urls",
-    "//ios/chrome/browser/payments:constants",
-    "//ios/chrome/browser/signin:feature_flags",
-    "//ios/chrome/browser/ssl:feature_flags",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/dialogs:feature_flags",
+    "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/omnibox",
-    "//ios/chrome/browser/ui/toolbar/public:feature_flags",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/common",
     "//ios/components/io_thread",
+    "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
@@ -137,7 +129,7 @@ source_set("browser") {
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/browser_state",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("utils") {
@@ -156,9 +148,7 @@ source_set("utils") {
     "//components/password_manager/core/common",
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
-    "//ios/chrome/browser/passwords:feature_flags",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
   ]
 }
 
@@ -171,8 +161,9 @@ source_set("chrome_url_constants") {
 
   deps = [
     "//base",
+    "//ios/components/webui:url_constants",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("pref_names") {
@@ -186,42 +177,53 @@ source_set("pref_names") {
 source_set("browser_impl") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "application_context_impl.cc",
     "application_context_impl.h",
+    "application_context_impl.mm",
     "ios_chrome_main_parts.h",
     "ios_chrome_main_parts.mm",
+    "ios_thread_profiler.cc",
+    "ios_thread_profiler.h",
   ]
   deps = [
     ":browser",
     "//base",
+    "//base/allocator:buildflags",
+    "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:feature_flags",
     "//components/component_updater",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/crash/core/common:crash_key_lib",
+    "//components/crash/core/common:reporter_running_ios",
     "//components/flags_ui",
     "//components/gcm_driver",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/language/core/browser",
-    "//components/language_usage_metrics",
     "//components/metrics",
+    "//components/metrics:child_call_stack_profile_builder",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/metrics_services_manager",
     "//components/net_log",
     "//components/network_time",
     "//components/open_from_clipboard",
     "//components/prefs",
-    "//components/rappor",
+    "//components/safe_browsing/core/common",
     "//components/sessions",
     "//components/translate/core/browser",
     "//components/ukm",
-    "//components/ukm/ios:features",
     "//components/update_client",
     "//components/variations",
     "//components/variations/field_trial_config",
     "//components/variations/service",
     "//components/version_info",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/component_updater",
+    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/crash_report/breadcrumbs",
+    "//ios/chrome/browser/crash_report/breadcrumbs:application_breadcrumbs_logger",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/flags",
     "//ios/chrome/browser/gcm",
@@ -230,8 +232,11 @@ source_set("browser_impl") {
     "//ios/chrome/browser/metrics:expired_histograms_array",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/open_from_clipboard",
+    "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/update_client",
@@ -240,6 +245,7 @@ source_set("browser_impl") {
     "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//ios/web/public/init",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//rlz/buildflags",
     "//services/network:network_service",
@@ -249,16 +255,48 @@ source_set("browser_impl") {
   if (enable_rlz) {
     deps += [ "//ios/chrome/browser/rlz" ]
   }
+
+  # Heap profiling is not compiled unless use_allocator_shim is true, as some of
+  # its dependencies require the allocator shim. This variable may be set to
+  # false, for example, in cronet builds.
+  if (use_allocator_shim) {
+    deps += [ "//components/heap_profiling/in_process" ]
+  }
+}
+
+tweak_info_plist("experimental_info_plist") {
+  info_plists = [ "resources/Settings.bundle/Experimental.plist" ]
+  if (ios_enable_metrickit) {
+    info_plists += [ "resources/Settings.bundle/ExperimentalMetricKit.plist" ]
+  }
+  if (ios_enable_sandbox_dump) {
+    info_plists += [ "resources/Settings.bundle/ExperimentalSandboxDump.plist" ]
+  }
+  info_plists += [
+    "resources/Settings.bundle/ExperimentalFlags.plist",
+    "resources/Settings.bundle/ExperimentalBlank.plist",
+  ]
+}
+
+bundle_data("settings_experimental_synctypeslist_plist") {
+  sources =
+      [ "resources/Settings.bundle/ExperimentalSyncTypesListDisabled.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
+}
+
+bundle_data("settings_resources_experimental_plist") {
+  public_deps = [
+    ":experimental_info_plist",
+    ":settings_experimental_synctypeslist_plist",
+  ]
+  sources = get_target_outputs(":experimental_info_plist")
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/Experimental.plist" ]
 }
 
 bundle_data("settings_resources") {
-  sources = [
-    "resources/Settings.bundle/Experimental.plist",
-    "resources/Settings.bundle/Root.plist",
-  ]
-  outputs = [
-    "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}",
-  ]
+  public_deps = [ ":settings_resources_experimental_plist" ]
+  sources = [ "resources/Settings.bundle/Root.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/Settings.bundle/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
@@ -280,6 +318,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/variations",
+    "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/web/public/test",

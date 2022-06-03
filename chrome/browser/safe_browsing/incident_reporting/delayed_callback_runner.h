@@ -7,9 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -27,17 +26,21 @@ class DelayedCallbackRunner {
   // |delay| time to pass before and between each callback.
   DelayedCallbackRunner(base::TimeDelta delay,
                         const scoped_refptr<base::TaskRunner>& task_runner);
+
+  DelayedCallbackRunner(const DelayedCallbackRunner&) = delete;
+  DelayedCallbackRunner& operator=(const DelayedCallbackRunner&) = delete;
+
   ~DelayedCallbackRunner();
 
   // Registers |callback| with the runner. A copy of |callback| is held until it
   // is run.
-  void RegisterCallback(const base::Closure& callback);
+  void RegisterCallback(base::OnceClosure callback);
 
   // Starts running the callbacks after the delay.
   void Start();
 
  private:
-  using CallbackList = base::queue<base::Closure>;
+  using CallbackList = base::queue<base::OnceClosure>;
 
   // A callback invoked by the timer to run the next callback. The timer is
   // restarted to process the next callback if there is one.
@@ -54,8 +57,6 @@ class DelayedCallbackRunner {
 
   // A timer upon the firing of which the next callback will be run.
   base::DelayTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedCallbackRunner);
 };
 
 }  // namespace safe_browsing

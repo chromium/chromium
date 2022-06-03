@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_CONTROL_CONNECTION_H_
 #define CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_CONTROL_CONNECTION_H_
 
+#include <list>
 #include <memory>
 #include <string>
 
@@ -31,7 +32,15 @@ class ControlConnection : public MixerConnection, public MixerSocket::Delegate {
   using StreamCountCallback =
       base::RepeatingCallback<void(int primary_streams, int sfx_streams)>;
 
+  // Callback that handles ListPostProcessors response.
+  using ListPostprocessorsCallback =
+      base::OnceCallback<void(const std::vector<std::string>&)>;
+
   ControlConnection();
+
+  ControlConnection(const ControlConnection&) = delete;
+  ControlConnection& operator=(const ControlConnection&) = delete;
+
   ~ControlConnection() override;
 
   // Connects to the mixer. If the mixer connection is lost, this will
@@ -49,6 +58,9 @@ class ControlConnection : public MixerConnection, public MixerSocket::Delegate {
 
   // Sets the maximum effective volume multiplier for a given content type.
   void SetVolumeLimit(AudioContentType type, float max_volume_multiplier);
+
+  // Returns a set of registered builtin post-processors.
+  void ListPostprocessors(ListPostprocessorsCallback callback);
 
   // Sends arbitrary config data to a specific postprocessor. Config is saved
   // for each unique |name| and will be resent if the mixer disconnects and then
@@ -78,6 +90,10 @@ class ControlConnection : public MixerConnection, public MixerSocket::Delegate {
   void SetNumOutputChannels(int num_channels);
 
  private:
+  bool SendPostprocessorMessageInternal(std::string postprocessor_name,
+                                        std::string message);
+  void OnSendFailed();
+
   // MixerConnection implementation:
   void OnConnected(std::unique_ptr<MixerSocket> socket) override;
   void OnConnectionError() override;
@@ -96,9 +112,9 @@ class ControlConnection : public MixerConnection, public MixerSocket::Delegate {
   base::flat_map<std::string, std::string> postprocessor_config_;
 
   StreamCountCallback stream_count_callback_;
+  // Uses std::list to trigger callbacks in FIFO order.
+  std::list<ListPostprocessorsCallback> list_postprocessors_callbacks_;
   int num_output_channels_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlConnection);
 };
 
 }  // namespace mixer_service

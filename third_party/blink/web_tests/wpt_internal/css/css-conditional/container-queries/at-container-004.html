@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Test that @container-dependent elements respond to iframe size changes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  iframe {
+    width: 200px;
+    height: 40px;
+  }
+</style>
+<iframe id=iframe srcdoc="
+  <style>
+    div#container {
+      contain: size layout style;
+      height: 20px;
+    }
+    div#child { color: red; }
+    @container (min-width: 300px) {
+      div#child { color: green; }
+    }
+  </style>
+  <div id=container>
+    <div id=child>Test</div>
+  </div>
+"></iframe>
+<script>
+
+  function waitForLoad(w) {
+    return new Promise(resolve => w.addEventListener('load', resolve));
+  }
+
+  promise_test(async () => {
+    await waitForLoad(window);
+    let inner_div = iframe.contentDocument.querySelector('div#child');
+    assert_equals(getComputedStyle(inner_div).color, 'rgb(255, 0, 0)');
+
+    iframe.style = 'width:400px';
+    assert_equals(getComputedStyle(inner_div).color, 'rgb(0, 128, 0)');
+  })
+</script>

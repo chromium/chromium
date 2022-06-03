@@ -9,9 +9,13 @@ syntax = "proto2";
 
 package json_proto;
 
-message JsonObject {
+message JsonObjectField {
   required string name = 1;
   required JsonValue value = 2;
+}
+
+message JsonObject {
+  repeated JsonObjectField field = 3;
 }
 
 message JsonValue {

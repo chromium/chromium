@@ -6,7 +6,7 @@
 
 syntax = "proto2";
 
-import "send_tab_to_self_specifics.proto";
+import "components/sync/protocol/send_tab_to_self_specifics.proto";
 
 option optimize_for = LITE_RUNTIME;
 

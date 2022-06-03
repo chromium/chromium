@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -50,6 +49,10 @@ struct IndividualSettings {
 
   IndividualSettings();
   explicit IndividualSettings(const IndividualSettings* default_settings);
+
+  IndividualSettings(const IndividualSettings&) = delete;
+  IndividualSettings& operator=(const IndividualSettings&) = delete;
+
   ~IndividualSettings();
 
   void Reset();
@@ -77,10 +80,15 @@ struct IndividualSettings {
   ExtensionManagement::InstallationMode installation_mode;
   std::string update_url;
 
+  // Boolean to indicate whether the update URL of the extension/app is
+  // overridden by the policy or not. It can be true only for extensions/apps
+  // which are marked as |force_installed|.
+  bool override_update_url{false};
+
   // Permissions block list for extensions. This setting won't grant permissions
   // to extensions automatically. Instead, this setting will provide a list of
   // blocked permissions for each extension. That is, if an extension requires a
-  // permission which has been blacklisted, this extension will not be allowed
+  // permission which has been blocklisted, this extension will not be allowed
   // to load. And if it contains a blocked permission as optional requirement,
   // it will be allowed to load (of course, with permission granted from user if
   // necessary), but conflicting permissions will be dropped.
@@ -134,13 +142,20 @@ struct IndividualSettings {
   // exceptions etc. This string is limited to 1000 characters.
   std::string blocked_install_message;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndividualSettings);
+  // Allows admins to control whether the extension icon should be pinned to
+  // the toolbar next to the omnibar. If it is pinned, the icon is visible at
+  // all times.
+  ExtensionManagement::ToolbarPinMode toolbar_pin =
+      ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
 };
 
 // Global extension management settings, applicable to all extensions.
 struct GlobalSettings {
   GlobalSettings();
+
+  GlobalSettings(const GlobalSettings&) = delete;
+  GlobalSettings& operator=(const GlobalSettings&) = delete;
+
   ~GlobalSettings();
 
   void Reset();
@@ -154,9 +169,6 @@ struct GlobalSettings {
   // only of |has_restricted_allowed_types| is set to true.
   std::vector<Manifest::Type> allowed_types;
   bool has_restricted_allowed_types;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalSettings);
 };
 
 }  // namespace internal

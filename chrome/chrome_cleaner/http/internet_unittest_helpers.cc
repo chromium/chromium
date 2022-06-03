@@ -12,8 +12,8 @@
 namespace chrome_cleaner {
 
 void ExpectMultipartMimeMessageIsPlausible(
-    const base::string16& boundary,
-    const std::map<base::string16, base::string16>& parameters,
+    const std::wstring& boundary,
+    const std::map<std::wstring, std::wstring>& parameters,
     const std::string& file,
     const std::string& file_part_name,
     const std::string& body) {

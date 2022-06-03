@@ -5,14 +5,22 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
+#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -24,9 +32,11 @@ IntentFilter GetIntentFilter(const std::string& host,
                              const std::string& pkg_name) {
   std::vector<IntentFilter::AuthorityEntry> authorities;
   authorities.emplace_back(host, /*port=*/-1);
-  return IntentFilter(pkg_name, std::move(authorities),
+  return IntentFilter(pkg_name, /*actions=*/std::vector<std::string>(),
+                      std::move(authorities),
                       std::vector<IntentFilter::PatternMatcher>(),
-                      std::vector<std::string>());
+                      /*schemes=*/std::vector<std::string>(),
+                      /*mime_types=*/std::vector<std::string>());
 }
 
 }  // namespace
@@ -34,6 +44,8 @@ IntentFilter GetIntentFilter(const std::string& host,
 class ArcIntentHelperTest : public testing::Test {
  protected:
   ArcIntentHelperTest() = default;
+  ArcIntentHelperTest(const ArcIntentHelperTest&) = delete;
+  ArcIntentHelperTest& operator=(const ArcIntentHelperTest&) = delete;
 
   class TestOpenUrlDelegate : public OpenUrlDelegate {
    public:
@@ -45,12 +57,15 @@ class ArcIntentHelperTest : public testing::Test {
     void OpenArcCustomTab(
         const GURL& url,
         int32_t task_id,
-        int32_t surface_id,
-        int32_t top_margin,
         mojom::IntentHelperHost::OnOpenCustomTabCallback callback) override {
-      std::move(callback).Run(nullptr);
+      std::move(callback).Run(mojo::NullRemote());
     }
     void OpenChromePageFromArc(mojom::ChromePage chrome_page) override {}
+    void OpenAppWithIntent(const GURL& url,
+                           mojom::LaunchIntentPtr intent) override {
+      last_opened_url_ = url;
+      last_opened_intent_ = std::move(intent);
+    }
 
     GURL TakeLastOpenedUrl() {
       GURL result = std::move(last_opened_url_);
@@ -58,8 +73,15 @@ class ArcIntentHelperTest : public testing::Test {
       return result;
     }
 
+    mojom::LaunchIntentPtr TakeLastOpenedIntent() {
+      auto result = std::move(last_opened_intent_);
+      last_opened_intent_.reset();
+      return result;
+    }
+
    private:
     GURL last_opened_url_;
+    mojom::LaunchIntentPtr last_opened_intent_;
   };
 
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
@@ -81,8 +103,6 @@ class ArcIntentHelperTest : public testing::Test {
     test_open_url_delegate_.reset();
     arc_bridge_service_.reset();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ArcIntentHelperTest);
 };
 
 // Tests if IsIntentHelperPackage works as expected. Probably too trivial
@@ -177,32 +197,80 @@ TEST_F(ArcIntentHelperTest, TestFilterOutIntentHelper) {
 
 // Tests if observer works as expected.
 TEST_F(ArcIntentHelperTest, TestObserver) {
-  class FakeObserver : public ArcIntentHelperObserver {
+  class MockObserver : public ArcIntentHelperObserver {
    public:
-    FakeObserver() = default;
-    void OnIntentFiltersUpdated(
-        const base::Optional<std::string>& package_name) override {
-      updated_ = true;
-    }
-    bool IsUpdated() { return updated_; }
-    void Reset() { updated_ = false; }
-
-   private:
-    bool updated_ = false;
+    MOCK_METHOD(void,
+                OnArcDownloadAdded,
+                (const base::FilePath& relative_path,
+                 const std::string& owner_package_name),
+                (override));
+    MOCK_METHOD(void,
+                OnIntentFiltersUpdated,
+                (const absl::optional<std::string>& package_name),
+                (override));
+    MOCK_METHOD(void, OnPreferredAppsChanged, (), (override));
+    MOCK_METHOD(
+        void,
+        OnArcSupportedLinksChanged,
+        (const std::vector<arc::mojom::SupportedLinksPtr>& added_packages,
+         const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages),
+        (override));
   };
 
-  // Observer should be called when intent filter is updated.
-  auto observer = std::make_unique<FakeObserver>();
-  instance_->AddObserver(observer.get());
-  EXPECT_FALSE(observer->IsUpdated());
-  instance_->OnIntentFiltersUpdated(std::vector<IntentFilter>());
-  EXPECT_TRUE(observer->IsUpdated());
+  // Create and add observer.
+  testing::StrictMock<MockObserver> observer;
+  instance_->AddObserver(&observer);
+
+  {
+    // Observer should be called when a download is added.
+    std::string relative_path("Download/foo/bar.pdf");
+    std::string owner_package_name("owner_package_name");
+    EXPECT_CALL(observer,
+                OnArcDownloadAdded(testing::Eq(base::FilePath(relative_path)),
+                                   testing::Ref(owner_package_name)));
+    instance_->OnDownloadAdded(relative_path, owner_package_name);
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should *not* be called when a download is added outside of the
+    // Download/ folder. This would be an unexpected event coming from ARC but
+    // we protect against it because ARC is treated as an untrusted source.
+    instance_->OnDownloadAdded(/*relative_path=*/"Download/../foo/bar.pdf",
+                               /*owner_package_name=*/"owner_package_name");
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when an intent filter is updated.
+    EXPECT_CALL(observer, OnIntentFiltersUpdated(testing::Eq(absl::nullopt)));
+    instance_->OnIntentFiltersUpdated(/*filters=*/std::vector<IntentFilter>());
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when preferred apps change.
+    EXPECT_CALL(observer, OnPreferredAppsChanged);
+    instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*deleted=*/{});
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when supported links change.
+    EXPECT_CALL(observer, OnArcSupportedLinksChanged);
+    instance_->OnSupportedLinksChanged(/*added_packages=*/{},
+                                       /*removed_packages=*/{});
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
 
   // Observer should not be called after it's removed.
-  observer->Reset();
-  instance_->RemoveObserver(observer.get());
-  instance_->OnIntentFiltersUpdated(std::vector<IntentFilter>());
-  EXPECT_FALSE(observer->IsUpdated());
+  instance_->RemoveObserver(&observer);
+  instance_->OnDownloadAdded(/*relative_path=*/"Download/foo/bar.pdf",
+                             /*owner_package_name=*/"owner_package_name");
+  instance_->OnIntentFiltersUpdated(/*filters=*/{});
+  instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*removed=*/{});
+  instance_->OnSupportedLinksChanged(/*added_packages=*/{},
+                                     /*removed_packages=*/{});
 }
 
 // Tests that ShouldChromeHandleUrl returns true by default.
@@ -330,10 +398,14 @@ TEST_F(ArcIntentHelperTest, TestOnOpenUrl) {
             test_open_url_delegate_->TakeLastOpenedUrl());
 }
 
-// Tests that OnOpenWebApp opens only HTTPS URLs.
+// Tests that OnOpenWebApp opens only HTTPS URLs or localhost.
 TEST_F(ArcIntentHelperTest, TestOnOpenWebApp) {
   instance_->OnOpenWebApp("http://google.com");
   EXPECT_EQ(GURL(), test_open_url_delegate_->TakeLastOpenedUrl());
+
+  instance_->OnOpenWebApp("http://localhost/");
+  EXPECT_EQ(GURL("http://localhost/"),
+            test_open_url_delegate_->TakeLastOpenedUrl());
 
   instance_->OnOpenWebApp("https://google.com");
   EXPECT_EQ(GURL("https://google.com"),
@@ -357,6 +429,37 @@ TEST_F(ArcIntentHelperTest, TestOnOpenUrl_ChromeScheme) {
 
   instance_->OnOpenUrl("about:blank");
   EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+}
+
+// Tests that OnOpenAppWithIntents opens only HTTPS URLs.
+TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
+  base::HistogramTester histograms;
+
+  auto intent = mojom::LaunchIntent::New();
+  intent->action = arc::kIntentActionSend;
+  intent->extra_text = "Foo";
+  instance_->OnOpenAppWithIntent(GURL("https://www.google.com"),
+                                 std::move(intent));
+  EXPECT_EQ(GURL("https://www.google.com"),
+            test_open_url_delegate_->TakeLastOpenedUrl());
+  EXPECT_EQ("Foo", test_open_url_delegate_->TakeLastOpenedIntent()->extra_text);
+  histograms.ExpectBucketCount("Arc.IntentHelper.OpenAppWithIntentAction",
+                               2 /* OpenIntentAction::kSend */, 1);
+
+  instance_->OnOpenAppWithIntent(GURL("http://www.google.com"),
+                                 mojom::LaunchIntent::New());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+  EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+
+  instance_->OnOpenAppWithIntent(GURL("http://localhost:8000/foo"),
+                                 mojom::LaunchIntent::New());
+  EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
+
+  instance_->OnOpenAppWithIntent(GURL("chrome://settings"),
+                                 mojom::LaunchIntent::New());
+  EXPECT_FALSE(test_open_url_delegate_->TakeLastOpenedUrl().is_valid());
+  EXPECT_TRUE(test_open_url_delegate_->TakeLastOpenedIntent().is_null());
 }
 
 // Tests that AppendStringToIntentHelperPackageName works.

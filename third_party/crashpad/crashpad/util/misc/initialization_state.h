@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -57,6 +56,10 @@ class InitializationState {
   };
 
   InitializationState() : state_(kStateUninitialized) {}
+
+  InitializationState(const InitializationState&) = delete;
+  InitializationState& operator=(const InitializationState&) = delete;
+
   ~InitializationState() { state_ = kStateDestroyed; }
 
   //! \brief Returns `true` if the object’s state is #kStateUninitialized and it
@@ -91,8 +94,6 @@ class InitializationState {
   // kStateDestroyed, limiting this class’ ability to catch use-after-free
   // errors.
   volatile State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitializationState);
 };
 
 }  // namespace crashpad

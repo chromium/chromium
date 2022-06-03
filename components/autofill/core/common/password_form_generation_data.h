@@ -5,36 +5,19 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_FORM_GENERATION_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_FORM_GENERATION_DATA_H_
 
-#include <stdint.h>
-
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/password_form.h"
-#include "components/autofill/core/common/signatures_util.h"
-#include "url/gurl.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
 // Structure used for sending information from browser to renderer about on
 // which fields password should be generated.
 struct PasswordFormGenerationData {
-  PasswordFormGenerationData();
-  PasswordFormGenerationData(const PasswordFormGenerationData& other);
-  PasswordFormGenerationData(uint32_t new_password_renderer_id,
-                             uint32_t confirmation_password_renderer_id);
 #if defined(OS_IOS)
-  PasswordFormGenerationData(base::string16 form_name,
-                             base::string16 new_password_element,
-                             base::string16 confirmation_password_element);
-
-  base::string16 form_name;
-  base::string16 new_password_element;
-  base::string16 confirmation_password_element;
+  FormRendererId form_renderer_id;
 #endif
-  uint32_t new_password_renderer_id = FormData::kNotSetRendererId;
-  uint32_t confirmation_password_renderer_id = FormData::kNotSetRendererId;
+  FieldRendererId new_password_renderer_id;
+  FieldRendererId confirmation_password_renderer_id;
 };
 
 }  // namespace autofill

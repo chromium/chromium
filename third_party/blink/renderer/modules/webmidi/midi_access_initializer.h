@@ -5,17 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_ACCESS_INITIALIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_ACCESS_INITIALIZER_H_
 
-#include <memory>
 #include "media/midi/midi_service.mojom-blink-forward.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_dispatcher.h"
-#include "third_party/blink/renderer/modules/webmidi/midi_options.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -24,7 +23,6 @@ class ScriptState;
 
 class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
                                              public MIDIDispatcher::Client {
-  USING_PRE_FINALIZER(MIDIAccessInitializer, Dispose);
 
  public:
   struct PortDescriptor {
@@ -61,8 +59,6 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
   MIDIAccessInitializer(ScriptState*, const MIDIOptions*);
   ~MIDIAccessInitializer() override = default;
 
-  void Dispose();
-
   // MIDIDispatcher::Client
   void DidAddInputPort(const String& id,
                        const String& manufacturer,
@@ -84,24 +80,24 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
                           wtf_size_t length,
                           base::TimeTicks time_stamp) override {}
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   ExecutionContext* GetExecutionContext() const;
   ScriptPromise Start();
 
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
 
   void StartSession();
 
   void OnPermissionsUpdated(mojom::blink::PermissionStatus);
   void OnPermissionUpdated(mojom::blink::PermissionStatus);
 
-  std::unique_ptr<MIDIDispatcher> dispatcher_;
+  Member<MIDIDispatcher> dispatcher_;
   Vector<PortDescriptor> port_descriptors_;
   Member<const MIDIOptions> options_;
 
-  mojo::Remote<mojom::blink::PermissionService> permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 
 }  // namespace blink

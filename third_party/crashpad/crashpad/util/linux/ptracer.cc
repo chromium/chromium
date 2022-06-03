@@ -44,7 +44,8 @@ bool GetRegisterSet(pid_t tid, int set, Destination* dest, bool can_log) {
     return false;
   }
   if (iov.iov_len != sizeof(*dest)) {
-    LOG_IF(ERROR, can_log) << "Unexpected registers size";
+    LOG_IF(ERROR, can_log) << "Unexpected registers size " << iov.iov_len
+                           << " != " << sizeof(*dest);
     return false;
   }
   return true;
@@ -176,7 +177,8 @@ bool GetFloatingPointRegisters32(pid_t tid,
     }
   } else {
     if (iov.iov_len != sizeof(context->f32.fpregs)) {
-      LOG_IF(ERROR, can_log) << "Unexpected registers size";
+      LOG_IF(ERROR, can_log) << "Unexpected registers size " << iov.iov_len
+                             << " != " << sizeof(context->f32.fpregs);
       return false;
     }
     context->f32.have_fpregs = true;
@@ -197,7 +199,8 @@ bool GetFloatingPointRegisters32(pid_t tid,
     }
   } else {
     if (iov.iov_len != kArmVfpSize && iov.iov_len != sizeof(context->f32.vfp)) {
-      LOG_IF(ERROR, can_log) << "Unexpected registers size";
+      LOG_IF(ERROR, can_log) << "Unexpected registers size " << iov.iov_len
+                             << " != " << sizeof(context->f32.vfp);
       return false;
     }
     context->f32.have_vfp = true;
@@ -223,7 +226,8 @@ bool GetFloatingPointRegisters64(pid_t tid,
     return false;
   }
   if (iov.iov_len != sizeof(context->f64)) {
-    LOG_IF(ERROR, can_log) << "Unexpected registers size";
+    LOG_IF(ERROR, can_log) << "Unexpected registers size " << iov.iov_len
+                           << " != " << sizeof(context->f64);
     return false;
   }
   return true;
@@ -425,9 +429,10 @@ size_t GetGeneralPurposeRegistersAndLength(pid_t tid,
 bool GetGeneralPurposeRegisters32(pid_t tid,
                                   ThreadContext* context,
                                   bool can_log) {
-  if (GetGeneralPurposeRegistersAndLength(tid, context, can_log) !=
-      sizeof(context->t32)) {
-    LOG_IF(ERROR, can_log) << "Unexpected registers size";
+  size_t length = GetGeneralPurposeRegistersAndLength(tid, context, can_log);
+  if (length != sizeof(context->t32)) {
+    LOG_IF(ERROR, can_log) << "Unexpected registers size " << length
+                           << " != " << sizeof(context->t32);
     return false;
   }
   return true;
@@ -436,9 +441,10 @@ bool GetGeneralPurposeRegisters32(pid_t tid,
 bool GetGeneralPurposeRegisters64(pid_t tid,
                                   ThreadContext* context,
                                   bool can_log) {
-  if (GetGeneralPurposeRegistersAndLength(tid, context, can_log) !=
-      sizeof(context->t64)) {
-    LOG_IF(ERROR, can_log) << "Unexpected registers size";
+  size_t length = GetGeneralPurposeRegistersAndLength(tid, context, can_log);
+  if (length != sizeof(context->t64)) {
+    LOG_IF(ERROR, can_log) << "Unexpected registers size " << length
+                           << " != " << sizeof(context->t64);
     return false;
   }
   return true;
@@ -467,7 +473,9 @@ bool Ptracer::Initialize(pid_t pid) {
   } else if (length == sizeof(context.t32)) {
     is_64_bit_ = false;
   } else {
-    LOG_IF(ERROR, can_log_) << "Unexpected registers size";
+    LOG_IF(ERROR, can_log_)
+        << "Unexpected registers size " << length
+        << " != " << sizeof(context.t64) << ", " << sizeof(context.t32);
     return false;
   }
 

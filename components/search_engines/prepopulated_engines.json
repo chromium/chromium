@@ -23,12 +23,12 @@
     // When adding new engines, increment this number and use it as the new
     // max ID. This is used by UMA stats and must be updated to include the full
     // range or else not all engines will be counted in stats.
-    "kMaxPrepopulatedEngineID": 94,
+    "kMaxPrepopulatedEngineID": 101,
 
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 117
+    "kCurrentDataVersion": 126
   },
 
   // The following engines are included in country lists and are added to the
@@ -102,13 +102,23 @@
       "id": 92
     },
 
+    "ecosia": {
+      "name": "Ecosia",
+      "keyword": "ecosia.org",
+      "favicon_url": "https://cdn.ecosia.org/assets/images/ico/favicon.ico",
+      "search_url": "https://www.ecosia.org/search?q={searchTerms}&addon=opensearch",
+      "suggest_url": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
+      "type": "SEARCH_ENGINE_ECOSIA",
+      "id": 101
+    },
+
     "google": {
       "name": "Google",
       "keyword": "google.com",
       "favicon_url": "https://www.google.com/images/branding/product/ico/googleg_lodp.ico",
-      "search_url": "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}",
+      "search_url": "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:prefetchSource}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}",
       "suggest_url": "{google:baseSuggestURL}search?{google:searchFieldtrialParameter}client={google:suggestClient}&gs_ri={google:suggestRid}&xssi=t&q={searchTerms}&{google:inputType}{google:omniboxFocusType}{google:cursorPosition}{google:currentPageUrl}{google:pageClassification}{google:searchVersion}{google:sessionToken}{google:prefetchQuery}sugkey={google:suggestAPIKeyParameter}",
-      "image_url": "{google:baseURL}searchbyimage/upload",
+      "image_url": "{google:baseSearchByImageURL}upload",
       "contextual_search_url": "{google:baseURL}_/contextualsearch?{google:contextualSearchVersion}{google:contextualSearchContextData}",
       "image_url_post_params": "encoded_image={google:imageThumbnail},image_url={google:imageURL},sbisrc={google:imageSearchSource},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight}",
       "alternate_urls": [
@@ -119,6 +129,7 @@
         "{google:baseURL}s?q={searchTerms}"
       ],
       "type": "SEARCH_ENGINE_GOOGLE",
+      "preconnect_to_search_url" : "ALLOWED",
       "id": 1
     },
 
@@ -156,12 +167,22 @@
       "id": 94
     },
 
-    "seznam": {
+    "seznam_cz": {
       "name": "Seznam",
       "keyword": "seznam.cz",
-      "favicon_url": "https://search.seznam.cz/r/img/favicon.ico",
+      "favicon_url": "https://search.seznam.cz/favicon.ico",
       "search_url": "https://search.seznam.cz/?q={searchTerms}",
-      "suggest_url": "https://suggest.fulltext.seznam.cz/fulltext_ff?phrase={searchTerms}",
+      "suggest_url": "https://suggest.seznam.cz/fulltext_ff?phrase={searchTerms}",
+      "type": "SEARCH_ENGINE_SEZNAM",
+      "id": 25
+    },
+
+    "seznam_sk": {
+      "name": "Seznam",
+      "keyword": "seznam.sk",
+      "favicon_url": "https://search.seznam.sk/favicon.ico",
+      "search_url": "https://search.seznam.sk/?q={searchTerms}",
+      "suggest_url": "https://suggest.seznam.sk/fulltext_ff?phrase={searchTerms}",
       "type": "SEARCH_ENGINE_SEZNAM",
       "id": 25
     },
@@ -188,7 +209,7 @@
       "alternate_urls": [
         "https://m.sogou.com/web/{google:pathWildcard}?ie={inputEncoding}&keyword={searchTerms}"
       ],
-      "suggest_url": "http://api.sugg.sogou.com/su?type=addrbar&key={searchTerms}&ie={inputEncoding}",
+      "suggest_url": "https://sugg.sogou.com/sugg/ajaj_json.jsp?type=addrbar&key={searchTerms}&ie={inputEncoding}&from=google",
       "type": "SEARCH_ENGINE_SOGOU",
       "id": 56
     },
@@ -197,8 +218,9 @@
       "name": "Yahoo!",
       "keyword": "yahoo.com",
       "favicon_url": "https://search.yahoo.com/favicon.ico",
-      "search_url": "https://search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "search_url": "https://search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas_sfp&p={searchTerms}",
+      "suggest_url": "https://search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas_sfp&command={searchTerms}",
+      "new_tab_url": "https://search.yahoo.com?fr=crmas_sfp",
       "type": "SEARCH_ENGINE_YAHOO",
       "id": 2
     },
@@ -331,9 +353,7 @@
       "search_url": "https://fr.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
       "suggest_url": "https://fr.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
       "type": "SEARCH_ENGINE_YAHOO",
-
-      // Can't be 2 as this has to appear in the Belgium list alongside yahoo.
-      "id": 5
+      "id": 2
     },
 
     "yahoo_hk": {
@@ -436,18 +456,6 @@
       "id": 2
     },
 
-    "yahoo_qc": {
-      "name": "Yahoo! Qu\u00e9bec",
-      "keyword": "qc.yahoo.com",
-      "favicon_url": "https://qc.search.yahoo.com/favicon.ico",
-      "search_url": "https://qc.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
-      "suggest_url": "https://qc.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
-      "type": "SEARCH_ENGINE_YAHOO",
-
-      // Can't be 2 as this has to appear in the Canada list alongside yahoo_ca.
-      "id": 5
-    },
-
     "yahoo_se": {
       "name": "Yahoo! Sverige",
       "keyword": "se.yahoo.com",
@@ -532,7 +540,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.by/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.by/suggest-ff.cgi?part={searchTerms}",
+      "suggest_url": "https://suggest.yandex.by/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.by/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.by/chrome/newtab",
@@ -545,7 +553,7 @@
       "keyword": "yandex.com",
       "favicon_url": "https://yastatic.net/lego/_/rBTjd6UOPk5913OSn5ZQVYMTQWQ.ico",
       "search_url": "https://yandex.com/search/?text={searchTerms}&from=os&clid=1836588",
-      "suggest_url": "https://suggest.yandex.com/suggest-ff.cgi?part={searchTerms}&uil=en&v=3&sn=5",
+      "suggest_url": "https://suggest.yandex.com/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}&uil=en&v=3&sn=5",
       "image_url": "https://yandex.com/images/search?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "type": "SEARCH_ENGINE_YANDEX",
@@ -558,7 +566,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.kz/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.kz/suggest-ff.cgi?part={searchTerms}",
+      "suggest_url": "https://suggest.yandex.kz/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.kz/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.kz/chrome/newtab",
@@ -572,7 +580,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.ru/{yandex:searchPath}?text={searchTerms}&{yandex:referralID}",
-      "suggest_url": "https://suggest.yandex.ru/suggest-ff.cgi?part={searchTerms}",
+      "suggest_url": "https://suggest.yandex.ru/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.ru/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.ru/chrome/newtab",
@@ -585,7 +593,7 @@
       "keyword": "yandex.com.tr",
       "favicon_url": "https://yastatic.net/lego/_/rBTjd6UOPk5913OSn5ZQVYMTQWQ.ico",
       "search_url": "https://www.yandex.com.tr/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}",
+      "suggest_url": "https://suggest.yandex.com.tr/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.com.tr/gorsel/search?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.com.tr/chrome/newtab",
@@ -599,7 +607,7 @@
       "favicon_url": "https://yastatic.net/lego/_/pDu9OWAQKB0s2J9IojKpiS_Eho.ico",
       "logo_url": "https://storage.ape.yandex.net/get/browser/Doodles/yandex/drawable-xxhdpi/yandex.png",
       "search_url": "https://yandex.ua/{yandex:searchPath}?text={searchTerms}",
-      "suggest_url": "https://suggest.yandex.ua/suggest-ff.cgi?part={searchTerms}",
+      "suggest_url": "https://suggest.yandex.ua/suggest-ff.cgi?part={searchTerms}&{google:cursorPosition}",
       "image_url": "https://yandex.ua/images/search/?rpt=imageview",
       "image_url_post_params": "upfile={google:imageThumbnail},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight},prg=1",
       "new_tab_url": "https://www.yandex.ua/chrome/newtab",
@@ -732,6 +740,76 @@
       "id": 60
     },
 
+    "givero": {
+      "name": "Givero",
+      "keyword": "givero.com",
+      "favicon_url": "https://www.givero.com/favicon.ico",
+      "search_url": "https://www.givero.com/search?q={searchTerms}",
+      "suggest_url": "https://www.givero.com/suggest?q={searchTerms}",
+      "type": "SEARCH_ENGINE_GIVERO",
+      "id": 95
+    },
+
+    "gmx": {
+      "name": "GMX Search",
+      "keyword": "search.gmx.com",
+      "favicon_url": "https://dl.gmx.com/apps/favicon.ico",
+      "search_url": "https://search.gmx.com/web/result?q={searchTerms}&sp=b",
+      "suggest_url": "https://suggestplugin.gmx.com/s?q={searchTerms}&brand=gmxcom&enc={inputEncoding}&sp=b",
+      "type": "SEARCH_ENGINE_GMX",
+      "id": 96
+    },
+
+    "gmx_at": {
+      "name": "GMX Suche",
+      "keyword": "suche.gmx.at",
+      "favicon_url": "https://dl.gmx.com/apps/favicon.ico",
+      "search_url": "https://suche.gmx.at/web/result?q={searchTerms}&sp=b",
+      "suggest_url": "https://suggestplugin.gmx.at/s?q={searchTerms}&brand=gmxat&enc={inputEncoding}&sp=b",
+      "type": "SEARCH_ENGINE_GMX",
+      "id": 96
+    },
+
+    "gmx_de": {
+      "name": "GMX Suche",
+      "keyword": "suche.gmx.net",
+      "favicon_url": "https://dl.gmx.com/apps/favicon.ico",
+      "search_url": "https://suche.gmx.net/web/result?q={searchTerms}&sp=b",
+      "suggest_url": "https://suggestplugin.gmx.net/s?q={searchTerms}&brand=gmx&enc={inputEncoding}&sp=b",
+      "type": "SEARCH_ENGINE_GMX",
+      "id": 96
+    },
+
+    "gmx_es": {
+      "name": "GMX Search",
+      "keyword": "search.gmx.es",
+      "favicon_url": "https://dl.gmx.com/apps/favicon.ico",
+      "search_url": "https://search.gmx.es/web/result?q={searchTerms}&sp=b",
+      "suggest_url": "https://suggestplugin.gmx.es/s?q={searchTerms}&brand=gmxes&enc={inputEncoding}&sp=b",
+      "type": "SEARCH_ENGINE_GMX",
+      "id": 96
+    },
+
+    "gmx_fr": {
+      "name": "GMX Search",
+      "keyword": "search.gmx.fr",
+      "favicon_url": "https://dl.gmx.com/apps/favicon.ico",
+      "search_url": "https://search.gmx.fr/web/result?q={searchTerms}&sp=b",
+      "suggest_url": "https://suggestplugin.gmx.fr/s?q={searchTerms}&brand=gmxfr&enc={inputEncoding}&sp=b",
+      "type": "SEARCH_ENGINE_GMX",
+      "id": 96
+    },
+
+    "gmx_gb": {
+      "name": "GMX Search",
+      "keyword": "search.gmx.co.uk",
+      "favicon_url": "https://dl.gmx.com/apps/favicon.ico",
+      "search_url": "https://search.gmx.co.uk/web/result?q={searchTerms}&sp=b",
+      "suggest_url": "https://suggestplugin.gmx.co.uk/s?q={searchTerms}&brand=gmxcouk&enc={inputEncoding}&sp=b",
+      "type": "SEARCH_ENGINE_GMX",
+      "id": 96
+    },
+
     "goo": {
       "name": "goo",
       "keyword": "search.goo.ne.jp",
@@ -793,6 +871,15 @@
       "id": 74
     },
 
+    "info_com": {
+      "name": "Info.com",
+      "keyword": "info.com",
+      "favicon_url": "https://www.info.com/static/www.info.com/favicon.ico",
+      "search_url": "https://www.info.com/serp?q={searchTerms}&segment=info.0472",
+      "type": "SEARCH_ENGINE_INFO_COM",
+      "id": 97
+    },
+
     "libero": {
       "name": "Libero",
       "keyword": "libero.it",
@@ -801,6 +888,24 @@
       "encoding": "ISO-8859-1",
       "type": "SEARCH_ENGINE_LIBERO",
       "id": 63
+    },
+
+    "metager_de": {
+      "name": "MetaGer",
+      "keyword": "metager.de",
+      "favicon_url": "https://metager.de/favicon.ico",
+      "search_url": "https://metager.de/meta/meta.ger3?eingabe={searchTerms}",
+      "type": "SEARCH_ENGINE_METAGER",
+      "id": 98
+    },
+
+    "metager_gb": {
+      "name": "MetaGer",
+      "keyword": "metager.org",
+      "favicon_url": "https://metager.de/favicon.ico",
+      "search_url": "https://metager.org/meta/meta.ger3?eingabe={searchTerms}",
+      "type": "SEARCH_ENGINE_METAGER",
+      "id": 98
     },
 
     "neti": {
@@ -828,6 +933,16 @@
       "id": 43
     },
 
+    "oceanhero":{
+      "name": "OceanHero",
+      "keyword": "oceanhero.today",
+      "favicon_url": "https://oceanhero.today/favicon.ico",
+      "search_url": "https://oceanhero.today/web?q={searchTerms}",
+      "suggest_url": "https://api.oceanhero.today/suggestions?q={searchTerms}",
+      "type": "SEARCH_ENGINE_OCEANHERO",
+      "id": 99
+    },
+
     "ok": {
       "name": "OK.hu",
       "keyword": "ok.hu",
@@ -836,6 +951,16 @@
       "encoding": "ISO-8859-2",
       "type": "SEARCH_ENGINE_OK",
       "id": 6
+    },
+
+    "privacywall": {
+      "name": "PrivacyWall",
+      "keyword": "privacywall.org",
+      "favicon_url": "https://www.privacywall.org/images/favicon_32x32.ico",
+      "search_url": "https://www.privacywall.org/search/secure/?q={searchTerms}",
+      "suggest_url": "https://search.privacywall.org/suggest.php?q={searchTerms}",
+      "type": "SEARCH_ENGINE_PRIVACYWALL",
+      "id": 100
     },
 
     "rambler": {
@@ -996,6 +1121,16 @@
       "search_url": "http://szukaj.wp.pl/szukaj.html?q={searchTerms}",
       "type": "SEARCH_ENGINE_WP",
       "id": 76
+    },
+
+    "yahoo_qc": {
+      "name": "Yahoo! Qu\u00e9bec",
+      "keyword": "qc.yahoo.com",
+      "favicon_url": "https://qc.search.yahoo.com/favicon.ico",
+      "search_url": "https://qc.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+      "suggest_url": "https://qc.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "type": "SEARCH_ENGINE_YAHOO",
+      "id": 2
     },
 
     "zoznam": {

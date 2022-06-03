@@ -7,14 +7,14 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,10 +24,13 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_inclusion_status.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
 using extension_function_test_utils::RunFunctionAndReturnSingleResult;
@@ -51,31 +54,30 @@ const char kRemoveEverythingArguments[] =
 // Sets the SAPISID Gaia cookie, which is monitored by the AccountReconcilor.
 bool SetGaiaCookieForProfile(Profile* profile) {
   GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
-  net::CanonicalCookie cookie("SAPISID", std::string(), "." + google_url.host(),
-                              "/", base::Time(), base::Time(), base::Time(),
-                              /*secure=*/true, false,
-                              net::CookieSameSite::NO_RESTRICTION,
-                              net::COOKIE_PRIORITY_DEFAULT);
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "SAPISID", std::string(), "." + google_url.host(), "/", base::Time(),
+      base::Time(), base::Time(),
+      /*secure=*/true, false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_DEFAULT, false);
 
   bool success = false;
   base::RunLoop loop;
   base::OnceClosure loop_quit = loop.QuitClosure();
-  base::OnceCallback<void(net::CanonicalCookie::CookieInclusionStatus)>
-      callback = base::BindLambdaForTesting(
-          [&success,
-           &loop_quit](net::CanonicalCookie::CookieInclusionStatus s) {
-            success = s.IsInclude();
+  base::OnceCallback<void(net::CookieAccessResult)> callback =
+      base::BindLambdaForTesting(
+          [&success, &loop_quit](net::CookieAccessResult r) {
+            success = r.status.IsInclude();
             std::move(loop_quit).Run();
           });
   network::mojom::CookieManager* cookie_manager =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   cookie_manager->SetCanonicalCookie(
-      cookie, google_url.scheme(), net::CookieOptions::MakeAllInclusive(),
+      *cookie, google_url, net::CookieOptions::MakeAllInclusive(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback), net::CanonicalCookie::CookieInclusionStatus(
-                                   net::CanonicalCookie::CookieInclusionStatus::
-                                       EXCLUDE_UNKNOWN_ERROR)));
+          std::move(callback),
+          net::CookieAccessResult(net::CookieInclusionStatus(
+              net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
   loop.Run();
   return success;
 }
@@ -96,22 +98,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, kPrimaryAccountEmail);
+      identity_manager, kPrimaryAccountEmail, signin::ConsentLevel::kSync);
   AccountInfo secondary_account_info =
       signin::MakeAccountAvailable(identity_manager, kSecondaryAccountEmail);
 
   // Sync is running.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
   sync_service->GetUserSettings()->SetSyncRequested(true);
   sync_service->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
-  ASSERT_EQ(sync_ui_util::SYNCED, sync_ui_util::GetStatus(profile));
+  ASSERT_EQ(SyncStatusMessageType::kSynced, GetSyncStatusMessageType(profile));
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
-                      function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_EQ(nullptr,
+            RunFunctionAndReturnSingleResult(
+                function.get(), kRemoveEverythingArguments, browser()));
   // Check that the Sync token was not revoked.
   EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
       primary_account_info.account_id));
@@ -133,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   const char kAccountEmail[] = "account@email.com";
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo account_info =
-      signin::MakePrimaryAccountAvailable(identity_manager, kAccountEmail);
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, kAccountEmail, signin::ConsentLevel::kSync);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager, account_info.account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -142,11 +145,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
               CREDENTIALS_REJECTED_BY_SERVER));
 
   // Sync is not running.
-  ASSERT_NE(sync_ui_util::SYNCED, sync_ui_util::GetStatus(profile));
+  ASSERT_NE(SyncStatusMessageType::kSynced, GetSyncStatusMessageType(profile));
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
-                      function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_EQ(nullptr,
+            RunFunctionAndReturnSingleResult(
+                function.get(), kRemoveEverythingArguments, browser()));
   // Check that the account was not removed and Sync was paused.
   EXPECT_TRUE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
@@ -170,8 +174,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
       signin::MakeAccountAvailable(identity_manager, kAccountEmail);
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
-  EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(
-                      function.get(), kRemoveEverythingArguments, browser()));
+  EXPECT_EQ(nullptr,
+            RunFunctionAndReturnSingleResult(
+                function.get(), kRemoveEverythingArguments, browser()));
   // Check that the account was removed.
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));

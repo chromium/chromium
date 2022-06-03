@@ -16,11 +16,9 @@
 #include "components/prefs/pref_service.h"
 #include "net/http/http_server_properties.h"
 #include "net/nqe/network_quality_estimator.h"
+#include "net/nqe/pref_names.h"
 
 namespace {
-
-// Prefs for persisting network qualities.
-const char kNetworkQualities[] = "net.network_qualities";
 
 // PrefDelegateImpl writes the provided dictionary value to the network quality
 // estimator prefs on the disk.
@@ -29,9 +27,13 @@ class PrefDelegateImpl
  public:
   // |pref_service| is used to read and write prefs from/to the disk.
   explicit PrefDelegateImpl(PrefService* pref_service)
-      : pref_service_(pref_service), path_(kNetworkQualities) {
+      : pref_service_(pref_service), path_(net::nqe::kNetworkQualities) {
     DCHECK(pref_service_);
   }
+
+  PrefDelegateImpl(const PrefDelegateImpl&) = delete;
+  PrefDelegateImpl& operator=(const PrefDelegateImpl&) = delete;
+
   ~PrefDelegateImpl() override {}
 
   void SetDictionaryValue(const base::DictionaryValue& value) override {
@@ -53,8 +55,6 @@ class PrefDelegateImpl
   const std::string path_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefDelegateImpl);
 };
 
 // Returns true if |pref_service| has been initialized.
@@ -102,7 +102,7 @@ void NetworkQualitiesPrefDelegate::ClearPrefs() {
 
 // static
 void NetworkQualitiesPrefDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kNetworkQualities);
+  registry->RegisterDictionaryPref(net::nqe::kNetworkQualities);
 }
 
 std::map<net::nqe::internal::NetworkID,

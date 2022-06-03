@@ -67,7 +67,7 @@ bool ActiveSuggestionMarkerListImpl::ShiftMarkers(const String&,
       &markers_, offset, old_length, new_length);
 }
 
-void ActiveSuggestionMarkerListImpl::Trace(Visitor* visitor) {
+void ActiveSuggestionMarkerListImpl::Trace(Visitor* visitor) const {
   visitor->Trace(markers_);
   DocumentMarkerList::Trace(visitor);
 }

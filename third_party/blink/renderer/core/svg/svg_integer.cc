@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_integer.h"
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -58,32 +58,34 @@ SVGParsingError SVGInteger::SetValueAsString(const String& string) {
   return valid ? SVGParseStatus::kNoError : SVGParseStatus::kExpectedInteger;
 }
 
-void SVGInteger::Add(SVGPropertyBase* other, SVGElement*) {
-  SetValue(value_ + ToSVGInteger(other)->Value());
+void SVGInteger::Add(const SVGPropertyBase* other, const SVGElement*) {
+  SetValue(value_ + To<SVGInteger>(other)->Value());
 }
 
 void SVGInteger::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
-  SVGInteger* from_integer = ToSVGInteger(from);
-  SVGInteger* to_integer = ToSVGInteger(to);
-  SVGInteger* to_at_end_of_duration_integer =
-      ToSVGInteger(to_at_end_of_duration);
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase* to_at_end_of_duration,
+    const SVGElement*) {
+  auto* from_integer = To<SVGInteger>(from);
+  auto* to_integer = To<SVGInteger>(to);
+  auto* to_at_end_of_duration_integer = To<SVGInteger>(to_at_end_of_duration);
 
-  float animated_float = value_;
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_integer->Value(), to_integer->Value(),
-      to_at_end_of_duration_integer->Value(), animated_float);
-  value_ = clampTo<int>(roundf(animated_float));
+  float result = ComputeAnimatedNumber(
+      parameters, percentage, repeat_count, from_integer->Value(),
+      to_integer->Value(), to_at_end_of_duration_integer->Value());
+  if (parameters.is_additive)
+    result += value_;
+
+  value_ = ClampTo<int>(roundf(result));
 }
 
-float SVGInteger::CalculateDistance(SVGPropertyBase* other, SVGElement*) {
-  return abs(value_ - ToSVGInteger(other)->Value());
+float SVGInteger::CalculateDistance(const SVGPropertyBase* other,
+                                    const SVGElement*) const {
+  return abs(value_ - To<SVGInteger>(other)->Value());
 }
 
 }  // namespace blink

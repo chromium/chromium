@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +24,7 @@
 #include "components/history/core/browser/url_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -74,12 +74,36 @@ PreconnectRequest::PreconnectRequest(
       num_sockets(num_sockets),
       network_isolation_key(network_isolation_key) {
   DCHECK_GE(num_sockets, 0);
+  DCHECK(!network_isolation_key.IsEmpty());
+}
+
+PrefetchRequest::PrefetchRequest(
+    const GURL& url,
+    const net::NetworkIsolationKey& network_isolation_key,
+    network::mojom::RequestDestination destination)
+    : url(url),
+      network_isolation_key(network_isolation_key),
+      destination(destination) {
+  DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;
 PreconnectPrediction::PreconnectPrediction(
     const PreconnectPrediction& prediction) = default;
+PreconnectPrediction::PreconnectPrediction(PreconnectPrediction&& other) =
+    default;
 PreconnectPrediction::~PreconnectPrediction() = default;
+
+PreconnectPrediction& PreconnectPrediction::operator=(
+    const PreconnectPrediction& other) = default;
+PreconnectPrediction& PreconnectPrediction::operator=(
+    PreconnectPrediction&& other) = default;
+
+OptimizationGuidePrediction::OptimizationGuidePrediction() = default;
+OptimizationGuidePrediction::OptimizationGuidePrediction(
+    const OptimizationGuidePrediction& prediction) = default;
+OptimizationGuidePrediction::~OptimizationGuidePrediction() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ResourcePrefetchPredictor static functions.
@@ -238,10 +262,10 @@ void ResourcePrefetchPredictor::StartInitialization() {
   // Create local caches using the database as loaded.
   auto host_redirect_data = std::make_unique<RedirectDataMap>(
       tables_, tables_->host_redirect_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
   auto origin_data = std::make_unique<OriginDataMap>(
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
   // will be passed to the reply task.
@@ -265,7 +289,7 @@ void ResourcePrefetchPredictor::SetObserverForTesting(TestObserver* observer) {
 }
 
 void ResourcePrefetchPredictor::Shutdown() {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ResourcePrefetchPredictor::RecordPageRequestSummary(
@@ -286,7 +310,8 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
   LearnRedirect(summary->initial_url.host(), summary->main_frame_url,
                 host_redirect_data_.get());
   LearnOrigins(summary->main_frame_url.host(),
-               summary->main_frame_url.GetOrigin(), summary->origins);
+               summary->main_frame_url.DeprecatedGetOriginAsURL(),
+               summary->origins);
 
   if (observer_)
     observer_->OnNavigationLearned(*summary);
@@ -600,8 +625,8 @@ void ResourcePrefetchPredictor::ConnectToHistoryService() {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (!history_service)
     return;
-  DCHECK(!history_service_observer_.IsObserving(history_service));
-  history_service_observer_.Add(history_service);
+  DCHECK(!history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.Observe(history_service);
   if (history_service->BackendLoaded()) {
     // HistoryService is already loaded. Continue with Initialization.
     OnHistoryAndCacheLoaded();

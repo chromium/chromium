@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_OR_SHADOW_ROOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_OR_SHADOW_ROOT_H_
 
+#include "third_party/blink/renderer/core/animation/document_animation.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -50,6 +51,15 @@ class DocumentOrShadowRoot {
     return tree_scope.GetSelection();
   }
 
+  static HeapVector<Member<Animation>> getAnimations(Document& document) {
+    return document.GetDocumentAnimations().getAnimations(document);
+  }
+
+  static HeapVector<Member<Animation>> getAnimations(ShadowRoot& shadow_root) {
+    return shadow_root.GetDocument().GetDocumentAnimations().getAnimations(
+        shadow_root);
+  }
+
   static Element* elementFromPoint(TreeScope& tree_scope, double x, double y) {
     return tree_scope.ElementFromPoint(x, y);
   }
@@ -65,24 +75,10 @@ class DocumentOrShadowRoot {
     const Element* target = document.PointerLockElement();
     if (!target)
       return nullptr;
-    // For Shadow DOM V0 compatibility: We allow returning an element in V0
-    // shadow tree, even though it leaks the Shadow DOM.
-    // TODO(kochi): Once V0 code is removed, the following V0 check is
-    // unnecessary.
-    if (target && target->IsInV0ShadowTree()) {
-      UseCounter::Count(document,
-                        WebFeature::kDocumentPointerLockElementInV0Shadow);
-      return const_cast<Element*>(target);
-    }
     return document.AdjustedElement(*target);
   }
 
   static Element* pointerLockElement(ShadowRoot& shadow_root) {
-    // TODO(kochi): Once V0 code is removed, the following non-V1 check is
-    // unnecessary.  After V0 code is removed, we can use the same logic for
-    // Document and ShadowRoot.
-    if (!shadow_root.IsV1())
-      return nullptr;
     UseCounter::Count(shadow_root.GetDocument(),
                       WebFeature::kShadowRootPointerLockElement);
     const Element* target = shadow_root.GetDocument().PointerLockElement();

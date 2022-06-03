@@ -13,8 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/security_state/core/features.h"
-#include "components/security_state/core/insecure_input_event_data.h"
-#include "components/security_state/core/security_state.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -32,7 +30,6 @@ const char kHttpUrl[] = "http://foo.test/";
 const char kLocalhostUrl[] = "http://localhost";
 const char kFileOrigin[] = "file://example_file";
 const char kWssUrl[] = "wss://foo.test/";
-const char kFtpUrl[] = "ftp://example.test/";
 const char kDataUrl[] = "data:text/html,<html>test</html>";
 
 // This list doesn't include data: URL, as data: URLs will be explicitly marked
@@ -40,10 +37,6 @@ const char kDataUrl[] = "data:text/html,<html>test</html>";
 const char* const kPseudoUrls[] = {
     "blob:http://test/some-guid", "filesystem:http://test/some-guid",
 };
-
-bool IsOriginSecure(const GURL& url) {
-  return url == kHttpsUrl;
-}
 
 class TestSecurityStateHelper {
  public:
@@ -61,7 +54,8 @@ class TestSecurityStateHelper {
         is_error_page_(false),
         is_view_source_(false),
         has_policy_certificate_(false),
-        safety_tip_info_({security_state::SafetyTipStatus::kUnknown, GURL()}) {}
+        safety_tip_info_({security_state::SafetyTipStatus::kUnknown, GURL()}),
+        is_https_only_mode_upgraded_(false) {}
   virtual ~TestSecurityStateHelper() {}
 
   void SetCertificate(scoped_refptr<net::X509Certificate> cert) {
@@ -99,9 +93,6 @@ class TestSecurityStateHelper {
     is_view_source_ = is_view_source;
   }
 
-  void set_insecure_field_edit(bool insecure_field_edit) {
-    insecure_input_events_.insecure_field_edited = insecure_field_edit;
-  }
   void set_has_policy_certificate(bool has_policy_cert) {
     has_policy_certificate_ = has_policy_cert;
   }
@@ -110,6 +101,10 @@ class TestSecurityStateHelper {
   void set_safety_tip_status(
       security_state::SafetyTipStatus safety_tip_status) {
     safety_tip_info_.status = safety_tip_status;
+  }
+
+  void set_is_https_only_mode_upgraded(bool is_https_only_mode_upgraded) {
+    is_https_only_mode_upgraded_ = is_https_only_mode_upgraded;
   }
 
   std::unique_ptr<VisibleSecurityState> GetVisibleSecurityState() const {
@@ -125,15 +120,14 @@ class TestSecurityStateHelper {
     state->malicious_content_status = malicious_content_status_;
     state->is_error_page = is_error_page_;
     state->is_view_source = is_view_source_;
-    state->insecure_input_events = insecure_input_events_;
     state->safety_tip_info = safety_tip_info_;
+    state->is_https_only_mode_upgraded = is_https_only_mode_upgraded_;
     return state;
   }
 
   security_state::SecurityLevel GetSecurityLevel() const {
-    return security_state::GetSecurityLevel(
-        *GetVisibleSecurityState(), has_policy_certificate_,
-        base::BindRepeating(&IsOriginSecure));
+    return security_state::GetSecurityLevel(*GetVisibleSecurityState(),
+                                            has_policy_certificate_);
   }
 
   bool HasMajorCertificateError() const {
@@ -152,8 +146,8 @@ class TestSecurityStateHelper {
   bool is_error_page_;
   bool is_view_source_;
   bool has_policy_certificate_;
-  InsecureInputEventData insecure_input_events_;
   security_state::SafetyTipInfo safety_tip_info_;
+  bool is_https_only_mode_upgraded_;
 };
 
 }  // namespace
@@ -240,13 +234,6 @@ TEST(SecurityStateTest, AlwaysWarnOnDataUrls) {
   EXPECT_EQ(WARNING, helper.GetSecurityLevel());
 }
 
-// Tests that FTP URLs always cause an WARNING to be shown.
-TEST(SecurityStateTest, AlwaysWarnOnFtpUrls) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kFtpUrl));
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-}
-
 // Tests that the security level is downgraded to WARNING on
 // pseudo URLs.
 TEST(SecurityStateTest, WarningOnPseudoUrls) {
@@ -308,7 +295,8 @@ TEST(SecurityStateTest, MixedContentWithPolicyCertificate) {
   // Verify that passive mixed content downgrades the security level.
   helper.set_contained_mixed_form(false);
   helper.set_displayed_mixed_content(true);
-  EXPECT_EQ(NONE, helper.GetSecurityLevel());
+  SecurityLevel expected_passive_level = WARNING;
+  EXPECT_EQ(expected_passive_level, helper.GetSecurityLevel());
 
   // Ensure that active mixed content downgrades the security level.
   helper.set_contained_mixed_form(false);
@@ -317,69 +305,12 @@ TEST(SecurityStateTest, MixedContentWithPolicyCertificate) {
   EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
-// Tests that WARNING is set on normal http pages but DANGEROUS on
-// form edits with default feature enabled.
-TEST(SecurityStateTest, WarningAndDangerousOnFormEditsWhenFeatureEnabled) {
+// Tests that HTTP URLs cause a WARNING security level.
+TEST(SecurityStateTest, WarningOnHttp) {
   TestSecurityStateHelper helper;
   helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kMarkHttpAsFeature);
-
-  EXPECT_EQ(security_state::WARNING, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-}
-
-// Tests that WARNING is set on normal http pages but DANGEROUS on
-// form edits with default feature disabled.
-TEST(SecurityStateTest, WarningAndDangerousOnFormEditsWhenFeatureDisabled) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      security_state::features::kMarkHttpAsFeature);
 
   EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-}
-
-// Tests that WARNING is set on normal http pages regardless of form edits
-// when kMarkHttpAsFeature is set to mark non-secure connections with grey
-// triangle icon.
-TEST(SecurityStateTest, AlwaysWarningWhenFeatureMarksWithTriangleWarning) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      security_state::features::kMarkHttpAsFeature,
-      {{security_state::features::kMarkHttpAsFeatureParameterName,
-        security_state::features::kMarkHttpAsParameterDangerWarning}});
-
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-}
-
-// Tests that DANGEROUS is set on normal http pages regardless of form edits
-// when kMarkHttpAsFeature is set to always DANGEROUS
-TEST(SecurityStateTest, AlwaysDangerousWhenFeatureMarksAllAsDangerous) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kHttpUrl));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      security_state::features::kMarkHttpAsFeature,
-      {{security_state::features::kMarkHttpAsFeatureParameterName,
-        security_state::features::kMarkHttpAsParameterDangerous}});
-
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-
-  helper.set_insecure_field_edit(true);
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
 // Tests that |safety_tip_status| effects security level appropriately.
@@ -434,35 +365,12 @@ TEST(SecurityStateTest, LocalhostOrFileUrl) {
 // Tests IsSslCertificateValid function.
 TEST(SecurityStateTest, SslCertificateValid) {
   EXPECT_TRUE(IsSslCertificateValid(SecurityLevel::SECURE));
-  EXPECT_TRUE(IsSslCertificateValid(SecurityLevel::EV_SECURE));
   EXPECT_TRUE(
       IsSslCertificateValid(SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT));
 
   EXPECT_FALSE(IsSslCertificateValid(SecurityLevel::NONE));
   EXPECT_FALSE(IsSslCertificateValid(SecurityLevel::DANGEROUS));
   EXPECT_FALSE(IsSslCertificateValid(SecurityLevel::WARNING));
-}
-
-// Tests GetLegacyTLSWarningStatus function.
-TEST(SecurityStateTest, LegacyTLSWarningStatus) {
-  const struct {
-    bool connection_used_legacy_tls;
-    bool should_suppress_legacy_tls_warning;
-    bool expected_legacy_tls_warning_status;
-  } kTestCases[] = {
-      {true, false, true},
-      {true, true, false},
-      {false, false, false},
-      {false, true, false},
-  };
-  for (auto testcase : kTestCases) {
-    auto state = VisibleSecurityState();
-    state.connection_used_legacy_tls = testcase.connection_used_legacy_tls;
-    state.should_suppress_legacy_tls_warning =
-        testcase.should_suppress_legacy_tls_warning;
-    EXPECT_EQ(testcase.expected_legacy_tls_warning_status,
-              GetLegacyTLSWarningStatus(state));
-  }
 }
 
 // Tests that WARNING is not set for error pages.
@@ -517,9 +425,6 @@ TEST(SecurityStateTest, NonCryptoHasNoCertificateErrors) {
   helper.SetUrl(GURL(kHttpUrl));
   EXPECT_FALSE(helper.HasMajorCertificateError());
 
-  helper.SetUrl(GURL(kFtpUrl));
-  EXPECT_FALSE(helper.HasMajorCertificateError());
-
   helper.SetUrl(GURL(kDataUrl));
   EXPECT_FALSE(helper.HasMajorCertificateError());
 }
@@ -558,6 +463,36 @@ TEST(SecurityStateTest, MajorCertificateErrors) {
   helper.set_cert_status(net::CERT_STATUS_SHA1_SIGNATURE_PRESENT |
                          net::CERT_STATUS_PINNED_KEY_MISSING);
   EXPECT_TRUE(helper.HasMajorCertificateError());
+}
+
+// Tests that if a page was upgraded by HTTPS-Only Mode it takes precedence
+// over net errors where connection info is not set.
+TEST(SecurityStateTest, HttpsOnlyModeOverridesNetError) {
+  TestSecurityStateHelper helper;
+  helper.SetUrl(GURL("https://nonexistent.test"));
+  helper.set_is_error_page(true);
+  helper.set_is_https_only_mode_upgraded(true);
+  EXPECT_EQ(SecurityLevel::WARNING, helper.GetSecurityLevel());
+}
+
+// Tests that if a page was upgraded by HTTPS-Only Mode it takes precedence
+// over the page having certificate errors.
+TEST(SecurityStateTest, HttpsOnlyModeOverridesCertificateError) {
+  TestSecurityStateHelper helper;
+  helper.set_cert_status(net::CERT_STATUS_SHA1_SIGNATURE_PRESENT |
+                         net::CERT_STATUS_UNABLE_TO_CHECK_REVOCATION);
+  EXPECT_TRUE(helper.HasMajorCertificateError());
+  helper.set_is_https_only_mode_upgraded(true);
+  EXPECT_EQ(SecurityLevel::WARNING, helper.GetSecurityLevel());
+}
+
+// Tests that malicious content status takes precedence over HTTPS-Only Mode.
+TEST(SecurityStateTest, MaliciousContentOverridesHttpsOnlyMode) {
+  TestSecurityStateHelper helper;
+  helper.set_malicious_content_status(
+      MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING);
+  helper.set_is_https_only_mode_upgraded(true);
+  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
 }  // namespace security_state

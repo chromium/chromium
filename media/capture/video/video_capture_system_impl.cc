@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video/video_capture_metrics.h"
 
 namespace {
 
@@ -46,9 +47,10 @@ void ConsolidateCaptureFormats(media::VideoCaptureFormats* formats) {
     return;
   // Mark all formats as I420, since this is what the renderer side will get
   // anyhow: the actual pixel format is decided at the device level.
-  // Don't do this for Y16 format as it is handled separatelly.
+  // Don't do this for the Y16 or NV12 formats as they are handled separately.
   for (auto& format : *formats) {
-    if (format.pixel_format != media::PIXEL_FORMAT_Y16)
+    if (format.pixel_format != media::PIXEL_FORMAT_Y16 &&
+        format.pixel_format != media::PIXEL_FORMAT_NV12)
       format.pixel_format = media::PIXEL_FORMAT_I420;
   }
   std::sort(formats->begin(), formats->end(), IsCaptureFormatSmaller);
@@ -76,31 +78,13 @@ void VideoCaptureSystemImpl::GetDeviceInfosAsync(
 
   device_enum_request_queue_.push_back(std::move(result_callback));
   if (device_enum_request_queue_.size() == 1) {
-    ProcessDeviceInfoRequest();
+    // base::Unretained() is safe because |factory_| is owned and it guarantees
+    // not to call the callback after destruction.
+    factory_->GetDevicesInfo(base::BindOnce(
+        &VideoCaptureSystemImpl::DevicesInfoReady, base::Unretained(this)));
   }
 }
 
-void VideoCaptureSystemImpl::ProcessDeviceInfoRequest() {
-  auto request = device_enum_request_queue_.begin();
-  if (request == device_enum_request_queue_.end()) {
-    return;
-  }
-
-  std::unique_ptr<VideoCaptureDeviceDescriptors> descriptors =
-      std::make_unique<VideoCaptureDeviceDescriptors>();
-  factory_->GetDeviceDescriptors(descriptors.get());
-
-#if defined(OS_WIN)
-  factory_->GetCameraLocationsAsync(
-      std::move(descriptors),
-      base::BindOnce(&VideoCaptureSystemImpl::DeviceInfosReady,
-                     base::Unretained(this)));
-#else
-  DeviceInfosReady(std::move(descriptors));
-#endif
-}
-
-// Creates a VideoCaptureDevice object. Returns NULL if something goes wrong.
 std::unique_ptr<VideoCaptureDevice> VideoCaptureSystemImpl::CreateDevice(
     const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -123,39 +107,33 @@ const VideoCaptureDeviceInfo* VideoCaptureSystemImpl::LookupDeviceInfoFromId(
   return &(*iter);
 }
 
-void VideoCaptureSystemImpl::DeviceInfosReady(
-    std::unique_ptr<VideoCaptureDeviceDescriptors> descriptors) {
+void VideoCaptureSystemImpl::DevicesInfoReady(
+    std::vector<VideoCaptureDeviceInfo> devices_info) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!device_enum_request_queue_.empty());
-  // For devices for which we already have an entry in |devices_info_cache_|,
-  // we do not want to query the |factory_| for supported formats again. We
-  // simply copy them from |devices_info_cache_|.
-  std::vector<VideoCaptureDeviceInfo> new_devices_info_cache;
-  new_devices_info_cache.reserve(descriptors->size());
-  for (const auto& descriptor : *descriptors) {
-    if (auto* cached_info = LookupDeviceInfoFromId(descriptor.device_id)) {
-      new_devices_info_cache.push_back(*cached_info);
-    } else {
-      // Query for supported formats in order to create the entry.
-      VideoCaptureDeviceInfo device_info(descriptor);
-      factory_->GetSupportedFormats(descriptor, &device_info.supported_formats);
-      ConsolidateCaptureFormats(&device_info.supported_formats);
-      new_devices_info_cache.push_back(device_info);
-    }
+
+  // Only save metrics the first time device infos are populated.
+  if (devices_info_cache_.empty()) {
+    LogCaptureDeviceMetrics(devices_info);
   }
 
-  devices_info_cache_.swap(new_devices_info_cache);
-  auto request_cb = std::move(device_enum_request_queue_.front());
-  device_enum_request_queue_.pop_front();
-  // If |request_cb| was the last callback in |device_enum_request_queue_|,
-  // |this| may be out of scope after running it. We need to be careful to
-  // not touch the state of |this| after running the callback in this case.
-  if (device_enum_request_queue_.empty()) {
-    std::move(request_cb).Run(devices_info_cache_);
-    return;
+  for (auto& device_info : devices_info) {
+    ConsolidateCaptureFormats(&device_info.supported_formats);
   }
-  std::move(request_cb).Run(devices_info_cache_);
-  ProcessDeviceInfoRequest();
+
+  devices_info_cache_ = std::move(devices_info);
+
+  DeviceEnumQueue requests;
+  std::swap(requests, device_enum_request_queue_);
+
+  auto weak_this = weak_factory_.GetWeakPtr();
+  for (auto& request : requests) {
+    std::move(request).Run(devices_info_cache_);
+
+    // Callbacks may destroy |this|.
+    if (!weak_this)
+      return;
+  }
 }
 
 }  // namespace media

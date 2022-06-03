@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_PERMISSION_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -13,13 +12,19 @@ namespace content {
 class BrowserContext;
 }
 
+namespace permissions {
 class PermissionManager;
+}
+
 class Profile;
 
 class PermissionManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static PermissionManager* GetForProfile(Profile* profile);
+  static permissions::PermissionManager* GetForProfile(Profile* profile);
   static PermissionManagerFactory* GetInstance();
+
+  PermissionManagerFactory(const PermissionManagerFactory&) = delete;
+  PermissionManagerFactory& operator=(const PermissionManagerFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<PermissionManagerFactory>;
@@ -32,8 +37,6 @@ class PermissionManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_MANAGER_FACTORY_H_

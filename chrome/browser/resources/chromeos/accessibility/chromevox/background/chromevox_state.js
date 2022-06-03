@@ -14,6 +14,7 @@ goog.provide('ChromeVoxStateObserver');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');
 goog.require('BrailleKeyEvent');
+goog.require('UserActionMonitor');
 
 /**
  * An interface implemented by objects that want to observe ChromeVox state
@@ -26,7 +27,7 @@ ChromeVoxStateObserver.prototype = {
   /**
    * @param {cursors.Range} range The new range.
    */
-  onCurrentRangeChanged: function(range) {}
+  onCurrentRangeChanged(range) {}
 };
 
 /**
@@ -37,10 +38,25 @@ ChromeVoxState = function() {
   if (ChromeVoxState.instance) {
     throw 'Trying to create two instances of singleton ChromeVoxState.';
   }
-  ChromeVoxState.instance = this;
+  const backgroundWindow = chrome.extension.getBackgroundPage();
+  // Only install the singleton instance if we are within the background page
+  // context. Otherwise, take the instance from the background page (e.g. for
+  // the panel page).
+  if (backgroundWindow === window) {
+    ChromeVoxState.instance = this;
+  } else {
+    Object.defineProperty(ChromeVoxState, 'instance', {
+      get: () => {
+        return backgroundWindow.ChromeVoxState.instance;
+      }
+    });
+    return;
+  }
 
   /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   this.focusBounds_ = [];
+  /** @private {UserActionMonitor} */
+  this.userActionMonitor_ = null;
 };
 
 /**
@@ -69,7 +85,7 @@ ChromeVoxState.prototype = {
    * @return {cursors.Range} The current range.
    * @protected
    */
-  getCurrentRange: function() {
+  getCurrentRange() {
     return null;
   },
 
@@ -88,15 +104,15 @@ ChromeVoxState.prototype = {
    * @param {!cursors.Range} range The new range.
    * @param {boolean=} opt_focus Focus the range; defaults to true.
    * @param {Object=} opt_speechProps Speech properties.
-   * @param {boolean=} opt_skipSettingSelection If true, does not set
-   *     the selection, otherwise it does by default.
+   * @param {boolean=} opt_shouldSetSelection If true, does set
+   *     the selection.
    */
   navigateToRange: goog.abstractMethod,
 
   /**
-   * Save the current ChromeVox range.
+   * Restores the last valid ChromeVox range.
    */
-  markCurrentRange: goog.abstractMethod,
+  restoreLastValidRangeIfNeeded: goog.abstractMethod,
 
   /**
    * Handles a braille command.
@@ -110,7 +126,7 @@ ChromeVoxState.prototype = {
    * Gets the bounds of the focus ring.
    * @return {Array<chrome.accessibilityPrivate.ScreenRect>}
    */
-  getFocusBounds: function() {
+  getFocusBounds() {
     return this.focusBounds_;
   },
 
@@ -118,14 +134,46 @@ ChromeVoxState.prototype = {
    * Sets the bounds of the focus ring.
    * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} bounds
    */
-  setFocusBounds: function(bounds) {
+  setFocusBounds(bounds) {
     this.focusBounds_ = bounds;
     chrome.accessibilityPrivate.setFocusRings([{
       rects: bounds,
       type: chrome.accessibilityPrivate.FocusType.GLOW,
       color: constants.FOCUS_COLOR
     }]);
-  }
+  },
+
+  /**
+   * Gets the user action monitor.
+   * @return {UserActionMonitor}
+   */
+  getUserActionMonitor() {
+    return this.userActionMonitor_;
+  },
+
+  /**
+   * Creates a new user action monitor.
+   * @param {!Array<{
+   *    type: string,
+   *    value: (string|Object),
+   *    beforeActionMsg: (string|undefined),
+   *    afterActionMsg: (string|undefined)
+   * }>} actions
+   * @param {function(): void} callback
+   */
+  createUserActionMonitor(actions, callback) {
+    this.userActionMonitor_ = new UserActionMonitor(actions, callback);
+  },
+
+  /** Destroys the user action monitor */
+  destroyUserActionMonitor() {
+    this.userActionMonitor_ = null;
+  },
+
+  /**
+   * Forces the reading of the next change to the clipboard.
+   */
+  readNextClipboardDataChange: goog.abstractMethod,
 };
 
 /** @type {!Array<ChromeVoxStateObserver>} */
@@ -136,4 +184,14 @@ ChromeVoxState.observers = [];
  */
 ChromeVoxState.addObserver = function(observer) {
   ChromeVoxState.observers.push(observer);
+};
+
+/**
+ * @param {ChromeVoxStateObserver} observer
+ */
+ChromeVoxState.removeObserver = function(observer) {
+  const index = ChromeVoxState.observers.indexOf(observer);
+  if (index > -1) {
+    ChromeVoxState.observers.splice(index, 1);
+  }
 };

@@ -4,13 +4,16 @@
 
 module blink.mojom;
 
-import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
 
 // NetworkService (PlzWorker):
 // Used for passing the web worker main script pre-requested by the browser
 // process and its redirect information.
 struct WorkerMainScriptLoadParams {
+  // Request ID for a browser-initiated request.
+  int32 request_id;
+
   // Used for loading the pre-requested main script in the renderer process.
   network.mojom.URLResponseHead response_head;
 

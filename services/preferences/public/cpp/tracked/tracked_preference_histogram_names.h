@@ -17,7 +17,6 @@ extern const char kTrackedPrefHistogramTrustedInitialized[];
 extern const char kTrackedPrefHistogramNullInitialized[];
 extern const char kTrackedPrefHistogramWantedReset[];
 extern const char kTrackedPrefHistogramReset[];
-extern const char kTrackedSplitPrefHistogramChanged[];
 extern const char kTrackedPrefRegistryValidationSuffix[];
 
 }  // namespace tracked

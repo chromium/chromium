@@ -38,14 +38,15 @@ namespace blink {
 
 class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
  public:
-  int ScrollbarThickness(ScrollbarControlSize) override;
+  int ScrollbarThickness(float scale_from_dip,
+                         EScrollbarWidth scrollbar_width) override;
 
  protected:
-  bool HasButtons(const Scrollbar&) override { return true; }
+  bool NativeThemeHasButtons() override { return true; }
   bool HasThumb(const Scrollbar&) override;
 
-  IntRect BackButtonRect(const Scrollbar&, ScrollbarPart) override;
-  IntRect ForwardButtonRect(const Scrollbar&, ScrollbarPart) override;
+  IntRect BackButtonRect(const Scrollbar&) override;
+  IntRect ForwardButtonRect(const Scrollbar&) override;
   IntRect TrackRect(const Scrollbar&) override;
   int MinimumThumbLength(const Scrollbar&) override;
 
@@ -82,4 +83,4 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_AURA_H_

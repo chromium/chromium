@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/media/cma/base/buffering_state.h"
 #include "media/base/timestamp_constants.h"
@@ -18,7 +18,7 @@ namespace media {
 namespace {
 
 // Maximum time for buffering before we error out the stream.
-constexpr base::TimeDelta kBufferingTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kBufferingTimeout = base::Minutes(1);
 
 }  // namespace
 
@@ -82,11 +82,11 @@ scoped_refptr<BufferingState> BufferingController::AddStream(
 
   // Add a new stream to the list of streams being monitored.
   scoped_refptr<BufferingState> buffering_state(new BufferingState(
-      stream_id,
-      config_,
-      base::Bind(&BufferingController::OnBufferingStateChanged, weak_this_,
-                 false, false),
-      base::Bind(&BufferingController::UpdateHighLevelThreshold, weak_this_)));
+      stream_id, config_,
+      base::BindRepeating(&BufferingController::OnBufferingStateChanged,
+                          weak_this_, false, false),
+      base::BindRepeating(&BufferingController::UpdateHighLevelThreshold,
+                          weak_this_)));
   stream_list_.push_back(buffering_state);
 
   // Update the state and force a notification to the streams.

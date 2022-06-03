@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 
@@ -21,6 +20,10 @@ namespace cloud_devices {
 class CloudDeviceDescription {
  public:
   CloudDeviceDescription();
+
+  CloudDeviceDescription(const CloudDeviceDescription&) = delete;
+  CloudDeviceDescription& operator=(const CloudDeviceDescription&) = delete;
+
   ~CloudDeviceDescription();
 
   bool InitFromString(const std::string& json);
@@ -44,8 +47,6 @@ class CloudDeviceDescription {
 
  private:
   base::Value root_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudDeviceDescription);
 };
 
 }  // namespace cloud_devices

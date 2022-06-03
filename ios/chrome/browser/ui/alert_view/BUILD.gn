@@ -15,19 +15,17 @@ source_set("alert_view") {
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "alert_view_controller_unittest.mm",
-  ]
+  sources = [ "alert_view_controller_unittest.mm" ]
   deps = [
     ":alert_view",
     "//testing/gtest:gtest",

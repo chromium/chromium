@@ -7,9 +7,7 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 component("constants") {
   output_name = "chromeos_dbus_constants"
   defines = [ "IS_CHROMEOS_DBUS_CONSTANTS_IMPL" ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
   sources = [
     "attestation_constants.cc",
     "attestation_constants.h",

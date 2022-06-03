@@ -19,12 +19,34 @@ CanvasResourceHost::ReplaceResourceProvider(
       std::move(resource_provider_);
   resource_provider_ = std::move(new_resource_provider);
   UpdateMemoryUsage();
+  if (resource_provider_) {
+    resource_provider_->Canvas()->restoreToCount(1);
+    InitializeForRecording(resource_provider_->Canvas());
+    // Using unretained here since CanvasResourceHost owns |resource_provider_|
+    // and is guaranteed to outlive it
+    resource_provider_->SetRestoreClipStackCallback(base::BindRepeating(
+        &CanvasResourceHost::InitializeForRecording, base::Unretained(this)));
+  }
+  if (old_resource_provider) {
+    old_resource_provider->SetRestoreClipStackCallback(
+        CanvasResourceProvider::RestoreMatrixClipStackCb());
+  }
   return old_resource_provider;
 }
 
 void CanvasResourceHost::DiscardResourceProvider() {
   resource_provider_ = nullptr;
   UpdateMemoryUsage();
+}
+
+void CanvasResourceHost::InitializeForRecording(cc::PaintCanvas* canvas) {
+  canvas->save();
+  RestoreCanvasMatrixClipStack(canvas);
+}
+
+void CanvasResourceHost::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
+  filter_quality_ = filter_quality;
 }
 
 }  // namespace blink

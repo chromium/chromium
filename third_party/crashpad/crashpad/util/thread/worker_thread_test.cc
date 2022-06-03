@@ -27,6 +27,10 @@ constexpr uint64_t kNanosecondsPerSecond = static_cast<uint64_t>(1E9);
 class WorkDelegate : public WorkerThread::Delegate {
  public:
   WorkDelegate() {}
+
+  WorkDelegate(const WorkDelegate&) = delete;
+  WorkDelegate& operator=(const WorkDelegate&) = delete;
+
   ~WorkDelegate() {}
 
   void DoWork(const WorkerThread* thread) override {
@@ -53,8 +57,6 @@ class WorkDelegate : public WorkerThread::Delegate {
   Semaphore semaphore_{0};
   int work_count_ = 0;
   int waiting_for_count_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkDelegate);
 };
 
 TEST(WorkerThread, DoWork) {

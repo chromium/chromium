@@ -18,12 +18,10 @@
 #include "base/process/process_metrics_iocounters.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/values.h"
 
 namespace base {
 namespace {
-
-// System pagesize. This value remains constant on x86/64 architectures.
-const int PAGESIZE_KB = 4;
 
 // ntstatus.h conflicts with windows.h so define this locally.
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
@@ -202,10 +200,6 @@ size_t GetSystemCommitCharge() {
   return (info.CommitTotal * system_info.dwPageSize) / 1024;
 }
 
-size_t GetPageSize() {
-  return PAGESIZE_KB * 1024;
-}
-
 // This function uses the following mapping between MEMORYSTATUSEX and
 // SystemMemoryInfoKB:
 //   ullTotalPhys ==> total
@@ -236,31 +230,31 @@ SystemPerformanceInfo::SystemPerformanceInfo() = default;
 SystemPerformanceInfo::SystemPerformanceInfo(
     const SystemPerformanceInfo& other) = default;
 
-std::unique_ptr<Value> SystemPerformanceInfo::ToValue() const {
-  std::unique_ptr<DictionaryValue> result(new DictionaryValue());
+Value SystemPerformanceInfo::ToValue() const {
+  Value result(Value::Type::DICTIONARY);
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  result->SetDouble("idle_time", strict_cast<double>(idle_time));
-  result->SetDouble("read_transfer_count",
-                    strict_cast<double>(read_transfer_count));
-  result->SetDouble("write_transfer_count",
-                    strict_cast<double>(write_transfer_count));
-  result->SetDouble("other_transfer_count",
-                    strict_cast<double>(other_transfer_count));
-  result->SetDouble("read_operation_count",
-                    strict_cast<double>(read_operation_count));
-  result->SetDouble("write_operation_count",
-                    strict_cast<double>(write_operation_count));
-  result->SetDouble("other_operation_count",
-                    strict_cast<double>(other_operation_count));
-  result->SetDouble("pagefile_pages_written",
-                    strict_cast<double>(pagefile_pages_written));
-  result->SetDouble("pagefile_pages_write_ios",
-                    strict_cast<double>(pagefile_pages_write_ios));
-  result->SetDouble("available_pages", strict_cast<double>(available_pages));
-  result->SetDouble("pages_read", strict_cast<double>(pages_read));
-  result->SetDouble("page_read_ios", strict_cast<double>(page_read_ios));
+  result.SetDoubleKey("idle_time", strict_cast<double>(idle_time));
+  result.SetDoubleKey("read_transfer_count",
+                      strict_cast<double>(read_transfer_count));
+  result.SetDoubleKey("write_transfer_count",
+                      strict_cast<double>(write_transfer_count));
+  result.SetDoubleKey("other_transfer_count",
+                      strict_cast<double>(other_transfer_count));
+  result.SetDoubleKey("read_operation_count",
+                      strict_cast<double>(read_operation_count));
+  result.SetDoubleKey("write_operation_count",
+                      strict_cast<double>(write_operation_count));
+  result.SetDoubleKey("other_operation_count",
+                      strict_cast<double>(other_operation_count));
+  result.SetDoubleKey("pagefile_pages_written",
+                      strict_cast<double>(pagefile_pages_written));
+  result.SetDoubleKey("pagefile_pages_write_ios",
+                      strict_cast<double>(pagefile_pages_write_ios));
+  result.SetDoubleKey("available_pages", strict_cast<double>(available_pages));
+  result.SetDoubleKey("pages_read", strict_cast<double>(pages_read));
+  result.SetDoubleKey("page_read_ios", strict_cast<double>(page_read_ios));
 
   return result;
 }

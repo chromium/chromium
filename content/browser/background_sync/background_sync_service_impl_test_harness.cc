@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_network_observer.h"
@@ -18,16 +18,18 @@
 #include "content/public/test/background_sync_test_util.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_background_sync_context.h"
-#include "mojo/core/embedder/embedder.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "mojo/public/cpp/system/functions.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
 namespace content {
 
 using ::testing::_;
 
-const char kServiceWorkerScope[] = "https://example.com/a";
+const char kServiceWorkerScope[] = "https://example.com/a/";
 const char kServiceWorkerScript[] = "https://example.com/a/script.js";
 
 void BackgroundSyncServiceImplTestHarness::RegisterServiceWorkerCallback(
@@ -95,9 +97,9 @@ void BackgroundSyncServiceImplTestHarness::SetUp() {
   // Don't let the tests be confused by the real-world device connectivity
   background_sync_test_util::SetIgnoreNetworkChanges(true);
 
-  mojo::core::SetDefaultProcessErrorCallback(base::AdaptCallbackForRepeating(
-      base::BindOnce(&BackgroundSyncServiceImplTestHarness::CollectMojoError,
-                     base::Unretained(this))));
+  mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
+      &BackgroundSyncServiceImplTestHarness::CollectMojoError,
+      base::Unretained(this)));
 
   CreateTestHelper();
   CreateStoragePartition();
@@ -121,8 +123,7 @@ void BackgroundSyncServiceImplTestHarness::TearDown() {
   // Restore the network observer functionality for subsequent tests
   background_sync_test_util::SetIgnoreNetworkChanges(false);
 
-  mojo::core::SetDefaultProcessErrorCallback(
-      mojo::core::ProcessErrorCallback());
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 // SetUp helper methods
@@ -142,8 +143,9 @@ void BackgroundSyncServiceImplTestHarness::CreateStoragePartition() {
   // Creates a StoragePartition so that the BackgroundSyncManager can
   // use it to access the BrowserContext.
   storage_partition_impl_ = StoragePartitionImpl::Create(
-      embedded_worker_helper_->browser_context(), /* in_memory= */ true,
-      base::FilePath(), /* partition_domain= */ "");
+      embedded_worker_helper_->browser_context(),
+      CreateStoragePartitionConfigForTesting(/*in_memory=*/true),
+      base::FilePath() /* relative_partition_path */);
   storage_partition_impl_->Initialize();
   embedded_worker_helper_->context_wrapper()->set_storage_partition(
       storage_partition_impl_.get());
@@ -176,16 +178,19 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
   bool called = false;
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL(kServiceWorkerScope);
+  blink::StorageKey key(url::Origin::Create(GURL(kServiceWorkerScope)));
   embedded_worker_helper_->context()->RegisterServiceWorker(
-      GURL(kServiceWorkerScript), options,
+      GURL(kServiceWorkerScript), key, options,
       blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisterServiceWorkerCallback, &called,
-                     &sw_registration_id_));
+                     &sw_registration_id_),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(called);
 
   embedded_worker_helper_->context_wrapper()->FindReadyRegistrationForId(
-      sw_registration_id_, GURL(kServiceWorkerScope).GetOrigin(),
+      sw_registration_id_,
+      blink::StorageKey::CreateFromStringForTesting(kServiceWorkerScope),
       base::BindOnce(FindServiceWorkerRegistrationCallback, &sw_registration_));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(sw_registration_);

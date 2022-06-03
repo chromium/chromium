@@ -16,6 +16,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/unique_position.proto";
+
 // Corresponds to a single meta info key/value pair for a bookmark node.
 message MetaInfo {
   optional string key = 1;
@@ -26,14 +28,49 @@ message MetaInfo {
 message BookmarkSpecifics {
   optional string url = 1;
   optional bytes favicon = 2;
-  optional string title = 3;
+  // Contains legacy title which is truncated and may contain escaped symbols.
+  optional string legacy_canonicalized_title = 3;
   // Corresponds to BookmarkNode::date_added() represented as microseconds since
   // the Windows epoch.
   optional int64 creation_time_us = 4;
   optional string icon_url = 5;
   repeated MetaInfo meta_info = 6;
-  // Introduced in M78. If not present, originator_client_item_id is interpreted
-  // as GUID as long as it is of the valid format. Otherwise, field is either
-  // ignored or overwritten locally.
-  optional string guid = 7;
+  reserved 7;
+  reserved 8;
+  reserved 9;
+  // Introduced in M81, it represents a globally unique and immutable ID.
+  //
+  // If present, it must be the same as originator_client_item_id in lowercase,
+  // unless originator client item ID is not a valid GUID. In such cases (which
+  // is the case for bookmarks created before 2015), this GUID must match the
+  // value inferred from the combination of originator cache GUID and
+  // originator client item ID, see InferGuidForLegacyBookmark().
+  //
+  // If not present, the value can be safely inferred using the very same
+  // methods listed above.
+  optional string guid = 10;
+  // Contains full title as is. |legacy_canonicalized_title| is a prefix of
+  // |full_title| with escaped symbols.
+  optional string full_title = 11;
+  reserved 12;
+  reserved 13;
+  // Introduced in M94, represents the GUID (field |guid|) of the parent.
+  optional string parent_guid = 14;
+
+  // Introduced in M94, determines whether this entity represents a bookmark
+  // folder. This field is redundant to the similar field in SyncEntity. If this
+  // field in specifics is set, it takes precedence over the one in SyncEntity.
+  enum Type {
+    // |UNSPECIFIED| is relevant only for the case where the field is not set.
+    // M94 and above should not use this value.
+    UNSPECIFIED = 0;
+    URL = 1;
+    FOLDER = 2;
+  }
+  optional Type type = 15;
+
+  // Introduced in M94, determines ordering among siblings. This field is
+  // redundant to the similar field in SyncEntity. If this field in specifics is
+  // set, it takes precedence over the one in SyncEntity.
+  optional UniquePosition unique_position = 16;
 }

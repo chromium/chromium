@@ -52,22 +52,23 @@ class SliderThumbElement final : public HTMLDivElement {
 
   void DragFrom(const LayoutPoint&);
   void DefaultEventHandler(Event&) override;
-  bool WillRespondToMouseMoveEvents() override;
+  bool WillRespondToMouseMoveEvents() const override;
   bool WillRespondToMouseClickEvents() override;
   void DetachLayoutTree(bool performing_reattach) override;
   const AtomicString& ShadowPseudoId() const override;
   HTMLInputElement* HostInput() const;
   void SetPositionFromPoint(const LayoutPoint&);
   void StopDragging();
+  bool IsSliderThumbElement() const override { return true; }
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() final;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) final;
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
   bool IsDisabledFormControl() const override;
   bool MatchesReadOnlyPseudoClass() const override;
   bool MatchesReadWritePseudoClass() const override;
-  const Node* FocusDelegate() const override;
   void StartDragging();
 
   bool
@@ -104,7 +105,6 @@ class SliderContainerElement final : public HTMLDivElement {
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() final;
   const AtomicString& ShadowPseudoId() const override;
   Direction GetDirection(LayoutPoint&, LayoutPoint&);
   bool CanSlide();
@@ -117,4 +117,4 @@ class SliderContainerElement final : public HTMLDivElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SLIDER_THUMB_ELEMENT_H_

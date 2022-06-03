@@ -1,8 +1,8 @@
 include_rules = [
   "+chrome/install_static",
   "+chrome/installer/util",
-  "+components/crash/content/app/crashpad.h",
-  "+components/crash/content/app/crash_reporter_client.h",
+  "+components/crash/core/app/crashpad.h",
+  "+components/crash/core/app/crash_reporter_client.h",
   "+components/version_info/channel.h",
 ]
 

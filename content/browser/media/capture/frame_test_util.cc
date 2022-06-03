@@ -16,7 +16,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace content {
 
@@ -75,8 +75,7 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
 
   // Construct the ColorTransform.
   const auto transform = gfx::ColorTransform::NewColorTransform(
-      frame.ColorSpace(), gfx::ColorSpace::CreateSRGB(),
-      gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
+      frame.ColorSpace(), gfx::ColorSpace::CreateSRGB());
   CHECK(transform);
 
   // Convert one row at a time.

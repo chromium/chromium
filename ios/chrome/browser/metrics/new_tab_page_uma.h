@@ -7,10 +7,7 @@
 
 #include "ui/base/page_transition_types.h"
 
-namespace ios {
 class ChromeBrowserState;
-}  // namespace ios
-
 class GURL;
 namespace web {
 class WebState;
@@ -37,15 +34,11 @@ enum ActionType {
   NUM_ACTION_TYPES,
 };
 
-void RecordAction(ios::ChromeBrowserState* browser_state,
+void RecordAction(ChromeBrowserState* browser_state,
                   web::WebState* web_state,
                   ActionType action);
 
-// DEPRECATED -- use the version above which passes web_state instead.
-// TODO(crbug.com/1032550) : Remove this function.
-void RecordAction(ios::ChromeBrowserState* browser_state, ActionType action);
-
-void RecordActionFromOmnibox(ios::ChromeBrowserState* browser_state,
+void RecordActionFromOmnibox(ChromeBrowserState* browser_state,
                              web::WebState* web_state,
                              const GURL& url,
                              ui::PageTransition transition,

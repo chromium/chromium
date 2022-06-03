@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {

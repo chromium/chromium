@@ -6,13 +6,15 @@
 
 #include <vector>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
-#include "third_party/blink/renderer/core/css/css_pending_interpolation_value.h"
+#include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_style_sheet_init.h"
+#include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
@@ -27,28 +29,55 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_interpolations.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_map.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
+#include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
-#include "third_party/blink/renderer/core/css/resolver/style_animator.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/css/style_cascade_slots.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
+using css_test_helpers::ParseDeclarationBlock;
 using css_test_helpers::RegisterProperty;
-using cssvalue::CSSPendingInterpolationValue;
-using Origin = StyleCascade::Origin;
-using Priority = StyleCascade::Priority;
+using Origin = CascadeOrigin;
+using Priority = CascadePriority;
 using UnitType = CSSPrimitiveValue::UnitType;
 
-enum class AnimationTainted { kYes, kNo };
+class TestCascadeResolver {
+  STACK_ALLOCATED();
+
+ public:
+  explicit TestCascadeResolver(uint8_t generation = 0)
+      : resolver_(CascadeFilter(), generation) {}
+  bool InCycle() const { return resolver_.InCycle(); }
+  bool DetectCycle(const CSSProperty& property) {
+    return resolver_.DetectCycle(property);
+  }
+  wtf_size_t CycleStart() const { return resolver_.cycle_start_; }
+  wtf_size_t CycleEnd() const { return resolver_.cycle_end_; }
+  uint8_t GetGeneration() { return resolver_.generation_; }
+  CascadeResolver& InnerResolver() { return resolver_; }
+  const CSSProperty* CurrentProperty() const {
+    return resolver_.CurrentProperty();
+  }
+
+ private:
+  friend class TestCascadeAutoLock;
+
+  CascadeResolver resolver_;
+};
 
 class TestCascade {
   STACK_ALLOCATED();
@@ -68,80 +97,57 @@ class TestCascade {
     state_.StyleRef().InheritFrom(*parent);
   }
 
-  void Add(String name,
-           String value,
-           Priority priority = Origin::kAuthor,
-           AnimationTainted animation_tainted = AnimationTainted::kNo) {
-    return Add(*CSSPropertyName::From(name), value, priority,
-               animation_tainted);
+  //  Note that because of how MatchResult works, declarations must be added
+  //  in "origin order", i.e. UserAgent first, then User, then Author.
+
+  void Add(String block,
+           CascadeOrigin origin = CascadeOrigin::kAuthor,
+           unsigned link_match_type = CSSSelector::kMatchAll) {
+    CSSParserMode mode =
+        origin == CascadeOrigin::kUserAgent ? kUASheetMode : kHTMLStandardMode;
+    Add(ParseDeclarationBlock(block, mode), origin, link_match_type);
   }
 
-  void Add(const CSSPropertyName& name,
-           String value,
-           Priority priority = Origin::kAuthor,
-           AnimationTainted animation_tainted = AnimationTainted::kNo) {
-    HeapVector<CSSPropertyValue, 256> values =
-        ParseValues(name, value, animation_tainted);
-
-    for (const CSSPropertyValue& v : values)
-      Add(v.Name(), v.Value(), priority);
+  void Add(String name, String value, CascadeOrigin origin = Origin::kAuthor) {
+    Add(name + ":" + value, origin);
   }
 
-  void Add(String name,
-           const CSSValue* value,
-           Priority priority = Origin::kAuthor) {
-    Add(*CSSPropertyName::From(name), value, priority);
+  void Add(const CSSPropertyValueSet* set,
+           CascadeOrigin origin = CascadeOrigin::kAuthor,
+           unsigned link_match_type = CSSSelector::kMatchAll) {
+    DCHECK_LE(origin, CascadeOrigin::kAuthor) << "Animations not supported";
+    DCHECK_LE(current_origin_, origin) << "Please add declarations in order";
+    EnsureAtLeast(origin);
+    cascade_.MutableMatchResult().AddMatchedProperties(
+        set, AddMatchedPropertiesOptions::Builder()
+                 .SetLinkMatchType(link_match_type)
+                 .Build());
   }
 
-  void Add(const CSSPropertyName& name,
-           const CSSValue* value,
-           Priority priority = Origin::kAuthor) {
-    DCHECK(CSSPropertyRef(name, GetDocument()).GetProperty().IsLonghand());
-    cascade_.Add(name, value, priority);
-    if (priority.HasUAOrigin()) {
-      const CSSProperty* ua = CSSProperty::Get(name.Id()).GetUAProperty();
-      if (ua)
-        cascade_.Add(ua->GetCSSPropertyName(), value, priority);
-    }
+  void Apply(CascadeFilter filter = CascadeFilter()) {
+    EnsureAtLeast(CascadeOrigin::kAnimation);
+    cascade_.Apply(filter);
   }
 
-  void Apply(const CSSPropertyName& name) { cascade_.Apply(name); }
-  void Apply(String name) { Apply(*CSSPropertyName::From(name)); }
-  void Apply() { cascade_.Apply(); }
-  void Apply(StyleCascade::Animator& animator) { cascade_.Apply(animator); }
-  void Exclude(CSSProperty::Flag flag, bool set) {
-    cascade_.Exclude(flag, set);
+  void ApplySingle(const CSSProperty& property) {
+    EnsureAtLeast(CascadeOrigin::kAnimation);
+    cascade_.AnalyzeIfNeeded();
+    TestCascadeResolver resolver(++cascade_.generation_);
+    cascade_.LookupAndApply(property, resolver.InnerResolver());
   }
 
-  HeapVector<CSSPropertyValue, 256> ParseValues(
-      const CSSPropertyName& name,
-      String value,
-      AnimationTainted animation_tainted) {
-    CSSTokenizer tokenizer(value);
-    auto tokens = tokenizer.TokenizeToEOF();
-    auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    context->SetMode(kUASheetMode);  // Allows -internal variables.
+  void AnalyzeIfNeeded() { cascade_.AnalyzeIfNeeded(); }
 
-    HeapVector<CSSPropertyValue, 256> parsed_properties;
+  const CSSValue* Resolve(const CSSProperty& property,
+                          const CSSValue& value,
+                          CascadeOrigin& origin) {
+    TestCascadeResolver resolver;
+    return cascade_.Resolve(property, value, CascadePriority(origin), origin,
+                            resolver.InnerResolver());
+  }
 
-    bool is_animation_tainted = animation_tainted == AnimationTainted::kYes;
-    if (name.Id() == CSSPropertyID::kVariable) {
-      // TODO(andruud): Make CSSPropertyParser::ParseValue handle custom props.
-      const CSSValue* decl = CSSVariableParser::ParseDeclarationValue(
-          name.ToAtomicString(), tokens, is_animation_tainted, *context);
-      DCHECK(decl);
-      parsed_properties.emplace_back(GetCSSPropertyVariable(), *decl);
-      return parsed_properties;
-    }
-
-    const bool important = false;
-
-    bool ok = CSSPropertyParser::ParseValue(name.Id(), important, tokens,
-                                            context, parsed_properties,
-                                            StyleRule::RuleType::kStyle);
-    DCHECK(ok);
-
-    return parsed_properties;
+  std::unique_ptr<CSSBitset> GetImportantSet() {
+    return cascade_.GetImportantSet();
   }
 
   String ComputedValue(String name) const {
@@ -154,76 +160,50 @@ class TestCascade {
     return value ? value->CssText() : g_null_atom;
   }
 
-  bool HasValue(String name, const CSSValue* value) {
-    return cascade_.HasValue(*CSSPropertyName::From(name), value);
+  CascadePriority GetPriority(String name) {
+    return GetPriority(
+        *CSSPropertyName::From(GetDocument().GetExecutionContext(), name));
   }
 
-  const CSSValue* GetCSSValue(String name) {
-    return cascade_.GetValue(*CSSPropertyName::From(name));
+  CascadePriority GetPriority(CSSPropertyName name) {
+    CascadePriority* c = cascade_.map_.Find(name);
+    return c ? *c : CascadePriority();
   }
 
-  const String GetValue(String name) {
-    const CSSValue* value = GetCSSValue(name);
-    // Per spec, CSSPendingSubstitutionValue serializes as an empty string,
-    // but for testing purposes it's nice to see the actual value.
-    if (const auto* v = DynamicTo<cssvalue::CSSPendingSubstitutionValue>(value))
-      return v->ShorthandValue()->CssText();
-    if (DynamicTo<CSSPendingInterpolationValue>(value))
-      return "<interpolation>";
-    return value ? value->CssText() : g_null_atom;
+  CascadeOrigin GetOrigin(String name) { return GetPriority(name).GetOrigin(); }
+
+  void AddInterpolations() {
+    CalculateInterpolationUpdate();
+
+    // Add to cascade:
+    const auto& update = state_.AnimationUpdate();
+    if (update.IsEmpty())
+      return;
+
+    cascade_.AddInterpolations(&update.ActiveInterpolationsForAnimations(),
+                               CascadeOrigin::kAnimation);
+    cascade_.AddInterpolations(&update.ActiveInterpolationsForTransitions(),
+                               CascadeOrigin::kTransition);
   }
 
-  CSSAnimationUpdate& CalculateTransitionUpdate() {
-    CSSAnimations::CalculateTransitionUpdate(
-        state_.AnimationUpdate(), CSSAnimations::PropertyPass::kCustom,
-        &state_.GetElement(), *state_.Style());
-    CSSAnimations::CalculateTransitionUpdate(
-        state_.AnimationUpdate(), CSSAnimations::PropertyPass::kStandard,
-        &state_.GetElement(), *state_.Style());
-    return state_.AnimationUpdate();
+  void Reset() {
+    cascade_.Reset();
+    current_origin_ = CascadeOrigin::kUserAgent;
   }
 
-  CSSAnimationUpdate& CalculateAnimationUpdate() {
-    CSSAnimations::CalculateAnimationUpdate(
-        state_.AnimationUpdate(), &state_.GetElement(), state_.GetElement(),
-        *state_.Style(), state_.ParentStyle(),
-        &GetDocument().EnsureStyleResolver());
-    return state_.AnimationUpdate();
+  bool NeedsMatchResultAnalyze() const {
+    return cascade_.needs_match_result_analyze_;
+  }
+  bool NeedsInterpolationsAnalyze() const {
+    return cascade_.needs_interpolations_analyze_;
+  }
+  bool DependsOnCascadeAffectingProperty() const {
+    return cascade_.depends_on_cascade_affecting_property_;
   }
 
-  void AddAnimations() {
-    auto& update = CalculateAnimationUpdate();
-    using Type = CSSPendingInterpolationValue::Type;
-
-    for (const auto& entry : update.ActiveInterpolationsForCustomAnimations()) {
-      auto name = entry.key.GetCSSPropertyName();
-      auto* v = CSSPendingInterpolationValue::Create(Type::kCSSProperty);
-      Add(name.ToAtomicString(), v);
-    }
-    for (const auto& entry :
-         update.ActiveInterpolationsForStandardAnimations()) {
-      auto name = entry.key.GetCSSPropertyName();
-      auto* v = CSSPendingInterpolationValue::Create(Type::kCSSProperty);
-      Add(name.ToAtomicString(), v);
-    }
-  }
-
-  void AddTransitions() {
-    auto& update = CalculateTransitionUpdate();
-    using Type = CSSPendingInterpolationValue::Type;
-
-    for (const auto& entry :
-         update.ActiveInterpolationsForCustomTransitions()) {
-      auto name = entry.key.GetCSSPropertyName();
-      auto* v = CSSPendingInterpolationValue::Create(Type::kCSSProperty);
-      Add(name.ToAtomicString(), v);
-    }
-    for (const auto& entry :
-         update.ActiveInterpolationsForStandardTransitions()) {
-      auto name = entry.key.GetCSSPropertyName();
-      auto* v = CSSPendingInterpolationValue::Create(Type::kCSSProperty);
-      Add(name.ToAtomicString(), v);
-    }
+  HeapHashMap<CSSPropertyName, Member<const CSSValue>> GetCascadedValues()
+      const {
+    return cascade_.GetCascadedValues();
   }
 
  private:
@@ -237,61 +217,73 @@ class TestCascade {
   }
 
   static scoped_refptr<ComputedStyle> InitialStyle(Document& document) {
-    return StyleResolver::InitialStyleForElement(document);
+    return document.GetStyleResolver().InitialStyleForElement();
   }
 
+  void FinishOrigin() {
+    switch (current_origin_) {
+      case CascadeOrigin::kUserAgent:
+        cascade_.MutableMatchResult().FinishAddingUARules();
+        current_origin_ = CascadeOrigin::kUser;
+        break;
+      case CascadeOrigin::kUser:
+        cascade_.MutableMatchResult().FinishAddingUserRules();
+        current_origin_ = CascadeOrigin::kAuthor;
+        break;
+      case CascadeOrigin::kAuthor:
+        cascade_.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+            GetDocument());
+        current_origin_ = CascadeOrigin::kAnimation;
+        break;
+      case CascadeOrigin::kAnimation:
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+  void EnsureAtLeast(CascadeOrigin origin) {
+    while (current_origin_ < origin)
+      FinishOrigin();
+  }
+
+  void CalculateInterpolationUpdate() {
+    CSSAnimations::CalculateTransitionUpdate(
+        state_.AnimationUpdate(), state_.GetElement(), *state_.Style());
+    CSSAnimations::CalculateAnimationUpdate(
+        state_.AnimationUpdate(), state_.GetElement(), state_.GetElement(),
+        *state_.Style(), state_.ParentStyle(),
+        &GetDocument().GetStyleResolver());
+  }
+
+  CascadeOrigin current_origin_ = CascadeOrigin::kUserAgent;
   StyleResolverState state_;
   StyleCascade cascade_;
-};
-
-class TestCascadeResolver {
-  STACK_ALLOCATED();
-
- public:
-  TestCascadeResolver(Document& document, StyleAnimator& animator)
-      : document_(&document), resolver_(animator, excluder_, slots_) {}
-  bool InCycle() const { return resolver_.InCycle(); }
-  bool DetectCycle(String name) {
-    CSSPropertyRef ref(name, *document_);
-    DCHECK(ref.IsValid());
-    const CSSProperty& property = ref.GetProperty();
-    return resolver_.DetectCycle(property);
-  }
-  wtf_size_t CycleDepth() const { return resolver_.cycle_depth_; }
-
- private:
-  friend class TestCascadeAutoLock;
-
-  Member<Document> document_;
-  StyleCascadeSlots slots_;
-  StyleCascade::Excluder excluder_;
-  StyleCascade::Resolver resolver_;
 };
 
 class TestCascadeAutoLock {
   STACK_ALLOCATED();
 
  public:
-  TestCascadeAutoLock(const CSSPropertyName& name,
+  TestCascadeAutoLock(const CSSProperty& property,
                       TestCascadeResolver& resolver)
-      : lock_(name, resolver.resolver_) {}
+      : lock_(property, resolver.resolver_) {}
 
  private:
-  StyleCascade::AutoLock lock_;
+  CascadeResolver::AutoLock lock_;
 };
 
-class StyleCascadeTest : public PageTestBase, private ScopedCSSCascadeForTest {
+class StyleCascadeTest : public PageTestBase {
  public:
-  StyleCascadeTest() : ScopedCSSCascadeForTest(true) {}
-
   CSSStyleSheet* CreateSheet(const String& css_text) {
     auto* init = MakeGarbageCollected<CSSStyleSheetInit>();
     DummyExceptionStateForTesting exception_state;
     CSSStyleSheet* sheet =
         CSSStyleSheet::Create(GetDocument(), init, exception_state);
     sheet->replaceSync(css_text, exception_state);
-    sheet->Contents()->EnsureRuleSet(MediaQueryEvaluator(),
-                                     kRuleHasNoSpecialState);
+    sheet->Contents()->EnsureRuleSet(
+        MediaQueryEvaluator(GetDocument().GetFrame()), kRuleHasNoSpecialState);
     return sheet;
   }
 
@@ -308,6 +300,10 @@ class StyleCascadeTest : public PageTestBase, private ScopedCSSCascadeForTest {
     active_sheets.push_back(
         std::make_pair(sheet, &sheet->Contents()->GetRuleSet()));
     scoped_resolver.AppendActiveStyleSheets(0, active_sheets);
+    GetDocument()
+        .GetStyleEngine()
+        .GetDocumentStyleSheetCollection()
+        .AppendActiveStyleSheet(active_sheets[0]);
   }
 
   Element* DocumentElement() const { return GetDocument().documentElement(); }
@@ -317,15 +313,15 @@ class StyleCascadeTest : public PageTestBase, private ScopedCSSCascadeForTest {
     UpdateAllLifecyclePhasesForTest();
   }
 
-  Priority AuthorPriority(uint16_t tree_order, uint16_t cascade_order) {
-    return Priority(Origin::kAuthor, tree_order)
-        .WithCascadeOrder(cascade_order);
-  }
-
-  Priority ImportantAuthorPriority(uint16_t tree_order,
-                                   uint16_t cascade_order) {
-    return Priority(Origin::kImportantAuthor, tree_order)
-        .WithCascadeOrder(cascade_order);
+  const MutableCSSPropertyValueSet* AnimationTaintedSet(AtomicString name,
+                                                        String value) {
+    CSSParserMode mode = kHTMLStandardMode;
+    auto* set = MakeGarbageCollected<MutableCSSPropertyValueSet>(mode);
+    set->SetProperty(name, value, /* important */ false,
+                     SecureContextMode::kSecureContext,
+                     /* context_style_sheet */ nullptr,
+                     /* is_animation_tainted */ true);
+    return set;
   }
 
   // Temporarily create a CSS Environment Variable.
@@ -345,130 +341,98 @@ class StyleCascadeTest : public PageTestBase, private ScopedCSSCascadeForTest {
       return document_->GetStyleEngine().EnsureEnvironmentVariables();
     }
 
-    Member<Document> document_;
+    Document* document_;
     AtomicString name_;
   };
-};
 
-TEST_F(StyleCascadeTest, OriginImportance) {
-  EXPECT_EQ(Origin::kImportantUserAgent,
-            Priority(Origin::kUserAgent).AddImportance().GetOrigin());
-  EXPECT_EQ(Origin::kImportantUser,
-            Priority(Origin::kUser).AddImportance().GetOrigin());
-  EXPECT_EQ(Origin::kImportantAuthor,
-            Priority(Origin::kAuthor).AddImportance().GetOrigin());
-}
-
-TEST_F(StyleCascadeTest, PriorityOrigin) {
-  std::vector<Priority> priorities = {
-      Origin::kTransition,    Origin::kImportantUserAgent,
-      Origin::kImportantUser, Origin::kImportantAuthor,
-      Origin::kAnimation,     Origin::kAuthor,
-      Origin::kUser,          Origin::kUserAgent,
-      Origin::kNone};
-
-  for (size_t i = 0; i < priorities.size(); ++i) {
-    for (size_t j = i; j < priorities.size(); ++j)
-      EXPECT_GE(priorities[i], priorities[j]);
+  CSSPropertyName PropertyName(String name) {
+    return *CSSPropertyName::From(GetDocument().GetExecutionContext(), name);
   }
 
-  EXPECT_FALSE(Priority(Origin::kUser) >= Priority(Origin::kAuthor));
-}
-
-TEST_F(StyleCascadeTest, PriorityHasOrigin) {
-  EXPECT_TRUE(Priority(Origin::kTransition).HasOrigin());
-  EXPECT_TRUE(Priority(Origin::kAuthor).HasOrigin());
-  EXPECT_FALSE(Priority(Origin::kNone).HasOrigin());
-}
-
-TEST_F(StyleCascadeTest, PriorityTreeOrder) {
-  Origin origin = Origin::kAuthor;
-  EXPECT_GE(Priority(origin, 0), Priority(origin, 1));
-  EXPECT_GE(Priority(origin, 6), Priority(origin, 7));
-  EXPECT_GE(Priority(origin, 42), Priority(origin, 42));
-  EXPECT_FALSE(Priority(origin, 8) >= Priority(origin, 1));
-}
-
-TEST_F(StyleCascadeTest, PriorityTreeOrderImportant) {
-  Origin origin = Origin::kImportantAuthor;
-  EXPECT_GE(Priority(origin, 1), Priority(origin, 0));
-  EXPECT_GE(Priority(origin, 7), Priority(origin, 6));
-  EXPECT_GE(Priority(origin, 42), Priority(origin, 42));
-  EXPECT_FALSE(Priority(origin, 1) >= Priority(origin, 8));
-}
-
-TEST_F(StyleCascadeTest, PriorityTreeOrderDifferentOrigin) {
-  // Tree order does not matter if the origin is different.
-  Origin author = Origin::kAuthor;
-  Origin transition = Origin::kTransition;
-  EXPECT_GE(Priority(transition, 42), Priority(author, 1));
-  EXPECT_GE(Priority(transition, 1), Priority(author, 1));
-}
-
-TEST_F(StyleCascadeTest, PriorityCascadeOrder) {
-  // AuthorPriority(tree_order, cascade_order)
-  EXPECT_GE(AuthorPriority(0, 0), AuthorPriority(0, 0));
-  EXPECT_GE(AuthorPriority(0, 1), AuthorPriority(0, 1));
-  EXPECT_GE(AuthorPriority(0, 1), AuthorPriority(0, 0));
-  EXPECT_GE(AuthorPriority(0, 2), AuthorPriority(0, 1));
-  EXPECT_GE(AuthorPriority(0, 0xFFFF), AuthorPriority(0, 0xFFFE));
-  EXPECT_FALSE(AuthorPriority(0, 2) >= AuthorPriority(0, 3));
-}
-
-TEST_F(StyleCascadeTest, PriorityCascadeOrderAndTreeOrder) {
-  // AuthorPriority(tree_order, cascade_order)
-  EXPECT_GE(AuthorPriority(0, 0), AuthorPriority(1, 0));
-  EXPECT_GE(AuthorPriority(0, 1), AuthorPriority(1, 1));
-  EXPECT_GE(AuthorPriority(0, 1), AuthorPriority(1, 3));
-  EXPECT_GE(AuthorPriority(0, 2), AuthorPriority(1, 0xFFFE));
-}
-
-TEST_F(StyleCascadeTest, PriorityCascadeOrderAndOrigin) {
-  // [Important]AuthorPriority(tree_order, cascade_order)
-  EXPECT_GE(ImportantAuthorPriority(0, 0), AuthorPriority(0, 0));
-  EXPECT_GE(ImportantAuthorPriority(0, 1), AuthorPriority(0, 1));
-  EXPECT_GE(ImportantAuthorPriority(0, 1), AuthorPriority(0, 3));
-  EXPECT_GE(ImportantAuthorPriority(0, 2), AuthorPriority(0, 0xFFFE));
-}
+  String CssTextAt(
+      const HeapHashMap<CSSPropertyName, Member<const CSSValue>>& map,
+      String name) {
+    const CSSValue* value = map.at(PropertyName(name));
+    return value ? value->CssText() : g_null_atom;
+  }
+};
 
 TEST_F(StyleCascadeTest, ApplySingle) {
   TestCascade cascade(GetDocument());
-  cascade.Add("width", "2px", Origin::kAuthor);
-  cascade.Add("width", "1px", Origin::kUser);
-  cascade.Apply("width");
+  cascade.Add("width", "1px", CascadeOrigin::kUserAgent);
+  cascade.Add("width", "2px", CascadeOrigin::kAuthor);
+  cascade.Apply();
 
   EXPECT_EQ("2px", cascade.ComputedValue("width"));
+}
+
+TEST_F(StyleCascadeTest, ApplyImportance) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:1px !important", CascadeOrigin::kUserAgent);
+  cascade.Add("width:2px", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("1px", cascade.ComputedValue("width"));
+}
+
+TEST_F(StyleCascadeTest, ApplyAll) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:1px", CascadeOrigin::kUserAgent);
+  cascade.Add("height:1px", CascadeOrigin::kUserAgent);
+  cascade.Add("all:initial", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("auto", cascade.ComputedValue("width"));
+  EXPECT_EQ("auto", cascade.ComputedValue("height"));
+}
+
+TEST_F(StyleCascadeTest, ApplyAllImportance) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("opacity:0.5", CascadeOrigin::kUserAgent);
+  cascade.Add("display:block !important", CascadeOrigin::kUserAgent);
+  cascade.Add("all:initial", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("1", cascade.ComputedValue("opacity"));
+  EXPECT_EQ("block", cascade.ComputedValue("display"));
+}
+
+TEST_F(StyleCascadeTest, ApplyAllWithPhysicalLonghands) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:1px", CascadeOrigin::kUserAgent);
+  cascade.Add("height:1px !important", CascadeOrigin::kUserAgent);
+  cascade.Add("all:initial", CascadeOrigin::kAuthor);
+  cascade.Apply();
+  EXPECT_EQ("auto", cascade.ComputedValue("width"));
+  EXPECT_EQ("1px", cascade.ComputedValue("height"));
 }
 
 TEST_F(StyleCascadeTest, ApplyCustomProperty) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", " 10px ");
   cascade.Add("--y", "nope");
-  cascade.Apply("--x");
-  cascade.Apply("--y");
+  cascade.Apply();
 
   EXPECT_EQ(" 10px ", cascade.ComputedValue("--x"));
   EXPECT_EQ("nope", cascade.ComputedValue("--y"));
 }
 
-TEST_F(StyleCascadeTest, Copy) {
-  StyleResolverState state(GetDocument(), *GetDocument().body());
-
+TEST_F(StyleCascadeTest, ApplyGenerations) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", "10px");
-  cascade.Add("width", "20px");
 
-  // Take snapshot of the cascade, pointing to the same StyleResolverState.
-  StyleCascade snapshot(cascade.InnerCascade());
-
-  cascade.Add("--x", "0px");
-  cascade.Add("width", "1px");
+  cascade.Add("--x:10px");
+  cascade.Add("width:20px");
   cascade.Apply();
+  EXPECT_EQ("10px", cascade.ComputedValue("--x"));
+  EXPECT_EQ("20px", cascade.ComputedValue("width"));
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
-  EXPECT_EQ("1px", cascade.ComputedValue("width"));
+  cascade.State().StyleRef().SetWidth(Length::Auto());
+  cascade.State().StyleRef().SetVariableData("--x", nullptr, true);
+  EXPECT_EQ(g_null_atom, cascade.ComputedValue("--x"));
+  EXPECT_EQ("auto", cascade.ComputedValue("width"));
 
-  snapshot.Apply();
+  // Apply again
+  cascade.Apply();
   EXPECT_EQ("10px", cascade.ComputedValue("--x"));
   EXPECT_EQ("20px", cascade.ComputedValue("width"));
 }
@@ -479,8 +443,7 @@ TEST_F(StyleCascadeTest, ApplyCustomPropertyVar) {
     TestCascade cascade(GetDocument());
     cascade.Add("--x", "yes and var(--y)");
     cascade.Add("--y", "no");
-    cascade.Apply("--x");
-    cascade.Apply("--y");
+    cascade.Apply();
 
     EXPECT_EQ("yes and no", cascade.ComputedValue("--x"));
     EXPECT_EQ("no", cascade.ComputedValue("--y"));
@@ -489,10 +452,9 @@ TEST_F(StyleCascadeTest, ApplyCustomPropertyVar) {
   // Apply --y first.
   {
     TestCascade cascade(GetDocument());
-    cascade.Add("--x", "yes and var(--y)");
     cascade.Add("--y", "no");
-    cascade.Apply("--y");
-    cascade.Apply("--x");
+    cascade.Add("--x", "yes and var(--y)");
+    cascade.Apply();
 
     EXPECT_EQ("yes and no", cascade.ComputedValue("--x"));
     EXPECT_EQ("no", cascade.ComputedValue("--y"));
@@ -502,7 +464,7 @@ TEST_F(StyleCascadeTest, ApplyCustomPropertyVar) {
 TEST_F(StyleCascadeTest, InvalidVarReferenceCauseInvalidVariable) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "nope var(--y)");
-  cascade.Apply("--x");
+  cascade.Apply();
 
   EXPECT_EQ(g_null_atom, cascade.ComputedValue("--x"));
 }
@@ -510,7 +472,7 @@ TEST_F(StyleCascadeTest, InvalidVarReferenceCauseInvalidVariable) {
 TEST_F(StyleCascadeTest, ApplyCustomPropertyFallback) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "yes and var(--y,no)");
-  cascade.Apply("--x");
+  cascade.Apply();
 
   EXPECT_EQ("yes and no", cascade.ComputedValue("--x"));
 }
@@ -541,7 +503,7 @@ TEST_F(StyleCascadeTest, VarInFallback) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "one var(--z,two var(--y))");
   cascade.Add("--y", "three");
-  cascade.Apply("--x");
+  cascade.Apply();
 
   EXPECT_EQ("one two three", cascade.ComputedValue("--x"));
 }
@@ -550,7 +512,7 @@ TEST_F(StyleCascadeTest, VarReferenceInNormalProperty) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "10px");
   cascade.Add("width", "var(--x)");
-  cascade.Apply("width");
+  cascade.Apply();
 
   EXPECT_EQ("10px", cascade.ComputedValue("width"));
 }
@@ -559,7 +521,7 @@ TEST_F(StyleCascadeTest, MultipleVarRefs) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "var(--y) bar var(--y)");
   cascade.Add("--y", "foo");
-  cascade.Apply("--x");
+  cascade.Apply();
 
   EXPECT_EQ("foo bar foo", cascade.ComputedValue("--x"));
 }
@@ -569,7 +531,7 @@ TEST_F(StyleCascadeTest, RegisteredPropertyComputedValue) {
 
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "1in");
-  cascade.Apply("--x");
+  cascade.Apply();
 
   EXPECT_EQ("96px", cascade.ComputedValue("--x"));
 }
@@ -580,8 +542,7 @@ TEST_F(StyleCascadeTest, RegisteredPropertySyntaxErrorCausesInitial) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "#fefefe");
   cascade.Add("--y", "var(--x)");
-  cascade.Apply("--x");
-  cascade.Apply("--y");
+  cascade.Apply();
 
   EXPECT_EQ("10px", cascade.ComputedValue("--x"));
   EXPECT_EQ("10px", cascade.ComputedValue("--y"));
@@ -593,7 +554,7 @@ TEST_F(StyleCascadeTest, RegisteredPropertySubstitution) {
   TestCascade cascade(GetDocument());
   cascade.Add("--x", "1in");
   cascade.Add("--y", "var(--x)");
-  cascade.Apply("--y");
+  cascade.Apply();
 
   EXPECT_EQ("96px", cascade.ComputedValue("--y"));
 }
@@ -641,10 +602,6 @@ TEST_F(StyleCascadeTest, ApplyingPendingSubstitutionFirst) {
   cascade.Add("margin", "1px var(--x) 3px 4px");
   cascade.Add("--x", "2px");
   cascade.Add("margin-right", "5px");
-
-  // Apply one of the pending substitution values first. This should not
-  // overwrite margin-right's 5px.
-  cascade.Apply("margin-left");
   cascade.Apply();
 
   EXPECT_EQ("1px", cascade.ComputedValue("margin-top"));
@@ -655,60 +612,67 @@ TEST_F(StyleCascadeTest, ApplyingPendingSubstitutionFirst) {
 
 TEST_F(StyleCascadeTest, ApplyingPendingSubstitutionLast) {
   TestCascade cascade(GetDocument());
+  cascade.Add("margin-right", "5px");
   cascade.Add("margin", "1px var(--x) 3px 4px");
   cascade.Add("--x", "2px");
-  cascade.Add("margin-right", "5px");
-
-  // Apply margin-right before the others. Applying the pending substitution
-  // afterwards should not overwrite margin-right's 5px.
-  cascade.Apply("margin-right");
   cascade.Apply();
 
   EXPECT_EQ("1px", cascade.ComputedValue("margin-top"));
-  EXPECT_EQ("5px", cascade.ComputedValue("margin-right"));
+  EXPECT_EQ("2px", cascade.ComputedValue("margin-right"));
   EXPECT_EQ("3px", cascade.ComputedValue("margin-bottom"));
   EXPECT_EQ("4px", cascade.ComputedValue("margin-left"));
 }
 
-TEST_F(StyleCascadeTest, ApplyingPendingSubstitutionModifiesCascade) {
+TEST_F(StyleCascadeTest, PendingSubstitutionInLogicalShorthand) {
   TestCascade cascade(GetDocument());
-  cascade.Add("margin", "1px var(--x) 3px 4px");
-  cascade.Add("--x", "2px");
-  cascade.Add("margin-right", "5px");
+  cascade.Add("margin-inline:var(--x)");
+  cascade.Add("--x:10px 20px");
+  cascade.Add("direction:rtl");
+  cascade.Apply();
 
-  // We expect the pending substitution value for all the shorthands,
-  // except margin-right.
-  EXPECT_EQ("1px var(--x) 3px 4px", cascade.GetValue("margin-top"));
-  EXPECT_EQ("5px", cascade.GetValue("margin-right"));
-  EXPECT_EQ("1px var(--x) 3px 4px", cascade.GetValue("margin-bottom"));
-  EXPECT_EQ("1px var(--x) 3px 4px", cascade.GetValue("margin-left"));
+  EXPECT_EQ("20px", cascade.ComputedValue("margin-left"));
+  EXPECT_EQ("10px", cascade.ComputedValue("margin-right"));
+}
 
-  // Apply a pending substitution value should modify the cascade for other
-  // longhands with the same pending substitution value.
-  cascade.Apply("margin-left");
+TEST_F(StyleCascadeTest, DetectCycleByName) {
+  TestCascade cascade(GetDocument());
+  TestCascadeResolver resolver;
 
-  EXPECT_EQ("1px", cascade.GetValue("margin-top"));
-  EXPECT_EQ("5px", cascade.GetValue("margin-right"));
-  EXPECT_EQ("3px", cascade.GetValue("margin-bottom"));
-  EXPECT_FALSE(cascade.GetValue("margin-left"));
+  // Two different CustomProperty instances with the same name:
+  CustomProperty a1("--a", GetDocument());
+  CustomProperty a2("--a", GetDocument());
+
+  {
+    TestCascadeAutoLock lock(a1, resolver);
+    EXPECT_FALSE(resolver.InCycle());
+
+    // This should still be detected as a cycle, even though it's not the same
+    // CustomProperty instance.
+    EXPECT_TRUE(resolver.DetectCycle(a2));
+    EXPECT_TRUE(resolver.InCycle());
+  }
+  EXPECT_FALSE(resolver.InCycle());
 }
 
 TEST_F(StyleCascadeTest, ResolverDetectCycle) {
   TestCascade cascade(GetDocument());
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-  TestCascadeResolver resolver(GetDocument(), animator);
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
 
   {
-    TestCascadeAutoLock lock(CSSPropertyName("--a"), resolver);
+    TestCascadeAutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      TestCascadeAutoLock lock(CSSPropertyName("--b"), resolver);
+      TestCascadeAutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        TestCascadeAutoLock lock(CSSPropertyName("--c"), resolver);
+        TestCascadeAutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
 
-        EXPECT_TRUE(resolver.DetectCycle("--a"));
+        EXPECT_TRUE(resolver.DetectCycle(a));
         EXPECT_TRUE(resolver.InCycle());
       }
       EXPECT_TRUE(resolver.InCycle());
@@ -720,20 +684,24 @@ TEST_F(StyleCascadeTest, ResolverDetectCycle) {
 
 TEST_F(StyleCascadeTest, ResolverDetectNoCycle) {
   TestCascade cascade(GetDocument());
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-  TestCascadeResolver resolver(GetDocument(), animator);
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
+  CustomProperty x("--x", GetDocument());
 
   {
-    TestCascadeAutoLock lock(CSSPropertyName("--a"), resolver);
+    TestCascadeAutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      TestCascadeAutoLock lock(CSSPropertyName("--b"), resolver);
+      TestCascadeAutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        TestCascadeAutoLock lock(CSSPropertyName("--c"), resolver);
+        TestCascadeAutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
 
-        EXPECT_FALSE(resolver.DetectCycle("--x"));
+        EXPECT_FALSE(resolver.DetectCycle(x));
         EXPECT_FALSE(resolver.InCycle());
       }
       EXPECT_FALSE(resolver.InCycle());
@@ -745,14 +713,15 @@ TEST_F(StyleCascadeTest, ResolverDetectNoCycle) {
 
 TEST_F(StyleCascadeTest, ResolverDetectCycleSelf) {
   TestCascade cascade(GetDocument());
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-  TestCascadeResolver resolver(GetDocument(), animator);
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
 
   {
-    TestCascadeAutoLock lock(CSSPropertyName("--a"), resolver);
+    TestCascadeAutoLock lock(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
 
-    EXPECT_TRUE(resolver.DetectCycle("--a"));
+    EXPECT_TRUE(resolver.DetectCycle(a));
     EXPECT_TRUE(resolver.InCycle());
   }
   EXPECT_FALSE(resolver.InCycle());
@@ -762,31 +731,35 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycle) {
   using AutoLock = TestCascadeAutoLock;
 
   TestCascade cascade(GetDocument());
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-  TestCascadeResolver resolver(GetDocument(), animator);
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
+  CustomProperty d("--d", GetDocument());
 
   {
-    AutoLock lock(CSSPropertyName("--a"), resolver);
+    AutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      AutoLock lock(CSSPropertyName("--b"), resolver);
+      AutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        AutoLock lock(CSSPropertyName("--c"), resolver);
+        AutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
         {
-          AutoLock lock(CSSPropertyName("--d"), resolver);
+          AutoLock lock_d(d, resolver);
           EXPECT_FALSE(resolver.InCycle());
 
           // Cycle 1 (big cycle):
-          EXPECT_TRUE(resolver.DetectCycle("--b"));
+          EXPECT_TRUE(resolver.DetectCycle(b));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(1u, resolver.CycleDepth());
+          EXPECT_EQ(1u, resolver.CycleStart());
 
           // Cycle 2 (small cycle):
-          EXPECT_TRUE(resolver.DetectCycle("--c"));
+          EXPECT_TRUE(resolver.DetectCycle(c));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(1u, resolver.CycleDepth());
+          EXPECT_EQ(1u, resolver.CycleStart());
         }
       }
       EXPECT_TRUE(resolver.InCycle());
@@ -800,35 +773,125 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycleReverse) {
   using AutoLock = TestCascadeAutoLock;
 
   TestCascade cascade(GetDocument());
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-  TestCascadeResolver resolver(GetDocument(), animator);
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
+  CustomProperty d("--d", GetDocument());
 
   {
-    AutoLock lock(CSSPropertyName("--a"), resolver);
+    AutoLock lock_a(a, resolver);
     EXPECT_FALSE(resolver.InCycle());
     {
-      AutoLock lock(CSSPropertyName("--b"), resolver);
+      AutoLock lock_b(b, resolver);
       EXPECT_FALSE(resolver.InCycle());
       {
-        AutoLock lock(CSSPropertyName("--c"), resolver);
+        AutoLock lock_c(c, resolver);
         EXPECT_FALSE(resolver.InCycle());
         {
-          AutoLock lock(CSSPropertyName("--d"), resolver);
+          AutoLock lock_d(d, resolver);
           EXPECT_FALSE(resolver.InCycle());
 
           // Cycle 1 (small cycle):
-          EXPECT_TRUE(resolver.DetectCycle("--c"));
+          EXPECT_TRUE(resolver.DetectCycle(c));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(2u, resolver.CycleDepth());
+          EXPECT_EQ(2u, resolver.CycleStart());
 
           // Cycle 2 (big cycle):
-          EXPECT_TRUE(resolver.DetectCycle("--b"));
+          EXPECT_TRUE(resolver.DetectCycle(b));
           EXPECT_TRUE(resolver.InCycle());
-          EXPECT_EQ(1u, resolver.CycleDepth());
+          EXPECT_EQ(1u, resolver.CycleStart());
         }
       }
       EXPECT_TRUE(resolver.InCycle());
     }
+    EXPECT_FALSE(resolver.InCycle());
+  }
+  EXPECT_FALSE(resolver.InCycle());
+}
+
+TEST_F(StyleCascadeTest, CurrentProperty) {
+  using AutoLock = TestCascadeAutoLock;
+
+  TestCascade cascade(GetDocument());
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
+
+  EXPECT_FALSE(resolver.CurrentProperty());
+  {
+    AutoLock lock_a(a, resolver);
+    EXPECT_EQ(&a, resolver.CurrentProperty());
+    {
+      AutoLock lock_b(b, resolver);
+      EXPECT_EQ(&b, resolver.CurrentProperty());
+      {
+        AutoLock lock_c(c, resolver);
+        EXPECT_EQ(&c, resolver.CurrentProperty());
+      }
+      EXPECT_EQ(&b, resolver.CurrentProperty());
+    }
+    EXPECT_EQ(&a, resolver.CurrentProperty());
+  }
+  EXPECT_FALSE(resolver.CurrentProperty());
+}
+
+TEST_F(StyleCascadeTest, CycleWithExtraEdge) {
+  using AutoLock = TestCascadeAutoLock;
+
+  TestCascade cascade(GetDocument());
+  TestCascadeResolver resolver;
+
+  CustomProperty a("--a", GetDocument());
+  CustomProperty b("--b", GetDocument());
+  CustomProperty c("--c", GetDocument());
+  CustomProperty d("--d", GetDocument());
+
+  {
+    AutoLock lock_a(a, resolver);
+    EXPECT_FALSE(resolver.InCycle());
+    {
+      AutoLock lock_b(b, resolver);
+      EXPECT_FALSE(resolver.InCycle());
+
+      {
+        AutoLock lock_c(c, resolver);
+        EXPECT_FALSE(resolver.InCycle());
+
+        // Cycle:
+        EXPECT_TRUE(resolver.DetectCycle(b));
+        EXPECT_TRUE(resolver.InCycle());
+        EXPECT_EQ(1u, resolver.CycleStart());
+        EXPECT_EQ(3u, resolver.CycleEnd());
+      }
+
+      // ~AutoLock must shrink the in-cycle range:
+      EXPECT_EQ(1u, resolver.CycleStart());
+      EXPECT_EQ(2u, resolver.CycleEnd());
+
+      {
+        // We should not be in a cycle when locking a new property ...
+        AutoLock lock_d(d, resolver);
+        EXPECT_FALSE(resolver.InCycle());
+        // AutoLock ctor does not affect in-cycle range:
+        EXPECT_EQ(1u, resolver.CycleStart());
+        EXPECT_EQ(2u, resolver.CycleEnd());
+      }
+
+      EXPECT_EQ(1u, resolver.CycleStart());
+      EXPECT_EQ(2u, resolver.CycleEnd());
+
+      // ... however we should be back InCycle when that AutoLock is destroyed.
+      EXPECT_TRUE(resolver.InCycle());
+    }
+
+    // ~AutoLock should reduce cycle-end to equal cycle-start, hence we
+    // are no longer in a cycle.
+    EXPECT_EQ(kNotFound, resolver.CycleStart());
+    EXPECT_EQ(kNotFound, resolver.CycleEnd());
     EXPECT_FALSE(resolver.InCycle());
   }
   EXPECT_FALSE(resolver.InCycle());
@@ -843,6 +906,7 @@ TEST_F(StyleCascadeTest, BasicCycle) {
   EXPECT_EQ("foo", cascade.ComputedValue("--a"));
   EXPECT_EQ("bar", cascade.ComputedValue("--b"));
 
+  cascade.Reset();
   cascade.Add("--a", "var(--b)");
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
@@ -858,6 +922,7 @@ TEST_F(StyleCascadeTest, SelfCycle) {
 
   EXPECT_EQ("foo", cascade.ComputedValue("--a"));
 
+  cascade.Reset();
   cascade.Add("--a", "var(--a)");
   cascade.Apply();
 
@@ -945,6 +1010,19 @@ TEST_F(StyleCascadeTest, RegisteredCycle) {
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
 
+  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--b"));
+}
+
+TEST_F(StyleCascadeTest, UniversalSyntaxCycle) {
+  RegisterProperty(GetDocument(), "--a", "*", "foo", false);
+  RegisterProperty(GetDocument(), "--b", "*", "bar", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--a", "var(--b)");
+  cascade.Add("--b", "var(--a)");
+  cascade.Apply();
+
   EXPECT_FALSE(cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
 }
@@ -957,11 +1035,11 @@ TEST_F(StyleCascadeTest, PartiallyRegisteredCycle) {
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--a"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
 }
 
-TEST_F(StyleCascadeTest, FallbackTriggeredByRegisteredCycle) {
+TEST_F(StyleCascadeTest, ReferencedRegisteredCycle) {
   RegisterProperty(GetDocument(), "--a", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--b", "<length>", "0px", false);
 
@@ -974,10 +1052,10 @@ TEST_F(StyleCascadeTest, FallbackTriggeredByRegisteredCycle) {
   cascade.Add("--d", "var(--b,2px)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--a"));
-  EXPECT_FALSE(cascade.ComputedValue("--b"));
-  EXPECT_EQ("1px", cascade.ComputedValue("--c"));
-  EXPECT_EQ("2px", cascade.ComputedValue("--d"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--b"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--c"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--d"));
 }
 
 TEST_F(StyleCascadeTest, CycleStillInvalidWithFallback) {
@@ -1077,7 +1155,7 @@ TEST_F(StyleCascadeTest, CycleReferencedFromStandardProperty) {
   TestCascade cascade(GetDocument());
   cascade.Add("--a", "var(--b)");
   cascade.Add("--b", "var(--a)");
-  cascade.Add("color", "var(--a,green)");
+  cascade.Add("color:var(--a,green)");
   cascade.Apply();
 
   EXPECT_FALSE(cascade.ComputedValue("--a"));
@@ -1140,7 +1218,7 @@ TEST_F(StyleCascadeTest, EmUnitCycle) {
   cascade.Add("--x", "10em");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--x"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, SubstitutingEmCycles) {
@@ -1153,8 +1231,8 @@ TEST_F(StyleCascadeTest, SubstitutingEmCycles) {
   cascade.Add("--z", "var(--x,1px)");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--y"));
-  EXPECT_EQ("1px", cascade.ComputedValue("--z"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--y"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--z"));
 }
 
 TEST_F(StyleCascadeTest, RemUnit) {
@@ -1203,7 +1281,7 @@ TEST_F(StyleCascadeTest, RemUnitInRootFontSizeCycle) {
   cascade.Add("--x", "1rem");
   cascade.Apply();
 
-  EXPECT_FALSE(cascade.ComputedValue("--x"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, RemUnitInRootFontSizeNonCycle) {
@@ -1213,6 +1291,7 @@ TEST_F(StyleCascadeTest, RemUnitInRootFontSizeNonCycle) {
 
   String expected = cascade.ComputedValue("font-size");
 
+  cascade.Reset();
   cascade.Add("font-size", "var(--x)");
   cascade.Add("--x", "1rem");
   cascade.Apply();
@@ -1235,6 +1314,7 @@ TEST_F(StyleCascadeTest, Initial) {
   EXPECT_EQ("foo", cascade.ComputedValue("--x"));
   EXPECT_EQ("foo", cascade.ComputedValue("--y"));
 
+  cascade.Reset();
   cascade.Add("--x", "initial");
   cascade.Add("--y", "initial");
   cascade.Apply();
@@ -1257,6 +1337,7 @@ TEST_F(StyleCascadeTest, Inherit) {
   cascade.Apply();
   EXPECT_EQ("bar", cascade.ComputedValue("--x"));
 
+  cascade.Reset();
   cascade.Add("--x", "inherit");
   cascade.Apply();
   EXPECT_EQ("foo", cascade.ComputedValue("--x"));
@@ -1275,9 +1356,515 @@ TEST_F(StyleCascadeTest, Unset) {
   cascade.Apply();
   EXPECT_EQ("bar", cascade.ComputedValue("--x"));
 
+  cascade.Reset();
   cascade.Add("--x", "unset");
   cascade.Apply();
   EXPECT_EQ("foo", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertUA) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("display:block", CascadeOrigin::kUserAgent);
+  cascade.Add("display:revert", CascadeOrigin::kUserAgent);
+
+  cascade.Add("display:block", CascadeOrigin::kUser);
+  cascade.Add("display:revert", CascadeOrigin::kUser);
+
+  cascade.Add("display:block", CascadeOrigin::kAuthor);
+  cascade.Add("display:revert", CascadeOrigin::kAuthor);
+
+  cascade.Apply();
+
+  EXPECT_EQ("inline", cascade.ComputedValue("display"));
+}
+
+TEST_F(StyleCascadeTest, RevertStandardProperty) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("left:10px", CascadeOrigin::kUserAgent);
+  cascade.Add("right:10px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("right:20px", CascadeOrigin::kUser);
+  cascade.Add("right:revert", CascadeOrigin::kUser);
+  cascade.Add("top:20px", CascadeOrigin::kUser);
+  cascade.Add("bottom:20px", CascadeOrigin::kUser);
+
+  cascade.Add("bottom:30px", CascadeOrigin::kAuthor);
+  cascade.Add("bottom:revert", CascadeOrigin::kAuthor);
+  cascade.Add("left:30px", CascadeOrigin::kAuthor);
+  cascade.Add("left:revert", CascadeOrigin::kAuthor);
+  cascade.Add("right:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("20px", cascade.ComputedValue("top"));
+  EXPECT_EQ("10px", cascade.ComputedValue("right"));
+  EXPECT_EQ("20px", cascade.ComputedValue("bottom"));
+  EXPECT_EQ("10px", cascade.ComputedValue("left"));
+}
+
+TEST_F(StyleCascadeTest, RevertCustomProperty) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:10px", CascadeOrigin::kUser);
+
+  cascade.Add("--y:fail", CascadeOrigin::kAuthor);
+
+  cascade.Add("--x:revert", CascadeOrigin::kAuthor);
+  cascade.Add("--y:revert", CascadeOrigin::kAuthor);
+
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("--x"));
+  EXPECT_FALSE(cascade.ComputedValue("--y"));
+}
+
+TEST_F(StyleCascadeTest, RevertChain) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:10px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("width:revert", CascadeOrigin::kUser);
+  cascade.Add("--x:revert", CascadeOrigin::kUser);
+
+  cascade.Add("width:revert", CascadeOrigin::kAuthor);
+  cascade.Add("--x:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_FALSE(cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertFromAuthorToUA) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:10px", CascadeOrigin::kUserAgent);
+  cascade.Add("height:10px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("width:20px", CascadeOrigin::kAuthor);
+  cascade.Add("height:20px", CascadeOrigin::kAuthor);
+  cascade.Add("width:revert", CascadeOrigin::kAuthor);
+  cascade.Add("height:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("10px", cascade.ComputedValue("height"));
+}
+
+TEST_F(StyleCascadeTest, RevertInitialFallback) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:20px", CascadeOrigin::kAuthor);
+  cascade.Add("width:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("auto", cascade.ComputedValue("width"));
+}
+
+TEST_F(StyleCascadeTest, RevertInheritedFallback) {
+  TestCascade parent(GetDocument());
+  parent.Add("color", "red");
+  parent.Apply();
+
+  TestCascade cascade(GetDocument());
+  cascade.InheritFrom(parent.TakeStyle());
+  EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("color"));
+
+  cascade.Add("color:black", CascadeOrigin::kAuthor);
+  cascade.Add("color:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+  EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("color"));
+}
+
+TEST_F(StyleCascadeTest, RevertRegistered) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:20px", CascadeOrigin::kUser);
+  cascade.Add("--x:100px", CascadeOrigin::kAuthor);
+  cascade.Add("--x:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("20px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertRegisteredInitialFallback) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:20px", CascadeOrigin::kAuthor);
+  cascade.Add("--x:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertRegisteredInheritedFallback) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", true);
+
+  TestCascade parent(GetDocument());
+  parent.Add("--x", "1px");
+  parent.Apply();
+
+  TestCascade cascade(GetDocument());
+  cascade.InheritFrom(parent.TakeStyle());
+  EXPECT_EQ("1px", cascade.ComputedValue("--x"));
+
+  cascade.Add("--x:100px", CascadeOrigin::kAuthor);
+  cascade.Add("--x:revert", CascadeOrigin::kAuthor);
+  cascade.Apply();
+  EXPECT_EQ("1px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertUASurrogate) {
+  TestCascade cascade(GetDocument());
+
+  // User-agent:
+
+  // Only logical:
+  cascade.Add("inline-size:10px", CascadeOrigin::kUserAgent);
+  cascade.Add("min-inline-size:11px", CascadeOrigin::kUserAgent);
+  // Only physical:
+  cascade.Add("height:12px", CascadeOrigin::kUserAgent);
+  cascade.Add("min-height:13px", CascadeOrigin::kUserAgent);
+  // Physical first:
+  cascade.Add("margin-left:14px", CascadeOrigin::kUserAgent);
+  cascade.Add("padding-left:15px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-inline-start:16px", CascadeOrigin::kUserAgent);
+  cascade.Add("padding-inline-start:17px", CascadeOrigin::kUserAgent);
+  // Logical first:
+  cascade.Add("margin-inline-end:18px", CascadeOrigin::kUserAgent);
+  cascade.Add("padding-inline-end:19px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-right:20px", CascadeOrigin::kUserAgent);
+  cascade.Add("padding-right:21px", CascadeOrigin::kUserAgent);
+
+  // Author:
+
+  cascade.Add("width:100px", CascadeOrigin::kAuthor);
+  cascade.Add("height:101px", CascadeOrigin::kAuthor);
+  cascade.Add("margin:102px", CascadeOrigin::kAuthor);
+  cascade.Add("padding:103px", CascadeOrigin::kAuthor);
+  cascade.Add("min-width:104px", CascadeOrigin::kAuthor);
+  cascade.Add("min-height:105px", CascadeOrigin::kAuthor);
+  // Revert via physical:
+  cascade.Add("width:revert", CascadeOrigin::kAuthor);
+  cascade.Add("height:revert", CascadeOrigin::kAuthor);
+  cascade.Add("margin-left:revert", CascadeOrigin::kAuthor);
+  cascade.Add("margin-right:revert", CascadeOrigin::kAuthor);
+  // Revert via logical:
+  cascade.Add("min-inline-size:revert", CascadeOrigin::kAuthor);
+  cascade.Add("min-block-size:revert", CascadeOrigin::kAuthor);
+  cascade.Add("padding-inline-start:revert", CascadeOrigin::kAuthor);
+  cascade.Add("padding-inline-end:revert", CascadeOrigin::kAuthor);
+
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("12px", cascade.ComputedValue("height"));
+  EXPECT_EQ("11px", cascade.ComputedValue("min-width"));
+  EXPECT_EQ("13px", cascade.ComputedValue("min-height"));
+  EXPECT_EQ("102px", cascade.ComputedValue("margin-top"));
+  EXPECT_EQ("20px", cascade.ComputedValue("margin-right"));
+  EXPECT_EQ("102px", cascade.ComputedValue("margin-bottom"));
+  EXPECT_EQ("16px", cascade.ComputedValue("margin-left"));
+  EXPECT_EQ("103px", cascade.ComputedValue("padding-top"));
+  EXPECT_EQ("21px", cascade.ComputedValue("padding-right"));
+  EXPECT_EQ("103px", cascade.ComputedValue("padding-bottom"));
+  EXPECT_EQ("17px", cascade.ComputedValue("padding-left"));
+
+  EXPECT_EQ("10px", cascade.ComputedValue("inline-size"));
+  EXPECT_EQ("12px", cascade.ComputedValue("block-size"));
+  EXPECT_EQ("11px", cascade.ComputedValue("min-inline-size"));
+  EXPECT_EQ("13px", cascade.ComputedValue("min-block-size"));
+  EXPECT_EQ("102px", cascade.ComputedValue("margin-block-start"));
+  EXPECT_EQ("20px", cascade.ComputedValue("margin-inline-end"));
+  EXPECT_EQ("102px", cascade.ComputedValue("margin-block-end"));
+  EXPECT_EQ("16px", cascade.ComputedValue("margin-inline-start"));
+  EXPECT_EQ("103px", cascade.ComputedValue("padding-block-start"));
+  EXPECT_EQ("21px", cascade.ComputedValue("padding-inline-end"));
+  EXPECT_EQ("103px", cascade.ComputedValue("padding-block-end"));
+  EXPECT_EQ("17px", cascade.ComputedValue("padding-inline-start"));
+}
+
+TEST_F(StyleCascadeTest, RevertWithImportantPhysical) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("inline-size:10px", CascadeOrigin::kUserAgent);
+  cascade.Add("block-size:11px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("width:100px", CascadeOrigin::kAuthor);
+  cascade.Add("height:101px", CascadeOrigin::kAuthor);
+  cascade.Add("width:revert !important", CascadeOrigin::kAuthor);
+  cascade.Add("inline-size:101px", CascadeOrigin::kAuthor);
+  cascade.Add("block-size:102px", CascadeOrigin::kAuthor);
+  cascade.Add("height:revert !important", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("11px", cascade.ComputedValue("height"));
+  EXPECT_EQ("10px", cascade.ComputedValue("inline-size"));
+  EXPECT_EQ("11px", cascade.ComputedValue("block-size"));
+}
+
+TEST_F(StyleCascadeTest, RevertWithImportantLogical) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("inline-size:10px", CascadeOrigin::kUserAgent);
+  cascade.Add("block-size:11px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("inline-size:revert !important", CascadeOrigin::kAuthor);
+  cascade.Add("width:100px", CascadeOrigin::kAuthor);
+  cascade.Add("height:101px", CascadeOrigin::kAuthor);
+  cascade.Add("block-size:revert !important", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("11px", cascade.ComputedValue("height"));
+  EXPECT_EQ("10px", cascade.ComputedValue("inline-size"));
+  EXPECT_EQ("11px", cascade.ComputedValue("block-size"));
+}
+
+TEST_F(StyleCascadeTest, RevertSurrogateChain) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("inline-size:revert", CascadeOrigin::kUserAgent);
+  cascade.Add("block-size:10px", CascadeOrigin::kUserAgent);
+  cascade.Add("min-inline-size:11px", CascadeOrigin::kUserAgent);
+  cascade.Add("min-block-size:12px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-inline:13px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-block:14px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-top:revert", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-left:15px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-bottom:16px", CascadeOrigin::kUserAgent);
+  cascade.Add("margin-block-end:17px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("inline-size:101px", CascadeOrigin::kUser);
+  cascade.Add("block-size:102px", CascadeOrigin::kUser);
+  cascade.Add("width:revert", CascadeOrigin::kUser);
+  cascade.Add("height:revert", CascadeOrigin::kUser);
+  cascade.Add("min-inline-size:103px", CascadeOrigin::kUser);
+  cascade.Add("min-block-size:104px", CascadeOrigin::kUser);
+  cascade.Add("margin:105px", CascadeOrigin::kUser);
+  cascade.Add("margin-block-start:revert", CascadeOrigin::kUser);
+  cascade.Add("margin-inline-start:106px", CascadeOrigin::kUser);
+  cascade.Add("margin-block-end:revert", CascadeOrigin::kUser);
+  cascade.Add("margin-right:107px", CascadeOrigin::kUser);
+
+  cascade.Add("inline-size:revert", CascadeOrigin::kAuthor);
+  cascade.Add("block-size:revert", CascadeOrigin::kAuthor);
+  cascade.Add("min-inline-size:revert", CascadeOrigin::kAuthor);
+  cascade.Add("min-block-size:1001px", CascadeOrigin::kAuthor);
+  cascade.Add("margin:1002px", CascadeOrigin::kAuthor);
+  cascade.Add("margin-top:revert", CascadeOrigin::kAuthor);
+  cascade.Add("margin-left:1003px", CascadeOrigin::kAuthor);
+  cascade.Add("margin-bottom:1004px", CascadeOrigin::kAuthor);
+  cascade.Add("margin-right:1005px", CascadeOrigin::kAuthor);
+  cascade.Apply();
+
+  EXPECT_EQ("auto", cascade.ComputedValue("width"));
+  EXPECT_EQ("10px", cascade.ComputedValue("height"));
+  EXPECT_EQ("103px", cascade.ComputedValue("min-width"));
+  EXPECT_EQ("1001px", cascade.ComputedValue("min-height"));
+  EXPECT_EQ("0px", cascade.ComputedValue("margin-top"));
+  EXPECT_EQ("1005px", cascade.ComputedValue("margin-right"));
+  EXPECT_EQ("1004px", cascade.ComputedValue("margin-bottom"));
+  EXPECT_EQ("1003px", cascade.ComputedValue("margin-left"));
+}
+
+TEST_F(StyleCascadeTest, RevertInKeyframe) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { margin-left: 0px; }
+        to { margin-left: revert; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("margin-left:100px", CascadeOrigin::kUserAgent);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("50px", cascade.ComputedValue("margin-left"));
+}
+
+TEST_F(StyleCascadeTest, RevertToCustomPropertyInKeyframe) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { --x: 0px; }
+        to { --x: revert; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--x:100px", CascadeOrigin::kUser);
+  cascade.Add("--x:1000px", CascadeOrigin::kAuthor);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("50px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertToCustomPropertyInKeyframeUnset) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+  RegisterProperty(GetDocument(), "--y", "<length>", "1000px", true);
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { --x: 100px; --y: 100px; }
+        to { --x: revert; --y: revert; }
+     }
+    )HTML");
+
+  TestCascade parent(GetDocument());
+  parent.Add("--y: 0px");
+  parent.Apply();
+  EXPECT_EQ("0px", parent.ComputedValue("--y"));
+
+  TestCascade cascade(GetDocument());
+  cascade.InheritFrom(parent.TakeStyle());
+  cascade.Add("--x:10000px", CascadeOrigin::kAuthor);
+  cascade.Add("--y:10000px", CascadeOrigin::kAuthor);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("50px", cascade.ComputedValue("--x"));
+  EXPECT_EQ("50px", cascade.ComputedValue("--y"));
+}
+
+TEST_F(StyleCascadeTest, RevertToCustomPropertyInKeyframeEmptyInherit) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", true);
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { --x: 100px; }
+        to { --x: revert; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:10000px", CascadeOrigin::kAuthor);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("50px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertInKeyframeResponsive) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { margin-left: 0px; }
+        to { margin-left: revert; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--x:100px", CascadeOrigin::kUser);
+  cascade.Add("margin-left:var(--x)", CascadeOrigin::kUser);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("50px", cascade.ComputedValue("margin-left"));
+
+  cascade.Reset();
+  cascade.Add("--x:100px", CascadeOrigin::kUser);
+  cascade.Add("margin-left:var(--x)", CascadeOrigin::kUser);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Add("--x:80px", CascadeOrigin::kAuthor);
+  cascade.Apply();
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("40px", cascade.ComputedValue("margin-left"));
+}
+
+TEST_F(StyleCascadeTest, RevertToCycleInKeyframe) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { --x: 100px; }
+        to { --x: revert; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--x:var(--y)", CascadeOrigin::kUser);
+  cascade.Add("--y:var(--x)", CascadeOrigin::kUser);
+  cascade.Add("--x:200px", CascadeOrigin::kAuthor);
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, RevertCausesTransition) {
+  TestCascade cascade1(GetDocument());
+  cascade1.Add("width:200px", CascadeOrigin::kUser);
+  cascade1.Add("width:100px", CascadeOrigin::kAuthor);
+  cascade1.Add("transition: width 1000s steps(2, end)", CascadeOrigin::kAuthor);
+  cascade1.Apply();
+
+  GetDocument().body()->SetComputedStyle(cascade1.TakeStyle());
+
+  // Now simulate a new style, with new color values.
+  TestCascade cascade2(GetDocument());
+  cascade2.Add("width:200px", CascadeOrigin::kUser);
+  cascade2.Add("width:100px", CascadeOrigin::kAuthor);
+  cascade2.Add("width:revert", CascadeOrigin::kAuthor);
+  cascade2.Add("transition: width 1000s steps(2, start)",
+               CascadeOrigin::kAuthor);
+  cascade2.Apply();
+
+  cascade2.AddInterpolations();
+  cascade2.Apply();
+
+  EXPECT_EQ("150px", cascade2.ComputedValue("width"));
+}
+
+TEST_F(StyleCascadeTest, CSSWideKeywordsInFallbacks) {
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("display:var(--u,initial)");
+    cascade.Add("margin:var(--u,initial)");
+    cascade.Apply();
+  }
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("display:var(--u,inherit)");
+    cascade.Add("margin:var(--u,inherit)");
+    cascade.Apply();
+  }
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("display:var(--u,unset)");
+    cascade.Add("margin:var(--u,unset)");
+    cascade.Apply();
+  }
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("display:var(--u,revert)");
+    cascade.Add("margin:var(--u,revert)");
+    cascade.Apply();
+  }
+
+  // TODO(crbug.com/1105782): Specs and WPT are currently in conflict
+  // regarding the correct behavior here. For now this test just verifies
+  // that we don't crash.
 }
 
 TEST_F(StyleCascadeTest, RegisteredInitial) {
@@ -1310,7 +1897,7 @@ TEST_F(StyleCascadeTest, SubstituteRegisteredUniversal) {
 }
 
 TEST_F(StyleCascadeTest, SubstituteRegisteredUniversalInvalid) {
-  RegisterProperty(GetDocument(), "--x", "*", g_null_atom, false);
+  RegisterProperty(GetDocument(), "--x", "*", absl::nullopt, false);
 
   TestCascade cascade(GetDocument());
   cascade.Add("--y", " var(--x) ");
@@ -1337,6 +1924,7 @@ TEST_F(StyleCascadeTest, RegisteredExplicitInitial) {
   cascade.Apply();
   EXPECT_EQ("10px", cascade.ComputedValue("--x"));
 
+  cascade.Reset();
   cascade.Add("--x", "initial");
   cascade.Add("--y", "var(--x)");
   cascade.Apply();
@@ -1357,6 +1945,7 @@ TEST_F(StyleCascadeTest, RegisteredExplicitInherit) {
   cascade.Apply();
   EXPECT_EQ("0px", cascade.ComputedValue("--x"));  // Note: inherit==false
 
+  cascade.Reset();
   cascade.Add("--x", "inherit");
   cascade.Add("--y", "var(--x)");
   cascade.Apply();
@@ -1383,6 +1972,7 @@ TEST_F(StyleCascadeTest, RegisteredExplicitUnset) {
   EXPECT_EQ("2px", cascade.ComputedValue("--x"));
   EXPECT_EQ("2px", cascade.ComputedValue("--y"));
 
+  cascade.Reset();
   cascade.Add("--x", "unset");
   cascade.Add("--y", "unset");
   cascade.Add("--z", "var(--x) var(--y)");
@@ -1394,7 +1984,7 @@ TEST_F(StyleCascadeTest, RegisteredExplicitUnset) {
 
 TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInCustomProperty) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", "15px", Origin::kAuthor, AnimationTainted::kYes);
+  cascade.Add(AnimationTaintedSet("--x", "15px"));
   cascade.Add("--y", "var(--x)");
   cascade.Apply();
   EXPECT_EQ("15px", cascade.ComputedValue("--x"));
@@ -1403,7 +1993,7 @@ TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInCustomProperty) {
 
 TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInStandardProperty) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", "15px", Origin::kAuthor, AnimationTainted::kYes);
+  cascade.Add(AnimationTaintedSet("--x", "15px"));
   cascade.Add("width", "var(--x)");
   cascade.Apply();
   EXPECT_EQ("15px", cascade.ComputedValue("--x"));
@@ -1419,7 +2009,8 @@ TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationProperty) {
   EXPECT_EQ("20s", cascade.ComputedValue("--x"));
   EXPECT_EQ("20s", cascade.ComputedValue("animation-duration"));
 
-  cascade.Add("--y", "20s", Origin::kAuthor, AnimationTainted::kYes);
+  cascade.Reset();
+  cascade.Add(AnimationTaintedSet("--y", "20s"));
   cascade.Add("animation-duration", "var(--y)");
   cascade.Apply();
 
@@ -1429,7 +2020,7 @@ TEST_F(StyleCascadeTest, SubstituteAnimationTaintedInAnimationProperty) {
 
 TEST_F(StyleCascadeTest, IndirectlyAnimationTainted) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", "20s", Origin::kAuthor, AnimationTainted::kYes);
+  cascade.Add(AnimationTaintedSet("--x", "20s"));
   cascade.Add("--y", "var(--x)");
   cascade.Add("animation-duration", "var(--y)");
   cascade.Apply();
@@ -1441,7 +2032,7 @@ TEST_F(StyleCascadeTest, IndirectlyAnimationTainted) {
 
 TEST_F(StyleCascadeTest, AnimationTaintedFallback) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", "20s", Origin::kAuthor, AnimationTainted::kYes);
+  cascade.Add(AnimationTaintedSet("--x", "20s"));
   cascade.Add("animation-duration", "var(--x,1s)");
   cascade.Apply();
 
@@ -1517,33 +2108,50 @@ TEST_F(StyleCascadeTest, ValidEnvInUsedFallback) {
   EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("background-color"));
 }
 
-// An Animator that just records the name of all the properties
-// applied.
-class RecordingAnimator : public StyleCascade::Animator {
- public:
-  void Apply(const CSSProperty& property,
-             const CSSPendingInterpolationValue&,
-             StyleCascade::Resolver& resolver) override {
-    record.push_back(property.GetCSSPropertyName());
-  }
+TEST_F(StyleCascadeTest, AnimationApplyFilter) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { color: white; background-color: white; }
+        to { color: gray; background-color: gray; }
+     }
+    )HTML");
 
-  Vector<CSSPropertyName> record;
-};
-
-TEST_F(StyleCascadeTest, AnimatorCalledByPendingInterpolationValue) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-
-  RecordingAnimator animator;
-
-  using Type = CSSPendingInterpolationValue::Type;
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", CSSPendingInterpolationValue::Create(Type::kCSSProperty));
-  cascade.Add("--y", CSSPendingInterpolationValue::Create(Type::kCSSProperty));
 
-  cascade.Apply(animator);
+  cascade.Add("animation: test linear 10s -5s");
+  cascade.Add("color:green");
+  cascade.Apply();
 
-  EXPECT_TRUE(animator.record.Contains(*CSSPropertyName::From("--x")));
-  EXPECT_TRUE(animator.record.Contains(*CSSPropertyName::From("--y")));
+  cascade.AddInterpolations();
+  cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
+
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
+  EXPECT_EQ("rgb(192, 192, 192)", cascade.ComputedValue("background-color"));
+}
+
+TEST_F(StyleCascadeTest, TransitionApplyFilter) {
+  TestCascade cascade1(GetDocument());
+  cascade1.Add("background-color: white");
+  cascade1.Add("color: white");
+  cascade1.Add("transition: all steps(2, start) 100s");
+  cascade1.Apply();
+
+  // Set the old style on the element, so that the transition
+  // update detects it.
+  GetDocument().body()->SetComputedStyle(cascade1.TakeStyle());
+
+  // Now simulate a new style, with new color values.
+  TestCascade cascade2(GetDocument());
+  cascade2.Add("background-color: gray");
+  cascade2.Add("color: gray");
+  cascade2.Add("transition: all steps(2, start) 100s");
+  cascade2.Apply();
+
+  cascade2.AddInterpolations();
+  cascade2.Apply(CascadeFilter(CSSProperty::kInherited, true));
+
+  EXPECT_EQ("rgb(128, 128, 128)", cascade2.ComputedValue("color"));
+  EXPECT_EQ("rgb(192, 192, 192)", cascade2.ComputedValue("background-color"));
 }
 
 TEST_F(StyleCascadeTest, PendingKeyframeAnimation) {
@@ -1562,9 +2170,10 @@ TEST_F(StyleCascadeTest, PendingKeyframeAnimation) {
   cascade.Add("animation-duration", "1s");
   cascade.Apply();
 
-  cascade.AddAnimations();
+  cascade.AddInterpolations();
+  cascade.Apply();
 
-  EXPECT_EQ("<interpolation>", cascade.GetValue("--x"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetPriority("--x").GetOrigin());
 }
 
 TEST_F(StyleCascadeTest, PendingKeyframeAnimationApply) {
@@ -1585,11 +2194,10 @@ TEST_F(StyleCascadeTest, PendingKeyframeAnimationApply) {
   cascade.Add("animation-delay", "-5s");
   cascade.Apply();
 
-  cascade.AddAnimations();
+  cascade.AddInterpolations();
+  cascade.Apply();
 
-  EXPECT_EQ("<interpolation>", cascade.GetValue("--x"));
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-  cascade.Apply(animator);
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetPriority("--x").GetOrigin());
   EXPECT_EQ("15px", cascade.ComputedValue("--x"));
 }
 
@@ -1612,11 +2220,11 @@ TEST_F(StyleCascadeTest, TransitionCausesInterpolationValue) {
   cascade2.Add("transition", "--x 1s");
   cascade2.Apply();
 
-  // Detects transitions, and adds CSSPendingInterpolationValues
-  // to the cascade, as appropriate.
-  cascade2.AddTransitions();
+  cascade2.AddInterpolations();
+  cascade2.Apply();
 
-  EXPECT_EQ("<interpolation>", cascade2.GetValue("--x"));
+  EXPECT_EQ(CascadeOrigin::kTransition,
+            cascade2.GetPriority("--x").GetOrigin());
 }
 
 TEST_F(StyleCascadeTest, TransitionDetectedForChangedFontSize) {
@@ -1640,10 +2248,11 @@ TEST_F(StyleCascadeTest, TransitionDetectedForChangedFontSize) {
   cascade2.Add("transition", "--x 1s, width 1s");
   cascade2.Apply();
 
-  cascade2.AddTransitions();
+  cascade2.AddInterpolations();
+  cascade2.Apply();
 
-  EXPECT_EQ("<interpolation>", cascade2.GetValue("--x"));
-  EXPECT_EQ("<interpolation>", cascade2.GetValue("width"));
+  EXPECT_EQ(CascadeOrigin::kTransition, cascade2.GetOrigin("--x"));
+  EXPECT_EQ(CascadeOrigin::kTransition, cascade2.GetOrigin("width"));
   EXPECT_EQ("10px", cascade2.ComputedValue("height"));
 }
 
@@ -1663,15 +2272,13 @@ TEST_F(StyleCascadeTest, AnimatingVarReferences) {
   cascade.Add("animation-duration", "10s");
   cascade.Add("animation-timing-function", "linear");
   cascade.Add("animation-delay", "-5s");
-  cascade.Apply();
-
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-
-  cascade.AddAnimations();
   cascade.Add("--from", "10px");
   cascade.Add("--to", "20px");
   cascade.Add("--y", "var(--x)");
-  cascade.Apply(animator);
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
 
   EXPECT_EQ("15px", cascade.ComputedValue("--x"));
   EXPECT_EQ("15px", cascade.ComputedValue("--y"));
@@ -1693,13 +2300,117 @@ TEST_F(StyleCascadeTest, AnimateStandardProperty) {
   cascade.Add("animation-delay", "-5s");
   cascade.Apply();
 
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
+  cascade.AddInterpolations();
+  cascade.Apply();
 
-  cascade.AddAnimations();
-  EXPECT_EQ("<interpolation>", cascade.GetValue("width"));
-
-  cascade.Apply(animator);
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("width"));
   EXPECT_EQ("15px", cascade.ComputedValue("width"));
+}
+
+TEST_F(StyleCascadeTest, AnimateLogicalProperty) {
+  // We don't support smooth interpolation of css-logical properties yet,
+  // so this test uses a paused animation at t=0.
+  // TODO(crbug.com/865579): Support animations of css-logical properties
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { margin-inline-start: 10px; }
+        to { margin-inline-start: 20px; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("margin-left:1000px");
+  cascade.Add("animation:test 1s linear paused");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-left"));
+  EXPECT_EQ("10px", cascade.ComputedValue("margin-left"));
+}
+
+TEST_F(StyleCascadeTest, AnimateLogicalPropertyWithLookup) {
+  // We don't support smooth interpolation of css-logical properties yet,
+  // so this test uses a paused animation at t=0.
+  // TODO(crbug.com/865579): Support animations of css-logical properties
+
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { margin-inline-start: 10px; }
+        to { margin-inline-start: 20px; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("margin-left:1000px");
+  cascade.Add("animation:test 1s linear paused");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.ApplySingle(GetCSSPropertyMarginLeft());
+
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-left"));
+  EXPECT_EQ("10px", cascade.ComputedValue("margin-left"));
+}
+
+TEST_F(StyleCascadeTest, AuthorImportantWinOverAnimations) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { width: 10px; height: 10px; }
+        to { width: 20px; height: 20px; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("animation-name", "test");
+  cascade.Add("animation-duration", "10s");
+  cascade.Add("animation-timing-function", "linear");
+  cascade.Add("animation-delay", "-5s");
+  cascade.Add("width:40px");
+  cascade.Add("height:40px !important");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("width"));
+  EXPECT_EQ(CascadeOrigin::kAuthor, cascade.GetOrigin("height"));
+
+  EXPECT_EQ("15px", cascade.ComputedValue("width"));
+  EXPECT_EQ("40px", cascade.ComputedValue("height"));
+}
+
+TEST_F(StyleCascadeTest, TransitionsWinOverAuthorImportant) {
+  // First, simulate an "old style".
+  TestCascade cascade1(GetDocument());
+  cascade1.Add("width:10px !important");
+  cascade1.Add("height:10px !important");
+  cascade1.Add("transition:all 1s");
+  cascade1.Apply();
+
+  // Set the old style on the element, so that the animation
+  // update detects it.
+  GetDocument().body()->SetComputedStyle(cascade1.TakeStyle());
+
+  // Now simulate a new style, with a new value for width/height.
+  TestCascade cascade2(GetDocument());
+  cascade2.Add("width:20px !important");
+  cascade2.Add("height:20px !important");
+  cascade2.Add("transition:all 1s");
+  cascade2.Apply();
+
+  cascade2.AddInterpolations();
+  cascade2.Apply();
+
+  EXPECT_EQ(CascadeOrigin::kTransition,
+            cascade2.GetPriority("width").GetOrigin());
+  EXPECT_EQ(CascadeOrigin::kTransition,
+            cascade2.GetPriority("height").GetOrigin());
 }
 
 TEST_F(StyleCascadeTest, EmRespondsToAnimatedFontSize) {
@@ -1718,15 +2429,13 @@ TEST_F(StyleCascadeTest, EmRespondsToAnimatedFontSize) {
   cascade.Add("animation-duration", "10s");
   cascade.Add("animation-timing-function", "linear");
   cascade.Add("animation-delay", "-5s");
-  cascade.Apply();
-
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-
-  cascade.AddAnimations();
   cascade.Add("--x", "2em");
   cascade.Add("width", "10em");
+  cascade.Apply();
 
-  cascade.Apply(animator);
+  cascade.AddInterpolations();
+  cascade.Apply();
+
   EXPECT_EQ("30px", cascade.ComputedValue("--x"));
   EXPECT_EQ("150px", cascade.ComputedValue("width"));
 }
@@ -1747,15 +2456,13 @@ TEST_F(StyleCascadeTest, AnimateStandardPropertyWithVar) {
   cascade.Add("animation-duration", "10s");
   cascade.Add("animation-timing-function", "linear");
   cascade.Add("animation-delay", "-5s");
-  cascade.Apply();
-
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-
-  cascade.AddAnimations();
   cascade.Add("--from", "10px");
   cascade.Add("--to", "20px");
+  cascade.Apply();
 
-  cascade.Apply(animator);
+  cascade.AddInterpolations();
+  cascade.Apply();
+
   EXPECT_EQ("15px", cascade.ComputedValue("width"));
 }
 
@@ -1777,19 +2484,80 @@ TEST_F(StyleCascadeTest, AnimateStandardShorthand) {
   cascade.Add("animation-delay", "-5s");
   cascade.Apply();
 
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
+  cascade.AddInterpolations();
+  cascade.Apply();
 
-  cascade.AddAnimations();
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-top"));
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-right"));
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-bottom"));
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-left"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-top"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-right"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-bottom"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-left"));
 
-  cascade.Apply(animator);
   EXPECT_EQ("15px", cascade.ComputedValue("margin-top"));
   EXPECT_EQ("15px", cascade.ComputedValue("margin-right"));
   EXPECT_EQ("15px", cascade.ComputedValue("margin-bottom"));
   EXPECT_EQ("15px", cascade.ComputedValue("margin-left"));
+}
+
+TEST_F(StyleCascadeTest, AnimatedVisitedImportantOverride) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { background-color: rgb(100, 100, 100); }
+        to { background-color: rgb(200, 200, 200); }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+  cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
+
+  cascade.Add(ParseDeclarationBlock("background-color:red !important"),
+              CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
+  cascade.Add("animation-name:test");
+  cascade.Add("animation-duration:10s");
+  cascade.Add("animation-timing-function:linear");
+  cascade.Add("animation-delay:-5s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+  EXPECT_EQ("rgb(150, 150, 150)", cascade.ComputedValue("background-color"));
+
+  auto style = cascade.TakeStyle();
+
+  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(Color(255, 0, 0),
+            style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
+
+  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  EXPECT_EQ(Color(150, 150, 150),
+            style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
+}
+
+TEST_F(StyleCascadeTest, AnimatedVisitedHighPrio) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { color: rgb(100, 100, 100); }
+        to { color: rgb(200, 200, 200); }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:red");
+  cascade.Add("animation:test 10s -5s linear");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+  EXPECT_EQ("rgb(150, 150, 150)", cascade.ComputedValue("color"));
+
+  auto style = cascade.TakeStyle();
+
+  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(Color(150, 150, 150),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
+
+  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  EXPECT_EQ(Color(150, 150, 150),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 TEST_F(StyleCascadeTest, AnimatePendingSubstitutionValue) {
@@ -1808,75 +2576,55 @@ TEST_F(StyleCascadeTest, AnimatePendingSubstitutionValue) {
   cascade.Add("animation-duration", "10s");
   cascade.Add("animation-timing-function", "linear");
   cascade.Add("animation-delay", "-5s");
-  cascade.Apply();
-
-  StyleAnimator animator(cascade.State(), cascade.InnerCascade());
-
-  cascade.AddAnimations();
   cascade.Add("--from", "10px");
   cascade.Add("--to", "20px");
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-top"));
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-right"));
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-bottom"));
-  EXPECT_EQ("<interpolation>", cascade.GetValue("margin-left"));
+  cascade.Apply();
 
-  cascade.Apply(animator);
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-top"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-right"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-bottom"));
+  EXPECT_EQ(CascadeOrigin::kAnimation, cascade.GetOrigin("margin-left"));
+
   EXPECT_EQ("15px", cascade.ComputedValue("margin-top"));
   EXPECT_EQ("15px", cascade.ComputedValue("margin-right"));
   EXPECT_EQ("15px", cascade.ComputedValue("margin-bottom"));
   EXPECT_EQ("15px", cascade.ComputedValue("margin-left"));
 }
 
-TEST_F(StyleCascadeTest, ForeignObjectZoomVsEffectiveZoom) {
-  GetDocument().body()->SetInnerHTMLFromString(R"HTML(
-    <svg>
-      <foreignObject id='foreign'></foreignObject>
-    </svg>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* foreign_object = GetDocument().getElementById("foreign");
-  ASSERT_TRUE(foreign_object);
-
-  TestCascade cascade(GetDocument(), foreign_object);
-
-  cascade.Add("zoom", "200%");
-  // TODO(andruud): Can't use CSSPropertyName to get -internal properties
-  // yet.
-  cascade.Add(CSSPropertyName(CSSPropertyID::kInternalEffectiveZoom),
-              "initial");
+TEST_F(StyleCascadeTest, ZoomCascadeOrder) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("zoom:200%", CascadeOrigin::kUserAgent);
+  cascade.Add("zoom:normal", CascadeOrigin::kUserAgent);
   cascade.Apply();
 
-  // If both zoom and -internal-zoom exists in the cascade,
-  // -internal-effective-zoom should win.
   EXPECT_EQ(1.0f, cascade.TakeStyle()->EffectiveZoom());
 }
 
-TEST_F(StyleCascadeTest, ZoomCascadeOrder) {
-  CSSPropertyName effective_zoom(CSSPropertyID::kInternalEffectiveZoom);
+TEST_F(StyleCascadeTest, ZoomVsAll) {
   TestCascade cascade(GetDocument());
-  cascade.Add("zoom", "200%");
-  cascade.Add(effective_zoom, "initial");
+  cascade.Add("zoom:200%", CascadeOrigin::kUserAgent);
+  cascade.Add("all:initial");
   cascade.Apply();
 
   EXPECT_EQ(1.0f, cascade.TakeStyle()->EffectiveZoom());
 }
 
 TEST_F(StyleCascadeTest, ZoomReversedCascadeOrder) {
-  CSSPropertyName effective_zoom(CSSPropertyID::kInternalEffectiveZoom);
   TestCascade cascade(GetDocument());
-  cascade.Add(effective_zoom, "initial");
-  cascade.Add("zoom", "200%");
+  cascade.Add("zoom:normal", CascadeOrigin::kUserAgent);
+  cascade.Add("zoom:200%", CascadeOrigin::kUserAgent);
   cascade.Apply();
 
   EXPECT_EQ(2.0f, cascade.TakeStyle()->EffectiveZoom());
 }
 
-TEST_F(StyleCascadeTest, ZoomPriority) {
-  CSSPropertyName effective_zoom(CSSPropertyID::kInternalEffectiveZoom);
+TEST_F(StyleCascadeTest, ZoomImportant) {
   TestCascade cascade(GetDocument());
-  cascade.Add("zoom", "200%", Origin::kImportantAuthor);
-  cascade.Add(effective_zoom, "initial");
+  cascade.Add("zoom:200% !important", CascadeOrigin::kUserAgent);
+  cascade.Add("zoom:normal", CascadeOrigin::kAuthor);
   cascade.Apply();
 
   EXPECT_EQ(2.0f, cascade.TakeStyle()->EffectiveZoom());
@@ -1904,12 +2652,94 @@ TEST_F(StyleCascadeTest, WritingModeReversedCascadeOrder) {
 
 TEST_F(StyleCascadeTest, WritingModePriority) {
   TestCascade cascade(GetDocument());
-  cascade.Add("writing-mode", "vertical-lr", Origin::kImportantAuthor);
-  cascade.Add("-webkit-writing-mode", "vertical-rl", Origin::kAuthor);
+  cascade.Add("writing-mode:vertical-lr !important", Origin::kAuthor);
+  cascade.Add("-webkit-writing-mode:vertical-rl", Origin::kAuthor);
   cascade.Apply();
 
   EXPECT_EQ("vertical-lr", cascade.ComputedValue("writing-mode"));
   EXPECT_EQ("vertical-lr", cascade.ComputedValue("-webkit-writing-mode"));
+}
+
+TEST_F(StyleCascadeTest, RubyPositionCascadeOrder) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("ruby-position", "over");
+  cascade.Add("-webkit-ruby-position", "after");
+  cascade.Apply();
+
+  EXPECT_EQ("under", cascade.ComputedValue("ruby-position"));
+  EXPECT_EQ("after", cascade.ComputedValue("-webkit-ruby-position"));
+}
+
+TEST_F(StyleCascadeTest, RubyPositionReverseCascadeOrder) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-ruby-position", "after");
+  cascade.Add("ruby-position", "over");
+  cascade.Apply();
+
+  EXPECT_EQ("over", cascade.ComputedValue("ruby-position"));
+  EXPECT_EQ("before", cascade.ComputedValue("-webkit-ruby-position"));
+}
+
+TEST_F(StyleCascadeTest, RubyPositionSurrogateCanCascadeAsOriginal) {
+  // Note: ruby-position is defined as the surrogate, and -webkit-ruby-position
+  // is the original.
+  ASSERT_TRUE(GetCSSPropertyRubyPosition().IsSurrogate());
+  ASSERT_FALSE(GetCSSPropertyWebkitRubyPosition().IsSurrogate());
+
+  const struct {
+    CSSValueID specified;
+    const char* webkit_expected;
+    const char* unprefixed_expected;
+  } tests[] = {
+      {CSSValueID::kBefore, "before", "over"},
+      {CSSValueID::kAfter, "after", "under"},
+      {CSSValueID::kOver, "before", "over"},
+      {CSSValueID::kUnder, "after", "under"},
+  };
+
+  for (const auto& test : tests) {
+    TestCascade cascade(GetDocument());
+    auto* set =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+    set->SetProperty(CSSPropertyID::kWebkitRubyPosition,
+                     *CSSIdentifierValue::Create(test.specified));
+    cascade.Add(set);
+    cascade.Apply();
+    EXPECT_EQ(test.unprefixed_expected, cascade.ComputedValue("ruby-position"));
+    EXPECT_EQ(test.webkit_expected,
+              cascade.ComputedValue("-webkit-ruby-position"));
+  }
+}
+
+TEST_F(StyleCascadeTest, TextOrientationPriority) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("text-orientation:upright !important");
+  cascade.Add("-webkit-text-orientation:sideways");
+  cascade.Apply();
+
+  EXPECT_EQ("upright", cascade.ComputedValue("text-orientation"));
+  EXPECT_EQ("upright", cascade.ComputedValue("-webkit-text-orientation"));
+}
+
+TEST_F(StyleCascadeTest, TextOrientationRevert) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("text-orientation:upright", CascadeOrigin::kUserAgent);
+  cascade.Add("-webkit-text-orientation:mixed");
+  cascade.Add("-webkit-text-orientation:revert");
+  cascade.Apply();
+
+  EXPECT_EQ("upright", cascade.ComputedValue("text-orientation"));
+  EXPECT_EQ("upright", cascade.ComputedValue("-webkit-text-orientation"));
+}
+
+TEST_F(StyleCascadeTest, TextOrientationLegacyKeyword) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-text-orientation:vertical-right");
+  cascade.Apply();
+
+  EXPECT_EQ("mixed", cascade.ComputedValue("text-orientation"));
+  EXPECT_EQ("vertical-right",
+            cascade.ComputedValue("-webkit-text-orientation"));
 }
 
 TEST_F(StyleCascadeTest, WebkitBorderImageCascadeOrder) {
@@ -1975,65 +2805,79 @@ TEST_F(StyleCascadeTest, WebkitBorderImageMixedOrder) {
   EXPECT_EQ("space", cascade.ComputedValue("border-image-repeat"));
 }
 
-TEST_F(StyleCascadeTest, AllLogicalPropertiesSlot) {
-  using Origin = StyleCascade::Origin;
-
+TEST_F(StyleCascadeTest, InitialDirection) {
   TestCascade cascade(GetDocument());
+  cascade.Add("margin-inline-start:10px");
+  cascade.Add("margin-inline-end:20px");
+  cascade.Apply();
 
-  static const TextDirection directions[] = {TextDirection::kLtr,
-                                             TextDirection::kRtl};
+  EXPECT_EQ("10px", cascade.ComputedValue("margin-left"));
+  EXPECT_EQ("20px", cascade.ComputedValue("margin-right"));
+}
 
-  static const WritingMode modes[] = {WritingMode::kHorizontalTb,
-                                      WritingMode::kVerticalRl,
-                                      WritingMode::kVerticalLr};
+TEST_F(StyleCascadeTest, NonInitialDirection) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("margin-inline-start:10px");
+  cascade.Add("margin-inline-end:20px");
+  cascade.Add("direction:rtl");
+  cascade.Apply();
 
-  for (CSSPropertyID id : CSSPropertyIDList()) {
-    const CSSProperty& property = CSSProperty::Get(id);
+  EXPECT_EQ("20px", cascade.ComputedValue("margin-left"));
+  EXPECT_EQ("10px", cascade.ComputedValue("margin-right"));
+}
 
-    if (!property.IsLonghand())
-      continue;
+TEST_F(StyleCascadeTest, InitialWritingMode) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("inline-size:10px");
+  cascade.Add("block-size:20px");
+  cascade.Apply();
 
-    for (TextDirection direction : directions) {
-      for (WritingMode mode : modes) {
-        const CSSProperty& physical =
-            property.ResolveDirectionAwareProperty(direction, mode);
-        if (&property == &physical)
-          continue;
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("20px", cascade.ComputedValue("height"));
+}
 
-        auto& state = cascade.State();
-        state.Style()->SetDirection(direction);
-        state.Style()->SetWritingMode(mode);
+TEST_F(StyleCascadeTest, NonInitialWritingMode) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("inline-size:10px");
+  cascade.Add("block-size:20px");
+  cascade.Add("writing-mode:vertical-lr");
+  cascade.Apply();
 
-        // Set logical first.
-        {
-          StyleCascadeSlots slots;
-          EXPECT_TRUE(slots.Set(property, Origin::kAuthor, state));
-          EXPECT_FALSE(slots.Set(physical, Origin::kUserAgent, state));
-        }
+  EXPECT_EQ("20px", cascade.ComputedValue("width"));
+  EXPECT_EQ("10px", cascade.ComputedValue("height"));
+}
 
-        // Set physical first.
-        {
-          StyleCascadeSlots slots;
-          EXPECT_TRUE(slots.Set(physical, Origin::kAuthor, state));
-          EXPECT_FALSE(slots.Set(property, Origin::kUserAgent, state));
-        }
+TEST_F(StyleCascadeTest, DoesNotDependOnCascadeAffectingProperty) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:10px");
+  cascade.Add("height:20px");
+  cascade.Apply();
 
-        // Set logical twice.
-        {
-          StyleCascadeSlots slots;
-          EXPECT_TRUE(slots.Set(property, Origin::kAuthor, state));
-          EXPECT_FALSE(slots.Set(property, Origin::kUserAgent, state));
-        }
+  EXPECT_FALSE(cascade.DependsOnCascadeAffectingProperty());
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("20px", cascade.ComputedValue("height"));
+}
 
-        // Set physical twice.
-        {
-          StyleCascadeSlots slots;
-          EXPECT_TRUE(slots.Set(physical, Origin::kAuthor, state));
-          EXPECT_FALSE(slots.Set(physical, Origin::kUserAgent, state));
-        }
-      }
-    }
-  }
+TEST_F(StyleCascadeTest, DependsOnCascadeAffectingProperty) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("inline-size:10px");
+  cascade.Add("height:20px");
+  cascade.Apply();
+
+  EXPECT_TRUE(cascade.DependsOnCascadeAffectingProperty());
+  EXPECT_EQ("10px", cascade.ComputedValue("width"));
+  EXPECT_EQ("20px", cascade.ComputedValue("height"));
+}
+
+TEST_F(StyleCascadeTest, ResetDependsOnCascadeAffectingPropertyFlag) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("inline-size:10px");
+  cascade.Add("height:20px");
+  cascade.Apply();
+
+  EXPECT_TRUE(cascade.DependsOnCascadeAffectingProperty());
+  cascade.Reset();
+  EXPECT_FALSE(cascade.DependsOnCascadeAffectingProperty());
 }
 
 TEST_F(StyleCascadeTest, MarkReferenced) {
@@ -2044,22 +2888,69 @@ TEST_F(StyleCascadeTest, MarkReferenced) {
   cascade.Add("width", "var(--x)");
   cascade.Apply();
 
-  const auto* registry = GetDocument().GetPropertyRegistry();
-  ASSERT_TRUE(registry);
+  const auto& registry = GetDocument().EnsurePropertyRegistry();
 
-  EXPECT_TRUE(registry->WasReferenced("--x"));
-  EXPECT_FALSE(registry->WasReferenced("--y"));
+  EXPECT_TRUE(registry.WasReferenced("--x"));
+  EXPECT_FALSE(registry.WasReferenced("--y"));
+}
+
+TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghand) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x", "1px");
+  cascade.Add("width", "var(--x)");
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthand) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x", "1px");
+  cascade.Add("margin", "var(--x)");
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghandMissingVar) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width", "var(--x)");
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthandMissingVar) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("margin", "var(--x)");
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceInherited) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color", "var(--x)");
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_FALSE(style->HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceWithoutVar) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width", "1px");
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_FALSE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
 TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
-  CSSPropertyName visited_color(CSSPropertyID::kInternalVisitedColor);
-
   TestCascade cascade(GetDocument());
-  cascade.Add(visited_color, "red");
-  cascade.Add("color", "green");
-  cascade.Apply();
+  cascade.Add("color:green", CascadeOrigin::kAuthor);
+  cascade.Add("color:red", CascadeOrigin::kAuthor, CSSSelector::kMatchVisited);
 
   cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.Apply();
 
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
 
@@ -2068,520 +2959,528 @@ TEST_F(StyleCascadeTest, InternalVisitedColorLonghand) {
   EXPECT_EQ(red, cascade.TakeStyle()->VisitedDependentColor(color));
 }
 
-TEST_F(StyleCascadeTest, VarInInternalVisitedShorthand) {
-  CSSPropertyName visited_outline_color(
-      CSSPropertyID::kInternalVisitedOutlineColor);
-
+TEST_F(StyleCascadeTest, VarInInternalVisitedColorShorthand) {
   TestCascade cascade(GetDocument());
-  cascade.Add("--x", "green");
-  cascade.Add("outline", "medium solid var(--x)");
-
-  // Copy pending substitution value from outline-color to
-  // -internal-visited-outline-color, approximating StyleResolver's behavior
-  // for :visited declarations.
-  const CSSValue* pending_substitution = cascade.GetCSSValue("outline-color");
-  ASSERT_TRUE(pending_substitution);
-  cascade.Add(visited_outline_color, pending_substitution);
-  cascade.Add("outline-color", "red");
-
-  // Apply "outline-color" manually first, to ensure that
-  // -internal-visited-outline-color is applied afterwards.
-  cascade.Apply("outline-color");
-
-  // When applying -internal-visited-outline-color, it should not modify
-  // outline-color.
-  cascade.Apply();
+  cascade.Add("--x:red", CascadeOrigin::kAuthor);
+  cascade.Add("outline:medium solid var(--x)", CascadeOrigin::kAuthor,
+              CSSSelector::kMatchVisited);
+  cascade.Add("outline-color:green", CascadeOrigin::kAuthor,
+              CSSSelector::kMatchLink);
 
   cascade.State().Style()->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  cascade.Apply();
 
-  EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("outline-color"));
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("outline-color"));
 
-  Color green(0, 128, 0);
+  Color red(255, 0, 0);
   const CSSProperty& outline_color = GetCSSPropertyOutlineColor();
-  EXPECT_EQ(green, cascade.TakeStyle()->VisitedDependentColor(outline_color));
+  EXPECT_EQ(red, cascade.TakeStyle()->VisitedDependentColor(outline_color));
 }
 
-TEST_F(StyleCascadeTest, ExcludeNothing) {
-  StyleCascade::Excluder excluder;
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyInternalVisitedColor()));
-}
-
-TEST_F(StyleCascadeTest, ExcludeInherited) {
-  StyleCascade::Excluder excluder;
-  excluder.Exclude(CSSProperty::kInherited, true);
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyFontSize()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyInternalVisitedColor()));
-}
-
-TEST_F(StyleCascadeTest, ExcludeNonInherited) {
-  StyleCascade::Excluder excluder;
-  excluder.Exclude(CSSProperty::kInherited, false);
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyInternalVisitedColor()));
-}
-
-TEST_F(StyleCascadeTest, ExcludeVisitedAndInherited) {
-  StyleCascade::Excluder excluder;
-  excluder.Exclude(CSSProperty::kVisited, true);
-  excluder.Exclude(CSSProperty::kInherited, true);
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_TRUE(
-      excluder.IsExcluded(GetCSSPropertyInternalVisitedBackgroundColor()));
-}
-
-TEST_F(StyleCascadeTest, ExcludeVisitedAndNonInherited) {
-  StyleCascade::Excluder excluder;
-  excluder.Exclude(CSSProperty::kVisited, true);
-  excluder.Exclude(CSSProperty::kInherited, false);
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyInternalVisitedColor()));
-}
-
-TEST_F(StyleCascadeTest, ClearExcludes) {
-  StyleCascade::Excluder excluder;
-  excluder.Exclude(CSSProperty::kVisited, true);
-  excluder.Exclude(CSSProperty::kInherited, false);
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_TRUE(excluder.IsExcluded(GetCSSPropertyInternalVisitedColor()));
-  excluder.Clear();
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyBackgroundColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyColor()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyDisplay()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyFloat()));
-  EXPECT_FALSE(excluder.IsExcluded(GetCSSPropertyInternalVisitedColor()));
-}
-
-TEST_F(StyleCascadeTest, ApplyWithExclude) {
+TEST_F(StyleCascadeTest, ApplyWithFilter) {
   TestCascade cascade(GetDocument());
   cascade.Add("color", "blue", Origin::kAuthor);
   cascade.Add("background-color", "green", Origin::kAuthor);
   cascade.Add("display", "inline", Origin::kAuthor);
   cascade.Apply();
+
+  cascade.Reset();
   cascade.Add("color", "green", Origin::kAuthor);
   cascade.Add("background-color", "red", Origin::kAuthor);
   cascade.Add("display", "block", Origin::kAuthor);
-  cascade.Exclude(CSSProperty::kInherited, false);
-  cascade.Apply();
+  cascade.Apply(CascadeFilter(CSSProperty::kInherited, false));
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
   EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("background-color"));
   EXPECT_EQ("inline", cascade.ComputedValue("display"));
 }
 
-TEST_F(StyleCascadeTest, ApplyClearsExcludes) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color", "red", Origin::kAuthor);
-  cascade.Add("background-color", "red", Origin::kAuthor);
-  cascade.Add("display", "inline", Origin::kAuthor);
-  cascade.Exclude(CSSProperty::kInherited, true);
-  cascade.Exclude(CSSProperty::kInherited, false);
-  cascade.Apply();
-  cascade.Add("color", "green", Origin::kAuthor);
-  cascade.Add("background-color", "green", Origin::kAuthor);
-  cascade.Add("display", "block", Origin::kAuthor);
-  cascade.Apply();
-  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
-  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("background-color"));
-  EXPECT_EQ("block", cascade.ComputedValue("display"));
+TEST_F(StyleCascadeTest, HasAuthorBackground) {
+  Vector<String> properties = {"background-attachment", "background-blend-mode",
+                               "background-clip",       "background-image",
+                               "background-origin",     "background-position-x",
+                               "background-position-y", "background-size"};
+
+  for (String property : properties) {
+    TestCascade cascade(GetDocument());
+    cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
+    cascade.Add(property, "unset", Origin::kAuthor);
+    cascade.Apply();
+    EXPECT_TRUE(cascade.TakeStyle()->HasAuthorBackground());
+  }
 }
 
-TEST_F(StyleCascadeTest, UAStyleAbsentWithoutAppearance) {
+TEST_F(StyleCascadeTest, HasAuthorBorder) {
+  Vector<String> properties = {
+      "border-top-color",          "border-right-color",
+      "border-bottom-color",       "border-left-color",
+      "border-top-style",          "border-right-style",
+      "border-bottom-style",       "border-left-style",
+      "border-top-width",          "border-right-width",
+      "border-bottom-width",       "border-left-width",
+      "border-top-left-radius",    "border-top-right-radius",
+      "border-bottom-left-radius", "border-bottom-right-radius",
+      "border-image-source",       "border-image-slice",
+      "border-image-width",        "border-image-outset",
+      "border-image-repeat"};
+
+  for (String property : properties) {
+    TestCascade cascade(GetDocument());
+    cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
+    cascade.Add(property, "unset", Origin::kAuthor);
+    cascade.Apply();
+    EXPECT_TRUE(cascade.TakeStyle()->HasAuthorBorder());
+  }
+}
+
+TEST_F(StyleCascadeTest, HasAuthorBorderLogical) {
   TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
+  cascade.Add("border-block-start-color", "red", Origin::kUserAgent);
+  cascade.Add("border-block-start-color", "green", Origin::kAuthor);
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_TRUE(style->HasAuthorBorder());
+}
+
+TEST_F(StyleCascadeTest, NoAuthorBackgroundOrBorder) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
   cascade.Add("background-color", "red", Origin::kUserAgent);
-  cascade.Add("border-right-color", "red", Origin::kUserAgent);
+  cascade.Add("border-left-color", "green", Origin::kUserAgent);
+  cascade.Add("background-clip", "padding-box", Origin::kUser);
+  cascade.Add("border-right-color", "green", Origin::kUser);
   cascade.Apply();
-  EXPECT_FALSE(cascade.State().GetUAStyle());
+  auto style = cascade.TakeStyle();
+  EXPECT_FALSE(style->HasAuthorBackground());
+  EXPECT_FALSE(style->HasAuthorBorder());
 }
 
-TEST_F(StyleCascadeTest, UAStylePresentWithAppearance) {
+TEST_F(StyleCascadeTest, AuthorBackgroundRevert) {
   TestCascade cascade(GetDocument());
-  cascade.Add("-webkit-appearance", "button");
+  cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
   cascade.Add("background-color", "red", Origin::kUserAgent);
+  cascade.Add("background-color", "revert", Origin::kAuthor);
   cascade.Apply();
-  EXPECT_TRUE(cascade.State().GetUAStyle());
+  auto style = cascade.TakeStyle();
+  EXPECT_FALSE(style->HasAuthorBackground());
 }
 
-TEST_F(StyleCascadeTest, UAStyleNoDiffBackground) {
+TEST_F(StyleCascadeTest, AuthorBorderRevert) {
   TestCascade cascade(GetDocument());
-  cascade.Add("-webkit-appearance", "button");
-  cascade.Add("background-attachment", "fixed", Origin::kUserAgent);
-  cascade.Add("background-blend-mode", "darken", Origin::kUserAgent);
-  cascade.Add("background-clip", "padding-box", Origin::kUserAgent);
-  cascade.Add("background-image", "none", Origin::kUserAgent);
-  cascade.Add("background-origin", "content-box", Origin::kUserAgent);
-  cascade.Add("background-position-x", "10px", Origin::kUserAgent);
-  cascade.Add("background-position-y", "10px", Origin::kUserAgent);
-  cascade.Add("background-size", "contain", Origin::kUserAgent);
-  cascade.Apply();
-  ASSERT_TRUE(cascade.State().GetUAStyle());
-  EXPECT_FALSE(cascade.State().GetUAStyle()->HasDifferentBackground(
-      cascade.State().StyleRef()));
-}
-
-TEST_F(StyleCascadeTest, UAStyleDiffBackground) {
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(red, green)",
-                Origin::kUserAgent);
-    cascade.Add("background-attachment", "fixed", Origin::kUserAgent);
-    cascade.Add("background-attachment", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(red, green)",
-                Origin::kUserAgent);
-    cascade.Add("background-blend-mode", "darken", Origin::kUserAgent);
-    cascade.Add("background-blend-mode", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(red, green)",
-                Origin::kUserAgent);
-    cascade.Add("background-clip", "padding-box", Origin::kUserAgent);
-    cascade.Add("background-clip", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(green, red)",
-                Origin::kUserAgent);
-    cascade.Add("background-image", "linear-gradient(red, green)",
-                Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(green, red)",
-                Origin::kUserAgent);
-    cascade.Add("background-origin", "content-box", Origin::kUserAgent);
-    cascade.Add("background-origin", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(green, red)",
-                Origin::kUserAgent);
-    cascade.Add("background-position-x", "10px", Origin::kUserAgent);
-    cascade.Add("background-position-x", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(green, red)",
-                Origin::kUserAgent);
-    cascade.Add("background-position-y", "10px", Origin::kUserAgent);
-    cascade.Add("background-position-y", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("background-image", "linear-gradient(green, red)",
-                Origin::kUserAgent);
-    cascade.Add("background-size", "contain", Origin::kUserAgent);
-    cascade.Add("background-size", "unset", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBackground(
-        cascade.State().StyleRef()));
-  }
-}
-
-TEST_F(StyleCascadeTest, UAStyleBorderNoDifference) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("-webkit-appearance", "button");
+  cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
   cascade.Add("border-top-color", "red", Origin::kUserAgent);
-  cascade.Add("border-right-color", "red", Origin::kUserAgent);
-  cascade.Add("border-bottom-color", "red", Origin::kUserAgent);
-  cascade.Add("border-left-color", "red", Origin::kUserAgent);
-  cascade.Add("border-top-style", "dashed", Origin::kUserAgent);
-  cascade.Add("border-right-style", "dashed", Origin::kUserAgent);
-  cascade.Add("border-bottom-style", "dashed", Origin::kUserAgent);
-  cascade.Add("border-left-style", "dashed", Origin::kUserAgent);
-  cascade.Add("border-top-width", "5px", Origin::kUserAgent);
-  cascade.Add("border-right-width", "5px", Origin::kUserAgent);
-  cascade.Add("border-bottom-width", "5px", Origin::kUserAgent);
-  cascade.Add("border-left-width", "5px", Origin::kUserAgent);
-  cascade.Add("border-top-left-radius", "5px", Origin::kUserAgent);
-  cascade.Add("border-top-right-radius", "5px", Origin::kUserAgent);
-  cascade.Add("border-bottom-left-radius", "5px", Origin::kUserAgent);
-  cascade.Add("border-bottom-right-radius", "5px", Origin::kUserAgent);
-  cascade.Add("border-image-source", "none", Origin::kUserAgent);
-  cascade.Add("border-image-slice", "30", Origin::kUserAgent);
-  cascade.Add("border-image-width", "10px", Origin::kUserAgent);
-  cascade.Add("border-image-outset", "15px", Origin::kUserAgent);
-  cascade.Add("border-image-repeat", "round", Origin::kUserAgent);
+  cascade.Add("border-top-color", "revert", Origin::kAuthor);
   cascade.Apply();
-  ASSERT_TRUE(cascade.State().GetUAStyle());
-  EXPECT_FALSE(cascade.State().GetUAStyle()->HasDifferentBorder(
-      cascade.State().StyleRef()));
+  auto style = cascade.TakeStyle();
+  EXPECT_FALSE(style->HasAuthorBorder());
 }
 
-TEST_F(StyleCascadeTest, UAStyleBorderDifference) {
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-top-color", "red", Origin::kUserAgent);
-    cascade.Add("border-top-color", "green", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-right-color", "red", Origin::kUserAgent);
-    cascade.Add("border-right-color", "green", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-bottom-color", "red", Origin::kUserAgent);
-    cascade.Add("border-bottom-color", "green", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-left-color", "red", Origin::kUserAgent);
-    cascade.Add("border-left-color", "green", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-top-style", "dashed", Origin::kUserAgent);
-    cascade.Add("border-top-style", "solid", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-right-style", "dashed", Origin::kUserAgent);
-    cascade.Add("border-right-style", "solid", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-bottom-style", "dashed", Origin::kUserAgent);
-    cascade.Add("border-bottom-style", "solid", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-left-style", "dashed", Origin::kUserAgent);
-    cascade.Add("border-left-style", "solid", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-top-style", "solid", Origin::kUserAgent);
-    cascade.Add("border-top-width", "10px", Origin::kUserAgent);
-    cascade.Add("border-top-width", "9px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-right-style", "solid", Origin::kUserAgent);
-    cascade.Add("border-right-width", "10px", Origin::kUserAgent);
-    cascade.Add("border-right-width", "9px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-bottom-style", "solid", Origin::kUserAgent);
-    cascade.Add("border-bottom-width", "10px", Origin::kUserAgent);
-    cascade.Add("border-bottom-width", "9px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-left-style", "solid", Origin::kUserAgent);
-    cascade.Add("border-left-width", "10px", Origin::kUserAgent);
-    cascade.Add("border-left-width", "9px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-top-left-radius", "5px", Origin::kUserAgent);
-    cascade.Add("border-top-left-radius", "2px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-top-right-radius", "5px", Origin::kUserAgent);
-    cascade.Add("border-top-right-radius", "2px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-bottom-left-radius", "5px", Origin::kUserAgent);
-    cascade.Add("border-bottom-left-radius", "2px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-bottom-right-radius", "5px", Origin::kUserAgent);
-    cascade.Add("border-bottom-right-radius", "2px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-image-source", "none", Origin::kUserAgent);
-    cascade.Add("border-image-source", "linear-gradient(red, green)",
-                Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-image-slice", "30", Origin::kUserAgent);
-    cascade.Add("border-image-slice", "10", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-image-width", "10px", Origin::kUserAgent);
-    cascade.Add("border-image-width", "15px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-image-outset", "10px", Origin::kUserAgent);
-    cascade.Add("border-image-outset", "15px", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
-  {
-    TestCascade cascade(GetDocument());
-    cascade.Add("-webkit-appearance", "button");
-    cascade.Add("border-image-repeat", "round", Origin::kUserAgent);
-    cascade.Add("border-image-repeat", "stretch", Origin::kAuthor);
-    cascade.Apply();
-    ASSERT_TRUE(cascade.State().GetUAStyle());
-    EXPECT_TRUE(cascade.State().GetUAStyle()->HasDifferentBorder(
-        cascade.State().StyleRef()));
-  }
+TEST_F(StyleCascadeTest, AuthorBorderRevertLogical) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-appearance", "button", Origin::kUserAgent);
+  cascade.Add("border-block-start-color", "red", Origin::kUserAgent);
+  cascade.Add("border-block-start-color", "revert", Origin::kAuthor);
+  cascade.Apply();
+  auto style = cascade.TakeStyle();
+  EXPECT_FALSE(style->HasAuthorBorder());
+}
+
+TEST_F(StyleCascadeTest, AnalyzeMatchResult) {
+  auto ua = CascadeOrigin::kUserAgent;
+  auto author = CascadeOrigin::kAuthor;
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("display:none;left:5px", ua);
+  cascade.Add("font-size:1px !important", ua);
+  cascade.Add("display:block;color:red", author);
+  cascade.Add("font-size:3px", author);
+  cascade.Apply();
+
+  EXPECT_EQ(cascade.GetPriority("display").GetOrigin(), author);
+  EXPECT_EQ(cascade.GetPriority("left").GetOrigin(), ua);
+  EXPECT_EQ(cascade.GetPriority("color").GetOrigin(), author);
+  EXPECT_EQ(cascade.GetPriority("font-size").GetOrigin(), ua);
+}
+
+TEST_F(StyleCascadeTest, AnalyzeMatchResultAll) {
+  auto ua = CascadeOrigin::kUserAgent;
+  auto author = CascadeOrigin::kAuthor;
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("display:block", ua);
+  cascade.Add("font-size:1px !important", ua);
+  cascade.Add("all:unset", author);
+  cascade.Apply();
+
+  EXPECT_EQ(cascade.GetPriority("display").GetOrigin(), author);
+  EXPECT_EQ(cascade.GetPriority("font-size").GetOrigin(), ua);
+
+  // Random sample from another property affected by 'all'.
+  EXPECT_EQ(cascade.GetPriority("color").GetOrigin(), author);
+  EXPECT_EQ(cascade.GetPriority("color"), cascade.GetPriority("display"));
+}
+
+TEST_F(StyleCascadeTest, AnalyzeFlagsClean) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { top: 0px; }
+        to { top: 10px; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("bottom:10px");
+  cascade.Add("animation:test linear 1000s -500s");
+  cascade.Apply();
+  EXPECT_FALSE(cascade.NeedsMatchResultAnalyze());
+  EXPECT_FALSE(cascade.NeedsInterpolationsAnalyze());
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+  EXPECT_FALSE(cascade.NeedsMatchResultAnalyze());
+  EXPECT_FALSE(cascade.NeedsInterpolationsAnalyze());
+}
+
+TEST_F(StyleCascadeTest, ApplyMatchResultFilter) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("display:block");
+  cascade.Add("color:green");
+  cascade.Add("font-size:3px");
+  cascade.Apply();
+
+  cascade.Reset();
+  cascade.Add("display:inline");
+  cascade.Add("color:red");
+  cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
+
+  EXPECT_EQ("inline", cascade.ComputedValue("display"));
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
+  EXPECT_EQ("3px", cascade.ComputedValue("font-size"));
+}
+
+TEST_F(StyleCascadeTest, ApplyMatchResultAllFilter) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:green");
+  cascade.Add("display:block");
+  cascade.Apply();
+
+  cascade.Reset();
+  cascade.Add("all:unset");
+  cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
+
+  EXPECT_EQ("rgb(0, 128, 0)", cascade.ComputedValue("color"));
+  EXPECT_EQ("inline", cascade.ComputedValue("display"));
+}
+
+TEST_F(StyleCascadeTest, MarkHasReferenceLonghand) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--x:red");
+  cascade.Add("background-color:var(--x)");
+  cascade.Apply();
+
+  EXPECT_TRUE(cascade.State()
+                  .StyleRef()
+                  .HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, MarkHasReferenceShorthand) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--x:red");
+  cascade.Add("background:var(--x)");
+  cascade.Apply();
+
+  EXPECT_TRUE(cascade.State()
+                  .StyleRef()
+                  .HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, NoMarkHasReferenceForInherited) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("--x:red");
+  cascade.Add("--y:caption");
+  cascade.Add("color:var(--x)");
+  cascade.Add("font:var(--y)");
+  cascade.Apply();
+
+  EXPECT_FALSE(cascade.State()
+                   .StyleRef()
+                   .HasVariableReferenceFromNonInheritedProperty());
+}
+
+TEST_F(StyleCascadeTest, Reset) {
+  TestCascade cascade(GetDocument());
+
+  EXPECT_EQ(CascadePriority(), cascade.GetPriority("color"));
+  EXPECT_EQ(CascadePriority(), cascade.GetPriority("--x"));
+
+  cascade.Add("color:red");
+  cascade.Add("--x:red");
+  cascade.Apply();  // generation=1
+  cascade.Apply();  // generation=2
+
+  EXPECT_EQ(2u, cascade.GetPriority("color").GetGeneration());
+  EXPECT_EQ(2u, cascade.GetPriority("--x").GetGeneration());
+
+  cascade.Reset();
+
+  EXPECT_EQ(CascadePriority(), cascade.GetPriority("color"));
+  EXPECT_EQ(CascadePriority(), cascade.GetPriority("--x"));
+}
+
+TEST_F(StyleCascadeTest, GetImportantSetEmpty) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("color:red");
+  cascade.Add("width:1px");
+  cascade.Add("--x:green");
+  EXPECT_FALSE(cascade.GetImportantSet());
+}
+
+TEST_F(StyleCascadeTest, GetImportantSetSingle) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:1px !important");
+  ASSERT_TRUE(cascade.GetImportantSet());
+  EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth}), *cascade.GetImportantSet());
+}
+
+TEST_F(StyleCascadeTest, GetImportantSetMany) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:1px !important");
+  cascade.Add("height:1px !important");
+  cascade.Add("top:1px !important");
+  ASSERT_TRUE(cascade.GetImportantSet());
+  EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth, CSSPropertyID::kHeight,
+                       CSSPropertyID::kTop}),
+            *cascade.GetImportantSet());
+}
+
+TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {
+  TestCascade cascade(GetDocument(), GetDocument().documentElement());
+  cascade.Add("color:red");
+  cascade.Apply();
+
+  cascade.Reset();
+  cascade.Add("display:block");
+  cascade.Apply();  // Should not affect 'color'.
+
+  auto style = cascade.TakeStyle();
+
+  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(Color(255, 0, 0),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
+
+  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  EXPECT_EQ(Color(255, 0, 0),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(StyleCascadeTest, InitialColor) {
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+
+  TestCascade cascade(GetDocument(), GetDocument().documentElement());
+  cascade.Add("color-scheme:dark");
+
+  // CSSInitialColorValue is not reachable via a string, hence we must
+  // create the CSSPropertyValueSet that contains it manually.
+  auto* set =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  set->SetProperty(CSSPropertyID::kColor, *CSSInitialColorValue::Create());
+  cascade.Add(set);
+
+  cascade.Apply();
+
+  auto style = cascade.TakeStyle();
+
+  style->SetInsideLink(EInsideLink::kInsideVisitedLink);
+  EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
+
+  style->SetInsideLink(EInsideLink::kNotInsideLink);
+  EXPECT_EQ(Color::kWhite, style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(StyleCascadeTest, MaxSubstitutionTokens) {
+  StringBuilder builder;
+  for (size_t i = 0; i < StyleCascade::kMaxSubstitutionTokens; ++i)
+    builder.Append(':');  // <colon-token>
+
+  String at_limit = builder.ToString();
+  String above_limit = builder.ToString() + ":";
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("--at-limit", at_limit);
+  cascade.Add("--above-limit", above_limit);
+  cascade.Add("--at-limit-reference", "var(--at-limit)");
+  cascade.Add("--above-limit-reference", "var(--above-limit)");
+  cascade.Add("--at-limit-reference-fallback",
+              "var(--unknown,var(--at-limit))");
+  cascade.Add("--above-limit-reference-fallback",
+              "var(--unknown,var(--above-limit))");
+  cascade.Apply();
+
+  EXPECT_EQ(at_limit, cascade.ComputedValue("--at-limit"));
+  EXPECT_EQ(above_limit, cascade.ComputedValue("--above-limit"));
+  EXPECT_EQ(at_limit, cascade.ComputedValue("--at-limit-reference"));
+  EXPECT_EQ(g_null_atom, cascade.ComputedValue("--above-limit-reference"));
+  EXPECT_EQ(at_limit, cascade.ComputedValue("--at-limit-reference-fallback"));
+  EXPECT_EQ(g_null_atom,
+            cascade.ComputedValue("--above-limit-reference-fallback"));
+}
+
+TEST_F(StyleCascadeTest, GetCascadedValues) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:1px", CascadeOrigin::kUserAgent);
+  cascade.Add("right:2px", CascadeOrigin::kUserAgent);
+  cascade.Add("bottom:3px", CascadeOrigin::kUserAgent);
+  cascade.Add("left:4px !important", CascadeOrigin::kUserAgent);
+  cascade.Add("width:5px", CascadeOrigin::kUserAgent);
+
+  cascade.Add("top:10px", CascadeOrigin::kUser);
+  cascade.Add("right:20px", CascadeOrigin::kUser);
+  cascade.Add("bottom:30px !important", CascadeOrigin::kUser);
+  cascade.Add("left:40px", CascadeOrigin::kUser);
+  cascade.Add("height:60px", CascadeOrigin::kUser);
+  cascade.Add("height:61px", CascadeOrigin::kUser);
+  cascade.Add("--x:70px", CascadeOrigin::kUser);
+  cascade.Add("--y:80px !important", CascadeOrigin::kUser);
+
+  cascade.Add("top:100px", CascadeOrigin::kAuthor);
+  cascade.Add("right:201px !important", CascadeOrigin::kAuthor);
+  cascade.Add("right:200px", CascadeOrigin::kAuthor);
+  cascade.Add("bottom:300px", CascadeOrigin::kAuthor);
+  cascade.Add("left:400px", CascadeOrigin::kAuthor);
+  cascade.Add("--x:700px", CascadeOrigin::kAuthor);
+  cascade.Add("--y:800px", CascadeOrigin::kAuthor);
+
+  cascade.Apply();
+
+  auto map = cascade.GetCascadedValues();
+  EXPECT_EQ(8u, map.size());
+
+  EXPECT_EQ("100px", CssTextAt(map, "top"));
+  EXPECT_EQ("201px", CssTextAt(map, "right"));
+  EXPECT_EQ("30px", CssTextAt(map, "bottom"));
+  EXPECT_EQ("4px", CssTextAt(map, "left"));
+  EXPECT_EQ("5px", CssTextAt(map, "width"));
+  EXPECT_EQ("61px", CssTextAt(map, "height"));
+  EXPECT_EQ("700px", CssTextAt(map, "--x"));
+  EXPECT_EQ("80px ", CssTextAt(map, "--y"));
+}
+
+TEST_F(StyleCascadeTest, GetCascadedValuesCssWide) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("top:initial");
+  cascade.Add("right:inherit");
+  cascade.Add("bottom:unset");
+  cascade.Add("left:revert");
+  cascade.Apply();
+
+  auto map = cascade.GetCascadedValues();
+  EXPECT_EQ(4u, map.size());
+
+  EXPECT_EQ("initial", CssTextAt(map, "top"));
+  EXPECT_EQ("inherit", CssTextAt(map, "right"));
+  EXPECT_EQ("unset", CssTextAt(map, "bottom"));
+  EXPECT_EQ("revert", CssTextAt(map, "left"));
+}
+
+TEST_F(StyleCascadeTest, GetCascadedValuesLogical) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("margin-inline-start:1px");
+  cascade.Add("margin-inline-end:2px");
+  cascade.Apply();
+
+  auto map = cascade.GetCascadedValues();
+  EXPECT_EQ(2u, map.size());
+
+  EXPECT_EQ("1px", CssTextAt(map, "margin-left"));
+  EXPECT_EQ("2px", CssTextAt(map, "margin-right"));
+}
+
+TEST_F(StyleCascadeTest, GetCascadedValuesInterpolated) {
+  AppendSheet(R"HTML(
+     @keyframes test {
+        from { --x: 100px; width: 100px; }
+        to { --x: 200px; width: 200px; }
+     }
+    )HTML");
+
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("animation-name: test");
+  cascade.Add("animation-timing-function: linear");
+  cascade.Add("animation-duration: 10s");
+  cascade.Add("animation-delay: -5s");
+  cascade.Apply();
+
+  cascade.AddInterpolations();
+  cascade.Apply();
+
+  // Verify that effect values from the animation did apply:
+  EXPECT_EQ(" 200px", cascade.ComputedValue("--x"));
+  EXPECT_EQ("150px", cascade.ComputedValue("width"));
+
+  // However, we don't currently support returning interpolated vales from
+  // GetCascadedValues:
+  auto map = cascade.GetCascadedValues();
+  EXPECT_EQ(4u, map.size());
+
+  EXPECT_EQ("test", CssTextAt(map, "animation-name"));
+  EXPECT_EQ("linear", CssTextAt(map, "animation-timing-function"));
+  EXPECT_EQ("10s", CssTextAt(map, "animation-duration"));
+  EXPECT_EQ("-5s", CssTextAt(map, "animation-delay"));
+}
+
+TEST_F(StyleCascadeTest, RevertOrigin) {
+  TestCascade cascade(GetDocument());
+
+  cascade.Add("width", "1px", CascadeOrigin::kUserAgent);
+  cascade.Add("height", "1px", CascadeOrigin::kUserAgent);
+  cascade.Add("display", "block", CascadeOrigin::kUserAgent);
+  cascade.Add("width", "2px", CascadeOrigin::kUser);
+  cascade.Add("height", "revert", CascadeOrigin::kUser);
+  cascade.Add("width", "revert", CascadeOrigin::kAuthor);
+  cascade.Add("height", "revert", CascadeOrigin::kAuthor);
+  cascade.Add("display", "revert", CascadeOrigin::kAuthor);
+  cascade.Add("margin-left", "revert", CascadeOrigin::kAuthor);
+
+  cascade.AnalyzeIfNeeded();
+
+  CSSValue* revert_value = cssvalue::CSSRevertValue::Create();
+
+  TestCascadeResolver resolver;
+
+  CascadeOrigin origin = CascadeOrigin::kAuthor;
+  const CSSValue* resolved_value =
+      cascade.Resolve(GetCSSPropertyWidth(), *revert_value, origin);
+  ASSERT_TRUE(resolved_value);
+  EXPECT_EQ(CascadeOrigin::kUser, origin);
+  EXPECT_EQ("2px", resolved_value->CssText());
+
+  origin = CascadeOrigin::kAuthor;
+  resolved_value =
+      cascade.Resolve(GetCSSPropertyHeight(), *revert_value, origin);
+  ASSERT_TRUE(resolved_value);
+  EXPECT_EQ(CascadeOrigin::kUserAgent, origin);
+  EXPECT_EQ("1px", resolved_value->CssText());
+
+  origin = CascadeOrigin::kAuthor;
+  resolved_value =
+      cascade.Resolve(GetCSSPropertyDisplay(), *revert_value, origin);
+  ASSERT_TRUE(resolved_value);
+  EXPECT_EQ(CascadeOrigin::kUserAgent, origin);
+  EXPECT_EQ("block", resolved_value->CssText());
+
+  origin = CascadeOrigin::kAuthor;
+  resolved_value =
+      cascade.Resolve(GetCSSPropertyMarginLeft(), *revert_value, origin);
+  ASSERT_TRUE(resolved_value);
+  EXPECT_EQ(CascadeOrigin::kNone, origin);
+  EXPECT_EQ("unset", resolved_value->CssText());
 }
 
 }  // namespace blink

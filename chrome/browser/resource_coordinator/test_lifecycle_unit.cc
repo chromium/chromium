@@ -33,7 +33,7 @@ TabLifecycleUnitExternal* TestLifecycleUnit::AsTabLifecycleUnitExternal() {
   return nullptr;
 }
 
-base::string16 TestLifecycleUnit::GetTitle() const {
+std::u16string TestLifecycleUnit::GetTitle() const {
   return title_;
 }
 
@@ -65,21 +65,9 @@ int TestLifecycleUnit::GetEstimatedMemoryFreedOnDiscardKB() const {
   return 0;
 }
 
-bool TestLifecycleUnit::CanFreeze(DecisionDetails* decision_details) const {
-  return false;
-}
-
 bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
                                    DecisionDetails* decision_details) const {
   return can_discard_;
-}
-
-bool TestLifecycleUnit::Freeze() {
-  return false;
-}
-
-bool TestLifecycleUnit::Unfreeze() {
-  return false;
 }
 
 bool TestLifecycleUnit::Discard(LifecycleUnitDiscardReason discard_reason) {
@@ -102,7 +90,6 @@ void ExpectCanDiscardTrue(const LifecycleUnit* lifecycle_unit,
 
 void ExpectCanDiscardTrueAllReasons(const LifecycleUnit* lifecycle_unit) {
   ExpectCanDiscardTrue(lifecycle_unit, LifecycleUnitDiscardReason::EXTERNAL);
-  ExpectCanDiscardTrue(lifecycle_unit, LifecycleUnitDiscardReason::PROACTIVE);
   ExpectCanDiscardTrue(lifecycle_unit, LifecycleUnitDiscardReason::URGENT);
 }
 
@@ -120,8 +107,6 @@ void ExpectCanDiscardFalseAllReasons(const LifecycleUnit* lifecycle_unit,
                                      DecisionFailureReason failure_reason) {
   ExpectCanDiscardFalse(lifecycle_unit, failure_reason,
                         LifecycleUnitDiscardReason::EXTERNAL);
-  ExpectCanDiscardFalse(lifecycle_unit, failure_reason,
-                        LifecycleUnitDiscardReason::PROACTIVE);
   ExpectCanDiscardFalse(lifecycle_unit, failure_reason,
                         LifecycleUnitDiscardReason::URGENT);
 }
@@ -141,8 +126,6 @@ void ExpectCanDiscardFalseTrivialAllReasons(
     const LifecycleUnit* lifecycle_unit) {
   ExpectCanDiscardFalseTrivial(lifecycle_unit,
                                LifecycleUnitDiscardReason::EXTERNAL);
-  ExpectCanDiscardFalseTrivial(lifecycle_unit,
-                               LifecycleUnitDiscardReason::PROACTIVE);
   ExpectCanDiscardFalseTrivial(lifecycle_unit,
                                LifecycleUnitDiscardReason::URGENT);
 }

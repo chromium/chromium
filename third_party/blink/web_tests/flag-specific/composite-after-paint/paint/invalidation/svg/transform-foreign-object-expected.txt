@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [108, 8, 100, 100],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [8, 8, 100, 100],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [108, 8, 100, 100],
+        [8, 8, 100, 100]
       ]
     }
   ]

@@ -4,10 +4,9 @@
 
 #include "content/test/test_content_browser_client.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "content/public/browser/browser_context.h"
-#include "storage/browser/quota/quota_settings.h"
 
 #if defined(OS_ANDROID)
 #include "content/shell/android/shell_descriptors.h"
@@ -15,10 +14,21 @@
 
 namespace content {
 
+// static
+TestContentBrowserClient* TestContentBrowserClient::instance_ = nullptr;
+
 TestContentBrowserClient::TestContentBrowserClient() {
+  instance_ = this;
 }
 
 TestContentBrowserClient::~TestContentBrowserClient() {
+  if (instance_ == this)
+    instance_ = nullptr;
+}
+
+// static
+TestContentBrowserClient* TestContentBrowserClient::GetInstance() {
+  return instance_;
 }
 
 base::FilePath TestContentBrowserClient::GetDefaultDownloadDirectory() {
@@ -38,15 +48,14 @@ TestContentBrowserClient::GetGeneratedCodeCacheSettings(
   return GeneratedCodeCacheSettings(true, 0, context->GetPath());
 }
 
-void TestContentBrowserClient::GetQuotaSettings(
-    BrowserContext* context,
-    StoragePartition* partition,
-    storage::OptionalQuotaSettingsCallback callback) {
-  std::move(callback).Run(storage::GetHardCodedSettings(100 * 1024 * 1024));
-}
-
 std::string TestContentBrowserClient::GetUserAgent() {
   return std::string("TestContentClient");
+}
+
+std::string TestContentBrowserClient::GetApplicationLocale() {
+  return application_locale_.empty()
+             ? ContentBrowserClient::GetApplicationLocale()
+             : application_locale_;
 }
 
 #if defined(OS_ANDROID)

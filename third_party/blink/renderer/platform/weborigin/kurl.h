@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -77,10 +78,6 @@ class PLATFORM_EXPORT KURL {
   USING_FAST_MALLOC(KURL);
 
  public:
-  // This must be called during initialization (before we create
-  // other threads).
-  static void Initialize();
-
   KURL();
   KURL(const KURL&);
 
@@ -118,6 +115,7 @@ class PLATFORM_EXPORT KURL {
 
   ~KURL();
 
+  KURL UrlStrippedForUseAsReferrer() const;
   String StrippedForUseAsReferrer() const;
   String StrippedForUseAsHref() const;
 
@@ -241,6 +239,8 @@ class PLATFORM_EXPORT KURL {
   // TODO(crbug.com/862940): Make this conversion explicit.
   operator GURL() const;
 
+  void WriteIntoTrace(perfetto::TracedValue context) const;
+
  private:
   friend struct WTF::HashTraits<blink::KURL>;
 
@@ -248,12 +248,17 @@ class PLATFORM_EXPORT KURL {
             const String& relative,
             const WTF::TextEncoding* query_encoding);
 
+  bool IsAboutURL(const char* allowed_path) const;
+
   StringView ComponentStringView(const url::Component&) const;
   String ComponentString(const url::Component&) const;
   StringView StringViewForInvalidComponent() const;
 
+  // If |preserve_validity| is true, refuse to make changes that would make the
+  // KURL invalid.
   template <typename CHAR>
-  void ReplaceComponents(const url::Replacements<CHAR>&);
+  void ReplaceComponents(const url::Replacements<CHAR>&,
+                         bool preserve_validity = false);
 
   void InitInnerURL();
   void InitProtocolMetadata();

@@ -107,7 +107,7 @@ class TestOperation : public MessageTransferOperation {
 
   bool has_operation_finished() { return has_operation_finished_; }
 
-  base::Optional<int> last_sequence_number() { return last_sequence_number_; }
+  absl::optional<int> last_sequence_number() { return last_sequence_number_; }
 
  private:
   struct DeviceMapValue {
@@ -124,7 +124,7 @@ class TestOperation : public MessageTransferOperation {
   bool should_unregister_device_on_message_received_ = false;
   bool has_operation_started_ = false;
   bool has_operation_finished_ = false;
-  base::Optional<int> last_sequence_number_;
+  absl::optional<int> last_sequence_number_;
 };
 
 TetherAvailabilityResponse CreateTetherAvailabilityResponse() {
@@ -140,6 +140,11 @@ TetherAvailabilityResponse CreateTetherAvailabilityResponse() {
 }  // namespace
 
 class MessageTransferOperationTest : public testing::Test {
+ public:
+  MessageTransferOperationTest(const MessageTransferOperationTest&) = delete;
+  MessageTransferOperationTest& operator=(const MessageTransferOperationTest&) =
+      delete;
+
  protected:
   MessageTransferOperationTest()
       : test_local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -237,7 +242,7 @@ class MessageTransferOperationTest : public testing::Test {
   void VerifyTimerCreatedForDevice(multidevice::RemoteDeviceRef remote_device,
                                    uint32_t timeout_seconds) {
     EXPECT_TRUE(GetTimerForDevice(remote_device));
-    EXPECT_EQ(base::TimeDelta::FromSeconds(timeout_seconds),
+    EXPECT_EQ(base::Seconds(timeout_seconds),
               GetTimerForDevice(remote_device)->GetCurrentDelay());
   }
 
@@ -262,9 +267,6 @@ class MessageTransferOperationTest : public testing::Test {
       fake_secure_channel_client_;
   TestTimerFactory* test_timer_factory_;
   std::unique_ptr<TestOperation> operation_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageTransferOperationTest);
 };
 
 TEST_F(MessageTransferOperationTest, TestFailedConnection) {

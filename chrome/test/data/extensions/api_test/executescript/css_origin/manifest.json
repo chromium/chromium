@@ -4,7 +4,8 @@
   "name": "css_origin test",
   "description": "Test the css_origin property of insertCSS",
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://b.com/"],
   "content_scripts": [

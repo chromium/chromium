@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/result_catcher.h"
 #include "net/base/backoff_entry.h"
@@ -56,7 +57,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   }
 
   // Unhandled requests result in the Embedded test server sending a 404.
-  return std::unique_ptr<net::test_server::BasicHttpResponse>();
+  return nullptr;
 }
 
 }  // namespace
@@ -91,7 +92,7 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
             : net::AppendQueryParameter(unthrottled_test_url,
                                         "expectedFailRequestNum",
                                         expected_throttled_request_num);
-    ui_test_utils::NavigateToURL(browser(), test_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 

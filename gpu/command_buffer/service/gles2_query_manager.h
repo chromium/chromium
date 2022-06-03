@@ -57,6 +57,10 @@ class GPU_GLES2_EXPORT GLES2QueryManager : public QueryManager {
   };
 
   GLES2QueryManager(GLES2Decoder* decoder, FeatureInfo* feature_info);
+
+  GLES2QueryManager(const GLES2QueryManager&) = delete;
+  GLES2QueryManager& operator=(const GLES2QueryManager&) = delete;
+
   ~GLES2QueryManager() override;
 
   // Creates a Query for the given query.
@@ -101,8 +105,6 @@ class GPU_GLES2_EXPORT GLES2QueryManager : public QueryManager {
   uint32_t disjoints_notified_;
 
   scoped_refptr<gl::GPUTimingClient> gpu_timing_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2QueryManager);
 };
 
 }  // namespace gles2

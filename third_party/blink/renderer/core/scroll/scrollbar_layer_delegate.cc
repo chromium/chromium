@@ -12,25 +12,27 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
 namespace {
 
 class ScopedScrollbarPainter {
+  STACK_ALLOCATED();
+
  public:
   ScopedScrollbarPainter(cc::PaintCanvas& canvas, float device_scale_factor)
       : canvas_(canvas) {
-    builder_.Context().SetDeviceScaleFactor(device_scale_factor);
+    builder_->Context().SetDeviceScaleFactor(device_scale_factor);
   }
-  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_.EndRecording()); }
+  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_->EndRecording()); }
 
-  GraphicsContext& Context() { return builder_.Context(); }
+  GraphicsContext& Context() { return builder_->Context(); }
 
  private:
   cc::PaintCanvas& canvas_;
-  PaintRecordBuilder builder_;
+  PaintRecordBuilder* builder_ = MakeGarbageCollected<PaintRecordBuilder>();
 };
 
 }  // namespace
@@ -45,10 +47,15 @@ ScrollbarLayerDelegate::ScrollbarLayerDelegate(blink::Scrollbar& scrollbar,
 
 ScrollbarLayerDelegate::~ScrollbarLayerDelegate() = default;
 
+bool ScrollbarLayerDelegate::IsSame(const cc::Scrollbar& other) const {
+  return scrollbar_.Get() ==
+         static_cast<const ScrollbarLayerDelegate&>(other).scrollbar_.Get();
+}
+
 cc::ScrollbarOrientation ScrollbarLayerDelegate::Orientation() const {
   if (scrollbar_->Orientation() == kHorizontalScrollbar)
-    return cc::HORIZONTAL;
-  return cc::VERTICAL;
+    return cc::ScrollbarOrientation::HORIZONTAL;
+  return cc::ScrollbarOrientation::VERTICAL;
 }
 
 bool ScrollbarLayerDelegate::IsLeftSideVerticalScrollbar() const {
@@ -69,48 +76,45 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
 
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
   IntRect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
-  track_rect.MoveBy(-scrollbar_->Location());
-  return track_rect;
+  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(track_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::TrackRect() const {
   IntRect track_rect = scrollbar_->GetTheme().TrackRect(*scrollbar_);
-  track_rect.MoveBy(-scrollbar_->Location());
-  return track_rect;
+  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(track_rect);
 }
 
 bool ScrollbarLayerDelegate::SupportsDragSnapBack() const {
   return scrollbar_->GetTheme().SupportsDragSnapBack();
 }
 
-gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
-  if (scrollbar_->GetTheme().ButtonsPlacement() ==
-      kWebScrollbarButtonsPlacementNone)
-    return gfx::Rect();
+bool ScrollbarLayerDelegate::JumpOnTrackClick() const {
+  return scrollbar_->GetTheme().JumpOnTrackClick();
+}
 
-  IntRect back_button_rect = scrollbar_->GetTheme().BackButtonRect(
-      *scrollbar_, blink::kBackButtonStartPart);
-  back_button_rect.MoveBy(-scrollbar_->Location());
-  return back_button_rect;
+gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
+  IntRect back_button_rect = scrollbar_->GetTheme().BackButtonRect(*scrollbar_);
+  if (!back_button_rect.IsEmpty())
+    back_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(back_button_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::ForwardButtonRect() const {
-  if (scrollbar_->GetTheme().ButtonsPlacement() ==
-      kWebScrollbarButtonsPlacementNone)
-    return gfx::Rect();
-
-  IntRect forward_button_rect = scrollbar_->GetTheme().ForwardButtonRect(
-      *scrollbar_, blink::kForwardButtonEndPart);
-  forward_button_rect.MoveBy(-scrollbar_->Location());
-  return forward_button_rect;
+  IntRect forward_button_rect =
+      scrollbar_->GetTheme().ForwardButtonRect(*scrollbar_);
+  if (!forward_button_rect.IsEmpty())
+    forward_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(forward_button_rect);
 }
 
-float ScrollbarLayerDelegate::ThumbOpacity() const {
-  return scrollbar_->GetTheme().ThumbOpacity(*scrollbar_);
+float ScrollbarLayerDelegate::Opacity() const {
+  return scrollbar_->GetTheme().Opacity(*scrollbar_);
 }
 
 bool ScrollbarLayerDelegate::NeedsRepaintPart(cc::ScrollbarPart part) const {
-  if (part == cc::THUMB)
+  if (part == cc::ScrollbarPart::THUMB)
     return scrollbar_->ThumbNeedsRepaint();
   return scrollbar_->TrackNeedsRepaint();
 }
@@ -121,13 +125,13 @@ bool ScrollbarLayerDelegate::UsesNinePatchThumbResource() const {
 
 gfx::Size ScrollbarLayerDelegate::NinePatchThumbCanvasSize() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return static_cast<gfx::Size>(
+  return ToGfxSize(
       scrollbar_->GetTheme().NinePatchThumbCanvasSize(*scrollbar_));
 }
 
 gfx::Rect ScrollbarLayerDelegate::NinePatchThumbAperture() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_);
+  return ToGfxRect(scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_));
 }
 
 bool ScrollbarLayerDelegate::ShouldPaint() const {
@@ -159,14 +163,13 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
   ScopedScrollbarPainter painter(*canvas, device_scale_factor_);
   // The canvas coordinate space is relative to the part's origin.
   switch (part) {
-    case cc::THUMB:
+    case cc::ScrollbarPart::THUMB:
       theme.PaintThumb(painter.Context(), *scrollbar_, IntRect(rect));
       scrollbar_->ClearThumbNeedsRepaint();
       break;
-    case cc::TRACK_BUTTONS_TICKMARKS: {
-      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().Size());
-      IntPoint offset(IntPoint(rect.origin()) -
-                      scrollbar_->FrameRect().Location());
+    case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
+      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().size());
+      gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();
       break;

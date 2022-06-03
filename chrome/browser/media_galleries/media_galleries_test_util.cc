@@ -6,16 +6,19 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -25,11 +28,11 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/preferences_mock_mac.h"
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -46,13 +49,13 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   manifest->SetString(extensions::manifest_keys::kVersion, "0.1");
   manifest->SetInteger(extensions::manifest_keys::kManifestVersion, 2);
   auto background_script_list = std::make_unique<base::ListValue>();
-  background_script_list->AppendString("background.js");
+  background_script_list->Append("background.js");
   manifest->Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
                 std::move(background_script_list));
 
   auto permission_detail_list = std::make_unique<base::ListValue>();
   for (size_t i = 0; i < media_galleries_permissions.size(); i++)
-    permission_detail_list->AppendString(media_galleries_permissions[i]);
+    permission_detail_list->Append(media_galleries_permissions[i]);
   auto media_galleries_permission = std::make_unique<base::DictionaryValue>();
   media_galleries_permission->Set("mediaGalleries",
                                   std::move(permission_detail_list));
@@ -66,9 +69,9 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   base::FilePath path = extension_prefs->install_directory().AppendASCII(name);
   std::string errors;
   scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(path, extensions::Manifest::INTERNAL,
-                                    *manifest.get(),
-                                    extensions::Extension::NO_FLAGS, &errors);
+      extensions::Extension::Create(
+          path, extensions::mojom::ManifestLocation::kInternal, *manifest.get(),
+          extensions::Extension::NO_FLAGS, &errors);
   EXPECT_TRUE(extension.get() != nullptr) << errors;
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
   if (!extension.get() || !crx_file::id_util::IdIsValid(extension->id()))
@@ -106,23 +109,23 @@ void EnsureMediaDirectoriesExists::ChangeMediaPathOverrides() {
   music_override_.reset();
   std::string music_path_string("music");
   music_path_string.append(base::NumberToString(times_overrides_changed_));
-  music_override_.reset(new base::ScopedPathOverride(
+  music_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_MUSIC,
-      fake_dir_.GetPath().AppendASCII(music_path_string)));
+      fake_dir_.GetPath().AppendASCII(music_path_string));
 
   pictures_override_.reset();
   std::string pictures_path_string("pictures");
   pictures_path_string.append(base::NumberToString(times_overrides_changed_));
-  pictures_override_.reset(new base::ScopedPathOverride(
+  pictures_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_PICTURES,
-      fake_dir_.GetPath().AppendASCII(pictures_path_string)));
+      fake_dir_.GetPath().AppendASCII(pictures_path_string));
 
   video_override_.reset();
   std::string videos_path_string("videos");
   videos_path_string.append(base::NumberToString(times_overrides_changed_));
-  video_override_.reset(new base::ScopedPathOverride(
+  video_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_VIDEOS,
-      fake_dir_.GetPath().AppendASCII(videos_path_string)));
+      fake_dir_.GetPath().AppendASCII(videos_path_string));
 
   times_overrides_changed_++;
 
@@ -143,26 +146,26 @@ base::FilePath EnsureMediaDirectoriesExists::GetFakeLocalAppDataPath() const {
 #endif  // OS_WIN
 
 void EnsureMediaDirectoriesExists::Init() {
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
   return;
 #else
 
   ASSERT_TRUE(fake_dir_.CreateUniqueTempDir());
 
-#if defined(OS_MACOSX)
-  mac_preferences_.reset(new MockPreferences);
-#endif  // OS_MACOSX
+#if defined(OS_MAC)
+  mac_preferences_ = std::make_unique<MockPreferences>();
+#endif  // OS_MAC
 
   ChangeMediaPathOverrides();
-#endif  // OS_CHROMEOS || OS_ANDROID
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_ANDROID
 }
 
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {
 #if defined(OS_WIN)
   return base::FilePath(FILE_PATH_LITERAL("C:\\")).AppendASCII(dir);
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::FilePath(FILE_PATH_LITERAL("/")).Append(dir);
 #else
-  NOTREACHED();
+#error Unknown platform.
 #endif
 }

@@ -25,6 +25,7 @@
 // TODO(foolip): SVGPoint is gone from SVG 2, replaced by DOMPoint.
 // https://crbug.com/709001
 [
+    Exposed=Window,
     ImplementedAs=SVGPointTearOff
 ] interface SVGPoint {
     [RaisesException=Setter] attribute unrestricted float x;

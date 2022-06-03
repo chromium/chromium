@@ -32,7 +32,7 @@ class EncryptedMediaRequest : public GarbageCollected<EncryptedMediaRequest> {
       std::unique_ptr<WebContentDecryptionModuleAccess>) = 0;
   virtual void RequestNotSupported(const WebString& error_message) = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

@@ -43,9 +43,7 @@ js_library("scrollbar") {
 }
 
 js_library("unit_label") {
-  deps = [
-    ":constants",
-  ]
+  deps = [ ":constants" ]
 }
 
 js_library("menu") {
@@ -57,9 +55,7 @@ js_library("menu") {
 }
 
 js_library("data_series") {
-  deps = [
-    ":constants",
-  ]
+  deps = [ ":constants" ]
 }
 
 js_library("constants") {

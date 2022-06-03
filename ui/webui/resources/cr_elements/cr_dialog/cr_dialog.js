@@ -97,7 +97,7 @@ Polymer({
   boundKeydown_: null,
 
   /** @override */
-  ready: function() {
+  ready() {
     // If the active history entry changes (i.e. user clicks back button),
     // all open dialogs should be cancelled.
     window.addEventListener('popstate', function() {
@@ -112,7 +112,7 @@ Polymer({
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     const mutationObserverCallback = function() {
       if (this.$.dialog.open) {
         this.enableShadowBehavior(true);
@@ -138,7 +138,7 @@ Polymer({
   },
 
   /** @override */
-  detached: function() {
+  detached() {
     this.removeKeydownListener_();
     if (this.mutationObserver_) {
       this.mutationObserver_.disconnect();
@@ -147,7 +147,7 @@ Polymer({
   },
 
   /** @private */
-  addKeydownListener_: function() {
+  addKeydownListener_() {
     if (!this.consumeKeydownEvent) {
       return;
     }
@@ -163,7 +163,7 @@ Polymer({
   },
 
   /** @private */
-  removeKeydownListener_: function() {
+  removeKeydownListener_() {
     if (!this.boundKeydown_) {
       return;
     }
@@ -173,21 +173,21 @@ Polymer({
     this.boundKeydown_ = null;
   },
 
-  showModal: function() {
+  showModal() {
     this.$.dialog.showModal();
     assert(this.$.dialog.open);
     this.open = true;
     this.fire('cr-dialog-open');
   },
 
-  cancel: function() {
+  cancel() {
     this.fire('cancel');
     this.$.dialog.close();
     assert(!this.$.dialog.open);
     this.open = false;
   },
 
-  close: function() {
+  close() {
     this.$.dialog.close('success');
     assert(!this.$.dialog.open);
     this.open = false;
@@ -197,7 +197,7 @@ Polymer({
    * Set the title of the dialog for a11y reader.
    * @param {string} title Title of the dialog.
    */
-  setTitleAriaLabel: function(title) {
+  setTitleAriaLabel(title) {
     this.$.dialog.removeAttribute('aria-labelledby');
     this.$.dialog.setAttribute('aria-label', title);
   },
@@ -206,7 +206,7 @@ Polymer({
    * @private
    * @param {Event} e
    */
-  onCloseKeypress_: function(e) {
+  onCloseKeypress_(e) {
     // Because the dialog may have a default Enter key handler, prevent
     // keypress events from bubbling up from this element.
     e.stopPropagation();
@@ -216,15 +216,11 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onNativeDialogClose_: function(e) {
+  onNativeDialogClose_(e) {
     // Ignore any 'close' events not fired directly by the <dialog> element.
     if (e.target !== this.getNative()) {
       return;
     }
-
-    // TODO(dpapad): This is necessary to make the code work both for Polymer 1
-    // and Polymer 2. Remove once migration to Polymer 2 is completed.
-    e.stopPropagation();
 
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
@@ -235,7 +231,7 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onNativeDialogCancel_: function(e) {
+  onNativeDialogCancel_(e) {
     // Ignore any 'cancel' events not fired directly by the <dialog> element.
     if (e.target !== this.getNative()) {
       return;
@@ -261,7 +257,7 @@ Polymer({
    * would not work on the wrapper).
    * @return {!HTMLDialogElement}
    */
-  getNative: function() {
+  getNative() {
     return /** @type {!HTMLDialogElement} */ (this.$.dialog);
   },
 
@@ -269,8 +265,8 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onKeypress_: function(e) {
-    if (e.key != 'Enter') {
+  onKeypress_(e) {
+    if (e.key !== 'Enter') {
       return;
     }
 
@@ -281,7 +277,7 @@ Polymer({
     // trigger searching.
     const accept = e.target === this ||
         e.composedPath().some(
-            el => el.tagName == 'CR-INPUT' && el.type != 'search');
+            el => el.tagName === 'CR-INPUT' && el.type !== 'search');
     if (!accept) {
       return;
     }
@@ -297,14 +293,14 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onKeydown_: function(e) {
+  onKeydown_(e) {
     assert(this.consumeKeydownEvent);
 
     if (!this.getNative().open) {
       return;
     }
 
-    if (this.ignoreEnterKey && e.key == 'Enter') {
+    if (this.ignoreEnterKey && e.key === 'Enter') {
       return;
     }
 
@@ -313,10 +309,10 @@ Polymer({
   },
 
   /** @param {!PointerEvent} e */
-  onPointerdown_: function(e) {
+  onPointerdown_(e) {
     // Only show pulse animation if user left-clicked outside of the dialog
     // contents.
-    if (e.button != 0 || e.composedPath()[0].tagName !== 'DIALOG') {
+    if (e.button !== 0 || e.composedPath()[0].tagName !== 'DIALOG') {
       return;
     }
 
@@ -342,3 +338,4 @@ Polymer({
     this.$$('.title-container').focus();
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

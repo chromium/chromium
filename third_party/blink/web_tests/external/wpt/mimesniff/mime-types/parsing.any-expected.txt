@@ -21,8 +21,8 @@ FAIL text/html; charset=gbk (Blob/File) assert_equals: Blob expected "text/html;
 FAIL text/html; charset=gbk (Request/Response) assert_equals: expected "text/html;charset=gbk" but got "text/html; charset=gbk"
 FAIL text/html;charset= gbk (Blob/File) assert_equals: Blob expected "text/html;charset=\" gbk\"" but got "text/html;charset= gbk"
 FAIL text/html;charset= gbk (Request/Response) assert_equals: expected "text/html;charset=\" gbk\"" but got "text/html;charset= gbk"
-FAIL text/html;charset= "gbk" (Blob/File) assert_equals: Blob expected "text/html;charset=\" \\\"gbk\\"\"" but got "text/html;charset= \"gbk\""
-FAIL text/html;charset= "gbk" (Request/Response) assert_equals: expected "text/html;charset=\" \\\"gbk\\"\"" but got "text/html;charset= \"gbk\""
+FAIL text/html;charset= "gbk" (Blob/File) assert_equals: Blob expected "text/html;charset=\" \\\"gbk\\\"\"" but got "text/html;charset= \"gbk\""
+FAIL text/html;charset= "gbk" (Request/Response) assert_equals: expected "text/html;charset=\" \\\"gbk\\\"\"" but got "text/html;charset= \"gbk\""
 FAIL text/html;charset=gbk (Blob/File) assert_equals: Blob expected "text/html" but got ""
 FAIL text/html;charset=gbk (Request/Response) assert_equals: expected "text/html" but got ""
 FAIL text/html;charset=gbk (Blob/File) assert_equals: Blob expected "text/html" but got ""
@@ -67,8 +67,8 @@ PASS text/html;charset="gbk " (Blob/File)
 PASS text/html;charset="gbk " (Request/Response)
 FAIL text/html;charset="\ gbk" (Blob/File) assert_equals: Blob expected "text/html;charset=\" gbk\"" but got "text/html;charset=\"\\ gbk\""
 FAIL text/html;charset="\ gbk" (Request/Response) assert_equals: expected "text/html;charset=\" gbk\"" but got "text/html;charset=\"\\ gbk\""
-FAIL text/html;charset="\g\b\k" (Blob/File) assert_equals: Blob expected "text/html;charset=gbk" but got "text/html;charset=\"\\g\b\k\""
-FAIL text/html;charset="\g\b\k" (Request/Response) assert_equals: expected "text/html;charset=gbk" but got "text/html;charset=\"\\g\b\k\""
+FAIL text/html;charset="\g\b\k" (Blob/File) assert_equals: Blob expected "text/html;charset=gbk" but got "text/html;charset=\"\\g\\b\\k\""
+FAIL text/html;charset="\g\b\k" (Request/Response) assert_equals: expected "text/html;charset=gbk" but got "text/html;charset=\"\\g\\b\\k\""
 FAIL text/html;charset="gbk"x (Blob/File) assert_equals: Blob expected "text/html;charset=gbk" but got "text/html;charset=\"gbk\"x"
 FAIL text/html;charset="gbk"x (Request/Response) assert_equals: expected "text/html;charset=gbk" but got "text/html;charset=\"gbk\"x"
 FAIL text/html;charset="";charset=GBK (Blob/File) assert_equals: Blob expected "text/html;charset=\"\"" but got "text/html;charset=\"\";charset=gbk"
@@ -83,12 +83,12 @@ PASS 012345678901234567890123456789012345678901234567890123456789012345678901234
 PASS 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789/0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789 (Request/Response)
 FAIL !#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz;!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz=!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz (Blob/File) assert_equals: Blob expected "!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz/!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz;!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz=!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" but got "!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz/!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz;!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz=!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 FAIL !#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz;!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz=!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz (Request/Response) assert_equals: expected "!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz/!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz;!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz=!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" but got "!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz/!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz;!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz=!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
-FAIL x/x;x="	 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ" (Blob/File) assert_equals: Blob expected "x/x;x=\"\t !\\\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ\"" but got ""
-FAIL x/x;x="	 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ" (Request/Response) assert_equals: expected "x/x;x=\"\t !\\\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ\"" but got ""
+FAIL x/x;x="	 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ" (Blob/File) assert_equals: Blob expected "x/x;x=\"\t !\\\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ\"" but got ""
+FAIL x/x;x="	 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ" (Request/Response) assert_equals: expected "x/x;x=\"\t !\\\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ\"" but got ""
 FAIL x/x;test (Blob/File) assert_equals: Blob expected "x/x" but got "x/x;test"
 FAIL x/x;test (Request/Response) assert_equals: expected "x/x" but got "x/x;test"
-FAIL x/x;test="\ (Blob/File) assert_equals: Blob expected "x/x;test=\"\\\\"" but got "x/x;test=\"\\"
-FAIL x/x;test="\ (Request/Response) assert_equals: expected "x/x;test=\"\\\\"" but got "x/x;test=\"\\"
+FAIL x/x;test="\ (Blob/File) assert_equals: Blob expected "x/x;test=\"\\\\\"" but got "x/x;test=\"\\"
+FAIL x/x;test="\ (Request/Response) assert_equals: expected "x/x;test=\"\\\\\"" but got "x/x;test=\"\\"
 FAIL x/x;x=  (Blob/File) assert_equals: Blob expected "x/x" but got "x/x;x= "
 FAIL x/x;x=  (Request/Response) assert_equals: expected "x/x" but got "x/x;x="
 FAIL x/x;x=	 (Blob/File) assert_equals: Blob expected "x/x" but got ""
@@ -102,7 +102,7 @@ FAIL
 \r	  (Blob/File) assert_equals: Blob expected "x/x;x=x" but got ""
 FAIL 
 \r	 x/x;x=x
-\r	  (Request/Response) assert_throws: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
+\r	  (Request/Response) assert_throws_js: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
 FAIL x/x;
 \r	 x=x
 \r	 ;x=y (Blob/File) assert_equals: Blob expected "x/x;x=x" but got ""
@@ -252,11 +252,11 @@ FAIL x/x;	=x;bonus=x (Request/Response) assert_equals: expected "x/x;bonus=x" bu
 PASS 
 /x (Blob/File)
 FAIL 
-/x (Request/Response) assert_throws: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
+/x (Request/Response) assert_throws_js: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
 PASS x/
  (Blob/File)
 FAIL x/
- (Request/Response) assert_throws: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
+ (Request/Response) assert_throws_js: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
 FAIL x/x;
 =x;bonus=x (Blob/File) assert_equals: Blob expected "x/x;bonus=x" but got ""
 PASS x/x;
@@ -290,9 +290,9 @@ FAIL x/x;x=;bonus=x (Request/Response) assert_equals: expected "x/x;bonus=x" bu
 FAIL x/x;x="";bonus=x (Blob/File) assert_equals: Blob expected "x/x;bonus=x" but got ""
 FAIL x/x;x="";bonus=x (Request/Response) assert_equals: expected "x/x;bonus=x" but got ""
 PASS \r/x (Blob/File)
-FAIL \r/x (Request/Response) assert_throws: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
+FAIL \r/x (Request/Response) assert_throws_js: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
 PASS x/\r (Blob/File)
-FAIL x/\r (Request/Response) assert_throws: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
+FAIL x/\r (Request/Response) assert_throws_js: function "() => new Request("about:blank", { headers: [["Content-Type", val.input]] })" did not throw
 FAIL x/x;\r=x;bonus=x (Blob/File) assert_equals: Blob expected "x/x;bonus=x" but got ""
 PASS x/x;\r=x;bonus=x (Request/Response)
 FAIL x/x;x=\r;bonus=x (Blob/File) assert_equals: Blob expected "x/x;bonus=x" but got ""

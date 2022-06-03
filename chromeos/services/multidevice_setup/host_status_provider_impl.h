@@ -5,13 +5,12 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_IMPL_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/host_verifier.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
 
@@ -29,18 +28,27 @@ class HostStatusProviderImpl : public HostStatusProvider,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<HostStatusProvider> BuildInstance(
+    static std::unique_ptr<HostStatusProvider> Create(
         EligibleHostDevicesProvider* eligible_host_devices_provider,
         HostBackendDelegate* host_backend_delegate,
         HostVerifier* host_verifier,
         device_sync::DeviceSyncClient* device_sync_client);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<HostStatusProvider> CreateInstance(
+        EligibleHostDevicesProvider* eligible_host_devices_provider,
+        HostBackendDelegate* host_backend_delegate,
+        HostVerifier* host_verifier,
+        device_sync::DeviceSyncClient* device_sync_client) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  HostStatusProviderImpl(const HostStatusProviderImpl&) = delete;
+  HostStatusProviderImpl& operator=(const HostStatusProviderImpl&) = delete;
 
   ~HostStatusProviderImpl() override;
 
@@ -64,17 +72,21 @@ class HostStatusProviderImpl : public HostStatusProvider,
   // device_sync::DeviceSyncClient::Observer:
   void OnNewDevicesSynced() override;
 
-  void CheckForUpdatedStatusAndNotifyIfChanged();
+  void CheckForUpdatedStatusAndNotifyIfChanged(
+      bool force_notify_host_status_change);
+
   HostStatusWithDevice GetCurrentStatus();
+
+  // Record the host status on sign-in, on status change, and every 30 minutes.
+  // The latter is necessary to capture users who stay logged in for days.
+  void RecordMultiDeviceHostStatus();
 
   EligibleHostDevicesProvider* eligible_host_devices_provider_;
   HostBackendDelegate* host_backend_delegate_;
   HostVerifier* host_verifier_;
   device_sync::DeviceSyncClient* device_sync_client_;
-
   HostStatusWithDevice current_status_and_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostStatusProviderImpl);
+  base::RepeatingTimer host_status_metric_timer_;
 };
 
 }  // namespace multidevice_setup

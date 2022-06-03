@@ -43,7 +43,7 @@ namespace blink {
 // from the impulseP impulse response, and this value  is returned.  The length
 // of the passed in AudioChannel must be a power of 2.
 static float ExtractAverageGroupDelay(AudioChannel* channel,
-                                      size_t analysis_fft_size) {
+                                      unsigned analysis_fft_size) {
   DCHECK(channel);
 
   float* impulse_p = channel->MutableData();
@@ -58,14 +58,14 @@ static float ExtractAverageGroupDelay(AudioChannel* channel,
   estimation_frame.DoFFT(impulse_p);
 
   float frame_delay =
-      clampTo<float>(estimation_frame.ExtractAverageGroupDelay());
+      ClampTo<float>(estimation_frame.ExtractAverageGroupDelay());
   estimation_frame.DoInverseFFT(impulse_p);
 
   return frame_delay;
 }
 
 HRTFKernel::HRTFKernel(AudioChannel* channel,
-                       size_t fft_size,
+                       unsigned fft_size,
                        float sample_rate)
     : frame_delay_(0), sample_rate_(sample_rate) {
   DCHECK(channel);
@@ -74,12 +74,12 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
   frame_delay_ = ExtractAverageGroupDelay(channel, fft_size / 2);
 
   float* impulse_response = channel->MutableData();
-  size_t response_length = channel->length();
+  uint32_t response_length = channel->length();
 
   // We need to truncate to fit into 1/2 the FFT size (with zero padding) in
   // order to do proper convolution.
   // Truncate if necessary to max impulse response length allowed by FFT.
-  size_t truncated_response_length = std::min(response_length, fft_size / 2);
+  unsigned truncated_response_length = std::min(response_length, fft_size / 2);
 
   // Quick fade-out (apply window) at truncation point
   unsigned number_of_fade_out_frames = static_cast<unsigned>(
@@ -97,18 +97,6 @@ HRTFKernel::HRTFKernel(AudioChannel* channel,
   fft_frame_->DoPaddedFFT(impulse_response, truncated_response_length);
 }
 
-std::unique_ptr<AudioChannel> HRTFKernel::CreateImpulseResponse() {
-  std::unique_ptr<AudioChannel> channel =
-      std::make_unique<AudioChannel>(FftSize());
-  FFTFrame fft_frame(*fft_frame_);
-
-  // Add leading delay back in.
-  fft_frame.AddConstantGroupDelay(frame_delay_);
-  fft_frame.DoInverseFFT(channel->MutableData());
-
-  return channel;
-}
-
 // Interpolates two kernels with x: 0 -> 1 and returns the result.
 std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
     HRTFKernel* kernel1,
@@ -118,7 +106,7 @@ std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
   DCHECK(kernel2);
   DCHECK_GE(x, 0.0);
   DCHECK_LT(x, 1.0);
-  x = clampTo(x, 0.0f, 1.0f);
+  x = ClampTo(x, 0.0f, 1.0f);
 
   float sample_rate1 = kernel1->SampleRate();
   float sample_rate2 = kernel2->SampleRate();

@@ -5,38 +5,43 @@
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 
 #include <fuchsia/web/cpp/fidl.h>
+#include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/service_directory.h>
 
+#include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
+#include "base/fuchsia/test_component_context_for_process.h"
 #include "base/run_loop.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/browser/web_engine_content_browser_client.h"
+#include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/web_engine_main_delegate.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace cr_fuchsia {
-
-namespace {
-zx_handle_t g_context_channel = ZX_HANDLE_INVALID;
-}  // namespace
 
 WebEngineBrowserTest::WebEngineBrowserTest() = default;
 
 WebEngineBrowserTest::~WebEngineBrowserTest() = default;
 
+void WebEngineBrowserTest::SetUp() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  SetUpCommandLine(command_line);
+  BrowserTestBase::SetUp();
+}
+
 void WebEngineBrowserTest::PreRunTestOnMainThread() {
-  zx_status_t result = context_.Bind(zx::channel(g_context_channel));
-  ZX_DCHECK(result == ZX_OK, result) << "Context::Bind";
-  g_context_channel = ZX_HANDLE_INVALID;
+  zx_status_t status = published_services().Connect(context_.NewRequest());
+  ZX_CHECK(status == ZX_OK, status) << "Connect fuchsia.web.Context";
 
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
   if (!test_server_root_.empty()) {
     embedded_test_server()->ServeFilesFromSourceDirectory(test_server_root_);
   }
-}
-
-void WebEngineBrowserTest::TearDownOnMainThread() {
-  navigation_listener_bindings_.CloseAll();
 }
 
 void WebEngineBrowserTest::PostRunTestOnMainThread() {
@@ -51,34 +56,42 @@ void WebEngineBrowserTest::PostRunTestOnMainThread() {
   base::RunLoop().RunUntilIdle();
 }
 
-fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrame(
-    fuchsia::web::NavigationEventListener* listener) {
-  fuchsia::web::FramePtr frame;
-  context_->CreateFrame(frame.NewRequest());
-
-  if (listener) {
-    frame->SetNavigationEventListener(
-        navigation_listener_bindings_.AddBinding(listener));
+sys::ServiceDirectory& WebEngineBrowserTest::published_services() {
+  if (!published_services_) {
+    fidl::InterfaceRequest<fuchsia::io::Directory> svc_request;
+    published_services_ =
+        sys::ServiceDirectory::CreateWithRequest(&svc_request);
+    base::ComponentContextForProcess()
+        ->outgoing()
+        ->GetOrCreateDirectory("svc")
+        ->Serve(fuchsia::io::OPEN_RIGHT_READABLE |
+                    ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+                svc_request.TakeChannel());
   }
-
-  // Pump the messages so that the caller can use the Frame instance
-  // immediately after this function returns.
-  base::RunLoop().RunUntilIdle();
-
-  return frame;
+  return *published_services_;
 }
 
-// static
-void WebEngineBrowserTest::SetContextClientChannel(zx::channel channel) {
-  DCHECK(channel);
-  g_context_channel = channel.release();
+void WebEngineBrowserTest::SetHeadlessInCommandLine(
+    base::CommandLine* command_line) {
+  command_line->AppendSwitchNative(switches::kOzonePlatform,
+                                   switches::kHeadless);
+  command_line->AppendSwitch(switches::kHeadless);
 }
 
 ContextImpl* WebEngineBrowserTest::context_impl() const {
-  return WebEngineMainDelegate::GetInstanceForTest()
-      ->browser_client()
-      ->main_parts_for_test()
-      ->context_for_test();
+  // The ContentMainDelegate and ContentBrowserClient must already exist,
+  // since those are created early on, before test setup or execution.
+  auto* browser_client =
+      WebEngineMainDelegate::GetInstanceForTest()->browser_client();
+  DCHECK(browser_client);
+
+  auto* main_parts = browser_client->main_parts_for_test();
+  CHECK(main_parts) << "context_impl() called too early in browser startup.";
+
+  auto* context = main_parts->context_for_test();
+  CHECK(context) << "context_impl() called before Context connected.";
+
+  return context;
 }
 
 }  // namespace cr_fuchsia

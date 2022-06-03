@@ -7,14 +7,8 @@
 #include <limits>
 #include <utility>
 
-#include "components/viz/common/features.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
-#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/test/test_frame_sink_manager.h"
-#include "content/browser/compositor/surface_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/compositor/reflector.h"
 #include "ui/compositor/test/in_process_context_provider.h"
 
 namespace content {
@@ -23,63 +17,39 @@ namespace {
 // TODO(kylechar): Use the same client id for the browser everywhere.
 constexpr uint32_t kDefaultClientId = std::numeric_limits<uint32_t>::max();
 
-class FakeReflector : public ui::Reflector {
- public:
-  FakeReflector() = default;
-  ~FakeReflector() override = default;
-
-  void OnMirroringCompositorResized() override {}
-  void AddMirroringLayer(ui::Layer* layer) override {}
-  void RemoveMirroringLayer(ui::Layer* layer) override {}
-};
-
 }  // namespace
 
 TestImageTransportFactory::TestImageTransportFactory()
-    : enable_viz_(features::IsVizDisplayCompositorEnabled()),
-      frame_sink_id_allocator_(kDefaultClientId) {
-  if (enable_viz_) {
-    test_frame_sink_manager_impl_ =
-        std::make_unique<viz::TestFrameSinkManagerImpl>();
+    : frame_sink_id_allocator_(kDefaultClientId) {
+  mojo::PendingRemote<viz::mojom::FrameSinkManager> frame_sink_manager;
+  mojo::PendingReceiver<viz::mojom::FrameSinkManager>
+      frame_sink_manager_receiver =
+          frame_sink_manager.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<viz::mojom::FrameSinkManagerClient>
+      frame_sink_manager_client;
+  mojo::PendingReceiver<viz::mojom::FrameSinkManagerClient>
+      frame_sink_manager_client_receiver =
+          frame_sink_manager_client.InitWithNewPipeAndPassReceiver();
 
-    mojo::PendingRemote<viz::mojom::FrameSinkManager> frame_sink_manager;
-    mojo::PendingReceiver<viz::mojom::FrameSinkManager>
-        frame_sink_manager_receiver =
-            frame_sink_manager.InitWithNewPipeAndPassReceiver();
-    mojo::PendingRemote<viz::mojom::FrameSinkManagerClient>
-        frame_sink_manager_client;
-    mojo::PendingReceiver<viz::mojom::FrameSinkManagerClient>
-        frame_sink_manager_client_receiver =
-            frame_sink_manager_client.InitWithNewPipeAndPassReceiver();
+  // Bind endpoints in HostFrameSinkManager.
+  host_frame_sink_manager_.BindAndSetManager(
+      std::move(frame_sink_manager_client_receiver), nullptr,
+      std::move(frame_sink_manager));
 
-    // Bind endpoints in HostFrameSinkManager.
-    host_frame_sink_manager_.BindAndSetManager(
-        std::move(frame_sink_manager_client_receiver), nullptr,
-        std::move(frame_sink_manager));
-
-    // Bind endpoints in TestFrameSinkManagerImpl. For non-tests there would be
-    // a FrameSinkManagerImpl running in another process and these interface
-    // endpoints would be bound there.
-    test_frame_sink_manager_impl_->BindReceiver(
-        std::move(frame_sink_manager_receiver),
-        std::move(frame_sink_manager_client));
-  } else {
-    shared_bitmap_manager_ = std::make_unique<viz::ServerSharedBitmapManager>();
-    frame_sink_manager_impl_ = std::make_unique<viz::FrameSinkManagerImpl>(
-        shared_bitmap_manager_.get());
-    surface_utils::ConnectWithLocalFrameSinkManager(
-        &host_frame_sink_manager_, frame_sink_manager_impl_.get());
-  }
+  // Bind endpoints in TestFrameSinkManagerImpl. For non-tests there would be
+  // a FrameSinkManagerImpl running in another process and these interface
+  // endpoints would be bound there.
+  test_frame_sink_manager_impl_.BindReceiver(
+      std::move(frame_sink_manager_receiver),
+      std::move(frame_sink_manager_client));
 }
 
-TestImageTransportFactory::~TestImageTransportFactory() {
-  for (auto& observer : observer_list_)
-    observer.OnLostSharedContext();
-}
+TestImageTransportFactory::~TestImageTransportFactory() = default;
 
 void TestImageTransportFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<ui::Compositor> compositor) {
-  compositor->SetLayerTreeFrameSink(cc::FakeLayerTreeFrameSink::Create3d());
+  compositor->SetLayerTreeFrameSink(cc::FakeLayerTreeFrameSink::Create3d(),
+                                    nullptr);
 }
 
 scoped_refptr<viz::ContextProvider>
@@ -114,29 +84,12 @@ cc::TaskGraphRunner* TestImageTransportFactory::GetTaskGraphRunner() {
   return &task_graph_runner_;
 }
 
-void TestImageTransportFactory::AddObserver(
-    ui::ContextFactoryObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void TestImageTransportFactory::RemoveObserver(
-    ui::ContextFactoryObserver* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-std::unique_ptr<ui::Reflector> TestImageTransportFactory::CreateReflector(
-    ui::Compositor* source,
-    ui::Layer* target) {
-  if (!enable_viz_)
-    return std::make_unique<FakeReflector>();
-
-  // TODO(crbug.com/601869): Reflector needs to be rewritten for viz.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 viz::FrameSinkId TestImageTransportFactory::AllocateFrameSinkId() {
   return frame_sink_id_allocator_.NextFrameSinkId();
+}
+
+viz::SubtreeCaptureId TestImageTransportFactory::AllocateSubtreeCaptureId() {
+  return subtree_capture_id_allocator_.NextSubtreeCaptureId();
 }
 
 viz::HostFrameSinkManager*
@@ -149,11 +102,6 @@ void TestImageTransportFactory::DisableGpuCompositing() {
 }
 
 ui::ContextFactory* TestImageTransportFactory::GetContextFactory() {
-  return this;
-}
-
-ui::ContextFactoryPrivate*
-TestImageTransportFactory::GetContextFactoryPrivate() {
   return this;
 }
 

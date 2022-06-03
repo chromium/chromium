@@ -22,13 +22,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_COMPONENT_TRANSFER_FUNCTION_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedNumber;
+class SVGAnimatedNumberList;
 
 DECLARE_SVG_ENUM_MAP(ComponentTransferType);
 
@@ -46,12 +47,12 @@ class SVGComponentTransferFunctionElement : public SVGElement {
   SVGAnimatedNumber* offset() { return offset_.Get(); }
   SVGAnimatedEnumeration<ComponentTransferType>* type() { return type_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   SVGComponentTransferFunctionElement(const QualifiedName&, Document&);
 
-  void SvgAttributeChanged(const QualifiedName&) final;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
 
   bool LayoutObjectIsNeeded(const ComputedStyle& style) const final {
     return false;

@@ -1,0 +1,14 @@
+include_rules = [
+  "+chrome/services/speech",
+  "+chromeos/services/machine_learning/public/cpp",
+  "+chromeos/services/machine_learning/public/mojom",
+  "+components/soda",
+  "+components/speech",
+  "+content/public/browser",
+  "+google_apis",
+  "+media",
+  "+services/audio/public/cpp",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/blink/public/mojom/speech",
+]

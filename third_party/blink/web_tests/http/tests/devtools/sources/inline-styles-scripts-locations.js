@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Bindings should only generate locations for an inline script (style) if the location is inside of the inline script (style).\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('../bindings/resources/inline-style.html');
@@ -18,7 +18,7 @@
 
   TestRunner.addResult("\n\nFormatting source now...\n\n");
 
-  const formatData = await Formatter.sourceFormatter.format(source);
+  const formatData = await Formatter.SourceFormatter.instance().format(source);
   const formattedSource = formatData.formattedSourceCode;
   var formattedContent = (await formatData.formattedSourceCode.requestContent()).content;
   TestRunner.addResult(`Formatted Content:\n${formattedContent}`);
@@ -30,18 +30,18 @@
   async function dumpLocations(type, lineCount, source) {
     TestRunner.addResult(`Scanning ${lineCount} lines for ${type} locations. Note that location line/column numbers are zero-based.`);
     for (let line = 0; line < lineCount; ++line) {
-      const rawLocations = getLocations(line);
+      const rawLocations = await getLocations(line);
       if (rawLocations.length) {
         const results = rawLocations.map(async loc => `${loc.lineNumber}:${loc.columnNumber} (${await checkValidity(loc)})`);
         const rawLocationsString = (await Promise.all(results)).join('  ');
         TestRunner.addResult(`uiLocation ${line}:0 resolves to: ${rawLocationsString}`)
       }
     }
-    function getLocations(line) {
+    async function getLocations(line) {
       if (type === "css")
         return Bindings.cssWorkspaceBinding.uiLocationToRawLocations(source.uiLocation(line, 0));
       if (type === "script")
-        return Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(source, line, 0);
+        return await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(source, line, 0);
       return null;
     }
     async function checkValidity(location) {

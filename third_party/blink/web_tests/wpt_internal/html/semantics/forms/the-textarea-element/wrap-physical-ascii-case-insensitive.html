@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="help" href="https://html.spec.whatwg.org/#attr-textarea-wrap">
+<link rel="help" href="https://html.spec.whatwg.org/#enumerated-attribute">
+<meta name="assert" content="non-standard textarea@wrap values are ASCII case-insensitive">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!--
+  Blink says physical and virtual were the names that Netscape used before a
+  recommendation for HTML 4 extension renamed them to hard and soft.
+-->
+<form target="child" method="GET" action="wrap-physical-ascii-case-insensitive-child.html">
+  <textarea name="a" wrap="physical" cols="7">hello world</textarea>
+  <textarea name="b" wrap="PhYsIcAl" cols="7">hello world</textarea>
+  <textarea name="c" wrap="phyſical" cols="7">hello world</textarea>
+</form>
+<iframe name="child"></iframe>
+<script>
+// #dom-textarea-wrap reflects the content attribute, but it isn’t a nullable
+// DOMString, nor is it #limited-to-only-known-values, so we can’t just take
+// the shortcut of asserting the IDL attribute like most other attributes
+async_test(function() {
+  // we use a message rather than the iframe’s load event to avoid dealing with
+  // spurious load events that some browsers dispatch on the initial about:blank
+  addEventListener("message", this.step_func_done(event => {
+    const params = new URL(event.data).searchParams;
+
+    // #textarea-wrapping-transformation says that a UA-defined algorithm wraps
+    // values by inserting CRLF pairs, so "hello \r\nworld" and "hello w\r\norld"
+    // are two of many valid outcomes for cols=7
+    assert_true(params.get("a").includes("\r\n"), "lowercase “physical” valid");
+    assert_true(params.get("b").includes("\r\n"), "mixed case “physical” valid");
+    assert_false(params.get("c").includes("\r\n"), "non-ASCII “physical” invalid");
+  }));
+
+  // we submit the form in GET mode to observe the values [#concept-fe-value] of
+  // the textareas, because IDL gives us the API value [#concept-fe-api-value],
+  // which isn’t subject to hard wrapping [#textarea-wrapping-transformation]
+  document.querySelector("form").submit();
+}, "keywords");
+</script>

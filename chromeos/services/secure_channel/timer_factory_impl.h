@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/timer_factory.h"
 
 namespace base {
@@ -24,14 +23,19 @@ class TimerFactoryImpl : public TimerFactory {
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<TimerFactory> Create();
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
-    virtual std::unique_ptr<TimerFactory> BuildInstance();
+    virtual std::unique_ptr<TimerFactory> CreateInstance() = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  TimerFactoryImpl(const TimerFactoryImpl&) = delete;
+  TimerFactoryImpl& operator=(const TimerFactoryImpl&) = delete;
 
   ~TimerFactoryImpl() override;
 
@@ -40,8 +44,6 @@ class TimerFactoryImpl : public TimerFactory {
 
   // TimerFactory:
   std::unique_ptr<base::OneShotTimer> CreateOneShotTimer() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerFactoryImpl);
 };
 
 }  // namespace secure_channel

@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UploadProgressTracker {
                         net::URLRequest* request,
                         scoped_refptr<base::SequencedTaskRunner> task_runner =
                             base::SequencedTaskRunnerHandle::Get());
+
+  UploadProgressTracker(const UploadProgressTracker&) = delete;
+  UploadProgressTracker& operator=(const UploadProgressTracker&) = delete;
+
   virtual ~UploadProgressTracker();
 
   void OnAckReceived();
@@ -61,8 +65,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UploadProgressTracker {
   base::RepeatingTimer progress_timer_;
 
   UploadProgressReportCallback report_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadProgressTracker);
 };
 
 }  // namespace network

@@ -5,7 +5,7 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -53,16 +53,16 @@ TEST_F(DevToolsFileSystemIndexerTest, BasicUsage) {
   scoped_refptr<DevToolsFileSystemIndexer::FileSystemIndexingJob> job =
       indexer_->IndexPath(index_path.AsUTF8Unsafe(), excluded_folders,
                           base::DoNothing(), base::DoNothing(),
-                          base::Bind(&DevToolsFileSystemIndexerTest::SetDone,
-                                     base::Unretained(this)));
+                          base::BindOnce(&DevToolsFileSystemIndexerTest::SetDone,
+                                         base::Unretained(this)));
 
   base::RunLoop().Run();
   ASSERT_TRUE(indexing_done_);
 
   indexer_->SearchInPath(
       index_path.AsUTF8Unsafe(), "Hello",
-      base::Bind(&DevToolsFileSystemIndexerTest::SearchCallback,
-                 base::Unretained(this)));
+      base::BindOnce(&DevToolsFileSystemIndexerTest::SearchCallback,
+                     base::Unretained(this)));
   base::RunLoop().Run();
 
   ASSERT_EQ(3lu, search_results_.size());
@@ -72,8 +72,8 @@ TEST_F(DevToolsFileSystemIndexerTest, BasicUsage) {
 
   indexer_->SearchInPath(
       index_path.AsUTF8Unsafe(), "FUNCTION",
-      base::Bind(&DevToolsFileSystemIndexerTest::SearchCallback,
-                 base::Unretained(this)));
+      base::BindOnce(&DevToolsFileSystemIndexerTest::SearchCallback,
+                     base::Unretained(this)));
   base::RunLoop().Run();
 
   ASSERT_EQ(1lu, search_results_.size());

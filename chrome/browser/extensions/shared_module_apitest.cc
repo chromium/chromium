@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 namespace extensions {
@@ -27,14 +28,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModule) {
           .AppendASCII("import_non_existent"), 0));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModuleWhitelist) {
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("shared_module")
-          .AppendASCII("shared_whitelist")));
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModuleAllowlist) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("shared_module")
+                                .AppendASCII("shared_allowlist")));
 
-  EXPECT_FALSE(InstallExtension(
-      test_data_dir_.AppendASCII("shared_module")
-          .AppendASCII("import_not_in_whitelist"), 0));
+  EXPECT_FALSE(InstallExtension(test_data_dir_.AppendASCII("shared_module")
+                                    .AppendASCII("import_not_in_allowlist"),
+                                0));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModuleInstallEvent) {

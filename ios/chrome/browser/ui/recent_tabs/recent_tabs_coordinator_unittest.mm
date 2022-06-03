@@ -13,13 +13,15 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/model/fake_model_type_controller_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/global_id_mapper.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -47,16 +49,6 @@ using testing::Return;
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateSyncSetupService(
-    web::BrowserState* context) {
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
-  syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state);
-  return std::make_unique<testing::NiceMock<SyncSetupServiceMock>>(
-      sync_service);
-}
-
 class SessionSyncServiceMockForRecentTabsTableCoordinator
     : public sync_sessions::SessionSyncService {
  public:
@@ -65,16 +57,14 @@ class SessionSyncServiceMockForRecentTabsTableCoordinator
 
   MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
   MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
-  MOCK_METHOD1(SubscribeToForeignSessionsChanged,
-               std::unique_ptr<base::CallbackList<void()>::Subscription>(
-                   const base::RepeatingClosure& cb));
+  MOCK_METHOD1(
+      SubscribeToForeignSessionsChanged,
+      base::CallbackListSubscription(const base::RepeatingClosure& cb));
   MOCK_METHOD0(ScheduleGarbageCollection, void());
   MOCK_METHOD0(GetControllerDelegate,
                base::WeakPtr<syncer::ModelTypeControllerDelegate>());
-  MOCK_METHOD0(GetFaviconCache, sync_sessions::FaviconCache*());
   MOCK_METHOD1(ProxyTabsStateChanged,
                void(syncer::DataTypeController::State state));
-  MOCK_METHOD1(SetSyncSessionsGUID, void(const std::string& guid));
 };
 
 std::unique_ptr<KeyedService>
@@ -89,11 +79,6 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
   OpenTabsUIDelegateMock() {}
   ~OpenTabsUIDelegateMock() override {}
 
-  MOCK_METHOD1(GetIconUrlForPageUrl, GURL(const GURL& page_url));
-
-  MOCK_CONST_METHOD1(
-      GetSyncedFaviconForPageURL,
-      favicon_base::FaviconRawBitmapResult(const GURL& page_url));
   MOCK_METHOD1(
       GetAllForeignSessions,
       bool(std::vector<const sync_sessions::SyncedSession*>* sessions));
@@ -135,12 +120,23 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
+    test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateSyncSetupService));
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     test_cbs_builder.AddTestingFactory(
         SessionSyncServiceFactory::GetInstance(),
         base::BindRepeating(
             &BuildMockSessionSyncServiceForRecentTabsTableCoordinator));
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeTabRestoreServiceFactory::GetInstance(),
+        IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
@@ -159,17 +155,18 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
                       BOOL syncCompleted,
                       BOOL hasForeignSessions) {
     if (signedIn) {
-      identity_test_env_.MakePrimaryAccountAvailable("test@test.com");
-    } else if (identity_test_env_.identity_manager()->HasPrimaryAccount()) {
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@test.com", signin::ConsentLevel::kSync);
+    } else if (identity_test_env_.identity_manager()->HasPrimaryAccount(
+                   signin::ConsentLevel::kSync)) {
       auto* account_mutator =
           identity_test_env_.identity_manager()->GetPrimaryAccountMutator();
 
       // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
       DCHECK(account_mutator);
       account_mutator->ClearPrimaryAccount(
-          signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
           signin_metrics::SIGNOUT_TEST,
-          signin_metrics::SignoutDelete::IGNORE_METRIC);
+          signin_metrics::SignoutDelete::kIgnoreMetric);
     }
 
     SessionSyncServiceMockForRecentTabsTableCoordinator* session_sync_service =
@@ -177,8 +174,8 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
             SessionSyncServiceFactory::GetForBrowserState(
                 chrome_browser_state_.get()));
 
-    // Needed by ProfileSyncService's initialization, triggered during
-    // initialization of SyncSetupServiceMock.
+    // Needed by SyncService's initialization, triggered during initialization
+    // of SyncSetupServiceMock.
     ON_CALL(*session_sync_service, GetControllerDelegate())
         .WillByDefault(Return(fake_controller_delegate_.GetWeakPtr()));
     ON_CALL(*session_sync_service, GetGlobalIdMapper())
@@ -187,7 +184,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     SyncSetupServiceMock* syncSetupService = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
-    ON_CALL(*syncSetupService, IsSyncEnabled())
+    ON_CALL(*syncSetupService, CanSyncFeatureStart())
         .WillByDefault(Return(syncEnabled));
     ON_CALL(*syncSetupService, IsDataTypePreferred(syncer::PROXY_TABS))
         .WillByDefault(Return(true));
@@ -248,6 +245,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 };
 
 TEST_F(RecentTabsTableCoordinatorTest, TestConstructorDestructor) {
+  SetupSyncState(NO, NO, NO, NO);
   CreateController();
   EXPECT_TRUE(coordinator_);
 }

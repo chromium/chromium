@@ -7,8 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/instance_id.h"
@@ -60,20 +61,7 @@ ExtensionFunction::ResponseAction InstanceIDApiFunction::Run() {
     return RespondNow(Error(
         "chrome.instanceID not supported in incognito mode"));
   }
-
-  if (!IsEnabled()) {
-    return RespondNow(Error(
-        InstanceIDResultToError(instance_id::InstanceID::DISABLED)));
-  }
-
   return DoWork();
-}
-
-bool InstanceIDApiFunction::IsEnabled() const {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-
-  return instance_id::InstanceIDProfileService::IsInstanceIDEnabled(
-      profile->GetPrefs());
 }
 
 instance_id::InstanceID* InstanceIDApiFunction::GetInstanceID() const {
@@ -88,12 +76,12 @@ InstanceIDGetIDFunction::~InstanceIDGetIDFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDGetIDFunction::DoWork() {
   GetInstanceID()->GetID(
-      base::Bind(&InstanceIDGetIDFunction::GetIDCompleted, this));
+      base::BindOnce(&InstanceIDGetIDFunction::GetIDCompleted, this));
   return RespondLater();
 }
 
 void InstanceIDGetIDFunction::GetIDCompleted(const std::string& id) {
-  Respond(OneArgument(std::make_unique<base::Value>(id)));
+  Respond(OneArgument(base::Value(id)));
 }
 
 InstanceIDGetCreationTimeFunction::InstanceIDGetCreationTimeFunction() {}
@@ -101,16 +89,14 @@ InstanceIDGetCreationTimeFunction::InstanceIDGetCreationTimeFunction() {}
 InstanceIDGetCreationTimeFunction::~InstanceIDGetCreationTimeFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDGetCreationTimeFunction::DoWork() {
-  GetInstanceID()->GetCreationTime(
-      base::Bind(&InstanceIDGetCreationTimeFunction::GetCreationTimeCompleted,
-                 this));
+  GetInstanceID()->GetCreationTime(base::BindOnce(
+      &InstanceIDGetCreationTimeFunction::GetCreationTimeCompleted, this));
   return RespondLater();
 }
 
 void InstanceIDGetCreationTimeFunction::GetCreationTimeCompleted(
     const base::Time& creation_time) {
-  Respond(
-      OneArgument(std::make_unique<base::Value>(creation_time.ToDoubleT())));
+  Respond(OneArgument(base::Value(creation_time.ToDoubleT())));
 }
 
 InstanceIDGetTokenFunction::InstanceIDGetTokenFunction() {}
@@ -119,21 +105,14 @@ InstanceIDGetTokenFunction::~InstanceIDGetTokenFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDGetTokenFunction::DoWork() {
   std::unique_ptr<api::instance_id::GetToken::Params> params =
-      api::instance_id::GetToken::Params::Create(*args_);
+      api::instance_id::GetToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  std::map<std::string, std::string> options;
-  if (params->get_token_params.options.get())
-    options = params->get_token_params.options->additional_properties;
-
-  UMA_HISTOGRAM_COUNTS_100("Extensions.InstanceID.GetToken.OptionsCount",
-                           options.size());
 
   GetInstanceID()->GetToken(
       params->get_token_params.authorized_entity,
-      params->get_token_params.scope, options,
+      params->get_token_params.scope, /*time_to_live=*/base::TimeDelta(),
       /*flags=*/{},
-      base::Bind(&InstanceIDGetTokenFunction::GetTokenCompleted, this));
+      base::BindOnce(&InstanceIDGetTokenFunction::GetTokenCompleted, this));
 
   return RespondLater();
 }
@@ -142,7 +121,7 @@ void InstanceIDGetTokenFunction::GetTokenCompleted(
     const std::string& token,
     instance_id::InstanceID::Result result) {
   if (result == instance_id::InstanceID::SUCCESS)
-    Respond(OneArgument(std::make_unique<base::Value>(token)));
+    Respond(OneArgument(base::Value(token)));
   else
     Respond(Error(InstanceIDResultToError(result)));
 }
@@ -153,13 +132,14 @@ InstanceIDDeleteTokenFunction::~InstanceIDDeleteTokenFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDDeleteTokenFunction::DoWork() {
   std::unique_ptr<api::instance_id::DeleteToken::Params> params =
-      api::instance_id::DeleteToken::Params::Create(*args_);
+      api::instance_id::DeleteToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetInstanceID()->DeleteToken(
       params->delete_token_params.authorized_entity,
       params->delete_token_params.scope,
-      base::Bind(&InstanceIDDeleteTokenFunction::DeleteTokenCompleted, this));
+      base::BindOnce(&InstanceIDDeleteTokenFunction::DeleteTokenCompleted,
+                     this));
 
   return RespondLater();
 }
@@ -178,7 +158,7 @@ InstanceIDDeleteIDFunction::~InstanceIDDeleteIDFunction() {}
 
 ExtensionFunction::ResponseAction InstanceIDDeleteIDFunction::DoWork() {
   GetInstanceID()->DeleteID(
-      base::Bind(&InstanceIDDeleteIDFunction::DeleteIDCompleted, this));
+      base::BindOnce(&InstanceIDDeleteIDFunction::DeleteIDCompleted, this));
 
   return RespondLater();
 }

@@ -13,7 +13,10 @@ MinidumpParams::MinidumpParams(const uint64_t p_process_uptime,
                                const std::string& p_last_app_name,
                                const std::string& p_cast_release_version,
                                const std::string& p_cast_build_number,
-                               const std::string& p_reason)
+                               const std::string& p_reason,
+                               const std::string& p_stadia_session_id,
+                               const std::string& p_extra_info,
+                               const std::string& p_exec_name)
     : process_uptime(p_process_uptime),
       suffix(p_suffix),
       previous_app_name(p_previous_app_name),
@@ -21,7 +24,10 @@ MinidumpParams::MinidumpParams(const uint64_t p_process_uptime,
       last_app_name(p_last_app_name),
       cast_release_version(p_cast_release_version),
       cast_build_number(p_cast_build_number),
-      reason(p_reason) {}
+      reason(p_reason),
+      stadia_session_id(p_stadia_session_id),
+      extra_info(p_extra_info),
+      exec_name(p_exec_name) {}
 
 MinidumpParams::MinidumpParams() : process_uptime(0) {}
 

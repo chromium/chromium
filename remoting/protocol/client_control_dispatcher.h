@@ -25,6 +25,10 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
                                 public HostStub {
  public:
   ClientControlDispatcher();
+
+  ClientControlDispatcher(const ClientControlDispatcher&) = delete;
+  ClientControlDispatcher& operator=(const ClientControlDispatcher&) = delete;
+
   ~ClientControlDispatcher() override;
 
   // ClipboardStub implementation.
@@ -39,6 +43,8 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
   void DeliverClientMessage(const ExtensionMessage& message) override;
   void SelectDesktopDisplay(
       const SelectDesktopDisplayRequest& select_display) override;
+  void ControlPeerConnection(
+      const protocol::PeerConnectionParameters& parameters) override;
 
   // Sets the ClientStub that will be called for each incoming control
   // message. |client_stub| must outlive this object.
@@ -55,8 +61,6 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
 
   ClientStub* client_stub_ = nullptr;
   ClipboardStub* clipboard_stub_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlDispatcher);
 };
 
 }  // namespace protocol

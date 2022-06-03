@@ -35,7 +35,7 @@
 #include "util/posix/drop_privileges.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <mach/mach.h>
 
 #include "base/mac/scoped_mach_port.h"
@@ -47,9 +47,9 @@
 #include "snapshot/win/process_snapshot_win.h"
 #include "util/win/scoped_process_suspend.h"
 #include "util/win/xp_compat.h"
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "snapshot/linux/process_snapshot_linux.h"
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
 namespace crashpad {
 namespace {
@@ -136,7 +136,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   task_t task = TaskForPID(options.pid);
   if (task == TASK_NULL) {
     return EXIT_FAILURE;
@@ -161,7 +161,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
     PLOG(ERROR) << "could not open process " << options.pid;
     return EXIT_FAILURE;
   }
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
   if (options.dump_path.empty()) {
     options.dump_path = base::StringPrintf("minidump.%" PRI_PROCESS_ID,
@@ -169,7 +169,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
   }
 
   {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     std::unique_ptr<ScopedTaskSuspend> suspend;
     if (options.suspend) {
       suspend.reset(new ScopedTaskSuspend(task));
@@ -179,9 +179,9 @@ int GenerateDumpMain(int argc, char* argv[]) {
     if (options.suspend) {
       suspend.reset(new ScopedProcessSuspend(process.get()));
     }
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     ProcessSnapshotMac process_snapshot;
     if (!process_snapshot.Initialize(task)) {
       return EXIT_FAILURE;
@@ -196,13 +196,13 @@ int GenerateDumpMain(int argc, char* argv[]) {
                                      0)) {
       return EXIT_FAILURE;
     }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     // TODO(jperaza): https://crashpad.chromium.org/bug/30.
     ProcessSnapshotLinux process_snapshot;
     if (!process_snapshot.Initialize(nullptr)) {
       return EXIT_FAILURE;
     }
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
     FileWriter file_writer;
     base::FilePath dump_path(

@@ -4,11 +4,13 @@
 
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 
-#include <base/base64url.h>
-#include <base/json/json_reader.h>
-#include <base/strings/string_split.h>
-#include <base/values.h>
 #include <memory>
+
+#include "base/base64url.h"
+#include "base/json/json_reader.h"
+#include "base/logging.h"
+#include "base/strings/string_split.h"
+#include "base/values.h"
 
 namespace {
 
@@ -63,16 +65,14 @@ bool GetServiceFlags(const std::string id_token,
     VLOG(1) << "Failed to decode the id_token";
     return false;
   }
-  base::Value* service_flags_value_raw =
+  const base::Value* service_flags_value_raw =
       decoded_payload->FindKeyOfType(kServicesKey, base::Value::Type::LIST);
   if (service_flags_value_raw == nullptr) {
     VLOG(1) << "Missing service flags in the id_token";
     return false;
   }
-  base::Value::ListStorage& service_flags_value =
-      service_flags_value_raw->GetList();
-  for (size_t i = 0; i < service_flags_value.size(); ++i) {
-    const std::string& flag = service_flags_value[i].GetString();
+  for (const auto& flag_value : service_flags_value_raw->GetList()) {
+    const std::string& flag = flag_value.GetString();
     if (flag.size())
       out_service_flags->push_back(flag);
   }

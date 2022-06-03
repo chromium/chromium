@@ -20,7 +20,4 @@ interface MirroringServiceHost {
         pending_remote<SessionObserver> observer,
         pending_remote<CastMessageChannel> outbound_channel,
         pending_receiver<CastMessageChannel> inbound_channel);
-
-  // TODO(crbug.com/1015461): Add interfaces to get the streaming events/stats
-  // and mirroring logs.
 };

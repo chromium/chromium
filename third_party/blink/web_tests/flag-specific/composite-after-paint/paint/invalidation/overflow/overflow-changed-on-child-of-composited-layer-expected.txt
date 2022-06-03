@@ -8,14 +8,13 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='parent'",
-      "position": [-1, -1],
-      "bounds": [102, 102],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='parent'",
-          "rect": [0, 0, 102, 102],
-          "reason": "full layer"
-        }
+      "position": [-10, -10],
+      "bounds": [754, 210],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 120, 210],
+        [210, 20, 100, 100],
+        [200, 10, 100, 100]
       ],
       "transform": 1
     }

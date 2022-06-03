@@ -10,8 +10,8 @@
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree_builder.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -167,7 +167,7 @@ void SetDeviceScaleAndUpdateViewportRect(LayerTreeHost* layer_tree_host,
   gfx::Rect viewport_rect(root_bounds.width() * device_scale_factor,
                           root_bounds.height() * device_scale_factor);
   layer_tree_host->SetViewportRectAndScale(viewport_rect, device_scale_factor,
-                                           viz::LocalSurfaceIdAllocation());
+                                           viz::LocalSurfaceId());
 }
 
 }  // namespace cc

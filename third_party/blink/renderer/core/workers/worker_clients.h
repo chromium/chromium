@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_CLIENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_CLIENTS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -44,17 +43,14 @@ namespace blink {
 // worklets.
 class CORE_EXPORT WorkerClients final : public GarbageCollected<WorkerClients>,
                                         public Supplementable<WorkerClients> {
-  USING_GARBAGE_COLLECTED_MIXIN(WorkerClients);
-
  public:
   WorkerClients() = default;
+  WorkerClients(const WorkerClients&) = delete;
+  WorkerClients& operator=(const WorkerClients&) = delete;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     Supplementable<WorkerClients>::Trace(visitor);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerClients);
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<WorkerClients>;

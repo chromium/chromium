@@ -41,7 +41,8 @@ public class VrModalPresenter extends ModalDialogManager.Presenter {
                 MarginLayoutParams.MATCH_PARENT, MarginLayoutParams.WRAP_CONTENT, Gravity.CENTER);
 
         mVrDialog = new VrDialog(mContext, mVrDialogManager);
-        int style = model.get(ModalDialogProperties.PRIMARY_BUTTON_FILLED)
+        int style = (model.get(ModalDialogProperties.BUTTON_STYLES)
+                            == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 ? R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton
                 : R.style.Theme_Chromium_ModalDialog_TextPrimaryButton;
         ModalDialogView dialogView =

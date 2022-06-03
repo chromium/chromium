@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Təsadüfi RSA şəxsi kilidini yaratmaq alınmadı.</translation>
 <translation id="1445572445564823378">Bu artırma yavaşlaşır <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> məhsulunun performansını bərpa etmək üçün onu deaktiv etməlisiniz.</translation>
 <translation id="1468038450257740950">WebGL dəstəklənmir.</translation>
-<translation id="149347756975725155">'<ph name="ICON" />' artırma ikonası yüklənə bilmir.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arxa fon səhifəsini yükləmək alınmadı.</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalizasiya işlənir, lakin defolt default_locale manifestdə göstərilməyib.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Gizli açarı oxumaq uğursuz oldu.</translation>
 <translation id="6391538222494443604">Giriş direktoriyası olmalıdır.</translation>
 <translation id="641087317769093025">Artırmanı arxivdən çıxarmaq alınmadı</translation>
-<translation id="6413453408918378296">"<ph name="ICON" />" ikonası yaxşı görünmür.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" bir və ya daha çox cihaza giriş tələb edir:</translation>
 <translation id="657064425229075395">'<ph name="BACKGROUND_SCRIPT" />' arxa fon skriptini yükləmək olmadı.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> vendorundan <ph name="PRODUCT_NAME" /> məhsulu (Seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>

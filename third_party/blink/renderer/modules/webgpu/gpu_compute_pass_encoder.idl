@@ -8,12 +8,13 @@
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUComputePassEncoder {
     void setPipeline(GPUComputePipeline pipeline);
-    void dispatch(unsigned long x,
-                  optional unsigned long y = 1,
-                  optional unsigned long z = 1);
+    void dispatch(GPUSize32 x,
+                  optional GPUSize32 y = 1,
+                  optional GPUSize32 z = 1);
     void dispatchIndirect(GPUBuffer indirectBuffer,
-                          GPUBufferSize indirectOffset);
-
+                          GPUSize64 indirectOffset);
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
     void endPass();
 };
+GPUComputePassEncoder includes GPUObjectBase;
 GPUComputePassEncoder includes GPUProgrammablePassEncoder;

@@ -23,12 +23,11 @@
  * DAMAGE.
  */
 
-// See https://webaudio.github.io/web-audio-api/#dynamicscompressornode
+// https://webaudio.github.io/web-audio-api/#dynamicscompressornode
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface DynamicsCompressorNode : AudioNode {
-    [RaisesException] constructor(BaseAudioContext context, optional DynamicsCompressorOptions options);
+    [RaisesException, Measure] constructor(BaseAudioContext context, optional DynamicsCompressorOptions options = {});
     readonly attribute AudioParam threshold; // in Decibels
     readonly attribute AudioParam knee; // in Decibels
     readonly attribute AudioParam ratio; // unit-less

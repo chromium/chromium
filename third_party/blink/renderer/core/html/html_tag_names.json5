@@ -113,10 +113,6 @@
       interfaceName: "HTMLUnknownElement",
     },
     {
-      name: "content",
-      interfaceName: "HTMLContentElement",
-    },
-    {
       name: "data",
       interfaceName: "HTMLDataElement",
     },
@@ -159,6 +155,15 @@
     {
       name: "embed",
       constructorNeedsCreateElementFlags: true,
+    },
+    {
+      name: "fencedframe",
+      interfaceName: "HTMLFencedFrameElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/fenced_frame",
+      runtimeEnabled: "FencedFrames",
+      // This element could be enabled in some documents but not others (due to
+      // origin trials), so we need custom type helpers.
+      noTypeHelpers: true,
     },
     {
       name: "fieldset",
@@ -342,10 +347,6 @@
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
-      name: "shadow",
-      interfaceName: "HTMLShadowElement",
-    },
-    {
       name: "p",
       interfaceName: "HTMLParagraphElement",
     },
@@ -359,10 +360,18 @@
       interfaceName: "HTMLElement",
     },
     {
+      name: "popup",
+      interfaceName: "HTMLPopupElement",
+      runtimeEnabled: "HTMLPopupElement",
+    },
+    {
       name: "portal",
       interfaceName: "HTMLPortalElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/portal",
       runtimeEnabled: "Portals",
+      // Portals could be enabled in some documents but not others (due to
+      // origin trials), so we need custom type helpers.
+      noTypeHelpers: true,
     },
     "pre",
     {
@@ -413,6 +422,12 @@
     },
     {
       name: "select",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+    },
+    {
+      name: "selectmenu",
+      interfaceName: "HTMLSelectMenuElement",
+      runtimeEnabled: "HTMLSelectMenuElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {

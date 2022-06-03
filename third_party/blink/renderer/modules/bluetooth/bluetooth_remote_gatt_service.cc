@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
 
 #include <utility>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -28,7 +29,7 @@ BluetoothRemoteGATTService::BluetoothRemoteGATTService(
       device_instance_id_(device_instance_id),
       device_(device) {}
 
-void BluetoothRemoteGATTService::Trace(blink::Visitor* visitor) {
+void BluetoothRemoteGATTService::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   ScriptWrappable::Trace(visitor);
 }
@@ -41,7 +42,7 @@ void BluetoothRemoteGATTService::GetCharacteristicsCallback(
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     ScriptPromiseResolver* resolver,
     mojom::blink::WebBluetoothResult result,
-    base::Optional<
+    absl::optional<
         Vector<mojom::blink::WebBluetoothRemoteGATTCharacteristicPtr>>
         characteristics) {
   if (!resolver->GetExecutionContext() ||
@@ -89,7 +90,7 @@ void BluetoothRemoteGATTService::GetCharacteristicsCallback(
 
 ScriptPromise BluetoothRemoteGATTService::getCharacteristic(
     ScriptState* script_state,
-    const StringOrUnsignedLong& characteristic,
+    const V8BluetoothCharacteristicUUID* characteristic,
     ExceptionState& exception_state) {
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);
@@ -103,7 +104,7 @@ ScriptPromise BluetoothRemoteGATTService::getCharacteristic(
 
 ScriptPromise BluetoothRemoteGATTService::getCharacteristics(
     ScriptState* script_state,
-    const StringOrUnsignedLong& characteristic,
+    const V8BluetoothCharacteristicUUID* characteristic,
     ExceptionState& exception_state) {
   String characteristic_uuid =
       BluetoothUUID::getCharacteristic(characteristic, exception_state);

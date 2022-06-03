@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_H_
 
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -26,13 +26,13 @@ class CryptAuthKey {
   // this status is meaningless.
   enum Status { kActive, kInactive };
 
-  static base::Optional<CryptAuthKey> FromDictionary(const base::Value& dict);
+  static absl::optional<CryptAuthKey> FromDictionary(const base::Value& dict);
 
   // Constructor for symmetric keys.
   CryptAuthKey(const std::string& symmetric_key,
                Status status,
                cryptauthv2::KeyType type,
-               const base::Optional<std::string>& handle = base::nullopt);
+               const absl::optional<std::string>& handle = absl::nullopt);
 
   // Constructor for asymmetric keys. Note that |public_key| should be a
   // serialized securemessage::GenericPublicKey proto.
@@ -40,7 +40,7 @@ class CryptAuthKey {
                const std::string& private_key,
                Status status,
                cryptauthv2::KeyType type,
-               const base::Optional<std::string>& handle = base::nullopt);
+               const absl::optional<std::string>& handle = absl::nullopt);
 
   CryptAuthKey(const CryptAuthKey&);
 

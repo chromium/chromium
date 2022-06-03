@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_UTIL_H_
 #define CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_UTIL_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -19,6 +19,8 @@ class Profile;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+namespace site_engagement {
 
 // Helper methods for important sites.
 // All methods should be used on the UI thread.
@@ -41,11 +43,8 @@ class ImportantSitesUtil {
     GURL example_origin;
     double engagement_score = 0;
     int32_t reason_bitfield = 0;
-    // |usage| has to be initialized by ImportantSitesUsageCounter before it
-    // will contain the number of bytes used for quota and localstorage.
-    int64_t usage = 0;
     // Only set if the domain belongs to an installed app.
-    base::Optional<std::string> app_name;
+    absl::optional<std::string> app_name;
   };
 
   // Do not change the values here, as they are used for UMA histograms.
@@ -57,6 +56,10 @@ class ImportantSitesUtil {
     NOTIFICATIONS = 4,
     REASON_BOUNDARY
   };
+
+  ImportantSitesUtil() = delete;
+  ImportantSitesUtil(const ImportantSitesUtil&) = delete;
+  ImportantSitesUtil& operator=(const ImportantSitesUtil&) = delete;
 
   static std::string GetRegisterableDomainOrIP(const GURL& url);
 
@@ -85,16 +88,18 @@ class ImportantSitesUtil {
       size_t max_results);
 #endif
 
-  // Record the sites that the user chose to blacklist from clearing (in the
-  // Clear Browsing Dialog) and the sites they ignored. The blacklisted sites
-  // are NOT cleared as they are 'blacklisted' from the clear operation.
-  // This records metrics for blacklisted and ignored sites and removes any
-  // 'ignored' sites from our important sites list if they were ignored 3 times
-  // in a row.
-  static void RecordBlacklistedAndIgnoredImportantSites(
+  static std::set<std::string> GetInstalledRegisterableDomains(
+      Profile* profile);
+
+  // Record the sites that the user explicitly chose to exclude from clearing
+  // (in the Clear Browsing Dialog) and the sites they ignored. This records
+  // metrics for excluded and ignored sites and suppresses any 'ignored' sites
+  // from appearing in our important sites list if they were ignored 3 times in
+  // a row.
+  static void RecordExcludedAndIgnoredImportantSites(
       Profile* profile,
-      const std::vector<std::string>& blacklisted_sites,
-      const std::vector<int32_t>& blacklisted_sites_reason_bitfield,
+      const std::vector<std::string>& excluded_sites,
+      const std::vector<int32_t>& excluded_sites_reason_bitfield,
       const std::vector<std::string>& ignored_sites,
       const std::vector<int32_t>& ignored_sites_reason_bitfield);
 
@@ -103,9 +108,8 @@ class ImportantSitesUtil {
   // testing.
   static void MarkOriginAsImportantForTesting(Profile* profile,
                                               const GURL& origin);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImportantSitesUtil);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_UTIL_H_

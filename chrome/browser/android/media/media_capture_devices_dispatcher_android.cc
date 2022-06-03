@@ -40,7 +40,8 @@ jboolean JNI_MediaCaptureDevicesDispatcherAndroid_IsCapturingScreen(
   scoped_refptr<MediaStreamCaptureIndicator> indicator =
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator();
-  return indicator->IsCapturingDesktop(web_contents);
+  return indicator->IsCapturingWindow(web_contents) ||
+         indicator->IsCapturingDisplay(web_contents);
 }
 
 void JNI_MediaCaptureDevicesDispatcherAndroid_NotifyStopped(

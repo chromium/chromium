@@ -149,6 +149,10 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAndResolve) {
     return;
   }
 
+  // TODO(crbug.com/1144270) Fails on Mac Mini 8.1
+  if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
+    return;
+
   static const float kBlue[] = {0.0f, 0.0f, 1.0f, 1.0f};
   static const float kGreen[] = {0.0f, 1.0f, 0.0f, 1.0f};
   static const float kRed[] = {1.0f, 0.0f, 0.0f, 1.0f};

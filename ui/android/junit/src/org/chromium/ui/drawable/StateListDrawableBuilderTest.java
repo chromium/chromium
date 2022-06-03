@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowStateListDrawable;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.shadows.ShadowAnimatedStateListDrawable;
@@ -31,23 +30,7 @@ public class StateListDrawableBuilderTest {
     private static final int DEFAULT_DRAWABLE = 45678;
 
     @Test
-    @Config(sdk = 19)
-    public void testPreL() {
-        StateListDrawableBuilder b = new StateListDrawableBuilder(RuntimeEnvironment.application);
-        b.addState(CHECKED_DRAWABLE, android.R.attr.state_checked);
-        b.addState(DEFAULT_DRAWABLE, WILDCARD_STATE);
-        StateListDrawable result = b.build();
-        assertEquals(result.getClass(), StateListDrawable.class);
-        ShadowStateListDrawable drawable = shadowOf(result);
-        assertEquals(CHECKED_DRAWABLE,
-                shadowOf(drawable.getDrawableForState(CHECKED_STATE)).getCreatedFromResId());
-        assertEquals(DEFAULT_DRAWABLE,
-                shadowOf(drawable.getDrawableForState(WILDCARD_STATE)).getCreatedFromResId());
-    }
-
-    @Test
-    @Config(sdk = 21)
-    public void testPostL() {
+    public void testBuild() {
         StateListDrawableBuilder b = new StateListDrawableBuilder(RuntimeEnvironment.application);
         b.addState(CHECKED_DRAWABLE, android.R.attr.state_checked);
         b.addState(DEFAULT_DRAWABLE, WILDCARD_STATE);

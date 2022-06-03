@@ -4,6 +4,7 @@
 
 module translate.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
@@ -23,20 +24,70 @@ enum TranslateError {
   TRANSLATE_ERROR_MAX,
 };
 
+// This struct is populated a TranslateAgent to inform the browser about the
+// result of the language detection model. Corresponds to
+// LanguageDetectionDetails defined in language_detection_details.h.
 struct LanguageDetectionDetails {
-  mojo_base.mojom.Time time;
+  // All the elements in this section are used for to make decisions related
+  // to page translation.
+  //
+  // The URL corresponding to the main frame that had its language detected.
+  // Used by the TranslateDriver to determine if the page is eligible for
+  // translation.
   url.mojom.Url url;
-  string content_language;
-  string cld_language;
-  bool is_cld_reliable;
-  bool has_notranslate;
-  string html_root_language;
+  // The calculated language based on the language detection model's prediction
+  // and reliability, content language, and the page language attribute. Used to
+  // determine if the page should be considered for translation.
   string adopted_language;
+  // Whether no translate was specified within HTML tag to prevent
+  // initiating a translation for the corresponding page load. If true,
+  // the page content should not be translated.
+  bool has_notranslate;
+
+  // All the elements below are used only for debugging and metrics purposes,
+  // e.g., translate-internals.
+  //
+  // The time at which language the language detection was performed. Used only
+  // for debugging.
+  mojo_base.mojom.Time time;
+  // The intended language of the audience of the content as specified by the
+  // HTTP header. Used only for debugging.
+  string content_language;
+  // The language predicted by the model based on the text of the page. Used
+  // only for debugging.
+  string model_detected_language;
+  // Whether the language prediction from the model is considered reliable
+  // for use, i.e., if the model's score is above a set threshold. Used
+  // only for debugging.
+  bool is_model_reliable;
+  // The language of the document specified by the HTML lang attribute.
+  // Used only for debugging.
+  string html_root_language;
+  // The content of the page that language detection has be executed on.
+  // Used only for debugging.
   mojo_base.mojom.String16 contents;
+  // The relability score of the language prediction made by the detection
+  // model, the units of the score depends on the model but generally higher is
+  // better. Used only for debugging and metrics.
+  float model_reliability_score;
+  // The version of the language detection model used to predict
+  // the language of the page. Used only for debugging.
+  string detection_model_version;
 };
 
-interface Page {
-  // Requests that the page be translated from |source_lang| to
+// Handles language translation. This is used by the browser process to
+// direct a renderer to detect the language details of a frame and translate
+// the language of a frame (or revert a previous translation of the contents
+// of a frame.
+interface TranslateAgent {
+  // Requests that the frame's language details be detected and returned to
+  // the browser process. This includes the html root language, the content
+  // language metadata, and whether the notranslate metadata is present.
+  GetWebLanguageDetectionDetails()
+        => (string content_meta_language, string html_root_lang,
+          url.mojom.Url url, bool has_notranslate_meta);
+
+  // Requests that the frame be translated from |source_lang| to
   // |target_lang|.
   //
   // If a Translate request is already in progress with a matching
@@ -49,18 +100,28 @@ interface Page {
   //
   // If |cancelled| is |true| all other response values should be
   // ignored.
-  Translate(string translate_script, string source_lang, string target_lang)
+  TranslateFrame(string translate_script, string source_lang,
+                 string target_lang)
       => (bool cancelled, string original_lang, string translated_lang,
           TranslateError error);
 
-  // Requests that the page be reverted to its original language with
+  // Requests that the frame be reverted to its original language with
   // no translation applied.
   RevertTranslation();
 };
 
+// Reports when page is ready for translation. This is used by the
+// renderer of a main frame to report its detected language to the
+// browser process and provides the translation interface back to itself.
 interface ContentTranslateDriver {
   // Notification that a new page is ready to translate,
   // and the language for it has been determined.
-  RegisterPage(pending_remote<Page> page, LanguageDetectionDetails details,
-               bool page_needs_translation);
+  RegisterPage(pending_remote<TranslateAgent> translate_agent,
+               LanguageDetectionDetails details, bool translation_critiera_met);
+
+  // Request that the language detection model being loaded and returned
+  // for use by the TranslateAgent.
+  GetLanguageDetectionModel()
+        => (mojo_base.mojom.File? model_file);
+
 };

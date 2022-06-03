@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package build.config.android.test;
+option java_package = "build.config.android.test";
+
+import "relative_child.proto";
+import "build/config/android/test/proto/absolute_dep/absolute_dep.proto";
+import "relative_dep.proto";
+
+message RelativeRoot {
+  optional RelativeChild relative_child = 1;
+  optional AbsoluteDep absolute_dep = 2;
+  optional RelativeDep relative_dep = 3;
+}

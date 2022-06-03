@@ -7,5 +7,5 @@
 [
     ImplementedAs=NavigatorRequestMediaKeySystemAccess
 ] partial interface Navigator {
-    [SecureContext, CallWith=ScriptState] Promise<MediaKeySystemAccess> requestMediaKeySystemAccess(DOMString keySystem, sequence<MediaKeySystemConfiguration> supportedConfigurations);
+    [SecureContext, CallWith=ScriptState, RaisesException] Promise<MediaKeySystemAccess> requestMediaKeySystemAccess(DOMString keySystem, sequence<MediaKeySystemConfiguration> supportedConfigurations);
 };

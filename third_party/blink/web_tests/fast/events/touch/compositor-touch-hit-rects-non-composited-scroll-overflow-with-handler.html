@@ -12,7 +12,8 @@ html, body { margin: 0; }
   border: 1px solid lightgrey;
   height: 100px;
   width: 300px;
-  background: lightblue;
+  /* translucent to prevent compositing. */
+  background: rgba(0, 0, 255, 0.5);
 }
 .overflowwithhandler {
   height: 25px;

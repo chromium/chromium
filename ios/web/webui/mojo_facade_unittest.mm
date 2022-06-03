@@ -11,11 +11,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #include "ios/web/test/mojo_test.mojom.h"
 #include "ios/web/web_state/web_state_impl.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,14 +47,14 @@ id GetObject(const std::string& json) {
                                            error:nil];
 }
 
-class FakeWebState : public TestWebState {
+class FakeWebStateWithMojoFacade : public FakeWebState {
  public:
   void SetWatchId(int watch_id) { watch_id_ = watch_id; }
 
   void SetFacade(MojoFacade* facade) { facade_ = facade; }
 
-  void ExecuteJavaScript(const base::string16& javascript) override {
-    TestWebState::ExecuteJavaScript(javascript);
+  void ExecuteJavaScript(const std::u16string& javascript) override {
+    FakeWebState::ExecuteJavaScript(javascript);
     // Cancel the watch immediately to ensure there are no additional
     // notifications.
     // NOTE: This must be done as a side effect of executing the JavaScript.
@@ -88,7 +87,7 @@ class MojoFacadeTest : public WebTest {
     web_state_.SetFacade(facade_.get());
   }
 
-  FakeWebState* web_state() { return &web_state_; }
+  FakeWebStateWithMojoFacade* web_state() { return &web_state_; }
   MojoFacade* facade() { return facade_.get(); }
 
   void CreateMessagePipe(uint32_t* handle0, uint32_t* handle1) {
@@ -120,7 +119,7 @@ class MojoFacadeTest : public WebTest {
   }
 
  private:
-  FakeWebState web_state_;
+  FakeWebStateWithMojoFacade web_state_;
   std::unique_ptr<MojoFacade> facade_;
 };
 

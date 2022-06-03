@@ -26,7 +26,7 @@ _root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 
 # Unique constants for use by ReadFile().
-BINARY, RAW_TEXT = range(2)
+BINARY = 0
 
 
 # Unique constants representing data pack encodings.
@@ -202,16 +202,17 @@ def ReadFile(filename, encoding):
 
   Args:
     filename: The path to the file.
-    encoding: A Python codec name or one of two special values: BINARY to read
-              the file in binary mode, or RAW_TEXT to read it with newline
-              conversion but without decoding to Unicode.
+    encoding: A Python codec name or the special value: BINARY to read
+              the file in binary mode.
   '''
-  mode = 'rb' if encoding == BINARY else 'rU'
-  with open(filename, mode) as f:
-    data = f.read()
-  if encoding not in (BINARY, RAW_TEXT):
-    data = data.decode(encoding)
-  return data
+  if encoding == BINARY:
+    mode = 'rb'
+    encoding = None
+  else:
+    mode = 'rU'
+
+  with io.open(filename, mode, encoding=encoding) as f:
+    return f.read()
 
 
 def WrapOutputStream(stream, encoding = 'utf-8'):
@@ -651,7 +652,8 @@ class TempDir(object):
   '''Creates files with the specified contents in a temporary directory,
   for unit testing.
   '''
-  def __init__(self, file_data):
+
+  def __init__(self, file_data, mode='w'):
     self._tmp_dir_name = tempfile.mkdtemp()
     assert not os.listdir(self.GetPath())
     for name, contents in file_data.items():
@@ -659,7 +661,7 @@ class TempDir(object):
       dir_path = os.path.split(file_path)[0]
       if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-      with open(file_path, 'wb') as f:
+      with open(file_path, mode) as f:
         f.write(file_data[name])
 
   def __enter__(self):

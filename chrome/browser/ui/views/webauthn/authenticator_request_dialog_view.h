@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -37,9 +36,13 @@ class AuthenticatorRequestSheetView;
 class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer,
-      public content::WebContentsObserver,
-      public views::ButtonListener {
+      public content::WebContentsObserver {
  public:
+  METADATA_HEADER(AuthenticatorRequestDialogView);
+  AuthenticatorRequestDialogView(const AuthenticatorRequestDialogView&) =
+      delete;
+  AuthenticatorRequestDialogView& operator=(
+      const AuthenticatorRequestDialogView&) = delete;
   ~AuthenticatorRequestDialogView() override;
 
  protected:
@@ -56,8 +59,8 @@ class AuthenticatorRequestDialogView
   // Shows or hides the "Choose another option" button based on whether the
   // current sheet model defines a model for the other transports popup menu,
   // and whether it has at least one element.
-  void ToggleOtherTransportsButtonVisibility();
-  bool ShouldOtherTransportsButtonBeVisible() const;
+  void ToggleOtherMechanismsButtonVisibility();
+  bool ShouldOtherMechanismsButtonBeVisible() const;
 
   AuthenticatorRequestSheetView* sheet() const {
     DCHECK(sheet_);
@@ -65,26 +68,18 @@ class AuthenticatorRequestDialogView
   }
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   bool Accept() override;
   bool Cancel() override;
-  bool Close() override;
-  int GetDialogButtons() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
+  std::u16string GetWindowTitle() const override;
 
   // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
+  // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
@@ -101,19 +96,21 @@ class AuthenticatorRequestDialogView
   // Shows the dialog after creation or after being hidden.
   void Show();
 
+  void OtherMechanismsButtonPressed();
+
+  void OnDialogClosing();
+
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
 
   AuthenticatorRequestSheetView* sheet_ = nullptr;
-  views::View* other_transports_button_ = nullptr;
-  std::unique_ptr<views::MenuRunner> other_transports_menu_runner_;
+  views::View* other_mechanisms_button_ = nullptr;
+  std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;
   bool first_shown_ = false;
 
   // web_contents_hidden_ is true if the |WebContents| that this dialog should
   // attach to is currently hidden. In this case, the dialog won't be shown
   // when requested, but will wait until the WebContents is visible again.
   bool web_contents_hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_VIEW_H_

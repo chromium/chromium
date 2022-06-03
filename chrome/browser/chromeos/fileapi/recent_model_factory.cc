@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map_factory.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/chromeos/fileapi/recent_model.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"

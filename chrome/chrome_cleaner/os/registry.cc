@@ -39,7 +39,7 @@ bool IsPredefinedRegistryHandle(HANDLE key) {
 }
 
 bool GetNativeKeyPath(const base::win::RegKey& key,
-                      base::string16* native_key_path) {
+                      std::wstring* native_key_path) {
   // This function uses a native API to determine the key path seen by the
   // kernel. See:
   // https://msdn.microsoft.com/en-us/library/windows/hardware/ff553373(v=vs.85).aspx
@@ -65,7 +65,7 @@ bool GetNativeKeyPath(const base::win::RegKey& key,
       reinterpret_cast<_KEY_NAME_INFORMATION*>(buffer.get());
   // The |NameLength| size is in bytes.
   *native_key_path =
-      base::string16(key_name->Name, key_name->NameLength / sizeof(wchar_t));
+      std::wstring(key_name->Name, key_name->NameLength / sizeof(wchar_t));
   return true;
 }
 
@@ -73,13 +73,13 @@ bool GetNativeKeyPath(const base::win::RegKey& key,
 // DCHECK'ed.
 RegKeyPath::RegKeyPath() : rootkey_(nullptr), wow64access_(0) {}
 
-RegKeyPath::RegKeyPath(HKEY rootkey, const base::string16& subkey)
+RegKeyPath::RegKeyPath(HKEY rootkey, const std::wstring& subkey)
     : RegKeyPath(rootkey, subkey, 0) {
   DCHECK(IsPredefinedRegistryHandle(rootkey));
 }
 
 RegKeyPath::RegKeyPath(HKEY rootkey,
-                       const base::string16& subkey,
+                       const std::wstring& subkey,
                        REGSAM wow64access)
     : rootkey_(rootkey), subkey_(subkey), wow64access_(wow64access) {
   DCHECK_NE(static_cast<HKEY>(nullptr), rootkey_);
@@ -136,8 +136,8 @@ bool RegKeyPath::Create(REGSAM access, base::win::RegKey* key) const {
   return true;
 }
 
-base::string16 RegKeyPath::FullPath() const {
-  base::string16 path = HKeyToString(rootkey());
+std::wstring RegKeyPath::FullPath() const {
+  std::wstring path = HKeyToString(rootkey());
   if (wow64access() == KEY_WOW64_32KEY)
     path += L":32";
   else if (wow64access() == KEY_WOW64_64KEY)
@@ -146,7 +146,7 @@ base::string16 RegKeyPath::FullPath() const {
   return path;
 }
 
-bool RegKeyPath::GetNativeFullPath(base::string16* native_path) const {
+bool RegKeyPath::GetNativeFullPath(std::wstring* native_path) const {
   base::win::RegKey key;
   if (!Open(KEY_READ, &key))
     return false;
@@ -155,21 +155,21 @@ bool RegKeyPath::GetNativeFullPath(base::string16* native_path) const {
 
 bool RegKeyPath::operator==(const RegKeyPath& other) const {
   return rootkey_ == other.rootkey_ &&
-         String16EqualsCaseInsensitive(subkey_, other.subkey_) &&
+         WStringEqualsCaseInsensitive(subkey_, other.subkey_) &&
          wow64access_ == other.wow64access_;
 }
 
 bool RegKeyPath::IsEquivalent(const RegKeyPath& other) const {
   // For consistent behavior, stop immediately if either of the key paths is
   // not valid.
-  base::string16 key_path;
-  base::string16 other_key_path;
+  std::wstring key_path;
+  std::wstring other_key_path;
   if (!GetNativeFullPath(&key_path) ||
       !other.GetNativeFullPath(&other_key_path)) {
     return false;
   }
 
-  return String16EqualsCaseInsensitive(key_path, other_key_path);
+  return WStringEqualsCaseInsensitive(key_path, other_key_path);
 }
 
 bool RegKeyPath::operator<(const RegKeyPath& other) const {

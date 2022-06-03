@@ -15,29 +15,26 @@ namespace blink {
 // Small shim around TraceWrapperReference<v8::String> with a few
 // utility methods. Internally, v8::String is represented as string
 // rope.
-class GC_PLUGIN_IGNORE("crbug.com/841830")
-    PLATFORM_EXPORT TraceWrapperV8String final : public NameClient {
-  DISALLOW_COPY_AND_ASSIGN(TraceWrapperV8String);
+class PLATFORM_EXPORT TraceWrapperV8String final {
   DISALLOW_NEW();
 
  public:
   TraceWrapperV8String() = default;
+  TraceWrapperV8String(const TraceWrapperV8String&) = delete;
+  TraceWrapperV8String& operator=(const TraceWrapperV8String&) = delete;
+  ~TraceWrapperV8String() = default;
 
   bool IsEmpty() const { return string_.IsEmpty(); }
-  void Clear() { string_.Clear(); }
+  void Clear() { string_.Reset(); }
 
   v8::Local<v8::String> V8Value(v8::Isolate* isolate) {
-    return string_.NewLocal(isolate);
+    return string_.Get(isolate);
   }
 
   void Concat(v8::Isolate*, const String&);
   String Flatten(v8::Isolate*) const;
 
-  virtual void Trace(Visitor* visitor) { visitor->Trace(string_); }
-
-  const char* NameInHeapSnapshot() const override {
-    return "TraceWrapperV8String";
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(string_); }
 
  private:
   TraceWrapperV8Reference<v8::String> string_;

@@ -10,9 +10,10 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/guid.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/feedback/proto/extension.pb.h"
 
 namespace feedback {
 
@@ -42,8 +43,10 @@ FeedbackReport::FeedbackReport(
     const base::FilePath& path,
     const base::Time& upload_at,
     std::unique_ptr<std::string> data,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : reports_path_(path),
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool has_email)
+    : has_email_(has_email),
+      reports_path_(path),
       upload_at_(upload_at),
       data_(std::move(data)),
       reports_task_runner_(task_runner) {
@@ -61,14 +64,21 @@ FeedbackReport::FeedbackReport(
 FeedbackReport::FeedbackReport(
     base::FilePath path,
     std::unique_ptr<std::string> data,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : file_(path), data_(std::move(data)), reports_task_runner_(task_runner) {}
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    bool has_email)
+    : file_(path),
+      has_email_(has_email),
+      data_(std::move(data)),
+      reports_task_runner_(task_runner) {}
 
 // static
 const char FeedbackReport::kCrashReportIdsKey[]  = "crash_report_ids";
 
 // static
 const char FeedbackReport::kAllCrashReportIdsKey[] = "all_crash_report_ids";
+
+// static
+const char FeedbackReport::kMemUsageWithTabTitlesKey[] = "mem_usage_with_title";
 
 // static
 void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
@@ -85,17 +95,21 @@ void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
        name = enumerator.Next()) {
     auto data = std::make_unique<std::string>();
     if (ReadFileToString(name, data.get())) {
+      userfeedback::ExtensionSubmit parsed;
+      parsed.ParseFromString(*data);
+
+      bool has_email = parsed.common_data().has_user_email() &&
+                       !parsed.common_data().user_email().empty();
       callback.Run(base::MakeRefCounted<FeedbackReport>(
-          std::move(name), std::move(data),
-          base::ThreadTaskRunnerHandle::Get()));
+          std::move(name), std::move(data), base::ThreadTaskRunnerHandle::Get(),
+          has_email));
     }
   }
 }
 
 void FeedbackReport::DeleteReportOnDisk() {
   reports_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&base::DeleteFile), file_, false));
+      FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), file_));
 }
 
 FeedbackReport::~FeedbackReport() {}

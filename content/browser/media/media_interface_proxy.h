@@ -9,48 +9,47 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_interface_factory_holder.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/common/cdm_info.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
+#include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/services/media_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
-namespace media {
-class MediaInterfaceProvider;
-}
+#if defined(OS_WIN)
+#include "base/task/sequenced_task_runner.h"
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
+#endif
 
 namespace content {
 
 class RenderFrameHost;
 
 // This implements the media::mojom::InterfaceFactory interface for a
-// RenderFrameHostImpl. Upon InterfaceFactory calls, it will
-// figure out where to forward to the interface requests. For example,
-// - When |enable_library_cdms| is true, forward CDM request to the CdmService
-// rather than the general media service.
-// - Forward CDM requests to different CdmService instances based on library
-//   CDM types.
-class MediaInterfaceProxy : public media::mojom::InterfaceFactory {
+// RenderFrameHostImpl to help create remote media components in different
+// processes.
+class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
+                                  public media::mojom::InterfaceFactory {
  public:
-  // Constructs MediaInterfaceProxy and bind |this| to the |request|. When
-  // connection error happens on the client interface, |error_handler| will be
-  // called, which could destroy |this|.
-  MediaInterfaceProxy(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
-      base::OnceClosure error_handler);
   ~MediaInterfaceProxy() final;
+
+  void Bind(mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
 
   // media::mojom::InterfaceFactory implementation.
   void CreateAudioDecoder(
@@ -78,25 +77,28 @@ class MediaInterfaceProxy : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
           renderer_extension_request) final;
 #endif  // defined(OS_ANDROID)
+#if defined(OS_WIN)
+  void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver) final;
+#endif  // defined(OS_WIN)
   void CreateCdm(const std::string& key_system,
-                 mojo::PendingReceiver<media::mojom::ContentDecryptionModule>
-                     receiver) final;
-  void CreateDecryptor(
-      int cdm_id,
-      mojo::PendingReceiver<media::mojom::Decryptor> receiver) final;
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  void CreateCdmProxy(
-      const base::Token& cdm_guid,
-      mojo::PendingReceiver<media::mojom::CdmProxy> receiver) final;
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
+                 const media::CdmConfig& cdm_config,
+                 CreateCdmCallback create_cdm_cb) final;
 
  private:
+  friend class DocumentUserData<MediaInterfaceProxy>;
+  explicit MediaInterfaceProxy(RenderFrameHost* rfh);
+  DOCUMENT_USER_DATA_KEY_DECL();
+
   // Gets services provided by the browser (at RenderFrameHost level) to the
   // mojo media (or CDM) service running remotely. |cdm_file_system_id| is
   // used to register the appropriate CdmStorage interface needed by the CDM.
-  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-  GetFrameServices(const base::Token& cdm_guid,
-                   const std::string& cdm_file_system_id);
+  // If |cdm_file_system_id| is empty, CdmStorage interface won't be available.
+  mojo::PendingRemote<media::mojom::FrameInterfaceFactory> GetFrameServices(
+      const std::string& cdm_file_system_id = "");
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Gets a CdmFactory pointer for |key_system|. Returns null if unexpected
@@ -108,38 +110,47 @@ class MediaInterfaceProxy : public media::mojom::InterfaceFactory {
   // CdmFactory pointer. Returns nullptr if unexpected error happened.
   // |cdm_path| will be used to preload the CDM, if necessary.
   // |cdm_file_system_id| is used when creating the matching storage interface.
-  media::mojom::CdmFactory* ConnectToCdmService(
-      const base::Token& cdm_guid,
-      const base::FilePath& cdm_path,
-      const std::string& cdm_file_system_id);
+  // |cdm_name| is used as the display name of the CDM (utility) process.
+  media::mojom::CdmFactory* ConnectToCdmService(const base::Token& cdm_guid,
+                                                const CdmInfo& cdm_info);
 
   // Callback for connection error from the CdmFactoryPtr in the
   // |cdm_factory_map_| associated with |cdm_guid|.
   void OnCdmServiceConnectionError(const base::Token& cdm_guid);
-
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-  // Creates a CdmProxy for the CDM in CdmService. Not implemented in
-  // CreateCdmProxy() because we don't want any client to be able to create
-  // a CdmProxy.
-  void CreateCdmProxyInternal(
-      const base::Token& cdm_guid,
-      mojo::PendingReceiver<media::mojom::CdmProxy> receiver);
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
-  RenderFrameHost* const render_frame_host_;
+#if defined(OS_CHROMEOS)
+  // Callback for for Chrome OS CDM creation to facilitate falling back to the
+  // library CDM if the daemon is unavailable or other settings prevent usage of
+  // it.
+  void OnChromeOsCdmCreated(
+      const std::string& key_system,
+      const media::CdmConfig& cdm_config,
+      CreateCdmCallback callback,
+      mojo::PendingRemote<media::mojom::ContentDecryptionModule> receiver,
+      media::mojom::CdmContextPtr cdm_context,
+      const std::string& error_message);
+#endif  // defined(OS_CHROMEOS)
 
-  // Receiver for incoming InterfaceFactoryRequest from the the RenderFrameImpl.
-  mojo::Receiver<InterfaceFactory> receiver_;
+#if defined(OS_WIN)
+  // Gets the InterfaceFactory from MediaFoundationService. May return null if
+  // MediaFoundationService cannot be used or connection failed.
+  InterfaceFactory* GetMediaFoundationServiceInterfaceFactory(
+      const base::FilePath& cdm_path);
 
-  // TODO(xhwang): Replace InterfaceProvider with a dedicated host interface.
-  // See http://crbug.com/660573
-  std::vector<std::unique_ptr<media::MediaInterfaceProvider>> media_registries_;
+  void ConnectToMediaFoundationService(const base::FilePath& cdm_path);
+  bool ShouldUseMediaFoundationServiceForCdm(
+      const std::string& key_system,
+      const media::CdmConfig& cdm_config);
+
+  mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
+#endif  // defined(OS_WIN)
+
+  mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;
 
   // InterfacePtr to the remote InterfaceFactory implementation in the Media
   // Service hosted in the process specified by the "mojo_media_host" gn
-  // argument. Available options are browser, GPU and utility processes.
+  // argument. Available options are browser or GPU processes.
   std::unique_ptr<MediaInterfaceFactoryHolder> media_interface_factory_ptr_;
 
   // An interface factory bound to a secondary instance of the Media Service,
@@ -150,15 +161,20 @@ class MediaInterfaceProxy : public media::mojom::InterfaceFactory {
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // CDM GUID to CDM InterfaceFactory Remotes mapping, where the
-  // InterfaceFactory instances live in the standalone CDM Service instances.
-  // These map entries effectively own the corresponding service processes.
+  // InterfaceFactory instances live in the standalone CdmService instances.
+  // These map entries effectively own the corresponding CDM processes.
+  // Only using the GUID to identify the CdmFactory is sufficient because the
+  // BrowserContext and Site URL should never change.
   std::map<base::Token, mojo::Remote<media::mojom::CdmFactory>>
       cdm_factory_map_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   base::ThreadChecker thread_checker_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaInterfaceProxy);
+  // Receivers for incoming interface requests from the the RenderFrameImpl.
+  mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
+
+  base::WeakPtrFactory<MediaInterfaceProxy> weak_factory_{this};
 };
 
 }  // namespace content

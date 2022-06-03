@@ -17,6 +17,9 @@ class SK_API SkiaMemoryDumpProvider
  public:
   static SkiaMemoryDumpProvider* GetInstance();
 
+  SkiaMemoryDumpProvider(const SkiaMemoryDumpProvider&) = delete;
+  SkiaMemoryDumpProvider& operator=(const SkiaMemoryDumpProvider&) = delete;
+
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(
       const base::trace_event::MemoryDumpArgs& args,
@@ -27,8 +30,6 @@ class SK_API SkiaMemoryDumpProvider
 
   SkiaMemoryDumpProvider();
   ~SkiaMemoryDumpProvider() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaMemoryDumpProvider);
 };
 
 }  // namespace skia

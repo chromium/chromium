@@ -23,7 +23,7 @@ class ServiceWorkerModuleTreeClient final : public ModuleTreeClient {
   // Implements ModuleTreeClient.
   void NotifyModuleTreeLoadFinished(ModuleScript*) final;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<ScriptState> script_state_;

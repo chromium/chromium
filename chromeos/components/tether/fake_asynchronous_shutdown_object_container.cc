@@ -9,18 +9,17 @@ namespace chromeos {
 namespace tether {
 
 FakeAsynchronousShutdownObjectContainer::
-    FakeAsynchronousShutdownObjectContainer(
-        const base::Closure& deletion_callback)
-    : deletion_callback_(deletion_callback) {}
+    FakeAsynchronousShutdownObjectContainer(base::OnceClosure deletion_callback)
+    : deletion_callback_(std::move(deletion_callback)) {}
 
 FakeAsynchronousShutdownObjectContainer::
     ~FakeAsynchronousShutdownObjectContainer() {
-  deletion_callback_.Run();
+  std::move(deletion_callback_).Run();
 }
 
 void FakeAsynchronousShutdownObjectContainer::Shutdown(
-    const base::Closure& shutdown_complete_callback) {
-  shutdown_complete_callback_ = shutdown_complete_callback;
+    base::OnceClosure shutdown_complete_callback) {
+  shutdown_complete_callback_ = std::move(shutdown_complete_callback);
 }
 
 TetherHostFetcher*

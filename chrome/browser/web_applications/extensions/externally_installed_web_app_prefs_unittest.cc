@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 
 #include <algorithm>
 
+#include "base/command_line.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,6 +26,10 @@ class ExternallyInstalledWebAppPrefsTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ExternallyInstalledWebAppPrefsTest() = default;
+  ExternallyInstalledWebAppPrefsTest(
+      const ExternallyInstalledWebAppPrefsTest&) = delete;
+  ExternallyInstalledWebAppPrefsTest& operator=(
+      const ExternallyInstalledWebAppPrefsTest&) = delete;
   ~ExternallyInstalledWebAppPrefsTest() override = default;
 
   void SetUp() override {
@@ -68,8 +73,6 @@ class ExternallyInstalledWebAppPrefsTest
     return urls;
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternallyInstalledWebAppPrefsTest);
 };
 
 TEST_F(ExternallyInstalledWebAppPrefsTest, BasicOps) {

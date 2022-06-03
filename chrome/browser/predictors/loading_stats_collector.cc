@@ -7,10 +7,15 @@
 #include <set>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace predictors {
 
@@ -39,10 +44,20 @@ RedirectStatus GetPredictionRedirectStatus(const GURL& initial_url,
              : RedirectStatus::REDIRECT_WRONG_PREDICTED;
 }
 
-void ReportPreconnectPredictionAccuracy(const PreconnectPrediction& prediction,
-                                        const PageRequestSummary& summary) {
+std::string GetHistogramNameForHintOrigin(HintOrigin hint_origin,
+                                          const char* histogram_base) {
+  return base::StringPrintf("%s.%s", histogram_base,
+                            GetStringNameForHintOrigin(hint_origin).c_str());
+}
+
+// Reports histograms for the accuracy of the prediction. Returns the number of
+// origins that were correctly predicted.
+size_t ReportPreconnectPredictionAccuracy(
+    const PreconnectPrediction& prediction,
+    const PageRequestSummary& summary,
+    HintOrigin hint_origin) {
   if (prediction.requests.empty() || summary.origins.empty())
-    return;
+    return 0;
 
   const auto& actual_origins = summary.origins;
 
@@ -56,21 +71,30 @@ void ReportPreconnectPredictionAccuracy(const PreconnectPrediction& prediction,
   size_t recall_percentage =
       (100 * correctly_predicted_count) / actual_origins.size();
 
-  UMA_HISTOGRAM_PERCENTAGE(
-      internal::kLoadingPredictorPreconnectLearningPrecision,
+  base::UmaHistogramPercentageObsoleteDoNotUse(
+      GetHistogramNameForHintOrigin(
+          hint_origin, internal::kLoadingPredictorPreconnectLearningPrecision),
       precision_percentage);
-  UMA_HISTOGRAM_PERCENTAGE(internal::kLoadingPredictorPreconnectLearningRecall,
-                           recall_percentage);
-  UMA_HISTOGRAM_COUNTS_100(internal::kLoadingPredictorPreconnectLearningCount,
-                           prediction.requests.size());
+  base::UmaHistogramPercentageObsoleteDoNotUse(
+      GetHistogramNameForHintOrigin(
+          hint_origin, internal::kLoadingPredictorPreconnectLearningRecall),
+      recall_percentage);
+  base::UmaHistogramCounts100(
+      GetHistogramNameForHintOrigin(
+          hint_origin, internal::kLoadingPredictorPreconnectLearningCount),
+      prediction.requests.size());
 
   RedirectStatus redirect_status = GetPredictionRedirectStatus(
       summary.initial_url, summary.main_frame_url, prediction.host,
       prediction.is_redirected, true /* is_host */);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      internal::kLoadingPredictorPreconnectLearningRedirectStatus,
-      static_cast<int>(redirect_status), static_cast<int>(RedirectStatus::MAX));
+  base::UmaHistogramEnumeration(
+      GetHistogramNameForHintOrigin(
+          hint_origin,
+          internal::kLoadingPredictorPreconnectLearningRedirectStatus),
+      redirect_status, RedirectStatus::MAX);
+
+  return correctly_predicted_count;
 }
 
 void ReportPreconnectAccuracy(
@@ -125,8 +149,7 @@ LoadingStatsCollector::LoadingStatsCollector(
     ResourcePrefetchPredictor* predictor,
     const LoadingPredictorConfig& config)
     : predictor_(predictor),
-      max_stats_age_(base::TimeDelta::FromSeconds(
-          config.max_navigation_lifetime_seconds)) {}
+      max_stats_age_(base::Seconds(config.max_navigation_lifetime_seconds)) {}
 
 LoadingStatsCollector::~LoadingStatsCollector() = default;
 
@@ -143,17 +166,134 @@ void LoadingStatsCollector::RecordPreconnectStats(
 }
 
 void LoadingStatsCollector::RecordPageRequestSummary(
-    const PageRequestSummary& summary) {
+    const PageRequestSummary& summary,
+    const absl::optional<OptimizationGuidePrediction>&
+        optimization_guide_prediction) {
   const GURL& initial_url = summary.initial_url;
 
+  ukm::builders::LoadingPredictor builder(summary.ukm_source_id);
+  bool recorded_ukm = false;
+  size_t ukm_cap = 100;
+
   PreconnectPrediction preconnect_prediction;
-  if (predictor_->PredictPreconnectOrigins(initial_url, &preconnect_prediction))
-    ReportPreconnectPredictionAccuracy(preconnect_prediction, summary);
+  if (predictor_->PredictPreconnectOrigins(initial_url,
+                                           &preconnect_prediction)) {
+    size_t correctly_predicted_origins = ReportPreconnectPredictionAccuracy(
+        preconnect_prediction, summary, HintOrigin::NAVIGATION);
+    if (!preconnect_prediction.requests.empty()) {
+      builder.SetLocalPredictionOrigins(
+          std::min(ukm_cap, preconnect_prediction.requests.size()));
+      builder.SetLocalPredictionCorrectlyPredictedOrigins(
+          std::min(ukm_cap, correctly_predicted_origins));
+      recorded_ukm = true;
+    }
+  }
+  if (optimization_guide_prediction) {
+    builder.SetOptimizationGuidePredictionDecision(
+        static_cast<int64_t>(optimization_guide_prediction->decision));
+    if (optimization_guide_prediction->optimization_guide_prediction_arrived) {
+      builder.SetNavigationStartToOptimizationGuidePredictionArrived(
+          (optimization_guide_prediction->optimization_guide_prediction_arrived
+               .value() -
+           summary.navigation_started)
+              .InMilliseconds());
+    }
+    if (!optimization_guide_prediction->preconnect_prediction.requests
+             .empty()) {
+      ReportPreconnectPredictionAccuracy(
+          optimization_guide_prediction->preconnect_prediction, summary,
+          HintOrigin::OPTIMIZATION_GUIDE);
+    }
+    if (!optimization_guide_prediction->predicted_subresources.empty()) {
+      builder.SetOptimizationGuidePredictionSubresources(std::min(
+          ukm_cap,
+          optimization_guide_prediction->predicted_subresources.size()));
+      const auto& actual_subresource_urls = summary.subresource_urls;
+      size_t correctly_predicted_subresources = std::count_if(
+          optimization_guide_prediction->predicted_subresources.begin(),
+          optimization_guide_prediction->predicted_subresources.end(),
+          [&actual_subresource_urls](const GURL& subresource_url) {
+            return actual_subresource_urls.find(subresource_url) !=
+                   actual_subresource_urls.end();
+          });
+      builder.SetOptimizationGuidePredictionCorrectlyPredictedSubresources(
+          std::min(ukm_cap, correctly_predicted_subresources));
+
+      url::Origin main_frame_origin = url::Origin::Create(summary.initial_url);
+      std::set<url::Origin> predicted_origins;
+      for (const auto& subresource :
+           optimization_guide_prediction->predicted_subresources) {
+        url::Origin subresource_origin = url::Origin::Create(subresource);
+        if (subresource_origin == main_frame_origin) {
+          // Do not count the main frame origin as a predicted origin.
+          continue;
+        }
+        predicted_origins.insert(subresource_origin);
+      }
+      builder.SetOptimizationGuidePredictionOrigins(
+          std::min(ukm_cap, predicted_origins.size()));
+      const auto& actual_subresource_origins = summary.origins;
+      size_t correctly_predicted_origins = std::count_if(
+          predicted_origins.begin(), predicted_origins.end(),
+          [&actual_subresource_origins](const url::Origin& subresource_origin) {
+            return actual_subresource_origins.find(subresource_origin) !=
+                   actual_subresource_origins.end();
+          });
+      builder.SetOptimizationGuidePredictionCorrectlyPredictedOrigins(
+          std::min(ukm_cap, correctly_predicted_origins));
+    }
+    recorded_ukm = true;
+  }
+  if (!summary.preconnect_origins.empty()) {
+    builder.SetSubresourceOriginPreconnectsInitiated(
+        std::min(ukm_cap, summary.preconnect_origins.size()));
+    const auto& actual_subresource_origins = summary.origins;
+    size_t correctly_predicted_subresource_origins_initiated = std::count_if(
+        summary.preconnect_origins.begin(), summary.preconnect_origins.end(),
+        [&actual_subresource_origins](const url::Origin& subresource_origin) {
+          return actual_subresource_origins.find(subresource_origin) !=
+                 actual_subresource_origins.end();
+        });
+    builder.SetCorrectSubresourceOriginPreconnectsInitiated(
+        std::min(ukm_cap, correctly_predicted_subresource_origins_initiated));
+    recorded_ukm = true;
+  }
+  if (!summary.prefetch_urls.empty()) {
+    builder.SetSubresourcePrefetchesInitiated(
+        std::min(ukm_cap, summary.prefetch_urls.size()));
+    const auto& actual_subresource_urls = summary.subresource_urls;
+    size_t correctly_predicted_subresource_prefetches_initiated = std::count_if(
+        summary.prefetch_urls.begin(), summary.prefetch_urls.end(),
+        [&actual_subresource_urls](const GURL& subresource_url) {
+          return actual_subresource_urls.find(subresource_url) !=
+                 actual_subresource_urls.end();
+        });
+    builder.SetCorrectSubresourcePrefetchesInitiated(std::min(
+        ukm_cap, correctly_predicted_subresource_prefetches_initiated));
+    recorded_ukm = true;
+  }
+  if (summary.first_prefetch_initiated) {
+    DCHECK(!summary.prefetch_urls.empty());
+    builder.SetNavigationStartToFirstSubresourcePrefetchInitiated(
+        (summary.first_prefetch_initiated.value() - summary.navigation_started)
+            .InMilliseconds());
+    recorded_ukm = true;
+  }
 
   auto it = preconnect_stats_.find(initial_url);
   if (it != preconnect_stats_.end()) {
     ReportPreconnectAccuracy(*it->second, summary.origins);
     preconnect_stats_.erase(it);
+  }
+
+  if (recorded_ukm) {
+    // Only record nav start to commit if we had any predictions.
+    if (summary.navigation_committed != base::TimeTicks::Max()) {
+      builder.SetNavigationStartToNavigationCommit(
+          (summary.navigation_committed - summary.navigation_started)
+              .InMilliseconds());
+    }
+    builder.Record(ukm::UkmRecorder::Get());
   }
 }
 

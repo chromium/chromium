@@ -73,4 +73,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) SamlPasswordAttributes {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SamlPasswordAttributes;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_SAML_PASSWORD_ATTRIBUTES_H_

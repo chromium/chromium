@@ -1,8 +1,9 @@
+// META: global=window,worker
 // META: script=../resources/utils.js
 
 function checkFetchResponse(url, data, mime, fetchMode, method) {
   var cut = (url.length >= 40) ? "[...]" : "";
-  desc = "Fetching " + (method ? "[" + method + "] " : "") + url.substring(0, 40) + cut + " is OK";
+  var desc = "Fetching " + (method ? "[" + method + "] " : "") + url.substring(0, 40) + cut + " is OK";
   var init = {"method": method || "GET"};
   if (fetchMode) {
     init.mode = fetchMode;
@@ -35,7 +36,7 @@ function checkKoUrl(url, method, desc) {
   var cut = (url.length >= 40) ? "[...]" : "";
   desc = "Fetching [" + method + "] " + url.substring(0, 45) + cut + " is KO"
   promise_test(function(test) {
-    return promise_rejects(test, new TypeError(), fetch(url, {"method": method}));
+    return promise_rejects_js(test, TypeError, fetch(url, {"method": method}));
   }, desc);
 }
 

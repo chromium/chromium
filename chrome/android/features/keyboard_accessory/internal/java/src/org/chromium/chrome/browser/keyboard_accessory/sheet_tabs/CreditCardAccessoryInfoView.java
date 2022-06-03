@@ -28,6 +28,7 @@ class CreditCardAccessoryInfoView extends LinearLayout {
     private ChipView mExpMonth;
     private ChipView mExpYear;
     private ChipView mCardholder;
+    private ChipView mCvc;
 
     /**
      * Constructor for inflating from XML.
@@ -46,6 +47,7 @@ class CreditCardAccessoryInfoView extends LinearLayout {
         mExpMonth = findViewById(R.id.exp_month);
         mExpYear = findViewById(R.id.exp_year);
         mCardholder = findViewById(R.id.cardholder);
+        mCvc = findViewById(R.id.cvc);
     }
 
     public void setIcon(@Nullable Drawable drawable) {
@@ -75,5 +77,9 @@ class CreditCardAccessoryInfoView extends LinearLayout {
 
     public LinearLayout getExpiryGroup() {
         return mExpiryGroup;
+    }
+
+    public ChipView getCvc() {
+        return mCvc;
     }
 }

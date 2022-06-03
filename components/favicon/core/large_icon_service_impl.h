@@ -6,10 +6,8 @@
 #define COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_IMPL_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -38,6 +36,10 @@ class LargeIconServiceImpl : public LargeIconService {
       int desired_size_in_dip_for_server_requests,
       favicon_base::IconType icon_type_for_server_requests,
       const std::string& google_server_client_param);
+
+  LargeIconServiceImpl(const LargeIconServiceImpl&) = delete;
+  LargeIconServiceImpl& operator=(const LargeIconServiceImpl&) = delete;
+
   ~LargeIconServiceImpl() override;
 
   // LargeIconService Implementation.
@@ -62,6 +64,11 @@ class LargeIconServiceImpl : public LargeIconService {
       int desired_size_in_pixel,
       favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker) override;
+  base::CancelableTaskTracker::TaskId GetIconRawBitmapOrFallbackStyleForPageUrl(
+      const GURL& page_url,
+      int desired_size_in_pixel,
+      favicon_base::LargeIconCallback callback,
+      base::CancelableTaskTracker* tracker) override;
   void GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
       const GURL& page_url,
       bool may_page_url_be_private,
@@ -69,10 +76,10 @@ class LargeIconServiceImpl : public LargeIconService {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       favicon_base::GoogleFaviconServerCallback callback) override;
   void TouchIconFromGoogleServer(const GURL& icon_url) override;
-  // Extracts the organization-identifying domain from |url| which excludes
-  // registrar portion (e.g. final ".com"). Used for logging UMA metrics.
-  // Exposed publicly for testing.
-  static std::string GetOrganizationNameForUma(const GURL& url);
+
+  // Overrides the URL of the Google favicon server to send requests to for
+  // testing.
+  void SetServerUrlForTesting(const GURL& server_url_for_testing);
 
  private:
   base::CancelableTaskTracker::TaskId GetLargeIconOrFallbackStyleImpl(
@@ -100,14 +107,10 @@ class LargeIconServiceImpl : public LargeIconService {
 
   const std::string google_server_client_param_;
 
-  // A pre-populated list of icon types to consider when looking for large
-  // icons. This is an optimization over populating an icon type vector on each
-  // request.
-  std::vector<favicon_base::IconTypeSet> large_icon_types_;
+  // URL of the Google favicon server (overridable by tests).
+  GURL server_url_;
 
   base::WeakPtrFactory<LargeIconServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LargeIconServiceImpl);
 };
 
 }  // namespace favicon

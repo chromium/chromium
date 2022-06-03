@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/content_settings/core",
+  "+components/keep_alive_registry",
+  "+components/keyed_service/core",
+  "+components/variations",
+  "+components/permissions",
+  "+content/public/browser",
+  "+content/public/test",
+  "+services/metrics/public",
+  "+third_party/blink/public",
+]

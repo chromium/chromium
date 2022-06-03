@@ -192,7 +192,7 @@ void NetworkQualityStore::NotifyCacheObserverIfPresent(
 
   if (!network_qualities_cache_observer_list_.HasObserver(observer))
     return;
-  for (const auto it : cached_network_qualities_)
+  for (const auto& it : cached_network_qualities_)
     observer->OnChangeInCachedNetworkQuality(it.first, it.second);
 }
 

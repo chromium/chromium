@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>Loader>WebPackaging"
+}
+
+team_email: "webpackage-dev@chromium.org"

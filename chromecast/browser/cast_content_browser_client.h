@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "chromecast/external_mojo/broker_service/broker_service.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,8 +25,10 @@
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "net/url_request/url_request_context.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/cpp/identity.h"
+#include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom-forward.h"
 #include "services/service_manager/public/mojom/service.mojom-forward.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -79,7 +83,6 @@ class VideoResolutionPolicy;
 namespace shell {
 class CastBrowserMainParts;
 class CastNetworkContexts;
-class URLRequestContextFactory;
 
 class CastContentBrowserClient
     : public content::ContentBrowserClient,
@@ -95,7 +98,18 @@ class CastContentBrowserClient
   // preflight checks.
   static std::vector<std::string> GetCorsExemptHeadersList();
 
+  CastContentBrowserClient(const CastContentBrowserClient&) = delete;
+  CastContentBrowserClient& operator=(const CastContentBrowserClient&) = delete;
+
   ~CastContentBrowserClient() override;
+
+  // Generally we discourage Initialize methods. Unfortunately, we can't do
+  // total RAII in ContentBrowserClient subclasses because we're missing a lot
+  // of foundational browser state/context at creation time, such as task
+  // runners. The earliest time that we can create most Cast objects is in
+  // CastBrowserMainParts::PostCreateThreads(), which is when this method is
+  // called.
+  void InitializeExternalConnector();
 
   // Creates a ServiceConnector for routing Cast-related service interface
   // binding requests.
@@ -114,6 +128,8 @@ class CastContentBrowserClient
   virtual media::VideoModeSwitcher* GetVideoModeSwitcher();
 
   virtual void InitializeURLLoaderThrottleDelegate();
+
+  virtual void SetPersistentCookieAccessSettings(PrefService* pref_service);
 
   // Returns the task runner that must be used for media IO.
   scoped_refptr<base::SingleThreadTaskRunner> GetMediaTaskRunner();
@@ -140,7 +156,7 @@ class CastContentBrowserClient
   // TODO(slan): This further couples the browser to the Cast service. Remove
   // this once the dedicated Bluetooth service has been implemented.
   // (b/76155468)
-  virtual base::WeakPtr<device::BluetoothAdapterCast> CreateBluetoothAdapter();
+  virtual scoped_refptr<device::BluetoothAdapterCast> CreateBluetoothAdapter();
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
   // chromecast::metrics::CastMetricsServiceDelegate implementation:
@@ -152,10 +168,20 @@ class CastContentBrowserClient
   // on browser startup.
   virtual bool EnableRemoteDebuggingImmediately();
 
+  // Note: These were originally part of ContentBrowserClient, but have been
+  // lifted into this class as they're now only used by Chromecast. This is a
+  // transitional step to avoid breakage in the internal downstream repository.
+  virtual void RunServiceInstance(
+      const service_manager::Identity& identity,
+      mojo::PendingReceiver<service_manager::mojom::Service>* receiver);
+  virtual absl::optional<service_manager::Manifest> GetServiceManifestOverlay(
+      base::StringPiece service_name);
+  std::vector<service_manager::Manifest> GetExtraServiceManifests();
+  std::vector<std::string> GetStartupServices();
+
   // content::ContentBrowserClient implementation:
-  std::vector<std::string> GetStartupServices() override;
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool IsHandledURL(const GURL& url) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;
@@ -163,15 +189,11 @@ class CastContentBrowserClient
                                       int child_process_id) override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
-  void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
-                           content::WebPreferences* prefs) override;
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
+                           blink::web_pref::WebPreferences* prefs) override;
   std::string GetApplicationLocale() override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
-  void GetQuotaSettings(
-      content::BrowserContext* context,
-      content::StoragePartition* partition,
-      storage::OptionalQuotaSettingsCallback callback) override;
   void AllowCertificateError(
       content::WebContents* web_contents,
       int cert_error,
@@ -206,29 +228,21 @@ class CastContentBrowserClient
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
-  void ExposeInterfacesToMediaService(
-      service_manager::BinderRegistry* registry,
-      content::RenderFrameHost* render_frame_host) override;
+  void BindMediaServiceReceiver(content::RenderFrameHost* render_frame_host,
+                                mojo::GenericPendingReceiver receiver) override;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
-      service_manager::BinderMapWithContext<content::RenderFrameHost*>* map)
-      override;
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
   mojo::Remote<::media::mojom::MediaService> RunSecondaryMediaService()
       override;
-  void RunServiceInstance(
-      const service_manager::Identity& identity,
-      mojo::PendingReceiver<service_manager::mojom::Service>* receiver)
-      override;
-  base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
-      base::StringPiece service_name) override;
-  std::vector<service_manager::Manifest> GetExtraServiceManifests() override;
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
   void GetAdditionalWebUISchemes(
       std::vector<std::string>* additional_schemes) override;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   bool ShouldEnableStrictSiteIsolation() override;
@@ -236,6 +250,7 @@ class CastContentBrowserClient
   CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
+      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
@@ -243,10 +258,13 @@ class CastContentBrowserClient
       NonNetworkURLLoaderFactoryMap* factories) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
-  mojo::Remote<network::mojom::NetworkContext> CreateNetworkContext(
+  void ConfigureNetworkContextParams(
       content::BrowserContext* context,
       bool in_memory,
-      const base::FilePath& relative_partition_path) override;
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
   std::string GetUserAgent() override;
   bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
@@ -263,7 +281,7 @@ class CastContentBrowserClient
   void CreateGeneralAudienceBrowsingService();
 
   virtual std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
-      service_manager::mojom::InterfaceProvider* host_interfaces);
+      ::media::mojom::FrameInterfaceFactory* frame_interfaces);
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   void BindGpuHostReceiver(mojo::GenericPendingReceiver receiver) override;
@@ -272,14 +290,22 @@ class CastContentBrowserClient
   CastNetworkContexts* cast_network_contexts() {
     return cast_network_contexts_.get();
   }
+  external_mojo::BrokerService* broker_service() {
+    CHECK(broker_service_);
+    return broker_service_.get();
+  }
+  external_service_support::ExternalConnector* connector() {
+    CHECK(connector_);
+    return connector_.get();
+  }
+  external_service_support::ExternalConnector* media_connector() {
+    CHECK(media_connector_);
+    return media_connector_.get();
+  }
 
  protected:
   explicit CastContentBrowserClient(
       CastFeatureListCreator* cast_feature_list_creator);
-
-  URLRequestContextFactory* url_request_context_factory() const {
-    return url_request_context_factory_.get();
-  }
 
   void BindMediaRenderer(
       mojo::PendingReceiver<::media::mojom::Renderer> receiver);
@@ -293,14 +319,20 @@ class CastContentBrowserClient
   virtual scoped_refptr<net::X509Certificate> DeviceCert();
   virtual scoped_refptr<net::SSLPrivateKey> DeviceKey();
 
+  virtual bool IsWhitelisted(const GURL& gurl,
+                             const std::string& session_id,
+                             int render_process_id,
+                             int render_frame_id,
+                             bool for_device_auth);
+
   void SelectClientCertificateOnIOThread(
       GURL requesting_url,
       const std::string& session_id,
       int render_process_id,
       int render_frame_id,
       scoped_refptr<base::SequencedTaskRunner> original_runner,
-      const base::Callback<void(scoped_refptr<net::X509Certificate>,
-                                scoped_refptr<net::SSLPrivateKey>)>&
+      base::OnceCallback<void(scoped_refptr<net::X509Certificate>,
+                              scoped_refptr<net::SSLPrivateKey>)>
           continue_callback);
 
 #if !defined(OS_FUCHSIA)
@@ -344,14 +376,19 @@ class CastContentBrowserClient
   // Created by CastContentBrowserClient but owned by BrowserMainLoop.
   CastBrowserMainParts* cast_browser_main_parts_;
   std::unique_ptr<CastNetworkContexts> cast_network_contexts_;
-  std::unique_ptr<URLRequestContextFactory> url_request_context_factory_;
   std::unique_ptr<media::CmaBackendFactory> cma_backend_factory_;
   std::unique_ptr<GeneralAudienceBrowsingService>
       general_audience_browsing_service_;
 
-  CastFeatureListCreator* cast_feature_list_creator_;
+  // These need to be accessible from internal code, so they live here instead
+  // of CastBrowserMainParts.
+  std::unique_ptr<external_mojo::BrokerService> broker_service_;
+  std::unique_ptr<external_service_support::ExternalConnector> connector_;
 
-  DISALLOW_COPY_AND_ASSIGN(CastContentBrowserClient);
+  // ExternalConnector for running on the media task runner.
+  std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
+
+  CastFeatureListCreator* cast_feature_list_creator_;
 };
 
 }  // namespace shell

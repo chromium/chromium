@@ -17,17 +17,19 @@
       "name": "LayoutNGBlockFlow DIV class='blended'",
       "position": [8, 8],
       "bounds": [160, 90],
+      "contentsOpaque": true,
       "backgroundColor": "#0000FF"
     },
     {
       "name": "LayoutImage IMG class='accelerated'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow HTML",
       "position": [8, 8],
-      "bounds": [272, 16]
+      "bounds": [784, 579]
     }
   ],
   "transforms": [

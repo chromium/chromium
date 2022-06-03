@@ -19,9 +19,7 @@ static_library("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "source_url_recorder_test.cc",
-  ]
+  sources = [ "source_url_recorder_test.cc" ]
   deps = [
     ":content",
     "//base",

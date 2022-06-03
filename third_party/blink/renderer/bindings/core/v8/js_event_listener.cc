@@ -59,7 +59,7 @@ void JSEventListener::InvokeInternal(EventTarget&,
   ALLOW_UNUSED_LOCAL(maybe_result);
 }
 
-void JSEventListener::Trace(blink::Visitor* visitor) {
+void JSEventListener::Trace(Visitor* visitor) const {
   visitor->Trace(event_listener_);
   JSBasedEventListener::Trace(visitor);
 }

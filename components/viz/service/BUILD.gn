@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//gpu/vulkan/features.gni")
@@ -14,14 +16,24 @@ config("viz_service_implementation") {
 
 viz_component("service") {
   sources = [
+    "debugger/viz_debugger.cc",
+    "debugger/viz_debugger.h",
+    "display/aggregated_frame.cc",
+    "display/aggregated_frame.h",
     "display/bsp_tree.cc",
     "display/bsp_tree.h",
     "display/bsp_walk_action.cc",
     "display/bsp_walk_action.h",
-    "display/color_lut_cache.cc",
-    "display/color_lut_cache.h",
     "display/damage_frame_annotator.cc",
     "display/damage_frame_annotator.h",
+    "display/delegated_ink_handler.cc",
+    "display/delegated_ink_handler.h",
+    "display/delegated_ink_point_renderer_base.cc",
+    "display/delegated_ink_point_renderer_base.h",
+    "display/delegated_ink_point_renderer_skia.cc",
+    "display/delegated_ink_point_renderer_skia.h",
+    "display/delegated_ink_trail_data.cc",
+    "display/delegated_ink_trail_data.h",
     "display/direct_renderer.cc",
     "display/direct_renderer.h",
     "display/display.cc",
@@ -31,6 +43,14 @@ viz_component("service") {
     "display/display_damage_tracker.h",
     "display/display_resource_provider.cc",
     "display/display_resource_provider.h",
+    "display/display_resource_provider_gl.cc",
+    "display/display_resource_provider_gl.h",
+    "display/display_resource_provider_null.cc",
+    "display/display_resource_provider_null.h",
+    "display/display_resource_provider_skia.cc",
+    "display/display_resource_provider_skia.h",
+    "display/display_resource_provider_software.cc",
+    "display/display_resource_provider_software.h",
     "display/display_scheduler.cc",
     "display/display_scheduler.h",
     "display/display_scheduler_base.cc",
@@ -53,6 +73,8 @@ viz_component("service") {
     "display/gl_renderer_draw_cache.h",
     "display/layer_quad.cc",
     "display/layer_quad.h",
+    "display/null_renderer.cc",
+    "display/null_renderer.h",
     "display/output_surface.cc",
     "display/output_surface.h",
     "display/output_surface_client.h",
@@ -60,14 +82,20 @@ viz_component("service") {
     "display/output_surface_frame.h",
     "display/overlay_candidate.cc",
     "display/overlay_candidate.h",
+    "display/overlay_candidate_temporal_tracker.cc",
+    "display/overlay_candidate_temporal_tracker.h",
     "display/overlay_processor_interface.cc",
     "display/overlay_processor_interface.h",
+    "display/overlay_processor_on_gpu.cc",
+    "display/overlay_processor_on_gpu.h",
     "display/overlay_processor_stub.cc",
     "display/overlay_processor_stub.h",
     "display/program_binding.cc",
     "display/program_binding.h",
     "display/renderer_utils.cc",
     "display/renderer_utils.h",
+    "display/resolved_frame_data.cc",
+    "display/resolved_frame_data.h",
     "display/resource_fence.h",
     "display/scoped_gpu_memory_buffer_texture.cc",
     "display/scoped_gpu_memory_buffer_texture.h",
@@ -94,16 +122,12 @@ viz_component("service") {
     "display/texture_deleter.h",
     "display_embedder/buffer_queue.cc",
     "display_embedder/buffer_queue.h",
-    "display_embedder/compositing_mode_reporter_impl.cc",
-    "display_embedder/compositing_mode_reporter_impl.h",
-    "display_embedder/direct_context_provider.cc",
-    "display_embedder/direct_context_provider.h",
+    "display_embedder/compositor_gpu_thread.cc",
+    "display_embedder/compositor_gpu_thread.h",
     "display_embedder/gl_output_surface.cc",
     "display_embedder/gl_output_surface.h",
     "display_embedder/gl_output_surface_buffer_queue.cc",
     "display_embedder/gl_output_surface_buffer_queue.h",
-    "display_embedder/gl_output_surface_chromeos.cc",
-    "display_embedder/gl_output_surface_chromeos.h",
     "display_embedder/gl_output_surface_offscreen.cc",
     "display_embedder/gl_output_surface_offscreen.h",
     "display_embedder/in_process_gpu_memory_buffer_manager.cc",
@@ -125,11 +149,10 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_impl.h",
     "frame_sinks/compositor_frame_sink_support.cc",
     "frame_sinks/compositor_frame_sink_support.h",
-    "frame_sinks/compositor_frame_sink_support_manager.h",
-    "frame_sinks/direct_layer_tree_frame_sink.cc",
-    "frame_sinks/direct_layer_tree_frame_sink.h",
     "frame_sinks/external_begin_frame_source_mojo.cc",
     "frame_sinks/external_begin_frame_source_mojo.h",
+    "frame_sinks/frame_sink_bundle_impl.cc",
+    "frame_sinks/frame_sink_bundle_impl.h",
     "frame_sinks/frame_sink_manager_impl.cc",
     "frame_sinks/frame_sink_manager_impl.h",
     "frame_sinks/frame_sink_observer.h",
@@ -158,6 +181,8 @@ viz_component("service") {
     "hit_test/hit_test_manager.cc",
     "hit_test/hit_test_manager.h",
     "surfaces/latest_local_surface_id_lookup_delegate.h",
+    "surfaces/pending_copy_output_request.cc",
+    "surfaces/pending_copy_output_request.h",
     "surfaces/referenced_surface_tracker.cc",
     "surfaces/referenced_surface_tracker.h",
     "surfaces/surface.cc",
@@ -174,6 +199,14 @@ viz_component("service") {
     "surfaces/surface_observer.h",
     "surfaces/surface_reference.cc",
     "surfaces/surface_reference.h",
+    "surfaces/surface_saved_frame.cc",
+    "surfaces/surface_saved_frame.h",
+    "surfaces/surface_saved_frame_storage.cc",
+    "surfaces/surface_saved_frame_storage.h",
+    "transitions/surface_animation_manager.cc",
+    "transitions/surface_animation_manager.h",
+    "transitions/transferable_resource_tracker.cc",
+    "transitions/transferable_resource_tracker.h",
     "viz_service_export.h",
   ]
 
@@ -183,10 +216,11 @@ viz_component("service") {
 
   deps = [
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
-    "//components/viz/common",
+    "//components/power_scheduler",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster",
@@ -202,9 +236,13 @@ viz_component("service") {
     "//media",
     "//media/capture:capture_lib",
     "//media/mojo/services",
+    "//services/tracing/public/cpp:cpp",
     "//services/viz/privileged/mojom",
+    "//skia",
     "//skia:skcms",
+    "//third_party/libyuv",
     "//ui/display/types",
+    "//ui/gfx/animation/keyframe",
   ]
 
   public_deps = [
@@ -212,24 +250,21 @@ viz_component("service") {
     "//base",
     "//cc",
     "//cc/debug",
+    "//components/viz/common",
     "//gpu/command_buffer/client:gles2_interface",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/public/mojom",
+    "//ui/base/prediction",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/latency",
   ]
 
-  if (use_x11) {
+  if (is_chromeos_ash) {
     sources += [
-      "display_embedder/software_output_device_x11.cc",
-      "display_embedder/software_output_device_x11.h",
+      "display_embedder/gl_output_surface_chromeos.cc",
+      "display_embedder/gl_output_surface_chromeos.h",
     ]
-    configs = [ "//build/config/linux:x11" ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
-  if (is_chromeos) {
     deps += [ "//components/arc/video_accelerator" ]
   }
 
@@ -248,7 +283,7 @@ viz_component("service") {
     ]
 
     deps += [ "//ui/accelerated_widget_mac" ]
-    libs = [ "IOSurface.framework" ]
+    frameworks = [ "IOSurface.framework" ]
   }
 
   if (is_android || use_ozone) {
@@ -285,6 +320,8 @@ viz_component("service") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_processor_delegated.cc",
+      "display/overlay_processor_delegated.h",
       "display/overlay_processor_ozone.cc",
       "display/overlay_processor_ozone.h",
       "display_embedder/software_output_device_ozone.cc",
@@ -311,7 +348,7 @@ viz_component("service") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "display_embedder/output_surface_unified.cc",
       "display_embedder/output_surface_unified.h",
@@ -333,8 +370,14 @@ viz_component("service") {
 # then this build target will no longer be needed.
 viz_source_set("gpu_service_dependencies") {
   sources = [
+    "display/display_compositor_memory_and_task_controller.cc",
+    "display/display_compositor_memory_and_task_controller.h",
     "display_embedder/image_context_impl.cc",
     "display_embedder/image_context_impl.h",
+    "display_embedder/output_presenter.cc",
+    "display_embedder/output_presenter.h",
+    "display_embedder/output_presenter_gl.cc",
+    "display_embedder/output_presenter_gl.h",
     "display_embedder/skia_output_device.cc",
     "display_embedder/skia_output_device.h",
     "display_embedder/skia_output_device_buffer_queue.cc",
@@ -343,6 +386,8 @@ viz_source_set("gpu_service_dependencies") {
     "display_embedder/skia_output_device_gl.h",
     "display_embedder/skia_output_device_offscreen.cc",
     "display_embedder/skia_output_device_offscreen.h",
+    "display_embedder/skia_output_device_webview.cc",
+    "display_embedder/skia_output_device_webview.h",
     "display_embedder/skia_output_surface_dependency.h",
     "display_embedder/skia_output_surface_dependency_impl.cc",
     "display_embedder/skia_output_surface_dependency_impl.h",
@@ -350,6 +395,8 @@ viz_source_set("gpu_service_dependencies") {
     "display_embedder/skia_output_surface_impl.h",
     "display_embedder/skia_output_surface_impl_on_gpu.cc",
     "display_embedder/skia_output_surface_impl_on_gpu.h",
+    "display_embedder/skia_render_copy_results.cc",
+    "display_embedder/skia_render_copy_results.h",
     "gl/gpu_service_impl.cc",
     "gl/gpu_service_impl.h",
   ]
@@ -368,8 +415,31 @@ viz_source_set("gpu_service_dependencies") {
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
 
-  deps = []
-  if (is_chromeos) {
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//gpu/config",
+    "//third_party/libyuv",
+  ]
+
+  if (is_win) {
+    sources += [
+      "gl/info_collection_gpu_service_impl.cc",
+      "gl/info_collection_gpu_service_impl.h",
+    ]
+
+    # SkiaOutputDeviceBufferQueue doesn't support Windows.
+    sources -= [
+      "display_embedder/output_presenter.cc",
+      "display_embedder/output_presenter.h",
+      "display_embedder/output_presenter_gl.cc",
+      "display_embedder/output_presenter_gl.h",
+      "display_embedder/skia_output_device_buffer_queue.cc",
+      "display_embedder/skia_output_device_buffer_queue.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
     deps += [
       "//components/arc/video_accelerator",
       "//components/chromeos_camera:jpeg_encode_accelerator_service",
@@ -394,18 +464,35 @@ viz_source_set("gpu_service_dependencies") {
     ]
 
     public_deps += [ "//gpu/vulkan" ]
+
+    if (is_android) {
+      sources += [
+        "display_embedder/skia_output_device_vulkan_secondary_cb.cc",
+        "display_embedder/skia_output_device_vulkan_secondary_cb.h",
+        "display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.cc",
+        "display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.h",
+      ]
+    }
+
+    # TODO(1239521): ideally, ozone_platform_x11 should not be used outside
+    # ui/ozone.
+    if (ozone_platform_x11) {
+      sources += [
+        "display_embedder/skia_output_device_x11.cc",
+        "display_embedder/skia_output_device_x11.h",
+      ]
+
+      libs = [ "xshmfence" ]
+
+      deps += [
+        "//ui/base/x",
+        "//ui/events/platform/x11",
+        "//ui/gfx/x",
+      ]
+    }
   }
 
-  if (use_x11 && enable_vulkan) {
-    sources += [
-      "display_embedder/skia_output_device_x11.cc",
-      "display_embedder/skia_output_device_x11.h",
-    ]
-    configs = [ "//build/config/linux:x11" ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
-  if (skia_use_dawn) {
+  if (skia_use_dawn && is_win) {
     sources += [
       "display_embedder/skia_output_device_dawn.cc",
       "display_embedder/skia_output_device_dawn.h",
@@ -414,37 +501,49 @@ viz_source_set("gpu_service_dependencies") {
     public_deps += [ "//third_party/dawn/src/dawn:dawn_headers" ]
 
     deps += [
-      "//third_party/dawn:libdawn_native",
-      "//third_party/dawn:libdawn_native_sources",
-      "//third_party/dawn/src/dawn:libdawn",
+      "//third_party/dawn/src/dawn:dawn_proc",
+      "//third_party/dawn/src/dawn:dawncpp",
+      "//third_party/dawn/src/dawn_native",
+    ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "display_embedder/output_presenter_fuchsia.cc",
+      "display_embedder/output_presenter_fuchsia.h",
     ]
   }
 }
 
 viz_source_set("unit_tests") {
-  # Not ready for jumbo compilation. Too much repeated test code.
-  never_build_jumbo = true
   testonly = true
   sources = [
+    "debugger/viz_debugger_unittest.cc",
     "display/bsp_tree_unittest.cc",
     "display/copy_output_scaling_pixeltest.cc",
+    "display/delegated_ink_point_pixel_test_helper.cc",
+    "display/delegated_ink_point_pixel_test_helper.h",
     "display/display_damage_tracker_unittest.cc",
-    "display/display_resource_provider_unittest.cc",
+    "display/display_resource_provider_gl_unittest.cc",
+    "display/display_resource_provider_skia_unittest.cc",
+    "display/display_resource_provider_software_unittest.cc",
     "display/display_scheduler_unittest.cc",
     "display/display_unittest.cc",
     "display/draw_polygon_unittest.cc",
     "display/frame_rate_decider_unittest.cc",
-    "display/gl_renderer_copier_pixeltest.cc",
-    "display/gl_renderer_copier_unittest.cc",
-    "display/gl_renderer_unittest.cc",
     "display/layer_quad_unittest.cc",
     "display/renderer_pixeltest.cc",
+    "display/resolved_frame_data_unittest.cc",
     "display/shader_unittest.cc",
+    "display/skia_readback_pixeltest.cc",
     "display/software_renderer_unittest.cc",
     "display/surface_aggregator_pixeltest.cc",
     "display/surface_aggregator_unittest.cc",
     "display/texture_deleter_unittest.cc",
+    "display/viz_pixel_test.cc",
+    "display/viz_pixel_test.h",
     "display_embedder/buffer_queue_unittest.cc",
+    "display_embedder/gl_output_surface_buffer_queue_unittest.cc",
     "display_embedder/server_shared_bitmap_manager_unittest.cc",
     "display_embedder/skia_output_device_buffer_queue_unittest.cc",
     "display_embedder/skia_output_surface_impl_unittest.cc",
@@ -452,7 +551,7 @@ viz_source_set("unit_tests") {
     "display_embedder/vsync_parameter_listener_unittest.cc",
     "frame_sinks/begin_frame_tracker_unittest.cc",
     "frame_sinks/compositor_frame_sink_support_unittest.cc",
-    "frame_sinks/direct_layer_tree_frame_sink_unittest.cc",
+    "frame_sinks/frame_sink_bundle_impl_unittest.cc",
     "frame_sinks/frame_sink_manager_unittest.cc",
     "frame_sinks/surface_references_unittest.cc",
     "frame_sinks/surface_synchronization_unittest.cc",
@@ -462,28 +561,40 @@ viz_source_set("unit_tests") {
     "frame_sinks/video_detector_unittest.cc",
     "gl/gpu_service_impl_unittest.cc",
     "hit_test/hit_test_aggregator_unittest.cc",
+    "main/viz_main_impl_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
+    "surfaces/surface_saved_frame_unittest.cc",
     "surfaces/surface_unittest.cc",
+    "transitions/surface_animation_manager_unittest.cc",
+    "transitions/transferable_resource_tracker_unittest.cc",
   ]
+
+  if (enable_gl_renderer_tests) {
+    sources += [
+      "display/gl_renderer_copier_pixeltest.cc",
+      "display/gl_renderer_copier_unittest.cc",
+      "display/gl_renderer_unittest.cc",
+    ]
+  }
 
   if (!use_aura && !is_mac) {
     sources -= [ "display_embedder/buffer_queue_unittest.cc" ]
   }
 
-  configs = [
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs = [ "//third_party/khronos:khronos_headers" ]
 
   deps = [
     ":service",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",
+    "//components/viz/service/main:main",
+    "//components/viz/test:test_suite",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_implementation",
@@ -503,10 +614,12 @@ viz_source_set("unit_tests") {
 
   if (use_ozone) {
     sources += [
+      "display/overlay_processor_ozone_unittest.cc",
       "display/overlay_unittest.cc",
       "display_embedder/software_output_device_ozone_unittest.cc",
     ]
     deps += [
+      "//ui/base:features",
       "//ui/compositor:test_support",
       "//ui/ozone",
     ]
@@ -517,14 +630,19 @@ viz_source_set("unit_tests") {
       "display/overlay_ca_unittest.cc",
       "display_embedder/software_output_device_mac_unittest.mm",
     ]
-    libs = [ "IOSurface.framework" ]
+    frameworks = [ "IOSurface.framework" ]
   }
 
   if (is_win) {
     sources += [
       "display/overlay_dc_unittest.cc",
       "display_embedder/output_device_backing_unittest.cc",
+      "display_embedder/software_output_device_win_unittest.cc",
     ]
+
+    # SkiaOutputDeviceBufferQueue doesn't support Windows.
+    sources -=
+        [ "display_embedder/skia_output_device_buffer_queue_unittest.cc" ]
   }
 
   if (is_android) {
@@ -540,19 +658,10 @@ viz_source_set("unit_tests") {
       "//gpu/vulkan:test_support",
       "//gpu/vulkan/init",
     ]
-
-    # TODO(samans): Support more configurations.
-    # CFI issue: https://crbug.com/967819
-    # LSAN issue: https://crbug.com/971357
-    if (use_x11 && !is_cfi && !is_lsan) {
-      defines = [ "ENABLE_VIZ_VULKAN_TESTS" ]
-    }
   }
 }
 
 viz_source_set("perf_tests") {
-  # Not ready for jumbo compilation. Too much repeated test code.
-  never_build_jumbo = true
   testonly = true
   sources = [
     "display/bsp_tree_perftest.cc",
@@ -560,6 +669,8 @@ viz_source_set("perf_tests") {
     "display/gl_renderer_copier_perftest.cc",
     "display/renderer_perftest.cc",
     "display/surface_aggregator_perftest.cc",
+    "display/viz_perftest.cc",
+    "display/viz_perftest.h",
   ]
 
   deps = [
@@ -573,13 +684,12 @@ viz_source_set("perf_tests") {
     "//components/viz/test:test_support",
     "//testing/gtest",
     "//testing/perf",
+    "//third_party/zlib/google:zip",
   ]
 }
 
 fuzzer_test("hit_test_manager_fuzzer") {
-  sources = [
-    "hit_test/hit_test_manager_fuzzer.cc",
-  ]
+  sources = [ "hit_test/hit_test_manager_fuzzer.cc" ]
 
   libfuzzer_options = [ "max_len=81920" ]
 
@@ -594,13 +704,12 @@ if (is_android) {
   android_library("service_java") {
     deps = [
       "//base:base_java",
-      "//base:jni_java",
-      "//ui/android:ui_full_java",
+      "//ui/android:ui_no_recycler_view_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-    java_files = [
-      "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+    sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
+      "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
     ]
   }
 

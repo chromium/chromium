@@ -17,7 +17,7 @@ The Google Chrome browser, which lives in `//chrome`, is the most important
 features that are not intended with or not compatible with the needs of
 the Google Chrome browser will have a very high bar for acceptance in `//net`.
 
-The feature matrix 
+The feature matrix
 
   * **Supported Platforms**: Windows, macOS, Linux, Chromium OS, iOS, Android
   * **Release Frequency**: ~6 weeks between releases
@@ -84,13 +84,14 @@ For official Android devices, WebView has the following capabilities.
 ## `//content` Embedders
 
 In addition to Chromium, there are a number of other of embedders of
-`//content`, such as projects like [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef)
-or [Electron](http://electron.atom.io/). While `//net` does not directly
-support these consumers, it does support the `//content` embedding API that
-these projects use. Note that this excludes the
+`//content`, such as projects like [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef),
+[Electron](http://electron.atom.io/) or Fuchsia's [WebEngine](https://chromium.googlesource.com/chromium/src/+/HEAD/fuchsia/engine).
+While `//net` does not directly support these consumers, it does support the
+`//content` embedding API that these projects use. Note that this excludes the
 [content_shell](../../content/shell) test framework.
 
-  * **Supported Platforms**: Windows, macOS, Linux, Chromium OS, iOS, Android
+  * **Supported Platforms**: Windows, macOS, Linux, Chromium OS, iOS, Android,
+    Fuchsia
   * **Release Frequency**: Varies by consumer; Officially ~6 weeks
   * **Command-line Flags**: Varies by consumer
   * **Field Trials (Finch)**: No

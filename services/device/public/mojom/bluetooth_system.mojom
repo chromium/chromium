@@ -68,6 +68,9 @@ struct BluetoothDeviceInfo {
   DeviceType device_type;
 
   BluetoothDeviceBatteryInfo? battery_info;
+
+  // Indicates whether or not device features are restricted by admin policy.
+  bool is_blocked_by_policy = false;
 };
 
 // Factory to get an instance of the BluetoothSystem interface.

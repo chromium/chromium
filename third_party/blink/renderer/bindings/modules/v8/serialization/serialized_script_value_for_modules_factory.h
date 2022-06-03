@@ -17,7 +17,18 @@ class SerializedScriptValueForModulesFactory final
  public:
   SerializedScriptValueForModulesFactory() : SerializedScriptValueFactory() {}
 
+  SerializedScriptValueForModulesFactory(
+      const SerializedScriptValueForModulesFactory&) = delete;
+  SerializedScriptValueForModulesFactory& operator=(
+      const SerializedScriptValueForModulesFactory&) = delete;
+
  protected:
+  bool ExtractTransferable(v8::Isolate*,
+                           v8::Local<v8::Value>,
+                           wtf_size_t,
+                           Transferables&,
+                           ExceptionState&) override;
+
   scoped_refptr<SerializedScriptValue> Create(
       v8::Isolate*,
       v8::Local<v8::Value>,
@@ -33,9 +44,6 @@ class SerializedScriptValueForModulesFactory final
       UnpackedSerializedScriptValue*,
       v8::Isolate*,
       const SerializedScriptValue::DeserializeOptions&) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerializedScriptValueForModulesFactory);
 };
 
 }  // namespace blink

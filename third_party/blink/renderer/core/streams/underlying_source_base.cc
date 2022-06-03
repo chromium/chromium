@@ -33,6 +33,12 @@ ScriptPromise UnderlyingSourceBase::pull(ScriptState* script_state) {
   return ScriptPromise::CastUndefined(script_state);
 }
 
+ScriptPromise UnderlyingSourceBase::cancelWrapper(ScriptState* script_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  return cancelWrapper(script_state,
+                       ScriptValue(isolate, v8::Undefined(isolate)));
+}
+
 ScriptPromise UnderlyingSourceBase::cancelWrapper(ScriptState* script_state,
                                                   ScriptValue reason) {
   if (controller_)
@@ -50,17 +56,17 @@ ScriptValue UnderlyingSourceBase::type(ScriptState* script_state) const {
                      v8::Undefined(script_state->GetIsolate()));
 }
 
-void UnderlyingSourceBase::ContextDestroyed(ExecutionContext*) {
+void UnderlyingSourceBase::ContextDestroyed() {
   if (controller_) {
     controller_->NoteHasBeenCanceled();
     controller_.Clear();
   }
 }
 
-void UnderlyingSourceBase::Trace(blink::Visitor* visitor) {
+void UnderlyingSourceBase::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

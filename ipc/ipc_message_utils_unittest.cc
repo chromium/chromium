@@ -13,9 +13,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/test_shared_memory_util.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
 
 namespace IPC {
 namespace {
@@ -110,7 +115,7 @@ TEST(IPCMessageUtilsTest, MojoChannelHandle) {
 }
 
 TEST(IPCMessageUtilsTest, OptionalUnset) {
-  base::Optional<int> opt;
+  absl::optional<int> opt;
   base::Pickle pickle;
   IPC::WriteParam(&pickle, opt);
 
@@ -118,14 +123,14 @@ TEST(IPCMessageUtilsTest, OptionalUnset) {
   IPC::LogParam(opt, &log);
   EXPECT_EQ("(unset)", log);
 
-  base::Optional<int> unserialized_opt;
+  absl::optional<int> unserialized_opt;
   base::PickleIterator iter(pickle);
   EXPECT_TRUE(IPC::ReadParam(&pickle, &iter, &unserialized_opt));
   EXPECT_FALSE(unserialized_opt);
 }
 
 TEST(IPCMessageUtilsTest, OptionalSet) {
-  base::Optional<int> opt(10);
+  absl::optional<int> opt(10);
   base::Pickle pickle;
   IPC::WriteParam(&pickle, opt);
 
@@ -133,7 +138,7 @@ TEST(IPCMessageUtilsTest, OptionalSet) {
   IPC::LogParam(opt, &log);
   EXPECT_EQ("10", log);
 
-  base::Optional<int> unserialized_opt;
+  absl::optional<int> unserialized_opt;
   base::PickleIterator iter(pickle);
   EXPECT_TRUE(IPC::ReadParam(&pickle, &iter, &unserialized_opt));
   EXPECT_TRUE(unserialized_opt);
@@ -215,6 +220,38 @@ TEST(IPCMessageUtilsTest, FlatMap) {
 
   EXPECT_EQ(input, output);
 }
+
+TEST(IPCMessageUtilsTest, StrongAlias) {
+  using TestType = base::StrongAlias<class Tag, int>;
+  TestType input(42);
+
+  base::Pickle pickle;
+  IPC::WriteParam(&pickle, input);
+
+  base::PickleIterator iter(pickle);
+  TestType output;
+  EXPECT_TRUE(IPC::ReadParam(&pickle, &iter, &output));
+
+  EXPECT_EQ(input, output);
+}
+
+#if defined(OS_WIN)
+TEST(IPCMessageUtilsTest, ScopedHandle) {
+  HANDLE raw_dupe_handle;
+  ASSERT_TRUE(::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentProcess(),
+                                ::GetCurrentProcess(), &raw_dupe_handle, 0,
+                                FALSE, DUPLICATE_SAME_ACCESS));
+  base::win::ScopedHandle dupe_handle(raw_dupe_handle);
+
+  Message message(0, 0, Message::PRIORITY_LOW);
+  WriteParam(&message, dupe_handle);
+
+  base::PickleIterator iter(message);
+  base::win::ScopedHandle read_handle;
+  EXPECT_TRUE(ReadParam(&message, &iter, &read_handle));
+  EXPECT_TRUE(read_handle.IsValid());
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace
 }  // namespace IPC

@@ -20,12 +20,12 @@ class Status;
 class Timeout;
 class WebView;
 
-typedef base::Callback<Status(Session* session,
-                              WebView* web_view,
-                              const std::string&,
-                              const base::DictionaryValue&,
-                              std::unique_ptr<base::Value>*)>
-    ElementCommand;
+using ElementCommand =
+    base::RepeatingCallback<Status(Session* session,
+                                   WebView* web_view,
+                                   const std::string&,
+                                   const base::DictionaryValue&,
+                                   std::unique_ptr<base::Value>*)>;
 
 // Execute a command on a specific element.
 Status ExecuteElementCommand(
@@ -148,6 +148,18 @@ Status ExecuteIsElementEnabled(Session* session,
                                const base::DictionaryValue& params,
                                std::unique_ptr<base::Value>* value);
 
+Status ExecuteGetComputedLabel(Session* session,
+                               WebView* web_view,
+                               const std::string& element_id,
+                               const base::DictionaryValue& params,
+                               std::unique_ptr<base::Value>* value);
+
+Status ExecuteGetComputedRole(Session* session,
+                              WebView* web_view,
+                              const std::string& element_id,
+                              const base::DictionaryValue& params,
+                              std::unique_ptr<base::Value>* value);
+
 Status ExecuteIsElementDisplayed(Session* session,
                                  WebView* web_view,
                                  const std::string& element_id,
@@ -208,5 +220,27 @@ Status ExecuteElementScreenshot(Session* session,
                                 const std::string& element_id,
                                 const base::DictionaryValue& params,
                                 std::unique_ptr<base::Value>* value);
+
+Status ExecuteGetElementShadowRoot(Session* session,
+                                   WebView* web_view,
+                                   const std::string& element_id,
+                                   const base::DictionaryValue& params,
+                                   std::unique_ptr<base::Value>* value);
+
+Status ExecuteFindChildElementFromShadowRoot(
+    int interval_ms,
+    Session* session,
+    WebView* web_view,
+    const std::string& shadow_root_id,
+    const base::DictionaryValue& params,
+    std::unique_ptr<base::Value>* value);
+
+Status ExecuteFindChildElementsFromShadowRoot(
+    int interval_ms,
+    Session* session,
+    WebView* web_view,
+    const std::string& shadow_root_id,
+    const base::DictionaryValue& params,
+    std::unique_ptr<base::Value>* value);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_ELEMENT_COMMANDS_H_

@@ -45,30 +45,22 @@ class CORE_EXPORT V8GCController {
   STATIC_ONLY(V8GCController);
 
  public:
-  static Node* OpaqueRootForGC(v8::Isolate*, Node*);
+  // Information about whether a wrapper is attached to the main DOM tree
+  // or not. It is computed as follows:
+  // 1) A ExecutionContext with IsContextDestroyed() = true is detached.
+  // 2) A ExecutionContext with IsContextDestroyed() = false is attached.
+  // 3) A Node that is reachable from a detached ExecutionContext is detached.
+  // 4) A Node that is reachable from an attached ExecutionContext is attached.
+  // 5) Any non-Node wrappers return unknown.
+  static v8::EmbedderGraph::Node::Detachedness DetachednessFromWrapper(
+      v8::Isolate*,
+      const v8::Local<v8::Value>&,
+      uint16_t class_id,
+      void*);
 
   // Prologue and epilogue callbacks for V8 garbage collections.
   static void GcPrologue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
   static void GcEpilogue(v8::Isolate*, v8::GCType, v8::GCCallbackFlags);
-
-  // Collects V8 and Blink objects in multiple garbage collection passes. Also
-  // triggers follow up garbage collections in Oilpan to collect chains of
-  // persistent handles.
-  //
-  // Usage: Testing that objects do indeed get collected. Note that this may
-  // depend on the EmbedderStackState, i.e., Blink may keep objects alive that
-  // are reachabe from the stack if necessary.
-  static void CollectAllGarbageForTesting(
-      v8::Isolate*,
-      v8::EmbedderHeapTracer::EmbedderStackState stack_state =
-          v8::EmbedderHeapTracer::EmbedderStackState::kUnknown);
-
-  // Called when Oilpan traces references from V8 wrappers to DOM wrappables.
-  static void TraceDOMWrappers(v8::Isolate*, Visitor*);
-
-  // Called upon terminating a thread when Oilpan clears references from V8
-  // wrappers to DOM wrappables.
-  static void ClearDOMWrappers(v8::Isolate*);
 };
 
 }  // namespace blink

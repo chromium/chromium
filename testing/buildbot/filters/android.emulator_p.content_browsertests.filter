@@ -1,0 +1,29 @@
+# crbug.com/1054829
+-All/TouchActionBrowserTest.PanXAtYAreaWithTimeout
+-All/TouchActionBrowserTest.TouchActionNone
+-All/TouchActionBrowserTest.TwoFingerPanXAtYAreaWithTimeout
+-All/TouchActionBrowserTest.BlockDoubleTapDragZoom
+
+# crbug.com/1056878
+-BackForwardCacheBrowserTest.VideoSuspendAndResume
+
+# crbug.com/1096612
+-All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/*
+
+# crbug.com/1058447
+-All/SitePerProcessBrowserTest.FrameViewportOffsetTestSimple/*
+
+# crbug.com/1056325
+-WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyLocalMutingWorks
+
+# crbug.com/1058570
+-WebRtcGetUserMediaBrowserTest.ApplyConstraintsNonDevice
+
+# crbug.com/1065184
+-RenderFrameHostImplBrowserTest.CheckIsCurrentBeforeAndAfterUnload
+
+# crbug.com/954217
+-RenderFrameHostImplBrowserTest.VisibilityScrolledOutOfView
+
+# crbug.com/1047994
+-WebRtcBrowserTest.CanSetupH264VideoCallOnSupportedDevice

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "base/at_exit.h"
@@ -13,9 +14,10 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "tools/android/forwarder2/common.h"
 #include "tools/android/forwarder2/daemon.h"
@@ -64,7 +66,7 @@ class ServerDelegate : public Daemon::ServerDelegate {
     g_notifier = new forwarder2::PipeNotifier();
     signal(SIGTERM, KillHandler);
     signal(SIGINT, KillHandler);
-    controller_thread_.reset(new base::Thread("controller_thread"));
+    controller_thread_ = std::make_unique<base::Thread>("controller_thread");
     controller_thread_->Start();
   }
 
@@ -119,7 +121,7 @@ class ClientDelegate : public Daemon::ClientDelegate {
     DCHECK(static_cast<unsigned int>(bytes_read) < sizeof(buf));
     buf[bytes_read] = 0;
     base::StringPiece msg(buf, bytes_read);
-    if (msg.starts_with("ERROR")) {
+    if (base::StartsWith(msg, "ERROR")) {
       LOG(ERROR) << msg;
       has_failed_ = true;
       return;

@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("cros_action_proto") {
-  sources = [
-    "cros_action.proto",
-  ]
+  sources = [ "cros_action.proto" ]
 }

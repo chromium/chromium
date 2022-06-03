@@ -6,6 +6,8 @@
 Helper methods for dealing with a SQLite database with pandas.
 """
 
+import six
+
 from core.external_modules import pandas
 
 
@@ -24,7 +26,7 @@ def DataFrame(column_types, index=None, rows=None):
     rows: An optional sequence of rows of data.
   """
   if rows:
-    cols = zip(*rows)
+    cols = list(zip(*rows))
     assert len(cols) == len(column_types)
     cols = (list(vs) for vs in cols)
   else:
@@ -33,7 +35,7 @@ def DataFrame(column_types, index=None, rows=None):
   for (column, dtype), values in zip(column_types, cols):
     df[column] = pandas.Series(values, dtype=dtype)
   if index is not None:
-    index = [index] if isinstance(index, basestring) else list(index)
+    index = [index] if isinstance(index, six.string_types) else list(index)
     df.set_index(index, inplace=True)
   return df
 

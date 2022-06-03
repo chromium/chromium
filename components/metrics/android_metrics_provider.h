@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_ANDROID_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_ANDROID_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -16,6 +15,10 @@ class ChromeUserMetricsExtension;
 class AndroidMetricsProvider : public metrics::MetricsProvider {
  public:
   AndroidMetricsProvider();
+
+  AndroidMetricsProvider(const AndroidMetricsProvider&) = delete;
+  AndroidMetricsProvider& operator=(const AndroidMetricsProvider&) = delete;
+
   ~AndroidMetricsProvider() override;
 
   // metrics::MetricsProvider:
@@ -23,9 +26,6 @@ class AndroidMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidMetricsProvider);
 };
 
 }  // namespace metrics

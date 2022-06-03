@@ -31,25 +31,27 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
 struct SameSizeAsElementRareData : NodeRareData {
   IntSize scroll_offset;
-  void* pointers_or_strings[3];
-  Member<void*> members[17];
+  void* pointers_or_strings[4];
+  Member<void*> members[18];
   bool flags[1];
 };
 
 ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
-    : NodeRareData(node_layout_data), class_list_(nullptr) {
-  is_element_rare_data_ = true;
-}
+    : NodeRareData(ClassType::kElementRareData, node_layout_data),
+      class_list_(nullptr) {}
 
 ElementRareData::~ElementRareData() {
   DCHECK(!pseudo_element_data_);
@@ -95,11 +97,12 @@ ElementInternals& ElementRareData::EnsureElementInternals(HTMLElement& target) {
   return *element_internals_;
 }
 
-void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) {
+void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(dataset_);
   visitor->Trace(class_list_);
   visitor->Trace(part_);
   visitor->Trace(shadow_root_);
+  visitor->Trace(edit_context_);
   visitor->Trace(attribute_map_);
   visitor->Trace(attr_node_list_);
   visitor->Trace(element_animations_);
@@ -108,15 +111,14 @@ void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) {
   visitor->Trace(pseudo_element_data_);
   visitor->Trace(accessible_node_);
   visitor->Trace(display_lock_context_);
-  visitor->Trace(v0_custom_element_definition_);
   visitor->Trace(custom_element_definition_);
   visitor->Trace(element_internals_);
   visitor->Trace(intersection_observer_data_);
   visitor->Trace(resize_observer_data_);
+  visitor->Trace(container_query_data_);
   NodeRareData::TraceAfterDispatch(visitor);
 }
 
-static_assert(sizeof(ElementRareData) == sizeof(SameSizeAsElementRareData),
-              "ElementRareData should stay small");
+ASSERT_SIZE(ElementRareData, SameSizeAsElementRareData);
 
 }  // namespace blink

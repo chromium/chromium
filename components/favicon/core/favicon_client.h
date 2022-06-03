@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_callback.h"
 
@@ -20,12 +19,24 @@ namespace favicon {
 class FaviconClient {
  public:
   FaviconClient() {}
+
+  FaviconClient(const FaviconClient&) = delete;
+  FaviconClient& operator=(const FaviconClient&) = delete;
+
   virtual ~FaviconClient() {}
 
   // Returns true if the specified URL is a native application page URL.
   // If this returns true the favicon for the page must be fetched using
   // GetFaviconForNativeApplicationURL().
   virtual bool IsNativeApplicationURL(const GURL& url) = 0;
+
+  // Returns true if the specified URL is a Reader Mode page URL. If this
+  // returns true the favicon for the page must be fetched using the original
+  // (distillable) page URL.
+  virtual bool IsReaderModeURL(const GURL& url) = 0;
+
+  // Gets the original page URL from a Reader Mode page URL.
+  virtual const GURL GetOriginalUrlFromReaderModeUrl(const GURL& url) = 0;
 
   // Requests the favicon for a native application page URL for the sizes
   // specified by |desired_sizes_in_pixel|. Returns a TaskId to use to cancel
@@ -36,9 +47,6 @@ class FaviconClient {
       const std::vector<int>& desired_sizes_in_pixel,
       favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FaviconClient);
 };
 
 }  // namespace favicon

@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -21,22 +21,27 @@ class RunCallbackOnDestruction {
  public:
   explicit RunCallbackOnDestruction(base::OnceClosure destruction_callback)
       : destruction_callback_(std::move(destruction_callback)) {}
+
+  RunCallbackOnDestruction(const RunCallbackOnDestruction&) = delete;
+  RunCallbackOnDestruction& operator=(const RunCallbackOnDestruction&) = delete;
+
   ~RunCallbackOnDestruction() { std::move(destruction_callback_).Run(); }
 
  private:
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackOnDestruction);
 };
 
 class ScopeToMessagePipeTest : public testing::Test {
  public:
   ScopeToMessagePipeTest() = default;
+
+  ScopeToMessagePipeTest(const ScopeToMessagePipeTest&) = delete;
+  ScopeToMessagePipeTest& operator=(const ScopeToMessagePipeTest&) = delete;
+
   ~ScopeToMessagePipeTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ScopeToMessagePipeTest);
 };
 
 TEST_F(ScopeToMessagePipeTest, ObjectDestroyedOnPeerClosure) {

@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_media_constraints.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_dom_string_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_constraindomstringparameters_string_stringsequence.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
-#include "third_party/blink/renderer/modules/mediastream/media_track_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 
 namespace blink {
 
 // The MediaTrackConstraintsTest group tests the types declared in
-// WebKit/public/platform/WebMediaConstraints.h
+// third_party/blink/renderer/platform/mediastream/media_constraints.h
 TEST(MediaTrackConstraintsTest, LongConstraint) {
   LongConstraint range_constraint(nullptr);
   range_constraint.SetMin(5);
@@ -28,10 +34,10 @@ TEST(MediaTrackConstraintsTest, LongConstraint) {
 
 TEST(MediaTrackConstraintsTest, DoubleConstraint) {
   DoubleConstraint range_constraint(nullptr);
-  EXPECT_TRUE(range_constraint.IsEmpty());
+  EXPECT_TRUE(range_constraint.IsUnconstrained());
   range_constraint.SetMin(5.0);
   range_constraint.SetMax(6.5);
-  EXPECT_FALSE(range_constraint.IsEmpty());
+  EXPECT_FALSE(range_constraint.IsUnconstrained());
   // Matching within epsilon
   EXPECT_TRUE(
       range_constraint.Matches(5.0 - DoubleConstraint::kConstraintEpsilon / 2));
@@ -39,7 +45,7 @@ TEST(MediaTrackConstraintsTest, DoubleConstraint) {
       range_constraint.Matches(6.5 + DoubleConstraint::kConstraintEpsilon / 2));
   DoubleConstraint exact_constraint(nullptr);
   exact_constraint.SetExact(5.0);
-  EXPECT_FALSE(range_constraint.IsEmpty());
+  EXPECT_FALSE(range_constraint.IsUnconstrained());
   EXPECT_FALSE(exact_constraint.Matches(4.9));
   EXPECT_TRUE(exact_constraint.Matches(5.0));
   EXPECT_TRUE(
@@ -51,11 +57,11 @@ TEST(MediaTrackConstraintsTest, DoubleConstraint) {
 
 TEST(MediaTrackConstraintsTest, BooleanConstraint) {
   BooleanConstraint bool_constraint(nullptr);
-  EXPECT_TRUE(bool_constraint.IsEmpty());
+  EXPECT_TRUE(bool_constraint.IsUnconstrained());
   EXPECT_TRUE(bool_constraint.Matches(false));
   EXPECT_TRUE(bool_constraint.Matches(true));
   bool_constraint.SetExact(false);
-  EXPECT_FALSE(bool_constraint.IsEmpty());
+  EXPECT_FALSE(bool_constraint.IsUnconstrained());
   EXPECT_FALSE(bool_constraint.Matches(true));
   EXPECT_TRUE(bool_constraint.Matches(false));
   bool_constraint.SetExact(true);
@@ -64,10 +70,10 @@ TEST(MediaTrackConstraintsTest, BooleanConstraint) {
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintSetEmpty) {
-  WebMediaTrackConstraintSet the_set;
-  EXPECT_TRUE(the_set.IsEmpty());
+  MediaTrackConstraintSetPlatform the_set;
+  EXPECT_TRUE(the_set.IsUnconstrained());
   the_set.echo_cancellation.SetExact(false);
-  EXPECT_FALSE(the_set.IsEmpty());
+  EXPECT_FALSE(the_set.IsUnconstrained());
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintName) {
@@ -77,8 +83,8 @@ TEST(MediaTrackConstraintsTest, ConstraintName) {
 }
 
 TEST(MediaTrackConstraintsTest, MandatoryChecks) {
-  WebMediaTrackConstraintSet the_set;
-  std::string found_name;
+  MediaTrackConstraintSetPlatform the_set;
+  String found_name;
   EXPECT_FALSE(the_set.HasMandatory());
   EXPECT_FALSE(the_set.HasMandatoryOutsideSet({"width"}, found_name));
   EXPECT_FALSE(the_set.width.HasMandatory());
@@ -94,7 +100,7 @@ TEST(MediaTrackConstraintsTest, MandatoryChecks) {
 }
 
 TEST(MediaTrackConstraintsTest, SetToString) {
-  WebMediaTrackConstraintSet the_set;
+  MediaTrackConstraintSetPlatform the_set;
   EXPECT_EQ("", the_set.ToString());
   the_set.width.SetMax(240);
   EXPECT_EQ("width: {max: 240}", the_set.ToString().Utf8());
@@ -104,9 +110,9 @@ TEST(MediaTrackConstraintsTest, SetToString) {
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintsToString) {
-  WebMediaConstraints the_constraints;
-  WebMediaTrackConstraintSet basic;
-  WebVector<WebMediaTrackConstraintSet> advanced(static_cast<size_t>(1));
+  MediaConstraints the_constraints;
+  MediaTrackConstraintSetPlatform basic;
+  Vector<MediaTrackConstraintSetPlatform> advanced(static_cast<size_t>(1));
   basic.width.SetMax(240);
   advanced[0].echo_cancellation.SetExact(true);
   the_constraints.Initialize(basic, advanced);
@@ -114,60 +120,88 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
       "{width: {max: 240}, advanced: [{echoCancellation: {exact: true}}]}",
       the_constraints.ToString().Utf8());
 
-  WebMediaConstraints null_constraints;
+  MediaConstraints null_constraints;
   EXPECT_EQ("", null_constraints.ToString().Utf8());
+
+  MediaConstraints pan_constraints;
+  MediaTrackConstraintSetPlatform pan_basic;
+  Vector<MediaTrackConstraintSetPlatform> pan_advanced(static_cast<size_t>(1));
+  pan_basic.pan.SetIsPresent(false);
+  pan_advanced[0].pan.SetIsPresent(true);
+  pan_constraints.Initialize(pan_basic, pan_advanced);
+  EXPECT_EQ("{advanced: [{pan: {}}]}", pan_constraints.ToString().Utf8());
+
+  MediaConstraints tilt_constraints;
+  MediaTrackConstraintSetPlatform tilt_basic;
+  Vector<MediaTrackConstraintSetPlatform> tilt_advanced(static_cast<size_t>(1));
+  tilt_basic.tilt.SetIsPresent(false);
+  tilt_advanced[0].tilt.SetIsPresent(true);
+  tilt_constraints.Initialize(tilt_basic, tilt_advanced);
+  EXPECT_EQ("{advanced: [{tilt: {}}]}", tilt_constraints.ToString().Utf8());
+
+  MediaConstraints zoom_constraints;
+  MediaTrackConstraintSetPlatform zoom_basic;
+  Vector<MediaTrackConstraintSetPlatform> zoom_advanced(static_cast<size_t>(1));
+  zoom_basic.zoom.SetIsPresent(false);
+  zoom_advanced[0].zoom.SetIsPresent(true);
+  zoom_constraints.Initialize(zoom_basic, zoom_advanced);
+  EXPECT_EQ("{advanced: [{zoom: {}}]}", zoom_constraints.ToString().Utf8());
+
+  // TODO(crbug.com/1086338): Test other constraints with IsPresent.
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebConstraintsBasic) {
-  WebMediaConstraints input;
+  MediaConstraints input;
   MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
   ALLOW_UNUSED_LOCAL(output);
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebSingleStringConstraint) {
-  WebMediaConstraints input;
+  MediaConstraints input;
 
-  WebMediaTrackConstraintSet basic;
-  WebVector<WebMediaTrackConstraintSet> advanced;
+  MediaTrackConstraintSetPlatform basic;
+  Vector<MediaTrackConstraintSetPlatform> advanced;
 
-  basic.facing_mode.SetIdeal(WebVector<WebString>(&"foo", 1));
+  basic.facing_mode.SetIdeal(Vector<String>({"foo"}));
   input.Initialize(basic, advanced);
   MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
   ASSERT_TRUE(output->hasFacingMode());
-  ASSERT_TRUE(output->facingMode().IsString());
-  EXPECT_EQ("foo", output->facingMode().GetAsString());
+  ASSERT_TRUE(output->facingMode()->IsString());
+  EXPECT_EQ("foo", output->facingMode()->GetAsString());
 }
 
 TEST(MediaTrackConstraintsTest, ConvertWebDoubleStringConstraint) {
-  WebMediaConstraints input;
+  MediaConstraints input;
 
-  WebVector<WebString> buffer(static_cast<size_t>(2u));
+  Vector<String> buffer(static_cast<size_t>(2u));
   buffer[0] = "foo";
   buffer[1] = "bar";
 
-  WebMediaTrackConstraintSet basic;
-  std::vector<WebMediaTrackConstraintSet> advanced;
+  MediaTrackConstraintSetPlatform basic;
+  Vector<MediaTrackConstraintSetPlatform> advanced;
   basic.facing_mode.SetIdeal(buffer);
   input.Initialize(basic, advanced);
 
   MediaTrackConstraints* output =
       media_constraints_impl::ConvertConstraints(input);
   ASSERT_TRUE(output->hasFacingMode());
-  ASSERT_TRUE(output->facingMode().IsStringSequence());
-  auto out_buffer = output->facingMode().GetAsStringSequence();
+  ASSERT_TRUE(output->facingMode()->IsStringSequence());
+  const auto& out_buffer = output->facingMode()->GetAsStringSequence();
   EXPECT_EQ("foo", out_buffer[0]);
   EXPECT_EQ("bar", out_buffer[1]);
 }
 
 TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
-  WebMediaConstraints output;
-  StringOrStringSequenceOrConstrainDOMStringParameters parameter;
-  parameter.SetString("foo");
+  MediaConstraints output;
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>("foo");
   input->setFacingMode(parameter);
-  output = media_constraints_impl::ConvertConstraintsToWeb(input);
+  MediaErrorState error_state;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_state);
+  ASSERT_FALSE(error_state.HadException());
   ASSERT_TRUE(output.Basic().facing_mode.HasIdeal());
   ASSERT_EQ(1U, output.Basic().facing_mode.Ideal().size());
   ASSERT_EQ("foo", output.Basic().facing_mode.Ideal()[0]);
@@ -175,16 +209,17 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkStringConstraint) {
 
 TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
-  WebMediaConstraints output;
-  StringOrStringSequenceOrConstrainDOMStringParameters parameter;
+  MediaConstraints output;
   ConstrainDOMStringParameters* subparameter =
       ConstrainDOMStringParameters::Create();
-  StringOrStringSequence inner_string;
-  inner_string.SetString("foo");
-  subparameter->setIdeal(inner_string);
-  parameter.SetConstrainDOMStringParameters(subparameter);
+  subparameter->setIdeal(
+      MakeGarbageCollected<V8UnionStringOrStringSequence>("foo"));
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>(subparameter);
   input->setFacingMode(parameter);
-  output = media_constraints_impl::ConvertConstraintsToWeb(input);
+  MediaErrorState error_state;
+  output = media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_state);
+  ASSERT_FALSE(error_state.HadException());
   ASSERT_TRUE(output.Basic().facing_mode.HasIdeal());
   ASSERT_EQ(1U, output.Basic().facing_mode.Ideal().size());
   ASSERT_EQ("foo", output.Basic().facing_mode.Ideal()[0]);
@@ -193,22 +228,24 @@ TEST(MediaTrackConstraintsTest, ConvertBlinkComplexStringConstraint) {
   MediaTrackConstraints* recycled =
       media_constraints_impl::ConvertConstraints(output);
   ASSERT_TRUE(recycled->hasFacingMode());
-  ASSERT_TRUE(recycled->facingMode().IsString());
-  ASSERT_EQ("foo", recycled->facingMode().GetAsString());
+  ASSERT_TRUE(recycled->facingMode()->IsString());
+  ASSERT_EQ("foo", recycled->facingMode()->GetAsString());
 }
 
 TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
   MediaTrackConstraints* input = MediaTrackConstraints::Create();
-  StringOrStringSequenceOrConstrainDOMStringParameters parameter;
-  parameter.SetString("foo");
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>("foo");
   input->setFacingMode(parameter);
   HeapVector<Member<MediaTrackConstraintSet>> advanced(
       1, MediaTrackConstraintSet::Create());
   advanced[0]->setFacingMode(parameter);
   input->setAdvanced(advanced);
 
-  WebMediaConstraints output =
-      media_constraints_impl::ConvertConstraintsToWeb(input);
+  MediaErrorState error_state;
+  MediaConstraints output =
+      media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+          input, error_state);
+  ASSERT_FALSE(error_state.HadException());
   ASSERT_TRUE(output.Basic().facing_mode.HasIdeal());
   ASSERT_FALSE(output.Basic().facing_mode.HasExact());
   ASSERT_EQ(1U, output.Basic().facing_mode.Ideal().size());
@@ -221,18 +258,18 @@ TEST(MediaTrackConstraintsTest, NakedIsExactInAdvanced) {
 }
 
 TEST(MediaTrackConstraintsTest, IdealAndExactConvertToNaked) {
-  WebMediaConstraints input;
-  WebVector<WebString> buffer(static_cast<size_t>(1u));
+  MediaConstraints input;
+  Vector<String> buffer(static_cast<size_t>(1u));
 
-  WebMediaTrackConstraintSet basic;
-  WebMediaTrackConstraintSet advanced_element1;
-  WebMediaTrackConstraintSet advanced_element2;
+  MediaTrackConstraintSetPlatform basic;
+  MediaTrackConstraintSetPlatform advanced_element1;
+  MediaTrackConstraintSetPlatform advanced_element2;
   buffer[0] = "ideal";
   basic.facing_mode.SetIdeal(buffer);
   advanced_element1.facing_mode.SetIdeal(buffer);
   buffer[0] = "exact";
   advanced_element2.facing_mode.SetExact(buffer);
-  std::vector<WebMediaTrackConstraintSet> advanced;
+  Vector<MediaTrackConstraintSetPlatform> advanced;
   advanced.push_back(advanced_element1);
   advanced.push_back(advanced_element2);
   input.Initialize(basic, advanced);
@@ -249,19 +286,78 @@ TEST(MediaTrackConstraintsTest, IdealAndExactConvertToNaked) {
   MediaTrackConstraintSet* element2 = output->advanced()[1];
 
   ASSERT_TRUE(output->hasFacingMode());
-  ASSERT_TRUE(output->facingMode().IsString());
-  EXPECT_EQ("ideal", output->facingMode().GetAsString());
+  ASSERT_TRUE(output->facingMode()->IsString());
+  EXPECT_EQ("ideal", output->facingMode()->GetAsString());
 
   ASSERT_TRUE(element1->hasFacingMode());
-  ASSERT_TRUE(element1->facingMode().IsConstrainDOMStringParameters());
+  ASSERT_TRUE(element1->facingMode()->IsConstrainDOMStringParameters());
   EXPECT_EQ("ideal", element1->facingMode()
-                         .GetAsConstrainDOMStringParameters()
+                         ->GetAsConstrainDOMStringParameters()
                          ->ideal()
-                         .GetAsString());
+                         ->GetAsString());
 
   ASSERT_TRUE(element2->hasFacingMode());
-  ASSERT_TRUE(element2->facingMode().IsString());
-  EXPECT_EQ("exact", element2->facingMode().GetAsString());
+  ASSERT_TRUE(element2->facingMode()->IsString());
+  EXPECT_EQ("exact", element2->facingMode()->GetAsString());
+}
+
+TEST(MediaTrackConstraintsTest, MaxLengthStringConstraintPasses) {
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  String str(
+      std::string(media_constraints_impl::kMaxConstraintStringLength, 'a')
+          .c_str());
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>(str);
+  input->setGroupId(parameter);
+  MediaErrorState error_state;
+  MediaConstraints output =
+      media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+          input, error_state);
+  EXPECT_FALSE(error_state.HadException());
+  EXPECT_EQ(*output.Basic().group_id.Ideal().begin(), str);
+}
+
+TEST(MediaTrackConstraintsTest, TooLongStringConstraintFails) {
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  String str(
+      std::string(media_constraints_impl::kMaxConstraintStringLength + 1, 'a')
+          .c_str());
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>(str);
+  input->setGroupId(parameter);
+  MediaErrorState error_state;
+  MediaConstraints output =
+      media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+          input, error_state);
+  EXPECT_TRUE(error_state.HadException());
+  EXPECT_EQ(error_state.GetErrorMessage(), "Constraint string too long.");
+}
+
+TEST(MediaTrackConstraintsTest, MaxLengthStringSequenceConstraintPasses) {
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  Vector<String> sequence;
+  sequence.Fill("a", media_constraints_impl::kMaxConstraintStringSeqLength);
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>(sequence);
+  input->setGroupId(parameter);
+  MediaErrorState error_state;
+  MediaConstraints output =
+      media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+          input, error_state);
+  EXPECT_FALSE(error_state.HadException());
+  EXPECT_EQ(output.Basic().group_id.Ideal().size(),
+            media_constraints_impl::kMaxConstraintStringSeqLength);
+}
+
+TEST(MediaTrackConstraintsTest, TooLongStringSequenceConstraintFails) {
+  MediaTrackConstraints* input = MediaTrackConstraints::Create();
+  Vector<String> sequence;
+  sequence.Fill("a", media_constraints_impl::kMaxConstraintStringSeqLength + 1);
+  auto* parameter = MakeGarbageCollected<V8ConstrainDOMString>(sequence);
+  input->setGroupId(parameter);
+  MediaErrorState error_state;
+  media_constraints_impl::ConvertTrackConstraintsToMediaConstraints(
+      input, error_state);
+  EXPECT_TRUE(error_state.HadException());
+  EXPECT_EQ(error_state.GetErrorMessage(),
+            "Constraint string sequence too long.");
 }
 
 }  // namespace blink

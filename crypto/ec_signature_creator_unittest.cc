@@ -37,8 +37,7 @@ TEST(ECSignatureCreatorTest, BasicTest) {
 
   std::string data("Hello, World!");
   std::vector<uint8_t> signature;
-  ASSERT_TRUE(signer->Sign(reinterpret_cast<const uint8_t*>(data.c_str()),
-                           data.size(), &signature));
+  ASSERT_TRUE(signer->Sign(base::as_bytes(base::make_span(data)), &signature));
 
   std::vector<uint8_t> public_key_info;
   ASSERT_TRUE(key_original->ExportPublicKey(&public_key_info));

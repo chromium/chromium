@@ -1,5 +1,5 @@
-#ifndef EXAMPLES_HELLO_WORLD_GLES_MATRIX_H
-#define EXAMPLES_HELLO_WORLD_GLES_MATRIX_H
+#ifndef EXAMPLES_API_GRAPHICS_3D_MATRIX_H_
+#define EXAMPLES_API_GRAPHICS_3D_MATRIX_H_
 
 /* Copyright (c) 2012 The Chromium Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
@@ -40,4 +40,4 @@ void multiply_matrix(const Matrix_t a, const Matrix_t b, Matrix_t mat);
 void rotate_matrix(GLfloat x_deg, GLfloat y_deg, GLfloat z_deg, Matrix_t mat);
 void translate_matrix(GLfloat x, GLfloat y, GLfloat z, Matrix_t mat);
 
-#endif  // EXAMPLES_HELLO_WORLD_GLES_MATRIX_H
+#endif  // EXAMPLES_API_GRAPHICS_3D_MATRIX_H_

@@ -38,8 +38,12 @@ bool RenderViewHostDelegateView::DoBrowserControlsShrinkRendererSize() const {
   return false;
 }
 
+bool RenderViewHostDelegateView::OnlyExpandTopControlsAtPageTop() const {
+  return false;
+}
+
 void RenderViewHostDelegateView::GestureEventAck(
     const blink::WebGestureEvent& event,
-    InputEventAckState ack_result) {}
+    blink::mojom::InputEventResultState ack_result) {}
 
 }  //  namespace content

@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.content.SharedPreferences;
-
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.offline_items_collection.ContentId;
 
 import java.util.ArrayList;
@@ -28,13 +25,11 @@ public class DownloadSharedPreferenceHelper {
         void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id);
     }
 
-    @VisibleForTesting
-    static final String KEY_PENDING_DOWNLOAD_NOTIFICATIONS = "PendingDownloadNotifications";
     private final List<DownloadSharedPreferenceEntry> mDownloadSharedPreferenceEntries =
             new ArrayList<DownloadSharedPreferenceEntry>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private SharedPreferences mSharedPrefs;
+    private SharedPreferencesManager mSharedPrefs;
 
     // "Initialization on demand holder idiom"
     private static class LazyHolder {
@@ -50,7 +45,7 @@ public class DownloadSharedPreferenceHelper {
     }
 
     private DownloadSharedPreferenceHelper() {
-        mSharedPrefs = ContextUtils.getAppSharedPreferences();
+        mSharedPrefs = SharedPreferencesManager.getInstance();
         parseDownloadSharedPrefs();
     }
 
@@ -133,9 +128,11 @@ public class DownloadSharedPreferenceHelper {
      * Parse a list of the DownloadSharedPreferenceEntry from |mSharedPrefs|.
      */
     private void parseDownloadSharedPrefs() {
-        if (!mSharedPrefs.contains(KEY_PENDING_DOWNLOAD_NOTIFICATIONS)) return;
+        if (!mSharedPrefs.contains(ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS)) {
+            return;
+        }
         Set<String> entries = DownloadManagerService.getStoredDownloadInfo(
-                mSharedPrefs, KEY_PENDING_DOWNLOAD_NOTIFICATIONS);
+                mSharedPrefs, ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS);
         for (String entryString : entries) {
             DownloadSharedPreferenceEntry entry =
                     DownloadSharedPreferenceEntry.parseFromString(entryString);
@@ -185,7 +182,7 @@ public class DownloadSharedPreferenceHelper {
         for (int i = 0; i < mDownloadSharedPreferenceEntries.size(); ++i) {
             entries.add(mDownloadSharedPreferenceEntries.get(i).getSharedPreferenceString());
         }
-        DownloadManagerService.storeDownloadInfo(
-                mSharedPrefs, KEY_PENDING_DOWNLOAD_NOTIFICATIONS, entries, forceCommit);
+        DownloadManagerService.storeDownloadInfo(mSharedPrefs,
+                ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS, entries, forceCommit);
     }
 }

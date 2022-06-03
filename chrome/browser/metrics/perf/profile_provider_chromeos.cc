@@ -9,8 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sampling_heap_profiler/sampling_heap_profiler.h"
-#include "chrome/browser/metrics/perf/heap_collector.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
@@ -55,13 +54,13 @@ bool IsNormalUserLoggedIn() {
 }  // namespace
 
 ProfileProvider::ProfileProvider()
-    : jankiness_collection_min_interval_(base::TimeDelta::FromSeconds(
-          kJankinessCollectionMinIntervalSec.Get())) {
+    : jankiness_collection_min_interval_(
+          base::Seconds(kJankinessCollectionMinIntervalSec.Get())) {
   // Initialize the WindowedIncognitoMonitor on the UI thread.
   WindowedIncognitoMonitor::Init();
   // Register a perf events collector.
-  collectors_.push_back(
-      std::make_unique<MetricProvider>(std::make_unique<PerfCollector>()));
+  collectors_.push_back(std::make_unique<MetricProvider>(
+      std::make_unique<PerfCollector>(), g_browser_process->profile_manager()));
 }
 
 ProfileProvider::~ProfileProvider() {
@@ -74,19 +73,6 @@ ProfileProvider::~ProfileProvider() {
 }
 
 void ProfileProvider::Init() {
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if (base::FeatureList::IsEnabled(heap_profiling::kOOPHeapProfilingFeature)) {
-    HeapCollectionMode mode = HeapCollector::CollectionModeFromString(
-        base::GetFieldTrialParamValueByFeature(
-            heap_profiling::kOOPHeapProfilingFeature,
-            heap_profiling::kOOPHeapProfilingFeatureMode));
-    if (mode != HeapCollectionMode::kNone) {
-      collectors_.push_back(std::make_unique<MetricProvider>(
-          std::make_unique<HeapCollector>(mode)));
-    }
-  }
-#endif
-
   for (auto& collector : collectors_) {
     collector->Init();
   }
@@ -111,8 +97,7 @@ void ProfileProvider::Init() {
 
   if (base::FeatureList::IsEnabled(kBrowserJankinessProfiling)) {
     // Set up the JankMonitor for watching browser jankiness.
-    jank_monitor_ =
-        base::MakeRefCounted<content::responsiveness::JankMonitor>();
+    jank_monitor_ = content::JankMonitor::Create();
     jank_monitor_->SetUp();
     jank_monitor_->AddObserver(this);
   }
@@ -128,6 +113,18 @@ bool ProfileProvider::GetSampledProfiles(
   return result;
 }
 
+void ProfileProvider::OnRecordingEnabled() {
+  for (auto& collector : collectors_) {
+    collector->EnableRecording();
+  }
+}
+
+void ProfileProvider::OnRecordingDisabled() {
+  for (auto& collector : collectors_) {
+    collector->DisableRecording();
+  }
+}
+
 void ProfileProvider::LoggedInStateChanged() {
   if (IsNormalUserLoggedIn()) {
     for (auto& collector : collectors_) {
@@ -140,7 +137,7 @@ void ProfileProvider::LoggedInStateChanged() {
   }
 }
 
-void ProfileProvider::SuspendDone(const base::TimeDelta& sleep_duration) {
+void ProfileProvider::SuspendDone(base::TimeDelta sleep_duration) {
   // A zero value for the suspend duration indicates that the suspend was
   // canceled. Do not collect anything if that's the case.
   if (sleep_duration.is_zero())
@@ -158,7 +155,8 @@ void ProfileProvider::SuspendDone(const base::TimeDelta& sleep_duration) {
   }
 }
 
-void ProfileProvider::OnSessionRestoreDone(int num_tabs_restored) {
+void ProfileProvider::OnSessionRestoreDone(Profile* profile,
+                                           int num_tabs_restored) {
   // Do not collect a profile unless logged in as a normal user.
   if (!IsNormalUserLoggedIn())
     return;

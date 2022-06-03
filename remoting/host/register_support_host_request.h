@@ -33,14 +33,16 @@ class RegisterSupportHostRequest {
                               protocol::ErrorCode error_code)>;
 
   RegisterSupportHostRequest() = default;
+
+  RegisterSupportHostRequest(const RegisterSupportHostRequest&) = delete;
+  RegisterSupportHostRequest& operator=(const RegisterSupportHostRequest&) =
+      delete;
+
   virtual ~RegisterSupportHostRequest() = default;
 
   virtual void StartRequest(SignalStrategy* signal_strategy,
                             scoped_refptr<RsaKeyPair> key_pair,
                             RegisterCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RegisterSupportHostRequest);
 };
 
 }  // namespace remoting

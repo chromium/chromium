@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,14 +18,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.media.MediaSwitches;
@@ -51,8 +54,14 @@ public class VideoFullscreenOrientationLockChromeTest {
     }
 
     private void waitForContentsFullscreenState(boolean fullscreenValue) {
-        CriteriaHelper.pollInstrumentationThread(
-                Criteria.equals(fullscreenValue, () -> DOMUtils.isFullscreen(getWebContents())));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                Criteria.checkThat(
+                        DOMUtils.isFullscreen(getWebContents()), Matchers.is(fullscreenValue));
+            } catch (TimeoutException ex) {
+                throw new CriteriaNotSatisfiedException(ex);
+            }
+        });
     }
 
     private boolean isScreenOrientationLocked() {
@@ -71,25 +80,18 @@ public class VideoFullscreenOrientationLockChromeTest {
     }
 
     private void waitUntilLockedToLandscape() {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                try {
-                    return isScreenOrientationLocked() && isScreenOrientationLandscape();
-                } catch (TimeoutException e) {
-                    return false;
-                }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                Criteria.checkThat(isScreenOrientationLocked(), Matchers.is(true));
+                Criteria.checkThat(isScreenOrientationLandscape(), Matchers.is(true));
+            } catch (TimeoutException e) {
+                throw new CriteriaNotSatisfiedException(e);
             }
         });
     }
 
     private void waitUntilUnlocked() {
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return !isScreenOrientationLocked();
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(() -> !isScreenOrientationLocked());
     }
 
     @Before
@@ -100,7 +102,6 @@ public class VideoFullscreenOrientationLockChromeTest {
     @Test
     // Test is disabled due to flakiness - crbug.com/888161
     // @MediumTest
-    // @RetryOnFailure // The final waitForContentsFullscreenState(false) is flaky -
     // crbug.com/711005.
     @DisabledTest
     public void testUnlockWithDownloadViewerActivity() throws Exception {
@@ -123,8 +124,8 @@ public class VideoFullscreenOrientationLockChromeTest {
         // Orientation lock should be disabled when download viewer activity is started.
         Uri fileUri = Uri.parse(UrlUtils.getIsolatedTestFileUrl(VIDEO_URL));
         String mimeType = "video/mp4";
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(
-                fileUri, fileUri, mimeType, true /* allowExternalAppHandlers */);
+        Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri, fileUri, mimeType,
+                true /* allowExternalAppHandlers */, mActivityTestRule.getActivity());
         IntentHandler.startActivityForTrustedIntent(intent);
         waitUntilUnlocked();
 

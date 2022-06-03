@@ -34,16 +34,16 @@ namespace cssvalue {
 class CSSCounterValue : public CSSValue {
  public:
   CSSCounterValue(CSSCustomIdentValue* identifier,
-                  CSSIdentifierValue* list_style,
+                  CSSCustomIdentValue* list_style,
                   CSSStringValue* separator)
       : CSSValue(kCounterClass),
         identifier_(identifier),
         list_style_(list_style),
         separator_(separator) {}
 
-  String Identifier() const { return identifier_->Value(); }
-  CSSValueID ListStyle() const { return list_style_->GetValueID(); }
-  String Separator() const { return separator_->Value(); }
+  const String& Identifier() const { return identifier_->Value(); }
+  const AtomicString& ListStyle() const { return list_style_->Value(); }
+  const String& Separator() const { return separator_->Value(); }
 
   bool Equals(const CSSCounterValue& other) const {
     return Identifier() == other.Identifier() &&
@@ -52,11 +52,11 @@ class CSSCounterValue : public CSSValue {
 
   String CustomCSSText() const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSCustomIdentValue> identifier_;  // string
-  Member<CSSIdentifierValue> list_style_;   // ident
+  Member<CSSCustomIdentValue> list_style_;  // ident
   Member<CSSStringValue> separator_;        // string
 };
 

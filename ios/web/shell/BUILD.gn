@@ -6,14 +6,11 @@ import("//build/config/ios/rules.gni")
 import("//ios/build/config.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/repack.gni")
 
 ios_app_bundle("ios_web_shell") {
   info_plist = "Info.plist"
 
-  deps = [
-    ":shell",
-  ]
+  deps = [ ":shell" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -28,15 +25,11 @@ bundle_data("shell_bundle_data") {
     "toolbar_back@2x.png",
     "toolbar_forward@2x.png",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
 mojom("shell_interfaces") {
-  sources = [
-    "web_usage_controller.mojom",
-  ]
+  sources = [ "web_usage_controller.mojom" ]
 }
 
 source_set("shell") {
@@ -72,7 +65,7 @@ source_set("shell") {
     "//ui/base",
   ]
 
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "CoreFoundation.framework",
     "Foundation.framework",

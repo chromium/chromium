@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_LAYOUT_PROVIDER_H_
 #define UI_VIEWS_LAYOUT_LAYOUT_PROVIDER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/shadow_value.h"
@@ -55,8 +54,11 @@ enum DistanceMetric {
   // two types have not been interchanged.
   VIEWS_DISTANCE_START = VIEWS_INSETS_MAX,
 
+  // Width of a bubble unless the content is too wide to make that
+  // feasible.
+  DISTANCE_BUBBLE_PREFERRED_WIDTH = VIEWS_DISTANCE_START,
   // The default padding to add on each side of a button's label.
-  DISTANCE_BUTTON_HORIZONTAL_PADDING = VIEWS_DISTANCE_START,
+  DISTANCE_BUTTON_HORIZONTAL_PADDING,
   // The maximum width a button can have and still influence the sizes of
   // other linked buttons.  This allows short buttons to have linked widths
   // without long buttons making things overly wide.
@@ -80,6 +82,9 @@ enum DistanceMetric {
   // The distance between the bottom of a dialog's title and the top of the
   // dialog's content, when the first content element is text.
   DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT,
+  // Width of modal dialogs unless the content is too wide to make that
+  // feasible.
+  DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH,
   // The spacing between a pair of related horizontal buttons, used for
   // dialog layout.
   DISTANCE_RELATED_BUTTON_HORIZONTAL,
@@ -108,30 +113,36 @@ enum DistanceMetric {
   VIEWS_DISTANCE_MAX = 0x2000
 };
 
-// The type of a dialog content element. TEXT should be used for Labels or other
-// elements that only show text. Otherwise CONTROL should be used.
-enum DialogContentType { CONTROL, TEXT };
+// The type of a dialog content element. kText should be used for Labels or
+// other elements that only show text. Otherwise kControl should be used.
+enum class DialogContentType { kControl, kText };
 
-enum EmphasisMetric {
+enum class Emphasis {
   // No emphasis needed for shadows, corner radius, etc.
-  EMPHASIS_NONE,
+  kNone,
   // Use this to indicate low-emphasis interactive elements such as buttons and
   // text fields.
-  EMPHASIS_LOW,
+  kLow,
   // Use this for components with medium emphasis, such the autofill dropdown.
-  EMPHASIS_MEDIUM,
+  kMedium,
   // High-emphasis components, such as tabs or dialogs.
-  EMPHASIS_HIGH,
+  kHigh,
   // Maximum emphasis components like the omnibox or rich suggestions.
-  EMPHASIS_MAXIMUM,
+  kMaximum,
 };
 
 class VIEWS_EXPORT LayoutProvider {
  public:
   LayoutProvider();
+
+  LayoutProvider(const LayoutProvider&) = delete;
+  LayoutProvider& operator=(const LayoutProvider&) = delete;
+
   virtual ~LayoutProvider();
 
   // This should never return nullptr.
+  // TODO(crbug.com/1200584): Replace callers of this with
+  // View::GetLayoutProvider().
   static LayoutProvider* Get();
 
   // Calculates the control height based on the |font|'s reported glyph height,
@@ -161,27 +172,23 @@ class VIEWS_EXPORT LayoutProvider {
   gfx::Insets GetDialogInsetsForContentType(DialogContentType leading,
                                             DialogContentType trailing) const;
 
-  // TODO (https://crbug.com/822000): Possibly combine the following two
-  // functions into a single function returning a struct. Keeping them separate
-  // for now in case different emphasis is needed for different elements in the
-  // same context. Delete this TODO in Q4 2018.
+  // TODO(https://crbug.com/822000): Possibly combine the following two
+  // functions into a single function returning a struct.
 
-  // Returns the corner radius specific to the given emphasis metric.
-  virtual int GetCornerRadiusMetric(EmphasisMetric emphasis_metric,
+  // Returns the corner radius specific to the given emphasis.
+  virtual int GetCornerRadiusMetric(Emphasis emphasis,
                                     const gfx::Size& size = gfx::Size()) const;
 
   // Returns the shadow elevation metric for the given emphasis.
-  virtual int GetShadowElevationMetric(EmphasisMetric emphasis_metric) const;
+  virtual int GetShadowElevationMetric(Emphasis emphasis) const;
 
-  // Creates shadows for the given elevation. Use GetShadowElevationMetric for
-  // the appropriate elevation.
-  virtual gfx::ShadowValues MakeShadowValues(int elevation,
-                                             SkColor color) const;
+ protected:
+  static constexpr int kSmallDialogWidth = 320;
+  static constexpr int kMediumDialogWidth = 448;
+  static constexpr int kLargeDialogWidth = 512;
 
  private:
   TypographyProvider typography_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutProvider);
 };
 
 }  // namespace views

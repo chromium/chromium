@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 
 group("extensions") {
@@ -9,17 +10,15 @@ group("extensions") {
     ":caretbrowsing",
     ":colorenhancer",
   ]
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "chromevoxclassic:chromevox" ]
   }
 }
 
 group("extension_tests") {
   testonly = true
-  if (is_chromeos) {
-    deps = [
-      "chromevoxclassic:chromevox_tests",
-    ]
+  if (is_chromeos_ash) {
+    deps = [ "chromevoxclassic:chromevox_tests" ]
   }
 }
 
@@ -77,6 +76,10 @@ locale_files = [
   "_locales/vi/messages.json",
   "_locales/zh_CN/messages.json",
   "_locales/zh_TW/messages.json",
+
+  # Pseudolocales
+  "_locales/ar_XB/messages.json",
+  "_locales/en_XA/messages.json",
 ]
 
 #
@@ -115,9 +118,7 @@ colorenhancer_files = [
 
 copy("colorenhancer_copy") {
   sources = colorenhancer_files
-  outputs = [
-    "$root_out_dir/{{source_target_relative}}",
-  ]
+  outputs = [ "$root_out_dir/{{source_target_relative}}" ]
 }
 
 #
@@ -157,7 +158,5 @@ caretbrowsing_files = [
 
 copy("caretbrowsing_copy") {
   sources = caretbrowsing_files
-  outputs = [
-    "$root_out_dir/caretbrowsing/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/caretbrowsing/{{source_file_part}}" ]
 }

@@ -1,0 +1,35 @@
+<!doctype html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<body style="background-color: blue">
+<textarea rows=3 style="transform: translateZ(0);">
+1
+2
+3
+4
+5
+</textarea>
+<br><br>
+<textarea rows=3 style="border-width: 3px; transform: translateZ(0);">
+1
+2
+3
+4
+5
+</textarea>
+<br><br>
+<textarea rows=3 style="border-width: 5px; transform: translateZ(0);">
+1
+2
+3
+4
+5
+</textarea>
+<script>
+runAfterLayoutAndPaint(function() {
+  const textareas = document.querySelectorAll("textarea");
+  textareas.forEach((textarea) => {
+    internals.setPseudoClassState(textarea, ":focus", true);
+  });
+}, true);
+</script>
+</body>

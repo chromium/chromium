@@ -14,32 +14,39 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Tests for {@link Tab}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures("ShoppingAssist")
 public class TabUnitTest {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
     private WindowAndroid mWindowAndroid;
@@ -55,6 +62,10 @@ public class TabUnitTest {
     private WeakReference<Activity> mWeakReferenceActivity;
     @Mock
     private Activity mActivity;
+    @Mock
+    private CriticalPersistedTabData mCriticalPersistedTabData;
+    @Mock
+    private CriticalPersistedTabDataObserver mCriticalPersistedTabDataObserver;
 
     private TabImpl mTab;
 
@@ -68,37 +79,35 @@ public class TabUnitTest {
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();
 
-        // Bypass feature checks.
-        Map<String, Boolean> features = new HashMap<>();
-        features.put("ShoppingAssist", true);
-        ChromeFeatureList.setTestFeatures(features);
-
-        mTab = new TabImpl(TAB1_ID, null, false, null);
+        mTab = new TabImpl(TAB1_ID, false, null, null);
         mTab.addObserver(mObserver);
+        CriticalPersistedTabData.from(mTab).addObserver(mCriticalPersistedTabDataObserver);
     }
 
     @Test
     @SmallTest
     public void testSetRootIdWithChange() {
-        assertThat(mTab.getRootId(), equalTo(TAB1_ID));
+        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
 
-        mTab.setRootId(TAB2_ID);
+        CriticalPersistedTabData.from(mTab).setRootId(TAB2_ID);
 
-        verify(mObserver).onRootIdChanged(mTab, TAB2_ID);
-        assertThat(mTab.getRootId(), equalTo(TAB2_ID));
+        verify(mCriticalPersistedTabDataObserver).onRootIdChanged(mTab, TAB2_ID);
+
+        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB2_ID));
         assertThat(mTab.isTabStateDirty(), equalTo(true));
     }
 
     @Test
     @SmallTest
     public void testSetRootIdWithoutChange() {
-        assertThat(mTab.getRootId(), equalTo(TAB1_ID));
+        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
         mTab.setIsTabStateDirty(false);
 
-        mTab.setRootId(TAB1_ID);
+        CriticalPersistedTabData.from(mTab).setRootId(TAB1_ID);
 
-        verify(mObserver, never()).onRootIdChanged(any(Tab.class), anyInt());
-        assertThat(mTab.getRootId(), equalTo(TAB1_ID));
+        verify(mCriticalPersistedTabDataObserver, never())
+                .onRootIdChanged(any(Tab.class), anyInt());
+        assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
         assertThat(mTab.isTabStateDirty(), equalTo(false));
     }
 }

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Ensures that the font family can be dynamically changed.
+FAIL Ensures that the font size can be dynamically changed. assert_equals: expected 32 but got 48
+Harness: the test ran to completion.
+

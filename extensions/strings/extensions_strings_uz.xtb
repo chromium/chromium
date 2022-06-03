@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Obbo! Tasodifiy RSA xususiy kalitini tuzib bo‘lmadi.</translation>
 <translation id="1445572445564823378">Bu kengaytma <ph name="PRODUCT_NAME" />’ni sekinlashtirmoqda. <ph name="PRODUCT_NAME" /> samarali ishlashi uchun kengaytmani o‘chirib qo‘yishingiz lozim.</translation>
 <translation id="1468038450257740950">WebGL qo‘llab-quvvatlanmaydi.</translation>
-<translation id="149347756975725155">“<ph name="ICON" />” kengaytmasi ikonkasini yuklab bo‘lmadi.</translation>
 <translation id="1803557475693955505">“<ph name="BACKGROUND_PAGE" />” orqa fon sahifasini yuklab bo‘lmadi.</translation>
 <translation id="2159915644201199628">Tasvirni dekodlab bo‘lmadi: “<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Mahalliylashtirish qo‘llanilmoqda, lekin manifest faylida “default_locale” qiymati belgilanmagan.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Yopiq kalitni o‘qib bo‘lmadi.</translation>
 <translation id="6391538222494443604">Joylashtiriladigan katalog mavjud bo‘lishi kerak.</translation>
 <translation id="641087317769093025">Kengaytmani arxivdan chiqarib bo‘lmadi</translation>
-<translation id="6413453408918378296">“<ph name="ICON" />” ikonkasi yetarlicha aks etmayapti.</translation>
 <translation id="6542618148162044354">“<ph name="APP_NAME" />” ilovasi bir yoki bir nechta qurilmaga ruxsat so‘ramoqda:</translation>
 <translation id="657064425229075395">“<ph name="BACKGROUND_SCRIPT" />” orqa fon skriptini yuklab bo‘lmadi.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />, ta’minotchi: <ph name="VENDOR_NAME" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>

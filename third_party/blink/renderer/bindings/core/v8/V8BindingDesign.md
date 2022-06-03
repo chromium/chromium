@@ -227,7 +227,7 @@ As a result, we have multiple DOM wrapper storages in one isolate.
 The mapping of the main world is written in `ScriptWrappable`.
 If `ScriptWrappable::main_world_wrapper_` has a non-empty value, it is a DOM
 wrapper of the C++ DOM object of the main world.
-The mapping of other worlds are written in `DOMWrapperMap`.
+The mapping of other worlds are written in `DOMDataStore`.
 
 ## DOM wrappers and contexts
 

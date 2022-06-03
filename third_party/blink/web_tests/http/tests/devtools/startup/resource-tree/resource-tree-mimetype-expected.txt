@@ -1,6 +1,0 @@
-Tests that resources panel correctly shows mime type when it loads data from memory cache. https://bugs.webkit.org/show_bug.cgi?id=63701
-
-image text/html http://127.0.0.1:8000/devtools/devtools/resource-tree/resources/empty.png
-stylesheet text/html http://127.0.0.1:8000/devtools/devtools/resource-tree/resources/styles-initial.css
-document text/html http://127.0.0.1:8000/devtools/startup/resource-tree/resources/resource-tree-mimetype.html
-

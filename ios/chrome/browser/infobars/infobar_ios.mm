@@ -4,9 +4,8 @@
 
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 
-#include "base/logging.h"
-#include "ios/chrome/browser/infobars/infobar_controller.h"
-#import "ios/chrome/browser/ui/infobars/infobar_ui_delegate.h"
+#include "base/check.h"
+#include "ios/chrome/browser/infobars/infobar_type.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,27 +14,36 @@
 using infobars::InfoBar;
 using infobars::InfoBarDelegate;
 
-InfoBarIOS::InfoBarIOS(id<InfobarUIDelegate> controller,
-                       std::unique_ptr<InfoBarDelegate> delegate)
-    : InfoBar(std::move(delegate)), controller_(controller) {
-  DCHECK(controller_);
-  [controller_ setDelegate:this];
-}
+InfoBarIOS::InfoBarIOS(InfobarType infobar_type,
+                       std::unique_ptr<InfoBarDelegate> delegate,
+                       bool skip_banner)
+    : InfoBar(std::move(delegate)),
+      infobar_type_(infobar_type),
+      skip_banner_(skip_banner) {}
 
 InfoBarIOS::~InfoBarIOS() {
-  DCHECK(controller_);
-  [controller_ detachView];
-  controller_ = nil;
+  for (auto& observer : observers_) {
+    observer.InfobarDestroyed(this);
+  }
 }
 
-id<InfobarUIDelegate> InfoBarIOS::InfobarUIDelegate() {
-  DCHECK(controller_);
-  return controller_;
+void InfoBarIOS::set_accepted(bool accepted) {
+  if (accepted_ == accepted)
+    return;
+  accepted_ = accepted;
+  for (auto& observer : observers_) {
+    observer.DidUpdateAcceptedState(this);
+  }
 }
 
-void InfoBarIOS::RemoveView() {
-  DCHECK(controller_);
-  [controller_ removeView];
+void InfoBarIOS::set_high_priority(bool high_priority) {
+  if (high_priority_ == high_priority)
+    return;
+  high_priority_ = high_priority;
+}
+
+base::WeakPtr<InfoBarIOS> InfoBarIOS::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 #pragma mark - InfoBarControllerDelegate

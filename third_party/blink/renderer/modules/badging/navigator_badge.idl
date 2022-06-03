@@ -8,9 +8,9 @@
     RuntimeEnabled=Badging,
     ImplementedAs=NavigatorBadge
 ] partial interface Navigator {
-  [CallWith=ScriptState, MeasureAs=BadgeSet, ImplementedAs=setAppBadge]
-  Promise<void> setExperimentalAppBadge(optional [EnforceRange] unsigned long long contents);
+  [CallWith=ScriptState, MeasureAs=BadgeSet]
+  Promise<void> setAppBadge(optional [EnforceRange] unsigned long long contents);
 
-  [CallWith=ScriptState, MeasureAs=BadgeClear, ImplementedAs=clearAppBadge]
-  Promise<void> clearExperimentalAppBadge();
+  [CallWith=ScriptState, MeasureAs=BadgeClear]
+  Promise<void> clearAppBadge();
 };

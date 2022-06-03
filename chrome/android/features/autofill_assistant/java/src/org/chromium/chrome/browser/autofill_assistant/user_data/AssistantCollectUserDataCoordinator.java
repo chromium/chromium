@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import android.app.Activity;
 import android.os.Build;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -15,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -43,8 +43,7 @@ public class AssistantCollectUserDataCoordinator {
 
     private AssistantCollectUserDataCoordinator(
             Activity activity, AssistantCollectUserDataModel model, Locale locale) {
-        this(activity, model, locale,
-                DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale));
+        this(activity, model, locale, DateFormat.getDateInstance(DateFormat.MEDIUM, locale));
     }
 
     @VisibleForTesting
@@ -77,9 +76,9 @@ public class AssistantCollectUserDataCoordinator {
         AssistantAdditionalSectionContainer prependedSections =
                 new AssistantAdditionalSectionContainer(mActivity, paymentRequestExpanderAccordion);
 
-        LinearLayout genericUserInterfaceContainer = new LinearLayout(activity);
-        genericUserInterfaceContainer.setOrientation(LinearLayout.VERTICAL);
-        paymentRequestExpanderAccordion.addView(genericUserInterfaceContainer,
+        LinearLayout genericUserInterfaceContainerPrepended = new LinearLayout(activity);
+        genericUserInterfaceContainerPrepended.setOrientation(LinearLayout.VERTICAL);
+        paymentRequestExpanderAccordion.addView(genericUserInterfaceContainerPrepended,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -107,6 +106,15 @@ public class AssistantCollectUserDataCoordinator {
         AssistantAdditionalSectionContainer appendedSections =
                 new AssistantAdditionalSectionContainer(mActivity, paymentRequestExpanderAccordion);
 
+        LinearLayout genericUserInterfaceContainerAppended = new LinearLayout(activity);
+        genericUserInterfaceContainerAppended.setOrientation(LinearLayout.VERTICAL);
+        paymentRequestExpanderAccordion.addView(genericUserInterfaceContainerAppended,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        AssistantInfoSection infoSection =
+                new AssistantInfoSection(mActivity, paymentRequestExpanderAccordion);
+
         AssistantTermsSection termsSection = new AssistantTermsSection(
                 mActivity, paymentRequestExpanderAccordion, /* showAsSingleCheckbox= */ false);
         AssistantTermsSection termsAsCheckboxSection =
@@ -130,14 +138,16 @@ public class AssistantCollectUserDataCoordinator {
                 AssistantTagsForTesting.COLLECT_USER_DATA_RADIO_TERMS_SECTION_TAG);
         termsAsCheckboxSection.getView().setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_CHECKBOX_TERMS_SECTION_TAG);
+        infoSection.getView().setTag(AssistantTagsForTesting.COLLECT_USER_DATA_INFO_SECTION_TAG);
 
         // Bind view and mediator through the model.
         mViewHolder = new AssistantCollectUserDataBinder.ViewHolder(mPaymentRequestUI,
                 paymentRequestExpanderAccordion, sectionToSectionPadding, loginSection,
                 contactDetailsSection, dateRangeStartSection, dateRangeEndSection,
                 paymentMethodSection, shippingAddressSection, termsSection, termsAsCheckboxSection,
-                prependedSections, appendedSections, genericUserInterfaceContainer, DIVIDER_TAG,
-                activity);
+                infoSection, prependedSections, appendedSections,
+                genericUserInterfaceContainerPrepended, genericUserInterfaceContainerAppended,
+                DIVIDER_TAG, mActivity);
         AssistantCollectUserDataBinder binder = new AssistantCollectUserDataBinder();
         PropertyModelChangeProcessor.create(model, mViewHolder, binder);
 
@@ -157,7 +167,7 @@ public class AssistantCollectUserDataCoordinator {
     }
 
     private void createSeparator(ViewGroup parent) {
-        View divider = LayoutInflater.from(mActivity).inflate(
+        View divider = LayoutUtils.createInflater(mActivity).inflate(
                 R.layout.autofill_assistant_payment_request_section_divider, parent, false);
         divider.setTag(DIVIDER_TAG);
         parent.addView(divider);

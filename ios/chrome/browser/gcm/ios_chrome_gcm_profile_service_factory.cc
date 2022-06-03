@@ -8,8 +8,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_profile_service.h"
@@ -58,7 +59,7 @@ void RequestProxyResolvingSocketFactory(
 
 // static
 gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<gcm::GCMProfileService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -94,12 +95,11 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
   DCHECK(!context->IsOffTheRecord());
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<gcm::GCMProfileService>(
       browser_state->GetPrefs(), browser_state->GetStatePath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory, context),

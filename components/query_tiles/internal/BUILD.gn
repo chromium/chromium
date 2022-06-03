@@ -1,0 +1,106 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+source_set("internal") {
+  sources = [
+    "black_hole_log_sink.cc",
+    "black_hole_log_sink.h",
+    "cached_image_loader.cc",
+    "cached_image_loader.h",
+    "image_loader.h",
+    "image_prefetcher.cc",
+    "image_prefetcher.h",
+    "init_aware_tile_service.cc",
+    "init_aware_tile_service.h",
+    "log_sink.h",
+    "log_source.h",
+    "logger_impl.cc",
+    "logger_impl.h",
+    "proto_conversion.cc",
+    "proto_conversion.h",
+    "stats.cc",
+    "stats.h",
+    "store.h",
+    "tile_config.cc",
+    "tile_config.h",
+    "tile_fetcher.cc",
+    "tile_fetcher.h",
+    "tile_group.cc",
+    "tile_group.h",
+    "tile_iterator.cc",
+    "tile_iterator.h",
+    "tile_manager.cc",
+    "tile_manager.h",
+    "tile_service_impl.cc",
+    "tile_service_impl.h",
+    "tile_service_scheduler.h",
+    "tile_service_scheduler_impl.cc",
+    "tile_service_scheduler_impl.h",
+    "tile_store.cc",
+    "tile_store.h",
+    "tile_types.h",
+    "tile_utils.cc",
+    "tile_utils.h",
+    "trending_tile_handler.cc",
+    "trending_tile_handler.h",
+  ]
+
+  public_deps = [ "//components/image_fetcher/core" ]
+
+  deps = [
+    "//base",
+    "//components/background_task_scheduler:public",
+    "//components/leveldb_proto",
+    "//components/prefs",
+    "//components/query_tiles:public",
+    "//components/query_tiles/proto",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility = [ "//components/query_tiles:unit_tests" ]
+
+  sources = [
+    "cached_image_loader_unittest.cc",
+    "image_prefetcher_unittest.cc",
+    "init_aware_tile_service_unittest.cc",
+    "proto_conversion_unittest.cc",
+    "stats_unittest.cc",
+    "tile_config_unittest.cc",
+    "tile_fetcher_unittest.cc",
+    "tile_group_unittest.cc",
+    "tile_iterator_unittest.cc",
+    "tile_manager_unittest.cc",
+    "tile_service_impl_unittest.cc",
+    "tile_service_scheduler_unittest.cc",
+    "tile_store_unittest.cc",
+    "tile_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/image_fetcher/core:test_support",
+    "//components/leveldb_proto",
+    "//components/leveldb_proto:test_support",
+    "//components/prefs:test_support",
+    "//components/query_tiles:public",
+    "//components/query_tiles/proto",
+    "//components/query_tiles/test:test_lib",
+    "//components/query_tiles/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

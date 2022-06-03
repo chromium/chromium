@@ -24,11 +24,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/webcomponents/spec/shadow/#the-slot-element
-[HTMLConstructor]
-interface HTMLSlotElement : HTMLElement {
+// https://html.spec.whatwg.org/C/#the-slot-element
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLSlotElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString name;
-    [ImplementedAs=AssignedNodesForBinding] sequence<Node> assignedNodes(optional AssignedNodesOptions options);
-    [ImplementedAs=AssignedElementsForBinding] sequence<Element> assignedElements(optional AssignedNodesOptions options);
-    [RuntimeEnabled=ManualSlotting] void assign(sequence<Node> nodes);
+    [ImplementedAs=AssignedNodesForBinding] sequence<Node> assignedNodes(optional AssignedNodesOptions options = {});
+    [ImplementedAs=AssignedElementsForBinding] sequence<Element> assignedElements(optional AssignedNodesOptions options = {});
+    [RaisesException] void assign((Element or Text)... nodes);
 };

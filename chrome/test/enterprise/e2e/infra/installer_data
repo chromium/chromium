@@ -2,7 +2,6 @@
   "distribution":{
      "make_chrome_default":true,
      "system_level":true,
-     "multi_install":true,
      "verbose_logging":true,
      "chrome":true,
      "require_eula":false,

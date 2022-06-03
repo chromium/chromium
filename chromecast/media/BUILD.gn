@@ -26,9 +26,9 @@ group("media") {
   public_deps = [
     "//chromecast/media/audio",
     "//chromecast/media/base",
-    "//chromecast/media/base:media_resource_tracker",
     "//chromecast/media/cdm",
     "//chromecast/media/cma",
+    "//chromecast/media/common:media_resource_tracker",
   ]
 }
 
@@ -36,25 +36,19 @@ group("media") {
 # Handles the various differences between (ATV, Things, desktop, device builds).
 group("libcast_media") {
   if (is_android) {
-    deps = [
-      "//chromecast/media/cma/backend/android:cast_media_android",
-    ]
+    deps = [ "//chromecast/media/cma/backend/android:cast_media_android" ]
   } else if (is_fuchsia) {
-    deps = [
-      "//chromecast/media/cma/backend/fuchsia:media_backend",
-    ]
+    deps = [ "//chromecast/media/cma/backend/fuchsia:media_backend" ]
   } else if (cast_static_media_lib_target != "") {
-    deps = [
-      "$cast_static_media_lib_target",
-    ]
+    deps = [ "$cast_static_media_lib_target" ]
   } else if (is_cast_desktop_build) {
-    deps = [
-      "//chromecast/media/cma/backend/desktop",
-    ]
+    deps = [ "//chromecast/media/cma/backend/desktop" ]
   } else {
-    deps = [
-      "//chromecast/media/cma/backend:libcast_media_1.0",
-    ]
+    deps = [ "//chromecast/media/cma/backend:libcast_media_1.0" ]
+  }
+
+  if (enable_chromium_runtime_cast_renderer) {
+    deps += [ "//chromecast/media/cma/backend/proxy" ]
   }
 
   if (cast_volume_control_in_avsettings) {
@@ -67,10 +61,10 @@ test("cast_media_unittests") {
     "audio/cast_audio_manager_unittest.cc",
     "audio/cast_audio_mixer_unittest.cc",
     "audio/cast_audio_output_stream_unittest.cc",
-    "base/media_resource_tracker_unittest.cc",
     "base/slew_volume_unittests.cc",
     "base/supported_codec_profile_levels_memo_unittest.cc",
-    "cma/backend/audio_decoder_software_wrapper_unittest.cc",
+    "common/audio_decoder_software_wrapper_unittest.cc",
+    "common/media_resource_tracker_unittest.cc",
     "test/run_all_unittests.cc",
   ]
 
@@ -87,11 +81,18 @@ test("cast_media_unittests") {
     "//chromecast/base",
     "//chromecast/base/metrics:test_support",
     "//chromecast/common/mojom",
+    "//chromecast/external_mojo/external_service_support:external_service",
+    "//chromecast/external_mojo/external_service_support:test_support",
+    "//chromecast/media/api:test_support",
+    "//chromecast/media/audio:test_support",
     "//chromecast/media/audio:unittests",
     "//chromecast/media/audio/capture_service:unittests",
     "//chromecast/media/base:monotonic_clock",
+    "//chromecast/media/base:slew_volume",
     "//chromecast/media/cma:test_support",
     "//chromecast/media/cma:unittests",
+    "//chromecast/media/common:media_pipeline_backend_manager",
+    "//chromecast/media/common:test_media_resource_tracker",
     "//chromecast/public",
     "//content/test:test_support",
     "//media:test_support",
@@ -101,6 +102,13 @@ test("cast_media_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (use_unix_sockets) {
+    deps += [
+      "//chromecast/media/audio/audio_output_service:unittests",
+      "//chromecast/media/audio/net:audio_socket_service_unittests",
+    ]
+  }
 
   if (is_android) {
     deps += [

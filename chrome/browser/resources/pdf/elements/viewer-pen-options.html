@@ -65,8 +65,8 @@
             on-pointerdown="blurOnPointerDown">
       </template>
       <cr-icon-button id="expand" iron-icon="cr:expand-more" tabindex="3"
-          on-click="toggleExpanded_" aria-label$="[[strings.annotationExpand]]"
-          title$="[[strings.annotationExpand]]"></cr-icon-button>
+          on-click="toggleExpanded_" aria-label="$i18n{annotationExpand}"
+          title$="$i18n{annotationExpand}"></cr-icon-button>
     </div>
     <div id="separator"></div>
     <div id="sizes" on-change="sizeChanged_">
@@ -74,7 +74,7 @@
         <input type="radio" name="size" value="[[item.size]]"
             checked$="[[equal_(selectedSize, item.size)]]"
             tabindex="2" style="--item-size: [[item.size]]"
-            title$="{{lookup_(strings, item.name)}}"
+            title="[[lookup_(strings, item.name)]]"
             aria-label$="[[lookup_(strings, item.name)]]"
             on-pointerdown="blurOnPointerDown">
       </template>

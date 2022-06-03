@@ -31,7 +31,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sql_transaction_callback.h"
@@ -59,7 +59,7 @@ class SQLTransaction final : public ScriptWrappable,
   class OnProcessCallback : public GarbageCollected<OnProcessCallback> {
    public:
     virtual ~OnProcessCallback() = default;
-    virtual void Trace(blink::Visitor*) {}
+    virtual void Trace(Visitor*) const {}
     virtual bool OnProcess(SQLTransaction*) = 0;
 
    protected:
@@ -76,7 +76,7 @@ class SQLTransaction final : public ScriptWrappable,
     explicit OnProcessV8Impl(V8SQLTransactionCallback* callback)
         : callback_(callback) {}
 
-    void Trace(blink::Visitor*) override;
+    void Trace(Visitor*) const override;
     bool OnProcess(SQLTransaction*) override;
 
    private:
@@ -86,7 +86,7 @@ class SQLTransaction final : public ScriptWrappable,
   class OnSuccessCallback : public GarbageCollected<OnSuccessCallback> {
    public:
     virtual ~OnSuccessCallback() = default;
-    virtual void Trace(blink::Visitor*) {}
+    virtual void Trace(Visitor*) const {}
     virtual void OnSuccess() = 0;
 
    protected:
@@ -102,7 +102,7 @@ class SQLTransaction final : public ScriptWrappable,
 
     explicit OnSuccessV8Impl(V8VoidCallback* callback) : callback_(callback) {}
 
-    void Trace(blink::Visitor*) override;
+    void Trace(Visitor*) const override;
     void OnSuccess() override;
 
    private:
@@ -112,7 +112,7 @@ class SQLTransaction final : public ScriptWrappable,
   class OnErrorCallback : public GarbageCollected<OnErrorCallback> {
    public:
     virtual ~OnErrorCallback() = default;
-    virtual void Trace(blink::Visitor*) {}
+    virtual void Trace(Visitor*) const {}
     virtual bool OnError(SQLError*) = 0;
 
    protected:
@@ -128,7 +128,7 @@ class SQLTransaction final : public ScriptWrappable,
     explicit OnErrorV8Impl(V8SQLTransactionErrorCallback* callback)
         : callback_(callback) {}
 
-    void Trace(blink::Visitor*) override;
+    void Trace(Visitor*) const override;
     bool OnError(SQLError*) override;
 
    private:
@@ -147,7 +147,7 @@ class SQLTransaction final : public ScriptWrappable,
                  OnErrorCallback*,
                  bool read_only);
   ~SQLTransaction() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void PerformPendingCallback();
 
@@ -159,7 +159,7 @@ class SQLTransaction final : public ScriptWrappable,
   void executeSql(ScriptState*, const String& sql_statement, ExceptionState&);
   void executeSql(ScriptState*,
                   const String& sql_statement,
-                  const base::Optional<HeapVector<ScriptValue>>& arguments,
+                  const absl::optional<HeapVector<ScriptValue>>& arguments,
                   V8SQLStatementCallback*,
                   V8SQLStatementErrorCallback*,
                   ExceptionState&);

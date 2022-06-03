@@ -93,10 +93,6 @@
       <span>$i18n{noSearchResults}</span>
     </div>
     <div class="items-container" hidden="[[!shownExtensionsCount_]]">
-      <div id="checkup-container" hidden="[[!showCheckup_]]">
-        <extensions-checkup id="checkup" slot="view">
-        </extensions-checkup>
-      </div>
       <!-- Render only a few items first, to improve initial render time,
         then render the remaining items on a different frame. Value of 3
         was chosen by experimentation, and it is a good trade-off between

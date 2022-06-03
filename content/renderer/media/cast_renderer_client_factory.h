@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "media/base/renderer.h"
@@ -30,6 +29,11 @@ class CONTENT_EXPORT CastRendererClientFactory : public media::RendererFactory {
   CastRendererClientFactory(
       media::MediaLog* media_log,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
+
+  CastRendererClientFactory(const CastRendererClientFactory&) = delete;
+  CastRendererClientFactory& operator=(const CastRendererClientFactory&) =
+      delete;
+
   ~CastRendererClientFactory() override;
 
   std::unique_ptr<media::Renderer> CreateRenderer(
@@ -37,14 +41,12 @@ class CONTENT_EXPORT CastRendererClientFactory : public media::RendererFactory {
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       media::AudioRendererSink* audio_renderer_sink,
       media::VideoRendererSink* video_renderer_sink,
-      const media::RequestOverlayInfoCB& request_overlay_info_cb,
+      media::RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) override;
 
  private:
   media::MediaLog* media_log_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastRendererClientFactory);
 };
 
 }  // namespace content

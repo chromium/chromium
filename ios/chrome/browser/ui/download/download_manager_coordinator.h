@@ -11,7 +11,6 @@
 namespace web {
 class DownloadTask;
 }  // namespace web
-class WebStateList;
 
 @protocol ContainedPresenter;
 
@@ -28,9 +27,6 @@ class WebStateList;
 // Download Manager supports only one download task at a time. Set to null when
 // stop method is called.
 @property(nonatomic) web::DownloadTask* downloadTask;
-
-// Needed to observe web state closing. Set to null when stop method is called.
-@property(nonatomic) WebStateList* webStateList;
 
 // Controls the height of the bottom margin.
 @property(nonatomic) NSLayoutDimension* bottomMarginHeightAnchor;

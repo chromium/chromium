@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/macros.h"
 
 namespace remoting {
@@ -18,14 +17,14 @@ namespace protocol {
 
 class VideoFeedbackStub {
  public:
+  VideoFeedbackStub(const VideoFeedbackStub&) = delete;
+  VideoFeedbackStub& operator=(const VideoFeedbackStub&) = delete;
+
   virtual void ProcessVideoAck(std::unique_ptr<VideoAck> video_ack) = 0;
 
  protected:
   VideoFeedbackStub() {}
   virtual ~VideoFeedbackStub() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoFeedbackStub);
 };
 
 }  // namespace protocol

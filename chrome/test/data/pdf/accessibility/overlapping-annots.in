@@ -1,0 +1,71 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 612 792]
+  /CropBox [0 0 612 792]
+  /Count 1
+  /Kids [3 0 R]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 5 0 R
+  /Annots [6 0 R 7 0 R]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 12 Tf
+(Overlapping link text, some text after link texts.) Tj
+ET
+endstream
+endobj
+{{object 6 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [70 698 175 710]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.bing.com)
+  >>
+  /F 4
+>>
+endobj
+{{object 7 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /Rect [133 698 175 710]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.adobe.com)
+  >>
+  /F 4
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

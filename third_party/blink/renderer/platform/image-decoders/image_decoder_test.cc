@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include <memory>
+#include "build/build_config.h"
+#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,12 +41,13 @@ namespace blink {
 
 class TestImageDecoder : public ImageDecoder {
  public:
-  TestImageDecoder(
-      ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option)
+  explicit TestImageDecoder(
+      ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
+      size_t max_decoded_bytes = kNoDecodedImageByteLimit)
       : ImageDecoder(kAlphaNotPremultiplied,
                      high_bit_depth_decoding_option,
                      ColorBehavior::TransformToSRGB(),
-                     kNoDecodedImageByteLimit) {}
+                     max_decoded_bytes) {}
 
   TestImageDecoder() : TestImageDecoder(ImageDecoder::kDefaultBitDepth) {}
 
@@ -58,12 +61,12 @@ class TestImageDecoder : public ImageDecoder {
           FindRequiredPreviousFrame(i, known_opaque));
   }
 
-  void InitFrames(size_t num_frames,
+  void InitFrames(wtf_size_t num_frames,
                   unsigned width = 100,
                   unsigned height = 100) {
     SetSize(width, height);
     frame_buffer_cache_.resize(num_frames);
-    for (size_t i = 0; i < num_frames; ++i)
+    for (wtf_size_t i = 0; i < num_frames; ++i)
       frame_buffer_cache_[i].SetOriginalFrameRect(IntRect(0, 0, width, height));
   }
 
@@ -73,7 +76,7 @@ class TestImageDecoder : public ImageDecoder {
  private:
   bool image_is_high_bit_depth_ = false;
   void DecodeSize() override {}
-  void Decode(size_t index) override {}
+  void Decode(wtf_size_t index) override {}
 };
 
 TEST(ImageDecoderTest, sizeCalculationMayOverflow) {
@@ -280,7 +283,7 @@ TEST(ImageDecoderTest, clearCacheExceptFrameAll) {
 }
 
 TEST(ImageDecoderTest, clearCacheExceptFramePreverveClearExceptFrame) {
-  const size_t kNumFrames = 10;
+  const wtf_size_t kNumFrames = 10;
   std::unique_ptr<TestImageDecoder> decoder(
       std::make_unique<TestImageDecoder>());
   decoder->InitFrames(kNumFrames);
@@ -290,7 +293,7 @@ TEST(ImageDecoderTest, clearCacheExceptFramePreverveClearExceptFrame) {
 
   decoder->ResetRequiredPreviousFrames();
   decoder->ClearCacheExceptFrame(5);
-  for (size_t i = 0; i < kNumFrames; ++i) {
+  for (wtf_size_t i = 0; i < kNumFrames; ++i) {
     SCOPED_TRACE(testing::Message() << i);
     if (i == 5)
       EXPECT_EQ(ImageFrame::kFrameComplete, frame_buffers[i].GetStatus());
@@ -298,5 +301,93 @@ TEST(ImageDecoderTest, clearCacheExceptFramePreverveClearExceptFrame) {
       EXPECT_EQ(ImageFrame::kFrameEmpty, frame_buffers[i].GetStatus());
   }
 }
+
+#if defined(OS_FUCHSIA)
+
+TEST(ImageDecoderTest, decodedSizeLimitBoundary) {
+  constexpr unsigned kWidth = 100;
+  constexpr unsigned kHeight = 200;
+  constexpr unsigned kBitDepth = 4;
+  std::unique_ptr<TestImageDecoder> decoder(std::make_unique<TestImageDecoder>(
+      ImageDecoder::kDefaultBitDepth, (kWidth * kHeight * kBitDepth)));
+
+  // Smallest allowable size, should succeed.
+  EXPECT_TRUE(decoder->SetSize(1, 1));
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+
+  // At the limit, should succeed.
+  EXPECT_TRUE(decoder->SetSize(kWidth, kHeight));
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+
+  // Just over the limit, should fail.
+  EXPECT_TRUE(decoder->SetSize(kWidth + 1, kHeight));
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->Failed());
+}
+
+TEST(ImageDecoderTest, decodedSizeUnlimited) {
+  // Very large values for width and height should be OK.
+  constexpr unsigned kWidth = 10000;
+  constexpr unsigned kHeight = 10000;
+
+  std::unique_ptr<TestImageDecoder> decoder(std::make_unique<TestImageDecoder>(
+      ImageDecoder::kDefaultBitDepth, ImageDecoder::kNoDecodedImageByteLimit));
+  EXPECT_TRUE(decoder->SetSize(kWidth, kHeight));
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+#else
+
+// The limit is currently ignored on non-Fuchsia platforms (except for
+// JPEG, which would decode a down-sampled version).
+TEST(ImageDecoderTest, decodedSizeLimitIsIgnored) {
+  constexpr unsigned kWidth = 100;
+  constexpr unsigned kHeight = 200;
+  constexpr unsigned kBitDepth = 4;
+  std::unique_ptr<TestImageDecoder> decoder(std::make_unique<TestImageDecoder>(
+      ImageDecoder::kDefaultBitDepth, (kWidth * kHeight * kBitDepth)));
+
+  // Just over the limit. The limit should be ignored.
+  EXPECT_TRUE(decoder->SetSize(kWidth + 1, kHeight));
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+#endif  // defined(OS_FUCHSIA)
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
+  // The first 36 bytes of the Netflix AVIF test image
+  // Chimera-AV1-10bit-1280x720-2380kbps-100.avif. Since the major_brand is
+  // not "avif" or "avis", we must parse the compatible_brands to determine if
+  // this is an AVIF image.
+  constexpr uint8_t kData[] = {
+      // A File Type Box.
+      0x00, 0x00, 0x00, 0x1c,  // unsigned int(32) size; 0x1c = 28
+      'f', 't', 'y', 'p',      // unsigned int(32) type = boxtype;
+      'm', 'i', 'f', '1',      // unsigned int(32) major_brand;
+      0x00, 0x00, 0x00, 0x00,  // unsigned int(32) minor_version;
+      'm', 'i', 'f', '1',      // unsigned int(32) compatible_brands[];
+      'a', 'v', 'i', 'f',      //
+      'm', 'i', 'a', 'f',      //
+      // The beginning of a Media Data Box.
+      0x00, 0x00, 0xa4, 0x3a,  // unsigned int(32) size;
+      'm', 'd', 'a', 't'       // unsigned int(32) type = boxtype;
+  };
+
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(kData, 8);
+  EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+  EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
+  buffer->Append<size_t>(kData + 8, 8);
+  EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+  EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
+  buffer->Append<size_t>(kData + 16, sizeof(kData) - 16);
+  EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
+  EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), "image/avif");
+}
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
 }  // namespace blink

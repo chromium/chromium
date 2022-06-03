@@ -10,7 +10,6 @@ var default_content_settings = {
   "cookies": "session_only",
   "images": "allow",
   "javascript": "block",
-  "plugins": "allow",
   "popups": "block",
   "location": "ask",
   "notifications": "ask",
@@ -18,24 +17,22 @@ var default_content_settings = {
   "mouselock": "ask",
   "microphone": "ask",
   "camera": "ask",
-  "unsandboxedPlugins": "ask",
   "automaticDownloads": "ask"
 };
 
 var settings = {
-  "cookies": "block",
-  "images": "allow",
-  "javascript": "block",
-  "plugins": "detect_important_content",
-  "popups": "allow",
-  "location": "block",
-  "notifications": "block",
-  "fullscreen": "block",  // Should be ignored.
-  "mouselock": "block",  // Should be ignored.
-  "microphone": "block",
-  "camera": "block",
-  "unsandboxedPlugins": "block",
-  "automaticDownloads": "block"
+  'cookies': 'block',
+  'images': 'allow',
+  'javascript': 'block',
+  'popups': 'allow',
+  'location': 'block',
+  'notifications': 'block',
+  'fullscreen': 'block',  // Should be ignored.
+  'mouselock': 'block',   // Should be ignored.
+  'plugins': 'block',     // Should be ignored.
+  'microphone': 'block',
+  'camera': 'block',
+  'automaticDownloads': 'block'
 };
 
 // List of settings that are expected to return different values than were
@@ -44,8 +41,9 @@ var settings = {
 // omitted from this list is expected to read back whatever was written.
 var deprecatedSettingsExpectations = {
   // Due to deprecation, these should be "allow", regardless of the setting.
-  "fullscreen": "allow",
-  "mouselock": "allow"
+  'fullscreen': 'allow',
+  'mouselock': 'allow',
+  'plugins': 'block'
 };
 
 Object.prototype.forEach = function(f) {
@@ -102,7 +100,7 @@ chrome.test.runTests([
     cs.cookies.get({
       'primaryUrl': 'moo'
     }, chrome.test.callbackFail("The URL \"moo\" is invalid."));
-    cs.plugins.set({
+    cs.javascript.set({
       'primaryPattern': 'http://example.com/*',
       'secondaryPattern': 'http://example.com/path',
       'setting': 'block'
@@ -122,5 +120,31 @@ chrome.test.runTests([
       caught = true;
     }
     chrome.test.assertTrue(caught);
+  },
+  function testPluginsApi_Set() {
+    cs['plugins'].set(
+        {
+          'primaryPattern': 'https://*.google.com:443/*',
+          'secondaryPattern': '<all_urls>',
+          'setting': 'allow'
+        },
+        () => {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+  },
+  function testPluginsApi_Get() {
+    cs['plugins'].get(
+        {'primaryUrl': 'https://drive.google.com:443/*'}, (value) => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq({setting: 'block'}, value);
+          chrome.test.succeed();
+        });
+  },
+  function testPluginsApi_Clear() {
+    cs['plugins'].clear({}, () => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
   }
 ]);

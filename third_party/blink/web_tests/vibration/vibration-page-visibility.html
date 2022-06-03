@@ -3,6 +3,7 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="../resources/user-gesture-utils.js"></script>
+<script src="../resources/visibility.js"></script>
 <script src="vibration-utils.js"></script>
 <script>
 'use strict';
@@ -10,22 +11,38 @@
 var element = document.getElementById("test");
 simulateUserClick(element.offsetLeft + 2, element.offsetTop + 2);
 
-test(() => {
-  // Initially the page is hidden and no vibration can be started.
-  testRunner.setPageVisibility('hidden');
+var t = async_test('Vibration should not start and it should cancel when the page is hidden.');
+
+// Initially the page is hidden and no vibration can be started.
+function test1() {
+  assert_equals(document.visibilityState, 'hidden');
   assert_false(navigator.vibrate(1001));
   assert_array_equals(internals.pendingVibrationPattern(navigator), []);
   assert_false(internals.isVibrating(navigator));
 
-  // Once the page is visible a vibration can be started.
-  testRunner.setPageVisibility('visible');
+  setMainWindowHidden(false).then(() => { t.step(test2); });
+}
+
+// Once the page is visible a vibration can be started.
+function test2() {
+  assert_equals(document.visibilityState, 'visible');
   assert_true(navigator.vibrate(1002));
   assert_array_equals(internals.pendingVibrationPattern(navigator), [1002]);
   assert_true(internals.isVibrating(navigator));
 
-  // When the page is hidden again the vibration is cancelled.
-  testRunner.setPageVisibility('hidden');
+  setMainWindowHidden(true).then(() => { t.step(test3); });
+}
+
+function test3() {
+  assert_equals(document.visibilityState, 'hidden');
   assert_array_equals(internals.pendingVibrationPattern(navigator), []);
   assert_false(internals.isVibrating(navigator));
-}, 'Vibration should not start and it should cancel when the page is hidden.');
+
+  t.done();
+}
+
+t.step(() => {
+  setMainWindowHidden(true).then(test1);
+});
+
 </script>

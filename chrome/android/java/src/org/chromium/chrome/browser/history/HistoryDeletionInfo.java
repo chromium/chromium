@@ -45,26 +45,10 @@ public class HistoryDeletionInfo {
         return HistoryDeletionInfoJni.get().isTimeRangeForAllTime(mHistoryDeletionInfoPtr);
     }
 
-    /**
-     * @return The beginning of the time range if the time range is valid.
-     */
-    public long getTimeRangeBegin() {
-        return HistoryDeletionInfoJni.get().getTimeRangeBegin(mHistoryDeletionInfoPtr);
-    }
-
-    /**
-     * @return The end of the time range if the time range is valid.
-     */
-    public long getTimeRangeEnd() {
-        return HistoryDeletionInfoJni.get().getTimeRangeBegin(mHistoryDeletionInfoPtr);
-    }
-
     @NativeMethods
     interface Natives {
         String[] getDeletedURLs(long historyDeletionInfoPtr);
         boolean isTimeRangeValid(long historyDeletionInfoPtr);
         boolean isTimeRangeForAllTime(long historyDeletionInfoPtr);
-        long getTimeRangeBegin(long historyDeletionInfoPtr);
-        long getTimeRangeEnd(long historyDeletionInfoPtr);
     }
 }

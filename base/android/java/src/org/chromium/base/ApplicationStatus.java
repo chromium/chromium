@@ -9,7 +9,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
-import android.view.ViewTreeObserver;
+import android.view.Window;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
@@ -19,10 +19,17 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.BuildConfig;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,9 +38,14 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Provides information about the current activity's status, and a way
  * to register / unregister listeners for state changes.
+ * TODO(https://crbug.com/470582): ApplicationStatus will not work on WebView/WebLayer, and
+ * should be moved out of base and into //chrome. It should not be relied upon for //components.
  */
 @JNINamespace("base::android")
 public class ApplicationStatus {
+    private static final String TOOLBAR_CALLBACK_WRAPPER_CLASS =
+            "androidx.appcompat.app.ToolbarActionBar$ToolbarCallbackWrapper";
+
     private static class ActivityInfo {
         private int mStatus = ActivityState.DESTROYED;
         private ObserverList<ActivityStateListener> mListeners = new ObserverList<>();
@@ -84,22 +96,19 @@ public class ApplicationStatus {
     /**
      * A list of observers to be notified when any {@link Activity} has a state change.
      */
-    private static final ObserverList<ActivityStateListener> sGeneralActivityStateListeners =
-            new ObserverList<>();
+    private static ObserverList<ActivityStateListener> sGeneralActivityStateListeners;
 
     /**
      * A list of observers to be notified when the visibility state of this {@link Application}
      * changes.  See {@link #getStateForApplication()}.
      */
-    private static final ObserverList<ApplicationStateListener> sApplicationStateListeners =
-            new ObserverList<>();
+    private static ObserverList<ApplicationStateListener> sApplicationStateListeners;
 
     /**
      * A list of observers to be notified when the window focus changes.
      * See {@link #registerWindowFocusChangedListener}.
      */
-    private static final ObserverList<WindowFocusChangedListener> sWindowFocusListeners =
-            new ObserverList<>();
+    private static ObserverList<WindowFocusChangedListener> sWindowFocusListeners;
 
     /**
      * Interface to be implemented by listeners.
@@ -145,6 +154,7 @@ public class ApplicationStatus {
     @MainThread
     public static void registerWindowFocusChangedListener(WindowFocusChangedListener listener) {
         assert isInitialized();
+        if (sWindowFocusListeners == null) sWindowFocusListeners = new ObserverList<>();
         sWindowFocusListeners.addObserver(listener);
     }
 
@@ -154,27 +164,58 @@ public class ApplicationStatus {
      */
     @MainThread
     public static void unregisterWindowFocusChangedListener(WindowFocusChangedListener listener) {
+        if (sWindowFocusListeners == null) return;
         sWindowFocusListeners.removeObserver(listener);
     }
 
     /**
-     * Monitors activity focus changes as a ViewTreeObserver.
+     * Intercepts calls to an existing Window.Callback. Most invocations are passed on directly
+     * to the composed Window.Callback but enables intercepting/manipulating others.
      *
      * This is used to relay window focus changes throughout the app and remedy a bug in the
      * appcompat library.
      */
-    private static class WindowFocusObserver
-            implements ViewTreeObserver.OnWindowFocusChangeListener {
+    @VisibleForTesting
+    static class WindowCallbackProxy implements InvocationHandler {
+        private final Window.Callback mCallback;
         private final Activity mActivity;
 
-        public WindowFocusObserver(Activity activity) {
+        public WindowCallbackProxy(Activity activity, Window.Callback callback) {
+            mCallback = callback;
             mActivity = activity;
         }
 
         @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (method.getName().equals("onWindowFocusChanged") && args.length == 1
+                    && args[0] instanceof Boolean) {
+                onWindowFocusChanged((boolean) args[0]);
+                return null;
+            } else {
+                try {
+                    return method.invoke(mCallback, args);
+                } catch (InvocationTargetException e) {
+                    // Special-case for when a method is not defined on the underlying
+                    // Window.Callback object. Because we're using a Proxy to forward all method
+                    // calls, this breaks the Android framework's handling for apps built against
+                    // an older SDK. The framework expects an AbstractMethodError but due to
+                    // reflection it becomes wrapped inside an InvocationTargetException. Undo the
+                    // wrapping to signal the framework accordingly.
+                    if (e.getCause() instanceof AbstractMethodError) {
+                        throw e.getCause();
+                    }
+                    throw e;
+                }
+            }
+        }
+
         public void onWindowFocusChanged(boolean hasFocus) {
-            for (WindowFocusChangedListener listener : sWindowFocusListeners) {
-                listener.onWindowFocusChanged(mActivity, hasFocus);
+            mCallback.onWindowFocusChanged(hasFocus);
+
+            if (sWindowFocusListeners != null) {
+                for (WindowFocusChangedListener listener : sWindowFocusListeners) {
+                    listener.onWindowFocusChanged(mActivity, hasFocus);
+                }
             }
         }
     }
@@ -216,41 +257,100 @@ public class ApplicationStatus {
             @Override
             public void onActivityCreated(final Activity activity, Bundle savedInstanceState) {
                 onStateChange(activity, ActivityState.CREATED);
-                activity.getWindow()
-                        .getDecorView()
-                        .getViewTreeObserver()
-                        .addOnWindowFocusChangeListener(new WindowFocusObserver(activity));
+                Window.Callback callback = activity.getWindow().getCallback();
+                activity.getWindow().setCallback(createWindowCallbackProxy(activity, callback));
             }
 
             @Override
             public void onActivityDestroyed(Activity activity) {
                 onStateChange(activity, ActivityState.DESTROYED);
+                checkCallback(activity);
             }
 
             @Override
             public void onActivityPaused(Activity activity) {
                 onStateChange(activity, ActivityState.PAUSED);
+                checkCallback(activity);
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
                 onStateChange(activity, ActivityState.RESUMED);
+                checkCallback(activity);
             }
 
             @Override
             public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+                checkCallback(activity);
             }
 
             @Override
             public void onActivityStarted(Activity activity) {
                 onStateChange(activity, ActivityState.STARTED);
+                checkCallback(activity);
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
                 onStateChange(activity, ActivityState.STOPPED);
+                checkCallback(activity);
+            }
+
+            private void checkCallback(Activity activity) {
+                if (BuildConfig.ENABLE_ASSERTS) {
+                    assert reachesWindowCallback(activity.getWindow().getCallback());
+                }
             }
         });
+    }
+
+    @VisibleForTesting
+    static Window.Callback createWindowCallbackProxy(Activity activity, Window.Callback callback) {
+        return (Window.Callback) Proxy.newProxyInstance(Window.Callback.class.getClassLoader(),
+                new Class[] {Window.Callback.class},
+                new ApplicationStatus.WindowCallbackProxy(activity, callback));
+    }
+
+    /**
+     * Tries to trace down to our WindowCallbackProxy from the given callback.
+     * Since the callback can be overwritten by embedder code we try to ensure
+     * that there at least seem to be a reference back to our callback by
+     * checking the declared fields of the given callback using reflection.
+     */
+    @VisibleForTesting
+    static boolean reachesWindowCallback(@Nullable Window.Callback callback) {
+        if (callback == null) return false;
+        if (callback.getClass().getName().equals(TOOLBAR_CALLBACK_WRAPPER_CLASS)) {
+            // We're actually not going to get called, see AndroidX report here:
+            // https://issuetracker.google.com/issues/155165145.
+            // But this was accepted in the old code as well so mimic that until
+            // AndroidX is fixed and updated.
+            return true;
+        }
+        if (Proxy.isProxyClass(callback.getClass())) {
+            return Proxy.getInvocationHandler(callback)
+                           instanceof ApplicationStatus.WindowCallbackProxy;
+        }
+        for (Class<?> c = callback.getClass(); c != Object.class; c = c.getSuperclass()) {
+            for (Field f : c.getDeclaredFields()) {
+                if (f.getType().isAssignableFrom(Window.Callback.class)) {
+                    boolean isAccessible = f.isAccessible();
+                    f.setAccessible(true);
+                    Window.Callback fieldCb;
+                    try {
+                        fieldCb = (Window.Callback) f.get(callback);
+                    } catch (IllegalAccessException ex) {
+                        continue;
+                    } finally {
+                        f.setAccessible(isAccessible);
+                    }
+                    if (reachesWindowCallback(fieldCb)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -298,12 +398,14 @@ public class ApplicationStatus {
 
         // Notify all state observers that are listening globally for all activity state
         // changes.
-        for (ActivityStateListener listener : sGeneralActivityStateListeners) {
-            listener.onActivityStateChange(activity, newState);
+        if (sGeneralActivityStateListeners != null) {
+            for (ActivityStateListener listener : sGeneralActivityStateListeners) {
+                listener.onActivityStateChange(activity, newState);
+            }
         }
 
         int applicationState = getStateForApplication();
-        if (applicationState != oldApplicationState) {
+        if (applicationState != oldApplicationState && sApplicationStateListeners != null) {
             for (ApplicationStateListener listener : sApplicationStateListeners) {
                 listener.onApplicationStateChange(applicationState);
             }
@@ -435,6 +537,9 @@ public class ApplicationStatus {
     @MainThread
     public static void registerStateListenerForAllActivities(ActivityStateListener listener) {
         assert isInitialized();
+        if (sGeneralActivityStateListeners == null) {
+            sGeneralActivityStateListeners = new ObserverList<>();
+        }
         sGeneralActivityStateListeners.addObserver(listener);
     }
 
@@ -464,7 +569,9 @@ public class ApplicationStatus {
      */
     @MainThread
     public static void unregisterActivityStateListener(ActivityStateListener listener) {
-        sGeneralActivityStateListeners.removeObserver(listener);
+        if (sGeneralActivityStateListeners != null) {
+            sGeneralActivityStateListeners.removeObserver(listener);
+        }
 
         // Loop through all observer lists for all activities and remove the listener.
         synchronized (sActivityInfo) {
@@ -480,6 +587,9 @@ public class ApplicationStatus {
      */
     @MainThread
     public static void registerApplicationStateListener(ApplicationStateListener listener) {
+        if (sApplicationStateListeners == null) {
+            sApplicationStateListeners = new ObserverList<>();
+        }
         sApplicationStateListeners.addObserver(listener);
     }
 
@@ -489,6 +599,7 @@ public class ApplicationStatus {
      */
     @MainThread
     public static void unregisterApplicationStateListener(ApplicationStateListener listener) {
+        if (sApplicationStateListeners == null) return;
         sApplicationStateListeners.removeObserver(listener);
     }
 
@@ -500,13 +611,31 @@ public class ApplicationStatus {
     @MainThread
     public static void destroyForJUnitTests() {
         synchronized (sActivityInfo) {
-            sApplicationStateListeners.clear();
-            sGeneralActivityStateListeners.clear();
+            if (sApplicationStateListeners != null) sApplicationStateListeners.clear();
+            if (sGeneralActivityStateListeners != null) sGeneralActivityStateListeners.clear();
             sActivityInfo.clear();
-            sWindowFocusListeners.clear();
+            if (sWindowFocusListeners != null) sWindowFocusListeners.clear();
             sCurrentApplicationState = ApplicationState.UNKNOWN;
             sActivity = null;
             sNativeApplicationStateListener = null;
+        }
+    }
+
+    /**
+     * Mark all Activities as destroyed to avoid side-effects in future test.
+     */
+    @MainThread
+    public static void resetActivitiesForInstrumentationTests() {
+        assert ThreadUtils.runningOnUiThread();
+
+        synchronized (sActivityInfo) {
+            // Copy the set to avoid concurrent modifications to the underlying set.
+            for (Activity activity : new HashSet<>(sActivityInfo.keySet())) {
+                assert activity.getApplication()
+                        == null : "Real activities that are launched should be closed by test code "
+                                  + "and not rely on this cleanup of mocks.";
+                onStateChangeForTesting(activity, ActivityState.DESTROYED);
+            }
         }
     }
 

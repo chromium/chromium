@@ -1,7 +1,7 @@
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Dummy benchmarks for the bisect FYI integration tests.
+"""Dummy benchmarks for the bisect FYI integration tests and other tests.
 
 The number they produce aren't meant to represent any actual performance
 data of the browser. For more information about these dummy benchmarks,
@@ -34,7 +34,9 @@ class _DummyBenchmark(perf_benchmark.PerfBenchmark):
   page_set = dummy_story_set.DummyStorySet
 
 
-@benchmark.Info(emails=['crouleau@chromium.org'], component='Test>Telemetry')
+@benchmark.Info(
+    emails=['johnchen@chromium.org', 'wenbinzhang@google.com'],
+    component='Test>Telemetry')
 class DummyBenchmarkOne(_DummyBenchmark):
   """A low noise benchmark with mean=100 & std=1."""
 
@@ -46,7 +48,9 @@ class DummyBenchmarkOne(_DummyBenchmark):
     return 'dummy_benchmark.stable_benchmark_1'
 
 
-@benchmark.Info(emails=['crouleau@chromium.org'], component='Test>Telemetry')
+@benchmark.Info(
+    emails=['johnchen@chromium.org', 'wenbinzhang@google.com'],
+    component='Test>Telemetry')
 class DummyBenchmarkTwo(_DummyBenchmark):
   """A noisy benchmark with mean=50 & std=20."""
 

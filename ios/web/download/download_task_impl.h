@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/web/public/download/download_task.h"
@@ -45,13 +47,12 @@ class DownloadTaskImpl : public DownloadTask {
 
   // Constructs a new DownloadTaskImpl objects. |web_state|, |identifier| and
   // |delegate| must be valid.
-  DownloadTaskImpl(const WebState* web_state,
+  DownloadTaskImpl(WebState* web_state,
                    const GURL& original_url,
                    NSString* http_method,
                    const std::string& content_disposition,
                    int64_t total_bytes,
                    const std::string& mime_type,
-                   ui::PageTransition page_transition,
                    NSString* identifier,
                    Delegate* delegate);
 
@@ -59,10 +60,12 @@ class DownloadTaskImpl : public DownloadTask {
   void ShutDown();
 
   // DownloadTask overrides:
+  WebState* GetWebState() override;
   DownloadTask::State GetState() const override;
-  void Start(std::unique_ptr<net::URLFetcherResponseWriter> writer) override;
+  void Start(const base::FilePath& path, Destination destination_hint) override;
   void Cancel() override;
-  net::URLFetcherResponseWriter* GetResponseWriter() const override;
+  NSData* GetResponseData() const override;
+  const base::FilePath& GetResponsePath() const override;
   NSString* GetIndentifier() const override;
   const GURL& GetOriginalUrl() const override;
   NSString* GetHttpMethod() const override;
@@ -75,27 +78,38 @@ class DownloadTaskImpl : public DownloadTask {
   std::string GetContentDisposition() const override;
   std::string GetOriginalMimeType() const override;
   std::string GetMimeType() const override;
-  ui::PageTransition GetTransitionType() const override;
-  base::string16 GetSuggestedFilename() const override;
+  std::u16string GetSuggestedFilename() const override;
   bool HasPerformedBackgroundDownload() const override;
   void AddObserver(DownloadTaskObserver* observer) override;
   void RemoveObserver(DownloadTaskObserver* observer) override;
+
+  DownloadTaskImpl(const DownloadTaskImpl&) = delete;
+  DownloadTaskImpl& operator=(const DownloadTaskImpl&) = delete;
+
   ~DownloadTaskImpl() override;
 
  private:
+  // Called once the net::URLFetcherResponseWriter created in
+  // Start() has been initialised. The download can be started
+  // unless the initialisation has failed (as reported by the
+  // |writer_initialization_status| result).
+  void OnWriterInitialized(
+      std::unique_ptr<net::URLFetcherResponseWriter> writer,
+      int writer_initialization_status);
+
   // Creates background NSURLSession with given |identifier| and |cookies|.
   NSURLSession* CreateSession(NSString* identifier,
                               NSArray<NSHTTPCookie*>* cookies);
 
   // Asynchronously returns cookies for WebState associated with this task.
   // Must be called on UI thread. The callback will be invoked on the UI thread.
-  void GetCookies(base::Callback<void(NSArray<NSHTTPCookie*>*)> callback);
+  void GetCookies(base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
 
   // Asynchronously returns cookies for |context_getter|. Must
   // be called on IO thread. The callback will be invoked on the UI thread.
   static void GetCookiesFromContextGetter(
       scoped_refptr<net::URLRequestContextGetter> context_getter,
-      base::Callback<void(NSArray<NSHTTPCookie*>*)> callback);
+      base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
 
   // Starts the download with given cookies.
   void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);
@@ -130,11 +144,10 @@ class DownloadTaskImpl : public DownloadTask {
   std::string content_disposition_;
   std::string original_mime_type_;
   std::string mime_type_;
-  ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
 
-  const WebState* web_state_ = nullptr;
+  WebState* web_state_ = nullptr;
   Delegate* delegate_ = nullptr;
   NSURLSession* session_ = nil;
   NSURLSessionTask* session_task_ = nil;
@@ -142,9 +155,7 @@ class DownloadTaskImpl : public DownloadTask {
   // Observes UIApplicationWillResignActiveNotification notifications.
   id<NSObject> observer_ = nil;
 
-  base::WeakPtrFactory<DownloadTaskImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskImpl);
+  base::WeakPtrFactory<DownloadTaskImpl> weak_factory_{this};
 };
 
 }  // namespace web

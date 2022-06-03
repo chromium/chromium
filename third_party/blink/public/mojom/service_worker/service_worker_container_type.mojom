@@ -1,0 +1,28 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// ServiceWorkerContainer is the spec concept that is exposed to a service
+// worker client or a service worker itself, and ServiceWorkerContainerHost is
+// the host of the container.
+// https://w3c.github.io/ServiceWorker/#serviceworkercontainer-interface
+//
+// This enum identifies which context ServiceWorkerContainer(Host) works for.
+// Currently, only windows support web-exposed ServiceWorkerContainer
+// (see https://crbug.com/371690), but ServiceWorkerContainerHost is created for
+// them all to provide service worker functionalities. Therefore, this enum also
+// defines the types for workers that don't support ServiceWorkerContainer yet.
+// See header comments on ServiceWorkerContainerHost for details.
+enum ServiceWorkerContainerType {
+  kUnknown,
+
+  // For service worker clients.
+  kForWindow,
+  kForDedicatedWorker,
+  kForSharedWorker,
+
+  // For service workers.
+  kForServiceWorker,
+};

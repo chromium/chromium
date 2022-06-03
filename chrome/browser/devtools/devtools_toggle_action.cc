@@ -4,11 +4,12 @@
 
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 
-DevToolsToggleAction::RevealParams::RevealParams(const base::string16& url,
+#include <memory>
+
+DevToolsToggleAction::RevealParams::RevealParams(const std::u16string& url,
                                                  size_t line_number,
                                                  size_t column_number)
-    : url(url), line_number(line_number), column_number(column_number) {
-}
+    : url(url), line_number(line_number), column_number(column_number) {}
 
 DevToolsToggleAction::RevealParams::~RevealParams() {
 }
@@ -28,7 +29,7 @@ DevToolsToggleAction::DevToolsToggleAction(const DevToolsToggleAction& rhs)
 void DevToolsToggleAction::operator=(const DevToolsToggleAction& rhs) {
   type_ = rhs.type_;
   if (rhs.params_.get())
-    params_.reset(new RevealParams(*rhs.params_));
+    params_ = std::make_unique<RevealParams>(*rhs.params_);
 }
 
 DevToolsToggleAction::~DevToolsToggleAction() {
@@ -65,10 +66,9 @@ DevToolsToggleAction DevToolsToggleAction::Toggle() {
 }
 
 // static
-DevToolsToggleAction DevToolsToggleAction::Reveal(
-    const base::string16& url,
-    size_t line_number,
-    size_t column_number) {
+DevToolsToggleAction DevToolsToggleAction::Reveal(const std::u16string& url,
+                                                  size_t line_number,
+                                                  size_t column_number) {
   return DevToolsToggleAction(
       new RevealParams(url, line_number, column_number));
 }

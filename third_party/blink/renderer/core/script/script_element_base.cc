@@ -19,10 +19,9 @@ ScriptLoader* ScriptLoaderFromElement(Element* element) {
   return script_loader;
 }
 
-ScriptLoader* ScriptElementBase::InitializeScriptLoader(bool parser_inserted,
-                                                        bool already_started) {
-  return MakeGarbageCollected<ScriptLoader>(this, parser_inserted,
-                                            already_started);
+ScriptLoader* ScriptElementBase::InitializeScriptLoader(
+    CreateElementFlags flags) {
+  return MakeGarbageCollected<ScriptLoader>(this, flags);
 }
 
 }  // namespace blink

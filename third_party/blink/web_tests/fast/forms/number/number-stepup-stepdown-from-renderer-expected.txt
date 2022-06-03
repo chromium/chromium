@@ -1,9 +1,9 @@
-CONSOLE WARNING: line 24: The specified value "foo" is not a valid number. The value must match to the following regular expression: -?(\d+|\d+\.\d+|\.\d+)([eE][-+]?\d+)?
-CONSOLE WARNING: line 24: The specified value "foo" is not a valid number. The value must match to the following regular expression: -?(\d+|\d+\.\d+|\.\d+)([eE][-+]?\d+)?
-CONSOLE WARNING: line 24: The specified value "foo" is not a valid number. The value must match to the following regular expression: -?(\d+|\d+\.\d+|\.\d+)([eE][-+]?\d+)?
-CONSOLE WARNING: line 24: The specified value "foo" is not a valid number. The value must match to the following regular expression: -?(\d+|\d+\.\d+|\.\d+)([eE][-+]?\d+)?
-CONSOLE WARNING: line 24: The specified value "foo" is not a valid number. The value must match to the following regular expression: -?(\d+|\d+\.\d+|\.\d+)([eE][-+]?\d+)?
-CONSOLE WARNING: line 24: The specified value "foo" is not a valid number. The value must match to the following regular expression: -?(\d+|\d+\.\d+|\.\d+)([eE][-+]?\d+)?
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
 Check stepping-up and -down for number input from renderer.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

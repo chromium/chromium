@@ -46,7 +46,6 @@ class ProgramCache;
 class BufferManager;
 class ImageManager;
 class RenderbufferManager;
-class PathManager;
 class ProgramManager;
 class SamplerManager;
 class ShaderManager;
@@ -78,6 +77,9 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
                PassthroughDiscardableManager* passthrough_discardable_manager,
                SharedImageManager* shared_image_manager);
 
+  ContextGroup(const ContextGroup&) = delete;
+  ContextGroup& operator=(const ContextGroup&) = delete;
+
   // This should only be called by a DecoderContext. This must be paired with a
   // call to destroy if it succeeds.
   gpu::ContextResult Initialize(DecoderContext* decoder,
@@ -89,6 +91,10 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   void Destroy(DecoderContext* decoder, bool have_context);
 
   MailboxManager* mailbox_manager() const { return mailbox_manager_; }
+
+  gpu::SharedImageManager* shared_image_manager() const {
+    return shared_image_manager_;
+  }
 
   MemoryTracker* memory_tracker() const { return memory_tracker_.get(); }
 
@@ -179,8 +185,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   TextureManager* texture_manager() const {
     return texture_manager_.get();
   }
-
-  PathManager* path_manager() const { return path_manager_.get(); }
 
   ProgramManager* program_manager() const {
     return program_manager_.get();
@@ -301,8 +305,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
 
   std::unique_ptr<TextureManager> texture_manager_;
 
-  std::unique_ptr<PathManager> path_manager_;
-
   std::unique_ptr<ProgramManager> program_manager_;
 
   std::unique_ptr<ShaderManager> shader_manager_;
@@ -336,7 +338,7 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContextGroup);
+  gpu::SharedImageManager* shared_image_manager_ = nullptr;
 };
 
 }  // namespace gles2

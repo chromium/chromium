@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Images Module Level 3: image-orientation: from-image with will-change: transform and no border. Blink treats this as 'directly composited' and rasterizes the image at its intrinsic size</title>
+<style>
+    body {
+        overflow: hidden;
+        image-orientation: from-image;
+    }
+    img {
+        will-change: transform;
+    }
+    .orientation-normal {
+        width:50px;
+        height:25px;
+    }
+    .orientation-swapped {
+        width:25px;
+        height:50px;
+    }
+    div {
+        display: inline-block;
+        width: 100px;
+        vertical-align: top;
+    }
+</style>
+</head>
+<body>
+    <!-- The images should rotate respecting their EXIF orientation because
+       image-orientation: from-image is specified. -->
+    <div>
+        <img class="orientation-normal"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-1-ul.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-normal"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-2-ur.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-normal"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-3-lr.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-normal"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-4-lol.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-swapped"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-5-lu.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-swapped"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-6-ru.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-swapped"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-7-rl.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-swapped"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-8-llo.jpg"/>
+
+    </div>
+    <div>
+        <img class="orientation-normal"
+             src="../external/wpt/css/css-images/image-orientation/support/exif-orientation-9-u.jpg"/>
+
+    </div>
+</body>
+</html>

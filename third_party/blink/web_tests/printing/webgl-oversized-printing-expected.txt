@@ -1,5 +1,5 @@
+PASS Printed without crashing.
 PASS successfullyParsed is true
 
 TEST COMPLETE
 
-PASS Printed without crashing.

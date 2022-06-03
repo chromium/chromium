@@ -18,13 +18,17 @@ class BackgroundFetchManager;
 class ServiceWorkerRegistrationBackgroundFetch final
     : public GarbageCollected<ServiceWorkerRegistrationBackgroundFetch>,
       public Supplement<ServiceWorkerRegistration> {
-  USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationBackgroundFetch);
-
  public:
   static const char kSupplementName[];
 
   explicit ServiceWorkerRegistrationBackgroundFetch(
       ServiceWorkerRegistration* registration);
+
+  ServiceWorkerRegistrationBackgroundFetch(
+      const ServiceWorkerRegistrationBackgroundFetch&) = delete;
+  ServiceWorkerRegistrationBackgroundFetch& operator=(
+      const ServiceWorkerRegistrationBackgroundFetch&) = delete;
+
   virtual ~ServiceWorkerRegistrationBackgroundFetch();
 
   static ServiceWorkerRegistrationBackgroundFetch& From(
@@ -34,13 +38,10 @@ class ServiceWorkerRegistrationBackgroundFetch final
       ServiceWorkerRegistration& registration);
   BackgroundFetchManager* backgroundFetch();
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<BackgroundFetchManager> background_fetch_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationBackgroundFetch);
 };
 
 }  // namespace blink

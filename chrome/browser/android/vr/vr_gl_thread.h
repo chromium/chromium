@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/android/java_handler_thread.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/browser_renderer_factory.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
 #include "chrome/browser/android/vr/gvr_keyboard_delegate.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/vr/text_input_delegate.h"
 #include "chrome/browser/vr/ui_browser_interface.h"
 #include "chrome/browser/vr/ui_test_input.h"
-#include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
 
 namespace base {
 class Version;
@@ -58,6 +56,9 @@ class VrGLThread : public base::android::JavaHandlerThread,
       base::WaitableEvent* gl_surface_created_event,
       base::OnceCallback<gfx::AcceleratedWidget()> surface_callback);
 
+  VrGLThread(const VrGLThread&) = delete;
+  VrGLThread& operator=(const VrGLThread&) = delete;
+
   ~VrGLThread() override;
   base::WeakPtr<BrowserRenderer> GetBrowserRenderer();
   void SetInputConnection(VrInputConnection* input_connection);
@@ -67,7 +68,7 @@ class VrGLThread : public base::android::JavaHandlerThread,
                              gl::SurfaceTexture* texture) override;
   void ContentOverlaySurfaceCreated(jobject surface,
                                     gl::SurfaceTexture* texture) override;
-  void GvrDelegateReady(gvr::ViewerType viewer_type) override;
+  void GvrDelegateReady() override;
   void SendRequestPresentReply(device::mojom::XRSessionPtr) override;
   void DialogSurfaceCreated(jobject surface,
                             gl::SurfaceTexture* texture) override;
@@ -131,7 +132,7 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void SetSpeechRecognitionEnabled(bool enabled) override;
   void SetHasOrCanRequestRecordAudioPermission(
       bool has_or_can_request_record_audio) override;
-  void SetRecognitionResult(const base::string16& result) override;
+  void SetRecognitionResult(const std::u16string& result) override;
   void OnSpeechRecognitionStateChanged(int new_state) override;
   void SetOmniboxSuggestions(std::vector<OmniboxSuggestion> result) override;
   void OnAssetsLoaded(AssetsLoadStatus status,
@@ -150,7 +151,7 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void OnSwapContents(int new_content_id) override;
   void SetDialogLocation(float x, float y) override;
   void SetDialogFloating(bool floating) override;
-  void ShowPlatformToast(const base::string16& text) override;
+  void ShowPlatformToast(const std::u16string& text) override;
   void CancelPlatformToast() override;
   void OnContentBoundsChanged(int width, int height) override;
   void PerformKeyboardInputForTesting(
@@ -183,8 +184,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
 
   // This state is used for initializing the BrowserRenderer.
   std::unique_ptr<BrowserRendererFactory::Params> factory_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(VrGLThread);
 };
 
 }  // namespace vr

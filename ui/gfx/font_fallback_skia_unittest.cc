@@ -4,6 +4,7 @@
 
 #include "ui/gfx/font_fallback.h"
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ TEST(FontFallbackSkiaTest, FontFallback) {
   for (const auto* test : kFallbackFontTests) {
     Font base_font;
     Font fallback_font;
-    base::string16 text = base::WideToUTF16(test);
+    std::u16string text = base::WideToUTF16(test);
 
     if (!GetFallbackFont(base_font, kDefaultApplicationLocale, text,
                          &fallback_font)) {
@@ -54,7 +55,7 @@ TEST(FontFallbackSkiaTest, CJKLocaleFallback) {
   // common feature of written Chinese (hanzi), Japanese (kanji), and Korean
   // (hanja). The same text will be rendered using a different font based on
   // locale.
-  const base::string16 kCJKTest = base::WideToUTF16(L"\u8AA4\u904E\u9AA8");
+  const std::u16string kCJKTest = u"\u8AA4\u904E\u9AA8";
   Font base_font;
 
   Font fallback_font_zh_cn;

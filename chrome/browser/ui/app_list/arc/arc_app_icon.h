@@ -11,11 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+
+struct ArcAppIconDescriptor;
 
 namespace apps {
 class ArcIconOnceLoader;
@@ -45,36 +46,73 @@ class ArcAppIcon {
     // is loaded and added to |image|.
     virtual void OnIconUpdated(ArcAppIcon* icon) = 0;
 
+    // Invoked when failed to generate an icon.
+    virtual void OnIconFailed(ArcAppIcon* icon) {}
+
    protected:
     virtual ~Observer() {}
+  };
+
+  enum IconType {
+    kUncompressed,
+    kCompressed,
+    kAdaptive,
   };
 
   ArcAppIcon(content::BrowserContext* context,
              const std::string& app_id,
              int resource_size_in_dip,
              Observer* observer,
-             bool serve_compressed_icons = false);
-  ~ArcAppIcon();
+             IconType icon_type = IconType::kUncompressed);
+
+  ArcAppIcon(const ArcAppIcon&) = delete;
+  ArcAppIcon& operator=(const ArcAppIcon&) = delete;
+
+  virtual ~ArcAppIcon();
 
   // Starts loading the icon at every supported scale factor. The |observer_|
   // will be notified as progress is made. "Supported" is in the same sense as
-  // ui::GetSupportedScaleFactors().
-  void LoadSupportedScaleFactors();
+  // ui::GetSupportedResourceScaleFactors().
+  virtual void LoadSupportedScaleFactors();
 
   // Whether every supported scale factor was successfully loaded. "Supported"
-  // is in the same sense as ui::GetSupportedScaleFactors().
-  bool EverySupportedScaleFactorIsLoaded() const;
+  // is in the same sense as ui::GetSupportedResourceScaleFactors().
+  //
+  // For the adaptive icon, if there is a non-adaptive icon for some scale
+  // refactors, sets all scale factors as the non-adaptive icon, and copy
+  // the decode result from |foreground_image_skia_| to |image_skia_|.
+  bool EverySupportedScaleFactorIsLoaded();
 
   const std::string& app_id() const { return app_id_; }
-  // Valid if the |serve_compressed_icons_| is false.
+
+  bool is_adaptive_icon() const {
+    return is_adaptive_icons_.empty() ? true
+                                      : is_adaptive_icons_.begin()->second;
+  }
+
+  // Returns |image_skia_| and valid if the |icon_type_| is
+  // IconType::kUncompressed.
   const gfx::ImageSkia& image_skia() const {
-    DCHECK(!serve_compressed_icons_);
     return image_skia_;
   }
-  // Valid if the |serve_compressed_icons_| is true.
-  const std::map<ui::ScaleFactor, std::string>& compressed_images() const {
-    DCHECK(serve_compressed_icons_);
+  // Returns |compressed_images_| and valid if the |icon_type_| is
+  // IconType::kCompressed.
+  const std::map<ui::ResourceScaleFactor, std::string>& compressed_images()
+      const {
+    DCHECK_EQ(IconType::kCompressed, icon_type_);
     return compressed_images_;
+  }
+  // Returns |foreground_image_skia_| and valid if the |icon_type_| is
+  // IconType::kAdaptive.
+  const gfx::ImageSkia& foreground_image_skia() const {
+    DCHECK_EQ(IconType::kAdaptive, icon_type_);
+    return foreground_image_skia_;
+  }
+  // Returns |background_image_skia_| and valid if the |icon_type_| is
+  // IconType::kAdaptive.
+  const gfx::ImageSkia& background_image_skia() const {
+    DCHECK_EQ(IconType::kAdaptive, icon_type_);
+    return background_image_skia_;
   }
 
   // Disables async safe decoding requests when unit tests are executed. This is
@@ -90,13 +128,21 @@ class ArcAppIcon {
   static void DisableSafeDecodingForTesting();
   static bool IsSafeDecodingDisabledForTesting();
 
- private:
-  friend class ArcAppIconLoader;
-  friend class apps::ArcIconOnceLoader;
+ protected:
+  struct ReadResult {
+    ReadResult(bool error,
+               bool request_to_install,
+               ui::ResourceScaleFactor scale_factor,
+               bool resize_allowed,
+               std::vector<std::string> unsafe_icon_data);
+    ~ReadResult();
 
-  class Source;
-  class DecodeRequest;
-  struct ReadResult;
+    const bool error;
+    const bool request_to_install;
+    const ui::ResourceScaleFactor scale_factor;
+    const bool resize_allowed;
+    const std::vector<std::string> unsafe_icon_data;
+  };
 
   // Icon loading is performed in several steps. It is initiated by
   // LoadImageForScaleFactor request that specifies a required scale factor.
@@ -113,17 +159,90 @@ class ArcAppIcon {
   // install required resource from ARC side. ArcAppListPrefs notifies UI items
   // that new icon is available and corresponding item should invoke
   // LoadImageForScaleFactor again.
-  void LoadForScaleFactor(ui::ScaleFactor scale_factor);
+  virtual void LoadForScaleFactor(ui::ResourceScaleFactor scale_factor);
 
-  void MaybeRequestIcon(ui::ScaleFactor scale_factor);
-  static std::unique_ptr<ArcAppIcon::ReadResult> ReadOnFileThread(
-      ui::ScaleFactor scale_factor,
+  virtual void OnIconRead(std::unique_ptr<ArcAppIcon::ReadResult> read_result);
+
+ private:
+  friend class ArcAppIconLoader;
+  friend class apps::ArcIconOnceLoader;
+
+  class Source;
+  class DecodeRequest;
+
+  void MaybeRequestIcon(ui::ResourceScaleFactor scale_factor);
+  static std::unique_ptr<ArcAppIcon::ReadResult> ReadOnBackgroundThread(
+      ArcAppIcon::IconType icon_type,
+      ui::ResourceScaleFactor scale_factor,
+      const std::vector<base::FilePath>& paths,
+      const std::vector<base::FilePath>& default_app_paths);
+  static std::unique_ptr<ArcAppIcon::ReadResult> ReadSingleIconFile(
+      ui::ResourceScaleFactor scale_factor,
       const base::FilePath& path,
       const base::FilePath& default_app_path);
-  void OnIconRead(std::unique_ptr<ArcAppIcon::ReadResult> read_result);
-  void UpdateUncompressed(ui::ScaleFactor scale_factor, const SkBitmap& bitmap);
-  void UpdateCompressed(ui::ScaleFactor scale_factor, std::string data);
-  void DiscardDecodeRequest(DecodeRequest* request);
+
+  // For the adaptive icon, currently, there are 3 images returned from the ARC
+  // side:
+  // (1) Icon_png_data, the adaptive icon generated by the ARC side, for
+  // backward compatibility.
+  // (2) Foreground_icon_png_data, the foreground image for
+  // the adaptive icon. Some icons are not adaptive icons, and don’t have the
+  // background images, then the foreground image is the app icon.
+  // (3) Background_icon_png_data, the background image for the adaptive icon.
+  // Some icons are not adaptive icons, and don’t have the background images.
+  //
+  // There are a few scenarios for the adaptive icon feature:
+  // A. For the adaptive icon, the foreground image and the background image are
+  // merged by the Chromium side, and applied with the mask, to generate the
+  // adaptive icon.
+  // B. For the non adaptive icon, the Chromium side adds a white background to
+  // the foreground image, then applies the mask to generate the adaptive icon.
+  // C. For the migration scenario (from the adaptive icon feature disable to
+  // enable), since neither foreground images and background images present on
+  // the system, the Chromium side sends requests to the ARC side to load the
+  // foreground and background images. However, it might take a few seconds to
+  // get the images files, so for users, it has a long lag for the ARC icon
+  // loading. To resolve the ARC icon lag issue, the old icon_png_data on the
+  // system is used to generate the icon, the same as the previous
+  // implementation, and at the same time, sending the request to the ARC side
+  // to request the new foreground and background images.
+  //
+  // TODO(crbug.com/1083331): Remove the migration handling code, which reads
+  // the old icon_png_data, when the adaptive icon feature is enabled in the
+  // stable release, and the adaptive icon flag is removed.
+  static std::unique_ptr<ArcAppIcon::ReadResult> ReadAdaptiveIconFiles(
+      ui::ResourceScaleFactor scale_factor,
+      const std::vector<base::FilePath>& paths,
+      const std::vector<base::FilePath>& default_app_paths);
+  static std::unique_ptr<ArcAppIcon::ReadResult>
+  ReadDefaultAppAdaptiveIconFiles(
+      ui::ResourceScaleFactor scale_factor,
+      const std::vector<base::FilePath>& default_app_paths);
+  static std::unique_ptr<ArcAppIcon::ReadResult> ReadFile(
+      bool request_to_install,
+      ui::ResourceScaleFactor scale_factor,
+      bool resize_allowed,
+      const base::FilePath& path);
+  static std::unique_ptr<ArcAppIcon::ReadResult> ReadFiles(
+      bool request_to_install,
+      ui::ResourceScaleFactor scale_factor,
+      bool resize_allowed,
+      const base::FilePath& foreground_path,
+      const base::FilePath& background_path);
+  void DecodeImage(
+      std::string unsafe_icon_data,
+      const ArcAppIconDescriptor& descriptor,
+      bool resize_allowed,
+      bool retain_padding,
+      gfx::ImageSkia& image_skia,
+      std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors);
+  void UpdateImageSkia(
+      ui::ResourceScaleFactor scale_factor,
+      const SkBitmap& bitmap,
+      gfx::ImageSkia& image_skia,
+      std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors);
+  void UpdateCompressed(ui::ResourceScaleFactor scale_factor, std::string data);
+  void DiscardDecodeRequest(DecodeRequest* request, bool is_decode_success);
 
   content::BrowserContext* const context_;
   const std::string app_id_;
@@ -132,22 +251,31 @@ class ArcAppIcon {
   const std::string mapped_app_id_;
   const int resource_size_in_dip_;
   Observer* const observer_;
-  const bool serve_compressed_icons_;
+  const IconType icon_type_;
   // Used to separate first 5 loaded app icons and other app icons.
   // Only one form of app icons will be loaded, compressed or uncompressed, so
   // only one counter is needed.
   int icon_loaded_count_ = 0;
 
+  // For some apps, some scales have the adaptive icons, but some are not. So
+  // using a map to present which scale is the adaptive icon, which is not.
+  std::map<ui::ResourceScaleFactor, bool> is_adaptive_icons_;
+
   gfx::ImageSkia image_skia_;
-  std::map<ui::ScaleFactor, std::string> compressed_images_;
-  std::map<ui::ScaleFactor, base::Time> incomplete_scale_factors_;
+  std::map<ui::ResourceScaleFactor, std::string> compressed_images_;
+  gfx::ImageSkia foreground_image_skia_;
+  gfx::ImageSkia background_image_skia_;
+
+  std::map<ui::ResourceScaleFactor, base::Time> incomplete_scale_factors_;
+  std::map<ui::ResourceScaleFactor, base::Time>
+      foreground_incomplete_scale_factors_;
+  std::map<ui::ResourceScaleFactor, base::Time>
+      background_incomplete_scale_factors_;
 
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 
   base::WeakPtrFactory<ArcAppIcon> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppIcon);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_ICON_H_

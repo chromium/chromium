@@ -4,13 +4,11 @@
 
 #include "ash/assistant/assistant_web_ui_controller.h"
 
-#include "ash/assistant/assistant_controller.h"
 #include "ash/assistant/ui/assistant_web_container_view.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "chromeos/services/assistant/public/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
@@ -30,6 +28,11 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
             views::EventMonitor::CreateWindowMonitor(this,
                                                      widget->GetNativeWindow(),
                                                      {ui::ET_KEY_PRESSED})) {}
+
+  AssistantWebContainerEventObserver(
+      const AssistantWebContainerEventObserver&) = delete;
+  AssistantWebContainerEventObserver& operator=(
+      const AssistantWebContainerEventObserver&) = delete;
 
   ~AssistantWebContainerEventObserver() override = default;
 
@@ -60,60 +63,63 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
   views::Widget* widget_ = nullptr;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebContainerEventObserver);
 };
 
 // -----------------------------------------------------------------------------
 // AssistantWebUiController:
 
-AssistantWebUiController::AssistantWebUiController(
-    AssistantController* assistant_controller)
-    : assistant_controller_(assistant_controller) {
-  DCHECK(chromeos::assistant::features::IsAssistantWebContainerEnabled());
-  assistant_controller_->AddObserver(this);
+AssistantWebUiController::AssistantWebUiController() {
+  assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
 AssistantWebUiController::~AssistantWebUiController() {
-  assistant_controller_->RemoveObserver(this);
+  CloseUi();
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void AssistantWebUiController::OnWidgetDestroying(views::Widget* widget) {
   ResetWebContainerView();
 }
 
-void AssistantWebUiController::OnAssistantControllerDestroying() {
-  if (!web_container_view_)
-    return;
+void AssistantWebUiController::OnAssistantControllerConstructed() {
+  AssistantState::Get()->AddObserver(this);
+}
 
-  // The view should not outlive the controller.
-  web_container_view_->GetWidget()->CloseNow();
-  DCHECK_EQ(nullptr, web_container_view_);
+void AssistantWebUiController::OnAssistantControllerDestroying() {
+  AssistantState::Get()->RemoveObserver(this);
 }
 
 void AssistantWebUiController::OnDeepLinkReceived(
     assistant::util::DeepLinkType type,
     const std::map<std::string, std::string>& params) {
-  if (!assistant::util::IsWebDeepLinkType(type, params))
-    return;
-
-  ShowUi();
-
-  // Open the url associated w/ the deep link.
-  web_container_view_->OpenUrl(
-      assistant::util::GetWebUrl(type, params).value());
+  if (assistant::util::IsWebDeepLinkType(type, params))
+    ShowUi(assistant::util::GetWebUrl(type, params).value());
 }
 
-void AssistantWebUiController::ShowUi() {
+void AssistantWebUiController::OnAssistantSettingsEnabled(bool enabled) {
+  if (!enabled)
+    CloseUi();
+}
+
+void AssistantWebUiController::ShowUi(const GURL& url) {
   if (!web_container_view_)
     CreateWebContainerView();
 
   web_container_view_->GetWidget()->Show();
+  web_container_view_->OpenUrl(url);
+}
+
+void AssistantWebUiController::CloseUi() {
+  if (!web_container_view_)
+    return;
+
+  web_container_view_->GetWidget()->CloseNow();
+  DCHECK_EQ(nullptr, web_container_view_);
 }
 
 void AssistantWebUiController::OnBackButtonPressed() {
   DCHECK(web_container_view_);
-  web_container_view_->OnBackButtonPressed();
+  web_container_view_->GoBack();
 }
 
 AssistantWebContainerView* AssistantWebUiController::GetViewForTest() {
@@ -123,8 +129,7 @@ AssistantWebContainerView* AssistantWebUiController::GetViewForTest() {
 void AssistantWebUiController::CreateWebContainerView() {
   DCHECK(!web_container_view_);
 
-  web_container_view_ = new AssistantWebContainerView(
-      assistant_controller_->view_delegate(), &view_delegate_);
+  web_container_view_ = new AssistantWebContainerView(&view_delegate_);
   auto* widget = web_container_view_->GetWidget();
   widget->AddObserver(this);
   event_observer_ =

@@ -4,16 +4,17 @@
      found in the LICENSE file. -->
 
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.chrome.browser.settings.ChromeSwitchPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="homepage_switch"
         android:summaryOn="@string/text_on"
         android:summaryOff="@string/text_off" />
 
-    <Preference
-        android:key="homepage_edit"
-        android:title="@string/options_homepage_edit_label"
-        android:fragment="org.chromium.chrome.browser.settings.homepage.HomepageEditor" />
-
+    <org.chromium.chrome.browser.homepage.settings.RadioButtonGroupHomepagePreference
+        android:key="homepage_radio_group"
+        android:selectable="false"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="false" />
 </PreferenceScreen>

@@ -13,8 +13,8 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -23,7 +23,6 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
@@ -31,7 +30,6 @@
 #include "mojo/core/core.h"
 #include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -48,7 +46,7 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
   scoped_refptr<SharedBufferDispatcher> buffer;
   MojoResult result =
       SharedBufferDispatcher::CreateFromPlatformSharedMemoryRegion(
-          T::TakeHandleForSerialization(std::move(region)), &buffer);
+          T::TakeHandleForSerialization(std::forward<T>(region)), &buffer);
   if (result != MOJO_RESULT_OK)
     return result;
 
@@ -347,7 +345,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessSharedMemoryClient,
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(sb1));
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 
 enum class HandleType {
   POSIX,
@@ -424,7 +422,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
   WriteMessage(client_mp, "bye");
 }
 
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #endif  // !defined(OS_IOS)
 

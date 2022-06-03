@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/process/memory.h"
-#include "base/stl_util.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
 #include <new.h>
 #include <psapi.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #if defined(__clang__)
 // This global constructor is trivial and non-racy (per being const).
@@ -40,30 +40,16 @@ namespace base {
 
 namespace {
 
-#pragma warning(push)
-#pragma warning(disable: 4702)  // Unreachable code after the _exit.
-
-NOINLINE int OnNoMemory(size_t size) {
-  // Kill the process. This is important for security since most of code
-  // does not check the result of memory allocation.
-  // https://msdn.microsoft.com/en-us/library/het71c37.aspx
-  // Pass the size of the failed request in an exception argument.
-  ULONG_PTR exception_args[] = {size};
-  ::RaiseException(win::kOomExceptionCode, EXCEPTION_NONCONTINUABLE,
-                   base::size(exception_args), exception_args);
-
-  // Safety check, make sure process exits here.
-  _exit(win::kOomExceptionCode);
+// Return a non-0 value to retry the allocation.
+int ReleaseReservationOrTerminate(size_t size) {
+  constexpr int kRetryAllocation = 1;
+  if (internal::ReleaseAddressSpaceReservation())
+    return kRetryAllocation;
+  TerminateBecauseOutOfMemory(size);
   return 0;
 }
 
-#pragma warning(pop)
-
 }  // namespace
-
-void TerminateBecauseOutOfMemory(size_t size) {
-  OnNoMemory(size);
-}
 
 void EnableTerminationOnHeapCorruption() {
   // Ignore the result code. Supported on XP SP3 and Vista.
@@ -71,8 +57,9 @@ void EnableTerminationOnHeapCorruption() {
 }
 
 void EnableTerminationOnOutOfMemory() {
-  _set_new_handler(&OnNoMemory);
-  _set_new_mode(1);
+  constexpr int kCallNewHandlerOnAllocationFailure = 1;
+  _set_new_handler(&ReleaseReservationOrTerminate);
+  _set_new_mode(kCallNewHandlerOnAllocationFailure);
 }
 
 // Implemented using a weak symbol.

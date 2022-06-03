@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 
+#include <string>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -205,6 +207,33 @@ TEST_F(MHTMLParserTest, SevenBitContentTransferEncoding) {
       "Content-Type: multipart/related;\r\n"
       "\ttype=\"text/html\";\r\n"
       "\tboundary=\"BoUnDaRy\"\r\n"
+      "\r\n"
+      "\r\n"
+      "--BoUnDaRy\r\n"
+      "Content-Location: http://www.example.com/page2\r\n"
+      "Content-Transfer-Encoding: 7bit\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n"
+      "123\r\n"
+      "abcdefg\r\n"
+      "\r\n"
+      "--BoUnDaRy--\r\n";
+
+  HeapVector<Member<ArchiveResource>> resources =
+      ParseArchive(mhtml_data, sizeof(mhtml_data));
+  EXPECT_EQ(1ul, resources.size());
+
+  EXPECT_EQ(std::string("123abcdefg", 10), GetResourceData(resources, 0));
+}
+
+TEST_F(MHTMLParserTest, SpaceAsHeaderContinuation) {
+  const char mhtml_data[] =
+      "From: <Saved by Blink>\r\n"
+      "Subject: Test Subject\r\n"
+      "MIME-Version: 1.0\r\n"
+      "Content-Type: multipart/related;\r\n"
+      "\ttype=\"text/html\";\r\n"
+      " boundary=\"BoUnDaRy\"\r\n"
       "\r\n"
       "\r\n"
       "--BoUnDaRy\r\n"

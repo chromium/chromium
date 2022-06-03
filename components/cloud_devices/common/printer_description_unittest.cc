@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cloud_devices {
@@ -40,7 +41,6 @@ const char kCdd[] = R"(
         },
         "color": {
           "option": [ {
-            "is_default": true,
             "type": "STANDARD_COLOR"
           }, {
             "type": "STANDARD_MONOCHROME"
@@ -71,6 +71,8 @@ const char kCdd[] = R"(
           } ]
         },
         "copies": {
+          "default": 1,
+          "max": 1
         },
         "margins": {
           "option": [ {
@@ -159,20 +161,6 @@ const char kBadVersionCdd[] = R"(
     {
       "version": "1.1",
       "printer": {
-      }
-    })";
-
-const char kNoDefaultCdd[] = R"(
-    {
-      "version": "1.0",
-      "printer": {
-        "color": {
-          "option": [ {
-            "type": "STANDARD_COLOR"
-          }, {
-            "type": "STANDARD_MONOCHROME"
-          } ]
-        }
       }
     })";
 
@@ -348,8 +336,11 @@ const char kMissingDisplayNameSelectVendorCapabilityJson[] = R"(
 const char kNoDefaultSelectVendorCapabilityJson[] = R"(
     {
       "option": [ {
-        "value": "value",
-        "display_name": "name"
+        "value": "value_1",
+        "display_name": "name_1"
+      }, {
+        "value": "value_2",
+        "display_name": "name_2"
       } ]
     })";
 
@@ -668,9 +659,6 @@ TEST(PrinterDescriptionTest, CddInvalid) {
 
   EXPECT_FALSE(description.InitFromString(kBadVersionCdd));
 
-  EXPECT_TRUE(description.InitFromString(kNoDefaultCdd));
-  EXPECT_FALSE(color.LoadFrom(description));
-
   EXPECT_TRUE(description.InitFromString(kMultyDefaultCdd));
   EXPECT_FALSE(color.LoadFrom(description));
 }
@@ -701,7 +689,7 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   custom_raster.rotate_all_pages = false;
   pwg_raster_config.set_value(custom_raster);
 
-  color.AddDefaultOption(Color(ColorType::STANDARD_COLOR), true);
+  color.AddOption(Color(ColorType::STANDARD_COLOR));
   color.AddOption(Color(ColorType::STANDARD_MONOCHROME));
   Color custom(ColorType::CUSTOM_MONOCHROME);
   custom.vendor_id = "123";
@@ -902,7 +890,7 @@ TEST(PrinterDescriptionTest, CddSetDocumentTypeSupported) {
 
 TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
   for (const auto& capacity : kTestRangeCapabilities) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(capacity.json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -917,7 +905,7 @@ TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
       kInvalidBoundariesRangeVendorCapabilityJson,
       kInvalidDefaultValueRangeVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(invalid_json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -941,7 +929,7 @@ TEST(PrinterDescriptionTest, CddSetRangeVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
   {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(kSelectVendorCapabilityJson);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -955,15 +943,28 @@ TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
     EXPECT_EQ(SelectVendorCapabilityOption("value_2", "name_2"),
               select_capability.GetDefault());
   }
-
+  {
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(kNoDefaultSelectVendorCapabilityJson);
+    ASSERT_TRUE(value);
+    base::Value description = std::move(*value);
+    SelectVendorCapability select_capability;
+    EXPECT_TRUE(select_capability.LoadFrom(description));
+    EXPECT_EQ(2u, select_capability.size());
+    EXPECT_TRUE(select_capability.Contains(
+        SelectVendorCapabilityOption("value_1", "name_1")));
+    EXPECT_TRUE(select_capability.Contains(
+        SelectVendorCapabilityOption("value_2", "name_2")));
+    EXPECT_EQ(SelectVendorCapabilityOption("value_1", "name_1"),
+              select_capability.GetDefault());
+  }
   const char* const kInvalidJsonNames[] = {
       kNotListSelectVendorCapabilityJson,
       kMissingValueSelectVendorCapabilityJson,
       kMissingDisplayNameSelectVendorCapabilityJson,
-      kNoDefaultSelectVendorCapabilityJson,
       kSeveralDefaultsSelectVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(invalid_json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -973,24 +974,41 @@ TEST(PrinterDescriptionTest, CddGetSelectVendorCapability) {
 }
 
 TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
-  SelectVendorCapability select_capability;
-  select_capability.AddOption(
-      SelectVendorCapabilityOption("value_1", "name_1"));
-  select_capability.AddDefaultOption(
-      SelectVendorCapabilityOption("value_2", "name_2"), true);
-  base::Value select_capability_value(base::Value::Type::DICTIONARY);
-  select_capability.SaveTo(&select_capability_value);
-  std::string select_capability_str;
-  EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
-      select_capability_value, base::JSONWriter::OPTIONS_PRETTY_PRINT,
-      &select_capability_str));
-  EXPECT_EQ(NormalizeJson(kSelectVendorCapabilityJson),
-            NormalizeJson(select_capability_str));
+  {
+    SelectVendorCapability select_capability;
+    select_capability.AddOption(
+        SelectVendorCapabilityOption("value_1", "name_1"));
+    select_capability.AddDefaultOption(
+        SelectVendorCapabilityOption("value_2", "name_2"), true);
+    base::Value select_capability_value(base::Value::Type::DICTIONARY);
+    select_capability.SaveTo(&select_capability_value);
+    std::string select_capability_str;
+    EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
+        select_capability_value, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+        &select_capability_str));
+    EXPECT_EQ(NormalizeJson(kSelectVendorCapabilityJson),
+              NormalizeJson(select_capability_str));
+  }
+  {
+    SelectVendorCapability select_capability;
+    select_capability.AddOption(
+        SelectVendorCapabilityOption("value_1", "name_1"));
+    select_capability.AddOption(
+        SelectVendorCapabilityOption("value_2", "name_2"));
+    base::Value select_capability_value(base::Value::Type::DICTIONARY);
+    select_capability.SaveTo(&select_capability_value);
+    std::string select_capability_str;
+    EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
+        select_capability_value, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+        &select_capability_str));
+    EXPECT_EQ(NormalizeJson(kNoDefaultSelectVendorCapabilityJson),
+              NormalizeJson(select_capability_str));
+  }
 }
 
 TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
   for (const auto& capacity : kTestTypedValueCapabilities) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(capacity.json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);
@@ -1005,7 +1023,7 @@ TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
       kInvalidFloatTypedValueVendorCapabilityJson,
       kInvalidIntegerTypedValueVendorCapabilityJson};
   for (const char* invalid_json_name : kInvalidJsonNames) {
-    base::Optional<base::Value> value =
+    absl::optional<base::Value> value =
         base::JSONReader::Read(invalid_json_name);
     ASSERT_TRUE(value);
     base::Value description = std::move(*value);

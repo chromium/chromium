@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="6106989379647458772">ייתכן שדף האינטרנט בכתובת <ph name="PAGE" /> אינו פעיל זמנית, או שהוא הועבר לכתובת אינטרנט קבועה אחרת.</translation>
-<translation id="6312113039770857350">דף האינטרנט אינו זמין</translation>
-<translation id="8681531050781943054">לא ניתן היה לטעון את דף האינטרנט בכתובת <ph name="PAGE" /> מהסיבות הבאות:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />הצעות:<ph name="MARKUP_2" />ודא שקיים חיבור נתונים<ph name="MARKUP_3" />טען מחדש את דף האינטרנט הזה מאוחר יותר<ph name="MARKUP_4" />בדוק את הכתובת שהזנת<ph name="MARKUP_5" /></translation>
 </translationbundle>

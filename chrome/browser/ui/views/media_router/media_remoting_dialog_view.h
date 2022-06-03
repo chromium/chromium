@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_MEDIA_REMOTING_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_MEDIA_REMOTING_DIALOG_VIEW_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class MediaRouterActionController;
@@ -26,6 +27,10 @@ namespace media_router {
 // then mirroring it remotely.
 class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(MediaRemotingDialogView);
+  MediaRemotingDialogView(const MediaRemotingDialogView&) = delete;
+  MediaRemotingDialogView& operator=(const MediaRemotingDialogView&) = delete;
+
   using PermissionCallback = base::OnceCallback<void(bool)>;
   // Checks the existing preference value, and if unset, instantiates and shows
   // the singleton dialog to get user's permission. |callback| runs on the same
@@ -38,20 +43,6 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
   static void HideDialog();
 
   static bool IsShowing();
-
-  // views::WidgetDelegateView:
-  bool ShouldShowCloseButton() const override;
-
-  // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
-
-  // views::DialogDelegate:
-  bool Accept() override;
-  bool Cancel() override;
-  bool Close() override;
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
   MediaRemotingDialogView(views::View* anchor_view,
@@ -76,15 +67,10 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
   PrefService* const pref_service_;
   MediaRouterActionController* const action_controller_;
 
-  // Title shown at the top of the dialog.
-  base::string16 dialog_title_;
-
   // Checkbox the user can use to indicate whether the preference should be
   // sticky. If this is checked, we record the preference and don't show the
   // dialog again.
   views::Checkbox* remember_choice_checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemotingDialogView);
 };
 
 }  // namespace media_router

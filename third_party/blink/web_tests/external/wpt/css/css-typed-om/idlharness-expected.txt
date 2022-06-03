@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 427 tests; 403 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 508 tests; 431 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -11,19 +11,23 @@ PASS Partial interface mixin ElementCSSInlineStyle: member names are unique
 PASS Partial namespace CSS: original namespace defined
 PASS Partial namespace CSS: member names are unique
 PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
-PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
-PASS HTMLElement includes ElementContentEditable: member names are unique
-PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS SVGElement includes ElementCSSInlineStyle: member names are unique
+PASS MathMLElement includes ElementCSSInlineStyle: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
 PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
-PASS Element includes Slotable: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS MathMLElement includes GlobalEventHandlers: member names are unique
+PASS MathMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS MathMLElement includes HTMLOrSVGElement: member names are unique
 PASS CSSStyleValue interface: existence and properties of interface object
 PASS CSSStyleValue interface object length
 PASS CSSStyleValue interface object name
@@ -50,16 +54,16 @@ PASS StylePropertyMap interface object name
 PASS StylePropertyMap interface: existence and properties of interface prototype object
 PASS StylePropertyMap interface: existence and properties of interface prototype object's "constructor" property
 PASS StylePropertyMap interface: existence and properties of interface prototype object's @@unscopables property
-PASS StylePropertyMap interface: operation set(USVString, [object Object],[object Object])
-PASS StylePropertyMap interface: operation append(USVString, [object Object],[object Object])
+PASS StylePropertyMap interface: operation set(USVString, (CSSStyleValue or USVString)...)
+PASS StylePropertyMap interface: operation append(USVString, (CSSStyleValue or USVString)...)
 PASS StylePropertyMap interface: operation delete(USVString)
 PASS StylePropertyMap interface: operation clear()
 PASS StylePropertyMap must be primary interface of styleMap
 PASS Stringification of styleMap
-PASS StylePropertyMap interface: styleMap must inherit property "set(USVString, [object Object],[object Object])" with the proper type
-PASS StylePropertyMap interface: calling set(USVString, [object Object],[object Object]) on styleMap with too few arguments must throw TypeError
-PASS StylePropertyMap interface: styleMap must inherit property "append(USVString, [object Object],[object Object])" with the proper type
-PASS StylePropertyMap interface: calling append(USVString, [object Object],[object Object]) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMap interface: styleMap must inherit property "set(USVString, (CSSStyleValue or USVString)...)" with the proper type
+PASS StylePropertyMap interface: calling set(USVString, (CSSStyleValue or USVString)...) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMap interface: styleMap must inherit property "append(USVString, (CSSStyleValue or USVString)...)" with the proper type
+PASS StylePropertyMap interface: calling append(USVString, (CSSStyleValue or USVString)...) on styleMap with too few arguments must throw TypeError
 PASS StylePropertyMap interface: styleMap must inherit property "delete(USVString)" with the proper type
 PASS StylePropertyMap interface: calling delete(USVString) on styleMap with too few arguments must throw TypeError
 PASS StylePropertyMap interface: styleMap must inherit property "clear()" with the proper type
@@ -99,15 +103,15 @@ PASS CSSNumericValue interface object name
 PASS CSSNumericValue interface: existence and properties of interface prototype object
 PASS CSSNumericValue interface: existence and properties of interface prototype object's "constructor" property
 PASS CSSNumericValue interface: existence and properties of interface prototype object's @@unscopables property
-PASS CSSNumericValue interface: operation add(CSSNumberish)
-PASS CSSNumericValue interface: operation sub(CSSNumberish)
-PASS CSSNumericValue interface: operation mul(CSSNumberish)
-PASS CSSNumericValue interface: operation div(CSSNumberish)
-PASS CSSNumericValue interface: operation min(CSSNumberish)
-PASS CSSNumericValue interface: operation max(CSSNumberish)
-PASS CSSNumericValue interface: operation equals(CSSNumberish)
+PASS CSSNumericValue interface: operation add(CSSNumberish...)
+PASS CSSNumericValue interface: operation sub(CSSNumberish...)
+PASS CSSNumericValue interface: operation mul(CSSNumberish...)
+PASS CSSNumericValue interface: operation div(CSSNumberish...)
+PASS CSSNumericValue interface: operation min(CSSNumberish...)
+PASS CSSNumericValue interface: operation max(CSSNumberish...)
+PASS CSSNumericValue interface: operation equals(CSSNumberish...)
 PASS CSSNumericValue interface: operation to(USVString)
-PASS CSSNumericValue interface: operation toSum(USVString)
+PASS CSSNumericValue interface: operation toSum(USVString...)
 PASS CSSNumericValue interface: operation type()
 PASS CSSNumericValue interface: operation parse(USVString)
 PASS CSSUnitValue interface: existence and properties of interface object
@@ -122,24 +126,24 @@ PASS CSSUnitValue must be primary interface of unitValue
 PASS Stringification of unitValue
 PASS CSSUnitValue interface: unitValue must inherit property "value" with the proper type
 PASS CSSUnitValue interface: unitValue must inherit property "unit" with the proper type
-PASS CSSNumericValue interface: unitValue must inherit property "add(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling add(CSSNumberish) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "sub(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling sub(CSSNumberish) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "mul(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling mul(CSSNumberish) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "div(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling div(CSSNumberish) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "min(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling min(CSSNumberish) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "max(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling max(CSSNumberish) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "equals(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling equals(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "add(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling add(CSSNumberish...) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "sub(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling sub(CSSNumberish...) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "mul(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling mul(CSSNumberish...) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "div(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling div(CSSNumberish...) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "min(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling min(CSSNumberish...) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "max(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling max(CSSNumberish...) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "equals(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling equals(CSSNumberish...) on unitValue with too few arguments must throw TypeError
 PASS CSSNumericValue interface: unitValue must inherit property "to(USVString)" with the proper type
 PASS CSSNumericValue interface: calling to(USVString) on unitValue with too few arguments must throw TypeError
-PASS CSSNumericValue interface: unitValue must inherit property "toSum(USVString)" with the proper type
-PASS CSSNumericValue interface: calling toSum(USVString) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "toSum(USVString...)" with the proper type
+PASS CSSNumericValue interface: calling toSum(USVString...) on unitValue with too few arguments must throw TypeError
 PASS CSSNumericValue interface: unitValue must inherit property "type()" with the proper type
 PASS CSSNumericValue interface: unitValue must inherit property "parse(USVString)" with the proper type
 FAIL CSSNumericValue interface: calling parse(USVString) on unitValue with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
@@ -165,24 +169,24 @@ PASS CSSMathSum must be primary interface of mathSum
 PASS Stringification of mathSum
 PASS CSSMathSum interface: mathSum must inherit property "values" with the proper type
 PASS CSSMathValue interface: mathSum must inherit property "operator" with the proper type
-PASS CSSNumericValue interface: mathSum must inherit property "add(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling add(CSSNumberish) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "sub(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling sub(CSSNumberish) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "mul(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling mul(CSSNumberish) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "div(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling div(CSSNumberish) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "min(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling min(CSSNumberish) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "max(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling max(CSSNumberish) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "equals(CSSNumberish)" with the proper type
-PASS CSSNumericValue interface: calling equals(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "add(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling add(CSSNumberish...) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "sub(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling sub(CSSNumberish...) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "mul(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling mul(CSSNumberish...) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "div(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling div(CSSNumberish...) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "min(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling min(CSSNumberish...) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "max(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling max(CSSNumberish...) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "equals(CSSNumberish...)" with the proper type
+PASS CSSNumericValue interface: calling equals(CSSNumberish...) on mathSum with too few arguments must throw TypeError
 PASS CSSNumericValue interface: mathSum must inherit property "to(USVString)" with the proper type
 PASS CSSNumericValue interface: calling to(USVString) on mathSum with too few arguments must throw TypeError
-PASS CSSNumericValue interface: mathSum must inherit property "toSum(USVString)" with the proper type
-PASS CSSNumericValue interface: calling toSum(USVString) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "toSum(USVString...)" with the proper type
+PASS CSSNumericValue interface: calling toSum(USVString...) on mathSum with too few arguments must throw TypeError
 PASS CSSNumericValue interface: mathSum must inherit property "type()" with the proper type
 PASS CSSNumericValue interface: mathSum must inherit property "parse(USVString)" with the proper type
 FAIL CSSNumericValue interface: calling parse(USVString) on mathSum with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
@@ -231,9 +235,9 @@ FAIL CSSMathClamp interface object name assert_own_property: self does not have 
 FAIL CSSMathClamp interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
 FAIL CSSMathClamp interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
 FAIL CSSMathClamp interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute min assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute val assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute max assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute lower assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute value assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute upper assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
 PASS CSSNumericArray interface: existence and properties of interface object
 PASS CSSNumericArray interface object length
 PASS CSSNumericArray interface object name
@@ -388,6 +392,82 @@ PASS CSSImageValue interface object name
 PASS CSSImageValue interface: existence and properties of interface prototype object
 PASS CSSImageValue interface: existence and properties of interface prototype object's "constructor" property
 PASS CSSImageValue interface: existence and properties of interface prototype object's @@unscopables property
+FAIL CSSColorValue interface: existence and properties of interface object assert_equals: prototype of CSSColorValue is not CSSStyleValue expected function "function CSSStyleValue() { [native code] }" but got function "function () { [native code] }"
+PASS CSSColorValue interface object length
+PASS CSSColorValue interface object name
+FAIL CSSColorValue interface: existence and properties of interface prototype object assert_equals: prototype of CSSColorValue.prototype is not CSSStyleValue.prototype expected [stringifying object threw TypeError: Illegal invocation with type object] but got object "[object Object]"
+PASS CSSColorValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSColorValue interface: existence and properties of interface prototype object's @@unscopables property
+FAIL CSSColorValue interface: attribute colorSpace assert_true: The prototype object must have a property "colorSpace" expected true got false
+FAIL CSSColorValue interface: operation to(CSSKeywordish) assert_own_property: interface prototype object missing non-static operation expected property "to" missing
+FAIL CSSColorValue interface: operation parse(USVString) assert_own_property: interface object missing static operation expected property "parse" missing
+PASS CSSRGB interface: existence and properties of interface object
+PASS CSSRGB interface object length
+PASS CSSRGB interface object name
+PASS CSSRGB interface: existence and properties of interface prototype object
+PASS CSSRGB interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSRGB interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSRGB interface: attribute r
+PASS CSSRGB interface: attribute g
+PASS CSSRGB interface: attribute b
+PASS CSSRGB interface: attribute alpha
+PASS CSSHSL interface: existence and properties of interface object
+PASS CSSHSL interface object length
+PASS CSSHSL interface object name
+PASS CSSHSL interface: existence and properties of interface prototype object
+PASS CSSHSL interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSHSL interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSHSL interface: attribute h
+PASS CSSHSL interface: attribute s
+PASS CSSHSL interface: attribute l
+PASS CSSHSL interface: attribute alpha
+FAIL CSSHWB interface: existence and properties of interface object assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface object length assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface object name assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: attribute h assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: attribute w assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: attribute b assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSHWB interface: attribute alpha assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
+FAIL CSSLCH interface: existence and properties of interface object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface object length assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface object name assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute l assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute c assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute h assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute alpha assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLab interface: existence and properties of interface object assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface object length assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface object name assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: attribute l assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: attribute a assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: attribute b assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLab interface: attribute alpha assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSColor interface: existence and properties of interface object assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface object length assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface object name assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSDeviceCMYK interface: existence and properties of interface object assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface object length assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface object name assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: attribute c assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: attribute m assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: attribute y assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: attribute k assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSDeviceCMYK interface: attribute alpha assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
 PASS CSSStyleRule interface: attribute styleMap
 PASS CSS namespace: operation escape(CSSOMString)
 PASS CSS namespace: operation number(double)
@@ -427,5 +507,6 @@ PASS CSS namespace: operation fr(double)
 FAIL SVGElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
 FAIL HTMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
 PASS Element interface: operation computedStyleMap()
+FAIL MathMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
 Harness: the test ran to completion.
 

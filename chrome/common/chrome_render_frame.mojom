@@ -7,18 +7,18 @@ module chrome.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
 
 enum ImageFormat {
   JPEG,
   PNG,
+  // ORIGINAL means request basic image formats, JPG/PNG/GIF, if the original
+  // image format is not one of them, encode the image to JPG and return.
+  ORIGINAL,
 };
-
-[Native]
-struct WebApplicationInfo;
 
 // Messages sent from chrome to the render frame.
 interface ChromeRenderFrame {
-
   // Updates the window features of the main frame's render view.
   SetWindowFeatures(blink.mojom.WindowFeatures window_features);
 
@@ -26,25 +26,33 @@ interface ChromeRenderFrame {
   // (if there indeed is an image at that location).
   RequestReloadImageForContextNode();
 
-  // Requests an encoded thumbnail of the image selected by the most recently
-  // opened context menu. The encoding format is specified as a parameter. If
-  // no image is selected or there's an error capturing a thumbnail,
-  // |thumbnail_data| will be empty. If the image area is larger than
-  // |thumbnail_min_area_pixels| it will be downscaled to fit within
-  // |thumbnail_max_size_pixels|.
-  RequestThumbnailForContextNode(int32 thumbnail_min_area_pixels,
-                                 gfx.mojom.Size thumbnail_max_size_pixels,
+  // Requests an encoded image selected by the most recently opened context
+  // menu. The encoding format is specified as a parameter. If no image is
+  // selected or there's an error capturing the image, |image_data| will be
+  // empty. If the image area is larger than |image_min_area_pixels| it will be
+  // downscaled to fit within |image_max_size_pixels|.
+  // If |image_format| is ORIGINAL, return orinal image data except image
+  // larger than size specified as a parameter. In that case, returns a resized
+  // JPEG static image.
+  RequestImageForContextNode(int32 image_min_area_pixels,
+                                 gfx.mojom.Size image_max_size_pixels,
                                  ImageFormat image_format)
-      => (array<uint8> thumbnail_data, gfx.mojom.Size original_size);
+      => (array<uint8> image_data, gfx.mojom.Size original_size,
+      string encoded_extension);
 
   // For WebUI testing, this message requests JavaScript to be executed at a
   // time which is late enough to not be thrown out, and early enough to be
   // before onload events are fired.
   ExecuteWebUIJavaScript(mojo_base.mojom.String16 javascript);
 
-  // Sent when the profile changes the kSafeBrowsingEnabled preference.
-  SetClientSidePhishingDetection(bool enable_phishing_detection);
+  // Sets a header identifying the CCT session.
+  [EnableIf=is_android]
+  SetCCTClientHeader(string header);
 
-  // Requests the web application info from the renderer.
-  GetWebApplicationInfo() => (WebApplicationInfo web_application_info);
+  // Requests the Media Feed Url from the renderer (if the page has one).
+  GetMediaFeedURL() => (url.mojom.Url? url);
+
+  // Tells the render frame to load any blocked plugins matching the given
+  // identifier (empty string matches all).
+  LoadBlockedPlugins(string identifier);
 };

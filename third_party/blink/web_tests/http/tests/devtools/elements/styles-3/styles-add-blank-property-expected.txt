@@ -9,11 +9,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 After insertion at index 0:
 [expanded] 
 element.style { ()
@@ -23,11 +18,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 After appending and changing a 'compound' property:
 [expanded] 
@@ -41,11 +31,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 After insertion at index 2:
 [expanded] 
 element.style { ()
@@ -58,10 +43,5 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 

@@ -9,7 +9,7 @@ description("Tests that manipulating location properties in a just-created windo
 
 if (window.testRunner) {
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 var testWindow = open("data:text/plain,a");

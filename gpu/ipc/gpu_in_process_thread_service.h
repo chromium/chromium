@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
@@ -25,27 +25,42 @@ namespace gles2 {
 class ProgramCache;
 }  // namespace gles2
 
+class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadServiceDelegate {
+ public:
+  GpuInProcessThreadServiceDelegate();
+
+  GpuInProcessThreadServiceDelegate(const GpuInProcessThreadServiceDelegate&) =
+      delete;
+  GpuInProcessThreadServiceDelegate& operator=(
+      const GpuInProcessThreadServiceDelegate&) = delete;
+
+  virtual ~GpuInProcessThreadServiceDelegate();
+
+  virtual scoped_refptr<SharedContextState> GetSharedContextState() = 0;
+  virtual scoped_refptr<gl::GLShareGroup> GetShareGroup() = 0;
+};
+
 // Default Service class when no service is specified. GpuInProcessThreadService
 // is used by Mus and unit tests.
 class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
     : public CommandBufferTaskExecutor {
  public:
-  // Must be valid to call through lifetime of GpuInProcessThreadService.
-  using SharedContextStateGetter =
-      base::RepeatingCallback<scoped_refptr<SharedContextState>()>;
-
   GpuInProcessThreadService(
+      GpuInProcessThreadServiceDelegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       Scheduler* scheduler,
       SyncPointManager* sync_point_manager,
       MailboxManager* mailbox_manager,
-      scoped_refptr<gl::GLShareGroup> share_group,
       gl::GLSurfaceFormat share_group_surface_format,
       const GpuFeatureInfo& gpu_feature_info,
       const GpuPreferences& gpu_preferences,
       SharedImageManager* shared_image_manager,
-      gles2::ProgramCache* program_cache,
-      SharedContextStateGetter shared_context_state_getter);
+      gles2::ProgramCache* program_cache);
+
+  GpuInProcessThreadService(const GpuInProcessThreadService&) = delete;
+  GpuInProcessThreadService& operator=(const GpuInProcessThreadService&) =
+      delete;
+
   ~GpuInProcessThreadService() override;
 
   // CommandBufferTaskExecutor implementation.
@@ -56,13 +71,12 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
   void ScheduleDelayedWork(base::OnceClosure task) override;
   void PostNonNestableToClient(base::OnceClosure callback) override;
   scoped_refptr<SharedContextState> GetSharedContextState() override;
+  scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
  private:
+  GpuInProcessThreadServiceDelegate* const delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Scheduler* scheduler_;
-  SharedContextStateGetter shared_context_state_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuInProcessThreadService);
 };
 
 }  // namespace gpu

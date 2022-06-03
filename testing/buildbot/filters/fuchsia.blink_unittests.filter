@@ -1,0 +1,15 @@
+# TODO(fuchsia): Fix these tests and remove the filter. https://crbug.com/1090066
+
+-All/PaintLayerScrollableAreaTest*
+-All/PaintLayerTest.RootLayerScrollBounds*
+-All/ScrollAnchorTest*
+-All/VisualViewportTest.TestVisibleContentRect*
+-AudioWorkletThreadDisplayPriorityTest.DisplayPriority
+-AudioWorkletThreadRealtimePriorityTest.RealtimePriority
+-ImageBitmapTest.CreateImageBitmapFromTooBigImageDataDoesNotCrash
+-JsToCppTest.BackPointer
+-JsToCppTest.Echo
+-JsToCppTest.Ping
+-MapCoordinatesTest.IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar
+-WebFrameTest.MoveCaretStaysHorizontallyAlignedWhenMoved
+-WebFrameTest.SelectRangeStaysHorizontallyAlignedWhenMoved

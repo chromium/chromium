@@ -63,6 +63,9 @@ class ExtensionThrottleEntry {
   ExtensionThrottleEntry(const std::string& url_id,
                          const net::BackoffEntry::Policy* backoff_policy);
 
+  ExtensionThrottleEntry(const ExtensionThrottleEntry&) = delete;
+  ExtensionThrottleEntry& operator=(const ExtensionThrottleEntry&) = delete;
+
   virtual ~ExtensionThrottleEntry();
 
   // Used by the manager, returns true if the entry needs to be garbage
@@ -154,8 +157,6 @@ class ExtensionThrottleEntry {
 
   // Canonicalized URL string that this entry is for; used for logging only.
   const std::string url_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionThrottleEntry);
 };
 
 }  // namespace extensions

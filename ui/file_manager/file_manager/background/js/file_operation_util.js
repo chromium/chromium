@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {TrashEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
+
+import {metadataProxy} from './metadata_proxy.js';
+
 /**
  * Utilities for file operations.
  */
@@ -13,8 +23,8 @@ const fileOperationUtil = {};
  *
  * @param {DirectoryEntry} root The root of the filesystem to search.
  * @param {string} path The path to be resolved.
- * @return {Promise} Promise fulfilled with the resolved entry, or rejected with
- *     FileError.
+ * @return {!Promise<DirectoryEntry|FileEntry>} Promise fulfilled with the
+ *     resolved entry, or rejected with FileError.
  */
 fileOperationUtil.resolvePath = (root, path) => {
   if (path === '' || path === '/') {
@@ -44,9 +54,9 @@ fileOperationUtil.resolvePath = (root, path) => {
  * @param {string} relativePath The path to be deduplicated.
  * @param {function(string)=} opt_successCallback Callback run with the
  *     deduplicated path on success.
- * @param {function(fileOperationUtil.Error)=} opt_errorCallback Callback run
- *     on error.
- * @return {Promise} Promise fulfilled with available path.
+ * @param {function(FileOperationError)=} opt_errorCallback
+ *     Callback run on error.
+ * @return {!Promise<string>} Promise fulfilled with available path.
  */
 fileOperationUtil.deduplicatePath =
     (dirEntry, relativePath, opt_successCallback, opt_errorCallback) => {
@@ -83,7 +93,7 @@ fileOperationUtil.deduplicatePath =
         if (error instanceof Error) {
           return Promise.reject(error);
         }
-        return Promise.reject(new fileOperationUtil.Error(
+        return Promise.reject(new FileOperationError(
             util.FileOperationErrorType.FILESYSTEM_ERROR, error));
       });
       if (opt_successCallback) {
@@ -412,11 +422,16 @@ fileOperationUtil.copyTo =
           }
 
           switch (status.type) {
-            case 'begin_copy_entry':
+            case 'begin':
               callback();
               break;
 
-            case 'end_copy_entry':
+            case 'progress':
+              progressCallback(status.sourceUrl, status.size);
+              callback();
+              break;
+
+            case 'end_copy':
               // TODO(mtomasz): Convert URL to Entry in custom bindings.
               (source.isFile ? parent.getFile : parent.getDirectory)
                   .call(
@@ -431,8 +446,17 @@ fileOperationUtil.copyTo =
                       });
               break;
 
-            case 'progress':
-              progressCallback(status.sourceUrl, status.size);
+            case 'end_move':
+              console.error(
+                  'Unexpected event: ' + status.type +
+                  ' (move not implemented yet)');
+              callback();
+              break;
+
+            case 'end_remove_source':
+              console.error(
+                  'Unexpected event: ' + status.type +
+                  ' (move not implemented yet)');
               callback();
               break;
 
@@ -509,35 +533,6 @@ fileOperationUtil.copyTo =
     };
 
 /**
- * Thin wrapper of chrome.fileManagerPrivate.zipSelection to adapt its
- * interface similar to copyTo().
- *
- * @param {!Array<!Entry>} sources The array of entries to be archived.
- * @param {!DirectoryEntry} parent The entry of the destination directory.
- * @param {string} newName The name of the archive to be created.
- * @param {function(FileEntry)} successCallback Callback invoked when the
- *     operation is successfully done with the entry of the created archive.
- * @param {function(DOMError)} errorCallback Callback invoked when an error
- *     is found.
- */
-fileOperationUtil.zipSelection =
-    (sources, parent, newName, successCallback, errorCallback) => {
-      chrome.fileManagerPrivate.zipSelection(
-          sources, parent, newName, success => {
-            if (!success) {
-              // Failed to create a zip archive.
-              errorCallback(
-                  util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
-              return;
-            }
-
-            // Returns the created entry via callback.
-            parent.getFile(
-                newName, {create: false}, successCallback, errorCallback);
-          });
-    };
-
-/**
  * A record of a queued copy operation.
  *
  * Multiple copy operations may be queued at any given time.  Additional
@@ -571,7 +566,7 @@ fileOperationUtil.Task = class {
     this.processingEntries = null;
 
     /**
-     * Total number of bytes to be processed. Filled in initialize().
+     * Total number of bytes to be processed. Filled in initialize() or run().
      * Use 1 as an initial value to indicate that the task is not completed.
      * @type {number}
      */
@@ -614,13 +609,29 @@ fileOperationUtil.Task = class {
     // For example, if 'dir' was copied as 'dir (1)', then 'dir/file.txt' should
     // become 'dir (1)/file.txt'.
     this.renamedDirectories_ = [];
+
+    /**
+     * Number of progress item sequence used in calculating moving average
+     * speed of task.
+     * @private {number}
+     */
+    this.SPEED_BUFFER_WINDOW_ = 20;
+
+    /**
+     * Speedometer object used to calculate and track speed and remaining time.
+     * @protected {fileOperationUtil.Speedometer}
+     */
+    this.speedometer_ =
+        new fileOperationUtil.Speedometer(this.SPEED_BUFFER_WINDOW_);
   }
 
 
   /**
    * @param {function()} callback When entries resolved.
    */
-  initialize(callback) {}
+  initialize(callback) {
+    callback();
+  }
 
   /**
    * Requests cancellation of this task.
@@ -643,15 +654,15 @@ fileOperationUtil.Task = class {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the operation.
    * @param {function()} successCallback Callback run on success.
-   * @param {function(fileOperationUtil.Error)} errorCallback Callback run on
-   *     error.
+   * @param {function(FileOperationError)} errorCallback Callback
+   *     run on error.
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {}
 
   /**
    * Get states of the task.
    * TODO(hirono): Removes this method and sets a task to progress events.
-   * @return {Object} Status object.
+   * @return {!fileOperationUtil.Status} Status object.
    */
   getStatus() {
     const processingEntry = this.sourceEntries[this.processingSourceIndex_];
@@ -661,7 +672,8 @@ fileOperationUtil.Task = class {
       totalBytes: this.totalBytes,
       processedBytes: this.processedBytes,
       processingEntryName: processingEntry ? processingEntry.name : '',
-      targetDirEntryName: this.targetDirEntry.name
+      targetDirEntryName: this.targetDirEntry.name,
+      remainingTime: this.speedometer_.getRemainingTime()
     };
   }
 
@@ -785,6 +797,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
           this.totalBytes += this.processingEntries[i][entryURL].size;
         }
       }
+      this.speedometer_.setTotalBytes(this.totalBytes);
 
       callback();
     });
@@ -800,7 +813,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the copying.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
@@ -825,7 +838,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
       };
 
       const onFilesystemError = err => {
-        errorCallback(new fileOperationUtil.Error(
+        errorCallback(new FileOperationError(
             util.FileOperationErrorType.FILESYSTEM_ERROR, err));
       };
 
@@ -861,6 +874,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
       const size = opt_size !== undefined ? opt_size : processedEntry.size;
       this.processedBytes += size - processedEntry.processedBytes;
       processedEntry.processedBytes = size;
+      this.speedometer_.update(this.processedBytes);
 
       // updateProgress can be called multiple times for a single file copy, and
       // it might not be called for a small file.
@@ -874,13 +888,13 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
       }
 
       // Updates progress bar in limited frequency so that intervals between
-      // updates have at least 200ms.
+      // updates have at least one second.
       this.updateProgressRateLimiter_.run();
     };
     updateProgress = updateProgress.bind(this);
 
     this.updateProgressRateLimiter_ =
-        new AsyncUtil.RateLimiter(progressCallback);
+        new AsyncUtil.RateLimiter(progressCallback, 1000);
 
     this.numRemainingItems = this.calcNumRemainingItems_();
 
@@ -893,7 +907,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
         this.sourceEntries,
         (callback, entry, index) => {
           if (this.cancelRequested_) {
-            errorCallback(new fileOperationUtil.Error(
+            errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.ABORT_ERR)));
             return;
@@ -920,6 +934,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
                 this.processingSourceIndex_ = index + 1;
                 this.processedBytes = this.calcProcessedBytes_();
                 this.numRemainingItems = this.calcNumRemainingItems_();
+                this.speedometer_.update(this.processedBytes);
                 errorCount = 0;
                 callback();
               },
@@ -930,6 +945,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
                 this.processingSourceIndex_ = index + 1;
                 this.processedBytes = this.calcProcessedBytes_();
                 this.numRemainingItems = this.calcNumRemainingItems_();
+                this.speedometer_.update(this.processedBytes);
                 errorCount++;
                 lastError = error;
                 if (errorCount <
@@ -963,7 +979,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
    * @param {function(string, number)} progressCallback Callback invoked
    *     periodically during the copying.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @private
    */
   processEntry_(
@@ -972,7 +988,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
     fileOperationUtil.deduplicatePath(
         destinationEntry, sourceEntry.name, destinationName => {
           if (this.cancelRequested_) {
-            errorCallback(new fileOperationUtil.Error(
+            errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.ABORT_ERR)));
             return;
@@ -986,7 +1002,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
               },
               error => {
                 this.cancelCallback_ = null;
-                errorCallback(new fileOperationUtil.Error(
+                errorCallback(new FileOperationError(
                     util.FileOperationErrorType.FILESYSTEM_ERROR, error));
               });
         }, errorCallback);
@@ -1052,7 +1068,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the moving.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
@@ -1065,7 +1081,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
         this.sourceEntries,
         (callback, entry, index) => {
           if (this.cancelRequested_) {
-            errorCallback(new fileOperationUtil.Error(
+            errorCallback(new FileOperationError(
                 util.FileOperationErrorType.FILESYSTEM_ERROR,
                 util.createDOMError(util.FileError.ABORT_ERR)));
             return;
@@ -1095,7 +1111,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
    * @param {function(util.EntryChangedKind, Entry)} entryChangedCallback
    *     Callback invoked when an entry is changed.
    * @param {function()} successCallback On success.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @private
    */
   static processEntry_(
@@ -1115,7 +1131,7 @@ fileOperationUtil.MoveTask = class extends fileOperationUtil.Task {
                 successCallback();
               },
               error => {
-                errorCallback(new fileOperationUtil.Error(
+                errorCallback(new FileOperationError(
                     util.FileOperationErrorType.FILESYSTEM_ERROR, error));
               });
         }, errorCallback);
@@ -1136,42 +1152,6 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
   constructor(taskId, sourceEntries, targetDirEntry, zipBaseDirEntry) {
     super(taskId, util.FileOperationType.ZIP, sourceEntries, targetDirEntry);
     this.zipBaseDirEntry = zipBaseDirEntry;
-
-    /** @type {boolean} */
-    this.zip = true;
-  }
-
-
-  /**
-   * Initializes the ZipTask.
-   * @param {function()} callback Called when the initialize is completed.
-   */
-  initialize(callback) {
-    const resolvedEntryMap = {};
-    const group = new AsyncUtil.Group();
-    for (let i = 0; i < this.sourceEntries.length; i++) {
-      group.add(function(index, callback) {
-        fileOperationUtil.resolveRecursively_(
-            this.sourceEntries[index], entries => {
-              for (let j = 0; j < entries.length; j++) {
-                resolvedEntryMap[entries[j].toURL()] = entries[j];
-              }
-              callback();
-            }, callback);
-      }.bind(this, i));
-    }
-
-    group.run(() => {
-      // For zip archiving, all the entries are processed at once.
-      this.processingEntries = [resolvedEntryMap];
-
-      this.totalBytes = 0;
-      for (const url in resolvedEntryMap) {
-        this.totalBytes += resolvedEntryMap[url].size;
-      }
-
-      callback();
-    });
   }
 
   /**
@@ -1182,74 +1162,119 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
    * @param {function()} progressCallback Callback invoked periodically during
    *     the moving.
    * @param {function()} successCallback On complete.
-   * @param {function(fileOperationUtil.Error)} errorCallback On error.
+   * @param {function(FileOperationError)} errorCallback On error.
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
-    // TODO(hidehiko): we should localize the name.
-    let destName = 'Archive';
-    if (this.sourceEntries.length == 1) {
-      const entryName = this.sourceEntries[0].name;
-      const i = entryName.lastIndexOf('.');
-      destName = ((i < 0) ? entryName : entryName.substr(0, i));
-    }
+    const f = async () => {
+      try {
+        // TODO(crbug.com/1238237) Localize the name.
+        let destName = 'Archive';
 
-    fileOperationUtil.deduplicatePath(
-        this.targetDirEntry, destName + '.zip', destPath => {
-          // TODO: per-entry zip progress update with accurate byte count.
-          // For now just set completedBytes to 0 so that it is not full until
-          // the zip operatoin is done.
-          this.processedBytes = 0;
-          progressCallback();
+        // If there is only one entry to zip, use this entry's name for the ZIP
+        // filename.
+        if (this.sourceEntries.length == 1) {
+          const entryName = this.sourceEntries[0].name;
+          const i = entryName.lastIndexOf('.');
+          destName = ((i < 0) ? entryName : entryName.substr(0, i));
+        }
 
-          // The number of elements in processingEntries is 1. See also
-          // initialize().
-          const entries = [];
-          for (const url in this.processingEntries[0]) {
-            entries.push(this.processingEntries[0][url]);
+        const destPath = await fileOperationUtil.deduplicatePath(
+            this.targetDirEntry, destName + '.zip');
+
+        if (this.cancelRequested_) {
+          throw util.createDOMError(util.FileError.ABORT_ERR);
+        }
+
+        // Start ZIP operation.
+        const {zipId, totalBytes} = await new Promise(
+            (resolve, reject) => chrome.fileManagerPrivate.zipSelection(
+                assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
+                (zipId, totalBytes) => chrome.runtime.lastError ?
+                    reject(chrome.runtime.lastError) :
+                    resolve({zipId, totalBytes})));
+
+        this.totalBytes = totalBytes;
+        this.speedometer_.setTotalBytes(this.totalBytes);
+
+        if (this.cancelRequested_) {
+          // Cancellation was requested while fileManagerPrivate.zipSelection()
+          // was running.
+          chrome.fileManagerPrivate.cancelZip(zipId);
+        } else {
+          // Set up cancellation callback.
+          this.cancelCallback_ = () =>
+              chrome.fileManagerPrivate.cancelZip(zipId);
+        }
+
+        // Monitor progress.
+        while (true) {
+          const {result, bytes} = await new Promise(
+              (resolve, reject) => chrome.fileManagerPrivate.getZipProgress(
+                  zipId, (result, bytes) => {
+                    if (chrome.runtime.lastError) {
+                      reject(chrome.runtime.lastError);
+                    } else {
+                      resolve({result, bytes});
+                    }
+                  }));
+
+          // Check for error.
+          if (result > 0) {
+            throw this.cancelRequested_ ?
+                util.createDOMError(util.FileError.ABORT_ERR) :
+                util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
           }
 
-          fileOperationUtil.zipSelection(
-              entries, this.zipBaseDirEntry, destPath,
-              entry => {
-                this.processedBytes = this.totalBytes;
-                entryChangedCallback(util.EntryChangedKind.CREATED, entry);
-                successCallback();
-              },
-              error => {
-                errorCallback(new fileOperationUtil.Error(
-                    util.FileOperationErrorType.FILESYSTEM_ERROR, error));
-              });
-        }, errorCallback);
+          // Report progress.
+          this.processedBytes = bytes;
+          this.speedometer_.update(this.processedBytes);
+          progressCallback();
+
+          // Check for success.
+          if (result == 0) {
+            successCallback();
+            return;
+          }
+        }
+      } catch (error) {
+        errorCallback(new FileOperationError(
+            util.FileOperationErrorType.FILESYSTEM_ERROR,
+            /** @type DOMError */ (error)));
+      }
+    };
+
+    f();
   }
 };
 
 /**
  * @typedef {{
+ *   operationType: !util.FileOperationType,
+ *   numRemainingItems: number,
+ *   totalBytes: number,
+ *   processedBytes: number,
+ *   processingEntryName: string,
+ *   targetDirEntryName: string,
+ *   remainingTime: number,
+ * }}
+ */
+fileOperationUtil.Status;
+
+/**
+ * @typedef {{
+ *  operationType: !util.FileOperationType,
  *  entries: Array<Entry>,
  *  taskId: string,
  *  entrySize: Object,
  *  totalBytes: number,
  *  processedBytes: number,
- *  cancelRequested: boolean
+ *  cancelRequested: boolean,
+ *  trashedEntries: Array<!TrashEntry>,
  * }}
  */
 fileOperationUtil.DeleteTask;
 
-/**
- * Error class used to report problems with a copy operation.
- * If the code is UNEXPECTED_SOURCE_FILE, data should be a path of the file.
- * If the code is TARGET_EXISTS, data should be the existing Entry.
- * If the code is FILESYSTEM_ERROR, data should be the FileError.
- *
- * @param {util.FileOperationErrorType} code Error type.
- * @param {string|Entry|DOMError} data Additional data.
- * @constructor
- */
-fileOperationUtil.Error = function(code, data) {
-  this.code = code;
-  this.data = data;
-};
 
 /**
  * Manages Event dispatching.
@@ -1258,7 +1283,7 @@ fileOperationUtil.Error = function(code, data) {
  *
  * TODO(hidehiko): Reorganize the event dispatching mechanism.
  */
-fileOperationUtil.EventRouter = class extends cr.EventTarget {
+fileOperationUtil.EventRouter = class extends EventTarget {
   constructor() {
     super();
     this.pendingDeletedEntries_ = {};
@@ -1271,15 +1296,15 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
    * Dispatches a simple "copy-progress" event with reason and current
    * FileOperationManager status. If it is an ERROR event, error should be set.
    *
-   * @param {fileOperationUtil.EventRouter.EventType} type Event type.
-   * @param {Object} status Current FileOperationManager's status. See also
-   *     FileOperationManager.Task.getStatus().
+   * @param {FileOperationProgressEvent.EventType} type Event type.
+   * @param {!fileOperationUtil.Status} status Current FileOperationManager's
+   *     status. See also FileOperationManager.Task.getStatus().
    * @param {string} taskId ID of task related with the event.
-   * @param {fileOperationUtil.Error=} opt_error The info for the error. This
-   *     should be set iff the reason is "ERROR".
+   * @param {FileOperationError=} opt_error The info for the
+   *     error. This should be set iff the reason is "ERROR".
    */
   sendProgressEvent(type, status, taskId, opt_error) {
-    const EventType = fileOperationUtil.EventRouter.EventType;
+    const EventType = FileOperationProgressEvent.EventType;
     // Before finishing operation, dispatch pending entries-changed events.
     if (type === EventType.SUCCESS || type === EventType.CANCELED) {
       this.entryChangedEventRateLimiter_.runImmediately();
@@ -1347,29 +1372,179 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
   /**
    * Dispatches an event to notify entries are changed for delete task.
    *
-   * @param {fileOperationUtil.EventRouter.EventType} reason Event type.
+   * @param {FileOperationProgressEvent.EventType} reason Event type.
    * @param {!Object} task Delete task related with the event.
+   * @param {FileOperationError=} error
    */
-  sendDeleteEvent(reason, task) {
+  sendDeleteEvent(reason, task, error) {
     const event =
         /** @type {FileOperationProgressEvent} */ (new Event('delete'));
     event.reason = reason;
+    event.error = error;
     event.taskId = task.taskId;
     event.entries = task.entries;
-    event.totalBytes = task.totalBytes;
-    event.processedBytes = task.processedBytes;
+    event.status = {
+      operationType: task.operationType,
+      numRemainingItems: task.entries.length,
+      totalBytes: task.totalBytes,
+      processedBytes: task.processedBytes,
+      processingEntryName: task.entries.length > 0 ? task.entries[0].name : '',
+      targetDirEntryName: '',
+      remainingTime: 0,
+    };
+    event.trashedEntries = task.trashedEntries;
     this.dispatchEvent(event);
   }
 };
 
 /**
- * Types of events emitted by the EventRouter.
- * @enum {string}
+ * Class to calculate transfer speed and remaining time.
+ *
+ * Each update from the transfer task stores a sample in a queue.
+ *
+ * Current speed and remaining time are calculated using a linear interpolation
+ * of the kept samples.
  */
-fileOperationUtil.EventRouter.EventType = {
-  BEGIN: 'BEGIN',
-  CANCELED: 'CANCELED',
-  ERROR: 'ERROR',
-  PROGRESS: 'PROGRESS',
-  SUCCESS: 'SUCCESS'
+fileOperationUtil.Speedometer = class {
+  /**
+   * @param {number} maxSamples Max number of samples to keep.
+   */
+  constructor(maxSamples = 20) {
+    /**
+     * @private @const {number} Max number of samples to keep.
+     */
+    this.maxSamples_ = maxSamples;
+
+    /**
+     * @private @const {!Array<!{time: number, bytes: number}>} Recent samples.
+     *     |time| is in milliseconds.
+     */
+    this.samples_ = [];
+
+    /**
+     * @private {?{time: number, bytes: number}} First sample.
+     *     |time| is in milliseconds.
+     */
+    this.first_ = null;
+
+    /**
+     * @private {number} Total number of bytes to be processed by the task.
+     */
+    this.totalBytes_ = 0;
+  }
+
+  /**
+   * @returns {number} Number of kept samples.
+   */
+  getSampleCount() {
+    return this.samples_.length;
+  }
+
+  /**
+   * @returns {number} Remaining time in seconds, or NaN if there aren't enough
+   *     samples.
+   */
+  getRemainingTime() {
+    const a = this.interpolate_();
+    if (!a) {
+      return NaN;
+    }
+
+    // Compute remaining time in milliseconds.
+    const targetTime =
+        (this.totalBytes_ - a.averageBytes) / a.speed + a.averageTime;
+    const remainingTime = targetTime - Date.now();
+
+    // Convert remaining time from milliseconds to seconds.
+    return remainingTime / 1000;
+  }
+
+  /**
+   * @param {number} totalBytes Number of total bytes task handles.
+   */
+  setTotalBytes(totalBytes) {
+    this.totalBytes_ = totalBytes;
+  }
+
+  /**
+   * Adds a sample with the current timestamp and the given number of |bytes|
+   * if the previous sample was received more than a second ago.
+   * Does nothing if the previous sample was received less than a second ago.
+   * @param {number} bytes Total number of bytes processed by the task so far.
+   */
+  update(bytes) {
+    const time = Date.now();
+    const sample = {time, bytes};
+
+    // Is this the first sample?
+    if (this.first_ == null) {
+      // Remember this sample as the first one.
+      this.first_ = sample;
+    } else {
+      // Drop this sample if we already received one less than a second ago.
+      const last = this.samples_[this.samples_.length - 1];
+      if (sample.time - last.time < 1000) {
+        return;
+      }
+    }
+
+    // Queue this sample.
+    if (this.samples_.push(sample) > this.maxSamples_) {
+      // Remove old sample.
+      this.samples_.shift();
+    }
+  }
+
+  /**
+   * Computes a linear interpolation of the samples stored in |this.samples_|.
+   * @private
+   * @returns {?{speed: number, averageTime: number, averageBytes: number}} null
+   *     if there aren't enough samples, or the result of the linear
+   *     interpolation. |speed| is the slope of the linear interpolation in
+   *     bytes per millisecond. The linear interpolation goes through the point
+   *     |(averageTime, averageBytes)|.
+   */
+  interpolate_() {
+    // Don't even try to compute the linear interpolation unless we have enough
+    // samples.
+    const n = this.samples_.length;
+    if (n < 2) {
+      return null;
+    }
+
+    // First pass to compute averages.
+    let averageTime = 0;
+    let averageBytes = 0;
+
+    for (const {time, bytes} of this.samples_) {
+      averageTime += time;
+      averageBytes += bytes;
+    }
+
+    averageTime /= n;
+    averageBytes /= n;
+
+    // Second pass to compute variances.
+    let varianceTime = 0;
+    let covarianceTimeBytes = 0;
+
+    for (const {time, bytes} of this.samples_) {
+      const timeDiff = time - averageTime;
+      varianceTime += timeDiff * timeDiff;
+      covarianceTimeBytes += timeDiff * (bytes - averageBytes);
+    }
+
+    // Strictly speaking, both varianceTime and covarianceTimeBytes should be
+    // scaled down by the number of samples n. But since we're only interested
+    // in the ratio of these two quantities, we can avoid these two divisions.
+    //
+    // varianceTime /= n;
+    // covarianceTimeBytes /= n;
+
+    // Compute speed.
+    const speed = covarianceTimeBytes / varianceTime;
+    return {speed, averageTime, averageBytes};
+  }
 };
+
+export {fileOperationUtil};

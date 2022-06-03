@@ -11,7 +11,6 @@ namespace {
 
 const uint8_t kKolySignature[4] = {'k', 'o', 'l', 'y'};
 constexpr size_t kSizeKolySignatureInBytes = sizeof(kKolySignature);
-const size_t kSizeKolyTrailerInBytes = 512;
 
 }  // namespace
 
@@ -30,7 +29,7 @@ bool DiskImageTypeSnifferMac::IsAppleDiskImage(const base::FilePath& dmg_file) {
 
   char data[kSizeKolySignatureInBytes];
 
-  if (file.Seek(base::File::FROM_END, -1 * kSizeKolyTrailerInBytes) == -1)
+  if (file.Seek(base::File::FROM_END, -1 * kAppleDiskImageTrailerSize) == -1)
     return false;
 
   if (file.ReadAtCurrentPos(data, kSizeKolySignatureInBytes) !=
@@ -54,11 +53,8 @@ bool DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
           0);
 }
 
-// static
-size_t DiskImageTypeSnifferMac::AppleDiskImageTrailerSize() {
-  return kSizeKolyTrailerInBytes;
-}
-
 DiskImageTypeSnifferMac::~DiskImageTypeSnifferMac() = default;
+
+constexpr size_t DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize;
 
 }  // namespace safe_browsing

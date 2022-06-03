@@ -1,8 +1,0 @@
-AXWebArea
-++AXTextArea AXValue='Editable text/Non-editable text' AXEditableAncestor='AXTextArea Editable text/Non-editable text' AXHighestEditableAncestor='AXTextArea Editable text/Non-editable text'
-++++AXGroup AXEditableAncestor='AXTextArea Editable text/Non-editable text' AXHighestEditableAncestor='AXTextArea Editable text/Non-editable text'
-++++++AXStaticText AXValue='Editable text/' AXEditableAncestor='AXTextArea Editable text/Non-editable text' AXHighestEditableAncestor='AXTextArea Editable text/Non-editable text'
-++++AXGroup
-++++++AXStaticText AXValue='Non-editable text'
-++AXGroup
-++++AXStaticText AXValue='Fake-editable'

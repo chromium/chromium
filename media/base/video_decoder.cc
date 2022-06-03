@@ -4,7 +4,10 @@
 
 #include "media/base/video_decoder.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "media/base/limits.h"
@@ -15,15 +18,7 @@ namespace media {
 
 VideoDecoder::VideoDecoder() = default;
 
-void VideoDecoder::Destroy() {
-  delete this;
-}
-
 VideoDecoder::~VideoDecoder() = default;
-
-bool VideoDecoder::IsPlatformDecoder() const {
-  return false;
-}
 
 bool VideoDecoder::NeedsBitstreamConversion() const {
   return false;
@@ -60,18 +55,9 @@ int VideoDecoder::GetRecommendedThreadCount(int desired_threads) {
   // zero threads; I.e., decoding will execute on the calling thread. Therefore,
   // at least two threads are required to allow decoding to progress outside of
   // each Decode() call.
-  return std::min(std::max(desired_threads,
-                           static_cast<int>(limits::kMinVideoDecodeThreads)),
-                  static_cast<int>(limits::kMaxVideoDecodeThreads));
+  return base::clamp(desired_threads,
+                     static_cast<int>(limits::kMinVideoDecodeThreads),
+                     static_cast<int>(limits::kMaxVideoDecodeThreads));
 }
 
 }  // namespace media
-
-namespace std {
-
-void default_delete<media::VideoDecoder>::operator()(
-    media::VideoDecoder* ptr) const {
-  ptr->Destroy();
-}
-
-}  // namespace std

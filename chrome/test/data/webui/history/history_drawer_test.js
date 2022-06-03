@@ -2,25 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+
 suite('drawer-test', function() {
   let app;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
     app = document.createElement('history-app');
     document.body.appendChild(app);
     return Promise.all([
       testService.whenCalled('queryHistory'),
-      history.ensureLazyLoaded(),
+      ensureLazyLoaded(),
     ]);
   });
 
   test('drawer has correct selection', function() {
     app.selectedPage_ = 'syncedTabs';
     app.hasDrawer_ = true;
-    return test_util.flushTasks().then(function() {
+    return flushTasks().then(function() {
       const drawer = /** @type {CrLazyRenderElement} */ (app.$.drawer);
       let drawerSideBar = app.$$('#drawer-side-bar');
 
@@ -29,10 +33,12 @@ suite('drawer-test', function() {
       // opened.
       assertFalse(!!drawerSideBar);
 
-      const menuButton = app.$.toolbar.$['main-toolbar'].$$('#menuButton');
+      const menuButton =
+          app.$.toolbar.$['main-toolbar'].shadowRoot.querySelector(
+              '#menuButton');
       assertTrue(!!menuButton);
 
-      MockInteractions.tap(menuButton);
+      menuButton.click();
       assertTrue(drawer.getIfExists().open);
       drawerSideBar = app.$$('#drawer-side-bar');
       assertTrue(!!drawerSideBar);

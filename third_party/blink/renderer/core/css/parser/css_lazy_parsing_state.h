@@ -30,7 +30,7 @@ class CSSLazyParsingState final : public GarbageCollected<CSSLazyParsingState> {
   const CSSParserContext* Context();
   const String& SheetText() const { return sheet_text_; }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   Member<const CSSParserContext> context_;

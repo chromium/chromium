@@ -30,7 +30,7 @@
 [cros]: https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1210982
 
 ### Windows Relocations (PE Format)
- * For PE files, relocaitons are stored in per-code-page
+ * For PE files, relocations are stored in per-code-page
    [`.reloc` sections][win_relocs].
  * Each relocation is stored using 2 bytes. Each `.reloc` section has a small
    overhead as well.
@@ -66,7 +66,7 @@
      `mremap` onto shared memory to dedupe after-the-fact.
 
 [almost no memory overhead]: https://devblogs.microsoft.com/oldnewthing/20160413-00/?p=93301
-[zygote]: linux_zygote.md
+[zygote]: linux/zygote.md
 [relro_sharing]: android_native_libraries.md#relro-sharing
 
 ### Start-up Time

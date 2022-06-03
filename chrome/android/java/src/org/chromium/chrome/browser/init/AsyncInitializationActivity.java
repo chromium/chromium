@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
@@ -42,21 +44,25 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.lang.reflect.Field;
 
 /**
  * An activity that talks with application and activity level delegates for async initialization.
  */
-public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatActivity
-        implements ChromeActivityNativeDelegate, BrowserParts, ModalDialogManagerHolder {
+public abstract class AsyncInitializationActivity
+        extends ChromeBaseAppCompatActivity implements ChromeActivityNativeDelegate, BrowserParts {
+    @VisibleForTesting
+    public static final String FIRST_DRAW_COMPLETED_TIME_MS_UMA = "FirstDrawCompletedTime";
     private static final String TAG = "AsyncInitActivity";
     protected final Handler mHandler;
 
@@ -64,18 +70,15 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             new NativeInitializationController(this);
 
     private final ActivityLifecycleDispatcherImpl mLifecycleDispatcher =
-            new ActivityLifecycleDispatcherImpl();
+            new ActivityLifecycleDispatcherImpl(this);
     private final MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher =
             new MultiWindowModeStateDispatcherImpl(this);
+    private final IntentRequestTracker mIntentRequestTracker;
 
     /** Time at which onCreate is called. This is realtime, counted in ms since device boot. */
     private long mOnCreateTimestampMs;
 
-    /** Time at which onCreate is called. This is uptime, to be sent to native code. */
-    private long mOnCreateTimestampUptimeMs;
-
     private ActivityWindowAndroid mWindowAndroid;
-    private ModalDialogManager mModalDialogManager;
     private Bundle mSavedInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
@@ -94,23 +97,37 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private Runnable mOnInflationCompleteCallback;
     private boolean mInitialLayoutInflationComplete;
 
+    // See enableHardwareAcceleration()
+    private boolean mSetWindowHWA;
+
+    private static boolean sInterceptMoveTaskToBackForTesting;
+    private static boolean sBackInterceptedForTesting;
+
     public AsyncInitializationActivity() {
         mHandler = new Handler();
+        mIntentRequestTracker = IntentRequestTracker.createFromDelegate(
+                new ActivityIntentRequestTrackerDelegate(this) {
+                    @Override
+                    public boolean onCallbackNotFoundError(String error) {
+                        return onIntentCallbackNotFoundError(error);
+                    }
+                });
+    }
+
+    /** Get the tracker of this activity's intents. */
+    public IntentRequestTracker getIntentRequestTracker() {
+        return mIntentRequestTracker;
     }
 
     @CallSuper
     @Override
     protected void onDestroy() {
         mDestroyed = true;
+        mLifecycleDispatcher.onDestroyStarted();
 
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
-        }
-
-        if (mModalDialogManager != null) {
-            mModalDialogManager.destroy();
-            mModalDialogManager = null;
         }
 
         super.onDestroy();
@@ -127,10 +144,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         // 2. To ensure mIsTablet only needs to be set once. Since the override lasts for the life
         //    of the activity, it will never change via onConfigurationUpdated().
         // See crbug.com/588838, crbug.com/662338, crbug.com/780593.
-        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(baseContext);
-        int targetSmallestScreenWidthDp =
-                DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
-        overrideConfig.smallestScreenWidthDp = targetSmallestScreenWidthDp;
+        overrideConfig.smallestScreenWidthDp = getCurrentSmallestScreenWidth(baseContext);
         return true;
     }
 
@@ -154,18 +168,28 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @Override
     public final void setContentViewAndLoadLibrary(Runnable onInflationCompleteCallback) {
-        // Start loading libraries before triggerLayoutInflation(). This "hides" library loading
-        // behind UI inflation and prevents stalling UI thread. See https://crbug.com/796957 for
-        // details. Note that for optimal performance AsyncInitTaskRunner.startBackgroundTasks()
-        // needs to start warmup renderer only after library is loaded.
+        boolean enableInstantStart =
+                TabUiFeatureUtilities.supportInstantStart(isTablet(), this) && !mHadWarmStart;
+        mOnInflationCompleteCallback = onInflationCompleteCallback;
+        if (enableInstantStart) {
+            triggerLayoutInflation();
+        }
+
+        // Start loading libraries. It happens before triggerLayoutInflation() for regular startup,
+        // but after triggerLayoutInflation() for instant start because we prioritize a Java UI and
+        // not rendering web content. This "hides" library loading behind UI inflation and prevents
+        // stalling UI thread. See https://crbug.com/796957 for details. Note that for optimal
+        // performance AsyncInitTaskRunner.startBackgroundTasks() needs to start warmup renderer
+        // only after library is loaded.
 
         if (!mStartupDelayed) {
             // Kick off long running IO tasks that can be done in parallel.
             mNativeInitializationController.startBackgroundTasks(shouldAllocateChildConnection());
         }
 
-        mOnInflationCompleteCallback = onInflationCompleteCallback;
-        triggerLayoutInflation();
+        if (!enableInstantStart) {
+            triggerLayoutInflation();
+        }
         if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onSetContentView();
     }
 
@@ -180,7 +204,17 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     public final void postInflationStartup() {
         performPostInflationStartup();
+        dispatchOnInflationComplete();
         mLifecycleDispatcher.dispatchPostInflationStartup();
+    }
+
+    /**
+     * This function allows subclasses overriding and adding additional tasks between calling
+     * mLifecycleDispatcher.dispatchOnInflationComplete() and
+     * mLifecycleDispatcher.dispatchPostInflationStartup().
+     */
+    protected void dispatchOnInflationComplete() {
+        mLifecycleDispatcher.dispatchOnInflationComplete();
     }
 
     /**
@@ -193,6 +227,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         assert firstDrawView != null;
         FirstDrawDetector.waitForFirstDraw(firstDrawView, () -> {
             mFirstDrawComplete = true;
+            StartSurfaceConfiguration.recordHistogram(FIRST_DRAW_COMPLETED_TIME_MS_UMA,
+                    SystemClock.elapsedRealtime() - getOnCreateTimestampMs(),
+                    TabUiFeatureUtilities.supportInstantStart(isTablet(), this));
             if (!mStartupDelayed) {
                 onFirstDrawComplete();
             }
@@ -215,8 +252,11 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) return;
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
-            WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
-                    Profile.getLastUsedProfile(), url);
+            // Blocking pre-connect for all off-the-record profiles.
+            if (!IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
+                WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
+                        Profile.getLastUsedRegularProfile(), url);
+            }
         } finally {
             TraceEvent.end("maybePreconnect");
         }
@@ -247,8 +287,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @CallSuper
     @Override
-    public void onStartupFailure() {
-        throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED);
+    public void onStartupFailure(Exception failureCause) {
+        throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED, failureCause);
     }
 
     /**
@@ -261,9 +301,25 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @SuppressLint("MissingSuperCall")  // Called in onCreateInternal.
     protected final void onCreate(Bundle savedInstanceState) {
         TraceEvent.begin("AsyncInitializationActivity.onCreate()");
-        onCreateInternal(savedInstanceState);
+        onPreCreate();
+        boolean willCreate = onCreateInternal(savedInstanceState);
+        if (!willCreate) {
+            onAbortCreate();
+        }
         TraceEvent.end("AsyncInitializationActivity.onCreate()");
     }
+
+    /**
+     * Override to perform operations in the first opportunity after the framework calls
+     * {@link #onCreate}. Note the activity may still be aborted by {@link #onCreateInternal}.
+     */
+    protected void onPreCreate() {}
+
+    /**
+     * Override to perform operations after the activity's creation is aborted by {@link
+     * #onCreateInternal}.
+     */
+    protected void onAbortCreate() {}
 
     /**
      * Called from onCreate() to give derived classes a chance to dispatch the intent using
@@ -272,32 +328,36 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      * @param intent intent to dispatch
      * @return {@link LaunchIntentDispatcher.Action} to take
      */
-    protected @LaunchIntentDispatcher.Action int maybeDispatchLaunchIntent(Intent intent) {
+    protected @LaunchIntentDispatcher.Action int maybeDispatchLaunchIntent(
+            Intent intent, Bundle savedInstanceState) {
         return LaunchIntentDispatcher.Action.CONTINUE;
     }
 
-    private final void onCreateInternal(Bundle savedInstanceState) {
+    /**
+     * @return true if will proceed with Activity creation, false if will abort.
+     */
+    private final boolean onCreateInternal(Bundle savedInstanceState) {
         initializeStartupMetrics();
-        setIntent(validateIntent(getIntent()));
+        setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
 
         @LaunchIntentDispatcher.Action
-        int dispatchAction = maybeDispatchLaunchIntent(getIntent());
+        int dispatchAction = maybeDispatchLaunchIntent(getIntent(), savedInstanceState);
         if (dispatchAction != LaunchIntentDispatcher.Action.CONTINUE) {
             abortLaunch(dispatchAction);
-            return;
+            return false;
         }
 
         Intent intent = getIntent();
         if (!isStartedUpCorrectly(intent)) {
             abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK);
-            return;
+            return false;
         }
 
         if (requiresFirstRunToBeCompleted(intent)
                 && FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
                         shouldPreferLightweightFre(intent))) {
-            abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK);
-            return;
+            abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY);
+            return false;
         }
 
         // Some Samsung devices load fonts from disk, crbug.com/691706.
@@ -305,17 +365,23 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             super.onCreate(transformSavedInstanceStateForOnCreate(savedInstanceState));
         }
         mOnCreateTimestampMs = SystemClock.elapsedRealtime();
-        mOnCreateTimestampUptimeMs = SystemClock.uptimeMillis();
         mSavedInstanceState = savedInstanceState;
 
         mWindowAndroid = createWindowAndroid();
-        if (mWindowAndroid != null) {
-            getWindowAndroid().restoreInstanceState(getSavedInstanceState());
-        }
-        mModalDialogManager = createModalDialogManager();
+        mIntentRequestTracker.restoreInstanceState(getSavedInstanceState());
 
         mStartupDelayed = shouldDelayBrowserStartup();
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(this);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(this);
+        return true;
+    }
+
+    /**
+     * A custom error handler for {@link IntentRequestTracker}. When false, the tracker will use
+     * the default error handler. Derived classes can override this method to customize the error
+     * handling.
+     */
+    protected boolean onIntentCallbackNotFoundError(String error) {
+        return false;
     }
 
     /**
@@ -360,6 +426,12 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mNativeInitializationController.startBackgroundTasks(shouldAllocateChildConnection());
 
         if (mFirstDrawComplete) onFirstDrawComplete();
+    }
+
+    @VisibleForTesting
+    public void startDelayedNativeInitializationForTests() {
+        mStartupDelayed = true;
+        startDelayedNativeInitialization();
     }
 
     /**
@@ -409,21 +481,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
-     * Validates the intent that started this activity.
-     * @return The validated intent.
-     */
-    protected Intent validateIntent(final Intent intent) {
-        return intent;
-    }
-
-    /**
-     * @return The elapsed real time for the activity creation in ms.
-     */
-    protected long getOnCreateTimestampUptimeMs() {
-        return mOnCreateTimestampUptimeMs;
-    }
-
-    /**
      * @return The uptime for the activity creation in ms.
      */
     protected long getOnCreateTimestampMs() {
@@ -449,6 +506,15 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onStart() {
         super.onStart();
         mNativeInitializationController.onStart();
+
+        // Since this activity is being started, the FRE should have been handled somehow already.
+        Intent intent = getIntent();
+        if (FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
+                    shouldPreferLightweightFre(intent), intent)
+                && requiresFirstRunToBeCompleted(intent)) {
+            throw new IllegalStateException("The app has not completed the FRE yet "
+                    + getClass().getName() + " is trying to start.");
+        }
     }
 
     @CallSuper
@@ -481,7 +547,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @CallSuper
     @Override
-    protected void onNewIntent(Intent intent) {
+    @SuppressLint("MissingSuperCall") // Empty method in parent Activity class.
+    public void onNewIntent(Intent intent) {
         if (intent == null) return;
         mNativeInitializationController.onNewIntent(intent);
         setIntent(intent);
@@ -489,6 +556,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @CallSuper
     @Override
+    @SuppressLint("MissingSuperCall") // Empty method in parent Activity class.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         mNativeInitializationController.onActivityResult(requestCode, resultCode, data);
     }
@@ -528,16 +596,29 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         return mDestroyed || isFinishing();
     }
 
+    /**
+     * Every child class wanting to perform tasks on configuration changed should override
+     * {@link #performOnConfigurationChanged(Configuration)} instead.
+     * @param newConfig The new configuration.
+     */
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public final void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        performOnConfigurationChanged(newConfig);
         mLifecycleDispatcher.dispatchOnConfigurationChanged(newConfig);
     }
+
+    /**
+     * Handle an {@link #onConfigurationChanged(Configuration)} event.
+     * @param newConfig The new configuration.
+     */
+    @CallSuper
+    public void performOnConfigurationChanged(Configuration newConfig) {}
 
     @Override
     public void onMultiWindowModeChanged(boolean inMultiWindowMode) {
         super.onMultiWindowModeChanged(inMultiWindowMode);
-        mMultiWindowModeStateDispatcher.dipatchMultiWindowModeChanged(inMultiWindowMode);
+        mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(inMultiWindowMode);
     }
 
     @Override
@@ -581,38 +662,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
-     * @return The {@link ModalDialogManager} created for this class.
-     */
-    @Nullable
-    protected ModalDialogManager createModalDialogManager() {
-        return null;
-    }
-
-    /**
-     * @return The {@link ModalDialogManager} that manages the display of modal dialogs (e.g.
-     *         JavaScript dialogs).
-     */
-    @Override
-    public ModalDialogManager getModalDialogManager() {
-        return mModalDialogManager;
-    }
-
-    /**
-     * Overrides the originally created modal dialog manager.
-     */
-    public void overrideModalDialogManager(ModalDialogManager modalDialogManager) {
-        mModalDialogManager = modalDialogManager;
-    }
-
-    /**
      * This will handle passing {@link Intent} results back to the {@link WindowAndroid}.  It will
      * return whether or not the {@link WindowAndroid} has consumed the event or not.
      */
     @CallSuper
     @Override
     public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
-        if (mWindowAndroid != null
-                && mWindowAndroid.onActivityResult(requestCode, resultCode, intent)) {
+        if (mIntentRequestTracker.onActivityResult(requestCode, resultCode, intent)) {
             return true;
         }
         mLifecycleDispatcher.dispatchOnActivityResultWithNative(requestCode, resultCode, intent);
@@ -636,7 +692,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mWindowAndroid != null) mWindowAndroid.saveInstanceState(outState);
+        mIntentRequestTracker.saveInstanceState(outState);
 
         mLifecycleDispatcher.dispatchOnSaveInstanceState(outState);
     }
@@ -649,11 +705,47 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mLifecycleDispatcher.dispatchOnWindowFocusChanged(hasFocus);
     }
 
+    @CallSuper
+    @Override
+    public void recreate() {
+        super.recreate();
+
+        mLifecycleDispatcher.dispatchOnRecreate();
+
+        // TODO(https://crbug.com/1252526): Remove stack trace logging once root cause of bug is
+        // identified & fixed.
+        Thread.dumpStack();
+    }
+
     /**
      * @return Whether the activity is running in tablet mode.
      */
     public boolean isTablet() {
         return mIsTablet;
+    }
+
+    /**
+     * Get current smallest screen width in dp. This method uses {@link WindowManager} on
+     * Android R and above; otherwise, {@link DisplayUtil#getSmallestWidth(DisplayAndroid)}.
+     *
+     * @param context {@link Context} used to get system service and target display.
+     * @return Smallest screen width in dp.
+     */
+    protected int getCurrentSmallestScreenWidth(Context context) {
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Context#getSystemService(Context.WINDOW_SERVICE) is preferred over
+            // Activity#getWindowManager, because during #attachBaseContext, #getWindowManager
+            // is not ready yet and always returns null. See crbug.com/1252150.
+            WindowManager manager =
+                    (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            assert manager != null;
+            Rect bounds = manager.getMaximumWindowMetrics().getBounds();
+            return DisplayUtil.pxToDp(
+                    display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
+        } else {
+            return DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
+        }
     }
 
     /**
@@ -833,5 +925,64 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                 return true;
             }
         };
+    }
+
+    @Override
+    public boolean moveTaskToBack(boolean nonRoot) {
+        // On Android L moving the task to the background flakily stops the
+        // Activity from being finished, breaking tests. Trying to bring the
+        // task back to the foreground after also happens to be flaky, so just
+        // allow tests to prevent actually moving to the background.
+        if (sInterceptMoveTaskToBackForTesting) {
+            sBackInterceptedForTesting = true;
+            return false;
+        }
+        return super.moveTaskToBack(nonRoot);
+    }
+
+    public static void interceptMoveTaskToBackForTesting() {
+        sInterceptMoveTaskToBackForTesting = true;
+        sBackInterceptedForTesting = false;
+    }
+
+    public static boolean wasMoveTaskToBackInterceptedForTesting() {
+        return sBackInterceptedForTesting;
+    }
+
+    private boolean shouldDisableHardwareAcceleration() {
+        // Low end devices should disable hardware acceleration for memory gains.
+        return SysUtils.isLowEndDevice();
+    }
+
+    protected void enableHardwareAcceleration() {
+        // HW acceleration is disabled in the manifest and may be re-enabled here.
+        if (!shouldDisableHardwareAcceleration()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+
+            // When HW acceleration is enabled manually for an activity, child windows (e.g.
+            // dialogs) don't inherit HW acceleration state. However, when HW acceleration is
+            // enabled in the manifest, child windows do inherit HW acceleration state. That
+            // looks like a bug, so I filed b/23036374
+            //
+            // In the meanwhile the workaround is to call
+            //   window.setWindowManager(..., hardwareAccelerated=true)
+            // to let the window know that it's HW accelerated. However, since there is no way
+            // to know 'appToken' argument until window's view is attached to the window (!!),
+            // we have to do the workaround in onAttachedToWindow()
+            mSetWindowHWA = true;
+        }
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        // See enableHardwareAcceleration()
+        if (mSetWindowHWA) {
+            mSetWindowHWA = false;
+            getWindow().setWindowManager(getWindow().getWindowManager(),
+                    getWindow().getAttributes().token, getComponentName().flattenToString(),
+                    true /* hardwareAccelerated */);
+        }
     }
 }

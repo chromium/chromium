@@ -26,9 +26,9 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include <memory>
-#include "base/optional.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
@@ -101,22 +101,34 @@ TEST(VectorTest, EraseAtIndex) {
 }
 
 TEST(VectorTest, Erase) {
-  Vector<int> int_vector({0, 1, 2, 3});
+  Vector<int> int_vector({0, 1, 2, 3, 4, 5});
 
-  EXPECT_EQ(4u, int_vector.size());
+  EXPECT_EQ(6u, int_vector.size());
   EXPECT_EQ(0, int_vector[0]);
   EXPECT_EQ(1, int_vector[1]);
   EXPECT_EQ(2, int_vector[2]);
   EXPECT_EQ(3, int_vector[3]);
+  EXPECT_EQ(4, int_vector[4]);
+  EXPECT_EQ(5, int_vector[5]);
 
   auto* first = int_vector.erase(int_vector.begin());
-  EXPECT_EQ(3u, int_vector.size());
+  EXPECT_EQ(5u, int_vector.size());
   EXPECT_EQ(1, *first);
   EXPECT_EQ(int_vector.begin(), first);
 
-  auto* last = std::lower_bound(int_vector.begin(), int_vector.end(), 3);
+  auto* last = std::lower_bound(int_vector.begin(), int_vector.end(), 5);
   auto* end = int_vector.erase(last);
+  EXPECT_EQ(4u, int_vector.size());
+  EXPECT_EQ(int_vector.end(), end);
+
+  auto* item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
+  auto* item4 = int_vector.erase(item2, item2 + 2);
   EXPECT_EQ(2u, int_vector.size());
+  EXPECT_EQ(4, *item4);
+
+  last = std::lower_bound(int_vector.begin(), int_vector.end(), 4);
+  end = int_vector.erase(last, int_vector.end());
+  EXPECT_EQ(1u, int_vector.size());
   EXPECT_EQ(int_vector.end(), end);
 }
 
@@ -531,11 +543,11 @@ TEST(VectorTest, ValuesMovedAndSwappedWithInlineCapacity) {
 TEST(VectorTest, UniquePtr) {
   using Pointer = std::unique_ptr<int>;
   Vector<Pointer> vector;
-  vector.push_back(Pointer(new int(1)));
+  vector.push_back(std::make_unique<int>(1));
   vector.ReserveCapacity(2);
-  vector.UncheckedAppend(Pointer(new int(2)));
-  vector.insert(2, Pointer(new int(3)));
-  vector.push_front(Pointer(new int(0)));
+  vector.UncheckedAppend(std::make_unique<int>(2));
+  vector.insert(2, std::make_unique<int>(3));
+  vector.push_front(std::make_unique<int>(0));
 
   ASSERT_EQ(4u, vector.size());
   EXPECT_EQ(0, *vector[0]);
@@ -549,7 +561,7 @@ TEST(VectorTest, UniquePtr) {
   ASSERT_EQ(4u, vector.size());
   EXPECT_TRUE(!vector[3]);
   vector.EraseAt(3);
-  vector[0] = Pointer(new int(-1));
+  vector[0] = std::make_unique<int>(-1);
   ASSERT_EQ(3u, vector.size());
   EXPECT_EQ(-1, *vector[0]);
 }
@@ -629,7 +641,7 @@ TEST(VectorTest, InitializerList) {
 }
 
 TEST(VectorTest, Optional) {
-  base::Optional<Vector<int>> vector;
+  absl::optional<Vector<int>> vector;
   EXPECT_FALSE(vector);
   vector.emplace(3);
   EXPECT_TRUE(vector);

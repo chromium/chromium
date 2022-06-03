@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_GOOGLEDRIVEFS_H_
-#define LIBRARIES_NACL_IO_GOOGLEDRIVEFS_H_
+#ifndef LIBRARIES_NACL_IO_GOOGLEDRIVEFS_GOOGLEDRIVEFS_H_
+#define LIBRARIES_NACL_IO_GOOGLEDRIVEFS_GOOGLEDRIVEFS_H_
 
 #include "nacl_io/filesystem.h"
 #include "nacl_io/node.h"
@@ -39,4 +39,4 @@ class GoogleDriveFs : public Filesystem {
 
 }  // namespace nacl_io
 
-#endif  // LIBRARIES_NACL_IO_GOOGLEDRIVEFS_H_
+#endif  // LIBRARIES_NACL_IO_GOOGLEDRIVEFS_GOOGLEDRIVEFS_H_

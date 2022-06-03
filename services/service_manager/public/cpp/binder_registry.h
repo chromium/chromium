@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -25,21 +26,12 @@ class BinderRegistryWithArgs {
       void(const std::string&, mojo::ScopedMessagePipeHandle, BinderArgs...)>;
 
   BinderRegistryWithArgs() {}
+
+  BinderRegistryWithArgs(const BinderRegistryWithArgs&) = delete;
+  BinderRegistryWithArgs& operator=(const BinderRegistryWithArgs&) = delete;
+
   ~BinderRegistryWithArgs() = default;
 
-  // Adds an interface inferring the interface name via the templated
-  // parameter Interface::Name_
-  // Usage example: //services/service_manager/README.md#OnBindInterface
-  template <typename Interface>
-  void AddInterface(
-      const base::RepeatingCallback<void(mojo::InterfaceRequest<Interface>,
-                                         BinderArgs...)>& callback,
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner = nullptr) {
-    SetInterfaceBinder(
-        Interface::Name_,
-        std::make_unique<CallbackBinder<Interface, BinderArgs...>>(
-            callback, task_runner));
-  }
   template <typename Interface>
   void AddInterface(
       const base::RepeatingCallback<void(mojo::PendingReceiver<Interface>,
@@ -145,8 +137,6 @@ class BinderRegistryWithArgs {
   InterfaceNameToBinderMap binders_;
 
   base::WeakPtrFactory<BinderRegistryWithArgs> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BinderRegistryWithArgs);
 };
 
 using BinderRegistry = BinderRegistryWithArgs<>;

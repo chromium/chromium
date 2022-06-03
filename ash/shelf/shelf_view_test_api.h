@@ -6,7 +6,6 @@
 #define ASH_SHELF_SHELF_VIEW_TEST_API_H_
 
 #include "ash/public/cpp/shelf_item.h"
-#include "base/macros.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -30,6 +29,10 @@ class ShelfView;
 class ShelfViewTestAPI {
  public:
   explicit ShelfViewTestAPI(ShelfView* shelf_view);
+
+  ShelfViewTestAPI(const ShelfViewTestAPI&) = delete;
+  ShelfViewTestAPI& operator=(const ShelfViewTestAPI&) = delete;
+
   ~ShelfViewTestAPI();
 
   // Number of icons displayed.
@@ -79,6 +82,9 @@ class ShelfViewTestAPI {
   // Close any open app list or context menu; returns true if a menu was closed.
   bool CloseMenu();
 
+  // The union of all visible shelf item bounds.
+  const gfx::Rect& visible_shelf_item_bounds_union() const;
+
   // An accessor for |shelf_view|.
   ShelfView* shelf_view() { return shelf_view_; }
 
@@ -107,11 +113,18 @@ class ShelfViewTestAPI {
   // An accessor for |shelf_button_pressed_metric_tracker_|.
   ShelfButtonPressedMetricTracker* shelf_button_pressed_metric_tracker();
 
+  // Set callback which will run after showing shelf context menu.
+  void SetShelfContextMenuCallback(base::RepeatingClosure closure);
+
+  // Returns |separator_index_|.
+  int GetSeparatorIndex() const;
+
+  // Checks whether the separator is visible or not.
+  bool IsSeparatorVisible() const;
+
  private:
   ShelfView* shelf_view_;
   int id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewTestAPI);
 };
 
 }  // namespace ash

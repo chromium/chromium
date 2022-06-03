@@ -25,6 +25,9 @@ template<class T> class ThreadSafeQueue {
     pthread_cond_init(&cond_, NULL);
   }
 
+  ThreadSafeQueue(const ThreadSafeQueue&) = delete;
+  ThreadSafeQueue& operator=(const ThreadSafeQueue&) = delete;
+
   ~ThreadSafeQueue() {
     pthread_cond_destroy(&cond_);
   }
@@ -55,10 +58,8 @@ template<class T> class ThreadSafeQueue {
   std::list<T*> list_;
   pthread_cond_t  cond_;
   SimpleLock lock_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeQueue);
 };
 
 }  // namespace sdk_util
 
 #endif  // LIBRARIES_SDK_UTIL_THREAD_SAFE_QUEUE_H_
-

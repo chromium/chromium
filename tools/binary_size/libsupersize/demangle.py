@@ -70,13 +70,17 @@ def _PostProcessDemangledSymbol(old_name, new_name):
 
 def _DemangleNames(names, tool_prefix):
   """Uses c++filt to demangle a list of names."""
+  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen([path_util.GetCppFiltPath(tool_prefix)],
-                          stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-  stdout = proc.communicate('\n'.join(_ExtractDemanglablePart(names)))[0]
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE,
+                          encoding='utf-8')
+  in_data = '\n'.join(_ExtractDemanglablePart(names))
+  stdout = proc.communicate(in_data)[0]
   assert proc.returncode == 0
   ret = [
       _PostProcessDemangledSymbol(old_name, new_name)
-      for (old_name, new_name) in itertools.izip(names, stdout.splitlines())
+      for (old_name, new_name) in zip(names, stdout.splitlines())
   ]
   if logging.getLogger().isEnabledFor(logging.INFO):
     fail_count = sum(1 for s in ret if _CanDemangle(s))
@@ -97,24 +101,24 @@ def DemangleRemainingSymbols(raw_symbols, tool_prefix):
     to_process[i].full_name = name
 
 
-def DemangleSetsInDicts(key_to_names, tool_prefix):
-  """Demangles values as sets, and returns the result.
+def DemangleSetsInDictsInPlace(key_to_names, tool_prefix):
+  """Demangles values as sets.
 
   |key_to_names| is a dict from key to sets (or lists) of mangled names.
   """
   all_names = []
-  for names in key_to_names.itervalues():
+  for names in key_to_names.values():
     all_names.extend(n for n in names if _CanDemangle(n))
   if not all_names:
     return key_to_names
 
   logging.info('Demangling %d values', len(all_names))
   it = iter(_DemangleNames(all_names, tool_prefix))
-  ret = {}
-  for key, names in key_to_names.iteritems():
-    ret[key] = set(next(it) if _CanDemangle(n) else n for n in names)
+  for key, names in key_to_names.items():
+    key_to_names[key] = set(next(it) if _CanDemangle(n) else n for n in names)
   assert(next(it, None) is None)
-  return ret
+
+  return None
 
 
 def DemangleKeysAndMergeLists(name_to_list, tool_prefix):
@@ -130,7 +134,7 @@ def DemangleKeysAndMergeLists(name_to_list, tool_prefix):
   logging.info('Demangling %d keys', len(keys))
   key_iter = iter(_DemangleNames(keys, tool_prefix))
   ret = collections.defaultdict(list)
-  for key, val in name_to_list.iteritems():
+  for key, val in name_to_list.items():
     ret[next(key_iter) if _CanDemangle(key) else key] += val
   assert(next(key_iter, None) is None)
   logging.info('* %d keys become %d keys' % (len(name_to_list), len(ret)))

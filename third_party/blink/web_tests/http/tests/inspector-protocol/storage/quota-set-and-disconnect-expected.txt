@@ -1,0 +1,15 @@
+Tests that disconnecting immediatelly after setting a quota works.
+
+Initial storage
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+Applying override and immediatelly disconnecting.
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+

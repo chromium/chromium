@@ -64,7 +64,7 @@ test( () => {
 }, "Set fractional scroll offset without zoom");
 
 test( () => {
-  eventSender.setPageZoomFactor(2);
+  testRunner.setPageZoomFactor(2);
 
   // Zooming provides additional granularity, regardless of the runtimeFlag
   // being enabled or not.
@@ -74,7 +74,7 @@ test( () => {
 }, "Set fractional scroll offset when zoomed");
 
 test( () => {
-  eventSender.setPageZoomFactor(2);
+  testRunner.setPageZoomFactor(2);
 
   // Zooming provides additional granularity but we try to set a value beyond the 0.5 increment.
   const setOffset = 4.6;

@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
+#include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -93,19 +93,32 @@ class HangingHostResolver : public network::mojom::HostResolver {
 class FakeHostResolverNetworkContext : public network::TestNetworkContext {
  public:
   FakeHostResolverNetworkContext(
-      std::vector<FakeHostResolver::SingleResult> system_result_list,
-      std::vector<FakeHostResolver::SingleResult> public_result_list);
+      std::vector<FakeHostResolver::SingleResult> current_config_result_list,
+      std::vector<FakeHostResolver::SingleResult> google_config_result_list);
   ~FakeHostResolverNetworkContext() override;
 
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
 
  private:
-  std::vector<FakeHostResolver::SingleResult> system_result_list_;
-  std::vector<FakeHostResolver::SingleResult> public_result_list_;
-  std::unique_ptr<FakeHostResolver> system_resolver_;
-  std::unique_ptr<FakeHostResolver> public_resolver_;
+  std::vector<FakeHostResolver::SingleResult> current_config_result_list_;
+  std::vector<FakeHostResolver::SingleResult> google_config_result_list_;
+  std::unique_ptr<FakeHostResolver> current_config_resolver_;
+  std::unique_ptr<FakeHostResolver> google_config_resolver_;
+};
+
+class HangingHostResolverNetworkContext : public network::TestNetworkContext {
+ public:
+  HangingHostResolverNetworkContext();
+  ~HangingHostResolverNetworkContext() override;
+
+  void CreateHostResolver(
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
+      mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
+
+ private:
+  std::unique_ptr<HangingHostResolver> resolver_;
 };
 
 class FakeDnsConfigChangeManager

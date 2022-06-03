@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>A div with its reflection below which results in multiple render passes</title>
+<style type="text/css">
+body {
+  margin: 0px auto;
+}
+
+/* Both will-change and -webkit-box-reflect are needed to ensure multiple render
+   passes. */
+#main {
+  position: absolute;
+  background-color: #FF8000;
+  width: 100px;
+  height: 400px;
+  will-change: transform;
+  -webkit-box-reflect: below 100px;
+}
+</style>
+<script>
+var frame = 0;
+
+// It's necessary to do an animation prior to sending SUCCESS in order to
+// reliably reproduce https://crbug.com/1033279.
+function animate() {
+  frame++;
+  document.getElementById('main').style.top = '-' + frame + 'px';
+  if (frame == 300) {
+    domAutomationController.send("SUCCESS");
+    return;
+  }
+  // Use setTimeout() because window.requestAnimationFrame() doesn't reliably
+  // reproduce https://crbug.com/1033279.
+  setTimeout(animate, 20);
+}
+</script>
+</head>
+<body onload="animate()">
+<div id="main"></div>
+</body>
+</html>

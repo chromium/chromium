@@ -8,26 +8,24 @@ source_set("cells") {
     "account_sign_in_item.mm",
     "byo_textfield_item.h",
     "byo_textfield_item.mm",
-    "clear_browsing_data_item.h",
-    "clear_browsing_data_item.mm",
     "copied_to_chrome_item.h",
     "copied_to_chrome_item.mm",
     "passphrase_error_item.h",
     "passphrase_error_item.mm",
     "search_engine_item.h",
     "search_engine_item.mm",
+    "settings_check_cell.h",
+    "settings_check_cell.mm",
+    "settings_check_item.h",
+    "settings_check_item.mm",
     "settings_image_detail_text_cell.h",
     "settings_image_detail_text_cell.mm",
     "settings_image_detail_text_item.h",
     "settings_image_detail_text_item.mm",
-    "settings_multiline_detail_item.h",
-    "settings_multiline_detail_item.mm",
     "settings_switch_cell.h",
     "settings_switch_cell.mm",
     "settings_switch_item.h",
     "settings_switch_item.mm",
-    "settings_text_item.h",
-    "settings_text_item.mm",
     "sync_switch_item.h",
     "sync_switch_item.mm",
     "table_view_clear_browsing_data_item.h",
@@ -41,26 +39,23 @@ source_set("cells") {
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]
 
-  public_deps = [
-    ":clear_browsing_data_constants",
-    "//ios/chrome/browser/ui/settings/cells/legacy",
-  ]
+  public_deps = [ ":clear_browsing_data_constants" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -85,11 +80,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "byo_textfield_item_unittest.mm",
-    "clear_browsing_data_item_unittest.mm",
     "copied_to_chrome_item_unittest.mm",
     "passphrase_error_item_unittest.mm",
     "search_engine_item_unittest.mm",
-    "settings_multiline_detail_item_unittest.mm",
+    "settings_check_item_unittest.mm",
+    "settings_image_detail_text_item_unittest.mm",
     "version_item_unittest.mm",
   ]
 

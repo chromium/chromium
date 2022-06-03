@@ -1,5 +1,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
   html {
     -webkit-writing-mode: vertical-rl;
@@ -31,16 +33,18 @@
   var initialX = -10;
   var initialY = 0;
   // Amount to smooth scroll by.
-  var userScrollX = -205;
-  var userScrollY = 51;
+  const { x: userScrollX } = calculatePixelsToScroll(
+    document.scrollingElement, -205, 0
+  );
   // Amount to change the height of the element above the viewport.
   var changerX = 100;
   // End position: height of ch + userScroll.
   var endX = -305;
-  var endY = 51;
+  var source = GestureSourceType.MOUSE_INPUT;
 
   function scrollListener() {
-    if (window.scrollX == endX && window.scrollY == endY) {
+    // The value on Linux appears to be slightly different
+    if (approx_equals(window.scrollX, endX, 0.5)) {
       asyncTest.done();
       return;
     }
@@ -49,24 +53,13 @@
       ch.style.width = changerX;
   }
 
-  window.onload = function() {
-    assert_false(!window.internals, 'This test requires internals');
-    internals.runtimeFlags.scrollAnchoringEnabled = true;
-    // Turn on smooth scrolling.
-    internals.settings.setScrollAnimatorEnabled(true);
-
+  window.onload = async () => {
     ch = document.getElementById("changer");
+    document.addEventListener("scroll", scrollListener);
+
+    // Smooth scroll.
+    smoothScroll(userScrollX, 100, 100, source, 'right', SPEED_INSTANT);
+    await raf();
     window.scrollTo(initialX, initialY);
-
-    asyncTest.step(function() {
-      assert_equals(window.scrollX, initialX);
-      assert_equals(window.scrollY, initialY);
-
-      // Smooth scroll.
-      eventSender.mouseMoveTo(100, 100);
-      eventSender.continuousMouseScrollBy(-userScrollX, -userScrollY);
-
-      document.addEventListener("scroll", scrollListener);
-    });
   }
 </script>

@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_INSPECTOR_DATABASE_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_INSPECTOR_DATABASE_RESOURCE_H_
 
-#include "third_party/blink/renderer/core/inspector/protocol/Database.h"
+#include "third_party/blink/renderer/core/inspector/protocol/database.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -46,7 +46,7 @@ class InspectorDatabaseResource final
                             const String& domain,
                             const String& name,
                             const String& version);
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   void Bind(protocol::Database::Frontend*);
   Database* GetDatabase() { return database_.Get(); }

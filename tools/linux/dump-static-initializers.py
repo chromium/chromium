@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -23,9 +23,11 @@ using objdump, we can disassemble those functions and dump all symbols that
 they reference.
 """
 
+# Needed so pylint does not complain about print('', end='').
 from __future__ import print_function
 
 import optparse
+import os
 import re
 import subprocess
 import sys
@@ -45,13 +47,23 @@ class Demangler(object):
   """A wrapper around c++filt to provide a function to demangle symbols."""
 
   def __init__(self, toolchain):
-    self.cppfilt = subprocess.Popen([toolchain + 'c++filt'],
+    # llvm toolchain uses cxx rather than c++.
+    path = toolchain + 'cxxfilt'
+    if not os.path.exists(path):
+      path = toolchain + 'c++filt'
+    if not os.path.exists(path):
+      # Android currently has an issue where the llvm toolchain in the ndk does
+      # not contain c++filt. Hopefully fixed in next NDK update...
+      path = 'c++filt'
+    self.cppfilt = subprocess.Popen([path],
                                     stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE)
+                                    stdout=subprocess.PIPE,
+                                    universal_newlines=True)
 
   def Demangle(self, sym):
     """Given mangled symbol |sym|, return its demangled form."""
     self.cppfilt.stdin.write(sym + '\n')
+    self.cppfilt.stdin.flush()
     return self.cppfilt.stdout.readline().strip()
 
 
@@ -67,9 +79,10 @@ def QualifyFilenameAsProto(filename):
   if not match:
     return filename
   basename = match.groups(0)
-  gitlsfiles = subprocess.Popen(
-    ['git', 'ls-files', '--', '*/%s.proto' % basename],
-    stdout=subprocess.PIPE)
+  cmd = ['git', 'ls-files', '--', '*/%s.proto' % basename]
+  gitlsfiles = subprocess.Popen(cmd,
+                                stdout=subprocess.PIPE,
+                                universal_newlines=True)
   candidate = filename
   for line in gitlsfiles.stdout:
     if candidate != filename:
@@ -95,9 +108,10 @@ def QualifyFilename(filename, symbol):
   if not match:
     return filename
   symbol = match.group(1)
-  gitgrep = subprocess.Popen(
-    ['git', 'grep', '-l', symbol, '--', '*/%s' % filename],
-    stdout=subprocess.PIPE)
+  cmd = ['git', 'grep', '-l', symbol, '--', '*/' + filename]
+  gitgrep = subprocess.Popen(cmd,
+                             stdout=subprocess.PIPE,
+                             universal_newlines=True)
   candidate = filename
   for line in gitgrep.stdout:
     if candidate != filename:  # More than one candidate; return bare filename.
@@ -161,7 +175,8 @@ def ParseNm(toolchain, binary):
   Given a binary, yield static initializers as (file, start, size, symbol)
   tuples."""
   nm = subprocess.Popen([toolchain + 'nm', '-S', binary],
-                        stdout=subprocess.PIPE)
+                        stdout=subprocess.PIPE,
+                        universal_newlines=True)
   for line in nm.stdout:
     parse = ParseNmLine(line)
     if parse:
@@ -176,14 +191,16 @@ def ExtractSymbolReferences(toolchain, binary, start, end, symbol):
   """Given a span of addresses, returns symbol references from disassembly."""
   cmd = [toolchain + 'objdump', binary, '--disassemble',
          '--start-address=0x%x' % start, '--stop-address=0x%x' % end]
-  objdump = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  objdump = subprocess.Popen(cmd,
+                             stdout=subprocess.PIPE,
+                             universal_newlines=True)
 
   refs = set()
   for line in objdump.stdout:
     if '__static_initialization_and_destruction' in line:
-      raise RuntimeError, ('code mentions '
-                           '__static_initialization_and_destruction; '
-                           'did you accidentally run this on a Debug binary?')
+      raise RuntimeError('code mentions '
+                         '__static_initialization_and_destruction; '
+                         'did you accidentally run this on a Debug binary?')
     match = disassembly_re.search(line)
     if match:
       (ref,) = match.groups()

@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutButton INPUT",
-          "rect": [3, 4, 63, 29],
-          "reason": "subtree"
-        },
-        {
-          "object": "InlineTextBox 'Submit'",
-          "rect": [16, 11, 37, 14],
-          "reason": "subtree"
-        }
+      "invalidations": [
+        [7, 7, 60, 23]
       ]
     }
   ]

@@ -9,10 +9,12 @@
 
 #include <tuple>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -48,6 +50,10 @@ bool IsCanonicalHost(const base::StringPiece& host) {
   return host == canon_host;
 }
 
+// Note: When changing IsValidInput, consider also updating
+// ShouldTreatAsOpaqueOrigin in Blink (there might be existing differences in
+// behavior between these 2 layers, but we should avoid introducing new
+// differences).
 bool IsValidInput(const base::StringPiece& scheme,
                   const base::StringPiece& host,
                   uint16_t port,
@@ -56,15 +62,21 @@ bool IsValidInput(const base::StringPiece& scheme,
   if (scheme.empty())
     return false;
 
+  // about:blank and other no-access schemes translate into an opaque origin.
+  // This helps consistency with ShouldTreatAsOpaqueOrigin in Blink.
+  if (base::Contains(GetNoAccessSchemes(), scheme))
+    return false;
+
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   bool is_standard = GetStandardSchemeType(
       scheme.data(),
       Component(0, base::checked_cast<int>(scheme.length())),
       &scheme_type);
   if (!is_standard) {
-    // To be consistent with blink, local non-standard schemes are currently
-    // allowed to be tuple origins. Nonstandard schemes don't have hostnames,
-    // so their tuple is just ("protocol", "", 0).
+    // To be consistent with ShouldTreatAsOpaqueOrigin in Blink, local
+    // non-standard schemes are currently allowed to be tuple origins.
+    // Nonstandard schemes don't have hostnames, so their tuple is just
+    // ("protocol", "", 0).
     //
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove this local scheme exception.
@@ -79,10 +91,12 @@ bool IsValidInput(const base::StringPiece& scheme,
   switch (scheme_type) {
     case SCHEME_WITH_HOST_AND_PORT:
     case SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION:
-      // A URL with |scheme| is required to have the host and port (may be
-      // omitted in a serialization if it's the same as the default value).
-      // Return an invalid instance if either of them is not given.
-      if (host.empty() || port == 0)
+      // A URL with |scheme| is required to have the host and port, so return an
+      // invalid instance if host is not given.  Note that a valid port is
+      // always provided by SchemeHostPort(const GURL&) constructor (a missing
+      // port is replaced with a default port if needed by
+      // GURL::EffectiveIntPort()).
+      if (host.empty())
         return false;
 
       // Don't do an expensive canonicalization if the host is already
@@ -125,35 +139,33 @@ bool IsValidInput(const base::StringPiece& scheme,
 
 }  // namespace
 
-SchemeHostPort::SchemeHostPort() : port_(0) {
-}
+SchemeHostPort::SchemeHostPort() = default;
 
 SchemeHostPort::SchemeHostPort(std::string scheme,
                                std::string host,
                                uint16_t port,
-                               ConstructPolicy policy)
-    : port_(0) {
+                               ConstructPolicy policy) {
   if (!IsValidInput(scheme, host, port, policy)) {
-    DCHECK(IsInvalid());
+    DCHECK(!IsValid());
     return;
   }
 
   scheme_ = std::move(scheme);
   host_ = std::move(host);
   port_ = port;
-  DCHECK(!IsInvalid()) << "Scheme: " << scheme_ << " Host: " << host_
-                       << " Port: " << port;
+  DCHECK(IsValid()) << "Scheme: " << scheme_ << " Host: " << host_
+                    << " Port: " << port;
 }
 
 SchemeHostPort::SchemeHostPort(base::StringPiece scheme,
                                base::StringPiece host,
                                uint16_t port)
-    : SchemeHostPort(scheme.as_string(),
-                     host.as_string(),
+    : SchemeHostPort(std::string(scheme),
+                     std::string(host),
                      port,
                      ConstructPolicy::CHECK_CANONICALIZATION) {}
 
-SchemeHostPort::SchemeHostPort(const GURL& url) : port_(0) {
+SchemeHostPort::SchemeHostPort(const GURL& url) {
   if (!url.is_valid())
     return;
 
@@ -172,19 +184,19 @@ SchemeHostPort::SchemeHostPort(const GURL& url) : port_(0) {
   if (!IsValidInput(scheme, host, port, ALREADY_CANONICALIZED))
     return;
 
-  scheme.CopyToString(&scheme_);
-  host.CopyToString(&host_);
+  scheme_ = std::string(scheme);
+  host_ = std::string(host);
   port_ = port;
 }
 
 SchemeHostPort::~SchemeHostPort() = default;
 
-bool SchemeHostPort::IsInvalid() const {
+bool SchemeHostPort::IsValid() const {
   // It suffices to just check |scheme_| for emptiness; the other fields are
   // never present without it.
   DCHECK(!scheme_.empty() || host_.empty());
   DCHECK(!scheme_.empty() || port_ == 0);
-  return scheme_.empty();
+  return !scheme_.empty();
 }
 
 std::string SchemeHostPort::Serialize() const {
@@ -198,7 +210,7 @@ GURL SchemeHostPort::GetURL() const {
   url::Parsed parsed;
   std::string serialized = SerializeInternal(&parsed);
 
-  if (IsInvalid())
+  if (!IsValid())
     return GURL(std::move(serialized), parsed, false);
 
   // SchemeHostPort does not have enough information to determine if an empty
@@ -223,7 +235,7 @@ bool SchemeHostPort::operator<(const SchemeHostPort& other) const {
 
 std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
   std::string result;
-  if (IsInvalid())
+  if (!IsValid())
     return result;
 
   // Reserve enough space for the "normal" case of scheme://host/.
@@ -240,9 +252,6 @@ std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
     parsed->host = Component(result.length(), host_.length());
     result.append(host_);
   }
-
-  if (port_ == 0)
-    return result;
 
   // Omit the port component if the port matches with the default port
   // defined for the scheme, if any.

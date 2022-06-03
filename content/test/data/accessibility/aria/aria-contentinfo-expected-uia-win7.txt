@@ -1,3 +1,3 @@
-document
-++contentinfo LocalizedControlType='content information'
-++++description Name='This is ARIA role contentinfo.'
+Document
+++Group LocalizedControlType='content information'
+++++Text Name='This is ARIA role contentinfo.'

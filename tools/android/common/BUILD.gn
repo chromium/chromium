@@ -12,7 +12,5 @@ source_set("common") {
     "net.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

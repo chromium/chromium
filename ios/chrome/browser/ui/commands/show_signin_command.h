@@ -19,8 +19,16 @@ enum AuthenticationOperation {
   AUTHENTICATION_OPERATION_REAUTHENTICATE,
 
   // Operation to start a sign-in operation. The user is presented with the
-  // SSOAuth sign in page (SSOAuth account picker or SSOAuth sign-in web page).
+  // sign-in page with the user consent.
   AUTHENTICATION_OPERATION_SIGNIN,
+
+  // Operation to add a secondary account. The user is presented with the
+  // SSOAUth sin-in page.
+  AUTHENTICATION_OPERATION_ADD_ACCOUNT,
+
+  // Operation to start a forced sign-in operation. The user is presented with
+  // the sign-in page with information about the policy and cannot dimiss it.
+  AUTHENTICATION_OPERATION_FORCED_SIGNIN,
 };
 
 // A command to perform a sign in operation.

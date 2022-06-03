@@ -3,7 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//build/config/clang/clang.gni")
+import("//build/config/compiler/compiler.gni")
 
 # This template creates a set of shared libraries, by linking a single
 # "partitioned" shared library, then splitting it into multiple pieces.
@@ -60,7 +62,7 @@ template("partitioned_shared_library") {
     }
     ldflags += [
       "-Wl,-soname,lib${_output_name}.so",
-      "--link-only",
+      "--partitioned-library",
     ]
 
     # This shared library is an intermediate artifact that should not packaged
@@ -71,20 +73,15 @@ template("partitioned_shared_library") {
 
   template("partition_action") {
     action(target_name) {
-      deps = [
-        ":$_combined_library_target",
-      ]
+      deps = [ ":$_combined_library_target" ]
       script = "//build/extract_partition.py"
-      sources = [
-        "$root_out_dir/lib.unstripped/lib${_output_name}__combined.so",
-      ]
+      sources =
+          [ "$root_out_dir/lib.unstripped/lib${_output_name}__combined.so" ]
       outputs = [
         invoker.unstripped_output,
         invoker.stripped_output,
       ]
-      data = [
-        invoker.unstripped_output,
-      ]
+      data = [ invoker.unstripped_output ]
       metadata = {
         shared_libraries = [ invoker.stripped_output ]
       }
@@ -101,6 +98,11 @@ template("partitioned_shared_library") {
           "--partition",
           "${invoker.partition}",
         ]
+      }
+
+      if (use_debug_fission) {
+        args += [ "--split-dwarf" ]
+        outputs += [ invoker.unstripped_output + ".dwp" ]
       }
       args += [ rebase_path(sources[0], root_build_dir) ]
     }

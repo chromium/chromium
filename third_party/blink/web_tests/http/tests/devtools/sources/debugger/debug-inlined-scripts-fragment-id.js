@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that all inlined scripts from the same document are shown in the same source frame with html script tags. Bug 54544.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('resources/inline-scripts.html');
@@ -21,16 +21,16 @@
     SourcesTestRunner.showScriptSource('inline-scripts.html', step2);
   }
 
-  function step2(sourceFrame) {
+  async function step2(sourceFrame) {
     TestRunner.addResult('Script source was shown.');
-    SourcesTestRunner.setBreakpoint(sourceFrame, 5, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 5, '', true);
     SourcesTestRunner.waitUntilPaused(step3);
     TestRunner.reloadPage(SourcesTestRunner.completeDebuggerTest.bind(SourcesTestRunner));
   }
 
-  function step3(callFrames) {
+  async function step3(callFrames) {
     TestRunner.addResult('Script execution paused.');
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.showScriptSource('inline-scripts.html', step4);
   }
 
@@ -39,13 +39,13 @@
     SourcesTestRunner.resumeExecution(SourcesTestRunner.waitUntilPaused.bind(null, step5));
   }
 
-  function step5(callFrames) {
+  async function step5(callFrames) {
     if (callFrames[0].location.lineNumber !== 9) {
       SourcesTestRunner.resumeExecution(SourcesTestRunner.waitUntilPaused.bind(null, step5));
       return;
     }
     TestRunner.addResult('Script execution paused.');
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.showScriptSource('inline-scripts.html', step6);
   }
 

@@ -1,0 +1,34 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+enum VideoPixelFormat {
+    // 4:2:0 Y, U, V
+    "I420",
+
+    // 4:2:0 Y, U, V, A
+    "I420A",
+
+    // 4:2:2 Y, U, V
+    "I422",
+
+    // 4:4:4 Y, U, V
+    "I444",
+
+    // 4:2:0 Y, UV
+    "NV12",
+
+    // 32bpp RGBA
+    "RGBA",
+
+    // 32bpp RGBX (opaque)
+    "RGBX",
+
+    // 32bpp BGRA
+    "BGRA",
+
+    // 32bpp BGRX (opaque)
+    "BGRX",
+};

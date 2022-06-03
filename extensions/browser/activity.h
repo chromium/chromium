@@ -9,6 +9,9 @@ namespace extensions {
 
 struct Activity {
   enum Type {
+    // The activity is for accessibility. The extra data is an empty string.
+    ACCESSIBILITY,
+
     // The activity is an Extensions API function call. The extra data is the
     // function name.
     API_FUNCTION,

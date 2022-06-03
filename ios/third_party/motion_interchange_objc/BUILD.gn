@@ -50,7 +50,7 @@ source_set("motion_interchange_objc") {
     "src/src/MotionInterchange.h",
   ]
 
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "Foundation.framework",
     "QuartzCore.framework",

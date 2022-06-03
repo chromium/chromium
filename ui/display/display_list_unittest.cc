@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -18,6 +19,10 @@ namespace {
 class DisplayObserverImpl : public DisplayObserver {
  public:
   DisplayObserverImpl() {}
+
+  DisplayObserverImpl(const DisplayObserverImpl&) = delete;
+  DisplayObserverImpl& operator=(const DisplayObserverImpl&) = delete;
+
   ~DisplayObserverImpl() override {}
 
   std::string GetAndClearChanges() {
@@ -65,8 +70,6 @@ class DisplayObserverImpl : public DisplayObserver {
   }
 
   std::string changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayObserverImpl);
 };
 
 TEST(DisplayListTest, AddUpdateRemove) {
@@ -107,30 +110,36 @@ TEST(DisplayListTest, AddUpdateRemove) {
   EXPECT_EQ(3, display_list.GetPrimaryDisplayIterator()->id());
 }
 
-TEST(DisplayListTest, SuspendUpdates) {
+TEST(DisplayListTest, EmptyIsValid) {
   DisplayList display_list;
-  display_list.AddDisplay(Display(2, gfx::Rect(0, 0, 801, 802)),
-                          DisplayList::Type::PRIMARY);
-  DisplayObserverImpl observer;
-  display_list.AddObserver(&observer);
-  {
-    // Suspend updates and add a new display.
-    std::unique_ptr<DisplayListObserverLock> lock =
-        display_list.SuspendObserverUpdates();
-    display_list.AddDisplay(Display(3, gfx::Rect(0, 0, 809, 802)),
-                            DisplayList::Type::NOT_PRIMARY);
-    EXPECT_EQ(2u, display_list.displays().size());
-    // No update should have been generated.
-    EXPECT_TRUE(observer.GetAndClearChanges().empty());
-  }
-  // The lock has been destroyed, but no updates should be sent yet.
-  EXPECT_TRUE(observer.GetAndClearChanges().empty());
+  EXPECT_TRUE(display_list.IsValid());
+}
 
-  // Update a display and verify observer called.
-  Display updated_display = display_list.displays()[0];
-  updated_display.set_bounds(gfx::Rect(0, 0, 803, 802));
-  display_list.UpdateDisplay(updated_display, DisplayList::Type::PRIMARY);
-  EXPECT_EQ("Changed id=2 bounds", observer.GetAndClearChanges());
+TEST(DisplayListTest, FirstDisplayAddedMustBePrimary) {
+  DisplayList display_list;
+  EXPECT_DCHECK_DEATH(
+      display_list.AddDisplay(Display(1), DisplayList::Type::NOT_PRIMARY));
+}
+
+TEST(DisplayListTest, DisplaysIdsMustBeUnique) {
+  DisplayList display_list;
+  display_list.AddDisplay(Display(1), DisplayList::Type::PRIMARY);
+  EXPECT_DCHECK_DEATH(
+      display_list.AddDisplay(Display(1), DisplayList::Type::PRIMARY));
+}
+
+TEST(DisplayListTest, GetPrimaryDisplayEmpty) {
+  DisplayList display_list;
+  EXPECT_EQ(display_list.displays().end(),
+            display_list.GetPrimaryDisplayIterator());
+}
+
+TEST(DisplayListTest, GetPrimaryDisplayOk) {
+  DisplayList display_list;
+  display_list.AddDisplay(Display(1), DisplayList::Type::PRIMARY);
+  EXPECT_NE(display_list.displays().end(),
+            display_list.GetPrimaryDisplayIterator());
+  EXPECT_EQ(1, display_list.GetPrimaryDisplayIterator()->id());
 }
 
 }  // namespace

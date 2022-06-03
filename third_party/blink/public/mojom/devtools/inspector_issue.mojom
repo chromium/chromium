@@ -1,0 +1,205 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/blocked_by_response_reason.mojom";
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// A code that uniquely identifies an issue. This type should be descriptive
+// enough for the front-end to provide a clear description of the issue.
+enum InspectorIssueCode {
+  kSameSiteCookieIssue,
+  kMixedContentIssue,
+  kBlockedByResponseIssue,
+  kContentSecurityPolicyIssue,
+  kSharedArrayBufferIssue,
+  kTrustedWebActivityIssue,
+  kHeavyAdIssue,
+  kLowTextContrastIssue,
+  kGenericIssue,
+};
+
+// Information about a cookie that is affected by an issue.
+struct AffectedCookie {
+  string name;
+  string path;
+  string domain;
+};
+
+struct AffectedRequest {
+  string request_id;
+  string? url;
+};
+
+struct AffectedFrame {
+  string frame_id;
+};
+
+struct AffectedLocation {
+  string? script_id;
+  string? url;
+  uint32 line = 0;  // Zero-based as the DevTools front-end expects it.
+  uint32 column = 0;
+};
+
+struct BlockedByResponseIssueDetails {
+  AffectedRequest request;
+  AffectedFrame? parentFrame;
+  AffectedFrame? blockedFrame;
+  network.mojom.BlockedByResponseReason reason;
+};
+
+enum HeavyAdResolutionStatus {
+  kHeavyAdBlocked,
+  kHeavyAdWarning,
+};
+
+enum HeavyAdReason {
+  kNetworkTotalLimit,
+  kCpuTotalLimit,
+  kCpuPeakLimit,
+};
+
+struct HeavyAdIssueDetails {
+  HeavyAdResolutionStatus resolution;
+  HeavyAdReason reason;
+  AffectedFrame frame;
+};
+
+enum MixedContentResolutionStatus {
+  kMixedContentBlocked,
+  kMixedContentAutomaticallyUpgraded,
+  kMixedContentWarning,
+};
+
+struct MixedContentIssueDetails {
+  RequestContextType request_context;
+  MixedContentResolutionStatus resolution_status;
+  string insecure_url;
+  string main_resource_url;
+  AffectedRequest? request;
+  AffectedFrame? frame;
+};
+
+enum ContentSecurityPolicyViolationType {
+    kInlineViolation,
+    kEvalViolation,
+    kURLViolation,
+    kTrustedTypesSinkViolation,
+    kTrustedTypesPolicyViolation,
+    kWasmEvalViolation,
+};
+
+struct ContentSecurityPolicyIssueDetails {
+  url.mojom.Url? blocked_url;
+  string violated_directive;
+  bool is_report_only;
+  ContentSecurityPolicyViolationType content_security_policy_violation_type;
+  AffectedFrame? frame_ancestor;
+  AffectedLocation? affected_location;
+  // 0 is not a valid node id and is used to indicate absence.
+  int32 violating_node_id = 0;
+};
+
+enum SameSiteCookieOperation {
+  kSetCookie, kReadCookie
+};
+
+enum SameSiteCookieExclusionReason {
+  kExcludeSameSiteUnspecifiedTreatedAsLax,
+  kExcludeSameSiteNoneInsecure,
+  kExcludeSameSiteLax,
+  kExcludeSameSiteStrict,
+};
+
+enum SameSiteCookieWarningReason {
+  kWarnSameSiteUnspecifiedCrossSiteContext,
+  kWarnSameSiteNoneInsecure,
+  kWarnSameSiteUnspecifiedLaxAllowUnsafe,
+  kWarnSameSiteStrictLaxDowngradeStrict,
+  kWarnSameSiteStrictCrossDowngradeStrict,
+  kWarnSameSiteStrictCrossDowngradeLax,
+  kWarnSameSiteLaxCrossDowngradeStrict,
+  kWarnSameSiteLaxCrossDowngradeLax,
+};
+
+// Specific information about |kSameSiteCookieIssue| type issues.
+struct SameSiteCookieIssueDetails {
+  AffectedCookie cookie;
+  array<SameSiteCookieExclusionReason> exclusion_reason;
+  array<SameSiteCookieWarningReason> warning_reason;
+  SameSiteCookieOperation operation;
+  url.mojom.Url? site_for_cookies;
+  url.mojom.Url? cookie_url;
+  AffectedRequest? request;
+};
+
+enum SharedArrayBufferIssueType {
+  kTransferIssue,
+  kCreationIssue,
+};
+
+struct SharedArrayBufferIssueDetails {
+  AffectedLocation? affected_location;
+  bool is_warning;
+  SharedArrayBufferIssueType type;
+};
+
+enum TwaQualityEnforcementViolationType {
+  kHttpError,
+  kUnavailableOffline,
+  kDigitalAssetLinks,
+};
+
+struct TrustedWebActivityIssueDetails {
+  url.mojom.Url url;
+  TwaQualityEnforcementViolationType violation_type;
+  // 0 is not a valid code and is used to indicate absence.
+  int32 http_error_code = 0;
+  string? package_name;
+  string? signature;
+};
+
+struct LowTextContrastIssue {
+  int32 violating_node_id;
+  string violating_node_selector;
+  float contrast_ratio;
+  float threshold_aa;
+  float threshold_aaa;
+  string font_size;
+  string font_weight;
+};
+
+enum GenericIssueErrorType {
+  kCrossOriginPortalPostMessageError,
+};
+
+struct GenericIssueDetails {
+  GenericIssueErrorType error_type;
+  string? frame_id;
+};
+
+// A collection of optional fields that may store additional data depending
+// on the issue code.
+struct InspectorIssueDetails {
+  SameSiteCookieIssueDetails? samesite_cookie_issue_details;
+  MixedContentIssueDetails? mixed_content_issue_details;
+  BlockedByResponseIssueDetails? blocked_by_response_issue_details;
+  ContentSecurityPolicyIssueDetails? csp_issue_details;
+  SharedArrayBufferIssueDetails? sab_issue_details;
+  TrustedWebActivityIssueDetails? twa_issue_details;
+  HeavyAdIssueDetails? heavy_ad_issue_details;
+  LowTextContrastIssue? low_text_contrast_details;
+  GenericIssueDetails? generic_issue_details;
+  mojo_base.mojom.UnguessableToken? issue_id;
+};
+
+struct InspectorIssueInfo {
+  InspectorIssueCode code;
+  InspectorIssueDetails details;
+};

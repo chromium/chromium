@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/logging.h"
 
 namespace mojo {
 namespace core {

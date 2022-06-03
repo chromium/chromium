@@ -16,7 +16,9 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  RTCPeerConnectionIceErrorEvent(const String& host_candidate,
+  RTCPeerConnectionIceErrorEvent(const String& address,
+                                 absl::optional<uint16_t> port,
+                                 const String& host_candidate,
                                  const String& url,
                                  uint16_t error_code,
                                  const String& error_text);
@@ -25,7 +27,9 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
                                  const RTCPeerConnectionIceErrorEventInit*);
   ~RTCPeerConnectionIceErrorEvent() override;
 
-  static RTCPeerConnectionIceErrorEvent* Create(const String& host_candidate,
+  static RTCPeerConnectionIceErrorEvent* Create(const String& address,
+                                                absl::optional<uint16_t> port,
+                                                const String& host_candidate,
                                                 const String& url,
                                                 int error_code,
                                                 const String& error_text);
@@ -34,15 +38,19 @@ class MODULES_EXPORT RTCPeerConnectionIceErrorEvent final : public Event {
       const AtomicString& type,
       const RTCPeerConnectionIceErrorEventInit*);
 
+  String address() const;
+  absl::optional<uint16_t> port() const;
   String hostCandidate() const;
   String url() const;
   uint16_t errorCode() const;
   String errorText() const;
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
+  String address_;
+  absl::optional<uint16_t> port_;
   String host_candidate_;
   String url_;
   uint16_t error_code_;

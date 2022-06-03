@@ -9,12 +9,16 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/span.h"
-#include "base/optional.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
 namespace views {
 class Button;
+class BubbleDialogDelegateView;
 }
 
 class ColorPickerElementView;
@@ -22,22 +26,24 @@ class ColorPickerElementView;
 // Lets users pick from a list of colors displayed as circles that can be
 // clicked on. Similar to radio buttons, exactly one is selected after the first
 // selection is made.
-//
-// TODO(crbug.com/989174): make this keyboard and screenreader accessible.
 class ColorPickerView : public views::View {
  public:
+  METADATA_HEADER(ColorPickerView);
+
   using ColorSelectedCallback = base::RepeatingCallback<void()>;
+
   // |colors| should contain the color values and accessible names. There should
   // not be duplicate colors.
-  explicit ColorPickerView(
-      base::span<const std::pair<SkColor, base::string16>> colors,
-      SkColor background_color,
-      SkColor initial_color,
-      ColorSelectedCallback callback);
+  explicit ColorPickerView(const views::BubbleDialogDelegateView* bubble_view,
+                           const TabGroupEditorBubbleView::Colors& colors,
+                           tab_groups::TabGroupColorId initial_color_id,
+                           ColorSelectedCallback callback);
+
   ~ColorPickerView() override;
 
+  // Returns the index of the selected element, if any.
   // After the callback is called, this is guaranteed to never return nullopt.
-  base::Optional<SkColor> GetSelectedColor() const;
+  absl::optional<int> GetSelectedElement() const;
 
   // views::View:
   views::View* GetSelectedViewForGroup(int group) override;

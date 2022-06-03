@@ -9,10 +9,18 @@ if (typeof distillerOnIos === 'undefined') {
   distillerOnIos = false;
 }
 
+// The style guide recommends preferring $() to getElementById(). Chrome's
+// standard implementation of $() is imported from chrome://resources, which the
+// distilled page is prohibited from accessing. A version of it is
+// re-implemented here to allow stylistic consistency with other JS code.
+function $(id) {
+  return document.getElementById(id);
+}
+
 function addToPage(html) {
   const div = document.createElement('div');
   div.innerHTML = html;
-  document.getElementById('content').appendChild(div);
+  $('content').appendChild(div);
   fillYouTubePlaceholders();
 }
 
@@ -20,7 +28,7 @@ function fillYouTubePlaceholders() {
   const placeholders = document.getElementsByClassName('embed-placeholder');
   for (let i = 0; i < placeholders.length; i++) {
     if (!placeholders[i].hasAttribute('data-type') ||
-        placeholders[i].getAttribute('data-type') != 'youtube' ||
+        placeholders[i].getAttribute('data-type') !== 'youtube' ||
         !placeholders[i].hasAttribute('data-id')) {
       continue;
     }
@@ -42,16 +50,17 @@ function fillYouTubePlaceholders() {
 }
 
 function showLoadingIndicator(isLastPage) {
-  document.getElementById('loading-indicator').className =
-      isLastPage ? 'hidden' : 'visible';
+  $('loading-indicator').className = isLastPage ? 'hidden' : 'visible';
 }
 
 // Sets the title.
-function setTitle(title) {
-  const holder = document.getElementById('title-holder');
-
-  holder.textContent = title;
-  document.title = title;
+function setTitle(title, documentTitleSuffix) {
+  $('title-holder').textContent = title;
+  if (documentTitleSuffix) {
+    document.title = title + documentTitleSuffix;
+  } else {
+    document.title = title;
+  }
 }
 
 // Set the text direction of the document ('ltr', 'rtl', or 'auto').
@@ -60,45 +69,34 @@ function setTextDirection(direction) {
 }
 
 // These classes must agree with the font classes in distilledpage.css.
-const fontFamilyClasses = ['sans-serif', 'serif', 'monospace'];
-function useFontFamily(fontFamily) {
-  fontFamilyClasses.forEach(
-      (element) =>
-          document.body.classList.toggle(element, element == fontFamily));
-}
-
-// These classes must agree with the theme classes in distilledpage.css.
 const themeClasses = ['light', 'dark', 'sepia'];
-function useTheme(theme) {
-  themeClasses.forEach(
-      (element) => document.body.classList.toggle(element, element == theme));
-  updateToolbarColor(theme);
+const fontFamilyClasses = ['sans-serif', 'serif', 'monospace'];
+
+// Get the currently applied appearance setting.
+function getAppearanceSetting(settingClasses) {
+  const cls = Array.from(document.body.classList)
+                  .find((cls) => settingClasses.includes(cls));
+  return cls ? cls : settingClasses[0];
 }
 
-function getClassFromElement(element, classList) {
-  let foundClass = classList[0];
-  classList.forEach((cls) => {
-    if (element.classList.contains(cls)) {
-      foundClass = cls;
-    }
-  });
-  return foundClass;
+function useTheme(theme) {
+  settingsDialog.useTheme(theme);
+}
+
+function useFontFamily(fontFamily) {
+  settingsDialog.useFontFamily(fontFamily);
 }
 
 function updateToolbarColor(theme) {
   let toolbarColor;
-  if (theme == 'sepia') {
+  if (theme === 'sepia') {
     toolbarColor = '#BF9A73';
-  } else if (theme == 'dark') {
+  } else if (theme === 'dark') {
     toolbarColor = '#1A1A1A';
   } else {
     toolbarColor = '#F5F5F5';
   }
-  document.getElementById('theme-color').content = toolbarColor;
-}
-
-function useFontScaling(scaling) {
-  pincher.useFontScaling(scaling);
+  $('theme-color').content = toolbarColor;
 }
 
 function maybeSetWebFont() {
@@ -119,38 +117,44 @@ function maybeSetWebFont() {
 
 // TODO(https://crbug.com/1027612): Consider making this a custom HTML element.
 class FontSizeSlider {
-  constructor(element, supportedFontSizes) {
-    this.element = element;
-    this.supportedFontSizes = supportedFontSizes;
-
-    this.element.addEventListener('change', (e) => {
-      document.body.style.fontSize =
-          this.supportedFontSizes[e.target.value] + 'px';
-      this.update(e.target.value);
-    });
+  constructor() {
+    this.element = $('font-size-selection');
+    this.baseSize = 16;
+    // These scales are applied to a base size of 16px.
+    this.fontSizeScale = [0.875, 0.9375, 1, 1.125, 1.25, 1.5, 1.75, 2, 2.5, 3];
 
     this.element.addEventListener('input', (e) => {
-      this.update(e.target.value);
+      const scale = this.fontSizeScale[e.target.value];
+      this.useFontScaling(scale);
+      distiller.storeFontScalingPref(parseFloat(scale));
     });
 
     this.tickmarks = document.createElement('datalist');
     this.tickmarks.setAttribute('class', 'tickmarks');
     this.element.after(this.tickmarks);
 
-    for (let i = 0; i < this.supportedFontSizes.length; i++) {
+    for (let i = 0; i < this.fontSizeScale.length; i++) {
       const option = document.createElement('option');
       option.setAttribute('value', i);
-      option.textContent = supportedFontSizes[i];
+      option.textContent = this.fontSizeScale[i] * this.baseSize;
       this.tickmarks.appendChild(option);
     }
-
+    this.element.value = 2;
+    this.update(this.element.value);
+  }
+  // TODO(meredithl): validate |scale| and snap to nearest supported font size.
+  useFontScaling(scale) {
+    this.element.value = this.fontSizeScale.indexOf(scale);
+    document.documentElement.style.fontSize = scale * this.baseSize + 'px';
     this.update(this.element.value);
   }
 
   update(position) {
     this.element.style.setProperty(
         '--fontSizePercent',
-        (position / (this.supportedFontSizes.length - 1) * 100) + '%');
+        (position / (this.fontSizeScale.length - 1) * 100) + '%');
+    this.element.setAttribute(
+        'aria-valuetext', this.fontSizeScale[position] + 'px');
     for (let option = this.tickmarks.firstChild; option != null;
          option = option.nextSibling) {
       const isBeforeThumb = option.value < position;
@@ -160,22 +164,12 @@ class FontSizeSlider {
   }
 }
 
-const fontSizeSlider = new FontSizeSlider(
-    document.querySelector('#font-size-selection'),
-    [14, 15, 16, 18, 20, 24, 28, 32, 40, 48]);
-
-updateToolbarColor(getClassFromElement(document.body, themeClasses));
 maybeSetWebFont();
 
 // The zooming speed relative to pinching speed.
 const FONT_SCALE_MULTIPLIER = 0.5;
 
 const MIN_SPAN_LENGTH = 20;
-
-// This has to be in sync with 'font-size' in distilledpage.css.
-// This value is hard-coded because JS might be injected before CSS is ready.
-// See crbug.com/1004663.
-const baseSize = 14;
 
 class Pincher {
   // When users pinch in Reader Mode, the page would zoom in or out as if it
@@ -195,6 +189,10 @@ class Pincher {
   // TODO(wychen): Improve scroll position when elementFromPoint is body.
 
   constructor() {
+    // This has to be in sync with 'font-size' in distilledpage.css.
+    // This value is hard-coded because JS might be injected before CSS is
+    // ready. See crbug.com/1004663.
+    this.baseSize = 14;
     this.pinching = false;
     this.fontSizeAnchor = 1.0;
 
@@ -210,6 +208,19 @@ class Pincher {
     this.scale = 1.0;
     this.shiftX = 0;
     this.shiftY = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      this.handleTouchStart(e);
+    }, {passive: false});
+    window.addEventListener('touchmove', (e) => {
+      this.handleTouchMove(e);
+    }, {passive: false});
+    window.addEventListener('touchend', (e) => {
+      this.handleTouchEnd(e);
+    }, {passive: false});
+    window.addEventListener('touchcancel', (e) => {
+      this.handleTouchCancel(e);
+    }, {passive: false});
   }
 
   /** @private */
@@ -255,11 +266,11 @@ class Pincher {
     document.body.style.transformOrigin = '';
     document.body.style.transform = '';
     document.documentElement.style.fontSize =
-        this.clampedScale * baseSize + 'px';
+        this.clampedScale * this.baseSize + 'px';
 
     this.restoreCenter_();
 
-    let img = document.getElementById('fontscaling-img');
+    let img = $('fontscaling-img');
     if (!img) {
       img = document.createElement('img');
       img.id = 'fontscaling-img';
@@ -327,7 +338,7 @@ class Pincher {
     this.pinching = true;
     this.fontSizeAnchor =
         parseFloat(getComputedStyle(document.documentElement).fontSize) /
-        baseSize;
+        this.baseSize;
 
     const pinchOrigin = this.touchPageMid_(e);
     document.body.style.transformOrigin =
@@ -395,7 +406,7 @@ class Pincher {
     this.shiftY = 0;
     this.clampedScale = 1;
     document.documentElement.style.fontSize =
-        this.clampedScale * baseSize + 'px';
+        this.clampedScale * this.baseSize + 'px';
   }
 
   status() {
@@ -411,44 +422,113 @@ class Pincher {
     this.saveCenter_({x: window.innerWidth / 2, y: window.innerHeight / 2});
     this.shiftX = 0;
     this.shiftY = 0;
-    document.documentElement.style.fontSize = scaling * baseSize + 'px';
+    document.documentElement.style.fontSize = scaling * this.baseSize + 'px';
     this.clampedScale = scaling;
     this.restoreCenter_();
   }
 }
 
-const pincher = new Pincher;
+// The pincher is only defined on Android, and the font size slider only on
+// desktop.
+// eslint-disable-next-line no-var
+var pincher, fontSizeSlider;
+if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
+  pincher = new Pincher;
+} else {
+  fontSizeSlider = new FontSizeSlider;
+}
 
-window.addEventListener(
-    'touchstart', pincher.handleTouchStart, {passive: false});
-window.addEventListener('touchmove', pincher.handleTouchMove, {passive: false});
-window.addEventListener('touchend', pincher.handleTouchEnd, {passive: false});
-window.addEventListener(
-    'touchcancel', pincher.handleTouchCancel, {passive: false});
-
-document.querySelector('#settings-toggle').addEventListener('click', (e) => {
-  const dialog = document.querySelector('#settings-dialog');
-  const toggle = document.querySelector('#settings-toggle');
-  if (dialog.open) {
-    toggle.classList.remove('activated');
-    dialog.close();
+function useFontScaling(scale) {
+  if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
+    pincher.useFontScaling(scale);
   } else {
-    toggle.classList.add('activated');
-    dialog.show();
+    fontSizeSlider.useFontScaling(scale);
   }
-});
+}
 
-document.querySelector('#close-settings-button')
-    .addEventListener('click', (e) => {
-      document.querySelector('#settings-toggle').classList.remove('activated');
-      document.querySelector('#settings-dialog').close();
+class SettingsDialog {
+  constructor(
+      toggleElement, dialogElement, backdropElement, themeFieldset,
+      fontFamilySelect) {
+    this._toggleElement = toggleElement;
+    this._dialogElement = dialogElement;
+    this._backdropElement = backdropElement;
+    this._themeFieldset = themeFieldset;
+    this._fontFamilySelect = fontFamilySelect;
+
+    this._toggleElement.addEventListener('click', this.toggle.bind(this));
+    this._dialogElement.addEventListener('close', this.close.bind(this));
+    this._backdropElement.addEventListener('click', this.close.bind(this));
+
+    $('close-settings-button').addEventListener('click', this.close.bind(this));
+
+    this._themeFieldset.addEventListener('change', (e) => {
+      const newTheme = e.target.value;
+      this.useTheme(newTheme);
+      distiller.storeThemePref(themeClasses.indexOf(newTheme));
     });
 
-document.querySelector('#theme-selection').addEventListener('change', (e) => {
-  useTheme(e.target.value);
-});
-
-document.querySelector('#font-family-selection')
-    .addEventListener('change', (e) => {
-      useFontFamily(e.target.value);
+    this._fontFamilySelect.addEventListener('change', (e) => {
+      const newFontFamily = e.target.value;
+      this.useFontFamily(newFontFamily);
+      distiller.storeFontFamilyPref(fontFamilyClasses.indexOf(newFontFamily));
     });
+
+    // Appearance settings are loaded from user preferences, so on page load
+    // the controllers for these settings may need to be updated to reflect
+    // the active setting.
+    this._updateFontFamilyControls(getAppearanceSetting(fontFamilyClasses));
+    const selectedTheme = getAppearanceSetting(themeClasses);
+    this._updateThemeControls(selectedTheme);
+    updateToolbarColor(selectedTheme);
+  }
+
+  toggle() {
+    if (this._dialogElement.open) {
+      this.close();
+    } else {
+      this.showModal();
+    }
+  }
+
+  showModal() {
+    this._toggleElement.classList.add('activated');
+    this._backdropElement.style.display = 'block';
+    this._dialogElement.showModal();
+  }
+
+  close() {
+    this._toggleElement.classList.remove('activated');
+    this._backdropElement.style.display = 'none';
+    this._dialogElement.close();
+  }
+
+  useTheme(theme) {
+    themeClasses.forEach(
+        (element) =>
+            document.body.classList.toggle(element, element === theme));
+    this._updateThemeControls(theme);
+    updateToolbarColor(theme);
+  }
+
+  _updateThemeControls(theme) {
+    const queryString = `input[value=${theme}]`;
+    this._themeFieldset.querySelector(queryString).checked = true;
+  }
+
+  useFontFamily(fontFamily) {
+    fontFamilyClasses.forEach(
+        (element) =>
+            document.body.classList.toggle(element, element === fontFamily));
+    this._updateFontFamilyControls(fontFamily);
+  }
+
+  _updateFontFamilyControls(fontFamily) {
+    this._fontFamilySelect.selectedIndex =
+        fontFamilyClasses.indexOf(fontFamily);
+  }
+}
+
+const settingsDialog = new SettingsDialog(
+    $('settings-toggle'), $('settings-dialog'), $('dialog-backdrop'),
+    $('theme-selection'), $('font-family-selection'));

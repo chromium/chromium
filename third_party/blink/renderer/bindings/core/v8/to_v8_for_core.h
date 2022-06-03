@@ -9,6 +9,7 @@
 // handle. Call sites must check IsEmpty() before using return value.
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
@@ -18,18 +19,6 @@
 namespace blink {
 
 class Dictionary;
-class DOMWindow;
-class EventTarget;
-
-CORE_EXPORT v8::Local<v8::Value> ToV8(DOMWindow*,
-                                      v8::Local<v8::Object> creation_context,
-                                      v8::Isolate*);
-CORE_EXPORT v8::Local<v8::Value> ToV8(EventTarget*,
-                                      v8::Local<v8::Object> creation_context,
-                                      v8::Isolate*);
-CORE_EXPORT v8::Local<v8::Value> ToV8(Node* node,
-                                      v8::Local<v8::Object> creation_context,
-                                      v8::Isolate* isolate);
 
 inline v8::Local<v8::Value> ToV8(const Dictionary& value,
                                  v8::Local<v8::Object> creation_context,
@@ -42,14 +31,14 @@ template <typename T>
 inline v8::Local<v8::Value> ToV8(NotShared<T> value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
-  return ToV8(value.View(), creation_context, isolate);
+  return ToV8(value.Get(), creation_context, isolate);
 }
 
 template <typename T>
 inline v8::Local<v8::Value> ToV8(MaybeShared<T> value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
-  return ToV8(value.View(), creation_context, isolate);
+  return ToV8(value.Get(), creation_context, isolate);
 }
 
 // Dictionary
@@ -60,6 +49,15 @@ inline v8::Local<v8::Value> ToV8(const IDLDictionaryBase* value,
   if (!value)
     return v8::Null(isolate);
   return value->ToV8Impl(creation_context, isolate);
+}
+
+// Promise
+
+inline v8::Local<v8::Value> ToV8(const ScriptPromise& value,
+                                 v8::Local<v8::Object> creation_context,
+                                 v8::Isolate* isolate) {
+  DCHECK(!value.IsEmpty());
+  return value.V8Value();
 }
 
 // ScriptValue

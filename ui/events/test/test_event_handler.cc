@@ -15,9 +15,8 @@ TestEventHandler::TestEventHandler()
       num_scroll_events_(0),
       num_touch_events_(0),
       num_gesture_events_(0),
-      recorder_(NULL),
-      handler_name_("unknown") {
-}
+      recorder_(nullptr),
+      handler_name_("unknown") {}
 
 TestEventHandler::~TestEventHandler() {}
 

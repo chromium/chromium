@@ -1,0 +1,19 @@
+Name: FreeType-Testing
+URL: https://github.com/freetype/freetype2-testing
+Version: VER-7688934d5
+Revision: fe2eddae6176f75e2101289eeda22a5ff3d808ca
+License: GPL
+License File: NOT_SHIPPED
+Security Critical: no
+License Android Compatible: yes
+
+Description:
+This package tracks the freetype-testing repository which is a collection of
+fuzzer harnesses that provide coverage for freetype for oss-fuzz. We want to run
+some of the fuzzing harness as part of Chromium's own fuzzing. This is the
+reason for this repository to be included.
+
+How to update:
+1. Update the revision in this file, and the freetype-testing revision in the
+   top level Chromium DEPS file.
+2. Update BUILD.gn to reflect changes if needed.

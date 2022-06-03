@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 7: Uncaught TypeError: host.createShadowRoot is not a function
-Tests that CSSComputedStyleDeclaration.length with dirty distribution doesn't crash.

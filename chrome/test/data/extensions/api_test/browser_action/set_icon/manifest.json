@@ -1,0 +1,15 @@
+{
+  "name": "A browser action to test chrome.browserAction.setIcon()",
+  "version": "1.0",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "permissions": [
+    "tabs", "http://*/*"
+  ],
+  "browser_action": {
+    "default_title": "Test setIcon()"
+  }
+}

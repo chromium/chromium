@@ -7,7 +7,8 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/prerender/prerender_service.h"
+#include "ios/chrome/browser/prerender/prerender_service_impl.h"
+#include "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -16,7 +17,7 @@
 
 // static
 PrerenderService* PrerenderServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<PrerenderService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -30,15 +31,17 @@ PrerenderServiceFactory* PrerenderServiceFactory::GetInstance() {
 PrerenderServiceFactory::PrerenderServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PrerenderService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ios::AccountConsistencyServiceFactory::GetInstance());
+}
 
 PrerenderServiceFactory::~PrerenderServiceFactory() {}
 
 std::unique_ptr<KeyedService> PrerenderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<PrerenderService>(browser_state);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<PrerenderServiceImpl>(browser_state);
 }
 
 bool PrerenderServiceFactory::ServiceIsNULLWhileTesting() const {

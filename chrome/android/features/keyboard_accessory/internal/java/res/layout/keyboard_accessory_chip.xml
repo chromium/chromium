@@ -19,5 +19,5 @@
     android:layout_marginBottom="@dimen/keyboard_accessory_chip_vertical_margin"
     android:layout_marginTop="@dimen/keyboard_accessory_chip_vertical_margin"
     android:elevation="2dp"
-    android:textAppearance="@style/TextAppearance.BlackTitle2"
+    android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
     android:background="@drawable/autofill_chip_inset"/>

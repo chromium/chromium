@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tabList horizontal setSize=5
+++++++++tab name='tab1' setSize=5 posInSet=2 selected=false
+++++++++++staticText name='tab1'
+++++++++++++inlineTextBox name='tab1'
+++++++++tab name='tab2' setSize=5 posInSet=3 selected=false
+++++++++++staticText name='tab2'
+++++++++++++inlineTextBox name='tab2'
+++++++++tab name='tab3' setSize=5 posInSet=4 selected=false
+++++++++++staticText name='tab3'
+++++++++++++inlineTextBox name='tab3'
+++++++++tab name='tab4' setSize=5 posInSet=5 selected=false
+++++++++++staticText name='tab4'
+++++++++++++inlineTextBox name='tab4'

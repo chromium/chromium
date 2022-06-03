@@ -7,9 +7,11 @@
 
 #include "base/component_export.h"
 #include "base/process/process_handle.h"
+#include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "base/trace_event/process_memory_dump.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-shared.h"
 
 namespace mojo {
 
@@ -100,19 +102,19 @@ template <>
 struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM) UnionTraits<
     memory_instrumentation::mojom::RawAllocatorDumpEntryValueDataView,
     base::trace_event::MemoryAllocatorDump::Entry> {
-  static memory_instrumentation::mojom::RawAllocatorDumpEntryValue::Tag GetTag(
-      const base::trace_event::MemoryAllocatorDump::Entry& args) {
+  static memory_instrumentation::mojom::RawAllocatorDumpEntryValueDataView::Tag
+  GetTag(const base::trace_event::MemoryAllocatorDump::Entry& args) {
     switch (args.entry_type) {
       case base::trace_event::MemoryAllocatorDump::Entry::EntryType::kUint64:
-        return memory_instrumentation::mojom::RawAllocatorDumpEntryValue::Tag::
-            VALUE_UINT64;
+        return memory_instrumentation::mojom::
+            RawAllocatorDumpEntryValueDataView::Tag::VALUE_UINT64;
       case base::trace_event::MemoryAllocatorDump::Entry::EntryType::kString:
-        return memory_instrumentation::mojom::RawAllocatorDumpEntryValue::Tag::
-            VALUE_STRING;
+        return memory_instrumentation::mojom::
+            RawAllocatorDumpEntryValueDataView::Tag::VALUE_STRING;
     }
     NOTREACHED();
-    return memory_instrumentation::mojom::RawAllocatorDumpEntryValue::Tag::
-        VALUE_UINT64;
+    return memory_instrumentation::mojom::RawAllocatorDumpEntryValueDataView::
+        Tag::VALUE_UINT64;
   }
 
   static uint64_t value_uint64(

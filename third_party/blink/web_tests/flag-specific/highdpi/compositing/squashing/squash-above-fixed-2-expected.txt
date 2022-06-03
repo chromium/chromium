@@ -1,0 +1,93 @@
+This scenario verifies that the cyan "container" element scrolls properly with squashing enabled. The "container" element should not squash into a composited layer mapping owned by the fixed position layer or its descendant, since this would make it behave like a fixed position element during composited scrolling.
+
+CASE 1, original layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 6075],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
+      "bounds": [600, 300],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='compositedInsideFixed'",
+      "bounds": [75, 75],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#FF0000"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "position": [150, 75],
+      "bounds": [300, 6000],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF"
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ]
+}
+
+CASE 2, scrolling y to 80, the "container" element should remain positioned with respect to the scrolled document, the fixed-pos layer compensates for the new scroll position:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 6075],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
+      "bounds": [600, 300],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='compositedInsideFixed'",
+      "bounds": [75, 75],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#FF0000"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "position": [150, 75],
+      "bounds": [300, 6000],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF",
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -120, 0, 1]
+      ]
+    }
+  ]
+}
+

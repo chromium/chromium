@@ -37,8 +37,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   // BluetoothRemoteGattDescriptor
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
-  void ReadRemoteDescriptor(ValueCallback callback,
-                            ErrorCallback error_callback) override;
+  void ReadRemoteDescriptor(ValueCallback callback) override;
   void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
@@ -54,6 +53,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   // Calls callbacks, when -[id<CBPeripheralDelegate>
   // peripheral:didWriteValueForDescriptor:error:] is called.
   void DidWriteValueForDescriptor(NSError* error);
+  bool HasPendingRead() const { return !read_value_callback_.is_null(); }
+  bool HasPendingWrite() const {
+    return !write_value_callbacks_.first.is_null();
+  }
 
   // Returns CoreBluetooth peripheral.
   CBPeripheral* GetCBPeripheral() const;
@@ -69,10 +72,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   BluetoothUUID uuid_;
   // Descriptor value.
   std::vector<uint8_t> value_;
-  // True if a gatt read or write request is in progress.
-  bool value_read_or_write_in_progress_;
-  // ReadRemoteDescriptor request callbacks.
-  std::pair<ValueCallback, ErrorCallback> read_value_callbacks_;
+  // The destructor runs callbacks. Methods can use |destructor_called_| to
+  // protect against reentrant calls to a partially deleted instance.
+  bool destructor_called_ = false;
+  // ReadRemoteDescriptor request callback.
+  ValueCallback read_value_callback_;
   // WriteRemoteDescriptor request callbacks.
   std::pair<base::OnceClosure, ErrorCallback> write_value_callbacks_;
 };
@@ -84,4 +88,4 @@ DEVICE_BLUETOOTH_EXPORT std::ostream& operator<<(
 
 }  // namespace device
 
-#endif  // DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_CHARACTERISTIC_MAC_H_
+#endif  // DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_

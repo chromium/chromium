@@ -7,11 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/login_screen.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/login/app_launch_controller.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/network_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -63,16 +63,11 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
   builder->Add("appStartMessage", IDS_APP_START_NETWORK_WAIT_MESSAGE);
   builder->Add("configureNetwork", IDS_APP_START_CONFIGURE_NETWORK);
 
-  const base::string16 product_os_name =
+  const std::u16string product_os_name =
       l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
-  builder->Add(
-      "shortcutInfo",
-      l10n_util::GetStringFUTF16(IDS_APP_START_BAILOUT_SHORTCUT_FORMAT,
-                                 product_os_name));
-
-  builder->Add(
-      "productName",
-      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME));
+  builder->Add("shortcutInfo",
+               l10n_util::GetStringFUTF16(IDS_APP_START_BAILOUT_SHORTCUT_FORMAT,
+                                          product_os_name));
 }
 
 void AppLaunchSplashScreenHandler::Initialize() {
@@ -88,16 +83,24 @@ void AppLaunchSplashScreenHandler::Show() {
     return;
   }
 
+  is_shown_ = true;
+
   base::DictionaryValue data;
   data.SetBoolean("shortcutEnabled",
                   !KioskAppManager::Get()->GetDisableBailoutShortcut());
 
-  auto app_info = std::make_unique<base::DictionaryValue>();
-  PopulateAppInfo(app_info.get());
-  data.Set("appInfo", std::move(app_info));
+  base::DictionaryValue app_info;
+  PopulateAppInfo(&app_info);
+  data.SetKey("appInfo", std::move(app_info));
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
   ShowScreenWithData(kScreenId, &data);
+  if (toggle_network_config_on_show_.has_value()) {
+    DoToggleNetworkConfig(toggle_network_config_on_show_.value());
+    toggle_network_config_on_show_.reset();
+  }
+  if (network_config_shown_)
+    ShowNetworkConfigureUI();
 }
 
 void AppLaunchSplashScreenHandler::RegisterMessages() {
@@ -112,10 +115,15 @@ void AppLaunchSplashScreenHandler::RegisterMessages() {
 }
 
 void AppLaunchSplashScreenHandler::Hide() {
+  is_shown_ = false;
 }
 
 void AppLaunchSplashScreenHandler::ToggleNetworkConfig(bool visible) {
-  CallJS("login.AppLaunchSplashScreen.toggleNetworkConfig", visible);
+  if (!is_shown_) {
+    toggle_network_config_on_show_ = visible;
+    return;
+  }
+  DoToggleNetworkConfig(visible);
 }
 
 void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
@@ -127,6 +135,7 @@ void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
     SetLaunchText(
         l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
   }
+
   UpdateState(NetworkError::ERROR_REASON_UPDATE);
 }
 
@@ -135,13 +144,14 @@ void AppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
 }
 
 void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
+  network_config_shown_ = true;
+
   NetworkStateInformer::State state = network_state_informer_->state();
-  if (state == NetworkStateInformer::ONLINE) {
-    online_state_ = true;
-    if (!network_config_requested_) {
-      delegate_->OnNetworkStateChanged(true);
-      return;
-    }
+
+  // We should not block users when the network was not required by the
+  // controller.
+  if (!delegate_->IsNetworkRequired()) {
+    state = NetworkStateInformer::ONLINE;
   }
 
   const std::string network_path = network_state_informer_->network_path();
@@ -183,7 +193,13 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
 
   if (GetCurrentScreen() != ErrorScreenView::kScreenId)
     error_screen_->SetParentScreen(kScreenId);
-  error_screen_->Show();
+  error_screen_->Show(nullptr);
+}
+
+void AppLaunchSplashScreenHandler::ShowErrorMessage(
+    KioskAppLaunchError::Error error) {
+  ash::LoginScreen::Get()->ShowKioskAppError(
+      KioskAppLaunchError::GetErrorMessage(error));
 }
 
 bool AppLaunchSplashScreenHandler::IsNetworkReady() {
@@ -197,16 +213,16 @@ void AppLaunchSplashScreenHandler::OnNetworkReady() {
 
 void AppLaunchSplashScreenHandler::UpdateState(
     NetworkError::ErrorReason reason) {
-  if (!delegate_ || (state_ != APP_LAUNCH_STATE_PREPARING_NETWORK &&
-                     state_ != APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT)) {
+  if (!delegate_)
     return;
-  }
-
   bool new_online_state =
       network_state_informer_->state() == NetworkStateInformer::ONLINE;
   delegate_->OnNetworkStateChanged(new_online_state);
 
-  online_state_ = new_online_state;
+  // Redraw network configure UI when the network state changes.
+  if (network_config_shown_) {
+    ShowNetworkConfigureUI();
+  }
 }
 
 void AppLaunchSplashScreenHandler::PopulateAppInfo(
@@ -222,8 +238,14 @@ void AppLaunchSplashScreenHandler::PopulateAppInfo(
         IDR_PRODUCT_LOGO_128);
   }
 
+  // Display app domain if present.
+  if (!app.url.is_empty()) {
+    app.url = app.url.DeprecatedGetOriginAsURL();
+  }
+
   out_info->SetString("name", app.name);
   out_info->SetString("iconURL", webui::GetBitmapDataUrl(*app.icon.bitmap()));
+  out_info->SetString("url", app.url.spec());
 }
 
 void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
@@ -233,20 +255,23 @@ void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
 int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
     AppLaunchState state) {
   switch (state) {
-    case APP_LAUNCH_STATE_PREPARING_NETWORK:
+    case AppLaunchState::kPreparingProfile:
+      return IDS_APP_START_PREPARING_PROFILE_MESSAGE;
+    case AppLaunchState::kPreparingNetwork:
       return IDS_APP_START_NETWORK_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_INSTALLING_APPLICATION:
+    case AppLaunchState::kInstallingApplication:
       return IDS_APP_START_APP_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_WAITING_APP_WINDOW:
+    case AppLaunchState::kInstallingExtension:
+      return IDS_APP_START_EXTENSION_WAIT_MESSAGE;
+    case AppLaunchState::kWaitingAppWindow:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE;
-    case APP_LAUNCH_STATE_WAITING_APP_WINDOW_INSTALL_FAILED:
+    case AppLaunchState::kWaitingAppWindowInstallFailed:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_INSTALL_FAILED_MESSAGE;
-    case APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT:
+    case AppLaunchState::kNetworkWaitTimeout:
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
-    case APP_LAUNCH_STATE_SHOWING_NETWORK_CONFIGURE_UI:
+    case AppLaunchState::kShowingNetworkConfigureUI:
       return IDS_APP_START_SHOWING_NETWORK_CONFIGURE_UI_MESSAGE;
   }
-  return IDS_APP_START_NETWORK_WAIT_MESSAGE;
 }
 
 void AppLaunchSplashScreenHandler::HandleConfigureNetwork() {
@@ -264,21 +289,22 @@ void AppLaunchSplashScreenHandler::HandleCancelAppLaunch() {
 }
 
 void AppLaunchSplashScreenHandler::HandleNetworkConfigRequested() {
-  if (!delegate_ || network_config_done_)
+  if (!delegate_)
     return;
-
-  network_config_requested_ = true;
   delegate_->OnNetworkConfigRequested();
 }
 
 void AppLaunchSplashScreenHandler::HandleContinueAppLaunch() {
-  DCHECK(online_state_);
-  if (delegate_ && online_state_) {
-    network_config_requested_ = false;
-    network_config_done_ = true;
-    delegate_->OnNetworkConfigFinished();
-    Show();
-  }
+  if (!delegate_)
+    return;
+
+  network_config_shown_ = false;
+  delegate_->OnNetworkConfigFinished();
+  Show();
+}
+
+void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {
+  CallJS("login.AppLaunchSplashScreen.toggleNetworkConfig", visible);
 }
 
 }  // namespace chromeos

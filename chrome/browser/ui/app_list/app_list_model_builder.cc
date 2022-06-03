@@ -7,14 +7,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
 AppListModelBuilder::AppListModelBuilder(AppListControllerDelegate* controller,
                                          const char* item_type)
     : controller_(controller), item_type_(item_type) {}
-
-AppListModelBuilder::~AppListModelBuilder() {
-}
 
 void AppListModelBuilder::Initialize(app_list::AppListSyncableService* service,
                                      Profile* profile,
@@ -45,8 +43,13 @@ void AppListModelBuilder::RemoveApp(const std::string& id,
 }
 
 const app_list::AppListSyncableService::SyncItem*
-AppListModelBuilder::GetSyncItem(const std::string& id) {
-  return service_ ? service_->GetSyncItem(id) : nullptr;
+AppListModelBuilder::GetSyncItem(
+    const std::string& id,
+    sync_pb::AppListSpecifics::AppListItemType type) {
+  if (!service_)
+    return nullptr;
+  auto* result = service_->GetSyncItem(id);
+  return result && result->item_type == type ? result : nullptr;
 }
 
 ChromeAppListItem* AppListModelBuilder::GetAppItem(const std::string& id) {

@@ -39,7 +39,7 @@ extern "C" {
 /**
  * XML_CATALOG_PI:
  *
- * The specific XML Catalog Processing Instuction name.
+ * The specific XML Catalog Processing Instruction name.
  */
 #define XML_CATALOG_PI						\
     (const xmlChar *) "oasis-xml-catalog"

@@ -14,7 +14,7 @@ function createWebview() {
 }
 
 function onGetBackgroundExecuted(results) {
-  chrome.send('testResult', [results.length == 1 && results[0] == 'red']);
+  chrome.send('testResult', [results.length === 1 && results[0] === 'red']);
 }
 
 function testExecuteScriptCode(url) {
@@ -77,11 +77,11 @@ function testAddContentScript(url) {
   });
 
   window.addEventListener('message', function(e) {
-    if (e.source != webview.contentWindow) {
+    if (e.source !== webview.contentWindow) {
       return;
     }
     var data = JSON.parse(e.data);
-    if (data == RESPONSE_FROM_COMM_CHANNEL_1) {
+    if (data[0] === RESPONSE_FROM_COMM_CHANNEL_1) {
       console.log(
           'Step 3: A communication channel has been established with webview.');
       chrome.send('testResult', [true]);
@@ -129,11 +129,11 @@ function testAddMultiContentScripts(url) {
   var response_1 = false;
   var response_2 = false;
   window.addEventListener('message', function(e) {
-    if (e.source != webview.contentWindow) {
+    if (e.source !== webview.contentWindow) {
       return;
     }
     var data = JSON.parse(e.data);
-    if (data == RESPONSE_FROM_COMM_CHANNEL_1) {
+    if (data[0] === RESPONSE_FROM_COMM_CHANNEL_1) {
       console.log(
           'Step 4: A communication channel has been established with webview.');
       response_1 = true;
@@ -141,7 +141,7 @@ function testAddMultiContentScripts(url) {
         chrome.send('testResult', [true]);
       }
       return;
-    } else if (data == RESPONSE_FROM_COMM_CHANNEL_2) {
+    } else if (data[0] === RESPONSE_FROM_COMM_CHANNEL_2) {
       console.log(
           'Step 5: A communication channel has been established with webview.');
       response_2 = true;
@@ -191,11 +191,11 @@ function testAddContentScriptWithSameNameShouldOverwriteTheExistingOne(url) {
 
   var should_get_response_from_script_1 = true;
   window.addEventListener('message', function(e) {
-    if (e.source != webview.contentWindow) {
+    if (e.source !== webview.contentWindow) {
       return;
     }
     var data = JSON.parse(e.data);
-    if (data == RESPONSE_FROM_COMM_CHANNEL_1) {
+    if (data[0] === RESPONSE_FROM_COMM_CHANNEL_1) {
       if (should_get_response_from_script_1) {
         console.log(
             'Step 2: A communication channel has been established with webview.');
@@ -215,7 +215,7 @@ function testAddContentScriptWithSameNameShouldOverwriteTheExistingOne(url) {
         chrome.send('testResult', [false]);
       }
       return;
-    } else if (data == RESPONSE_FROM_COMM_CHANNEL_2) {
+    } else if (data[0] === RESPONSE_FROM_COMM_CHANNEL_2) {
       console.log(
           'Step 4: Another communication channel has been established ' +
           'with webview.');
@@ -257,11 +257,11 @@ function testAddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView(url) {
   });
 
   window.addEventListener('message', function(e) {
-    if (e.source != webview2.contentWindow) {
+    if (e.source !== webview2.contentWindow) {
       return;
     }
     var data = JSON.parse(e.data);
-    if (data == RESPONSE_FROM_COMM_CHANNEL_1) {
+    if (data[0] === RESPONSE_FROM_COMM_CHANNEL_1) {
       chrome.send('testResult', [false]);
       return;
     }
@@ -295,12 +295,12 @@ function testAddAndRemoveContentScripts(url) {
 
   var count = 0;
   webview.addEventListener('loadstop', function() {
-    if (count == 0) {
+    if (count === 0) {
       console.log('Step 2: post message to build connect.');
       var msg = [REQUEST_TO_COMM_CHANNEL_1];
       webview.contentWindow.postMessage(JSON.stringify(msg), '*');
       ++count;
-    } else if (count == 1) {
+    } else if (count === 1) {
       console.log('Step 5: post message to build connect again.');
       var msg = [REQUEST_TO_COMM_CHANNEL_1];
       webview.contentWindow.postMessage(JSON.stringify(msg), '*');
@@ -311,11 +311,11 @@ function testAddAndRemoveContentScripts(url) {
   });
 
   window.addEventListener('message', function(e) {
-    if (e.source != webview.contentWindow) {
+    if (e.source !== webview.contentWindow) {
       return;
     }
     var data = JSON.parse(e.data);
-    if (data[0] == RESPONSE_FROM_COMM_CHANNEL_1 &&
+    if (data[0] === RESPONSE_FROM_COMM_CHANNEL_1 &&
         should_get_response_from_script_1) {
       console.log(
           'Step 3: A communication channel has been established ' +
@@ -367,12 +367,12 @@ function testAddContentScriptsWithNewWindowAPI(url) {
   });
 
   window.addEventListener('message', function(e) {
-    if (!newwebview || e.source != newwebview.contentWindow) {
+    if (!newwebview || e.source !== newwebview.contentWindow) {
       return;
     }
     var data = JSON.parse(e.data);
-    if (data == RESPONSE_FROM_COMM_CHANNEL_1 &&
-        e.source == newwebview.contentWindow) {
+    if (data[0] === RESPONSE_FROM_COMM_CHANNEL_1 &&
+        e.source === newwebview.contentWindow) {
       console.log(
           'Step 5: a communication channel has been established ' +
           'with the new webview.');
@@ -406,12 +406,12 @@ function testContentScriptIsInjectedAfterTerminateAndReloadWebView(url) {
 
   var count = 0;
   webview.addEventListener('loadstop', function() {
-    if (count == 0) {
+    if (count === 0) {
       console.log('Step 2: call webview.terminate().');
       webview.terminate();
       ++count;
       return;
-    } else if (count == 1) {
+    } else if (count === 1) {
       console.log('Step 4: call <webview>.executeScript to check result.');
       webview.executeScript(
           {code: 'document.body.style.backgroundColor;'},
@@ -443,7 +443,7 @@ function testContentScriptExistsAsLongAsWebViewTagExists(url) {
 
   var count = 0;
   webview.addEventListener('loadstop', function() {
-    if (count == 0) {
+    if (count === 0) {
       console.log('Step 2: check the result of content script injected.');
       webview.executeScript(
           {code: 'document.body.style.backgroundColor;'}, function(results) {
@@ -456,7 +456,7 @@ function testContentScriptExistsAsLongAsWebViewTagExists(url) {
             document.body.appendChild(webview);
             ++count;
           });
-    } else if (count == 1) {
+    } else if (count === 1) {
       console.log('Step 5: check the result of content script injected again.');
       webview.executeScript(
           {code: 'document.body.style.backgroundColor;'},
@@ -517,7 +517,7 @@ function testDragAndDropToInput() {
   });
 
   webview.addEventListener('loadstop', function(e) {
-    if (webview.src != 'about:blank') {
+    if (webview.src !== 'about:blank') {
       return;
     }
     console.log('load stop of src = :' + webview.src);

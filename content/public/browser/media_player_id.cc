@@ -4,32 +4,30 @@
 
 #include "content/public/browser/media_player_id.h"
 
-#include "content/public/browser/render_frame_host.h"
-
 namespace content {
 
-MediaPlayerId::MediaPlayerId(RenderFrameHost* render_frame_host,
+MediaPlayerId::MediaPlayerId(GlobalRenderFrameHostId frame_routing_id,
                              int delegate_id)
-    : render_frame_host(render_frame_host), delegate_id(delegate_id) {}
+    : frame_routing_id(frame_routing_id), delegate_id(delegate_id) {}
 
 MediaPlayerId MediaPlayerId::CreateMediaPlayerIdForTests() {
-  return MediaPlayerId(nullptr, 0);
+  return MediaPlayerId(GlobalRenderFrameHostId(), 0);
 }
 
 bool MediaPlayerId::operator==(const MediaPlayerId& other) const {
-  return render_frame_host == other.render_frame_host &&
+  return frame_routing_id == other.frame_routing_id &&
          delegate_id == other.delegate_id;
 }
 
 bool MediaPlayerId::operator!=(const MediaPlayerId& other) const {
-  return render_frame_host != other.render_frame_host ||
+  return frame_routing_id != other.frame_routing_id ||
          delegate_id != other.delegate_id;
 }
 
 bool MediaPlayerId::operator<(const MediaPlayerId& other) const {
-  if (render_frame_host == other.render_frame_host)
+  if (frame_routing_id == other.frame_routing_id)
     return delegate_id < other.delegate_id;
-  return render_frame_host < other.render_frame_host;
+  return frame_routing_id < other.frame_routing_id;
 }
 
 }  // namespace content

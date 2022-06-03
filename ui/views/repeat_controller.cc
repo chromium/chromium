@@ -6,22 +6,20 @@
 
 #include <utility>
 
-using base::TimeDelta;
-
 namespace views {
 
 ///////////////////////////////////////////////////////////////////////////////
 // RepeatController, public:
 
-RepeatController::RepeatController(base::RepeatingClosure callback)
-    : callback_(std::move(callback)) {}
+RepeatController::RepeatController(base::RepeatingClosure callback,
+                                   const base::TickClock* tick_clock)
+    : timer_(tick_clock), callback_(std::move(callback)) {}
 
 RepeatController::~RepeatController() = default;
 
 void RepeatController::Start() {
   // The first timer is slightly longer than subsequent repeats.
-  timer_.Start(FROM_HERE, TimeDelta::FromMilliseconds(250), this,
-               &RepeatController::Run);
+  timer_.Start(FROM_HERE, kInitialWait, this, &RepeatController::Run);
 }
 
 void RepeatController::Stop() {
@@ -31,9 +29,14 @@ void RepeatController::Stop() {
 ///////////////////////////////////////////////////////////////////////////////
 // RepeatController, private:
 
+// static
+constexpr base::TimeDelta RepeatController::kInitialWait;
+
+// static
+constexpr base::TimeDelta RepeatController::kRepeatingWait;
+
 void RepeatController::Run() {
-  timer_.Start(FROM_HERE, TimeDelta::FromMilliseconds(50), this,
-               &RepeatController::Run);
+  timer_.Start(FROM_HERE, kRepeatingWait, this, &RepeatController::Run);
   callback_.Run();
 }
 

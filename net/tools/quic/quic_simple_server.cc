@@ -6,10 +6,12 @@
 
 #include <string.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -108,13 +110,13 @@ bool QuicSimpleServer::Listen(const IPEndPoint& address) {
   if (socket_ == nullptr)
     return false;
 
-  dispatcher_.reset(new quic::QuicSimpleDispatcher(
+  dispatcher_ = std::make_unique<quic::QuicSimpleDispatcher>(
       &config_, &crypto_config_, &version_manager_,
       std::unique_ptr<quic::QuicConnectionHelperInterface>(helper_),
-      std::unique_ptr<quic::QuicCryptoServerStream::Helper>(
+      std::unique_ptr<quic::QuicCryptoServerStreamBase::Helper>(
           new QuicSimpleServerSessionHelper(quic::QuicRandom::GetInstance())),
       std::unique_ptr<quic::QuicAlarmFactory>(alarm_factory_),
-      quic_simple_server_backend_, quic::kQuicDefaultConnectionIdLength));
+      quic_simple_server_backend_, quic::kQuicDefaultConnectionIdLength);
   QuicSimpleServerPacketWriter* writer =
       new QuicSimpleServerPacketWriter(socket_.get(), dispatcher_.get());
   dispatcher_->InitializeWithWriter(writer);
@@ -125,6 +127,7 @@ bool QuicSimpleServer::Listen(const IPEndPoint& address) {
 }
 
 void QuicSimpleServer::Shutdown() {
+  DVLOG(1) << "QuicSimpleServer is shutting down";
   // Before we shut down the epoll server, give all active sessions a chance to
   // notify clients that they're closing.
   dispatcher_->Shutdown();
@@ -177,19 +180,26 @@ void QuicSimpleServer::StartReading() {
 
 void QuicSimpleServer::OnReadComplete(int result) {
   read_pending_ = false;
-  if (result == 0)
-    result = ERR_CONNECTION_CLOSED;
 
-  if (result < 0) {
+  if (result > 0) {
+    quic::QuicReceivedPacket packet(read_buffer_->data(), result,
+                                    helper_->GetClock()->Now(), false);
+    dispatcher_->ProcessPacket(ToQuicSocketAddress(server_address_),
+                               ToQuicSocketAddress(client_address_), packet);
+  } else {
     LOG(ERROR) << "QuicSimpleServer read failed: " << ErrorToString(result);
-    Shutdown();
-    return;
+    // Do not act on ERR_MSG_TOO_BIG as that indicates that we received a UDP
+    // packet whose payload is larger than our receive buffer. Do not act on 0
+    // as that indicates that we received a UDP packet with an empty payload.
+    // In both cases, the socket should still be usable.
+    // Also do not act on ERR_CONNECTION_RESET as this is happening when the
+    // network service restarts on Windows.
+    if (result != ERR_MSG_TOO_BIG && result != ERR_CONNECTION_RESET &&
+        result != 0) {
+      Shutdown();
+      return;
+    }
   }
-
-  quic::QuicReceivedPacket packet(read_buffer_->data(), result,
-                                  helper_->GetClock()->Now(), false);
-  dispatcher_->ProcessPacket(ToQuicSocketAddress(server_address_),
-                             ToQuicSocketAddress(client_address_), packet);
 
   StartReading();
 }

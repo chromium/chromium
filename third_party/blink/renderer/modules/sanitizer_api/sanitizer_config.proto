@@ -1,0 +1,27 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+message SanitizerConfigProto {
+  required string html_string = 1;
+
+  repeated string allow_elements = 2;
+  repeated string block_elements = 3;
+  repeated string drop_elements = 4;
+
+  message Elements { repeated string element = 1; }
+  map<string, Elements> allow_attributes = 5;
+  map<string, Elements> drop_attributes = 6;
+
+  optional bool allow_custom_elements = 7;
+  optional bool allow_comments = 8;
+
+  enum StringContext {
+    TEMPLATE = 0;
+    DIV = 1;
+    TABLE = 2;
+  }
+  optional StringContext string_context = 9;
+}

@@ -1,0 +1,23 @@
+<html>
+<head></head>
+<img/>
+<img/>
+<script src="common.js"></script>
+<script>
+function checkBothImagesLoaded() {
+  return new Promise((resolve, reject) => {
+    Promise.all([imageLoadedPromise(document.images[0]),
+      imageLoadedPromise(document.images[1])]).then(() => {
+        resolve(true);
+      });
+   });
+}
+
+window.onload = () => {
+  setTimeout(() => {
+    document.images[0].src = "image.png"
+    document.images[1].src = "image.png?foo"
+  }, 1000)
+}
+</script>
+</html>

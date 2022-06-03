@@ -5,17 +5,16 @@
 #ifndef UI_BASE_COCOA_CONTROLS_BUTTON_UTILS_H_
 #define UI_BASE_COCOA_CONTROLS_BUTTON_UTILS_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 #include <Cocoa/Cocoa.h>
 
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface ButtonUtils : NSObject
 
 // These methods are a polyfill for convenience constructors that exist on
 // NSButton in macOS 10.12+.
-// TODO(ellyjones): once we target only 10.12+, delete these and migrate callers
-// over to NSButton directly.
+// TODO(https://crbug.com/1241080): once we target only 10.12+, delete these.
 + (NSButton*)buttonWithTitle:(NSString*)title
                       action:(SEL)action
                       target:(id)target;

@@ -8,28 +8,54 @@
 #include "base/macros.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+class PrefService;
+
 namespace ios_web_view {
 // An //ios/web_view implementation of password_manager::PasswordFeatureManager.
 class WebViewPasswordFeatureManager
     : public password_manager::PasswordFeatureManager {
  public:
-  WebViewPasswordFeatureManager() = default;
+  WebViewPasswordFeatureManager(PrefService* pref_service,
+                                const syncer::SyncService* sync_service);
+
+  WebViewPasswordFeatureManager(const WebViewPasswordFeatureManager&) = delete;
+  WebViewPasswordFeatureManager& operator=(
+      const WebViewPasswordFeatureManager&) = delete;
+
   ~WebViewPasswordFeatureManager() override = default;
 
   bool IsGenerationEnabled() const override;
 
-  bool ShouldCheckReuseOnLeakDetection() const override;
-
   bool IsOptedInForAccountStorage() const override;
   bool ShouldShowAccountStorageOptIn() const override;
-  void SetAccountStorageOptIn(bool opt_in) override;
+  bool ShouldShowAccountStorageReSignin(
+      const GURL& current_page_url) const override;
+  void OptInToAccountStorage() override;
+  void OptOutOfAccountStorageAndClearSettings() override;
+
+  bool ShouldShowAccountStorageBubbleUi() const override;
+
+  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
 
   void SetDefaultPasswordStore(
-      const autofill::PasswordForm::Store& store) override;
-  autofill::PasswordForm::Store GetDefaultPasswordStore() const override;
+      const password_manager::PasswordForm::Store& store) override;
+  password_manager::PasswordForm::Store GetDefaultPasswordStore()
+      const override;
+  bool IsDefaultPasswordStoreSet() const override;
+
+  password_manager::metrics_util::PasswordAccountStorageUsageLevel
+  ComputePasswordAccountStorageUsageLevel() const override;
+
+  void RecordMoveOfferedToNonOptedInUser() override;
+  int GetMoveOfferedToNonOptedInUserCount() const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordFeatureManager);
+  PrefService* const pref_service_;
+  const syncer::SyncService* const sync_service_;
 };
 }  // namespace ios_web_view
 

@@ -1,0 +1,19 @@
+Tests Accessibility.getFullAXTree
+
+RootWebArea
+  generic
+    StaticText "Some text in a div, also a"
+      InlineTextBox
+    link "link"
+      StaticText "link"
+        InlineTextBox
+  button "Hello Button"
+    StaticText "Hello Button"
+      InlineTextBox
+  Iframe
+
+RootWebArea "Iframe with accessible name"
+  heading "accessible name"
+    StaticText "accessible name"
+      InlineTextBox
+

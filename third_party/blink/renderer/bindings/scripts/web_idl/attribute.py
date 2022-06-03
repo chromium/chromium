@@ -19,7 +19,7 @@ from .make_copy import make_copy
 class Attribute(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
                 WithExposure, WithOwner, WithOwnerMixin, WithComponent,
                 WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-attributes"""
+    """https://webidl.spec.whatwg.org/#idl-attributes"""
 
     class IR(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):
@@ -87,6 +87,6 @@ class Attribute(WithIdentifier, WithExtendedAttributes, WithCodeGeneratorInfo,
     def does_inherit_getter(self):
         """
         Returns True if this attribute inherits its getter.
-        https://heycam.github.io/webidl/#dfn-inherit-getter
+        https://webidl.spec.whatwg.org/#dfn-inherit-getter
         """
         return self._does_inherit_getter

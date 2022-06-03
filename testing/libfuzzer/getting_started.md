@@ -245,21 +245,45 @@ data, size_t size`). However, APIs often accept multiple arguments of various
 types, rather than a single buffer. You can use three different methods to
 mutate multiple inputs at once.
 
-#### libprotobuf-mutator
+#### libprotobuf-mutator (LPM)
 
 If you need to mutate multiple inputs of various types and length, see [Getting
 Started with libprotobuf-mutator in Chromium].
 
 *** note
-**Note:** This method requires extra effort, but works with APIs and data
-structures of any complexity.
+**Note:** This method works with APIs and data structures of any complexity, but
+requires extra effort. You would need to write a `.proto` definition (unless you
+fuzz an existing protobuf) and C++ code to pass the proto message to the API you
+are fuzzing (you'll have a fuzzed protobuf message instead of `data, size`
+buffer).
 ***
+
+#### FuzzedDataProvider (FDP)
+
+[FuzzedDataProvider] is a class useful for splitting a fuzz input into multiple
+parts of various types.
+
+*** note
+**Note:** FDP is much easier to use than LPM, but its downside is that format of
+the corpus becomes inconsistent. This doesn't matter if you don't have [Seed
+Corpus] (e.g. valid image files if you fuzz an image parser). FDP splits your
+corpus files into several pieces to fuzz a broader range of input types, so it
+can take longer to reach deeper code paths that surface more quickly if you fuzz
+only a single input type.
+***
+
+To use FDP, add `#include <fuzzer/FuzzedDataProvider.h>` to your fuzz target
+source file.
+
+To learn more about `FuzzedDataProvider`, check out the [upstream documentation]
+on it. It gives an overview of the available methods and links to a few example
+fuzz targets.
 
 #### Hash-based argument
 
 If your API accepts a buffer with data and some integer value (i.e., a bitwise
-combination of flags), we recommend calculating a hash value from (`data, size`)
-and using that value to fuzz an additional integer argument. For example:
+combination of flags), you can calculate a hash value from (`data, size`) and
+use it to fuzz an additional integer argument. For example:
 
 ```cpp
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -272,96 +296,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 ```
 
 *** note
-**Note:** The hash value derived from the data is a random value, rather than a
-meaningful one controlled by the fuzzing engine. A single bit mutation might
+**Note:** The hash method doesn't have the corpus format issue mentioned in the
+FDP section above, but it can lead to results that aren't as sophisticated as
+LPM or FDP. The hash value derived from the data is a random value, rather than
+a meaningful one controlled by the fuzzing engine. A single bit mutation might
 lead to a new code coverage, but the next mutation would generate a new hash
 value and trigger another code path, without providing any real guidance to the
 fuzzing engine.
 ***
-
-#### Bytes taken from (data, size)
-
-You can extract one or more bytes from the data provided by fuzzing engine and
-use that value for fuzzing other arguments of the target API or making other
-decisions (e.g. number of iterations or attempts for calling some function).
-Note that those bytes should not be used as data for any other arguments, e.g.:
-
-```cpp
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // Don't forget to enforce minimal data length.
-  if (size < 1)
-    return 0;
-
-  // Extract single byte for fuzzing "flags" value.
-  uint8_t flags = data[0];
-
-  // Wrong, there is a bias between flags and API input.
-  APIToBeFuzzed(data, size, flags);
-
-  // Good, API input and flags are independent.
-  APIToBeFuzzed(data + 1, size - 1, flags);
-
-  return 0;
-}
-```
-
-This approach addresses the problem of the *hash-based argument* approach, but
-has its own **caveats**:
-
-* If you extract any bytes from the input (either first or last ones), you
-cannot use valid samples as seed corpus. In that case, you'll have to generate
-seed corpus manually, i.e. append necessary bytes to the valid sample inputs.
-
-* Imagine that `APIToBeFuzzed()` had a bug, something like the following:
-
-```cpp
-void APIToBeFuzzed(uint8_t* buffer, size_t length, uint8_t options) {
-  ...
-  if (options == 0x66) {
-    // Yes, looks ridiculous, but things like that did happen in the real world.
-    *(buffer - 1) = -1;
-  }
-  ...
-}
-```
-
-Assuming we used the fuzz target listed above, neither ASan nor other sanitizers
-would detect a buffer underwrite vulnerability, as the byte addressed by
-`buffer - 1` is actually a mapped memory allocated inside the fuzzing engine as
-`data[0]`.
-
-To avoid issues like that one, we would have to allocate a separate buffer and
-copy API input into it, or use a container object e.g.:
-
-```cpp
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // Don't forget to enforce minimal data length.
-  if (size < 1)
-    return 0;
-
-  // Extract single byte for fuzzing flags value.
-  uint8_t flags = data[0];
-
-  // Put API input into a separate container.
-  std::vector<uint8_t> buffer(data + 1, data + size);
-
-  APIToBeFuzzed(buffer.data(), buffer.size(), flags);
-
-  return 0;
-}
-```
-
-There is [FuzzedDataProvider] class that might be helpful for writing fuzz
-targets using that approach. In order to use it, add
-`#include <fuzzer/FuzzedDataProvider.h>` to your fuzz target source file. To
-learn more about `FuzzedDataProvider`, check out the
-[google/fuzzing documentation page] on it.
-
-Note that it's not recommended to use `FuzzedDataProvider` unless you actually
-need to split the fuzz input. If you need to convert the fuzz input into a
-vector or string object, for example, simply initialize that object by passing
-`const uint8_t* data, size_t size` to its constructor.
-
 
 [AFL]: AFL_integration.md
 [AddressSanitizer]: http://clang.llvm.org/docs/AddressSanitizer.html
@@ -377,7 +319,7 @@ vector or string object, for example, simply initialize that object by passing
 [UndefinedBehaviorSanitizer]: http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 [code coverage report]: efficient_fuzzing.md#Code-coverage
 [crbug/598448]: https://bugs.chromium.org/p/chromium/issues/detail?id=598448
-[google/fuzzing documentation page]: https://github.com/google/fuzzing/blob/master/docs/split-inputs.md#fuzzed-data-provider
+[upstream documentation]: https://github.com/google/fuzzing/blob/master/docs/split-inputs.md#fuzzed-data-provider
 [libFuzzer's output documentation]: http://llvm.org/docs/LibFuzzer.html#output
 [quic_stream_factory_fuzzer.cc]: https://cs.chromium.org/chromium/src/net/quic/quic_stream_factory_fuzzer.cc
 [sanitizers]: https://github.com/google/sanitizers

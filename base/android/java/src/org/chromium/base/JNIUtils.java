@@ -4,6 +4,9 @@
 
 package org.chromium.base;
 
+import android.content.Context;
+import android.text.TextUtils;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.MainDex;
 
@@ -20,12 +23,22 @@ public class JNIUtils {
      * is needed for the few cases where the JNI mechanism is unable to automatically determine the
      * appropriate ClassLoader instance.
      */
-    @CalledByNative
-    public static Object getClassLoader() {
+    private static ClassLoader getClassLoader() {
         if (sJniClassLoader == null) {
             return JNIUtils.class.getClassLoader();
         }
         return sJniClassLoader;
+    }
+
+    /** Returns a ClassLoader which can load Java classes from the specified split. */
+    @CalledByNative
+    public static ClassLoader getSplitClassLoader(String splitName) {
+        Context context = ContextUtils.getApplicationContext();
+        if (!TextUtils.isEmpty(splitName)
+                && BundleUtils.isIsolatedSplitInstalled(context, splitName)) {
+            return BundleUtils.createIsolatedSplitContext(context, splitName).getClassLoader();
+        }
+        return getClassLoader();
     }
 
     /**

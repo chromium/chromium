@@ -11,13 +11,13 @@
 
 namespace blink {
 
-base::Optional<MessagePortChannel>
+absl::optional<MessagePortChannel>
 WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value) {
   MessagePort* port = V8MessagePort::ToImplWithTypeCheck(isolate, value);
   if (!port || port->IsNeutered())
-    return base::nullopt;
+    return absl::nullopt;
   return port->Disentangle();
 }
 

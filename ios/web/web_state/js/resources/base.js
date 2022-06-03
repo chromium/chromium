@@ -8,6 +8,7 @@
 // this.style because member identifiers are minified by default.
 // See http://goo.gl/FwOgy
 
+var goog;
 goog.provide('__crWeb.base');
 
 // This object is checked on the main app to know when to inject (or not).

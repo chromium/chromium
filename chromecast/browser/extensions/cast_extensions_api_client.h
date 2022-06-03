@@ -17,6 +17,10 @@ class MessagingDelegate;
 class CastExtensionsAPIClient : public ExtensionsAPIClient {
  public:
   CastExtensionsAPIClient();
+
+  CastExtensionsAPIClient(const CastExtensionsAPIClient&) = delete;
+  CastExtensionsAPIClient& operator=(const CastExtensionsAPIClient&) = delete;
+
   ~CastExtensionsAPIClient() override;
 
   // ExtensionsAPIClient implementation.
@@ -31,8 +35,6 @@ class CastExtensionsAPIClient : public ExtensionsAPIClient {
   std::unique_ptr<MessagingDelegate> messaging_delegate_;
   std::unique_ptr<extensions::ChromecastAutomationInternalApiDelegate>
       extensions_automation_api_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsAPIClient);
 };
 
 }  // namespace extensions

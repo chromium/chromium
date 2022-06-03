@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/persistent_availability_store.h"
 
@@ -33,11 +33,11 @@ bool AvailabilityModelImpl::IsReady() const {
   return ready_;
 }
 
-base::Optional<uint32_t> AvailabilityModelImpl::GetAvailability(
+absl::optional<uint32_t> AvailabilityModelImpl::GetAvailability(
     const base::Feature& feature) const {
   auto search = feature_availabilities_.find(feature.name);
   if (search == feature_availabilities_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return search->second;
 }

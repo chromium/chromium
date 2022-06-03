@@ -7,14 +7,14 @@
     <![CDATA[
         function runText() 
         {
-            for(var y=20; y<5000; y+=100)
+            for(var y=0; y<=1000; y+=100)
             {
-                for(var x=0; x<5000; x+=100)
+                for(var x=0; x<=500; x+=100)
                 {
                     var svgArea = document.getElementById("svgArea");
                     var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     text.setAttributeNS(null, "x", x);
-                    text.setAttributeNS(null, "y", y);
+                    text.setAttributeNS(null, "y", y+20);
                     text.setAttributeNS(null, "fill", "black");
                     text.setAttributeNS(null, "font-size", 20);
                     text.setAttributeNS(null, "text-anchor", "start");

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_HELPERS_PAGE_LIVE_STATE_DECORATOR_HELPER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_DECORATORS_HELPERS_PAGE_LIVE_STATE_DECORATOR_HELPER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
@@ -14,7 +13,7 @@ namespace performance_manager {
 
 class PageLiveStateDecoratorHelper
     : public MediaStreamCaptureIndicator::Observer,
-      public PerformanceManagerMainThreadObserver {
+      public PerformanceManagerMainThreadObserverDefaultImpl {
  public:
   PageLiveStateDecoratorHelper();
   ~PageLiveStateDecoratorHelper() override;
@@ -30,8 +29,10 @@ class PageLiveStateDecoratorHelper
                                  bool is_capturing_audio) override;
   void OnIsBeingMirroredChanged(content::WebContents* contents,
                                 bool is_being_mirrored) override;
-  void OnIsCapturingDesktopChanged(content::WebContents* contents,
-                                   bool is_capturing_desktop) override;
+  void OnIsCapturingWindowChanged(content::WebContents* contents,
+                                  bool is_capturing_window) override;
+  void OnIsCapturingDisplayChanged(content::WebContents* contents,
+                                   bool is_capturing_display) override;
 
   // PerformanceManagerMainThreadObserver:
   void OnPageNodeCreatedForWebContents(

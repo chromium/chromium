@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_tree_impl_test_base.h"
@@ -395,8 +395,7 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
           gfx::Size(10, 10), gfx::Rect(10, 10), gfx::Size(10, 10),
           base::TimeDelta());
   ASSERT_TRUE(video_frame);
-  video_frame->metadata()->SetBoolean(media::VideoFrameMetadata::ALLOW_OVERLAY,
-                                      true);
+  video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
@@ -439,8 +438,7 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
           media::PIXEL_FORMAT_ARGB, mailbox_holders, base::DoNothing(),
           resource_size, gfx::Rect(10, 10), resource_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);
-  video_frame->metadata()->SetBoolean(media::VideoFrameMetadata::ALLOW_OVERLAY,
-                                      true);
+  video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 

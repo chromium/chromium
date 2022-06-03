@@ -10,11 +10,11 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -31,6 +31,9 @@ class MEDIA_EXPORT AudioDebugFileWriter {
   // parameters are ignored. The number of channels in the data passed to
   // Write() must match |params|.
   explicit AudioDebugFileWriter(const AudioParameters& params);
+
+  AudioDebugFileWriter(const AudioDebugFileWriter&) = delete;
+  AudioDebugFileWriter& operator=(const AudioDebugFileWriter&) = delete;
 
   virtual ~AudioDebugFileWriter();
 
@@ -63,15 +66,12 @@ class MEDIA_EXPORT AudioDebugFileWriter {
 
   // The task runner to do file output operations on.
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   AudioFileWriterUniquePtr file_writer_;
   SEQUENCE_CHECKER(client_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugFileWriter);
 };
 
 }  // namespace media

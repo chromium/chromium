@@ -8,10 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <type_traits>
+#include <ostream>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
+#include "base/bits.h"
+#include "base/check.h"
 #include "build/build_config.h"
 
 #if defined(COMPILER_MSVC)
@@ -54,6 +55,28 @@ struct AlignedFreeDeleter {
     AlignedFree(ptr);
   }
 };
+
+#ifdef __has_builtin
+#define SUPPORTS_BUILTIN_IS_ALIGNED (__has_builtin(__builtin_is_aligned))
+#else
+#define SUPPORTS_BUILTIN_IS_ALIGNED 0
+#endif
+
+inline bool IsAligned(uintptr_t val, size_t alignment) {
+  // If the compiler supports builtin alignment checks prefer them.
+#if SUPPORTS_BUILTIN_IS_ALIGNED
+  return __builtin_is_aligned(val, alignment);
+#else
+  DCHECK(bits::IsPowerOfTwo(alignment)) << alignment << " is not a power of 2";
+  return (val & (alignment - 1)) == 0;
+#endif
+}
+
+#undef SUPPORTS_BUILTIN_IS_ALIGNED
+
+inline bool IsAligned(const void* val, size_t alignment) {
+  return IsAligned(reinterpret_cast<uintptr_t>(val), alignment);
+}
 
 }  // namespace base
 

@@ -8,6 +8,7 @@
 #include <ostream>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_data_type_android.h"
 
@@ -24,19 +25,21 @@ struct COMPONENT_EXPORT(TRACING_CPP) Instance {
   };
 
   explicit Instance(uint64_t object_id);
-  Instance(uint64_t object_id, std::string type_name);
-  Instance(uint64_t object_id, uint32_t size);
-  Instance(uint64_t object_id, uint32_t size, std::string type_name);
+  Instance(uint64_t object_id, const std::string& type_name);
+  Instance(uint64_t object_id, uint64_t size);
+  Instance(uint64_t object_id, uint64_t size, const std::string& type_name);
   Instance(const Instance& other);
   ~Instance();
 
-  void AddReference(const std::string& name, uint64_t object_id);
+  void AddReferenceFrom(const std::string& name, uint64_t obj_id);
+  void AddReferenceTo(const std::string& name, uint64_t obj_id);
 
   //  Only set in first pass for ClassObject and PrimitiveArrayInstances.
   std::string type_name;
   const uint64_t object_id;  // Always set in first pass.
-  uint32_t size;             // Set in first pass except for ClassObject
-  std::vector<Reference> references;  // Always set on second pass.
+  uint64_t size = 0;         // Set in first pass except for ClassObject
+  std::vector<Reference> referred_by;  // Always set on second pass.
+  std::vector<Reference> referred_to;
 };
 
 // A single instance of a particular class. There can be multiple class
@@ -60,21 +63,22 @@ struct COMPONENT_EXPORT(TRACING_CPP) ClassInstance {
 
 // Stores data about a static or instance field within a class object.
 struct COMPONENT_EXPORT(TRACING_CPP) Field {
-  Field(std::string name, DataType type, uint64_t object_id);
+  Field(const std::string& name, DataType type, uint64_t object_id);
 
-  const std::string name;
-  const DataType type;
-  const uint64_t object_id;
+  std::string name;
+  DataType type;
+  uint64_t object_id;
 };
 
 // An instance that contains the information associated with a given class's
 // architecture. There can only be one class object per class.
 struct COMPONENT_EXPORT(TRACING_CPP) ClassObject {
   ~ClassObject();
-  ClassObject(uint64_t object_id, std::string type_name);
+  ClassObject(uint64_t object_id, const std::string& type_name);
 
   Instance base_instance;
-  uint64_t instance_size;
+  uint64_t super_class_id = 0;  // Set in first pass.
+  uint64_t instance_size = 0;
   std::vector<Field> instance_fields;
   std::vector<Field> static_fields;
 };
@@ -105,7 +109,7 @@ struct COMPONENT_EXPORT(TRACING_CPP) ObjectArrayInstance {
 struct COMPONENT_EXPORT(TRACING_CPP) PrimitiveArrayInstance {
   PrimitiveArrayInstance(uint64_t object_id,
                          DataType type,
-                         std::string type_name,
+                         const std::string& type_name,
                          uint64_t size);
   Instance base_instance;
   const DataType type;

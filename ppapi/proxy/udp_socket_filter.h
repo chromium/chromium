@@ -41,7 +41,7 @@ class PPAPI_PROXY_EXPORT UDPSocketFilter : public ResourceMessageFilter {
   void AddUDPResource(PP_Instance instance,
                       PP_Resource resource,
                       bool private_api,
-                      const base::Closure& slot_available_callback);
+                      base::RepeatingClosure slot_available_callback);
   void RemoveUDPResource(PP_Resource resource);
   // Note, the slot_available_callback that was provided to AddUDPResource may
   // be invoked during the RequestData call; this gives the client the
@@ -77,7 +77,7 @@ class PPAPI_PROXY_EXPORT UDPSocketFilter : public ResourceMessageFilter {
    public:
     explicit RecvQueue(PP_Instance instance,
                        bool private_api,
-                       const base::Closure& slot_available_callback);
+                       base::RepeatingClosure slot_available_callback);
     ~RecvQueue();
 
     // Called on the IO thread when data is received. It will post |callback_|
@@ -114,7 +114,7 @@ class PPAPI_PROXY_EXPORT UDPSocketFilter : public ResourceMessageFilter {
     PP_NetAddress_Private last_recvfrom_addr_;
     bool private_api_;
     // Callback to invoke when a UDP receive slot is available.
-    base::Closure slot_available_callback_;
+    base::RepeatingClosure slot_available_callback_;
   };
 
  private:

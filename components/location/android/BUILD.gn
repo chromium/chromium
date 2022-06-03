@@ -14,10 +14,53 @@ java_cpp_enum("location_settings_dialog_enums_java") {
 android_library("location_java") {
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
-  java_files =
-      [ "java/src/org/chromium/components/location/LocationUtils.java" ]
+  sources = [ "java/src/org/chromium/components/location/LocationUtils.java" ]
   srcjar_deps = [ ":location_settings_dialog_enums_java" ]
+}
+
+android_library("settings_java") {
+  deps = [
+    ":location_java",
+    "//base:base_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  sources =
+      [ "java/src/org/chromium/components/location/LocationSettings.java" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/location/LocationSettings.java" ]
+}
+
+source_set("settings") {
+  sources = [
+    "location_settings.h",
+    "location_settings_impl.cc",
+    "location_settings_impl.h",
+  ]
+  deps = [
+    ":jni_headers",
+    ":location_settings_dialog_enums_java",
+    "//base",
+    "//ui/android",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "location_settings_dialog_context.h",
+    "location_settings_dialog_outcome.h",
+    "mock_location_settings.cc",
+    "mock_location_settings.h",
+  ]
+  deps = [
+    ":settings",
+    "//base",
+  ]
 }

@@ -38,6 +38,9 @@ class JniRuntimeDelegate : public ChromotingClientRuntime::Delegate {
   // we close. Its components are reused across |JniRuntimeDelegate|s.
   static JniRuntimeDelegate* GetInstance();
 
+  JniRuntimeDelegate(const JniRuntimeDelegate&) = delete;
+  JniRuntimeDelegate& operator=(const JniRuntimeDelegate&) = delete;
+
   // remoting::ChromotingClientRuntime::Delegate overrides.
   void RuntimeWillShutdown() override;
   void RuntimeDidShutdown() override;
@@ -60,8 +63,6 @@ class JniRuntimeDelegate : public ChromotingClientRuntime::Delegate {
   std::unique_ptr<JniOAuthTokenGetter> token_getter_;
 
   friend struct base::DefaultSingletonTraits<JniRuntimeDelegate>;
-
-  DISALLOW_COPY_AND_ASSIGN(JniRuntimeDelegate);
 };
 
 }  // namespace remoting

@@ -1,0 +1,24 @@
+<html>
+<body>
+<canvas id="c" width=100 height=100></canvas>
+<script>
+
+// Test Canvas content shows up correctly after a full repaint.
+var c2 = document.getElementById("c");
+var ctx = c2.getContext('2d');
+
+// Since it checks if content retaining |mode_| changes from frame to frame,
+// multiple calls to rAF are used to assure the craetion of new frame.
+ctx.fillRect(5, 5, 50, 50);
+ctx.clearRect(0, 0, 800, 1000);
+window.requestAnimationFrame( dt=> {
+  ctx.fillRect(50, 50, 50, 50);
+  ctx.clearRect(50, 50, 50, 40);
+  window.requestAnimationFrame(dt => {
+    ctx.fillRect(0, 0, 15, 15);
+  });
+});
+
+</script>
+</body>
+</html>

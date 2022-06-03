@@ -22,4 +22,4 @@ enum PaintResult {
 
 }  // namespace blink
 
-#endif  // PaintResult.h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_RESULT_H_

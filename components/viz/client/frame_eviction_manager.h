@@ -10,11 +10,10 @@
 #include <list>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
 #include "components/viz/client/viz_client_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -36,13 +35,17 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager {
   class VIZ_CLIENT_EXPORT ScopedPause {
    public:
     ScopedPause();
-    ~ScopedPause();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedPause);
+    ScopedPause(const ScopedPause&) = delete;
+    ScopedPause& operator=(const ScopedPause&) = delete;
+
+    ~ScopedPause();
   };
 
   static FrameEvictionManager* GetInstance();
+
+  FrameEvictionManager(const FrameEvictionManager&) = delete;
+  FrameEvictionManager& operator=(const FrameEvictionManager&) = delete;
 
   void AddFrame(FrameEvictionManagerClient*, bool locked);
   void RemoveFrame(FrameEvictionManagerClient*);
@@ -90,9 +93,7 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager {
   int pause_count_ = 0;
 
   // Argument of the last CullUnlockedFrames call while paused.
-  base::Optional<size_t> pending_unlocked_frame_limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameEvictionManager);
+  absl::optional<size_t> pending_unlocked_frame_limit_;
 };
 
 }  // namespace viz

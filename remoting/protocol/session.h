@@ -62,6 +62,10 @@ class Session {
   };
 
   Session() {}
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
   virtual ~Session() {}
 
   // Set event handler for this session. |event_handler| must outlive
@@ -92,9 +96,6 @@ class Session {
   // called immediately after SessionManager::Connect() for outgoing connections
   // or in the IncomingSessionCallback handler for incoming connections.
   virtual void AddPlugin(SessionPlugin* plugin) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
 }  // namespace protocol

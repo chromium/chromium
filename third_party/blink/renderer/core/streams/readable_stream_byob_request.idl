@@ -1,0 +1,13 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://streams.spec.whatwg.org/#readablestreambyobrequest
+[
+    Exposed=(Window,Worker,Worklet)
+] interface ReadableStreamBYOBRequest {
+    [RaisesException] readonly attribute ArrayBufferView? view;
+
+    [CallWith=ScriptState, RaisesException] void respond([EnforceRange] unsigned long long bytesWritten);
+    [CallWith=ScriptState, RaisesException] void respondWithNewView(ArrayBufferView view);
+};

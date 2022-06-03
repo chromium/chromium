@@ -20,6 +20,9 @@ namespace protocol {
 
 class FrameConsumer {
  public:
+  FrameConsumer(const FrameConsumer&) = delete;
+  FrameConsumer& operator=(const FrameConsumer&) = delete;
+
   virtual ~FrameConsumer() {}
 
   // List of supported pixel formats needed by various platforms.
@@ -32,16 +35,13 @@ class FrameConsumer {
       const webrtc::DesktopSize& size) = 0;
 
   virtual void DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
-                         const base::Closure& done) = 0;
+                         base::OnceClosure done) = 0;
 
   // Returns the preferred pixel encoding for the platform.
   virtual PixelFormat GetPixelFormat() = 0;
 
  protected:
   FrameConsumer() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameConsumer);
 };
 
 }  // namespace protocol

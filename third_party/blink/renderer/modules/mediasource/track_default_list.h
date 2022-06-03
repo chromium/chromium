@@ -21,16 +21,16 @@ class TrackDefaultList final : public ScriptWrappable {
   static TrackDefaultList* Create(const HeapVector<Member<TrackDefault>>&,
                                   ExceptionState&);
 
-  TrackDefaultList();
+  TrackDefaultList() = default;
   explicit TrackDefaultList(const HeapVector<Member<TrackDefault>>&);
 
   unsigned length() const { return track_defaults_.size(); }
   TrackDefault* item(unsigned) const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  const HeapVector<Member<TrackDefault>> track_defaults_;
+  const HeapVector<Member<TrackDefault>> track_defaults_{};
 };
 
 }  // namespace blink

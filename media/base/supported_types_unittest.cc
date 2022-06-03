@@ -4,7 +4,13 @@
 
 #include "media/base/supported_types.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 namespace media {
 
@@ -14,7 +20,7 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 const bool kMpeg4Supported = true;
 #else
 const bool kMpeg4Supported = false;
@@ -22,80 +28,77 @@ const bool kMpeg4Supported = false;
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   // Default to common 709.
-  const media::VideoColorSpace kColorSpace = media::VideoColorSpace::REC709();
+  const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
 
   // Some codecs do not have a notion of level.
   const int kUnspecifiedLevel = 0;
 
   // Expect support for baseline configuration of known codecs.
-  EXPECT_TRUE(IsSupportedVideoType({media::kCodecVP8, media::VP8PROFILE_ANY,
-                                    kUnspecifiedLevel, kColorSpace}));
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, kColorSpace}));
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
   EXPECT_TRUE(
-      IsSupportedVideoType({media::kCodecVP9, media::VP9PROFILE_PROFILE0,
+      IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
-  EXPECT_TRUE(IsSupportedVideoType({media::kCodecTheora,
-                                    media::VIDEO_CODEC_PROFILE_UNKNOWN,
-                                    kUnspecifiedLevel, kColorSpace}));
 
   // Expect non-support for the following.
-  EXPECT_FALSE(IsSupportedVideoType({media::kUnknownVideoCodec,
-                                     media::VIDEO_CODEC_PROFILE_UNKNOWN,
-                                     kUnspecifiedLevel, kColorSpace}));
-  EXPECT_FALSE(IsSupportedVideoType({media::kCodecVC1,
-                                     media::VIDEO_CODEC_PROFILE_UNKNOWN,
-                                     kUnspecifiedLevel, kColorSpace}));
-  EXPECT_FALSE(IsSupportedVideoType({media::kCodecMPEG2,
-                                     media::VIDEO_CODEC_PROFILE_UNKNOWN,
-                                     kUnspecifiedLevel, kColorSpace}));
-  EXPECT_FALSE(IsSupportedVideoType({media::kCodecHEVC,
-                                     media::VIDEO_CODEC_PROFILE_UNKNOWN,
-                                     kUnspecifiedLevel, kColorSpace}));
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kUnknown, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kVC1, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kMPEG2, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
 
   // Expect conditional support for the following.
+  EXPECT_EQ(kPropCodecsEnabled,
+            IsSupportedVideoType(
+                {VideoCodec::kH264, H264PROFILE_BASELINE, 1, kColorSpace}));
   EXPECT_EQ(
-      kPropCodecsEnabled,
-      IsSupportedVideoType(
-          {media::kCodecH264, media::H264PROFILE_BASELINE, 1, kColorSpace}));
-  EXPECT_EQ(kMpeg4Supported,
-            IsSupportedVideoType({media::kCodecMPEG4,
-                                  media::VIDEO_CODEC_PROFILE_UNKNOWN,
-                                  kUnspecifiedLevel, kColorSpace}));
+      kMpeg4Supported,
+      IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoType_VP9TransferFunctions) {
   size_t num_found = 0;
   // TODO(hubbe): Verify support for HDR codecs when color management enabled.
-  const std::set<media::VideoColorSpace::TransferID> kSupportedTransfers = {
-      media::VideoColorSpace::TransferID::GAMMA22,
-      media::VideoColorSpace::TransferID::UNSPECIFIED,
-      media::VideoColorSpace::TransferID::BT709,
-      media::VideoColorSpace::TransferID::SMPTE170M,
-      media::VideoColorSpace::TransferID::BT2020_10,
-      media::VideoColorSpace::TransferID::BT2020_12,
-      media::VideoColorSpace::TransferID::IEC61966_2_1,
-      media::VideoColorSpace::TransferID::GAMMA28,
-      media::VideoColorSpace::TransferID::SMPTE240M,
-      media::VideoColorSpace::TransferID::LINEAR,
-      media::VideoColorSpace::TransferID::LOG,
-      media::VideoColorSpace::TransferID::LOG_SQRT,
-      media::VideoColorSpace::TransferID::BT1361_ECG,
-      media::VideoColorSpace::TransferID::SMPTEST2084,
-      media::VideoColorSpace::TransferID::IEC61966_2_4,
-      media::VideoColorSpace::TransferID::SMPTEST428_1,
-      media::VideoColorSpace::TransferID::ARIB_STD_B67,
+  const std::set<VideoColorSpace::TransferID> kSupportedTransfers = {
+      VideoColorSpace::TransferID::GAMMA22,
+      VideoColorSpace::TransferID::UNSPECIFIED,
+      VideoColorSpace::TransferID::BT709,
+      VideoColorSpace::TransferID::SMPTE170M,
+      VideoColorSpace::TransferID::BT2020_10,
+      VideoColorSpace::TransferID::BT2020_12,
+      VideoColorSpace::TransferID::IEC61966_2_1,
+      VideoColorSpace::TransferID::GAMMA28,
+      VideoColorSpace::TransferID::SMPTE240M,
+      VideoColorSpace::TransferID::LINEAR,
+      VideoColorSpace::TransferID::LOG,
+      VideoColorSpace::TransferID::LOG_SQRT,
+      VideoColorSpace::TransferID::BT1361_ECG,
+      VideoColorSpace::TransferID::SMPTEST2084,
+      VideoColorSpace::TransferID::IEC61966_2_4,
+      VideoColorSpace::TransferID::SMPTEST428_1,
+      VideoColorSpace::TransferID::ARIB_STD_B67,
   };
 
-  for (int i = 0; i <= (1 << (8 * sizeof(media::VideoColorSpace::TransferID)));
-       i++) {
-    media::VideoColorSpace color_space = media::VideoColorSpace::REC709();
-    color_space.transfer = media::VideoColorSpace::GetTransferID(i);
+  for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::TransferID))); i++) {
+    VideoColorSpace color_space = VideoColorSpace::REC709();
+    color_space.transfer = VideoColorSpace::GetTransferID(i);
     bool found = kSupportedTransfers.find(color_space.transfer) !=
                  kSupportedTransfers.end();
     if (found)
       num_found++;
-    EXPECT_EQ(found, IsSupportedVideoType({media::kCodecVP9,
-                                           media::VP9PROFILE_PROFILE0, 1,
-                                           color_space}));
+    EXPECT_EQ(found,
+              IsSupportedVideoType(
+                  {VideoCodec::kVP9, VP9PROFILE_PROFILE0, 1, color_space}));
   }
   EXPECT_EQ(kSupportedTransfers.size(), num_found);
 }
@@ -103,31 +106,30 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9TransferFunctions) {
 TEST(SupportedTypesTest, IsSupportedVideoType_VP9Primaries) {
   size_t num_found = 0;
   // TODO(hubbe): Verify support for HDR codecs when color management enabled.
-  const std::set<media::VideoColorSpace::PrimaryID> kSupportedPrimaries = {
-      media::VideoColorSpace::PrimaryID::BT709,
-      media::VideoColorSpace::PrimaryID::UNSPECIFIED,
-      media::VideoColorSpace::PrimaryID::BT470M,
-      media::VideoColorSpace::PrimaryID::BT470BG,
-      media::VideoColorSpace::PrimaryID::SMPTE170M,
-      media::VideoColorSpace::PrimaryID::SMPTE240M,
-      media::VideoColorSpace::PrimaryID::FILM,
-      media::VideoColorSpace::PrimaryID::BT2020,
-      media::VideoColorSpace::PrimaryID::SMPTEST428_1,
-      media::VideoColorSpace::PrimaryID::SMPTEST431_2,
-      media::VideoColorSpace::PrimaryID::SMPTEST432_1,
+  const std::set<VideoColorSpace::PrimaryID> kSupportedPrimaries = {
+      VideoColorSpace::PrimaryID::BT709,
+      VideoColorSpace::PrimaryID::UNSPECIFIED,
+      VideoColorSpace::PrimaryID::BT470M,
+      VideoColorSpace::PrimaryID::BT470BG,
+      VideoColorSpace::PrimaryID::SMPTE170M,
+      VideoColorSpace::PrimaryID::SMPTE240M,
+      VideoColorSpace::PrimaryID::FILM,
+      VideoColorSpace::PrimaryID::BT2020,
+      VideoColorSpace::PrimaryID::SMPTEST428_1,
+      VideoColorSpace::PrimaryID::SMPTEST431_2,
+      VideoColorSpace::PrimaryID::SMPTEST432_1,
   };
 
-  for (int i = 0; i <= (1 << (8 * sizeof(media::VideoColorSpace::PrimaryID)));
-       i++) {
-    media::VideoColorSpace color_space = media::VideoColorSpace::REC709();
-    color_space.primaries = media::VideoColorSpace::GetPrimaryID(i);
+  for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::PrimaryID))); i++) {
+    VideoColorSpace color_space = VideoColorSpace::REC709();
+    color_space.primaries = VideoColorSpace::GetPrimaryID(i);
     bool found = kSupportedPrimaries.find(color_space.primaries) !=
                  kSupportedPrimaries.end();
     if (found)
       num_found++;
-    EXPECT_EQ(found, IsSupportedVideoType({media::kCodecVP9,
-                                           media::VP9PROFILE_PROFILE0, 1,
-                                           color_space}));
+    EXPECT_EQ(found,
+              IsSupportedVideoType(
+                  {VideoCodec::kVP9, VP9PROFILE_PROFILE0, 1, color_space}));
   }
   EXPECT_EQ(kSupportedPrimaries.size(), num_found);
 }
@@ -135,69 +137,176 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Primaries) {
 TEST(SupportedTypesTest, IsSupportedVideoType_VP9Matrix) {
   size_t num_found = 0;
   // TODO(hubbe): Verify support for HDR codecs when color management enabled.
-  const std::set<media::VideoColorSpace::MatrixID> kSupportedMatrix = {
-      media::VideoColorSpace::MatrixID::BT709,
-      media::VideoColorSpace::MatrixID::UNSPECIFIED,
-      media::VideoColorSpace::MatrixID::BT470BG,
-      media::VideoColorSpace::MatrixID::SMPTE170M,
-      media::VideoColorSpace::MatrixID::BT2020_NCL,
-      media::VideoColorSpace::MatrixID::RGB,
-      media::VideoColorSpace::MatrixID::FCC,
-      media::VideoColorSpace::MatrixID::SMPTE240M,
-      media::VideoColorSpace::MatrixID::YCOCG,
-      media::VideoColorSpace::MatrixID::YDZDX,
-      media::VideoColorSpace::MatrixID::BT2020_CL,
+  const std::set<VideoColorSpace::MatrixID> kSupportedMatrix = {
+      VideoColorSpace::MatrixID::BT709,
+      VideoColorSpace::MatrixID::UNSPECIFIED,
+      VideoColorSpace::MatrixID::BT470BG,
+      VideoColorSpace::MatrixID::SMPTE170M,
+      VideoColorSpace::MatrixID::BT2020_NCL,
+      VideoColorSpace::MatrixID::RGB,
+      VideoColorSpace::MatrixID::FCC,
+      VideoColorSpace::MatrixID::SMPTE240M,
+      VideoColorSpace::MatrixID::YCOCG,
+      VideoColorSpace::MatrixID::YDZDX,
+      VideoColorSpace::MatrixID::BT2020_CL,
   };
 
-  for (int i = 0; i <= (1 << (8 * sizeof(media::VideoColorSpace::MatrixID)));
-       i++) {
-    media::VideoColorSpace color_space = media::VideoColorSpace::REC709();
-    color_space.matrix = media::VideoColorSpace::GetMatrixID(i);
+  for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::MatrixID))); i++) {
+    VideoColorSpace color_space = VideoColorSpace::REC709();
+    color_space.matrix = VideoColorSpace::GetMatrixID(i);
     bool found =
         kSupportedMatrix.find(color_space.matrix) != kSupportedMatrix.end();
     if (found)
       num_found++;
-    EXPECT_EQ(found, IsSupportedVideoType({media::kCodecVP9,
-                                           media::VP9PROFILE_PROFILE0, 1,
-                                           color_space}));
+    EXPECT_EQ(found,
+              IsSupportedVideoType(
+                  {VideoCodec::kVP9, VP9PROFILE_PROFILE0, 1, color_space}));
   }
   EXPECT_EQ(kSupportedMatrix.size(), num_found);
+}
+
+TEST(SupportedTypesTest, IsSupportedVideoType_VP9Profiles) {
+  // Default to common 709.
+  const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
+
+  // Some codecs do not have a notion of level.
+  const int kUnspecifiedLevel = 0;
+
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE1, kUnspecifiedLevel, kColorSpace}));
+
+// VP9 Profile2 are supported on x86, ChromeOS on ARM and Mac/Win on ARM64.
+// See third_party/libvpx/BUILD.gn.
+#if defined(ARCH_CPU_X86_FAMILY) ||                                 \
+    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)) || \
+    (defined(ARCH_CPU_ARM64) && (defined(OS_MAC) || defined(OS_WIN)))
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kUnspecifiedLevel, kColorSpace}));
+#endif
 }
 
 TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
   const bool is_spatial_rendering = true;
   // Dolby Atmos = E-AC3 (Dolby Digital Plus) + spatialRendering. Currently not
   // supported.
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecEAC3, is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kEAC3, AudioCodecProfile::kUnknown, is_spatial_rendering}));
 
   // Expect non-support for codecs with which there is no spatial audio format.
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecAAC, is_spatial_rendering}));
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecMP3, is_spatial_rendering}));
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecPCM, is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kAAC, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kMP3, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kPCM, AudioCodecProfile::kUnknown, is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecVorbis, is_spatial_rendering}));
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecFLAC, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kVorbis, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kFLAC, AudioCodecProfile::kUnknown, is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecAMR_NB, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kAMR_NB, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecAMR_WB, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kAMR_WB, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecPCM_MULAW, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kPCM_MULAW, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecGSM_MS, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kGSM_MS, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecPCM_S16BE, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kPCM_S16BE, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecPCM_S24BE, is_spatial_rendering}));
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecOpus, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kPCM_S24BE, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kOpus, AudioCodecProfile::kUnknown, is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecPCM_ALAW, is_spatial_rendering}));
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecALAC, is_spatial_rendering}));
-  EXPECT_FALSE(IsSupportedAudioType({media::kCodecAC3, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kPCM_ALAW, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kALAC, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kAC3, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+  EXPECT_FALSE(IsSupportedAudioType({AudioCodec::kMpegHAudio,
+                                     AudioCodecProfile::kUnknown,
+                                     is_spatial_rendering}));
   EXPECT_FALSE(
-      IsSupportedAudioType({media::kCodecMpegHAudio, is_spatial_rendering}));
-  EXPECT_FALSE(
-      IsSupportedAudioType({media::kUnknownAudioCodec, is_spatial_rendering}));
+      IsSupportedAudioType({AudioCodec::kUnknown, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
 }
 
+TEST(SupportedTypesTest, XHE_AACSupportedOnAndroidOnly) {
+  // TODO(dalecurtis): Update this test if we ever have support elsewhere.
+#if defined(OS_ANDROID)
+  const bool is_supported =
+      kPropCodecsEnabled &&
+      base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_P;
+
+  EXPECT_EQ(is_supported,
+            IsSupportedAudioType(
+                {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
+#else
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
+#endif
+}
+
+TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
+  // Default to common 709.
+  VideoColorSpace color_space = VideoColorSpace::REC709();
+
+  // Some codecs do not have a notion of level.
+  const int kUnspecifiedLevel = 0;
+
+  // Expect support for baseline configuration of known codecs.
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, color_space}));
+
+  // All combinations of combinations of color gamuts and transfer functions
+  // should be supported.
+  color_space.primaries = VideoColorSpace::PrimaryID::SMPTEST431_2;
+  color_space.transfer = VideoColorSpace::TransferID::SMPTEST2084;
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, color_space}));
+
+  color_space.primaries = VideoColorSpace::PrimaryID::BT2020;
+  color_space.transfer = VideoColorSpace::TransferID::ARIB_STD_B67;
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(IsSupportedVideoType(
+      {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, color_space}));
+
+  // No HDR metadata types are supported.
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
+                            color_space, gfx::HdrMetadataType::kSmpteSt2086}));
+
+  EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
+                                     kUnspecifiedLevel, color_space,
+                                     gfx::HdrMetadataType::kSmpteSt2094_10}));
+
+  EXPECT_FALSE(IsSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY,
+                                     kUnspecifiedLevel, color_space,
+                                     gfx::HdrMetadataType::kSmpteSt2094_40}));
+}
 }  // namespace media

@@ -7,9 +7,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/values.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_network_session.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
@@ -38,15 +39,18 @@ ClientSocketPoolManagerImpl::~ClientSocketPoolManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void ClientSocketPoolManagerImpl::FlushSocketPoolsWithError(int error) {
+void ClientSocketPoolManagerImpl::FlushSocketPoolsWithError(
+    int net_error,
+    const char* net_log_reason_utf8) {
   for (const auto& it : socket_pools_) {
-    it.second->FlushWithError(error);
+    it.second->FlushWithError(net_error, net_log_reason_utf8);
   }
 }
 
-void ClientSocketPoolManagerImpl::CloseIdleSockets() {
+void ClientSocketPoolManagerImpl::CloseIdleSockets(
+    const char* net_log_reason_utf8) {
   for (const auto& it : socket_pools_) {
-    it.second->CloseIdleSockets();
+    it.second->CloseIdleSockets(net_log_reason_utf8);
   }
 }
 
@@ -101,21 +105,11 @@ ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
     } else {
       type = "http_proxy_socket_pool";
     }
-    list->Append(
-        socket_pool.second->GetInfoAsValue(socket_pool.first.ToURI(), type));
+    list->Append(socket_pool.second->GetInfoAsValue(
+        ProxyServerToProxyUri(socket_pool.first), type));
   }
 
   return std::move(list);
-}
-
-void ClientSocketPoolManagerImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {
-  SocketPoolMap::const_iterator socket_pool =
-      socket_pools_.find(ProxyServer::Direct());
-  if (socket_pool == socket_pools_.end())
-    return;
-  socket_pool->second->DumpMemoryStats(pmd, parent_dump_absolute_name);
 }
 
 }  // namespace net

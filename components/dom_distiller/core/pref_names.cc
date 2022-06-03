@@ -15,6 +15,9 @@ const char kTheme[] = "dom_distiller.theme";
 const char kFontScale[] = "dom_distiller.font_scale";
 // Path to the boolean whether Reader Mode for Accessibility option is enabled.
 const char kReaderForAccessibility[] = "dom_distiller.reader_for_accessibility";
+// A boolean pref set to true if the option to use reader mode should be visible
+// on articles, when available.
+const char kOfferReaderMode[] = "dom_distiller.offer_reader_mode";
 
 }  // namespace prefs
 }  // namespace dom_distiller

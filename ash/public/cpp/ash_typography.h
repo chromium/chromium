@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_ASH_TYPOGRAPHY_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/style/typography.h"
 
@@ -26,15 +27,65 @@ enum AshTextContext {
   // A headline label that appears in a larger window.
   CONTEXT_HEADLINE_OVERSIZED,
 
+  // Title label in the Sharesheet bubble. Medium weight. Usually 16pt.
+  CONTEXT_SHARESHEET_BUBBLE_TITLE,
+
+  // Body text label in the Sharesheet bubble. Medium weight. Usually 14pt.
+  CONTEXT_SHARESHEET_BUBBLE_BODY,
+
+  // Body text label in the Sharesheet bubble. Generally appears under body
+  // text. Usually 13pt.
+  CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
+
+  // Text label in the Sharesheet bubble for small text. Medium weight.
+  // Usually 10pt.
+  CONTEXT_SHARESHEET_BUBBLE_SMALL,
+
+  // A month label that appears in the Calendar view.
+  CONTEXT_CALENDAR_LABEL,
+
+  // Date text in the Calendar view.
+  CONTEXT_CALENDAR_DATE,
+
+  // Title and details text label used in search result view. Usually 14 pt.
+  CONTEXT_SEARCH_RESULT_VIEW,
+
+  // Details text label used for inline answer search result view. Usually 12pt.
+  // Used when productivity launcher is enabled.
+  CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS,
+
+  // Label text for search result view categories. Usually 13 pt. Appears above
+  // one or more search result views.
+  CONTEXT_SEARCH_RESULT_CATEGORY_LABEL,
+
   ASH_TEXT_CONTEXT_END
 };
 
-// Sets the |size_delta| and |font_weight| for ash-specific text contexts.
-// Values are only set for contexts specific to ash.
-void ASH_PUBLIC_EXPORT ApplyAshFontStyles(int context,
-                                          int style,
-                                          int* size_delta,
-                                          gfx::Font::Weight* font_weight);
+enum AshTextStyle {
+  ASH_TEXT_STYLE_START = views::style::VIEWS_TEXT_STYLE_END,
+
+  // Used to draw attention to a section of body text such as a matched search
+  // string.
+  STYLE_EMPHASIZED = ASH_TEXT_STYLE_START,
+
+  // Text styling specifically for the Chrome OS sharesheet.
+  STYLE_SHARESHEET,
+
+  // Text styling for classic launcher's search result view.
+  STYLE_CLASSIC_LAUNCHER,
+
+  // Text styling for productivity launcher's search result view.
+  STYLE_PRODUCTIVITY_LAUNCHER,
+
+  ASH_TEXT_STYLE_END
+};
+
+// Sets the |details| for ash-specific text contexts. Values are only set for
+// contexts specific to ash.
+void ASH_PUBLIC_EXPORT
+ApplyAshFontStyles(int context,
+                   int style,
+                   ui::ResourceBundle::FontDetails& details);
 
 }  // namespace ash
 

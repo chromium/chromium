@@ -7,12 +7,13 @@
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_permission_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -27,14 +28,16 @@ class ScriptState;
 // TODO(peter): Make the NotificationManager responsible for resource loading.
 class NotificationManager final : public GarbageCollected<NotificationManager>,
                                   public Supplement<ExecutionContext> {
-  USING_GARBAGE_COLLECTED_MIXIN(NotificationManager);
-
  public:
   static const char kSupplementName[];
 
   static NotificationManager* From(ExecutionContext* context);
 
   explicit NotificationManager(ExecutionContext& context);
+
+  NotificationManager(const NotificationManager&) = delete;
+  NotificationManager& operator=(const NotificationManager&) = delete;
+
   ~NotificationManager();
 
   // Returns the notification permission status of the current origin. This
@@ -79,7 +82,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
                         bool include_triggered,
                         ScriptPromiseResolver* resolver);
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   void DidDisplayPersistentNotification(
@@ -93,8 +96,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
 
   // Returns an initialized NotificationService remote. A connection will be
   // established the first time this method is called.
-  const mojo::Remote<mojom::blink::NotificationService>&
-  GetNotificationService();
+  mojom::blink::NotificationService* GetNotificationService();
 
   void OnPermissionRequestComplete(
       ScriptPromiseResolver* resolver,
@@ -104,10 +106,8 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   void OnNotificationServiceConnectionError();
   void OnPermissionServiceConnectionError();
 
-  mojo::Remote<mojom::blink::NotificationService> notification_service_;
-  mojo::Remote<mojom::blink::PermissionService> permission_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationManager);
+  HeapMojoRemote<mojom::blink::NotificationService> notification_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 
 }  // namespace blink

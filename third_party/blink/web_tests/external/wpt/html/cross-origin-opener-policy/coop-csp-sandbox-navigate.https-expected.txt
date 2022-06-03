@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL CSP: sandbox allow-popups allow-scripts allow-same-origin; CSP sandbox popup navigate to Cross-Origin-Opener-Policy document should work assert_true: same-origin check expected true got false
+FAIL CSP: sandbox allow-popups allow-scripts; CSP sandbox popup navigate to Cross-Origin-Opener-Policy document should work assert_throws_dom: same-origin check function "() => { popup.document; }" did not throw
+Harness: the test ran to completion.
+

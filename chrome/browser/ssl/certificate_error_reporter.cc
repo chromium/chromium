@@ -64,9 +64,9 @@ constexpr net::NetworkTrafficAnnotationTag
             "details of possible security incidents to Google' setting under "
             "'Privacy'. The feature is disabled by default."
           chrome_policy {
-            SafeBrowsingExtendedReportingOptInAllowed {
+            SafeBrowsingExtendedReportingEnabled {
               policy_options {mode: MANDATORY}
-              SafeBrowsingExtendedReportingOptInAllowed: false
+              SafeBrowsingExtendedReportingEnabled: false
             }
           }
         })");

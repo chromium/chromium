@@ -1,0 +1,83 @@
+<!doctype html>
+<title>Tests the basics of SpeechGrammar and SpeechGrammarList</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const base = document.baseURI.substring(0,
+                                        document.baseURI.lastIndexOf('/') + 1);
+
+test(() => {
+  assert_true('webkitSpeechGrammar' in window);
+  assert_false(webkitSpeechGrammar == null);
+  assert_true('webkitSpeechGrammarList' in window);
+  assert_false(webkitSpeechGrammarList == null);
+}, "Check availablility of constructors");
+
+test(() => {
+  var g = new webkitSpeechGrammar();
+  assert_false(g == null);
+  assert_equals(g.weight, 1.0);
+  assert_equals(g.src, "");
+}, "Creating a grammar explicitly");
+
+test(() => {
+  var g = new webkitSpeechGrammar();
+  g.weight = 2;
+  assert_equals(g.weight, 2.0);
+  assert_throws_js(TypeError, () => g.weight = NaN);
+  assert_throws_js(TypeError, () => g.weight = Infinity);
+  assert_equals(g.weight, 2.0);
+  g.src = "grammar.xml";
+  assert_equals(g.src, base + "grammar.xml");
+  g.src = "http://example.tld/grammar.xml"
+  assert_equals(g.src, "http://example.tld/grammar.xml");
+  g.src = "foo bar";
+  assert_equals(g.src, base + "foo%20bar");
+}, "Setting grammar attributes");
+
+test(() => {
+  gs = new webkitSpeechGrammarList();
+  assert_false(gs == null);
+  assert_equals(gs.length, 0);
+  assert_equals(gs.item(0), null);
+  assert_equals(gs[0], undefined);
+  assert_equals(gs.item(-1), null);
+  assert_equals(gs[-1], undefined);
+
+  gs.addFromUri("grammar", 2);
+  assert_equals(gs.length, 1);
+  assert_equals(gs.item(1), null);
+  assert_equals(gs[1], undefined);
+  assert_equals(gs.item(-1), null);
+  assert_equals(gs[-1], undefined);
+  assert_equals(gs[0], gs.item(0));
+  assert_equals(gs.item(0).src, base + "grammar");
+  assert_equals(gs.item(0).weight, 2);
+
+  gs.addFromUri("http://foo.tld/grammar.xml", 3);
+  assert_equals(gs.length, 2);
+  assert_equals(gs[1], gs.item(1));
+  assert_equals(gs.item(1).src, "http://foo.tld/grammar.xml");
+  assert_equals(gs.item(1).weight, 3);
+
+  gs.addFromString('<grammar>foo</grammar>', 4);
+  assert_equals(gs.length, 3);
+  assert_equals(gs[2], gs.item(2));
+  assert_equals(gs.item(2).src,
+                "data:application/xml,%3Cgrammar%3Efoo%3C/grammar%3E");
+  assert_equals(gs.item(2).weight, 4);
+  assert_equals(gs[2].src,
+                "data:application/xml,%3Cgrammar%3Efoo%3C/grammar%3E");
+  assert_equals(gs[2].weight, 4);
+
+  assert_throws_js(TypeError,
+                   () => gs.addFromUri("http://foo.tld/grammar.xml", NaN));
+  assert_throws_js(TypeError,
+                   () => gs.addFromUri("http://foo.tld/grammar.xml", Infinity));
+  assert_throws_js(TypeError,
+                   () => gs.addFromString("foo", NaN));
+  assert_throws_js(TypeError,
+                   () => gs.addFromString("foo", Infinity));
+}, "Creating a grammar list");
+
+</script>

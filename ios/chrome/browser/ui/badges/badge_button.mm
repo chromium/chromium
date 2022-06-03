@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 
-#import "base/logging.h"
+#include <ostream>
+
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,6 +37,8 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
 + (instancetype)badgeButtonWithType:(BadgeType)badgeType {
   BadgeButton* button = [self buttonWithType:UIButtonTypeSystem];
   button.badgeType = badgeType;
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
   return button;
 }
 
@@ -47,7 +52,8 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
   self.accepted = accepted;
   void (^changeTintColor)() = ^{
     self.tintColor = accepted ? nil : [UIColor colorNamed:kToolbarButtonColor];
-    self.accessibilityIdentifier = [self getAccessibilityIdentifier:accepted];
+    self.accessibilityIdentifier =
+        [self accessibilityIdentifierForAcceptedState:accepted];
   };
   if (animated) {
     [UIView animateWithDuration:kButtonAnimationDuration
@@ -76,7 +82,7 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
 
 #pragma mark - Private
 
-- (NSString*)getAccessibilityIdentifier:(BOOL)accepted {
+- (NSString*)accessibilityIdentifierForAcceptedState:(BOOL)accepted {
   switch (self.badgeType) {
     case BadgeType::kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
@@ -95,9 +101,16 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
     case BadgeType::kBadgeTypeSaveCard:
       return accepted ? kBadgeButtonSaveCardAcceptedAccessibilityIdentifier
                       : kBadgeButtonSaveCardAccessibilityIdentifier;
+    case BadgeType::kBadgeTypeSaveAddressProfile:
+      return accepted
+                 ? kBadgeButtonSaveAddressProfileAcceptedAccessibilityIdentifier
+                 : kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
     case BadgeType::kBadgeTypeTranslate:
       return accepted ? kBadgeButtonTranslateAcceptedAccessibilityIdentifier
                       : kBadgeButtonTranslateAccessibilityIdentifier;
+    case BadgeType::kBadgeTypeAddToReadingList:
+      return accepted ? kBadgeButtonReadingListAcceptedAccessibilityIdentifier
+                      : kBadgeButtonReadingListAccessibilityIdentifier;
   }
 }
 

@@ -38,7 +38,7 @@ class CSSVariableReferenceValue : public CSSValue {
   }
   String CustomCSSText() const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   scoped_refptr<CSSVariableData> data_;

@@ -25,8 +25,9 @@ enum AudioSampleRate {
   k192000Hz = 10,
   k24000Hz = 11,
   k384000Hz = 12,
+  k768000Hz = 13,
   // Must always equal the largest value ever reported:
-  kAudioSampleRateMax = k384000Hz,
+  kAudioSampleRateMax = k768000Hz,
 };
 
 // Helper method to convert integral values to their respective enum values,

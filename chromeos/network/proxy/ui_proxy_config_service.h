@@ -8,7 +8,8 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chromeos/network/network_profile_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_prefs.h"
 
@@ -22,7 +23,6 @@ namespace chromeos {
 
 class NetworkState;
 class NetworkStateHandler;
-class NetworkProfileHandler;
 
 // This class provides an interface to the UI for getting a network proxy
 // configuration.
@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
                        PrefService* local_state_prefs,
                        NetworkStateHandler* network_state_handler,
                        NetworkProfileHandler* network_profile_handler);
+
+  UIProxyConfigService(const UIProxyConfigService&) = delete;
+  UIProxyConfigService& operator=(const UIProxyConfigService&) = delete;
+
   ~UIProxyConfigService();
 
   // Generates ONC dictionary for proxy settings enforced for the network, and
@@ -64,7 +68,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
   // with mode == MODE_FIXED_SERVERS.
   bool HasDefaultNetworkProxyConfigured();
 
-  // Returns the ProxyMode for |network| using |local_state_prefs_|
+  // Returns the ProxyMode for |network| using |local_state_prefs_|. Proxies
+  // configured by policy or extensions are not being considered. The returned
+  // result is used to display a privacy warning to the user which in the
+  // context of managed networks is not helpful (see https://crbug.com/1130566).
   ProxyPrefs::ProxyMode ProxyModeForNetwork(const NetworkState* network);
 
  private:
@@ -81,10 +88,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
 
   NetworkStateHandler* network_state_handler_;      // unowned
   NetworkProfileHandler* network_profile_handler_;  // unowned
-
-  DISALLOW_COPY_AND_ASSIGN(UIProxyConfigService);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::UIProxyConfigService;
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_PROXY_UI_PROXY_CONFIG_SERVICE_H_

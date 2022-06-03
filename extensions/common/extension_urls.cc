@@ -16,13 +16,9 @@
 
 namespace extensions {
 
-const char kEventBindings[] = "event_bindings";
-
-const char kSchemaUtils[] = "schemaUtils";
-
-bool IsSourceFromAnExtension(const base::string16& source) {
+bool IsSourceFromAnExtension(const std::u16string& source) {
   return GURL(source).SchemeIs(kExtensionScheme) ||
-         base::StartsWith(source, base::ASCIIToUTF16("extensions::"),
+         base::StartsWith(source, u"extensions::",
                           base::CompareCase::SENSITIVE);
 }
 
@@ -56,19 +52,6 @@ std::string GetWebstoreItemDetailURLPrefix() {
 GURL GetWebstoreItemJsonDataURL(const std::string& extension_id) {
   return GURL(GetWebstoreLaunchURL().spec() + "/inlineinstall/detail/" +
               extension_id);
-}
-
-GURL GetWebstoreJsonSearchUrl(const std::string& query,
-                              const std::string& host_language_code) {
-  GURL url(GetWebstoreLaunchURL().spec() + "/jsonsearch");
-  url = net::AppendQueryParameter(url, "q", query);
-  url = net::AppendQueryParameter(url, "hl", host_language_code);
-  return url;
-}
-
-GURL GetWebstoreSearchPageUrl(const std::string& query) {
-  return GURL(GetWebstoreLaunchURL().spec() + "/search/" +
-              net::EscapeQueryParamValue(query, false));
 }
 
 GURL GetDefaultWebstoreUpdateUrl() {

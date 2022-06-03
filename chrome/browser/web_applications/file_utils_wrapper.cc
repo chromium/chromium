@@ -9,10 +9,6 @@
 
 namespace web_app {
 
-std::unique_ptr<FileUtilsWrapper> FileUtilsWrapper::Clone() {
-  return std::make_unique<FileUtilsWrapper>();
-}
-
 bool FileUtilsWrapper::PathExists(const base::FilePath& path) {
   return base::PathExists(path);
 }
@@ -56,11 +52,13 @@ bool FileUtilsWrapper::ReadFileToString(const base::FilePath& path,
 }
 
 bool FileUtilsWrapper::DeleteFile(const base::FilePath& path, bool recursive) {
-  return base::DeleteFile(path, recursive);
+  if (!recursive)
+    return base::DeleteFile(path);
+  return base::DeletePathRecursively(path);
 }
 
 bool FileUtilsWrapper::DeleteFileRecursively(const base::FilePath& path) {
-  return base::DeleteFileRecursively(path);
+  return base::DeletePathRecursively(path);
 }
 
 }  // namespace web_app

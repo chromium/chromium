@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_report.h"
@@ -23,7 +24,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   void RemoveBrowsingData(bool remove_reports,
                           bool remove_clients,
                           std::string host) {
-    int data_type_mask = 0;
+    uint64_t data_type_mask = 0;
     if (remove_reports)
       data_type_mask |= ReportingBrowsingDataRemover::DATA_TYPE_REPORTS;
     if (remove_clients)
@@ -40,15 +41,19 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
     }
   }
 
+  // TODO(chlily): Take NIK.
   void AddReport(const GURL& url) {
-    cache()->AddReport(url, kUserAgent_, kGroup_, kType_,
+    cache()->AddReport(absl::nullopt, NetworkIsolationKey(), url, kUserAgent_,
+                       kGroup_, kType_,
                        std::make_unique<base::DictionaryValue>(), 0,
                        tick_clock()->NowTicks(), 0);
   }
 
-  void SetEndpoint(const url::Origin& origin, const GURL& endpoint) {
-    SetEndpointInCache(origin, kGroup_, endpoint,
-                       base::Time::Now() + base::TimeDelta::FromDays(7));
+  // TODO(chlily): Take NIK.
+  void SetEndpoint(const url::Origin& origin) {
+    SetEndpointInCache(
+        ReportingEndpointGroupKey(NetworkIsolationKey(), origin, kGroup_),
+        kEndpoint_, base::Time::Now() + base::Days(7));
   }
 
   static bool HostIs(std::string host, const GURL& url) {
@@ -75,8 +80,8 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveNothing) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetEndpoint(kOrigin1_, kEndpoint_);
-  SetEndpoint(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_);
+  SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ false,
                      /* host= */ "");
@@ -88,8 +93,8 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveAllReports) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetEndpoint(kOrigin1_, kEndpoint_);
-  SetEndpoint(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_);
+  SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ false,
                      /* host= */ "");
@@ -101,8 +106,8 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveAllClients) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetEndpoint(kOrigin1_, kEndpoint_);
-  SetEndpoint(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_);
+  SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ true,
                      /* host= */ "");
@@ -114,8 +119,8 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveAllReportsAndClients) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetEndpoint(kOrigin1_, kEndpoint_);
-  SetEndpoint(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_);
+  SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ true,
                      /* host= */ "");
@@ -127,8 +132,8 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeReports) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetEndpoint(kOrigin1_, kEndpoint_);
-  SetEndpoint(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_);
+  SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ false,
                      /* host= */ kUrl1_.host());
@@ -144,14 +149,18 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeClients) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetEndpoint(kOrigin1_, kEndpoint_);
-  SetEndpoint(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_);
+  SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ true,
                      /* host= */ kUrl1_.host());
   EXPECT_EQ(2u, report_count());
-  EXPECT_FALSE(FindEndpointInCache(kOrigin1_, kGroup_, kEndpoint_));
-  EXPECT_TRUE(FindEndpointInCache(kOrigin2_, kGroup_, kEndpoint_));
+  EXPECT_FALSE(FindEndpointInCache(
+      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin1_, kGroup_),
+      kEndpoint_));
+  EXPECT_TRUE(FindEndpointInCache(
+      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin2_, kGroup_),
+      kEndpoint_));
 }
 
 }  // namespace

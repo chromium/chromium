@@ -35,10 +35,12 @@ callback MutationCallback = void (sequence<MutationRecord> mutations,
 
 [
     ActiveScriptWrappable,
-    Exposed=Window
+    Exposed=Window,
+    LegacyWindowAlias=WebKitMutationObserver,
+    LegacyWindowAlias_Measure=PrefixedMutationObserverConstructor
 ] interface MutationObserver {
     [CallWith=ScriptState] constructor(MutationCallback callback);
-    [RaisesException] void observe(Node target, optional MutationObserverInit options);
+    [RaisesException] void observe(Node target, optional MutationObserverInit options = {});
     void disconnect();
     sequence<MutationRecord> takeRecords();
 };

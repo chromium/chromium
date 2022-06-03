@@ -31,6 +31,7 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
     // Overridden from KeyboardUI:
     aura::Window* LoadKeyboardWindow(LoadCallback callback) override;
     aura::Window* GetKeyboardWindow() const override;
+    ui::GestureConsumer* GetGestureConsumer() const override;
     ui::InputMethod* GetInputMethod() override;
     void ReloadKeyboardIfNeeded() override {}
 
@@ -41,6 +42,10 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
   };
 
   explicit TestKeyboardUIFactory(ui::InputMethod* input_method);
+
+  TestKeyboardUIFactory(const TestKeyboardUIFactory&) = delete;
+  TestKeyboardUIFactory& operator=(const TestKeyboardUIFactory&) = delete;
+
   ~TestKeyboardUIFactory() override;
 
   // Overridden from KeyboardUIFactory:
@@ -48,8 +53,6 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
 
  private:
   ui::InputMethod* input_method_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardUIFactory);
 };
 
 }  // namespace keyboard

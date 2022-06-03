@@ -7,8 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
@@ -16,40 +17,42 @@ namespace signin {
 PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
     const std::string& oauth_consumer_name,
     IdentityManager* identity_manager,
-    const identity::ScopeSet& scopes,
+    const ScopeSet& scopes,
     AccessTokenFetcher::TokenCallback callback,
-    Mode mode)
+    Mode mode,
+    ConsentLevel consent)
     : oauth_consumer_name_(oauth_consumer_name),
       identity_manager_(identity_manager),
       scopes_(scopes),
       callback_(std::move(callback)),
-      access_token_retried_(false),
-      mode_(mode) {
+      mode_(mode),
+      consent_(consent) {
+  identity_manager_observation_.Observe(identity_manager_);
   if (mode_ == Mode::kImmediate || AreCredentialsAvailable()) {
     StartAccessTokenRequest();
     return;
   }
-
-  // Start observing the IdentityManager. This observer will be removed either
-  // when credentials are obtained and an access token request is started or
-  // when this object is destroyed.
-  identity_manager_observer_.Add(identity_manager_);
+  waiting_for_account_available_ = true;
 }
 
-PrimaryAccountAccessTokenFetcher::~PrimaryAccountAccessTokenFetcher() {}
+PrimaryAccountAccessTokenFetcher::~PrimaryAccountAccessTokenFetcher() = default;
+
+CoreAccountId PrimaryAccountAccessTokenFetcher::GetAccountId() const {
+  return identity_manager_->GetPrimaryAccountId(consent_);
+}
 
 bool PrimaryAccountAccessTokenFetcher::AreCredentialsAvailable() const {
   DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
 
-  return identity_manager_->HasPrimaryAccountWithRefreshToken();
+  return identity_manager_->HasAccountWithRefreshToken(GetAccountId());
 }
 
 void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   DCHECK(mode_ == Mode::kImmediate || AreCredentialsAvailable());
 
   // By the time of starting an access token request, we should no longer be
-  // listening for signin-related events.
-  DCHECK(!identity_manager_observer_.IsObserving(identity_manager_));
+  // waiting for the account.
+  DCHECK(!waiting_for_account_available_);
 
   // Note: We might get here even in cases where we know that there's no refresh
   // token. We're requesting an access token anyway, so that the token service
@@ -63,15 +66,22 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   // token available. AccessTokenFetcher used in
   // |kWaitUntilRefreshTokenAvailable| mode would guarantee only the latter.
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      identity_manager_->GetPrimaryAccountId(), oauth_consumer_name_, scopes_,
+      GetAccountId(), oauth_consumer_name_, scopes_,
       base::BindOnce(
           &PrimaryAccountAccessTokenFetcher::OnAccessTokenFetchComplete,
           base::Unretained(this)),
       AccessTokenFetcher::Mode::kImmediate);
 }
 
-void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
+void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountChanged(
+    const PrimaryAccountChangeEvent& event) {
+  // We're only interested when the account is set for the |consent_|
+  // consent level.
+  if (event.GetEventTypeFor(consent_) !=
+      PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+  DCHECK(!event.GetCurrentState().primary_account.account_id.empty());
   ProcessSigninStateChange();
 }
 
@@ -80,14 +90,26 @@ void PrimaryAccountAccessTokenFetcher::OnRefreshTokenUpdatedForAccount(
   ProcessSigninStateChange();
 }
 
-void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
-  DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
+void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown(
+    IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+  access_token_fetcher_.reset();
+  if (callback_) {
+    std::move(callback_).Run(
+        GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+        AccessTokenInfo());
+  }
+}
 
+void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
+  if (!waiting_for_account_available_)
+    return;
+
+  DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
   if (!AreCredentialsAvailable())
     return;
 
-  identity_manager_observer_.Remove(identity_manager_);
-
+  waiting_for_account_available_ = false;
   StartAccessTokenRequest();
 }
 

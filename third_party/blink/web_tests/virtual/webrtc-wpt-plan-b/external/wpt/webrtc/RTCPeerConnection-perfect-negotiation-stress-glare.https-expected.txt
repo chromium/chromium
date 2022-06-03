@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Perfect negotiation stress glare Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+FAIL Perfect negotiation stress glare with roles reversed Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
+Harness: the test ran to completion.
+

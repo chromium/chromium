@@ -21,6 +21,7 @@
 #if defined(USE_PLATFORM_STATE_STORE)
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/safe_browsing/incident_reporting/state_store_data.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -71,7 +72,7 @@ void IncidentsSentToProtobuf(
       NOTREACHED();
       continue;
     }
-    if (keys_and_digests->empty())
+    if (keys_and_digests->DictEmpty())
       continue;
     int incident_type = 0;
     if (!base::StringToInt(iter.key(), &incident_type)) {
@@ -151,9 +152,6 @@ std::unique_ptr<base::DictionaryValue> Load(Profile* profile) {
       NOTREACHED();
       break;
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      "SBIRS.PSSLoadResult", static_cast<uint32_t>(result),
-      static_cast<uint32_t>(PlatformStateStoreLoadResult::NUM_RESULTS));
   return value_dict;
 #else
   return nullptr;
@@ -164,7 +162,6 @@ void Store(Profile* profile, const base::DictionaryValue* incidents_sent) {
 #if defined(USE_PLATFORM_STATE_STORE)
   std::string data;
   SerializeIncidentsSent(incidents_sent, &data);
-  UMA_HISTOGRAM_COUNTS_1M("SBIRS.PSSDataStoreSize", data.size());
   WriteStoreData(profile, data);
 #endif
 }

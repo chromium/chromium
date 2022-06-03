@@ -1,0 +1,44 @@
+{
+  "name": "Manifest test app with Shortcuts",
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "shortcuts": [
+    {
+      "name": "shortcut1",
+      "short_name": "short_name1",
+      "url": "launch_url1",
+      "icons": [
+        {
+          "src": "launcher-icon-1x.png",
+          "sizes": "48x48",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "shortcut2",
+      "short_name": "short_name2",
+      "url": "launch_url2",
+      "icons": [
+        {
+          "src": "launcher-icon-2x.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        },
+        {
+          "src": "launcher-icon-3x.png",
+          "sizes": "144x144",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

@@ -20,7 +20,7 @@ namespace content {
 // frame.
 struct CONTENT_EXPORT PresentationRequest {
  public:
-  PresentationRequest(const GlobalFrameRoutingId& render_frame_host_id,
+  PresentationRequest(const GlobalRenderFrameHostId& render_frame_host_id,
                       const std::vector<GURL>& presentation_urls,
                       const url::Origin& frame_origin);
   ~PresentationRequest();
@@ -28,8 +28,13 @@ struct CONTENT_EXPORT PresentationRequest {
   PresentationRequest(const PresentationRequest& other);
   PresentationRequest& operator=(const PresentationRequest& other);
 
+  bool operator==(const PresentationRequest& other) const;
+  bool operator!=(const PresentationRequest& other) const {
+    return !(*this == other);
+  }
+
   // ID of RenderFrameHost that initiated the request.
-  GlobalFrameRoutingId render_frame_host_id;
+  GlobalRenderFrameHostId render_frame_host_id;
 
   // URLs of presentation.
   std::vector<GURL> presentation_urls;

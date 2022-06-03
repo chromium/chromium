@@ -4,6 +4,7 @@
 
 #include "components/viz/test/begin_frame_source_test.h"
 
+#include "base/location.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +34,7 @@ const BeginFrameArgs MockBeginFrameObserver::kDefaultBeginFrameArgs =
 #ifdef NDEBUG
         nullptr,
 #else
-        FROM_HERE_WITH_EXPLICIT_FUNCTION(
-            "MockBeginFrameObserver::kDefaultBeginFrameArgs"),
+        FROM_HERE,
 #endif
         BeginFrameArgs::kManualSourceId,
         BeginFrameArgs::kStartingFrameNumber,

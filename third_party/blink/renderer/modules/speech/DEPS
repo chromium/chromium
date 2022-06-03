@@ -5,5 +5,4 @@ include_rules = [
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/mediastream",
     "+third_party/blink/renderer/modules/speech",
-    "+mojo/public/cpp/bindings/binding.h"
 ]

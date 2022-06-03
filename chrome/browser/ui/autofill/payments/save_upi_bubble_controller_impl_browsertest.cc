@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -13,6 +15,10 @@ namespace autofill {
 class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
  public:
   SaveUPIBubbleControllerImplTest() = default;
+  SaveUPIBubbleControllerImplTest(const SaveUPIBubbleControllerImplTest&) =
+      delete;
+  SaveUPIBubbleControllerImplTest& operator=(
+      const SaveUPIBubbleControllerImplTest&) = delete;
   ~SaveUPIBubbleControllerImplTest() override = default;
 
   // DialogBrowserTest:
@@ -30,8 +36,6 @@ class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
 
  private:
   SaveUPIBubbleControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveUPIBubbleControllerImplTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUPIBubbleControllerImplTest, InvokeUi) {

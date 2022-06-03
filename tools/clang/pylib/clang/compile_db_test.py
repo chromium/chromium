@@ -58,20 +58,56 @@ class CompileDbTest(unittest.TestCase):
 
   def testProcessNotOnWindows(self):
     sys.platform = 'linux2'
-    processed_compile_db = compile_db.ProcessCompileDatabaseIfNeeded(
-        _TEST_COMPILE_DB)
+    processed_compile_db = compile_db.ProcessCompileDatabase(
+        _TEST_COMPILE_DB, [])
 
     # Assert no changes were made.
-    self.assertItemsEqual(processed_compile_db, _TEST_COMPILE_DB)
+    try:
+      # assertItemsEqual is renamed assertCountEqual in Python3.
+      self.assertCountEqual(processed_compile_db, _TEST_COMPILE_DB)
+    except AttributeError:
+      self.assertItemsEqual(processed_compile_db, _TEST_COMPILE_DB)
 
-  def testProcessForWindows(self):
+  def testProcessForWindows_HostPlatformBased(self):
     sys.platform = 'win32'
-    processed_compile_db = compile_db.ProcessCompileDatabaseIfNeeded(
-        _TEST_COMPILE_DB)
+    processed_compile_db = compile_db.ProcessCompileDatabase(
+        _TEST_COMPILE_DB, [])
 
     # Check each entry individually to improve readability of the output.
     for actual, expected in zip(processed_compile_db, _EXPECTED_COMPILE_DB):
       self.assertDictEqual(actual, expected)
+
+  def testProcessForWindows_TargetOsBased(self):
+    sys.platform = 'linux2'
+    processed_compile_db = compile_db.ProcessCompileDatabase(_TEST_COMPILE_DB,
+                                                             [],
+                                                             target_os='win')
+
+    # Check each entry individually to improve readability of the output.
+    for actual, expected in zip(processed_compile_db, _EXPECTED_COMPILE_DB):
+      self.assertDictEqual(actual, expected)
+
+  def testFrontendArgsFiltered(self):
+    sys.platform = 'linux2'
+    input_db = [{
+        'command':
+        r'clang -g -Xclang -fuse-ctor-homing -funroll-loops test.cc'
+    }]
+    self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
+                      [{
+                          'command': r'clang -g -funroll-loops test.cc'
+                      }])
+
+  def testFilterArgs(self):
+    sys.platform = 'linux2'
+    input_db = [{'command': r'clang -g -ffile-compilation-dir=. -O3 test.cc'}]
+    self.assertEquals(
+        compile_db.ProcessCompileDatabase(
+            input_db,
+            ['-ffile-compilation-dir=.', '-frandom-flag-that-does-not-exist']),
+        [{
+            'command': r'clang -g -O3 test.cc'
+        }])
 
 
 if __name__ == '__main__':

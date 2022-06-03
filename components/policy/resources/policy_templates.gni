@@ -101,7 +101,11 @@ policy_templates_plist_path =
     "$policy_templates_base_dir/mac/app-Manifest.plist"
 policy_templates_plist_strings_path =
     "$policy_templates_base_dir/mac/strings/\${lang}.lproj/Localizable.strings"
-policy_templates_mac_outputs = [ policy_templates_plist_path ]
+policy_templates_jamf_path = "$policy_templates_base_dir/mac/jamf.json"
+policy_templates_mac_outputs = [
+  policy_templates_plist_path,
+  policy_templates_jamf_path,
+]
 foreach(lang, mac_policy_templates_languages) {
   policy_templates_mac_outputs += [
     "$policy_templates_base_dir/mac/strings/${lang}.lproj/Localizable.strings",
@@ -161,3 +165,8 @@ foreach(lang, policy_templates_languages) {
   policy_templates_chromeos_google_outputs +=
       [ "$policy_templates_base_dir/chromeos/admx/${lang}/google.adml" ]
 }
+
+# iOS outputs
+policy_templates_ios_app_config_path =
+    "$policy_templates_base_dir/ios/appconfig.xml"
+policy_templates_ios_outputs = [ policy_templates_ios_app_config_path ]

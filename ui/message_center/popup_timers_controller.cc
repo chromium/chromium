@@ -6,17 +6,18 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
 namespace message_center {
 
 namespace {
 
-base::TimeDelta GetTimeoutForNotification(Notification* notification) {
+bool UseHighPriorityDelay(Notification* notification) {
 // Web Notifications are given a longer on-screen time on non-Chrome OS
 // platforms as there is no notification center to dismiss them to.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool use_high_priority_delay =
       notification->priority() > DEFAULT_PRIORITY;
 #else
@@ -25,13 +26,16 @@ base::TimeDelta GetTimeoutForNotification(Notification* notification) {
       notification->notifier_id().type == NotifierType::WEB_PAGE;
 #endif
 
-  if (use_high_priority_delay)
-    return base::TimeDelta::FromSeconds(kAutocloseHighPriorityDelaySeconds);
-
-  return base::TimeDelta::FromSeconds(kAutocloseDefaultDelaySeconds);
+  return use_high_priority_delay;
 }
 
 }  // namespace
+
+// Timeout values used to dismiss notifications automatically after they are
+// shown.
+int notification_timeout_default_seconds_ = kAutocloseDefaultDelaySeconds;
+int notification_timeout_high_priority_seconds_ =
+    kAutocloseHighPriorityDelaySeconds;
 
 PopupTimersController::PopupTimersController(MessageCenter* message_center)
     : message_center_(message_center) {
@@ -71,6 +75,12 @@ void PopupTimersController::CancelTimer(const std::string& id) {
   popup_timers_.erase(id);
 }
 
+void PopupTimersController::SetNotificationTimeouts(int default_timeout,
+                                                    int high_priority_timeout) {
+  notification_timeout_default_seconds_ = default_timeout;
+  notification_timeout_high_priority_seconds_ = high_priority_timeout;
+}
+
 void PopupTimersController::CancelAll() {
   popup_timers_.clear();
 }
@@ -81,6 +91,17 @@ void PopupTimersController::TimerFinished(const std::string& id) {
 
   CancelTimer(id);
   message_center_->MarkSinglePopupAsShown(id, false);
+}
+
+base::TimeDelta PopupTimersController::GetTimeoutForNotification(
+    Notification* notification) {
+  return base::Seconds(UseHighPriorityDelay(notification)
+                           ? notification_timeout_high_priority_seconds_
+                           : notification_timeout_default_seconds_);
+}
+
+int PopupTimersController::GetNotificationTimeoutDefault() {
+  return notification_timeout_default_seconds_;
 }
 
 void PopupTimersController::OnNotificationDisplayed(
@@ -120,8 +141,7 @@ void PopupTimersController::OnNotificationUpdated(const std::string& id) {
   // If a timer was paused before, pause it afterwards as well.
   // See crbug.com/710298
   if (was_paused) {
-    auto timer = popup_timers_.find(id);
-    timer->second->Pause();
+    popup_timers_.find(id)->second->Pause();
   }
 }
 

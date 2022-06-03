@@ -28,10 +28,9 @@ const char kSuccessResult[] = "success";
 class DummyTetherConnector : public FakeTetherConnector {
  public:
   // TetherConnector:
-  void ConnectToNetwork(
-      const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback) override {}
+  void ConnectToNetwork(const std::string& tether_network_guid,
+                        base::OnceClosure success_callback,
+                        StringErrorCallback error_callback) override {}
 };
 
 // Does nothing when a disconnection is requested.
@@ -40,8 +39,8 @@ class DummyTetherDisconnector : public FakeTetherDisconnector {
   // TetherDisconnector:
   void DisconnectFromNetwork(
       const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::StringResultCallback& error_callback,
+      base::OnceClosure success_callback,
+      StringErrorCallback error_callback,
       const TetherSessionCompletionLogger::SessionCompletionReason&
           session_completion_reason) override {}
 };
@@ -52,41 +51,49 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
   ~TestNetworkConnectionHandler() override = default;
 
   void CallTetherConnect(const std::string& tether_network_guid,
-                         const base::Closure& success_callback,
-                         const network_handler::ErrorCallback& error_callback) {
-    InitiateTetherNetworkConnection(tether_network_guid, success_callback,
-                                    error_callback);
+                         base::OnceClosure success_callback,
+                         network_handler::ErrorCallback error_callback) {
+    InitiateTetherNetworkConnection(tether_network_guid,
+                                    std::move(success_callback),
+                                    std::move(error_callback));
   }
 
-  void CallTetherDisconnect(
-      const std::string& tether_network_guid,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) {
-    InitiateTetherNetworkDisconnection(tether_network_guid, success_callback,
-                                       error_callback);
+  void CallTetherDisconnect(const std::string& tether_network_guid,
+                            base::OnceClosure success_callback,
+                            network_handler::ErrorCallback error_callback) {
+    InitiateTetherNetworkDisconnection(tether_network_guid,
+                                       std::move(success_callback),
+                                       std::move(error_callback));
   }
 
   // NetworkConnectionHandler:
   void ConnectToNetwork(const std::string& service_path,
-                        const base::Closure& success_callback,
-                        const network_handler::ErrorCallback& error_callback,
+                        base::OnceClosure success_callback,
+                        network_handler::ErrorCallback error_callback,
                         bool check_error_state,
                         ConnectCallbackMode mode) override {}
 
   void DisconnectNetwork(
       const std::string& service_path,
-      const base::Closure& success_callback,
-      const network_handler::ErrorCallback& error_callback) override {}
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback) override {}
 
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override {}
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularConnectionHandler* cellular_connection_handler) override {}
 };
 
 }  // namespace
 
 class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
+ public:
+  NetworkConnectionHandlerTetherDelegateTest(
+      const NetworkConnectionHandlerTetherDelegateTest&) = delete;
+  NetworkConnectionHandlerTetherDelegateTest& operator=(
+      const NetworkConnectionHandlerTetherDelegateTest&) = delete;
+
  protected:
   NetworkConnectionHandlerTetherDelegateTest() = default;
 
@@ -114,19 +121,19 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
   void CallTetherConnect(const std::string& guid) {
     test_network_connection_handler_->CallTetherConnect(
         guid,
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
-                   base::Unretained(this)),
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
+                       base::Unretained(this)),
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnError,
+                       base::Unretained(this)));
   }
 
   void CallTetherDisconnect(const std::string& guid) {
     test_network_connection_handler_->CallTetherDisconnect(
         guid,
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
-                   base::Unretained(this)),
-        base::Bind(&NetworkConnectionHandlerTetherDelegateTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnSuccess,
+                       base::Unretained(this)),
+        base::BindOnce(&NetworkConnectionHandlerTetherDelegateTest::OnError,
+                       base::Unretained(this)));
   }
 
   void OnSuccess() { result_ = kSuccessResult; }
@@ -151,9 +158,6 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
   std::string result_;
 
   std::unique_ptr<NetworkConnectionHandlerTetherDelegate> delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerTetherDelegateTest);
 };
 
 TEST_F(NetworkConnectionHandlerTetherDelegateTest,

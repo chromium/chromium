@@ -24,12 +24,26 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
     kDefaultMtu = 20,
   };
 
+  enum class ConnectStatus {
+    kUndefined,
+    kGattClientManagerDestroyed,
+    kConnectPending,
+    kFailure,
+    kSuccess,
+  };
+
   using StatusCallback = base::OnceCallback<void(bool)>;
+  using ConnectCallback = base::OnceCallback<void(ConnectStatus)>;
+
+  RemoteDevice(const RemoteDevice&) = delete;
+  RemoteDevice& operator=(const RemoteDevice&) = delete;
 
   // Initiate a connection to this device. Callback will return |true| if
   // connected successfully, otherwise false. Only one pending call is allowed
   // at a time.
-  virtual void Connect(StatusCallback cb) = 0;
+  virtual void Connect(
+      ConnectCallback cb,
+      bluetooth_v2_shlib::Gatt::Client::Transport transport = bluetooth_v2_shlib::Gatt::Client::Transport::kAuto) = 0;
 
   // Disconnect from this device. Callback will return |true| if disconnected
   // successfully, otherwise false. Only one pending call is allowed at a time.
@@ -95,9 +109,6 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
 
   RemoteDevice() = default;
   virtual ~RemoteDevice() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteDevice);
 };
 
 }  // namespace bluetooth

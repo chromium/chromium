@@ -12,8 +12,6 @@
 namespace ui {
 
 struct DidOverscrollParams {
-  DidOverscrollParams();
-  ~DidOverscrollParams();
   gfx::Vector2dF accumulated_overscroll;
   gfx::Vector2dF latest_overscroll_delta;
   gfx::Vector2dF current_fling_velocity;

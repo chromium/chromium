@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Enum for tracking the result of a pointer lock request.
+// This enum is used in the callback from
+// WidgetInputHandlerHost.RequestMouselock which is a request
+// made from the renderer to the browser.
+enum PointerLockResult {
+  kSuccess = 0,
+  kUnsupportedOptions,
+  kRequiresUserGesture,
+  kUserRejected, // When user hits escape before lock is acquired.
+  kPermissionDenied,
+  kAlreadyLocked,
+  kWrongDocument,
+  kElementDestroyed,
+  kUnknownError // Used for functions that should be overridden and tests.
+};

@@ -9,174 +9,112 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
-#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
+#include "services/tracing/perfetto/test_utils.h"
+#include "services/tracing/public/cpp/buildflags.h"
+#include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/perfetto/include/perfetto/ext/base/utils.h"
-#include "third_party/perfetto/include/perfetto/protozero/scattered_stream_null_delegate.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
-#include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+#include "base/test/trace_event_analyzer.h"
+#include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
+#include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
+#endif
+
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace tracing {
 namespace {
 
 using base::trace_event::TraceLog;
+using ::testing::Invoke;
+using ::testing::Return;
 
-class MockTraceWriter : public perfetto::TraceWriter {
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+
+class MockLoaderLockSampler : public LoaderLockSampler {
  public:
-  MockTraceWriter(
-      const base::RepeatingCallback<void(
-          std::unique_ptr<perfetto::protos::TracePacket>)>& on_packet_callback)
-      : delegate_(perfetto::base::kPageSize),
-        stream_(&delegate_),
-        on_packet_callback_(std::move(on_packet_callback)) {
-    trace_packet_.Reset(&stream_);
-  }
+  MockLoaderLockSampler() = default;
+  ~MockLoaderLockSampler() override = default;
 
-  void FlushPacketIfPossible() {
-    // GetNewBuffer() in ScatteredStreamWriterNullDelegate doesn't
-    // actually return a new buffer, but rather lets us access the buffer
-    // buffer already used by protozero to write the TracePacket into.
-    protozero::ContiguousMemoryRange buffer = delegate_.GetNewBuffer();
-
-    uint32_t message_size = trace_packet_.Finalize();
-    if (message_size) {
-      EXPECT_GE(buffer.size(), message_size);
-
-      auto proto = std::make_unique<perfetto::protos::TracePacket>();
-      EXPECT_TRUE(proto->ParseFromArray(buffer.begin, message_size));
-      on_packet_callback_.Run(std::move(proto));
-    }
-
-    stream_.Reset(buffer);
-    trace_packet_.Reset(&stream_);
-  }
-
-  perfetto::TraceWriter::TracePacketHandle NewTracePacket() override {
-    FlushPacketIfPossible();
-
-    return perfetto::TraceWriter::TracePacketHandle(&trace_packet_);
-  }
-
-  void Flush(std::function<void()> callback = {}) override {}
-
-  perfetto::WriterID writer_id() const override {
-    return perfetto::WriterID(0);
-  }
-
-  uint64_t written() const override { return 0u; }
-
- private:
-  perfetto::protos::pbzero::TracePacket trace_packet_;
-  protozero::ScatteredStreamWriterNullDelegate delegate_;
-  protozero::ScatteredStreamWriter stream_;
-
-  base::RepeatingCallback<void(std::unique_ptr<perfetto::protos::TracePacket>)>
-      on_packet_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTraceWriter);
+  MOCK_METHOD(bool, IsLoaderLockHeld, (), (const, override));
 };
 
-class MockPerfettoProducer : public ProducerClient {
+class LoaderLockEventAnalyzer {
  public:
-  explicit MockPerfettoProducer(std::unique_ptr<PerfettoTaskRunner> task_runner)
-      : ProducerClient(task_runner.get()),
-        task_runner_(std::move(task_runner)) {}
-
-  std::unique_ptr<perfetto::TraceWriter> CreateTraceWriter(
-      perfetto::BufferID target_buffer,
-      perfetto::BufferExhaustedPolicy =
-          perfetto::BufferExhaustedPolicy::kDefault) override {
-    auto packet_callback = base::BindRepeating(
-        [](base::WeakPtr<MockPerfettoProducer> weak_self,
-           scoped_refptr<base::SequencedTaskRunner> task_runner,
-           std::unique_ptr<perfetto::protos::TracePacket> packet) {
-          task_runner->PostTask(
-              FROM_HERE, base::BindOnce(&MockPerfettoProducer::ReceivePacket,
-                                        weak_self, std::move(packet)));
-        },
-        weak_ptr_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get());
-
-    return std::make_unique<MockTraceWriter>(packet_callback);
+  LoaderLockEventAnalyzer() {
+    trace_analyzer::Start(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"));
   }
 
-  void ReceivePacket(std::unique_ptr<perfetto::protos::TracePacket> packet) {
-    base::AutoLock lock(lock_);
-    finalized_packets_.push_back(std::move(packet));
+  size_t CountEvents() {
+    std::unique_ptr<trace_analyzer::TraceAnalyzer> analyzer =
+        trace_analyzer::Stop();
+    trace_analyzer::TraceEventVector events;
+    return analyzer->FindEvents(
+        trace_analyzer::Query::EventName() ==
+            trace_analyzer::Query::String(
+                LoaderLockSamplingThread::kLoaderLockHeldEventName),
+        &events);
   }
-
-  const perfetto::protos::TracePacket* GetFinalizedPacket(
-      size_t packet_index = 0) {
-    base::AutoLock lock(lock_);
-    EXPECT_GT(finalized_packets_.size(), packet_index);
-    return finalized_packets_[packet_index].get();
-  }
-
-  const std::vector<std::unique_ptr<perfetto::protos::TracePacket>>&
-  finalized_packets() const {
-    return finalized_packets_;
-  }
-
- private:
-  base::Lock lock_;  // protects finalized_packets_
-  std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
-      finalized_packets_;
-
-  std::unique_ptr<PerfettoTaskRunner> task_runner_;
-  base::WeakPtrFactory<MockPerfettoProducer> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockPerfettoProducer);
 };
 
-class TracingSampleProfilerTest : public testing::Test {
+#endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+
+class TracingSampleProfilerTest : public TracingUnitTest {
  public:
   TracingSampleProfilerTest() = default;
+
+  TracingSampleProfilerTest(const TracingSampleProfilerTest&) = delete;
+  TracingSampleProfilerTest& operator=(const TracingSampleProfilerTest&) =
+      delete;
+
   ~TracingSampleProfilerTest() override = default;
 
   void SetUp() override {
+    TracingUnitTest::SetUp();
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+    // Override the default LoaderLockSampler because in production it is
+    // expected to be called from a single thread, and each test may re-create
+    // the sampling thread.
+    ON_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
+        .WillByDefault(Return(false));
+    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(
+        &mock_loader_lock_sampler_);
+#endif
+
     events_stack_received_count_ = 0u;
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
 
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
-        task_environment_.GetMainThreadTaskRunner());
-
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
+        base::ThreadTaskRunnerHandle::Get());
     producer_ =
-        std::make_unique<MockPerfettoProducer>(std::move(perfetto_wrapper));
+        std::make_unique<TestProducerClient>(std::move(perfetto_wrapper),
+                                             /*log_only_main_thread=*/false);
   }
 
   void TearDown() override {
-    // Be sure there is no pending/running tasks.
-    task_environment_.RunUntilIdle();
+    producer_.reset();
+
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+    LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
+#endif
+
+    TracingUnitTest::TearDown();
   }
 
   void BeginTrace() {
     TracingSamplerProfiler::StartTracingForTesting(producer_.get());
   }
 
-  void WaitForEvents() {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
-  }
-
-  // Returns whether of not the sampler profiling is able to unwind the stack
-  // on this platform.
-  bool IsStackUnwindingSupported() {
-#if defined(OS_MACOSX) || defined(OS_WIN) && defined(_WIN64) ||     \
-    (defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-     defined(OFFICIAL_BUILD))
-    return true;
-#else
-    return false;
-#endif
-  }
+  void WaitForEvents() { base::PlatformThread::Sleep(base::Milliseconds(200)); }
 
   void EndTracing() {
     TracingSamplerProfiler::StopTracingForTesting();
@@ -191,7 +129,7 @@ class TracingSampleProfilerTest : public testing::Test {
   }
 
   void ValidateReceivedEvents() {
-    if (IsStackUnwindingSupported()) {
+    if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
       EXPECT_GT(events_stack_received_count_, 0U);
     } else {
       EXPECT_EQ(events_stack_received_count_, 0U);
@@ -211,21 +149,21 @@ class TracingSampleProfilerTest : public testing::Test {
     return profile_sequence_id;
   }
 
-  const MockPerfettoProducer* producer() const { return producer_.get(); }
+  const TestProducerClient* producer() const { return producer_.get(); }
 
- private:
-  base::test::TaskEnvironment task_environment_;
-
+ protected:
   // We want our singleton torn down after each test.
   base::ShadowingAtExitManager at_exit_manager_;
   base::trace_event::TraceResultBuffer trace_buffer_;
 
-  std::unique_ptr<MockPerfettoProducer> producer_;
+  std::unique_ptr<TestProducerClient> producer_;
 
   // Number of stack sampling events received.
   size_t events_stack_received_count_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(TracingSampleProfilerTest);
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+  MockLoaderLockSampler mock_loader_lock_sampler_;
+#endif
 };
 
 // Stub module for testing.
@@ -247,9 +185,25 @@ class TestModule : public base::ModuleCache::Module {
   std::string id_;
 };
 
+bool ShouldSkipTestForMacOS11() {
+#if defined(OS_MAC)
+  // The sampling profiler does not work on macOS 11 and is disabled.
+  // See https://crbug.com/1101399 and https://crbug.com/1098119.
+  // DCHECK here so that when the sampling profiler is re-enabled on macOS 11,
+  // these tests are also re-enabled.
+  if (base::mac::IsAtLeastOS11()) {
+    DCHECK(!base::StackSamplingProfiler::IsSupportedForCurrentPlatform());
+    return true;
+  }
+#endif
+  return false;
+}
+
 }  // namespace
 
 TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   BeginTrace();
   base::RunLoop().RunUntilIdle();
@@ -260,6 +214,8 @@ TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
 }
 
 TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   BeginTrace();
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   base::RunLoop().RunUntilIdle();
@@ -270,8 +226,10 @@ TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
-  TracingSamplerProfiler::SetupStartupTracing();
+  TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
   WaitForEvents();
   auto start_tracing_ts = TRACE_TIME_TICKS_NOW();
@@ -280,7 +238,7 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
   WaitForEvents();
   EndTracing();
   base::RunLoop().RunUntilIdle();
-  if (IsStackUnwindingSupported()) {
+  if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
     uint32_t seq_id = FindProfilerSequenceId();
     auto& packets = producer()->finalized_packets();
     int64_t reference_ts = 0;
@@ -304,7 +262,9 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
-  TracingSamplerProfiler::SetupStartupTracing();
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
+  TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   WaitForEvents();
@@ -314,7 +274,7 @@ TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
   WaitForEvents();
   EndTracing();
   base::RunLoop().RunUntilIdle();
-  if (IsStackUnwindingSupported()) {
+  if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
     uint32_t seq_id = FindProfilerSequenceId();
     auto& packets = producer()->finalized_packets();
     int64_t reference_ts = 0;
@@ -338,6 +298,8 @@ TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
   base::Thread sampled_thread("sampling_profiler_test");
   sampled_thread.Start();
   sampled_thread.task_runner()->PostTask(
@@ -353,47 +315,187 @@ TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST(TracingProfileBuilderTest, ValidModule) {
+#if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnMainThread) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
+  LoaderLockEventAnalyzer event_analyzer;
+
+  bool lock_held = false;
+  size_t call_count = 0;
+  EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
+      .WillRepeatedly(Invoke([&lock_held, &call_count]() {
+        ++call_count;
+        lock_held = !lock_held;
+        return lock_held;
+      }));
+
+  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  BeginTrace();
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
+  base::RunLoop().RunUntilIdle();
+
+  // Since the loader lock state changed each time it was sampled an event
+  // should be emitted each time.
+  ASSERT_GE(call_count, 1U);
+  EXPECT_EQ(event_analyzer.CountEvents(), call_count);
+}
+
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockAlwaysHeld) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
+  LoaderLockEventAnalyzer event_analyzer;
+
+  EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
+      .WillRepeatedly(Return(true));
+
+  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  BeginTrace();
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
+  base::RunLoop().RunUntilIdle();
+
+  // An event should be emitted at the first sample when the loader lock was
+  // held, and then not again since the state never changed.
+  EXPECT_EQ(event_analyzer.CountEvents(), 1U);
+}
+
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockNeverHeld) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
+  LoaderLockEventAnalyzer event_analyzer;
+
+  EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld())
+      .WillRepeatedly(Return(false));
+
+  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  BeginTrace();
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
+  base::RunLoop().RunUntilIdle();
+
+  // No events should be emitted since the lock is never held.
+  EXPECT_EQ(event_analyzer.CountEvents(), 0U);
+}
+
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockOnChildThread) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
+  LoaderLockEventAnalyzer event_analyzer;
+
+  // Loader lock should only be sampled on main thread.
+  EXPECT_CALL(mock_loader_lock_sampler_, IsLoaderLockHeld()).Times(0);
+
+  base::Thread sampled_thread("sampling_profiler_test");
+  sampled_thread.Start();
+  sampled_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&TracingSamplerProfiler::CreateOnChildThread));
+  BeginTrace();
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
+  sampled_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TracingSamplerProfiler::DeleteOnChildThreadForTesting));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(event_analyzer.CountEvents(), 0U);
+}
+
+TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
+  if (ShouldSkipTestForMacOS11())
+    GTEST_SKIP() << "Stack sampler is not supported on macOS 11";
+
+  // Use the real loader lock sampler. This tests that it is initialized
+  // correctly in TracingSamplerProfiler.
+  LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
+
+  // This must be the only thread that uses the real loader lock sampler in the
+  // test process.
+  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  BeginTrace();
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
+  base::RunLoop().RunUntilIdle();
+
+  // The loader lock may or may not be held during the test, so there's no
+  // output to test. The test passes if it reaches the end without crashing.
+}
+
+#endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
+
+class TracingProfileBuilderTest : public TracingUnitTest {
+ public:
+  void SetUp() override {
+    TracingUnitTest::SetUp();
+
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
+        base::ThreadTaskRunnerHandle::Get());
+    producer_client_ = std::make_unique<TestProducerClient>(
+        std::move(perfetto_wrapper), /*log_only_main_thread=*/false);
+  }
+
+  void TearDown() override {
+    producer_client_.reset();
+    TracingUnitTest::TearDown();
+  }
+
+  TestProducerClient* producer() { return producer_client_.get(); }
+
+ private:
+  std::unique_ptr<TestProducerClient> producer_client_;
+};
+
+TEST_F(TracingProfileBuilderTest, ValidModule) {
   TestModule module;
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(),
-      std::make_unique<MockTraceWriter>(base::DoNothing()), false);
-  profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)});
+      base::PlatformThreadId(), std::make_unique<TestTraceWriter>(producer()),
+      false);
+  profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)},
+                                    base::TimeTicks());
 }
 
-TEST(TracingProfileBuilderTest, InvalidModule) {
+TEST_F(TracingProfileBuilderTest, InvalidModule) {
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(),
-      std::make_unique<MockTraceWriter>(base::DoNothing()), false);
-  profile_builder.OnSampleCompleted({base::Frame(0x1010, nullptr)});
+      base::PlatformThreadId(), std::make_unique<TestTraceWriter>(producer()),
+      false);
+  profile_builder.OnSampleCompleted({base::Frame(0x1010, nullptr)},
+                                    base::TimeTicks());
 }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
-TEST(TracingProfileBuilderTest, MangleELFModuleID) {
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+TEST_F(TracingProfileBuilderTest, MangleELFModuleID) {
   TestModule module;
   // See explanation for the module_id mangling in
   // TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit.
   module.set_id("7F0715C286F8B16C10E4AD349CDA3B9B56C7A773");
 
-  bool found_build_id = false;
-  auto on_packet_callback = base::BindLambdaForTesting(
-      [&found_build_id](std::unique_ptr<perfetto::protos::TracePacket> packet) {
-        if (!packet->has_interned_data() ||
-            packet->interned_data().build_ids_size() == 0) {
-          return;
-        }
-
-        found_build_id = true;
-        EXPECT_EQ(packet->interned_data().build_ids(0).str(),
-                  "C215077FF8866CB110E4AD349CDA3B9B0");
-      });
-
-  auto trace_writer = std::make_unique<MockTraceWriter>(on_packet_callback);
-  auto* raw_trace_writer = trace_writer.get();
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(), std::move(trace_writer), false);
-  profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)});
-  raw_trace_writer->FlushPacketIfPossible();
+      base::PlatformThreadId(), std::make_unique<TestTraceWriter>(producer()),
+      false);
+  profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)},
+                                    base::TimeTicks());
+  producer()->FlushPacketIfPossible();
+
+  bool found_build_id = false;
+  for (unsigned i = 0; i < producer()->GetFinalizedPacketCount(); ++i) {
+    const perfetto::protos::TracePacket* packet =
+        producer()->GetFinalizedPacket(i);
+    if (!packet->has_interned_data() ||
+        packet->interned_data().build_ids_size() == 0) {
+      return;
+    }
+
+    found_build_id = true;
+    EXPECT_EQ(packet->interned_data().build_ids(0).str(),
+              "C215077FF8866CB110E4AD349CDA3B9B0");
+  }
   EXPECT_TRUE(found_build_id);
 }
 #endif

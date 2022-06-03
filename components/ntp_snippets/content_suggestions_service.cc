@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -44,12 +44,6 @@ enum class FaviconFetchResult {
   COUNT = 3
 };
 
-void RecordFaviconFetchResult(FaviconFetchResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "NewTabPage.ContentSuggestions.ArticleFaviconFetchResult", result,
-      FaviconFetchResult::COUNT);
-}
-
 }  // namespace
 
 ContentSuggestionsService::ContentSuggestionsService(
@@ -62,8 +56,6 @@ ContentSuggestionsService::ContentSuggestionsService(
     std::unique_ptr<UserClassifier> user_classifier,
     std::unique_ptr<RemoteSuggestionsScheduler> remote_suggestions_scheduler)
     : state_(state),
-      identity_manager_observer_(this),
-      history_service_observer_(this),
       remote_suggestions_provider_(nullptr),
       large_icon_service_(large_icon_service),
       pref_service_(pref_service),
@@ -72,11 +64,11 @@ ContentSuggestionsService::ContentSuggestionsService(
       category_ranker_(std::move(category_ranker)) {
   // Can be null in tests.
   if (identity_manager) {
-    identity_manager_observer_.Add(identity_manager);
+    identity_manager_observation_.Observe(identity_manager);
   }
 
   if (history_service) {
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
   }
 
   RestoreDismissedCategoriesFromPrefs();
@@ -126,11 +118,11 @@ CategoryStatus ContentSuggestionsService::GetCategoryStatus(
   return iterator->second->GetCategoryStatus(category);
 }
 
-base::Optional<CategoryInfo> ContentSuggestionsService::GetCategoryInfo(
+absl::optional<CategoryInfo> ContentSuggestionsService::GetCategoryInfo(
     Category category) const {
   auto iterator = providers_by_category_.find(category);
   if (iterator == providers_by_category_.end()) {
-    return base::Optional<CategoryInfo>();
+    return absl::optional<CategoryInfo>();
   }
   return iterator->second->GetCategoryInfo(category);
 }
@@ -182,7 +174,6 @@ void ContentSuggestionsService::FetchSuggestionFavicon(
   if (!domain_with_favicon.is_valid() || !large_icon_service_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), gfx::Image()));
-    RecordFaviconFetchResult(FaviconFetchResult::FAILURE);
     return;
   }
 
@@ -228,10 +219,10 @@ void ContentSuggestionsService::GetFaviconFromCache(
   // is not poorly rescaled by LargeIconService).
   large_icon_service_->GetLargeIconImageOrFallbackStyleForPageUrl(
       publisher_url, minimum_size_in_pixel, /*desired_size_in_pixel=*/0,
-      base::Bind(&ContentSuggestionsService::OnGetFaviconFromCacheFinished,
-                 base::Unretained(this), publisher_url, minimum_size_in_pixel,
-                 desired_size_in_pixel, base::Passed(std::move(callback)),
-                 continue_to_google_server),
+      base::BindOnce(&ContentSuggestionsService::OnGetFaviconFromCacheFinished,
+                     base::Unretained(this), publisher_url,
+                     minimum_size_in_pixel, desired_size_in_pixel,
+                     std::move(callback), continue_to_google_server),
       &favicons_task_tracker_);
 }
 
@@ -244,11 +235,6 @@ void ContentSuggestionsService::OnGetFaviconFromCacheFinished(
     const favicon_base::LargeIconImageResult& result) {
   if (!result.image.IsEmpty()) {
     std::move(callback).Run(result.image);
-    // The icon is from cache if we haven't gone to Google server yet. The icon
-    // is freshly fetched, otherwise.
-    RecordFaviconFetchResult(continue_to_google_server
-                                 ? FaviconFetchResult::SUCCESS_CACHED
-                                 : FaviconFetchResult::SUCCESS_FETCHED);
     // Update the time when the icon was last requested - postpone thus the
     // automatic eviction of the favicon from the favicon database.
     large_icon_service_->TouchIconFromGoogleServer(result.icon_url);
@@ -262,7 +248,6 @@ void ContentSuggestionsService::OnGetFaviconFromCacheFinished(
     // cache (resulting in non-default background color) or if we already did
     // so.
     std::move(callback).Run(gfx::Image());
-    RecordFaviconFetchResult(FaviconFetchResult::FAILURE);
     return;
   }
 
@@ -294,10 +279,10 @@ void ContentSuggestionsService::OnGetFaviconFromCacheFinished(
           publisher_url,
           /*may_page_url_be_private=*/false,
           /*should_trim_page_url_path=*/false, traffic_annotation,
-          base::Bind(
+          base::BindOnce(
               &ContentSuggestionsService::OnGetFaviconFromGoogleServerFinished,
               base::Unretained(this), publisher_url, minimum_size_in_pixel,
-              desired_size_in_pixel, base::Passed(std::move(callback))));
+              desired_size_in_pixel, std::move(callback)));
 }
 
 void ContentSuggestionsService::OnGetFaviconFromGoogleServerFinished(
@@ -308,7 +293,6 @@ void ContentSuggestionsService::OnGetFaviconFromGoogleServerFinished(
     favicon_base::GoogleFaviconServerRequestStatus status) {
   if (status != favicon_base::GoogleFaviconServerRequestStatus::SUCCESS) {
     std::move(callback).Run(gfx::Image());
-    RecordFaviconFetchResult(FaviconFetchResult::FAILURE);
     return;
   }
 
@@ -320,7 +304,7 @@ void ContentSuggestionsService::OnGetFaviconFromGoogleServerFinished(
 void ContentSuggestionsService::ClearHistory(
     base::Time begin,
     base::Time end,
-    const base::Callback<bool(const GURL& url)>& filter) {
+    const base::RepeatingCallback<bool(const GURL& url)>& filter) {
   for (const auto& provider : providers_) {
     provider->ClearHistory(begin, end, filter);
   }
@@ -516,14 +500,18 @@ void ContentSuggestionsService::OnSuggestionInvalidated(
   }
 }
 // signin::IdentityManager::Observer implementation
-void ContentSuggestionsService::OnPrimaryAccountSet(
-    const CoreAccountInfo& account_info) {
-  OnSignInStateChanged(/*has_signed_in=*/true);
-}
-
-void ContentSuggestionsService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  OnSignInStateChanged(/*has_signed_in=*/false);
+void ContentSuggestionsService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      OnSignInStateChanged(/*has_signed_in=*/true);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      OnSignInStateChanged(/*has_signed_in=*/false);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 // history::HistoryServiceObserver implementation.
@@ -536,8 +524,8 @@ void ContentSuggestionsService::OnURLsDeleted(
   }
 
   if (deletion_info.IsAllHistory()) {
-    base::Callback<bool(const GURL& url)> filter =
-        base::Bind([](const GURL& url) { return true; });
+    base::RepeatingCallback<bool(const GURL& url)> filter =
+        base::BindRepeating([](const GURL& url) { return true; });
     ClearHistory(base::Time(), base::Time::Max(), filter);
   } else {
     // If a user deletes a single URL, we don't consider this a clear user
@@ -553,10 +541,10 @@ void ContentSuggestionsService::OnURLsDeleted(
     for (const history::URLRow& row : deletion_info.deleted_rows()) {
       deleted_urls.insert(row.url());
     }
-    base::Callback<bool(const GURL& url)> filter =
-        base::Bind([](const std::set<GURL>& set,
-                      const GURL& url) { return set.count(url) != 0; },
-                   deleted_urls);
+    base::RepeatingCallback<bool(const GURL& url)> filter =
+        base::BindRepeating([](const std::set<GURL>& set,
+                               const GURL& url) { return set.count(url) != 0; },
+                            deleted_urls);
     // We usually don't have any time-related information (the URLRow objects
     // usually don't provide a |last_visit()| timestamp. Hence we simply clear
     // the whole history for the selected URLs.
@@ -566,7 +554,8 @@ void ContentSuggestionsService::OnURLsDeleted(
 
 void ContentSuggestionsService::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.RemoveAll();
+  DCHECK(history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.Reset();
 }
 
 bool ContentSuggestionsService::TryRegisterProviderForCategory(
@@ -686,22 +675,22 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
 
   const base::ListValue* list =
       pref_service_->GetList(prefs::kDismissedCategories);
-  for (const base::Value& entry : *list) {
-    int id = 0;
-    if (!entry.GetAsInteger(&id)) {
+  for (const base::Value& entry : list->GetList()) {
+    if (!entry.is_int()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;
       continue;
     }
 
     // When the provider is registered, it will be stored in this map.
-    dismissed_providers_by_category_[Category::FromIDValue(id)] = nullptr;
+    dismissed_providers_by_category_[Category::FromIDValue(entry.GetInt())] =
+        nullptr;
   }
 }
 
 void ContentSuggestionsService::StoreDismissedCategoriesToPrefs() {
   base::ListValue list;
   for (const auto& category_provider_pair : dismissed_providers_by_category_) {
-    list.AppendInteger(category_provider_pair.first.id());
+    list.Append(category_provider_pair.first.id());
   }
 
   pref_service_->Set(prefs::kDismissedCategories, list);

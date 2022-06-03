@@ -1,0 +1,57 @@
+Tests setting accepted encodings.
+Testing that navigation requests have overrides applied:
+
+Testing Accept-Encoding header before overrides are set:
+Server received Accept-Encoding header: gzip, deflate, br
+
+Testing Accept-Encoding header with the override: 
+Server received Accept-Encoding header: 
+
+Testing Accept-Encoding header with the override: gzip
+Server received Accept-Encoding header: gzip
+
+Testing Accept-Encoding header with the override: gzip,br
+Server received Accept-Encoding header: gzip, br
+
+Testing Accept-Encoding header with the override: gzip,br,deflate
+Server received Accept-Encoding header: gzip, deflate, br
+
+Testing Accept-Encoding header with the override: br
+Server received Accept-Encoding header: br
+
+Testing Accept-Encoding header after clearAcceptedEncodingsOverride
+Server received Accept-Encoding header: gzip, deflate, br
+
+Testing that page fetch requests have overrides applied:
+
+Testing Accept-Encoding header before overrides are set:
+Server received Accept-Encoding header: gzip, deflate, br
+
+Testing Accept-Encoding header with the override: 
+Server received Accept-Encoding header: 
+
+Testing Accept-Encoding header with the override: gzip
+Server received Accept-Encoding header: gzip
+
+Testing Accept-Encoding header with the override: gzip,br
+Server received Accept-Encoding header: gzip, br
+
+Testing Accept-Encoding header with the override: gzip,br,deflate
+Server received Accept-Encoding header: gzip, deflate, br
+
+Testing Accept-Encoding header with the override: br
+Server received Accept-Encoding header: br
+
+Testing Accept-Encoding header after clearAcceptedEncodingsOverride
+Server received Accept-Encoding header: gzip, deflate, br
+
+Invalid encoding error:
+{
+    error : {
+        code : -32602
+        message : Unknown encoding type: unknown
+    }
+    id : <number>
+    sessionId : <string>
+}
+

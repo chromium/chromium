@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
 
@@ -35,23 +34,32 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
   ServiceWorkerInstalledScriptLoader(
       uint32_t options,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      std::unique_ptr<ServiceWorkerResponseReader> response_reader,
+      mojo::Remote<storage::mojom::ServiceWorkerResourceReader> resource_reader,
       scoped_refptr<ServiceWorkerVersion>
           version_for_main_script_http_response_info,
       const GURL& request_url);
+
+  ServiceWorkerInstalledScriptLoader(
+      const ServiceWorkerInstalledScriptLoader&) = delete;
+  ServiceWorkerInstalledScriptLoader& operator=(
+      const ServiceWorkerInstalledScriptLoader&) = delete;
+
   ~ServiceWorkerInstalledScriptLoader() override;
 
   // ServiceWorkerInstalledScriptReader::Client overrides:
-  void OnStarted(scoped_refptr<HttpResponseInfoIOBuffer> http_info,
+  void OnStarted(network::mojom::URLResponseHeadPtr response_head,
+                 absl::optional<mojo_base::BigBuffer> metadata,
                  mojo::ScopedDataPipeConsumerHandle body_handle,
                  mojo::ScopedDataPipeConsumerHandle meta_data_handle) override;
   void OnFinished(
       ServiceWorkerInstalledScriptReader::FinishedReason reason) override;
 
   // network::mojom::URLLoader overrides:
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers,
-                      const base::Optional<GURL>& new_url) override;
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -63,7 +71,6 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
   void OnDataAvailable(const void* data, size_t num_bytes) override {}
   void OnDataComplete() override {}
 
-  uint32_t options_ = network::mojom::kURLLoadOptionNone;
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   scoped_refptr<ServiceWorkerVersion>
       version_for_main_script_http_response_info_;
@@ -74,8 +81,6 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
   mojo::ScopedDataPipeConsumerHandle body_handle_;
   uint64_t body_size_ = 0;
   std::unique_ptr<mojo::DataPipeDrainer> metadata_drainer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptLoader);
 };
 
 }  // namespace content

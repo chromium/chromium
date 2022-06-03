@@ -5,7 +5,6 @@
 #include "content/public/child/image_decoder_utils.h"
 
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

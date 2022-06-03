@@ -117,9 +117,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -183,8 +183,14 @@ enum UnknownRegistryFilter {
 NET_EXPORT std::string GetDomainAndRegistry(const GURL& gurl,
                                             PrivateRegistryFilter filter);
 
-// Like the GURL version, but takes a host (which is canonicalized internally)
-// instead of a full GURL.
+// Like the GURL version, but takes an Origin. Returns an empty string if the
+// Origin is opaque.
+NET_EXPORT std::string GetDomainAndRegistry(const url::Origin& origin,
+                                            PrivateRegistryFilter filter);
+
+// Like the GURL / Origin versions, but takes a host (which is canonicalized
+// internally). Prefer either the GURL or Origin variants instead of this one
+// to avoid needing to re-canonicalize the host.
 NET_EXPORT std::string GetDomainAndRegistry(base::StringPiece host,
                                             PrivateRegistryFilter filter);
 
@@ -202,7 +208,7 @@ NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
                                  PrivateRegistryFilter filter);
 // Note: this returns false if |origin2| is not set.
 NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
-                                 const base::Optional<url::Origin>& origin2,
+                                 const absl::optional<url::Origin>& origin2,
                                  PrivateRegistryFilter filter);
 NET_EXPORT bool SameDomainOrHost(const GURL& gurl,
                                  const url::Origin& origin,

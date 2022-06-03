@@ -10,19 +10,18 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
+#include "components/search/search_provider_observer.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/sync/driver/sync_service.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class BrowsingDataFilterBuilder;
@@ -33,9 +32,14 @@ namespace settings {
 
 // Chrome browser startup settings handler.
 class ClearBrowsingDataHandler : public SettingsPageUIHandler,
-                                 public syncer::SyncServiceObserver {
+                                 public syncer::SyncServiceObserver,
+                                 public TemplateURLServiceObserver {
  public:
   ClearBrowsingDataHandler(content::WebUI* webui, Profile* profile);
+
+  ClearBrowsingDataHandler(const ClearBrowsingDataHandler&) = delete;
+  ClearBrowsingDataHandler& operator=(const ClearBrowsingDataHandler&) = delete;
+
   ~ClearBrowsingDataHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -52,17 +56,27 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void GetRecentlyLaunchedInstalledApps(const base::ListValue* args);
 
  private:
+  friend class TestingClearBrowsingDataHandler;
+  friend class ClearBrowsingDataHandlerUnitTest;
+  FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
+                           UpdateSyncState_GoogleDse);
+  FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
+                           UpdateSyncState_NonGoogleDsePrepopulated);
+  FRIEND_TEST_ALL_PREFIXES(ClearBrowsingDataHandlerUnitTest,
+                           UpdateSyncState_NonGoogleDseNotPrepopulated);
+
   // Respond to the WebUI callback with the list of installed apps.
   void OnGotInstalledApps(
       const std::string& webui_callback_id,
-      const std::vector<ImportantSitesUtil::ImportantDomainInfo>&
+      const std::vector<
+          site_engagement::ImportantSitesUtil::ImportantDomainInfo>&
           installed_apps);
 
   // Build a filter of sites to include and exclude from site data removal
   // based on whether installed apps were marked for deletion by the checkbox on
   // the installed apps warning dialog.
   std::unique_ptr<content::BrowsingDataFilterBuilder> ProcessInstalledApps(
-      const base::ListValue* installed_apps);
+      base::Value::ConstListView installed_apps);
 
   // Clears browsing data, called by Javascript.
   void HandleClearBrowsingData(const base::ListValue* value);
@@ -74,7 +88,8 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void OnClearingTaskFinished(
       const std::string& webui_callback_id,
       const base::flat_set<browsing_data::BrowsingDataType>& data_types,
-      std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion);
+      std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> deletion,
+      uint64_t failed_data_types);
 
   // Initializes the dialog UI. Called by JavaScript when the DOM is ready.
   void HandleInitialize(const base::ListValue* args);
@@ -83,7 +98,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void OnStateChanged(syncer::SyncService* sync) override;
 
   // Updates the footer of the dialog when the sync state changes.
-  void UpdateSyncState();
+  virtual void UpdateSyncState();
 
   // Finds out whether we should show notice about other forms of history stored
   // in user's account.
@@ -105,6 +120,9 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Record changes to the time period preferences.
   void HandleTimePeriodChanged(const std::string& pref_name);
 
+  // Implementation of TemplateURLServiceObserver.
+  void OnTemplateURLServiceChanged() override;
+
   // Cached profile corresponding to the WebUI of this handler.
   Profile* profile_;
 
@@ -113,8 +131,11 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
 
   // SyncService to observe sync state changes.
   syncer::SyncService* sync_service_;
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      dse_service_observation_{this};
 
   // Whether we should show a dialog informing the user about other forms of
   // history stored in their account after the history deletion is finished.
@@ -128,8 +149,6 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // The weak pointers are invalidated in |OnJavascriptDisallowed()| and
   // |HandleInitialize()| to cancel previously initiated tasks.
   base::WeakPtrFactory<ClearBrowsingDataHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClearBrowsingDataHandler);
 };
 
 }  // namespace settings

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_BINDING_API_BINDING_UTIL_H_
-#define EXTENSIONS_RENDERER_BINDING_API_BINDING_UTIL_H_
+#ifndef EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_
+#define EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_
 
 #include <memory>
 #include <string>
@@ -40,6 +40,11 @@ class ContextInvalidationListener {
  public:
   ContextInvalidationListener(v8::Local<v8::Context> context,
                               base::OnceClosure on_invalidated);
+
+  ContextInvalidationListener(const ContextInvalidationListener&) = delete;
+  ContextInvalidationListener& operator=(const ContextInvalidationListener&) =
+      delete;
+
   ~ContextInvalidationListener();
 
   void OnInvalidated();
@@ -48,8 +53,6 @@ class ContextInvalidationListener {
   base::OnceClosure on_invalidated_;
 
   ContextInvalidationData* context_invalidation_data_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextInvalidationListener);
 };
 
 // Returns the string version of the current platform, one of "chromeos",
@@ -69,4 +72,4 @@ std::unique_ptr<base::AutoReset<bool>> SetResponseValidationEnabledForTesting(
 }  // namespace binding
 }  // namespace extensions
 
-#endif  // EXTENSIONS_RENDERER_BINDING_API_BINDING_UTIL_H_
+#endif  // EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_

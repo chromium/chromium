@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that perform-undo-perform of the mergeable action does not crash.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -18,35 +18,35 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('container', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('Initial value');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('font-weight');
     treeItem.applyStyleText('font-weight: normal', false);
     ElementsTestRunner.waitForStyles('container', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('After changing property');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     SDK.domModelUndoStack.undo();
     ElementsTestRunner.waitForStyles('container', step3);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('After undo');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('font-weight');
     treeItem.applyStyleText('font-weight: normal', false);
     ElementsTestRunner.waitForStyles('container', step4);
   }
 
-  function step4() {
+  async function step4() {
     TestRunner.addResult('After perform');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

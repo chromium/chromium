@@ -9,6 +9,11 @@ def get_events(session):
             key = e["key"]
             hex_suffix = key[key.index("+") + 1:]
             e["key"] = unichr(int(hex_suffix, 16))
+
+        # WebKit sets code as 'Unidentified' for unidentified key codes, but
+        # tests expect ''.
+        if "code" in e and e["code"] == "Unidentified":
+            e["code"] = ""
     return events
 
 
@@ -22,12 +27,3 @@ def get_keys(input_el):
         return ""
     else:
         return rv
-
-
-def filter_dict(source, d):
-    """Filter `source` dict to only contain same keys as `d` dict.
-
-    :param source: dictionary to filter.
-    :param d: dictionary whose keys determine the filtering.
-    """
-    return {k: source[k] for k in d.keys()}

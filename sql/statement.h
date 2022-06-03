@@ -6,14 +6,18 @@
 #define SQL_STATEMENT_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "sql/database.h"
 
 namespace sql {
@@ -28,6 +32,11 @@ enum class ColumnType {
   kNull = 5,
 };
 
+// Compiles and executes SQL statements.
+//
+// This class is not thread-safe. An instance must be accessed from a single
+// sequence. This is enforced in DCHECK-enabled builds.
+//
 // Normal usage:
 //   sql::Statement s(connection_.GetUniqueStatement(...));
 //   s.BindInt(0, a);
@@ -50,6 +59,10 @@ class COMPONENT_EXPORT(SQL) Statement {
   Statement();
 
   explicit Statement(scoped_refptr<Database::StatementRef> ref);
+
+  Statement(const Statement&) = delete;
+  Statement& operator=(const Statement&) = delete;
+
   ~Statement();
 
   // Initializes this object with the given statement, which may or may not
@@ -65,7 +78,11 @@ class COMPONENT_EXPORT(SQL) Statement {
   // default value. This is because the statement can become invalid in the
   // middle of executing a command if there is a serious error and the database
   // has to be reset.
-  bool is_valid() const { return ref_->is_valid(); }
+  bool is_valid() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return ref_->is_valid();
+  }
 
   // Running -------------------------------------------------------------------
 
@@ -99,20 +116,38 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Binding -------------------------------------------------------------------
 
-  // These all take a 0-based argument index and return true on success. You
-  // may not always care about the return value (they'll DCHECK if they fail).
-  // The main thing you may want to check is when binding large blobs or
+  // These all take a 0-based parameter index and return true on success.
   // strings there may be out of memory.
-  bool BindNull(int col);
-  bool BindBool(int col, bool val);
-  bool BindInt(int col, int val);
-  bool BindInt(int col, int64_t val) = delete;  // Call BindInt64() instead.
-  bool BindInt64(int col, int64_t val);
-  bool BindDouble(int col, double val);
-  bool BindCString(int col, const char* val);
-  bool BindString(int col, const std::string& val);
-  bool BindString16(int col, const base::string16& value);
-  bool BindBlob(int col, const void* value, int value_len);
+  void BindNull(int param_index);
+  void BindBool(int param_index, bool val);
+  void BindInt(int param_index, int val);
+  void BindInt(int param_index,
+               int64_t val) = delete;  // Call BindInt64() instead.
+  void BindInt64(int param_index, int64_t val);
+  void BindDouble(int param_index, double val);
+  void BindCString(int param_index, const char* val);
+  void BindString(int param_index, base::StringPiece val);
+  void BindString16(int param_index, base::StringPiece16 value);
+  void BindBlob(int param_index, base::span<const uint8_t> value);
+
+  // Overload that makes it easy to pass in std::string values.
+  void BindBlob(int param_index, base::span<const char> value) {
+    BindBlob(param_index, base::as_bytes(base::make_span(value)));
+  }
+
+  // Conforms with base::Time serialization recommendations.
+  //
+  // This is equivalent to the following snippets, which should be replaced.
+  // * BindInt64(col, val.ToInternalValue())
+  // * BindInt64(col, val.ToDeltaSinceWindowsEpoch().InMicroseconds())
+  //
+  // Features that serialize base::Time in other ways, such as ToTimeT() or
+  // ToJavaTime(), will require a database migration to be converted to this
+  // (recommended) serialization method.
+  //
+  // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
+  //                          then remove the migration details above.
+  void BindTime(int param_index, base::Time time);
 
   // Retrieving ----------------------------------------------------------------
 
@@ -125,25 +160,40 @@ class COMPONENT_EXPORT(SQL) Statement {
   // "type conversion." This means requesting the value of a column of a type
   // where that type is not the native type. For safety, call ColumnType only
   // on a column before getting the value out in any way.
-  ColumnType GetColumnType(int col) const;
+  ColumnType GetColumnType(int col);
 
   // These all take a 0-based argument index.
-  bool ColumnBool(int col) const;
-  int ColumnInt(int col) const;
-  int64_t ColumnInt64(int col) const;
-  double ColumnDouble(int col) const;
-  std::string ColumnString(int col) const;
-  base::string16 ColumnString16(int col) const;
+  bool ColumnBool(int column_index);
+  int ColumnInt(int column_index);
+  int64_t ColumnInt64(int column_index);
+  double ColumnDouble(int column_index);
+  std::string ColumnString(int column_index);
+  std::u16string ColumnString16(int column_index);
 
-  // When reading a blob, you can get a raw pointer to the underlying data,
-  // along with the length, or you can just ask us to copy the blob into a
-  // vector. Danger! ColumnBlob may return nullptr if there is no data!
-  int ColumnByteLength(int col) const;
-  const void* ColumnBlob(int col) const;
-  bool ColumnBlobAsString(int col, std::string* blob) const;
-  bool ColumnBlobAsString16(int col, base::string16* val) const;
-  bool ColumnBlobAsVector(int col, std::vector<char>* val) const;
-  bool ColumnBlobAsVector(int col, std::vector<unsigned char>* val) const;
+  // Conforms with base::Time serialization recommendations.
+  //
+  // This is equivalent to the following snippets, which should be replaced.
+  // * base::Time::FromInternalValue(ColumnInt64(col))
+  // * base::Time::FromDeltaSinceWindowsEpoch(
+  //       base::Microseconds(ColumnInt64(col)))
+  //
+  // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
+  //                          then remove the migration details above.
+  base::Time ColumnTime(int column_index);
+
+  // Returns a span pointing to a buffer containing the blob data.
+  //
+  // The span's contents should be copied to a caller-owned buffer immediately.
+  // Any method call on the Statement may invalidate the span.
+  //
+  // The span will be empty (and may have a null data) if the underlying blob is
+  // empty. Code that needs to distinguish between empty blobs and NULL should
+  // call GetColumnType() before calling ColumnBlob().
+  base::span<const uint8_t> ColumnBlob(int column_index);
+
+  bool ColumnBlobAsString(int column_index, std::string* result);
+  bool ColumnBlobAsVector(int column_index, std::vector<char>* result);
+  bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result);
 
   // Diagnostics --------------------------------------------------------------
 
@@ -158,10 +208,6 @@ class COMPONENT_EXPORT(SQL) Statement {
   // code. Currently this function just updates the succeeded flag, but will be
   // enhanced in the future to do the notification.
   int CheckError(int err);
-
-  // Contraction for checking an error code against SQLITE_OK. Does not set the
-  // succeeded flag.
-  bool CheckOk(int err) const;
 
   // Should be called by all mutating methods to check that the statement is
   // valid. Returns true if the statement is valid. DCHECKS and returns false
@@ -184,17 +230,19 @@ class COMPONENT_EXPORT(SQL) Statement {
   // The actual sqlite statement. This may be unique to us, or it may be cached
   // by the Database, which is why it's ref-counted. This pointer is
   // guaranteed non-null.
-  scoped_refptr<Database::StatementRef> ref_;
-
-  // Set after Step() or Run() are called, reset by Reset().  Used to
-  // prevent accidental calls to API functions which would not work
-  // correctly after stepping has started.
-  bool stepped_;
+  scoped_refptr<Database::StatementRef> ref_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // See Succeeded() for what this holds.
-  bool succeeded_;
+  bool succeeded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  DISALLOW_COPY_AND_ASSIGN(Statement);
+#if DCHECK_IS_ON()
+  // Used to DCHECK() that Bind*() is called before Step() or Run() are called.
+  bool step_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+#endif  // DCHECK_IS_ON()
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace sql

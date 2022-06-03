@@ -11,20 +11,21 @@ import("//remoting/remoting_options.gni")
 group("jni") {
   testonly = true
 
-  deps = [
-    ":remoting_client_jni",
-  ]
+  deps = [ ":remoting_client_jni" ]
 }
 
 shared_library("remoting_client_jni") {
   deps = [
     "//remoting/android:jni_headers",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/client",
+    "//remoting/client/audio",
     "//remoting/client/display",
     "//remoting/client/notification",
-    "//remoting/proto/remoting/v1:directory_grpc_library",
+    "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/protocol",
+    "//services/network/public/cpp",
     "//ui/gfx",
   ]
   sources = [

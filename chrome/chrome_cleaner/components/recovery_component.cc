@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
@@ -38,7 +38,7 @@ namespace {
 
 const char kComponentDownloadUrl[] =
     "https://clients2.google.com/service/update2/crx?response=redirect&os=win"
-    "&arch=x86&installsource=swreporter&x=id%3Dnpdjjkjlcidkjlamlmmdelcjbcpdjocm"
+    "&installsource=swreporter&x=id%3Dnpdjjkjlcidkjlamlmmdelcjbcpdjocm"
     "%26v%3D0.0.0.0%26uc&acceptformat=crx3";
 
 // CRX hash. The extension id is: npdjjkjlcidkjlamlmmdelcjbcpdjocm.
@@ -191,7 +191,7 @@ void RecoveryComponent::Run() {
   ran_ = true;
   // We must make sure that the crx expansion is complete.
   if (!done_expanding_crx_.TimedWait(
-          base::TimeDelta::FromMinutes(kDownloadCrxWaitTimeInMin))) {
+          base::Minutes(kDownloadCrxWaitTimeInMin))) {
     LOG(WARNING) << "Timed out waiting for crx expansion completion.";
     return;
   }
@@ -217,7 +217,7 @@ void RecoveryComponent::Run() {
 
   int exit_code = -1;
   bool success = recovery_process.WaitForExitWithTimeout(
-      base::TimeDelta::FromMinutes(kExecutionCrxWaitTimeInMin), &exit_code);
+      base::Minutes(kExecutionCrxWaitTimeInMin), &exit_code);
   LOG_IF(INFO, success) << "ChromeRecovery returned code: " << exit_code;
   PLOG_IF(ERROR, !success) << "ChromeRecovery failed to start in time.";
 }
@@ -275,7 +275,7 @@ void RecoveryComponent::FetchOnIOThread() {
   }
 
   base::ScopedClosureRunner delete_file(
-      base::BindOnce(base::IgnoreResult(&base::DeleteFile), crx_file, false));
+      base::BindOnce(base::GetDeleteFileCallback(), crx_file));
 
   if (!SaveHttpResponseDataToFile(crx_file, http_response.get())) {
     LOG(WARNING) << "Failed to save downloaded recovery component";

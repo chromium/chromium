@@ -5,9 +5,7 @@
 import("//testing/test.gni")
 
 group("tools") {
-  deps = [
-    ":certificate_tag",
-  ]
+  deps = [ ":certificate_tag" ]
 }
 
 source_set("certificate_tag_lib") {
@@ -16,19 +14,11 @@ source_set("certificate_tag_lib") {
     "certificate_tag.h",
   ]
 
-  # TODO(sorin): clean up the unused constant definitions after the code is
-  # complete and before closing crbug.com/1031734.
-  cflags_cc = [ "-Wno-unused-const-variable" ]
-
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 executable("certificate_tag") {
-  sources = [
-    "main.cc",
-  ]
+  sources = [ "main.cc" ]
 
   deps = [
     ":certificate_tag_lib",
@@ -39,14 +29,15 @@ executable("certificate_tag") {
 source_set("unittest") {
   testonly = true
 
-  sources = [
-    "certificate_tag_unittest.cc",
-  ]
+  sources = [ "certificate_tag_unittest.cc" ]
 
   deps = [
     ":certificate_tag_lib",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
   ]
+
+  data = [ "../test/data/signed.exe.gz" ]
 }

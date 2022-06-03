@@ -10,8 +10,7 @@ namespace base {
 void* SystemAllocPages(void* hint,
                        size_t length,
                        PageAccessibilityConfiguration accessibility,
-                       PageTag page_tag,
-                       bool commit);
+                       PageTag page_tag);
 
 }  // namespace base
 

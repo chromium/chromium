@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCPeerConnection.prototype.getStats</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -22,7 +23,7 @@
 
   // The following helper function is called from RTCPeerConnection-helper.js
   //   exchangeIceCandidates
-  //   doSignalingHandshake
+  //   exchangeOfferAnswer
 
   /*
     8.2.  getStats
@@ -64,7 +65,7 @@
     t.add_cleanup(() => pc.close());
     return getTrackFromUserMedia('audio')
     .then(([track, mediaStream]) => {
-      return promise_rejects(t, 'InvalidAccessError', pc.getStats(track));
+      return promise_rejects_dom(t, 'InvalidAccessError', pc.getStats(track));
     });
   }, 'getStats() with track not added to connection should reject with InvalidAccessError');
 
@@ -82,30 +83,13 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
     pc.addTransceiver(track);
 
     return pc.getStats(track);
   }, 'getStats() with track added via addTransceiver should succeed');
-
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
-    return getTrackFromUserMedia('audio')
-    .then(([track, mediaStream]) => {
-      // addTransceiver allows adding same track multiple times
-      const transceiver1 = pc.addTransceiver(track);
-      const transceiver2 = pc.addTransceiver(track);
-
-      assert_not_equals(transceiver1, transceiver2);
-      assert_not_equals(transceiver1.sender, transceiver2.sender);
-      assert_equals(transceiver1.sender.track, transceiver2.sender.track);
-
-      return promise_rejects(t, 'InvalidAccessError', pc.getStats(track));
-    });
-  }, `getStats() with track associated with more than one sender should reject with InvalidAccessError`);
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -117,7 +101,7 @@
     const transceiver2 = pc.addTransceiver(transceiver1.receiver.track);
     assert_equals(transceiver1.receiver.track, transceiver2.sender.track);
 
-    return promise_rejects(t, 'InvalidAccessError', pc.getStats(transceiver1.receiver.track));
+    return promise_rejects_dom(t, 'InvalidAccessError', pc.getStats(transceiver1.receiver.track));
   }, 'getStats() with track associated with both sender and receiver should reject with InvalidAccessError');
 
   /*
@@ -135,35 +119,69 @@
     });
   }, 'getStats() with no argument should return stats report containing peer-connection stats on an empty PC');
 
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
-    return getTrackFromUserMedia('audio')
-    .then(([track, mediaStream]) => {
-      pc.addTrack(track, mediaStream);
-      return pc.getStats();
-    })
-    .then(statsReport => {
-      validateStatsReport(statsReport);
-      assert_stats_report_has_stats(statsReport, ['peer-connection']);
-      assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
-    });
-  }, 'getStats() with no argument should return stats report containing peer-connection stats and outbound-track-stats');
+  promise_test(async t => {
+    const pc = createPeerConnectionWithCleanup(t);
+    const pc2 = createPeerConnectionWithCleanup(t);
+    const [track, mediaStream] = await getTrackFromUserMedia('audio');
+    pc.addTrack(track, mediaStream);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    await listenToConnected(pc);
+    const statsReport = await pc.getStats();
+    getRequiredStats(statsReport, 'peer-connection');
+    getRequiredStats(statsReport, 'outbound-rtp');
+  }, 'getStats() track with stream returns peer-connection and outbound-rtp stats');
 
-  promise_test(t => {
-    const pc = new RTCPeerConnection();
-    t.add_cleanup(() => pc.close());
-    return getTrackFromUserMedia('audio')
-    .then(([track, mediaStream]) => {
-      pc.addTrack(track);
-      return pc.getStats();
-    })
-    .then(statsReport => {
-      validateStatsReport(statsReport);
-      assert_stats_report_has_stats(statsReport, ['peer-connection']);
-      assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
-    });
-  }, 'getStats() with no argument should return stats for no-stream tracks');
+  promise_test(async t => {
+    const pc = createPeerConnectionWithCleanup(t);
+    const pc2 = createPeerConnectionWithCleanup(t);
+    const [track, mediaStream] = await getTrackFromUserMedia('audio');
+    pc.addTrack(track);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    await listenToConnected(pc);
+    const statsReport = await pc.getStats();
+    getRequiredStats(statsReport, 'peer-connection');
+    getRequiredStats(statsReport, 'outbound-rtp');
+  }, 'getStats() track without stream returns peer-connection and outbound-rtp stats');
+
+  promise_test(async t => {
+    const pc = createPeerConnectionWithCleanup(t);
+    const pc2 = createPeerConnectionWithCleanup(t);
+    const [track, mediaStream] = await getTrackFromUserMedia('audio');
+    pc.addTrack(track, mediaStream);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    await listenToConnected(pc);
+    const statsReport = await pc.getStats();
+    assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
+  }, 'getStats() audio outbound-rtp contains all mandatory stats');
+
+  promise_test(async t => {
+    const pc = createPeerConnectionWithCleanup(t);
+    const pc2 = createPeerConnectionWithCleanup(t);
+    const [track, mediaStream] = await getTrackFromUserMedia('video');
+    pc.addTrack(track, mediaStream);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    await listenToConnected(pc);
+    const statsReport = await pc.getStats();
+    assert_stats_report_has_stats(statsReport, ['outbound-rtp']);
+  }, 'getStats() video outbound-rtp contains all mandatory stats');
+
+  promise_test(async t => {
+    const pc = createPeerConnectionWithCleanup(t);
+    const pc2 = createPeerConnectionWithCleanup(t);
+    const [audioTrack, audioStream] = await getTrackFromUserMedia('audio');
+    pc.addTrack(audioTrack, audioStream);
+    const [videoTrack, videoStream] = await getTrackFromUserMedia('video');
+    pc.addTrack(videoTrack, videoStream);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    await listenToConnected(pc);
+    const statsReport = await pc.getStats();
+    validateStatsReport(statsReport);
+  }, 'getStats() audio and video validate all mandatory stats');
 
   /*
     8.5.  The stats selection algorithm
@@ -179,14 +197,12 @@
 
     let [track, mediaStream] = await getTrackFromUserMedia('audio');
     pc.addTrack(track, mediaStream);
-    coupleIceCandidates(pc, pc2);
-    await doSignalingHandshake(pc, pc2);
-    await listenToIceConnected(pc);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    await listenToConnected(pc);
     const stats = await pc.getStats(track);
-    validateStatsReport(stats);
-    assert_stats_report_has_stats(stats, ['outbound-rtp']);
-  }, `getStats() on track associated with RtpSender should return stats report containing outbound-rtp stats`);
-
+    getRequiredStats(stats, 'outbound-rtp');
+  }, `getStats() on track associated with RTCRtpSender should return stats report containing outbound-rtp stats`);
 
   /*
     8.5.  The stats selection algorithm
@@ -202,8 +218,8 @@
 
     let [track, mediaStream] = await getTrackFromUserMedia('audio');
     pc.addTrack(track, mediaStream);
-    coupleIceCandidates(pc, pc2);
-    await doSignalingHandshake(pc, pc2);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
     // Wait for unmute if the track is not already unmuted.
     // According to spec, it should be muted when being created, but this
     // is not what this test is testing, so allow it to be unmuted.
@@ -212,10 +228,29 @@
         pc2.getReceivers()[0].track.addEventListener('unmute', resolve);
       });
     }
-    const stats = await pc2.getStats(track);
-    validateStatsReport(stats);
-    assert_stats_report_has_stats(stats, ['inbound-rtp']);
-  }, `getStats() on track associated with RtpReceiver should return stats report containing inbound-rtp stats`);
+    const stats = await pc2.getStats(pc2.getReceivers()[0].track);
+    getRequiredStats(stats, 'inbound-rtp');
+  }, `getStats() on track associated with RTCRtpReceiver should return stats report containing inbound-rtp stats`);
+
+  promise_test(async t => {
+    const pc = createPeerConnectionWithCleanup(t);
+    const pc2 = createPeerConnectionWithCleanup(t);
+
+    let [track, mediaStream] = await getTrackFromUserMedia('audio');
+    pc.addTrack(track, mediaStream);
+    exchangeIceCandidates(pc, pc2);
+    await exchangeOfferAnswer(pc, pc2);
+    // Wait for unmute if the track is not already unmuted.
+    // According to spec, it should be muted when being created, but this
+    // is not what this test is testing, so allow it to be unmuted.
+    if (pc2.getReceivers()[0].track.muted) {
+      await new Promise(resolve => {
+        pc2.getReceivers()[0].track.addEventListener('unmute', resolve);
+      });
+    }
+    const stats = await pc2.getStats(pc2.getReceivers()[0].track);
+    getRequiredStats(stats, 'inbound-rtp');
+  }, `getStats() inbound-rtp contains all mandatory stats`);
 
   /*
     8.6   Mandatory To Implement Stats
@@ -230,10 +265,11 @@
     "outbound-rtp",
     "remote-inbound-rtp",
     "remote-outbound-rtp",
+    "media-source",
     "peer-connection",
     "data-channel",
-    "stream",
-    "track",
+    "sender",
+    "receiver",
     "transport",
     "candidate-pair",
     "local-candidate",
@@ -249,7 +285,7 @@
 
     const dataChannel = pc1.createDataChannel('test-channel');
 
-    return getNoiseStream({
+    getNoiseStream({
       audio: true,
       video: true
     })
@@ -276,6 +312,7 @@
 
         assert_equals(dataChannelStats.label, 'test-channel');
 
+        /* TODO track stats are obsolete - replace with sender/receiver? */
         const audioTrackStats = findStatsFromReport(statsReport,
           stats => {
             return stats.type === 'track' &&
@@ -293,22 +330,13 @@
           'Expect video track stats to be found');
 
         assert_equals(videoTrackStats.kind, 'video');
-
-        const mediaStreamStats = findStatsFromReport(statsReport,
-          stats => {
-            return stats.type === 'stream' &&
-              stats.streamIdentifier === mediaStream.id;
-          },
-          'Expect media stream stats to be found');
-
-        assert_true(mediaStreamStats.trackIds.include(audioTrackStats.id));
-        assert_true(mediaStreamStats.trackIds.include(videoTrackStats.id));
       }
 
       const onConnected = t.step_func(() => {
         // Wait a while for the peer connections to collect stats
         t.step_timeout(() => {
           Promise.all([
+            /* TODO: for both pc1 and pc2 to expose all mandatory stats, they need to both send/receive tracks and data channels */
             pc1.getStats()
             .then(statsReport => testStatsReport(pc1, statsReport)),
 
@@ -340,13 +368,43 @@
       }));
 
 
-      coupleIceCandidates(pc1, pc2);
-      doSignalingHandshake(pc1, pc2);
+      exchangeIceCandidates(pc1, pc2);
+      exchangeOfferAnswer(pc1, pc2);
     }))
     .catch(t.step_func(err => {
       assert_unreached(`test failed with error: ${err}`);
     }));
 
   }, `getStats() with connected peer connections having tracks and data channel should return all mandatory to implement stats`);
+
+  promise_test(async t => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    const [track, mediaStream] = await getTrackFromUserMedia('audio');
+    pc.addTransceiver(track);
+    pc.addTransceiver(track);
+    await promise_rejects_dom(t, 'InvalidAccessError', pc.getStats(track));
+  }, `getStats(track) should not work if multiple senders have the same track`);
+
+  promise_test(async t => {
+    const kMinimumTimeElapsedBetweenGetStatsCallsMs = 500;
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    const t0 = Math.floor(performance.now());
+    const t0Stats = getRequiredStats(await pc.getStats(), 'peer-connection');
+    await new Promise(
+        r => t.step_timeout(r, kMinimumTimeElapsedBetweenGetStatsCallsMs));
+    const t1Stats = getRequiredStats(await pc.getStats(), 'peer-connection');
+    const t1 = Math.ceil(performance.now());
+    const maximumTimeElapsedBetweenGetStatsCallsMs = t1 - t0;
+    const deltaTimestampMs = t1Stats.timestamp - t0Stats.timestamp;
+    // The delta must be at least the time we waited between calls.
+    assert_greater_than_equal(deltaTimestampMs,
+                              kMinimumTimeElapsedBetweenGetStatsCallsMs);
+    // The delta must be at most the time elapsed before the first getStats()
+    // call and after the second getStats() call.
+    assert_less_than_equal(deltaTimestampMs,
+                           maximumTimeElapsedBetweenGetStatsCallsMs);
+  }, `RTCStats.timestamp increases with time passing`);
 
 </script>

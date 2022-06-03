@@ -1,37 +1,21 @@
 <!doctype html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
-  <meta charset="utf-8">
-  <title>$i18n{title}</title>
-  <link rel="import" href="chrome://resources/html/polymer.html">
-  <link rel="import" href="chrome://resources/cr_elements/icons.html">
-  <link rel="stylesheet" href="chrome://resources/css/spinner.css">
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-  <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-  <link rel="stylesheet" href="chrome://chrome-signin/inline_login.css">
-  <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/cr/event_target.js"></script>
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="chrome://chrome-signin/gaia_auth_host.js"></script>
-  <script src="chrome://chrome-signin/inline_login.js"></script>
-  <script src="chrome://chrome-signin/strings.js"></script>
+<meta charset="utf-8">
+<title>$i18n{title}</title>
+<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
 </head>
+<style>
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+</style>
 <body>
-  <div id="contents" class="loading">
-    <webview id="signin-frame" name="signin-frame" allowscaling></webview>
-    <div id="spinner-container">
-      <div class="spinner"></div>
-    </div>
-  </div>
-
-  <cr-button
-      id="navigation-button"
-      aria-label="$i18n{accessibleBackButtonLabel}">
-    <iron-icon id="navigation-icon"></iron-icon>
-    $i18n{accessibleBackButtonLabel}
-  </cr-button>
+  <inline-login-app></inline-login-app>
+  <script type="module" src="inline_login_app.js"></script>
 </body>
 </html>

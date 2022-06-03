@@ -72,7 +72,7 @@ void SessionFileOperationsHandler::WriteFile(uint64_t file_id,
 }
 
 void SessionFileOperationsHandler::WriteChunk(uint64_t file_id,
-                                              std::string data) {
+                                              std::vector<std::uint8_t> data) {
   auto writer_iter = writers_.find(file_id);
   if (writer_iter == writers_.end()) {
     result_handler_->OnResult(

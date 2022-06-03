@@ -54,7 +54,7 @@ PerfDataProto GetExamplePerfDataProto() {
 // Perf session ID returned by the GetPerfOutputFd DBus method call.
 const uint64_t kFakePerfSssionId = 101;
 // Profile collection duration is 4 seconds.
-const base::TimeDelta kProfileDuration = base::TimeDelta::FromSeconds(4);
+const base::TimeDelta kProfileDuration = base::Seconds(4);
 // Perf command line arguments.
 const std::vector<std::string> kPerfArgs{"perf",   "record", "-a", "-e",
                                          "cycles", "-g",     "-c", "4000037"};
@@ -65,6 +65,10 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   FakeDebugDaemonClient()
       : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  FakeDebugDaemonClient(const FakeDebugDaemonClient&) = delete;
+  FakeDebugDaemonClient& operator=(const FakeDebugDaemonClient&) = delete;
+
   ~FakeDebugDaemonClient() override {
     EXPECT_FALSE(perf_output_file_.IsValid());
   }
@@ -119,8 +123,6 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   base::File perf_output_file_;
   chromeos::DBusMethodCallback<uint64_t> get_perf_outjput_callback_;
   bool stop_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDebugDaemonClient);
 };
 
 }  // namespace
@@ -128,6 +130,9 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 class PerfOutputCallTest : public testing::Test {
  public:
   PerfOutputCallTest() = default;
+
+  PerfOutputCallTest(const PerfOutputCallTest&) = delete;
+  PerfOutputCallTest& operator=(const PerfOutputCallTest&) = delete;
 
   void SetUp() override {
     debug_daemon_client_ = std::make_unique<FakeDebugDaemonClient>();
@@ -149,8 +154,6 @@ class PerfOutputCallTest : public testing::Test {
   std::unique_ptr<PerfOutputCall> perf_output_call_;
 
   std::string perf_output_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfOutputCallTest);
 };
 
 // Test getting perf output after profile duration elapses.

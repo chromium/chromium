@@ -28,6 +28,8 @@
 # targets' configuration or visibility, require consulting ENG_REVIEW_OWNERS,
 # as per the "adding_to_third_party.md" link above.
 
+import("//third_party/wuffs/config.gni")
+
 static_library("wuffs") {
   defines = [
     # Copy/pasting from "src/release/c/wuffs-*.c":
@@ -64,18 +66,23 @@ static_library("wuffs") {
     # Do not modify this list without considering the "consult
     # ENG_REVIEW_OWNERS" comment at the top of this file.
     "WUFFS_CONFIG__MODULES",
-    "WUFFS_CONFIG__MODULE__BASE",
-    "WUFFS_CONFIG__MODULE__GIF",
-    "WUFFS_CONFIG__MODULE__LZW",
+    "WUFFS_CONFIG__MODULE__BASE__CORE",
   ]
+
+  if (use_wuffs_gif_parser) {
+    defines += [
+      "WUFFS_CONFIG__MODULE__BASE__INTERFACES",
+      "WUFFS_CONFIG__MODULE__BASE__PIXCONV",
+      "WUFFS_CONFIG__MODULE__GIF",
+      "WUFFS_CONFIG__MODULE__LZW",
+    ]
+  }
 
   # Do not modify this list without considering the "consult ENG_REVIEW_OWNERS"
   # comment at the top of this file.
   visibility = [ "//skia" ]
 
-  sources = [
-    "src/release/c/wuffs-v0.2.c",
-  ]
+  sources = [ "src/release/c/wuffs-v0.3.c" ]
 }
 # Do not add build targets, or change their configuration or visibility,
 # without considering the "consult ENG_REVIEW_OWNERS" comment at the top of

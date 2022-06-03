@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -37,6 +37,11 @@ void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlags(
   NOTIMPLEMENTED();
 }
 
+void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlagsNow(
+    int additional_load_flags) {
+  NOTIMPLEMENTED();
+}
+
 URLLoaderThrottle::Delegate::~Delegate() {}
 
 URLLoaderThrottle::~URLLoaderThrottle() {}
@@ -48,17 +53,26 @@ void URLLoaderThrottle::DetachFromCurrentSequence() {
 void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
                                          bool* defer) {}
 
+const char* URLLoaderThrottle::NameForLoggingWillStartRequest() {
+  return nullptr;
+}
+
 void URLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
     std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers) {}
+    net::HttpRequestHeaders* modified_request_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {}
 
 void URLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {}
+
+const char* URLLoaderThrottle::NameForLoggingWillProcessResponse() {
+  return nullptr;
+}
 
 void URLLoaderThrottle::BeforeWillProcessResponse(
     const GURL& response_url,

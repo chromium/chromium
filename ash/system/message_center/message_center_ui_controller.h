@@ -5,11 +5,14 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UI_CONTROLLER_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UI_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/system/message_center/message_center_ui_delegate.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -25,16 +28,21 @@ namespace ash {
 // UiDelegate when the tray is changed, as well as when bubbles are shown and
 // hidden.
 class ASH_EXPORT MessageCenterUiController
-    : public message_center::MessageCenterObserver {
+    : public message_center::MessageCenterObserver,
+      public SessionObserver {
  public:
   explicit MessageCenterUiController(MessageCenterUiDelegate* delegate);
+
+  MessageCenterUiController(const MessageCenterUiController&) = delete;
+  MessageCenterUiController& operator=(const MessageCenterUiController&) =
+      delete;
+
   ~MessageCenterUiController() override;
 
-  // Shows or updates the message center bubble and hides the popup bubble. Set
-  // |show_by_click| to true if bubble is shown by mouse or gesture click.
+  // Shows or updates the message center bubble and hides the popup bubble.
   // Returns whether the message center is visible after the call, whether or
   // not it was visible before.
-  bool ShowMessageCenterBubble(bool show_by_click);
+  bool ShowMessageCenterBubble();
 
   // Hides the message center if visible and returns whether the message center
   // was visible before.
@@ -68,16 +76,22 @@ class ASH_EXPORT MessageCenterUiController
   void OnNotificationUpdated(const std::string& notification_id) override;
   void OnNotificationClicked(
       const std::string& notification_id,
-      const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const absl::optional<int>& button_index,
+      const absl::optional<std::u16string>& reply) override;
   void OnNotificationDisplayed(
       const std::string& notification_id,
       const message_center::DisplaySource source) override;
   void OnQuietModeChanged(bool in_quiet_mode) override;
   void OnBlockingStateChanged(
       message_center::NotificationBlocker* blocker) override;
+  void OnNotificationPopupShown(const std::string& notification_id,
+                                bool mark_notification_as_read) override;
+
+  // SessionObserver:
+  void OnFirstSessionStarted() override;
 
  private:
+  void OnLoginTimerEnded();
   void OnMessageCenterChanged();
   void NotifyUiControllerChanged();
   void HidePopupBubbleInternal();
@@ -90,7 +104,11 @@ class ASH_EXPORT MessageCenterUiController
   // Set true to hide MessageCenterView when the last notification is dismissed.
   bool hide_on_last_notification_ = true;
 
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterUiController);
+  int notifications_displayed_in_first_minute_count_ = 0;
+  base::OneShotTimer login_notification_logging_timer_;
+
+  base::ScopedObservation<SessionController, SessionObserver> session_observer_{
+      this};
 };
 
 }  // namespace ash

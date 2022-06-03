@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 
 class LocationBarView;
-class Profile;
+class TemplateURLService;
 
 namespace gfx {
 class FontList;
@@ -24,24 +24,39 @@ class Size;
 // SelectedKeywordView displays the tab-to-search UI in the location bar view.
 class SelectedKeywordView : public IconLabelBubbleView {
  public:
+  METADATA_HEADER(SelectedKeywordView);
+
+  struct KeywordLabelNames {
+    std::u16string short_name;
+    std::u16string full_name;
+  };
+  // Returns the short and long names that can be used to describe keyword
+  // behavior, e.g. "Search google.com" or an equivalent translation, with
+  // consideration for bidirectional text safety using |service|. Empty
+  // names are returned if service is null.
+  static KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
+                                                TemplateURLService* service);
+
   SelectedKeywordView(LocationBarView* location_bar,
-                      const gfx::FontList& font_list,
-                      Profile* profile);
+                      TemplateURLService* template_url_service,
+                      const gfx::FontList& font_list);
+  SelectedKeywordView(const SelectedKeywordView&) = delete;
+  SelectedKeywordView& operator=(const SelectedKeywordView&) = delete;
   ~SelectedKeywordView() override;
 
-  // Resets the icon for this chip to its default (it may have been changed
-  // for an extension).
-  void ResetImage();
+  // Sets the icon for this chip to |image|.  If there is no custom image (i.e.
+  // |image| is empty), resets the icon for this chip to its default.
+  void SetCustomImage(const gfx::Image& image);
 
   // IconLabelBubbleView:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
-  SkColor GetTextColor() const override;
-  SkColor GetInkDropBaseColor() const override;
+  void OnThemeChanged() override;
+  SkColor GetForegroundColor() const override;
 
   // The current keyword, or an empty string if no keyword is displayed.
-  void SetKeyword(const base::string16& keyword);
-  const base::string16& keyword() const { return keyword_; }
+  void SetKeyword(const std::u16string& keyword);
+  const std::u16string& GetKeyword() const;
 
   using IconLabelBubbleView::label;
 
@@ -49,16 +64,16 @@ class SelectedKeywordView : public IconLabelBubbleView {
   // IconLabelBubbleView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   int GetExtraInternalSpacing() const override;
-  const char* GetClassName() const override;
 
   void SetLabelForCurrentWidth();
 
   LocationBarView* location_bar_;
+  TemplateURLService* template_url_service_;
 
   // The keyword we're showing. If empty, no keyword is selected.
   // NOTE: we don't cache the TemplateURL as it is possible for it to get
   // deleted out from under us.
-  base::string16 keyword_;
+  std::u16string keyword_;
 
   // These labels are never visible.  They are used to size the view.  One
   // label contains the complete description of the keyword, the second
@@ -67,9 +82,8 @@ class SelectedKeywordView : public IconLabelBubbleView {
   views::Label full_label_;
   views::Label partial_label_;
 
-  Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectedKeywordView);
+  // True when the chip icon has been changed via SetCustomImage().
+  bool using_custom_image_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_SELECTED_KEYWORD_VIEW_H_

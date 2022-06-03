@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/gamepad_export.h"
+#include "device/gamepad/gamepad_id_list.h"
 
 namespace device {
 
@@ -23,7 +24,7 @@ class DEVICE_GAMEPAD_EXPORT XboxHidController final
   XboxHidController(std::unique_ptr<HidWriter> writer);
   ~XboxHidController() override;
 
-  static bool IsXboxHid(uint16_t vendor_id, uint16_t product_id);
+  static bool IsXboxHid(GamepadId gamepad_id);
 
   // AbstractHapticGamepad public implementation.
   void SetVibration(double strong_magnitude, double weak_magnitude) override;

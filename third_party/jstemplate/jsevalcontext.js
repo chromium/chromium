@@ -303,11 +303,24 @@ JsEvalContext.prototype.evalExpression = function(expr, opt_template) {
 
 
 /**
- * Uninlined string literals for jsEvalToFunction() (IE6 perf).
+ * This is used to create TrustedScript.
+ *
+ * @type {!TrustedTypePolicy}
  */
-var STRING_a = 'a_';
-var STRING_b = 'b_';
-var STRING_with = 'with (a_) with (b_) return ';
+let unsanitizedPolicy;
+if (window.trustedTypes) {
+  // This is relatively safe because attribute's values can
+  // only reach here with `JsEvalContext` bootstrap. And even
+  // if opaqueScript calls dangerous sinks (e.g. innerHTML),
+  // it'll still be subject to type check with Trusted Types.
+  // This could be exploited if bootstrap is called with an
+  // event which can be triggered after the page load
+  // (e.g. onclick).
+  // TODO(crbug.com/525224): Eliminate the use of jstemplate
+  // in WebUI
+  unsanitizedPolicy = trustedTypes.createPolicy(
+      'jstemplate', {createScript: opaqueScript => opaqueScript});
+}
 
 
 /**
@@ -331,9 +344,16 @@ JsEvalContext.evalToFunctionCache_ = {};
 function jsEvalToFunction(expr) {
   if (!JsEvalContext.evalToFunctionCache_[expr]) {
     try {
-      // NOTE(mesch): The Function constructor is faster than eval().
-      JsEvalContext.evalToFunctionCache_[expr] =
-        new Function(STRING_a, STRING_b, STRING_with + expr);
+      /** @type {string} */
+      const f = `(function(a_, b_) { with (a_) with (b_) return ${expr} })`;
+      /** @type {!TrustedScript|string} */
+      const opaqueExpr = window.trustedTypes ? unsanitizedPolicy.createScript(f) : f;
+
+      // TODO(crbug.com/1087743): Support Function constructor in Trusted Types
+      // TODO(crbug.com/1091600): Support TrustedScript type as an argument to
+      // eval in Closure Compiler
+      /** @suppress {checkTypes} */
+      JsEvalContext.evalToFunctionCache_[expr] = window.eval(opaqueExpr);
     } catch (e) {
       log('jsEvalToFunction (' + expr + ') EXCEPTION ' + e);
     }

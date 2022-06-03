@@ -6,17 +6,20 @@
 
 namespace media {
 
-size_t GetDemuxerStreamAudioMemoryLimit() {
+size_t GetDemuxerStreamAudioMemoryLimit(
+    const AudioDecoderConfig* /*audio_config*/) {
   return internal::kDemuxerStreamAudioMemoryLimitDefault;
 }
 
-size_t GetDemuxerStreamVideoMemoryLimit() {
+size_t GetDemuxerStreamVideoMemoryLimit(
+    Demuxer::DemuxerTypes /*demuxer_type*/,
+    const VideoDecoderConfig* /*video_config*/) {
   return internal::kDemuxerStreamVideoMemoryLimitDefault;
 }
 
-size_t GetDemuxerMemoryLimit() {
-  return GetDemuxerStreamAudioMemoryLimit() +
-         GetDemuxerStreamVideoMemoryLimit();
+size_t GetDemuxerMemoryLimit(Demuxer::DemuxerTypes demuxer_type) {
+  return GetDemuxerStreamAudioMemoryLimit(nullptr) +
+         GetDemuxerStreamVideoMemoryLimit(demuxer_type, nullptr);
 }
 
 }  // namespace media

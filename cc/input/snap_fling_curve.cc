@@ -20,9 +20,8 @@ constexpr double kDistanceEstimatorScalar = 25;
 // The delta to be scrolled in next frame is 0.92 of the delta in last frame.
 constexpr double kRatio = 0.92;
 #endif
-constexpr double kMsPerFrame = 16;
-constexpr base::TimeDelta kMaximumSnapDuration =
-    base::TimeDelta::FromSecondsD(5);
+constexpr auto kFrameTime = base::Milliseconds(16);
+constexpr base::TimeDelta kMaximumSnapDuration = base::Seconds(5);
 
 double GetDistanceFromDisplacement(gfx::Vector2dF displacement) {
   return std::hypot(displacement.x(), displacement.y());
@@ -67,7 +66,7 @@ SnapFlingCurve::SnapFlingCurve(const gfx::Vector2dF& start_offset,
       start_time_(first_gsu_time),
       total_frames_(EstimateFramesFromDistance(total_distance_)),
       first_delta_(CalculateFirstDelta(total_distance_, total_frames_)),
-      duration_(base::TimeDelta::FromMilliseconds(total_frames_ * kMsPerFrame)),
+      duration_(total_frames_ * kFrameTime),
       is_finished_(total_distance_ == 0) {
   if (is_finished_)
     return;
@@ -78,10 +77,10 @@ SnapFlingCurve::SnapFlingCurve(const gfx::Vector2dF& start_offset,
 SnapFlingCurve::~SnapFlingCurve() = default;
 
 double SnapFlingCurve::GetCurrentCurveDistance(base::TimeDelta current_time) {
-  double current_frame = current_time.InMillisecondsF() / kMsPerFrame + 1;
-  double sum =
+  const double current_frame = current_time / kFrameTime + 1;
+  const double sum =
       first_delta_ * (1 - std::pow(kRatio, current_frame)) / (1 - kRatio);
-  return sum <= total_distance_ ? sum : total_distance_;
+  return std::min(sum, total_distance_);
 }
 
 gfx::Vector2dF SnapFlingCurve::GetScrollDelta(base::TimeTicks time_stamp) {

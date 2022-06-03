@@ -101,7 +101,7 @@ mojo::ScopedDataPipeConsumerHandle consumer = std::move(pipe.consumer_handle);
 // Or alternatively:
 mojo::ScopedDataPipeProducerHandle producer;
 mojo::ScopedDataPipeConsumerHandle consumer;
-mojo::CreateDataPipe(null, &producer, &consumer);
+mojo::CreateDataPipe(nullptr, producer, consumer);
 ```
 
 C++ helpers which correspond directly to the
@@ -369,7 +369,7 @@ wait_set.AddEvent(&timeout_event);
 
 // Ensure the Wait() lasts no more than 5 seconds.
 bg_thread->task_runner()->PostDelayedTask(FROM_HERE, base::BindOnce([](base::WaitableEvent* e) { e->Signal(); }, &timeout_event);
-    base::TimeDelta::FromSeconds(5));
+    base::Seconds(5));
 
 base::WaitableEvent* ready_event = nullptr;
 size_t num_ready_handles = 1;
@@ -480,14 +480,15 @@ message pipe handles as mojom interfaces. For example:
 // Process A
 mojo::OutgoingInvitation invitation;
 auto pipe = invitation->AttachMessagePipe("x");
-mojo::Binding<foo::mojom::Bar> binding(
+mojo::Receiver<foo::mojom::Bar> receiver(
     &bar_impl,
-    foo::mojom::BarRequest(std::move(pipe)));
+    mojo::PendingReceiver<foo::mojom::Bar>(std::move(pipe)));
 
 // Process B
 auto invitation = mojo::IncomingInvitation::Accept(...);
 auto pipe = invitation->ExtractMessagePipe("x");
-mojo::Remote<foo::mojom::Bar> bar(mojo::PendingRemote<foo::mojom::Bar>(std::move(pipe), 0));
+mojo::Remote<foo::mojom::Bar> bar(
+    mojo::PendingRemote<foo::mojom::Bar>(std::move(pipe), 0));
 
 // Will asynchronously invoke bar_impl.DoSomething() in process A.
 bar->DoSomething();

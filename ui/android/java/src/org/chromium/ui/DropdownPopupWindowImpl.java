@@ -25,7 +25,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
- * The dropdown popup window for use on KitKat+. Internally uses an AnchoredPopupWindow
+ * The dropdown popup window for use on Lollipop+. Internally uses an AnchoredPopupWindow
  * anchored to a view to display a list of options.
  */
 class DropdownPopupWindowImpl
@@ -83,7 +83,7 @@ class DropdownPopupWindowImpl
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         rectProvider.setIncludePadding(true);
         mBackground = ApiCompatibilityUtils.getDrawable(
-                context.getResources(), R.drawable.popup_bg_tinted);
+                context.getResources(), R.drawable.menu_bg_tinted);
         mAnchoredPopupWindow = new AnchoredPopupWindow(
                 context, mAnchorView, mBackground, mContentView, rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
@@ -118,7 +118,7 @@ class DropdownPopupWindowImpl
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
         mBackground.setBounds(anchorRect);
         mAnchoredPopupWindow.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                mContext.getResources(), R.drawable.popup_bg_tinted));
+                mContext.getResources(), R.drawable.menu_bg_tinted));
     }
 
     /**

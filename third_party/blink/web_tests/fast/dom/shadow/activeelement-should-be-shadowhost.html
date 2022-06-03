@@ -29,7 +29,7 @@ if (window.testRunner) {
     testRunner.dumpAsText();
 
   function appendChildToShadow(shadowHost, child) {
-    var shadowRoot = shadowHost.shadowRoot || shadowHost.createShadowRoot();
+    var shadowRoot = shadowHost.shadowRoot || shadowHost.attachShadow({mode: 'open'});
     return shadowRoot.appendChild(child)
   }
 
@@ -67,7 +67,7 @@ if (window.testRunner) {
   var input1 = appendChildToShadow(shadow1, doc1.createElement('input'));
 
   var shadow2 = appendShadowHost(doc0);
-  var shadow2_1 = appendShadowHost(doc0, shadow2.createShadowRoot());
+  var shadow2_1 = appendShadowHost(doc0, shadow2.attachShadow({mode: 'open'}));
   var input2 = appendChildToShadow(shadow2_1, doc0.createElement('input'));
 
   var shadow3 = appendShadowHost(doc0);

@@ -5,7 +5,6 @@ include_rules = [
     "+base/strings/string_number_conversions.h",
     "+base/strings/stringprintf.h",
     "+base/containers/flat_map.h",
-    "+base/callback_helpers.h",
 
     # TODO(crbug.com/923394): Remove these dependencies once per-frame
     # task runners are used in all cases.
@@ -26,9 +25,12 @@ include_rules = [
     "+skia/ext/platform_canvas.h",
 
     "+base/atomicops.h",
+    "+base/task/bind_post_task.h",
     "+base/files/file.h",
     "+base/metrics/field_trial.h",
 
+    "+base/guid.h",
+    "+base/token.h",
     "+base/trace_event/trace_event.h",
     "+base/unguessable_token.h",
     "+media/audio",
@@ -38,8 +40,7 @@ include_rules = [
     "+media/webrtc/audio_delay_stats_reporter.h",
     "+media/webrtc/audio_processor_controls.h",
     "+media/webrtc/helpers.h",
-    "+media/webrtc/webrtc_switches.h",
-    "+mojo/public/cpp/bindings/binding.h",
+    "+media/webrtc/webrtc_features.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",
     "+third_party/blink/renderer/modules/event_target_modules.h",
@@ -64,7 +65,7 @@ specific_include_rules = {
         "+base/files/scoped_temp_dir.h",
         "+base/memory/aligned_memory.h",
         "+base/path_service.h",
-        "+base/test/bind_test_util.h",
+        "+base/test/bind.h",
         "+base/threading/thread.h",
         "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
     ],

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`fromPrefetchCache flag must be set for prefetched resousces.\n`);
 
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   const ret = await TestRunner.evaluateInPageAsync(`
     (function(){

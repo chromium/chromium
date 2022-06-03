@@ -5,37 +5,51 @@
 module device.mojom;
 
 enum NDEFErrorType {
-  // No permssion.
+  // No permission.
   NOT_ALLOWED,
   // No hardware support, no NFC adapter, the connection cannot be established,
   // or operation is not supported by the NFC Adapter.
   NOT_SUPPORTED,
   // NFC adapter is disabled.
   NOT_READABLE,
-  NOT_FOUND,
   INVALID_MESSAGE,
   OPERATION_CANCELLED,
-  CANNOT_CANCEL,
   // Transfer data error.
   IO_ERROR
 };
 
-enum NDEFPushTarget {
-  // The target of a push operation must be the NFC tag.
-  TAG,
-  // The target of a push operation must be the NFC peer (device to device).
-  PEER,
-  // The target of a push operation must be either NFC tag or peer.
-  ANY
+// https://w3c.github.io/web-nfc/#the-record-type-string
+enum NDEFRecordTypeCategory {
+  // Standardized well known types, including "empty", "text", "url",
+  // "smart-poster", "absolute-url", "mime", and "unknown", etc.
+  // https://w3c.github.io/web-nfc/#dfn-well-known-type-name
+  kStandardized,
+
+  // External types that follow the rule defined by
+  // https://w3c.github.io/web-nfc/#dfn-external-type-name.
+  kExternal,
+
+  // Local types that follow the rule defined by
+  // https://w3c.github.io/web-nfc/#dfn-local-type-name.
+  kLocal
 };
 
+// Used to notify errors when pushing/watching.
 struct NDEFError {
   NDEFErrorType error_type;
+
+  // Detailed information about how/why the error happened.
+  string error_message;
 };
 
 // https://w3c.github.io/web-nfc/#dom-ndefrecord
 struct NDEFRecord {
+  // The category |record_type| belongs to. This field is not exposed to JS, but
+  // is used to transfer information internally and make code more readable.
+  NDEFRecordTypeCategory category;
+
   // The type of NDEFRecord.
+  // https://w3c.github.io/web-nfc/#the-record-type-string
   string record_type;
 
   // Represents the IANA media type of the NDEFRecord data field.
@@ -55,72 +69,62 @@ struct NDEFRecord {
   // Payload of the NDEFRecord.
   array<uint8> data;
 
-  // |data| parsed as an NDEFMessage. This field may be set for some
-  // "smart-poster" or external type records. This field may be null even if
-  // |data| is valid.
+  // This field may be set for some "smart-poster", external, or local type
+  // records.
+  // On the writing direction (passed from inside Blink), if this field is
+  // non-null, |data| will be empty and the receiver is expected to make out the
+  // payload raw bytes from this field.
+  // On the reading direction (passed towards Blink), |data| always carries the
+  // payload raw bytes, this field is non-null only if |data| can be parsed as
+  // an NDEFMessage.
   NDEFMessage? payload_message;
 };
 
+// Mojo has a maximum size limit usually in megabytes for messages sent/received
+// via message pipes, possibly like 256M or 128M.
+//
+// On the reading direction, the NDEFMessage is read from an NFC tag which can
+// never have so large storage, so we'll never exceed the size limit above.
+//
+// On the writing direction, if the NDEFMessage input from users exceeds the
+// limit, Mojo will raise a crash for the sender process, which is specifically
+// the renderer process for our WebNFC impl.
 struct NDEFMessage {
   // The body of the NDEFMessage is a collection of NDEFRecord objects.
   array<NDEFRecord> data;
-
-  // Maximum size of NFC message that can be sent over IPC is 32KB.
-  const uint32 kMaxSize = 32768;
 };
 
-struct NDEFPushOptions {
-  // The target of the push operation.
-  NDEFPushTarget target;
-
-  // If the property is true, the push operation will suspend active watchers
-  // until its completion.
-  bool ignore_read;
+struct NDEFWriteOptions {
+  // Only the case of |overwrite| being |false| matters: the push operation will
+  // read the NFC tag to determine if it has NDEF records on it, and if yes, do
+  // not execute write.
+  bool overwrite;
 };
 
-struct NDEFScanOptions {
-  // Defines record id filtering constraint. Null means don't filter, empty
-  // string means must match on empty.
-  string? id;
-
-  // Defines record type filtering constraint.
-  string? record_type;
-
-  // Defines media type filtering constraint. Empty string means don't filter.
-  string media_type;
-};
-
+// Interface used by Web NFC to push data to NFC devices and get notified of
+// nearby NFC devices.
 interface NFC {
-  // NFCClient interface is used to notify |client| when NDEFMessage matches one
-  // or more pending watch operations.
+  // NFCClient interface is used to notify |client| when watching for nearby
+  // NFC devices.
   SetClient(pending_remote<NFCClient> client);
 
   // Pushes data to NFC device.
-  // NDEFPushOptions specify type of device where data should be pushed.
-  Push(NDEFMessage message, NDEFPushOptions? options) => (NDEFError? error);
+  // NDEFWriteOptions specify options of the pending push operation.
+  Push(NDEFMessage message, NDEFWriteOptions? options) => (NDEFError? error);
 
   // Cancels pending push request.
-  CancelPush(NDEFPushTarget target) => (NDEFError? error);
+  CancelPush();
 
-  // Starts watching for nearby NFC devices with data that matches
-  // NDEFScanOptions filtering criteria. |id| identifies each watch request on
-  // the current Mojo connection.
-  Watch(NDEFScanOptions options, uint32 id) => (NDEFError? error);
+  // Starts watching for nearby NFC devices. |id| identifies each watch request
+  // on the current Mojo connection.
+  Watch(uint32 id) => (NDEFError? error);
 
   // Cancels watch operation with provided id.
-  CancelWatch (uint32 id) => (NDEFError? error);
-
-  // Cancels all watch operations.
-  CancelAllWatches () => (NDEFError? error);
-
-  // Suspends all pending NFC operations. Could be used when web page
-  // visibility is lost.
-  SuspendNFCOperations();
-
-  // Resumes all suspended NFC operations.
-  ResumeNFCOperations();
+  CancelWatch(uint32 id);
 };
 
+// Interface that client of the NFC interface must implement to get notified of
+// nearby NFC devices.
 interface NFCClient {
   // Sends |message| to those readers that have registered |watch_ids| via
   // NFC.Watch(), i.e. |message| matches their filtering criteria.
@@ -131,5 +135,5 @@ interface NFCClient {
 
   // Sends |error| to all readers that are trying to read some data from the nfc
   // tag coming nearby.
-  OnError(NDEFErrorType error);
+  OnError(NDEFError error);
 };

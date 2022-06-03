@@ -1,5 +1,1 @@
-# Original (legacy) owner.
-mcasas@chromium.org
-
-# COMPONENT: Blink>ImageCapture
-# TEAM: chromium-dev@chromium.org
+file://third_party/blink/renderer/modules/imagecapture/OWNERS

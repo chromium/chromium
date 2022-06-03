@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/event_store.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
@@ -25,18 +24,22 @@ class PersistentEventStore : public EventStore {
  public:
   // Builds a PersistentEventStore backed by the ProtoDatabase |db|.
   PersistentEventStore(std::unique_ptr<leveldb_proto::ProtoDatabase<Event>> db);
+
+  PersistentEventStore(const PersistentEventStore&) = delete;
+  PersistentEventStore& operator=(const PersistentEventStore&) = delete;
+
   ~PersistentEventStore() override;
 
   // EventStore implementation.
-  void Load(const OnLoadedCallback& callback) override;
+  void Load(OnLoadedCallback callback) override;
   bool IsReady() const override;
   void WriteEvent(const Event& event) override;
   void DeleteEvent(const std::string& event_name) override;
 
  private:
-  void OnInitComplete(const OnLoadedCallback& callback,
+  void OnInitComplete(OnLoadedCallback callback,
                       leveldb_proto::Enums::InitStatus status);
-  void OnLoadComplete(const OnLoadedCallback& callback,
+  void OnLoadComplete(OnLoadedCallback callback,
                       bool success,
                       std::unique_ptr<std::vector<Event>> entries);
 
@@ -49,8 +52,6 @@ class PersistentEventStore : public EventStore {
   bool ready_;
 
   base::WeakPtrFactory<PersistentEventStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentEventStore);
 };
 
 }  // namespace feature_engagement

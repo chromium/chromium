@@ -20,12 +20,6 @@ import java.util.List;
 public interface TabPersistencePolicy {
 
     /**
-     * The prefix of the name of the file where the state is saved.  {@link #getStateFileName()}
-     * and {@link #getStateToBeMergedFileName()} must begin with this prefix.
-     */
-    String SAVED_STATE_FILE_PREFIX = "tab_state";
-
-    /**
      * @return File representing the directory that is used to store Tab state
      *         information.
      */
@@ -95,6 +89,14 @@ public interface TabPersistencePolicy {
     //                files to be deleted.  It should either handle all deletions internally or not
     //                do anything but collect files to be deleted.
     void cleanupUnusedFiles(Callback<List<String>> filesToDelete);
+
+    /**
+     * Clean up the persistent state for a given instance.
+     * @param index ID of an instance whose state will be deleted.
+     * @param filesToDelete Callback that is triggered with the filenames to delete.  These files
+     *                      need to reside in {@link #getOrCreateStateDirectory()}.
+     */
+    default void cleanupInstanceState(int index, Callback<List<String>> filesToDelete) {}
 
     /**
      * Sets the {@link TabContentManager} to use.

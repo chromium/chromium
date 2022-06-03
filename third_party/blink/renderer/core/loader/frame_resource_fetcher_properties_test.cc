@@ -7,7 +7,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/loader/frame_or_imported_document.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
@@ -18,9 +17,8 @@ class FrameResourceFetcherPropertiesTest : public testing::Test {
   FrameResourceFetcherPropertiesTest()
       : dummy_page_holder_(std::make_unique<DummyPageHolder>(IntSize(1, 1))),
         properties_(MakeGarbageCollected<FrameResourceFetcherProperties>(
-            *MakeGarbageCollected<FrameOrImportedDocument>(
-                *dummy_page_holder_->GetDocument().Loader(),
-                dummy_page_holder_->GetDocument()))) {}
+            *dummy_page_holder_->GetDocument().Loader(),
+            dummy_page_holder_->GetDocument())) {}
 
  protected:
   const std::unique_ptr<DummyPageHolder> dummy_page_holder_;

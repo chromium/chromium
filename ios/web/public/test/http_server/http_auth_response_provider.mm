@@ -36,8 +36,9 @@ void HttpAuthResponseProvider::GetResponseHeadersAndBody(
     *headers = GetDefaultResponseHeaders();
   } else {
     *headers = GetResponseHeaders("", net::HTTP_UNAUTHORIZED);
-    (*headers)->AddHeader(base::StringPrintf(
-        "WWW-Authenticate: Basic realm=\"%s\"", realm_.c_str()));
+    (*headers)->AddHeader(
+        "WWW-Authenticate",
+        base::StringPrintf("Basic realm=\"%s\"", realm_.c_str()));
   }
 }
 

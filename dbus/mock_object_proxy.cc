@@ -36,6 +36,11 @@ void MockObjectProxy::CallMethodWithErrorCallback(
                                 &error_callback);
 }
 
+void MockObjectProxy::WaitForServiceToBeAvailable(
+    WaitForServiceToBeAvailableCallback callback) {
+  DoWaitForServiceToBeAvailable(&callback);
+}
+
 void MockObjectProxy::ConnectToSignal(
     const std::string& interface_name,
     const std::string& signal_name,

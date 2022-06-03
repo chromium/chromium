@@ -4,6 +4,7 @@
 
 #include "cc/paint/paint_filter.h"
 
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/test/skia_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,9 +21,10 @@ class MockImageProvider : public ImageProvider {
   ScopedResult GetRasterContent(const DrawImage& draw_image) override {
     DCHECK(!draw_image.paint_image().IsPaintWorklet());
     image_count_++;
-    return ScopedResult(DecodedDrawImage(
-        CreateBitmapImage(gfx::Size(10, 10)).GetSkImage(), SkSize::MakeEmpty(),
-        SkSize::Make(1.0f, 1.0f), draw_image.filter_quality(), true));
+    return ScopedResult(
+        DecodedDrawImage(CreateBitmapImage(gfx::Size(10, 10)).GetSwSkImage(),
+                         nullptr, SkSize::MakeEmpty(), SkSize::Make(1.0f, 1.0f),
+                         draw_image.filter_quality(), true));
   }
   int image_count_ = 0;
 };
@@ -37,13 +39,13 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
 
   auto image_filter = sk_make_sp<ImagePaintFilter>(
       image, SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
-      kNone_SkFilterQuality);
+      PaintFlags::FilterQuality::kNone);
   auto record = sk_make_sp<PaintOpBuffer>();
-  record->push<DrawImageOp>(image, 0.f, 0.f, nullptr);
+  record->push<DrawImageOp>(image, 0.f, 0.f);
   auto record_filter =
       sk_make_sp<RecordPaintFilter>(record, SkRect::MakeWH(100.f, 100.f));
 
-  SkImageFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
+  PaintFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
 
   switch (filter_type) {
     case PaintFilter::Type::kNullFilter:
@@ -53,13 +55,12 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<ColorFilterPaintFilter>(SkLumaColorFilter::Make(),
                                                 image_filter, &crop_rect);
     case PaintFilter::Type::kBlur:
-      return sk_make_sp<BlurPaintFilter>(0.1f, 0.2f,
-                                         SkBlurImageFilter::kClamp_TileMode,
+      return sk_make_sp<BlurPaintFilter>(0.1f, 0.2f, SkTileMode::kClamp,
                                          record_filter, &crop_rect);
     case PaintFilter::Type::kDropShadow:
       return sk_make_sp<DropShadowPaintFilter>(
           0.1, 0.2f, 0.3f, 0.4f, SK_ColorWHITE,
-          SkDropShadowImageFilter::kDrawShadowOnly_ShadowMode, image_filter,
+          DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, image_filter,
           &crop_rect);
     case PaintFilter::Type::kMagnifier:
       return sk_make_sp<MagnifierPaintFilter>(SkRect::MakeWH(100.f, 100.f),
@@ -81,14 +82,12 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       SkScalar scalars[9] = {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f};
       return sk_make_sp<MatrixConvolutionPaintFilter>(
           SkISize::Make(3, 3), scalars, 0.1f, 0.2f, SkIPoint::Make(2, 2),
-          SkMatrixConvolutionImageFilter::TileMode::kRepeat_TileMode, false,
-          image_filter, &crop_rect);
+          SkTileMode::kRepeat, false, image_filter, &crop_rect);
     }
     case PaintFilter::Type::kDisplacementMapEffect:
       return sk_make_sp<DisplacementMapEffectPaintFilter>(
-          SkDisplacementMapEffect::ChannelSelectorType::kR_ChannelSelectorType,
-          SkDisplacementMapEffect::ChannelSelectorType::kR_ChannelSelectorType,
-          0.1f, image_filter, record_filter, &crop_rect);
+          SkColorChannel::kR, SkColorChannel::kR, 0.1f, image_filter,
+          record_filter, &crop_rect);
     case PaintFilter::Type::kImage:
       return image_filter;
     case PaintFilter::Type::kPaintRecord:
@@ -112,15 +111,16 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<TurbulencePaintFilter>(
           TurbulencePaintFilter::TurbulenceType::kTurbulence, 0.1f, 0.2f, 2,
           0.3f, nullptr, &crop_rect);
-    case PaintFilter::Type::kPaintFlags: {
-      PaintFlags flags;
-      flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
-                                             SkTileMode::kClamp, nullptr));
-      return sk_make_sp<PaintFlagsPaintFilter>(flags, &crop_rect);
+    case PaintFilter::Type::kShader: {
+      return sk_make_sp<ShaderPaintFilter>(
+          PaintShader::MakeImage(image, SkTileMode::kClamp, SkTileMode::kClamp,
+                                 nullptr),
+          /*alpha=*/255, PaintFlags::FilterQuality::kNone,
+          SkImageFilters::Dither::kNo, &crop_rect);
     }
     case PaintFilter::Type::kMatrix:
-      return sk_make_sp<MatrixPaintFilter>(SkMatrix::I(), kNone_SkFilterQuality,
-                                           record_filter);
+      return sk_make_sp<MatrixPaintFilter>(
+          SkMatrix::I(), PaintFlags::FilterQuality::kNone, record_filter);
     case PaintFilter::Type::kLightingDistant:
       return sk_make_sp<LightingDistantPaintFilter>(
           PaintFilter::LightingType::kDiffuse, SkPoint3::Make(0.1f, 0.2f, 0.3f),
@@ -134,6 +134,9 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
           PaintFilter::LightingType::kDiffuse, SkPoint3::Make(0.1f, 0.2f, 0.3f),
           SkPoint3::Make(0.4f, 0.5f, 0.6f), 0.1f, 0.2f, SK_ColorWHITE, 0.4f,
           0.5f, 0.6f, image_filter, &crop_rect);
+    case PaintFilter::Type::kStretch:
+      return sk_make_sp<StretchPaintFilter>(0.1f, 0.2f, 100.f, 200.f,
+                                            image_filter, &crop_rect);
   }
   NOTREACHED();
   return nullptr;
@@ -152,7 +155,7 @@ INSTANTIATE_TEST_SUITE_P(
     P,
     PaintFilterTest,
     ::testing::Range(static_cast<uint8_t>(PaintFilter::Type::kColorFilter),
-                     static_cast<uint8_t>(PaintFilter::Type::kMaxFilterType)));
+                     static_cast<uint8_t>(PaintFilter::Type::kMaxValue)));
 
 TEST_P(PaintFilterTest, HasDiscardableImagesYes) {
   // TurbulencePaintFilter can not embed images.

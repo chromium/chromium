@@ -21,11 +21,14 @@ public class DnsStatus {
 
     private final String mPrivateDnsServerName;
 
-    public DnsStatus(
-            List<InetAddress> dnsServers, boolean privateDnsActive, String privateDnsServerName) {
+    private final String mSearchDomains;
+
+    public DnsStatus(List<InetAddress> dnsServers, boolean privateDnsActive,
+            String privateDnsServerName, String searchDomains) {
         mDnsServers = dnsServers;
         mPrivateDnsActive = privateDnsActive;
         mPrivateDnsServerName = (privateDnsServerName != null) ? privateDnsServerName : "";
+        mSearchDomains = (searchDomains != null) ? searchDomains : "";
     }
 
     @CalledByNative
@@ -45,5 +48,10 @@ public class DnsStatus {
     @CalledByNative
     public String getPrivateDnsServerName() {
         return mPrivateDnsServerName;
+    }
+
+    @CalledByNative
+    public String getSearchDomains() {
+        return mSearchDomains;
     }
 }

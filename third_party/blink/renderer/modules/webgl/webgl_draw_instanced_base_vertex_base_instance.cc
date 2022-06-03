@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_draw_instanced_base_vertex_base_instance.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 
 namespace blink {
 
@@ -40,13 +41,6 @@ WebGLDrawInstancedBaseVertexBaseInstance::
 
 WebGLExtensionName WebGLDrawInstancedBaseVertexBaseInstance::GetName() const {
   return kWebGLDrawInstancedBaseVertexBaseInstanceName;
-}
-
-WebGLDrawInstancedBaseVertexBaseInstance*
-WebGLDrawInstancedBaseVertexBaseInstance::Create(
-    WebGLRenderingContextBase* context) {
-  return MakeGarbageCollected<WebGLDrawInstancedBaseVertexBaseInstance>(
-      context);
 }
 
 // static
@@ -72,6 +66,9 @@ void WebGLDrawInstancedBaseVertexBaseInstance::
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()->ContextGL()->DrawArraysInstancedBaseInstanceANGLE(
       mode, first, count, instance_count, baseinstance);
 }
@@ -87,6 +84,9 @@ void WebGLDrawInstancedBaseVertexBaseInstance::
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost())
     return;
+
+  scoped.Context()->RecordUKMCanvasDrawnToAtFirstDrawCall();
+
   scoped.Context()
       ->ContextGL()
       ->DrawElementsInstancedBaseVertexBaseInstanceANGLE(

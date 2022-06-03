@@ -16,6 +16,10 @@ namespace remoting {
 class VideoEncoderVerbatim : public VideoEncoder {
  public:
   VideoEncoderVerbatim();
+
+  VideoEncoderVerbatim(const VideoEncoderVerbatim&) = delete;
+  VideoEncoderVerbatim& operator=(const VideoEncoderVerbatim&) = delete;
+
   ~VideoEncoderVerbatim() override;
 
   // VideoEncoder interface.
@@ -24,8 +28,6 @@ class VideoEncoderVerbatim : public VideoEncoder {
 
  private:
   VideoEncoderHelper helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderVerbatim);
 };
 
 }  // namespace remoting

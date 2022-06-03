@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<head>
+<title>Test vibrate with user gesture in same-origin iframe</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+function startTest() {
+  if (window.eventSender) {
+    // Simulates a user click for vibrate to be allowed.
+    var element = document.getElementById("test");
+    eventSender.mouseMoveTo(element.offsetLeft, element.offsetTop);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+  }
+}
+
+window.onmessage = msg => {
+  if (msg.data === 'Start') {
+    startTest();
+  }
+}
+
+function testVibrate() {
+  assert_true(navigator.vibrate(200));
+}
+</script>
+</head>
+<body>
+<button id="test" onclick="testVibrate();">Click to vibrate</button>
+</body>
+</html>
+

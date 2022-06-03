@@ -23,11 +23,13 @@
 #include <cassert>
 #include <memory>
 
+#include "absl/base/attributes.h"
 #include "absl/base/call_once.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/spinlock.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace base_internal {
 
 #if ABSL_THREAD_IDENTITY_MODE != ABSL_THREAD_IDENTITY_MODE_USE_CPP11
@@ -52,10 +54,17 @@ void AllocateThreadIdentityKey(ThreadIdentityReclaimerFunction reclaimer) {
 // exist within a process (via dlopen() or similar), references to
 // thread_identity_ptr from each instance of the code will refer to
 // *different* instances of this ptr.
-#ifdef __GNUC__
+// Apple platforms have the visibility attribute, but issue a compile warning
+// that protected visibility is unsupported.
+#if ABSL_HAVE_ATTRIBUTE(visibility) && !defined(__APPLE__)
 __attribute__((visibility("protected")))
-#endif  // __GNUC__
-  ABSL_PER_THREAD_TLS_KEYWORD ThreadIdentity* thread_identity_ptr;
+#endif  // ABSL_HAVE_ATTRIBUTE(visibility) && !defined(__APPLE__)
+#if ABSL_PER_THREAD_TLS
+// Prefer __thread to thread_local as benchmarks indicate it is a bit faster.
+ABSL_PER_THREAD_TLS_KEYWORD ThreadIdentity* thread_identity_ptr = nullptr;
+#elif defined(ABSL_HAVE_THREAD_LOCAL)
+thread_local ThreadIdentity* thread_identity_ptr = nullptr;
+#endif  // ABSL_PER_THREAD_TLS
 #endif  // TLS or CPP11
 
 void SetCurrentThreadIdentity(
@@ -69,8 +78,8 @@ void SetCurrentThreadIdentity(
   absl::call_once(init_thread_identity_key_once, AllocateThreadIdentityKey,
                   reclaimer);
 
-#ifdef __EMSCRIPTEN__
-  // Emscripten PThread implementation does not support signals.
+#if defined(__EMSCRIPTEN__) || defined(__MINGW32__)
+  // Emscripten and MinGW pthread implementations does not support signals.
   // See https://kripken.github.io/emscripten-site/docs/porting/pthreads.html
   // for more information.
   pthread_setspecific(thread_identity_pthread_key,
@@ -89,7 +98,7 @@ void SetCurrentThreadIdentity(
   pthread_setspecific(thread_identity_pthread_key,
                       reinterpret_cast<void*>(identity));
   pthread_sigmask(SIG_SETMASK, &curr_signals, nullptr);
-#endif  // !__EMSCRIPTEN__
+#endif  // !__EMSCRIPTEN__ && !__MINGW32__
 
 #elif ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_TLS
   // NOTE: Not async-safe.  But can be open-coded.
@@ -106,6 +115,18 @@ void SetCurrentThreadIdentity(
 #error Unimplemented ABSL_THREAD_IDENTITY_MODE
 #endif
 }
+
+#if ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_TLS || \
+    ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_CPP11
+
+// Please see the comment on `CurrentThreadIdentityIfPresent` in
+// thread_identity.h. When we cannot expose thread_local variables in
+// headers, we opt for the correct-but-slower option of not inlining this
+// function.
+#ifndef ABSL_INTERNAL_INLINE_CURRENT_THREAD_IDENTITY_IF_PRESENT
+ThreadIdentity* CurrentThreadIdentityIfPresent() { return thread_identity_ptr; }
+#endif
+#endif
 
 void ClearCurrentThreadIdentity() {
 #if ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_TLS || \
@@ -130,4 +151,5 @@ ThreadIdentity* CurrentThreadIdentityIfPresent() {
 #endif
 
 }  // namespace base_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

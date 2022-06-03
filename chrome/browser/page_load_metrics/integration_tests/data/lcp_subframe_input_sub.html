@@ -1,0 +1,36 @@
+<div><img id="img1"></div>
+<div id="container"></div>
+<script>
+  var last_url = null;
+  const test_step_1 = async () => {
+    // Workaround for crbug.com/1149053: wait for IntersectionObserver to say
+    // that we are visible before loading the <img>.
+    await new Promise(resolve => {
+      new IntersectionObserver(list => {
+        if (list.some(e => e.isIntersecting))
+          resolve();
+      }).observe(container);
+    });
+    img1.src = "images/green-16x16.png";
+    return new Promise(resolve => {
+      new PerformanceObserver(list => {
+        resolve(last_url = list.getEntries()[0].url.match(/images\/(.*)/)[1]);
+      }).observe({type: 'largest-contentful-paint', buffered: true});
+    });
+  };
+  const test_step_2 = async () => {
+    let img = document.createElement("img");
+    let img_load = new Promise(resolve => {
+      new PerformanceObserver(list => {
+        if (list.getEntries().some(e => e.identifier == "blue"))
+          resolve();
+      }).observe({type: 'element'});
+      img.setAttribute("elementtiming", "blue");
+    });
+    container.appendChild(img);
+    img.src = "images/blue96x96.png";
+    await img_load;
+    await new Promise(resolve => { requestAnimationFrame(resolve); });
+    return last_url;
+  };
+</script>

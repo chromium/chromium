@@ -22,14 +22,15 @@ namespace cc {
 // image) and that the design complication for this edge case isn't worth
 // it.
 
-class CC_PAINT_EXPORT ServiceShaderTransferCacheEntry
+class CC_PAINT_EXPORT ServiceShaderTransferCacheEntry final
     : public ServiceTransferCacheEntryBase<TransferCacheEntryType::kShader> {
  public:
   explicit ServiceShaderTransferCacheEntry(sk_sp<PaintShader> shader,
                                            size_t size);
   ~ServiceShaderTransferCacheEntry() final;
   size_t CachedSize() const final;
-  bool Deserialize(GrContext* context, base::span<const uint8_t> data) final;
+  bool Deserialize(GrDirectContext* context,
+                   base::span<const uint8_t> data) final;
 
   sk_sp<PaintShader> shader() const { return shader_; }
 

@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS MediaRecorder will stop recording and fire a stop event when all tracks are ended
+PASS MediaRecorder will stop recording and fire a stop event when stop() is called
+FAIL MediaRecorder will not fire an exception when stopped after creation promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'stop' on 'MediaRecorder': The MediaRecorder's state is 'inactive'."
+FAIL MediaRecorder will not fire an exception when stopped after having just been stopped promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'stop' on 'MediaRecorder': The MediaRecorder's state is 'inactive'."
+FAIL MediaRecorder will not fire an exception when stopped after having just been spontaneously stopped promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'stop' on 'MediaRecorder': The MediaRecorder's state is 'inactive'."
+FAIL MediaRecorder will fire start event even if stopped synchronously promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getUserMedia' of undefined"
+FAIL MediaRecorder will fire start event even if a track is removed synchronously promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getUserMedia' of undefined"
+Harness: the test ran to completion.
+

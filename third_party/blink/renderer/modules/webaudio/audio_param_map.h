@@ -31,7 +31,7 @@ class AudioParamMap final : public ScriptWrappable,
 
   const MapType& GetHashMap() const { return parameter_map_; }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(parameter_map_);
     ScriptWrappable::Trace(visitor);
   }
@@ -50,4 +50,4 @@ class AudioParamMap final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_MAP_H_

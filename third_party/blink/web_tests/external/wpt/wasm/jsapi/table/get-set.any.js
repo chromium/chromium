@@ -1,4 +1,4 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
 // META: script=/wasm/jsapi/wasm-module-builder.js
 // META: script=assertions.js
 
@@ -24,7 +24,7 @@ setup(() => {
 test(() => {
   const argument = { "element": "anyfunc", "initial": 5 };
   const table = new WebAssembly.Table(argument);
-  assert_throws(new TypeError(), () => table.get());
+  assert_throws_js(TypeError, () => table.get());
 }, "Missing arguments: get");
 
 test(t => {
@@ -48,15 +48,14 @@ test(t => {
   const fn = WebAssembly.Table.prototype.get;
 
   for (const thisValue of thisValues) {
-    assert_throws(new TypeError(), () => fn.call(thisValue, argument), `this=${format_value(thisValue)}`);
+    assert_throws_js(TypeError, () => fn.call(thisValue, argument), `this=${format_value(thisValue)}`);
   }
 }, "Branding: get");
 
 test(() => {
   const argument = { "element": "anyfunc", "initial": 5 };
   const table = new WebAssembly.Table(argument);
-  assert_throws(new TypeError(), () => table.set());
-  assert_throws(new TypeError(), () => table.set(0));
+  assert_throws_js(TypeError, () => table.set());
 }, "Missing arguments: set");
 
 test(t => {
@@ -80,7 +79,7 @@ test(t => {
   const fn = WebAssembly.Table.prototype.set;
 
   for (const thisValue of thisValues) {
-    assert_throws(new TypeError(), () => fn.call(thisValue, argument, null), `this=${format_value(thisValue)}`);
+    assert_throws_js(TypeError, () => fn.call(thisValue, argument, null), `this=${format_value(thisValue)}`);
   }
 }, "Branding: set");
 
@@ -128,8 +127,8 @@ test(() => {
 
   // -1 is the wrong type hence the type check on entry gets this
   // before the range check does.
-  assert_throws(new TypeError(), () => table.set(-1, fn));
-  assert_throws(new RangeError(), () => table.set(5, fn));
+  assert_throws_js(TypeError, () => table.set(-1, fn));
+  assert_throws_js(RangeError, () => table.set(5, fn));
   assert_equal_to_array(table, [null, null, null, null, null]);
 }, "Setting out-of-bounds");
 
@@ -149,8 +148,8 @@ test(() => {
     {},
   ];
   for (const argument of invalidArguments) {
-    assert_throws(new TypeError(), () => table.set(0, argument),
-                  `set(${format_value(argument)})`);
+    assert_throws_js(TypeError, () => table.set(0, argument),
+                     `set(${format_value(argument)})`);
   }
   assert_equal_to_array(table, [null]);
 }, "Setting non-function");
@@ -161,7 +160,7 @@ test(() => {
   assert_equal_to_array(table, [null]);
 
   const fn = function() {};
-  assert_throws(new TypeError(), () => table.set(0, fn));
+  assert_throws_js(TypeError, () => table.set(0, fn));
   assert_equal_to_array(table, [null]);
 }, "Setting non-wasm function");
 
@@ -171,7 +170,7 @@ test(() => {
   assert_equal_to_array(table, [null]);
 
   const fn = () => {};
-  assert_throws(new TypeError(), () => table.set(0, fn));
+  assert_throws_js(TypeError, () => table.set(0, fn));
   assert_equal_to_array(table, [null]);
 }, "Setting non-wasm arrow function");
 
@@ -191,13 +190,13 @@ for (const value of outOfRangeValues) {
   test(() => {
     const argument = { "element": "anyfunc", "initial": 1 };
     const table = new WebAssembly.Table(argument);
-    assert_throws(new TypeError(), () => table.get(value));
+    assert_throws_js(TypeError, () => table.get(value));
   }, `Getting out-of-range argument: ${format_value(value)}`);
 
   test(() => {
     const argument = { "element": "anyfunc", "initial": 1 };
     const table = new WebAssembly.Table(argument);
-    assert_throws(new TypeError(), () => table.set(value, null));
+    assert_throws_js(TypeError, () => table.set(value, null));
   }, `Setting out-of-range argument: ${format_value(value)}`);
 }
 
@@ -211,7 +210,7 @@ test(() => {
       return 0;
     },
   };
-  assert_throws(new TypeError(), () => table.set(value, {}));
+  assert_throws_js(TypeError, () => table.set(value, {}));
   assert_equals(called, 1);
 }, "Order of argument conversion");
 
@@ -223,3 +222,42 @@ test(() => {
   assert_equals(table.get(0, {}), null);
   assert_equals(table.set(0, fn, {}), undefined);
 }, "Stray argument");
+
+test(() => {
+  const builder = new WasmModuleBuilder();
+  builder
+    .addFunction("fn", kSig_v_v)
+    .addBody([])
+    .exportFunc();
+  const bin = builder.toBuffer();
+  const fn = new WebAssembly.Instance(new WebAssembly.Module(bin)).exports.fn;
+
+  const argument = { "element": "anyfunc", "initial": 1 };
+  const table = new WebAssembly.Table(argument, fn);
+
+  assert_equals(table.get(0), fn);
+  table.set(0);
+  assert_equals(table.get(0), null);
+
+  table.set(0, fn);
+  assert_equals(table.get(0), fn);
+
+  assert_throws_js(TypeError, () => table.set(0, {}));
+  assert_throws_js(TypeError, () => table.set(0, 37));
+}, "Arguments for anyfunc table set");
+
+test(() => {
+  const testObject = {};
+  const argument = { "element": "externref", "initial": 1 };
+  const table = new WebAssembly.Table(argument, testObject);
+
+  assert_equals(table.get(0), testObject);
+  table.set(0);
+  assert_equals(table.get(0), undefined);
+
+  table.set(0, testObject);
+  assert_equals(table.get(0), testObject);
+
+  table.set(0, 37);
+  assert_equals(table.get(0), 37);
+}, "Arguments for externref table set");

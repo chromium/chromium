@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromecast/ui/media_overlay.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace chromecast {
 
@@ -22,12 +23,15 @@ class CastWindowManager;
 // can therefore be written in a platform-agnostic way.
 class AuraComponents {
  public:
-  explicit AuraComponents(CastWindowManager* cast_window_manager);
-  ~AuraComponents();
+  static std::unique_ptr<AuraComponents> Create(
+      CastWindowManager* cast_window_manager);
+
+  AuraComponents();
+  virtual ~AuraComponents();
 
   MediaOverlay* media_overlay() const { return media_overlay_.get(); }
 
- private:
+ protected:
   std::unique_ptr<MediaOverlay> media_overlay_;
 };
 

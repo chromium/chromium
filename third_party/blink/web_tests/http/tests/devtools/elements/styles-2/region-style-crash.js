@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that webkit css region styling can be parsed correctly. Test passes if it doesn't crash.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -25,8 +25,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('p1', dumpAllStyles);
 
-  function dumpAllStyles() {
-    ElementsTestRunner.dumpSelectedElementStyles();
+  async function dumpAllStyles() {
+    await ElementsTestRunner.dumpSelectedElementStyles();
     TestRunner.completeTest();
   }
 })();

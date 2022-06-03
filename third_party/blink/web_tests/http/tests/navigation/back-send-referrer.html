@@ -6,7 +6,7 @@
 
     window.onload = function() {
         setTimeout(function() {
-            window.name = "0";
+            sessionStorage.setItem("name", "0");
             window.location = "resources/back-send-referrer-helper.php"
         }, 0);
     }

@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("payment_app_proto") {
-  sources = [
-    "payment_app.proto",
-  ]
+  sources = [ "payment_app.proto" ]
 }

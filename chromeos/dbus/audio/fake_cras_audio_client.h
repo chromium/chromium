@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 
 namespace chromeos {
@@ -19,10 +19,19 @@ namespace chromeos {
 class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
     : public CrasAudioClient {
  public:
+  using ClientTypeToInputStreamCount = base::flat_map<std::string, uint32_t>;
+
   FakeCrasAudioClient();
+
+  FakeCrasAudioClient(const FakeCrasAudioClient&) = delete;
+  FakeCrasAudioClient& operator=(const FakeCrasAudioClient&) = delete;
+
   ~FakeCrasAudioClient() override;
 
   static FakeCrasAudioClient* Get();
+
+  void SetNoiseCancellationSupported(bool noise_cancellation_supported);
+  uint32_t GetNoiseCancellationEnabledCount();
 
   // CrasAudioClient overrides:
   void AddObserver(Observer* observer) override;
@@ -32,25 +41,44 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void GetDefaultOutputBufferSize(DBusMethodCallback<int> callback) override;
   void GetSystemAecSupported(DBusMethodCallback<bool> callback) override;
   void GetSystemAecGroupId(DBusMethodCallback<int32_t> callback) override;
+  void GetSystemNsSupported(DBusMethodCallback<bool> callback) override;
+  void GetSystemAgcSupported(DBusMethodCallback<bool> callback) override;
   void GetNodes(DBusMethodCallback<AudioNodeList> callback) override;
   void GetNumberOfActiveOutputStreams(
       DBusMethodCallback<int> callback) override;
+  void GetNumberOfInputStreamsWithPermission(
+      DBusMethodCallback<ClientTypeToInputStreamCount>) override;
+  void GetDeprioritizeBtWbsMic(DBusMethodCallback<bool> callback) override;
   void SetOutputNodeVolume(uint64_t node_id, int32_t volume) override;
   void SetOutputUserMute(bool mute_on) override;
   void SetInputNodeGain(uint64_t node_id, int32_t gain) override;
   void SetInputMute(bool mute_on) override;
+  void SetNoiseCancellationEnabled(bool noise_cancellation_on) override;
+  void GetNoiseCancellationSupported(
+      DBusMethodCallback<bool> callback) override;
   void SetActiveOutputNode(uint64_t node_id) override;
   void SetActiveInputNode(uint64_t node_id) override;
   void SetHotwordModel(uint64_t node_id,
                        const std::string& hotword_model,
                        VoidDBusMethodCallback callback) override;
+  void SetFixA2dpPacketSize(bool enabled) override;
+  void SetFlossEnabled(bool enabled) override;
   void AddActiveInputNode(uint64_t node_id) override;
   void RemoveActiveInputNode(uint64_t node_id) override;
   void AddActiveOutputNode(uint64_t node_id) override;
   void RemoveActiveOutputNode(uint64_t node_id) override;
   void SwapLeftRight(uint64_t node_id, bool swap) override;
+  void SetDisplayRotation(uint64_t node_id,
+                          cras::DisplayRotation rotation) override;
   void SetGlobalOutputChannelRemix(int32_t channels,
                                    const std::vector<double>& mixer) override;
+  void SetPlayerPlaybackStatus(const std::string& playback_status) override;
+  void SetPlayerIdentity(const std::string& playback_identity) override;
+  void SetPlayerPosition(const int64_t& position) override;
+  void SetPlayerDuration(const int64_t& duration) override;
+  void SetPlayerMetadata(
+      const std::map<std::string, std::string>& metadata) override;
+  void ResendBluetoothBattery() override;
   void WaitForServiceToBeAvailable(
       WaitForServiceToBeAvailableCallback callback) override;
 
@@ -75,6 +103,14 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // Generates fake hotword signal for HotwordTriggered.
   void NotifyHotwordTriggeredForTesting(uint64_t tv_sec, uint64_t tv_nsec);
 
+  // Set a mock battery level for ResendBatteryLevel.
+  void SetBluetoothBattteryLevelForTesting(uint32_t level);
+
+  // Sets a mock mapping from client type to number of active input streams per
+  // the client type.
+  void SetActiveInputStreamsWithPermission(
+      const ClientTypeToInputStreamCount& input_streams);
+
   const AudioNodeList& node_list() const { return node_list_; }
   const uint64_t& active_input_node_id() const { return active_input_node_id_; }
   const uint64_t& active_output_node_id() const {
@@ -95,9 +131,14 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   // By default, immediately sends OutputNodeVolumeChange signal following the
   // SetOutputNodeVolume fake dbus call.
   bool notify_volume_change_with_delay_ = false;
-  base::ObserverList<Observer>::Unchecked observers_;
+  bool noise_cancellation_supported_ = false;
+  uint32_t battery_level_ = 0;
+  uint32_t noise_cancellation_enabled_counter_ = 0;
+  // Maps audio client type to the number of active input streams for clients
+  // with the type specified
+  ClientTypeToInputStreamCount active_input_streams_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeCrasAudioClient);
+  base::ObserverList<Observer>::Unchecked observers_;
 };
 
 }  // namespace chromeos

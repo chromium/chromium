@@ -6,10 +6,9 @@
 
 #include <iostream>
 
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "components/metrics/system_session_analyzer_win.h"
+#include "components/metrics/system_session_analyzer/system_session_analyzer_win.h"
 
 namespace {
 

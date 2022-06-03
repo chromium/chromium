@@ -13,7 +13,7 @@ BluetoothDevicesObserver::BluetoothDevicesObserver(
     const AdapterOrDeviceChangedCallback& device_changed_callback)
     : adapter_or_device_changed_callback_(device_changed_callback) {
   if (device::BluetoothAdapterFactory::IsBluetoothSupported()) {
-    device::BluetoothAdapterFactory::GetAdapter(
+    device::BluetoothAdapterFactory::Get()->GetAdapter(
         base::BindOnce(&BluetoothDevicesObserver::InitializeOnAdapterReady,
                        weak_factory_.GetWeakPtr()));
   } else {

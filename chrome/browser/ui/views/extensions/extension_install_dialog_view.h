@@ -7,40 +7,41 @@
 
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/uninstall_reason.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/link_listener.h"
+#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/view.h"
 
 class Profile;
 
-namespace content {
-class PageNavigator;
-}
-
-namespace views {
-class Link;
-}
-
 // Modal dialog that shows when the user attempts to install an extension. Also
 // shown if the extension is already installed but needs additional permissions.
 // Not a normal "bubble" despite being a subclass of BubbleDialogDelegateView.
-class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
-                                   public views::LinkListener {
+class ExtensionInstallDialogView
+    : public views::BubbleDialogDelegateView,
+      public extensions::ExtensionRegistryObserver {
  public:
+  METADATA_HEADER(ExtensionInstallDialogView);
+
   // The views::View::id of the ratings section in the dialog.
   static const int kRatingsViewId = 1;
 
   ExtensionInstallDialogView(
-      Profile* profile,
-      content::PageNavigator* navigator,
-      const ExtensionInstallPrompt::DoneCallback& done_callback,
+      std::unique_ptr<ExtensionInstallPromptShowParams> show_params,
+      ExtensionInstallPrompt::DoneCallback done_callback,
       std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt);
+  ExtensionInstallDialogView(const ExtensionInstallDialogView&) = delete;
+  ExtensionInstallDialogView& operator=(const ExtensionInstallDialogView&) =
+      delete;
   ~ExtensionInstallDialogView() override;
 
   // Returns the interior ScrollView of the dialog. This allows us to inspect
@@ -52,24 +53,32 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // Changes the widget size to accommodate the contents' preferred size.
   void ResizeWidget();
 
- private:
-  // views::BubbleDialogDelegate:
-  gfx::Size CalculatePreferredSize() const override;
+  // views::BubbleDialogDelegateView:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
-  bool Cancel() override;
-  bool Accept() override;
-  int GetDialogButtons() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  bool ShouldShowCloseButton() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
-  // views::WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() override;
-  base::string16 GetAccessibleWindowTitle() const override;
-  ui::ModalType GetModalType() const override;
+  ExtensionInstallPromptShowParams* GetShowParamsForTesting();
+  void ClickLinkForTesting();
 
-  // views::LinkListener:
-  void LinkClicked(views::Link* source, int event_flags) override;
+  bool IsJustificationFieldVisibleForTesting();
+
+ private:
+  // Forward-declaration.
+  class ExtensionJustificationView;
+
+  void CloseDialog();
+
+  // extensions::ExtensionRegistryObserver:
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override;
+  void OnShutdown(extensions::ExtensionRegistry* registry) override;
+
+  void LinkClicked();
+  void OnDialogCanceled();
+  void OnDialogAccepted();
 
   // Creates the contents area that contains permissions and other extension
   // info.
@@ -78,30 +87,25 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // Enables the install button and updates the dialog buttons.
   void EnableInstallButton();
 
-  bool is_external_install() const {
-    return prompt_->type() == ExtensionInstallPrompt::EXTERNAL_INSTALL_PROMPT;
-  }
-
   // Updates the histogram that holds installation accepted/aborted data.
   void UpdateInstallResultHistogram(bool accepted) const;
 
   Profile* profile_;
-  content::PageNavigator* navigator_;
+  std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
-  base::string16 title_;
+  std::u16string title_;
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // The scroll view containing all the details for the dialog (including all
   // collapsible/expandable sections).
   views::ScrollView* scroll_view_;
 
-  // Set to true once the user's selection has been received and the callback
-  // has been run.
-  bool handled_result_;
-
   // Used to record time between dialog creation and acceptance, cancellation,
   // or dismissal.
-  base::Optional<base::ElapsedTimer> install_result_timer_;
+  absl::optional<base::ElapsedTimer> install_result_timer_;
 
   // Used to delay the activation of the install button.
   base::OneShotTimer enable_install_timer_;
@@ -109,7 +113,12 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // Used to determine whether the install button should be enabled.
   bool install_button_enabled_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallDialogView);
+  // Checkbox used to indicate if permissions should be withheld on install.
+  views::Checkbox* withhold_permissions_checkbox_;
+
+  // The justification text field view where users enter their justification for
+  // requesting an extension.
+  ExtensionJustificationView* justification_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_

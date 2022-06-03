@@ -141,43 +141,20 @@ public class SessionDataHolder {
     }
 
     /**
-     * Checks whether the given referrer can be used as valid within the Activity launched by the
-     * given intent. For this to be true, the intent should be for a {@link CustomTabsSessionToken}
-     * that is the currently in focus custom tab and also the related client should have a verified
-     * relationship with the referrer origin. This can only be true for https:// origins.
+     * Checks whether the given referrer can be used as valid within the Activity launched with the
+     * given {@link CustomTabsSessionToken}. For this to be true the token should correspond to the
+     * currently in focus custom tab and also the related client should have a verified relationship
+     * with the referrer origin. This can only be true for https:// origins.
      *
-     * @param intent The intent that was used to launch the Activity in question.
+     * @param token The session token specified in the activity launch intent.
      * @param referrer The referrer url that is to be used.
      * @return Whether the given referrer is a valid first party url to the client that launched
      *         the activity.
      */
-    public boolean canActiveHandlerUseReferrer(Intent intent, Uri referrer) {
-        SessionHandler handler = getActiveHandlerForIntent(intent);
+    public boolean canActiveHandlerUseReferrer(
+            @Nullable CustomTabsSessionToken token, Uri referrer) {
+        SessionHandler handler = getActiveHandler(token);
         return handler != null && handler.canUseReferrer(referrer);
-    }
-
-    /**
-     * @return The url for the page displayed using the current {@link
-     * SessionHandler}.
-     *
-     * @deprecated This will be removed once downstream usages change.
-     */
-    @Deprecated
-    public String getCurrentUrlForActiveBrowserSession() {
-        if (mActiveSessionHandler == null) return null;
-        return mActiveSessionHandler.getCurrentUrl();
-    }
-
-    /**
-     * @return The pending url for the page about to be displayed using the current {@link
-     * SessionHandler}.
-     *
-     * @deprecated This will be removed once downstream usages change.
-     */
-    @Deprecated
-    public String getPendingUrlForActiveBrowserSession() {
-        if (mActiveSessionHandler == null) return null;
-        return mActiveSessionHandler.getPendingUrl();
     }
 
     private void ensureSessionCleanUpOnDisconnects() {

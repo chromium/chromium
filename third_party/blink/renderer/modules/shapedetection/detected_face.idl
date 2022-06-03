@@ -4,13 +4,8 @@
 
 // https://wicg.github.io/shape-detection-api/#face-detection-api
 
-[
-    Serializable,
-    Exposed=(Window,Worker),
-    SecureContext,
-    RuntimeEnabled=ShapeDetection
-] interface DetectedFace {
+dictionary DetectedFace {
     // TODO(xianglu): Implement any other fields. https://crbug.com/646083
-    [SameObject] readonly attribute DOMRectReadOnly boundingBox;
-    [SameObject, SaveSameObject] readonly attribute FrozenArray<Landmark> landmarks;
+    required DOMRectReadOnly boundingBox;
+    required FrozenArray<Landmark> landmarks;
 };

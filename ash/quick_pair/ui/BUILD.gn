@@ -1,0 +1,60 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+source_set("ui") {
+  output_name = "quick_pair_ui"
+
+  defines = [ "IS_QUICK_PAIR_UI_IMPL" ]
+
+  sources = [
+    "actions.cc",
+    "actions.h",
+    "fast_pair/fast_pair_notification_controller.cc",
+    "fast_pair/fast_pair_notification_controller.h",
+    "fast_pair/fast_pair_presenter.cc",
+    "fast_pair/fast_pair_presenter.h",
+    "ui_broker.h",
+    "ui_broker_impl.cc",
+    "ui_broker_impl.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp:cpp",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository",
+    "//ash/resources/vector_icons",
+    "//ash/strings",
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "actions.cc",
+    "actions.h",
+    "mock_ui_broker.cc",
+    "mock_ui_broker.h",
+    "ui_broker.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -15,17 +15,19 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sharing.SharingAdapter;
 import org.chromium.chrome.browser.sharing.SharingServiceProxy;
 import org.chromium.chrome.browser.sharing.SharingServiceProxy.DeviceInfo;
-import org.chromium.components.sync.AndroidSyncSettings;
+import org.chromium.chrome.browser.sync.AndroidSyncSettings;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.sync.protocol.SharingSpecificFields;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -78,7 +80,8 @@ public class SharedClipboardShareActivity
         if (!AndroidSyncSettings.get().isChromeSyncEnabled()) {
             chromeSettingsButton.setVisibility(View.VISIBLE);
             chromeSettingsButton.setOnClickListener(view -> {
-                SettingsLauncher.launchSettingsPage(ContextUtils.getApplicationContext(), null);
+                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                settingsLauncher.launchSettingsActivity(ContextUtils.getApplicationContext());
             });
         }
 
@@ -95,7 +98,7 @@ public class SharedClipboardShareActivity
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
-        mAdapter = new SharingAdapter(SharingSpecificFields.EnabledFeatures.SHARED_CLIPBOARD);
+        mAdapter = new SharingAdapter(SharingSpecificFields.EnabledFeatures.SHARED_CLIPBOARD_V2);
         if (!mAdapter.isEmpty()) {
             findViewById(R.id.device_picker_toolbar).setVisibility(View.VISIBLE);
             SharedClipboardMetrics.recordShowDeviceList();
@@ -122,14 +125,13 @@ public class SharedClipboardShareActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         DeviceInfo device = mAdapter.getItem(position);
-        String text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        String text = IntentUtils.safeGetStringExtra(getIntent(), Intent.EXTRA_TEXT);
 
         // Log metrics for device click and text size.
         SharedClipboardMetrics.recordDeviceClick(position);
-        SharedClipboardMetrics.recordTextSize(text.length());
+        SharedClipboardMetrics.recordTextSize(text != null ? text.length() : 0);
 
-        SharedClipboardMessageHandler.showSendingNotification(
-                device.guid, device.clientName, device.lastUpdatedTimestampMillis, text);
+        SharedClipboardMessageHandler.showSendingNotification(device.guid, device.clientName, text);
         finish();
     }
 }

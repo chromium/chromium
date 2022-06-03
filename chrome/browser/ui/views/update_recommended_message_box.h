@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_
 #define CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -19,26 +18,23 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
  public:
   static void Show(gfx::NativeWindow parent_window);
 
+  UpdateRecommendedMessageBox(const UpdateRecommendedMessageBox&) = delete;
+  UpdateRecommendedMessageBox& operator=(const UpdateRecommendedMessageBox&) =
+      delete;
+
  private:
   UpdateRecommendedMessageBox();
   ~UpdateRecommendedMessageBox() override;
 
-  // Overridden from views::DialogDelegate:
+  // views::DialogDelegate:
   bool Accept() override;
-
-  // Overridden from views::WidgetDelegate:
   bool ShouldShowWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
-  void DeleteDelegate() override;
-  ui::ModalType GetModalType() const override;
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
-  views::MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRecommendedMessageBox);
+  views::MessageBoxView* message_box_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_

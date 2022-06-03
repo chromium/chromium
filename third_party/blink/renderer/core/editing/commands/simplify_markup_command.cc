@@ -73,7 +73,7 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
 
       if (!current_node->GetLayoutObject() ||
           !current_node->GetLayoutObject()->IsLayoutInline() ||
-          ToLayoutInline(current_node->GetLayoutObject())
+          To<LayoutInline>(current_node->GetLayoutObject())
               ->AlwaysCreateLineBoxes())
         continue;
 
@@ -88,10 +88,11 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
         top_node_with_starting_style = current_node;
     }
     if (top_node_with_starting_style) {
-      for (Node& node : NodeTraversal::InclusiveAncestorsOf(*starting_node)) {
-        if (node == top_node_with_starting_style)
+      for (Node& ancestor_node :
+           NodeTraversal::InclusiveAncestorsOf(*starting_node)) {
+        if (ancestor_node == top_node_with_starting_style)
           break;
-        nodes_to_remove.push_back(static_cast<ContainerNode*>(&node));
+        nodes_to_remove.push_back(static_cast<ContainerNode*>(&ancestor_node));
       }
     }
   }
@@ -154,7 +155,7 @@ int SimplifyMarkupCommand::PruneSubsequentAncestorsToRemove(
   return past_last_node_to_remove - start_node_index - 1;
 }
 
-void SimplifyMarkupCommand::Trace(Visitor* visitor) {
+void SimplifyMarkupCommand::Trace(Visitor* visitor) const {
   visitor->Trace(first_node_);
   visitor->Trace(node_after_last_);
   CompositeEditCommand::Trace(visitor);

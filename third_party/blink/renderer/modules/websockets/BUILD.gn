@@ -26,4 +26,6 @@ blink_modules_sources("websockets") {
     "websocket_stream.cc",
     "websocket_stream.h",
   ]
+
+  deps = [ "//services/network/public/mojom:websocket_mojom" ]
 }

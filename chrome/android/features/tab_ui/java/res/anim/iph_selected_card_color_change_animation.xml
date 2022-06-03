@@ -6,8 +6,8 @@
     <objectAnimator
         android:propertyName="fillColor"
         android:duration="1000"
-        android:valueFrom="@color/default_icon_color_white"
-        android:valueTo="@color/default_icon_color_white"/>
+        android:valueFrom="@color/default_icon_color_light"
+        android:valueTo="@color/default_icon_color_light"/>
     <objectAnimator
         android:propertyName="fillColor"
         android:duration="300"
@@ -21,6 +21,6 @@
     <objectAnimator
         android:propertyName="fillColor"
         android:duration="300"
-        android:valueFrom="@color/default_icon_color_white"
-        android:valueTo="@color/default_icon_color_white"/>
+        android:valueFrom="@color/default_icon_color_light"
+        android:valueTo="@color/default_icon_color_light"/>
 </set>

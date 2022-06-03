@@ -18,6 +18,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
 testA.animate([{fontSize: 'large'}, {fontSize: '24px'}], 1000);
 testB.animate([{fontSize: '6rem'}, {fontSize: 'x-large'}], 1000);
 try {

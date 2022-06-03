@@ -65,12 +65,12 @@ void MediaControlsSharedHelpers::TransitionEventListener::Invoke(
 }
 
 void MediaControlsSharedHelpers::TransitionEventListener::Trace(
-    blink::Visitor* visitor) {
+    blink::Visitor* visitor) const {
   NativeEventListener::Trace(visitor);
   visitor->Trace(element_);
 }
 
-base::Optional<unsigned>
+absl::optional<unsigned>
 MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
     HTMLMediaElement& media_element) {
   double current_time = media_element.currentTime();
@@ -81,7 +81,7 @@ MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
 
   if (std::isnan(duration) || std::isinf(duration) || !duration ||
       std::isnan(current_time)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Calculate the size of the after segment (i.e. what has been buffered).
@@ -102,7 +102,7 @@ MediaControlsSharedHelpers::GetCurrentBufferedTimeRange(
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 String MediaControlsSharedHelpers::FormatTime(double time) {
@@ -152,7 +152,8 @@ bool MediaControlsSharedHelpers::ShouldShowFullscreenButton(
   if (!Fullscreen::FullscreenEnabled(media_element.GetDocument()))
     return false;
 
-  if (media_element.ControlsListInternal()->ShouldHideFullscreen()) {
+  if (media_element.ControlsListInternal()->ShouldHideFullscreen() &&
+      !media_element.UserWantsControlsVisible()) {
     UseCounter::Count(media_element.GetDocument(),
                       WebFeature::kHTMLMediaElementControlsListNoFullscreen);
     return false;

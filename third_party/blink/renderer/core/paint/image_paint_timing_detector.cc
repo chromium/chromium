@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/image_paint_timing_detector.h"
 
+#include "base/feature_list.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -27,12 +32,12 @@ namespace {
 // As the image do not have a lot of content, we down scale |visual_size| by the
 // ratio of |intrinsic_image_size|/|displayed_image_size| = 1/10000.
 //
-// * |visual_size| referes to the size of the |displayed_image_size| after
+// * |visual_size| refers to the size of the |displayed_image_size| after
 // clipping and transforming. The size is in the main-frame's coordinate.
-// * |displayed_image_size| refers to the paint size in the image object's
-// coordinate.
 // * |intrinsic_image_size| refers to the the image object's original size
 // before scaling. The size is in the image object's coordinate.
+// * |displayed_image_size| refers to the paint size in the image object's
+// coordinate.
 uint64_t DownScaleIfIntrinsicSizeIsSmaller(
     uint64_t visual_size,
     const uint64_t& intrinsic_image_size,
@@ -46,6 +51,11 @@ uint64_t DownScaleIfIntrinsicSizeIsSmaller(
            displayed_image_size;
   }
   return visual_size;
+}
+
+bool ShouldReportAnimatedImages() {
+  return (RuntimeEnabledFeatures::LCPAnimatedImagesWebExposedEnabled() ||
+          base::FeatureList::IsEnabled(features::kLCPAnimatedImagesReporting));
 }
 
 }  // namespace
@@ -64,7 +74,9 @@ static bool LargeImageFirst(const base::WeakPtr<ImageRecord>& a,
 ImagePaintTimingDetector::ImagePaintTimingDetector(
     LocalFrameView* frame_view,
     PaintTimingCallbackManager* callback_manager)
-    : records_manager_(frame_view),
+    : uses_page_viewport_(
+          base::FeatureList::IsEnabled(features::kUsePageViewportInLCP)),
+      records_manager_(frame_view),
       frame_view_(frame_view),
       callback_manager_(callback_manager) {}
 
@@ -82,6 +94,9 @@ void ImagePaintTimingDetector::PopulateTraceValue(
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
   value.SetBoolean("isOOPIF",
                    !frame_view_->GetFrame().LocalFrameRoot().IsMainFrame());
+  if (first_image_paint.lcp_rect_info_) {
+    first_image_paint.lcp_rect_info_->OutputToTraceValue(value);
+  }
 }
 
 void ImagePaintTimingDetector::ReportCandidateToTrace(
@@ -91,6 +106,7 @@ void ImagePaintTimingDetector::ReportCandidateToTrace(
   DCHECK(!largest_image_record.paint_time.is_null());
   auto value = std::make_unique<TracedValue>();
   PopulateTraceValue(*value, largest_image_record);
+  // TODO(yoav): Report first animated frame times as well.
   TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading", "LargestImagePaint::Candidate",
                                    largest_image_record.paint_time, "data",
                                    std::move(value), "frame",
@@ -113,18 +129,38 @@ void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
 ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
   ImageRecord* largest_image_record =
       records_manager_.FindLargestPaintCandidate();
-  const base::TimeTicks time = largest_image_record
-                                   ? largest_image_record->paint_time
-                                   : base::TimeTicks();
+  base::TimeTicks time = largest_image_record ? largest_image_record->paint_time
+                                              : base::TimeTicks();
+  // This doesn't use ShouldReportAnimatedImages(), as it should only update the
+  // record when the base::Feature is enabled, regardless of the runtime-enabled
+  // flag.
+  if (base::FeatureList::IsEnabled(features::kLCPAnimatedImagesReporting) &&
+      largest_image_record &&
+      !largest_image_record->first_animated_frame_time.is_null()) {
+    time = largest_image_record->first_animated_frame_time;
+  }
+
+  // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
+  // default, we'd be able to use the value of
+  // largest_image_record->first_animated_frame_time directly.
+  bool is_animated = largest_image_record &&
+                     largest_image_record->cached_image &&
+                     largest_image_record->cached_image
+                         ->IsAnimatedImageWithPaintedFirstFrame();
+
   const uint64_t size =
       largest_image_record ? largest_image_record->first_size : 0;
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
+  // Calling NotifyIfChangedLargestImagePaint only has an impact on
+  // PageLoadMetrics, and not on the web exposed metrics.
+  //
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
-  bool changed = detector.NotifyIfChangedLargestImagePaint(time, size);
+  bool changed = detector.NotifyIfChangedLargestImagePaint(
+      time, size, records_manager_.LargestRemovedImagePaintTime(),
+      records_manager_.LargestRemovedImageSize(), is_animated);
   if (changed) {
-    if (!time.is_null()) {
-      DCHECK(largest_image_record->loaded);
+    if (!time.is_null() && largest_image_record->loaded) {
       ReportCandidateToTrace(*largest_image_record);
     } else {
       ReportNoCandidateToTrace();
@@ -135,62 +171,60 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
 
 void ImagePaintTimingDetector::OnPaintFinished() {
   frame_index_++;
+  viewport_size_ = absl::nullopt;
   if (need_update_timing_at_frame_end_) {
     need_update_timing_at_frame_end_ = false;
     frame_view_->GetPaintTimingDetector()
         .UpdateLargestContentfulPaintCandidate();
   }
 
-  if (!records_manager_.HasUnregisteredRecordsInQueued(
+  if (!records_manager_.HasUnregisteredRecordsInQueue(
           last_registered_frame_index_))
     return;
 
-  last_registered_frame_index_ = records_manager_.LastQueuedFrameIndex();
-  RegisterNotifySwapTime();
-}
-
-void ImagePaintTimingDetector::LayoutObjectWillBeDestroyed(
-    const LayoutObject& object) {
-  if (!is_recording_)
-    return;
-
-  // The visible record removal has been handled by
-  // |NotifyImageRemoved|.
-  records_manager_.RemoveInvisibleRecordIfNeeded(object);
+  last_registered_frame_index_ = frame_index_ - 1;
+  RegisterNotifyPresentationTime();
 }
 
 void ImagePaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
-  if (!is_recording_)
-    return;
   RecordId record_id = std::make_pair(&object, cached_image);
-  records_manager_.RemoveImageFinishedRecord(record_id);
+  records_manager_.RemoveImageTimeRecords(record_id);
+  records_manager_.RemoveInvisibleRecordIfNeeded(record_id);
   if (!records_manager_.IsRecordedVisibleImage(record_id))
     return;
   records_manager_.RemoveVisibleRecord(record_id);
   need_update_timing_at_frame_end_ = true;
 }
 
-void ImagePaintTimingDetector::RegisterNotifySwapTime() {
-  auto callback = WTF::Bind(&ImagePaintTimingDetector::ReportSwapTime,
+void ImagePaintTimingDetector::StopRecordEntries() {
+  // Clear the records queued for presentation callback to ensure no new updates
+  // occur.
+  records_manager_.ClearImagesQueuedForPaintTime();
+  if (frame_view_->GetFrame().IsMainFrame()) {
+    DCHECK(frame_view_->GetFrame().GetDocument());
+    ukm::builders::Blink_PaintTiming(
+        frame_view_->GetFrame().GetDocument()->UkmSourceID())
+        .SetLCPDebugging_HasViewportImage(contains_full_viewport_image_)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void ImagePaintTimingDetector::RegisterNotifyPresentationTime() {
+  auto callback = WTF::Bind(&ImagePaintTimingDetector::ReportPresentationTime,
                             WrapCrossThreadWeakPersistent(this),
                             last_registered_frame_index_);
   callback_manager_->RegisterCallback(std::move(callback));
-  num_pending_swap_callbacks_++;
 }
 
-void ImagePaintTimingDetector::ReportSwapTime(
+void ImagePaintTimingDetector::ReportPresentationTime(
     unsigned last_queued_frame_index,
     base::TimeTicks timestamp) {
-  if (!is_recording_)
-    return;
   // The callback is safe from race-condition only when running on main-thread.
   DCHECK(ThreadState::Current()->IsMainThread());
   records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
       timestamp, last_queued_frame_index);
-  num_pending_swap_callbacks_--;
-  DCHECK_GE(num_pending_swap_callbacks_, 0);
 }
 
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
@@ -205,75 +239,155 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     }
     if (record->frame_index > last_queued_frame_index)
       break;
-    record->paint_time = timestamp;
+    if (record->loaded) {
+      record->paint_time = timestamp;
+    }
+    if (record->queue_animated_paint) {
+      record->first_animated_frame_time = timestamp;
+      record->queue_animated_paint = false;
+    }
     images_queued_for_paint_time_.pop_front();
   }
 }
 
 void ImagePaintTimingDetector::RecordImage(
     const LayoutObject& object,
-    const IntSize& intrinsic_size,
+    const gfx::Size& intrinsic_size,
     const ImageResourceContent& cached_image,
-    const PropertyTreeState& current_paint_chunk_properties,
-    const StyleFetchedImage* style_image) {
+    const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+    const StyleFetchedImage* style_image,
+    const gfx::Rect& image_border) {
   Node* node = object.GetNode();
+
   if (!node)
     return;
-  if (records_manager_.IsRecordedInvisibleImage(object))
+
+  // Before the image resource starts loading, <img> has no size info. We wait
+  // until the size is known.
+  if (image_border.IsEmpty())
     return;
 
   RecordId record_id = std::make_pair(&object, &cached_image);
-  bool is_recored_visible_image =
+
+  if (!base::FeatureList::IsEnabled(
+          features::kIncludeInitiallyInvisibleImagesInLCP) &&
+      records_manager_.IsRecordedInvisibleImage(record_id)) {
+    // Ignore images that are initially invisible, even if they later become
+    // visible. This is done as an optimization, to reduce LCP calculation
+    // costs.
+    // Note that this results in correctness issues:
+    // https://crbug.com/1249622
+    return;
+  }
+  bool is_recorded_visible_image =
       records_manager_.IsRecordedVisibleImage(record_id);
-  if (is_recored_visible_image &&
-      !records_manager_.IsVisibleImageLoaded(record_id) &&
-      cached_image.IsLoaded()) {
-    records_manager_.OnImageLoaded(record_id, frame_index_, style_image);
-    need_update_timing_at_frame_end_ = true;
-    if (base::Optional<PaintTimingVisualizer>& visualizer =
-            frame_view_->GetPaintTimingDetector().Visualizer()) {
-      FloatRect mapped_visual_rect =
+
+  if (int depth = IgnorePaintTimingScope::IgnoreDepth()) {
+    // Record the largest loaded image that is hidden due to documentElement
+    // being invisible but by no other reason (i.e. IgnoreDepth() needs to be
+    // 1).
+    if (depth == 1 && IgnorePaintTimingScope::IsDocumentElementInvisible() &&
+        !is_recorded_visible_image && cached_image.IsLoaded()) {
+      gfx::RectF mapped_visual_rect =
           frame_view_->GetPaintTimingDetector().CalculateVisualRect(
-              object.FragmentsVisualRectBoundingBox(),
-              current_paint_chunk_properties);
-      visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
-                                         cached_image);
+              image_border, current_paint_chunk_properties);
+      uint64_t rect_size = ComputeImageRectSize(
+          image_border, mapped_visual_rect, intrinsic_size,
+          current_paint_chunk_properties, object, cached_image);
+      records_manager_.MaybeUpdateLargestIgnoredImage(
+          record_id, rect_size, image_border, mapped_visual_rect);
     }
     return;
   }
 
-  if (is_recored_visible_image || !is_recording_)
+  if (is_recorded_visible_image) {
+    if (ShouldReportAnimatedImages() &&
+        cached_image.IsAnimatedImageWithPaintedFirstFrame()) {
+      need_update_timing_at_frame_end_ |=
+          records_manager_.OnFirstAnimatedFramePainted(record_id, frame_index_);
+    }
+    if (!records_manager_.IsVisibleImageLoaded(record_id) &&
+        cached_image.IsLoaded()) {
+      records_manager_.OnImageLoaded(record_id, frame_index_, style_image);
+      need_update_timing_at_frame_end_ = true;
+      if (absl::optional<PaintTimingVisualizer>& visualizer =
+              frame_view_->GetPaintTimingDetector().Visualizer()) {
+        gfx::RectF mapped_visual_rect =
+            frame_view_->GetPaintTimingDetector().CalculateVisualRect(
+                image_border, current_paint_chunk_properties);
+        visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
+                                           cached_image);
+      }
+    }
     return;
-  IntRect visual_rect = object.FragmentsVisualRectBoundingBox();
-  // Before the image resource starts loading, <img> has no size info. We wait
-  // until the size is known.
-  if (visual_rect.IsEmpty())
-    return;
-  FloatRect mapped_visual_rect =
-      frame_view_->GetPaintTimingDetector().CalculateVisualRect(
-          visual_rect, current_paint_chunk_properties);
-  if (base::Optional<PaintTimingVisualizer>& visualizer =
-          frame_view_->GetPaintTimingDetector().Visualizer()) {
-    visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
-                                       cached_image);
   }
-  uint64_t rect_size = mapped_visual_rect.Size().Area();
-  // Transform visual rect to window before calling downscale.
-  WebFloatRect float_visual_rect = FloatRect(visual_rect);
-  frame_view_->GetPaintTimingDetector().ConvertViewportToWindow(
-      &float_visual_rect);
-  rect_size = DownScaleIfIntrinsicSizeIsSmaller(
-      rect_size, intrinsic_size.Area(),
-      float_visual_rect.width * float_visual_rect.height);
+
+  gfx::RectF mapped_visual_rect =
+      frame_view_->GetPaintTimingDetector().CalculateVisualRect(
+          image_border, current_paint_chunk_properties);
+  uint64_t rect_size = ComputeImageRectSize(
+      image_border, mapped_visual_rect, intrinsic_size,
+      current_paint_chunk_properties, object, cached_image);
   if (rect_size == 0) {
-    records_manager_.RecordInvisible(object);
+    records_manager_.RecordInvisible(record_id);
   } else {
-    records_manager_.RecordVisible(record_id, rect_size);
+    records_manager_.RecordVisible(record_id, rect_size, image_border,
+                                   mapped_visual_rect);
+    if (ShouldReportAnimatedImages() &&
+        cached_image.IsAnimatedImageWithPaintedFirstFrame()) {
+      need_update_timing_at_frame_end_ |=
+          records_manager_.OnFirstAnimatedFramePainted(record_id, frame_index_);
+    }
     if (cached_image.IsLoaded()) {
       records_manager_.OnImageLoaded(record_id, frame_index_, style_image);
       need_update_timing_at_frame_end_ = true;
     }
   }
+}
+
+uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
+    const gfx::Rect& image_border,
+    const gfx::RectF& mapped_visual_rect,
+    const gfx::Size& intrinsic_size,
+    const PropertyTreeStateOrAlias& current_paint_chunk_properties,
+    const LayoutObject& object,
+    const ImageResourceContent& cached_image) {
+  if (absl::optional<PaintTimingVisualizer>& visualizer =
+          frame_view_->GetPaintTimingDetector().Visualizer()) {
+    visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
+                                       cached_image);
+  }
+  uint64_t rect_size = mapped_visual_rect.size().GetArea();
+  // Transform visual rect to window before calling downscale.
+  gfx::RectF float_visual_rect =
+      frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
+          gfx::RectF(image_border));
+  if (!viewport_size_.has_value()) {
+    // If the flag to use page viewport is enabled, we use the page viewport
+    // (aka the main frame viewport) for all frames, including iframes. This
+    // prevents us from discarding images with size equal to the size of its
+    // embedding iframe.
+    gfx::Rect viewport_int_rect = ToGfxRect(
+        uses_page_viewport_
+            ? frame_view_->GetPage()->GetVisualViewport().VisibleContentRect()
+            : frame_view_->GetScrollableArea()->VisibleContentRect());
+    gfx::RectF viewport =
+        frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
+            gfx::RectF(viewport_int_rect));
+    viewport_size_ = viewport.size().GetArea();
+  }
+  // An SVG image size is computed with respect to the virtual viewport of the
+  // SVG, so |rect_size| can be larger than |*viewport_size| in edge cases. If
+  // the rect occupies the whole viewport, disregard this candidate by saying
+  // the size is 0.
+  if (rect_size >= *viewport_size_) {
+    contains_full_viewport_image_ = true;
+    return 0;
+  }
+
+  rect_size = DownScaleIfIntrinsicSizeIsSmaller(
+      rect_size, intrinsic_size.Area64(), float_visual_rect.size().GetArea());
+  return rect_size;
 }
 
 void ImagePaintTimingDetector::NotifyImageFinished(
@@ -283,8 +397,26 @@ void ImagePaintTimingDetector::NotifyImageFinished(
   records_manager_.NotifyImageFinished(record_id);
 }
 
+void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
+  need_update_timing_at_frame_end_ = true;
+  records_manager_.ReportLargestIgnoredImage(frame_index_);
+}
+
 ImageRecordsManager::ImageRecordsManager(LocalFrameView* frame_view)
     : size_ordered_set_(&LargeImageFirst), frame_view_(frame_view) {}
+
+bool ImageRecordsManager::OnFirstAnimatedFramePainted(
+    const RecordId& record_id,
+    unsigned current_frame_index) {
+  base::WeakPtr<ImageRecord> record = FindVisibleRecord(record_id);
+  DCHECK(record);
+  if (record->first_animated_frame_time.is_null()) {
+    record->queue_animated_paint = true;
+    QueueToMeasurePaintTime(record, current_frame_index);
+    return true;
+  }
+  return false;
+}
 
 void ImageRecordsManager::OnImageLoaded(const RecordId& record_id,
                                         unsigned current_frame_index,
@@ -292,8 +424,11 @@ void ImageRecordsManager::OnImageLoaded(const RecordId& record_id,
   base::WeakPtr<ImageRecord> record = FindVisibleRecord(record_id);
   DCHECK(record);
   if (!style_image) {
-    record->load_time = image_finished_times_.at(record_id);
-    DCHECK(!record->load_time.is_null());
+    auto it = image_finished_times_.find(record_id);
+    if (it != image_finished_times_.end()) {
+      record->load_time = it->value;
+      DCHECK(!record->load_time.is_null());
+    }
   } else {
     Document* document = frame_view_->GetFrame().GetDocument();
     if (document && document->domWindow()) {
@@ -304,6 +439,25 @@ void ImageRecordsManager::OnImageLoaded(const RecordId& record_id,
   OnImageLoadedInternal(record, current_frame_index);
 }
 
+void ImageRecordsManager::ReportLargestIgnoredImage(
+    unsigned current_frame_index) {
+  if (!largest_ignored_image_)
+    return;
+  base::WeakPtr<ImageRecord> record = largest_ignored_image_->AsWeakPtr();
+  Node* node = DOMNodeIds::NodeForId(largest_ignored_image_->node_id);
+  if (!node || !node->GetLayoutObject() ||
+      !largest_ignored_image_->cached_image) {
+    // The image has been removed, so we have no content to report.
+    largest_ignored_image_.reset();
+    return;
+  }
+  RecordId record_id = std::make_pair(node->GetLayoutObject(),
+                                      largest_ignored_image_->cached_image);
+  size_ordered_set_.insert(record);
+  visible_images_.insert(record_id, std::move(largest_ignored_image_));
+  OnImageLoadedInternal(record, current_frame_index);
+}
+
 void ImageRecordsManager::OnImageLoadedInternal(
     base::WeakPtr<ImageRecord>& record,
     unsigned current_frame_index) {
@@ -311,10 +465,27 @@ void ImageRecordsManager::OnImageLoadedInternal(
   QueueToMeasurePaintTime(record, current_frame_index);
 }
 
+void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
+    const RecordId& record_id,
+    const uint64_t& visual_size,
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect) {
+  if (visual_size && (!largest_ignored_image_ ||
+                      visual_size > largest_ignored_image_->first_size)) {
+    largest_ignored_image_ =
+        CreateImageRecord(*record_id.first, record_id.second, visual_size,
+                          frame_visual_rect, root_visual_rect);
+    largest_ignored_image_->load_time = base::TimeTicks::Now();
+  }
+}
+
 void ImageRecordsManager::RecordVisible(const RecordId& record_id,
-                                        const uint64_t& visual_size) {
+                                        const uint64_t& visual_size,
+                                        const gfx::Rect& frame_visual_rect,
+                                        const gfx::RectF& root_visual_rect) {
   std::unique_ptr<ImageRecord> record =
-      CreateImageRecord(*record_id.first, record_id.second, visual_size);
+      CreateImageRecord(*record_id.first, record_id.second, visual_size,
+                        frame_visual_rect, root_visual_rect);
   size_ordered_set_.insert(record->AsWeakPtr());
   visible_images_.insert(record_id, std::move(record));
 }
@@ -322,12 +493,14 @@ void ImageRecordsManager::RecordVisible(const RecordId& record_id,
 std::unique_ptr<ImageRecord> ImageRecordsManager::CreateImageRecord(
     const LayoutObject& object,
     const ImageResourceContent* cached_image,
-    const uint64_t& visual_size) {
+    const uint64_t& visual_size,
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect) {
   DCHECK_GT(visual_size, 0u);
   Node* node = object.GetNode();
   DOMNodeId node_id = DOMNodeIds::IdForNode(node);
-  std::unique_ptr<ImageRecord> record =
-      std::make_unique<ImageRecord>(node_id, cached_image, visual_size);
+  std::unique_ptr<ImageRecord> record = std::make_unique<ImageRecord>(
+      node_id, cached_image, visual_size, frame_visual_rect, root_visual_rect);
   return record;
 }
 
@@ -338,7 +511,16 @@ ImageRecord* ImageRecordsManager::FindLargestPaintCandidate() const {
   return size_ordered_set_.begin()->get();
 }
 
-void ImagePaintTimingDetector::Trace(blink::Visitor* visitor) {
+void ImageRecordsManager::ClearImagesQueuedForPaintTime() {
+  images_queued_for_paint_time_.clear();
+}
+
+void ImageRecordsManager::Trace(Visitor* visitor) const {
+  visitor->Trace(frame_view_);
+}
+
+void ImagePaintTimingDetector::Trace(Visitor* visitor) const {
+  visitor->Trace(records_manager_);
   visitor->Trace(frame_view_);
   visitor->Trace(callback_manager_);
 }

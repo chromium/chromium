@@ -7,23 +7,22 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/callback.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/border.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_MACOSX)
-#import "components/constrained_window/native_web_contents_modal_dialog_manager_views_mac.h"
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 using web_modal::ModalDialogHost;
@@ -45,13 +44,12 @@ const char* const kWidgetModalDialogHostObserverViewsKey =
     "__WIDGET_MODAL_DIALOG_HOST_OBSERVER_VIEWS__";
 
 // Applies positioning changes from the ModalDialogHost to the Widget.
-class WidgetModalDialogHostObserverViews
-    : public views::WidgetObserver,
-      public ModalDialogHostObserver {
+class WidgetModalDialogHostObserverViews : public views::WidgetObserver,
+                                           public ModalDialogHostObserver {
  public:
   WidgetModalDialogHostObserverViews(ModalDialogHost* host,
                                      views::Widget* target_widget,
-                                     const char *const native_window_property)
+                                     const char* const native_window_property)
       : host_(host),
         target_widget_(target_widget),
         native_window_property_(native_window_property) {
@@ -61,11 +59,17 @@ class WidgetModalDialogHostObserverViews
     target_widget_->AddObserver(this);
   }
 
+  WidgetModalDialogHostObserverViews(
+      const WidgetModalDialogHostObserverViews&) = delete;
+  WidgetModalDialogHostObserverViews& operator=(
+      const WidgetModalDialogHostObserverViews&) = delete;
+
   ~WidgetModalDialogHostObserverViews() override {
     if (host_)
       host_->RemoveObserver(this);
     target_widget_->RemoveObserver(this);
     target_widget_->SetNativeWindowProperty(native_window_property_, nullptr);
+    CHECK(!IsInObserverList());
   }
 
   // WidgetObserver overrides
@@ -85,8 +89,6 @@ class WidgetModalDialogHostObserverViews
   ModalDialogHost* host_;
   views::Widget* target_widget_;
   const char* const native_window_property_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetModalDialogHostObserverViews);
 };
 
 void UpdateModalDialogPosition(views::Widget* widget,
@@ -109,15 +111,21 @@ void UpdateModalDialogPosition(views::Widget* widget,
   }
 
   gfx::Point position = dialog_host->GetDialogPosition(size);
-  views::Border* border = widget->non_client_view()->frame_view()->border();
-  // Border may be null during widget initialization.
-  if (border) {
-    // Align the first row of pixels inside the border. This is the apparent
-    // top of the dialog.
-    position.set_y(position.y() - border->GetInsets().top());
-  }
+  // Align the first row of pixels inside the border. This is the apparent top
+  // of the dialog.
+  position.set_y(position.y() -
+                 widget->non_client_view()->frame_view()->GetInsets().top());
 
-  if (widget->is_top_level()) {
+  const bool supports_global_screen_coordinates =
+#if !defined(USE_OZONE)
+      true;
+#else
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .supports_global_screen_coordinates;
+#endif
+
+  if (widget->is_top_level() && supports_global_screen_coordinates) {
     position += host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
     // If the dialog extends partially off any display, clamp its position to
     // be fully visible within that display. If the dialog doesn't intersect
@@ -150,11 +158,8 @@ void UpdateWebContentsModalDialogPosition(
   gfx::Size max_size = dialog_host->GetMaximumDialogSize();
   // Enlarge the max size by the top border, as the dialog will be shifted
   // outside the area specified by the dialog host by this amount later.
-  views::Border* border =
-      widget->non_client_view()->frame_view()->border();
-  // Border may be null during widget initialization.
-  if (border)
-    max_size.Enlarge(0, border->GetInsets().top());
+  max_size.Enlarge(0,
+                   widget->non_client_view()->frame_view()->GetInsets().top());
   size.SetToMin(max_size);
   UpdateModalDialogPosition(widget, dialog_host, size);
 }
@@ -167,8 +172,7 @@ void UpdateWidgetModalDialogPosition(views::Widget* widget,
 
 content::WebContents* GetTopLevelWebContents(
     content::WebContents* initiator_web_contents) {
-  return guest_view::GuestViewBase::GetTopLevelWebContents(
-      initiator_web_contents);
+  return initiator_web_contents->GetResponsibleWebContents();
 }
 
 views::Widget* ShowWebModalDialogViews(
@@ -184,27 +188,6 @@ views::Widget* ShowWebModalDialogViews(
   return widget;
 }
 
-#if defined(OS_MACOSX)
-views::Widget* ShowWebModalDialogWithOverlayViews(
-    views::WidgetDelegate* dialog,
-    content::WebContents* initiator_web_contents) {
-  DCHECK(CurrentClient());
-  // For embedded WebContents, use the embedder's WebContents for constrained
-  // window.
-  content::WebContents* web_contents =
-      GetTopLevelWebContents(initiator_web_contents);
-  views::Widget* widget = CreateWebModalDialogViews(dialog, web_contents);
-  web_modal::WebContentsModalDialogManager* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  std::unique_ptr<web_modal::SingleWebContentsDialogManager> dialog_manager(
-      new NativeWebContentsModalDialogManagerViewsMac(widget->GetNativeWindow(),
-                                                      manager));
-  manager->ShowDialogWithManager(widget->GetNativeWindow(),
-                                 std::move(dialog_manager));
-  return widget;
-}
-#endif
-
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents) {
   DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
@@ -214,6 +197,12 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   return views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
       manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
+}
+
+views::Widget* CreateBrowserModalDialogViews(
+    std::unique_ptr<views::DialogDelegate> dialog,
+    gfx::NativeWindow parent) {
+  return CreateBrowserModalDialogViews(dialog.release(), parent);
 }
 
 views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
@@ -229,7 +218,7 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 
   bool requires_positioning = dialog->use_custom_frame();
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // On Mac, window modal dialogs are displayed as sheets, so their position is
   // managed by the parent window.
   requires_positioning = false;
@@ -250,4 +239,13 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
   return widget;
 }
 
-}  // namespace constrained window
+void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                      gfx::NativeWindow parent) {
+  auto dialog = views::BubbleDialogModelHost::CreateModal(
+      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
+  dialog->SetOwnedByWidget(true);
+  constrained_window::CreateBrowserModalDialogViews(std::move(dialog), parent)
+      ->Show();
+}
+
+}  // namespace constrained_window

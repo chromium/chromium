@@ -8,9 +8,7 @@ import("//testing/test.gni")
 
 group("tests") {
   testonly = true
-  deps = [
-    ":service_manager_unittests",
-  ]
+  deps = [ ":service_manager_unittests" ]
 }
 
 test("service_manager_unittests") {
@@ -33,15 +31,12 @@ test("service_manager_unittests") {
     "//services/service_manager/public/mojom",
     "//services/service_manager/tests/connect",
     "//services/service_manager/tests/lifecycle",
-    "//services/service_manager/tests/sandbox",
     "//services/service_manager/tests/service_manager",
     "//services/service_manager/tests/shutdown",
     "//testing/gtest",
   ]
 
-  data_deps = [
-    ":background_service_manager_test_service",
-  ]
+  data_deps = [ ":background_service_manager_test_service" ]
 
   if (!is_ios) {
     sources += [ "service_process_launcher_unittest.cc" ]
@@ -77,9 +72,7 @@ source_set("util") {
 service_executable("background_service_manager_test_service") {
   testonly = true
 
-  sources = [
-    "background_service_manager_test_service_main.cc",
-  ]
+  sources = [ "background_service_manager_test_service_main.cc" ]
 
   deps = [
     ":interfaces",
@@ -93,7 +86,5 @@ service_executable("background_service_manager_test_service") {
 service_executable("service_process_launcher_test_service") {
   testonly = true
 
-  sources = [
-    "service_process_launcher_test_service_main.cc",
-  ]
+  sources = [ "service_process_launcher_test_service_main.cc" ]
 }

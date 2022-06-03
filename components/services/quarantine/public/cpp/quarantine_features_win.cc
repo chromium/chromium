@@ -10,6 +10,6 @@ namespace quarantine {
 // the browser process or a new utility process.
 // Unused until quarantine service is fully implemented.
 const base::Feature kOutOfProcessQuarantine{"OutOfProcessQuarantine",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace quarantine

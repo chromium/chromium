@@ -11,7 +11,7 @@
 
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_prefs.h"
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -19,7 +19,6 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
@@ -37,6 +36,10 @@ namespace {
 class TestSessionObserver : public SessionObserver {
  public:
   TestSessionObserver() : active_account_id_(EmptyAccountId()) {}
+
+  TestSessionObserver(const TestSessionObserver&) = delete;
+  TestSessionObserver& operator=(const TestSessionObserver&) = delete;
+
   ~TestSessionObserver() override = default;
 
   // SessionObserver:
@@ -85,8 +88,6 @@ class TestSessionObserver : public SessionObserver {
   std::vector<AccountId> user_session_account_ids_;
   PrefService* last_user_pref_service_ = nullptr;
   int user_prefs_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionObserver);
 };
 
 void FillDefaultSessionInfo(SessionInfo* info) {
@@ -100,6 +101,11 @@ void FillDefaultSessionInfo(SessionInfo* info) {
 class SessionControllerImplTest : public testing::Test {
  public:
   SessionControllerImplTest() = default;
+
+  SessionControllerImplTest(const SessionControllerImplTest&) = delete;
+  SessionControllerImplTest& operator=(const SessionControllerImplTest&) =
+      delete;
+
   ~SessionControllerImplTest() override = default;
 
   // testing::Test:
@@ -140,8 +146,6 @@ class SessionControllerImplTest : public testing::Test {
  private:
   std::unique_ptr<SessionControllerImpl> controller_;
   TestSessionObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerImplTest);
 };
 
 // Tests that the simple session info is reflected properly.
@@ -266,7 +270,7 @@ TEST_F(SessionControllerImplTest, GetLoginStatus) {
       {SessionState::LOGIN_PRIMARY, LoginStatus::NOT_LOGGED_IN},
       {SessionState::LOGGED_IN_NOT_ACTIVE, LoginStatus::NOT_LOGGED_IN},
       {SessionState::LOCKED, LoginStatus::LOCKED},
-      // TODO: Add LOGIN_SECONDARY if we added a status for it.
+      // TODO(jamescook): Add LOGIN_SECONDARY if we added a status for it.
   };
 
   SessionInfo info;
@@ -294,12 +298,12 @@ TEST_F(SessionControllerImplTest, GetLoginStateForActiveSession) {
       {user_manager::USER_TYPE_REGULAR, LoginStatus::USER},
       {user_manager::USER_TYPE_GUEST, LoginStatus::GUEST},
       {user_manager::USER_TYPE_PUBLIC_ACCOUNT, LoginStatus::PUBLIC},
-      {user_manager::USER_TYPE_SUPERVISED, LoginStatus::SUPERVISED},
       {user_manager::USER_TYPE_KIOSK_APP, LoginStatus::KIOSK_APP},
-      {user_manager::USER_TYPE_CHILD, LoginStatus::SUPERVISED},
+      {user_manager::USER_TYPE_CHILD, LoginStatus::CHILD},
       {user_manager::USER_TYPE_ARC_KIOSK_APP, LoginStatus::KIOSK_APP},
       {user_manager::USER_TYPE_WEB_KIOSK_APP, LoginStatus::KIOSK_APP}
-      // TODO: Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for it.
+      // TODO(jamescook): Add USER_TYPE_ACTIVE_DIRECTORY if we add a status for
+      // it.
   };
 
   for (const auto& test_case : kTestCases) {
@@ -408,15 +412,6 @@ TEST_F(SessionControllerImplTest,
   }
 }
 
-TEST_F(SessionControllerImplTest, IsUserSupervised) {
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::USER_TYPE_SUPERVISED;
-  controller()->UpdateUserSession(session);
-
-  EXPECT_TRUE(controller()->IsUserSupervised());
-}
-
 TEST_F(SessionControllerImplTest, IsUserChild) {
   UserSession session;
   session.session_id = 1u;
@@ -424,9 +419,6 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   controller()->UpdateUserSession(session);
 
   EXPECT_TRUE(controller()->IsUserChild());
-
-  // Child accounts are supervised.
-  EXPECT_TRUE(controller()->IsUserSupervised());
 }
 
 using SessionControllerImplPrefsTest = NoSessionAshTestBase;
@@ -445,12 +437,11 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   // Setup 2 users.
   TestSessionControllerClient* session = GetSessionControllerClient();
   // Disable auto-provision of PrefService for each user.
-  constexpr bool kEnableSettings = true;
   constexpr bool kProvidePrefService = false;
   session->AddUserSession(kUser1, user_manager::USER_TYPE_REGULAR,
-                          kEnableSettings, kProvidePrefService);
+                          kProvidePrefService);
   session->AddUserSession(kUser2, user_manager::USER_TYPE_REGULAR,
-                          kEnableSettings, kProvidePrefService);
+                          kProvidePrefService);
 
   // The observer is not notified because the PrefService for kUser1 is not yet
   // ready.
@@ -586,6 +577,10 @@ class CanSwitchUserTest : public AshTestBase {
     DECLINE_DIALOG,  // A dialog should be shown and we do not accept it.
   };
   CanSwitchUserTest() = default;
+
+  CanSwitchUserTest(const CanSwitchUserTest&) = delete;
+  CanSwitchUserTest& operator=(const CanSwitchUserTest&) = delete;
+
   ~CanSwitchUserTest() override = default;
 
   void TearDown() override {
@@ -599,7 +594,7 @@ class CanSwitchUserTest : public AshTestBase {
     Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
         base::BindRepeating(&CanSwitchUserTest::StopCaptureCallback,
                             base::Unretained(this)),
-        base::RepeatingClosure(), base::string16());
+        base::RepeatingClosure(), std::u16string());
   }
 
   // The callback which gets called when the screen capture gets stopped.
@@ -616,7 +611,7 @@ class CanSwitchUserTest : public AshTestBase {
     Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
         base::BindRepeating(&CanSwitchUserTest::StopShareCallback,
                             base::Unretained(this)),
-        base::string16());
+        std::u16string());
   }
 
   // Simulates a screen share session stop.
@@ -681,8 +676,6 @@ class CanSwitchUserTest : public AshTestBase {
   int stop_capture_callback_hit_count_ = 0;
   int stop_share_callback_hit_count_ = 0;
   int switch_callback_hit_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CanSwitchUserTest);
 };
 
 // Test that when there is no screen operation going on the user switch will be

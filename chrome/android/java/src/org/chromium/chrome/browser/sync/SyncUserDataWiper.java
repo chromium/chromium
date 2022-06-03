@@ -6,22 +6,17 @@ package org.chromium.chrome.browser.sync;
 
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.settings.privacy.BrowsingDataBridge;
-import org.chromium.chrome.browser.settings.privacy.BrowsingDataBridge.OnClearBrowsingDataListener;
 
 /**
  * A class to wipe the user's bookmarks and all types of sync data.
  */
 public class SyncUserDataWiper {
-    private static final int[] SYNC_DATA_TYPES = {
-            BrowsingDataType.HISTORY,
-            BrowsingDataType.CACHE,
-            BrowsingDataType.COOKIES,
-            BrowsingDataType.PASSWORDS,
-            BrowsingDataType.FORM_DATA
-    };
+    private static final int[] SYNC_DATA_TYPES = {BrowsingDataType.HISTORY, BrowsingDataType.CACHE,
+            BrowsingDataType.COOKIES, BrowsingDataType.PASSWORDS, BrowsingDataType.FORM_DATA};
 
     /**
      * Wipes the user's bookmarks and sync data.

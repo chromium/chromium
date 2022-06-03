@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Selectors Test: Mouse click on select element does match :focus-visible</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo" />
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5822" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+  :focus-visible {
+    background-color: lime;
+  }
+
+  :focus:not(:focus-visible) {
+    background-color: red;
+  }
+</style>
+
+<p>This test checks that when you click a select element it does match <code>:focus-visible</code>.</p>
+<p>Note: This test is not in WPT because the behavior is optional and different browsers behave differently here (see <a href="https://github.com/w3c/csswg-drafts/issues/5822">CSSWG issue #5822</a>).</p>
+<ol id="instructions">
+  <li>If the user-agent does not claim to support the <code>:focus-visible</code> pseudo-class then SKIP this test.</li>
+  <li>Click in the element that says "Focus me".</li>
+  <li>If the element has a green background, then the test result is a SUCCESS.</li>
+</ol>
+
+<select id="target"><option>Focus me</option></select>
+
+<script>
+  setup({ explicit_done: true });
+
+  async_test(function(t) {
+    target.addEventListener("focus", t.step_func_done(function() {
+      assert_equals(getComputedStyle(target).backgroundColor, "rgb(0, 255, 0)", `backgroundColor for ${target.tagName}#${target.id} should be lime`);
+      assert_equals(getComputedStyle(target).outlineStyle, "auto", `outline-style for ${target.tagName}#${target.id} should be auto`);
+    }));
+
+    test_driver.click(target).then(() => done());
+  }, ":focus-visible matches on select element after mouse click");
+</script>

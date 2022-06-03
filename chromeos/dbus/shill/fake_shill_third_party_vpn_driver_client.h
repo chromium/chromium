@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 
 namespace chromeos {
@@ -26,6 +25,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
       public ShillThirdPartyVpnDriverClient::TestInterface {
  public:
   FakeShillThirdPartyVpnDriverClient();
+
+  FakeShillThirdPartyVpnDriverClient(
+      const FakeShillThirdPartyVpnDriverClient&) = delete;
+  FakeShillThirdPartyVpnDriverClient& operator=(
+      const FakeShillThirdPartyVpnDriverClient&) = delete;
+
   ~FakeShillThirdPartyVpnDriverClient() override;
 
   // ShillThirdPartyVpnDriverClient overrides
@@ -35,7 +40,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
   void RemoveShillThirdPartyVpnObserver(
       const std::string& object_path_value) override;
   void SetParameters(const std::string& object_path_value,
-                     const base::DictionaryValue& parameters,
+                     const base::Value& parameters,
                      StringCallback callback,
                      ErrorCallback error_callback) override;
   void UpdateConnectionState(const std::string& object_path_value,
@@ -58,8 +63,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
   using ObserverMap = std::map<std::string, ShillThirdPartyVpnObserver*>;
 
   ObserverMap observer_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillThirdPartyVpnDriverClient);
 };
 
 }  // namespace chromeos

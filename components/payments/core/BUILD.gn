@@ -2,24 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 
-jumbo_static_library("core") {
+static_library("core") {
   sources = [
+    "android_app_description.cc",
+    "android_app_description.h",
+    "android_app_description_tools.cc",
+    "android_app_description_tools.h",
+    "autofill_card_validation.cc",
+    "autofill_card_validation.h",
+    "basic_card_response.cc",
+    "basic_card_response.h",
     "can_make_payment_query.cc",
     "can_make_payment_query.h",
     "currency_formatter.cc",
     "currency_formatter.h",
     "error_logger.cc",
     "error_logger.h",
+    "error_message_util.cc",
+    "error_message_util.h",
     "features.cc",
     "features.h",
     "journey_logger.cc",
     "journey_logger.h",
+    "payer_data.cc",
+    "payer_data.h",
     "payment_address.cc",
     "payment_address.h",
-    "payment_app.cc",
-    "payment_app.h",
     "payment_currency_amount.cc",
     "payment_currency_amount.h",
     "payment_details.cc",
@@ -36,41 +46,37 @@ jumbo_static_library("core") {
     "payment_method_data.h",
     "payment_prefs.cc",
     "payment_prefs.h",
+    "payment_request_base_delegate.h",
+    "payment_request_data_util.cc",
+    "payment_request_data_util.h",
+    "payment_request_delegate.cc",
+    "payment_request_delegate.h",
     "payment_shipping_option.cc",
     "payment_shipping_option.h",
+    "payments_experimental_features.cc",
+    "payments_experimental_features.h",
     "payments_validators.cc",
     "payments_validators.h",
+    "secure_payment_confirmation_instrument.cc",
+    "secure_payment_confirmation_instrument.h",
+    "secure_payment_confirmation_metrics.cc",
+    "secure_payment_confirmation_metrics.h",
+    "sizes.h",
     "url_util.cc",
     "url_util.h",
   ]
 
   if (!is_android) {
     sources += [
-      "autofill_card_validation.cc",
-      "autofill_card_validation.h",
-      "autofill_payment_app.cc",
-      "autofill_payment_app.h",
-      "basic_card_response.cc",
-      "basic_card_response.h",
-      "payer_data.cc",
-      "payer_data.h",
       "payment_options.cc",
       "payment_options.h",
       "payment_options_provider.h",
-      "payment_request_base_delegate.h",
-      "payment_request_data_util.cc",
-      "payment_request_data_util.h",
-      "payment_request_delegate.h",
       "payment_response.cc",
       "payment_response.h",
-      "payments_experimental_features.cc",
-      "payments_experimental_features.h",
       "payments_profile_comparator.cc",
       "payments_profile_comparator.h",
       "strings_util.cc",
       "strings_util.h",
-      "web_payment_request.cc",
-      "web_payment_request.h",
     ]
   }
 
@@ -78,6 +84,7 @@ jumbo_static_library("core") {
     ":error_strings",
     ":method_strings",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//components/link_header_util",
@@ -100,27 +107,32 @@ jumbo_static_library("core") {
   ]
 }
 
-jumbo_static_library("error_strings") {
+static_library("error_strings") {
   sources = [
     "error_strings.cc",
     "error_strings.h",
     "native_error_strings.cc",
     "native_error_strings.h",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "chrome_os_error_strings.cc",
+      "chrome_os_error_strings.h",
+    ]
+  }
 }
 
-jumbo_static_library("method_strings") {
+static_library("method_strings") {
   sources = [
     "method_strings.cc",
     "method_strings.h",
   ]
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
-    "mock_payment_request_delegate.cc",
-    "mock_payment_request_delegate.h",
     "payments_test_util.cc",
     "payments_test_util.h",
     "test_payment_manifest_downloader.cc",
@@ -144,9 +156,10 @@ jumbo_static_library("test_support") {
   ]
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
   sources = [
+    "android_app_description_tools_unittest.cc",
     "can_make_payment_query_unittest.cc",
     "currency_formatter_unittest.cc",
     "journey_logger_unittest.cc",
@@ -159,20 +172,18 @@ jumbo_source_set("unit_tests") {
     "payment_method_data_unittest.cc",
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
+    "secure_payment_confirmation_instrument_unittest.cc",
     "url_util_unittest.cc",
   ]
 
   if (!is_android) {
     sources += [
-      "autofill_payment_app_unittest.cc",
       "basic_card_response_unittest.cc",
       "payment_address_unittest.cc",
       "payment_options_unittest.cc",
       "payment_request_data_util_unittest.cc",
       "payment_response_unittest.cc",
       "payments_profile_comparator_unittest.cc",
-      "strings_util_unittest.cc",
-      "web_payment_request_unittest.cc",
     ]
   }
 
@@ -196,100 +207,4 @@ jumbo_source_set("unit_tests") {
     "//third_party/libaddressinput:test_support",
     "//ui/base",
   ]
-}
-
-if (is_ios) {
-  bundle_data("payments_test_bundle_data") {
-    testonly = true
-
-    sources = [
-      "//components/test/data/payments/abort.js",
-      "//components/test/data/payments/alicepay_bobpay_charliepay_and_cards.js",
-      "//components/test/data/payments/blob_url.js",
-      "//components/test/data/payments/bobpay.js",
-      "//components/test/data/payments/bobpay_and_basic_card_with_modifier_optional_data.js",
-      "//components/test/data/payments/bobpay_and_basic_card_with_modifiers.js",
-      "//components/test/data/payments/bobpay_and_cards.js",
-      "//components/test/data/payments/bobpay_ui_skip.js",
-      "//components/test/data/payments/bobpay_ui_skip_preload.js",
-      "//components/test/data/payments/can_make_payment_metrics.js",
-      "//components/test/data/payments/can_make_payment_query.js",
-      "//components/test/data/payments/can_make_payment_query_bobpay.js",
-      "//components/test/data/payments/can_make_payment_query_cc.js",
-      "//components/test/data/payments/contact_details.js",
-      "//components/test/data/payments/contact_details_and_free_shipping.js",
-      "//components/test/data/payments/debit.js",
-      "//components/test/data/payments/dynamic_shipping.js",
-      "//components/test/data/payments/email.js",
-      "//components/test/data/payments/email_and_free_shipping.js",
-      "//components/test/data/payments/email_and_phone.js",
-      "//components/test/data/payments/extra_shipping_options.js",
-      "//components/test/data/payments/fail_complete.js",
-      "//components/test/data/payments/free_shipping.js",
-      "//components/test/data/payments/initiated.js",
-      "//components/test/data/payments/initiated_test.html",
-      "//components/test/data/payments/long_id.js",
-      "//components/test/data/payments/metrics.js",
-      "//components/test/data/payments/modifier.js",
-      "//components/test/data/payments/multiple_show.js",
-      "//components/test/data/payments/name.js",
-      "//components/test/data/payments/name_and_free_shipping.js",
-      "//components/test/data/payments/no_shipping.js",
-      "//components/test/data/payments/payment_method_identifier.js",
-      "//components/test/data/payments/payment_request.html",
-      "//components/test/data/payments/payment_request.js",
-      "//components/test/data/payments/payment_request_abort_test.html",
-      "//components/test/data/payments/payment_request_alicepay_bobpay_charliepay_and_cards_test.html",
-      "//components/test/data/payments/payment_request_blob_url_test.html",
-      "//components/test/data/payments/payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html",
-      "//components/test/data/payments/payment_request_bobpay_and_basic_card_with_modifiers_test.html",
-      "//components/test/data/payments/payment_request_bobpay_and_cards_test.html",
-      "//components/test/data/payments/payment_request_bobpay_test.html",
-      "//components/test/data/payments/payment_request_bobpay_ui_skip_preload_test.html",
-      "//components/test/data/payments/payment_request_bobpay_ui_skip_test.html",
-      "//components/test/data/payments/payment_request_can_make_payment_metrics_test.html",
-      "//components/test/data/payments/payment_request_can_make_payment_query_bobpay_test.html",
-      "//components/test/data/payments/payment_request_can_make_payment_query_cc_test.html",
-      "//components/test/data/payments/payment_request_can_make_payment_query_test.html",
-      "//components/test/data/payments/payment_request_contact_details_and_free_shipping_test.html",
-      "//components/test/data/payments/payment_request_contact_details_test.html",
-      "//components/test/data/payments/payment_request_debit_test.html",
-      "//components/test/data/payments/payment_request_dynamic_shipping_test.html",
-      "//components/test/data/payments/payment_request_email_and_free_shipping_test.html",
-      "//components/test/data/payments/payment_request_email_and_phone_test.html",
-      "//components/test/data/payments/payment_request_email_test.html",
-      "//components/test/data/payments/payment_request_extra_shipping_options_test.html",
-      "//components/test/data/payments/payment_request_fail_complete_test.html",
-      "//components/test/data/payments/payment_request_free_shipping_test.html",
-      "//components/test/data/payments/payment_request_id.js",
-      "//components/test/data/payments/payment_request_id_test.html",
-      "//components/test/data/payments/payment_request_iframe.html",
-      "//components/test/data/payments/payment_request_long_id_test.html",
-      "//components/test/data/payments/payment_request_main.html",
-      "//components/test/data/payments/payment_request_metrics_test.html",
-      "//components/test/data/payments/payment_request_modifier_test.html",
-      "//components/test/data/payments/payment_request_multiple_requests.html",
-      "//components/test/data/payments/payment_request_multiple_show_test.html",
-      "//components/test/data/payments/payment_request_name_and_free_shipping_test.html",
-      "//components/test/data/payments/payment_request_name_test.html",
-      "//components/test/data/payments/payment_request_no_shipping_test.html",
-      "//components/test/data/payments/payment_request_payment_method_identifier_test.html",
-      "//components/test/data/payments/payment_request_phone_and_free_shipping_test.html",
-      "//components/test/data/payments/payment_request_phone_test.html",
-      "//components/test/data/payments/payment_request_shipping_address_change_test.html",
-      "//components/test/data/payments/payment_request_show_promise.html",
-      "//components/test/data/payments/payment_request_show_twice_test.html",
-      "//components/test/data/payments/phone.js",
-      "//components/test/data/payments/phone_and_free_shipping.js",
-      "//components/test/data/payments/shipping_address_change.js",
-      "//components/test/data/payments/show_promise.js",
-      "//components/test/data/payments/show_twice.js",
-      "//components/test/data/payments/style.css",
-      "//components/test/data/payments/util.js",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/" +
-          "{{source_root_relative_dir}}/{{source_file_part}}",
-    ]
-  }
 }

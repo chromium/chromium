@@ -5,14 +5,17 @@
 #ifndef BASE_TEST_GMOCK_MOVE_SUPPORT_H_
 #define BASE_TEST_GMOCK_MOVE_SUPPORT_H_
 
-#include "testing/gmock/include/gmock/gmock.h"
+#include <cstddef>
+#include <tuple>
+#include <utility>
 
 // A similar action as testing::SaveArg, but it does an assignment with
 // std::move() instead of always performing a copy.
-ACTION_TEMPLATE(MoveArg,
-                HAS_1_TEMPLATE_PARAMS(int, k),
-                AND_1_VALUE_PARAMS(out)) {
-  *out = std::move(::testing::get<k>(args));
+template <size_t I = 0, typename T>
+auto MoveArg(T* out) {
+  return [out](auto&&... args) {
+    *out = std::move(std::get<I>(std::tie(args...)));
+  };
 }
 
 #endif  // BASE_TEST_GMOCK_MOVE_SUPPORT_H_

@@ -9,13 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/cryptauth_api_call_flow.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 struct AccessTokenInfo;
@@ -48,66 +47,70 @@ class CryptAuthClientImpl : public CryptAuthClient {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const cryptauth::DeviceClassifier& device_classifier);
+
+  CryptAuthClientImpl(const CryptAuthClientImpl&) = delete;
+  CryptAuthClientImpl& operator=(const CryptAuthClientImpl&) = delete;
+
   ~CryptAuthClientImpl() override;
 
   // CryptAuthClient:
   void GetMyDevices(const cryptauth::GetMyDevicesRequest& request,
-                    const GetMyDevicesCallback& callback,
-                    const ErrorCallback& error_callback,
+                    GetMyDevicesCallback callback,
+                    ErrorCallback error_callback,
                     const net::PartialNetworkTrafficAnnotationTag&
                         partial_traffic_annotation) override;
   void FindEligibleUnlockDevices(
       const cryptauth::FindEligibleUnlockDevicesRequest& request,
-      const FindEligibleUnlockDevicesCallback& callback,
-      const ErrorCallback& error_callback) override;
+      FindEligibleUnlockDevicesCallback callback,
+      ErrorCallback error_callback) override;
   void FindEligibleForPromotion(
       const cryptauth::FindEligibleForPromotionRequest& request,
-      const FindEligibleForPromotionCallback& callback,
-      const ErrorCallback& error_callback) override;
+      FindEligibleForPromotionCallback callback,
+      ErrorCallback error_callback) override;
   void SendDeviceSyncTickle(
       const cryptauth::SendDeviceSyncTickleRequest& request,
-      const SendDeviceSyncTickleCallback& callback,
-      const ErrorCallback& error_callback,
+      SendDeviceSyncTickleCallback callback,
+      ErrorCallback error_callback,
       const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
       override;
   void ToggleEasyUnlock(const cryptauth::ToggleEasyUnlockRequest& request,
-                        const ToggleEasyUnlockCallback& callback,
-                        const ErrorCallback& error_callback) override;
+                        ToggleEasyUnlockCallback callback,
+                        ErrorCallback error_callback) override;
   void SetupEnrollment(const cryptauth::SetupEnrollmentRequest& request,
-                       const SetupEnrollmentCallback& callback,
-                       const ErrorCallback& error_callback) override;
+                       SetupEnrollmentCallback callback,
+                       ErrorCallback error_callback) override;
   void FinishEnrollment(const cryptauth::FinishEnrollmentRequest& request,
-                        const FinishEnrollmentCallback& callback,
-                        const ErrorCallback& error_callback) override;
+                        FinishEnrollmentCallback callback,
+                        ErrorCallback error_callback) override;
   void SyncKeys(const cryptauthv2::SyncKeysRequest& request,
-                const SyncKeysCallback& callback,
-                const ErrorCallback& error_callback) override;
+                SyncKeysCallback callback,
+                ErrorCallback error_callback) override;
   void EnrollKeys(const cryptauthv2::EnrollKeysRequest& request,
-                  const EnrollKeysCallback& callback,
-                  const ErrorCallback& error_callback) override;
+                  EnrollKeysCallback callback,
+                  ErrorCallback error_callback) override;
   void SyncMetadata(const cryptauthv2::SyncMetadataRequest& request,
-                    const SyncMetadataCallback& callback,
-                    const ErrorCallback& error_callback) override;
+                    SyncMetadataCallback callback,
+                    ErrorCallback error_callback) override;
   void ShareGroupPrivateKey(
       const cryptauthv2::ShareGroupPrivateKeyRequest& request,
-      const ShareGroupPrivateKeyCallback& callback,
-      const ErrorCallback& error_callback) override;
+      ShareGroupPrivateKeyCallback callback,
+      ErrorCallback error_callback) override;
   void BatchNotifyGroupDevices(
       const cryptauthv2::BatchNotifyGroupDevicesRequest& request,
-      const BatchNotifyGroupDevicesCallback& callback,
-      const ErrorCallback& error_callback) override;
+      BatchNotifyGroupDevicesCallback callback,
+      ErrorCallback error_callback) override;
   void BatchGetFeatureStatuses(
       const cryptauthv2::BatchGetFeatureStatusesRequest& request,
-      const BatchGetFeatureStatusesCallback& callback,
-      const ErrorCallback& error_callback) override;
+      BatchGetFeatureStatusesCallback callback,
+      ErrorCallback error_callback) override;
   void BatchSetFeatureStatuses(
       const cryptauthv2::BatchSetFeatureStatusesRequest& request,
-      const BatchSetFeatureStatusesCallback& callback,
-      const ErrorCallback& error_callback) override;
+      BatchSetFeatureStatusesCallback callback,
+      ErrorCallback error_callback) override;
   void GetDevicesActivityStatus(
       const cryptauthv2::GetDevicesActivityStatusRequest& request,
-      const GetDevicesActivityStatusCallback& callback,
-      const ErrorCallback& error_callback) override;
+      GetDevicesActivityStatusCallback callback,
+      ErrorCallback error_callback) override;
   std::string GetAccessTokenUsed() override;
 
  private:
@@ -132,11 +135,11 @@ class CryptAuthClientImpl : public CryptAuthClient {
   void MakeApiCall(
       const GURL& request_url,
       RequestType request_type,
-      const base::Optional<std::string>& serialized_request,
-      const base::Optional<std::vector<std::pair<std::string, std::string>>>&
+      const absl::optional<std::string>& serialized_request,
+      const absl::optional<std::vector<std::pair<std::string, std::string>>>&
           request_as_query_parameters,
-      const base::Callback<void(const ResponseProto&)>& response_callback,
-      const ErrorCallback& error_callback,
+      base::OnceCallback<void(const ResponseProto&)> response_callback,
+      ErrorCallback error_callback,
       const net::PartialNetworkTrafficAnnotationTag&
           partial_traffic_annotation);
 
@@ -144,10 +147,10 @@ class CryptAuthClientImpl : public CryptAuthClient {
   template <class ResponseProto>
   void OnAccessTokenFetched(
       RequestType request_type,
-      const base::Optional<std::string>& serialized_request,
-      const base::Optional<std::vector<std::pair<std::string, std::string>>>&
+      const absl::optional<std::string>& serialized_request,
+      const absl::optional<std::vector<std::pair<std::string, std::string>>>&
           request_as_query_parameters,
-      const base::Callback<void(const ResponseProto&)>& response_callback,
+      base::OnceCallback<void(const ResponseProto&)> response_callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
@@ -155,7 +158,7 @@ class CryptAuthClientImpl : public CryptAuthClient {
   // return the result.
   template <class ResponseProto>
   void OnFlowSuccess(
-      const base::Callback<void(const ResponseProto&)>& result_callback,
+      base::OnceCallback<void(const ResponseProto&)> result_callback,
       const std::string& serialized_response);
 
   // Called when the current API call fails at any step.
@@ -196,8 +199,6 @@ class CryptAuthClientImpl : public CryptAuthClient {
   ErrorCallback error_callback_;
 
   base::WeakPtrFactory<CryptAuthClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthClientImpl);
 };
 
 // Implementation of CryptAuthClientFactory.
@@ -211,6 +212,11 @@ class CryptAuthClientFactoryImpl : public CryptAuthClientFactory {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const cryptauth::DeviceClassifier& device_classifier);
+
+  CryptAuthClientFactoryImpl(const CryptAuthClientFactoryImpl&) = delete;
+  CryptAuthClientFactoryImpl& operator=(const CryptAuthClientFactoryImpl&) =
+      delete;
+
   ~CryptAuthClientFactoryImpl() override;
 
   // CryptAuthClientFactory:
@@ -220,8 +226,6 @@ class CryptAuthClientFactoryImpl : public CryptAuthClientFactory {
   signin::IdentityManager* identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const cryptauth::DeviceClassifier device_classifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthClientFactoryImpl);
 };
 
 }  // namespace device_sync

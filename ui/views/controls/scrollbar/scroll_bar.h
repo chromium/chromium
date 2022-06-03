@@ -5,15 +5,15 @@
 #ifndef UI_VIEWS_CONTROLS_SCROLLBAR_SCROLL_BAR_H_
 #define UI_VIEWS_CONTROLS_SCROLLBAR_SCROLL_BAR_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/animation/scroll_animator.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/repeat_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -45,6 +45,10 @@ class VIEWS_EXPORT ScrollBarController {
   // The provided position is expressed in pixels. It is the new X or Y
   // position which is in the GetMinPosition() / GetMaxPosition range.
   virtual void ScrollToPosition(ScrollBar* source, int position) = 0;
+
+  // Called when the scroll that triggered by gesture or scroll events sequence
+  // ended.
+  virtual void OnScrollEnded() {}
 
   // Returns the amount to scroll. The amount to scroll may be requested in
   // two different amounts. If is_page is true the 'page scroll' amount is
@@ -89,13 +93,16 @@ class VIEWS_EXPORT ScrollBar : public View,
     kNextPage,
   };
 
+  ScrollBar(const ScrollBar&) = delete;
+  ScrollBar& operator=(const ScrollBar&) = delete;
+
   ~ScrollBar() override;
 
   // Returns whether this scrollbar is horizontal.
   bool IsHorizontal() const;
 
   void set_controller(ScrollBarController* controller) {
-     controller_ = controller;
+    controller_ = controller;
   }
   ScrollBarController* controller() const { return controller_; }
 
@@ -131,6 +138,7 @@ class VIEWS_EXPORT ScrollBar : public View,
 
   // ScrollDelegate:
   bool OnScroll(float dx, float dy) override;
+  void OnFlingScrollEnded() override;
 
   // ContextMenuController:
   void ShowContextMenuForViewImpl(View* source,
@@ -165,6 +173,10 @@ class VIEWS_EXPORT ScrollBar : public View,
   // scrollbar.
   virtual int GetThickness() const = 0;
 
+  bool is_scrolling() const {
+    return scroll_status_ == ScrollStatus::kScrollInProgress;
+  }
+
  protected:
   // Create new scrollbar, either horizontal or vertical. These are protected
   // since you need to be creating either a NativeScrollBar or a
@@ -185,6 +197,9 @@ class VIEWS_EXPORT ScrollBar : public View,
   friend class test::ScrollViewTestApi;
   FRIEND_TEST_ALL_PREFIXES(ScrollBarViewsTest, ScrollBarFitsToBottom);
   FRIEND_TEST_ALL_PREFIXES(ScrollBarViewsTest, ThumbFullLengthOfTrack);
+  FRIEND_TEST_ALL_PREFIXES(ScrollBarViewsTest, DragThumbScrollsContent);
+  FRIEND_TEST_ALL_PREFIXES(ScrollBarViewsTest, RightClickOpensMenu);
+  FRIEND_TEST_ALL_PREFIXES(ScrollBarViewsTest, TestPageScrollingByPress);
 
   static base::RetainingOneShotTimer* GetHideTimerForTesting(
       ScrollBar* scroll_bar);
@@ -221,7 +236,7 @@ class VIEWS_EXPORT ScrollBar : public View,
   ScrollAmount DetermineScrollAmountByKeyCode(
       const ui::KeyboardCode& keycode) const;
 
-  base::Optional<int> GetDesiredScrollOffset(ScrollAmount amount);
+  absl::optional<int> GetDesiredScrollOffset(ScrollAmount amount);
 
   // The size of the scrolled contents, in pixels.
   int contents_size_ = 0;
@@ -260,11 +275,25 @@ class VIEWS_EXPORT ScrollBar : public View,
   // is enabled. See crbug.com/329354.
   gfx::Vector2dF roundoff_error_;
 
+  // The enumeration keeps track of the current status of the scroll. Used when
+  // the contents scrolled by the gesture or scroll events sequence.
+  enum class ScrollStatus {
+    kScrollNone,
+    kScrollStarted,
+    kScrollInProgress,
+
+    // The contents will keep scrolling for a while if the events sequence ends
+    // with ui::ET_SCROLL_FLING_START. Set the status to kScrollInEnding if it
+    // happens, and set it to kScrollEnded while the scroll really ended.
+    kScrollInEnding,
+    kScrollEnded,
+  };
+
+  ScrollStatus scroll_status_ = ScrollStatus::kScrollNone;
+
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<ScrollAnimator> scroll_animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollBar);
 };
 
 }  // namespace views

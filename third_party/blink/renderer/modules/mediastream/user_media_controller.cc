@@ -23,40 +23,46 @@
  */
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
 const char UserMediaController::kSupplementName[] = "UserMediaController";
 
-UserMediaController::UserMediaController(LocalFrame& frame)
-    : Supplement<LocalFrame>(frame),
-      ContextLifecycleObserver(frame.GetDocument()) {}
+UserMediaController* UserMediaController::From(LocalDOMWindow* window) {
+  auto* controller =
+      Supplement<LocalDOMWindow>::From<UserMediaController>(window);
+  if (!controller) {
+    controller = MakeGarbageCollected<UserMediaController>(window);
+    Supplement<LocalDOMWindow>::ProvideTo(*window, controller);
+  }
+  return controller;
+}
 
-void UserMediaController::Trace(blink::Visitor* visitor) {
-  Supplement<LocalFrame>::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+UserMediaController::UserMediaController(LocalDOMWindow* window)
+    : Supplement<LocalDOMWindow>(*window),
+      ExecutionContextLifecycleObserver(window) {}
+
+void UserMediaController::Trace(Visitor* visitor) const {
+  Supplement<LocalDOMWindow>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(client_);
 }
 
 UserMediaClient* UserMediaController::Client() {
-  if (!client_) {
+  auto* window = To<LocalDOMWindow>(GetExecutionContext());
+  if (!client_ && window) {
+    DCHECK(window->GetFrame());
     client_ = MakeGarbageCollected<UserMediaClient>(
-        GetFrame(), GetFrame()->GetTaskRunner(TaskType::kInternalMedia));
+        window->GetFrame(), window->GetTaskRunner(TaskType::kInternalMedia));
   }
 
   return client_;
 }
 
-void UserMediaController::ContextDestroyed(ExecutionContext*) {
+void UserMediaController::ContextDestroyed() {
   if (!client_)
     return;
   client_->ContextDestroyed();
-}
-
-void ProvideUserMediaTo(LocalFrame& frame) {
-  UserMediaController::ProvideTo(
-      frame, MakeGarbageCollected<UserMediaController>(frame));
 }
 
 }  // namespace blink

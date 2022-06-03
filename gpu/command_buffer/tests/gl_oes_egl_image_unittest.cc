@@ -7,13 +7,14 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "ui/gl/gl_image_native_pixmap.h"
 #endif
 
@@ -34,15 +35,15 @@ class GpuOESEGLImageTest : public testing::Test,
                            public gpu::GpuCommandBufferTestEGL {
  protected:
   void SetUp() override {
-    egl_gles2_initialized_ = InitializeEGLGLES2(kImageWidth, kImageHeight);
+    egl_initialized_ = InitializeEGL(kImageWidth, kImageHeight);
   }
 
   void TearDown() override { RestoreGLDefault(); }
 
-  bool egl_gles2_initialized_;
+  bool egl_initialized_{false};
 };
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // TODO(crbug.com/835072): re-enable this test on ASAN once bugs are fixed.
 #if !defined(ADDRESS_SANITIZER)
 
@@ -77,7 +78,7 @@ SHADER(
 // texture and verifies that the colors match with the pixels uploaded into
 // the initial GL texture.
 TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
-  SKIP_TEST_IF(!egl_gles2_initialized_);
+  SKIP_TEST_IF(!egl_initialized_);
 
   // This extension is required for creating an EGLImage from a GL texture.
   SKIP_TEST_IF(!HasEGLExtension("EGL_KHR_image_base"));
@@ -175,6 +176,6 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
   glDeleteTextures(1, &texture_id);
 }
 #endif  // !defined(ADDRESS_SANITIZER)
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace

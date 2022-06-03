@@ -11,14 +11,11 @@
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/devtools/grit/devtools_resources_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-
-#if !defined(OS_FUCHSIA)
-#include "content/browser/devtools/grit/devtools_resources_map.h"  // nogncheck
-#endif
 
 namespace content {
 
@@ -51,14 +48,11 @@ void DevToolsFrontendHost::SetupExtensionsAPI(
 // static
 scoped_refptr<base::RefCountedMemory>
 DevToolsFrontendHost::GetFrontendResourceBytes(const std::string& path) {
-#if !defined(OS_FUCHSIA)
   for (size_t i = 0; i < kDevtoolsResourcesSize; ++i) {
-    if (path == kDevtoolsResources[i].name) {
-      return GetContentClient()->GetDataResourceBytes(
-          kDevtoolsResources[i].value);
+    if (path == kDevtoolsResources[i].path) {
+      return GetContentClient()->GetDataResourceBytes(kDevtoolsResources[i].id);
     }
   }
-#endif  // defined(OS_FUCHSIA)
   return nullptr;
 }
 
@@ -84,17 +78,15 @@ DevToolsFrontendHostImpl::DevToolsFrontendHostImpl(
                                   receiver_.BindNewEndpointAndPassRemote());
 }
 
-DevToolsFrontendHostImpl::~DevToolsFrontendHostImpl() {
-}
+DevToolsFrontendHostImpl::~DevToolsFrontendHostImpl() = default;
 
-void DevToolsFrontendHostImpl::BadMessageRecieved() {
+void DevToolsFrontendHostImpl::BadMessageReceived() {
   bad_message::ReceivedBadMessage(web_contents_->GetMainFrame()->GetProcess(),
                                   bad_message::DFH_BAD_EMBEDDER_MESSAGE);
 }
 
-void DevToolsFrontendHostImpl::DispatchEmbedderMessage(
-    const std::string& message) {
-  handle_message_callback_.Run(message);
+void DevToolsFrontendHostImpl::DispatchEmbedderMessage(base::Value message) {
+  handle_message_callback_.Run(std::move(message));
 }
 
 }  // namespace content

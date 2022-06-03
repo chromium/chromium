@@ -246,7 +246,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.SetInnerHTMLFromString(shadow_content);
+  shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById("foo");
   Element* s1 = shadow_root.QuerySelector("#s1");
@@ -312,7 +312,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.SetInnerHTMLFromString(shadow_content);
+  shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById("foo");
   Element* bar = GetDocument().getElementById("bar");
@@ -517,4 +517,42 @@ TEST_F(SelectionAdjusterTest, ShadowHostAndShadowTreeAreEditable) {
     </div>)HTML",
             GetSelectionTextInFlatTreeFromBody(result2));
 }
+
+TEST_F(SelectionAdjusterTest, AdjustSelectionTypeWithShadow) {
+  SetBodyContent("<p id='host'>foo</p>");
+  SetShadowContent("bar<slot></slot>", "host");
+
+  Element* host = GetDocument().getElementById("host");
+  const Position& base = Position(host->firstChild(), 0);
+  const Position& extent = Position(host, 0);
+  const SelectionInDOMTree& selection =
+      SelectionInDOMTree::Builder().Collapse(base).Extend(extent).Build();
+
+  // Should not crash
+  const SelectionInDOMTree& adjusted =
+      SelectionAdjuster::AdjustSelectionType(selection);
+
+  EXPECT_EQ(base, adjusted.Base());
+  EXPECT_EQ(extent, adjusted.Extent());
+}
+
+TEST_F(SelectionAdjusterTest, AdjustShadowWithRootAndHost) {
+  SetBodyContent("<div id='host'></div>");
+  ShadowRoot* shadow_root = SetShadowContent("", "host");
+
+  Element* host = GetDocument().getElementById("host");
+  const SelectionInDOMTree& selection = SelectionInDOMTree::Builder()
+                                            .Collapse(Position(shadow_root, 0))
+                                            .Extend(Position(host, 0))
+                                            .Build();
+
+  // Should not crash
+  const SelectionInDOMTree& result =
+      SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
+          selection);
+
+  EXPECT_EQ(Position(shadow_root, 0), result.Base());
+  EXPECT_EQ(Position(shadow_root, 0), result.Extent());
+}
+
 }  // namespace blink

@@ -8,7 +8,7 @@
 namespace weblayer {
 struct MainParams;
 
-weblayer::MainParams CreateMainParams();
+MainParams CreateMainParams();
 
 }  // namespace weblayer
 

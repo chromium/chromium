@@ -1,0 +1,56 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SYSTEM_PHONEHUB_CONTINUE_BROWSING_CHIP_H_
+#define ASH_SYSTEM_PHONEHUB_CONTINUE_BROWSING_CHIP_H_
+
+#include "ash/ash_export.h"
+#include "ash/components/phonehub/browser_tabs_model.h"
+#include "ui/gfx/canvas.h"
+#include "ui/views/controls/button/button.h"
+
+namespace chromeos {
+namespace phonehub {
+class UserActionRecorder;
+}  // namespace phonehub
+}  // namespace chromeos
+
+namespace ash {
+
+// A chip containing a web page info (title, web URL, etc.) that users left off
+// from their phone.
+class ASH_EXPORT ContinueBrowsingChip : public views::Button {
+ public:
+  ContinueBrowsingChip(
+      const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
+      int index,
+      size_t total_count,
+      chromeos::phonehub::UserActionRecorder* user_action_recorder);
+
+  ~ContinueBrowsingChip() override;
+  ContinueBrowsingChip(ContinueBrowsingChip&) = delete;
+  ContinueBrowsingChip operator=(ContinueBrowsingChip&) = delete;
+
+  // views::Button:
+  void OnPaintBackground(gfx::Canvas* canvas) override;
+  const char* GetClassName() const override;
+
+ private:
+  void ButtonPressed();
+
+  // The URL of the tab to open.
+  GURL url_;
+
+  // The index of the chip as it is ordered in the parent view.
+  int index_;
+
+  // The total number of chips in the parent view.
+  size_t total_count_;
+
+  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
+};
+
+}  // namespace ash
+
+#endif  // ASH_SYSTEM_PHONEHUB_CONTINUE_BROWSING_CHIP_H_

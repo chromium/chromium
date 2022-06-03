@@ -1,5 +1,5 @@
 UNKNOWN_TYPE | s | Search | all | s_1-default
-SEARCH_TERM | q | Search |  | s_1-default
+UNKNOWN_TYPE | q | Search |  | s_1-default
 EMAIL_ADDRESS | email1 | E-mail: |  | email1_1-default
 EMAIL_ADDRESS | email2 | Confirm E-mail: |  | email1_1-default
 UNKNOWN_TYPE | gender | Male | M | email1_1-default

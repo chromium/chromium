@@ -16,12 +16,13 @@ from pylib import constants
 _MINIUMUM_TIMEOUT = 3.0
 _PER_LINE_TIMEOUT = .002  # Should be able to process 500 lines per second.
 _PROCESS_START_TIMEOUT = 10.0
+_MAX_RESTARTS = 10  # Should be plenty unless tool is crashing on start-up.
 
 
 class Deobfuscator(object):
   def __init__(self, mapping_path):
-    script_path = os.path.join(
-        constants.GetOutDirectory(), 'bin', 'java_deobfuscate')
+    script_path = os.path.join(constants.DIR_SOURCE_ROOT, 'build', 'android',
+                               'stacktrace', 'java_deobfuscate.py')
     cmd = [script_path, mapping_path]
     # Allow only one thread to call TransformLines() at a time.
     self._lock = threading.Lock()
@@ -32,9 +33,12 @@ class Deobfuscator(object):
     self._proc = None
     # Start process eagerly to hide start-up latency.
     self._proc_start_time = time.time()
-    self._proc = subprocess.Popen(
-        cmd, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        close_fds=True)
+    self._proc = subprocess.Popen(cmd,
+                                  bufsize=1,
+                                  stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE,
+                                  universal_newlines=True,
+                                  close_fds=True)
 
   def IsClosed(self):
     return self._closed_called or self._proc.returncode is not None
@@ -134,22 +138,31 @@ class Deobfuscator(object):
 
 class DeobfuscatorPool(object):
   # As of Sep 2017, each instance requires about 500MB of RAM, as measured by:
-  # /usr/bin/time -v out/Release/bin/java_deobfuscate \
+  # /usr/bin/time -v build/android/stacktrace/java_deobfuscate.py \
   #     out/Release/apks/ChromePublic.apk.mapping
   def __init__(self, mapping_path, pool_size=4):
     self._mapping_path = mapping_path
-    self._pool = [Deobfuscator(mapping_path) for _ in xrange(pool_size)]
+    self._pool = [Deobfuscator(mapping_path) for _ in range(pool_size)]
     # Allow only one thread to select from the pool at a time.
     self._lock = threading.Lock()
+    self._num_restarts = 0
 
   def TransformLines(self, lines):
     with self._lock:
       assert self._pool, 'TransformLines() called on a closed DeobfuscatorPool.'
+
+      # De-obfuscation is broken.
+      if self._num_restarts == _MAX_RESTARTS:
+        raise Exception('Deobfuscation seems broken.')
+
       # Restart any closed Deobfuscators.
       for i, d in enumerate(self._pool):
         if d.IsClosed():
           logging.warning('deobfuscator: Restarting closed instance.')
           self._pool[i] = Deobfuscator(self._mapping_path)
+          self._num_restarts += 1
+          if self._num_restarts == _MAX_RESTARTS:
+            logging.warning('deobfuscator: MAX_RESTARTS reached.')
 
       selected = next((x for x in self._pool if x.IsReady()), self._pool[0])
       # Rotate the order so that next caller will not choose the same one.

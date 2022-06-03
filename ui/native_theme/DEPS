@@ -3,6 +3,7 @@ include_rules = [
   "+skia/ext",
   "+third_party/skia",
   "+ui/base",
+  "+ui/color",
   "+ui/display",
   "+ui/gfx",
   "+ui/resources/grit/ui_resources.h",

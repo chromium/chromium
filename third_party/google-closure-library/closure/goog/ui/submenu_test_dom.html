@@ -1,0 +1,82 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style type="text/css">
+ .goog-menu {
+  position: absolute;
+  color: #000;
+  border: 1px solid #B5B6B5;
+  background-color: #F3F3F7;
+  cursor: default;
+  font: normal small arial, helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+.goog-menuitem {
+  padding: 2px 1.5em 2px 5px;
+  margin: 0;
+  list-style: none;
+}
+
+.goog-menuitem-rtl {
+  padding: 2px 5px 2px 1.5em;
+}
+
+.goog-submenu-arrow {
+  text-align: right;
+  position: absolute;
+  right: 0;
+  left: auto;
+}
+
+.goog-menuitem-rtl .goog-submenu-arrow {
+  text-align: left;
+  position: absolute;
+  left: 0;
+  right: auto;
+}
+
+.goog-menuitem-disabled .goog-submenu-arrow {
+  display: none;
+}
+</style>
+<p>
+ Here's a menu (with submenus) defined in markup:
+</p>
+<div class="goog-menu" id="demoMenu">
+ <div class="goog-menuitem">
+  Open...
+ </div>
+ <div class="goog-submenu">
+  Open Recent
+  <div class="goog-menu">
+   <div class="goog-menuitem">
+    Annual Report.pdf
+   </div>
+   <div class="goog-menuitem">
+    Quarterly Update.pdf
+   </div>
+   <div class="goog-menuitem">
+    Enemies List.txt
+   </div>
+   <div class="goog-submenu">
+    More
+    <div class="goog-menu">
+     <div class="goog-menuitem">
+      Foo.txt
+     </div>
+     <div class="goog-menuitem">
+      Bar.txt
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+<div id="sandbox">
+</div>

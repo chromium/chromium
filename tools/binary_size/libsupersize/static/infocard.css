@@ -19,8 +19,8 @@
   opacity: 0;
   transition: 0.3s ease transform, 0.3s ease opacity, 0.3s ease visibility;
 }
-.tree-container:hover ~ .infocards,
-.tree-container.focused ~ .infocards,
+.tree-view:hover ~ .infocards,
+.tree-view.focused ~ .infocards,
 .infocards:hover {
   visibility: visible;
   opacity: 1;
@@ -31,7 +31,7 @@
   display: grid;
   padding: 16px;
 }
-.infocard-container {
+.infocard-artifact {
   grid-template-areas: 'header icon' 'type type';
   grid-template-columns: 1fr 80px;
   grid-column-gap: 16px;
@@ -58,7 +58,7 @@
   padding: 8px 2px 8px 8px;
   border-radius: 50%;
 }
-.container-icon-info {
+.artifact-icon-info {
   position: relative;
   padding: 0;
   height: 80px;
@@ -78,7 +78,7 @@
 .symbol-name-info {
   font-weight: 500;
 }
-.type-info-container {
+.type-info-artifact {
   grid-area: type;
   margin-bottom: 0;
 }

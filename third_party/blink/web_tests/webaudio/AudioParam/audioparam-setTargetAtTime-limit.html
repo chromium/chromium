@@ -71,7 +71,7 @@
           timeConstant: timeConstant,
           eps: limitThreshold,
           // Experimentally determined
-          threshold: 4.7470e-8,
+          threshold: 1.2591e-7,
           tailThreshold: {absoluteThreshold: 2.3310e-5}
         }).then(() => task.done());
       });
@@ -104,7 +104,7 @@
                duration, 0, targetValue, context.sampleRate, timeConstant);
 
              should(actual, 'Output')
-              .beCloseToArray(expected, {absoluteThreshold: 9.8172e-7});
+              .beCloseToArray(expected, {absoluteThreshold: 5.0098e-6});
           })
           .then(() => task.done());
       });

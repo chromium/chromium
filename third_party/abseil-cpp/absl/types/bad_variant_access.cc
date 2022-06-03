@@ -14,7 +14,7 @@
 
 #include "absl/types/bad_variant_access.h"
 
-#ifndef ABSL_HAVE_STD_VARIANT
+#ifndef ABSL_USES_STD_VARIANT
 
 #include <cstdlib>
 #include <stdexcept>
@@ -23,6 +23,7 @@
 #include "absl/base/internal/raw_logging.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 //////////////////////////
 // [variant.bad.access] //
@@ -57,6 +58,7 @@ void Rethrow() {
 }
 
 }  // namespace variant_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_HAVE_STD_VARIANT
+#endif  // ABSL_USES_STD_VARIANT

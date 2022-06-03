@@ -115,10 +115,10 @@ inline Element* TreeOrderedMap::Get(const AtomicString& key,
                                     const TreeScope& scope) const {
   DCHECK(key);
 
-  MapEntry* entry = map_.at(key);
-  if (!entry)
+  auto it = map_.find(key);
+  if (it == map_.end())
     return nullptr;
-
+  MapEntry* entry = it->value;
   DCHECK(entry->count);
   if (entry->element)
     return entry->element;
@@ -138,6 +138,9 @@ inline Element* TreeOrderedMap::Get(const AtomicString& key,
 #if DCHECK_IS_ON()
   DCHECK(g_remove_scope_level);
 #endif
+  // Since we didn't find any elements for this key, remove the key from the
+  // map here.
+  map_.erase(key);
   return nullptr;
 }
 
@@ -194,18 +197,19 @@ HTMLSlotElement* TreeOrderedMap::GetSlotByName(const AtomicString& key,
 
 Element* TreeOrderedMap::GetCachedFirstElementWithoutAccessingNodeTree(
     const AtomicString& key) {
-  MapEntry* entry = map_.at(key);
-  if (!entry)
+  auto it = map_.find(key);
+  if (it == map_.end())
     return nullptr;
+  MapEntry* entry = it->value;
   DCHECK(entry->count);
   return entry->element;
 }
 
-void TreeOrderedMap::Trace(Visitor* visitor) {
+void TreeOrderedMap::Trace(Visitor* visitor) const {
   visitor->Trace(map_);
 }
 
-void TreeOrderedMap::MapEntry::Trace(Visitor* visitor) {
+void TreeOrderedMap::MapEntry::Trace(Visitor* visitor) const {
   visitor->Trace(element);
   visitor->Trace(ordered_list);
 }

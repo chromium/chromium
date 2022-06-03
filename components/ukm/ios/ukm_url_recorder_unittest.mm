@@ -5,7 +5,6 @@
 #include "components/ukm/ios/ukm_url_recorder.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #import "base/test/ios/wait_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -15,6 +14,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -79,14 +79,14 @@ class UkmUrlRecorderTest : public web::WebTestWithWebState {
   testing::AssertionResult RecordedUrl(
       ukm::SourceId source_id,
       GURL expected_url,
-      base::Optional<GURL> expected_initial_url) {
+      absl::optional<GURL> expected_initial_url) {
     auto* source = test_ukm_recorder_.GetSourceForSourceId(source_id);
     if (!source)
       return testing::AssertionFailure() << "No URL recorded";
     if (source->url() != expected_url)
       return testing::AssertionFailure()
              << "Url was " << source->url() << ", expected: " << expected_url;
-    base::Optional<GURL> initial_url;
+    absl::optional<GURL> initial_url;
     if (source->urls().size() > 1u)
       initial_url = source->urls().front();
     if (expected_initial_url != initial_url) {
@@ -121,7 +121,7 @@ TEST_F(UkmUrlRecorderTest, Basic) {
   GURL url = server_.GetURL("/title1.html");
   EXPECT_TRUE(LoadUrlAndWait(url));
   ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state());
-  EXPECT_TRUE(RecordedUrl(source_id, url, base::nullopt));
+  EXPECT_TRUE(RecordedUrl(source_id, url, absl::nullopt));
 }
 
 // Tests that subframe URLs do not get recorded.
@@ -130,7 +130,7 @@ TEST_F(UkmUrlRecorderTest, IgnoreUrlInSubframe) {
   GURL subframe_url = server_.GetURL("/title1.html");
   EXPECT_TRUE(LoadUrlAndWait(main_url));
   ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(web_state());
-  EXPECT_TRUE(RecordedUrl(source_id, main_url, base::nullopt));
+  EXPECT_TRUE(RecordedUrl(source_id, main_url, absl::nullopt));
   EXPECT_TRUE(DidNotRecordUrl(subframe_url));
 }
 

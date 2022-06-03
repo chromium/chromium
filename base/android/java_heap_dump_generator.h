@@ -5,10 +5,9 @@
 #ifndef BASE_ANDROID_JAVA_HEAP_DUMP_GENERATOR_H_
 #define BASE_ANDROID_JAVA_HEAP_DUMP_GENERATOR_H_
 
-#include <string>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 namespace android {

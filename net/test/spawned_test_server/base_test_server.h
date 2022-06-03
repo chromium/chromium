@@ -19,10 +19,10 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/ssl/ssl_client_cert_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -41,13 +41,10 @@ class BaseTestServer {
   // http://www.iana.org/assignments/uri-schemes.html
   enum Type {
     TYPE_BASIC_AUTH_PROXY,
-    TYPE_FTP,
     TYPE_HTTP,
     TYPE_HTTPS,
     TYPE_WS,
     TYPE_WSS,
-    TYPE_TCP_ECHO,
-    TYPE_UDP_ECHO,
     TYPE_PROXY,
   };
 
@@ -56,18 +53,6 @@ class BaseTestServer {
   struct SSLOptions {
     enum ServerCertificate {
       CERT_OK,
-
-      // CERT_AUTO causes the testserver to generate a test certificate issued
-      // by "Testing CA" (see net/data/ssl/certificates/ocsp-test-root.pem).
-      CERT_AUTO,
-      // As with CERT_AUTO, but the chain will include a generated intermediate
-      // as well. The testserver will include the intermediate cert in the TLS
-      // handshake.
-      CERT_AUTO_WITH_INTERMEDIATE,
-      // Generate an intermediate cert issued by "Testing CA", and generate a
-      // test certificate issued by that intermediate with an AIA record for
-      // retrieving the intermediate.
-      CERT_AUTO_AIA_INTERMEDIATE,
 
       CERT_MISMATCHED_NAME,
       CERT_EXPIRED,
@@ -92,77 +77,11 @@ class BaseTestServer {
       // A certificate with invalid notBefore and notAfter times. Windows'
       // certificate library will not parse this certificate.
       CERT_BAD_VALIDITY,
-    };
 
-    // OCSPStatus enumerates the types of OCSP response that the testserver
-    // can produce.
-    enum OCSPStatus {
-      OCSP_OK,
-      OCSP_REVOKED,
-      OCSP_INVALID_RESPONSE,
-      OCSP_UNAUTHORIZED,
-      OCSP_UNKNOWN,
-      OCSP_INVALID_RESPONSE_DATA,
-      OCSP_TRY_LATER,
-      OCSP_MISMATCHED_SERIAL,
-    };
-
-    // OCSPDate enumerates the date ranges for OCSP responses that the
-    // testserver can produce.
-    enum OCSPDate {
-      OCSP_DATE_VALID,
-      OCSP_DATE_OLD,
-      OCSP_DATE_EARLY,
-      OCSP_DATE_LONG,
-      OCSP_DATE_LONGER,
-    };
-
-    // OCSPSingleResponse is used when specifying multiple stapled responses,
-    // each
-    // with their own CertStatus and date validity.
-    struct OCSPSingleResponse {
-      OCSPStatus status;
-      OCSPDate date;
-    };
-
-    // OCSPProduced enumerates the validity of the producedAt field in OCSP
-    // responses produced by the testserver.
-    enum OCSPProduced {
-      OCSP_PRODUCED_VALID,
-      OCSP_PRODUCED_BEFORE_CERT,
-      OCSP_PRODUCED_AFTER_CERT,
-    };
-
-    // Bitmask of key exchange algorithms that the test server supports and that
-    // can be selectively enabled or disabled.
-    enum KeyExchange {
-      // Special value used to indicate that any algorithm the server supports
-      // is acceptable. Preferred over explicitly OR-ing all key exchange
-      // algorithms.
-      KEY_EXCHANGE_ANY = 0,
-
-      KEY_EXCHANGE_RSA = (1 << 0),
-      KEY_EXCHANGE_DHE_RSA = (1 << 1),
-      KEY_EXCHANGE_ECDHE_RSA = (1 << 2),
-    };
-
-    // Bitmask of bulk encryption algorithms that the test server supports
-    // and that can be selectively enabled or disabled.
-    enum BulkCipher {
-      // Special value used to indicate that any algorithm the server supports
-      // is acceptable. Preferred over explicitly OR-ing all ciphers.
-      BULK_CIPHER_ANY = 0,
-
-      BULK_CIPHER_RC4 = (1 << 0),
-      BULK_CIPHER_AES128 = (1 << 1),
-      BULK_CIPHER_AES256 = (1 << 2),
-
-      // NOTE: 3DES support in the Python test server has external
-      // dependencies and not be available on all machines. Clients may not
-      // be able to connect if only 3DES is specified.
-      BULK_CIPHER_3DES = (1 << 3),
-
-      BULK_CIPHER_AES128GCM = (1 << 4),
+      // A certificate that covers a number of test names. See [test_names] in
+      // net/data/ssl/scripts/ee.cnf. More may be added by editing this list and
+      // and rerunning net/data/ssl/scripts/generate-test-certs.sh.
+      CERT_TEST_NAMES,
     };
 
     // NOTE: the values of these enumerators are passed to the the Python test
@@ -195,6 +114,7 @@ class BaseTestServer {
 
     // Initialize a new SSLOptions that will use the specified certificate.
     explicit SSLOptions(ServerCertificate cert);
+    explicit SSLOptions(base::FilePath cert);
     SSLOptions(const SSLOptions& other);
     ~SSLOptions();
 
@@ -202,85 +122,9 @@ class BaseTestServer {
     // |server_certificate|.
     base::FilePath GetCertificateFile() const;
 
-    // GetOCSPArgument returns the value of any OCSP argument to testserver or
-    // the empty string if there is none.
-    std::string GetOCSPArgument() const;
-
-    // GetOCSPDateArgument returns the value of the OCSP date argument to
-    // testserver or the empty string if there is none.
-    std::string GetOCSPDateArgument() const;
-
-    // GetOCSPProducedArgument returns the value of the OCSP produced argument
-    // to testserver or the empty string if there is none.
-    std::string GetOCSPProducedArgument() const;
-
-    // GetOCSPIntermediateArgument returns the value of any OCSP intermediate
-    // argument to testserver or the empty string if there is none.
-    std::string GetOCSPIntermediateArgument() const;
-
-    // GetOCSPIntermediateDateArgument returns the value of the OCSP
-    // intermediate date argument to testserver or the empty string if there is
-    // none.
-    std::string GetOCSPIntermediateDateArgument() const;
-
-    // GetOCSPIntermediateProducedArgument returns the value of the OCSP
-    // intermediate produced argument to testserver or the empty string if
-    // there is none.
-    std::string GetOCSPIntermediateProducedArgument() const;
-
     // The certificate to use when serving requests.
     ServerCertificate server_certificate = CERT_OK;
-
-    // If |server_certificate==CERT_AUTO| or |CERT_AUTO_WITH_INTERMEDIATE| then
-    // this determines the type of leaf OCSP response returned. Ignored if
-    // |ocsp_responses| is non-empty.
-    OCSPStatus ocsp_status = OCSP_OK;
-
-    // If |server_certificate==CERT_AUTO| or |CERT_AUTO_WITH_INTERMEDIATE| then
-    // this determines the date range set on the leaf OCSP response returned.
-    // Ignore if |ocsp_responses| is non-empty.
-    OCSPDate ocsp_date = OCSP_DATE_VALID;
-
-    // If |server_certificate==CERT_AUTO| or |CERT_AUTO_WITH_INTERMEDIATE|,
-    // contains the status and validity for multiple stapled responeses.
-    // Overrides |ocsp_status| and |ocsp_date| when
-    // non-empty.
-    std::vector<OCSPSingleResponse> ocsp_responses;
-
-    // If |server_certificate==CERT_AUTO| or |CERT_AUTO_WITH_INTERMEDIATE| then
-    // this determines the validity of the producedAt field on the returned
-    // leaf OCSP response.
-    OCSPProduced ocsp_produced = OCSP_PRODUCED_VALID;
-
-    // If |server_certificate==CERT_AUTO_WITH_INTERMEDIATE| then this
-    // determines the type of intermediate OCSP response returned. Ignored if
-    // |ocsp_intermediate_responses| is non-empty.
-    OCSPStatus ocsp_intermediate_status = OCSP_OK;
-
-    // If |server_certificate==CERT_AUTO_WITH_INTERMEDIATE| then this
-    // determines the date range set on the intermediate OCSP response
-    // returned. Ignore if |ocsp_intermediate_responses| is non-empty.
-    OCSPDate ocsp_intermediate_date = OCSP_DATE_VALID;
-
-    // If |server_certificate==CERT_AUTO_WITH_INTERMEDIATE|, contains the
-    // status and validity for multiple stapled responeses. Overrides
-    // |ocsp_intermediate_status| and |ocsp_intermediate_date| when non-empty.
-    // TODO(mattm): testserver doesn't actually staple OCSP responses for
-    // intermediates.
-    std::vector<OCSPSingleResponse> ocsp_intermediate_responses;
-
-    // If |server_certificate==CERT_AUTO_WITH_INTERMEDIATE| then this
-    // determines the validity of the producedAt field on the returned
-    // intermediate OCSP response.
-    OCSPProduced ocsp_intermediate_produced = OCSP_PRODUCED_VALID;
-
-    // If not zero, |cert_serial| will be the serial number of the
-    // auto-generated leaf certificate when |server_certificate==CERT_AUTO|.
-    uint64_t cert_serial = 0;
-
-    // If not empty, |cert_common_name| will be the common name of the
-    // auto-generated leaf certificate when |server_certificate==CERT_AUTO|.
-    std::string cert_common_name;
+    base::FilePath custom_certificate;
 
     // True if a CertificateRequest should be sent to the client during
     // handshaking.
@@ -297,21 +141,6 @@ class BaseTestServer {
     // CertificateRequest.
     std::vector<SSLClientCertType> client_cert_types;
 
-    // A bitwise-OR of KeyExchnage that should be used by the
-    // HTTPS server, or KEY_EXCHANGE_ANY to indicate that all implemented
-    // key exchange algorithms are acceptable.
-    int key_exchanges = KEY_EXCHANGE_ANY;
-
-    // A bitwise-OR of BulkCipher that should be used by the
-    // HTTPS server, or BULK_CIPHER_ANY to indicate that all implemented
-    // ciphers are acceptable.
-    int bulk_ciphers = BULK_CIPHER_ANY;
-
-    // If true, pass the --https-record-resume argument to testserver.py which
-    // causes it to log session cache actions and echo the log on
-    // /ssl-session-cache.
-    bool record_resume = false;
-
     // If not TLS_INTOLERANT_NONE, the server will abort any handshake that
     // negotiates an intolerant TLS version in order to test version fallback.
     TLSIntolerantLevel tls_intolerant = TLS_INTOLERANT_NONE;
@@ -323,44 +152,8 @@ class BaseTestServer {
     // The maximum TLS version to support.
     TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
 
-    // fallback_scsv_enabled, if true, causes the server to process the
-    // TLS_FALLBACK_SCSV cipher suite. This cipher suite is sent by Chrome
-    // when performing TLS version fallback in response to an SSL handshake
-    // failure. If this option is enabled then the server will reject fallback
-    // connections.
-    bool fallback_scsv_enabled = false;
-
-    // Temporary glue for testing: validation of SCTs is application-controlled
-    // and can be appropriately mocked out, so sending fake data here does not
-    // affect handshaking behaviour.
-    // TODO(ekasper): replace with valid SCT files for test certs.
-    // (Fake) SignedCertificateTimestampList (as a raw binary string) to send in
-    // a TLS extension.
-    std::string signed_cert_timestamps_tls_ext;
-
-    // Whether to staple the OCSP response.
-    bool staple_ocsp_response = false;
-
-    // Whether to make the OCSP server unavailable. This does not affect the
-    // stapled OCSP response.
-    bool ocsp_server_unavailable = false;
-
-    // List of protocols to advertise in NPN extension.  NPN is not supported if
-    // list is empty.  Note that regardless of what protocol is negotiated, the
-    // test server will continue to speak HTTP/1.1.
-    std::vector<std::string> npn_protocols;
-
-    // List of supported ALPN protocols.
-    std::vector<std::string> alpn_protocols;
-
     // Whether to send a fatal alert immediately after completing the handshake.
     bool alert_after_handshake = false;
-
-    // If true, disables channel ID on the server.
-    bool disable_channel_id = false;
-
-    // If true, disables extended master secret tls extension.
-    bool disable_extended_master_secret = false;
 
     // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
     // random.
@@ -376,6 +169,9 @@ class BaseTestServer {
 
   // Initialize a TestServer with a specific set of SSLOptions for HTTPS or WSS.
   BaseTestServer(Type type, const SSLOptions& ssl_options);
+
+  BaseTestServer(const BaseTestServer&) = delete;
+  BaseTestServer& operator=(const BaseTestServer&) = delete;
 
   // Starts the server blocking until the server is ready.
   bool Start() WARN_UNUSED_RESULT;
@@ -410,6 +206,8 @@ class BaseTestServer {
   bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
 
   GURL GetURL(const std::string& path) const;
+  GURL GetURL(const std::string& hostname,
+              const std::string& relative_url) const;
 
   GURL GetURLWithUser(const std::string& path,
                       const std::string& user) const;
@@ -432,11 +230,6 @@ class BaseTestServer {
   // TYPE_WSS.
   void set_websocket_basic_auth(bool ws_basic_auth) {
     ws_basic_auth_ = ws_basic_auth;
-  }
-
-  // Disable creation of anonymous FTP user.
-  void set_no_anonymous_ftp_user(bool no_anonymous_ftp_user) {
-    no_anonymous_ftp_user_ = no_anonymous_ftp_user;
   }
 
   // Redirect proxied CONNECT requests to localhost.
@@ -511,7 +304,7 @@ class BaseTestServer {
   HostPortPair host_port_pair_;
 
   // Holds the data sent from the server (e.g., port number).
-  base::Optional<base::Value> server_data_;
+  absl::optional<base::Value> server_data_;
 
   // If |type_| is TYPE_HTTPS or TYPE_WSS, the TLS settings to use for the test
   // server.
@@ -528,15 +321,10 @@ class BaseTestServer {
   // Is WebSocket basic HTTP authentication enabled?
   bool ws_basic_auth_ = false;
 
-  // Disable creation of anonymous FTP user?
-  bool no_anonymous_ftp_user_ = false;
-
   // Redirect proxied CONNECT requests to localhost?
   bool redirect_connect_to_localhost_ = false;
 
   std::unique_ptr<ScopedPortException> allowed_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseTestServer);
 };
 
 }  // namespace net

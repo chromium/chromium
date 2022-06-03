@@ -14,15 +14,18 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -43,76 +46,81 @@ enum class InvalidOriginReason {
 // A UsageTracker object will own one ClientUsageTracker instance per client.
 // This class is not thread-safe. All methods other than the constructor must be
 // called on the same sequence.
-class ClientUsageTracker : public SpecialStoragePolicy::Observer,
-                           public base::SupportsWeakPtr<ClientUsageTracker> {
+class ClientUsageTracker : public SpecialStoragePolicy::Observer {
  public:
-  using OriginSetByHost = std::map<std::string, std::set<url::Origin>>;
+  using StorageKeySetByHost =
+      std::map<std::string, std::set<blink::StorageKey>>;
 
-  ClientUsageTracker(UsageTracker* tracker,
-                     scoped_refptr<QuotaClient> client,
-                     blink::mojom::StorageType type,
-                     SpecialStoragePolicy* special_storage_policy);
+  // The caller must ensure that `client` outlives this instance.
+  ClientUsageTracker(
+      UsageTracker* tracker,
+      mojom::QuotaClient* client,
+      blink::mojom::StorageType type,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy);
+
+  ClientUsageTracker(const ClientUsageTracker&) = delete;
+  ClientUsageTracker& operator=(const ClientUsageTracker&) = delete;
+
   ~ClientUsageTracker() override;
 
-  void GetGlobalLimitedUsage(UsageCallback callback);
   void GetGlobalUsage(GlobalUsageCallback callback);
   void GetHostUsage(const std::string& host, UsageCallback callback);
-  void UpdateUsageCache(const url::Origin& origin, int64_t delta);
+  void UpdateUsageCache(const blink::StorageKey& storage_key, int64_t delta);
   int64_t GetCachedUsage() const;
-  void GetCachedHostsUsage(std::map<std::string, int64_t>* host_usage) const;
-  void GetCachedOriginsUsage(
-      std::map<url::Origin, int64_t>* origin_usage) const;
-  void GetCachedOrigins(std::set<url::Origin>* origins) const;
-  bool IsUsageCacheEnabledForOrigin(const url::Origin& origin) const;
-  void SetUsageCacheEnabled(const url::Origin& origin, bool enabled);
+  std::map<std::string, int64_t> GetCachedHostsUsage() const;
+  std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
+  std::set<blink::StorageKey> GetCachedStorageKeys() const;
+  bool IsUsageCacheEnabledForStorageKey(
+      const blink::StorageKey& storage_key) const;
+  void SetUsageCacheEnabled(const blink::StorageKey& storage_key, bool enabled);
+
  private:
-  using UsageMap = std::map<url::Origin, int64_t>;
+  using UsageMap = std::map<blink::StorageKey, int64_t>;
 
-  struct AccumulateInfo {
-    size_t pending_jobs = 0;
-    int64_t limited_usage = 0;
-    int64_t unlimited_usage = 0;
-  };
+  struct AccumulateInfo;
 
-  void AccumulateLimitedOriginUsage(AccumulateInfo* info,
-                                    UsageCallback callback,
-                                    int64_t usage);
-  void DidGetOriginsForGlobalUsage(GlobalUsageCallback callback,
-                                   const std::set<url::Origin>& origins);
+  void DidGetStorageKeysForGlobalUsage(
+      GlobalUsageCallback callback,
+      const std::vector<blink::StorageKey>& storage_keys);
   void AccumulateHostUsage(AccumulateInfo* info,
-                           GlobalUsageCallback callback,
+                           GlobalUsageCallback& callback,
                            int64_t limited_usage,
                            int64_t unlimited_usage);
 
-  void DidGetOriginsForHostUsage(const std::string& host,
-                                 const std::set<url::Origin>& origins);
+  void DidGetStorageKeysForHostUsage(
+      const std::string& host,
+      const std::vector<blink::StorageKey>& storage_keys);
 
-  void GetUsageForOrigins(const std::string& host,
-                          const std::set<url::Origin>& origins);
-  void AccumulateOriginUsage(AccumulateInfo* info,
-                             const std::string& host,
-                             const base::Optional<url::Origin>& origin,
-                             int64_t usage);
+  void GetUsageForStorageKeys(
+      const std::string& host,
+      const std::vector<blink::StorageKey>& storage_keys);
+  void AccumulateStorageKeyUsage(
+      AccumulateInfo* info,
+      const std::string& host,
+      const absl::optional<blink::StorageKey>& storage_key,
+      int64_t usage);
 
   // Methods used by our GatherUsage tasks, as a task makes progress
-  // origins and hosts are added incrementally to the cache.
-  void AddCachedOrigin(const url::Origin& origin, int64_t usage);
+  // storage keys and hosts are added incrementally to the cache.
+  void AddCachedStorageKey(const blink::StorageKey& storage_key, int64_t usage);
   void AddCachedHost(const std::string& host);
 
   int64_t GetCachedHostUsage(const std::string& host) const;
-  int64_t GetCachedGlobalUnlimitedUsage();
-  bool GetCachedOriginUsage(const url::Origin& origin, int64_t* usage) const;
+  bool GetCachedStorageKeyUsage(const blink::StorageKey& storage_key,
+                                int64_t* usage) const;
 
   // SpecialStoragePolicy::Observer overrides
-  void OnGranted(const GURL& origin_url, int change_flags) override;
-  void OnRevoked(const GURL& origin_url, int change_flags) override;
+  // TODO(crbug.com/1215208): Migrate to use StorageKey when the StoragePolicy
+  // is migrated to use StorageKey instead of Origin.
+  void OnGranted(const url::Origin& origin_url, int change_flags) override;
+  void OnRevoked(const url::Origin& origin_url, int change_flags) override;
   void OnCleared() override;
 
   void UpdateGlobalUsageValue(int64_t* usage_value, int64_t delta);
 
-  bool IsStorageUnlimited(const url::Origin& origin) const;
+  bool IsStorageUnlimited(const blink::StorageKey& storage_key) const;
 
-  scoped_refptr<QuotaClient> client_;
+  mojom::QuotaClient* client_;
   const blink::mojom::StorageType type_;
 
   int64_t global_limited_usage_;
@@ -121,8 +129,8 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer,
   std::set<std::string> cached_hosts_;
   std::map<std::string, UsageMap> cached_usage_by_host_;
 
-  OriginSetByHost non_cached_limited_origins_by_host_;
-  OriginSetByHost non_cached_unlimited_origins_by_host_;
+  StorageKeySetByHost non_cached_limited_storage_keys_by_host_;
+  StorageKeySetByHost non_cached_unlimited_storage_keys_by_host_;
 
   CallbackQueueMap<
       base::OnceCallback<void(int64_t limited_usage, int64_t unlimited_usage)>,
@@ -131,11 +139,11 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer,
       int64_t>
       host_usage_accumulators_;
 
-  scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
+  const scoped_refptr<SpecialStoragePolicy> special_storage_policy_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(ClientUsageTracker);
+  base::WeakPtrFactory<ClientUsageTracker> weak_factory_{this};
 };
 
 }  // namespace storage

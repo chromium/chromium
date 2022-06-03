@@ -20,7 +20,8 @@ For more comprehensive list of design docs relating to Viz, check out
     2. [client](#directory-structure-client)
     3. [host](#directory-structure-host)
     4. [service](#directory-structure-service)
-3. [Naming guidelines with Mojo](#naming-guidelines)
+3. [Runtime Features](#runtime-features)
+4. [Naming guidelines with Mojo](#naming-guidelines)
 
 ## Terminology
 
@@ -158,6 +159,28 @@ be composited.
 | viz/service/display_embedder/ |
 | viz/service/hit_test/         |
 | viz/service/surfaces/         |
+| viz/service/transitions/      |
+
+#### service/frame_sinks/video_capture
+**FrameSinkVideoCaptureImpl**: This component implements the [Mojo
+interfaces](../../services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom)
+to capture frames that are sent to the compositing service, producing a stream
+of video frames. It provides a capture pipeline where asynchronous GPU readback
+is executed (via [CopyOutputRequests](common/frame_sinks/README.md), and then
+CopyOutputResults are applied to a pool of shared memory buffers backing video
+frames that are sent to privileged consumers.
+
+A capturer instance is created via [FrameSinkManager's
+CreateVideoCapturer()](../../services/viz/privileged/mojom/compositing/frame_sink_manager.mojom)
+method.
+
+| Can depend on:                |
+|:------------------------------|
+| media/base/*                  |
+| media/capture/*               |
+| media/mojo/*                  |
+| viz/common/*                  |
+| viz/service/frame_sinks/*     |
 
 #### service/gl
 **GL**: This component implements the Mojo interfaces for allocating (and
@@ -204,6 +227,57 @@ display compositor.
 |:---------------|
 | viz/common/*   |
 
+#### service/transitions
+**Transitions**: This directory is in support of the shared element transitions
+project. See //third\_party/blink/rendering/core/document\_transition/README.md
+
+| Can depend on:        |
+|:----------------------|
+| viz/common/           |
+| viz/service/surfaces/ |
+
+## Runtime Features
+
+Viz related runtime feature flags, aka `base::Feature`s, should go in
+[components/viz/common/features.h](https://cs.chromium.org/chromium/src/components/viz/common/features.h).
+
+When adding a new feature `kMyFeature` it's recommended that you add a helper
+function `IsMyFeatureEnabled()` to check if the feature is enabled. Code should
+then use `IsMyFeatureEnabled()` instead of checking
+`base::FeatureList::IsEnabled(kMyFeature)`. Having a helper function makes it
+easy to enforce preconditions that must be met for the feature to be enabled or
+to unconditionally enable a feature on a per platform basis.
+
+### Runtime Feature Checks
+
+Never check if a feature is enabled in a hot code path as
+`base::FeatureList::IsEnabled()` has a non-trivial runtime cost (it does a map
+lookup). Ideally the feature state should be stored as a member variable in a
+long lived class.
+
+Resist the temptation to cache if a feature is enabled in a variable with static
+storage duration, for example:
+
+```cpp
+bool IsMyFeatureEnabled() {
+  static bool enabled = base::FeatureList::IsEnabled(kMyFeature);  // NO!
+  return enabled;
+}
+```
+
+While this avoids repeated calls to `FeatureList::IsEnabled()` it breaks tests.
+The first time `IsMyFeatureEnabled()` is called from the test runner process the
+feature state is cached. If a later test uses `base::ScopedFeatureList` to
+change the feature state, that change will not be reflected in
+`IsMyFeatureEnabled()` and the test will (most likely) fail. Test retries in a
+new test runner process will pass, adding hidden flake and slowing down CQ.
+
+### Testing Viz Features
+
+Ensure that features are enabled/disabled for testing before any viz code is
+initialized. As a general rule `base::ScopedFeatureList` should be the first
+thing initialized in a test fixture to avoid data races and incorrect feature
+values.
 
 ## Naming guidelines with Mojo <a name="naming-guidelines"></a>
 

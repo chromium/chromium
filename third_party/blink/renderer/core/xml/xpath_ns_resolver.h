@@ -27,12 +27,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_NS_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_NS_RESOLVER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-class XPathNSResolver : public ScriptWrappable {
+class CORE_EXPORT XPathNSResolver : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

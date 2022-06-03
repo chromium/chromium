@@ -13,9 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/captive_portal/captive_portal_detector.h"
-#include "components/captive_portal/captive_portal_metrics.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/captive_portal/core/captive_portal_detector.h"
+#include "components/captive_portal/core/captive_portal_metrics.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
@@ -45,6 +45,7 @@ CaptivePortalBlockingPage::CaptivePortalBlockingPage(
     const GURL& request_url,
     const GURL& login_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
+    bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
@@ -57,6 +58,7 @@ CaptivePortalBlockingPage::CaptivePortalBlockingPage(
                           std::move(ssl_cert_reporter),
                           false /* overridable */,
                           base::Time::Now(),
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
       open_login_callback_(open_login_callback),
       login_url_(login_url),
@@ -99,14 +101,14 @@ std::string CaptivePortalBlockingPage::GetWiFiSSID() const {
   // currently associated WiFi access point. |WiFiService| isn't available on
   // Linux so |net::GetWifiSSID| is used instead.
   std::string ssid;
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_APPLE)
   std::unique_ptr<wifi::WiFiService> wifi_service(wifi::WiFiService::Create());
   wifi_service->Initialize(nullptr);
   std::string error;
   wifi_service->GetConnectedNetworkSSID(&ssid, &error);
   if (!error.empty())
     return std::string();
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   ssid = net::GetWifiSSID();
 #elif defined(OS_ANDROID)
   ssid = net::android::GetWifiSSID();
@@ -117,36 +119,29 @@ std::string CaptivePortalBlockingPage::GetWiFiSSID() const {
   return ssid;
 }
 
-bool CaptivePortalBlockingPage::ShouldCreateNewNavigation() const {
-  // Captive portal interstitials always create new navigation entries, as
-  // opposed to SafeBrowsing subresource interstitials which just block access
-  // to the current page and don't create a new entry.
-  return true;
-}
-
 void CaptivePortalBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetString("iconClass", "icon-offline");
-  load_time_data->SetString("type", "CAPTIVE_PORTAL");
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetBoolean("hide_primary_button", false);
+    base::Value* load_time_data) {
+  load_time_data->SetStringKey("iconClass", "icon-offline");
+  load_time_data->SetStringKey("type", "CAPTIVE_PORTAL");
+  load_time_data->SetBoolKey("overridable", false);
+  load_time_data->SetBoolKey("hide_primary_button", false);
 
   // |IsWifiConnection| isn't accurate on some platforms, so always try to get
   // the Wi-Fi SSID even if |IsWifiConnection| is false.
   std::string wifi_ssid = GetWiFiSSID();
   bool is_wifi = !wifi_ssid.empty() || IsWifiConnection();
 
-  load_time_data->SetString(
+  load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
 
-  base::string16 tab_title =
+  std::u16string tab_title =
       l10n_util::GetStringUTF16(is_wifi ? IDS_CAPTIVE_PORTAL_HEADING_WIFI
                                         : IDS_CAPTIVE_PORTAL_HEADING_WIRED);
-  load_time_data->SetString("tabTitle", tab_title);
-  load_time_data->SetString("heading", tab_title);
+  load_time_data->SetStringKey("tabTitle", tab_title);
+  load_time_data->SetStringKey("heading", tab_title);
 
-  base::string16 paragraph;
+  std::u16string paragraph;
   if (login_url_.is_empty() ||
       login_url_.spec() == captive_portal::CaptivePortalDetector::kDefaultURL) {
     // Don't show the login url when it's empty or is the portal detection URL.
@@ -168,7 +163,7 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
     // If |languages| is empty, punycode in |login_host| will always be decoded.
-    base::string16 login_host = url_formatter::IDNToUnicode(login_url_.host());
+    std::u16string login_host = url_formatter::IDNToUnicode(login_url_.host());
     if (base::i18n::IsRTL())
       base::i18n::WrapStringWithLTRFormatting(&login_host);
 
@@ -183,19 +178,29 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
           net::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)), login_host);
     }
   }
-  load_time_data->SetString("primaryParagraph", paragraph);
+  load_time_data->SetStringKey("primaryParagraph", paragraph);
+  load_time_data->SetStringKey(
+      "optInLink",
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data->SetStringKey(
+      "enhancedProtectionMessage",
+      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
   // Explicitly specify other expected fields to empty.
-  load_time_data->SetString("openDetails", "");
-  load_time_data->SetString("closeDetails", "");
-  load_time_data->SetString("explanationParagraph", "");
-  load_time_data->SetString("finalParagraph", "");
-  load_time_data->SetString("recurrentErrorParagraph", "");
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
+  load_time_data->SetStringKey("openDetails", "");
+  load_time_data->SetStringKey("closeDetails", "");
+  load_time_data->SetStringKey("explanationParagraph", "");
+  load_time_data->SetStringKey("finalParagraph", "");
+  load_time_data->SetStringKey("recurrentErrorParagraph", "");
+  load_time_data->SetBoolKey("show_recurrent_error_paragraph", false);
 
-  if (cert_report_helper())
+  if (cert_report_helper()) {
     cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
-  else
-    load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox, false);
+    cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
+  } else {
+    load_time_data->SetBoolKey(security_interstitials::kDisplayCheckBox, false);
+    load_time_data->SetBoolKey(
+        security_interstitials::kDisplayEnhancedProtectionMessage, false);
+  }
 }
 
 void CaptivePortalBlockingPage::CommandReceived(const std::string& command) {
@@ -233,8 +238,4 @@ void CaptivePortalBlockingPage::CommandReceived(const std::string& command) {
       NOTREACHED() << "Command " << cmd
                    << " isn't handled by the captive portal interstitial.";
   }
-}
-
-void CaptivePortalBlockingPage::OverrideEntry(content::NavigationEntry* entry) {
-  entry->GetSSL() = content::SSLStatus(ssl_info_);
 }

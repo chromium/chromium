@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_L10N_FONT_UTIL_H_
-#define UI_BASE_L10N_FONT_UTIL_H_
+#ifndef UI_BASE_L10N_L10N_FONT_UTIL_H_
+#define UI_BASE_L10N_L10N_FONT_UTIL_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
-class Font;
+class FontList;
 }
 
 namespace ui {
@@ -18,14 +18,13 @@ namespace ui {
 // its localized size data and the given font. The width in cols is held in a
 // localized string resource identified by |col_resource_id|, the height in the
 // same fashion.
-UI_BASE_EXPORT int GetLocalizedContentsWidthForFont(int col_resource_id,
-                                                    const gfx::Font& font);
-UI_BASE_EXPORT int GetLocalizedContentsHeightForFont(int row_resource_id,
-                                                     const gfx::Font& font);
-UI_BASE_EXPORT gfx::Size GetLocalizedContentsSizeForFont(int col_resource_id,
-                                                         int row_resource_id,
-                                                         const gfx::Font& font);
+COMPONENT_EXPORT(UI_BASE)
+int GetLocalizedContentsWidthForFontList(int col_resource_id,
+                                         const gfx::FontList& font_list);
+COMPONENT_EXPORT(UI_BASE)
+int GetLocalizedContentsHeightForFontList(int row_resource_id,
+                                          const gfx::FontList& font_list);
 
 }  // namespace ui
 
-#endif  // UI_BASE_L10N_FONT_UTIL_H_
+#endif  // UI_BASE_L10N_L10N_FONT_UTIL_H_

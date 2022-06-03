@@ -4,16 +4,15 @@
 
 #include "chrome/browser/extensions/unpacked_installer.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -24,6 +23,8 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -33,7 +34,6 @@
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
-#include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
@@ -51,7 +51,7 @@ namespace extensions {
 
 namespace {
 
-const char kUnpackedExtensionsBlacklistedError[] =
+const char kUnpackedExtensionsBlocklistedError[] =
     "Loading of unpacked extensions is disabled by the administrator.";
 
 const char kImportMinVersionNewer[] =
@@ -65,11 +65,11 @@ void MaybeCleanupMetadataFolder(const base::FilePath& extension_path) {
   const std::vector<base::FilePath> reserved_filepaths =
       file_util::GetReservedMetadataFilePaths(extension_path);
   for (const auto& file : reserved_filepaths)
-    base::DeleteFile(file, false /*recursive*/);
+    base::DeletePathRecursively(file);
 
   const base::FilePath& metadata_dir = extension_path.Append(kMetadataFolder);
   if (base::IsDirectoryEmpty(metadata_dir))
-    base::DeleteFileRecursively(metadata_dir);
+    base::DeletePathRecursively(metadata_dir);
 }
 
 }  // namespace
@@ -116,12 +116,13 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
       base::MakeAbsoluteFilePath(path_util::ResolveHomeDirectory(path_in));
 
   if (!IsLoadingUnpackedAllowed()) {
-    ReportExtensionLoadError(kUnpackedExtensionsBlacklistedError);
+    ReportExtensionLoadError(kUnpackedExtensionsBlocklistedError);
     return false;
   }
 
   std::string error;
-  if (!LoadExtension(Manifest::COMMAND_LINE, GetFlags(), &error)) {
+  if (!LoadExtension(mojom::ManifestLocation::kCommandLine, GetFlags(),
+                     &error)) {
     ReportExtensionLoadError(error);
     return false;
   }
@@ -160,7 +161,8 @@ void UnpackedInstaller::StartInstallChecks() {
   // they are disabled for extensions loaded from the command-line is that
   // installing unpacked extensions is asynchronous, but there can be
   // dependencies between the extensions loaded by the command line.
-  if (extension()->manifest()->location() != Manifest::COMMAND_LINE) {
+  if (extension()->manifest()->location() !=
+      mojom::ManifestLocation::kCommandLine) {
     if (service->browser_terminating())
       return;
 
@@ -213,8 +215,8 @@ void UnpackedInstaller::OnInstallChecksComplete(
     return;
   }
 
-  base::string16 error_message;
-  if (errors.count(PreloadCheck::DISALLOWED_BY_POLICY))
+  std::u16string error_message;
+  if (errors.count(PreloadCheck::Error::kDisallowedByPolicy))
     error_message = policy_check_->GetErrorMessage();
   else
     error_message = requirements_check_->GetErrorMessage();
@@ -226,10 +228,13 @@ void UnpackedInstaller::OnInstallChecksComplete(
 int UnpackedInstaller::GetFlags() {
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
-      Manifest::ShouldAlwaysAllowFileAccess(Manifest::UNPACKED);
+      Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
-  if (prefs->HasAllowFileAccessSetting(id))
+  if (allow_file_access_.has_value()) {
+    allow_file_access = *allow_file_access_;
+  } else if (prefs->HasAllowFileAccessSetting(id)) {
     allow_file_access = prefs->AllowFileAccess(id);
+  }
 
   int result = Extension::FOLLOW_SYMLINKS_ANYWHERE;
   if (allow_file_access)
@@ -240,7 +245,7 @@ int UnpackedInstaller::GetFlags() {
   return result;
 }
 
-bool UnpackedInstaller::LoadExtension(Manifest::Location location,
+bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
                                       int flags,
                                       std::string* error) {
   // Clean up the kMetadataFolder if necessary. This prevents spurious
@@ -251,7 +256,7 @@ bool UnpackedInstaller::LoadExtension(Manifest::Location location,
   // Treat presence of illegal filenames as a hard error for unpacked
   // extensions. Don't do so for command line extensions since this breaks
   // Chrome OS autotests (crbug.com/764787).
-  if (location == Manifest::UNPACKED &&
+  if (location == mojom::ManifestLocation::kUnpacked &&
       !file_util::CheckForIllegalFilenames(extension_path_, error)) {
     return false;
   }
@@ -268,23 +273,27 @@ bool UnpackedInstaller::LoadExtension(Manifest::Location location,
 bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
   DCHECK(extension());
 
-  if (!declarative_net_request::DNRManifestData::HasRuleset(*extension())) {
-    // The extension did not provide a ruleset.
-    return true;
-  }
+  // Index all static rulesets and therefore parse all static rules at
+  // installation time for unpacked extensions. Throw an error for invalid rules
+  // where possible so that the extension developer is immediately notified.
+  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
+      RulesetFilter::kIncludeAll;
+  auto parse_flags =
+      declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
+      declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
 
-  // TODO(crbug.com/761107): Change this so that we don't need to parse JSON
-  // in the browser process.
-  auto ruleset_source =
-      declarative_net_request::RulesetSource::CreateStatic(*extension());
-  declarative_net_request::IndexAndPersistJSONRulesetResult result =
-      ruleset_source.IndexAndPersistJSONRulesetUnsafe();
-  if (!result.success) {
-    *error = std::move(result.error);
+  // TODO(crbug.com/761107): IndexStaticRulesetsUnsafe will read and parse JSON
+  // synchronously. Change this so that we don't need to parse JSON in the
+  // browser process.
+  declarative_net_request::InstallIndexHelper::Result result =
+      declarative_net_request::InstallIndexHelper::IndexStaticRulesetsUnsafe(
+          *extension(), ruleset_filter, parse_flags);
+  if (result.error) {
+    *error = std::move(*result.error);
     return false;
   }
 
-  dnr_ruleset_checksum_ = result.ruleset_checksum;
+  ruleset_install_prefs_ = std::move(result.ruleset_install_prefs);
   if (!result.warnings.empty())
     extension_->AddInstallWarnings(std::move(result.warnings));
 
@@ -294,19 +303,21 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
 bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
   if (!service_weak_.get())
     return true;
-  // If there is a "*" in the extension blacklist, then no extensions should be
-  // allowed at all (except explicitly whitelisted extensions).
+  // If there is a "*" in the extension blocklist, then no extensions should be
+  // allowed at all (except explicitly allowlisted extensions).
   return !ExtensionManagementFactory::GetForBrowserContext(
-              service_weak_->profile())->BlacklistedByDefault();
+              service_weak_->profile())
+              ->BlocklistedByDefault();
 }
 
 void UnpackedInstaller::GetAbsolutePath() {
   extension_path_ = base::MakeAbsoluteFilePath(extension_path_);
 
   // Set priority explicitly to avoid unwanted task priority inheritance.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI, base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&UnpackedInstaller::CheckExtensionFileAccess, this));
+  content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UnpackedInstaller::CheckExtensionFileAccess, this));
 }
 
 void UnpackedInstaller::CheckExtensionFileAccess() {
@@ -315,7 +326,7 @@ void UnpackedInstaller::CheckExtensionFileAccess() {
     return;
 
   if (!IsLoadingUnpackedAllowed()) {
-    ReportExtensionLoadError(kUnpackedExtensionsBlacklistedError);
+    ReportExtensionLoadError(kUnpackedExtensionsBlocklistedError);
     return;
   }
 
@@ -326,18 +337,18 @@ void UnpackedInstaller::CheckExtensionFileAccess() {
 
 void UnpackedInstaller::LoadWithFileAccess(int flags) {
   std::string error;
-  if (!LoadExtension(Manifest::UNPACKED, flags, &error)) {
+  if (!LoadExtension(mojom::ManifestLocation::kUnpacked, flags, &error)) {
     // Set priority explicitly to avoid unwanted task priority inheritance.
-    base::PostTask(FROM_HERE,
-                   {BrowserThread::UI, base::TaskPriority::USER_BLOCKING},
+    content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+        ->PostTask(FROM_HERE,
                    base::BindOnce(&UnpackedInstaller::ReportExtensionLoadError,
                                   this, error));
     return;
   }
 
   // Set priority explicitly to avoid unwanted task priority inheritance.
-  base::PostTask(FROM_HERE,
-                 {BrowserThread::UI, base::TaskPriority::USER_BLOCKING},
+  content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE,
                  base::BindOnce(&UnpackedInstaller::StartInstallChecks, this));
 }
 
@@ -361,13 +372,26 @@ void UnpackedInstaller::InstallExtension() {
     return;
   }
 
+  // Force file access and/or incognito state and set install param if
+  // requested.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
+  if (allow_file_access_.has_value()) {
+    prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    prefs->SetInstallParam(extension()->id(), *install_param_);
+  }
+
   PermissionsUpdater perms_updater(service_weak_->profile());
   perms_updater.InitializePermissions(extension());
   perms_updater.GrantActivePermissions(extension());
 
   service_weak_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
                                       kInstallFlagInstallImmediately,
-                                      dnr_ruleset_checksum_);
+                                      ruleset_install_prefs_);
 
   if (!callback_.is_null())
     std::move(callback_).Run(extension(), extension_path_, std::string());

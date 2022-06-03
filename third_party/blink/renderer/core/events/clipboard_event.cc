@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/events/clipboard_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_clipboard_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 
 namespace blink {
@@ -45,7 +46,7 @@ bool ClipboardEvent::IsClipboardEvent() const {
   return true;
 }
 
-void ClipboardEvent::Trace(blink::Visitor* visitor) {
+void ClipboardEvent::Trace(Visitor* visitor) const {
   visitor->Trace(clipboard_data_);
   Event::Trace(visitor);
 }

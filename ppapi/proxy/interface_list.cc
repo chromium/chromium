@@ -10,6 +10,7 @@
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "ppapi/c/dev/ppb_audio_input_dev.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
@@ -25,7 +26,6 @@
 #include "ppapi/c/dev/ppb_printing_dev.h"
 #include "ppapi/c/dev/ppb_text_input_dev.h"
 #include "ppapi/c/dev/ppb_trace_event_dev.h"
-#include "ppapi/c/dev/ppb_truetype_font_dev.h"
 #include "ppapi/c/dev/ppb_url_util_dev.h"
 #include "ppapi/c/dev/ppb_var_deprecated.h"
 #include "ppapi/c/dev/ppb_video_capture_dev.h"
@@ -34,7 +34,6 @@
 #include "ppapi/c/ppb_audio.h"
 #include "ppapi/c/ppb_audio_buffer.h"
 #include "ppapi/c/ppb_audio_config.h"
-#include "ppapi/c/ppb_audio_encoder.h"
 #include "ppapi/c/ppb_console.h"
 #include "ppapi/c/ppb_core.h"
 #include "ppapi/c/ppb_file_io.h"
@@ -78,15 +77,7 @@
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
 #include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppb_flash.h"
-#include "ppapi/c/private/ppb_flash_clipboard.h"
-#include "ppapi/c/private/ppb_flash_drm.h"
-#include "ppapi/c/private/ppb_flash_file.h"
 #include "ppapi/c/private/ppb_flash_font_file.h"
-#include "ppapi/c/private/ppb_flash_fullscreen.h"
-#include "ppapi/c/private/ppb_flash_menu.h"
-#include "ppapi/c/private/ppb_flash_message_loop.h"
-#include "ppapi/c/private/ppb_flash_print.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
@@ -97,7 +88,6 @@
 #include "ppapi/c/private/ppb_udp_socket_private.h"
 #include "ppapi/c/private/ppb_uma_private.h"
 #include "ppapi/c/private/ppb_x509_certificate_private.h"
-#include "ppapi/c/trusted/ppb_broker_trusted.h"
 #include "ppapi/c/trusted/ppb_browser_font_trusted.h"
 #include "ppapi/c/trusted/ppb_char_set_trusted.h"
 #include "ppapi/c/trusted/ppb_file_chooser_trusted.h"
@@ -106,10 +96,8 @@
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/ppb_audio_proxy.h"
-#include "ppapi/proxy/ppb_broker_proxy.h"
 #include "ppapi/proxy/ppb_buffer_proxy.h"
 #include "ppapi/proxy/ppb_core_proxy.h"
-#include "ppapi/proxy/ppb_flash_message_loop_proxy.h"
 #include "ppapi/proxy/ppb_graphics_3d_proxy.h"
 #include "ppapi/proxy/ppb_image_data_proxy.h"
 #include "ppapi/proxy/ppb_instance_proxy.h"
@@ -190,11 +178,11 @@ InterfaceList::InterfaceList() {
     Permission current_required_permission = PERMISSION_DEV;
     #include "ppapi/thunk/interfaces_ppb_public_dev.h"
   }
+#if !defined(OS_NACL)
   {
     Permission current_required_permission = PERMISSION_PRIVATE;
     #include "ppapi/thunk/interfaces_ppb_private.h"
   }
-#if !defined(OS_NACL)
   {
     Permission current_required_permission = PERMISSION_FLASH;
     #include "ppapi/thunk/interfaces_ppb_private_flash.h"
@@ -344,8 +332,7 @@ const void* InterfaceList::GetInterfaceForPPB(const std::string& name) {
   if (g_process_global_permissions.Get().HasPermission(
           found->second->required_permission())) {
     // Only log interface use once per plugin.
-    found->second->LogWithUmaOnce(
-        PluginGlobals::Get()->GetBrowserSender(), name);
+    found->second->LogWithUmaOnce(name);
     return found->second->iface();
   }
   return nullptr;
@@ -358,8 +345,7 @@ const void* InterfaceList::GetInterfaceForPPP(const std::string& name) const {
   return found->second->iface();
 }
 
-void InterfaceList::InterfaceInfo::LogWithUmaOnce(
-    IPC::Sender* sender, const std::string& name) {
+void InterfaceList::InterfaceInfo::LogWithUmaOnce(const std::string& name) {
   {
     base::AutoLock acquire(sent_to_uma_lock_);
     if (sent_to_uma_)
@@ -367,8 +353,7 @@ void InterfaceList::InterfaceInfo::LogWithUmaOnce(
     sent_to_uma_ = true;
   }
   int hash = InterfaceList::HashInterfaceName(name);
-  PluginGlobals::Get()->GetBrowserSender()->Send(
-      new PpapiHostMsg_LogInterfaceUsage(hash));
+  base::UmaHistogramSparse("Pepper.InterfaceUsed", hash);
 }
 
 void InterfaceList::AddProxy(ApiID id,

@@ -9,23 +9,25 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_state/core/security_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ReputationServiceTest : public ChromeRenderViewHostTestHarness {
+ public:
+  ReputationServiceTest(const ReputationServiceTest&) = delete;
+  ReputationServiceTest& operator=(const ReputationServiceTest&) = delete;
+
  protected:
   ReputationServiceTest() {}
   ~ReputationServiceTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReputationServiceTest);
 };
 
 // Test that the blocklist blocks patterns as expected.
 TEST_F(ReputationServiceTest, BlocklistTest) {
-  SetSafetyTipBadRepPatterns(
+  reputation::SetSafetyTipBadRepPatterns(
       {"domain.test/", "directory.test/foo/", "path.test/foo/bar.html",
        "query.test/foo/bar.html?baz=test", "sub.subdomain.test/"});
 
@@ -92,6 +94,7 @@ TEST_F(ReputationServiceTest, BlocklistTest) {
       };
 
   for (auto test : kTests) {
-    EXPECT_EQ(GetSafetyTipUrlBlockType(GURL(test.first)), test.second);
+    EXPECT_EQ(reputation::GetSafetyTipUrlBlockType(GURL(test.first)),
+              test.second);
   }
 }

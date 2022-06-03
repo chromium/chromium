@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

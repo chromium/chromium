@@ -19,8 +19,11 @@ enum CacheType {
   PNACL_CACHE,                // Backing store the PNaCl translation cache
   GENERATED_BYTE_CODE_CACHE,  // Backing store for renderer generated data like
                               // bytecode for JavaScript.
-  GENERATED_NATIVE_CODE_CACHE,  // Backing store for renderer generated data
-                                // like native code for WebAssembly.
+  GENERATED_NATIVE_CODE_CACHE,      // Backing store for renderer generated data
+                                    // like native code for WebAssembly.
+  GENERATED_WEBUI_BYTE_CODE_CACHE,  // Backing store for renderer generated data
+                                    // like bytecode for JavaScript from WebUI
+                                    // pages.
 };
 
 // The types of disk cache backend, only used at backend instantiation.

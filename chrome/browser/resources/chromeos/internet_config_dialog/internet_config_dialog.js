@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import './strings.m.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * @fileoverview
  * 'internet-config-dialog' is used to configure a new or existing network
@@ -11,13 +24,15 @@
 Polymer({
   is: 'internet-config-dialog',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [I18nBehavior],
 
   properties: {
     /** @private */
     shareAllowEnable_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('shareNetworkAllowEnable');
       }
     },
@@ -25,7 +40,7 @@ Polymer({
     /** @private */
     shareDefault_: {
       type: Boolean,
-      value: function() {
+      value() {
         return loadTimeData.getBoolean('shareNetworkDefault');
       }
     },
@@ -57,7 +72,7 @@ Polymer({
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     var dialogArgs = chrome.getVariableValue('dialogArguments');
     if (dialogArgs) {
       var args = JSON.parse(dialogArgs);
@@ -77,7 +92,7 @@ Polymer({
   },
 
   /** @private */
-  close_: function() {
+  close_() {
     chrome.send('dialogClose');
   },
 
@@ -85,7 +100,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getDialogTitle_: function() {
+  getDialogTitle_() {
     var type = this.i18n('OncType' + this.type_);
     return this.i18n('internetJoinType', type);
   },
@@ -94,19 +109,19 @@ Polymer({
    * @return {string}
    * @private
    */
-  getError_: function() {
+  getError_() {
     if (this.i18nExists(this.error_))
       return this.i18n(this.error_);
     return this.i18n('networkErrorUnknown');
   },
 
   /** @private */
-  onCancelClick_: function() {
+  onCancelClick_() {
     this.close_();
   },
 
   /** @private */
-  onConnectClick_: function() {
+  onConnectClick_() {
     this.$.networkConfig.connect();
   },
 });

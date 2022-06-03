@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/decorators/process_metrics_decorator.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -39,7 +40,7 @@ class LenientTestProcessMetricsDecorator : public ProcessMetricsDecorator {
   // Mock method used to set the test expectations.
   MOCK_METHOD0(
       GetMemoryDump,
-      base::Optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>());
+      absl::optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>());
 };
 using TestProcessMetricsDecorator =
     ::testing::StrictMock<LenientTestProcessMetricsDecorator>;
@@ -47,7 +48,7 @@ using TestProcessMetricsDecorator =
 void LenientTestProcessMetricsDecorator::RequestProcessesMemoryMetrics(
     memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
         callback) {
-  base::Optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>
+  absl::optional<memory_instrumentation::mojom::GlobalMemoryDumpPtr>
       global_dump = GetMemoryDump();
 
   std::move(callback).Run(
@@ -101,11 +102,19 @@ memory_instrumentation::mojom::GlobalMemoryDumpPtr GenerateMemoryDump(
 }  // namespace
 
 class ProcessMetricsDecoratorTest : public GraphTestHarness {
+ public:
+  ProcessMetricsDecoratorTest(const ProcessMetricsDecoratorTest&) = delete;
+  ProcessMetricsDecoratorTest& operator=(const ProcessMetricsDecoratorTest&) =
+      delete;
+
  protected:
+  using Super = GraphTestHarness;
+
   ProcessMetricsDecoratorTest() = default;
   ~ProcessMetricsDecoratorTest() override = default;
 
   void SetUp() override {
+    Super::SetUp();
     std::unique_ptr<TestProcessMetricsDecorator> decorator =
         std::make_unique<TestProcessMetricsDecorator>();
     decorator_raw_ = decorator.get();
@@ -113,6 +122,9 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
         std::make_unique<MockSinglePageWithMultipleProcessesGraph>(graph());
     EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
     graph()->PassToGraph(std::move(decorator));
+    EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
+    metrics_interest_token_ =
+        ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
     EXPECT_TRUE(decorator_raw_->IsTimerRunningForTesting());
   }
 
@@ -122,19 +134,22 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
     return mock_graph_.get();
   }
 
+  void ReleaseMetricsInterestToken() { metrics_interest_token_.reset(); }
+
  private:
   TestProcessMetricsDecorator* decorator_raw_;
 
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 
-  DISALLOW_COPY_AND_ASSIGN(ProcessMetricsDecoratorTest);
+  std::unique_ptr<ProcessMetricsDecorator::ScopedMetricsInterestToken>
+      metrics_interest_token_;
 };
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   MockSystemNodeObserver sys_node_observer;
 
   graph()->AddSystemNodeObserver(&sys_node_observer);
-  auto memory_dump = base::make_optional(
+  auto memory_dump = absl::make_optional(
       GenerateMemoryDump({{mock_graph()->process->process_id(),
                            kFakeResidentSetKb, kFakePrivateFootprintKb},
                           {mock_graph()->other_process->process_id(),
@@ -150,7 +165,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(testing::_));
 
   // Advance the timer, this should trigger a refresh of the metrics.
-  task_env().FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
   EXPECT_EQ(kFakeResidentSetKb, mock_graph()->process->resident_set_kb());
   EXPECT_EQ(kFakePrivateFootprintKb,
@@ -165,7 +180,7 @@ TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
 
 TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   // Only contains the data for one of the two processes.
-  auto partial_memory_dump = base::make_optional(
+  auto partial_memory_dump = absl::make_optional(
       GenerateMemoryDump({{mock_graph()->process->process_id(),
                            kFakeResidentSetKb, kFakePrivateFootprintKb}}));
 
@@ -173,7 +188,7 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
       .WillOnce(
           testing::Return(testing::ByMove(std::move(partial_memory_dump))));
 
-  task_env().FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
   EXPECT_EQ(kFakeResidentSetKb, mock_graph()->process->resident_set_kb());
   EXPECT_EQ(kFakePrivateFootprintKb,
@@ -181,14 +196,14 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
 
   // Do another partial refresh but this time for the other process. The data
   // attached to |mock_graph()->process| shouldn't change.
-  auto partial_memory_dump2 = base::make_optional(GenerateMemoryDump(
+  auto partial_memory_dump2 = absl::make_optional(GenerateMemoryDump(
       {{mock_graph()->other_process->process_id(), kFakeResidentSetKb * 2,
         kFakePrivateFootprintKb * 2}}));
   EXPECT_CALL(*decorator(), GetMemoryDump())
       .WillOnce(
           testing::Return(testing::ByMove(std::move(partial_memory_dump2))));
 
-  task_env().FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
   EXPECT_EQ(kFakeResidentSetKb, mock_graph()->process->resident_set_kb());
   EXPECT_EQ(kFakePrivateFootprintKb,
@@ -202,12 +217,29 @@ TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(testing::Return(testing::ByMove(base::nullopt)));
+      .WillOnce(testing::Return(testing::ByMove(absl::nullopt)));
 
-  task_env().FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
   EXPECT_EQ(0U, mock_graph()->process->resident_set_kb());
   EXPECT_EQ(0U, mock_graph()->process->private_footprint_kb());
+}
+
+TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
+  ReleaseMetricsInterestToken();
+  EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
+  auto metrics_interest_token1 =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+  EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+
+  auto metrics_interest_token2 =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+  EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+
+  metrics_interest_token1.reset();
+  EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+  metrics_interest_token2.reset();
+  EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
 }
 
 }  // namespace performance_manager

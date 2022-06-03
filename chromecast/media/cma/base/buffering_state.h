@@ -20,6 +20,9 @@ class BufferingConfig : public base::RefCountedThreadSafe<BufferingConfig> {
   BufferingConfig(base::TimeDelta low_level_threshold,
                   base::TimeDelta high_level_threshold);
 
+  BufferingConfig(const BufferingConfig&) = delete;
+  BufferingConfig& operator=(const BufferingConfig&) = delete;
+
   base::TimeDelta low_level() const { return low_level_threshold_; }
   base::TimeDelta high_level() const { return high_level_threshold_; }
 
@@ -36,14 +39,12 @@ class BufferingConfig : public base::RefCountedThreadSafe<BufferingConfig> {
 
   base::TimeDelta low_level_threshold_;
   base::TimeDelta high_level_threshold_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingConfig);
 };
 
 class BufferingState
     : public base::RefCountedThreadSafe<BufferingState> {
  public:
-  typedef base::Callback<void(base::TimeDelta)> HighLevelBufferCB;
+  typedef base::RepeatingCallback<void(base::TimeDelta)> HighLevelBufferCB;
 
   enum State {
     kLowLevel,
@@ -59,8 +60,11 @@ class BufferingState
   // the current high buffer level.
   BufferingState(const std::string& stream_id,
                  const scoped_refptr<BufferingConfig>& config,
-                 const base::Closure& state_changed_cb,
+                 const base::RepeatingClosure& state_changed_cb,
                  const HighLevelBufferCB& high_level_buffer_cb);
+
+  BufferingState(const BufferingState&) = delete;
+  BufferingState& operator=(const BufferingState&) = delete;
 
   // Returns the buffering state.
   State GetState() const { return state_; }
@@ -110,7 +114,7 @@ class BufferingState
   scoped_refptr<BufferingConfig> const config_;
 
   // Callback invoked each time there is a change of state.
-  base::Closure state_changed_cb_;
+  base::RepeatingClosure state_changed_cb_;
 
   // Callback invoked to adjust the high buffer level.
   HighLevelBufferCB high_level_buffer_cb_;
@@ -130,8 +134,6 @@ class BufferingState
   // Buffered media time.
   // Equal to kNoTimestamp when not known.
   base::TimeDelta buffered_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingState);
 };
 
 }  // namespace media

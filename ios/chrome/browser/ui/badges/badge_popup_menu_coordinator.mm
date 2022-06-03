@@ -4,11 +4,21 @@
 
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 
-#include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "ios/chrome/browser/infobars/infobar_ios.h"
+#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_item.h"
+#import "ios/chrome/browser/ui/badges/badges_histograms.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
@@ -17,6 +27,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,16 +87,6 @@
   [self.consumer setPopupMenuItems:self.popupMenuItems];
 }
 
-#pragma mark - ContainedPresenterDelegate
-
-- (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
-  // noop.
-}
-
-- (void)containedPresenterDidDismiss:(id<ContainedPresenter>)presenter {
-  // noop.
-}
-
 #pragma mark - PopupMenuPresenterDelegate
 
 - (void)popupMenuPresenterWillDismiss:(PopupMenuPresenter*)presenter {
@@ -100,17 +101,36 @@
   [self dismissPopupMenu];
   switch (item.actionIdentifier) {
     case PopupMenuActionShowSavePasswordOptions: {
-      [self.dispatcher
-          displayModalInfobar:InfobarType::kInfobarTypePasswordSave];
+      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
+                                MobileMessagesInfobarType::SavePassword);
+      [self
+          addModalRequestForInfobarType:InfobarType::kInfobarTypePasswordSave];
       break;
     }
     case PopupMenuActionShowUpdatePasswordOptions: {
-      [self.dispatcher
-          displayModalInfobar:InfobarType::kInfobarTypePasswordUpdate];
+      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
+                                MobileMessagesInfobarType::UpdatePassword);
+      [self addModalRequestForInfobarType:InfobarType::
+                                              kInfobarTypePasswordUpdate];
+      break;
+    }
+    case PopupMenuActionShowSaveAddressProfileOptions: {
+      // TODO(crbug.com/1167062): Record this event.
+
+      [self addModalRequestForInfobarType:
+                InfobarType::kInfobarTypeSaveAutofillAddressProfile];
       break;
     }
     case PopupMenuActionShowSaveCardOptions: {
-      [self.dispatcher displayModalInfobar:InfobarType::kInfobarTypeSaveCard];
+      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
+                                MobileMessagesInfobarType::SaveCard);
+      [self addModalRequestForInfobarType:InfobarType::kInfobarTypeSaveCard];
+      break;
+    }
+    case PopupMenuActionShowTranslateOptions: {
+      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
+                                MobileMessagesInfobarType::Translate);
+      [self addModalRequestForInfobarType:InfobarType::kInfobarTypeTranslate];
       break;
     }
     default:
@@ -120,6 +140,36 @@
 }
 
 #pragma mark - Private
+
+// Adds a modal request for the Infobar of |infobarType|.
+- (void)addModalRequestForInfobarType:(InfobarType)infobarType {
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    DCHECK(webState);
+    InfoBarIOS* infobar = [self infobarWithType:infobarType];
+    DCHECK(infobar);
+    InfobarOverlayRequestInserter::CreateForWebState(webState);
+    InsertParams params(infobar);
+    params.overlay_type = InfobarOverlayType::kModal;
+    params.insertion_index = OverlayRequestQueue::FromWebState(
+                                 webState, OverlayModality::kInfobarModal)
+                                 ->size();
+    params.source = InfobarOverlayInsertionSource::kBadge;
+    InfobarOverlayRequestInserter::FromWebState(webState)->InsertOverlayRequest(
+        params);
+}
+
+// Retrieves the existing Infobar of |type|.
+- (InfoBarIOS*)infobarWithType:(InfobarType)type {
+  InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(
+      self.browser->GetWebStateList()->GetActiveWebState());
+  for (size_t index = 0; index < manager->infobar_count(); ++index) {
+    InfoBarIOS* infobar = static_cast<InfoBarIOS*>(manager->infobar_at(index));
+    if (infobar->infobar_type() == type)
+      return infobar;
+  }
+  return nullptr;
+}
 
 - (void)dismissPopupMenu {
   if (self.popupMenuPresenter) {

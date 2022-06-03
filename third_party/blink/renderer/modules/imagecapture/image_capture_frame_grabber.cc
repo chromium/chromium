@@ -4,14 +4,19 @@
 
 #include "third_party/blink/renderer/modules/imagecapture/image_capture_frame_grabber.h"
 
+#include "cc/paint/skia_paint_canvas.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -49,77 +54,122 @@ void OnError(std::unique_ptr<ImageCaptureGrabFrameCallbacks> callbacks) {
 }  // anonymous namespace
 
 // Ref-counted class to receive a single VideoFrame on IO thread, convert it and
-// send it to |main_task_runner_|, where this class is created and destroyed.
+// send it to |task_runner|, where this class is created and destroyed.
 class ImageCaptureFrameGrabber::SingleShotFrameHandler
     : public WTF::ThreadSafeRefCounted<SingleShotFrameHandler> {
  public:
-  SingleShotFrameHandler() : first_frame_received_(false) {}
+  using SkImageDeliverCB = WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
+
+  explicit SingleShotFrameHandler(SkImageDeliverCB deliver_cb)
+      : deliver_cb_(std::move(deliver_cb)) {
+    DCHECK(deliver_cb_);
+  }
+
+  SingleShotFrameHandler(const SingleShotFrameHandler&) = delete;
+  SingleShotFrameHandler& operator=(const SingleShotFrameHandler&) = delete;
 
   // Receives a |frame| and converts its pixels into a SkImage via an internal
   // PaintSurface and SkPixmap. Alpha channel, if any, is copied.
-  using SkImageDeliverCB = WTF::CrossThreadFunction<void(sk_sp<SkImage>)>;
   void OnVideoFrameOnIOThread(
-      SkImageDeliverCB callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<media::VideoFrame> frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       base::TimeTicks current_time);
 
  private:
   friend class WTF::ThreadSafeRefCounted<SingleShotFrameHandler>;
 
-  // Flag to indicate that the first frames has been processed, and subsequent
-  // ones can be safely discarded.
-  bool first_frame_received_;
+  // Converts the media::VideoFrame into a SkImage on the |task_runner|.
+  void ConvertAndDeliverFrame(SkImageDeliverCB callback,
+                              scoped_refptr<media::VideoFrame> frame);
 
-  DISALLOW_COPY_AND_ASSIGN(SingleShotFrameHandler);
+  // Null once the initial frame has been queued for delivery.
+  SkImageDeliverCB deliver_cb_;
 };
 
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
-    SkImageDeliverCB callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     scoped_refptr<media::VideoFrame> frame,
-    base::TimeTicks /* current_time */) {
-  DCHECK(frame->format() == media::PIXEL_FORMAT_I420 ||
-         frame->format() == media::PIXEL_FORMAT_I420A ||
-         frame->format() == media::PIXEL_FORMAT_NV12);
-
-  if (first_frame_received_)
+    std::vector<scoped_refptr<media::VideoFrame>> /*scaled_frames*/,
+    base::TimeTicks /*current_time*/) {
+  if (!deliver_cb_)
     return;
-  first_frame_received_ = true;
 
+  // Scaled video frames are not used by ImageCaptureFrameGrabber.
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(&SingleShotFrameHandler::ConvertAndDeliverFrame,
+                          base::WrapRefCounted(this), std::move(deliver_cb_),
+                          std::move(frame)));
+}
+
+void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
+    SkImageDeliverCB callback,
+    scoped_refptr<media::VideoFrame> frame) {
+  media::VideoRotation rotation = media::VIDEO_ROTATION_0;
+  if (frame->metadata().transformation) {
+    rotation = frame->metadata().transformation->rotation;
+  }
+
+  const gfx::Size& original_size = frame->visible_rect().size();
+  gfx::Size display_size = original_size;
+  if (rotation == media::VIDEO_ROTATION_90 ||
+      rotation == media::VIDEO_ROTATION_270) {
+    display_size.SetSize(display_size.height(), display_size.width());
+  }
   const SkAlphaType alpha = media::IsOpaque(frame->format())
                                 ? kOpaque_SkAlphaType
                                 : kPremul_SkAlphaType;
-  const SkImageInfo info = SkImageInfo::MakeN32(
-      frame->visible_rect().width(), frame->visible_rect().height(), alpha);
+  const SkImageInfo info =
+      SkImageInfo::MakeN32(display_size.width(), display_size.height(), alpha);
 
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
+  SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
   DCHECK(surface);
 
-  auto wrapper_callback =
-      media::BindToLoop(std::move(task_runner),
-                        ConvertToBaseRepeatingCallback(std::move(callback)));
+  // If a frame is GPU backed, we need to use PaintCanvasVideoRenderer to read
+  // it back from the GPU.
+  const bool is_readable = frame->format() == media::PIXEL_FORMAT_I420 ||
+                           frame->format() == media::PIXEL_FORMAT_I420A ||
+                           (frame->format() == media::PIXEL_FORMAT_NV12 &&
+                            frame->HasGpuMemoryBuffer());
+  if (!is_readable) {
+    cc::SkiaPaintCanvas canvas(surface->getCanvas());
+    cc::PaintFlags paint_flags;
+    DrawVideoFrameIntoCanvas(std::move(frame), &canvas, paint_flags,
+                             /*ignore_video_transformation=*/false);
+    std::move(callback).Run(surface->makeImageSnapshot());
+    return;
+  }
 
   SkPixmap pixmap;
   if (!skia::GetWritablePixels(surface->getCanvas(), &pixmap)) {
     DLOG(ERROR) << "Error trying to map SkSurface's pixels";
-    std::move(wrapper_callback).Run(sk_sp<SkImage>());
+    std::move(callback).Run(sk_sp<SkImage>());
     return;
   }
 
-  const uint32_t destination_pixel_format =
-      (kN32_SkColorType == kRGBA_8888_SkColorType) ? libyuv::FOURCC_ABGR
-                                                   : libyuv::FOURCC_ARGB;
+#if SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+  const uint32_t destination_pixel_format = libyuv::FOURCC_ABGR;
+#else
+  const uint32_t destination_pixel_format = libyuv::FOURCC_ARGB;
+#endif
   uint8_t* destination_plane = static_cast<uint8_t*>(pixmap.writable_addr());
   int destination_stride = pixmap.width() * 4;
   int destination_width = pixmap.width();
   int destination_height = pixmap.height();
 
+  // The frame rotating code path based on libyuv will convert any format to
+  // I420, rotate under I420 and transform I420 to destination format.
+  bool need_rotate = rotation != media::VIDEO_ROTATION_0;
+  scoped_refptr<media::VideoFrame> i420_frame;
+
   if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
     auto* gmb = frame->GetGpuMemoryBuffer();
     if (!gmb->Map()) {
       DLOG(ERROR) << "Error mapping GpuMemoryBuffer video frame";
-      std::move(wrapper_callback).Run(sk_sp<SkImage>());
+      std::move(callback).Run(sk_sp<SkImage>());
       return;
     }
 
@@ -136,45 +186,102 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
                                ((frame->visible_rect().x() * 2) / 2) +
                                ((frame->visible_rect().y() / 2) * uv_stride));
 
-    switch (destination_pixel_format) {
-      case libyuv::FOURCC_ABGR:
-        libyuv::NV12ToABGR(y_plane, y_stride, uv_plane, uv_stride,
-                           destination_plane, destination_stride,
-                           destination_width, destination_height);
-        break;
-      case libyuv::FOURCC_ARGB:
-        libyuv::NV12ToARGB(y_plane, y_stride, uv_plane, uv_stride,
-                           destination_plane, destination_stride,
-                           destination_width, destination_height);
-        break;
-      default:
-        NOTREACHED();
+    if (need_rotate) {
+      // Transform to I420 first to be later on rotated.
+      i420_frame = media::VideoFrame::CreateFrame(
+          media::PIXEL_FORMAT_I420, original_size, gfx::Rect(original_size),
+          original_size, base::TimeDelta());
+
+      libyuv::NV12ToI420(y_plane, y_stride, uv_plane, uv_stride,
+                         i420_frame->visible_data(media::VideoFrame::kYPlane),
+                         i420_frame->stride(media::VideoFrame::kYPlane),
+                         i420_frame->visible_data(media::VideoFrame::kUPlane),
+                         i420_frame->stride(media::VideoFrame::kUPlane),
+                         i420_frame->visible_data(media::VideoFrame::kVPlane),
+                         i420_frame->stride(media::VideoFrame::kVPlane),
+                         original_size.width(), original_size.height());
+    } else {
+      switch (destination_pixel_format) {
+        case libyuv::FOURCC_ABGR:
+          libyuv::NV12ToABGR(y_plane, y_stride, uv_plane, uv_stride,
+                             destination_plane, destination_stride,
+                             destination_width, destination_height);
+          break;
+        case libyuv::FOURCC_ARGB:
+          libyuv::NV12ToARGB(y_plane, y_stride, uv_plane, uv_stride,
+                             destination_plane, destination_stride,
+                             destination_width, destination_height);
+          break;
+        default:
+          NOTREACHED();
+      }
     }
+
     gmb->Unmap();
   } else {
     DCHECK(frame->format() == media::PIXEL_FORMAT_I420 ||
            frame->format() == media::PIXEL_FORMAT_I420A);
-    libyuv::ConvertFromI420(frame->visible_data(media::VideoFrame::kYPlane),
-                            frame->stride(media::VideoFrame::kYPlane),
-                            frame->visible_data(media::VideoFrame::kUPlane),
-                            frame->stride(media::VideoFrame::kUPlane),
-                            frame->visible_data(media::VideoFrame::kVPlane),
-                            frame->stride(media::VideoFrame::kVPlane),
-                            destination_plane, destination_stride,
-                            destination_width, destination_height,
-                            destination_pixel_format);
+    i420_frame = std::move(frame);
+  }
 
-    if (frame->format() == media::PIXEL_FORMAT_I420A) {
+  if (i420_frame) {
+    if (need_rotate) {
+      scoped_refptr<media::VideoFrame> rotated_frame =
+          media::VideoFrame::CreateFrame(media::PIXEL_FORMAT_I420, display_size,
+                                         gfx::Rect(display_size), display_size,
+                                         base::TimeDelta());
+
+      libyuv::RotationMode libyuv_rotate = [rotation]() {
+        switch (rotation) {
+          case media::VIDEO_ROTATION_0:
+            return libyuv::kRotate0;
+          case media::VIDEO_ROTATION_90:
+            return libyuv::kRotate90;
+          case media::VIDEO_ROTATION_180:
+            return libyuv::kRotate180;
+          case media::VIDEO_ROTATION_270:
+            return libyuv::kRotate270;
+        }
+      }();
+
+      libyuv::I420Rotate(
+          i420_frame->visible_data(media::VideoFrame::kYPlane),
+          i420_frame->stride(media::VideoFrame::kYPlane),
+          i420_frame->visible_data(media::VideoFrame::kUPlane),
+          i420_frame->stride(media::VideoFrame::kUPlane),
+          i420_frame->visible_data(media::VideoFrame::kVPlane),
+          i420_frame->stride(media::VideoFrame::kVPlane),
+          rotated_frame->visible_data(media::VideoFrame::kYPlane),
+          rotated_frame->stride(media::VideoFrame::kYPlane),
+          rotated_frame->visible_data(media::VideoFrame::kUPlane),
+          rotated_frame->stride(media::VideoFrame::kUPlane),
+          rotated_frame->visible_data(media::VideoFrame::kVPlane),
+          rotated_frame->stride(media::VideoFrame::kVPlane),
+          original_size.width(), original_size.height(), libyuv_rotate);
+      i420_frame = std::move(rotated_frame);
+    }
+
+    libyuv::ConvertFromI420(
+        i420_frame->visible_data(media::VideoFrame::kYPlane),
+        i420_frame->stride(media::VideoFrame::kYPlane),
+        i420_frame->visible_data(media::VideoFrame::kUPlane),
+        i420_frame->stride(media::VideoFrame::kUPlane),
+        i420_frame->visible_data(media::VideoFrame::kVPlane),
+        i420_frame->stride(media::VideoFrame::kVPlane), destination_plane,
+        destination_stride, destination_width, destination_height,
+        destination_pixel_format);
+
+    if (i420_frame->format() == media::PIXEL_FORMAT_I420A) {
       DCHECK(!info.isOpaque());
       // This function copies any plane into the alpha channel of an ARGB image.
-      libyuv::ARGBCopyYToAlpha(frame->visible_data(media::VideoFrame::kAPlane),
-                               frame->stride(media::VideoFrame::kAPlane),
-                               destination_plane, destination_stride,
-                               destination_width, destination_height);
+      libyuv::ARGBCopyYToAlpha(
+          i420_frame->visible_data(media::VideoFrame::kAPlane),
+          i420_frame->stride(media::VideoFrame::kAPlane), destination_plane,
+          destination_stride, destination_width, destination_height);
     }
   }
 
-  std::move(wrapper_callback).Run(surface->makeImageSnapshot());
+  std::move(callback).Run(surface->makeImageSnapshot());
 }
 
 ImageCaptureFrameGrabber::ImageCaptureFrameGrabber()
@@ -185,14 +292,14 @@ ImageCaptureFrameGrabber::~ImageCaptureFrameGrabber() {
 }
 
 void ImageCaptureFrameGrabber::GrabFrame(
-    WebMediaStreamTrack* track,
+    MediaStreamComponent* component,
     std::unique_ptr<ImageCaptureGrabFrameCallbacks> callbacks,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!!callbacks);
 
-  DCHECK(track && !track->IsNull() && track->GetPlatformTrack());
-  DCHECK_EQ(WebMediaStreamSource::kTypeVideo, track->Source().GetType());
+  DCHECK(component && component->GetPlatformTrack());
+  DCHECK_EQ(MediaStreamSource::kTypeVideo, component->Source()->GetType());
 
   if (frame_grab_in_progress_) {
     // Reject grabFrame()s too close back to back.
@@ -210,15 +317,15 @@ void ImageCaptureFrameGrabber::GrabFrame(
   // https://crbug.com/623042.
   frame_grab_in_progress_ = true;
   MediaStreamVideoSink::ConnectToTrack(
-      *track,
+      WebMediaStreamTrack(component),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &SingleShotFrameHandler::OnVideoFrameOnIOThread,
-          base::MakeRefCounted<SingleShotFrameHandler>(),
-          WTF::Passed(CrossThreadBindRepeating(
+          base::MakeRefCounted<SingleShotFrameHandler>(CrossThreadBindOnce(
               &ImageCaptureFrameGrabber::OnSkImage, weak_factory_.GetWeakPtr(),
-              WTF::Passed(std::move(scoped_callbacks)))),
-          WTF::Passed(std::move(task_runner)))),
-      false);
+              std::move(scoped_callbacks))),
+          std::move(task_runner))),
+      MediaStreamVideoSink::IsSecure::kNo,
+      MediaStreamVideoSink::UsesAlpha::kDefault);
 }
 
 void ImageCaptureFrameGrabber::OnSkImage(

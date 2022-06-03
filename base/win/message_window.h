@@ -5,14 +5,17 @@
 #ifndef BASE_WIN_MESSAGE_WINDOW_H_
 #define BASE_WIN_MESSAGE_WINDOW_H_
 
-#include <windows.h>
+#include <string>
 
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
+#include "base/win/windows_types.h"
+
+// Protect against windows.h being included before this header.
+#undef FindWindow
 
 namespace base {
 namespace win {
@@ -30,6 +33,10 @@ class BASE_EXPORT MessageWindow {
       bool(UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result)>;
 
   MessageWindow();
+
+  MessageWindow(const MessageWindow&) = delete;
+  MessageWindow& operator=(const MessageWindow&) = delete;
+
   ~MessageWindow();
 
   // Creates a message-only window. The incoming messages will be passed by
@@ -38,13 +45,13 @@ class BASE_EXPORT MessageWindow {
 
   // Same as Create() but assigns the name to the created window.
   bool CreateNamed(MessageCallback message_callback,
-                   const string16& window_name);
+                   const std::wstring& window_name);
 
   HWND hwnd() const { return window_; }
 
   // Retrieves a handle of the first message-only window with matching
   // |window_name|.
-  static HWND FindWindow(const string16& window_name);
+  static HWND FindWindow(const std::wstring& window_name);
 
  private:
   // Give |WindowClass| access to WindowProc().
@@ -63,11 +70,9 @@ class BASE_EXPORT MessageWindow {
   MessageCallback message_callback_;
 
   // Handle of the input window.
-  HWND window_;
+  HWND window_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MessageWindow);
 };
 
 }  // namespace win

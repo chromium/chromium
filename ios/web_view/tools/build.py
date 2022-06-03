@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -27,7 +27,7 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
   Args:
     build_config: A string describing the build configuration. Ex: 'Debug'
     target_device: A string describing the target device. Ex: 'simulator'
-    extra_gn_options: A string of gn args (space separated key=value items) to
+    extra_gn_options: A list of strings of gn args (key=value items) to
       be appended to the gn gen command.
     extra_ninja_options: A string of gn options to be appended to the ninja
       command.
@@ -36,27 +36,42 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
     The return code of generating ninja if it is non-zero, else the return code
       of the ninja build command.
   """
+  gn_args = [
+      'target_os="ios"',
+      'enable_websockets=false',
+      'is_component_build=false',
+      'disable_file_support=true',
+      'disable_ftp_support=true',
+      'disable_brotli_filter=true',
+      'ios_enable_code_signing=false',
+      'enable_dsyms=true',
+  ]
+
   if target_device == 'iphoneos':
-    target_cpu = 'arm64'
+    gn_args.extend([
+        'target_cpu="arm64"',
+        'target_environment="device"',
+    ])
   else:
-    target_cpu = 'x64'
+    gn_args.extend([
+        'target_cpu="x64"',
+        'target_environment="simulator"',
+    ])
 
   if build_config == 'Debug':
-    build_config_gn_args = 'is_debug=true'
+    gn_args.append('is_debug=true')
   else:
-    build_config_gn_args = ('is_debug=false enable_stripping=true '
-                            'is_official_build=true')
+    gn_args.extend([
+        'is_debug=false',
+        'enable_stripping=true',
+        'is_official_build=true',
+    ])
+
+  if extra_gn_options:
+    gn_args.extend(extra_gn_options)
 
   build_dir = os.path.join("out", target_dir_name(build_config, target_device))
-  gn_args = ('target_os="ios" enable_websockets=false '
-            'is_component_build=false use_xcode_clang=false '
-            'disable_file_support=true disable_ftp_support=true '
-            'disable_brotli_filter=true ios_enable_code_signing=false '
-            'enable_dsyms=true '
-            'target_cpu="%s" %s %s' %
-            (target_cpu, build_config_gn_args, extra_gn_options))
-
-  gn_command = 'gn gen %s --args=\'%s\'' % (build_dir, gn_args)
+  gn_command = 'gn gen %s --args=\'%s\'' % (build_dir, ' '.join(gn_args))
   print gn_command
   gn_result = os.system(gn_command)
   if gn_result != 0:
@@ -108,7 +123,7 @@ def package_framework(build_config,
     build_config: A string describing the build configuration. Ex: 'Debug'
     target_device: A string describing the target device. Ex: 'simulator'
     out_dir: A string to the path which all build products will be copied.
-    extra_gn_options: A string of gn args (space separated key=value items) to
+    extra_gn_options: A list of strings of gn args (key=value items) to
       be appended to the gn gen command.
     extra_ninja_options: A string of gn options to be appended to the ninja
       command.
@@ -138,7 +153,7 @@ def package_all_frameworks(out_dir, output_name, extra_gn_options,
 
   Args:
     out_dir: A string to the path which all build products will be copied.
-    extra_gn_options: A string of gn args (space separated key=value items) to
+    extra_gn_options: A list of strings of gn args (key=value items) to
       be appended to the gn gen command.
     build_configs: A list of configs to build.
     target_devices: A list of devices to target.
@@ -186,10 +201,6 @@ def main():
                       help='Additional gn args to pass through to ninja.')
   parser.add_argument('--include_cronet', action='store_true',
                       help='Combines Cronet and ChromeWebView as 1 framework.')
-  parser.add_argument('--enable_sync', action='store_true',
-                      help='Enables public API for sync.')
-  parser.add_argument('--enable_autofill', action='store_true',
-                      help='Enables public API for autofill.')
   build_configs = ['Debug', 'Release']
   target_devices = ['iphonesimulator', 'iphoneos']
   parser.add_argument('--build_configs', nargs='+', default=build_configs,
@@ -213,26 +224,18 @@ def main():
     return 1
 
   output_name = 'ChromeWebView'
-  extra_gn_options = ''
+  extra_gn_options = []
   if not options.no_goma:
-    extra_gn_options += 'use_goma=true '
+    extra_gn_options.append('use_goma=true')
   if options.include_cronet:
-    extra_gn_options += 'ios_web_view_include_cronet=true '
+    extra_gn_options.append('ios_web_view_include_cronet=true')
     output_name = 'CronetChromeWebView'
   else:
-    extra_gn_options += 'ios_web_view_include_cronet=false '
-  if options.enable_sync:
-    extra_gn_options += 'ios_web_view_enable_sync=true '
-  else:
-    extra_gn_options += 'ios_web_view_enable_sync=false '
-  if options.enable_autofill:
-    extra_gn_options += 'ios_web_view_enable_autofill=true '
-  else:
-    extra_gn_options += 'ios_web_view_enable_autofill=false '
-  extra_gn_options += 'ios_web_view_output_name="%s" ' % output_name
+    extra_gn_options.append('ios_web_view_include_cronet=false')
+  extra_gn_options.append('ios_web_view_output_name="%s"' % output_name)
   # This prevents Breakpad from being included in the final binary to avoid
   # duplicate symbols with the client app.
-  extra_gn_options += 'use_crash_key_stubs=true '
+  extra_gn_options.append('use_crash_key_stubs=true')
 
   return package_all_frameworks(out_dir, output_name, extra_gn_options,
                                 set(options.build_configs),

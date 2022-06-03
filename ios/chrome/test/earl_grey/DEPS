@@ -1,14 +1,23 @@
 specific_include_rules = {
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "chrome_test_case\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
   # To compile base::Feature under EG2
   "chrome_earl_grey_app_interface\.mm":[
    "+components/autofill/core/common/autofill_features.h",
    "+components/payments/core/features.h",
    "+components/ukm/ios/features.h",
    "+services/metrics/public/cpp/ukm_recorder.h",
+  ],
+
+  "chrome_earl_grey_app_interface\.h":[
+   "+third_party/metrics_proto",
+  ],
+
+  "chrome_earl_grey\.h": [
+    "+third_party/metrics_proto",
+  ],
+
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "web_http_server_chrome_test_case\.mm": [
+    "+ios/web/public/test/http_server",
   ],
 }

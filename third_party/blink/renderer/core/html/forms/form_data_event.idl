@@ -7,6 +7,6 @@
 [
   Exposed=Window
 ] interface FormDataEvent : Event {
-  constructor(DOMString type, optional FormDataEventInit eventInitDict);
+  constructor(DOMString type, FormDataEventInit eventInitDict);
   readonly attribute FormData formData;
 };

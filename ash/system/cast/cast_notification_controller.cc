@@ -27,7 +27,7 @@ bool ShouldShowNotification() {
          cast_config->HasActiveRoute();
 }
 
-base::string16 GetNotificationTitle(const CastSink& sink,
+std::u16string GetNotificationTitle(const CastSink& sink,
                                     const CastRoute& route) {
   switch (route.content_source) {
     case ContentSource::kUnknown:
@@ -40,10 +40,10 @@ base::string16 GetNotificationTitle(const CastSink& sink,
   }
 }
 
-base::string16 GetNotificationMessage(const CastRoute& route) {
+std::u16string GetNotificationMessage(const CastRoute& route) {
   switch (route.content_source) {
     case ContentSource::kUnknown:
-      return base::string16();
+      return std::u16string();
     case ContentSource::kTab:
       return base::UTF8ToUTF16(route.title);
     case ContentSource::kDesktop:
@@ -95,7 +95,7 @@ void CastNotificationController::OnDevicesUpdated(
     std::unique_ptr<Notification> notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
         GetNotificationTitle(sink, route), GetNotificationMessage(route),
-        base::string16() /* display_source */, GURL(),
+        std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId),
         data,

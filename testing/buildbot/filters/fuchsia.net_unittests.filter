@@ -13,7 +13,3 @@
 
 # Flaky, https://crbug.com/793176.
 -NetworkQualityEstimatorTest.RecordAccuracy
-
-# Flaky, https://crbug.com/813631.
--URLRequestQuicTest.CancelPushIfCached_*
--URLRequestQuicTest.DoNotCancelPushIfNotFoundInCache

@@ -1,0 +1,38 @@
+<dom-module id="history-clusters-shared-style">
+  <template>
+    <style include="shared-style cr-shared-style cr-hidden-style">
+      .truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .pill {
+        border: 1px solid var(--border-color);
+        border-radius: calc(var(--pill-height) / 2);
+        box-sizing: border-box;
+        font-size: 0.875rem;  /* 14px */
+        height: var(--pill-height);
+        line-height: 22px;
+      }
+
+      .pill-icon-start {
+        padding-inline-end: var(--pill-padding-text);
+        padding-inline-start: var(--pill-padding-icon);
+      }
+
+      .pill-icon-start .icon {
+        margin-inline-end: 8px;
+      }
+
+      .pill-icon-end {
+        padding-inline-end: var(--pill-padding-icon);
+        padding-inline-start: var(--pill-padding-text);
+      }
+
+      .pill-icon-end .icon {
+        margin-inline-start: 8px;
+      }
+    </style>
+  </template>
+</dom-module>

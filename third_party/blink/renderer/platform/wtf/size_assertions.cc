@@ -28,14 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/thread_restriction_verifier.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
@@ -64,28 +62,19 @@ struct SameSizeAsVectorWithInlineCapacity {
 };
 
 #if !DCHECK_IS_ON()
-static_assert(sizeof(RefCounted<int>) == sizeof(SameSizeAsRefCounted),
-              "RefCounted should stay small");
+ASSERT_SIZE(RefCounted<int>, SameSizeAsRefCounted);
 #endif
 
-static_assert(sizeof(std::unique_ptr<int>) == sizeof(int*),
-              "std::unique_ptr should stay small");
-static_assert(sizeof(scoped_refptr<RefCounted<int>>) == sizeof(int*),
-              "RefPtr should stay small");
-static_assert(sizeof(String) == sizeof(int*), "String should stay small");
-static_assert(sizeof(AtomicString) == sizeof(String),
-              "AtomicString should stay small");
-static_assert(sizeof(Vector<int>) ==
-                  sizeof(SameSizeAsVectorWithInlineCapacity<int>),
-              "Vector should stay small");
-static_assert(sizeof(Vector<int, 1>) ==
-                  sizeof(SameSizeAsVectorWithInlineCapacity<int, 1>),
-              "Vector should stay small");
-static_assert(sizeof(Vector<int, 2>) ==
-                  sizeof(SameSizeAsVectorWithInlineCapacity<int, 2>),
-              "Vector should stay small");
-static_assert(sizeof(Vector<int, 3>) ==
-                  sizeof(SameSizeAsVectorWithInlineCapacity<int, 3>),
-              "Vector should stay small");
+ASSERT_SIZE(std::unique_ptr<int>, int*);
+ASSERT_SIZE(scoped_refptr<RefCounted<int>>, int*);
+ASSERT_SIZE(Vector<int>, SameSizeAsVectorWithInlineCapacity<int>);
+// This is to avoid problem of comma in macro parameters.
+#define INLINE_CAPACITY_PARAMS(i) int, i
+ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(1)>,
+            SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(1)>);
+ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(2)>,
+            SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(2)>);
+ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(3)>,
+            SameSizeAsVectorWithInlineCapacity<INLINE_CAPACITY_PARAMS(3)>);
 
 }  // namespace WTF

@@ -1,0 +1,197 @@
+This test verifies the position and size of the highlight rectangles overlayed on an inspected div in the scrolled view.
+
+inspectedElement1{
+  "paths": [
+    {
+      "path": [
+        "M",
+        -12,
+        -62,
+        "L",
+        188,
+        -62,
+        "L",
+        188,
+        138,
+        "L",
+        -12,
+        138,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        -27,
+        -77,
+        "L",
+        203,
+        -77,
+        "L",
+        203,
+        153,
+        "L",
+        -27,
+        153,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        -37,
+        -87,
+        "L",
+        213,
+        -87,
+        "L",
+        213,
+        163,
+        "L",
+        -37,
+        163,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        -42,
+        -92,
+        "L",
+        218,
+        -92,
+        "L",
+        218,
+        168,
+        "L",
+        -42,
+        168,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "inspectedElement1",
+    "className": ".inspected",
+    "nodeWidth": "250",
+    "nodeHeight": "250",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutBlockFlow",
+    "showAccessibilityInfo": true
+  }
+}
+inspectedElement2{
+  "paths": [
+    {
+      "path": [
+        "M",
+        -72,
+        148,
+        "L",
+        128,
+        148,
+        "L",
+        128,
+        348,
+        "L",
+        -72,
+        348,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        -87,
+        133,
+        "L",
+        143,
+        133,
+        "L",
+        143,
+        363,
+        "L",
+        -87,
+        363,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        -97,
+        123,
+        "L",
+        153,
+        123,
+        "L",
+        153,
+        373,
+        "L",
+        -97,
+        373,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        -102,
+        118,
+        "L",
+        158,
+        118,
+        "L",
+        158,
+        378,
+        "L",
+        -102,
+        378,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "inspectedElement2",
+    "className": ".inspected",
+    "nodeWidth": "250",
+    "nodeHeight": "250",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutBlockFlow",
+    "showAccessibilityInfo": true
+  }
+}
+

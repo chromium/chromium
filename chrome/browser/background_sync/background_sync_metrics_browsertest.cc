@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background_sync/background_sync_metrics.h"
+#include "components/background_sync/background_sync_metrics.h"
 
 #include <memory>
 
-#include "chrome/browser/metrics/ukm_background_recorder_service.h"
+#include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
@@ -19,24 +20,29 @@
 class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundSyncMetricsBrowserTest() = default;
+
+  BackgroundSyncMetricsBrowserTest(const BackgroundSyncMetricsBrowserTest&) =
+      delete;
+  BackgroundSyncMetricsBrowserTest& operator=(
+      const BackgroundSyncMetricsBrowserTest&) = delete;
+
   ~BackgroundSyncMetricsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
 
-    recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    auto* ukm_background_service =
-        ukm::UkmBackgroundRecorderFactory::GetForProfile(profile);
-    DCHECK(ukm_background_service);
+    background_sync_delegate_ =
+        std::make_unique<BackgroundSyncDelegateImpl>(profile);
+    background_sync_metrics_ = std::make_unique<BackgroundSyncMetrics>(
+        background_sync_delegate_.get());
 
-    background_sync_metrics_ =
-        std::make_unique<BackgroundSyncMetrics>(ukm_background_service);
+    recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     // Adds the URL to the history so that UKM events for this origin are
     // recorded.
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL("/links.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
  protected:
@@ -49,14 +55,14 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncMetricsBrowserTest);
+  std::unique_ptr<BackgroundSyncDelegateImpl> background_sync_delegate_;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
                        OneShotBackgroundSyncUkmEventsAreRecorded) {
   background_sync_metrics_->MaybeRecordOneShotSyncRegistrationEvent(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* can_fire= */ true,
       /* is_reregistered= */ false);
   WaitForUkm();
@@ -74,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
   }
 
   background_sync_metrics_->MaybeRecordOneShotSyncCompletionEvent(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* status_code= */ blink::ServiceWorkerStatusCode::kOk,
       /* num_attempts= */ 2, /* max_attempts= */ 5);
   WaitForUkm();
@@ -97,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
                        PeriodicBackgroundSyncUkmEventsAreRecorded) {
   background_sync_metrics_->MaybeRecordPeriodicSyncRegistrationEvent(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* min_interval= */ 1000,
       /* is_reregistered= */ false);
   WaitForUkm();
@@ -118,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
   }
 
   background_sync_metrics_->MaybeRecordPeriodicSyncEventCompletion(
-      url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
+      url::Origin::Create(
+          embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
       /* status_code= */ blink::ServiceWorkerStatusCode::kOk,
       /* num_attempts= */ 2, /* max_attempts= */ 5);
   WaitForUkm();

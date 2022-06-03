@@ -16,9 +16,13 @@ class ShellURLRequestContextGetter;
 
 // Shell-specific implementation of BrowserState.  Can only be called from the
 // UI thread.
-class ShellBrowserState : public BrowserState {
+class ShellBrowserState final : public BrowserState {
  public:
   ShellBrowserState();
+
+  ShellBrowserState(const ShellBrowserState&) = delete;
+  ShellBrowserState& operator=(const ShellBrowserState&) = delete;
+
   ~ShellBrowserState() override;
 
   // BrowserState implementation.
@@ -29,8 +33,6 @@ class ShellBrowserState : public BrowserState {
  private:
   base::FilePath path_;
   scoped_refptr<ShellURLRequestContextGetter> request_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserState);
 };
 
 }  // namespace web

@@ -11,6 +11,15 @@ using device::BluetoothUUID;
 
 namespace content {
 
+namespace {
+#ifdef OFFICIAL_BUILD
+// The official build does not print the reason a CHECK failed.
+const char kInvalidUUIDErrorRegex[] = "";
+#else
+const char kInvalidUUIDErrorRegex[] = "uuid.IsValid\\(\\)";
+#endif
+}  // namespace
+
 class BluetoothBlocklistTest : public ::testing::Test {
  public:
   BluetoothBlocklistTest() : list_(BluetoothBlocklist::Get()) {
@@ -52,21 +61,30 @@ TEST_F(BluetoothBlocklistTest, ExcludeWritesUUID) {
   EXPECT_TRUE(list_.IsExcludedFromWrites(exclude_writes_uuid));
 }
 
-TEST_F(BluetoothBlocklistTest, InvalidUUID) {
+TEST_F(BluetoothBlocklistTest, EmptyStringUUID) {
   BluetoothUUID empty_string_uuid("");
   EXPECT_DEATH_IF_SUPPORTED(
-      list_.Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(empty_string_uuid), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(empty_string_uuid), "");
+      list_.Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
+      kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(empty_string_uuid),
+                            kInvalidUUIDErrorRegex);
+}
 
+TEST_F(BluetoothBlocklistTest, InvalidUUID) {
   BluetoothUUID invalid_string_uuid("Not a valid UUID string.");
   EXPECT_DEATH_IF_SUPPORTED(
-      list_.Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid), "");
-  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(invalid_string_uuid), "");
+      list_.Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
+      kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcluded(invalid_string_uuid),
+                            kInvalidUUIDErrorRegex);
+  EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromReads(invalid_string_uuid),
+                            kInvalidUUIDErrorRegex);
   EXPECT_DEATH_IF_SUPPORTED(list_.IsExcludedFromWrites(invalid_string_uuid),
-                            "");
+                            kInvalidUUIDErrorRegex);
 }
 
 // Abreviated UUIDs used to create, or test against, the blocklist work
@@ -427,7 +445,7 @@ TEST_F(BluetoothBlocklistTest, RemoveExcludedUuids_Matching) {
 
 TEST_F(BluetoothBlocklistTest, VerifyDefaultBlocklistSize) {
   // REMINDER: ADD new blocklist items to tests below for each exclusion type.
-  EXPECT_EQ(13u, list_.size());
+  EXPECT_EQ(15u, list_.size());
 }
 
 TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeList) {
@@ -439,7 +457,9 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeList) {
   EXPECT_TRUE(
       list_.IsExcluded(BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("00060000")));
+  EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fff9")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fffd")));
+  EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("fde2")));
   EXPECT_FALSE(list_.IsExcluded(BluetoothUUID("2a02")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("2a03")));
   EXPECT_TRUE(list_.IsExcluded(BluetoothUUID("2a25")));
@@ -462,7 +482,9 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeReadList) {
   EXPECT_TRUE(list_.IsExcludedFromReads(
       BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("00060000")));
+  EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fff9")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fffd")));
+  EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("fde2")));
   EXPECT_FALSE(list_.IsExcludedFromReads(BluetoothUUID("2a02")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("2a03")));
   EXPECT_TRUE(list_.IsExcludedFromReads(BluetoothUUID("2a25")));
@@ -485,7 +507,9 @@ TEST_F(BluetoothBlocklistTest, VerifyDefaultExcludeWriteList) {
   EXPECT_TRUE(list_.IsExcludedFromWrites(
       BluetoothUUID("f000ffc0-0451-4000-b000-000000000000")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("00060000")));
+  EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fff9")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fffd")));
+  EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("fde2")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a02")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a03")));
   EXPECT_TRUE(list_.IsExcludedFromWrites(BluetoothUUID("2a25")));

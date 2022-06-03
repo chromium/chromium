@@ -13,7 +13,7 @@
 
   // try to overwrite it with an insecure cookie
   const {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(setCookieInsecure);
-  testRunner.log(`set-cookie that would overwrite secure cookie blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'set-cookie that would overwrite secure cookie blocked set-cookies:');
 
   testRunner.completeTest();
 })

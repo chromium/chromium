@@ -62,7 +62,7 @@
 - (void)failWithExceptionName:(NSString*)name reason:(NSString*)reason {
   GREYFrameworkException* exception =
       [GREYFrameworkException exceptionWithName:name reason:reason];
-  [_impl handleException:exception details:@""];
+  [_impl handleException:exception details:reason];
 }
 
 @end

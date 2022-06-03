@@ -4,17 +4,20 @@
 
 #include "services/video_capture/shared_memory_virtual_device_mojo_adapter.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
+#include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
-#include "services/video_capture/scoped_access_permission_media_to_mojo_adapter.h"
 
 namespace {
 
@@ -36,7 +39,6 @@ SharedMemoryVirtualDeviceMojoAdapter::SharedMemoryVirtualDeviceMojoAdapter(
       send_buffer_handles_to_producer_as_raw_file_descriptors_(
           send_buffer_handles_to_producer_as_raw_file_descriptors),
       buffer_pool_(new media::VideoCaptureBufferPoolImpl(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
           media::VideoCaptureBufferType::kSharedMemory,
           max_buffer_pool_buffer_count())) {}
 
@@ -45,12 +47,7 @@ SharedMemoryVirtualDeviceMojoAdapter::~SharedMemoryVirtualDeviceMojoAdapter() {
 }
 
 int SharedMemoryVirtualDeviceMojoAdapter::max_buffer_pool_buffer_count() {
-  // The maximum number of video frame buffers in-flight at any one time
-  // If all buffers are still in use by consumers when new frames are produced
-  // those frames get dropped.
-  static const int kMaxBufferCount = 3;
-
-  return kMaxBufferCount;
+  return media::kVideoCaptureDefaultMaxBufferPoolSize;
 }
 
 void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
@@ -113,10 +110,9 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
     // message pipes, so the order for calls to |producer_| and |callback|
     // is not guaranteed.
     if (producer_.is_bound())
-      producer_->OnNewBuffer(
-          buffer_id, std::move(buffer_handle),
-          base::BindOnce(&OnNewBufferAcknowleged, base::Passed(&callback),
-                         buffer_id));
+      producer_->OnNewBuffer(buffer_id, std::move(buffer_handle),
+                             base::BindOnce(&OnNewBufferAcknowleged,
+                                            std::move(callback), buffer_id));
     return;
   }
   std::move(callback).Run(buffer_id);
@@ -133,18 +129,20 @@ void SharedMemoryVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
 
   // Notify receiver if there is one.
   if (video_frame_handler_.is_bound()) {
+    if (!scoped_access_permission_map_) {
+      scoped_access_permission_map_ = ScopedAccessPermissionMap::
+          CreateMapAndSendVideoFrameAccessHandlerReady(video_frame_handler_);
+    }
     buffer_pool_->HoldForConsumers(buffer_id, 1 /* num_clients */);
     auto access_permission = std::make_unique<
         media::ScopedBufferPoolReservation<media::ConsumerReleaseTraits>>(
         buffer_pool_, buffer_id);
-    mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission_proxy;
-    mojo::MakeSelfOwnedReceiver<mojom::ScopedAccessPermission>(
-        std::make_unique<ScopedAccessPermissionMediaToMojoAdapter>(
-            std::move(access_permission)),
-        access_permission_proxy.InitWithNewPipeAndPassReceiver());
+    scoped_access_permission_map_->InsertAccessPermission(
+        buffer_id, std::move(access_permission));
     video_frame_handler_->OnFrameReadyInBuffer(
-        buffer_id, 0 /* frame_feedback_id */,
-        std::move(access_permission_proxy), std::move(frame_info));
+        mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
+                                       std::move(frame_info)),
+        {});
   }
   buffer_pool_->RelinquishProducerReservation(buffer_id);
 }
@@ -191,6 +189,11 @@ void SharedMemoryVirtualDeviceMojoAdapter::SetPhotoOptions(
 
 void SharedMemoryVirtualDeviceMojoAdapter::TakePhoto(
     TakePhotoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void SharedMemoryVirtualDeviceMojoAdapter::ProcessFeedback(
+    const media::VideoCaptureFeedback& feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

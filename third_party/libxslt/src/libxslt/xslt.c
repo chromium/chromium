@@ -592,10 +592,6 @@ xsltCompilationCtxtFree(xsltCompilerCtxtPtr cctxt)
     }
     if (cctxt->tmpList != NULL)
 	xsltPointerListFree(cctxt->tmpList);
-#ifdef XSLT_REFACTORED_XPATHCOMP
-    if (cctxt->xpathCtxt != NULL)
-	xmlXPathFreeContext(cctxt->xpathCtxt);
-#endif
     if (cctxt->nsAliases != NULL)
 	xsltFreeNsAliasList(cctxt->nsAliases);
 
@@ -631,15 +627,6 @@ xsltCompilationCtxtCreate(xsltStylesheetPtr style) {
     if (ret->tmpList == NULL) {
 	goto internal_err;
     }
-#ifdef XSLT_REFACTORED_XPATHCOMP
-    /*
-    * Create the XPath compilation context in order
-    * to speed up precompilation of XPath expressions.
-    */
-    ret->xpathCtxt = xmlXPathNewContext(NULL);
-    if (ret->xpathCtxt == NULL)
-	goto internal_err;
-#endif
 
     return(ret);
 
@@ -761,14 +748,15 @@ internal_err:
 #endif
 
 /**
- * xsltNewStylesheet:
+ * xsltNewStylesheetInternal:
+ * @parent:  the parent stylesheet or NULL
  *
  * Create a new XSLT Stylesheet
  *
  * Returns the newly allocated xsltStylesheetPtr or NULL in case of error
  */
-xsltStylesheetPtr
-xsltNewStylesheet(void) {
+static xsltStylesheetPtr
+xsltNewStylesheetInternal(xsltStylesheetPtr parent) {
     xsltStylesheetPtr ret = NULL;
 
     ret = (xsltStylesheetPtr) xmlMalloc(sizeof(xsltStylesheet));
@@ -779,6 +767,7 @@ xsltNewStylesheet(void) {
     }
     memset(ret, 0, sizeof(xsltStylesheet));
 
+    ret->parent = parent;
     ret->omitXmlDeclaration = -1;
     ret->standalone = -1;
     ret->decimalFormat = xsltNewDecimalFormat(NULL, NULL);
@@ -799,6 +788,21 @@ xsltNewStylesheet(void) {
 	"creating dictionary for stylesheet\n");
 #endif
 
+    if (parent == NULL) {
+        ret->principal = ret;
+
+        ret->xpathCtxt = xmlXPathNewContext(NULL);
+        if (ret->xpathCtxt == NULL) {
+            xsltTransformError(NULL, NULL, NULL,
+                    "xsltNewStylesheet: xmlXPathNewContext failed\n");
+            goto internal_err;
+        }
+        if (xmlXPathContextSetCache(ret->xpathCtxt, 1, -1, 0) == -1)
+            goto internal_err;
+    } else {
+        ret->principal = parent->principal;
+    }
+
     xsltInit();
 
     return(ret);
@@ -807,6 +811,18 @@ internal_err:
     if (ret != NULL)
 	xsltFreeStylesheet(ret);
     return(NULL);
+}
+
+/**
+ * xsltNewStylesheet:
+ *
+ * Create a new XSLT Stylesheet
+ *
+ * Returns the newly allocated xsltStylesheetPtr or NULL in case of error
+ */
+xsltStylesheetPtr
+xsltNewStylesheet(void) {
+    return xsltNewStylesheetInternal(NULL);
 }
 
 /**
@@ -1064,6 +1080,9 @@ xsltFreeStylesheet(xsltStylesheetPtr style)
                      "freeing dictionary from stylesheet\n");
 #endif
     xmlDictFree(style->dict);
+
+    if (style->xpathCtxt != NULL)
+	xmlXPathFreeContext(style->xpathCtxt);
 
     memset(style, -1, sizeof(xsltStylesheet));
     xmlFree(style);
@@ -1349,8 +1368,8 @@ xsltParseStylesheetOutput(xsltStylesheetPtr style, xmlNodePtr cur)
 			*  via the stylesheet's error handling.
 			*/
 			xsltTransformError(NULL, style, cur,
-			    "Attribute 'cdata-section-elements': The value "
-			    "'%s' is not a valid QName.\n", element);
+			    "Attribute 'cdata-section-elements': "
+			    "Not a valid QName.\n");
 			style->errors++;
 		    } else {
 			xmlNsPtr ns;
@@ -3637,12 +3656,8 @@ xsltPreprocessStylesheet(xsltStylesheetPtr style, xmlNodePtr cur)
 	    (!xsltCheckExtURI(style, cur->ns->href))) {
 	    goto skip_children;
 	} else if (cur->children != NULL) {
-	    if ((cur->children->type != XML_ENTITY_DECL) &&
-		(cur->children->type != XML_ENTITY_REF_NODE) &&
-		(cur->children->type != XML_ENTITY_NODE)) {
-		cur = cur->children;
-		continue;
-	    }
+	    cur = cur->children;
+	    continue;
 	}
 
 skip_children:
@@ -5479,7 +5494,7 @@ error:
 
 /**
  * xsltIncludeComp:
- * @cctxt: the compilation contenxt
+ * @cctxt: the compilation context
  * @node:  the xsl:include node
  *
  * Process the xslt include node on the source node
@@ -6532,54 +6547,67 @@ xsltParseStylesheetImportedDoc(xmlDocPtr doc,
     if (doc == NULL)
 	return(NULL);
 
-    retStyle = xsltNewStylesheet();
+    retStyle = xsltNewStylesheetInternal(parentStyle);
     if (retStyle == NULL)
 	return(NULL);
-    /*
-    * Set the importing stylesheet module; also used to detect recursion.
-    */
-    retStyle->parent = parentStyle;
+
+    if (xsltParseStylesheetUser(retStyle, doc) != 0) {
+        xsltFreeStylesheet(retStyle);
+        return(NULL);
+    }
+
+    return(retStyle);
+}
+
+/**
+ * xsltParseStylesheetUser:
+ * @style: pointer to the stylesheet
+ * @doc:  an xmlDoc parsed XML
+ *
+ * Parse an XSLT stylesheet with a user-provided stylesheet struct.
+ *
+ * Returns 0 if successful, -1 in case of error.
+ */
+int
+xsltParseStylesheetUser(xsltStylesheetPtr style, xmlDocPtr doc) {
+    if ((style == NULL) || (doc == NULL))
+	return(-1);
+
     /*
     * Adjust the string dict.
     */
     if (doc->dict != NULL) {
-        xmlDictFree(retStyle->dict);
-	retStyle->dict = doc->dict;
+        xmlDictFree(style->dict);
+	style->dict = doc->dict;
 #ifdef WITH_XSLT_DEBUG
         xsltGenericDebug(xsltGenericDebugContext,
 	    "reusing dictionary from %s for stylesheet\n",
 	    doc->URL);
 #endif
-	xmlDictReference(retStyle->dict);
+	xmlDictReference(style->dict);
     }
 
     /*
     * TODO: Eliminate xsltGatherNamespaces(); we must not restrict
     *  the stylesheet to containt distinct namespace prefixes.
     */
-    xsltGatherNamespaces(retStyle);
+    xsltGatherNamespaces(style);
 
 #ifdef XSLT_REFACTORED
     {
 	xsltCompilerCtxtPtr cctxt;
 	xsltStylesheetPtr oldCurSheet;
 
-	if (parentStyle == NULL) {
+	if (style->parent == NULL) {
 	    xsltPrincipalStylesheetDataPtr principalData;
-	    /*
-	    * Principal stylesheet
-	    * --------------------
-	    */
-	    retStyle->principal = retStyle;
 	    /*
 	    * Create extra data for the principal stylesheet.
 	    */
 	    principalData = xsltNewPrincipalStylesheetData();
 	    if (principalData == NULL) {
-		xsltFreeStylesheet(retStyle);
-		return(NULL);
+		return(-1);
 	    }
-	    retStyle->principalData = principalData;
+	    style->principalData = principalData;
 	    /*
 	    * Create the compilation context
 	    * ------------------------------
@@ -6587,14 +6615,13 @@ xsltParseStylesheetImportedDoc(xmlDocPtr doc,
 	    * This is currently the only function where the
 	    * compilation context is created.
 	    */
-	    cctxt = xsltCompilationCtxtCreate(retStyle);
+	    cctxt = xsltCompilationCtxtCreate(style);
 	    if (cctxt == NULL) {
-		xsltFreeStylesheet(retStyle);
-		return(NULL);
+		return(-1);
 	    }
-	    retStyle->compCtxt = (void *) cctxt;
-	    cctxt->style = retStyle;
-	    cctxt->dict = retStyle->dict;
+	    style->compCtxt = (void *) cctxt;
+	    cctxt->style = style;
+	    cctxt->dict = style->dict;
 	    cctxt->psData = principalData;
 	    /*
 	    * Push initial dummy node info.
@@ -6605,22 +6632,21 @@ xsltParseStylesheetImportedDoc(xmlDocPtr doc,
 	    /*
 	    * Imported stylesheet.
 	    */
-	    retStyle->principal = parentStyle->principal;
-	    cctxt = parentStyle->compCtxt;
-	    retStyle->compCtxt = cctxt;
+	    cctxt = style->parent->compCtxt;
+	    style->compCtxt = cctxt;
 	}
 	/*
 	* Save the old and set the current stylesheet structure in the
 	* compilation context.
 	*/
 	oldCurSheet = cctxt->style;
-	cctxt->style = retStyle;
+	cctxt->style = style;
 
-	retStyle->doc = doc;
-	xsltParseStylesheetProcess(retStyle, doc);
+	style->doc = doc;
+	xsltParseStylesheetProcess(style, doc);
 
 	cctxt->style = oldCurSheet;
-	if (parentStyle == NULL) {
+	if (style->parent == NULL) {
 	    /*
 	    * Pop the initial dummy node info.
 	    */
@@ -6631,65 +6657,54 @@ xsltParseStylesheetImportedDoc(xmlDocPtr doc,
 	    * stylesheets.
 	    * TODO: really?
 	    */
-	    /* retStyle->compCtxt = NULL; */
+	    /* style->compCtxt = NULL; */
 	}
-	/*
-	* Free the stylesheet if there were errors.
-	*/
-	if (retStyle != NULL) {
-	    if (retStyle->errors != 0) {
-#ifdef XSLT_REFACTORED_XSLT_NSCOMP
-		/*
-		* Restore all changes made to namespace URIs of ns-decls.
-		*/
-		if (cctxt->psData->nsMap)
-		    xsltRestoreDocumentNamespaces(cctxt->psData->nsMap, doc);
-#endif
-		/*
-		* Detach the doc from the stylesheet; otherwise the doc
-		* will be freed in xsltFreeStylesheet().
-		*/
-		retStyle->doc = NULL;
-		/*
-		* Cleanup the doc if its the main stylesheet.
-		*/
-		if (parentStyle == NULL) {
-		    xsltCleanupStylesheetTree(doc, xmlDocGetRootElement(doc));
-		    if (retStyle->compCtxt != NULL) {
-			xsltCompilationCtxtFree(retStyle->compCtxt);
-			retStyle->compCtxt = NULL;
-		    }
-		}
 
-		xsltFreeStylesheet(retStyle);
-		retStyle = NULL;
-	    }
-	}
+#ifdef XSLT_REFACTORED_XSLT_NSCOMP
+        if (style->errors != 0) {
+            /*
+            * Restore all changes made to namespace URIs of ns-decls.
+            */
+            if (cctxt->psData->nsMap)
+                xsltRestoreDocumentNamespaces(cctxt->psData->nsMap, doc);
+        }
+#endif
+
+        if (style->parent == NULL) {
+            xsltCompilationCtxtFree(style->compCtxt);
+            style->compCtxt = NULL;
+        }
     }
 
 #else /* XSLT_REFACTORED */
     /*
     * Old behaviour.
     */
-    retStyle->doc = doc;
-    if (xsltParseStylesheetProcess(retStyle, doc) == NULL) {
-		retStyle->doc = NULL;
-		xsltFreeStylesheet(retStyle);
-		retStyle = NULL;
-    }
-    if (retStyle != NULL) {
-	if (retStyle->errors != 0) {
-	    retStyle->doc = NULL;
-	    if (parentStyle == NULL)
-		xsltCleanupStylesheetTree(doc,
-		    xmlDocGetRootElement(doc));
-	    xsltFreeStylesheet(retStyle);
-	    retStyle = NULL;
-	}
+    style->doc = doc;
+    if (xsltParseStylesheetProcess(style, doc) == NULL) {
+        style->doc = NULL;
+        return(-1);
     }
 #endif /* else of XSLT_REFACTORED */
 
-    return(retStyle);
+    if (style->errors != 0) {
+        /*
+        * Detach the doc from the stylesheet; otherwise the doc
+        * will be freed in xsltFreeStylesheet().
+        */
+        style->doc = NULL;
+        /*
+        * Cleanup the doc if its the main stylesheet.
+        */
+        if (style->parent == NULL)
+            xsltCleanupStylesheetTree(doc, xmlDocGetRootElement(doc));
+        return(-1);
+    }
+
+    if (style->parent == NULL)
+        xsltResolveStylesheetAttributeSet(style);
+
+    return(0);
 }
 
 /**
@@ -6707,27 +6722,9 @@ xsltParseStylesheetImportedDoc(xmlDocPtr doc,
 
 xsltStylesheetPtr
 xsltParseStylesheetDoc(xmlDocPtr doc) {
-    xsltStylesheetPtr ret;
-
     xsltInitGlobals();
 
-    ret = xsltParseStylesheetImportedDoc(doc, NULL);
-    if (ret == NULL)
-	return(NULL);
-
-    xsltResolveStylesheetAttributeSet(ret);
-#ifdef XSLT_REFACTORED
-    /*
-    * Free the compilation context.
-    * TODO: Check if it's better to move this cleanup to
-    *   xsltParseStylesheetImportedDoc().
-    */
-    if (ret->compCtxt != NULL) {
-	xsltCompilationCtxtFree(XSLT_CCTXT(ret));
-	ret->compCtxt = NULL;
-    }
-#endif
-    return(ret);
+    return(xsltParseStylesheetImportedDoc(doc, NULL));
 }
 
 /**

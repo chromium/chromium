@@ -9,8 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
@@ -19,11 +17,14 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "net/base/network_isolation_key.h"
 #include "net/ssl/ssl_info.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -31,7 +32,6 @@ class URLLoaderThrottle;
 }  // namespace blink
 
 namespace net {
-struct SHA256HashValue;
 class SourceStream;
 }  // namespace net
 
@@ -42,6 +42,7 @@ class SourceStreamToDataPipe;
 
 namespace content {
 
+class PrefetchedSignedExchangeCacheEntry;
 class SignedExchangeDevToolsProxy;
 class SignedExchangeHandler;
 class SignedExchangeHandlerFactory;
@@ -75,14 +76,21 @@ class CONTENT_EXPORT SignedExchangeLoader final
       std::unique_ptr<SignedExchangeReporter> reporter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       URLLoaderThrottlesGetter url_loader_throttles_getter,
+      const net::NetworkIsolationKey& network_isolation_key,
       int frame_tree_node_id,
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
-      const std::string& accept_langs);
+      const std::string& accept_langs,
+      bool keep_entry_for_prefetch_cache);
+
+  SignedExchangeLoader(const SignedExchangeLoader&) = delete;
+  SignedExchangeLoader& operator=(const SignedExchangeLoader&) = delete;
+
   ~SignedExchangeLoader() override;
 
 
   // network::mojom::URLLoaderClient implementation
   // Only OnStartLoadingResponseBody() and OnComplete() are called.
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -98,9 +106,11 @@ class CONTENT_EXPORT SignedExchangeLoader final
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // network::mojom::URLLoader implementation
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers,
-                      const base::Optional<GURL>& new_url) override;
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -109,21 +119,17 @@ class CONTENT_EXPORT SignedExchangeLoader final
   void ConnectToClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  const base::Optional<GURL>& fallback_url() const { return fallback_url_; }
+  const absl::optional<GURL>& fallback_url() const { return fallback_url_; }
 
-  const base::Optional<GURL>& inner_request_url() const {
+  const absl::optional<GURL>& inner_request_url() const {
     return inner_request_url_;
   }
 
-  // Returns the header integrity value of the loaded signed exchange if
-  // available. This is available after OnReceiveRedirect() of
-  // |forwarding_client| is called. Otherwise returns nullopt.
-  base::Optional<net::SHA256HashValue> ComputeHeaderIntegrity() const;
-
-  // Returns the signature expire time of the loaded signed exchange if
-  // available. This is available after OnReceiveRedirect() of
-  // |forwarding_client| is called. Otherwise returns a null Time.
-  base::Time GetSignatureExpireTime() const;
+  // Called to get the information about the loaded signed exchange. To call
+  // this method, |keep_entry_for_prefetch_cache| constructor argument must be
+  // set.
+  std::unique_ptr<PrefetchedSignedExchangeCacheEntry>
+  TakePrefetchedSignedExchangeCacheEntry();
 
   // Set nullptr to reset the mocking.
   static void SetSignedExchangeHandlerFactoryForTest(
@@ -176,32 +182,35 @@ class CONTENT_EXPORT SignedExchangeLoader final
   std::unique_ptr<SignedExchangeReporter> reporter_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   URLLoaderThrottlesGetter url_loader_throttles_getter_;
+  const net::NetworkIsolationKey network_isolation_key_;
   const int frame_tree_node_id_;
   scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder_;
 
-  base::Optional<net::SSLInfo> ssl_info_;
+  absl::optional<net::SSLInfo> ssl_info_;
 
   std::string content_type_;
 
-  base::Optional<GURL> fallback_url_;
-  base::Optional<GURL> inner_request_url_;
+  absl::optional<GURL> fallback_url_;
+  absl::optional<GURL> inner_request_url_;
 
   struct OuterResponseLengthInfo {
     int64_t encoded_data_length;
     int64_t decoded_body_length;
   };
   // Set when URLLoaderClient::OnComplete() is called.
-  base::Optional<OuterResponseLengthInfo> outer_response_length_info_;
+  absl::optional<OuterResponseLengthInfo> outer_response_length_info_;
 
   // Set when |body_data_pipe_adapter_| finishes loading the decoded body.
-  base::Optional<int> decoded_body_read_result_;
+  absl::optional<int> decoded_body_read_result_;
   const std::string accept_langs_;
+
+  // Keep the signed exchange info to be stored to
+  // PrefetchedSignedExchangeCache.
+  std::unique_ptr<PrefetchedSignedExchangeCacheEntry> cache_entry_;
 
   std::unique_ptr<SignedExchangeValidityPinger> validity_pinger_;
 
   base::WeakPtrFactory<SignedExchangeLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeLoader);
 };
 
 }  // namespace content

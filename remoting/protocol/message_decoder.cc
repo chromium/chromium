@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/proto/internal.pb.h"

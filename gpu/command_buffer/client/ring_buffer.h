@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "gpu/gpu_export.h"
 
@@ -24,6 +23,8 @@ class GPU_EXPORT RingBuffer {
  public:
   typedef uint32_t Offset;
 
+  RingBuffer() = delete;
+
   // Creates a RingBuffer.
   // Parameters:
   //   alignment: Alignment for allocations.
@@ -36,6 +37,9 @@ class GPU_EXPORT RingBuffer {
              uint32_t size,
              CommandBufferHelper* helper,
              void* base);
+
+  RingBuffer(const RingBuffer&) = delete;
+  RingBuffer& operator=(const RingBuffer&) = delete;
 
   ~RingBuffer();
 
@@ -157,8 +161,6 @@ class GPU_EXPORT RingBuffer {
 
   // The physical address that corresponds to base_offset.
   void* base_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RingBuffer);
 };
 
 }  // namespace gpu

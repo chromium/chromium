@@ -1,0 +1,20 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/platform/platform.gni")
+
+blink_platform_sources("android_webview") {
+  sources = [
+    "synchronous_compositor_registry.h",
+    "synchronous_layer_tree_frame_sink.cc",
+    "synchronous_layer_tree_frame_sink.h",
+  ]
+
+  deps = [
+    "//components/power_scheduler",
+
+    # TODO(crbug.com/805739): This should not be depended on from the renderer.
+    "//components/viz/service",
+  ]
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr-Latn">
+<translation id="1287053896835709737">Žuto na crnom</translation>
+<translation id="1408730541890277710">Zamenite slike njihovim alternativnim tekstom.</translation>
+<translation id="145360476452865422">Smernice za animaciju:</translation>
+<translation id="1555130319947370107">Plava</translation>
+<translation id="1588438908519853928">Normalan</translation>
+<translation id="1591070050619849194">Onemogući sve animirane slike.</translation>
+<translation id="1703735871906654364">Navigacija kursorom</translation>
+<translation id="1791496371305830581">Omogući sve animirane slike.</translation>
+<translation id="1996252509865389616">Omogućiti?</translation>
+<translation id="2079545284768500474">Opozovi</translation>
+<translation id="2179565792157161713">Otvori pun opis na novoj kartici</translation>
+<translation id="2223143012868735942">Prilagodljivi filter za boje se primenjuje na veb-stranice radi poboljšanja percepcije boja.</translation>
+<translation id="2394933097471027016">Isprobajte odmah – Navigacija kursorom je uvek omogućena na ovoj stranici!</translation>
+<translation id="2471847333270902538">Šema boja za <ph name="SITE" />:</translation>
+<translation id="2648340354586434750">Držite taster &lt;span class='key'&gt;Option&lt;/span&gt; da biste prelazili sa jedne reči na drugu.</translation>
+<translation id="2795227192542594043">Uz ovaj dodatak na veb-stranicama ćete videti kursor koji možete da pomerate tastaturom i kojim možete da izaberete tekst na stranicama.</translation>
+<translation id="2808027189040546825">1. korak: Izaberite red sa najslabije vidljivim zvezdicama:</translation>
+<translation id="2965611304828530558">&lt;p&gt;Kad dođete do nekog linka ili kontrole, taj element se automatski fokusira.   Pritisnite &lt;span class='key'&gt;Enter&lt;/span&gt; da biste kliknuli na link ili dugme. &lt;/p&gt; &lt;p&gt;   Kad neka kontrola u fokusu (na primer okvir za tekst ili okvir sa listom) prati pritiske na tastere sa strelicama, pritisnite &lt;span class='key'&gt;Esc&lt;/span&gt;, pa strelicu nalevo ili nadesno da biste nastavili navigaciju kursorom. &lt;/p&gt; &lt;p&gt;   Takođe možete da pritisnete &lt;span class='key'&gt;Tab&lt;/span&gt; da biste prešli na sledeću kontrolu koju je moguće fokusirati. &lt;/p&gt;</translation>
+<translation id="3252573918265662711">Podešavanje</translation>
+<translation id="3410969471888629217">Zaboravi prilagođavanja sajta</translation>
+<translation id="3435896845095436175">Omogući</translation>
+<translation id="3622586652998721735">Podesi kao podrazumevanu šemu</translation>
+<translation id="3812541808639806898">Prikazivač alternativnog teksta koji se prikazuje umesto slika</translation>
+<translation id="381767806621926835">Kliknite desnim tasterom na bilo šta sa atributima „longdesc“ ili „aria-describedat“ da biste pristupili dužem opisu te stavke.</translation>
+<translation id="4023902424053835668">Pomerajte se po tekstu na veb-stranici pomoću tastera sa strelicama.</translation>
+<translation id="4388820049312272371">Istakni poziciju kursora kratkim treptajem.</translation>
+<translation id="4394049700291259645">Onemogući</translation>
+<translation id="4769065380738716500">Slike su zamenjene „alt“ tekstom.</translation>
+<translation id="4896660567607030658">Bez povratnih informacija, samo prikazuj kursor.</translation>
+<translation id="4937901943818762779">Dozvoli animirane slike, ali samo jednom.</translation>
+<translation id="4949131196216960195">Pritisnite &lt;span class='key'&gt;taster za pretragu&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (taster za pojačavanje osvetljenja ili F7) da biste uključili navigaciju kursorom. Pritisnite ga ponovo da biste ga isključili.</translation>
+<translation id="4954450790315188152">Kad je omogućena navigacija kursorom:</translation>
+<translation id="5041932793799765940">Prilagođavanje boja</translation>
+<translation id="5094574508723441140">Veći kontrast</translation>
+<translation id="5173942593318174089">Istakni poziciju kursora animacijom.</translation>
+<translation id="5287723860611749454">&lt;p&gt;Pomerajte se po dokumentu pomoću tastera sa strelicama. &lt;/p&gt;&lt;p&gt;Kliknite bilo gde da biste pomerili kursor na to mesto. &lt;/p&gt; &lt;p&gt;   Pritisnite &lt;span class='key'&gt;Shift&lt;/span&gt; + strelice da biste izabrali tekst.&lt;/p&gt;</translation>
+<translation id="5331422999063554397">Obrnute boje</translation>
+<translation id="5555153510860501336">Visoki kontrast je onemogućen</translation>
+<translation id="5558600050691192317">Tasterske komande</translation>
+<translation id="5594989420907487559">Pokreće animacije samo jednom ili potpuno onemogućava animacije.</translation>
+<translation id="5631241868147802353">Podrazumevana šema boja:</translation>
+<translation id="5650358096585648000">Vizuelne povratne informacije</translation>
+<translation id="5710185147685935461">Promenite ili obrnite šemu boja da biste lakše čitali veb-stranice.</translation>
+<translation id="5939518447894949180">Resetuj</translation>
+<translation id="595639123821853262">Obrnuti sivi tonovi</translation>
+<translation id="6017514345406065928">Zelena</translation>
+<translation id="6050189528197190982">Sivi tonovi</translation>
+<translation id="6170146920149900756">Poboljšavanje boja</translation>
+<translation id="633394792577263429">Držite &lt;span class='key'&gt;Ctrl&lt;/span&gt; da biste se pomerali sa jedne reči na drugu.</translation>
+<translation id="6550675742724504774">Opcije</translation>
+<translation id="6838518108677880446">Podešavanje:</translation>
+<translation id="690628312087070417">Kada kursor pređe veliku oblast na stranici:</translation>
+<translation id="6965382102122355670">Potvrdi</translation>
+<translation id="7379645913608427028">Stepen</translation>
+<translation id="7384431257964758081">Visoki kontrast je omogućen</translation>
+<translation id="7586636300921797327">2. korak: Podešavajte klizač dok sve zvezdice ne budu vidljive u
+        izabranom redu</translation>
+<translation id="7658239707568436148">Otkaži</translation>
+<translation id="786423340267544509">Dodaj okvir elementima sa atributima aria-describedat ili longdesc.</translation>
+<translation id="7942349550061667556">Crvena</translation>
+<translation id="8260673944985561857">Opcije za navigaciju kursorom</translation>
+<translation id="8321034316479930120">Smernice za animaciju</translation>
+<translation id="8480209185614411573">Visoki kontrast</translation>
+<translation id="8609925175482059018">Pritisnite &lt;span class='key'&gt;F7&lt;/span&gt; da biste uključili navigaciju kursorom. Ponovnim pritiskom na isti taster onemogućićete ovu funkciju.</translation>
+<translation id="894241283505723656">Pun opis u kontekstualnom meniju</translation>
+</translationbundle>

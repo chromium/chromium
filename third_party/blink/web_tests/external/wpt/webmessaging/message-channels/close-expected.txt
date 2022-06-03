@@ -4,6 +4,6 @@ PASS Message sent from closed port should not arrive.
 PASS Message sent to closed port from transferred port should not arrive.
 PASS Inflight messages should be delivered even when sending port is closed afterwards.
 PASS Close in onmessage should not cancel inflight messages.
-FAIL close() detaches a MessagePort (but not the one its entangled with) assert_throws: function "() => self.postMessage(null, "*", [c.port1])" did not throw
+FAIL close() detaches a MessagePort (but not the one its entangled with) assert_throws_dom: function "() => self.postMessage(null, "*", [c.port1])" did not throw
 Harness: the test ran to completion.
 

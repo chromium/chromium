@@ -149,8 +149,8 @@ promise_test(t => setup_and_clean()
   'mode: "manual", non-intercepted request');
 
 promise_test(t => setup_and_clean()
-    .then(() => promise_rejects(
-                   t, new TypeError(),
+    .then(() => promise_rejects_js(
+                   t, TypeError,
                    self.fetch(REDIRECT_TO_TARGET_URL + '&error',
                               {redirect:'error'}),
                    'The redirect response from the server should be treated as' +
@@ -191,8 +191,8 @@ promise_test(t => setup_and_clean()
     .then(() => {
       const url = REDIRECT_TO_TARGET_URL +
                   '&original-redirect-mode=error&sw=follow';
-      return promise_rejects(
-          t, new TypeError(),
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
           frame.contentWindow.fetch(url, {redirect: 'error'}),
           'The redirected response from the service worker should be ' +
           'treated as an error when the redirect flag of request was ' +
@@ -205,8 +205,8 @@ promise_test(t => setup_and_clean()
     .then(() => {
       const url = REDIRECT_TO_TARGET_URL +
                   '&original-redirect-mode=manual&sw=follow';
-      return promise_rejects(
-          t, new TypeError(),
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
           frame.contentWindow.fetch(url, {redirect: 'manual'}),
           'The redirected response from the service worker should be ' +
           'treated as an error when the redirect flag of request was ' +
@@ -223,8 +223,8 @@ promise_test(t => setup_and_clean()
     .then(() => {
       const url = REDIRECT_TO_TARGET_URL +
                   '&original-redirect-mode=follow&sw=manual';
-      return promise_rejects(
-          t, new TypeError(),
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
           frame.contentWindow.fetch(url, {redirect: 'follow'}),
           'The opaqueredirect response from the service worker should ' +
           'be treated as an error when the redirect flag of request was' +
@@ -237,8 +237,8 @@ promise_test(t => setup_and_clean()
     .then(() => {
       const url = REDIRECT_TO_TARGET_URL +
                   '&original-redirect-mode=error&sw=manual';
-      return promise_rejects(
-          t, new TypeError(),
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
           frame.contentWindow.fetch(url, {redirect: 'error'}),
           'The opaqueredirect response from the service worker should ' +
           'be treated as an error when the redirect flag of request was' +
@@ -267,7 +267,7 @@ promise_test(t => setup_and_clean()
 promise_test(t => setup_and_clean()
     .then(() => {
       const url = host_info['HTTPS_ORIGIN'] + base_path() +
-                  'dummy?url=' + encodeURIComponent(TARGET_URL) +
+                  'sample?url=' + encodeURIComponent(TARGET_URL) +
                   '&original-redirect-mode=follow&sw=gen';
       return redirected_test({url: url,
                               fetch_option: {redirect: 'follow'},
@@ -281,10 +281,10 @@ promise_test(t => setup_and_clean()
 promise_test(t => setup_and_clean()
     .then(() => {
       const url = host_info['HTTPS_ORIGIN'] + base_path() +
-                  'dummy?url=' + encodeURIComponent(TARGET_URL) +
+                  'sample?url=' + encodeURIComponent(TARGET_URL) +
                   '&original-redirect-mode=error&sw=gen';
-      return promise_rejects(
-          t, new TypeError(),
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
           frame.contentWindow.fetch(url, {redirect: 'error'}),
           'The generated redirect response from the service worker should ' +
           'be treated as an error when the redirect flag of request was' +
@@ -296,8 +296,8 @@ promise_test(t => setup_and_clean()
 promise_test(t => setup_and_clean()
     .then(() => {
       const url = host_info['HTTPS_ORIGIN'] + base_path() +
-                  'dummy?url=' + encodeURIComponent(TARGET_URL) +
-                  '&original-redirect-mode=follow&sw=gen';
+                  'sample?url=' + encodeURIComponent(TARGET_URL) +
+                  '&original-redirect-mode=manual&sw=gen';
       return redirected_test({url: url,
                               fetch_option: {redirect: 'manual'},
                               fetch_method: frame.contentWindow.fetch,
@@ -306,6 +306,102 @@ promise_test(t => setup_and_clean()
                               expected_intercepted_urls: [url]})
     }),
   'mode: "manual", generated redirect response');
+
+// =======================================================
+// Tests for requests that are in-scope of the service worker. The service
+// worker returns a generated redirect response manually with the Response
+// constructor.
+// =======================================================
+promise_test(t => setup_and_clean()
+    .then(() => {
+      const url = host_info['HTTPS_ORIGIN'] + base_path() +
+                  'sample?url=' + encodeURIComponent(TARGET_URL) +
+                  '&original-redirect-mode=follow&sw=gen-manual';
+      return redirected_test({url: url,
+                              fetch_option: {redirect: 'follow'},
+                              fetch_method: frame.contentWindow.fetch,
+                              expected_type: 'basic',
+                              expected_redirected: true,
+                              expected_intercepted_urls: [url, TARGET_URL]})
+    }),
+  'mode: "follow", manually-generated redirect response');
+
+promise_test(t => setup_and_clean()
+    .then(() => {
+      const url = host_info['HTTPS_ORIGIN'] + base_path() +
+                  'sample?url=' + encodeURIComponent(TARGET_URL) +
+                  '&original-redirect-mode=error&sw=gen-manual';
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
+          frame.contentWindow.fetch(url, {redirect: 'error'}),
+          'The generated redirect response from the service worker should ' +
+          'be treated as an error when the redirect flag of request was' +
+          ' \'error\'.')
+        .then(() => check_intercepted_urls([url]));
+    }),
+  'mode: "error", manually-generated redirect response');
+
+promise_test(t => setup_and_clean()
+    .then(() => {
+      const url = host_info['HTTPS_ORIGIN'] + base_path() +
+                  'sample?url=' + encodeURIComponent(TARGET_URL) +
+                  '&original-redirect-mode=manual&sw=gen-manual';
+      return redirected_test({url: url,
+                              fetch_option: {redirect: 'manual'},
+                              fetch_method: frame.contentWindow.fetch,
+                              expected_type: 'opaqueredirect',
+                              expected_redirected: false,
+                              expected_intercepted_urls: [url]})
+    }),
+  'mode: "manual", manually-generated redirect response');
+
+// =======================================================
+// Tests for requests that are in-scope of the service worker. The service
+// worker returns a generated redirect response with a relative location header.
+// Generated responses do not have URLs, so this should fail to resolve.
+// =======================================================
+promise_test(t => setup_and_clean()
+    .then(() => {
+      const url = host_info['HTTPS_ORIGIN'] + base_path() +
+                  'sample?url=blank.html' +
+                  '&original-redirect-mode=follow&sw=gen-manual';
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
+          frame.contentWindow.fetch(url, {redirect: 'follow'}),
+          'Following the generated redirect response from the service worker '+
+          'should result fail.')
+        .then(() => check_intercepted_urls([url]));
+    }),
+  'mode: "follow", generated relative redirect response');
+
+promise_test(t => setup_and_clean()
+    .then(() => {
+      const url = host_info['HTTPS_ORIGIN'] + base_path() +
+                  'sample?url=blank.html' +
+                  '&original-redirect-mode=error&sw=gen-manual';
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
+          frame.contentWindow.fetch(url, {redirect: 'error'}),
+          'The generated redirect response from the service worker should ' +
+          'be treated as an error when the redirect flag of request was' +
+          ' \'error\'.')
+        .then(() => check_intercepted_urls([url]));
+    }),
+  'mode: "error", generated relative redirect response');
+
+promise_test(t => setup_and_clean()
+    .then(() => {
+      const url = host_info['HTTPS_ORIGIN'] + base_path() +
+                  'sample?url=blank.html' +
+                  '&original-redirect-mode=manual&sw=gen-manual';
+      return redirected_test({url: url,
+                              fetch_option: {redirect: 'manual'},
+                              fetch_method: frame.contentWindow.fetch,
+                              expected_type: 'opaqueredirect',
+                              expected_redirected: false,
+                              expected_intercepted_urls: [url]})
+    }),
+  'mode: "manual", generated relative redirect response');
 
 // =======================================================
 // Tests for requests that are in-scope of the service worker. The service
@@ -319,7 +415,7 @@ promise_test(t => setup_and_clean()
       // So fetch can follow the redirect response 20 times.
       let urls = [TARGET_URL];
       for (let i = 0; i < 20; ++i) {
-        urls.unshift(host_info['HTTPS_ORIGIN'] + '/dummy?sw=gen&url=' +
+        urls.unshift(host_info['HTTPS_ORIGIN'] + '/sample?sw=gen&url=' +
                     encodeURIComponent(urls[0]));
 
       }
@@ -339,12 +435,12 @@ promise_test(t => setup_and_clean()
       // network error." https://fetch.spec.whatwg.org/#http-redirect-fetch
       // So fetch can't follow the redirect response 21 times.
       for (let i = 0; i < 21; ++i) {
-        urls.unshift(host_info['HTTPS_ORIGIN'] + '/dummy?sw=gen&url=' +
+        urls.unshift(host_info['HTTPS_ORIGIN'] + '/sample?sw=gen&url=' +
                     encodeURIComponent(urls[0]));
 
       }
-      return promise_rejects(
-          t, new TypeError(),
+      return promise_rejects_js(
+          t, frame.contentWindow.TypeError,
           frame.contentWindow.fetch(urls[0], {redirect: 'follow'}),
           'Fetch should not follow the redirect response 21 times.')
         .then(() => {
@@ -360,7 +456,7 @@ promise_test(t => setup_and_clean()
 // =======================================================
 promise_test(t => setup_and_clean()
     .then(() => {
-      const url = host_info['HTTPS_ORIGIN'] + base_path() + 'dummy?url=' +
+      const url = host_info['HTTPS_ORIGIN'] + base_path() + 'sample?url=' +
                   encodeURIComponent(TARGET_URL) +'&sw=fetch-url';
       return redirected_test({url: url,
                               fetch_option: {},

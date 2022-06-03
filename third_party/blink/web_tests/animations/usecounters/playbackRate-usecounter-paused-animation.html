@@ -18,16 +18,15 @@ var animation = div.animate(null, 100 * MS_PER_SEC);
 var startTimeBefore = animation.startTime;
 animation.currentTime = 7 * MS_PER_SEC; // ms
 
-async_test(t => {
-  return animation.ready.then(t.step_func_done(() => {
-    var current_time = animation.currentTime;
-    animation.pause();
-    animation.currentTime = current_time;
-    assert_equals(animation.playState, "paused");
+promise_test(async t => {
+  await animation.ready;
+  var current_time = animation.currentTime;
+  animation.pause();
+  animation.currentTime = current_time;
+  assert_equals(animation.playState, "paused");
 
-    animation.playbackRate = 0.5;
+  animation.playbackRate = 0.5;
 
-    assert_false(internals.isUseCounted(document, AnimationSetPlaybackRateCompensatorySeek));
-  }))
+  assert_false(internals.isUseCounted(document, AnimationSetPlaybackRateCompensatorySeek));
 }, 'Check to ensure that we UseCount when you cause a compensatory seek by setting playbackRate when paused');
 </script>

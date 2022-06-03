@@ -54,7 +54,7 @@ class VTTParserClient : public GarbageCollectedMixin {
   virtual void NewCuesParsed() = 0;
   virtual void FileFailedToParse() = 0;
 
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 };
 
 // Implementation of the WebVTT parser algorithm.
@@ -114,7 +114,7 @@ class VTTParser final : public GarbageCollected<VTTParser> {
   // Transfers ownership of last parsed style sheets to caller.
   void GetNewStyleSheets(HeapVector<Member<CSSStyleSheet>>&);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   Member<Document> document_;
@@ -160,4 +160,4 @@ class VTTParser final : public GarbageCollected<VTTParser> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_PARSER_H_

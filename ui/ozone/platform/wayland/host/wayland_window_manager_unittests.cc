@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
@@ -10,6 +11,8 @@
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
 namespace ui {
+
+using ::testing::Values;
 
 namespace {
 
@@ -20,6 +23,8 @@ constexpr gfx::Rect kDefaultBounds(0, 0, 100, 100);
 class WaylandWindowManagerTest : public WaylandTest {
  public:
   WaylandWindowManagerTest() {}
+  WaylandWindowManagerTest(const WaylandWindowManagerTest&) = delete;
+  WaylandWindowManagerTest& operator=(const WaylandWindowManagerTest&) = delete;
 
   void SetUp() override {
     WaylandTest::SetUp();
@@ -44,9 +49,6 @@ class WaylandWindowManagerTest : public WaylandTest {
   }
 
   WaylandWindowManager* manager_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandWindowManagerTest);
 };
 
 TEST_P(WaylandWindowManagerTest, GetWindow) {
@@ -97,24 +99,31 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 
   auto* pointer = server_.seat()->pointer();
   ASSERT_TRUE(pointer);
 
-  wl::MockSurface* surface =
-      server_.GetObject<wl::MockSurface>(window1->GetWidget());
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window1->root_surface()->GetSurfaceId());
   wl_pointer_send_enter(pointer->resource(), 1, surface->resource(), 0, 0);
 
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentKeyboardFocusedWindow());
   EXPECT_TRUE(window1.get() == manager_->GetCurrentFocusedWindow());
+  EXPECT_TRUE(window1.get() ==
+              manager_->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_TRUE(window1.get() == manager_->GetCurrentPointerFocusedWindow());
 
   wl_pointer_send_leave(pointer->resource(), 2, surface->resource());
 
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 }
 
 TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
@@ -138,8 +147,8 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   auto* keyboard = server_.seat()->keyboard();
   ASSERT_TRUE(keyboard);
 
-  wl::MockSurface* surface =
-      server_.GetObject<wl::MockSurface>(window1->GetWidget());
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window1->root_surface()->GetSurfaceId());
 
   struct wl_array empty;
   wl_array_init(&empty);
@@ -147,7 +156,8 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
 
   Sync();
 
-  EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_TRUE(window1.get() == manager_->GetCurrentFocusedWindow());
   EXPECT_TRUE(window1.get() == manager_->GetCurrentKeyboardFocusedWindow());
 
   wl_keyboard_send_leave(keyboard->resource(), 2, surface->resource());
@@ -160,7 +170,15 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
 TEST_P(WaylandWindowManagerTest, GetWindowsOnOutput) {
   MockPlatformWindowDelegate delegate;
 
+  // Create a second wl_output.
   wl::TestOutput* output = server_.CreateAndInitializeOutput();
+  Sync();
+
+  // Place it at the right of the first output.
+  int x = server_.output()->GetRect().x();
+  output->SetRect({x, 0, 800, 600});
+  output->Flush();
+  Sync();
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
@@ -170,24 +188,25 @@ TEST_P(WaylandWindowManagerTest, GetWindowsOnOutput) {
 
   Sync();
 
-  wl::MockSurface* surface =
-      server_.GetObject<wl::MockSurface>(window1->GetWidget());
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window1->root_surface()->GetSurfaceId());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output->resource());
 
   Sync();
 
-  auto entered_outputs_window1 = window1->entered_outputs_ids();
+  auto entered_outputs_window1 = window1->root_surface()->entered_outputs();
   EXPECT_EQ(1u, entered_outputs_window1.size());
 
-  uint32_t output_id = *entered_outputs_window1.begin();
+  uint32_t output_id = (*entered_outputs_window1.begin());
 
   auto windows_on_output = manager_->GetWindowsOnOutput(output_id);
   EXPECT_EQ(1u, windows_on_output.size());
 
   EXPECT_TRUE(window1.get() == *windows_on_output.begin());
 
-  surface = server_.GetObject<wl::MockSurface>(window2->GetWidget());
+  surface = server_.GetObject<wl::MockSurface>(
+      window2->root_surface()->GetSurfaceId());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output->resource());
 
@@ -195,6 +214,9 @@ TEST_P(WaylandWindowManagerTest, GetWindowsOnOutput) {
 
   windows_on_output = manager_->GetWindowsOnOutput(output_id);
   EXPECT_EQ(2u, windows_on_output.size());
+
+  output->DestroyGlobal();
+  Sync();
 }
 
 TEST_P(WaylandWindowManagerTest, GetAllWindows) {
@@ -218,10 +240,12 @@ TEST_P(WaylandWindowManagerTest, GetAllWindows) {
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowManagerTest,
-                         ::testing::Values(kXdgShellStable));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandWindowManagerTest,
-                         ::testing::Values(kXdgShellV6));
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
 
 }  // namespace ui

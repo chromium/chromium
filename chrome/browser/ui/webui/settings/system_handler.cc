@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -27,7 +27,7 @@ void SystemHandler::AddLoadTimeData(content::WebUIDataSource* data_source) {
 }
 
 void SystemHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showProxySettings",
       base::BindRepeating(&SystemHandler::HandleShowProxySettings,
                           base::Unretained(this)));

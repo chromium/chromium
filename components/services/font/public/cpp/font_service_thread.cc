@@ -10,15 +10,15 @@
 #include "base/files/file.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/services/font/public/cpp/mapped_font_file.h"
 
 namespace font_service {
 namespace internal {
 
 FontServiceThread::FontServiceThread()
-    : task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
-           base::MayBlock()})) {}
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock()})) {}
 
 FontServiceThread::~FontServiceThread() {
   // Ensure the remote is unbound on the appropriate sequence.

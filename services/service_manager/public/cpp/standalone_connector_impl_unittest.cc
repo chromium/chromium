@@ -5,15 +5,15 @@
 #include "services/service_manager/public/cpp/standalone_connector_impl.h"
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/standalone_connector_impl_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace standalone_connector_impl_unittest {
@@ -23,6 +23,9 @@ class TestConnectorDelegate : public StandaloneConnectorImpl::Delegate {
   template <typename Handler>
   TestConnectorDelegate(Handler handler)
       : TestConnectorDelegate(base::BindLambdaForTesting(handler)) {}
+
+  TestConnectorDelegate(const TestConnectorDelegate&) = delete;
+  TestConnectorDelegate& operator=(const TestConnectorDelegate&) = delete;
 
   ~TestConnectorDelegate() override = default;
 
@@ -40,8 +43,6 @@ class TestConnectorDelegate : public StandaloneConnectorImpl::Delegate {
   }
 
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectorDelegate);
 };
 
 class StandaloneConnectorImplTest : public testing::Test {
@@ -57,7 +58,7 @@ TEST_F(StandaloneConnectorImplTest, Connect) {
   const std::string kBarServiceName = "bar_service";
 
   int requests_processed = 0;
-  base::Optional<base::RunLoop> loop;
+  absl::optional<base::RunLoop> loop;
   TestConnectorDelegate delegate([&](const std::string& service_name,
                                      mojo::GenericPendingReceiver receiver) {
     ASSERT_TRUE(receiver);

@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -13,6 +14,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/aligned_memory.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -30,29 +32,29 @@ class ConstructAndDestructLogger {
   ConstructAndDestructLogger() {
     constructed_seq_.GetNext();
   }
+  ConstructAndDestructLogger(const ConstructAndDestructLogger&) = delete;
+  ConstructAndDestructLogger& operator=(const ConstructAndDestructLogger&) =
+      delete;
   ~ConstructAndDestructLogger() {
     destructed_seq_.GetNext();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConstructAndDestructLogger);
 };
 
 class SlowConstructor {
  public:
   SlowConstructor() : some_int_(0) {
     // Sleep for 1 second to try to cause a race.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
     ++constructed;
     some_int_ = 12;
   }
+  SlowConstructor(const SlowConstructor&) = delete;
+  SlowConstructor& operator=(const SlowConstructor&) = delete;
   int some_int() const { return some_int_; }
 
   static int constructed;
  private:
   int some_int_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowConstructor);
 };
 
 // static
@@ -63,6 +65,8 @@ class SlowDelegate : public base::DelegateSimpleThread::Delegate {
   explicit SlowDelegate(
       base::LazyInstance<SlowConstructor>::DestructorAtExit* lazy)
       : lazy_(lazy) {}
+  SlowDelegate(const SlowDelegate&) = delete;
+  SlowDelegate& operator=(const SlowDelegate&) = delete;
 
   void Run() override {
     EXPECT_EQ(12, lazy_->Get().some_int());
@@ -71,8 +75,6 @@ class SlowDelegate : public base::DelegateSimpleThread::Delegate {
 
  private:
   base::LazyInstance<SlowConstructor>::DestructorAtExit* lazy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowDelegate);
 };
 
 }  // namespace
@@ -178,9 +180,6 @@ class AlignedData {
 
 }  // namespace
 
-#define EXPECT_ALIGNED(ptr, align) \
-    EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) & (align - 1))
-
 TEST(LazyInstanceTest, Alignment) {
   using base::LazyInstance;
 
@@ -194,9 +193,9 @@ TEST(LazyInstanceTest, Alignment) {
   static LazyInstance<AlignedData<4096>>::DestructorAtExit align4096 =
       LAZY_INSTANCE_INITIALIZER;
 
-  EXPECT_ALIGNED(align4.Pointer(), 4);
-  EXPECT_ALIGNED(align32.Pointer(), 32);
-  EXPECT_ALIGNED(align4096.Pointer(), 4096);
+  EXPECT_TRUE(base::IsAligned(align4.Pointer(), 4));
+  EXPECT_TRUE(base::IsAligned(align32.Pointer(), 32));
+  EXPECT_TRUE(base::IsAligned(align4096.Pointer(), 4096));
 }
 
 namespace {
@@ -213,7 +212,8 @@ class BlockingConstructor {
       base::PlatformThread::YieldCurrentThread();
     done_construction_ = true;
   }
-
+  BlockingConstructor(const BlockingConstructor&) = delete;
+  BlockingConstructor& operator=(const BlockingConstructor&) = delete;
   ~BlockingConstructor() {
     // Restore static state for the next test.
     base::subtle::NoBarrier_Store(&constructor_called_, 0);
@@ -230,7 +230,7 @@ class BlockingConstructor {
     base::subtle::NoBarrier_Store(&complete_construction_, 1);
   }
 
-  bool done_construction() { return done_construction_; }
+  bool done_construction() const { return done_construction_; }
 
  private:
   // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
@@ -238,8 +238,6 @@ class BlockingConstructor {
   static base::subtle::Atomic32 complete_construction_;
 
   bool done_construction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructor);
 };
 
 // A SimpleThread running at |thread_priority| which invokes |before_get|
@@ -253,6 +251,9 @@ class BlockingConstructorThread : public base::SimpleThread {
       : SimpleThread("BlockingConstructorThread", Options(thread_priority)),
         lazy_(lazy),
         before_get_(std::move(before_get)) {}
+  BlockingConstructorThread(const BlockingConstructorThread&) = delete;
+  BlockingConstructorThread& operator=(const BlockingConstructorThread&) =
+      delete;
 
   void Run() override {
     if (before_get_)
@@ -263,8 +264,6 @@ class BlockingConstructorThread : public base::SimpleThread {
  private:
   base::LazyInstance<BlockingConstructor>::DestructorAtExit* lazy_;
   base::OnceClosure before_get_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingConstructorThread);
 };
 
 // static
@@ -290,7 +289,7 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
   background_getter.Start();
 
   while (!BlockingConstructor::WasConstructorCalled())
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+    base::PlatformThread::Sleep(base::Milliseconds(1));
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction LazyInstance. When they are all running and poking at it :
@@ -317,6 +316,5 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a
   // Z840 without r527445 but is expected to be fast (~30ms) with the fix).
-  EXPECT_LT(base::TimeTicks::Now() - test_begin,
-            base::TimeDelta::FromSeconds(5));
+  EXPECT_LT(base::TimeTicks::Now() - test_begin, base::Seconds(5));
 }

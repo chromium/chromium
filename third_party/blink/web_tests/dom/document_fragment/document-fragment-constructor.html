@@ -4,6 +4,8 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
+setup({single_test: true});
+
 assert_equals(new DocumentFragment().ownerDocument, document);
 
 assert_equals(typeof new DocumentFragment, "object");

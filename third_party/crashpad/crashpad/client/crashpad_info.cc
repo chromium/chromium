@@ -19,7 +19,7 @@
 #include "util/misc/address_sanitizer.h"
 #include "util/misc/from_pointer_cast.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <mach-o/loader.h>
 #endif
 
@@ -55,7 +55,7 @@ static_assert(std::is_standard_layout<CrashpadInfo>::value,
 #if defined(OS_POSIX)
 __attribute__((
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     // Put the structure in a well-known section name where it can be easily
     // found without having to consult the symbol table.
     section(SEG_DATA ",crashpad_info"),
@@ -94,7 +94,8 @@ extern "C" int* CRASHPAD_NOTE_REFERENCE;
 
 // static
 CrashpadInfo* CrashpadInfo::GetCrashpadInfo() {
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
+    defined(OS_FUCHSIA)
   // This otherwise-unused reference is used so that any module that
   // references GetCrashpadInfo() will also include the note in the
   // .note.crashpad.info section. That note in turn contains the address of

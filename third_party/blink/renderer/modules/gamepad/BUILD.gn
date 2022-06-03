@@ -33,16 +33,15 @@ blink_modules_sources("gamepad") {
 
   deps = [
     "//device/gamepad/public/cpp:shared_with_blink",
+    "//device/gamepad/public/cpp:switches",
     "//device/gamepad/public/mojom:mojom_blink",
     "//third_party/blink/public:blink_headers",
   ]
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
-  sources = [
-    "gamepad_comparisons_test.cc",
-  ]
+  sources = [ "gamepad_comparisons_test.cc" ]
 
   configs += [
     "//third_party/blink/renderer:config",
@@ -51,6 +50,7 @@ jumbo_source_set("unit_tests") {
   ]
 
   deps = [
+    "//device/gamepad/public/cpp:shared_with_blink",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/renderer/modules",

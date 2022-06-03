@@ -5,13 +5,9 @@
 #ifndef CC_TREES_TARGET_PROPERTY_H_
 #define CC_TREES_TARGET_PROPERTY_H_
 
-#include <bitset>
-
 #include "base/containers/flat_map.h"
 
 namespace cc {
-
-static constexpr size_t kMaxTargetPropertyIndex = 32u;
 
 namespace TargetProperty {
 
@@ -24,6 +20,9 @@ enum Type {
   BACKGROUND_COLOR,
   BOUNDS,
   CSS_CUSTOM_PROPERTY,
+  // This is used for the set of properties whose animation use paint worklet
+  // infra. The value of the animation represents its progress.
+  NATIVE_PROPERTY,
   BACKDROP_FILTER,
   // These sentinels must be last
   FIRST_TARGET_PROPERTY = TRANSFORM,
@@ -31,9 +30,6 @@ enum Type {
 };
 
 }  // namespace TargetProperty
-
-// A set of target properties.
-using TargetProperties = std::bitset<kMaxTargetPropertyIndex>;
 
 // A map of target property to ElementId.
 // flat_map was chosen because there are expected to be relatively few entries

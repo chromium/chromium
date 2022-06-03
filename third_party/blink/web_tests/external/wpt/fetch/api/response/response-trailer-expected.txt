@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL trailer() test promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'then' of undefined"
-Harness: the test ran to completion.
-

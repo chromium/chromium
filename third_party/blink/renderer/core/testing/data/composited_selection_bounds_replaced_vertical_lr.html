@@ -1,0 +1,27 @@
+<style>
+    @font-face {
+        font-family: ahem;
+        src: url(Ahem.ttf);
+    }
+    * {
+        font-family: ahem;
+    }
+    body { writing-mode: vertical-lr; }
+</style>
+<div>Text1</div>
+<img src="notifications/120x120.png" />
+<div>Text2</div>
+<div>Text3</div>
+<div>Text4</div>
+<div>Text5</div>
+<div>Text6</div>
+<div>Text7</div>
+<div>Text8</div>
+<script>
+    var range = document.createRange();
+    range.setStart(document.body, 2);
+    range.setEnd(document.body.querySelector("div:last-of-type").firstChild, 2);
+    document.getSelection().addRange(range);
+
+    window.expectedResult = [document, 140, 8, 20, 8, document, 212, 32, 224, 32];
+</script>

@@ -9,21 +9,20 @@
 
 #include "components/favicon/core/favicon_url.h"
 #include "components/favicon_base/favicon_types.h"
-#include "content/public/common/favicon_url.h"
 
 namespace favicon {
 namespace {
 
 favicon_base::IconType IconTypeFromContentIconType(
-    content::FaviconURL::IconType icon_type) {
+    blink::mojom::FaviconIconType icon_type) {
   switch (icon_type) {
-    case content::FaviconURL::IconType::kFavicon:
+    case blink::mojom::FaviconIconType::kFavicon:
       return favicon_base::IconType::kFavicon;
-    case content::FaviconURL::IconType::kTouchIcon:
+    case blink::mojom::FaviconIconType::kTouchIcon:
       return favicon_base::IconType::kTouchIcon;
-    case content::FaviconURL::IconType::kTouchPrecomposedIcon:
+    case blink::mojom::FaviconIconType::kTouchPrecomposedIcon:
       return favicon_base::IconType::kTouchPrecomposedIcon;
-    case content::FaviconURL::IconType::kInvalid:
+    case blink::mojom::FaviconIconType::kInvalid:
       return favicon_base::IconType::kInvalid;
   }
   NOTREACHED();
@@ -33,14 +32,14 @@ favicon_base::IconType IconTypeFromContentIconType(
 }  // namespace
 
 FaviconURL FaviconURLFromContentFaviconURL(
-    const content::FaviconURL& favicon_url) {
-  return FaviconURL(favicon_url.icon_url,
-                    IconTypeFromContentIconType(favicon_url.icon_type),
-                    favicon_url.icon_sizes);
+    const blink::mojom::FaviconURLPtr& favicon_url) {
+  return FaviconURL(favicon_url->icon_url,
+                    IconTypeFromContentIconType(favicon_url->icon_type),
+                    favicon_url->icon_sizes);
 }
 
 std::vector<FaviconURL> FaviconURLsFromContentFaviconURLs(
-    const std::vector<content::FaviconURL>& favicon_urls) {
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
   std::vector<FaviconURL> result;
   result.reserve(favicon_urls.size());
   std::transform(favicon_urls.begin(), favicon_urls.end(),

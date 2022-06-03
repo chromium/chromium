@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace viz {
@@ -14,8 +15,7 @@ namespace viz {
 namespace {
 
 // How long to wait before attempting to re-establish a lost connection.
-constexpr base::TimeDelta kReEstablishConnectionDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kReEstablishConnectionDelay = base::Milliseconds(100);
 
 }  // namespace
 
@@ -72,11 +72,15 @@ void ClientFrameSinkVideoCapturer::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
-    const base::Optional<FrameSinkId>& frame_sink_id) {
+    const absl::optional<FrameSinkId>& frame_sink_id,
+    mojom::SubTargetPtr sub_target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   target_ = frame_sink_id;
-  capturer_remote_->ChangeTarget(frame_sink_id);
+  sub_target_ = std::move(sub_target);
+
+  capturer_remote_->ChangeTarget(frame_sink_id,
+                                 sub_target_ ? sub_target_.Clone() : nullptr);
 }
 
 void ClientFrameSinkVideoCapturer::Start(
@@ -157,6 +161,12 @@ void ClientFrameSinkVideoCapturer::OnFrameCaptured(
                              std::move(callbacks));
 }
 
+void ClientFrameSinkVideoCapturer::OnLog(const std::string& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  consumer_->OnLog(message);
+}
+
 void ClientFrameSinkVideoCapturer::OnStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -185,8 +195,10 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
   }
   if (auto_throttling_enabled_)
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
-  if (target_)
-    capturer_remote_->ChangeTarget(target_);
+  if (target_) {
+    capturer_remote_->ChangeTarget(
+        target_, sub_target_ ? sub_target_->Clone() : nullptr);
+  }
   for (Overlay* overlay : overlays_)
     overlay->EstablishConnection(capturer_remote_.get());
   if (is_started_)
@@ -267,6 +279,7 @@ void ClientFrameSinkVideoCapturer::Overlay::EstablishConnection(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_capturer_);
 
+  overlay_.reset();
   capturer->CreateOverlay(stacking_index_,
                           overlay_.BindNewPipeAndPassReceiver());
   // Note: There's no need to add a connection error handler on the remote. If

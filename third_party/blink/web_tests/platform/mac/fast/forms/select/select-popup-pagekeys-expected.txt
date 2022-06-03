@@ -1,0 +1,72 @@
+This test verifies that the Home/End/PageUp/PageDown keys work correctly for pop-up <select> elements that have focus but are not currently popped-up.
+
+Output below is a series of PASS or FAIL lines showing expected and actual selection indexes, followed by a single PASS or FAIL for the status of the entire test.
+
+NOTE: This test will fail on Mac OS, on which these keys are NOT supposed to change the selection of a focused pop-up.
+
+0
+1
+2
+3
+4
+5
+6
+ 
+0
+1
+2
+3
+4
+5
+6
+7
+FAIL: selectedIndex should be 3 (is 0) after a PageDown from index 0
+FAIL: selectedIndex should be 4 (is 1) after a PageDown from index 1
+FAIL: selectedIndex should be 5 (is 2) after a PageDown from index 2
+FAIL: selectedIndex should be 6 (is 3) after a PageDown from index 3
+FAIL: selectedIndex should be 6 (is 4) after a PageDown from index 4
+FAIL: selectedIndex should be 6 (is 5) after a PageDown from index 5
+FAIL: selectedIndex should be 3 (is 6) after a PageUp from index 6
+FAIL: selectedIndex should be 2 (is 5) after a PageUp from index 5
+FAIL: selectedIndex should be 1 (is 4) after a PageUp from index 4
+FAIL: selectedIndex should be 0 (is 3) after a PageUp from index 3
+FAIL: selectedIndex should be 0 (is 2) after a PageUp from index 2
+FAIL: selectedIndex should be 0 (is 1) after a PageUp from index 1
+FAIL: selectedIndex should be 0 (is 6) after a Home from index 6
+FAIL: selectedIndex should be 0 (is 5) after a Home from index 5
+FAIL: selectedIndex should be 0 (is 4) after a Home from index 4
+FAIL: selectedIndex should be 0 (is 3) after a Home from index 3
+FAIL: selectedIndex should be 0 (is 2) after a Home from index 2
+FAIL: selectedIndex should be 0 (is 1) after a Home from index 1
+FAIL: selectedIndex should be 6 (is 5) after a End from index 5
+FAIL: selectedIndex should be 6 (is 4) after a End from index 4
+FAIL: selectedIndex should be 6 (is 3) after a End from index 3
+FAIL: selectedIndex should be 6 (is 2) after a End from index 2
+FAIL: selectedIndex should be 6 (is 1) after a End from index 1
+FAIL: selectedIndex should be 6 (is 0) after a End from index 0
+FAIL: selectedIndex should be 4 (is 1) after a PageDown from index 1
+FAIL: selectedIndex should be 5 (is 2) after a PageDown from index 2
+FAIL: selectedIndex should be 6 (is 4) after a PageDown from index 4
+FAIL: selectedIndex should be 6 (is 5) after a PageDown from index 5
+FAIL: selectedIndex should be 2 (is 6) after a PageUp from index 6
+FAIL: selectedIndex should be 2 (is 5) after a PageUp from index 5
+FAIL: selectedIndex should be 1 (is 4) after a PageUp from index 4
+FAIL: selectedIndex should be 1 (is 2) after a PageUp from index 2
+FAIL: selectedIndex should be 1 (is 7) after a Home from index 7
+FAIL: selectedIndex should be 1 (is 6) after a Home from index 6
+FAIL: selectedIndex should be 1 (is 5) after a Home from index 5
+FAIL: selectedIndex should be 1 (is 4) after a Home from index 4
+FAIL: selectedIndex should be 1 (is 3) after a Home from index 3
+FAIL: selectedIndex should be 1 (is 2) after a Home from index 2
+FAIL: selectedIndex should be 1 (is 0) after a Home from index 0
+FAIL: selectedIndex should be 6 (is 7) after a End from index 7
+FAIL: selectedIndex should be 6 (is 5) after a End from index 5
+FAIL: selectedIndex should be 6 (is 4) after a End from index 4
+FAIL: selectedIndex should be 6 (is 3) after a End from index 3
+FAIL: selectedIndex should be 6 (is 2) after a End from index 2
+FAIL: selectedIndex should be 6 (is 1) after a End from index 1
+FAIL: selectedIndex should be 6 (is 0) after a End from index 0
+
+FAIL: SOME TESTS FAILED (SEE ABOVE)
+
+

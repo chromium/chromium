@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_H_
 
 #include "base/supports_user_data.h"
+#include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_type.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -20,9 +21,10 @@ class RenderFrameHost;
 class CONTENT_EXPORT PermissionController
     : public base::SupportsUserData::Data {
  public:
-  // Constant retured when registering and subscribing if
-  // cancelling/unsubscribing at a later stage would have no effect.
-  static const int kNoPendingOperation = -1;
+  // Identifier for an active subscription. This is intentionally a distinct
+  // type from PermissionControllerDelegate::SubscriptionId as the concrete
+  // identifier values may be different.
+  using SubscriptionId = base::IdType64<PermissionController>;
 
   ~PermissionController() override {}
 
@@ -47,5 +49,18 @@ class CONTENT_EXPORT PermissionController
 };
 
 }  // namespace content
+
+namespace std {
+
+template <>
+struct hash<content::PermissionController::SubscriptionId> {
+  std::size_t operator()(
+      const content::PermissionController::SubscriptionId& v) const {
+    content::PermissionController::SubscriptionId::Hasher hasher;
+    return hasher(v);
+  }
+};
+
+}  // namespace std
 
 #endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_H_

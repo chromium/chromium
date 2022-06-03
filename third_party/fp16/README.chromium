@@ -1,0 +1,15 @@
+Name: FP16
+Short Name: fp16
+URL: https://github.com/Maratyszcza/FP16
+Version: 4dfe081cf6bcd15db339cf2680b9281b8451eeb3
+Date: 2020/05/14
+License: MIT
+License File: LICENSE
+Security Critical: Yes
+
+Description:
+Header-only library for conversion to/from half-precision floating point formats
+
+Local Modifications:
+- Included only the header files in the `include` directory in `src/`.
+- Extracted LICENSE file separately.

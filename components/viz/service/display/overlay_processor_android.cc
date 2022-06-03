@@ -4,40 +4,132 @@
 
 #include "components/viz/service/display/overlay_processor_android.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/synchronization/waitable_event.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
+#include "components/viz/service/display/overlay_processor_on_gpu.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "gpu/ipc/scheduler_sequence.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
 OverlayProcessorAndroid::OverlayProcessorAndroid(
-    SkiaOutputSurface* skia_output_surface,
-    bool enable_overlay)
+    DisplayCompositorMemoryAndTaskController* display_controller)
     : OverlayProcessorUsingStrategy(),
-      skia_output_surface_(skia_output_surface),
-      overlay_enabled_(enable_overlay) {
-  if (overlay_enabled_) {
-    // For Android, we do not have the ability to skip an overlay, since the
-    // texture is already in a SurfaceView.  Ideally, we would honor a 'force
-    // overlay' flag that FromDrawQuad would also check.
-    // For now, though, just skip the opacity check.  We really have no idea if
-    // the underlying overlay is opaque anyway; the candidate is referring to
-    // a dummy resource that has no relation to what the overlay contains.
-    // https://crbug.com/842931 .
-    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
-        this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
+      gpu_task_scheduler_(display_controller->gpu_task_scheduler()) {
+  // In unittests, we don't have the gpu_task_scheduler_ set up, but still want
+  // to test ProcessForOverlays functionalities where we are making overlay
+  // candidates correctly.
+  if (gpu_task_scheduler_) {
+    gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
+    // TODO(weiliangc): Eventually move the on gpu initialization to another
+    // static function.
+    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                              base::WaitableEvent::InitialState::NOT_SIGNALED);
+    auto callback = base::BindOnce(
+        &OverlayProcessorAndroid::InitializeOverlayProcessorOnGpu,
+        base::Unretained(this), display_controller->controller_on_gpu(),
+        &event);
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+    event.Wait();
+  }
+
+  // For Android, we do not have the ability to skip an overlay, since the
+  // texture is already in a SurfaceView.  Ideally, we would honor a 'force
+  // overlay' flag that FromDrawQuad would also check.
+  // For now, though, just skip the opacity check.  We really have no idea if
+  // the underlying overlay is opaque anyway; the candidate is referring to
+  // a dummy resource that has no relation to what the overlay contains.
+  // https://crbug.com/842931 .
+  strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
+      this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
+
+  overlay_candidates_.clear();
+}
+
+OverlayProcessorAndroid::~OverlayProcessorAndroid() {
+  if (processor_on_gpu_) {
+    gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
+    // If we have a |gpu_task_scheduler_|, we must have started initializing
+    // a |processor_on_gpu_| on the |gpu_task_scheduler_|.
+    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                              base::WaitableEvent::InitialState::NOT_SIGNALED);
+    auto callback =
+        base::BindOnce(&OverlayProcessorAndroid::DestroyOverlayProcessorOnGpu,
+                       base::Unretained(this), &event);
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(callback), {});
+    event.Wait();
   }
 }
 
-OverlayProcessorAndroid::~OverlayProcessorAndroid() {}
-
-bool OverlayProcessorAndroid::IsOverlaySupported() const {
-  return overlay_enabled_;
+void OverlayProcessorAndroid::InitializeOverlayProcessorOnGpu(
+    gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
+        display_controller_on_gpu,
+    base::WaitableEvent* event) {
+  processor_on_gpu_ =
+      std::make_unique<OverlayProcessorOnGpu>(display_controller_on_gpu);
+  DCHECK(event);
+  event->Signal();
 }
 
-bool OverlayProcessorAndroid::NeedsSurfaceOccludingDamageRect() const {
+void OverlayProcessorAndroid::DestroyOverlayProcessorOnGpu(
+    base::WaitableEvent* event) {
+  processor_on_gpu_ = nullptr;
+  DCHECK(event);
+  event->Signal();
+}
+
+bool OverlayProcessorAndroid::IsOverlaySupported() const {
+  return true;
+}
+
+bool OverlayProcessorAndroid::NeedsSurfaceDamageRectList() const {
   return false;
+}
+
+void OverlayProcessorAndroid::ScheduleOverlays(
+    DisplayResourceProvider* resource_provider) {
+  if (!processor_on_gpu_)
+    return;
+
+  // Even if we don't have anything to overlay, still generate overlay locks for
+  // empty frame.
+  pending_overlay_locks_.emplace_back();
+
+  // Early out if we don't have any overlay candidates.
+  if (overlay_candidates_.empty())
+    return;
+
+  auto& locks = pending_overlay_locks_.back();
+  std::vector<gpu::SyncToken> locks_sync_tokens;
+  for (auto& candidate : overlay_candidates_) {
+    locks.emplace_back(resource_provider, candidate.resource_id);
+    locks_sync_tokens.push_back(locks.back().sync_token());
+  }
+
+  auto task = base::BindOnce(&OverlayProcessorOnGpu::ScheduleOverlays,
+                             base::Unretained(processor_on_gpu_.get()),
+                             std::move(overlay_candidates_));
+  gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens);
+  overlay_candidates_.clear();
+}
+
+void OverlayProcessorAndroid::OverlayPresentationComplete() {
+  // If there is not |processor_on_gpu_| to send information to, we won't have
+  // overlay resources locked, and don't need to clear the locks.
+  if (!processor_on_gpu_)
+    return;
+
+  // This is a signal from Display::DidReceiveSwapBuffersAck. We use this to
+  // help clear locks on resources from the old frame.
+  committed_overlay_locks_.clear();
+  std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
+  pending_overlay_locks_.pop_front();
 }
 
 void OverlayProcessorAndroid::CheckOverlaySupport(
@@ -85,18 +177,26 @@ gfx::Rect OverlayProcessorAndroid::GetOverlayDamageRectForOutputSurface(
   return ToEnclosedRect(overlay.display_rect);
 }
 
+void OverlayProcessorAndroid::TakeOverlayCandidates(
+    OverlayCandidateList* candidate_list) {
+  overlay_candidates_.swap(*candidate_list);
+  candidate_list->clear();
+}
+
 void OverlayProcessorAndroid::NotifyOverlayPromotion(
     DisplayResourceProvider* resource_provider,
     const CandidateList& candidates,
     const QuadList& quad_list) {
-  // No need to notify overlay promotion if not any resource wants promotion
-  // hints.
-  if (!resource_provider->DoAnyResourcesWantPromotionHints())
+  // If we don't have a processor_on_gpu_, there is nothing to send the overlay
+  // promotions to.
+  if (!processor_on_gpu_) {
+    promotion_hint_info_map_.clear();
     return;
+  }
 
-  // |promotion_hint_requestor_set_| is calculated here, so it should be empty
-  // to begin with.
-  DCHECK(promotion_hint_requestor_set_.empty());
+  // Set of resources that have requested a promotion hint that also have quads
+  // that use them.
+  ResourceIdSet promotion_hint_requestor_set;
 
   for (auto* quad : quad_list) {
     if (quad->material != DrawQuad::Material::kStreamVideoContent)
@@ -104,35 +204,26 @@ void OverlayProcessorAndroid::NotifyOverlayPromotion(
     ResourceId id = StreamVideoDrawQuad::MaterialCast(quad)->resource_id();
     if (!resource_provider->DoesResourceWantPromotionHint(id))
       continue;
-    promotion_hint_requestor_set_.insert(id);
+    promotion_hint_requestor_set.insert(id);
   }
 
-  if (skia_output_surface_) {
-    NotifyOverlayPromotionUsingSkiaOutputSurface(resource_provider, candidates);
-  } else {
-    resource_provider->SendPromotionHints(promotion_hint_info_map_,
-                                          promotion_hint_requestor_set_);
+  if (promotion_hint_requestor_set.empty()) {
+    promotion_hint_info_map_.clear();
+    return;
   }
-  promotion_hint_info_map_.clear();
-  promotion_hint_requestor_set_.clear();
-}
 
-void OverlayProcessorAndroid::NotifyOverlayPromotionUsingSkiaOutputSurface(
-    DisplayResourceProvider* resource_provider,
-    const OverlayCandidateList& candidate_list) {
   base::flat_set<gpu::Mailbox> promotion_denied;
   base::flat_map<gpu::Mailbox, gfx::Rect> possible_promotions;
 
-  DCHECK(candidate_list.empty() || candidate_list.size() == 1u);
+  DCHECK(candidates.empty() || candidates.size() == 1u);
 
   std::vector<
       std::unique_ptr<DisplayResourceProvider::ScopedReadLockSharedImage>>
       locks;
-  for (auto& request : promotion_hint_requestor_set_) {
+  for (auto& request : promotion_hint_requestor_set) {
     // If we successfully promote one candidate, then that promotion hint
     // should be sent later when we schedule the overlay.
-    if (!candidate_list.empty() &&
-        candidate_list.front().resource_id == request)
+    if (!candidates.empty() && candidates.front().resource_id == request)
       continue;
 
     locks.emplace_back(
@@ -152,9 +243,14 @@ void OverlayProcessorAndroid::NotifyOverlayPromotionUsingSkiaOutputSurface(
   for (auto& read_lock : locks)
     locks_sync_tokens.push_back(read_lock->sync_token());
 
-  skia_output_surface_->SendOverlayPromotionNotification(
-      std::move(locks_sync_tokens), std::move(promotion_denied),
-      std::move(possible_promotions));
+  if (gpu_task_scheduler_) {
+    auto task = base::BindOnce(&OverlayProcessorOnGpu::NotifyOverlayPromotions,
+                               base::Unretained(processor_on_gpu_.get()),
+                               std::move(promotion_denied),
+                               std::move(possible_promotions));
+    gpu_task_scheduler_->ScheduleGpuTask(std::move(task), locks_sync_tokens);
+  }
+  promotion_hint_info_map_.clear();
 }
 
 }  // namespace viz

@@ -66,7 +66,12 @@ struct VectorTraitsBase {
 
   // Vectors do not support deleting values.
   static constexpr bool kCanHaveDeletedValue = false;
-  static bool IsDeletedValue(T value) { return false; }
+  static bool IsDeletedValue(const T& value) { return false; }
+
+  // The kCanTraceConcurrently value is used by Oilpan concurrent marking.
+  // Only type for which VectorTraits<T>::kCanTraceConcurrently is true can
+  // be traced on a concurrent thread.
+  static constexpr bool kCanTraceConcurrently = false;
 };
 
 template <typename T>
@@ -120,6 +125,11 @@ struct VectorTraits<std::pair<First, Second>> {
   typedef VectorTraits<First> FirstTraits;
   typedef VectorTraits<Second> SecondTraits;
 
+  static_assert(!IsWeak<First>::value,
+                "Weak references are not allowed in Vector");
+  static_assert(!IsWeak<Second>::value,
+                "Weak references are not allowed in Vector");
+
   static const bool kNeedsDestruction =
       FirstTraits::kNeedsDestruction || SecondTraits::kNeedsDestruction;
   static const bool kCanInitializeWithMemset =
@@ -147,6 +157,8 @@ struct VectorTraits<std::pair<First, Second>> {
   // Vectors do not support deleting values.
   static constexpr bool kCanHaveDeletedValue = false;
   static bool IsDeletedValue(std::pair<First, Second> value) { return false; }
+
+  static constexpr bool kCanTraceConcurrently = false;
 };
 
 }  // namespace WTF

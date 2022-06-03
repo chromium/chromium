@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Navigator} from './navigator.js';
+import {SwitchAccess} from './switch_access.js';
+import {SAConstants} from './switch_access_constants.js';
+
 /**
  * Class to handle auto-scan behavior.
  */
-class AutoScanManager {
-  /**
-   * @param {!SwitchAccessInterface} switchAccess
-   */
-  constructor(switchAccess) {
-    /**
-     * SwitchAccess reference.
-     * @private {!SwitchAccessInterface}
-     */
-    this.switchAccess_ = switchAccess;
-
+export class AutoScanManager {
+  /** @private */
+  constructor() {
     /**
      * Auto-scan interval ID.
      * @private {number|undefined}
@@ -23,17 +19,22 @@ class AutoScanManager {
     this.intervalID_;
 
     /**
-     * Length of the default auto-scan interval (used wherever there is not
-     * a more specific scan time set) in milliseconds.
+     * Length of the auto-scan interval for most contexts, in milliseconds.
      * @private {number}
      */
-    this.defaultScanTime_ = SCAN_TIME_NOT_INITIALIZED;
+    this.primaryScanTime_ = AutoScanManager.NOT_INITIALIZED;
 
     /**
      * Length of auto-scan interval for the on-screen keyboard in milliseconds.
      * @private {number}
      */
-    this.keyboardScanTime_ = SCAN_TIME_NOT_INITIALIZED;
+    this.keyboardScanTime_ = AutoScanManager.NOT_INITIALIZED;
+
+    /**
+     * Whether auto-scanning is enabled.
+     * @private {boolean}
+     */
+    this.isEnabled_ = false;
 
     /**
      * Whether the current node is within the virtual keyboard.
@@ -42,35 +43,34 @@ class AutoScanManager {
     this.inKeyboard_ = false;
   }
 
-  /** Finishes setup of auto scan manager once Prefs are loaded. */
-  onPrefsReady() {
-    this.defaultScanTime_ = this.switchAccess_.getNumberPreference(
-        SAConstants.Preference.AUTO_SCAN_TIME);
-    this.keyboardScanTime_ = this.switchAccess_.getNumberPreference(
-        SAConstants.Preference.AUTO_SCAN_KEYBOARD_TIME);
-    const enabled = this.switchAccess_.getBooleanPreference(
-        SAConstants.Preference.AUTO_SCAN_ENABLED);
-    if (enabled) {
-      this.start_();
-    }
-  }
+  // ============== Static Methods ================
 
-  /**
-   * Return true if auto-scan is currently running. Otherwise return false.
-   * @return {boolean}
-   */
-  isRunning() {
-    return this.intervalID_ !== undefined;
+  static get instance() {
+    if (!AutoScanManager.instance_) {
+      AutoScanManager.instance_ = new AutoScanManager();
+    }
+    return AutoScanManager.instance_;
   }
 
   /**
    * Restart auto-scan under the current settings if it is currently running.
    */
-  restartIfRunning() {
-    if (this.isRunning()) {
-      this.stop_();
-      this.start_();
+  static restartIfRunning() {
+    if (AutoScanManager.instance.isRunning_()) {
+      AutoScanManager.instance.stop_();
+      AutoScanManager.instance.start_();
     }
+  }
+
+  /**
+   * Update this.primaryScanTime_ to |scanTime|. Then, if auto-scan is currently
+   * running, restart it.
+   *
+   * @param {number} scanTime Auto-scan interval time in milliseconds.
+   */
+  static setPrimaryScanTime(scanTime) {
+    AutoScanManager.instance.primaryScanTime_ = scanTime;
+    AutoScanManager.restartIfRunning();
   }
 
   /**
@@ -79,24 +79,14 @@ class AutoScanManager {
    *
    * @param {boolean} enabled
    */
-  setEnabled(enabled) {
-    if (this.isRunning()) {
-      this.stop_();
+  static setEnabled(enabled) {
+    if (AutoScanManager.instance.isRunning_()) {
+      AutoScanManager.instance.stop_();
     }
+    AutoScanManager.instance.isEnabled_ = enabled;
     if (enabled) {
-      this.start_();
+      AutoScanManager.instance.start_();
     }
-  }
-
-  /**
-   * Update this.defaultScanTime_ to |scanTime|. Then, if auto-scan is currently
-   * running, restart it.
-   *
-   * @param {number} scanTime Auto-scan interval time in milliseconds.
-   */
-  setDefaultScanTime(scanTime) {
-    this.defaultScanTime_ = scanTime;
-    this.restartIfRunning();
   }
 
   /**
@@ -104,10 +94,10 @@ class AutoScanManager {
    *
    * @param {number} scanTime Auto-scan interval time in milliseconds.
    */
-  setKeyboardScanTime(scanTime) {
-    this.keyboardScanTime_ = scanTime;
-    if (this.inKeyboard_) {
-      this.restartIfRunning();
+  static setKeyboardScanTime(scanTime) {
+    AutoScanManager.instance.keyboardScanTime_ = scanTime;
+    if (AutoScanManager.instance.inKeyboard_) {
+      AutoScanManager.restartIfRunning();
     }
   }
 
@@ -115,8 +105,50 @@ class AutoScanManager {
    * Sets whether the keyboard scan time is used.
    * @param {boolean} inKeyboard
    */
-  setInKeyboard(inKeyboard) {
-    this.inKeyboard_ = inKeyboard;
+  static setInKeyboard(inKeyboard) {
+    AutoScanManager.instance.inKeyboard_ = inKeyboard;
+  }
+
+  // ============== Private Methods ================
+
+  /**
+   * Return true if auto-scan is currently running. Otherwise return false.
+   * @return {boolean}
+   * @private
+   */
+  isRunning_() {
+    return AutoScanManager.instance.isEnabled_;
+  }
+
+  /**
+   * Set the window to move to the next node at an interval in milliseconds
+   * depending on where the user is navigating. Currently,
+   * this.keyboardScanTime_ is used as the interval if the user is
+   * navigating in the virtual keyboard, and this.primaryScanTime_ is used
+   * otherwise. Does not do anything if AutoScanManager is already scanning.
+   *
+   * @private
+   */
+  start_() {
+    if (this.primaryScanTime_ === AutoScanManager.NOT_INITIALIZED ||
+        this.intervalID_ || SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+      return;
+    }
+
+    let currentScanTime = this.primaryScanTime_;
+
+    if (SwitchAccess.instance.improvedTextInputEnabled() && this.inKeyboard_ &&
+        this.keyboardScanTime_ !== AutoScanManager.NOT_INITIALIZED) {
+      currentScanTime = this.keyboardScanTime_;
+    }
+
+    this.intervalID_ = window.setInterval(() => {
+      if (SwitchAccess.mode === SAConstants.Mode.POINT_SCAN) {
+        AutoScanManager.instance.stop_();
+        return;
+      }
+      Navigator.byItem.moveForward();
+    }, currentScanTime);
   }
 
   /**
@@ -127,35 +159,10 @@ class AutoScanManager {
     window.clearInterval(this.intervalID_);
     this.intervalID_ = undefined;
   }
-
-  /**
-   * Set the window to move to the next node at an interval in milliseconds
-   * depending on where the user is navigating. Currently,
-   * this.keyboardScanTime_ is used as the interval if the user is
-   * navigating in the virtual keyboard, and this.defaultScanTime_ is used
-   * otherwise.
-   * @private
-   */
-  start_() {
-    if (this.defaultScanTime_ === SCAN_TIME_NOT_INITIALIZED) {
-      return;
-    }
-
-    let currentScanTime = this.defaultScanTime_;
-
-    if (this.switchAccess_.improvedTextInputEnabled() && this.inKeyboard_ &&
-        this.keyboardScanTime_ !== SCAN_TIME_NOT_INITIALIZED) {
-      currentScanTime = this.keyboardScanTime_;
-    }
-
-    this.intervalID_ = window.setInterval(
-        this.switchAccess_.moveForward.bind(this.switchAccess_),
-        currentScanTime);
-  }
 }
 
 /**
  * Sentinel value that indicates an uninitialized scan time.
  * @type {number}
  */
-const SCAN_TIME_NOT_INITIALIZED = -1;
+AutoScanManager.NOT_INITIALIZED = -1;

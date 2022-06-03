@@ -11,6 +11,10 @@ namespace ui {
 class ViewAndroid;
 }
 
+namespace gfx {
+class Rect;
+}
+
 namespace content {
 
 // Provides a test version of the ViewAndroidDelegate with a native interface
@@ -19,6 +23,10 @@ namespace content {
 class TestViewAndroidDelegate {
  public:
   TestViewAndroidDelegate();
+
+  TestViewAndroidDelegate(const TestViewAndroidDelegate&) = delete;
+  TestViewAndroidDelegate& operator=(const TestViewAndroidDelegate&) = delete;
+
   ~TestViewAndroidDelegate();
   // Sets up the test delegate.
   // |view_android| is the ViewAndroid to use.
@@ -28,10 +36,10 @@ class TestViewAndroidDelegate {
   // first.
   void InsetViewportBottom(int bottom);
 
+  void SetDisplayFeatureForTesting(const gfx::Rect& display_feature);
+
  private:
   base::android::ScopedJavaLocalRef<jobject> j_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestViewAndroidDelegate);
 };
 
 }  // namespace content

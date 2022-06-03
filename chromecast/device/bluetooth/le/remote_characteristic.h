@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromecast/device/bluetooth/le/ble_types.h"
 #include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
@@ -29,6 +30,9 @@ class RemoteCharacteristic
   using ReadCallback =
       base::OnceCallback<void(bool, const std::vector<uint8_t>&)>;
   using StatusCallback = base::OnceCallback<void(bool)>;
+
+  RemoteCharacteristic(const RemoteCharacteristic&) = delete;
+  RemoteCharacteristic& operator=(const RemoteCharacteristic&) = delete;
 
   // Return a list of all descriptors.
   virtual std::vector<scoped_refptr<RemoteDescriptor>> GetDescriptors() = 0;
@@ -78,10 +82,8 @@ class RemoteCharacteristic
   // Returns true if notifications are enabled.
   virtual bool NotificationEnabled() = 0;
 
-  virtual const bluetooth_v2_shlib::Gatt::Characteristic& characteristic()
-      const = 0;
   virtual const bluetooth_v2_shlib::Uuid& uuid() const = 0;
-  virtual uint16_t handle() const = 0;
+  virtual HandleId handle() const = 0;
   virtual bluetooth_v2_shlib::Gatt::Permissions permissions() const = 0;
   virtual bluetooth_v2_shlib::Gatt::Properties properties() const = 0;
 
@@ -90,9 +92,6 @@ class RemoteCharacteristic
 
   RemoteCharacteristic() = default;
   virtual ~RemoteCharacteristic() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteCharacteristic);
 };
 
 }  // namespace bluetooth

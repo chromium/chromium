@@ -10,6 +10,7 @@
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "services/viz/public/mojom/compositing/paint_filter.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class PaintFilter;
@@ -19,7 +20,7 @@ namespace mojo {
 
 template <>
 struct StructTraits<viz::mojom::PaintFilterDataView, sk_sp<cc::PaintFilter>> {
-  static base::Optional<std::vector<uint8_t>> data(
+  static absl::optional<std::vector<uint8_t>> data(
       const sk_sp<cc::PaintFilter>& filter);
 
   static bool Read(viz::mojom::PaintFilterDataView data,

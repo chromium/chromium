@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <div id="slider"
+       role="slider"
+       aria-valuemin="0"
+       aria-valuemax="10"
+       aria-valuenow="5"></div>
+
+<script>
+  function checkEvent(event, expected_key) {
+    if (expected_key == "ArrowUp") {
+      assert_equals(event.code, "ArrowUp", "event.code on " + event.type);
+      assert_equals(event.key, "ArrowUp", "event.key on " + event.type);
+      assert_equals(event.keyCode, 38, "event.keyCode on " + event.type);
+      assert_equals(event.which, 38, "event.which on " + event.type);
+    } else if (expected_key == "ArrowDown") {
+      assert_equals(event.code, "ArrowDown", "event.code on " + event.type);
+      assert_equals(event.key, "ArrowDown", "event.key on " + event.type);
+      assert_equals(event.keyCode, 40, "event.keyCode on " + event.type);
+      assert_equals(event.which, 40, "event.which on " + event.type);
+    }
+
+    assert_true(event.isTrusted, "event.isTrusted on " + event.type);
+    assert_equals(event.charCode, 0, "event.charCode on " + event.type);
+    assert_equals(event.target, slider, "event.target on " + event.type);
+    assert_equals(event.srcElement, slider, "event.srcElement on " + event.type);
+    assert_true(event.bubbles, "event.bubbles on " + event.type);
+    assert_false(event.defaultPrevented, "event.defaultPrevented on " + event.type);
+  }
+
+  async_test(function(t) {
+    var slider = document.getElementById("slider");
+    var axSlider = accessibilityController.accessibleElementById("slider");
+
+    slider.addEventListener("keydown", t.step_func((event) => {
+      checkEvent(event, "ArrowUp");
+    }), { once: true });
+
+    slider.addEventListener("keyup", t.step_func((event) => {
+      checkEvent(event, "ArrowUp");
+
+      slider.addEventListener("keydown", t.step_func((event) => {
+        checkEvent(event, "ArrowDown");
+      }), { once: true });
+
+      slider.addEventListener("keyup", t.step_func_done((event) => {
+        checkEvent(event, "ArrowDown");
+
+        t.done();
+      }), { once: true });
+
+      window.setTimeout(() => {
+        axSlider.decrement();
+      }, 0);
+    }), { once: true });
+
+    window.setTimeout(t.step_func(() => {
+      assert(false, "didn't get all key events within 1000ms");
+      t.done();
+    }), 1000);
+
+    axSlider.increment();
+  }, "check that sending an increment event to an ARIA slider generates an up arrow key event");
+</script>
+</body>
+</html>

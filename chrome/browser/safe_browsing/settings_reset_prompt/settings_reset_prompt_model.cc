@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -123,7 +123,7 @@ bool SettingsResetPromptModel::ShouldPromptForReset() const {
 
 void SettingsResetPromptModel::PerformReset(
     std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-    const base::Closure& done_callback) {
+    base::OnceClosure done_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(default_settings);
 
@@ -147,7 +147,7 @@ void SettingsResetPromptModel::PerformReset(
   }
 
   profile_resetter_->Reset(reset_flags, std::move(default_settings),
-                           done_callback);
+                           std::move(done_callback));
 }
 
 void SettingsResetPromptModel::DialogShown() {

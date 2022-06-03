@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+
+  body {
+    margin: 0px;
+    height: 100px;
+    width: 100px;
+  }
+  #parentDiv {
+    background-color: #FF7F7F;
+    height: 100px;
+    width: 100px;
+    overflow: scroll;
+  }
+  #content1 {
+    height: 120px;
+    width: 120px;
+  }
+  #childDiv {
+    background-color: #84BE6A;
+    height: 80px;
+    width: 80px;
+    overflow: scroll;
+  }
+  #content2 {
+    height: 100px;
+    width: 100px;
+  }
+</style>
+
+<div id="parentDiv">
+  <div id="content1">
+    <div id="childDiv">
+      <div id="content2">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+window.onload = () => {
+  var childDiv = document.getElementById('childDiv');
+  var parentDiv = document.getElementById('parentDiv');
+  var rect = childDiv.getBoundingClientRect();
+  const GESTURE_SOURCE_TYPE = GestureSourceType.MOUSE_INPUT;
+
+  promise_test(async t => {
+    await waitForCompositorCommit();
+
+    await smoothScroll(1000, rect.right - 5, rect.bottom - 25,
+                       GESTURE_SOURCE_TYPE, 'down', 4000);
+    await waitForAnimationEndTimeBased( () => { return childDiv.scrollTop; } );
+    await waitForAnimationEndTimeBased( () => { return parentDiv.scrollTop; } );
+
+    const expectedScroll = childDiv.scrollHeight - childDiv.clientHeight;
+    const delta = childDiv.scrollTop - expectedScroll;
+    assert_true(Math.abs(delta) < 0.5, "childDiv must be fully scrolled");
+    assert_equals(parentDiv.scrollTop, 0, "parentDiv shouldn't scroll at all");
+  }, "Scrolling on scrollbar of the child div doesn't propagate to the parent.");
+}
+
+</script>

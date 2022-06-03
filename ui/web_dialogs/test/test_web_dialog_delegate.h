@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -19,6 +18,10 @@ namespace test {
 class TestWebDialogDelegate : public WebDialogDelegate {
  public:
   explicit TestWebDialogDelegate(const GURL& url);
+
+  TestWebDialogDelegate(const TestWebDialogDelegate&) = delete;
+  TestWebDialogDelegate& operator=(const TestWebDialogDelegate&) = delete;
+
   ~TestWebDialogDelegate() override;
 
   void set_size(int width, int height) {
@@ -35,7 +38,7 @@ class TestWebDialogDelegate : public WebDialogDelegate {
 
   // WebDialogDelegate implementation:
   ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -52,8 +55,6 @@ class TestWebDialogDelegate : public WebDialogDelegate {
   gfx::Size size_;
   bool* did_delete_;
   bool close_on_escape_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebDialogDelegate);
 };
 
 }  // namespace test

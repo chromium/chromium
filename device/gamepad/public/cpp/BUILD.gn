@@ -23,9 +23,7 @@ component("shared_with_blink") {
 
   # Do not add deps here per the above comment.
   defines = [ "IS_GAMEPAD_PUBLIC_IMPL" ]
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 # Normally typemap traits sources should be build directly into mojom targets
@@ -48,15 +46,16 @@ component("shared_typemap_traits") {
   ]
 }
 
-static_library("switches") {
-  sources = [
-    "gamepad_features.cc",
+component("switches") {
+  public = [
     "gamepad_features.h",
-    "gamepad_switches.cc",
     "gamepad_switches.h",
   ]
-
-  public_deps = [
-    "//base",
+  sources = [
+    "gamepad_features.cc",
+    "gamepad_features_export.h",
+    "gamepad_switches.cc",
   ]
+  public_deps = [ "//base" ]
+  defines = [ "GAMEPAD_FEATURES_IMPLEMENTATION" ]
 }

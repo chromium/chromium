@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {FileSelection, FileSelectionHandler} from './file_selection.js';
+
 /**
  * Mock FileSelectionHandler.
  * @extends {FileSelectionHandler}
  */
-class FakeFileSelectionHandler {
+export class FakeFileSelectionHandler {
   constructor() {
     this.selection = /** @type {!FileSelection} */ ({});
     this.updateSelection([], []);
-    this.eventTarget_ = new cr.EventTarget();
+    this.eventTarget_ = new EventTarget();
   }
 
   computeAdditionalCallback() {}
@@ -30,5 +34,9 @@ class FakeFileSelectionHandler {
 
   addEventListener(...args) {
     return this.eventTarget_.addEventListener(...args);
+  }
+
+  isAvailable() {
+    return true;
   }
 }

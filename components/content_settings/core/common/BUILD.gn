@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
-jumbo_static_library("common") {
+static_library("common") {
   sources = [
     "content_settings.cc",
     "content_settings.h",
+    "content_settings_constraints.h",
     "content_settings_param_traits.cc",
     "content_settings_param_traits.h",
     "content_settings_pattern.cc",
@@ -18,6 +19,8 @@ jumbo_static_library("common") {
     "content_settings_types.h",
     "content_settings_utils.cc",
     "content_settings_utils.h",
+    "cookie_controls_enforcement.h",
+    "cookie_controls_status.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
     "pref_names.cc",
@@ -28,10 +31,10 @@ jumbo_static_library("common") {
 
   public_deps = [
     ":features",
+    "//base",
   ]
 
   deps = [
-    "//base",
     "//ipc",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings:struct_traits",
@@ -40,7 +43,7 @@ jumbo_static_library("common") {
   ]
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
   sources = [
     "content_settings_pattern_parser_unittest.cc",
@@ -60,12 +63,43 @@ jumbo_source_set("unit_tests") {
 
 mojom("mojo_bindings") {
   generate_java = true
-  sources = [
-    "content_settings.mojom",
-  ]
+  sources = [ "content_settings.mojom" ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content_settings.mojom.PatternParts"
+          cpp = "::ContentSettingsPattern::PatternParts"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSettingsPattern"
+          cpp = "::ContentSettingsPattern"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSettingsType"
+          cpp = "::ContentSettingsType"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSetting"
+          cpp = "::ContentSetting"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSettingPatternSource"
+          cpp = "::ContentSettingPatternSource"
+        },
+        {
+          mojom = "content_settings.mojom.RendererContentSettingRules"
+          cpp = "::RendererContentSettingRules"
+        },
+      ]
+      traits_headers = [ "content_settings_mojom_traits.h" ]
+      traits_private_headers = [ "content_settings_param_traits.h" ]
+      traits_sources = [ "content_settings_mojom_traits.cc" ]
+      traits_public_deps = [ ":common" ]
+    },
   ]
 }
 
@@ -79,7 +113,17 @@ component("features") {
     "features.h",
   ]
 
+  deps = [ "//base" ]
+}
+
+fuzzer_test("content_settings_pattern_parser_fuzzer") {
+  sources = [ "content_settings_pattern_parser_fuzzer.cc" ]
   deps = [
+    ":common",
     "//base",
+    "//base:i18n",
+    "//third_party/icu",
+    "//third_party/icu/fuzzers:fuzzer_support",
   ]
+  dict = "content_settings_pattern_parser_fuzzer.dict"
 }

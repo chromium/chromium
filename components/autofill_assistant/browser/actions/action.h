@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/actions/stopwatch.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -34,6 +36,10 @@ class Action {
 
   const ActionProto& proto() const { return proto_; }
 
+  // Actions that can manipulate the UserActions should be interrupted, such
+  // that they do not overwrite the paused state.
+  virtual bool ShouldInterruptOnPause() const;
+
  protected:
   // |delegate| must remain valid for the lifetime of this instance.
   explicit Action(ActionDelegate* delegate, const ActionProto& proto);
@@ -48,6 +54,18 @@ class Action {
   void UpdateProcessedAction(ProcessedActionStatusProto status);
   void UpdateProcessedAction(const ClientStatus& status);
 
+  // Wraps the `ProcesseActionCallback` to also fill the relevant timing stat
+  // fields.
+  void RecordActionTimes(ProcessActionCallback callback,
+                         std::unique_ptr<ProcessedActionProto>);
+
+  // Wraps `callback` to record the wait in the action stopwatch for wait for
+  // dom and short wait for element operations.
+  void OnWaitForElementTimed(
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& element_status,
+      base::TimeDelta wait_time);
+
   // Intended for debugging. Writes a string representation of |action| to
   // |out|.
   friend std::ostream& operator<<(std::ostream& out, const Action& action);
@@ -59,6 +77,10 @@ class Action {
   std::unique_ptr<ProcessedActionProto> processed_action_proto_;
   // Reference to the delegate that owns this action.
   ActionDelegate* delegate_;
+  // Used to record active and wait times in the action execution.
+  ActionStopwatch action_stopwatch_;
+
+  base::WeakPtrFactory<Action> weak_ptr_factory_{this};
 };
 
 // Intended for debugging. Writes a string representation of |action_case| to

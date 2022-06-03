@@ -21,6 +21,11 @@ namespace ash {
 class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
  public:
   IMEFeaturePodControllerTest() = default;
+
+  IMEFeaturePodControllerTest(const IMEFeaturePodControllerTest&) = delete;
+  IMEFeaturePodControllerTest& operator=(const IMEFeaturePodControllerTest&) =
+      delete;
+
   ~IMEFeaturePodControllerTest() override = default;
 
   void SetUp() override {
@@ -83,8 +88,6 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
   ImeInfo current_ime_;
   std::vector<ImeInfo> available_imes_;
   std::vector<ImeMenuItem> menu_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(IMEFeaturePodControllerTest);
 };
 
 // Tests that if the pod button is hidden if less than 2 IMEs are present.

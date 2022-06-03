@@ -4,22 +4,46 @@
 
 #include "base/win/windows_version.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace win {
 
-TEST(WindowsVersion, GetVersionExAndKernelVersionMatch) {
+TEST(WindowsVersion, GetVersionExAndKernelOsVersionMatch) {
   // If this fails, we're running in compatibility mode, or need to update the
   // application manifest.
-  EXPECT_EQ(OSInfo::GetInstance()->version(),
-            OSInfo::GetInstance()->Kernel32Version());
+  // Note: not all versions of Windows return identical build numbers e.g.
+  // 1909/19H2 kernel32.dll has build number 18362 but OS version build number
+  // 18363.
+  EXPECT_EQ(OSInfo::GetInstance()->Kernel32VersionNumber().major,
+            OSInfo::GetInstance()->version_number().major);
+  EXPECT_EQ(OSInfo::GetInstance()->Kernel32VersionNumber().minor,
+            OSInfo::GetInstance()->version_number().minor);
 }
 
 TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 32767),
-            Version::WIN10_19H1);
+            Version::WIN11);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 22000),
+            Version::WIN11);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 21999),
+            Version::SERVER_2022);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 20348),
+            Version::SERVER_2022);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 20347),
+            Version::WIN10_21H2);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19044),
+            Version::WIN10_21H2);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19043),
+            Version::WIN10_21H1);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19042),
+            Version::WIN10_20H2);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 19041),
+            Version::WIN10_20H1);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 18363),
+            Version::WIN10_19H2);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 18362),
             Version::WIN10_19H1);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(10, 0, 17763), Version::WIN10_RS5);
@@ -45,12 +69,40 @@ TEST(OSInfo, MajorMinorBuildToVersion) {
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(0, 0, 0), Version::PRE_XP);
 
 #if !DCHECK_IS_ON()
-  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(11, 0, 0), Version::WIN_LAST);
+  EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(12, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(9, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(8, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(7, 0, 0), Version::WIN_LAST);
   EXPECT_EQ(OSInfo::MajorMinorBuildToVersion(6, 4, 0), Version::WIN8_1);
 #endif  // !DCHECK_IS_ON()
+}
+
+// For more info on what processor information is defined, see:
+// http://msdn.microsoft.com/en-us/library/b0084kay.aspx
+TEST(OSInfo, GetWowStatusForProcess) {
+#if defined(ARCH_CPU_64_BITS)
+  EXPECT_TRUE(OSInfo::GetInstance()->IsWowDisabled());
+#elif defined(ARCH_CPU_X86)
+  if (OSInfo::GetArchitecture() == OSInfo::X86_ARCHITECTURE) {
+    EXPECT_TRUE(OSInfo::GetInstance()->IsWowDisabled());
+  } else if (OSInfo::GetArchitecture() == OSInfo::X64_ARCHITECTURE) {
+    EXPECT_TRUE(OSInfo::GetInstance()->IsWowX86OnAMD64());
+  } else {
+    // Currently, the only way to determine if a WOW emulation is
+    // running on an ARM64 device is via the function that the
+    // |IsWow*| helper functions rely on.  As such, it is not possible
+    // to separate out x86 running on ARM64 machines vs x86 running on
+    // other host machines.
+    EXPECT_TRUE(OSInfo::GetInstance()->IsWowX86OnARM64() ||
+                OSInfo::GetInstance()->IsWowX86OnOther());
+  }
+#else
+  ADD_FAILURE()
+      << "This test fails when we're using a process or host machine that is "
+         "not being considered by our helper functions.  If you're seeing this "
+         "error, please add a helper function for determining WOW emulation "
+         "for your process and host machine.";
+#endif
 }
 
 }  // namespace win

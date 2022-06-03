@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,39 +28,17 @@ PermissionMessages GetMessages(const PermissionSet& permissions,
       provider->GetAllPermissionIDs(permissions, extension_type));
 }
 
-std::vector<base::string16> MakeVectorString16(const base::string16& str) {
-  return std::vector<base::string16>(1, str);
-}
-
-std::vector<base::string16> MakeVectorString16(const base::string16& str1,
-                                               const base::string16& str2) {
-  std::vector<base::string16> result;
-  result.push_back(str1);
-  result.push_back(str2);
-  return result;
-}
-
-std::vector<base::string16> MakeVectorString16(const std::string& str1,
-                                               const std::string& str2) {
-  return MakeVectorString16(base::UTF8ToUTF16(str1), base::UTF8ToUTF16(str2));
-}
-
-std::vector<base::string16> MakeVectorString16(
+std::vector<std::u16string> MakeVectorString16(
     const std::vector<std::string>& vec) {
-  std::vector<base::string16> result;
+  std::vector<std::u16string> result;
   for (const std::string& msg : vec)
     result.push_back(base::UTF8ToUTF16(msg));
   return result;
 }
 
-std::vector<std::vector<base::string16>> MakeVectorVectorString16(
-    const std::vector<base::string16>& vec) {
-  return std::vector<std::vector<base::string16>>(1, vec);
-}
-
-std::vector<std::vector<base::string16>> MakeVectorVectorString16(
+std::vector<std::vector<std::u16string>> MakeVectorVectorString16(
     const std::vector<std::vector<std::string>>& vecs) {
-  std::vector<std::vector<base::string16>> result;
+  std::vector<std::vector<std::u16string>> result;
   for (const std::vector<std::string>& vec : vecs)
     result.push_back(MakeVectorString16(vec));
   return result;
@@ -66,32 +46,31 @@ std::vector<std::vector<base::string16>> MakeVectorVectorString16(
 
 // Returns the vector of messages concatenated into a single string, separated
 // by newlines, e.g.: "Bar"\n"Baz"\n
-base::string16 MessagesVectorToString(
-    const std::vector<base::string16>& messages) {
+std::string MessagesVectorToString(
+    const std::vector<std::u16string>& messages) {
   if (messages.empty())
-    return base::ASCIIToUTF16("\n");
-  return base::ASCIIToUTF16("\"") +
-         base::JoinString(messages, base::ASCIIToUTF16("\"\n\"")) +
-         base::ASCIIToUTF16("\"\n");
+    return "\n";
+  return base::StrCat(
+      {"\"", base::UTF16ToUTF8(base::JoinString(messages, u"\"\n\"")), "\"\n"});
 }
 
-base::string16 MessagesToString(const PermissionMessages& messages) {
-  std::vector<base::string16> messages_vec;
+std::string MessagesToString(const PermissionMessages& messages) {
+  std::vector<std::u16string> messages_vec;
   for (const PermissionMessage& msg : messages)
     messages_vec.push_back(msg.message());
   return MessagesVectorToString(messages_vec);
 }
 
 bool CheckThatSubmessagesMatch(
-    const base::string16& message,
-    const std::vector<base::string16>& expected_submessages,
-    const std::vector<base::string16>& actual_submessages) {
+    const std::u16string& message,
+    const std::vector<std::u16string>& expected_submessages,
+    const std::vector<std::u16string>& actual_submessages) {
   bool result = true;
 
-  std::vector<base::string16> expected_sorted(expected_submessages);
+  std::vector<std::u16string> expected_sorted(expected_submessages);
   std::sort(expected_sorted.begin(), expected_sorted.end());
 
-  std::vector<base::string16> actual_sorted(actual_submessages);
+  std::vector<std::u16string> actual_sorted(actual_submessages);
   std::sort(actual_sorted.begin(), actual_sorted.end());
   if (expected_sorted != actual_sorted) {
     // This is always a failure, even within an EXPECT_FALSE.
@@ -107,8 +86,8 @@ bool CheckThatSubmessagesMatch(
 }
 
 testing::AssertionResult VerifyHasPermissionMessageImpl(
-    const base::string16& expected_message,
-    const std::vector<base::string16>& expected_submessages,
+    const std::u16string& expected_message,
+    const std::vector<std::u16string>& expected_submessages,
     const PermissionMessages& actual_messages) {
   auto message_it =
       std::find_if(actual_messages.begin(), actual_messages.end(),
@@ -135,8 +114,8 @@ testing::AssertionResult VerifyHasPermissionMessageImpl(
 }
 
 testing::AssertionResult VerifyPermissionMessagesWithSubmessagesImpl(
-    const std::vector<base::string16>& expected_messages,
-    const std::vector<std::vector<base::string16>>& expected_submessages,
+    const std::vector<std::u16string>& expected_messages,
+    const std::vector<std::vector<std::u16string>>& expected_submessages,
     const PermissionMessages& actual_messages,
     bool check_order) {
   CHECK_EQ(expected_messages.size(), expected_submessages.size());
@@ -182,40 +161,24 @@ testing::AssertionResult VerifyPermissionMessagesWithSubmessagesImpl(
 
 testing::AssertionResult VerifyHasPermissionMessage(
     const PermissionsData* permissions_data,
-    const std::string& expected_message) {
-  return VerifyHasPermissionMessage(permissions_data,
-                                    base::UTF8ToUTF16(expected_message));
-}
-
-testing::AssertionResult VerifyHasPermissionMessage(
-    const PermissionsData* permissions_data,
-    const base::string16& expected_message) {
+    const std::u16string& expected_message) {
   return VerifyHasPermissionMessageImpl(
-      expected_message, std::vector<base::string16>(),
-      permissions_data->GetPermissionMessages());
+      expected_message, {}, permissions_data->GetPermissionMessages());
 }
 
 testing::AssertionResult VerifyHasPermissionMessage(
     const PermissionSet& permissions,
     Manifest::Type extension_type,
     const std::string& expected_message) {
-  return VerifyHasPermissionMessage(permissions, extension_type,
-                                    base::UTF8ToUTF16(expected_message));
-}
-
-testing::AssertionResult VerifyHasPermissionMessage(
-    const PermissionSet& permissions,
-    Manifest::Type extension_type,
-    const base::string16& expected_message) {
   return VerifyHasPermissionMessageImpl(
-      expected_message, std::vector<base::string16>(),
+      base::UTF8ToUTF16(expected_message), {},
       GetMessages(permissions, extension_type));
 }
 
 testing::AssertionResult VerifyNoPermissionMessages(
     const PermissionsData* permissions_data) {
   return VerifyPermissionMessages(permissions_data,
-                                  std::vector<base::string16>(), true);
+                                  std::vector<std::u16string>(), true);
 }
 
 testing::AssertionResult VerifyOnePermissionMessage(
@@ -227,18 +190,16 @@ testing::AssertionResult VerifyOnePermissionMessage(
 
 testing::AssertionResult VerifyOnePermissionMessage(
     const PermissionsData* permissions_data,
-    const base::string16& expected_message) {
-  return VerifyPermissionMessages(permissions_data,
-                                  MakeVectorString16(expected_message), true);
+    const std::u16string& expected_message) {
+  return VerifyPermissionMessages(permissions_data, {expected_message}, true);
 }
 
 testing::AssertionResult VerifyOnePermissionMessage(
     const PermissionSet& permissions,
     Manifest::Type extension_type,
-    const base::string16& expected_message) {
+    const std::u16string& expected_message) {
   return VerifyPermissionMessagesWithSubmessagesImpl(
-      MakeVectorString16(expected_message),
-      std::vector<std::vector<base::string16>>(1),
+      {expected_message}, std::vector<std::vector<std::u16string>>(1),
       GetMessages(permissions, extension_type), true);
 }
 
@@ -246,18 +207,8 @@ testing::AssertionResult VerifyOnePermissionMessageWithSubmessages(
     const PermissionsData* permissions_data,
     const std::string& expected_message,
     const std::vector<std::string>& expected_submessages) {
-  return VerifyOnePermissionMessageWithSubmessages(
-      permissions_data, base::UTF8ToUTF16(expected_message),
-      MakeVectorString16(expected_submessages));
-}
-
-testing::AssertionResult VerifyOnePermissionMessageWithSubmessages(
-    const PermissionsData* permissions_data,
-    const base::string16& expected_message,
-    const std::vector<base::string16>& expected_submessages) {
   return VerifyPermissionMessagesWithSubmessages(
-      permissions_data, MakeVectorString16(expected_message),
-      MakeVectorVectorString16(expected_submessages), true);
+      permissions_data, {expected_message}, {expected_submessages}, true);
 }
 
 testing::AssertionResult VerifyTwoPermissionMessages(
@@ -265,19 +216,10 @@ testing::AssertionResult VerifyTwoPermissionMessages(
     const std::string& expected_message_1,
     const std::string& expected_message_2,
     bool check_order) {
-  return VerifyPermissionMessages(
-      permissions_data,
-      MakeVectorString16(expected_message_1, expected_message_2), check_order);
-}
-
-testing::AssertionResult VerifyTwoPermissionMessages(
-    const PermissionsData* permissions_data,
-    const base::string16& expected_message_1,
-    const base::string16& expected_message_2,
-    bool check_order) {
-  return VerifyPermissionMessages(
-      permissions_data,
-      MakeVectorString16(expected_message_1, expected_message_2), check_order);
+  return VerifyPermissionMessages(permissions_data,
+                                  {base::UTF8ToUTF16(expected_message_1),
+                                   base::UTF8ToUTF16(expected_message_2)},
+                                  check_order);
 }
 
 testing::AssertionResult VerifyPermissionMessages(
@@ -290,11 +232,11 @@ testing::AssertionResult VerifyPermissionMessages(
 
 testing::AssertionResult VerifyPermissionMessages(
     const PermissionsData* permissions_data,
-    const std::vector<base::string16>& expected_messages,
+    const std::vector<std::u16string>& expected_messages,
     bool check_order) {
   return VerifyPermissionMessagesWithSubmessages(
       permissions_data, expected_messages,
-      std::vector<std::vector<base::string16>>(expected_messages.size()),
+      std::vector<std::vector<std::u16string>>(expected_messages.size()),
       check_order);
 }
 
@@ -310,8 +252,8 @@ testing::AssertionResult VerifyPermissionMessagesWithSubmessages(
 
 testing::AssertionResult VerifyPermissionMessagesWithSubmessages(
     const PermissionsData* permissions_data,
-    const std::vector<base::string16>& expected_messages,
-    const std::vector<std::vector<base::string16>>& expected_submessages,
+    const std::vector<std::u16string>& expected_messages,
+    const std::vector<std::vector<std::u16string>>& expected_submessages,
     bool check_order) {
   CHECK_EQ(expected_messages.size(), expected_submessages.size());
   return VerifyPermissionMessagesWithSubmessagesImpl(

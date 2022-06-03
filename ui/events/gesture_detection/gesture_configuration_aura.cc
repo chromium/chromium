@@ -5,21 +5,24 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event_switches.h"
 
 namespace ui {
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr bool kDoubleTapAuraSupport = true;
 #else
 constexpr bool kDoubleTapAuraSupport = false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class GestureConfigurationAura : public GestureConfiguration {
  public:
+  GestureConfigurationAura(const GestureConfigurationAura&) = delete;
+  GestureConfigurationAura& operator=(const GestureConfigurationAura&) = delete;
+
   ~GestureConfigurationAura() override {
   }
 
@@ -29,6 +32,12 @@ class GestureConfigurationAura : public GestureConfiguration {
 
  private:
   GestureConfigurationAura() : GestureConfiguration() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On ChromeOS, use 6 which is derived from the android's default(8),
+    // multiplied by base dpi ratio(0.75).  See crbug.com/1083120 for more
+    // details.
+    set_max_touch_move_in_pixels_for_click(6);
+#endif
     set_double_tap_enabled(kDoubleTapAuraSupport);
     set_double_tap_timeout_in_ms(semi_long_press_time_in_ms());
     set_gesture_begin_end_types_enabled(true);
@@ -47,7 +56,6 @@ class GestureConfigurationAura : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationAura>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationAura);
 };
 
 }  // namespace

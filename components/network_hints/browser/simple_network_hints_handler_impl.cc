@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -29,6 +29,17 @@
 namespace network_hints {
 namespace {
 
+// Preconnects can be received from the renderer before commit messages, so
+// need to use the key from the pending navigation, and not the committed
+// navigation, unlike other consumers. This does mean on navigating away from a
+// site, preconnect is more likely to incorrectly use the NetworkIsolationKey of
+// the previous commit.
+net::NetworkIsolationKey GetPendingNetworkIsolationKey(
+    content::RenderFrameHost* render_frame_host) {
+  return render_frame_host->GetPendingIsolationInfoForSubresources()
+      .network_isolation_key();
+}
+
 const int kDefaultPort = 80;
 
 // This class contains a std::unique_ptr of itself, it is passed in through
@@ -36,8 +47,15 @@ const int kDefaultPort = 80;
 // has completed or mojo connection error has happened.
 class DnsLookupRequest : public network::ResolveHostClientBase {
  public:
-  DnsLookupRequest(int render_process_id, const std::string& hostname)
-      : render_process_id_(render_process_id), hostname_(hostname) {}
+  DnsLookupRequest(int render_process_id,
+                   int render_frame_id,
+                   const std::string& hostname)
+      : render_process_id_(render_process_id),
+        render_frame_id_(render_frame_id),
+        hostname_(hostname) {}
+
+  DnsLookupRequest(const DnsLookupRequest&) = delete;
+  DnsLookupRequest& operator=(const DnsLookupRequest&) = delete;
 
   // Return underlying network resolver status.
   // net::OK ==> Host was found synchronously.
@@ -46,11 +64,11 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
   void Start(std::unique_ptr<DnsLookupRequest> request) {
     request_ = std::move(request);
 
-    content::RenderProcessHost* render_process_host =
-        content::RenderProcessHost::FromID(render_process_id_);
-    if (!render_process_host) {
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+    if (!render_frame_host) {
       OnComplete(net::ERR_NAME_NOT_RESOLVED,
-                 net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt);
+                 net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt);
       return;
     }
 
@@ -64,15 +82,17 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
     // TODO(https://crbug.com/997049): Pass in a non-empty NetworkIsolationKey.
-    render_process_host->GetStoragePartition()
+    render_frame_host->GetProcess()
+        ->GetStoragePartition()
         ->GetNetworkContext()
-        ->ResolveHost(host_port_pair, net::NetworkIsolationKey::Todo(),
+        ->ResolveHost(host_port_pair,
+                      GetPendingNetworkIsolationKey(render_frame_host),
                       std::move(resolve_host_parameters),
                       receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&DnsLookupRequest::OnComplete, base::Unretained(this),
                        net::ERR_NAME_NOT_RESOLVED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   }
 
  private:
@@ -80,25 +100,26 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override {
+      const absl::optional<net::AddressList>& resolved_addresses) override {
     VLOG(2) << __FUNCTION__ << ": " << hostname_
             << ", result=" << resolve_error_info.error;
     request_.reset();
   }
 
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
-  int render_process_id_;
+  const int render_process_id_;
+  const int render_frame_id_;
   const std::string hostname_;
   std::unique_ptr<DnsLookupRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsLookupRequest);
 };
 
 }  // namespace
 
 SimpleNetworkHintsHandlerImpl::SimpleNetworkHintsHandlerImpl(
-    int render_process_id)
-    : render_process_id_(render_process_id) {}
+    int render_process_id,
+    int render_frame_id)
+    : render_process_id_(render_process_id),
+      render_frame_id_(render_frame_id) {}
 
 SimpleNetworkHintsHandlerImpl::~SimpleNetworkHintsHandlerImpl() = default;
 
@@ -107,8 +128,10 @@ void SimpleNetworkHintsHandlerImpl::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mojom::NetworkHintsHandler> receiver) {
   int render_process_id = frame_host->GetProcess()->GetID();
+  int render_frame_id = frame_host->GetRoutingID();
   mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new SimpleNetworkHintsHandlerImpl(render_process_id)),
+      base::WrapUnique(new SimpleNetworkHintsHandlerImpl(render_process_id,
+                                                         render_frame_id)),
       std::move(receiver));
 }
 
@@ -116,7 +139,8 @@ void SimpleNetworkHintsHandlerImpl::PrefetchDNS(
     const std::vector<std::string>& names) {
   for (const std::string& hostname : names) {
     std::unique_ptr<DnsLookupRequest> request =
-        std::make_unique<DnsLookupRequest>(render_process_id_, hostname);
+        std::make_unique<DnsLookupRequest>(render_process_id_, render_frame_id_,
+                                           hostname);
     DnsLookupRequest* request_ptr = request.get();
     request_ptr->Start(std::move(request));
   }

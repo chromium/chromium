@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -22,11 +23,11 @@ namespace media {
 namespace {
 
 base::TimeTicks InitialTestTimeTicks() {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+  return base::TimeTicks() + base::Seconds(1);
 }
 
 base::TimeDelta FpsAsPeriod(int frame_rate) {
-  return base::TimeDelta::FromSeconds(1) / frame_rate;
+  return base::Seconds(1) / frame_rate;
 }
 
 }  // namespace
@@ -39,13 +40,13 @@ class AnimatedContentSamplerTest : public ::testing::Test {
   void SetUp() override {
     rand_seed_ = static_cast<int>(
         (InitialTestTimeTicks() - base::TimeTicks()).InMicroseconds());
-    sampler_.reset(new AnimatedContentSampler(GetMinCapturePeriod()));
+    sampler_ = std::make_unique<AnimatedContentSampler>(GetMinCapturePeriod());
   }
 
  protected:
   // Overridden by subclass for parameterized tests.
   virtual base::TimeDelta GetMinCapturePeriod() const {
-    return base::TimeDelta::FromSeconds(1) / 30;
+    return base::Seconds(1) / 30;
   }
 
   AnimatedContentSampler* sampler() const { return sampler_.get(); }
@@ -406,8 +407,7 @@ class AnimatedContentSamplerParameterizedTest
       return;
     }
     const double expected_sampling_ratio =
-        GetParam().content_period.InSecondsF() /
-        ComputeExpectedSamplingPeriod().InSecondsF();
+        GetParam().content_period / ComputeExpectedSamplingPeriod();
     const int total_frames = count_dropped_frames_ + count_sampled_frames_;
     EXPECT_NEAR(total_frames * expected_sampling_ratio, count_sampled_frames_,
                 1.5);
@@ -430,18 +430,18 @@ TEST_P(AnimatedContentSamplerParameterizedTest, DetectsAnimatedContent) {
   base::TimeTicks begin = InitialTestTimeTicks();
 
   // Provide random events and expect no lock-in.
-  RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(5),
-                            false, true, &begin),
-      false, false, false, "Provide random events and expect no lock-in.");
+  RunEventSequence(GenerateEventSequence(begin, begin + base::Seconds(5), false,
+                                         true, &begin),
+                   false, false, false,
+                   "Provide random events and expect no lock-in.");
   if (HasFailure())
     return;
 
   // Provide content frame events with some random events mixed-in, and expect
   // the sampler to lock-in.
   RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(5),
-                            true, true, &begin),
+      GenerateEventSequence(begin, begin + base::Seconds(5), true, true,
+                            &begin),
       false, true, false,
       "Provide content frame events with some random events mixed-in, and "
       "expect the sampler to lock-in.");
@@ -451,8 +451,8 @@ TEST_P(AnimatedContentSamplerParameterizedTest, DetectsAnimatedContent) {
   // Continue providing content frame events without the random events mixed-in
   // and expect the lock-in to hold.
   RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(5),
-                            true, false, &begin),
+      GenerateEventSequence(begin, begin + base::Seconds(5), true, false,
+                            &begin),
       true, true, false,
       "Continue providing content frame events without the random events "
       "mixed-in and expect the lock-in to hold.");
@@ -462,8 +462,8 @@ TEST_P(AnimatedContentSamplerParameterizedTest, DetectsAnimatedContent) {
   // Continue providing just content frame events and expect the lock-in to
   // hold.  Also simulate the capture pipeline experiencing back pressure.
   RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(20),
-                            true, false, &begin),
+      GenerateEventSequence(begin, begin + base::Seconds(20), true, false,
+                            &begin),
       true, true, true,
       "Continue providing just content frame events and expect the lock-in to "
       "hold.  Also simulate the capture pipeline experiencing back pressure.");
@@ -473,9 +473,8 @@ TEST_P(AnimatedContentSamplerParameterizedTest, DetectsAnimatedContent) {
   // Provide a half-second of random events only, and expect the lock-in to be
   // broken.
   RunEventSequence(
-      GenerateEventSequence(begin,
-                            begin + base::TimeDelta::FromMilliseconds(500),
-                            false, true, &begin),
+      GenerateEventSequence(begin, begin + base::Milliseconds(500), false, true,
+                            &begin),
       true, false, false,
       "Provide a half-second of random events only, and expect the lock-in to "
       "be broken.");
@@ -485,8 +484,8 @@ TEST_P(AnimatedContentSamplerParameterizedTest, DetectsAnimatedContent) {
   // Now, go back to providing content frame events, and expect the sampler to
   // lock-in once again.
   RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(5),
-                            true, false, &begin),
+      GenerateEventSequence(begin, begin + base::Seconds(5), true, false,
+                            &begin),
       false, true, false,
       "Now, go back to providing content frame events, and expect the sampler "
       "to lock-in once again.");
@@ -507,8 +506,8 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
   // lock-in.
   base::TimeTicks begin = InitialTestTimeTicks();
   RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(5),
-                            true, false, &begin),
+      GenerateEventSequence(begin, begin + base::Seconds(5), true, false,
+                            &begin),
       false, true, false,
       "Start the first animation and run for a bit, and expect the sampler to "
       "lock-in.");
@@ -520,7 +519,7 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
   // the sampler to enter an "undetected" state since it's unclear which
   // animation should be locked into.
   std::vector<Event> first_animation_events = GenerateEventSequence(
-      begin, begin + base::TimeDelta::FromSeconds(20), true, false, &begin);
+      begin, begin + base::Seconds(20), true, false, &begin);
   gfx::Rect second_animation_rect(
       gfx::Point(0, GetContentDamageRect().height()),
       GetContentDamageRect().size());
@@ -542,8 +541,8 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
   // Now, run just the first animation, and expect the sampler to lock-in once
   // again.
   RunEventSequence(
-      GenerateEventSequence(begin, begin + base::TimeDelta::FromSeconds(5),
-                            true, false, &begin),
+      GenerateEventSequence(begin, begin + base::Seconds(5), true, false,
+                            &begin),
       false, true, false,
       "Now, run just the first animation, and expect the sampler to lock-in "
       "once again.");
@@ -555,7 +554,7 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
   // cause the sampler to enter an "undetected" state again.  This tests that
   // pixel-weighting is being accounted for in the sampler's logic.
   first_animation_events = GenerateEventSequence(
-      begin, begin + base::TimeDelta::FromSeconds(20), true, false, &begin);
+      begin, begin + base::Seconds(20), true, false, &begin);
   second_animation_rect.set_width(second_animation_rect.width() * 2);
   both_animations_events.clear();
   bool include_second_animation_frame = true;
@@ -583,7 +582,7 @@ TEST_P(AnimatedContentSamplerParameterizedTest, FrameTimestampsAreSmooth) {
   // once lock-in is continuous.
   const base::TimeTicks begin = InitialTestTimeTicks();
   std::vector<Event> events = GenerateEventSequence(
-      begin, begin + base::TimeDelta::FromSeconds(20), true, false, nullptr);
+      begin, begin + base::Seconds(20), true, false, nullptr);
   typedef std::vector<base::TimeTicks> Timestamps;
   Timestamps frame_timestamps;
   for (std::vector<Event>::const_iterator i = events.begin(); i != events.end();
@@ -606,12 +605,12 @@ TEST_P(AnimatedContentSamplerParameterizedTest, FrameTimestampsAreSmooth) {
   // display_counts[2] == 10.  Quit early if any one frame was obviously
   // repeated too many times.
   const int64_t max_expected_repeats_per_frame =
-      1 + ComputeExpectedSamplingPeriod() / GetParam().vsync_interval;
+      1 + ComputeExpectedSamplingPeriod().IntDiv(GetParam().vsync_interval);
   std::vector<size_t> display_counts(max_expected_repeats_per_frame + 1, 0);
   base::TimeTicks last_present_time = frame_timestamps.front();
   for (Timestamps::const_iterator i = frame_timestamps.begin() + 1;
        i != frame_timestamps.end(); ++i) {
-    const size_t num_vsync_intervals = static_cast<size_t>(
+    const size_t num_vsync_intervals = base::ClampFloor<size_t>(
         (*i - last_present_time) / GetParam().vsync_interval);
     ASSERT_LT(0u, num_vsync_intervals);
     ASSERT_GT(display_counts.size(), num_vsync_intervals);  // Quit early.
@@ -666,7 +665,7 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
   // Generate a full minute of events.
   const base::TimeTicks begin = InitialTestTimeTicks();
   std::vector<Event> events = GenerateEventSequence(
-      begin, begin + base::TimeDelta::FromMinutes(1), true, false, nullptr);
+      begin, begin + base::Minutes(1), true, false, nullptr);
 
   // Modify the event sequence so that 1-3 ms of additional drift is suddenly
   // present every 100 events.  This is meant to simulate that, external to
@@ -675,7 +674,7 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
   base::TimeDelta accumulated_drift;
   for (size_t i = 1; i < events.size(); ++i) {
     if (i % 100 == 0) {
-      accumulated_drift += base::TimeDelta::FromMilliseconds(
+      accumulated_drift += base::Milliseconds(
           GetRandomInRange(1, max_drift_increment_millis + 1));
     }
     events[i].second += accumulated_drift;
@@ -697,7 +696,7 @@ TEST_P(AnimatedContentSamplerParameterizedTest,
       events.back().second - last_frame_timestamp;
   const base::TimeDelta max_acceptable_error =
       GetParam().min_capture_period +
-      base::TimeDelta::FromMilliseconds(max_drift_increment_millis);
+      base::Milliseconds(max_drift_increment_millis);
   EXPECT_NEAR(0.0, total_error.InMicroseconds(),
               max_acceptable_error.InMicroseconds());
 }

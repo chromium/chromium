@@ -4,7 +4,6 @@
 
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
@@ -14,41 +13,62 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "content/public/browser/navigation_controller.h"
+#endif
+
+namespace {
+
+// URL that the "leave site" button aborts to by default.
 const char kSafetyTipLeaveSiteUrl[] = "chrome://newtab";
 
-void RecordSafetyTipInteractionHistogram(content::WebContents* web_contents,
-                                         SafetyTipInteraction interaction) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  base::UmaHistogramEnumeration(
-      security_state::GetSafetyTipHistogramName(
-          "Security.SafetyTips.Interaction",
-          helper->GetVisibleSecurityState()->safety_tip_info.status),
-      interaction);
-}
+}  // namespace
 
 void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
                             const GURL& safe_url) {
-  RecordSafetyTipInteractionHistogram(web_contents,
-                                      SafetyTipInteraction::kLeaveSite);
+  auto navigated_to = safe_url;
+  if (navigated_to.is_empty()) {
+    navigated_to = GURL(kSafetyTipLeaveSiteUrl);
+
+#if defined(OS_ANDROID)
+    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+    if (tab && tab->IsCustomTab()) {
+      auto& controller = web_contents->GetController();
+      // For CCTs, just go back if we can...
+      if (controller.CanGoBack()) {
+        controller.GoBack();
+        return;
+      }
+      // ... or close the CCT otherwise.
+      auto* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
+      if (tab_model) {
+        tab_model->CloseTabAt(tab_model->GetActiveIndex());
+        return;
+      }
+      // (And if we don't have a tab model for some reason, just navigate away
+      //  someplace at least slightly. To my knowledge, this shouldn't happen.)
+    }
+#endif
+  }
+
   content::OpenURLParams params(
-      safe_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      navigated_to, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false /* is_renderer_initiated */);
   params.should_replace_current_entry = true;
   web_contents->OpenURL(params);
 }
 
 void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents) {
-  RecordSafetyTipInteractionHistogram(web_contents,
-                                      SafetyTipInteraction::kLearnMore);
   web_contents->OpenURL(content::OpenURLParams(
       GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
       false /*is_renderer_initiated*/));
 }
 
-base::string16 GetSafetyTipTitle(
+std::u16string GetSafetyTipTitle(
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url) {
   switch (safety_tip_status) {
@@ -56,14 +76,11 @@ base::string16 GetSafetyTipTitle(
       return l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE);
     case security_state::SafetyTipStatus::kLookalike:
-#if defined(OS_ANDROID)
-      return l10n_util::GetStringUTF16(IDS_SAFETY_TIP_ANDROID_LOOKALIKE_TITLE);
-#else
       return l10n_util::GetStringFUTF16(
           IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
           security_interstitials::common_string_util::GetFormattedHostName(
               suggested_url));
-#endif
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
     case security_state::SafetyTipStatus::kBadKeyword:
@@ -73,30 +90,17 @@ base::string16 GetSafetyTipTitle(
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetSafetyTipDescription(
+std::u16string GetSafetyTipDescription(
     security_state::SafetyTipStatus warning_type,
-    const GURL& url,
     const GURL& suggested_url) {
   switch (warning_type) {
     case security_state::SafetyTipStatus::kBadReputation:
-      return l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_DESCRIPTION);
     case security_state::SafetyTipStatus::kLookalike:
-#if defined(OS_ANDROID)
-      return l10n_util::GetStringFUTF16(
-          IDS_SAFETY_TIP_ANDROID_LOOKALIKE_DESCRIPTION,
-          security_interstitials::common_string_util::GetFormattedHostName(url),
-          security_interstitials::common_string_util::GetFormattedHostName(
-              suggested_url));
-#else
-      return l10n_util::GetStringFUTF16(
-          IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION,
-          security_interstitials::common_string_util::GetFormattedHostName(
-              suggested_url));
-#endif
+      return l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_DESCRIPTION);
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
     case security_state::SafetyTipStatus::kBadKeyword:
@@ -105,20 +109,16 @@ base::string16 GetSafetyTipDescription(
       NOTREACHED();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 int GetSafetyTipLeaveButtonId(security_state::SafetyTipStatus warning_type) {
   switch (warning_type) {
-#if defined(OS_ANDROID)
     case security_state::SafetyTipStatus::kBadReputation:
+      return IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_LEAVE_BUTTON;
     case security_state::SafetyTipStatus::kLookalike:
-      return IDS_SAFETY_TIP_ANDROID_LEAVE_BUTTON;
-#else
-    case security_state::SafetyTipStatus::kBadReputation:
-    case security_state::SafetyTipStatus::kLookalike:
-      return IDS_PAGE_INFO_SAFETY_TIP_LEAVE_BUTTON;
-#endif
+      return IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_LEAVE_BUTTON;
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
     case security_state::SafetyTipStatus::kBadKeyword:

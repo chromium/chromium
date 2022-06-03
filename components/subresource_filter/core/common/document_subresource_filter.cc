@@ -4,9 +4,10 @@
 
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -26,8 +27,10 @@ DocumentSubresourceFilter::DocumentSubresourceFilter(
       ruleset_matcher_(ruleset_->data(), ruleset_->length()) {
   DCHECK_NE(activation_state_.activation_level,
             mojom::ActivationLevel::kDisabled);
-  if (!activation_state_.filtering_disabled_for_document)
-    document_origin_.reset(new FirstPartyOrigin(std::move(document_origin)));
+  if (!activation_state_.filtering_disabled_for_document) {
+    document_origin_ =
+        std::make_unique<FirstPartyOrigin>(std::move(document_origin));
+  }
 }
 
 DocumentSubresourceFilter::~DocumentSubresourceFilter() = default;
@@ -65,9 +68,11 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
 
   ++statistics_.num_loads_evaluated;
   DCHECK(document_origin_);
-  if (ruleset_matcher_.ShouldDisallowResourceLoad(
-          subresource_url, *document_origin_, subresource_type,
-          activation_state_.generic_blocking_rules_disabled)) {
+  LoadPolicy result = ruleset_matcher_.GetLoadPolicyForResourceLoad(
+      subresource_url, *document_origin_, subresource_type,
+      activation_state_.generic_blocking_rules_disabled);
+  DCHECK_NE(LoadPolicy::WOULD_DISALLOW, result);
+  if (result == LoadPolicy::DISALLOW) {
     ++statistics_.num_loads_matching_rules;
     if (activation_state_.activation_level ==
         mojom::ActivationLevel::kEnabled) {
@@ -78,7 +83,7 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
       return LoadPolicy::WOULD_DISALLOW;
     }
   }
-  return LoadPolicy::ALLOW;
+  return result;
 }
 
 const url_pattern_index::flat::UrlRule*

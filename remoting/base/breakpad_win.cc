@@ -4,7 +4,7 @@
 
 // This module contains the necessary code to register the Breakpad exception
 // handler. This implementation is based on Chrome crash reporting code. See:
-//   - src/components/crash/content/app/breakpad_win.cc
+//   - src/components/crash/core/app/breakpad_win.cc
 //   - src/chrome/installer/setup/setup_main.cc
 
 #include "remoting/base/breakpad.h"
@@ -16,10 +16,12 @@
 #include <string>
 
 #include "base/atomicops.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/file_version_info.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
 #include "base/win/wrapped_window_proc.h"
@@ -57,6 +59,10 @@ using base::subtle::NoBarrier_CompareAndSwap;
 class BreakpadWin {
  public:
   BreakpadWin();
+
+  BreakpadWin(const BreakpadWin&) = delete;
+  BreakpadWin& operator=(const BreakpadWin&) = delete;
+
   ~BreakpadWin();
 
   static BreakpadWin* GetInstance();
@@ -88,8 +94,6 @@ class BreakpadWin {
   static const wchar_t* pipe_name_;
 
   friend void ::remoting::InitializeCrashReportingForTest(const wchar_t*);
-
-  DISALLOW_COPY_AND_ASSIGN(BreakpadWin);
 };
 
 // |LazyInstance| is used to guarantee that the exception handler will be
@@ -151,7 +155,7 @@ google_breakpad::CustomClientInfo* BreakpadWin::GetCustomInfo() {
 
   static wchar_t version[64];
   if (version_info.get()) {
-    wcscpy_s(version, version_info->product_version().c_str());
+    wcscpy_s(version, base::as_wcstr(version_info->product_version()));
   } else {
     wcscpy_s(version, kBreakpadVersionDefault);
   }

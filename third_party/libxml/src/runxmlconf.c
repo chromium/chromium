@@ -1,5 +1,5 @@
 /*
- * runsuite.c: C program to run libxml2 againts published testsuites
+ * runxmlconf.c: C program to run XML W3C conformance testsuites
  *
  * See Copyright for the status of this software.
  *
@@ -164,8 +164,8 @@ initializeLibxml2(void) {
     * Deactivate the cache if created; otherwise we have to create/free it
     * for every test, since it will confuse the memory leak detection.
     * Note that normally this need not be done, since the cache is not
-    * created until set explicitely with xmlXPathContextSetCache();
-    * but for test purposes it is sometimes usefull to activate the
+    * created until set explicitly with xmlXPathContextSetCache();
+    * but for test purposes it is sometimes useful to activate the
     * cache by default for the whole library.
     */
     if (ctxtXPath->cache != NULL)
@@ -248,7 +248,7 @@ xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
 
     /*
      * In case of Namespace errors, libxml2 will still parse the document
-     * but log a Namesapce error.
+     * but log a Namespace error.
      */
     doc = xmlReadFile(filename, NULL, options);
     if (doc == NULL) {
@@ -507,7 +507,7 @@ xmlconfInfo(void) {
     fprintf(stderr, "  you need to fetch and extract the\n");
     fprintf(stderr, "  latest XML Conformance Test Suites\n");
     fprintf(stderr, "  http://www.w3.org/XML/Test/xmlts20080827.tar.gz\n");
-    fprintf(stderr, "  see http://www.w3.org/XML/Test/ for informations\n");
+    fprintf(stderr, "  see http://www.w3.org/XML/Test/ for information\n");
 }
 
 static int

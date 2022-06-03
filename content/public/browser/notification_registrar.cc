@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <ostream>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "content/browser/notification_service_impl.h"
 
 namespace content {

@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr-Latn">
+<translation id="1135328998467923690">Paket je nevažeći: „<ph name="ERROR_CODE" />“.</translation>
+<translation id="1140871961407805696">Zadnja</translation>
+<translation id="1196338895211115272">Izvoz privatnog ključa nije uspeo.</translation>
+<translation id="1420684932347524586">Generisanje nasumičnog RSA privatnog ključa nije uspelo.</translation>
+<translation id="1445572445564823378">Ovaj dodatak usporava <ph name="PRODUCT_NAME" />. Trebalo bi da ga onemogućite da bi se učinak proizvoda <ph name="PRODUCT_NAME" /> vratio.</translation>
+<translation id="1468038450257740950">WebGL nije podržan.</translation>
+<translation id="1803557475693955505">Nije moguće učitati stranicu u pozadini „<ph name="BACKGROUND_PAGE" />“.</translation>
+<translation id="2159915644201199628">Nije moguće dekodirati sliku: „<ph name="IMAGE_NAME" />“</translation>
+<translation id="2350172092385603347">Korišćena je lokalizacija, ali parametar default_locale nije naveden u manifestu.</translation>
+<translation id="2576842806987913196">Već postoji CRX datoteka sa ovim nazivom.</translation>
+<translation id="2785530881066938471">Učitavanje datoteke „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja nije uspelo. Nema UTF-8 šifrovanje.</translation>
+<translation id="2903070246402204397">Administrator je blokirao <ph name="EXTENSION_NAME" /> (ID dodatka je „<ph name="EXTENSION_ID" />“). <ph name="ADMIN_INFO" /></translation>
+<translation id="2988488679308982380">Instalacija paketa nije bila moguća: „<ph name="ERROR_CODE" />“</translation>
+<translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="3144135466825225871">Zamena crx datoteke nije uspela. Proverite da li se datoteka koristi.</translation>
+<translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /></translation>
+<translation id="3302709122321372472">Nije moguće učitati css „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja.</translation>
+<translation id="3369521687965833290">Nije moguće otpakovati dodatak. Da biste bezbedno otpakovali dodatak, mora da postoji putanja do direktorijuma profila koja počinje slovom za oznaku jedinice i ne sadrži spoj, tačku povezivanja ili simboličku vezu. Za vaš profil ne postoji takva putanja.</translation>
+<translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="3561217442734750519">Ulazna vrednost privatnog ključa mora biti važeća putanja.</translation>
+<translation id="388442998277590542">Nije moguće učitati stranicu opcija „<ph name="OPTIONS_PAGE" />“.</translation>
+<translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja dodatka.</translation>
+<translation id="39964277676607559">Nije moguće učitati javascript „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja.</translation>
+<translation id="4115165561519362854">Administrator ovog računara zahteva da <ph name="EXTENSION_NAME" /> ima minimalnu verziju <ph name="EXTENSION_VERSION" />. Ne možete da ga omogućite dok ga ne ažurirate na tu verziju (ili noviju).</translation>
+<translation id="4233778200880751280">Nije moguće učitati stranicu sa osnovnim podacima „<ph name="ABOUT_PAGE" />“.</translation>
+<translation id="471800408830181311">Formiranje izlaznih rezultata privatnog ključa nije uspelo.</translation>
+<translation id="4811956658694082538">Instaliranje paketa nije uspelo zato što je uslužni proces otkazao. Probajte da ponovo pokrenete Chrome i pokušajte ponovo.</translation>
+<translation id="4988792151665380515">Izvoz javnog ključa nije uspeo.</translation>
+<translation id="5026754133087629784">Veb-prikaz: <ph name="WEBVIEW_TAG_NAME" /></translation>
+<translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorijuma za pakovanje.</translation>
+<translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5436430103864390185">Prozori različitih oblika nisu podržani.</translation>
+<translation id="5456409301717116725">Ovaj dodatak sadrži datoteku ključa „<ph name="KEY_PATH" />“. Verovatno to ne želite.</translation>
+<translation id="5486326529110362464">Ulazna vrednost privatnog ključa mora da postoji.</translation>
+<translation id="5972529113578162692">Administrator ovog računara zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga deinstalirate.</translation>
+<translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /></translation>
+<translation id="6143635259298204954">Nije moguće otpakovati dodatak. Da biste bezbedno otpakovali dodatak, mora da postoji putanja do direktorijuma profila koja ne sadrži simboličku vezu. Za vaš profil ne postoji takva putanja.</translation>
+<translation id="6322279351188361895">Čitanje privatnog ključa nije uspelo.</translation>
+<translation id="6391538222494443604">Ulazni katalog mora da postoji.</translation>
+<translation id="641087317769093025">Nije moguće raspakovati dodatak</translation>
+<translation id="6542618148162044354">„<ph name="APP_NAME" />“ zahteva pristup jednom ili više uređaja:</translation>
+<translation id="657064425229075395">Nije moguće učitati skriptu u pozadini „<ph name="BACKGROUND_SCRIPT" />“.</translation>
+<translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="677806580227005219">Rukovalac za MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
+<translation id="6840444547062817500">Ovaj dodatak se suviše često ponovo učitavao.</translation>
+<translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /></translation>
+<translation id="7068383018033524534">Datoteka manifesta je nevažeća</translation>
+<translation id="7217838517480956708">Administrator ovog uređaja zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga uklonite ili izmenite.</translation>
+<translation id="7612608473764576263">Ulazna vrednost za privatni ključ mora da bude važeći format (PEM kodirani RSA ključ u PKCS#8 formatu).</translation>
+<translation id="7939686037314084444">Dodatak se nije pravilno učitao. Možda neće moći da preusmerava mrežne zahteve.</translation>
+<translation id="7972881773422714442">Opcije: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
+<translation id="8035920974645200807">Prednja</translation>
+<translation id="8047248493720652249">Ovaj dodatak nije uspeo da preuzetoj datoteci dâ naziv „<ph name="ATTEMPTED_FILENAME" />“ zato što je jedan drugi dodatak (<ph name="EXTENSION_NAME" />) odredio drugačiji naziv datoteke „<ph name="ACTUAL_FILENAME" />“.</translation>
+<translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_NAME" /></translation>
+<translation id="8517576857589387417">Datoteka manifesta nedostaje ili nije mogla da se čita</translation>
+<translation id="8636666366616799973">Paket je nevažeći. Detalji: „<ph name="ERROR_MESSAGE" />“.</translation>
+<translation id="8761756413268424715">„<ph name="APP_NAME" />“ zahteva pristup nekom od uređaja:</translation>
+<translation id="8885905466771744233">Privatni ključ za navedeni dodatak već postoji. Ponovo koristite taj ključ ili ga prvo izbrišite.</translation>
+<translation id="907841381057066561">Pravljenje privremene zip datoteke nije uspelo tokom pakovanja.</translation>
+<translation id="941543339607623937">Nevažeći privatni ključ.</translation>
+</translationbundle>

@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "remoting/host/evaluate_capability.h"

@@ -1,0 +1,14 @@
+#<skip -- Some bots do not map details/details-for>
+[document web]
+++[section]
+++++[entry] selectable-text details
+++[paragraph] details-for
+++++[static] name='Details'
+++[paragraph]
+++++[static] name='This '
+++++[section] details
+++++++[static] name='text'
+++++[static] name=' has details'
+++[panel] details-for
+++++[static] name='Text details'
+++[image] name='Image details' details-for

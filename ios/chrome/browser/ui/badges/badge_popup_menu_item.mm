@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_item.h"
 
-#import "base/logging.h"
+#include <ostream>
+
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -59,14 +61,22 @@ const CGFloat kBadgeCornerRadius = 5.0;
         _title = l10n_util::GetNSString(
             IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE);
         break;
+      case BadgeType::kBadgeTypeSaveAddressProfile:
+        _actionIdentifier = PopupMenuActionShowSaveAddressProfileOptions;
+        _title = @"Save Address";
+        break;
       case BadgeType::kBadgeTypeSaveCard:
         _actionIdentifier = PopupMenuActionShowSaveCardOptions;
         _title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
         break;
       case BadgeType::kBadgeTypeTranslate:
         _actionIdentifier = PopupMenuActionShowTranslateOptions;
-        // TODO(crbug.com/1014959): use l10n to translate string.
-        _title = @"Translate Page";
+        _title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE);
+        break;
+      case BadgeType::kBadgeTypeAddToReadingList:
+        _actionIdentifier = PopupMenuActionAddToReadingListOptions;
+        _title =
+            l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
         break;
       case BadgeType::kBadgeTypeIncognito:
         NOTREACHED() << "A BadgePopupMenuItem should not be an Incognito badge";
@@ -91,7 +101,11 @@ const CGFloat kBadgeCornerRadius = 5.0;
   switch (self.badgeType) {
     case BadgeType::kBadgeTypePasswordSave:
     case BadgeType::kBadgeTypePasswordUpdate:
-      badgeImage = [[UIImage imageNamed:@"infobar_passwords_icon"]
+      badgeImage = [[UIImage imageNamed:@"password_key"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypeSaveAddressProfile:
+      badgeImage = [[UIImage imageNamed:@"ic_place"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeSaveCard:
@@ -100,6 +114,10 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case BadgeType::kBadgeTypeTranslate:
       badgeImage = [[UIImage imageNamed:@"infobar_translate_icon"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypeAddToReadingList:
+      badgeImage = [[UIImage imageNamed:@"infobar_reading_list"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeIncognito:

@@ -1,0 +1,685 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a .pyl, or "Python Literal", file. You can treat it just like a
+# .json file, with the following exceptions:
+# * all keys must be quoted (use single quotes, please);
+# * comments are allowed, using '#' syntax; and
+# * trailing commas are allowed.
+
+{
+  'IPHONE_6S_12_3_1': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'os': 'iOS-12.3.1',
+          'device': 'iPhone8,1'
+        }
+      ]
+    },
+    'identifier': 'iPhone 6S 12.3.1'
+  },
+  'LACROS_TOT': {
+    'args': [
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
+    ],
+    'identifier': 'Lacros plus ToT ash',
+  },
+  'LACROS_VERSION_SKEW_CANARY': {
+    'args': [
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v97.0.4683.0/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
+    ],
+    'identifier': 'Lacros version skew testing ash 97.0.4683.0',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_v97.0.4683.0',
+          'revision': 'version:97.0.4683.0',
+        },
+      ],
+    },
+  },
+  'LACROS_VERSION_SKEW_DEV': {
+    'args': [
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v97.0.4669.0/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
+    ],
+    'identifier': 'Lacros version skew testing ash 97.0.4669.0',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_v97.0.4669.0',
+          'revision': 'version:97.0.4669.0',
+        },
+      ],
+    },
+  },
+  'LACROS_VERSION_SKEW_BETA': {
+    'args': [
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v96.0.4664.13/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
+    ],
+    'identifier': 'Lacros version skew testing ash 96.0.4664.13',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_v96.0.4664.13',
+          'revision': 'version:96.0.4664.13',
+        },
+      ],
+    },
+  },
+  'LACROS_VERSION_SKEW_STABLE': {
+    'args': [
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v94.0.4606.104/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
+    ],
+    'identifier': 'Lacros version skew testing ash 94.0.4606.104',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
+          'location': 'lacros_version_skew_tests_v94.0.4606.104',
+          'revision': 'version:94.0.4606.104',
+        },
+      ],
+    },
+  },
+  'SIM_IPAD_AIR_2_14_4': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '14.4'
+    ],
+    'identifier': 'iPad Air 2 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
+  },
+  'SIM_IPAD_AIR_2_14_5': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '14.5'
+    ],
+    'identifier': 'iPad Air 2 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPAD_AIR_2_15_0': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPad Air 2 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
+  'SIM_IPAD_AIR_3RD_GEN_14_5': {
+    'args': [
+      '--platform',
+      'iPad Air (3rd generation)',
+      '--version',
+      '14.5'
+    ],
+    'identifier': 'iPad Air (3rd generation) 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
+  # "platform" arg.
+  'SIM_IPAD_PRO_2ND_GEN_14_5': {
+    'args': [
+      '--platform',
+      'iPad Pro (12.9-inch) (2nd generation)',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPAD_6_GEN_14_5': {
+    'args': [
+      '--platform',
+      'iPad (6th generation)',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPad (6th generation) 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_6S_14_4': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '14.4',
+    ],
+    'identifier': 'iPhone 6s 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
+  },
+  'SIM_IPHONE_6S_14_5': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPhone 6s 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_6S_15_0': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPhone 6s 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
+  'SIM_IPHONE_6S_PLUS_14_4': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '14.4',
+    ],
+    'identifier': 'iPhone 6s Plus 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
+  },
+  'SIM_IPHONE_6S_PLUS_14_5': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPhone 6s Plus 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_6S_PLUS_15_0': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '15.0',
+    ],
+    'identifier': 'iPhone 6s Plus 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
+  'SIM_IPHONE_7_14_4': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '14.4',
+    ],
+    'identifier': 'iPhone 7 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
+  },
+  'SIM_IPHONE_7_14_5': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPhone 7 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_7_15_0': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPhone 7 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
+  'SIM_IPHONE_SE_1ST_GEN_14_4': {
+    'args': [
+      '--platform',
+      'iPhone SE (1st generation)',
+      '--version',
+      '14.4',
+    ],
+    'identifier': 'iPhone SE (1st generation) 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
+  },
+  'SIM_IPHONE_SE_1ST_GEN_14_5': {
+    'args': [
+      '--platform',
+      'iPhone SE (1st generation)',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPhone SE (1st generation) 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_SE_1ST_GEN_15_0': {
+    'args': [
+      '--platform',
+      'iPhone SE (1st generation)',
+      '--version',
+      '15.0',
+    ],
+    'identifier': 'iPhone SE (1st generation) 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
+  'SIM_IPHONE_X_14_4': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '14.4',
+    ],
+    'identifier': 'iPhone X 14.4',
+    'mixins': [
+      'ios_runtime_cache_14_4',
+    ],
+  },
+  'SIM_IPHONE_X_14_5': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '14.5',
+    ],
+    'identifier': 'iPhone X 14.5',
+    'mixins': [
+      'ios_runtime_cache_14_5',
+    ],
+  },
+  'SIM_IPHONE_X_15_0': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '15.0'
+    ],
+    'identifier': 'iPhone X 15.0',
+    'mixins': [
+      'ios_runtime_cache_15_0',
+    ],
+  },
+  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M97/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=97',
+    ],
+    'identifier': 'with_impl_from_97',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M97',
+          'revision': 'version:97.0.4692.11',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M96/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=96',
+    ],
+    'identifier': 'with_impl_from_96',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M96',
+          'revision': 'version:96.0.4664.45',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M92/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=92',
+    ],
+    'identifier': 'with_impl_from_92',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M92',
+          'revision': 'version:92.0.4515.166',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M97/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=97',
+    ],
+    'identifier': 'with_impl_from_97',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M97',
+          'revision': 'version:97.0.4692.11',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M96/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=96',
+    ],
+    'identifier': 'with_impl_from_96',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M96',
+          'revision': 'version:96.0.4664.45',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M92/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=92',
+    ],
+    'identifier': 'with_impl_from_92',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M92',
+          'revision': 'version:92.0.4515.166',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M97/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=97',
+    ],
+    'identifier': 'with_client_from_97',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M97',
+          'revision': 'version:97.0.4692.11',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M96/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=96',
+    ],
+    'identifier': 'with_client_from_96',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M96',
+          'revision': 'version:96.0.4664.45',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
+    'args': [
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M92/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=92',
+    ],
+    'identifier': 'with_client_from_92',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M92',
+          'revision': 'version:92.0.4515.166',
+        }
+      ],
+    },
+  },
+  'CROS_ATLAS_LKGM': {
+    'skylab': {
+      'cros_board': 'atlas',
+      'cros_img': 'atlas-release/R98-14328.0.0',
+    },
+    'identifier': 'ATLAS_LKGM',
+  },
+  'CROS_ATLAS_DEV': {
+    'skylab': {
+      'cros_board': 'atlas',
+      'cros_img': 'atlas-release/R97-14309.0.0',
+    },
+    'identifier': 'ATLAS_DEV',
+  },
+  'CROS_ATLAS_BETA': {
+    'skylab': {
+      'cros_board': 'atlas',
+      'cros_img': 'atlas-release/R96-14268.25.0',
+    },
+    'identifier': 'ATLAS_BETA',
+  },
+  'CROS_ATLAS_STABLE': {
+    'skylab': {
+      'cros_board': 'atlas',
+      'cros_img': 'atlas-release/R94-14150.74.0',
+    },
+    'identifier': 'ATLAS_STABLE',
+  },
+  'CROS_EVE_LKGM': {
+    'skylab': {
+      'cros_board': 'eve',
+      'cros_img': 'eve-release/R98-14328.0.0',
+    },
+    'identifier': 'EVE_LKGM',
+  },
+  'CROS_EVE_DEV': {
+    'skylab': {
+      'cros_board': 'eve',
+      'cros_img': 'eve-release/R97-14324.5.0',
+    },
+    'identifier': 'EVE_DEV',
+  },
+  'CROS_EVE_BETA': {
+    'skylab': {
+      'cros_board': 'eve',
+      'cros_img': 'eve-release/R96-14268.25.0',
+    },
+    'identifier': 'EVE_BETA',
+  },
+  'CROS_EVE_STABLE': {
+    'skylab': {
+      'cros_board': 'eve',
+      'cros_img': 'eve-release/R94-14150.74.0',
+    },
+    'identifier': 'EVE_STABLE',
+  },
+  'CROS_KEVIN_LKGM': {
+    'skylab': {
+      'cros_board': 'kevin',
+      'cros_img': 'kevin-release/R98-14328.0.0',
+    },
+    'identifier': 'KEVIN_LKGM',
+  },
+  'CROS_OCTOPUS_LKGM': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R98-14328.0.0',
+    },
+    'identifier': 'OCTOPUS_LKGM',
+  },
+  'CROS_OCTOPUS_DEV': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R97-14324.5.0',
+    },
+    'identifier': 'OCTOPUS_DEV',
+  },
+  'CROS_OCTOPUS_BETA': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R96-14268.25.0',
+    },
+    'identifier': 'OCTOPUS_BETA',
+  },
+  'CROS_OCTOPUS_STABLE': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R94-14150.74.0',
+    },
+    'identifier': 'OCTOPUS_STABLE',
+  },
+  'LACROS_AMD64_GENERIC': {
+    'args': [
+      '--board=amd64-generic',
+      '--use-vm',
+    ],
+    'identifier': 'amd64-generic',
+    'swarming': {
+       'dimension_sets': [
+        {
+          'cpu': 'x86',
+          'kvm': '1',
+          'os': 'Ubuntu-18.04',
+        }
+      ],
+    },
+  },
+  'LACROS_EVE': {
+    'args': [
+      '--board=eve',
+      '--flash',
+    ],
+    'identifier': 'eve',
+    'swarming': {
+      'dimension_sets': [
+        {
+          'os': 'ChromeOS',
+          'device_type': 'eve',
+        }
+      ],
+    },
+  },
+}

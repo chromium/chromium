@@ -13,7 +13,7 @@ mojo::PendingRemote<mojom::DisplayClient> FakeDisplayClient::BindRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 void FakeDisplayClient::OnDisplayReceivedCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {}
 #endif
@@ -23,7 +23,7 @@ void FakeDisplayClient::CreateLayeredWindowUpdater(
     mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) {}
 #endif
 
-#if defined(USE_X11)
+#if defined(OS_LINUX)
 void FakeDisplayClient::DidCompleteSwapWithNewSize(const gfx::Size& size) {}
 #endif
 

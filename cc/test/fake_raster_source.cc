@@ -5,6 +5,7 @@
 #include "cc/test/fake_raster_source.h"
 
 #include <limits>
+#include <utility>
 
 #include "base/synchronization/waitable_event.h"
 #include "cc/paint/paint_flags.h"
@@ -66,6 +67,15 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithImages(
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
 }
 
+scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithText(
+    const gfx::Size& size) {
+  auto recording_source =
+      FakeRecordingSource::CreateFilledRecordingSource(size);
+  recording_source->set_has_draw_text_op();
+  recording_source->Rerecord();
+  return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
+}
+
 scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithPaintWorklet(
     const gfx::Size& size) {
   auto recording_source =
@@ -76,26 +86,6 @@ scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledWithPaintWorklet(
       CreatePaintWorkletPaintImage(std::move(input)), gfx::Point(0, 0));
 
   recording_source->Rerecord();
-  return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
-}
-
-scoped_refptr<FakeRasterSource> FakeRasterSource::CreateFilledLCD(
-    const gfx::Size& size) {
-  auto recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
-
-  PaintFlags red_flags;
-  red_flags.setColor(SK_ColorRED);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(size), red_flags);
-
-  gfx::Size smaller_size(size.width() - 10, size.height() - 10);
-  PaintFlags green_flags;
-  green_flags.setColor(SK_ColorGREEN);
-  recording_source->add_draw_rect_with_flags(gfx::Rect(smaller_size),
-                                             green_flags);
-
-  recording_source->Rerecord();
-
   return base::WrapRefCounted(new FakeRasterSource(recording_source.get()));
 }
 
@@ -169,11 +159,12 @@ FakeRasterSource::FakeRasterSource(const RecordingSource* recording_source,
 
 FakeRasterSource::~FakeRasterSource() = default;
 
-void FakeRasterSource::PlaybackToCanvas(SkCanvas* canvas,
-                                        ImageProvider* image_provider) const {
+void FakeRasterSource::PlaybackDisplayListToCanvas(
+    SkCanvas* canvas,
+    ImageProvider* image_provider) const {
   if (playback_allowed_event_)
     playback_allowed_event_->Wait();
-  RasterSource::PlaybackToCanvas(canvas, image_provider);
+  RasterSource::PlaybackDisplayListToCanvas(canvas, image_provider);
 }
 
 }  // namespace cc

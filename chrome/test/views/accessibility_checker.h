@@ -5,7 +5,7 @@
 #ifndef CHROME_TEST_VIEWS_ACCESSIBILITY_CHECKER_H_
 #define CHROME_TEST_VIEWS_ACCESSIBILITY_CHECKER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -22,6 +22,10 @@ class AccessibilityChecker : public ChromeViewsDelegate,
                              public views::WidgetObserver {
  public:
   AccessibilityChecker();
+
+  AccessibilityChecker(const AccessibilityChecker&) = delete;
+  AccessibilityChecker& operator=(const AccessibilityChecker&) = delete;
+
   ~AccessibilityChecker() override;
 
   // ChromeViewsDelegate:
@@ -34,9 +38,8 @@ class AccessibilityChecker : public ChromeViewsDelegate,
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  private:
-  ScopedObserver<views::Widget, WidgetObserver> scoped_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityChecker);
+  base::ScopedMultiSourceObservation<views::Widget, WidgetObserver>
+      scoped_observations_{this};
 };
 
 #endif  // CHROME_TEST_VIEWS_ACCESSIBILITY_CHECKER_H_

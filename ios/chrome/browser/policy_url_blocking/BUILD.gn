@@ -1,0 +1,58 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("policy_url_blocking") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "policy_url_blocking_service.cc",
+    "policy_url_blocking_service.h",
+    "policy_url_blocking_tab_helper.h",
+    "policy_url_blocking_tab_helper.mm",
+  ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/policy/core/browser",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/web",
+    "//net",
+  ]
+}
+
+source_set("util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "policy_url_blocking_util.h",
+    "policy_url_blocking_util.mm",
+  ]
+  deps = [
+    "//ios/net",
+    "//net",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "policy_url_blocking_egtest.mm" ]
+  deps = [
+    "//base",
+    "//components/policy:generated",
+    "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/policy:feature_flags",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

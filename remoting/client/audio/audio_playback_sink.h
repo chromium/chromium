@@ -16,6 +16,10 @@ struct AudioStreamFormat;
 class AudioPlaybackSink {
  public:
   AudioPlaybackSink() = default;
+
+  AudioPlaybackSink(const AudioPlaybackSink&) = delete;
+  AudioPlaybackSink& operator=(const AudioPlaybackSink&) = delete;
+
   virtual ~AudioPlaybackSink() = default;
 
   // Sets the data supplier to be used by the sink to request for more audio
@@ -25,9 +29,6 @@ class AudioPlaybackSink {
 
   // Called whenever the stream format is first received or has been changed.
   virtual void ResetStreamFormat(const AudioStreamFormat& format) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioPlaybackSink);
 };
 
 }  // namespace remoting

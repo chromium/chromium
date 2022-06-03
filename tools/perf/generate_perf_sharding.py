@@ -7,7 +7,6 @@ from __future__ import print_function
 
 import argparse
 import collections
-import csv
 import filecmp
 import json
 import multiprocessing
@@ -16,6 +15,10 @@ import shutil
 import sys
 import tempfile
 import textwrap
+import six
+from six.moves import input  # pylint: disable=redefined-builtin
+
+import cross_device_test_config
 
 from core import path_util
 path_util.AddTelemetryToPath()
@@ -41,14 +44,17 @@ files may not match with the true state of world.
 
 """
 
-_BENCHMARK_SCHEDULES = 'tools/perf/benchmark_schedules.csv'
-_CYCLETIME_CONTRIBUTION = 'tools/perf/cycletime_contributions.csv'
-
-
 def GetParser():
   parser = argparse.ArgumentParser(
       description=_SCRIPT_USAGE, formatter_class=argparse.RawTextHelpFormatter)
-  subparsers = parser.add_subparsers()
+
+  if six.PY2:
+    subparsers = parser.add_subparsers()
+  else:
+    # Python 3 needs required=True in order to issue an error when subcommand is
+    # missing. Without metavar, argparse would crash while issuing error (bug?).
+    subparsers = parser.add_subparsers(
+        required=True, metavar='{update,update-timing,deschedule,validate}')
 
   parser_update = subparsers.add_parser(
       'update',
@@ -118,139 +124,41 @@ def _DumpJson(data, output_path):
 
 
 def _LoadTimingData(args):
-  builder_name, timing_file_path = args
+  builder, timing_file_path = args
   data = retrieve_story_timing.FetchAverageStoryTimingData(
-      configurations=[builder_name], num_last_days=5)
+      configurations=[builder.name], num_last_days=5)
+  for executable in builder.executables:
+    data.append({
+        'duration': str(float(executable.estimated_runtime)),
+        'name': executable.name + '/' + bot_platforms.GTEST_STORY_NAME
+    })
   _DumpJson(data, timing_file_path)
-  print('Finished retrieving story timing data for %s' % repr(builder_name))
+  print('Finished retrieving story timing data for %s' % repr(builder.name))
 
 
 def _source_filepath(posix_path):
   return os.path.join(path_util.GetChromiumSrcDir(), *posix_path.split('/'))
 
 
-class _BenchmarkUsageRow(object):
-  def __init__(self, name, platforms, duration):
-    self.name = name
-    self.platforms = platforms
-    self.duration = duration
-
-  def Add(self, other):
-    if not self.name:
-      self.name = other.name
-      self.platforms = other.platforms
-      self.duration = other.duration
-    else:
-      assert self.name == other.name, '%s,%s' % (self.name, other.name)
-      self.platforms |= other.platforms
-      self.duration += other.duration
-
-  def _GetBenchmarkConfiguration(self, platform):
-    for benchmark_config in platform.benchmark_configs:
-      if benchmark_config.name == self.name:
-        return benchmark_config
-
-  def ToRow(self):
-    unabridged_platforms = sorted([
-        p.name for p in self.platforms
-        if not self._GetBenchmarkConfiguration(p).abridged])
-    abridged_platforms = sorted([
-        p.name for p in self.platforms
-        if self._GetBenchmarkConfiguration(p).abridged])
-    unabridged_count = len(unabridged_platforms)
-    abridged_count = len(abridged_platforms)
-    platform_names = sorted([p.name for p in self.platforms])
-    assert len(platform_names) == unabridged_count + abridged_count
-    return [self.name, '%.2f' % (self.duration/60.0/60.0), unabridged_count,
-            abridged_count, ', '.join(unabridged_platforms),
-            ', '.join(abridged_platforms)]
-
-
-def _UpdateWaterfallUsageCsvs(schedules_output_path=None,
-                              cycletimes_output_path=None):
-  schedules_output_path = schedules_output_path or _source_filepath(
-      _BENCHMARK_SCHEDULES)
-  cycletimes_output_path = cycletimes_output_path or _source_filepath(
-      _CYCLETIME_CONTRIBUTION)
-  builders = sorted(_GetBuilderPlatforms(builders=None, waterfall='perf'),
-                    key=lambda b: b.name)
-  # https://stackoverflow.com/questions/31838823
-  EmptyBenchmarkUsageRow = lambda: _BenchmarkUsageRow(None, None, None)
-  benchmark_waterfall_usage = collections.defaultdict(EmptyBenchmarkUsageRow)
-  platforms = collections.OrderedDict()
-  for builder in builders:
-    platforms[builder] = collections.defaultdict(float)
-    with open(builder.timing_file_path) as fh:
-      timing_data = json.load(fh)
-    for story in timing_data:
-      benchmark_name = story['name'].split('/')[0]
-      platforms[builder][benchmark_name] += float(story['duration'])
-      benchmark_waterfall_usage[benchmark_name].Add(_BenchmarkUsageRow(
-          benchmark_name, set((builder,)), float(story['duration'])))
-  benchmarks = benchmark_waterfall_usage.values()
-  benchmark_names = benchmark_waterfall_usage.keys()
-  benchmarks.sort(key=lambda b: b.duration, reverse=True)
-  _UpdateSchedulesCsv(benchmarks, schedules_output_path)
-  _UpdateCycletimesCsv(platforms, benchmark_names, cycletimes_output_path)
-
-
-def _UpdateCycletimesCsv(platforms, benchmark_names, output_path):
-  benchmark_names = sorted(benchmark_names)
-  csv_data = [
-      ['AUTOGENERATED FILE DO NOT EDIT'],
-      ['View a prettier version of this at',
-       'https://docs.google.com/spreadsheets/d/'
-       '15pJY4cxtM2NVNFKQDgDnoT5PLo0Nm5Td-Ov-5PZefAw'],
-      ['platform',
-       'shards',
-       'idealized cycle time (hrs)'] + benchmark_names]
-  for platform, durations in platforms.iteritems():
-    multiplier = 2.0 if platform.run_reference_build else 1.0
-    estimated_cycle_time = (multiplier * sum(durations.values()) /
-                            60.0 / 60.0 / float(platform.num_shards))
-    # Double all cycle time stats by 2 to account for reference build.
-    csv_data.append([
-      platform.name,
-      platform.num_shards,
-      '%.2f' % estimated_cycle_time] + [
-          '%.2f' % (multiplier * durations[name] / 60.0 /
-                    60.0 / float(platform.num_shards))
-          for name in benchmark_names]
-    )
-  with open(output_path, 'w') as fh:
-    writer = csv.writer(fh, lineterminator='\n')
-    writer.writerows(csv_data)
-
-
-def _UpdateSchedulesCsv(benchmark_rows, output_path):
-  csv_data = [
-      ['AUTOGENERATED FILE DO NOT EDIT'],
-      ['View a prettier version of this at',
-       'https://docs.google.com/spreadsheets/d/'
-       '1RQepnii8sGTGiSdcQfWPpaYMZd6SRk9bRKd_HrdC3jI'],
-      ['benchmark name',
-       'total device usage hours per cycle',
-       'platforms count (unabridged)',
-       'platforms count (abridged)',
-       'platforms where unabridged',
-       'platforms where abridged']]
-  for benchmark in benchmark_rows:
-    csv_data.append(benchmark.ToRow())
-  with open(output_path, 'w') as fh:
-    writer = csv.writer(fh, lineterminator='\n')
-    writer.writerows(csv_data)
-
-
-def _GenerateShardMap(
-    builder, num_of_shards, output_path, debug):
+def GenerateShardMap(builder, num_of_shards, debug=False):
   timing_data = []
   if builder:
     with open(builder.timing_file_path) as f:
       timing_data = json.load(f)
-  benchmarks_to_shard = list(builder.benchmark_configs)
+  benchmarks_to_shard = (
+      list(builder.benchmark_configs) + list(builder.executables))
+  repeat_config = cross_device_test_config.TARGET_DEVICES.get(builder.name, {})
   sharding_map = sharding_map_generator.generate_sharding_map(
-      benchmarks_to_shard, timing_data, num_shards=num_of_shards,
-      debug=debug)
+      benchmarks_to_shard,
+      timing_data,
+      num_shards=num_of_shards,
+      debug=debug,
+      repeat_config=repeat_config)
+  return sharding_map
+
+
+def _GenerateShardMapJson(builder, num_of_shards, output_path, debug):
+  sharding_map = GenerateShardMap(builder, num_of_shards, debug)
   _DumpJson(sharding_map, output_path)
 
 
@@ -268,7 +176,7 @@ def _PromptWarning():
              'false regressions in your CL '
              'description')
   print(textwrap.fill(message, 70), '\n')
-  answer = raw_input("Enter 'y' to continue: ")
+  answer = input("Enter 'y' to continue: ")
   if answer != 'y':
     print('Abort updating shard maps for benchmarks on perf waterfall')
     sys.exit(0)
@@ -280,7 +188,6 @@ def _UpdateTimingDataCommand(args):
     _UpdateTimingData(builders)
   for builder in builders:
     _FilterTimingData(builder)
-  _UpdateWaterfallUsageCsvs()
 
 
 def _FilterTimingData(builder, output_path=None):
@@ -293,8 +200,11 @@ def _FilterTimingData(builder, output_path=None):
       story_full_names.add('/'.join([benchmark_config.name, story]))
   # When benchmarks are abridged or stories are removed, we want that
   # to be reflected in the timing data right away.
+  executable_story_names = [e.name + '/' + bot_platforms.GTEST_STORY_NAME
+                            for e in builder.executables]
   timing_dataset = [point for point in timing_dataset
-                    if str(point['name']) in story_full_names]
+                    if (str(point['name']) in story_full_names or
+                        str(point['name']) in executable_story_names)]
   _DumpJson(timing_dataset, output_path)
 
 
@@ -302,7 +212,7 @@ def _UpdateTimingData(builders):
   print('Updating shards timing data. May take a while...')
   load_timing_args = []
   for b in builders:
-    load_timing_args.append((b.name, b.timing_file_path))
+    load_timing_args.append((b, b.timing_file_path))
   p = multiprocessing.Pool(len(load_timing_args))
   # Use map_async to work around python bug. See crbug.com/1026004.
   p.map_async(_LoadTimingData, load_timing_args).get(12*60*60)
@@ -330,8 +240,7 @@ def _UpdateShardsForBuilders(args):
   if not args.use_existing_timing_data:
     _UpdateTimingData(builders)
   for b in builders:
-    _GenerateShardMap(
-        b, b.num_shards, b.shards_map_file_path, args.debug)
+    _GenerateShardMapJson(b, b.num_shards, b.shards_map_file_path, args.debug)
     print('Updated sharding map for %s' % repr(b.name))
 
 
@@ -342,6 +251,7 @@ def _DescheduleBenchmark(args):
   for b in builders:
     benchmarks_to_keep = set(
         benchmark.Name() for benchmark in b.benchmarks_to_run)
+    executables_to_keep = set(executable.name for executable in b.executables)
     with open(b.shards_map_file_path, 'r') as f:
       if not os.path.exists(b.shards_map_file_path):
         continue
@@ -349,10 +259,14 @@ def _DescheduleBenchmark(args):
       for shard, shard_map in shards_map.items():
         if shard == 'extra_infos':
           break
-        benchmarks = shard_map['benchmarks']
+        benchmarks = shard_map.get('benchmarks', dict())
         for benchmark in benchmarks.keys():
           if benchmark not in benchmarks_to_keep:
             del benchmarks[benchmark]
+        executables = shard_map.get('executables', dict())
+        for executable in executables.keys():
+          if executable not in executables_to_keep:
+            del executables[executable]
     os.remove(b.shards_map_file_path)
     _DumpJson(shards_map, b.shards_map_file_path)
   print('done.')
@@ -365,11 +279,13 @@ def _ParseBenchmarks(shard_map_path):
   all_benchmarks = set()
   with open(shard_map_path) as f:
     shard_map = json.load(f)
-  for shard, benchmarks_in_shard in shard_map.iteritems():
+  for shard, benchmarks_in_shard in shard_map.items():
     if "extra_infos" in shard:
       continue
-    for benchmark, _ in benchmarks_in_shard['benchmarks'].iteritems():
-      all_benchmarks.add(benchmark)
+    if benchmarks_in_shard.get('benchmarks'):
+      all_benchmarks |= set(benchmarks_in_shard['benchmarks'].keys())
+    if benchmarks_in_shard.get('executables'):
+      all_benchmarks |= set(benchmarks_in_shard['executables'].keys())
   return frozenset(all_benchmarks)
 
 
@@ -380,24 +296,7 @@ def _ValidateShardMaps(args):
 
   tempdir = tempfile.mkdtemp()
   try:
-    temp_schedules_filepath = os.path.join(tempdir, 'schedules.csv')
-    temp_cycletime_filepath = os.path.join(tempdir, 'cycletime.csv')
-    _UpdateWaterfallUsageCsvs(temp_schedules_filepath,
-                              temp_cycletime_filepath)
-    real_schedules_path = _source_filepath(_BENCHMARK_SCHEDULES)
-    if not filecmp.cmp(temp_schedules_filepath, real_schedules_path):
-      errors.append(
-          '{benchmark_schedules} is not up to date. Please run '
-          '`./generate_perf_sharding.py update-timing --filter-only` '
-          'to regenerate it.'.format(benchmark_schedules=_BENCHMARK_SCHEDULES))
-    real_cycletime_path = _source_filepath(_CYCLETIME_CONTRIBUTION)
-    if not filecmp.cmp(temp_cycletime_filepath, real_cycletime_path):
-      errors.append(
-          '{cycletimes} is not up to date. Please run '
-          '`./generate_perf_sharding.py update-timing --filter-only` '
-          'to regenerate it.'.format(cycletimes=_CYCLETIME_CONTRIBUTION))
-
-    builders = _GetBuilderPlatforms(builders=None, waterfall='perf')
+    builders = _GetBuilderPlatforms(builders=None, waterfall='all')
     for builder in builders:
       output_file = os.path.join(
           tempdir, os.path.basename(builder.timing_file_path))
@@ -413,7 +312,8 @@ def _ValidateShardMaps(args):
   # Check that bot_platforms.py matches the actual shard maps
   for platform in bot_platforms.ALL_PLATFORMS:
     platform_benchmark_names = set(
-        b.name for b in platform.benchmark_configs)
+        b.name for b in platform.benchmark_configs) | set(
+            e.name for e in platform.executables)
     shard_map_benchmark_names = _ParseBenchmarks(platform.shards_map_file_path)
     for benchmark in platform_benchmark_names - shard_map_benchmark_names:
       errors.append(

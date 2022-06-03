@@ -36,10 +36,10 @@ RequestPriority ConvertQuicPriorityToRequestPriority(
 }
 
 base::Value QuicRequestNetLogParams(quic::QuicStreamId stream_id,
-                                    const spdy::SpdyHeaderBlock* headers,
+                                    const spdy::Http2HeaderBlock* headers,
                                     spdy::SpdyPriority priority,
                                     NetLogCaptureMode capture_mode) {
-  base::Value dict = SpdyHeaderBlockNetLogParams(headers, capture_mode);
+  base::Value dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
   DCHECK(dict.is_dict());
   dict.SetIntKey("quic_priority", static_cast<int>(priority));
   dict.SetIntKey("quic_stream_id", static_cast<int>(stream_id));
@@ -48,9 +48,9 @@ base::Value QuicRequestNetLogParams(quic::QuicStreamId stream_id,
 
 base::Value QuicResponseNetLogParams(quic::QuicStreamId stream_id,
                                      bool fin_received,
-                                     const spdy::SpdyHeaderBlock* headers,
+                                     const spdy::Http2HeaderBlock* headers,
                                      NetLogCaptureMode capture_mode) {
-  base::Value dict = SpdyHeaderBlockNetLogParams(headers, capture_mode);
+  base::Value dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
   dict.SetIntKey("quic_stream_id", static_cast<int>(stream_id));
   dict.SetBoolKey("fin", fin_received);
   return dict;
@@ -64,8 +64,10 @@ quic::ParsedQuicVersionVector FilterSupportedAltSvcVersions(
       << quic_alt_svc.protocol_id;
 
   for (uint32_t quic_version : quic_alt_svc.version) {
-    for (quic::ParsedQuicVersion supported : supported_versions) {
-      if (static_cast<uint32_t>(supported.transport_version) == quic_version) {
+    for (const quic::ParsedQuicVersion& supported : supported_versions) {
+      if (supported.UsesQuicCrypto() &&
+          supported.SupportsGoogleAltSvcFormat() &&
+          static_cast<uint32_t>(supported.transport_version) == quic_version) {
         supported_alt_svc_versions.push_back(supported);
         RecordAltSvcFormat(GOOGLE_FORMAT);
       }

@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Module to generate a test file with random calls to the Web Bluetooth API."""
 
 import random
@@ -27,9 +26,7 @@ TOKENS = [
         '.then(() => {',
     ],
     # Request Device Tokens
-    [
-        '  requestDeviceWithKeyDown(TRANSFORM_REQUEST_DEVICE_OPTIONS);'
-    ],
+    ['  requestDeviceWithKeyDown(TRANSFORM_REQUEST_DEVICE_OPTIONS);'],
     [
         '  return requestDeviceWithKeyDown(TRANSFORM_REQUEST_DEVICE_OPTIONS);',
         '})',
@@ -194,5 +191,4 @@ def GenerateTestFile(template_file_data):
     """
 
     return FillInParameter('TRANSFORM_RANDOM_TOKENS',
-                           _GenerateSequenceOfRandomTokens,
-                           template_file_data)
+                           _GenerateSequenceOfRandomTokens, template_file_data)

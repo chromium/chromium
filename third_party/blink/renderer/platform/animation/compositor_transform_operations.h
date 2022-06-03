@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_TRANSFORM_OPERATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_TRANSFORM_OPERATIONS_H_
 
-#include "cc/animation/transform_operations.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
-class SkMatrix44;
+namespace skia {
+class Matrix44;
+}
 
 namespace blink {
 
@@ -17,8 +20,8 @@ class PLATFORM_EXPORT CompositorTransformOperations {
   STACK_ALLOCATED();
 
  public:
-  const cc::TransformOperations& AsCcTransformOperations() const;
-  cc::TransformOperations ReleaseCcTransformOperations();
+  const gfx::TransformOperations& AsGfxTransformOperations() const;
+  gfx::TransformOperations ReleaseGfxTransformOperations();
 
   // Returns true if these operations can be blended. It will only return
   // false if we must resort to matrix interpolation, and matrix interpolation
@@ -28,15 +31,16 @@ class PLATFORM_EXPORT CompositorTransformOperations {
   void AppendTranslate(double x, double y, double z);
   void AppendRotate(double x, double y, double z, double degrees);
   void AppendScale(double x, double y, double z);
+  void AppendSkewX(double x);
+  void AppendSkewY(double y);
   void AppendSkew(double x, double y);
-  void AppendPerspective(double depth);
-  void AppendMatrix(const SkMatrix44&);
-  void AppendIdentity();
+  void AppendPerspective(absl::optional<double> depth);
+  void AppendMatrix(const skia::Matrix44&);
 
   bool IsIdentity() const;
 
  private:
-  cc::TransformOperations transform_operations_;
+  gfx::TransformOperations transform_operations_;
 };
 
 }  // namespace blink

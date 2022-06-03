@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/client_hints/common",
+  "+content/public/child",
+  "+content/public/common",
+  "+content/public/renderer",
+  "+content/public/test",
+  "+mojo/public",
+  "+net/cookies/site_for_cookies.h",
+  "+third_party/blink/public",
+]

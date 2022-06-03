@@ -7,7 +7,6 @@
 
 #include "ui/message_center/vector_icons.h"
 
-#include "base/logging.h"
 #include "components/vector_icons/cc_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 

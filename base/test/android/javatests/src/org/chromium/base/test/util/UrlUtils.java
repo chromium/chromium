@@ -16,7 +16,7 @@ import org.chromium.base.annotations.MainDex;
  */
 @MainDex
 public class UrlUtils {
-    private static final String DATA_DIR = "/chrome/test/data/";
+    private static final String DATA_DIR = "chrome/test/data/";
 
     /**
      * Construct the full path of a test data file.

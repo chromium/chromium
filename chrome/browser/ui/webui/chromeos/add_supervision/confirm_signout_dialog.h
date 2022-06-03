@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ADD_SUPERVISION_CONFIRM_SIGNOUT_DIALOG_H_
 
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -20,15 +20,17 @@ namespace chromeos {
 // signing out.
 class ConfirmSignoutDialog : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(ConfirmSignoutDialog);
+  ConfirmSignoutDialog(const ConfirmSignoutDialog&) = delete;
+  ConfirmSignoutDialog& operator=(const ConfirmSignoutDialog&) = delete;
   ~ConfirmSignoutDialog() override;
 
   // views::WidgetDelegate:
   ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // views::DialogDelegate:
   bool Accept() override;
-  int GetDialogButtons() const override;
 
   static void Show();
   static bool IsShowing();
@@ -36,8 +38,6 @@ class ConfirmSignoutDialog : public views::DialogDelegateView {
  private:
   ConfirmSignoutDialog();
   static views::Widget* current_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfirmSignoutDialog);
 };
 
 }  // namespace chromeos

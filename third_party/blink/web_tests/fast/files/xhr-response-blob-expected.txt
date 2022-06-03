@@ -13,7 +13,7 @@ PASS xhr.response instanceof Blob is true
 PASS xhr.response.type is "text/plain"
 PASS xhr.responseType is "blob"
 FAIL xhr.response instanceof Blob should be true. Was false.
-FAIL xhr.response.type should be . Threw exception TypeError: Cannot read property 'type' of null
+FAIL xhr.response.type should be . Threw exception TypeError: Cannot read properties of null (reading 'type')
 PASS xhr.responseType is "blob"
 PASS xhr.response is null
 PASS xhr.response instanceof Blob is true

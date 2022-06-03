@@ -25,17 +25,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_LAYOUT_SUPPORT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
 #include "third_party/blink/renderer/platform/graphics/dash_array.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class PointF;
+class RectF;
+}  // namespace gfx
+
 namespace blink {
 
 class AffineTransform;
-class FloatPoint;
-class FloatRect;
-class LayoutGeometryMap;
 class LayoutBoxModelObject;
 class LayoutObject;
 class ComputedStyle;
@@ -47,65 +48,42 @@ class CORE_EXPORT SVGLayoutSupport {
   STATIC_ONLY(SVGLayoutSupport);
 
  public:
-  // Shares child layouting code between
-  // LayoutSVGRoot/LayoutSVG(Hidden)Container
-  static void LayoutChildren(LayoutObject*,
-                             bool force_layout,
-                             bool screen_scaling_factor_changed,
-                             bool layout_size_changed);
-
-  // Layout resources used by this node.
-  static void LayoutResourcesIfNeeded(const LayoutObject&);
-
   // Helper function determining whether overflow is hidden.
   static bool IsOverflowHidden(const LayoutObject&);
   static bool IsOverflowHidden(const ComputedStyle&);
 
-  // Adjusts the visualRect in combination with filter, clipper and masker
-  // in local coordinates.
-  static void AdjustVisualRectWithResources(
-      const LayoutObject&,
-      const FloatRect& object_bounding_box,
-      FloatRect&);
+  // Adjusts the visual rect with clipper and masker in local coordinates.
+  static void AdjustWithClipPathAndMask(const LayoutObject& layout_object,
+                                        const gfx::RectF& object_bounding_box,
+                                        gfx::RectF& visual_rect);
 
-  // Determine if the LayoutObject references a filter resource object.
-  static bool HasFilterResource(const LayoutObject&);
+  // Add any contribution from 'stroke' to a text content bounding rect.
+  static gfx::RectF ExtendTextBBoxWithStroke(const LayoutObject&,
+                                             const gfx::RectF& text_bounds);
+
+  // Compute the visual rect for the a text content LayoutObject.
+  static gfx::RectF ComputeVisualRectForText(const LayoutObject&,
+                                             const gfx::RectF& text_bounds);
 
   // Determine whether the passed location intersects a clip path referenced by
   // the passed LayoutObject.
   // |reference_box| is used to resolve 'objectBoundingBox' units/percentages,
   // and can differ from the reference box of the passed LayoutObject.
   static bool IntersectsClipPath(const LayoutObject&,
-                                 const FloatRect& reference_box,
+                                 const gfx::RectF& reference_box,
                                  const HitTestLocation&);
-
-  // Shared child hit-testing code between LayoutSVGRoot/LayoutSVGContainer.
-  static bool HitTestChildren(LayoutObject* last_child,
-                              HitTestResult&,
-                              const HitTestLocation&,
-                              const PhysicalOffset& accumulated_offset,
-                              HitTestAction);
-
-  static void ComputeContainerBoundingBoxes(const LayoutObject* container,
-                                            FloatRect& object_bounding_box,
-                                            bool& object_bounding_box_valid,
-                                            FloatRect& stroke_bounding_box,
-                                            FloatRect& local_visual_rect);
 
   // Important functions used by nearly all SVG layoutObjects centralizing
   // coordinate transformations / visual rect calculations
-  static FloatRect LocalVisualRect(const LayoutObject&);
+  static gfx::RectF LocalVisualRect(const LayoutObject&);
   static PhysicalRect VisualRectInAncestorSpace(
       const LayoutObject&,
       const LayoutBoxModelObject& ancestor,
       VisualRectFlags = kDefaultVisualRectFlags);
-  static PhysicalRect TransformVisualRect(const LayoutObject&,
-                                          const AffineTransform&,
-                                          const FloatRect&);
   static bool MapToVisualRectInAncestorSpace(
       const LayoutObject&,
       const LayoutBoxModelObject* ancestor,
-      const FloatRect& local_visual_rect,
+      const gfx::RectF& local_visual_rect,
       PhysicalRect& result_rect,
       VisualRectFlags = kDefaultVisualRectFlags);
   static void MapLocalToAncestor(const LayoutObject*,
@@ -116,10 +94,6 @@ class CORE_EXPORT SVGLayoutSupport {
                                  const LayoutBoxModelObject* ancestor,
                                  TransformState&,
                                  MapCoordinatesFlags);
-  static const LayoutObject* PushMappingToContainer(
-      const LayoutObject*,
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&);
 
   // Shared between SVG layoutObjects and resources.
   static void ApplyStrokeStyleToStrokeData(StrokeData&,
@@ -144,22 +118,17 @@ class CORE_EXPORT SVGLayoutSupport {
   // Determines whether a svg node should isolate or not based on ComputedStyle.
   static bool WillIsolateBlendingDescendantsForStyle(const ComputedStyle&);
   static bool WillIsolateBlendingDescendantsForObject(const LayoutObject*);
-  template <typename LayoutObjectType>
-  static bool ComputeHasNonIsolatedBlendingDescendants(const LayoutObjectType*);
   static bool IsIsolationRequired(const LayoutObject*);
 
   static AffineTransform DeprecatedCalculateTransformToLayer(
       const LayoutObject*);
   static float CalculateScreenFontSizeScalingFactor(const LayoutObject*);
 
+  // This returns a LayoutSVGText, a LayoutNGSVGText, or nullptr.
   static LayoutObject* FindClosestLayoutSVGText(const LayoutObject*,
-                                                const FloatPoint&);
+                                                const gfx::PointF&);
 
- private:
-  static void UpdateObjectBoundingBox(FloatRect& object_bounding_box,
-                                      bool& object_bounding_box_valid,
-                                      LayoutObject* other,
-                                      FloatRect other_bounding_box);
+  static void NotifySVGRootOfChangedCompositingReasons(const LayoutObject*);
 };
 
 class SubtreeContentTransformScope {
@@ -177,20 +146,6 @@ class SubtreeContentTransformScope {
   static AffineTransform::Transform current_content_transformation_;
   AffineTransform saved_content_transformation_;
 };
-
-template <typename LayoutObjectType>
-bool SVGLayoutSupport::ComputeHasNonIsolatedBlendingDescendants(
-    const LayoutObjectType* object) {
-  for (LayoutObject* child = object->FirstChild(); child;
-       child = child->NextSibling()) {
-    if (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode())
-      return true;
-    if (child->HasNonIsolatedBlendingDescendants() &&
-        !WillIsolateBlendingDescendantsForObject(child))
-      return true;
-  }
-  return false;
-}
 
 }  // namespace blink
 

@@ -4,6 +4,7 @@
 """Logic for diffing two SizeInfo objects."""
 
 import collections
+import itertools
 import logging
 import re
 
@@ -25,15 +26,16 @@ def _Key1(s):
   name = _STRIP_NUMBERS_PATTERN.sub('', s.full_name)
   # Prefer source_path over object_path since object_path for native files have
   # the target_name in it (which can get renamed).
+  # Also because object_path of Java lambdas symbols contains a hash.
   path = s.source_path or s.object_path
   # Use section rather than section_name since clang & gcc use
   # .data.rel.ro vs. .data.rel.ro.local.
-  return s.section, name, path, s.size_without_padding
+  return s.container_name, s.section, name, path, s.size_without_padding
 
 
 # Same as _Key1, but size can change.
 def _Key2(s):
-  return _Key1(s)[:3]
+  return _Key1(s)[:4]
 
 
 # Same as _Key2, but allow signature changes (uses name rather than full_name).
@@ -46,17 +48,17 @@ def _Key3(s):
   if name.startswith('*'):
     # "* symbol gap 3 (bar)" -> "* symbol gaps"
     name = _NORMALIZE_STAR_SYMBOLS_PATTERN.sub('s', name)
-  return s.section, name, path
+  return s.container_name, s.section, name, path
 
 
 # Match on full name, but without path (to account for file moves).
 def _Key4(s):
   if not s.IsNameUnique():
     return None
-  return s.section, s.full_name
+  return s.container_name, s.section, s.full_name
 
 
-def _MatchSymbols(before, after, key_func, padding_by_section_name):
+def _MatchSymbols(before, after, key_func, padding_by_segment):
   logging.debug('%s: Building symbol index', key_func.__name__)
   before_symbols_by_key = collections.defaultdict(list)
   for s in before:
@@ -72,8 +74,9 @@ def _MatchSymbols(before, after, key_func, padding_by_section_name):
       before_sym = before_sym.pop(0)
       # Padding tracked in aggregate, except for padding-only symbols.
       if before_sym.size_without_padding != 0:
-        padding_by_section_name[before_sym.section_name] += (
-            after_sym.padding_pss - before_sym.padding_pss)
+        segment = (before_sym.container_name, before_sym.section_name)
+        padding_by_segment[segment] += (after_sym.padding_pss -
+                                        before_sym.padding_pss)
       delta_symbols.append(models.DeltaSymbol(before_sym, after_sym))
     else:
       unmatched_after.append(after_sym)
@@ -82,23 +85,24 @@ def _MatchSymbols(before, after, key_func, padding_by_section_name):
                 len(delta_symbols), len(after))
 
   unmatched_before = []
-  for syms in before_symbols_by_key.itervalues():
+  for syms in before_symbols_by_key.values():
     unmatched_before.extend(syms)
   return delta_symbols, unmatched_before, unmatched_after
 
 
-def _DiffSymbolGroups(before, after):
+def _DiffSymbolGroups(containers, before, after):
   # For changed symbols, padding is zeroed out. In order to not lose the
-  # information entirely, store it in aggregate.
-  padding_by_section_name = collections.defaultdict(int)
+  # information entirely, store it in aggregate. These aggregations are grouped
+  # by "segment names", which are (container name, section name) tuples.
+  padding_by_segment = collections.defaultdict(float)
 
   # Usually >90% of symbols are exact matches, so all of the time is spent in
   # this first pass.
   all_deltas, before, after = _MatchSymbols(before, after, _Key1,
-                                            padding_by_section_name)
+                                            padding_by_segment)
   for key_func in (_Key2, _Key3, _Key4):
-    delta_syms, before, after = _MatchSymbols(
-        before, after, key_func, padding_by_section_name)
+    delta_syms, before, after = _MatchSymbols(before, after, key_func,
+                                              padding_by_segment)
     all_deltas.extend(delta_syms)
 
   logging.debug('Creating %d unmatched symbols', len(after) + len(before))
@@ -107,10 +111,15 @@ def _DiffSymbolGroups(before, after):
   for before_sym in before:
     all_deltas.append(models.DeltaSymbol(before_sym, None))
 
+  container_from_name = {c.name: c for c in containers}
+
   # Create a DeltaSymbol to represent the zero'd out padding of matched symbols.
-  for section_name, padding in padding_by_section_name.iteritems():
+  for (container_name, section_name), padding in padding_by_segment.items():
+    # Values need to be integer (crbug.com/1132394).
+    padding = round(padding)
     if padding != 0:
       after_sym = models.Symbol(section_name, padding)
+      after_sym.container = container_from_name[container_name]
       # This is after _NormalizeNames() is called, so set |full_name|,
       # |template_name|, and |name|.
       after_sym.SetName("Overhead: aggregate padding of diff'ed symbols")
@@ -120,18 +129,33 @@ def _DiffSymbolGroups(before, after):
   return models.DeltaSymbolGroup(all_deltas)
 
 
+def _DiffContainerLists(before_containers, after_containers):
+  """Computes diff of Containers lists, matching names."""
+  # Find ordered unique names, preferring order of |container_after|.
+  pairs = collections.OrderedDict()
+  for c in after_containers:
+    pairs[c.name] = [models.Container.Empty(), c]
+  for c in before_containers:
+    if c.name in pairs:
+      pairs[c.name][0] = c
+    else:
+      pairs[c.name] = [c, models.Container.Empty()]
+  ret = []
+  for name, (before, after) in pairs.items():
+    ret.append(models.DeltaContainer(name=name, before=before, after=after))
+  # This update newly created diff Containers, not existing ones or EMPTY.
+  models.BaseContainer.AssignShortNames(ret)
+  return ret
+
+
 def Diff(before, after, sort=False):
   """Diffs two SizeInfo objects. Returns a DeltaSizeInfo."""
   assert isinstance(before, models.SizeInfo)
   assert isinstance(after, models.SizeInfo)
-  section_sizes = {k: after.section_sizes.get(k, 0) - v
-                   for k, v in before.section_sizes.iteritems()}
-  for k, v in after.section_sizes.iteritems():
-    if k not in section_sizes:
-      section_sizes[k] = v
-
-  symbol_diff = _DiffSymbolGroups(before.raw_symbols, after.raw_symbols)
-  ret = models.DeltaSizeInfo(before, after, section_sizes, symbol_diff)
+  containers_diff = _DiffContainerLists(before.containers, after.containers)
+  symbol_diff = _DiffSymbolGroups(containers_diff, before.raw_symbols,
+                                  after.raw_symbols)
+  ret = models.DeltaSizeInfo(before, after, containers_diff, symbol_diff)
 
   if sort:
     syms = ret.symbols  # Triggers clustering.

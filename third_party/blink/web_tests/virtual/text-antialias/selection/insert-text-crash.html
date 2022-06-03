@@ -53,7 +53,7 @@ document.addEventListener("DOMNodeRemoved", DOMNodeRemoved, true);
 
 window.onload = function() {
   test(function() {
-    assert_throws(new TypeError, function() {
+    assert_throws_js(TypeError, function() {
       document.designMode = "on";
 
       var oElement = document.getElementById('col');

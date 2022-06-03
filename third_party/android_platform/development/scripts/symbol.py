@@ -156,6 +156,8 @@ def GetCrazyLib(apk_filename):
     if match:
       return match.group(1)
 
+  return None
+
 def GetApkFromLibrary(device_library_path):
   match = re.match(r'.*/([^/]*)-[0-9]+(\/[^/]*)?\.apk$', device_library_path)
   if not match:
@@ -191,6 +193,8 @@ def MapDeviceApkToLibrary(device_apk_name):
     crazy_lib = GetCrazyLib(matching_apk)
     if crazy_lib:
       return crazy_lib
+
+  return None
 
 
 def GetLibrarySearchPaths():
@@ -280,8 +284,7 @@ def SetSecondaryAbiOutputPath(path):
     raise Exception ('SetSecondaryAbiOutputPath() was already called with a ' +
                      'different value, previous: %s new: %s' % (
                        _SECONDARY_ABI_OUTPUT_PATH, path))
-  else:
-    _SECONDARY_ABI_OUTPUT_PATH = path
+  _SECONDARY_ABI_OUTPUT_PATH = path
 
 
 def SymbolInformationForSet(lib, unique_addrs, get_detailed_info,
@@ -338,7 +341,7 @@ def SymbolInformationForSet(lib, unique_addrs, get_detailed_info,
   return result
 
 
-class _MemoizedForSet(object):
+class _MemoizedForSet:
   """Decorator class used to memoize CallXXXForSet() results."""
   def __init__(self, fn):
     self.fn = fn
@@ -418,6 +421,21 @@ def _CallAddr2LineForSet(lib, unique_addrs, cpu_arch):
   return result
 
 
+def _StripPC(addr, cpu_arch):
+  """Strips the Thumb bit a program counter address when appropriate.
+
+  Args:
+    addr: the program counter address
+    cpu_arch: Target CPU architecture.
+
+  Returns:
+    The stripped program counter address.
+  """
+  if cpu_arch == "arm":
+    return addr & ~1
+  return addr
+
+
 @_MemoizedForSet
 def _CallObjdumpForSet(lib, unique_addrs, cpu_arch):
   """Use objdump to find out the names of the containing functions.
@@ -455,8 +473,8 @@ def _CallObjdumpForSet(lib, unique_addrs, cpu_arch):
   asm_regexp = re.compile("(^[ a-f0-9]*):[ a-f0-0]*.*$")
 
   for target_addr in unique_addrs:
-    start_addr_dec = str(StripPC(int(target_addr, 16)))
-    stop_addr_dec = str(StripPC(int(target_addr, 16)) + 8)
+    start_addr_dec = str(_StripPC(int(target_addr, 16), cpu_arch))
+    stop_addr_dec = str(_StripPC(int(target_addr, 16), cpu_arch) + 8)
     cmd = [host_paths.ToolPath("objdump", cpu_arch),
            "--section=.text",
            "--demangle",
@@ -493,7 +511,7 @@ def _CallObjdumpForSet(lib, unique_addrs, cpu_arch):
       if components:
         addr = components.group(1)
         i_addr = int(addr, 16)
-        i_target = StripPC(int(target_addr, 16))
+        i_target = _StripPC(int(target_addr, 16), cpu_arch)
         if i_addr == i_target:
           result[target_addr] = (current_symbol, i_target - current_symbol_addr)
     stream.close()

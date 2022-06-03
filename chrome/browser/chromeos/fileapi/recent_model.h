@@ -10,17 +10,15 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -42,6 +40,10 @@ class RecentModel : public KeyedService {
  public:
   using GetRecentFilesCallback =
       base::OnceCallback<void(const std::vector<RecentFile>& files)>;
+  using FileType = RecentSource::FileType;
+
+  RecentModel(const RecentModel&) = delete;
+  RecentModel& operator=(const RecentModel&) = delete;
 
   ~RecentModel() override;
 
@@ -57,6 +59,7 @@ class RecentModel : public KeyedService {
   // Results might be internally cached for better performance.
   void GetRecentFiles(storage::FileSystemContext* file_system_context,
                       const GURL& origin,
+                      FileType file_type,
                       GetRecentFilesCallback callback);
 
   // KeyedService overrides:
@@ -74,8 +77,9 @@ class RecentModel : public KeyedService {
 
   void OnGetRecentFiles(size_t max_files,
                         const base::Time& cutoff_time,
+                        FileType file_type,
                         std::vector<RecentFile> files);
-  void OnGetRecentFilesCompleted();
+  void OnGetRecentFilesCompleted(FileType file_type);
   void ClearCache();
 
   void SetMaxFilesForTest(size_t max_files);
@@ -89,10 +93,13 @@ class RecentModel : public KeyedService {
 
   // If this is set to non-null, it is used as a cut-off time. Should be used
   // only in unit tests.
-  base::Optional<base::Time> forced_cutoff_time_;
+  absl::optional<base::Time> forced_cutoff_time_;
 
   // Cached GetRecentFiles() response.
-  base::Optional<std::vector<RecentFile>> cached_files_ = base::nullopt;
+  absl::optional<std::vector<RecentFile>> cached_files_ = absl::nullopt;
+
+  // File type of the cached GetRecentFiles() response.
+  FileType cached_files_type_ = FileType::kAll;
 
   // Timer to clear the cache.
   base::OneShotTimer cache_clear_timer_;
@@ -112,8 +119,6 @@ class RecentModel : public KeyedService {
       intermediate_files_;
 
   base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentModel);
 };
 
 }  // namespace chromeos

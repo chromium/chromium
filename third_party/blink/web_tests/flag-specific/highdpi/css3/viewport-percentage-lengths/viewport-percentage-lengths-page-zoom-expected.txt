@@ -1,0 +1,15 @@
+This test checks that getComputedStyle returns pixel values for viewport units that are affected by page zoom (aka browser zoom).
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 165.8
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 115.2
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 96
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 80
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 66.6
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 46.3
+PASS parseFloat(getComputedStyle(test).fontSize) is within 1 of 32.1
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

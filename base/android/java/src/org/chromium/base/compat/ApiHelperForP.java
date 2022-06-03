@@ -5,10 +5,17 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
+import android.content.ClipboardManager;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.LinkProperties;
 import android.os.Build;
+import android.os.LocaleList;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
+import android.view.textclassifier.TextClassifier;
+import android.view.textclassifier.TextSelection;
 
 import org.chromium.base.annotations.VerifiesOnP;
 
@@ -40,5 +47,44 @@ public final class ApiHelperForP {
     /** See {@link LocationManager#isLocationEnabled() }. */
     public static boolean isLocationEnabled(LocationManager locationManager) {
         return locationManager.isLocationEnabled();
+    }
+
+    /** See {@link TelephonyManager#getSignalStrength() }. */
+    public static SignalStrength getSignalStrength(TelephonyManager telephonyManager) {
+        return telephonyManager.getSignalStrength();
+    }
+
+    /** See {@link ClipboardManager#clearPrimaryClip() }. */
+    public static void clearPrimaryClip(ClipboardManager clipboardManager) {
+        clipboardManager.clearPrimaryClip();
+    }
+
+    /** See {@link PackageManager#hasSigningCertificate(String, byte[], int) }. */
+    public static boolean hasSigningCertificate(
+            PackageManager pm, String packageName, byte[] certificate, int type) {
+        return pm.hasSigningCertificate(packageName, certificate, type);
+    }
+
+    /** See {@link TextClassifier#suggestSelection() } */
+    public static TextSelection suggestSelection(
+            TextClassifier textClassifier, TextSelection.Request request) {
+        return textClassifier.suggestSelection(request);
+    }
+
+    /** See {@link TextSelection.Request.Builder#Builder() } */
+    public static TextSelection.Request.Builder newTextSelectionRequestBuilder(
+            CharSequence text, int startIndex, int endIndex) {
+        return new TextSelection.Request.Builder(text, startIndex, endIndex);
+    }
+
+    /** See {@link TextSelection.Request.Builder#setDefaultLocales() } */
+    public static TextSelection.Request.Builder setDefaultLocales(
+            TextSelection.Request.Builder builder, LocaleList defaultLocales) {
+        return builder.setDefaultLocales(defaultLocales);
+    }
+
+    /** See {@link TextSelection.Request.Builder#build() } */
+    public static TextSelection.Request build(TextSelection.Request.Builder builder) {
+        return builder.build();
     }
 }

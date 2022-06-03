@@ -16,7 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/element_selector.h"
@@ -139,7 +139,7 @@ void SwitchToNormalMode() {
 }  // namespace
 
 // Test for the TabUsageRecorder class.
-@interface TabUsageRecorderTestCase : ChromeTestCase
+@interface TabUsageRecorderTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation TabUsageRecorderTestCase
@@ -160,7 +160,6 @@ void SwitchToNormalMode() {
 // Tests that the recorder actual recorde tab state.
 // TODO(crbug.com/934228) The test is flaky.
 - (void)DISABLED_testTabSwitchRecorder {
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
@@ -189,7 +188,7 @@ void SwitchToNormalMode() {
 
   // Evict the tab.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
@@ -217,7 +216,6 @@ void SwitchToNormalMode() {
 // Verifies the UMA metric for page loads before a tab eviction by loading
 // some tabs, forcing a tab eviction, then checking the histogram.
 - (void)testPageLoadCountBeforeEvictedTab {
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
   const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
   // This test opens three tabs.
@@ -259,17 +257,13 @@ void SwitchToNormalMode() {
   // does not trigger a reload immediately.
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
   // Switch back to the normal tabs. Should be on tab one.
   SwitchToNormalMode();
 
   [ChromeEarlGrey selectTabAtIndex:0];
-#if defined(CHROME_EARL_GREY_2)
-  // TODO(crbug.com/1033879): Remove this timer once the sync is fixed.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(1));
-#endif
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
 
   // Verify that one page-load count has been recorded. It should contain two
@@ -295,7 +289,6 @@ void SwitchToNormalMode() {
 // EVICTED_DUE_TO_COLD_START.
 // TODO(crbug.com/934228) The test is disabled due to flakiness.
 - (void)DISABLED_testColdLaunchReloadCount {
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
@@ -307,9 +300,9 @@ void SwitchToNormalMode() {
 
   // Open two incognito tabs with urls, clearing normal tabs from memory.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   [ChromeEarlGrey waitForIncognitoTabCount:2];
 
@@ -366,7 +359,6 @@ void SwitchToNormalMode() {
 // Tests that tabs reloads after backgrounding and eviction.
 // TODO(crbug.com/934228) The test is flaky.
 - (void)DISABLED_testBackgroundingReloadCount {
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
@@ -378,7 +370,7 @@ void SwitchToNormalMode() {
 
   // Open incognito and clear normal tabs from memory.
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
   NSError* error = [MetricsAppInterface
@@ -431,13 +423,11 @@ void SwitchToNormalMode() {
 // succeeds.
 // TODO(crbug.com/934228) The test is flaky.
 - (void)DISABLED_testEvictedTabReloadSuccess {
-  web::test::SetUpFileBasedHttpServer();
-
   [ChromeEarlGrey closeAllTabsInCurrentMode];
   GURL URL = web::test::HttpServer::MakeUrl(kTestUrl1);
   NewMainTabWithURL(URL, kURL1FirstWord);
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   SwitchToNormalMode();
 
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
@@ -490,7 +480,7 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   [ChromeEarlGrey removeBrowsingCache];
 
   SwitchToNormalMode();
@@ -504,7 +494,7 @@ void SwitchToNormalMode() {
     // Wait for the page starting to load. It is possible that the page finish
     // loading before this test. In that case the wait will timeout. Ignore the
     // result.
-    bool unused =
+    unused =
         base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
           return [ChromeEarlGrey isLoading];
         });
@@ -544,7 +534,7 @@ void SwitchToNormalMode() {
   (void)unused;
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   [ChromeEarlGrey removeBrowsingCache];
 
@@ -594,7 +584,7 @@ void SwitchToNormalMode() {
   (void)unused;
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   [ChromeEarlGrey removeBrowsingCache];
   SwitchToNormalMode();
@@ -653,7 +643,7 @@ void SwitchToNormalMode() {
   int nb_incognito_tab = [ChromeEarlGrey incognitoTabCount];
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:(nb_incognito_tab + 1)];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kWaitElementTimeout,
                  ^{
@@ -730,7 +720,6 @@ void SwitchToNormalMode() {
       "http://ios/testing/data/http_server_files/redirect_refresh.html");
   GURL destinationURL = web::test::HttpServer::MakeUrl(
       "http://ios/testing/data/http_server_files/destination.html");
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
 
   NewMainTabWithURL(redirectURL, "arrived");
@@ -742,15 +731,11 @@ void SwitchToNormalMode() {
   NSUInteger tabIndex = [ChromeEarlGrey mainTabCount] - 1;
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
 
   SwitchToNormalMode();
 
   [ChromeEarlGrey selectTabAtIndex:tabIndex];
-#if defined(CHROME_EARL_GREY_2)
-  // TODO(crbug.com/1033879): Remove this timer once the sync is fixed.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(1));
-#endif
   [ChromeEarlGrey waitForWebStateContainingText:"arrived"];
 
   // Verify that one page-load count has been recorded.  It should contain a
@@ -797,7 +782,7 @@ void SwitchToNormalMode() {
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey evictOtherTabModelTabs];
+  [ChromeEarlGrey evictOtherBrowserTabs];
   SwitchToNormalMode();
 
   [ChromeEarlGrey selectTabAtIndex:tabIndex];
@@ -865,7 +850,7 @@ void SwitchToNormalMode() {
 
   [ChromeEarlGrey selectTabAtIndex:numberOfTabs];
 
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  [ChromeEarlGreyUI waitForAppToIdle];
   [ChromeEarlGrey waitForWebStateContainingText:"Whee"];
 
   NSError* error = [MetricsAppInterface
@@ -885,7 +870,6 @@ void SwitchToNormalMode() {
 
 // Tests that opening tabs from external app will not cause tab eviction.
 - (void)testOpenFromApp {
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
 
   [ChromeEarlGrey openNewTab];
@@ -897,8 +881,7 @@ void SwitchToNormalMode() {
   // is for zero metrics recorded, it adds no flakiness.  However, this pause
   // makes the step more likely to fail in failure cases.  I.e. without it, this
   // test would sometimes pass even when it should fail.
-  base::test::ios::SpinRunLoopWithMaxDelay(
-      base::TimeDelta::FromMilliseconds(500));
+  base::test::ios::SpinRunLoopWithMaxDelay(base::Milliseconds(500));
 
   // Verify that zero Tab.StatusWhenSwitchedBackToForeground metrics were
   // recorded.  Tabs created at the time the user switches to them should not
@@ -914,7 +897,6 @@ void SwitchToNormalMode() {
 // Verify that evicted tabs that are deleted are removed from the evicted tabs
 // map.
 - (void)testTabDeletion {
-  web::test::SetUpFileBasedHttpServer();
   [ChromeEarlGrey resetTabUsageRecorder];
   // Add an autorelease pool to delete the closed tabs before the end of the
   // test.
@@ -943,7 +925,7 @@ void SwitchToNormalMode() {
     CloseTabAtIndexAndSync(0);
     GREYAssertEqual([ChromeEarlGrey mainTabCount], 1,
                     @"Check number of normal tabs");
-    [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+    [ChromeEarlGreyUI waitForAppToIdle];
   }
   // The deleted tabs are purged during foregrounding and backgrounding.
   [ChromeEarlGrey simulateTabsBackgrounding];

@@ -8,8 +8,7 @@
 
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-
-class Profile;
+#include "chrome/browser/profiles/profile.h"
 
 namespace {
 

@@ -28,27 +28,27 @@ GURL GetMockUrl(const std::string& scheme, const std::string& hostname) {
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestInterceptor implementation
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new URLRequestHangingReadJob(request, network_delegate);
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::make_unique<URLRequestHangingReadJob>(request);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace
 
-URLRequestHangingReadJob::URLRequestHangingReadJob(
-    URLRequest* request,
-    NetworkDelegate* network_delegate)
-    : URLRequestJob(request, network_delegate),
-      content_length_(10)  // non-zero content-length
-{}
+URLRequestHangingReadJob::URLRequestHangingReadJob(URLRequest* request)
+    : URLRequestJob(request),
+      // non-zero content-length
+      content_length_(10) {}
+
+URLRequestHangingReadJob::~URLRequestHangingReadJob() = default;
 
 void URLRequestHangingReadJob::Start() {
   // Start reading asynchronously so that all error reporting and data
@@ -57,8 +57,6 @@ void URLRequestHangingReadJob::Start() {
       FROM_HERE, base::BindOnce(&URLRequestHangingReadJob::StartAsync,
                                 weak_factory_.GetWeakPtr()));
 }
-
-URLRequestHangingReadJob::~URLRequestHangingReadJob() = default;
 
 int URLRequestHangingReadJob::ReadRawData(IOBuffer* buf, int buf_size) {
   // Make read hang. It never completes.

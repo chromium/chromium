@@ -23,7 +23,7 @@ class MockLogReceiver : public autofill::LogReceiver {
  public:
   MockLogReceiver() {}
 
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
 };
 
 }  // namespace

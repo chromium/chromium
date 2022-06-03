@@ -56,6 +56,21 @@ class CronetInputStream extends InputStream {
         return -1;
     }
 
+    @Override
+    public int available() throws IOException {
+        if (mResponseDataCompleted) {
+            if (mException != null) {
+                throw mException;
+            }
+            return 0;
+        }
+        if (hasUnreadData()) {
+            return mBuffer.remaining();
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * Called by {@link CronetHttpURLConnection} to notify that the entire
      * response body has been read.

@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/android/customtabs/detached_resource_request.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "url/gurl.h"
 
 namespace customtabs {
@@ -143,9 +144,8 @@ std::unique_ptr<HttpResponse> LargeHeadersAndResponseSize(
     return nullptr;
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->AddCustomHeader(
-      "X-Large-Header",
-      std::string(DetachedResourceRequest::kMaxResponseSize, 'b'));
+  // Maximum header size ios 256kB, stay below it.
+  response->AddCustomHeader("X-Large-Header", std::string(100 * 1024, 'b'));
   response->set_code(net::HTTP_OK);
 
   uint32_t length;
@@ -163,9 +163,8 @@ std::unique_ptr<HttpResponse> LargeResponseAndCookie(
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->AddCustomHeader("Set-Cookie", kCookieFromLargeResponse);
-  response->AddCustomHeader(
-      "X-Large-Header",
-      std::string(DetachedResourceRequest::kMaxResponseSize, 'b'));
+  // Maximum header size ios 256kB, stay below it.
+  response->AddCustomHeader("X-Large-Header", std::string(100 * 1024, 'b'));
   response->set_code(net::HTTP_OK);
   response->set_content(
       std::string(DetachedResourceRequest::kMaxResponseSize + 1, 'a'));
@@ -264,15 +263,15 @@ class DetachedResourceRequestTest : public ::testing::Test {
                            redirected_url.spec().c_str());
 
     GURL url(https_server()->GetURL(relative_url));
-    GURL site_for_cookies = third_party ? GURL("http://cats.google.com")
-                                        : https_server()->base_url();
+    GURL site_for_referrer = third_party ? GURL("http://cats.google.com")
+                                         : https_server()->base_url();
 
     std::string cookie = content::GetCookies(browser_context(), url);
     ASSERT_EQ("", cookie);
 
     DetachedResourceRequest::CreateAndStart(
-        browser_context(), url, site_for_cookies,
-        content::Referrer::GetDefaultReferrerPolicy(), kMotivation);
+        browser_context(), url, site_for_referrer,
+        blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "");
     first_request_waiter.Run();
     second_request_waiter.Run();
 
@@ -282,7 +281,7 @@ class DetachedResourceRequestTest : public ::testing::Test {
 
   void SetAndCheckReferrer(const std::string& initial_referrer,
                            const std::string& expected_referrer,
-                           net::URLRequest::ReferrerPolicy policy) {
+                           net::ReferrerPolicy policy) {
     base::RunLoop request_completion_waiter;
     base::RunLoop server_request_waiter;
     HttpRequest::HeaderMap headers;
@@ -292,11 +291,11 @@ class DetachedResourceRequestTest : public ::testing::Test {
                             &headers, server_request_waiter.QuitClosure()));
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL(kEchoTitle));
-    GURL site_for_cookies(initial_referrer);
+    GURL site_for_referrer(initial_referrer);
 
     DetachedResourceRequest::CreateAndStart(
-        browser_context(), url, site_for_cookies, policy, kMotivation,
-        base::BindLambdaForTesting([&](int net_error) {
+        browser_context(), url, site_for_referrer, policy, kMotivation,
+        "a.package.name", base::BindLambdaForTesting([&](int net_error) {
           EXPECT_EQ(net::OK, net_error);
           request_completion_waiter.Quit();
         }));
@@ -325,17 +324,17 @@ TEST_F(DetachedResourceRequestTest, Simple) {
                           &headers, server_request_waiter.QuitClosure()));
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kEchoTitle));
-  GURL site_for_cookies("http://cats.google.com/");
+  GURL site_for_referrer("http://cats.google.com/");
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(net::OK, net_error);
         request_completion_waiter.Quit();
       }));
   server_request_waiter.Run();
-  EXPECT_EQ(site_for_cookies.spec(), headers["referer"]);
+  EXPECT_EQ(site_for_referrer.spec(), headers["referer"]);
   request_completion_waiter.Run();
   histogram_tester.ExpectUniqueSample(
       "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 0, 1);
@@ -350,11 +349,11 @@ TEST_F(DetachedResourceRequestTest, SimpleFailure) {
   base::RunLoop request_waiter;
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/unknown-url"));
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_NE(net::OK, net_error);
         request_waiter.Quit();
@@ -372,7 +371,7 @@ TEST_F(DetachedResourceRequestTest, SimpleFailure) {
 TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   // Checks that headers are not included in the size limit (response size is
   // 1 below the limit, hence above including headers.)
@@ -383,8 +382,8 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
                            DetachedResourceRequest::kMaxResponseSize - 1)));
 
     DetachedResourceRequest::CreateAndStart(
-        browser_context(), url, site_for_cookies,
-        content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+        browser_context(), url, site_for_referrer,
+        blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
         base::BindLambdaForTesting([&](int net_error) {
           EXPECT_EQ(net::OK, net_error);
           request_waiter.Quit();
@@ -406,8 +405,8 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
                            DetachedResourceRequest::kMaxResponseSize + 1)));
 
     DetachedResourceRequest::CreateAndStart(
-        browser_context(), url, site_for_cookies,
-        content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+        browser_context(), url, site_for_referrer,
+        blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
         base::BindLambdaForTesting([&](int net_error) {
           EXPECT_NE(net::OK, net_error);
           request_waiter.Quit();
@@ -426,7 +425,7 @@ TEST_F(DetachedResourceRequestTest, ResponseTooLarge) {
 TEST_F(DetachedResourceRequestTest, CookieSetWithTruncatedResponse) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
   base::RunLoop request_waiter;
   GURL url(embedded_test_server()->GetURL(kLargeResponseAndCookie));
 
@@ -434,8 +433,8 @@ TEST_F(DetachedResourceRequestTest, CookieSetWithTruncatedResponse) {
   ASSERT_EQ("", cookie);
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_NE(net::OK, net_error);
         request_waiter.Quit();
@@ -464,16 +463,16 @@ TEST_F(DetachedResourceRequestTest, MultipleRequests) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL(kEchoTitle));
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   // No request coalescing, and no cache hit for a no-cache resource.
   for (int i = 0; i < 2; ++i) {
     DetachedResourceRequest::CreateAndStart(
-        browser_context(), url, site_for_cookies,
-        content::Referrer::GetDefaultReferrerPolicy(), kMotivation);
+        browser_context(), url, site_for_referrer,
+        blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "");
   }
   request_waiter.Run();
-  EXPECT_EQ(site_for_cookies.spec(), headers["referer"]);
+  EXPECT_EQ(site_for_referrer.spec(), headers["referer"]);
 }
 
 TEST_F(DetachedResourceRequestTest, NoReferrerWhenDowngrade) {
@@ -487,11 +486,11 @@ TEST_F(DetachedResourceRequestTest, NoReferrerWhenDowngrade) {
 
   GURL url(embedded_test_server()->GetURL(kEchoTitle));
   // Downgrade, as the server is over HTTP.
-  GURL site_for_cookies("https://cats.google.com");
+  GURL site_for_referrer("https://cats.google.com");
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation);
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "");
   request_waiter.Run();
   EXPECT_EQ("", headers["referer"]);
 }
@@ -514,11 +513,11 @@ TEST_F(DetachedResourceRequestTest, FollowRedirect) {
   GURL redirected_url(embedded_test_server()->GetURL(kHttpNoContent));
   GURL url(embedded_test_server()->GetURL(initial_relative_url +
                                           redirected_url.spec()));
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation);
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "");
   first_request_waiter.Run();
   second_request_waiter.Run();
 }
@@ -536,14 +535,14 @@ TEST_F(DetachedResourceRequestTest, NoContentCanSetCookie) {
   ASSERT_TRUE(https_server()->Start());
 
   GURL url(https_server()->GetURL(kSetCookieAndNoContent));
-  GURL site_for_cookies("http://cats.google.com/");
+  GURL site_for_referrer("http://cats.google.com/");
 
   std::string cookie = content::GetCookies(browser_context(), url);
   ASSERT_EQ("", cookie);
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(net::OK, net_error);
         request_completion_waiter.Quit();
@@ -557,20 +556,19 @@ TEST_F(DetachedResourceRequestTest, NoContentCanSetCookie) {
 TEST_F(DetachedResourceRequestTest, DefaultReferrerPolicy) {
   // No Referrer on downgrade.
   SetAndCheckReferrer("https://cats.google.com", "",
-                      content::Referrer::GetDefaultReferrerPolicy());
+                      blink::ReferrerUtils::GetDefaultNetReferrerPolicy());
 }
 
 TEST_F(DetachedResourceRequestTest, OriginReferrerPolicy) {
   // Only the origin, even for downgrades.
   SetAndCheckReferrer("https://cats.google.com/cute-cats",
-                      "https://cats.google.com/",
-                      net::URLRequest::ReferrerPolicy::ORIGIN);
+                      "https://cats.google.com/", net::ReferrerPolicy::ORIGIN);
 }
 
 TEST_F(DetachedResourceRequestTest, NeverClearReferrerPolicy) {
   SetAndCheckReferrer("https://cats.google.com/cute-cats",
                       "https://cats.google.com/cute-cats",
-                      net::URLRequest::ReferrerPolicy::NEVER_CLEAR_REFERRER);
+                      net::ReferrerPolicy::NEVER_CLEAR);
 }
 
 TEST_F(DetachedResourceRequestTest, MultipleOrigins) {
@@ -595,7 +593,7 @@ TEST_F(DetachedResourceRequestTest, MultipleOrigins) {
       "acookie;SameSite=None;Secure", kUrlKey, redirected_url.spec().c_str());
 
   GURL url(https_server()->GetURL(relative_url));
-  GURL site_for_cookies = GURL("http://cats.google.com");
+  GURL site_for_referrer = GURL("http://cats.google.com");
 
   std::string cookie = content::GetCookies(browser_context(), url);
   ASSERT_EQ("", cookie);
@@ -603,8 +601,8 @@ TEST_F(DetachedResourceRequestTest, MultipleOrigins) {
   ASSERT_EQ("", cookie);
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(net::OK, net_error);
         detached_request_waiter.Quit();
@@ -617,6 +615,13 @@ TEST_F(DetachedResourceRequestTest, MultipleOrigins) {
   ASSERT_EQ("acookie", cookie);
   cookie = content::GetCookies(browser_context(), redirected_origin);
   ASSERT_EQ(kCookieFromNoContent, cookie);
+
+  // Not from AGA, no samples recorded.
+  histogram_tester.ExpectTotalCount(
+      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success.FromAga", 0);
+  histogram_tester.ExpectTotalCount(
+      "CustomTabs.DetachedResourceRequest.FinalStatus.FromAga", 0);
+
   histogram_tester.ExpectUniqueSample(
       "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 1, 1);
   histogram_tester.ExpectBucketCount(
@@ -631,20 +636,28 @@ TEST_F(DetachedResourceRequestTest, ManyRedirects) {
   auto relative_url = base::StringPrintf("%s?%s=%d&%s=%d", kManyRedirects,
                                          kIndexKey, 1, kMaxKey, 10);
   GURL url(embedded_test_server()->GetURL(relative_url));
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation,
+      "com.google.android.googlequicksearchbox",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(net::OK, net_error);
         request_waiter.Quit();
       }));
   request_waiter.Run();
+  // Histograms are recorded in both places.
   histogram_tester.ExpectUniqueSample(
       "CustomTabs.DetachedResourceRequest.RedirectsCount.Success", 9, 1);
   histogram_tester.ExpectBucketCount(
       "CustomTabs.DetachedResourceRequest.FinalStatus", net::OK, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "CustomTabs.DetachedResourceRequest.RedirectsCount.Success.FromAga", 9,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "CustomTabs.DetachedResourceRequest.FinalStatus.FromAga", net::OK, 1);
 }
 
 TEST_F(DetachedResourceRequestTest, TooManyRedirects) {
@@ -655,11 +668,11 @@ TEST_F(DetachedResourceRequestTest, TooManyRedirects) {
   auto relative_url = base::StringPrintf("%s?%s=%d&%s=%d", kManyRedirects,
                                          kIndexKey, 1, kMaxKey, 40);
   GURL url(embedded_test_server()->GetURL(relative_url));
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(-net::ERR_TOO_MANY_REDIRECTS, net_error);
         request_waiter.Quit();
@@ -684,11 +697,11 @@ TEST_F(DetachedResourceRequestTest, CachedResponse) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL(kCacheable));
-  GURL site_for_cookies(embedded_test_server()->base_url());
+  GURL site_for_referrer(embedded_test_server()->base_url());
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(net::OK, net_error);
         first_request_waiter.Quit();
@@ -696,8 +709,8 @@ TEST_F(DetachedResourceRequestTest, CachedResponse) {
   first_request_waiter.Run();
 
   DetachedResourceRequest::CreateAndStart(
-      browser_context(), url, site_for_cookies,
-      content::Referrer::GetDefaultReferrerPolicy(), kMotivation,
+      browser_context(), url, site_for_referrer,
+      blink::ReferrerUtils::GetDefaultNetReferrerPolicy(), kMotivation, "",
       base::BindLambdaForTesting([&](int net_error) {
         EXPECT_EQ(net::OK, net_error);
         second_request_waiter.Quit();

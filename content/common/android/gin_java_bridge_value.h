@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -30,8 +29,13 @@ class GinJavaBridgeValue {
     TYPE_NONFINITE,
     // Bridge Object ID
     TYPE_OBJECT_ID,
+    // Uint32 type
+    TYPE_UINT32,
     TYPE_LAST_VALUE
   };
+
+  GinJavaBridgeValue(const GinJavaBridgeValue&) = delete;
+  GinJavaBridgeValue& operator=(const GinJavaBridgeValue&) = delete;
 
   // Serialization
   CONTENT_EXPORT static std::unique_ptr<base::Value> CreateUndefinedValue();
@@ -41,6 +45,8 @@ class GinJavaBridgeValue {
       double in_value);
   CONTENT_EXPORT static std::unique_ptr<base::Value> CreateObjectIDValue(
       int32_t in_value);
+  CONTENT_EXPORT static std::unique_ptr<base::Value> CreateUInt32Value(
+      uint32_t in_value);
 
   // De-serialization
   CONTENT_EXPORT static bool ContainsGinJavaBridgeValue(
@@ -53,6 +59,7 @@ class GinJavaBridgeValue {
 
   CONTENT_EXPORT bool GetAsNonFinite(float* out_value) const;
   CONTENT_EXPORT bool GetAsObjectID(int32_t* out_object_id) const;
+  CONTENT_EXPORT bool GetAsUInt32(uint32_t* out_value) const;
 
  private:
   explicit GinJavaBridgeValue(Type type);
@@ -60,8 +67,6 @@ class GinJavaBridgeValue {
   std::unique_ptr<base::Value> SerializeToBinaryValue();
 
   base::Pickle pickle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeValue);
 };
 
 }  // namespace content

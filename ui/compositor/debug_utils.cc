@@ -12,11 +12,12 @@
 
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
+#include "cc/trees/layer_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace ui {
 
@@ -67,6 +68,21 @@ void PrintLayerHierarchyImp(const Layer* layer,
   if (!layer->GetSubpixelOffset().IsZero())
     *out << " " << layer->GetSubpixelOffset().ToString();
 
+  const cc::Layer* cc_layer = layer->cc_layer_for_testing();
+  if (cc_layer) {
+    // Property trees must be updated in order to get valid render surface
+    // reasons.
+    if (cc_layer->layer_tree_host() &&
+        !cc_layer->layer_tree_host()->property_trees()->needs_rebuild) {
+      cc::RenderSurfaceReason render_surface =
+          cc_layer->GetRenderSurfaceReason();
+      if (render_surface != cc::RenderSurfaceReason::kNone) {
+        *out << " render-surface-reason: "
+             << cc::RenderSurfaceReasonToString(render_surface);
+      }
+    }
+  }
+
   const ui::Layer* mask = const_cast<ui::Layer*>(layer)->layer_mask_layer();
 
   if (mask) {
@@ -108,10 +124,16 @@ void PrintLayerHierarchyImp(const Layer* layer,
 
 void PrintLayerHierarchy(const Layer* layer, const gfx::Point& mouse_location) {
   std::ostringstream out;
-  out << "Layer hierarchy:\n";
-  PrintLayerHierarchyImp(layer, 0, mouse_location, &out);
+  PrintLayerHierarchy(layer, mouse_location, &out);
   // Error so logs can be collected from end-users.
   LOG(ERROR) << out.str();
+}
+
+void PrintLayerHierarchy(const Layer* layer,
+                         const gfx::Point& mouse_location,
+                         std::ostringstream* out) {
+  *out << "Layer hierarchy:\n";
+  PrintLayerHierarchyImp(layer, 0, mouse_location, out);
 }
 
 }  // namespace ui

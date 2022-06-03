@@ -37,14 +37,16 @@
 #include <stack>
 #include <string>
 #include <vector>
+
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/stringprintf.h>
-#include <google/protobuf/io/coded_stream_inl.h>
+#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
-#include <google/protobuf/port_def.inc>
 
+
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -524,15 +526,7 @@ void WireFormatLite::WriteMessage(int field_number, const MessageLite& value,
 
 void WireFormatLite::WriteSubMessageMaybeToArray(
     int size, const MessageLite& value, io::CodedOutputStream* output) {
-  if (!output->IsSerializationDeterministic()) {
-    uint8* target = output->GetDirectBufferForNBytesAndAdvance(size);
-    if (target != nullptr) {
-      uint8* end = value.InternalSerializeWithCachedSizesToArray(target);
-      GOOGLE_DCHECK_EQ(end - target, size);
-      return;
-    }
-  }
-  value.SerializeWithCachedSizes(output);
+  output->SetCur(value._InternalSerialize(output->Cur(), output->EpsCopy()));
 }
 
 void WireFormatLite::WriteGroupMaybeToArray(int field_number,
@@ -558,8 +552,7 @@ PROTOBUF_ALWAYS_INLINE static bool ReadBytesToString(
 inline static bool ReadBytesToString(io::CodedInputStream* input,
                                      std::string* value) {
   uint32 length;
-  return input->ReadVarint32(&length) &&
-         input->InternalReadStringInline(value, length);
+  return input->ReadVarint32(&length) && input->ReadString(value, length);
 }
 
 bool WireFormatLite::ReadBytes(io::CodedInputStream* input,
@@ -610,7 +603,6 @@ bool WireFormatLite::VerifyUtf8String(const char* data, int size, Operation op,
 // efficient SSE code.
 template <bool ZigZag, bool SignExtended, typename T>
 static size_t VarintSize(const T* data, const int n) {
-#if __cplusplus >= 201103L
   static_assert(sizeof(T) == 4, "This routine only works for 32 bit integers");
   // is_unsigned<T> => !ZigZag
   static_assert(
@@ -622,7 +614,6 @@ static size_t VarintSize(const T* data, const int n) {
       "Cannot SignExtended unsigned types");
   static_assert(!(SignExtended && ZigZag),
                 "Cannot SignExtended and ZigZag on the same type");
-#endif
   uint32 sum = n;
   uint32 msb_sum = 0;
   for (int i = 0; i < n; i++) {
@@ -647,12 +638,10 @@ static size_t VarintSize(const T* data, const int n) {
 
 template <bool ZigZag, typename T>
 static size_t VarintSize64(const T* data, const int n) {
-#if __cplusplus >= 201103L
   static_assert(sizeof(T) == 8, "This routine only works for 64 bit integers");
   // is_unsigned<T> => !ZigZag
   static_assert(!ZigZag || !std::is_unsigned<T>::value,
                 "Cannot ZigZag encode unsigned types");
-#endif
   uint64 sum = n;
   for (int i = 0; i < n; i++) {
     uint64 x = data[i];

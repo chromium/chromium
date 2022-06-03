@@ -22,10 +22,6 @@ namespace base {
 class TaskRunner;
 }
 
-namespace content {
-class LocalFileStreamReaderTest;
-}
-
 namespace net {
 class FileStream;
 }
@@ -47,9 +43,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
 
  private:
   friend class FileStreamReader;
-  friend class content::LocalFileStreamReaderTest;
+  friend class LocalFileStreamReaderTest;
 
-  LocalFileStreamReader(base::TaskRunner* task_runner,
+  LocalFileStreamReader(scoped_refptr<base::TaskRunner> task_runner,
                         const base::FilePath& file_path,
                         int64_t initial_offset,
                         const base::Time& expected_modification_time);
@@ -67,8 +63,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   void OnRead(int read_result);
 
   void DidGetFileInfoForGetLength(net::Int64CompletionOnceCallback callback,
-                                  base::File::Error error,
-                                  const base::File::Info& file_info);
+                                  base::FileErrorOr<base::File::Info> result);
 
   net::CompletionOnceCallback callback_;
   scoped_refptr<base::TaskRunner> task_runner_;
@@ -76,7 +71,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   const base::FilePath file_path_;
   const int64_t initial_offset_;
   const base::Time expected_modification_time_;
-  bool has_pending_open_;
+  bool has_pending_open_ = false;
   base::WeakPtrFactory<LocalFileStreamReader> weak_factory_{this};
 };
 

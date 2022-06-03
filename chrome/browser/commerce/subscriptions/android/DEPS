@@ -1,0 +1,4 @@
+include_rules = [
+ "+chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/PriceTrackingUtilities.java",
+ "+chrome/android/java/src/org/chromium/chrome/browser",
+]

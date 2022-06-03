@@ -31,35 +31,36 @@
 #include "third_party/blink/public/mojom/speech/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_result.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
-class LocalFrame;
+class LocalDOMWindow;
 class SpeechRecognitionController;
 
 class MODULES_EXPORT SpeechRecognition final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<SpeechRecognition>,
-      public ContextLifecycleObserver,
+      public ExecutionContextLifecycleObserver,
       public mojom::blink::SpeechRecognitionSessionClient,
       public PageVisibilityObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(SpeechRecognition);
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static SpeechRecognition* Create(ExecutionContext*);
 
-  SpeechRecognition(LocalFrame*, ExecutionContext*);
+  SpeechRecognition(LocalDOMWindow*);
   ~SpeechRecognition() override;
 
   // SpeechRecognition.idl implemementation.
@@ -102,8 +103,8 @@ class MODULES_EXPORT SpeechRecognition final
   // ScriptWrappable
   bool HasPendingActivity() const final;
 
-  // ContextLifecycleObserver
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
@@ -120,7 +121,7 @@ class MODULES_EXPORT SpeechRecognition final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(start, kStart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEnd)
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void OnConnectionError();
@@ -135,8 +136,10 @@ class MODULES_EXPORT SpeechRecognition final
   bool started_;
   bool stopping_;
   HeapVector<Member<SpeechRecognitionResult>> final_results_;
-  mojo::Receiver<mojom::blink::SpeechRecognitionSessionClient> receiver_;
-  mojo::Remote<mojom::blink::SpeechRecognitionSession> session_;
+  HeapMojoReceiver<mojom::blink::SpeechRecognitionSessionClient,
+                   SpeechRecognition>
+      receiver_;
+  HeapMojoRemote<mojom::blink::SpeechRecognitionSession> session_;
 };
 
 }  // namespace blink

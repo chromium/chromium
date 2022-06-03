@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {MetadataItem} from './metadata_item.js';
+
 /**
  * Cache of metadata for a FileEntry.
  */
-class MetadataCacheItem {
+export class MetadataCacheItem {
   constructor() {
     /**
      * Map of property name and MetadataCacheItemProperty.
@@ -62,12 +66,12 @@ class MetadataCacheItem {
   storeProperties(requestId, typedObject) {
     let changed = false;
     const object = /** @type {!Object} */ (typedObject);
-    for (let name in object) {
+    for (const name in object) {
       if (/.Error$/.test(name) && object[name]) {
         object[name.substr(0, name.length - 5)] = undefined;
       }
     }
-    for (let name in object) {
+    for (const name in object) {
       if (/.Error$/.test(name)) {
         continue;
       }
@@ -167,7 +171,7 @@ const MetadataCacheItemPropertyState = {
 /**
  * Cache of metadata for a property.
  */
-class MetadataCacheItemProperty {
+export class MetadataCacheItemProperty {
   constructor() {
     /**
      * Cached value of property.

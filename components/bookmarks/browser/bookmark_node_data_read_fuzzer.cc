@@ -8,6 +8,7 @@
 #include "base/at_exit.h"
 #include "base/containers/span.h"
 #include "base/i18n/icu_util.h"
+#include "base/logging.h"
 #include "base/pickle.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 

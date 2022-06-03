@@ -4,6 +4,7 @@
 
 #include "media/capture/video/gpu_memory_buffer_utils.h"
 
+#include "base/callback_helpers.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -61,7 +62,8 @@ VideoCaptureDevice::Client::ReserveResult AllocateNV12GpuMemoryBuffer(
   *out_gpu_memory_buffer = gmb_support->CreateGpuMemoryBufferImplFromHandle(
       out_capture_buffer->handle_provider->GetGpuMemoryBufferHandle(),
       buffer_size, kOpaqueGfxFormat,
-      gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, base::NullCallback());
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+      base::NullCallback());
   return reserve_result;
 }
 

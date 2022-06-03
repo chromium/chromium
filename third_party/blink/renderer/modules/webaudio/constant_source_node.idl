@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See https://webaudio.github.io/web-audio-api/#ConstantSourceNode
+// https://webaudio.github.io/web-audio-api/#ConstantSourceNode
 [
     Exposed=Window,
-    ActiveScriptWrappable,
-    Measure
+    ActiveScriptWrappable
 ] interface ConstantSourceNode : AudioScheduledSourceNode {
-    [RaisesException] constructor(BaseAudioContext context, optional ConstantSourceOptions options);
+    [RaisesException, Measure] constructor(BaseAudioContext context, optional ConstantSourceOptions options = {});
     readonly attribute AudioParam offset;
 };

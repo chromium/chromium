@@ -28,6 +28,10 @@ class P2PStreamSocket;
 class AuthenticatorTestBase : public testing::Test {
  public:
   AuthenticatorTestBase();
+
+  AuthenticatorTestBase(const AuthenticatorTestBase&) = delete;
+  AuthenticatorTestBase& operator=(const AuthenticatorTestBase&) = delete;
+
   ~AuthenticatorTestBase() override;
 
  protected:
@@ -66,8 +70,6 @@ class AuthenticatorTestBase : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorTestBase);
 };
 
 }  // namespace protocol

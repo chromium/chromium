@@ -11,10 +11,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -24,10 +22,15 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace ui {
 class DropTargetEvent;
@@ -50,6 +53,9 @@ class CONTENT_EXPORT WebContentsViewAura
  public:
   WebContentsViewAura(WebContentsImpl* web_contents,
                       WebContentsViewDelegate* delegate);
+
+  WebContentsViewAura(const WebContentsViewAura&) = delete;
+  WebContentsViewAura& operator=(const WebContentsViewAura&) = delete;
 
   // Allow the WebContentsViewDelegate to be set explicitly.
   void SetDelegateForTesting(WebContentsViewDelegate* delegate);
@@ -76,7 +82,7 @@ class CONTENT_EXPORT WebContentsViewAura
                          const ui::DropTargetEvent& event,
                          std::unique_ptr<ui::OSExchangeData> data,
                          base::ScopedClosureRunner end_drag_runner,
-                         base::Optional<gfx::PointF> transformed_pt,
+                         absl::optional<gfx::PointF> transformed_pt,
                          gfx::PointF screen_pt);
     OnPerformDropContext(OnPerformDropContext&& other);
     ~OnPerformDropContext();
@@ -85,7 +91,7 @@ class CONTENT_EXPORT WebContentsViewAura
     ui::DropTargetEvent event;
     std::unique_ptr<ui::OSExchangeData> data;
     base::ScopedClosureRunner end_drag_runner;
-    base::Optional<gfx::PointF> transformed_pt;
+    absl::optional<gfx::PointF> transformed_pt;
     gfx::PointF screen_pt;
   };
 
@@ -101,14 +107,20 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropOnOopif);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
 
   class WindowObserver;
 
   ~WebContentsViewAura() override;
 
-  void SizeChangedCommon(const gfx::Size& size);
+  // Utility to fill a DropData object from ui::OSExchangeData.
+  void PrepareDropData(DropData* drop_data,
+                       const ui::OSExchangeData& data) const;
 
-  void EndDrag(RenderWidgetHost* source_rwh, blink::WebDragOperationsMask ops);
+  void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
+               ui::mojom::DragOperation op);
 
   void InstallOverscrollControllerDelegate(RenderWidgetHostViewAura* view);
 
@@ -136,8 +148,7 @@ class CONTENT_EXPORT WebContentsViewAura
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetContentNativeView() const override;
   gfx::NativeWindow GetTopLevelNativeWindow() const override;
-  void GetContainerBounds(gfx::Rect* out) const override;
-  void SizeContents(const gfx::Size& size) override;
+  gfx::Rect GetContainerBounds() const override;
   void Focus() override;
   void SetInitialFocus() override;
   void StoreFocus() override;
@@ -150,23 +161,23 @@ class CONTENT_EXPORT WebContentsViewAura
       RenderWidgetHost* render_widget_host) override;
   RenderWidgetHostViewBase* CreateViewForChildWidget(
       RenderWidgetHost* render_widget_host) override;
-  void SetPageTitle(const base::string16& title) override;
-  void RenderViewCreated(RenderViewHost* host) override;
+  void SetPageTitle(const std::u16string& title) override;
   void RenderViewReady() override;
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
+  void OnCapturerCountChanged() override;
 
   // Overridden from RenderViewHostDelegateView:
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
   void StartDragging(const DropData& drop_data,
-                     blink::WebDragOperationsMask operations,
+                     blink::DragOperationsMask operations,
                      const gfx::ImageSkia& image,
                      const gfx::Vector2d& image_offset,
-                     const DragEventSourceInfo& event_info,
+                     const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override;
-  void UpdateDragCursor(blink::WebDragOperation operation) override;
+  void UpdateDragCursor(ui::mojom::DragOperation operation) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
@@ -174,16 +185,16 @@ class CONTENT_EXPORT WebContentsViewAura
   int GetBottomControlsHeight() const override;
   bool DoBrowserControlsShrinkRendererSize() const override;
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
-  void ShowPopupMenu(RenderFrameHost* render_frame_host,
-                     const gfx::Rect& bounds,
-                     int item_height,
-                     double item_font_size,
-                     int selected_item,
-                     const std::vector<MenuItem>& items,
-                     bool right_aligned,
-                     bool allow_multiple_selection) override;
-
-  void HidePopupMenu() override;
+  void ShowPopupMenu(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
+      const gfx::Rect& bounds,
+      int item_height,
+      double item_font_size,
+      int selected_item,
+      std::vector<blink::mojom::MenuItemPtr> menu_items,
+      bool right_aligned,
+      bool allow_multiple_selection) override;
 #endif
 
   // Overridden from aura::WindowDelegate:
@@ -204,8 +215,8 @@ class CONTENT_EXPORT WebContentsViewAura
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowDestroyed(aura::Window* window) override;
   void OnWindowTargetVisibilityChanged(bool visible) override;
-  void OnWindowOcclusionChanged(aura::Window::OcclusionState occlusion_state,
-                                const SkRegion&) override;
+  void OnWindowOcclusionChanged(
+      aura::Window::OcclusionState occlusion_state) override;
   bool HasHitTestMask() const override;
   void GetHitTestMask(SkPath* mask) const override;
 
@@ -215,22 +226,30 @@ class CONTENT_EXPORT WebContentsViewAura
 
   // Overridden from aura::client::DragDropDelegate:
   void OnDragEntered(const ui::DropTargetEvent& event) override;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  aura::client::DragUpdateInfo OnDragUpdated(
+      const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
+
   void DragEnteredCallback(ui::DropTargetEvent event,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
   void DragUpdatedCallback(ui::DropTargetEvent event,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
   void PerformDropCallback(ui::DropTargetEvent event,
                            std::unique_ptr<ui::OSExchangeData> data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
-                           base::Optional<gfx::PointF> transformed_pt);
+                           absl::optional<gfx::PointF> transformed_pt);
+
+  // Completes a drag exit operation by communicating with the renderer process.
+  void CompleteDragExit();
 
   // Called from PerformDropCallback() to finish processing the drop.
   void FinishOnPerformDropCallback(
@@ -244,6 +263,13 @@ class CONTENT_EXPORT WebContentsViewAura
                     const gfx::PointF& client_pt,
                     const gfx::PointF& screen_pt,
                     int key_modifiers);
+
+  // Performs drop if it's run. Otherwise, it exits the drag. Returned by
+  // GetDropCallback.
+  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
+                             const ui::DropTargetEvent& event,
+                             std::unique_ptr<ui::OSExchangeData> data,
+                             ui::mojom::DragOperation& output_drag_op);
 
   // For unit testing, registers a callback for when a drop operation
   // completes.
@@ -288,7 +314,7 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
-  blink::WebDragOperationsMask current_drag_op_;
+  ui::mojom::DragOperation current_drag_op_;
 
   std::unique_ptr<DropData> current_drop_data_;
 
@@ -314,8 +340,22 @@ class CONTENT_EXPORT WebContentsViewAura
   // the RenderViewHost may not be in the same process as the RenderProcessHost,
   // since the view corresponds to the page, while the process is specific to
   // the frame from which the drag started.
-  int drag_start_process_id_;
-  GlobalRoutingID drag_start_view_id_;
+  // We also track whether a dragged image is accessible from its frame, so we
+  // can disallow tainted-cross-origin same-page drag-drop.
+  struct DragStart {
+    DragStart(int process_id,
+              GlobalRoutingID view_id,
+              bool image_accessible_from_frame)
+        : process_id(process_id),
+          view_id(view_id),
+          image_accessible_from_frame(image_accessible_from_frame) {}
+    ~DragStart() = default;
+
+    int process_id;
+    GlobalRoutingID view_id;
+    bool image_accessible_from_frame;
+  };
+  absl::optional<DragStart> drag_start_;
 
   // Responsible for handling gesture-nav and pull-to-refresh UI.
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;
@@ -327,11 +367,10 @@ class CONTENT_EXPORT WebContentsViewAura
 
   bool init_rwhv_with_null_parent_for_testing_;
 
-  // Used to ensure that the drag and drop callbacks bound to this
-  // object are canceled when this object is destroyed.
-  base::WeakPtrFactory<WebContentsViewAura> weak_ptr_factory_{this};
+  // Non-null when the WebContents is being captured for video.
+  std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewAura);
+  base::WeakPtrFactory<WebContentsViewAura> weak_ptr_factory_{this};
 };
 
 }  // namespace content

@@ -7,10 +7,14 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_op.h"
+
 namespace url_matcher {
 
 StringPattern::StringPattern(std::string pattern, StringPattern::ID id)
-    : pattern_(std::move(pattern)), id_(id) {}
+    : pattern_(std::move(pattern)), id_(id) {
+  DCHECK_NE(kInvalidId, id_);
+}
 
 StringPattern::~StringPattern() {}
 

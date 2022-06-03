@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 
 namespace arc {
 
@@ -27,9 +26,9 @@ class ArcUsbHostUiDelegate {
   virtual void RequestUsbAccessPermission(
       const std::string& package_name,
       const std::string& guid,
-      const base::string16& serial_number,
-      const base::string16& manufacturer_string,
-      const base::string16& product_string,
+      const std::u16string& serial_number,
+      const std::u16string& manufacturer_string,
+      const std::u16string& product_string,
       uint16_t vendor_id,
       uint16_t product_id,
       RequestPermissionCallback callback) = 0;
@@ -37,7 +36,7 @@ class ArcUsbHostUiDelegate {
   // Checks if package have access to USB device.
   virtual bool HasUsbAccessPermission(const std::string& package_name,
                                       const std::string& guid,
-                                      const base::string16& serial_number,
+                                      const std::u16string& serial_number,
                                       uint16_t vendor_id,
                                       uint16_t product_id) const = 0;
 
@@ -52,7 +51,7 @@ class ArcUsbHostUiDelegate {
   // Gets list of packages which should receive USB device attach/detach event.
   virtual std::unordered_set<std::string> GetEventPackageList(
       const std::string& guid,
-      const base::string16& serial_number,
+      const std::u16string& serial_number,
       uint16_t vendor_id,
       uint16_t product_id) const = 0;
 

@@ -8,7 +8,7 @@
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
-#include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
+#include "chromeos/services/device_sync/public/mojom/device_sync.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {

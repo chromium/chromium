@@ -7,22 +7,24 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 import static org.chromium.chrome.browser.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 
 import java.util.List;
 
 /**
  * The login details section of the Autofill Assistant payment request.
  */
-public class AssistantLoginSection extends AssistantCollectUserDataSection<AssistantLoginChoice> {
+public class AssistantLoginSection extends AssistantCollectUserDataSection<LoginChoiceModel> {
     AssistantLoginSection(Context context, ViewGroup parent) {
         super(context, parent, R.layout.autofill_assistant_login, R.layout.autofill_assistant_login,
                 context.getResources().getDimensionPixelSize(
@@ -32,20 +34,21 @@ public class AssistantLoginSection extends AssistantCollectUserDataSection<Assis
     }
 
     @Override
-    protected void createOrEditItem(@Nullable AssistantLoginChoice oldItem) {
+    protected void createOrEditItem(@NonNull LoginChoiceModel oldItem) {
         assert oldItem != null;
-        assert oldItem.getInfoPopup() != null;
+        assert oldItem.mOption.getInfoPopup() != null;
 
-        oldItem.getInfoPopup().show(mContext);
+        oldItem.mOption.getInfoPopup().show(mContext);
     }
 
     @Override
-    protected void updateFullView(View fullView, AssistantLoginChoice option) {
-        updateSummaryView(fullView, option);
+    protected void updateFullView(View fullView, LoginChoiceModel model) {
+        updateSummaryView(fullView, model);
     }
 
     @Override
-    protected void updateSummaryView(View summaryView, AssistantLoginChoice option) {
+    protected void updateSummaryView(View summaryView, LoginChoiceModel model) {
+        AssistantLoginChoice option = model.mOption;
         TextView labelView = summaryView.findViewById(R.id.label);
         labelView.setText(option.getLabel());
         TextView sublabelView = summaryView.findViewById(R.id.sublabel);
@@ -58,56 +61,45 @@ public class AssistantLoginSection extends AssistantCollectUserDataSection<Assis
     }
 
     @Override
-    protected boolean canEditOption(AssistantLoginChoice choice) {
-        return choice.getInfoPopup() != null;
+    protected boolean canEditOption(LoginChoiceModel model) {
+        return model.mOption.getInfoPopup() != null;
     }
 
     @Override
-    protected @DrawableRes int getEditButtonDrawable(AssistantLoginChoice choice) {
+    protected @DrawableRes int getEditButtonDrawable(LoginChoiceModel model) {
         return R.drawable.btn_info;
     }
 
     @Override
-    protected String getEditButtonContentDescription(AssistantLoginChoice choice) {
-        // TODO(b/143862732): Send this a11y string from the backend.
-        return mContext.getString(R.string.learn_more);
+    protected String getEditButtonContentDescription(LoginChoiceModel model) {
+        if (model.mOption.getEditButtonContentDescription() != null) {
+            return model.mOption.getEditButtonContentDescription();
+        } else {
+            return mContext.getString(R.string.learn_more);
+        }
     }
 
     @Override
     protected boolean areEqual(
-            @Nullable AssistantLoginChoice optionA, @Nullable AssistantLoginChoice optionB) {
-        if (optionA == null || optionB == null) {
-            return optionA == optionB;
+            @Nullable LoginChoiceModel modelA, @Nullable LoginChoiceModel modelB) {
+        if (modelA == null || modelB == null) {
+            return modelA == modelB;
         }
         // Native ensures that each login choice has a unique identifier.
-        return TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier());
+        return TextUtils.equals(modelA.mOption.getIdentifier(), modelB.mOption.getIdentifier());
     }
 
     /**
      * The login options have changed externally. This will rebuild the UI with the new/changed
      * set of login options, while keeping the selected item if possible.
      */
-    void onLoginsChanged(List<AssistantLoginChoice> options) {
+    void onLoginsChanged(List<LoginChoiceModel> options) {
         int indexToSelect = -1;
         if (mSelectedOption != null) {
             for (int i = 0; i < getItems().size(); i++) {
-                if (TextUtils.equals(
-                            mSelectedOption.getIdentifier(), getItems().get(i).getIdentifier())) {
+                if (areEqual(mSelectedOption, getItems().get(i))) {
                     indexToSelect = i;
                     break;
-                }
-            }
-        }
-
-        // Preselect login option according to priority. This will implicitly select the first
-        // option if all options have the same (default) priority.
-        if (indexToSelect == -1) {
-            int highestPriority = Integer.MAX_VALUE;
-            for (int i = 0; i < options.size(); i++) {
-                int priority = options.get(i).getPriority();
-                if (priority < highestPriority) {
-                    highestPriority = priority;
-                    indexToSelect = i;
                 }
             }
         }

@@ -1,0 +1,50 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include <memory>
+
+#include "base/strings/string_piece.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_pattern_parser.h"
+#include "third_party/icu/fuzzers/fuzzer_utils.h"
+
+IcuEnvironment* env = new IcuEnvironment();
+
+namespace content_settings {
+
+namespace {
+ContentSettingsPattern Parse(base::StringPiece pattern_spec) {
+  std::unique_ptr<ContentSettingsPattern::BuilderInterface> builder =
+      ContentSettingsPattern::CreateBuilder();
+  PatternParser::Parse(pattern_spec, builder.get());
+  return builder->Build();
+}
+}  // namespace
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  base::StringPiece pattern_spec(reinterpret_cast<const char*>(data), size);
+
+  // Parse the fuzzer-generated |pattern_spec| to obtain |canonical_pattern|.
+  ContentSettingsPattern canonical_pattern = Parse(pattern_spec);
+  if (!canonical_pattern.IsValid())
+    return 0;
+  const std::string canonical_pattern_spec = canonical_pattern.ToString();
+
+  // Recanonicalizing |canonical_pattern| should be idempotent.
+  ContentSettingsPattern recanonicalized_pattern =
+      Parse(canonical_pattern_spec);
+  CHECK(recanonicalized_pattern.IsValid())
+      << "Could not recanonicalize\n  '" << canonical_pattern_spec
+      << "' (originally '" << pattern_spec << "')";
+  CHECK_EQ(recanonicalized_pattern.ToString(), canonical_pattern_spec)
+      << "\n  (originally '" << pattern_spec << "')";
+  CHECK_EQ(recanonicalized_pattern.Compare(canonical_pattern),
+           ContentSettingsPattern::Relation::IDENTITY);
+  return 0;
+}
+
+}  // namespace content_settings

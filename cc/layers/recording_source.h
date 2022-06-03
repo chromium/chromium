@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "cc/base/invalidation_region.h"
 #include "cc/cc_export.h"
@@ -24,16 +22,6 @@ class Region;
 
 class CC_EXPORT RecordingSource {
  public:
-  enum RecordingMode {
-    RECORD_NORMALLY,
-    RECORD_WITH_PAINTING_DISABLED,
-    RECORD_WITH_CACHING_DISABLED,
-    RECORD_WITH_CONSTRUCTION_DISABLED,
-    RECORD_WITH_SUBSEQUENCE_CACHING_DISABLED,
-    RECORD_WITH_PARTIAL_INVALIDATION,
-    RECORDING_MODE_COUNT,  // Must be the last entry.
-  };
-
   RecordingSource();
   RecordingSource(const RecordingSource&) = delete;
   virtual ~RecordingSource();
@@ -44,7 +32,6 @@ class CC_EXPORT RecordingSource {
                                    const gfx::Size& layer_size,
                                    const gfx::Rect& new_recorded_viewport);
   void UpdateDisplayItemList(const scoped_refptr<DisplayItemList>& display_list,
-                             const size_t& painter_reported_memory_usage,
                              float recording_scale_factor);
   gfx::Size GetSize() const;
   void SetEmptyBounds();
@@ -62,15 +49,13 @@ class CC_EXPORT RecordingSource {
  protected:
   gfx::Rect recorded_viewport_;
   gfx::Size size_;
-  int slow_down_raster_scale_factor_for_debug_;
-  bool requires_clear_;
-  bool is_solid_color_;
-  bool clear_canvas_with_debug_color_;
-  SkColor solid_color_;
-  SkColor background_color_;
+  int slow_down_raster_scale_factor_for_debug_ = 0;
+  bool requires_clear_ = false;
+  bool is_solid_color_ = false;
+  SkColor solid_color_ = SK_ColorTRANSPARENT;
+  SkColor background_color_ = SK_ColorTRANSPARENT;
   scoped_refptr<DisplayItemList> display_list_;
-  size_t painter_reported_memory_usage_;
-  float recording_scale_factor_;
+  float recording_scale_factor_ = 1.0f;
 
  private:
   void UpdateInvalidationForNewViewport(const gfx::Rect& old_recorded_viewport,

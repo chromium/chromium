@@ -25,8 +25,6 @@ class CSSPaintImageGeneratorImpl;
 // https://drafts.css-houdini.org/css-paint-api/#dom-css-paintworklet
 class MODULES_EXPORT PaintWorklet : public Worklet,
                                     public Supplement<LocalDOMWindow> {
-  USING_GARBAGE_COLLECTED_MIXIN(PaintWorklet);
-
  public:
   static const char kSupplementName[];
 
@@ -34,7 +32,11 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   static const wtf_size_t kNumGlobalScopesPerThread;
   static PaintWorklet* From(LocalDOMWindow&);
 
-  explicit PaintWorklet(LocalFrame*);
+  explicit PaintWorklet(LocalDOMWindow&);
+
+  PaintWorklet(const PaintWorklet&) = delete;
+  PaintWorklet& operator=(const PaintWorklet&) = delete;
+
   ~PaintWorklet() override;
 
   void AddPendingGenerator(const String& name, CSSPaintImageGeneratorImpl*);
@@ -46,7 +48,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
                              float device_scale_factor);
 
   int WorkletId() const { return worklet_id_; }
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // The DocumentDefinitionMap tracks definitions registered via
   // registerProperty; definitions are only considered valid once all global
@@ -88,6 +90,8 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   void SetProxyClientForTesting(PaintWorkletProxyClient* proxy_client) {
     proxy_client_ = proxy_client;
   }
+
+  void ResetIsPaintOffThreadForTesting();
 
  protected:
   // Since paint worklet has more than one global scope, we MUST override this
@@ -140,7 +144,11 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   // to ensure that all global scopes get the same proxy client.
   Member<PaintWorkletProxyClient> proxy_client_;
 
-  DISALLOW_COPY_AND_ASSIGN(PaintWorklet);
+  // When running layout test, paint worklet has to be on the main thread
+  // because "enable-threaded-compositing" is off by default. However, some unit
+  // tests may be testing the functionality of the APIs when the paint worklet
+  // is off the main thread.
+  bool is_paint_off_thread_;
 };
 
 }  // namespace blink

@@ -33,12 +33,11 @@ from blinkpy.common.system import stack_utils
 
 
 def current_thread_id():
-    thread_id, _ = sys._current_frames().items()[0]
+    thread_id, _ = list(sys._current_frames().items())[0]
     return thread_id
 
 
 class StackUtilsTest(unittest.TestCase):
-
     def test_find_thread_stack_found(self):
         thread_id = current_thread_id()
         found_stack = stack_utils._find_thread_stack(thread_id)

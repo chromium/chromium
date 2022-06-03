@@ -1,0 +1,46 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style type="text/css">
+ .tr-field {
+    border: thin solid blue;
+  }
+
+  .tr_bq {
+    border-left: thin solid red;
+    margin-left: 5px;
+  }
+</style>
+<input onclick="setUp()" type="button" value="Make all fields editable"/>
+<p>
+ <div id="container">
+  This is used to test static utility functions.
+ </div>
+ <div id="root">
+  <div class="tr-field" id="field1">
+   <blockquote>
+    This is an
+    <span id="field1cursor">
+     selection
+    </span>
+    unsetup blockquote
+   </blockquote>
+  </div>
+  <p>
+   <div class="tr-field" id="field2">
+    <blockquote class="tr_bq">
+     This is a
+     <span id="field2cursor">
+      selection
+     </span>
+     setup blockquote
+    </blockquote>
+   </div>
+  </p>
+  <p>
+  </p>
+ </div>
+</p>

@@ -14,13 +14,13 @@ namespace blink {
 
 PresentationConnectionList::PresentationConnectionList(
     ExecutionContext* context)
-    : ContextClient(context) {}
+    : ExecutionContextClient(context) {}
 
 const AtomicString& PresentationConnectionList::InterfaceName() const {
   return event_target_names::kPresentationConnectionList;
 }
 
-const HeapVector<Member<ReceiverPresentationConnection>>&
+const HeapVector<Member<PresentationConnection>>&
 PresentationConnectionList::connections() const {
   return connections_;
 }
@@ -38,12 +38,12 @@ void PresentationConnectionList::AddedEventListener(
 }
 
 void PresentationConnectionList::AddConnection(
-    ReceiverPresentationConnection* connection) {
+    PresentationConnection* connection) {
   connections_.push_back(connection);
 }
 
 bool PresentationConnectionList::RemoveConnection(
-    ReceiverPresentationConnection* connection) {
+    PresentationConnection* connection) {
   for (wtf_size_t i = 0; i < connections_.size(); i++) {
     if (connections_[i] == connection) {
       connections_.EraseAt(i);
@@ -63,10 +63,10 @@ bool PresentationConnectionList::IsEmpty() {
   return connections_.IsEmpty();
 }
 
-void PresentationConnectionList::Trace(blink::Visitor* visitor) {
+void PresentationConnectionList::Trace(Visitor* visitor) const {
   visitor->Trace(connections_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

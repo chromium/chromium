@@ -8,8 +8,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -120,8 +121,7 @@ bool EnableTraceEvent(const char* tracing_dir, base::StringPiece event) {
 
   // Enabling events returns EINVAL if the event does not exist. It is normal
   // for driver specific events to be missing when the driver is not built in.
-  if (!base::AppendToFile(path, event.data(), event.size()) &&
-      errno != EINVAL) {
+  if (!base::AppendToFile(path, event) && errno != EINVAL) {
     PLOG(ERROR) << "write: " << path;
     return false;
   }

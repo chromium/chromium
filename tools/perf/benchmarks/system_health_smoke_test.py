@@ -12,6 +12,8 @@ stories as memory ones, only with fewer actions (no memory dumping).
 import collections
 import unittest
 
+import six
+
 from chrome_telemetry_build import chromium_config
 
 from core import perf_benchmark
@@ -28,175 +30,78 @@ from benchmarks import system_health
 
 
 def GetSystemHealthBenchmarksToSmokeTest():
-  sh_benchmark_classes = discover.DiscoverClassesInModule(
-      system_health, perf_benchmark.PerfBenchmark,
-      index_by_class_name=True).values()
+  sh_benchmark_classes = list(
+      discover.DiscoverClassesInModule(system_health,
+                                       perf_benchmark.PerfBenchmark,
+                                       index_by_class_name=True).values())
   return list(b for b in sh_benchmark_classes if
               b.Name().startswith('system_health.memory'))
 
 
 _DISABLED_TESTS = frozenset({
-  # crbug.com/983326 - flaky.
-  'system_health.memory_desktop/browse_accessibility:media:youtube',
+    # crbug.com/983326 - flaky.
+    'system_health.memory_desktop/browse_accessibility:media:youtube',
 
-  # crbug.com/878390 - These stories are already covered by their 2018 or
-  # 2019 versions and will later be removed.
-  'system_health.memory_mobile/background:social:facebook',
-  'system_health.memory_mobile/background:media:imgur',
-  'system_health.memory_mobile/browse:chrome:omnibox',
-  'system_health.memory_mobile/browse:tech:discourse_infinite_scroll',
-  'system_health.memory_mobile/browse:shopping:amazon',
-  'system_health.memory_mobile/browse:social:facebook_infinite_scroll',
-  'system_health.memory_mobile/browse:social:instagram',
-  'system_health.memory_mobile/browse:news:reddit',
-  'system_health.memory_mobile/browse:social:tumblr_infinite_scroll',
-  'system_health.memory_mobile/browse:social:twitter',
-  'system_health.memory_mobile/browse:tools:maps',
-  'system_health.memory_mobile/browse:news:cnn',
-  'system_health.memory_mobile/browse:news:washingtonpost',
-  'system_health.memory_mobile/browse:media:youtube',
-  'system_health.memory_mobile/load:media:facebook_photos',
-  'system_health.memory_mobile/load:news:cnn',
-  'system_health.memory_mobile/load:news:nytimes',
-  'system_health.memory_mobile/load:news:qq',
-  'system_health.memory_mobile/load:news:reddit',
-  'system_health.memory_mobile/load:news:washingtonpost',
-  'system_health.memory_mobile/load:search:amazon',
-  'system_health.memory_mobile/load:search:taobao',
-  'system_health.memory_mobile/load:tools:stackoverflow',
-  'system_health.memory_desktop/load_accessibility:shopping:amazon',
-  'system_health.memory_desktop/browse_accessibility:tech:codesearch',
-  'system_health.memory_desktop/load_accessibility:media:wikipedia',
-  'system_health.memory_desktop/browse:tech:discourse_infinite_scroll',
-  'system_health.memory_desktop/browse:tools:maps',
-  'system_health.memory_desktop/browse:social:facebook_infinite_scroll',
-  'system_health.memory_desktop/browse:social:tumblr_infinite_scroll',
-  'system_health.memory_desktop/browse:news:flipboard',
-  'system_health.memory_desktop/browse:search:google',
-  'system_health.memory_desktop/browse:news:hackernews',
-  'system_health.memory_desktop/load:search:amazon',
-  'system_health.memory_desktop/load:news:bbc',
-  'system_health.memory_desktop/load:news:hackernews',
-  'system_health.memory_desktop/load:social:instagram',
-  'system_health.memory_desktop/load:news:reddit',
-  'system_health.memory_desktop/load:search:taobao',
-  'system_health.memory_desktop/multitab:misc:typical24',
-  'system_health.memory_desktop/browse:news:reddit',
-  'system_health.memory_desktop/browse:media:tumblr',
-  'system_health.memory_desktop/browse:social:twitter_infinite_scroll',
-  'system_health.memory_mobile/load:social:twitter',
-  'system_health.memory_desktop/load:social:vk',
+    # crbug.com/878390 - These stories are already covered by their 2018 or
+    # 2019 versions and will later be removed.
+    'system_health.memory_desktop/multitab:misc:typical24',
 
-  # crbug.com/637230
-  'system_health.memory_desktop/browse:news:cnn',
-  # Permenently disabled from smoke test for being long-running.
-  'system_health.memory_mobile/long_running:tools:gmail-foreground',
-  'system_health.memory_mobile/long_running:tools:gmail-background',
-  'system_health.memory_desktop/long_running:tools:gmail-foreground',
-  'system_health.memory_desktop/long_running:tools:gmail-background',
+    # crbug.com/637230
+    'system_health.memory_desktop/browse:news:cnn',
+    # Permenently disabled from smoke test for being long-running.
+    'system_health.memory_mobile/long_running:tools:gmail-foreground',
+    'system_health.memory_mobile/long_running:tools:gmail-background',
+    'system_health.memory_desktop/long_running:tools:gmail-foreground',
+    'system_health.memory_desktop/long_running:tools:gmail-background',
 
-  # crbug.com/769263
-  'system_health.memory_desktop/play:media:soundcloud',
+    # crbug.com/885320
+    'system_health.memory_desktop/browse:search:google:2020',
 
-  # crbug.com/
-  'system_health.memory_desktop/browse:news:nytimes',
+    # crbug.com/893615
+    'system_health.memory_desktop/multitab:misc:typical24:2018',
 
-  # crbug.com/688190
-  'system_health.memory_mobile/browse:news:washingtonpost',
+    # crbug.com/903849
+    'system_health.memory_mobile/browse:news:cnn:2018',
 
-  # crbug.com/696824
-  'system_health.memory_desktop/load:news:qq',
-  # crbug.com/893615
-  # DESKTOP:
-  'system_health.memory_desktop/browse:media:pinterest',
-  'system_health.memory_desktop/browse:media:youtube',
-  'system_health.memory_desktop/browse:search:google_india',
-  'system_health.memory_desktop/load:games:alphabetty',
-  'system_health.memory_desktop/load:games:bubbles',
-  'system_health.memory_desktop/load:games:miniclip',
-  'system_health.memory_desktop/load:games:spychase',
-  'system_health.memory_desktop/load:media:flickr',
-  'system_health.memory_desktop/load:media:google_images',
-  'system_health.memory_desktop/load:media:imgur',
-  'system_health.memory_desktop/load:media:soundcloud',
-  'system_health.memory_desktop/load:media:youtube',
-  'system_health.memory_desktop/load:news:cnn',
-  'system_health.memory_desktop/load:news:wikipedia',
-  'system_health.memory_desktop/load:search:baidu',
-  'system_health.memory_desktop/load:search:ebay',
-  'system_health.memory_desktop/load:search:google',
-  'system_health.memory_desktop/load:search:yahoo',
-  'system_health.memory_desktop/load:search:yandex',
-  'system_health.memory_desktop/load:tools:stackoverflow',
-  'system_health.memory_mobile/load:media:soundcloud',
-  # MOBILE:
-  'system_health.memory_mobile/load:games:bubbles',
-  'system_health.memory_mobile/load:games:spychase',
-  'system_health.memory_mobile/load:media:flickr',
-  'system_health.memory_mobile/load:media:google_images',
-  'system_health.memory_mobile/load:media:imgur',
-  'system_health.memory_mobile/load:media:youtube',
-  'system_health.memory_mobile/load:news:wikipedia',
-  'system_health.memory_mobile/load:search:baidu',
-  'system_health.memory_mobile/load:search:ebay',
-  'system_health.memory_mobile/load:search:google',
-  'system_health.memory_mobile/load:search:yahoo',
-  'system_health.memory_mobile/load:search:yandex',
+    # crbug.com/978358
+    'system_health.memory_desktop/browse:news:flipboard:2020',
 
-  # crbug.com/698006
-  'system_health.memory_desktop/load:tools:drive',
-  'system_health.memory_desktop/load:tools:gmail',
+    # crbug.com/1008001
+    'system_health.memory_desktop/browse:tools:sheets:2019',
+    'system_health.memory_desktop/browse:tools:maps:2019',
 
-  # crbug.com/725386
-  'system_health.memory_desktop/browse:social:twitter',
+    # crbug.com/1014661
+    'system_health.memory_desktop/browse:social:tumblr_infinite_scroll:2018',
+    'system_health.memory_desktop/browse:search:google_india:2021',
 
-  # crbug.com/816482
-  'system_health.memory_desktop/load:news:nytimes',
+    # crbug.com/1224874
+    'system_health.memory_desktop/load:social:instagram:2018',
+    'system_health.memory_desktop/load:social:pinterest:2019',
 
-  # crbug.com/885320
-  'system_health.memory_desktop/browse:search:google:2018',
-
-  # crbug.com/893615
-  'system_health.memory_desktop/multitab:misc:typical24:2018',
-
-  # crbug.com/903849
-  'system_health.memory_mobile/browse:news:cnn:2018',
-
-  # crbug.com/937006
-  'system_health.memory_mobile/browse:news:toi',
-
-  # crbug.com/978358
-  'system_health.memory_desktop/browse:news:flipboard:2018',
-
-  # crbug.com/1008001
-  'system_health.memory_desktop/browse:tools:sheets:2019',
-  'system_health.memory_desktop/browse:tools:maps:2019',
-
-  # crbug.com/1014661
-  'system_health.memory_desktop/browse:social:tumblr_infinite_scroll:2018'
-  'system_health.memory_desktop/browse:search:google_india:2018'
-
-  # The following tests are disabled because they are disabled on the perf
-  # waterfall (using tools/perf/expectations.config) on one platform or another.
-  # They may run fine on the CQ, but it isn't worth the bot time to run them.
-  # [
-  # crbug.com/799106
-  'system_health.memory_desktop/browse:media:flickr_infinite_scroll'
-  # crbug.com/836407
-  'system_health.memory_desktop/browse:tools:maps'
-  # crbug.com/924330
-  'system_health.memory_desktop/browse:media:pinterest:2018'
-  # crbug.com/899887
-  'system_health.memory_desktop/browse:social:facebook_infinite_scroll:2018'
-  # crbug.com/649392
-  'system_health.memory_desktop/play:media:google_play_music'
-  # crbug.com/934885
-  'system_health.memory_desktop/load_accessibility:media:wikipedia:2018'
-  # crbug.com/942952
-  'system_health.memory_desktop/browse:news:hackernews:2018',
-  # crbug.com/992436
-  'system_health.memory_desktop/browse:social:twitter:2018'
-  # ]
+    # The following tests are disabled because they are disabled on the perf
+    # waterfall (using tools/perf/expectations.config) on one platform or
+    # another. They may run fine on the CQ, but it isn't worth the bot time to
+    # run them.
+    # [
+    # crbug.com/924330
+    'system_health.memory_desktop/browse:media:pinterest:2018',
+    # crbug.com/899887
+    'system_health.memory_desktop/browse:social:facebook_infinite_scroll:2018',
+    # crbug.com/649392
+    'system_health.memory_desktop/play:media:google_play_music',
+    # crbug.com/934885
+    'system_health.memory_desktop/load_accessibility:media:wikipedia:2018',
+    # crbug.com/942952
+    'system_health.memory_desktop/browse:news:hackernews:2020',
+    # crbug.com/992436
+    'system_health.memory_desktop/browse:social:twitter:2018',
+    # crbug.com/1060068
+    'system_health.memory_desktop/browse:tech:discourse_infinite_scroll:2018',
+    # crbug.com/1091274
+    'system_health.memory_desktop/browse:media:tumblr:2018',
+    # crbug.com/1194256
+    'system_health.memory_desktop/browse:news:cnn:2021',
+    # ]
 })
 
 
@@ -233,9 +138,15 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
       options = GenerateBenchmarkOptions(
           output_dir=temp_dir,
           benchmark_cls=SinglePageBenchmark)
-      simplified_test_name = self.id().replace(
-          'benchmarks.system_health_smoke_test.SystemHealthBenchmarkSmokeTest.',
-          '')
+      # The ID signature changes based on Python version.
+      if six.PY2:
+        replacement_string = ('benchmarks.system_health_smoke_test.'
+                              'SystemHealthBenchmarkSmokeTest.')
+      else:
+        replacement_string = ('benchmarks.system_health_smoke_test.'
+                              '_GenerateSmokeTestCase.<locals>.'
+                              'SystemHealthBenchmarkSmokeTest.')
+      simplified_test_name = self.id().replace(replacement_string, '')
       # Sanity check to ensure that that substring removal was effective.
       assert len(simplified_test_name) < len(self.id())
 
@@ -251,7 +162,7 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
       self.assertEqual(
           return_code, 0,
           msg='Benchmark run failed: %s' % benchmark_class.Name())
-      return_code = results_processor.ProcessResults(options)
+      return_code = results_processor.ProcessResults(options, is_unittest=True)
       self.assertEqual(
           return_code, 0,
           msg='Result processing failed: %s' % benchmark_class.Name())
@@ -283,8 +194,11 @@ def GenerateBenchmarkOptions(output_dir, benchmark_cls):
   # all crashes and hence remove the need to enable logging in actual perf
   # benchmarks.
   options.browser_options.logging_verbosity = 'non-verbose'
+  options.browser_options.environment = \
+      chromium_config.GetDefaultChromiumConfig()
   options.target_platforms = benchmark_cls.GetSupportedPlatformNames(
       benchmark_cls.SUPPORTED_PLATFORMS)
+  results_processor.ProcessOptions(options)
   return options
 
 
@@ -391,7 +305,7 @@ def find_multi_version_stories(stories, disabled):
       else:
         prefix = name
     prefixes[prefix].append(name)
-  for prefix, stories in prefixes.items():
-    if len(stories) == 1:
-      prefixes.pop(prefix)
-  return prefixes
+  return {
+      prefix: stories
+      for prefix, stories in prefixes.items() if len(stories) != 1
+  }

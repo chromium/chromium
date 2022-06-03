@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.toolbar.top;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import android.app.Activity;
-import android.support.test.filters.MediumTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,9 +23,10 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.widget.listmenu.ListMenuButton;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -43,7 +45,8 @@ public class TabSwitcherActionMenuRenderTest extends DummyUiActivityTestCase {
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = new ChromeRenderTestRule();
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     private View mView;
 
@@ -53,8 +56,30 @@ public class TabSwitcherActionMenuRenderTest extends DummyUiActivityTestCase {
     }
 
     @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    public void tearDownTest() throws Exception {
+        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
+        super.tearDownTest();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_TabSwitcherActionMenu() throws IOException {
+        IncognitoUtils.setEnabledForTesting(true);
+        showMenu();
+        mRenderTestRule.render(mView, "tab_switcher_action_menu");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_TabSwitcherActionMenu_IncognitoDisabled() throws IOException {
+        IncognitoUtils.setEnabledForTesting(false);
+        showMenu();
+        mRenderTestRule.render(mView, "tab_switcher_action_menu_incognito_disabled");
+    }
+
+    private void showMenu() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Activity activity = getActivity();
             TabSwitcherActionMenuCoordinator coordinator = new TabSwitcherActionMenuCoordinator();
@@ -68,21 +93,8 @@ public class TabSwitcherActionMenuRenderTest extends DummyUiActivityTestCase {
             int popupWidth =
                     activity.getResources().getDimensionPixelSize(R.dimen.tab_switcher_menu_width);
             mView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    activity.getResources(), R.drawable.popup_bg_tinted));
+                    activity.getResources(), R.drawable.menu_bg_tinted));
             activity.setContentView(mView, new LayoutParams(popupWidth, WRAP_CONTENT));
         });
-    }
-
-    @Override
-    public void tearDownTest() throws Exception {
-        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
-        super.tearDownTest();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testRender_TabSwitcherActionMenu() throws IOException {
-        mRenderTestRule.render(mView, "tab_switcher_action_menu");
     }
 }

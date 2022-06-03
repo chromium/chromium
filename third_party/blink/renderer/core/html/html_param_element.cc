@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {
@@ -34,7 +35,7 @@ HTMLParamElement::HTMLParamElement(Document& document)
 const AtomicString& HTMLParamElement::GetName() const {
   if (HasName())
     return GetNameAttribute();
-  return GetDocument().IsHTMLDocument() ? g_empty_atom : GetIdAttribute();
+  return IsA<HTMLDocument>(GetDocument()) ? g_empty_atom : GetIdAttribute();
 }
 
 const AtomicString& HTMLParamElement::Value() const {
@@ -46,11 +47,11 @@ const AtomicString& HTMLParamElement::Value() const {
 // allow the resource's URL to be given by a param of the named "code",
 // "data", "movie", "src" or "url".
 bool HTMLParamElement::IsURLParameter(const String& name) {
-  return DeprecatedEqualIgnoringCase(name, "code") ||
-         DeprecatedEqualIgnoringCase(name, "data") ||
-         DeprecatedEqualIgnoringCase(name, "movie") ||
-         DeprecatedEqualIgnoringCase(name, "src") ||
-         DeprecatedEqualIgnoringCase(name, "url");
+  return EqualIgnoringASCIICase(name, "code") ||
+         EqualIgnoringASCIICase(name, "data") ||
+         EqualIgnoringASCIICase(name, "movie") ||
+         EqualIgnoringASCIICase(name, "src") ||
+         EqualIgnoringASCIICase(name, "url");
 }
 
 bool HTMLParamElement::IsURLAttribute(const Attribute& attribute) const {

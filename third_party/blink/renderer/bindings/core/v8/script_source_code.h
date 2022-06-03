@@ -43,6 +43,7 @@
 namespace blink {
 
 class ScriptResource;
+class ScriptCacheConsumer;
 class SingleCachedMetadataHandler;
 
 class CORE_EXPORT ScriptSourceCode final {
@@ -62,6 +63,7 @@ class CORE_EXPORT ScriptSourceCode final {
   // We lose the encoding information from ScriptResource.
   // Not sure if that matters.
   ScriptSourceCode(ScriptStreamer*,
+                   ScriptCacheConsumer*,
                    ScriptResource*,
                    ScriptStreamer::NotStreamingReason);
 
@@ -79,7 +81,7 @@ class CORE_EXPORT ScriptSourceCode final {
                    const KURL&);
 
   ~ScriptSourceCode();
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   const ParkableString& Source() const { return source_; }
   SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
@@ -95,6 +97,8 @@ class CORE_EXPORT ScriptSourceCode final {
     return not_streaming_reason_;
   }
 
+  ScriptCacheConsumer* CacheConsumer() const { return cache_consumer_; }
+
  private:
   ScriptSourceCode(
       const ParkableString& source,
@@ -106,6 +110,7 @@ class CORE_EXPORT ScriptSourceCode final {
   const ParkableString source_;
   Member<SingleCachedMetadataHandler> cache_handler_;
   Member<ScriptStreamer> streamer_;
+  Member<ScriptCacheConsumer> cache_consumer_;
   ScriptStreamer::NotStreamingReason not_streaming_reason_;
 
   // The URL of the source code, which is primarily intended for DevTools

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromecast/device/bluetooth/le/ble_notification_logger.h"
+
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_device.h"

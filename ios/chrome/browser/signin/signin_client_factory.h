@@ -11,19 +11,18 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
 class SigninClient;
 
-namespace ios {
-class ChromeBrowserState;
-}
-
 // Singleton that owns all SigninClients and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class SigninClientFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static SigninClient* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+  static SigninClient* GetForBrowserState(ChromeBrowserState* browser_state);
   static SigninClientFactory* GetInstance();
+
+  SigninClientFactory(const SigninClientFactory&) = delete;
+  SigninClientFactory& operator=(const SigninClientFactory&) = delete;
 
  private:
   friend class base::NoDestructor<SigninClientFactory>;
@@ -34,8 +33,6 @@ class SigninClientFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninClientFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_CLIENT_FACTORY_H_

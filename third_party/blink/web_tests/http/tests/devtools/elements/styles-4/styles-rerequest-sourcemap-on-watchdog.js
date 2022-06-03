@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verifies that the sourceMap is in fact re-requested from network as SASS watchdog updates the CSS file.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`<link rel="stylesheet">`);
@@ -23,12 +23,12 @@
   TestRunner.evaluateInPagePromise('addStyleSheet()');
 
   function onInitialSourceMap() {
-    TestRunner.cssModel.removeEventListener(SDK.SourceMapManager.Events.SourceMapAttached, onInitialSourceMap);
+    TestRunner.cssModel.sourceMapManager().removeEventListener(SDK.SourceMapManager.Events.SourceMapAttached, onInitialSourceMap);
     SourcesTestRunner.waitForScriptSource('styles-rerequest-sourcemap-on-watchdog.css', onCSSFile);
   }
 
   function onCSSFile(uiSourceCode) {
-    TestRunner.addSniffer(SDK.SourceMapManager.prototype, '_sourceMapLoadedForTest', onSourceMapRerequested);
+    TestRunner.addSniffer(SDK.SourceMapManager.prototype, 'sourceMapLoadedForTest', onSourceMapRerequested);
     uiSourceCode.addRevision(
         'div { color: blue; } /*# sourceMappingURL=styles-rerequest-sourcemap-on-watchdog.css.map */');
   }

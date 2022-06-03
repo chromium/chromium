@@ -8,9 +8,6 @@
 #include <windows.h>
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
@@ -38,7 +35,7 @@ bool LaunchProcessWithToken(
     SECURITY_ATTRIBUTES* thread_attributes,
     const base::HandlesToInheritVector& handles_to_inherit,
     DWORD creation_flags,
-    const base::char16* desktop_name,
+    const wchar_t* desktop_name,
     base::win::ScopedHandle* process_out,
     base::win::ScopedHandle* thread_out);
 

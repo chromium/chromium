@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/components/tether/fake_host_scan_cache.h"
@@ -26,6 +27,10 @@ namespace chromeos {
 namespace tether {
 
 class NetworkHostScanCacheTest : public testing::Test {
+ public:
+  NetworkHostScanCacheTest(const NetworkHostScanCacheTest&) = delete;
+  NetworkHostScanCacheTest& operator=(const NetworkHostScanCacheTest&) = delete;
+
  protected:
   NetworkHostScanCacheTest()
       : test_entries_(host_scan_test_util::CreateTestEntries()) {}
@@ -128,9 +133,6 @@ class NetworkHostScanCacheTest : public testing::Test {
   std::unique_ptr<FakeHostScanCache> expected_cache_;
 
   std::unique_ptr<NetworkHostScanCache> host_scan_cache_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkHostScanCacheTest);
 };
 
 TEST_F(NetworkHostScanCacheTest, TestSetAndRemove) {

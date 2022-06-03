@@ -1,0 +1,16 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-in-out-arg-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-in-out-arg-actual.cc:::1090:::3:::raw_ptr<T>
+r:::gen-in-out-arg-actual.cc:::2873:::3:::raw_ptr<T>
+r:::gen-in-out-arg-actual.cc:::789:::11:::raw_ptr<SomeClass>
+r:::gen-in-out-arg-actual.cc:::813:::11:::raw_ptr<SomeClass>
+r:::gen-in-out-arg-actual.cc:::842:::11:::raw_ptr<SomeClass>
+r:::gen-in-out-arg-actual.cc:::871:::11:::raw_ptr<SomeClass>
+r:::gen-in-out-arg-actual.cc:::907:::11:::raw_ptr<SomeClass>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+my_namespace::MyStruct::in_out_via_auto_reset  # addr-of
+my_namespace::MyStruct::in_out_via_ptr  # addr-of
+my_namespace::MyStruct::in_out_via_ref  # in-out-param-ref
+my_namespace::MyTemplateBase::ptr_  # addr-of
+==== END FIELD FILTERS ====

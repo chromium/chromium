@@ -41,7 +41,7 @@ ScopedTaskSuspend::ScopedTaskSuspend(const zx::process& process) {
   for (const auto& thread : GetThreadHandles(process)) {
     // We omit the crashed thread (blocked in an exception) as it is technically
     // not suspended, cf. ZX-3772.
-    zx_info_thread info;
+    zx_info_thread_t info;
     if (thread.get_info(
             ZX_INFO_THREAD, &info, sizeof(info), nullptr, nullptr) == ZX_OK) {
       if (info.state == ZX_THREAD_STATE_BLOCKED_EXCEPTION) {
@@ -52,8 +52,16 @@ ScopedTaskSuspend::ScopedTaskSuspend(const zx::process& process) {
     zx_signals_t observed = 0u;
     const zx_status_t wait_status = thread.wait_one(
         ZX_THREAD_SUSPENDED, zx::deadline_after(zx::msec(50)), &observed);
-    ZX_LOG_IF(ERROR, wait_status != ZX_OK, wait_status)
-        << "thread failed to suspend";
+    if (wait_status != ZX_OK) {
+      zx_info_thread_t info = {};
+      zx_status_t info_status = thread.get_info(
+          ZX_INFO_THREAD, &info, sizeof(info), nullptr, nullptr);
+      ZX_LOG(ERROR, wait_status) << "thread failed to suspend";
+      LOG(ERROR) << "Thread info status " << info_status;
+      if (info_status == ZX_OK) {
+        LOG(ERROR) << "Thread state " << info.state;
+      }
+    }
   }
 }
 

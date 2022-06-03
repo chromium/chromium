@@ -1,0 +1,55 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "src/src/main/proto/device_to_device_messages.proto",
+    "src/src/main/proto/passwordless_auth_payloads.proto",
+    "src/src/main/proto/proximity_payloads.proto",
+    "src/src/main/proto/securegcm.proto",
+    "src/src/main/proto/ukey.proto",
+  ]
+
+  proto_out_dir = "third_party/ukey2/proto"
+  import_dirs = [ "//third_party/securemessage/proto" ]
+  link_deps = [ "//third_party/securemessage/proto" ]
+  proto_deps = [ "//third_party/securemessage/proto" ]
+}
+
+config("ukey2_config") {
+  include_dirs = [
+    "$root_gen_dir/third_party/ukey2",
+    "src/src/main/cpp/include",
+  ]
+}
+
+source_set("ukey2") {
+  public_configs = [ ":ukey2_config" ]
+
+  sources = [
+    "src/src/main/cpp/src/securegcm/d2d_connection_context_v1.cc",
+    "src/src/main/cpp/src/securegcm/d2d_crypto_ops.cc",
+    "src/src/main/cpp/src/securegcm/java_util.cc",
+    "src/src/main/cpp/src/securegcm/ukey2_handshake.cc",
+  ]
+
+  public = [
+    "src/src/main/cpp/include/securegcm/d2d_connection_context_v1.h",
+    "src/src/main/cpp/include/securegcm/d2d_crypto_ops.h",
+    "src/src/main/cpp/include/securegcm/java_util.h",
+    "src/src/main/cpp/include/securegcm/ukey2_handshake.h",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//third_party/securemessage",
+    "//third_party/securemessage:securemessage_cpp_protobuf",
+    "//third_party/securemessage:securemessage_openssl",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}

@@ -15,68 +15,60 @@ class XDGSurfaceWrapperImpl;
 class WaylandConnection;
 class WaylandWindow;
 
-// Popup wrapper for xdg-shell stable and xdg-shell-unstable-v6
+// Popup wrapper for xdg-shell stable
 class XDGPopupWrapperImpl : public ShellPopupWrapper {
  public:
   XDGPopupWrapperImpl(std::unique_ptr<XDGSurfaceWrapperImpl> surface,
-                      WaylandWindow* wayland_window);
+                      WaylandWindow* wayland_window,
+                      WaylandConnection* connection);
+
+  XDGPopupWrapperImpl(const XDGPopupWrapperImpl&) = delete;
+  XDGPopupWrapperImpl& operator=(const XDGPopupWrapperImpl&) = delete;
+
   ~XDGPopupWrapperImpl() override;
 
   // XDGPopupWrapper:
-  bool Initialize(WaylandConnection* connection,
-                  const gfx::Rect& bounds) override;
+  bool Initialize(const ShellPopupParams& params) override;
+  void AckConfigure(uint32_t serial) override;
+  bool IsConfigured() override;
+  bool SetBounds(const gfx::Rect& new_bounds) override;
+  void SetWindowGeometry(const gfx::Rect& bounds) override;
+  void Grab(uint32_t serial) override;
 
  private:
-  bool InitializeStable(WaylandConnection* connection,
-                        const gfx::Rect& bounds,
-                        XDGSurfaceWrapperImpl* parent_xdg_surface);
-  struct xdg_positioner* CreatePositionerStable(WaylandConnection* connection,
-                                                WaylandWindow* parent_window,
-                                                const gfx::Rect& bounds);
-
-  bool InitializeV6(WaylandConnection* connection,
-                    const gfx::Rect& bounds,
-                    XDGSurfaceWrapperImpl* parent_xdg_surface);
-  struct zxdg_positioner_v6* CreatePositionerV6(WaylandConnection* connection,
-                                                WaylandWindow* parent_window,
-                                                const gfx::Rect& bounds);
+  struct xdg_positioner* CreatePositioner(WaylandWindow* parent_window);
 
   // xdg_popup_listener
   static void Configure(void* data,
-                        int32_t x,
-                        int32_t y,
-                        int32_t width,
-                        int32_t height);
-  static void ConfigureStable(void* data,
                               struct xdg_popup* xdg_popup,
                               int32_t x,
                               int32_t y,
                               int32_t width,
                               int32_t height);
-  static void ConfigureV6(void* data,
-                          struct zxdg_popup_v6* zxdg_popup_v6,
-                          int32_t x,
-                          int32_t y,
-                          int32_t width,
-                          int32_t height);
-  static void PopupDone(void* data);
-  static void PopupDoneStable(void* data, struct xdg_popup* xdg_popup);
-  static void PopupDoneV6(void* data, struct zxdg_popup_v6* zxdg_popup_v6);
+  static void PopupDone(void* data, struct xdg_popup* xdg_popup);
+  static void Repositioned(void* data,
+                           struct xdg_popup* xdg_popup,
+                           uint32_t token);
 
-  XDGSurfaceWrapperImpl* xdg_surface();
+  XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
   // Non-owned WaylandWindow that uses this popup.
   WaylandWindow* const wayland_window_;
+  WaylandConnection* const connection_;
 
   // Ground surface for this popup.
-  std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_;
+  std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;
 
   // XDG Shell Stable object.
   wl::Object<xdg_popup> xdg_popup_;
-  // XDG Shell V6 object.
-  wl::Object<zxdg_popup_v6> zxdg_popup_v6_;
 
-  DISALLOW_COPY_AND_ASSIGN(XDGPopupWrapperImpl);
+  // Aura shell popup object
+  wl::Object<zaura_popup> aura_popup_;
+
+  // Parameters that help to configure this popup.
+  ShellPopupParams params_;
+
+  uint32_t next_reposition_token_ = 1;
 };
 
 }  // namespace ui

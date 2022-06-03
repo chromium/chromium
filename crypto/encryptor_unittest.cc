@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/symmetric_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,13 +29,21 @@ TEST(EncryptorTest, EncryptDecrypt) {
   std::string plaintext("this is the plaintext");
   std::string ciphertext;
   EXPECT_TRUE(encryptor.Encrypt(plaintext, &ciphertext));
-
   EXPECT_LT(0U, ciphertext.size());
 
   std::string decrypted;
   EXPECT_TRUE(encryptor.Decrypt(ciphertext, &decrypted));
-
   EXPECT_EQ(plaintext, decrypted);
+
+  // Repeat the test with the bytes API.
+  std::vector<uint8_t> plaintext_vec(plaintext.begin(), plaintext.end());
+  std::vector<uint8_t> ciphertext_vec;
+  EXPECT_TRUE(encryptor.Encrypt(plaintext_vec, &ciphertext_vec));
+  EXPECT_LT(0U, ciphertext_vec.size());
+
+  std::vector<uint8_t> decrypted_vec;
+  EXPECT_TRUE(encryptor.Decrypt(ciphertext_vec, &decrypted_vec));
+  EXPECT_EQ(plaintext_vec, decrypted_vec);
 }
 
 TEST(EncryptorTest, DecryptWrongKey) {
@@ -211,6 +219,24 @@ void TestAESCTREncrypt(
   EXPECT_TRUE(encryptor.Decrypt(encrypted, &decrypted));
 
   EXPECT_EQ(plaintext_str, decrypted);
+
+  // Repeat the test with the bytes API.
+  EXPECT_TRUE(
+      encryptor.SetCounter(base::make_span(init_counter, init_counter_size)));
+  std::vector<uint8_t> encrypted_vec;
+  EXPECT_TRUE(encryptor.Encrypt(base::make_span(plaintext, plaintext_size),
+                                &encrypted_vec));
+
+  EXPECT_EQ(ciphertext_size, encrypted_vec.size());
+  EXPECT_EQ(0, memcmp(encrypted_vec.data(), ciphertext, encrypted_vec.size()));
+
+  std::vector<uint8_t> decrypted_vec;
+  EXPECT_TRUE(
+      encryptor.SetCounter(base::make_span(init_counter, init_counter_size)));
+  EXPECT_TRUE(encryptor.Decrypt(encrypted_vec, &decrypted_vec));
+
+  EXPECT_EQ(std::vector<uint8_t>(plaintext, plaintext + plaintext_size),
+            decrypted_vec);
 }
 
 void TestAESCTRMultipleDecrypt(
@@ -308,47 +334,6 @@ TEST(EncryptorTest, EncryptDecryptCTR) {
   EXPECT_TRUE(encryptor.SetCounter(kInitialCounter));
   EXPECT_TRUE(encryptor.Decrypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
-}
-
-TEST(EncryptorTest, CTRCounter) {
-  const int kCounterSize = 16;
-  const unsigned char kTest1[] =
-      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned char buf[16];
-
-  // Increment 10 times.
-  crypto::Encryptor::Counter counter1(
-      std::string(reinterpret_cast<const char*>(kTest1), kCounterSize));
-  for (int i = 0; i < 10; ++i)
-    counter1.Increment();
-  counter1.Write(buf);
-  EXPECT_EQ(0, memcmp(buf, kTest1, 15));
-  EXPECT_EQ(10, buf[15]);
-
-  // Check corner cases.
-  const unsigned char kTest2[] = {
-      0, 0, 0, 0, 0, 0, 0, 0,
-      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
-  };
-  const unsigned char kExpect2[] =
-      {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
-  crypto::Encryptor::Counter counter2(
-      std::string(reinterpret_cast<const char*>(kTest2), kCounterSize));
-  counter2.Increment();
-  counter2.Write(buf);
-  EXPECT_EQ(0, memcmp(buf, kExpect2, kCounterSize));
-
-  const unsigned char kTest3[] = {
-      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
-  };
-  const unsigned char kExpect3[] =
-      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  crypto::Encryptor::Counter counter3(
-      std::string(reinterpret_cast<const char*>(kTest3), kCounterSize));
-  counter3.Increment();
-  counter3.Write(buf);
-  EXPECT_EQ(0, memcmp(buf, kExpect3, kCounterSize));
 }
 
 // TODO(wtc): add more known-answer tests.  Test vectors are available from

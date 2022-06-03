@@ -84,14 +84,14 @@ ProcessSnapshotSanitized::~ProcessSnapshotSanitized() = default;
 
 bool ProcessSnapshotSanitized::Initialize(
     const ProcessSnapshot* snapshot,
-    std::unique_ptr<const std::vector<std::string>> annotations_whitelist,
+    std::unique_ptr<const std::vector<std::string>> allowed_annotations,
     std::unique_ptr<const std::vector<std::pair<VMAddress, VMAddress>>>
-        memory_range_whitelist,
+        allowed_memory_ranges,
     VMAddress target_module_address,
     bool sanitize_stacks) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   snapshot_ = snapshot;
-  annotations_whitelist_ = std::move(annotations_whitelist);
+  allowed_annotations_ = std::move(allowed_annotations);
   sanitize_stacks_ = sanitize_stacks;
 
   if (target_module_address) {
@@ -139,10 +139,10 @@ bool ProcessSnapshotSanitized::Initialize(
     }
   }
 
-  if (annotations_whitelist_) {
+  if (allowed_annotations_) {
     for (const auto module : snapshot_->Modules()) {
       modules_.emplace_back(std::make_unique<internal::ModuleSnapshotSanitized>(
-          module, annotations_whitelist_.get()));
+          module, allowed_annotations_.get()));
     }
   }
 
@@ -159,7 +159,7 @@ bool ProcessSnapshotSanitized::Initialize(
     }
   }
 
-  process_memory_.Initialize(snapshot_->Memory(), memory_range_whitelist.get());
+  process_memory_.Initialize(snapshot_->Memory(), allowed_memory_ranges.get());
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
@@ -227,7 +227,7 @@ std::vector<const ThreadSnapshot*> ProcessSnapshotSanitized::Threads() const {
 
 std::vector<const ModuleSnapshot*> ProcessSnapshotSanitized::Modules() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  if (!annotations_whitelist_) {
+  if (!allowed_annotations_) {
     return snapshot_->Modules();
   }
 

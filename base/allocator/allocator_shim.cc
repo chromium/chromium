@@ -10,11 +10,9 @@
 #include <new>
 
 #include "base/allocator/buildflags.h"
-#include "base/atomicops.h"
 #include "base/bits.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/process/process_metrics.h"
+#include "base/check_op.h"
+#include "base/memory/page_size.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
@@ -24,10 +22,11 @@
 #include "base/allocator/winheap_stubs_win.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <malloc/malloc.h>
 
 #include "base/allocator/allocator_interception_mac.h"
+#include "base/mac/mach_logging.h"
 #endif
 
 // No calls to malloc / new in this file. They would would cause re-entrancy of
@@ -37,13 +36,12 @@
 
 namespace {
 
-base::subtle::AtomicWord g_chain_head =
-    reinterpret_cast<base::subtle::AtomicWord>(
-        &base::allocator::AllocatorDispatch::default_dispatch);
+std::atomic<const base::allocator::AllocatorDispatch*> g_chain_head{
+    &base::allocator::AllocatorDispatch::default_dispatch};
 
 bool g_call_new_handler_on_malloc_failure = false;
 
-inline size_t GetCachedPageSize() {
+ALWAYS_INLINE size_t GetCachedPageSize() {
   static size_t pagesize = 0;
   if (!pagesize)
     pagesize = base::GetPageSize();
@@ -66,17 +64,8 @@ bool CallNewHandler(size_t size) {
 #endif
 }
 
-inline const base::allocator::AllocatorDispatch* GetChainHead() {
-  // TODO(primiano): Just use NoBarrier_Load once crbug.com/593344 is fixed.
-  // Unfortunately due to that bug NoBarrier_Load() is mistakenly fully
-  // barriered on Linux+Clang, and that causes visible perf regressons.
-  return reinterpret_cast<const base::allocator::AllocatorDispatch*>(
-#if defined(OS_LINUX) && defined(__clang__)
-      *static_cast<const volatile base::subtle::AtomicWord*>(&g_chain_head)
-#else
-      base::subtle::NoBarrier_Load(&g_chain_head)
-#endif
-  );
+ALWAYS_INLINE const base::allocator::AllocatorDispatch* GetChainHead() {
+  return g_chain_head.load(std::memory_order_relaxed);
 }
 
 }  // namespace
@@ -90,7 +79,7 @@ void SetCallNewHandlerOnMallocFailure(bool value) {
 
 void* UncheckedAlloc(size_t size) {
   const allocator::AllocatorDispatch* const chain_head = GetChainHead();
-  return chain_head->alloc_function(chain_head, size, nullptr);
+  return chain_head->alloc_unchecked_function(chain_head, size, nullptr);
 }
 
 void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
@@ -107,13 +96,11 @@ void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
     // we don't really want this to be a release-store with a corresponding
     // acquire-load during malloc().
     std::atomic_thread_fence(std::memory_order_seq_cst);
-    subtle::AtomicWord old_value =
-        reinterpret_cast<subtle::AtomicWord>(chain_head);
     // Set the chain head to the new dispatch atomically. If we lose the race,
-    // the comparison will fail, and the new head of chain will be returned.
-    if (subtle::NoBarrier_CompareAndSwap(
-            &g_chain_head, old_value,
-            reinterpret_cast<subtle::AtomicWord>(dispatch)) == old_value) {
+    // retry.
+    if (g_chain_head.compare_exchange_strong(chain_head, dispatch,
+                                             std::memory_order_relaxed,
+                                             std::memory_order_relaxed)) {
       // Success.
       return;
     }
@@ -124,8 +111,7 @@ void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
 
 void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
   DCHECK_EQ(GetChainHead(), dispatch);
-  subtle::NoBarrier_Store(&g_chain_head,
-                          reinterpret_cast<subtle::AtomicWord>(dispatch->next));
+  g_chain_head.store(dispatch->next, std::memory_order_relaxed);
 }
 
 }  // namespace allocator
@@ -147,7 +133,7 @@ extern "C" {
 //   - If the std::new_handler is NOT set just return nullptr.
 //   - If the std::new_handler is set:
 //     - Assume it will abort() if it fails (very likely the new_handler will
-//       just suicide priting a message).
+//       just suicide printing a message).
 //     - Assume it did succeed if it returns, in which case reattempt the alloc.
 
 ALWAYS_INLINE void* ShimCppNew(size_t size) {
@@ -155,7 +141,7 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
   void* ptr;
   do {
     void* context = nullptr;
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_function(chain_head, size, context);
@@ -163,12 +149,21 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
   return ptr;
 }
 
+ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
+  void* context = nullptr;
+#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  context = malloc_default_zone();
+#endif
+  const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->alloc_unchecked_function(chain_head, size, context);
+}
+
 ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
   void* ptr;
   do {
     void* context = nullptr;
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
@@ -179,7 +174,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
 
 ALWAYS_INLINE void ShimCppDelete(void* address) {
   void* context = nullptr;
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
@@ -251,7 +246,7 @@ ALWAYS_INLINE void* ShimPvalloc(size_t size) {
   if (size == 0) {
     size = GetCachedPageSize();
   } else {
-    size = (size + GetCachedPageSize() - 1) & ~(GetCachedPageSize() - 1);
+    size = base::bits::AlignUp(size, GetCachedPageSize());
   }
   // The third argument is nullptr because pvalloc is glibc only and does not
   // exist on OSX/BSD systems.
@@ -328,10 +323,16 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 
 }  // extern "C"
 
-#if !defined(OS_WIN) && !defined(OS_MACOSX)
+#if !defined(OS_WIN) && \
+    !(defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
 // Cpp symbols (new / delete) should always be routed through the shim layer
-// except on Windows and macOS where the malloc intercept is deep enough that it
-// also catches the cpp calls.
+// except on Windows and macOS (except for PartitionAlloc-Everywhere) where the
+// malloc intercept is deep enough that it also catches the cpp calls.
+//
+// In case of PartitionAlloc-Everywhere on macOS, malloc backed by
+// base::internal::PartitionMalloc crashes on OOM, and we need to avoid crashes
+// in case of operator new() noexcept.  Thus, operator new() noexcept needs to
+// be routed to base::internal::PartitionMallocUnchecked through the shim layer.
 #include "base/allocator/allocator_shim_override_cpp_symbols.h"
 #endif
 
@@ -342,24 +343,47 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #elif defined(OS_WIN)
 // On Windows we use plain link-time overriding of the CRT symbols.
 #include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
-#elif defined(OS_MACOSX)
-#include "base/allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.h"
+#elif defined(OS_APPLE)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/allocator_shim_override_mac_default_zone.h"
+#else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_override_mac_symbols.h"
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #else
 #include "base/allocator/allocator_shim_override_libc_symbols.h"
 #endif
 
 // In the case of tcmalloc we also want to plumb into the glibc hooks
 // to avoid that allocations made in glibc itself (e.g., strdup()) get
-// accidentally performed on the glibc heap instead of the tcmalloc one.
-#if BUILDFLAG(USE_TCMALLOC)
+// accidentally performed on the glibc heap.
+//
+// More details:
+// Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)
+// incorrectly call __libc_memalign() to allocate memory (see elf/dl-tls.c in
+// glibc 2.23 for instance), and free() to free it. This causes issues for us,
+// as we are then asked to free memory we didn't allocate.
+//
+// This only happened in glibc to allocate TLS storage metadata, and there are
+// no other callers of __libc_memalign() there as of September 2020. To work
+// around this issue, intercept this internal libc symbol to make sure that both
+// the allocation and the free() are caught by the shim.
+//
+// This seems fragile, and is, but there is ample precedent for it, making it
+// quite likely to keep working in the future. For instance, both tcmalloc (in
+// libc_override_glibc.h, see in third_party/tcmalloc) and LLVM for LSAN use the
+// same mechanism.
+
+#if defined(LIBC_GLIBC) && \
+    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
 #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 namespace base {
 namespace allocator {
+
 void InitializeAllocatorShim() {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Prepares the default dispatch. After the intercepted malloc calls have
   // traversed the shim this will route them to the default malloc zone.
   InitializeDefaultDispatchToMacAllocator();
@@ -369,7 +393,9 @@ void InitializeAllocatorShim() {
   // This replaces the default malloc zone, causing calls to malloc & friends
   // from the codebase to be routed to ShimMalloc() above.
   base::allocator::ReplaceFunctionsForStoredZones(&functions);
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
+
 }  // namespace allocator
 }  // namespace base
 #endif

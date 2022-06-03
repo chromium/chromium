@@ -5,20 +5,24 @@
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
-#include <unordered_set>
-
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 
 struct SkRect;
 struct SkIRect;
 class SkRRect;
 
+namespace gpu {
+struct Mailbox;
+}
+
 namespace cc {
 
+class DecodedDrawImage;
 class DrawImage;
 class PaintShader;
 
@@ -47,6 +51,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   void Write(SkScalar data);
   void Write(SkMatrix data);
+  void Write(const SkM44& data);
   void Write(uint8_t data);
   void Write(uint32_t data);
   void Write(uint64_t data);
@@ -54,27 +59,38 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const SkRect& rect);
   void Write(const SkIRect& rect);
   void Write(const SkRRect& rect);
-
-  void Write(const SkPath& path);
-  void Write(const PaintFlags& flags);
+  void Write(const SkPath& path, UsePaintCache);
   void Write(const sk_sp<SkData>& data);
   void Write(const SkColorSpace* data);
-  void Write(const PaintShader* shader, SkFilterQuality quality);
-  void Write(const PaintFilter* filter);
+  void Write(const SkSamplingOptions&);
   void Write(const sk_sp<SkTextBlob>& blob);
-  void Write(SkColorType color_type);
   void Write(SkYUVColorSpace yuv_color_space);
+  void Write(SkYUVAInfo::PlaneConfig plane_config);
+  void Write(SkYUVAInfo::Subsampling subsampling);
+  void Write(const gpu::Mailbox& mailbox);
 
-  void Write(SkClipOp op) { Write(static_cast<uint8_t>(op)); }
-  void Write(PaintCanvas::AnnotationType type) {
-    Write(static_cast<uint8_t>(type));
+  // Shaders and filters need to know the current transform in order to lock in
+  // the scale factor they will be evaluated at after deserialization. This is
+  // critical to ensure that nested PaintRecords are analyzed and rasterized
+  // identically when text is involved.
+  void Write(const PaintFlags& flags, const SkM44& current_ctm);
+  void Write(const PaintShader* shader,
+             PaintFlags::FilterQuality quality,
+             const SkM44& current_ctm);
+  void Write(const PaintFilter* filter, const SkM44& current_ctm);
+
+  void Write(SkClipOp op) { WriteEnum(op); }
+  void Write(PaintCanvas::AnnotationType type) { WriteEnum(type); }
+  void Write(SkCanvas::SrcRectConstraint constraint) { WriteEnum(constraint); }
+  void Write(SkColorType color_type) { WriteEnum(color_type); }
+  void Write(PaintFlags::FilterQuality filter_quality) {
+    WriteEnum(filter_quality);
   }
-  void Write(PaintCanvas::SrcRectConstraint constraint) {
-    Write(static_cast<uint8_t>(constraint));
-  }
-  void Write(SkFilterQuality filter_quality) {
-    Write(static_cast<uint8_t>(filter_quality));
-  }
+  void Write(SkBlendMode blend_mode) { WriteEnum(blend_mode); }
+  void Write(SkTileMode tile_mode) { WriteEnum(tile_mode); }
+  void Write(SkFilterMode filter_mode) { WriteEnum(filter_mode); }
+  void Write(SkMipmapMode mipmap_mode) { WriteEnum(mipmap_mode); }
+
   void Write(bool data) { Write(static_cast<uint8_t>(data)); }
 
   // Aligns the memory to the given alignment.
@@ -103,51 +119,66 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // image.
   void Write(const DrawImage& draw_image, SkSize* scale_adjustment);
 
+  // Serializes the given |skottie| vector graphic.
+  void Write(scoped_refptr<SkottieWrapper> skottie);
+
  private:
   template <typename T>
   void WriteSimple(const T& val);
 
   void WriteFlattenable(const SkFlattenable* val);
 
+  template <typename Enum>
+  void WriteEnum(Enum value) {
+    Write(base::checked_cast<uint8_t>(value));
+  }
+
   // The main entry point is Write(const PaintFilter* filter) which casts the
   // filter and calls one of the following functions.
-  void Write(const ColorFilterPaintFilter& filter);
-  void Write(const BlurPaintFilter& filter);
-  void Write(const DropShadowPaintFilter& filter);
-  void Write(const MagnifierPaintFilter& filter);
-  void Write(const ComposePaintFilter& filter);
-  void Write(const AlphaThresholdPaintFilter& filter);
-  void Write(const XfermodePaintFilter& filter);
-  void Write(const ArithmeticPaintFilter& filter);
-  void Write(const MatrixConvolutionPaintFilter& filter);
-  void Write(const DisplacementMapEffectPaintFilter& filter);
-  void Write(const ImagePaintFilter& filter);
-  void Write(const RecordPaintFilter& filter);
-  void Write(const MergePaintFilter& filter);
-  void Write(const MorphologyPaintFilter& filter);
-  void Write(const OffsetPaintFilter& filter);
-  void Write(const TilePaintFilter& filter);
-  void Write(const TurbulencePaintFilter& filter);
-  void Write(const PaintFlagsPaintFilter& filter);
-  void Write(const MatrixPaintFilter& filter);
-  void Write(const LightingDistantPaintFilter& filter);
-  void Write(const LightingPointPaintFilter& filter);
-  void Write(const LightingSpotPaintFilter& filter);
+  void Write(const ColorFilterPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const BlurPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const DropShadowPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const MagnifierPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const ComposePaintFilter& filter, const SkM44& current_ctm);
+  void Write(const AlphaThresholdPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const XfermodePaintFilter& filter, const SkM44& current_ctm);
+  void Write(const ArithmeticPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const MatrixConvolutionPaintFilter& filter,
+             const SkM44& current_ctm);
+  void Write(const DisplacementMapEffectPaintFilter& filter,
+             const SkM44& current_ctm);
+  void Write(const ImagePaintFilter& filter, const SkM44& current_ctm);
+  void Write(const RecordPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const MergePaintFilter& filter, const SkM44& current_ctm);
+  void Write(const MorphologyPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const OffsetPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const TilePaintFilter& filter, const SkM44& current_ctm);
+  void Write(const TurbulencePaintFilter& filter, const SkM44& current_ctm);
+  void Write(const ShaderPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const MatrixPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const LightingDistantPaintFilter& filter,
+             const SkM44& current_ctm);
+  void Write(const LightingPointPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const LightingSpotPaintFilter& filter, const SkM44& current_ctm);
+  void Write(const StretchPaintFilter& filter, const SkM44& current_ctm);
 
   void Write(const PaintRecord* record,
              const gfx::Rect& playback_rect,
-             const gfx::SizeF& post_scale,
-             const SkMatrix& post_matrix_for_analysis);
+             const gfx::SizeF& post_scale);
   void Write(const SkRegion& region);
+  void WriteImage(const DecodedDrawImage& decoded_draw_image);
   void WriteImage(uint32_t transfer_cache_entry_id, bool needs_mips);
+  void WriteImage(const gpu::Mailbox& mailbox);
 
   void EnsureBytes(size_t required_bytes);
   sk_sp<PaintShader> TransformShaderIfNecessary(
       const PaintShader* original,
-      SkFilterQuality quality,
+      PaintFlags::FilterQuality quality,
+      const SkM44& current_ctm,
       uint32_t* paint_image_transfer_cache_entry_id,
       gfx::SizeF* paint_record_post_scale,
-      bool* paint_image_needs_mips);
+      bool* paint_image_needs_mips,
+      gpu::Mailbox* mailbox_out);
 
   char* memory_ = nullptr;
   size_t size_ = 0u;

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/compose_bitmaps_helper.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -18,14 +19,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace explore_sites {
-
-namespace {
-
-// Ratio of icon size to the amount of padding between the icons.
-const int kIconPaddingScale = 8;
-
-}  // namespace
-
 // Class Job is used to manage multiple calls to the ImageHelper. Each request
 // to the ImageHelper is handled by a single Job, which is then destroyed after
 // it is finished.
@@ -39,6 +32,10 @@ class ImageHelper::Job {
       BitmapCallback bitmap_callback,
       EncodedImageList images,
       int pixel_size);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   // Start begins the work that a Job performs (decoding and composition).
@@ -60,8 +57,6 @@ class ImageHelper::Job {
   std::vector<SkBitmap> bitmaps_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ImageHelper::Job::Job(ImageHelper* image_helper,
@@ -93,7 +88,7 @@ void ImageHelper::Job::Start() {
 
 void ImageHelper::Job::DecodeImageBytes(
     std::unique_ptr<EncodedImageBytes> image_bytes) {
-  data_decoder::mojom::ImageDecoder::DecodeImageCallback callback;
+  data_decoder::DecodeImageCallback callback;
   if (job_type_ == ImageJobType::kSiteIcon) {
     callback = base::BindOnce(&ImageHelper::Job::OnDecodeSiteImageDone,
                               weak_ptr_factory_.GetWeakPtr());
@@ -103,7 +98,7 @@ void ImageHelper::Job::DecodeImageBytes(
   }
 
   data_decoder::DecodeImage(&image_helper_->data_decoder_, *image_bytes,
-                            data_decoder::mojom::ImageCodec::DEFAULT, false,
+                            data_decoder::mojom::ImageCodec::kDefault, false,
                             data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
                             std::move(callback));
 }
@@ -146,123 +141,8 @@ void ImageHelper::Job::OnDecodeCategoryImageDone(
   }
 }
 
-SkBitmap ScaleBitmap(int icon_size, SkBitmap* bitmap) {
-  DCHECK(bitmap);
-  SkBitmap temp_bitmap;
-  SkImageInfo scaledIconInfo = bitmap->info().makeWH(icon_size, icon_size);
-  temp_bitmap.setInfo(scaledIconInfo);
-  temp_bitmap.allocPixels();
-  bool did_scale =
-      bitmap->pixmap().scalePixels(temp_bitmap.pixmap(), kHigh_SkFilterQuality);
-  if (!did_scale) {
-    DLOG(ERROR) << "Unable to scale icon for category image.";
-    return SkBitmap();
-  }
-  return temp_bitmap;
-}
-
 std::unique_ptr<SkBitmap> ImageHelper::Job::CombineImages() {
-  DVLOG(1) << "num icons: " << num_icons_;
-  if (num_icons_ == 0) {
-    return nullptr;
-  }
-
-  DVLOG(1) << "pixel_size_: " << pixel_size_;
-  int icon_padding_pixel_size = pixel_size_ / kIconPaddingScale;
-
-  // Offset to write icons out of frame due to padding.
-  int icon_write_offset = icon_padding_pixel_size / 2;
-
-  SkBitmap composite_bitmap;
-  SkImageInfo image_info = bitmaps_[0]
-                               .info()
-                               .makeWH(pixel_size_, pixel_size_)
-                               .makeAlphaType(kPremul_SkAlphaType);
-
-  composite_bitmap.setInfo(image_info);
-  composite_bitmap.allocPixels();
-
-  int icon_size = pixel_size_ / 2;
-
-  // draw icons in correct areas
-  switch (num_icons_) {
-    case 1: {
-      // Centered.
-      SkBitmap scaledBitmap = ScaleBitmap(icon_size, &bitmaps_[0]);
-      if (scaledBitmap.empty()) {
-        return nullptr;
-      }
-      composite_bitmap.writePixels(
-          scaledBitmap.pixmap(),
-          ((icon_size + icon_padding_pixel_size) / 2) - icon_write_offset,
-          ((icon_size + icon_padding_pixel_size) / 2) - icon_write_offset);
-      break;
-    }
-    case 2: {
-      // Side by side.
-      for (int i = 0; i < 2; i++) {
-        SkBitmap scaledBitmap = ScaleBitmap(icon_size, &bitmaps_[i]);
-        if (scaledBitmap.empty()) {
-          return nullptr;
-        }
-        composite_bitmap.writePixels(
-            scaledBitmap.pixmap(),
-            (i * (icon_size + icon_padding_pixel_size)) - icon_write_offset,
-            ((icon_size + icon_padding_pixel_size) / 2) - icon_write_offset);
-      }
-      break;
-    }
-    case 3: {
-      // Two on top, one on bottom.
-      for (int i = 0; i < 3; i++) {
-        SkBitmap scaledBitmap = ScaleBitmap(icon_size, &bitmaps_[i]);
-        if (scaledBitmap.empty()) {
-          return nullptr;
-        }
-        switch (i) {
-          case 0:
-            composite_bitmap.writePixels(
-                scaledBitmap.pixmap(), -icon_write_offset, -icon_write_offset);
-            break;
-          case 1:
-            composite_bitmap.writePixels(
-                scaledBitmap.pixmap(),
-                (icon_size + icon_padding_pixel_size) - icon_write_offset,
-                -icon_write_offset);
-            break;
-          default:
-            composite_bitmap.writePixels(
-                scaledBitmap.pixmap(),
-                ((icon_size + icon_padding_pixel_size) / 2) - icon_write_offset,
-                (icon_size + icon_padding_pixel_size) - icon_write_offset);
-            break;
-        }
-      }
-      break;
-    }
-    case 4: {
-      // One in each corner.
-      for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2; j++) {
-          int index = i + 2 * j;
-          SkBitmap scaledBitmap = ScaleBitmap(icon_size, &bitmaps_[index]);
-          if (scaledBitmap.empty()) {
-            return nullptr;
-          }
-          composite_bitmap.writePixels(
-              scaledBitmap.pixmap(),
-              (j * (icon_size + icon_padding_pixel_size)) - icon_write_offset,
-              (i * (icon_size + icon_padding_pixel_size)) - icon_write_offset);
-        }
-      }
-      break;
-    }
-    default:
-      DLOG(ERROR) << "Invalid number of icons to combine: " << bitmaps_.size();
-      return nullptr;
-  }
-
-  return std::make_unique<SkBitmap>(composite_bitmap);
+  return compose_bitmaps_helper::ComposeBitmaps(bitmaps_, pixel_size_);
 }
 
 ImageHelper::ImageHelper() : last_used_job_id_(0) {}

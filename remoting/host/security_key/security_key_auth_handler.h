@@ -28,7 +28,8 @@ class SecurityKeyAuthHandler {
   virtual ~SecurityKeyAuthHandler() {}
 
   // Used to send security key extension messages to the client.
-  typedef base::Callback<void(int connection_id, const std::string& data)>
+  typedef base::RepeatingCallback<void(int connection_id,
+                                       const std::string& data)>
       SendMessageCallback;
 
   // Creates a platform-specific SecurityKeyAuthHandler.

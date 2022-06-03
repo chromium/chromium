@@ -32,6 +32,9 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
     kYUV,
   };
 
+  VideoFrameFileWriter(const VideoFrameFileWriter&) = delete;
+  VideoFrameFileWriter& operator=(const VideoFrameFileWriter&) = delete;
+
   ~VideoFrameFileWriter() override;
 
   // Create an instance of the video frame file writer.
@@ -41,7 +44,9 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
   static std::unique_ptr<VideoFrameFileWriter> Create(
       const base::FilePath& output_folder,
       OutputFormat output_format = OutputFormat::kPNG,
-      size_t output_limit = std::numeric_limits<size_t>::max());
+      size_t output_limit = std::numeric_limits<size_t>::max(),
+      const base::FilePath::StringType& output_file_prefix =
+          base::FilePath::StringType());
 
   // Interface VideoFrameProcessor
   void ProcessVideoFrame(scoped_refptr<const VideoFrame> video_frame,
@@ -52,7 +57,8 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
  private:
   VideoFrameFileWriter(const base::FilePath& output_folder,
                        OutputFormat output_format,
-                       size_t output_limit);
+                       size_t output_limit,
+                       const base::FilePath::StringType& output_prefix);
 
   // Initialize the video frame file writer.
   bool Initialize();
@@ -74,6 +80,8 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
   const OutputFormat output_format_;
   // The maximum number of frames that can be written.
   const size_t output_limit_;
+  // The prefix of the output file.
+  const base::FilePath::StringType output_file_prefix_;
 
   // The video frame mapper used to gain access to the raw video frame memory.
   std::unique_ptr<VideoFrameMapper> video_frame_mapper_;
@@ -90,8 +98,6 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
 
   SEQUENCE_CHECKER(writer_sequence_checker_);
   SEQUENCE_CHECKER(writer_thread_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameFileWriter);
 };
 
 }  // namespace test

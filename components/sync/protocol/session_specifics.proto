@@ -16,10 +16,11 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "sync_enums.proto";
+import "components/sync/protocol/sync_enums.proto";
 
 message SessionSpecifics {
-  // Unique id for the client.
+  // Unique id for the client. M89 and higher use sync's cache GUID (client ID)
+  // to populate this tag for *new* sessions.
   optional string session_tag = 1;
   optional SessionHeader header = 2;
   optional SessionTab tab = 3;
@@ -83,6 +84,8 @@ message SessionTab {
   optional string favicon_source = 11 [deprecated = true];
   // Ids of the currently assigned variations which should be sent to sync.
   repeated uint64 variation_id = 12 [deprecated = true];
+
+  optional SessionWindow.BrowserType browser_type = 13;
 }
 
 message TabNavigation {
@@ -132,8 +135,8 @@ message TabNavigation {
   }
   // Whether access to the URL was allowed or blocked.
   optional BlockedState blocked_state = 18 [default = STATE_ALLOWED];
-  // A list of category identifiers for the URL.
-  repeated string content_pack_categories = 19;
+  reserved 19;
+  reserved "content_pack_categories";
   // The status code from the last navigation.
   optional int32 http_status_code = 20;
 

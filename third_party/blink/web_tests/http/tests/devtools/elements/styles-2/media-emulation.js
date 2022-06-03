@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that emulated CSS media is reflected in the Styles pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -23,30 +23,30 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('main', step0);
 
-  function step0() {
+  async function step0() {
     TestRunner.addResult('Original style:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     applyEmulatedMedia('print');
     ElementsTestRunner.waitForStyles('main', step1);
   }
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('print media emulated:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     applyEmulatedMedia('tty');
     ElementsTestRunner.waitForStyles('main', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('tty media emulated:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     applyEmulatedMedia('');
     ElementsTestRunner.waitForStyles('main', step3);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('No media emulated:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 

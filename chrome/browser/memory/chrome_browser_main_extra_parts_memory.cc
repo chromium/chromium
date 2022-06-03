@@ -6,11 +6,15 @@
 
 #include "base/memory/memory_pressure_monitor.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
+#include "chrome/browser/memory/memory_ablation_study.h"
 
-#if defined(OS_WIN)
-#include "chrome/browser/memory/swap_thrashing_monitor.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/logging.h"
+#include "base/system/sys_info.h"
+#include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
 #endif
 
 ChromeBrowserMainExtraPartsMemory::ChromeBrowserMainExtraPartsMemory() = default;
@@ -19,22 +23,23 @@ ChromeBrowserMainExtraPartsMemory::~ChromeBrowserMainExtraPartsMemory() =
     default;
 
 void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
-#if defined(OS_WIN)
-  // Start the swap thrashing monitor if it's enabled.
-  //
-  // TODO(sebmarchand): Delay the initialization of this monitor once we start
-  // using this feature by default, this is currently enabled at startup to make
-  // it easier to experiment with this monitor.
-  if (base::FeatureList::IsEnabled(features::kSwapThrashingMonitor))
-    memory::SwapThrashingMonitor::Initialize();
-#endif
-
   // The MemoryPressureMonitor might not be available in some tests.
-  if (base::MemoryPressureMonitor::Get() &&
-      memory::EnterpriseMemoryLimitPrefObserver::PlatformIsSupported()) {
-    memory_limit_pref_observer_ =
-        std::make_unique<memory::EnterpriseMemoryLimitPrefObserver>(
-            g_browser_process->local_state());
+  if (base::MemoryPressureMonitor::Get()) {
+    if (memory::EnterpriseMemoryLimitPrefObserver::PlatformIsSupported()) {
+      memory_limit_pref_observer_ =
+          std::make_unique<memory::EnterpriseMemoryLimitPrefObserver>(
+              g_browser_process->local_state());
+    }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      cros_evaluator_ =
+          std::make_unique<chromeos::memory::SystemMemoryPressureEvaluator>(
+              static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
+                  base::MemoryPressureMonitor::Get())
+                  ->CreateVoter());
+    }
+#endif
   }
 }
 
@@ -43,4 +48,10 @@ void ChromeBrowserMainExtraPartsMemory::PostMainMessageLoopRun() {
   // is destroyed, as the observer's PrefChangeRegistrar's destructor uses the
   // pref_service.
   memory_limit_pref_observer_.reset();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  cros_evaluator_.reset();
+#endif
+
+  memory_ablation_study_ = std::make_unique<memory::MemoryAblationStudy>();
 }

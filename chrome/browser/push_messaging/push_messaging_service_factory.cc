@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -19,9 +20,9 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #endif
 
 // static
@@ -31,13 +32,6 @@ PushMessagingServiceImpl* PushMessagingServiceFactory::GetForProfile(
   // See https://crbug.com/401439.
   if (context->IsOffTheRecord())
     return nullptr;
-
-  if (!instance_id::InstanceIDProfileService::IsInstanceIDEnabled(
-          Profile::FromBrowserContext(context)->GetPrefs())) {
-    LOG(WARNING) << "PushMessagingService could not be built because "
-                    "InstanceID is unexpectedly disabled";
-    return nullptr;
-  }
 
   return static_cast<PushMessagingServiceImpl*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
@@ -56,11 +50,11 @@ PushMessagingServiceFactory::PushMessagingServiceFactory()
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(PermissionManagerFactory::GetInstance());
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
-#if defined(OS_CHROMEOS)
-  DependsOn(chromeos::android_sms::AndroidSmsServiceFactory::GetInstance());
-  DependsOn(chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
-                GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DependsOn(ash::android_sms::AndroidSmsServiceFactory::GetInstance());
+  DependsOn(
+      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 #endif
 }
 

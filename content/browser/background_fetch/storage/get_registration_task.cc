@@ -7,18 +7,19 @@
 #include "base/bind.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/background_fetch/storage/get_metadata_task.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
 
 GetRegistrationTask::GetRegistrationTask(DatabaseTaskHost* host,
                                          int64_t service_worker_registration_id,
-                                         const url::Origin& origin,
+                                         const blink::StorageKey& storage_key,
                                          const std::string& developer_id,
                                          GetRegistrationCallback callback)
     : DatabaseTask(host),
       service_worker_registration_id_(service_worker_registration_id),
-      origin_(origin),
+      storage_key_(storage_key),
       developer_id_(developer_id),
       callback_(std::move(callback)) {}
 
@@ -26,7 +27,7 @@ GetRegistrationTask::~GetRegistrationTask() = default;
 
 void GetRegistrationTask::Start() {
   AddSubTask(std::make_unique<GetMetadataTask>(
-      this, service_worker_registration_id_, origin_, developer_id_,
+      this, service_worker_registration_id_, storage_key_, developer_id_,
       base::BindOnce(&GetRegistrationTask::DidGetMetadata,
                      weak_factory_.GetWeakPtr())));
 }
@@ -58,7 +59,7 @@ void GetRegistrationTask::FinishWithError(
     }
 
     registration_id = BackgroundFetchRegistrationId(
-        service_worker_registration_id_, origin_, developer_id_,
+        service_worker_registration_id_, storage_key_, developer_id_,
         metadata_proto_->registration().unique_id());
   }
 

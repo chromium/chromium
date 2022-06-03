@@ -5,11 +5,8 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_PROLOGUE_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_PROLOGUE_H_
 
-#include <string>
-
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"

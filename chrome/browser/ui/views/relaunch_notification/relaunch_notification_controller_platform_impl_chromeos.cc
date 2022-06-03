@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h"
 
+#include <utility>
+
 #include "ash/public/cpp/update_types.h"
+#include "ash/shell.h"
 #include "base/bind.h"
-#include "chrome/browser/ui/ash/system_tray_client.h"
-#include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_metrics.h"
+#include "base/callback.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
-#include "chrome/grit/chromium_strings.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
+#include "ui/display/manager/display_configurator.h"
 
 RelaunchNotificationControllerPlatformImpl::
     RelaunchNotificationControllerPlatformImpl() = default;
@@ -22,70 +27,103 @@ RelaunchNotificationControllerPlatformImpl::
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
     base::Time /*detection_time*/,
     bool past_deadline) {
-  RecordRecommendedShowResult();
   RefreshRelaunchRecommendedTitle(past_deadline);
 }
 
-void RelaunchNotificationControllerPlatformImpl::RecordRecommendedShowResult() {
-  if (!recorded_shown_) {
-    relaunch_notification::RecordRecommendedShowResult(
-        relaunch_notification::ShowResult::kShown);
-    recorded_shown_ = true;
-  }
-}
-
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
-    base::Time deadline) {
+    base::Time deadline,
+    base::OnceCallback<base::Time()> on_visible) {
   if (!relaunch_required_timer_) {
     relaunch_required_timer_ = std::make_unique<RelaunchRequiredTimer>(
         deadline,
         base::BindRepeating(&RelaunchNotificationControllerPlatformImpl::
                                 RefreshRelaunchRequiredTitle,
                             base::Unretained(this)));
-
-    relaunch_notification::RecordRequiredShowResult(
-        relaunch_notification::ShowResult::kShown);
   }
 
   RefreshRelaunchRequiredTitle();
+
+  if (!CanScheduleReboot()) {
+    on_visible_ = std::move(on_visible);
+    StartObserving();
+  } else {
+    StopObserving();
+  }
 }
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
-  SystemTrayClient::Get()->SetUpdateNotificationState(
-      ash::NotificationStyle::kDefault, base::string16(), base::string16());
-  recorded_shown_ = false;
+  SystemTrayClientImpl::Get()->ResetUpdateState();
   relaunch_required_timer_.reset();
+  on_visible_.Reset();
+  StopObserving();
 }
 
 void RelaunchNotificationControllerPlatformImpl::SetDeadline(
     base::Time deadline) {
-  relaunch_required_timer_->SetDeadline(deadline);
+  if (relaunch_required_timer_)
+    relaunch_required_timer_->SetDeadline(deadline);
 }
 
 void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRecommendedTitle(bool past_deadline) {
   if (past_deadline) {
-    SystemTrayClient::Get()->SetUpdateNotificationState(
-        ash::NotificationStyle::kAdminRecommended,
-        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE),
-        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY));
+    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+        {.requirement_type =
+             ash::RelaunchNotificationState::kRecommendedAndOverdue});
   } else {
-    SystemTrayClient::Get()->SetUpdateNotificationState(
-        ash::NotificationStyle::kAdminRecommended,
-        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE),
-        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_BODY));
+    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+        {.requirement_type =
+             ash::RelaunchNotificationState::kRecommendedNotOverdue});
   }
-}
-
-void RelaunchNotificationControllerPlatformImpl::
-    RefreshRelaunchRequiredTitle() {
-  SystemTrayClient::Get()->SetUpdateNotificationState(
-      ash::NotificationStyle::kAdminRequired,
-      relaunch_required_timer_->GetWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_RELAUNCH_REQUIRED_BODY));
 }
 
 bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
     const {
   return relaunch_required_timer_ != nullptr;
+}
+
+void RelaunchNotificationControllerPlatformImpl::
+    RefreshRelaunchRequiredTitle() {
+  // SystemTrayClientImpl may not exist in unit tests.
+  if (SystemTrayClientImpl::Get()) {
+    SystemTrayClientImpl::Get()->SetRelaunchNotificationState(
+        {.requirement_type = ash::RelaunchNotificationState::kRequired,
+         .rounded_time_until_reboot_required =
+             relaunch_required_timer_->GetRoundedDeadlineDelta()});
+  }
+}
+
+void RelaunchNotificationControllerPlatformImpl::OnPowerStateChanged(
+    chromeos::DisplayPowerState power_state) {
+  if (CanScheduleReboot() && on_visible_) {
+    base::Time new_deadline = std::move(on_visible_).Run();
+    SetDeadline(new_deadline);
+    StopObserving();
+  }
+}
+
+void RelaunchNotificationControllerPlatformImpl::OnSessionStateChanged() {
+  if (CanScheduleReboot() && on_visible_) {
+    base::Time new_deadline = std::move(on_visible_).Run();
+    SetDeadline(new_deadline);
+    StopObserving();
+  }
+}
+
+bool RelaunchNotificationControllerPlatformImpl::CanScheduleReboot() {
+  return ash::Shell::Get()->display_configurator()->IsDisplayOn() &&
+         session_manager::SessionManager::Get()->session_state() ==
+             session_manager::SessionState::ACTIVE;
+}
+
+void RelaunchNotificationControllerPlatformImpl::StartObserving() {
+  if (!display_observation_.IsObserving())
+    display_observation_.Observe(ash::Shell::Get()->display_configurator());
+  if (!session_observation_.IsObserving())
+    session_observation_.Observe(session_manager::SessionManager::Get());
+}
+
+void RelaunchNotificationControllerPlatformImpl::StopObserving() {
+  display_observation_.Reset();
+  session_observation_.Reset();
 }

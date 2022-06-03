@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="resources/canvas_runner.js"></script>
+<script>
+var canvas_idle = null;
+
+function createCanvas4k(canvas_id) {
+    var myCanvas = document.createElement("canvas");
+    myCanvas.id = canvas_id;
+    myCanvas.width = 4000;
+    myCanvas.height = 4000;
+    myCanvas.getContext("2d").fillStyle = "rgba(0, 255, 0, 0.5)";
+    myCanvas.getContext("2d").fillRect(0, 0, myCanvas.width, myCanvas.height);
+    return myCanvas;
+}
+
+function invokeToBlobJpg(myCanvas) {
+    myCanvas.toBlob(function(blob){
+        CanvasRunner.gc();
+        runTest(myCanvas);
+    }, "image/jpeg");
+    myCanvas.getContext("2d").drawImage(myCanvas, 0, 0, 1, 1, 0, 0, 1, 1);
+}
+
+function runTest(myCanvas) {
+    invokeToBlobJpg(myCanvas);
+}
+
+window.onload = function () {
+    canvas_idle = createCanvas4k("canvas_idle");
+    document.body.appendChild(canvas_idle);
+    runTest(canvas_idle);
+};
+</script>
+</body>
+</html>
+

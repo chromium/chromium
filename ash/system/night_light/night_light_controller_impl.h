@@ -10,14 +10,16 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/night_light_controller.h"
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/night_light/time_of_day.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/env_observer.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class PrefRegistrySimple;
@@ -65,7 +67,7 @@ class ASH_EXPORT NightLightControllerImpl
   class Delegate {
    public:
     // NightLightController owns the delegate.
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Gets the current time.
     virtual base::Time GetNow() const = 0;
@@ -76,13 +78,19 @@ class ASH_EXPORT NightLightControllerImpl
 
     // Provides the delegate with the geoposition so that it can be used to
     // calculate sunset and sunrise times.
-    virtual void SetGeoposition(const SimpleGeoposition& position) = 0;
+    // Returns true if |position| is different than the current known value,
+    // potentially requiring a refresh of the schedule. False otherwise.
+    virtual bool SetGeoposition(const SimpleGeoposition& position) = 0;
 
     // Returns true if a geoposition value is available.
     virtual bool HasGeoposition() const = 0;
   };
 
   NightLightControllerImpl();
+
+  NightLightControllerImpl(const NightLightControllerImpl&) = delete;
+  NightLightControllerImpl& operator=(const NightLightControllerImpl&) = delete;
+
   ~NightLightControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -138,13 +146,18 @@ class ASH_EXPORT NightLightControllerImpl
     return ambient_rgb_scaling_factors_;
   }
 
-  // Get the NightLight settings stored in the current active user prefs.
-  bool GetEnabled() const;
   float GetColorTemperature() const;
   ScheduleType GetScheduleType() const;
   TimeOfDay GetCustomStartTime() const;
   TimeOfDay GetCustomEndTime() const;
   bool GetAmbientColorEnabled() const;
+
+  // Get whether the current time is after sunset and before sunrise.
+  bool IsNowWithinSunsetSunrise() const;
+
+  // Update |ambient_rgb_scaling_factors_| from the current
+  // |ambient_temperature_|.
+  void UpdateAmbientRgbScalingFactors();
 
   // Set the desired NightLight settings in the current active user prefs.
   void SetEnabled(bool enabled, AnimationDuration animation_type);
@@ -170,15 +183,16 @@ class ASH_EXPORT NightLightControllerImpl
 
   // ash::NightLightController:
   void SetCurrentGeoposition(const SimpleGeoposition& position) override;
+  bool GetEnabled() const override;
 
   // chromeos::PowerManagerClient::Observer:
-  void SuspendDone(const base::TimeDelta& sleep_duration) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
   void AmbientColorChanged(const int32_t color_temperature) override;
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
@@ -187,6 +201,10 @@ class ASH_EXPORT NightLightControllerImpl
   message_center::Notification* GetAutoNightLightNotificationForTesting() const;
 
  private:
+  // Attempts restoring a previously stored schedule for the current user if
+  // possible and returns true if so, false otherwise.
+  bool MaybeRestoreSchedule();
+
   // Returns true if the user has ever changed the schedule type, which means we
   // must respect the user's choice and let it overwrite Auto Night Light.
   bool UserHasEverChangedSchedule() const;
@@ -216,9 +234,10 @@ class ASH_EXPORT NightLightControllerImpl
   // is turned off.
   void RefreshDisplaysTemperature(float color_temperature);
 
-  // Refreshes the displays color transforms based on the given status of the
-  // controller.
-  void RefreshDisplaysColorTemperatures();
+  // Reapplys the current color temperature on the displays without starting a
+  // new animation or overriding an on-going one towards the same target
+  // temperature.
+  void ReapplyColorTemperatures();
 
   void StartWatchingPrefsChanges();
 
@@ -249,17 +268,23 @@ class ASH_EXPORT NightLightControllerImpl
   // parameters. |did_schedule_change| is true when Refresh() is called as a
   // result of a change in one of the schedule related prefs, and false
   // otherwise.
-  void Refresh(bool did_schedule_change);
+  // If |keep_manual_toggles_during_schedules| is true, refreshing the schedule
+  // will not override a previous user's decision to toggle the NightLight
+  // status while the schedule is being used.
+  void Refresh(bool did_schedule_change,
+               bool keep_manual_toggles_during_schedules);
 
   // Given the desired start and end times that determine the time interval
   // during which NightLight will be ON, depending on the time of "now", it
   // refreshes the |timer_| to either schedule the future start or end of
   // NightLight mode, as well as update the current status if needed.
-  // For |did_schedule_change|, see Refresh() above.
+  // For |did_schedule_change| and |keep_manual_toggles_during_schedules|, see
+  // Refresh() above.
   // This function should never be called if the schedule type is |kNone|.
   void RefreshScheduleTimer(base::Time start_time,
                             base::Time end_time,
-                            bool did_schedule_change);
+                            bool did_schedule_change,
+                            bool keep_manual_toggles_during_schedules);
 
   // Schedule the upcoming next toggle of NightLight mode. This is used for the
   // automatic status changes of NightLight which always use an
@@ -278,6 +303,18 @@ class ASH_EXPORT NightLightControllerImpl
   AnimationDuration last_animation_duration_ = AnimationDuration::kShort;
 
   std::unique_ptr<ColorTemperatureAnimation> temperature_animation_;
+
+  // Tracks the upcoming NightLight state changes per each user due to automatic
+  // schedules. This can be used to restore a manually toggled status while the
+  // schedule is being used. See MaybeRestoreSchedule().
+  struct ScheduleTargetState {
+    // The time at which NightLight will switch to |target_status| defined
+    // below.
+    base::Time target_time;
+    bool target_status;
+  };
+  base::flat_map<PrefService*, ScheduleTargetState>
+      per_user_schedule_target_state_;
 
   // The timer that schedules the start and end of NightLight when the schedule
   // type is either kSunsetToSunrise or kCustom.
@@ -309,11 +346,9 @@ class ASH_EXPORT NightLightControllerImpl
 
   // The ambient color R, G, and B scaling factors.
   // Valid only if ambient color is enabled.
-  gfx::Vector3dF ambient_rgb_scaling_factors_;
+  gfx::Vector3dF ambient_rgb_scaling_factors_ = {1.f, 1.f, 1.f};
 
   base::WeakPtrFactory<NightLightControllerImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightControllerImpl);
 };
 
 }  // namespace ash

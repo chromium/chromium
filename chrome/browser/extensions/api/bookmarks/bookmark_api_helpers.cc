@@ -63,27 +63,29 @@ void PopulateBookmarkTreeNode(
 
   const BookmarkNode* parent = node->parent();
   if (parent) {
-    out_bookmark_tree_node->parent_id.reset(
-        new std::string(base::NumberToString(parent->id())));
-    out_bookmark_tree_node->index.reset(new int(parent->GetIndexOf(node)));
+    out_bookmark_tree_node->parent_id =
+        std::make_unique<std::string>(base::NumberToString(parent->id()));
+    out_bookmark_tree_node->index =
+        std::make_unique<int>(parent->GetIndexOf(node));
   }
 
   if (!node->is_folder()) {
-    out_bookmark_tree_node->url.reset(new std::string(node->url().spec()));
+    out_bookmark_tree_node->url =
+        std::make_unique<std::string>(node->url().spec());
   } else {
     // Javascript Date wants milliseconds since the epoch, ToDoubleT is seconds.
     base::Time t = node->date_folder_modified();
     if (!t.is_null()) {
-      out_bookmark_tree_node->date_group_modified.reset(
-          new double(floor(t.ToDoubleT() * 1000)));
+      out_bookmark_tree_node->date_group_modified =
+          std::make_unique<double>(floor(t.ToDoubleT() * 1000));
     }
   }
 
   out_bookmark_tree_node->title = base::UTF16ToUTF8(node->GetTitle());
   if (!node->date_added().is_null()) {
     // Javascript Date wants milliseconds since the epoch, ToDoubleT is seconds.
-    out_bookmark_tree_node->date_added.reset(
-        new double(floor(node->date_added().ToDoubleT() * 1000)));
+    out_bookmark_tree_node->date_added =
+        std::make_unique<double>(floor(node->date_added().ToDoubleT() * 1000));
   }
 
   if (bookmarks::IsDescendantOf(node, managed->managed_node())) {
@@ -99,8 +101,8 @@ void PopulateBookmarkTreeNode(
             GetBookmarkTreeNode(managed, child.get(), true, only_folders));
       }
     }
-    out_bookmark_tree_node->children.reset(
-        new std::vector<BookmarkTreeNode>(std::move(children)));
+    out_bookmark_tree_node->children =
+        std::make_unique<std::vector<BookmarkTreeNode>>(std::move(children));
   }
 }
 
@@ -151,14 +153,15 @@ void GetMetaInfo(const BookmarkNode& node,
     return;
 
   const BookmarkNode::MetaInfoMap* meta_info = node.GetMetaInfoMap();
-  auto value = std::make_unique<base::DictionaryValue>();
+  base::Value value(base::Value::Type::DICTIONARY);
   if (meta_info) {
     BookmarkNode::MetaInfoMap::const_iterator itr;
     for (itr = meta_info->begin(); itr != meta_info->end(); ++itr) {
-      value->SetKey(itr->first, base::Value(itr->second));
+      value.SetKey(itr->first, base::Value(itr->second));
     }
   }
-  id_to_meta_info_map->Set(base::NumberToString(node.id()), std::move(value));
+  id_to_meta_info_map->SetKey(base::NumberToString(node.id()),
+                              std::move(value));
 
   if (node.is_folder()) {
     for (const auto& child : node.children())

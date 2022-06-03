@@ -4,14 +4,17 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_download_button_element.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
-#include "third_party/blink/renderer/core/html/media/html_media_source.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
@@ -38,7 +41,8 @@ bool MediaControlDownloadButtonElement::ShouldDisplayDownloadButton() const {
   // The attribute disables the download button.
   // This is run after `SupportSave()` to guarantee that it is recorded only if
   // it blocks the download button from showing up.
-  if (MediaElement().ControlsListInternal()->ShouldHideDownload()) {
+  if (MediaElement().ControlsListInternal()->ShouldHideDownload() &&
+      !MediaElement().UserWantsControlsVisible()) {
     UseCounter::Count(MediaElement().GetDocument(),
                       WebFeature::kHTMLMediaElementControlsListNoDownload);
     return false;
@@ -59,7 +63,7 @@ bool MediaControlDownloadButtonElement::IsControlPanelButton() const {
   return true;
 }
 
-void MediaControlDownloadButtonElement::Trace(blink::Visitor* visitor) {
+void MediaControlDownloadButtonElement::Trace(Visitor* visitor) const {
   MediaControlInputElement::Trace(visitor);
 }
 
@@ -76,10 +80,10 @@ void MediaControlDownloadButtonElement::DefaultEventHandler(Event& event) {
         UserMetricsAction("Media.Controls.Download"));
     ResourceRequest request(url);
     request.SetSuggestedFilename(MediaElement().title());
-    request.SetRequestContext(mojom::RequestContextType::DOWNLOAD);
-    request.SetRequestorOrigin(SecurityOrigin::Create(GetDocument().Url()));
-    GetDocument().GetFrame()->Client()->DownloadURL(
-        request, network::mojom::RedirectMode::kError);
+    request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);
+    request.SetRequestorOrigin(GetExecutionContext()->GetSecurityOrigin());
+    GetDocument().GetFrame()->DownloadURL(
+        request, network::mojom::blink::RedirectMode::kError);
   }
   MediaControlInputElement::DefaultEventHandler(event);
 }

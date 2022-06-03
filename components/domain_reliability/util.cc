@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_errors.h"
@@ -71,7 +72,8 @@ const struct NetErrorMapping {
 
 bool CanReportFullBeaconURLToCollector(const GURL& beacon_url,
                                        const GURL& collector_url) {
-  return beacon_url.GetOrigin() == collector_url.GetOrigin();
+  return beacon_url.DeprecatedGetOriginAsURL() ==
+         collector_url.DeprecatedGetOriginAsURL();
 }
 
 }  // namespace
@@ -118,40 +120,25 @@ std::string GetDomainReliabilityProtocol(
   return "";
 }
 
-int GetNetErrorFromURLRequestStatus(const net::URLRequestStatus& status) {
-  switch (status.status()) {
-    case net::URLRequestStatus::SUCCESS:
-      return net::OK;
-    case net::URLRequestStatus::CANCELED:
-      return net::ERR_ABORTED;
-    case net::URLRequestStatus::FAILED:
-      return status.error();
-    default:
-      NOTREACHED();
-      return net::ERR_FAILED;
-  }
-}
-
-void GetUploadResultFromResponseDetails(
+DomainReliabilityUploader::UploadResult GetUploadResultFromResponseDetails(
     int net_error,
     int http_response_code,
-    base::TimeDelta retry_after,
-    DomainReliabilityUploader::UploadResult* result) {
+    base::TimeDelta retry_after) {
+  DomainReliabilityUploader::UploadResult result;
   if (net_error == net::OK && http_response_code == 200) {
-    result->status = DomainReliabilityUploader::UploadResult::SUCCESS;
-    return;
+    result.status = DomainReliabilityUploader::UploadResult::SUCCESS;
+    return result;
   }
 
-  if (net_error == net::OK &&
-      http_response_code == 503 &&
+  if (net_error == net::OK && http_response_code == 503 &&
       !retry_after.is_zero()) {
-    result->status = DomainReliabilityUploader::UploadResult::RETRY_AFTER;
-    result->retry_after = retry_after;
-    return;
+    result.status = DomainReliabilityUploader::UploadResult::RETRY_AFTER;
+    result.retry_after = retry_after;
+    return result;
   }
 
-  result->status = DomainReliabilityUploader::UploadResult::FAILURE;
-  return;
+  result.status = DomainReliabilityUploader::UploadResult::FAILURE;
+  return result;
 }
 
 // N.B. This uses a std::vector<std::unique_ptr<>> because that's what
@@ -193,8 +180,8 @@ class ActualTimer : public MockableTime::Timer {
   // MockableTime::Timer implementation:
   void Start(const base::Location& posted_from,
              base::TimeDelta delay,
-             const base::Closure& user_task) override {
-    base_timer_.Start(posted_from, delay, user_task);
+             base::OnceClosure user_task) override {
+    base_timer_.Start(posted_from, delay, std::move(user_task));
   }
 
   void Stop() override { base_timer_.Stop(); }
@@ -225,6 +212,10 @@ base::TimeTicks ActualTime::NowTicks() const {
 
 std::unique_ptr<MockableTime::Timer> ActualTime::CreateTimer() {
   return std::unique_ptr<MockableTime::Timer>(new ActualTimer());
+}
+
+const base::TickClock* ActualTime::AsTickClock() const {
+  return base::DefaultTickClock::GetInstance();
 }
 
 }  // namespace domain_reliability

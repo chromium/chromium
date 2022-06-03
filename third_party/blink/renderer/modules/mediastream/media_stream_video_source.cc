@@ -7,19 +7,24 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <utility>
 
+#include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/token.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -33,13 +38,29 @@ MediaStreamVideoSource* MediaStreamVideoSource::GetVideoSource(
   return static_cast<MediaStreamVideoSource*>(source.GetPlatformSource());
 }
 
-MediaStreamVideoSource::MediaStreamVideoSource() : state_(NEW) {
-  track_adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-      Platform::Current()->GetIOTaskRunner(), GetWeakPtr());
+// static
+MediaStreamVideoSource* MediaStreamVideoSource::GetVideoSource(
+    MediaStreamSource* source) {
+  if (!source || source->GetType() != MediaStreamSource::kTypeVideo) {
+    return nullptr;
+  }
+  return static_cast<MediaStreamVideoSource*>(source->GetPlatformSource());
 }
 
+MediaStreamVideoSource::MediaStreamVideoSource(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : MediaStreamVideoSource(std::move(task_runner),
+                             /*metronome_provider=*/nullptr) {}
+
+MediaStreamVideoSource::MediaStreamVideoSource(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<MetronomeProvider> metronome_provider)
+    : WebPlatformMediaStreamSource(std::move(task_runner)),
+      state_(NEW),
+      metronome_provider_(std::move(metronome_provider)) {}
+
 MediaStreamVideoSource::~MediaStreamVideoSource() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (remove_last_track_callback_) {
     std::move(remove_last_track_callback_).Run();
   }
@@ -53,7 +74,7 @@ void MediaStreamVideoSource::AddTrack(
     const VideoTrackSettingsCallback& settings_callback,
     const VideoTrackFormatCallback& format_callback,
     ConstraintsOnceCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(!base::Contains(tracks_, track));
   tracks_.push_back(track);
   secure_tracker_.Add(track, true);
@@ -69,10 +90,10 @@ void MediaStreamVideoSource::AddTrack(
       state_ = STARTING;
       StartSourceImpl(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-              &VideoTrackAdapter::DeliverFrameOnIO, track_adapter_)),
+              &VideoTrackAdapter::DeliverFrameOnIO, GetTrackAdapter())),
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::DeliverEncodedVideoFrameOnIO,
-              track_adapter_)));
+              GetTrackAdapter())));
       break;
     }
     case STARTING:
@@ -93,22 +114,21 @@ void MediaStreamVideoSource::AddTrack(
 
 void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
                                          base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   {
-    auto it = std::find(tracks_.begin(), tracks_.end(), video_track);
-    DCHECK(it != tracks_.end());
-    tracks_.erase(it);
+    auto it = tracks_.Find(video_track);
+    DCHECK_NE(it, kNotFound);
+    tracks_.EraseAt(it);
   }
   secure_tracker_.Remove(video_track);
 
   {
-    auto it = std::find(suspended_tracks_.begin(), suspended_tracks_.end(),
-                        video_track);
-    if (it != suspended_tracks_.end())
-      suspended_tracks_.erase(it);
+    auto it = suspended_tracks_.Find(video_track);
+    if (it != kNotFound)
+      suspended_tracks_.EraseAt(it);
   }
 
-  for (auto it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
+  for (auto* it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
     if (it->track == video_track) {
       pending_tracks_.erase(it);
       break;
@@ -117,9 +137,9 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
 
   // Call |frame_adapter_->RemoveTrack| here even if adding the track has
   // failed and |frame_adapter_->AddCallback| has not been called.
-  track_adapter_->RemoveTrack(video_track);
+  GetTrackAdapter()->RemoveTrack(video_track);
 
-  if (tracks_.empty()) {
+  if (tracks_.IsEmpty()) {
     if (callback) {
       // Use StopForRestart() in order to get a notification of when the
       // source is actually stopped (if supported). The source will not be
@@ -135,8 +155,8 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
       // sources created after that StopSource() call, but before the actual
       // stop takes place. See https://crbug.com/778039.
       remove_last_track_callback_ = std::move(callback);
-      StopForRestart(WTF::Bind(&MediaStreamVideoSource::DidStopSource,
-                               weak_factory_.GetWeakPtr()));
+      StopForRestart(
+          WTF::Bind(&MediaStreamVideoSource::DidStopSource, GetWeakPtr()));
       if (state_ == STOPPING_FOR_RESTART || state_ == STOPPED_FOR_RESTART) {
         // If the source supports restarting, it is necessary to call
         // FinalizeStopSource() to ensure the same behavior as StopSource(),
@@ -161,7 +181,7 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
 }
 
 void MediaStreamVideoSource::DidStopSource(RestartResult result) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(remove_last_track_callback_);
   if (result == RestartResult::IS_STOPPED) {
     state_ = ENDED;
@@ -181,37 +201,54 @@ void MediaStreamVideoSource::DidStopSource(RestartResult result) {
 void MediaStreamVideoSource::ReconfigureTrack(
     MediaStreamVideoTrack* track,
     const VideoTrackAdapterSettings& adapter_settings) {
-  track_adapter_->ReconfigureTrack(track, adapter_settings);
+  GetTrackAdapter()->ReconfigureTrack(track, adapter_settings);
   // It's OK to reconfigure settings even if ReconfigureTrack fails, provided
   // |track| is not connected to a different source, which is a precondition
   // for calling this method.
   UpdateTrackSettings(track, adapter_settings);
 }
 
-void MediaStreamVideoSource::StopForRestart(RestartCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
+                                            bool send_black_frame) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (state_ != STARTED) {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    GetTaskRunner()->PostTask(
         FROM_HERE,
         WTF::Bind(std::move(callback), RestartResult::INVALID_STATE));
     return;
   }
 
   DCHECK(!restart_callback_);
-  track_adapter_->StopFrameMonitoring();
+  GetTrackAdapter()->StopFrameMonitoring();
   state_ = STOPPING_FOR_RESTART;
   restart_callback_ = std::move(callback);
+
+  if (send_black_frame) {
+    const absl::optional<gfx::Size> source_size =
+        GetTrackAdapter()->source_frame_size();
+    scoped_refptr<media::VideoFrame> black_frame =
+        media::VideoFrame::CreateBlackFrame(
+            source_size.has_value() ? *source_size
+                                    : gfx::Size(kDefaultWidth, kDefaultHeight));
+    PostCrossThreadTask(
+        *io_task_runner(), FROM_HERE,
+        CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
+                            GetTrackAdapter(), black_frame,
+                            std::vector<scoped_refptr<media::VideoFrame>>(),
+                            base::TimeTicks::Now()));
+  }
+
   StopSourceForRestartImpl();
 }
 
 void MediaStreamVideoSource::StopSourceForRestartImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DCHECK_EQ(state_, STOPPING_FOR_RESTART);
   OnStopForRestartDone(false);
 }
 
 void MediaStreamVideoSource::OnStopForRestartDone(bool did_stop_for_restart) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (state_ == ENDED) {
     return;
   }
@@ -228,16 +265,16 @@ void MediaStreamVideoSource::OnStopForRestartDone(bool did_stop_for_restart) {
 
   RestartResult result = did_stop_for_restart ? RestartResult::IS_STOPPED
                                               : RestartResult::IS_RUNNING;
-  Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(std::move(restart_callback_), result));
+  GetTaskRunner()->PostTask(FROM_HERE,
+                            WTF::Bind(std::move(restart_callback_), result));
 }
 
 void MediaStreamVideoSource::Restart(
     const media::VideoCaptureFormat& new_format,
     RestartCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (state_ != STOPPED_FOR_RESTART) {
-    Thread::Current()->GetTaskRunner()->PostTask(
+    GetTaskRunner()->PostTask(
         FROM_HERE,
         WTF::Bind(std::move(callback), RestartResult::INVALID_STATE));
     return;
@@ -254,7 +291,7 @@ void MediaStreamVideoSource::RestartSourceImpl(
 }
 
 void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (state_ == ENDED)
     return;
 
@@ -269,20 +306,19 @@ void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
 
   RestartResult result =
       did_restart ? RestartResult::IS_RUNNING : RestartResult::IS_STOPPED;
-  Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(std::move(restart_callback_), result));
+  GetTaskRunner()->PostTask(FROM_HERE,
+                            WTF::Bind(std::move(restart_callback_), result));
 }
 
 void MediaStreamVideoSource::UpdateHasConsumers(MediaStreamVideoTrack* track,
                                                 bool has_consumers) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const auto it =
-      std::find(suspended_tracks_.begin(), suspended_tracks_.end(), track);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  const auto it = suspended_tracks_.Find(track);
   if (has_consumers) {
-    if (it != suspended_tracks_.end())
-      suspended_tracks_.erase(it);
+    if (it != kNotFound)
+      suspended_tracks_.EraseAt(it);
   } else {
-    if (it == suspended_tracks_.end())
+    if (it == kNotFound)
       suspended_tracks_.push_back(track);
   }
   OnHasConsumers(suspended_tracks_.size() < tracks_.size());
@@ -291,7 +327,7 @@ void MediaStreamVideoSource::UpdateHasConsumers(MediaStreamVideoTrack* track,
 void MediaStreamVideoSource::UpdateCapturingLinkSecure(
     MediaStreamVideoTrack* track,
     bool is_secure) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   secure_tracker_.Update(track, is_secure);
   NotifyCapturingLinkSecured(CountEncodedSinks());
 }
@@ -304,25 +340,25 @@ void MediaStreamVideoSource::NotifyCapturingLinkSecured(
 }
 
 void MediaStreamVideoSource::SetDeviceRotationDetection(bool enabled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   enable_device_rotation_detection_ = enabled;
 }
 
 base::SingleThreadTaskRunner* MediaStreamVideoSource::io_task_runner() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return track_adapter_->io_task_runner();
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return Platform::Current()->GetIOTaskRunner().get();
 }
 
-base::Optional<media::VideoCaptureFormat>
+absl::optional<media::VideoCaptureFormat>
 MediaStreamVideoSource::GetCurrentFormat() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::Optional<media::VideoCaptureFormat>();
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return absl::optional<media::VideoCaptureFormat>();
 }
 
-base::Optional<media::VideoCaptureParams>
+absl::optional<media::VideoCaptureParams>
 MediaStreamVideoSource::GetCurrentCaptureParams() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::Optional<media::VideoCaptureParams>();
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return absl::optional<media::VideoCaptureParams>();
 }
 
 size_t MediaStreamVideoSource::CountEncodedSinks() const {
@@ -333,9 +369,8 @@ size_t MediaStreamVideoSource::CountEncodedSinks() const {
 }
 
 void MediaStreamVideoSource::UpdateNumEncodedSinks() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   size_t count = CountEncodedSinks();
-  DCHECK(SupportsEncodedOutput() || count == 0);
   if (count == 1) {
     OnEncodedSinkEnabled();
   } else if (count == 0) {
@@ -347,7 +382,7 @@ void MediaStreamVideoSource::UpdateNumEncodedSinks() {
 
 void MediaStreamVideoSource::DoChangeSource(
     const MediaStreamDevice& new_device) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DVLOG(1) << "MediaStreamVideoSource::DoChangeSource: "
            << ", new device id = " << new_device.id
            << ", session id = " << new_device.session_id();
@@ -359,11 +394,11 @@ void MediaStreamVideoSource::DoChangeSource(
 }
 
 void MediaStreamVideoSource::DoStopSource() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DVLOG(3) << "DoStopSource()";
   if (state_ == ENDED)
     return;
-  track_adapter_->StopFrameMonitoring();
+  GetTrackAdapter()->StopFrameMonitoring();
   StopSourceImpl();
   state_ = ENDED;
   SetReadyState(WebMediaStreamSource::kReadyStateEnded);
@@ -371,7 +406,7 @@ void MediaStreamVideoSource::DoStopSource() {
 
 void MediaStreamVideoSource::OnStartDone(
     mojom::blink::MediaStreamRequestResult result) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   DVLOG(3) << "OnStartDone({result =" << result << "})";
   if (state_ == ENDED) {
     OnLog(
@@ -396,8 +431,8 @@ void MediaStreamVideoSource::OnStartDone(
 }
 
 void MediaStreamVideoSource::FinalizeAddPendingTracks() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<PendingTrackInfo> pending_track_descriptors;
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  Vector<PendingTrackInfo> pending_track_descriptors;
   pending_track_descriptors.swap(pending_tracks_);
   for (auto& track_info : pending_track_descriptors) {
     auto result = mojom::blink::MediaStreamRequestResult::OK;
@@ -407,7 +442,7 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks() {
     }
 
     if (result == mojom::blink::MediaStreamRequestResult::OK) {
-      track_adapter_->AddTrack(
+      GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
           track_info.encoded_frame_callback, track_info.settings_callback,
           track_info.format_callback, *track_info.adapter_settings);
@@ -428,21 +463,21 @@ void MediaStreamVideoSource::FinalizeAddPendingTracks() {
 }
 
 void MediaStreamVideoSource::StartFrameMonitoring() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::Optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  absl::optional<media::VideoCaptureFormat> current_format = GetCurrentFormat();
   double frame_rate = current_format ? current_format->frame_rate : 0.0;
   if (current_format && enable_device_rotation_detection_) {
-    track_adapter_->SetSourceFrameSize(current_format->frame_size);
+    GetTrackAdapter()->SetSourceFrameSize(current_format->frame_size);
   }
-  track_adapter_->StartFrameMonitoring(
-      frame_rate, WTF::BindRepeating(&MediaStreamVideoSource::SetMutedState,
-                                     weak_factory_.GetWeakPtr()));
+  GetTrackAdapter()->StartFrameMonitoring(
+      frame_rate,
+      WTF::BindRepeating(&MediaStreamVideoSource::SetMutedState, GetWeakPtr()));
 }
 
 void MediaStreamVideoSource::SetReadyState(
     WebMediaStreamSource::ReadyState state) {
   DVLOG(3) << "MediaStreamVideoSource::SetReadyState state " << state;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!Owner().IsNull())
     Owner().SetReadyState(state);
   for (auto* track : tracks_)
@@ -451,7 +486,7 @@ void MediaStreamVideoSource::SetReadyState(
 
 void MediaStreamVideoSource::SetMutedState(bool muted_state) {
   DVLOG(3) << "MediaStreamVideoSource::SetMutedState state=" << muted_state;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (!Owner().IsNull()) {
     Owner().SetReadyState(muted_state ? WebMediaStreamSource::kReadyStateMuted
                                       : WebMediaStreamSource::kReadyStateLive);
@@ -481,6 +516,26 @@ void MediaStreamVideoSource::UpdateTrackSettings(
 
 bool MediaStreamVideoSource::SupportsEncodedOutput() const {
   return false;
+}
+
+void MediaStreamVideoSource::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+}
+
+VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
+  // Each source implementation has to implement its own feedback callbacks.
+  return base::DoNothing();
+}
+
+scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  if (!track_adapter_) {
+    track_adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
+        io_task_runner(), metronome_provider_, GetWeakPtr());
+  }
+  return track_adapter_;
 }
 
 MediaStreamVideoSource::PendingTrackInfo::PendingTrackInfo(

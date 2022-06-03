@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -55,18 +54,21 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   // Delay between the scheduling and actual running of maintenance tasks. To
   // not cause the re-opening of the metadata store this delay should be kept
   // smaller than OfflinePageMetadataStore::kClosingDelay.
-  static constexpr base::TimeDelta kMaintenanceTasksDelay =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kMaintenanceTasksDelay = base::Seconds(10);
 
   // Minimum delay between runs of maintenance tasks during a Chrome session.
-  static constexpr base::TimeDelta kClearStorageInterval =
-      base::TimeDelta::FromMinutes(30);
+  static constexpr base::TimeDelta kClearStorageInterval = base::Minutes(30);
 
   OfflinePageModelTaskified(
       std::unique_ptr<OfflinePageMetadataStore> store,
       std::unique_ptr<ArchiveManager> archive_manager,
       std::unique_ptr<OfflinePageArchivePublisher> archive_publisher,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  OfflinePageModelTaskified(const OfflinePageModelTaskified&) = delete;
+  OfflinePageModelTaskified& operator=(const OfflinePageModelTaskified&) =
+      delete;
+
   ~OfflinePageModelTaskified() override;
 
   // TaskQueue::Delegate implementation.
@@ -140,7 +142,7 @@ class OfflinePageModelTaskified : public OfflinePageModel,
                            OfflinePageArchiver::ArchiverResult archiver_result,
                            const GURL& saved_url,
                            const base::FilePath& file_path,
-                           const base::string16& title,
+                           const std::u16string& title,
                            int64_t file_size,
                            const std::string& file_hash);
 
@@ -225,8 +227,6 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<OfflinePageModelTaskified> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageModelTaskified);
 };
 
 }  // namespace offline_pages

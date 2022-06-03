@@ -1352,7 +1352,7 @@ Output.prototype = {
       // (because they don't cover any position).  Still, we want to include
       // these because they can be included (the selection span in an empty
       // text field is an example), which is why we write the below code
-      // using getSpansInstanceOf and check the endpoints (isntead of doing
+      // using getSpansInstanceOf and check the endpoints (instead of doing
       // the opposite).
       result.getSpansInstanceOf(Output.NodeSpan).forEach(function(leftSpan) {
         if (result.getSpanEnd(leftSpan) < result.length)

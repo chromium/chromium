@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
@@ -195,9 +194,8 @@ class HourBinPredictorTest : public testing::Test {
   // Sets local time according to |day_of_week| and |hour_of_day|.
   void SetLocalTime(const int day_of_week, const int hour_of_day) {
     AdvanceToNextLocalSunday();
-    const auto advance = base::TimeDelta::FromDays(day_of_week) +
-                         base::TimeDelta::FromHours(hour_of_day);
-    if (advance > base::TimeDelta()) {
+    const auto advance = base::Days(day_of_week) + base::Hours(hour_of_day);
+    if (advance.is_positive()) {
       time_.Advance(advance);
     }
   }
@@ -231,9 +229,9 @@ class HourBinPredictorTest : public testing::Test {
   void AdvanceToNextLocalSunday() {
     base::Time::Exploded now;
     base::Time::Now().LocalExplode(&now);
-    const auto advance = base::TimeDelta::FromDays(6 - now.day_of_week) +
-                         base::TimeDelta::FromHours(24 - now.hour);
-    if (advance > base::TimeDelta()) {
+    const auto advance =
+        base::Days(6 - now.day_of_week) + base::Hours(24 - now.hour);
+    if (advance.is_positive()) {
       time_.Advance(advance);
     }
     base::Time::Now().LocalExplode(&now);

@@ -4,7 +4,7 @@
 
 #include "remoting/client/audio/async_audio_data_supplier.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace remoting {
 

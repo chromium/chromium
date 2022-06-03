@@ -5,9 +5,8 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -39,6 +39,10 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
   explicit KeyboardVisibleWaiter(bool visible) : visible_(visible) {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardVisibleWaiter(const KeyboardVisibleWaiter&) = delete;
+  KeyboardVisibleWaiter& operator=(const KeyboardVisibleWaiter&) = delete;
+
   ~KeyboardVisibleWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -60,8 +64,6 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
  private:
   base::RunLoop run_loop_;
   const bool visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardVisibleWaiter);
 };
 
 class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
@@ -69,6 +71,10 @@ class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
   KeyboardLoadedWaiter() {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardLoadedWaiter(const KeyboardLoadedWaiter&) = delete;
+  KeyboardLoadedWaiter& operator=(const KeyboardLoadedWaiter&) = delete;
+
   ~KeyboardLoadedWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -84,8 +90,6 @@ class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardLoadedWaiter);
 };
 
 class KeyboardOccludedBoundsChangeWaiter
@@ -94,6 +98,12 @@ class KeyboardOccludedBoundsChangeWaiter
   KeyboardOccludedBoundsChangeWaiter() {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardOccludedBoundsChangeWaiter(
+      const KeyboardOccludedBoundsChangeWaiter&) = delete;
+  KeyboardOccludedBoundsChangeWaiter& operator=(
+      const KeyboardOccludedBoundsChangeWaiter&) = delete;
+
   ~KeyboardOccludedBoundsChangeWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -107,8 +117,6 @@ class KeyboardOccludedBoundsChangeWaiter
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardOccludedBoundsChangeWaiter);
 };
 
 ui::InputMethod* GetInputMethod() {
@@ -123,6 +131,12 @@ ui::InputMethod* GetInputMethod() {
 class KeyboardControllerWebContentTest : public InProcessBrowserTest {
  public:
   KeyboardControllerWebContentTest() {}
+
+  KeyboardControllerWebContentTest(const KeyboardControllerWebContentTest&) =
+      delete;
+  KeyboardControllerWebContentTest& operator=(
+      const KeyboardControllerWebContentTest&) = delete;
+
   ~KeyboardControllerWebContentTest() override {}
 
   void SetUp() override {
@@ -170,8 +184,6 @@ class KeyboardControllerWebContentTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ui::DummyTextInputClient> client;
   ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerWebContentTest);
 };
 
 // Test for crbug.com/404340. After enabling an IME in a different extension,
@@ -210,7 +222,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerWebContentTest,
 IN_PROC_BROWSER_TEST_F(KeyboardControllerWebContentTest,
                        CanDragFloatingKeyboardWithMouse) {
   ChromeKeyboardControllerClient::Get()->SetContainerType(
-      keyboard::ContainerType::kFloating, base::nullopt, base::DoNothing());
+      keyboard::ContainerType::kFloating, gfx::Rect(0, 0, 400, 200),
+      base::DoNothing());
 
   auto* controller = keyboard::KeyboardUIController::Get();
   controller->ShowKeyboard(false);
@@ -237,6 +250,12 @@ class KeyboardControllerAppWindowTest
     : public extensions::PlatformAppBrowserTest {
  public:
   KeyboardControllerAppWindowTest() {}
+
+  KeyboardControllerAppWindowTest(const KeyboardControllerAppWindowTest&) =
+      delete;
+  KeyboardControllerAppWindowTest& operator=(
+      const KeyboardControllerAppWindowTest&) = delete;
+
   ~KeyboardControllerAppWindowTest() override {}
 
   // Ensure that the virtual keyboard is enabled.
@@ -244,29 +263,88 @@ class KeyboardControllerAppWindowTest
     command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerAppWindowTest);
+  scoped_refptr<const extensions::Extension> CreateDummyExtension() {
+    auto extension =
+        extensions::ExtensionBuilder()
+            .SetManifest(
+                extensions::DictionaryBuilder()
+                    .Set("name", "test extension")
+                    .Set("version", "1")
+                    .Set("manifest_version", 2)
+                    .Set("background",
+                         extensions::DictionaryBuilder()
+                             .Set("scripts", extensions::ListBuilder()
+                                                 .Append("background.js")
+                                                 .Build())
+                             .Build())
+                    .Build())
+            .Build();
+    extension_service()->AddExtension(extension.get());
+    return extension;
+  }
 };
+
+IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
+                       ShowingKeyboardChangesViewport) {
+  auto* client = ChromeKeyboardControllerClient::Get();
+
+  auto extension = CreateDummyExtension();
+  extensions::AppWindow::CreateParams params;
+  params.frame = extensions::AppWindow::FRAME_NONE;
+  params.state = ui::SHOW_STATE_MAXIMIZED;
+  extensions::AppWindow* app_window =
+      CreateAppWindowFromParams(browser()->profile(), extension.get(), params);
+
+  // Wait until the keyboard is shown.
+  KeyboardLoadedWaiter().Wait();
+  client->ShowKeyboard();
+  KeyboardVisibleWaiter(true).Wait();
+
+  const int new_viewport_height = app_window->web_contents()
+                                      ->GetRenderWidgetHostView()
+                                      ->GetVisibleViewportSize()
+                                      .height();
+  const int screen_height = display::Screen::GetScreen()
+                                ->GetPrimaryDisplay()
+                                .GetSizeInPixel()
+                                .height();
+  EXPECT_EQ(new_viewport_height,
+            screen_height - client->GetKeyboardWindow()->bounds().height());
+}
+
+IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
+                       ShowingStickyKeyboardChangesViewport) {
+  auto extension = CreateDummyExtension();
+  extensions::AppWindow::CreateParams params;
+  params.frame = extensions::AppWindow::FRAME_NONE;
+  params.state = ui::SHOW_STATE_MAXIMIZED;
+  extensions::AppWindow* app_window =
+      CreateAppWindowFromParams(browser()->profile(), extension.get(), params);
+
+  // Wait until the keyboard is shown.
+  KeyboardLoadedWaiter().Wait();
+  keyboard::KeyboardUIController::Get()->ShowKeyboard(/*locked*/ true);
+  KeyboardVisibleWaiter(true).Wait();
+
+  const int new_viewport_height = app_window->web_contents()
+                                      ->GetRenderWidgetHostView()
+                                      ->GetVisibleViewportSize()
+                                      .height();
+  const int screen_height = display::Screen::GetScreen()
+                                ->GetPrimaryDisplay()
+                                .GetSizeInPixel()
+                                .height();
+  EXPECT_EQ(new_viewport_height,
+            screen_height - ChromeKeyboardControllerClient::Get()
+                                ->GetKeyboardWindow()
+                                ->bounds()
+                                .height());
+}
 
 // Tests that ime window won't overscroll. See crbug.com/529880.
 IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
                        DisableOverscrollForImeWindow) {
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder()
-          .SetManifest(extensions::DictionaryBuilder()
-                           .Set("name", "test extension")
-                           .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Set("background",
-                                extensions::DictionaryBuilder()
-                                    .Set("scripts", extensions::ListBuilder()
-                                                        .Append("background.js")
-                                                        .Build())
-                                    .Build())
-                           .Build())
-          .Build();
-
-  extension_service()->AddExtension(extension.get());
+  auto extension = CreateDummyExtension();
   extensions::AppWindow::CreateParams non_ime_params;
   non_ime_params.frame = extensions::AppWindow::FRAME_NONE;
   extensions::AppWindow* non_ime_app_window = CreateAppWindowFromParams(
@@ -331,15 +409,17 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
 class KeyboardControllerStateTest : public InProcessBrowserTest {
  public:
   KeyboardControllerStateTest() {}
+
+  KeyboardControllerStateTest(const KeyboardControllerStateTest&) = delete;
+  KeyboardControllerStateTest& operator=(const KeyboardControllerStateTest&) =
+      delete;
+
   ~KeyboardControllerStateTest() override {}
 
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerStateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardControllerStateTest, OpenTwice) {

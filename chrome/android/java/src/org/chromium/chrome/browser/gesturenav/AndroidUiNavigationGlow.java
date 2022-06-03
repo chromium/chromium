@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EdgeEffect;
@@ -20,7 +18,7 @@ public class AndroidUiNavigationGlow extends NavigationGlow {
      * Amount of time we wait before {@link GlowView} gets detached from parent view
      * after the glow effect is completed.
      */
-    private final static int REMOVE_RUNNABLE_DELAY_MS = 500;
+    private static final int REMOVE_RUNNABLE_DELAY_MS = 500;
 
     private final Runnable mRemoveGlowViewRunnable;
 
@@ -29,6 +27,11 @@ public class AndroidUiNavigationGlow extends NavigationGlow {
      * hierarchy while rendering is in progress only.
      */
     private final GlowView mGlowView;
+
+    /**
+     * Total amount of pull offset.
+     */
+    private float mTotalPullOffset;
 
     public AndroidUiNavigationGlow(ViewGroup parentView) {
         super(parentView);
@@ -45,7 +48,9 @@ public class AndroidUiNavigationGlow extends NavigationGlow {
     }
 
     @Override
-    public void onScroll(float xDelta) {
+    public void onScroll(float offset) {
+        float xDelta = -(offset - mTotalPullOffset);
+        mTotalPullOffset = offset;
         mGlowView.onPull(xDelta / mParentView.getWidth());
     }
 
@@ -56,6 +61,7 @@ public class AndroidUiNavigationGlow extends NavigationGlow {
         if (mGlowView.getParent() != null) {
             mParentView.postDelayed(mRemoveGlowViewRunnable, REMOVE_RUNNABLE_DELAY_MS);
         }
+        mTotalPullOffset = 0.f;
     }
 
     @Override
@@ -78,11 +84,8 @@ public class AndroidUiNavigationGlow extends NavigationGlow {
             setColor();
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         private void setColor() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mEdgeEffectRight.setColor(android.R.color.black);
-            }
+            mEdgeEffectRight.setColor(android.R.color.black);
         }
 
         @Override

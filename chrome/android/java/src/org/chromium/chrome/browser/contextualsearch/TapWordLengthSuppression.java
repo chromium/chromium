@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 
 /**
- * Implements signals for Taps on short and long words.
+ * Implements a {@link ContextualSearchHeuristic} for Taps on short and long words.
  * This signal could be used for suppression when the word is short, so we aggregate-log too.
  * We log CTR to UMA for Taps on both short and long words.
  */

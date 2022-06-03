@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -18,6 +18,10 @@ class NavigationObserver: public WebContentsObserver {
  public:
   explicit NavigationObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override {}
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
@@ -40,8 +44,6 @@ class NavigationObserver: public WebContentsObserver {
  private:
   GURL redirect_url_;
   GURL navigation_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 class CrossSiteRedirectorBrowserTest : public ContentBrowserTest {
@@ -154,8 +156,9 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsWithManualReply) {
 
   std::string script = "window.domAutomationController.send(20); 'hi';";
 
-  // Calling domAutomationController is required for EvalJsWithManualReply.
-  EXPECT_EQ(20, EvalJsWithManualReply(shell(), script));
+  // Calling domAutomationController is required for
+  // EXECUTE_SCRIPT_USE_MANUAL_REPLY.
+  EXPECT_EQ(20, EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Calling domAutomationController is an error with EvalJs.
   auto result = EvalJs(shell(), script);
@@ -168,9 +171,10 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsWithManualReply) {
       result.error,
       ::testing::EndsWith("This is potentially because a script tried to call "
                           "domAutomationController.send itself -- that is only "
-                          "allowed when using EvalJsWithManualReply().  When "
-                          "using EvalJs(), result values are just the result "
-                          "of calling eval() on the script -- the completion "
+                          "allowed when using "
+                          "EXECUTE_SCRIPT_USE_MANUAL_REPLY.  When using "
+                          "EvalJs(), result values are just the result of "
+                          "calling eval() on the script -- the completion "
                           "value is the value of the last executed statement.  "
                           "When using ExecJs(), there is no result value."));
 }

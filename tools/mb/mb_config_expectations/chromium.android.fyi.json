@@ -1,0 +1,198 @@
+{
+  "Android ASAN (dbg) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_asan": true,
+      "is_clang": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "Android WebView P FYI (rel)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "Android arm64 Builder (dbg) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "android-12-x64-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "skip_secondary_abi_for_cq": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview.debug",
+      "target_cpu": "x64",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
+  "android-annotator-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "android-pie-arm64-wpt-rel-non-cq": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "android-web-platform-pie-x86-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
+  "android-weblayer-pie-x86-wpt-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
+  "android-weblayer-pie-x86-wpt-smoketest": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
+  "android-weblayer-with-aosp-webview-x86-fyi-rel": {
+    "gn_args": {
+      "chrome_public_manifest_package": "com.android.chrome",
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "enable_proguard_obfuscation": false,
+      "enable_resource_allowlist_generation": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
+  "android-webview-pie-x86-wpt-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
+  "android-x86-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview.debug",
+      "system_webview_shell_package_name": "com.google.android.webview_shell",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  }
+}

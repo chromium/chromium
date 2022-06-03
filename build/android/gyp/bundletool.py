@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -19,20 +19,25 @@ BUNDLETOOL_DIR = os.path.abspath(os.path.join(
     __file__, '..', '..', '..', '..', 'third_party', 'android_build_tools',
     'bundletool'))
 
-BUNDLETOOL_VERSION = '0.11.0'
+BUNDLETOOL_JAR_PATH = os.path.join(BUNDLETOOL_DIR, 'bundletool.jar')
 
-BUNDLETOOL_JAR_PATH = os.path.join(
-    BUNDLETOOL_DIR, 'bundletool-all-%s.jar' % BUNDLETOOL_VERSION)
 
-def RunBundleTool(args):
-  args = [build_utils.JAVA_PATH, '-jar', BUNDLETOOL_JAR_PATH] + args
-  logging.debug(' '.join(args))
-  build_utils.CheckOutput(
-      args,
-      print_stdout=True,
+def RunBundleTool(args, warnings_as_errors=(), print_stdout=False):
+  # Use () instead of None because command-line flags are None by default.
+  verify = warnings_as_errors == () or warnings_as_errors
+  # ASAN builds failed with the default of 1GB (crbug.com/1120202).
+  # Bug for bundletool: https://issuetracker.google.com/issues/165911616
+  cmd = build_utils.JavaCmd(verify, xmx='4G')
+  cmd += ['-jar', BUNDLETOOL_JAR_PATH]
+  cmd += args
+  logging.debug(' '.join(cmd))
+  return build_utils.CheckOutput(
+      cmd,
+      print_stdout=print_stdout,
       print_stderr=True,
+      fail_on_output=False,
       stderr_filter=build_utils.FilterReflectiveAccessJavaWarnings)
 
 
 if __name__ == '__main__':
-  RunBundleTool(sys.argv[1:])
+  RunBundleTool(sys.argv[1:], print_stdout=True)

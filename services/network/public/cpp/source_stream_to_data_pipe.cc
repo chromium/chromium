@@ -53,10 +53,9 @@ void SourceStreamToDataPipe::ReadMore() {
 
   scoped_refptr<net::IOBuffer> buffer(
       new network::NetToMojoIOBuffer(pending_write_.get()));
-  int result =
-      source_->Read(buffer.get(), base::checked_cast<int>(num_bytes),
-                    base::BindRepeating(&SourceStreamToDataPipe::DidRead,
-                                        base::Unretained(this)));
+  int result = source_->Read(
+      buffer.get(), base::checked_cast<int>(num_bytes),
+      base::BindOnce(&SourceStreamToDataPipe::DidRead, base::Unretained(this)));
 
   if (result != net::ERR_IO_PENDING)
     DidRead(result);

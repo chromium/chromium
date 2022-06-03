@@ -18,9 +18,7 @@ static_library("crx_file") {
     "//crypto",
   ]
 
-  public_deps = [
-    ":crx3_proto",
-  ]
+  public_deps = [ ":crx3_proto" ]
 }
 
 static_library("crx_creator") {
@@ -35,9 +33,7 @@ static_library("crx_creator") {
     "//crypto",
   ]
 
-  public_deps = [
-    ":crx3_proto",
-  ]
+  public_deps = [ ":crx3_proto" ]
 }
 
 bundle_data("unit_tests_bundle_data") {
@@ -51,10 +47,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/crx_file/valid_publisher.crx3",
     "//components/test/data/crx_file/valid_test_publisher.crx3",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
@@ -76,7 +70,19 @@ source_set("unit_tests") {
 }
 
 proto_library("crx3_proto") {
-  sources = [
-    "crx3.proto",
-  ]
+  sources = [ "crx3.proto" ]
+}
+
+if (host_toolchain == current_toolchain) {
+  executable("crx3_build_action") {
+    testonly = true
+
+    sources = [ "crx_build_action_main.cc" ]
+
+    deps = [
+      ":crx_creator",
+      "//base",
+      "//crypto",
+    ]
+  }
 }

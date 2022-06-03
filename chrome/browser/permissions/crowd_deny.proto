@@ -18,10 +18,21 @@ message SiteReputation {
     UNKNOWN = 0;
     ACCEPTABLE = 1;
     UNSOLICITED_PROMPTS = 2;
+    ABUSIVE_PROMPTS = 3;  // Supported as of M84.
+    ABUSIVE_CONTENT = 4;  // Supported as of M85.
   }
 
   // The quality of the experience users have with notifications on this site.
   optional NotificationUserExperienceQuality notification_ux_quality = 2;
+
+  // Whether the reputation propagates to all subdomains of |domain|. Supported
+  // as of M84. Older versions will always perform exact domain matching.
+  optional bool include_subdomains = 3;
+
+  // Whether to merely print a console warning and not enforce. Supported as of
+  // M84. Older versions will always enforce if |notification_ux_quality| is
+  // set to a value recognized by the version, other than `ACCEPTABLE`.
+  optional bool warning_only = 4;
 }
 
 // Information, about popular sites, relevant for making permission decisions.

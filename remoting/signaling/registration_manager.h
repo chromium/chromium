@@ -8,14 +8,15 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "third_party/grpc/src/include/grpcpp/support/status.h"
 
 namespace remoting {
+
+class ProtobufHttpStatus;
 
 // Interface for registering the user with signaling service.
 class RegistrationManager {
  public:
-  using DoneCallback = base::OnceCallback<void(const grpc::Status& status)>;
+  using DoneCallback = base::OnceCallback<void(const ProtobufHttpStatus&)>;
 
   virtual ~RegistrationManager() = default;
 

@@ -10,10 +10,15 @@
 namespace notifications {
 namespace features {
 
-// The feature flag to determine whether to use Chime notification platform.
-extern const base::Feature kChimeNotificationPlatform;
+// The feature flag to determine whether to use Chime Android SDK.
+extern const base::Feature kUseChimeAndroidSdk;
 
 }  // namespace features
+
+namespace switches {
+// Debug flag to show Chime notifications.
+extern const char kDebugChimeNotification[];
+}  // namespace switches
 }  // namespace notifications
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_CHIME_ANDROID_FEATURES_H_

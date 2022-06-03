@@ -21,7 +21,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TRANSFORM_SOURCE_H_
 
 #include <libxml/tree.h>
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -31,13 +30,14 @@ class TransformSource {
 
  public:
   explicit TransformSource(xmlDocPtr source);
+  TransformSource(const TransformSource&) = delete;
+  TransformSource& operator=(const TransformSource&) = delete;
   ~TransformSource();
 
   xmlDocPtr PlatformSource() const { return source_; }
 
  private:
   xmlDocPtr source_;
-  DISALLOW_COPY_AND_ASSIGN(TransformSource);
 };
 
 }  // namespace blink

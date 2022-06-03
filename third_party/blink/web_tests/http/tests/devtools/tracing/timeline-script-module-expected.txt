@@ -5,7 +5,7 @@ v8.compileModule Properties:
     data : {
         columnNumber : 1
         lineNumber : 1
-        notStreamedReason : "module script"
+        notStreamedReason : "already disabled streaming"
         streamed : <boolean>
         url : .../devtools/resources/inspected-page.html
     }

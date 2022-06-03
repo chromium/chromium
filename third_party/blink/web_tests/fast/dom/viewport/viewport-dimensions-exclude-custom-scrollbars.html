@@ -46,7 +46,8 @@
           "Height with pinch-zoom");
 
       // Apply browser zoom.
-      eventSender.setPageZoomFactor(browserZoomFactor);
+      if (window.testRunner)
+        testRunner.setPageZoomFactor(browserZoomFactor);
 
       // Verify scrollbar exclusion with browser zoom. Custom scrollbars are
       // scaled with browser zoom but remain unchanged with pinch zoom.

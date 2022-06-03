@@ -1,47 +1,49 @@
     <style>
-      :host {
+      /* A separate div is used because if the direction CSS property is applied
+       * to the host element, any margins or paddings set by the parent will be
+       * affected and be reversed. */
+      #content {
+        align-items: center;
         color: #fff;
+        direction: ltr;
         display: flex;
         font-size: 0.81rem;
+        text-align: center;
+
+        --page-selector-spacing: 4px;
       }
 
-      :host ::selection {
-        background: rgba(255, 255, 255, 0.3);
+      #pageselector::selection {
+        background-color: var(--viewer-text-input-selection-color);
       }
 
-      #pageselector-container,
-      #pagelength-spacer {
-        padding: 0 3px;
-        text-align: start;
-        /* --page-length-digits is set through JavaScript */
-        width: calc(var(--page-length-digits, 1) * 1ch);
+      input,
+      #pagelength {
+        /* --page-length-digits is set through JavaScript. 1px is added because
+         * the unit 'ch' does not provide exact whole number pixels, and
+         * therefore seems to have 1px-off bugginess. */
+        width: calc(max(2, var(--page-length-digits)) * 1ch + 1px);
       }
 
-      #pageselector-container:focus-within,
-      #pageselector-container:hover {
+      input {
         background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        font-family: inherit;
+        line-height: inherit;
+        outline: none;
+        padding: 0 var(--page-selector-spacing);
+        text-align: center;
       }
 
-      #pageselector {
-        --cr-input-focus-color: transparent;
-        --cr-input-error-display: none;
-        --cr-input-background-color: transparent;
-        --cr-input-color: white;
-      }
-
-      #pageselector::part(input) {
-        caret-color: var(--cr-input-color);
-        padding: 0;
-        text-align: end;
+      #divider {
+        margin: 0 var(--page-selector-spacing);
       }
     </style>
-    <div id="pageselector-container">
-      <cr-input id="pageselector" value="[[pageNo]]" on-mouseup="select"
-          on-value-changed="onInputValueChange_" on-change="pageNoCommitted"
-          aria-label$="{{strings.labelPageNumber}}">
-      </cr-input>
+    <div id="content">
+      <input part="input" type="text" id="pageselector" value="[[pageNo]]"
+          on-pointerup="select" on-input="onInput_" on-change="pageNoCommitted"
+          aria-label="$i18n{labelPageNumber}">
+      <span id="divider">/</span>
+      <span id="pagelength">[[docLength]]</span>
     </div>
-    <span id="slash">/</span>
-    <span id="pagelength-spacer">
-      <span id="pagelength">{{docLength}}</span>
-    </span>

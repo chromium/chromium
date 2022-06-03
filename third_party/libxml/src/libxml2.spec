@@ -2,7 +2,7 @@
 
 Summary: Library providing XML and HTML support
 Name: libxml2
-Version: 2.9.9
+Version: 2.9.12
 Release: 1%{?dist}%{?extra_release}
 License: MIT
 Group: Development/Libraries
@@ -128,7 +128,8 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/doc/libxml2-python-%{version}/*
 gzip -9 -c doc/libxml2-api.xml > doc/libxml2-api.xml.gz
 
 %check
-make runtests
+#disabling python tests from rpm build as broken in Fedora 30
+make PYTHON_SUBDIR="" runtests
 
 %clean
 rm -fr %{buildroot}
@@ -203,6 +204,6 @@ rm -fr %{buildroot}
 %endif # with_python3
 
 %changelog
-* Tue Feb 19 2019 Daniel Veillard <veillard@redhat.com>
-- upstream release 2.9.9 see http://xmlsoft.org/news.html
+* Tue Aug  3 2021 Daniel Veillard <veillard@redhat.com>
+- upstream release 2.9.12 see http://xmlsoft.org/news.html
 

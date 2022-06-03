@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "ui/base/models/table_model.h"
@@ -38,8 +37,10 @@ struct TableSortDescriptor {
 // (Either views::TableView or NSTableView on the Mac).
 class TableViewDelegate {
  public:
-  TableViewDelegate() {}
-  virtual ~TableViewDelegate() {}
+  TableViewDelegate() = default;
+  TableViewDelegate(const TableViewDelegate&) = delete;
+  TableViewDelegate& operator=(const TableViewDelegate&) = delete;
+  virtual ~TableViewDelegate() = default;
 
   virtual bool IsColumnVisible(int column_id) const = 0;
 
@@ -51,22 +52,20 @@ class TableViewDelegate {
 
   virtual void SetSortDescriptor(
       const TableSortDescriptor& sort_descriptor) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TableViewDelegate);
 };
 
-class TaskManagerTableModel
-    : public TaskManagerObserver,
-      public ui::TableModel {
+class TaskManagerTableModel : public TaskManagerObserver,
+                              public ui::TableModel {
  public:
   explicit TaskManagerTableModel(TableViewDelegate* delegate);
+  TaskManagerTableModel(const TaskManagerTableModel&) = delete;
+  TaskManagerTableModel& operator=(const TaskManagerTableModel&) = delete;
   ~TaskManagerTableModel() override;
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  std::u16string GetText(int row, int column) override;
+  ui::ImageModel GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(int row1, int row2, int column_id) override;
 
@@ -144,8 +143,6 @@ class TaskManagerTableModel
 
   // The status of the flag #enable-nacl-debug.
   bool is_nacl_debugging_flag_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerTableModel);
 };
 
 }  // namespace task_manager

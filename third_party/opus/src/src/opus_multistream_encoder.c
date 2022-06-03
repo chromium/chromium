@@ -61,37 +61,6 @@ static const VorbisLayout vorbis_mappings[8] = {
       {5, 3, {0, 6, 1, 2, 3, 4, 5, 7}}, /* 8: 7.1 surround */
 };
 
-typedef void (*opus_copy_channel_in_func)(
-  opus_val16 *dst,
-  int dst_stride,
-  const void *src,
-  int src_stride,
-  int src_channel,
-  int frame_size
-);
-
-typedef enum {
-  MAPPING_TYPE_NONE,
-  MAPPING_TYPE_SURROUND
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
-  ,  /* Do not include comma at end of enumerator list */
-  MAPPING_TYPE_AMBISONICS
-#endif
-} MappingType;
-
-struct OpusMSEncoder {
-   ChannelLayout layout;
-   int arch;
-   int lfe_stream;
-   int application;
-   int variable_duration;
-   MappingType mapping_type;
-   opus_int32 bitrate_bps;
-   /* Encoder states go here */
-   /* then opus_val32 window_mem[channels*120]; */
-   /* then opus_val32 preemph_mem[channels]; */
-};
-
 static opus_val32 *ms_get_preemph_mem(OpusMSEncoder *st)
 {
    int s;
@@ -132,19 +101,20 @@ static opus_val32 *ms_get_window_mem(OpusMSEncoder *st)
    return (opus_val32*)(void*)ptr;
 }
 
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
 static int validate_ambisonics(int nb_channels, int *nb_streams, int *nb_coupled_streams)
 {
    int order_plus_one;
    int acn_channels;
    int nondiegetic_channels;
 
+   if (nb_channels < 1 || nb_channels > 227)
+      return 0;
+
    order_plus_one = isqrt32(nb_channels);
    acn_channels = order_plus_one * order_plus_one;
    nondiegetic_channels = nb_channels - acn_channels;
 
-   if (order_plus_one < 1 || order_plus_one > 15 ||
-       (nondiegetic_channels != 0 && nondiegetic_channels != 2))
+   if (nondiegetic_channels != 0 && nondiegetic_channels != 2)
       return 0;
 
    if (nb_streams)
@@ -153,7 +123,6 @@ static int validate_ambisonics(int nb_channels, int *nb_streams, int *nb_coupled
       *nb_coupled_streams = nondiegetic_channels != 0;
    return 1;
 }
-#endif
 
 static int validate_encoder_layout(const ChannelLayout *layout)
 {
@@ -296,7 +265,7 @@ void surround_analysis(const CELTMode *celt_mode, const void *pcm, opus_val16 *b
       int nb_frames = frame_size/freq_size;
       celt_assert(nb_frames*freq_size == frame_size);
       OPUS_COPY(in, mem+c*overlap, overlap);
-      (*copy_channel_in)(x, 1, pcm, channels, c, len);
+      (*copy_channel_in)(x, 1, pcm, channels, c, len, NULL);
       celt_preemphasis(x, in+overlap, frame_size, 1, upsample, celt_mode->preemph, preemph_mem+c, 0);
 #ifndef FIXED_POINT
       {
@@ -443,12 +412,10 @@ opus_int32 opus_multistream_surround_encoder_get_size(int channels, int mapping_
    {
       nb_streams=channels;
       nb_coupled_streams=0;
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
-   } else if (mapping_family==254)
+   } else if (mapping_family==2)
    {
       if (!validate_ambisonics(channels, &nb_streams, &nb_coupled_streams))
          return 0;
-#endif
    } else
       return 0;
    size = opus_multistream_encoder_get_size(nb_streams, nb_coupled_streams);
@@ -476,7 +443,8 @@ static int opus_multistream_encoder_init_impl(
    char *ptr;
 
    if ((channels>255) || (channels<1) || (coupled_streams>streams) ||
-       (streams<1) || (coupled_streams<0) || (streams>255-coupled_streams))
+       (streams<1) || (coupled_streams<0) || (streams>255-coupled_streams) ||
+       (streams+coupled_streams>channels))
       return OPUS_BAD_ARG;
 
    st->arch = opus_select_arch();
@@ -492,14 +460,11 @@ static int opus_multistream_encoder_init_impl(
       st->layout.mapping[i] = mapping[i];
    if (!validate_layout(&st->layout))
       return OPUS_BAD_ARG;
-   if (mapping_type == MAPPING_TYPE_SURROUND &&
-       !validate_encoder_layout(&st->layout))
+   if (!validate_encoder_layout(&st->layout))
       return OPUS_BAD_ARG;
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
    if (mapping_type == MAPPING_TYPE_AMBISONICS &&
        !validate_ambisonics(st->layout.nb_channels, NULL, NULL))
       return OPUS_BAD_ARG;
-#endif
    ptr = (char*)st + align(sizeof(OpusMSEncoder));
    coupled_size = opus_encoder_get_size(2);
    mono_size = opus_encoder_get_size(1);
@@ -591,8 +556,7 @@ int opus_multistream_surround_encoder_init(
       *coupled_streams=0;
       for(i=0;i<channels;i++)
          mapping[i] = i;
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
-   } else if (mapping_family==254)
+   } else if (mapping_family==2)
    {
       int i;
       if (!validate_ambisonics(channels, streams, coupled_streams))
@@ -601,17 +565,14 @@ int opus_multistream_surround_encoder_init(
          mapping[i] = i + (*coupled_streams * 2);
       for(i = 0; i < *coupled_streams * 2; i++)
          mapping[i + (*streams - *coupled_streams)] = i;
-#endif
    } else
       return OPUS_UNIMPLEMENTED;
 
    if (channels>2 && mapping_family==1) {
       mapping_type = MAPPING_TYPE_SURROUND;
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
-   } else if (mapping_family==254)
+   } else if (mapping_family==2)
    {
       mapping_type = MAPPING_TYPE_AMBISONICS;
-#endif
    } else
    {
       mapping_type = MAPPING_TYPE_NONE;
@@ -634,7 +595,8 @@ OpusMSEncoder *opus_multistream_encoder_create(
    int ret;
    OpusMSEncoder *st;
    if ((channels>255) || (channels<1) || (coupled_streams>streams) ||
-       (streams<1) || (coupled_streams<0) || (streams>255-coupled_streams))
+       (streams<1) || (coupled_streams<0) || (streams>255-coupled_streams) ||
+       (streams+coupled_streams>channels))
    {
       if (error)
          *error = OPUS_BAD_ARG;
@@ -772,7 +734,6 @@ static void surround_rate_allocation(
    }
 }
 
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
 static void ambisonics_rate_allocation(
       OpusMSEncoder *st,
       opus_int32 *rate,
@@ -781,24 +742,15 @@ static void ambisonics_rate_allocation(
       )
 {
    int i;
-   int total_rate;
-   int directional_rate;
-   int nondirectional_rate;
-   int leftover_bits;
+   opus_int32 total_rate;
+   opus_int32 per_stream_rate;
 
-   /* Each nondirectional channel gets (rate_ratio_num / rate_ratio_den) times
-    * as many bits as all other ambisonics channels.
-    */
-   const int rate_ratio_num = 4;
-   const int rate_ratio_den = 3;
    const int nb_channels = st->layout.nb_streams + st->layout.nb_coupled_streams;
-   const int nb_nondirectional_channels = st->layout.nb_coupled_streams * 2 + 1;
-   const int nb_directional_channels = st->layout.nb_streams - 1;
 
    if (st->bitrate_bps==OPUS_AUTO)
    {
       total_rate = (st->layout.nb_coupled_streams + st->layout.nb_streams) *
-         (Fs+60*Fs/frame_size) + st->layout.nb_streams * 15000;
+         (Fs+60*Fs/frame_size) + st->layout.nb_streams * (opus_int32)15000;
    } else if (st->bitrate_bps==OPUS_BITRATE_MAX)
    {
       total_rate = nb_channels * 320000;
@@ -807,49 +759,14 @@ static void ambisonics_rate_allocation(
       total_rate = st->bitrate_bps;
    }
 
-   /* Let y be the directional rate, m be the num of nondirectional channels
-    *   m = (s + 1)
-    * and let p, q be integers such that the nondirectional rate is
-    *   m_rate = (p / q) * y
-    * Also let T be the total bitrate to allocate. Then
-    *   T = (n - m) * y + m * m_rate
-    * Solving for y,
-    *   y = (q * T) / (m * (p - q) + n * q)
-    */
-   directional_rate =
-      total_rate * rate_ratio_den
-      / (nb_nondirectional_channels * (rate_ratio_num - rate_ratio_den)
-       + nb_channels * rate_ratio_den);
-
-   /* Calculate the nondirectional rate.
-    *   m_rate = y * (p / q)
-    */
-   nondirectional_rate = directional_rate * rate_ratio_num / rate_ratio_den;
-
-   /* Calculate the leftover from truncation error.
-    *   leftover = T - y * (n - m) - m_rate * m
-    * Place leftover bits in omnidirectional channel.
-    */
-   leftover_bits = total_rate
-      - directional_rate * nb_directional_channels
-      - nondirectional_rate * nb_nondirectional_channels;
-
-   /* Calculate rates for each channel */
+   /* Allocate equal number of bits to Ambisonic (uncoupled) and non-diegetic
+    * (coupled) streams */
+   per_stream_rate = total_rate / st->layout.nb_streams;
    for (i = 0; i < st->layout.nb_streams; i++)
    {
-      if (i < st->layout.nb_coupled_streams)
-      {
-         rate[i] = nondirectional_rate * 2;
-      } else if (i == st->layout.nb_coupled_streams)
-      {
-         rate[i] = nondirectional_rate + leftover_bits;
-      } else
-      {
-         rate[i] = directional_rate;
-      }
+     rate[i] = per_stream_rate;
    }
 }
-#endif /* ENABLE_EXPERIMENTAL_AMBISONICS */
 
 static opus_int32 rate_allocation(
       OpusMSEncoder *st,
@@ -865,11 +782,9 @@ static opus_int32 rate_allocation(
    ptr = (char*)st + align(sizeof(OpusMSEncoder));
    opus_encoder_ctl((OpusEncoder*)ptr, OPUS_GET_SAMPLE_RATE(&Fs));
 
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
    if (st->mapping_type == MAPPING_TYPE_AMBISONICS) {
      ambisonics_rate_allocation(st, rate, frame_size, Fs);
    } else
-#endif
    {
      surround_rate_allocation(st, rate, frame_size, Fs);
    }
@@ -884,7 +799,7 @@ static opus_int32 rate_allocation(
 
 /* Max size in case the encoder decides to return six frames (6 x 20 ms = 120 ms) */
 #define MS_FRAME_TMP (6*1275+12)
-static int opus_multistream_encode_native
+int opus_multistream_encode_native
 (
     OpusMSEncoder *st,
     opus_copy_channel_in_func copy_channel_in,
@@ -894,7 +809,8 @@ static int opus_multistream_encode_native
     opus_int32 max_data_bytes,
     int lsb_depth,
     downmix_func downmix,
-    int float_api
+    int float_api,
+    void *user_data
 )
 {
    opus_int32 Fs;
@@ -1001,11 +917,9 @@ static int opus_multistream_encode_native
             opus_encoder_ctl(enc, OPUS_SET_FORCE_CHANNELS(2));
          }
       }
-#ifdef ENABLE_EXPERIMENTAL_AMBISONICS
       else if (st->mapping_type == MAPPING_TYPE_AMBISONICS) {
         opus_encoder_ctl(enc, OPUS_SET_FORCE_MODE(MODE_CELT_ONLY));
       }
-#endif
    }
 
    ptr = (char*)st + align(sizeof(OpusMSEncoder));
@@ -1028,9 +942,9 @@ static int opus_multistream_encode_native
          left = get_left_channel(&st->layout, s, -1);
          right = get_right_channel(&st->layout, s, -1);
          (*copy_channel_in)(buf, 2,
-            pcm, st->layout.nb_channels, left, frame_size);
+            pcm, st->layout.nb_channels, left, frame_size, user_data);
          (*copy_channel_in)(buf+1, 2,
-            pcm, st->layout.nb_channels, right, frame_size);
+            pcm, st->layout.nb_channels, right, frame_size, user_data);
          ptr += align(coupled_size);
          if (st->mapping_type == MAPPING_TYPE_SURROUND)
          {
@@ -1046,7 +960,7 @@ static int opus_multistream_encode_native
          int i;
          int chan = get_mono_channel(&st->layout, s, -1);
          (*copy_channel_in)(buf, 1,
-            pcm, st->layout.nb_channels, chan, frame_size);
+            pcm, st->layout.nb_channels, chan, frame_size, user_data);
          ptr += align(mono_size);
          if (st->mapping_type == MAPPING_TYPE_SURROUND)
          {
@@ -1105,11 +1019,13 @@ static void opus_copy_channel_in_float(
   const void *src,
   int src_stride,
   int src_channel,
-  int frame_size
+  int frame_size,
+  void *user_data
 )
 {
    const float *float_src;
    opus_int32 i;
+   (void)user_data;
    float_src = (const float *)src;
    for (i=0;i<frame_size;i++)
 #if defined(FIXED_POINT)
@@ -1126,11 +1042,13 @@ static void opus_copy_channel_in_short(
   const void *src,
   int src_stride,
   int src_channel,
-  int frame_size
+  int frame_size,
+  void *user_data
 )
 {
    const opus_int16 *short_src;
    opus_int32 i;
+   (void)user_data;
    short_src = (const opus_int16 *)src;
    for (i=0;i<frame_size;i++)
 #if defined(FIXED_POINT)
@@ -1151,7 +1069,7 @@ int opus_multistream_encode(
 )
 {
    return opus_multistream_encode_native(st, opus_copy_channel_in_short,
-      pcm, frame_size, data, max_data_bytes, 16, downmix_int, 0);
+      pcm, frame_size, data, max_data_bytes, 16, downmix_int, 0, NULL);
 }
 
 #ifndef DISABLE_FLOAT_API
@@ -1164,7 +1082,7 @@ int opus_multistream_encode_float(
 )
 {
    return opus_multistream_encode_native(st, opus_copy_channel_in_float,
-      pcm, frame_size, data, max_data_bytes, 16, downmix_float, 1);
+      pcm, frame_size, data, max_data_bytes, 16, downmix_float, 1, NULL);
 }
 #endif
 
@@ -1180,7 +1098,7 @@ int opus_multistream_encode_float
 )
 {
    return opus_multistream_encode_native(st, opus_copy_channel_in_float,
-      pcm, frame_size, data, max_data_bytes, 24, downmix_float, 1);
+      pcm, frame_size, data, max_data_bytes, 24, downmix_float, 1, NULL);
 }
 
 int opus_multistream_encode(
@@ -1192,18 +1110,16 @@ int opus_multistream_encode(
 )
 {
    return opus_multistream_encode_native(st, opus_copy_channel_in_short,
-      pcm, frame_size, data, max_data_bytes, 16, downmix_int, 0);
+      pcm, frame_size, data, max_data_bytes, 16, downmix_int, 0, NULL);
 }
 #endif
 
-int opus_multistream_encoder_ctl(OpusMSEncoder *st, int request, ...)
+int opus_multistream_encoder_ctl_va_list(OpusMSEncoder *st, int request,
+                                         va_list ap)
 {
-   va_list ap;
    int coupled_size, mono_size;
    char *ptr;
    int ret = OPUS_OK;
-
-   va_start(ap, request);
 
    coupled_size = opus_encoder_get_size(2);
    mono_size = opus_encoder_get_size(1);
@@ -1334,7 +1250,7 @@ int opus_multistream_encoder_ctl(OpusMSEncoder *st, int request, ...)
       OpusEncoder **value;
       stream_id = va_arg(ap, opus_int32);
       if (stream_id<0 || stream_id >= st->layout.nb_streams)
-         ret = OPUS_BAD_ARG;
+         goto bad_arg;
       value = va_arg(ap, OpusEncoder**);
       if (!value)
       {
@@ -1392,12 +1308,19 @@ int opus_multistream_encoder_ctl(OpusMSEncoder *st, int request, ...)
       ret = OPUS_UNIMPLEMENTED;
       break;
    }
-
-   va_end(ap);
    return ret;
 bad_arg:
-   va_end(ap);
    return OPUS_BAD_ARG;
+}
+
+int opus_multistream_encoder_ctl(OpusMSEncoder *st, int request, ...)
+{
+   int ret;
+   va_list ap;
+   va_start(ap, request);
+   ret = opus_multistream_encoder_ctl_va_list(st, request, ap);
+   va_end(ap);
+   return ret;
 }
 
 void opus_multistream_encoder_destroy(OpusMSEncoder *st)

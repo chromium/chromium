@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/public/browser/device_service.h"
+#include "services/device/public/mojom/battery_status.mojom.h"
 
 namespace {
 
@@ -68,7 +69,7 @@ void BatteryMetrics::RecordBatteryDropUMA(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (battery_status.charging) {
     // If the battery charges, drop the stored battery level.
-    last_recorded_battery_level_ = base::nullopt;
+    last_recorded_battery_level_ = absl::nullopt;
     return;
   }
 

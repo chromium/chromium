@@ -26,10 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_CONTAINER_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/animation/priority_queue.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_time.h"
-#include "third_party/blink/renderer/platform/graphics/image_animation_policy.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -41,7 +43,8 @@ class SVGElement;
 class SVGSMILElement;
 class SVGSVGElement;
 
-class SMILTimeContainer final : public GarbageCollected<SMILTimeContainer> {
+class CORE_EXPORT SMILTimeContainer final
+    : public GarbageCollected<SMILTimeContainer> {
  public:
   explicit SMILTimeContainer(SVGSVGElement& owner);
   ~SMILTimeContainer();
@@ -64,7 +67,8 @@ class SMILTimeContainer final : public GarbageCollected<SMILTimeContainer> {
   void Unpause();
   void SetElapsed(SMILTime);
 
-  void ServiceAnimations();
+  // True if an animation frame is successfully scheduled.
+  bool ServiceAnimations();
   bool HasAnimations() const;
 
   void ResetDocumentTime();
@@ -72,8 +76,9 @@ class SMILTimeContainer final : public GarbageCollected<SMILTimeContainer> {
 
   // Advance the animation timeline a single frame.
   void AdvanceFrameForTesting();
+  bool EventsDisabled() const { return !should_dispatch_events_; }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   enum FrameSchedulingState {
@@ -87,35 +92,26 @@ class SMILTimeContainer final : public GarbageCollected<SMILTimeContainer> {
     kAnimationFrame
   };
 
-  enum AnimationPolicyOnceAction {
-    // Restart OnceTimer if the timeline is not paused.
-    kRestartOnceTimerIfNotPaused,
-    // Restart OnceTimer.
-    kRestartOnceTimer,
-    // Cancel OnceTimer.
-    kCancelOnceTimer
-  };
-
   bool IsTimelineRunning() const;
   void SynchronizeToDocumentTimeline();
   void ScheduleAnimationFrame(base::TimeDelta delay_time);
   void CancelAnimationFrame();
   void WakeupTimerFired(TimerBase*);
-  void ScheduleAnimationPolicyTimer();
-  void CancelAnimationPolicyTimer();
-  void AnimationPolicyTimerFired(TimerBase*);
-  ImageAnimationPolicy AnimationPolicy() const;
-  bool HandleAnimationPolicy(AnimationPolicyOnceAction);
-  bool CanScheduleFrame(SMILTime earliest_fire_time) const;
-  void UpdateAnimationsAndScheduleFrameIfNeeded(SMILTime elapsed);
+  mojom::blink::ImageAnimationPolicy AnimationPolicy() const;
+  bool AnimationsDisabled() const;
+  class TimingUpdate;
+  bool UpdateAnimationsAndScheduleFrameIfNeeded(TimingUpdate&);
+  void PrepareSeek(TimingUpdate&);
   void ResetIntervals();
-  void UpdateIntervals(SMILTime presentation_time);
-  void UpdateAnimationTimings(SMILTime elapsed);
+  void UpdateIntervals(TimingUpdate&);
+  void UpdateTimedElements(TimingUpdate&);
   void ApplyTimedEffects(SMILTime elapsed);
   SMILTime NextProgressTime(SMILTime presentation_time) const;
   void ServiceOnNextFrame();
   void ScheduleWakeUp(base::TimeDelta delay_time, FrameSchedulingState);
   bool HasPendingSynchronization() const;
+  void SetPresentationTime(SMILTime new_presentation_time);
+  SMILTime ClampPresentationTime(SMILTime presentation_time) const;
 
   void UpdateDocumentOrderIndexes();
 
@@ -125,6 +121,9 @@ class SMILTimeContainer final : public GarbageCollected<SMILTimeContainer> {
   // The latest "restart" time for the time container's timeline. If the
   // timeline has not been manipulated (seeked, paused) this will be zero.
   SMILTime presentation_time_;
+  // The maximum possible presentation time. When this time is reached
+  // animations will stop.
+  SMILTime max_presentation_time_;
   // The state all SVGSMILElements should be at.
   SMILTime latest_update_time_;
   // The time on the document timeline corresponding to |presentation_time_|.
@@ -134,11 +133,11 @@ class SMILTimeContainer final : public GarbageCollected<SMILTimeContainer> {
   bool started_ : 1;  // The timeline has been started.
   bool paused_ : 1;   // The timeline is paused.
 
+  const bool should_dispatch_events_ : 1;
   bool document_order_indexes_dirty_ : 1;
   bool is_updating_intervals_;
 
-  TaskRunnerTimer<SMILTimeContainer> wakeup_timer_;
-  TaskRunnerTimer<SMILTimeContainer> animation_policy_once_timer_;
+  HeapTaskRunnerTimer<SMILTimeContainer> wakeup_timer_;
 
   using AnimatedTargets = HeapHashCountedSet<WeakMember<SVGElement>>;
   AnimatedTargets animated_targets_;

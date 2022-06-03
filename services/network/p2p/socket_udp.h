@@ -52,13 +52,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
                mojo::PendingReceiver<mojom::P2PSocket> socket,
                P2PMessageThrottler* throttler,
                net::NetLog* net_log);
+
+  P2PSocketUdp(const P2PSocketUdp&) = delete;
+  P2PSocketUdp& operator=(const P2PSocketUdp&) = delete;
+
   ~P2PSocketUdp() override;
 
   // P2PSocket overrides.
   void Init(const net::IPEndPoint& local_address,
             uint16_t min_port,
             uint16_t max_port,
-            const P2PHostAndIPEndPoint& remote_address) override;
+            const P2PHostAndIPEndPoint& remote_address,
+            const net::NetworkIsolationKey& network_isolation_key) override;
 
   // mojom::P2PSocket implementation:
   void Send(const std::vector<int8_t>& data,
@@ -124,8 +129,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketUdp);
 };
 
 }  // namespace network

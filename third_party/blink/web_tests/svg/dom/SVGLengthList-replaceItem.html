@@ -39,10 +39,10 @@ test(function() {
   assert_equals(list1.replaceItem(newLength1, 0).value, newLength1.value);
   assert_equals(list1.replaceItem(newLength2, 1).value, newLength2.value);
   assert_equals(list1.replaceItem(newLength3, 2).value, newLength3.value);
-  assert_throws("IndexSizeError", function() { list1.replaceItem(newLength3, -100); });
-  assert_throws("IndexSizeError", function() { list1.replaceItem(newLength3, -1); });
-  assert_throws("IndexSizeError", function() { list1.replaceItem(newLength3, 3); });
-  assert_throws("IndexSizeError", function() { list1.replaceItem(newLength3, 100); });
+  assert_throws_dom("IndexSizeError", function() { list1.replaceItem(newLength3, -100); });
+  assert_throws_dom("IndexSizeError", function() { list1.replaceItem(newLength3, -1); });
+  assert_throws_dom("IndexSizeError", function() { list1.replaceItem(newLength3, 3); });
+  assert_throws_dom("IndexSizeError", function() { list1.replaceItem(newLength3, 100); });
 
   // Verify that the text1 x value list is correct.
   assert_list(list1, [50, 100, 150]);

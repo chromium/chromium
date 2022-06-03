@@ -10,11 +10,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "content/common/content_param_traits.h"
-#include "content/common/resource_messages.h"
 #include "content/public/common/content_constants.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
@@ -90,8 +88,8 @@ TEST(IPCMessageTest, Bitmap) {
 
 TEST(IPCMessageTest, ListValue) {
   base::ListValue input;
-  input.AppendDouble(42.42);
-  input.AppendString("forty");
+  input.Append(42.42);
+  input.Append("forty");
   input.Append(std::make_unique<base::Value>());
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
@@ -112,21 +110,21 @@ TEST(IPCMessageTest, ListValue) {
 
 TEST(IPCMessageTest, DictionaryValue) {
   base::DictionaryValue input;
-  input.Set("null", std::make_unique<base::Value>());
+  input.SetKey("null", base::Value());
   input.SetBoolean("bool", true);
   input.SetInteger("int", 42);
 
-  auto subdict = std::make_unique<base::DictionaryValue>();
-  subdict->SetString("str", "forty two");
-  subdict->SetBoolean("bool", false);
+  base::DictionaryValue subdict;
+  subdict.SetString("str", "forty two");
+  subdict.SetBoolean("bool", false);
 
-  auto sublist = std::make_unique<base::ListValue>();
-  sublist->AppendDouble(42.42);
-  sublist->AppendString("forty");
-  sublist->AppendString("two");
-  subdict->Set("list", std::move(sublist));
+  base::ListValue sublist;
+  sublist.Append(42.42);
+  sublist.Append("forty");
+  sublist.Append("two");
+  subdict.SetKey("list", std::move(sublist));
 
-  input.Set("dict", std::move(subdict));
+  input.SetKey("dict", std::move(subdict));
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   IPC::WriteParam(&msg, input);
@@ -266,19 +264,4 @@ TEST(IPCMessageTest, SurfaceInfo) {
       IPC::ParamTraits<viz::SurfaceInfo>::Read(&msg, &iter, &surface_info_out));
 
   ASSERT_EQ(surface_info_in, surface_info_out);
-}
-
-TEST(IPCMessageTest, WebCursor) {
-  content::CursorInfo info(ui::CursorType::kCustom);
-  info.custom_image.allocN32Pixels(32, 32);
-  info.hotspot = gfx::Point(10, 20);
-  info.image_scale_factor = 1.5f;
-  content::WebCursor input(info);
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  IPC::ParamTraits<content::WebCursor>::Write(&msg, input);
-
-  content::WebCursor output;
-  base::PickleIterator iter(msg);
-  ASSERT_TRUE(IPC::ParamTraits<content::WebCursor>::Read(&msg, &iter, &output));
-  EXPECT_EQ(output, input);
 }

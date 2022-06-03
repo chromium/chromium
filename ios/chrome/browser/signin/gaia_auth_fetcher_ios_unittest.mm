@@ -4,16 +4,12 @@
 
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
 
-#import <WebKit/WebKit.h>
 #include <memory>
 
-#include "base/ios/ios_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_wk_webview_bridge.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -21,8 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,23 +24,54 @@
 
 namespace {
 
-class FakeGaiaAuthFetcherIOSWKWebViewBridge
-    : public GaiaAuthFetcherIOSWKWebViewBridge {
+class FakeGaiaAuthFetcherIOSBridge : public GaiaAuthFetcherIOSBridge {
  public:
-  FakeGaiaAuthFetcherIOSWKWebViewBridge(
-      GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
-      web::BrowserState* browser_state)
-      : GaiaAuthFetcherIOSWKWebViewBridge(delegate, browser_state),
-        mock_web_view_(nil) {}
+  FakeGaiaAuthFetcherIOSBridge(
+      GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate)
+      : GaiaAuthFetcherIOSBridge(delegate) {}
+  ~FakeGaiaAuthFetcherIOSBridge() override {}
+
+  void Fetch(const GURL& url,
+             const std::string& headers,
+             const std::string& body,
+             bool should_use_xml_http_request) override {
+    fetch_called_ = true;
+    url_ = url;
+  }
+
+  void Cancel() override { cancel_called_ = true; }
+
+  void NotifyDelegateFetchSuccess(const std::string& data) {
+    EXPECT_TRUE(fetch_called_);
+    const int kSuccessResponseCode = 200;
+    delegate()->OnFetchComplete(url_, data, net::Error::OK,
+                                kSuccessResponseCode);
+    fetch_called_ = false;
+  }
+
+  void NotifyDelegateFetchError(net::Error net_error) {
+    EXPECT_TRUE(fetch_called_);
+    const int kSomeErrorResponseCode = 500;
+    delegate()->OnFetchComplete(url_, "", net_error, kSomeErrorResponseCode);
+    fetch_called_ = false;
+  }
+
+  void NotifyDelegateFetchAborted() {
+    EXPECT_TRUE(cancel_called_);
+    const int kIgnoredResponseCode = 0;
+    delegate()->OnFetchComplete(url_, "", net::ERR_ABORTED,
+                                kIgnoredResponseCode);
+    fetch_called_ = false;
+    cancel_called_ = false;
+  }
+
+  bool fetch_called() const { return fetch_called_; }
+  bool cancel_called() const { return cancel_called_; }
 
  private:
-  WKWebView* BuildWKWebView() override {
-    if (!mock_web_view_) {
-      mock_web_view_ = [OCMockObject niceMockForClass:[WKWebView class]];
-    }
-    return mock_web_view_;
-  }
-  id mock_web_view_;
+  bool fetch_called_ = false;
+  bool cancel_called_ = false;
+  GURL url_;
 };
 
 class MockGaiaConsumer : public GaiaAuthConsumer {
@@ -67,35 +92,24 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
   GaiaAuthFetcherIOSTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
-    ActiveStateManager::FromBrowserState(browser_state())->SetActive(true);
     gaia_auth_fetcher_.reset(new GaiaAuthFetcherIOS(
         &consumer_, gaia::GaiaSource::kChrome,
-        test_url_loader_factory_.GetSafeWeakWrapper(), browser_state()));
-    gaia_auth_fetcher_->bridge_.reset(new FakeGaiaAuthFetcherIOSWKWebViewBridge(
-        gaia_auth_fetcher_.get(), browser_state()));
+        test_url_loader_factory_.GetSafeWeakWrapper(), browser_state_.get()));
+    gaia_auth_fetcher_->bridge_.reset(
+        new FakeGaiaAuthFetcherIOSBridge(gaia_auth_fetcher_.get()));
   }
 
   ~GaiaAuthFetcherIOSTest() override {
     gaia_auth_fetcher_.reset();
-    ActiveStateManager::FromBrowserState(browser_state())->SetActive(false);
   }
 
-  GaiaAuthFetcherIOSBridge* GetBridge() {
-    return gaia_auth_fetcher_->bridge_.get();
-  }
-
-  ios::ChromeBrowserState* browser_state() { return browser_state_.get(); }
-
-  id GetMockWKWebView() {
-    GaiaAuthFetcherIOSWKWebViewBridge* wkWebviewBridge =
-        reinterpret_cast<GaiaAuthFetcherIOSWKWebViewBridge*>(
-            gaia_auth_fetcher_->bridge_.get());
-    return wkWebviewBridge->GetWKWebView();
+  FakeGaiaAuthFetcherIOSBridge* GetBridge() {
+    return static_cast<FakeGaiaAuthFetcherIOSBridge*>(
+        gaia_auth_fetcher_->bridge_.get());
   }
 
   web::WebTaskEnvironment task_environment_;
-  // BrowserState, required for WKWebView creation.
-  std::unique_ptr<ios::ChromeBrowserState> browser_state_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
   MockGaiaConsumer consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<GaiaAuthFetcherIOS> gaia_auth_fetcher_;
@@ -104,46 +118,39 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
 // Tests that the cancel mechanism works properly by cancelling an OAuthLogin
 // request and controlling that the consumer is properly called.
 TEST_F(GaiaAuthFetcherIOSTest, StartOAuthLoginCancelled) {
+  gaia_auth_fetcher_->StartOAuthLogin("fake_token", "gaia");
+  EXPECT_TRUE(GetBridge()->fetch_called());
+
+  gaia_auth_fetcher_->CancelRequest();
+  EXPECT_TRUE(GetBridge()->cancel_called());
+
   GoogleServiceAuthError expected_error =
       GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
-  EXPECT_CALL(consumer_, OnClientLoginFailure(expected_error)).Times(1);
-
-  [static_cast<WKWebView*>([GetMockWKWebView() expect])
-      loadRequest:[OCMArg any]];
-  [[GetMockWKWebView() expect] stopLoading];
-
-  gaia_auth_fetcher_->StartOAuthLogin("fake_token", "gaia");
-  gaia_auth_fetcher_->CancelRequest();
-  EXPECT_OCMOCK_VERIFY(GetMockWKWebView());
+  EXPECT_CALL(consumer_, OnClientLoginFailure(expected_error));
+  GetBridge()->NotifyDelegateFetchAborted();
 }
 
 // Tests that the successful case works properly by starting a MergeSession
 // request, making it succeed and controlling that the consumer is properly
 // called.
 TEST_F(GaiaAuthFetcherIOSTest, StartMergeSession) {
-  EXPECT_CALL(consumer_, OnMergeSessionSuccess("data")).Times(1);
-
-  [static_cast<WKWebView*>([[GetMockWKWebView() expect] andDo:^(NSInvocation*) {
-    GetBridge()->OnURLFetchSuccess("data", 200);
-  }]) loadRequest:[OCMArg any]];
-
   gaia_auth_fetcher_->StartMergeSession("uber_token", "");
-  EXPECT_OCMOCK_VERIFY(GetMockWKWebView());
+  EXPECT_TRUE(GetBridge()->fetch_called());
+
+  EXPECT_CALL(consumer_, OnMergeSessionSuccess("data"));
+  GetBridge()->NotifyDelegateFetchSuccess("data");
 }
 
 // Tests that the failure case works properly by starting a LogOut request,
 // making it fail, and controlling that the consumer is properly called.
 TEST_F(GaiaAuthFetcherIOSTest, StartLogOutError) {
-  GoogleServiceAuthError expected_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
-  EXPECT_CALL(consumer_, OnLogOutFailure(expected_error)).Times(1);
-
-  [static_cast<WKWebView*>([[GetMockWKWebView() expect] andDo:^(NSInvocation*) {
-    GetBridge()->OnURLFetchFailure(net::ERR_FAILED, 500);
-  }]) loadRequest:[OCMArg any]];
-
   gaia_auth_fetcher_->StartLogOut();
-  EXPECT_OCMOCK_VERIFY(GetMockWKWebView());
+  EXPECT_TRUE(GetBridge()->fetch_called());
+
+  GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromConnectionError(net::Error::ERR_FAILED);
+  EXPECT_CALL(consumer_, OnLogOutFailure(expected_error));
+  GetBridge()->NotifyDelegateFetchError(net::Error::ERR_FAILED);
 }
 
 // Tests that requests that do not require cookies are using the original
@@ -161,50 +168,7 @@ TEST_F(GaiaAuthFetcherIOSTest, StartGetCheckConnectionInfo) {
       data);
 
   gaia_auth_fetcher_->StartGetCheckConnectionInfo();
+  EXPECT_FALSE(GetBridge()->fetch_called());
+
   base::RunLoop().RunUntilIdle();
-}
-
-// Tests whether the WKWebView is actually stopped when the browser state is
-// inactive.
-TEST_F(GaiaAuthFetcherIOSTest, OnInactive) {
-  [[GetMockWKWebView() expect] stopLoading];
-  ActiveStateManager::FromBrowserState(browser_state())->SetActive(false);
-  EXPECT_OCMOCK_VERIFY(GetMockWKWebView());
-}
-
-// Tests that the pending request is processed when the browser state becomes
-// active.
-TEST_F(GaiaAuthFetcherIOSTest, FetchOnActive) {
-  EXPECT_CALL(consumer_, OnMergeSessionSuccess("data")).Times(1);
-
-  // No action is made until the browser state is active, then a WKWebView and
-  // its navigation delegate are created, and the request is processed.
-  [[GetMockWKWebView() expect] setNavigationDelegate:[OCMArg isNotNil]];
-  [static_cast<WKWebView*>([[GetMockWKWebView() expect] andDo:^(NSInvocation*) {
-    GetBridge()->OnURLFetchSuccess("data", 200);
-  }]) loadRequest:[OCMArg any]];
-
-  ActiveStateManager::FromBrowserState(browser_state())->SetActive(false);
-  gaia_auth_fetcher_->StartMergeSession("uber_token", "");
-  ActiveStateManager::FromBrowserState(browser_state())->SetActive(true);
-  EXPECT_OCMOCK_VERIFY(GetMockWKWebView());
-}
-
-// Tests that the pending request is stopped when the browser state becomes
-// inactive and restarted when it becomes active again.
-TEST_F(GaiaAuthFetcherIOSTest, StopOnInactiveReFetchOnActive) {
-  EXPECT_CALL(consumer_, OnMergeSessionSuccess("data")).Times(1);
-
-  [static_cast<WKWebView*>([GetMockWKWebView() expect])
-      loadRequest:[OCMArg any]];
-  [[GetMockWKWebView() expect] setNavigationDelegate:[OCMArg isNil]];
-  [[GetMockWKWebView() expect] setNavigationDelegate:[OCMArg isNotNil]];
-  [static_cast<WKWebView*>([[GetMockWKWebView() expect] andDo:^(NSInvocation*) {
-    GetBridge()->OnURLFetchSuccess("data", 200);
-  }]) loadRequest:[OCMArg any]];
-
-  gaia_auth_fetcher_->StartMergeSession("uber_token", "");
-  ActiveStateManager::FromBrowserState(browser_state())->SetActive(false);
-  ActiveStateManager::FromBrowserState(browser_state())->SetActive(true);
-  EXPECT_OCMOCK_VERIFY(GetMockWKWebView());
 }

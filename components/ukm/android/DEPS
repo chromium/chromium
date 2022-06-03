@@ -1,0 +1,4 @@
+include_rules = [
+  "+content/public/android",
+  "+content/public/browser",
+]

@@ -8,17 +8,16 @@
 #include <memory>
 
 #import "base/mac/foundation_util.h"
-#import "base/mac/mac_util.h"
 #import "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
-#include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/test/app_shim_listener_test_api_mac.h"
-#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -26,6 +25,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/constants.h"
@@ -54,6 +54,11 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
  protected:
   NativeAppWindowCocoaBrowserTest() {}
 
+  NativeAppWindowCocoaBrowserTest(const NativeAppWindowCocoaBrowserTest&) =
+      delete;
+  NativeAppWindowCocoaBrowserTest& operator=(
+      const NativeAppWindowCocoaBrowserTest&) = delete;
+
   void SetUpAppWithWindows(int num_windows) {
     app_ = InstallExtension(
         test_data_dir_.AppendASCII("platform_apps").AppendASCII("minimal"), 1);
@@ -63,19 +68,17 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
       content::WindowedNotificationObserver app_loaded_observer(
           content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
           content::NotificationService::AllSources());
-      apps::LaunchService::Get(profile())->OpenApplication(
-          apps::AppLaunchParams(
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParams(apps::AppLaunchParams(
               app_->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
               WindowOpenDisposition::NEW_WINDOW,
-              apps::mojom::AppLaunchSource::kSourceTest));
+              apps::mojom::LaunchSource::kFromTest));
       app_loaded_observer.Wait();
     }
   }
 
   const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeAppWindowCocoaBrowserTest);
 };
 
 }  // namespace
@@ -230,8 +233,6 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Fullscreen) {
 
 // Test Minimize, Restore combinations with their native equivalents.
 IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Minimize) {
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582
   SetUpAppWithWindows(1);
   AppWindow* app_window = GetFirstAppWindow();
   extensions::NativeAppWindow* window = app_window->GetBaseWindow();
@@ -357,8 +358,6 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MaximizeConstrained) {
 
 // Test Minimize, Maximize, Restore combinations with their native equivalents.
 IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MinimizeMaximize) {
-  if (base::mac::IsOS10_10())
-    return;  // Fails when swarmed. http://crbug.com/660582
   SetUpAppWithWindows(1);
   AppWindow* app_window = GetFirstAppWindow();
   extensions::NativeAppWindow* window = app_window->GetBaseWindow();
@@ -482,7 +481,9 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Frameless) {
 
   // Windows created with NSBorderlessWindowMask by default don't have shadow,
   // but packaged apps should always have one.
-  EXPECT_TRUE([ns_window hasShadow]);
+  // This specific check is disabled because shadows are disabled on the
+  // bots - see https://crbug.com/899286.
+  // EXPECT_TRUE([ns_window hasShadow]);
 
   // Since the window has no constraints, it should have all of the following
   // style mask bits.

@@ -6,7 +6,7 @@
 
 [
     Exposed=Window,
-    ImplementedAs=NavigatorUSB,
+    ImplementedAs=USB,
     SecureContext
 ] partial interface Navigator {
     [SameObject, RuntimeEnabled=WebUSB] readonly attribute USB usb;

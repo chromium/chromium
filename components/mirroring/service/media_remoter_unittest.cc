@@ -4,7 +4,6 @@
 
 #include "components/mirroring/service/media_remoter.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -75,6 +74,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
                             inbound_channel_.BindNewPipeAndPassReceiver(),
                             error_callback_.Get()),
         sink_metadata_(DefaultSinkMetadata()) {}
+  MediaRemoterTest(const MediaRemoterTest&) = delete;
+  MediaRemoterTest& operator=(const MediaRemoterTest&) = delete;
   ~MediaRemoterTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -174,8 +175,6 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   MockRemotingSource remoting_source_;
   mojo::Remote<media::mojom::Remoter> remoter_;
   std::unique_ptr<MediaRemoter> media_remoter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemoterTest);
 };
 
 TEST_F(MediaRemoterTest, StartAndStopRemoting) {

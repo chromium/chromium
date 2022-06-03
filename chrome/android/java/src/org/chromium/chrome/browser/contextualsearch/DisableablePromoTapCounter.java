@@ -10,9 +10,10 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
- * Manages the Contextual Search disable-able promo tap counter.
+ * Manages the Contextual Search disable-able promo tap counter for privacy opt-in/out.
  * This counter stores a single persistent integer preference that can indicate both a count
  * and whether it's been disabled (and remembers the count before being disabled).
+ * TODO(donnd): remove this class and its usage since the value is no longer clear.
  */
 class DisableablePromoTapCounter {
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
-
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
 
@@ -12,37 +12,26 @@
 #error "This file requires ARC support."
 #endif
 
+@protocol TabStripContaining;
+
 @interface TabStripLegacyCoordinator ()
 @property(nonatomic, assign) BOOL started;
 @property(nonatomic, strong) TabStripController* tabStripController;
 @end
 
 @implementation TabStripLegacyCoordinator
-@synthesize browserState = _browserState;
-@synthesize dispatcher = _dispatcher;
 @synthesize longPressDelegate = _longPressDelegate;
-@synthesize tabModel = _tabModel;
 @synthesize presentationProvider = _presentationProvider;
 @synthesize started = _started;
 @synthesize tabStripController = _tabStripController;
 @synthesize animationWaitDuration = _animationWaitDuration;
-
-- (void)setDispatcher:(id<BrowserCommands, ApplicationCommands>)dispatcher {
-  DCHECK(!self.started);
-  _dispatcher = dispatcher;
-}
-
-- (void)setTabModel:(TabModel*)tabModel {
-  DCHECK(!self.started);
-  _tabModel = tabModel;
-}
 
 - (void)setLongPressDelegate:(id<PopupMenuLongPressDelegate>)longPressDelegate {
   _longPressDelegate = longPressDelegate;
   self.tabStripController.longPressDelegate = longPressDelegate;
 }
 
-- (UIView*)view {
+- (UIView<TabStripContaining>*)view {
   DCHECK(self.started);
   return [self.tabStripController view];
 }
@@ -66,19 +55,24 @@
   [self.tabStripController hideTabStrip:hidden];
 }
 
+- (void)tabStripSizeDidChange {
+  [self.tabStripController tabStripSizeDidChange];
+}
+
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler {
+  self.tabStripController.panGestureHandler = panGestureHandler;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(self.browserState);
-  DCHECK(self.tabModel);
-  DCHECK(self.dispatcher);
+  DCHECK(self.browser);
   DCHECK(self.presentationProvider);
   TabStripStyle style =
-      self.browserState->IsOffTheRecord() ? INCOGNITO : NORMAL;
+      self.browser->GetBrowserState()->IsOffTheRecord() ? INCOGNITO : NORMAL;
   self.tabStripController =
-      [[TabStripController alloc] initWithTabModel:self.tabModel
-                                             style:style
-                                        dispatcher:self.dispatcher];
+      [[TabStripController alloc] initWithBrowser:self.browser style:style];
   self.tabStripController.presentationProvider = self.presentationProvider;
   self.tabStripController.animationWaitDuration = self.animationWaitDuration;
   self.tabStripController.longPressDelegate = self.longPressDelegate;
@@ -90,8 +84,6 @@
   self.started = NO;
   [self.tabStripController disconnect];
   self.tabStripController = nil;
-  self.dispatcher = nil;
-  self.tabModel = nil;
   self.presentationProvider = nil;
 }
 

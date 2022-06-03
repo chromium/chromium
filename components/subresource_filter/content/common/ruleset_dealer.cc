@@ -4,7 +4,7 @@
 
 #include "components/subresource_filter/content/common/ruleset_dealer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 
 namespace subresource_filter {

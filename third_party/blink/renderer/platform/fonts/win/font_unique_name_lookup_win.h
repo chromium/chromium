@@ -25,6 +25,8 @@ namespace blink {
 class FontUniqueNameLookupWin : public FontUniqueNameLookup {
  public:
   FontUniqueNameLookupWin();
+  FontUniqueNameLookupWin(const FontUniqueNameLookupWin&) = delete;
+  FontUniqueNameLookupWin& operator=(const FontUniqueNameLookupWin&) = delete;
   ~FontUniqueNameLookupWin() override;
   sk_sp<SkTypeface> MatchUniqueName(const String& font_unique_name) override;
 
@@ -45,12 +47,10 @@ class FontUniqueNameLookupWin : public FontUniqueNameLookup {
 
   mojo::Remote<mojom::blink::DWriteFontProxy> service_;
   WTF::Deque<NotifyFontUniqueNameLookupReady> pending_callbacks_;
-  base::Optional<blink::mojom::UniqueFontLookupMode> lookup_mode_;
-  base::Optional<bool> sync_available_;
+  absl::optional<blink::mojom::UniqueFontLookupMode> lookup_mode_;
+  absl::optional<bool> sync_available_;
   void ReceiveReadOnlySharedMemoryRegion(
       base::ReadOnlySharedMemoryRegion shared_memory_region);
-
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupWin);
 };
 
 }  // namespace blink

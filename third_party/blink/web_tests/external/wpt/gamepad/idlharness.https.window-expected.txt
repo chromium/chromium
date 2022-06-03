@@ -1,0 +1,77 @@
+This is a testharness.js-based test.
+Found 73 tests; 66 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: valid exposure set
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin WindowEventHandlers: original interface mixin defined
+PASS Partial interface mixin WindowEventHandlers: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Partial interface HTMLBodyElement: member names are unique
+PASS Partial interface Window: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Gamepad interface: existence and properties of interface object
+PASS Gamepad interface object length
+PASS Gamepad interface object name
+PASS Gamepad interface: existence and properties of interface prototype object
+PASS Gamepad interface: existence and properties of interface prototype object's "constructor" property
+PASS Gamepad interface: existence and properties of interface prototype object's @@unscopables property
+PASS Gamepad interface: attribute id
+PASS Gamepad interface: attribute index
+PASS Gamepad interface: attribute connected
+PASS Gamepad interface: attribute timestamp
+PASS Gamepad interface: attribute mapping
+PASS Gamepad interface: attribute axes
+PASS Gamepad interface: attribute buttons
+PASS GamepadButton interface: existence and properties of interface object
+PASS GamepadButton interface object length
+PASS GamepadButton interface object name
+PASS GamepadButton interface: existence and properties of interface prototype object
+PASS GamepadButton interface: existence and properties of interface prototype object's "constructor" property
+PASS GamepadButton interface: existence and properties of interface prototype object's @@unscopables property
+PASS GamepadButton interface: attribute pressed
+PASS GamepadButton interface: attribute touched
+PASS GamepadButton interface: attribute value
+PASS GamepadEvent interface: existence and properties of interface object
+FAIL GamepadEvent interface object length assert_equals: wrong value for GamepadEvent.length expected 2 but got 1
+PASS GamepadEvent interface object name
+PASS GamepadEvent interface: existence and properties of interface prototype object
+PASS GamepadEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS GamepadEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS GamepadEvent interface: attribute gamepad
+PASS GamepadEvent must be primary interface of new GamepadEvent("gamepad")
+PASS Stringification of new GamepadEvent("gamepad")
+PASS GamepadEvent interface: new GamepadEvent("gamepad") must inherit property "gamepad" with the proper type
+FAIL HTMLBodyElement interface: attribute ongamepadconnected assert_true: The prototype object must have a property "ongamepadconnected" expected true got false
+FAIL HTMLBodyElement interface: attribute ongamepaddisconnected assert_true: The prototype object must have a property "ongamepaddisconnected" expected true got false
+FAIL Window interface: attribute ongamepadconnected assert_own_property: The global object must have a property "ongamepadconnected" expected property "ongamepadconnected" missing
+FAIL Window interface: attribute ongamepaddisconnected assert_own_property: The global object must have a property "ongamepaddisconnected" expected property "ongamepaddisconnected" missing
+PASS Navigator interface: operation getGamepads()
+PASS Navigator interface: navigator must inherit property "getGamepads()" with the proper type
+FAIL HTMLFrameSetElement interface: attribute ongamepadconnected assert_true: The prototype object must have a property "ongamepadconnected" expected true got false
+FAIL HTMLFrameSetElement interface: attribute ongamepaddisconnected assert_true: The prototype object must have a property "ongamepaddisconnected" expected true got false
+Harness: the test ran to completion.
+

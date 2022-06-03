@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCPeerConnection.prototype.createDataChannel</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
@@ -34,7 +35,6 @@ const stopTracks = (...streams) => {
         readonly attribute USVString           protocol;
         readonly attribute boolean             negotiated;
         readonly attribute unsigned short?     id;
-        readonly attribute RTCPriorityType     priority;
         readonly attribute RTCDataChannelState readyState;
         readonly attribute unsigned long       bufferedAmount;
                  attribute unsigned long       bufferedAmountLowThreshold;
@@ -51,16 +51,6 @@ const stopTracks = (...streams) => {
         boolean         negotiated = false;
         [EnforceRange]
         unsigned short  id;
-        RTCPriorityType priority = "low";
-    };
-
-  4.9.1.  RTCPriorityType Enum
-
-    enum RTCPriorityType {
-      "very-low",
-      "low",
-      "medium",
-      "high"
     };
  */
 
@@ -69,7 +59,7 @@ test(t => {
   t.add_cleanup(() => pc.close());
 
   assert_equals(pc.createDataChannel.length, 1);
-  assert_throws(new TypeError(), () => pc.createDataChannel());
+  assert_throws_js(TypeError, () => pc.createDataChannel());
 }, 'createDataChannel with no argument should throw TypeError');
 
 /*
@@ -80,7 +70,7 @@ test(t => {
   const pc = new RTCPeerConnection();
   pc.close();
   assert_equals(pc.signalingState, 'closed', 'signaling state');
-  assert_throws('InvalidStateError', () => pc.createDataChannel(''));
+  assert_throws_dom('InvalidStateError', () => pc.createDataChannel(''));
 }, 'createDataChannel with closed connection should throw InvalidStateError');
 
 /*
@@ -102,8 +92,6 @@ test(t => {
         member.
     15. Let channel have an [[DataChannelId]] internal slot initialized to option's id
         member, if it is present and [[Negotiated]] is true, otherwise null.
-    17. Let channel have an [[DataChannelPriority]] internal slot initialized to option's
-        priority member.
     21. If the [[DataChannelId]] slot is null (due to no ID being passed into
         createDataChannel, or [[Negotiated]] being false), and the DTLS role of the SCTP
         transport has already been negotiated, then initialize [[DataChannelId]] to a value
@@ -148,7 +136,6 @@ test(t => {
   // Since no offer/answer exchange has occurred yet, the DTLS role is unknown
   // and so the ID should be null.
   assert_equals(dc.id, null);
-  assert_equals(dc.priority, 'low');
   assert_equals(dc.readyState, 'connecting');
   assert_equals(dc.bufferedAmount, 0);
   assert_equals(dc.bufferedAmountLowThreshold, 0);
@@ -165,8 +152,7 @@ test(t => {
     // Note: maxPacketLifeTime is not set in this test.
     protocol: 'custom',
     negotiated: true,
-    id: 3,
-    priority: 'high'
+    id: 3
   });
 
   assert_true(dc instanceof RTCDataChannel, 'is RTCDataChannel');
@@ -177,7 +163,6 @@ test(t => {
   assert_equals(dc.protocol, 'custom');
   assert_equals(dc.negotiated, true);
   assert_equals(dc.id, 3);
-  assert_equals(dc.priority, 'high');
   assert_equals(dc.readyState, 'connecting');
   assert_equals(dc.bufferedAmount, 0);
   assert_equals(dc.bufferedAmountLowThreshold, 0);
@@ -189,7 +174,7 @@ test(t => {
   });
   assert_equals(dc2.label, 'test2');
   assert_equals(dc2.maxPacketLifeTime, 42);
-  assert_equals(dc.maxRetransmits, null);
+  assert_equals(dc2.maxRetransmits, null);
 }, 'createDataChannel with provided parameters should initialize attributes to provided values');
 
 /*
@@ -292,11 +277,11 @@ test(t => {
   const pc = new RTCPeerConnection;
   t.add_cleanup(() => pc.close());
 
-  assert_throws(new TypeError(), () => pc.createDataChannel('', {
+  assert_throws_js(TypeError, () => pc.createDataChannel('', {
     maxPacketLifeTime: 0,
     maxRetransmits: 0
   }));
-  assert_throws(new TypeError(), () => pc.createDataChannel('', {
+  assert_throws_js(TypeError, () => pc.createDataChannel('', {
     maxPacketLifeTime: 42,
     maxRetransmits: 42
   }));
@@ -330,6 +315,15 @@ for (const [description, protocol, expected] of protocols) {
       20. If [[DataChannelId]] is equal to 65535, which is greater than the maximum allowed
           ID of 65534 but still qualifies as an unsigned short, throw a TypeError.
  */
+for (const id of [0, 1, 65534, 65535]) {
+  test((t) => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    const dc = pc.createDataChannel('', { id });
+    assert_equals(dc.id, null);
+  }, `createDataChannel with id ${id} and negotiated not set should succeed, but not set the channel's id`);
+}
+
 for (const id of [0, 1, 65534]) {
   test(t => {
     const pc = new RTCPeerConnection();
@@ -337,7 +331,15 @@ for (const id of [0, 1, 65534]) {
 
     const dc = pc.createDataChannel('', { 'negotiated': true, 'id': id });
     assert_equals(dc.id, id);
-  }, `createDataChannel with id ${id} should succeed`);
+  }, `createDataChannel with id ${id} and negotiated true should succeed, and set the channel's id`);
+}
+
+for (const id of [-1, 65536]) {
+  test((t) => {
+    const pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
+    assert_throws_js(TypeError, () => pc.createDataChannel('', { id }));
+  }, `createDataChannel with id ${id} and negotiated not set should throw TypeError`);
 }
 
 for (const id of [-1, 65535, 65536]) {
@@ -345,32 +347,10 @@ for (const id of [-1, 65535, 65536]) {
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    assert_throws(new TypeError(), () => pc.createDataChannel('',
+    assert_throws_js(TypeError, () => pc.createDataChannel('',
         { 'negotiated': true, 'id': id }));
   }, `createDataChannel with id ${id} should throw TypeError`);
 }
-
-/*
-  6.2.  RTCDataChannel
-    createDataChannel
-      17. Let channel have an [[DataChannelPriority]] internal slot initialized to option's
-          priority member.
- */
-test(t => {
-  const pc = new RTCPeerConnection();
-  t.add_cleanup(() => pc.close());
-
-  const dc = pc.createDataChannel('', { priority: 'high' });
-  assert_equals(dc.priority, 'high');
-}, 'createDataChannel with priority "high" should succeed');
-
-test(t => {
-  const pc = new RTCPeerConnection();
-  t.add_cleanup(() => pc.close());
-
-  assert_throws(new TypeError(),
-    () => pc.createDataChannel('', { priority: 'invalid' }));
-}, 'createDataChannel with invalid priority should throw TypeError');
 
 /*
   6.2.  createDataChannel
@@ -380,10 +360,10 @@ test(t => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('l'.repeat(65536)));
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('l'.repeat(65536), {
       negotiated: true,
       id: 42
@@ -394,10 +374,10 @@ test(t => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('\u00b5'.repeat(32768)));
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('\u00b5'.repeat(32768), {
       negotiated: true,
       id: 42
@@ -435,12 +415,12 @@ test(t => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('', {
       protocol: 'p'.repeat(65536)
     }));
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('', {
       protocol: 'p'.repeat(65536),
       negotiated: true,
@@ -452,12 +432,12 @@ test(t => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('', {
       protocol: '\u00b6'.repeat(32768)
     }));
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('', {
       protocol: '\u00b6'.repeat(32768),
       negotiated: true,
@@ -520,7 +500,7 @@ test(t => {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
 
-  assert_throws(new TypeError(), () =>
+  assert_throws_js(TypeError, () =>
     pc.createDataChannel('test', {
       negotiated: true
     }));
@@ -618,7 +598,7 @@ test(t => {
   assert_equals(dc2.id, 43,
     'Expect dc2.id to be 43');
 
-  assert_throws('OperationError', () =>
+  assert_throws_dom('OperationError', () =>
     pc.createDataChannel('channel-3', {
       negotiated: true,
       id: 42,
@@ -655,7 +635,7 @@ promise_test(async t => {
 
   assert_equals(dc2.id, 43, 'Expect dc2.id to be 43');
 
-  assert_throws('OperationError', () =>
+  assert_throws_dom('OperationError', () =>
     pc1.createDataChannel('channel-3', {
       negotiated: true,
       id: 42,
@@ -679,7 +659,7 @@ promise_test(async t => {
   assert_not_equals(dc1.id, null,
     'Expect dc1.id to be assigned after remote description has been set');
 
-  assert_throws('OperationError', () =>
+  assert_throws_dom('OperationError', () =>
     pc1.createDataChannel('channel-2', {
       negotiated: true,
       id: dc1.id,
@@ -687,66 +667,72 @@ promise_test(async t => {
 }, 'Reusing a data channel id that is in use (after setRemoteDescription, negotiated via DCEP) ' +
   'should throw OperationError');
 
-// Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1441723
-promise_test(async t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
 
-  await createDataChannelPair(pc1, pc2);
+for (const options of [{}, {negotiated: true, id: 0}]) {
+  const mode = `${options.negotiated? "negotiated " : ""}datachannel`;
 
-  const dc = pc1.createDataChannel('');
-  assert_equals(dc.readyState, 'connecting', 'Channel should be in the connecting state');
-}, 'New data channel should be in the connecting state after creation (after connection ' +
-  'establishment)');
+  // Based on https://bugzilla.mozilla.org/show_bug.cgi?id=1441723
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
 
-promise_test(async t => {
-  const pc1 = new RTCPeerConnection();
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-  const stream = await getNoiseStream({audio: true, video: true});
-  t.add_cleanup(() => stopTracks(stream));
-  const audio = stream.getAudioTracks()[0];
-  const video = stream.getVideoTracks()[0];
-  pc1.addTrack(audio, stream);
-  pc1.addTrack(video, stream);
-  await createDataChannelPair(pc1, pc2);
-}, 'addTrack, then createDataChannel, should negotiate properly');
+    await createDataChannelPair(t, options, pc1);
 
-promise_test(async t => {
-  const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-  const stream = await getNoiseStream({audio: true, video: true});
-  t.add_cleanup(() => stopTracks(stream));
-  const audio = stream.getAudioTracks()[0];
-  const video = stream.getVideoTracks()[0];
-  pc1.addTrack(audio, stream);
-  pc1.addTrack(video, stream);
-  await createDataChannelPair(pc1, pc2);
-}, 'addTrack, then createDataChannel, should negotiate properly when max-bundle is used');
+    const dc = pc1.createDataChannel('');
+    assert_equals(dc.readyState, 'connecting', 'Channel should be in the connecting state');
+  }, `New ${mode} should be in the connecting state after creation ` +
+     `(after connection establishment)`);
 
-promise_test(async t => {
-  const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
-  const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
-  t.add_cleanup(() => pc2.close());
-  const stream = await getNoiseStream({audio: true, video: true});
-  t.add_cleanup(() => stopTracks(stream));
-  const audio = stream.getAudioTracks()[0];
-  const video = stream.getVideoTracks()[0];
-  pc1.addTrack(audio, stream);
-  pc1.addTrack(video, stream);
-  const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const stream = await getNoiseStream({audio: true, video: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const audio = stream.getAudioTracks()[0];
+    const video = stream.getVideoTracks()[0];
+    pc1.addTrack(audio, stream);
+    pc1.addTrack(video, stream);
+    await createDataChannelPair(t, options, pc1);
+  }, `addTrack, then creating ${mode}, should negotiate properly`);
 
-  pc2.getTransceivers()[0].stop();
-  const dc1Closed = new Promise(r => dc1.onclose = r);
-  await doSignalingHandshake(pc1, pc2);
-  await dc1Closed;
-}, 'Stopping the bundle-tag when there is a DataChannel in the bundle should kill the DataChannel');
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
+    t.add_cleanup(() => pc1.close());
+    const stream = await getNoiseStream({audio: true, video: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const audio = stream.getAudioTracks()[0];
+    const video = stream.getVideoTracks()[0];
+    pc1.addTrack(audio, stream);
+    pc1.addTrack(video, stream);
+    await createDataChannelPair(t, options, pc1);
+  }, `addTrack, then creating ${mode}, should negotiate properly when max-bundle is used`);
+
+/*
+This test is disabled until https://github.com/w3c/webrtc-pc/issues/2562
+has been resolved; it presupposes that stopping the first transceiver
+breaks the transport.
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection({bundlePolicy: "max-bundle"});
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+    const stream = await getNoiseStream({audio: true, video: true});
+    t.add_cleanup(() => stopTracks(stream));
+    const audio = stream.getAudioTracks()[0];
+    const video = stream.getVideoTracks()[0];
+    pc1.addTrack(audio, stream);
+    pc1.addTrack(video, stream);
+    const [dc1, dc2] = await createDataChannelPair(t, options, pc1, pc2);
+
+    pc2.getTransceivers()[0].stop();
+    const dc1Closed = new Promise(r => dc1.onclose = r);
+    await exchangeOfferAnswer(pc1, pc2);
+    await dc1Closed;
+  }, `Stopping the bundle-tag when there is a ${mode} in the bundle ` +
+     `should kill the DataChannel`);
+*/
+}
 
 /*
   Untestable

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS SVGAElement.rel getter
+FAIL Test anchor's rel getter assert_equals: expected (string) "noreferrer" but got (undefined) undefined
+Harness: the test ran to completion.
+

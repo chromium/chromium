@@ -1,0 +1,13 @@
+Test for page-break with 'display:none'
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+FAIL: expected page number of "page1-1" is 1. Was 0
+PASS: page number of "displaynone" is -1
+FAIL: expected page number of "page1-2" is 1. Was 0
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

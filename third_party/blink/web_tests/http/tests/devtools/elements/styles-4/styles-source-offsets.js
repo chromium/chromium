@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that proper data and start/end offset positions are reported for CSS style declarations and properties.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <head>
@@ -57,6 +57,17 @@ body.mainpage {
           (('parsedOk' in property) ? ' non-parsed' : '') + '] @' + ElementsTestRunner.rangeText(property.range));
     }
   }
+
+  await (() => {
+    // TODO(crbug.com/1046354): This is a workaround for loadHTML() resolving
+    // before parsing is finished. In this case the stylesheet is blocking html
+    // parsing with BlockHTMLParsingOnStyleSheets enabled and mainBody is not
+    // found by selectNodeWithId below.
+    let resolve;
+    const promise = new Promise(r => resolve = r);
+    TestRunner.waitForPageLoad(() => resolve());
+    return promise;
+  })();
 
   ElementsTestRunner.selectNodeWithId('mainBody', step1);
 

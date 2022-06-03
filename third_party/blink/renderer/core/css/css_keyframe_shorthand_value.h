@@ -45,7 +45,7 @@ class CSSKeyframeShorthandValue : public CSSValue {
     return shorthand_ == other.shorthand_ && properties_ == other.properties_;
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   // The shorthand property that these longhands belonged to.

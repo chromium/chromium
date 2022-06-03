@@ -5,7 +5,9 @@
 #include "content/browser/scheduler/responsiveness/watcher.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/pending_task.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/scheduler/responsiveness/calculator.h"
@@ -97,15 +99,9 @@ void Watcher::DidRunTask(const base::PendingTask* task,
   if (UNLIKELY(currently_running_metadata->empty() ||
                (task != currently_running_metadata->back().identifier))) {
     *mismatched_task_identifiers += 1;
-    // Mismatches can happen (e.g: on ozone/wayland when Paste button is pressed
-    // in context menus, among others). Simply ignore the mismatches for now.
-    // See https://crbug.com/929813 for the details of why the mismatch
-    // happens.
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX) && defined(USE_OZONE)
-    return currently_running_metadata_ui_.clear();
-#endif
-    DCHECK_LE(*mismatched_task_identifiers, 1);
-    return;
+    // Mismatches can happen, so just ignore them for now. See
+    // https://crbug.com/929813 and https://crbug.com/931874 for details.
+    return currently_running_metadata->clear();
   }
 
   const Metadata metadata = currently_running_metadata->back();
@@ -170,11 +166,7 @@ void Watcher::DidRunEventOnUIThread(const void* opaque_identifier) {
     mismatched_event_identifiers_ui_ += 1;
     // See comment in DidRunTask() for why |currently_running_metadata_ui_| may
     // be reset.
-#if !defined(OS_CHROMEOS) && defined(OS_LINUX) && defined(USE_OZONE)
     return currently_running_metadata_ui_.clear();
-#endif
-    DCHECK_LE(mismatched_event_identifiers_ui_, 1);
-    return;
   }
 
   const bool caused_reentrancy =
@@ -198,6 +190,8 @@ Watcher::Watcher() = default;
 Watcher::~Watcher() = default;
 
 void Watcher::SetUp() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // Set up |calculator_| before |metric_source_| because SetUpOnIOThread()
   // uses |calculator_|.
   calculator_ = CreateCalculator();
@@ -208,11 +202,17 @@ void Watcher::SetUp() {
 }
 
 void Watcher::Destroy() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // This holds a ref to |this| until the destroy flow completes.
   base::ScopedClosureRunner on_destroy_complete(base::BindOnce(
       &Watcher::FinishDestroyMetricSource, base::RetainedRef(this)));
 
   metric_source_->Destroy(std::move(on_destroy_complete));
+}
+
+void Watcher::OnFirstIdle() {
+  calculator_->OnFirstIdle();
 }
 
 void Watcher::SetUpOnIOThread() {

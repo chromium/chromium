@@ -14,6 +14,14 @@
 // safe to call.
 + (void)configureCoverageReportPath;
 
+// Resets coverage counter and already-dumped flag so that incremental coverage
+// data can be dumped to the same raw coverage data file. This should be called
+// only once in between two write coverage data calls.
++ (void)resetCoverageProfileCounters;
+
+// Writes the raw coverage data to previously configured report path.
++ (void)writeClangCoverageProfile;
+
 @end
 
 #endif  // IOS_TESTING_EARL_GREY_COVERAGE_UTILS_H_

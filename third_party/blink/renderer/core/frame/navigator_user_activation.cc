@@ -30,12 +30,13 @@ UserActivation* NavigatorUserActivation::userActivation() {
   return user_activation_;
 }
 
-void NavigatorUserActivation::Trace(blink::Visitor* visitor) {
+void NavigatorUserActivation::Trace(Visitor* visitor) const {
   visitor->Trace(user_activation_);
   Supplement<Navigator>::Trace(visitor);
 }
 
-NavigatorUserActivation::NavigatorUserActivation(Navigator& navigator) {
+NavigatorUserActivation::NavigatorUserActivation(Navigator& navigator)
+    : Supplement(navigator) {
   user_activation_ =
       MakeGarbageCollected<UserActivation>(navigator.DomWindow());
 }

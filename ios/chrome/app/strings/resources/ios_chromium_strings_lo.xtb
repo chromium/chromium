@@ -3,51 +3,107 @@
 <translationbundle lang="lo">
 <translation id="102360288709523007">ຊ່ວຍເຮັດໃຫ້ Chromium ດີກ່ວາໂດຍການສົ່ງສະຖິຕິການໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງຫາ Google.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
-<translation id="1289966288285062467">ແຈ້ງການຄວາມເປັນສ່ວນຕົວຂອງ Chromium</translation>
+<translation id="1257458525759135959">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
+<translation id="1289216811211435351">ປ່ຽນເປັນ Chromium</translation>
+<translation id="1361748954329991663">Chromium ເກົ່າແລ້ວ ຖ້າບໍ່ມີການອັບເດດໃນ <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ມັນເປັນໄປໄດ້ວ່າອຸປະກອນຂອງທ່ານບໍ່ຮອງຮັບ Chromium ເວີຊັນໃໝ່ອີກຕໍ່ໄປ.</translation>
+<translation id="1370204544543370355">ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chromium ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="1431818719585918472">ອະນຸຍາດໃຫ້ Chromium ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="1472013873724362412">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Chromium. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1507010443238049608">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chromium</translation>
+<translation id="1531155317299575425">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chromium.</translation>
+<translation id="1584569488888892906">Chromium ແມ່ນໃຊ້ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ</translation>
 <translation id="1617663976202781617">ຂໍ້ມູນຈາກການຊິ້ງຂໍ້ມູນຂອງ Chromium</translation>
 <translation id="1736662517232558588">ລຶບລ້າງຂໍ້ມູນ Chromium ແລ້ວ</translation>
 <translation id="1838412507805038478">Chromium ໄດ້ພິສູດຢືນຢັນວ່າ <ph name="ISSUER" /> ໄດ້ອອກໃບຮັບຮອງຂອງເວັບໄຊນີ້.</translation>
 <translation id="1843424232666537147">Chromium ມີຄຸນສົມບັດທີ່ຊ່ວຍໃຫ້ທ່ານຈັດການຂໍ້ມູນອິນເຕີເນັດຂອງທ່ານ ແລະ ຈັດການວ່າທ່ານສາມາດໂຫຼດໜ້າເວັບຕ່າງໆໄດ້ໄວສໍ່າໃດ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
-<translation id="2075400798887076382">ເຂົ້າຫາແຖບຕ່າງໆທີ່ທ່ານເຄີຍເປີດຢູ່ໃນຄອມພິວເຕີຂອງທ່ານທັນທີຈາກບ່ອນນີ້. ພຽງແຕ່ເປີດ Chromium ຢູ່ໃນຄອມພິວເຕີຂອງທ່ານ, ໄປຫາເມນູ ແລະ ເລືອກ “ເຂົ້າສູ່ລະບົບ Chromium…”</translation>
+<translation id="2006345422933397527">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
+<translation id="2054703085270098503">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Chromium</translation>
 <translation id="2168108852149185974">ບາງສ່ວນເສີມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາຖອນການຕິດຕັ້ງ:</translation>
 <translation id="2178608107313874732">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
 <translation id="2195025571279539885">ທ່ານຕ້ອງການໃຫ້ Chromium ສະເໜີແປໜ້າ <ph name="LANGUAGE_NAME" /> ຈາກເວັບໄຊນີ້ໃນຄັ້ງຕໍ່ໄປບໍ?</translation>
+<translation id="2218146227246548550">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chromium.</translation>
+<translation id="2450140762465183767">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
+<translation id="2478931088402984578">ເລືອກ <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2567507405773541360">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ</translation>
 <translation id="2590893390871230428">ຊິ້ງຂໍ້ມູນ Chromium ຂອງທ່ານ</translation>
+<translation id="2650312721222849884">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="2684230048001240293">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອຊິ້ງຂໍ້ມູນແຖບ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2730884209570016437">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ ເພາະວ່າກ້ອງຖືກໃຊ້ໂດຍແອັບພລິເຄຊັນອື່ນ</translation>
 <translation id="2915596697727466327">Chromium ໃຊ້ Face ID ເພື່ອຮັບປະກັນການເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານແບບໄດ້ຮັບອະນຸຍາດ.</translation>
+<translation id="2918709798697875261">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານສືບຕໍ່ອອກຈາກລະບົບ Chromium.</translation>
+<translation id="2942241131342758843">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເປີດລິ້ງ, ຊອກຫາຈາກວິດເຈັດ ແລະ ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດໃນແອັບອື່ນໆ</translation>
+<translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="3256316712990552818">ອັດ​ສຳ​ເນົາ​ໄປ​ໃສ່ Chromium ແລ້ວ</translation>
+<translation id="3344973607274501920">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
+<translation id="3472200483164753384">ບໍ່ຮອງຮັບໃນ Chromium Canary</translation>
+<translation id="3639997914391704523">Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້.</translation>
 <translation id="3805899903892079518">Chromium ບໍ່​ມີ​ການ​ເຂົ້າ​ເຖິງ​ຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
+<translation id="3946918322491238254">ທ່ານຍັງສາມາດເຫັນບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນທັງໝົດຂອງທ່ານໄດ້ໃນອຸປະກອນນີ້. ຖ້າທ່ານເຮັດການປ່ຽນແປງ, ພວກມັນຈະບໍ່ຊິ້ງຂໍ້ມູນກັບບັນຊີຂອງທ່ານ.</translation>
+<translation id="4099085513035183040">ບໍ່ຮອງຮັບໃນ Chromium Beta</translation>
 <translation id="4555020257205549924">ເມື່ອຄຸນສົມບັດນີ້ເປີດຢູ່, Chromium ຈະສະເໜີແປໜ້າຕ່າງໆທີ່ຂຽນເປັນພາສາອື່ນ ໂດຍໃຊ້ Google ແປພາສາ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="4585809515399340748">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະໃສ່ລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="4681781466797808448">ເປີດເຄື່ອງສະແກນ Chromium</translation>
-<translation id="4787850887676698916">ແຖບທີ່ທ່ານເຄີຍເປີດໃນ Chromium ຢູ່ໃນອຸປະກອນອື່ນຂອງທ່ານຈະປາກົດຢູ່ບ່ອນນີ້.</translation>
+<translation id="4736424910885271643">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ດັ່ງນັ້ນຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບລ້າງຈາກອຸປະກອນນີ້</translation>
+<translation id="4806326830773390517">ຊ່ວຍປັບປຸງ Chromium ໂດຍການສົ່ງສະຖິຕິການນຳໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງໄປໃຫ້ Google</translation>
+<translation id="4828317641996116749">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
+<translation id="4985291216379576555">ອອບລາຍຢູ່, Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4999538639245140991">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="5171868502429358653">ເຂົ້າສູ່ລະບົບຫາ Chromium</translation>
+<translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
+<translation id="5308226104666789935">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
+<translation id="5396916991083608703">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
+<translation id="5521125884468363740">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="5573014823074921752">ເຄັດລັບກ່ຽວກັບ Chromium. ສຳລັບຕົວເລືອກແຖບເພີ່ມເຕີມ, ກະລຸນາແຕະປຸ່ມສະແດງແຖບໃນແຖບເຄື່ອງມືຄ້າງໄວ້ ເຊິ່ງຢູ່ລຸ່ມສຸດ ຫຼື ເທິງສຸດຂອງໜ້າຈໍຂອງທ່ານ.</translation>
+<translation id="5700709190537129682">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
+<translation id="5777187867430702742">ໜ້າ Chromium</translation>
 <translation id="5862307444128926510">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium</translation>
 <translation id="5945387852661427312">ທ່ານກຳລັງເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" /> ແລະ ກຳລັງໃຫ້ການຄວບຄຸມຂໍ້ມູນ Chromium ຂອງທ່ານແກ່ຜູ້ເບິ່ງແຍງລະບົບຂອງມັນ. ຂໍ້ມູນຂອງທ່ານຈະຖືກເຊື່ອມໂຍງຢ່າງຖາວອນກັບບັນຊີນີ້. ການອອກຈາກລະບົບ Chromium ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຈະຍັງຄົງຖືກຮັກສາໄວ້ຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
-<translation id="6068866989048414399">ຂໍ້ກຳນົດການໃຫ້ບໍລິການຂອງ Chromium</translation>
+<translation id="602807004951640891">ໂດຍການໃຊ້ Chromium, ແມ່ນຖືວ່າທ່ານເຫັນນຳ <ph name="BEGIN_LINK_TOS" />ຂໍ້ກຳນົດການບໍລິການ<ph name="END_LINK_TOS" />.</translation>
+<translation id="6119647025869519954">ເພື່ອເຮັດໃຫ້ Chromium ເປັນໂປຣແກຣມເລີ່ມຕົ້ນຂອງທ່ານ:
+1. ເປີດການຕັ້ງຄ່າ ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ
+3. ເລືອກ Chromium.</translation>
+<translation id="6155422572367400359">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້, ບັນຊີ Google ຂອງທ່ານ ແລະ Chromium. ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໃນພາຍຫຼັງໄດ້.</translation>
+<translation id="6183442264225539303">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້ ແລະ Chromium. ທ່ານສາມາດເປີດການຊິ້ງຂໍ້ມູນໃນພາຍຫຼັງໄດ້.</translation>
 <translation id="6268381023930128611">ອອກຈາກລະບົບ Chromium ບໍ?</translation>
+<translation id="632825460376924298">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
+<translation id="6337530241089703714">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
-<translation id="6604711459180487467">ມີປະສົບການທີ່ດີກວ່າໃນ Chromium ໂດຍອີງໃສ່ສະຖານທີ່ຂອງທ່ານ.</translation>
-<translation id="6626296268883197964">ໂດຍການໃຊ້ແອັບພລິເຄຊັນນີ້, ແມ່ນຖືວ່າທ່ານເຫັນດີນຳ <ph name="BEGIN_LINK_TOS" />ຂໍ້ກຳນົດການບໍລິການ<ph name="END_LINK_TOS" /> ແລະ <ph name="BEGIN_LINK_PRIVACY" />ແຈ້ງການຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK_PRIVACY" /> ຂອງ Chromium.</translation>
+<translation id="6752854822223394465">ອົງການຂອງທ່ານກຳລັງຕັ້ງຄ່າ Chromium...</translation>
+<translation id="6820823224820483452">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
+<translation id="7018284295775193585">Chromium ບໍ່ສາມາດອັບເດດໄດ້</translation>
+<translation id="7045244423563602563">ຕັ້ງຄ່າ Chromium ແບບກຳນົດເອງ</translation>
 <translation id="7099326575020694068">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໃນໂໝດມຸມມອງແຍກກັນໄດ້</translation>
+<translation id="7108914401277488191">ເຮັດໃຫ້ແລ້ວໄດ້ຫຼາຍຂຶ້ນກັບ Chromium</translation>
+<translation id="7118091470949186573">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="7208566199746267865">Chromium ຊ່ວຍທ່ານປະຢັດເວລາໂດຍການນຳເອົາບັນຊີຂອງທ່ານໄປສູ່ເວັບ. ທ່ານສາມາດເພີ່ມ ຫຼື ລຶບບັນຊີຕ່າງໆອອກໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="725427773388857052">Chromium ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="7269362888766543920">ບາງສ່ວນເພີ່ມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາລອງຖອນການຕິດຕັ້ງພວກມັນ.</translation>
+<translation id="7313655110045230863">ເພື່ອເຮັດໃຫ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ, ກະລຸນາເປີດການຕັ້ງຄ່າ. ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ, ຈາກນັ້ນເລືອກ Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">ຂໍ້ມູນທີ່ເລືອກໄດ້ຖືກລຶບອອກຈາກ Chromium ແລະ ອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນ ເຊັ່ນວ່າ ການຊອກຫາ ແລະ ການເຄື່ອນໄຫວຈາກການບໍລິການອື່ນຂອງ Google ຢູ່ history.google.com.</translation>
 <translation id="7400689562045506105">ໃຊ້ Chromium ຢູ່ທຸກບ່ອນ</translation>
+<translation id="766897673682622022">ລະຫັດຜ່ານຂອງທ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ. Chromium ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຕອນນີ້ເລີຍ.</translation>
 <translation id="7674213385180944843">ເປີດການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ &gt; ກ້ອງຖ່າຍຮູບ &gt; Chromium ແລະ ເປີດກ້ອງຖ່າຍຮູບ.</translation>
 <translation id="7746854981345936341">ເຄັດລັບກ່ຽວກັບ Chromium. ດຽວນີ້ບາງປຸ່ມຢູ່ສ່ວນລຸ່ມຂອງໜ້າຈໍ ເຊັ່ນ: ກັບຄືນ, ສົ່ງຕໍ່ ແລະ ຊອກຫາ.</translation>
+<translation id="7763454117143368771">ໃຊ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອປ້ອງກັນເວັບໄຊທີ່ເປັນອັນຕະລາຍ ແລະ ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ</translation>
 <translation id="786327964234957808">ທ່ານກຳລັງປ່ຽນບັນຊີຊິ້ງຂໍ້ມູນຈາກ <ph name="USER_EMAIL1" /> ເປັນ <ph name="USER_EMAIL2" />. ຂໍ້ມູນ Chromium ທີ່ມີຢູ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" />. ນີ້ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນ <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">ເລີ່ມໃຊ້ເຄື່ອງສະແກນ Chromium</translation>
+<translation id="7928628054454574139">ເປີດ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະໃສ່ລິ້ງໃນແອັບອື່ນ</translation>
+<translation id="7931842119211730154">ລັອກ incognito tab ເມື່ອທ່ານປິດ Chromium</translation>
+<translation id="7980860476903281594">Chromium ຈະແບ່ງປັນສະຖານທີ່ຂອງທ່ານໃຫ້ກັບເວັບໄຊທີ່ທ່ານອະນຸຍາດ.</translation>
+<translation id="8013573822802650211">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເຂົ້າສູ່ລະບົບໃນອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="8073677936375100957">ລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານຈາກອຸປະກອນນີ້ອອກບໍ?</translation>
 <translation id="8175055321229419309">ເຄັດລັບ: <ph name="BEGIN_LINK" />ຍ້າຍ Chromium ໄປໃສ່ດັອກຂອງທ່ານ<ph name="END_LINK" /></translation>
-<translation id="8252885722420466166">ເອົາ​ປະ​ສົບ​ການ Google ​ທີ່​ດີ​ກ່​ວາ​ຢູ່​ໃນ Chromium ອີງ​ຕາມ​ທີ່​ຕັ້ງ​ຂອງ​ທ່ານ.</translation>
-<translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນລິຂະສິດ.</translation>
-<translation id="8809780021347235332">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ໃຊ້ຮູບຖ່າຍຂອງທ່ານ</translation>
+<translation id="8240981428553046115">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
+<translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
+<translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
+<translation id="8776843108004031667">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chromium.</translation>
+<translation id="894437814105052438">ເມື່ອທ່ານອອກຈາກລະບົບ, Chromium ຈະບໍ່ຊິ້ງຂໍ້ມູນໃໝ່ໃດໆກັບບັນຊີ Google ຂອງທ່ານ. ຂໍ້ມູນທີ່ຊິ້ງໄວ້ກ່ອນໜ້າຈະຍັງຢູ່ໃນບັນຊີ.</translation>
 <translation id="9022552996538154597">ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium</translation>
-<translation id="9217078088703304241"><ph name="BEGIN_LINK" />ກວດເບິ່ງຂໍ້ກຳນົດການບໍລິການຂອງ Chromium ທີ່ອັບເດດແລ້ວ.<ph name="END_LINK" /></translation>
+<translation id="9089354809943900324">Chromium ຫຼ້າສະໄໝແລ້ວ</translation>
+<translation id="9110075932708282655">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="921174536258924340">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">ຜູ້ຂຽນ Chromium</translation>
 </translationbundle>

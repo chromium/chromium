@@ -4,6 +4,8 @@
 
 #include "base/message_loop/message_pump_io_ios.h"
 
+#include "base/notreached.h"
+
 namespace base {
 
 MessagePumpIOSForIO::FdWatchController::FdWatchController(

@@ -2,6 +2,11 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#sink-status-div {
+body {
+  font-size: large;
+}
+
+.status {
+  font-family: monospace;
   white-space: pre-wrap;
 }

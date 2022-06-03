@@ -1,0 +1,14 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("buckets") {
+  sources = [
+    "storage_bucket.cc",
+    "storage_bucket.h",
+    "storage_bucket_manager.cc",
+    "storage_bucket_manager.h",
+  ]
+}

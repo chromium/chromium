@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../resources/common.js"></script>
+  <script src="../resources/picker-common.js"></script>
+</head>
+<body>
+<script>
+if (window.internals)
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
+else
+    debug('Require testRunner.');
+</script>
+
+<input type="time" id="time" value="11:34:00" />
+<input type="time" step="1" id="timeWithSeconds" value="11:34:34" />
+<input type="time" lang="ko" id="timeAmFirst" value="11:34:00" />
+
+<script>
+
+function runTimeTest(input, includesSeconds)
+{
+    let seconds = includesSeconds ? 34 : 0;
+    let secondsStr = includesSeconds ? (":" + seconds) : "";
+    // Update hours
+    input.focus();
+    assert_equals(internals.pagePopupWindow, null);
+    return openPickerWithPromise(input).then(() => {
+        assert_not_equals(internals.pagePopupWindow, null);
+        eventSender.keyDown('ArrowUp');
+        assert_equals(input.value, "10:34" + secondsStr);
+        eventSender.keyDown('ArrowDown');
+        assert_equals(input.value, "11:34" + secondsStr);
+    }).then(() => {
+        // Update minutes
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab");
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "11:33" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "11:34" + secondsStr);
+        });
+    }).then(() => {
+        if (!includesSeconds)
+            return;
+        // Update seconds
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To minutes
+        eventSender.keyDown("Tab"); // To seconds
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            seconds--;
+            assert_equals(input.value, "11:34:" + seconds);
+            eventSender.keyDown('ArrowDown');
+            seconds++;
+            assert_equals(input.value, "11:34:" + seconds);
+        });
+    }).then(() => {
+        // Update am/pm
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab");
+        if (includesSeconds)
+            eventSender.keyDown("Tab"); // To seconds
+        eventSender.keyDown("Tab");
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "23:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "11:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "23:34" + secondsStr);
+            input.blur();
+        });
+    });
+}
+
+promise_test(() => {
+    var input = document.getElementById("time");
+    return runTimeTest(input, false);
+}, "Test opening time picker to focused field.");
+
+promise_test(() => {
+    var input = document.getElementById("timeWithSeconds");
+    return runTimeTest(input, true);
+}, "Test opening time picker to focused field with seconds.");
+
+promise_test(() => {
+    var input = document.getElementById("timeAmFirst");
+    // Update am/pm
+    input.focus();
+    assert_equals(internals.pagePopupWindow, null);
+    return openPickerWithPromise(input).then(() => {
+        assert_not_equals(internals.pagePopupWindow, null);
+        eventSender.keyDown('ArrowUp');
+        assert_equals(input.value, "23:34");
+        eventSender.keyDown('ArrowDown');
+        assert_equals(input.value, "11:34");
+        eventSender.keyDown('ArrowDown');
+        assert_equals(input.value, "23:34");
+        eventSender.keyDown('ArrowDown');
+        assert_equals(input.value, "11:34");
+    }).then(() => {
+        // Update hours
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab");
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "10:34");
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "11:34");
+        });
+      }).then(() => {
+        // Update minutes
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab");
+        eventSender.keyDown("Tab");
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "11:33");
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "11:34");
+            input.blur();
+        });
+    });
+}, "Test opening time picker to focused field for AM/PM first.");
+
+</script>
+</body>
+</html>

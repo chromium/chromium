@@ -14,7 +14,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -92,7 +91,7 @@ class LoggingOverride {
 
 // Validate that the run once on restart registry value contains the given
 // |sub_string|.
-bool RunOnceCommandLineContains(const base::string16& product_shortname,
+bool RunOnceCommandLineContains(const std::wstring& product_shortname,
                                 const wchar_t* sub_string);
 
 // Validate that the run once on restart switch-containing registry value
@@ -120,7 +119,7 @@ void ExpectDiskFootprint(const PUPData::PUP& pup,
 void ExpectScheduledTaskFootprint(const PUPData::PUP& pup,
                                   const wchar_t* task_name);
 
-// This function is the 8 bits version of String16ContainsCaseInsensitive in
+// This function is the 8 bits version of WStringContainsCaseInsensitive in
 // chrome_cleaner/string_util. Since it's only used in tests, we decided not to
 // move it to the main lib.
 bool StringContainsCaseInsensitive(const std::string& value,
@@ -157,7 +156,7 @@ class ScopedTempDirNoWow64 : protected base::ScopedTempDir {
 
   // Convenience function to call CreateUniqueSystem32TempDir and create an
   // empty file with the given |file_name| in the resulting directory.
-  bool CreateEmptyFileInUniqueSystem32TempDir(const base::string16& file_name)
+  bool CreateEmptyFileInUniqueSystem32TempDir(const std::wstring& file_name)
       WARN_UNUSED_RESULT;
 
   using base::ScopedTempDir::Delete;

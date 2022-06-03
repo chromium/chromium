@@ -9,14 +9,12 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
 namespace content {
 
 class RenderFrameHost;
-class WebContents;
 class WebBluetoothServiceImpl;
 
 // Class that interacts with a prompt.
@@ -38,15 +36,13 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
   // ShowPermissionPrompt() is called.
   void AddFilteredDevice(const std::string& device_id,
                          bool should_update_name,
-                         const base::string16& device_name);
+                         const std::u16string& device_name);
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.
   WebBluetoothServiceImpl* const web_bluetooth_service_;
   // The RenderFrameHost that owns |web_bluetooth_service_|.
   RenderFrameHost* const render_frame_host_;
-  // The WebContents that owns |render_frame_host_|.
-  WebContents* const web_contents_;
 
   // The currently opened BluetoothScanningPrompt.
   std::unique_ptr<BluetoothScanningPrompt> prompt_;

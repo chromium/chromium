@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: Triple-click</title>
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#treelike">
+<link rel="help" href="https://drafts.csswg.org/css-ui/#user-interaction">
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
+<meta name="assert" content="This test checks that there is no crash when triple-clicking a pseudo-element that is destroyed when focused." />
+<style>
+.target {
+  width: max-content;
+  font: 50px/1 Ahem;
+}
+[data-pseudo="::marker"]:not(:focus) {
+  display: list-item;
+  list-style-type: 'XX';
+  direction: rtl;
+}
+[data-pseudo="::before"]:not(:focus)::before {
+  display: inline-block;
+  content: 'XX';
+}
+[data-pseudo="::after"]:not(:focus)::after {
+  display: inline-block;
+  content: 'XX';
+}
+</style>
+<div class="target" data-pseudo="::marker" contenteditable="true"></div>
+<div class="target" data-pseudo="::before" contenteditable="true"></div>
+<div class="target" data-pseudo="::after" contenteditable="true"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/user-gesture-utils.js"></script>
+<script>
+for (let target of document.querySelectorAll(".target")) {
+  const {pseudo} = target.dataset;
+  test(function(t) {
+    const x = target.offsetLeft + 50;
+    const y = target.offsetTop + target.offsetHeight / 2;
+
+    // The pseudo-element generates a 100px wide box
+    assert_equals(getComputedStyle(target, pseudo).width, "100px", "initial width");
+
+    // Click in the middle of #target
+    simulateUserClick(x, y);
+
+    // #target is now focused, and the pseudo-element has been destroyed
+    assert_equals(getComputedStyle(target, pseudo).width, "auto", "width after click");
+
+    // Triple-click in the same location
+    simulateUserClick(x, y);
+    simulateUserClick(x, y);
+    simulateUserClick(x, y);
+
+    // We haven't crashed
+  }, pseudo);
+}
+</script>

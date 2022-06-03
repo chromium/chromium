@@ -22,6 +22,8 @@ class CustomLayoutEdges : public ScriptWrappable {
         inline_end_(border_scrollbar_padding.inline_end),
         block_start_(border_scrollbar_padding.block_start),
         block_end_(border_scrollbar_padding.block_end) {}
+  CustomLayoutEdges(const CustomLayoutEdges&) = delete;
+  CustomLayoutEdges& operator=(const CustomLayoutEdges&) = delete;
 
   // layout_edges.idl
   double inlineStart() const { return inline_start_; }
@@ -36,8 +38,6 @@ class CustomLayoutEdges : public ScriptWrappable {
   double inline_end_;
   double block_start_;
   double block_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLayoutEdges);
 };
 
 }  // namespace blink

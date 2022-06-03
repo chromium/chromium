@@ -28,6 +28,9 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
    public:
     explicit FdWatchController(const Location& from_here);
 
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     // Implicitly calls StopWatchingFileDescriptor.
     ~FdWatchController() override;
 
@@ -58,11 +61,13 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     // If this pointer is non-NULL, the pointee is set to true in the
     // destructor.
     bool* was_destroyed_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpLibevent();
+
+  MessagePumpLibevent(const MessagePumpLibevent&) = delete;
+  MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;
+
   ~MessagePumpLibevent() override;
 
   bool WatchFileDescriptor(int fd,
@@ -90,28 +95,33 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   // ... callback; called by libevent inside Run() when pipe is ready to read
   static void OnWakeup(int socket, short flags, void* context);
 
-  // This flag is set to false when Run should return.
-  bool keep_running_;
+  struct RunState {
+    explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
 
-  // This flag is set when inside Run.
-  bool in_run_;
+    Delegate* const delegate;
+
+    // Used to flag that the current Run() invocation should return ASAP.
+    bool should_quit = false;
+  };
+
+  // State for the current invocation of Run(). null if not running.
+  RunState* run_state_ = nullptr;
 
   // This flag is set if libevent has processed I/O events.
-  bool processed_io_events_;
+  bool processed_io_events_ = false;
 
   // Libevent dispatcher.  Watches all sockets registered with it, and sends
   // readiness callbacks when a socket is ready for I/O.
-  event_base* event_base_;
+  event_base* const event_base_;
 
   // ... write end; ScheduleWork() writes a single byte to it
-  int wakeup_pipe_in_;
+  int wakeup_pipe_in_ = -1;
   // ... read end; OnWakeup reads it and then breaks Run() out of its sleep
-  int wakeup_pipe_out_;
+  int wakeup_pipe_out_ = -1;
   // ... libevent wrapper for read end
-  event* wakeup_event_;
+  event* wakeup_event_ = nullptr;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpLibevent);
 };
 
 }  // namespace base

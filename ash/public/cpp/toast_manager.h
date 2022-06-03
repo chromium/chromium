@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_TOAST_MANAGER_H_
 #define ASH_PUBLIC_CPP_TOAST_MANAGER_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 
 namespace ash {
@@ -19,6 +21,9 @@ class ASH_PUBLIC_EXPORT ToastManager {
   // Show a toast. If there are queued toasts, succeeding toasts are queued as
   // well, and are shown one by one.
   virtual void Show(const ToastData& data) = 0;
+
+  // Cancels a toast with the provided ID.
+  virtual void Cancel(const std::string& id) = 0;
 
  protected:
   ToastManager();

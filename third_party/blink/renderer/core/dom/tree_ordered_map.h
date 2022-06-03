@@ -32,6 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_ORDERED_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_ORDERED_MAP_H_
 
+#include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -46,7 +48,12 @@ class Element;
 class HTMLSlotElement;
 class TreeScope;
 
-class TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
+// TreeOrderedMap is a map from keys to |Element|s, which allows multiple values
+// per key, maintained in tree order per key. Tree walks are avoided when
+// possible by retaining a cached, ordered array of matching nodes. Adding or
+// removing an element for a given key often clears the cache, forcing a tree
+// walk upon the next access.
+class CORE_EXPORT TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
  public:
   TreeOrderedMap();
 
@@ -65,7 +72,7 @@ class TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
   // TreeOrderedMap exactly.
   Element* GetCachedFirstElementWithoutAccessingNodeTree(const AtomicString&);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
 #if DCHECK_IS_ON()
   // While removing a ContainerNode, ID lookups won't be precise should the tree
@@ -73,7 +80,7 @@ class TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
   // Rare trees, but ID lookups may legitimately fail across such removals;
   // this scope object informs TreeOrderedMaps about the transitory state of the
   // underlying tree.
-  class RemoveScope {
+  class CORE_EXPORT RemoveScope {
     STACK_ALLOCATED();
 
    public:
@@ -81,7 +88,7 @@ class TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
     ~RemoveScope();
   };
 #else
-  class RemoveScope {
+  class CORE_EXPORT RemoveScope {
     STACK_ALLOCATED();
 
    public:
@@ -99,7 +106,7 @@ class TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
     explicit MapEntry(Element& first_element)
         : element(first_element), count(1) {}
 
-    void Trace(Visitor*);
+    void Trace(Visitor*) const;
 
     Member<Element> element;
     unsigned count;

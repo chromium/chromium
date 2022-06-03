@@ -8,30 +8,86 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/containers/fixed_flat_set.h"
+#include "extensions/common/constants.h"
+#endif
+
+// A UsbDeviceClient represents a UsbDevice pipe that has been passed to the
+// renderer process. The UsbDeviceClient pipe allows the browser process to
+// continue to monitor how the device is used and cause the connection to be
+// closed at will.
+class WebUsbServiceImpl::UsbDeviceClient
+    : public device::mojom::UsbDeviceClient {
+ public:
+  UsbDeviceClient(
+      WebUsbServiceImpl* service,
+      const std::string& device_guid,
+      mojo::PendingReceiver<device::mojom::UsbDeviceClient> receiver)
+      : service_(service),
+        device_guid_(device_guid),
+        receiver_(this, std::move(receiver)) {
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&WebUsbServiceImpl::RemoveDeviceClient,
+                       base::Unretained(service_), base::Unretained(this)));
+  }
+
+  ~UsbDeviceClient() override {
+    if (opened_) {
+      // If the connection was opened destroying |receiver_| will cause it to
+      // be closed but that event won't be dispatched here because the receiver
+      // has been destroyed.
+      OnDeviceClosed();
+    }
+  }
+
+  const std::string& device_guid() const { return device_guid_; }
+
+  // device::mojom::UsbDeviceClient implementation:
+  void OnDeviceOpened() override {
+    DCHECK(!opened_);
+    opened_ = true;
+    service_->IncrementConnectionCount();
+  }
+
+  void OnDeviceClosed() override {
+    DCHECK(opened_);
+    opened_ = false;
+    service_->DecrementConnectionCount();
+  }
+
+ private:
+  WebUsbServiceImpl* const service_;
+  const std::string device_guid_;
+  bool opened_ = false;
+  mojo::Receiver<device::mojom::UsbDeviceClient> receiver_;
+};
 
 WebUsbServiceImpl::WebUsbServiceImpl(
     content::RenderFrameHost* render_frame_host,
     base::WeakPtr<WebUsbChooser> usb_chooser)
     : render_frame_host_(render_frame_host),
-      usb_chooser_(std::move(usb_chooser)),
-      device_observer_(this),
-      permission_observer_(this) {
+      usb_chooser_(std::move(usb_chooser)) {
   DCHECK(render_frame_host_);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   // This class is destroyed on cross-origin navigations and so it is safe to
   // cache these values.
-  requesting_origin_ = render_frame_host_->GetLastCommittedOrigin();
-  embedding_origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   chooser_context_ = UsbChooserContextFactory::GetForProfile(profile);
@@ -52,10 +108,10 @@ void WebUsbServiceImpl::BindReceiver(
   // the OnDeviceRemoved event will be delivered here after it is delivered
   // to UsbChooserContext, meaning that all ephemeral permission checks in
   // OnDeviceRemoved() will fail.
-  if (!device_observer_.IsObservingSources())
-    device_observer_.Add(chooser_context_);
-  if (!permission_observer_.IsObservingSources())
-    permission_observer_.Add(chooser_context_);
+  if (!device_observation_.IsObserving())
+    device_observation_.Observe(chooser_context_);
+  if (!permission_observation_.IsObserving())
+    permission_observation_.Observe(chooser_context_);
 }
 
 bool WebUsbServiceImpl::HasDevicePermission(
@@ -65,13 +121,90 @@ bool WebUsbServiceImpl::HasDevicePermission(
   if (!chooser_context_)
     return false;
 
-  return chooser_context_->HasDevicePermission(requesting_origin_,
-                                               embedding_origin_, device_info);
+  return chooser_context_->HasDevicePermission(origin_, device_info);
+}
+
+std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
+  // Specified in https://wicg.github.io/webusb#protected-interface-classes
+  std::vector<uint8_t> classes = {
+      device::mojom::kUsbAudioClass,       device::mojom::kUsbHidClass,
+      device::mojom::kUsbMassStorageClass, device::mojom::kUsbSmartCardClass,
+      device::mojom::kUsbVideoClass,       device::mojom::kUsbAudioVideoClass,
+      device::mojom::kUsbWirelessClass,
+  };
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+  // These extensions can claim the protected HID interface class (example: used
+  // as badge readers)
+  static constexpr auto kHidPrivilegedExtensionIds =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
+          "baobpecgllpajfeojepgedjdlnlfffde",
+          "bnfoibgpjolimhppjmligmcgklpboloj",
+          "cdgickkdpbekbnalbmpgochbninibkko",
+          "cjakdianfealdjlapagfagpdpemoppba",
+          "cokoeepjbmmnhgdhlkpahohdaiedfjgn",
+          "dahgfgiifpnaoajmloofonkndaaafacp",
+          "dbknmmkopacopifbkgookcdbhfnggjjh",
+          "ddcjglpbfbibgepfffpklmpihphbcdco",
+          "dhodapiemamlmhlhblgcibabhdkohlen",
+          "dlahpllbhpbkfnoiedkgombmegnnjopi",
+          "egfpnfjeaopimgpiioeedbpmojdapaip",
+          "fnbibocngjnefolmcodjkkghijpdlnfm",
+          "jcnflhjcfjkplgkcinikhbgbhfldkadl",
+          "jkfjfbelolphkjckiolfcakgalloegek",
+          "kmhpgpnbglclbaccjjgoioogjlnfgbne",
+          "lpimkpkllnkdlcigdbgmabfplniahkgm",
+          "odehonhhkcjnbeaomlodfkjaecbmhklm",
+          "olnmflhcfkifkgbiegcoabineoknmbjc",
+          "omificdfgpipkkpdhbjmefgfgbppehke",
+          "phjobickjiififdadeoepbdaciefacfj",
+          "pkeacbojooejnjolgjdecbpnloibpafm",
+          "pllbepacblmgialkkpcceohmjakafnbb",
+          "plpogimmgnkkiflhpidbibfmgpkaofec",
+          "pmhiabnkkchjeaehcodceadhdpfejmmd",
+
+          // Hotrod Extensions, see crbug.com/1220165
+          "acdafoiapclbpdkhnighhilgampkglpc",
+          "denipklgekfpcdmbahmbpnmokgajnhma",
+          "hkamnlhnogggfddmjomgbdokdkgfelgg",
+          "ikfcpmgefdpheiiomgmhlmmkihchmdlj",
+          "jlgegmdnodfhciolbdjciihnlaljdbjo",
+          "ldmpofkllgeicjiihkimgeccbhghhmfj",
+          "lkbhffjfgpmpeppncnimiiikojibkhnm",
+          "moklfjoegmpoolceggbebbmgbddlhdgp",
+      });
+
+  if (origin_.scheme() == extensions::kExtensionScheme &&
+      base::Contains(kHidPrivilegedExtensionIds, origin_.host())) {
+    base::Erase(classes, device::mojom::kUsbHidClass);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // These extensions can claim the smart card USB class
+  static constexpr auto kSmartCardPrivilegedExtensionIds =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          // Smart Card Connector Extension and its Beta version, see
+          // crbug.com/1233881.
+          "khpfeaanjngmcnplbdlpegiifgpfgdco",
+          "mockcojkppdndnhgonljagclgpkjbkek",
+      });
+
+  if (origin_.scheme() == extensions::kExtensionScheme &&
+      base::Contains(kSmartCardPrivilegedExtensionIds, origin_.host())) {
+    base::Erase(classes, device::mojom::kUsbSmartCardClass);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return classes;
 }
 
 void WebUsbServiceImpl::GetDevices(GetDevicesCallback callback) {
-  if (!chooser_context_)
+  if (!chooser_context_) {
     std::move(callback).Run(std::vector<device::mojom::UsbDeviceInfoPtr>());
+    return;
+  }
 
   chooser_context_->GetDevices(base::BindOnce(&WebUsbServiceImpl::OnGetDevices,
                                               weak_factory_.GetWeakPtr(),
@@ -104,17 +237,21 @@ void WebUsbServiceImpl::GetDevice(
   // This receiver will also be closed to notify the device service to close
   // the connection if permission is revoked.
   mojo::PendingRemote<device::mojom::UsbDeviceClient> device_client;
-  device_client_receivers_[guid].Add(
-      this, device_client.InitWithNewPipeAndPassReceiver());
-  chooser_context_->GetDevice(guid, std::move(device_receiver),
+  device_clients_.push_back(std::make_unique<UsbDeviceClient>(
+      this, guid, device_client.InitWithNewPipeAndPassReceiver()));
+
+  chooser_context_->GetDevice(guid, GetProtectedInterfaceClasses(),
+                              std::move(device_receiver),
                               std::move(device_client));
 }
 
 void WebUsbServiceImpl::GetPermission(
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     GetPermissionCallback callback) {
-  if (!usb_chooser_)
+  if (!usb_chooser_) {
     std::move(callback).Run(nullptr);
+    return;
+  }
 
   usb_chooser_->GetPermission(std::move(device_filters), std::move(callback));
 }
@@ -126,18 +263,15 @@ void WebUsbServiceImpl::SetClient(
   clients_.Add(std::move(client));
 }
 
-void WebUsbServiceImpl::OnPermissionRevoked(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  if (requesting_origin_ != requesting_origin ||
-      embedding_origin_ != embedding_origin) {
+void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
+  if (origin_ != origin) {
     return;
   }
 
   // Close the connection between Blink and the device if the device lost
   // permission.
-  base::EraseIf(device_client_receivers_, [this](const auto& entry) {
-    auto* device_info = chooser_context_->GetDeviceInfo(entry.first);
+  base::EraseIf(device_clients_, [this](const auto& client) {
+    auto* device_info = chooser_context_->GetDeviceInfo(client->device_guid());
     if (!device_info)
       return true;
 
@@ -156,7 +290,10 @@ void WebUsbServiceImpl::OnDeviceAdded(
 
 void WebUsbServiceImpl::OnDeviceRemoved(
     const device::mojom::UsbDeviceInfo& device_info) {
-  device_client_receivers_.erase(device_info.guid);
+  base::EraseIf(device_clients_, [&device_info](const auto& client) {
+    return device_info.guid == client->device_guid();
+  });
+
   if (!HasDevicePermission(device_info))
     return;
 
@@ -170,30 +307,36 @@ void WebUsbServiceImpl::OnDeviceManagerConnectionError() {
   receivers_.Clear();
 
   // Remove itself from UsbChooserContext's ObserverList.
-  device_observer_.RemoveAll();
-  permission_observer_.RemoveAll();
+  device_observation_.Reset();
+  permission_observation_.Reset();
 }
 
 // device::mojom::UsbDeviceClient implementation:
-void WebUsbServiceImpl::OnDeviceOpened() {
+void WebUsbServiceImpl::IncrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents);
-  tab_helper->IncrementConnectionCount(render_frame_host_);
+  tab_helper->IncrementConnectionCount();
 }
 
-void WebUsbServiceImpl::OnDeviceClosed() {
+void WebUsbServiceImpl::DecrementConnectionCount() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents);
-  tab_helper->DecrementConnectionCount(render_frame_host_);
+  tab_helper->DecrementConnectionCount();
+}
+
+void WebUsbServiceImpl::RemoveDeviceClient(const UsbDeviceClient* client) {
+  base::EraseIf(device_clients_, [client](const auto& this_client) {
+    return client == this_client.get();
+  });
 }
 
 void WebUsbServiceImpl::OnConnectionError() {
   if (receivers_.empty()) {
-    device_observer_.RemoveAll();
-    permission_observer_.RemoveAll();
+    device_observation_.Reset();
+    permission_observation_.Reset();
   }
 }

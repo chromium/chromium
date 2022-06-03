@@ -5,8 +5,6 @@
 #ifndef REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 #define REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/time/tick_clock.h"
 #include "remoting/client/ui/fling_tracker.h"
@@ -19,7 +17,7 @@ class FlingAnimation {
  public:
   // arguments are delta_x and delta_y with respect to the positions at previous
   // tick.
-  using FlingCallback = base::Callback<void(float, float)>;
+  using FlingCallback = base::RepeatingCallback<void(float, float)>;
 
   FlingAnimation(float time_constant, const FlingCallback& fling_callback);
   ~FlingAnimation();

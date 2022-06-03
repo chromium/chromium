@@ -5,31 +5,32 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_INFOBAR_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class DevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  using Callback = base::Callback<void(bool)>;
+  using Callback = base::OnceCallback<void(bool)>;
 
-  static void Create(const base::string16& message, const Callback& callback);
+  static void Create(const std::u16string& message, Callback callback);
+
+  DevToolsInfoBarDelegate(const DevToolsInfoBarDelegate&) = delete;
+  DevToolsInfoBarDelegate& operator=(const DevToolsInfoBarDelegate&) = delete;
 
  private:
-  DevToolsInfoBarDelegate(const base::string16& message,
-                          const Callback& callback);
+  DevToolsInfoBarDelegate(const std::u16string& message, Callback callback);
   ~DevToolsInfoBarDelegate() override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
-  const base::string16 message_;
+  const std::u16string message_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_INFOBAR_DELEGATE_H_

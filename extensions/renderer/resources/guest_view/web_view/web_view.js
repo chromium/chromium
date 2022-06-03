@@ -142,18 +142,16 @@ WebViewImpl.prototype.onFrameNameChanged = function(name) {
 // Updates state upon loadcommit.
 WebViewImpl.prototype.onLoadCommit = function(
     baseUrlForDataUrl, currentEntryIndex, entryCount,
-    processId, url, isTopLevel) {
+    processId, visibleUrl) {
   this.baseUrlForDataUrl = baseUrlForDataUrl;
   this.currentEntryIndex = currentEntryIndex;
   this.entryCount = entryCount;
   this.processId = processId;
-  if (isTopLevel) {
-    // Touching the src attribute triggers a navigation. To avoid
-    // triggering a page reload on every guest-initiated navigation,
-    // we do not handle this mutation.
-    this.attributes[
-        WebViewConstants.ATTRIBUTE_SRC].setValueIgnoreMutation(url);
-  }
+  // Touching the src attribute triggers a navigation. To avoid
+  // triggering a page reload on every guest-initiated navigation,
+  // we do not handle this mutation.
+  this.attributes[
+      WebViewConstants.ATTRIBUTE_SRC].setValueIgnoreMutation(visibleUrl);
 };
 
 WebViewImpl.prototype.onAttach = function(storagePartitionId) {
@@ -195,8 +193,14 @@ WebViewImpl.prototype.executeCode = function(func, args) {
     return false;
   }
 
+  // We specify what the embedder sees as the current URL, so that if this
+  // inject call races with navigation in the guest, we don't inject into a
+  // document we're not expecting.
   var webviewSrc = this.attributes[WebViewConstants.ATTRIBUTE_SRC].getValue();
   if (this.baseUrlForDataUrl) {
+    // The virtual URL from the src attribute won't match the guest document's
+    // URL when a base URL is provided for a data URL. The base URL should be
+    // used for the comparison.
     webviewSrc = this.baseUrlForDataUrl;
   }
 

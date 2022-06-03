@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings_utils.h"
+#include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_system.h"
@@ -24,27 +24,26 @@ namespace settings {
 const char OnStartupHandler::kOnStartupNtpExtensionEventName[] =
     "update-ntp-extension";
 
-OnStartupHandler::OnStartupHandler(Profile* profile)
-    : extension_registry_observer_(this), profile_(profile) {
+OnStartupHandler::OnStartupHandler(Profile* profile) : profile_(profile) {
   DCHECK(profile);
 }
 OnStartupHandler::~OnStartupHandler() {}
 
 void OnStartupHandler::OnJavascriptAllowed() {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 }
 
 void OnStartupHandler::OnJavascriptDisallowed() {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
 }
 
 void OnStartupHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getNtpExtension",
       base::BindRepeating(&OnStartupHandler::HandleGetNtpExtension,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "validateStartupPage",
       base::BindRepeating(&OnStartupHandler::HandleValidateStartupPage,
                           base::Unretained(this)));
@@ -82,23 +81,20 @@ std::unique_ptr<base::Value> OnStartupHandler::GetNtpExtension() {
 }
 
 void OnStartupHandler::HandleGetNtpExtension(const base::ListValue* args) {
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
   AllowJavascript();
 
-  ResolveJavascriptCallback(*callback_id, *GetNtpExtension());
+  ResolveJavascriptCallback(callback_id, *GetNtpExtension());
 }
 
 void OnStartupHandler::HandleValidateStartupPage(const base::ListValue* args) {
-  CHECK_EQ(args->GetSize(), 2U);
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  std::string url_string;
-  CHECK(args->GetString(1, &url_string));
+  CHECK_EQ(args->GetList().size(), 2U);
+  const base::Value& callback_id = args->GetList()[0];
+  const std::string& url_string = args->GetList()[1].GetString();
   AllowJavascript();
 
   bool valid = settings_utils::FixupAndValidateStartupPage(url_string, nullptr);
-  ResolveJavascriptCallback(*callback_id, base::Value(valid));
+  ResolveJavascriptCallback(callback_id, base::Value(valid));
 }
 
 }  // namespace settings

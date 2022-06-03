@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +52,9 @@ class Action : public base::RefCountedThreadSafe<Action> {
          const ActionType action_type,
          const std::string& api_name,
          int64_t action_id = -1);
+
+  Action(const Action&) = delete;
+  Action& operator=(const Action&) = delete;
 
   // Creates and returns a mutable copy of an Action.
   scoped_refptr<Action> Clone() const;
@@ -147,8 +149,6 @@ class Action : public base::RefCountedThreadSafe<Action> {
   std::unique_ptr<base::DictionaryValue> other_;
   int count_;
   int64_t action_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Action);
 };
 
 // A comparator for Action class objects; this performs a lexicographic

@@ -4,7 +4,7 @@
 
 #include "media/cdm/cdm_helpers.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {

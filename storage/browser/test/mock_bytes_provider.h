@@ -20,7 +20,7 @@ class MockBytesProvider : public blink::mojom::BytesProvider {
       size_t* reply_request_count = nullptr,
       size_t* stream_request_count = nullptr,
       size_t* file_request_count = nullptr,
-      base::Optional<base::Time> file_modification_time = base::Time());
+      absl::optional<base::Time> file_modification_time = base::Time());
   ~MockBytesProvider() override;
 
   // BytesProvider implementation:
@@ -37,7 +37,7 @@ class MockBytesProvider : public blink::mojom::BytesProvider {
   size_t* reply_request_count_;
   size_t* stream_request_count_;
   size_t* file_request_count_;
-  base::Optional<base::Time> file_modification_time_;
+  absl::optional<base::Time> file_modification_time_;
 };
 
 }  // namespace storage

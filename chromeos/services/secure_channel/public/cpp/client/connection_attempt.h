@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_ATTEMPT_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_CONNECTION_ATTEMPT_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -33,6 +32,10 @@ class ConnectionAttempt {
   };
 
   ConnectionAttempt();
+
+  ConnectionAttempt(const ConnectionAttempt&) = delete;
+  ConnectionAttempt& operator=(const ConnectionAttempt&) = delete;
+
   virtual ~ConnectionAttempt();
 
   void SetDelegate(Delegate* delegate);
@@ -44,8 +47,6 @@ class ConnectionAttempt {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttempt);
 };
 
 }  // namespace secure_channel

@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 15: WebSocket connection to 'ws://localhost:8880/handshake-fail-by-null-subprotocol-selection' failed: Error during WebSocket handshake: Sent non-empty 'Sec-WebSocket-Protocol' header but no response was received
 Test for verifying that the WebSocket handshake fails when the client requests a subprotocol but the server doesn't include a Sec-WebSocket-Protocol header in the response.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

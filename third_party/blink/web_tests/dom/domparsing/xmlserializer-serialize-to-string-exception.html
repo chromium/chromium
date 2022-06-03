@@ -22,7 +22,7 @@ var count = 0;
 function shouldThrowException(node)
 {
     var xs = new XMLSerializer();
-    assert_throws(new TypeError(), () => { xs.serializeToString.apply(xs, arguments); }, ++count + ". Verifying XMLSerializer.serializeToString() should THROW exception with " + (arguments.length ? "argument " + node : "no argument"));
+    assert_throws_js(TypeError, () => { xs.serializeToString.apply(xs, arguments); }, ++count + ". Verifying XMLSerializer.serializeToString() should THROW exception with " + (arguments.length ? "argument " + node : "no argument"));
 }
 
 function shouldNOTThrowException(node)

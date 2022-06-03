@@ -6,18 +6,23 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.util.UrlUtilitiesJni;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Bundles a Search Request URL with a low-priority version of the URL, helps manage the
- * fall-back when the low-priority version fails, and tracks which one is in use.
+ * Builds a Search Request URL to be used to populate the content of the Bottom Sheet in response
+ * to a particular Contextual Search.
+ * The URL has a low-priority version to help with server overload, and helps manage the
+ * fall-back to normal when that is needed after the low-priority version fails.
+ * The URL building includes triggering of feature one-boxes on the SERP like a translation
+ * One-box or a knowledge panel.
  */
 class ContextualSearchRequest {
     private final boolean mWasPrefetch;
@@ -63,6 +68,15 @@ class ContextualSearchRequest {
      */
     ContextualSearchRequest(String searchTerm, boolean isLowPriorityEnabled) {
         this(searchTerm, null, null, isLowPriorityEnabled, null, null);
+    }
+
+    /**
+     * Creates a search request for the given URL without any alternate term or low priority
+     * loading capability for preload.
+     * @param searchUrlFull The URI for the full search to present in the overlay.
+     */
+    ContextualSearchRequest(@NonNull Uri searchUrlFull) {
+        this(null, null, null, false, searchUrlFull.toString(), null);
     }
 
     /**
@@ -175,14 +189,17 @@ class ContextualSearchRequest {
     }
 
     /**
-     * Adds translation parameters.
+     * Adds translation parameters, unless they match.
      * @param sourceLanguage The language of the original search term.
      * @param targetLanguage The language the that the user prefers.
      */
     void forceTranslation(String sourceLanguage, String targetLanguage) {
         mIsTranslationForced = true;
         // If the server is providing a full URL then we shouldn't alter it.
-        if (mIsFullSearchUrlProvided) return;
+        if (mIsFullSearchUrlProvided || TextUtils.isEmpty(targetLanguage)
+                || targetLanguage.equals(sourceLanguage)) {
+            return;
+        }
 
         if (mLowPriorityUri != null) {
             mLowPriorityUri = makeTranslateUri(mLowPriorityUri, sourceLanguage, targetLanguage);
@@ -221,8 +238,12 @@ class ContextualSearchRequest {
      */
     protected Uri getUriTemplate(String query, @Nullable String alternateTerm, @Nullable String mid,
             boolean shouldPrefetch) {
-        Uri uri = Uri.parse(TemplateUrlServiceFactory.get().getUrlForContextualSearchQuery(
-                query, alternateTerm, shouldPrefetch, CTXS_TWO_REQUEST_PROTOCOL));
+        // TODO(https://crbug.com/783819): Avoid parsing the GURL as a Uri, and update
+        // makeKPTriggeringUri to operate on GURLs.
+        Uri uri = Uri.parse(TemplateUrlServiceFactory.get()
+                                    .getUrlForContextualSearchQuery(query, alternateTerm,
+                                            shouldPrefetch, CTXS_TWO_REQUEST_PROTOCOL)
+                                    .getSpec());
         if (!TextUtils.isEmpty(mid)) uri = makeKPTriggeringUri(uri, mid);
         return uri;
     }

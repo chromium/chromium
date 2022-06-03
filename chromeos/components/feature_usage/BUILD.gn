@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("feature_usage") {
+  sources = [
+    "feature_usage_metrics.cc",
+    "feature_usage_metrics.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/metrics",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "feature_usage_metrics_unittest.cc" ]
+  deps = [
+    ":feature_usage",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,18 @@
+[{
+  "id" : 3,
+  "priority": 1,
+  "action": { "type" : "redirect", "redirect" : { "url": "http://abc.com" } },
+  "condition" : { "urlFilter" : "redir2.com", "resourceTypes" : [ "main_frame" ] }
+},
+{
+  "id" : 4,
+  "priority": 1,
+  "action": { "type" : "allow" },
+  "condition" : { "urlFilter" : "abcde.com", "resourceTypes" : [ "main_frame" ] }
+},
+{
+  "id" : 5,
+  "priority": 1,
+  "action": { "type" : "redirect", "redirect" : { "url": "http://nomatch.com" } },
+  "condition" : { "urlFilter" : "abcde.com", "resourceTypes" : [ "main_frame" ] }
+}]

@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_component("types") {
+component("types") {
   output_name = "display_types"
   sources = [
+    "display_configuration_params.cc",
+    "display_configuration_params.h",
     "display_constants.h",
     "display_mode.cc",
     "display_mode.h",

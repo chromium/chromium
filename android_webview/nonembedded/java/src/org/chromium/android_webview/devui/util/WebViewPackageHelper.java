@@ -6,17 +6,23 @@ package org.chromium.android_webview.devui.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.webkit.WebView;
 
+import androidx.annotation.VisibleForTesting;
+
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 
 /**
  * A helper class to get info about WebView package.
  */
 public final class WebViewPackageHelper {
+    private static PackageInfo sWebViewCurrentPackage;
+
     /**
      * If WebView has already been loaded into the current process this method will return the
      * package that was used to load it. Otherwise, the package that would be used if the WebView
@@ -30,7 +36,11 @@ public final class WebViewPackageHelper {
      */
     // This method is copied from androidx.webkit.WebViewCompat.
     // TODO(crbug.com/1020024) use androidx.webkit.WebViewCompat#getCurrentWebViewPackage instead.
+    @SuppressWarnings("WebViewApiAvailability")
     public static PackageInfo getCurrentWebViewPackage(Context context) {
+        if (sWebViewCurrentPackage != null) {
+            return sWebViewCurrentPackage;
+        }
         // There was no WebView Package before Lollipop, the WebView code was part of the framework
         // back then.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -118,6 +128,52 @@ public final class WebViewPackageHelper {
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Check if the given context is a WebView package and if it's currently selected as system's
+     * WebView implementation.
+     *
+     * @param context the {@link Context} to check its package.
+     */
+    public static boolean isCurrentSystemWebViewImplementation(Context context) {
+        PackageInfo systemWebViewPackage = getCurrentWebViewPackage(context);
+        if (systemWebViewPackage == null) return false;
+        return context.getPackageName().equals(systemWebViewPackage.packageName);
+    }
+
+    /**
+     * Check if the system currently has a valid WebView implementation.
+     */
+    public static boolean hasValidWebViewImplementation(Context context) {
+        return getCurrentWebViewPackage(context) != null;
+    }
+
+    /**
+     * Loads a label for the app specified by {@code mContext}. This is designed to be consistent
+     * with how the system's WebView chooser labels WebView packages (see {@code
+     * com.android.settings.webview.WebViewAppPicker.WebViewAppInfo#loadLabel()} in the AOSP source
+     * code).
+     */
+    public static CharSequence loadLabel(Context context) {
+        ApplicationInfo applicationInfo = context.getApplicationInfo();
+        PackageManager pm = context.getPackageManager();
+        CharSequence appLabel = applicationInfo.loadLabel(pm);
+        try {
+            String versionName = pm.getPackageInfo(context.getPackageName(), 0).versionName;
+            return String.format(Locale.US, "%s %s", appLabel, versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            return appLabel;
+        }
+    }
+
+    /**
+     * Inject a {@link PackageInfo} as the current webview package for testing. This PackageInfo
+     * will be returned by {@link #getCurrentWebViewPackage}.
+     */
+    @VisibleForTesting
+    public static void setCurrentWebViewPackageForTesting(PackageInfo currentWebView) {
+        sWebViewCurrentPackage = currentWebView;
     }
 
     // Do not instantiate this class.

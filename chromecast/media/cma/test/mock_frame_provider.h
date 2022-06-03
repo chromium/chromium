@@ -20,6 +20,10 @@ class FrameGeneratorForTest;
 class MockFrameProvider : public CodedFrameProvider {
  public:
   MockFrameProvider();
+
+  MockFrameProvider(const MockFrameProvider&) = delete;
+  MockFrameProvider& operator=(const MockFrameProvider&) = delete;
+
   ~MockFrameProvider() override;
 
   void Configure(const std::vector<bool>& delayed_task_pattern,
@@ -27,11 +31,11 @@ class MockFrameProvider : public CodedFrameProvider {
   void SetDelayFlush(bool delay_flush);
 
   // CodedFrameProvider implementation.
-  void Read(const ReadCB& read_cb) override;
-  void Flush(const base::Closure& flush_cb) override;
+  void Read(ReadCB read_cb) override;
+  void Flush(base::OnceClosure flush_cb) override;
 
  private:
-  void DoRead(const ReadCB& read_cb);
+  void DoRead(ReadCB read_cb);
 
   // Parameterization of the frame provider.
   // |delayed_task_pattern_| indicates the pattern for delivering frames,
@@ -45,8 +49,6 @@ class MockFrameProvider : public CodedFrameProvider {
   bool delay_flush_;
 
   std::unique_ptr<FrameGeneratorForTest> frame_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFrameProvider);
 };
 
 }  // namespace media

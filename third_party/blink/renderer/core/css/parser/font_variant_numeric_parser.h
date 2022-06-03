@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
 
@@ -26,29 +26,29 @@ class FontVariantNumericParser {
       case CSSValueID::kOldstyleNums:
         if (numeric_figure_)
           return ParseResult::kDisallowedValue;
-        numeric_figure_ = css_property_parser_helpers::ConsumeIdent(range);
+        numeric_figure_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kProportionalNums:
       case CSSValueID::kTabularNums:
         if (numeric_spacing_)
           return ParseResult::kDisallowedValue;
-        numeric_spacing_ = css_property_parser_helpers::ConsumeIdent(range);
+        numeric_spacing_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kDiagonalFractions:
       case CSSValueID::kStackedFractions:
         if (numeric_fraction_)
           return ParseResult::kDisallowedValue;
-        numeric_fraction_ = css_property_parser_helpers::ConsumeIdent(range);
+        numeric_fraction_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kOrdinal:
         if (ordinal_)
           return ParseResult::kDisallowedValue;
-        ordinal_ = css_property_parser_helpers::ConsumeIdent(range);
+        ordinal_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       case CSSValueID::kSlashedZero:
         if (slashed_zero_)
           return ParseResult::kDisallowedValue;
-        slashed_zero_ = css_property_parser_helpers::ConsumeIdent(range);
+        slashed_zero_ = css_parsing_utils::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
       default:
         return ParseResult::kUnknownValue;
@@ -73,11 +73,11 @@ class FontVariantNumericParser {
   }
 
  private:
-  Member<CSSIdentifierValue> numeric_figure_;
-  Member<CSSIdentifierValue> numeric_spacing_;
-  Member<CSSIdentifierValue> numeric_fraction_;
-  Member<CSSIdentifierValue> ordinal_;
-  Member<CSSIdentifierValue> slashed_zero_;
+  CSSIdentifierValue* numeric_figure_ = nullptr;
+  CSSIdentifierValue* numeric_spacing_ = nullptr;
+  CSSIdentifierValue* numeric_fraction_ = nullptr;
+  CSSIdentifierValue* ordinal_ = nullptr;
+  CSSIdentifierValue* slashed_zero_ = nullptr;
 };
 
 }  // namespace blink

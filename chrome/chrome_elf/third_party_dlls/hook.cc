@@ -253,7 +253,8 @@ bool GetDataFromImage(PVOID buffer,
 // 6) Unmap view if blocking required.
 // 7) Log the result either way.
 //------------------------------------------------------------------------------
-
+// CFG must be disabled for the call to orig_MapViewOfSection below.
+DISABLE_CFI_ICALL
 NTSTATUS NewNtMapViewOfSectionImpl(
     NtMapViewOfSectionFunction orig_MapViewOfSection,
     HANDLE section,

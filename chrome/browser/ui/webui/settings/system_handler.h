@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SYSTEM_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SYSTEM_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {
@@ -21,6 +20,10 @@ namespace settings {
 class SystemHandler : public SettingsPageUIHandler {
  public:
   SystemHandler();
+
+  SystemHandler(const SystemHandler&) = delete;
+  SystemHandler& operator=(const SystemHandler&) = delete;
+
   ~SystemHandler() override;
 
   // Populates handler-specific loadTimeData values used by the system page.
@@ -34,8 +37,6 @@ class SystemHandler : public SettingsPageUIHandler {
  private:
   // Handler for the "showProxySettings" message. No args.
   void HandleShowProxySettings(const base::ListValue* /*args*/);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemHandler);
 };
 
 }  // namespace settings

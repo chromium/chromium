@@ -14,7 +14,7 @@ if (window.internals && internals.dictionaryTest) {
     dict = dictionaryTest.get();
     shouldBeUndefined('dict.longMember');
     shouldBe('dict.longMemberWithDefault', '42');
-    shouldBeNull('dict.longOrNullMember');
+    shouldBeUndefined('dict.longOrNullMember');
     shouldBeNull('dict.longOrNullMemberWithDefault');
     shouldBeUndefined('dict.booleanMember');
     shouldBeUndefined('dict.doubleMember');
@@ -25,12 +25,12 @@ if (window.internals && internals.dictionaryTest) {
     shouldBeUndefined('dict.usvStringMember');
     shouldBeUndefined('dict.stringSequenceMember');
     shouldBe('dict.stringSequenceMemberWithDefault', '[]');
-    shouldBeNull('dict.stringSequenceOrNullMember');
+    shouldBeUndefined('dict.stringSequenceOrNullMember');
     shouldBeUndefined('dict.elementMember');
     shouldBeUndefined('dict.elementOrNullMember');
     shouldBeUndefined('dict.enumMember');
     shouldBeEqualToString('dict.enumMemberWithDefault', 'foo');
-    shouldBeNull('dict.enumOrNullMember');
+    shouldBeUndefined('dict.enumOrNullMember');
     shouldBeUndefined('dict.objectMember');
     shouldBeNull('dict.objectOrNullMemberWithDefault');
     shouldBeUndefined('dict.doubleOrStringMember');
@@ -45,7 +45,7 @@ if (window.internals && internals.dictionaryTest) {
     dict = dictionaryTest.get();
     shouldBeUndefined('dict.longMember');
     shouldBe('dict.longMemberWithDefault', '42');
-    shouldBeNull('dict.longOrNullMember');
+    shouldBeUndefined('dict.longOrNullMember');
     shouldBeNull('dict.longOrNullMemberWithDefault');
     shouldBeUndefined('dict.booleanMember');
     shouldBeUndefined('dict.doubleMember');
@@ -56,7 +56,7 @@ if (window.internals && internals.dictionaryTest) {
     shouldBeEqualToString('dict.stringMemberWithDefault', 'defaultStringValue');
     shouldBeUndefined('dict.stringSequenceMember');
     shouldBe('dict.stringSequenceMemberWithDefault', '[]');
-    shouldBeNull('dict.stringSequenceOrNullMember');
+    shouldBeUndefined('dict.stringSequenceOrNullMember');
     shouldBeUndefined('dict.elementMember');
     shouldBeUndefined('dict.elementOrNullMember');
     shouldBeUndefined('dict.objectMember');
@@ -176,7 +176,7 @@ if (window.internals && internals.dictionaryTest) {
     // ToNumber(null) results in 0.
     shouldBe('dict.longMemberWithDefault', '0');
     // Passing undefined shouldn't invoke any conversion.
-    shouldBeNull('dict.longOrNullMember');
+    shouldBeUndefined('dict.longOrNullMember');
     // Nullable and its default value is null
     shouldBeNull('dict.longOrNullMemberWithDefault');
     // A non-nullable enum must throw when passed null.
@@ -273,14 +273,6 @@ if (window.internals && internals.dictionaryTest) {
     shouldThrow('dictionaryTest.set({ longMemberWithEnforceRange: 2147483648 })');
     debug('');
 
-    debug('Test for [ImplementedAs] and [DeprecateAs] member');
-    dictionaryTest.set({
-        deprecateLongMember: 42
-    });
-    dict = dictionaryTest.get();
-    shouldBe('dict.longMember', '42');
-    debug('');
-
     debug('Test for passing EventTarget');
     dictionaryTest.set({
         eventTargetOrNullMember: window
@@ -303,27 +295,12 @@ if (window.internals && internals.dictionaryTest) {
     shouldThrow("dictionaryTest.set({eventTargetOrNullMember: {}})");
     debug('');
 
-    debug('Test for passing Dictionary (not IDL dictionary)');
-    dictionaryTest.set({
-        dictionaryMember: {'foo': 'x', 'bar': 'y'}
-    });
-    properties = dictionaryTest.getDictionaryMemberProperties();
-    shouldBeEqualToString('properties.foo', 'x');
-    shouldBeEqualToString('properties.bar', 'y');
-    shouldBeUndefined('properties.baz');
-    dictionaryTest.set({dictionaryMember: undefined});
-    properties = dictionaryTest.getDictionaryMemberProperties();
-    shouldBe('properties', '{}');
-    shouldThrow("dictionaryTest.set({dictionaryMember: 42})");
-    shouldThrow("dictionaryTest.set({dictionaryMember: 'foo'})");
-    debug('');
-
     debug('Test for derived dictionary');
     dictionaryTest.setDerived({ requiredBooleanMember: true });
     derived = dictionaryTest.getDerived();
     shouldBeUndefined('derived.longMember');
     shouldBe('derived.longMemberWithDefault', '42');
-    shouldBeNull('derived.longOrNullMember');
+    shouldBeUndefined('derived.longOrNullMember');
     shouldBeNull('derived.longOrNullMemberWithDefault');
     shouldBeUndefined('derived.booleanMember');
     shouldBeUndefined('derived.doubleMember');
@@ -331,12 +308,12 @@ if (window.internals && internals.dictionaryTest) {
     shouldBeEqualToString('derived.stringMemberWithDefault', 'defaultStringValue');
     shouldBeUndefined('derived.stringSequenceMember');
     shouldBe('derived.stringSequenceMemberWithDefault', '[]');
-    shouldBeNull('derived.stringSequenceOrNullMember');
+    shouldBeUndefined('derived.stringSequenceOrNullMember');
     shouldBeUndefined('derived.elementMember');
     shouldBeUndefined('derived.elementOrNullMember');
     shouldBeUndefined('derived.enumMember');
     shouldBeEqualToString('derived.enumMemberWithDefault', 'foo');
-    shouldBeNull('derived.enumOrNullMember');
+    shouldBeUndefined('derived.enumOrNullMember');
     shouldBeUndefined('derived.objectMember');
     shouldBeNull('derived.objectOrNullMemberWithDefault');
     shouldBeUndefined('derived.derivedStringMember');

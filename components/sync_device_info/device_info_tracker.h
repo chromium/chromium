@@ -5,15 +5,21 @@
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_TRACKER_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_TRACKER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "components/sync_device_info/device_info.h"
 
+namespace sync_pb {
+enum SyncEnums_DeviceType : int;
+}  // namespace sync_pb
+
 namespace syncer {
 
-// Interface for tracking synced DeviceInfo.
+// Interface for tracking synced DeviceInfo. This excludes sync-ing clients that
+// are not chromium-based.
 class DeviceInfoTracker {
  public:
   virtual ~DeviceInfoTracker() {}
@@ -21,6 +27,17 @@ class DeviceInfoTracker {
   // Observer class for listening to device info changes.
   class Observer {
    public:
+    // Called on any change in the device info list. If sync is enabled, it is
+    // guaranteed that the method will be called at least once after browser
+    // startup. There are several possible cases:
+    // 1. The list has been changed during remote update (initial merge or
+    // incremental).
+    // 2. The list has been cleaned up when sync is stopped.
+    // 3. The local device info has been changed and committed to the server.
+    // 4. The list has been just loaded after browser startup from the
+    // persistent storage. If the list is empty (e.g. due to mismatching cache
+    // GUID or this is the first browser startup), it will be updated later
+    // during the initial merge.
     virtual void OnDeviceInfoChange() = 0;
   };
 
@@ -37,12 +54,15 @@ class DeviceInfoTracker {
   virtual void AddObserver(Observer* observer) = 0;
   // Unregisters an observer.
   virtual void RemoveObserver(Observer* observer) = 0;
-  // Returns the count of active devices. Deduping logic may be used internally
-  // to prevent double counting for devices that disable sync and reenable it,
-  // but callers should nevertheless consider this an upper bound.
-  virtual int CountActiveDevices() const = 0;
-  // A temporary function to to allow tests to ensure active devices.
-  // TODO(crbug/948784) remove this function after architecture work.
+  // Returns the count of active devices per device type. Deduping logic may be
+  // used internally to prevent double counting for devices that disable sync
+  // and reenable it, but callers should nevertheless consider this an upper
+  // bound per type.
+  virtual std::map<sync_pb::SyncEnums_DeviceType, int>
+  CountActiveDevicesByType() const = 0;
+  // A function to to allow tests to ensure active devices. If called when the
+  // local device info provider is not initialized, will force update after
+  // initialization.
   virtual void ForcePulseForTest() = 0;
   // Returns if the provided |cache_guid| is the current device cache_guid for
   // the current device or was of the recently used.

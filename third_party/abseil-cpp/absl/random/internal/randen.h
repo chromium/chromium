@@ -23,9 +23,10 @@
 #include "absl/random/internal/randen_traits.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
-// RANDen = RANDom generator or beetroots in Swiss German.
+// RANDen = RANDom generator or beetroots in Swiss High German.
 // 'Strong' (well-distributed, unpredictable, backtracking-resistant) random
 // generator, faster in some benchmarks than std::mt19937_64 and pcg64_c32.
 //
@@ -95,6 +96,7 @@ class Randen {
 };
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_RANDEN_H_

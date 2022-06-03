@@ -1,0 +1,10 @@
+This test must produce two pages of output. This sentence must be on the first page.
+This sentence must be at the top of the second page.
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+
+This must be the last sentence on the second and final page.
+
+
+FAIL: expected page number of "test1" is 1. Was 0
+FAIL: expected page number of "test2" is 1. Was 0
+FAIL: expected number of pages is 2. Was 1

@@ -2,7 +2,6 @@ file://components/arc/video_accelerator/OWNERS
 file://media/OWNERS
 
 per-file chrome_content_gpu_client*=file://components/arc/video_accelerator/OWNERS
-per-file widevine_cdm_proxy*=file://media/OWNERS
 
 # For security review
 per-file browser_exposed_gpu_interfaces.cc=set noparent

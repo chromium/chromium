@@ -7,7 +7,7 @@ Bug 100059
 
 
 TEST CASE: Implicit default cursor
-Cursor Info: type=IBeam hotSpot=0,0
+Cursor Info: type=IBeam
 
 
 TEST CASE: CUR file with 3 frames, largest of which (2nd frame) is 20x12 with hotspot at (18,11).

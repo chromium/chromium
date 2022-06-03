@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/ptr_util.h"
 

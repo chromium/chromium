@@ -46,7 +46,7 @@ class MockImageProvider : public ImageProvider {
     bitmap.allocN32Pixels(10, 10);
     bitmap.eraseColor(SK_ColorBLACK);
     sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
-    return ScopedResult(DecodedDrawImage(image, SkSize::MakeEmpty(),
+    return ScopedResult(DecodedDrawImage(image, nullptr, SkSize::MakeEmpty(),
                                          SkSize::Make(1.0f, 1.0f),
                                          draw_image.filter_quality(), true));
   }
@@ -60,13 +60,13 @@ class MockImageProvider : public ImageProvider {
 }  // namespace
 
 TEST(PaintShaderTest, RasterizationRectForRecordShaders) {
-  SkMatrix local_matrix = SkMatrix::MakeScale(0.5f, 0.5f);
+  SkMatrix local_matrix = SkMatrix::Scale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
       sk_make_sp<PaintOpBuffer>(), SkRect::MakeWH(100, 100), SkTileMode::kClamp,
       SkTileMode::kClamp, &local_matrix);
 
   SkRect tile_rect;
-  SkMatrix ctm = SkMatrix::MakeScale(0.5f, 0.5f);
+  SkMatrix ctm = SkMatrix::Scale(0.5f, 0.5f);
   EXPECT_TRUE(record_shader->GetRasterizationTileRect(ctm, &tile_rect));
   EXPECT_EQ(tile_rect, SkRect::MakeWH(25, 25));
 }
@@ -84,8 +84,8 @@ TEST(PaintShaderTest, DecodePaintRecord) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  record->push<DrawImageOp>(paint_image, 0.f, 0.f, nullptr);
-  SkMatrix local_matrix = SkMatrix::MakeScale(0.5f, 0.5f);
+  record->push<DrawImageOp>(paint_image, 0.f, 0.f);
+  SkMatrix local_matrix = SkMatrix::Scale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
       record, SkRect::MakeWH(100, 100), SkTileMode::kClamp, SkTileMode::kClamp,
       &local_matrix);
@@ -111,7 +111,7 @@ TEST(PaintShaderTest, DecodePaintRecord) {
   EXPECT_TRUE(skia_image->isLazyGenerated());
   EXPECT_EQ(xy[0], record_shader->tx());
   EXPECT_EQ(xy[1], record_shader->ty());
-  EXPECT_EQ(decoded_local_matrix, SkMatrix::MakeScale(2.f, 2.f));
+  EXPECT_EQ(decoded_local_matrix, SkMatrix::Scale(2.f, 2.f));
 
   // The rasterization of the shader is internal to skia, so use a raster canvas
   // to verify that the decoded paint does not have the encoded image.

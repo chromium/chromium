@@ -4,12 +4,22 @@
 
 #include "base/observer_list.h"
 
+// observer_list.h is a widely included header and its size has significant
+// impact on build time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 480000
+#endif
+
+#include <memory>
+
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -118,7 +128,7 @@ template <class ObserverListType>
 class ObserverListCreator : public DelegateSimpleThread::Delegate {
  public:
   std::unique_ptr<ObserverListType> Create(
-      base::Optional<base::ObserverListPolicy> policy = nullopt) {
+      absl::optional<base::ObserverListPolicy> policy = absl::nullopt) {
     policy_ = policy;
     DelegateSimpleThread thread(this, "ListCreator");
     thread.Start();
@@ -136,14 +146,16 @@ class ObserverListCreator : public DelegateSimpleThread::Delegate {
   }
 
   std::unique_ptr<ObserverListType> observer_list_;
-  base::Optional<base::ObserverListPolicy> policy_;
+  absl::optional<base::ObserverListPolicy> policy_;
 };
 
 }  // namespace
 
 class ObserverListTestBase {
  public:
-  ObserverListTestBase() {}
+  ObserverListTestBase() = default;
+  ObserverListTestBase(const ObserverListTestBase&) = delete;
+  ObserverListTestBase& operator=(const ObserverListTestBase&) = delete;
 
   template <class T>
   const decltype(T::list_.get()) list(const T& iter) {
@@ -163,9 +175,6 @@ class ObserverListTestBase {
     EXPECT_DCHECK_DEATH(return iter->GetCurrent());
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverListTestBase);
 };
 
 // Templatized test fixture that can pick between CheckedBase and UncheckedBase.
@@ -179,10 +188,9 @@ class ObserverListTest : public ObserverListTestBase, public ::testing::Test {
   using iterator = typename ObserverList<ObserverType>::iterator;
   using const_iterator = typename ObserverList<ObserverType>::const_iterator;
 
-  ObserverListTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverListTest);
+  ObserverListTest() = default;
+  ObserverListTest(const ObserverListTest&) = delete;
+  ObserverListTest& operator=(const ObserverListTest&) = delete;
 };
 
 using ObserverTypes = ::testing::Types<CheckedBase, UncheckedBase>;
@@ -200,10 +208,10 @@ TYPED_TEST_SUITE(ObserverListTest, ObserverTypes);
   using Disrupter = DisrupterT<ObserverListFoo>;                            \
   using const_iterator = typename TestFixture::const_iterator;              \
   using iterator = typename TestFixture::iterator;                          \
-  (void)(Disrupter*)(0);                                                    \
-  (void)(Adder*)(0);                                                        \
-  (void)(const_iterator*)(0);                                               \
-  (void)(iterator*)(0)
+  (void)reinterpret_cast<Disrupter*>(0);                                    \
+  (void)reinterpret_cast<Adder*>(0);                                        \
+  (void)reinterpret_cast<const_iterator*>(0);                               \
+  (void)reinterpret_cast<iterator*>(0)
 
 TYPED_TEST(ObserverListTest, BasicTest) {
   DECLARE_TYPES;
@@ -364,7 +372,7 @@ TYPED_TEST(ObserverListTest, CompactsWhenNoActiveIterator) {
   EXPECT_TRUE(col.HasObserver(&a));
   EXPECT_FALSE(col.HasObserver(&c));
 
-  EXPECT_TRUE(col.might_have_observers());
+  EXPECT_TRUE(!col.empty());
 
   using It = typename ObserverListConstFoo::const_iterator;
 
@@ -379,45 +387,45 @@ TYPED_TEST(ObserverListTest, CompactsWhenNoActiveIterator) {
     EXPECT_EQ(itb, it);
     EXPECT_EQ(++it, col.end());
 
-    EXPECT_TRUE(col.might_have_observers());
+    EXPECT_TRUE(!col.empty());
     EXPECT_EQ(&*ita, &a);
     EXPECT_EQ(&*itb, &b);
 
     ol.RemoveObserver(&a);
-    EXPECT_TRUE(col.might_have_observers());
+    EXPECT_TRUE(!col.empty());
     EXPECT_FALSE(col.HasObserver(&a));
     EXPECT_EQ(&*itb, &b);
 
     ol.RemoveObserver(&b);
-    EXPECT_TRUE(col.might_have_observers());
+    EXPECT_FALSE(!col.empty());
     EXPECT_FALSE(col.HasObserver(&a));
     EXPECT_FALSE(col.HasObserver(&b));
 
     it = It();
     ita = It();
-    EXPECT_TRUE(col.might_have_observers());
+    EXPECT_FALSE(!col.empty());
     ita = itb;
     itb = It();
-    EXPECT_TRUE(col.might_have_observers());
+    EXPECT_FALSE(!col.empty());
     ita = It();
-    EXPECT_FALSE(col.might_have_observers());
+    EXPECT_FALSE(!col.empty());
   }
 
   ol.AddObserver(&a);
   ol.AddObserver(&b);
-  EXPECT_TRUE(col.might_have_observers());
+  EXPECT_TRUE(!col.empty());
   ol.Clear();
-  EXPECT_FALSE(col.might_have_observers());
+  EXPECT_FALSE(!col.empty());
 
   ol.AddObserver(&a);
   ol.AddObserver(&b);
-  EXPECT_TRUE(col.might_have_observers());
+  EXPECT_TRUE(!col.empty());
   {
     const It it = col.begin();
     ol.Clear();
-    EXPECT_TRUE(col.might_have_observers());
+    EXPECT_FALSE(!col.empty());
   }
-  EXPECT_FALSE(col.might_have_observers());
+  EXPECT_FALSE(!col.empty());
 }
 
 TYPED_TEST(ObserverListTest, DisruptSelf) {
@@ -950,26 +958,26 @@ TYPED_TEST(ObserverListTest, ReentrantObserverList) {
 class TestCheckedObserver : public CheckedObserver {
  public:
   explicit TestCheckedObserver(int* count) : count_(count) {}
+  TestCheckedObserver(const TestCheckedObserver&) = delete;
+  TestCheckedObserver& operator=(const TestCheckedObserver&) = delete;
 
   void Observe() { ++(*count_); }
 
  private:
   int* count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCheckedObserver);
 };
 
 // A second, identical observer, used to test multiple inheritance.
 class TestCheckedObserver2 : public CheckedObserver {
  public:
   explicit TestCheckedObserver2(int* count) : count_(count) {}
+  TestCheckedObserver2(const TestCheckedObserver2&) = delete;
+  TestCheckedObserver2& operator=(const TestCheckedObserver2&) = delete;
 
   void Observe() { ++(*count_); }
 
  private:
   int* count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCheckedObserver2);
 };
 
 using CheckedObserverListTest = ::testing::Test;
@@ -1001,7 +1009,7 @@ TEST_F(CheckedObserverListTest, CheckedObserver) {
     // On the non-death fork, no UAF occurs since the deleted observer is never
     // notified, but also the observer list still has |l2| in it. Check that.
     list->RemoveObserver(&l1);
-    EXPECT_TRUE(list->might_have_observers());
+    EXPECT_TRUE(!list->empty());
 
     // Now (in the non-death fork()) there's a problem. To delete |it|, we need
     // to compact the list, but that needs to iterate, which would CHECK again.

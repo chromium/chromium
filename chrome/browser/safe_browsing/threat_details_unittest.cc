@@ -7,25 +7,30 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/browser/referrer_chain_provider.h"
-#include "components/safe_browsing/browser/threat_details.h"
-#include "components/safe_browsing/browser/threat_details_history.h"
-#include "components/safe_browsing/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/threat_details_history.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/security_interstitials/content/unsafe_resource_util.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +41,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -103,8 +109,8 @@ class ThreatDetailsWrap : public ThreatDetails {
                       history_service,
                       referrer_chain_provider,
                       /*trim_to_ad_tags=*/false,
-                      base::Bind(&ThreatDetailsWrap::ThreatDetailsDone,
-                                 base::Unretained(this))),
+                      base::BindOnce(&ThreatDetailsWrap::ThreatDetailsDone,
+                                     base::Unretained(this))),
         run_loop_(nullptr),
         done_callback_count_(0) {}
 
@@ -123,8 +129,8 @@ class ThreatDetailsWrap : public ThreatDetails {
                       history_service,
                       referrer_chain_provider,
                       trim_to_ad_tags,
-                      base::Bind(&ThreatDetailsWrap::ThreatDetailsDone,
-                                 base::Unretained(this))),
+                      base::BindOnce(&ThreatDetailsWrap::ThreatDetailsDone,
+                                     base::Unretained(this))),
         run_loop_(nullptr),
         done_callback_count_(0) {}
 
@@ -158,10 +164,19 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
  public:
   // The safe browsing UI manager does not need a service for this test.
   MockSafeBrowsingUIManager()
-      : SafeBrowsingUIManager(nullptr), report_sent_(false) {}
+      : SafeBrowsingUIManager(
+            std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+            GURL(chrome::kChromeUINewTabURL)),
+        report_sent_(false) {}
+
+  MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
+  MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
+      delete;
 
   // When the serialized report is sent, this is called.
-  void SendSerializedThreatDetails(const std::string& serialized) override {
+  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
+                                   const std::string& serialized) override {
     report_sent_ = true;
     serialized_ = serialized;
   }
@@ -174,7 +189,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
   std::string serialized_;
   bool report_sent_;
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingUIManager);
 };
 
 class MockReferrerChainProvider : public ReferrerChainProvider {
@@ -187,6 +201,10 @@ class MockReferrerChainProvider : public ReferrerChainProvider {
   MOCK_METHOD4(IdentifyReferrerChainByEventURL,
                AttributionResult(const GURL& event_url,
                                  SessionID event_tab_id,
+                                 int user_gesture_count_limit,
+                                 ReferrerChain* out_referrer_chain));
+  MOCK_METHOD3(IdentifyReferrerChainByPendingEventURL,
+               AttributionResult(const GURL& event_url,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
 };
@@ -203,8 +221,6 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    ASSERT_TRUE(profile()->CreateHistoryService(true /* delete_file */,
-                                                false /* no_db */));
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -231,19 +247,24 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
   bool ReportWasSent() { return ui_manager_->ReportWasSent(); }
 
  protected:
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
+  }
+
   void InitResource(SBThreatType threat_type,
                     ThreatSource threat_source,
                     bool is_subresource,
                     const GURL& url,
                     UnsafeResource* resource) {
+    const content::GlobalRenderFrameHostId primary_main_frame_id =
+        web_contents()->GetMainFrame()->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
-    resource->web_contents_getter =
-        SafeBrowsingUIManager::UnsafeResource::GetWebContentsGetter(
-            web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            web_contents()->GetMainFrame()->GetRoutingID());
+    resource->render_process_id = primary_main_frame_id.child_id;
+    resource->render_frame_id = primary_main_frame_id.frame_routing_id;
   }
 
   void VerifyResults(const ClientSafeBrowsingReportRequest& report_pb,
@@ -369,7 +390,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     history_service()->AddPage(url, base::Time::Now(),
                                reinterpret_cast<history::ContextID>(1), 0,
                                GURL(), *redirects, ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED, false);
+                               history::SOURCE_BROWSED, false, false);
   }
 
   void WriteCacheEntry(const std::string& url,
@@ -425,9 +446,9 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
-  // Note that the referrer policy is not actually enacted here, since that's
-  // done in Blink.
-  expected.set_referrer_url(kReferrerURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -440,7 +461,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(kReferrerURL);
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   VerifyResults(actual, expected);
 }
@@ -483,9 +504,9 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
-  // Note that the referrer policy is not actually enacted here, since that's
-  // done in Blink.
-  expected.set_referrer_url(kReferrerURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -498,7 +519,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(kReferrerURL);
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   // Make sure the referrer chain returned by the provider is copied into the
   // resulting proto.
@@ -513,7 +534,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResourceWithOriginalUrl) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_PHISHING, ThreatSource::DATA_SAVER,
+  InitResource(SB_THREAT_TYPE_URL_PHISHING, ThreatSource::LOCAL_PVER4,
                true /* is_subresource */, GURL(kThreatURL), &resource);
   resource.original_url = GURL(kOriginalLandingURL);
 
@@ -531,7 +552,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResourceWithOriginalUrl) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::FLYWHEEL);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
@@ -563,7 +584,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_UNWANTED, ThreatSource::LOCAL_PVER3,
+  InitResource(SB_THREAT_TYPE_URL_UNWANTED, ThreatSource::LOCAL_PVER4,
                true /* is_subresource */, GURL(kThreatURL), &resource);
 
   auto report = std::make_unique<ThreatDetailsWrap>(
@@ -597,7 +618,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_UNWANTED);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::PVER3_NATIVE);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
@@ -970,8 +991,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_element->mutable_attribute(0)->set_value(kDOMChildUrl2);
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_UNWANTED,
-               ThreatSource::PASSWORD_PROTECTION_SERVICE,
+  InitResource(SB_THREAT_TYPE_URL_UNWANTED, ThreatSource::CLIENT_SIDE_DETECTION,
                true /* is_subresource */, GURL(kThreatURL), &resource);
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
@@ -1505,9 +1525,9 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
-  // Note that the referrer policy is not actually enacted here, since that's
-  // done in Blink.
-  expected.set_referrer_url(kReferrerURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -1520,7 +1540,7 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(kReferrerURL);
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   VerifyResults(actual, expected);
 }
@@ -1530,6 +1550,9 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
   // https://crbug.com/524208.)
   EXPECT_EQ(nullptr, controller().GetLastCommittedEntry());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
+
+  // Initiate the connection to a (pretend) renderer process.
+  NavigateAndCommit(GURL("about:blank"));
 
   // Simulate a subresource malware hit (this could happen if the WebContents
   // was created with window.open, and had content injected into it).
@@ -1642,7 +1665,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   VerifyResults(actual, expected);
 }
 
-// Test that only some fields of the HTTPS resource (eg: whitelisted headers)
+// Test that only some fields of the HTTPS resource (eg: allowlisted headers)
 // are reported.
 TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   content::WebContentsTester::For(web_contents())
@@ -1702,7 +1725,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   pb_response->set_remote_ip("1.2.3.4:80");
 
   // The threat URL is HTTP so the request and response are cleared (except for
-  // whitelisted headers and certain safe fields). Namely the firstline and body
+  // allowlisted headers and certain safe fields). Namely the firstline and body
   // are missing.
   pb_resource = expected.add_resources();
   pb_resource->set_id(1);
@@ -1727,7 +1750,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
 
   UnsafeResource resource;
   InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
-               ThreatSource::LOCAL_PVER3, true /* is_subresource */,
+               ThreatSource::LOCAL_PVER4, true /* is_subresource */,
                GURL(kThreatURL), &resource);
 
   auto report = std::make_unique<ThreatDetailsWrap>(
@@ -1760,7 +1783,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::PVER3_NATIVE);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
@@ -1795,7 +1818,7 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::LOCAL_PVER3,
+  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::LOCAL_PVER4,
                true /* is_subresource */, GURL(kThreatURL), &resource);
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
@@ -1818,7 +1841,7 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::PVER3_NATIVE);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");

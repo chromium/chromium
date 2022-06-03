@@ -5,18 +5,19 @@
 #include "components/autofill_assistant/browser/element_area.h"
 
 #include <algorithm>
-#include <map>
 #include <ostream>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -24,19 +25,11 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
 
-namespace autofill_assistant {
-
 // User-friendly RectF string representation for matchers.
-//
-// operator<< must not be in an anonymous namespace to be usable in all
-// matchers.
 std::string ToString(const RectF& rect) {
-  return base::StringPrintf("RectF(%2.2f, %2.2f, %2.2f, %2.2f)", rect.left,
-                            rect.top, rect.right, rect.bottom);
-}
-
-std::ostream& operator<<(std::ostream& out, const RectF& rectf) {
-  return out << ToString(rectf);
+  std::ostringstream stream;
+  stream << rect;
+  return stream.str();
 }
 
 namespace {
@@ -46,9 +39,26 @@ MATCHER_P4(MatchingRectF,
            top,
            right,
            bottom,
-           ToString(RectF{left, top, right, bottom})) {
+           ToString(RectF(left, top, right, bottom))) {
   if (abs(left - arg.left) < 0.01 && abs(top - arg.top) < 0.01 &&
-      abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01) {
+      abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01 &&
+      arg.full_width == false) {
+    return true;
+  }
+  *result_listener << arg;
+  return false;
+}
+
+MATCHER_P5(MatchingRectF,
+           left,
+           top,
+           right,
+           bottom,
+           full_width,
+           ToString(RectF(left, top, right, bottom, full_width))) {
+  if (abs(left - arg.left) < 0.01 && abs(top - arg.top) < 0.01 &&
+      abs(right - arg.right) < 0.01 && abs(bottom - arg.bottom) < 0.01 &&
+      full_width == arg.full_width) {
     return true;
   }
   *result_listener << arg;
@@ -65,6 +75,8 @@ MATCHER(EmptyRectF, "EmptyRectF") {
 
 ACTION(DoNothing) {}
 
+}  // namespace
+
 class ElementAreaTest : public testing::Test {
  protected:
   ElementAreaTest()
@@ -72,12 +84,15 @@ class ElementAreaTest : public testing::Test {
         element_area_(&delegate_) {
     delegate_.SetWebController(&mock_web_controller_);
     delegate_.GetMutableSettings()->element_position_update_interval =
-        base::TimeDelta::FromMilliseconds(100);
+        base::Milliseconds(100);
 
-    ON_CALL(mock_web_controller_, OnGetElementPosition(_, _))
-        .WillByDefault(RunOnceCallback<1>(false, RectF()));
-    ON_CALL(mock_web_controller_, OnGetVisualViewport(_))
-        .WillByDefault(RunOnceCallback<0>(true, RectF(0, 0, 200, 400)));
+    test_util::MockFindAnyElement(mock_web_controller_);
+    ON_CALL(mock_web_controller_, GetElementRect(_, _))
+        .WillByDefault(
+            RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
+    ON_CALL(mock_web_controller_, GetVisualViewport(_))
+        .WillByDefault(
+            RunOnceCallback<0>(OkClientStatus(), RectF(0, 0, 200, 400)));
 
     element_area_.SetOnUpdate(base::BindRepeating(&ElementAreaTest::OnUpdate,
                                                   base::Unretained(this)));
@@ -90,9 +105,11 @@ class ElementAreaTest : public testing::Test {
   void SetElement(const std::string& selector, bool restricted) {
     ElementAreaProto area;
     auto* rectangle = restricted ? area.add_restricted() : area.add_touchable();
-    rectangle->add_elements()->add_selectors(selector);
+    *rectangle->add_elements() = ToSelectorProto(selector);
     element_area_.SetFromProto(area);
   }
+
+  void Update() { element_area_.Update(); }
 
   void OnUpdate(const RectF& visual_viewport,
                 const std::vector<RectF>& touchable_area,
@@ -122,10 +139,6 @@ TEST_F(ElementAreaTest, Empty) {
   std::vector<RectF> rectangles;
   element_area_.GetTouchableRectangles(&rectangles);
   EXPECT_THAT(rectangles, IsEmpty());
-
-  RectF viewport;
-  element_area_.GetVisualViewport(&viewport);
-  EXPECT_THAT(viewport, EmptyRectF());
 }
 
 TEST_F(ElementAreaTest, ElementNotFound) {
@@ -137,17 +150,13 @@ TEST_F(ElementAreaTest, ElementNotFound) {
   EXPECT_THAT(rectangles, ElementsAre(EmptyRectF()));
 }
 
-TEST_F(ElementAreaTest, GetVisualViewport) {
-  SetElement("#some_element");
-  RectF viewport;
-  element_area_.GetVisualViewport(&viewport);
-  EXPECT_THAT(viewport, MatchingRectF(0, 0, 200, 400));
-}
-
 TEST_F(ElementAreaTest, OneRectangle) {
+  Selector expected_selector({"#found"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
   std::vector<RectF> rectangles;
@@ -156,9 +165,12 @@ TEST_F(ElementAreaTest, OneRectangle) {
 }
 
 TEST_F(ElementAreaTest, CallOnUpdate) {
+  Selector expected_selector({"#found"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
   EXPECT_EQ(on_update_call_count_, 1);
@@ -166,47 +178,43 @@ TEST_F(ElementAreaTest, CallOnUpdate) {
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(25, 25, 75, 75)));
 }
 
-TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
-  // Swallowing calls to OnGetVisualViewport guarantees that the viewport
-  // position will never be known.
-  EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
-      .WillOnce(DoNothing());
+TEST_F(ElementAreaTest, CallOnUpdateAfterSetFromProto) {
+  Selector expected_selector({"#found"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(Eq(Selector({"#found"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector, 2)),
+                             _))
+      .Times(2)
+      .WillRepeatedly(
+          RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#found");
-  EXPECT_EQ(on_update_call_count_, 0);
-}
-
-TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
-  EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
-      .WillRepeatedly(RunOnceCallback<0>(false, RectF()));
-
-  SetElement("#found");
-
-  // A newly empty element area should be reported.
-  on_update_call_count_ = 0;
-  element_area_.Clear();
-
   EXPECT_EQ(on_update_call_count_, 1);
-  EXPECT_THAT(reported_visual_viewport_, EmptyRectF());
-  EXPECT_THAT(reported_area_, IsEmpty());
+  SetElement("#found");
+  EXPECT_EQ(on_update_call_count_, 2);
 }
 
 TEST_F(ElementAreaTest, TwoRectangles) {
+  Selector expected_selector_top_left({"#top_left"});
+  Selector expected_selector_bottom_right({"#bottom_right"});
+
   EXPECT_CALL(
       mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#top_left"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 0, 25, 25)));
+      GetElementRect(EqualsElement(test_util::MockFindElement(
+                         mock_web_controller_, expected_selector_top_left)),
+                     _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 0, 25, 25)));
   EXPECT_CALL(
       mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#bottom_right"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 100, 100)));
+      GetElementRect(EqualsElement(test_util::MockFindElement(
+                         mock_web_controller_, expected_selector_bottom_right)),
+                     _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 100, 100)));
 
   ElementAreaProto area_proto;
-  area_proto.add_touchable()->add_elements()->add_selectors("#top_left");
-  area_proto.add_touchable()->add_elements()->add_selectors("#bottom_right");
+  *area_proto.add_touchable()->add_elements() = ToSelectorProto("#top_left");
+  *area_proto.add_touchable()->add_elements() =
+      ToSelectorProto("#bottom_right");
   element_area_.SetFromProto(area_proto);
 
   std::vector<RectF> rectangles;
@@ -216,19 +224,24 @@ TEST_F(ElementAreaTest, TwoRectangles) {
 }
 
 TEST_F(ElementAreaTest, OneRectangleTwoElements) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 3, 2, 4)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(5, 2, 6, 5)));
+  Selector expected_selector_1({"#element1"});
+  Selector expected_selector_2({"#element2"});
+
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 2, 6, 5)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
-  rectangle_proto->add_elements()->add_selectors("#element1");
-  rectangle_proto->add_elements()->add_selectors("#element2");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element1");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element2");
   element_area_.SetFromProto(area_proto);
 
   std::vector<RectF> rectangles;
@@ -237,22 +250,26 @@ TEST_F(ElementAreaTest, OneRectangleTwoElements) {
 }
 
 TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 3, 2, 4)));
+  Selector expected_selector_1({"#element1"});
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
 
   // Getting the position of #element2 neither succeeds nor fails, simulating an
   // intermediate state which shouldn't be reported to the callback.
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
+  Selector expected_selector_2({"#element2"});
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
       .WillOnce(DoNothing());  // overrides default action
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
-  rectangle_proto->add_elements()->add_selectors("#element1");
-  rectangle_proto->add_elements()->add_selectors("#element2");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element1");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element2");
   element_area_.SetFromProto(area_proto);
 
   EXPECT_THAT(reported_area_, IsEmpty());
@@ -263,29 +280,38 @@ TEST_F(ElementAreaTest, DoNotReportIncompleteRectangles) {
 }
 
 TEST_F(ElementAreaTest, OneRectangleFourElements) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 0, 1, 1)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(9, 9, 100, 100)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element3"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 9, 1, 100)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element4"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(9, 0, 100, 1)));
+  Selector expected_selector_1({"#element1"});
+  Selector expected_selector_2({"#element2"});
+  Selector expected_selector_3({"#element3"});
+  Selector expected_selector_4({"#element4"});
+
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 0, 1, 1)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(9, 9, 100, 100)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_3)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 9, 1, 100)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_4)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(9, 0, 100, 1)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
-  rectangle_proto->add_elements()->add_selectors("#element1");
-  rectangle_proto->add_elements()->add_selectors("#element2");
-  rectangle_proto->add_elements()->add_selectors("#element3");
-  rectangle_proto->add_elements()->add_selectors("#element4");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element1");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element2");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element3");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element4");
   element_area_.SetFromProto(area_proto);
 
   std::vector<RectF> rectangles;
@@ -294,19 +320,24 @@ TEST_F(ElementAreaTest, OneRectangleFourElements) {
 }
 
 TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 1, 2, 2)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(false, RectF()));
+  Selector expected_selector_1({"#element1"});
+  Selector expected_selector_2({"#element2"});
+
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 1, 2, 2)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
-  rectangle_proto->add_elements()->add_selectors("#element1");
-  rectangle_proto->add_elements()->add_selectors("#element2");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element1");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element2");
   element_area_.SetFromProto(area_proto);
 
   std::vector<RectF> rectangles;
@@ -317,39 +348,49 @@ TEST_F(ElementAreaTest, OneRectangleMissingElementsReported) {
 }
 
 TEST_F(ElementAreaTest, FullWidthRectangle) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(1, 3, 2, 4)));
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(5, 7, 6, 8)));
-  EXPECT_CALL(mock_web_controller_, OnGetVisualViewport(_))
-      .WillRepeatedly(RunOnceCallback<0>(true, RectF(100, 0, 200, 400)));
+  Selector expected_selector_1({"#element1"});
+  Selector expected_selector_2({"#element2"});
+
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_1)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(1, 3, 2, 4)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector_2)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(5, 7, 6, 8)));
 
   ElementAreaProto area_proto;
   auto* rectangle_proto = area_proto.add_touchable();
-  rectangle_proto->add_elements()->add_selectors("#element1");
-  rectangle_proto->add_elements()->add_selectors("#element2");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element1");
+  *rectangle_proto->add_elements() = ToSelectorProto("#element2");
   rectangle_proto->set_full_width(true);
   element_area_.SetFromProto(area_proto);
 
   std::vector<RectF> rectangles;
   element_area_.GetTouchableRectangles(&rectangles);
 
-  // left and right of the box come from the visual viewport, top from the 1st
-  // element, bottom from the 2nd.
-  EXPECT_THAT(rectangles, ElementsAre(MatchingRectF(100, 3, 200, 8)));
+  // left and top come from the 1st element, right and bottom from the 2nd.
+  EXPECT_THAT(rectangles, ElementsAre(MatchingRectF(1, 3, 6, 8, true)));
 }
 
 TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
   testing::InSequence seq;
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 25, 100, 50)))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 50, 100, 75)));
+
+  Selector expected_selector({"#element"});
+
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 25, 100, 50)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
 
   SetElement("#element");
 
@@ -358,7 +399,7 @@ TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
   EXPECT_THAT(original, ElementsAre(MatchingRectF(0, 25, 100, 50)));
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(0, 25, 100, 50)));
 
-  element_area_.Update();
+  Update();
 
   // Updated area is available
   std::vector<RectF> updated;
@@ -371,17 +412,30 @@ TEST_F(ElementAreaTest, ElementMovesAfterUpdate) {
 
 TEST_F(ElementAreaTest, ElementMovesWithTime) {
   testing::InSequence seq;
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnGetElementPosition(Eq(Selector({"#element"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(0, 25, 100, 50)))
-      .WillRepeatedly(RunOnceCallback<1>(true, RectF(0, 50, 100, 75)));
+
+  Selector expected_selector({"#element"});
+
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 25, 100, 50)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(0, 50, 100, 75)));
 
   SetElement("#element");
 
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(0, 25, 100, 50)));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 
   // Updated area is available
   std::vector<RectF> rectangles;
@@ -390,13 +444,21 @@ TEST_F(ElementAreaTest, ElementMovesWithTime) {
 
   // Updated area is reported
   EXPECT_THAT(reported_area_, ElementsAre(MatchingRectF(0, 50, 100, 75)));
+  EXPECT_THAT(on_update_call_count_, 2);
+
+  // No update if the element's position has not changed.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_THAT(on_update_call_count_, 2);
 }
 
 TEST_F(ElementAreaTest, RestrictedElement) {
+  Selector expected_selector({"#restricted_element"});
+
   EXPECT_CALL(mock_web_controller_,
-              OnGetElementPosition(
-                  Eq(Selector({"#restricted_element"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(true, RectF(25, 25, 75, 75)));
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
 
   SetElement("#restricted_element", /* restricted= */ true);
 
@@ -414,5 +476,37 @@ TEST_F(ElementAreaTest, RestrictedElement) {
   EXPECT_THAT(restricted_rectangles,
               ElementsAre(MatchingRectF(25, 25, 75, 75)));
 }
-}  // namespace
+
+TEST_F(ElementAreaTest, DontCallOnUpdateWhenViewportMissing) {
+  Selector expected_selector({"#found"});
+
+  // Swallowing calls to GetVisualViewport guarantees that the viewport
+  // position will never be known.
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_)).WillOnce(DoNothing());
+  EXPECT_CALL(mock_web_controller_,
+              GetElementRect(EqualsElement(test_util::MockFindElement(
+                                 mock_web_controller_, expected_selector)),
+                             _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), RectF(25, 25, 75, 75)));
+
+  SetElement("#found");
+  EXPECT_EQ(on_update_call_count_, 0);
+}
+
+TEST_F(ElementAreaTest, CallOnUpdateWhenViewportMissingAndEmptyRect) {
+  EXPECT_CALL(mock_web_controller_, GetVisualViewport(_))
+      .WillRepeatedly(
+          RunOnceCallback<0>(ClientStatus(UNEXPECTED_JS_ERROR), RectF()));
+
+  SetElement("#found");
+
+  // A newly empty element area should be reported.
+  on_update_call_count_ = 0;
+  element_area_.Clear();
+
+  EXPECT_EQ(on_update_call_count_, 1);
+  EXPECT_THAT(reported_visual_viewport_, EmptyRectF());
+  EXPECT_THAT(reported_area_, IsEmpty());
+}
+
 }  // namespace autofill_assistant

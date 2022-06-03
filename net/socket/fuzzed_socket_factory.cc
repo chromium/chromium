@@ -6,7 +6,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -28,6 +28,10 @@ namespace {
 class FailingSSLClientSocket : public SSLClientSocket {
  public:
   FailingSSLClientSocket() = default;
+
+  FailingSSLClientSocket(const FailingSSLClientSocket&) = delete;
+  FailingSSLClientSocket& operator=(const FailingSSLClientSocket&) = delete;
+
   ~FailingSSLClientSocket() override = default;
 
   // Socket implementation:
@@ -98,10 +102,14 @@ class FailingSSLClientSocket : public SSLClientSocket {
     return 0;
   }
 
+  // SSLClientSocket implementation:
+  std::vector<uint8_t> GetECHRetryConfigs() override {
+    NOTREACHED();
+    return {};
+  }
+
  private:
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingSSLClientSocket);
 };
 
 }  // namespace
@@ -123,6 +131,7 @@ std::unique_ptr<TransportClientSocket>
 FuzzedSocketFactory::CreateTransportClientSocket(
     const AddressList& addresses,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
     const NetLogSource& source) {
   std::unique_ptr<FuzzedSocket> socket(

@@ -8,6 +8,8 @@ import android.graphics.Rect;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.UnguessableToken;
+
 import java.util.Arrays;
 
 /**
@@ -17,7 +19,7 @@ import java.util.Arrays;
  * Optionally, a frame can have other frames (iframes) as its children. or sub-frames.
  */
 class PaintPreviewFrame {
-    private long mGuid;
+    private UnguessableToken mGuid;
     // The content size of this frame. In native, this is represented as 'scroll extent'.
     private int mContentWidth;
     private int mContentHeight;
@@ -25,18 +27,27 @@ class PaintPreviewFrame {
     private PaintPreviewFrame[] mSubFrames;
     // The coordinates of the sub-frames relative to this frame.
     private Rect[] mSubFrameClips;
+    // The initial scroll position of this frame.
+    private int mInitialScrollX;
+    private int mInitialScrollY;
 
-    PaintPreviewFrame(long guid, int contentWidth, int contentHeight) {
+    PaintPreviewFrame(UnguessableToken guid, int contentWidth, int contentHeight,
+            int initialScrollX, int initialScrollY) {
         mGuid = guid;
         mContentWidth = contentWidth;
         mContentHeight = contentHeight;
+        mInitialScrollX = initialScrollX;
+        mInitialScrollY = initialScrollY;
     }
 
-    private PaintPreviewFrame(long guid, int contentWidth, int contentHeight,
-            PaintPreviewFrame[] subFrames, Rect[] subFrameClips) {
+    private PaintPreviewFrame(UnguessableToken guid, int contentWidth, int contentHeight,
+            int initialScrollX, int initialScrollY, PaintPreviewFrame[] subFrames,
+            Rect[] subFrameClips) {
         mGuid = guid;
         mContentWidth = contentWidth;
         mContentHeight = contentHeight;
+        mInitialScrollX = initialScrollX;
+        mInitialScrollY = initialScrollY;
         mSubFrames = subFrames;
         mSubFrameClips = subFrameClips;
     }
@@ -49,7 +60,7 @@ class PaintPreviewFrame {
         mSubFrameClips = subFrameClips;
     }
 
-    long getGuid() {
+    UnguessableToken getGuid() {
         return mGuid;
     }
 
@@ -61,6 +72,14 @@ class PaintPreviewFrame {
         return mContentHeight;
     }
 
+    int getInitialScrollX() {
+        return mInitialScrollX;
+    }
+
+    int getInitialScrollY() {
+        return mInitialScrollY;
+    }
+
     PaintPreviewFrame[] getSubFrames() {
         return mSubFrames;
     }
@@ -69,12 +88,36 @@ class PaintPreviewFrame {
         return mSubFrameClips;
     }
 
+    /**
+     *
+     * @param checkDirectChildren Should direct children of this frame be considered.
+     * @return Whether this frame has any scrollable descendants.
+     */
+    boolean hasScrollableDescendants(boolean checkDirectChildren) {
+        if (mSubFrameClips == null || mSubFrames == null) {
+            return false;
+        }
+
+        for (int i = 0; i < mSubFrames.length; i++) {
+            PaintPreviewFrame subFrame = mSubFrames[i];
+            Rect subFrameClip = mSubFrameClips[i];
+            if (checkDirectChildren) {
+                if (subFrame.mContentWidth > subFrameClip.width()
+                        || subFrame.mContentHeight > subFrameClip.height()) {
+                    return true;
+                }
+            }
+            if (subFrame.hasScrollableDescendants(true)) return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) return false;
 
         PaintPreviewFrame other = (PaintPreviewFrame) obj;
-        if (this.mGuid != other.mGuid) return false;
+        if (!this.mGuid.equals(other.mGuid)) return false;
 
         if (this.mContentHeight != other.mContentHeight) return false;
 
@@ -104,8 +147,10 @@ class PaintPreviewFrame {
     }
 
     @VisibleForTesting
-    static PaintPreviewFrame createInstanceForTest(long guid, int contentWidth, int contentHeight,
+    static PaintPreviewFrame createInstanceForTest(UnguessableToken guid, int contentWidth,
+            int contentHeight, int initialScrollX, int initialScrollY,
             PaintPreviewFrame[] subFrames, Rect[] subFrameClips) {
-        return new PaintPreviewFrame(guid, contentWidth, contentHeight, subFrames, subFrameClips);
+        return new PaintPreviewFrame(guid, contentWidth, contentHeight, initialScrollX,
+                initialScrollY, subFrames, subFrameClips);
     }
 }

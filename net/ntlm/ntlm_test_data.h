@@ -13,8 +13,8 @@
 // [2] https://blogs.msdn.microsoft.com/openspecification/2013/03/26/ntlm-and-
 //         channel-binding-hash-aka-extended-protection-for-authentication/
 
-#ifndef NET_BASE_NTLM_TEST_DATA_H_
-#define NET_BASE_NTLM_TEST_DATA_H_
+#ifndef NET_NTLM_NTLM_TEST_DATA_H_
+#define NET_NTLM_NTLM_TEST_DATA_H_
 
 #include "net/ntlm/ntlm_constants.h"
 
@@ -23,17 +23,15 @@ namespace ntlm {
 namespace test {
 
 // Common input values defined in [MS-NLMP] Section 4.2.1.
-constexpr base::char16 kPassword[] = {'P', 'a', 's', 's', 'w',
-                                      'o', 'r', 'd', '\0'};
-constexpr base::char16 kNtlmDomain[] = {'D', 'o', 'm', 'a', 'i', 'n', '\0'};
+constexpr char16_t kPassword[] = {'P', 'a', 's', 's', 'w', 'o', 'r', 'd', '\0'};
+constexpr char16_t kNtlmDomain[] = {'D', 'o', 'm', 'a', 'i', 'n', '\0'};
 constexpr uint8_t kNtlmDomainRaw[] = {'D', 0x00, 'o', 0x00, 'm', 0x00,
                                       'a', 0x00, 'i', 0x00, 'n', 0x00};
-constexpr base::char16 kUser[] = {'U', 's', 'e', 'r', '\0'};
-constexpr base::char16 kDomainUserCombined[] = {'D',  'o', 'm', 'a', 'i', 'n',
-                                                '\\', 'U', 's', 'e', 'r', '\0'};
-constexpr base::char16 kHostname[] = {'C', 'O', 'M', 'P', 'U',
-                                      'T', 'E', 'R', '\0'};
-constexpr base::char16 kServer[] = {'S', 'e', 'r', 'v', 'e', 'r', '\0'};
+constexpr char16_t kUser[] = {'U', 's', 'e', 'r', '\0'};
+constexpr char16_t kDomainUserCombined[] = {'D',  'o', 'm', 'a', 'i', 'n',
+                                            '\\', 'U', 's', 'e', 'r', '\0'};
+constexpr char16_t kHostname[] = {'C', 'O', 'M', 'P', 'U', 'T', 'E', 'R', '\0'};
+constexpr char16_t kServer[] = {'S', 'e', 'r', 'v', 'e', 'r', '\0'};
 constexpr uint8_t kServerRaw[] = {'S', 0x00, 'e', 0x00, 'r', 0x00,
                                   'v', 0x00, 'e', 0x00, 'r', 0x00};
 
@@ -43,7 +41,7 @@ constexpr char kUserAscii[] = "User";
 constexpr char kHostnameAscii[] = "COMPUTER";
 
 // Test data obtained from [2].
-constexpr char kChannelBindings[] = {
+constexpr uint8_t kChannelBindings[] = {
     't',  'l',  's',  '-',  's',  'e',  'r',  'v',  'e',  'r',  '-',
     'e',  'n',  'd',  '-',  'p',  'o',  'i',  'n',  't',  ':',  0xea,
     0x05, 0xfe, 0xfe, 0xcc, 0x6b, 0x0b, 0xd5, 0x71, 0xdb, 0xbc, 0x5b,
@@ -572,4 +570,4 @@ constexpr uint8_t kExpectedAuthenticateMsgEmptyChannelBindingsV2[] = {
 }  // namespace ntlm
 }  // namespace net
 
-#endif  // NET_BASE_NTLM_TEST_DATA_H_
+#endif  // NET_NTLM_NTLM_TEST_DATA_H_

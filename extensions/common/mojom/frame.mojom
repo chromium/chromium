@@ -1,0 +1,140 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "extensions/common/mojom/code_injection.mojom";
+import "extensions/common/mojom/host_id.mojom";
+import "extensions/common/mojom/injection_type.mojom";
+import "extensions/common/mojom/run_location.mojom";
+import "extensions/common/mojom/view_type.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+
+// Allows an extension to execute code in a tab.
+struct ExecuteCodeParams {
+  // The ID of the requesting injection host.
+  HostID host_id;
+
+  // The CSS or JS to inject into the target.
+  CodeInjection injection;
+
+  // The webview guest source who calls to execute code.
+  url.mojom.Url webview_src;
+  // Whether to inject into about:blank (sub)frames.
+  bool match_about_blank;
+  // When to inject the code.
+  RunLocation run_at;
+  // Whether the request is coming from a <webview>.
+  bool is_web_view;
+};
+
+// Parameters structure for LocalFrameHost.Request().
+struct RequestParams {
+  // Message name.
+  string name;
+  // List of message arguments.
+  mojo_base.mojom.ListValue arguments;
+  // Extension ID this request was sent from. This can be empty, in the case
+  // where we expose APIs to normal web pages using the extension function
+  // system.
+  string extension_id;
+  // URL of the frame the request was sent from. This isn't necessarily an
+  // extension url. Extension requests can also originate from content scripts,
+  // in which case extension_id will indicate the ID of the associated
+  // extension. Or, they can originate from hosted apps or normal web pages.
+  url.mojom.Url source_url;
+  // Unique request id to match requests and responses.
+  int32 request_id;
+  // True if request has a callback specified.
+  bool has_callback;
+  // True if request is executed in response to an explicit user gesture.
+  bool user_gesture;
+  // If this API call is for a service worker, then this is the worker thread
+  // id. Otherwise, this is kMainThreadId.
+  int32 worker_thread_id;
+  // If this API call is for a service worker, then this is the service
+  // worker version id. Otherwise, this is set to
+  // blink::mojom::kInvalidServiceWorkerVersionId.
+  int64 service_worker_version_id;
+};
+
+// Implemented in the renderer, this interface defines the local frame specific
+// methods.
+interface LocalFrame {
+  // Sets the top-level frame to the provided name.
+  SetFrameName(string frame_name);
+
+  // Enables or disables spatial navigation.
+  SetSpatialNavigationEnabled(bool spatial_nav_enabled);
+
+  // Tells the render view what its tab ID is.
+  SetTabId(int32 tab_id);
+
+  // Notifies the renderer that its window has closed.
+  AppWindowClosed(bool send_onclosed);
+
+  // Tells the renderer which type this view is.
+  NotifyRenderViewType(ViewType view_type);
+
+  // Asks the renderer to invoke |function_name| with |args| in |module_name|.
+  // If |extension_id| is non-empty, the function will be invoked only in
+  // contexts owned by the extension. |args| is a list of primitive Value types
+  // that are passed to the function.
+  MessageInvoke(string extension_id,
+                string module_name,
+                string function_name,
+                mojo_base.mojom.ListValue args);
+
+  // Notifies the renderer that it should run some JavaScript code. The reply
+  // is sent back to the browser to return the script running result. An empty
+  // |error| implies success. |url| is the URL that the code executed on. It may
+  // be empty if it's unsuccessful. We use an optional for |result| to
+  // differentiate between no result (such as in the case of an error) and a
+  // null result.
+  ExecuteCode(ExecuteCodeParams param) =>
+      (string error, url.mojom.Url url, mojo_base.mojom.Value? result);
+
+  // Trigger to execute declarative content script under browser control.
+  ExecuteDeclarativeScript(int32 tab_id,
+                           string extension_id,
+                           string script_id,
+                           url.mojom.Url url);
+};
+
+// Implemented in the browser, this interface defines the local frame host
+// specific methods.
+interface LocalFrameHost {
+  // Requests permission for a script injection from the renderer to the
+  // browser.
+  // The reply is sent back to the renderer with |granted| for granting
+  // permission for a script to run. If |granted| is false, the permission
+  // should not be handled.
+  RequestScriptInjectionPermission(string extension_id,
+                      InjectionType script_type,
+                      RunLocation run_location) => (bool granted);
+
+  // Gets the install state for the app when a web page is checking if its app
+  // is installed. The reply is sent back to the renderer with |state|.
+  GetAppInstallState(url.mojom.Url url) => (string state);
+
+  // Sends an extension API request to the browser.
+  // The reply is sent back to the renderer with the response data (if any) is
+  // one of the base::Value types, wrapped as the first element in a LIST
+  // typed Value.
+  [UnlimitedSize]
+  Request(RequestParams params) => (bool success,
+                                    mojo_base.mojom.ListValue response_wrapper,
+                                    string error);
+  // Notifies the browser process that a tab has started or stopped matching
+  // certain conditions.  This method is called by response to several events:
+  //
+  // * The WatchPages Mojo method was called, updating the set of
+  // * conditions. A new page is loaded.  This will be invoked after
+  //   mojom::FrameHost::DidCommitProvisionalLoad. Currently this only fires for
+  //   the main frame.
+  // * Something changed on an existing frame causing the set of matching
+  //   searches to change.
+  WatchedPageChange(array<string> css_selectors);
+};

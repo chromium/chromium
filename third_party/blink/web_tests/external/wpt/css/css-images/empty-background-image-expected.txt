@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Empty url shouldn't try to load a subresource. assert_not_equals: Shouldn't have tried to request ourselves as a subresource got disallowed value "http://web-platform.test:8001/css/css-images/empty-background-image.html"
+Harness: the test ran to completion.
+

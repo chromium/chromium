@@ -1,43 +1,12 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../controls/controlled_button.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="chrome_cleanup_proxy.html">
-<link rel="import" href="items_to_remove_list.html">
-
-<dom-module id="settings-chrome-cleanup-page">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared iron-flex">
       #status-title {
         font-weight: 500;
       }
 
       #waiting-spinner {
         flex-shrink: 0;
-        height: 20px;
-        width: 20px;
-      }
-
-      #powered-by-settings-box {
-        min-height: 1em;
-      }
-
-      #powered-by-container {
-        align-items: center;
-        display: flex;
-        min-height: var(--settings-row-min-height);
-        width: 100%;
+        height: 2.0em;
+        width: 2.0em;
       }
 
       /* Apply a fixed height to the <svg> tag inside #powered-by-logo.
@@ -46,8 +15,8 @@
         height: 22px;
       }
     </style>
-    <div class="settings-box first">
-      <div class="start">
+    <div class="cr-row first">
+      <div class="flex">
         <div id="status-title" role="status" inner-h-t-m-l="[[title_]]"></div>
         <div hidden="[[!showExplanation_]]">
           <span class="secondary">[[explanation_]]</span>
@@ -66,7 +35,7 @@
         </cr-button>
       </template>
     </div>
-    <div class="settings-box continuation">
+    <div class="cr-row continuation">
       <settings-checkbox hidden="[[!showLogsPermission_]]"
           id="chromeCleanupLogsUploadControl"
           sub-label="$i18n{chromeCleanupExplanationLogsPermissionPref}"
@@ -75,8 +44,8 @@
       </settings-checkbox>
     </div>
     <cr-expand-button
-        alt="[[showItemsLinkLabel_]]"
-        class="settings-box"
+        aria-label="[[showItemsLinkLabel_]]"
+        class="cr-row"
         expanded="{{itemsToRemoveSectionExpanded_}}"
         hidden="[[!showItemsToRemove_]]"
         id="show-items-button">
@@ -98,25 +67,13 @@
           items-to-show="[[
               getListEntriesFromStrings_(scannerResults_.registryKeys)]]">
       </items-to-remove-list>
-      <items-to-remove-list
-          id="extensions-list"
-          hidden="[[!hasExtensionsToShow_]]"
-          title="$i18n{chromeCleanupDetailsExtensions}"
-          items-to-show="[[
-              getListEntriesFromStrings_(scannerResults_.extensions)]]">
-      </items-to-remove-list>
-      <div class="settings-box continuation">
+      <div class="cr-row continuation">
         <div class="secondary">
           $i18nRaw{chromeCleanupDetailsExplanation}
         </div>
       </div>
-      <div id="powered-by-settings-box" class="settings-box continuation">
-        <div id="powered-by-container" class="secondary"
-            hidden="[[!isPoweredByPartner_]]">
-          $i18nRaw{chromeCleanupPoweredByHtml}
-        </div>
+      <div id="powered-by" class="cr-row continuation"
+          hidden="[[!isPoweredByPartner_]]">
+        $i18nRaw{chromeCleanupPoweredByHtml}
       </div>
     </iron-collapse>
-  </template>
-  <script src="chrome_cleanup_page.js"></script>
-</dom-module>

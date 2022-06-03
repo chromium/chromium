@@ -4,6 +4,7 @@
     <title>About Cryptohome</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <script src="chrome://resources/js/assert.js"></script>
     <script src="chrome://resources/js/util.js"></script>
     <script src="chrome://cryptohome/cryptohome.js"></script>
   </head>
@@ -30,13 +31,13 @@
         <td id="tpm-is-owned"></td>
       </tr>
       <tr>
-        <td>TpmIsBeingOwned</td>
-        <td id="tpm-is-being-owned"></td>
-      </tr>
-      <tr>
         <td>Pkcs11IsTpmTokenReady</td>
         <td id="pkcs11-is-tpm-token-ready"></td>
-    </tr>
+      </tr>
+      <tr>
+        <td>HasResetLockPermissions</td>
+        <td id="has-reset-lock-permissions"></td>
+      </tr>
     </table>
     <h3>crypto:</h3>
     <table>

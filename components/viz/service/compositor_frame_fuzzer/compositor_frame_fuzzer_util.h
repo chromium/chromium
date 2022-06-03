@@ -50,7 +50,7 @@ struct FuzzedData {
 // If necessary, performs minimal correction to ensure submission to a
 // CompositorFrameSink will not cause validation errors on deserialization.
 FuzzedData BuildFuzzedCompositorFrame(
-    const proto::RenderPass& render_pass_spec);
+    const proto::CompositorRenderPass& render_pass_spec);
 
 }  // namespace viz
 

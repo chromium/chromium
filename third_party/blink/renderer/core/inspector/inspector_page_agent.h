@@ -31,11 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Page.h"
+#include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -84,10 +83,10 @@ class CORE_EXPORT InspectorPageAgent final
     kWebSocketResource,
     kManifestResource,
     kSignedExchangeResource,
+    kPingResource,
     kOtherResource
   };
 
-  static HeapVector<Member<Document>> ImportsForFrame(LocalFrame*);
   static bool CachedResourceContent(const Resource*,
                                     String* result,
                                     bool* base64_encoded);
@@ -105,6 +104,8 @@ class CORE_EXPORT InspectorPageAgent final
                      Client*,
                      InspectorResourceContentLoader*,
                      v8_inspector::V8InspectorSession*);
+  InspectorPageAgent(const InspectorPageAgent&) = delete;
+  InspectorPageAgent& operator=(const InspectorPageAgent&) = delete;
 
   // Page API for frontend
   protocol::Response enable() override;
@@ -116,6 +117,7 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response addScriptToEvaluateOnNewDocument(
       const String& source,
       Maybe<String> world_name,
+      Maybe<bool> include_command_line_api,
       String* identifier) override;
   protocol::Response removeScriptToEvaluateOnNewDocument(
       const String& identifier) override;
@@ -141,6 +143,15 @@ class CORE_EXPORT InspectorPageAgent final
                                         const String& html) override;
   protocol::Response setBypassCSP(bool enabled) override;
 
+  protocol::Response getPermissionsPolicyState(
+      const String& frame_id,
+      std::unique_ptr<
+          protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>*)
+      override;
+  protocol::Response getOriginTrials(
+      const String& frame_id,
+      std::unique_ptr<protocol::Array<protocol::Page::OriginTrial>>*) override;
+
   protocol::Response startScreencast(Maybe<String> format,
                                      Maybe<int> quality,
                                      Maybe<int> max_width,
@@ -148,9 +159,12 @@ class CORE_EXPORT InspectorPageAgent final
                                      Maybe<int> every_nth_frame) override;
   protocol::Response stopScreencast() override;
   protocol::Response getLayoutMetrics(
-      std::unique_ptr<protocol::Page::LayoutViewport>*,
-      std::unique_ptr<protocol::Page::VisualViewport>*,
-      std::unique_ptr<protocol::DOM::Rect>*) override;
+      std::unique_ptr<protocol::Page::LayoutViewport>* out_layout_viewport,
+      std::unique_ptr<protocol::Page::VisualViewport>* out_visual_viewport,
+      std::unique_ptr<protocol::DOM::Rect>* out_content_size,
+      std::unique_ptr<protocol::Page::LayoutViewport>* out_css_layout_viewport,
+      std::unique_ptr<protocol::Page::VisualViewport>* out_css_visual_viewport,
+      std::unique_ptr<protocol::DOM::Rect>* out_css_content_size) override;
   protocol::Response createIsolatedWorld(const String& frame_id,
                                          Maybe<String> world_name,
                                          Maybe<bool> grant_universal_access,
@@ -162,7 +176,9 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response generateTestReport(const String& message,
                                         Maybe<String> group) override;
 
-  protocol::Response setProduceCompilationCache(bool enabled) override;
+  protocol::Response produceCompilationCache(
+      std::unique_ptr<protocol::Array<protocol::Page::CompilationCacheParams>>
+          scripts) override;
   protocol::Response addCompilationCache(const String& url,
                                          const protocol::Binary& data) override;
   protocol::Response clearCompilationCache() override;
@@ -175,13 +191,16 @@ class CORE_EXPORT InspectorPageAgent final
   void DomContentLoadedEventFired(LocalFrame*);
   void LoadEventFired(LocalFrame*);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
+  void DidRestoreFromBackForwardCache(LocalFrame*);
+  void DidOpenDocument(LocalFrame*, DocumentLoader*);
   void FrameAttachedToParent(LocalFrame*);
-  void FrameDetachedFromParent(LocalFrame*);
+  void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameStartedLoading(LocalFrame*);
   void FrameStoppedLoading(LocalFrame*);
   void FrameRequestedNavigation(Frame* target_frame,
                                 const KURL&,
-                                ClientNavigationReason);
+                                ClientNavigationReason,
+                                NavigationPolicy);
   void FrameScheduledNavigation(LocalFrame*,
                                 const KURL&,
                                 base::TimeDelta delay,
@@ -200,15 +219,15 @@ class CORE_EXPORT InspectorPageAgent final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::RecalculateStyle&);
   void Did(const probe::RecalculateStyle&);
-  void WindowOpen(Document*,
-                  const String&,
+  void WindowOpen(const KURL&,
                   const AtomicString&,
                   const WebWindowFeatures&,
                   bool);
-  void ConsumeCompilationCache(const ScriptSourceCode& source,
-                               v8::ScriptCompiler::CachedData**);
-  void ProduceCompilationCache(const ScriptSourceCode& source,
-                               v8::Local<v8::Script> script);
+  void ApplyCompilationModeOverride(const ScriptSourceCode& source,
+                                    v8::ScriptCompiler::CachedData**,
+                                    v8::ScriptCompiler::CompileOptions*);
+  void DidProduceCompilationCache(const ScriptSourceCode& source,
+                                  v8::Local<v8::Script> script);
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,
                          bool* intercepted);
@@ -217,7 +236,7 @@ class CORE_EXPORT InspectorPageAgent final
   void Restore() override;
   bool ScreencastEnabled();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void GetResourceContentAfterResourcesContentLoaded(
@@ -247,6 +266,10 @@ class CORE_EXPORT InspectorPageAgent final
       LocalFrame*);
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, protocol::Binary> compilation_cache_;
+  // TODO(caseq): should this be stored as InspectorAgentState::StringMap
+  // instead? Current use cases do not require this, but we might eventually
+  // reconsider. Value is true iff eager compilation requested.
+  HashMap<String, bool> requested_compilation_cache_;
   using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
   v8_inspector::V8InspectorSession* v8_session_;
@@ -262,6 +285,8 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Boolean bypass_csp_enabled_;
   InspectorAgentState::StringMap scripts_to_evaluate_on_load_;
   InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
+  InspectorAgentState::BooleanMap
+      include_command_line_api_for_scripts_to_evaluate_on_load_;
   InspectorAgentState::String standard_font_family_;
   InspectorAgentState::String fixed_font_family_;
   InspectorAgentState::String serif_font_family_;
@@ -271,8 +296,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::String pictograph_font_family_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
-  InspectorAgentState::Boolean produce_compilation_cache_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorPageAgent);
 };
 
 }  // namespace blink

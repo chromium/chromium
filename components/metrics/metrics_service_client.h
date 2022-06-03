@@ -11,8 +11,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -26,6 +26,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace network_time {
+class NetworkTimeTracker;
+}
+
 namespace metrics {
 
 class MetricsLogUploader;
@@ -36,6 +40,10 @@ class MetricsService;
 class MetricsServiceClient {
  public:
   MetricsServiceClient();
+
+  MetricsServiceClient(const MetricsServiceClient&) = delete;
+  MetricsServiceClient& operator=(const MetricsServiceClient&) = delete;
+
   virtual ~MetricsServiceClient();
 
   // Returns the MetricsService instance that this client is associated with.
@@ -46,6 +54,10 @@ class MetricsServiceClient {
 
   // Returns the UkmService instance that this client is associated with.
   virtual ukm::UkmService* GetUkmService();
+
+  // Returns true if metrics should be uploaded for the given |user_id|, which
+  // corresponds to the |user_id| field in ChromeUserMetricsExtension.
+  virtual bool ShouldUploadMetricsForUserId(uint64_t user_id);
 
   // Registers the client id with other services (e.g. crash reporting), called
   // when metrics recording gets enabled.
@@ -59,12 +71,18 @@ class MetricsServiceClient {
   // Returns the current application locale (e.g. "en-US").
   virtual std::string GetApplicationLocale() = 0;
 
+  // Return a NetworkTimeTracker for access to a server-provided clock.
+  virtual const network_time::NetworkTimeTracker* GetNetworkTimeTracker() = 0;
+
   // Retrieves the brand code string associated with the install, returning
   // false if no brand code is available.
   virtual bool GetBrand(std::string* brand_code) = 0;
 
   // Returns the release channel (e.g. stable, beta, etc) of the application.
   virtual SystemProfileProto::Channel GetChannel() = 0;
+
+  // Returns true if the application is on the extended stable channel.
+  virtual bool IsExtendedStableChannel() = 0;
 
   // Returns the version of the application as a string.
   virtual std::string GetVersionString() = 0;
@@ -74,9 +92,6 @@ class MetricsServiceClient {
   // |serialized_environment| are consumed by the call, but the caller maintains
   // ownership.
   virtual void OnEnvironmentUpdate(std::string* serialized_environment) {}
-
-  // Called by the metrics service to record a clean shutdown.
-  virtual void OnLogCleanShutdown() {}
 
   // Called prior to a metrics log being closed, allowing the client to collect
   // extra histograms that will go in that log. Asynchronous API - the client
@@ -112,6 +127,9 @@ class MetricsServiceClient {
   // data.
   virtual bool ShouldStartUpFastForTesting() const;
 
+  // Called when loading state changed, e.g. start/stop loading.
+  virtual void LoadingStateChanged(bool is_loading) {}
+
   // Called on plugin loading errors.
   virtual void OnPluginLoadingError(const base::FilePath& plugin_path) {}
 
@@ -130,6 +148,10 @@ class MetricsServiceClient {
   // Returns whether cellular logic is enabled for metrics reporting.
   virtual bool IsUMACellularUploadLogicEnabled();
 
+  // Returns whether the allowlist for external experiment ids is enabled. Some
+  // embedders like WebLayer disable it. For Chrome, it should be enabled.
+  virtual bool IsExternalExperimentAllowlistEnabled();
+
   // Returns true iff UKM is allowed for all profiles.
   // See //components/ukm/observers/ukm_consent_state_observer.h for details.
   virtual bool IsUkmAllowedForAllProfiles();
@@ -146,14 +168,20 @@ class MetricsServiceClient {
   // string (this is the same as the default behavior). If the package name
   // should not be logged for privacy/fingerprintability reasons, the embedder
   // should return the empty string.
-  virtual std::string GetAppPackageName();
+  virtual std::string GetAppPackageNameIfLoggable();
 
   // Gets the key used to sign metrics uploads. This will be used to compute an
   // HMAC-SHA256 signature of an uploaded log.
   virtual std::string GetUploadSigningKey();
 
+  // Checks if the cloned install detector says that client ids should be reset.
+  virtual bool ShouldResetClientIdsOnClonedInstall();
+
+  // Specifies local log storage requirements and restrictions.
+  virtual MetricsLogStore::StorageLimits GetStorageLimits() const;
+
   // Sets the callback to run MetricsServiceManager::UpdateRunningServices.
-  void SetUpdateRunningServicesCallback(const base::Closure& callback);
+  void SetUpdateRunningServicesCallback(const base::RepeatingClosure& callback);
 
   // Notify MetricsServiceManager to UpdateRunningServices using callback.
   void UpdateRunningServices();
@@ -161,10 +189,23 @@ class MetricsServiceClient {
   // Checks if the user has forced metrics collection on via the override flag.
   bool IsMetricsReportingForceEnabled() const;
 
- private:
-  base::Closure update_running_services_;
+  // Initializes per-user metrics collection. For more details what per-user
+  // metrics collection is, refer to MetricsService::InitPerUserMetrics.
+  //
+  // Since the concept of a user is only applicable in Ash Chrome, this function
+  // should no-op for other platforms.
+  virtual void InitPerUserMetrics() {}
 
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceClient);
+  // Updates the current user's metrics consent. This allows embedders to update
+  // the user consent. If there is no current user, then this function will
+  // no-op.
+  //
+  // Since the concept of a user is only applicable on Ash Chrome, this function
+  // should no-op for other platforms.
+  virtual void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) {}
+
+ private:
+  base::RepeatingClosure update_running_services_;
 };
 
 }  // namespace metrics

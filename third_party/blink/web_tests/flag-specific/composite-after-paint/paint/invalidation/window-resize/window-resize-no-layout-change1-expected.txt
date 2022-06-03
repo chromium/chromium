@@ -4,7 +4,7 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [2008, 2016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#0000FF"
     }
   ]
 }
@@ -14,7 +14,7 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [2008, 2016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#0000FF"
     }
   ]
 }
@@ -24,7 +24,7 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [2008, 2016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#0000FF"
     }
   ]
 }
@@ -34,7 +34,7 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [2008, 2016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#0000FF"
     }
   ]
 }

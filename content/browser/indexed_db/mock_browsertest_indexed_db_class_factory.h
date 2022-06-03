@@ -13,10 +13,12 @@
 
 #include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
+#include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 
 namespace content {
@@ -30,26 +32,10 @@ class LevelDBSnapshot;
 class TransactionalLevelDBTransaction;
 class TransactionalLevelDBDatabase;
 
-enum FailClass {
-  FAIL_CLASS_NOTHING,
-  FAIL_CLASS_LEVELDB_ITERATOR,
-  FAIL_CLASS_LEVELDB_DIRECT_TRANSACTION,
-  FAIL_CLASS_LEVELDB_TRANSACTION,
-  FAIL_CLASS_LEVELDB_DATABASE,
-};
-
-enum FailMethod {
-  FAIL_METHOD_NOTHING,
-  FAIL_METHOD_COMMIT,
-  FAIL_METHOD_COMMIT_DISK_FULL,
-  FAIL_METHOD_GET,
-  FAIL_METHOD_SEEK,
-  FAIL_METHOD_WRITE,
-};
-
-class MockBrowserTestIndexedDBClassFactory
+class CONTENT_EXPORT MockBrowserTestIndexedDBClassFactory
     : public IndexedDBClassFactory,
-      public DefaultTransactionalLevelDBFactory {
+      public DefaultTransactionalLevelDBFactory,
+      public storage::mojom::MockFailureInjector {
  public:
   MockBrowserTestIndexedDBClassFactory();
   ~MockBrowserTestIndexedDBClassFactory() override;
@@ -58,7 +44,7 @@ class MockBrowserTestIndexedDBClassFactory
 
   std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
   CreateIndexedDBDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       TasksAvailableCallback tasks_available_callback,
@@ -90,18 +76,19 @@ class MockBrowserTestIndexedDBClassFactory
       base::WeakPtr<TransactionalLevelDBTransaction> txn,
       std::unique_ptr<LevelDBSnapshot> snapshot) override;
 
-  void FailOperation(FailClass failure_class,
-                     FailMethod failure_method,
+  void FailOperation(storage::mojom::FailClass failure_class,
+                     storage::mojom::FailMethod failure_method,
                      int fail_on_instance_num,
-                     int fail_on_call_num);
+                     int fail_on_call_num,
+                     base::OnceClosure callback) override;
   void Reset();
 
  private:
-  FailClass failure_class_;
-  FailMethod failure_method_;
-  std::map<FailClass, int> instance_count_;
-  std::map<FailClass, int> fail_on_instance_num_;
-  std::map<FailClass, int> fail_on_call_num_;
+  storage::mojom::FailClass failure_class_;
+  storage::mojom::FailMethod failure_method_;
+  std::map<storage::mojom::FailClass, int> instance_count_;
+  std::map<storage::mojom::FailClass, int> fail_on_instance_num_;
+  std::map<storage::mojom::FailClass, int> fail_on_call_num_;
   bool only_trace_calls_;
 };
 

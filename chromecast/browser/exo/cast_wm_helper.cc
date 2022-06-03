@@ -4,15 +4,17 @@
 
 #include "chromecast/browser/exo/cast_wm_helper.h"
 
+#include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
 #include "ui/aura/client/focus_client.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
-#include "ui/display/manager/display_configurator.h"
-#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -103,17 +105,25 @@ VSyncTimingManager& CastWMHelper::GetVSyncTimingManager() {
 
 void CastWMHelper::OnDragEntered(const ui::DropTargetEvent& event) {}
 
-int CastWMHelper::OnDragUpdated(const ui::DropTargetEvent& event) {
+aura::client::DragUpdateInfo CastWMHelper::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
   NOTIMPLEMENTED();
-  return 0;
+  return aura::client::DragUpdateInfo();
 }
 
 void CastWMHelper::OnDragExited() {}
 
-int CastWMHelper::OnPerformDrop(const ui::DropTargetEvent& event,
-                                std::unique_ptr<ui::OSExchangeData> data) {
+ui::mojom::DragOperation CastWMHelper::OnPerformDrop(
+    const ui::DropTargetEvent& event,
+    std::unique_ptr<ui::OSExchangeData> data) {
   NOTIMPLEMENTED();
-  return ui::DragDropTypes::DRAG_MOVE;
+  return ui::mojom::DragOperation::kMove;
+}
+
+WMHelper::DropCallback CastWMHelper::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  NOTIMPLEMENTED();
+  return base::NullCallback();
 }
 
 void CastWMHelper::AddVSyncParameterObserver(
@@ -195,13 +205,14 @@ double CastWMHelper::GetDefaultDeviceScaleFactor() const {
   return 1.0;
 }
 
-void CastWMHelper::SetImeBlocked(aura::Window* window, bool ime_blocked) {
+double CastWMHelper::GetDeviceScaleFactorForWindow(aura::Window* window) const {
   NOTIMPLEMENTED();
+  return 1.0;
 }
 
-bool CastWMHelper::IsImeBlocked(aura::Window* window) const {
+void CastWMHelper::SetDefaultScaleCancellation(
+    bool default_scale_cancellation) {
   NOTIMPLEMENTED();
-  return false;
 }
 
 WMHelper::LifetimeManager* CastWMHelper::GetLifetimeManager() {

@@ -1,0 +1,90 @@
+digraph {
+  newrank=true;
+  node [shape="box"];
+
+  CreateTypeface
+  -> matchFamilyStyle
+  -> matchFamily
+  -> FindFamilyName
+  -> CreateFamily
+  -> RuntimeClassInitialize
+  ;
+
+  matchFamilyStyle
+  -> matchStyle
+  -> GetFirstMatchingFont
+  -> LoadFamily
+  -> FontCollectionLoadFamily
+  -> CreateCustomFontCollection
+  -> CreateEnumeratorFromKey
+  ;
+
+  matchStyle [label="matchStyle\n99% of CreateTypeface", color=red];
+  CreateCustomFontCollection [label="CreateCustomFontCollection\n90% of CreateTypeface", color=red];
+  "FontCollectionBuilder::AddFontFiles" [label="FontCollectionBuilder::AddFontFiles\n50% of CreateTypeface", color=red];
+  CreateEnumeratorFromKey [label="CreateEnumeratorFromKey\n20% of CreateTypeface", color=red];
+
+  subgraph cluster_Renderer {
+    label = "Renderer";
+    subgraph cluster_FontCache {
+      label = "blink::FontCache";
+      CreateTypeface;
+    }
+
+    subgraph cluster_content_child {
+      label = "content/child";
+
+      subgraph cluster_DWriteFontCollectionProxy {
+        label = "DWriteFontCollectionProxy";
+        FindFamilyName;
+        CreateFamily;
+        FontCollectionLoadFamily [label="LoadFamily"];
+        CreateEnumeratorFromKey;
+      }
+
+      subgraph cluster_DWriteFontFamilyProxy {
+        label = "DWriteFontFamilyProxy";
+        RuntimeClassInitialize;
+        GetFirstMatchingFont;
+        LoadFamily;
+      }
+    }
+
+    subgraph cluster_Skia {
+      label = "Skia";
+
+      subgraph cluster_SkFontStyleSet {
+        label = "SkFontStyleSet";
+        matchStyle;
+      }
+
+      subgraph cluster_SkFontMgr {
+        label = "SkFontMgr";
+        matchFamily;
+        matchFamilyStyle;
+      }
+    }
+
+    subgraph cluster_DWriteInRenderer {
+      label = "DWrite";
+      CreateCustomFontCollection
+      -> "FontCollectionBuilder::AddFontFiles"
+      ;
+    }
+  }
+
+  subgraph cluster_Browser {
+    label = "Browser (ThreadPoolForegroundWorker)";
+    subgraph cluster_DWriteFontProxyImpl {
+      label = "DWriteFontProxyImpl";
+      FindFamilyName -> FindFamily;
+      CreateFamily -> GetFamilyCount [label="only once"];
+      CreateEnumeratorFromKey -> GetFontFiles;
+    }
+
+    subgraph cluster_DWriteInBrowser {
+      label = "DWrite";
+      "IDWriteFontCollection (System)";
+    }
+  }
+}

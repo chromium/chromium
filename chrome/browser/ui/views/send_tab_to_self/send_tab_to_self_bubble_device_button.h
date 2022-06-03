@@ -9,19 +9,25 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/views/hover_button.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace send_tab_to_self {
 
+class SendTabToSelfBubbleViewImpl;
 struct TargetDeviceInfo;
 
 // A button representing a device in share bubble. It is highlighted when
 // hovered.
 class SendTabToSelfBubbleDeviceButton : public HoverButton {
  public:
-  SendTabToSelfBubbleDeviceButton(views::ButtonListener* button_listener,
-                                  const TargetDeviceInfo& device_info,
-                                  int button_tag);
+  METADATA_HEADER(SendTabToSelfBubbleDeviceButton);
+  SendTabToSelfBubbleDeviceButton(SendTabToSelfBubbleViewImpl* bubble,
+                                  const TargetDeviceInfo& device_info);
+  SendTabToSelfBubbleDeviceButton(const SendTabToSelfBubbleDeviceButton&) =
+      delete;
+  SendTabToSelfBubbleDeviceButton& operator=(
+      const SendTabToSelfBubbleDeviceButton&) = delete;
   ~SendTabToSelfBubbleDeviceButton() override;
 
   const std::string& device_name() const { return device_name_; }
@@ -32,8 +38,6 @@ class SendTabToSelfBubbleDeviceButton : public HoverButton {
   std::string device_name_;
   std::string device_guid_;
   sync_pb::SyncEnums::DeviceType device_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBubbleDeviceButton);
 };
 
 }  // namespace send_tab_to_self

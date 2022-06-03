@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script>
+// With deferral enabled we can get a lot of resource thrash when intermediate
+// canvases and contexts are created, updated and drawn to a target canvas
+// multiple times in a tight loop.
+// See crbug.com/1030108
+
+// We're more likely to see regressions with large canvases
+const size = 1024;
+var colourCounter = 0;
+
+const targetCanvas = document.createElement("canvas");
+targetCanvas.width = targetCanvas.height = size;
+document.body.appendChild(targetCanvas);
+const targetCtx = targetCanvas.getContext("2d");
+
+const intermediateCanvas = document.createElement("canvas");
+intermediateCanvas.width = intermediateCanvas.height = size;
+const intermediateCtx = intermediateCanvas.getContext("2d");
+
+function makeAndFillCanvasWithDifferentColor(i) {
+  intermediateCtx.fillStyle = "rgba(0, 0, " + colourCounter + ", 1)";
+  colourCounter = (colourCounter + 1) % 256;
+  intermediateCtx.fillRect(0, 0, intermediateCanvas.width, intermediateCanvas.height);
+
+  targetCtx.drawImage(intermediateCanvas, 0, 0);
+}
+
+function doRun() {
+  // Make and fill many canvases
+  for (let i = 0; i < 50; i++) {
+    makeAndFillCanvasWithDifferentColor(i);
+  }
+  requestAnimationFrame(doRun);
+}
+
+window.onload = function () {
+   doRun();
+}
+
+</script>
+</body>
+</html>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CLOUD_DEVICES_COMMON_CAPABILITY_INTERFACES_H_
-#define COMPONENTS_CLOUD_DEVICES_COMMON_CAPABILITY_INTERFACES_H_
+#ifndef COMPONENTS_CLOUD_DEVICES_COMMON_DESCRIPTION_ITEMS_H_
+#define COMPONENTS_CLOUD_DEVICES_COMMON_DESCRIPTION_ITEMS_H_
 
 // Defines common templates that could be used to create device specific
 // capabilities and print tickets.
@@ -11,12 +11,12 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 
 namespace cloud_devices {
@@ -44,6 +44,11 @@ template <class Option, class Traits>
 class ListCapability {
  public:
   ListCapability();
+  ListCapability(ListCapability&& other);
+
+  ListCapability(const ListCapability&) = delete;
+  ListCapability& operator=(const ListCapability&) = delete;
+
   ~ListCapability();
 
   bool LoadFrom(const CloudDeviceDescription& description);
@@ -66,10 +71,8 @@ class ListCapability {
   void AddOption(Option&& option) { options_.emplace_back(std::move(option)); }
 
  private:
-  typedef std::vector<Option> OptionVector;
+  using OptionVector = std::vector<Option>;
   OptionVector options_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListCapability);
 };
 
 // Represents CDD capability stored as JSON list with default_value value.
@@ -82,6 +85,10 @@ class SelectionCapability {
  public:
   SelectionCapability();
   SelectionCapability(SelectionCapability&& other);
+
+  SelectionCapability(const SelectionCapability&) = delete;
+  SelectionCapability& operator=(const SelectionCapability&) = delete;
+
   ~SelectionCapability();
 
   SelectionCapability& operator=(SelectionCapability&& other);
@@ -112,8 +119,8 @@ class SelectionCapability {
   }
 
   const Option& GetDefault() const {
-    CHECK_GE(default_idx_, 0);
-    return options_[default_idx_];
+    CHECK(!options_.empty());
+    return options_[std::max(default_idx_, 0)];
   }
 
   void AddOption(const Option& option) { AddDefaultOption(option, false); }
@@ -132,8 +139,6 @@ class SelectionCapability {
 
   OptionVector options_;
   int default_idx_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionCapability);
 };
 
 // Represents CDD capability that can be true or false.
@@ -143,6 +148,10 @@ template <class Traits>
 class BooleanCapability {
  public:
   BooleanCapability();
+
+  BooleanCapability(const BooleanCapability&) = delete;
+  BooleanCapability& operator=(const BooleanCapability&) = delete;
+
   ~BooleanCapability();
 
   bool LoadFrom(const CloudDeviceDescription& description);
@@ -156,8 +165,6 @@ class BooleanCapability {
 
  private:
   bool default_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(BooleanCapability);
 };
 
 // Represents CDD capability for which existence is only important.
@@ -167,13 +174,14 @@ template <class Traits>
 class EmptyCapability {
  public:
   EmptyCapability() {}
+
+  EmptyCapability(const EmptyCapability&) = delete;
+  EmptyCapability& operator=(const EmptyCapability&) = delete;
+
   ~EmptyCapability() {}
 
   bool LoadFrom(const CloudDeviceDescription& description);
   void SaveTo(CloudDeviceDescription* description) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmptyCapability);
 };
 
 // Represents an item that is of a specific value type.
@@ -184,6 +192,10 @@ template <class Option, class Traits>
 class ValueCapability {
  public:
   ValueCapability();
+
+  ValueCapability(const ValueCapability&) = delete;
+  ValueCapability& operator=(const ValueCapability&) = delete;
+
   ~ValueCapability();
 
   bool LoadFrom(const CloudDeviceDescription& description);
@@ -199,8 +211,6 @@ class ValueCapability {
 
  private:
   Option value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueCapability);
 };
 
 // Represents CJT items.
@@ -211,6 +221,10 @@ template <class Option, class Traits>
 class TicketItem {
  public:
   TicketItem();
+
+  TicketItem(const TicketItem&) = delete;
+  TicketItem& operator=(const TicketItem&) = delete;
+
   ~TicketItem();
 
   bool LoadFrom(const CloudDeviceDescription& description);
@@ -226,10 +240,8 @@ class TicketItem {
 
  private:
   Option value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TicketItem);
 };
 
 }  // namespace cloud_devices
 
-#endif  // COMPONENTS_CLOUD_DEVICES_COMMON_CAPABILITY_INTERFACES_H_
+#endif  // COMPONENTS_CLOUD_DEVICES_COMMON_DESCRIPTION_ITEMS_H_

@@ -1,1 +1,1 @@
-CONSOLE MESSAGE: line 50: [object DataTransfer]
+CONSOLE MESSAGE: [object DataTransfer]

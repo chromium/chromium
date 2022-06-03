@@ -5,20 +5,20 @@
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +26,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/webrtc_logs_resources.h"
+#include "chrome/grit/webrtc_logs_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/upload_list/upload_list.h"
 #include "components/version_info/version_info.h"
@@ -35,10 +36,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#endif
+#include "ui/base/webui/web_ui_util.h"
 
 using content::WebContents;
 using content::WebUIMessageHandler;
@@ -73,11 +71,12 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
       {"noTextLogsMessage", IDS_WEBRTC_LOGS_NO_TEXT_LOGS_MESSAGE},
       {"noEventLogsMessage", IDS_WEBRTC_LOGS_NO_EVENT_LOGS_MESSAGE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->UseStringsJs();
-  source->AddResourcePath("webrtc_logs.js", IDR_WEBRTC_LOGS_JS);
-  source->SetDefaultResource(IDR_WEBRTC_LOGS_HTML);
+  source->AddResourcePaths(
+      base::make_span(kWebrtcLogsResources, kWebrtcLogsResourcesSize));
+  source->SetDefaultResource(IDR_WEBRTC_LOGS_WEBRTC_LOGS_HTML);
   return source;
 }
 
@@ -91,9 +90,14 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
 class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
  public:
   explicit WebRtcLogsDOMHandler(Profile* profile);
+
+  WebRtcLogsDOMHandler(const WebRtcLogsDOMHandler&) = delete;
+  WebRtcLogsDOMHandler& operator=(const WebRtcLogsDOMHandler&) = delete;
+
   ~WebRtcLogsDOMHandler() override;
 
   // WebUIMessageHandler implementation.
+  void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
  private:
@@ -103,41 +107,38 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
   void HandleRequestWebRtcLogs(const base::ListValue* args);
 
   // Asynchronously load WebRTC text logs.
-  void LoadWebRtcTextLogs();
+  void LoadWebRtcTextLogs(const std::string& callback_id);
 
   // Callback for when WebRTC text logs have been asynchronously loaded.
-  void OnWebRtcTextLogsLoaded();
+  void OnWebRtcTextLogsLoaded(const std::string& callback_id);
 
   // Asynchronously load WebRTC event logs.
-  void LoadWebRtcEventLogs();
+  void LoadWebRtcEventLogs(const std::string& callback_id);
 
   // Callback for when WebRTC event logs have been asynchronously loaded.
   void OnWebRtcEventLogsLoaded(
+      const std::string& callback_id,
       const std::vector<UploadList::UploadInfo>& event_logs);
 
   // Update the chrome://webrtc-logs/ page.
-  void UpdateUI();
+  void UpdateUI(const std::string& callback_id);
 
   // Update the text/event logs part of the forementioned page.
-  void UpdateUIWithTextLogs(base::ListValue* text_logs_list) const;
-  void UpdateUIWithEventLogs(base::ListValue* event_logs_list) const;
+  base::Value UpdateUIWithTextLogs() const;
+  base::Value UpdateUIWithEventLogs() const;
 
   // Convert a history entry about a captured WebRTC event log into a
-  // DictionaryValue of the type expected by updateWebRtcLogsList().
-  std::unique_ptr<base::DictionaryValue> EventLogUploadInfoToDictionaryValue(
+  // Value of the type expected by updateWebRtcLogsList().
+  base::Value EventLogUploadInfoToValue(
       const UploadList::UploadInfo& info) const;
 
   // Helpers for EventLogUploadInfoToDictionaryValue().
-  std::unique_ptr<base::DictionaryValue> FromPendingLog(
+  base::Value FromPendingLog(const UploadList::UploadInfo& info) const;
+  base::Value FromActivelyUploadedLog(const UploadList::UploadInfo& info) const;
+  base::Value FromNotUploadedLog(const UploadList::UploadInfo& info) const;
+  base::Value FromUploadUnsuccessfulLog(
       const UploadList::UploadInfo& info) const;
-  std::unique_ptr<base::DictionaryValue> FromActivelyUploadedLog(
-      const UploadList::UploadInfo& info) const;
-  std::unique_ptr<base::DictionaryValue> FromNotUploadedLog(
-      const UploadList::UploadInfo& info) const;
-  std::unique_ptr<base::DictionaryValue> FromUploadUnsuccessfulLog(
-      const UploadList::UploadInfo& info) const;
-  std::unique_ptr<base::DictionaryValue> FromUploadSuccessfulLog(
-      const UploadList::UploadInfo& info) const;
+  base::Value FromUploadSuccessfulLog(const UploadList::UploadInfo& info) const;
 
   bool SanityCheckOnUploadInfo(const UploadList::UploadInfo& info) const;
 
@@ -161,8 +162,6 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
 
   // Factory for creating weak references to instances of this class.
   base::WeakPtrFactory<WebRtcLogsDOMHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLogsDOMHandler);
 };
 
 WebRtcLogsDOMHandler::WebRtcLogsDOMHandler(Profile* profile)
@@ -186,31 +185,38 @@ WebRtcLogsDOMHandler::~WebRtcLogsDOMHandler() {
 void WebRtcLogsDOMHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestWebRtcLogsList",
       base::BindRepeating(&WebRtcLogsDOMHandler::HandleRequestWebRtcLogs,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 }
 
 void WebRtcLogsDOMHandler::HandleRequestWebRtcLogs(
     const base::ListValue* args) {
+  std::string callback_id = args->GetList()[0].GetString();
+  AllowJavascript();
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LoadWebRtcTextLogs();
+  LoadWebRtcTextLogs(callback_id);
 }
 
-void WebRtcLogsDOMHandler::LoadWebRtcTextLogs() {
+void WebRtcLogsDOMHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void WebRtcLogsDOMHandler::LoadWebRtcTextLogs(const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   text_log_upload_list_->Load(
       base::BindOnce(&WebRtcLogsDOMHandler::OnWebRtcTextLogsLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
-void WebRtcLogsDOMHandler::OnWebRtcTextLogsLoaded() {
+void WebRtcLogsDOMHandler::OnWebRtcTextLogsLoaded(
+    const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LoadWebRtcEventLogs();  // Text logs loaded; on to the event logs.
+  LoadWebRtcEventLogs(callback_id);  // Text logs loaded; on to the event logs.
 }
 
-void WebRtcLogsDOMHandler::LoadWebRtcEventLogs() {
+void WebRtcLogsDOMHandler::LoadWebRtcEventLogs(const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   WebRtcEventLogManager* manager = WebRtcEventLogManager::GetInstance();
@@ -218,58 +224,56 @@ void WebRtcLogsDOMHandler::LoadWebRtcEventLogs() {
     manager->GetHistory(
         original_browser_context_id_,
         base::BindOnce(&WebRtcLogsDOMHandler::OnWebRtcEventLogsLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), callback_id));
   } else {
-    OnWebRtcEventLogsLoaded(std::vector<UploadList::UploadInfo>());
+    OnWebRtcEventLogsLoaded(callback_id, std::vector<UploadList::UploadInfo>());
   }
 }
 
 void WebRtcLogsDOMHandler::OnWebRtcEventLogsLoaded(
+    const std::string& callback_id,
     const std::vector<UploadList::UploadInfo>& event_logs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   event_logs_ = event_logs;
 
-  UpdateUI();  // All log histories loaded asynchronously; time to display.
+  // All log histories loaded asynchronously; time to display.
+  UpdateUI(callback_id);
 }
 
-void WebRtcLogsDOMHandler::UpdateUI() {
+void WebRtcLogsDOMHandler::UpdateUI(const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::ListValue text_logs_list;
-  UpdateUIWithTextLogs(&text_logs_list);
-
-  base::ListValue event_logs_list;
-  UpdateUIWithEventLogs(&event_logs_list);
-
-  base::Value version(version_info::GetVersionNumber());
-
-  web_ui()->CallJavascriptFunctionUnsafe("updateWebRtcLogsList", text_logs_list,
-                                         event_logs_list, version);
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetKey("textLogs", UpdateUIWithTextLogs());
+  result.SetKey("eventLogs", UpdateUIWithEventLogs());
+  result.SetKey("version", base::Value(version_info::GetVersionNumber()));
+  ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
-    base::ListValue* upload_list) const {
+base::Value WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  base::Value result(base::Value::Type::LIST);
   std::vector<UploadList::UploadInfo> uploads;
   text_log_upload_list_->GetUploads(50, &uploads);
 
-  for (auto i = uploads.begin(); i != uploads.end(); ++i) {
-    std::unique_ptr<base::DictionaryValue> upload(new base::DictionaryValue());
-    upload->SetString("id", i->upload_id);
+  for (const auto& upload : uploads) {
+    base::Value upload_value(base::Value::Type::DICTIONARY);
+    upload_value.SetStringKey("id", upload.upload_id);
 
-    base::string16 value_w;
-    if (!i->upload_time.is_null())
-      value_w = base::TimeFormatFriendlyDateAndTime(i->upload_time);
-    upload->SetString("upload_time", value_w);
+    std::u16string value_w;
+    if (!upload.upload_time.is_null())
+      value_w = base::TimeFormatFriendlyDateAndTime(upload.upload_time);
+    upload_value.SetStringKey("upload_time", value_w);
 
-    base::FilePath::StringType value;
-    if (!i->local_id.empty())
-      value = text_log_dir_.AppendASCII(i->local_id)
+    std::string value;
+    if (!upload.local_id.empty()) {
+      value = text_log_dir_.AppendASCII(upload.local_id)
                   .AddExtension(FILE_PATH_LITERAL(".gz"))
-                  .value();
-    upload->SetString("local_file", value);
+                  .AsUTF8Unsafe();
+    }
+    upload_value.SetStringKey("local_file", value);
 
     // In october 2015, capture time was added to the log list, previously the
     // local ID was used as capture time. The local ID has however changed so
@@ -277,14 +281,14 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     // to a time within reasonable bounds, otherwise we fall back on the upload
     // time.
     // TODO(grunell): Use |capture_time| only.
-    if (!i->capture_time.is_null()) {
-      value_w = base::TimeFormatFriendlyDateAndTime(i->capture_time);
+    if (!upload.capture_time.is_null()) {
+      value_w = base::TimeFormatFriendlyDateAndTime(upload.capture_time);
     } else {
       // Fall back on local ID as time. We need to check that it's within
       // resonable bounds, since the ID may not represent time. Check between
       // 2012 when the feature was introduced and now.
       double seconds_since_epoch;
-      if (base::StringToDouble(i->local_id, &seconds_since_epoch)) {
+      if (base::StringToDouble(upload.local_id, &seconds_since_epoch)) {
         base::Time capture_time = base::Time::FromDoubleT(seconds_since_epoch);
         const base::Time::Exploded lower_limit = {2012, 1, 0, 1, 0, 0, 0, 0};
         base::Time out_time;
@@ -300,23 +304,24 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     // was already in the variable. In case it's empty set the string to
     // inform that the time is unknown.
     if (value_w.empty())
-      value_w = base::string16(base::ASCIIToUTF16("(unknown time)"));
-    upload->SetString("capture_time", value_w);
+      value_w = std::u16string(u"(unknown time)");
+    upload_value.SetStringKey("capture_time", value_w);
 
-    upload_list->Append(std::move(upload));
+    result.Append(std::move(upload_value));
   }
+  return result;
 }
 
-void WebRtcLogsDOMHandler::UpdateUIWithEventLogs(
-    base::ListValue* event_logs_list) const {
+base::Value WebRtcLogsDOMHandler::UpdateUIWithEventLogs() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto it = event_logs_.crbegin(); it != event_logs_.crend(); ++it) {
-    event_logs_list->Append(EventLogUploadInfoToDictionaryValue(*it));
+  base::Value result(base::Value::Type::LIST);
+  for (const auto& log : event_logs_) {
+    result.Append(EventLogUploadInfoToValue(log));
   }
+  return result;
 }
 
-std::unique_ptr<base::DictionaryValue>
-WebRtcLogsDOMHandler::EventLogUploadInfoToDictionaryValue(
+base::Value WebRtcLogsDOMHandler::EventLogUploadInfoToValue(
     const UploadList::UploadInfo& info) const {
   switch (info.state) {
     case UploadList::UploadInfo::State::Pending:
@@ -334,111 +339,108 @@ WebRtcLogsDOMHandler::EventLogUploadInfoToDictionaryValue(
   }
 
   LOG(ERROR) << "Unrecognized state (" << static_cast<int>(info.state) << ").";
-  return nullptr;
+  return base::Value();
 }
 
-std::unique_ptr<base::DictionaryValue> WebRtcLogsDOMHandler::FromPendingLog(
+base::Value WebRtcLogsDOMHandler::FromPendingLog(
     const UploadList::UploadInfo& info) const {
   DCHECK_EQ(info.state, UploadList::UploadInfo::State::Pending);
   DCHECK(info.upload_time.is_null());
 
   if (!SanityCheckOnUploadInfo(info)) {
-    return nullptr;
+    return base::Value();
   }
 
-  std::unique_ptr<base::DictionaryValue> log(new base::DictionaryValue());
-  log->SetString("state", "pending");
-  log->SetString("capture_time",
-                 base::TimeFormatFriendlyDateAndTime(info.capture_time));
-  log->SetString("local_file",
-                 event_log_dir_.AppendASCII(info.local_id).value());
+  base::Value log(base::Value::Type::DICTIONARY);
+  log.SetStringKey("state", "pending");
+  log.SetStringKey("capture_time",
+                   base::TimeFormatFriendlyDateAndTime(info.capture_time));
+  log.SetStringKey("local_file",
+                   event_log_dir_.AppendASCII(info.local_id).AsUTF8Unsafe());
   return log;
 }
 
-std::unique_ptr<base::DictionaryValue>
-WebRtcLogsDOMHandler::FromActivelyUploadedLog(
+base::Value WebRtcLogsDOMHandler::FromActivelyUploadedLog(
     const UploadList::UploadInfo& info) const {
   DCHECK_EQ(info.state, UploadList::UploadInfo::State::Pending);
   DCHECK(!info.upload_time.is_null());
 
   if (!SanityCheckOnUploadInfo(info)) {
-    return nullptr;
+    return base::Value();
   }
 
-  std::unique_ptr<base::DictionaryValue> log(new base::DictionaryValue());
-  log->SetString("state", "actively_uploaded");
-  log->SetString("capture_time",
-                 base::TimeFormatFriendlyDateAndTime(info.capture_time));
-  log->SetString("local_file",
-                 event_log_dir_.AppendASCII(info.local_id).value());
+  base::Value log(base::Value::Type::DICTIONARY);
+  log.SetStringKey("state", "actively_uploaded");
+  log.SetStringKey("capture_time",
+                   base::TimeFormatFriendlyDateAndTime(info.capture_time));
+  log.SetStringKey("local_file",
+                   event_log_dir_.AppendASCII(info.local_id).AsUTF8Unsafe());
   return log;
 }
 
-std::unique_ptr<base::DictionaryValue> WebRtcLogsDOMHandler::FromNotUploadedLog(
+base::Value WebRtcLogsDOMHandler::FromNotUploadedLog(
     const UploadList::UploadInfo& info) const {
   DCHECK_EQ(info.state, UploadList::UploadInfo::State::NotUploaded);
   DCHECK(info.upload_time.is_null());
 
   if (!SanityCheckOnUploadInfo(info)) {
-    return nullptr;
+    return base::Value();
   }
 
-  std::unique_ptr<base::DictionaryValue> log(new base::DictionaryValue());
-  log->SetString("state", "not_uploaded");
-  log->SetString("capture_time",
-                 base::TimeFormatFriendlyDateAndTime(info.capture_time));
-  log->SetString("local_id", info.local_id);
+  base::Value log(base::Value::Type::DICTIONARY);
+  log.SetStringKey("state", "not_uploaded");
+  log.SetStringKey("capture_time",
+                   base::TimeFormatFriendlyDateAndTime(info.capture_time));
+  log.SetStringKey("local_id", info.local_id);
   return log;
 }
 
-std::unique_ptr<base::DictionaryValue>
-WebRtcLogsDOMHandler::FromUploadUnsuccessfulLog(
+base::Value WebRtcLogsDOMHandler::FromUploadUnsuccessfulLog(
     const UploadList::UploadInfo& info) const {
   DCHECK_EQ(info.state, UploadList::UploadInfo::State::NotUploaded);
   DCHECK(!info.upload_time.is_null());
 
   if (!SanityCheckOnUploadInfo(info)) {
-    return nullptr;
+    return base::Value();
   }
 
   if (!info.upload_id.empty()) {
     LOG(ERROR) << "Unexpected upload ID.";
-    return nullptr;
+    return base::Value();
   }
 
-  std::unique_ptr<base::DictionaryValue> log(new base::DictionaryValue());
-  log->SetString("state", "upload_unsuccessful");
-  log->SetString("capture_time",
-                 base::TimeFormatFriendlyDateAndTime(info.capture_time));
-  log->SetString("local_id", info.local_id);
-  log->SetString("upload_time",
-                 base::TimeFormatFriendlyDateAndTime(info.upload_time));
+  base::Value log(base::Value::Type::DICTIONARY);
+  log.SetStringKey("state", "upload_unsuccessful");
+  log.SetStringKey("capture_time",
+                   base::TimeFormatFriendlyDateAndTime(info.capture_time));
+  log.SetStringKey("local_id", info.local_id);
+  log.SetStringKey("upload_time",
+                   base::TimeFormatFriendlyDateAndTime(info.upload_time));
   return log;
 }
 
-std::unique_ptr<base::DictionaryValue>
-WebRtcLogsDOMHandler::FromUploadSuccessfulLog(
+base::Value WebRtcLogsDOMHandler::FromUploadSuccessfulLog(
     const UploadList::UploadInfo& info) const {
   DCHECK_EQ(info.state, UploadList::UploadInfo::State::Uploaded);
   DCHECK(!info.upload_time.is_null());
 
   if (!SanityCheckOnUploadInfo(info)) {
-    return nullptr;
+    return base::Value();
   }
 
   if (info.upload_id.empty()) {
     LOG(ERROR) << "Unknown upload ID.";
-    return nullptr;
+    return base::Value();
   }
 
-  std::unique_ptr<base::DictionaryValue> log(new base::DictionaryValue());
-  log->SetString("state", "upload_successful");
-  log->SetString("capture_time",
-                 base::TimeFormatFriendlyDateAndTime(info.capture_time));
-  log->SetString("local_id", info.local_id);
-  log->SetString("upload_id", info.upload_id);
-  log->SetString("upload_time",
-                 base::TimeFormatFriendlyDateAndTime(info.upload_time));
+  base::Value log(base::Value::Type::DICTIONARY);
+  log.SetStringKey("state", "upload_successful");
+  log.SetStringKey("capture_time",
+                   base::TimeFormatFriendlyDateAndTime(info.capture_time));
+  log.SetStringKey("local_id", info.local_id);
+  log.SetStringKey("upload_id", info.upload_id);
+  log.SetStringKey("upload_time",
+                   base::TimeFormatFriendlyDateAndTime(info.upload_time));
   return log;
 }
 

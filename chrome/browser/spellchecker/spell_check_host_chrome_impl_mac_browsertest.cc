@@ -4,6 +4,8 @@
 
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -18,7 +21,7 @@ class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     content::BrowserContext* context = browser()->profile();
-    renderer_.reset(new content::MockRenderProcessHost(context));
+    renderer_ = std::make_unique<content::MockRenderProcessHost>(context);
     SpellCheckHostChromeImpl::Create(
         renderer_->GetID(), spell_check_host_.BindNewPipeAndPassReceiver());
   }
@@ -53,7 +56,7 @@ class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplMacBrowserTest,
                        SpellCheckReturnMessage) {
   spell_check_host_->RequestTextCheck(
-      base::UTF8ToUTF16("zz."), 123,
+      u"zz.", 123,
       base::BindOnce(&SpellCheckHostChromeImplMacBrowserTest::LogResult,
                      base::Unretained(this)));
   RunUntilResultReceived();

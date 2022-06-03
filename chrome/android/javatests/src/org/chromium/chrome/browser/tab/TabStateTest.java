@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.graphics.Color;
-import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -17,12 +16,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.chrome.browser.tab.TabState.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 
 /**
  * Tests whether TabState can be saved and restored to disk properly. Also checks to see if
@@ -43,7 +41,7 @@ public class TabStateTest {
 
     @After
     public void tearDown() {
-        TabState.setChannelNameOverrideForTest(null);
+        TabStateFileManager.setChannelNameOverrideForTest(null);
         mTestTabModelDirectory.tearDown();
     }
 
@@ -51,17 +49,17 @@ public class TabStateTest {
         mTestTabModelDirectory.writeTabStateFile(info);
 
         File tabStateFile = new File(mTestTabModelDirectory.getBaseDirectory(), info.filename);
-        TabState tabState = TabState.restoreTabState(tabStateFile, false);
+        TabState tabState = TabStateFileManager.restoreTabState(tabStateFile, false);
         Assert.assertNotNull(tabState);
-        Assert.assertEquals(info.url, tabState.getVirtualUrlFromState());
-        Assert.assertEquals(info.title, tabState.getDisplayTitleFromState());
+        Assert.assertEquals(info.url, tabState.contentsState.getVirtualUrlFromState());
+        Assert.assertEquals(info.title, tabState.contentsState.getDisplayTitleFromState());
         Assert.assertEquals(info.version, tabState.contentsState.version());
     }
 
     @Test
     @SmallTest
     public void testLoadV0Tabs() throws Exception {
-        TabState.setChannelNameOverrideForTest("stable");
+        TabStateFileManager.setChannelNameOverrideForTest("stable");
         loadAndCheckTabState(TestTabModelDirectory.M18_GOOGLE_COM);
         loadAndCheckTabState(TestTabModelDirectory.M18_NTP);
     }
@@ -69,7 +67,7 @@ public class TabStateTest {
     @Test
     @SmallTest
     public void testLoadV1Tabs() throws Exception {
-        TabState.setChannelNameOverrideForTest(null);
+        TabStateFileManager.setChannelNameOverrideForTest(null);
         loadAndCheckTabState(TestTabModelDirectory.M26_GOOGLE_COM);
         loadAndCheckTabState(TestTabModelDirectory.M26_GOOGLE_CA);
     }
@@ -77,7 +75,7 @@ public class TabStateTest {
     @Test
     @SmallTest
     public void testLoadV2Tabs() throws Exception {
-        TabState.setChannelNameOverrideForTest(null);
+        TabStateFileManager.setChannelNameOverrideForTest(null);
 
         // Standard English tabs.
         loadAndCheckTabState(TestTabModelDirectory.V2_DUCK_DUCK_GO);
@@ -90,32 +88,4 @@ public class TabStateTest {
         loadAndCheckTabState(TestTabModelDirectory.V2_HAARETZ);
     }
 
-    @Test
-    @SmallTest
-    public void testSaveLoadThroughBundle() {
-        TabState tabState = new TabState();
-        byte[] bytes = {'A', 'B', 'C'};
-        tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(bytes.length));
-        tabState.contentsState.buffer().put(bytes);
-        tabState.timestampMillis = 1234;
-        tabState.parentId = 2;
-        tabState.openerAppId = "app";
-        tabState.contentsState.setVersion(TabState.CONTENTS_STATE_CURRENT_VERSION);
-        tabState.themeColor = Color.BLACK;
-        tabState.mIsIncognito = true;
-
-        Bundle b = new Bundle();
-        TabState.saveState(b, tabState);
-        TabState restoredState = TabState.restoreTabState(b);
-
-        Assert.assertEquals(restoredState.contentsState.buffer(), tabState.contentsState.buffer());
-        Assert.assertEquals(tabState.timestampMillis, restoredState.timestampMillis);
-        Assert.assertEquals(tabState.parentId, restoredState.parentId);
-        Assert.assertEquals(tabState.openerAppId, restoredState.openerAppId);
-        Assert.assertEquals(tabState.timestampMillis, restoredState.timestampMillis);
-        Assert.assertEquals(
-                tabState.contentsState.version(), restoredState.contentsState.version());
-        Assert.assertEquals(tabState.themeColor, restoredState.themeColor);
-        Assert.assertEquals(tabState.mIsIncognito, restoredState.mIsIncognito);
-    }
 }

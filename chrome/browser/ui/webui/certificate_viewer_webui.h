@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cert/scoped_nss_types.h"
@@ -34,6 +33,9 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
+  CertificateViewerDialog(const CertificateViewerDialog&) = delete;
+  CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
+
   ~CertificateViewerDialog() override;
 
   gfx::NativeWindow GetNativeWebContentsModalDialog();
@@ -48,7 +50,7 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
 
   // ui::WebDialogDelegate:
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -64,12 +66,10 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   net::ScopedCERTCertificateList nss_certs_;
 
   // The title of the certificate viewer dialog, Certificate Viewer: CN.
-  base::string16 title_;
+  std::u16string title_;
 
   content::WebUI* webui_ = nullptr;
   ConstrainedWebDialogDelegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialog);
 };
 
 // Dialog handler which handles calls from the JS WebUI code to view certificate
@@ -78,6 +78,12 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
  public:
   CertificateViewerDialogHandler(CertificateViewerDialog* dialog,
                                  net::ScopedCERTCertificateList cert_chain);
+
+  CertificateViewerDialogHandler(const CertificateViewerDialogHandler&) =
+      delete;
+  CertificateViewerDialogHandler& operator=(
+      const CertificateViewerDialogHandler&) = delete;
+
   ~CertificateViewerDialogHandler() override;
 
   // Overridden from WebUIMessageHandler
@@ -88,26 +94,24 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // chain.
   //
   // The input is an integer index to the certificate in the chain to export.
-  void ExportCertificate(const base::ListValue* args);
+  void HandleExportCertificate(const base::ListValue* args);
 
-  // Gets the details for a specific certificate in the certificate chain. Calls
-  // the javascript function cert_viewer.getCertificateFields with a tree
-  // structure containing the fields and values for certain nodes.
+  // Gets the details for a specific certificate in the certificate chain.
+  // Responds with a tree structure containing the fields and values for certain
+  // nodes.
   //
   // The input is an integer index to the certificate in the chain to view.
-  void RequestCertificateFields(const base::ListValue* args);
+  void HandleRequestCertificateFields(const base::ListValue* args);
 
-  // Helper function to get the certificate index from |args|. Returns -1 if
-  // the index is out of range.
-  int GetCertificateIndex(const base::ListValue* args) const;
+  // Helper function to get the certificate index. Returns -1 if the index is
+  // out of range.
+  int GetCertificateIndex(int requested_index) const;
 
   // The dialog.
   CertificateViewerDialog* dialog_;
 
   // The certificate chain.
   net::ScopedCERTCertificateList cert_chain_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialogHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_

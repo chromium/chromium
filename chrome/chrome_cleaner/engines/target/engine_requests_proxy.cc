@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/registry.h"
-#include "chrome/chrome_cleaner/strings/string16_embedded_nulls.h"
+#include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace chrome_cleaner {
@@ -196,9 +196,8 @@ bool EngineRequestsProxy::GetProcessImagePath(base::ProcessId pid,
   return result;
 }
 
-bool EngineRequestsProxy::GetLoadedModules(
-    base::ProcessId pid,
-    std::vector<base::string16>* modules) {
+bool EngineRequestsProxy::GetLoadedModules(base::ProcessId pid,
+                                           std::vector<std::wstring>* modules) {
   if (modules == nullptr) {
     LOG(ERROR) << "GetLoadedModulesCallback received a null modules";
     return false;
@@ -209,8 +208,8 @@ bool EngineRequestsProxy::GetLoadedModules(
       base::BindOnce(&EngineRequestsProxy::SandboxGetLoadedModules,
                      base::Unretained(this), pid),
       base::BindOnce(
-          &SaveBoolAndCopyableDataCallback<std::vector<base::string16>>,
-          &result, modules));
+          &SaveBoolAndCopyableDataCallback<std::vector<std::wstring>>, &result,
+          modules));
   if (call_status.state == MojoCallStatus::MOJO_CALL_ERROR) {
     return false;
   }
@@ -218,7 +217,7 @@ bool EngineRequestsProxy::GetLoadedModules(
 }
 
 bool EngineRequestsProxy::GetProcessCommandLine(base::ProcessId pid,
-                                                base::string16* command_line) {
+                                                std::wstring* command_line) {
   if (command_line == nullptr) {
     LOG(ERROR) << "GetProcessCommandLineCallback received a null command_line";
     return false;
@@ -228,7 +227,7 @@ bool EngineRequestsProxy::GetProcessCommandLine(base::ProcessId pid,
       this,
       base::BindOnce(&EngineRequestsProxy::SandboxGetProcessCommandLine,
                      base::Unretained(this), pid),
-      base::BindOnce(&SaveBoolAndCopyableDataCallback<base::string16>, &result,
+      base::BindOnce(&SaveBoolAndCopyableDataCallback<std::wstring>, &result,
                      command_line));
   if (call_status.state == MojoCallStatus::MOJO_CALL_ERROR) {
     return false;
@@ -256,11 +255,10 @@ bool EngineRequestsProxy::GetUserInfoFromSID(
   return result;
 }
 
-uint32_t EngineRequestsProxy::OpenReadOnlyRegistry(
-    HANDLE root_key,
-    const base::string16& sub_key,
-    uint32_t dw_access,
-    HANDLE* registry_handle) {
+uint32_t EngineRequestsProxy::OpenReadOnlyRegistry(HANDLE root_key,
+                                                   const std::wstring& sub_key,
+                                                   uint32_t dw_access,
+                                                   HANDLE* registry_handle) {
   uint32_t return_code;
   MojoCallStatus call_status = SyncSandboxRequest(
       this,
@@ -276,7 +274,7 @@ uint32_t EngineRequestsProxy::OpenReadOnlyRegistry(
 
 uint32_t EngineRequestsProxy::NtOpenReadOnlyRegistry(
     HANDLE root_key,
-    const String16EmbeddedNulls& sub_key,
+    const WStringEmbeddedNulls& sub_key,
     uint32_t dw_access,
     HANDLE* registry_handle) {
   uint32_t return_code;
@@ -415,7 +413,7 @@ MojoCallStatus EngineRequestsProxy::SandboxGetUserInfoFromSID(
 
 MojoCallStatus EngineRequestsProxy::SandboxOpenReadOnlyRegistry(
     HANDLE root_key,
-    const base::string16& sub_key,
+    const std::wstring& sub_key,
     uint32_t dw_access,
     mojom::EngineRequests::SandboxOpenReadOnlyRegistryCallback
         result_callback) {
@@ -431,7 +429,7 @@ MojoCallStatus EngineRequestsProxy::SandboxOpenReadOnlyRegistry(
 
 MojoCallStatus EngineRequestsProxy::SandboxNtOpenReadOnlyRegistry(
     HANDLE root_key,
-    const String16EmbeddedNulls& sub_key,
+    const WStringEmbeddedNulls& sub_key,
     uint32_t dw_access,
     mojom::EngineRequests::SandboxNtOpenReadOnlyRegistryCallback
         result_callback) {

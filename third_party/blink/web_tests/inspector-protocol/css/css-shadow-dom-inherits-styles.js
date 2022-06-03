@@ -21,7 +21,7 @@ body {
   var nodeId = await cssHelper.requestNodeId(documentNodeId, '#shadow-host');
 
   session.evaluate(() => {
-    var shadowRoot = document.querySelector('#shadow-host').createShadowRoot();
+    var shadowRoot = document.querySelector('#shadow-host').attachShadow({mode: 'open'});
     var template = document.querySelector('template');
     var clone = document.importNode(template.content, true);
     shadowRoot.appendChild(clone);

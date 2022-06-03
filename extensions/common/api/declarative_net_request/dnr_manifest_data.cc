@@ -5,31 +5,76 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 
 #include <utility>
-#include "extensions/common/manifest_constants.h"
+
+#include "base/check_op.h"
+#include "base/no_destructor.h"
+#include "extensions/common/api/declarative_net_request.h"
 
 namespace extensions {
+
+namespace dnr_api = api::declarative_net_request;
 namespace declarative_net_request {
 
-DNRManifestData::DNRManifestData(base::FilePath ruleset_relative_path)
-    : ruleset_relative_path(std::move(ruleset_relative_path)) {}
+DNRManifestData::RulesetInfo::RulesetInfo() = default;
+DNRManifestData::RulesetInfo::~RulesetInfo() = default;
+DNRManifestData::RulesetInfo::RulesetInfo(RulesetInfo&&) = default;
+DNRManifestData::RulesetInfo& DNRManifestData::RulesetInfo::operator=(
+    RulesetInfo&&) = default;
+
+DNRManifestData::DNRManifestData(std::vector<RulesetInfo> rulesets)
+    : rulesets(std::move(rulesets)) {
+  for (const RulesetInfo& info : this->rulesets)
+    manifest_id_to_ruleset_map.emplace(info.manifest_id, &info);
+}
+
 DNRManifestData::~DNRManifestData() = default;
 
 // static
-bool DNRManifestData::HasRuleset(const Extension& extension) {
-  return extension.GetManifestData(manifest_keys::kDeclarativeNetRequestKey);
+const std::vector<DNRManifestData::RulesetInfo>& DNRManifestData::GetRulesets(
+    const Extension& extension) {
+  // Since we return a reference, use a function local static for the case where
+  // the extension didn't specify any rulesets.
+  static const base::NoDestructor<std::vector<DNRManifestData::RulesetInfo>>
+      empty_vector;
+
+  Extension::ManifestData* data =
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest);
+  if (!data)
+    return *empty_vector;
+
+  return static_cast<DNRManifestData*>(data)->rulesets;
+}
+
+const DNRManifestData::ManifestIDToRulesetMap&
+DNRManifestData::GetManifestIDToRulesetMap(const Extension& extension) {
+  // Since we return a reference, use a function local static for the case where
+  // the extension didn't specify any rulesets.
+  static const base::NoDestructor<ManifestIDToRulesetMap> empty_map;
+
+  Extension::ManifestData* data =
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest);
+  if (!data)
+    return *empty_map;
+
+  return static_cast<DNRManifestData*>(data)->manifest_id_to_ruleset_map;
 }
 
 // static
-base::FilePath DNRManifestData::GetRulesetPath(const Extension& extension) {
+const DNRManifestData::RulesetInfo& DNRManifestData::GetRuleset(
+    const Extension& extension,
+    RulesetID ruleset_id) {
   Extension::ManifestData* data =
-      extension.GetManifestData(manifest_keys::kDeclarativeNetRequestKey);
+      extension.GetManifestData(dnr_api::ManifestKeys::kDeclarativeNetRequest);
   DCHECK(data);
 
-  // The ruleset path is validated during DNRManifestHandler::Validate, and
-  // hence is safe to use.
-  const base::FilePath& relative_path =
-      static_cast<DNRManifestData*>(data)->ruleset_relative_path;
-  return extension.path().Append(relative_path);
+  const std::vector<DNRManifestData::RulesetInfo>& rulesets =
+      static_cast<DNRManifestData*>(data)->rulesets;
+
+  int index = ruleset_id.value() - kMinValidStaticRulesetID.value();
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), rulesets.size());
+
+  return rulesets[index];
 }
 
 }  // namespace declarative_net_request

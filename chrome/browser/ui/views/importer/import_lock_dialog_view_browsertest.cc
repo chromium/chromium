@@ -9,19 +9,22 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "content/public/test/browser_test.h"
 
 class ImportLockDialogViewBrowserTest : public DialogBrowserTest {
  public:
   ImportLockDialogViewBrowserTest() {}
 
+  ImportLockDialogViewBrowserTest(const ImportLockDialogViewBrowserTest&) =
+      delete;
+  ImportLockDialogViewBrowserTest& operator=(
+      const ImportLockDialogViewBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
-    ImportLockDialogView::Show(native_window, base::Callback<void(bool)>());
+    ImportLockDialogView::Show(native_window, base::OnceCallback<void(bool)>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImportLockDialogViewBrowserTest);
 };
 
 // Invokes a dialog that implores the user to close Firefox before trying to

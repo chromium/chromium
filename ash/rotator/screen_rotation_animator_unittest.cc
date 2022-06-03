@@ -10,7 +10,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/rotator/screen_rotation_animator_test_api.h"
 #include "ash/shell.h"
@@ -19,11 +18,12 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -60,6 +60,9 @@ class AnimationObserver : public ScreenRotationAnimatorObserver {
  public:
   AnimationObserver() = default;
 
+  AnimationObserver(const AnimationObserver&) = delete;
+  AnimationObserver& operator=(const AnimationObserver&) = delete;
+
   bool copy_notified() const { return copy_notified_; }
   bool finish_notified() const { return finish_notified_; }
 
@@ -72,8 +75,6 @@ class AnimationObserver : public ScreenRotationAnimatorObserver {
  private:
   bool copy_notified_ = false;
   bool finish_notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationObserver);
 };
 
 class TestScreenRotationAnimator : public ScreenRotationAnimator {
@@ -81,6 +82,11 @@ class TestScreenRotationAnimator : public ScreenRotationAnimator {
   TestScreenRotationAnimator(aura::Window* root_window,
                              const base::RepeatingClosure& before_callback,
                              const base::RepeatingClosure& after_callback);
+
+  TestScreenRotationAnimator(const TestScreenRotationAnimator&) = delete;
+  TestScreenRotationAnimator& operator=(const TestScreenRotationAnimator&) =
+      delete;
+
   ~TestScreenRotationAnimator() override = default;
 
  private:
@@ -96,8 +102,6 @@ class TestScreenRotationAnimator : public ScreenRotationAnimator {
 
   base::RepeatingClosure intersect_before_callback_;
   base::RepeatingClosure intersect_after_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenRotationAnimator);
 };
 
 TestScreenRotationAnimator::TestScreenRotationAnimator(
@@ -147,6 +151,12 @@ void TestScreenRotationAnimator::IntersectAfter(
 class ScreenRotationAnimatorSlowAnimationTest : public AshTestBase {
  public:
   ScreenRotationAnimatorSlowAnimationTest() = default;
+
+  ScreenRotationAnimatorSlowAnimationTest(
+      const ScreenRotationAnimatorSlowAnimationTest&) = delete;
+  ScreenRotationAnimatorSlowAnimationTest& operator=(
+      const ScreenRotationAnimatorSlowAnimationTest&) = delete;
+
   ~ScreenRotationAnimatorSlowAnimationTest() override = default;
 
   // AshTestBase:
@@ -167,12 +177,13 @@ class ScreenRotationAnimatorSlowAnimationTest : public AshTestBase {
   std::unique_ptr<ScreenRotationAnimatorTestApi> test_api_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimatorSlowAnimationTest);
 };
 
 void ScreenRotationAnimatorSlowAnimationTest::SetUp() {
   AshTestBase::SetUp();
+  // ScreenRotionAnimator skips animation if the wallpaper isn't ready.
+  Shell::Get()->wallpaper_controller()->set_bypass_decode_for_testing();
+  Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
 
   display_ = display::Screen::GetScreen()->GetPrimaryDisplay();
   animator_ = std::make_unique<ScreenRotationAnimator>(
@@ -184,9 +195,17 @@ void ScreenRotationAnimatorSlowAnimationTest::SetUp() {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 }
 
-class ScreenRotationAnimatorSmoothAnimationTest : public AshTestBase {
+class ScreenRotationAnimatorSmoothAnimationTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   ScreenRotationAnimatorSmoothAnimationTest() = default;
+
+  ScreenRotationAnimatorSmoothAnimationTest(
+      const ScreenRotationAnimatorSmoothAnimationTest&) = delete;
+  ScreenRotationAnimatorSmoothAnimationTest& operator=(
+      const ScreenRotationAnimatorSmoothAnimationTest&) = delete;
+
   ~ScreenRotationAnimatorSmoothAnimationTest() override = default;
 
   // AshTestBase:
@@ -197,6 +216,17 @@ class ScreenRotationAnimatorSmoothAnimationTest : public AshTestBase {
 
  protected:
   int64_t display_id() const { return display_.id(); }
+
+  std::string GetDisplaySpec(int width, int height) const {
+    int scale = GetParam() ? 1 : 2;
+    return base::StringPrintf("%dx%d*%d", width * scale, height * scale, scale);
+  }
+
+  void UpdateDisplayWithParam() {
+    auto current = display::Screen::GetScreen()->GetPrimaryDisplay();
+    UpdateDisplay(
+        GetDisplaySpec(current.size().width(), current.size().height()));
+  }
 
   TestScreenRotationAnimator* animator() { return animator_.get(); }
 
@@ -210,7 +240,6 @@ class ScreenRotationAnimatorSmoothAnimationTest : public AshTestBase {
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
- protected:
   std::unique_ptr<TestScreenRotationAnimator> animator_;
 
  private:
@@ -219,8 +248,6 @@ class ScreenRotationAnimatorSmoothAnimationTest : public AshTestBase {
   std::unique_ptr<ScreenRotationAnimatorTestApi> test_api_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimatorSmoothAnimationTest);
 };
 
 void ScreenRotationAnimatorSmoothAnimationTest::RemoveSecondaryDisplay(
@@ -235,6 +262,9 @@ void ScreenRotationAnimatorSmoothAnimationTest::QuitWaitForCopyCallback() {
 
 void ScreenRotationAnimatorSmoothAnimationTest::SetUp() {
   AshTestBase::SetUp();
+  // ScreenRotationAnimator skips animation if the wallpaper isn't ready.
+  Shell::Get()->wallpaper_controller()->set_bypass_decode_for_testing();
+  Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
 
   display_ = display::Screen::GetScreen()->GetPrimaryDisplay();
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -257,7 +287,7 @@ void ScreenRotationAnimatorSmoothAnimationTest::SetScreenRotationAnimator(
 }
 
 void ScreenRotationAnimatorSmoothAnimationTest::WaitForCopyCallback() {
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 }
 
@@ -398,7 +428,8 @@ TEST_F(ScreenRotationAnimatorSlowAnimationTest,
   EXPECT_FALSE(GetTray()->GetVisible());
 }
 
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest, Observer) {
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest, Observer) {
+  UpdateDisplayWithParam();
   const int64_t display_id = display_manager()->GetDisplayAt(0).id();
 
   SetScreenRotationAnimator(
@@ -435,8 +466,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest, Observer) {
 }
 
 // Test enable smooth screen rotation code path.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RotatesToDifferentRotationWithCopyCallback) {
+  UpdateDisplayWithParam();
   const int64_t display_id = display_manager()->GetDisplayAt(0).id();
   SetScreenRotationAnimator(
       Shell::GetRootWindowForDisplayId(display_id),
@@ -479,9 +511,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 
 // If the rotating external secondary display is removed before the first copy
 // request callback called, it should stop rotating.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalSecondaryDisplayBeforeFirstCopyCallback) {
-  UpdateDisplay("640x480,800x600");
+  UpdateDisplay("640x480," + GetDisplaySpec(800, 600));
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   const int64_t primary_display_id = display_manager()->GetDisplayAt(0).id();
@@ -504,9 +536,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 
 // If the rotating external primary display is removed before the first copy
 // request callback called, it should stop rotating.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalPrimaryDisplayBeforeFirstCopyCallback) {
-  UpdateDisplay("640x480,800x600");
+  UpdateDisplay(GetDisplaySpec(640, 480) + ",800x600");
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(
@@ -530,9 +562,14 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 
 // If the rotating external secondary display is removed before the second copy
 // request callback called, it should stop rotating.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalSecondaryDisplayBeforeSecondCopyCallback) {
-  UpdateDisplay("640x480,800x600");
+  {
+    // Disable wallpaper animation on a secondary display.
+    ui::ScopedAnimationDurationScaleMode disable(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    UpdateDisplay("640x480," + GetDisplaySpec(800, 600));
+  }
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   const int64_t primary_display_id = display_manager()->GetDisplayAt(0).id();
@@ -554,9 +591,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 
 // If the rotating external primary display is removed before the second copy
 // request callback called, it should stop rotating.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalPrimaryDisplayBeforeSecondCopyCallback) {
-  UpdateDisplay("640x480,800x600");
+  UpdateDisplay("640x480," + GetDisplaySpec(800, 600));
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(
@@ -581,9 +618,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 // If the external primary display is removed while rotating the secondary
 // display. It should stop rotating the secondary display because the
 // |root_window| changed.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        RemoveExternalPrimaryDisplayDuringAnimationChangedRootWindow) {
-  UpdateDisplay("640x480,800x600");
+  UpdateDisplay("640x480," + GetDisplaySpec(800, 600));
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
   Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(
@@ -608,8 +645,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 
 // Test that smooth screen rotation animation will not interrupt hide animation.
 // The OverviewButton should be hidden.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        OverviewButtonTrayHideAnimationAlwaysCompletes) {
+  UpdateDisplayWithParam();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Long duration for hide animation, to allow it to be interrupted.
@@ -639,8 +677,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
 
 // Test that smooth screen rotation animation will work when |root_window|
 // recreated.
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
        ShouldRotateAfterRecreateLayers) {
+  UpdateDisplayWithParam();
   const int64_t display_id = display_manager()->GetDisplayAt(0).id();
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   SetScreenRotationAnimator(
@@ -676,7 +715,8 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest,
   EXPECT_EQ(display::Display::ROTATE_180, GetDisplayRotation(display_id));
 }
 
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest, DisplayChangeDuringCopy) {
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest, DisplayChangeDuringCopy) {
+  UpdateDisplayWithParam();
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
@@ -713,7 +753,8 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest, DisplayChangeDuringCopy) {
             GetDisplayRotation(internal_display_id));
 }
 
-TEST_F(ScreenRotationAnimatorSmoothAnimationTest, NewRequestShouldNotCancel) {
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest, NewRequestShouldNotCancel) {
+  UpdateDisplayWithParam();
   const int64_t display_id = display_manager()->GetDisplayAt(0).id();
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   SetScreenRotationAnimator(
@@ -767,5 +808,9 @@ TEST_F(ScreenRotationAnimatorSmoothAnimationTest, NewRequestShouldNotCancel) {
   EXPECT_FALSE(test_api()->HasActiveAnimations());
   EXPECT_EQ(display::Display::ROTATE_0, GetDisplayRotation(display_id));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ScreenRotationAnimatorSmoothAnimationTest,
+                         testing::Bool());
 
 }  // namespace ash

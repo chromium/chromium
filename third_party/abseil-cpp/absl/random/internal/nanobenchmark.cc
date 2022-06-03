@@ -27,6 +27,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/random/internal/platform.h"
 #include "absl/random/internal/randen_engine.h"
@@ -59,15 +60,6 @@
 #include <time.h>  // NOLINT
 #endif
 
-// ABSL_HAVE_ATTRIBUTE
-#if !defined(ABSL_HAVE_ATTRIBUTE)
-#ifdef __has_attribute
-#define ABSL_HAVE_ATTRIBUTE(x) __has_attribute(x)
-#else
-#define ABSL_HAVE_ATTRIBUTE(x) 0
-#endif
-#endif
-
 // ABSL_RANDOM_INTERNAL_ATTRIBUTE_NEVER_INLINE prevents inlining of the method.
 #if ABSL_HAVE_ATTRIBUTE(noinline) || (defined(__GNUC__) && !defined(__clang__))
 #define ABSL_RANDOM_INTERNAL_ATTRIBUTE_NEVER_INLINE __attribute__((noinline))
@@ -78,6 +70,7 @@
 #endif
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal_nanobenchmark {
 namespace {
 
@@ -108,7 +101,7 @@ std::string BrandString() {
   char brand_string[49];
   uint32_t abcd[4];
 
-  // Check if brand std::string is supported (it is on all reasonable Intel/AMD)
+  // Check if brand string is supported (it is on all reasonable Intel/AMD)
   Cpuid(0x80000000U, 0, abcd);
   if (abcd[0] < 0x80000004U) {
     return std::string();
@@ -807,4 +800,5 @@ size_t Measure(const Func func, const void* arg, const FuncInput* inputs,
 }
 
 }  // namespace random_internal_nanobenchmark
+ABSL_NAMESPACE_END
 }  // namespace absl

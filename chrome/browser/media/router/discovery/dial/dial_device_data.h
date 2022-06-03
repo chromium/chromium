@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "base/values.h"
 #include "url/gurl.h"
 
 namespace net {

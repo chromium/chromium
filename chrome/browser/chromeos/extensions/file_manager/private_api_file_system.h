@@ -15,15 +15,16 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/extension_function.h"
-#include "services/device/public/mojom/mtp_storage_info.mojom.h"
+#include "services/device/public/mojom/mtp_storage_info.mojom-forward.h"
 #include "storage/browser/file_system/file_system_url.h"
+
+class Profile;
 
 namespace storage {
 class FileSystemContext;
@@ -75,6 +76,11 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
  public:
   FileManagerPrivateGrantAccessFunction();
 
+  FileManagerPrivateGrantAccessFunction(
+      const FileManagerPrivateGrantAccessFunction&) = delete;
+  FileManagerPrivateGrantAccessFunction& operator=(
+      const FileManagerPrivateGrantAccessFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.grantAccess",
                              FILEMANAGERPRIVATE_GRANTACCESS)
 
@@ -83,8 +89,6 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
 
  private:
   ExtensionFunction::ResponseAction Run() override;
-  const ChromeExtensionFunctionDetails chrome_details_;
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPrivateGrantAccessFunction);
 };
 
 // Base class for FileManagerPrivateInternalAddFileWatchFunction and
@@ -94,7 +98,7 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
 // directories.
 class FileWatchFunctionBase : public LoggedExtensionFunction {
  public:
-  using ResponseCallback = base::Callback<void(bool success)>;
+  using ResponseCallback = base::OnceCallback<void(bool success)>;
 
   // Calls Respond() with |success| converted to base::Value.
   void RespondWith(bool success);
@@ -185,12 +189,15 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnGetDriveAvailableSpace(drive::FileError error,
-                                int64_t bytes_total,
-                                int64_t bytes_used);
-
   void OnGetMtpAvailableSpace(device::mojom::MtpStorageInfoPtr mtp_storage_info,
                               const bool error);
+
+  void OnGetDocumentsProviderAvailableSpace(const bool error,
+                                            const uint64_t available_bytes,
+                                            const uint64_t capacity_bytes);
+
+  void OnGetDriveQuotaUsage(drive::FileError error,
+                            drivefs::mojom::QuotaUsagePtr usage);
 
   void OnGetSizeStats(const uint64_t* total_size,
                       const uint64_t* remaining_size);
@@ -223,6 +230,21 @@ class FileManagerPrivateFormatVolumeFunction : public LoggedExtensionFunction {
 
  protected:
   ~FileManagerPrivateFormatVolumeFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.singlePartitionFormat method.
+// Deletes removable device partitions, create a single partition and format.
+class FileManagerPrivateSinglePartitionFormatFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.singlePartitionFormat",
+                             FILEMANAGERPRIVATE_SINGLEPARTITIONFORMAT)
+
+ protected:
+  ~FileManagerPrivateSinglePartitionFormatFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
@@ -268,14 +290,15 @@ class FileManagerPrivateInternalStartCopyFunction
 
   // Part of RunAsync(). Called after FreeDiskSpaceIfNeededFor() is completed on
   // IO thread.
-  void RunAfterFreeDiskSpace(bool available);
+  void RunAfterFreeDiskSpace(bool available, int64_t space_needed);
 
   // Part of RunAsync(). Called after Copy() is started on IO thread.
   void RunAfterStartCopy(int operation_id);
 
+  Profile* profile_ = nullptr;
+
   storage::FileSystemURL source_url_;
   storage::FileSystemURL destination_url_;
-  const ChromeExtensionFunctionDetails chrome_details_;
 };
 
 // Implements the chrome.fileManagerPrivate.cancelCopy method.
@@ -328,7 +351,7 @@ class FileManagerPrivateInternalComputeChecksumFunction
   ResponseAction Run() override;
 
  private:
-  std::unique_ptr<drive::util::FileStreamMd5Digester> digester_;
+  scoped_refptr<drive::util::FileStreamMd5Digester> digester_;
 
   void RespondWith(std::string hash);
 };
@@ -361,8 +384,6 @@ class FileManagerPrivateSearchFilesByHashesFunction
   void OnSearchByHashes(const std::set<std::string>& hashes,
                         drive::FileError error,
                         const std::vector<drive::HashAndFilePath>& results);
-
-  const ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class FileManagerPrivateSearchFilesFunction : public LoggedExtensionFunction {
@@ -381,8 +402,6 @@ class FileManagerPrivateSearchFilesFunction : public LoggedExtensionFunction {
 
   void OnSearchByPattern(
       const std::vector<std::pair<base::FilePath, bool>>& results);
-
-  const ChromeExtensionFunctionDetails chrome_details_;
 };
 
 // Implements the chrome.fileManagerPrivate.getDirectorySize method.
@@ -396,6 +415,33 @@ class FileManagerPrivateInternalGetDirectorySizeFunction
   ~FileManagerPrivateInternalGetDirectorySizeFunction() override = default;
 
   void OnDirectorySizeRetrieved(int64_t size);
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.startIOTask method.
+class FileManagerPrivateInternalStartIOTaskFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.startIOTask",
+                             FILEMANAGERPRIVATEINTERNAL_STARTIOTASK)
+
+ protected:
+  ~FileManagerPrivateInternalStartIOTaskFunction() override = default;
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.cancelIOTask method.
+class FileManagerPrivateCancelIOTaskFunction : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelIOTask",
+                             FILEMANAGERPRIVATE_CANCELIOTASK)
+
+ protected:
+  ~FileManagerPrivateCancelIOTaskFunction() override = default;
 
   // ExtensionFunction overrides
   ResponseAction Run() override;

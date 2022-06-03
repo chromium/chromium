@@ -4,10 +4,7 @@
 
 #include "chrome/browser/extensions/extension_ui_util.h"
 
-#include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/test/base/testing_profile.h"
 #include "extensions/common/image_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,15 +15,13 @@ namespace extensions {
 // need this test at the browser level, since the lower levels where
 // we use this value don't have access to the ThemeService.
 //
-// See ThemeProperties::GetDefaultColor() for the definition of the
-// default color.
+// TODO(pkasting): The validation that uses this color should happen at some
+// point where the requesting Chrome window can supply the relevant toolbar
+// color through an interface of some sort, removing this hardcoded value.
 TEST(ExtensionUiUtilTest, CheckDefaultToolbarColor) {
-  TestExtensionEnvironment env;
-  TestingProfile profile;
-  const ui::ThemeProvider& provider =
-      ThemeService::GetThemeProviderForProfile(&profile);
-  EXPECT_EQ(image_util::kDefaultToolbarColor,
-            provider.GetColor(ThemeProperties::COLOR_TOOLBAR))
+  EXPECT_EQ(
+      image_util::kDefaultToolbarColor,
+      ThemeProperties::GetDefaultColor(ThemeProperties::COLOR_TOOLBAR, false))
       << "Please update image_util::kDefaultToolbarColor to the new value";
 }
 

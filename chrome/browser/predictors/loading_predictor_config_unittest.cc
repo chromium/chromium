@@ -57,15 +57,29 @@ TEST_F(LoadingPredictorConfigTest, FeatureEnabledAndPrefDisabled) {
   EXPECT_FALSE(IsPreconnectAllowed(profile()));
 }
 
-TEST_F(LoadingPredictorConfigTest, OffTheRecordProfile) {
+TEST_F(LoadingPredictorConfigTest, IncognitoProfile) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
   SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
-  Profile* incognito = profile()->GetOffTheRecordProfile();
+  Profile* incognito =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   EXPECT_TRUE(IsPreconnectFeatureEnabled());
   EXPECT_FALSE(IsLoadingPredictorEnabled(incognito));
   EXPECT_TRUE(IsPreconnectAllowed(incognito));
+}
+
+TEST_F(LoadingPredictorConfigTest, NonPrimaryOffTheRecordProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
+  SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  Profile* otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
+
+  EXPECT_TRUE(IsPreconnectFeatureEnabled());
+  EXPECT_FALSE(IsLoadingPredictorEnabled(otr_profile));
+  EXPECT_TRUE(IsPreconnectAllowed(otr_profile));
 }
 
 }  // namespace predictors

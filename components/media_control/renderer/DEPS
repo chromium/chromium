@@ -1,0 +1,8 @@
+include_rules = [
+  "+content/public/renderer",
+  "+content/public/common",
+  "+components/media_control/mojom",
+  "+mojo/public",
+  "+services/service_manager/public",
+  "+third_party/blink/public/common",
+]

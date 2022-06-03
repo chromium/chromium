@@ -9,11 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace chromeos {
 
@@ -27,6 +25,10 @@ class FakeMultiplexedChannel : public MultiplexedChannel {
       ConnectionDetails connection_details,
       base::OnceCallback<void(const ConnectionDetails&)> destructor_callback =
           base::OnceCallback<void(const ConnectionDetails&)>());
+
+  FakeMultiplexedChannel(const FakeMultiplexedChannel&) = delete;
+  FakeMultiplexedChannel& operator=(const FakeMultiplexedChannel&) = delete;
+
   ~FakeMultiplexedChannel() override;
 
   std::vector<std::unique_ptr<ClientConnectionParameters>>& added_clients() {
@@ -52,26 +54,28 @@ class FakeMultiplexedChannel : public MultiplexedChannel {
   std::vector<std::unique_ptr<ClientConnectionParameters>> added_clients_;
 
   base::OnceCallback<void(const ConnectionDetails&)> destructor_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiplexedChannel);
 };
 
 // Test MultiplexedChannel::Delegate implementation.
 class FakeMultiplexedChannelDelegate : public MultiplexedChannel::Delegate {
  public:
   FakeMultiplexedChannelDelegate();
+
+  FakeMultiplexedChannelDelegate(const FakeMultiplexedChannelDelegate&) =
+      delete;
+  FakeMultiplexedChannelDelegate& operator=(
+      const FakeMultiplexedChannelDelegate&) = delete;
+
   ~FakeMultiplexedChannelDelegate() override;
 
-  const base::Optional<ConnectionDetails>& disconnected_connection_details() {
+  const absl::optional<ConnectionDetails>& disconnected_connection_details() {
     return disconnected_connection_details_;
   }
 
  private:
   void OnDisconnected(const ConnectionDetails& connection_details) override;
 
-  base::Optional<ConnectionDetails> disconnected_connection_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiplexedChannelDelegate);
+  absl::optional<ConnectionDetails> disconnected_connection_details_;
 };
 
 }  // namespace secure_channel

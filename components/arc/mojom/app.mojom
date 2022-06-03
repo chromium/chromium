@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 44
+// Next MinVersion: 50
 
 module arc.mojom;
 
 import "components/arc/mojom/app_permissions.mojom";
+import "components/arc/mojom/compatibility_mode.mojom";
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/scale_factor.mojom";
 import "ui/accessibility/mojom/ax_assistant_structure.mojom";
@@ -25,6 +26,7 @@ struct AppInfo {
   [MinVersion=2] bool sticky;  // true if the app cannot be uninstalled
   [MinVersion=7] bool notifications_enabled;
   [MinVersion=35] bool suspended;
+  [MinVersion=47] ArcResizeLockState resize_lock_state;
 };
 
 // Describes the data required to install a web app.
@@ -40,6 +42,12 @@ struct WebAppInfo {
   // The color used for the title bar of the app. Passed as a 32 bit ARGB value.
   // INT_MAX+1 represents an invalid color.
   int64 theme_color;
+
+  // If the web app is tied to a web-only TWA.
+  [MinVersion=44] bool is_web_only_twa;
+
+  // SHA256 fingerprint of the APK the web app belongs to.
+  [MinVersion=45] string? certificate_sha256_fingerprint;
 };
 
 // Describes ARC package.
@@ -81,6 +89,30 @@ enum ShowPackageInfoPage {
   MANAGE_LINKS = 1,
 };
 
+// Describes the raw icon png data published by an Android application.
+struct RawIconPngData {
+  // True if the icon is an adaptive icon, or false otherwise.
+  bool is_adaptive_icon;
+  // The raw icon for the non-adaptive icon, or the generated standard icon done
+  // by the ARC side for the adaptive icon.
+  array<uint8>? icon_png_data;
+  // The foreground image for the adaptive icon.
+  array<uint8>? foreground_icon_png_data;
+  // The background image for the adaptive icon.
+  array<uint8>? background_icon_png_data;
+};
+
+// The window information to launch an app.
+// This should be kept in sync with WindowInfo in
+// components/services/app_service/public/mojom/types.mojom, and
+// MakeArcWindowInfo in chrome/browser/apps/app_service/launch_utils.cc
+struct WindowInfo {
+  int32 window_id = -1;
+  int32 state = 0;
+  int64 display_id = -1;
+  Rect? bounds;
+};
+
 // Describes a Play Store app discovery result.
 struct AppDiscoveryResult {
   string? launch_intent_uri;
@@ -93,6 +125,7 @@ struct AppDiscoveryResult {
   float review_score;
   array<uint8> icon_png_data;
   [MinVersion=22] string? package_name;
+  [MinVersion=46] RawIconPngData? icon;
 };
 
 // Describes the status of an app discovery request, including completed
@@ -135,54 +168,6 @@ enum AppDiscoveryRequestState {
   PHONESKY_INTERNAL_ERROR = 15,
   //   At least one result returned with invalid app data.
   PHONESKY_RESULT_INVALID_DATA = 16,
-};
-
-// Describes the type/category of an app data search result.
-[Extensible]
-enum AppDataResultType {
-  PERSON = 0,         // Person search result.
-  NOTE_DOCUMENT = 1,  // Note document search result.
-};
-
-// Describes an app data search result.
-struct AppDataResult {
-  // Intent uri to launch the result.
-  string launch_intent_uri@0;
-  // Label for the result.
-  string label@1;
-  // Text information for the result.
-  string text@3;
-  // Icon information in png format. It could be null if not provided. Decoded
-  // in the utility process.
-  array<uint8>? icon_png_data@2;
-  // Type of this app data search result.
-  [MinVersion=28] AppDataResultType type@4;
-};
-
-// Describes the status of an app data search request, including completed
-// states and all possible anomalies.
-[Extensible]
-enum AppDataRequestState {
-  // Request is handled successfully.
-  REQUEST_SUCCESS = 0,
-  // Request is canceled.
-  REQUEST_CANCELED = 1,
-  // Request times out.
-  REQUEST_TIMEOUT = 2,
-  // Request fails for the case of an interrupted status.
-  REQUEST_INTERRUPTED = 3,
-  // Request fails for the case of response document error.
-  RESPONSE_DOCUMENT_ERROR = 4,
-  // Request has an unexpected exception of call to GmsCore.
-  REQUEST_UNEXPECTED_EXCEPTION = 5,
-  // Request has invalid parameters.
-  REQUEST_HAS_INVALID_PARAMS = 6,
-  // AppDataSearchProxyService is not available.
-  APP_DATA_SEARCH_PROXY_NOT_AVAILABLE = 7,
-  // Failed to call globalQuery to GmsCore.
-  FAILED_TO_CALL_GLOBALQUERY = 8,
-  // Failed to sign into GmsCore.
-  NOT_SIGNED_IN = 9,
 };
 
 // Describes the category type of app shortcut item.
@@ -242,7 +227,8 @@ struct AppShortcutItem {
   // The short description of this shortcut.
   string short_label;
 
-  // The icon for this shortcut, decoded in the utility process.
+  // The icon for this shortcut, decoded in the utility process. This will be
+  // replaced by |icon|.
   array<uint8> icon_png;
 
   // The package name of the publisher app.
@@ -253,6 +239,9 @@ struct AppShortcutItem {
 
   // "Rank" of a shortcut, which is a non-negative, sequential value.
   [MinVersion=32] int32 rank;
+
+  // The icon for this shortcut, decoded in the utility process.
+  [MinVersion=46] RawIconPngData? icon;
 };
 
 [Extensible]
@@ -279,7 +268,7 @@ enum PaiFlowState {
     TIMEOUT = 9,
 };
 
-// Next method ID: 18
+// Next method ID: 19
 // Deprecated method IDs: 1
 interface AppHost {
   // Sends newly added ARC app to Chrome. This message is sent when ARC receives
@@ -312,17 +301,28 @@ interface AppHost {
 
   // Sends information about newly created task |package_name| and |activity|
   // specifies launch activity and |intent| is initial intent used to start
-  // new task.
+  // new task. |session_id| is the window_id of |window_info| from app launch
+  // parameters. |session_id| is -1 if the window_id is not set.
   [MinVersion=4] OnTaskCreated@4(int32 task_id@0,
                                  string package_name@1,
                                  string activity@2,
                                  [MinVersion=13] string? name@3,
-                                 [MinVersion=15] string? intent@4);
+                                 [MinVersion=15] string? intent@4,
+                                 [MinVersion=48] int32 session_id@5);
 
-  // Sends task label and icon.
+  // Sends task label and icon. This is deprecated and will soon be replaced by
+  // OnTaskDescriptionChanged().
   [MinVersion=19] OnTaskDescriptionUpdated@17(int32 task_id,
                                               string label,
                                               array<uint8> icon_png_data);
+
+  // Sends task label and icon.
+  [MinVersion=46] OnTaskDescriptionChanged@18(
+      int32 task_id,
+      string label,
+      RawIconPngData icon,
+      [MinVersion=49] uint32 primary_color,
+      [MinVersion=49] uint32 status_bar_color);
 
   // Notifies that task has been destroyed.
   [MinVersion=4] OnTaskDestroyed@5(int32 task_id);
@@ -354,14 +354,14 @@ interface AppHost {
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
-// Next method ID: 35
-// Deprecated method IDs: 2, 3, 13
+// Next method ID: 40
+// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 22
 interface AppInstance {
   // DEPRECATED: Please use Init@21 instead.
-  InitDeprecated@0(AppHost host_ptr);
+  InitDeprecated@0(pending_remote<AppHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=26] Init@21(AppHost host_ptr) => ();
+  [MinVersion=26] Init@21(pending_remote<AppHost> host_remote) => ();
 
   [MinVersion=1] CanHandleResolutionDeprecated@4(
       string package_name, string activity, Rect dimension) =>
@@ -382,8 +382,15 @@ interface AppInstance {
 
   // Sends a request to ARC to launch an ARC app defined by |package_name| and
   // |activity|, which cannot be empty.
-  [MinVersion=23] LaunchApp@18(string package_name, string activity,
+  [MinVersion=23] LaunchApp@18(string package_name,
+                               string activity,
                                int64 display_id);
+
+  // Sends a request to ARC to launch an ARC app with specific launch window
+  // info.
+  [MinVersion=47] LaunchAppWithWindowInfo@38(string package_name,
+                                            string activity,
+                                            WindowInfo window_info);
 
   // Sends a request to ARC for the Android launcher to launch the specified app
   // shortcut.
@@ -395,29 +402,61 @@ interface AppInstance {
 
   // Sends a request to ARC to launch an intent. The intent is encoded as a URI
   // string. See Intent.toUri().
-  [MinVersion=23] LaunchIntent@19(string intent_uri, int64 display_id);
+  [MinVersion=23] LaunchIntent@19(string intent_uri,
+                                  int64 display_id);
 
-  // Sends a request for the ARC shortcut icon of a given resource id and
-  // |pixel_size|.
+  // Sends a request to ARC to launch an ARC app with specific launch window
+  // info.
+  [MinVersion=47] LaunchIntentWithWindowInfo@39(string intent_uri,
+                                                WindowInfo window_info);
+
+  // Updates ghost window info to ARC.
+  [MinVersion=49] UpdateWindowInfo@40(WindowInfo window_info);
+
+  // Sends a request for the ARC icon of a given resource id and
+  // |pixel_size|. This is deprecated and will soon be replaced by GetAppIcon().
   [MinVersion=36] RequestAppIcon@27(string package_name,
                                     string activity,
                                     int32 pixel_size) =>
                                         (array<uint8> icon_png_data);
 
-  // Sends a request for the ARC shortcut icon of a given resource id and
+  // Sends a request for the ARC icon of a given resource id and
   // |pixel_size|.
+  [MinVersion=46] GetAppIcon@35(string package_name,
+                                string activity, int32 pixel_size) =>
+                                    (RawIconPngData icon);
+
+  // Sends a request for the ARC shortcut icon of a given resource id and
+  // |pixel_size|. This is deprecated and will soon be replaced by
+  // GetAppShortcutIcon().
   [MinVersion=36] RequestShortcutIcon@28(string icon_resource_id,
                                          int32 pixel_size) =>
                                              (array<uint8> icon_png_data);
+
+  // Sends a request for the ARC shortcut icon of a given resource id and
+  // |pixel_size|.
+  [MinVersion=46] GetAppShortcutIcon@36(string icon_resource_id,
+                                        int32 pixel_size) =>
+                                            (RawIconPngData icon);
+
+  // Sends a request for the ARC icon for a given |package_name| and
+  // |pixel_size|. If |normalize| is true, the icon will be normalized per
+  // Android's icon guidelines, otherwise, the raw unnormalized icon is
+  // returned. Returns an empty array if an error occurred. This is deprecated
+  // and will soon be replaced by GetPackageIcon().
+  [MinVersion=38] RequestPackageIcon@30(string package_name,
+                                        int32 pixel_size,
+                                        bool normalize) =>
+                                            (array<uint8> icon_png_data);
 
   // Sends a request for the ARC icon for a given |package_name| and
   // |pixel_size|. If |normalize| is true, the icon will be normalized per
   // Android's icon guidelines, otherwise, the raw unnormalized icon is
   // returned. Returns an empty array if an error occurred.
-  [MinVersion=38] RequestPackageIcon@30(string package_name,
-                                        int32 pixel_size,
-                                        bool normalize) =>
-                                            (array<uint8> icon_png_data);
+  [MinVersion=46] GetPackageIcon@37(string package_name,
+                                    int32 pixel_size,
+                                    bool normalize) =>
+                                        (RawIconPngData icon);
 
   // Removes cached shortcut icon with the given resource id.
   [MinVersion=9] RemoveCachedIcon@14(string icon_resource_id);
@@ -476,11 +515,6 @@ interface AppInstance {
   // Sends a request to ARC to get app shortcuts for app with |package_name|.
   [MinVersion=29] GetAppShortcutItems@23(string package_name) =>
       (array<AppShortcutItem> shortcut_items);
-
-  // Starts a query for app data, which is querying icing indexable contents.
-  [MinVersion=27] GetIcingGlobalQueryResults@22(
-      string query, int32 max_results) =>
-          (AppDataRequestState state, array<AppDataResult> results);
 
   // Starts a query for Play Store apps.
   [MinVersion=20] GetRecentAndSuggestedAppsFromPlayStore@16(

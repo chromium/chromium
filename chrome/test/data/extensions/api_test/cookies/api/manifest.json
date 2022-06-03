@@ -4,11 +4,11 @@
   "manifest_version": 2,
   "description": "end-to-end browser test for chrome.experimental.cookies API",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "permissions": [
     "cookies",
-    "tabs",
     "http://*.chrome_extensions.cookies.com/",
     "http://chromium.cookies.com/",
     "https://*.cookies.com/",

@@ -49,7 +49,7 @@ class MODULES_EXPORT SpeechGrammarList final : public ScriptWrappable {
   void addFromUri(ScriptState*, const String& src, double weight = 1.0);
   void addFromString(const String&, double weight = 1.0);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<SpeechGrammar>> grammars_;

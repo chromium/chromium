@@ -109,46 +109,6 @@ TEST(MachMessage, MachMessageTrailerFromHeader) {
   EXPECT_EQ(MachMessageTrailerFromHeader(&test.receive), &test.receive.trailer);
 }
 
-TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
-  base::mac::ScopedMachReceiveRight port(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
-  ASSERT_NE(port, kMachPortNull);
-
-  mach_msg_empty_send_t send = {};
-  send.header.msgh_bits = MACH_MSGH_BITS(MACH_MSG_TYPE_MAKE_SEND_ONCE, 0);
-  send.header.msgh_size = sizeof(send);
-  send.header.msgh_remote_port = port.get();
-  mach_msg_return_t mr =
-      MachMessageWithDeadline(&send.header,
-                              MACH_SEND_MSG,
-                              0,
-                              MACH_PORT_NULL,
-                              kMachMessageDeadlineNonblocking,
-                              MACH_PORT_NULL,
-                              false);
-  ASSERT_EQ(mr, MACH_MSG_SUCCESS)
-      << MachErrorMessage(mr, "MachMessageWithDeadline send");
-
-  struct EmptyReceiveMessageWithAuditTrailer : public mach_msg_empty_send_t {
-    union {
-      mach_msg_trailer_t trailer;
-      mach_msg_audit_trailer_t audit_trailer;
-    };
-  };
-
-  EmptyReceiveMessageWithAuditTrailer receive;
-  mr = MachMessageWithDeadline(&receive.header,
-                               MACH_RCV_MSG | kMachMessageReceiveAuditTrailer,
-                               sizeof(receive),
-                               port.get(),
-                               kMachMessageDeadlineNonblocking,
-                               MACH_PORT_NULL,
-                               false);
-  ASSERT_EQ(mr, MACH_MSG_SUCCESS)
-      << MachErrorMessage(mr, "MachMessageWithDeadline receive");
-
-  EXPECT_EQ(AuditPIDFromMachMessageTrailer(&receive.trailer), getpid());
-}
-
 TEST(MachMessage, MachMessageDestroyReceivedPort) {
   mach_port_t port = NewMachPort(MACH_PORT_RIGHT_RECEIVE);
   ASSERT_NE(port, kMachPortNull);
@@ -197,6 +157,50 @@ TEST(MachMessage, MachMessageDestroyReceivedPort) {
   ignore_result(receive.release());
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_SEND));
 }
+
+#if defined(OS_MAC)
+
+TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
+  base::mac::ScopedMachReceiveRight port(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
+  ASSERT_NE(port, kMachPortNull);
+
+  mach_msg_empty_send_t send = {};
+  send.header.msgh_bits = MACH_MSGH_BITS(MACH_MSG_TYPE_MAKE_SEND_ONCE, 0);
+  send.header.msgh_size = sizeof(send);
+  send.header.msgh_remote_port = port.get();
+  mach_msg_return_t mr =
+      MachMessageWithDeadline(&send.header,
+                              MACH_SEND_MSG,
+                              0,
+                              MACH_PORT_NULL,
+                              kMachMessageDeadlineNonblocking,
+                              MACH_PORT_NULL,
+                              false);
+  ASSERT_EQ(mr, MACH_MSG_SUCCESS)
+      << MachErrorMessage(mr, "MachMessageWithDeadline send");
+
+  struct EmptyReceiveMessageWithAuditTrailer : public mach_msg_empty_send_t {
+    union {
+      mach_msg_trailer_t trailer;
+      mach_msg_audit_trailer_t audit_trailer;
+    };
+  };
+
+  EmptyReceiveMessageWithAuditTrailer receive;
+  mr = MachMessageWithDeadline(&receive.header,
+                               MACH_RCV_MSG | kMachMessageReceiveAuditTrailer,
+                               sizeof(receive),
+                               port.get(),
+                               kMachMessageDeadlineNonblocking,
+                               MACH_PORT_NULL,
+                               false);
+  ASSERT_EQ(mr, MACH_MSG_SUCCESS)
+      << MachErrorMessage(mr, "MachMessageWithDeadline receive");
+
+  EXPECT_EQ(AuditPIDFromMachMessageTrailer(&receive.trailer), getpid());
+}
+
+#endif  // OS_MAC
 
 }  // namespace
 }  // namespace test

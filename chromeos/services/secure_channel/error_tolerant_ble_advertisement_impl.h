@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/error_tolerant_ble_advertisement.h"
@@ -28,17 +27,27 @@ class ErrorTolerantBleAdvertisementImpl
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<ErrorTolerantBleAdvertisement> BuildInstance(
+    static std::unique_ptr<ErrorTolerantBleAdvertisement> Create(
         const DeviceIdPair& device_id_pair,
         std::unique_ptr<DataWithTimestamp> advertisement_data,
         BleSynchronizerBase* ble_synchronizer);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<ErrorTolerantBleAdvertisement> CreateInstance(
+        const DeviceIdPair& device_id_pair,
+        std::unique_ptr<DataWithTimestamp> advertisement_data,
+        BleSynchronizerBase* ble_synchronizer) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  ErrorTolerantBleAdvertisementImpl(const ErrorTolerantBleAdvertisementImpl&) =
+      delete;
+  ErrorTolerantBleAdvertisementImpl& operator=(
+      const ErrorTolerantBleAdvertisementImpl&) = delete;
 
   ~ErrorTolerantBleAdvertisementImpl() override;
 
@@ -51,7 +60,7 @@ class ErrorTolerantBleAdvertisementImpl
       BleSynchronizerBase* ble_synchronizer);
 
   // ErrorTolerantBleAdvertisement:
-  void Stop(const base::Closure& callback) override;
+  void Stop(base::OnceClosure callback) override;
   bool HasBeenStopped() override;
 
   // device::BluetoothAdvertisement::Observer
@@ -88,12 +97,11 @@ class ErrorTolerantBleAdvertisementImpl
 
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
 
-  base::Closure stop_callback_;
+  bool stopped_ = false;
+  base::OnceClosure stop_callback_;
 
   base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorTolerantBleAdvertisementImpl);
 };
 
 }  // namespace secure_channel

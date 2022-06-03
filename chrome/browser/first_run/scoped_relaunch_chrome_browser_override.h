@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FIRST_RUN_SCOPED_RELAUNCH_CHROME_BROWSER_OVERRIDE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 
 namespace upgrade_util {
@@ -18,12 +17,16 @@ class ScopedRelaunchChromeBrowserOverride {
  public:
   explicit ScopedRelaunchChromeBrowserOverride(
       RelaunchChromeBrowserCallback callback);
+
+  ScopedRelaunchChromeBrowserOverride(
+      const ScopedRelaunchChromeBrowserOverride&) = delete;
+  ScopedRelaunchChromeBrowserOverride& operator=(
+      const ScopedRelaunchChromeBrowserOverride&) = delete;
+
   ~ScopedRelaunchChromeBrowserOverride();
 
  private:
   RelaunchChromeBrowserCallback previous_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedRelaunchChromeBrowserOverride);
 };
 
 }  // namespace upgrade_util

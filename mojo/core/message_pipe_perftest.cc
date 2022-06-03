@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/perf_time_logger.h"
@@ -19,7 +19,6 @@
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_utils.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +30,9 @@ namespace {
 class MessagePipePerfTest : public test::MojoTestBase {
  public:
   MessagePipePerfTest() : message_count_(0), message_size_(0) {}
+
+  MessagePipePerfTest(const MessagePipePerfTest&) = delete;
+  MessagePipePerfTest& operator=(const MessagePipePerfTest&) = delete;
 
   void SetUpMeasurement(int message_count, size_t message_size) {
     message_count_ = message_count;
@@ -124,8 +126,6 @@ class MessagePipePerfTest : public test::MojoTestBase {
   std::string payload_;
   std::vector<uint8_t> read_buffer_;
   std::unique_ptr<base::PerfTimeLogger> perf_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipePerfTest);
 };
 
 TEST_F(MessagePipePerfTest, PingPong) {

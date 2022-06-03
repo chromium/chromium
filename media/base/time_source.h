@@ -18,8 +18,8 @@ class MEDIA_EXPORT TimeSource {
  public:
   // Helper alias for converting media timestamps into a wall clock timestamps.
   using WallClockTimeCB =
-      base::Callback<bool(const std::vector<base::TimeDelta>&,
-                          std::vector<base::TimeTicks>*)>;
+      base::RepeatingCallback<bool(const std::vector<base::TimeDelta>&,
+                                   std::vector<base::TimeTicks>*)>;
 
   TimeSource() {}
   virtual ~TimeSource() {}

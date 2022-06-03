@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STORE_VISUALS_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STORE_VISUALS_TASK_H_
 
-#include <vector>
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_visuals.h"
 #include "components/offline_pages/task/task.h"
@@ -27,6 +24,9 @@ class StoreVisualsTask : public Task {
   using RowUpdatedCallback =
       base::OnceCallback<void(bool, std::string, std::string)>;
 
+  StoreVisualsTask(const StoreVisualsTask&) = delete;
+  StoreVisualsTask& operator=(const StoreVisualsTask&) = delete;
+
   ~StoreVisualsTask() override;
 
   static std::unique_ptr<StoreVisualsTask> MakeStoreThumbnailTask(
@@ -40,10 +40,10 @@ class StoreVisualsTask : public Task {
       std::string favicon,
       CompleteCallback callback);
 
+ private:
   // Task implementation:
   void Run() override;
 
- private:
   StoreVisualsTask(OfflinePageMetadataStore* store,
                    int64_t offline_id,
                    std::string thumbnail,
@@ -58,7 +58,6 @@ class StoreVisualsTask : public Task {
   std::string favicon_;
   RowUpdatedCallback complete_callback_;
   base::WeakPtrFactory<StoreVisualsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StoreVisualsTask);
 };
 
 }  // namespace offline_pages

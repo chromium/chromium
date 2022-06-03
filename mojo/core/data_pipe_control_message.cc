@@ -4,6 +4,7 @@
 
 #include "mojo/core/data_pipe_control_message.h"
 
+#include "base/logging.h"
 #include "mojo/core/node_controller.h"
 #include "mojo/core/ports/event.h"
 #include "mojo/core/user_message_impl.h"

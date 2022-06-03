@@ -355,4 +355,4 @@ class PPBNaClPrivate {
 
 }  // namespace nacl
 
-#endif  /* COMPONENTS_NACL_RENDERER_PPB_NACL_PRIVATE_H_ */
+#endif  // COMPONENTS_NACL_RENDERER_PPB_NACL_PRIVATE_H_

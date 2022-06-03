@@ -7,11 +7,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
-#include "ui/base/ui_base_export.h"
 
 // Base class for all constrained window animation classes.
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface ConstrainedWindowAnimationBase : NSAnimation {
  @protected
   base::scoped_nsobject<NSWindow> _window;
@@ -22,17 +22,17 @@ UI_BASE_EXPORT
 @end
 
 // An animation to show a window.
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface ConstrainedWindowAnimationShow : ConstrainedWindowAnimationBase
 @end
 
 // An animation to hide a window.
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface ConstrainedWindowAnimationHide : ConstrainedWindowAnimationBase
 @end
 
 // An animation that pulses the window by growing it then shrinking it back.
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface ConstrainedWindowAnimationPulse : ConstrainedWindowAnimationBase
 @end
 

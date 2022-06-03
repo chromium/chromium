@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/origin.mojom-lite.js';
+import './media_engagement_score_details.mojom-lite.js';
+
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated with media engagement details.
 const pageIsPopulatedResolver = new PromiseResolver();
-function whenPageIsPopulatedForTest() {
+window.whenPageIsPopulatedForTest = function() {
   return pageIsPopulatedResolver.promise;
-}
-
-(function() {
+};
 
 let detailsProvider = null;
 let info = null;
@@ -23,7 +29,8 @@ let showNoPlaybacks = false;
 
 /**
  * Creates a single row in the engagement table.
- * @param {!MediaEngagementScoreDetails} rowInfo The info to create the row.
+ * @param {!media.mojom.MediaEngagementScoreDetails} rowInfo The info to create
+ *     the row.
  * @return {!HTMLElement}
  */
 function createRow(rowInfo) {
@@ -46,14 +53,15 @@ function createRow(rowInfo) {
   td[5].textContent = rowInfo.totalScore ? rowInfo.totalScore.toFixed(2) : '0';
   td[6].getElementsByClassName('engagement-bar')[0].style.width =
       (rowInfo.totalScore * 50) + 'px';
-  return document.importNode(template.content, true);
+  return /** @type {!HTMLElement} */ (
+      document.importNode(template.content, true));
 }
 
 /**
  * Remove all rows from the engagement table.
  */
 function clearTable() {
-  engagementTableBody.innerHTML = '';
+  engagementTableBody.innerHTML = trustedTypes.emptyHTML;
 }
 
 /**
@@ -68,8 +76,8 @@ function sortInfo() {
 /**
  * Compares two MediaEngagementScoreDetails objects based on |sortKey|.
  * @param {string} sortKey The name of the property to sort by.
- * @param {number|url.mojom.Origin} The first object to compare.
- * @param {number|url.mojom.Origin} The second object to compare.
+ * @param {Object|url.mojom.Origin} a The first object to compare.
+ * @param {Object|url.mojom.Origin} b The second object to compare.
  * @return {number} A negative number if |a| should be ordered before
  *     |b|, a positive number otherwise.
  */
@@ -97,7 +105,7 @@ function compareTableItem(sortKey, a, b) {
 /**
  * Creates a single row in the config table.
  * @param {string} name The name of the config setting.
- * @param {string} value The value of the config setting.
+ * @param {number|string} value The value of the config setting.
  * @return {!HTMLElement}
  */
 function createConfigRow(name, value) {
@@ -105,16 +113,18 @@ function createConfigRow(name, value) {
   const td = template.content.querySelectorAll('td');
   td[0].textContent = name;
   td[1].textContent = value;
-  return document.importNode(template.content, true);
+  return /** @type {!HTMLElement} */ (
+      document.importNode(template.content, true));
 }
 
 /**
  * Regenerates the config table.
- * @param {!MediaEngagementConfig} config The config of the MEI service.
+ * @param {!media.mojom.MediaEngagementConfig} config The config of the MEI
+ *     service.
  */
 
 function renderConfigTable(config) {
-  configTableBody.innerHTML = '';
+  configTableBody.innerHTML = trustedTypes.emptyHTML;
 
   configTableBody.appendChild(
       createConfigRow('Min Sessions', config.scoreMinVisits));
@@ -136,9 +146,6 @@ function renderConfigTable(config) {
       'Autoplay disable settings',
       formatFeatureFlag(config.featureAutoplayDisableSettings)));
   configTableBody.appendChild(createConfigRow(
-      'Autoplay whitelist settings',
-      formatFeatureFlag(config.featureAutoplayWhitelistSettings)));
-  configTableBody.appendChild(createConfigRow(
       'Unified autoplay (preference)',
       formatFeatureFlag(config.prefDisableUnifiedAutoplay)));
   configTableBody.appendChild(createConfigRow(
@@ -153,7 +160,7 @@ function renderConfigTable(config) {
 
 /**
  * Converts a boolean into a string value.
- * @param {bool} value The value of the config setting.
+ * @param {boolean} value The value of the config setting.
  * @return {string}
  */
 function formatFeatureFlag(value) {
@@ -188,8 +195,7 @@ function updateEngagementTable() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  detailsProvider = media.mojom.MediaEngagementScoreDetailsProvider.getRemote(
-      /*useBrowserInterfaceBroker=*/ true);
+  detailsProvider = media.mojom.MediaEngagementScoreDetailsProvider.getRemote();
   updateEngagementTable();
 
   engagementTableBody = $('engagement-table-body');
@@ -239,4 +245,3 @@ document.addEventListener('DOMContentLoaded', function() {
     renderTable();
   });
 });
-})();

@@ -5,7 +5,7 @@
 
 # Blink Layout
 
-The `Source/core/layout` directory contains the implementation of layout objects.
+The `renderer/core/layout` directory contains the implementation of layout objects.
 It covers the following document lifecycle states:
 
 * LayoutSubtreeChange (`InLayoutSubtreeChange` and `LayoutSubtreeChangeClean`)

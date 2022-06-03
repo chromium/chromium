@@ -20,6 +20,9 @@ class MockPermissionManager : public PermissionControllerDelegate {
  public:
   MockPermissionManager();
 
+  MockPermissionManager(const MockPermissionManager&) = delete;
+  MockPermissionManager& operator=(const MockPermissionManager&) = delete;
+
   ~MockPermissionManager() override;
 
   // PermissionManager:
@@ -32,13 +35,14 @@ class MockPermissionManager : public PermissionControllerDelegate {
                    PermissionType permission,
                    content::RenderFrameHost* render_frame_host,
                    const GURL& requesting_origin));
-  int RequestPermission(PermissionType permission,
-                        RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -49,16 +53,15 @@ class MockPermissionManager : public PermissionControllerDelegate {
   void ResetPermission(PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override {}
-  int SubscribePermissionStatusChange(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override;
-  void UnsubscribePermissionStatusChange(int subscription_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPermissionManager);
+  MOCK_METHOD4(SubscribePermissionStatusChange,
+               SubscriptionId(
+                   PermissionType permission,
+                   RenderFrameHost* render_frame_host,
+                   const GURL& requesting_origin,
+                   base::RepeatingCallback<void(blink::mojom::PermissionStatus)>
+                       callback));
+  MOCK_METHOD1(UnsubscribePermissionStatusChange,
+               void(SubscriptionId subscription_id));
 };
 
 }  // namespace content

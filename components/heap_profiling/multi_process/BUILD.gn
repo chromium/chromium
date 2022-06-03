@@ -1,0 +1,64 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("multi_process") {
+  sources = [
+    "client_connection_manager.cc",
+    "client_connection_manager.h",
+    "supervisor.cc",
+    "supervisor.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/services/heap_profiling",
+    "//components/services/heap_profiling/public/cpp",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
+if (is_android) {
+  generate_jni("jni_headers") {
+    testonly = true
+    sources = [ "javatests/src/org/chromium/components/heap_profiling/multi_process/HeapProfilingTestShim.java" ]
+  }
+
+  # This library must be included by the apk_under_test in order for the JNI
+  # shim to function correctly.
+  android_library("heap_profiling_java_test_support") {
+    testonly = true
+    sources = [ "javatests/src/org/chromium/components/heap_profiling/multi_process/HeapProfilingTestShim.java" ]
+    deps = [ "//base:base_java" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_driver.cc",
+    "test_driver.h",
+  ]
+
+  deps = [
+    ":multi_process",
+    "//base",
+    "//base/test:test_support",
+    "//components/services/heap_profiling/public/cpp",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+
+  if (is_android) {
+    sources += [
+      "heap_profiling_test_shim.cc",
+      "heap_profiling_test_shim.h",
+    ]
+    deps += [ ":jni_headers" ]
+  }
+}

@@ -4,16 +4,17 @@
 
 (async function() {
   TestRunner.addResult(`Tests that watches pane renders errors in red.\n`);
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var foo = 123
   `);
 
-  var watchExpressionsPane = self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
-  UI.panels.sources._sidebarPaneStack.showView(UI.panels.sources._watchSidebarPane).then(() => {
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
+  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
-    watchExpressionsPane._createWatchExpression('#$%');
-    watchExpressionsPane._saveExpressions();
+    watchExpressionsPane.createWatchExpression('#$%');
+    watchExpressionsPane.saveExpressions();
     TestRunner.deprecatedRunAfterPendingDispatches(step1);
   });
 
@@ -23,7 +24,7 @@
         watchExpressionsPane.contentElement.deepTextContent().indexOf('<not available>') !== -1 ? 'SUCCESS' : 'FAILED');
 
     // Clear watch expressions after execution.
-    watchExpressionsPane._deleteAllButtonClicked();
+    watchExpressionsPane.deleteAllButtonClicked();
     TestRunner.completeTest();
   }
 })();

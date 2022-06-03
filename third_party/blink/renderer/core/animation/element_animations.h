@@ -31,11 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ELEMENT_ANIMATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ELEMENT_ANIMATIONS_H_
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -50,6 +51,8 @@ class CORE_EXPORT ElementAnimations final
     : public GarbageCollected<ElementAnimations> {
  public:
   ElementAnimations();
+  ElementAnimations(const ElementAnimations&) = delete;
+  ElementAnimations& operator=(const ElementAnimations&) = delete;
   ~ElementAnimations();
 
   // Animations that are currently active for this element, their effects will
@@ -70,27 +73,22 @@ class CORE_EXPORT ElementAnimations final
 
   bool IsEmpty() const {
     return effect_stack_.IsEmpty() && css_animations_.IsEmpty() &&
-           animations_.IsEmpty();
+           animations_.IsEmpty() && worklet_animations_.IsEmpty();
   }
 
   void RestartAnimationOnCompositor();
 
-  void UpdateAnimationFlags(ComputedStyle&);
   void SetAnimationStyleChange(bool animation_style_change) {
     animation_style_change_ = animation_style_change;
   }
-
-  const ComputedStyle* BaseComputedStyle() const;
-  void UpdateBaseComputedStyle(const ComputedStyle*);
-  void ClearBaseComputedStyle();
-
-  bool AnimationsPreserveAxisAlignment() const;
-
-  void Trace(blink::Visitor*);
-
- private:
   bool IsAnimationStyleChange() const { return animation_style_change_; }
 
+  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
+  bool IsIdentityOrTranslation() const;
+
+  void Trace(Visitor*) const;
+
+ private:
   EffectStack effect_stack_;
   CSSAnimations css_animations_;
   AnimationCountedSet animations_;
@@ -102,12 +100,9 @@ class CORE_EXPORT ElementAnimations final
   // style, we store a cached value of the 'base' computed style (e.g. with no
   // change from the running animations) and use that during style recalc,
   // applying only the animation changes on top of it.
+  //
+  // See also StyleBaseData.
   bool animation_style_change_;
-  scoped_refptr<ComputedStyle> base_computed_style_;
-
-  // CSSAnimations checks if a style change is due to animation.
-  friend class CSSAnimations;
-  DISALLOW_COPY_AND_ASSIGN(ElementAnimations);
 
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, PseudoElementBaseComputedStyle);
 };

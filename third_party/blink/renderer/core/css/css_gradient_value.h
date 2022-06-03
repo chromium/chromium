@@ -74,7 +74,7 @@ struct CSSGradientColorStop {
 
   bool IsCacheable() const;
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   Member<const CSSPrimitiveValue> offset_;  // percentage | length | angle
   Member<const CSSValue> color_;
@@ -109,17 +109,13 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   CSSGradientType GradientType() const { return gradient_type_; }
 
-  bool IsFixedSize() const { return false; }
-  FloatSize FixedSize(const Document&) const { return FloatSize(); }
-
-  bool IsPending() const { return false; }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-
-  void LoadSubimages(const Document&) {}
+  CSSGradientValue* ComputedCSSValue(const ComputedStyle&,
+                                     bool allow_visited_style) const;
 
   Vector<Color> GetStopColors(const Document&, const ComputedStyle&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
   struct GradientDesc;
 
@@ -181,9 +177,9 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   bool Equals(const CSSLinearGradientValue&) const;
 
   CSSLinearGradientValue* ComputedCSSValue(const ComputedStyle&,
-                                           bool allow_visited_style);
+                                           bool allow_visited_style) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   // Any of these may be null.
@@ -279,9 +275,9 @@ class CSSRadialGradientValue final : public CSSGradientValue {
   bool Equals(const CSSRadialGradientValue&) const;
 
   CSSRadialGradientValue* ComputedCSSValue(const ComputedStyle&,
-                                           bool allow_visited_style);
+                                           bool allow_visited_style) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   // Any of these may be null.
@@ -305,14 +301,6 @@ class CSSRadialGradientValue final : public CSSGradientValue {
 
 class CSSConicGradientValue final : public CSSGradientValue {
  public:
-  static CSSConicGradientValue* Create(const CSSValue* x,
-                                       const CSSValue* y,
-                                       const CSSPrimitiveValue* from_angle,
-                                       CSSGradientRepeat repeat) {
-    return MakeGarbageCollected<CSSConicGradientValue>(x, y, from_angle,
-                                                       repeat);
-  }
-
   CSSConicGradientValue(const CSSValue* x,
                         const CSSValue* y,
                         const CSSPrimitiveValue* from_angle,
@@ -333,9 +321,9 @@ class CSSConicGradientValue final : public CSSGradientValue {
   bool Equals(const CSSConicGradientValue&) const;
 
   CSSConicGradientValue* ComputedCSSValue(const ComputedStyle&,
-                                          bool allow_visited_style);
+                                          bool allow_visited_style) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   // Any of these may be null.

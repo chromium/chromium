@@ -47,7 +47,7 @@ enum IDBCursorDirection {
   [RaisesException] void advance([EnforceRange] unsigned long count);
 
   [CallWith=ScriptState, ImplementedAs=Continue, RaisesException]
-  void continue([DefaultValue=Undefined] optional any key);
+  void continue(optional any key = null);
 
   [CallWith=ScriptState, RaisesException]
   void continuePrimaryKey(any key, any primaryKey);

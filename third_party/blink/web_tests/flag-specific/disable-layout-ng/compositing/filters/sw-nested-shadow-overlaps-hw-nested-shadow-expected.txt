@@ -10,13 +10,20 @@
       "name": "LayoutBlockFlow (positioned) DIV id='composited-parent'",
       "position": [-100, -100],
       "bounds": [200, 200],
-      "backgroundColor": "#000000",
       "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='software-parent'",
-      "bounds": [200, 200],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='software-child'",
+      "position": [100, 100],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
     }
   ],
   "transforms": [

@@ -5,9 +5,9 @@
 #ifndef CHROME_CHROME_CLEANER_TEST_TEST_SETTINGS_UTIL_H_
 #define CHROME_CHROME_CLEANER_TEST_TEST_SETTINGS_UTIL_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/settings/settings.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
@@ -35,7 +35,7 @@ class MockSettings : public Settings {
   ~MockSettings() override;
 
   MOCK_CONST_METHOD0(allow_crash_report_upload, bool());
-  MOCK_CONST_METHOD0(session_id, base::string16());
+  MOCK_CONST_METHOD0(session_id, std::wstring());
   MOCK_CONST_METHOD0(cleanup_id, std::string());
   MOCK_CONST_METHOD0(engine, Engine::Name());
   MOCK_CONST_METHOD0(is_stub_engine, bool());

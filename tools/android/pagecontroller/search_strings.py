@@ -15,7 +15,7 @@ _SRC_DIR = os.path.abspath(os.path.join(
       os.path.dirname(__file__), '..', '..', '..'))
 
 _DEFAULT_GRD = os.path.join(_SRC_DIR,
-    'chrome/android/java/strings/android_chrome_strings.grd')
+    'chrome/browser/ui/android/strings/android_chrome_strings.grd')
 _MATCH_MSG = u'  R.string.{}:\n    Text = "{}"\n    Desc = "{}"'
 
 class GrdSearch(object):

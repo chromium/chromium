@@ -28,6 +28,6 @@
 [
 Exposed=(Window,Worker)
 ] interface PerformanceMark : PerformanceEntry {
-    [CallWith=ScriptState, RaisesException] constructor(DOMString markName, optional PerformanceMarkOptions markOptions);
+    [MeasureAs=UserTimingL3, CallWith=ScriptState, RaisesException] constructor(DOMString markName, optional PerformanceMarkOptions markOptions = {});
     [CallWith=ScriptState] readonly attribute any detail;
 };

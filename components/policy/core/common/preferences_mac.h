@@ -7,7 +7,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
 #include "components/policy/policy_export.h"
 
 // Wraps a small part of the CFPreferences API surface in a very thin layer, to
@@ -19,6 +18,8 @@
 class POLICY_EXPORT MacPreferences {
  public:
   MacPreferences() {}
+  MacPreferences(const MacPreferences&) = delete;
+  MacPreferences& operator=(const MacPreferences&) = delete;
   virtual ~MacPreferences() {}
 
   virtual Boolean AppSynchronize(CFStringRef applicationID);
@@ -27,9 +28,6 @@ class POLICY_EXPORT MacPreferences {
                                          CFStringRef applicationID);
 
   virtual Boolean AppValueIsForced(CFStringRef key, CFStringRef applicationID);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MacPreferences);
 };
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_PREFERENCES_MAC_H_

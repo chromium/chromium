@@ -7,16 +7,15 @@
 
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 
 namespace content {
 
 // Callback interface to receive results of RunFileChooser() and
 // EnumerateDirectory() of WebContentsDelegate.
-class FileSelectListener {
+class FileSelectListener : public base::RefCounted<FileSelectListener> {
  public:
-  virtual ~FileSelectListener() {}
-
   // This function should be called if file selection succeeds.
   // |files| - A list of selected files.
   // |base_dir| - This has non-empty directory path if |mode| argument is
@@ -34,6 +33,11 @@ class FileSelectListener {
   // This function should be called if a user cancels a file selection
   // dialog, or we open no file selection dialog for some reason.
   virtual void FileSelectionCanceled() = 0;
+
+ protected:
+  virtual ~FileSelectListener() = default;
+
+  friend class base::RefCounted<FileSelectListener>;
 };
 
 }  // namespace content

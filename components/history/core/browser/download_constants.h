@@ -35,7 +35,7 @@ enum class DownloadDangerType {
   USER_VALIDATED = 6,
   DANGEROUS_HOST = 7,
   POTENTIALLY_UNWANTED = 8,
-  WHITELISTED_BY_POLICY = 9,
+  ALLOWLISTED_BY_POLICY = 9,
   ASYNC_SCANNING = 10,
   BLOCKED_PASSWORD_PROTECTED = 11,
   BLOCKED_TOO_LARGE = 12,
@@ -44,6 +44,8 @@ enum class DownloadDangerType {
   DEEP_SCANNED_SAFE = 15,
   DEEP_SCANNED_OPENED_DANGEROUS = 16,
   PROMPT_FOR_SCANNING = 17,
+  BLOCKED_UNSUPPORTED_FILETYPE = 18,
+  DANGEROUS_ACCOUNT_COMRPOMISE = 19,
 };
 
 // DownloadId represents the id of a DownloadRow into the DownloadDatabase.
@@ -51,6 +53,6 @@ enum class DownloadDangerType {
 // kInvalidDownloadId.
 extern const DownloadId kInvalidDownloadId;
 
-}  // namespace
+}  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_DOWNLOAD_CONSTANTS_H_

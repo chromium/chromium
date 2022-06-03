@@ -21,11 +21,12 @@ namespace cssvalue {
 
 class CSSPathValue : public CSSValue {
  public:
-  static CSSPathValue& EmptyPathValue();
+  static const CSSPathValue& EmptyPathValue();
 
   explicit CSSPathValue(scoped_refptr<StylePath>,
                         PathSerializationFormat = kNoTransformation);
   explicit CSSPathValue(std::unique_ptr<SVGPathByteStream>,
+                        WindRule wind_rule = RULE_NONZERO,
                         PathSerializationFormat = kNoTransformation);
 
   StylePath* GetStylePath() const { return style_path_.get(); }
@@ -33,7 +34,7 @@ class CSSPathValue : public CSSValue {
 
   bool Equals(const CSSPathValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
   const SVGPathByteStream& ByteStream() const {
     return style_path_->ByteStream();

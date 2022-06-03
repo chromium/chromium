@@ -54,9 +54,9 @@ bool CompareImages(const DecodedImage& reference_image,
   // Uses the reference image's size as the ground truth.
   const gfx::Size image_size = reference_image.size;
   if (image_size != hw_decoded_image.size) {
-    DLOG(ERROR) << "Wrong expected software decoded image size, "
-                << image_size.ToString() << " versus VaAPI provided "
-                << hw_decoded_image.size.ToString();
+    LOG(ERROR) << "Wrong expected software decoded image size, "
+               << image_size.ToString() << " versus VaAPI provided "
+               << hw_decoded_image.size.ToString();
     return false;
   }
 
@@ -100,7 +100,7 @@ bool CompareImages(const DecodedImage& reference_image,
           image_size.width(), image_size.height());
     }
     if (conversion_result != 0) {
-      DLOG(ERROR) << "libyuv conversion error";
+      LOG(ERROR) << "libyuv conversion error";
       return false;
     }
 
@@ -112,12 +112,12 @@ bool CompareImages(const DecodedImage& reference_image,
         temp_v.get(), half_image_size.width(), image_size.width(),
         image_size.height());
   } else {
-    DLOG(ERROR) << "HW FourCC not supported: " << FourccToString(hw_fourcc);
+    LOG(ERROR) << "HW FourCC not supported: " << FourccToString(hw_fourcc);
     return false;
   }
 
   if (ssim < min_ssim) {
-    DLOG(ERROR) << "SSIM too low: " << ssim << " < " << min_ssim;
+    LOG(ERROR) << "SSIM too low: " << ssim << " < " << min_ssim;
     return false;
   }
 

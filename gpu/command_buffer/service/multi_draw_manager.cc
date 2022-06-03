@@ -6,7 +6,8 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 
 namespace gpu {

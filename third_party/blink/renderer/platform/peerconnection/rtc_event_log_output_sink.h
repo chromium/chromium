@@ -14,7 +14,7 @@ class PLATFORM_EXPORT RtcEventLogOutputSink : public GarbageCollectedMixin {
  public:
   virtual ~RtcEventLogOutputSink() = default;
 
-  virtual void OnWebRtcEventLogWrite(const std::string& output) = 0;
+  virtual void OnWebRtcEventLogWrite(const WTF::Vector<uint8_t>& output) = 0;
 };
 
 }  // namespace blink

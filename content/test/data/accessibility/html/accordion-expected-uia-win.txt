@@ -1,0 +1,23 @@
+Document
+++Text Name='Accordion Section #1'
+++++Button Name='Accordion Section #1' ExpandCollapse.ExpandCollapseState='Expanded'
+++++++Group IsControlElement=false
+++++++++Text Name='Accordion Section #1' IsControlElement=false
+++Group Name='Accordion Section #1'
+++++Group IsControlElement=false
+++++++Text Name='Content for first section of accordion element.'
+++Text Name='Accordion Section #2'
+++++Button Name='Accordion Section #2' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++Group IsControlElement=false
+++++++++Text Name='Accordion Section #2' IsControlElement=false
+++Text Name='Accordion Section #3'
+++++Button Name='Accordion Section #3' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++Group IsControlElement=false
+++++++++Text Name='Accordion Section #3' IsControlElement=false
+++Text Name='Accordion Section #4'
+++++Button Name='Accordion Section #4' IsEnabled=false ExpandCollapse.ExpandCollapseState='Expanded'
+++++++Group IsControlElement=false
+++++++++Text Name='Accordion Section #4' IsControlElement=false
+++Group Name='Accordion Section #4'
+++++Group IsControlElement=false
+++++++Text Name='Content for forth section of accordion element. This section will always be visible but disabled.'

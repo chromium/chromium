@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging detects external arrays as arrays.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -37,8 +37,8 @@
     ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(onRemoteObjectsLoaded);
   }
 
-  function onRemoteObjectsLoaded() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function onRemoteObjectsLoaded() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

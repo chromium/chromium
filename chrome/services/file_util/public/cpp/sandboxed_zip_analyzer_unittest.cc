@@ -7,9 +7,8 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,13 +23,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 namespace {
 
 const char kAppInZipHistogramName[] =
     "SBClientDownload.ZipFileContainsAppDirectory";
 }
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
 class SandboxedZipAnalyzerTest : public ::testing::Test {
  protected:
@@ -54,6 +53,9 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
       results->success = false;
     }
 
+    ResultsGetter(const ResultsGetter&) = delete;
+    ResultsGetter& operator=(const ResultsGetter&) = delete;
+
     SandboxedZipAnalyzer::ResultCallback GetCallback() {
       return base::BindOnce(&ResultsGetter::OnZipAnalyzerResults,
                             base::Unretained(this));
@@ -68,8 +70,6 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
 
     base::OnceClosure quit_closure_;
     safe_browsing::ArchiveAnalyzerResults* results_;
-
-    DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
 
   SandboxedZipAnalyzerTest()
@@ -113,7 +113,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   }
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   void ExpectMachOHeaders(
       const BinaryData& data,
       const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary) {
@@ -153,14 +153,14 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
       return;
     }
 #endif  // OS_WIN
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     // ExtractImageFeatures for Mac, which only works on MachO
     // files.
     if (binary.file_basename().find("executablefat") != std::string::npos) {
       ExpectMachOHeaders(data, binary);
       return;
     }
-#endif  // OS_MACOSX
+#endif  // OS_MAC
     // No signature/image headers should be extracted on the wrong platform
     // (e.g. analyzing .exe on Mac).
     ASSERT_FALSE(binary.has_signature());
@@ -174,12 +174,12 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   static const BinaryData kSignedExe;
   static const BinaryData kJSEFile;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   static const uint8_t kUnsignedMachODigest[];
   static const uint8_t kSignedMachODigest[];
   static const BinaryData kUnsignedMachO;
   static const BinaryData kSignedMachO;
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
   base::FilePath dir_test_data_;
   content::BrowserTaskEnvironment task_environment_;
@@ -223,7 +223,7 @@ const SandboxedZipAnalyzerTest::BinaryData SandboxedZipAnalyzerTest::kJSEFile =
         false,  // is_signed
 };
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 const uint8_t SandboxedZipAnalyzerTest::kUnsignedMachODigest[] = {
     0xe4, 0x62, 0xff, 0x75, 0x2f, 0xf9, 0xd8, 0x4e, 0x34, 0xd8, 0x43,
     0xe5, 0xd4, 0x6e, 0x20, 0x12, 0xad, 0xcb, 0xd4, 0x85, 0x40, 0xa8,
@@ -248,7 +248,7 @@ const SandboxedZipAnalyzerTest::BinaryData
         34176,
         true,  // !is_signed
 };
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
 TEST_F(SandboxedZipAnalyzerTest, NoBinaries) {
   safe_browsing::ArchiveAnalyzerResults results;
@@ -258,7 +258,10 @@ TEST_F(SandboxedZipAnalyzerTest, NoBinaries) {
   ASSERT_TRUE(results.success);
   EXPECT_FALSE(results.has_executable);
   EXPECT_FALSE(results.has_archive);
-  EXPECT_EQ(0, results.archived_binary.size());
+  ASSERT_EQ(1, results.archived_binary.size());
+  EXPECT_EQ(results.archived_binary[0].file_basename(), "simple_exe.txt");
+  EXPECT_FALSE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
 }
 
 TEST_F(SandboxedZipAnalyzerTest, OneUnsignedBinary) {
@@ -367,7 +370,7 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedJSEFile) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kAppInZipHistogramName, 0);
@@ -400,4 +403,4 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   EXPECT_TRUE(found_unsigned);
   EXPECT_TRUE(found_signed);
 }
-#endif  // OS_MACOSX
+#endif  // OS_MAC

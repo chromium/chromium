@@ -29,8 +29,6 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
-#include "components/previews/core/previews_experiments.h"
-#include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -144,73 +142,11 @@ DataReductionProxySettingsAndroid::GetDailyReceivedContentLengths(
       env, data_reduction_proxy::prefs::kDailyHttpReceivedContentLength);
 }
 
-ScopedJavaLocalRef<jstring>
-DataReductionProxySettingsAndroid::GetDataReductionProxyPassThroughHeader(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  return ConvertUTF8ToJavaString(
-      env, data_reduction_proxy::chrome_proxy_pass_through_header());
-}
 
 jboolean DataReductionProxySettingsAndroid::IsDataReductionProxyUnreachable(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   return Settings()->IsDataReductionProxyUnreachable();
-}
-
-ScopedJavaLocalRef<jstring>
-DataReductionProxySettingsAndroid::MaybeRewriteWebliteUrl(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jstring>& url) {
-  if (url.is_null() || !Settings()->IsDataReductionProxyEnabled() ||
-      !previews::params::ArePreviewsAllowed()) {
-    return ScopedJavaLocalRef<jstring>(url);
-  }
-
-  GURL gurl(base::android::ConvertJavaStringToUTF8(url));
-  if (!gurl.is_valid() || gurl.is_empty())
-    return ScopedJavaLocalRef<jstring>(url);
-
-  std::string weblite_host_and_path = base::GetFieldTrialParamValueByFeature(
-      data_reduction_proxy::features::kDataReductionProxyDecidesTransform,
-      "weblite_url_host_and_path");
-
-  if (weblite_host_and_path.empty())
-    weblite_host_and_path = "googleweblight.com/i";
-
-  if (gurl.host() + gurl.path() != weblite_host_and_path)
-    return ScopedJavaLocalRef<jstring>(url);
-
-  std::string weblite_query_param = base::GetFieldTrialParamValueByFeature(
-      data_reduction_proxy::features::kDataReductionProxyDecidesTransform,
-      "weblite_url_query_param");
-  if (weblite_query_param.empty())
-    weblite_query_param = "u";
-
-  std::string wrapped_url_str;
-  if (!net::GetValueForKeyInQuery(gurl, weblite_query_param, &wrapped_url_str))
-    return ScopedJavaLocalRef<jstring>(url);
-
-  GURL wrapped_gurl(wrapped_url_str);
-  if (!wrapped_gurl.is_valid() || wrapped_gurl.is_empty() ||
-      (!wrapped_gurl.SchemeIs("http") && !wrapped_gurl.SchemeIs("https"))) {
-    return ScopedJavaLocalRef<jstring>(url);
-  }
-
-  // For http:// webpages that are fetched via data saver proxy, do not
-  // rewrite the URL if the use of proxy or previews delivered via proxy is
-  // disabled.
-  if (wrapped_gurl.SchemeIs("http")) {
-    if (data_reduction_proxy::params::IsIncludedInHoldbackFieldTrial() ||
-        !base::FeatureList::IsEnabled(
-            data_reduction_proxy::features::
-                kDataReductionProxyDecidesTransform)) {
-      return ScopedJavaLocalRef<jstring>(url);
-    }
-  }
-
-  return base::android::ConvertUTF8ToJavaString(env, wrapped_gurl.spec());
 }
 
 ScopedJavaLocalRef<jlongArray>
@@ -251,7 +187,7 @@ void DataReductionProxySettingsAndroid::QueryDataUsage(
   Settings()
       ->data_reduction_proxy_service()
       ->compression_stats()
-      ->GetHistoricalDataUsage(base::Bind(
+      ->GetHistoricalDataUsage(base::BindOnce(
           &DataReductionProxySettingsAndroid::OnQueryDataUsageComplete,
           weak_factory_.GetWeakPtr(), JavaObjectWeakGlobalRef(env, obj),
           base::android::ScopedJavaGlobalRef<jobject>(j_result_obj), num_days));

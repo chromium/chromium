@@ -16,7 +16,7 @@
 
 namespace content {
 
-class DevToolsProtocolTest : public ContentBrowserTest,
+class DevToolsProtocolTest : virtual public ContentBrowserTest,
                              public DevToolsAgentHostClient,
                              public WebContentsDelegate {
  public:
@@ -32,13 +32,9 @@ class DevToolsProtocolTest : public ContentBrowserTest,
   // WebContentsDelegate methods:
   bool DidAddMessageToConsole(WebContents* source,
                               blink::mojom::ConsoleMessageLevel log_level,
-                              const base::string16& message,
+                              const std::u16string& message,
                               int32_t line_no,
-                              const base::string16& source_id) override;
-
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents,
-      content::SecurityStyleExplanations* security_style_explanations) override;
+                              const std::u16string& source_id) override;
 
   base::DictionaryValue* SendCommand(const std::string& method,
                                      std::unique_ptr<base::Value> params) {
@@ -47,7 +43,20 @@ class DevToolsProtocolTest : public ContentBrowserTest,
 
   base::DictionaryValue* SendCommand(const std::string& method,
                                      std::unique_ptr<base::Value> params,
-                                     bool wait);
+                                     bool wait) {
+    return SendSessionCommand(method, std::move(params), std::string(), wait);
+  }
+
+  base::DictionaryValue* SendSessionCommand(const std::string& method,
+                                            std::unique_ptr<base::Value> params,
+                                            const std::string& session_id) {
+    return SendSessionCommand(method, std::move(params), session_id, true);
+  }
+
+  base::DictionaryValue* SendSessionCommand(const std::string& method,
+                                            std::unique_ptr<base::Value> params,
+                                            const std::string& session_id,
+                                            bool wait);
 
   void WaitForResponse();
 
@@ -70,6 +79,7 @@ class DevToolsProtocolTest : public ContentBrowserTest,
 
   void TearDownOnMainThread() override;
 
+  bool HasExistingNotification(const std::string& notification) const;
   std::unique_ptr<base::DictionaryValue> WaitForNotification(
       const std::string& notification) {
     return WaitForNotification(notification, false);
@@ -109,16 +119,14 @@ class DevToolsProtocolTest : public ContentBrowserTest,
   void ProcessNavigationsAnyOrder(
       std::vector<ExpectedNavigation> expected_navigations);
 
-  std::vector<std::string> GetAllFrameUrls();
-
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 
-  void SetSecurityExplanationCert(
-      const scoped_refptr<net::X509Certificate>& cert) {
-    cert_ = cert;
+  void SetAllowUnsafeOperations(bool allow) {
+    allow_unsafe_operations_ = allow;
   }
 
   std::unique_ptr<base::DictionaryValue> result_;
+  base::Value error_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int last_sent_id_;
   std::vector<int> result_ids_;
@@ -129,9 +137,9 @@ class DevToolsProtocolTest : public ContentBrowserTest,
  private:
   void RunLoopUpdatingQuitClosure();
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                               const std::string& message) override;
-
+                               base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
+  bool AllowUnsafeOperations() override;
 
   std::string waiting_for_notification_;
   NotificationMatcher waiting_for_notification_matcher_;
@@ -139,8 +147,8 @@ class DevToolsProtocolTest : public ContentBrowserTest,
   int waiting_for_command_result_id_;
   bool in_dispatch_;
   bool agent_host_can_close_;
-  scoped_refptr<net::X509Certificate> cert_;
   base::OnceClosure run_loop_quit_closure_;
+  bool allow_unsafe_operations_ = true;
 };
 
 }  // namespace content

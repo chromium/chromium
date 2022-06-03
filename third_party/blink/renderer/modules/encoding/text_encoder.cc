@@ -30,9 +30,9 @@
 
 #include "third_party/blink/renderer/modules/encoding/text_encoder.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
-#include "third_party/blink/renderer/modules/encoding/text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
@@ -88,15 +88,15 @@ TextEncoderEncodeIntoResult* TextEncoder::encodeInto(
       TextEncoderEncodeIntoResult::Create();
 
   TextCodec::EncodeIntoResult encode_into_result_data;
-  unsigned char* destination_buffer = destination.View()->View()->Data();
+  unsigned char* destination_buffer = destination->Data();
   if (source.Is8Bit()) {
-    encode_into_result_data = codec_->EncodeInto(
-        source.Characters8(), source.length(), destination_buffer,
-        destination.View()->deprecatedLengthAsUnsigned());
+    encode_into_result_data =
+        codec_->EncodeInto(source.Characters8(), source.length(),
+                           destination_buffer, destination->length());
   } else {
-    encode_into_result_data = codec_->EncodeInto(
-        source.Characters16(), source.length(), destination_buffer,
-        destination.View()->deprecatedLengthAsUnsigned());
+    encode_into_result_data =
+        codec_->EncodeInto(source.Characters16(), source.length(),
+                           destination_buffer, destination->length());
   }
 
   encode_into_result->setRead(encode_into_result_data.code_units_read);

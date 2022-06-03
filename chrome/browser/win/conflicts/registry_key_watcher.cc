@@ -13,7 +13,7 @@
 // static
 std::unique_ptr<RegistryKeyWatcher> RegistryKeyWatcher::Create(
     HKEY root,
-    const base::string16& subkey,
+    const std::wstring& subkey,
     REGSAM wow64access,
     base::OnceClosure on_registry_key_deleted) {
   std::unique_ptr<RegistryKeyWatcher> instance(new RegistryKeyWatcher(
@@ -29,7 +29,7 @@ RegistryKeyWatcher::~RegistryKeyWatcher() = default;
 
 RegistryKeyWatcher::RegistryKeyWatcher(
     HKEY root,
-    const base::string16& subkey,
+    const std::wstring& subkey,
     REGSAM wow64access,
     base::OnceClosure on_registry_key_deleted)
     : registry_key_(std::make_unique<base::win::RegKey>(
@@ -56,7 +56,7 @@ void RegistryKeyWatcher::OnRegistryKeyChanged() {
   // This callback may be invoked for any modification on the registry key.
   // Since this class cares only about the deletion of the key, read the default
   // value of the key to figure out if it still exists.
-  base::string16 value;
+  std::wstring value;
   if (registry_key_->ReadValue(nullptr, &value) == ERROR_KEY_DELETED) {
     // The registry key is no longer needed.
     registry_key_.reset();

@@ -541,9 +541,7 @@ quand une drôle de petite voix m’a réveillé. Elle disait:
         # won't read the file even with open(...encoding='utf-8') unless
         # errors is specified.   or if there's some quirk in 3.1.2
         # since I'm pretty sure this test worked with py3k when I wrote it.
-        template.render(
-            path=self._file_path("internationalization.html")
-        )
+        template.render(path=self._file_path("internationalization.html"))
 
     @requires_python_2
     def test_bytestring_passthru(self):
@@ -1682,7 +1680,7 @@ Text
                     8,
                     8,
                 ],
-                "source_encoding": "ascii",
+                "source_encoding": "utf-8",
                 "filename": None,
                 "line_map": {
                     35: 29,
@@ -1773,7 +1771,7 @@ Text
                     8,
                     8,
                 ],
-                "source_encoding": "ascii",
+                "source_encoding": "utf-8",
                 "filename": None,
                 "line_map": {
                     34: 10,

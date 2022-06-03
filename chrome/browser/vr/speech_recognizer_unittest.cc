@@ -5,11 +5,11 @@
 #include "chrome/browser/vr/speech_recognizer.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
@@ -32,9 +32,9 @@
 namespace vr {
 
 static const int kTestSessionId = 1;
-const char kTestInterimResult[] = "kitten";
-const char kTestResult[] = "cat";
-const char kTestResultMultiple[] = "cat video";
+const char16_t kTestInterimResult[] = u"kitten";
+const char16_t kTestResult[] = u"cat";
+const char16_t kTestResultMultiple[] = u"cat video";
 
 enum FakeRecognitionEvent {
   RECOGNITION_START = 0,
@@ -54,6 +54,10 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
   FakeSharedURLLoaderFactory() {}
 
+  FakeSharedURLLoaderFactory(const FakeSharedURLLoaderFactory&) = delete;
+  FakeSharedURLLoaderFactory& operator=(const FakeSharedURLLoaderFactory&) =
+      delete;
+
   // network::mojom::URLLoaderFactory:
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
@@ -63,7 +67,6 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -71,8 +74,8 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     test_url_loader_factory_.CreateLoaderAndStart(
-        std::move(loader), routing_id, request_id, options, request,
-        std::move(client), traffic_annotation);
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
   }
 
   // network::SharedURLLoaderFactory:
@@ -87,8 +90,6 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
   ~FakeSharedURLLoaderFactory() override {}
 
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSharedURLLoaderFactory);
 };
 
 // Returns a SharedURLLoaderFactory that hangs.
@@ -96,6 +97,12 @@ class FakePendingSharedURLLoaderFactory
     : public network::PendingSharedURLLoaderFactory {
  public:
   FakePendingSharedURLLoaderFactory() {}
+
+  FakePendingSharedURLLoaderFactory(const FakePendingSharedURLLoaderFactory&) =
+      delete;
+  FakePendingSharedURLLoaderFactory& operator=(
+      const FakePendingSharedURLLoaderFactory&) = delete;
+
   ~FakePendingSharedURLLoaderFactory() override {}
 
  protected:
@@ -105,14 +112,16 @@ class FakePendingSharedURLLoaderFactory
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override {
     return base::MakeRefCounted<FakeSharedURLLoaderFactory>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakePendingSharedURLLoaderFactory);
 };
 
 class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
  public:
   FakeSpeechRecognitionManager() {}
+
+  FakeSpeechRecognitionManager(const FakeSpeechRecognitionManager&) = delete;
+  FakeSpeechRecognitionManager& operator=(const FakeSpeechRecognitionManager&) =
+      delete;
+
   ~FakeSpeechRecognitionManager() override {}
 
   // SpeechRecognitionManager methods.
@@ -149,8 +158,8 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
 
   void FakeSpeechRecognitionEvent(FakeRecognitionEvent event) {
     if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
-      base::PostTask(
-          FROM_HERE, {content::BrowserThread::IO},
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
           base::BindOnce(
               &FakeSpeechRecognitionManager::FakeSpeechRecognitionEvent,
               base::Unretained(this), event));
@@ -214,7 +223,7 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
   }
 
  private:
-  void SendRecognitionResult(const char* string, bool is_provisional) {
+  void SendRecognitionResult(const char16_t* string, bool is_provisional) {
     content::SpeechRecognitionEventListener* listener = GetActiveListener();
     if (!listener)
       return;
@@ -223,8 +232,8 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
 
     blink::mojom::SpeechRecognitionResultPtr result =
         blink::mojom::SpeechRecognitionResult::New();
-    result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-        base::ASCIIToUTF16(string), 1.0));
+    result->hypotheses.push_back(
+        blink::mojom::SpeechRecognitionHypothesis::New(string, 1.0));
     result->is_provisional = is_provisional;
     std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
     results.push_back(std::move(result));
@@ -240,19 +249,18 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
   int session_id_ = 0;
   content::SpeechRecognitionSessionContext session_ctx_;
   content::SpeechRecognitionSessionConfig session_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSpeechRecognitionManager);
 };
 
 class MockVoiceSearchDelegate : public VoiceResultDelegate {
  public:
   MockVoiceSearchDelegate() = default;
+
+  MockVoiceSearchDelegate(const MockVoiceSearchDelegate&) = delete;
+  MockVoiceSearchDelegate& operator=(const MockVoiceSearchDelegate&) = delete;
+
   ~MockVoiceSearchDelegate() override = default;
 
-  MOCK_METHOD1(OnVoiceResults, void(const base::string16& result));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVoiceSearchDelegate);
+  MOCK_METHOD1(OnVoiceResults, void(const std::u16string& result));
 };
 
 class SpeechRecognizerTest : public testing::Test {
@@ -270,6 +278,9 @@ class SpeechRecognizerTest : public testing::Test {
     SpeechRecognizer::SetManagerForTest(fake_speech_recognition_manager_.get());
   }
 
+  SpeechRecognizerTest(const SpeechRecognizerTest&) = delete;
+  SpeechRecognizerTest& operator=(const SpeechRecognizerTest&) = delete;
+
   ~SpeechRecognizerTest() override {
     SpeechRecognizer::SetManagerForTest(nullptr);
   }
@@ -280,17 +291,14 @@ class SpeechRecognizerTest : public testing::Test {
   std::unique_ptr<MockBrowserUiInterface> ui_;
   std::unique_ptr<MockVoiceSearchDelegate> delegate_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerTest);
 };
 
 TEST_F(SpeechRecognizerTest, ReceivedCorrectSpeechResult) {
   testing::Sequence s;
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(true)).InSequence(s);
-  EXPECT_CALL(*ui_, SetRecognitionResult(base::ASCIIToUTF16(kTestResult)))
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResult)))
       .InSequence(s);
-  EXPECT_CALL(*delegate_, OnVoiceResults(base::ASCIIToUTF16(kTestResult)))
+  EXPECT_CALL(*delegate_, OnVoiceResults(std::u16string(kTestResult)))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(false)).InSequence(s);
@@ -314,11 +322,9 @@ TEST_F(SpeechRecognizerTest, ReceivedCorrectSpeechResult) {
 TEST_F(SpeechRecognizerTest, MultipleResultsTriggerNavigation) {
   testing::Sequence s;
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(true)).InSequence(s);
-  EXPECT_CALL(*ui_,
-              SetRecognitionResult(base::ASCIIToUTF16(kTestResultMultiple)))
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResultMultiple)))
       .InSequence(s);
-  EXPECT_CALL(*delegate_,
-              OnVoiceResults(base::ASCIIToUTF16(kTestResultMultiple)))
+  EXPECT_CALL(*delegate_, OnVoiceResults(std::u16string(kTestResultMultiple)))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*ui_, SetSpeechRecognitionEnabled(false)).InSequence(s);
@@ -386,8 +392,7 @@ TEST_F(SpeechRecognizerTest, NoSoundTimeout) {
 TEST_F(SpeechRecognizerTest, SafeToResetAfterStart) {
   EXPECT_CALL(*ui_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNITION_RECOGNIZING));
-  EXPECT_CALL(*ui_, SetRecognitionResult(base::ASCIIToUTF16(kTestResult)))
-      .Times(0);
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResult))).Times(0);
 
   speech_recognizer_->Start();
   base::RunLoop().RunUntilIdle();
@@ -404,8 +409,7 @@ TEST_F(SpeechRecognizerTest, SafeToResetAfterStart) {
 
 // This test that calling start after stop should still work as expected.
 TEST_F(SpeechRecognizerTest, RestartAfterStop) {
-  EXPECT_CALL(*ui_, SetRecognitionResult(base::ASCIIToUTF16(kTestResult)))
-      .Times(1);
+  EXPECT_CALL(*ui_, SetRecognitionResult(std::u16string(kTestResult))).Times(1);
 
   speech_recognizer_->Start();
   base::RunLoop().RunUntilIdle();

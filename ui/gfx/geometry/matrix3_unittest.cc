@@ -103,63 +103,6 @@ TEST(Matrix3fTest, Transpose) {
   EXPECT_TRUE(matrix.IsEqual(transpose.Transpose()));
 }
 
-TEST(Matrix3fTest, EigenvectorsIdentity) {
-  // This block tests the trivial case of eigenvalues of the identity matrix.
-  Matrix3F identity = Matrix3F::Identity();
-  Vector3dF eigenvals = identity.SolveEigenproblem(NULL);
-  EXPECT_EQ(Vector3dF(1.0f, 1.0f, 1.0f), eigenvals);
-}
-
-TEST(Matrix3fTest, EigenvectorsDiagonal)  {
-  // This block tests the another trivial case of eigenvalues of a diagonal
-  // matrix. Here we expect values to be sorted.
-  Matrix3F matrix = Matrix3F::Zeros();
-  matrix.set(0, 0, 1.0f);
-  matrix.set(1, 1, -2.5f);
-  matrix.set(2, 2, 3.14f);
-  Matrix3F eigenvectors = Matrix3F::Zeros();
-  Vector3dF eigenvals = matrix.SolveEigenproblem(&eigenvectors);
-  EXPECT_EQ(Vector3dF(3.14f, 1.0f, -2.5f), eigenvals);
-
-  EXPECT_EQ(Vector3dF(0.0f, 0.0f, 1.0f), eigenvectors.get_column(0));
-  EXPECT_EQ(Vector3dF(1.0f, 0.0f, 0.0f), eigenvectors.get_column(1));
-  EXPECT_EQ(Vector3dF(0.0f, 1.0f, 0.0f), eigenvectors.get_column(2));
-}
-
-TEST(Matrix3fTest, EigenvectorsNiceNotPositive)  {
-  // This block tests computation of eigenvectors of a matrix where nice
-  // round values are expected.
-  Matrix3F matrix = Matrix3F::Zeros();
-  // This is not a positive-definite matrix but eigenvalues and the first
-  // eigenvector should nonetheless be computed correctly.
-  matrix.set(3, 2, 4, 2, 0, 2, 4, 2, 3);
-  Matrix3F eigenvectors = Matrix3F::Zeros();
-  Vector3dF eigenvals = matrix.SolveEigenproblem(&eigenvectors);
-  EXPECT_EQ(Vector3dF(8.0f, -1.0f, -1.0f), eigenvals);
-
-  Vector3dF expected_principal(0.66666667f, 0.33333333f, 0.66666667f);
-  EXPECT_NEAR(0.0f,
-              (expected_principal - eigenvectors.get_column(0)).Length(),
-              0.000001f);
-}
-
-TEST(Matrix3fTest, EigenvectorsPositiveDefinite) {
-  // This block tests computation of eigenvectors of a matrix where output
-  // is not as nice as above, but it actually meets the definition.
-  Matrix3F matrix = Matrix3F::Zeros();
-  Matrix3F eigenvectors = Matrix3F::Zeros();
-  Matrix3F expected_eigenvectors = Matrix3F::Zeros();
-  matrix.set(1, -1,  2, -1,  4,  5, 2,  5,  0);
-  Vector3dF eigenvals =  matrix.SolveEigenproblem(&eigenvectors);
-  Vector3dF expected_eigv(7.3996266f, 1.91197255f, -4.31159915f);
-  expected_eigv -= eigenvals;
-  EXPECT_NEAR(0, expected_eigv.LengthSquared(), 0.00001f);
-  expected_eigenvectors.set(0.04926317f, -0.92135662f, -0.38558414f,
-                            0.82134249f, 0.25703273f, -0.50924521f,
-                            0.56830419f, -0.2916096f, 0.76941158f);
-  EXPECT_TRUE(expected_eigenvectors.IsNear(eigenvectors, 0.00001f));
-}
-
 TEST(Matrix3fTest, Operators) {
   Matrix3F matrix1 = Matrix3F::Zeros();
   matrix1.set(1, 2, 3, 4, 5, 6, 7, 8, 9);

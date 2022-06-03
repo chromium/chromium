@@ -6,7 +6,7 @@
 
 #include "jingle/notifier/communicator/login_settings.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "jingle/notifier/base/server_information.h"
 #include "net/cert/cert_verifier.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
@@ -54,8 +54,7 @@ void LoginSettings::SetRedirectServer(
     const ServerInformation& redirect_server) {
   redirect_server_ = redirect_server;
   redirect_expiration_ =
-      base::Time::Now() +
-      base::TimeDelta::FromMinutes(kRedirectExpirationTimeMinutes);
+      base::Time::Now() + base::Minutes(kRedirectExpirationTimeMinutes);
 }
 
 ServerList LoginSettings::GetServersForTimeForTest(base::Time now) const {

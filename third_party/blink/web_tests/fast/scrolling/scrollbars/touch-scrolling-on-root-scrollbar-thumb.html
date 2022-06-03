@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>Tests mouse interactions on a non-custom composited root scrollbar thumb.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<body style="height: 1000px; width: 1000px">
+<script>
+window.onload = () => {
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+
+  promise_test (async () => {
+    if(navigator.userAgent.includes("Mac OS X"))
+      return;
+
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Testing the vertical scrollbar thumb with touch.
+    let x = window.innerWidth - TRACK_WIDTH / 2;
+    let y = BUTTON_WIDTH + 10;
+
+    let drag = {
+      start_x: x,
+      start_y: y,
+      end_x: x,
+      end_y: y + 100
+    }
+
+    const scrollPromise = waitForScrollEvent(document);
+    await touchDragTo(drag);
+    await scrollPromise;
+    await waitForCompositorCommit();
+
+    // The compositor thread ingests touch moves and we do not account for the
+    // slop region in ScrollbarController. The browser process conversely
+    // does subtract the slop region from the scrollbar thumb delta, therefore
+    // scrollY would be less by a value of slop region * scroller_to_scrollbar_ratio
+    assert_approx_equals(window.scrollY, 183, 28, "Touch dragging scrollbar did not scroll right amount");
+
+    // Since the horizontal scrolling is essentially the same codepath as vertical,
+    // this need not be tested in the interest of making the test run faster.
+  }, "Test touch drags on non-custom composited root scrollbar thumb.");
+}
+</script>
+</body>

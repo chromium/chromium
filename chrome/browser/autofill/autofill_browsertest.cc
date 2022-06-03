@@ -9,14 +9,14 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -35,24 +35,37 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
+using testing::_;
 
 namespace autofill {
 
@@ -100,6 +113,45 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
   Browser* browser_;
 };
 
+// Upon construction, and in response to ReadyToCommitNavigation, installs a
+// mock browser autofill manager of type |T|.
+template <typename T>
+class MockAutofillManagerInjector : public content::WebContentsObserver {
+ public:
+  explicit MockAutofillManagerInjector(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {
+    Inject(web_contents->GetMainFrame());
+  }
+  ~MockAutofillManagerInjector() override = default;
+
+  T* GetForFrame(content::RenderFrameHost* rfh) {
+    ContentAutofillDriverFactory* driver_factory =
+        ContentAutofillDriverFactory::FromWebContents(web_contents());
+    return static_cast<T*>(
+        driver_factory->DriverForFrame(rfh)->browser_autofill_manager());
+  }
+
+ protected:
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsPrerenderedPageActivation() &&
+        !navigation_handle->IsSameDocument()) {
+      Inject(navigation_handle->GetRenderFrameHost());
+    }
+  }
+
+  void Inject(content::RenderFrameHost* rfh) {
+    ContentAutofillDriverFactory* driver_factory =
+        ContentAutofillDriverFactory::FromWebContents(web_contents());
+    AutofillClient* client = driver_factory->client();
+    ContentAutofillDriver* driver = driver_factory->DriverForFrame(rfh);
+    std::unique_ptr<T> mock_autofill_manager =
+        std::make_unique<T>(driver, client, rfh);
+    driver->SetBrowserAutofillManager(std::move(mock_autofill_manager));
+  }
+};
+
 class AutofillTest : public InProcessBrowserTest {
  protected:
   AutofillTest() {}
@@ -108,6 +160,10 @@ class AutofillTest : public InProcessBrowserTest {
     // Don't want Keychain coming up on Mac.
     test::DisableSystemServices(browser()->profile()->GetPrefs());
 
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -115,12 +171,18 @@ class AutofillTest : public InProcessBrowserTest {
     // Make sure to close any showing popups prior to tearing down the UI.
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    AutofillManager* autofill_manager =
+    BrowserAutofillManager* autofill_manager =
         ContentAutofillDriverFactory::FromWebContents(web_contents)
             ->DriverForFrame(web_contents->GetMainFrame())
-            ->autofill_manager();
-    autofill_manager->client()->HideAutofillPopup();
+            ->browser_autofill_manager();
+    autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   PersonalDataManager* personal_data_manager() {
@@ -156,11 +218,13 @@ class AutofillTest : public InProcessBrowserTest {
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     ui_test_utils::NavigateToURL(&params);
-
+    // Shortcut explicit save prompts and automatically accept.
+    personal_data_manager()->set_auto_accept_address_imports_for_testing(true);
     WindowedPersonalDataManagerObserver observer(browser());
 
     std::string js = GetJSToFillForm(data) + submit_js;
     ASSERT_TRUE(content::ExecuteScript(web_contents(), js));
+
     if (simulate_click) {
       // Simulate a mouse click to submit the form because form submissions not
       // triggered by user gestures are ignored.
@@ -178,37 +242,40 @@ class AutofillTest : public InProcessBrowserTest {
     base::FilePath data_file =
         ui_test_utils::GetTestFilePath(base::FilePath().AppendASCII("autofill"),
                                        base::FilePath().AppendASCII(filename));
-    CHECK(base::ReadFileToString(data_file, &data));
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(base::ReadFileToString(data_file, &data));
+    }
     std::vector<std::string> lines = base::SplitString(
         data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     int parsed_profiles = 0;
-    for (size_t i = 0; i < lines.size(); ++i) {
-      if (base::StartsWith(lines[i], "#", base::CompareCase::SENSITIVE))
+    for (const auto& line : lines) {
+      if (base::StartsWith(line, "#", base::CompareCase::SENSITIVE))
         continue;
 
       std::vector<std::string> fields = base::SplitString(
-          lines[i], "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+          line, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       if (fields.empty())
         continue;  // Blank line.
 
       ++parsed_profiles;
       CHECK_EQ(12u, fields.size());
 
-      FormMap data;
-      data["NAME_FIRST"] = fields[0];
-      data["NAME_MIDDLE"] = fields[1];
-      data["NAME_LAST"] = fields[2];
-      data["EMAIL_ADDRESS"] = fields[3];
-      data["COMPANY_NAME"] = fields[4];
-      data["ADDRESS_HOME_LINE1"] = fields[5];
-      data["ADDRESS_HOME_LINE2"] = fields[6];
-      data["ADDRESS_HOME_CITY"] = fields[7];
-      data["ADDRESS_HOME_STATE"] = fields[8];
-      data["ADDRESS_HOME_ZIP"] = fields[9];
-      data["ADDRESS_HOME_COUNTRY"] = fields[10];
-      data["PHONE_HOME_WHOLE_NUMBER"] = fields[11];
+      FormMap form;
+      form["NAME_FIRST"] = fields[0];
+      form["NAME_MIDDLE"] = fields[1];
+      form["NAME_LAST"] = fields[2];
+      form["EMAIL_ADDRESS"] = fields[3];
+      form["COMPANY_NAME"] = fields[4];
+      form["ADDRESS_HOME_LINE1"] = fields[5];
+      form["ADDRESS_HOME_LINE2"] = fields[6];
+      form["ADDRESS_HOME_CITY"] = fields[7];
+      form["ADDRESS_HOME_STATE"] = fields[8];
+      form["ADDRESS_HOME_ZIP"] = fields[9];
+      form["ADDRESS_HOME_COUNTRY"] = fields[10];
+      form["PHONE_HOME_WHOLE_NUMBER"] = fields[11];
 
-      FillFormAndSubmit("duplicate_profiles_test.html", data);
+      FillFormAndSubmit("duplicate_profiles_test.html", form);
     }
     return parsed_profiles;
   }
@@ -269,12 +336,12 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesAggregatedWithSubmitHandler) {
   FillFormAndSubmitWithHandler("duplicate_profiles_test.html", data, submit,
                                false);
 
-  // The AutofillManager will update the user's profile.
+  // The BrowserAutofillManager will update the user's profile.
   EXPECT_EQ(1u, personal_data_manager()->GetProfiles().size());
 
-  EXPECT_EQ(ASCIIToUTF16("Bob"),
+  EXPECT_EQ(u"Bob",
             personal_data_manager()->GetProfiles()[0]->GetRawInfo(NAME_FIRST));
-  EXPECT_EQ(ASCIIToUTF16("Smith"),
+  EXPECT_EQ(u"Smith",
             personal_data_manager()->GetProfiles()[0]->GetRawInfo(NAME_LAST));
 }
 
@@ -361,22 +428,21 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   data4["PHONE_HOME_WHOLE_NUMBER"] = "+21 08450 777 777";
   profiles.push_back(data4);
 
-  for (size_t i = 0; i < profiles.size(); ++i)
-    FillFormAndSubmit("autofill_test_form.html", profiles[i]);
+  for (const auto& profile : profiles)
+    FillFormAndSubmit("autofill_test_form.html", profile);
 
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
-  int us_address_index =
-      personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-          ADDRESS_HOME_LINE1) == ASCIIToUTF16("123 Cherry Ave")
-          ? 0
-          : 1;
+  int us_address_index = personal_data_manager()->GetProfiles()[0]->GetRawInfo(
+                             ADDRESS_HOME_LINE1) == u"123 Cherry Ave"
+                             ? 0
+                             : 1;
 
   EXPECT_EQ(
-      ASCIIToUTF16("408-871-4567"),
+      u"408-871-4567",
       personal_data_manager()->GetProfiles()[us_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
   ASSERT_EQ(
-      ASCIIToUTF16("+49 40-80-81-79-000"),
+      u"+49 40-80-81-79-000",
       personal_data_manager()->GetProfiles()[1 - us_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
 }
@@ -402,17 +468,16 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
   int second_address_index =
       personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-          ADDRESS_HOME_LINE1) == ASCIIToUTF16("4321 H St.")
+          ADDRESS_HOME_LINE1) == u"4321 H St."
           ? 0
           : 1;
 
-  EXPECT_EQ(ASCIIToUTF16("+49 8450 777777"),
-            personal_data_manager()
-                ->GetProfiles()[1 - second_address_index]
-                ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+49 8450 777777", personal_data_manager()
+                                    ->GetProfiles()[1 - second_address_index]
+                                    ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
   EXPECT_EQ(
-      ASCIIToUTF16("08450 777777"),
+      u"08450 777777",
       personal_data_manager()->GetProfiles()[second_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
 }
@@ -423,18 +488,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
 //   The phone number does not have a leading '+'.
 //   The phone number has a leading international direct dialing (IDD) code.
 // This does not apply to US numbers. For US numbers, '+' is removed.
-
-// Flaky on Windows. http://crbug.com/500491
-// Also flaky on Linux. http://crbug.com/935629
-#if defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_UsePlusSignForInternationalNumber \
-    DISABLED_UsePlusSignForInternationalNumber
-#else
-#define MAYBE_UsePlusSignForInternationalNumber \
-    UsePlusSignForInternationalNumber
-#endif
-
-IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_UsePlusSignForInternationalNumber) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, UsePlusSignForInternationalNumber) {
   std::vector<FormMap> profiles;
 
   FormMap data1;
@@ -538,9 +592,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Mininum address values needed during aggregation are: address line 1, city,
 // state, and zip code.
 // Profiles are merged when data for address line 1 and city match.
-// DISABLED: http://crbug.com/281541
-IN_PROC_BROWSER_TEST_F(AutofillTest,
-                       DISABLED_ProfilesNotMergedWhenNoMinAddressData) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotMergedWhenNoMinAddressData) {
   AggregateProfilesIntoAutofillPrefs("dataset_no_address.txt");
 
   ASSERT_EQ(0u, personal_data_manager()->GetProfiles().size());
@@ -549,6 +601,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Test Autofill ability to merge duplicate profiles and throw away junk.
 // TODO(isherman): this looks redundant, consider removing.
 // DISABLED: http://crbug.com/281541
+// This tests opens and submits over 240 forms which does not finish within the
+// allocated time of browser_tests. This should be converted into a unittest.
 IN_PROC_BROWSER_TEST_F(AutofillTest,
                        DISABLED_MergeAggregatedDuplicatedProfiles) {
   int num_of_profiles =
@@ -561,7 +615,10 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Accessibility Tests //
 class AutofillAccessibilityTest : public AutofillTest {
  protected:
-  AutofillAccessibilityTest() {}
+  AutofillAccessibilityTest() {
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        "vmodule", "accessibility_notification_waiter=1");
+  }
 
   // Returns true if kAutofillAvailable state is present AND  kAutoComplete
   // string attribute is missing; only one should be set at any given time.
@@ -584,21 +641,24 @@ class AutofillAccessibilityTest : public AutofillTest {
     }
     return false;
   }
+
+ private:
+  base::test::ScopedCommandLine command_line_;
 };
 
 // Test that autofill available state is correctly set on accessibility node.
-IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
-  // Navigate to url.
+// Test is flaky: https://crbug.com/1239099
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+
+  // Navigate to url and wait for accessibility notification.
   GURL url =
       embedded_test_server()->GetURL("/autofill/duplicate_profiles_test.html");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  ui_test_utils::NavigateToURL(&params);
-
-  // Enable accessibility.
-  content::EnableAccessibilityForWebContents(web_contents());
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
   content::AccessibilityNotificationWaiter layout_waiter_one(
-      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+  ui_test_utils::NavigateToURL(&params);
   layout_waiter_one.WaitForNotification();
 
   // Focus target form field.
@@ -636,9 +696,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
   ASSERT_EQ(1u, personal_data_manager()->GetProfiles().size());
 
   // Reload page.
-  ui_test_utils::NavigateToURL(&params);
   content::AccessibilityNotificationWaiter layout_waiter_two(
-      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+  ui_test_utils::NavigateToURL(&params);
   layout_waiter_two.WaitForNotification();
 
   // Focus target form field.
@@ -659,18 +719,18 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
 // Test that autocomplete available string attribute is correctly set on
 // accessibility node. Test autocomplete in this file since it uses the same
 // infrastructure as autofill.
-IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
-  // Navigate to url.
+// Test is flaky: http://crbug.com/1239099
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
+                       DISABLED_TestAutocompleteState) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  // Navigate to url and wait for accessibility notification
   GURL url =
       embedded_test_server()->GetURL("/autofill/duplicate_profiles_test.html");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  ui_test_utils::NavigateToURL(&params);
-
-  // Enable accessibility.
-  content::EnableAccessibilityForWebContents(web_contents());
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
   content::AccessibilityNotificationWaiter layout_waiter_one(
-      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+  ui_test_utils::NavigateToURL(&params);
   layout_waiter_one.WaitForNotification();
 
   // Focus target form field.
@@ -704,9 +764,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
   ASSERT_EQ(0u, personal_data_manager()->GetProfiles().size());
 
   // Reload page.
-  ui_test_utils::NavigateToURL(&params);
   content::AccessibilityNotificationWaiter layout_waiter_two(
-      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLayoutComplete);
+      web_contents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
+  ui_test_utils::NavigateToURL(&params);
   layout_waiter_two.WaitForNotification();
 
   // Focus target form field.
@@ -723,5 +783,285 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
   // Sanity check.
   ASSERT_TRUE(AutocompleteIsAvailable(node_data));
 }
+
+// Test fixture for prerendering tests. In general, these tests aim to check
+// that we avoid unexpected behavior while the prerendered page is inactive and
+// that the page operates as expected, post-activation.
+class PrerenderAutofillTest : public InProcessBrowserTest {
+ protected:
+  class MockPrerenderBrowserAutofillManager : public BrowserAutofillManager {
+   public:
+    MockPrerenderBrowserAutofillManager(AutofillDriver* driver,
+                                        AutofillClient* client,
+                                        content::RenderFrameHost* rfh)
+        : BrowserAutofillManager(
+              driver,
+              client,
+              "en-US",
+              BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {
+      // We need to set these expectations immediately to catch any premature
+      // calls while prerendering.
+      if (rfh->GetLifecycleState() ==
+          content::RenderFrameHost::LifecycleState::kPrerendering) {
+        EXPECT_CALL(*this, OnFormsSeen(_, _)).Times(0);
+        EXPECT_CALL(*this, OnFocusOnFormFieldImpl(_, _, _)).Times(0);
+      }
+    }
+    MOCK_METHOD(void,
+                OnFormsSeen,
+                (const std::vector<FormData>&,
+                 const std::vector<FormGlobalId>&),
+                (override));
+    MOCK_METHOD(void,
+                OnFocusOnFormFieldImpl,
+                (const FormData&,
+                 const FormFieldData&,
+                 const gfx::RectF& bounding_box),
+                (override));
+  };
+
+  PrerenderAutofillTest()
+      : prerender_helper_(
+            base::BindRepeating(&PrerenderAutofillTest::web_contents,
+                                base::Unretained(this))) {}
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
+  void TearDownOnMainThread() override {}
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Ensures that the prerendered renderer does not attempt to communicate with
+// the browser in response to RenderFrameObserver messages. Specifically, it
+// checks that it does not alert the browser that a form has been seen prior to
+// activation and that it does alert the browser after activation. Also ensures
+// that programmatic input on the prerendered page does not result in unexpected
+// messages prior to activation and that things work correctly post-activation.
+IN_PROC_BROWSER_TEST_F(PrerenderAutofillTest, DeferWhilePrerendering) {
+  MockAutofillManagerInjector<MockPrerenderBrowserAutofillManager> injector(
+      web_contents());
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/autofill/prerendered.html");
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  prerender_helper().NavigatePrimaryPage(initial_url);
+
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  auto* rfh = prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ignore_result(
+      content::ExecJs(rfh, "document.querySelector('#NAME_FIRST').focus();",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Since the initial prerender page load has finished at this point and we
+  // have issued our programmatic focus, we need to check that the expectations
+  // we set up during render frame creation have been met (i.e., that we did not
+  // issue a calls to the driver for either the forms being seen nor the focus
+  // update).
+  auto* mock = injector.GetForFrame(rfh);
+  testing::Mock::VerifyAndClearExpectations(mock);
+  // Next, we ensure that once we activate, we issue the deferred calls.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock, OnFocusOnFormFieldImpl(_, _, _)).Times(1);
+  EXPECT_CALL(*mock, OnFormsSeen(_, _))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_EQ(prerender_helper().GetRequestCount(prerender_url), 1);
+  run_loop.Run();
+}
+
+// Test fixture for testing that that appropriate form submission events are
+// fired in BrowserAutofillManager.
+class FormSubmissionDetectionTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  class MockFormSubmissionAutofillManager : public BrowserAutofillManager {
+   public:
+    MockFormSubmissionAutofillManager(AutofillDriver* driver,
+                                      AutofillClient* client,
+                                      content::RenderFrameHost* rhf)
+        : BrowserAutofillManager(
+              driver,
+              client,
+              "en-US",
+              BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER) {}
+    MOCK_METHOD(void,
+                OnFormSubmittedImpl,
+                (const FormData&, bool, mojom::SubmissionSource),
+                (override));
+  };
+
+  FormSubmissionDetectionTest() { InitializeFeatures(); }
+
+  void SetUpOnMainThread() override {
+    SetUpServer();
+    NavigateToPage("/form.html");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
+  void TearDownOnMainThread() override {}
+
+  void ExecuteScript(const std::string& js) {
+    // Simulate a mouse click to submit the form because form submissions not
+    // triggered by user gestures are ignored.
+    std::string onclick_js = "document.onclick = function() { " + js + "; };";
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(content::ExecuteScript(web_contents, onclick_js));
+    content::SimulateMouseClick(
+        browser()->tab_strip_model()->GetActiveWebContents(), 0,
+        blink::WebMouseEvent::Button::kLeft);
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  void InitializeFeatures() {
+    std::vector<base::Feature> enabled;
+    std::vector<base::Feature> disabled;
+    if (std::get<0>(GetParam())) {
+      enabled.push_back(features::kAutofillAllowDuplicateFormSubmissions);
+    } else {
+      disabled.push_back(features::kAutofillAllowDuplicateFormSubmissions);
+    }
+    if (std::get<1>(GetParam())) {
+      enabled.push_back(features::kAutofillProbableFormSubmissionInBrowser);
+    } else {
+      disabled.push_back(features::kAutofillProbableFormSubmissionInBrowser);
+    }
+    feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
+  void SetUpServer() {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &FormSubmissionDetectionTest::HandleRequest, base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
+    std::string content;
+    if (absolute_url.path() == "/form.html") {
+      content = get_form_html();
+    } else if (absolute_url.path() == "/success.html") {
+      content = "<html><body>Happy times!";
+    } else {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/html");
+    http_response->set_content(content);
+    return http_response;
+  }
+
+  virtual std::string get_form_html() const {
+    return "<html><body>"
+           "<form id='form' method='POST' action='/success.html'>"
+           "Name: <input type='text' id='name'><br>"
+           "Address: <input type='text' id='address'><br>"
+           "City: <input type='text' id='city'><br>"
+           "ZIP: <input type='text' id='zip'><br>"
+           "State: <select id='state'>"
+           "  <option value='CA'>CA</option>"
+           "  <option value='WA'>WA</option>"
+           "</select><br>"
+           "</form>";
+  }
+
+  void NavigateToPage(const std::string& filename) {
+    GURL url = embedded_test_server()->GetURL(filename);
+    NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    ui_test_utils::NavigateToURL(&params);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that user-triggered submission triggers a submission event in
+// BrowserAutofillManager.
+IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
+  MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
+      web_contents());
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      *injector.GetForFrame(web_contents()->GetMainFrame()),
+      OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  ExecuteScript(
+      "document.getElementById('name').value = 'Sarah';"
+      "document.getElementById('name').select();"
+      "document.getElementById('form').submit();");
+  run_loop.Run();
+}
+
+// Tests that non-link-click, renderer-inititiated navigation triggers a
+// submission event in BrowserAutofillManager.
+IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, ProbableSubmission) {
+  MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
+      web_contents());
+  base::RunLoop run_loop;
+  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetMainFrame()),
+              OnFormSubmittedImpl(
+                  _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  // Add a delay before navigating away to avoid race conditions. This is
+  // appropriate since we're faking user interaction here.
+  ExecuteScript(
+      "document.getElementById('name').focus();"
+      "document.getElementById('name').value = 'Sarah';"
+      "document.getElementById('name').select();"
+      "document.getElementById('state').selectedIndex = 1;"
+      "document.getElementById('zip').focus();"
+      "document.getElementById('name').select();"
+      "setTimeout(function() { window.location.assign('/success.html'); }, "
+      "50);");
+  run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FormSubmissionDetectionTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace autofill

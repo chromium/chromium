@@ -5,6 +5,8 @@
 #ifndef CC_LAYERS_SURFACE_LAYER_H_
 #define CC_LAYERS_SURFACE_LAYER_H_
 
+#include <memory>
+
 #include "cc/cc_export.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/layers/layer.h"
@@ -13,11 +15,22 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace cc {
 
 // If given true, we should submit frames, as we are unoccluded on screen.
 // If given false, we should not submit compositor frames.
-using UpdateSubmissionStateCB = base::RepeatingCallback<void(bool is_visible)>;
+// The second parameter is only used in tests to ensure that the
+// UpdateSubmissionStateCB is called synchronously relative to the calling
+// thread. That is, the calling thread will block on the given waitable event
+// when calling the callback. It is the responsibility of the callback to signal
+// the event once the state has been updated. If blocking is not required, then
+// the second parameter will be nullptr.
+using UpdateSubmissionStateCB =
+    base::RepeatingCallback<void(bool is_visible, base::WaitableEvent*)>;
 
 // A layer that renders a surface referencing the output of another compositor
 // instance or client.
@@ -40,9 +53,6 @@ class CC_EXPORT SurfaceLayer : public Layer {
     return stretch_content_to_fill_bounds_;
   }
 
-  void SetUnoccludedForHitTesting(bool unoccluded);
-  bool UnoccludedForHitTesting() const { return unoccluded_for_hit_testing_; }
-
   void SetSurfaceHitTestable(bool surface_hit_testable);
 
   void SetHasPointerEventsNone(bool has_pointer_events_none);
@@ -54,15 +64,16 @@ class CC_EXPORT SurfaceLayer : public Layer {
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   const viz::SurfaceId& surface_id() const { return surface_range_.end(); }
 
-  const base::Optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
+  const absl::optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
     return surface_range_.start();
   }
 
-  base::Optional<uint32_t> deadline_in_frames() const {
+  absl::optional<uint32_t> deadline_in_frames() const {
     return deadline_in_frames_;
   }
 
@@ -78,7 +89,7 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   bool may_contain_video_ = false;
   viz::SurfaceRange surface_range_;
-  base::Optional<uint32_t> deadline_in_frames_ = 0u;
+  absl::optional<uint32_t> deadline_in_frames_ = 0u;
 
   bool stretch_content_to_fill_bounds_ = false;
 
@@ -89,13 +100,6 @@ class CC_EXPORT SurfaceLayer : public Layer {
   // being hit testable in the renderer, a hit testable surface layer may not
   // be surface hit testable (e.g., a surface layer created by video).
   bool surface_hit_testable_ = false;
-
-  // For an out-of-process iframe, indicates whether any other content in the
-  // embedding page occludes the iframe, which will necessitate a hit test in
-  // the renderer process to target input events. A `true` values means the
-  // surface is guaranteed *not* to be occluded; a `false` value means we cannot
-  // make that guarantee.
-  bool unoccluded_for_hit_testing_ = false;
 
   // Whether or not the surface can accept pointer events. It is set to true if
   // the frame owner has pointer-events: none property.

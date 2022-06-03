@@ -4,35 +4,67 @@
 
 #include "chrome/browser/ui/views/sharing/sharing_browsertest.h"
 
+#include <map>
+
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_device_registration_result.h"
 #include "chrome/browser/sharing/sharing_device_source_sync.h"
+#include "chrome/browser/sharing/sharing_fcm_sender.h"
+#include "chrome/browser/sharing/sharing_message_sender.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
+#include "chrome/browser/sharing/sharing_utils.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "components/sync/driver/profile_sync_service.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/gcm_driver/fake_gcm_profile_service.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/blink/public/common/context_menu_data/media_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+
+void FakeWebPushSender::SendMessage(const std::string& fcm_token,
+                                    crypto::ECPrivateKey* vapid_key,
+                                    WebPushMessage message,
+                                    WebPushCallback callback) {
+  fcm_token_ = fcm_token;
+  message_ = std::move(message);
+  std::move(callback).Run(SendWebPushMessageResult::kSuccessful, "message_id");
+}
+
+void FakeSharingMessageBridge::SendSharingMessage(
+    std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
+    CommitFinishedCallback on_commit_callback) {
+  specifics_ = std::move(*specifics);
+  sync_pb::SharingMessageCommitError commit_error;
+  commit_error.set_error_code(sync_pb::SharingMessageCommitError::NONE);
+  std::move(on_commit_callback).Run(commit_error);
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+FakeSharingMessageBridge::GetControllerDelegate() {
+  return nullptr;
+}
 
 SharingBrowserTest::SharingBrowserTest()
     : SyncTest(TWO_CLIENT),
       scoped_testing_factory_installer_(
-          base::BindRepeating(&gcm::FakeGCMProfileService::Build)) {}
+          base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
+      sharing_service_(nullptr),
+      fake_web_push_sender_(nullptr) {}
 
 SharingBrowserTest::~SharingBrowserTest() = default;
 
@@ -54,11 +86,15 @@ void SharingBrowserTest::Init(
   web_contents_ = GetBrowser(0)->tab_strip_model()->GetWebContentsAt(0);
   ASSERT_TRUE(NavigateToURL(web_contents_, url));
 
-  gcm_service_ = static_cast<gcm::FakeGCMProfileService*>(
-      gcm::GCMProfileServiceFactory::GetForProfile(GetProfile(0)));
-  gcm_service_->set_collect(true);
-
   sharing_service_ = SharingServiceFactory::GetForBrowserContext(GetProfile(0));
+
+  SharingFCMSender* sharing_fcm_sender =
+      sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
+  fake_web_push_sender_ = new FakeWebPushSender();
+  sharing_fcm_sender->SetWebPushSenderForTesting(
+      base::WrapUnique(fake_web_push_sender_));
+  sharing_fcm_sender->SetSharingMessageBridgeForTesting(
+      &fake_sharing_message_bridge_);
 
   SetUpDevices(first_device_feature, second_device_feature);
 }
@@ -80,7 +116,12 @@ void SharingBrowserTest::SetUpDevices(
 
   for (size_t i = 0; i < original_devices.size(); i++)
     AddDeviceInfo(*original_devices[i], i);
-  ASSERT_EQ(2, fake_device_info_tracker_.CountActiveDevices());
+  const std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type =
+      fake_device_info_tracker_.CountActiveDevicesByType();
+  int total = 0;
+  for (const auto& type_and_count : device_count_by_type)
+    total += type_and_count.second;
+  ASSERT_EQ(2, total);
 }
 
 void SharingBrowserTest::RegisterDevice(
@@ -105,11 +146,6 @@ void SharingBrowserTest::RegisterDevice(
 void SharingBrowserTest::AddDeviceInfo(
     const syncer::DeviceInfo& original_device,
     int fake_device_id) {
-  // The SharingInfo on the DeviceInfo will be empty. In this test we want the
-  // SharingInfo to be read from SharingSyncPreference instead.
-  base::Optional<syncer::DeviceInfo::SharingInfo> fake_sharing_info =
-      base::nullopt;
-
   std::unique_ptr<syncer::DeviceInfo> fake_device =
       std::make_unique<syncer::DeviceInfo>(
           original_device.guid(),
@@ -117,14 +153,15 @@ void SharingBrowserTest::AddDeviceInfo(
               {"testing_device_", base::NumberToString(fake_device_id)}),
           original_device.chrome_version(), original_device.sync_user_agent(),
           original_device.device_type(),
-          original_device.signin_scoped_device_id(),
-          base::SysInfo::HardwareInfo{
-              "Google",
-              base::StrCat({"model", base::NumberToString(fake_device_id)}),
-              "serial_number"},
+          original_device.signin_scoped_device_id(), "Google",
+          base::StrCat({"model", base::NumberToString(fake_device_id)}),
+          original_device.full_hardware_class(),
           original_device.last_updated_timestamp(),
+          original_device.pulse_interval(),
           original_device.send_tab_to_self_receiving_enabled(),
-          fake_sharing_info);
+          original_device.sharing_info(), original_device.paask_info(),
+          original_device.fcm_registration_token(),
+          original_device.interested_data_types());
   fake_device_info_tracker_.Add(fake_device.get());
   device_infos_.push_back(std::move(fake_device));
 }
@@ -135,38 +172,51 @@ std::unique_ptr<TestRenderViewContextMenu> SharingBrowserTest::InitContextMenu(
     base::StringPiece selection_text) {
   content::ContextMenuParams params;
   params.selection_text = base::ASCIIToUTF16(selection_text);
-  params.media_type = blink::ContextMenuDataMediaType::kNone;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
   params.unfiltered_link_url = url;
   params.link_url = url;
   params.src_url = url;
   params.link_text = base::ASCIIToUTF16(link_text);
   params.page_url = web_contents_->GetVisibleURL();
   params.source_type = ui::MenuSourceType::MENU_SOURCE_MOUSE;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   params.writing_direction_default = 0;
   params.writing_direction_left_to_right = 0;
   params.writing_direction_right_to_left = 0;
 #endif
   auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents_->GetMainFrame(), params);
+      *web_contents_->GetMainFrame(), params);
   menu->Init();
   return menu;
 }
 
 void SharingBrowserTest::CheckLastReceiver(
-    const std::string& device_guid) const {
-  auto target_info =
-      sharing_service_->GetSyncPreferencesForTesting()->GetTargetInfo(
-          device_guid);
-  ASSERT_TRUE(target_info);
-  EXPECT_EQ(target_info->fcm_token, gcm_service_->last_receiver_id());
+    const syncer::DeviceInfo& device) const {
+  auto fcm_configuration = GetFCMChannel(device);
+  ASSERT_TRUE(fcm_configuration);
+
+  if (base::FeatureList::IsEnabled(kSharingSendViaSync)) {
+    EXPECT_EQ(fcm_configuration->sender_id_fcm_token(),
+              fake_sharing_message_bridge_.specifics()
+                  .channel_configuration()
+                  .fcm()
+                  .token());
+  } else {
+    EXPECT_EQ(fcm_configuration->vapid_fcm_token(),
+              fake_web_push_sender_->fcm_token());
+  }
 }
 
 chrome_browser_sharing::SharingMessage
 SharingBrowserTest::GetLastSharingMessageSent() const {
   chrome_browser_sharing::SharingMessage sharing_message;
-  sharing_message.ParseFromString(
-      gcm_service_->last_web_push_message().payload);
+
+  if (base::FeatureList::IsEnabled(kSharingSendViaSync)) {
+    sharing_message.ParseFromString(
+        fake_sharing_message_bridge_.specifics().payload());
+  } else {
+    sharing_message.ParseFromString(fake_web_push_sender_->message().payload);
+  }
   return sharing_message;
 }
 

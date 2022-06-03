@@ -19,24 +19,24 @@ void Rect::SetColor(SkColor color) {
 }
 
 void Rect::SetCenterColor(SkColor color) {
-  animation().TransitionColorTo(last_frame_time(), BACKGROUND_COLOR,
-                                center_color_, color);
+  animator().TransitionColorTo(this, last_frame_time(), BACKGROUND_COLOR,
+                               center_color_, color);
 }
 
 void Rect::SetEdgeColor(SkColor color) {
-  animation().TransitionColorTo(last_frame_time(), FOREGROUND_COLOR,
-                                edge_color_, color);
+  animator().TransitionColorTo(this, last_frame_time(), FOREGROUND_COLOR,
+                               edge_color_, color);
 }
 
-void Rect::NotifyClientColorAnimated(SkColor color,
-                                     int target_property_id,
-                                     cc::KeyframeModel* animation) {
+void Rect::OnColorAnimated(const SkColor& color,
+                           int target_property_id,
+                           gfx::KeyframeModel* animation) {
   if (target_property_id == BACKGROUND_COLOR) {
     center_color_ = color;
   } else if (target_property_id == FOREGROUND_COLOR) {
     edge_color_ = color;
   } else {
-    UiElement::NotifyClientColorAnimated(color, target_property_id, animation);
+    UiElement::OnColorAnimated(color, target_property_id, animation);
   }
 }
 
@@ -50,18 +50,17 @@ void Rect::Render(UiElementRenderer* renderer, const CameraModel& model) const {
 }
 
 void Rect::SetLocalOpacity(float opacity) {
-  animation().TransitionFloatTo(last_frame_time(), LOCAL_OPACITY,
-                                local_opacity_, opacity);
+  animator().TransitionFloatTo(this, last_frame_time(), LOCAL_OPACITY,
+                               local_opacity_, opacity);
 }
 
-void Rect::NotifyClientFloatAnimated(float value,
-                                     int target_property_id,
-                                     cc::KeyframeModel* keyframe_model) {
+void Rect::OnFloatAnimated(const float& value,
+                           int target_property_id,
+                           gfx::KeyframeModel* keyframe_model) {
   if (target_property_id == LOCAL_OPACITY) {
     local_opacity_ = value;
   } else {
-    UiElement::NotifyClientFloatAnimated(value, target_property_id,
-                                         keyframe_model);
+    UiElement::OnFloatAnimated(value, target_property_id, keyframe_model);
   }
 }
 

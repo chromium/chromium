@@ -4,20 +4,24 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -75,6 +79,11 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
     scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
   }
 
+  WebRtcVideoCaptureSharedDeviceBrowserTest(
+      const WebRtcVideoCaptureSharedDeviceBrowserTest&) = delete;
+  WebRtcVideoCaptureSharedDeviceBrowserTest& operator=(
+      const WebRtcVideoCaptureSharedDeviceBrowserTest&) = delete;
+
   ~WebRtcVideoCaptureSharedDeviceBrowserTest() override {}
 
   void OpenDeviceViaService() {
@@ -104,16 +113,13 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
 
     const std::string javascript_to_execute = base::StringPrintf(
         kStartVideoCaptureAndVerify, kVideoSize.width(), kVideoSize.height());
-    std::string result;
     // Start video capture and wait until it started rendering
-    ASSERT_TRUE(
-        ExecuteScriptAndExtractString(shell(), javascript_to_execute, &result));
-    ASSERT_EQ("OK", result);
+    ASSERT_EQ("OK", EvalJs(shell(), javascript_to_execute,
+                           EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
   }
 
@@ -209,8 +215,6 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
   mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber_;
   base::WeakPtrFactory<WebRtcVideoCaptureSharedDeviceBrowserTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureSharedDeviceBrowserTest);
 };
 
 // Tests that a single fake video capture device can be opened via JavaScript
@@ -229,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(
               int32_t, media::mojom::VideoBufferHandlePtr* buffer_handle) {
             ASSERT_EQ(expected_buffer_handle_tag, (*buffer_handle)->which());
           }));
-  EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _, _))
+  EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _))
       .WillOnce(InvokeWithoutArgs([&receive_frame_from_service_wait_loop]() {
         receive_frame_from_service_wait_loop.Quit();
       }))
@@ -261,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(
               int32_t, media::mojom::VideoBufferHandlePtr* buffer_handle) {
             ASSERT_EQ(expected_buffer_handle_tag, (*buffer_handle)->which());
           }));
-  EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _, _))
+  EXPECT_CALL(*mock_video_frame_handler_, DoOnFrameReadyInBuffer(_, _, _))
       .WillOnce(InvokeWithoutArgs([&receive_frame_from_service_wait_loop]() {
         receive_frame_from_service_wait_loop.Quit();
       }))
@@ -282,7 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
         TestParams {
           ServiceApi::kMultiClient, media::VideoCaptureBufferType::kSharedMemory
         }
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
         ,
         TestParams{
             ServiceApi::kSingleClient,
@@ -291,7 +295,7 @@ INSTANTIATE_TEST_SUITE_P(
           ServiceApi::kMultiClient,
               media::VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor
         }
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
         ));
 
 }  // namespace content

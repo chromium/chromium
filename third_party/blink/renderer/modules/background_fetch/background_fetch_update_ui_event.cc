@@ -5,17 +5,17 @@
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_update_ui_event.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_ui_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_resource.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
-#include "third_party/blink/renderer/modules/background_fetch/background_fetch_event_init.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
-#include "third_party/blink/renderer/modules/background_fetch/background_fetch_ui_options.h"
 #include "third_party/blink/renderer/modules/event_interface_modules_names.h"
-#include "third_party/blink/renderer/modules/manifest/image_resource.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -38,7 +38,7 @@ BackgroundFetchUpdateUIEvent::BackgroundFetchUpdateUIEvent(
 
 BackgroundFetchUpdateUIEvent::~BackgroundFetchUpdateUIEvent() = default;
 
-void BackgroundFetchUpdateUIEvent::Trace(blink::Visitor* visitor) {
+void BackgroundFetchUpdateUIEvent::Trace(Visitor* visitor) const {
   visitor->Trace(service_worker_registration_);
   visitor->Trace(loader_);
   BackgroundFetchEvent::Trace(visitor);

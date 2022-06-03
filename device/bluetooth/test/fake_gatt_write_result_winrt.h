@@ -25,6 +25,10 @@ class FakeGattWriteResultWinrt
   FakeGattWriteResultWinrt();
   explicit FakeGattWriteResultWinrt(
       BluetoothGattService::GattErrorCode error_code);
+
+  FakeGattWriteResultWinrt(const FakeGattWriteResultWinrt&) = delete;
+  FakeGattWriteResultWinrt& operator=(const FakeGattWriteResultWinrt&) = delete;
+
   ~FakeGattWriteResultWinrt() override;
 
   // IGattWriteResult:
@@ -39,8 +43,6 @@ class FakeGattWriteResultWinrt
       GattCommunicationStatus status_ = ABI::Windows::Devices::Bluetooth::
           GenericAttributeProfile::GattCommunicationStatus_Success;
   uint8_t protocol_error_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattWriteResultWinrt);
 };
 
 }  // namespace device

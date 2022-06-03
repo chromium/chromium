@@ -15,7 +15,7 @@
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
@@ -76,7 +76,7 @@ TEST(LayerAnimationElementTest, TransformElement) {
   target_transform.Rotate(30.0);
   base::TimeTicks start_time;
   base::TimeTicks effective_start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
 
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateTransformElement(target_transform, delta);
@@ -127,7 +127,7 @@ TEST(LayerAnimationElementTest, BoundsElement) {
   start.set_x(-90);
   target.set_x(90);
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
 
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateBoundsElement(target, delta);
@@ -171,7 +171,7 @@ TEST(LayerAnimationElementTest, OpacityElement) {
   float target = 1.0;
   base::TimeTicks start_time;
   base::TimeTicks effective_start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateOpacityElement(target, delta);
 
@@ -214,7 +214,7 @@ TEST(LayerAnimationElementTest, VisibilityElement) {
   bool start = true;
   bool target = false;
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateVisibilityElement(target, delta);
 
@@ -256,7 +256,7 @@ TEST(LayerAnimationElementTest, BrightnessElement) {
   float middle = 0.5;
   float target = 1.0;
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateBrightnessElement(target, delta);
 
@@ -298,7 +298,7 @@ TEST(LayerAnimationElementTest, GrayscaleElement) {
   float middle = 0.5;
   float target = 1.0;
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateGrayscaleElement(target, delta);
 
@@ -341,7 +341,7 @@ TEST(LayerAnimationElementTest, PauseElement) {
       LayerAnimationElement::GRAYSCALE;
 
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
 
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreatePauseElement(properties, delta);
@@ -389,7 +389,7 @@ TEST(LayerAnimationElementTest, ClipRectElement) {
   start.set_width(70);
   target.set_width(30);
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
 
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateClipRectElement(target, delta);
@@ -433,7 +433,7 @@ TEST(LayerAnimationElementTest, RoundedCornersElement) {
   gfx::RoundedCornersF middle(6.0f, 7.0f, 8.0f, 9.0f);
 
   base::TimeTicks start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
 
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateRoundedCornersElement(target, delta);
@@ -476,7 +476,7 @@ TEST(LayerAnimationElementTest, AbortOpacityElement) {
   float target = 1.0;
   base::TimeTicks start_time;
   base::TimeTicks effective_start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateOpacityElement(target, delta);
 
@@ -520,7 +520,7 @@ TEST(LayerAnimationElementTest, AbortTransformElement) {
   target_transform.Rotate(30.0);
   base::TimeTicks start_time;
   base::TimeTicks effective_start_time;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateTransformElement(target_transform, delta);
 
@@ -565,7 +565,7 @@ TEST(LayerAnimationElementTest, OpacityElementIsThreaded) {
   float target = 1.0;
   delegate.SetOpacityFromAnimation(start,
                                    PropertyChangeReason::NOT_FROM_ANIMATION);
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateOpacityElement(target, delta);
   EXPECT_TRUE(element->IsThreaded(&delegate));
@@ -585,7 +585,7 @@ TEST(LayerAnimationElementTest, OpacityElementIsThreaded) {
 
 TEST(LayerAnimationElementTest, ToString) {
   float target = 1.0;
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<LayerAnimationElement> element =
       LayerAnimationElement::CreateOpacityElement(target, delta);
   element->set_animation_group_id(42);

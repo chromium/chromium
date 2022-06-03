@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_EVENT_GENERATOR_DELEGATE_AURA_H_
 #define UI_AURA_TEST_EVENT_GENERATOR_DELEGATE_AURA_H_
 
-#include "base/macros.h"
 #include "ui/events/test/event_generator.h"
 
 #include <memory>
@@ -23,13 +22,18 @@ namespace test {
 class EventGeneratorDelegateAura : public ui::test::EventGeneratorDelegate {
  public:
   EventGeneratorDelegateAura();
+
+  EventGeneratorDelegateAura(const EventGeneratorDelegateAura&) = delete;
+  EventGeneratorDelegateAura& operator=(const EventGeneratorDelegateAura&) =
+      delete;
+
   ~EventGeneratorDelegateAura() override;
 
   // Creates a new EventGeneratorDelegateAura.
   static std::unique_ptr<ui::test::EventGeneratorDelegate> Create(
       ui::test::EventGenerator* owner,
       gfx::NativeWindow root_window,
-      gfx::NativeWindow window);
+      gfx::NativeWindow target_window);
 
   // Returns the screen position client that determines the
   // coordinates used in EventGenerator. EventGenerator uses
@@ -38,6 +42,7 @@ class EventGeneratorDelegateAura : public ui::test::EventGeneratorDelegate {
       const Window* window) const;
 
   // Overridden from ui::test::EventGeneratorDelegate:
+  void SetTargetWindow(gfx::NativeWindow target_window) override;
   ui::EventSource* GetEventSource(ui::EventTarget* target) override;
   gfx::Point CenterOfTarget(const ui::EventTarget* target) const override;
   gfx::Point CenterOfWindow(gfx::NativeWindow window) const override;
@@ -49,14 +54,10 @@ class EventGeneratorDelegateAura : public ui::test::EventGeneratorDelegate {
                               gfx::Point* point) const override;
   void ConvertPointFromHost(const ui::EventTarget* hosted_target,
                             gfx::Point* point) const override;
-  ui::EventDispatchDetails DispatchKeyEventToIME(ui::EventTarget* target,
-                                                 ui::KeyEvent* event) override;
 
  private:
   gfx::Point CenterOfWindow(const Window* window) const;
   void ConvertPointFromWindow(const Window* window, gfx::Point* point) const;
-
-  DISALLOW_COPY_AND_ASSIGN(EventGeneratorDelegateAura);
 };
 
 }  // namespace test

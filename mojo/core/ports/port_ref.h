@@ -6,7 +6,6 @@
 #define MOJO_CORE_PORTS_PORT_REF_H_
 
 #include "base/component_export.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/ports/name.h"
 

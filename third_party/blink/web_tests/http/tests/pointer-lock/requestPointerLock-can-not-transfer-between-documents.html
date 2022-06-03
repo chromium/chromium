@@ -27,7 +27,7 @@
           doNextStep();
       },
       function () {
-          iframe.contentWindow.postMessage(["eval", 'document.body.requestPointerLock()'], "*");
+          iframe.contentWindow.postMessage(["eval", 'document.body.requestPointerLock().catch(()=>{})'], "*");
           window.onmessage = function (messageEvent) {
               message = messageEvent.data;
               shouldBeEqualToString("message", "inner-iframe.html onpointerlockerror");

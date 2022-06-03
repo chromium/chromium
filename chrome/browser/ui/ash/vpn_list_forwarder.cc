@@ -6,10 +6,10 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/user_manager/user.h"
@@ -58,7 +58,7 @@ namespace {
 
 bool IsVPNProvider(const extensions::Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
-      extensions::APIPermission::kVpnProvider);
+      extensions::mojom::APIPermissionID::kVpnProvider);
 }
 
 Profile* GetProfileForPrimaryUser() {

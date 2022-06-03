@@ -40,7 +40,7 @@ cr.define('cr.ui', function() {
     }
 
     // Make sure the element is in the document we're listening to events on.
-    assert(document == toFocus.ownerDocument);
+    assert(document === toFocus.ownerDocument);
     const {noink} = toFocus;
     toFocus.noink = true;
     toFocus.focus();
@@ -48,5 +48,6 @@ cr.define('cr.ui', function() {
   };
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {focusWithoutInk: focusWithoutInk};
 });

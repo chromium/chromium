@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/macros.h"
 #include "chrome/browser/vr/model/text_input_info.h"
 #include "chrome/browser/vr/platform_ui_input_delegate.h"
@@ -30,6 +29,10 @@ class VR_BASE_EXPORT ContentInputDelegate : public PlatformUiInputDelegate {
 
   ContentInputDelegate();
   explicit ContentInputDelegate(PlatformInputHandler* content);
+
+  ContentInputDelegate(const ContentInputDelegate&) = delete;
+  ContentInputDelegate& operator=(const ContentInputDelegate&) = delete;
+
   ~ContentInputDelegate() override;
 
   // Text Input specific.
@@ -61,7 +64,7 @@ class VR_BASE_EXPORT ContentInputDelegate : public PlatformUiInputDelegate {
   };
   bool ContentGestureIsLocked(InputEvent::Type type);
   void OnWebInputTextChanged(TextInputInfo pending_input_info,
-                             const base::string16& text);
+                             const std::u16string& text);
 
   int content_id_ = 0;
   int locked_content_id_ = 0;
@@ -69,8 +72,6 @@ class VR_BASE_EXPORT ContentInputDelegate : public PlatformUiInputDelegate {
   EditedText last_keyboard_edit_;
   TextRequestState pending_text_request_state_ = kNoPendingRequest;
   std::queue<TextInputUpdateCallback> update_state_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentInputDelegate);
 };
 
 }  // namespace vr

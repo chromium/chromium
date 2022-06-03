@@ -18,7 +18,7 @@ class SSLSocket;
 namespace remoting {
 namespace protocol {
 
-// Labels for use when exporting the SSL master keys.
+// Labels for use when exporting the SSL shared secret.
 extern const char kClientAuthSslExporterLabel[];
 extern const char kHostAuthSslExporterLabel[];
 

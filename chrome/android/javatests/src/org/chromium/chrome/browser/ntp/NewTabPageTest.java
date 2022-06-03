@@ -4,27 +4,31 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.ComponentCallbacks2;
 import android.graphics.Canvas;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
-import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -32,67 +36,58 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.feed.FeedNewTabPage;
-import org.chromium.chrome.browser.feed.FeedProcessScopeFactory;
-import org.chromium.chrome.browser.feed.TestNetworkClient;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.cards.NewTabPageAdapter;
-import org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerView;
-import org.chromium.chrome.browser.ntp.cards.SignInPromo;
-import org.chromium.chrome.browser.ntp.cards.SuggestionsSection;
-import org.chromium.chrome.browser.ntp.snippets.KnownCategories;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeader;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.UrlConstants;
-import org.chromium.chrome.browser.widget.ScrimView;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.RecyclerViewTestUtils;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
-import org.chromium.policy.test.annotations.Policies;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -104,45 +99,40 @@ import java.util.concurrent.TimeUnit;
  *
  * TODO(https://crbug.com/906151): Add new goldens and enable ExploreSites.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Features.DisableFeatures(ChromeFeatureList.EXPLORE_SITES)
-@RetryOnFailure
+@RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
+@Features.DisableFeatures({ChromeFeatureList.EXPLORE_SITES, ChromeFeatureList.QUERY_TILES,
+        ChromeFeatureList.VIDEO_TUTORIALS})
 public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
+
+    private static final int RENDER_TEST_REVISION = 3;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule
+    public AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeAccountInfoService());
+    @Rule
+    public final DisableAnimationsTestRule mNoAnimationRule = new DisableAnimationsTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = new ChromeRenderTestRule();
-
-    /** Parameter provider for enabling/disabling "Interest Feed Content Suggestions". */
-    public static class InterestFeedParams implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            // Don't run tests for the dummy version of the FeedNewTabPage because content
-            // suggestions dependencies may not be initialized.
-            if (FeedNewTabPage.isDummy()) {
-                return Collections.singletonList(
-                        new ParameterSet().value(false).name("DisableInterestFeed"));
-            } else {
-                return Arrays.asList(new ParameterSet().value(false).name("DisableInterestFeed"),
-                        new ParameterSet().value(true).name("EnableInterestFeed"));
-            }
-        }
-    }
+    public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
+                                                          .setRevision(RENDER_TEST_REVISION)
+                                                          .build();
+    @Mock
+    OmniboxStub mOmniboxStub;
+    @Mock
+    VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
             UrlUtils.getIsolatedTestFilePath("/chrome/test/data/android/feed/hello_world.gcl.bin");
 
-    // Anything not parameterized runs with Feed disabled.
-    private boolean mInterestFeedEnabled;
     private Tab mTab;
     private NewTabPage mNtp;
     private View mFakebox;
@@ -151,21 +141,9 @@ public class NewTabPageTest {
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
 
-    @ParameterAnnotations.UseMethodParameterBefore(InterestFeedParams.class)
-    public void setupInterestFeed(boolean interestFeedEnabled) {
-        mInterestFeedEnabled = interestFeedEnabled;
-    }
-
     @Before
     public void setUp() throws Exception {
-        if (mInterestFeedEnabled) {
-            Features.getInstance().enable(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS);
-            TestNetworkClient client = new TestNetworkClient();
-            client.setNetworkResponseFile(TEST_FEED);
-            FeedProcessScopeFactory.setTestNetworkClient(client);
-        } else {
-            Features.getInstance().disable(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS);
-        }
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
@@ -189,113 +167,77 @@ public class NewTabPageTest {
     @After
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
-        if (mInterestFeedEnabled) {
-            FeedProcessScopeFactory.setTestNetworkClient(null);
-        }
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/813589")
     @MediumTest
-    @Feature({"NewTabPage", "RenderTest"})
-    public void testRender() throws IOException {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        ChromeRenderTestRule.sanitize(mNtp.getView());
-        mRenderTestRule.render(mTileGridLayout, "most_visited");
-        mRenderTestRule.render(mFakebox, "fakebox");
-        mRenderTestRule.render(mNtp.getView().getRootView(), "new_tab_page");
-
-        RecyclerViewTestUtils.scrollToBottom(mNtp.getNewTabPageView().getRecyclerView());
-        mRenderTestRule.render(mNtp.getView().getRootView(), "new_tab_page_scrolled");
-    }
-
-    @Test
-    @DisabledTest(message = "https://crbug.com/888129")
-    @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testRender_FocusFakeBox(boolean interestFeedEnabled) throws Exception {
-        ScrimView scrimView = mActivityTestRule.getActivity().getScrim();
-        scrimView.disableAnimationForTesting(true);
+    public void testRender_FocusFakeBox() throws Exception {
+        ScrimCoordinator scrimCoordinator = mActivityTestRule.getActivity()
+                                                    .getRootUiCoordinatorForTesting()
+                                                    .getScrimCoordinatorForTesting();
+        scrimCoordinator.disableAnimationForTesting(true);
         onView(withId(R.id.search_box)).perform(click());
         ChromeRenderTestRule.sanitize(mNtp.getView().getRootView());
         mRenderTestRule.render(mNtp.getView().getRootView(), "focus_fake_box");
-        scrimView.disableAnimationForTesting(false);
+        scrimCoordinator.disableAnimationForTesting(false);
     }
 
-    @DisabledTest(message = "https://crbug.com/898165")
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testRender_SignInPromo(boolean interestFeedEnabled) throws Exception {
+    public void testRender_SignInPromoNoAccounts() throws Exception {
         // Scroll to the sign in promo in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-        mRenderTestRule.render(mNtp.getSignInPromoViewForTesting(), "sign_in_promo");
+        mRenderTestRule.render(
+                mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sign_in_promo");
     }
 
-    @DisabledTest(message = "https://crbug.com/945293")
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testRender_ArticleSectionHeader(boolean interestFeedEnabled) throws Exception {
+    public void testRender_SignInPromoWithAccount() throws Exception {
+        mAccountManagerTestRule.addAccountWithNameAndAvatar(
+                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        // Scroll to the sign in promo in case it is not visible.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
+                "sign_in_promo_with_account");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    public void testRender_SyncPromo() throws Exception {
+        mAccountManagerTestRule.addTestAccountThenSignin();
+        // Scroll to the sign in promo in case it is not visible.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        mRenderTestRule.render(
+                mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sync_promo");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    public void testRender_ArticleSectionHeader() throws Exception {
         // Scroll to the article section header in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
-        View view = mNtp.getSectionHeaderViewForTesting();
+        View view = mNtp.getCoordinatorForTesting().getSectionHeaderViewForTesting();
         // Check header is expanded.
         mRenderTestRule.render(view, "expandable_header_expanded");
 
         // Toggle header on the current tab.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         onView(withId(R.id.header_title)).perform(click());
         // Check header is collapsed.
         mRenderTestRule.render(view, "expandable_header_collapsed");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"NewTabPage"})
-    public void testThumbnailInvalidations() throws Throwable {
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                captureThumbnail();
-                Assert.assertFalse(mNtp.shouldCaptureThumbnail());
-
-                // Check that we invalidate the thumbnail when the Recycler View is updated.
-                NewTabPageRecyclerView recyclerView = mNtp.getNewTabPageView().getRecyclerView();
-
-                recyclerView.getAdapter().notifyDataSetChanged();
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemChanged(0);
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemInserted(0);
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemMoved(0, 1);
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemRangeChanged(0, 1);
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemRangeInserted(0, 1);
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemRangeRemoved(0, 1);
-                assertThumbnailInvalidAndRecapture();
-
-                recyclerView.getAdapter().notifyItemRemoved(0);
-                assertThumbnailInvalidAndRecapture();
-            }
-        });
     }
 
     /**
@@ -305,17 +247,18 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testFocusFakebox(boolean interestFeedEnabled) {
+    public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);
 
         TouchCommon.singleClickView(mFakebox);
+
         waitForFakeboxFocusAnimationComplete(mNtp);
         UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
-        int afterFocusFakeboxTop = getFakeboxTop(mNtp);
-        Assert.assertTrue(afterFocusFakeboxTop < initialFakeboxTop);
-
+        if (!mActivityTestRule.getActivity().isTablet()) {
+            int afterFocusFakeboxTop = getFakeboxTop(mNtp);
+            Assert.assertTrue(afterFocusFakeboxTop < initialFakeboxTop);
+        }
         OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
         waitForFakeboxTopPosition(mNtp, initialFakeboxTop);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, false);
@@ -328,25 +271,20 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "Test is flaky. crbug.com/593007, crbug.com/1033654")
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testSearchFromFakebox(boolean interestFeedEnabled) {
+    @DisabledTest(message = "https://crbug.com/1033654")
+    public void testSearchFromFakebox() {
         TouchCommon.singleClickView(mFakebox);
         waitForFakeboxFocusAnimationComplete(mNtp);
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
 
-        InstrumentationRegistry.getInstrumentation().sendStringSync(TEST_PAGE);
+        InstrumentationRegistry.getInstrumentation().sendStringSync(UrlConstants.VERSION_URL);
         LocationBarLayout locationBar =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);
-
-        ChromeTabUtils.waitForTabPageLoaded(mTab, null, new Runnable() {
-            @Override
-            public void run() {
-                KeyUtils.singleKeyEventView(InstrumentationRegistry.getInstrumentation(), urlBar,
-                        KeyEvent.KEYCODE_ENTER);
-            }
+        ChromeTabUtils.waitForTabPageLoaded(mTab, null, () -> {
+            KeyUtils.singleKeyEventView(
+                    InstrumentationRegistry.getInstrumentation(), urlBar, KeyEvent.KEYCODE_ENTER);
         });
     }
 
@@ -356,16 +294,16 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testClickMostVisitedItem(boolean interestFeedEnabled) {
-        ChromeTabUtils.waitForTabPageLoaded(mTab, mSiteSuggestions.get(0).url, new Runnable() {
-            @Override
-            public void run() {
-                View mostVisitedItem = mTileGridLayout.getChildAt(0);
-                TouchCommon.singleClickView(mostVisitedItem);
-            }
-        });
-        Assert.assertEquals(mSiteSuggestions.get(0).url, mTab.getUrl());
+    public void testClickMostVisitedItem() {
+        ChromeTabUtils.waitForTabPageLoaded(
+                mTab, mSiteSuggestions.get(0).url.getSpec(), new Runnable() {
+                    @Override
+                    public void run() {
+                        View mostVisitedItem = mTileGridLayout.getChildAt(0);
+                        TouchCommon.singleClickView(mostVisitedItem);
+                    }
+                });
+        Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
     }
 
     /**
@@ -375,12 +313,10 @@ public class NewTabPageTest {
     @DisabledTest // Flaked on the try bot. http://crbug.com/543138
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testOpenMostVisitedItemInNewTab(boolean interestFeedEnabled)
-            throws ExecutionException {
+    public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0), ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
-                false, mSiteSuggestions.get(0).url);
+                false, mSiteSuggestions.get(0).url.getSpec());
     }
 
     /**
@@ -389,13 +325,11 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testOpenMostVisitedItemInIncognitoTab(boolean interestFeedEnabled)
-            throws ExecutionException {
+    public void testOpenMostVisitedItemInIncognitoTab() throws ExecutionException {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, true,
-                mSiteSuggestions.get(0).url);
+                mSiteSuggestions.get(0).url.getSpec());
     }
 
     /**
@@ -404,8 +338,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testRemoveMostVisitedItem(boolean interestFeedEnabled) throws ExecutionException {
+    @FlakyTest(message = "crbug.com/1075804")
+    public void testRemoveMostVisitedItem() throws ExecutionException {
         SiteSuggestion testSite = mSiteSuggestions.get(0);
         View mostVisitedItem = mTileGridLayout.getChildAt(0);
         ArrayList<View> views = new ArrayList<>();
@@ -417,14 +351,13 @@ public class NewTabPageTest {
         Assert.assertTrue(InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
                 mActivityTestRule.getActivity(), ContextMenuManager.ContextMenuItemId.REMOVE, 0));
 
-        Assert.assertTrue(mMostVisitedSites.isUrlBlacklisted(testSite.url));
+        Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(testSite.url));
     }
 
     @Test
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testUrlFocusAnimationsDisabledOnLoad(boolean interestFeedEnabled) {
+    public void testUrlFocusAnimationsDisabledOnLoad() {
         Assert.assertFalse(getUrlFocusAnimationsDisabled());
         ChromeTabUtils.waitForTabPageLoaded(mTab, mTestServer.getURL(TEST_PAGE), new Runnable() {
             @Override
@@ -444,9 +377,7 @@ public class NewTabPageTest {
     @Test
     @LargeTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testUrlFocusAnimationsEnabledOnFailedLoad(boolean interestFeedEnabled)
-            throws Exception {
+    public void testUrlFocusAnimationsEnabledOnFailedLoad() throws Exception {
         // TODO(jbudorick): switch this to EmbeddedTestServer.
         TestWebServer webServer = TestWebServer.start();
         try {
@@ -477,12 +408,14 @@ public class NewTabPageTest {
             OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);
 
             final CallbackHelper loadedCallback = new CallbackHelper();
-            mTab.addObserver(new EmptyTabObserver() {
-                @Override
-                public void onPageLoadFinished(Tab tab, String url) {
-                    loadedCallback.notifyCalled();
-                    tab.removeObserver(this);
-                }
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mTab.addObserver(new EmptyTabObserver() {
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        loadedCallback.notifyCalled();
+                        tab.removeObserver(this);
+                    }
+                });
             });
 
             final View v = urlBar;
@@ -508,8 +441,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testSetSearchProviderInfo(boolean interestFeedEnabled) throws Throwable {
+    public void testSetSearchProviderInfo() throws Throwable {
         mActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -531,8 +463,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testPlaceholder(boolean interestFeedEnabled) {
+    public void testPlaceholder() {
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         final View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
         final View searchBoxView = ntpLayout.findViewById(R.id.search_box);
@@ -555,11 +486,9 @@ public class NewTabPageTest {
 
             ntpLayout.getTileGroup().onSwitchToForeground(false); // Force tile refresh.
         });
-        CriteriaHelper.pollUiThread(new Criteria("The tile grid was not updated.") {
-            @Override
-            public boolean isSatisfied() {
-                return mTileGridLayout.getChildCount() == 0;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    "The tile grid was not updated.", mTileGridLayout.getChildCount(), is(0));
         });
         Assert.assertNotNull(ntpLayout.getPlaceholder());
         Assert.assertEquals(View.VISIBLE, ntpLayout.getPlaceholder().getVisibility());
@@ -576,85 +505,8 @@ public class NewTabPageTest {
 
     @Test
     @SmallTest
-    public void testRemoteSuggestionsEnabledByDefault() {
-        Assert.assertTrue(
-                mNtp.getManagerForTesting().getSuggestionsSource().areRemoteSuggestionsEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add("disable-features=NTPArticleSuggestions")
-    public void testRemoteSuggestionsEnabledWhenFeatureDisabled() {
-        // Verifies crash from https://crbug.com/742056.
-        Assert.assertFalse(
-                mNtp.getManagerForTesting().getSuggestionsSource().areRemoteSuggestionsEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @Policies.Add(@Policies.Item(key = "NTPContentSuggestionsEnabled", string = "false"))
-    public void testRemoteSuggestionsEnabledWhenDisabledByPolicy() {
-        Assert.assertFalse(
-                mNtp.getManagerForTesting().getSuggestionsSource().areRemoteSuggestionsEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage"})
-    public void testArticleExpandableHeaderOnMultipleTabs() throws Exception {
-        // Disable the sign-in promo so the header is visible above the fold.
-        SignInPromo.setDisablePromoForTests(true);
-
-        // Open a new tab.
-        SuggestionsSection firstSection = getArticleSectionOnNewTab();
-        SectionHeader firstHeader = firstSection.getHeaderItemForTesting();
-        int firstTabId = mActivityTestRule.getActivity().getActivityTab().getId();
-
-        // Check header is expanded.
-        Assert.assertTrue(firstHeader.isExpandable() && firstHeader.isExpanded());
-        Assert.assertTrue(firstSection.getItemCount() > 1);
-        Assert.assertTrue(getPreferenceForExpandableHeader());
-
-        // Toggle header on the current tab.
-        onView(withId(R.id.header_title)).perform(click());
-
-        // Check header is collapsed.
-        Assert.assertTrue(firstHeader.isExpandable() && !firstHeader.isExpanded());
-        Assert.assertEquals(1, firstSection.getItemCount());
-        Assert.assertFalse(getPreferenceForExpandableHeader());
-
-        // Open a second new tab.
-        SuggestionsSection secondSection = getArticleSectionOnNewTab();
-        SectionHeader secondHeader = secondSection.getHeaderItemForTesting();
-
-        // Check header on the second tab is collapsed.
-        Assert.assertTrue(secondHeader.isExpandable() && !secondHeader.isExpanded());
-        Assert.assertEquals(1, secondSection.getItemCount());
-        Assert.assertFalse(getPreferenceForExpandableHeader());
-
-        // Toggle header on the second tab.
-        onView(withId(R.id.header_title)).perform(click());
-
-        // Check header on the second tab is expanded.
-        Assert.assertTrue(secondHeader.isExpandable() && secondHeader.isExpanded());
-        Assert.assertTrue(secondSection.getItemCount() > 1);
-        Assert.assertTrue(getPreferenceForExpandableHeader());
-
-        // Go back to the first tab and check header is expanded.
-        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), firstTabId);
-        Assert.assertTrue(firstHeader.isExpandable() && firstHeader.isExpanded());
-        Assert.assertTrue(firstSection.getItemCount() > 1);
-        Assert.assertTrue(getPreferenceForExpandableHeader());
-
-        // Reset state.
-        SignInPromo.setDisablePromoForTests(false);
-    }
-
-    @Test
-    @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testMemoryPressure(boolean interestFeedEnabled) throws Exception {
+    public void testMemoryPressure() throws Exception {
         // TODO(twellington): This test currently just checks that sending a memory pressure
         // signal doesn't crash. Enhance the test to also check whether certain behaviors are
         // performed.
@@ -669,6 +521,44 @@ public class NewTabPageTest {
         callback.waitForCallback(0);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> MemoryPressureListener.removeCallback(pressureCallback));
+    }
+
+    @Test
+    @DisabledTest(message = "Test is flaky. crbug.com/1077724")
+    @SmallTest
+    @Feature("NewTabPage")
+    public void testNewTabPageCanBeGarbageCollected() throws IOException {
+        WeakReference<NewTabPage> ntpRef = new WeakReference<>(mNtp);
+
+        mActivityTestRule.loadUrl("about:blank");
+
+        mNtp = null;
+        mMostVisitedSites = null;
+        mSuggestionsDeps.getFactory().mostVisitedSites = null;
+        mFakebox = null;
+        mTileGridLayout = null;
+        mTab = null;
+
+        Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(ntpRef));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    public void testSettingOmniboxStubAddsVoiceObserver() throws IOException {
+        when(mOmniboxStub.getVoiceRecognitionHandler()).thenReturn(mVoiceRecognitionHandler);
+        when(mVoiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNtp.setOmniboxStub(mOmniboxStub);
+            verify(mVoiceRecognitionHandler).addObserver(eq(mNtp));
+            View micButton = mNtp.getView().findViewById(R.id.voice_search_button);
+            assertEquals(View.VISIBLE, micButton.getVisibility());
+
+            when(mVoiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(false);
+            mNtp.onVoiceAvailabilityImpacted();
+            assertEquals(View.GONE, micButton.getVisibility());
+        });
     }
 
     private void assertThumbnailInvalidAndRecapture() {
@@ -692,34 +582,26 @@ public class NewTabPageTest {
     }
 
     private void waitForUrlFocusAnimationsDisabledState(boolean disabled) {
-        CriteriaHelper.pollInstrumentationThread(Criteria.equals(disabled, new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return getUrlFocusAnimationsDisabled();
-            }
-        }));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(getUrlFocusAnimationsDisabled(), is(disabled)));
     }
 
     private void waitForTabLoading() {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mTab.isLoading();
-            }
-        });
+        CriteriaHelper.pollUiThread(() -> mTab.isLoading());
     }
 
     private void waitForFakeboxFocusAnimationComplete(NewTabPage ntp) {
+        // Tablet doesn't animate fakebox but simply focuses Omnibox upon click.
+        // Skip the check on animation.
+        if (mActivityTestRule.getActivity().isTablet()) return;
         waitForUrlFocusPercent(ntp, 1f);
     }
 
     private void waitForUrlFocusPercent(final NewTabPage ntp, float percent) {
-        CriteriaHelper.pollUiThread(Criteria.equals(percent, new Callable<Float>() {
-            @Override
-            public Float call() {
-                return ntp.getNewTabPageLayout().getUrlFocusChangeAnimationPercent();
-            }
-        }));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    ntp.getNewTabPageLayout().getUrlFocusChangeAnimationPercent(), is(percent));
+        });
     }
 
     private void clickFakebox() {
@@ -746,24 +628,6 @@ public class NewTabPageTest {
      * Waits until the top of the fakebox reaches the given position.
      */
     private void waitForFakeboxTopPosition(final NewTabPage ntp, int position) {
-        CriteriaHelper.pollUiThread(Criteria.equals(position, new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return getFakeboxTop(ntp);
-            }
-        }));
-    }
-
-    private SuggestionsSection getArticleSectionOnNewTab() {
-        Tab tab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
-        NewTabPage ntp = (NewTabPage) tab.getNativePage();
-        NewTabPageAdapter adapter =
-                (NewTabPageAdapter) ntp.getNewTabPageView().getRecyclerView().getAdapter();
-        return adapter.getSectionListForTesting().getSection(KnownCategories.ARTICLES);
-    }
-
-    private boolean getPreferenceForExpandableHeader() throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> PrefServiceBridge.getInstance().getBoolean(Pref.NTP_ARTICLES_LIST_VISIBLE));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(getFakeboxTop(ntp), is(position)));
     }
 }

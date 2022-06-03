@@ -66,9 +66,10 @@ int32_t VpnProviderResource::Bind(
   bind_callback_ = callback;
 
   Call<PpapiPluginMsg_VpnProvider_BindReply>(
-      BROWSER, PpapiHostMsg_VpnProvider_Bind(configuration_id_var->value(),
-                                             configuration_name_var->value()),
-      base::Bind(&VpnProviderResource::OnPluginMsgBindReply, this));
+      BROWSER,
+      PpapiHostMsg_VpnProvider_Bind(configuration_id_var->value(),
+                                    configuration_name_var->value()),
+      base::BindOnce(&VpnProviderResource::OnPluginMsgBindReply, this));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -115,7 +116,7 @@ int32_t VpnProviderResource::DoSendPacket(const PP_Var& packet, uint32_t id) {
 
   Call<PpapiPluginMsg_VpnProvider_SendPacketReply>(
       BROWSER, PpapiHostMsg_VpnProvider_SendPacket(packet_size, id),
-      base::Bind(&VpnProviderResource::OnPluginMsgSendPacketReply, this));
+      base::BindOnce(&VpnProviderResource::OnPluginMsgSendPacketReply, this));
 
   return PP_OK;
 }

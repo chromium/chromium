@@ -9,10 +9,6 @@
 
 namespace install_static {
 
-enum : bool {
-  kUseGoogleUpdateIntegration = false,
-};
-
 // Note: This list of indices must be kept in sync with the brand-specific
 // resource strings in chrome/installer/util/prebuild/create_string_rc.
 enum InstallConstantIndex {

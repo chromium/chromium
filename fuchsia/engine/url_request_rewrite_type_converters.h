@@ -7,52 +7,16 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "fuchsia/base/string_util.h"
 #include "fuchsia/engine/url_request_rewrite.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 
 namespace mojo {
 
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteAddHeadersPtr,
-                     fuchsia::web::UrlRequestRewriteAddHeaders> {
-  static mojom::UrlRequestRewriteAddHeadersPtr Convert(
-      const fuchsia::web::UrlRequestRewriteAddHeaders& input);
-};
-
-template <>
-struct TypeConverter<mojom::UrlRequestRewriteRemoveHeaderPtr,
-                     fuchsia::web::UrlRequestRewriteRemoveHeader> {
-  static mojom::UrlRequestRewriteRemoveHeaderPtr Convert(
-      const fuchsia::web::UrlRequestRewriteRemoveHeader& input);
-};
-
-template <>
-struct TypeConverter<mojom::UrlRequestRewriteSubstituteQueryPatternPtr,
-                     fuchsia::web::UrlRequestRewriteSubstituteQueryPattern> {
-  static mojom::UrlRequestRewriteSubstituteQueryPatternPtr Convert(
-      const fuchsia::web::UrlRequestRewriteSubstituteQueryPattern& input);
-};
-
-template <>
-struct TypeConverter<mojom::UrlRequestRewriteReplaceUrlPtr,
-                     fuchsia::web::UrlRequestRewriteReplaceUrl> {
-  static mojom::UrlRequestRewriteReplaceUrlPtr Convert(
-      const fuchsia::web::UrlRequestRewriteReplaceUrl& input);
-};
-
-template <>
-struct TypeConverter<mojom::UrlRequestRewritePtr,
-                     fuchsia::web::UrlRequestRewrite> {
-  static mojom::UrlRequestRewritePtr Convert(
-      const fuchsia::web::UrlRequestRewrite& input);
-};
-
-template <>
-struct TypeConverter<mojom::UrlRequestRewriteRulePtr,
-                     fuchsia::web::UrlRequestRewriteRule> {
-  static mojom::UrlRequestRewriteRulePtr Convert(
-      const fuchsia::web::UrlRequestRewriteRule& input);
+struct TypeConverter<mojom::UrlRequestRewriteRulesPtr,
+                     std::vector<fuchsia::web::UrlRequestRewriteRule>> {
+  static mojom::UrlRequestRewriteRulesPtr Convert(
+      const std::vector<fuchsia::web::UrlRequestRewriteRule>& input);
 };
 
 }  // namespace mojo

@@ -5,6 +5,7 @@
 #include "net/cookies/cookie_deletion_info.h"
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 
 namespace net {
@@ -28,12 +29,8 @@ bool DomainMatchesDomains(const net::CanonicalCookie& cookie,
   // If the cookie's domain is is not parsed as belonging to a registry
   // (e.g. for IP addresses or internal hostnames) an empty string will be
   // returned.  In this case, use the domain in the cookie.
-  if (effective_domain.empty()) {
-    if (cookie.IsDomainCookie())
-      effective_domain = cookie.Domain().substr(1);
-    else
-      effective_domain = cookie.Domain();
-  }
+  if (effective_domain.empty())
+    effective_domain = cookie.DomainWithoutDot();
 
   return match_domains.count(effective_domain) != 0;
 }
@@ -91,7 +88,7 @@ CookieDeletionInfo& CookieDeletionInfo::operator=(
     const CookieDeletionInfo& rhs) = default;
 
 bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
-                                 CookieAccessSemantics access_semantics) const {
+                                 const CookieAccessParams& params) const {
   if (session_control != SessionControl::IGNORE_CONTROL &&
       (cookie.IsPersistent() !=
        (session_control == SessionControl::PERSISTENT_COOKIES))) {
@@ -119,8 +116,8 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
   if (url.has_value() &&
       !cookie
            .IncludeForRequestURL(url.value(), CookieOptions::MakeAllInclusive(),
-                                 access_semantics)
-           .IsInclude()) {
+                                 params)
+           .status.IsInclude()) {
     return false;
   }
 

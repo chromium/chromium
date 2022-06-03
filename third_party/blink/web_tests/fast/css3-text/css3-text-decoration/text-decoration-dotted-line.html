@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>CSS Test: CSS3 text-decoration dotted line for text test</title>
+        <link rel="help" href="http://http://dev.w3.org/csswg/css3-text/#text-decoration-style"/>
+        <meta name="flags" content="ahem"/>
+        <style>
+            .overline {
+              text-decoration: overline;
+              text-decoration-style: dotted;
+              text-decoration-skip-ink: none;
+              text-decoration-color: red;
+            }
+
+            .line-through {
+              text-decoration: line-through;
+              text-decoration-style: dotted;
+              text-decoration-skip-ink: none;
+              text-decoration-color: red;
+            }
+
+            .underline {
+              text-decoration: underline;
+              text-decoration-style: dotted;
+              text-decoration-skip-ink: none;
+              text-decoration-color: red;
+            }
+
+            .underline-skip-ink {
+              text-decoration: underline;
+              text-decoration-style: dotted;
+              text-decoration-skip-ink: auto;
+              text-decoration-color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overline">Lorem ipsum dolor sit amet</div>
+        <div class="overline">Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.</div>
+        <div class="overline">Quisque velit nisi, pretium ut lacinia in, elementum id enim.</div>
+        <div class="overline">Nulla porttitor accumsan tincidunt.</div>
+        <div class="overline">Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</div>
+
+        <div class="line-through">Lorem ipsum dolor sit amet</div>
+        <div class="line-through">Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.</div>
+        <div class="line-through">Quisque velit nisi, pretium ut lacinia in, elementum id enim.</div>
+        <div class="line-through">Nulla porttitor accumsan tincidunt.</div>
+        <div class="line-through">Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</div>
+
+        <div class="underline">Lorem ipsum dolor sit amet</div>
+        <div class="underline">Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.</div>
+        <div class="underline">Quisque velit nisi, pretium ut lacinia in, elementum id enim.</div>
+        <div class="underline">Nulla porttitor accumsan tincidunt.</div>
+        <div class="underline">Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</div>
+
+        <div class="underline-skip-ink">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div>
+    </body>
+</html>

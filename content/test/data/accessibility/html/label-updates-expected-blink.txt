@@ -1,20 +1,21 @@
 rootWebArea
-++genericContainer
-++++textField name='oranges'
-++++++genericContainer
-++++labelText ignored invisible
-++++++genericContainer ignored invisible
+++genericContainer ignored
+++++genericContainer
+++++++textField name='oranges'
+++++++++genericContainer
+++++++labelText ignored invisible
 ++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='oranges'
-++++textField name='oranges'
-++++++genericContainer
-++++labelText ignored invisible
-++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible name='oranges'
+++++++textField name='oranges'
+++++++++genericContainer
+++++++labelText ignored invisible
 ++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='oranges'
-++++textField name='bananas'
-++++++genericContainer
-++++labelText ignored invisible
-++++++staticText ignored invisible name='bananas'
-++++textField name='finished'
-++++++genericContainer
+++++++++++genericContainer ignored invisible
+++++++++++++staticText ignored invisible name='oranges'
+++++++textField name='bananas'
+++++++++genericContainer
+++++++labelText ignored invisible
+++++++++staticText ignored invisible name='bananas'
+++++++textField name='finished'
+++++++++genericContainer

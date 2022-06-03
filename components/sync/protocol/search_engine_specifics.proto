@@ -49,7 +49,7 @@ message SearchEngineSpecifics {
   // DEPRECATED: Whether to autogenerate a keyword for the search engine or not.
   // Do not write to this field in the future.  We preserve this for now so we
   // can read the field in order to migrate existing data that sets this bit.
-  optional bool autogenerate_keyword = 12;
+  optional bool autogenerate_keyword = 12 [deprecated = true];
   // ID 13 reserved - previously used by |logo_id|, now deprecated.
   // Obsolete field. This used to represent whether or not this search engine
   // entry was created automatically by an administrator via group policy. This
@@ -80,4 +80,16 @@ message SearchEngineSpecifics {
 
   // The parameterized URL for a search provider specified new tab page.
   optional string new_tab_url = 26;
+
+  enum ActiveStatus {
+    // The default state when a SE is auto-added. Unspecified SE are inactive.
+    ACTIVE_STATUS_UNSPECIFIED = 0;
+    // The SE is active and can be triggered via the omnibox.
+    ACTIVE_STATUS_TRUE = 1;
+    // The SE has been manually set to inactive by the user.
+    ACTIVE_STATUS_FALSE = 2;
+  }
+  // Whether a search engine is 'active' and can be triggered via the omnibox by
+  // typing in the relevant keyword.
+  optional ActiveStatus is_active = 27;
 }

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Meta refresh is blocked by the allow-scripts sandbox flag at its creation time, not when refresh comes due Uncaught Error: assert_unreached: The iframe into which the meta was moved must not refresh Reached unreachable code
-Harness: the test ran to completion.
-

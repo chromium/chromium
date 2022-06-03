@@ -2,10 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
 # Implementations of media C++ interfaces using corresponding mojo services.
-jumbo_source_set("clients") {
+source_set("clients") {
   visibility = [
     "//chromecast/*",
 
@@ -14,24 +12,31 @@ jumbo_source_set("clients") {
 
     "//content/renderer:*",
 
-    # TODO(xhwang): Only allow //media/mojo/services:media_service_unittests
+    # TODO(xhwang): Only allow //media/mojo/services:unit_tests
     "//media/mojo/services:*",
 
     "//media/mojo:test_support",
 
     "//media/test/*",
 
+    "//content/browser:*",
     "//chrome/browser:*",
+
+    "//chrome/browser/thumbnail/generator",
 
     "//content/gpu:*",
 
     # TODO(liberato): can we avoid this?
     "//content/test/*",
+
+    "//third_party/blink/renderer/modules/webcodecs",
   ]
 
   sources = [
     "mojo_audio_decoder.cc",
     "mojo_audio_decoder.h",
+    "mojo_audio_encoder.cc",
+    "mojo_audio_encoder.h",
     "mojo_cdm.cc",
     "mojo_cdm.h",
     "mojo_cdm_factory.cc",
@@ -74,6 +79,7 @@ jumbo_source_set("clients") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//media/gpu",
     "//media/mojo/common",
     "//media/mojo/common:mojo_shared_buffer_video_frame",
@@ -86,6 +92,14 @@ jumbo_source_set("clients") {
       "//ui/gl:gl",
     ]
   }
+  if (is_win) {
+    sources += [
+      "win/media_foundation_renderer_client.cc",
+      "win/media_foundation_renderer_client.h",
+      "win/media_foundation_renderer_client_factory.cc",
+      "win/media_foundation_renderer_client_factory.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -93,6 +107,7 @@ source_set("unit_tests") {
 
   sources = [
     "mojo_audio_decoder_unittest.cc",
+    "mojo_audio_encoder_unittest.cc",
     "mojo_cdm_unittest.cc",
     "mojo_decryptor_unittest.cc",
     "mojo_renderer_unittest.cc",

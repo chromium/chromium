@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"

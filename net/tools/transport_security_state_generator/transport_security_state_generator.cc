@@ -110,14 +110,15 @@ bool CheckCertificatesInPinsets(const Pinsets& pinsets) {
 // Checks if there are two or more entries for the same hostname.
 bool CheckDuplicateEntries(const TransportSecurityStateEntries& entries) {
   std::set<std::string> seen_entries;
+  bool has_duplicates = false;
   for (const auto& entry : entries) {
     if (seen_entries.find(entry->hostname) != seen_entries.cend()) {
       LOG(ERROR) << "Duplicate entry for " << entry->hostname;
-      return false;
+      has_duplicates = true;
     }
     seen_entries.insert(entry->hostname);
   }
-  return true;
+  return !has_duplicates;
 }
 
 // Checks for entries which have no effect.
@@ -212,7 +213,7 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {
-    args.push_back(base::UTF16ToUTF8(arg));
+    args.push_back(base::WideToUTF8(arg));
   }
 #else
   base::CommandLine::StringVector args = command_line.GetArgs();

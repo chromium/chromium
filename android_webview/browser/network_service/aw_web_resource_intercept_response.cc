@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "android_webview/browser/network_service/aw_web_resource_response.h"
 #include "android_webview/browser_jni_headers/AwWebResourceInterceptResponse_jni.h"
 #include "base/android/jni_android.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -27,17 +27,16 @@ bool AwWebResourceInterceptResponse::RaisedException(JNIEnv* env) const {
 }
 
 bool AwWebResourceInterceptResponse::HasResponse(JNIEnv* env) const {
-  return !Java_AwWebResourceInterceptResponse_getResponse(env, java_object_)
-              .is_null();
+  return !!Java_AwWebResourceInterceptResponse_getResponse(env, java_object_);
 }
 
-std::unique_ptr<AwWebResourceResponse>
+std::unique_ptr<embedder_support::WebResourceResponse>
 AwWebResourceInterceptResponse::GetResponse(JNIEnv* env) const {
   ScopedJavaLocalRef<jobject> j_response =
       Java_AwWebResourceInterceptResponse_getResponse(env, java_object_);
-  if (j_response.is_null())
+  if (!j_response)
     return nullptr;
-  return std::make_unique<AwWebResourceResponse>(j_response);
+  return std::make_unique<embedder_support::WebResourceResponse>(j_response);
 }
 
 }  // namespace android_webview

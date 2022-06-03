@@ -17,9 +17,9 @@ function runTest(notification) {
     try {
       assert_true('NotificationEvent' in self);
 
-      assert_throws(new TypeError(), () => new NotificationEvent('NotificationEvent'));
-      assert_throws(new TypeError(), () => new NotificationEvent('NotificationEvent', {}));
-      assert_throws(new TypeError(), () => new NotificationEvent('NotificationEvent', { notification: null }));
+      assert_throws_js(TypeError, () => new NotificationEvent('NotificationEvent'));
+      assert_throws_js(TypeError, () => new NotificationEvent('NotificationEvent', {}));
+      assert_throws_js(TypeError, () => new NotificationEvent('NotificationEvent', { notification: null }));
 
       const event = new NotificationEvent('NotificationEvent', { notification });
 

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -15,9 +15,7 @@ js_library("neon-animatable") {
 }
 
 js_library("neon-animatable-behavior") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }
 
 js_library("neon-animated-pages") {
@@ -30,9 +28,7 @@ js_library("neon-animated-pages") {
 }
 
 js_library("neon-animation-behavior") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }
 
 js_library("neon-animation-runner-behavior") {

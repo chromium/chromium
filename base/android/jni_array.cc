@@ -4,9 +4,11 @@
 
 #include "base/android/jni_array.h"
 
+#include <ostream>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 namespace android {
@@ -32,8 +34,8 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
   CheckException(env);
   DCHECK(byte_array);
 
-  env->SetByteArrayRegion(
-      byte_array, 0, len, reinterpret_cast<const jbyte*>(bytes));
+  env->SetByteArrayRegion(byte_array, 0, len,
+                          reinterpret_cast<const jbyte*>(bytes));
   CheckException(env);
 
   return ScopedJavaLocalRef<jbyteArray>(env, byte_array);
@@ -41,7 +43,7 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
 
 ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(
     JNIEnv* env,
-    const std::vector<uint8_t>& bytes) {
+    base::span<const uint8_t> bytes) {
   return ToJavaByteArray(env, bytes.data(), bytes.size());
 }
 
@@ -65,21 +67,22 @@ ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
   return ScopedJavaLocalRef<jbooleanArray>(env, boolean_array);
 }
 
-ScopedJavaLocalRef<jintArray> ToJavaIntArray(
-    JNIEnv* env, const int* ints, size_t len) {
+ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
+                                             const int* ints,
+                                             size_t len) {
   jintArray int_array = env->NewIntArray(len);
   CheckException(env);
   DCHECK(int_array);
 
-  env->SetIntArrayRegion(
-      int_array, 0, len, reinterpret_cast<const jint*>(ints));
+  env->SetIntArrayRegion(int_array, 0, len,
+                         reinterpret_cast<const jint*>(ints));
   CheckException(env);
 
   return ScopedJavaLocalRef<jintArray>(env, int_array);
 }
 
-ScopedJavaLocalRef<jintArray> ToJavaIntArray(
-    JNIEnv* env, const std::vector<int>& ints) {
+ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
+                                             base::span<const int> ints) {
   return ToJavaIntArray(env, ints.data(), ints.size());
 }
 
@@ -90,8 +93,8 @@ ScopedJavaLocalRef<jlongArray> ToJavaLongArray(JNIEnv* env,
   CheckException(env);
   DCHECK(long_array);
 
-  env->SetLongArrayRegion(
-      long_array, 0, len, reinterpret_cast<const jlong*>(longs));
+  env->SetLongArrayRegion(long_array, 0, len,
+                          reinterpret_cast<const jlong*>(longs));
   CheckException(env);
 
   return ScopedJavaLocalRef<jlongArray>(env, long_array);
@@ -100,19 +103,19 @@ ScopedJavaLocalRef<jlongArray> ToJavaLongArray(JNIEnv* env,
 // Returns a new Java long array converted from the given int64_t array.
 BASE_EXPORT ScopedJavaLocalRef<jlongArray> ToJavaLongArray(
     JNIEnv* env,
-    const std::vector<int64_t>& longs) {
+    base::span<const int64_t> longs) {
   return ToJavaLongArray(env, longs.data(), longs.size());
 }
 
 // Returns a new Java float array converted from the given C++ float array.
-BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
-    JNIEnv* env, const float* floats, size_t len) {
+BASE_EXPORT ScopedJavaLocalRef<jfloatArray>
+ToJavaFloatArray(JNIEnv* env, const float* floats, size_t len) {
   jfloatArray float_array = env->NewFloatArray(len);
   CheckException(env);
   DCHECK(float_array);
 
-  env->SetFloatArrayRegion(
-      float_array, 0, len, reinterpret_cast<const jfloat*>(floats));
+  env->SetFloatArrayRegion(float_array, 0, len,
+                           reinterpret_cast<const jfloat*>(floats));
   CheckException(env);
 
   return ScopedJavaLocalRef<jfloatArray>(env, float_array);
@@ -120,7 +123,7 @@ BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
 
 BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
     JNIEnv* env,
-    const std::vector<float>& floats) {
+    base::span<const float> floats) {
   return ToJavaFloatArray(env, floats.data(), floats.size());
 }
 
@@ -139,15 +142,46 @@ ToJavaDoubleArray(JNIEnv* env, const double* doubles, size_t len) {
 
 BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
     JNIEnv* env,
-    const std::vector<double>& doubles) {
+    base::span<const double> doubles) {
   return ToJavaDoubleArray(env, doubles.data(), doubles.size());
 }
 
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaLocalRef<jobject>> v) {
+  ScopedJavaLocalRef<jclass> object_array_clazz =
+      GetClass(env, "java/lang/Object");
+  jobjectArray joa =
+      env->NewObjectArray(v.size(), object_array_clazz.obj(), nullptr);
+  CheckException(env);
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    env->SetObjectArrayElement(joa, i, v[i].obj());
+  }
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaGlobalRef<jobject>> v) {
+  ScopedJavaLocalRef<jclass> object_array_clazz =
+      GetClass(env, "java/lang/Object");
+  jobjectArray joa =
+      env->NewObjectArray(v.size(), object_array_clazz.obj(), nullptr);
+  CheckException(env);
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    env->SetObjectArrayElement(joa, i, v[i].obj());
+  }
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
-    JNIEnv* env, const std::vector<std::string>& v) {
+    JNIEnv* env,
+    base::span<const std::string> v) {
   ScopedJavaLocalRef<jclass> byte_array_clazz = GetClass(env, "[B");
-  jobjectArray joa = env->NewObjectArray(v.size(),
-                                         byte_array_clazz.obj(), NULL);
+  jobjectArray joa =
+      env->NewObjectArray(v.size(), byte_array_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
@@ -158,10 +192,27 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
   return ScopedJavaLocalRef<jobjectArray>(env, joa);
 }
 
+ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
+    JNIEnv* env,
+    base::span<const std::vector<uint8_t>> v) {
+  ScopedJavaLocalRef<jclass> byte_array_clazz = GetClass(env, "[B");
+  jobjectArray joa =
+      env->NewObjectArray(v.size(), byte_array_clazz.obj(), nullptr);
+  CheckException(env);
+
+  for (size_t i = 0; i < v.size(); ++i) {
+    ScopedJavaLocalRef<jbyteArray> byte_array =
+        ToJavaByteArray(env, v[i].data(), v[i].size());
+    env->SetObjectArrayElement(joa, i, byte_array.obj());
+  }
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
-    JNIEnv* env, const std::vector<std::string>& v) {
+    JNIEnv* env,
+    base::span<const std::string> v) {
   ScopedJavaLocalRef<jclass> string_clazz = GetClass(env, "java/lang/String");
-  jobjectArray joa = env->NewObjectArray(v.size(), string_clazz.obj(), NULL);
+  jobjectArray joa = env->NewObjectArray(v.size(), string_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
@@ -173,12 +224,31 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
     JNIEnv* env,
-    const std::vector<std::vector<string16>>& vec_outer) {
+    base::span<const std::vector<std::string>> vec_outer) {
   ScopedJavaLocalRef<jclass> string_array_clazz =
       GetClass(env, "[Ljava/lang/String;");
 
   jobjectArray joa =
-      env->NewObjectArray(vec_outer.size(), string_array_clazz.obj(), NULL);
+      env->NewObjectArray(vec_outer.size(), string_array_clazz.obj(), nullptr);
+  CheckException(env);
+
+  for (size_t i = 0; i < vec_outer.size(); ++i) {
+    ScopedJavaLocalRef<jobjectArray> inner =
+        ToJavaArrayOfStrings(env, vec_outer[i]);
+    env->SetObjectArrayElement(joa, i, inner.obj());
+  }
+
+  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
+ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
+    JNIEnv* env,
+    base::span<const std::vector<std::u16string>> vec_outer) {
+  ScopedJavaLocalRef<jclass> string_array_clazz =
+      GetClass(env, "[Ljava/lang/String;");
+
+  jobjectArray joa =
+      env->NewObjectArray(vec_outer.size(), string_array_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < vec_outer.size(); ++i) {
@@ -191,9 +261,10 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
 }
 
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
-    JNIEnv* env, const std::vector<string16>& v) {
+    JNIEnv* env,
+    base::span<const std::u16string> v) {
   ScopedJavaLocalRef<jclass> string_clazz = GetClass(env, "java/lang/String");
-  jobjectArray joa = env->NewObjectArray(v.size(), string_clazz.obj(), NULL);
+  jobjectArray joa = env->NewObjectArray(v.size(), string_clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
@@ -205,7 +276,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 
 void AppendJavaStringArrayToStringVector(JNIEnv* env,
                                          const JavaRef<jobjectArray>& array,
-                                         std::vector<string16>* out) {
+                                         std::vector<std::u16string>* out) {
   DCHECK(out);
   if (!array)
     return;
@@ -331,6 +402,17 @@ void JavaFloatArrayToFloatVector(JNIEnv* env,
   env->GetFloatArrayRegion(float_array.obj(), 0, len, out->data());
 }
 
+void JavaDoubleArrayToDoubleVector(JNIEnv* env,
+                                   const JavaRef<jdoubleArray>& double_array,
+                                   std::vector<double>* out) {
+  DCHECK(out);
+  size_t len = SafeGetArrayLength(env, double_array);
+  out->resize(len);
+  if (!len)
+    return;
+  env->GetDoubleArrayRegion(double_array.obj(), 0, len, out->data());
+}
+
 void JavaArrayOfByteArrayToStringVector(JNIEnv* env,
                                         const JavaRef<jobjectArray>& array,
                                         std::vector<std::string>* out) {
@@ -348,10 +430,41 @@ void JavaArrayOfByteArrayToStringVector(JNIEnv* env,
   }
 }
 
+void JavaArrayOfByteArrayToBytesVector(JNIEnv* env,
+                                       const JavaRef<jobjectArray>& array,
+                                       std::vector<std::vector<uint8_t>>* out) {
+  DCHECK(out);
+  const size_t len = SafeGetArrayLength(env, array);
+  out->resize(len);
+  for (size_t i = 0; i < len; ++i) {
+    ScopedJavaLocalRef<jbyteArray> bytes_array(
+        env,
+        static_cast<jbyteArray>(env->GetObjectArrayElement(array.obj(), i)));
+    JavaByteArrayToByteVector(env, bytes_array, &(*out)[i]);
+  }
+}
+
 void Java2dStringArrayTo2dStringVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
-    std::vector<std::vector<string16>>* out) {
+    std::vector<std::vector<std::u16string>>* out) {
+  DCHECK(out);
+  size_t len = SafeGetArrayLength(env, array);
+  out->resize(len);
+  for (size_t i = 0; i < len; ++i) {
+    ScopedJavaLocalRef<jobjectArray> strings_array(
+        env,
+        static_cast<jobjectArray>(env->GetObjectArrayElement(array.obj(), i)));
+
+    out->at(i).clear();
+    AppendJavaStringArrayToStringVector(env, strings_array, &out->at(i));
+  }
+}
+
+void Java2dStringArrayTo2dStringVector(
+    JNIEnv* env,
+    const JavaRef<jobjectArray>& array,
+    std::vector<std::vector<std::string>>* out) {
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, array);
   out->resize(len);

@@ -144,9 +144,9 @@ bool SortedDocumentMarkerListEditor::ShiftMarkersContentIndependent(
   bool did_shift_marker = false;
   for (MarkerList::iterator it = shift_range_begin; it != list->end(); ++it) {
     DocumentMarker& marker = **it;
-    base::Optional<DocumentMarker::MarkerOffsets> result =
+    absl::optional<DocumentMarker::MarkerOffsets> result =
         marker.ComputeOffsetsAfterShift(offset, old_length, new_length);
-    if (result == base::nullopt) {
+    if (result == absl::nullopt) {
       if (erase_range_begin == list->end())
         erase_range_begin = it;
       erase_range_end = std::next(it);

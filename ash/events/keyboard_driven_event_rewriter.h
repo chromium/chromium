@@ -6,7 +6,6 @@
 #define ASH_EVENTS_KEYBOARD_DRIVEN_EVENT_REWRITER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_rewriter.h"
 
 namespace ash {
@@ -17,20 +16,21 @@ namespace ash {
 class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
  public:
   KeyboardDrivenEventRewriter();
+
+  KeyboardDrivenEventRewriter(const KeyboardDrivenEventRewriter&) = delete;
+  KeyboardDrivenEventRewriter& operator=(const KeyboardDrivenEventRewriter&) =
+      delete;
+
   ~KeyboardDrivenEventRewriter() override;
 
   // Calls Rewrite for testing.
-  ui::EventRewriteStatus RewriteForTesting(
-      const ui::Event& event,
-      std::unique_ptr<ui::Event>* new_event);
+  ui::EventDispatchDetails RewriteForTesting(const ui::Event& event,
+                                             const Continuation continuation);
 
   // EventRewriter overrides:
-  ui::EventRewriteStatus RewriteEvent(
+  ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
-      std::unique_ptr<ui::Event>* new_event) override;
-  ui::EventRewriteStatus NextDispatchEvent(
-      const ui::Event& last_event,
-      std::unique_ptr<ui::Event>* new_event) override;
+      const Continuation continuation) override;
 
   void set_enabled(bool enabled) { enabled_ = enabled; }
   void set_arrow_to_tab_rewriting_enabled(bool enabled) {
@@ -38,8 +38,8 @@ class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
   }
 
  private:
-  ui::EventRewriteStatus Rewrite(const ui::Event& event,
-                                 std::unique_ptr<ui::Event>* new_event);
+  ui::EventDispatchDetails Rewrite(const ui::Event& event,
+                                   const Continuation continuation);
 
   // If true, this rewriter is enabled. It is only active before user login.
   bool enabled_ = false;
@@ -47,8 +47,6 @@ class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
   // If true, Shift + Arrow keys are rewritten to Tab/Shift-Tab keys.
   // This only applies when the KeyboardDrivenEventRewriter is active.
   bool arrow_to_tab_rewriting_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDrivenEventRewriter);
 };
 
 }  // namespace ash

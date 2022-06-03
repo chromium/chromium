@@ -50,7 +50,7 @@ void StartAndCrashWithExtendedHandler(const base::FilePath& temp_dir) {
                                   false,
                                   false));
 
-  // It appears that the GoogleTest fixture will catch and handle exceptions
+  // It appears that the Google Test fixture will catch and handle exceptions
   // from here. Hence the fabricated crash in favor of raising an exception.
   EXCEPTION_RECORD exception_record = {kExpectedExitCode,
                                        EXCEPTION_NONCONTINUABLE};

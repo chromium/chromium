@@ -36,6 +36,10 @@ class FtlSignalingPlayground final : public SignalStrategy::Listener,
                                      public protocol::Session::EventHandler {
  public:
   FtlSignalingPlayground();
+
+  FtlSignalingPlayground(const FtlSignalingPlayground&) = delete;
+  FtlSignalingPlayground& operator=(const FtlSignalingPlayground&) = delete;
+
   ~FtlSignalingPlayground() override;
 
   bool ShouldPrintHelp();
@@ -87,8 +91,6 @@ class FtlSignalingPlayground final : public SignalStrategy::Listener,
   base::OnceClosure on_signaling_connected_callback_;
 
   base::OneShotTimer tear_down_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FtlSignalingPlayground);
 };
 
 }  // namespace remoting

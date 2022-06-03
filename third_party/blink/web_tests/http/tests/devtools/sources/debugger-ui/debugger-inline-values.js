@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests inline values rendering in the sources panel.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -27,14 +27,14 @@
 
   function runTestFunction() {
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged',
+        Sources.DebuggerPlugin.prototype, 'executionLineChanged',
         onSetExecutionLocation);
     TestRunner.evaluateInPage('setTimeout(testFunction, 0)');
   }
 
-  function onSetExecutionLocation(liveLocation) {
+  async function onSetExecutionLocation(liveLocation) {
     TestRunner.deprecatedRunAfterPendingDispatches(dumpAndContinue.bind(
-        null, this._textEditor, liveLocation.uiLocation().lineNumber));
+        null, this.textEditor, (await liveLocation.uiLocation()).lineNumber));
   }
 
   function dumpAndContinue(textEditor, lineNumber) {
@@ -44,12 +44,12 @@
       output.push(i == lineNumber ? '>' : ' ');
       output.push(textEditor.line(i));
       output.push('\t');
-      textEditor._decorations.get(i).forEach(decoration => output.push(decoration.element.deepTextContent()));
+      textEditor.decorations.get(i).forEach(decoration => output.push(decoration.element.deepTextContent()));
       TestRunner.addResult(output.join(' '));
     }
 
     TestRunner.addSniffer(
-        Sources.DebuggerPlugin.prototype, '_executionLineChanged',
+        Sources.DebuggerPlugin.prototype, 'executionLineChanged',
         onSetExecutionLocation);
     if (++stepCount < 10)
       SourcesTestRunner.stepOver();

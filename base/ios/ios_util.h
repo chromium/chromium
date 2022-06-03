@@ -13,17 +13,21 @@
 namespace base {
 namespace ios {
 
-// Returns whether the operating system is iOS 10 or later.
-BASE_EXPORT bool IsRunningOnIOS10OrLater();
-
-// Returns whether the operating system is iOS 11 or later.
-BASE_EXPORT bool IsRunningOnIOS11OrLater();
-
 // Returns whether the operating system is iOS 12 or later.
+// TODO(crbug.com/1129482): Remove once minimum supported version is at least 12
 BASE_EXPORT bool IsRunningOnIOS12OrLater();
 
 // Returns whether the operating system is iOS 13 or later.
+// TODO(crbug.com/1129483): Remove once minimum supported version is at least 13
 BASE_EXPORT bool IsRunningOnIOS13OrLater();
+
+// Returns whether the operating system is iOS 14 or later.
+// TODO(crbug.com/1129484): Remove once minimum supported version is at least 14
+BASE_EXPORT bool IsRunningOnIOS14OrLater();
+
+// Returns whether the operating system is iOS 15 or later.
+// TODO(crbug.com/1227419): Remove once minimum supported version is at least 15
+BASE_EXPORT bool IsRunningOnIOS15OrLater();
 
 // Returns whether the operating system is at the given version or later.
 BASE_EXPORT bool IsRunningOnOrLater(int32_t major,
@@ -44,6 +48,22 @@ BASE_EXPORT void OverridePathOfEmbeddedICU(const char* path);
 // Returns the overriden path set by OverridePathOfEmbeddedICU(), otherwise
 // returns invalid FilePath.
 BASE_EXPORT FilePath FilePathOfEmbeddedICU();
+
+// Returns true if multiwindow is supported on this OS version and is enabled in
+// the current build configuration. Does not check if this device can actually
+// show multiple windows (e.g. on iPhone): use [UIApplication
+// supportsMultipleScenes] instead.
+BASE_EXPORT bool IsMultiwindowSupported();
+
+// Returns true if the iOS13 UIScene-based startup flow is supported, regardless
+// of whether multiple windows are permitted. This always returns true if
+// base::ios::IsMultiwindowSupported() returns true.
+BASE_EXPORT bool IsSceneStartupSupported();
+
+// Returns true iff multiple windows can be opened, i.e. when the multiwindow
+// build flag is on, the device is running on iOS 13+ and it's a compatible
+// iPad.
+BASE_EXPORT bool IsMultipleScenesSupported();
 
 }  // namespace ios
 }  // namespace base

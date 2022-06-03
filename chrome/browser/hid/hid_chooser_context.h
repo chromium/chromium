@@ -12,13 +12,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "url/origin.h"
+
+class Profile;
 
 namespace base {
 class Value;
@@ -26,63 +31,109 @@ class Value;
 
 // Manages the internal state and connection to the device service for the
 // Human Interface Device (HID) chooser UI.
-class HidChooserContext : public ChooserContextBase {
+class HidChooserContext : public permissions::ObjectPermissionContextBase,
+                          public device::mojom::HidManagerClient {
  public:
+  // This observer can be used to be notified when HID devices are connected or
+  // disconnected.
+  class DeviceObserver : public base::CheckedObserver {
+   public:
+    virtual void OnDeviceAdded(const device::mojom::HidDeviceInfo&);
+    virtual void OnDeviceRemoved(const device::mojom::HidDeviceInfo&);
+    virtual void OnDeviceChanged(const device::mojom::HidDeviceInfo&);
+    virtual void OnHidManagerConnectionError();
+
+    // Called when the HidChooserContext is shutting down. Observers must remove
+    // themselves before returning.
+    virtual void OnHidChooserContextShutdown() = 0;
+  };
+
   explicit HidChooserContext(Profile* profile);
+  HidChooserContext(const HidChooserContext&) = delete;
+  HidChooserContext& operator=(const HidChooserContext&) = delete;
   ~HidChooserContext() override;
 
-  // Given a chooser item |object|, returns a human-readable string
-  // representing the object.
-  static std::string GetObjectName(const base::Value& object);
+  // Returns a human-readable string identifier for |device|.
+  static std::u16string DisplayNameFromDeviceInfo(
+      const device::mojom::HidDeviceInfo& device);
 
-  // ChooserContextBase:
+  // Returns true if a persistent permission can be granted for |device|.
+  static bool CanStorePersistentEntry(
+      const device::mojom::HidDeviceInfo& device);
+
+  // permissions::ObjectPermissionContextBase implementation:
+  std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
-  // In addition these methods from ChooserContextBase are overridden in order
-  // to expose ephemeral devices through the public interface.
+  // In addition these methods from ObjectPermissionContextBase are overridden
+  // in order to expose ephemeral devices through the public interface.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin) override;
+      const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
-  void RevokeObjectPermission(const url::Origin& requesting_origin,
-                              const url::Origin& embedding_origin,
+  void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
+  std::u16string GetObjectDisplayName(const base::Value& object) override;
 
   // HID-specific interface for granting and checking permissions.
-  void GrantDevicePermission(const url::Origin& requesting_origin,
-                             const url::Origin& embedding_origin,
+  void GrantDevicePermission(const url::Origin& origin,
                              const device::mojom::HidDeviceInfo& device);
-  bool HasDevicePermission(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin,
+  bool HasDevicePermission(const url::Origin& origin,
                            const device::mojom::HidDeviceInfo& device);
+
+  // For ScopedObserver.
+  void AddDeviceObserver(DeviceObserver* observer);
+  void RemoveDeviceObserver(DeviceObserver* observer);
+
+  // Forward HidManager::GetDevices.
+  void GetDevices(device::mojom::HidManager::GetDevicesCallback callback);
+
+  // Only call this if you're sure |devices_| has been initialized before-hand.
+  // The returned raw pointer is owned by |devices_| and will be destroyed when
+  // the device is removed.
+  const device::mojom::HidDeviceInfo* GetDeviceInfo(const std::string& guid);
 
   device::mojom::HidManager* GetHidManager();
 
+  // Sets |manager| as the HidManager and registers this context as a
+  // HidManagerClient. Calls |callback| with the set of enumerated devices once
+  // the client is registered and the initial enumeration is complete.
   void SetHidManagerForTesting(
-      mojo::PendingRemote<device::mojom::HidManager> manager);
+      mojo::PendingRemote<device::mojom::HidManager> manager,
+      device::mojom::HidManager::GetDevicesCallback callback);
+
   base::WeakPtr<HidChooserContext> AsWeakPtr();
 
  private:
+  // device::mojom::HidManagerClient implementation:
+  void DeviceAdded(device::mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceRemoved(device::mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device_info) override;
+
   void EnsureHidManagerConnection();
   void SetUpHidManagerConnection(
       mojo::PendingRemote<device::mojom::HidManager> manager);
+  void InitDeviceList(std::vector<device::mojom::HidDeviceInfoPtr> devices);
+  void OnHidManagerInitializedForTesting(
+      device::mojom::HidManager::GetDevicesCallback callback,
+      std::vector<device::mojom::HidDeviceInfoPtr> devices);
   void OnHidManagerConnectionError();
 
   const bool is_incognito_;
+  bool is_initialized_ = false;
+  base::queue<device::mojom::HidManager::GetDevicesCallback>
+      pending_get_devices_requests_;
 
-  // Tracks the set of devices to which an origin (potentially embedded in
-  // another origin) has access to. Key is (requesting_origin,
-  // embedding_origin).
-  std::map<std::pair<url::Origin, url::Origin>, std::set<std::string>>
-      ephemeral_devices_;
+  // Tracks the set of devices to which an origin has access to.
+  std::map<url::Origin, std::set<std::string>> ephemeral_devices_;
 
-  // Holds information about devices in |ephemeral_devices_|.
-  std::map<std::string, base::Value> device_info_;
+  // Map from device GUID to device info.
+  std::map<std::string, device::mojom::HidDeviceInfoPtr> devices_;
 
   mojo::Remote<device::mojom::HidManager> hid_manager_;
+  mojo::AssociatedReceiver<device::mojom::HidManagerClient> client_receiver_{
+      this};
+  base::ObserverList<DeviceObserver> device_observer_list_;
 
   base::WeakPtrFactory<HidChooserContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HidChooserContext);
 };
 
 #endif  // CHROME_BROWSER_HID_HID_CHOOSER_CONTEXT_H_

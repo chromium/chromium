@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/synthetic_pinch_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_pointer_action.h"

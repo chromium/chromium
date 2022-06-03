@@ -4,10 +4,12 @@
 
 #include "media/cast/cast_sender_impl.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "media/base/video_frame.h"
 #include "media/cast/sender/video_frame_factory.h"
 
@@ -16,7 +18,7 @@ namespace cast {
 
 // The LocalVideoFrameInput class posts all incoming video frames to the main
 // cast thread for processing.
-class LocalVideoFrameInput : public VideoFrameInput {
+class LocalVideoFrameInput final : public VideoFrameInput {
  public:
   LocalVideoFrameInput(scoped_refptr<CastEnvironment> cast_environment,
                        base::WeakPtr<VideoSender> video_sender)
@@ -26,12 +28,15 @@ class LocalVideoFrameInput : public VideoFrameInput {
             video_sender.get() ?
                 video_sender->CreateVideoFrameFactory().release() : nullptr) {}
 
+  LocalVideoFrameInput(const LocalVideoFrameInput&) = delete;
+  LocalVideoFrameInput& operator=(const LocalVideoFrameInput&) = delete;
+
   void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            base::TimeTicks capture_time) final {
     cast_environment_->PostTask(
         CastEnvironment::MAIN, FROM_HERE,
-        base::BindRepeating(&VideoSender::InsertRawVideoFrame, video_sender_,
-                            std::move(video_frame), capture_time));
+        base::BindOnce(&VideoSender::InsertRawVideoFrame, video_sender_,
+                       std::move(video_frame), capture_time));
   }
 
   scoped_refptr<VideoFrame> MaybeCreateOptimizedFrame(
@@ -54,26 +59,25 @@ class LocalVideoFrameInput : public VideoFrameInput {
   const scoped_refptr<CastEnvironment> cast_environment_;
   const base::WeakPtr<VideoSender> video_sender_;
   const std::unique_ptr<VideoFrameFactory> video_frame_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalVideoFrameInput);
 };
 
 // The LocalAudioFrameInput class posts all incoming audio frames to the main
 // cast thread for processing. Therefore frames can be inserted from any thread.
-class LocalAudioFrameInput : public AudioFrameInput {
+class LocalAudioFrameInput final : public AudioFrameInput {
  public:
   LocalAudioFrameInput(scoped_refptr<CastEnvironment> cast_environment,
                        base::WeakPtr<AudioSender> audio_sender)
       : cast_environment_(cast_environment), audio_sender_(audio_sender) {}
 
+  LocalAudioFrameInput(const LocalAudioFrameInput&) = delete;
+  LocalAudioFrameInput& operator=(const LocalAudioFrameInput&) = delete;
+
   void InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                    const base::TimeTicks& recorded_time) final {
-    cast_environment_->PostTask(CastEnvironment::MAIN,
-                                FROM_HERE,
-                                base::Bind(&AudioSender::InsertAudio,
-                                           audio_sender_,
-                                           base::Passed(&audio_bus),
-                                           recorded_time));
+    cast_environment_->PostTask(
+        CastEnvironment::MAIN, FROM_HERE,
+        base::BindOnce(&AudioSender::InsertAudio, audio_sender_,
+                       std::move(audio_bus), recorded_time));
   }
 
  protected:
@@ -84,8 +88,6 @@ class LocalAudioFrameInput : public AudioFrameInput {
 
   scoped_refptr<CastEnvironment> cast_environment_;
   base::WeakPtr<AudioSender> audio_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalAudioFrameInput);
 };
 
 std::unique_ptr<CastSender> CastSender::Create(
@@ -104,20 +106,18 @@ CastSenderImpl::CastSenderImpl(scoped_refptr<CastEnvironment> cast_environment,
 
 void CastSenderImpl::InitializeAudio(
     const FrameSenderConfig& audio_config,
-    const StatusChangeCallback& status_change_cb) {
+    StatusChangeOnceCallback status_change_cb) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(audio_config.use_external_encoder ||
         cast_environment_->HasAudioThread());
 
   VLOG(1) << "CastSenderImpl@" << this << "::InitializeAudio()";
 
-  audio_sender_.reset(
-      new AudioSender(cast_environment_,
-                      audio_config,
-                      base::Bind(&CastSenderImpl::OnAudioStatusChange,
-                                 weak_factory_.GetWeakPtr(),
-                                 status_change_cb),
-                      transport_sender_));
+  audio_sender_ = std::make_unique<AudioSender>(
+      cast_environment_, audio_config,
+      base::BindOnce(&CastSenderImpl::OnAudioStatusChange,
+                     weak_factory_.GetWeakPtr(), std::move(status_change_cb)),
+      transport_sender_);
   if (video_sender_) {
     DCHECK(audio_sender_->GetTargetPlayoutDelay() ==
            video_sender_->GetTargetPlayoutDelay());
@@ -127,23 +127,20 @@ void CastSenderImpl::InitializeAudio(
 void CastSenderImpl::InitializeVideo(
     const FrameSenderConfig& video_config,
     const StatusChangeCallback& status_change_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb) {
+    const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
   VLOG(1) << "CastSenderImpl@" << this << "::InitializeVideo()";
 
-  video_sender_.reset(new VideoSender(
-      cast_environment_,
-      video_config,
-      base::Bind(&CastSenderImpl::OnVideoStatusChange,
-                 weak_factory_.GetWeakPtr(),
-                 status_change_cb),
-      create_vea_cb,
-      create_video_encode_mem_cb,
-      transport_sender_,
-      base::Bind(&CastSenderImpl::SetTargetPlayoutDelay,
-                 weak_factory_.GetWeakPtr())));
+  // No feedback callback, since it's ignored for CastSender.
+  video_sender_ = std::make_unique<VideoSender>(
+      cast_environment_, video_config,
+      base::BindRepeating(&CastSenderImpl::OnVideoStatusChange,
+                          weak_factory_.GetWeakPtr(), status_change_cb),
+      create_vea_cb, transport_sender_,
+      base::BindRepeating(&CastSenderImpl::SetTargetPlayoutDelay,
+                          weak_factory_.GetWeakPtr()),
+      media::VideoCaptureFeedbackCB());
   if (audio_sender_) {
     DCHECK(audio_sender_->GetTargetPlayoutDelay() ==
            video_sender_->GetTargetPlayoutDelay());
@@ -175,14 +172,14 @@ void CastSenderImpl::SetTargetPlayoutDelay(
 }
 
 void CastSenderImpl::OnAudioStatusChange(
-    const StatusChangeCallback& status_change_cb,
+    StatusChangeOnceCallback status_change_cb,
     OperationalStatus status) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   if (status == STATUS_INITIALIZED && !audio_frame_input_) {
     audio_frame_input_ =
         new LocalAudioFrameInput(cast_environment_, audio_sender_->AsWeakPtr());
   }
-  status_change_cb.Run(status);
+  std::move(status_change_cb).Run(status);
 }
 
 void CastSenderImpl::OnVideoStatusChange(

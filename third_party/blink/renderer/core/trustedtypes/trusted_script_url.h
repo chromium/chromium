@@ -15,10 +15,11 @@ class CORE_EXPORT TrustedScriptURL final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit TrustedScriptURL(const String& url);
+  explicit TrustedScriptURL(String url);
 
   // TrustedScriptURL.idl
-  String toString() const;
+  const String& toString() const;
+  const String& toJSON() const { return toString(); }
 
  private:
   const String url_;

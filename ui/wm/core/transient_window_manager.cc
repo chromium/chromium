@@ -8,7 +8,7 @@
 #include <functional>
 
 #include "base/auto_reset.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window.h"
@@ -62,6 +62,9 @@ void TransientWindowManager::AddTransientChild(Window* child) {
   // isn't installed stacking is going to be wrong.
   DCHECK(TransientWindowStackingClient::instance_);
 
+  // Self-owning windows break things, shouldn't happen.
+  DCHECK_NE(this->window_, child);
+
   TransientWindowManager* child_manager = GetOrCreate(child);
   if (child_manager->transient_parent_)
     GetOrCreate(child_manager->transient_parent_)->RemoveTransientChild(child);
@@ -114,8 +117,8 @@ bool TransientWindowManager::IsStackingTransient(
 
 TransientWindowManager::TransientWindowManager(Window* window)
     : window_(window),
-      transient_parent_(NULL),
-      stacking_target_(NULL),
+      transient_parent_(nullptr),
+      stacking_target_(nullptr),
       parent_controls_visibility_(false),
       show_on_parent_visible_(false),
       ignore_visibility_changed_event_(false) {

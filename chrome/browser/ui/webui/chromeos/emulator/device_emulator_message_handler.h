@@ -7,16 +7,14 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/system/pointer_device_observer.h"
+#include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace base {
-class DictionaryValue;
 class ListValue;
 }  // namespace base
 
@@ -38,6 +36,11 @@ class DeviceEmulatorMessageHandler :
     public content::WebUIMessageHandler {
  public:
   DeviceEmulatorMessageHandler();
+
+  DeviceEmulatorMessageHandler(const DeviceEmulatorMessageHandler&) = delete;
+  DeviceEmulatorMessageHandler& operator=(const DeviceEmulatorMessageHandler&) =
+      delete;
+
   ~DeviceEmulatorMessageHandler() override;
 
   // Adds |this| as an observer to all necessary objects.
@@ -118,14 +121,14 @@ class DeviceEmulatorMessageHandler :
 
   // Builds a dictionary with each key representing a property of the device
   // with path |object_path|.
-  std::unique_ptr<base::DictionaryValue> GetDeviceInfo(
-      const dbus::ObjectPath& object_path);
+  base::Value GetDeviceInfo(const dbus::ObjectPath& object_path);
 
   void ConnectToBluetoothDevice(const std::string& address);
 
   // system::PointerDeviceObserver::Observer:
   void TouchpadExists(bool exists) override;
   void MouseExists(bool exists) override;
+  void PointingStickExists(bool exists) override;
 
   bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
   std::unique_ptr<BluetoothObserver> bluetooth_observer_;
@@ -138,8 +141,6 @@ class DeviceEmulatorMessageHandler :
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   base::WeakPtrFactory<DeviceEmulatorMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEmulatorMessageHandler);
 };
 
 }  // namespace chromeos

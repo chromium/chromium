@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_HELPER_H_
-#define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_HELPER_H_
+#ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_
+#define COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_
 
-#include "base/optional.h"
+#include <vector>
+
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_info.h"
 #include "components/ntp_snippets/remote/remote_suggestion.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ntp_snippets {
 
@@ -30,10 +32,10 @@ using FetchedCategoriesVector = std::vector<FetchedCategory>;
 // Provides the CategoryInfo data for article suggestions. If |title| is
 // nullopt, then the default, hard-coded title will be used.
 CategoryInfo BuildArticleCategoryInfo(
-    const base::Optional<base::string16>& title);
+    const absl::optional<std::u16string>& title);
 
 // Provides the CategoryInfo data for other remote suggestions.
-CategoryInfo BuildRemoteCategoryInfo(const base::string16& title,
+CategoryInfo BuildRemoteCategoryInfo(const std::u16string& title,
                                      bool allow_fetching_more_results);
 
 bool JsonToCategories(const base::Value& parsed,
@@ -42,4 +44,4 @@ bool JsonToCategories(const base::Value& parsed,
 
 }  // namespace ntp_snippets
 
-#endif  // COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_HELPER_H_
+#endif  // COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_

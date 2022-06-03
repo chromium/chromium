@@ -1,14 +1,6 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="reset_browser_proxy.html">
-<link rel="import" href="../route.html">
-
-<dom-module id="settings-reset-profile-banner">
-  <template>
     <style include="settings-shared"></style>
-    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate>
+    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+        on-cancel="onCancel_">
       <div slot="title">$i18n{resetAutomatedDialogTitle}</div>
       <div slot="body">
         <span id="description">
@@ -27,6 +19,3 @@
         </cr-button>
       </div>
     </cr-dialog>
-  </template>
-  <script src="reset_profile_banner.js"></script>
-</dom-module>

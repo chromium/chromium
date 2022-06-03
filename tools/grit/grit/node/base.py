@@ -31,8 +31,15 @@ class Node(object):
   _CONTENT_TYPE_CDATA = 1  # Only CDATA, no children.
   _CONTENT_TYPE_MIXED = 2  # CDATA and children, possibly intermingled
 
-  # Default nodes to not whitelist skipped
-  _whitelist_marked_as_skip = False
+  # Types of files to be compressed by default.
+  _COMPRESS_BY_DEFAULT_EXTENSIONS = ('.js', '.html', '.css', '.svg')
+
+  # Types of files to disallow compressing, as it provides no benefit, and can
+  # potentially even make the file larger.
+  _COMPRESS_DISALLOWED_EXTENSIONS = ('.png', '.jpg')
+
+  # Default nodes to not allowlist skipped
+  _allowlist_marked_as_skip = False
 
   # A class-static cache to speed up EvaluateExpression().
   # Keys are expressions (e.g. 'is_ios and lang == "fr"'). Values are tuples
@@ -77,7 +84,7 @@ class Node(object):
   def ActiveChildren(self):
     '''Returns the children of this node that should be included in the current
     configuration. Overridden by <if>.'''
-    return [node for node in self.children if not node.WhitelistMarkedAsSkip()]
+    return [node for node in self.children if not node.AllowlistMarkedAsSkip()]
 
   def ActiveDescendants(self):
     '''Yields the current node and all descendants that should be included in
@@ -280,7 +287,8 @@ class Node(object):
     # Finally build the XML for our node and return it
     if len(inside_content) > 0:
       if one_line:
-        return u'<%s%s>%s</%s>' % (self.name, attribs, inside_content, self.name)
+        return u'<%s%s>%s</%s>' % (self.name, attribs, inside_content,
+                                   self.name)
       elif content_one_line:
         return u'%s<%s%s>\n%s  %s\n%s</%s>' % (
           indent, self.name, attribs,
@@ -424,6 +432,15 @@ class Node(object):
     else:
       return self.attrs['translateable'] == 'true'
 
+  def IsAccessibilityWithNoUI(self):
+    '''Returns true if the node is marked as an accessibility label and the
+    message isn't shown in the UI. Otherwise returns false. This label is
+    used to determine if the text requires screenshots.'''
+    if not 'is_accessibility_with_no_ui' in self.attrs:
+      return False
+    else:
+      return self.attrs['is_accessibility_with_no_ui'] == 'true'
+
   def GetNodeById(self, id):
     '''Returns the node in the subtree parented by this node that has a 'name'
     attribute matching 'id'.  Returns None if no such node is found.
@@ -483,11 +500,13 @@ class Node(object):
         value = target_platform == 'android'
       elif name == 'is_ios':
         value = target_platform == 'ios'
+      elif name == 'is_fuchsia':
+        value = target_platform == 'fuchsia'
       elif name == 'is_bsd':
         value = 'bsd' in target_platform
       elif name == 'is_posix':
-        value = (target_platform in ('darwin', 'linux2', 'linux3', 'sunos5',
-                                     'android', 'ios')
+        value = (target_platform.startswith('linux')
+                 or target_platform in ('darwin', 'sunos5', 'android', 'ios')
                  or 'bsd' in target_platform)
 
       elif name == 'pp_ifdef':
@@ -586,16 +605,16 @@ class Node(object):
     return self.FindBooleanAttribute('fallback_to_english',
                                      default=False, skip_self=True)
 
-  def WhitelistMarkedAsSkip(self):
+  def AllowlistMarkedAsSkip(self):
     '''Returns true if the node is marked to be skipped in the output by a
-    whitelist.
+    allowlist.
     '''
-    return self._whitelist_marked_as_skip
+    return self._allowlist_marked_as_skip
 
-  def SetWhitelistMarkedAsSkip(self, mark_skipped):
-    '''Sets WhitelistMarkedAsSkip.
+  def SetAllowlistMarkedAsSkip(self, mark_skipped):
+    '''Sets AllowlistMarkedAsSkip.
     '''
-    self._whitelist_marked_as_skip = mark_skipped
+    self._allowlist_marked_as_skip = mark_skipped
 
   def ExpandVariables(self):
     '''Whether we need to expand variables on a given node.'''
@@ -614,7 +633,20 @@ class Node(object):
       The data in gzipped or brotli compressed format. If the format is
       unspecified then this returns the data uncompressed.
     '''
-    if self.attrs.get('compress') == 'gzip':
+
+    compress = self.attrs.get('compress')
+    assert not (
+        compress != 'default' and compress != 'false' and
+        self.attrs.get('file').endswith(self._COMPRESS_DISALLOWED_EXTENSIONS)
+    ), 'Disallowed |compress| attribute found for %s' % self.attrs.get('name')
+
+    # Compress JS, HTML, CSS and SVG files by default (gzip), unless |compress|
+    # is explicitly specified.
+    compress_by_default = (compress == 'default'
+                           and self.attrs.get('file').endswith(
+                               self._COMPRESS_BY_DEFAULT_EXTENSIONS))
+
+    if compress == 'gzip' or compress_by_default:
       # We only use rsyncable compression on Linux.
       # We exclude ChromeOS since ChromeOS bots are Linux based but do not have
       # the --rsyncable option built in for gzip. See crbug.com/617950.
@@ -622,7 +654,7 @@ class Node(object):
         return grit.format.gzip_string.GzipStringRsyncable(data)
       return grit.format.gzip_string.GzipString(data)
 
-    elif self.attrs.get('compress') == 'brotli':
+    if compress == 'brotli':
       # The length of the uncompressed data as 8 bytes little-endian.
       size_bytes = struct.pack("<q", len(data))
       data = brotli_util.BrotliCompress(data)
@@ -636,11 +668,10 @@ class Node(object):
              b''.join(struct.unpack(formatter, size_bytes)) +
              data)
 
-    elif self.attrs.get('compress') == 'false':
+    if compress == 'false' or compress == 'default':
       return data
 
-    else:
-      raise Exception('Invalid value for compression')
+    raise Exception('Invalid value for compression')
 
 
 class ContentNode(Node):

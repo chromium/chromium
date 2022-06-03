@@ -6,14 +6,15 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_H_
 
 #include <map>
+#include <ostream>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -23,7 +24,7 @@ namespace device_sync {
 class CryptAuthDevice {
  public:
   // Returns null if |dict| cannot be converted into a CryptAuthDevice.
-  static base::Optional<CryptAuthDevice> FromDictionary(
+  static absl::optional<CryptAuthDevice> FromDictionary(
       const base::Value& dict);
 
   // |instance_id|: The Instance ID, used as a unique device identifier. Cannot
@@ -34,7 +35,7 @@ class CryptAuthDevice {
       const std::string& device_name,
       const std::string& device_better_together_public_key,
       const base::Time& last_update_time,
-      const base::Optional<cryptauthv2::BetterTogetherDeviceMetadata>&
+      const absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>&
           better_together_device_metadata,
       const std::map<multidevice::SoftwareFeature,
                      multidevice::SoftwareFeatureState>& feature_states);
@@ -58,6 +59,9 @@ class CryptAuthDevice {
   //   }
   base::Value AsDictionary() const;
 
+  // Converts the device to a human-readable dictionary.
+  base::Value AsReadableDictionary() const;
+
   bool operator==(const CryptAuthDevice& other) const;
   bool operator!=(const CryptAuthDevice& other) const;
 
@@ -76,7 +80,7 @@ class CryptAuthDevice {
 
   // Device metadata relevant to the suite of multi-device ("Better Together")
   // features. Null if metadata could not be decrypted.
-  base::Optional<cryptauthv2::BetterTogetherDeviceMetadata>
+  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>
       better_together_device_metadata;
 
   // A map from the multi-device feature type (example: kBetterTogetherHost) to
@@ -87,6 +91,8 @@ class CryptAuthDevice {
  private:
   std::string instance_id_;
 };
+
+std::ostream& operator<<(std::ostream& stream, const CryptAuthDevice& device);
 
 }  // namespace device_sync
 

@@ -4,6 +4,8 @@
 
 #include "chromecast/base/chromecast_config_android.h"
 
+#include "base/no_destructor.h"
+
 namespace chromecast {
 namespace android {
 
@@ -11,6 +13,10 @@ namespace android {
 class ChromecastConfigAndroidDummy : public ChromecastConfigAndroid {
  public:
   ChromecastConfigAndroidDummy() {}
+
+  ChromecastConfigAndroidDummy(const ChromecastConfigAndroidDummy&) = delete;
+  ChromecastConfigAndroidDummy& operator=(const ChromecastConfigAndroidDummy&) =
+      delete;
 
   ~ChromecastConfigAndroidDummy() override {}
 
@@ -25,8 +31,6 @@ class ChromecastConfigAndroidDummy : public ChromecastConfigAndroid {
 
  private:
   friend class base::NoDestructor<ChromecastConfigAndroidDummy>;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromecastConfigAndroidDummy);
 };
 
 // static

@@ -1,20 +1,20 @@
 def main(request, response):
-    headers = [("Content-Type", "text/html")]
-    if "policy" in request.GET:
-        headers.append(("Content-Security-Policy", request.GET["policy"]))
-    if "policy2" in request.GET:
-        headers.append(("Content-Security-Policy", request.GET["policy2"]))
-    if "policy3" in request.GET:
-        headers.append(("Content-Security-Policy", request.GET["policy3"]))
-    message = request.GET["id"]
-    return headers, '''
+    headers = [(b"Content-Type", b"text/html")]
+    if b"policy" in request.GET:
+        headers.append((b"Content-Security-Policy", request.GET[b"policy"]))
+    if b"policy2" in request.GET:
+        headers.append((b"Content-Security-Policy", request.GET[b"policy2"]))
+    if b"policy3" in request.GET:
+        headers.append((b"Content-Security-Policy", request.GET[b"policy3"]))
+    message = request.GET[b"id"]
+    return headers, b'''
 <!DOCTYPE html>
 <html>
 <head>
     <title>This page sets given CSP upon itself.</title>
 </head>
 <body>
-    <script nonce="abc"> 
+    <script nonce="abc">
         var response = {};
         response["id"] = "%s";
         response["loaded"] = true;

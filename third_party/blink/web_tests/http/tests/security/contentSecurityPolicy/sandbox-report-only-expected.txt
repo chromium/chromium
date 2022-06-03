@@ -1,5 +1,4 @@
 CONSOLE ERROR: The Content Security Policy directive 'sandbox' is ignored when delivered in a report-only policy.
-CONSOLE ERROR: The Content Security Policy 'sandbox' was delivered in report-only mode, but does not specify a 'report-uri'; the policy will have no effect. Please either add a 'report-uri' directive, or deliver the policy via the 'Content-Security-Policy' header.
-CONSOLE MESSAGE: line 4: Script executed in iframe.
+CONSOLE MESSAGE: Script executed in iframe.
 ALERT: PASS: Iframe was not in a unique origin
 

@@ -1,16 +1,22 @@
 import json
-import helpers
+from cookies.resources import helpers
+
+from wptserve.utils import isomorphic_decode
 
 def main(request, response):
     headers = helpers.setNoCacheAndCORSHeaders(request, response)
     cookies = helpers.readCookies(request)
-    headers.append(("Content-Type", "text/html; charset=utf-8"))
+    headers.append((b"Content-Type", b"text/html; charset=utf-8"))
 
-    tmpl = """
+    tmpl = u"""
 <!DOCTYPE html>
 <script>
   var data = %s;
   data.type = "COOKIES";
+
+  try {
+    data.domcookies = document.cookie;
+  } catch (e) {}
 
   if (window.parent != window) {
     window.parent.postMessage(data, "*");
@@ -29,4 +35,5 @@ def main(request, response):
   });
 </script>
 """
-    return headers, tmpl % json.dumps(cookies)
+    decoded_cookies = {isomorphic_decode(key): isomorphic_decode(val) for key, val in cookies.items()}
+    return headers, tmpl % json.dumps(decoded_cookies)

@@ -1,0 +1,13 @@
+Name: Maven Repository Metadata Model
+Short Name: maven-repository-metadata
+URL: https://maven.apache.org/
+Version: 2.2.1
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Per-directory repository metadata.
+
+Local Modifications:
+No modifications.

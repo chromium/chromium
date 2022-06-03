@@ -4,6 +4,7 @@
 
 #include "ui/gfx/mac/display_icc_profiles.h"
 
+#include "base/notreached.h"
 #include "ui/gfx/icc_profile.h"
 
 namespace gfx {

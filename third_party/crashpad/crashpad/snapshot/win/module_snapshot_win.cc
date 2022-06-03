@@ -58,7 +58,7 @@ bool ModuleSnapshotWin::Initialize(
   if (!pe_image_reader_->Initialize(process_reader_,
                                     process_reader_module.dll_base,
                                     process_reader_module.size,
-                                    base::UTF16ToUTF8(name_))) {
+                                    base::WideToUTF8(name_))) {
     return false;
   }
 
@@ -73,7 +73,7 @@ bool ModuleSnapshotWin::Initialize(
     // would do). As we don't expect to ever encounter a module that wouldn't be
     // using .PDB that we actually have symbols for, we simply set a plausible
     // name here, but this will never correspond to symbols that we have.
-    pdb_name_ = base::UTF16ToUTF8(name_);
+    pdb_name_ = base::WideToUTF8(name_);
   }
 
   if (!memory_range_.Initialize(process_reader_->Memory(),
@@ -110,7 +110,7 @@ void ModuleSnapshotWin::GetCrashpadOptions(CrashpadInfoClientOptions* options) {
 
 std::string ModuleSnapshotWin::Name() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return base::UTF16ToUTF8(name_);
+  return base::WideToUTF8(name_);
 }
 
 uint64_t ModuleSnapshotWin::Address() const {
@@ -299,7 +299,7 @@ void ModuleSnapshotWin::GetCrashpadExtraMemoryRanges(
           simple_ranges.size() * sizeof(simple_ranges[0]),
           &simple_ranges[0])) {
     LOG(WARNING) << "could not read simple address_ranges from "
-                 << base::UTF16ToUTF8(name_);
+                 << base::WideToUTF8(name_);
     return;
   }
 
@@ -322,7 +322,7 @@ void ModuleSnapshotWin::GetCrashpadUserMinidumpStreams(
     if (!process_reader_->Memory()->Read(
             cur, sizeof(list_entry), &list_entry)) {
       LOG(WARNING) << "could not read user data stream entry from "
-                   << base::UTF16ToUTF8(name_);
+                   << base::WideToUTF8(name_);
       return;
     }
 

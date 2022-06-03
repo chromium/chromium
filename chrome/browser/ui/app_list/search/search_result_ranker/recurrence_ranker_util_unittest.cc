@@ -23,17 +23,17 @@ class RecurrenceRankerJsonConfigConverterTest : public testing::Test {
  public:
   // Converts the async JsonConfigConverter::Convert call into a synchronous
   // call for ease of testing.
-  base::Optional<RecurrenceRankerConfigProto> Convert(const std::string& json) {
+  absl::optional<RecurrenceRankerConfigProto> Convert(const std::string& json) {
     base::RunLoop run_loop;
     done_callback_ = run_loop.QuitClosure();
     converter_ = JsonConfigConverter::Convert(
         json, "",
         base::BindOnce(
             [](RecurrenceRankerJsonConfigConverterTest* fixture,
-               base::Optional<RecurrenceRankerConfigProto> config) {
+               absl::optional<RecurrenceRankerConfigProto> config) {
               fixture->converter_.reset();
               fixture->config_ = config;
-              fixture->done_callback_.Run();
+              std::move(fixture->done_callback_).Run();
             },
             base::Unretained(this)));
     run_loop.Run();
@@ -53,9 +53,9 @@ class RecurrenceRankerJsonConfigConverterTest : public testing::Test {
 
   std::unique_ptr<JsonConfigConverter> converter_;
 
-  base::Closure done_callback_;
+  base::OnceClosure done_callback_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  base::Optional<RecurrenceRankerConfigProto> config_;
+  absl::optional<RecurrenceRankerConfigProto> config_;
 };
 
 TEST_F(RecurrenceRankerJsonConfigConverterTest, ParseFailures) {

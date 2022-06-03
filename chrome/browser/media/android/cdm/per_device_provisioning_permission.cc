@@ -8,13 +8,13 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/permissions/permission_request.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,7 +26,7 @@
 namespace {
 
 // Only keep track of the last response for a short period of time.
-constexpr base::TimeDelta kLastRequestDelta = base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kLastRequestDelta = base::Minutes(15);
 
 // Keep track of the last response. This is only kept in memory, so once Chrome
 // quits it is forgotten.
@@ -68,54 +68,40 @@ LastResponse& GetLastResponse() {
   return *s_last_response;
 }
 
-// A PermissionRequest to allow MediaDrmBridge to use per-device provisioning.
-class PerDeviceProvisioningPermissionRequest : public PermissionRequest {
+// A permissions::PermissionRequest to allow MediaDrmBridge to use per-device
+// provisioning.
+class PerDeviceProvisioningPermissionRequest final
+    : public permissions::PermissionRequest {
  public:
   PerDeviceProvisioningPermissionRequest(
       const url::Origin& origin,
       base::OnceCallback<void(bool)> callback)
-      : origin_(origin), callback_(std::move(callback)) {}
+      : PermissionRequest(
+            origin.GetURL(),
+            permissions::RequestType::kProtectedMediaIdentifier,
+            /*has_gesture=*/false,
+            base::BindOnce(
+                &PerDeviceProvisioningPermissionRequest::PermissionDecided,
+                base::Unretained(this)),
+            base::BindOnce(
+                &PerDeviceProvisioningPermissionRequest::DeleteRequest,
+                base::Unretained(this))),
+        origin_(origin),
+        callback_(std::move(callback)) {}
 
-  PermissionRequest::IconId GetIconId() const final {
-    return IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER;
+  PerDeviceProvisioningPermissionRequest(
+      const PerDeviceProvisioningPermissionRequest&) = delete;
+  PerDeviceProvisioningPermissionRequest& operator=(
+      const PerDeviceProvisioningPermissionRequest&) = delete;
+
+  void PermissionDecided(ContentSetting result, bool is_one_time) {
+    DCHECK(!is_one_time);
+    const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;
+    UpdateLastResponse(granted);
+    std::move(callback_).Run(granted);
   }
 
-  base::string16 GetTitleText() const final {
-    return l10n_util::GetStringUTF16(
-        IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_TITLE);
-  }
-
-  base::string16 GetMessageText() const final {
-    // Note that the string is specific to per-device provisioning.
-    return l10n_util::GetStringFUTF16(
-        IDS_PROTECTED_MEDIA_IDENTIFIER_PER_DEVICE_PROVISIONING_INFOBAR_TEXT,
-        url_formatter::FormatUrlForSecurityDisplay(
-            GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  }
-
-  base::string16 GetMessageTextFragment() const final {
-    return l10n_util::GetStringUTF16(
-        IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT);
-  }
-
-  GURL GetOrigin() const final { return origin_.GetURL(); }
-
-  void PermissionGranted() final {
-    UpdateLastResponse(true);
-    std::move(callback_).Run(true);
-  }
-
-  void PermissionDenied() final {
-    UpdateLastResponse(false);
-    std::move(callback_).Run(false);
-  }
-
-  void Cancelled() final {
-    UpdateLastResponse(false);
-    std::move(callback_).Run(false);
-  }
-
-  void RequestFinished() final {
+  void DeleteRequest() {
     // The |callback_| may not have run if the prompt was ignored, e.g. the tab
     // was closed while the prompt was displayed. Don't save this result as the
     // last response since it wasn't really a user action.
@@ -125,13 +111,9 @@ class PerDeviceProvisioningPermissionRequest : public PermissionRequest {
     delete this;
   }
 
-  PermissionRequestType GetPermissionRequestType() const final {
-    return PermissionRequestType::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
-  }
-
  private:
-  // Can only be self-destructed. See RequestFinished().
-  ~PerDeviceProvisioningPermissionRequest() final = default;
+  // Can only be self-destructed. See DeleteRequest().
+  ~PerDeviceProvisioningPermissionRequest() override = default;
 
   void UpdateLastResponse(bool allowed) {
     GetLastResponse().Update(origin_, allowed);
@@ -139,8 +121,6 @@ class PerDeviceProvisioningPermissionRequest : public PermissionRequest {
 
   const url::Origin origin_;
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerDeviceProvisioningPermissionRequest);
 };
 
 }  // namespace
@@ -170,15 +150,16 @@ void RequestPerDeviceProvisioningPermission(
   DCHECK(web_contents) << "WebContents not available.";
 
   auto* permission_request_manager =
-      PermissionRequestManager::FromWebContents(web_contents);
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (!permission_request_manager) {
     std::move(callback).Run(false);
     return;
   }
 
   // The created PerDeviceProvisioningPermissionRequest deletes itself once
-  // complete. See PerDeviceProvisioningPermissionRequest::RequestFinished().
+  // complete. See PerDeviceProvisioningPermissionRequest::DeleteRequest().
   permission_request_manager->AddRequest(
+      render_frame_host,
       new PerDeviceProvisioningPermissionRequest(
           render_frame_host->GetLastCommittedOrigin(), std::move(callback)));
 }

@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 
 namespace content {
@@ -60,6 +59,10 @@ class ContentPredicateEvaluator : public ContentPredicateFactory {
  public:
   class Delegate;
 
+  ContentPredicateEvaluator(const ContentPredicateEvaluator&) = delete;
+  ContentPredicateEvaluator& operator=(const ContentPredicateEvaluator&) =
+      delete;
+
   ~ContentPredicateEvaluator() override;
 
   // Returns the attribute name in the API for this evaluator's predicates.
@@ -93,6 +96,12 @@ class ContentPredicateEvaluator : public ContentPredicateFactory {
       content::WebContents* contents,
       content::NavigationHandle* navigation_handle) = 0;
 
+  // Applies the given content rules to |contents| when the render process
+  // notifies that a tab has started or stopped matching certain conditions.
+  virtual void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) = 0;
+
   // Returns true if |predicate| evaluates to true on the state associated with
   // |tab|. It must be the case that predicate->GetEvaluator() == this object,
   // |predicate| was previously passed to TrackPredicates(), and
@@ -103,15 +112,15 @@ class ContentPredicateEvaluator : public ContentPredicateFactory {
 
  protected:
   ContentPredicateEvaluator();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentPredicateEvaluator);
 };
 
 // Allows an evaluator to notify that predicate evaluation state has been
 // updated, and determine whether it should manage predicates for a context.
 class ContentPredicateEvaluator::Delegate {
  public:
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   // Notifies that predicate evaluation state has been updated for
   // |contents|. This must be called whenever the URL or page state changes,
   // even if the value of the predicate evaluation itself doesn't change.
@@ -127,9 +136,6 @@ class ContentPredicateEvaluator::Delegate {
  protected:
   Delegate();
   virtual ~Delegate();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 }  // namespace extensions

@@ -5,14 +5,80 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 
-#include "third_party/blink/renderer/core/streams/readable_stream_reader.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-// ReadableStreamDefaultReader is implemented by the ReadableStreamReader class.
-// See the header file for the reasoning.
+class ExceptionState;
+class ReadableStream;
+class ScriptPromise;
+class ScriptState;
+class StreamPromiseResolver;
 
-using ReadableStreamDefaultReader = ReadableStreamReader;
+class CORE_EXPORT ReadableStreamDefaultReader
+    : public ReadableStreamGenericReader,
+      public ActiveScriptWrappable<ReadableStreamDefaultReader>,
+      public ExecutionContextClient {
+  DEFINE_WRAPPERTYPEINFO();
+
+ public:
+  static ReadableStreamDefaultReader* Create(ScriptState*,
+                                             ReadableStream* stream,
+                                             ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#default-reader-constructor
+  ReadableStreamDefaultReader(ScriptState*,
+                              ReadableStream* stream,
+                              ExceptionState&);
+  ~ReadableStreamDefaultReader() override;
+
+  bool IsDefaultReader() const override { return true; }
+  bool IsBYOBReader() const override { return false; }
+
+  // https://streams.spec.whatwg.org/#default-reader-read
+  ScriptPromise read(ScriptState*, ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#default-reader-release-lock
+  void releaseLock(ScriptState*, ExceptionState&);
+
+  static void SetUpDefaultReader(ScriptState*,
+                                 ReadableStreamDefaultReader* reader,
+                                 ReadableStream* stream,
+                                 ExceptionState&);
+
+  //
+  // Readable stream reader abstract operations
+  //
+
+  // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
+  static StreamPromiseResolver* Read(ScriptState*,
+                                     ReadableStreamDefaultReader* reader);
+
+  void Trace(Visitor*) const override;
+
+  bool HasPendingActivity() const final;
+
+ private:
+  friend class ReadableByteStreamController;
+  friend class ReadableStreamDefaultController;
+  friend class ReadableStream;
+
+  HeapDeque<Member<StreamPromiseResolver>> read_requests_;
+  bool for_author_code_ = true;
+};
+
+template <>
+struct DowncastTraits<ReadableStreamDefaultReader> {
+  static bool AllowFrom(const ReadableStreamGenericReader& reader) {
+    return reader.IsDefaultReader();
+  }
+};
 
 }  // namespace blink
 

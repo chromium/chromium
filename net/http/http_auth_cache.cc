@@ -4,9 +4,9 @@
 
 #include "net/http/http_auth_cache.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 
 namespace {
@@ -42,7 +42,7 @@ bool IsEnclosingPath(const std::string& container, const std::string& path) {
 void CheckOriginIsValid(const GURL& origin) {
   DCHECK(origin.is_valid());
   DCHECK(origin.SchemeIsHTTPOrHTTPS() || origin.SchemeIsWSOrWSS());
-  DCHECK(origin.GetOrigin() == origin);
+  DCHECK(origin.DeprecatedGetOriginAsURL() == origin);
 }
 
 // Debug helper to check that |path| arguments are properly formed.
@@ -166,7 +166,6 @@ HttpAuthCache::Entry* HttpAuthCache::Add(
   HttpAuthCache::Entry* entry =
       Lookup(origin, target, realm, scheme, network_isolation_key);
   if (!entry) {
-    bool evicted = false;
     // Failsafe to prevent unbounded memory growth of the cache.
     //
     // Data was collected in June of 2019, before entries were keyed on either
@@ -178,7 +177,6 @@ HttpAuthCache::Entry* HttpAuthCache::Add(
     if (entries_.size() >= kMaxNumRealmEntries) {
       DLOG(WARNING) << "Num auth cache entries reached limit -- evicting";
       EvictLeastRecentlyUsedEntry();
-      evicted = true;
     }
     entry = &(entries_
                   .emplace(std::make_pair(
@@ -244,7 +242,6 @@ void HttpAuthCache::Entry::AddPath(const std::string& path) {
     // Remove any entries that have been subsumed by the new entry.
     base::EraseIf(paths_, IsEnclosedBy(parent_dir));
 
-    bool evicted = false;
     // Failsafe to prevent unbounded memory growth of the cache.
     //
     // Data collected on June of 2019 indicate that when we get here, the list
@@ -253,7 +250,6 @@ void HttpAuthCache::Entry::AddPath(const std::string& path) {
       DLOG(WARNING) << "Num path entries for " << origin()
                     << " has grown too large -- evicting";
       paths_.pop_back();
-      evicted = true;
     }
 
     // Add new path.
@@ -300,15 +296,18 @@ bool HttpAuthCache::Remove(const GURL& origin,
   return false;
 }
 
-void HttpAuthCache::ClearEntriesAddedSince(base::Time begin_time) {
-  if (begin_time.is_null()) {
+void HttpAuthCache::ClearEntriesAddedBetween(base::Time begin_time,
+                                             base::Time end_time) {
+  if (begin_time.is_min() && end_time.is_max()) {
     ClearAllEntries();
-  } else {
-    base::EraseIf(entries_, [begin_time](EntryMap::value_type& entry_map_pair) {
-      Entry& entry = entry_map_pair.second;
-      return entry.creation_time_ >= begin_time;
-    });
+    return;
   }
+  base::EraseIf(entries_,
+                [begin_time, end_time](EntryMap::value_type& entry_map_pair) {
+                  Entry& entry = entry_map_pair.second;
+                  return entry.creation_time_ >= begin_time &&
+                         entry.creation_time_ < end_time;
+                });
 }
 
 void HttpAuthCache::ClearAllEntries() {

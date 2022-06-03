@@ -1,0 +1,6 @@
+# This test relies on window activation, which currently is not possible
+# on Wayland without using unstandardized protocol extensions. Once
+# support for the xdg-activation extension has been implemented (see
+# https://crbug.com/1175327), this test should pass. As soon as Weston
+# supports this extension, the test can be re-enabled.
+-RelaunchNotificationControllerPlatformImplTest.SynchronousNotification

@@ -4,7 +4,7 @@
 
 #include "net/disk_cache/blockfile/addr.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace disk_cache {
 

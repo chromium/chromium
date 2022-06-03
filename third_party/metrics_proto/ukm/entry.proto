@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
 
 package ukm;
 
@@ -26,7 +27,7 @@ message Entry {
   optional fixed64 event_hash = 4;
 
   // For each Event, we have a list of possible metrics included. It's possible
-  // for a single metric name to be repeated. There is also no guarentee that
+  // for a single metric name to be repeated. There is also no guarantee that
   // all metrics that are available for a given event will be provided for a
   // single Entry.
   message Metric {

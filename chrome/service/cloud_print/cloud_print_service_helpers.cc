@@ -4,6 +4,7 @@
 
 #include "chrome/service/cloud_print/cloud_print_service_helpers.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
 #include "chrome/common/cloud_print/cloud_print_helpers.h"
@@ -93,7 +94,7 @@ std::string GetCloudPrintAuthHeaderFromStore() {
     LOG(ERROR) << "CP_PROXY: Missing OAuth token for request";
     return std::string();
   }
-  return GetCloudPrintAuthHeader(token_store->token());
+  return GetCloudPrintAuthHeaderValue(token_store->token());
 }
 
 }  // namespace cloud_print

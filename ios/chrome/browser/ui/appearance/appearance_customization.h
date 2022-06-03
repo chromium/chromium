@@ -10,4 +10,7 @@
 // Overrides some default appearance values for UIKit controls.
 void CustomizeUIAppearance();
 
+// Overrides some default UIWindow appearance values.
+void CustomizeUIWindowAppearance(UIWindow* window);
+
 #endif  // IOS_CHROME_BROWSER_UI_APPEARANCE_APPEARANCE_CUSTOMIZATION_H_

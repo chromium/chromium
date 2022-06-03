@@ -17,6 +17,11 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) NSSTempCertsCacheChromeOS {
  public:
   explicit NSSTempCertsCacheChromeOS(const net::CertificateList& certificates);
+
+  NSSTempCertsCacheChromeOS(const NSSTempCertsCacheChromeOS&) = delete;
+  NSSTempCertsCacheChromeOS& operator=(const NSSTempCertsCacheChromeOS&) =
+      delete;
+
   ~NSSTempCertsCacheChromeOS();
 
  private:
@@ -30,8 +35,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NSSTempCertsCacheChromeOS {
   // However, this is not an issue, as these certificates are not imported into
   // permanent databases, nor are the trust settings mutated to trust them.
   net::ScopedCERTCertificateList temp_certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(NSSTempCertsCacheChromeOS);
 };
 
 }  // namespace network

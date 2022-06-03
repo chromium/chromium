@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_WORKLET_MESSAGING_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_WORKLET_MESSAGING_PROXY_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_proxy.h"
@@ -19,8 +19,6 @@ class WorkletModuleResponsesMap;
 class CORE_EXPORT ThreadedWorkletMessagingProxy
     : public ThreadedMessagingProxyBase,
       public WorkletGlobalScopeProxy {
-  USING_GARBAGE_COLLECTED_MIXIN(ThreadedWorkletMessagingProxy);
-
  public:
   // WorkletGlobalScopeProxy implementation.
   void FetchAndInvokeScript(
@@ -36,9 +34,9 @@ class CORE_EXPORT ThreadedWorkletMessagingProxy
   void Initialize(
       WorkerClients*,
       WorkletModuleResponsesMap*,
-      const base::Optional<WorkerBackingThreadStartupData>& = base::nullopt);
+      const absl::optional<WorkerBackingThreadStartupData>& = absl::nullopt);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit ThreadedWorkletMessagingProxy(ExecutionContext*);

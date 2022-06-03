@@ -22,18 +22,18 @@ output_filename = sys.argv[2]
 
 # Load PEM block.
 with open(input_filename, 'r') as f:
-    match = re.search(
-        r"-----BEGIN CERTIFICATE-----\n(.+)-----END CERTIFICATE-----\n",
-        f.read(), re.DOTALL)
+  match = re.search(
+      r"-----BEGIN CERTIFICATE-----\n(.+)-----END CERTIFICATE-----\n", f.read(),
+      re.DOTALL)
 text = match.group(1)
 
 # Perform Base64 decoding.
 data = base64.b64decode(text)
 
 # Hex format data.
-hex_encoded = ", ".join("0x{:02x}".format(ord(c)) for c in data)
+hex_encoded = ", ".join("0x{:02x}".format(c) for c in bytearray(data))
 
 # Write into |output_filename| wrapped at 80 columns.
 with open(output_filename, 'w') as f:
-    f.write(textwrap.fill(hex_encoded, 80))
-    f.write("\n")
+  f.write(textwrap.fill(hex_encoded, 80))
+  f.write("\n")

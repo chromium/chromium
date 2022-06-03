@@ -10,10 +10,15 @@
 #include "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/startup_task_runner_service_factory.h"
+#import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remover_factory.h"
 #include "ios/chrome/browser/content_settings/cookie_settings_factory.h"
+#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#include "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
+#import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#include "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #include "ios/chrome/browser/download/browser_download_service_factory.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -22,42 +27,56 @@
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/google/google_logo_service_factory.h"
+#include "ios/chrome/browser/history/domain_diversity_reporter_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
-#include "ios/chrome/browser/invalidation/ios_chrome_deprecated_profile_invalidation_provider_factory.h"
+#include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
+#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/policy/policy_features.h"
+#include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
+#include "ios/chrome/browser/search/search_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
-#include "ios/chrome/browser/sessions/tab_restore_service_delegate_impl_ios_factory.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/chrome/browser/signin/account_reconcilor_factory.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/signin/signin_browser_state_info_updater_factory.h"
 #include "ios/chrome/browser/signin/signin_client_factory.h"
 #include "ios/chrome/browser/signin/signin_error_controller_factory.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache_factory.h"
-#include "ios/chrome/browser/suggestions/suggestions_service_factory.h"
 #include "ios/chrome/browser/sync/consent_auditor_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
-#include "ios/chrome/browser/ui/fullscreen/fullscreen_controller_factory.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+#include "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
+#endif
+
+#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
+#import "ios/chrome/browser/screen_time/features.h"
+#import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -88,42 +107,62 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ios::InMemoryURLIndexFactory::GetInstance();
   ios::ShortcutsBackendFactory::GetInstance();
   ios::SigninErrorControllerFactory::GetInstance();
-  ios::StartupTaskRunnerServiceFactory::GetInstance();
   ios::TemplateURLServiceFactory::GetInstance();
   ios::TopSitesFactory::GetInstance();
   ios::WebDataServiceFactory::GetInstance();
   ios::WebHistoryServiceFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
-  suggestions::SuggestionsServiceFactory::GetInstance();
   AuthenticationServiceFactory::GetInstance();
+  BreadcrumbManagerKeyedServiceFactory::GetInstance();
   BrowserDownloadServiceFactory::GetInstance();
   BrowsingDataRemoverFactory::GetInstance();
+  ChromeAccountManagerServiceFactory::GetInstance();
+  ChromePasswordProtectionServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
-  FullscreenControllerFactory::GetInstance();
+  DeviceSharingManagerFactory::GetInstance();
+  DiscoverFeedServiceFactory::GetInstance();
+  DomainDiversityReporterFactory::GetInstance();
+  BackgroundDownloadServiceFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   IOSChromeContentSuggestionsServiceFactory::GetInstance();
-  IOSChromeDeprecatedProfileInvalidationProviderFactory::GetInstance();
   IOSChromeFaviconLoaderFactory::GetInstance();
   IOSChromeGCMProfileServiceFactory::GetInstance();
   IOSChromeLargeIconCacheFactory::GetInstance();
   IOSChromeLargeIconServiceFactory::GetInstance();
+  IOSChromePasswordCheckManagerFactory::GetInstance();
   IOSChromePasswordStoreFactory::GetInstance();
+  IOSChromeProfileInvalidationProviderFactory::GetInstance();
   IOSProfileSessionDurationsServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
+  ManagedBookmarkServiceFactory::GetInstance();
   ModelTypeStoreServiceFactory::GetInstance();
-  ProfileSyncServiceFactory::GetInstance();
+  OptimizationGuideServiceFactory::GetInstance();
+  SearchServiceFactory::GetInstance();
+  SyncServiceFactory::GetInstance();
   ReadingListModelFactory::GetInstance();
-  send_tab_to_self::SendTabToSelfClientServiceFactory::GetInstance();
+  RealTimeUrlLookupServiceFactory::GetInstance();
   SigninBrowserStateInfoUpdaterFactory::GetInstance();
   SigninClientFactory::GetInstance();
-  SnapshotCacheFactory::GetInstance();
   SyncSetupServiceFactory::GetInstance();
-  TabRestoreServiceDelegateImplIOSFactory::GetInstance();
   TextToSpeechPlaybackControllerFactory::GetInstance();
   TranslateAcceptLanguagesFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
-  WebStateListWebUsageEnablerFactory::GetInstance();
+  VerdictCacheManagerFactory::GetInstance();
+
+  if (IsURLBlocklistEnabled()) {
+    PolicyBlocklistServiceFactory::GetInstance();
+  }
+
+#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
+  CredentialProviderServiceFactory::GetInstance();
+#endif
+
+#if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
+  if (IsScreenTimeIntegrationEnabled()) {
+    ScreenTimeHistoryDeleterFactory::GetInstance();
+  }
+#endif
 }

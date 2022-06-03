@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
 enum NetLogCaptureMode {
@@ -50,4 +51,32 @@ interface NetLogExporter {
   // Returns network error code; if successful this will occur only after
   // the file has been fully written.
   Stop(mojo_base.mojom.DictionaryValue polled_values) => (int32 net_error);
+};
+
+// Equivalent to NetLogEventPhase in net/log/net_log_event_type.h.
+enum NetLogEventPhase {
+  BEGIN,
+  END,
+  NONE
+};
+
+// Sources that generate NetLog events outside the network service implement
+// this interface to receive notifications when the NetLog capture mode
+// changes.
+interface NetLogProxySource {
+  // |modes| is a NetLogCaptureModeSet, a bitfield.
+  UpdateCaptureModes(uint32 modes);
+};
+
+// Receives NetLog events from another process and inserts them into the main
+// NetLog.
+interface NetLogProxySink {
+  // Adds a NetLog entry. |source_id| values must not conflict with the source
+  // IDs generated in the network service or in other sources. The process
+  // sending the entries can use the net::NetLog::InitializeSourceIdPartition()
+  // function to ensure this, see the comments for that function for caveats.
+  AddEntry(/*NetLogEventType*/ uint32 type,
+           /*NetLogSourceType*/ uint32 source_type, uint32 source_id,
+           mojo_base.mojom.TimeTicks source_start_time, NetLogEventPhase phase,
+           mojo_base.mojom.TimeTicks time, mojo_base.mojom.Value params);
 };

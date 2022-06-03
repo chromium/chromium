@@ -6,9 +6,13 @@ include_rules = [
   "+crypto",
   "+gpu/config",
   "+gpu/ipc/client",
+  # Required by Open Screen API.
+  "+third_party/jsoncpp/source/include/json",
   "+net",
   "+services/network/public",
   "+services/network/test",
   "+services/viz/public",
+  "+third_party/libaom",
+  "+third_party/openscreen/src/cast/streaming",
   "+ui/base",
 ]

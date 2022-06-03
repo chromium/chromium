@@ -6,11 +6,11 @@
 
 dictionary SerialInputSignals {
   // DCD (Data Carrier Detect) or RLSD (Receive Line Signal Detect)
-  required boolean dcd;
+  required boolean dataCarrierDetect;
   // CTS (Clear to Send)
-  required boolean cts;
+  required boolean clearToSend;
   // RI (Ring Indicator)
-  required boolean ri;
+  required boolean ringIndicator;
   // DSR (Data Set Ready)
-  required boolean dsr;
+  required boolean dataSetReady;
 };

@@ -37,7 +37,7 @@
     [Replaceable] readonly attribute DOMString name;
 
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);
-    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options);
+    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options = {});
 
     void close();
 

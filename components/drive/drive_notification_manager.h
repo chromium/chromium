@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -20,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/public/invalidation_handler.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace invalidation {
@@ -33,24 +33,27 @@ namespace drive {
 // 1. XMPP invalidation is received from Google Drive.
 // 2. Polling timer counts down.
 class DriveNotificationManager : public KeyedService,
-                                 public syncer::InvalidationHandler {
+                                 public invalidation::InvalidationHandler {
  public:
   // |clock| can be injected for testing.
   explicit DriveNotificationManager(
       invalidation::InvalidationService* invalidation_service,
-      bool use_fcm_object_ids = false,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+
+  DriveNotificationManager(const DriveNotificationManager&) = delete;
+  DriveNotificationManager& operator=(const DriveNotificationManager&) = delete;
+
   ~DriveNotificationManager() override;
 
   // KeyedService override.
   void Shutdown() override;
 
-  // syncer::InvalidationHandler implementation.
-  void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
+  // invalidation::InvalidationHandler implementation.
+  void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const syncer::ObjectIdInvalidationMap& invalidation_map) override;
+      const invalidation::TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
-  bool IsPublicTopic(const syncer::Topic& topic) const override;
+  bool IsPublicTopic(const invalidation::Topic& topic) const override;
 
   void AddObserver(DriveNotificationObserver* observer);
   void RemoveObserver(DriveNotificationObserver* observer);
@@ -59,6 +62,9 @@ class DriveNotificationManager : public KeyedService,
   // to update which objects we receive invalidations for.
   void UpdateTeamDriveIds(const std::set<std::string>& added_team_drive_ids,
                           const std::set<std::string>& removed_team_drive_ids);
+
+  // Unsubscribe from invalidations from all team drives.
+  void ClearTeamDriveIds();
 
   // True when XMPP notification is currently enabled.
   bool push_notification_enabled() const {
@@ -109,10 +115,10 @@ class DriveNotificationManager : public KeyedService,
   // Returns a string representation of NotificationSource.
   static std::string NotificationSourceToString(NotificationSource source);
 
-  std::string GetDriveInvalidationObjectId() const;
-  std::string GetTeamDriveInvalidationObjectId(
+  invalidation::Topic GetDriveInvalidationTopic() const;
+  invalidation::Topic GetTeamDriveInvalidationTopic(
       const std::string& team_drive_id) const;
-  std::string ExtractTeamDriveId(base::StringPiece object_id) const;
+  std::string ExtractTeamDriveId(base::StringPiece topic_name) const;
 
   invalidation::InvalidationService* invalidation_service_;
   base::ObserverList<DriveNotificationObserver>::Unchecked observers_;
@@ -140,19 +146,11 @@ class DriveNotificationManager : public KeyedService,
   // service, will be reset when when send the invalidations to the observers.
   std::map<std::string, int64_t> invalidated_change_ids_;
 
-  // Whether the FCM invalidation IDs should be used. This decides whether
-  // "Drive" or "CHANGELOG" is used for the Drive invalidations and whether
-  // the "TD:" or the "team-drive-" prefix is used. This value must match
-  // whether |invalidation_service_| is an FCMInvalidationService.
-  const bool use_fcm_object_ids_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveNotificationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveNotificationManager);
 };
 
 }  // namespace drive

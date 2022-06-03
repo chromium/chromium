@@ -1,0 +1,43 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://emoji-picker/=../../chrome/browser/resources/chromeos/emoji_picker/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                    "js_module_root=" + rebase_path(
+                            "//chrome/browser/resources/chromeos/emoji_picker/",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
+                            root_build_dir),
+                  ]
+  deps = [
+    ":emoji_picker_store_test",
+    ":emoji_picker_test",
+  ]
+}
+
+js_library("emoji_picker_test") {
+  deps = [
+    "//chrome/browser/resources/chromeos/emoji_picker:emoji_button",
+    "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
+    "//chrome/browser/resources/chromeos/emoji_picker:emoji_variants",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("emoji_picker_store_test") {
+  deps = [
+    "//chrome/browser/resources/chromeos/emoji_picker:store",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}

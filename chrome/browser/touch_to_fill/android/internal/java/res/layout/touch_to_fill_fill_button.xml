@@ -3,13 +3,15 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+ <!-- Please update R.dimens.touch_to_fill_sheet_height_button when modifying
+     the margins. -->
 <org.chromium.ui.widget.ButtonCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="16dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
     android:minHeight="48dp"
     android:gravity="center"
     android:text="@string/touch_to_fill_continue"

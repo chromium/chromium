@@ -1,0 +1,2 @@
+# https://crbug.com/1039860
+-All/ImageTransferCacheEntryTest.HardwareDecoded*

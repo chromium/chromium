@@ -8,9 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class ImageView;
@@ -31,17 +29,21 @@ class PaymentRequestState;
 class PaymentRequestItemList {
  public:
   // Represents an item in the item list.
-  class Item : public views::ButtonListener, public PaymentRequestRowView {
+  class Item : public PaymentRequestRowView {
    public:
-    // Creates an item that will be owned by |list| with the initial state set
-    // to |selected|. |clickable| indicates whether or not the user can interact
-    // with this row.
-    Item(PaymentRequestSpec* spec,
-         PaymentRequestState* state,
+    // Creates an item that will be owned by `list` with the initial state set
+    // to `selected`. `clickable` indicates whether or not the user can interact
+    // with this row. The `spec` parameter should not be null.
+    Item(base::WeakPtr<PaymentRequestSpec> spec,
+         base::WeakPtr<PaymentRequestState> state,
          PaymentRequestItemList* list,
          bool selected,
          bool clickable,
          bool show_edit_button);
+
+    Item(const Item&) = delete;
+    Item& operator=(const Item&) = delete;
+
     ~Item() override;
 
     bool selected() const { return selected_; }
@@ -54,8 +56,8 @@ class PaymentRequestItemList {
 
     // Returns a pointer to the PaymentRequestSpec/State objects associated with
     // this instance of the UI.
-    PaymentRequestSpec* spec() { return spec_; }
-    PaymentRequestState* state() { return state_; }
+    base::WeakPtr<PaymentRequestSpec> spec() { return spec_; }
+    base::WeakPtr<PaymentRequestState> state() { return state_; }
 
    protected:
     // Initializes the layout and content of the row. Must be called by subclass
@@ -78,7 +80,7 @@ class PaymentRequestItemList {
     // |accessible_content| with the screen reader string for the returned
     // content. |accessible_content| shouldn't be null.
     virtual std::unique_ptr<views::View> CreateContentView(
-        base::string16* accessible_content) = 0;
+        std::u16string* accessible_content) = 0;
 
     // Creates the view that should be displayed after the checkmark in the
     // item's view, such as the credit card icon.
@@ -87,7 +89,7 @@ class PaymentRequestItemList {
     // Returns a string describing the type of data for which this row
     // represents an instance. e.g., "credit card" or "billing address". Used
     // when describing the row for accessibility.
-    virtual base::string16 GetNameForDataType() = 0;
+    virtual std::u16string GetNameForDataType() = 0;
 
     // Returns whether this item is complete/valid and can be selected by the
     // user. If this returns false when the user attempts to select this item,
@@ -103,24 +105,26 @@ class PaymentRequestItemList {
     virtual void EditButtonPressed() = 0;
 
    private:
-    // views::ButtonListener:
-    void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
     // Updates the accessible description of this item to reflect its current
     // status (selected/not).
     void UpdateAccessibleName();
 
-    PaymentRequestSpec* spec_;
-    PaymentRequestState* state_;
+    void ButtonPressed();
+
+    base::WeakPtr<PaymentRequestSpec> spec_;
+    base::WeakPtr<PaymentRequestState> state_;
     PaymentRequestItemList* list_;
-    base::string16 accessible_item_description_;
+    std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
-
-    DISALLOW_COPY_AND_ASSIGN(Item);
   };
 
-  explicit PaymentRequestItemList(PaymentRequestDialogView* dialog);
+  explicit PaymentRequestItemList(
+      base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentRequestItemList(const PaymentRequestItemList&) = delete;
+  PaymentRequestItemList& operator=(const PaymentRequestItemList&) = delete;
+
   virtual ~PaymentRequestItemList();
 
   // Adds an item to this list. |item->list()| should return this object.
@@ -137,7 +141,7 @@ class PaymentRequestItemList {
   // Deselects the currently selected item and selects |item| instead.
   void SelectItem(Item* item);
 
-  PaymentRequestDialogView* dialog() { return dialog_; }
+  base::WeakPtr<PaymentRequestDialogView> dialog() { return dialog_; }
 
  private:
   // Unselects the currently selected item. This is private so that the list can
@@ -147,9 +151,7 @@ class PaymentRequestItemList {
 
   std::vector<std::unique_ptr<Item>> items_;
   Item* selected_item_;
-  PaymentRequestDialogView* dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestItemList);
+  base::WeakPtr<PaymentRequestDialogView> dialog_;
 };
 
 }  // namespace payments

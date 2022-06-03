@@ -28,7 +28,7 @@
 [
     Exposed=(Window,Worker)
 ] interface CustomEvent : Event {
-    [CallWith=ScriptState] constructor(DOMString type, optional CustomEventInit eventInitDict);
+    [CallWith=ScriptState] constructor(DOMString type, optional CustomEventInit eventInitDict = {});
     [CallWith=ScriptState] readonly attribute any detail;
 
     [Measure, CallWith=ScriptState] void initCustomEvent(DOMString type, optional boolean bubbles = false, optional boolean cancelable = false, optional any detail = null);

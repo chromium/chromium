@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/common/notifications/notification_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace content {
@@ -33,16 +33,20 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       content::BrowserContext* browser_context);
 
   typedef base::RepeatingCallback<void(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       NotificationHandler::Type notification_type,
       const GURL& origin,
       const std::string& notification_id,
-      const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
-      const base::Optional<bool>& by_user)>
+      const absl::optional<int>& action_index,
+      const absl::optional<std::u16string>& reply,
+      const absl::optional<bool>& by_user)>
       ProcessNotificationOperationCallback;
 
   explicit StubNotificationDisplayService(Profile* profile);
+  StubNotificationDisplayService(const StubNotificationDisplayService&) =
+      delete;
+  StubNotificationDisplayService& operator=(
+      const StubNotificationDisplayService&) = delete;
   ~StubNotificationDisplayService() override;
 
   // Sets |closure| to be invoked when any notification has been added.
@@ -55,7 +59,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   std::vector<message_center::Notification> GetDisplayedNotificationsForType(
       NotificationHandler::Type type) const;
 
-  base::Optional<message_center::Notification> GetNotification(
+  absl::optional<message_center::Notification> GetNotification(
       const std::string& notification_id);
 
   const NotificationCommon::Metadata* GetMetadataForNotification(
@@ -65,8 +69,8 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   // on, optionally with the given |action_index| and |reply|.
   void SimulateClick(NotificationHandler::Type notification_type,
                      const std::string& notification_id,
-                     base::Optional<int> action_index,
-                     base::Optional<base::string16> reply);
+                     absl::optional<int> action_index,
+                     absl::optional<std::u16string> reply);
 
   // Simulates a click on the settings button of the notification identified by
   // |notification_id|.
@@ -99,13 +103,13 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
              const std::string& notification_id) override;
   void GetDisplayed(DisplayedNotificationsCallback callback) override;
   void ProcessNotificationOperation(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       NotificationHandler::Type notification_type,
       const GURL& origin,
       const std::string& notification_id,
-      const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
-      const base::Optional<bool>& by_user) override;
+      const absl::optional<int>& action_index,
+      const absl::optional<std::u16string>& reply,
+      const absl::optional<bool>& by_user) override;
 
  private:
   // Data to store for a notification that's being shown through this service.
@@ -135,8 +139,6 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   Profile* profile_;
 
   ProcessNotificationOperationCallback process_notification_operation_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubNotificationDisplayService);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPLAY_SERVICE_H_

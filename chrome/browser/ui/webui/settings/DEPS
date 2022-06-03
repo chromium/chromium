@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/live_caption",
+  "+content/public/browser/tts_controller.h",
+]

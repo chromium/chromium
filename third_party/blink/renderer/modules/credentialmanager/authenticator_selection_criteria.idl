@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/webauthn/#enumdef-authenticatorattachment
-
 enum AuthenticatorAttachment {
   "platform",
   "cross-platform"
 };
 
 // https://w3c.github.io/webauthn/#enumdef-userverificationrequirement
-
 enum UserVerificationRequirement {
     "required",
     "preferred",
@@ -18,9 +16,10 @@ enum UserVerificationRequirement {
 };
 
 // https://w3c.github.io/webauthn/#dictdef-authenticatorselectioncriteria
-
 dictionary AuthenticatorSelectionCriteria {
   AuthenticatorAttachment authenticatorAttachment;
   boolean requireResidentKey = false;
+  // A DOMString expressing a ResidentKeyRequirement.
+  [RuntimeEnabled=WebAuthenticationResidentKeyRequirement] DOMString residentKey;
   UserVerificationRequirement userVerification;
 };

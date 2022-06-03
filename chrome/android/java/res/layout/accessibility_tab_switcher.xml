@@ -34,10 +34,11 @@
         android:visibility="gone"
         android:scaleY="-1">
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@null"
             app:tabMaxWidth="0dp"
             app:tabGravity="fill"
             app:tabMode="fixed" />
@@ -61,7 +62,7 @@
             android:layout_weight="1"
             android:background="@drawable/btn_bg_holo_active"
             android:src="@drawable/btn_normal_tabs"
-            app:tint="@color/tint_on_dark_bg"
+            app:tint="@color/default_icon_color_light_tint_list"
             android:contentDescription="@string/accessibility_tab_switcher_standard_stack"
             style="?android:attr/borderlessButtonStyle" />
 
@@ -77,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/incognito_simple"
-            app:tint="@color/tint_on_dark_bg"
+            app:tint="@color/default_icon_color_light_tint_list"
             android:background="@drawable/btn_bg_holo"
             android:contentDescription="@string/accessibility_tab_switcher_incognito_stack"
             style="?android:attr/borderlessButtonStyle" />

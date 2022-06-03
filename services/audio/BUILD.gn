@@ -3,17 +3,22 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
-import("//media/webrtc/audio_processing.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 source_set("audio") {
   sources = [
+    "concurrent_stream_metric_reporter.cc",
+    "concurrent_stream_metric_reporter.h",
     "debug_recording.cc",
     "debug_recording.h",
     "delay_buffer.cc",
     "delay_buffer.h",
+    "device_listener_output_stream.cc",
+    "device_listener_output_stream.h",
     "device_notifier.cc",
     "device_notifier.h",
+    "device_output_listener.h",
     "group_coordinator-impl.h",
     "group_coordinator.h",
     "in_process_audio_manager_accessor.cc",
@@ -37,12 +42,23 @@ source_set("audio") {
     "loopback_group_member.h",
     "loopback_stream.cc",
     "loopback_stream.h",
+    "mixing_graph.cc",
+    "mixing_graph.h",
+    "mixing_graph_impl.cc",
+    "mixing_graph_impl.h",
     "output_controller.cc",
     "output_controller.h",
+    "output_device_mixer.cc",
+    "output_device_mixer.h",
+    "output_device_mixer_impl.cc",
+    "output_device_mixer_impl.h",
+    "output_device_mixer_manager.cc",
+    "output_device_mixer_manager.h",
     "output_stream.cc",
     "output_stream.h",
     "owning_audio_manager_accessor.cc",
     "owning_audio_manager_accessor.h",
+    "reference_output.h",
     "service.cc",
     "service.h",
     "service_factory.cc",
@@ -54,8 +70,6 @@ source_set("audio") {
     "stream_factory.cc",
     "stream_factory.h",
     "stream_monitor.h",
-    "stream_monitor_coordinator.cc",
-    "stream_monitor_coordinator.h",
     "sync_reader.cc",
     "sync_reader.h",
     "system_info.cc",
@@ -67,36 +81,28 @@ source_set("audio") {
   deps = [
     ":testing_api_support",
     "//build:chromecast_buildflags",
-    "//components/crash/core/common:crash_key",  # Temporary: crbug.com/888478
+    "//build:chromeos_buildflags",
   ]
-
-  if (audio_processing_in_audio_service_supported) {
-    deps += [ "//media/webrtc" ]
-  }
 
   public_deps = [
     "//base",
     "//media",
+    "//media/mojo/mojom",
     "//media/webrtc",
     "//services/audio/public/mojom",
-    "//services/service_manager/sandbox",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "audio_sandbox_hook_linux.cc",
       "audio_sandbox_hook_linux.h",
     ]
-    public_deps += [ "//sandbox/linux:sandbox_services" ]
+    public_deps += [
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/policy",
+    ]
   }
 
-  if (is_win) {
-    sources += [
-      "audio_sandbox_win.cc",
-      "audio_sandbox_win.h",
-    ]
-    public_deps += [ "//sandbox/win:sandbox" ]
-  }
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//media:media_config",
@@ -130,6 +136,7 @@ source_set("tests") {
   sources = [
     "debug_recording_unittest.cc",
     "delay_buffer_unittest.cc",
+    "device_listener_output_stream_unittest.cc",
     "device_notifier_unittest.cc",
     "group_coordinator_unittest.cc",
     "input_controller_unittest.cc",
@@ -138,7 +145,10 @@ source_set("tests") {
     "local_muter_unittest.cc",
     "log_factory_manager_unittest.cc",
     "loopback_stream_unittest.cc",
+    "mixing_graph_impl_unittest.cc",
     "output_controller_unittest.cc",
+    "output_device_mixer_impl_unittest.cc",
+    "output_device_mixer_manager_unittest.cc",
     "output_stream_unittest.cc",
     "public/cpp/input_ipc_unittest.cc",
     "public/cpp/output_device_unittest.cc",
@@ -164,8 +174,8 @@ source_set("tests") {
   deps = [
     ":audio",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//media:test_support",
-    "//mojo/core/embedder",
     "//services/audio/public/cpp",
     "//services/audio/public/cpp:test_support",
     "//services/audio/public/mojom",
@@ -173,7 +183,7 @@ source_set("tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos || is_chromecast) {
+  if (is_chromeos_ash || is_chromecast) {
     sources += [
       "public/cpp/sounds/audio_stream_handler_unittest.cc",
       "public/cpp/sounds/sounds_manager_unittest.cc",

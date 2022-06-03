@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<body>
+  <script>
+    let adoptionCompletePromise = new Promise(r => {
+      window.onportalactivate = e => {
+        let portal = e.adoptPredecessor();
+        document.body.appendChild(portal);
+        r();
+      };
+    });
+
+    async function waitForAdoption() {
+      await adoptionCompletePromise;
+      domAutomationController.send(true);
+    }
+
+    function activate() {
+      let portal = document.querySelector('portal');
+      portal.activate().then(() => {
+        document.body.removeChild(portal);
+      });
+    }
+  </script>
+</body>

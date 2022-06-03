@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 
@@ -43,6 +42,9 @@ class TabLayer : public Layer {
                                         ui::ResourceManager* resource_manager,
                                         LayerTitleCache* layer_title_cache,
                                         TabContentManager* tab_content_manager);
+
+  TabLayer(const TabLayer&) = delete;
+  TabLayer& operator=(const TabLayer&) = delete;
 
   // TODO(meiliang): This method needs another parameter, a resource that can be
   // used to indicate the currently selected tab for the TabLayer.
@@ -86,7 +88,6 @@ class TabLayer : public Layer {
                      float content_width,
                      float content_height,
                      float view_width,
-                     float view_height,
                      bool show_toolbar,
                      int default_theme_color,
                      int toolbar_background_color,
@@ -95,9 +96,9 @@ class TabLayer : public Layer {
                      bool show_tab_title,
                      int toolbar_textbox_resource_id,
                      int toolbar_textbox_background_color,
-                     float toolbar_textbox_alpha,
                      float toolbar_alpha,
                      float toolbar_y_offset,
+                     float content_offset,
                      float side_border_scale,
                      bool inset_border);
 
@@ -164,8 +165,6 @@ class TabLayer : public Layer {
   scoped_refptr<cc::NinePatchLayer> shadow_;
   scoped_refptr<cc::UIResourceLayer> back_logo_;
   float brightness_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLayer);
 };
 
 }  //  namespace android

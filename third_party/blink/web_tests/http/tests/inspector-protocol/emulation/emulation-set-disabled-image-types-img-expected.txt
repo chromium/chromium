@@ -1,0 +1,8 @@
+Tests the Emulation.setDisabledImageTypes method with an <img> element.
+With emulation (avif enabled):
+Expected avif image: http://127.0.0.1:8000/inspector-protocol/emulation/resources/test.avif
+Image request Accept header: image/avif,image/apng,image/svg+xml,image/*,*/*;q=0.8
+With emulation (avif disabled):
+Expected png image: http://127.0.0.1:8000/inspector-protocol/emulation/resources/test.png
+Image request Accept header: image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+

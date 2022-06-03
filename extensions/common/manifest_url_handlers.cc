@@ -9,7 +9,6 @@
 
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/error_utils.h"
@@ -99,7 +98,7 @@ HomepageURLHandler::HomepageURLHandler() {
 HomepageURLHandler::~HomepageURLHandler() {
 }
 
-bool HomepageURLHandler::Parse(Extension* extension, base::string16* error) {
+bool HomepageURLHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
   std::string homepage_url_str;
   if (!extension->manifest()->GetString(keys::kHomepageURL,
@@ -130,7 +129,7 @@ UpdateURLHandler::UpdateURLHandler() {
 UpdateURLHandler::~UpdateURLHandler() {
 }
 
-bool UpdateURLHandler::Parse(Extension* extension, base::string16* error) {
+bool UpdateURLHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
   std::string tmp_update_url;
 
@@ -163,7 +162,7 @@ AboutPageHandler::AboutPageHandler() {
 AboutPageHandler::~AboutPageHandler() {
 }
 
-bool AboutPageHandler::Parse(Extension* extension, base::string16* error) {
+bool AboutPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
   std::string about_str;
   if (!extension->manifest()->GetString(keys::kAboutPage, &about_str)) {

@@ -10,21 +10,19 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/download/mhtml_extra_parts_impl.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/mhtml_extra_parts.h"
@@ -60,12 +58,12 @@ struct CloseFileResult {
                   std::string* digest)
       : save_status(status), file_size(size) {
     if (digest)
-      file_digest = base::Optional<std::string>(*digest);
+      file_digest = absl::optional<std::string>(*digest);
   }
 
   content::mojom::MhtmlSaveStatus save_status;
   int64_t file_size;
-  base::Optional<std::string> file_digest;
+  absl::optional<std::string> file_digest;
 
   content::MHTMLGenerationResult toMHTMLGenerationResult() const {
     return content::MHTMLGenerationResult(file_size,
@@ -114,6 +112,9 @@ class MHTMLGenerationManager::Job {
       WebContents* web_contents,
       const MHTMLGenerationParams& params,
       MHTMLGenerationResult::GenerateMHTMLCallback callback);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
 
  private:
   Job(WebContents* web_contents,
@@ -300,8 +301,6 @@ class MHTMLGenerationManager::Job {
   std::unique_ptr<crypto::SecureHash> secure_hash_;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 MHTMLGenerationManager::Job::Job(
@@ -399,30 +398,11 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
 
   mojom::SerializeAsMHTMLParamsPtr params(CreateMojoParams());
 
-  // Initialize method of file writing depending on |compute_contents_hash|
-  // flag.
   params->output_handle = mojom::MhtmlOutputHandle::New();
-  if (params_.compute_contents_hash) {
-    // Create and set up the data pipe.
-    mojo::ScopedDataPipeProducerHandle producer;
-    if (mojo::CreateDataPipe(nullptr, &producer, &mhtml_data_consumer_) !=
-        MOJO_RESULT_OK) {
-      DLOG(ERROR) << "Failed to create Mojo Data Pipe.";
-      return mojom::MhtmlSaveStatus::kStreamingError;
-    }
-    MHTMLWriteCompleteCallback write_complete_callback = base::BindRepeating(
-        &Job::DoneWritingToDisk, weak_factory_.GetWeakPtr());
-    download::GetDownloadTaskRunner().get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Job::BeginWatchingHandle, base::Unretained(this),
-                       std::move(write_complete_callback)));
-    waiting_on_data_streaming_ = true;
-    params->output_handle->set_producer_handle(std::move(producer));
-  } else {
-    // File::Duplicate() creates a reference to this file for use in the
-    // Renderer.
-    params->output_handle->set_file_handle(browser_file_.Duplicate());
-  }
+
+  // File::Duplicate() creates a reference to this file for use in the
+  // Renderer.
+  params->output_handle->set_file_handle(browser_file_.Duplicate());
 
   // Send a Mojo request to Renderer to serialize its frame.
   DCHECK_EQ(FrameTreeNode::kFrameTreeNodeInvalidId,
@@ -449,13 +429,6 @@ void MHTMLGenerationManager::Job::BeginWatchingHandle(
   watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
       download::GetDownloadTaskRunner());
-  // It is entirely possible for BeginWatchingHandle to get bound multiple times
-  // if we have to serialize multiple render frames, but we will only ever want
-  // one secure hash instance created.
-  if (params_.compute_contents_hash && !secure_hash_) {
-    secure_hash_ =
-        crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
-  }
 
   // base::Unretained is safe, as |this| owns |mhtml_data_consumer_|, which
   // is responsible for invoking |watcher_| callbacks.
@@ -514,8 +487,8 @@ void MHTMLGenerationManager::Job::OnWriteComplete(
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
 
   watcher_.reset();
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(std::move(callback), save_status));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), save_status));
 }
 
 void MHTMLGenerationManager::Job::DoneWritingToDisk(
@@ -622,8 +595,8 @@ void MHTMLGenerationManager::Job::MarkAsFinished() {
 
 void MHTMLGenerationManager::Job::ReportRendererMainThreadTime(
     base::TimeDelta renderer_main_thread_time) {
-  DCHECK(renderer_main_thread_time > base::TimeDelta());
-  if (renderer_main_thread_time > base::TimeDelta())
+  DCHECK(renderer_main_thread_time.is_positive());
+  if (renderer_main_thread_time.is_positive())
     all_renderers_main_thread_time_ += renderer_main_thread_time;
   if (renderer_main_thread_time > longest_renderer_main_thread_time_)
     longest_renderer_main_thread_time_ = renderer_main_thread_time;

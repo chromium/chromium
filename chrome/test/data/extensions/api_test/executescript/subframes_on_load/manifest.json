@@ -4,7 +4,8 @@
   "name": "Subframes on load",
   "description": "Test that calling executeScript on a tab that has completed its load injects into subframes.",
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://a.com/"]
 }

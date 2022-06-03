@@ -40,6 +40,9 @@ class SyncReader : public OutputController::SyncReader {
              const media::AudioParameters& params,
              base::CancelableSyncSocket* foreign_socket);
 
+  SyncReader(const SyncReader&) = delete;
+  SyncReader& operator=(const SyncReader&) = delete;
+
   ~SyncReader() override;
 
   // Returns true if the SyncReader initialized successfully, and
@@ -100,8 +103,6 @@ class SyncReader : public OutputController::SyncReader {
   // The index of the audio buffer we're expecting to be sent from the renderer;
   // used to block with timeout for audio data.
   uint32_t buffer_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncReader);
 };
 
 }  // namespace audio

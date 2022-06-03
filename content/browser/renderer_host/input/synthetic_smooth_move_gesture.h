@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -15,7 +14,8 @@
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_smooth_drag_gesture_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -34,12 +34,15 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
   InputType input_type;
   gfx::PointF start_point;
   std::vector<gfx::Vector2dF> distances;
-  int speed_in_pixels_s;
-  int fling_velocity_x;
-  int fling_velocity_y;
-  bool prevent_fling;
-  bool add_slop;
-  ui::input_types::ScrollGranularity granularity;
+  int speed_in_pixels_s = SyntheticGestureParams::kDefaultSpeedInPixelsPerSec;
+  int fling_velocity_x = 0;
+  int fling_velocity_y = 0;
+  bool prevent_fling = true;
+  bool add_slop = true;
+  ui::ScrollGranularity granularity = ui::ScrollGranularity::kScrollByPixel;
+  // A bitfield of values from blink::WebInputEvent::Modifiers.
+  int modifiers = 0;
+  bool from_devtools_debugger = false;
 };
 
 // This class is used as helper class for simulation of scroll and drag.
@@ -53,6 +56,11 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
 class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
  public:
   explicit SyntheticSmoothMoveGesture(SyntheticSmoothMoveGestureParams params);
+
+  SyntheticSmoothMoveGesture(const SyntheticSmoothMoveGesture&) = delete;
+  SyntheticSmoothMoveGesture& operator=(const SyntheticSmoothMoveGesture&) =
+      delete;
+
   ~SyntheticSmoothMoveGesture() override;
 
   // SyntheticGesture implementation:
@@ -79,7 +87,8 @@ class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
   void ForwardMouseWheelEvent(SyntheticGestureTarget* target,
                               const gfx::Vector2dF& delta,
                               const blink::WebMouseWheelEvent::Phase phase,
-                              const base::TimeTicks& timestamp) const;
+                              const base::TimeTicks& timestamp,
+                              int modifiers) const;
 
   void ForwardFlingGestureEvent(SyntheticGestureTarget* target,
                                 const blink::WebInputEvent::Type type) const;
@@ -106,14 +115,12 @@ class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
   gfx::Vector2dF current_move_segment_total_delta_;
   // Used for touch input.
   gfx::PointF current_move_segment_start_position_;
-  GestureState state_;
+  GestureState state_ = SETUP;
   int current_move_segment_;
   base::TimeTicks current_move_segment_start_time_;
   base::TimeTicks current_move_segment_stop_time_;
   // Used to set phase information for synthetic wheel events.
-  bool needs_scroll_begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticSmoothMoveGesture);
+  bool needs_scroll_begin_ = true;
 };
 
 }  // namespace content

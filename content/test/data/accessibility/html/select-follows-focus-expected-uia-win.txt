@@ -1,0 +1,6 @@
+Document
+++Tab Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++TabItem Name='tab1' SelectionItem.IsSelected=true
+++++TabItem Name='tab2' SelectionItem.IsSelected=true
+++++TabItem Name='tab3' SelectionItem.IsSelected=false
+++Text Name='Done'

@@ -68,9 +68,6 @@ public class CaptioningChangeDelegate {
     public void onLocaleChanged(Locale locale) {}
 
     /**
-     * Unlike the original method, use Chromium's CaptioningStyle since CaptionStyle is only
-     * available on KitKat or higher. userStyle will never be null.
-     *
      * @see android.view.accessibility.CaptioningManager.CaptioningChangeListener#onUserStyleChanged
      */
     public void onUserStyleChanged(CaptioningStyle userStyle) {
@@ -108,7 +105,6 @@ public class CaptioningChangeDelegate {
     public static String getShadowFromColorAndSystemEdge(String color, Integer type) {
         String edgeShadow = "";
         if (type != null) {
-            // Lollipop adds support for EDGE_TYPE_DEPRESSED and EDGE_TYPE_RAISED.
             switch (type) {
                 case CaptionStyle.EDGE_TYPE_OUTLINE:
                     edgeShadow =
@@ -149,9 +145,7 @@ public class CaptioningChangeDelegate {
         // in Android settings app.
         String fonts[] = {// Fonts in Lollipop and above
                 "", "sans-serif", "sans-serif-condensed", "sans-serif-monospace", "serif",
-                "serif-monospace", "casual", "cursive", "sans-serif-smallcaps",
-                // Fonts in KitKat
-                "monospace"};
+                "serif-monospace", "casual", "cursive", "sans-serif-smallcaps", "monospace"};
         for (String font : fonts) {
             if (Typeface.create(font, typeFace.getStyle()).equals(typeFace)) return font;
         }

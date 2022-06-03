@@ -53,7 +53,10 @@
 #ifndef ABSL_DEBUGGING_INTERNAL_DEMANGLE_H_
 #define ABSL_DEBUGGING_INTERNAL_DEMANGLE_H_
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 
 // Demangle `mangled`.  On success, return true and write the
@@ -62,6 +65,7 @@ namespace debugging_internal {
 bool Demangle(const char *mangled, char *out, int out_size);
 
 }  // namespace debugging_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_DEBUGGING_INTERNAL_DEMANGLE_H_

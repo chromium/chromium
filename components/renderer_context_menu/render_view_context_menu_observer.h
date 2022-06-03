@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_OBSERVER_H_
 #define COMPONENTS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_OBSERVER_H_
 
+#include "ui/gfx/geometry/rect.h"
+
 namespace content {
 struct ContextMenuParams;
 }
@@ -98,8 +100,22 @@ class RenderViewContextMenuObserver {
   virtual bool IsCommandIdChecked(int command_id);
   virtual bool IsCommandIdEnabled(int command_id);
 
-  // Called when a user selects the specified context-menu item.
+  // Called when a user selects the specified context-menu item. This is
+  // only called when the observer returns true for IsCommandIdSupported()
+  // for that |command_id|.
   virtual void ExecuteCommand(int command_id) {}
+
+  // Called when a user selects the specified context-menu item, including
+  // command that is supported by other observers.
+  virtual void CommandWillBeExecuted(int command_id) {}
+
+  virtual void OnMenuClosed() {}
+
+  virtual void OnContextMenuShown(const content::ContextMenuParams& params,
+                                  const gfx::Rect& bounds_in_screen) {}
+  //
+  virtual void OnContextMenuViewBoundsChanged(
+      const gfx::Rect& bounds_in_screen) {}
 };
 
 #endif  // COMPONENTS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_OBSERVER_H_

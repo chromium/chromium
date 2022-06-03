@@ -1,0 +1,98 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
+
+#import <MobileCoreServices/UTCoreTypes.h>
+
+#include "base/check_op.h"
+#include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
+#import "net/base/mac/url_conversions.h"
+#include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation TableViewURLDragDropHandler
+
+#pragma mark - UITableViewDragDelegate
+
+- (NSArray<UIDragItem*>*)tableView:(UITableView*)tableView
+      itemsForBeginningDragSession:(id<UIDragSession>)session
+                       atIndexPath:(NSIndexPath*)indexPath {
+  DCHECK(self.dragDataSource && self.origin);
+  URLInfo* info = [self.dragDataSource tableView:tableView
+                              URLInfoAtIndexPath:indexPath];
+  // Returning nil indicates that the drag item has no content to be dropped.
+  // However, drag to reorder within the table view is still enabled/controlled
+  // by the UITableViewDataSource reordering methods.
+  return info ? @[ CreateURLDragItem(info, self.origin) ] : nil;
+}
+
+- (NSArray<UIDragItem*>*)tableView:(UITableView*)tableView
+       itemsForAddingToDragSession:(id<UIDragSession>)session
+                       atIndexPath:(NSIndexPath*)indexPath
+                             point:(CGPoint)point {
+  // TODO(crbug.com/1100940): Enable multi-select dragging.
+  return nil;
+}
+
+- (void)tableView:(UITableView*)tableView
+    dragSessionWillBegin:(id<UIDragSession>)session {
+  DCHECK_EQ(1U, session.items.count);
+  UIDragItem* item = session.items.firstObject;
+  URLInfo* info = base::mac::ObjCCastStrict<URLInfo>(item.localObject);
+  session.items.firstObject.previewProvider = ^{
+    return [UIDragPreview previewForURL:net::NSURLWithGURL(info.URL)
+                                  title:info.title];
+  };
+}
+
+#pragma mark - UITableViewDropDelegate
+
+- (BOOL)tableView:(UITableView*)tableView
+    canHandleDropSession:(id<UIDropSession>)session {
+  DCHECK(self.dropDelegate);
+  // TODO(crbug.com/1100940): Enable multi-item drops.
+  return session.items.count == 1U &&
+         [self.dropDelegate canHandleURLDropInTableView:tableView] &&
+         [session hasItemsConformingToTypeIdentifiers:@[
+           (__bridge NSString*)kUTTypeURL
+         ]];
+}
+
+- (UITableViewDropProposal*)tableView:(UITableView*)tableView
+                 dropSessionDidUpdate:(id<UIDropSession>)session
+             withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  UIDropOperation operation =
+      tableView.hasActiveDrag ? UIDropOperationMove : UIDropOperationCopy;
+  return [[UITableViewDropProposal alloc]
+      initWithDropOperation:operation
+                     intent:UITableViewDropIntentInsertAtDestinationIndexPath];
+}
+
+- (void)tableView:(UITableView*)tableView
+    performDropWithCoordinator:(id<UITableViewDropCoordinator>)coordinator {
+  DCHECK(self.dropDelegate);
+  if ([coordinator.session canLoadObjectsOfClass:[NSURL class]]) {
+    __weak TableViewURLDragDropHandler* weakSelf = self;
+    [coordinator.session
+        loadObjectsOfClass:[NSURL class]
+                completion:^(NSArray<NSURL*>* objects) {
+                  // TODO(crbug.com/1100940): Enable multi-item drops.
+                  DCHECK_EQ(1U, objects.count);
+                  GURL URL = net::GURLWithNSURL(objects.firstObject);
+                  if (URL.is_valid()) {
+                    [weakSelf.dropDelegate
+                          tableView:tableView
+                         didDropURL:URL
+                        atIndexPath:coordinator.destinationIndexPath];
+                  }
+                }];
+  }
+}
+
+@end

@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -21,7 +23,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-// TODO(siggi): Add workers to the WebUI graph.
 class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
                               public performance_manager::GraphOwned,
                               public performance_manager::FrameNodeObserver,
@@ -30,6 +31,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
                               public performance_manager::WorkerNodeObserver {
  public:
   DiscardsGraphDumpImpl();
+
+  DiscardsGraphDumpImpl(const DiscardsGraphDumpImpl&) = delete;
+  DiscardsGraphDumpImpl& operator=(const DiscardsGraphDumpImpl&) = delete;
+
   ~DiscardsGraphDumpImpl() override;
 
   // Creates a new DiscardsGraphDumpImpl to service |receiver| and passes its
@@ -43,11 +48,16 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       performance_manager::Graph* graph,
       mojo::PendingReceiver<discards::mojom::GraphDump> receiver);
 
+  int64_t GetNodeIdForTesting(const performance_manager::Node* node);
+
  protected:
   // WebUIGraphDump implementation.
   void SubscribeToChanges(
       mojo::PendingRemote<discards::mojom::GraphChangeStream> change_subscriber)
       override;
+  void RequestNodeDescriptions(
+      const std::vector<int64_t>& node_ids,
+      RequestNodeDescriptionsCallback callback) override;
 
   // GraphOwned implementation.
   void OnPassedToGraph(performance_manager::Graph* graph) override;
@@ -67,10 +77,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnFrameLifecycleStateChanged(
       const performance_manager::FrameNode* frame_node) override {}
-  // Ignored.
-  void OnOriginTrialFreezePolicyChanged(
-      const performance_manager::FrameNode* frame_node,
-      const InterventionPolicy& previous_value) override {}
   void OnURLChanged(const performance_manager::FrameNode* frame_node,
                     const GURL& previous_value) override;
   // Ignored.
@@ -88,25 +94,50 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnPriorityAndReasonChanged(
       const performance_manager::FrameNode* frame_node,
-      const PriorityAndReason& previous_value) override {}
+      const performance_manager::PriorityAndReason& previous_value) override {}
+  // Ignored.
+  void OnHadFormInteractionChanged(
+      const performance_manager::FrameNode* frame_node) override {}
+  // Ignored.
+  void OnIsAudibleChanged(
+      const performance_manager::FrameNode* frame_node) override {}
+  // Ignored.
+  void OnFirstContentfulPaint(
+      const performance_manager::FrameNode* frame_node,
+      base::TimeDelta time_since_navigation_start) override {}
+  // Ignored.
+  void OnViewportIntersectionChanged(
+      const performance_manager::FrameNode* frame_node) override {}
+  // Ignored.
+  void OnFrameVisibilityChanged(
+      const performance_manager::FrameNode* frame_node,
+      performance_manager::FrameNode::Visibility previous_value) override {}
 
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const performance_manager::PageNode* page_node) override;
   void OnBeforePageNodeRemoved(
       const performance_manager::PageNode* page_node) override;
-  void OnIsVisibleChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
-  void OnIsAudibleChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
-  void OnIsLoadingChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
-  void OnUkmSourceIdChanged(
-      const performance_manager::PageNode* page_node) override {}  // Ignored.
+  void OnOpenerFrameNodeChanged(
+      const performance_manager::PageNode* page_node,
+      const performance_manager::FrameNode* previous_opener) override;
+  void OnEmbedderFrameNodeChanged(
+      const performance_manager::PageNode* page_node,
+      const performance_manager::FrameNode* previous_embedder,
+      EmbeddingType previous_embedding_type) override;
   // Ignored.
-  void OnPageLifecycleStateChanged(
+  void OnIsVisibleChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
-  void OnPageOriginTrialFreezePolicyChanged(
+  void OnIsAudibleChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
+  void OnLoadingStateChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
+  void OnUkmSourceIdChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
+  void OnPageLifecycleStateChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnPageIsHoldingWebLockChanged(
@@ -117,14 +148,24 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnMainFrameUrlChanged(
       const performance_manager::PageNode* page_node) override;
   // Ignored.
-  void OnPageAlmostIdleChanged(
-      const performance_manager::PageNode* page_node) override {}
   void OnMainFrameDocumentChanged(
       const performance_manager::PageNode* page_node) override {}
+  // Ignored.
+  void OnHadFormInteractionChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnTitleUpdated(const performance_manager::PageNode* page_node) override {
-  }  // Ignored.
+  }
   void OnFaviconUpdated(
       const performance_manager::PageNode* page_node) override;
+  // Ignored.
+  void OnFreezingVoteChanged(
+      const performance_manager::PageNode* page_node,
+      absl::optional<performance_manager::freezing::FreezingVote>) override {}
+  // Ignored.
+  void OnPageStateChanged(
+      const performance_manager::PageNode* page_node,
+      performance_manager::PageNode::PageState old_state) override {}
 
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(
@@ -133,9 +174,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(
       const performance_manager::ProcessNode* process_node) override;
-  void OnExpectedTaskQueueingDurationSample(
-      const performance_manager::ProcessNode* process_node) override {
-  }  // Ignored.
   // Ignored.
   void OnMainThreadTaskLoadIsLow(
       const performance_manager::ProcessNode* process_node) override {}
@@ -150,6 +188,8 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::WorkerNode* worker_node) override;
   void OnBeforeWorkerNodeRemoved(
       const performance_manager::WorkerNode* worker_node) override;
+  void OnFinalResponseURLDetermined(
+      const performance_manager::WorkerNode* worker_node) override;
   void OnClientFrameAdded(
       const performance_manager::WorkerNode* worker_node,
       const performance_manager::FrameNode* client_frame_node) override;
@@ -162,11 +202,21 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnBeforeClientWorkerRemoved(
       const performance_manager::WorkerNode* worker_node,
       const performance_manager::WorkerNode* client_worker_node) override;
+  // Ignored.
+  void OnPriorityAndReasonChanged(
+      const performance_manager::WorkerNode* worker_node,
+      const performance_manager::PriorityAndReason& previous_value) override {}
 
  private:
   // The favicon requests happen on the UI thread. This helper class
   // maintains the state required to do that.
   class FaviconRequestHelper;
+  using NodeId = base::IdType64<class NodeIdTag>;
+
+  void AddNode(const performance_manager::Node* node);
+  void RemoveNode(const performance_manager::Node* node);
+  bool HasNode(const performance_manager::Node* node) const;
+  int64_t GetNodeId(const performance_manager::Node* node) const;
 
   FaviconRequestHelper* EnsureFaviconRequestHelper();
 
@@ -174,6 +224,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void StartFrameFaviconRequest(
       const performance_manager::FrameNode* frame_node);
 
+  void SendNotificationToAllNodes(bool created);
   void SendFrameNotification(const performance_manager::FrameNode* frame,
                              bool created);
   void SendPageNotification(const performance_manager::PageNode* page,
@@ -187,14 +238,16 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       int64_t serialization_id,
       scoped_refptr<base::RefCountedMemory> bitmap_data);
 
-  static void BindOnPMSequence(
-      mojo::PendingReceiver<discards::mojom::GraphDump> receiver,
-      performance_manager::Graph* graph);
   static void OnConnectionError(DiscardsGraphDumpImpl* impl);
 
   performance_manager::Graph* graph_ = nullptr;
 
   std::unique_ptr<FaviconRequestHelper> favicon_request_helper_;
+
+  // The live nodes and their IDs.
+  base::flat_map<const performance_manager::Node*, NodeId> node_ids_;
+  base::flat_map<NodeId, const performance_manager::Node*> nodes_by_id_;
+  NodeId::Generator node_id_generator_;
 
   // The current change subscriber to this dumper. This instance is subscribed
   // to every node in |graph_| save for the system node, so long as there is a
@@ -205,8 +258,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DiscardsGraphDumpImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardsGraphDumpImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DISCARDS_GRAPH_DUMP_IMPL_H_

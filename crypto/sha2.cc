@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "crypto/secure_hash.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_TAB_CONTENTS_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_TAB_CONTENTS_TASK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace task_manager {
@@ -15,6 +14,8 @@ namespace task_manager {
 class TabContentsTask : public RendererTask {
  public:
   explicit TabContentsTask(content::WebContents* web_contents);
+  TabContentsTask(const TabContentsTask&) = delete;
+  TabContentsTask& operator=(const TabContentsTask&) = delete;
   ~TabContentsTask() override;
 
   // task_manager::RendererTask:
@@ -23,9 +24,7 @@ class TabContentsTask : public RendererTask {
   Type GetType() const override;
 
  private:
-  base::string16 GetCurrentTitle() const;
-
-  DISALLOW_COPY_AND_ASSIGN(TabContentsTask);
+  std::u16string GetCurrentTitle() const;
 };
 
 }  // namespace task_manager

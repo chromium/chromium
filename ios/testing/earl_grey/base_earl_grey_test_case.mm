@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
@@ -18,10 +19,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#if defined(CHROME_EARL_GREY_2)
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BaseEarlGreyTestCaseAppInterface)
-#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 
@@ -42,8 +39,8 @@ bool g_needs_set_up_for_test_case = true;
 - (void)setUp {
   [super setUp];
 
-#if defined(CHROME_EARL_GREY_2)
-  [self launchAppForTestMethod];
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
   [self handleSystemAlertIfVisible];
 
   NSString* logFormat = @"*********************************\nStarting test: %@";
@@ -55,23 +52,22 @@ bool g_needs_set_up_for_test_case = true;
   // here. See +setUp below for details on why overriding +setUp causes a
   // failure.
   [self failIfSetUpIsOverridden];
-#endif
 
   if (g_needs_set_up_for_test_case) {
     g_needs_set_up_for_test_case = false;
-    [CoverageUtils configureCoverageReportPath];
     [[self class] setUpForTestCase];
   }
 }
 
 + (void)tearDown {
+  [CoverageUtils writeClangCoverageProfile];
+  [CoverageUtils resetCoverageProfileCounters];
   g_needs_set_up_for_test_case = true;
   [super tearDown];
 }
 
 // Handles system alerts if any are present, closing them to unblock the UI.
 - (void)handleSystemAlertIfVisible {
-#if defined(CHROME_EARL_GREY_2)
   NSError* systemAlertFoundError = nil;
   [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
       assertWithMatcher:grey_nil()
@@ -84,10 +80,14 @@ bool g_needs_set_up_for_test_case = true;
     GREYAssertNil(alertGetTextError, @"Error getting alert text.\n%@",
                   alertGetTextError);
 
-    // If the system alert is of a known type, accept it.
-    // Otherwise, reject it, as unknown types include alerts which are not
-    // desirable to accept, including OS upgrades.
-    if ([self grey_systemAlertType] != GREYSystemAlertTypeUnknown) {
+    @try {
+      // TODO(crbug.com/1073542): Style guide does not allow throwing
+      // exceptions. This call throws an NSInternalInconsistencyException when
+      // the system alert is unknown in EG2 framework. The exception will be
+      // handled in @catch. Otherwise the system alert is of a known type,
+      // accept it.
+      [self grey_systemAlertType];
+
       DLOG(WARNING) << "Accepting iOS system alert: "
                     << base::SysNSStringToUTF8(alertText);
 
@@ -95,23 +95,76 @@ bool g_needs_set_up_for_test_case = true;
       [self grey_acceptSystemDialogWithError:&acceptAlertError];
       GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
                     acceptAlertError);
-    } else {
-      DLOG(WARNING) << "Denying iOS system alert of unknown type: "
-                    << base::SysNSStringToUTF8(alertText);
 
-      NSError* denyAlertError = nil;
-      [self grey_denySystemDialogWithError:&denyAlertError];
-      GREYAssertNil(denyAlertError, @"Error denying system alert.\n%@",
-                    denyAlertError);
+    } @catch (NSException* exception) {
+      GREYAssert(
+          (exception.name == NSInternalInconsistencyException &&
+           [exception.reason rangeOfString:@"Invalid System Alert."].location !=
+               NSNotFound),
+          @"Unknown error caught when handling unknown system alert: %@",
+          exception.reason);
+      // If the unsupported alert is iOS upgrade or carrier settings alert,
+      // handle it. Otherwise, fail the test.
+      if ([alertText isEqualToString:@"Software Update"]) {
+        DLOG(WARNING) << "Denying iOS system alert of Software Update!";
+        // Software Update alert usually has two consecutive alerts, handle them
+        // one by one.
+        NSError* error = nil;
+        // Choose "Later" for the first alert.
+        [self tapAlertButtonWithText:@"Later" error:&error];
+        // If an error with code |GREYSystemAlertCustomButtonNotFound| happens,
+        // probably the second alert is already there. Try to handle it in
+        // following steps.
+        GREYAssert(
+            error == nil || error.code == GREYSystemAlertCustomButtonNotFound,
+            @"Error denying first Software Update alert.\n%@", error);
+        // A second alert promoting to update tonight will appear. Wait for it.
+        [self grey_waitForAlertVisibility:YES
+                              withTimeout:kSystemAlertVisibilityTimeout];
+        error = nil;
+        // Choose "Remind Me Later" for the second alert.
+        [self tapAlertButtonWithText:@"Remind Me Later" error:&error];
+        GREYAssertNil(error, @"Error denying second Software Update alert.\n%@",
+                      error);
+      } else if ([alertText
+                     containsString:@"A new iOS update is now available."]) {
+        DLOG(WARNING)
+            << "Denying iOS system alert of new iOS update is now available!";
+        // This is another format of Software Update dialog. Need to choose
+        // "Close".
+        NSError* error = nil;
+        [self tapAlertButtonWithText:@"Close" error:&error];
+        GREYAssertNil(error, @"Error closing Software Update alert.\n%@",
+                      error);
+      } else if ([alertText isEqualToString:@"Carrier Settings Update"]) {
+        DLOG(WARNING) << "Denying iOS system alert of Carrier Settings Update!";
+        NSError* error = nil;
+        [self tapAlertButtonWithText:@"Not Now" error:&error];
+        GREYAssertNil(
+            error, @"Error closing Carrier Settings Update alert.\n%@", error);
+      } else if ([alertText containsString:@"would like to find and connect to "
+                                           @"devices on your local network."]) {
+        DLOG(WARNING) << "Denying iOS system alert of connecting to local "
+                         "network devices!";
+        NSError* error = nil;
+        [self tapAlertButtonWithText:@"OK" error:&error];
+        GREYAssertNil(error,
+                      @"Error closing connecting to local network devices.\n%@",
+                      error);
+      } else {
+        XCTFail("An unsupported system alert is present on device. Failing "
+                "this test. Alert label: %@",
+                alertText);
+      }
     }
   }
-#endif  // CHROME_EARL_GREY_2
+  // Ensures no visible alert after handling.
+  [self grey_waitForAlertVisibility:NO
+                        withTimeout:kSystemAlertVisibilityTimeout];
 }
 
-- (void)launchAppForTestMethod {
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
-      disabled:{}
-      relaunchPolicy:NoForceRelaunchAndResetState];
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  return AppLaunchConfiguration();
 }
 
 #pragma mark - Private
@@ -129,6 +182,31 @@ bool g_needs_set_up_for_test_case = true;
             @"+setUp method to +setUpForTestCase.",
             NSStringFromClass([self class]));
   }
+}
+
+// Taps button with |text| in the system alert on screen. If an alert or the
+// button doesn't exist, note it in |error| accordingly. In EG1, this method is
+// no-op.
+- (void)tapAlertButtonWithText:(NSString*)text error:(NSError**)error {
+  XCUIApplication* springboardApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.springboard"];
+  XCUIElement* alert = [[springboardApp
+      descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
+  if (![alert waitForExistenceWithTimeout:kSystemAlertVisibilityTimeout]) {
+    *error = [NSError errorWithDomain:kGREYSystemAlertDismissalErrorDomain
+                                 code:GREYSystemAlertNotPresent
+                             userInfo:nil];
+    return;
+  }
+  XCUIElement* button = alert.buttons[text];
+  if (![alert.buttons[text] exists]) {
+    *error = [NSError errorWithDomain:kGREYSystemAlertDismissalErrorDomain
+                                 code:GREYSystemAlertCustomButtonNotFound
+                             userInfo:nil];
+    return;
+  }
+
+  [button tap];
 }
 
 @end

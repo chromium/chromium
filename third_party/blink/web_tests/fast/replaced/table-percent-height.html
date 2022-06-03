@@ -45,28 +45,28 @@ function test()
 {
     description("This test checks that replaced elements with percentage heights within table cells have the correct height.<br>Note, some of the button height tests fail on the Windows ports. See bug #34071.");
 
-    shouldBe("getWidth('canvas-75')", "'225px'");
-    shouldBe("getHeight('canvas-75')", "'112.5px'");
+    shouldBe("getWidth('canvas-75')", "'300px'");
+    shouldBe("getHeight('canvas-75')", "'150px'");
     shouldBe("getWidth('canvas-100')", "'300px'");
     shouldBe("getHeight('canvas-100')", "'150px'");
 
     shouldBe("getWidth('embed-75')", "'300px'");
-    shouldBe("getHeight('embed-75')", "'112.5px'");
+    shouldBe("getHeight('embed-75')", "'150px'");
     shouldBe("getWidth('embed-100')", "'300px'");
     shouldBe("getHeight('embed-100')", "'150px'");
 
-    shouldBe("getWidth('img-75')", "'75px'");
-    shouldBe("getHeight('img-75')", "'75px'");
+    shouldBe("getWidth('img-75')", "'100px'");
+    shouldBe("getHeight('img-75')", "'100px'");
     shouldBe("getWidth('img-100')", "'100px'");
     shouldBe("getHeight('img-100')", "'100px'");
 
-    shouldBe("getWidth('img-75-nested')", "'75px'");
-    shouldBe("getHeight('img-75-nested')", "'75px'");
+    shouldBe("getWidth('img-75-nested')", "'100px'");
+    shouldBe("getHeight('img-75-nested')", "'100px'");
     shouldBe("getWidth('img-100-nested')", "'100px'");
     shouldBe("getHeight('img-100-nested')", "'100px'");
 
     shouldBe("getWidth('object-75')", "'300px'");
-    shouldBe("getHeight('object-75')", "'112.5px'");
+    shouldBe("getHeight('object-75')", "'150px'");
     shouldBe("getWidth('object-100')", "'300px'");
     shouldBe("getHeight('object-100')", "'150px'");
 
@@ -86,9 +86,8 @@ function test()
     shouldBeTrue("getHeight('input-file-75') != '0px'");
     shouldBe("getHeight('input-file-75')", "getHeight('input-file-100')");
 
-    // Note: This behavior doesn't match to Firefox 3.5 and Opera 10.
-    shouldBe("getWidth('input-image-75')", "'75px'");
-    shouldBe("getHeight('input-image-75')", "'75px'");
+    shouldBe("getWidth('input-image-75')", "'100px'");
+    shouldBe("getHeight('input-image-75')", "'100px'");
     shouldBe("getWidth('input-image-100')", "'100px'");
     shouldBe("getHeight('input-image-100')", "'100px'");
 

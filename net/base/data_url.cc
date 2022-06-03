@@ -9,11 +9,11 @@
 #include "net/base/data_url.h"
 
 #include "base/base64.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "net/base/escape.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -43,7 +43,7 @@ bool DataURL::Parse(const GURL& url,
     return false;
 
   std::vector<base::StringPiece> meta_data =
-      base::SplitStringPiece(base::StringPiece(begin, comma), ";",
+      base::SplitStringPiece(base::MakeStringPiece(begin, comma), ";",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // These are moved to |mime_type| and |charset| on success.
@@ -66,7 +66,7 @@ bool DataURL::Parse(const GURL& url,
     } else if (charset_value.empty() &&
                base::StartsWith(*iter, kCharsetTag,
                                 base::CompareCase::INSENSITIVE_ASCII)) {
-      charset_value = iter->substr(kCharsetTag.size()).as_string();
+      charset_value = std::string(iter->substr(kCharsetTag.size()));
       // The grammar for charset is not specially defined in RFC2045 and
       // RFC2397. It just needs to be a token.
       if (!HttpUtil::IsToken(charset_value))
@@ -104,13 +104,13 @@ bool DataURL::Parse(const GURL& url,
     // spaces itself, anyways. Should we just trim leading spaces instead?
     // Allowing random intermediary spaces seems unnecessary.
 
-    base::StringPiece raw_body(comma + 1, end);
+    auto raw_body = base::MakeStringPiece(comma + 1, end);
 
     // For base64, we may have url-escaped whitespace which is not part
     // of the data, and should be stripped. Otherwise, the escaped whitespace
     // could be part of the payload, so don't strip it.
     if (base64_encoded) {
-      std::string unescaped_body = UnescapeBinaryURLComponent(raw_body);
+      std::string unescaped_body = base::UnescapeBinaryURLComponent(raw_body);
 
       // Strip spaces, which aren't allowed in Base64 encoding.
       base::EraseIf(unescaped_body, base::IsAsciiWhitespace<char>);
@@ -133,12 +133,12 @@ bool DataURL::Parse(const GURL& url,
       std::string temp;
       if (!(mime_type_value.compare(0, 5, "text/") == 0 ||
             mime_type_value.find("xml") != std::string::npos)) {
-        temp = raw_body.as_string();
+        temp = std::string(raw_body);
         base::EraseIf(temp, base::IsAsciiWhitespace<char>);
         raw_body = temp;
       }
 
-      *data = UnescapeBinaryURLComponent(raw_body);
+      *data = base::UnescapeBinaryURLComponent(raw_body);
     }
   }
 

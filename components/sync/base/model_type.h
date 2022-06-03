@@ -5,23 +5,21 @@
 #ifndef COMPONENTS_SYNC_BASE_MODEL_TYPE_H_
 #define COMPONENTS_SYNC_BASE_MODEL_TYPE_H_
 
+#include <iosfwd>
 #include <map>
 #include <memory>
-#include <ostream>
-#include <set>
 #include <string>
 
-#include "base/logging.h"
-#include "components/sync/base/enum_set.h"
+#include "base/compiler_specific.h"
+#include "base/containers/enum_set.h"
 
 namespace base {
 class ListValue;
 class Value;
-}
+}  // namespace base
 
 namespace sync_pb {
 class EntitySpecifics;
-class SyncEntity;
 }
 
 namespace syncer {
@@ -36,16 +34,15 @@ namespace syncer {
 // |kModelTypeInfoMap| struct entries are in the same order as their definition
 // in ModelType enum. When you make changes in ModelType enum, don't forget to
 // update the |kModelTypeInfoMap| struct in model_type.cc and also the
-// SyncModelType and SyncModelTypeByMacro histogram suffixes in histograms.xml
+// SyncModelType histogram suffix in histograms.xml
 enum ModelType {
-  // Object type unknown.  Objects may transition through
-  // the unknown state during their initial creation, before
-  // their properties are set.  After deletion, object types
-  // are generally preserved.
+  // Object type unknown. This may be used when:
+  // a) The client received *valid* data from a data type which this version
+  // is unaware of (only present in versions newer than this one, or present
+  // in older versions but removed since).
+  // b) The client received invalid data from the server due to some error.
+  // c) A data object was just created, in which case this is a temporary state.
   UNSPECIFIED,
-  // A permanent folder whose children may be of mixed
-  // datatypes (e.g. the "Google Chrome" folder).
-  TOP_LEVEL_FOLDER,
 
   // ------------------------------------ Start of "real" model types.
   // The model types declared before here are somewhat special, as they
@@ -73,6 +70,9 @@ enum ModelType {
   // Usage counts and last use dates for Wallet cards and addresses. This data
   // is both readable and writable.
   AUTOFILL_WALLET_METADATA,
+  // Offers and rewards from the user's account. These are read-only on the
+  // client side.
+  AUTOFILL_WALLET_OFFER,
   // A theme object.
   THEMES,
   // A typed_url object, i.e. a URL the user has typed into the Omnibox.
@@ -96,12 +96,6 @@ enum ModelType {
   HISTORY_DELETE_DIRECTIVES,
   // Custom spelling dictionary entries.
   DICTIONARY,
-  // Favicon images, including both the image URL and the actual pixels.
-  // TODO(https://crbug.com/978775): Prepend DEPRECATED to the name of favicon
-  // data types.
-  FAVICON_IMAGES,
-  // Favicon tracking information, i.e. metadata such as last visit date.
-  FAVICON_TRACKING,
   // Client-specific metadata, synced before other user types.
   DEVICE_INFO,
   // These preferences are synced before other user types and are never
@@ -111,9 +105,6 @@ enum ModelType {
   SUPERVISED_USER_SETTINGS,
   // App List items, used by the ChromeOS app launcher.
   APP_LIST,
-  // Supervised user whitelists. Each item contains a CRX ID (like an extension
-  // ID) and a name.
-  SUPERVISED_USER_WHITELISTS,
   // ARC package items, i.e. Android apps on ChromeOS.
   ARC_PACKAGE,
   // Printer device information. ChromeOS only.
@@ -136,36 +127,46 @@ enum ModelType {
   OS_PREFERENCES,
   // Synced before other user types. Never encrypted. Chrome OS only.
   OS_PRIORITY_PREFERENCES,
+  // Commit only sharing message object.
+  SHARING_MESSAGE,
+  // A workspace desk saved by user. Chrome OS only.
+  WORKSPACE_DESK,
+  // WebAuthn credentials. Commented out because this type is currently only
+  // used by the server and Play Services, not Chrome itself.
+  // (crbug.com/1223853)
+  // WEBAUTHN_CREDENTIAL,
 
-  // ---- Proxy types ----
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
   // them from normal protocol types.
-
+  //
   // Tab sync. This is a placeholder type, so that Sessions can be implicitly
   // enabled for history sync and tabs sync.
   PROXY_TABS,
-  FIRST_PROXY_TYPE = PROXY_TABS,
-  LAST_PROXY_TYPE = PROXY_TABS,
   LAST_USER_MODEL_TYPE = PROXY_TABS,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
   NIGORI,
-  DEPRECATED_EXPERIMENTS,
-  LAST_REAL_MODEL_TYPE = DEPRECATED_EXPERIMENTS,
+  LAST_REAL_MODEL_TYPE = NIGORI,
 
-  NUM_ENTRIES,
+  // NEW ENTRIES MUST BE ADDED ABOVE THIS.
+  LAST_ENTRY = LAST_REAL_MODEL_TYPE,
 };
 
 using ModelTypeSet =
-    EnumSet<ModelType, FIRST_REAL_MODEL_TYPE, LAST_REAL_MODEL_TYPE>;
-using FullModelTypeSet = EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
+    base::EnumSet<ModelType, FIRST_REAL_MODEL_TYPE, LAST_REAL_MODEL_TYPE>;
+using FullModelTypeSet =
+    base::EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
 using ModelTypeNameMap = std::map<ModelType, const char*>;
+
+constexpr int GetNumModelTypes() {
+  return static_cast<int>(ModelType::LAST_ENTRY) + 1;
+}
 
 inline ModelType ModelTypeFromInt(int i) {
   DCHECK_GE(i, 0);
-  DCHECK_LT(i, ModelType::NUM_ENTRIES);
+  DCHECK_LT(i, GetNumModelTypes());
   return static_cast<ModelType>(i);
 }
 
@@ -177,11 +178,10 @@ inline ModelType ModelTypeFromInt(int i) {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When you add a new entry or when you
 // deprecate an existing one, also update SyncModelTypes in enums.xml and
-// SyncModelType and SyncModelTypeByMacro suffixes in histograms.xml.
-// TODO(crbug.com/1019744): Remove the SyncModelTypeByMacro suffixes.
+// SyncModelType suffix in histograms.xml.
 enum class ModelTypeForHistograms {
   kUnspecified = 0,
-  kTopLevelFolder = 1,
+  // kTopLevelFolder = 1,
   kBookmarks = 2,
   kPreferences = 3,
   kPasswords = 4,
@@ -199,12 +199,12 @@ enum class ModelTypeForHistograms {
   kHistoryDeleteDirectices = 16,
   kNigori = 17,
   kDeviceInfo = 18,
-  kDeprecatedExperiments = 19,
+  // kDeprecatedExperiments = 19,
   // kDeprecatedSyncedNotifications = 20,
   kPriorityPreferences = 21,
   kDictionary = 22,
-  kFaviconImages = 23,
-  kFaviconTracking = 24,
+  // kFaviconImages = 23,
+  // kFaviconTracking = 24,
   kProxyTabs = 25,
   kSupervisedUserSettings = 26,
   // kDeprecatedSupervisedUsers = 27,
@@ -213,7 +213,7 @@ enum class ModelTypeForHistograms {
   // kDeprecatedSupervisedUserSharedSettings = 30,
   // kDeprecatedSyncedNotificationAppInfo = 31,
   // kDeprecatedWifiCredentials = 32,
-  kSupervisedUserWhitelists = 33,
+  kDeprecatedSupervisedUserAllowlists = 33,
   kAutofillWalletData = 34,
   kAutofillWalletMetadata = 35,
   kArcPackage = 36,
@@ -228,21 +228,17 @@ enum class ModelTypeForHistograms {
   kWebApps = 45,
   kOsPreferences = 46,
   kOsPriorityPreferences = 47,
-  kMaxValue = kOsPriorityPreferences
+  kSharingMessage = 48,
+  kAutofillWalletOffer = 49,
+  kWorkspaceDesk = 50,
+  kMaxValue = kWorkspaceDesk
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics);
 
-// Extract the model type of a SyncEntity protocol buffer.  ModelType is a
-// local concept: the enum is not in the protocol.  The SyncEntity's ModelType
-// is inferred from the presence of particular datatype field in the
-// entity specifics.
-ModelType GetModelType(const sync_pb::SyncEntity& sync_entity);
-
-// Extract the model type from an EntitySpecifics field.  Note that there
-// are some ModelTypes (like TOP_LEVEL_FOLDER) that can't be inferred this way;
-// prefer using GetModelType where possible.
+// Extract the model type from an EntitySpecifics field. ModelType is a
+// local concept: the enum is not in the protocol.
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics);
 
 // Protocol types are those types that have actual protocol buffer
@@ -251,14 +247,13 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics);
 constexpr ModelTypeSet ProtocolTypes() {
   return ModelTypeSet(
       BOOKMARKS, PREFERENCES, PASSWORDS, AUTOFILL_PROFILE, AUTOFILL,
-      AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, THEMES, TYPED_URLS,
-      EXTENSIONS, SEARCH_ENGINES, SESSIONS, APPS, APP_SETTINGS,
-      EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY, FAVICON_IMAGES,
-      FAVICON_TRACKING, DEVICE_INFO, PRIORITY_PREFERENCES,
-      SUPERVISED_USER_SETTINGS, APP_LIST, SUPERVISED_USER_WHITELISTS,
-      ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI,
-      DEPRECATED_EXPERIMENTS, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
-      WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES);
+      AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
+      THEMES, TYPED_URLS, EXTENSIONS, SEARCH_ENGINES, SESSIONS, APPS,
+      APP_SETTINGS, EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY,
+      DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
+      ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
+      SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
+      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
@@ -271,7 +266,7 @@ constexpr ModelTypeSet UserTypes() {
 // User types, which are not user-controlled.
 constexpr ModelTypeSet AlwaysPreferredUserTypes() {
   return ModelTypeSet(DEVICE_INFO, USER_CONSENTS, SECURITY_EVENTS,
-                      SUPERVISED_USER_SETTINGS, SUPERVISED_USER_WHITELISTS);
+                      SUPERVISED_USER_SETTINGS, SHARING_MESSAGE);
 }
 
 // User types which are always encrypted.
@@ -282,19 +277,29 @@ constexpr ModelTypeSet AlwaysEncryptedUserTypes() {
   return ModelTypeSet(PASSWORDS, WIFI_CONFIGURATIONS);
 }
 
-// This is the subset of UserTypes() that have priority over other types.  These
-// types are synced before other user types and are never encrypted.
+// This is the subset of UserTypes() that have priority over other types. These
+// types are synced before other user types (both for get_updates and commits).
+// This mostly matters during initial sync, since priority types can become
+// active before all the data for non-prio types has been downloaded (which may
+// be a lot of data).
 constexpr ModelTypeSet PriorityUserTypes() {
-  return ModelTypeSet(DEVICE_INFO, PRIORITY_PREFERENCES,
-                      SUPERVISED_USER_SETTINGS, SUPERVISED_USER_WHITELISTS,
-                      OS_PRIORITY_PREFERENCES);
-}
-
-// Proxy types are placeholder types for handling implicitly enabling real
-// types. They do not exist at the server, and are simply used for
-// UI/Configuration logic.
-constexpr ModelTypeSet ProxyTypes() {
-  return ModelTypeSet::FromRange(FIRST_PROXY_TYPE, LAST_PROXY_TYPE);
+  return ModelTypeSet(
+      // The "Send to Your Devices" feature needs fast updating of the list of
+      // your devices and also fast sending of the actual messages.
+      DEVICE_INFO, SHARING_MESSAGE,
+      // For supervised users, it is important to quickly deliver changes in
+      // settings and in allowed sites to the supervised user.
+      SUPERVISED_USER_SETTINGS,
+      // These are by definition preferences for which it is important that the
+      // client picks them up quickly (also because these can get changed
+      // server-side). For example, such a pref could control whether a
+      // non-priority type gets enabled (Wallet has such a pref).
+      PRIORITY_PREFERENCES, OS_PRIORITY_PREFERENCES,
+      // Speed matters for the user experience when sync gets enabled directly
+      // in the creation flow for a new profile. If the user has no theme in
+      // their sync data, the browser offers a theme customization bubble which
+      // should appear soon after opening the browser.
+      THEMES);
 }
 
 // Returns a list of all control types.
@@ -306,7 +311,7 @@ constexpr ModelTypeSet ProxyTypes() {
 // - They are always enabled.  Users may not disable these types.
 // - Their contents are not encrypted automatically.
 // - They support custom update application and conflict resolution logic.
-// - All change processing occurs on the sync thread (GROUP_PASSIVE).
+// - All change processing occurs on the sync thread.
 constexpr ModelTypeSet ControlTypes() {
   return ModelTypeSet(NIGORI);
 }
@@ -319,8 +324,10 @@ constexpr bool IsControlType(ModelType model_type) {
 }
 
 // Types that may commit data, but should never be included in a GetUpdates.
+// These are never encrypted.
 constexpr ModelTypeSet CommitOnlyTypes() {
-  return ModelTypeSet(USER_EVENTS, USER_CONSENTS, SECURITY_EVENTS);
+  return ModelTypeSet(USER_EVENTS, USER_CONSENTS, SECURITY_EVENTS,
+                      SHARING_MESSAGE);
 }
 
 // User types that can be encrypted, which is a subset of UserTypes() and a
@@ -410,13 +417,10 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 // iff |notification_type| was the notification type of a real model
 // type and |model_type| was filled in.
 bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type);
+                                     ModelType* model_type) WARN_UNUSED_RESULT;
 
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);
-
-// Returns true if |model_type| is a proxy type
-bool IsProxyType(ModelType model_type);
 
 // Returns true if |model_type| is an act-once type. Act once types drop
 // entities after applying them. Drops are deletes that are not synced to other
@@ -431,12 +435,6 @@ bool IsTypeWithServerGeneratedRoot(ModelType model_type);
 // Returns true if root folder for |model_type| is created on the client when
 // that type is initially synced.
 bool IsTypeWithClientGeneratedRoot(ModelType model_type);
-
-// Returns true if |model_type| supports parent-child hierarchy or entries.
-bool TypeSupportsHierarchy(ModelType model_type);
-
-// Returns true if |model_type| supports ordering of sibling entries.
-bool TypeSupportsOrdering(ModelType model_type);
 
 }  // namespace syncer
 

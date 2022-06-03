@@ -5,16 +5,17 @@
 import("//build/config/android/rules.gni")
 
 android_resources("memconsumer_apk_resources") {
-  resource_dirs = [ "java/res" ]
+  sources = [
+    "java/res/drawable/icon.png",
+    "java/res/drawable/notification_icon.png",
+  ]
   android_manifest = "java/AndroidManifest.xml"
 }
 
 android_apk("memconsumer_apk") {
   apk_name = "MemConsumer"
   android_manifest = "java/AndroidManifest.xml"
-  min_sdk_version = 16
-  target_sdk_version = 16
-  java_files = [
+  sources = [
     "java/src/org/chromium/memconsumer/MemConsumer.java",
     "java/src/org/chromium/memconsumer/ResidentService.java",
   ]
@@ -28,9 +29,7 @@ android_apk("memconsumer_apk") {
 
 shared_library("libmemconsumer") {
   output_name = "memconsumer"
-  sources = [
-    "memconsumer_hook.cc",
-  ]
+  sources = [ "memconsumer_hook.cc" ]
   libs = [ "log" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
 

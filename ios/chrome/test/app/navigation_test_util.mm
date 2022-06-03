@@ -5,6 +5,7 @@
 #include "ios/chrome/test/app/navigation_test_util.h"
 
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/test/app/window_test_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/web_state.h"
 
@@ -18,12 +19,16 @@ void LoadUrl(const GURL& url) {
   web::test::LoadUrl(GetCurrentWebState(), url);
 }
 
+void LoadUrlInWindowWithNumber(const GURL& url, int window_number) {
+  web::test::LoadUrl(GetCurrentWebStateForWindowWithNumber(window_number), url);
+}
+
 bool IsLoading() {
   return GetCurrentWebState()->IsLoading();
 }
 
-bool WaitForPageToFinishLoading() {
-  return web::test::WaitForPageToFinishLoading(GetCurrentWebState());
+bool IsLoadingInWindowWithNumber(int window_number) {
+  return GetCurrentWebStateForWindowWithNumber(window_number)->IsLoading();
 }
 
 }  // namespace chrome_test_util

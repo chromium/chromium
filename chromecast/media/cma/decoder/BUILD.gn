@@ -7,11 +7,13 @@ import("//chromecast/chromecast.gni")
 cast_source_set("decoder") {
   sources = [
     "cast_audio_decoder.cc",
-    "cast_audio_decoder.h",
+    "external_audio_decoder_wrapper.cc",
+    "external_audio_decoder_wrapper.h",
   ]
 
   deps = [
     "//base",
+    "//chromecast/media/api",
     "//chromecast/media/cma/base",
     "//media",
     "//media:shared_memory_support",

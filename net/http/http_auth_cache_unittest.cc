@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,9 +11,9 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_auth_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
 
 using base::ASCIIToUTF16;
 
@@ -27,15 +26,17 @@ const char kRealm2[] = "Realm2";
 const char kRealm3[] = "Realm3";
 const char kRealm4[] = "Realm4";
 const char kRealm5[] = "Realm5";
-const base::string16 k123(ASCIIToUTF16("123"));
-const base::string16 k1234(ASCIIToUTF16("1234"));
-const base::string16 kAdmin(ASCIIToUTF16("admin"));
-const base::string16 kAlice(ASCIIToUTF16("alice"));
-const base::string16 kAlice2(ASCIIToUTF16("alice2"));
-const base::string16 kPassword(ASCIIToUTF16("password"));
-const base::string16 kRoot(ASCIIToUTF16("root"));
-const base::string16 kUsername(ASCIIToUTF16("username"));
-const base::string16 kWileCoyote(ASCIIToUTF16("wilecoyote"));
+const std::u16string k123(u"123");
+const std::u16string k1234(u"1234");
+const std::u16string k12345(u"12345");
+const std::u16string kAdmin(u"admin");
+const std::u16string kAlice(u"alice");
+const std::u16string kAlice2(u"alice2");
+const std::u16string kAlice3(u"alice3");
+const std::u16string kPassword(u"password");
+const std::u16string kRoot(u"root");
+const std::u16string kUsername(u"username");
+const std::u16string kWileCoyote(u"wilecoyote");
 
 AuthCredentials CreateASCIICredentials(const char* username,
                                        const char* password) {
@@ -117,9 +118,8 @@ TEST(HttpAuthCacheTest, Basic) {
   EXPECT_EQ(HttpAuth::AUTH_SCHEME_BASIC, entry->scheme());
   EXPECT_EQ(kRealm3, entry->realm());
   EXPECT_EQ("Basic realm=Realm3", entry->auth_challenge());
-  EXPECT_EQ(ASCIIToUTF16("realm3-basic-user"), entry->credentials().username());
-  EXPECT_EQ(ASCIIToUTF16("realm3-basic-password"),
-            entry->credentials().password());
+  EXPECT_EQ(u"realm3-basic-user", entry->credentials().username());
+  EXPECT_EQ(u"realm3-basic-password", entry->credentials().password());
 
   // Same realm, scheme with different origins
   HttpAuthCache::Entry* entry2 =
@@ -137,10 +137,8 @@ TEST(HttpAuthCacheTest, Basic) {
   EXPECT_EQ(HttpAuth::AUTH_SCHEME_DIGEST, entry->scheme());
   EXPECT_EQ(kRealm3, entry->realm());
   EXPECT_EQ("Digest realm=Realm3", entry->auth_challenge());
-  EXPECT_EQ(ASCIIToUTF16("realm3-digest-user"),
-            entry->credentials().username());
-  EXPECT_EQ(ASCIIToUTF16("realm3-digest-password"),
-            entry->credentials().password());
+  EXPECT_EQ(u"realm3-digest-user", entry->credentials().username());
+  EXPECT_EQ(u"realm3-digest-password", entry->credentials().password());
 
   // Valid lookup by realm.
   entry = cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm2,
@@ -149,8 +147,8 @@ TEST(HttpAuthCacheTest, Basic) {
   EXPECT_EQ(HttpAuth::AUTH_SCHEME_BASIC, entry->scheme());
   EXPECT_EQ(kRealm2, entry->realm());
   EXPECT_EQ("Basic realm=Realm2", entry->auth_challenge());
-  EXPECT_EQ(ASCIIToUTF16("realm2-user"), entry->credentials().username());
-  EXPECT_EQ(ASCIIToUTF16("realm2-password"), entry->credentials().password());
+  EXPECT_EQ(u"realm2-user", entry->credentials().username());
+  EXPECT_EQ(u"realm2-password", entry->credentials().password());
 
   // Check that subpaths are recognized.
   HttpAuthCache::Entry* p_realm2_entry =
@@ -235,10 +233,10 @@ TEST(HttpAuthCacheTest, Basic) {
 
 // Make sure server and proxy credentials are treated separately.
 TEST(HttpAuthCacheTest, SeparateByTarget) {
-  const base::string16 kServerUser = ASCIIToUTF16("server_user");
-  const base::string16 kServerPass = ASCIIToUTF16("server_pass");
-  const base::string16 kProxyUser = ASCIIToUTF16("proxy_user");
-  const base::string16 kProxyPass = ASCIIToUTF16("proxy_pass");
+  const std::u16string kServerUser = u"server_user";
+  const std::u16string kServerPass = u"server_pass";
+  const std::u16string kProxyUser = u"proxy_user";
+  const std::u16string kProxyPass = u"proxy_pass";
 
   const char kServerPath[] = "/foo/bar/index.html";
 
@@ -326,18 +324,18 @@ TEST(HttpAuthCacheTest, SeparateByTarget) {
 // Make sure server credentials with different NetworkIsolationKeys are treated
 // separately if |key_entries_by_network_isolation_key| is set to true.
 TEST(HttpAuthCacheTest, SeparateServersByNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   GURL kPseudoOrigin("http://www.google.com");
   const char kPath[] = "/";
 
-  const base::string16 kUser1 = ASCIIToUTF16("user1");
-  const base::string16 kPass1 = ASCIIToUTF16("pass1");
-  const base::string16 kUser2 = ASCIIToUTF16("user2");
-  const base::string16 kPass2 = ASCIIToUTF16("pass2");
+  const std::u16string kUser1 = u"user1";
+  const std::u16string kPass1 = u"pass1";
+  const std::u16string kUser2 = u"user2";
+  const std::u16string kPass2 = u"pass2";
 
   for (bool key_entries_by_network_isolation_key : {false, true}) {
     HttpAuthCache cache(key_entries_by_network_isolation_key);
@@ -425,18 +423,18 @@ TEST(HttpAuthCacheTest, SeparateServersByNetworkIsolationKey) {
 // Make sure added proxy credentials ignore NetworkIsolationKey, even if if
 // |key_entries_by_network_isolation_key| is set to true.
 TEST(HttpAuthCacheTest, NeverSeparateProxiesByNetworkIsolationKey) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1(GURL("https://foo.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const SchemefulSite kSite2(GURL("https://bar.test/"));
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   GURL kPseudoOrigin("http://www.google.com");
   const char kPath[] = "/";
 
-  const base::string16 kUser1 = ASCIIToUTF16("user1");
-  const base::string16 kPass1 = ASCIIToUTF16("pass1");
-  const base::string16 kUser2 = ASCIIToUTF16("user2");
-  const base::string16 kPass2 = ASCIIToUTF16("pass2");
+  const std::u16string kUser1 = u"user1";
+  const std::u16string kPass1 = u"pass1";
+  const std::u16string kUser2 = u"user2";
+  const std::u16string kPass2 = u"pass2";
 
   for (bool key_entries_by_network_isolation_key : {false, true}) {
     HttpAuthCache cache(key_entries_by_network_isolation_key);
@@ -506,10 +504,10 @@ TEST(HttpAuthCacheTest, SetKeyServerEntriesByNetworkIsolationKey) {
   GURL kOrigin("http://www.google.com");
   const char kPath[] = "/";
 
-  const base::string16 kUser1 = ASCIIToUTF16("user1");
-  const base::string16 kPass1 = ASCIIToUTF16("pass1");
-  const base::string16 kUser2 = ASCIIToUTF16("user2");
-  const base::string16 kPass2 = ASCIIToUTF16("pass2");
+  const std::u16string kUser1 = u"user1";
+  const std::u16string kPass1 = u"pass1";
+  const std::u16string kUser2 = u"user2";
+  const std::u16string kPass2 = u"pass2";
 
   for (bool initially_key_entries_by_network_isolation_key : {false, true}) {
     for (bool to_key_entries_by_network_isolation_key : {false, true}) {
@@ -614,8 +612,8 @@ TEST(HttpAuthCacheTest, AddToExistingEntry) {
                    HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey());
 
   EXPECT_TRUE(entry == orig_entry);
-  EXPECT_EQ(ASCIIToUTF16("user3"), entry->credentials().username());
-  EXPECT_EQ(ASCIIToUTF16("password3"), entry->credentials().password());
+  EXPECT_EQ(u"user3", entry->credentials().username());
+  EXPECT_EQ(u"password3", entry->credentials().password());
 
   EXPECT_EQ(2U, entry->paths_.size());
   EXPECT_EQ("/z/", entry->paths_.front());
@@ -696,7 +694,7 @@ TEST(HttpAuthCacheTest, Remove) {
   EXPECT_FALSE(nullptr == entry);
 }
 
-TEST(HttpAuthCacheTest, ClearEntriesAddedSince) {
+TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
   GURL origin("http://foobar.com");
 
   base::Time start_time;
@@ -714,7 +712,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSince) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kRoot, kWileCoyote), "/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));  // Time now 12:00:10
+  test_clock.Advance(base::Seconds(10));  // Time now 12:00:10
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm3, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm3",
             AuthCredentials(kAlice2, k1234), "/");
@@ -726,9 +724,16 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSince) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  base::Time test_time;
-  ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:05", &test_time));
-  cache.ClearEntriesAddedSince(test_time);
+  test_clock.Advance(base::Seconds(10));  // Time now 12:00:20
+  cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm5, HttpAuth::AUTH_SCHEME_BASIC,
+            NetworkIsolationKey(), "basic realm=Realm5",
+            AuthCredentials(kAlice3, k12345), "/");
+
+  base::Time test_time1;
+  ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:05", &test_time1));
+  base::Time test_time2;
+  ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:15", &test_time2));
+  cache.ClearEntriesAddedBetween(test_time1, test_time2);
 
   // Realms 1 and 2 are older than 12:00:05 and should not be cleared
   EXPECT_NE(nullptr,
@@ -737,12 +742,18 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSince) {
   EXPECT_NE(nullptr,
             cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm2,
                          HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey()));
+
+  // Realms 5 is newer than 12:00:15 and should not be cleared
+  EXPECT_NE(nullptr,
+            cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm5,
+                         HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey()));
+
   // Creation time is set for a whole entry rather than for a particular path.
   // Path added within the requested duration isn't be removed.
   EXPECT_NE(nullptr, cache.LookupByPath(origin, HttpAuth::AUTH_SERVER,
                                         NetworkIsolationKey(), "/baz/"));
 
-  // Realms 3 and 4 are newer than 12:00:05 and should be cleared.
+  // Realms 3 and 4 are between 12:00:05 and 12:00:10 and should be cleared.
   EXPECT_EQ(nullptr,
             cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm3,
                          HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey()));
@@ -750,7 +761,8 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSince) {
             cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm4,
                          HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey()));
 
-  cache.ClearEntriesAddedSince(start_time - base::TimeDelta::FromSeconds(1));
+  cache.ClearEntriesAddedBetween(start_time - base::Seconds(1),
+                                 base::Time::Max());
   EXPECT_EQ(nullptr,
             cache.Lookup(origin, HttpAuth::AUTH_SERVER, kRealm1,
                          HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey()));
@@ -761,7 +773,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSince) {
                                         NetworkIsolationKey(), "/baz/"));
 }
 
-TEST(HttpAuthCacheTest, ClearEntriesAddedSinceWithNullTime) {
+TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
   GURL origin("http://foobar.com");
 
   base::SimpleTestClock test_clock;
@@ -777,7 +789,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSinceWithNullTime) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kRoot, kWileCoyote), "/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock.Advance(base::Seconds(10));
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm3, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm3",
             AuthCredentials(kAlice2, k1234), "/");
@@ -789,7 +801,7 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedSinceWithNullTime) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  cache.ClearEntriesAddedSince(base::Time());
+  cache.ClearEntriesAddedBetween(base::Time::Min(), base::Time::Max());
 
   // All entries should be cleared.
   EXPECT_EQ(nullptr,
@@ -824,7 +836,7 @@ TEST(HttpAuthCacheTest, ClearAllEntries) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kRoot, kWileCoyote), "/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock.Advance(base::Seconds(10));
   cache.Add(origin, HttpAuth::AUTH_SERVER, kRealm3, HttpAuth::AUTH_SCHEME_BASIC,
             NetworkIsolationKey(), "basic realm=Realm3",
             AuthCredentials(kAlice2, k1234), "/");
@@ -836,7 +848,7 @@ TEST(HttpAuthCacheTest, ClearAllEntries) {
             NetworkIsolationKey(), "basic realm=Realm2",
             AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(55));
+  test_clock.Advance(base::Seconds(55));
   cache.ClearAllEntries();
 
   // All entries should be cleared.
@@ -1060,27 +1072,27 @@ TEST_F(HttpAuthCacheEvictionTest, RealmEntryEviction) {
 
   for (int i = 0; i < kMaxRealms; ++i) {
     AddRealm(i);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < kMaxRealms; ++i) {
     CheckRealmExistence(i, true);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < 3; ++i) {
     AddRealm(i + kMaxRealms);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < 3; ++i) {
     CheckRealmExistence(i, false);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 
   for (int i = 0; i < kMaxRealms; ++i) {
     CheckRealmExistence(i + 3, true);
-    test_clock.Advance(base::TimeDelta::FromSeconds(1));
+    test_clock.Advance(base::Seconds(1));
   }
 }
 

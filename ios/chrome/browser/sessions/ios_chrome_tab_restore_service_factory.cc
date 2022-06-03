@@ -18,8 +18,8 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
     web::BrowserState* context) {
   DCHECK(!context->IsOffTheRecord());
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<sessions::TabRestoreServiceImpl>(
       base::WrapUnique(new IOSChromeTabRestoreServiceClient(browser_state)),
       browser_state->GetPrefs(), nullptr);
@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(
 // static
 sessions::TabRestoreService*
 IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<sessions::TabRestoreService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

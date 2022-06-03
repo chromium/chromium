@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests single resource search in inspector page agent with non existing resource url does not cause a crash.\n`);
-  await TestRunner.loadModule('application_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe('resources/search.html');
   await TestRunner
@@ -20,7 +20,7 @@
     var resource = Bindings.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
     var url = 'http://127.0.0.1:8000/devtools/search/resources/non-existing.js';
     var response = await TestRunner.PageAgent.invoke_searchInResource({frameId: resource.frameId, url, query: text});
-    TestRunner.addResult(response[Protocol.Error]);
+    TestRunner.addResult(response.getError());
     TestRunner.completeTest();
   }
 })();

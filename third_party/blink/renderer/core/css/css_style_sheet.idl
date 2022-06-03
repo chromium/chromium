@@ -23,17 +23,17 @@
 [
     Exposed=Window
 ] interface CSSStyleSheet : StyleSheet {
-    [CallWith=Document, RaisesException] constructor(optional CSSStyleSheetInit options);
+    [CallWith=Document, RaisesException] constructor(optional CSSStyleSheetInit options = {});
     readonly attribute CSSRule? ownerRule;
     [SameObject, RaisesException] readonly attribute CSSRuleList cssRules;
     [RaisesException] unsigned long insertRule(DOMString rule, optional unsigned long index = 0);
     [RaisesException] void deleteRule(unsigned long index);
 
-    [MeasureAs=CSSStyleSheetReplace, CallWith=ScriptState, RaisesException] Promise<CSSStyleSheet> replace(DOMString text);
+    [MeasureAs=CSSStyleSheetReplace, CallWith=ScriptState] Promise<CSSStyleSheet> replace(DOMString text);
     [MeasureAs=CSSStyleSheetReplaceSync, RaisesException] void replaceSync(DOMString text);
 
     // Non-standard APIs
     [MeasureAs=CSSStyleSheetRules, RaisesException] readonly attribute CSSRuleList rules;
-    [MeasureAs=CSSStyleSheetAddRule, RaisesException] long addRule([DefaultValue=Undefined] optional DOMString selector, [DefaultValue=Undefined] optional DOMString style, optional unsigned long index);
-    [MeasureAs=CSSStyleSheetRemoveRule, RaisesException] void removeRule([DefaultValue=Undefined] optional unsigned long index);
+    [MeasureAs=CSSStyleSheetAddRule, RaisesException] long addRule(optional DOMString selector = "undefined", optional DOMString style = "undefined", optional unsigned long index);
+    [MeasureAs=CSSStyleSheetRemoveRule, RaisesException] void removeRule(optional unsigned long index = 0);
 };

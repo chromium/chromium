@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -15,14 +15,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.payments.Event;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
@@ -48,12 +49,13 @@ public class PaymentRequestContactDetailsAndFreeShippingTest implements MainActi
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address with a valid email address and a valid phone number on
         // disk.
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "555-555-5555", "jon.doe@google.com", "en-US"));
+        String billingAddressId = helper.setProfile(
+                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
+                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
+                        "US", "555-555-5555", "jon.doe@google.com", "en-US"));
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                CardType.UNKNOWN, billingAddressId, "" /* serverId */));
+                billingAddressId, "" /* serverId */));
     }
 
     /**
@@ -62,6 +64,7 @@ public class PaymentRequestContactDetailsAndFreeShippingTest implements MainActi
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -85,6 +88,7 @@ public class PaymentRequestContactDetailsAndFreeShippingTest implements MainActi
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @FlakyTest(message = "https://crbug.com/1182589")
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());

@@ -1,0 +1,9 @@
+Tests that raw response headers are correctly reported after navigation.
+
+Fetching resource:
+responseRecevied status: 200
+responseReceviedExtraInfo status: 200
+Fetching same resource again:
+responseRecevied status: 200
+responseReceviedExtraInfo status: 304
+

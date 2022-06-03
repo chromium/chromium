@@ -56,7 +56,7 @@
 // empty list, the new list head becomes that which is pointed to by
 // the former head's |next| pointer.  If the list is doubly linked, the
 // new head |previous| pointer gets changed from pointing to the former
-// head to NULL.
+// head to nullptr.
 
 #include "free_list.h"
 #include <stddef.h>
@@ -66,15 +66,122 @@
 
 namespace tcmalloc {
 
+namespace {
+
+// Precomputed pointer mask.
+uintptr_t ptr_mask = 0;
+
+void* MaskPtr(void* p) {
+  return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(p) ^ ptr_mask);
+}
+
+void* UnmaskPtr(void* p) {
+  return MaskPtr(p);
+}
+
+void EnsureNonLoop(void* node, void* next) {
+  // We only have time to do minimal checking.  We don't traverse the list, but
+  // only look for an immediate loop (cycle back to ourself).
+  if (node != next)
+    return;
+  Log(kCrash, __FILE__, __LINE__, "Circular loop in list detected: ", next);
+}
+
+template <typename T>
+void FL_EqualityCheck(const T& v0, const T& v1, const char* file, int line) {
+  if (v0 != v1)
+    Log(kCrash, file, line, "Memory corruption detected.");
+}
+
+// Returns value of the |previous| pointer w/out running a sanity
+// check.
+void* FL_Previous_No_Check(void* t) {
+  return UnmaskPtr(reinterpret_cast<void**>(t)[1]);
+}
+
+// Returns value of the |next| pointer w/out running a sanity check.
+void* FL_Next_No_Check(void* t) {
+  return UnmaskPtr(reinterpret_cast<void**>(t)[0]);
+}
+
+void* FL_Previous(void* t) {
+  void* previous = FL_Previous_No_Check(t);
+  if (previous) {
+    FL_EqualityCheck(FL_Next_No_Check(previous), t, __FILE__, __LINE__);
+  }
+  return previous;
+}
+
+}  // namespace
+
+void FL_InitPtrMask(uintptr_t seed) {
+  // Maximize ASLR entropy and guarantee the result is an invalid address.
+  ptr_mask = ~(seed >> 13);
+}
+
+void FL_SetPrevious(void* t, void* n) {
+  EnsureNonLoop(t, n);
+  reinterpret_cast<void**>(t)[1] = MaskPtr(n);
+}
+
+void FL_SetNext(void* t, void* n) {
+  EnsureNonLoop(t, n);
+  reinterpret_cast<void**>(t)[0] = MaskPtr(n);
+}
+
+void* FL_Next(void* t) {
+  void* next = FL_Next_No_Check(t);
+  if (next) {
+    FL_EqualityCheck(FL_Previous_No_Check(next), t, __FILE__, __LINE__);
+  }
+  return next;
+}
+
+// Pops the top element off the linked list whose first element is at
+// |*list|, and updates |*list| to point to the next element in the
+// list.  Returns the address of the element that was removed from the
+// linked list.  |list| must not be nullptr.
+void* FL_Pop(void** list) {
+  void* result = *list;
+  ASSERT(FL_Previous_No_Check(result) == nullptr);
+  *list = FL_Next(result);
+  if (*list != nullptr) {
+    FL_SetPrevious(*list, nullptr);
+  }
+  return result;
+}
+
+// Makes the element at |t| a singleton doubly linked list.
+void FL_Init(void* t) {
+  FL_SetPrevious(t, nullptr);
+  FL_SetNext(t, nullptr);
+}
+
+// Pushes element to a linked list whose first element is at
+// |*list|. When this call returns, |list| will point to the new head
+// of the linked list.
+void FL_Push(void** list, void* element) {
+  void* old = *list;
+  if (old == nullptr) {  // Builds singleton list.
+    FL_Init(element);
+  } else {
+    ASSERT(FL_Previous_No_Check(old) == nullptr);
+    FL_SetNext(element, old);
+    FL_SetPrevious(old, element);
+    FL_SetPrevious(element, nullptr);
+  }
+  *list = element;
+}
+
 // Remove |n| elements from linked list at whose first element is at
 // |*head|.  |head| will be modified to point to the new head.
 // |start| will point to the first node of the range, |end| will point
 // to the last node in the range. |n| must be <= FL_Size(|*head|)
-// If |n| > 0, |head| must not be NULL.
+// If |n| > 0, |head| must not be nullptr.
 void FL_PopRange(void** head, int n, void** start, void** end) {
   if (n == 0) {
-    *start = NULL;
-    *end = NULL;
+    *start = nullptr;
+    *end = nullptr;
     return;
   }
 
@@ -85,16 +192,16 @@ void FL_PopRange(void** head, int n, void** start, void** end) {
   }
   *end = tmp;  // |end| now set to point to last node in range.
   *head = FL_Next(*end);
-  FL_SetNext(*end, NULL);  // Unlink range from list.
+  FL_SetNext(*end, nullptr);  // Unlink range from list.
 
   if (*head) {  // Fixup popped list.
-    FL_SetPrevious(*head, NULL);
+    FL_SetPrevious(*head, nullptr);
   }
 }
 
 // Pushes the nodes in the list beginning at |start| whose last node
 // is |end| into the linked list at |*head|. |*head| is updated to
-// point be the new head of the list.  |head| must not be NULL.
+// point be the new head of the list.  |head| must not be nullptr.
 void FL_PushRange(void** head, void* start, void* end) {
   if (!start)
     return;
@@ -103,12 +210,12 @@ void FL_PushRange(void** head, void* start, void* end) {
   // FL_Next and FL_Previous.
   FL_Next(start);
   FL_Previous(end);
-  ASSERT(FL_Previous_No_Check(start) == NULL);
-  ASSERT(FL_Next_No_Check(end) == NULL);
+  ASSERT(FL_Previous_No_Check(start) == nullptr);
+  ASSERT(FL_Next_No_Check(end) == nullptr);
 
   if (*head) {
-    FL_EqualityCheck(FL_Previous_No_Check(*head), (void*)NULL, __FILE__,
-                     __LINE__);
+    FL_EqualityCheck(FL_Previous_No_Check(*head), static_cast<void*>(nullptr),
+                     __FILE__, __LINE__);
     FL_SetNext(end, *head);
     FL_SetPrevious(*head, end);
   }
@@ -119,8 +226,8 @@ void FL_PushRange(void** head, void* start, void* end) {
 size_t FL_Size(void* head) {
   int count = 0;
   if (head) {
-    FL_EqualityCheck(FL_Previous_No_Check(head), (void*)NULL, __FILE__,
-                     __LINE__);
+    FL_EqualityCheck(FL_Previous_No_Check(head), static_cast<void*>(nullptr),
+                     __FILE__, __LINE__);
   }
   while (head) {
     count++;

@@ -12,15 +12,15 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_request_info.h"
 #include "net/websockets/websocket_handshake_response_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -45,6 +45,7 @@ class URLRequestContext;
 struct WebSocketFrame;
 class WebSocketBasicHandshakeStream;
 class WebSocketHttp2HandshakeStream;
+struct NetworkTrafficAnnotationTag;
 
 // WebSocketStreamRequest is the caller's handle to the process of creation of a
 // WebSocketStream. Deleting the object before the ConnectDelegate OnSuccess or
@@ -65,7 +66,9 @@ class NET_EXPORT_PRIVATE WebSocketStreamRequestAPI
       WebSocketBasicHandshakeStream* handshake_stream) = 0;
   virtual void OnHttp2HandshakeStreamCreated(
       WebSocketHttp2HandshakeStream* handshake_stream) = 0;
-  virtual void OnFailure(const std::string& message) = 0;
+  virtual void OnFailure(const std::string& message,
+                         int net_error,
+                         absl::optional<int> response_code) = 0;
 };
 
 // WebSocketStream is a transport-agnostic interface for reading and writing
@@ -80,11 +83,6 @@ class NET_EXPORT_PRIVATE WebSocketStreamRequestAPI
 // be finished synchronously, the function returns ERR_IO_PENDING, and
 // |callback| will be called when the operation is finished. Non-null |callback|
 // must be provided to these functions.
-//
-// Please update the traffic annotations in the websocket_basic_stream.cc and
-// websocket_stream.cc if the class is used for any communication with Google.
-// In such a case, annotation should be passed from the callers to this class
-// and a local annotation can not be used anymore.
 
 class NET_EXPORT_PRIVATE WebSocketStream {
  public:
@@ -98,19 +96,19 @@ class NET_EXPORT_PRIVATE WebSocketStream {
 
     // Called on successful connection. The parameter is an object derived from
     // WebSocketStream.
-    virtual void OnSuccess(std::unique_ptr<WebSocketStream> stream) = 0;
+    virtual void OnSuccess(
+        std::unique_ptr<WebSocketStream> stream,
+        std::unique_ptr<WebSocketHandshakeResponseInfo> response) = 0;
 
     // Called on failure to connect.
     // |message| contains defails of the failure.
-    virtual void OnFailure(const std::string& message) = 0;
+    virtual void OnFailure(const std::string& message,
+                           int net_error,
+                           absl::optional<int> response_code) = 0;
 
     // Called when the WebSocket Opening Handshake starts.
     virtual void OnStartOpeningHandshake(
         std::unique_ptr<WebSocketHandshakeRequestInfo> request) = 0;
-
-    // Called when the WebSocket Opening Handshake ends.
-    virtual void OnFinishOpeningHandshake(
-        std::unique_ptr<WebSocketHandshakeResponseInfo> response) = 0;
 
     // Called when there is an SSL certificate error. Should call
     // ssl_error_callbacks->ContinueSSLRequest() or
@@ -136,7 +134,7 @@ class NET_EXPORT_PRIVATE WebSocketStream {
         scoped_refptr<HttpResponseHeaders> response_headers,
         const IPEndPoint& remote_endpoint,
         base::OnceCallback<void(const AuthCredentials*)> callback,
-        base::Optional<AuthCredentials>* credentials) = 0;
+        absl::optional<AuthCredentials>* credentials) = 0;
   };
 
   // Create and connect a WebSocketStream of an appropriate type. The actual
@@ -156,10 +154,11 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* url_request_context,
       const NetLogWithSource& net_log,
+      NetworkTrafficAnnotationTag traffic_annotation,
       std::unique_ptr<ConnectDelegate> connect_delegate);
 
   // Alternate version of CreateAndConnectStream() for testing use only. It
@@ -172,13 +171,17 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
       const SiteForCookies& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* url_request_context,
       const NetLogWithSource& net_log,
+      NetworkTrafficAnnotationTag traffic_annotation,
       std::unique_ptr<ConnectDelegate> connect_delegate,
       std::unique_ptr<base::OneShotTimer> timer,
       std::unique_ptr<WebSocketStreamRequestAPI> api_delegate);
+
+  WebSocketStream(const WebSocketStream&) = delete;
+  WebSocketStream& operator=(const WebSocketStream&) = delete;
 
   // Derived classes must make sure Close() is called when the stream is not
   // closed on destruction.
@@ -270,9 +273,6 @@ class NET_EXPORT_PRIVATE WebSocketStream {
 
  protected:
   WebSocketStream();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketStream);
 };
 
 // A helper function used in the implementation of CreateAndConnectStream() and

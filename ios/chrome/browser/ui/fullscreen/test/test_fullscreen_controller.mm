@@ -18,7 +18,11 @@ TestFullscreenController::TestFullscreenController(FullscreenModel* model)
       model_(model),
       broadcaster_([[ChromeBroadcaster alloc] init]) {}
 
-TestFullscreenController::~TestFullscreenController() = default;
+TestFullscreenController::~TestFullscreenController() {
+  for (auto& observer : observers_) {
+    observer.FullscreenControllerWillShutDown(this);
+  }
+}
 
 ChromeBroadcaster* TestFullscreenController::broadcaster() {
   return broadcaster_;
@@ -84,17 +88,14 @@ UIEdgeInsets TestFullscreenController::GetCurrentViewportInsets() const {
   return model_ ? model_->current_toolbar_insets() : UIEdgeInsetsZero;
 }
 
-void TestFullscreenController::EnterFullscreen() {}
+void TestFullscreenController::EnterFullscreen() {
+  if (model_)
+    model_->AnimationEndedWithProgress(0.0);
+}
 
 void TestFullscreenController::ExitFullscreen() {
   if (model_)
     model_->ResetForNavigation();
-}
-
-void TestFullscreenController::Shutdown() {
-  for (auto& observer : observers_) {
-    observer.FullscreenControllerWillShutDown(this);
-  }
 }
 
 void TestFullscreenController::OnFullscreenViewportInsetRangeChanged(
@@ -123,4 +124,19 @@ void TestFullscreenController::OnFullscreenWillAnimate(
   for (auto& observer : observers_) {
     observer.FullscreenWillAnimate(this, animator);
   }
+}
+
+void TestFullscreenController::ResizeHorizontalViewport() {
+  // NOOP in tests.
+}
+
+void TestFullscreenController::FreezeToolbarHeight(bool freeze_toolbar_height) {
+  if (model_) {
+    model_->SetFreezeToolbarHeight(freeze_toolbar_height);
+  }
+}
+
+// static
+const void* TestFullscreenController::UserDataKeyForTesting() {
+  return FullscreenController::UserDataKey();
 }

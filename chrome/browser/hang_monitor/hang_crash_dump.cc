@@ -4,7 +4,7 @@
 
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 void CrashDumpHungChildProcess(base::ProcessHandle handle) {
   NOTIMPLEMENTED();

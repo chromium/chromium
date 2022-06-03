@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/layout.h"
 
@@ -18,13 +15,14 @@ class RefCountedMemory;
 class ComponentsUI : public content::WebUIController {
  public:
   explicit ComponentsUI(content::WebUI* web_ui);
+
+  ComponentsUI(const ComponentsUI&) = delete;
+  ComponentsUI& operator=(const ComponentsUI&) = delete;
+
   ~ComponentsUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComponentsUI);
+      ui::ResourceScaleFactor scale_factor);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_

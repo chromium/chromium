@@ -5,12 +5,13 @@
 #include "components/test/components_test_suite.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
@@ -34,20 +35,19 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 #endif
 
-#if defined(OS_WIN)
-#include "base/win/scoped_com_initializer.h"
-#endif
-
 namespace {
 
 // Not using kExtensionScheme and kChromeSearchScheme to avoid the dependency
 // to extensions and chrome/common.
-const char* const kNonWildcardDomainNonPortSchemes[] = {"chrome-extension",
-                                                        "chrome-search"};
+const char* const kNonWildcardDomainNonPortSchemes[] = {
+    "chrome-extension", "chrome-search", "chrome", "chrome-untrusted",
+    "devtools"};
 
 class ComponentsTestSuite : public base::TestSuite {
  public:
   ComponentsTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+  ComponentsTestSuite(const ComponentsTestSuite&) = delete;
+  ComponentsTestSuite& operator=(const ComponentsTestSuite&) = delete;
 
  private:
   void Initialize() override {
@@ -55,8 +55,13 @@ class ComponentsTestSuite : public base::TestSuite {
 
     mojo::core::Init();
 
-    // Before registering any schemes, clear GURL's internal state.
-    url::ResetForTests();
+    // These schemes need to be added globally to pass tests of
+    // autocomplete_input_unittest.cc and content_settings_pattern*
+    // TODO(https://crbug.com/1047702): Move this scheme initialization into the
+    //    individual tests that need these schemes.
+    url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("chrome-distiller", url::SCHEME_WITH_HOST);
 
 #if !defined(OS_IOS)
     gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -68,6 +73,11 @@ class ComponentsTestSuite : public base::TestSuite {
       content::ContentClient content_client;
       content::ContentTestSuiteBase::RegisterContentSchemes(&content_client);
     }
+#else
+    url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("chrome-untrusted", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("devtools", url::SCHEME_WITH_HOST);
+
 #endif
 
     ui::RegisterPathProvider();
@@ -76,7 +86,7 @@ class ComponentsTestSuite : public base::TestSuite {
 #if defined(OS_ANDROID)
     base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
 #else
-    base::PathService::Get(base::DIR_MODULE, &pak_path);
+    base::PathService::Get(base::DIR_ASSETS, &pak_path);
 #endif
 
     base::FilePath ui_test_pak_path;
@@ -85,15 +95,7 @@ class ComponentsTestSuite : public base::TestSuite {
 
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
-
-    // These schemes need to be added globally to pass tests of
-    // autocomplete_input_unittest.cc and content_settings_pattern*
-    url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
-    url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
-    url::AddStandardScheme("devtools", url::SCHEME_WITH_HOST);
-    url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);
-    url::AddStandardScheme("chrome-distiller", url::SCHEME_WITH_HOST);
+        ui::kScaleFactorNone);
 
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
         kNonWildcardDomainNonPortSchemes,
@@ -104,24 +106,23 @@ class ComponentsTestSuite : public base::TestSuite {
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
-
-#if defined(OS_WIN)
-  base::win::ScopedCOMInitializer com_initializer_;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentsTestSuite);
 };
 
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
  public:
-  ComponentsUnitTestEventListener() {}
-  ~ComponentsUnitTestEventListener() override {}
+  ComponentsUnitTestEventListener() = default;
+  ComponentsUnitTestEventListener(const ComponentsUnitTestEventListener&) =
+      delete;
+  ComponentsUnitTestEventListener& operator=(
+      const ComponentsUnitTestEventListener&) = delete;
+  ~ComponentsUnitTestEventListener() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
 #if defined(OS_IOS)
     ios_initializer_.reset(new IosComponentsTestInitializer());
 #else
-    content_initializer_.reset(new content::TestContentClientInitializer());
+    content_initializer_ =
+        std::make_unique<content::TestContentClientInitializer>();
 #endif
   }
 
@@ -139,8 +140,6 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 #else
   std::unique_ptr<content::TestContentClientInitializer> content_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentsUnitTestEventListener);
 };
 
 }  // namespace

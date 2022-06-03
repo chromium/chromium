@@ -17,7 +17,9 @@
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_injection_callback.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace extensions {
 
@@ -60,15 +62,22 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   class NativesEnabledScope {
    public:
     explicit NativesEnabledScope(ModuleSystem* module_system);
+
+    NativesEnabledScope(const NativesEnabledScope&) = delete;
+    NativesEnabledScope& operator=(const NativesEnabledScope&) = delete;
+
     ~NativesEnabledScope();
 
    private:
     ModuleSystem* module_system_;
-    DISALLOW_COPY_AND_ASSIGN(NativesEnabledScope);
   };
 
   // |source_map| is a weak pointer.
   ModuleSystem(ScriptContext* context, const SourceMap* source_map);
+
+  ModuleSystem(const ModuleSystem&) = delete;
+  ModuleSystem& operator=(const ModuleSystem&) = delete;
+
   ~ModuleSystem() override;
 
   // ObjectBackedNativeHandler:
@@ -98,12 +107,11 @@ class ModuleSystem : public ObjectBackedNativeHandler {
                             const std::string& method_name,
                             int argc,
                             v8::Local<v8::Value> argv[]);
-  void CallModuleMethodSafe(
-      const std::string& module_name,
-      const std::string& method_name,
-      int argc,
-      v8::Local<v8::Value> argv[],
-      const ScriptInjectionCallback::CompleteCallback& callback);
+  void CallModuleMethodSafe(const std::string& module_name,
+                            const std::string& method_name,
+                            int argc,
+                            v8::Local<v8::Value> argv[],
+                            ScriptInjectionCallback::CompleteCallback callback);
 
   // Register |native_handler| as a potential target for requireNative(), so
   // calls to requireNative(|name|) from JS will return a new object created by
@@ -156,7 +164,8 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   void SetGetInternalAPIHook(v8::Local<v8::FunctionTemplate> get_internal_api);
 
   using JSBindingUtilGetter =
-      base::Callback<void(v8::Local<v8::Context>, v8::Local<v8::Value>*)>;
+      base::RepeatingCallback<void(v8::Local<v8::Context>,
+                                   v8::Local<v8::Value>*)>;
   void SetJSBindingUtilGetter(const JSBindingUtilGetter& getter);
 
  protected:
@@ -267,8 +276,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   // The set of modules that we've attempted to load.
   std::set<std::string> loaded_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSystem);
 };
 
 }  // namespace extensions

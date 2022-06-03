@@ -137,11 +137,11 @@ TEST(HttpAuthControllerTest, PermanentErrors) {
 // Verify that the controller logs appropriate lifetime events.
 TEST(HttpAuthControllerTest, Logging) {
   base::test::TaskEnvironment task_environment;
-  RecordingBoundTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
 
   RunSingleRoundAuthTest(RUN_HANDLER_SYNC, OK, OK, SCHEME_IS_ENABLED,
-                         net_log.bound());
-  auto entries = net_log.GetEntries();
+                         NetLogWithSource::Make(NetLogSourceType::NONE));
+  auto entries = net_log_observer.GetEntries();
 
   // There should be at least two events.
   ASSERT_GE(entries.size(), 2u);
@@ -183,8 +183,9 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
 
    protected:
     bool Init(HttpAuthChallengeTokenizer* challenge,
-              const SSLInfo& ssl_info) override {
-      HttpAuthHandlerMock::Init(challenge, ssl_info);
+              const SSLInfo& ssl_info,
+              const NetworkIsolationKey& network_isolation_key) override {
+      HttpAuthHandlerMock::Init(challenge, ssl_info, network_isolation_key);
       set_allows_default_credentials(true);
       set_allows_explicit_credentials(false);
       set_connection_based(true);
@@ -283,8 +284,7 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
   ASSERT_EQ(OK, controller->HandleAuthChallenge(headers, null_ssl_info, false,
                                                 false, dummy_log));
   ASSERT_TRUE(controller->HaveAuthHandler());
-  controller->ResetAuth(AuthCredentials(base::ASCIIToUTF16("Hello"),
-                        base::string16()));
+  controller->ResetAuth(AuthCredentials(u"Hello", std::u16string()));
   EXPECT_TRUE(controller->HaveAuth());
   EXPECT_TRUE(controller->IsAuthSchemeDisabled(HttpAuth::AUTH_SCHEME_MOCK));
   EXPECT_FALSE(controller->IsAuthSchemeDisabled(HttpAuth::AUTH_SCHEME_BASIC));

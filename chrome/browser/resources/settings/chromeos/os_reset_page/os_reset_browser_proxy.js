@@ -2,39 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('settings', function() {
-  /** @interface */
-  class OsResetBrowserProxy {
-    /**
-     * A method to be called when the reset powerwash dialog is shown.
-     */
-    onPowerwashDialogShow() {}
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
-    /**
-     * Initiates a factory reset and restarts.
-     */
-    requestFactoryResetRestart() {}
-  }
+/** @interface */
+export class OsResetBrowserProxy {
+  /**
+   * A method to be called when the reset powerwash dialog is shown.
+   */
+  onPowerwashDialogShow() {}
 
   /**
-   * @implements {settings.OsResetBrowserProxy}
+   * Initiates a factory reset and restarts.
    */
-  class OsResetBrowserProxyImpl {
-    /** @override */
-    onPowerwashDialogShow() {
-      chrome.send('onPowerwashDialogShow');
-    }
+  requestFactoryResetRestart() {}
+}
 
-    /** @override */
-    requestFactoryResetRestart() {
-      chrome.send('requestFactoryResetRestart');
-    }
+/**
+ * @implements {OsResetBrowserProxy}
+ */
+export class OsResetBrowserProxyImpl {
+  /** @override */
+  onPowerwashDialogShow() {
+    chrome.send('onPowerwashDialogShow');
   }
 
-  cr.addSingletonGetter(OsResetBrowserProxyImpl);
+  /** @override */
+  requestFactoryResetRestart() {
+    chrome.send('requestFactoryResetRestart');
+  }
+}
 
-  return {
-    OsResetBrowserProxy: OsResetBrowserProxy,
-    OsResetBrowserProxyImpl: OsResetBrowserProxyImpl,
-  };
-});
+addSingletonGetter(OsResetBrowserProxyImpl);

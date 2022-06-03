@@ -60,18 +60,18 @@ bool FakeBluetoothGattManagerClient::VerifyProviderHierarchy(
   std::set<dbus::ObjectPath> descriptors =
       FindDescriptorProviders(application_path);
 
-  VLOG(1) << "Verifying " << services.size()
-          << " services in application: " << application_path.value();
+  DVLOG(1) << "Verifying " << services.size()
+           << " services in application: " << application_path.value();
 
   for (const auto& descriptor : descriptors) {
     if (characteristics.count(
             descriptor_map_[descriptor]->characteristic_path()) != 1) {
       return false;
     }
-    VLOG(1) << "Descriptor " << descriptor.value()
-            << " verified, has parent characteristic ("
-            << descriptor_map_[descriptor]->characteristic_path().value()
-            << ")  in hierarchy.";
+    DVLOG(1) << "Descriptor " << descriptor.value()
+             << " verified, has parent characteristic ("
+             << descriptor_map_[descriptor]->characteristic_path().value()
+             << ")  in hierarchy.";
   }
 
   for (const auto& characteristic : characteristics) {
@@ -79,10 +79,10 @@ bool FakeBluetoothGattManagerClient::VerifyProviderHierarchy(
         1) {
       return false;
     }
-    VLOG(1) << "Characteristic " << characteristic.value()
-            << " verified, has parent service ("
-            << characteristic_map_[characteristic]->service_path().value()
-            << ") in hierarchy.";
+    DVLOG(1) << "Characteristic " << characteristic.value()
+             << " verified, has parent service ("
+             << characteristic_map_[characteristic]->service_path().value()
+             << ") in hierarchy.";
   }
 
   return true;
@@ -102,9 +102,9 @@ void FakeBluetoothGattManagerClient::RegisterApplication(
     const dbus::ObjectPath& adapter_object_path,
     const dbus::ObjectPath& application_path,
     const Options& options,
-    const base::Closure& callback,
+    base::OnceClosure callback,
     ErrorCallback error_callback) {
-  VLOG(1) << "Register GATT application: " << application_path.value();
+  DVLOG(1) << "Register GATT application: " << application_path.value();
   ApplicationProvider* provider =
       GetApplicationServiceProvider(application_path);
   if (!provider || provider->second) {
@@ -116,16 +116,16 @@ void FakeBluetoothGattManagerClient::RegisterApplication(
     return;
   }
   provider->second = true;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 // BluetoothGattManagerClient overrides.
 void FakeBluetoothGattManagerClient::UnregisterApplication(
     const dbus::ObjectPath& adapter_object_path,
     const dbus::ObjectPath& application_path,
-    const base::Closure& callback,
+    base::OnceClosure callback,
     ErrorCallback error_callback) {
-  VLOG(1) << "Unregister GATT application: " << application_path.value();
+  DVLOG(1) << "Unregister GATT application: " << application_path.value();
   ApplicationProvider* provider =
       GetApplicationServiceProvider(application_path);
   if (!provider || !provider->second) {
@@ -133,7 +133,7 @@ void FakeBluetoothGattManagerClient::UnregisterApplication(
     return;
   }
   provider->second = false;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void FakeBluetoothGattManagerClient::RegisterApplicationServiceProvider(
@@ -162,8 +162,8 @@ void FakeBluetoothGattManagerClient::RegisterServiceServiceProvider(
   // Ignore, if a service provider is already registered for the object path.
   auto iter = service_map_.find(provider->object_path());
   if (iter != service_map_.end()) {
-    VLOG(1) << "GATT service service provider already registered for "
-            << "object path: " << provider->object_path().value();
+    DVLOG(1) << "GATT service service provider already registered for "
+             << "object path: " << provider->object_path().value();
     return;
   }
   service_map_[provider->object_path()] = provider;
@@ -174,8 +174,8 @@ void FakeBluetoothGattManagerClient::RegisterCharacteristicServiceProvider(
   // Ignore, if a service provider is already registered for the object path.
   auto iter = characteristic_map_.find(provider->object_path());
   if (iter != characteristic_map_.end()) {
-    VLOG(1) << "GATT characteristic service provider already registered for "
-            << "object path: " << provider->object_path().value();
+    DVLOG(1) << "GATT characteristic service provider already registered for "
+             << "object path: " << provider->object_path().value();
     return;
   }
   characteristic_map_[provider->object_path()] = provider;
@@ -186,8 +186,8 @@ void FakeBluetoothGattManagerClient::RegisterDescriptorServiceProvider(
   // Ignore, if a service provider is already registered for the object path.
   auto iter = descriptor_map_.find(provider->object_path());
   if (iter != descriptor_map_.end()) {
-    VLOG(1) << "GATT descriptor service provider already registered for "
-            << "object path: " << provider->object_path().value();
+    DVLOG(1) << "GATT descriptor service provider already registered for "
+             << "object path: " << provider->object_path().value();
     return;
   }
   descriptor_map_[provider->object_path()] = provider;

@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 /**
- * A piece of conditional behavior that supports experimentation and logging.
+ * Provides a {@link ContextualSearchHeuristic} that tracks whether a "QuickAnswer" was provided
+ * to the user, e.g. a definition shown right in the Bar.
  */
 class QuickAnswersHeuristic extends ContextualSearchHeuristic {
     private boolean mIsConditionSatisfied;

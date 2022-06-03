@@ -9,7 +9,9 @@
 #include <string.h>
 
 #include "base/strings/string_number_conversions.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 namespace v8_helpers {

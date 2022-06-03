@@ -19,6 +19,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferFormat, gfx::BufferFormat::LAST)
 
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferUsage, gfx::BufferUsage::LAST)
 
+IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferPlane, gfx::BufferPlane::LAST)
+
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT
 

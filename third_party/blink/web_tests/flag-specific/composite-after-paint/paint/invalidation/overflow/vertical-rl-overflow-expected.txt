@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='div'",
-          "rect": [50, 100, 150, 100],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [50, 100, 150, 100]
       ]
     }
   ]

@@ -7,29 +7,36 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "components/safe_browsing/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace security_interstitials {
 struct UnsafeResource;
 }
 
-namespace weblayer {
-
+namespace safe_browsing {
 class SafeBrowsingUIManager;
+}
+
+namespace weblayer {
 
 class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
  public:
   UrlCheckerDelegateImpl(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
-      scoped_refptr<SafeBrowsingUIManager> ui_manager);
+      scoped_refptr<safe_browsing::SafeBrowsingUIManager> ui_manager);
+
+  UrlCheckerDelegateImpl(const UrlCheckerDelegateImpl&) = delete;
+  UrlCheckerDelegateImpl& operator=(const UrlCheckerDelegateImpl&) = delete;
+
+  void SetSafeBrowsingDisabled(bool disabled);
 
  private:
   ~UrlCheckerDelegateImpl() override;
 
   // Implementation of UrlCheckerDelegate:
-  void MaybeDestroyPrerenderContents(
+  void MaybeDestroyNoStatePrefetchContents(
       content::WebContents::OnceGetter web_contents_getter) override;
   void StartDisplayingBlockingPageHelper(
       const security_interstitials::UnsafeResource& resource,
@@ -37,9 +44,13 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       const net::HttpRequestHeaders& headers,
       bool is_main_frame,
       bool has_user_gesture) override;
-  bool IsUrlWhitelisted(const GURL& url) override;
-  bool ShouldSkipRequestCheck(content::ResourceContext* resource_context,
-                              const GURL& original_url,
+  void StartObservingInteractionsForDelayedBlockingPageHelper(
+      const security_interstitials::UnsafeResource& resource,
+      bool is_main_frame) override;
+  bool IsUrlAllowlisted(const GURL& url) override;
+  void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) override;
+  bool ShouldSkipRequestCheck(const GURL& original_url,
                               int frame_tree_node_id,
                               int render_process_id,
                               int render_frame_id,
@@ -55,10 +66,8 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       const security_interstitials::UnsafeResource& resource);
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  scoped_refptr<SafeBrowsingUIManager> ui_manager_;
+  scoped_refptr<safe_browsing::SafeBrowsingUIManager> ui_manager_;
   safe_browsing::SBThreatTypeSet threat_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlCheckerDelegateImpl);
 };
 
 }  // namespace weblayer

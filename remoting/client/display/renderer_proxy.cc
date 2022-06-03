@@ -5,9 +5,9 @@
 #include "remoting/client/display/renderer_proxy.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "remoting/base/queued_task_poster.h"
 #include "remoting/client/display/gl_renderer.h"
-#include "remoting/client/queued_task_poster.h"
 #include "remoting/client/ui/view_matrix.h"
 
 namespace remoting {
@@ -26,43 +26,44 @@ void RendererProxy::Initialize(base::WeakPtr<GlRenderer> renderer) {
 
 void RendererProxy::SetTransformation(const ViewMatrix& transformation) {
   // Viewport and cursor movements need to be synchronized into the same frame.
-  RunTaskOnProperThread(base::Bind(&GlRenderer::OnPixelTransformationChanged,
-                                   renderer_, transformation.ToMatrixArray()),
-                        true);
+  RunTaskOnProperThread(
+      base::BindOnce(&GlRenderer::OnPixelTransformationChanged, renderer_,
+                     transformation.ToMatrixArray()),
+      true);
 }
 
 void RendererProxy::SetCursorPosition(float x, float y) {
-  RunTaskOnProperThread(base::Bind(&GlRenderer::OnCursorMoved, renderer_, x, y),
-                        true);
+  RunTaskOnProperThread(
+      base::BindOnce(&GlRenderer::OnCursorMoved, renderer_, x, y), true);
 }
 
 void RendererProxy::SetCursorVisibility(bool visible) {
   // Cursor visibility and position should be synchronized.
-  RunTaskOnProperThread(
-      base::Bind(&GlRenderer::OnCursorVisibilityChanged, renderer_, visible),
-      true);
+  RunTaskOnProperThread(base::BindOnce(&GlRenderer::OnCursorVisibilityChanged,
+                                       renderer_, visible),
+                        true);
 }
 
 void RendererProxy::StartInputFeedback(float x, float y, float diameter) {
-  RunTaskOnProperThread(
-      base::Bind(&GlRenderer::OnCursorInputFeedback, renderer_, x, y, diameter),
-      false);
+  RunTaskOnProperThread(base::BindOnce(&GlRenderer::OnCursorInputFeedback,
+                                       renderer_, x, y, diameter),
+                        false);
 }
 
-void RendererProxy::RunTaskOnProperThread(const base::Closure& task,
+void RendererProxy::RunTaskOnProperThread(base::OnceClosure task,
                                           bool needs_synchronization) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (task_runner_->BelongsToCurrentThread()) {
-    task.Run();
+    std::move(task).Run();
     return;
   }
 
   if (needs_synchronization) {
-    ui_task_poster_->AddTask(task);
+    ui_task_poster_->AddTask(std::move(task));
     return;
   }
 
-  task_runner_->PostTask(FROM_HERE, task);
+  task_runner_->PostTask(FROM_HERE, std::move(task));
 }
 
 }  // namespace remoting

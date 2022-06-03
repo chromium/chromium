@@ -1,0 +1,20 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//build/util/process_version.gni")
+
+python_library("lacros_resource_sizes_py") {
+  pydeps_file = "lacros_resource_sizes.pydeps"
+  data = [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
+  data_deps = [ "//third_party/catapult/tracing:convert_chart_json" ]
+}
+
+process_version("lacros_version_metadata") {
+  sources = [ "//chrome/VERSION" ]
+
+  template_file = "metadata.json.in"
+  output = "$root_out_dir/metadata.json"
+  process_only = true
+}

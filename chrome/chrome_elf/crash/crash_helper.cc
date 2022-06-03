@@ -13,7 +13,7 @@
 
 #include "chrome/app/chrome_crash_reporter_client_win.h"
 #include "chrome/chrome_elf/hook_util/hook_util.h"
-#include "components/crash/content/app/crashpad.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
@@ -64,6 +64,9 @@ namespace elf_crash {
 // NOTE: This function will be called from DllMain during DLL_PROCESS_ATTACH
 // (while we have the loader lock), so do not misbehave.
 bool InitializeCrashReporting() {
+  if (g_crash_helper_enabled)
+    return true;
+
 #ifdef _DEBUG
   assert(g_crash_reports == nullptr);
   assert(g_set_unhandled_exception_filter == nullptr);
@@ -83,11 +86,11 @@ bool InitializeCrashReporting() {
 // NOTE: This function will be called from DllMain during DLL_PROCESS_DETACH
 // (while we have the loader lock), so do not misbehave.
 void ShutdownCrashReporting() {
-  if (g_crash_reports != nullptr) {
+  if (g_crash_reports) {
     g_crash_reports->clear();
     delete g_crash_reports;
   }
-  if (g_set_unhandled_exception_filter != nullptr) {
+  if (g_set_unhandled_exception_filter) {
     delete g_set_unhandled_exception_filter;
   }
 }

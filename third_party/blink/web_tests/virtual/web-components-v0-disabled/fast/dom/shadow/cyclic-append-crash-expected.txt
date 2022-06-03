@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 13: Uncaught TypeError: f2.createShadowRoot is not a function
-If this does not crash, the test passed.

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -166,10 +167,11 @@ void TrackElementId(const WebElement& element,
 // example if an invalid attribute is added), but these cases are assumed
 // to be rare, and are ignored for the sake of simplicity.
 // The id of |node| will additionally be added to the corresponding |ids| set.
+template <typename RendererId>
 bool TrackElementByRendererIdIfUntracked(
     const WebElement& element,
-    const uint32_t renderer_id,
-    std::set<uint32_t>* skip_renderer_ids,
+    const RendererId renderer_id,
+    std::set<RendererId>* skip_renderer_ids,
     std::map<std::string, std::vector<WebNode>>* nodes_for_id) {
   if (skip_renderer_ids->count(renderer_id))
     return true;
@@ -183,8 +185,8 @@ bool TrackElementByRendererIdIfUntracked(
 // analysis.
 std::vector<FormInputCollection> ExtractFormsForAnalysis(
     const WebDocument& document,
-    std::set<uint32_t>* skip_form_ids,
-    std::set<uint32_t>* skip_control_ids,
+    std::set<FormRendererId>* skip_form_ids,
+    std::set<FieldRendererId>* skip_control_ids,
     PageFormAnalyserLogger* logger) {
   std::vector<FormInputCollection> form_input_collections;
 
@@ -193,17 +195,13 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   std::set<WebFormControlElement> inputs_with_forms;
   std::map<std::string, std::vector<WebNode>> nodes_for_id;
 
-  WebVector<WebFormElement> forms;
-  document.Forms(forms);
-  for (const WebFormElement& form : forms) {
+  for (const WebFormElement& form : document.Forms()) {
     form_input_collections.push_back(FormInputCollection{form});
     // Collect all the inputs in the form.
-    WebVector<WebFormControlElement> form_control_elements;
-    form.GetFormControlElements(form_control_elements);
-    for (const WebFormControlElement& input : form_control_elements) {
+    for (const WebFormControlElement& input : form.GetFormControlElements()) {
       if (TrackElementByRendererIdIfUntracked(
-              input, input.UniqueRendererFormControlId(), skip_control_ids,
-              &nodes_for_id))
+              input, FieldRendererId(input.UniqueRendererFormControlId()),
+              skip_control_ids, &nodes_for_id))
         continue;
       // We are only interested in a subset of input elements -- those likely
       // to be username or password fields.
@@ -215,8 +213,9 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
         inputs_with_forms.insert(input);
       }
     }
-    TrackElementByRendererIdIfUntracked(form, form.UniqueRendererFormId(),
-                                        skip_form_ids, &nodes_for_id);
+    TrackElementByRendererIdIfUntracked(
+        form, FormRendererId(form.UniqueRendererFormId()), skip_form_ids,
+        &nodes_for_id);
   }
 
   // Check for password fields that are not contained inside forms.
@@ -227,7 +226,8 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
     if (!input_element || input_element->IsNull())
       continue;
     if (TrackElementByRendererIdIfUntracked(
-            password_inputs[i], input_element->UniqueRendererFormControlId(),
+            password_inputs[i],
+            FieldRendererId(input_element->UniqueRendererFormControlId()),
             skip_control_ids, &nodes_for_id))
       continue;
     // Any password fields inside <form> elements will have been skipped,
@@ -248,7 +248,8 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
     if (!input_element || input_element->IsNull())
       continue;
     TrackElementByRendererIdIfUntracked(
-        text_input, input_element->UniqueRendererFormControlId(),
+        text_input,
+        FieldRendererId(input_element->UniqueRendererFormControlId()),
         skip_control_ids, &nodes_for_id);
   }
   // Warn against elements sharing an id attribute. Duplicate id attributes both
@@ -260,17 +261,10 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
     const std::vector<WebNode>& nodes = pair.second;
     if (nodes.size() <= 1)
       continue;
-    if (!id_attr.empty()) {
-      logger->Send(LinkDocumentation(base::StringPrintf(
-                       "Found %zu elements with non-unique id #%s:",
-                       nodes.size(), id_attr.c_str())),
-                   PageFormAnalyserLogger::kWarning, nodes);
-    } else {
-      logger->Send(LinkDocumentation(base::StringPrintf(
-                       "Found %zu elements with non-unique id #%s:",
-                       nodes.size(), id_attr.c_str())),
-                   PageFormAnalyserLogger::kWarning, nodes);
-    }
+    logger->Send(LinkDocumentation(base::StringPrintf(
+                     "Found %zu elements with non-unique id #%s:", nodes.size(),
+                     id_attr.c_str())),
+                 PageFormAnalyserLogger::kWarning, nodes);
   }
 
   return form_input_collections;
@@ -441,9 +435,9 @@ void AnalyseForm(const FormInputCollection& form_input_collection,
 }  // namespace
 
 // Out-of-line definitions to keep [chromium-style] happy.
-PagePasswordsAnalyser::PagePasswordsAnalyser() {}
+PagePasswordsAnalyser::PagePasswordsAnalyser() = default;
 
-PagePasswordsAnalyser::~PagePasswordsAnalyser() {}
+PagePasswordsAnalyser::~PagePasswordsAnalyser() = default;
 
 void PagePasswordsAnalyser::Reset() {
   skip_control_element_renderer_ids_.clear();

@@ -1,0 +1,19 @@
+<html>
+<body>
+<canvas id="c" width=800 height=1000></canvas>
+<script>
+var canvas = document.getElementById('c');
+let ctx = canvas.getContext("2d")
+
+let grd = ctx.createLinearGradient(0,800,0,0)
+grd.addColorStop(0, "#FF0000")
+grd.addColorStop(1, "#0000FF")
+ctx.fillStyle = grd
+
+ctx.font = "bold 20px Arial"
+ctx.scale(0.5, 1)
+ctx.fillText("LoMaxWidth", 500, 200)
+
+</script>
+</body>
+</html>

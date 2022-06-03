@@ -17,7 +17,7 @@ promise_test(async t => {
   let stream = await navigator.mediaDevices.getUserMedia({ video: true });
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
 
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   let videoParameters = videoSender.getParameters();
   videoParameters.encodings[0].active = false;
   videoParameters.encodings[0].priority = 'high';
@@ -40,7 +40,7 @@ promise_test(async t => {
   let stream = await navigator.mediaDevices.getUserMedia({ video: true });
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
 
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   let videoParameters = videoSender.getParameters();
   videoParameters.encodings[0].maxBitrate = 0xFFFFFFFF;
   await videoSender.setParameters(videoParameters);
@@ -58,7 +58,7 @@ promise_test(async (t) => {
 
   let stream = await navigator.mediaDevices.getUserMedia({ video: true }, 1);
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
 
   let videoParameters = videoSender.getParameters();
   videoParameters.encodings[0].active = false;
@@ -69,11 +69,9 @@ promise_test(async (t) => {
   videoParameters.encodings[0].active = true;
   videoParameters.encodings[0].priority = 'low';
   videoParameters.encodings[0].maxBitrate = 1337001;
-  return promise_rejects(
+  return promise_rejects_dom(
     t,
-    new DOMException(
-      "getParameters() needs to be called before setParameters().",
-      "InvalidStateError"),
+    "InvalidStateError",
     videoSender.setParameters(videoParameters));
 }, 'setParameters() with multiple calls after single getParameters()');
 
@@ -86,13 +84,11 @@ promise_test(async (t) => {
 
   let stream = await navigator.mediaDevices.getUserMedia({ video: true }, 1);
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
 
-  return promise_rejects(
+  return promise_rejects_dom(
     t,
-    new DOMException(
-      "getParameters() needs to be called before setParameters().",
-      "InvalidStateError"),
+    "InvalidStateError",
     videoSender.setParameters({
       transactionId: "",
       codecs: [],
@@ -242,14 +238,13 @@ for (testCase of readOnlyParameters) {
 
     let stream = await navigator.mediaDevices.getUserMedia({ video: true }, 1);
     let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
-    await doSignalingHandshake(pc1, pc2);
+    await exchangeOfferAnswer(pc1, pc2);
 
     let videoParameters = videoSender.getParameters();
     if (!check || check(videoParameters)) {
       transform(videoParameters);
-      return promise_rejects(t,
-        new DOMException("Read-only field modified in setParameters().",
-          "InvalidModificationError"),
+      return promise_rejects_dom(t,
+        "InvalidModificationError",
         videoSender.setParameters(videoParameters));
     }
   }).bind(undefined, testCase.name, testCase.transform, testCase.check),
@@ -263,14 +258,13 @@ for (testCase of readOnlyParameters) {
 
     let stream = await navigator.mediaDevices.getUserMedia({ audio: true }, 1);
     let audioSender = pc1.addTrack(stream.getAudioTracks()[0], stream);
-    await doSignalingHandshake(pc1, pc2);
+    await exchangeOfferAnswer(pc1, pc2);
 
     let audioParameters = audioSender.getParameters();
     if (!check || check(audioParameters)) {
       transform(audioParameters);
-      return promise_rejects(t,
-        new DOMException("Read-only field modified in setParameters().",
-          "InvalidModificationError"),
+      return promise_rejects_dom(t,
+          "InvalidModificationError",
           audioSender.setParameters(audioParameters));
     }
   }).bind(undefined, testCase.name, testCase.transform, testCase.check),
@@ -327,12 +321,12 @@ for (testCase of requiredParameters) {
 
     let stream = await navigator.mediaDevices.getUserMedia({ video: true }, 1);
     let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
-    await doSignalingHandshake(pc1, pc2);
+    await exchangeOfferAnswer(pc1, pc2);
 
     let videoParameters = videoSender.getParameters();
     transform(videoParameters);
-      return promise_rejects(t,
-        new TypeError(),
+      return promise_rejects_js(t,
+        TypeError,
         videoSender.setParameters(videoParameters));
   }).bind(undefined, testCase.name, testCase.transform, testCase.check),
   'video setParameters() check for ' + testCase.name);
@@ -348,7 +342,7 @@ promise_test(async t => {
   let stream = await navigator.mediaDevices.getUserMedia({video:true});
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
 
-  await doSignalingHandshake(pc1, pc2);
+  await exchangeOfferAnswer(pc1, pc2);
   let videoParameters = videoSender.getParameters();
   videoParameters.encodings[0].maxBitrate = 50;
   await videoSender.setParameters(videoParameters);
@@ -360,7 +354,7 @@ promise_test(async t => {
 /**
   * Helper functions to tests.
   */
-async function doSignalingHandshake(localPc, remotePc) {
+async function exchangeOfferAnswer(localPc, remotePc) {
   let offer = await localPc.createOffer();
   await localPc.setLocalDescription(offer);
   await remotePc.setRemoteDescription(offer);

@@ -18,13 +18,14 @@ function dumpsizes(tblid) {
     target.appendChild(document.createTextNode(tds[i].style.width + " "));
   }
   target.appendChild(document.createTextNode("\n"));
-  
+
   target.appendChild(document.createTextNode("Actual TD widths:    "));
   for (var i = 0 ; i < tds.length; ++i) {
-    target.appendChild(document.createTextNode(view.getComputedStyle(tds[i], "").getPropertyValue("width") + " "));
+    let width = Math.round(parseFloat(view.getComputedStyle(tds[i], "").getPropertyValue("width")) ).toFixed(1) + "px";
+    target.appendChild(document.createTextNode(width + " "));
   }
   target.appendChild(document.createTextNode("\n\n"));
-  
+
 }
 </script>
 </head>

@@ -8,11 +8,9 @@
 #include <stdint.h>
 
 #include <queue>
-#include <string>
 
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -20,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "components/cast_channel/cast_auth_util.h"
 #include "components/cast_channel/cast_channel_enum.h"
-#include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_transport.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
@@ -28,6 +25,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_source.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -194,6 +192,9 @@ class CastSocketImpl : public CastSocket {
                  const scoped_refptr<Logger>& logger,
                  const AuthContext& auth_context);
 
+  CastSocketImpl(const CastSocketImpl&) = delete;
+  CastSocketImpl& operator=(const CastSocketImpl&) = delete;
+
   // Ensures that the socket is closed.
   ~CastSocketImpl() override;
 
@@ -241,6 +242,11 @@ class CastSocketImpl : public CastSocket {
   class CastSocketMessageDelegate : public CastTransport::Delegate {
    public:
     CastSocketMessageDelegate(CastSocketImpl* socket);
+
+    CastSocketMessageDelegate(const CastSocketMessageDelegate&) = delete;
+    CastSocketMessageDelegate& operator=(const CastSocketMessageDelegate&) =
+        delete;
+
     ~CastSocketMessageDelegate() override;
 
     // CastTransport::Delegate implementation.
@@ -250,7 +256,6 @@ class CastSocketImpl : public CastSocket {
 
    private:
     CastSocketImpl* const socket_;
-    DISALLOW_COPY_AND_ASSIGN(CastSocketMessageDelegate);
   };
 
   // Replaces the internally-constructed transport object with one provided
@@ -312,14 +317,14 @@ class CastSocketImpl : public CastSocket {
 
   // Callback from network::mojom::NetworkContext::CreateTCPConnectedSocket.
   void OnConnect(int result,
-                 const base::Optional<net::IPEndPoint>& local_addr,
-                 const base::Optional<net::IPEndPoint>& peer_addr,
+                 const absl::optional<net::IPEndPoint>& local_addr,
+                 const absl::optional<net::IPEndPoint>& peer_addr,
                  mojo::ScopedDataPipeConsumerHandle receive_stream,
                  mojo::ScopedDataPipeProducerHandle send_stream);
   void OnUpgradeToTLS(int result,
                       mojo::ScopedDataPipeConsumerHandle receive_stream,
                       mojo::ScopedDataPipeProducerHandle send_stream,
-                      const base::Optional<net::SSLInfo>& ssl_info);
+                      const absl::optional<net::SSLInfo>& ssl_info);
   /////////////////////////////////////////////////////////////////////////////
 
   // Resets the cancellable callback used for async invocations of
@@ -374,7 +379,7 @@ class CastSocketImpl : public CastSocket {
   std::vector<OnOpenCallback> connect_callbacks_;
 
   // Callback invoked by |connect_timeout_timer_| to cancel the connection.
-  base::CancelableClosure connect_timeout_callback_;
+  base::CancelableOnceClosure connect_timeout_callback_;
 
   // Timer invoked when the connection has timed out.
   std::unique_ptr<base::OneShotTimer> connect_timeout_timer_;
@@ -407,7 +412,7 @@ class CastSocketImpl : public CastSocket {
   // The callback signature is based on net::CompletionCallback, which passes
   // operation result codes as byte counts in the success case, or as
   // net::Error enum values for error cases.
-  base::CancelableCallback<void(int)> connect_loop_callback_;
+  base::CancelableOnceCallback<void(int)> connect_loop_callback_;
 
   // Cast message formatting and parsing layer.
   std::unique_ptr<CastTransport> transport_;
@@ -423,8 +428,6 @@ class CastSocketImpl : public CastSocket {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CastSocketImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastSocketImpl);
 };
 }  // namespace cast_channel
 

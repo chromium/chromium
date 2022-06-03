@@ -5,12 +5,17 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_CALCULATOR_H_
 
+#include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
 
 namespace content {
 namespace responsiveness {
@@ -23,6 +28,10 @@ namespace responsiveness {
 class CONTENT_EXPORT Calculator {
  public:
   Calculator();
+
+  Calculator(const Calculator&) = delete;
+  Calculator& operator=(const Calculator&) = delete;
+
   virtual ~Calculator();
 
   // Must be called from the UI thread.
@@ -44,6 +53,16 @@ class CONTENT_EXPORT Calculator {
       base::TimeTicks execution_start_time,
       base::TimeTicks execution_finish_time);
 
+  // Must be invoked once-and-only-once, after the first time the
+  // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
+  // during startup). This will be used as a signal for the true end of
+  // "startup" and the beginning of recording
+  // Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.
+  void OnFirstIdle();
+
+  // Change the Power state of the process. Must be called from the UI thread.
+  void SetProcessSuspended(bool suspended);
+
   // Each janking task/event is fully defined by |start_time| and |end_time|.
   // Note that |duration| = |end_time| - |start_time|.
   struct Jank {
@@ -59,10 +78,41 @@ class CONTENT_EXPORT Calculator {
     kQueueAndExecution,
   };
 
+  // Stages of startup used by this Calculator. Public for testing.
+  enum class StartupStage {
+    // From this Calculator's creation until OnFirstIdle().
+    kMessageLoopStarted,
+    // From OnFirstIdle() to the end of the kMeasurementInterval including it.
+    kPastFirstIdle,
+    // From the first kMeasurementInterval after OnFirstIdle() onward.
+    kRecordingPastFirstIdle,
+  };
+
  protected:
   // Emits an UMA metric for responsiveness of a single measurement interval.
   // Exposed for testing.
-  virtual void EmitResponsiveness(JankType jank_type, size_t janky_slices);
+  virtual void EmitResponsiveness(JankType jank_type,
+                                  size_t janky_slices,
+                                  StartupStage startup_stage);
+
+  // Emits trace events for responsiveness metric. A trace event is emitted for
+  // the whole duration of the metric interval and sub events are emitted for
+  // the specific janky slices.
+  // Exposed for testing.
+  void EmitResponsivenessTraceEvents(JankType jank_type,
+                                     base::TimeTicks start_time,
+                                     base::TimeTicks end_time,
+                                     const std::set<int>& janky_slices);
+
+  // Exposed for testing.
+  virtual void EmitJankyIntervalsMeasurementTraceEvent(
+      base::TimeTicks start_time,
+      base::TimeTicks end_time,
+      size_t amount_of_slices);
+
+  // Exposed for testing.
+  virtual void EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
+                                                base::TimeTicks end_time);
 
   // Exposed for testing.
   base::TimeTicks GetLastCalculationTime();
@@ -99,10 +149,16 @@ class CONTENT_EXPORT Calculator {
   JankList& GetExecutionJanksOnUIThread();
   JankList& GetQueueAndExecutionJanksOnUIThread();
 
-  // This method:
+#if defined(OS_ANDROID)
+  // Callback invoked when the application state changes.
+  void OnApplicationStateChanged(base::android::ApplicationState state);
+#endif
+
+  // This helper method:
   //   1) Removes all Janks with Jank.end_time < |end_time| from |janks|.
   //   2) Returns all Janks with Jank.start_time < |end_time|.
-  JankList TakeJanksOlderThanTime(JankList* janks, base::TimeTicks end_time);
+  static JankList TakeJanksOlderThanTime(JankList* janks,
+                                         base::TimeTicks end_time);
 
   // Janks from tasks/events with a long execution time on the UI thread. Should
   // only be accessed via the accessor, which checks that the caller is on the
@@ -113,6 +169,14 @@ class CONTENT_EXPORT Calculator {
   // thread. Should only be accessed via the accessor, which checks that the
   // caller is on the UI thread.
   JankList queue_and_execution_janks_on_ui_thread_;
+
+#if defined(OS_ANDROID)
+  // Stores the current visibility state of the application. Accessed only on
+  // the UI thread.
+  bool is_application_visible_ = false;
+#endif
+
+  StartupStage startup_stage_ = StartupStage::kMessageLoopStarted;
 
   // We expect there to be low contention and this lock to cause minimal
   // overhead. If performance of this lock proves to be a problem, we can move
@@ -140,7 +204,12 @@ class CONTENT_EXPORT Calculator {
   // executed, so a very long execution time should be treated similarly.
   base::TimeTicks most_recent_activity_time_;
 
-  DISALLOW_COPY_AND_ASSIGN(Calculator);
+#if defined(OS_ANDROID)
+  // Listener for changes in application state, unregisters itself when
+  // destroyed.
+  const std::unique_ptr<base::android::ApplicationStatusListener>
+      application_status_listener_;
+#endif
 };
 
 }  // namespace responsiveness

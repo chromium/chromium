@@ -3,3 +3,5 @@
 joedow@chromium.org
 lambroslambrou@chromium.org
 yuweih@chromium.org
+
+per-file lint-*.xml=*

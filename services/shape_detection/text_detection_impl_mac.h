@@ -5,7 +5,8 @@
 #ifndef SERVICES_SHAPE_DETECTION_TEXT_DETECTION_IMPL_MAC_H_
 #define SERVICES_SHAPE_DETECTION_TEXT_DETECTION_IMPL_MAC_H_
 
-#include "base/mac/availability.h"
+#import <os/availability.h>
+
 #include "base/mac/scoped_nsobject.h"
 #include "services/shape_detection/public/mojom/textdetection.mojom.h"
 
@@ -17,6 +18,10 @@ class API_AVAILABLE(macosx(10.11)) TextDetectionImplMac
     : public mojom::TextDetection {
  public:
   TextDetectionImplMac();
+
+  TextDetectionImplMac(const TextDetectionImplMac&) = delete;
+  TextDetectionImplMac& operator=(const TextDetectionImplMac&) = delete;
+
   ~TextDetectionImplMac() override;
 
   void Detect(const SkBitmap& bitmap,
@@ -24,8 +29,6 @@ class API_AVAILABLE(macosx(10.11)) TextDetectionImplMac
 
  private:
   base::scoped_nsobject<CIDetector> detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextDetectionImplMac);
 };
 
 }  // namespace shape_detection

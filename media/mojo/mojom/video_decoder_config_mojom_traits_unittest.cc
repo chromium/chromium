@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,10 +25,11 @@ TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Normal) {
   const uint8_t kExtraData[] = "config extra data";
   const std::vector<uint8_t> kExtraDataVector(
       &kExtraData[0], &kExtraData[0] + base::size(kExtraData));
-  VideoDecoderConfig input(
-      kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
-      kNaturalSize, kExtraDataVector, EncryptionScheme::kUnencrypted);
+  VideoDecoderConfig input(VideoCodec::kVP8, VP8PROFILE_ANY,
+                           VideoDecoderConfig::AlphaMode::kIsOpaque,
+                           VideoColorSpace(), kNoTransformation, kCodedSize,
+                           kVisibleRect, kNaturalSize, kExtraDataVector,
+                           EncryptionScheme::kUnencrypted);
   std::vector<uint8_t> data =
       media::mojom::VideoDecoderConfig::Serialize(&input);
   VideoDecoderConfig output;
@@ -39,10 +40,11 @@ TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Normal) {
 
 TEST(VideoDecoderConfigStructTraitsTest,
      ConvertVideoDecoderConfig_EmptyExtraData) {
-  VideoDecoderConfig input(
-      kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
-      kNaturalSize, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  VideoDecoderConfig input(VideoCodec::kVP8, VP8PROFILE_ANY,
+                           VideoDecoderConfig::AlphaMode::kIsOpaque,
+                           VideoColorSpace(), kNoTransformation, kCodedSize,
+                           kVisibleRect, kNaturalSize, EmptyExtraData(),
+                           EncryptionScheme::kUnencrypted);
   std::vector<uint8_t> data =
       media::mojom::VideoDecoderConfig::Serialize(&input);
   VideoDecoderConfig output;
@@ -52,10 +54,11 @@ TEST(VideoDecoderConfigStructTraitsTest,
 }
 
 TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Encrypted) {
-  VideoDecoderConfig input(
-      kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
-      kNaturalSize, EmptyExtraData(), EncryptionScheme::kCenc);
+  VideoDecoderConfig input(VideoCodec::kVP8, VP8PROFILE_ANY,
+                           VideoDecoderConfig::AlphaMode::kIsOpaque,
+                           VideoColorSpace(), kNoTransformation, kCodedSize,
+                           kVisibleRect, kNaturalSize, EmptyExtraData(),
+                           EncryptionScheme::kCenc);
   std::vector<uint8_t> data =
       media::mojom::VideoDecoderConfig::Serialize(&input);
   VideoDecoderConfig output;
@@ -67,7 +70,8 @@ TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Encrypted) {
 TEST(VideoDecoderConfigStructTraitsTest,
      ConvertVideoDecoderConfig_ColorSpaceInfo) {
   VideoDecoderConfig input(
-      kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoCodec::kVP8, VP8PROFILE_ANY,
+      VideoDecoderConfig::AlphaMode::kIsOpaque,
       VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_CL,
@@ -84,23 +88,24 @@ TEST(VideoDecoderConfigStructTraitsTest,
 
 TEST(VideoDecoderConfigStructTraitsTest,
      ConvertVideoDecoderConfig_HDRMetadata) {
-  VideoDecoderConfig input(
-      kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
-      kNaturalSize, EmptyExtraData(), EncryptionScheme::kUnencrypted);
-  HDRMetadata hdr_metadata;
+  VideoDecoderConfig input(VideoCodec::kVP8, VP8PROFILE_ANY,
+                           VideoDecoderConfig::AlphaMode::kIsOpaque,
+                           VideoColorSpace(), kNoTransformation, kCodedSize,
+                           kVisibleRect, kNaturalSize, EmptyExtraData(),
+                           EncryptionScheme::kUnencrypted);
+  gfx::HDRMetadata hdr_metadata;
   hdr_metadata.max_frame_average_light_level = 123;
   hdr_metadata.max_content_light_level = 456;
-  hdr_metadata.mastering_metadata.primary_r.set_x(0.1f);
-  hdr_metadata.mastering_metadata.primary_r.set_y(0.2f);
-  hdr_metadata.mastering_metadata.primary_g.set_x(0.3f);
-  hdr_metadata.mastering_metadata.primary_g.set_y(0.4f);
-  hdr_metadata.mastering_metadata.primary_b.set_x(0.5f);
-  hdr_metadata.mastering_metadata.primary_b.set_y(0.6f);
-  hdr_metadata.mastering_metadata.white_point.set_x(0.7f);
-  hdr_metadata.mastering_metadata.white_point.set_y(0.8f);
-  hdr_metadata.mastering_metadata.luminance_max = 1000;
-  hdr_metadata.mastering_metadata.luminance_min = 0;
+  hdr_metadata.color_volume_metadata.primary_r.set_x(0.1f);
+  hdr_metadata.color_volume_metadata.primary_r.set_y(0.2f);
+  hdr_metadata.color_volume_metadata.primary_g.set_x(0.3f);
+  hdr_metadata.color_volume_metadata.primary_g.set_y(0.4f);
+  hdr_metadata.color_volume_metadata.primary_b.set_x(0.5f);
+  hdr_metadata.color_volume_metadata.primary_b.set_y(0.6f);
+  hdr_metadata.color_volume_metadata.white_point.set_x(0.7f);
+  hdr_metadata.color_volume_metadata.white_point.set_y(0.8f);
+  hdr_metadata.color_volume_metadata.luminance_max = 1000;
+  hdr_metadata.color_volume_metadata.luminance_min = 0;
   input.set_hdr_metadata(hdr_metadata);
   std::vector<uint8_t> data =
       media::mojom::VideoDecoderConfig::Serialize(&input);
@@ -126,10 +131,11 @@ TEST(VideoDecoderConfigStructTraitsTest,
 
   // Next try an non-empty invalid config. Natural size must not be zero.
   const gfx::Size kInvalidNaturalSize(0, 0);
-  input.Initialize(
-      kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
-      kInvalidNaturalSize, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  input.Initialize(VideoCodec::kVP8, VP8PROFILE_ANY,
+                   VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+                   kNoTransformation, kCodedSize, kVisibleRect,
+                   kInvalidNaturalSize, EmptyExtraData(),
+                   EncryptionScheme::kUnencrypted);
   EXPECT_FALSE(input.IsValidConfig());
 
   // Deserialize should again fail due to invalid config.

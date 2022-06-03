@@ -79,14 +79,30 @@ message FoilUwSData {
   repeated StaticRegistryFootprint registry_footprints = 5;
 }
 
+// The git SHA's of each repo that is used to build this version of the
+// reporter and cleaner.
+//
+// Next tag: 4.
+message CommitInfo {
+  // The commit of the root chromium repository.
+  optional string chromium_commit = 1;
+
+  // The commit of the src-internal repository.
+  optional string src_internal_commit = 2;
+
+  // The commit of the chrome/chrome_cleaner/internal repository.
+  optional string chrome_cleaner_internal_commit = 3;
+}
+
 // Specifies all UwS recognized by a given version of the reporter or cleaner.
 //
 // FoilVersionSpec is a legacy name that must be kept because existing analysis
 // tools use it.
 //
-// Next tag: 3.
+// Next tag: 4.
 message FoilVersionSpec {
   optional string version = 1;
+  optional CommitInfo commit_info = 3;
   repeated FoilUwSData uws = 2;
 }
 

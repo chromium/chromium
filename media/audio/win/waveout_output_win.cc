@@ -82,7 +82,7 @@ PCMWaveOutAudioOutputStream::PCMWaveOutAudioOutputStream(
     UINT device_id)
     : state_(PCMA_BRAND_NEW),
       manager_(manager),
-      callback_(NULL),
+      callback_(nullptr),
       num_buffers_(num_buffers),
       buffer_size_(params.GetBytesPerBuffer(kSampleFormat)),
       volume_(1),
@@ -270,7 +270,7 @@ void PCMWaveOutAudioOutputStream::Stop() {
     GetBuffer(ix)->dwFlags = WHDR_PREPARED;
 
   // Don't use callback after Stop().
-  callback_ = NULL;
+  callback_ = nullptr;
 
   state_ = PCMA_READY;
 }
@@ -332,9 +332,9 @@ void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
   // TODO(fbarchard): Handle used 0 by queueing more.
 
   // TODO(sergeyu): Specify correct hardware delay for |delay|.
-  const base::TimeDelta delay = base::TimeDelta::FromMicroseconds(
-      pending_bytes_ * base::Time::kMicrosecondsPerSecond /
-      format_.Format.nAvgBytesPerSec);
+  const base::TimeDelta delay =
+      base::Microseconds(pending_bytes_ * base::Time::kMicrosecondsPerSecond /
+                         format_.Format.nAvgBytesPerSec);
   int frames_filled =
       callback_->OnMoreData(delay, base::TimeTicks::Now(), 0, audio_bus_.get());
   uint32_t used = frames_filled * audio_bus_->channels() *
@@ -344,8 +344,10 @@ void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
     // Note: If this ever changes to output raw float the data must be clipped
     // and sanitized since it may come from an untrusted source such as NaCl.
     audio_bus_->Scale(volume_);
-    audio_bus_->ToInterleaved(
-        frames_filled, format_.Format.wBitsPerSample / 8, buffer->lpData);
+
+    DCHECK_EQ(format_.Format.wBitsPerSample, 16);
+    audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
+        frames_filled, reinterpret_cast<int16_t*>(buffer->lpData));
 
     buffer->dwBufferLength = used * format_.Format.nChannels / channels_;
   } else {

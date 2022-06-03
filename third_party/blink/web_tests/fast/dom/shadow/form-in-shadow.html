@@ -12,7 +12,7 @@ if (window.testRunner)
 
 function createShadowForm() {
     var container = document.getElementById('container');
-    var shadowRoot = container.createShadowRoot();
+    var shadowRoot = container.attachShadow({mode: 'open'});
 
     shadowRoot.innerHTML =
         '<form>' +

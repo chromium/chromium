@@ -27,11 +27,13 @@ struct CONTENT_EXPORT SyntheticSmoothScrollGestureParams
 
   gfx::PointF anchor;
   std::vector<gfx::Vector2dF> distances;  // Positive X/Y to scroll left/up.
-  bool prevent_fling;  // Defaults to true.
-  float speed_in_pixels_s;
-  float fling_velocity_x;
-  float fling_velocity_y;
-  ui::input_types::ScrollGranularity granularity;
+  bool prevent_fling = true;              // Defaults to true.
+  float speed_in_pixels_s = SyntheticGestureParams::kDefaultSpeedInPixelsPerSec;
+  float fling_velocity_x = 0;
+  float fling_velocity_y = 0;
+  ui::ScrollGranularity granularity = ui::ScrollGranularity::kScrollByPixel;
+  // A bitfield of values from blink::WebInputEvent::Modifiers.
+  int modifiers = 0;
 
   static const SyntheticSmoothScrollGestureParams* Cast(
       const SyntheticGestureParams* gesture_params);

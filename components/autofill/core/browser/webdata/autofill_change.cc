@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 
-#include "base/logging.h"
 
 namespace autofill {
 

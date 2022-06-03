@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1014868">
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+
+<div>
+  <template shadowroot=open>
+    <slot />
+  </template>
+  <slot>
+    <input id=input1>
+  </slot>
+  <slot>
+    <input id=input2>
+  </slot>
+</div>
+
+<script>
+test(() => {
+  input2.focus();
+  assert_equals(document.activeElement, input2);
+
+  // TODO(crbug.com/893480): Replace this with test_driver.Actions() and move
+  // this test to WPT when test_driver.Actions() is supported in content_shell
+  // or when all WPTs are run on chrome instead of content_shell.
+  eventSender.keyDown('\t', ['shiftKey']);
+  assert_equals(document.activeElement, input1);
+}, `Verifies that focusing backwards from an input inside a slot which has no shadow root goes to the previous focusable element in light DOM.`);
+</script>

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -25,7 +24,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-#include "media/remoting/rpc_broker.h"  // nogncheck
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"  // nogncheck
+#include "third_party/openscreen/src/util/weak_ptr.h"  // nogncheck
 #endif
 
 namespace base {
@@ -44,6 +44,10 @@ class RendererController final : public mojom::RemotingSource,
   RendererController(
       mojo::PendingReceiver<mojom::RemotingSource> source_receiver,
       mojo::PendingRemote<mojom::Remoter> remoter);
+
+  RendererController(const RendererController&) = delete;
+  RendererController& operator=(const RendererController&) = delete;
+
   ~RendererController() override;
 
   // mojom::RemotingSource implementations.
@@ -61,6 +65,7 @@ class RendererController final : public mojom::RemotingSource,
   void OnPlaying() override;
   void OnPaused() override;
   void OnDataSourceInitialized(const GURL& url_after_redirects) override;
+  void OnHlsManifestDetected() override;
   void SetClient(MediaObserverClient* client) override;
 
   base::WeakPtr<RendererController> GetWeakPtr() {
@@ -79,12 +84,17 @@ class RendererController final : public mojom::RemotingSource,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> video,
       mojo::ScopedDataPipeProducerHandle audio_handle,
       mojo::ScopedDataPipeProducerHandle video_handle)>;
-  void StartDataPipe(std::unique_ptr<mojo::DataPipe> audio_data_pipe,
-                     std::unique_ptr<mojo::DataPipe> video_data_pipe,
+  // Creates up to two data pipes with a byte capacity of |data_pipe_capacity|:
+  // one for audio if |audio| is true and one for |video| if video is true. The
+  // controller then starts processing the consumer ends of the data pipes,
+  // with the producer ends supplied to the |done_callback|.
+  void StartDataPipe(uint32_t data_pipe_capacity,
+                     bool audio,
+                     bool video,
                      DataPipeStartCallback done_callback);
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-  base::WeakPtr<RpcBroker> GetRpcBroker();
+  openscreen::WeakPtr<openscreen::cast::RpcMessenger> GetRpcMessenger();
 #endif
 
   // Called by CourierRenderer when it encountered a fatal error. This will
@@ -116,11 +126,14 @@ class RendererController final : public mojom::RemotingSource,
   bool IsAudioCodecSupported() const;
   bool IsAudioOrVideoSupported() const;
 
-  // Returns true if all of the technical requirements for the media pipeline
-  // and remote rendering are being met. This does not include environmental
-  // conditions, such as the content being dominant in the viewport, available
-  // network bandwidth, etc.
-  bool CanBeRemoting() const;
+  // Returns |kCompatible| if all of the technical requirements for the media
+  // pipeline and remote rendering are being met, and the first detected
+  // reason if incompatible. This does not include environmental conditions,
+  // such as the content being dominant in the viewport, available network
+  // bandwidth, etc.
+  RemotingCompatibility GetVideoCompatibility() const;
+  RemotingCompatibility GetAudioCompatibility() const;
+  RemotingCompatibility GetCompatibility() const;
 
   // Determines whether to enter or leave Remoting mode and switches if
   // necessary. Each call to this method could cause a remoting session to be
@@ -145,13 +158,18 @@ class RendererController final : public mojom::RemotingSource,
                                 unsigned decoded_frame_count_before_delay,
                                 base::TimeTicks delayed_start_time);
 
+  // Records in a histogram and returns whether the receiver supports the given
+  // pixel rate.
+  bool RecordPixelRateSupport(double pixels_per_second);
+
   // Queries on remoting sink capabilities.
   bool HasVideoCapability(mojom::RemotingSinkVideoCapability capability) const;
   bool HasAudioCapability(mojom::RemotingSinkAudioCapability capability) const;
   bool HasFeatureCapability(mojom::RemotingSinkFeature capability) const;
+  bool SinkSupportsRemoting() const;
 
-  // Callback from RpcBroker when sending message to remote sink.
-  void SendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message);
+  // Callback from RpcMessenger when sending message to remote sink.
+  void SendMessageToSink(std::vector<uint8_t> message);
 
 #if defined(OS_ANDROID)
   bool IsAudioRemotePlaybackSupported() const;
@@ -161,7 +179,7 @@ class RendererController final : public mojom::RemotingSource,
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
   // Handles dispatching of incoming and outgoing RPC messages.
-  RpcBroker rpc_broker_;
+  openscreen::cast::RpcMessenger rpc_messenger_;
 #endif
 
   const mojo::Receiver<mojom::RemotingSource> receiver_;
@@ -213,6 +231,8 @@ class RendererController final : public mojom::RemotingSource,
   // Current data source information.
   GURL url_after_redirects_;
 
+  bool is_hls_ = false;
+
   // Records session events of interest.
   SessionMetricsRecorder metrics_recorder_;
 
@@ -229,8 +249,6 @@ class RendererController final : public mojom::RemotingSource,
   const base::TickClock* clock_;
 
   base::WeakPtrFactory<RendererController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererController);
 };
 
 }  // namespace remoting

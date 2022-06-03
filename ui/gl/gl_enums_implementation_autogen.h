@@ -829,10 +829,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_FILL_NV",
     },
     {
-        0x1D00,
-        "GL_FLAT_CHROMIUM",
-    },
-    {
         0x1E00,
         "GL_KEEP",
     },
@@ -875,14 +871,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     {
         0x20000000,
         "GL_FONT_NUM_GLYPH_INDICES_BIT_NV",
-    },
-    {
-        0x2400,
-        "GL_EYE_LINEAR_CHROMIUM",
-    },
-    {
-        0x2401,
-        "GL_OBJECT_LINEAR_CHROMIUM",
     },
     {
         0x2600,
@@ -2053,10 +2041,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_MAX_CUBE_MAP_TEXTURE_SIZE",
     },
     {
-        0x8576,
-        "GL_CONSTANT_CHROMIUM",
-    },
-    {
         0x8589,
         "GL_SRC1_ALPHA_EXT",
     },
@@ -2693,32 +2677,16 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_TEXTURE_FILTERING_HINT_CHROMIUM",
     },
     {
-        0x8AF1,
-        "GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM",
-    },
-    {
-        0x8AF2,
-        "GL_COLOR_SPACE_SCRGB_LINEAR_CHROMIUM",
-    },
-    {
-        0x8AF3,
-        "GL_COLOR_SPACE_SRGB_CHROMIUM",
-    },
-    {
-        0x8AF4,
-        "GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM",
-    },
-    {
-        0x8AF5,
-        "GL_COLOR_SPACE_HDR10_CHROMIUM",
-    },
-    {
         0x8AF6,
         "GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM",
     },
     {
         0x8AF7,
         "GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM",
+    },
+    {
+        0x8AF8,
+        "GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM",
     },
     {
         0x8B30,
@@ -4649,10 +4617,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_PATH_CLIENT_LENGTH_NV",
     },
     {
-        0x907a,
-        "GL_PATH_MITER_LIMIT_CHROMIUM",
-    },
-    {
         0x9080,
         "GL_PATH_FILL_MODE_NV",
     },
@@ -4671,10 +4635,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     {
         0x9084,
         "GL_PATH_STROKE_MASK_NV",
-    },
-    {
-        0x9086,
-        "GL_PATH_STROKE_BOUND_CHROMIUM",
     },
     {
         0x9088,
@@ -4983,14 +4943,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
     {
         0x90F3,
         "GL_CONTEXT_ROBUST_ACCESS_KHR",
-    },
-    {
-        0x90a3,
-        "GL_SQUARE_CHROMIUM",
-    },
-    {
-        0x90a4,
-        "GL_ROUND_CHROMIUM",
     },
     {
         0x9100,

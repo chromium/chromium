@@ -23,8 +23,10 @@ class StyleRule;
 class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
  public:
   explicit DeclaredStylePropertyMap(CSSStyleRule* owner_rule);
+  DeclaredStylePropertyMap(const DeclaredStylePropertyMap&) = delete;
+  DeclaredStylePropertyMap& operator=(const DeclaredStylePropertyMap&) = delete;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(owner_rule_);
     StylePropertyMap::Trace(visitor);
   }
@@ -33,7 +35,7 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
 
  protected:
   const CSSValue* GetProperty(CSSPropertyID) const override;
-  const CSSValue* GetCustomProperty(AtomicString) const override;
+  const CSSValue* GetCustomProperty(const AtomicString&) const override;
   void ForEachProperty(const IterationCallback&) override;
   void SetProperty(CSSPropertyID, const CSSValue&) override;
   bool SetShorthandProperty(CSSPropertyID,
@@ -50,10 +52,8 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
   StyleRule* GetStyleRule() const;
 
   WeakMember<CSSStyleRule> owner_rule_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclaredStylePropertyMap);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_DECLARED_STYLE_PROPERTY_MAP_H_

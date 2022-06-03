@@ -8,7 +8,7 @@
 #include <string>
 
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
-#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-shared.h"
 
 namespace mojo {
 

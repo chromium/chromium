@@ -5,8 +5,9 @@
 #ifndef CC_PAINT_PAINT_RECORDER_H_
 #define CC_PAINT_PAINT_RECORDER_H_
 
+#include <memory>
 #include "base/compiler_specific.h"
-#include "base/optional.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
 
@@ -36,6 +37,14 @@ class CC_PAINT_EXPORT PaintRecorder {
   }
 
   sk_sp<PaintRecord> finishRecordingAsPicture();
+
+  bool ListHasDrawOps() const;
+
+  // Ops with nested paint ops are considered as a single op.
+  size_t num_paint_ops() const;
+
+  size_t TotalOpCount() const { return display_item_list_->TotalOpCount(); }
+  size_t BytesUsed() const { return display_item_list_->BytesUsed(); }
 
  protected:
   virtual std::unique_ptr<RecordPaintCanvas> CreateCanvas(DisplayItemList* list,

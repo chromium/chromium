@@ -5,10 +5,10 @@
 #ifndef ASH_SHELF_SHELF_TOOLTIP_DELEGATE_H_
 #define ASH_SHELF_SHELF_TOOLTIP_DELEGATE_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class Point;
@@ -46,7 +46,7 @@ class ASH_EXPORT ShelfTooltipDelegate {
       views::View* view) = 0;
 
   // Returns the title of |view|.
-  virtual base::string16 GetTitleForView(const views::View* view) const = 0;
+  virtual std::u16string GetTitleForView(const views::View* view) const = 0;
 
   // Returns the view that should handle |event|.
   virtual views::View* GetViewForEvent(const ui::Event& event) = 0;

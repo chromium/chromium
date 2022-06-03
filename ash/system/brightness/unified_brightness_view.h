@@ -19,6 +19,10 @@ class UnifiedBrightnessView : public UnifiedSliderView,
  public:
   UnifiedBrightnessView(UnifiedBrightnessSliderController* controller,
                         UnifiedSystemTrayModel* model);
+
+  UnifiedBrightnessView(const UnifiedBrightnessView&) = delete;
+  UnifiedBrightnessView& operator=(const UnifiedBrightnessView&) = delete;
+
   ~UnifiedBrightnessView() override;
 
   // UnifiedSystemTrayModel::Observer:
@@ -26,11 +30,10 @@ class UnifiedBrightnessView : public UnifiedSliderView,
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   UnifiedSystemTrayModel* const model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedBrightnessView);
 };
 
 }  // namespace ash

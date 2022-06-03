@@ -1,0 +1,88 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/blob/blob.mojom";
+
+// A reader for the data and side data in a cache storage entry.
+interface BlobDataItemReader {
+  // Causes a subrange of the contents of this entry to be written into the
+  // given data pipe.  Returns the net::Error result.
+  Read(uint64 offset, uint64 length, handle<data_pipe_producer> pipe)
+      => (int32 success);
+  // Reads the side-data (if any) associated with this entry.  Returns
+  // a net::Error result and the data, if any.
+  ReadSideData() => (int32 success, mojo_base.mojom.BigBuffer data);
+};
+
+// The type of BlobDataItem.  Used for histograms.
+enum BlobDataItemType {
+  kUnknown,       // Type not known.
+  kCacheStorage,  // Data comes from the cache storage system.
+  kIndexedDB,     // Data comes from the IndexedDB storage system.
+};
+
+// A remote representation of a BlobDataItem::DataHandle for cache storage.
+struct BlobDataItem {
+  BlobDataItemType type;
+
+  // The size of the normal data.  BlobDataItem::DataHandle needs this
+  // synchronously, which is why it is in a struct and not the interface.
+  uint64 size;
+
+  // The size of the side data.  If this is zero, reader.ReadSideData()
+  // should not be called, and there is no side data.
+  uint64 side_data_size;
+
+  // The mime type of this data item.  This is empty if unknown.
+  string content_type;
+
+  // An interface to read the normal and side data of this entry.
+  pending_remote<BlobDataItemReader> reader;
+};
+
+// The result of writing a blob to disk.
+enum WriteBlobToFileResult {
+  kError,             // There was an error writing the blob to a file.
+  kBadPath,           // The path given is not accessible or has references.
+  kInvalidBlob,       // The blob is invalid and cannot be read.
+  kIOError,           // Error writing bytes on disk.
+  kTimestampError,    // Error writing the last modified timestamp.
+  kSuccess,
+};
+
+// This interface is the primary access point to the browser's blob system
+// for chrome internals. This interface lives in the browser process. This is a
+// simplified version of the blink.mojom.BlobRegistry interface.
+//
+// This interface has enhanced capabilities that should NOT be accessible to a
+// renderer, which is why it is a separate interface. For example,
+// WriteBlobToFile writes a blob to an arbitrary file path.
+interface BlobStorageContext {
+  // Create a blob with a particular uuid and consisting of a single
+  // BlobDataItem::DataHandle constructed from |item|.
+  RegisterFromDataItem(pending_receiver<blink.mojom.Blob> blob, string uuid,
+                       BlobDataItem item);
+  // Create a blob with a particular uuid whose contents are contained
+  // in |data|.
+  RegisterFromMemory(pending_receiver<blink.mojom.Blob> blob, string uuid,
+                     mojo_base.mojom.BigBuffer data);
+
+  // Writes the given blob to the given file path. If the given |path| is not
+  // under the blob storage context's profile directory or if it has references
+  // (like "..") then the implementation returns kBadPath. If the directory
+  // that contains the file at |path| does not exist, then this function will
+  // return kIOError. If a file already exists at |path| then it is
+  // overwritten. If |flush_on_write| is true, then Flush will be called on the
+  // new file before it is closed.
+  WriteBlobToFile(pending_remote<blink.mojom.Blob> blob,
+                  mojo_base.mojom.FilePath path,
+                  bool flush_on_write,
+                  mojo_base.mojom.Time? last_modified)
+      => (WriteBlobToFileResult result);
+};

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
+// NOTE: This API is not used in Chromium anymore, but the server still needs to
+// support it for the benefit of older clients (Chrome versions up to and
+// including M80 rely on it, see crbug.com/1009361).
+
 syntax = "proto2";
 
 option java_multiple_files = true;
@@ -11,7 +15,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "experiments_specifics.proto";
+import "components/sync/protocol/experiments_specifics.proto";
 
 // This request allows an unauthenticated client to check the status of the
 // experiments which do not require user authentication.  The status of an

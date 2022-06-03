@@ -1,0 +1,14 @@
+[document web]
+++[page tab list] horizontal setsize:2
+++++[page tab] name='Tab 1 of 2, level 1' selectable posinset:1 setsize:2
+++++[page tab] name='Tab 2 of 2, level 1' selectable posinset:2 setsize:2
+++[page tab list] horizontal setsize:3
+++++[page tab] name='Tab 1 of 3, level 2' selectable posinset:1 setsize:3
+++++[page tab] name='Tab 2 of 3, level 2' selectable posinset:2 setsize:3
+++++[page tab list] horizontal setsize:1
+++++++[page tab] name='Tab 1 of 1, level 3' selectable posinset:1 setsize:1
+++++[page tab] name='Tab 3 of 3, level 2' selectable posinset:3 setsize:3
+++[page tab list] horizontal setsize:1
+++++[page tab] name='Tab 1 of 1, level 2' selectable posinset:1 setsize:1
+++[page tab list] horizontal setsize:1
+++++[page tab] name='Tab 1 of 1, level 1' selectable posinset:1 setsize:1

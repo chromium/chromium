@@ -33,6 +33,7 @@ _GATHERERS = {
   'chrome_html'         : grit.gather.chrome_html.ChromeHtml,
   'chrome_scaled_image' : grit.gather.chrome_scaled_image.ChromeScaledImage,
   'dialog'              : grit.gather.rc.Dialog,
+  'lottie'              : grit.gather.chrome_html.ChromeHtml,
   'menu'                : grit.gather.rc.Menu,
   'rcdata'              : grit.gather.rc.RCData,
   'tr_html'             : grit.gather.tr_html.TrHtml,
@@ -117,32 +118,33 @@ class StructureNode(base.Node):
     return ['type', 'name', 'file']
 
   def DefaultAttributes(self):
-    return { 'encoding' : 'cp1252',
-             'exclude_from_rc' : 'false',
-             'line_end' : 'unix',
-             'output_encoding' : 'utf-8',
-             'generateid': 'true',
-             'expand_variables' : 'false',
-             'output_filename' : '',
-             'fold_whitespace': 'false',
-             # Run an arbitrary command after translation is complete
-             # so that it doesn't interfere with what's in translation
-             # console.
-             'run_command' : '',
-             # Leave empty to run on all platforms, comma-separated
-             # for one or more specific platforms. Values must match
-             # output of platform.system().
-             'run_command_on_platforms' : '',
-             'allowexternalscript': 'false',
-             # preprocess takes the same code path as flattenhtml, but it
-             # disables any processing/inlining outside of <if> and <include>.
-             'preprocess': 'false',
-             'flattenhtml': 'false',
-             'fallback_to_low_resolution': 'default',
-             'variables': '',
-             'compress': 'false',
-             'use_base_dir': 'true',
-             }
+    return {
+        'encoding': 'cp1252',
+        'exclude_from_rc': 'false',
+        'line_end': 'unix',
+        'output_encoding': 'utf-8',
+        'generateid': 'true',
+        'expand_variables': 'false',
+        'output_filename': '',
+        'fold_whitespace': 'false',
+        # Run an arbitrary command after translation is complete
+        # so that it doesn't interfere with what's in translation
+        # console.
+        'run_command': '',
+        # Leave empty to run on all platforms, comma-separated
+        # for one or more specific platforms. Values must match
+        # output of platform.system().
+        'run_command_on_platforms': '',
+        'allowexternalscript': 'false',
+        # preprocess takes the same code path as flattenhtml, but it
+        # disables any processing/inlining outside of <if> and <include>.
+        'preprocess': 'false',
+        'flattenhtml': 'false',
+        'fallback_to_low_resolution': 'default',
+        'variables': '',
+        'compress': 'default',
+        'use_base_dir': 'true',
+    }
 
   def IsExcludedFromRc(self):
     return self.attrs['exclude_from_rc'] == 'true'
@@ -189,13 +191,19 @@ class StructureNode(base.Node):
     return self.gatherer.GetCliques()
 
   def GetDataPackValue(self, lang, encoding):
-    """Returns a str represenation for a data_pack entry."""
+    """Returns a bytes representation for a data_pack entry."""
     if self.ExpandVariables():
       text = self.gatherer.GetText()
       data = util.Encode(self._Substitute(text), encoding)
     else:
       data = self.gatherer.GetData(lang, encoding)
-    return self.CompressDataIfNeeded(data)
+    if encoding != util.BINARY:
+      data = data.encode(encoding)
+    data = self.CompressDataIfNeeded(data)
+    # If the asset is in the Lottie format, indicate it by prepending "LOTTIE".
+    if self.attrs['type'] == 'lottie':
+      data = 'LOTTIE'.encode(self.attrs['output_encoding']) + data
+    return data
 
   def GetHtmlResourceFilenames(self):
     """Returns a set of all filenames inlined by this node."""

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
@@ -30,7 +31,7 @@ ScrollableArea* GetScrollableArea(Node* node) {
       !node->GetLayoutObject()->IsBoxModelObject())
     return nullptr;
 
-  return ToLayoutBoxModelObject(node->GetLayoutObject())->GetScrollableArea();
+  return To<LayoutBoxModelObject>(node->GetLayoutObject())->GetScrollableArea();
 }
 
 }  // namespace
@@ -38,7 +39,7 @@ ScrollableArea* GetScrollableArea(Node* node) {
 TopDocumentRootScrollerController::TopDocumentRootScrollerController(Page& page)
     : page_(&page) {}
 
-void TopDocumentRootScrollerController::Trace(blink::Visitor* visitor) {
+void TopDocumentRootScrollerController::Trace(Visitor* visitor) const {
   visitor->Trace(viewport_apply_scroll_);
   visitor->Trace(global_root_scroller_);
   visitor->Trace(page_);
@@ -56,10 +57,8 @@ void TopDocumentRootScrollerController::DidResizeViewport() {
   if (!GlobalRootScroller()->GetLayoutObject())
     return;
 
-  DCHECK(GlobalRootScroller()->GetLayoutObject()->IsBoxModelObject());
-
-  LayoutBoxModelObject* layout_object =
-      ToLayoutBoxModelObject(GlobalRootScroller()->GetLayoutObject());
+  auto* layout_object =
+      To<LayoutBoxModelObject>(GlobalRootScroller()->GetLayoutObject());
 
   // Top controls can resize the viewport without invalidating compositing or
   // paint so we need to do that manually here.
@@ -89,7 +88,7 @@ IntSize TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
              ->View()
              ->LayoutViewport()
              ->VisibleContentRect(kExcludeScrollbars)
-             .Size() +
+             .size() +
          IntSize(0, browser_controls_adjustment);
 }
 

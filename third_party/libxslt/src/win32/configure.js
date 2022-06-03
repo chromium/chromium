@@ -47,6 +47,7 @@ var withIconv = true;
 var withZlib = false;
 var withCrypto = true;
 var withModules = false;
+var withProfiler = true;
 /* Win32 build options. */
 var dirSep = "\\";
 var compiler = "msvc";
@@ -106,6 +107,7 @@ function usage()
 	txt += "  zlib:       Use zlib library (" + (withZlib? "yes" : "no") + ")\n";
 	txt += "  crypto:     Enable Crypto support (" + (withCrypto? "yes" : "no") + ")\n";
 	txt += "  modules:    Enable Module support (" + (withModules? "yes" : "no") + ")\n";
+	txt += "  profiler:   Enable Profiler support (" + (withProfiler? "yes" : "no") + ")\n";
 	txt += "\nWin32 build options, default value given in parentheses:\n\n";
 	txt += "  compiler:   Compiler to be used [msvc|mingw] (" + compiler + ")\n";
 	txt += "  cruntime:   C-runtime compiler option (only msvc) (" + cruntime + ")\n";
@@ -134,7 +136,7 @@ function usage()
    file included by our makefile. */
 function discoverVersion()
 {
-	var fso, cf, vf, ln, s;
+	var fso, cf, vf, ln, s, m;
 	fso = new ActiveXObject("Scripting.FileSystemObject");
 	verCvs = "";
 	if (useCvsVer && fso.FileExists("..\\CVS\\Entries")) {
@@ -143,8 +145,8 @@ function discoverVersion()
 			ln = cf.ReadLine();
 			s = new String(ln);
 			if (s.search(/^\/ChangeLog\//) != -1) {
-				iDot = s.indexOf(".");
-				iSlash = s.indexOf("/", iDot);
+				var iDot = s.indexOf(".");
+				var iSlash = s.indexOf("/", iDot);
 				verCvs = "CVS" + s.substring(iDot + 1, iSlash);
 				break;
 			}
@@ -174,13 +176,13 @@ function discoverVersion()
 			verMicroXslt = m[1];
 		} else if (s.search(/^LIBEXSLT_MAJOR_VERSION=/) != -1) {
 			vf.WriteLine(s);
-			verMajorExslt = s.substring(s.indexOf("=") + 1, s.length)
+			verMajorExslt = s.substring(s.indexOf("=") + 1, s.length);
 		} else if(s.search(/^LIBEXSLT_MINOR_VERSION=/) != -1) {
 			vf.WriteLine(s);
-			verMinorExslt = s.substring(s.indexOf("=") + 1, s.length)
+			verMinorExslt = s.substring(s.indexOf("=") + 1, s.length);
 		} else if(s.search(/^LIBEXSLT_MICRO_VERSION=/) != -1) {
 			vf.WriteLine(s);
-			verMicroExslt = s.substring(s.indexOf("=") + 1, s.length)
+			verMicroExslt = s.substring(s.indexOf("=") + 1, s.length);
 		}
 	}
 	cf.Close();
@@ -192,6 +194,7 @@ function discoverVersion()
 	vf.WriteLine("WITH_ZLIB=" + (withZlib? "1" : "0"));
 	vf.WriteLine("WITH_CRYPTO=" + (withCrypto? "1" : "0"));
 	vf.WriteLine("WITH_MODULES=" + (withModules? "1" : "0"));
+	vf.WriteLine("WITH_PROFILER=" + (withProfiler? "1" : "0"));
 	vf.WriteLine("DEBUG=" + (buildDebug? "1" : "0"));
 	vf.WriteLine("STATIC=" + (buildStatic? "1" : "0"));
 	vf.WriteLine("PREFIX=" + buildPrefix);
@@ -240,6 +243,8 @@ function configureXslt()
 			of.WriteLine(s.replace(/\@WITH_DEBUGGER\@/, withDebugger? "1" : "0"));
 		} else if (s.search(/\@WITH_MODULES\@/) != -1) {
 			of.WriteLine(s.replace(/\@WITH_MODULES\@/, withModules? "1" : "0"));
+		} else if (s.search(/\@WITH_PROFILER\@/) != -1) {
+			of.WriteLine(s.replace(/\@WITH_PROFILER\@/, withProfiler? "1" : "0"));
 		} else if (s.search(/\@LIBXSLT_DEFAULT_PLUGINS_PATH\@/) != -1) {
 			of.WriteLine(s.replace(/\@LIBXSLT_DEFAULT_PLUGINS_PATH\@/, "NULL"));
 		} else
@@ -343,6 +348,8 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
 			withCrypto = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "modules")
 			withModules = strToBool(arg.substring(opt.length + 1, arg.length));
+		else if (opt == "profiler")
+			withProfiler = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "compiler")
 			compiler = arg.substring(opt.length + 1, arg.length);
  		else if (opt == "cruntime")
@@ -353,8 +360,6 @@ for (i = 0; (i < WScript.Arguments.length) && (error == 0); i++) {
 			buildStatic = strToBool(arg.substring(opt.length + 1, arg.length));
 		else if (opt == "prefix")
 			buildPrefix = arg.substring(opt.length + 1, arg.length);
-		else if (opt == "incdir")
-			buildIncPrefix = arg.substring(opt.length + 1, arg.length);
 		else if (opt == "bindir")
 			buildBinPrefix = arg.substring(opt.length + 1, arg.length);
 		else if (opt == "libdir")
@@ -477,6 +482,7 @@ txtOut += "         Use iconv: " + boolToStr(withIconv) + "\n";
 txtOut += "         With zlib: " + boolToStr(withZlib) + "\n";
 txtOut += "            Crypto: " + boolToStr(withCrypto) + "\n";
 txtOut += "           Modules: " + boolToStr(withModules) + "\n";
+txtOut += "          Profiler: " + boolToStr(withProfiler) + "\n";
 txtOut += "\n";
 txtOut += "Win32 build configuration\n";
 txtOut += "-------------------------\n";

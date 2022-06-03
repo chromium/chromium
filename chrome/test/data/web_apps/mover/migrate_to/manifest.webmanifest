@@ -1,0 +1,13 @@
+{
+  "name": "App Migration Tester",
+  "description": "This is the migration goal!",
+  "start_url": "/web_apps/mover/migrate_to/index.html",
+  "display": "standalone",
+  "theme_color": "#b2ec40",
+  "scope": "/web_apps/mover/migrate_to/",
+  "icons": [{
+    "src": "icon144.png",
+    "sizes": "144x144",
+    "type": "image/png"
+  }]
+}

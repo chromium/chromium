@@ -9,5 +9,5 @@ window[0] = {
     }
 };
 </script>
-<iframe src="data:text/html,<script>try { alert(parent[0].a); } catch (e) { alert('PASS: Access to parent[0].a threw exception.'); }</script><script>try { parent[0].f(); } catch (e) { alert('PASS: Access to parent[0].f() threw exception.'); }</script>"></iframe><br>
+<iframe src="javascript:try { alert(parent[0].a); } catch (e) { alert('PASS: Access to parent[0].a threw exception.'); } try { parent[0].f(); } catch (e) { alert('PASS: Access to parent[0].f() threw exception.'); }"></iframe><br>
 This test passes if the access is forbidden.

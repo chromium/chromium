@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS An array
+PASS A generator
+FAIL An array with an overridden Symbol.iterator assert_array_equals: expected property 0 to be 6 but got 1 (expected array [6, 7] got [1, 2])
+PASS An object with an overriden Symbol.iterator
+FAIL An array with an overridden Symbol.iterator on the prototype assert_array_equals: expected property 0 to be 11 but got 1 (expected array [11, 12] got [1, 2])
+FAIL An array with an overridden %ArrayIterator%.prototype.next assert_array_equals: expected property 0 to be 8 but got 1 (expected array [8, 9] got [1, 2])
+PASS A holey array with fallback to an accessor on the prototype
+PASS A string array in sequence<sequence> or record
+Harness: the test ran to completion.
+

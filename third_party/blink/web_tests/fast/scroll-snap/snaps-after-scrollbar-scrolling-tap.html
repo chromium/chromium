@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1" />
+<link rel="stylesheet" href="resources/simple-snap.css">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/scrollbar-util.js"></script>
+<script src="../../resources/blink-coordinates-util.js"></script>
+
+<div id='scroller'>
+  <div id="space"></div>
+  <div class="snap left top"></div>
+  <div class="snap right top"></div>
+  <div class="snap left bottom"></div>
+</div>
+
+<script>
+  if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+  window.onload = () => {
+    const scroller = document.getElementById("scroller");
+    const snapPoint = 400;
+    const trackPos = 350;
+
+    function scrollTop() {
+      return scroller.scrollTop;
+    }
+
+    function scrollLeft() {
+      return scroller.scrollLeft;
+    }
+
+    // MacOS devices do not have touch screens Tests are irrelevant.
+    const macPlatform = navigator.platform.indexOf('Mac') == 0;
+
+    promise_test (async () => {
+      if (macPlatform)
+        return;
+
+      scroller.scrollTo(0, 0);
+      const thumb = horizontalThumb(scroller);
+      await touchTapOn(trackPos, thumb.y);
+      await waitForScrollEnd(scroller, scrollLeft, snapPoint);
+    }, "Snaps after tapping on the forward track on the horizontal scrollbar.");
+
+    promise_test (async () => {
+      if (macPlatform)
+        return;
+
+      scroller.scrollTo(0, 0);
+      const thumb = verticalThumb(scroller);
+      await touchTapOn(thumb.x, trackPos);
+      await waitForScrollEnd(scroller, scrollTop, snapPoint);
+    }, "Snaps after tapping on the forward track on the vertical scrollbar.");
+  };
+</script>
+

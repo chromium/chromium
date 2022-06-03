@@ -12,7 +12,7 @@ NotifierMetadata::NotifierMetadata(NotifierMetadata&& other) = default;
 
 NotifierMetadata::NotifierMetadata(
     const message_center::NotifierId& notifier_id,
-    const base::string16& name,
+    const std::u16string& name,
     bool enabled,
     bool enforced,
     const gfx::ImageSkia& icon)

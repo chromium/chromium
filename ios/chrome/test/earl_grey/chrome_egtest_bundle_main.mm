@@ -5,11 +5,13 @@
 #import "ios/chrome/test/earl_grey/chrome_egtest_bundle_main.h"
 
 #import <XCTest/XCTest.h>
+#import <objc/runtime.h>
 #include <memory>
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/i18n/icu_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -49,6 +51,8 @@ class TestMain {
     // CommandLine to exist.
     base::CommandLine::Init(argc, argv);
 
+    base::i18n::InitializeICU();
+
     // Load pak files into the ResourceBundle.
     l10n_util::OverrideLocaleWithCocoaLocale();
     const std::string loaded_locale =
@@ -58,15 +62,27 @@ class TestMain {
     CHECK(!loaded_locale.empty());
   }
 
+  TestMain(const TestMain&) = delete;
+  TestMain& operator=(const TestMain&) = delete;
+
   ~TestMain() {}
 
  private:
   base::AtExitManager exit_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMain);
 };
 
 }
+
+@class XCTSourceCodeSymbolInfo;
+@protocol XCTSymbolInfoProviding <NSObject>
+- (XCTSourceCodeSymbolInfo*)symbolInfoForAddressInCurrentProcess:(pid_t)pid
+                                                           error:
+                                                               (NSError**)error;
+@end
+
+@interface XCTSymbolicationService
++ (void)setSharedService:(id<XCTSymbolInfoProviding>)arg1;
+@end
 
 @interface ChromeEGTestBundleMain () <XCTestObservation> {
   std::unique_ptr<TestMain> _testMain;
@@ -83,6 +99,25 @@ class TestMain {
   return self;
 }
 
+// -waitForQuiescenceIncludingAnimationsIdle tends to introduce a long
+// unnecessary delay, as EarlGrey already checks for animations to complete.
+// Swizzling and skipping the following call speeds up test runs.
+- (void)disableWaitForIdle {
+  SEL originalSelector =
+      NSSelectorFromString(@"waitForQuiescenceIncludingAnimationsIdle:");
+  SEL swizzledSelector = @selector(skipQuiescenceDelay);
+  Method originalMethod = class_getInstanceMethod(
+      objc_getClass("XCUIApplicationProcess"), originalSelector);
+  Method swizzledMethod =
+      class_getInstanceMethod([self class], swizzledSelector);
+  method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
+// Empty swizzled method to be invoked by XCTest at the start of each test case.
+// Since earl grey synchronizes automatically, do nothing here.
+- (void)skipQuiescenceDelay {
+}
+
 #pragma mark - XCTestObservation
 
 - (void)testBundleWillStart:(NSBundle*)testBundle {
@@ -96,6 +131,20 @@ class TestMain {
   CHECK(NSClassFromString(@"CRWWebController") == nil);
   CHECK(NSClassFromString(@"MainController") == nil);
   CHECK(NSClassFromString(@"BrowserViewController") == nil);
+
+  // Disable aggressive symbolication and disable symbolication service to work
+  // around slow XCTest assertion failures. These failures are spending a very
+  // long time attempting to symbolicate.
+  Class symbolicationService = NSClassFromString(@"XCTSymbolicationService");
+  if (symbolicationService != nil) {
+    [symbolicationService setSharedService:nil];
+  }
+  [[NSUserDefaults standardUserDefaults]
+      setBool:YES
+       forKey:@"XCTDisableAggressiveSymbolication"];
+
+  // Disable long wait for idle messages.
+  [self disableWaitForIdle];
 }
 
 - (void)testBundleDidFinish:(NSBundle*)testBundle {

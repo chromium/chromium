@@ -1,0 +1,37 @@
+{
+  "name": "dependency-analysis",
+  "version": "1.0.0",
+  "scripts": {
+    "serve": "webpack-dev-server --mode development",
+    "serve-dist": "http-server ./dist --port 8888",
+    "build": "webpack",
+    "lint": "eslint src/*.js src/vue_components/*.vue; exit 0",
+    "lint-fix": "eslint --fix src/*.js src/vue_components/*.vue; exit 0"
+  },
+  "dependencies": {
+    "@trevoreyre/autocomplete-vue": "^2.2.0",
+    "d3": "^5.16.0",
+    "vue": "^2.6.11",
+    "vue-js-modal": "^2.0.0-rc.6",
+    "vue-material": "^1.0.0-beta-14"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^6.0.3",
+    "css-loader": "^3.6.0",
+    "eslint": "^7.2.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-vue": "^7.0.0-alpha.9",
+    "file-loader": "^6.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "http-server": "^0.12.3",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^9.0.3",
+    "vue-loader": "^15.9.3",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.6.11",
+    "webpack": "^4.43.0",
+    "webpack-bundle-analyzer": "^3.8.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

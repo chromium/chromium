@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_H_
 
 #include <atomic>
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_database_callback.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_basic_types.h"
@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_backend.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_database.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -56,10 +57,9 @@ class Database final : public ScriptWrappable {
   Database(DatabaseContext*,
            const String& name,
            const String& expected_version,
-           const String& display_name,
-           uint32_t estimated_size);
+           const String& display_name);
   ~Database() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   bool OpenAndVerifyVersion(bool set_version_in_new_database,
                             DatabaseError&,
@@ -100,7 +100,6 @@ class Database final : public ScriptWrappable {
   const SecurityOrigin* GetSecurityOrigin() const;
   String StringIdentifier() const;
   String DisplayName() const;
-  uint32_t EstimatedSize() const;
   String FileName() const;
   SQLiteDatabase& SqliteDatabase() { return sqlite_database_; }
 
@@ -177,7 +176,6 @@ class Database final : public ScriptWrappable {
   String name_;
   String expected_version_;
   String display_name_;
-  uint32_t estimated_size_;
   String filename_;
 
   DatabaseGuid guid_;
@@ -195,6 +193,15 @@ class Database final : public ScriptWrappable {
   Mutex transaction_in_progress_mutex_;
   bool transaction_in_progress_;
   bool is_transaction_queue_enabled_;
+
+  // Gates UKM counters to execute once per database instance.
+  bool did_try_to_count_transaction_;
+  bool did_try_to_count_third_party_transaction_;
+
+  // Disable BackForwardCache when using WebDatabase feature, because we do not
+  // handle the state inside the portal after putting the page in cache.
+  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 
   friend class ChangeVersionWrapper;
   friend class DatabaseManager;

@@ -19,8 +19,7 @@ interface AudioStreamCreatorClient {
   StreamCreated(
       pending_remote<media.mojom.AudioInputStream> stream,
       pending_receiver<media.mojom.AudioInputStreamClient> client_receiver,
-      media.mojom.ReadOnlyAudioDataPipe data_pipe,
-      bool initially_muted);
+      media.mojom.ReadOnlyAudioDataPipe data_pipe);
 };
 
 // This interface is used by the Mirroring Service to ask the browser to provide

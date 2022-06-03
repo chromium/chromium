@@ -19,10 +19,9 @@
 #include <string>
 #include <memory>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -46,6 +45,9 @@ class ScopedExecutablePatch {
     memcpy(target_, source, size_);
   }
 
+  ScopedExecutablePatch(const ScopedExecutablePatch&) = delete;
+  ScopedExecutablePatch& operator=(const ScopedExecutablePatch&) = delete;
+
   ~ScopedExecutablePatch() {
     ScopedVirtualProtectRWX protect_rwx(target_, size_);
     memcpy(target_, original_.get(), size_);
@@ -62,7 +64,7 @@ class ScopedExecutablePatch {
    public:
     // If either the constructor or destructor fails, PCHECK() to terminate
     // immediately, because the process will be in a weird and untrustworthy
-    // state, and gtest error handling isn’t worthwhile at that point.
+    // state, and Google Test error handling isn’t worthwhile at that point.
 
     ScopedVirtualProtectRWX(void* address, size_t size)
         : address_(address), size_(size) {
@@ -70,6 +72,9 @@ class ScopedExecutablePatch {
           address_, size_, PAGE_EXECUTE_READWRITE, &old_protect_))
           << "VirtualProtect";
     }
+
+    ScopedVirtualProtectRWX(const ScopedVirtualProtectRWX&) = delete;
+    ScopedVirtualProtectRWX& operator=(const ScopedVirtualProtectRWX&) = delete;
 
     ~ScopedVirtualProtectRWX() {
       DWORD last_protect_;
@@ -81,15 +86,11 @@ class ScopedExecutablePatch {
     void* address_;
     size_t size_;
     DWORD old_protect_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedVirtualProtectRWX);
   };
 
   std::unique_ptr<uint8_t[]> original_;
   void* target_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedExecutablePatch);
 };
 
 // SafeTerminateProcess is calling convention specific only for x86.

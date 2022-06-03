@@ -5,9 +5,9 @@
 package org.chromium.android_webview;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
  * Delegate for handling callbacks. All methods are called on the background thread.
@@ -17,7 +17,7 @@ import org.chromium.base.annotations.JNINamespace;
 public abstract class AwContentsBackgroundThreadClient {
     private static final String TAG = "AwBgThreadClient";
 
-    public abstract AwWebResourceResponse shouldInterceptRequest(
+    public abstract WebResourceResponseInfo shouldInterceptRequest(
             AwContentsClient.AwWebResourceRequest request);
 
     // Protected methods ---------------------------------------------------------------------------
@@ -32,16 +32,13 @@ public abstract class AwContentsBackgroundThreadClient {
                             isMainFrame, hasUserGesture, method, requestHeaderNames,
                             requestHeaderValues)),
                     /*raisedException=*/false);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Log.e(TAG,
                     "Client raised exception in shouldInterceptRequest. Re-throwing on UI thread.");
 
-            ThreadUtils.getUiThreadHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e(TAG, "The following exception was raised by shouldInterceptRequest:");
-                    throw e;
-                }
+            AwThreadUtils.postToUiThreadLooper(() -> {
+                Log.e(TAG, "The following exception was raised by shouldInterceptRequest:");
+                throw e;
             });
 
             return new AwWebResourceInterceptResponse(null, /*raisedException=*/true);

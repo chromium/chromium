@@ -49,81 +49,13 @@ class VisibleUnitsSentenceTest : public EditingTestBase {
   }
 };
 
-class ParameterizedVisibleUnitsSentenceTest
-    : public ::testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest,
-      public VisibleUnitsSentenceTest {
- protected:
-  ParameterizedVisibleUnitsSentenceTest() : ScopedLayoutNGForTest(GetParam()) {}
-
-  bool LayoutNGEnabled() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedVisibleUnitsSentenceTest,
-                         ::testing::Bool());
-
-TEST_P(ParameterizedVisibleUnitsSentenceTest, EndOfSentenceShadowDOMV0) {
-  const char* body_content = "<a id=host><b id=one>1</b><b id=two>22</b></a>";
-  const char* shadow_content =
-      "<p><i id=three>333</i> <content select=#two></content> <content "
-      "select=#one></content> <i id=four>4444</i></p>";
-  SetBodyContent(body_content);
-  ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = shadow_root->getElementById("three")->firstChild();
-  Node* four = shadow_root->getElementById("four")->firstChild();
-
-  EXPECT_EQ(
-      Position(four, 4),
-      EndOfSentence(CreateVisiblePositionInDOMTree(*one, 0)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(four, 4),
-      EndOfSentence(CreateVisiblePositionInFlatTree(*one, 0)).DeepEquivalent());
-
-  EXPECT_EQ(
-      Position(four, 4),
-      EndOfSentence(CreateVisiblePositionInDOMTree(*one, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(four, 4),
-      EndOfSentence(CreateVisiblePositionInFlatTree(*one, 1)).DeepEquivalent());
-
-  EXPECT_EQ(
-      Position(four, 4),
-      EndOfSentence(CreateVisiblePositionInDOMTree(*two, 0)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(four, 4),
-      EndOfSentence(CreateVisiblePositionInFlatTree(*two, 0)).DeepEquivalent());
-
-  EXPECT_EQ(
-      Position(four, 4),
-      EndOfSentence(CreateVisiblePositionInDOMTree(*two, 1)).DeepEquivalent());
-  EXPECT_EQ(
-      PositionInFlatTree(four, 4),
-      EndOfSentence(CreateVisiblePositionInFlatTree(*two, 1)).DeepEquivalent());
-
-  EXPECT_EQ(Position(four, 4),
-            EndOfSentence(CreateVisiblePositionInDOMTree(*three, 1))
-                .DeepEquivalent());
-  EXPECT_EQ(PositionInFlatTree(four, 4),
-            EndOfSentence(CreateVisiblePositionInFlatTree(*three, 1))
-                .DeepEquivalent());
-
-  EXPECT_EQ(
-      Position(four, 4),
-      EndOfSentence(CreateVisiblePositionInDOMTree(*four, 1)).DeepEquivalent());
-  EXPECT_EQ(PositionInFlatTree(four, 4),
-            EndOfSentence(CreateVisiblePositionInFlatTree(*four, 1))
-                .DeepEquivalent());
-}
-
 TEST_F(VisibleUnitsSentenceTest, startOfSentence) {
-  const char* body_content = "<a id=host><b id=one>1</b><b id=two>22</b></a>";
+  const char* body_content =
+      "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></span>";
   const char* shadow_content =
-      "<p><i id=three>333</i> <content select=#two></content> <content "
-      "select=#one></content> <i id=four>4444</i></p>";
+      "<p><i id=three>333</i> <slot name=#two></slot> <slot name=#one></slot> "
+      "<i id=four>4444</i></p>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -132,47 +64,29 @@ TEST_F(VisibleUnitsSentenceTest, startOfSentence) {
   Node* three = shadow_root->getElementById("three")->firstChild();
   Node* four = shadow_root->getElementById("four")->firstChild();
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*one, 0))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*one, 0)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*one, 0))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*one, 0)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*one, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*one, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*one, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*one, 1)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*two, 0))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*two, 0)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*two, 0))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*two, 0)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*two, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*two, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*two, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*two, 1)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*three, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*three, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*three, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*three, 1)));
 
-  EXPECT_EQ(Position(three, 0),
-            StartOfSentence(CreateVisiblePositionInDOMTree(*four, 1))
-                .DeepEquivalent());
+  EXPECT_EQ(Position(three, 0), StartOfSentencePosition(Position(*four, 1)));
   EXPECT_EQ(PositionInFlatTree(three, 0),
-            StartOfSentence(CreateVisiblePositionInFlatTree(*four, 1))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(*four, 1)));
 }
 
 TEST_F(VisibleUnitsSentenceTest, SentenceBoundarySkipTextControl) {
@@ -185,12 +99,10 @@ TEST_F(VisibleUnitsSentenceTest, SentenceBoundarySkipTextControl) {
             EndOfSentence(PositionInFlatTree(foo, 1)).GetPosition());
 
   EXPECT_EQ(Position(foo, 0),
-            StartOfSentence(CreateVisiblePosition(Position(bar, 3)))
-                .DeepEquivalent());
+            StartOfSentencePosition(Position(Position(bar, 3))));
 
   EXPECT_EQ(PositionInFlatTree(foo, 0),
-            StartOfSentence(CreateVisiblePosition(PositionInFlatTree(bar, 3)))
-                .DeepEquivalent());
+            StartOfSentencePosition(PositionInFlatTree(bar, 3)));
 }
 
 }  // namespace blink

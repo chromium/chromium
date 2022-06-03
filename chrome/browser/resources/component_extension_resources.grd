@@ -14,12 +14,6 @@
     <structures>
       <if expr="chromeos">
         <structure name="IDR_WALLPAPER_MANAGER_MAIN" file="chromeos/wallpaper_manager/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
-        <if expr="not _google_chrome">
-          <structure name="IDR_FIRST_RUN_DIALOG_MAIN" file="chromeos/first_run/app/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" variables="GREETING_IMAGE=disabled" expand_variables="true"/>
-        </if>
-        <if expr="_google_chrome">
-          <structure name="IDR_FIRST_RUN_DIALOG_MAIN" file="chromeos/first_run/app/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" variables="GREETING_IMAGE=enabled" expand_variables="true"/>
-        </if>
       </if>
     </structures>
     <includes>
@@ -30,61 +24,72 @@
         <include name="IDR_BRAILLE_IME_MAIN_JS" file="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
       </if>
 
-      <!-- Bookmarks -->
-      <include name="IDR_COMPONENT_BOOKMARKS_BOOKMARKS_HTML" file="bookmarks/bookmarks.html" type="BINDATA" />
       <!-- Hangout Services extension, included in Google Chrome builds only. -->
       <if expr="_google_chrome or enable_hangout_services_extension">
         <include name="IDR_HANGOUT_SERVICES_BACKGROUND_HTML" file="hangout_services/background.html" type="BINDATA" />
         <include name="IDR_HANGOUT_SERVICES_THUNK_JS" file="hangout_services/thunk.js" type="BINDATA" />
       </if>
       <if expr="not is_android">
-        <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="feedback/html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_DEFAULT_HTML" file="feedback/html/default.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_DEFAULT_HTML" file="feedback/html/default.html" preprocess="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_SYSINFO_HTML" file="feedback/html/sys_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_EVENT_HANDLER_JS" file="feedback/js/event_handler.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_FEEDBACK_JS" file="feedback/js/feedback.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_SYSINFO_JS" file="feedback/js/sys_info.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="feedback/js/take_screenshot.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_TOPBAR_HANDLER_JS" file="feedback/js/topbar_handlers.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_QUESTIONNAIRE_JS" file="feedback/js/questionnaire.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_FEEDBACK_JS" file="feedback/js/feedback.js" preprocess="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_SYSINFO_JS" file="feedback/js/sys_info.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="feedback/js/take_screenshot.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_TOPBAR_HANDLER_JS" file="feedback/js/topbar_handlers.js" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_CSS" file="feedback/css/assistant_logs_info.css" type="BINDATA" />
         <include name="IDR_FEEDBACK_FEEDBACK_CSS" file="feedback/css/feedback.css" type="BINDATA" />
         <include name="IDR_FEEDBACK_SYSINFO_CSS" file="feedback/css/sys_info.css" type="BINDATA" />
         <include name="IDR_FEEDBACK_ICON_48" file="feedback/images/icon48.png" type="BINDATA" />
         <include name="IDR_FEEDBACK_ICON_192" file="feedback/images/icon192.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PNG"
+                 file="feedback/images/button_butter_bar_close.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_PNG"
+                 file="feedback/images/button_butter_bar_close_hover.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_PNG"
+                 file="feedback/images/button_butter_bar_close_pressed.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_2X_PNG"
+                 file="feedback/images/2x/button_butter_bar_close.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_2X_PNG"
+                 file="feedback/images/2x/button_butter_bar_close_hover.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_2X_PNG"
+                 file="feedback/images/2x/button_butter_bar_close_pressed.png" type="BINDATA" />
       </if>
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_BACKGROUND_JS" file="identity_scope_approval_dialog/background.js" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_CSS" file="identity_scope_approval_dialog/scope_approval_dialog.css" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG" file="identity_scope_approval_dialog/scope_approval_dialog.html" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_JS" file="identity_scope_approval_dialog/scope_approval_dialog.js" type="BINDATA" />
+      <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_INJECT_JS" file="identity_scope_approval_dialog/inject.js" type="BINDATA" />
       <if expr="chromeos">
-        <include name="IDR_WALLPAPER_MANAGER_CONSTANTS_JS" file="chromeos/wallpaper_manager/js/constants.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_EVENT_JS" file="chromeos/wallpaper_manager/js/event_page.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_WALLPAPER_MANAGER_CONSTANTS_JS" file="chromeos/wallpaper_manager/js/constants.js" type="BINDATA" />
+        <include name="IDR_WALLPAPER_MANAGER_EVENT_JS" file="chromeos/wallpaper_manager/js/event_page.js" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_ICON_48" file="chromeos/wallpaper_manager/images/icon48.png" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_ICON_192" file="chromeos/wallpaper_manager/images/icon192.png" type="BINDATA" />
         <include name="IDR_WALLPAPER_MANAGER_MAIN_JS" file="chromeos/wallpaper_manager/js/main_scripts.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_UTIL_JS" file="chromeos/wallpaper_manager/js/util.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_BACKGROUND_JS" file="chromeos/first_run/app/background.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_MAIN_JS" file="chromeos/first_run/app/main.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_16" file="chromeos/first_run/app/icon/16.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_32" file="chromeos/first_run/app/icon/32.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_48" file="chromeos/first_run/app/icon/48.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_64" file="chromeos/first_run/app/icon/64.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_96" file="chromeos/first_run/app/icon/96.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_128" file="chromeos/first_run/app/icon/128.png" type="BINDATA" />
-        <include name="IDR_FIRST_RUN_DIALOG_ICON_256" file="chromeos/first_run/app/icon/256.png" type="BINDATA" />
-        <include name="IDR_ARC_SUPPORT_BACKGROUND_JS" file="chromeos/arc_support/background.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_WALLPAPER_MANAGER_UTIL_JS" file="chromeos/wallpaper_manager/js/util.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_BACKGROUND_JS" file="chromeos/arc_support/background.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_BUBBLE_CSS" file="chromeos/arc_support/bubble.css" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_BUBBLE_JS" file="chromeos/arc_support/bubble.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_BUBBLE_BUTTON_JS" file="chromeos/arc_support/bubble_button.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_BUBBLE_BUTTON_CSS" file="chromeos/arc_support/bubble_button.css" type="chrome_html" />
+        <include name="IDR_ARC_SUPPORT_CONTROLLED_INDICATOR_JS" file="chromeos/arc_support/controlled_indicator.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_CONTROLLED_INDICATOR_CSS" file="chromeos/arc_support/controlled_indicator.css" flattenhtml="true" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_MAIN_CSS" file="chromeos/arc_support/main.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN_JS" file="chromeos/arc_support/main.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_OVERLAY_CSS" file="chromeos/arc_support/overlay.css" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_OVERLAY_JS" file="chromeos/arc_support/overlay.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PLAYSTORE_CSS" file="chromeos/arc_support/playstore.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PLAYSTORE_JS" file="chromeos/arc_support/playstore.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PLAYSTORE_LOGO" file="chromeos/arc_support/icon/playstore.svg" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PROGRESSBAR_CSS" file="chromeos/arc_support/progressbar.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PROGRESSBAR_JS" file="chromeos/arc_support/progressbar.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_FOCUS_MANAGER_JS" file="chromeos/arc_support/arc_optin_focus_manager.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_LAYOUT_STYLE" file="chromeos/arc_support/layout_style.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN" file="chromeos/arc_support/main.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_32" file="chromeos/arc_support/icon/32.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_192" file="chromeos/arc_support/icon/192.png" type="BINDATA" />
@@ -92,46 +97,6 @@
         <include name="IDR_ARC_SUPPORT_ICON_HEADER" file="chromeos/arc_support/images/header.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS" file="chromeos/arc_support/recommend_app_list_view.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML" file="chromeos/arc_support/recommend_app_list_view.html" type="chrome_html" flattenhtml="true" />
-      </if>
-      <if expr="enable_plugins">
-        <!-- Note that resources included here also must be included in
-             print_preview_ui.cc such these resources will be exposed to
-             PDF in print preview. -->
-        <include name="IDR_PDF_INDEX_HTML" file="pdf/index.html" allowexternalscript="true" type="BINDATA" preprocess="true" />
-        <include name="IDR_PDF_INDEX_CSS" file="pdf/index.css" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_PDF_MAIN_JS" file="pdf/main.js" type="BINDATA" preprocess="true" />
-        <include name="IDR_PDF_PDF_VIEWER_JS" file="pdf/pdf_viewer.js" type="BINDATA" />
-        <include name="IDR_PDF_CONTROLLER_JS" file="pdf/controller.js" type="BINDATA" />
-        <include name="IDR_PDF_TOOLBAR_MANAGER_JS" file="pdf/toolbar_manager.js" type="BINDATA" />
-        <include name="IDR_PDF_PDF_FITTING_TYPE_JS" file="pdf/pdf_fitting_type.js" type="BINDATA" />
-        <include name="IDR_PDF_VIEWPORT_JS" file="pdf/viewport.js" type="BINDATA" />
-        <include name="IDR_PDF_OPEN_PDF_PARAMS_PARSER_JS" file="pdf/open_pdf_params_parser.js" type="BINDATA" />
-        <include name="IDR_PDF_NAVIGATOR_JS" file="pdf/navigator.js" type="BINDATA" />
-        <include name="IDR_PDF_VIEWPORT_SCROLLER_JS" file="pdf/viewport_scroller.js" type="BINDATA" />
-        <include name="IDR_PDF_PDF_SCRIPTING_API_JS" file="pdf/pdf_scripting_api.js" type="BINDATA" />
-        <include name="IDR_PDF_ZOOM_MANAGER_JS" file="pdf/zoom_manager.js" type="BINDATA" />
-        <include name="IDR_PDF_GESTURE_DETECTOR_JS" file="pdf/gesture_detector.js" type="BINDATA" />
-        <include name="IDR_PDF_BROWSER_API_JS" file="pdf/browser_api.js" type="BINDATA" />
-        <include name="IDR_PDF_METRICS_JS" file="pdf/metrics.js" type="BINDATA" />
-
-        <include name="IDR_PDF_SHARED_VARS_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/shared-vars.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_ICONS_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/icons.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_BOOKMARK_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-bookmark.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_ERROR_SCREEN_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-error-screen.js" use_base_dir="false" type="BINDATA" />
-        <if expr="chromeos">
-          <include name="IDR_PDF_VIEWER_INK_INDEX_HTML" file="pdf/ink/index.html" type="BINDATA" />
-          <include name="IDR_PDF_VIEWER_INK_INK_API_JS" file="pdf/ink/ink_api.js" type="BINDATA" />
-          <include name="IDR_PDF_VIEWER_INK_HOST_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-ink-host.js" use_base_dir="false" type="BINDATA" />
-          <include name="IDR_PDF_VIEWER_PEN_OPTIONS_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-pen-options.js" use_base_dir="false" type="BINDATA" />
-          <include name="IDR_PDF_VIEWER_FORM_WARNING_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-form-warning.js" use_base_dir="false" type="BINDATA" />
-        </if>
-        <include name="IDR_PDF_VIEWER_PAGE_INDICATOR_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-page-indicator.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_PAGE_SELECTOR_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-page-selector.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_PASSWORD_SCREEN_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-password-screen.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_PDF_TOOLBAR_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-pdf-toolbar.js" use_base_dir="false" type="BINDATA" preprocess="true"/>
-        <include name="IDR_PDF_VIEWER_TOOLBAR_DROPDOWN_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-toolbar-dropdown.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_ZOOM_BUTTON_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-zoom-button.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_PDF_VIEWER_ZOOM_SELECTOR_JS" file="${root_gen_dir}/chrome/browser/resources/pdf/elements/viewer-zoom-toolbar.js" use_base_dir="false" type="BINDATA" />
       </if>
       <include name="IDR_CRYPTOTOKEN_UTIL_JS" file="cryptotoken/util.js" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_B64_JS" file="cryptotoken/b64.js" type="BINDATA" />

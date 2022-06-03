@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "ash/public/cpp/ash_prefs.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 

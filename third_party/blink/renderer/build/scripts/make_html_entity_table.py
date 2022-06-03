@@ -26,7 +26,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """This python script creates the raw data that is our entity
 database. The representation is one string database containing all
 strings we could need, and then a mapping from offset+length -> entity
@@ -55,16 +54,20 @@ def offset_table_entry(offset):
 def check_ascii(entity_string):
     for ch in entity_string:
         code = ord(ch)
-        assert 0 <= code <= 127, (ch + " is not ASCII. Need to change type " +
-                                  "of storage from LChar to UChar to support " +
-                                  "this entity.")
+        assert 0 <= code <= 127, (
+            ch + " is not ASCII. Need to change type " +
+            "of storage from LChar to UChar to support " + "this entity.")
 
 
 def main():
     program_name = os.path.basename(__file__)
     if len(sys.argv) < 4 or sys.argv[1] != "-o":
-        # Python 3, change to: print("Usage: %s -o OUTPUT_FILE INPUT_FILE" % program_name, file=sys.stderr)
-        sys.stderr.write("Usage: %s -o OUTPUT_FILE INPUT_FILE\n" % program_name)
+        # Python 3, change to:
+        # print(
+        #     "Usage: %s -o OUTPUT_FILE INPUT_FILE" % program_name,
+        #     file=sys.stderr)
+        sys.stderr.write(
+            "Usage: %s -o OUTPUT_FILE INPUT_FILE\n" % program_name)
         exit(1)
 
     output_path = sys.argv[2]
@@ -153,7 +156,8 @@ namespace {
             all_data += data_to_add
             output_file.write("'")
             entity_offset += len(data_to_add)
-        assert len(entry) == 2, "We will use slot [2] in the list for the offset."
+        assert len(
+            entry) == 2, "We will use slot [2] in the list for the offset."
         assert this_offset < 32768  # Stored in a 16 bit short.
         entry.append(this_offset)
 
@@ -166,7 +170,8 @@ namespace {
             index[starting_letter] = offset
 
     output_file.write("""
-static const HTMLEntityTableEntry staticEntityTable[%s] = {\n""" % entity_count)
+static const HTMLEntityTableEntry staticEntityTable[%s] = {\n""" %
+                      entity_count)
 
     for entry in entries:
         values = entry[VALUE].split(' ')
@@ -232,6 +237,7 @@ const HTMLEntityTableEntry* HTMLEntityTable::LastEntry()
 
 }
 """ % entity_count)
+
 
 if __name__ == "__main__":
     main()

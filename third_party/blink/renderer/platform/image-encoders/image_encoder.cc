@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

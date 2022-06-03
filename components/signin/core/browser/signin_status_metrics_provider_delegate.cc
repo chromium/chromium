@@ -4,7 +4,7 @@
 
 #include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
 
 AccountsStatus::AccountsStatus()

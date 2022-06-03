@@ -8,15 +8,12 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/async_execution_time_metrics_logger.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
-#include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
-#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
-#include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
 
 namespace chromeos {
 
@@ -24,24 +21,18 @@ namespace device_sync {
 
 namespace {
 
-// Timeout values for asynchronous operation.
-// TODO(https://crbug.com/933656): Use async execution time metric to tune these
-// timeout values.
-constexpr base::TimeDelta kWaitingForClientAppMetadataTimeout =
-    base::TimeDelta::FromSeconds(60);
+// TODO(https://crbug.com/933656): Use async execution time metric to tune this.
 constexpr base::TimeDelta kWaitingForBatchNotifyGroupDevicesResponseTimeout =
     kMaxAsyncExecutionTime;
 
-void RecordClientAppMetadataFetchMetrics(const base::TimeDelta& execution_time,
-                                         CryptAuthAsyncTaskResult result) {
-  // TODO(https://crbug.com/933656, https://crbug.com/936273): Add metrics to
-  // track async execution times and failure rates due to async timeouts.
-}
-
 void RecordBatchNotifyGroupDevicesMetrics(const base::TimeDelta& execution_time,
                                           CryptAuthApiCallResult result) {
-  // TODO(https://crbug.com/933656, https://crbug.com/936273): Add metrics to
-  // track async execution times and failure rates due to async timeouts.
+  LogAsyncExecutionTimeMetric(
+      "CryptAuth.DeviceSyncV2.DeviceNotifier.ExecutionTime.NotifyGroupDevices",
+      execution_time);
+  LogCryptAuthApiCallSuccessMetric(
+      "CryptAuth.DeviceSyncV2.DeviceNotifier.ApiCallResult.NotifyGroupDevices",
+      result);
 }
 
 }  // namespace
@@ -51,13 +42,19 @@ CryptAuthDeviceNotifierImpl::Factory*
     CryptAuthDeviceNotifierImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthDeviceNotifierImpl::Factory*
-CryptAuthDeviceNotifierImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<CryptAuthDeviceNotifier>
+CryptAuthDeviceNotifierImpl::Factory::Create(
+    const std::string& instance_id,
+    const std::string& instance_id_token,
+    CryptAuthClientFactory* client_factory,
+    std::unique_ptr<base::OneShotTimer> timer) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(instance_id, instance_id_token,
+                                         client_factory, std::move(timer));
+  }
 
-  static base::NoDestructor<CryptAuthDeviceNotifierImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthDeviceNotifierImpl(
+      instance_id, instance_id_token, client_factory, std::move(timer)));
 }
 
 // static
@@ -68,40 +65,27 @@ void CryptAuthDeviceNotifierImpl::Factory::SetFactoryForTesting(
 
 CryptAuthDeviceNotifierImpl::Factory::~Factory() = default;
 
-std::unique_ptr<CryptAuthDeviceNotifier>
-CryptAuthDeviceNotifierImpl::Factory::BuildInstance(
-    ClientAppMetadataProvider* client_app_metadata_provider,
-    CryptAuthClientFactory* client_factory,
-    CryptAuthGCMManager* gcm_manager,
-    std::unique_ptr<base::OneShotTimer> timer) {
-  return base::WrapUnique(new CryptAuthDeviceNotifierImpl(
-      client_app_metadata_provider, client_factory, gcm_manager,
-      std::move(timer)));
-}
-
 CryptAuthDeviceNotifierImpl::CryptAuthDeviceNotifierImpl(
-    ClientAppMetadataProvider* client_app_metadata_provider,
+    const std::string& instance_id,
+    const std::string& instance_id_token,
     CryptAuthClientFactory* client_factory,
-    CryptAuthGCMManager* gcm_manager,
     std::unique_ptr<base::OneShotTimer> timer)
-    : client_app_metadata_provider_(client_app_metadata_provider),
+    : instance_id_(instance_id),
+      instance_id_token_(instance_id_token),
       client_factory_(client_factory),
-      gcm_manager_(gcm_manager),
       timer_(std::move(timer)) {}
 
 CryptAuthDeviceNotifierImpl::~CryptAuthDeviceNotifierImpl() = default;
 
 // static
-base::Optional<base::TimeDelta> CryptAuthDeviceNotifierImpl::GetTimeoutForState(
+absl::optional<base::TimeDelta> CryptAuthDeviceNotifierImpl::GetTimeoutForState(
     State state) {
   switch (state) {
-    case State::kWaitingForClientAppMetadata:
-      return kWaitingForClientAppMetadataTimeout;
     case State::kWaitingForBatchNotifyGroupDevicesResponse:
       return kWaitingForBatchNotifyGroupDevicesResponseTimeout;
     default:
       // Signifies that there should not be a timeout.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -151,7 +135,7 @@ void CryptAuthDeviceNotifierImpl::SetState(State state) {
   state_ = state;
   last_state_change_timestamp_ = base::TimeTicks::Now();
 
-  base::Optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
+  absl::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
   if (!timeout_for_state)
     return;
 
@@ -161,21 +145,11 @@ void CryptAuthDeviceNotifierImpl::SetState(State state) {
 }
 
 void CryptAuthDeviceNotifierImpl::OnTimeout() {
+  DCHECK_EQ(state_, State::kWaitingForBatchNotifyGroupDevicesResponse);
   base::TimeDelta execution_time =
       base::TimeTicks::Now() - last_state_change_timestamp_;
-  switch (state_) {
-    case State::kWaitingForClientAppMetadata:
-      RecordClientAppMetadataFetchMetrics(execution_time,
-                                          CryptAuthAsyncTaskResult::kTimeout);
-      break;
-    case State::kWaitingForBatchNotifyGroupDevicesResponse:
-      RecordBatchNotifyGroupDevicesMetrics(execution_time,
-                                           CryptAuthApiCallResult::kTimeout);
-      break;
-    default:
-      NOTREACHED();
-  }
-
+  RecordBatchNotifyGroupDevicesMetrics(execution_time,
+                                       CryptAuthApiCallResult::kTimeout);
   PA_LOG(ERROR) << "Timed out in state " << state_ << ".";
 
   // TODO(https://crbug.com/1011358): Use more specific error codes.
@@ -186,28 +160,14 @@ void CryptAuthDeviceNotifierImpl::ProcessRequestQueue() {
   if (pending_requests_.empty())
     return;
 
-  if (!client_app_metadata_) {
-    // GCM registration is expected to be completed before the first enrollment.
-    DCHECK(!gcm_manager_->GetRegistrationId().empty())
-        << "DeviceSync requested before GCM registration complete.";
-
-    SetState(State::kWaitingForClientAppMetadata);
-    client_app_metadata_provider_->GetClientAppMetadata(
-        gcm_manager_->GetRegistrationId(),
-        base::BindOnce(&CryptAuthDeviceNotifierImpl::OnClientAppMetadataFetched,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
   cryptauthv2::BatchNotifyGroupDevicesRequest request;
   request.mutable_context()->set_group(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(
           CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether));
   request.mutable_context()->mutable_client_metadata()->set_invocation_reason(
       cryptauthv2::ClientMetadata::INVOCATION_REASON_UNSPECIFIED);
-  request.mutable_context()->set_device_id(client_app_metadata_->instance_id());
-  request.mutable_context()->set_device_id_token(
-      client_app_metadata_->instance_id_token());
+  request.mutable_context()->set_device_id(instance_id_);
+  request.mutable_context()->set_device_id_token(instance_id_token_);
   *request.mutable_notify_device_ids() = {
       pending_requests_.front().device_ids.begin(),
       pending_requests_.front().device_ids.end()};
@@ -219,54 +179,44 @@ void CryptAuthDeviceNotifierImpl::ProcessRequestQueue() {
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->BatchNotifyGroupDevices(
       request,
-      base::Bind(&CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesSuccess,
-                 base::Unretained(this)),
-      base::Bind(&CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesFailure,
-                 base::Unretained(this)));
-}
-
-void CryptAuthDeviceNotifierImpl::OnClientAppMetadataFetched(
-    const base::Optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
-  DCHECK_EQ(State::kWaitingForClientAppMetadata, state_);
-
-  bool success = client_app_metadata.has_value();
-
-  RecordClientAppMetadataFetchMetrics(
-      base::TimeTicks::Now() - last_state_change_timestamp_,
-      success ? CryptAuthAsyncTaskResult::kSuccess
-              : CryptAuthAsyncTaskResult::kError);
-
-  if (!success) {
-    PA_LOG(ERROR) << "ClientAppMetadata fetch failed.";
-
-    // TODO(https://crbug.com/1011358): Use more specific error codes.
-    FinishAttempt(NetworkRequestError::kUnknown);
-
-    return;
-  }
-
-  client_app_metadata_ = client_app_metadata;
-  ProcessRequestQueue();
+      base::BindOnce(
+          &CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesSuccess,
+          base::Unretained(this)),
+      base::BindOnce(
+          &CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesFailure,
+          base::Unretained(this)));
 }
 
 void CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesSuccess(
     const cryptauthv2::BatchNotifyGroupDevicesResponse& response) {
   DCHECK_EQ(State::kWaitingForBatchNotifyGroupDevicesResponse, state_);
-  FinishAttempt(base::nullopt /* error */);
+
+  RecordBatchNotifyGroupDevicesMetrics(
+      base::TimeTicks::Now() - last_state_change_timestamp_,
+      CryptAuthApiCallResult::kSuccess);
+
+  FinishAttempt(absl::nullopt /* error */);
 }
 
 void CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesFailure(
     NetworkRequestError error) {
   DCHECK_EQ(State::kWaitingForBatchNotifyGroupDevicesResponse, state_);
+
+  RecordBatchNotifyGroupDevicesMetrics(
+      base::TimeTicks::Now() - last_state_change_timestamp_,
+      CryptAuthApiCallResultFromNetworkRequestError(error));
   PA_LOG(ERROR) << "BatchNotifyGroupDevices call failed with error " << error
                 << ".";
+
   FinishAttempt(error);
 }
 
 void CryptAuthDeviceNotifierImpl::FinishAttempt(
-    base::Optional<NetworkRequestError> error) {
-  DCHECK(!pending_requests_.empty());
+    absl::optional<NetworkRequestError> error) {
+  cryptauth_client_.reset();
+  SetState(State::kIdle);
 
+  DCHECK(!pending_requests_.empty());
   Request current_request = std::move(pending_requests_.front());
   pending_requests_.pop();
 
@@ -277,7 +227,6 @@ void CryptAuthDeviceNotifierImpl::FinishAttempt(
     std::move(current_request.success_callback).Run();
   }
 
-  SetState(State::kIdle);
   ProcessRequestQueue();
 }
 
@@ -286,10 +235,6 @@ std::ostream& operator<<(std::ostream& stream,
   switch (state) {
     case CryptAuthDeviceNotifierImpl::State::kIdle:
       stream << "[CryptAuthDeviceNotifier state: Idle]";
-      break;
-    case CryptAuthDeviceNotifierImpl::State::kWaitingForClientAppMetadata:
-      stream << "[CryptAuthDeviceNotifier state: Waiting for "
-             << "ClientAppMetadata]";
       break;
     case CryptAuthDeviceNotifierImpl::State::
         kWaitingForBatchNotifyGroupDevicesResponse:

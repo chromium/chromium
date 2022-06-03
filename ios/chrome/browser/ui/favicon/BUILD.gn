@@ -11,7 +11,6 @@ source_set("favicon") {
   ]
   deps = [
     "resources:default_favicon",
-    "resources:default_world_favicon",
     "resources:default_world_favicon_incognito",
     "resources:default_world_favicon_regular",
     "//base",
@@ -19,7 +18,8 @@ source_set("favicon") {
     "//components/favicon_base",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/favicon",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/resources:default_world_favicon",
     "//url",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

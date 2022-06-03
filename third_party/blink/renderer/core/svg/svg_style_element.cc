@@ -138,7 +138,7 @@ void SVGStyleElement::DispatchPendingEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
-void SVGStyleElement::Trace(blink::Visitor* visitor) {
+void SVGStyleElement::Trace(Visitor* visitor) const {
   StyleElement::Trace(visitor);
   SVGElement::Trace(visitor);
 }

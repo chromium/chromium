@@ -1,0 +1,19 @@
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<style>
+#target {
+    font: 10px/15px Ahem;
+    letter-spacing: 20px;
+}
+</style>
+<div id="target">x</div>
+<script>
+const text = target.firstChild;
+function typing(character) {
+    text.replaceData(0, 0, character);
+    document.body.offsetHeight;
+}
+typing('a');
+typing('b');
+typing('c');
+</script>

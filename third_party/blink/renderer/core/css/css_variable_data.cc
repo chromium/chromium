@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -49,6 +50,40 @@ static bool IsRootFontUnitToken(CSSParserToken token) {
          token.GetUnitType() == CSSPrimitiveValue::UnitType::kRems;
 }
 
+String CSSVariableData::Serialize() const {
+  if (original_text_) {
+    if (original_text_.EndsWith('\\')) {
+      // https://drafts.csswg.org/css-syntax/#consume-escaped-code-point
+      // '\' followed by EOF is consumed as U+FFFD.
+      // https://drafts.csswg.org/css-syntax/#consume-string-token
+      // '\' followed by EOF in a string token is ignored.
+      //
+      // The tokenizer handles both of these cases when returning tokens, but
+      // since we're working with the original string, we need to deal with them
+      // ourselves.
+      StringBuilder serialized_text;
+      serialized_text.Append(original_text_);
+      serialized_text.Resize(serialized_text.length() - 1);
+      DCHECK(!tokens_.IsEmpty());
+      const CSSParserToken& last = tokens_.back();
+      if (last.GetType() != kStringToken)
+        serialized_text.Append(kReplacementCharacter);
+
+      // Certain token types implicitly include terminators when serialized.
+      // https://drafts.csswg.org/cssom/#common-serializing-idioms
+      if (last.GetType() == kStringToken)
+        serialized_text.Append('"');
+      if (last.GetType() == kUrlToken)
+        serialized_text.Append(')');
+
+      return serialized_text.ReleaseString();
+    }
+
+    return original_text_;
+  }
+  return TokenRange().Serialize();
+}
+
 bool CSSVariableData::operator==(const CSSVariableData& other) const {
   return Tokens() == other.Tokens();
 }
@@ -66,7 +101,7 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
     has_font_units_ |= IsFontUnitToken(token);
     has_root_font_units_ |= IsRootFontUnitToken(token);
   }
-  String backing_string = string_builder.ToString();
+  String backing_string = string_builder.ReleaseString();
   backing_strings_.push_back(backing_string);
   if (backing_string.Is8Bit())
     UpdateTokens<LChar>(range, backing_string, tokens_);
@@ -74,20 +109,18 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
     UpdateTokens<UChar>(range, backing_string, tokens_);
 }
 
-CSSVariableData::CSSVariableData(const CSSParserTokenRange& range,
+CSSVariableData::CSSVariableData(const CSSTokenizedValue& tokenized_value,
                                  bool is_animation_tainted,
                                  bool needs_variable_resolution,
                                  const KURL& base_url,
                                  const WTF::TextEncoding& charset)
-    : is_animation_tainted_(is_animation_tainted),
+    : original_text_(tokenized_value.text.ToString()),
+      is_animation_tainted_(is_animation_tainted),
       needs_variable_resolution_(needs_variable_resolution),
-      has_font_units_(false),
-      has_root_font_units_(false),
-      absolutized_(false),
       base_url_(base_url.IsValid() ? base_url.GetString() : String()),
       charset_(charset) {
-  DCHECK(!range.AtEnd());
-  ConsumeAndUpdateTokens(range);
+  DCHECK(!tokenized_value.range.AtEnd());
+  ConsumeAndUpdateTokens(tokenized_value.range);
 }
 
 const CSSValue* CSSVariableData::ParseForSyntax(
@@ -96,7 +129,8 @@ const CSSValue* CSSVariableData::ParseForSyntax(
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for
   // relative URL resolution.
-  return syntax.Parse(TokenRange(), StrictCSSParserContext(secure_context_mode),
+  return syntax.Parse(TokenRange(),
+                      *StrictCSSParserContext(secure_context_mode),
                       is_animation_tainted_);
 }
 

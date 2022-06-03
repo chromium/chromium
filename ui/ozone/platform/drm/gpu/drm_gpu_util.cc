@@ -4,8 +4,12 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
+#include <fcntl.h>
+#include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -117,4 +121,32 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
   return result;
 }
 
+bool IsDriverName(const char* device_file_name, const char* driver) {
+  base::ScopedFD fd(open(device_file_name, O_RDWR));
+  if (!fd.is_valid()) {
+    LOG(ERROR) << "Failed to open DRM device " << device_file_name;
+    return false;
+  }
+
+  ScopedDrmVersionPtr version(drmGetVersion(fd.get()));
+  if (!version) {
+    LOG(ERROR) << "Failed to query DRM version " << device_file_name;
+    return false;
+  }
+
+  if (strncmp(driver, version->name, version->name_len) == 0)
+    return true;
+
+  return false;
+}
+
+void DrmAsValueIntoHelper(const drmModeModeInfo& mode_info,
+                          base::trace_event::TracedValue* value) {
+  value->SetString("name", mode_info.name);
+  value->SetInteger("type", mode_info.type);
+  value->SetInteger("flags", mode_info.flags);
+  value->SetInteger("clock", mode_info.clock);
+  value->SetInteger("hdisplay", mode_info.hdisplay);
+  value->SetInteger("vdisplay", mode_info.vdisplay);
+}
 }  // namespace ui

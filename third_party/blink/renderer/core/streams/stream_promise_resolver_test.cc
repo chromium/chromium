@@ -105,7 +105,7 @@ TEST(StreamPromiseResolverTest, ResolveDoesNothingInsideResolve) {
     ThenGetter(ScriptState* script_state, StreamPromiseResolver* promise)
         : ScriptFunction(script_state), promise_(promise) {}
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(promise_);
       ScriptFunction::Trace(visitor);
     }

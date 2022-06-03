@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -23,10 +24,8 @@ scoped_refptr<base::RefCountedMemory> EncodeImageAsPNG(
     const gfx::Image& image) {
   if (image.IsEmpty())
     return nullptr;
-  std::vector<uint8_t> result;
   DCHECK(!image.AsImageSkia().GetRepresentation(1.0f).is_null());
-  gfx::PNGCodec::FastEncodeBGRASkBitmap(image.AsBitmap(), true, &result);
-  return base::RefCountedBytes::TakeVector(&result);
+  return image.As1xPNGBytes();
 }
 
 scoped_refptr<base::RefCountedMemory> EncodeImageAsJPEG(
@@ -42,9 +41,8 @@ void EncodeImageAndScheduleCallback(
     base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> data)>
         callback,
     gfx::Image image) {
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(encode_func, std::move(image)), std::move(callback));
 }
 

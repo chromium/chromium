@@ -162,7 +162,8 @@
 // iOS does not support dispatch, even on x86, since applications
 // should be bundled as fat binaries, with a different build tailored for
 // each specific supported platform/architecture.
-#if defined(__APPLE__) && (TARGET_OS_IPHONE || TARGET_OS_IPHONE_SIMULATOR)
+#if (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
+    (defined(TARGET_OS_IPHONE_SIMULATOR) && TARGET_OS_IPHONE_SIMULATOR)
 #undef ABSL_RANDOM_INTERNAL_AES_DISPATCH
 #define ABSL_RANDOM_INTERNAL_AES_DISPATCH 0
 #endif

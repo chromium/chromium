@@ -38,12 +38,14 @@ namespace blink {
 
 class LayoutRubyBase;
 class LayoutRubyText;
+template <typename Base>
+class LayoutNGMixin;
 
 // LayoutRubyRun are 'inline-block/table' like objects,and wrap a single pairing
 // of a ruby base with its ruby text(s).
 // See LayoutRuby.h for further comments on the structure
 
-class LayoutRubyRun final : public LayoutBlockFlow {
+class LayoutRubyRun : public LayoutBlockFlow {
  public:
   ~LayoutRubyRun() override;
 
@@ -69,26 +71,43 @@ class LayoutRubyRun final : public LayoutBlockFlow {
                    int& start_overhang,
                    int& end_overhang) const;
 
-  static LayoutRubyRun* StaticCreateRubyRun(const LayoutObject* parent_ruby);
+  static LayoutRubyRun* StaticCreateRubyRun(
+      const LayoutObject* parent_ruby,
+      const LayoutBlock& containing_block);
 
   bool CanBreakBefore(const LazyLineBreakIterator&) const;
 
-  const char* GetName() const override { return "LayoutRubyRun"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutRubyRun";
+  }
+
+  // The argument must be nullptr.
+  explicit LayoutRubyRun(Element*);
 
  protected:
   LayoutRubyBase* CreateRubyBase() const;
 
  private:
-  LayoutRubyRun();
-
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectRubyRun || LayoutBlockFlow::IsOfType(type);
   }
-  bool CreatesAnonymousWrapper() const override { return true; }
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {}
+  bool CreatesAnonymousWrapper() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override { NOT_DESTROYED(); }
+
+  friend class LayoutNGMixin<LayoutRubyRun>;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutRubyRun, IsRubyRun());
+template <>
+struct DowncastTraits<LayoutRubyRun> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRubyRun();
+  }
+};
 
 }  // namespace blink
 

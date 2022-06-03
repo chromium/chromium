@@ -25,16 +25,15 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_string_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor_with_value.h"
@@ -144,8 +143,6 @@ v8::Local<v8::Value> ToV8(const IDBAny* impl,
       return v8::Undefined(isolate);
     case IDBAny::kNullType:
       return v8::Null(isolate);
-    case IDBAny::kDOMStringListType:
-      return ToV8(impl->DomStringList(), creation_context, isolate);
     case IDBAny::kIDBCursorType:
       return ToV8(impl->IdbCursor(), creation_context, isolate);
     case IDBAny::kIDBCursorWithValueType:
@@ -166,8 +163,6 @@ v8::Local<v8::Value> ToV8(const IDBAny* impl,
   NOTREACHED();
   return v8::Undefined(isolate);
 }
-
-static const size_t kMaximumDepth = 2000;
 
 // Convert a simple (non-Array) script value to an Indexed DB key. If the
 // conversion fails due to a detached buffer, an exception is thrown. If
@@ -192,25 +187,32 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     return IDBKey::CreateDate(value.As<v8::Date>()->ValueOf());
 
   if (value->IsArrayBuffer()) {
-    DOMArrayBuffer* buffer = V8ArrayBuffer::ToImpl(value.As<v8::Object>());
+    DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+        isolate, value, exception_state);
+    if (exception_state.HadException())
+      return IDBKey::CreateInvalid();
     if (buffer->IsDetached()) {
       exception_state.ThrowTypeError("The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
     const char* start = static_cast<const char*>(buffer->Data());
-    size_t length = buffer->ByteLengthAsSizeT();
+    size_t length = buffer->ByteLength();
     return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
   }
 
   if (value->IsArrayBufferView()) {
     DOMArrayBufferView* view =
-        V8ArrayBufferView::ToImpl(value.As<v8::Object>());
+        NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
+            isolate, value, exception_state)
+            .Get();
+    if (exception_state.HadException())
+      return IDBKey::CreateInvalid();
     if (view->buffer()->IsDetached()) {
       exception_state.ThrowTypeError("The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
     const char* start = static_cast<const char*>(view->BaseAddress());
-    size_t length = view->byteLengthAsSizeT();
+    size_t length = view->byteLength();
     return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
   }
 
@@ -261,12 +263,17 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
   // Initial state.
   {
     v8::Local<v8::Array> array = value.As<v8::Array>();
+    if (array->Length() > IndexedDBKey::kMaximumArraySize)
+      return IDBKey::CreateInvalid();
+
     stack.push_back(std::make_unique<Record>(array));
     seen.push_back(array);
   }
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::TryCatch try_block(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Process stack - will return when complete.
   while (true) {
@@ -314,7 +321,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
     } else {
       // A sub-array; push onto the stack and start processing it.
       v8::Local<v8::Array> array = item.As<v8::Array>();
-      if (seen.Contains(array) || stack.size() >= kMaximumDepth) {
+      if (seen.Contains(array) || stack.size() >= IndexedDBKey::kMaximumDepth ||
+          array->Length() > IndexedDBKey::kMaximumArraySize) {
         return IDBKey::CreateInvalid();
       }
 
@@ -370,6 +378,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::TryCatch block(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   for (wtf_size_t i = 0; i < key_path_elements.size(); ++i) {
     const String& element = key_path_elements[i];
 
@@ -540,9 +550,12 @@ static v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate* isolate,
 
   scoped_refptr<SerializedScriptValue> serialized_value =
       value->CreateSerializedValue();
+
+  serialized_value->FileSystemAccessTokens() =
+      std::move(const_cast<IDBValue*>(value)->FileSystemAccessTokens());
+
   SerializedScriptValue::DeserializeOptions options;
   options.blob_info = &value->BlobInfo();
-  options.read_wasm_from_stream = true;
 
   // deserialize() returns null when serialization fails.  This is sub-optimal
   // because IndexedDB values can be null, so an application cannot distinguish
@@ -758,8 +771,7 @@ bool CanInjectIDBKeyIntoScriptValue(v8::Isolate* isolate,
 
 ScriptValue DeserializeScriptValue(ScriptState* script_state,
                                    SerializedScriptValue* serialized_value,
-                                   const Vector<WebBlobInfo>* blob_info,
-                                   bool read_wasm_from_stream) {
+                                   const Vector<WebBlobInfo>* blob_info) {
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::HandleScope handle_scope(isolate);
   if (!serialized_value)
@@ -767,7 +779,6 @@ ScriptValue DeserializeScriptValue(ScriptState* script_state,
 
   SerializedScriptValue::DeserializeOptions options;
   options.blob_info = blob_info;
-  options.read_wasm_from_stream = read_wasm_from_stream;
   return ScriptValue(isolate, serialized_value->Deserialize(isolate, options));
 }
 

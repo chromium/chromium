@@ -6,7 +6,7 @@
 
 #include "base/debug/leak_annotations.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter_observer.h"
 
@@ -60,23 +60,5 @@ void URLRequestContextGetter::NotifyContextShuttingDown() {
   for (auto& observer : observer_list_)
     observer.OnContextShuttingDown();
 }
-
-TrivialURLRequestContextGetter::TrivialURLRequestContextGetter(
-    URLRequestContext* context,
-    const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner)
-    : context_(context), main_task_runner_(main_task_runner) {
-}
-
-TrivialURLRequestContextGetter::~TrivialURLRequestContextGetter() = default;
-
-URLRequestContext* TrivialURLRequestContextGetter::GetURLRequestContext() {
-  return context_;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-TrivialURLRequestContextGetter::GetNetworkTaskRunner() const {
-  return main_task_runner_;
-}
-
 
 }  // namespace net

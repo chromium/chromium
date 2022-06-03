@@ -11,13 +11,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/notreached.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -44,17 +45,6 @@ namespace {
 // the cache.
 const int64_t kMaxSparseDataSizeDivisor = 10;
 
-// Used in histograms, please only add entries at the end.
-enum SimpleEntryWriteResult {
-  SIMPLE_ENTRY_WRITE_RESULT_SUCCESS = 0,
-  SIMPLE_ENTRY_WRITE_RESULT_INVALID_ARGUMENT = 1,
-  SIMPLE_ENTRY_WRITE_RESULT_OVER_MAX_SIZE = 2,
-  SIMPLE_ENTRY_WRITE_RESULT_BAD_STATE = 3,
-  SIMPLE_ENTRY_WRITE_RESULT_SYNC_WRITE_FAILURE = 4,
-  SIMPLE_ENTRY_WRITE_RESULT_FAST_EMPTY_RETURN = 5,
-  SIMPLE_ENTRY_WRITE_RESULT_MAX = 6,
-};
-
 OpenEntryIndexEnum ComputeIndexState(SimpleBackendImpl* backend,
                                      uint64_t entry_hash) {
   if (!backend->index()->initialized())
@@ -68,17 +58,6 @@ void RecordOpenEntryIndexState(net::CacheType cache_type,
                                OpenEntryIndexEnum state) {
   SIMPLE_CACHE_UMA(ENUMERATION, "OpenEntryIndexState", cache_type, state,
                    INDEX_MAX);
-}
-
-void RecordReadResult(net::CacheType cache_type, SimpleReadResult result) {
-  SIMPLE_CACHE_UMA(ENUMERATION,
-                   "ReadResult", cache_type, result, READ_RESULT_MAX);
-}
-
-void RecordWriteResult(net::CacheType cache_type,
-                       SimpleEntryWriteResult result) {
-  SIMPLE_CACHE_UMA(ENUMERATION, "WriteResult2", cache_type, result,
-                   SIMPLE_ENTRY_WRITE_RESULT_MAX);
 }
 
 void RecordHeaderSize(net::CacheType cache_type, int size) {
@@ -121,18 +100,10 @@ int PostToCallbackIfNeeded(bool sync_possible,
 
 }  // namespace
 
-using base::Closure;
 using base::OnceClosure;
 using base::FilePath;
 using base::Time;
 using base::TaskRunner;
-
-// Static function called by base::trace_event::EstimateMemoryUsage() to
-// estimate the memory of SimpleEntryOperation.
-// This needs to be in disk_cache namespace.
-size_t EstimateMemoryUsage(const SimpleEntryOperation& op) {
-  return 0;
-}
 
 // A helper class to insure that RunNextOperationIfNeeded() is called when
 // exiting the current stack frame.
@@ -184,9 +155,6 @@ SimpleEntryImpl::SimpleEntryImpl(
       "arrays should be the same size");
   static_assert(std::extent<decltype(data_size_)>() ==
                     std::extent<decltype(have_written_)>(),
-                "arrays should be the same size");
-  static_assert(std::extent<decltype(data_size_)>() ==
-                    std::extent<decltype(crc_check_state_)>(),
                 "arrays should be the same size");
   ResetEntry();
   NetLogSimpleEntryConstruction(net_log_,
@@ -426,7 +394,6 @@ int SimpleEntryImpl::ReadData(int stream_index,
           net::NetLogEventPhase::NONE, net::ERR_INVALID_ARGUMENT);
     }
 
-    RecordReadResult(cache_type_, READ_RESULT_INVALID_ARGUMENT);
     return net::ERR_INVALID_ARGUMENT;
   }
 
@@ -469,7 +436,6 @@ int SimpleEntryImpl::WriteData(int stream_index,
           net_log_, net::NetLogEventType::SIMPLE_CACHE_ENTRY_WRITE_END,
           net::NetLogEventPhase::NONE, net::ERR_INVALID_ARGUMENT);
     }
-    RecordWriteResult(cache_type_, SIMPLE_ENTRY_WRITE_RESULT_INVALID_ARGUMENT);
     return net::ERR_INVALID_ARGUMENT;
   }
   int end_offset;
@@ -480,7 +446,6 @@ int SimpleEntryImpl::WriteData(int stream_index,
           net_log_, net::NetLogEventType::SIMPLE_CACHE_ENTRY_WRITE_END,
           net::NetLogEventPhase::NONE, net::ERR_FAILED);
     }
-    RecordWriteResult(cache_type_, SIMPLE_ENTRY_WRITE_RESULT_OVER_MAX_SIZE);
     return net::ERR_FAILED;
   }
   ScopedOperationRunner operation_runner(this);
@@ -591,13 +556,12 @@ int SimpleEntryImpl::WriteSparseData(int64_t offset,
   return net::ERR_IO_PENDING;
 }
 
-int SimpleEntryImpl::GetAvailableRange(int64_t offset,
-                                       int len,
-                                       int64_t* start,
-                                       CompletionOnceCallback callback) {
+RangeResult SimpleEntryImpl::GetAvailableRange(int64_t offset,
+                                               int len,
+                                               RangeResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (offset < 0 || len < 0)
-    return net::ERR_INVALID_ARGUMENT;
+    return RangeResult(net::ERR_INVALID_ARGUMENT);
 
   // Truncate |len| to make sure that |offset + len| does not overflow.
   // This is OK since one can't write that far anyway.
@@ -607,8 +571,8 @@ int SimpleEntryImpl::GetAvailableRange(int64_t offset,
 
   ScopedOperationRunner operation_runner(this);
   pending_operations_.push(SimpleEntryOperation::GetAvailableRangeOperation(
-      this, offset, len, start, std::move(callback)));
-  return net::ERR_IO_PENDING;
+      this, offset, len, std::move(callback)));
+  return RangeResult(net::ERR_IO_PENDING);
 }
 
 bool SimpleEntryImpl::CouldBeSparse() const {
@@ -637,15 +601,6 @@ void SimpleEntryImpl::SetLastUsedTimeForTest(base::Time time) {
   backend_->index()->SetLastUsedTimeForTest(entry_hash_, time);
 }
 
-size_t SimpleEntryImpl::EstimateMemoryUsage() const {
-  // TODO(xunjieli): crbug.com/669108. It'd be nice to have the rest of |entry|
-  // measured, but the ownership of SimpleSynchronousEntry isn't straightforward
-  return sizeof(SimpleSynchronousEntry) +
-         base::trace_event::EstimateMemoryUsage(pending_operations_) +
-         (stream_0_data_ ? stream_0_data_->capacity() : 0) +
-         (stream_1_prefetch_data_ ? stream_1_prefetch_data_->capacity() : 0);
-}
-
 void SimpleEntryImpl::SetPriority(uint32_t entry_priority) {
   entry_priority_ = entry_priority;
 }
@@ -654,15 +609,13 @@ SimpleEntryImpl::~SimpleEntryImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0U, pending_operations_.size());
 
-  // STATE_IO_PENDING is possible here in one corner case: the entry had
-  // dispatched the final Close() operation to SimpleSynchronousEntry, and the
-  // only thing keeping |this| alive were the callbacks for that
-  // PostTaskAndReply. If at that point the message loop is shut down, all
-  // outstanding tasks get destroyed, dropping the last reference without
-  // CloseOperationComplete ever getting to run to exit from IO_PENDING.
-  DCHECK(state_ == STATE_UNINITIALIZED || state_ == STATE_FAILURE ||
-         state_ == STATE_IO_PENDING);
-  DCHECK(!synchronous_entry_);
+  // This used to DCHECK on `state_`, but it turns out that destruction
+  // happening on thread shutdown, when closures holding `this` get deleted
+  // can happen in circumstances not possible during normal use, such as when
+  // I/O for Close operation is keeping the entry alive in STATE_IO_PENDING, or
+  // an entry that's STATE_READY has callbacks pending to hand it over to the
+  // user right as the thread is shutdown (this would also have a non-null
+  // `synchronous_entry_`).
   net_log_.EndEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY);
 }
 
@@ -698,9 +651,6 @@ void SimpleEntryImpl::ResetEntry() {
   std::memset(crc32s_, 0, sizeof(crc32s_));
   std::memset(have_written_, 0, sizeof(have_written_));
   std::memset(data_size_, 0, sizeof(data_size_));
-  for (size_t i = 0; i < base::size(crc_check_state_); ++i) {
-    crc_check_state_[i] = CRC_CHECK_NEVER_READ_AT_ALL;
-  }
 }
 
 void SimpleEntryImpl::ReturnEntryToCaller() {
@@ -793,8 +743,7 @@ void SimpleEntryImpl::RunNextOperationIfNeeded() {
         break;
       case SimpleEntryOperation::TYPE_GET_AVAILABLE_RANGE:
         GetAvailableRangeInternal(operation.sparse_offset(), operation.length(),
-                                  operation.out_start(),
-                                  operation.ReleaseCallback());
+                                  operation.ReleaseRangeResultCalback());
         break;
       case SimpleEntryOperation::TYPE_DOOM:
         DoomEntryInternal(operation.ReleaseCallback());
@@ -853,7 +802,7 @@ void SimpleEntryImpl::OpenEntryInternal(
 
   base::OnceClosure task = base::BindOnce(
       &SimpleSynchronousEntry::OpenEntry, cache_type_, path_, key_, entry_hash_,
-      start_time, file_tracker_, trailer_prefetch_size, results.get());
+      file_tracker_, trailer_prefetch_size, results.get());
 
   base::OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::CreationOperationComplete, this, result_state,
@@ -897,9 +846,9 @@ void SimpleEntryImpl::CreateEntryInternal(
       new SimpleEntryCreationResults(SimpleEntryStat(
           last_used_, last_modified_, data_size_, sparse_data_size_)));
 
-  OnceClosure task = base::BindOnce(&SimpleSynchronousEntry::CreateEntry,
-                                    cache_type_, path_, key_, entry_hash_,
-                                    start_time, file_tracker_, results.get());
+  OnceClosure task =
+      base::BindOnce(&SimpleSynchronousEntry::CreateEntry, cache_type_, path_,
+                     key_, entry_hash_, file_tracker_, results.get());
   OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::CreationOperationComplete, this, result_state,
       std::move(callback), start_time, base::Time(), std::move(results),
@@ -958,10 +907,10 @@ void SimpleEntryImpl::OpenOrCreateEntryInternal(
     }
   }
 
-  base::OnceClosure task = base::BindOnce(
-      &SimpleSynchronousEntry::OpenOrCreateEntry, cache_type_, path_, key_,
-      entry_hash_, index_state, optimistic_create, start_time, file_tracker_,
-      trailer_prefetch_size, results.get());
+  base::OnceClosure task =
+      base::BindOnce(&SimpleSynchronousEntry::OpenOrCreateEntry, cache_type_,
+                     path_, key_, entry_hash_, index_state, optimistic_create,
+                     file_tracker_, trailer_prefetch_size, results.get());
 
   base::OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::CreationOperationComplete, this, result_state,
@@ -1018,14 +967,6 @@ void SimpleEntryImpl::CloseInternal() {
     synchronous_entry_ = nullptr;
     prioritized_task_runner_->PostTaskAndReply(
         FROM_HERE, std::move(task), std::move(reply), entry_priority_);
-
-    for (int i = 0; i < kSimpleEntryStreamCount; ++i) {
-      if (!have_written_[i]) {
-        SIMPLE_CACHE_UMA(ENUMERATION,
-                         "CheckCRCResult", cache_type_,
-                         crc_check_state_[i], CRC_CHECK_MAX);
-      }
-    }
   } else {
     CloseOperationComplete(std::move(results));
   }
@@ -1047,7 +988,6 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
   }
 
   if (state_ == STATE_FAILURE || state_ == STATE_UNINITIALIZED) {
-    RecordReadResult(cache_type_, READ_RESULT_BAD_STATE);
     if (net_log_.IsCapturing()) {
       NetLogReadWriteComplete(net_log_,
                               net::NetLogEventType::SIMPLE_CACHE_ENTRY_READ_END,
@@ -1061,9 +1001,6 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
   }
   DCHECK_EQ(STATE_READY, state_);
   if (offset >= GetDataSize(stream_index) || offset < 0 || !buf_len) {
-    RecordReadResult(cache_type_, sync_possible
-                                      ? READ_RESULT_NONBLOCK_EMPTY_RETURN
-                                      : READ_RESULT_FAST_EMPTY_RETURN);
     // If there is nothing to read, we bail out before setting state_ to
     // STATE_IO_PENDING (so ScopedOperationRunner might start us on next op
     // here).
@@ -1081,12 +1018,6 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
 
   // Sometimes we can read in-ram prefetched stream 1 data immediately, too.
   if (stream_index == 1) {
-    if (is_initial_stream1_read_) {
-      SIMPLE_CACHE_UMA(BOOLEAN, "ReadStream1FromPrefetched", cache_type_,
-                       stream_1_prefetch_data_ != nullptr);
-    }
-    is_initial_stream1_read_ = false;
-
     if (stream_1_prefetch_data_) {
       int rv =
           ReadFromBuffer(stream_1_prefetch_data_.get(), offset, buf_len, buf);
@@ -1143,7 +1074,6 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
   }
 
   if (state_ == STATE_FAILURE || state_ == STATE_UNINITIALIZED) {
-    RecordWriteResult(cache_type_, SIMPLE_ENTRY_WRITE_RESULT_BAD_STATE);
     if (net_log_.IsCapturing()) {
       NetLogReadWriteComplete(
           net_log_, net::NetLogEventType::SIMPLE_CACHE_ENTRY_WRITE_END,
@@ -1173,8 +1103,6 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
   if (buf_len == 0) {
     int32_t data_size = data_size_[stream_index];
     if (truncate ? (offset == data_size) : (offset <= data_size)) {
-      RecordWriteResult(cache_type_,
-                        SIMPLE_ENTRY_WRITE_RESULT_FAST_EMPTY_RETURN);
       if (!callback.is_null()) {
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), 0));
@@ -1348,18 +1276,17 @@ void SimpleEntryImpl::WriteSparseDataInternal(
                                              std::move(reply), entry_priority_);
 }
 
-void SimpleEntryImpl::GetAvailableRangeInternal(
-    int64_t sparse_offset,
-    int len,
-    int64_t* out_start,
-    net::CompletionOnceCallback callback) {
+void SimpleEntryImpl::GetAvailableRangeInternal(int64_t sparse_offset,
+                                                int len,
+                                                RangeResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScopedOperationRunner operation_runner(this);
 
   if (state_ == STATE_FAILURE || state_ == STATE_UNINITIALIZED) {
     if (!callback.is_null()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), RangeResult(net::ERR_FAILED)));
     }
     // |this| may be destroyed after return here.
     return;
@@ -1368,12 +1295,11 @@ void SimpleEntryImpl::GetAvailableRangeInternal(
   DCHECK_EQ(STATE_READY, state_);
   state_ = STATE_IO_PENDING;
 
-  std::unique_ptr<int> result(new int());
-  OnceClosure task =
-      base::BindOnce(&SimpleSynchronousEntry::GetAvailableRange,
-                     base::Unretained(synchronous_entry_),
-                     SimpleSynchronousEntry::SparseRequest(sparse_offset, len),
-                     out_start, result.get());
+  auto result = std::make_unique<RangeResult>();
+  OnceClosure task = base::BindOnce(
+      &SimpleSynchronousEntry::GetAvailableRange,
+      base::Unretained(synchronous_entry_),
+      SimpleSynchronousEntry::SparseRequest(sparse_offset, len), result.get());
   OnceClosure reply =
       base::BindOnce(&SimpleEntryImpl::GetAvailableRangeOperationComplete, this,
                      std::move(callback), std::move(result));
@@ -1450,9 +1376,6 @@ void SimpleEntryImpl::CreationOperationComplete(
   DCHECK_EQ(state_, STATE_IO_PENDING);
   DCHECK(in_results);
   ScopedOperationRunner operation_runner(this);
-  SIMPLE_CACHE_UMA(BOOLEAN,
-                   "EntryCreationResult", cache_type_,
-                   in_results->result == net::OK);
   if (in_results->result != net::OK) {
     if (in_results->result != net::ERR_FILE_EXISTS) {
       // Here we keep index up-to-date, but don't remove ourselves from active
@@ -1499,7 +1422,6 @@ void SimpleEntryImpl::CreationOperationComplete(
         stream_1_prefetch_data_ = prefetched.data;
 
       // The crc was read in SimpleSynchronousEntry.
-      crc_check_state_[stream] = CRC_CHECK_DONE;
       crc32s_[stream] = prefetched.stream_crc32;
       crc32s_end_offset_[stream] = in_results->entry_stat.data_size(stream);
     }
@@ -1537,8 +1459,7 @@ void SimpleEntryImpl::CreationOperationComplete(
   }
 }
 
-void SimpleEntryImpl::EntryOperationComplete(
-    net::CompletionOnceCallback completion_callback,
+void SimpleEntryImpl::UpdateStateAfterOperationComplete(
     const SimpleEntryStat& entry_stat,
     int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1551,7 +1472,13 @@ void SimpleEntryImpl::EntryOperationComplete(
     state_ = STATE_READY;
     UpdateDataFromEntryStat(entry_stat);
   }
+}
 
+void SimpleEntryImpl::EntryOperationComplete(
+    net::CompletionOnceCallback completion_callback,
+    const SimpleEntryStat& entry_stat,
+    int result) {
+  UpdateStateAfterOperationComplete(entry_stat, result);
   if (!completion_callback.is_null()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_callback), result));
@@ -1571,31 +1498,18 @@ void SimpleEntryImpl::ReadOperationComplete(
   DCHECK(read_result);
   int result = read_result->result;
 
-  if (result > 0 &&
-      crc_check_state_[stream_index] == CRC_CHECK_NEVER_READ_AT_ALL) {
-    crc_check_state_[stream_index] = CRC_CHECK_NEVER_READ_TO_END;
-  }
-
   if (read_result->crc_updated) {
     if (result > 0) {
       DCHECK_EQ(crc32s_end_offset_[stream_index], offset);
       crc32s_end_offset_[stream_index] += result;
       crc32s_[stream_index] = read_result->updated_crc32;
     }
-
-    if (read_result->crc_performed_verify)
-      crc_check_state_[stream_index] = CRC_CHECK_DONE;
   }
 
   if (result < 0) {
     crc32s_end_offset_[stream_index] = 0;
-  } else {
-    if (crc_check_state_[stream_index] == CRC_CHECK_NEVER_READ_TO_END &&
-        offset + result == GetDataSize(stream_index)) {
-      crc_check_state_[stream_index] = CRC_CHECK_NOT_DONE;
-    }
   }
-  RecordReadResultConsideringChecksum(read_result);
+
   if (net_log_.IsCapturing()) {
     NetLogReadWriteComplete(net_log_,
                             net::NetLogEventType::SIMPLE_CACHE_ENTRY_READ_END,
@@ -1612,11 +1526,6 @@ void SimpleEntryImpl::WriteOperationComplete(
     std::unique_ptr<SimpleSynchronousEntry::WriteResult> write_result,
     net::IOBuffer* buf) {
   int result = write_result->result;
-  if (result >= 0)
-    RecordWriteResult(cache_type_, SIMPLE_ENTRY_WRITE_RESULT_SUCCESS);
-  else
-    RecordWriteResult(cache_type_,
-                      SIMPLE_ENTRY_WRITE_RESULT_SYNC_WRITE_FAILURE);
   if (net_log_.IsCapturing()) {
     NetLogReadWriteComplete(net_log_,
                             net::NetLogEventType::SIMPLE_CACHE_ENTRY_WRITE_END,
@@ -1671,15 +1580,20 @@ void SimpleEntryImpl::WriteSparseOperationComplete(
 }
 
 void SimpleEntryImpl::GetAvailableRangeOperationComplete(
-    net::CompletionOnceCallback completion_callback,
-    std::unique_ptr<int> result) {
+    RangeResultCallback completion_callback,
+    std::unique_ptr<RangeResult> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(synchronous_entry_);
   DCHECK(result);
 
   SimpleEntryStat entry_stat(last_used_, last_modified_, data_size_,
                              sparse_data_size_);
-  EntryOperationComplete(std::move(completion_callback), entry_stat, *result);
+  UpdateStateAfterOperationComplete(entry_stat, result->net_error);
+  if (!completion_callback.is_null()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(completion_callback), *result));
+  }
+  RunNextOperationIfNeeded();
 }
 
 void SimpleEntryImpl::DoomOperationComplete(
@@ -1694,24 +1608,6 @@ void SimpleEntryImpl::DoomOperationComplete(
   if (post_doom_waiting_) {
     post_doom_waiting_->OnDoomComplete(entry_hash_);
     post_doom_waiting_ = nullptr;
-  }
-}
-
-void SimpleEntryImpl::RecordReadResultConsideringChecksum(
-    const std::unique_ptr<SimpleSynchronousEntry::ReadResult>& read_result)
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(synchronous_entry_);
-  DCHECK_EQ(STATE_IO_PENDING, state_);
-
-  if (read_result->result >= 0) {
-    RecordReadResult(cache_type_, READ_RESULT_SUCCESS);
-  } else {
-    if (read_result->crc_updated && read_result->crc_performed_verify &&
-        !read_result->crc_verify_ok)
-      RecordReadResult(cache_type_, READ_RESULT_SYNC_CHECKSUM_FAILURE);
-    else
-      RecordReadResult(cache_type_, READ_RESULT_SYNC_READ_FAILURE);
   }
 }
 
@@ -1744,8 +1640,10 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
     data_size_[i] = entry_stat.data_size(i);
   }
   sparse_data_size_ = entry_stat.sparse_data_size();
-  if (doom_state_ == DOOM_NONE && backend_.get()) {
-    backend_->index()->UpdateEntrySize(
+
+  SimpleBackendImpl* backend_ptr = backend_.get();
+  if (doom_state_ == DOOM_NONE && backend_ptr) {
+    backend_ptr->index()->UpdateEntrySize(
         entry_hash_, base::checked_cast<uint32_t>(GetDiskUsage()));
   }
 }
@@ -1769,7 +1667,6 @@ int SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
   memcpy(out_buf->data(), in_buf->data() + offset, buf_len);
   UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
                                           data_size_, sparse_data_size_));
-  RecordReadResult(cache_type_, READ_RESULT_SUCCESS);
   return buf_len;
 }
 
@@ -1811,7 +1708,6 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   UpdateDataFromEntryStat(
       SimpleEntryStat(modification_time, modification_time, data_size_,
                       sparse_data_size_));
-  RecordWriteResult(cache_type_, SIMPLE_ENTRY_WRITE_RESULT_SUCCESS);
   return buf_len;
 }
 

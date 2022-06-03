@@ -31,6 +31,12 @@ class FtlHostChangeNotificationListener : public SignalStrategy::Listener {
   // Both listener and signal_strategy are expected to outlive this object.
   FtlHostChangeNotificationListener(Listener* listener,
                                     SignalStrategy* signal_strategy);
+
+  FtlHostChangeNotificationListener(const FtlHostChangeNotificationListener&) =
+      delete;
+  FtlHostChangeNotificationListener& operator=(
+      const FtlHostChangeNotificationListener&) = delete;
+
   ~FtlHostChangeNotificationListener() override;
 
   // SignalStrategy::Listener interface.
@@ -48,7 +54,6 @@ class FtlHostChangeNotificationListener : public SignalStrategy::Listener {
   Listener* listener_;
   SignalStrategy* signal_strategy_;
   base::WeakPtrFactory<FtlHostChangeNotificationListener> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FtlHostChangeNotificationListener);
 };
 
 }  // namespace remoting

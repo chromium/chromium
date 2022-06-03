@@ -28,9 +28,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import copy
-import cPickle as pickle
 import os
 import sys
+
+if sys.version_info.major == 2:
+    import cPickle as pickle
+else:
+    import pickle
 
 from blinkbuild.name_style_converter import NameStyleConverter
 import make_runtime_features_utilities as util
@@ -47,44 +51,39 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
     file_basename = None
 
     def __init__(self, json5_file_path, output_dir):
-        super(BaseRuntimeFeatureWriter, self).__init__(json5_file_path, output_dir)
+        super(BaseRuntimeFeatureWriter, self).__init__(json5_file_path,
+                                                       output_dir)
         # Subclasses should add generated output files and their contents to this dict.
         self._outputs = {}
         assert self.file_basename
 
         self._features = self.json5_file.name_dictionaries
-        # Dependency graph specified by 'depends_on' attribute.
-        self._dependency_graph = util.init_graph(self._features)
+        origin_trial_set = util.origin_trials(self._features)
+
         # Make sure the resulting dictionaries have all the keys we expect.
         for feature in self._features:
-            feature['data_member_name'] = self._data_member_name(feature['name'])
-            # Most features just check their is_foo_enabled_ bool
-            # but some depend on or are implied by other bools.
-            enabled_condition = feature['data_member_name']
-            assert not feature['implied_by'] or not feature['depends_on'], 'Only one of implied_by and depends_on is allowed'
-            for implied_by_name in feature['implied_by']:
-                enabled_condition += ' || ' + self._data_member_name(implied_by_name)
-            for dependant_name in feature['depends_on']:
-                assert dependant_name in self._dependency_graph, dependant_name + ' is not a feature.'
-                self._dependency_graph[dependant_name].append(str(feature['name']))
-                enabled_condition += ' && ' + self._data_member_name(dependant_name)
-            feature['enabled_condition'] = enabled_condition
+            feature['in_origin_trial'] = str(
+                feature['name']) in origin_trial_set
+            feature['data_member_name'] = self._data_member_name(
+                feature['name'])
             # If 'status' is a dict, add the values for all the not-mentioned platforms too.
             if isinstance(feature['status'], dict):
-                feature['status'] = self._status_with_all_platforms(feature['status'])
+                feature['status'] = self._status_with_all_platforms(
+                    feature['status'])
             # Specify the type of status
-            feature['status_type'] = "dict" if isinstance(feature['status'], dict) else "str"
+            feature['status_type'] = "dict" if isinstance(
+                feature['status'], dict) else "str"
 
-        util.check_if_dependency_graph_contains_cycle(self._dependency_graph)
-        util.set_origin_trials_features(self._features, self._dependency_graph)
-
-        self._standard_features = [feature for feature in self._features if not feature['custom']]
-        self._origin_trial_features = [feature for feature in self._features if feature['in_origin_trial']]
-        self._header_guard = self.make_header_guard(self._relative_output_dir + self.file_basename + '.h')
+        self._origin_trial_features = [
+            feature for feature in self._features if feature['in_origin_trial']
+        ]
+        self._header_guard = self.make_header_guard(self._relative_output_dir +
+                                                    self.file_basename + '.h')
 
     @staticmethod
     def _data_member_name(str_or_converter):
-        converter = NameStyleConverter(str_or_converter) if type(str_or_converter) is str else str_or_converter
+        converter = NameStyleConverter(str_or_converter) if type(
+            str_or_converter) is str else str_or_converter
         return converter.to_class_data_member(prefix='is', suffix='enabled')
 
     def _feature_sets(self):
@@ -123,7 +122,8 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
 
     def _write_features_to_pickle_file(self, platform_output_dir):
         # TODO(yashard): Get the file path from args instead of hardcoding it.
-        file_name = os.path.join(platform_output_dir, '..', 'build', 'scripts', 'runtime_enabled_features.pickle')
+        file_name = os.path.join(platform_output_dir, '..', 'build', 'scripts',
+                                 'runtime_enabled_features.pickle')
         features_map = {}
         for feature in self._features:
             features_map[str(feature['name'])] = {
@@ -138,7 +138,7 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
                 except Exception:
                     # If trouble unpickling, overwrite
                     pass
-        with open(os.path.abspath(file_name), 'w') as pickle_file:
+        with open(os.path.abspath(file_name), 'wb') as pickle_file:
             pickle.dump(features_map, pickle_file)
 
     def _template_inputs(self):
@@ -147,7 +147,6 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
             'feature_sets': self._feature_sets(),
             'platforms': self._platforms(),
             'input_files': self._input_files,
-            'standard_features': self._standard_features,
             'origin_trial_controlled_features': self._origin_trial_features,
             'header_guard': self._header_guard,
         }
@@ -166,8 +165,11 @@ class RuntimeFeatureTestHelpersWriter(BaseRuntimeFeatureWriter):
     file_basename = 'runtime_enabled_features_test_helpers'
 
     def __init__(self, json5_file_path, output_dir):
-        super(RuntimeFeatureTestHelpersWriter, self).__init__(json5_file_path, output_dir)
-        self._outputs = {('testing/' + self.file_basename + '.h'): self.generate_header}
+        super(RuntimeFeatureTestHelpersWriter, self).__init__(
+            json5_file_path, output_dir)
+        self._outputs = {
+            ('testing/' + self.file_basename + '.h'): self.generate_header
+        }
 
     def _template_inputs(self):
         return {

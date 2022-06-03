@@ -1,0 +1,100 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
+import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
+import "third_party/blink/public/mojom/renderer_preferences.mojom";
+
+enum PagehideDispatch {
+  // We haven't dispatched pagehide and should do so when appropriate.
+  kNotDispatched,
+  // We've dispatched pagehide with persisted == false.
+  kDispatchedNotPersisted,
+  // We've dispatched pagehide with persisted == true.
+  kDispatchedPersisted
+};
+
+// We need this structure to be able to atomically update the state of the page
+// to avoid it being in an inconsistent state (e.g. frozen but visible).
+// TODO(yuzus): Replace
+// third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h
+// with this struct.
+struct PageLifecycleState {
+  bool is_frozen;
+  PageVisibilityState visibility;
+  bool is_in_back_forward_cache;
+  PagehideDispatch pagehide_dispatch;
+  // Tells the renderer whether it is allowed to evict the page from the
+  // back-forward cache. This is set to false shortly before the page is
+  // taken out of the cache to make sure that evict requests from the renderer
+  // do not race with the restoration flow on the browser. For example, if set
+  // to true the renderer must not evict the page if javascript is executed.
+  bool eviction_enabled;
+  // TODO(https://crbug.com/1234634): Remove this, it's for temporary
+  // debugging to find when the renderer and browser disagree. It should not
+  // be used for any decision making and its value is not preserved in the
+  // renderer's copy of the state.
+  // True if changing to this state should trigger a pageshow event.
+  bool should_dispatch_pageshow_for_debugging;
+};
+
+// Additional parameters to send with SetPageLifecycleState calls when we're
+// restoring a page from the back-forward cache.
+struct PageRestoreParams {
+  // Timestamp of the start of the navigation restoring this entry from the
+  // back-forward cache.
+  mojo_base.mojom.TimeTicks navigation_start;
+
+  // The offset in the session history list for the page to be restored.
+  int32 pending_history_list_offset;
+
+  // Total size of the session history list.
+  int32 current_history_list_length;
+};
+
+// Used for broadcast messages from browser to renderer for messages that need
+// to go to all blink::WebViewImpls for a given content::WebContents. There may
+// be multiple blink::WebViewImpls when there are out-of-process iframes.
+interface PageBroadcast {
+  // Notifies the renderer about a change in the lifecycle state of the page.
+  SetPageLifecycleState(
+      PageLifecycleState state,
+      PageRestoreParams? page_restore_params) => ();
+
+  // Notifies the renderer when audio is started or stopped.
+  AudioStateChanged(bool is_audio_playing);
+
+  // Notifies the renderer when a prerendered page is activated. The renderer
+  // is expected to update `document.prerendering` and dispatch the
+  // prerenderingchange event on relevant documents.
+  //
+  // `activation_start` is when the activation navigation started for use in
+  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
+  // host the main frame, to avoid sending the data cross-origin.
+  //
+  // The renderer calls the callback once all documents in the
+  // blink::WebViewImpl finished activating.
+  //
+  // TODO(falken): Move this to SetPageLifecycleState.
+  ActivatePrerenderedPage(mojo_base.mojom.TimeTicks activation_start) => ();
+
+  // Notifies renderers when a portal web contents is activated or if a
+  // web contents is adopted as a portal.
+  SetInsidePortal(bool is_inside_portal);
+
+  // Notifies the renderer when updating a set of blink preferences.
+  UpdateWebPreferences(blink.mojom.WebPreferences preferences);
+
+  // Updates renderer preferences.
+  UpdateRendererPreferences(blink.mojom.RendererPreferences preferences);
+
+  // Set history offset and length.
+  SetHistoryOffsetAndLength(int32 offset, int32 length);
+
+  // Sent to whole page, but should only be used by the main frame.
+  SetPageBaseBackgroundColor(skia.mojom.SkColor? color);
+};

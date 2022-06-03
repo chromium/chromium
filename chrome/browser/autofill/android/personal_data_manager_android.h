@@ -5,12 +5,10 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_PERSONAL_DATA_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_PERSONAL_DATA_MANAGER_ANDROID_H_
 
-#include <string>
 #include <vector>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/geo/subkey_requester.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -23,6 +21,10 @@ namespace autofill {
 class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  public:
   PersonalDataManagerAndroid(JNIEnv* env, jobject obj);
+
+  PersonalDataManagerAndroid(const PersonalDataManagerAndroid&) = delete;
+  PersonalDataManagerAndroid& operator=(const PersonalDataManagerAndroid&) =
+      delete;
 
   static base::android::ScopedJavaLocalRef<jobject>
   CreateJavaCreditCardFromNative(JNIEnv* env, const CreditCard& card);
@@ -188,6 +190,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jcard);
 
+  // Adds a server credit card and sets the additional fields, for example,
+  // card_issuer, nickname. Used only in tests.
+  void AddServerCreditCardForTestWithAdditionalFields(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj,
+      const base::android::JavaParamRef<jobject>& jcard,
+      const base::android::JavaParamRef<jstring>& jnickname,
+      jint jcard_issuer);
+
   // Removes the profile or credit card represented by |jguid|.
   void RemoveByGUID(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& unused_obj,
@@ -294,6 +305,11 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj);
 
+  // Clears server profiles and cards, to be used in tests only.
+  void ClearServerDataForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj);
+
   // These functions help address normalization.
   // --------------------
 
@@ -329,6 +345,9 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Checks whether the Autofill PersonalDataManager has credit cards.
   jboolean HasCreditCards(JNIEnv* env);
+
+  // Checks whether FIDO authentication is available.
+  jboolean IsFidoAuthenticationAvailable(JNIEnv* env);
 
   // Gets the subkeys for the region with |jregion_code| code, if the
   // |jregion_code| rules have finished loading. Otherwise, sets up a task to
@@ -391,8 +410,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Used for subkey request.
   SubKeyRequester subkey_requester_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerAndroid);
 };
 
 }  // namespace autofill

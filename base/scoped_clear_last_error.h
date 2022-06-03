@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <errno.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace base {
-namespace internal {
 
 // ScopedClearLastError stores and resets the value of thread local error codes
 // (errno, GetLastError()), and restores them in the destructor. This is useful
@@ -24,12 +22,12 @@ namespace internal {
 class BASE_EXPORT ScopedClearLastErrorBase {
  public:
   ScopedClearLastErrorBase() : last_errno_(errno) { errno = 0; }
+  ScopedClearLastErrorBase(const ScopedClearLastErrorBase&) = delete;
+  ScopedClearLastErrorBase& operator=(const ScopedClearLastErrorBase&) = delete;
   ~ScopedClearLastErrorBase() { errno = last_errno_; }
 
  private:
   const int last_errno_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedClearLastErrorBase);
 };
 
 #if defined(OS_WIN)
@@ -38,12 +36,12 @@ class BASE_EXPORT ScopedClearLastErrorBase {
 class BASE_EXPORT ScopedClearLastError : public ScopedClearLastErrorBase {
  public:
   ScopedClearLastError();
+  ScopedClearLastError(const ScopedClearLastError&) = delete;
+  ScopedClearLastError& operator=(const ScopedClearLastError&) = delete;
   ~ScopedClearLastError();
 
  private:
-  unsigned int last_system_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedClearLastError);
+  const unsigned long last_system_error_;
 };
 
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -52,7 +50,6 @@ using ScopedClearLastError = ScopedClearLastErrorBase;
 
 #endif  // defined(OS_WIN)
 
-}  // namespace internal
 }  // namespace base
 
 #endif  // BASE_SCOPED_CLEAR_LAST_ERROR_H_

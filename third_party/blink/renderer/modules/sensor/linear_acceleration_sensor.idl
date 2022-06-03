@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Specification at:
 // https://w3c.github.io/accelerometer/#linearaccelerationsensor
 
 [
     SecureContext,
-    MeasureAs=LinearAccelerationSensorConstructor,
     Exposed=Window
 ] interface LinearAccelerationSensor : Accelerometer {
-  [CallWith=ExecutionContext, RaisesException] constructor(optional SpatialSensorOptions sensorOptions);
+  [CallWith=ExecutionContext, RaisesException, MeasureAs=LinearAccelerationSensorConstructor] constructor(optional SpatialSensorOptions sensorOptions = {});
 };

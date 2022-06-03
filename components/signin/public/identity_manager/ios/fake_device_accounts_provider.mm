@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

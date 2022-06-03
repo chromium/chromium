@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the way service worker manager manages targets.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -21,11 +21,8 @@
         var serviceWorkerManager = SDK.targetManager.mainTarget().model(SDK.ServiceWorkerManager);
         // Allow agents to do rountrips.
         TestRunner.deprecatedRunAfterPendingDispatches(function() {
-          for (var registration of serviceWorkerManager.registrations().valuesArray()) {
-            for (var version of registration.versions.valuesArray()) {
-              serviceWorkerManager.stopWorker(version.id);
-            }
-          }
+          for (var registration of serviceWorkerManager.registrations().values())
+            serviceWorkerManager.deleteRegistration(registration.id)
         });
       }
     },

@@ -29,4 +29,5 @@ class LuciAuthTest(unittest.TestCase):
         luci_auth.get_access_token()
         self.assertEqual(
             host.executive.calls,
-            [['/mock-checkout/third_party/depot_tools/luci-auth.bat', 'token']])
+            [['/mock-checkout/third_party/depot_tools/luci-auth.bat', 'token']
+             ])

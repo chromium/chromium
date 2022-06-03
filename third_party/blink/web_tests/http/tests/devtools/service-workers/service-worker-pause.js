@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests that we can pause in service worker.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.showPanel('sources');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -21,8 +22,8 @@
     ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
   }
 
-  function onPaused(frames, reason, breakpointIds, async) {
-    SourcesTestRunner.captureStackTrace(frames, async);
+  async function onPaused(frames, reason, breakpointIds, async) {
+    await SourcesTestRunner.captureStackTrace(frames, async);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

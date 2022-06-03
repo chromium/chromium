@@ -15,6 +15,10 @@ source_set("cells") {
     "signin_promo_view_delegate.h",
     "table_view_account_item.h",
     "table_view_account_item.mm",
+    "table_view_identity_cell.h",
+    "table_view_identity_cell.mm",
+    "table_view_identity_item.h",
+    "table_view_identity_item.mm",
     "table_view_signin_promo_item.h",
     "table_view_signin_promo_item.mm",
   ]
@@ -23,23 +27,25 @@ source_set("cells") {
     "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/table_view:styler",
-    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]
   public_deps = [
     ":constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
+    "//ios/chrome/browser/ui/table_view/cells",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
@@ -71,12 +77,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/signin_interaction/public",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/unified_consent",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/third_party/material_components_ios",
     "//ios/web/public/test",
@@ -92,5 +98,5 @@ source_set("constants") {
     "signin_promo_view_constants.h",
     "signin_promo_view_constants.mm",
   ]
-  libs = [ "Foundation.framework" ]
+  frameworks = [ "Foundation.framework" ]
 }

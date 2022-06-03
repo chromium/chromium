@@ -10,6 +10,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 
 namespace extensions {
 
@@ -32,11 +33,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsIncognito) {
   prefs->SetString(prefs::kWebKitSansSerifFontFamily, "Arial");
   prefs->SetInteger(prefs::kWebKitDefaultFontSize, 16);
 
-  int flags = ExtensionApiTest::kFlagEnableIncognito |
-      ExtensionApiTest::kFlagUseIncognito;
-  EXPECT_TRUE(RunExtensionSubtest("font_settings/incognito",
-                                  "launch.html",
-                                  flags));
+  EXPECT_TRUE(
+      RunExtensionTest("font_settings/incognito",
+                       {.page_url = "launch.html", .open_in_incognito = true},
+                       {.allow_in_incognito = true}));
 }
 
 }  // namespace extensions

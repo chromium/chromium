@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/base_export.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
 #include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_category.h"
@@ -125,7 +125,7 @@ class BASE_EXPORT CategoryRegistry {
   static TraceCategory categories_[kMaxCategories];
 
   // Contains the number of created categories.
-  static base::subtle::AtomicWord category_index_;
+  static std::atomic<size_t> category_index_;
 };
 
 }  // namespace trace_event

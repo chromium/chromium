@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sessions {
 class SessionCommand;
@@ -36,10 +38,16 @@ std::unique_ptr<SessionCommand> CreateSetTabExtensionAppIDCommand(
 std::unique_ptr<SessionCommand> CreateSetTabUserAgentOverrideCommand(
     SessionCommand::id_type command_id,
     SessionID tab_id,
-    const std::string& user_agent_override);
+    const SerializedUserAgentOverride& user_agent_override);
 
 // Creates a SessionCommand stores a browser window's app name.
 std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
+    SessionCommand::id_type command_id,
+    SessionID window_id,
+    const std::string& app_name);
+
+// Creates a SessionCommand storing a browser window's user title.
+std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
     SessionCommand::id_type command_id,
     SessionID window_id,
     const std::string& app_name);
@@ -61,7 +69,16 @@ bool RestoreSetTabExtensionAppIDCommand(const SessionCommand& command,
                                         std::string* extension_app_id);
 
 // Extracts a SessionCommand as previously created by
-// CreateSetTabUserAgentOverrideCommand into the tab id and user agent.
+// CreateSetTabUserAgentOverrideCommand into the tab id and user agent and
+// structured user agent.
+bool RestoreSetTabUserAgentOverrideCommand2(
+    const SessionCommand& command,
+    SessionID* tab_id,
+    std::string* user_agent_override,
+    absl::optional<std::string>* opaque_ua_metadata_override);
+
+// Backwards compatible version that restores versions that didn't have
+// structured user agent override.
 bool RestoreSetTabUserAgentOverrideCommand(const SessionCommand& command,
                                            SessionID* tab_id,
                                            std::string* user_agent_override);
@@ -71,6 +88,12 @@ bool RestoreSetTabUserAgentOverrideCommand(const SessionCommand& command,
 bool RestoreSetWindowAppNameCommand(const SessionCommand& command,
                                     SessionID* window_id,
                                     std::string* app_name);
+
+// Extracts a SessionCommand as previously created by
+// CreateSetWindowUserTitleCommand into the window id and user title.
+bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
+                                      SessionID* window_id,
+                                      std::string* user_title);
 
 }  // namespace sessions
 

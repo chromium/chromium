@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
@@ -17,6 +17,9 @@
 namespace blink {
 
 namespace {
+
+const uint8_t kVersion2 = 2;
+const uint8_t kVersion3 = 3;
 
 // This is a sample public key for testing the API. The corresponding private
 // key (use this to generate new samples for this test file) is:
@@ -34,7 +37,7 @@ namespace {
 //  To use this with a real browser, use --origin-trial-public-key with the
 //  public key, base-64-encoded:
 //  --origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=
-const uint8_t kTestPublicKey[] = {
+const OriginTrialPublicKey kTestPublicKey = {
     0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
     0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
@@ -49,7 +52,7 @@ const uint8_t kTestPublicKey[] = {
 //  0x07, 0x4d, 0x76, 0x55, 0x56, 0x42, 0x17, 0x2d, 0x8a, 0x9c, 0x47,
 //  0x96, 0x25, 0xda, 0x70, 0xaa, 0xb9, 0xfd, 0x53, 0x5d, 0x51, 0x3e,
 //  0x16, 0xab, 0xb4, 0x86, 0xea, 0xf3, 0x35, 0xc6, 0xca
-const uint8_t kTestPublicKey2[] = {
+const OriginTrialPublicKey kTestPublicKey2 = {
     0x50, 0x07, 0x4d, 0x76, 0x55, 0x56, 0x42, 0x17, 0x2d, 0x8a, 0x9c,
     0x47, 0x96, 0x25, 0xda, 0x70, 0xaa, 0xb9, 0xfd, 0x53, 0x5d, 0x51,
     0x3e, 0x16, 0xab, 0xb4, 0x86, 0xea, 0xf3, 0x35, 0xc6, 0xca,
@@ -57,13 +60,13 @@ const uint8_t kTestPublicKey2[] = {
 
 // This is a good trial token, signed with the above test private key.
 // Generate this token with the command (in tools/origin_trials):
-// generate_token.py valid.example.com Frobulate --expire-timestamp=1458766277
-const char kSampleToken[] =
+// generate_token.py valid.example.com 2 Frobulate --expire-timestamp=1458766277
+const char kSampleTokenV2[] =
     "Ap+Q/Qm0ELadZql+dlEGSwnAVsFZKgCEtUZg8idQC3uekkIeSZIY1tftoYdrwhqj"
     "7FO5L22sNvkZZnacLvmfNwsAAABZeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
     "eGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGUiLCAiZXhwaXJ5"
     "IjogMTQ1ODc2NjI3N30=";
-const uint8_t kSampleTokenSignature[] = {
+const uint8_t kSampleTokenV2Signature[] = {
     0x9f, 0x90, 0xfd, 0x09, 0xb4, 0x10, 0xb6, 0x9d, 0x66, 0xa9, 0x7e,
     0x76, 0x51, 0x06, 0x4b, 0x09, 0xc0, 0x56, 0xc1, 0x59, 0x2a, 0x00,
     0x84, 0xb5, 0x46, 0x60, 0xf2, 0x27, 0x50, 0x0b, 0x7b, 0x9e, 0x92,
@@ -71,9 +74,25 @@ const uint8_t kSampleTokenSignature[] = {
     0xc2, 0x1a, 0xa3, 0xec, 0x53, 0xb9, 0x2f, 0x6d, 0xac, 0x36, 0xf9,
     0x19, 0x66, 0x76, 0x9c, 0x2e, 0xf9, 0x9f, 0x37, 0x0b};
 
+// This is a good trial token, signed with the above test private key.
+// Generate this token with the command (in tools/origin_trials):
+// generate_token.py valid.example.com 3 Frobulate --expire-timestamp=1458766277
+const char kSampleTokenV3[] =
+    "A79AvyC9SLsjuRTUsjIeGmEfw8Ow0pZSoFtHs8qtrAhUKSNbluCYo86D4M3F6bco"
+    "F2BOyjyI7mEWztV+HQvxUAsAAABZeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGUiLCAiZXhwaXJ5"
+    "IjogMTQ1ODc2NjI3N30=";
+const uint8_t kSampleTokenV3Signature[] = {
+    0xbf, 0x40, 0xbf, 0x20, 0xbd, 0x48, 0xbb, 0x23, 0xb9, 0x14, 0xd4,
+    0xb2, 0x32, 0x1e, 0x1a, 0x61, 0x1f, 0xc3, 0xc3, 0xb0, 0xd2, 0x96,
+    0x52, 0xa0, 0x5b, 0x47, 0xb3, 0xca, 0xad, 0xac, 0x08, 0x54, 0x29,
+    0x23, 0x5b, 0x96, 0xe0, 0x98, 0xa3, 0xce, 0x83, 0xe0, 0xcd, 0xc5,
+    0xe9, 0xb7, 0x28, 0x17, 0x60, 0x4e, 0xca, 0x3c, 0x88, 0xee, 0x61,
+    0x16, 0xce, 0xd5, 0x7e, 0x1d, 0x0b, 0xf1, 0x50, 0x0b};
+
 // This is a good subdomain trial token, signed with the above test private key.
 // Generate this token with the command (in tools/origin_trials):
-// generate_token.py example.com Frobulate --is-subdomain
+// generate_token.py 2 example.com Frobulate --is-subdomain
 //   --expire-timestamp=1458766277
 const char kSampleSubdomainToken[] =
     "Auu+j9nXAQoy5+t00MiWakZwFExcdNC8ENkRdK1gL4OMFHS0AbZCscslDTcP1fjN"
@@ -90,7 +109,7 @@ const uint8_t kSampleSubdomainTokenSignature[] = {
 
 // This is a good trial token, explicitly not a subdomain, signed with the above
 // test private key. Generate this token with the command:
-// generate_token.py valid.example.com Frobulate --no-subdomain
+// generate_token.py 2 valid.example.com Frobulate --no-subdomain
 //   --expire-timestamp=1458766277
 const char kSampleNonSubdomainToken[] =
     "AreD979D7tO0luSZTr1+/+J6E0SSj/GEUyLK41o1hXFzXw1R7Z1hCDHs0gXWVSu1"
@@ -104,6 +123,78 @@ const uint8_t kSampleNonSubdomainTokenSignature[] = {
     0x0d, 0x51, 0xed, 0x9d, 0x61, 0x08, 0x31, 0xec, 0xd2, 0x05, 0xd6,
     0x55, 0x2b, 0xb5, 0x96, 0xf1, 0xf9, 0xd9, 0x68, 0xa7, 0xbf, 0x2d,
     0xfd, 0xb4, 0x76, 0xec, 0x53, 0x68, 0x09, 0x25, 0x06};
+
+// This is a good third party trial token, signed with the above test private
+// key. Generate this token with the command (in tools/origin_trials):
+// generate_token.py 3 example.com Frobulate --is-third-party
+//   --expire-timestamp=1458766277
+const char kSampleThirdPartyToken[] =
+    "A9+2NjaYsaFkwtULzbWjcsSJiXD0LuoOgma9fET8hq1uEqVcNyqjGH4ExpF7mYUk"
+    "ireYovWqOwsZEyiX6eodfw4AAABveyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZSwgImZlYXR1cmUi"
+    "OiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDE0NTg3NjYyNzd9";
+const uint8_t kSampleThirdPartyTokenSignature[] = {
+    0xdf, 0xb6, 0x36, 0x36, 0x98, 0xb1, 0xa1, 0x64, 0xc2, 0xd5, 0x0b,
+    0xcd, 0xb5, 0xa3, 0x72, 0xc4, 0x89, 0x89, 0x70, 0xf4, 0x2e, 0xea,
+    0x0e, 0x82, 0x66, 0xbd, 0x7c, 0x44, 0xfc, 0x86, 0xad, 0x6e, 0x12,
+    0xa5, 0x5c, 0x37, 0x2a, 0xa3, 0x18, 0x7e, 0x04, 0xc6, 0x91, 0x7b,
+    0x99, 0x85, 0x24, 0x8a, 0xb7, 0x98, 0xa2, 0xf5, 0xaa, 0x3b, 0x0b,
+    0x19, 0x13, 0x28, 0x97, 0xe9, 0xea, 0x1d, 0x7f, 0x0e};
+
+// This is a good trial token, explicitly not a third party, signed with the
+// above test private key. Generate this token with the command:
+// generate_token.py 3 valid.example.com Frobulate --no-third-party
+//   --expire-timestamp=1458766277
+const char kSampleNonThirdPartyToken[] =
+    "Ay0uBIEXlhMfvS43Z+m8bgeqnnZq27xV4OG13d+bkyGuCKx6Wa+hSkLkk6OStg+D"
+    "l8pRdqUG19BhWnizn5TbKAMAAABweyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiaXNUaGlyZFBhcnR5IjogZmFsc2UsICJmZWF0dXJl"
+    "IjogIkZyb2J1bGF0ZSIsICJleHBpcnkiOiAxNDU4NzY2Mjc3fQ==";
+const uint8_t kSampleNonThirdPartyTokenSignature[] = {
+    0x2d, 0x2e, 0x04, 0x81, 0x17, 0x96, 0x13, 0x1f, 0xbd, 0x2e, 0x37,
+    0x67, 0xe9, 0xbc, 0x6e, 0x07, 0xaa, 0x9e, 0x76, 0x6a, 0xdb, 0xbc,
+    0x55, 0xe0, 0xe1, 0xb5, 0xdd, 0xdf, 0x9b, 0x93, 0x21, 0xae, 0x08,
+    0xac, 0x7a, 0x59, 0xaf, 0xa1, 0x4a, 0x42, 0xe4, 0x93, 0xa3, 0x92,
+    0xb6, 0x0f, 0x83, 0x97, 0xca, 0x51, 0x76, 0xa5, 0x06, 0xd7, 0xd0,
+    0x61, 0x5a, 0x78, 0xb3, 0x9f, 0x94, 0xdb, 0x28, 0x03};
+
+// This is a good third party trial token with usage restriction set to subset,
+// signed with the above test private key. Generate this token with the
+// command:
+// generate_token.py valid.example.com Frobulate --version 3 --is-third-party
+//   --expire-timestamp=1458766277 --usage-restriction subset
+const char kSampleThirdPartyUsageSubsetToken[] =
+    "A27Ee1Bm6HYjEu2Zz1DbGNUaPuM8x0Tnk15Gyx8TRKZg72+JUXgCccMxlLIjVh4l"
+    "enOES58tfJxrRCorBAKmBwcAAACCeyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZSwgInVzYWdlIjog"
+    "InN1YnNldCIsICJmZWF0dXJlIjogIkZyb2J1bGF0ZSIsICJleHBpcnkiOiAxNDU4"
+    "NzY2Mjc3fQ==";
+const uint8_t kSampleThirdPartyUsageSubsetTokenSignature[] = {
+    0x6e, 0xc4, 0x7b, 0x50, 0x66, 0xe8, 0x76, 0x23, 0x12, 0xed, 0x99,
+    0xcf, 0x50, 0xdb, 0x18, 0xd5, 0x1a, 0x3e, 0xe3, 0x3c, 0xc7, 0x44,
+    0xe7, 0x93, 0x5e, 0x46, 0xcb, 0x1f, 0x13, 0x44, 0xa6, 0x60, 0xef,
+    0x6f, 0x89, 0x51, 0x78, 0x02, 0x71, 0xc3, 0x31, 0x94, 0xb2, 0x23,
+    0x56, 0x1e, 0x25, 0x7a, 0x73, 0x84, 0x4b, 0x9f, 0x2d, 0x7c, 0x9c,
+    0x6b, 0x44, 0x2a, 0x2b, 0x04, 0x02, 0xa6, 0x07, 0x07};
+
+// This is a good third party trial token with usage restriction set to none,
+// signed with the above test private key. Generate this token with the
+// command:
+// generate_token.py valid.example.com Frobulate --version 3 --is-third-party
+//   --expire-timestamp=1458766277 --usage-restriction ""
+const char kSampleThirdPartyUsageEmptyToken[] =
+    "A+gXf6yZgfN8NADWvnEhQ/GKycwCg34USmDlQ9UXTP6jDGJLBV+jI1npSUI0W/YW"
+    "hNyNYbzBaE2iCJSGCD56pwwAAAB8eyJvcmlnaW4iOiAiaHR0cHM6Ly92YWxpZC5l"
+    "eGFtcGxlLmNvbTo0NDMiLCAiaXNUaGlyZFBhcnR5IjogdHJ1ZSwgInVzYWdlIjog"
+    "IiIsICJmZWF0dXJlIjogIkZyb2J1bGF0ZSIsICJleHBpcnkiOiAxNDU4NzY2Mjc3"
+    "fQ==";
+const uint8_t kSampleThirdPartyUsageEmptyTokenSignature[] = {
+    0xe8, 0x17, 0x7f, 0xac, 0x99, 0x81, 0xf3, 0x7c, 0x34, 0x00, 0xd6,
+    0xbe, 0x71, 0x21, 0x43, 0xf1, 0x8a, 0xc9, 0xcc, 0x02, 0x83, 0x7e,
+    0x14, 0x4a, 0x60, 0xe5, 0x43, 0xd5, 0x17, 0x4c, 0xfe, 0xa3, 0x0c,
+    0x62, 0x4b, 0x05, 0x5f, 0xa3, 0x23, 0x59, 0xe9, 0x49, 0x42, 0x34,
+    0x5b, 0xf6, 0x16, 0x84, 0xdc, 0x8d, 0x61, 0xbc, 0xc1, 0x68, 0x4d,
+    0xa2, 0x08, 0x94, 0x86, 0x08, 0x3e, 0x7a, 0xa7, 0x0c};
 
 const char kExpectedFeatureName[] = "Frobulate";
 // This is an excessively long feature name (100 characters). This is valid, as
@@ -172,16 +263,47 @@ const char kSampleSubdomainTokenJSON[] =
     "{\"origin\": \"https://example.com:443\", \"isSubdomain\": true, "
     "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
 
+const char kUsageEmptyTokenJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"usage\": \"\", "
+    "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
+const char kUsageSubsetTokenJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"usage\": \"subset\", "
+    "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
+const char kSampleNonThirdPartyTokenJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"isThirdParty\": false, "
+    "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
+const char kSampleThirdPartyTokenJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"isThirdParty\": true, "
+    "\"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
+const char kSampleThirdPartyTokenUsageSubsetJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"isThirdParty\": true, "
+    "\"usage\": \"subset\", \"feature\": \"Frobulate\", \"expiry\": "
+    "1458766277}";
+
+const char kSampleThirdPartyTokenUsageEmptyJSON[] =
+    "{\"origin\": \"https://valid.example.com:443\", \"isThirdParty\": true, "
+    "\"usage\": \"\", \"feature\": \"Frobulate\", \"expiry\": 1458766277}";
+
 // Various ill-formed trial tokens. These should all fail to parse.
 const char* kInvalidTokens[] = {
+    // Empty String
+    "",
     // Invalid - Not JSON at all
     "abcde",
     // Invalid JSON
     "{",
     // Not an object
-    "\"abcde\"", "123.4", "[0, 1, 2]",
+    "\"abcde\"",
+    "123.4",
+    "[0, 1, 2]",
     // Missing keys
-    "{}", "{\"something\": 1}", "{\"origin\": \"https://a.a\"}",
+    "{}",
+    "{\"something\": 1}",
+    "{\"origin\": \"https://a.a\"}",
     "{\"origin\": \"https://a.a\", \"feature\": \"a\"}",
     "{\"origin\": \"https://a.a\", \"expiry\": 1458766277}",
     "{\"feature\": \"FeatureName\", \"expiry\": 1458766277}",
@@ -201,6 +323,18 @@ const char* kInvalidTokens[] = {
     "1458766277}",
     "{\"origin\": \"javascript:alert(1)\", \"feature\": \"a\", \"expiry\": "
     "1458766277}",
+};
+
+const char* kInvalidTokensVersion3[] = {
+    // Incorrect types
+    "{\"origin\": \"https://a.a\", \"isThirdParty\": \"true\", \"feature\": "
+    "\"a\", \"expiry\": 1458766277}",
+    "{\"origin\": \"https://a.a\", \"isThirdParty\": 1, \"feature\": \"a\", "
+    "\"expiry\": 1458766277}",
+    // Invalid value in usage field
+    "{\"origin\": \"https://a.a\", \"isThirdParty\": true, \"usage\": "
+    "\"cycle\", \"feature\": \"a\", "
+    "\"expiry\": 1458766277}",
 };
 
 // Valid token JSON. The feature name matches matches kExpectedLongFeatureName
@@ -394,7 +528,7 @@ const char kTooLargeTokenJSON[] =
 // kExpectedLongFeatureName (100 characters), and the origin is 2048 chars.
 // Generate this token with the command:
 // generate_token.py --is-subdomain --expire-timestamp=1458766277 \
-//   https://www.<2027 random chars>.com:9999 \
+//   2 https://www.<2027 random chars>.com:9999 \
 //   ThisTrialNameIs100CharactersLongIncludingPaddingAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 const char kLargeValidToken[] =
     "Aq1wGS1wFPBT/"
@@ -452,7 +586,7 @@ const uint8_t kLargeValidTokenSignature[] = {
 // kExpectedLongFeatureName (100 characters), and the origin is 2833 chars.
 // Generate this token with the command:
 // generate_token.py --is-subdomain --expire-timestamp=1458766277 \
-//   https://www.<4348 random chars>.com:9999 \
+//   2 https://www.<4348 random chars>.com:9999 \
 //   ThisTrialNameIs100CharactersLongIncludingPaddingAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 const char kTooLargeValidToken[] =
     "AswTUJEo9qF5QaVITkRzMQ+muYHK13+"
@@ -542,7 +676,7 @@ const char kTooLargeValidToken[] =
 
 }  // namespace
 
-class TrialTokenTest : public testing::TestWithParam<const char*> {
+class TrialTokenTest : public testing::Test {
  public:
   TrialTokenTest()
       : expected_origin_(url::Origin::Create(GURL(kExpectedOrigin))),
@@ -559,40 +693,58 @@ class TrialTokenTest : public testing::TestWithParam<const char*> {
         expected_expiry_(base::Time::FromDoubleT(kExpectedExpiry)),
         valid_timestamp_(base::Time::FromDoubleT(kValidTimestamp)),
         invalid_timestamp_(base::Time::FromDoubleT(kInvalidTimestamp)),
-        expected_signature_(
-            std::string(reinterpret_cast<const char*>(kSampleTokenSignature),
-                        base::size(kSampleTokenSignature))),
+        expected_v2_signature_(
+            std::string(reinterpret_cast<const char*>(kSampleTokenV2Signature),
+                        base::size(kSampleTokenV2Signature))),
+        expected_v3_signature_(
+            std::string(reinterpret_cast<const char*>(kSampleTokenV3Signature),
+                        base::size(kSampleTokenV3Signature))),
         expected_subdomain_signature_(std::string(
             reinterpret_cast<const char*>(kSampleSubdomainTokenSignature),
             base::size(kSampleSubdomainTokenSignature))),
         expected_nonsubdomain_signature_(std::string(
             reinterpret_cast<const char*>(kSampleNonSubdomainTokenSignature),
             base::size(kSampleNonSubdomainTokenSignature))),
-        correct_public_key_(
-            base::StringPiece(reinterpret_cast<const char*>(kTestPublicKey),
-                              base::size(kTestPublicKey))),
-        incorrect_public_key_(
-            base::StringPiece(reinterpret_cast<const char*>(kTestPublicKey2),
-                              base::size(kTestPublicKey2))) {}
+        expected_third_party_signature_(std::string(
+            reinterpret_cast<const char*>(kSampleThirdPartyTokenSignature),
+            base::size(kSampleThirdPartyTokenSignature))),
+        expected_non_third_party_signature_(std::string(
+            reinterpret_cast<const char*>(kSampleNonThirdPartyTokenSignature),
+            base::size(kSampleNonThirdPartyTokenSignature))),
+        expected_third_party_usage_empty_signature_(
+            std::string(reinterpret_cast<const char*>(
+                            kSampleThirdPartyUsageEmptyTokenSignature),
+                        base::size(kSampleThirdPartyUsageEmptyTokenSignature))),
+        expected_third_party_usage_subset_signature_(std::string(
+            reinterpret_cast<const char*>(
+                kSampleThirdPartyUsageSubsetTokenSignature),
+            base::size(kSampleThirdPartyUsageSubsetTokenSignature))),
+        correct_public_key_(kTestPublicKey),
+        incorrect_public_key_(kTestPublicKey2) {}
 
  protected:
   OriginTrialTokenStatus Extract(const std::string& token_text,
-                                 base::StringPiece public_key,
+                                 const OriginTrialPublicKey& public_key,
                                  std::string* token_payload,
-                                 std::string* token_signature) {
+                                 std::string* token_signature,
+                                 uint8_t* token_version) {
     return TrialToken::Extract(token_text, public_key, token_payload,
-                               token_signature);
+                               token_signature, token_version);
   }
 
-  OriginTrialTokenStatus ExtractIgnorePayload(const std::string& token_text,
-                                              base::StringPiece public_key) {
+  OriginTrialTokenStatus ExtractStatusOnly(
+      const std::string& token_text,
+      const OriginTrialPublicKey& public_key) {
     std::string token_payload;
     std::string token_signature;
-    return Extract(token_text, public_key, &token_payload, &token_signature);
+    uint8_t token_version;
+    return Extract(token_text, public_key, &token_payload, &token_signature,
+                   &token_version);
   }
 
-  std::unique_ptr<TrialToken> Parse(const std::string& token_payload) {
-    return TrialToken::Parse(token_payload);
+  std::unique_ptr<TrialToken> Parse(const std::string& token_payload,
+                                    const uint8_t token_version) {
+    return TrialToken::Parse(token_payload, token_version);
   }
 
   bool ValidateOrigin(TrialToken* token, const url::Origin origin) {
@@ -607,8 +759,12 @@ class TrialTokenTest : public testing::TestWithParam<const char*> {
     return token->ValidateDate(now);
   }
 
-  base::StringPiece correct_public_key() { return correct_public_key_; }
-  base::StringPiece incorrect_public_key() { return incorrect_public_key_; }
+  const OriginTrialPublicKey& correct_public_key() {
+    return correct_public_key_;
+  }
+  const OriginTrialPublicKey& incorrect_public_key() {
+    return incorrect_public_key_;
+  }
 
   const url::Origin expected_origin_;
   const url::Origin expected_subdomain_origin_;
@@ -623,36 +779,59 @@ class TrialTokenTest : public testing::TestWithParam<const char*> {
   const base::Time valid_timestamp_;
   const base::Time invalid_timestamp_;
 
-  std::string expected_signature_;
+  std::string expected_v2_signature_;
+  std::string expected_v3_signature_;
   std::string expected_subdomain_signature_;
   std::string expected_nonsubdomain_signature_;
+  std::string expected_third_party_signature_;
+  std::string expected_non_third_party_signature_;
+  std::string expected_third_party_usage_empty_signature_;
+  std::string expected_third_party_usage_subset_signature_;
 
  private:
-  base::StringPiece correct_public_key_;
-  base::StringPiece incorrect_public_key_;
+  OriginTrialPublicKey correct_public_key_;
+  OriginTrialPublicKey incorrect_public_key_;
 };
 
 // Test the extraction of the signed payload from token strings. This includes
 // checking the included version identifier, payload length, and cryptographic
 // signature.
 
-TEST_F(TrialTokenTest, ExtractValidSignature) {
+TEST_F(TrialTokenTest, ExtractValidSignatureVersion2) {
   std::string token_payload;
   std::string token_signature;
-  OriginTrialTokenStatus status = Extract(kSampleToken, correct_public_key(),
-                                          &token_payload, &token_signature);
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kSampleTokenV2, correct_public_key(), &token_payload,
+              &token_signature, &token_version);
   ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion2, token_version);
   EXPECT_STREQ(kSampleTokenJSON, token_payload.c_str());
-  EXPECT_EQ(expected_signature_, token_signature);
+  EXPECT_EQ(expected_v2_signature_, token_signature);
+}
+
+TEST_F(TrialTokenTest, ExtractValidSignatureVersion3) {
+  std::string token_payload;
+  std::string token_signature;
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kSampleTokenV3, correct_public_key(), &token_payload,
+              &token_signature, &token_version);
+  ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion3, token_version);
+  EXPECT_STREQ(kSampleTokenJSON, token_payload.c_str());
+  EXPECT_EQ(expected_v3_signature_, token_signature);
 }
 
 TEST_F(TrialTokenTest, ExtractSubdomainValidSignature) {
   std::string token_payload;
   std::string token_signature;
+  uint8_t token_version;
   OriginTrialTokenStatus status =
       Extract(kSampleSubdomainToken, correct_public_key(), &token_payload,
-              &token_signature);
+              &token_signature, &token_version);
   ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion2, token_version);
   EXPECT_STREQ(kSampleSubdomainTokenJSON, token_payload.c_str());
   EXPECT_EQ(expected_subdomain_signature_, token_signature);
 }
@@ -660,56 +839,112 @@ TEST_F(TrialTokenTest, ExtractSubdomainValidSignature) {
 TEST_F(TrialTokenTest, ExtractNonSubdomainValidSignature) {
   std::string token_payload;
   std::string token_signature;
+  uint8_t token_version;
   OriginTrialTokenStatus status =
       Extract(kSampleNonSubdomainToken, correct_public_key(), &token_payload,
-              &token_signature);
+              &token_signature, &token_version);
   ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion2, token_version);
   EXPECT_STREQ(kSampleNonSubdomainTokenJSON, token_payload.c_str());
   EXPECT_EQ(expected_nonsubdomain_signature_, token_signature);
 }
 
+TEST_F(TrialTokenTest, ExtractThirdPartyValidSignature) {
+  std::string token_payload;
+  std::string token_signature;
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kSampleThirdPartyToken, correct_public_key(), &token_payload,
+              &token_signature, &token_version);
+  ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion3, token_version);
+  EXPECT_STREQ(kSampleThirdPartyTokenJSON, token_payload.c_str());
+  EXPECT_EQ(expected_third_party_signature_, token_signature);
+}
+
+TEST_F(TrialTokenTest, ExtractNonThirdPartyValidSignature) {
+  std::string token_payload;
+  std::string token_signature;
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kSampleNonThirdPartyToken, correct_public_key(), &token_payload,
+              &token_signature, &token_version);
+  ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion3, token_version);
+  EXPECT_STREQ(kSampleNonThirdPartyTokenJSON, token_payload.c_str());
+  EXPECT_EQ(expected_non_third_party_signature_, token_signature);
+}
+
+TEST_F(TrialTokenTest, ExtractThirdPartyUsageEmptyValidSignature) {
+  std::string token_payload;
+  std::string token_signature;
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kSampleThirdPartyUsageEmptyToken, correct_public_key(),
+              &token_payload, &token_signature, &token_version);
+  ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion3, token_version);
+  EXPECT_STREQ(kSampleThirdPartyTokenUsageEmptyJSON, token_payload.c_str());
+  EXPECT_EQ(expected_third_party_usage_empty_signature_, token_signature);
+}
+
+TEST_F(TrialTokenTest, ExtractThirdPartyUsageSubsetValidSignature) {
+  std::string token_payload;
+  std::string token_signature;
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kSampleThirdPartyUsageSubsetToken, correct_public_key(),
+              &token_payload, &token_signature, &token_version);
+  ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion3, token_version);
+  EXPECT_STREQ(kSampleThirdPartyTokenUsageSubsetJSON, token_payload.c_str());
+  EXPECT_EQ(expected_third_party_usage_subset_signature_, token_signature);
+}
+
 TEST_F(TrialTokenTest, ExtractInvalidSignature) {
   OriginTrialTokenStatus status =
-      ExtractIgnorePayload(kInvalidSignatureToken, correct_public_key());
+      ExtractStatusOnly(kInvalidSignatureToken, correct_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kInvalidSignature, status);
 }
 
 TEST_F(TrialTokenTest, ExtractSignatureWithIncorrectKey) {
   OriginTrialTokenStatus status =
-      ExtractIgnorePayload(kSampleToken, incorrect_public_key());
+      ExtractStatusOnly(kSampleTokenV2, incorrect_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kInvalidSignature, status);
 }
 
 TEST_F(TrialTokenTest, ExtractEmptyToken) {
-  OriginTrialTokenStatus status =
-      ExtractIgnorePayload("", correct_public_key());
+  OriginTrialTokenStatus status = ExtractStatusOnly("", correct_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kMalformed, status);
 }
 
 TEST_F(TrialTokenTest, ExtractShortToken) {
   OriginTrialTokenStatus status =
-      ExtractIgnorePayload(kTruncatedToken, correct_public_key());
+      ExtractStatusOnly(kTruncatedToken, correct_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kMalformed, status);
 }
 
 TEST_F(TrialTokenTest, ExtractUnsupportedVersion) {
   OriginTrialTokenStatus status =
-      ExtractIgnorePayload(kIncorrectVersionToken, correct_public_key());
+      ExtractStatusOnly(kIncorrectVersionToken, correct_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kWrongVersion, status);
 }
 
 TEST_F(TrialTokenTest, ExtractSignatureWithIncorrectLength) {
   OriginTrialTokenStatus status =
-      ExtractIgnorePayload(kIncorrectLengthToken, correct_public_key());
+      ExtractStatusOnly(kIncorrectLengthToken, correct_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kMalformed, status);
 }
 
 TEST_F(TrialTokenTest, ExtractLargeToken) {
   std::string token_payload;
   std::string token_signature;
-  OriginTrialTokenStatus status = Extract(
-      kLargeValidToken, correct_public_key(), &token_payload, &token_signature);
+  uint8_t token_version;
+  OriginTrialTokenStatus status =
+      Extract(kLargeValidToken, correct_public_key(), &token_payload,
+              &token_signature, &token_version);
   ASSERT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(kVersion2, token_version);
   std::string expected_signature(
       std::string(reinterpret_cast<const char*>(kLargeValidTokenSignature),
                   base::size(kLargeValidTokenSignature)));
@@ -718,28 +953,58 @@ TEST_F(TrialTokenTest, ExtractLargeToken) {
 
 TEST_F(TrialTokenTest, ExtractTooLargeToken) {
   OriginTrialTokenStatus status =
-      ExtractIgnorePayload(kTooLargeValidToken, correct_public_key());
+      ExtractStatusOnly(kTooLargeValidToken, correct_public_key());
   EXPECT_EQ(OriginTrialTokenStatus::kMalformed, status);
 }
 
 // Test parsing of fields from JSON token.
+class TrialTokenParseInvalidTest
+    : public TrialTokenTest,
+      public testing::WithParamInterface<std::tuple<const char*, uint8_t>> {};
 
-TEST_F(TrialTokenTest, ParseEmptyString) {
-  std::unique_ptr<TrialToken> empty_token = Parse("");
-  EXPECT_FALSE(empty_token);
-}
-
-TEST_P(TrialTokenTest, ParseInvalidString) {
-  std::unique_ptr<TrialToken> empty_token = Parse(GetParam());
+TEST_P(TrialTokenParseInvalidTest, ParseInvalidString) {
+  std::tuple<const char*, uint8_t> param = GetParam();
+  std::unique_ptr<TrialToken> empty_token =
+      Parse(std::get<0>(param), std::get<1>(param));
   EXPECT_FALSE(empty_token) << "Invalid trial token should not parse.";
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         TrialTokenTest,
-                         testing::ValuesIn(kInvalidTokens));
+INSTANTIATE_TEST_SUITE_P(TrialTokenTest,
+                         TrialTokenParseInvalidTest,
+                         testing::Combine(testing::ValuesIn(kInvalidTokens),
+                                          testing::Values(kVersion2,
+                                                          kVersion3)));
 
-TEST_F(TrialTokenTest, ParseValidToken) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleTokenJSON);
+class TrialTokenParseInvalidVersion3Test
+    : public TrialTokenTest,
+      public testing::WithParamInterface<const char*> {};
+
+TEST_P(TrialTokenParseInvalidVersion3Test, ParseInvalidString) {
+  std::unique_ptr<TrialToken> empty_token = Parse(GetParam(), kVersion3);
+  EXPECT_FALSE(empty_token) << "Invalid trial token should not parse.";
+}
+
+INSTANTIATE_TEST_SUITE_P(TrialTokenTest,
+                         TrialTokenParseInvalidVersion3Test,
+                         testing::ValuesIn(kInvalidTokensVersion3));
+
+// Test parsing of fields from JSON token.
+class TrialTokenParseTest : public TrialTokenTest,
+                            public testing::WithParamInterface<uint8_t> {};
+
+TEST_P(TrialTokenParseTest, ParseValidToken) {
+  std::unique_ptr<TrialToken> token = Parse(kSampleTokenJSON, GetParam());
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->match_subdomains());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+  EXPECT_EQ(TrialToken::UsageRestriction::kNone, token->usage_restriction());
+}
+
+TEST_P(TrialTokenParseTest, ParseValidNonSubdomainToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleNonSubdomainTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_EQ(kExpectedFeatureName, token->feature_name());
   EXPECT_FALSE(token->match_subdomains());
@@ -747,17 +1012,9 @@ TEST_F(TrialTokenTest, ParseValidToken) {
   EXPECT_EQ(expected_expiry_, token->expiry_time());
 }
 
-TEST_F(TrialTokenTest, ParseValidNonSubdomainToken) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleNonSubdomainTokenJSON);
-  ASSERT_TRUE(token);
-  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
-  EXPECT_FALSE(token->match_subdomains());
-  EXPECT_EQ(expected_origin_, token->origin());
-  EXPECT_EQ(expected_expiry_, token->expiry_time());
-}
-
-TEST_F(TrialTokenTest, ParseValidSubdomainToken) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleSubdomainTokenJSON);
+TEST_P(TrialTokenParseTest, ParseValidSubdomainToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleSubdomainTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_EQ(kExpectedFeatureName, token->feature_name());
   EXPECT_TRUE(token->match_subdomains());
@@ -766,8 +1023,8 @@ TEST_F(TrialTokenTest, ParseValidSubdomainToken) {
   EXPECT_EQ(expected_expiry_, token->expiry_time());
 }
 
-TEST_F(TrialTokenTest, ParseValidLargeToken) {
-  std::unique_ptr<TrialToken> token = Parse(kLargeTokenJSON);
+TEST_P(TrialTokenParseTest, ParseValidLargeToken) {
+  std::unique_ptr<TrialToken> token = Parse(kLargeTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_EQ(kExpectedLongFeatureName, token->feature_name());
   EXPECT_TRUE(token->match_subdomains());
@@ -777,13 +1034,13 @@ TEST_F(TrialTokenTest, ParseValidLargeToken) {
   EXPECT_EQ(expected_expiry_, token->expiry_time());
 }
 
-TEST_F(TrialTokenTest, ParseTooLargeToken) {
-  std::unique_ptr<TrialToken> token = Parse(kTooLargeTokenJSON);
+TEST_P(TrialTokenParseTest, ParseTooLargeToken) {
+  std::unique_ptr<TrialToken> token = Parse(kTooLargeTokenJSON, GetParam());
   ASSERT_FALSE(token);
 }
 
-TEST_F(TrialTokenTest, ValidateValidToken) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleTokenJSON);
+TEST_P(TrialTokenParseTest, ValidateValidToken) {
+  std::unique_ptr<TrialToken> token = Parse(kSampleTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_TRUE(ValidateOrigin(token.get(), expected_origin_));
   EXPECT_FALSE(ValidateOrigin(token.get(), invalid_origin_));
@@ -801,8 +1058,9 @@ TEST_F(TrialTokenTest, ValidateValidToken) {
   EXPECT_FALSE(ValidateDate(token.get(), invalid_timestamp_));
 }
 
-TEST_F(TrialTokenTest, ValidateValidSubdomainToken) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleSubdomainTokenJSON);
+TEST_P(TrialTokenParseTest, ValidateValidSubdomainToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleSubdomainTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_TRUE(ValidateOrigin(token.get(), expected_origin_));
   EXPECT_TRUE(ValidateOrigin(token.get(), expected_subdomain_origin_));
@@ -813,8 +1071,8 @@ TEST_F(TrialTokenTest, ValidateValidSubdomainToken) {
   EXPECT_FALSE(ValidateOrigin(token.get(), invalid_tld_origin_));
 }
 
-TEST_F(TrialTokenTest, TokenIsValid) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleTokenJSON);
+TEST_P(TrialTokenParseTest, TokenIsValid) {
+  std::unique_ptr<TrialToken> token = Parse(kSampleTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_EQ(OriginTrialTokenStatus::kSuccess,
             token->IsValid(expected_origin_, valid_timestamp_));
@@ -828,8 +1086,9 @@ TEST_F(TrialTokenTest, TokenIsValid) {
             token->IsValid(expected_origin_, invalid_timestamp_));
 }
 
-TEST_F(TrialTokenTest, SubdomainTokenIsValid) {
-  std::unique_ptr<TrialToken> token = Parse(kSampleSubdomainTokenJSON);
+TEST_P(TrialTokenParseTest, SubdomainTokenIsValid) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleSubdomainTokenJSON, GetParam());
   ASSERT_TRUE(token);
   EXPECT_EQ(OriginTrialTokenStatus::kSuccess,
             token->IsValid(expected_origin_, valid_timestamp_));
@@ -848,21 +1107,116 @@ TEST_F(TrialTokenTest, SubdomainTokenIsValid) {
             token->IsValid(expected_origin_, invalid_timestamp_));
 }
 
+INSTANTIATE_TEST_SUITE_P(TrialTokenTest,
+                         TrialTokenParseTest,
+                         testing::Values(kVersion2, kVersion3));
+
+TEST_F(TrialTokenTest, ParseValidNonThirdPartyToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleNonThirdPartyTokenJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidThirdPartyToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleThirdPartyTokenJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_TRUE(token->is_third_party());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidThirdPartyTokenInvalidVersion) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleThirdPartyTokenJSON, kVersion2);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidUsageEmptyToken) {
+  std::unique_ptr<TrialToken> token = Parse(kUsageEmptyTokenJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(TrialToken::UsageRestriction::kNone, token->usage_restriction());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidUsageSubsetToken) {
+  std::unique_ptr<TrialToken> token = Parse(kUsageSubsetTokenJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_FALSE(token->is_third_party());
+  EXPECT_EQ(TrialToken::UsageRestriction::kSubset, token->usage_restriction());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidThirdPartyUsageSubsetToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleThirdPartyTokenUsageSubsetJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_TRUE(token->is_third_party());
+  EXPECT_EQ(TrialToken::UsageRestriction::kSubset, token->usage_restriction());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
+TEST_F(TrialTokenTest, ParseValidThirdPartyUsageEmptyToken) {
+  std::unique_ptr<TrialToken> token =
+      Parse(kSampleThirdPartyTokenUsageEmptyJSON, kVersion3);
+  ASSERT_TRUE(token);
+  EXPECT_EQ(kExpectedFeatureName, token->feature_name());
+  EXPECT_TRUE(token->is_third_party());
+  EXPECT_EQ(TrialToken::UsageRestriction::kNone, token->usage_restriction());
+  EXPECT_EQ(expected_origin_, token->origin());
+  EXPECT_EQ(expected_expiry_, token->expiry_time());
+}
+
 // Test overall extraction and parsing, to ensure output status matches returned
 // token, and signature is provided.
+// Test Version 2.
 TEST_F(TrialTokenTest, FromValidToken) {
   OriginTrialTokenStatus status;
   std::unique_ptr<TrialToken> token =
-      TrialToken::From(kSampleToken, correct_public_key(), &status);
+      TrialToken::From(kSampleTokenV2, correct_public_key(), &status);
   EXPECT_TRUE(token);
   EXPECT_EQ(OriginTrialTokenStatus::kSuccess, status);
-  EXPECT_EQ(expected_signature_, token->signature());
+  EXPECT_EQ(expected_v2_signature_, token->signature());
 }
 
 TEST_F(TrialTokenTest, FromInvalidSignature) {
   OriginTrialTokenStatus status;
   std::unique_ptr<TrialToken> token =
-      TrialToken::From(kSampleToken, incorrect_public_key(), &status);
+      TrialToken::From(kSampleTokenV2, incorrect_public_key(), &status);
+  EXPECT_FALSE(token);
+  EXPECT_EQ(OriginTrialTokenStatus::kInvalidSignature, status);
+}
+
+// Test Version 3.
+TEST_F(TrialTokenTest, FromValidTokenVersion3) {
+  OriginTrialTokenStatus status;
+  std::unique_ptr<TrialToken> token =
+      TrialToken::From(kSampleTokenV3, correct_public_key(), &status);
+  EXPECT_TRUE(token);
+  EXPECT_EQ(OriginTrialTokenStatus::kSuccess, status);
+  EXPECT_EQ(expected_v3_signature_, token->signature());
+}
+
+TEST_F(TrialTokenTest, FromInvalidSignatureVersion3) {
+  OriginTrialTokenStatus status;
+  std::unique_ptr<TrialToken> token =
+      TrialToken::From(kSampleTokenV3, incorrect_public_key(), &status);
   EXPECT_FALSE(token);
   EXPECT_EQ(OriginTrialTokenStatus::kInvalidSignature, status);
 }

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "net/extras/preload_data/decoder.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace net {
 
@@ -308,7 +309,7 @@ bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
       }
     }
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace extras

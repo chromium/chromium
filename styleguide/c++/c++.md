@@ -1,13 +1,14 @@
 # Chromium C++ style guide
 
-_For other languages, please see the [Chromium style guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+_For other languages, please see the
+[Chromium style guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
 Chromium follows the [Google C++ Style
 Guide](https://google.github.io/styleguide/cppguide.html) unless an exception
 is listed below.
 
 A checkout should give you
-[clang-format](https://chromium.googlesource.com/chromium/src/+/master/docs/clang_format.md)
+[clang-format](https://chromium.googlesource.com/chromium/src/+/main/docs/clang_format.md)
 to automatically format C++ code. By policy, Clang's formatting of code should
 always be accepted in code reviews.
 
@@ -16,31 +17,51 @@ You can propose changes to this style guide by sending an email to
 request review for a change to this file. If there's no consensus,
 `src/styleguide/c++/OWNERS` get to decide.
 
-Blink code in `third_party/WebKit` uses [Blink style](blink-c++.md).
+Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 
 ## Modern C++ features
 
-Some features of C++ remain forbidden, even as Chromium adopts newer versions
-of the C++ language and standard library. These should be similar to those
-allowed in Google style, but may occasionally differ. The status of modern C++
-features in Chromium is tracked in the separate
-[C++ use in Chromium](https://chromium-cpp.appspot.com/) page.
+Google style
+[targets C++17](https://google.github.io/styleguide/cppguide.html#C++_Version).
+Chromium targets C++14; [C++17 support](https://crbug.com/752720) is not
+expected before
+[mid-2021](https://blog.chromium.org/2020/01/moving-forward-from-chrome-apps.html).
+Additionally, some features of supported C++ versions remain forbidden. The
+status of Chromium's C++ support is covered in more detail in
+[Modern C++ use in Chromium](c++11.md).
 
 ## Naming
 
   * "Chromium" is the name of the project, not the product, and should never
     appear in code, variable names, API names etc. Use "Chrome" instead.
 
-## Test-only Code
+## Tests and Test-only Code
 
   * Functions used only for testing should be restricted to test-only usages
-    with the `ForTesting` suffix. This is checked at presubmit time to ensure
-    these functions are only called by test files.
+    with the testing suffixes supported by
+    [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
+    `ForTesting` is the conventional suffix although similar patterns, such as
+    `ForTest`, are also accepted. These suffixes are checked at presubmit time
+    to ensure the functions are called only by test files.
+  * Classes used only for testing should be in a GN build target that is
+    marked `testonly=true`. Tests can depend on such targets, but production
+    code can not.
+  * While test files generally appear alongside the production code they test,
+    support code for `testonly` targets should be placed in a `test/` subdirectory.
+    For example, see `//mojo/core/core_unittest.cc` and
+    `//mojo/core/test/mojo_test_base.cc`. For test classes used across multiple
+    directories, it might make sense to move them into a nested `test` namespace for
+    clarity.
+  * Despite the Google C++ style guide
+    [deprecating](https://google.github.io/styleguide/cppguide.html#File_Names)
+    the `_unittest.cc` suffix for unit test files, in Chromium we still use this
+    suffix to distinguish unit tests from browser tests, which are written in
+    files with the `_browsertest.cc` suffix.
 
 ## Code formatting
 
   * Put `*` and `&` by the type rather than the variable name.
-  * In class declarations, group function overrides together within each access
+  * In class declarations, group function overrides together within each access
     control section, with one labeled group per parent class.
   * Prefer `(foo == 0)` to `(0 == foo)`.
 
@@ -155,10 +176,16 @@ Place platform-specific #includes in their own section below the "normal"
     not have been compiled with the same sizes for things like `int` and
     `size_t`. However, to the greatest degree possible, avoid letting these
     sized types bleed through the APIs of the layers in question.
-  * Don't use `std::wstring`. Use `base::string16` or `base::FilePath` instead.
-    (Windows-specific code interfacing with system APIs using `wstring` and
-    `wchar_t` can still use `string16` and `char16`; it is safe to assume that
-    these are equivalent to the "wide" types.)
+  * The Google Style Guide [bans
+    UTF-16](https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters).
+    For various reasons, Chromium uses UTF-16 extensively. Use `std::u16string`
+    and `char16_t*` for 16-bit strings, `u"..."` to declare UTF-16 literals, and
+    either the actual characters or the `\uXXXX` or `\UXXXXXXXX` escapes for
+    Unicode characters. Avoid `\xXX...`-style escapes, which can cause subtle
+    problems if someone attempts to change the type of string that holds the
+    literal. In code used only on Windows, it may be necessary to use
+    `std::wstring` and `wchar_t*`; these are legal, but note that they are
+    distinct types and are often not 16-bit on other platforms.
 
 ## Object ownership and calling conventions
 
@@ -280,6 +307,17 @@ these:
     bots in a bad state. Use the `ASSERT_xx()` and `EXPECT_xx()` family of
     macros, which report failures gracefully and can continue running other
     tests.
+  * Dereferencing a null pointer in C++ is generally UB (undefined behavior) as
+    the compiler is free to assume a dereference means the pointer is not null
+    and may apply optimizations based on that. As such, there is sometimes a
+    strong opinion to `CHECK()` pointers before dereference. Chromium builds
+    with the `no-delete-null-pointer-checks` Clang/GCC flag which prevents such
+    optimizations, meaning the side effect of a null dereference would just be
+    the use of 0x0 which will lead to a crash on all the platforms Chromium
+    supports. As such we do not use `CHECK()` to guard pointer deferences. A
+    `DCHECK()` can be used to document that a pointer is never null, and doing
+    so as early as possible can help with debugging, though our styleguide now
+    recommends using a reference instead of a pointer when it cannot be null.
 
 ## Miscellany
 

@@ -3,9 +3,7 @@
 # found in the LICENSE file.
 
 executable("io_benchmark") {
-  sources = [
-    "io_benchmark.cc",
-  ]
+  sources = [ "io_benchmark.cc" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -14,9 +12,7 @@ executable("io_benchmark") {
 }
 
 executable("compression_benchmark") {
-  sources = [
-    "compression_benchmark.cc",
-  ]
+  sources = [ "compression_benchmark.cc" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -29,9 +25,7 @@ executable("compression_benchmark") {
 }
 
 executable("sha_benchmark") {
-  sources = [
-    "sha_benchmark.cc",
-  ]
+  sources = [ "sha_benchmark.cc" ]
   deps = [
     "//base",
     "//base/test:test_support",

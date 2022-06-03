@@ -3,3 +3,7 @@ AXWebArea
 ++++AXGroup AXDescription='Browser Engines:'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Browser Engines:'
+++AXGroup AXDescription='Which cake do you prefer?'
+++++AXGroup
+++++++AXHeading AXTitle='Which cake do you prefer?' AXValue=2
+++++++++AXStaticText AXValue='Which cake do you prefer?'

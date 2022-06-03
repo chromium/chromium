@@ -22,7 +22,7 @@
 #include "sql/transaction.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -39,34 +39,40 @@ static const int kSizeThresholdForFlush = 200;
 
 ActivityDatabase::ActivityDatabase(ActivityDatabase::Delegate* delegate)
     : delegate_(delegate),
+      db_({
+          .exclusive_locking = true,
+          .page_size = 4096,
+          .cache_size = 32,
+          // TODO(pwnall): Add a meta table and remove this option.
+          .mmap_alt_status_discouraged = true,
+          .enable_views_discouraged = true,  // Required by mmap_alt_status.
+      }),
       valid_db_(false),
       batch_mode_(true),
       already_closed_(false),
       did_init_(false) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableExtensionActivityLogTesting)) {
-    batching_period_ = base::TimeDelta::FromSeconds(10);
+    batching_period_ = base::Seconds(10);
   } else {
-    batching_period_ = base::TimeDelta::FromMinutes(2);
+    batching_period_ = base::Minutes(2);
   }
 }
 
-ActivityDatabase::~ActivityDatabase() {}
+ActivityDatabase::~ActivityDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void ActivityDatabase::Init(const base::FilePath& db_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (did_init_)
     return;
   did_init_ = true;
   DCHECK(GetActivityLogTaskRunner()->RunsTasksInCurrentSequence());
   db_.set_histogram_tag("Activity");
-  db_.set_error_callback(
-      base::Bind(&ActivityDatabase::DatabaseErrorCallback,
-                 base::Unretained(this)));
-  db_.set_page_size(4096);
-  db_.set_cache_size(32);
-
-  // This db does not use [meta] table, store mmap status data elsewhere.
-  db_.set_mmap_alt_status();
+  db_.set_error_callback(base::BindRepeating(
+      &ActivityDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
   if (!db_.Open(db_name)) {
     LOG(ERROR) << db_.GetErrorMessage();
@@ -79,7 +85,7 @@ void ActivityDatabase::Init(const base::FilePath& db_name) {
   if (!committer.Begin())
     return LogInitFailure();
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Exclude the database from backups.
   base::mac::SetFileBackupExclusion(db_name);
 #endif
@@ -103,11 +109,13 @@ void ActivityDatabase::Init(const base::FilePath& db_name) {
 }
 
 void ActivityDatabase::LogInitFailure() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "Couldn't initialize the activity log database.";
   SoftFailureClose();
 }
 
 void ActivityDatabase::AdviseFlush(int size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!valid_db_)
     return;
   if (!batch_mode_ || size == kFlushImmediately ||
@@ -118,6 +126,7 @@ void ActivityDatabase::AdviseFlush(int size) {
 }
 
 void ActivityDatabase::RecordBatchedActions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (valid_db_) {
     if (!delegate_->FlushDatabase(&db_))
       SoftFailureClose();
@@ -125,6 +134,7 @@ void ActivityDatabase::RecordBatchedActions() {
 }
 
 void ActivityDatabase::SetBatchModeForTesting(bool batch_mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (batch_mode && !batch_mode_) {
     timer_.Start(FROM_HERE,
                  batching_period_,
@@ -138,7 +148,7 @@ void ActivityDatabase::SetBatchModeForTesting(bool batch_mode) {
 }
 
 sql::Database* ActivityDatabase::GetSqlConnection() {
-  DCHECK(GetActivityLogTaskRunner()->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (valid_db_) {
     return &db_;
   } else {
@@ -147,6 +157,7 @@ sql::Database* ActivityDatabase::GetSqlConnection() {
 }
 
 void ActivityDatabase::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();
   if (!already_closed_) {
     RecordBatchedActions();
@@ -161,6 +172,7 @@ void ActivityDatabase::Close() {
 }
 
 void ActivityDatabase::HardFailureClose() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (already_closed_) return;
   valid_db_ = false;
   timer_.Stop();
@@ -171,12 +183,14 @@ void ActivityDatabase::HardFailureClose() {
 }
 
 void ActivityDatabase::SoftFailureClose() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   valid_db_ = false;
   timer_.Stop();
   delegate_->OnDatabaseFailure();
 }
 
 void ActivityDatabase::DatabaseErrorCallback(int error, sql::Statement* stmt) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sql::IsErrorCatastrophic(error)) {
     LOG(ERROR) << "Killing the ActivityDatabase due to catastrophic error.";
     HardFailureClose();
@@ -188,15 +202,15 @@ void ActivityDatabase::DatabaseErrorCallback(int error, sql::Statement* stmt) {
 }
 
 void ActivityDatabase::RecordBatchedActionsWhileTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordBatchedActions();
   timer_.Stop();
 }
 
 void ActivityDatabase::SetTimerForTesting(int ms) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Stop();
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromMilliseconds(ms),
-               this,
+  timer_.Start(FROM_HERE, base::Milliseconds(ms), this,
                &ActivityDatabase::RecordBatchedActionsWhileTesting);
 }
 

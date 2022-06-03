@@ -4,18 +4,9 @@
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_1)
-
-id<GREYMatcher> grey_kindOfClassName(NSString* name) {
-  Class klass = NSClassFromString(name);
-  DCHECK(klass);
-  return grey_kindOfClass(klass);
-}
-
-#endif

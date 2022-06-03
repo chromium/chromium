@@ -104,6 +104,12 @@ class DoubleToStringConverter {
   //   ToPrecision(230.0, 2) -> "230"
   //   ToPrecision(230.0, 2) -> "230."  with EMIT_TRAILING_DECIMAL_POINT.
   //   ToPrecision(230.0, 2) -> "2.3e2" with EMIT_TRAILING_ZERO_AFTER_POINT.
+  //
+  // The min_exponent_width is used for exponential representations.
+  // The converter adds leading '0's to the exponent until the exponent
+  // is at least min_exponent_width digits long.
+  // The min_exponent_width is clamped to 5.
+  // As such, the exponent may never have more than 5 digits in total.
   DoubleToStringConverter(int flags,
                           const char* infinity_symbol,
                           const char* nan_symbol,
@@ -111,7 +117,8 @@ class DoubleToStringConverter {
                           int decimal_in_shortest_low,
                           int decimal_in_shortest_high,
                           int max_leading_padding_zeroes_in_precision_mode,
-                          int max_trailing_padding_zeroes_in_precision_mode)
+                          int max_trailing_padding_zeroes_in_precision_mode,
+                          int min_exponent_width = 0)
       : flags_(flags),
         infinity_symbol_(infinity_symbol),
         nan_symbol_(nan_symbol),
@@ -121,7 +128,8 @@ class DoubleToStringConverter {
         max_leading_padding_zeroes_in_precision_mode_(
             max_leading_padding_zeroes_in_precision_mode),
         max_trailing_padding_zeroes_in_precision_mode_(
-            max_trailing_padding_zeroes_in_precision_mode) {
+            max_trailing_padding_zeroes_in_precision_mode),
+        min_exponent_width_(min_exponent_width) {
     // When 'trailing zero after the point' is set, then 'trailing point'
     // must be set too.
     DOUBLE_CONVERSION_ASSERT(((flags & EMIT_TRAILING_DECIMAL_POINT) != 0) ||
@@ -378,6 +386,7 @@ class DoubleToStringConverter {
   const int decimal_in_shortest_high_;
   const int max_leading_padding_zeroes_in_precision_mode_;
   const int max_trailing_padding_zeroes_in_precision_mode_;
+  const int min_exponent_width_;
 
   DOUBLE_CONVERSION_DISALLOW_IMPLICIT_CONSTRUCTORS(DoubleToStringConverter);
 };

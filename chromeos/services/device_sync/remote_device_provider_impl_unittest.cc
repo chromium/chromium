@@ -7,16 +7,16 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/services/device_sync/fake_cryptauth_device_manager.h"
@@ -41,6 +41,7 @@ const char kTestRemoteDeviceNamePrefix[] = "name-";
 const char kTestRemoteDevicePiiFreeNamePrefix[] = "piiFreeName-";
 const char kTestRemoteDevicePublicKeyPrefix[] = "publicKey-";
 const char kTestRemoteDevicePskPrefix[] = "psk-";
+const char kTestRemoteDeviceBluetoothPublicAddressPrefix[] = "address-";
 
 multidevice::RemoteDevice CreateRemoteDeviceForTest(const std::string& suffix,
                                                     bool has_instance_id,
@@ -62,7 +63,8 @@ multidevice::RemoteDevice CreateRemoteDeviceForTest(const std::string& suffix,
       kTestRemoteDevicePskPrefix + suffix, 100L /* last_update_time_millis */,
       {} /* software_features */,
       {multidevice::BeaconSeed(beacon_seed_data, base::Time::FromJavaTime(200L),
-                               base::Time::FromJavaTime(300L))});
+                               base::Time::FromJavaTime(300L))},
+      kTestRemoteDeviceBluetoothPublicAddressPrefix + suffix);
 }
 
 // Provide four fake RemoteDevices associated with a v1 DeviceSync. These
@@ -141,8 +143,8 @@ CryptAuthDevice ConvertRemoteDeviceToCryptAuthDevice(
       "DeviceSync:BetterTogether public key",
       base::Time::FromJavaTime(remote_device.last_update_time_millis),
       remote_device.public_key.empty()
-          ? base::nullopt
-          : base::make_optional(beto_device_metadata),
+          ? absl::nullopt
+          : absl::make_optional(beto_device_metadata),
       remote_device.software_features);
 }
 
@@ -170,7 +172,7 @@ class FakeDeviceLoader final : public RemoteDeviceLoader {
     TestRemoteDeviceLoaderFactory() = default;
     ~TestRemoteDeviceLoaderFactory() = default;
 
-    std::unique_ptr<RemoteDeviceLoader> BuildInstance(
+    std::unique_ptr<RemoteDeviceLoader> CreateInstance(
         const std::vector<cryptauth::ExternalDeviceInfo>& device_info_list,
         const std::string& user_email,
         const std::string& user_private_key,
@@ -190,22 +192,21 @@ class FakeDeviceLoader final : public RemoteDeviceLoader {
       // Fetch only the devices inserted by tests, since GetV1RemoteDevices()
       // contains all available devices.
       multidevice::RemoteDeviceList devices;
-      for (const auto remote_device : GetV1RemoteDevices()) {
+      for (const auto& remote_device : GetV1RemoteDevices()) {
         for (const auto& external_device_info : device_info_list) {
           if (remote_device.public_key == external_device_info.public_key())
             devices.push_back(remote_device);
         }
       }
-      callback_.Run(devices);
-      callback_.Reset();
+      std::move(callback_).Run(devices);
     }
 
     // Fetch is only started if the change result passed to OnSyncFinished() is
     // CHANGED and sync is SUCCESS.
     bool HasQueuedCallback() { return !callback_.is_null(); }
 
-    void QueueCallback(const RemoteDeviceCallback& callback) {
-      callback_ = callback;
+    void QueueCallback(RemoteDeviceCallback callback) {
+      callback_ = std::move(callback);
     }
 
    private:
@@ -222,8 +223,8 @@ class FakeDeviceLoader final : public RemoteDeviceLoader {
 
   TestRemoteDeviceLoaderFactory* remote_device_loader_factory_;
 
-  void Load(const RemoteDeviceCallback& callback) override {
-    remote_device_loader_factory_->QueueCallback(callback);
+  void Load(RemoteDeviceCallback callback) override {
+    remote_device_loader_factory_->QueueCallback(std::move(callback));
   }
 };
 
@@ -231,18 +232,23 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
  public:
   DeviceSyncRemoteDeviceProviderImplTest() = default;
 
+  DeviceSyncRemoteDeviceProviderImplTest(
+      const DeviceSyncRemoteDeviceProviderImplTest&) = delete;
+  DeviceSyncRemoteDeviceProviderImplTest& operator=(
+      const DeviceSyncRemoteDeviceProviderImplTest&) = delete;
+
   void SetUp() override {
     fake_device_manager_ = std::make_unique<FakeCryptAuthDeviceManager>();
     fake_v2_device_manager_ = std::make_unique<FakeCryptAuthV2DeviceManager>();
 
     fake_secure_message_delegate_factory_ =
         std::make_unique<multidevice::FakeSecureMessageDelegateFactory>();
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         fake_secure_message_delegate_factory_.get());
 
     test_device_loader_factory_ =
         std::make_unique<FakeDeviceLoader::TestRemoteDeviceLoaderFactory>();
-    RemoteDeviceLoader::Factory::SetInstanceForTesting(
+    RemoteDeviceLoader::Factory::SetFactoryForTesting(
         test_device_loader_factory_.get());
     fake_remote_device_v2_loader_factory_ =
         std::make_unique<FakeRemoteDeviceV2LoaderFactory>();
@@ -253,9 +259,9 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         nullptr);
-    RemoteDeviceLoader::Factory::SetInstanceForTesting(nullptr);
+    RemoteDeviceLoader::Factory::SetFactoryForTesting(nullptr);
     RemoteDeviceV2LoaderImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
@@ -380,7 +386,7 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
         success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
                 : CryptAuthDeviceSyncResult::ResultCode::
                       kErrorSyncMetadataApiCallBadRequest,
-        did_devices_change, base::nullopt /* client_directive */));
+        did_devices_change, absl::nullopt /* client_directive */));
 
     // A new loader should be created after a successful v2 DeviceSync that
     // changed the device registry.
@@ -463,8 +469,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
       fake_remote_device_v2_loader_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<RemoteDeviceProviderImpl> remote_device_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncRemoteDeviceProviderImplTest);
 };
 
 // ---------------------------------- V1 Only ----------------------------------

@@ -1,0 +1,14 @@
+{
+  "name": "no caching",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Checks that content scripts receiving events evict from back forward cache.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://a.com/*", "*://b.com/*"],
+      "js": ["storage.js"],
+      "run_at": "document_end"
+    }
+  ]
+}

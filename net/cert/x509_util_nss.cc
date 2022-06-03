@@ -208,8 +208,8 @@ ScopedCERTCertificateList CreateCERTCertificateListFromX509Certificate(
 ScopedCERTCertificateList CreateCERTCertificateListFromBytes(const char* data,
                                                              size_t length,
                                                              int format) {
-  CertificateList certs =
-      X509Certificate::CreateCertificateListFromBytes(data, length, format);
+  CertificateList certs = X509Certificate::CreateCertificateListFromBytes(
+      base::as_bytes(base::make_span(data, length)), format);
   ScopedCERTCertificateList nss_chain;
   nss_chain.reserve(certs.size());
   for (const scoped_refptr<X509Certificate>& cert : certs) {
@@ -249,8 +249,7 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCERTCertificate(
     return nullptr;
   bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
       X509Certificate::CreateCertBufferFromBytes(
-          reinterpret_cast<const char*>(nss_cert->derCert.data),
-          nss_cert->derCert.len));
+          base::make_span(nss_cert->derCert.data, nss_cert->derCert.len)));
   if (!cert_handle)
     return nullptr;
 
@@ -260,9 +259,8 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCERTCertificate(
     if (!nss_intermediate || !nss_intermediate->derCert.len)
       return nullptr;
     bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-        X509Certificate::CreateCertBufferFromBytes(
-            reinterpret_cast<const char*>(nss_intermediate->derCert.data),
-            nss_intermediate->derCert.len));
+        X509Certificate::CreateCertBufferFromBytes(base::make_span(
+            nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
     if (!intermediate_cert_handle)
       return nullptr;
     intermediates.push_back(std::move(intermediate_cert_handle));

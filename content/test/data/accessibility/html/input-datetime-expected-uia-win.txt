@@ -1,4 +1,4 @@
-document
-++group IsControlElement=false
-++++textbox Value.Value='1/1/2015 1:00AM'
-++++textbox Name='Launch' Value.Value='1/1/2015 1:00AM'
+Document
+++Group IsControlElement=false
+++++Edit Value.Value='1/1/2015 1:00AM'
+++++Edit Name='Launch' Value.Value='1/1/2015 1:00AM'

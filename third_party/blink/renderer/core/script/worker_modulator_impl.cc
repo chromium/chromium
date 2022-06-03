@@ -4,13 +4,10 @@
 
 #include "third_party/blink/renderer/core/script/worker_modulator_impl.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/loader/modulescript/document_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/loader/modulescript/installed_service_worker_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/loader/modulescript/worker_module_script_fetcher.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -18,42 +15,37 @@ WorkerModulatorImpl::WorkerModulatorImpl(ScriptState* script_state)
     : ModulatorImplBase(script_state) {}
 
 ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
-    ModuleScriptCustomFetchType custom_fetch_type) {
+    ModuleScriptCustomFetchType custom_fetch_type,
+    base::PassKey<ModuleScriptLoader> pass_key) {
   auto* global_scope = To<WorkerGlobalScope>(GetExecutionContext());
   switch (custom_fetch_type) {
     case ModuleScriptCustomFetchType::kNone:
-      return MakeGarbageCollected<DocumentModuleScriptFetcher>();
+      return MakeGarbageCollected<DocumentModuleScriptFetcher>(pass_key);
     case ModuleScriptCustomFetchType::kWorkerConstructor:
-      return MakeGarbageCollected<WorkerModuleScriptFetcher>(global_scope);
+      return MakeGarbageCollected<WorkerModuleScriptFetcher>(global_scope,
+                                                             pass_key);
     case ModuleScriptCustomFetchType::kWorkletAddModule:
       break;
     case ModuleScriptCustomFetchType::kInstalledServiceWorker:
       return MakeGarbageCollected<InstalledServiceWorkerModuleScriptFetcher>(
-          global_scope);
+          global_scope, pass_key);
   }
   NOTREACHED();
   return nullptr;
 }
 
 bool WorkerModulatorImpl::IsDynamicImportForbidden(String* reason) {
-  // TODO(nhiroki): Remove this flag check once module loading for
-  // DedicatedWorker is enabled by default (https://crbug.com/680046).
-  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope() &&
-      RuntimeEnabledFeatures::ModuleDedicatedWorkerEnabled()) {
+  if (GetExecutionContext()->IsDedicatedWorkerGlobalScope() ||
+      GetExecutionContext()->IsSharedWorkerGlobalScope()) {
     return false;
   }
 
-  // TODO(nhiroki): Support module loading for SharedWorker and Service Worker.
-  // (https://crbug.com/680046)
+  // https://html.spec.whatwg.org/C/#hostimportmoduledynamically(referencingscriptormodule,-specifier,-promisecapability)
+  DCHECK(GetExecutionContext()->IsServiceWorkerGlobalScope());
   *reason =
-      "Module scripts are not supported on WorkerGlobalScope yet (see "
-      "https://crbug.com/680046).";
+      "import() is disallowed on ServiceWorkerGlobalScope by the HTML "
+      "specification. See https://github.com/w3c/ServiceWorker/issues/1356.";
   return true;
-}
-
-V8CacheOptions WorkerModulatorImpl::GetV8CacheOptions() const {
-  auto* scope = To<WorkerGlobalScope>(GetExecutionContext());
-  return scope->GetV8CacheOptions();
 }
 
 }  // namespace blink

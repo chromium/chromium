@@ -1,9 +1,10 @@
 This test makes sure that CSSStyleDeclaration enumerates JavaScript properties for defined and non-defined CSS properties, indexed properties, and properties defined on the prototype. See Bug 23946.
-PASS document.body.style.length is 4
+PASS document.body.style.length is 5
 PASS '0' in document.body.style is true
 PASS '1' in document.body.style is true
 PASS 'textDecoration' in document.body.style is true
 PASS 'textDecorationLine' in document.body.style is true
+PASS 'textDecorationThickness' in document.body.style is true
 PASS 'textDecorationStyle' in document.body.style is true
 PASS 'textDecorationColor' in document.body.style is true
 PASS 'borderTopColor' in document.body.style is true

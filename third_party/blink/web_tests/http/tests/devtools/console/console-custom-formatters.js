@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging dumps properly when there are multiple custom formatters on the page\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -133,10 +133,10 @@
   function expandVariablesInConsole() {
     var consoleView = Console.ConsoleView.instance();
 
-    if (consoleView._needsFullUpdate)
-      consoleView._updateMessageList();
+    if (consoleView.needsFullUpdate)
+      consoleView.updateMessageList();
 
-    var viewMessages = consoleView._visibleViewMessages;
+    var viewMessages = consoleView.visibleViewMessages;
 
     for (var i = 0; i < viewMessages.length; ++i) {
       var uiMessage = viewMessages[i];
@@ -154,8 +154,8 @@
     TestRunner.deprecatedRunAfterPendingDispatches(dumpExpanded);
   }
 
-  function dumpExpanded() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function dumpExpanded() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

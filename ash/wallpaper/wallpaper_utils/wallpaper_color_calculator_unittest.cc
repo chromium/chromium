@@ -6,11 +6,10 @@
 
 #include <memory>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -51,6 +50,11 @@ class TestWallpaperColorCalculatorObserver
  public:
   TestWallpaperColorCalculatorObserver() {}
 
+  TestWallpaperColorCalculatorObserver(
+      const TestWallpaperColorCalculatorObserver&) = delete;
+  TestWallpaperColorCalculatorObserver& operator=(
+      const TestWallpaperColorCalculatorObserver&) = delete;
+
   ~TestWallpaperColorCalculatorObserver() override {}
 
   bool WasNotified() const { return notified_; }
@@ -60,8 +64,6 @@ class TestWallpaperColorCalculatorObserver
 
  private:
   bool notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperColorCalculatorObserver);
 };
 
 // Returns an image that will yield a color using the LumaRange::NORMAL and
@@ -84,6 +86,11 @@ gfx::ImageSkia CreateNonColorProducingImage(const gfx::Size& size) {
 class WallpaperColorCalculatorTest : public testing::Test {
  public:
   WallpaperColorCalculatorTest();
+
+  WallpaperColorCalculatorTest(const WallpaperColorCalculatorTest&) = delete;
+  WallpaperColorCalculatorTest& operator=(const WallpaperColorCalculatorTest&) =
+      delete;
+
   ~WallpaperColorCalculatorTest() override;
 
  protected:
@@ -108,8 +115,6 @@ class WallpaperColorCalculatorTest : public testing::Test {
  private:
   // Required for asynchronous calculations, e.g. by PostTaskAndReplyImpl.
   std::unique_ptr<base::ThreadTaskRunnerHandle> task_runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperColorCalculatorTest);
 };
 
 WallpaperColorCalculatorTest::WallpaperColorCalculatorTest()

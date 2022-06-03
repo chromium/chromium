@@ -4,18 +4,25 @@
 
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
-WebAppRegistrationWaiter::WebAppRegistrationWaiter(PendingAppManager* manager)
+WebAppRegistrationWaiter::WebAppRegistrationWaiter(
+    ExternallyManagedAppManager* manager)
     : manager_(manager) {
   manager_->SetRegistrationCallbackForTesting(base::BindLambdaForTesting(
-      [this](const GURL& launch_url, RegistrationResultCode code) {
-        CHECK_EQ(launch_url_, launch_url);
-        CHECK_EQ(code_, code);
+      [this](const GURL& install_url, RegistrationResultCode code) {
+        ASSERT_EQ(install_url_, install_url);
+        if (code_)
+          ASSERT_EQ(code_, code);
+        else
+          ASSERT_NE(code, RegistrationResultCode::kTimeout);
         run_loop_.Quit();
       }));
+  manager_->SetRegistrationsCompleteCallbackForTesting(
+      complete_run_loop_.QuitClosure());
 }
 
 WebAppRegistrationWaiter::~WebAppRegistrationWaiter() {
@@ -23,11 +30,22 @@ WebAppRegistrationWaiter::~WebAppRegistrationWaiter() {
 }
 
 void WebAppRegistrationWaiter::AwaitNextRegistration(
-    const GURL& launch_url,
+    const GURL& install_url,
     RegistrationResultCode code) {
-  launch_url_ = launch_url;
+  install_url_ = install_url;
   code_ = code;
   run_loop_.Run();
+}
+
+void WebAppRegistrationWaiter::AwaitNextNonFailedRegistration(
+    const GURL& install_url) {
+  install_url_ = install_url;
+  code_ = absl::nullopt;
+  run_loop_.Run();
+}
+
+void WebAppRegistrationWaiter::AwaitRegistrationsComplete() {
+  complete_run_loop_.Run();
 }
 
 }  // namespace web_app

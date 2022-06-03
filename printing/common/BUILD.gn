@@ -6,15 +6,12 @@ source_set("common") {
   sources = [
     "metafile_utils.cc",
     "metafile_utils.h",
-    "printing_features.cc",
-    "printing_features.h",
   ]
 
   deps = [
     "//base",
-    "//printing:printing_export",
+    "//printing/buildflags",
     "//skia",
+    "//ui/accessibility",
   ]
-
-  defines = [ "PRINTING_IMPLEMENTATION" ]
 }

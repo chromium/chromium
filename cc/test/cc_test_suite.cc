@@ -14,15 +14,24 @@
 
 namespace cc {
 
+std::unique_ptr<base::test::TaskEnvironment> CCTestSuite::task_environment_;
+
 CCTestSuite::CCTestSuite(int argc, char** argv)
     : base::TestSuite(argc, argv) {}
 
 CCTestSuite::~CCTestSuite() = default;
 
+// static
+void CCTestSuite::RunUntilIdle() {
+  CHECK(task_environment_);
+  task_environment_->RunUntilIdle();
+}
+
 void CCTestSuite::Initialize() {
   base::TestSuite::Initialize();
-  task_environment_ =
-      std::make_unique<base::test::SingleThreadTaskEnvironment>();
+
+  CHECK(!task_environment_);
+  task_environment_ = std::make_unique<base::test::TaskEnvironment>();
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
@@ -36,6 +45,7 @@ void CCTestSuite::Initialize() {
 }
 
 void CCTestSuite::Shutdown() {
+  CHECK(task_environment_);
   task_environment_ = nullptr;
 
   base::TestSuite::Shutdown();

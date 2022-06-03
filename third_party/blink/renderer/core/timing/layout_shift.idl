@@ -8,6 +8,7 @@ interface LayoutShift : PerformanceEntry {
     readonly attribute double value;
     readonly attribute boolean hadRecentInput;
     readonly attribute DOMHighResTimeStamp lastInputTime;
+    [SameObject, SaveSameObject] readonly attribute FrozenArray<LayoutShiftAttribution> sources;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

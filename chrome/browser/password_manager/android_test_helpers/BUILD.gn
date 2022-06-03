@@ -1,0 +1,34 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+static_library("android_wrappers") {
+  testonly = true
+  sources = [ "chrome_password_manager_client_android_wrapper.cc" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser",
+    "//chrome/browser/password_manager/android_test_helpers:jni_headers",
+    "//content/public/browser",
+  ]
+}
+
+generate_jni("jni_headers") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/password_manager/PasswordManagerClientBridgeForTesting.java" ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/password_manager/PasswordManagerClientBridgeForTesting.java" ]
+  deps = [
+    "//base:base_java",
+    "//base:base_jni_headers",
+    "//base:jni_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}

@@ -20,18 +20,15 @@ struct URLLoaderFactoryBundle {
   //
   // TODO(jam): https://crbug.com/887109: Remove |default_factory| and put it
   // inside |scheme_specific_factories| instead.
-  network.mojom.URLLoaderFactory? default_factory;
+  pending_remote<network.mojom.URLLoaderFactory>? default_factory;
 
   // A mapping from URL scheme to factory interface.
-  map<string, network.mojom.URLLoaderFactory> scheme_specific_factories;
+  map<string, pending_remote<network.mojom.URLLoaderFactory>>
+      scheme_specific_factories;
 
   // A mapping from isolated world's origin to factory interface.
-  map<url.mojom.Origin, network.mojom.URLLoaderFactory>
+  map<url.mojom.Origin, pending_remote<network.mojom.URLLoaderFactory>>
       isolated_world_factories;
-
-  // A special factory that is used for AppCache.
-  // TODO(https://crbug.com/582750): Drop this when AppCache is deprecated.
-  network.mojom.URLLoaderFactory? appcache_factory;
 
   // Whether redirect checks should be bypassed, since they are happening in the
   // browser.

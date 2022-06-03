@@ -7,7 +7,14 @@
 #include <stdint.h>
 
 #include "base/strings/string_util.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-maybe.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-promise.h"
+#include "v8/include/v8-value.h"
 
 using v8::ArrayBuffer;
 using v8::Boolean;
@@ -152,17 +159,17 @@ bool Converter<std::string>::FromV8(Isolate* isolate,
   return true;
 }
 
-Local<Value> Converter<base::string16>::ToV8(Isolate* isolate,
-                                             const base::string16& val) {
+Local<Value> Converter<std::u16string>::ToV8(Isolate* isolate,
+                                             const std::u16string& val) {
   return String::NewFromTwoByte(isolate,
                                 reinterpret_cast<const uint16_t*>(val.data()),
                                 v8::NewStringType::kNormal, val.size())
       .ToLocalChecked();
 }
 
-bool Converter<base::string16>::FromV8(Isolate* isolate,
+bool Converter<std::u16string>::FromV8(Isolate* isolate,
                                        Local<Value> val,
-                                       base::string16* out) {
+                                       std::u16string* out) {
   if (!val->IsString())
     return false;
   Local<String> str = Local<String>::Cast(val);

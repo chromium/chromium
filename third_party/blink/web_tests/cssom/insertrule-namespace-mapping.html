@@ -16,14 +16,14 @@ function assertColorGreen(id) {
 }
 
 test(function() {
-  style.sheet.insertRule('tns|#testInsertRule[tns|green] { color: green; }', style.sheet.cssRules.length);
+  style.sheet.insertRule('tns|*#testInsertRule[tns|green] { color: green; }', style.sheet.cssRules.length);
   assertColorGreen('testInsertRule');
 }, 'Selectors added to CSSStyleSheets via insertRule() should use the @namespace mapping');
 
 test(function() {
   var mediaRule = style.sheet.rules[1];
   console.assert(mediaRule instanceof CSSMediaRule); // CSSMediaRule inherits from the CSSGroupingRule interface.
-  mediaRule.insertRule('tns|#testMediaInsertRule[tns|green] { color: green; }', style.sheet.length);
+  mediaRule.insertRule('tns|*#testMediaInsertRule[tns|green] { color: green; }', style.sheet.length);
   assertColorGreen('testMediaInsertRule');
 }, 'Selectors added to CSSGroupingRules via insertRule() should use the @namespace mapping');
 </script>

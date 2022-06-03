@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
-// To avoid conflicts with the CreateWindow macro from the Windows SDK...
+// To avoid conflicts with the DrawText macro from the Windows SDK...
 #undef DrawText
 
 namespace cc {
@@ -54,7 +54,6 @@ namespace blink {
 struct CharacterRange;
 class FloatPoint;
 class FloatRect;
-class FontData;
 class FontSelector;
 class ShapeCache;
 class TextRun;
@@ -66,7 +65,8 @@ class PLATFORM_EXPORT Font {
 
  public:
   Font();
-  Font(const FontDescription&);
+  explicit Font(const FontDescription&);
+  Font(const FontDescription&, FontSelector*);
   ~Font();
 
   Font(const Font&);
@@ -79,7 +79,7 @@ class PLATFORM_EXPORT Font {
     return font_description_;
   }
 
-  void Update(FontSelector*) const;
+  enum class DrawType { kGlyphsOnly, kGlyphsAndClusters };
 
   enum CustomFontNotReadyAction {
     kDoNotPaintIfFontNotReady,
@@ -93,25 +93,29 @@ class PLATFORM_EXPORT Font {
                 const TextRunPaintInfo&,
                 const FloatPoint&,
                 float device_scale_factor,
-                const cc::PaintFlags&) const;
+                const cc::PaintFlags&,
+                DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
                 const FloatPoint&,
                 float device_scale_factor,
                 cc::NodeId node_id,
-                const cc::PaintFlags&) const;
+                const cc::PaintFlags&,
+                DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const NGTextFragmentPaintInfo&,
                 const FloatPoint&,
                 float device_scale_factor,
                 cc::NodeId node_id,
-                const cc::PaintFlags&) const;
+                const cc::PaintFlags&,
+                DrawType = DrawType::kGlyphsOnly) const;
   bool DrawBidiText(cc::PaintCanvas*,
                     const TextRunPaintInfo&,
                     const FloatPoint&,
                     CustomFontNotReadyAction,
                     float device_scale_factor,
-                    const cc::PaintFlags&) const;
+                    const cc::PaintFlags&,
+                    DrawType = DrawType::kGlyphsOnly) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
@@ -164,7 +168,6 @@ class PLATFORM_EXPORT Font {
                                  float height,
                                  int from = 0,
                                  int to = -1) const;
-  FloatRect BoundingBox(const TextRun&, int from = 0, int to = -1) const;
   CharacterRange GetCharacterRange(const TextRun&,
                                    unsigned from,
                                    unsigned to) const;
@@ -203,7 +206,6 @@ class PLATFORM_EXPORT Font {
   // loaded. This *should* not happen but in reality it does ever now and then
   // when, for whatever reason, the last resort font cannot be loaded.
   const SimpleFontData* PrimaryFont() const;
-  const FontData* FontDataAt(unsigned) const;
 
   // Access the shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.
@@ -215,56 +217,51 @@ class PLATFORM_EXPORT Font {
   bool CanShapeWordByWord() const;
 
   void SetCanShapeWordByWordForTesting(bool b) {
-    can_shape_word_by_word_ = b;
-    shape_word_by_word_computed_ = true;
+    EnsureFontFallbackList()->SetCanShapeWordByWordForTesting(b);
   }
 
   void ReportNotDefGlyph() const;
+
+  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
+                                       unsigned num_broken_clusters) const;
 
  private:
   enum ForTextEmphasisOrNot { kNotForTextEmphasis, kForTextEmphasis };
 
   GlyphData GetEmphasisMarkGlyphData(const AtomicString&) const;
 
-  bool ComputeCanShapeWordByWord() const;
-
  public:
   FontSelector* GetFontSelector() const;
   FontFallbackIterator CreateFontFallbackIterator(
       FontFallbackPriority fallback_priority) const {
+    EnsureFontFallbackList();
     return FontFallbackIterator(font_description_, font_fallback_list_,
                                 fallback_priority);
   }
 
   void WillUseFontData(const String& text) const;
 
-  bool LoadingCustomFonts() const;
   bool IsFallbackValid() const;
 
   bool ShouldSkipDrawing() const {
-    return font_fallback_list_ && font_fallback_list_->ShouldSkipDrawing();
+    if (!font_fallback_list_)
+      return false;
+    return EnsureFontFallbackList()->ShouldSkipDrawing();
   }
 
  private:
+  // TODO(xiaochengh): The function not only initializes null FontFallbackList,
+  // but also syncs invalid FontFallbackList. Rename it for better readability.
+  FontFallbackList* EnsureFontFallbackList() const;
+  void RevalidateFontFallbackList() const;
+  void ReleaseFontFallbackListRef() const;
+
   FontDescription font_description_;
   mutable scoped_refptr<FontFallbackList> font_fallback_list_;
-  mutable unsigned can_shape_word_by_word_ : 1;
-  mutable unsigned shape_word_by_word_computed_ : 1;
-
-  // For m_fontDescription & m_fontFallbackList access.
-  friend class CachingWordShaper;
 };
 
-inline Font::~Font() = default;
-
 inline const SimpleFontData* Font::PrimaryFont() const {
-  DCHECK(font_fallback_list_);
-  return font_fallback_list_->PrimarySimpleFontData(font_description_);
-}
-
-inline const FontData* Font::FontDataAt(unsigned index) const {
-  DCHECK(font_fallback_list_);
-  return font_fallback_list_->FontDataAt(font_description_, index);
+  return EnsureFontFallbackList()->PrimarySimpleFontData(font_description_);
 }
 
 inline FontSelector* Font::GetFontSelector() const {
@@ -281,4 +278,4 @@ inline float Font::TabWidth(const SimpleFontData* font_data,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_H_

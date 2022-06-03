@@ -193,6 +193,15 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
                                            unsigned format,
                                            int width,
                                            int height) = 0;
+  // Clears a level sub area of a compressed 3D texture.
+  // Returns false if a GL error should be generated.
+  virtual bool ClearCompressedTextureLevel3D(gles2::Texture* texture,
+                                             unsigned target,
+                                             int level,
+                                             unsigned format,
+                                             int width,
+                                             int height,
+                                             int depth) = 0;
   // Clears a level of a 3D texture.
   // Returns false if a GL error should be generated.
   virtual bool ClearLevel3D(gles2::Texture* texture,

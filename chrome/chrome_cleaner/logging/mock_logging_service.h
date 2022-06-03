@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/logging/utils.h"
@@ -46,46 +44,45 @@ class MockLoggingService : public LoggingServiceAPI {
   MOCK_METHOD1(AddDetectedUwS, void(const UwS& uws));
   MOCK_METHOD1(SetExitCode, void(ResultCode exit_code));
   MOCK_METHOD3(AddLoadedModule,
-               void(const base::string16& name,
+               void(const std::wstring& name,
                     ModuleHost host,
                     const internal::FileInformation& file_information));
   MOCK_METHOD1(AddInstalledProgram, void(const base::FilePath& folder_path));
   MOCK_METHOD3(AddService,
-               void(const base::string16& display_name,
-                    const base::string16& service_name,
+               void(const std::wstring& display_name,
+                    const std::wstring& service_name,
                     const internal::FileInformation& file_information));
   MOCK_METHOD2(AddProcess,
-               void(const base::string16& name,
+               void(const std::wstring& name,
                     const internal::FileInformation& file_information));
   MOCK_METHOD2(
       AddRegistryValue,
       void(const internal::RegistryValue& registry_value,
            const std::vector<internal::FileInformation>& file_informations));
   MOCK_METHOD2(AddLayeredServiceProvider,
-               void(const std::vector<base::string16>& guids,
+               void(const std::vector<std::wstring>& guids,
                     const internal::FileInformation& file_information));
   MOCK_METHOD4(SetWinInetProxySettings,
-               void(const base::string16& config,
-                    const base::string16& bypass,
-                    const base::string16& auto_config_url,
+               void(const std::wstring& config,
+                    const std::wstring& bypass,
+                    const std::wstring& auto_config_url,
                     bool autodetect));
   MOCK_METHOD2(SetWinHttpProxySettings,
-               void(const base::string16& config,
-                    const base::string16& bypass));
+               void(const std::wstring& config, const std::wstring& bypass));
   MOCK_METHOD3(
       AddInstalledExtension,
-      void(const base::string16& extension_id,
+      void(const std::wstring& extension_id,
            ExtensionInstallMethod install_method,
            const std::vector<internal::FileInformation>& file_information));
   MOCK_METHOD3(AddScheduledTask,
-               void(const base::string16& name,
-                    const base::string16& description,
+               void(const std::wstring& name,
+                    const std::wstring& description,
                     const std::vector<internal::FileInformation>& actions));
   MOCK_METHOD4(AddShortcutData,
-               void(const base::string16& lnk_path,
-                    const base::string16& executable_path,
+               void(const std::wstring& lnk_path,
+                    const std::wstring& executable_path,
                     const std::string& executable_hash,
-                    const std::vector<base::string16>& command_line_arguments));
+                    const std::vector<std::wstring>& command_line_arguments));
   MOCK_METHOD1(SetFoundModifiedChromeShortcuts,
                void(bool found_modified_shortcuts));
   MOCK_METHOD1(SetScannedLocations,

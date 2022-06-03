@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
-
+#include "net/disk_cache/disk_cache.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
@@ -65,8 +64,8 @@ void NetLogSparseReadWrite(const net::NetLogWithSource& net_log,
                            int child_len);
 
 // Creates NetLog parameters for when a call to GetAvailableRange returns.
-base::Value CreateNetLogGetAvailableRangeResultParams(int64_t start,
-                                                      int result);
+base::Value CreateNetLogGetAvailableRangeResultParams(
+    const disk_cache::RangeResult result);
 
 }  // namespace disk_cache
 

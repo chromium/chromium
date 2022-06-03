@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace metrics {
@@ -17,10 +16,6 @@ class MetricsStateManager;
 
 namespace network {
 class SharedURLLoaderFactory;
-}
-
-namespace rappor {
-class RapporServiceImpl;
 }
 
 namespace variations {
@@ -36,8 +31,6 @@ class MetricsServicesManagerClient {
   virtual ~MetricsServicesManagerClient() {}
 
   // Methods that create the various services in the context of the embedder.
-  virtual std::unique_ptr<rappor::RapporServiceImpl>
-  CreateRapporServiceImpl() = 0;
   virtual std::unique_ptr<variations::VariationsService>
   CreateVariationsService() = 0;
   virtual std::unique_ptr<metrics::MetricsServiceClient>
@@ -57,8 +50,8 @@ class MetricsServicesManagerClient {
   // Returns whether metrics consent is given.
   virtual bool IsMetricsConsentGiven() = 0;
 
-  // Returns whether there are any Incognito browsers/tabs open.
-  virtual bool IsIncognitoSessionActive() = 0;
+  // Returns whether there are any OffTheRecord browsers/tabs open.
+  virtual bool IsOffTheRecordSessionActive() = 0;
 
   // Update the running state of metrics services managed by the embedder, for
   // example, crash reporting.

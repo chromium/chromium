@@ -17,6 +17,9 @@ namespace rlz_lib {
 // Implements RlzValueStore by storing values in the windows registry.
 class RlzValueStoreRegistry : public RlzValueStore {
  public:
+  RlzValueStoreRegistry(const RlzValueStoreRegistry&) = delete;
+  RlzValueStoreRegistry& operator=(const RlzValueStoreRegistry&) = delete;
+
   static std::wstring GetWideLibKeyName();
 
   bool HasAccess(AccessType type) override;
@@ -50,7 +53,6 @@ class RlzValueStoreRegistry : public RlzValueStore {
 
  private:
   RlzValueStoreRegistry() {}
-  DISALLOW_COPY_AND_ASSIGN(RlzValueStoreRegistry);
   friend class ScopedRlzValueStoreLock;
 };
 

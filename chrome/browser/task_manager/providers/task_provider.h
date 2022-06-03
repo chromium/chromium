@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 
 namespace task_manager {
@@ -18,6 +18,8 @@ namespace task_manager {
 class TaskProvider {
  public:
   TaskProvider();
+  TaskProvider(const TaskProvider&) = delete;
+  TaskProvider& operator=(const TaskProvider&) = delete;
   virtual ~TaskProvider();
 
   // Should return the task associated to the specified IDs from a
@@ -40,6 +42,10 @@ class TaskProvider {
   void ClearObserver();
 
  protected:
+  // Indicates if this instance is currently tracking tasks. Will return true
+  // between the calls to StartUpdating() and StopUpdating().
+  bool IsUpdating() const;
+
   // Used by concrete task providers to notify the observer of tasks addition/
   // removal/renderer unresponsive. These methods should only be called after
   // StartUpdating() has been called and before StopUpdating() is called.
@@ -50,6 +56,9 @@ class TaskProvider {
       Task* existing_task,
       base::ProcessHandle new_process_handle,
       base::ProcessId new_process_id) const;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void NotifyObserverTaskIdsListToBeInvalidated() const;
+#endif
 
  private:
   // This will be called once an observer is set for this provider. When it is
@@ -65,8 +74,6 @@ class TaskProvider {
 
   // We support only one single obsever which will be the sampler in this case.
   TaskProviderObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskProvider);
 };
 
 }  // namespace task_manager

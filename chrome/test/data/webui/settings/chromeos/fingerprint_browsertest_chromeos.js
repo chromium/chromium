@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
+// #import {FingerprintBrowserProxyImpl, FingerprintSetupStep, FingerprintResultType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// clang-format on
+
 /** @implements {settings.FingerprintBrowserProxy} */
 class TestFingerprintBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -154,8 +164,7 @@ suite('settings-fingerprint-list', function() {
   test('EnrollingFingerprintLottieAnimation', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.TABLET_POWER_BUTTON,
+      useLottieAnimationForFingerprint: true,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
@@ -165,11 +174,10 @@ suite('settings-fingerprint-list', function() {
     });
   });
 
-  test('EnrollingFingerprintPNG', function() {
+  test('EnrollingFingerprintIllustration', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.KEYBOARD_TOP_RIGHT,
+      useLottieAnimationForFingerprint: false,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
@@ -184,15 +192,14 @@ suite('settings-fingerprint-list', function() {
   test('EnrollingFingerprint', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.KEYBOARD_BOTTOM_RIGHT,
+      useLottieAnimationForFingerprint: true,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
       assertEquals(0, dialog.percentComplete_);
       assertEquals(settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
-      assertFalse(dialog.$$('#scannerLocation').hidden);
+      assertFalse(dialog.$$('#scannerLocationLottie').hidden);
       assertTrue(dialog.$$('#arc').hidden);
       // Message should be shown for LOCATE_SCANNER step.
       assertEquals(
@@ -204,7 +211,7 @@ suite('settings-fingerprint-list', function() {
           settings.FingerprintResultType.SUCCESS, false, 20 /* percent */);
       assertEquals(20, dialog.percentComplete_);
       assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
-      assertTrue(dialog.$$('#scannerLocation').hidden);
+      assertTrue(dialog.$$('#scannerLocationLottie').hidden);
       assertFalse(dialog.$$('#arc').hidden);
 
       // Verify that by sending a scan problem, the div that contains the
@@ -252,8 +259,7 @@ suite('settings-fingerprint-list', function() {
   test('EnrollingAnotherFingerprint', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.KEYBOARD_TOP_RIGHT,
+      useLottieAnimationForFingerprint: false,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll')
@@ -395,6 +401,49 @@ suite('settings-fingerprint-list', function() {
         .then(function() {
           assertEquals(1, fingerprintList.fingerprints_.length);
         });
+  });
+
+  test('Deep link to add fingerprint', async () => {
+    const settingId = '1111';
+
+    browserProxy.setFingerprints(['Label 1', 'Label 2']);
+    fingerprintList.updateFingerprintsList_();
+    await browserProxy.whenCalled('getFingerprintsList');
+
+    const params = new URLSearchParams;
+    params.append('settingId', settingId);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.FINGERPRINT, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = fingerprintList.$$('#addFingerprint');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Add button should be focused for settingId=' + settingId);
+  });
+
+  test('Deep link to remove fingerprint', async () => {
+    const settingId = '1112';
+
+    browserProxy.setFingerprints(['Label 1', 'Label 2']);
+    fingerprintList.updateFingerprintsList_();
+    await browserProxy.whenCalled('getFingerprintsList');
+
+    const params = new URLSearchParams;
+    params.append('settingId', settingId);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.FINGERPRINT, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        fingerprintList.root.querySelectorAll('cr-icon-button')[0];
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Trash can button should be focused for settingId=' + settingId);
   });
 
   test('ChangeFingerprintLabel', function() {

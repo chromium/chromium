@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_MAC_H_
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_MAC_H_
 
+#include <memory>
+
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/base/cocoa/views_hostable.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/views_export.h"
@@ -15,6 +16,10 @@ namespace ui {
 class LayerOwner;
 class ViewsHostableView;
 }  // namespace ui
+
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace views {
 
@@ -26,6 +31,10 @@ class NativeViewHostMac : public NativeViewHostWrapper,
                           public ui::ViewsHostableView::Host {
  public:
   explicit NativeViewHostMac(NativeViewHost* host);
+
+  NativeViewHostMac(const NativeViewHostMac&) = delete;
+  NativeViewHostMac& operator=(const NativeViewHostMac&) = delete;
+
   ~NativeViewHostMac() override;
 
   // ViewsHostableView::Host:
@@ -39,6 +48,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   void NativeViewDetaching(bool destroyed) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
   bool SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) override;
   void SetHitTestTopInset(int top_inset) override;
   int GetHitTestTopInset() const override;
@@ -54,6 +64,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   gfx::NativeCursor GetCursor(int x, int y) override;
   void SetVisible(bool visible) override;
   void SetParentAccessible(gfx::NativeViewAccessible) override;
+  gfx::NativeViewAccessible GetParentAccessible() override;
 
  private:
   // Return the NativeWidgetMacNSWindowHost for this hosted view.
@@ -69,8 +80,6 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   // the corresponding ViewsHostableView interface (which is implemeted only
   // by WebContents and tests).
   ui::ViewsHostableView* native_view_hostable_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostMac);
 };
 
 }  // namespace views

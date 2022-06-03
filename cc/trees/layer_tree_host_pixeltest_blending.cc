@@ -4,17 +4,19 @@
 
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
-#include "cc/layers/picture_image_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/render_surface_filters.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "cc/test/fake_content_layer_client.h"
+#include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_pixel_resource_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "components/viz/test/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -67,14 +69,16 @@ const uint32_t kForceShaders = 1 << 3;
 class LayerTreeHostBlendingPixelTest
     : public LayerTreeHostPixelResourceTest,
       public ::testing::WithParamInterface<
-          ::testing::tuple<PixelResourceTestCase, SkBlendMode>> {
+          ::testing::tuple<RasterTestConfig, SkBlendMode>> {
  public:
   LayerTreeHostBlendingPixelTest()
-      : force_antialiasing_(false), force_blending_with_shaders_(false) {
+      : LayerTreeHostPixelResourceTest(resource_type()),
+        force_antialiasing_(false),
+        force_blending_with_shaders_(false) {
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
   }
 
-  PixelResourceTestCase resource_type() const {
+  RasterTestConfig resource_type() const {
     return ::testing::get<0>(GetParam());
   }
   SkBlendMode current_blend_mode() const {
@@ -116,23 +120,19 @@ class LayerTreeHostBlendingPixelTest
 
   scoped_refptr<Layer> CreateColorfulBackdropLayer(int width, int height) {
     sk_sp<SkSurface> backing_store = CreateColorfulSurface(width, height);
-    scoped_refptr<PictureImageLayer> layer = PictureImageLayer::Create();
+    gfx::Size bounds(width, height);
+    backdrop_client_.set_bounds(bounds);
+    backdrop_client_.add_draw_image(backing_store->makeImageSnapshot(),
+                                    gfx::Point());
+    scoped_refptr<FakePictureLayer> layer =
+        FakePictureLayer::Create(&backdrop_client_);
     layer->SetIsDrawable(true);
-    layer->SetBounds(gfx::Size(width, height));
-    layer->SetImage(PaintImageBuilder::WithDefault()
-                        .set_id(PaintImage::GetNextId())
-                        .set_image(backing_store->makeImageSnapshot(),
-                                   PaintImage::GetNextContentId())
-                        .TakePaintImage(),
-                    SkMatrix::I(), false);
+    layer->SetBounds(bounds);
     return layer;
   }
 
   void SetupMaskLayer(scoped_refptr<Layer> layer) {
     gfx::Size bounds = layer->bounds();
-    scoped_refptr<PictureImageLayer> mask = PictureImageLayer::Create();
-    mask->SetIsDrawable(true);
-    mask->SetBounds(bounds);
 
     sk_sp<SkSurface> surface =
         SkSurface::MakeRasterN32Premul(bounds.width(), bounds.height());
@@ -144,12 +144,14 @@ class LayerTreeHostBlendingPixelTest
     // cover the right half of it
     canvas->drawRect(
         SkRect::MakeXYWH(1, 0, bounds.width() - 1, bounds.height()), paint);
-    mask->SetImage(PaintImageBuilder::WithDefault()
-                       .set_id(PaintImage::GetNextId())
-                       .set_image(surface->makeImageSnapshot(),
-                                  PaintImage::GetNextContentId())
-                       .TakePaintImage(),
-                   SkMatrix::I(), false);
+
+    mask_client_.set_bounds(bounds);
+    mask_client_.add_draw_image(surface->makeImageSnapshot(), gfx::Point());
+
+    scoped_refptr<FakePictureLayer> mask =
+        FakePictureLayer::Create(&mask_client_);
+    mask->SetIsDrawable(true);
+    mask->SetBounds(bounds);
     layer->SetMaskLayer(mask);
   }
 
@@ -199,7 +201,7 @@ class LayerTreeHostBlendingPixelTest
 
     SkBitmap expected;
     expected.allocN32Pixels(width, height);
-    SkCanvas canvas(expected);
+    SkCanvas canvas(expected, SkSurfaceProps{});
     canvas.clear(SK_ColorWHITE);
     canvas.drawImage(surface->makeImageSnapshot(), 0, 0);
 
@@ -209,13 +211,12 @@ class LayerTreeHostBlendingPixelTest
   void RunBlendingWithRenderPass(RenderPassOptions flags) {
     const int kRootWidth = 2;
     const int kRootHeight = kRootWidth * kCSSTestColorsCount;
-    InitializeFromTestCase(resource_type());
 
     // Force shaders only applies to gl renderer.
-    if (renderer_type() != RENDERER_GL && flags & kForceShaders)
+    if (renderer_type_ != viz::RendererType::kGL && flags & kForceShaders)
       return;
 
-    SCOPED_TRACE(TestTypeToString(renderer_type()));
+    SCOPED_TRACE(TestTypeToString());
     SCOPED_TRACE(SkBlendMode_Name(current_blend_mode()));
 
     scoped_refptr<SolidColorLayer> root = CreateSolidColorLayer(
@@ -231,8 +232,8 @@ class LayerTreeHostBlendingPixelTest
     force_antialiasing_ = (flags & kUseAntialiasing);
     force_blending_with_shaders_ = (flags & kForceShaders);
 
-    if ((renderer_type() == RENDERER_GL && force_antialiasing_) ||
-        renderer_type() == RENDERER_SKIA_VK) {
+    if ((renderer_type_ == viz::RendererType::kGL && force_antialiasing_) ||
+        renderer_type_ == viz::RendererType::kSkiaVk) {
       // Blending results might differ with one pixel.
       float percentage_pixels_error = 35.f;
       float percentage_pixels_small_error = 0.f;
@@ -253,27 +254,44 @@ class LayerTreeHostBlendingPixelTest
 
   bool force_antialiasing_;
   bool force_blending_with_shaders_;
+  FakeContentLayerClient mask_client_;
+  FakeContentLayerClient backdrop_client_;
   SkColor misc_opaque_color_ = 0xffc86464;
 };
 
-std::vector<PixelResourceTestCase> const kTestCases = {
-    {LayerTreeTest::RENDERER_SOFTWARE, SOFTWARE},
-    {LayerTreeTest::RENDERER_GL, ZERO_COPY},
-    {LayerTreeTest::RENDERER_SKIA_GL, GPU},
-#if defined(ENABLE_CC_VULKAN_TESTS)
-    {LayerTreeTest::RENDERER_SKIA_VK, GPU},
-#endif
+std::vector<RasterTestConfig> const kTestCases = {
+    {viz::RendererType::kSoftware, TestRasterType::kBitmap},
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+    {viz::RendererType::kGL, TestRasterType::kZeroCopy},
+    {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
+    {viz::RendererType::kSkiaDawn, TestRasterType::kOop},
+#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
-INSTANTIATE_TEST_SUITE_P(B,
-                         LayerTreeHostBlendingPixelTest,
-                         ::testing::Combine(::testing::ValuesIn(kTestCases),
-                                            ::testing::ValuesIn(kBlendModes)));
+INSTANTIATE_TEST_SUITE_P(
+    B,
+    LayerTreeHostBlendingPixelTest,
+    ::testing::Combine(::testing::ValuesIn(kTestCases),
+                       ::testing::ValuesIn(kBlendModes)),
+    // Print a parameter label for blending tests. Use this instead of
+    // PrintTupleToStringParamName() because the PrintTo(SkBlendMode)
+    // implementation wasn't being used on some platforms (crbug.com/1123758).
+    [](const testing::TestParamInfo<
+        testing::tuple<RasterTestConfig, SkBlendMode>>& info) -> std::string {
+      std::stringstream ss;
+      PrintTo(testing::get<0>(info.param), &ss);
+      ss << "_" << SkBlendMode_Name(testing::get<1>(info.param));
+      return ss.str();
+    });
 
 TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithRoot) {
   const int kRootWidth = 2;
   const int kRootHeight = 2;
-  InitializeFromTestCase(resource_type());
 
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(kRootWidth, kRootHeight), kCSSOrange);
@@ -287,7 +305,7 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithRoot) {
 
   SkBitmap expected;
   expected.allocN32Pixels(kRootWidth, kRootHeight);
-  SkCanvas canvas(expected);
+  SkCanvas canvas(expected, SkSurfaceProps{});
   canvas.drawColor(kCSSOrange);
   SkPaint paint;
   paint.setBlendMode(current_blend_mode());
@@ -300,7 +318,6 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithRoot) {
 TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackdropFilter) {
   const int kRootWidth = 2;
   const int kRootHeight = 2;
-  InitializeFromTestCase(resource_type());
 
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(kRootWidth, kRootHeight), kCSSOrange);
@@ -319,7 +336,7 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackdropFilter) {
 
   SkBitmap expected;
   expected.allocN32Pixels(kRootWidth, kRootHeight);
-  SkCanvas canvas(expected);
+  SkCanvas canvas(expected, SkSurfaceProps{});
   SkiaPaintCanvas paint_canvas(&canvas);
   PaintFlags grayscale;
   grayscale.setColor(kCSSOrange);
@@ -340,7 +357,6 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithBackdropFilter) {
 TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithTransparent) {
   const int kRootWidth = 2;
   const int kRootHeight = 2;
-  InitializeFromTestCase(resource_type());
 
   // Intermediate layer here that should be ignored because of the isolated
   // group.
@@ -362,7 +378,7 @@ TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithTransparent) {
 
   SkBitmap expected;
   expected.allocN32Pixels(kRootWidth, kRootHeight);
-  SkCanvas canvas(expected);
+  SkCanvas canvas(expected, SkSurfaceProps{});
   canvas.drawColor(kCSSOrange);
   SkPaint paint;
   paint.setBlendMode(current_blend_mode());

@@ -1,0 +1,59 @@
+<!doctype html>
+<title>readEntries() called multiple times</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/fs-test-util.js"></script>
+<script>
+
+// Needed as a rejected promise is lazily analyzed.
+setup({ allow_uncaught_exception: true });
+
+// Wrap a typical FS method call with trailing success/error callback
+// methods into a promise. Pass object as first arg, method as second,
+// and optional args.
+// Example: file = await asPromise(dir, dir.getFile, path, {});
+function asPromise(receiver, func) {
+  const args = [...arguments].slice(2);
+  return new Promise((resolve, reject) => {
+    func.apply(receiver, [...args, resolve, reject]);
+  });
+}
+
+promise_test(async t => {
+  const fileSystem =
+    await asPromise(window, webkitRequestFileSystem, TEMPORARY, 100);
+  const dir = fileSystem.root;
+  await asPromise(null, removeAllInDirectory, dir);
+  t.add_cleanup(() => asPromise(null, removeAllInDirectory, dir));
+
+  const files = ['a', 'b', 'c', 'd', 'e', 'f'];
+  for (const file of files) {
+    await asPromise(dir, dir.getFile, file, {create: true});
+  }
+
+  const reader = dir.createReader();
+  const read = [];
+
+  while (true) {
+    // Call, but don't await as that could let the first one finish.
+    const p = asPromise(reader, reader.readEntries);
+    const q = asPromise(reader, reader.readEntries);
+
+    // First call should have succeeded.
+    const entries = await p;
+
+    // Second should have failed.
+    promise_rejects_dom(t, 'InvalidStateError', q,
+                        'Second call before first finishes should fail');
+
+    if (entries.length === 0)
+      break;
+    entries.forEach(entry => { read.push(entry.name); });
+  }
+
+  assert_array_equals(read.sort(), files.sort(),
+                      'Should read all files, despite failed calls.');
+
+}, 'Verify that readEntries() fails predictably when called multiple times');
+
+</script>

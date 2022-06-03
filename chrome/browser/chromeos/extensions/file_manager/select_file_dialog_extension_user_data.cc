@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
 
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 
 const char kSelectFileDialogExtensionUserDataKey[] =
@@ -22,7 +23,12 @@ void SelectFileDialogExtensionUserData::SetRoutingIdForWebContents(
 // static
 std::string SelectFileDialogExtensionUserData::GetRoutingIdForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  // There's a race condition. This can be called from a callback after the
+  // webcontents has been deleted.
+  if (!web_contents) {
+    return "";
+  }
+
   SelectFileDialogExtensionUserData* data =
       static_cast<SelectFileDialogExtensionUserData*>(
           web_contents->GetUserData(kSelectFileDialogExtensionUserDataKey));

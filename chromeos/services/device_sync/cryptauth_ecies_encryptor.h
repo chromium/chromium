@@ -9,8 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -38,10 +37,13 @@ class CryptAuthEciesEncryptor {
 
   using IdToInputMap = base::flat_map<std::string, PayloadAndKey>;
   using IdToOutputMap =
-      base::flat_map<std::string, base::Optional<std::string>>;
+      base::flat_map<std::string, absl::optional<std::string>>;
   using SingleInputCallback =
-      base::OnceCallback<void(const base::Optional<std::string>&)>;
+      base::OnceCallback<void(const absl::optional<std::string>&)>;
   using BatchCallback = base::OnceCallback<void(const IdToOutputMap&)>;
+
+  CryptAuthEciesEncryptor(const CryptAuthEciesEncryptor&) = delete;
+  CryptAuthEciesEncryptor& operator=(const CryptAuthEciesEncryptor&) = delete;
 
   virtual ~CryptAuthEciesEncryptor();
 
@@ -80,8 +82,6 @@ class CryptAuthEciesEncryptor {
                     BatchCallback callback);
 
   BatchCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEciesEncryptor);
 };
 
 }  // namespace device_sync

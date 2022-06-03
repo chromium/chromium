@@ -15,14 +15,10 @@ mojom("test_mojom") {
   ]
 }
 
-if (enable_mojom_closure_compile || closure_compile) {
+if (enable_mojom_closure_compile || enable_js_type_check) {
   js_binary("compile_test") {
-    outputs = [
-      "$target_gen_dir/compile_test.js",
-    ]
-    deps = [
-      ":test_mojom_js_library_for_compile",
-    ]
+    outputs = [ "$target_gen_dir/compile_test.js" ]
+    deps = [ ":test_mojom_js_library_for_compile" ]
     closure_flags = strict_error_checking_closure_args + [
                       "compilation_level=ADVANCED_OPTIMIZATIONS",
                       "language_in=ECMASCRIPT_2017",

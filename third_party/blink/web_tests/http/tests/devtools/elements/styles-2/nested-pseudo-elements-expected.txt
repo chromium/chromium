@@ -1,0 +1,93 @@
+Tests that nested pseudo elements and their styles are handled properly.
+
+
+Running: dumpOriginalTree
+Original elements tree:
+- <div id="container">
+    - <div id="inspected">
+        - ::before
+              ::marker
+          "Text"
+        - ::after
+              ::marker
+      </div>
+  </div>
+
+Running: dumpBeforeStyles
+[expanded] 
+[$#inspected::before$] { (<style>)
+    display: list-item;
+
+[expanded] 
+[$#inspected::before$] { (<style>)
+    content: "BEFORE";
+
+
+Running: dumpAfterStyles
+[expanded] 
+[$#inspected::after$] { (<style>)
+    display: list-item;
+
+[expanded] 
+[$#inspected::after$] { (<style>)
+    content: "AFTER";
+
+
+Running: dumpBeforeMarkerStyles
+
+Running: dumpAfterMarkerStyles
+
+Running: removeAfterMarker
+- <div id="container">
+    - <div id="inspected">
+        - ::before
+              ::marker
+          "Text"
+          ::after
+      </div>
+  </div>
+
+Running: removeBeforeMarker
+- <div id="container">
+    - <div id="inspected">
+          ::before
+          "Text"
+          ::after
+      </div>
+  </div>
+
+Running: addAfterMarker
+- <div id="container">
+    - <div id="inspected">
+          ::before
+          "Text"
+        + ::after
+      </div>
+  </div>
+== Expanding: ==
+- <div id="container">
+    - <div id="inspected">
+          ::before
+          "Text"
+        - ::after
+              ::marker
+      </div>
+  </div>
+
+Running: addBeforeMarker
+- <div id="container">
+    - <div id="inspected">
+        + ::before
+          "Text"
+        - ::after
+              ::marker
+      </div>
+  </div>
+
+Running: removeNodeAndCheckPseudoElementsUnbound
+  <div id="container"></div>
+inspected::before DOMNode in DOMAgent: false
+inspected::before::marker DOMNode in DOMAgent: false
+inspected::after DOMNode in DOMAgent: false
+inspected::after::marker DOMNode in DOMAgent: false
+

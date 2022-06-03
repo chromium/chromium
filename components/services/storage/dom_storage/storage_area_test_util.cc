@@ -7,9 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "base/test/bind.h"
 
 namespace storage {
 namespace test {
@@ -33,7 +31,7 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(base::OnceClosure callback,
 bool PutSync(blink::mojom::StorageArea* area,
              const std::vector<uint8_t>& key,
              const std::vector<uint8_t>& value,
-             const base::Optional<std::vector<uint8_t>>& old_value,
+             const absl::optional<std::vector<uint8_t>>& old_value,
              const std::string& source) {
   bool success = false;
   base::RunLoop loop;
@@ -65,43 +63,20 @@ bool GetAllSync(blink::mojom::StorageArea* area,
                 std::vector<blink::mojom::KeyValuePtr>* data_out) {
   DCHECK(data_out);
   base::RunLoop loop;
-  bool complete = false;
-  bool success = false;
   area->GetAll(
-      GetAllCallback::CreateAndBind(&complete, loop.QuitClosure()),
+      /*new_observer=*/mojo::NullRemote(),
       base::BindLambdaForTesting(
-          [&](bool success_in, std::vector<blink::mojom::KeyValuePtr> data_in) {
-            success = success_in;
+          [&](std::vector<blink::mojom::KeyValuePtr> data_in) {
             *data_out = std::move(data_in);
+            loop.Quit();
           }));
   loop.Run();
-  DCHECK(complete);
-  return success;
-}
-
-bool GetAllSyncOnDedicatedPipe(
-    blink::mojom::StorageArea* area,
-    std::vector<blink::mojom::KeyValuePtr>* data_out) {
-  DCHECK(data_out);
-  base::RunLoop loop;
-  bool complete = false;
-  bool success = false;
-  area->GetAll(
-      GetAllCallback::CreateAndBindOnDedicatedPipe(&complete,
-                                                   loop.QuitClosure()),
-      base::BindLambdaForTesting(
-          [&](bool success_in, std::vector<blink::mojom::KeyValuePtr> data_in) {
-            success = success_in;
-            *data_out = std::move(data_in);
-          }));
-  loop.Run();
-  DCHECK(complete);
-  return success;
+  return true;
 }
 
 bool DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
-                const base::Optional<std::vector<uint8_t>>& client_old_value,
+                const absl::optional<std::vector<uint8_t>>& client_old_value,
                 const std::string& source) {
   bool success = false;
   base::RunLoop loop;
@@ -117,7 +92,8 @@ bool DeleteSync(blink::mojom::StorageArea* area,
 bool DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source) {
   bool success = false;
   base::RunLoop loop;
-  area->DeleteAll(source, base::BindLambdaForTesting([&](bool success_in) {
+  area->DeleteAll(source, /*new_observer=*/mojo::NullRemote(),
+                  base::BindLambdaForTesting([&](bool success_in) {
                     success = success_in;
                     loop.Quit();
                   }));
@@ -125,58 +101,27 @@ bool DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source) {
   return success;
 }
 
-base::OnceCallback<void(bool, std::vector<blink::mojom::KeyValuePtr>)>
-MakeGetAllCallback(bool* success_out,
-                   std::vector<blink::mojom::KeyValuePtr>* data_out) {
-  DCHECK(success_out);
+blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
+    base::OnceClosure callback,
+    std::vector<blink::mojom::KeyValuePtr>* data_out) {
   DCHECK(data_out);
-  return base::BindLambdaForTesting(
-      [success_out, data_out](bool success_in,
-                              std::vector<blink::mojom::KeyValuePtr> data_in) {
-        *success_out = success_in;
+  return base::BindOnce(
+      [](base::OnceClosure callback,
+         std::vector<blink::mojom::KeyValuePtr>* data_out,
+         std::vector<blink::mojom::KeyValuePtr> data_in) {
         *data_out = std::move(data_in);
-      });
-}
-
-// static
-mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-GetAllCallback::CreateAndBind(bool* result, base::OnceClosure callback) {
-  mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-      pending_remote;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      base::WrapUnique(new GetAllCallback(result, std::move(callback))),
-      pending_remote.InitWithNewEndpointAndPassReceiver());
-  return pending_remote;
-}
-
-// static
-mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-GetAllCallback::CreateAndBindOnDedicatedPipe(bool* result,
-                                             base::OnceClosure callback) {
-  mojo::AssociatedRemote<blink::mojom::StorageAreaGetAllCallback> remote;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      base::WrapUnique(new GetAllCallback(result, std::move(callback))),
-      remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
-  return remote.Unbind();
-}
-
-GetAllCallback::GetAllCallback(bool* result, base::OnceClosure callback)
-    : result_(result), callback_(std::move(callback)) {}
-
-GetAllCallback::~GetAllCallback() = default;
-
-void GetAllCallback::Complete(bool success) {
-  *result_ = success;
-  if (callback_)
-    std::move(callback_).Run();
+        std::move(callback).Run();
+      },
+      std::move(callback), data_out);
 }
 
 MockLevelDBObserver::MockLevelDBObserver() = default;
+
 MockLevelDBObserver::~MockLevelDBObserver() = default;
 
-mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver>
+mojo::PendingRemote<blink::mojom::StorageAreaObserver>
 MockLevelDBObserver::Bind() {
-  return receiver_.BindNewEndpointAndPassRemote();
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 }  // namespace test

@@ -9,7 +9,7 @@
 // </p>
 // <p>
 //   Network connection configurations are specified following
-//   <a href="https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md">
+//   <a href="https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md">
 //   Open Network Configuration (ONC)</a> specification.
 // </p>
 // <p>
@@ -260,6 +260,7 @@ namespace networking.onc {
     DOMString? AnonymousIdentity;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     ClientCertificateType ClientCertType;
     DOMString? Identity;
@@ -597,8 +598,7 @@ namespace networking.onc {
     // set - properties returned by $(ref:getProperties) will not contain this
     // value.
     DOMString? Passphrase;
-    // Signal-to-noise value (in dB) below which roaming to a new network
-    // should be attempted.
+    // Deprecated, ignored.
     long? RoamThreshold;
     // The network SSID.
     DOMString? SSID;
@@ -606,8 +606,6 @@ namespace networking.onc {
     DOMString? Security;
     // The network signal strength.
     long? SignalStrength;
-    // The tethering state associated with the connection.
-    DOMString? TetheringState;
   };
 
   dictionary ManagedWiFiProperties {
@@ -625,7 +623,7 @@ namespace networking.onc {
     ManagedDOMString? HexSSID;
     // See $(ref:WiFiProperties.HiddenSSID).
     ManagedBoolean? HiddenSSID;
-    // See $(ref:WiFiProperties.RoamThreshold).
+    // Deprecated, ignored. See $(ref:WiFiProperties.RoamThreshold).
     ManagedLong? RoamThreshold;
     // See $(ref:WiFiProperties.SSID).
     ManagedDOMString? SSID;
@@ -633,8 +631,6 @@ namespace networking.onc {
     ManagedDOMString Security;
     // See $(ref:WiFiProperties.SignalStrength).
     long? SignalStrength;
-    // See $(ref:WiFiProperties.TetheringState).
-    DOMString? TetheringState;
   };
 
   dictionary WiFiStateProperties {
@@ -650,8 +646,6 @@ namespace networking.onc {
     long? SignalStrength;
     // See $(ref:WiFiProperties.SSID).
     DOMString? SSID;
-    // See $(ref:WiFiProperties.TetheringState).
-    DOMString? TetheringState;
   };
 
   // Deprecated
@@ -707,6 +701,8 @@ namespace networking.onc {
     IPConfigProperties[]? IPConfigs;
     // The network's MAC address.
     DOMString? MacAddress;
+    // Whether the network is metered.
+    boolean? Metered;
     // A user friendly network name.
     DOMString? Name;
     // The IP configuration type for the name servers used by the network.
@@ -763,6 +759,8 @@ namespace networking.onc {
     IPConfigProperties[]? IPConfigs;
     // See $(ref:NetworkProperties.MacAddress).
     DOMString? MacAddress;
+    // See $(ref:NetworkProperties.Metered).
+    ManagedBoolean? Metered;
     // See $(ref:NetworkProperties.Name).
     ManagedDOMString? Name;
     // See $(ref:NetworkProperties.NameServersConfigType).
@@ -860,10 +858,10 @@ namespace networking.onc {
     // or configured. Defaults to false.
     boolean? AllowOnlyPolicyNetworksToConnectIfAvailable;
 
-    // List of blacklisted networks. Connections to blacklisted networks are
-    // prohibited. Networks can be whitelisted again by specifying an explicit
+    // List of blocked networks. Connections to blocked networks are
+    // prohibited. Networks can be unblocked again by specifying an explicit
     // network configuration. Defaults to an empty list.
-    DOMString[]? BlacklistedHexSSIDs;
+    DOMString[]? BlockedHexSSIDs;
   };
 
   callback VoidCallback = void();

@@ -11,9 +11,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/api/socket/socket.h"
-#include "extensions/browser/api/socket/tcp_socket.h"
 #include "extensions/common/api/socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -51,8 +50,11 @@ class TCPSocket : public Socket {
   TCPSocket(mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
             mojo::ScopedDataPipeConsumerHandle receive_stream,
             mojo::ScopedDataPipeProducerHandle send_stream,
-            const base::Optional<net::IPEndPoint>& remote_addr,
+            const absl::optional<net::IPEndPoint>& remote_addr,
             const std::string& owner_extension_id);
+
+  TCPSocket(const TCPSocket&) = delete;
+  TCPSocket& operator=(const TCPSocket&) = delete;
 
   ~TCPSocket() override;
 
@@ -99,50 +101,19 @@ class TCPSocket : public Socket {
                 net::CompletionOnceCallback callback) override;
 
  private:
-  // Connects a client TCP socket. This is done on the UI thread because
-  // StoragePartition::GetNetworkContext() needs to happen on the UI thread.
-  // The completion callback is posted back to the thread on which |this| lives.
-  static void ConnectOnUIThread(
-      content::StoragePartition* storage_partition,
-      content::BrowserContext* browser_context,
-      const net::AddressList& remote_address_list,
-      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
-      network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
-          callback);
-  static void OnConnectCompleteOnUIThread(
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
-      int result,
-      const base::Optional<net::IPEndPoint>& local_addr,
-      const base::Optional<net::IPEndPoint>& peer_addr,
-      mojo::ScopedDataPipeConsumerHandle receive_stream,
-      mojo::ScopedDataPipeProducerHandle send_stream);
+  // Connects a client TCP socket.
   void OnConnectComplete(int result,
-                         const base::Optional<net::IPEndPoint>& local_addr,
-                         const base::Optional<net::IPEndPoint>& peer_addr,
+                         const absl::optional<net::IPEndPoint>& local_addr,
+                         const absl::optional<net::IPEndPoint>& peer_addr,
                          mojo::ScopedDataPipeConsumerHandle receive_stream,
                          mojo::ScopedDataPipeProducerHandle send_stream);
 
-  // Connects a server TCP socket. This is done on the UI thread because
-  // StoragePartition::GetNetworkContext() needs to happen on the UI thread.
-  // The completion callback is posted back to the thread on which |this| lives.
-  static void ListenOnUIThread(
-      content::StoragePartition* storage_partition,
-      content::BrowserContext* browser_context,
-      const net::IPEndPoint& local_addr,
-      int backlog,
-      mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
-      network::mojom::NetworkContext::CreateTCPServerSocketCallback callback);
-  static void OnListenCompleteOnUIThread(
-      const scoped_refptr<base::SequencedTaskRunner>& original_task_runner,
-      network::mojom::NetworkContext::CreateTCPServerSocketCallback callback,
-      int result,
-      const base::Optional<net::IPEndPoint>& local_addr);
+  // Connects a server TCP socket.
   void OnListenComplete(int result,
-                        const base::Optional<net::IPEndPoint>& local_addr);
+                        const absl::optional<net::IPEndPoint>& local_addr);
   void OnAccept(
       int result,
-      const base::Optional<net::IPEndPoint>& remote_addr,
+      const absl::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream);
@@ -156,7 +127,7 @@ class TCPSocket : public Socket {
       int result,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream,
-      const base::Optional<net::SSLInfo>& ssl_info);
+      const absl::optional<net::SSLInfo>& ssl_info);
 
   content::StoragePartition* GetStoragePartitionHelper();
 
@@ -184,10 +155,8 @@ class TCPSocket : public Socket {
 
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  base::Optional<net::IPEndPoint> local_addr_;
-  base::Optional<net::IPEndPoint> peer_addr_;
+  absl::optional<net::IPEndPoint> local_addr_;
+  absl::optional<net::IPEndPoint> peer_addr_;
 
   // Only used in tests.
   content::StoragePartition* storage_partition_ = nullptr;
@@ -195,8 +164,6 @@ class TCPSocket : public Socket {
   // WeakPtr is used when posting tasks to |task_runner_| which might outlive
   // |this|.
   base::WeakPtrFactory<TCPSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocket);
 };
 
 // TCP Socket instances from the "sockets.tcp" namespace. These are regular
@@ -211,7 +178,7 @@ class ResumableTCPSocket : public TCPSocket {
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream,
-      const base::Optional<net::IPEndPoint>& remote_addr,
+      const absl::optional<net::IPEndPoint>& remote_addr,
       const std::string& owner_extension_id);
 
   ~ResumableTCPSocket() override;

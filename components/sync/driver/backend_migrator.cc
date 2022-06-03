@@ -6,25 +6,21 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/syncable/directory.h"
-#include "components/sync/syncable/read_transaction.h"
 
 namespace syncer {
 
-MigrationObserver::~MigrationObserver() {}
+MigrationObserver::~MigrationObserver() = default;
 
 BackendMigrator::BackendMigrator(
     const std::string& name,
-    UserShare* user_share,
     DataTypeManager* manager,
     const base::RepeatingClosure& reconfigure_callback,
     const base::RepeatingClosure& migration_done_callback)
     : name_(name),
-      user_share_(user_share),
       manager_(manager),
       reconfigure_callback_(reconfigure_callback),
       migration_done_callback_(migration_done_callback),
@@ -33,7 +29,7 @@ BackendMigrator::BackendMigrator(
   DCHECK(!migration_done_callback_.is_null());
 }
 
-BackendMigrator::~BackendMigrator() {}
+BackendMigrator::~BackendMigrator() = default;
 
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncer threads involved.
@@ -112,24 +108,6 @@ void BackendMigrator::OnConfigureDone(
                                 weak_ptr_factory_.GetWeakPtr(), result));
 }
 
-namespace {
-
-ModelTypeSet GetUnsyncedDataTypes(UserShare* user_share) {
-  ReadTransaction trans(FROM_HERE, user_share);
-  ModelTypeSet unsynced_data_types;
-  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
-    ModelType type = ModelTypeFromInt(i);
-    sync_pb::DataTypeProgressMarker progress_marker;
-    trans.GetDirectory()->GetDownloadProgress(type, &progress_marker);
-    if (progress_marker.token().empty()) {
-      unsynced_data_types.Put(type);
-    }
-  }
-  return unsynced_data_types;
-}
-
-}  // namespace
-
 void BackendMigrator::OnConfigureDoneImpl(
     const DataTypeManager::ConfigureResult& result) {
   SDVLOG(1) << "OnConfigureDone with requested types "
@@ -169,13 +147,22 @@ void BackendMigrator::OnConfigureDoneImpl(
   }
 
   if (state_ == DISABLING_TYPES) {
-    const ModelTypeSet unsynced_types = GetUnsyncedDataTypes(user_share_);
-    if (!unsynced_types.HasAll(to_migrate_)) {
-      SLOG(WARNING) << "Set of unsynced types: "
-                    << ModelTypeSetToString(unsynced_types)
+    ModelTypeSet purged_types = manager_->GetPurgedDataTypes();
+    // NIGORI does not have a controller and is hence not managed by
+    // DataTypeManager, which means it's never returned in GetPurgedDataTypes().
+    // Luckily, there's no need to wait until NIGORI is purged, because that
+    // takes effect immediately.
+    // TODO(crbug.com/922900): try to find better way to implement this logic.
+    purged_types.Put(NIGORI);
+
+    if (!purged_types.HasAll(to_migrate_)) {
+      SLOG(WARNING) << "Set of purged types: "
+                    << ModelTypeSetToString(purged_types)
                     << " does not contain types to migrate: "
                     << ModelTypeSetToString(to_migrate_)
-                    << "; not re-enabling yet";
+                    << "; not re-enabling yet due to "
+                    << ModelTypeSetToString(
+                           Difference(to_migrate_, purged_types));
       return;
     }
 

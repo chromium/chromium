@@ -4,8 +4,9 @@
 
 #include "content/browser/media/session/media_session_controllers_manager.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "content/browser/media/session/media_session_controller.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
 
@@ -22,8 +23,8 @@ bool IsMediaSessionEnabled() {
 }  // namespace
 
 MediaSessionControllersManager::MediaSessionControllersManager(
-    MediaWebContentsObserver* media_web_contents_observer)
-    : media_web_contents_observer_(media_web_contents_observer) {}
+    WebContentsImpl* web_contents)
+    : web_contents_(web_contents) {}
 
 MediaSessionControllersManager::~MediaSessionControllersManager() = default;
 
@@ -32,72 +33,47 @@ void MediaSessionControllersManager::RenderFrameDeleted(
   if (!IsMediaSessionEnabled())
     return;
 
-  for (auto it = controllers_map_.begin(); it != controllers_map_.end();) {
-    if (it->first.render_frame_host == render_frame_host)
-      it = controllers_map_.erase(it);
-    else
-      ++it;
-  }
+  base::EraseIf(
+      controllers_map_,
+      [render_frame_host](const ControllersMap::value_type& id_and_controller) {
+        return render_frame_host->GetGlobalId() ==
+               id_and_controller.first.frame_routing_id;
+      });
 }
 
-bool MediaSessionControllersManager::RequestPlay(
+void MediaSessionControllersManager::OnMetadata(
     const MediaPlayerId& id,
     bool has_audio,
-    bool is_remote,
+    bool has_video,
     media::MediaContentType media_content_type) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->SetMetadata(has_audio, has_video, media_content_type);
+}
+
+bool MediaSessionControllersManager::RequestPlay(const MediaPlayerId& id) {
   if (!IsMediaSessionEnabled())
     return true;
 
-  // If we have previously received the position for this player then we should
-  // initialize the controller with it.
-  media_session::MediaPosition* position = nullptr;
-  auto position_it = position_map_.find(id);
-  if (position_it != position_map_.end())
-    position = &position_it->second;
-
-  // Since we don't remove session instances on pause, there may be an existing
-  // instance for this playback attempt.
-  //
-  // In this case, try to reinitialize it with the new settings.  If they are
-  // the same, this is a no-op.  If the reinitialize fails, destroy the
-  // controller. A later playback attempt will create a new controller.
-  auto it = controllers_map_.find(id);
-  if (it != controllers_map_.end()) {
-    if (it->second->Initialize(has_audio, is_remote, media_content_type,
-                               position)) {
-      return true;
-    }
-
-    controllers_map_.erase(it);
-    return false;
-  }
-
-  std::unique_ptr<MediaSessionController> controller(
-      new MediaSessionController(id, media_web_contents_observer_));
-
-  if (!controller->Initialize(has_audio, is_remote, media_content_type,
-                              position)) {
-    return false;
-  }
-
-  controllers_map_[id] = std::move(controller);
-  return true;
+  MediaSessionController* const controller = FindOrCreateController(id);
+  return controller->OnPlaybackStarted();
 }
 
-void MediaSessionControllersManager::OnPause(const MediaPlayerId& id) {
+void MediaSessionControllersManager::OnPause(const MediaPlayerId& id,
+                                             bool reached_end_of_stream) {
   if (!IsMediaSessionEnabled())
     return;
 
-  auto it = controllers_map_.find(id);
-  if (it == controllers_map_.end())
-    return;
-
-  it->second->OnPlaybackPaused();
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnPlaybackPaused(reached_end_of_stream);
 }
 
 void MediaSessionControllersManager::OnEnd(const MediaPlayerId& id) {
   if (!IsMediaSessionEnabled())
     return;
+
   controllers_map_.erase(id);
 }
 
@@ -107,13 +83,17 @@ void MediaSessionControllersManager::OnMediaPositionStateChanged(
   if (!IsMediaSessionEnabled())
     return;
 
-  base::InsertOrAssign(position_map_, id, position);
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnMediaPositionStateChanged(position);
+}
 
-  auto it = controllers_map_.find(id);
-  if (it == controllers_map_.end())
+void MediaSessionControllersManager::PictureInPictureStateChanged(
+    bool is_picture_in_picture) {
+  if (!IsMediaSessionEnabled())
     return;
 
-  it->second->OnMediaPositionStateChanged(position);
+  for (auto& entry : controllers_map_)
+    entry.second->PictureInPictureStateChanged(is_picture_in_picture);
 }
 
 void MediaSessionControllersManager::WebContentsMutedStateChanged(bool muted) {
@@ -122,6 +102,57 @@ void MediaSessionControllersManager::WebContentsMutedStateChanged(bool muted) {
 
   for (auto& entry : controllers_map_)
     entry.second->WebContentsMutedStateChanged(muted);
+}
+
+void MediaSessionControllersManager::OnMediaMutedStatusChanged(
+    const MediaPlayerId& id,
+    bool mute) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnMediaMutedStatusChanged(mute);
+}
+
+void MediaSessionControllersManager::OnPictureInPictureAvailabilityChanged(
+    const MediaPlayerId& id,
+    bool available) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnPictureInPictureAvailabilityChanged(available);
+}
+
+void MediaSessionControllersManager::OnAudioOutputSinkChanged(
+    const MediaPlayerId& id,
+    const std::string& raw_device_id) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnAudioOutputSinkChanged(raw_device_id);
+}
+
+void MediaSessionControllersManager::OnAudioOutputSinkChangingDisabled(
+    const MediaPlayerId& id) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnAudioOutputSinkChangingDisabled();
+}
+
+MediaSessionController* MediaSessionControllersManager::FindOrCreateController(
+    const MediaPlayerId& id) {
+  auto it = controllers_map_.find(id);
+  if (it == controllers_map_.end()) {
+    it = controllers_map_
+             .emplace(id, std::make_unique<MediaSessionController>(
+                              id, web_contents_))
+             .first;
+  }
+  return it->second.get();
 }
 
 }  // namespace content

@@ -37,13 +37,12 @@ namespace blink {
 
 class DOMWindow;
 class Internals;
-class ScriptState;
 
 class InternalsSpeechSynthesis {
   STATIC_ONLY(InternalsSpeechSynthesis);
 
  public:
-  static void enableMockSpeechSynthesizer(ScriptState*, Internals&, DOMWindow*);
+  static void enableMockSpeechSynthesizer(Internals&, DOMWindow*);
 };
 
 }  // namespace blink

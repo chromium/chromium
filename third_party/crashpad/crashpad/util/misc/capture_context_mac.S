@@ -12,17 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if defined(__i386__) || defined(__x86_64__)
+#if defined(__i386__) || defined(__x86_64__) || defined(__aarch64__)
 
+#if defined(__i386__) || defined(__x86_64__)
 // namespace crashpad {
 // void CaptureContext(x86_thread_state_t* x86_thread_state);
 // }  // namespace crashpad
 #define CAPTURECONTEXT_SYMBOL __ZN8crashpad14CaptureContextEP16x86_thread_state
+#elif defined(__aarch64__)
+// namespace crashpad {
+// void CaptureContext(arm_unified_thread_state_t* arm_unified_thread_state);
+// }  // namespace crashpad
+#define CAPTURECONTEXT_SYMBOL \
+    __ZN8crashpad14CaptureContextEP24arm_unified_thread_state
+#endif
 
   .section __TEXT,__text,regular,pure_instructions
   .private_extern CAPTURECONTEXT_SYMBOL
   .globl CAPTURECONTEXT_SYMBOL
-  .balign 16, 0x90
+#if defined(__i386__) || defined(__x86_64__)
+  .p2align 4, 0x90
+#elif defined(__aarch64__)
+  .p2align 2
+#endif
 CAPTURECONTEXT_SYMBOL:
 
 #if defined(__i386__)
@@ -206,6 +218,64 @@ CAPTURECONTEXT_SYMBOL:
   popfq
 
   popq %rbp
+
+  ret
+
+  .cfi_endproc
+
+#elif defined(__aarch64__)
+
+  .cfi_startproc
+
+  // Save general-purpose registers in arm_unified_thread_state->ts_64.__x[0].
+  // The original x0 can't be recovered.
+  stp x0, x1, [x0, #0x8]
+  stp x2, x3, [x0, #0x18]
+  stp x4, x5, [x0, #0x28]
+  stp x6, x7, [x0, #0x38]
+  stp x8, x9, [x0, #0x48]
+  stp x10, x11, [x0, #0x58]
+  stp x12, x13, [x0, #0x68]
+  stp x14, x15, [x0, #0x78]
+  stp x16, x17, [x0, #0x88]
+  stp x18, x19, [x0, #0x98]
+  stp x20, x21, [x0, #0xa8]
+  stp x22, x23, [x0, #0xb8]
+  stp x24, x25, [x0, #0xc8]
+  stp x26, x27, [x0, #0xd8]
+
+  // Save the last general-purpose register (x28) and the frame pointer (x29).
+  stp x28, x29, [x0, #0xe8]  // __x[28] and __fp
+
+  // Save the link register (x30) and the stack pointer (using x1 as a scratch
+  // register)
+  mov x1, sp
+  stp x30, x1, [x0, #0xf8]  // __lr and __sp
+
+  // The link register (x30) holds the return address for this function.
+  // __cpsr should hold current program status register, but nzcv are the only
+  // bits we know about (saved using x1 as a scratch register). The 64-bit x1
+  // covers both the 32-bit __cpsr (which receives the nzcv bits) and __pad
+  // (which will be zeroed).
+  mrs x1, nzcv
+  stp x30, x1, [x0, #0x108]  // __pc and __cpsr and __pad
+
+  // Initialize the header identifying the arm_unified_thread_state structure as
+  // carrying an arm_thread_state64_t (flavor ARM_THREAD_STATE64) of size
+  // ARM_THREAD_STATE64_COUNT 32-bit values.
+  mov x1, #6
+  movk x1, #68, lsl #32
+  str x1, [x0, #0x0]  // arm_thread_state->ash.flavor and count
+
+  // Restore x1 from the saved context.
+  ldr x1, [x0, #0x10]
+
+  // TODO(justincohen): Consider saving floating-point registers into
+  // arm_neon_state64_t as second parameter, or as a a second function call
+  // after all of the general-purpose state is captured, or as a new struct that
+  // has both arm_unified_state_t and arm_neon_state64_t members. That may be
+  // better than a second parameter (which occupies another register) and better
+  // than a second function call.
 
   ret
 

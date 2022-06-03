@@ -4,12 +4,13 @@
 
 #include "ash/system/network/auto_connect_notifier.h"
 
+#include <string>
+
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -38,8 +39,7 @@ namespace {
 // initiated, we expect the connection to occur within this amount of time. If
 // a timeout occurs, we assume that no auto-connection occurred and do not show
 // a notification.
-constexpr const base::TimeDelta kNetworkConnectionTimeout =
-    base::TimeDelta::FromSeconds(3);
+constexpr const base::TimeDelta kNetworkConnectionTimeout = base::Seconds(3);
 
 const char kNotifierAutoConnect[] = "ash.auto-connect";
 
@@ -146,14 +146,14 @@ void AutoConnectNotifier::OnAutoConnectedInitiated(int auto_connect_reasons) {
 
 void AutoConnectNotifier::DisplayNotification(
     const chromeos::NetworkState* network) {
-  NET_LOG(EVENT) << "Show AutoConnect Notification for: " << network->name();
-  auto notification = ash::CreateSystemNotification(
+  NET_LOG(EVENT) << "Show AutoConnect Notification for: " << NetworkId(network);
+  auto notification = CreateSystemNotification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       kAutoConnectNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_MESSAGE),
-      base::string16() /* display_source */, GURL() /* origin_url */,
+      std::u16string() /* display_source */, GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierAutoConnect),
       {} /* optional_fields */,
@@ -162,7 +162,8 @@ void AutoConnectNotifier::DisplayNotification(
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   notification->set_small_image(gfx::Image(network_icon::GetImageForWifiNetwork(
-      notification->accent_color(),
+      notification->accent_color().value_or(
+          ash::kSystemNotificationColorNormal),
       gfx::Size(message_center::kSmallImageSizeMD,
                 message_center::kSmallImageSizeMD))));
 

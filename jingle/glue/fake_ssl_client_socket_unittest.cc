@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
@@ -108,14 +108,14 @@ class FakeSSLClientSocketTest : public testing::Test {
 
   std::unique_ptr<net::StreamSocket> MakeClientSocket() {
     return mock_client_socket_factory_.CreateTransportClientSocket(
-        net::AddressList(), NULL, NULL, net::NetLogSource());
+        net::AddressList(), nullptr, nullptr, nullptr, net::NetLogSource());
   }
 
   void SetData(const net::MockConnect& mock_connect,
                std::vector<net::MockRead>* reads,
                std::vector<net::MockWrite>* writes) {
-    static_socket_data_provider_.reset(
-        new net::StaticSocketDataProvider(*reads, *writes));
+    static_socket_data_provider_ =
+        std::make_unique<net::StaticSocketDataProvider>(*reads, *writes);
     static_socket_data_provider_->set_connect_data(mock_connect);
     mock_client_socket_factory_.AddSocketDataProvider(
         static_socket_data_provider_.get());

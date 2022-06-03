@@ -6,6 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
+#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -14,10 +15,12 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/drop_data.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #import "third_party/mozilla/NSPasteboard+Utils.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
@@ -27,12 +30,32 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
-using blink::WebDragOperationsMask;
+using blink::DragOperationsMask;
 using content::DropData;
 using content::OpenURLParams;
 using content::Referrer;
 using content::WebContentsImpl;
 using remote_cocoa::mojom::DraggingInfo;
+
+namespace content {
+
+DropContext::DropContext(
+    const content::DropData drop_data,
+    const gfx::PointF client_pt,
+    const gfx::PointF screen_pt,
+    int modifier_flags,
+    base::WeakPtr<content::RenderWidgetHostImpl> target_rwh)
+    : drop_data(drop_data),
+      client_pt(client_pt),
+      screen_pt(screen_pt),
+      modifier_flags(modifier_flags),
+      target_rwh(target_rwh) {}
+
+DropContext::DropContext(const DropContext& other) = default;
+
+DropContext::~DropContext() = default;
+
+}  // namespace content
 
 namespace {
 
@@ -66,6 +89,22 @@ int GetModifierFlags() {
 content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
   return content::GlobalRoutingID(rvh->GetProcess()->GetID(),
                                   rvh->GetRoutingID());
+}
+
+void DropCompletionCallback(
+    WebDragDest* drag_dest,
+    const content::DropContext context,
+    content::WebContentsViewDelegate::DropCompletionResult result) {
+  // This is an async callback. Make sure RWH is still valid.
+  if (!context.target_rwh ||
+      ![drag_dest isValidDragTarget:context.target_rwh.get()]) {
+    return;
+  }
+
+  bool success =
+      result ==
+      content::WebContentsViewDelegate::DropCompletionResult::kContinue;
+  [drag_dest completeDropAsync:success withContext:context];
 }
 
 }  // namespace
@@ -124,15 +163,6 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
   return screenPoint;
 }
 
-// Return YES if the drop site only allows drops that would navigate.  If this
-// is the case, we don't want to pass messages to the renderer because there's
-// really no point (i.e., there's nothing that cares about the mouse position or
-// entering and exiting).  One example is an interstitial page (e.g., safe
-// browsing warning).
-- (BOOL)onlyAllowsNavigation {
-  return _webContents->ShowingInterstitialPage();
-}
-
 // Messages to send during the tracking of a drag, usually upon receiving
 // calls from the view system. Communicates the drag messages to WebCore.
 
@@ -141,6 +171,9 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
 }
 
 - (NSDragOperation)draggingEntered:(const DraggingInfo*)info {
+  if (_webContents->ShouldIgnoreInputEvents())
+    return NSDragOperationNone;
+
   // Save off the RVH so we can tell if it changes during a drag. If it does,
   // we need to send a new enter message in draggingUpdated:.
   _currentRVH = _webContents->GetRenderViewHost();
@@ -172,17 +205,9 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
 
   // Give the delegate an opportunity to cancel the drag.
   _canceled = !_webContents->GetDelegate()->CanDragEnter(
-      _webContents,
-      *dropData,
-      static_cast<WebDragOperationsMask>(mask));
+      _webContents, *dropData, static_cast<DragOperationsMask>(mask));
   if (_canceled)
     return NSDragOperationNone;
-
-  if ([self onlyAllowsNavigation]) {
-    if (info->url)
-      return NSDragOperationCopy;
-    return NSDragOperationNone;
-  }
 
   if (_delegate) {
     _delegate->DragInitialize(_webContents);
@@ -193,7 +218,8 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
 
   _currentRWHForDrag->DragTargetDragEnter(
       *_dropDataFiltered, transformedPt, info->location_in_screen,
-      static_cast<WebDragOperationsMask>(mask), GetModifierFlags());
+      static_cast<DragOperationsMask>(mask), GetModifierFlags(),
+      base::DoNothing());
 
   // We won't know the true operation (whether the drag is allowed) until we
   // hear back from the renderer. For now, be optimistic:
@@ -202,14 +228,17 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
 }
 
 - (void)draggingExited {
+  if (_webContents->ShouldIgnoreInputEvents())
+    return;
+
+  if (!_dropDataFiltered || !_dropDataUnfiltered)
+    return;
+
   DCHECK(_currentRVH);
   if (_currentRVH != _webContents->GetRenderViewHost())
     return;
 
   if (_canceled)
-    return;
-
-  if ([self onlyAllowsNavigation])
     return;
 
   if (_delegate)
@@ -224,6 +253,12 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
 }
 
 - (NSDragOperation)draggingUpdated:(const DraggingInfo*)info {
+  if (_webContents->ShouldIgnoreInputEvents())
+    return NSDragOperationNone;
+
+  if (!_dropDataFiltered || !_dropDataUnfiltered)
+    return NSDragOperationNone;
+
   if (_canceled) {
     // TODO(ekaramad,paulmeyer): We probably shouldn't be checking for
     // |canceled_| twice in this method.
@@ -263,16 +298,10 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
   if (_canceled)
     return NSDragOperationNone;
 
-  if ([self onlyAllowsNavigation]) {
-    if (info->url)
-      return NSDragOperationCopy;
-    return NSDragOperationNone;
-  }
-
   NSDragOperation mask = info->operation_mask;
   targetRWH->DragTargetDragOver(transformedPt, info->location_in_screen,
-                                static_cast<WebDragOperationsMask>(mask),
-                                GetModifierFlags());
+                                static_cast<DragOperationsMask>(mask),
+                                GetModifierFlags(), base::DoNothing());
 
   if (_delegate)
     _delegate->OnDragOver();
@@ -280,7 +309,12 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
   return _currentOperation;
 }
 
-- (BOOL)performDragOperation:(const DraggingInfo*)info {
+- (BOOL)performDragOperation:(const DraggingInfo*)info
+    withWebContentsViewDelegate:
+        (content::WebContentsViewDelegate*)webContentsViewDelegate {
+  if (_webContents->ShouldIgnoreInputEvents())
+    return NO;
+
   gfx::PointF transformedPt;
   content::RenderWidgetHostImpl* targetRWH =
       [self GetRenderWidgetHostAtPoint:info->location_in_view
@@ -296,30 +330,45 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
     [self draggingEntered:info];
   }
 
-  // Check if we only allow navigation and navigate to a url on the pasteboard.
-  if ([self onlyAllowsNavigation]) {
-    if (info->url) {
-      _webContents->OpenURL(OpenURLParams(
-          *info->url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
-      return YES;
-    } else {
-      return NO;
-    }
-  }
-
-  if (_delegate)
-    _delegate->OnDrop();
-
   _currentRVH = NULL;
+  _webContents->Focus();
 
-  targetRWH->DragTargetDrop(*_dropDataFiltered, transformedPt,
-                            info->location_in_screen, GetModifierFlags());
+  if (webContentsViewDelegate) {
+    content::DropContext context(/*drop_data=*/*_dropDataFiltered,
+                                 /*client_pt=*/transformedPt,
+                                 /*screen_pt=*/info->location_in_screen,
+                                 /*modifier_flags=*/GetModifierFlags(),
+                                 /*target_rwh=*/targetRWH->GetWeakPtr());
 
+    webContentsViewDelegate->OnPerformDrop(
+        context.drop_data,
+        base::BindOnce(&DropCompletionCallback, self, context));
+  } else {
+    if (_delegate)
+      _delegate->OnDrop();
+    targetRWH->DragTargetDrop(*_dropDataFiltered, transformedPt,
+                              info->location_in_screen, GetModifierFlags(),
+                              base::DoNothing());
+  }
   _dropDataUnfiltered.reset();
   _dropDataFiltered.reset();
 
   return YES;
+}
+
+- (void)completeDropAsync:(BOOL)success
+              withContext:(const content::DropContext)context {
+  if (success) {
+    if (_delegate)
+      _delegate->OnDrop();
+    context.target_rwh->DragTargetDrop(
+        context.drop_data, context.client_pt, context.screen_pt,
+        context.modifier_flags, base::DoNothing());
+  } else {
+    if (_delegate)
+      _delegate->OnDragLeave();
+    context.target_rwh->DragTargetDragLeave(gfx::PointF(), gfx::PointF());
+  }
 }
 
 - (content::RenderWidgetHostImpl*)
@@ -349,7 +398,8 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
                                     NSPasteboard* pboard) {
   DCHECK(data);
   DCHECK(pboard);
-  NSArray* types = [pboard types];
+  // https://crbug.com/1016740#c21
+  base::scoped_nsobject<NSArray> types([[pboard types] retain]);
 
   data->did_originate_from_renderer =
       [types containsObject:ui::kChromeDragDummyPboardType];
@@ -363,21 +413,20 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
 
   // Get plain text.
   if ([types containsObject:NSStringPboardType]) {
-    data->text = base::NullableString16(
-        base::SysNSStringToUTF16([pboard stringForType:NSStringPboardType]),
-        false);
+    data->text =
+        base::SysNSStringToUTF16([pboard stringForType:NSStringPboardType]);
   }
 
   // Get HTML. If there's no HTML, try RTF.
   if ([types containsObject:NSHTMLPboardType]) {
     NSString* html = [pboard stringForType:NSHTMLPboardType];
-    data->html = base::NullableString16(base::SysNSStringToUTF16(html), false);
+    data->html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:ui::kChromeDragImageHTMLPboardType]) {
     NSString* html = [pboard stringForType:ui::kChromeDragImageHTMLPboardType];
-    data->html = base::NullableString16(base::SysNSStringToUTF16(html), false);
+    data->html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:NSRTFPboardType]) {
     NSString* html = ui::ClipboardUtil::GetHTMLFromRTFOnPasteboard(pboard);
-    data->html = base::NullableString16(base::SysNSStringToUTF16(html), false);
+    data->html = base::SysNSStringToUTF16(html);
   }
 
   // Get files.

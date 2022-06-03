@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command, CommandManager, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksCommandManagerElement, Command, createBookmark, DialogFocusManager, getDisplayedList, MenuSource, selectFolder} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {pressAndReleaseKeyOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, customClick, findFolderNode, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestCommandManager} from './test_command_manager.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, customClick, findFolderNode, normalizeIterable, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-command-manager>', function() {
   let commandManager;
@@ -87,14 +88,7 @@ suite('<bookmarks-command-manager>', function() {
     commandManager = testCommandManager.getCommandManager();
     replaceBody(commandManager);
     document.body.appendChild(document.createElement('cr-toast-manager'));
-    DialogFocusManager.instance_ = null;
-  });
-
-  test('Copy URL is only active for single URL items', function() {
-    assertFalse(commandManager.canExecute(Command.COPY_URL, new Set(['11'])));
-    assertFalse(
-        commandManager.canExecute(Command.COPY_URL, new Set(['11', '13'])));
-    assertTrue(commandManager.canExecute(Command.COPY_URL, new Set(['13'])));
+    DialogFocusManager.setInstance(null);
   });
 
   test('context menu hides invalid commands', function() {
@@ -112,7 +106,6 @@ suite('<bookmarks-command-manager>', function() {
     // With a folder and an item selected, the only available context menu item
     // is 'Delete'.
     assertTrue(commandHidden[Command.EDIT]);
-    assertTrue(commandHidden[Command.COPY_URL]);
     assertFalse(commandHidden[Command.DELETE]);
   });
 
@@ -161,7 +154,6 @@ suite('<bookmarks-command-manager>', function() {
     store.notifyObservers();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
-    assertTrue(commandManager.hasAnySublabel_);
     assertEquals('2', commandManager.getCommandSublabel_(Command.OPEN_NEW_TAB));
   });
 
@@ -322,7 +314,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(dialog.open);
 
     // Pressing 'cancel' should not open the window.
-    tap(dialog.querySelector('.cancel-button'));
+    dialog.querySelector('.cancel-button').click();
     assertFalse(dialog.open);
     assertEquals(null, lastCreate);
 
@@ -330,7 +322,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(dialog.open);
 
     // Pressing 'yes' will open all the URLs.
-    tap(dialog.querySelector('.action-button'));
+    dialog.querySelector('.action-button').click();
     assertFalse(dialog.open);
     assertEquals(20, lastCreate.url.length);
   });
@@ -394,13 +386,13 @@ suite('<bookmarks-command-manager>', function() {
     commandManager.root.querySelectorAll('.dropdown-item').forEach(element => {
       commandItem[element.getAttribute('command')] = element;
     });
-    tap(commandItem[Command.EDIT]);
+    commandItem[Command.EDIT].click();
     testCommandManager.assertLastCommand(null);
   });
 
   test('keyboard shortcuts are disabled while a dialog is open', function() {
     assertFalse(DialogFocusManager.getInstance().hasOpenDialog());
-    let items = new Set(['12']);
+    const items = new Set(['12']);
     store.data.selection.items = items;
     store.notifyObservers();
 
@@ -590,8 +582,8 @@ suite('<bookmarks-item> CommandManager integration', function() {
   });
 
   test('copy/cut/paste for folder nodes independent of selection', function() {
-    let bmpCopyFunction = chrome.bookmarkManagerPrivate.copy;
-    let bmpCutFunction = chrome.bookmarkManagerPrivate.cut;
+    const bmpCopyFunction = chrome.bookmarkManagerPrivate.copy;
+    const bmpCutFunction = chrome.bookmarkManagerPrivate.cut;
 
     let lastCut;
     let lastCopy;
@@ -618,7 +610,7 @@ suite('<bookmarks-item> CommandManager integration', function() {
   });
 
   test('context menu disappears immediately on right click', async function() {
-    commandManager.updateForPaste_ = function() {
+    commandManager.updateCanPaste_ = function() {
       this.canPaste_ = true;
       return Promise.resolve();
     };
@@ -682,7 +674,7 @@ suite('<bookmarks-command-manager> whole page integration', function() {
     const app = document.createElement('bookmarks-app');
     replaceBody(app);
 
-    commandManager = CommandManager.getInstance();
+    commandManager = BookmarksCommandManagerElement.getInstance();
 
     await promise;
 

@@ -27,7 +27,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Supports reading and processing text files."""
 
 import codecs
@@ -35,12 +34,10 @@ import logging
 import os
 import sys
 
-
 _log = logging.getLogger(__name__)
 
 
 class TextFileReader(object):
-
     """Supports reading and processing text files.
 
        Attributes:
@@ -109,7 +106,8 @@ class TextFileReader(object):
 
         if not self.filesystem.exists(file_path) and file_path != '-':
             _log.error("File does not exist: '%s'", file_path)
-            sys.exit(1)  # FIXME: This should throw or return instead of exiting directly.
+            # FIXME: This should throw or return instead of exiting directly.
+            sys.exit(1)
 
         if not self._processor.should_process(file_path):
             _log.debug("Skipping file: '%s'", file_path)
@@ -119,7 +117,8 @@ class TextFileReader(object):
         try:
             lines = self._read_lines(file_path)
         except IOError as err:
-            message = ("Could not read file. Skipping: '%s'\n  %s" % (file_path, err))
+            message = (
+                "Could not read file. Skipping: '%s'\n  %s" % (file_path, err))
             _log.warning(message)
             return
 

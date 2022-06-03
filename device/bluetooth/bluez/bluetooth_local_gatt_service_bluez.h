@@ -33,6 +33,11 @@ class BluetoothLocalGattServiceBlueZ
       bool is_primary,
       device::BluetoothLocalGattService::Delegate* delegate);
 
+  BluetoothLocalGattServiceBlueZ(const BluetoothLocalGattServiceBlueZ&) =
+      delete;
+  BluetoothLocalGattServiceBlueZ& operator=(
+      const BluetoothLocalGattServiceBlueZ&) = delete;
+
   ~BluetoothLocalGattServiceBlueZ() override;
 
   // device::BluetoothGattService overrides.
@@ -40,9 +45,9 @@ class BluetoothLocalGattServiceBlueZ
   bool IsPrimary() const override;
 
   // device::BluetoothLocalGattService overrides.
-  void Register(const base::Closure& callback,
+  void Register(base::OnceClosure callback,
                 ErrorCallback error_callback) override;
-  void Unregister(const base::Closure& callback,
+  void Unregister(base::OnceClosure callback,
                   ErrorCallback error_callback) override;
   bool IsRegistered() override;
   void Delete() override;
@@ -89,8 +94,6 @@ class BluetoothLocalGattServiceBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothLocalGattServiceBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattServiceBlueZ);
 };
 
 }  // namespace bluez

@@ -33,12 +33,12 @@
 enum CompositeOperation { "replace", "add", "accumulate" };
 
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface KeyframeEffect : AnimationEffect {
-  [CallWith=ScriptState, RaisesException] constructor(Element? target, object? keyframes, optional (unrestricted double or KeyframeEffectOptions) options);
-  [CallWith=ScriptState, RaisesException] constructor(KeyframeEffect source);
+  [CallWith=ScriptState, RaisesException, Measure] constructor(Element? target, object? keyframes, optional (unrestricted double or KeyframeEffectOptions) options);
+  [CallWith=ScriptState, RaisesException, Measure] constructor(KeyframeEffect source);
   attribute Element? target;
+  [RuntimeEnabled=WebAnimationsAPI, RaisesException=Setter] attribute CSSOMString? pseudoElement;
   [RuntimeEnabled=WebAnimationsAPI] attribute CompositeOperation composite;
   [CallWith=ScriptState, RuntimeEnabled=WebAnimationsAPI] sequence<object> getKeyframes();
   [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebAnimationsAPI] void setKeyframes(object? keyframes);

@@ -6,11 +6,9 @@
 #define EXTENSIONS_COMMON_CONSTANTS_H_
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
-#include "components/version_info/channel.h"
-#include "ui/base/layout.h"
+#include "build/chromeos_buildflags.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 
 namespace extensions {
 
@@ -29,6 +27,9 @@ extern const base::FilePath::CharType kLocaleFolder[];
 // The name of the messages file inside an extension.
 extern const base::FilePath::CharType kMessagesFilename[];
 
+// The name of the gzipped messages file inside an extension.
+extern const base::FilePath::CharType kGzippedMessagesFilename[];
+
 // The base directory for subdirectories with platform-specific code.
 extern const base::FilePath::CharType kPlatformSpecificFolder[];
 
@@ -42,8 +43,8 @@ extern const base::FilePath::CharType kVerifiedContentsFilename[];
 // Name of the computed hashes file within the metadata folder.
 extern const base::FilePath::CharType kComputedHashesFilename[];
 
-// Name of the indexed ruleset file for the Declarative Net Request API.
-extern const base::FilePath::CharType kIndexedRulesetFilename[];
+// Name of the indexed ruleset directory for the Declarative Net Request API.
+extern const base::FilePath::CharType kIndexedRulesetDirectory[];
 
 // The name of the directory inside the profile where extensions are
 // installed to.
@@ -75,31 +76,44 @@ extern const int kDefaultUpdateFrequencySeconds;
 
 // The name of the directory inside the profile where per-app local settings
 // are stored.
-extern const char kLocalAppSettingsDirectoryName[];
+extern const base::FilePath::CharType kLocalAppSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-extension local
 // settings are stored.
-extern const char kLocalExtensionSettingsDirectoryName[];
+extern const base::FilePath::CharType kLocalExtensionSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-app synced settings
 // are stored.
-extern const char kSyncAppSettingsDirectoryName[];
+extern const base::FilePath::CharType kSyncAppSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-extension synced
 // settings are stored.
-extern const char kSyncExtensionSettingsDirectoryName[];
+extern const base::FilePath::CharType kSyncExtensionSettingsDirectoryName[];
 
 // The name of the directory inside the profile where per-extension persistent
 // managed settings are stored.
-extern const char kManagedSettingsDirectoryName[];
+extern const base::FilePath::CharType kManagedSettingsDirectoryName[];
 
 // The name of the database inside the profile where chrome-internal
 // extension state resides.
-extern const char kStateStoreName[];
+extern const base::FilePath::CharType kStateStoreName[];
 
 // The name of the database inside the profile where declarative extension
 // rules are stored.
-extern const char kRulesStoreName[];
+extern const base::FilePath::CharType kRulesStoreName[];
+
+// The name of the database inside the profile where persistent dynamic user
+// script metadata is stored.
+extern const base::FilePath::CharType kScriptsStoreName[];
+
+// Statistics are logged to UMA with these strings as part of histogram name.
+// They can all be found under Extensions.Database.Open.<client>. Changing this
+// needs to synchronize with histograms.xml, AND will also become incompatible
+// with older browsers still reporting the previous values.
+extern const char kSettingsDatabaseUMAClientName[];
+extern const char kRulesDatabaseUMAClientName[];
+extern const char kStateDatabaseUMAClientName[];
+extern const char kScriptsDatabaseUMAClientName[];
 
 // The URL query parameter key corresponding to multi-login user index.
 extern const char kAuthUserQueryKey[];
@@ -115,14 +129,55 @@ extern const char kWebStoreAppId[];
 extern const uint8_t kWebstoreSignaturesPublicKey[];
 extern const size_t kWebstoreSignaturesPublicKeySize;
 
+// A preference for storing the extension's update URL data.
+extern const char kUpdateURLData[];
+
 // Thread identifier for the main renderer thread (as opposed to a service
 // worker thread).
 // This is the default thread id used for extension event listeners registered
 // from a non-service worker context
 extern const int kMainThreadId;
 
-using apps::mojom::AppLaunchSource;
 using apps::mojom::LaunchContainer;
+
+// Enumeration of possible app launch sources.
+// This should be kept in sync with LaunchSource in
+// extensions/common/api/app_runtime.idl, and GetLaunchSourceEnum() in
+// extensions/browser/api/app_runtime/app_runtime_api.cc.
+// Note the enumeration is used in UMA histogram so entries
+// should not be re-ordered or removed.
+enum class AppLaunchSource {
+  kSourceNone = 0,
+  kSourceUntracked = 1,
+  kSourceAppLauncher = 2,
+  kSourceNewTabPage = 3,
+  kSourceReload = 4,
+  kSourceRestart = 5,
+  kSourceLoadAndLaunch = 6,
+  kSourceCommandLine = 7,
+  kSourceFileHandler = 8,
+  kSourceUrlHandler = 9,
+  kSourceSystemTray = 10,
+  kSourceAboutPage = 11,
+  kSourceKeyboard = 12,
+  kSourceExtensionsPage = 13,
+  kSourceManagementApi = 14,
+  kSourceEphemeralAppDeprecated = 15,
+  kSourceBackground = 16,
+  kSourceKiosk = 17,
+  kSourceChromeInternal = 18,
+  kSourceTest = 19,
+  kSourceInstalledNotification = 20,
+  kSourceContextMenu = 21,
+  kSourceArc = 22,
+  kSourceIntentUrl = 23,        // App launch triggered by a URL.
+  kSourceRunOnOsLogin = 24,     // App launched during OS login.
+  kSourceProtocolHandler = 25,  // App launch via protocol handler.
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kSourceProtocolHandler,
+};
 
 // This enum is used for the launch type the user wants to use for an
 // application.
@@ -142,10 +197,6 @@ enum LaunchType {
   // the default for the NTP and chrome.management.launchApp().
   LAUNCH_TYPE_DEFAULT = LAUNCH_TYPE_REGULAR
 };
-
-// The origin of injected CSS.
-enum CSSOrigin { CSS_ORIGIN_AUTHOR, CSS_ORIGIN_USER };
-static const CSSOrigin CSS_ORIGIN_LAST = CSS_ORIGIN_USER;
 
 }  // namespace extensions
 
@@ -192,17 +243,44 @@ extern const char kQuickOfficeExtensionId[];
 // The extension id used for testing mimeHandlerPrivate.
 extern const char kMimeHandlerPrivateTestExtensionId[];
 
-// The extension id of the Camera application.
-extern const char kCameraAppId[];
-
-// The extension id of the devoloper version of Camera application.
-extern const char kCameraAppDevId[];
-
 // The extension id of the Chrome component application.
 extern const char kChromeAppId[];
 
+// Fake extension ID for the Lacros chrome browser application.
+extern const char kLacrosAppId[];
+
 // The extension id of the Files Manager application.
 extern const char kFilesManagerAppId[];
+
+// The extension id of the Calculator application.
+extern const char kCalculatorAppId[];
+
+// The extension id of the demo Calendar application.
+extern const char kCalendarDemoAppId[];
+
+// The extension id of the GMail application.
+extern const char kGmailAppId[];
+
+// The extension id of the demo Google Docs application.
+extern const char kGoogleDocsDemoAppId[];
+
+// The extension id of the Google Docs PWA.
+extern const char kGoogleDocsPwaAppId[];
+
+// The extension id of the Google Drive application.
+extern const char kGoogleDriveAppId[];
+
+// The extension id of the Google Meet PWA.
+extern const char kGoogleMeetPwaAppId[];
+
+// The extension id of the demo Google Sheets application.
+extern const char kGoogleSheetsDemoAppId[];
+
+// The extension id of the Google Sheets PWA.
+extern const char kGoogleSheetsPwaAppId[];
+
+// The extension id of the demo Google Slides application.
+extern const char kGoogleSlidesDemoAppId[];
 
 // The extension id of the Google Keep application.
 extern const char kGoogleKeepAppId[];
@@ -210,42 +288,69 @@ extern const char kGoogleKeepAppId[];
 // The extension id of the Youtube application.
 extern const char kYoutubeAppId[];
 
-// The extension id of the genius (Get Help) app.
-extern const char kGeniusAppId[];
+// The extension id of the Youtube PWA.
+extern const char kYoutubePwaAppId[];
 
-#if defined(OS_CHROMEOS)
+// The extension id of the Spotify PWA.
+extern const char kSpotifyAppId[];
+
+// The extension id of the BeFunky PWA.
+extern const char kBeFunkyAppId[];
+
+// The extension id of the Clipchamp PWA.
+extern const char kClipchampAppId[];
+
+// The extension id of the GeForce NOW PWA.
+extern const char kGeForceNowAppId[];
+
+// The extension id of the Zoom PWA.
+extern const char kZoomAppId[];
+
+// The extension id of the Google Docs application.
+extern const char kGoogleDocsAppId[];
+
+// The extension id of the Google Sheets application.
+extern const char kGoogleSheetsAppId[];
+
+// The extension id of the Google Slides application.
+extern const char kGoogleSlidesAppId[];
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the default Demo Mode Highlights app.
 extern const char kHighlightsAppId[];
 
-// The extension id of the eve Demo Mode Highlights app.
-extern const char kHighlightsEveAppId[];
-
-// The extension id of the nocturne Demo Mode Highlights app.
-extern const char kHighlightsNocturneAppId[];
-
-// The extension id of an alternate Demo Mode Highlights app.
-extern const char kHighlightsAltAppId[];
+// The extension id of the atlas Demo Mode Highlights app.
+extern const char kHighlightsAtlasAppId[];
 
 // The extension id of the default Demo Mode screensaver app.
 extern const char kScreensaverAppId[];
 
-// The extension id of the eve Demo Mode screensaver app.
-extern const char kScreensaverEveAppId[];
+// The extension id of the atlas Demo Mode screensaver app.
+extern const char kScreensaverAtlasAppId[];
 
-// The extension id of the nocturne Demo Mode screensaver app.
-extern const char kScreensaverNocturneAppId[];
+// The extension id of the krane Demo Mode screensaver app. That app is only
+// run on KRANE-ZDKS devices.
+extern const char kScreensaverKraneZdksAppId[];
 
-// The extension id of an alternate Demo Mode screensaver app.
-extern const char kScreensaverAltAppId[];
+// The id of the testing extension allowed in the signin profile.
+extern const char kSigninProfileTestExtensionId[];
 
-// The extension id of an kukui Demo Mode screensaver app.
-extern const char kScreensaverKukuiAppId[];
+// The id of the testing extension allowed in guest mode.
+extern const char kGuestModeTestExtensionId[];
 
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
 bool IsSystemUIApp(base::StringPiece extension_id);
 #endif
+
+// Returns if the app is managed by extension default apps. This is a hardcoded
+// list of default apps for Windows/Linux/MacOS platforms that should be
+// migrated from extension to web app.
+// TODO(https://crbug.com/1257275): remove after deault app migration is done.
+// This function is copied from
+// chrome/browser/web_applications/extension_status_utils.h.
+bool IsPreinstalledAppId(const std::string& app_id);
 
 // The extension id for the production version of Hangouts.
 extern const char kProdHangoutsExtensionId[];
@@ -259,12 +364,15 @@ extern const char kPolicyBlockedScripting[];
 // The default block size for hashing used in content verification.
 extern const int kContentVerificationDefaultBlockSize;
 
-// The minimum severity of a log or error in order to report it to the browser.
-extern const logging::LogSeverity kMinimumSeverityToReportError;
+// The origin of the CryptoToken component extension, which implements the
+// deprecated U2F Security Key API.
+// TODO(1224886): Delete together with CryptoToken code.
+extern const char kCryptotokenExtensionId[];
 
-// The minimum channel where Service Worker based extensions can run.
-constexpr version_info::Channel kMinChannelForServiceWorkerBasedExtension =
-    version_info::Channel::CANARY;
+// The name of the CryptoToken component extension deprecation trial, which
+// allows making requests to the extension after it has been default disabled.
+// TODO(1224886): Delete together with CryptoToken code.
+extern const char kCryptotokenDeprecationTrialName[];
 
 }  // namespace extension_misc
 

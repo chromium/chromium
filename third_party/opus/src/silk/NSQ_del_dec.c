@@ -250,7 +250,7 @@ void silk_NSQ_del_dec_c(
 
                 /* Rewhiten with new A coefs */
                 start_idx = psEncC->ltp_mem_length - lag - psEncC->predictLPCOrder - LTP_ORDER / 2;
-                silk_assert( start_idx > 0 );
+                celt_assert( start_idx > 0 );
 
                 silk_LPC_analysis_filter( &sLTP[ start_idx ], &NSQ->xq[ start_idx + k * psEncC->subfr_length ],
                     A_Q12, psEncC->ltp_mem_length - start_idx, psEncC->predictLPCOrder, psEncC->arch );
@@ -361,7 +361,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
     NSQ_sample_struct  *psSS;
     SAVE_STACK;
 
-    silk_assert( nStatesDelayedDecision > 0 );
+    celt_assert( nStatesDelayedDecision > 0 );
     ALLOC( psSampleState, nStatesDelayedDecision, NSQ_sample_pair );
 
     shp_lag_ptr  = &NSQ->sLTP_shp_Q14[ NSQ->sLTP_shp_buf_idx - lag + HARM_SHAPE_FIR_TAPS / 2 ];
@@ -395,7 +395,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
         if( lag > 0 ) {
             /* Symmetric, packed FIR coefficients */
             n_LTP_Q14 = silk_SMULWB( silk_ADD_SAT32( shp_lag_ptr[ 0 ], shp_lag_ptr[ -2 ] ), HarmShapeFIRPacked_Q14 );
-            n_LTP_Q14 = silk_SMLAWT( n_LTP_Q14, shp_lag_ptr[ -1 ],                      HarmShapeFIRPacked_Q14 );
+            n_LTP_Q14 = silk_SMLAWT( n_LTP_Q14, shp_lag_ptr[ -1 ], HarmShapeFIRPacked_Q14 );
             n_LTP_Q14 = silk_SUB_LSHIFT32( LTP_pred_Q14, n_LTP_Q14, 2 );            /* Q12 -> Q14 */
             shp_lag_ptr++;
         } else {
@@ -419,22 +419,34 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
             LPC_pred_Q14 = silk_LSHIFT( LPC_pred_Q14, 4 );                              /* Q10 -> Q14 */
 
             /* Noise shape feedback */
-            silk_assert( ( shapingLPCOrder & 1 ) == 0 );   /* check that order is even */
+            celt_assert( ( shapingLPCOrder & 1 ) == 0 );   /* check that order is even */
             /* Output of lowpass section */
             tmp2 = silk_SMLAWB( psDD->Diff_Q14, psDD->sAR2_Q14[ 0 ], warping_Q16 );
             /* Output of allpass section */
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+            tmp1 = silk_SMLAWB( psDD->sAR2_Q14[ 0 ], silk_SUB32_ovflw(psDD->sAR2_Q14[ 1 ], tmp2), warping_Q16 );
+#else
             tmp1 = silk_SMLAWB( psDD->sAR2_Q14[ 0 ], psDD->sAR2_Q14[ 1 ] - tmp2, warping_Q16 );
+#endif
             psDD->sAR2_Q14[ 0 ] = tmp2;
             n_AR_Q14 = silk_RSHIFT( shapingLPCOrder, 1 );
             n_AR_Q14 = silk_SMLAWB( n_AR_Q14, tmp2, AR_shp_Q13[ 0 ] );
             /* Loop over allpass sections */
             for( j = 2; j < shapingLPCOrder; j += 2 ) {
                 /* Output of allpass section */
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+                tmp2 = silk_SMLAWB( psDD->sAR2_Q14[ j - 1 ], silk_SUB32_ovflw(psDD->sAR2_Q14[ j + 0 ], tmp1), warping_Q16 );
+#else
                 tmp2 = silk_SMLAWB( psDD->sAR2_Q14[ j - 1 ], psDD->sAR2_Q14[ j + 0 ] - tmp1, warping_Q16 );
+#endif
                 psDD->sAR2_Q14[ j - 1 ] = tmp1;
                 n_AR_Q14 = silk_SMLAWB( n_AR_Q14, tmp1, AR_shp_Q13[ j - 1 ] );
                 /* Output of allpass section */
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+                tmp1 = silk_SMLAWB( psDD->sAR2_Q14[ j + 0 ], silk_SUB32_ovflw(psDD->sAR2_Q14[ j + 1 ], tmp2), warping_Q16 );
+#else
                 tmp1 = silk_SMLAWB( psDD->sAR2_Q14[ j + 0 ], psDD->sAR2_Q14[ j + 1 ] - tmp2, warping_Q16 );
+#endif
                 psDD->sAR2_Q14[ j + 0 ] = tmp2;
                 n_AR_Q14 = silk_SMLAWB( n_AR_Q14, tmp2, AR_shp_Q13[ j ] );
             }
@@ -451,9 +463,9 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
 
             /* Input minus prediction plus noise feedback                       */
             /* r = x[ i ] - LTP_pred - LPC_pred + n_AR + n_Tilt + n_LF + n_LTP  */
-            tmp1 = silk_ADD32( n_AR_Q14, n_LF_Q14 );                                    /* Q14 */
+            tmp1 = silk_ADD_SAT32( n_AR_Q14, n_LF_Q14 );                                /* Q14 */
             tmp2 = silk_ADD32( n_LTP_Q14, LPC_pred_Q14 );                               /* Q13 */
-            tmp1 = silk_SUB32( tmp2, tmp1 );                                            /* Q13 */
+            tmp1 = silk_SUB_SAT32( tmp2, tmp1 );                                        /* Q13 */
             tmp1 = silk_RSHIFT_ROUND( tmp1, 4 );                                        /* Q10 */
 
             r_Q10 = silk_SUB32( x_Q10[ i ], tmp1 );                                     /* residual error Q10 */
@@ -534,8 +546,12 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
 
             /* Update states */
             psSS[ 0 ].Diff_Q14     = silk_SUB_LSHIFT32( xq_Q14, x_Q10[ i ], 4 );
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+            sLF_AR_shp_Q14         = silk_SUB32_ovflw( psSS[ 0 ].Diff_Q14, n_AR_Q14 );
+#else
             sLF_AR_shp_Q14         = silk_SUB32( psSS[ 0 ].Diff_Q14, n_AR_Q14 );
-            psSS[ 0 ].sLTP_shp_Q14 = silk_SUB32( sLF_AR_shp_Q14, n_LF_Q14 );
+#endif
+            psSS[ 0 ].sLTP_shp_Q14 = silk_SUB_SAT32( sLF_AR_shp_Q14, n_LF_Q14 );
             psSS[ 0 ].LF_AR_Q14    = sLF_AR_shp_Q14;
             psSS[ 0 ].LPC_exc_Q14  = LPC_exc_Q14;
             psSS[ 0 ].xq_Q14       = xq_Q14;
@@ -554,8 +570,12 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
 
             /* Update states */
             psSS[ 1 ].Diff_Q14     = silk_SUB_LSHIFT32( xq_Q14, x_Q10[ i ], 4 );
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+            sLF_AR_shp_Q14         = silk_SUB32_ovflw( psSS[ 1 ].Diff_Q14, n_AR_Q14 );
+#else
             sLF_AR_shp_Q14         = silk_SUB32( psSS[ 1 ].Diff_Q14, n_AR_Q14 );
-            psSS[ 1 ].sLTP_shp_Q14 = silk_SUB32( sLF_AR_shp_Q14, n_LF_Q14 );
+#endif
+            psSS[ 1 ].sLTP_shp_Q14 = silk_SUB_SAT32( sLF_AR_shp_Q14, n_LF_Q14 );
             psSS[ 1 ].LF_AR_Q14    = sLF_AR_shp_Q14;
             psSS[ 1 ].LPC_exc_Q14  = LPC_exc_Q14;
             psSS[ 1 ].xq_Q14       = xq_Q14;

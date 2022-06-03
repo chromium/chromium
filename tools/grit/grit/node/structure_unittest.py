@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -25,6 +25,23 @@ from grit import util
 from grit.node import brotli_util
 from grit.node import structure
 from grit.format import rc
+
+
+def checkIsGzipped(filename, compress_attr):
+  test_data_root = util.PathFromRoot('grit/testdata')
+  root = util.ParseGrdForUnittest(
+      '''
+      <structures>
+        <structure name="TEST_TXT" file="%s" %s type="chrome_html"/>
+      </structures>''' % (filename, compress_attr),
+      base_dir=test_data_root)
+  node, = root.GetChildrenOfType(structure.StructureNode)
+  node.RunPreSubstitutionGatherer()
+  compressed = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+  decompressed_data = zlib.decompress(compressed, 16 + zlib.MAX_WBITS)
+  expected = util.ReadFile(os.path.join(test_data_root, filename), util.BINARY)
+  return expected == decompressed_data
 
 
 class StructureUnittest(unittest.TestCase):
@@ -100,20 +117,18 @@ class StructureUnittest(unittest.TestCase):
                          base_dir, r'structure_variables.html')))
 
   def testCompressGzip(self):
-    test_data_root = util.PathFromRoot('grit/testdata')
-    root = util.ParseGrdForUnittest('''
-        <structures>
-          <structure name="TEST_TXT" file="test_text.txt"
-                   compress="gzip" type="chrome_html" />
-        </structures>''', base_dir=test_data_root)
-    node, = root.GetChildrenOfType(structure.StructureNode)
-    node.RunPreSubstitutionGatherer()
-    compressed = node.GetDataPackValue(lang='en', encoding=1)
+    self.assertTrue(checkIsGzipped('test_text.txt', 'compress="gzip"'))
 
-    decompressed_data = zlib.decompress(compressed, 16 + zlib.MAX_WBITS)
-    self.assertEqual(util.ReadFile(
-        os.path.join(test_data_root, 'test_text.txt'), util.BINARY),
-                     decompressed_data)
+  def testCompressGzipByDefault(self):
+    self.assertTrue(checkIsGzipped('test_html.html', ''))
+    self.assertTrue(checkIsGzipped('test_js.js', ''))
+    self.assertTrue(checkIsGzipped('test_css.css', ''))
+    self.assertTrue(checkIsGzipped('test_svg.svg', ''))
+
+    self.assertTrue(checkIsGzipped('test_html.html', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_js.js', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_css.css', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_svg.svg', 'compress="default"'))
 
   def testCompressBrotli(self):
     test_data_root = util.PathFromRoot('grit/testdata')
@@ -131,7 +146,7 @@ class StructureUnittest(unittest.TestCase):
     brotli_util.SetBrotliCommand([sys.executable,
                                  os.path.join(os.path.dirname(__file__),
                                  'mock_brotli.py')])
-    compressed = node.GetDataPackValue(lang='en', encoding=1)
+    compressed = node.GetDataPackValue(lang='en', encoding=util.BINARY)
     # Assert that the first two bytes in compressed format is BROTLI_CONST.
     self.assertEqual(constants.BROTLI_CONST, compressed[0:2])
 
@@ -153,10 +168,68 @@ class StructureUnittest(unittest.TestCase):
         </structures>''', base_dir=test_data_root)
     node, = root.GetChildrenOfType(structure.StructureNode)
     node.RunPreSubstitutionGatherer()
-    data = node.GetDataPackValue(lang='en', encoding=1)
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
 
     self.assertEqual(util.ReadFile(
         os.path.join(test_data_root, 'test_text.txt'), util.BINARY), data)
+
+  def testLottie(self):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    root = util.ParseGrdForUnittest('''
+        <structures>
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" />
+        </structures>''',
+                                    base_dir=test_data_root)
+    node, = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+    self.assertEqual(
+        b'LOTTIE' + util.ReadFile(
+            os.path.join(test_data_root, 'test_json.json'), util.BINARY), data)
+
+  def testGzippedLottie(self):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    root = util.ParseGrdForUnittest('''
+        <structures>
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" compress="gzip" />
+        </structures>''',
+                                    base_dir=test_data_root)
+    node, = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+    self.assertEqual('LOTTIE'.encode('utf-8'), data[0:6])
+    self.assertEqual(
+        util.ReadFile(os.path.join(test_data_root, 'test_json.json'),
+                      util.BINARY),
+        zlib.decompress(data[6:], 16 + zlib.MAX_WBITS))
+
+  def testBrotliLottie(self):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    root = util.ParseGrdForUnittest('''
+        <structures>
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" compress="brotli" />
+        </structures>''',
+                                    base_dir=test_data_root)
+    node, = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+    # Using the mock brotli decompression executable.
+    brotli_util.SetBrotliCommand([
+        sys.executable,
+        os.path.join(os.path.dirname(__file__), 'mock_brotli.py')
+    ])
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+    self.assertEqual('LOTTIE'.encode('utf-8'), data[0:6])
+    self.assertEqual(constants.BROTLI_CONST, data[6:8])
+    self.assertEqual(
+        len(
+            util.ReadFile(os.path.join(test_data_root, 'test_json.json'),
+                          util.BINARY)),
+        struct.unpack('<i', data[8:12])[0] +
+        (struct.unpack('<h', data[12:14])[0] << 4 * 8))
+    self.assertEqual(b'This has been mock compressed!', data[14:])
 
 
 if __name__ == '__main__':

@@ -4,12 +4,16 @@
 
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/macros.h"
 #include "ui/base/class_property.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -87,14 +91,45 @@ std::vector<gfx::Rect> CollectCollisionRects(
       rects.push_back(ComputeCollisionRectFromBounds(
           shelf_window->GetTargetBounds(), shelf_window->parent()));
 
+    // Explicitly add popup notifications as they are not in the notification
+    // tray.
+    auto* shelf_container =
+        root_window->GetChildById(kShellWindowId_ShelfContainer);
+    for (auto* window : shelf_container->children()) {
+      if (window->IsVisible() && !window->GetTargetBounds().IsEmpty() &&
+          window->GetName() ==
+              AshMessagePopupCollection::kMessagePopupWidgetName &&
+          !ShouldIgnoreWindowForCollision(window, priority))
+        rects.push_back(ComputeCollisionRectFromBounds(
+            window->GetTargetBounds(), window->parent()));
+    }
+
+    // The hotseat doesn't span the whole width of the display, but to allow
+    // a PIP window to be slided horizontally along the hotseat, we extend the
+    // width of the hotseat to that of the display.
+    auto* hotseat_widget = shelf->hotseat_widget();
+    if (hotseat_widget) {
+      auto* hotseat_window = hotseat_widget->GetNativeWindow();
+      gfx::Rect hotseat_rect{root_window->bounds().x(),
+                             hotseat_window->GetTargetBounds().y(),
+                             root_window->bounds().width(),
+                             hotseat_window->GetTargetBounds().height()};
+      if (hotseat_widget->state() != HotseatState::kHidden &&
+          hotseat_widget->state() != HotseatState::kNone &&
+          !ShouldIgnoreWindowForCollision(hotseat_window, priority)) {
+        rects.push_back(ComputeCollisionRectFromBounds(
+            hotseat_rect, hotseat_window->parent()));
+      }
+    }
+
     // Check the Automatic Clicks windows.
-    // TODO(Katie): The PIP isn't re-triggered to check the autoclick window
-    // when the autoclick window moves, just when the PIP moves or another
-    // system window. Need to ensure that changing the autoclick menu position
-    // triggers the PIP to re-check its bounds. crbug.com/954546.
-    auto* autoclick_container =
-        root_window->GetChildById(kShellWindowId_AutoclickContainer);
-    for (auto* window : autoclick_container->children()) {
+    // TODO(Katie): The PIP isn't re-triggered to check the accessibility bubble
+    // windows when the autoclick window moves, just when the PIP moves or
+    // another system window. Need to ensure that changing the autoclick menu
+    // position triggers the PIP to re-check its bounds. crbug.com/954546.
+    auto* accessibility_bubble_container =
+        root_window->GetChildById(kShellWindowId_AccessibilityBubbleContainer);
+    for (auto* window : accessibility_bubble_container->children()) {
       if (!window->IsVisible() && !window->GetTargetBounds().IsEmpty())
         continue;
       if (ShouldIgnoreWindowForCollision(window, priority))
@@ -130,6 +165,17 @@ std::vector<gfx::Rect> CollectCollisionRects(
     rects.push_back(ComputeCollisionRectFromBounds(
         keyboard_controller->visual_bounds_in_root(),
         /*parent=*/root_window));
+  }
+
+  // Check the capture bar if capture mode is active.
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (capture_mode_controller->IsActive()) {
+    aura::Window* capture_bar_window =
+        capture_mode_controller->capture_mode_session()
+            ->capture_mode_bar_widget()
+            ->GetNativeWindow();
+    rects.push_back(ComputeCollisionRectFromBounds(
+        capture_bar_window->GetTargetBounds(), capture_bar_window->parent()));
   }
 
   return rects;
@@ -226,17 +272,23 @@ gfx::Rect CollisionDetectionUtils::GetMovementArea(
   return work_area;
 }
 
+gfx::Rect CollisionDetectionUtils::AdjustToFitMovementAreaByGravity(
+    const display::Display& display,
+    const gfx::Rect& bounds_in_screen) {
+  gfx::Rect resting_bounds = bounds_in_screen;
+  gfx::Rect area = GetMovementArea(display);
+  resting_bounds.AdjustToFit(area);
+  const CollisionDetectionUtils::Gravity gravity =
+      GetGravityToClosestEdge(resting_bounds, area);
+  return GetAdjustedBoundsByGravity(resting_bounds, area, gravity);
+}
+
 gfx::Rect CollisionDetectionUtils::GetRestingPosition(
     const display::Display& display,
     const gfx::Rect& bounds_in_screen,
     CollisionDetectionUtils::RelativePriority priority) {
-  gfx::Rect resting_bounds = bounds_in_screen;
-  gfx::Rect area = GetMovementArea(display);
-  resting_bounds.AdjustToFit(area);
-
-  const CollisionDetectionUtils::Gravity gravity =
-      GetGravityToClosestEdge(resting_bounds, area);
-  resting_bounds = GetAdjustedBoundsByGravity(resting_bounds, area, gravity);
+  gfx::Rect resting_bounds =
+      AdjustToFitMovementAreaByGravity(display, bounds_in_screen);
   return AvoidObstacles(display, resting_bounds, priority);
 }
 

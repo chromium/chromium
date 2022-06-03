@@ -1,112 +1,66 @@
-<div id="first" style="width: 4000px; height: 1000px">A long text to test document caretRangeFromPoint. Test scroll, zoom, zoomAndScroll .................................... The End </div>
-<ul id="console"></ul>
-
-<script src="../../../../resources/js-test.js"></script>
+<!doctype html>
+<script src="../../../../resources/ahem.js"></script>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<style>
+body { margin: 0px; }
+</style>
+<div id="first" style="font: 10px/1 Ahem; width: 4000px; height: 1000px">A long text to test document caretRangeFromPoint. Test scroll, zoom, zoomAndScroll .................................... The End </div>
 <script>
-    function sendClick(x, y)
-    {
-        eventSender.mouseMoveTo(x, y);
-        eventSender.mouseDown();
-        eventSender.mouseUp();
-    }
-    
-    // 29 is the character offset in the div text "A long text to test document caretRangeFromPoint".
-    var expectedOffset = 29;
-    var succeed = true;
-    
-    function checkNodeAndOffsetFromCaretRangeFromPoint(message, event)
-    {
-        var range = document.caretRangeFromPoint(event.clientX, event.clientY);
-        var offset = 0;
-        if (range)
-          offset = range.startOffset;
-        else {
-          alert("range is null");
-          return;
-        }
+// 29 is the character offset in the div text "A long text to test document
+// caretRangeFromPoint".
+const kExpectedOffset = 29;
 
-        var node = document.getElementById("first").firstChild;
-        if (range.startContainer != node) {
-            testFailed(message + " node should be div's child text node");
-            succeed = false;
-        }
-        if (offset != expectedOffset) {
-            testFailed(message + " offset actual: " + offset + "; expected: " + expectedOffset);
-            succeed = false;
-        }
-    }
-    
-    function checkBase(event)
-    {
-        checkNodeAndOffsetFromCaretRangeFromPoint("check base", event);
-    }
-    
-    function checkScroll(event)
-    {
-        checkNodeAndOffsetFromCaretRangeFromPoint("check scroll", event);
-    }
-    
-    function checkZoom(event)
-    {
-        checkNodeAndOffsetFromCaretRangeFromPoint("check zoom", event);
-    }
-    
-    function checkZoomScroll(event)
-    {
-        checkNodeAndOffsetFromCaretRangeFromPoint("check zoom and scroll", event);
-    }
-    
-    function scrollPage(x, y)
-    {
-        window.scrollTo(x, y);
-    }
-    
-    onload = function()
-    {
-        if (!window.testRunner)
-            return;
-        
-        testRunner.dumpAsText();
-    
-        var range = document.createRange();
-        var node = document.getElementById("first");
-        // Set range in the middle of word "document".
-        range.setStart(node.firstChild, expectedOffset);
-        range.setEnd(node.firstChild, expectedOffset + 1);
+const t = async_test();
 
-        // Base test.
-        window.addEventListener("click", checkBase, false);
-        rects = range.getClientRects();
-        var x = rects[0].left;
-        var y = rects[0].top + rects[0].width / 2;
-        sendClick(x, y);
-        window.removeEventListener("click", checkBase, false);
-    
-        // Test scroll.
-        window.addEventListener("click", checkScroll, false);
-        scrollPage(x / 2, 0);
-        sendClick(x / 2, y);
-        scrollPage(0, 0);
-        window.removeEventListener("click", checkScroll, false);
-    
-        // Test zoom.
-        window.addEventListener("click", checkZoom, false);
-        node.style.zoom = 2.0;
-        rects = range.getClientRects();
-        var x = rects[0].left;
-        var y = rects[0].top + rects[0].width / 2;
-        sendClick(x * 2, y);
-        window.removeEventListener("click", checkZoom, false);
-    
-        // Test scroll and Zoom.
-        window.addEventListener("click", checkZoomScroll, false);
-        scrollPage(x, 0);
-        sendClick(x, y);
-        scrollPage(0, 0);
-        node.style.zoom = 1.0;
-        window.removeEventListener("click", checkZoomScroll, false);
-    
-        if (succeed == true)
-            testPassed("Test completed successfully");
+document.addEventListener('DOMContentLoaded', t.step_func_done(() => {
+    const range = document.createRange();
+    const node = document.getElementById('first');
+    // Set range in the middle of word 'document'.
+    range.setStart(node.firstChild, kExpectedOffset);
+    range.setEnd(node.firstChild, kExpectedOffset + 1);
+
+    let stepName = '';
+    window.addEventListener('click', t.step_func(event => {
+        const range = document.caretRangeFromPoint(event.clientX, event.clientY);
+        if (!range)
+          throw 'caretRangeFromPoint() returns null';
+        assert_equals(range.startContainer, node.firstChild,
+                      `${stepName}: range.startContainer`);
+        assert_equals(range.startOffset, kExpectedOffset,
+                      `${stepName}: ${event.clientX} range.startOffset`);
+    }));
+
+    function testIt(name, scrollFunction) {
+        if (!window.eventSender)
+            throw 'This test requires eventSender.';
+        stepName = name;
+        const shouldScroll = name.startsWith('scroll');
+        const scale = shouldScroll ? 0.5 : 1;
+        // Note: Style.zoom doesn't affect Range#getClientRects().
+        const rect = range.getClientRects()[0];
+        const x = rect.left * scale * node.style.zoom;
+        const y = (rect.top + rect.height / 2) * node.style.zoom;
+        if (shouldScroll)
+            scrollTo(x, 0);
+        if (window.eventSender) {
+            eventSender.leapForward(9999); // reset mouse button state
+            eventSender.mouseMoveTo(x, y);
+            eventSender.mouseDown();
+            eventSender.mouseUp();
+        }
+        scrollTo(0, 0);
     }
+
+    node.style.zoom = 1.0;
+    testIt('base');
+    testIt('scroll');
+
+    node.style.zoom = 2.0;
+    testIt('zoom');
+    testIt('scroll and zoom');
+
+    scrollTo(0, 0);
+    node.style.zoom = 1.0;
+}));
 </script>

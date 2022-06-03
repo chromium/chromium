@@ -25,9 +25,7 @@ group("cloud_print") {
 }
 
 test("cloud_print_unittests") {
-  sources = [
-    "virtual_driver/win/port_monitor/port_monitor_unittest.cc",
-  ]
+  sources = [ "virtual_driver/win/port_monitor/port_monitor_unittest.cc" ]
 
   deps = [
     "//base",

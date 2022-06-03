@@ -1,4 +1,15 @@
 include_rules = [
     "+media/base/logging_override_if_enabled.h",
+    "+media/base/media_content_type.h",
     "+media/base/media_switches.h",
+    "+media/base/video_frame.h",
+    "+media/mojo/mojom/media_player.mojom-blink.h",
+    "+services/media_session/public/mojom/media_session.mojom-blink.h",
 ]
+
+specific_include_rules = {
+    # Tests need to wait to check mojo messages are correctly sent.
+    "html_media_element_test\.cc": [
+        "+base/run_loop.h",
+    ],
+}

@@ -9,21 +9,28 @@
 ] interface mixin GPURenderEncoderBase {
     void setPipeline(GPURenderPipeline pipeline);
 
-    void setIndexBuffer(GPUBuffer buffer, optional GPUBufferSize offset = 0);
-    void setVertexBuffer(unsigned long slot,
-                         GPUBuffer buffer,
-                         optional GPUBufferSize offset = 0);
+    void setIndexBuffer(GPUBuffer buffer,
+                        GPUIndexFormat format,
+                        optional GPUSize64 offset = 0,
+                        optional GPUSize64 size);
 
-    void draw(unsigned long vertexCount, unsigned long instanceCount,
-              unsigned long firstVertex,
-              unsigned long firstInstance);
-    void drawIndexed(unsigned long indexCount, unsigned long instanceCount,
-                     unsigned long firstIndex,
-                     long baseVertex,
-                     unsigned long firstInstance);
+    void setVertexBuffer(GPUIndex32 slot,
+                         GPUBuffer buffer,
+                         optional GPUSize64 offset = 0,
+                         optional GPUSize64 size);
+
+    void draw(GPUSize32 vertexCount,
+              optional GPUSize32 instanceCount = 1,
+              optional GPUSize32 firstVertex = 0,
+              optional GPUSize32 firstInstance = 0);
+    void drawIndexed(GPUSize32 indexCount,
+                     optional GPUSize32 instanceCount = 1,
+                     optional GPUSize32 firstIndex = 0,
+                     optional GPUSignedOffset32 baseVertex = 0,
+                     optional GPUSize32 firstInstance = 0);
 
     void drawIndirect(GPUBuffer indirectBuffer,
-                      GPUBufferSize indirectOffset);
+                      GPUSize64 indirectOffset);
     void drawIndexedIndirect(GPUBuffer indirectBuffer,
-                             GPUBufferSize indirectOffset);
+                             GPUSize64 indirectOffset);
 };

@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
-#include "components/variations/variations_http_header_provider.h"
+#include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_ids_provider.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -17,15 +19,16 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
-#include "ios/chrome/browser/url_loading/test_url_loading_service.h"
-#include "ios/chrome/browser/url_loading/url_loading_params.h"
-#include "ios/chrome/browser/url_loading/url_loading_service_factory.h"
+#import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -33,7 +36,7 @@
 #error "This file requires ARC support."
 #endif
 
-using variations::VariationsHttpHeaderProvider;
+using variations::VariationsIdsProvider;
 
 @interface TestToolbarCoordinatorDelegate : NSObject<ToolbarCoordinatorDelegate>
 
@@ -46,8 +49,6 @@ using variations::VariationsHttpHeaderProvider;
 - (void)locationBarDidBecomeFirstResponder {
 }
 - (void)locationBarDidResignFirstResponder {
-}
-- (void)locationBarBeganEdit {
 }
 
 - (LocationBarModel*)locationBarModel {
@@ -64,21 +65,24 @@ namespace {
 
 class LocationBarCoordinatorTest : public PlatformTest {
  protected:
-  LocationBarCoordinatorTest() : web_state_list_(&web_state_list_delegate_) {}
+  LocationBarCoordinatorTest()
+      : web_state_list_(&web_state_list_delegate_),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
 
     TestChromeBrowserState::Builder test_cbs_builder;
+
+    ASSERT_TRUE(state_dir_.CreateUniqueTempDir());
+    test_cbs_builder.SetPath(state_dir_.GetPath());
+
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         ios::AutocompleteClassifierFactory::GetInstance(),
         ios::AutocompleteClassifierFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        UrlLoadingServiceFactory::GetInstance(),
-        UrlLoadingServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
@@ -90,12 +94,16 @@ class LocationBarCoordinatorTest : public PlatformTest {
         ios::FaviconServiceFactory::GetDefaultFactory());
 
     browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(browser_state_->CreateHistoryService(true));
+    ASSERT_TRUE(browser_state_->CreateHistoryService());
 
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
 
-    auto web_state = std::make_unique<web::TestWebState>();
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+
+    auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetCurrentURL(GURL("http://test/"));
     web_state_list_.InsertWebState(0, std::move(web_state),
@@ -104,27 +112,33 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
     delegate_ = [[TestToolbarCoordinatorDelegate alloc] init];
 
-    coordinator_ = [[LocationBarCoordinator alloc] init];
-    coordinator_.browser = browser_.get();
+    coordinator_ = [[LocationBarCoordinator alloc]
+        initWithBaseViewController:nil
+                           browser:browser_.get()];
     coordinator_.delegate = delegate_;
-    coordinator_.commandDispatcher = [[CommandDispatcher alloc] init];
   }
 
   void TearDown() override {
     // Started coordinator has to be stopped before WebStateList destruction.
     [coordinator_ stop];
 
-    VariationsHttpHeaderProvider::GetInstance()->ResetForTesting();
-
     PlatformTest::TearDown();
   }
 
+  // A state directory that outlives |task_environment_| is needed because
+  // CreateHistoryService/CreateBookmarkModel use the directory to host
+  // databases. See https://crbug.com/546640 for more details.
+  base::ScopedTempDir state_dir_;
+
   web::WebTaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   LocationBarCoordinator* coordinator_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   std::unique_ptr<Browser> browser_;
+  SceneState* scene_state_;
   TestToolbarCoordinatorDelegate* delegate_;
 };
 
@@ -146,8 +160,8 @@ TEST_F(LocationBarCoordinatorTest, RemoveLastWebState) {
 // Verifies that URLLoader receives correct load request, which also includes
 // variations header.
 TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
-  ASSERT_EQ(VariationsHttpHeaderProvider::ForceIdsResult::SUCCESS,
-            VariationsHttpHeaderProvider::GetInstance()->ForceVariationIds(
+  ASSERT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
+            VariationsIdsProvider::GetInstance()->ForceVariationIds(
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
 
   GURL url("https://www.google.com/");
@@ -159,10 +173,9 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
                              transition:transition
                             disposition:disposition];
 
-  TestUrlLoadingService* url_loader =
-      (TestUrlLoadingService*)UrlLoadingServiceFactory::GetForBrowserState(
-          browser_state_.get());
-
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
   EXPECT_EQ(url, url_loader->last_params.web_params.url);
   EXPECT_TRUE(url_loader->last_params.web_params.referrer.url.is_empty());
   EXPECT_EQ(web::ReferrerPolicyDefault,
@@ -181,8 +194,8 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
 // URL. Verifies that URLLoader receives correct load request without variations
 // header.
 TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
-  ASSERT_EQ(VariationsHttpHeaderProvider::ForceIdsResult::SUCCESS,
-            VariationsHttpHeaderProvider::GetInstance()->ForceVariationIds(
+  ASSERT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
+            VariationsIdsProvider::GetInstance()->ForceVariationIds(
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
 
   GURL url("https://www.nongoogle.com/");
@@ -194,9 +207,9 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
                              transition:transition
                             disposition:disposition];
 
-  TestUrlLoadingService* url_loader =
-      (TestUrlLoadingService*)UrlLoadingServiceFactory::GetForBrowserState(
-          browser_state_.get());
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
   EXPECT_EQ(url, url_loader->last_params.web_params.url);
   EXPECT_TRUE(url_loader->last_params.web_params.referrer.url.is_empty());

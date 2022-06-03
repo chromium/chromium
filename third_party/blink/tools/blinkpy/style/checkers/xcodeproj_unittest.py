@@ -20,7 +20,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit test for xcodeproj.py."""
 
 import unittest
@@ -47,7 +46,8 @@ class XcodeProjectFileCheckerTest(unittest.TestCase):
 
     def assert_no_error(self, lines):
         def handler(error_handler, line_number, category, confidence, message):
-            self.fail('Unexpected error: %d %s %d %s' % (line_number, category, confidence, message))
+            self.fail('Unexpected error: %d %s %d %s' % (line_number, category,
+                                                         confidence, message))
 
         error_handler = TestErrorHandler(handler)
         checker = xcodeproj.XcodeProjectFileChecker('', error_handler)
@@ -59,10 +59,13 @@ class XcodeProjectFileCheckerTest(unittest.TestCase):
         def handler(error_handler, line_number, category, confidence, message):
             self.assertEqual(expected_message, message)
             self.had_error = True
+
         error_handler = TestErrorHandler(handler)
         checker = xcodeproj.XcodeProjectFileChecker('', error_handler)
         checker.check(lines)
-        self.assertTrue(self.had_error, '%s should have error: %s.' % (lines, expected_message))
+        self.assertTrue(
+            self.had_error,
+            '%s should have error: %s.' % (lines, expected_message))
 
     def test_detect_development_region(self):
         self.assert_no_error(['developmentRegion = English;'])

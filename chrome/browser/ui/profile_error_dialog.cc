@@ -48,8 +48,6 @@ void ShowProfileErrorDialog(ProfileErrorType type,
 #if defined(OS_ANDROID)
   NOTIMPLEMENTED();
 #else  // defined(OS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION("Profile.ProfileError", static_cast<int>(type),
-                            static_cast<int>(ProfileErrorType::END));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoErrorDialogs)) {
     return;
@@ -64,7 +62,7 @@ void ShowProfileErrorDialog(ProfileErrorType type,
       nullptr, l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),
       l10n_util::GetStringUTF16(message_id),
       l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_CHECKBOX),
-      base::Bind(&OnProfileErrorDialogDismissed, diagnostics));
+      base::BindOnce(&OnProfileErrorDialogDismissed, diagnostics));
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   chrome::ShowWarningMessageBox(
       nullptr, l10n_util::GetStringUTF16(IDS_PROFILE_ERROR_DIALOG_TITLE),

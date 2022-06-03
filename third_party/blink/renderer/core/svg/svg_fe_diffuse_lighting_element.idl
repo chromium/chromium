@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEDiffuseLightingElement
 
-interface SVGFEDiffuseLightingElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEDiffuseLightingElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber surfaceScale;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber diffuseConstant;

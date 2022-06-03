@@ -24,25 +24,25 @@ const char kMockHostname[] = "mock.ssl.cert.error.request";
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestJobFactory::ProtocolHandler implementation:
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new SSLCertificateErrorJob(request, network_delegate);
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::make_unique<SSLCertificateErrorJob>(request);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace
 
-SSLCertificateErrorJob::SSLCertificateErrorJob(
-    URLRequest* request,
-    NetworkDelegate* network_delegate)
-    : URLRequestJob(request, network_delegate) {}
+SSLCertificateErrorJob::SSLCertificateErrorJob(URLRequest* request)
+    : URLRequestJob(request) {}
+
+SSLCertificateErrorJob::~SSLCertificateErrorJob() = default;
 
 void SSLCertificateErrorJob::Start() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -60,8 +60,6 @@ void SSLCertificateErrorJob::AddUrlHandler() {
 GURL SSLCertificateErrorJob::GetMockUrl() {
   return GURL(base::StringPrintf("https://%s", kMockHostname));
 }
-
-SSLCertificateErrorJob::~SSLCertificateErrorJob() = default;
 
 void SSLCertificateErrorJob::NotifyError() {
   SSLInfo info;

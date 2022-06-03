@@ -8,58 +8,60 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "components/arc/session/connection_holder.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
 
-// Thin interface to wrap InterfacePtr<T> with type erasure.
+// Thin interface to wrap Remote<T> with type erasure.
 class MojoChannelBase {
  public:
+  MojoChannelBase(const MojoChannelBase&) = delete;
+  MojoChannelBase& operator=(const MojoChannelBase&) = delete;
+
   virtual ~MojoChannelBase() = default;
 
  protected:
   MojoChannelBase() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoChannelBase);
 };
 
-// Thin wrapper for InterfacePtr<T>, where T is one of ARC mojo Instance class.
+// Thin wrapper for Remote<T>, where T is one of ARC mojo Instance class.
 template <typename InstanceType, typename HostType>
 class MojoChannel : public MojoChannelBase {
  public:
   MojoChannel(ConnectionHolder<InstanceType, HostType>* holder,
-              mojo::InterfacePtr<InstanceType> ptr)
-      : holder_(holder), ptr_(std::move(ptr)) {
+              mojo::PendingRemote<InstanceType> remote)
+      : holder_(holder), remote_(std::move(remote)) {
     // Delay registration to the ConnectionHolder until the version is ready.
   }
 
-  ~MojoChannel() override { holder_->CloseInstance(ptr_.get()); }
+  MojoChannel(const MojoChannel&) = delete;
+  MojoChannel& operator=(const MojoChannel&) = delete;
 
-  void set_connection_error_handler(base::OnceClosure error_handler) {
-    ptr_.set_connection_error_handler(std::move(error_handler));
+  ~MojoChannel() override { holder_->CloseInstance(remote_.get()); }
+
+  void set_disconnect_handler(base::OnceClosure error_handler) {
+    remote_.set_disconnect_handler(std::move(error_handler));
   }
 
   void QueryVersion() {
-    // Note: the callback will not be called if |ptr_| is destroyed.
-    ptr_.QueryVersion(
-        base::Bind(&MojoChannel::OnVersionReady, base::Unretained(this)));
+    // Note: the callback will not be called if |remote_| is destroyed.
+    remote_.QueryVersion(
+        base::BindOnce(&MojoChannel::OnVersionReady, base::Unretained(this)));
   }
 
  private:
   void OnVersionReady(uint32_t unused_version) {
-    holder_->SetInstance(ptr_.get(), ptr_.version());
+    holder_->SetInstance(remote_.get(), remote_.version());
   }
 
   // Externally owned ConnectionHolder instance.
   ConnectionHolder<InstanceType, HostType>* const holder_;
 
-  // Put as a last member to ensure that any callback tied to the |ptr_|
+  // Put as a last member to ensure that any callback tied to the |remote_|
   // is not invoked.
-  mojo::InterfacePtr<InstanceType> ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoChannel);
+  mojo::Remote<InstanceType> remote_;
 };
 
 }  // namespace arc

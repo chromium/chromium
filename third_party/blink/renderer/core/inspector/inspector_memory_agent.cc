@@ -33,14 +33,16 @@
 #include <cstdio>
 
 #include "base/debug/stack_trace.h"
-#include "base/sampling_heap_profiler/module_cache.h"
+#include "base/profiler/module_cache.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -62,7 +64,7 @@ Response InspectorMemoryAgent::getDOMCounters(int* documents,
   *nodes = InstanceCounters::CounterValue(InstanceCounters::kNodeCounter);
   *js_event_listeners =
       InstanceCounters::CounterValue(InstanceCounters::kJSEventListenerCounter);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorMemoryAgent::forciblyPurgeJavaScriptMemory() {
@@ -77,10 +79,10 @@ Response InspectorMemoryAgent::forciblyPurgeJavaScriptMemory() {
   }
   V8PerIsolateData::MainThreadIsolate()->MemoryPressureNotification(
       v8::MemoryPressureLevel::kCritical);
-  return Response::OK();
+  return Response::Success();
 }
 
-void InspectorMemoryAgent::Trace(blink::Visitor* visitor) {
+void InspectorMemoryAgent::Trace(Visitor* visitor) const {
   visitor->Trace(frames_);
   InspectorBaseAgent::Trace(visitor);
 }
@@ -97,33 +99,33 @@ Response InspectorMemoryAgent::startSampling(
   int interval =
       in_sampling_interval.fromMaybe(kDefaultNativeMemorySamplingInterval);
   if (interval <= 0)
-    return Response::Error("Invalid sampling rate.");
+    return Response::ServerError("Invalid sampling rate.");
   base::SamplingHeapProfiler::Get()->SetSamplingInterval(interval);
   sampling_profile_interval_.Set(interval);
   if (in_suppressRandomness.fromMaybe(false))
     base::PoissonAllocationSampler::Get()->SuppressRandomnessForTest(true);
   profile_id_ = base::SamplingHeapProfiler::Get()->Start();
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorMemoryAgent::stopSampling() {
   if (sampling_profile_interval_.Get() == 0)
-    return Response::Error("Sampling profiler is not started.");
+    return Response::ServerError("Sampling profiler is not started.");
   base::SamplingHeapProfiler::Get()->Stop();
   sampling_profile_interval_.Clear();
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorMemoryAgent::getAllTimeSamplingProfile(
     std::unique_ptr<protocol::Memory::SamplingProfile>* out_profile) {
   *out_profile = GetSamplingProfileById(0);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response InspectorMemoryAgent::getSamplingProfile(
     std::unique_ptr<protocol::Memory::SamplingProfile>* out_profile) {
   *out_profile = GetSamplingProfileById(profile_id_);
-  return Response::OK();
+  return Response::Success();
 }
 
 std::unique_ptr<protocol::Memory::SamplingProfile>
@@ -168,7 +170,7 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
   for (const auto* module : module_cache.GetModules()) {
     modules->emplace_back(
         protocol::Memory::Module::create()
-            .setName(module->GetDebugBasename().value().c_str())
+            .setName(module->GetDebugBasename().AsUTF16Unsafe().c_str())
             .setUuid(module->GetId().c_str())
             .setBaseAddress(
                 String::Format("0x%" PRIxPTR, module->GetBaseAddress()))
@@ -184,7 +186,7 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
 
 Vector<String> InspectorMemoryAgent::Symbolize(
     const WebVector<void*>& addresses) {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // TODO(alph): Move symbolization to the client.
   Vector<void*> addresses_to_symbolize;
   for (size_t i = 0; i < addresses.size(); i++) {
@@ -198,13 +200,13 @@ Vector<String> InspectorMemoryAgent::Symbolize(
                   .ToString()
                   .c_str());
   // Populate cache with new entries.
-  size_t next_pos;
-  for (size_t pos = 0, i = 0;; pos = next_pos + 1, ++i) {
+  wtf_size_t next_pos;
+  for (wtf_size_t pos = 0, i = 0;; pos = next_pos + 1, ++i) {
     next_pos = text.find('\n', pos);
     if (next_pos == kNotFound)
       break;
     String line = text.Substring(pos, next_pos - pos);
-    size_t space_pos = line.ReverseFind(' ');
+    wtf_size_t space_pos = line.ReverseFind(' ');
     String name = line.Substring(space_pos == kNotFound ? 0 : space_pos + 1);
     symbols_cache_.insert(addresses_to_symbolize[i], name);
   }

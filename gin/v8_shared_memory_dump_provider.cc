@@ -9,7 +9,8 @@
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-initialization.h"
+#include "v8/include/v8-isolate.h"
 
 namespace gin {
 

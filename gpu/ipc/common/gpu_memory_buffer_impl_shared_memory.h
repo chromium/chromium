@@ -18,6 +18,11 @@ namespace gpu {
 // Implementation of GPU memory buffer based on shared memory.
 class GPU_EXPORT GpuMemoryBufferImplSharedMemory : public GpuMemoryBufferImpl {
  public:
+  GpuMemoryBufferImplSharedMemory(const GpuMemoryBufferImplSharedMemory&) =
+      delete;
+  GpuMemoryBufferImplSharedMemory& operator=(
+      const GpuMemoryBufferImplSharedMemory&) = delete;
+
   ~GpuMemoryBufferImplSharedMemory() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
@@ -87,8 +92,6 @@ class GPU_EXPORT GpuMemoryBufferImplSharedMemory : public GpuMemoryBufferImpl {
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   size_t offset_;
   int stride_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplSharedMemory);
 };
 
 }  // namespace gpu

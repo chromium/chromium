@@ -4,34 +4,40 @@
 
 #include "content/common/cursors/webcursor.h"
 
-#include "base/logging.h"
-#include "third_party/blink/public/platform/web_cursor_info.h"
+#include "base/check_op.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_util.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace content {
 
 gfx::NativeCursor WebCursor::GetNativeCursor() {
-  if (info_.type == ui::CursorType::kCustom) {
-    ui::Cursor cursor(ui::CursorType::kCustom);
-    SkBitmap bitmap;
-    gfx::Point hotspot;
-    float scale;
-    CreateScaledBitmapAndHotspotFromCustomData(&bitmap, &hotspot, &scale);
-    cursor.set_custom_bitmap(bitmap);
-    cursor.set_custom_hotspot(hotspot);
-    cursor.set_device_scale_factor(scale);
-    cursor.SetPlatformCursor(GetPlatformCursor(cursor));
-    return cursor;
+  if (cursor_.type() == ui::mojom::CursorType::kCustom) {
+    if (!custom_cursor_) {
+      custom_cursor_.emplace(ui::mojom::CursorType::kCustom);
+      SkBitmap bitmap;
+      gfx::Point hotspot;
+      float scale;
+      CreateScaledBitmapAndHotspotFromCustomData(&bitmap, &hotspot, &scale);
+      custom_cursor_->set_custom_bitmap(bitmap);
+      custom_cursor_->set_custom_hotspot(hotspot);
+      custom_cursor_->set_image_scale_factor(device_scale_factor_);
+      custom_cursor_->SetPlatformCursor(
+          ui::CursorFactory::GetInstance()->CreateImageCursor(
+              ui::mojom::CursorType::kCustom, bitmap, hotspot));
+    }
+    return *custom_cursor_;
   }
-  return info_.type;
+  return cursor_.type();
 }
 
 void WebCursor::CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
                                                            gfx::Point* hotspot,
                                                            float* scale) {
-  *bitmap = info_.custom_image;
-  *hotspot = info_.hotspot;
+  DCHECK_EQ(ui::mojom::CursorType::kCustom, cursor_.type());
+  *bitmap = cursor_.custom_bitmap();
+  *hotspot = cursor_.custom_hotspot();
   *scale = GetCursorScaleFactor(bitmap);
   ui::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap, hotspot);
 }
@@ -49,9 +55,13 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
 // ozone also has extra calculations for scale factor (taking max cursor size
 // into account).
 float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
-  DCHECK_NE(0, info_.image_scale_factor);
-  return device_scale_factor_ / info_.image_scale_factor;
+  DCHECK_NE(0, cursor_.image_scale_factor());
+  return device_scale_factor_ / cursor_.image_scale_factor();
 }
 #endif
+
+void WebCursor::CleanupPlatformData() {
+  custom_cursor_.reset();
+}
 
 }  // namespace content

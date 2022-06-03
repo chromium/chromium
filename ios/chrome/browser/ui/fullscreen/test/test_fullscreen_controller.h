@@ -40,9 +40,8 @@ class TestFullscreenController : public FullscreenController {
   UIEdgeInsets GetCurrentViewportInsets() const override;
   void EnterFullscreen() override;
   void ExitFullscreen() override;
-
-  // KeyedService:
-  void Shutdown() override;
+  void ResizeHorizontalViewport() override;
+  void FreezeToolbarHeight(bool freeze_toolbar_height) override;
 
   // Calls FullscreenViewportInsetRangeChanged() on observers.
   void OnFullscreenViewportInsetRangeChanged(UIEdgeInsets min_viewport_insets,
@@ -53,6 +52,10 @@ class TestFullscreenController : public FullscreenController {
   void OnFullscreenEnabledStateChanged(bool enabled);
   // Calls FullscreenWillAnimate() on observers.
   void OnFullscreenWillAnimate(FullscreenAnimator* animator);
+
+  // Returns the UserDataKey, used to set the FullscreenController for a
+  // browser.
+  static const void* UserDataKeyForTesting();
 
  private:
   // The model.

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+<select aria-hidden="true" id="container">
+<option>A</option>
+<option selected="selected">B</option>
+</select>
+
+<script>
+test((t) => {
+    var container = accessibilityController.accessibleElementById("container");
+    assert_equals(container.childrenCount, 1);
+    var popup = container.childAtIndex(0);
+    assert_equals(popup.childrenCount, 2);
+    var option1 = popup.childAtIndex(0);
+    assert_equals(option1.name, "A");
+    assert_true(option1.isFocusable);
+    var option2 = popup.childAtIndex(1);
+    assert_equals(option2.name, "B");
+    assert_true(option2.isFocusable);
+}, "This tests that the aria-hidden attribute on the SELECT element works \
+correctly with accessibility. Even though the SELECT element is aria-hidden, \
+it and its children should appear in the accessibility tree since it is \
+focusable.");
+
+</script>
+
+</body>
+</html>

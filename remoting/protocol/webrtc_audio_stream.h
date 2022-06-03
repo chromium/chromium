@@ -30,6 +30,10 @@ class WebrtcTransport;
 class WebrtcAudioStream : public AudioStream {
  public:
   WebrtcAudioStream();
+
+  WebrtcAudioStream(const WebrtcAudioStream&) = delete;
+  WebrtcAudioStream& operator=(const WebrtcAudioStream&) = delete;
+
   ~WebrtcAudioStream() override;
 
   void Start(scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
@@ -43,8 +47,6 @@ class WebrtcAudioStream : public AudioStream {
   scoped_refptr<WebrtcAudioSourceAdapter> source_adapter_;
 
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcAudioStream);
 };
 
 }  // namespace protocol

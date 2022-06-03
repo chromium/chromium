@@ -22,8 +22,8 @@ class BASE_EXPORT AndroidImageReader {
   // Thread safe GetInstance.
   static AndroidImageReader& GetInstance();
 
-  // Disable image reader support.
-  static void DisableSupport();
+  AndroidImageReader(const AndroidImageReader&) = delete;
+  AndroidImageReader& operator=(const AndroidImageReader&) = delete;
 
   // Check if the image reader usage is supported. This function returns TRUE
   // if android version is >=OREO, image reader support is not disabled and all
@@ -67,8 +67,7 @@ class BASE_EXPORT AndroidImageReader {
   AndroidImageReader();
   bool LoadFunctions();
 
-  static bool disable_support_;
-  bool is_supported_;
+  const bool is_supported_;
   pAImage_delete AImage_delete_;
   pAImage_deleteAsync AImage_deleteAsync_;
   pAImage_getHardwareBuffer AImage_getHardwareBuffer_;
@@ -83,8 +82,6 @@ class BASE_EXPORT AndroidImageReader {
   pAImageReader_acquireLatestImageAsync AImageReader_acquireLatestImageAsync_;
   pAImageReader_acquireNextImageAsync AImageReader_acquireNextImageAsync_;
   pANativeWindow_toSurface ANativeWindow_toSurface_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidImageReader);
 };
 
 }  // namespace android

@@ -5,12 +5,12 @@
 #include "chrome/browser/mac/bluetooth_utility.h"
 
 #import <Foundation/Foundation.h>
+#import <IOBluetooth/IOBluetooth.h>
 #include <IOKit/IOKitLib.h>
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/mac/sdk_forward_declarations.h"
 
 namespace bluetooth_utility {
 
@@ -42,7 +42,7 @@ BluetoothAvailability GetBluetoothAvailability() {
 
     NSDictionary* objc_dict = base::mac::CFToNSCast(scoped_dict.get());
     NSNumber* lmp_version =
-        base::mac::ObjCCast<NSNumber>([objc_dict objectForKey:@"LMPVersion"]);
+        base::mac::ObjCCast<NSNumber>(objc_dict[@"LMPVersion"]);
     if (!lmp_version)
       continue;
 
@@ -50,8 +50,8 @@ BluetoothAvailability GetBluetoothAvailability() {
     if ([lmp_version intValue] < 6)
       continue;
 
-    NSData* data = base::mac::ObjCCast<NSData>(
-        [objc_dict objectForKey:@"HCISupportedFeatures"]);
+    NSData* data =
+        base::mac::ObjCCast<NSData>(objc_dict[@"HCISupportedFeatures"]);
 
     NSUInteger supported_features_index = 4;
     NSUInteger length = [data length];

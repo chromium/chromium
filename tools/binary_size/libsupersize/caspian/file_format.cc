@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <cstring>
 #include <iostream>
@@ -26,7 +27,8 @@
 
 namespace {
 const char kDiffHeader[] = "# Created by //tools/binary_size\nDIFF\n";
-const char kSerializationVersion[] = "Size File Format v1";
+const char kSerializationVersionSingleContainer[] = "Size File Format v1";
+const char kSerializationVersionMultiContainer[] = "Size File Format v1.1";
 
 int ReadLoneInt(char** rest) {
   char* token = strsep(rest, "\n");
@@ -67,9 +69,11 @@ void Decompress(const char* gzipped,
 
 std::vector<const char*> ReadValuesFromLine(char** rest,
                                             const char* delimiter) {
-  char* rest_of_line = strsep(rest, "\n");
-
   std::vector<const char*> ret;
+  char* rest_of_line = strsep(rest, "\n");
+  // Check for empty line (otherwise "" is added).
+  if (!*rest_of_line)
+    return ret;
   while (true) {
     char* token = strsep(&rest_of_line, delimiter);
     if (!token)
@@ -101,33 +105,33 @@ std::vector<T> ReadIntList(char** rest,
 template <typename T>
 std::vector<std::vector<T>> ReadIntListForEachSection(
     char** rest,
-    const std::vector<int>& section_counts,
+    const std::vector<int>& symbol_counts,
     bool stored_as_delta) {
   std::vector<std::vector<T>> ret;
-  ret.reserve(section_counts.size());
-  for (int nsymbols : section_counts) {
+  ret.reserve(symbol_counts.size());
+  for (int nsymbols : symbol_counts) {
     ret.push_back(ReadIntList<T>(rest, " ", nsymbols, stored_as_delta));
   }
   return ret;
 }
 
-void ReadJsonBlob(char** rest, Json::Value* metadata) {
+void ReadJsonBlob(char** rest, Json::Value* fields) {
   // Metadata begins with its length in bytes, followed by a json blob.
-  int metadata_len = ReadLoneInt(rest);
-  if (metadata_len < 0) {
-    std::cerr << "Unexpected negative metadata length: " << metadata_len
+  int fields_len = ReadLoneInt(rest);
+  if (fields_len < 0) {
+    std::cerr << "Unexpected negative fields length: " << fields_len
               << std::endl;
     exit(1);
   }
   char* json_start = *rest;
-  *rest += metadata_len + 1;
+  *rest += fields_len + 1;
 
   std::unique_ptr<Json::CharReader> reader;
   reader.reset(Json::CharReaderBuilder().newCharReader());
   std::string json_errors;
-  if (!reader->parse(json_start, json_start + metadata_len, metadata,
+  if (!reader->parse(json_start, json_start + fields_len, fields,
                      &json_errors)) {
-    std::cerr << "Failed to parse JSON metadata:" << *rest << std::endl;
+    std::cerr << "Failed to parse JSON fields:" << *rest << std::endl;
     std::cerr << json_errors << std::endl;
     exit(1);
   }
@@ -211,23 +215,37 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   Decompress(gzipped, len, &info->raw_decompressed);
   char* rest = &info->raw_decompressed[0];
 
-  // Ignore generated header
+  // Ignore generated header.
   char* line = strsep(&rest, "\n");
 
-  // Serialization version
+  // Serialization version.
   line = strsep(&rest, "\n");
-  if (std::strcmp(line, kSerializationVersion)) {
+  bool has_multi_containers = false;
+  if (!std::strcmp(line, kSerializationVersionSingleContainer)) {
+    has_multi_containers = false;
+  } else if (!std::strcmp(line, kSerializationVersionMultiContainer)) {
+    has_multi_containers = true;
+  } else {
     std::cerr << "Serialization version: '" << line << "' not recognized."
               << std::endl;
     exit(1);
   }
 
-  ReadJsonBlob(&rest, &info->metadata);
+  ReadJsonBlob(&rest, &info->fields);
+  if (has_multi_containers) {
+    const Json::Value& container_values = info->fields["containers"];
+    for (const auto& container_value : container_values) {
+      const std::string name = container_value["name"].asString();
+      info->containers.push_back(Container(name));
+    }
+  } else {
+    info->containers.push_back(Container(""));
+  }
 
-  const bool has_components = info->metadata["has_components"].asBool();
-  const bool has_padding = info->metadata["has_padding"].asBool();
+  const bool has_components = info->fields["has_components"].asBool();
+  const bool has_padding = info->fields["has_padding"].asBool();
 
-  // List of paths: (object_path, [source_path])
+  // List of paths: (object_path, [source_path]).
   int n_paths = ReadLoneInt(&rest);
   if (n_paths < 0) {
     std::cerr << "Unexpected negative path list length: " << n_paths
@@ -239,7 +257,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   info->object_paths.reserve(n_paths);
   info->source_paths.reserve(n_paths);
   for (int i = 0; i < n_paths; i++) {
-    char* line = strsep(&rest, "\n");
+    line = strsep(&rest, "\n");
     char* first = strsep(&line, "\t");
     char* second = strsep(&line, "\t");
     if (second) {
@@ -258,7 +276,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   }
 
   if (has_components) {
-    // List of component names
+    // List of component names.
     int n_components = ReadLoneInt(&rest);
     if (n_components < 0) {
       std::cerr << "Unexpected negative components list length: "
@@ -273,55 +291,85 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
     }
   }
 
-  // Section names
-  info->section_names = ReadValuesFromLine(&rest, "\t");
-  int n_sections = info->section_names.size();
+  // Segments = List of (Container, section name).
+  std::vector<const char*> segment_names;
+  segment_names = ReadValuesFromLine(&rest, "\t");
+  int n_segments = segment_names.size();
 
-  // Symbol counts for each section
-  std::vector<int> section_counts =
-      ReadIntList<int>(&rest, "\t", n_sections, false);
-  std::cout << "Section counts:" << std::endl;
+  // Parse segment name into Container pointers and section names.
+  std::vector<Container*> segment_containers(n_segments);
+  std::vector<const char*> segment_section_names(n_segments);
+  for (int segment_idx = 0; segment_idx < n_segments; segment_idx++) {
+    const char* segment_name = segment_names[segment_idx];
+    if (has_multi_containers) {
+      // |segment_name| is formatted as "<container_idx>section_name".
+      std::string t = segment_name;
+      assert(t.length() > 0 && t[0] == '<');
+      size_t sep_pos = t.find('>');
+      assert(sep_pos != std::string::npos);
+      std::string container_idx_str = t.substr(1, sep_pos - 1);
+      int container_idx = std::atoi(container_idx_str.c_str());
+      assert(container_idx >= 0 &&
+             container_idx < static_cast<int>(info->containers.size()));
+      segment_containers[segment_idx] = &info->containers[container_idx];
+      segment_section_names[segment_idx] = segment_name + (sep_pos + 1);
+    } else {
+      // Segments are already container names.
+      segment_containers[segment_idx] = &info->containers[0];
+      segment_section_names[segment_idx] = segment_name;
+    }
+  }
+
+  // Symbol counts for each section.
+  std::vector<int> symbol_counts =
+      ReadIntList<int>(&rest, "\t", n_segments, false);
+  std::cout << "Symbol counts:" << std::endl;
   int total_symbols =
-      std::accumulate(section_counts.begin(), section_counts.end(), 0);
+      std::accumulate(symbol_counts.begin(), symbol_counts.end(), 0);
 
-  for (int section_idx = 0; section_idx < n_sections; section_idx++) {
-    std::cout << "  " << info->section_names[section_idx] << '\t'
-              << section_counts[section_idx] << std::endl;
+  for (int segment_idx = 0; segment_idx < n_segments; segment_idx++) {
+    std::cout << "  ";
+    if (has_multi_containers) {
+      std::cout << "<" << segment_containers[segment_idx]->name << ">";
+    }
+    std::cout << segment_section_names[segment_idx];
+    std::cout << '\t' << symbol_counts[segment_idx] << std::endl;
   }
 
   std::vector<std::vector<int64_t>> addresses =
-      ReadIntListForEachSection<int64_t>(&rest, section_counts, true);
+      ReadIntListForEachSection<int64_t>(&rest, symbol_counts, true);
   std::vector<std::vector<int32_t>> sizes =
-      ReadIntListForEachSection<int32_t>(&rest, section_counts, false);
+      ReadIntListForEachSection<int32_t>(&rest, symbol_counts, false);
   std::vector<std::vector<int32_t>> paddings;
   if (has_padding) {
-    paddings = ReadIntListForEachSection<int32_t>(&rest, section_counts, false);
+    paddings = ReadIntListForEachSection<int32_t>(&rest, symbol_counts, false);
   } else {
     paddings.resize(addresses.size());
   }
   std::vector<std::vector<int32_t>> path_indices =
-      ReadIntListForEachSection<int32_t>(&rest, section_counts, true);
+      ReadIntListForEachSection<int32_t>(&rest, symbol_counts, true);
   std::vector<std::vector<int32_t>> component_indices;
   if (has_components) {
     component_indices =
-        ReadIntListForEachSection<int32_t>(&rest, section_counts, true);
+        ReadIntListForEachSection<int32_t>(&rest, symbol_counts, true);
   } else {
     component_indices.resize(addresses.size());
   }
 
   info->raw_symbols.reserve(total_symbols);
-  // Construct raw symbols
-  for (int section_idx = 0; section_idx < n_sections; section_idx++) {
-    const char* cur_section_name = info->section_names[section_idx];
+  // Construct raw symbols.
+  for (int segment_idx = 0; segment_idx < n_segments; segment_idx++) {
+    const Container* cur_container = segment_containers[segment_idx];
+    const char* cur_section_name = segment_section_names[segment_idx];
     caspian::SectionId cur_section_id =
         info->ShortSectionName(cur_section_name);
-    const int cur_section_count = section_counts[section_idx];
-    const std::vector<int64_t>& cur_addresses = addresses[section_idx];
-    const std::vector<int32_t>& cur_sizes = sizes[section_idx];
-    const std::vector<int32_t>& cur_paddings = paddings[section_idx];
-    const std::vector<int32_t>& cur_path_indices = path_indices[section_idx];
+    const int cur_section_count = symbol_counts[segment_idx];
+    const std::vector<int64_t>& cur_addresses = addresses[segment_idx];
+    const std::vector<int32_t>& cur_sizes = sizes[segment_idx];
+    const std::vector<int32_t>& cur_paddings = paddings[segment_idx];
+    const std::vector<int32_t>& cur_path_indices = path_indices[segment_idx];
     const std::vector<int32_t>& cur_component_indices =
-        component_indices[section_idx];
+        component_indices[segment_idx];
     int32_t alias_counter = 0;
 
     for (int i = 0; i < cur_section_count; i++) {
@@ -330,7 +378,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
 
       int32_t flags = 0;
       int32_t num_aliases = 0;
-      char* line = strsep(&rest, "\n");
+      line = strsep(&rest, "\n");
       if (*line) {
         new_sym.full_name_ = strsep(&line, "\t");
         char* first = nullptr;
@@ -359,7 +407,9 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
       new_sym.size_ = cur_sizes[i];
       if (has_padding) {
         new_sym.padding_ = cur_paddings[i];
-        new_sym.size_ += new_sym.padding_;
+        if (!new_sym.IsOverhead()) {
+          new_sym.size_ += new_sym.padding_;
+        }
       }
       new_sym.section_name_ = cur_section_name;
       new_sym.object_path_ = info->object_paths[cur_path_indices[i]];
@@ -382,6 +432,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
         new_sym.aliases_->push_back(&new_sym);
         alias_counter--;
       }
+      new_sym.container_ = cur_container;
     }
   }
 
@@ -407,17 +458,17 @@ void ParseDiffSizeInfo(char* file,
   // Skip "DIFF" header.
   char* rest = file;
   rest += strlen(kDiffHeader);
-  Json::Value metadata;
-  ReadJsonBlob(&rest, &metadata);
+  Json::Value fields;
+  ReadJsonBlob(&rest, &fields);
 
-  if (metadata["version"].asInt() != 1) {
+  if (fields["version"].asInt() != 1) {
     std::cerr << ".sizediff version mismatch, write some upgrade code. version="
-              << metadata["version"] << std::endl;
+              << fields["version"] << std::endl;
     exit(1);
   }
 
   unsigned long header_len = rest - file;
-  unsigned long before_len = metadata["before_length"].asUInt();
+  unsigned long before_len = fields["before_length"].asUInt();
   unsigned long after_len = len - header_len - before_len;
 
   ParseSizeInfo(rest, before_len, before);

@@ -13,9 +13,8 @@
 
 namespace blink {
 
-Vector<const cc::Layer*> CcLayersByName(const cc::Layer* root,
-                                        const String& name_regex) {
-  Vector<const cc::Layer*> layers;
+Vector<cc::Layer*> CcLayersByName(cc::Layer* root, const String& name_regex) {
+  Vector<cc::Layer*> layers;
   ::testing::Matcher<std::string> matcher(
       ::testing::ContainsRegex(name_regex.Utf8()));
   for (auto& layer : root->children()) {
@@ -25,18 +24,47 @@ Vector<const cc::Layer*> CcLayersByName(const cc::Layer* root,
   return layers;
 }
 
+Vector<const cc::Layer*> CcLayersByName(const cc::Layer* root,
+                                        const String& name_regex) {
+  Vector<cc::Layer*> non_const_result =
+      CcLayersByName(const_cast<cc::Layer*>(root), name_regex);
+  Vector<const cc::Layer*> result(non_const_result.size());
+  auto** it = non_const_result.begin();
+  auto** end = non_const_result.end();
+  for (unsigned i = 0; it != end; ++it, ++i)
+    result[i] = *it;
+  return result;
+}
+
+Vector<cc::Layer*> CcLayersByDOMElementId(cc::Layer* root,
+                                          const String& dom_id) {
+  return CcLayersByName(root, String("id='") + dom_id + "'");
+}
+
 Vector<const cc::Layer*> CcLayersByDOMElementId(const cc::Layer* root,
                                                 const String& dom_id) {
-  return CcLayersByName(root, String("id='") + dom_id + "'");
+  Vector<cc::Layer*> non_const_result =
+      CcLayersByDOMElementId(const_cast<cc::Layer*>(root), dom_id);
+  Vector<const cc::Layer*> result(non_const_result.size());
+  auto** it = non_const_result.begin();
+  auto** end = non_const_result.end();
+  for (unsigned i = 0; it != end; ++it, ++i)
+    result[i] = *it;
+  return result;
+}
+
+cc::Layer* CcLayerByCcElementId(cc::Layer* root,
+                                const CompositorElementId& element_id) {
+  return root->layer_tree_host()->LayerByElementId(element_id);
 }
 
 const cc::Layer* CcLayerByCcElementId(const cc::Layer* root,
                                       const CompositorElementId& element_id) {
-  return root->layer_tree_host()->LayerByElementId(element_id);
+  return CcLayerByCcElementId(const_cast<cc::Layer*>(root), element_id);
 }
 
-const cc::Layer* ScrollingContentsCcLayerByScrollElementId(
-    const cc::Layer* root,
+cc::Layer* ScrollingContentsCcLayerByScrollElementId(
+    cc::Layer* root,
     const CompositorElementId& scroll_element_id) {
   const auto& scroll_tree =
       root->layer_tree_host()->property_trees()->scroll_tree;
@@ -49,22 +77,37 @@ const cc::Layer* ScrollingContentsCcLayerByScrollElementId(
   return nullptr;
 }
 
-const cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
+const cc::Layer* ScrollingContentsCcLayerByScrollElementId(
     const cc::Layer* root,
-    const cc::ScrollNode* scroll_node,
+    const CompositorElementId& scroll_element_id) {
+  return ScrollingContentsCcLayerByScrollElementId(const_cast<cc::Layer*>(root),
+                                                   scroll_element_id);
+}
+
+cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
+    cc::Layer* root,
+    cc::ScrollNode* scroll_node,
     cc::ScrollbarOrientation orientation) {
   if (!scroll_node)
     return nullptr;
   for (auto& layer : root->children()) {
-    if (!layer->is_scrollbar())
+    if (!layer->IsScrollbarLayerForTesting())
       continue;
-    const auto* scrollbar_layer =
-        static_cast<const cc::ScrollbarLayerBase*>(layer.get());
+    auto* scrollbar_layer = static_cast<cc::ScrollbarLayerBase*>(layer.get());
     if (scrollbar_layer->scroll_element_id() == scroll_node->element_id &&
         scrollbar_layer->orientation() == orientation)
       return scrollbar_layer;
   }
   return nullptr;
+}
+
+const cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
+    const cc::Layer* root,
+    const cc::ScrollNode* scroll_node,
+    cc::ScrollbarOrientation orientation) {
+  return ScrollbarLayerForScrollNode(const_cast<cc::Layer*>(root),
+                                     const_cast<cc::ScrollNode*>(scroll_node),
+                                     orientation);
 }
 
 }  // namespace blink

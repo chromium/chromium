@@ -11,7 +11,7 @@ function startTest(imageSourceElement, imageSourceType) {
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
-    assert_throws("SecurityError", function() {
+    assert_throws_dom("SecurityError", function() {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageSourceElement);
     }, "cross-origin " + imageSourceType + " should be tainted");
 }

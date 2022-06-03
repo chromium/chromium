@@ -11,27 +11,33 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
-#include "third_party/grpc/src/include/grpcpp/support/status.h"
 
 namespace remoting {
 
-class ScopedGrpcServerStream;
+class ScopedProtobufHttpRequest;
+class ProtobufHttpStatus;
 
 // Interface for starting or closing the server stream to receive messages from
 // FTL backend.
 class MessageReceptionChannel {
  public:
   using StreamOpener =
-      base::RepeatingCallback<std::unique_ptr<ScopedGrpcServerStream>(
+      base::RepeatingCallback<std::unique_ptr<ScopedProtobufHttpRequest>(
           base::OnceClosure on_channel_ready,
           const base::RepeatingCallback<void(
-              const ftl::ReceiveMessagesResponse&)>& on_incoming_msg,
-          base::OnceCallback<void(const grpc::Status&)> on_channel_closed)>;
+              std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
+          base::OnceCallback<void(const ProtobufHttpStatus&)>
+              on_channel_closed)>;
   using MessageCallback =
-      base::RepeatingCallback<void(const ftl::InboxMessage&)>;
-  using DoneCallback = base::OnceCallback<void(const grpc::Status& status)>;
+      base::RepeatingCallback<void(const ftl::InboxMessage& message)>;
+  using DoneCallback =
+      base::OnceCallback<void(const ProtobufHttpStatus& status)>;
 
   MessageReceptionChannel() = default;
+
+  MessageReceptionChannel(const MessageReceptionChannel&) = delete;
+  MessageReceptionChannel& operator=(const MessageReceptionChannel&) = delete;
+
   virtual ~MessageReceptionChannel() = default;
 
   virtual void Initialize(const StreamOpener& stream_opener,
@@ -46,14 +52,12 @@ class MessageReceptionChannel {
   virtual void StartReceivingMessages(base::OnceClosure on_ready,
                                       DoneCallback on_closed) = 0;
 
-  // Closes the streaming channel.
+  // Closes the streaming channel. Note that |on_closed| callback will be
+  // silently dropped.
   virtual void StopReceivingMessages() = 0;
 
   // Returns true if the streaming channel is open.
   virtual bool IsReceivingMessages() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageReceptionChannel);
 };
 
 }  // namespace remoting

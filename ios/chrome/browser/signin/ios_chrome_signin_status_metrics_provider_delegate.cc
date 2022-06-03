@@ -29,16 +29,16 @@ void IOSChromeSigninStatusMetricsProviderDelegate::Initialize() {
 
 AccountsStatus
 IOSChromeSigninStatusMetricsProviderDelegate::GetStatusOfAllAccounts() {
-  std::vector<ios::ChromeBrowserState*> browser_state_list =
+  std::vector<ChromeBrowserState*> browser_state_list =
       GetLoadedChromeBrowserStates();
   AccountsStatus accounts_status;
   accounts_status.num_accounts = browser_state_list.size();
   accounts_status.num_opened_accounts = accounts_status.num_accounts;
 
-  for (ios::ChromeBrowserState* browser_state : browser_state_list) {
+  for (ChromeBrowserState* browser_state : browser_state_list) {
     auto* manager = IdentityManagerFactory::GetForBrowserState(
         browser_state->GetOriginalChromeBrowserState());
-    if (manager && manager->HasPrimaryAccount())
+    if (manager && manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
       accounts_status.num_signed_in_accounts++;
   }
 
@@ -49,8 +49,7 @@ std::vector<signin::IdentityManager*>
 IOSChromeSigninStatusMetricsProviderDelegate::
     GetIdentityManagersForAllAccounts() {
   std::vector<signin::IdentityManager*> managers;
-  for (ios::ChromeBrowserState* browser_state :
-       GetLoadedChromeBrowserStates()) {
+  for (ChromeBrowserState* browser_state : GetLoadedChromeBrowserStates()) {
     signin::IdentityManager* manager =
         IdentityManagerFactory::GetForBrowserStateIfExists(browser_state);
     if (manager) {
@@ -66,12 +65,7 @@ void IOSChromeSigninStatusMetricsProviderDelegate::IdentityManagerCreated(
   owner()->OnIdentityManagerCreated(manager);
 }
 
-void IOSChromeSigninStatusMetricsProviderDelegate::IdentityManagerShutdown(
-    signin::IdentityManager* manager) {
-  owner()->OnIdentityManagerShutdown(manager);
-}
-
-std::vector<ios::ChromeBrowserState*>
+std::vector<ChromeBrowserState*>
 IOSChromeSigninStatusMetricsProviderDelegate::GetLoadedChromeBrowserStates() {
   return GetApplicationContext()
       ->GetChromeBrowserStateManager()

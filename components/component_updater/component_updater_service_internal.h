@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "components/component_updater/update_scheduler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeTicks;
@@ -40,6 +40,10 @@ class CrxUpdateService : public ComponentUpdateService,
   CrxUpdateService(scoped_refptr<Configurator> config,
                    std::unique_ptr<UpdateScheduler> scheduler,
                    scoped_refptr<UpdateClient> update_client);
+
+  CrxUpdateService(const CrxUpdateService&) = delete;
+  CrxUpdateService& operator=(const CrxUpdateService&) = delete;
+
   ~CrxUpdateService() override;
 
   // Overrides for ComponentUpdateService.
@@ -48,8 +52,6 @@ class CrxUpdateService : public ComponentUpdateService,
   bool RegisterComponent(const CrxComponent& component) override;
   bool UnregisterComponent(const std::string& id) override;
   std::vector<std::string> GetComponentIDs() const override;
-  std::unique_ptr<ComponentInfo> GetComponentForMimeType(
-      const std::string& id) const override;
   std::vector<ComponentInfo> GetComponents() const override;
   OnDemandUpdater& GetOnDemandUpdater() override;
   void MaybeThrottle(const std::string& id,
@@ -78,11 +80,11 @@ class CrxUpdateService : public ComponentUpdateService,
 
   bool DoUnregisterComponent(const CrxComponent& component);
 
-  base::Optional<CrxComponent> GetComponent(const std::string& id) const;
+  absl::optional<CrxComponent> GetComponent(const std::string& id) const;
 
   const CrxUpdateItem* GetComponentState(const std::string& id) const;
 
-  std::vector<base::Optional<CrxComponent>> GetCrxComponents(
+  std::vector<absl::optional<CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
   void OnUpdateComplete(Callback callback,
                         const base::TimeTicks& start_time,
@@ -96,7 +98,7 @@ class CrxUpdateService : public ComponentUpdateService,
   scoped_refptr<UpdateClient> update_client_;
 
   // A collection of every registered component.
-  using Components = std::map<std::string, CrxComponent>;
+  using Components = base::flat_map<std::string, CrxComponent>;
   Components components_;
 
   // Maintains the order in which components have been registered. The position
@@ -124,8 +126,6 @@ class CrxUpdateService : public ComponentUpdateService,
   // for that media type. Only the most recently-registered component is
   // tracked. May include the IDs of un-registered components.
   std::map<std::string, std::string> component_ids_by_mime_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrxUpdateService);
 };
 
 }  // namespace component_updater

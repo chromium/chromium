@@ -8,10 +8,17 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/password_manager/core/browser/password_store.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
+#include "components/autofill/ios/form_util/form_activity_params.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/password_generation_provider.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
-#include "ios/chrome/browser/passwords/password_manager_features.h"
+#import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential+PasswordForm.h"
@@ -21,7 +28,9 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
@@ -29,11 +38,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Minimum favicon size to retrieve.
-const CGFloat kMinFaviconSizePt = 8.0;
-}  // namespace
 
 namespace manual_fill {
 
@@ -59,10 +63,12 @@ BOOL AreCredentialsAtIndexesConnected(
       isEqualToString:credentials[secondIndex].host];
 }
 
-@interface ManualFillPasswordMediator () <ManualFillContentInjector,
+@interface ManualFillPasswordMediator () <CRWWebStateObserver,
+                                          FormActivityObserver,
+                                          ManualFillContentInjector,
                                           PasswordFetcherDelegate> {
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
 }
 
 // The password fetcher to query the user profile.
@@ -78,36 +84,75 @@ BOOL AreCredentialsAtIndexesConnected(
 // YES if the password fetcher has completed at least one fetch.
 @property(nonatomic, assign) BOOL passwordFetcherDidFetch;
 
+// YES if the active field is of type 'password'.
+@property(nonatomic, assign) BOOL activeFieldIsPassword;
+
+// The relevant active web state.
+@property(nonatomic, assign) web::WebState* webState;
+
+// Sync setup service.
+@property(nonatomic, assign) SyncSetupService* syncService;
+
 @end
 
-@implementation ManualFillPasswordMediator
+@implementation ManualFillPasswordMediator {
+  // Bridge to observe the web state from Objective-C.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+
+  // Bridge to observe form activity in |_webState|.
+  std::unique_ptr<autofill::FormActivityObserverBridge>
+      _formActivityObserverBridge;
+
+  // Origin to fetch passwords for.
+  GURL _URL;
+}
 
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
-                        faviconLoader:(FaviconLoader*)faviconLoader {
+                        faviconLoader:(FaviconLoader*)faviconLoader
+                             webState:(web::WebState*)webState
+                          syncService:(SyncSetupService*)syncService
+                                  URL:(const GURL&)URL
+               invokedOnPasswordField:(BOOL)invokedOnPasswordField {
   self = [super init];
   if (self) {
     _credentials = @[];
     _passwordStore = passwordStore;
     _faviconLoader = faviconLoader;
+    _webState = webState;
+    _syncService = syncService;
+    _URL = URL;
+    _activeFieldIsPassword = invokedOnPasswordField;
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _webState->AddObserver(_webStateObserverBridge.get());
+    _formActivityObserverBridge =
+        std::make_unique<autofill::FormActivityObserverBridge>(_webState, self);
   }
   return self;
 }
 
-- (void)fetchPasswordsForURL:(const GURL&)URL {
+- (void)dealloc {
+  if (_webState) {
+    [self webStateDestroyed:_webState];
+  }
+}
+
+- (void)fetchPasswords {
   self.credentials = @[];
   self.passwordFetcher =
       [[PasswordFetcher alloc] initWithPasswordStore:_passwordStore
                                             delegate:self
-                                                 URL:URL];
+                                                 URL:_URL];
 }
 
 #pragma mark - PasswordFetcherDelegate
 
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords {
+          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+              passwords {
   NSMutableArray<ManualFillCredential*>* credentials =
       [[NSMutableArray alloc] initWithCapacity:passwords.size()];
   for (const auto& form : passwords) {
@@ -193,6 +238,30 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
+    password_manager::PasswordManagerClient* passwordManagerClient =
+        _webState ? PasswordTabHelper::FromWebState(_webState)
+                        ->GetPasswordManagerClient()
+                  : nullptr;
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kEnableManualPasswordGeneration) &&
+        _syncService && _syncService->CanSyncFeatureStart() &&
+        passwordManagerClient &&
+        passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
+        _activeFieldIsPassword) {
+      NSString* suggestPasswordTitleString = l10n_util::GetNSString(
+          IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
+      auto suggestPasswordItem = [[ManualFillActionItem alloc]
+          initWithTitle:suggestPasswordTitleString
+                 action:^{
+                   base::RecordAction(base::UserMetricsAction(
+                       "ManualFallback_Password_OpenSuggestPassword"));
+                   [weakSelf suggestPassword];
+                 }];
+      suggestPasswordItem.accessibilityIdentifier =
+          manual_fill::SuggestPasswordAccessibilityIdentifier;
+      [actions addObject:suggestPasswordItem];
+    }
+
     NSString* otherPasswordsTitleString = l10n_util::GetNSString(
         IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
     auto otherPasswordsItem = [[ManualFillActionItem alloc]
@@ -220,6 +289,17 @@ BOOL AreCredentialsAtIndexesConnected(
     [actions addObject:managePasswordsItem];
 
     [self.consumer presentActions:actions];
+  }
+}
+
+- (void)suggestPassword {
+  if ([self canUserInjectInPasswordField:YES requiresHTTPS:NO]) {
+    DCHECK(_webState);
+    id<PasswordGenerationProvider> generationProvider =
+        PasswordTabHelper::FromWebState(_webState)
+            ->GetPasswordGenerationProvider();
+    if (generationProvider)
+      [generationProvider triggerPasswordGeneration];
   }
 }
 
@@ -255,9 +335,33 @@ BOOL AreCredentialsAtIndexesConnected(
 - (void)faviconForURL:(const GURL&)URL
            completion:(void (^)(FaviconAttributes*))completion {
   DCHECK(completion);
-  self.faviconLoader->FaviconForPageUrl(
-      URL, gfx::kFaviconSize, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, completion);
+  self.faviconLoader->FaviconForPageUrlOrHost(URL, gfx::kFaviconSize,
+                                              completion);
+}
+
+#pragma mark - FormActivityObserver
+
+- (void)webState:(web::WebState*)webState
+    didRegisterFormActivity:(const autofill::FormActivityParams&)params
+                    inFrame:(web::WebFrame*)frame {
+  DCHECK_EQ(_webState, webState);
+  if (_activeFieldIsPassword !=
+      (params.field_type == autofill::kPasswordFieldType)) {
+    _activeFieldIsPassword = params.field_type == autofill::kPasswordFieldType;
+    [self postActionsToConsumer];
+  }
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  DCHECK_EQ(_webState, webState);
+  if (_webState) {
+    _webState->RemoveObserver(_webStateObserverBridge.get());
+    _webState = nullptr;
+  }
+  _webStateObserverBridge.reset();
+  _formActivityObserverBridge.reset();
 }
 
 @end

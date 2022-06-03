@@ -8,16 +8,15 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_registration_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -28,8 +27,14 @@ class CONTENT_EXPORT OneShotBackgroundSyncServiceImpl
  public:
   OneShotBackgroundSyncServiceImpl(
       BackgroundSyncContextImpl* background_sync_context,
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
+
+  OneShotBackgroundSyncServiceImpl(const OneShotBackgroundSyncServiceImpl&) =
+      delete;
+  OneShotBackgroundSyncServiceImpl& operator=(
+      const OneShotBackgroundSyncServiceImpl&) = delete;
 
   ~OneShotBackgroundSyncServiceImpl() override;
 
@@ -51,13 +56,13 @@ class CONTENT_EXPORT OneShotBackgroundSyncServiceImpl
   // |background_sync_context_| owns |this|.
   BackgroundSyncContextImpl* const background_sync_context_;
 
+  url::Origin origin_;
+
   std::unique_ptr<BackgroundSyncRegistrationHelper> registration_helper_;
   mojo::Receiver<blink::mojom::OneShotBackgroundSyncService> receiver_;
 
   base::WeakPtrFactory<blink::mojom::OneShotBackgroundSyncService>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotBackgroundSyncServiceImpl);
 };
 
 }  // namespace content

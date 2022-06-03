@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/download/database/download_db_conversions.h"
 #include "components/download/database/download_db_entry.h"
 #include "components/download/database/proto/download_entry.pb.h"
@@ -53,8 +54,8 @@ DownloadDBImpl::DownloadDBImpl(
   DCHECK(!database_dir.empty());
   db_ = db_provider->GetDB<download_pb::DownloadDBEntry>(
       leveldb_proto::ProtoDbType::DOWNLOAD_DB, database_dir,
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(),
            // USER_VISIBLE because it is required to display chrome://downloads.
            // https://crbug.com/976223
            base::TaskPriority::USER_VISIBLE,

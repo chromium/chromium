@@ -8,17 +8,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"
 
 namespace device {
 
-// Compare the |vendor_id| and |product_id| of a connected USB or Bluetooth
-// device against a list of known gaming peripherals. If a match is found,
-// record a GamepadId enumeration value corresponding to the device. Does
-// nothing if the device has no corresponding GamepadId.
+// Compare the |gamepad_id| of a connected USB or Bluetooth device against a
+// list of known gaming peripherals. If a match is found, record the GamepadId
+// enumeration value corresponding to the device. Does nothing if the device is
+// unknown.
 //
 // To preserve privacy, the vendor and product IDs are not recorded.
-void RecordConnectedGamepad(uint16_t vendor_id, uint16_t product_id);
+void RecordConnectedGamepad(GamepadId gamepad_id);
 
 // Record that the gamepad data fetcher identified by |source| recognized a
 // device as a gamepad, but the device is not included on our list of known

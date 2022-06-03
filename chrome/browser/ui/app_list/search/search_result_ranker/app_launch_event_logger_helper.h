@@ -8,7 +8,7 @@
 #include <array>
 
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/power/ml/user_activity_ukm_logger_helpers.h"
+#include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
 
 namespace app_list {
 
@@ -18,15 +18,15 @@ const char kExtensionSchemeWithDelimiter[] = "chrome-extension://";
 
 constexpr float kTotalHoursBucketSizeMultiplier = 1.25;
 
-constexpr std::array<chromeos::power::ml::Bucket, 2> kClickBuckets = {
+constexpr std::array<ash::power::ml::Bucket, 2> kClickBuckets = {
     {{20, 1}, {200, 10}}};
-constexpr std::array<chromeos::power::ml::Bucket, 6>
-    kTimeSinceLastClickBuckets = {{{60, 1},
-                                   {600, 60},
-                                   {1200, 300},
-                                   {3600, 600},
-                                   {18000, 1800},
-                                   {86400, 3600}}};
+constexpr std::array<ash::power::ml::Bucket, 6> kTimeSinceLastClickBuckets = {
+    {{60, 1},
+     {600, 60},
+     {1200, 300},
+     {3600, 600},
+     {18000, 1800},
+     {86400, 3600}}};
 
 // Returns the nearest bucket for |value|, where bucket sizes are determined
 // exponentially, with each bucket size increasing by a factor of |base|.

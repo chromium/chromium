@@ -4,10 +4,12 @@
 
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
 # Should only be running on Windows.
@@ -22,7 +24,11 @@ assert(is_win)
 # This tool will is used as a wrapper for various commands below.
 tool_wrapper_path = rebase_path("tool_wrapper.py", root_build_dir)
 
-if (use_goma) {
+if (use_remoteexec) {
+  goma_prefix = ""
+  rbe_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
+  clang_prefix = rbe_prefix
+} else if (use_goma) {
   if (host_os == "win") {
     goma_prefix = "$goma_dir/gomacc.exe "
   } else {
@@ -79,6 +85,9 @@ template("msvc_toolchain") {
 
       # This value needs to be passed through unchanged.
       host_toolchain = host_toolchain
+
+      # Respect the global setting for whether rustc can make binaries.
+      rustc_can_link = rustc_can_link
     }
 
     # Make these apply to all tools below.
@@ -123,7 +132,8 @@ template("msvc_toolchain") {
     # passing in a list of include directories isn't enough.
     if (defined(invoker.sys_include_flags)) {
       env_wrapper = ""
-      sys_include_flags = "${invoker.sys_include_flags} "  # Note trailing space.
+      sys_include_flags =
+          "${invoker.sys_include_flags} "  # Note trailing space.
     } else {
       # clang-cl doesn't need this env hoop, so omit it there.
       assert((defined(toolchain_args.is_clang) && !toolchain_args.is_clang) ||
@@ -136,7 +146,7 @@ template("msvc_toolchain") {
     # mt.exe in PATH on non-Windows, so it's not needed there anyways.
     if (host_os != "win") {
       linker_wrapper = ""
-      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space
+      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space.
     } else if (defined(invoker.sys_lib_flags)) {
       # Invoke ninja as wrapper instead of tool wrapper, because python
       # invocation requires higher cpu usage compared to ninja invocation, and
@@ -144,10 +154,11 @@ template("msvc_toolchain") {
       # TODO(thakis): Remove wrapper once lld-link can merge manifests without
       # relying on mt.exe being in %PATH% on Windows, https://crbug.com/872740
       linker_wrapper = "ninja -t msvc -e $env -- "  # Note trailing space.
-      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space
+      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space.
     } else {
+      # Note trailing space:
       linker_wrapper =
-          "$python_path $tool_wrapper_path link-wrapper $env False "  # Note trailing space.
+          "$python_path $tool_wrapper_path link-wrapper $env False "
       sys_lib_flags = ""
     }
 
@@ -171,6 +182,12 @@ template("msvc_toolchain") {
       coverage_wrapper =
           rebase_path("//build/toolchain/clang_code_coverage_wrapper.py",
                       root_build_dir)
+      if (is_win) {
+        # Disable writing out bytecode because this causes contention over
+        # access to the .pyc which causes scaling problems on Windows. See
+        # https://crbug.com/1266174 for details.
+        coverage_wrapper = "-B " + coverage_wrapper
+      }
       coverage_wrapper = coverage_wrapper + " --target-os=" + target_os
       if (toolchain_coverage_instrumentation_input_file != "") {
         coverage_wrapper =
@@ -183,6 +200,17 @@ template("msvc_toolchain") {
       coverage_wrapper = ""
     }
 
+    # Disabled with cc_wrapper because of https://github.com/mozilla/sccache/issues/1013
+    if (toolchain_args.is_clang && cc_wrapper == "") {
+      # This flag omits system includes from /showIncludes output, to reduce the
+      # amount of data to parse and store in .ninja_deps. We do this on non-Windows too,
+      # and already make sure rebuilds after win sdk / libc++ / clang header updates happen via
+      # changing commandline flags.
+      show_includes = "/showIncludes:user"
+    } else {
+      show_includes = "/showIncludes"
+    }
+
     tool("cc") {
       precompiled_header_type = "msvc"
       pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
@@ -192,11 +220,11 @@ template("msvc_toolchain") {
       # full file name and will quote automatically when necessary.
       depsformat = "msvc"
       description = "CC {{output}}"
-      outputs = [
-        "$object_subdir/{{source_name_part}}.obj",
-      ]
+      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
 
-      command = "$coverage_wrapper$env_wrapper$cl /nologo /showIncludes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+      # Note that the code coverage wrapper scripts assumes that {{source}}
+      # comes immediately after /c.
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /Fo{{output}} /Fd\"$pdbname\""
     }
 
     tool("cxx") {
@@ -208,38 +236,55 @@ template("msvc_toolchain") {
       # See comment in CC tool about quoting.
       depsformat = "msvc"
       description = "CXX {{output}}"
-      outputs = [
-        "$object_subdir/{{source_name_part}}.obj",
-      ]
+      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
 
-      command = "$coverage_wrapper$env_wrapper$cl /nologo /showIncludes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+      # Note that the code coverage wrapper scripts assumes that {{source}}
+      # comes immediately after /c.
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /Fd\"$pdbname\""
     }
 
     tool("rc") {
       command = "$python_path $tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
       depsformat = "msvc"
-      outputs = [
-        "$object_subdir/{{source_name_part}}.res",
-      ]
+      outputs = [ "$object_subdir/{{source_name_part}}.res" ]
       description = "RC {{output}}"
     }
 
     tool("asm") {
+      is_msvc_assembler = true
+
       if (toolchain_args.current_cpu == "arm64") {
-        prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-        ml = "${clang_prefix}${prefix}/${clang_cl} --target=arm64-windows"
-        if (host_os == "win") {
-          # Flip the slashes so that copy/paste of the command works.
-          ml = string_replace(ml, "/", "\\")
+        if (is_clang) {
+          prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+          ml = "${clang_prefix}${prefix}/${clang_cl} --target=arm64-windows"
+          if (host_os == "win") {
+            # Flip the slashes so that copy/paste of the command works.
+            ml = string_replace(ml, "/", "\\")
+          }
+          ml += " -c -o{{output}}"
+          is_msvc_assembler = false
+        } else {
+          # Only affects Arm builds with is_clang = false, implemented for building
+          # V8 for Windows on Arm systems with the MSVC toolchain.
+          ml = "armasm64.exe"
         }
-        ml += " -c -o{{output}}"
       } else {
+        # x86/x64 builds always use the MSVC assembler.
         if (toolchain_args.current_cpu == "x64") {
           ml = "ml64.exe"
         } else {
           ml = "ml.exe"
         }
-        ml += " /nologo /c /Fo{{output}}"
+      }
+
+      if (is_msvc_assembler) {
+        ml += " /nologo /Fo{{output}}"
+
+        # Suppress final-stage linking on x64/x86 builds. (Armasm64 does not
+        # require /c because it doesn't support linking.)
+        if (toolchain_args.current_cpu != "arm64") {
+          ml += " /c"
+        }
         if (use_lld) {
           # Wrap ml(64).exe with a script that makes its output deterministic.
           # It's lld only because the script zaps obj Timestamp which
@@ -251,16 +296,66 @@ template("msvc_toolchain") {
           ml = "$python_path $ml_py $ml"
         }
       }
-      command = "$python_path $tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+      if (toolchain_args.current_cpu != "arm64" || is_clang) {
+        command = "$python_path $tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+      } else {
+        # armasm64.exe does not support definitions passed via the command line.
+        # (Fortunately, they're not needed for compiling the V8 snapshot, which
+        # is the only time this assembler is required.)
+        command = "$python_path $tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
+      }
+
       description = "ASM {{output}}"
-      outputs = [
-        "$object_subdir/{{source_name_part}}.obj",
-      ]
+      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
+    }
+
+    if (toolchain_has_rust) {
+      tool("rust_staticlib") {
+        rust_outfile = "{{target_out_dir}}/{{crate_name}}.lib"
+        depfile = "{{crate_name}}.d"
+        command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      tool("rust_rlib") {
+        rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
+        depfile = "{{crate_name}}.d"
+        command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      if (toolchain_args.rustc_can_link) {
+        tool("rust_bin") {
+          rust_outfile = "{{root_out_dir}}/{{crate_name}}.exe"
+          depfile = "{{crate_name}}.d"
+          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_cdylib") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
+          depfile = "{{crate_name}}.d"
+          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_macro") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
+          depfile = "{{crate_name}}.d"
+          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+      }
     }
 
     tool("alink") {
       rspfile = "{{output}}.rsp"
-      command = "$linker_wrapper$lib /nologo ${sys_lib_flags}{{arflags}} /OUT:{{output}} @$rspfile"
+      command = "$linker_wrapper$lib /OUT:{{output}} /nologo ${sys_lib_flags}{{arflags}} @$rspfile"
       description = "LIB {{output}}"
       outputs = [
         # Ignore {{output_extension}} and always use .lib, there's no reason to
@@ -276,13 +371,14 @@ template("msvc_toolchain") {
     }
 
     tool("solink") {
-      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"  # e.g. foo.dll
+      # E.g. "foo.dll":
+      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
       libname = "${dllname}.lib"  # e.g. foo.dll.lib
       pdbname = "${dllname}.pdb"
       rspfile = "${dllname}.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_wrapper$link /nologo ${sys_lib_flags}/IMPLIB:$libname /DLL /OUT:$dllname /PDB:$pdbname @$rspfile"
+      command = "$linker_wrapper$link /OUT:$dllname /nologo ${sys_lib_flags}/IMPLIB:$libname /DLL /PDB:$pdbname @$rspfile"
 
       default_output_extension = ".dll"
       default_output_dir = "{{root_out_dir}}"
@@ -290,14 +386,14 @@ template("msvc_toolchain") {
       outputs = [
         dllname,
         libname,
+        pdbname,
       ]
       link_output = libname
       depend_output = libname
-      runtime_outputs = [ dllname ]
-      if (symbol_level != 0) {
-        outputs += [ pdbname ]
-        runtime_outputs += [ pdbname ]
-      }
+      runtime_outputs = [
+        dllname,
+        pdbname,
+      ]
 
       # Since the above commands only updates the .lib file when it changes, ask
       # Ninja to check if the timestamp actually changed to know if downstream
@@ -306,31 +402,32 @@ template("msvc_toolchain") {
 
       # The use of inputs_newline is to work around a fixed per-line buffer
       # size in the linker.
-      rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}}"
+      rspfile_content =
+          "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}} {{rlibs}}"
     }
 
     tool("solink_module") {
-      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"  # e.g. foo.dll
+      # E.g. "foo.dll":
+      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
       pdbname = "${dllname}.pdb"
       rspfile = "${dllname}.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_wrapper$link /nologo ${sys_lib_flags}/DLL /OUT:$dllname /PDB:$pdbname @$rspfile"
+      command = "$linker_wrapper$link /OUT:$dllname /nologo ${sys_lib_flags}/DLL /PDB:$pdbname @$rspfile"
 
       default_output_extension = ".dll"
       default_output_dir = "{{root_out_dir}}"
       description = "LINK_MODULE(DLL) {{output}}"
       outputs = [
         dllname,
+        pdbname,
       ]
-      if (symbol_level != 0) {
-        outputs += [ pdbname ]
-      }
       runtime_outputs = outputs
 
       # The use of inputs_newline is to work around a fixed per-line buffer
       # size in the linker.
-      rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}}"
+      rspfile_content =
+          "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}} {{rlibs}}"
     }
 
     tool("link") {
@@ -339,22 +436,21 @@ template("msvc_toolchain") {
       rspfile = "$exename.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_wrapper$link /nologo ${sys_lib_flags}/OUT:$exename /PDB:$pdbname @$rspfile"
+      command = "$linker_wrapper$link /OUT:$exename /nologo ${sys_lib_flags} /PDB:$pdbname @$rspfile"
 
       default_output_extension = ".exe"
       default_output_dir = "{{root_out_dir}}"
       description = "LINK {{output}}"
       outputs = [
         exename,
+        pdbname,
       ]
-      if (symbol_level != 0) {
-        outputs += [ pdbname ]
-      }
       runtime_outputs = outputs
 
       # The use of inputs_newline is to work around a fixed per-line buffer
       # size in the linker.
-      rspfile_content = "{{inputs_newline}} {{libs}} {{solibs}} {{ldflags}}"
+      rspfile_content =
+          "{{inputs_newline}} {{libs}} {{solibs}} {{ldflags}} {{rlibs}}"
     }
 
     # These two are really entirely generic, but have to be repeated in
@@ -416,12 +512,20 @@ template("win_toolchains") {
     environment = "environment." + toolchain_arch
     prefix = rebase_path("$clang_base_path/bin", root_build_dir)
     cl = "${clang_prefix}$prefix/${clang_cl}"
+    _clang_lib_dir =
+        rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
+                    root_build_dir)
     if (host_os == "win") {
       # Flip the slashes so that copy/paste of the command works.
       cl = string_replace(cl, "/", "\\")
+
+      # And to match the other -libpath flags.
+      _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
     }
+
     sys_include_flags = "${win_toolchain_data.include_flags_imsvc}"
-    sys_lib_flags = "${win_toolchain_data.libpath_flags}"
+    sys_lib_flags =
+        "-libpath:$_clang_lib_dir ${win_toolchain_data.libpath_flags}"
 
     toolchain_args = {
       if (defined(invoker.toolchain_args)) {

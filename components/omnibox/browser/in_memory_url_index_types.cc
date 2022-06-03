@@ -22,14 +22,14 @@ namespace {
 // while matching user-typed terms.
 const size_t kMaxSignificantChars = 200;
 
-void String16VectorFromString16Internal(base::string16 word,
+void String16VectorFromString16Internal(std::u16string word,
                                         size_t previous_postion,
                                         bool break_on_space,
                                         String16Vector* words,
                                         WordStarts* word_starts) {
   size_t initial_whitespace = 0;
   if (break_on_space) {
-    base::string16 trimmed_word;
+    std::u16string trimmed_word;
     base::TrimWhitespace(word, base::TRIM_LEADING, &trimmed_word);
     initial_whitespace = word.length() - trimmed_word.length();
     base::TrimWhitespace(trimmed_word, base::TRIM_TRAILING, &word);
@@ -48,7 +48,7 @@ void String16VectorFromString16Internal(base::string16 word,
 // Matches within URL and Title Strings ----------------------------------------
 
 TermMatches MatchTermsInString(const String16Vector& terms,
-                               const base::string16& cleaned_string) {
+                               const std::u16string& cleaned_string) {
   TermMatches matches;
   for (size_t i = 0; i < terms.size(); ++i) {
     TermMatches term_matches = MatchTermInString(terms[i], cleaned_string, i);
@@ -57,16 +57,17 @@ TermMatches MatchTermsInString(const String16Vector& terms,
   return matches;
 }
 
-TermMatches MatchTermInString(const base::string16& term,
-                              const base::string16& cleaned_string,
+TermMatches MatchTermInString(const std::u16string& term,
+                              const std::u16string& cleaned_string,
                               int term_num) {
   const size_t kMaxCompareLength = 2048;
-  const base::string16& short_string =
-      (cleaned_string.length() > kMaxCompareLength) ?
-      cleaned_string.substr(0, kMaxCompareLength) : cleaned_string;
+  const std::u16string& short_string =
+      (cleaned_string.length() > kMaxCompareLength)
+          ? cleaned_string.substr(0, kMaxCompareLength)
+          : cleaned_string;
   TermMatches matches;
   for (size_t location = short_string.find(term);
-       location != base::string16::npos;
+       location != std::u16string::npos;
        location = short_string.find(term, location + 1))
     matches.push_back(TermMatch(term_num, location, term.length()));
   return matches;
@@ -115,8 +116,8 @@ TermMatches ReplaceOffsetsInTermMatches(const TermMatches& matches,
     const size_t starting_offset = *offset_iter;
     ++offset_iter;
     const size_t ending_offset = *offset_iter;
-    if ((starting_offset != base::string16::npos) &&
-        (ending_offset != base::string16::npos) &&
+    if ((starting_offset != std::u16string::npos) &&
+        (ending_offset != std::u16string::npos) &&
         (starting_offset != ending_offset)) {
       TermMatch new_match(*term_iter);
       new_match.offset = starting_offset;
@@ -129,7 +130,7 @@ TermMatches ReplaceOffsetsInTermMatches(const TermMatches& matches,
 
 // Utility Functions -----------------------------------------------------------
 
-String16Set String16SetFromString16(const base::string16& cleaned_uni_string,
+String16Set String16SetFromString16(const std::u16string& cleaned_uni_string,
                                     WordStarts* word_starts) {
   String16Vector words =
       String16VectorFromString16(cleaned_uni_string, false, word_starts);
@@ -140,7 +141,7 @@ String16Set String16SetFromString16(const base::string16& cleaned_uni_string,
 }
 
 String16Vector String16VectorFromString16(
-    const base::string16& cleaned_uni_string,
+    const std::u16string& cleaned_uni_string,
     bool break_on_space,
     WordStarts* word_starts) {
   if (word_starts)
@@ -171,7 +172,7 @@ String16Vector String16VectorFromString16(
   return words;
 }
 
-Char16Set Char16SetFromString16(const base::string16& term) {
+Char16Set Char16SetFromString16(const std::u16string& term) {
   return Char16Set(term.begin(), term.end());
 }
 

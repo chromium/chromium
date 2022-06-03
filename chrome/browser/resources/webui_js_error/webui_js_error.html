@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>$i18n{title}</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>$i18n{explainerText}<div>
+      <!-- Ids are referenced in integration tests, including tast tests -->
+      <button id="error-button" accesskey="l">$i18n{logErrorButton}</button>
+      <button id="exception-button" accesskey="t">
+        $i18n{uncaughtErrorButton}
+      </button>
+      <button id="promise-button" accesskey="p">
+        $i18n{promiseRejectButton}
+      </button>
+    </div>
+    <script type="module" src="webui_js_error.js"></script>
+  </body>
+</html>

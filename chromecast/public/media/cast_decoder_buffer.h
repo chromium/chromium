@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <cstddef>
-
 #include "stream_id.h"
 
 namespace chromecast {

@@ -83,7 +83,7 @@ class MutationObserverInterestGroup final
   bool IsOldValueRequested();
   void EnqueueMutationRecord(MutationRecord*);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   static MutationObserverInterestGroup* CreateIfNeeded(

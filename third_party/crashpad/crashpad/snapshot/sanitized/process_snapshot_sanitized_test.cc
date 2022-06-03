@@ -14,7 +14,10 @@
 
 #include "snapshot/sanitized/process_snapshot_sanitized.h"
 
-#include "base/macros.h"
+#include <string.h>
+
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
@@ -22,7 +25,7 @@
 #include "util/misc/address_sanitizer.h"
 #include "util/numeric/safe_assignment.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <sys/syscall.h>
 
 #include "snapshot/linux/process_snapshot_linux.h"
@@ -37,6 +40,9 @@ namespace {
 
 class ExceptionGenerator {
  public:
+  ExceptionGenerator(const ExceptionGenerator&) = delete;
+  ExceptionGenerator& operator=(const ExceptionGenerator&) = delete;
+
   static ExceptionGenerator* Get() {
     static ExceptionGenerator* instance = new ExceptionGenerator();
     return instance;
@@ -69,14 +75,12 @@ class ExceptionGenerator {
 
   FileHandle in_;
   FileHandle out_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionGenerator);
 };
 
-constexpr char kWhitelistedAnnotationName[] = "name_of_whitelisted_anno";
-constexpr char kWhitelistedAnnotationValue[] = "some_value";
-constexpr char kNonWhitelistedAnnotationName[] = "non_whitelisted_anno";
-constexpr char kNonWhitelistedAnnotationValue[] = "private_annotation";
+constexpr char kAllowedAnnotationName[] = "name_of_allowed_anno";
+constexpr char kAllowedAnnotationValue[] = "some_value";
+constexpr char kNonAllowedAnnotationName[] = "non_allowed_anno";
+constexpr char kNonAllowedAnnotationValue[] = "private_annotation";
 constexpr char kSensitiveStackData[] = "sensitive_stack_data";
 
 struct ChildTestAddresses {
@@ -91,15 +95,13 @@ void ChildTestFunction() {
   FileHandle in = StdioFileHandle(StdioStream::kStandardInput);
   FileHandle out = StdioFileHandle(StdioStream::kStandardOutput);
 
-  static StringAnnotation<32> whitelisted_annotation(
-      kWhitelistedAnnotationName);
-  whitelisted_annotation.Set(kWhitelistedAnnotationValue);
+  static StringAnnotation<32> allowed_annotation(kAllowedAnnotationName);
+  allowed_annotation.Set(kAllowedAnnotationValue);
 
-  static StringAnnotation<32> non_whitelisted_annotation(
-      kNonWhitelistedAnnotationName);
-  non_whitelisted_annotation.Set(kNonWhitelistedAnnotationValue);
+  static StringAnnotation<32> non_allowed_annotation(kNonAllowedAnnotationName);
+  non_allowed_annotation.Set(kNonAllowedAnnotationValue);
 
-  char string_data[strlen(kSensitiveStackData) + 1];
+  char string_data[base::size(kSensitiveStackData)];
   strcpy(string_data, kSensitiveStackData);
 
   void (*code_pointer)(void) = ChildTestFunction;
@@ -125,39 +127,39 @@ CRASHPAD_CHILD_TEST_MAIN(ChildToBeSanitized) {
 }
 
 void ExpectAnnotations(ProcessSnapshot* snapshot, bool sanitized) {
-  bool found_whitelisted = false;
-  bool found_non_whitelisted = false;
+  bool found_allowed = false;
+  bool found_non_allowed = false;
   for (auto module : snapshot->Modules()) {
     for (const auto& anno : module->AnnotationObjects()) {
-      if (anno.name == kWhitelistedAnnotationName) {
-        found_whitelisted = true;
-      } else if (anno.name == kNonWhitelistedAnnotationName) {
-        found_non_whitelisted = true;
+      if (anno.name == kAllowedAnnotationName) {
+        found_allowed = true;
+      } else if (anno.name == kNonAllowedAnnotationName) {
+        found_non_allowed = true;
       }
     }
   }
 
-  EXPECT_TRUE(found_whitelisted);
+  EXPECT_TRUE(found_allowed);
   if (sanitized) {
-    EXPECT_FALSE(found_non_whitelisted);
+    EXPECT_FALSE(found_non_allowed);
   } else {
-    EXPECT_TRUE(found_non_whitelisted);
+    EXPECT_TRUE(found_non_allowed);
   }
 }
 
 void ExpectProcessMemory(ProcessSnapshot* snapshot,
-                         VMAddress whitelisted_byte,
+                         VMAddress allowed_byte,
                          bool sanitized) {
   auto memory = snapshot->Memory();
 
   char out;
-  EXPECT_TRUE(memory->Read(whitelisted_byte, 1, &out));
+  EXPECT_TRUE(memory->Read(allowed_byte, 1, &out));
 
-  bool unwhitelisted_read = memory->Read(whitelisted_byte + 1, 1, &out);
+  bool disallowed_read = memory->Read(allowed_byte + 1, 1, &out);
   if (sanitized) {
-    EXPECT_FALSE(unwhitelisted_read);
+    EXPECT_FALSE(disallowed_read);
   } else {
-    EXPECT_TRUE(unwhitelisted_read);
+    EXPECT_TRUE(disallowed_read);
   }
 }
 
@@ -246,6 +248,9 @@ class SanitizeTest : public MultiprocessExec {
     SetExpectedChildTerminationBuiltinTrap();
   }
 
+  SanitizeTest(const SanitizeTest&) = delete;
+  SanitizeTest& operator=(const SanitizeTest&) = delete;
+
   ~SanitizeTest() = default;
 
  private:
@@ -271,18 +276,18 @@ class SanitizeTest : public MultiprocessExec {
                         addrs.string_address,
                         /* sanitized= */ false);
 
-    auto annotations_whitelist = std::make_unique<std::vector<std::string>>();
-    annotations_whitelist->push_back(kWhitelistedAnnotationName);
+    auto allowed_annotations = std::make_unique<std::vector<std::string>>();
+    allowed_annotations->push_back(kAllowedAnnotationName);
 
-    auto memory_ranges_whitelist =
+    auto allowed_memory_ranges =
         std::make_unique<std::vector<std::pair<VMAddress, VMAddress>>>();
-    memory_ranges_whitelist->push_back(
+    allowed_memory_ranges->push_back(
         std::make_pair(addrs.string_address, addrs.string_address + 1));
 
     ProcessSnapshotSanitized sanitized;
     ASSERT_TRUE(sanitized.Initialize(&snapshot,
-                                     std::move(annotations_whitelist),
-                                     std::move(memory_ranges_whitelist),
+                                     std::move(allowed_annotations),
+                                     std::move(allowed_memory_ranges),
                                      addrs.module_address,
                                      true));
 
@@ -296,8 +301,6 @@ class SanitizeTest : public MultiprocessExec {
     EXPECT_FALSE(screened_snapshot.Initialize(
         &snapshot, nullptr, nullptr, addrs.non_module_address, false));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SanitizeTest);
 };
 
 TEST(ProcessSnapshotSanitized, Sanitize) {

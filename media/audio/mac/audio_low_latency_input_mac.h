@@ -44,7 +44,6 @@
 
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -67,12 +66,16 @@ class MEDIA_EXPORT AUAudioInputStream
       AudioDeviceID audio_device_id,
       const AudioManager::LogCallback& log_callback,
       AudioManagerBase::VoiceProcessingMode voice_processing_mode);
+
+  AUAudioInputStream(const AUAudioInputStream&) = delete;
+  AUAudioInputStream& operator=(const AUAudioInputStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioInputStream::Close().
   ~AUAudioInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  AudioInputStream::OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -271,8 +274,6 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AUAudioInputStream);
 };
 
 }  // namespace media

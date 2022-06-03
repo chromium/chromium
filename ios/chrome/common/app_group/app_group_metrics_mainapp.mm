@@ -6,8 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
@@ -19,20 +18,6 @@
 namespace app_group {
 
 namespace main_app {
-
-void RecordWidgetUsage() {
-  NSUserDefaults* shared_defaults = GetGroupUserDefaults();
-  int content_extension_count =
-      [shared_defaults integerForKey:kContentExtensionDisplayCount];
-  UMA_HISTOGRAM_COUNTS_1000("IOS.ContentExtension.DisplayCount",
-                            content_extension_count);
-  [shared_defaults setInteger:0 forKey:kContentExtensionDisplayCount];
-  int search_extension_count =
-      [shared_defaults integerForKey:kSearchExtensionDisplayCount];
-  UMA_HISTOGRAM_COUNTS_1000("IOS.SearchExtension.DisplayCount",
-                            search_extension_count);
-  [shared_defaults setInteger:0 forKey:kSearchExtensionDisplayCount];
-}
 
 void ProcessPendingLogs(ProceduralBlockWithData callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

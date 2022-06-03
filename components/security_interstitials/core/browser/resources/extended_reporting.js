@@ -13,8 +13,8 @@ const SB_DISPLAY_CHECK_BOX = 'displaycheckbox';
 // interstitial type is not SAFEBROWSING or SSL or CAPTIVE_PORTAL.
 function setupExtendedReportingCheckbox() {
   const interstitialType = loadTimeData.getString('type');
-  if (interstitialType != 'SAFEBROWSING' && interstitialType != 'SSL' &&
-      interstitialType != 'CAPTIVE_PORTAL') {
+  if (interstitialType !== 'SAFEBROWSING' && interstitialType !== 'SSL' &&
+      interstitialType !== 'CAPTIVE_PORTAL') {
     return;
   }
 
@@ -22,15 +22,23 @@ function setupExtendedReportingCheckbox() {
     return;
   }
 
-  $('opt-in-label').innerHTML = loadTimeData.getString('optInLink');
+  if ($('privacy-link')) {
+    $('privacy-link').addEventListener('click', function() {
+      sendCommand(SecurityInterstitialCommandId.CMD_OPEN_REPORTING_PRIVACY);
+      return false;
+    });
+    $('privacy-link').addEventListener('mousedown', function() {
+      return false;
+    });
+  }
   $('opt-in-checkbox').checked = loadTimeData.getBoolean(SB_BOX_CHECKED);
   $('extended-reporting-opt-in').classList.remove('hidden');
 
-  const billing = interstitialType == 'SAFEBROWSING' &&
-                    loadTimeData.getBoolean('billing');
+  const billing =
+      interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
 
   let className = 'ssl-opt-in';
-  if (interstitialType == 'SAFEBROWSING' && !billing) {
+  if (interstitialType === 'SAFEBROWSING' && !billing) {
     className = 'safe-browsing-opt-in';
   }
 

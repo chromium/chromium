@@ -12,32 +12,10 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/wm/core/default_screen_position_client.h"
 
 namespace wm {
 
-class ImeUtilChromeosTest : public aura::test::AuraTestBase {
- public:
-  ImeUtilChromeosTest() = default;
-  ~ImeUtilChromeosTest() override = default;
-
-  void SetUp() override {
-    AuraTestBase::SetUp();
-    screen_position_client_ = std::make_unique<DefaultScreenPositionClient>();
-    aura::client::SetScreenPositionClient(root_window(),
-                                          screen_position_client_.get());
-  }
-
-  void TearDown() override {
-    aura::client::SetScreenPositionClient(root_window(), nullptr);
-    AuraTestBase::TearDown();
-  }
-
- private:
-  std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeUtilChromeosTest);
-};
+using ImeUtilChromeosTest = aura::test::AuraTestBase;
 
 TEST_F(ImeUtilChromeosTest, RestoreWindowBounds) {
   const gfx::Rect bounds(10, 20, 100, 200);
@@ -148,25 +126,6 @@ TEST_F(ImeUtilChromeosTest, MoveUpThenRestore) {
   EnsureWindowNotInRect(window, rect);
   EXPECT_EQ(original_bounds, window->bounds());
   EXPECT_EQ(original_bounds, window->GetBoundsInScreen());
-}
-
-// Tests that setting/clearing kEmbeddedWindowEnsureNotInRect window property
-// triggers the relevant top level to be moved/restored.
-TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRectHelper) {
-  const gfx::Rect original_bounds(10, 10, 100, 100);
-  aura::Window* top_level = aura::test::CreateTestWindow(
-      SK_ColorWHITE, 1, original_bounds, root_window());
-  aura::Window* embedding_root = aura::test::CreateTestWindowWithBounds(
-      gfx::Rect(original_bounds.size()), top_level);
-  EnsureWindowNotInRectHelper helper(embedding_root);
-
-  gfx::Rect occluded_rect(50, 50, 200, 200);
-  embedding_root->SetProperty(aura::client::kEmbeddedWindowEnsureNotInRect,
-                              new gfx::Rect(occluded_rect));
-  EXPECT_EQ(gfx::Rect(10, 0, 100, 100), top_level->bounds());
-
-  embedding_root->ClearProperty(aura::client::kEmbeddedWindowEnsureNotInRect);
-  EXPECT_EQ(original_bounds, top_level->bounds());
 }
 
 }  // namespace wm

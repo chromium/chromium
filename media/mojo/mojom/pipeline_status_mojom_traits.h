@@ -5,8 +5,6 @@
 #ifndef MEDIA_MOJO_MOJOM_PIPELINE_STATUS_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_PIPELINE_STATUS_MOJOM_TRAITS_H_
 
-#include <string>
-
 #include "media/base/pipeline_status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 
@@ -47,27 +45,66 @@ struct StructTraits<media::mojom::PipelineStatisticsDataView,
 };
 
 template <>
-struct StructTraits<media::mojom::PipelineDecoderInfoDataView,
-                    media::PipelineDecoderInfo> {
-  static std::string decoder_name(const media::PipelineDecoderInfo& input) {
-    return input.decoder_name;
+struct StructTraits<media::mojom::AudioPipelineInfoDataView,
+                    media::AudioPipelineInfo> {
+  static media::AudioDecoderType decoder_type(
+      const media::AudioPipelineInfo& input) {
+    return input.decoder_type;
   }
 
-  static bool is_platform_decoder(const media::PipelineDecoderInfo& input) {
+  static bool is_platform_decoder(const media::AudioPipelineInfo& input) {
     return input.is_platform_decoder;
   }
 
   static bool has_decrypting_demuxer_stream(
-      const media::PipelineDecoderInfo& input) {
+      const media::AudioPipelineInfo& input) {
     return input.has_decrypting_demuxer_stream;
   }
 
-  static bool Read(media::mojom::PipelineDecoderInfoDataView data,
-                   media::PipelineDecoderInfo* output) {
+  static media::EncryptionType encryption_type(
+      const media::AudioPipelineInfo& input) {
+    return input.encryption_type;
+  }
+
+  static bool Read(media::mojom::AudioPipelineInfoDataView data,
+                   media::AudioPipelineInfo* output) {
     output->is_platform_decoder = data.is_platform_decoder();
     output->has_decrypting_demuxer_stream =
         data.has_decrypting_demuxer_stream();
-    return data.ReadDecoderName(&output->decoder_name);
+    return data.ReadEncryptionType(&output->encryption_type) &&
+           data.ReadDecoderType(&output->decoder_type);
+  }
+};
+
+template <>
+struct StructTraits<media::mojom::VideoPipelineInfoDataView,
+                    media::VideoPipelineInfo> {
+  static media::VideoDecoderType decoder_type(
+      const media::VideoPipelineInfo& input) {
+    return input.decoder_type;
+  }
+
+  static bool is_platform_decoder(const media::VideoPipelineInfo& input) {
+    return input.is_platform_decoder;
+  }
+
+  static bool has_decrypting_demuxer_stream(
+      const media::VideoPipelineInfo& input) {
+    return input.has_decrypting_demuxer_stream;
+  }
+
+  static media::EncryptionType encryption_type(
+      const media::VideoPipelineInfo& input) {
+    return input.encryption_type;
+  }
+
+  static bool Read(media::mojom::VideoPipelineInfoDataView data,
+                   media::VideoPipelineInfo* output) {
+    output->is_platform_decoder = data.is_platform_decoder();
+    output->has_decrypting_demuxer_stream =
+        data.has_decrypting_demuxer_stream();
+    return data.ReadEncryptionType(&output->encryption_type) &&
+           data.ReadDecoderType(&output->decoder_type);
   }
 };
 

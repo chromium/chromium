@@ -32,13 +32,17 @@ class ProxyResolverV8Tracing {
   class Bindings {
    public:
     Bindings() {}
+
+    Bindings(const Bindings&) = delete;
+    Bindings& operator=(const Bindings&) = delete;
+
     virtual ~Bindings() {}
 
     // Invoked in response to an alert() call by the PAC script.
-    virtual void Alert(const base::string16& message) = 0;
+    virtual void Alert(const std::u16string& message) = 0;
 
     // Invoked in response to an error in the PAC script.
-    virtual void OnError(int line_number, const base::string16& message) = 0;
+    virtual void OnError(int line_number, const std::u16string& message) = 0;
 
     // Returns a HostResolver to use for DNS resolution.
     virtual ProxyHostResolver* GetHostResolver() = 0;
@@ -46,9 +50,6 @@ class ProxyResolverV8Tracing {
     // Returns a NetLogWithSource to be passed to the HostResolver returned by
     // GetHostResolver().
     virtual net::NetLogWithSource GetNetLogWithSource() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Bindings);
   };
 
   virtual ~ProxyResolverV8Tracing() {}
@@ -75,6 +76,11 @@ class ProxyResolverV8Tracing {
 class ProxyResolverV8TracingFactory {
  public:
   ProxyResolverV8TracingFactory() {}
+
+  ProxyResolverV8TracingFactory(const ProxyResolverV8TracingFactory&) = delete;
+  ProxyResolverV8TracingFactory& operator=(
+      const ProxyResolverV8TracingFactory&) = delete;
+
   virtual ~ProxyResolverV8TracingFactory() = default;
 
   virtual void CreateProxyResolverV8Tracing(
@@ -85,9 +91,6 @@ class ProxyResolverV8TracingFactory {
       std::unique_ptr<net::ProxyResolverFactory::Request>* request) = 0;
 
   static std::unique_ptr<ProxyResolverV8TracingFactory> Create();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverV8TracingFactory);
 };
 
 }  // namespace proxy_resolver

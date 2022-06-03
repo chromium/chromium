@@ -5,18 +5,16 @@
 #ifndef NET_NQE_SOCKET_WATCHER_H_
 #define NET_NQE_SOCKET_WATCHER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -30,12 +28,13 @@ class AddressList;
 
 namespace {
 
-typedef base::Callback<void(SocketPerformanceWatcherFactory::Protocol protocol,
-                            const base::TimeDelta& rtt,
-                            const base::Optional<nqe::internal::IPHash>& host)>
+typedef base::RepeatingCallback<void(
+    SocketPerformanceWatcherFactory::Protocol protocol,
+    const base::TimeDelta& rtt,
+    const absl::optional<nqe::internal::IPHash>& host)>
     OnUpdatedRTTAvailableCallback;
 
-typedef base::Callback<bool(base::TimeTicks)> ShouldNotifyRTTCallback;
+typedef base::RepeatingCallback<bool(base::TimeTicks)> ShouldNotifyRTTCallback;
 
 }  // namespace
 
@@ -66,6 +65,9 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
                 OnUpdatedRTTAvailableCallback updated_rtt_observation_callback,
                 ShouldNotifyRTTCallback should_notify_rtt_callback,
                 const base::TickClock* tick_clock);
+
+  SocketWatcher(const SocketWatcher&) = delete;
+  SocketWatcher& operator=(const SocketWatcher&) = delete;
 
   ~SocketWatcher() override;
 
@@ -106,9 +108,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   bool first_quic_rtt_notification_received_;
 
   // A unique identifier for the remote host that this socket connects to.
-  const base::Optional<IPHash> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketWatcher);
+  const absl::optional<IPHash> host_;
 };
 
 }  // namespace internal

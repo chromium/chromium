@@ -1,0 +1,16 @@
+<!doctype html>
+<title>Verify that calling start() during onend does not crash</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+async_test(t => {
+  var recog = new webkitSpeechRecognition();
+  recog.onend = () => {
+    recog.start();
+    setTimeout(() => t.done());
+  };
+  recog.start();
+});
+
+</script>

@@ -29,6 +29,14 @@ SchedulerHelper::SchedulerHelper(SequenceManager* sequence_manager)
   sequence_manager_->SetWorkBatchSize(4);
 }
 
+void SchedulerHelper::AttachToCurrentThread() {
+  DETACH_FROM_THREAD(thread_checker_);
+  CheckOnValidThread();
+  DCHECK(default_task_runner_) << "Must be invoked after InitDefaultQueues.";
+  DCHECK(!simple_task_executor_.has_value());
+  simple_task_executor_.emplace(default_task_runner_);
+}
+
 void SchedulerHelper::InitDefaultQueues(
     scoped_refptr<TaskQueue> default_task_queue,
     scoped_refptr<TaskQueue> control_task_queue,
@@ -38,10 +46,11 @@ void SchedulerHelper::InitDefaultQueues(
   default_task_runner_ =
       default_task_queue->CreateTaskRunner(static_cast<int>(default_task_type));
 
+  // Invoking SequenceManager::SetDefaultTaskRunner() before attaching the
+  // SchedulerHelper to a thread is fine. The default TaskRunner will be stored
+  // in TLS by the ThreadController before tasks are executed.
   DCHECK(sequence_manager_);
   sequence_manager_->SetDefaultTaskRunner(default_task_runner_);
-
-  blink_task_executor_.emplace(default_task_runner_, sequence_manager_);
 }
 
 SchedulerHelper::~SchedulerHelper() {
@@ -50,16 +59,13 @@ SchedulerHelper::~SchedulerHelper() {
 
 void SchedulerHelper::Shutdown() {
   CheckOnValidThread();
+  DCHECK(simple_task_executor_.has_value())
+      << "AttachToCurrentThread() was not invoked.";
   if (!sequence_manager_)
     return;
   ShutdownAllQueues();
   sequence_manager_->SetObserver(nullptr);
   sequence_manager_ = nullptr;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-SchedulerHelper::DefaultTaskRunner() {
-  return default_task_runner_;
 }
 
 void SchedulerHelper::SetWorkBatchSizeForTesting(int work_batch_size) {
@@ -117,22 +123,24 @@ void SchedulerHelper::ReclaimMemory() {
   sequence_manager_->ReclaimMemory();
 }
 
-TimeDomain* SchedulerHelper::real_time_domain() const {
+absl::optional<base::sequence_manager::DelayedWakeUp>
+SchedulerHelper::GetNextDelayedWakeUp() const {
   CheckOnValidThread();
   DCHECK(sequence_manager_);
-  return sequence_manager_->GetRealTimeDomain();
+  return sequence_manager_->GetNextDelayedWakeUp();
 }
 
-void SchedulerHelper::RegisterTimeDomain(TimeDomain* time_domain) {
+void SchedulerHelper::SetTimeDomain(
+    base::sequence_manager::TimeDomain* time_domain) {
   CheckOnValidThread();
   DCHECK(sequence_manager_);
-  sequence_manager_->RegisterTimeDomain(time_domain);
+  return sequence_manager_->SetTimeDomain(time_domain);
 }
 
-void SchedulerHelper::UnregisterTimeDomain(TimeDomain* time_domain) {
+void SchedulerHelper::ResetTimeDomain() {
   CheckOnValidThread();
-  if (sequence_manager_)
-    sequence_manager_->UnregisterTimeDomain(time_domain);
+  DCHECK(sequence_manager_);
+  return sequence_manager_->ResetTimeDomain();
 }
 
 void SchedulerHelper::OnBeginNestedRunLoop() {
@@ -166,33 +174,12 @@ void SchedulerHelper::SetTimerSlack(base::TimerSlack timer_slack) {
   }
 }
 
-double SchedulerHelper::GetSamplingRateForRecordingCPUTime() const {
-  if (sequence_manager_) {
-    return sequence_manager_->GetMetricRecordingSettings()
-        .task_sampling_rate_for_recording_cpu_time;
-  }
-  return 0;
-}
-
 bool SchedulerHelper::HasCPUTimingForEachTask() const {
   if (sequence_manager_) {
     return sequence_manager_->GetMetricRecordingSettings()
         .records_cpu_time_for_all_tasks();
   }
   return false;
-}
-
-SchedulerHelper::BlinkTaskExecutor::BlinkTaskExecutor(
-    scoped_refptr<base::SingleThreadTaskRunner> default_task_queue,
-    base::sequence_manager::SequenceManager* sequence_manager)
-    : base::SimpleTaskExecutor(sequence_manager, std::move(default_task_queue)),
-      sequence_manager_(sequence_manager) {}
-
-SchedulerHelper::BlinkTaskExecutor::~BlinkTaskExecutor() = default;
-
-const scoped_refptr<base::SequencedTaskRunner>&
-SchedulerHelper::BlinkTaskExecutor::GetContinuationTaskRunner() {
-  return sequence_manager_->GetTaskRunnerForCurrentTask();
 }
 
 }  // namespace scheduler

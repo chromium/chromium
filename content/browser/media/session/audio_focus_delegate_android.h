@@ -23,6 +23,11 @@ namespace content {
 class AudioFocusDelegateAndroid : public AudioFocusDelegate {
  public:
   explicit AudioFocusDelegateAndroid(MediaSessionImpl* media_session);
+
+  AudioFocusDelegateAndroid(const AudioFocusDelegateAndroid&) = delete;
+  AudioFocusDelegateAndroid& operator=(const AudioFocusDelegateAndroid&) =
+      delete;
+
   ~AudioFocusDelegateAndroid() override;
 
   void Initialize();
@@ -30,9 +35,10 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
   AudioFocusResult RequestAudioFocus(
       media_session::mojom::AudioFocusType audio_focus_type) override;
   void AbandonAudioFocus() override;
-  base::Optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
+  absl::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override;
   const base::UnguessableToken& request_id() const override;
+  void ReleaseRequestId() override {}
 
   // Called when the Android system requests the MediaSession to be suspended.
   // Called by Java through JNI.
@@ -57,13 +63,12 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
 
   // This is not used by this delegate.
   void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr) override {}
+      const media_session::mojom::MediaSessionInfoPtr&) override {}
 
  private:
   // Weak pointer because |this| is owned by |media_session_|.
   MediaSessionImpl* media_session_;
   base::android::ScopedJavaGlobalRef<jobject> j_media_session_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusDelegateAndroid);
 };
 
 }  // namespace content

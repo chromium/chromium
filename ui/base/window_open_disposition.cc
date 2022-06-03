@@ -9,13 +9,15 @@
 
 namespace ui {
 
-WindowOpenDisposition DispositionFromClick(bool middle_button,
-                                           bool alt_key,
-                                           bool ctrl_key,
-                                           bool meta_key,
-                                           bool shift_key) {
+WindowOpenDisposition DispositionFromClick(
+    bool middle_button,
+    bool alt_key,
+    bool ctrl_key,
+    bool meta_key,
+    bool shift_key,
+    WindowOpenDisposition disposition_for_current_tab) {
   // MacOS uses meta key (Command key) to spawn new tabs.
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   if (middle_button || meta_key)
 #else
   if (middle_button || ctrl_key)
@@ -26,16 +28,18 @@ WindowOpenDisposition DispositionFromClick(bool middle_button,
     return WindowOpenDisposition::NEW_WINDOW;
   if (alt_key)
     return WindowOpenDisposition::SAVE_TO_DISK;
-  return WindowOpenDisposition::CURRENT_TAB;
+  return disposition_for_current_tab;
 }
 
-WindowOpenDisposition DispositionFromEventFlags(int event_flags) {
-  return DispositionFromClick(
-      (event_flags & ui::EF_MIDDLE_MOUSE_BUTTON) != 0,
-      (event_flags & ui::EF_ALT_DOWN) != 0,
-      (event_flags & ui::EF_CONTROL_DOWN) != 0,
-      (event_flags & ui::EF_COMMAND_DOWN) != 0,
-      (event_flags & ui::EF_SHIFT_DOWN) != 0);
+WindowOpenDisposition DispositionFromEventFlags(
+    int event_flags,
+    WindowOpenDisposition disposition_for_current_tab) {
+  return DispositionFromClick((event_flags & ui::EF_MIDDLE_MOUSE_BUTTON) != 0,
+                              (event_flags & ui::EF_ALT_DOWN) != 0,
+                              (event_flags & ui::EF_CONTROL_DOWN) != 0,
+                              (event_flags & ui::EF_COMMAND_DOWN) != 0,
+                              (event_flags & ui::EF_SHIFT_DOWN) != 0,
+                              disposition_for_current_tab);
 }
 
 }  // namespace ui

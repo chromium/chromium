@@ -10,21 +10,23 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_server_properties.h"
@@ -36,7 +38,14 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/radio_utils.h"
+#include "base/power_monitor/power_monitor.h"
+#include "net/android/network_library.h"
+#endif  // defined(OS_ANDROID)
 
 namespace network {
 
@@ -64,6 +73,7 @@ enum class RequestStartTrigger {
   LONG_QUEUED_REQUESTS_TIMER_FIRED,
   EFFECTIVE_CONNECTION_TYPE_CHANGED,
   PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED,
+  FOUND_IN_CACHE,
 };
 
 const char* RequestStartTriggerString(RequestStartTrigger trigger) {
@@ -88,6 +98,8 @@ const char* RequestStartTriggerString(RequestStartTrigger trigger) {
       return "EFFECTIVE_CONNECTION_TYPE_CHANGED";
     case RequestStartTrigger::PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED:
       return "PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED";
+    case RequestStartTrigger::FOUND_IN_CACHE:
+      return "FOUND_IN_CACHE";
   }
 }
 
@@ -132,17 +144,16 @@ base::TimeDelta GetQueuedRequestsDispatchPeriodicity() {
   // dispatch of the request by a significant amount.
   if (!base::FeatureList::IsEnabled(
           features::kProactivelyThrottleLowPriorityRequests)) {
-    return base::TimeDelta::FromSeconds(5);
+    return base::Seconds(5);
   }
 
   // Choosing 100 milliseconds as the checking interval ensurs that the
   // queue is not checked too frequently. The interval is also not too long, so
   // we do not expect too many requests to go on the network at the
   // same time.
-  return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kProactivelyThrottleLowPriorityRequests,
-          "queued_requests_dispatch_periodicity_ms", 100));
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kProactivelyThrottleLowPriorityRequests,
+      "queued_requests_dispatch_periodicity_ms", 100));
 }
 
 struct ResourceScheduler::RequestPriorityParams {
@@ -226,8 +237,8 @@ void ResourceScheduler::ScheduledResourceRequest::RunResumeCallback() {
   std::move(resume_callback_).Run();
 }
 
-// This is the handle we return to the ResourceDispatcherHostImpl so it can
-// interact with the request.
+// This is the handle we return to the URLLoader so it can interact with the
+// request.
 class ResourceScheduler::ScheduledResourceRequestImpl
     : public ScheduledResourceRequest {
  public:
@@ -246,10 +257,15 @@ class ResourceScheduler::ScheduledResourceRequestImpl
         priority_(priority),
         fifo_ordering_(0),
         peak_delayable_requests_in_flight_(0u),
-        host_port_pair_(net::HostPortPair::FromURL(request->url())) {
+        host_port_pair_(net::HostPortPair::FromURL(request->url())),
+        cache_checked_(false) {
     DCHECK(!request_->GetUserData(kUserDataKey));
     request_->SetUserData(kUserDataKey, std::make_unique<UnownedPointer>(this));
   }
+
+  ScheduledResourceRequestImpl(const ScheduledResourceRequestImpl&) = delete;
+  ScheduledResourceRequestImpl& operator=(const ScheduledResourceRequestImpl&) =
+      delete;
 
   ~ScheduledResourceRequestImpl() override {
     if ((attributes_ & kAttributeLayoutBlocking) == kAttributeLayoutBlocking) {
@@ -297,6 +313,10 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     ready_ = true;
   }
 
+  void set_cache_checked() { cache_checked_ = true; }
+
+  bool cache_checked() const { return cache_checked_; }
+
   void UpdateDelayableRequestsInFlight(size_t delayable_requests_in_flight) {
     peak_delayable_requests_in_flight_ = std::max(
         peak_delayable_requests_in_flight_, delayable_requests_in_flight);
@@ -312,7 +332,11 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   net::URLRequest* url_request() { return request_; }
   const net::URLRequest* url_request() const { return request_; }
   bool is_async() const { return is_async_; }
-  uint32_t fifo_ordering() const { return fifo_ordering_; }
+  uint32_t fifo_ordering() const {
+    // Ensure that |fifo_ordering_| has been set before it's used.
+    DCHECK_LT(0u, fifo_ordering_);
+    return fifo_ordering_;
+  }
   void set_fifo_ordering(uint32_t fifo_ordering) {
     fifo_ordering_ = fifo_ordering;
   }
@@ -328,12 +352,13 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     explicit UnownedPointer(ScheduledResourceRequestImpl* pointer)
         : pointer_(pointer) {}
 
+    UnownedPointer(const UnownedPointer&) = delete;
+    UnownedPointer& operator=(const UnownedPointer&) = delete;
+
     ScheduledResourceRequestImpl* get() const { return pointer_; }
 
    private:
     ScheduledResourceRequestImpl* const pointer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
 
   static const void* const kUserDataKey;
@@ -355,11 +380,10 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   size_t peak_delayable_requests_in_flight_;
   // Cached to excessive recomputation in ReachedMaxRequestsPerHostPerClient().
   const net::HostPortPair host_port_pair_;
+  bool cache_checked_;
 
   base::WeakPtrFactory<ResourceScheduler::ScheduledResourceRequestImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScheduledResourceRequestImpl);
 };
 
 const void* const
@@ -425,17 +449,21 @@ class ResourceScheduler::Client
     }
   }
 
-  void ScheduleRequest(const net::URLRequest& url_request,
+  // Returns true if the request is started.
+  bool ScheduleRequest(const net::URLRequest& url_request,
                        ScheduledResourceRequestImpl* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    UpdateSignalQualityStatus();
     SetRequestAttributes(request, DetermineRequestAttributes(request));
     ShouldStartReqResult should_start = ShouldStartRequest(request);
     if (should_start == START_REQUEST) {
       // New requests can be started synchronously without issue.
       StartRequest(request, START_SYNC, RequestStartTrigger::NONE);
-    } else {
-      pending_requests_.Insert(request);
+      return true;
     }
+
+    pending_requests_.Insert(request);
+    return false;
   }
 
   void RemoveRequest(ScheduledResourceRequestImpl* request) {
@@ -526,6 +554,78 @@ class ResourceScheduler::Client
         RequestStartTrigger::LONG_QUEUED_REQUESTS_TIMER_FIRED);
   }
 
+  void OnCacheCheckForQueuedRequestsTimerFired() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (RequestQueue::NetQueue::const_iterator it =
+             pending_requests_.GetNextHighestIterator();
+         it != pending_requests_.End(); ++it) {
+      if (!(*it)->cache_checked() &&
+          tick_clock_->NowTicks() - (*it)->url_request()->creation_time() >=
+              features::kQueuedRequestsCacheCheckTimeThreshold.Get()) {
+        CheckDiskCacheForPendingRequest(*it);
+      }
+    }
+  }
+
+  void CheckDiskCacheForPendingRequest(ScheduledResourceRequestImpl* request) {
+    request->set_cache_checked();
+    net::URLRequest* url_request = request->url_request();
+    net::HttpCache* http_cache =
+        url_request->context()->http_transaction_factory()->GetCache();
+    if (!http_cache)
+      return;
+
+    if (http_cache->mode() == net::HttpCache::Mode::DISABLE)
+      return;
+
+    if (url_request->method() != net::HttpRequestHeaders::kGetMethod)
+      return;
+
+    int load_flags = url_request->load_flags();
+    if (load_flags & net::LOAD_DISABLE_CACHE ||
+        load_flags & net::LOAD_BYPASS_CACHE ||
+        load_flags & net::LOAD_VALIDATE_CACHE) {
+      return;
+    }
+
+    net::Error result = http_cache->CheckResourceExistence(
+        url_request->url(), url_request->method(),
+        url_request->isolation_info().network_isolation_key(),
+        url_request->isolation_info().request_type() ==
+            net::IsolationInfo::RequestType::kSubFrame,
+        base::BindOnce(&Client::StartPendingRequestIfCached,
+                       weak_ptr_factory_.GetWeakPtr(), url_request->url()));
+    if (result != net::OK)
+      return;
+
+    // It reaches here during iterating |pending_requests_|, and call
+    // StartPendingRequestIfCached() can change |pending_requests_|. So delay
+    // the run of StartPendingRequestIfCached() until after iterating
+    // |pending_requests_|.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&Client::StartPendingRequestIfCached,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  url_request->url(), net::OK));
+  }
+
+  void StartPendingRequestIfCached(const GURL& url, net::Error result) {
+    if (result != net::OK)
+      return;
+
+    for (RequestQueue::NetQueue::const_iterator it =
+             pending_requests_.GetNextHighestIterator();
+         it != pending_requests_.End(); ++it) {
+      ScheduledResourceRequestImpl* request = *it;
+      if (request->url_request()->url() == url) {
+        // Iterator invalidation doesn't matter because we are not going to loop
+        // again.
+        pending_requests_.Erase(request);
+        StartRequest(request, START_ASYNC, RequestStartTrigger::FOUND_IN_CACHE);
+        return;
+      }
+    }
+  }
+
   bool HasNoPendingRequests() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return pending_requests_.IsEmpty();
@@ -602,7 +702,7 @@ class ResourceScheduler::Client
 
     if (p2p_connections_count_ == 0 &&
         p2p_connections_count_active_timestamp_.has_value()) {
-      p2p_connections_count_active_timestamp_ = base::nullopt;
+      p2p_connections_count_active_timestamp_ = absl::nullopt;
     }
 
     LoadAnyStartablePendingRequests(
@@ -757,8 +857,9 @@ class ResourceScheduler::Client
         net::HttpServerProperties& http_server_properties =
             *request->url_request()->context()->http_server_properties();
         if (!http_server_properties.SupportsRequestPriority(
-                scheme_host_port,
-                request->url_request()->network_isolation_key())) {
+                scheme_host_port, request->url_request()
+                                      ->isolation_info()
+                                      .network_isolation_key())) {
           attributes |= kAttributeDelayable;
         }
       }
@@ -817,10 +918,11 @@ class ResourceScheduler::Client
         }
       } else {
         if (last_non_delayable_request_end_) {
-          UMA_HISTOGRAM_MEDIUM_TIMES(
+          LOCAL_HISTOGRAM_CUSTOM_TIMES(
               "ResourceScheduler.NonDelayableLastEndToNonDelayableStart."
               "NonDelayableNotInFlight",
-              ticks_now - last_non_delayable_request_end_.value());
+              ticks_now - last_non_delayable_request_end_.value(),
+              base::Milliseconds(10), base::Minutes(3), 50);
         }
       }
 
@@ -833,14 +935,15 @@ class ResourceScheduler::Client
             ticks_now - last_non_delayable_request_start_.value());
       }
       if (last_non_delayable_request_end_.has_value()) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        LOCAL_HISTOGRAM_CUSTOM_TIMES(
             "ResourceScheduler.NonDelayableLastEndToNonDelayableStart",
-            ticks_now - last_non_delayable_request_end_.value());
+            ticks_now - last_non_delayable_request_end_.value(),
+            base::Milliseconds(10), base::Minutes(3), 50);
       }
 
       // Record time since last non-delayable request start or end, whichever
       // happened later.
-      base::Optional<base::TimeTicks> last_non_delayable_request_start_or_end;
+      absl::optional<base::TimeTicks> last_non_delayable_request_start_or_end;
       if (last_non_delayable_request_start_.has_value() &&
           !last_non_delayable_request_end_.has_value()) {
         last_non_delayable_request_start_or_end =
@@ -895,6 +998,127 @@ class ResourceScheduler::Client
     request->Start(start_mode);
   }
 
+#if defined(OS_ANDROID)
+  void RecordMetricsForWeakSignalThrottlingDuration() const {
+    if (weak_signal_throttling_start_timestamp_.has_value()) {
+      base::TimeDelta time_since_throttling_start =
+          tick_clock_->NowTicks() -
+          weak_signal_throttling_start_timestamp_.value();
+      if (base::android::RadioUtils::GetConnectionType() ==
+          base::android::RadioConnectionType::kWifi) {
+        base::UmaHistogramLongTimes(
+            "ResourceScheduler.WeakSignalThrottling.WeakSignalDuration.Wifi",
+            time_since_throttling_start);
+      } else {
+        base::UmaHistogramLongTimes(
+            "ResourceScheduler.WeakSignalThrottling.WeakSignalDuration.Cell",
+            time_since_throttling_start);
+      }
+    }
+  }
+
+  bool GetSignalQualityAllowsForThrottling() {
+    // We should only throttle while on battery power and poor radio signal.
+    if (base::PowerMonitor::IsInitialized() &&
+        !base::PowerMonitor::IsOnBatteryPower()) {
+      return false;
+    }
+    if (base::android::RadioUtils::GetConnectionType() ==
+        base::android::RadioConnectionType::kWifi) {
+      absl::optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
+      return maybe_level.has_value() &&
+             *maybe_level <=
+                 static_cast<int>(base::android::RadioSignalLevel::kModerate);
+    }
+    absl::optional<base::android::RadioSignalLevel> maybe_level =
+        base::android::RadioUtils::GetCellSignalLevel();
+    return maybe_level.has_value() &&
+           *maybe_level <= base::android::RadioSignalLevel::kModerate;
+  }
+#endif  // defined(OS_ANDROID)
+
+  // While the radio signal is weak and the device is on battery power, we
+  // only allow short periods when IDLE browser requests can be sent.
+  // The length and interval of the periods are configurable via
+  // ResourceSchedulerParamsManager. Android only.
+  void UpdateSignalQualityStatus() {
+    if (!is_browser_client_)
+      return;
+
+    if (!base::FeatureList::IsEnabled(
+            features::kPauseLowPriorityBrowserRequestsOnWeakSignal)) {
+      return;
+    }
+
+#if defined(OS_ANDROID)
+    if (!base::android::RadioUtils::IsSupported())
+      return;
+
+    if (!GetSignalQualityAllowsForThrottling()) {
+      RecordMetricsForWeakSignalThrottlingDuration();
+      // Reset windows and stop throttling.
+      weak_signal_throttling_start_timestamp_ = absl::nullopt;
+      weak_signal_throttling_end_timestamp_ = absl::nullopt;
+      return;
+    }
+
+    if (weak_signal_throttling_end_timestamp_.has_value()) {
+      // Requests are temporarily being allowed to load. Check if we should
+      // start throttling again.
+      base::TimeDelta time_since_unthrottled =
+          tick_clock_->NowTicks() -
+          weak_signal_throttling_end_timestamp_.value();
+      base::TimeDelta weak_signal_unthrottle_duration =
+          resource_scheduler_->resource_scheduler_params_manager_
+              .weak_signal_unthrottle_duration()
+              .value();
+      if (time_since_unthrottled > weak_signal_unthrottle_duration) {
+        // Restart throttling.
+        weak_signal_throttling_start_timestamp_ = tick_clock_->NowTicks();
+        weak_signal_throttling_end_timestamp_ = absl::nullopt;
+      }
+      return;
+    }
+
+    if (weak_signal_throttling_start_timestamp_.has_value()) {
+      // We're currently throttling requests. Check if we should temporarily
+      // allow requests to load again to avoid infinite starvation.
+      base::TimeDelta time_since_throttling_start =
+          tick_clock_->NowTicks() -
+          weak_signal_throttling_start_timestamp_.value();
+      base::TimeDelta max_weak_signal_throttling_duration =
+          resource_scheduler_->resource_scheduler_params_manager_
+              .max_weak_signal_throttling_duration()
+              .value();
+      if (time_since_throttling_start > max_weak_signal_throttling_duration) {
+        RecordMetricsForWeakSignalThrottlingDuration();
+        // Temporarily pause throttling.
+        weak_signal_throttling_start_timestamp_ = absl::nullopt;
+        weak_signal_throttling_end_timestamp_ = tick_clock_->NowTicks();
+      }
+      return;
+    }
+
+    // Not currently throttling, so start throttling.
+    weak_signal_throttling_start_timestamp_ = tick_clock_->NowTicks();
+#endif  // defined(OS_ANDROID)
+  }
+
+  // Returns true if |request| should be throttled to avoid unnecessary
+  // radio power drain when radio signal is weak (Android only).
+  bool ShouldThrottleBrowserInitiatedRequestDueToSignalQuality(
+      const ScheduledResourceRequestImpl& request) const {
+    DCHECK(is_browser_client_);
+
+    // Check if throttling is currently enabled.
+    if (!weak_signal_throttling_start_timestamp_.has_value())
+      return false;
+
+    // IDLE browser requests can be delayed without affecting the user
+    // experience gravely.
+    return request.url_request()->priority() <= net::IDLE;
+  }
+
   // Returns true if |request| should be throttled to avoid network contention
   // with active P2P connections.
   bool ShouldThrottleBrowserInitiatedRequestDueToP2PConnections(
@@ -944,7 +1168,7 @@ class ResourceScheduler::Client
           tick_clock_->NowTicks() -
           p2p_connections_count_active_timestamp_.value();
 
-      base::Optional<base::TimeDelta> max_wait_time_p2p_connections =
+      absl::optional<base::TimeDelta> max_wait_time_p2p_connections =
           resource_scheduler_->resource_scheduler_params_manager_
               .max_wait_time_p2p_connections();
 
@@ -1031,7 +1255,12 @@ class ResourceScheduler::Client
         return DO_NOT_START_REQUEST_AND_KEEP_SEARCHING;
       }
 
+      if (ShouldThrottleBrowserInitiatedRequestDueToSignalQuality(*request)) {
+        return DO_NOT_START_REQUEST_AND_KEEP_SEARCHING;
+      }
+
       RecordMetricsForBrowserInitiatedRequestsOnNetworkDispatch(*request);
+
       return START_REQUEST;
     }
 
@@ -1061,8 +1290,9 @@ class ResourceScheduler::Client
     bool supports_priority =
         url_request.context()
             ->http_server_properties()
-            ->SupportsRequestPriority(scheme_host_port,
-                                      url_request.network_isolation_key());
+            ->SupportsRequestPriority(
+                scheme_host_port,
+                url_request.isolation_info().network_isolation_key());
 
     if (!priority_delayable) {
       // TODO(willchan): We should really improve this algorithm as described in
@@ -1125,7 +1355,7 @@ class ResourceScheduler::Client
 
   // Returns true if a non-delayable request is expected to arrive soon.
   bool IsNonDelayableRequestAnticipated() const {
-    base::Optional<double> http_rtt_multiplier =
+    absl::optional<double> http_rtt_multiplier =
         params_for_network_quality_
             .http_rtt_multiplier_for_proactive_throttling;
 
@@ -1141,7 +1371,7 @@ class ResourceScheduler::Client
     if (!last_non_delayable_request_start_.has_value())
       return false;
 
-    base::Optional<base::TimeDelta> http_rtt =
+    absl::optional<base::TimeDelta> http_rtt =
         network_quality_estimator_->GetHttpRTT();
     if (!http_rtt.has_value())
       return false;
@@ -1195,6 +1425,7 @@ class ResourceScheduler::Client
     // 3) We do not start the request, same as above, but StartRequest() tells
     //     us there's no point in checking any further requests.
     TRACE_EVENT0("loading", "LoadAnyStartablePendingRequests");
+    UpdateSignalQualityStatus();
     if (num_skipped_scans_due_to_scheduled_start_ > 0) {
       UMA_HISTOGRAM_COUNTS_1M("ResourceScheduler.NumSkippedScans.ScheduleStart",
                               num_skipped_scans_due_to_scheduled_start_);
@@ -1257,16 +1488,12 @@ class ResourceScheduler::Client
                                request.url_request()->creation_time();
     }
 
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    LOCAL_HISTOGRAM_CUSTOM_TIMES(
         "ResourceScheduler.DelayableRequests."
         "WaitTimeToAvoidContentionWithNonDelayableRequest",
-        ideal_duration_to_wait);
+        ideal_duration_to_wait, base::Milliseconds(10), base::Minutes(3), 50);
   }
 
-  // Tracks if the main HTML parser has reached the body which marks the end of
-  // layout-blocking resources.
-  // This is disabled and the is always true when kRendererSideResourceScheduler
-  // is enabled.
   RequestQueue pending_requests_;
   RequestSet in_flight_requests_;
 
@@ -1299,10 +1526,10 @@ class ResourceScheduler::Client
   const base::TickClock* tick_clock_;
 
   // Time when the last non-delayble request started in this client.
-  base::Optional<base::TimeTicks> last_non_delayable_request_start_;
+  absl::optional<base::TimeTicks> last_non_delayable_request_start_;
 
   // Time when the last non-delayble request ended in this client.
-  base::Optional<base::TimeTicks> last_non_delayable_request_end_;
+  absl::optional<base::TimeTicks> last_non_delayable_request_end_;
 
   // Current estimated value of the effective connection type.
   net::EffectiveConnectionType effective_connection_type_ =
@@ -1315,14 +1542,21 @@ class ResourceScheduler::Client
   // connection. Set to current timestamp when |p2p_connections_count_|
   // changes from 0 to a non-zero value. Reset to null when
   // |p2p_connections_count_| becomes 0.
-  base::Optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
+  absl::optional<base::TimeTicks> p2p_connections_count_active_timestamp_;
 
   // Earliest timestamp since when the count of active peer to peer
   // connection counts dropped from a non-zero value to zero. Set to current
   // timestamp when |p2p_connections_count_| changes from a non-zero value to 0.
-  base::Optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
+  absl::optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
 
   base::OneShotTimer p2p_connections_count_ended_timer_;
+
+  // Start of period when we delay requests due to bad signal quality.
+  absl::optional<base::TimeTicks> weak_signal_throttling_start_timestamp_;
+
+  // Start of period when we don't delay requests even if the signal quality is
+  // bad.
+  absl::optional<base::TimeTicks> weak_signal_throttling_end_timestamp_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -1370,7 +1604,12 @@ ResourceScheduler::ScheduleRequest(int child_id,
   }
 
   Client* client = it->second.get();
-  client->ScheduleRequest(*url_request, request.get());
+  if (!client->ScheduleRequest(*url_request, request.get())) {
+    if (base::FeatureList::IsEnabled(features::kCheckCacheForQueuedRequests)) {
+      // If the request is queued, start the cache check timer.
+      StartCacheCheckForQueuedRequestsTimer();
+    }
+  }
 
   if (!IsLongQueuedRequestsDispatchTimerRunning())
     StartLongQueuedRequestsDispatchTimerIfNeeded();
@@ -1513,6 +1752,21 @@ void ResourceScheduler::OnLongQueuedRequestsDispatchTimerFired() {
   StartLongQueuedRequestsDispatchTimerIfNeeded();
 }
 
+void ResourceScheduler::StartCacheCheckForQueuedRequestsTimer() {
+  if (check_cache_for_queued_request_timer_.IsRunning())
+    return;
+
+  check_cache_for_queued_request_timer_.Start(
+      FROM_HERE, features::kQueuedRequestsCacheCheckInterval.Get(), this,
+      &ResourceScheduler::OnCacheCheckForQueuedRequestsTimerFired);
+}
+
+void ResourceScheduler::OnCacheCheckForQueuedRequestsTimerFired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : client_map_)
+    client.second->OnCacheCheckForQueuedRequestsTimerFired();
+}
+
 void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
                                             net::RequestPriority new_priority,
                                             int new_intra_priority_value) {
@@ -1575,6 +1829,10 @@ bool ResourceScheduler::IsLongQueuedRequestsDispatchTimerRunning() const {
   return long_queued_requests_dispatch_timer_.IsRunning();
 }
 
+base::SequencedTaskRunner* ResourceScheduler::task_runner() {
+  return task_runner_.get();
+}
+
 void ResourceScheduler::SetResourceSchedulerParamsManagerForTests(
     const ResourceSchedulerParamsManager& resource_scheduler_params_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1587,6 +1845,11 @@ void ResourceScheduler::SetResourceSchedulerParamsManagerForTests(
 void ResourceScheduler::DispatchLongQueuedRequestsForTesting() {
   long_queued_requests_dispatch_timer_.Stop();
   OnLongQueuedRequestsDispatchTimerFired();
+}
+
+void ResourceScheduler::FireQueuedRequestsCacheCheckTimerForTesting() {
+  check_cache_for_queued_request_timer_.Stop();
+  OnCacheCheckForQueuedRequestsTimerFired();
 }
 
 }  // namespace network

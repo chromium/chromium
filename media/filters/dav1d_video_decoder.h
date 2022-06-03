@@ -5,15 +5,13 @@
 #ifndef MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 #define MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/threading/thread_checker.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/sequence_checker.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_frame_pool.h"
 #include "media/filters/offloading_video_decoder.h"
 
 struct Dav1dContext;
@@ -24,12 +22,18 @@ class MediaLog;
 
 class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
  public:
+  static SupportedVideoDecoderConfigs SupportedConfigs();
+
   Dav1dVideoDecoder(MediaLog* media_log,
                     OffloadState offload_state = OffloadState::kNormal);
+
+  Dav1dVideoDecoder(const Dav1dVideoDecoder&) = delete;
+  Dav1dVideoDecoder& operator=(const Dav1dVideoDecoder&) = delete;
+
   ~Dav1dVideoDecoder() override;
 
   // VideoDecoder implementation.
-  std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
@@ -57,7 +61,7 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   // Invokes the decoder and calls |output_cb_| for any returned frames.
   bool DecodeBuffer(scoped_refptr<DecoderBuffer> buffer);
 
-  scoped_refptr<VideoFrame> CopyImageToVideoFrame(const Dav1dPicture* img);
+  scoped_refptr<VideoFrame> BindImageToVideoFrame(const Dav1dPicture* img);
 
   // Used to report error messages to the client.
   MediaLog* const media_log_ = nullptr;
@@ -67,6 +71,10 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   const bool bind_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // "Zero" filled UV data for monochrome images to use since Chromium doesn't
+  // have support for I400P(8|10|12) images.
+  scoped_refptr<base::RefCountedBytes> fake_uv_data_;
 
   // Current decoder state. Used to ensure methods are called as expected.
   DecoderState state_ = DecoderState::kUninitialized;
@@ -81,8 +89,6 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   // The allocated decoder; null before Initialize() and anytime after
   // CloseDecoder().
   Dav1dContext* dav1d_decoder_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Dav1dVideoDecoder);
 };
 
 // Helper class for creating a Dav1dVideoDecoder which will offload all AV1
@@ -92,7 +98,7 @@ class OffloadingDav1dVideoDecoder : public OffloadingVideoDecoder {
   explicit OffloadingDav1dVideoDecoder(MediaLog* media_log)
       : OffloadingVideoDecoder(
             0,
-            std::vector<VideoCodec>(1, kCodecAV1),
+            std::vector<VideoCodec>(1, VideoCodec::kAV1),
             std::make_unique<Dav1dVideoDecoder>(
                 media_log,
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}

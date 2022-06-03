@@ -27,6 +27,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//base",
+    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
   ]

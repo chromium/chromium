@@ -12,8 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_decoder_config.h"
@@ -40,16 +38,21 @@ namespace mp2t {
 //
 class MEDIA_EXPORT EsParserH264 : public EsParser {
  public:
-  typedef base::Callback<void(const VideoDecoderConfig&)> NewVideoConfigCB;
+  using NewVideoConfigCB =
+      base::RepeatingCallback<void(const VideoDecoderConfig&)>;
 
-  EsParserH264(const NewVideoConfigCB& new_video_config_cb,
-               const EmitBufferCB& emit_buffer_cb);
+  EsParserH264(NewVideoConfigCB new_video_config_cb,
+               EmitBufferCB emit_buffer_cb);
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
-  EsParserH264(const NewVideoConfigCB& new_video_config_cb,
-               const EmitBufferCB& emit_buffer_cb,
+  EsParserH264(NewVideoConfigCB new_video_config_cb,
+               EmitBufferCB emit_buffer_cb,
                EncryptionScheme init_encryption_scheme,
                const GetDecryptConfigCB& get_decrypt_config_cb);
 #endif
+
+  EsParserH264(const EsParserH264&) = delete;
+  EsParserH264& operator=(const EsParserH264&) = delete;
+
   ~EsParserH264() override;
 
   // EsParser implementation.
@@ -95,8 +98,6 @@ class MEDIA_EXPORT EsParserH264 : public EsParser {
 
   // Last video decoder config.
   VideoDecoderConfig last_video_decoder_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserH264);
 };
 
 }  // namespace mp2t

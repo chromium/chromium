@@ -49,6 +49,16 @@ TEST(CpuIdentityTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
   EXPECT_EQ("GoldmontPlus", GetCpuUarch(cpuid));
 }
 
+TEST(CpuIdentityTest, DefaultCommandsBasedOnUarch_Tigerlake) {
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x8c;  // Tiger Lake
+  cpuid.model_name = "";
+  EXPECT_EQ("Tigerlake", GetCpuUarch(cpuid));
+}
+
 TEST(CpuIdentityTest, DefaultCommandsBasedOnUarch_Excavator) {
   CPUIdentity cpuid;
   cpuid.arch = "x86_64";

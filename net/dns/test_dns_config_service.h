@@ -5,13 +5,18 @@
 #ifndef NET_DNS_TEST_DNS_CONFIG_SERVICE_H_
 #define NET_DNS_TEST_DNS_CONFIG_SERVICE_H_
 
+#include <memory>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+
+class DnsHostsParser;
 
 // Simple test implementation of DnsConfigService that will trigger
 // notifications only on explicitly calling On...() methods.
@@ -20,7 +25,8 @@ class TestDnsConfigService : public DnsConfigService {
   TestDnsConfigService();
   ~TestDnsConfigService() override;
 
-  void ReadNow() override {}
+  void ReadConfigNow() override {}
+  void ReadHostsNow() override {}
   bool StartWatching() override;
 
   // Expose the protected methods to this test suite.
@@ -36,10 +42,6 @@ class TestDnsConfigService : public DnsConfigService {
     DnsConfigService::OnHostsRead(hosts);
   }
 
-  void set_watch_failed(bool value) {
-    DnsConfigService::set_watch_failed(value);
-  }
-
   void RefreshConfig() override;
 
   void SetConfigForRefresh(DnsConfig config) {
@@ -48,7 +50,60 @@ class TestDnsConfigService : public DnsConfigService {
   }
 
  private:
-  base::Optional<DnsConfig> config_for_refresh_;
+  absl::optional<DnsConfig> config_for_refresh_;
+};
+
+// Test implementation of `DnsConfigService` that exercises the
+// `DnsConfigService::HostsReader`. Uses an injected `DnsHostsParser`. `Watcher`
+// change notifications are simulated using `TriggerHostsChangeNotification()`.
+class HostsReadingTestDnsConfigService : public TestDnsConfigService {
+ public:
+  using HostsParserFactory =
+      base::RepeatingCallback<std::unique_ptr<DnsHostsParser>(void)>;
+
+  explicit HostsReadingTestDnsConfigService(
+      HostsParserFactory hosts_parser_factory);
+  ~HostsReadingTestDnsConfigService() override;
+
+  // Simulate a `Watcher` change notification for the HOSTS file.
+  void TriggerHostsChangeNotification(bool success) {
+    watcher_->TriggerHostsChangeNotification(success);
+  }
+
+  // DnsConfigService:
+  void ReadHostsNow() override;
+  bool StartWatching() override;
+
+ private:
+  class HostsReader : public DnsConfigService::HostsReader {
+   public:
+    HostsReader(TestDnsConfigService& service,
+                HostsParserFactory hosts_parser_factory);
+    ~HostsReader() override;
+
+    // DnsConfigService::HostsReader:
+    std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override;
+
+   private:
+    HostsParserFactory hosts_parser_factory_;
+  };
+
+  class Watcher : public DnsConfigService::Watcher {
+   public:
+    explicit Watcher(DnsConfigService& service);
+    ~Watcher() override;
+
+    void TriggerHostsChangeNotification(bool success);
+
+    // DnsConfigService::Watcher:
+    bool Watch() override;
+
+   private:
+    bool watch_started_ = false;
+  };
+
+  std::unique_ptr<HostsReader> hosts_reader_;
+  std::unique_ptr<Watcher> watcher_ = std::make_unique<Watcher>(*this);
 };
 
 }  // namespace net

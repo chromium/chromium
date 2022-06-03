@@ -14,11 +14,13 @@ class NeverEventStorageValidatorTest : public ::testing::Test {
  public:
   NeverEventStorageValidatorTest() = default;
 
+  NeverEventStorageValidatorTest(const NeverEventStorageValidatorTest&) =
+      delete;
+  NeverEventStorageValidatorTest& operator=(
+      const NeverEventStorageValidatorTest&) = delete;
+
  protected:
   NeverEventStorageValidator validator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NeverEventStorageValidatorTest);
 };
 
 }  // namespace

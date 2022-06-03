@@ -4,12 +4,15 @@
 
 #include "components/viz/service/display_embedder/software_output_device_mac.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/mac/foundation_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/ca_layer_params.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/skia_util.h"
 
 namespace viz {
 
@@ -170,6 +173,9 @@ SkCanvas* SoftwareOutputDeviceMac::BeginPaint(
 
 void SoftwareOutputDeviceMac::EndPaint() {
   SoftwareOutputDevice::EndPaint();
+  if (!current_paint_buffer_)
+    return;
+
   {
     TRACE_EVENT0("browser", "IOSurfaceUnlock");
     IOReturn io_result = IOSurfaceUnlock(current_paint_buffer_->io_surface,

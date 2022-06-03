@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 declare_args() {
@@ -11,10 +12,9 @@ declare_args() {
   # Don't check in changes that set this to false for more platforms; doing so
   # is not supported.
   use_custom_libcxx =
-      is_fuchsia || is_android || is_mac || (is_ios && !use_xcode_clang) ||
+      is_fuchsia || is_android || is_apple || is_linux || is_chromeos_lacros ||
       (is_win && is_clang) ||
-      (is_linux &&
-       (!is_chromeos || default_toolchain != "//build/toolchain/cros:target"))
+      (is_chromeos && default_toolchain != "//build/toolchain/cros:target")
 
   # Use libc++ instead of stdlibc++ when using the host_cpu toolchain, even if
   # use_custom_libcxx is false. This is useful for cross-compiles where a custom
@@ -29,10 +29,7 @@ declare_args() {
   # http://crbug.com/966687.
   libcxx_natvis_include = true
 
-  # When set, enables C++ iterator debugging in debug builds. Iterator
-  # debugging is always off in release builds (technically, this flag affects
-  # the "debug" config, which is always available but applied by default only
-  # in debug builds).
+  # When set, enables libc++ debug mode with iterator debugging.
   #
   # Iterator debugging is generally useful for catching bugs. But it can
   # introduce extra locking to check the state of an iterator against the state
@@ -45,7 +42,7 @@ declare_args() {
 }
 
 use_custom_libcxx =
-    use_custom_libcxx || (use_custom_libcxx_for_host && current_cpu == host_cpu)
+    use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
 use_custom_libcxx = use_custom_libcxx && !is_nacl
 
 declare_args() {
@@ -61,7 +58,7 @@ declare_args() {
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.
 export_libcxxabi_from_executables =
-    use_custom_libcxx && !is_win && !is_component_build &&
+    use_custom_libcxx && !is_apple && !is_win && !is_component_build &&
     (is_asan || is_ubsan_vptr)
 
 # On Android, many shared libraries get loaded from the context of a JRE.  In

@@ -14,10 +14,7 @@ class PrefService;
 
 // |prefs| must not be nil.
 - (instancetype)initWithPrefs:(PrefService*)prefs NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

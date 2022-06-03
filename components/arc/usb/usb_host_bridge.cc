@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +23,9 @@
 
 namespace arc {
 namespace {
+
+// USB class codes are detailed at https://www.usb.org/defined-class-codes
+constexpr int kUsbClassMassStorage = 0x08;
 
 // Singleton factory for ArcUsbHostBridge
 class ArcUsbHostBridgeFactory
@@ -40,6 +45,26 @@ class ArcUsbHostBridgeFactory
   ArcUsbHostBridgeFactory() = default;
   ~ArcUsbHostBridgeFactory() override = default;
 };
+
+bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
+  for (const auto& alternate : interface.alternates) {
+    if (alternate->class_code == kUsbClassMassStorage)
+      return true;
+  }
+  return false;
+}
+
+bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
+  // ChromeOS allows mass storage devices to be detached, but we don't expose
+  // these directly to ARC.
+  for (const auto& configuration : device_info.configurations) {
+    for (const auto& interface : configuration->interfaces) {
+      if (!IsMassStorageInterface(*interface))
+        return true;
+    }
+  }
+  return false;
+}
 
 void OnDeviceOpened(mojom::UsbHostHost::OpenDeviceCallback callback,
                     base::ScopedFD fd) {
@@ -73,9 +98,16 @@ std::string GetDevicePath(const device::mojom::UsbDeviceInfo& device_info) {
 
 }  // namespace
 
+// static
 ArcUsbHostBridge* ArcUsbHostBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcUsbHostBridgeFactory::GetForBrowserContext(context);
+}
+
+// static
+ArcUsbHostBridge* ArcUsbHostBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcUsbHostBridgeFactory::GetForBrowserContextForTesting(context);
 }
 
 ArcUsbHostBridge::ArcUsbHostBridge(content::BrowserContext* context,
@@ -131,14 +163,14 @@ void ArcUsbHostBridge::RequestPermission(const std::string& guid,
   DCHECK(ui_delegate_);
   // Ask the authorization from the user.
   ui_delegate_->RequestUsbAccessPermission(
-      package, guid, iter->second->serial_number.value_or(base::string16()),
-      iter->second->manufacturer_name.value_or(base::string16()),
-      iter->second->product_name.value_or(base::string16()),
+      package, guid, iter->second->serial_number.value_or(std::u16string()),
+      iter->second->manufacturer_name.value_or(std::u16string()),
+      iter->second->product_name.value_or(std::u16string()),
       iter->second->vendor_id, iter->second->product_id, std::move(callback));
 }
 
 void ArcUsbHostBridge::OpenDevice(const std::string& guid,
-                                  const base::Optional<std::string>& package,
+                                  const absl::optional<std::string>& package,
                                   OpenDeviceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
@@ -161,17 +193,16 @@ void ArcUsbHostBridge::OpenDevice(const std::string& guid,
     return;
   }
 
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   chromeos::PermissionBrokerClient::Get()->OpenPath(
       GetDevicePath(*iter->second),
-      base::BindOnce(&OnDeviceOpened, repeating_callback),
-      base::BindOnce(&OnDeviceOpenError, repeating_callback));
+      base::BindOnce(&OnDeviceOpened, std::move(split_callback.first)),
+      base::BindOnce(&OnDeviceOpenError, std::move(split_callback.second)));
 }
 
 void ArcUsbHostBridge::OpenDeviceDeprecated(
     const std::string& guid,
-    const base::Optional<std::string>& package,
+    const absl::optional<std::string>& package,
     OpenDeviceCallback callback) {
   LOG(ERROR) << "ArcUsbHostBridge::OpenDeviceDeprecated is deprecated";
   OpenDevice(guid, package, std::move(callback));
@@ -192,17 +223,17 @@ void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
 
   device::mojom::UsbDeviceInfoPtr info = iter->second->Clone();
   // b/69295049 the other side doesn't like optional strings.
-  info->manufacturer_name = info->manufacturer_name.value_or(base::string16());
-  info->product_name = info->product_name.value_or(base::string16());
-  info->serial_number = info->serial_number.value_or(base::string16());
+  info->manufacturer_name = info->manufacturer_name.value_or(std::u16string());
+  info->product_name = info->product_name.value_or(std::u16string());
+  info->serial_number = info->serial_number.value_or(std::u16string());
   for (const device::mojom::UsbConfigurationInfoPtr& cfg :
        info->configurations) {
     cfg->configuration_name =
-        cfg->configuration_name.value_or(base::string16());
+        cfg->configuration_name.value_or(std::u16string());
     for (const device::mojom::UsbInterfaceInfoPtr& iface : cfg->interfaces) {
       for (const device::mojom::UsbAlternateInterfaceInfoPtr& alt :
            iface->alternates) {
-        alt->interface_name = alt->interface_name.value_or(base::string16());
+        alt->interface_name = alt->interface_name.value_or(std::u16string());
       }
     }
   }
@@ -212,9 +243,6 @@ void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
 }
 
 void ArcUsbHostBridge::OnConnectionReady() {
-  if (delegate_)
-    delegate_->AttachDevicesToArcVm();
-
   // Receive mojo::Remote<UsbDeviceManager> from DeviceService.
   content::GetDeviceService().BindUsbDeviceManager(
       usb_manager_.BindNewPipeAndPassReceiver());
@@ -244,6 +272,8 @@ void ArcUsbHostBridge::SetUiDelegate(ArcUsbHostUiDelegate* ui_delegate) {
   ui_delegate_ = ui_delegate;
 }
 
+// TODO(lgcheng) Remove these part. For ARCVM the usb_host_bridge will not be
+// connected.
 void ArcUsbHostBridge::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
@@ -269,18 +299,13 @@ std::vector<std::string> ArcUsbHostBridge::GetEventReceiverPackages(
   DCHECK(ui_delegate_);
 
   std::unordered_set<std::string> receivers = ui_delegate_->GetEventPackageList(
-      device_info.guid, device_info.serial_number.value_or(base::string16()),
+      device_info.guid, device_info.serial_number.value_or(std::u16string()),
       device_info.vendor_id, device_info.product_id);
 
   return std::vector<std::string>(receivers.begin(), receivers.end());
 }
 
 void ArcUsbHostBridge::OnDeviceChecked(const std::string& guid, bool allowed) {
-  if (!base::FeatureList::IsEnabled(arc::kUsbHostFeature)) {
-    VLOG(1) << "AndroidUSBHost: feature is disabled; ignoring";
-    return;
-  }
-
   if (!allowed)
     return;
 
@@ -288,6 +313,9 @@ void ArcUsbHostBridge::OnDeviceChecked(const std::string& guid, bool allowed) {
   // CheckAccess().
   auto iter = devices_.find(guid);
   if (iter == devices_.end())
+    return;
+
+  if (!ShouldExposeDevice(*iter->second))
     return;
 
   mojom::UsbHostInstance* usb_host_instance = ARC_GET_INSTANCE_FOR_METHOD(
@@ -307,7 +335,7 @@ bool ArcUsbHostBridge::HasPermissionForDevice(
 
   return ui_delegate_->HasUsbAccessPermission(
       package, device_info.guid,
-      device_info.serial_number.value_or(base::string16()),
+      device_info.serial_number.value_or(std::u16string()),
       device_info.vendor_id, device_info.product_id);
 }
 

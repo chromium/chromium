@@ -4,17 +4,25 @@
 
 #include "chrome/browser/feedback/system_logs/about_system_logs_fetcher.h"
 
+#include <memory>
+
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/system_logs/command_line_log_source.h"
-#include "chrome/browser/chromeos/system_logs/dbus_log_source.h"
-#include "chrome/browser/chromeos/system_logs/debug_daemon_log_source.h"
-#include "chrome/browser/chromeos/system_logs/device_event_log_source.h"
-#include "chrome/browser/chromeos/system_logs/touch_log_source.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/system_logs/command_line_log_source.h"
+#include "chrome/browser/ash/system_logs/dbus_log_source.h"
+#include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
+#include "chrome/browser/ash/system_logs/device_event_log_source.h"
+#include "chrome/browser/ash/system_logs/network_health_source.h"
+#include "chrome/browser/ash/system_logs/reven_log_source.h"
+#include "chrome/browser/ash/system_logs/shill_log_source.h"
+#include "chrome/browser/ash/system_logs/touch_log_source.h"
+#include "chrome/browser/ash/system_logs/ui_hierarchy_log_source.h"
 #endif
 
 namespace system_logs {
@@ -27,15 +35,23 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // These sources rely on scrubbing in SystemLogsFetcher.
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
   fetcher->AddSource(std::make_unique<DBusLogSource>());
   fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
+#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
+  if (base::FeatureList::IsEnabled(ash::features::kRevenLogSource))
+    fetcher->AddSource(std::make_unique<RevenLogSource>());
+#endif
+
   fetcher->AddSource(std::make_unique<TouchLogSource>());
 
-  // Debug Daemon data source - currently only this data source supports
-  // the scrub_data parameter.
+  // Data sources that directly scrub itentifiable information.
   fetcher->AddSource(std::make_unique<DebugDaemonLogSource>(scrub_data));
+  fetcher->AddSource(std::make_unique<NetworkHealthSource>(scrub_data));
+  fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
+  fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
 #endif
 
   return fetcher;

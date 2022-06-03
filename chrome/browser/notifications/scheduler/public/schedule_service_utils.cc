@@ -8,7 +8,7 @@ namespace notifications {
 namespace {
 
 bool ValidateTimeWindow(const TimeDeltaPair& window) {
-  return (window.second - window.first < base::TimeDelta::FromHours(12) &&
+  return (window.second - window.first < base::Hours(12) &&
           window.second >= window.first);
 }
 
@@ -23,7 +23,7 @@ bool ToLocalHour(int hour,
   DCHECK(out);
 
   // Gets the local time at |hour| in yesterday.
-  base::Time another_day = today + base::TimeDelta::FromDays(day_delta);
+  base::Time another_day = today + base::Days(day_delta);
   base::Time::Exploded another_day_exploded;
   another_day.LocalExplode(&another_day_exploded);
   another_day_exploded.hour = hour;
@@ -64,8 +64,8 @@ bool NextTimeWindow(base::Clock* clock,
 
   // tomorrow morning window.
   *out = std::pair<base::Time, base::Time>(
-      beginning_of_today + base::TimeDelta::FromDays(1) + morning.first,
-      beginning_of_today + base::TimeDelta::FromDays(1) + morning.second);
+      beginning_of_today + base::Days(1) + morning.first,
+      beginning_of_today + base::Days(1) + morning.second);
   return true;
 }
 

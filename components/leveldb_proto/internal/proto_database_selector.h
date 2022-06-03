@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 
@@ -61,7 +61,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
     kSharedDbClientMissing = 25,
     kFailureNoSharedDBProviderUniqueFailed = 26,
     kSuccessNoSharedDBProviderUniqueSucceeded = 27,
-    kMaxValue = kSuccessNoSharedDBProviderUniqueSucceeded,
+    kFailureUniqueDbMissingClearSharedFailed = 28,
+    kDeletedSharedDbOnRepeatedFailures = 29,
+    kDeletionOfSharedDbFailed = 30,
+    kMaxValue = kDeletionOfSharedDbFailed,
   };
 
   static void RecordInitState(ProtoDatabaseInitState state);
@@ -117,6 +120,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
   void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
+      typename Callbacks::LoadKeysAndEntriesCallback callback);
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
       typename Callbacks::LoadKeysAndEntriesCallback callback);
 
   void LoadKeys(Callbacks::LoadKeysCallback callback);
@@ -185,6 +192,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
       Callbacks::InitStatusCallback callback,
       bool success);
   void OnInitDone(ProtoDatabaseInitState state);
+  void InvokeInitUniqueDbMissingSharedCleared(
+      std::unique_ptr<SharedProtoDatabaseClient> client,
+      Callbacks::InitStatusCallback,
+      bool shared_cleared);
 
   ProtoDbType db_type_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

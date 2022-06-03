@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_(unittest|perftest|fuzzer)\.cc": [
+  ".*_(unittest|perftest|perf_test|fuzzer)\.cc": [
     "+components/viz",
   ],
 

@@ -5,8 +5,8 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_BUFFER_FACTORY_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_BUFFER_FACTORY_H_
 
+#include <map>
 #include <memory>
-#include <unordered_map>
 
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
@@ -24,16 +24,17 @@ class CAPTURE_EXPORT CameraBufferFactory {
 
   virtual std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
-      gfx::BufferFormat format);
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage);
 
   virtual ChromiumPixelFormat ResolveStreamBufferFormat(
-      cros::mojom::HalPixelFormat hal_format);
-
-  static gfx::BufferUsage GetBufferUsage(gfx::BufferFormat format);
+      cros::mojom::HalPixelFormat hal_format,
+      gfx::BufferUsage usage);
 
  private:
-  std::unordered_map<cros::mojom::HalPixelFormat, ChromiumPixelFormat>
-      resolved_hal_formats_;
+  std::map<std::pair<cros::mojom::HalPixelFormat, gfx::BufferUsage>,
+           ChromiumPixelFormat>
+      resolved_format_usages_;
 };
 
 }  // namespace media

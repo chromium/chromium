@@ -5,11 +5,11 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 document.designMode = "on"
 PASS document.getElementById("div").getAttribute("contentEditable") is "false"
 PASS document.getElementById("div").contentEditable is "false"
-PASS document.getElementById("div").isContentEditable is false
+PASS document.getElementById("div").isContentEditable is true
 PASS window.getComputedStyle(div, "").getPropertyValue("-webkit-user-modify") is "read-only"
 PASS document.getElementById("div2").getAttribute("contentEditable") is "false"
 PASS document.getElementById("div2").contentEditable is "false"
-PASS document.getElementById("div2").isContentEditable is false
+PASS document.getElementById("div2").isContentEditable is true
 PASS window.getComputedStyle(div2, "").getPropertyValue("-webkit-user-modify") is "read-only"
 PASS document.getElementById("p").getAttribute("contentEditable") is "true"
 PASS document.getElementById("p").contentEditable is "true"

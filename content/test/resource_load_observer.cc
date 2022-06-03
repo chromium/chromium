@@ -26,7 +26,7 @@ void ResourceLoadObserver::CheckResourceLoaded(
     const GURL& original_url,
     const GURL& referrer,
     const std::string& load_method,
-    content::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     const base::FilePath::StringPieceType& served_file_name,
     const std::string& mime_type,
     const std::string& ip_address,
@@ -50,7 +50,7 @@ void ResourceLoadObserver::CheckResourceLoaded(
     }
     EXPECT_EQ(referrer, resource_load_info->referrer);
     EXPECT_EQ(load_method, resource_load_info->method);
-    EXPECT_EQ(resource_type, resource_load_info->resource_type);
+    EXPECT_EQ(request_destination, resource_load_info->request_destination);
     if (!first_network_request)
       EXPECT_GT(resource_load_info->request_id, 0);
     EXPECT_EQ(mime_type, resource_load_info->mime_type);
@@ -83,7 +83,7 @@ void ResourceLoadObserver::CheckResourceLoaded(
 }
 
 // Returns the resource with the given url if found, otherwise nullptr.
-mojom::ResourceLoadInfoPtr* ResourceLoadObserver::FindResource(
+blink::mojom::ResourceLoadInfoPtr* ResourceLoadObserver::GetResource(
     const GURL& original_url) {
   for (auto& resource : resource_load_infos_) {
     if (resource->original_url == original_url)
@@ -116,7 +116,7 @@ void ResourceLoadObserver::WaitForResourceCompletion(const GURL& original_url) {
 void ResourceLoadObserver::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const GlobalRequestID& request_id,
-    const mojom::ResourceLoadInfo& resource_load_info) {
+    const blink::mojom::ResourceLoadInfo& resource_load_info) {
   EXPECT_NE(nullptr, render_frame_host);
   resource_load_infos_.push_back(resource_load_info.Clone());
   resource_is_associated_with_main_frame_.push_back(
@@ -131,9 +131,10 @@ void ResourceLoadObserver::ResourceLoadComplete(
 }
 
 void ResourceLoadObserver::DidLoadResourceFromMemoryCache(
+    content::RenderFrameHost* render_frame_host,
     const GURL& url,
     const std::string& mime_type,
-    ResourceType resource_type) {
+    network::mojom::RequestDestination request_destination) {
   memory_cached_loaded_urls_.push_back(url);
 }
 

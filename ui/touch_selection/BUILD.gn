@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
@@ -10,7 +9,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-jumbo_component("touch_selection") {
+component("touch_selection") {
   output_name = "ui_touch_selection"
 
   sources = [
@@ -23,6 +22,8 @@ jumbo_component("touch_selection") {
     "touch_selection_controller.cc",
     "touch_selection_controller.h",
     "touch_selection_draggable.h",
+    "touch_selection_menu_runner.cc",
+    "touch_selection_menu_runner.h",
     "ui_touch_selection_export.h",
   ]
 
@@ -50,8 +51,6 @@ jumbo_component("touch_selection") {
     sources += [
       "touch_handle_drawable_aura.cc",
       "touch_handle_drawable_aura.h",
-      "touch_selection_menu_runner.cc",
-      "touch_selection_menu_runner.h",
     ]
   }
 }
@@ -71,6 +70,8 @@ static_library("test_support") {
 }
 
 test("ui_touch_selection_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "longpress_drag_selector_unittest.cc",
     "touch_handle_unittest.cc",
@@ -89,20 +90,17 @@ test("ui_touch_selection_unittests") {
     "//ui/gfx:test_support",
   ]
 
-  data_deps = [
-    "//third_party/mesa_headers",
-  ]
+  data_deps = [ "//third_party/mesa_headers" ]
 }
 
 if (is_android) {
   java_cpp_enum("ui_touch_selection_enums_srcjar") {
     sources = [
       "selection_event_type.h",
+      "touch_selection_draggable.h",
     ]
   }
   java_cpp_enum("ui_touch_handle_orientation_srcjar") {
-    sources = [
-      "touch_handle_orientation.h",
-    ]
+    sources = [ "touch_handle_orientation.h" ]
   }
 }

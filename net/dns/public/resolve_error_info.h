@@ -13,7 +13,7 @@ namespace net {
 // Host resolution error info.
 struct NET_EXPORT ResolveErrorInfo {
   ResolveErrorInfo();
-  ResolveErrorInfo(int resolve_error);
+  ResolveErrorInfo(int resolve_error, bool is_secure_network_error = false);
   ResolveErrorInfo(const ResolveErrorInfo& resolve_error_info);
   ResolveErrorInfo(ResolveErrorInfo&& other);
 
@@ -24,6 +24,12 @@ struct NET_EXPORT ResolveErrorInfo {
   bool operator!=(const ResolveErrorInfo& other) const;
 
   int error = net::OK;
+  // Whether |error| resulted from a DNS-over-HTTPS lookup. If an answer was
+  // obtained from the cache this field will be false, regardless of whether the
+  // answer was originally obtained securely, because this field is intended to
+  // identify secure DNS *network* failures. This field will also always be
+  // false if |error| is net::OK.
+  bool is_secure_network_error = false;
 };
 
 }  // namespace net

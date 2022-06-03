@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<body>
+<script>
+const colorscheme = `color-scheme: dark`;
+document.body.style = colorscheme;
+const colorschemeDiv = document.createElement('div');
+colorschemeDiv.textContent = colorscheme;
+document.body.appendChild(colorschemeDiv);
+
+function addColor(color) {
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+
+  div.style = `accent-color: ${color}; margin: 5px`;
+
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.checked = true;
+  div.appendChild(checkbox);
+
+  const radio = document.createElement('input');
+  radio.type = 'radio';
+  radio.checked = true;
+  div.appendChild(radio);
+
+  const progress = document.createElement('progress');
+  progress.max = 100;
+  progress.value = 50;
+  div.appendChild(progress);
+
+  const range = document.createElement('input');
+  range.type = 'range';
+  div.appendChild(range);
+
+  const text = document.createTextNode(`accent-color: ${color} `);
+  div.appendChild(text);
+}
+
+const numEntries = 18;
+addColor('auto');
+for (let i = 0; i < numEntries; i++) {
+  const brightness = i / (numEntries - 1) * 255;
+  addColor(`rgb(${brightness}, ${brightness}, ${brightness})`);
+}
+</script>

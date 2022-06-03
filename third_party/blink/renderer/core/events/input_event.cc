@@ -4,7 +4,13 @@
 
 #include "third_party/blink/renderer/core/events/input_event.h"
 
-#include "base/stl_util.h"
+// input_event.h is a widely included header and its size impacts build
+// time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#pragma clang max_tokens_here 1250000
+
+#include "base/cxx17_backports.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_command_type.h"
@@ -181,7 +187,7 @@ bool InputEvent::IsInputEvent() const {
   return true;
 }
 
-void InputEvent::Trace(blink::Visitor* visitor) {
+void InputEvent::Trace(Visitor* visitor) const {
   UIEvent::Trace(visitor);
   visitor->Trace(data_transfer_);
   visitor->Trace(ranges_);

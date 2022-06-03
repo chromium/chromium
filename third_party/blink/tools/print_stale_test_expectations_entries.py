@@ -27,7 +27,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Prints a list of test expectations for tests whose bugs haven't been modified recently."""
 
 import csv
@@ -44,18 +43,22 @@ from blinkpy.web_tests.models.test_expectations import TestExpectationParser
 # FIXME: Make this a direct request to Monorail.
 GOOGLE_CODE_URL = 'https://www.googleapis.com/projecthosting/v2/projects/chromium/issues/%s?key=AIzaSyDgCqT1Dt5AZWLHo4QJjyMHaCjhnFacGF0'
 CRBUG_PREFIX = 'crbug.com/'
-CSV_ROW_HEADERS = ['crbug link', 'test file', 'days since last update', 'owner', 'status']
+CSV_ROW_HEADERS = [
+    'crbug link', 'test file', 'days since last update', 'owner', 'status'
+]
+
 
 class BugInfo():
-    def __init__(self, bug_link, filename, days_since_last_update, owner, status):
+    def __init__(self, bug_link, filename, days_since_last_update, owner,
+                 status):
         self.bug_link = bug_link
         self.filename = filename
         self.days_since_last_update = days_since_last_update
         self.owner = owner
         self.status = status
 
-class StaleTestPrinter(object):
 
+class StaleTestPrinter(object):
     def __init__(self, options):
         self.days = options.days
         self.csv_filename = options.create_csv
@@ -67,7 +70,8 @@ class StaleTestPrinter(object):
         expectations = port.expectations_dict()
         parser = TestExpectationParser(port, all_tests=(), is_lint_mode=False)
         expectations_file, expectations_contents = expectations.items()[0]
-        expectation_lines = parser.parse(expectations_file, expectations_contents)
+        expectation_lines = parser.parse(expectations_file,
+                                         expectations_contents)
         csv_rows = []
         for line in expectation_lines:
             row = self.check_expectations_line(line)
@@ -98,14 +102,16 @@ class StaleTestPrinter(object):
             if bug_links:
                 # Prepopulate bug info.
                 for bug_link in bug_links:
-                    self.populate_bug_info(bug_link, test_name);
+                    self.populate_bug_info(bug_link, test_name)
                 # Return the stale bug's information.
                 if all(self.is_stale(bug_link) for bug_link in bug_links):
                     print line.original_string.strip()
-                    return [bug_links[0], self.bug_info[bug_links[0]].filename,
-                            self.bug_info[bug_links[0]].days_since_last_update,
-                            self.bug_info[bug_links[0]].owner,
-                            self.bug_info[bug_links[0]].status]
+                    return [
+                        bug_links[0], self.bug_info[bug_links[0]].filename,
+                        self.bug_info[bug_links[0]].days_since_last_update,
+                        self.bug_info[bug_links[0]].owner,
+                        self.bug_info[bug_links[0]].status
+                    ]
         except urllib2.HTTPError as error:
             if error.code == 404:
                 message = 'got 404, bug does not exist.'
@@ -113,7 +119,8 @@ class StaleTestPrinter(object):
                 message = 'got 403, not accessible. Not able to tell if it\'s stale.'
             else:
                 message = str(error)
-            print >> sys.stderr, 'Error when checking %s: %s' % (','.join(bug_links), message)
+            print >> sys.stderr, 'Error when checking %s: %s' % (
+                ','.join(bug_links), message)
         return None
 
     def populate_bug_info(self, bug_link, test_name):
@@ -124,12 +131,14 @@ class StaleTestPrinter(object):
         url = GOOGLE_CODE_URL % bug_number
         response = urllib2.urlopen(url)
         parsed = json.loads(response.read())
-        parsed_time = datetime.datetime.strptime(parsed['updated'].split(".")[0] + "UTC", "%Y-%m-%dT%H:%M:%S%Z")
+        parsed_time = datetime.datetime.strptime(
+            parsed['updated'].split(".")[0] + "UTC", "%Y-%m-%dT%H:%M:%S%Z")
         time_delta = datetime.datetime.now() - parsed_time
         owner = 'none'
         if 'owner' in parsed.keys():
             owner = parsed['owner']['name']
-        self.bug_info[bug_link] = BugInfo(bug_link, test_name, time_delta.days, owner, parsed['state'])
+        self.bug_info[bug_link] = BugInfo(bug_link, test_name, time_delta.days,
+                                          owner, parsed['state'])
 
     def is_stale(self, bug_link):
         return self.bug_info[bug_link].days_since_last_update > self.days
@@ -138,11 +147,17 @@ class StaleTestPrinter(object):
 def main(argv):
     option_parser = optparse.OptionParser()
     option_parser.add_option(
-        '--days', type='int', default=90,
+        '--days',
+        type='int',
+        default=90,
         help='Number of days to consider a bug stale.')
     option_parser.add_option(
-        '--create-csv', type='string', default='',
-        help='Filename of CSV file to write stale entries to. No file will be written if no name specified.')
+        '--create-csv',
+        type='string',
+        default='',
+        help=
+        'Filename of CSV file to write stale entries to. No file will be written if no name specified.'
+    )
     options, _ = option_parser.parse_args(argv)
     printer = StaleTestPrinter(options)
     printer.print_stale_tests()

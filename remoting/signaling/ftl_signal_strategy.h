@@ -8,13 +8,19 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/signal_strategy.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace remoting {
 
 class FtlDeviceIdProvider;
 class MessagingClient;
 class RegistrationManager;
+class SignalingTracker;
 class OAuthTokenGetter;
 
 // FtlSignalStrategy implements SignalStrategy using the FTL messaging service.
@@ -24,8 +30,15 @@ class FtlSignalStrategy : public SignalStrategy {
  public:
   // We take unique_ptr<OAuthTokenGetter> here so that we still have a chance to
   // send out pending requests after the instance is deleted.
-  FtlSignalStrategy(std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
-                    std::unique_ptr<FtlDeviceIdProvider> device_id_provider);
+  // |signaling_tracker| is nullable; if it's non-null, it must outlive |this|.
+  FtlSignalStrategy(
+      std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<FtlDeviceIdProvider> device_id_provider,
+      SignalingTracker* signaling_tracker = nullptr);
+
+  FtlSignalStrategy(const FtlSignalStrategy&) = delete;
+  FtlSignalStrategy& operator=(const FtlSignalStrategy&) = delete;
 
   // Note that pending outgoing messages will be silently dropped when the
   // signal strategy is being deleted. If you want to send last minute messages,
@@ -42,6 +55,8 @@ class FtlSignalStrategy : public SignalStrategy {
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
   bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) override;
+  bool SendMessage(const SignalingAddress& destination_address,
+                   const ftl::ChromotingMessage& message) override;
   std::string GetNextId() override;
   bool IsSignInError() const override;
 
@@ -61,8 +76,6 @@ class FtlSignalStrategy : public SignalStrategy {
   class Core;
 
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(FtlSignalStrategy);
 };
 
 }  // namespace remoting

@@ -42,6 +42,10 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
       size_t write_buf_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
+  NetworkServiceAsyncSocket(const NetworkServiceAsyncSocket&) = delete;
+  NetworkServiceAsyncSocket& operator=(const NetworkServiceAsyncSocket&) =
+      delete;
+
   // Does not raise any signals.
   ~NetworkServiceAsyncSocket() override;
 
@@ -170,8 +174,8 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
   void ProcessConnectDone(mojo::PendingReceiver<network::mojom::SocketObserver>
                               socket_observer_receiver,
                           int status,
-                          const base::Optional<net::IPEndPoint>& local_addr,
-                          const base::Optional<net::IPEndPoint>& peer_addr,
+                          const absl::optional<net::IPEndPoint>& local_addr,
+                          const absl::optional<net::IPEndPoint>& peer_addr,
                           mojo::ScopedDataPipeConsumerHandle receive_stream,
                           mojo::ScopedDataPipeProducerHandle send_stream);
 
@@ -262,8 +266,6 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
   // NetworkServiceAsyncSocket is not reused, hence annotation can be added in
   // constructor and used in all subsequent writes.
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceAsyncSocket);
 };
 
 }  // namespace jingle_glue

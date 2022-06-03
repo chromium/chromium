@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXTERNAL_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXTERNAL_DELEGATE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
@@ -22,7 +21,7 @@
 namespace autofill {
 
 class AutofillDriver;
-class AutofillManager;
+class BrowserAutofillManager;
 class CreditCard;
 
 // TODO(csharp): A lot of the logic in this class is copied from autofillagent.
@@ -32,32 +31,39 @@ class CreditCard;
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillPopupDelegate {
  public:
-  // Creates an AutofillExternalDelegate for the specified AutofillManager and
-  // AutofillDriver.
-  AutofillExternalDelegate(AutofillManager* manager, AutofillDriver* driver);
+  // Creates an AutofillExternalDelegate for the specified
+  // BrowserAutofillManager and AutofillDriver.
+  AutofillExternalDelegate(BrowserAutofillManager* manager,
+                           AutofillDriver* driver);
+
+  AutofillExternalDelegate(const AutofillExternalDelegate&) = delete;
+  AutofillExternalDelegate& operator=(const AutofillExternalDelegate&) = delete;
+
   virtual ~AutofillExternalDelegate();
 
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
-  void DidSelectSuggestion(const base::string16& value,
-                           int identifier) override;
-  void DidAcceptSuggestion(const base::string16& value,
-                           int identifier,
+  void DidSelectSuggestion(const std::u16string& value,
+                           int frontend_id) override;
+  void DidAcceptSuggestion(const std::u16string& value,
+                           int frontend_id,
+                           const std::string& backend_id,
                            int position) override;
-  bool GetDeletionConfirmationText(const base::string16& value,
-                                   int identifier,
-                                   base::string16* title,
-                                   base::string16* body) override;
-  bool RemoveSuggestion(const base::string16& value, int identifier) override;
+  bool GetDeletionConfirmationText(const std::u16string& value,
+                                   int frontend_id,
+                                   std::u16string* title,
+                                   std::u16string* body) override;
+  bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
   void ClearPreviewedForm() override;
 
   // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the
   // popup type after call to |onQuery|.
   PopupType GetPopupType() const override;
 
-  AutofillDriver* GetAutofillDriver() override;
+  absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+  GetDriver() override;
 
   // Returns the ax node id associated with the current web contents' element
   // who has a controller relation to the current autofill popup.
@@ -91,8 +97,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
 
   // Set the data list value associated with the current field.
   void SetCurrentDataListValues(
-      const std::vector<base::string16>& data_list_values,
-      const std::vector<base::string16>& data_list_labels);
+      const std::vector<std::u16string>& data_list_values,
+      const std::vector<std::u16string>& data_list_labels);
 
   // Inform the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
@@ -142,9 +148,9 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void InsertDataListValues(std::vector<Suggestion>* suggestions);
 
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
-  base::string16 GetSettingsSuggestionValue() const;
+  std::u16string GetSettingsSuggestionValue() const;
 
-  AutofillManager* const manager_;  // weak.
+  BrowserAutofillManager* const manager_;  // weak.
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
@@ -173,15 +179,13 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   bool should_show_cards_from_account_option_ = false;
 
   // The current data list values.
-  std::vector<base::string16> data_list_values_;
-  std::vector<base::string16> data_list_labels_;
+  std::vector<std::u16string> data_list_values_;
+  std::vector<std::u16string> data_list_labels_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillExternalDelegate);
 };
 
 }  // namespace autofill

@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "base/android/jni_android.h"
+#include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -159,8 +160,7 @@ int ToEventFlags(int meta_state, int button_state) {
 }
 
 base::TimeTicks FromAndroidTime(int64_t time_ms) {
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_ms);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time_ms);
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }
@@ -242,6 +242,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
                                        jint history_size,
                                        jint action_index,
                                        jint android_action_button,
+                                       jint android_gesture_classification,
                                        jint android_button_state,
                                        jint android_meta_state,
                                        jfloat raw_offset_x_pixels,
@@ -261,6 +262,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
       cached_history_size_(ToValidHistorySize(history_size, cached_action_)),
       cached_action_index_(action_index),
       cached_action_button_(android_action_button),
+      cached_gesture_classification_(android_gesture_classification),
       cached_button_state_(FromAndroidButtonState(android_button_state)),
       cached_flags_(ToEventFlags(android_meta_state, android_button_state)),
       cached_raw_position_offset_(ToDips(raw_offset_x_pixels),
@@ -292,6 +294,7 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e)
       cached_history_size_(e.cached_history_size_),
       cached_action_index_(e.cached_action_index_),
       cached_action_button_(e.cached_action_button_),
+      cached_gesture_classification_(e.cached_gesture_classification_),
       cached_button_state_(e.cached_button_state_),
       cached_flags_(e.cached_flags_),
       cached_raw_position_offset_(e.cached_raw_position_offset_),
@@ -336,6 +339,11 @@ MotionEventAndroid::Action MotionEventAndroid::GetAction() const {
 
 int MotionEventAndroid::GetActionButton() const {
   return cached_action_button_;
+}
+
+MotionEvent::Classification MotionEventAndroid::GetClassification() const {
+  return static_cast<MotionEvent::Classification>(
+      cached_gesture_classification_);
 }
 
 float MotionEventAndroid::GetTickMultiplier() const {

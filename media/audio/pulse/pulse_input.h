@@ -9,11 +9,11 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_device_name.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/audio_manager.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 
@@ -27,12 +27,16 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
                         const std::string& device_name,
                         const AudioParameters& params,
                         pa_threaded_mainloop* mainloop,
-                        pa_context* context);
+                        pa_context* context,
+                        AudioManager::LogCallback log_callback);
+
+  PulseAudioInputStream(const PulseAudioInputStream&) = delete;
+  PulseAudioInputStream& operator=(const PulseAudioInputStream&) = delete;
 
   ~PulseAudioInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  AudioInputStream::OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -43,6 +47,9 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
  private:
+  // Helper method used for sending native logs to the registered client.
+  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+
   // PulseAudio Callbacks.
   static void ReadCallback(pa_stream* handle, size_t length, void* user_data);
   static void StreamNotifyCallback(pa_stream* stream, void* user_data);
@@ -76,12 +83,15 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
 
   // PulseAudio API structs.
   pa_threaded_mainloop* pa_mainloop_; // Weak.
+
   pa_context* pa_context_;  // Weak.
+
+  // Callback to send log messages to registered clients.
+  AudioManager::LogCallback log_callback_;
+
   pa_stream* handle_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PulseAudioInputStream);
 };
 
 }  // namespace media

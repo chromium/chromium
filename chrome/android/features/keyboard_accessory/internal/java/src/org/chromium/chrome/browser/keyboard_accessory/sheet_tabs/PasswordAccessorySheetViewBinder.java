@@ -6,14 +6,10 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.RecyclerView;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
@@ -22,18 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
-import org.chromium.chrome.browser.favicon.FaviconUtils;
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.ui.HorizontalListDividerDrawable;
 import org.chromium.ui.modelutil.ListModel;
 
@@ -153,7 +147,7 @@ class PasswordAccessorySheetViewBinder {
             bindTextView(password, info.getFields().get(1));
 
             // Set the default icon for username, then try to get a better one.
-            FaviconHelper faviconHelper = new FaviconHelper(username.getContext());
+            FaviconHelper faviconHelper = FaviconHelper.create(username.getContext());
             setIconForBitmap(username, faviconHelper.getDefaultIcon(info.getOrigin()));
             faviconHelper.fetchFavicon(info.getOrigin(), icon -> setIconForBitmap(username, icon));
 
@@ -191,49 +185,6 @@ class PasswordAccessorySheetViewBinder {
             }
             text.setCompoundDrawablePadding(mPadding);
             text.setCompoundDrawablesRelative(icon, null, null, null);
-        }
-    }
-
-    /**
-     * Provides default favicons and helps to fetch and set favicons. It automatically discards
-     * out-of-date responses which are common for recycled ViewHolder.
-     */
-    static class FaviconHelper {
-        private final Resources mResources;
-        private final RoundedIconGenerator mIconGenerator;
-        private final int mDesiredSize;
-
-        /**
-         * Creates a new helper.
-         * @param context The {@link Context} used to fetch resources and create Drawables.
-         */
-        FaviconHelper(Context context) {
-            mResources = context.getResources();
-            mDesiredSize = mResources.getDimensionPixelSize(
-                    R.dimen.keyboard_accessory_suggestion_icon_size);
-            mIconGenerator = FaviconUtils.createCircularIconGenerator(mResources);
-        }
-
-        Drawable getDefaultIcon(String origin) {
-            return FaviconUtils.getIconDrawableWithoutFilter(null, origin,
-                    R.color.default_favicon_background_color, mIconGenerator, mResources,
-                    mDesiredSize);
-        }
-
-        /**
-         * Resets favicon in case the container is recycled. Then queries a favicon for the origin.
-         * @param origin The origin URL of the favicon.
-         * @param setIconCallback Callback called with fetched icons. May be called with null.
-         */
-        void fetchFavicon(String origin, Callback<Drawable> setIconCallback) {
-            final LargeIconBridge mIconBridge =
-                    new LargeIconBridge(Profile.getLastUsedProfile().getOriginalProfile());
-            mIconBridge.getLargeIconForUrl(origin, mDesiredSize,
-                    (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                        Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon, origin,
-                                fallbackColor, mIconGenerator, mResources, mDesiredSize);
-                        setIconCallback.onResult(drawable);
-                    });
         }
     }
 

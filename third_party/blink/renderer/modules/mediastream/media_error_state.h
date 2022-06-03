@@ -31,18 +31,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_ERROR_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_ERROR_STATE_H_
 
-#include "third_party/blink/renderer/bindings/modules/v8/dom_exception_or_overconstrained_error.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class ExceptionState;
 class OverconstrainedError;
+class V8UnionDOMExceptionOrOverconstrainedError;
 
 // A class that is able to be used like ExceptionState for carrying
 // information about an error up the stack, but it is up to the higher
 // level code whether it produces a DOMException or a OverconstrainedError.
-class MediaErrorState {
+class MODULES_EXPORT MediaErrorState {
   STACK_ALLOCATED();
 
  public:
@@ -56,7 +59,7 @@ class MediaErrorState {
   bool CanGenerateException();
   void RaiseException(ExceptionState&);
   String GetErrorMessage();
-  DOMExceptionOrOverconstrainedError CreateError();
+  V8UnionDOMExceptionOrOverconstrainedError* CreateError();
 
  private:
   enum ErrorType { kNoError, kTypeError, kDOMException, kConstraintError };

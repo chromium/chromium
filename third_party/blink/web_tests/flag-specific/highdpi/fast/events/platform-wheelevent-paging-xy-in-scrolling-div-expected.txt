@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS This test checks one page of scroll on both x and y on div moves the content by 87.5% of the scroller size.
+Harness: the test ran to completion.
+

@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "content/public/common/service_names.mojom.h"
-#include "content/renderer/loader/request_extra_data.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_file_ref_renderer_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -25,6 +25,7 @@
 #include "ppapi/shared_impl/url_request_info_data.h"
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/thunk/enter.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
@@ -51,10 +53,14 @@ namespace content {
 
 namespace {
 
-mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager() {
+mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
+    RendererPpapiHost* renderer_ppapi_host,
+    PP_Instance instance) {
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager;
-  ChildThreadImpl::current()->BindHostReceiver(
-      file_system_manager.BindNewPipeAndPassReceiver());
+  RenderFrame* frame = renderer_ppapi_host->GetRenderFrameForInstance(instance);
+  if (frame)
+    frame->GetBrowserInterfaceBroker()->GetInterface(
+        file_system_manager.BindNewPipeAndPassReceiver());
   return file_system_manager;
 }
 
@@ -80,6 +86,12 @@ bool AppendFileRefToBody(PP_Instance instance,
       renderer_ppapi_host->GetPpapiHost()->GetResourceHost(resource);
   if (!resource_host || !resource_host->IsFileRefHost())
     return false;
+
+  mojo::Remote<blink::mojom::FileSystemManager> file_system_manager =
+      GetFileSystemManager(renderer_ppapi_host, instance);
+  CHECK(file_system_manager)
+      << "No FileSystemManager exists for this PepperPluginInstance";
+
   PepperFileRefRendererHost* file_ref_host =
       static_cast<PepperFileRefRendererHost*>(resource_host);
   switch (file_ref_host->GetFileSystemType()) {
@@ -87,8 +99,8 @@ bool AppendFileRefToBody(PP_Instance instance,
     case PP_FILESYSTEMTYPE_LOCALPERSISTENT:
       // TODO(kinuko): remove this sync IPC when we fully support
       // AppendURLRange for FileSystem URL.
-      GetFileSystemManager()->GetPlatformPath(file_ref_host->GetFileSystemURL(),
-                                              &platform_path);
+      file_system_manager->GetPlatformPath(file_ref_host->GetFileSystemURL(),
+                                           &platform_path);
       break;
     case PP_FILESYSTEMTYPE_EXTERNAL:
       platform_path = file_ref_host->GetExternalFilePath();
@@ -96,7 +108,7 @@ bool AppendFileRefToBody(PP_Instance instance,
     default:
       NOTREACHED();
   }
-  base::Optional<base::Time> optional_modified_time;
+  absl::optional<base::Time> optional_modified_time;
   if (expected_last_modified_time != 0)
     optional_modified_time =
         base::Time::FromDoubleT(expected_last_modified_time);
@@ -144,8 +156,8 @@ std::string MakeXRequestedWithValue(const std::string& name,
   if (rv.empty())
     return std::string();
 
-  // Apply to a narrow list of plugins only.
-  if (rv != "ShockwaveFlash" && rv != "PPAPITests")
+  // Apply to test plugins only.
+  if (rv != "PPAPITests")
     return std::string();
 
   std::string filtered_version = FilterStringForXRequestedWithValue(version);
@@ -246,13 +258,19 @@ bool CreateWebURLRequest(PP_Instance instance,
     dest->SetRequestedWithHeader(WebString::FromUTF8(name_version));
 
   if (data->has_custom_user_agent) {
-    auto extra_data = std::make_unique<RequestExtraData>();
-    extra_data->set_custom_user_agent(
+    auto url_request_extra_data =
+        base::MakeRefCounted<blink::WebURLRequestExtraData>();
+    url_request_extra_data->set_custom_user_agent(
         WebString::FromUTF8(data->custom_user_agent));
-    dest->SetExtraData(std::move(extra_data));
+    dest->SetURLRequestExtraData(std::move(url_request_extra_data));
   }
 
   dest->SetRequestContext(blink::mojom::RequestContextType::PLUGIN);
+  // TODO(lyf): We don't currently distinguish between plugin content loaded
+  // via `<embed>` or `<object>` as https://github.com/whatwg/fetch/pull/948
+  // asks us to do. See `content::PepperURLLoaderHost::InternalOnHostMsgOpen`
+  // for details.
+  dest->SetRequestDestination(network::mojom::RequestDestination::kEmbed);
 
   return true;
 }

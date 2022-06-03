@@ -44,6 +44,12 @@
     (DOMString or EnumType) y;
   };
 
+  dictionary ManifestKeys {
+    // String manifest key.
+    DOMString key_str;
+    MyType2 key_ref;
+  };
+
   callback Callback1 = void();
   callback Callback2 = void(long x);
   callback Callback3 = void(MyType1 arg);
@@ -108,8 +114,6 @@
     static EnumType[] function28();
     static idl_other_namespace.SomeType function29();
     static idl_other_namespace.SomeType[] function30();
-
-    [nodefine] static void function31(long switch);
   };
 
   interface Events {

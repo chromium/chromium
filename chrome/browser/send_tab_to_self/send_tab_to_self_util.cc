@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -42,9 +40,8 @@ bool HasValidTargetDevice(Profile* profile) {
 
 bool AreContentRequirementsMet(const GURL& url, Profile* profile) {
   bool is_http_or_https = url.SchemeIsHTTPOrHTTPS();
-  bool is_native_page = url.SchemeIs(content::kChromeUIScheme);
   bool is_incognito_mode = profile->IsIncognitoProfile();
-  return is_http_or_https && !is_native_page && !is_incognito_mode;
+  return is_http_or_https && !is_incognito_mode;
 }
 
 bool ShouldOfferFeature(content::WebContents* web_contents) {
@@ -53,8 +50,17 @@ bool ShouldOfferFeature(content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
+  GURL page_url = web_contents->GetURL();
+  content::NavigationEntry* navigation_entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  bool has_last_entry = (navigation_entry != nullptr);
+
+  return ShouldOfferFeatureForPage(profile, page_url) && has_last_entry;
+}
+
+bool ShouldOfferFeatureForPage(Profile* profile, const GURL& page_url) {
   return IsUserSyncTypeActive(profile) && HasValidTargetDevice(profile) &&
-         AreContentRequirementsMet(web_contents->GetURL(), profile);
+         AreContentRequirementsMet(page_url, profile);
 }
 
 bool ShouldOfferFeatureForLink(content::WebContents* web_contents,

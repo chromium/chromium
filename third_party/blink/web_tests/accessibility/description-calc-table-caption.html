@@ -34,7 +34,7 @@ test(function(t) {
     assert_equals(axTable2.name, "Label");
     assert_equals(axTable2.nameFrom, "attribute");
     assert_equals(axTable2.description, "Caption");
-    assert_equals(axTable2.descriptionFrom, "relatedElement");
+    assert_equals(axTable2.descriptionFrom, "tableCaption");
     assert_equals(axTable2.descriptionElementCount(), 1);
     assert_equals(axTable2.descriptionElementAtIndex(0).role, "AXRole: AXCaption");
 }, "Table with caption and aria-label.");

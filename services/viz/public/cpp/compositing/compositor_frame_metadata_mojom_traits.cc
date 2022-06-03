@@ -6,8 +6,11 @@
 
 #include "build/build_config.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
+#include "services/viz/public/cpp/crash_keys.h"
+#include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
@@ -18,11 +21,14 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
                   viz::CompositorFrameMetadata>::
     Read(viz::mojom::CompositorFrameMetadataDataView data,
          viz::CompositorFrameMetadata* out) {
-  if (data.device_scale_factor() <= 0)
+  if (data.device_scale_factor() <= 0) {
+    viz::SetDeserializationCrashKeyString("Invalid device scale factor");
     return false;
+  }
   out->device_scale_factor = data.device_scale_factor();
-  if (!data.ReadRootScrollOffset(&out->root_scroll_offset))
+  if (!data.ReadRootScrollOffset(&out->root_scroll_offset)) {
     return false;
+  }
 
   out->page_scale_factor = data.page_scale_factor();
   if (!data.ReadScrollableViewportSize(&out->scrollable_viewport_size))
@@ -32,7 +38,11 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return false;
   out->frame_token = data.frame_token();
 
+  if (!data.ReadContentColorUsage(&out->content_color_usage))
+    return false;
   out->may_contain_video = data.may_contain_video();
+  out->may_throttle_if_undrawn_frames = data.may_throttle_if_undrawn_frames();
+  out->has_shared_element_resources = data.has_shared_element_resources();
   out->is_resourceless_software_draw_with_scroll_or_animation =
       data.is_resourceless_software_draw_with_scroll_or_animation();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();
@@ -43,16 +53,24 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.top_controls_visible_height());
   }
 
+  if (!data.ReadPreferredFrameInterval(&out->preferred_frame_interval))
+    return false;
+
+  // Preferred_frame_interval must be nullopt or non-negative.
+  if (out->preferred_frame_interval &&
+      out->preferred_frame_interval->is_negative()) {
+    return false;
+  }
+
   return data.ReadLatencyInfo(&out->latency_info) &&
          data.ReadReferencedSurfaces(&out->referenced_surfaces) &&
          data.ReadDeadline(&out->deadline) &&
          data.ReadActivationDependencies(&out->activation_dependencies) &&
          data.ReadBeginFrameAck(&out->begin_frame_ack) &&
-         data.ReadLocalSurfaceIdAllocationTime(
-             &out->local_surface_id_allocation_time) &&
-         !out->local_surface_id_allocation_time.is_null() &&
-         data.ReadPreferredFrameInterval(&out->preferred_frame_interval) &&
-         data.ReadDisplayTransformHint(&out->display_transform_hint);
+         data.ReadDisplayTransformHint(&out->display_transform_hint) &&
+         data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
+         data.ReadTransitionDirectives(&out->transition_directives) &&
+         data.ReadCaptureBounds(&out->capture_bounds);
 }
 
 }  // namespace mojo

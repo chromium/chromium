@@ -4,60 +4,46 @@
 
 #include "chrome/updater/win/setup/setup.h"
 
+#include <shlobj.h>
+
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "chrome/updater/updater_constants.h"
+#include "chrome/updater/app/server/win/updater_idl.h"
+#include "chrome/updater/app/server/win/updater_internal_idl.h"
+#include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
-#include "chrome/updater/win/constants.h"
-#include "chrome/updater/win/updater_idl.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/task_scheduler.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace {
 
-const base::char16* kUpdaterFiles[] = {
-    L"icudtl.dat",
-    L"updater.exe",
-    L"uninstall.cmd",
-#if defined(COMPONENT_BUILD)
-    // TODO(sorin): get the list of component dependencies from a build-time
-    // file instead of hardcoding the names of the components here.
-    L"base.dll",
-    L"base_i18n.dll",
-    L"boringssl.dll",
-    L"crcrypto.dll",
-    L"icui18n.dll",
-    L"icuuc.dll",
-    L"libc++.dll",
-    L"prefs.dll",
-    L"protobuf_lite.dll",
-    L"url_lib.dll",
-    L"zlib.dll",
-#endif
-};
-
-// Adds work items to register the COM Server with Windows.
-void AddComServerWorkItems(HKEY root,
-                           const base::FilePath& com_server_path,
+// Adds work items to register the per-user internal COM Server with Windows.
+void AddComServerWorkItems(const base::FilePath& com_server_path,
                            WorkItemList* list) {
   DCHECK(list);
   if (com_server_path.empty()) {
@@ -65,83 +51,81 @@ void AddComServerWorkItems(HKEY root,
     return;
   }
 
-  const base::string16 clsid_reg_path =
-      base::StrCat({L"Software\\Classes\\CLSID\\",
-                    base::win::String16FromGUID(__uuidof(UpdaterClass))});
-  const base::string16 iid_reg_path =
-      base::StrCat({L"Software\\Classes\\Interface\\",
-                    base::win::String16FromGUID(__uuidof(IUpdater))});
-  const base::string16 typelib_reg_path =
-      base::StrCat({L"Software\\Classes\\TypeLib\\",
-                    base::win::String16FromGUID(__uuidof(IUpdater))});
-
-  // Delete any old registrations first.
-  for (const auto& reg_path :
-       {clsid_reg_path, iid_reg_path, typelib_reg_path}) {
-    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
-      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
+  for (const auto& clsid : GetSideBySideServers(UpdaterScope::kUser)) {
+    AddInstallServerWorkItems(HKEY_CURRENT_USER, clsid, com_server_path, true,
+                              list);
   }
+}
 
-  list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);
+// Adds work items to register the COM Interfaces with Windows.
+void AddComInterfacesWorkItems(HKEY root,
+                               const base::FilePath& typelib_path,
+                               WorkItemList* list) {
+  DCHECK(list);
 
-  base::CommandLine run_com_server_command(com_server_path);
-  run_com_server_command.AppendSwitch(kComServerSwitch);
-  list->AddSetRegValueWorkItem(
-      root, clsid_reg_path, WorkItem::kWow64Default, L"LocalServer32",
-      run_com_server_command.GetCommandLineString(), true);
+  for (const auto& iid : GetSideBySideInterfaces()) {
+    AddInstallComInterfaceWorkItems(root, typelib_path, iid, list);
+  }
+}
 
-  // Registering the Ole Automation marshaler with the CLSID
-  // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the IUpdater
-  // interface.
-  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
-                               WorkItem::kWow64Default, L"",
-                               L"{00020424-0000-0000-C000-000000000046}", true);
-  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\TypeLib",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\TypeLib",
-                               WorkItem::kWow64Default, L"",
-                               base::win::String16FromGUID(__uuidof(IUpdater)),
-                               true);
-
-  // The TypeLib registration for the Ole Automation marshaler.
-  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
-                               WorkItem::kWow64Default, L"",
-                               com_server_path.value(), true);
-  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
-                               WorkItem::kWow64Default, L"",
-                               com_server_path.value(), true);
+// Returns a list of base file names which the setup copies to the install
+// directory. The source of these files is either the unpacked metainstaller
+// archive, or the `out` directory of the build, if a command line argument is
+// present. In the former case, which is the normal execution flow, the files
+// are enumerated from the directory where the metainstaller unpacked its
+// contents. In the latter case, the file containing the run time dependencies
+// of the updater (which is generated by GN at build time) is parsed, and the
+// relevant file names are extracted.
+std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kInstallFromOutDir)) {
+    return ParseFilesFromDeps(source_dir.Append(FILE_PATH_LITERAL(
+        "gen\\chrome\\updater\\win\\installer\\updater.runtime_deps")));
+  }
+  std::vector<base::FilePath> result;
+  base::FileEnumerator it(
+      source_dir, false, base::FileEnumerator::FileType::FILES,
+      FILE_PATH_LITERAL("*"), base::FileEnumerator::FolderSearchPolicy::ALL,
+      base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
+  for (base::FilePath file = it.Next(); !file.empty(); file = it.Next()) {
+    result.push_back(file.BaseName());
+  }
+  if (it.GetError() != base::File::Error::FILE_OK) {
+    VLOG(2) << __func__ << " could not enumerate files : " << it.GetError();
+    return {};
+  }
+  return result;
 }
 
 }  // namespace
 
-int Setup() {
-  VLOG(1) << __func__;
+// TODO(crbug.com/1069976): use specific return values for different code paths.
+int Setup(UpdaterScope scope) {
+  VLOG(1) << __func__ << ", scope: " << scope;
+  DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
+  HKEY key;
+  switch (scope) {
+    case UpdaterScope::kSystem:
+      key = HKEY_LOCAL_MACHINE;
+      break;
+    case UpdaterScope::kUser:
+      key = HKEY_CURRENT_USER;
+      break;
+  }
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
-
-  if (!TaskScheduler::Initialize()) {
-    LOG(ERROR) << "Failed to initialize the scheduler.";
-    return -1;
-  }
-  base::ScopedClosureRunner task_scheduler_terminate_caller(
-      base::BindOnce([]() { TaskScheduler::Terminate(); }));
 
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir)) {
     LOG(ERROR) << "GetTempDir failed.";
     return -1;
   }
-  base::FilePath product_dir;
-  if (!GetProductDirectory(&product_dir)) {
-    LOG(ERROR) << "GetProductDirectory failed.";
+  const absl::optional<base::FilePath> versioned_dir =
+      GetVersionedDirectory(scope);
+  if (!versioned_dir) {
+    LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;
   }
   base::FilePath exe_path;
@@ -156,44 +140,62 @@ int Setup() {
     return -1;
   }
 
-  const base::FilePath source_dir = exe_path.DirName();
+  const auto source_dir = exe_path.DirName();
+  const auto setup_files = GetSetupFiles(source_dir);
+  if (setup_files.empty()) {
+    LOG(ERROR) << "No files to set up.";
+    return -1;
+  }
 
+  // All source files are installed in a flat directory structure inside the
+  // versioned directory, hence the BaseName function call below.
   std::unique_ptr<WorkItemList> install_list(WorkItem::CreateWorkItemList());
-  for (const auto* file : kUpdaterFiles) {
-    const base::FilePath target_path = product_dir.Append(file);
+  for (const auto& file : setup_files) {
+    const base::FilePath target_path = versioned_dir->Append(file.BaseName());
     const base::FilePath source_path = source_dir.Append(file);
-    install_list->AddCopyTreeWorkItem(source_path.value(), target_path.value(),
-                                      temp_dir.value(), WorkItem::ALWAYS);
+    install_list->AddCopyTreeWorkItem(source_path, target_path, temp_dir,
+                                      WorkItem::ALWAYS);
   }
 
   for (const auto& key_path :
        {GetRegistryKeyClientsUpdater(), GetRegistryKeyClientStateUpdater()}) {
-    install_list->AddCreateRegKeyWorkItem(HKEY_CURRENT_USER, key_path,
-                                          WorkItem::kWow64Default);
+    install_list->AddCreateRegKeyWorkItem(key, key_path, Wow6432(0));
+    install_list->AddSetRegValueWorkItem(key, key_path, Wow6432(0), kRegValuePV,
+                                         kUpdaterVersionUtf16, true);
     install_list->AddSetRegValueWorkItem(
-        HKEY_CURRENT_USER, key_path, WorkItem::kWow64Default, kRegistryValuePV,
-        base::ASCIIToUTF16(UPDATER_VERSION_STRING), true);
-    install_list->AddSetRegValueWorkItem(
-        HKEY_CURRENT_USER, key_path, WorkItem::kWow64Default,
-        kRegistryValueName, base::ASCIIToUTF16(PRODUCT_FULLNAME_STRING), true);
+        key, key_path, Wow6432(0), kRegValueName,
+        base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
-  AddComServerWorkItems(HKEY_CURRENT_USER,
-                        product_dir.Append(FILE_PATH_LITERAL("updater.exe")),
-                        install_list.get());
+  static constexpr base::FilePath::StringPieceType kUpdaterExe =
+      FILE_PATH_LITERAL("updater.exe");
 
-  base::CommandLine run_updater_ua_command(
-      product_dir.Append(FILE_PATH_LITERAL("updater.exe")));
-  run_updater_ua_command.AppendSwitch(kUpdateAppsSwitch);
-#if !defined(NDEBUG)
-  run_updater_ua_command.AppendSwitch(kEnableLoggingSwitch);
-  run_updater_ua_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                           "*/chrome/updater/*=2");
-#endif
-  if (!install_list->Do() || !RegisterUpdateAppsTask(run_updater_ua_command)) {
+  AddComInterfacesWorkItems(key, versioned_dir->Append(kUpdaterExe),
+                            install_list.get());
+  switch (scope) {
+    case UpdaterScope::kUser:
+      AddComServerWorkItems(versioned_dir->Append(kUpdaterExe),
+                            install_list.get());
+      break;
+    case UpdaterScope::kSystem:
+      AddComServiceWorkItems(versioned_dir->Append(kUpdaterExe), true,
+                             install_list.get());
+      break;
+  }
+
+  base::CommandLine run_updater_wake_command(
+      versioned_dir->Append(kUpdaterExe));
+  run_updater_wake_command.AppendSwitch(kWakeSwitch);
+  if (scope == UpdaterScope::kSystem)
+    run_updater_wake_command.AppendSwitch(kSystemSwitch);
+  run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
+  run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                             kLoggingModuleSwitchValue);
+  if (!install_list->Do() ||
+      !RegisterWakeTask(run_updater_wake_command, scope)) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();
-    UnregisterUpdateAppsTask();
+    UnregisterWakeTask(scope);
     LOG(ERROR) << "Rollback complete.";
     return -1;
   }

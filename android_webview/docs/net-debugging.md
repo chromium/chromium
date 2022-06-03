@@ -5,15 +5,17 @@
 WebView supports the `kLogNetLog` flag to log debugging network info to a JSON
 file on disk.
 
-*** aside
-For more info on commandline flags, see
-[commandline-flags.md](./commandline-flags.md).
-***
+### Please do not request netlogs from reporters
 
 *** note
-**Note:** this requires either a `userdebug` or `eng` Android build (you can
-check with `adb shell getprop ro.build.type`). Flags cannot be enabled on
-production builds of Android.
+**Important**: at the moment, WebView netlog requires applying commandline
+flags. **It's not typically possible for external reporters to apply commandline
+flags, so please do not ask them to follow this guide.**
+
+This guide is only for chromium developers who are set up for WebView
+development. Specifically, this guide requires the reader to use a `userdebug`
+or `eng` Android image, see [device setup](device-setup.md) and [commandline
+flags](commandline-flags.md) for more information.
 ***
 
 ### Python script

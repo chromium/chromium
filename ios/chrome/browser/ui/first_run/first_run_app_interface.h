@@ -12,9 +12,6 @@
 // test code.
 @interface FirstRunAppInterface : NSObject
 
-// Triggers the display of the first run UI.
-+ (void)showFirstRunUI;
-
 // Resets the UMA collection enabled pref to |enabled|.
 + (void)setUMACollectionEnabled:(BOOL)enabled;
 
@@ -29,6 +26,9 @@
 
 // Returns whether sync has finished its first run setup.
 + (BOOL)isSyncFirstSetupComplete;
+
+// Checks if the "old strings in new FRE" feature is enabled.
++ (BOOL)isOldSyncStringInFREEnabled;
 
 @end
 

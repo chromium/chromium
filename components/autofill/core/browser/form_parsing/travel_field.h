@@ -9,6 +9,8 @@
 
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
+#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
@@ -19,6 +21,7 @@ class TravelField : public FormField {
   ~TravelField() override;
 
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const LanguageCode& page_language,
                                           LogManager* log_manager);
 
  protected:

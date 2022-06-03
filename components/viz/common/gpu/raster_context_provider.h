@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
@@ -17,7 +19,7 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 
-class GrContext;
+class GrDirectContext;
 
 namespace base {
 class Lock;
@@ -97,7 +99,7 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // Get a Skia GPU raster interface to the 3d context.  The context provider
   // must have been successfully bound to a thread before calling this.  Returns
   // nullptr if a GrContext fails to initialize on this context.
-  virtual class GrContext* GrContext() = 0;
+  virtual class GrDirectContext* GrContext() = 0;
 
   virtual gpu::SharedImageInterface* SharedImageInterface() = 0;
 
@@ -105,7 +107,7 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // provider must have been successfully bound to a thread before calling this.
   virtual const gpu::Capabilities& ContextCapabilities() const = 0;
 
-  // Returns feature blacklist decisions and driver bug workarounds info.  The
+  // Returns feature blocklist decisions and driver bug workarounds info.  The
   // context provider must have been successfully bound to a thread before
   // calling this.
   virtual const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const = 0;

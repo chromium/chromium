@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'requestLEScan with uuid filter.';
+let scan_result;
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(
+      async () => {scan_result = await navigator.bluetooth.requestLEScan(
+                       {filters: [{services: [health_uuid]}]})});
+  assert_array_equals(scan_result.filters[0].services, [health_uuid]);
+
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let promise = eventWatcher.wait_for('advertisementreceived').then(e => {
+    // Note that the simulated scan used 'generic_access' which is defined by
+    // https://www.bluetooth.com/specifications/gatt/services. WebBluetooth
+    // returns the actual uuid value which is used below.
+    assert_array_equals(
+        e.uuids, ['00001800-0000-1000-8000-00805f9b34fb', health_uuid]);
+  });
+
+  let scan = {
+    deviceAddress: '09:09:09:09:09:09',
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  // This scan is missing the uuids that the filters is looking for.
+  fake_central.simulateAdvertisementReceived(scan);
+
+  // Our filter is looking for one of these uuids
+  scan.scanRecord.uuids = ['generic_access', health_uuid];
+  fake_central.simulateAdvertisementReceived(scan);
+  return promise;
+}, test_desc);
+</script>

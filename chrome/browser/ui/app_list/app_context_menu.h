@@ -10,7 +10,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class AppListControllerDelegate;
@@ -27,7 +27,9 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
                  Profile* profile,
                  const std::string& app_id,
                  AppListControllerDelegate* controller);
-  ~AppContextMenu() override;
+  AppContextMenu(const AppContextMenu&) = delete;
+  AppContextMenu& operator=(const AppContextMenu&) = delete;
+  ~AppContextMenu() override = default;
 
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
@@ -35,11 +37,15 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
 
   // ui::SimpleMenuModel::Delegate overrides:
   bool IsItemForCommandIdDynamic(int command_id) const override;
-  base::string16 GetLabelForCommandId(int command_id) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
-  const gfx::VectorIcon* GetVectorIconForCommandId(
-      int command_id) const override;
+  ui::ImageModel GetIconForCommandId(int command_id) const override;
+
+  // Helper method to get the gfx::VectorIcon for a |command_id|. Returns an
+  // empty gfx::VectorIcon if there is no icon for this |command_id|.
+  static const gfx::VectorIcon& GetMenuItemVectorIcon(int command_id,
+                                                      int string_id);
 
  protected:
   // Creates default items, derived class may override to add their specific
@@ -54,11 +60,6 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
                             ash::CommandId command_id,
                             int string_id);
 
-  // Helper method to get the gfx::VectorIcon for a |command_id|. Returns an
-  // empty gfx::VectorIcon if there is no icon for this |command_id|.
-  const gfx::VectorIcon& GetMenuItemVectorIcon(int command_id,
-                                               int string_id) const;
-
   const std::string& app_id() const { return app_id_; }
   Profile* profile() const { return profile_; }
   AppContextMenuDelegate* delegate() const { return delegate_; }
@@ -69,8 +70,6 @@ class AppContextMenu : public ui::SimpleMenuModel::Delegate {
   Profile* profile_;
   const std::string app_id_;
   AppListControllerDelegate* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppContextMenu);
 };
 
 }  // namespace app_list

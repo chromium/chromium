@@ -9,36 +9,32 @@
 #include <memory>
 
 #include "base/json/json_string_value_serializer.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/invalidation/impl/unacked_invalidation_set_test_util.h"
-#include "components/invalidation/public/object_id_invalidation_map.h"
-#include "components/invalidation/public/single_object_invalidation_set.h"
+#include "base/task/single_thread_task_runner.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
+#include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 class UnackedInvalidationSetTest : public testing::Test {
  public:
-  UnackedInvalidationSetTest()
-      : kObjectId_(10, "ASDF"),
-        unacked_invalidations_(kObjectId_) {}
+  UnackedInvalidationSetTest() : unacked_invalidations_(kTopic) {}
 
-  SingleObjectInvalidationSet GetStoredInvalidations() {
-    ObjectIdInvalidationMap map;
+  SingleTopicInvalidationSet GetStoredInvalidations() {
+    TopicInvalidationMap map;
     unacked_invalidations_.ExportInvalidations(
         base::WeakPtr<AckHandler>(),
         scoped_refptr<base::SingleThreadTaskRunner>(),
         &map);
-    ObjectIdSet ids = map.GetObjectIds();
-    if (ids.find(kObjectId_) != ids.end()) {
-      return map.ForObject(kObjectId_);
+    if (map.Empty()) {
+      return SingleTopicInvalidationSet();
     } else {
-      return SingleObjectInvalidationSet();
+      return map.ForTopic(kTopic);
     }
   }
 
-  const invalidation::ObjectId kObjectId_;
+  const Topic kTopic = "ASDF";
   UnackedInvalidationSet unacked_invalidations_;
 };
 
@@ -51,17 +47,17 @@ TEST_F(UnackedInvalidationSetTest, Empty) {
 
 // Test storage and retrieval of a single invalidation.
 TEST_F(UnackedInvalidationSetTest, OneInvalidation) {
-  Invalidation inv1 = Invalidation::Init(kObjectId_, 10, "payload");
+  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
   unacked_invalidations_.Add(inv1);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(1U, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
 }
 
 // Test that calling Clear() returns us to the empty state.
 TEST_F(UnackedInvalidationSetTest, Clear) {
-  Invalidation inv1 = Invalidation::Init(kObjectId_, 10, "payload");
+  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
   unacked_invalidations_.Add(inv1);
   unacked_invalidations_.Clear();
 
@@ -70,14 +66,14 @@ TEST_F(UnackedInvalidationSetTest, Clear) {
 
 // Test that repeated unknown version invalidations are squashed together.
 TEST_F(UnackedInvalidationSetTest, UnknownVersions) {
-  Invalidation inv1 = Invalidation::Init(kObjectId_, 10, "payload");
-  Invalidation inv2 = Invalidation::InitUnknownVersion(kObjectId_);
-  Invalidation inv3 = Invalidation::InitUnknownVersion(kObjectId_);
+  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
+  Invalidation inv2 = Invalidation::InitUnknownVersion(kTopic);
+  Invalidation inv3 = Invalidation::InitUnknownVersion(kTopic);
   unacked_invalidations_.Add(inv1);
   unacked_invalidations_.Add(inv2);
   unacked_invalidations_.Add(inv3);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(2U, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
 }
@@ -87,11 +83,11 @@ TEST_F(UnackedInvalidationSetTest, NoTruncation) {
   size_t kMax = UnackedInvalidationSet::kMaxBufferedInvalidations;
 
   for (size_t i = 0; i < kMax; ++i) {
-    Invalidation inv = Invalidation::Init(kObjectId_, i, "payload");
+    Invalidation inv = Invalidation::Init(kTopic, i, "payload");
     unacked_invalidations_.Add(inv);
   }
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(kMax, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
   EXPECT_EQ(0, set.begin()->version());
@@ -103,11 +99,11 @@ TEST_F(UnackedInvalidationSetTest, Truncation) {
   size_t kMax = UnackedInvalidationSet::kMaxBufferedInvalidations;
 
   for (size_t i = 0; i < kMax + 1; ++i) {
-    Invalidation inv = Invalidation::Init(kObjectId_, i, "payload");
+    Invalidation inv = Invalidation::Init(kTopic, i, "payload");
     unacked_invalidations_.Add(inv);
   }
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(kMax, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
   EXPECT_TRUE(set.begin()->is_unknown_version());
@@ -121,11 +117,11 @@ TEST_F(UnackedInvalidationSetTest, RegistrationAndTruncation) {
   size_t kMax = UnackedInvalidationSet::kMaxBufferedInvalidations;
 
   for (size_t i = 0; i < kMax + 1; ++i) {
-    Invalidation inv = Invalidation::Init(kObjectId_, i, "payload");
+    Invalidation inv = Invalidation::Init(kTopic, i, "payload");
     unacked_invalidations_.Add(inv);
   }
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(kMax+1, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
   EXPECT_EQ(0, set.begin()->version());
@@ -133,7 +129,7 @@ TEST_F(UnackedInvalidationSetTest, RegistrationAndTruncation) {
 
   // Unregistering should re-enable truncation.
   unacked_invalidations_.SetHandlerIsUnregistered();
-  SingleObjectInvalidationSet set2 = GetStoredInvalidations();
+  SingleTopicInvalidationSet set2 = GetStoredInvalidations();
   ASSERT_EQ(kMax, set2.GetSize());
   EXPECT_TRUE(set2.StartsWithUnknownVersion());
   EXPECT_TRUE(set2.begin()->is_unknown_version());
@@ -149,8 +145,8 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
   // Not that it makes much of a difference in behavior.
   unacked_invalidations_.SetHandlerIsRegistered();
 
-  Invalidation inv1 = Invalidation::Init(kObjectId_, 10, "payload");
-  Invalidation inv2 = Invalidation::InitUnknownVersion(kObjectId_);
+  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
+  Invalidation inv2 = Invalidation::InitUnknownVersion(kTopic);
   AckHandle inv1_handle = inv1.ack_handle();
 
   unacked_invalidations_.Add(inv1);
@@ -158,7 +154,7 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
 
   unacked_invalidations_.Acknowledge(inv1_handle);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   EXPECT_EQ(1U, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
 }
@@ -172,8 +168,8 @@ TEST_F(UnackedInvalidationSetTest, Drop) {
   // Not that it makes much of a difference in behavior.
   unacked_invalidations_.SetHandlerIsRegistered();
 
-  Invalidation inv1 = Invalidation::Init(kObjectId_, 10, "payload");
-  Invalidation inv2 = Invalidation::Init(kObjectId_, 15, "payload");
+  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
+  Invalidation inv2 = Invalidation::Init(kTopic, 15, "payload");
   AckHandle inv1_handle = inv1.ack_handle();
 
   unacked_invalidations_.Add(inv1);
@@ -181,85 +177,12 @@ TEST_F(UnackedInvalidationSetTest, Drop) {
 
   unacked_invalidations_.Drop(inv1_handle);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(2U, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
   EXPECT_EQ(15, set.rbegin()->version());
 }
 
-class UnackedInvalidationSetSerializationTest
-    : public UnackedInvalidationSetTest {
- public:
-  UnackedInvalidationSet SerializeDeserialize() {
-    std::unique_ptr<base::DictionaryValue> value =
-        unacked_invalidations_.ToValue();
-    UnackedInvalidationSet deserialized(kObjectId_);
-    deserialized.ResetFromValue(*value);
-    return deserialized;
-  }
-};
-
-TEST_F(UnackedInvalidationSetSerializationTest, Empty) {
-  UnackedInvalidationSet deserialized = SerializeDeserialize();
-  EXPECT_THAT(unacked_invalidations_, test_util::Eq(deserialized));
-}
-
-TEST_F(UnackedInvalidationSetSerializationTest, OneInvalidation) {
-  Invalidation inv = Invalidation::Init(kObjectId_, 10, "payload");
-  unacked_invalidations_.Add(inv);
-
-  UnackedInvalidationSet deserialized = SerializeDeserialize();
-  EXPECT_THAT(unacked_invalidations_, test_util::Eq(deserialized));
-}
-
-TEST_F(UnackedInvalidationSetSerializationTest, WithUnknownVersion) {
-  Invalidation inv1 = Invalidation::Init(kObjectId_, 10, "payload");
-  Invalidation inv2 = Invalidation::InitUnknownVersion(kObjectId_);
-  Invalidation inv3 = Invalidation::InitUnknownVersion(kObjectId_);
-  unacked_invalidations_.Add(inv1);
-  unacked_invalidations_.Add(inv2);
-  unacked_invalidations_.Add(inv3);
-
-  UnackedInvalidationSet deserialized = SerializeDeserialize();
-  EXPECT_THAT(unacked_invalidations_, test_util::Eq(deserialized));
-}
-
-TEST_F(UnackedInvalidationSetSerializationTest, ValidConversionFromMap) {
-  UnackedInvalidationsMap map;
-  Invalidation inv = Invalidation::Init(kObjectId_, 10, "payload");
-  unacked_invalidations_.Add(inv);
-  std::unique_ptr<base::DictionaryValue> dict =
-      unacked_invalidations_.ToValue();
-  bool result = UnackedInvalidationSet::DeserializeSetIntoMap(*dict, &map);
-  EXPECT_EQ(true, result);
-  auto item = map.find(kObjectId_);
-  ASSERT_NE(map.end(), item);
-  EXPECT_EQ(kObjectId_, item->second.object_id());
-}
-
-TEST_F(UnackedInvalidationSetSerializationTest, InvalidConversionFromMap) {
-  UnackedInvalidationsMap map;
-  base::DictionaryValue dict;
-  // Empty dictionary should fail.
-  EXPECT_FALSE(UnackedInvalidationSet::DeserializeSetIntoMap(dict, &map));
-
-  // Non-int source should fail.
-  dict.SetString("source", "foo");
-  EXPECT_FALSE(UnackedInvalidationSet::DeserializeSetIntoMap(dict, &map));
-
-  // Missing "name" should fail.
-  dict.SetString("source", base::NumberToString(kObjectId_.source()));
-  EXPECT_FALSE(UnackedInvalidationSet::DeserializeSetIntoMap(dict, &map));
-
-  // The "invalidation-list" is not required, so add "name" to make valid.
-  dict.SetString("name", kObjectId_.name());
-  bool result = UnackedInvalidationSet::DeserializeSetIntoMap(dict, &map);
-  EXPECT_TRUE(result);
-  auto item = map.find(kObjectId_);
-  ASSERT_NE(map.end(), item);
-  EXPECT_EQ(kObjectId_, item->second.object_id());
-}
-
 }  // namespace
 
-}  // namespace syncer
+}  // namespace invalidation

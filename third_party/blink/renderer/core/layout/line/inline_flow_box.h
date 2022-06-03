@@ -22,6 +22,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_INLINE_FLOW_BOX_H_
 
 #include <memory>
+
+#include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/line/inline_box.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
@@ -36,8 +39,8 @@ class VerticalPositionCache;
 
 struct GlyphOverflow;
 
-typedef HashMap<const InlineTextBox*,
-                std::pair<Vector<const SimpleFontData*>, GlyphOverflow>>
+typedef HeapHashMap<Member<const InlineTextBox>,
+                    std::pair<Vector<const SimpleFontData*>, GlyphOverflow>>
     GlyphOverflowAndFallbackFontsMap;
 
 class InlineFlowBox : public InlineBox {
@@ -58,10 +61,6 @@ class InlineFlowBox : public InlineBox {
         line_break_bidi_status_last_strong_(WTF::unicode::kLeftToRight),
         line_break_bidi_status_last_(WTF::unicode::kLeftToRight),
         is_first_after_page_break_(false)
-#if DCHECK_IS_ON()
-        ,
-        has_bad_child_list_(false)
-#endif
   {
     // Internet Explorer and Firefox always create a marker for list items, even
     // when the list-style-type is none.  We do not make a marker in the
@@ -77,8 +76,10 @@ class InlineFlowBox : public InlineBox {
     has_text_descendants_ = has_text_children_;
   }
 
+  void Trace(Visitor*) const override;
+
 #if DCHECK_IS_ON()
-  ~InlineFlowBox() override;
+  void Destroy() override;
 
   void DumpLineTreeAndMark(StringBuilder&,
                            const InlineBox* = nullptr,
@@ -125,7 +126,7 @@ class InlineFlowBox : public InlineBox {
   LayoutRect FrameRect() const;
 
   void Paint(const PaintInfo&,
-             const LayoutPoint&,
+             const PhysicalOffset&,
              LayoutUnit line_top,
              LayoutUnit line_bottom) const override;
   bool NodeAtPoint(HitTestResult&,
@@ -198,6 +199,13 @@ class InlineFlowBox : public InlineBox {
   void SetEdges(bool include_left, bool include_right) {
     include_logical_left_edge_ = include_left;
     include_logical_right_edge_ = include_right;
+  }
+
+  PhysicalBoxSides SidesToInclude() const {
+    const LogicalBoxSides logical_sides(true, IncludeLogicalRightEdge(), true,
+                                        IncludeLogicalLeftEdge());
+    return PhysicalBoxSides(logical_sides,
+                            GetLineLayoutItem().StyleRef().GetWritingMode());
   }
 
   // Helper functions used during line construction and placement.
@@ -459,14 +467,14 @@ class InlineFlowBox : public InlineBox {
 
   bool IsInlineFlowBox() const final { return true; }
 
-  InlineBox* first_child_;
-  InlineBox* last_child_;
+  Member<InlineBox> first_child_;
+  Member<InlineBox> last_child_;
 
   // The next/previous box that also uses our LayoutObject.
   // RootInlineBox, a subclass of this class, uses these fields for
   // next/previous RootInlineBox.
-  InlineFlowBox* prev_line_box_;
-  InlineFlowBox* next_line_box_;
+  Member<InlineFlowBox> prev_line_box_;
+  Member<InlineFlowBox> next_line_box_;
 
  private:
   unsigned include_logical_left_edge_ : 1;
@@ -481,7 +489,7 @@ class InlineFlowBox : public InlineBox {
 
   // Whether or not this line uses alphabetic or ideographic baselines by
   // default.
-  unsigned baseline_type_ : 1;  // FontBaseline
+  unsigned baseline_type_ : 3;  // FontBaseline
 
   // If the line contains any ruby runs, then this will be true.
   unsigned has_annotations_before_ : 1;
@@ -494,20 +502,12 @@ class InlineFlowBox : public InlineBox {
   unsigned is_first_after_page_break_ : 1;
 
 // End of RootInlineBox-specific members.
-
-#if DCHECK_IS_ON()
- private:
-  unsigned has_bad_child_list_ : 1;
-#endif
 };
 
-DEFINE_INLINE_BOX_TYPE_CASTS(InlineFlowBox);
-
-inline void InlineFlowBox::SetHasBadChildList() {
-#if DCHECK_IS_ON()
-  has_bad_child_list_ = true;
-#endif
-}
+template <>
+struct DowncastTraits<InlineFlowBox> {
+  static bool AllowFrom(const InlineBox& box) { return box.IsInlineFlowBox(); }
+};
 
 }  // namespace blink
 

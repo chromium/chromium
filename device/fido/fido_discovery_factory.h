@@ -9,17 +9,25 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/v2_constants.h"
+#include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_discovery.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/hid/fido_hid_discovery.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/usb_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "device/fido/mac/authenticator_config.h"
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 namespace device {
 
@@ -34,41 +42,54 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   FidoDiscoveryFactory();
   virtual ~FidoDiscoveryFactory();
 
-  // Resets all fields that are only meaningful for the duration of a single
-  // request to a safe default.
-  //
-  // The "regular" FidoDiscoveryFactory is owned by the
-  // AuthenticatorClientRequestDelegate and lives only for a single request.
-  // Instances returned from
-  // AuthenticatorEnvironmentImpl::GetDiscoveryFactoryOverride(), which are
-  // used in unit tests or by the WebDriver virtual authenticators, are
-  // long-lived and may handle multiple WebAuthn requests. Hence, they will be
-  // reset at the beginning of each new request.
-  void ResetRequestState();
-
-  // Instantiates a FidoDiscoveryBase for the given transport.
+  // Instantiates one or more FidoDiscoveryBases for the given transport.
   //
   // FidoTransportProtocol::kUsbHumanInterfaceDevice is not valid on Android.
-  virtual std::unique_ptr<FidoDiscoveryBase> Create(
+  virtual std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport);
 
+  // Returns whether the current instance is an override injected by the
+  // WebAuthn testing API.
+  virtual bool IsTestOverride();
+
   // set_cable_data configures caBLE obtained via a WebAuthn extension.
-  void set_cable_data(std::vector<CableDiscoveryData> cable_data,
-                      base::Optional<QRGeneratorKey> qr_generator_key);
+  virtual void set_cable_data(
+      FidoRequestType request_type,
+      std::vector<CableDiscoveryData> cable_data,
+      const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
+          qr_generator_key,
+      std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings);
+
+  // set_android_accessory_params configures values necessary for discovering
+  // Android AOA devices. The |aoa_request_description| is a string that is sent
+  // to the device to describe the type of request and may appears in
+  // permissions UI on the device.
+  void set_android_accessory_params(
+      mojo::Remote<device::mojom::UsbDeviceManager>,
+      std::string aoa_request_description);
+
+  void set_network_context(network::mojom::NetworkContext*);
 
   // set_cable_pairing_callback installs a repeating callback that will be
   // called when a QR handshake results in a phone wishing to pair with this
   // browser.
-  void set_cable_pairing_callback(
-      base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>);
+  virtual void set_cable_pairing_callback(
+      base::RepeatingCallback<void(cablev2::PairingEvent)>);
 
-#if defined(OS_MACOSX)
-  // Configures the Touch ID authenticator. Set to base::nullopt to disable it.
+  // get_cable_contact_callback returns a callback that can be called with
+  // indexes into the vector of pairings passed to |set_cable_data| in order
+  // to contact the indexed device. Only a single callback is supported.
+  virtual base::RepeatingCallback<void(size_t)> get_cable_contact_callback();
+
+  void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
+
+#if defined(OS_MAC)
+  // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
   void set_mac_touch_id_info(
-      base::Optional<fido::mac::AuthenticatorConfig> mac_touch_id_config) {
+      absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config) {
     mac_touch_id_config_ = std::move(mac_touch_id_config);
   }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
   // Instantiates a FidoDiscovery for the native Windows WebAuthn API where
@@ -82,26 +103,57 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   WinWebAuthnApi* win_webauthn_api() const;
 #endif  // defined(OS_WIN)
 
- private:
-  // RequestState holds configuration data that is only meaningful for a
-  // single WebAuthn request.
-  struct RequestState {
-    RequestState();
-    ~RequestState();
-    base::Optional<std::vector<CableDiscoveryData>> cable_data_;
-    base::Optional<QRGeneratorKey> qr_generator_key_;
-    base::Optional<
-        base::RepeatingCallback<void(std::unique_ptr<CableDiscoveryData>)>>
-        cable_pairing_callback_;
-  };
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sets a callback to generate an identifier when making DBUS requests to
+  // u2fd.
+  void set_generate_request_id_callback(base::RepeatingCallback<uint32_t()>);
 
-  RequestState request_state_;
-#if defined(OS_MACOSX)
-  base::Optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
-#endif  // defined(OS_MACOSX)
+  // Configures the ChromeOS platform authenticator discovery to instantiate an
+  // authenticator if the legacy U2F authenticator is enabled by policy.
+  void set_require_legacy_cros_authenticator(bool value);
+
+  // Sets a CtapGetAssertionRequest on the instance for checking if a credential
+  // exists on the enterprise policy controlled legacy U2F authenticator. If one
+  // exists and the enterprise policy is active, an authenticator may be
+  // instantiated even if IsUVPAA() is false (because no PIN has been set).
+  void set_get_assertion_request_for_legacy_credential_check(
+      CtapGetAssertionRequest request);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+ protected:
+  static std::vector<std::unique_ptr<FidoDiscoveryBase>> SingleDiscovery(
+      std::unique_ptr<FidoDiscoveryBase> discovery);
+
+ private:
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<FidoDiscoveryBase> MaybeCreatePlatformDiscovery() const;
+#endif
+
+#if defined(OS_MAC)
+  absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
+#endif  // defined(OS_MAC)
+  absl::optional<mojo::Remote<device::mojom::UsbDeviceManager>>
+      usb_device_manager_;
+  std::string aoa_request_description_;
+  network::mojom::NetworkContext* network_context_ = nullptr;
+  absl::optional<std::vector<CableDiscoveryData>> cable_data_;
+  absl::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
+  absl::optional<FidoRequestType> request_type_;
+  std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
+      contact_device_stream_;
+  absl::optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
+      cable_pairing_callback_;
 #if defined(OS_WIN)
   WinWebAuthnApi* win_webauthn_api_ = nullptr;
 #endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
+  bool require_legacy_cros_authenticator_ = false;
+  absl::optional<CtapGetAssertionRequest>
+      get_assertion_request_for_legacy_credential_check_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  base::flat_set<VidPid> hid_ignore_list_;
 };
 
 }  // namespace device

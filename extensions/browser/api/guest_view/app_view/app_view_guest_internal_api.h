@@ -16,12 +16,14 @@ class AppViewGuestInternalAttachFrameFunction : public ExtensionFunction {
                              APPVIEWINTERNAL_ATTACHFRAME)
   AppViewGuestInternalAttachFrameFunction();
 
+  AppViewGuestInternalAttachFrameFunction(
+      const AppViewGuestInternalAttachFrameFunction&) = delete;
+  AppViewGuestInternalAttachFrameFunction& operator=(
+      const AppViewGuestInternalAttachFrameFunction&) = delete;
+
  protected:
   ~AppViewGuestInternalAttachFrameFunction() override {}
   ResponseAction Run() final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppViewGuestInternalAttachFrameFunction);
 };
 
 class AppViewGuestInternalDenyRequestFunction : public ExtensionFunction {
@@ -30,12 +32,14 @@ class AppViewGuestInternalDenyRequestFunction : public ExtensionFunction {
                              APPVIEWINTERNAL_DENYREQUEST)
   AppViewGuestInternalDenyRequestFunction();
 
+  AppViewGuestInternalDenyRequestFunction(
+      const AppViewGuestInternalDenyRequestFunction&) = delete;
+  AppViewGuestInternalDenyRequestFunction& operator=(
+      const AppViewGuestInternalDenyRequestFunction&) = delete;
+
  protected:
   ~AppViewGuestInternalDenyRequestFunction() override {}
   ResponseAction Run() final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppViewGuestInternalDenyRequestFunction);
 };
 
 }  // namespace extensions

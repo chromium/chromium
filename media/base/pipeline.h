@@ -8,11 +8,9 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
-#include "media/base/cdm_context.h"
 #include "media/base/media_export.h"
 #include "media/base/media_status.h"
 #include "media/base/media_track.h"
@@ -23,10 +21,12 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
+class CdmContext;
 class Demuxer;
 
 class MEDIA_EXPORT Pipeline {
@@ -79,8 +79,13 @@ class MEDIA_EXPORT Pipeline {
 
     // Executed whenever the underlying AudioDecoder or VideoDecoder changes
     // during playback.
-    virtual void OnAudioDecoderChange(const PipelineDecoderInfo& info) = 0;
-    virtual void OnVideoDecoderChange(const PipelineDecoderInfo& info) = 0;
+    virtual void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) = 0;
+    virtual void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) = 0;
+
+    // Executed whenever the video frame rate changes.  |fps| will be unset if
+    // the frame rate is unstable.  The duration used for the frame rate is
+    // based on wall clock time, not media time.
+    virtual void OnVideoFrameRateChange(absl::optional<int> fps) = 0;
   };
 
   virtual ~Pipeline() {}
@@ -106,7 +111,7 @@ class MEDIA_EXPORT Pipeline {
   virtual void Start(StartType start_type,
                      Demuxer* demuxer,
                      Client* client,
-                     const PipelineStatusCB& seek_cb) = 0;
+                     PipelineStatusCallback seek_cb) = 0;
 
   // Track switching works similarly for both audio and video. Callbacks are
   // used to notify when it is time to procede to the next step, since many of
@@ -143,7 +148,7 @@ class MEDIA_EXPORT Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   virtual void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id,
+      absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) = 0;
 
   // Stops the pipeline. This is a blocking function.
@@ -163,7 +168,7 @@ class MEDIA_EXPORT Pipeline {
   //
   // It is an error to call this method if the pipeline has not started or
   // has been suspended.
-  virtual void Seek(base::TimeDelta time, const PipelineStatusCB& seek_cb) = 0;
+  virtual void Seek(base::TimeDelta time, PipelineStatusCallback seek_cb) = 0;
 
   // Suspends the pipeline, discarding the current renderer.
   //
@@ -172,14 +177,14 @@ class MEDIA_EXPORT Pipeline {
   //
   // It is an error to call this method if the pipeline has not started or is
   // seeking.
-  virtual void Suspend(const PipelineStatusCB& suspend_cb) = 0;
+  virtual void Suspend(PipelineStatusCallback suspend_cb) = 0;
 
   // Resume the pipeline and seek to |timestamp|.
   //
   // It is an error to call this method if the pipeline has not finished
   // suspending.
   virtual void Resume(base::TimeDelta timestamp,
-                      const PipelineStatusCB& seek_cb) = 0;
+                      PipelineStatusCallback seek_cb) = 0;
 
   // Returns true if the pipeline has been started via Start().  If IsRunning()
   // returns true, it is expected that Stop() will be called before destroying
@@ -218,7 +223,14 @@ class MEDIA_EXPORT Pipeline {
   // post-decode buffering required to start playback or resume from
   // seek/underflow. A null option indicates the hint is unset and the pipeline
   // can choose its own default.
-  virtual void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
+
+  // Sets whether pitch adjustment should be applied when the playback rate is
+  // different than 1.0.
+  virtual void SetPreservesPitch(bool preserves_pitch) = 0;
+
+  // Sets a flag indicating whether the audio stream was initiated by autoplay.
+  virtual void SetAutoplayInitiated(bool autoplay_initiated) = 0;
 
   // Returns the current media playback time, which progresses from 0 until
   // GetMediaDuration().
@@ -238,6 +250,7 @@ class MEDIA_EXPORT Pipeline {
   // Gets the current pipeline statistics.
   virtual PipelineStatistics GetStatistics() const = 0;
 
+  using CdmAttachedCB = base::OnceCallback<void(bool)>;
   virtual void SetCdm(CdmContext* cdm_context,
                       CdmAttachedCB cdm_attached_cb) = 0;
 };

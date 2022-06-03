@@ -7,12 +7,14 @@
 #include <iostream>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/ipc_constants.h"
@@ -24,6 +26,9 @@
 #endif
 
 namespace remoting {
+
+// TODO(crbug.com/1144161): Do not perform blocking operations on the IO thread.
+class ScopedBypassIOThreadRestrictions : public base::ScopedAllowBlocking {};
 
 namespace {
 
@@ -50,7 +55,7 @@ base::FilePath BuildHostBinaryPath() {
   }
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (path.BaseName().value() ==
       FILE_PATH_LITERAL("chrome-remote-desktop-host")) {
     return path;
@@ -60,7 +65,7 @@ base::FilePath BuildHostBinaryPath() {
   }
 
   return directory.Append(FILE_PATH_LITERAL("remoting_me2me_host"));
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
   if (path.BaseName().value() == FILE_PATH_LITERAL("remoting_me2me_host")) {
     return path;
   }
@@ -112,23 +117,22 @@ int EvaluateCapability(const std::string& type,
     output = &dummy_output;
   }
 
-  bool result = base::GetAppOutputWithExitCode(command, output, &exit_code);
-#if defined(OS_WIN)
-  // On Windows, base::GetAppOutputWithExitCode() usually returns false when
-  // receiving "unknown" exit code. See
-  // https://cs.chromium.org/chromium/src/base/process/launch_win.cc?rcl=39ec40095376e8d977decbdc5d7ca28ba7d39cf2&l=130
-  // But we forward the |exit_code| through return value, so the return value of
-  // base::GetAppOutputWithExitCode() should be ignored.
-  result = true;
+  // TODO(crbug.com/1144161): Do not perform blocking operations on the IO
+  // thread.
+  ScopedBypassIOThreadRestrictions bypass;
+#if DCHECK_IS_ON() && !defined(OS_WIN)
+  const bool result =
 #endif
-  if (!result) {
-    LOG(ERROR) << "Failed to execute process "
-               << command.GetCommandLineString()
-               << ", exit code "
-               << exit_code;
-    // This should not happen.
-    NOTREACHED();
-  }
+      base::GetAppOutputWithExitCode(command, output, &exit_code);
+
+// On Windows, base::GetAppOutputWithExitCode() usually returns false when
+// receiving "unknown" exit code. See
+// https://cs.chromium.org/chromium/src/base/process/launch_win.cc?rcl=39ec40095376e8d977decbdc5d7ca28ba7d39cf2&l=130
+#if DCHECK_IS_ON() && !defined(OS_WIN)
+  DCHECK(result) << "Failed to execute process "
+                 << command.GetCommandLineString() << ", exit code "
+                 << exit_code;
+#endif
 
   return exit_code;
 }

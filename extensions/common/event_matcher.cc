@@ -60,7 +60,7 @@ bool EventMatcher::MatchNonURLCriteria(
 int EventMatcher::GetURLFilterCount() const {
   base::ListValue* url_filters = nullptr;
   if (filter_->GetList(kUrlFiltersKey, &url_filters))
-    return url_filters->GetSize();
+    return url_filters->GetList().size();
   return 0;
 }
 
@@ -83,15 +83,13 @@ std::string EventMatcher::GetServiceTypeFilter() const {
 }
 
 int EventMatcher::GetInstanceID() const {
-  int instance_id = 0;
-  filter_->GetInteger("instanceId", &instance_id);
-  return instance_id;
+  return filter_->FindIntKey("instanceId").value_or(0);
 }
 
 int EventMatcher::GetWindowTypeCount() const {
   base::ListValue* window_type_filters = nullptr;
   if (filter_->GetList(kWindowTypesKey, &window_type_filters))
-    return window_type_filters->GetSize();
+    return window_type_filters->GetList().size();
   return 0;
 }
 

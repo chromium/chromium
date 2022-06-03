@@ -11,10 +11,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/win/windows_types.h"
 #include "base/win/wrapped_window_proc.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
@@ -47,6 +47,11 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
     worker_thread_.init_com_with_mta(false);
   }
 
+  StatusTrayStateChangerProxyImpl(const StatusTrayStateChangerProxyImpl&) =
+      delete;
+  StatusTrayStateChangerProxyImpl& operator=(
+      const StatusTrayStateChangerProxyImpl&) = delete;
+
   ~StatusTrayStateChangerProxyImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -59,11 +64,11 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
     ++pending_requests_;
     worker_thread_.task_runner()->PostTaskAndReply(
         FROM_HERE,
-        base::Bind(
+        base::BindOnce(
             &StatusTrayStateChangerProxyImpl::EnqueueChangeOnWorkerThread,
             icon_id, window),
-        base::Bind(&StatusTrayStateChangerProxyImpl::ChangeDone,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&StatusTrayStateChangerProxyImpl::ChangeDone,
+                       weak_factory_.GetWeakPtr()));
   }
 
  private:
@@ -92,8 +97,6 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StatusTrayStateChangerProxyImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerProxyImpl);
 };
 
 StatusTrayWin::StatusTrayWin()
@@ -122,7 +125,7 @@ StatusTrayWin::StatusTrayWin()
   // "TaskbarCreated".
   window_ = CreateWindow(MAKEINTATOM(atom_),
                          0, WS_POPUP, 0, 0, 0, 0, 0, 0, instance_, 0);
-  gfx::CheckWindowCreated(window_);
+  gfx::CheckWindowCreated(window_, ::GetLastError());
   gfx::SetWindowUserData(window_, this);
 }
 
@@ -214,7 +217,7 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
 std::unique_ptr<StatusIcon> StatusTrayWin::CreatePlatformStatusIcon(
     StatusTray::StatusIconType type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip) {
+    const std::u16string& tool_tip) {
   UINT next_icon_id;
   if (type == StatusTray::OTHER_ICON)
     next_icon_id = NextIconId();

@@ -16,7 +16,17 @@ using blink::IndexedDBDatabaseMetadata;
 
 namespace content {
 
-IndexedDBPreCloseTaskQueue::PreCloseTask::~PreCloseTask() {}
+IndexedDBPreCloseTaskQueue::PreCloseTask::PreCloseTask(leveldb::DB* database)
+    : database_(database) {}
+
+IndexedDBPreCloseTaskQueue::PreCloseTask::~PreCloseTask() = default;
+
+bool IndexedDBPreCloseTaskQueue::PreCloseTask::RequiresMetadata() const {
+  return false;
+}
+
+void IndexedDBPreCloseTaskQueue::PreCloseTask::SetMetadata(
+    const std::vector<blink::IndexedDBDatabaseMetadata>* metadata) {}
 
 IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
     std::list<std::unique_ptr<IndexedDBPreCloseTaskQueue::PreCloseTask>> tasks,
@@ -28,22 +38,20 @@ IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
       timeout_time_(max_run_time),
       timeout_timer_(std::move(timer)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() {}
+IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() = default;
 
-void IndexedDBPreCloseTaskQueue::StopForNewConnection() {
+void IndexedDBPreCloseTaskQueue::Stop(StopReason reason) {
   if (!started_ || done_)
     return;
   DCHECK(!tasks_.empty());
   while (!tasks_.empty()) {
-    tasks_.front()->Stop(StopReason::NEW_CONNECTION);
+    tasks_.front()->Stop(reason);
     tasks_.pop_front();
   }
   OnComplete();
 }
 
-void IndexedDBPreCloseTaskQueue::Start(
-    base::OnceCallback<leveldb::Status(std::vector<IndexedDBDatabaseMetadata>*)>
-        metadata_fetcher) {
+void IndexedDBPreCloseTaskQueue::Start(MetadataFetcher metadata_fetcher) {
   DCHECK(!started_);
   started_ = true;
   if (tasks_.empty()) {
@@ -54,12 +62,7 @@ void IndexedDBPreCloseTaskQueue::Start(
       FROM_HERE, timeout_time_,
       base::BindOnce(&IndexedDBPreCloseTaskQueue::StopForTimout,
                      ptr_factory_.GetWeakPtr()));
-  leveldb::Status status = std::move(metadata_fetcher).Run(&metadata_);
-  if (!status.ok()) {
-    StopForMetadataError(status);
-    return;
-  }
-  tasks_.front()->SetMetadata(&metadata_);
+  metadata_fetcher_ = std::move(metadata_fetcher);
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&IndexedDBPreCloseTaskQueue::RunLoop,
                                         ptr_factory_.GetWeakPtr()));
@@ -110,14 +113,26 @@ void IndexedDBPreCloseTaskQueue::RunLoop() {
     return;
   }
 
-  bool done = tasks_.front()->RunRound();
+  PreCloseTask* task = tasks_.front().get();
+  if (task->RequiresMetadata() && !task->set_metadata_was_called_) {
+    if (!has_metadata_) {
+      leveldb::Status status = std::move(metadata_fetcher_).Run(&metadata_);
+      has_metadata_ = true;
+      if (!status.ok()) {
+        StopForMetadataError(status);
+        return;
+      }
+    }
+    task->SetMetadata(&metadata_);
+    task->set_metadata_was_called_ = true;
+  }
+  bool done = task->RunRound();
   if (done) {
     tasks_.pop_front();
     if (tasks_.empty()) {
       OnComplete();
       return;
     }
-    tasks_.front()->SetMetadata(&metadata_);
   }
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&IndexedDBPreCloseTaskQueue::RunLoop,

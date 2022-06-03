@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests js cpu profile in timeline.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       // Save references to the worker objects to make sure they are not GC'ed.

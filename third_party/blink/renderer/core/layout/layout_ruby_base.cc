@@ -30,27 +30,39 @@
 
 #include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 
+#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_base.h"
+
 namespace blink {
 
-LayoutRubyBase::LayoutRubyBase() : LayoutBlockFlow(nullptr) {
+LayoutRubyBase::LayoutRubyBase(Element* element) : LayoutBlockFlow(nullptr) {
+  DCHECK(!element);
   SetInline(false);
 }
 
 LayoutRubyBase::~LayoutRubyBase() = default;
 
-LayoutRubyBase* LayoutRubyBase::CreateAnonymous(Document* document) {
-  LayoutRubyBase* layout_object = new LayoutRubyBase();
+LayoutRubyBase* LayoutRubyBase::CreateAnonymous(Document* document,
+                                                const LayoutRubyRun& ruby_run) {
+  LayoutRubyBase* layout_object;
+  if (ruby_run.IsLayoutNGObject()) {
+    layout_object = MakeGarbageCollected<LayoutNGRubyBase>();
+  } else {
+    layout_object = MakeGarbageCollected<LayoutRubyBase>(nullptr);
+  }
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;
 }
 
 bool LayoutRubyBase::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
+  NOT_DESTROYED();
   return child->IsInline();
 }
 
 void LayoutRubyBase::MoveChildren(LayoutRubyBase* to_base,
                                   LayoutObject* before_child) {
+  NOT_DESTROYED();
   // This function removes all children that are before (!) beforeChild
   // and appends them to toBase.
   DCHECK(to_base);
@@ -65,14 +77,15 @@ void LayoutRubyBase::MoveChildren(LayoutRubyBase* to_base,
   else
     MoveBlockChildren(to_base, before_child);
 
-  SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+  SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kUnknown);
-  to_base->SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+  to_base->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kUnknown);
 }
 
 void LayoutRubyBase::MoveInlineChildren(LayoutRubyBase* to_base,
                                         LayoutObject* before_child) {
+  NOT_DESTROYED();
   DCHECK(ChildrenInline());
   DCHECK(to_base);
 
@@ -101,6 +114,7 @@ void LayoutRubyBase::MoveInlineChildren(LayoutRubyBase* to_base,
 
 void LayoutRubyBase::MoveBlockChildren(LayoutRubyBase* to_base,
                                        LayoutObject* before_child) {
+  NOT_DESTROYED();
   DCHECK(!ChildrenInline());
   DCHECK(to_base);
 
@@ -152,7 +166,8 @@ void LayoutRubyBase::AdjustInlineDirectionLineBounds(
     unsigned expansion_opportunity_count,
     LayoutUnit& logical_left,
     LayoutUnit& logical_width) const {
-  int max_preferred_logical_width = MaxPreferredLogicalWidth().ToInt();
+  NOT_DESTROYED();
+  int max_preferred_logical_width = PreferredLogicalWidths().max_size.ToInt();
   if (max_preferred_logical_width >= logical_width)
     return;
 

@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -24,6 +23,12 @@ class TestMediaTransferProtocolManagerChromeOS
  public:
   static TestMediaTransferProtocolManagerChromeOS* GetFakeMtpManager();
   TestMediaTransferProtocolManagerChromeOS();
+
+  TestMediaTransferProtocolManagerChromeOS(
+      const TestMediaTransferProtocolManagerChromeOS&) = delete;
+  TestMediaTransferProtocolManagerChromeOS& operator=(
+      const TestMediaTransferProtocolManagerChromeOS&) = delete;
+
   ~TestMediaTransferProtocolManagerChromeOS() override;
 
   void AddReceiver(mojo::PendingReceiver<device::mojom::MtpManager> receiver);
@@ -72,8 +77,6 @@ class TestMediaTransferProtocolManagerChromeOS
                     DeleteObjectCallback callback) override;
 
   mojo::ReceiverSet<device::mojom::MtpManager> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaTransferProtocolManagerChromeOS);
 };
 
 }  // namespace storage_monitor

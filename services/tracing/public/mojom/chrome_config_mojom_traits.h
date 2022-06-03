@@ -11,7 +11,7 @@
 #include <string>
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "services/tracing/public/mojom/perfetto_service.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 
 namespace mojo {
@@ -25,6 +25,25 @@ class StructTraits<tracing::mojom::ChromeConfigDataView,
 
   static bool privacy_filtering_enabled(const perfetto::ChromeConfig& src) {
     return src.privacy_filtering_enabled();
+  }
+
+  static bool convert_to_legacy_json(const perfetto::ChromeConfig& src) {
+    return src.convert_to_legacy_json();
+  }
+
+  static tracing::mojom::TracingClientPriority client_priority(
+      const perfetto::ChromeConfig& src) {
+    switch (src.client_priority()) {
+      case perfetto::protos::gen::ChromeConfig::BACKGROUND:
+        return tracing::mojom::TracingClientPriority::kBackground;
+      case perfetto::protos::gen::ChromeConfig::USER_INITIATED:
+        return tracing::mojom::TracingClientPriority::kUserInitiated;
+      case perfetto::protos::gen::ChromeConfig::UNKNOWN:
+        return tracing::mojom::TracingClientPriority::kUnknown;
+      default:
+        NOTREACHED();
+        return tracing::mojom::TracingClientPriority::kUnknown;
+    }
   }
 
   static bool Read(tracing::mojom::ChromeConfigDataView data,

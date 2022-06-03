@@ -16,13 +16,21 @@ namespace base {
 
 // Ensures that the Windows high resolution timer is only used
 // when not running on battery power.
-class BASE_EXPORT HighResolutionTimerManager : public base::PowerObserver {
+class BASE_EXPORT HighResolutionTimerManager
+    : public base::PowerSuspendObserver,
+      public base::PowerStateObserver {
  public:
   HighResolutionTimerManager();
+
+  HighResolutionTimerManager(const HighResolutionTimerManager&) = delete;
+  HighResolutionTimerManager& operator=(const HighResolutionTimerManager&) =
+      delete;
+
   ~HighResolutionTimerManager() override;
 
-  // base::PowerObserver methods.
+  // base::PowerStateObserver methods.
   void OnPowerStateChange(bool on_battery_power) override;
+  // base::PowerSuspendObserver methods.
   void OnSuspend() override;
   void OnResume() override;
 
@@ -39,8 +47,6 @@ class BASE_EXPORT HighResolutionTimerManager : public base::PowerObserver {
   // Timer for polling the high resolution timer usage.
   base::RepeatingTimer timer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HighResolutionTimerManager);
 };
 
 }  // namespace base

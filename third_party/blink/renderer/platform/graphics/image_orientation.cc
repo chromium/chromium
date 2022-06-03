@@ -26,34 +26,33 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
 
 AffineTransform ImageOrientation::TransformFromDefault(
     const FloatSize& drawn_size) const {
-  float w = drawn_size.Width();
-  float h = drawn_size.Height();
+  float w = drawn_size.width();
+  float h = drawn_size.height();
 
   switch (orientation_) {
-    case kOriginTopLeft:
+    case ImageOrientationEnum::kOriginTopLeft:
       return AffineTransform();
-    case kOriginTopRight:
+    case ImageOrientationEnum::kOriginTopRight:
       return AffineTransform(-1, 0, 0, 1, w, 0);
-    case kOriginBottomRight:
+    case ImageOrientationEnum::kOriginBottomRight:
       return AffineTransform(-1, 0, 0, -1, w, h);
-    case kOriginBottomLeft:
+    case ImageOrientationEnum::kOriginBottomLeft:
       return AffineTransform(1, 0, 0, -1, 0, h);
-    case kOriginLeftTop:
+    case ImageOrientationEnum::kOriginLeftTop:
       return AffineTransform(0, 1, 1, 0, 0, 0);
-    case kOriginRightTop:
+    case ImageOrientationEnum::kOriginRightTop:
       return AffineTransform(0, 1, -1, 0, w, 0);
-    case kOriginRightBottom:
+    case ImageOrientationEnum::kOriginRightBottom:
       return AffineTransform(0, -1, -1, 0, w, h);
-    case kOriginLeftBottom:
+    case ImageOrientationEnum::kOriginLeftBottom:
       return AffineTransform(0, -1, 1, 0, 0, h);
-    default:
-      NOTREACHED();
   }
 
   NOTREACHED();

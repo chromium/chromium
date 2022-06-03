@@ -7,15 +7,14 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "ui/base/ui_base_export.h"
 
 @class CrTrackingAreaOwnerProxy;
 
 // The CrTrackingArea can be used in place of an NSTrackingArea to shut off
 // messaging to the |owner| at a specific point in time.
-UI_BASE_EXPORT
+COMPONENT_EXPORT(UI_BASE)
 @interface CrTrackingArea : NSTrackingArea {
  @private
   base::scoped_nsobject<CrTrackingAreaOwnerProxy> _ownerProxy;
@@ -31,14 +30,6 @@ UI_BASE_EXPORT
 // Prevents any future messages from being delivered to the |owner|.
 - (void)clearOwner;
 
-// Watches |window| for its NSWindowWillCloseNotification and calls
-// |-clearOwner| when the notification is observed.
-- (void)clearOwnerWhenWindowWillClose:(NSWindow*)window;
-
-// Returns YES if the mouse is inside the tracking area's rect. |view| is the
-// NSView the tracking area is attached to.
-- (BOOL)mouseInsideTrackingAreaForView:(NSView*)view;
-
 @end
 
 // Scoper //////////////////////////////////////////////////////////////////////
@@ -47,10 +38,14 @@ namespace ui {
 
 // Use an instance of this class to call |-clearOwner| on the |tracking_area_|
 // when this goes out of scope.
-class UI_BASE_EXPORT ScopedCrTrackingArea {
+class COMPONENT_EXPORT(UI_BASE) ScopedCrTrackingArea {
  public:
   // Takes ownership of |tracking_area| without retaining it.
   explicit ScopedCrTrackingArea(CrTrackingArea* tracking_area = nil);
+
+  ScopedCrTrackingArea(const ScopedCrTrackingArea&) = delete;
+  ScopedCrTrackingArea& operator=(const ScopedCrTrackingArea&) = delete;
+
   ~ScopedCrTrackingArea();
 
   // This will call |scoped_nsobject<>::reset()| to take ownership of the new
@@ -62,7 +57,6 @@ class UI_BASE_EXPORT ScopedCrTrackingArea {
 
  private:
   base::scoped_nsobject<CrTrackingArea> tracking_area_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrTrackingArea);
 };
 
 }  // namespace ui

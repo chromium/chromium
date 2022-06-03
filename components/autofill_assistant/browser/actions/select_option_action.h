@@ -6,11 +6,12 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SELECT_OPTION_ACTION_H_
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -19,21 +20,26 @@ class SelectOptionAction : public Action {
  public:
   explicit SelectOptionAction(ActionDelegate* delegate,
                               const ActionProto& proto);
+
+  SelectOptionAction(const SelectOptionAction&) = delete;
+  SelectOptionAction& operator=(const SelectOptionAction&) = delete;
+
   ~SelectOptionAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void OnWaitForElement(ProcessActionCallback callback,
-                        const Selector& selector,
+  void OnWaitForElement(const Selector& selector,
                         const ClientStatus& element_status);
-  void OnSelectOption(ProcessActionCallback callback,
-                      const ClientStatus& status);
+
+  void EndAction(const ClientStatus& status);
+
+  std::string value_;
+  bool case_sensitive_ = false;
+  ProcessActionCallback process_action_callback_;
 
   base::WeakPtrFactory<SelectOptionAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SelectOptionAction);
 };
 
 }  // namespace autofill_assistant

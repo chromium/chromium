@@ -10,7 +10,11 @@ class MockWPTGitHub(object):
     # Some unused arguments may be included to match the real class's API.
     # pylint: disable=unused-argument
 
-    def __init__(self, pull_requests, unsuccessful_merge_index=-1, create_pr_fail_index=-1, merged_index=-1):
+    def __init__(self,
+                 pull_requests,
+                 unsuccessful_merge_index=-1,
+                 create_pr_fail_index=-1,
+                 merged_index=-1):
         """Initializes a mock WPTGitHub.
 
         Args:
@@ -31,7 +35,7 @@ class MockWPTGitHub(object):
         self.create_pr_index = 0
         self.create_pr_fail_index = create_pr_fail_index
         self.merged_index = merged_index
-        self.status = ''
+        self.check_runs = []
 
     def all_pull_requests(self, limit=30):
         self.calls.append('all_pull_requests')
@@ -60,8 +64,8 @@ class MockWPTGitHub(object):
         self.calls.append('create_pr')
 
         if self.create_pr_fail_index != self.create_pr_index:
-            self.pull_requests_created.append(
-                (remote_branch_name, desc_title, body))
+            self.pull_requests_created.append((remote_branch_name, desc_title,
+                                               body))
 
         self.create_pr_index += 1
         return 5678
@@ -86,9 +90,9 @@ class MockWPTGitHub(object):
         self.calls.append('get_pr_branch')
         return 'fake_branch_PR_%d' % number
 
-    def get_branch_statuses(self, branch_name):
-        self.calls.append('get_branch_statuses')
-        return self.status
+    def get_branch_check_runs(self, remote_branch_name):
+        self.calls.append('get_branch_check_runs')
+        return self.check_runs
 
     def pr_for_chromium_commit(self, commit):
         self.calls.append('pr_for_chromium_commit')

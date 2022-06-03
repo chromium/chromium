@@ -7,21 +7,21 @@
 
 #include <vector>
 
-#include <wayland-client.h>
-
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 class SkBitmap;
+class SkPath;
 
 namespace ui {
 class WaylandConnection;
 class WaylandShmBuffer;
+class WaylandWindow;
 }  // namespace ui
 
 namespace gfx {
@@ -59,8 +59,36 @@ gfx::Rect TranslateBoundsToParentCoordinates(const gfx::Rect& child_bounds,
 gfx::Rect TranslateBoundsToTopLevelCoordinates(const gfx::Rect& child_bounds,
                                                const gfx::Rect& parent_bounds);
 
-// Says if the type is kPopup or kMenu.
-bool IsMenuType(ui::PlatformWindowType type);
+// Returns wl_output_transform corresponding |transform|. |transform| is an
+// enumeration of a fixed selection of transformations.
+wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform);
+
+// |bounds| contains |rect|. ApplyWaylandTransform() returns the resulted
+// |rect| after transformation is applied to |bounds| containing |rect| as a
+// whole.
+gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
+                                const gfx::Size& bounds,
+                                wl_output_transform transform);
+
+// Applies transformation to |size|.
+gfx::Size ApplyWaylandTransform(const gfx::Size& size,
+                                wl_output_transform transform);
+
+// Returns the root WaylandWindow for the given wl_surface.
+ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface);
+
+// Returns bounds of the given window, adjusted to its subsurface. We need to
+// adjust bounds because WaylandWindow::GetBounds() returns absolute bounds in
+// pixels, but wl_subsurface works with bounds relative to the parent surface
+// and in DIP.
+gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
+                                           ui::WaylandWindow* parent_window);
+
+// Returns rectangles dictated by SkPath.
+std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path);
+
+// Returns converted SkPath in DIPs from the one in pixels.
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale);
 
 }  // namespace wl
 

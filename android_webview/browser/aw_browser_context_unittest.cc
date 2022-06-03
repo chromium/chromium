@@ -11,6 +11,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "mojo/core/embedder/embedder.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -53,13 +55,14 @@ class AwBrowserContextTest : public testing::Test {
 // enforced for the NetworkContext, as it should behave like the Android system.
 TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
   AwBrowserContext context;
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      context.GetNetworkContextParams(false, base::FilePath());
+  network::mojom::NetworkContextParams network_context_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
+  context.ConfigureNetworkContextParams(
+      false, base::FilePath(), &network_context_params, &cert_verifier_params);
 
-  ASSERT_TRUE(network_context_params);
-  ASSERT_TRUE(network_context_params->initial_ssl_config);
-  ASSERT_TRUE(network_context_params->initial_ssl_config
-                  ->symantec_enforcement_disabled);
+  ASSERT_TRUE(network_context_params.initial_ssl_config);
+  ASSERT_TRUE(
+      network_context_params.initial_ssl_config->symantec_enforcement_disabled);
 }
 
 // Tests that SHA-1 is still allowed for locally-installed trust anchors,
@@ -67,13 +70,14 @@ TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
 // the Android system.
 TEST_F(AwBrowserContextTest, SHA1LocalAnchorsAllowed) {
   AwBrowserContext context;
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      context.GetNetworkContextParams(false, base::FilePath());
+  network::mojom::NetworkContextParams network_context_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
+  context.ConfigureNetworkContextParams(
+      false, base::FilePath(), &network_context_params, &cert_verifier_params);
 
-  ASSERT_TRUE(network_context_params);
-  ASSERT_TRUE(network_context_params->initial_ssl_config);
+  ASSERT_TRUE(network_context_params.initial_ssl_config);
   ASSERT_TRUE(
-      network_context_params->initial_ssl_config->sha1_local_anchors_enabled);
+      network_context_params.initial_ssl_config->sha1_local_anchors_enabled);
 }
 
 }  // namespace android_webview

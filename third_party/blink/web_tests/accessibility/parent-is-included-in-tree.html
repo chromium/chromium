@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="parent">
+  <div style="display:none">
+    <div id="child" style="display:none">
+      Cats are liquid
+    </div>
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+    return accessibilityController.accessibleElementById(id);
+}
+
+const parentObj = axElementById('parent');
+const childObj = axElementById('child');
+
+test(function(t) {
+    assert_true(Boolean(childObj));
+}, "An object with display:none and @id is included in tree");
+
+test(function(t) {
+    assert_equals(parentObj.childAtIndex(0), childObj);
+}, "A child is included in tree");
+
+test(function(t) {
+    assert_equals(childObj.parentElement(), parentObj);
+}, "A parent is included in tree");
+
+</script>

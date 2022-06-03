@@ -9,13 +9,17 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -28,6 +32,10 @@ class CRLSetComponentInstallerTest : public PlatformTest {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         network_service_(std::make_unique<network::NetworkService>(nullptr)) {}
+
+  CRLSetComponentInstallerTest(const CRLSetComponentInstallerTest&) = delete;
+  CRLSetComponentInstallerTest& operator=(const CRLSetComponentInstallerTest&) =
+      delete;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -65,7 +73,7 @@ class CRLSetComponentInstallerTest : public PlatformTest {
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
     loader_.reset();
     loader_factory->CreateLoaderAndStart(
-        loader_.BindNewPipeAndPassReceiver(), 1, 1,
+        loader_.BindNewPipeAndPassReceiver(), 1,
         network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
             network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
         request, client_->CreateRemote(),
@@ -75,11 +83,18 @@ class CRLSetComponentInstallerTest : public PlatformTest {
 
   void InstallCRLSet(const base::FilePath& raw_crl_file) {
     base::CopyFile(raw_crl_file, temp_dir_.GetPath().AppendASCII("crl-set"));
-    ASSERT_TRUE(policy_->VerifyInstallation(base::DictionaryValue(),
-                                            temp_dir_.GetPath()));
+    ASSERT_TRUE(policy_->VerifyInstallation(
+        base::Value(base::Value::Type::DICTIONARY), temp_dir_.GetPath()));
     policy_->ComponentReady(base::Version("1.0"), temp_dir_.GetPath(),
-                            std::make_unique<base::DictionaryValue>());
+                            base::Value(base::Value::Type::DICTIONARY));
     task_environment_.RunUntilIdle();
+  }
+
+  network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
+    auto params = network::mojom::NetworkContextParams::New();
+    params->cert_verifier_params = content::GetCertVerifierParams(
+        cert_verifier::mojom::CertVerifierCreationParams::New());
+    return params;
   }
 
  protected:
@@ -92,15 +107,12 @@ class CRLSetComponentInstallerTest : public PlatformTest {
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoader> loader_;
   base::ScopedTempDir temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CRLSetComponentInstallerTest);
 };
 
 TEST_F(CRLSetComponentInstallerTest, ConfiguresOnInstall) {
   network_service_->CreateNetworkContext(
       network_context_.BindNewPipeAndPassReceiver(),
-      network::mojom::NetworkContextParams::New());
+      CreateNetworkContextParams());
 
   // Ensure the test server can load by default.
   LoadURL(test_server_.GetURL("/empty.html"));
@@ -122,7 +134,7 @@ TEST_F(CRLSetComponentInstallerTest, ConfiguresOnInstall) {
 TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithCRLSet) {
   network_service_->CreateNetworkContext(
       network_context_.BindNewPipeAndPassReceiver(),
-      network::mojom::NetworkContextParams::New());
+      CreateNetworkContextParams());
 
   // Ensure the test server can load by default.
   LoadURL(test_server_.GetURL("/empty.html"));
@@ -148,7 +160,7 @@ TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithCRLSet) {
   network_context_.reset();
   network_service_->CreateNetworkContext(
       network_context_.BindNewPipeAndPassReceiver(),
-      network::mojom::NetworkContextParams::New());
+      CreateNetworkContextParams());
 
   // Ensure the test server is still flagged even with a new context and
   // service.
@@ -162,7 +174,7 @@ TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithCRLSet) {
 TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithNoCRLSet) {
   network_service_->CreateNetworkContext(
       network_context_.BindNewPipeAndPassReceiver(),
-      network::mojom::NetworkContextParams::New());
+      CreateNetworkContextParams());
 
   // Ensure the test server can load by default.
   LoadURL(test_server_.GetURL("/empty.html"));
@@ -176,7 +188,7 @@ TEST_F(CRLSetComponentInstallerTest, ReconfiguresAfterRestartWithNoCRLSet) {
   network_context_.reset();
   network_service_->CreateNetworkContext(
       network_context_.BindNewPipeAndPassReceiver(),
-      network::mojom::NetworkContextParams::New());
+      CreateNetworkContextParams());
 
   // Ensure the test server can still load.
   LoadURL(test_server_.GetURL("/empty.html"));

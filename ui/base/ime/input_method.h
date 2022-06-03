@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "build/build_config.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -18,17 +15,13 @@
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace extensions {
-class InputImeApiTest;
-}  // namespace extensions
-
 namespace ui {
 
 namespace internal {
 class InputMethodDelegate;
 }  // namespace internal
 
-class InputMethodKeyboardController;
+class VirtualKeyboardController;
 class InputMethodObserver;
 class KeyEvent;
 class TextInputClient;
@@ -57,8 +50,6 @@ class TextInputClient;
 // ui::InputMethod and owns it.
 class InputMethod {
  public:
-  InputMethod() : track_key_events_for_testing_(false) {}
-
 #if defined(OS_WIN)
   typedef LRESULT NativeEventResult;
 #else
@@ -81,8 +72,19 @@ class InputMethod {
   // Called when the focused window receives native IME messages that are not
   // translated into other predefined event callbacks. Currently this method is
   // used only for IME functionalities specific to Windows.
-  virtual bool OnUntranslatedIMEMessage(const MSG event,
+  virtual bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                         NativeEventResult* result) = 0;
+
+  // Called by the focused client whenever its input locale is changed.
+  // This method is currently used only on Windows.
+  // This method does not take a parameter of TextInputClient for historical
+  // reasons.
+  // TODO(ime): Consider to take a parameter of TextInputClient.
+  virtual void OnInputLocaleChanged() = 0;
+
+  // Returns whether the system input locale is in CJK languages.
+  // This is only used in Windows platforms.
+  virtual bool IsInputLocaleCJK() const = 0;
 #endif
 
   // Sets the text input client which receives text input events such as
@@ -123,17 +125,6 @@ class InputMethod {
   // focused client.
   virtual void CancelComposition(const TextInputClient* client) = 0;
 
-  // Called by the focused client whenever its input locale is changed.
-  // This method is currently used only on Windows.
-  // This method does not take a parameter of TextInputClient for historical
-  // reasons.
-  // TODO(ime): Consider to take a parameter of TextInputClient.
-  virtual void OnInputLocaleChanged() = 0;
-
-  // Returns whether the system input locale is in CJK languages.
-  // This is only used in Windows platforms.
-  virtual bool IsInputLocaleCJK() const = 0;
-
   // TODO(yoichio): Following 3 methods(GetTextInputType, GetTextInputMode and
   // CanComposeInline) calls client's same method and returns its value. It is
   // not InputMethod itself's infomation. So rename these to
@@ -142,28 +133,15 @@ class InputMethod {
   // ui::TEXT_INPUT_TYPE_NONE if there is no focused client.
   virtual TextInputType GetTextInputType() const = 0;
 
-  // Gets the text input mode of the focused text input client. Returns
-  // ui::TEXT_INPUT_TYPE_DEFAULT if there is no focused client.
-  virtual TextInputMode GetTextInputMode() const = 0;
-
-  // Gets the text input flags of the focused text input client. Returns
-  // 0 if there is no focused client.
-  virtual int GetTextInputFlags() const = 0;
-
-  // Checks if the focused text input client supports inline composition.
-  virtual bool CanComposeInline() const = 0;
-
   // Returns true if we know for sure that a candidate window (or IME suggest,
   // etc.) is open.  Returns false if no popup window is open or the detection
   // of IME popups is not supported.
   virtual bool IsCandidatePopupOpen() const = 0;
 
-  // Check whether text entered into the focused text input client should be
-  // used to improve typing suggestions for the user.
-  virtual bool GetClientShouldDoLearning() = 0;
-
   // Displays an on screen keyboard if enabled.
   virtual void ShowVirtualKeyboardIfEnabled() = 0;
+
+  virtual void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) = 0;
 
   // Management of the observer list.
   virtual void AddObserver(InputMethodObserver* observer) = 0;
@@ -173,17 +151,7 @@ class InputMethod {
   virtual void SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {}
 
   // Return the keyboard controller; used only on Windows.
-  virtual InputMethodKeyboardController* GetInputMethodKeyboardController() = 0;
-
- protected:
-  friend class extensions::InputImeApiTest;
-
-  // Gets the tracked key events of using input.ime.sendKeyEvents API.
-  virtual const std::vector<std::unique_ptr<ui::KeyEvent>>&
-  GetKeyEventsForTesting() = 0;
-
-  // Whether the key events will be tracked. Only used for testing.
-  bool track_key_events_for_testing_;
+  virtual VirtualKeyboardController* GetVirtualKeyboardController() = 0;
 };
 
 }  // namespace ui

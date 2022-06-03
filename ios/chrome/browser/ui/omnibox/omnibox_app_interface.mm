@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "components/google/core/common/google_util.h"
+#include "components/variations/variations_ids_provider.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -40,6 +42,13 @@ bool GoogleToLocalhostURLRewriter(GURL* url, web::BrowserState* browser_state) {
   chrome_test_util::GetCurrentWebState()
       ->GetNavigationManager()
       ->AddTransientURLRewriter(&GoogleToLocalhostURLRewriter);
+}
+
++ (BOOL)forceVariationID:(int)variationID {
+  return variations::VariationsIdsProvider::ForceIdsResult::SUCCESS ==
+         variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
+             /*variation_ids=*/{base::NumberToString(variationID)},
+             /*command_line_variation_ids=*/"");
 }
 
 @end

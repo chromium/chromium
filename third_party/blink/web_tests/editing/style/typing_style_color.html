@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug where the color of pasted text couldn't be changed.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<font color="#0000ff">abc | def</font>',
+        '</div>',
+    ],
+    selection => {
+        selection.document.execCommand("ForeColor", false, 'green');
+        selection.document.execCommand("InsertText", false, 'XYZ');
+    },
+    [
+        '<div contenteditable>',
+            '<font color="#0000ff">abc </font>',
+            '<font color="#008000">XYZ|</font>',
+            '<font color="#0000ff">def</font>',
+        '</div>',
+    ]);
+</script>

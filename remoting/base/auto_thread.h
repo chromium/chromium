@@ -30,7 +30,7 @@ namespace remoting {
 //
 //  (1) Thread::CleanUp()
 //  (2) MessageLoop::~MessageLoop
-//  (3.b) MessageLoopCurrent::DestructionObserver::WillDestroyCurrentMessageLoop
+//  (3.b) CurrentThread::DestructionObserver::WillDestroyCurrentMessageLoop
 class AutoThread : base::PlatformThread::Delegate {
  public:
   // Create an AutoThread with the specified message-loop |type| and |name|.
@@ -58,6 +58,9 @@ class AutoThread : base::PlatformThread::Delegate {
   // Construct the AutoThread.  |name| identifies the thread for debugging.
   explicit AutoThread(const char* name);
 
+  AutoThread(const AutoThread&) = delete;
+  AutoThread& operator=(const AutoThread&) = delete;
+
   // Waits for the thread to exit, and then destroys it.
   ~AutoThread() override;
 
@@ -82,7 +85,7 @@ class AutoThread : base::PlatformThread::Delegate {
  private:
   AutoThread(const char* name, AutoThreadTaskRunner* joiner);
 
-  void QuitThread(const base::Closure& quit_when_idle_closure);
+  void QuitThread(base::OnceClosure quit_when_idle_closure);
   void JoinAndDeleteThread();
 
   // base::PlatformThread::Delegate methods:
@@ -112,10 +115,8 @@ class AutoThread : base::PlatformThread::Delegate {
 
   // Verifies that QuitThread() is called on the same thread as ThreadMain().
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoThread);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_AUTO_THREAD_H_
+#endif  // REMOTING_BASE_AUTO_THREAD_H_

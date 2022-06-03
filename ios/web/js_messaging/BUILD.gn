@@ -3,44 +3,153 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/js_compile.gni")
 
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":frame_listeners_js",
+    ":java_script_content_world_header",
+    ":scoped_wk_script_message_handler",
+    ":setup_frame_js",
+    ":web_frames_manager_impl_header",
     "//base",
     "//crypto",
+    "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_view:util",
     "//url",
   ]
 
   sources = [
-    "crw_js_injector.h",
-    "crw_js_injector.mm",
     "crw_js_window_id_manager.h",
     "crw_js_window_id_manager.mm",
-    "crw_wk_script_message_router.h",
-    "crw_wk_script_message_router.mm",
     "page_script_util.h",
     "page_script_util.mm",
+    "script_command_java_script_feature.h",
+    "script_command_java_script_feature.mm",
     "web_frame_impl.h",
     "web_frame_impl.mm",
+    "web_frame_internal.h",
     "web_frame_util.mm",
-    "web_frames_manager_impl.h",
     "web_frames_manager_impl.mm",
+    "web_frames_manager_java_script_feature.h",
+    "web_frames_manager_java_script_feature.mm",
     "web_view_js_utils.h",
     "web_view_js_utils.mm",
+    "web_view_web_state_map.h",
+    "web_view_web_state_map.mm",
   ]
+}
+
+source_set("web_frames_manager_impl_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+  sources = [ "web_frames_manager_impl.h" ]
+}
+
+source_set("java_script_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ ":java_script_content_world_header" ]
+  deps = [
+    ":js_messaging",
+    ":scoped_wk_script_message_handler",
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
+  ]
+
+  sources = [
+    "java_script_content_world.mm",
+    "java_script_feature.mm",
+    "java_script_feature_manager.h",
+    "java_script_feature_manager.mm",
+    "script_message.mm",
+  ]
+}
+
+source_set("java_script_content_world_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":scoped_wk_script_message_handler",
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [ "java_script_content_world.h" ]
+}
+
+source_set("java_script_feature_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":js_messaging",
+    "//base",
+    "//ios/web/favicon",
+    "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
+    "//ios/web/js_features/scroll_helper",
+    "//ios/web/js_features/web_performance_metrics",
+    "//ios/web/js_features/window_error",
+    "//ios/web/navigation:navigation_feature",
+    "//ios/web/navigation:session_restore_feature",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/text_fragments",
+  ]
+
+  sources = [
+    "java_script_feature_util_impl.h",
+    "java_script_feature_util_impl.mm",
+  ]
+}
+
+source_set("scoped_wk_script_message_handler") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [ "//base" ]
+
+  sources = [
+    "scoped_wk_script_message_handler.h",
+    "scoped_wk_script_message_handler.mm",
+  ]
+}
+
+js_compile_bundle("setup_frame_js") {
+  visibility = [ ":js_messaging" ]
+  closure_entry_point = "__crWeb.setupFrame"
+
+  sources = [ "resources/setup_frame.js" ]
+}
+
+js_compile_bundle("frame_listeners_js") {
+  visibility = [ ":js_messaging" ]
+  closure_entry_point = "__crWeb.frameListeners"
+
+  sources = [ "resources/frame_listeners.js" ]
 }
 
 source_set("unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
+    ":java_script_feature",
+    ":java_script_feature_util",
     ":js_messaging",
+    ":scoped_wk_script_message_handler",
+    ":web_frames_manager_impl_header",
     "//base",
     "//base/test:test_support",
     "//crypto",
@@ -48,17 +157,26 @@ source_set("unittests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
 
   sources = [
     "crw_js_window_id_manager_unittest.mm",
-    "crw_wk_script_message_router_unittest.mm",
+    "java_script_content_world_unittest.mm",
+    "java_script_feature_manager_unittest.mm",
+    "java_script_feature_unittest.mm",
     "page_script_util_unittest.mm",
+    "scoped_wk_script_message_handler_unittest.mm",
     "web_frame_impl_unittest.mm",
     "web_frame_util_unittest.mm",
     "web_frames_manager_impl_unittest.mm",
+    "web_frames_manager_java_script_feature_unittest.mm",
+    "web_view_js_utils_unittest.mm",
+    "web_view_web_state_map_unittest.mm",
   ]
 }
 
@@ -66,21 +184,30 @@ source_set("inttests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
+    ":java_script_content_world_header",
+    ":java_script_feature",
+    ":js_messaging",
     "//base",
     "//base/test:test_support",
+    "//ios/testing:embedded_test_server_support",
     "//ios/web/common",
-    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//ios/web/test:test_support",
+    "//ios/web/test/fakes",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
   sources = [
+    "java_script_feature_inttest.mm",
+    "java_script_feature_manager_inttest.mm",
     "web_frame_impl_inttest.mm",
     "web_frame_web_state_observer_inttest.mm",
     "web_frames_manager_inttest.mm",

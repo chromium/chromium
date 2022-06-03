@@ -1,0 +1,17 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/feature-policy/#reporting
+
+[
+    LegacyNoInterfaceObject
+] interface PermissionsPolicyViolationReportBody : ReportBody {
+  readonly attribute DOMString featureId;
+  readonly attribute DOMString? sourceFile;
+  readonly attribute unsigned long? lineNumber;
+  readonly attribute unsigned long? columnNumber;
+  readonly attribute DOMString disposition;
+  readonly attribute DOMString? message;
+  [CallWith=ScriptState] object toJSON();
+};

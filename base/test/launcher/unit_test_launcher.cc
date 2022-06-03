@@ -17,16 +17,15 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
@@ -46,65 +45,84 @@ namespace {
 // This constant controls how many tests are run in a single batch by default.
 const size_t kDefaultTestBatchLimit = 10;
 
+#if !defined(OS_ANDROID)
 void PrintUsage() {
-  fprintf(stdout,
-          "Runs tests using the gtest framework, each batch of tests being\n"
-          "run in their own process. Supported command-line flags:\n"
-          "\n"
-          " Common flags:\n"
-          "  --gtest_filter=...\n"
-          "    Runs a subset of tests (see --gtest_help for more info).\n"
-          "\n"
-          "  --help\n"
-          "    Shows this message.\n"
-          "\n"
-          "  --gtest_help\n"
-          "    Shows the gtest help message.\n"
-          "\n"
-          "  --test-launcher-jobs=N\n"
-          "    Sets the number of parallel test jobs to N.\n"
-          "\n"
-          "  --single-process-tests\n"
-          "    Runs the tests and the launcher in the same process. Useful\n"
-          "    for debugging a specific test in a debugger.\n"
-          "\n"
-          " Other flags:\n"
-          "  --test-launcher-filter-file=PATH\n"
-          "    Like --gtest_filter, but read the test filter from PATH.\n"
-          "    Supports multiple filter paths separated by ';'.\n"
-          "    One pattern per line; lines starting with '-' are exclusions.\n"
-          "    See also //testing/buildbot/filters/README.md file.\n"
-          "\n"
-          "  --test-launcher-batch-limit=N\n"
-          "    Sets the limit of test batch to run in a single process to N.\n"
-          "\n"
-          "  --test-launcher-debug-launcher\n"
-          "    Disables autodetection of debuggers and similar tools,\n"
-          "    making it possible to use them to debug launcher itself.\n"
-          "\n"
-          "  --test-launcher-retry-limit=N\n"
-          "    Sets the limit of test retries on failures to N.\n"
-          "\n"
-          "  --test-launcher-summary-output=PATH\n"
-          "    Saves a JSON machine-readable summary of the run.\n"
-          "\n"
-          "  --test-launcher-print-test-stdio=auto|always|never\n"
-          "    Controls when full test output is printed.\n"
-          "    auto means to print it when the test failed.\n"
-          "\n"
-          "  --test-launcher-test-part-results-limit=N\n"
-          "    Sets the limit of failed EXPECT/ASSERT entries in the xml and\n"
-          "    JSON outputs per test to N (default N=10). Negative value \n"
-          "    will disable this limit.\n"
-          "\n"
-          "  --test-launcher-total-shards=N\n"
-          "    Sets the total number of shards to N.\n"
-          "\n"
-          "  --test-launcher-shard-index=N\n"
-          "    Sets the shard index to run to N (from 0 to TOTAL - 1).\n"
-          "\n"
-          "  --dont-use-job-objects\n"
-          "    Avoids using job objects in Windows.\n");
+  fprintf(
+      stdout,
+      "Runs tests using the gtest framework, each batch of tests being\n"
+      "run in their own process. Supported command-line flags:\n"
+      "\n"
+      " Common flags:\n"
+      "  --gtest_filter=...\n"
+      "    Runs a subset of tests (see --gtest_help for more info).\n"
+      "\n"
+      "  --help\n"
+      "    Shows this message.\n"
+      "\n"
+      "  --gtest_help\n"
+      "    Shows the gtest help message.\n"
+      "\n"
+      "  --test-launcher-jobs=N\n"
+      "    Sets the number of parallel test jobs to N.\n"
+      "\n"
+      "  --single-process-tests\n"
+      "    Runs the tests and the launcher in the same process. Useful\n"
+      "    for debugging a specific test in a debugger.\n"
+      "\n"
+      " Other flags:\n"
+      "  --test-launcher-filter-file=PATH\n"
+      "    Like --gtest_filter, but read the test filter from PATH.\n"
+      "    Supports multiple filter paths separated by ';'.\n"
+      "    One pattern per line; lines starting with '-' are exclusions.\n"
+      "    See also //testing/buildbot/filters/README.md file.\n"
+      "\n"
+      "  --test-launcher-batch-limit=N\n"
+      "    Sets the limit of test batch to run in a single process to N.\n"
+      "\n"
+      "  --test-launcher-debug-launcher\n"
+      "    Disables autodetection of debuggers and similar tools,\n"
+      "    making it possible to use them to debug launcher itself.\n"
+      "\n"
+      "  --test-launcher-retry-limit=N\n"
+      "    Sets the limit of test retries on failures to N.\n"
+      "  --gtest_repeat=N\n"
+      "    Forces the launcher to run every test N times. -1 is a special"
+      "    value, causing the infinite amount of iterations."
+      "    Repeated tests are run in parallel, unless the number of"
+      "    iterations is infinite or --gtest_break_on_failure is specified"
+      "    (see below)."
+      "    Consider using --test_launcher-jobs flag to speed up the"
+      "    parallel execution."
+      "\n"
+      "  --gtest_break_on_failure\n"
+      "    Stop running repeated tests as soon as one repeat of the test fails."
+      "    This flag forces sequential repeats and prevents parallelised"
+      "    execution."
+      "\n"
+      "  --test-launcher-summary-output=PATH\n"
+      "    Saves a JSON machine-readable summary of the run.\n"
+      "\n"
+      "  --test-launcher-print-test-stdio=auto|always|never\n"
+      "    Controls when full test output is printed.\n"
+      "    auto means to print it when the test failed.\n"
+      "\n"
+      "  --test-launcher-test-part-results-limit=N\n"
+      "    Sets the limit of failed EXPECT/ASSERT entries in the xml and\n"
+      "    JSON outputs per test to N (default N=10). Negative value \n"
+      "    will disable this limit.\n"
+      "\n"
+      "  --test-launcher-total-shards=N\n"
+      "    Sets the total number of shards to N.\n"
+      "\n"
+      "  --test-launcher-shard-index=N\n"
+      "    Sets the shard index to run to N (from 0 to TOTAL - 1).\n"
+      "\n"
+      "  --dont-use-job-objects\n"
+      "    Avoids using job objects in Windows.\n"
+      "\n"
+      "  --test-launcher-print-temp-leaks\n"
+      "    Prints information about leaked files and/or directories in\n"
+      "    child process's temporary directories (Windows and macOS).\n");
   fflush(stdout);
 }
 
@@ -121,6 +139,7 @@ bool GetSwitchValueAsInt(const std::string& switch_name, int* result) {
 
   return true;
 }
+#endif
 
 int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
                             size_t parallel_jobs,
@@ -157,7 +176,6 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
       force_single_process) {
     return std::move(run_test_suite).Run();
   }
-#endif
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(switches::kHelpFlag)) {
     PrintUsage();
@@ -199,6 +217,7 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
   fflush(stdout);
 
   return (success ? 0 : 1);
+#endif
 }
 
 void InitGoogleTestChar(int* argc, char** argv) {
@@ -216,12 +235,33 @@ void InitGoogleTestWChar(int* argc, wchar_t** argv) {
 // Flag to avoid using job objects
 const char kDontUseJobObjectFlag[] = "dont-use-job-objects";
 
+MergeTestFilterSwitchHandler::~MergeTestFilterSwitchHandler() = default;
+void MergeTestFilterSwitchHandler::ResolveDuplicate(
+    base::StringPiece key,
+    CommandLine::StringPieceType new_value,
+    CommandLine::StringType& out_value) {
+  if (key != switches::kTestLauncherFilterFile) {
+    out_value = CommandLine::StringType(new_value);
+    return;
+  }
+  if (!out_value.empty()) {
+#if defined(OS_WIN)
+    StrAppend(&out_value, {L";"});
+#else
+    StrAppend(&out_value, {";"});
+#endif
+  }
+  StrAppend(&out_value, {new_value});
+}
+
 int LaunchUnitTests(int argc,
                     char** argv,
                     RunTestSuiteCallback run_test_suite,
                     size_t retry_limit) {
+  CommandLine::SetDuplicateSwitchHandler(
+      std::make_unique<MergeTestFilterSwitchHandler>());
   CommandLine::Init(argc, argv);
-  size_t parallel_jobs = NumParallelJobs();
+  size_t parallel_jobs = NumParallelJobs(/*cores_per_job=*/1);
   if (parallel_jobs == 0U) {
     return 1;
   }
@@ -258,7 +298,7 @@ int LaunchUnitTests(int argc,
                     RunTestSuiteCallback run_test_suite) {
   // Windows CommandLine::Init ignores argv anyway.
   CommandLine::Init(argc, NULL);
-  size_t parallel_jobs = NumParallelJobs();
+  size_t parallel_jobs = NumParallelJobs(/*cores_per_job=*/1);
   if (parallel_jobs == 0U) {
     return 1;
   }
@@ -303,9 +343,7 @@ CommandLine DefaultUnitTestPlatformDelegate::GetCommandLineForChildGTestProcess(
 
   std::string long_flags(
       StrCat({"--", kGTestFilterFlag, "=", JoinString(test_names, ":")}));
-  CHECK_EQ(static_cast<int>(long_flags.size()),
-           WriteFile(flag_file, long_flags.data(),
-                     static_cast<int>(long_flags.size())));
+  CHECK(WriteFile(flag_file, long_flags));
 
   new_cmd_line.AppendSwitchPath(switches::kTestLauncherOutput, output_file);
   new_cmd_line.AppendSwitchPath(kGTestFlagfileFlag, flag_file);

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isRTL} from 'chrome://resources/js/util.m.js';
+
 /**
  * The minimum amount of pixels needed for the user to swipe for the position
  * (controlled by transform property) to start animating to 0.
@@ -32,7 +34,7 @@ export const SWIPE_FINISH_THRESHOLD_PX = 200;
  * register the set of pointer events as an intended swipe.
  * @const {number}
  */
-const SWIPE_VELOCITY_THRESHOLD = 0.1;
+const SWIPE_VELOCITY_THRESHOLD = 0.2;
 
 export class TabSwiper {
   /** @param {!HTMLElement} element */
@@ -81,6 +83,9 @@ export class TabSwiper {
 
   /** @private */
   createAnimation_() {
+    // TODO(crbug.com/1025390): padding-inline-end does not work with
+    // animations built using JS.
+    const paddingInlineEnd = isRTL() ? 'paddingLeft' : 'paddingRight';
     const animation = new Animation(new KeyframeEffect(
         this.element_,
         [
@@ -88,6 +93,7 @@ export class TabSwiper {
             // Base.
             opacity: 1,
             maxWidth: 'var(--tabstrip-tab-width)',
+            [paddingInlineEnd]: 'var(--tabstrip-tab-spacing)',
             transform: `translateY(0)`
           },
           {
@@ -100,12 +106,14 @@ export class TabSwiper {
             // Start of max-width and opacity animation swiping up.
             maxWidth: 'var(--tabstrip-tab-width)',
             offset: SWIPE_START_THRESHOLD_PX / SWIPE_FINISH_THRESHOLD_PX,
+            [paddingInlineEnd]: 'var(--tabstrip-tab-spacing)',
             opacity: 1,
           },
           {
             // Fully swiped up.
             maxWidth: '0px',
             opacity: 0,
+            [paddingInlineEnd]: 0,
             transform: `translateY(-${SWIPE_FINISH_THRESHOLD_PX}px)`
           },
         ],
@@ -113,7 +121,7 @@ export class TabSwiper {
           duration: SWIPE_FINISH_THRESHOLD_PX,
           fill: 'both',
         }));
-    animation.currentTime = 0;
+    animation.cancel();
     animation.onfinish = () => {
       this.element_.dispatchEvent(new CustomEvent('swipe'));
     };
@@ -125,7 +133,7 @@ export class TabSwiper {
    * @private
    */
   onPointerDown_(event) {
-    if (this.currentPointerDownEvent_) {
+    if (this.currentPointerDownEvent_ || event.pointerType !== 'touch') {
       return;
     }
 
@@ -200,6 +208,10 @@ export class TabSwiper {
     }
 
     this.clearPointerEvents_();
+  }
+
+  reset() {
+    this.animation_.cancel();
   }
 
   startObserving() {

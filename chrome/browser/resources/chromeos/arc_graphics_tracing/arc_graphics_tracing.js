@@ -11,7 +11,7 @@ cr.define('cr.ArcGraphicsTracing', function() {
     /**
      * Initializes internal structures.
      */
-    initialize: function() {
+    initialize() {
       var stopOnJank = $('arc-graphics-tracing-stop-on-jank');
       stopOnJank.addEventListener('click', function(event) {
         chrome.send('setStopOnJank', [stopOnJank.checked]);
@@ -23,7 +23,7 @@ cr.define('cr.ArcGraphicsTracing', function() {
 
     setStatus: setStatus,
 
-    setModel: function(model) {
+    setModel(model) {
       setGraphicBuffersModel(model);
     }
   };

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Strings for the chrome://management page on mobile platform.-->
+
+<grit-part>
+  <message name="IDS_IOS_MANAGEMENT_UI_DESC" desc="The descriptive text on chrome://management page when the browser is managed.">
+    Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.
+  </message>
+  <message name="IDS_IOS_MANAGEMENT_UI_LEARN_MORE_LINK" desc="The clickable text on chrome://management.">
+    Learn More
+  </message>
+  <message name="IDS_IOS_MANAGEMENT_UI_MESSAGE" desc="The main message at the top of chrome://management page when the browser is managed.">
+    Your browser is managed by your administrator.
+  </message>
+  <message name="IDS_IOS_MANAGEMENT_UI_UNMANAGED_DESC" desc="The descriptive text on chrome://management page when the browser is not managed.">
+    Your browser is not managed.
+  </message>
+</grit-part>

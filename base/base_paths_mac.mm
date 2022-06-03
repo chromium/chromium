@@ -11,12 +11,13 @@
 #include <stdint.h>
 
 #include "base/base_paths.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -39,8 +40,8 @@ void GetNSExecutablePath(base::FilePath* path) {
 
   // _NSGetExecutablePath may return paths containing ./ or ../ which makes
   // FilePath::DirName() work incorrectly, convert it to absolute path so that
-  // paths such as DIR_SOURCE_ROOT can work, since we expect absolute paths to
-  // be returned here.
+  // paths such as DIR_SRC_TEST_DATA_ROOT can work, since we expect absolute
+  // paths to be returned here.
   // TODO(bauerb): http://crbug.com/259796, http://crbug.com/373477
   base::ThreadRestrictions::ScopedAllowIO allow_io;
   *path = base::MakeAbsoluteFilePath(base::FilePath(executable_path));
@@ -81,7 +82,12 @@ bool PathProviderMac(int key, base::FilePath* result) {
 #endif  // defined(OS_IOS)
       return success;
     }
-    case base::DIR_SOURCE_ROOT:
+    case base::DIR_SRC_TEST_DATA_ROOT:
+#if defined(OS_IOS)
+      // On iOS, there is no access to source root, however, the necessary
+      // resources are packaged into the test as assets.
+      return PathService::Get(base::DIR_ASSETS, result);
+#else
       // Go through PathService to catch overrides.
       if (!PathService::Get(base::FILE_EXE, result))
         return false;
@@ -89,7 +95,6 @@ bool PathProviderMac(int key, base::FilePath* result) {
       // Start with the executable's directory.
       *result = result->DirName();
 
-#if !defined(OS_IOS)
       if (base::mac::AmIBundled()) {
         // The bundled app executables (Chromium, TestShell, etc) live five
         // levels down, eg:
@@ -100,8 +105,8 @@ bool PathProviderMac(int key, base::FilePath* result) {
         // src/xcodebuild/{Debug|Release}/base_unittests
         *result = result->DirName().DirName();
       }
-#endif
       return true;
+#endif  // !defined(OS_IOS)
     case base::DIR_USER_DESKTOP:
 #if defined(OS_IOS)
       // iOS does not have desktop directories.
@@ -112,7 +117,7 @@ bool PathProviderMac(int key, base::FilePath* result) {
 #endif
     case base::DIR_ASSETS:
 #if defined(OS_IOS)
-      // TODO(https://crbug.com/957792): Assets live alongside the executable.
+      // On iOS, the assets are located next to the module binary.
       return PathService::Get(base::DIR_MODULE, result);
 #else
       if (!base::mac::AmIBundled()) {

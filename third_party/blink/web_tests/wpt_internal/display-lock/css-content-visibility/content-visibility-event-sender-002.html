@@ -1,0 +1,39 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: focus on display none element</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
+<meta name="assert" content="tab navigation skips display none elements in an auto subtree">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 3000px;
+}
+.auto {
+  content-visibility: auto;
+}
+</style>
+
+<div class=spacer></div>
+<div id="container" style="content-visibility: auto">
+  <div id="focusableA" tabindex="0">a</div>
+  <div id="focusableB" tabindex="0">b</div>
+</div>
+
+<script>
+test(() => {
+  focusableA.style = "display: none;";
+  eventSender.keyDown("Tab", []);
+  assert_equals(document.activeElement, focusableB);
+  eventSender.keyDown("Tab", []);
+  assert_equals(document.activeElement, focusableB);
+  focusableA.style = "display: block;";
+  eventSender.keyDown("Tab", []);
+  assert_equals(document.activeElement, focusableA);
+}, "Trying to focus on an element in a locked subtree that's not visible will skip that element");
+</script>
+</html>

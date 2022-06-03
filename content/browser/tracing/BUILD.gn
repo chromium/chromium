@@ -3,53 +3,37 @@
 # found in the LICENSE file.
 
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-# generate_about_tracing puts its files in this directory
-tracing_gen_dir = "$root_gen_dir/content/browser/tracing"
+assert(!is_android)
 
 # The script just writes filename with no dirs to the .grd, so we always need
 # this file to be in the same directory as the inputs.
-tracing_grd = "$tracing_gen_dir/tracing_resources.grd"
+tracing_grd = "$target_gen_dir/tracing_resources.grd"
 
-action("generate_tracing_grd") {
-  visibility = [ ":*" ]  # Depend on ":resources" to get this.
-  script = "generate_trace_viewer_grd.py"
-
-  input_pages = [
-    "$tracing_gen_dir/about_tracing.html",
-    "$tracing_gen_dir/about_tracing.js",
+generate_grd("build_grd") {
+  grd_prefix = "tracing"
+  out_grd = tracing_grd
+  input_files = [
+    "about_tracing.html",
+    "about_tracing.js",
   ]
-  inputs = input_pages
-  outputs = [
-    tracing_grd,
-  ]
-
-  args = rebase_path(input_pages, target_gen_dir) + [
-           "--output",
-           rebase_path(tracing_grd, root_build_dir),
-         ]
-
-  deps = [
-    "//third_party/catapult/tracing:generate_about_tracing",
-  ]
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  deps = [ "//third_party/catapult/tracing:generate_about_tracing" ]
 }
 
 grit("resources") {
   source = tracing_grd
-  source_is_generated = true
+
+  # Required because the .grd is generated.
+  enable_input_discovery_for_gn_analyze = false
 
   outputs = [
     "grit/tracing_resources.h",
+    "grit/tracing_resources_map.cc",
+    "grit/tracing_resources_map.h",
     "tracing_resources.pak",
   ]
 
-  # resource_ids has an entry for our .grd file that looks like:
-  # "<(SHARED_INTERMEDIATE_DIR)/content/browser/tracing/tracing_resources.grd"
-  # and what we pass here should make that resolve to our .grd file.
-  defines =
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-
-  deps = [
-    ":generate_tracing_grd",
-  ]
+  deps = [ ":build_grd" ]
 }

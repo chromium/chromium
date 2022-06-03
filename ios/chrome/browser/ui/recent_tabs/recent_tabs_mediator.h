@@ -12,9 +12,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/synced_sessions_bridge.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 class WebStateList;
 
 @protocol RecentTabsConsumer;
@@ -34,7 +32,7 @@ class WebStateList;
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
 
 // The coordinator's BrowserState.
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+@property(nonatomic, assign) ChromeBrowserState* browserState;
 
 // The WebStateList that this mediator listens for.
 @property(nonatomic, assign) WebStateList* webStateList;

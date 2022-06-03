@@ -1,0 +1,31 @@
+Tests Page.loadNetworkResource for different frames with cookies
+Number of frames in page: 3
+Response for fetch: {
+    id : <number>
+    result : {
+        resource : {
+            headers : <object>
+            httpStatusCode : 200
+            stream : <string>
+            success : true
+        }
+    }
+    sessionId : <string>
+}
+Response for fetch: {
+    error : {
+        code : -32602
+        message : Frame not under control of agent host
+    }
+    id : <number>
+    sessionId : <string>
+}
+Response for fetch: {
+    error : {
+        code : -32602
+        message : Frame not under control of agent host
+    }
+    id : <number>
+    sessionId : <string>
+}
+

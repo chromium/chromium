@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
@@ -27,42 +27,35 @@
 namespace payments {
 namespace {
 
-const char* const kAllOriginsSupportedIndicator = "*";
-
-// Enables |method_manifest_url| in those |apps| that are from |app_origins|, if
-// either |all_origins_supported| is true or |supported_origin_strings| contains
-// the origin of the app.
+// Enables |method_manifest_url| in the subset of |apps| specified by |app_ids|,
+// if |supported_origin_strings| contains the origin of the app.
 void EnableMethodManifestUrlForSupportedApps(
     const GURL& method_manifest_url,
     const std::vector<std::string>& supported_origin_strings,
-    bool all_origins_supported,
-    const std::set<url::Origin>& app_origins,
-    content::PaymentAppProvider::PaymentApps* apps,
+    content::InstalledPaymentAppsFinder::PaymentApps* apps,
+    std::vector<int64_t> app_ids,
     std::map<GURL, std::set<GURL>>* prohibited_payment_methods) {
-  for (const auto& app_origin : app_origins) {
-    for (auto& app : *apps) {
-      if (app_origin.IsSameOriginWith(
-              url::Origin::Create(app.second->scope.GetOrigin()))) {
-        app.second->has_explicitly_verified_methods =
-            base::Contains(supported_origin_strings, app_origin.Serialize());
-        if (all_origins_supported ||
-            app.second->has_explicitly_verified_methods) {
-          app.second->enabled_methods.emplace_back(method_manifest_url.spec());
-          prohibited_payment_methods->at(app.second->scope)
-              .erase(method_manifest_url);
-        }
-      }
+  for (auto app_id : app_ids) {
+    auto* app = (*apps)[app_id].get();
+    app->has_explicitly_verified_methods = base::Contains(
+        supported_origin_strings,
+        url::Origin::Create(app->scope.DeprecatedGetOriginAsURL()).Serialize());
+    if (app->has_explicitly_verified_methods) {
+      app->enabled_methods.emplace_back(method_manifest_url.spec());
+      prohibited_payment_methods->at(app->scope).erase(method_manifest_url);
     }
   }
 }
 
 }  // namespace
 
-ManifestVerifier::ManifestVerifier(content::WebContents* web_contents,
+ManifestVerifier::ManifestVerifier(const url::Origin& merchant_origin,
+                                   content::WebContents* web_contents,
                                    PaymentManifestDownloader* downloader,
                                    PaymentManifestParser* parser,
                                    PaymentManifestWebDataService* cache)
-    : log_(web_contents),
+    : merchant_origin_(merchant_origin),
+      log_(web_contents),
       downloader_(downloader),
       parser_(parser),
       cache_(cache),
@@ -75,9 +68,10 @@ ManifestVerifier::~ManifestVerifier() {
   }
 }
 
-void ManifestVerifier::Verify(content::PaymentAppProvider::PaymentApps apps,
-                              VerifyCallback finished_verification,
-                              base::OnceClosure finished_using_resources) {
+void ManifestVerifier::Verify(
+    content::InstalledPaymentAppsFinder::PaymentApps apps,
+    VerifyCallback finished_verification,
+    base::OnceClosure finished_using_resources) {
   DCHECK(apps_.empty());
   DCHECK(finished_verification_callback_.is_null());
   DCHECK(finished_using_resources_callback_.is_null());
@@ -90,16 +84,6 @@ void ManifestVerifier::Verify(content::PaymentAppProvider::PaymentApps apps,
   for (auto& app : apps_) {
     std::vector<std::string> verified_method_names;
     for (const auto& method : app.second->enabled_methods) {
-      // For non-URL payment method names, only names published by W3C should be
-      // supported. Keep this in sync with AndroidPaymentAppFinder.java.
-      if (method == methods::kBasicCard || method == methods::kInterledger ||
-          method == methods::kPayeeCreditTransfer ||
-          method == methods::kPayerCreditTransfer ||
-          method == methods::kTokenizedCard) {
-        verified_method_names.emplace_back(method);
-        continue;
-      }
-
       // GURL constructor may crash with some invalid unicode strings.
       if (!base::IsStringUTF8(method)) {
         log_.Warn("Payment method name \"" + method +
@@ -108,6 +92,7 @@ void ManifestVerifier::Verify(content::PaymentAppProvider::PaymentApps apps,
         continue;
       }
 
+      // Only URL payment method names are supported.
       GURL method_manifest_url = GURL(method);
       if (!UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(
               method_manifest_url)) {
@@ -120,8 +105,8 @@ void ManifestVerifier::Verify(content::PaymentAppProvider::PaymentApps apps,
 
       // Same origin payment methods are always allowed.
       url::Origin app_origin =
-          url::Origin::Create(app.second->scope.GetOrigin());
-      if (url::Origin::Create(method_manifest_url.GetOrigin())
+          url::Origin::Create(app.second->scope.DeprecatedGetOriginAsURL());
+      if (url::Origin::Create(method_manifest_url.DeprecatedGetOriginAsURL())
               .IsSameOriginWith(app_origin)) {
         verified_method_names.emplace_back(method);
         app.second->has_explicitly_verified_methods = true;
@@ -129,9 +114,9 @@ void ManifestVerifier::Verify(content::PaymentAppProvider::PaymentApps apps,
       }
 
       manifests_to_download.insert(method_manifest_url);
-      manifest_url_to_app_origins_map_[method_manifest_url].insert(app_origin);
       prohibited_payment_methods_[app.second->scope].insert(
           method_manifest_url);
+      manifest_url_to_app_id_map_[method_manifest_url].emplace_back(app.first);
     }
 
     app.second->enabled_methods.swap(verified_method_names);
@@ -169,28 +154,20 @@ void ManifestVerifier::OnWebDataServiceRequestDone(
       (static_cast<const WDResult<std::vector<std::string>>*>(result.get()))
           ->GetValue();
 
-  bool all_origins_supported = false;
   std::vector<std::string> native_app_ids;
   std::vector<std::string> supported_origin_strings;
   for (const auto& origin_or_id : cached_strings) {
-    // The string could be "*", origin or native payment app package Id on
-    // Android.
-    if (origin_or_id == kAllOriginsSupportedIndicator) {
-      all_origins_supported = true;
-      continue;
-    }
-
     if (base::IsStringUTF8(origin_or_id) && GURL(origin_or_id).is_valid()) {
       supported_origin_strings.emplace_back(origin_or_id);
-    } else {
+    } else if (base::IsStringASCII(origin_or_id)) {
       native_app_ids.emplace_back(origin_or_id);
     }
   }
   cached_supported_native_app_ids_[method_manifest_url] = native_app_ids;
 
   EnableMethodManifestUrlForSupportedApps(
-      method_manifest_url, supported_origin_strings, all_origins_supported,
-      manifest_url_to_app_origins_map_[method_manifest_url], &apps_,
+      method_manifest_url, supported_origin_strings, &apps_,
+      manifest_url_to_app_id_map_[method_manifest_url],
       &prohibited_payment_methods_);
 
   if (!supported_origin_strings.empty()) {
@@ -203,7 +180,7 @@ void ManifestVerifier::OnWebDataServiceRequestDone(
   }
 
   downloader_->DownloadPaymentMethodManifest(
-      method_manifest_url,
+      merchant_origin_, method_manifest_url,
       base::BindOnce(&ManifestVerifier::OnPaymentMethodManifestDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), method_manifest_url));
 }
@@ -233,7 +210,7 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
   }
 
   parser_->ParsePaymentMethodManifest(
-      content,
+      method_manifest_url, content,
       base::BindOnce(&ManifestVerifier::OnPaymentMethodManifestParsed,
                      weak_ptr_factory_.GetWeakPtr(), method_manifest_url));
 }
@@ -241,8 +218,7 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
 void ManifestVerifier::OnPaymentMethodManifestParsed(
     const GURL& method_manifest_url,
     const std::vector<GURL>& default_applications,
-    const std::vector<url::Origin>& supported_origins,
-    bool all_origins_supported) {
+    const std::vector<url::Origin>& supported_origins) {
   DCHECK_LT(0U, number_of_manifests_to_download_);
 
   std::vector<std::string> supported_origin_strings(supported_origins.size());
@@ -253,8 +229,8 @@ void ManifestVerifier::OnPaymentMethodManifestParsed(
   if (cached_manifest_urls_.find(method_manifest_url) ==
       cached_manifest_urls_.end()) {
     EnableMethodManifestUrlForSupportedApps(
-        method_manifest_url, supported_origin_strings, all_origins_supported,
-        manifest_url_to_app_origins_map_[method_manifest_url], &apps_,
+        method_manifest_url, supported_origin_strings, &apps_,
+        manifest_url_to_app_id_map_[method_manifest_url],
         &prohibited_payment_methods_);
 
     if (--number_of_manifests_to_verify_ == 0) {
@@ -263,9 +239,6 @@ void ManifestVerifier::OnPaymentMethodManifestParsed(
           .Run(std::move(apps_), first_error_message_);
     }
   }
-
-  if (all_origins_supported)
-    supported_origin_strings.emplace_back(kAllOriginsSupportedIndicator);
 
   // Keep Android native payment app Ids in cache.
   std::map<GURL, std::vector<std::string>>::const_iterator it =
@@ -288,7 +261,7 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
   for (const auto& it : prohibited_payment_methods_) {
     DCHECK(it.first.is_valid());
     std::string app_scope = it.first.spec();
-    std::string app_origin = it.first.GetOrigin().spec();
+    std::string app_origin = it.first.DeprecatedGetOriginAsURL().spec();
     const std::set<GURL>& methods = it.second;
     for (const GURL& method : methods) {
       DCHECK(method.is_valid());
@@ -296,11 +269,10 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
                 "\" is not allowed to use payment method \"" + method.spec() +
                 "\", because the payment handler origin \"" + app_origin +
                 "\" is different from the payment method origin \"" +
-                method.GetOrigin().spec() +
+                method.DeprecatedGetOriginAsURL().spec() +
                 "\" and the \"supported_origins\" field in the payment method "
                 "manifest for \"" +
-                method.spec() +
-                "\" is not \"*\" and is not a list that includes \"" +
+                method.spec() + "\" is not a list that includes \"" +
                 app_origin + "\".");
     }
   }

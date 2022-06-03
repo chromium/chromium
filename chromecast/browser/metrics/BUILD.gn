@@ -22,7 +22,7 @@ cast_source_set("metrics") {
     "//chromecast/base:cast_version",
     "//chromecast/metrics",
     "//components/metrics",
-    "//components/metrics:gpu",
+    "//components/metrics:content",
     "//components/metrics:net",
     "//components/metrics:ui",
     "//components/prefs",
@@ -32,7 +32,7 @@ cast_source_set("metrics") {
     "//third_party/metrics_proto",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "external_metrics.cc",
       "external_metrics.h",

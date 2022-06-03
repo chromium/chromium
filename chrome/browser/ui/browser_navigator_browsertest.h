@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/notification_types.h"
 
 class Profile;
 
@@ -23,8 +22,7 @@ class WebContents;
 // Browsertest class for testing the browser navigation. It is also a base class
 // for the |BrowserGuestModeNavigation| which tests navigation while in guest
 // mode.
-class BrowserNavigatorTest : public InProcessBrowserTest,
-                             public content::NotificationObserver {
+class BrowserNavigatorTest : public InProcessBrowserTest {
  protected:
   NavigateParams MakeNavigateParams() const;
   NavigateParams MakeNavigateParams(Browser* browser) const;
@@ -40,15 +38,10 @@ class BrowserNavigatorTest : public InProcessBrowserTest,
                                     const ui::PageTransition& page_transition);
   void RunDoNothingIfIncognitoIsForcedTest(const GURL& url);
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   bool OpenPOSTURLInNewForegroundTabAndGetTitle(const GURL& url,
                                                 const std::string& post_data,
                                                 bool is_browser_initiated,
-                                                base::string16* title);
+                                                std::u16string* title);
 
   Browser* NavigateHelper(const GURL& url,
                           Browser* browser,

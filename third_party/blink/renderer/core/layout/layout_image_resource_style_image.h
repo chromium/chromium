@@ -52,10 +52,11 @@ class LayoutImageResourceStyleImage final : public LayoutImageResource {
   }
   FloatSize ImageSize(float multiplier) const override;
   FloatSize ImageSizeWithDefaultSize(float multiplier,
-                                     const LayoutSize&) const override;
+                                     const FloatSize&) const override;
+  RespectImageOrientationEnum ImageOrientation() const override;
   WrappedImagePtr ImagePtr() const override { return style_image_->Data(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<StyleImage> style_image_;
@@ -63,4 +64,4 @@ class LayoutImageResourceStyleImage final : public LayoutImageResource {
 
 }  // namespace blink
 
-#endif  // LayoutImageStyleImage_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_IMAGE_RESOURCE_STYLE_IMAGE_H_

@@ -4,7 +4,7 @@
 
 #include "media/formats/mp2t/ts_section_cets_ecm.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"
 

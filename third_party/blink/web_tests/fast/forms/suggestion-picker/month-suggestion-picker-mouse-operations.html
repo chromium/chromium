@@ -2,6 +2,7 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
 <script src="../../forms/resources/common.js"></script>
 <script src="../../forms/resources/common-wheel-event.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
@@ -68,7 +69,11 @@
 debug('Check that page popup doesn\'t exist at first.');
 shouldBeNull('$("mock-page-popup")');
 
-openPicker($('month'), test1);
+window.onload = function() {
+    if (window.internals)
+        internals.settings.setScrollAnimatorEnabled(false);
+    openPicker($('month'), test1);
+};
 
 function test1() {
     debug('Check that page popup exists.');
@@ -109,15 +114,19 @@ function test2() {
         waitUntilClosing(test2AfterClosing);
     }
 
-    function scrollUp() {
+    async function scrollUp() {
         scrollTopBeforeWheelEvent = suggestionList.scrollTop;
-        dispatchWheelEvent(suggestionList, 0, 100);
+        await dispatchWheelEvent(suggestionList, 0, -3);
+        await waitFor(() => {
+            return scrollTopBeforeWheelEvent > suggestionList.scrollTop});
         shouldBecomeEqual('scrollTopBeforeWheelEvent > suggestionList.scrollTop', 'true', finishTest)
     }
 
-    function scrollDown() {
+    async function scrollDown() {
         scrollTopBeforeWheelEvent = suggestionList.scrollTop;
-        dispatchWheelEvent(suggestionList, 0, -100);
+        await dispatchWheelEvent(suggestionList, 0, 3);
+        await waitFor(() => {
+            return scrollTopBeforeWheelEvent < suggestionList.scrollTop});
         shouldBecomeEqual('scrollTopBeforeWheelEvent < suggestionList.scrollTop', 'true', scrollUp);
     }
 

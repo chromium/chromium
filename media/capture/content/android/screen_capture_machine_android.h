@@ -6,7 +6,6 @@
 #define MEDIA_CAPTURE_CONTENT_ANDROID_SCREEN_CAPTURE_MACHINE_ANDROID_H_
 
 #include <jni.h>
-#include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +21,11 @@ class VideoFrame;
 class CAPTURE_EXPORT ScreenCaptureMachineAndroid {
  public:
   ScreenCaptureMachineAndroid();
+
+  ScreenCaptureMachineAndroid(const ScreenCaptureMachineAndroid&) = delete;
+  ScreenCaptureMachineAndroid& operator=(const ScreenCaptureMachineAndroid&) =
+      delete;
+
   virtual ~ScreenCaptureMachineAndroid();
 
   static base::android::ScopedJavaLocalRef<jobject>
@@ -83,8 +87,6 @@ class CAPTURE_EXPORT ScreenCaptureMachineAndroid {
 
   // Java VideoCaptureAndroid instance.
   base::android::ScopedJavaLocalRef<jobject> j_capture_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureMachineAndroid);
 };
 
 }  // namespace media

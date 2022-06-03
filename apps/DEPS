@@ -2,6 +2,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
+  "+components/app_restore",
   "+components/services/app_service/public",
   "+components/keyed_service",
   "+components/user_manager",
@@ -29,6 +30,6 @@ specific_include_rules = {
     # See http://crbug.com/162530 for details.
     "+chrome/browser/extensions/api/file_system/file_system_api.h",
     # To access sandbox includes.
-    "+services/service_manager/sandbox",
-  ]
+    "+sandbox/policy",
+  ],
 }

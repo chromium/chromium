@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/application_context.h"
 
-#include "base/logging.h"
 
 namespace {
 // Global ApplicationContext instance.

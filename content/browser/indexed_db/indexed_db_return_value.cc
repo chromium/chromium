@@ -29,8 +29,8 @@ blink::mojom::IDBReturnValuePtr IndexedDBReturnValue::ConvertReturnValue(
     // Release value->bits std::string.
     value->bits.clear();
   }
-  IndexedDBBlobInfo::ConvertBlobInfo(value->blob_info,
-                                     &mojo_value->value->blob_or_file_info);
+  IndexedDBExternalObject::ConvertToMojo(value->external_objects,
+                                         &mojo_value->value->external_objects);
   return mojo_value;
 }
 

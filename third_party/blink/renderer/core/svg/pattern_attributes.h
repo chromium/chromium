@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -59,7 +60,7 @@ class PatternAttributes final {
   SVGLength* Y() const { return y_.Get(); }
   SVGLength* Width() const { return width_.Get(); }
   SVGLength* Height() const { return height_.Get(); }
-  FloatRect ViewBox() const { return view_box_; }
+  gfx::RectF ViewBox() const { return view_box_; }
   SVGPreserveAspectRatio* PreserveAspectRatio() const {
     return preserve_aspect_ratio_.Get();
   }
@@ -92,7 +93,7 @@ class PatternAttributes final {
     height_set_ = true;
   }
 
-  void SetViewBox(const FloatRect& value) {
+  void SetViewBox(const gfx::RectF& value) {
     view_box_ = value;
     view_box_set_ = true;
   }
@@ -133,7 +134,7 @@ class PatternAttributes final {
   bool HasPatternTransform() const { return pattern_transform_set_; }
   bool HasPatternContentElement() const { return pattern_content_element_set_; }
 
-  void Trace(blink::Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(x_);
     visitor->Trace(y_);
     visitor->Trace(width_);
@@ -148,7 +149,7 @@ class PatternAttributes final {
   Member<SVGLength> y_;
   Member<SVGLength> width_;
   Member<SVGLength> height_;
-  FloatRect view_box_;
+  gfx::RectF view_box_;
   Member<SVGPreserveAspectRatio> preserve_aspect_ratio_;
   SVGUnitTypes::SVGUnitType pattern_units_;
   SVGUnitTypes::SVGUnitType pattern_content_units_;
@@ -176,7 +177,7 @@ class PatternAttributesWrapper
 
   PatternAttributes& Attributes() { return attributes_; }
   void Set(const PatternAttributes& attributes) { attributes_ = attributes; }
-  void Trace(blink::Visitor* visitor) { visitor->Trace(attributes_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(attributes_); }
 
  private:
   PatternAttributes attributes_;

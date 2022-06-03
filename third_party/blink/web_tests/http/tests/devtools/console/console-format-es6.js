@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console properly displays information about ES6 features.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -85,14 +85,14 @@
         loopOverGlobals(next, total);
     }
 
-    function finish() {
-      ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+    async function finish() {
+      await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
       TestRunner.addResult('Expanded all messages');
       ConsoleTestRunner.expandConsoleMessages(dumpConsoleMessages);
     }
 
-    function dumpConsoleMessages() {
-      ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+    async function dumpConsoleMessages() {
+      await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
       TestRunner.completeTest();
     }
 

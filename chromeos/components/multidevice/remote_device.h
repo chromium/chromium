@@ -38,9 +38,22 @@ struct RemoteDevice {
   std::string pii_free_name;
   std::string public_key;
   std::string persistent_symmetric_key;
+
+  // The last time a feature bit changed for the device in the CryptAuth server.
+  // Beware that devices don't necessarily flip their own bits, for example,
+  // exclusively enabling a feature will disable the bit on all other devices,
+  // or a Chromebook can enable/disable a phone's BETTER_TOGETHER_HOST bit.
+  // Note: Do not confuse with GetDevicesActivityStatus RPC response's
+  // |last_update_time|.
   int64_t last_update_time_millis;
+
   std::map<SoftwareFeature, SoftwareFeatureState> software_features;
   std::vector<BeaconSeed> beacon_seeds;
+
+  // Bluetooth public address, formatted as a hex string with colons and capital
+  // letters (example: "01:23:45:67:89:AB"). If the device does not have a
+  // synced address, this field is empty.
+  std::string bluetooth_public_address;
 
   RemoteDevice();
   RemoteDevice(
@@ -52,7 +65,8 @@ struct RemoteDevice {
       const std::string& persistent_symmetric_key,
       int64_t last_update_time_millis,
       const std::map<SoftwareFeature, SoftwareFeatureState>& software_features,
-      const std::vector<BeaconSeed>& beacon_seeds);
+      const std::vector<BeaconSeed>& beacon_seeds,
+      const std::string& bluetooth_public_address);
   RemoteDevice(const RemoteDevice& other);
   ~RemoteDevice();
 
@@ -70,5 +84,14 @@ typedef std::vector<RemoteDevice> RemoteDeviceList;
 }  // namespace multidevice
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::RemoteDevice;
+using ::chromeos::multidevice::RemoteDeviceList;
+}  // namespace multidevice
+}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_H_

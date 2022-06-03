@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Package that handles non-debug, non-file output for run_web_tests.py."""
 
 import logging
@@ -33,25 +32,45 @@ import math
 import optparse
 
 from blinkpy.web_tests.models import test_expectations
+from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.views.metered_stream import MeteredStream
 from blinkpy.tool import grammar
-
 
 NUM_SLOW_TESTS_TO_LOG = 10
 
 
 def print_options():
     return [
-        optparse.make_option('--debug-rwt-logging', action='store_true', default=False,
-                             help='print timestamps and debug information for run_web_tests.py itself'),
-        optparse.make_option('--details', action='store_true', default=False,
-                             help='print detailed results for every test'),
-        optparse.make_option('-q', '--quiet', action='store_true', default=False,
-                             help='run quietly (errors, warnings, and progress only)'),
-        optparse.make_option('--timing', action='store_true', default=False,
-                             help='display test times (summary plus per-test w/ --verbose)'),
-        optparse.make_option('-v', '--verbose', action='store_true', default=False,
-                             help='print a summarized result for every test (one line per test)'),
+        optparse.make_option(
+            '--debug-rwt-logging',
+            action='store_true',
+            default=False,
+            help=
+            'print timestamps and debug information for run_web_tests.py itself'
+        ),
+        optparse.make_option(
+            '--details',
+            action='store_true',
+            default=False,
+            help='print detailed results for every test'),
+        optparse.make_option(
+            '-q',
+            '--quiet',
+            action='store_true',
+            default=False,
+            help='run quietly (errors, warnings, and progress only)'),
+        optparse.make_option(
+            '--timing',
+            action='store_true',
+            default=False,
+            help='display test times (summary plus per-test w/ --verbose)'),
+        optparse.make_option(
+            '-v',
+            '--verbose',
+            action='store_true',
+            default=False,
+            help='print a summarized result for every test (one line per test)'
+        ),
     ]
 
 
@@ -64,9 +83,13 @@ class Printer(object):
         self._host = host
         self._options = options
         logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG if options.debug_rwt_logging else logging.INFO)
-        self._meter = MeteredStream(regular_output, options.debug_rwt_logging, logger,
-                                    number_of_columns=host.platform.terminal_width())
+        logger.setLevel(logging.DEBUG if options.
+                        debug_rwt_logging else logging.INFO)
+        self._meter = MeteredStream(
+            regular_output,
+            options.debug_rwt_logging,
+            logger,
+            number_of_columns=host.platform.terminal_width())
         self._running_tests = []
         self._completed_tests = []
 
@@ -78,48 +101,68 @@ class Printer(object):
 
     def print_config(self, port):
         self._print_default("Using port '%s'" % port.name())
-        self._print_default('Test configuration: %s' % port.test_configuration())
-        self._print_default('View the test results at file://%s/results.html' % port.artifacts_directory())
+        self._print_default(
+            'Test configuration: %s' % port.test_configuration())
+        self._print_default('View the test results at file://%s/results.html' %
+                            port.artifacts_directory())
         if self._options.order == 'random':
-            self._print_default('Using random order with seed: %d' % self._options.seed)
+            self._print_default(
+                'Using random order with seed: %d' % self._options.seed)
 
         fs = self._host.filesystem
         fallback_path = [fs.split(x)[1] for x in port.baseline_search_path()]
-        self._print_default('Baseline search path: %s -> generic' % ' -> '.join(fallback_path))
+        self._print_default(
+            'Baseline search path: %s -> generic' % ' -> '.join(fallback_path))
         self._print_default('Using %s build' % self._options.configuration)
-        self._print_default('Regular timeout: %s, slow test timeout: %s' %
-                            (self._options.time_out_ms, self._options.slow_time_out_ms))
+        self._print_default(
+            'Regular timeout: %s, slow test timeout: %s' %
+            (self._options.time_out_ms, self._options.slow_time_out_ms))
 
-        self._print_default('Command line: ' + ' '.join(port.driver_cmd_line()))
+        self._print_default('Command line: ' +
+                            ' '.join(port.driver_cmd_line()))
         self._print_default('')
 
-    def print_found(self, num_all_test_files, num_shard_test_files, num_to_run, repeat_each, iterations):
-        found_str = 'Found %s' % grammar.pluralize('test', num_shard_test_files)
+    def print_found(self, num_all_test_files, num_shard_test_files, num_to_run,
+                    repeat_each, iterations):
+        found_str = 'Found %s' % grammar.pluralize('test',
+                                                   num_shard_test_files)
         if num_all_test_files != num_shard_test_files:
             found_str += ' (total %d)' % num_all_test_files
         found_str += '; running %d' % num_to_run
         if repeat_each * iterations > 1:
-            found_str += ' (%d times each: --repeat-each=%d --iterations=%d)' % (repeat_each * iterations, repeat_each, iterations)
+            found_str += ' (%d times each: --repeat-each=%d --iterations=%d)' % (
+                repeat_each * iterations, repeat_each, iterations)
         found_str += ', skipping %d' % (num_shard_test_files - num_to_run)
         self._print_default(found_str + '.')
 
     def print_expected(self, run_results, tests_with_result_type_callback):
-        self._print_expected_results_of_type(run_results, test_expectations.PASS, 'passes', tests_with_result_type_callback)
-        self._print_expected_results_of_type(run_results, test_expectations.FAIL, 'failures', tests_with_result_type_callback)
-        self._print_expected_results_of_type(run_results, test_expectations.FLAKY, 'flaky', tests_with_result_type_callback)
+        self._print_expected_results_of_type(run_results,
+                                             test_expectations.PASS, 'passes',
+                                             tests_with_result_type_callback)
+        self._print_expected_results_of_type(
+            run_results, test_expectations.FAIL, 'failures',
+            tests_with_result_type_callback)
+        self._print_expected_results_of_type(run_results,
+                                             test_expectations.FLAKY, 'flaky',
+                                             tests_with_result_type_callback)
         self._print_debug('')
 
-    def print_workers_and_shards(self, port, num_workers, num_shards, num_locked_shards):
+    def print_workers_and_shards(self, port, num_workers, num_shards,
+                                 num_locked_shards):
         driver_name = port.driver_name()
         if num_workers == 1:
             self._print_default('Running 1 %s.' % driver_name)
             self._print_debug('(%s).' % grammar.pluralize('shard', num_shards))
         else:
-            self._print_default('Running %d %ss in parallel.' % (num_workers, driver_name))
-            self._print_debug('(%d shards; %d locked).' % (num_shards, num_locked_shards))
+            self._print_default(
+                'Running %d %ss in parallel.' % (num_workers, driver_name))
+            self._print_debug(
+                '(%d shards; %d locked).' % (num_shards, num_locked_shards))
         self._print_default('')
 
-    def _print_expected_results_of_type(self, run_results, result_type, result_type_str, tests_with_result_type_callback):
+    def _print_expected_results_of_type(self, run_results, result_type,
+                                        result_type_str,
+                                        tests_with_result_type_callback):
         tests = tests_with_result_type_callback(result_type)
         self._print_debug('Expect: %5d %-8s' % (len(tests), result_type_str))
 
@@ -143,20 +186,27 @@ class Printer(object):
         stats = {}
         cuml_time = 0
         for result in run_results.results_by_name.values():
-            stats.setdefault(result.worker_name, {'num_tests': 0, 'total_time': 0})
+            stats.setdefault(result.worker_name, {
+                'num_tests': 0,
+                'total_time': 0
+            })
             stats[result.worker_name]['num_tests'] += 1
             stats[result.worker_name]['total_time'] += result.total_run_time
             cuml_time += result.total_run_time
 
         for worker_name in stats:
-            self._print_debug('    %10s: %5d tests, %6.2f secs' % (worker_name, stats[
-                              worker_name]['num_tests'], stats[worker_name]['total_time']))
-        self._print_debug('   %6.2f cumulative, %6.2f optimal' % (cuml_time, cuml_time / num_workers))
+            self._print_debug('    %10s: %5d tests, %6.2f secs' %
+                              (worker_name, stats[worker_name]['num_tests'],
+                               stats[worker_name]['total_time']))
+        self._print_debug('   %6.2f cumulative, %6.2f optimal' %
+                          (cuml_time, cuml_time / num_workers))
         self._print_debug('')
 
     def print_summary(self, total_time, run_results):
         if self._options.timing:
-            parallel_time = sum(result.total_run_time for result in run_results.results_by_name.values())
+            parallel_time = sum(
+                result.total_run_time
+                for result in run_results.results_by_name.values())
 
             # There is serial overhead in web_test_runner.run() that we can't easily account for when
             # really running in parallel, but taking the min() ensures that in the worst case
@@ -164,7 +214,8 @@ class Printer(object):
             serial_time = total_time - min(run_results.run_time, parallel_time)
 
             speedup = (parallel_time + serial_time) / total_time
-            timing_summary = ' in %.2fs (%.2fs in rwt, %.2gx)' % (total_time, serial_time, speedup)
+            timing_summary = ' in %.2fs (%.2fs in rwt, %.2gx)' % (
+                total_time, serial_time, speedup)
         else:
             timing_summary = ''
 
@@ -183,30 +234,38 @@ class Printer(object):
         expected_summary_str = ''
         if run_results.expected_failures > 0:
             expected_summary_str = " (%d passed, %d didn't)" % (
-                expected - run_results.expected_failures, run_results.expected_failures)
+                expected - run_results.expected_failures,
+                run_results.expected_failures)
 
         summary = ''
         if unexpected == 0:
             if expected == total:
                 if expected > 1:
-                    summary = 'All %d tests ran as expected%s%s.' % (expected, expected_summary_str, timing_summary)
+                    summary = 'All %d tests ran as expected%s%s.' % (
+                        expected, expected_summary_str, timing_summary)
                 else:
-                    summary = 'The test ran as expected%s%s.' % (expected_summary_str, timing_summary)
+                    summary = 'The test ran as expected%s%s.' % (
+                        expected_summary_str, timing_summary)
             else:
                 summary = '%s ran as expected%s%s%s.' % (grammar.pluralize(
-                    'test', expected), expected_summary_str, incomplete_str, timing_summary)
+                    'test', expected), expected_summary_str, incomplete_str,
+                                                         timing_summary)
             self._print_quiet(summary)
         else:
-            self._print_quiet("%s ran as expected%s, %d didn't%s%s:" % (grammar.pluralize(
-                'test', expected), expected_summary_str, unexpected, incomplete_str, timing_summary))
+            self._print_quiet(
+                "%s ran as expected%s, %d didn't%s%s:" %
+                (grammar.pluralize('test', expected), expected_summary_str,
+                 unexpected, incomplete_str, timing_summary))
             for test_name in sorted(run_results.unexpected_results_by_name):
                 self._print_quiet('    %s' % test_name)
 
     def _test_status_line(self, test_name, suffix):
         format_string = '[%d/%d] %s%s'
-        status_line = format_string % (self.num_completed, self.num_tests, test_name, suffix)
+        status_line = format_string % (self.num_completed, self.num_tests,
+                                       test_name, suffix)
         if len(status_line) > self._meter.number_of_columns():
-            overflow_columns = len(status_line) - self._meter.number_of_columns()
+            overflow_columns = (
+                len(status_line) - self._meter.number_of_columns())
             ellipsis = '...'
             if len(test_name) < overflow_columns + len(ellipsis) + 2:
                 # We don't have enough space even if we elide, just show the test filename.
@@ -215,8 +274,10 @@ class Printer(object):
             else:
                 new_length = len(test_name) - overflow_columns - len(ellipsis)
                 prefix = int(new_length / 2)
-                test_name = test_name[:prefix] + ellipsis + test_name[-(new_length - prefix):]
-        return format_string % (self.num_completed, self.num_tests, test_name, suffix)
+                test_name = (test_name[:prefix] + ellipsis +
+                             test_name[-(new_length - prefix):])
+        return format_string % (self.num_completed, self.num_tests, test_name,
+                                suffix)
 
     def print_started_test(self, test_name):
         self._running_tests.append(test_name)
@@ -234,8 +295,9 @@ class Printer(object):
         self.num_completed += 1
         test_name = result.test_name
 
-        result_message = self._result_message(result.type, result.failures, expected,
-                                              self._options.timing, result.test_run_time)
+        result_message = self._result_message(result.type, result.failures,
+                                              expected, self._options.timing,
+                                              result.test_run_time)
 
         if self._options.details:
             self._print_test_trace(port, result, exp_str, got_str)
@@ -250,17 +312,20 @@ class Printer(object):
                 self._completed_tests.append([test_name, result_message])
 
             for test_name, result_message in self._completed_tests:
-                self._meter.write_throttled_update(self._test_status_line(test_name, result_message))
+                self._meter.write_throttled_update(
+                    self._test_status_line(test_name, result_message))
             self._completed_tests = []
         self._running_tests.remove(test_name)
 
-    def _result_message(self, result_type, failures, expected, timing, test_run_time):
+    def _result_message(self, result_type, failures, expected, timing,
+                        test_run_time):
         exp_string = ' unexpectedly' if not expected else ''
-        timing_string = ' %.4fs' % test_run_time if timing else ''
-        if result_type == test_expectations.PASS:
+        timing_string = ' %.4fs' % test_run_time if timing or test_run_time > 1 else ''
+        if result_type == ResultType.Pass:
             return ' passed%s%s' % (exp_string, timing_string)
         else:
-            return ' failed%s (%s)%s' % (exp_string, ', '.join(failure.message() for failure in failures), timing_string)
+            return ' failed%s (%s)%s' % (exp_string, ', '.join(
+                failure.message() for failure in failures), timing_string)
 
     def _print_test_trace(self, port, result, exp_str, got_str):
         test_name = result.test_name
@@ -276,7 +341,8 @@ class Printer(object):
         references = port.reference_files(test_name)
         if references:
             for _, filename in references:
-                self._print_default('  ref: %s' % port.relative_test_filename(filename))
+                self._print_default(
+                    '  ref: %s' % port.relative_test_filename(filename))
         else:
             for extension in ('.txt', '.png', '.wav'):
                 self._print_baseline(port, test_name, extension)

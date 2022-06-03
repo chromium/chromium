@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
+#include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -22,6 +22,7 @@
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 #if defined(OS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
@@ -30,6 +31,14 @@
 namespace base {
 class CommandLine;
 }
+
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class ChildProcessLauncherPriority;
+}
+}  // namespace protos
+}  // namespace perfetto
 
 namespace content {
 
@@ -58,7 +67,6 @@ struct ChildProcessLauncherPriority {
   ChildProcessLauncherPriority(bool visible,
                                bool has_media_stream,
                                bool has_foreground_service_worker,
-                               bool has_only_low_priority_frames,
                                unsigned int frame_depth,
                                bool intersects_viewport,
                                bool boost_for_pending_views
@@ -70,7 +78,6 @@ struct ChildProcessLauncherPriority {
       : visible(visible),
         has_media_stream(has_media_stream),
         has_foreground_service_worker(has_foreground_service_worker),
-        has_only_low_priority_frames(has_only_low_priority_frames),
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
         boost_for_pending_views(boost_for_pending_views)
@@ -89,6 +96,10 @@ struct ChildProcessLauncherPriority {
     return !(*this == other);
   }
 
+  void WriteIntoTrace(
+      perfetto::TracedProto<
+          perfetto::protos::pbzero::ChildProcessLauncherPriority> proto);
+
   // Prefer |is_background()| to inspecting these fields individually (to ensure
   // all logic uses the same notion of "backgrounded").
 
@@ -106,10 +117,6 @@ struct ChildProcessLauncherPriority {
   // worker that may need to service timely events from other, possibly visible,
   // processes.
   bool has_foreground_service_worker;
-
-  // True if this ChildProcessLauncher has a non-zero number of frames attached
-  // to it and they're all low priority.
-  bool has_only_low_priority_frames;
 
   // |frame_depth| is the depth of the shallowest frame this process is
   // responsible for which has |visible| visibility. It only makes sense to
@@ -179,6 +186,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
       const mojo::ProcessErrorCallback& process_error_callback,
       std::map<std::string, base::FilePath> files_to_preload,
       bool terminate_on_shutdown = true);
+
+  ChildProcessLauncher(const ChildProcessLauncher&) = delete;
+  ChildProcessLauncher& operator=(const ChildProcessLauncher&) = delete;
+
   ~ChildProcessLauncher();
 
   // True if the process is being launched and so the handle isn't available.
@@ -196,6 +207,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // process will be killed if it was still running. See ZygoteHostImpl for
   // more discussion of Linux implementation details.
   ChildProcessTerminationInfo GetChildTerminationInfo(bool known_dead);
+
+  // Gather the lifetime process metrics and save them to histograms. Call
+  // right before the process is about to go away.
+  void RecordProcessLifetimeMetrics();
 
   // Changes whether the process runs in the background or not.  Only call
   // this after the process has started.
@@ -232,10 +247,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // The process associated with this ChildProcessLauncher. Set in Notify by
   // ChildProcessLauncherHelper once the process was started.
   internal::ChildProcessLauncherHelper::Process process_;
+  base::TimeTicks process_start_time_;
 
   ChildProcessTerminationInfo termination_info_;
   bool starting_;
-  base::TimeTicks start_time_;
 
   // Controls whether the child process should be terminated on browser
   // shutdown. Default behavior is to terminate the child.
@@ -246,8 +261,6 @@ class CONTENT_EXPORT ChildProcessLauncher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ChildProcessLauncher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessLauncher);
 };
 
 }  // namespace content

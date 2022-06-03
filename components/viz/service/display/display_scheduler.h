@@ -8,26 +8,35 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_scheduler_base.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace viz {
 
-class BeginFrameSource;
-
-class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
+class VIZ_SERVICE_EXPORT DisplayScheduler
+    : public DisplaySchedulerBase,
+      public DynamicBeginFrameDeadlineOffsetSource {
  public:
+  // `max_pending_swaps_120hz`, if positive, is used as the number of pending
+  // swaps while running at 120hz. Otherwise, this will fallback to
+  // `max_pending_swaps`.
   DisplayScheduler(BeginFrameSource* begin_frame_source,
                    base::SingleThreadTaskRunner* task_runner,
                    int max_pending_swaps,
-                   bool wait_for_all_surfaces_before_draw = false);
+                   absl::optional<int> max_pending_swaps_120hz,
+                   bool wait_for_all_surfaces_before_draw = false,
+                   gfx::RenderingPipeline* gpu_pipeline = nullptr);
+
+  DisplayScheduler(const DisplayScheduler&) = delete;
+  DisplayScheduler& operator=(const DisplayScheduler&) = delete;
+
   ~DisplayScheduler() override;
 
   // DisplaySchedulerBase implementation.
@@ -37,16 +46,21 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
+  void SetGpuLatency(base::TimeDelta gpu_latency) override;
 
   // DisplayDamageTrackerObserver implementation.
-  void OnDisplayDamaged() override;
+  void OnDisplayDamaged(SurfaceId surface_id) override;
   void OnRootFrameMissing(bool missing) override;
   void OnPendingSurfacesChanged() override;
+
+  // DynamicBeginFrameDeadlineOffsetSource:
+  base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const override;
 
  protected:
   class BeginFrameObserver;
 
   bool OnBeginFrame(const BeginFrameArgs& args);
+  int MaxPendingSwaps() const;
 
   base::TimeTicks current_frame_display_time() const {
     return current_begin_frame_args_.frame_time +
@@ -95,6 +109,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   BeginFrameSource* begin_frame_source_;
   base::SingleThreadTaskRunner* task_runner_;
+  gfx::RenderingPipeline* gpu_pipeline_;
+  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
+      gpu_pipeline_active_;
 
   BeginFrameArgs current_begin_frame_args_;
   base::RepeatingClosure begin_frame_deadline_closure_;
@@ -113,15 +130,18 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
 
   int next_swap_id_;
   int pending_swaps_;
-  int max_pending_swaps_;
+  const int max_pending_swaps_;
+  absl::optional<int> max_pending_swaps_120hz_;
   bool wait_for_all_surfaces_before_draw_;
 
   bool observing_begin_frame_source_;
 
-  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
+  // If set, we are dynamically adjusting our frame deadline, by the percentile
+  // of historic draw times to base the adjustment on.
+  const absl::optional<double> dynamic_cc_deadlines_percentile_;
+  const absl::optional<double> dynamic_scheduler_deadlines_percentile_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayScheduler);
+  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };
 
 }  // namespace viz

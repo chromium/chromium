@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_HTTP_SERVER_DATA_RESPONSE_PROVIDER_H_
 #define IOS_WEB_PUBLIC_TEST_HTTP_SERVER_DATA_RESPONSE_PROVIDER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"

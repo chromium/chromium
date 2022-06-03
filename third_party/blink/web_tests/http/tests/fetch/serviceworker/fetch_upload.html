@@ -1,0 +1,24 @@
+<!doctype html>
+<head>
+<meta name="timeout" content="long"></meta>
+<script src = "/resources/get-host-info.js?pipe=sub"></script>
+<script src = "/resources/testharness.js"></script>
+<script src = "/resources/testharnessreport.js"></script>
+<script src = "/fetch/resources/fetch-test-options.js"></script>
+<script src = "/serviceworker/resources/test-helpers.js"></script>
+</head>
+<body>
+<script>
+var options = get_fetch_test_options();
+function start(t) {
+  service_worker_test(
+    '../script-tests/fetch_upload.js?',
+    'fetch_upload-serviceworker');
+  t.done();
+}
+function init() {
+  return Promise.resolve();
+}
+</script>
+<script src = "../resources/init.js"></script>
+</body>

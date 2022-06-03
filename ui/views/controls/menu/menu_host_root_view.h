@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_HOST_ROOT_VIEW_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_HOST_ROOT_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/views/widget/root_view.h"
 
 namespace views {
@@ -21,7 +20,12 @@ class SubmenuView;
 // such that when MenuHostRootView is deleted it doesn't delete the menu items.
 class MenuHostRootView : public internal::RootView {
  public:
+  METADATA_HEADER(MenuHostRootView);
+
   MenuHostRootView(Widget* widget, SubmenuView* submenu);
+
+  MenuHostRootView(const MenuHostRootView&) = delete;
+  MenuHostRootView& operator=(const MenuHostRootView&) = delete;
 
   void ClearSubmenu() { submenu_ = nullptr; }
 
@@ -32,8 +36,8 @@ class MenuHostRootView : public internal::RootView {
   void OnMouseMoved(const ui::MouseEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  void ViewHierarchyChanged(const ViewHierarchyChangedDetails& details)
-      override;
+  void ViewHierarchyChanged(
+      const ViewHierarchyChangedDetails& details) override;
 
   bool ProcessMousePressed(const ui::MouseEvent& event);
   bool ProcessMouseDragged(const ui::MouseEvent& event);
@@ -51,8 +55,6 @@ class MenuHostRootView : public internal::RootView {
 
   // The SubmenuView we contain.
   SubmenuView* submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuHostRootView);
 };
 
 }  // namespace views

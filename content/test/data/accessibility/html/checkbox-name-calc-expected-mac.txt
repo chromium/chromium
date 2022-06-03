@@ -1,7 +1,7 @@
 AXWebArea
 ++AXCheckBox AXDescription='Title0'
-++AXCheckBox AXTitle='Label1' AXHelp='Title1'
+++AXCheckBox AXHelp='Title1' AXTitle='Label1'
 ++AXCheckBox AXDescription='AriaLabel2' AXHelp='Title2'
-++AXCheckBox AXTitle='LabelledBy3' AXHelp='Title3'
-++AXCheckBox AXTitle='LabelledBy4' AXHelp='DescribedBy4'
+++AXCheckBox AXHelp='Title3' AXTitle='LabelledBy3'
+++AXCheckBox AXHelp='DescribedBy4' AXTitle='LabelledBy4'
 ++AXCheckBox AXHelp='DescribedBy5'

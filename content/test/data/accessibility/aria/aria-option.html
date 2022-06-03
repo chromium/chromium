@@ -1,9 +1,8 @@
 <!--
-@MAC-ALLOW:AXRole*
+@MAC-ALLOW:AXRoleDescription
 @WIN-ALLOW:xml-roles*
 @WIN-ALLOW:SELECT*
 @BLINK-ALLOW:focus*
-@BLINK-ALLOW:select*
 @AURALINUX-ALLOW:xml-roles*
 @AURALINUX-ALLOW:select*
 -->
@@ -11,9 +10,12 @@
 <html>
 <body>
 
-<div role="listbox">
+<div role="listbox" onclick="console.log('hi')">
   <div role="option">option 1</div>
   <div role="option" aria-label="label 2">option 2</div>
+  <div role="option">cat<strong>erpillar</strong></div>
+  <div role="option">cat<em>fish</em></div>
+  <div role="option" aria-label="medusa"><em>jelly</em>fish</div>
 </div>
 
 </body>

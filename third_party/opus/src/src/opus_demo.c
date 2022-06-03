@@ -79,14 +79,7 @@ static opus_uint32 char_to_int(unsigned char ch[4])
          | ((opus_uint32)ch[2]<< 8) |  (opus_uint32)ch[3];
 }
 
-static void check_encoder_option(int decode_only, const char *opt)
-{
-   if (decode_only)
-   {
-      fprintf(stderr, "option %s is only for encoding\n", opt);
-      exit(EXIT_FAILURE);
-   }
-}
+#define check_encoder_option(decode_only, opt) do {if (decode_only) {fprintf(stderr, "option %s is only for encoding\n", opt); goto failure;}} while(0)
 
 static const int silk8_test[][4] = {
       {MODE_SILK_ONLY, OPUS_BANDWIDTH_NARROWBAND, 960*3, 1},
@@ -218,15 +211,16 @@ int main(int argc, char *argv[])
 {
     int err;
     char *inFile, *outFile;
-    FILE *fin, *fout;
+    FILE *fin=NULL;
+    FILE *fout=NULL;
     OpusEncoder *enc=NULL;
     OpusDecoder *dec=NULL;
     int args;
     int len[2];
     int frame_size, channels;
     opus_int32 bitrate_bps=0;
-    unsigned char *data[2];
-    unsigned char *fbytes;
+    unsigned char *data[2] = {NULL, NULL};
+    unsigned char *fbytes=NULL;
     opus_int32 sampling_rate;
     int use_vbr;
     int max_payload_bytes;
@@ -240,7 +234,8 @@ int main(int argc, char *argv[])
     int k;
     opus_int32 skip=0;
     int stop=0;
-    short *in, *out;
+    short *in=NULL;
+    short *out=NULL;
     int application=OPUS_APPLICATION_AUDIO;
     double bits=0.0, bits_max=0.0, bits_act=0.0, bits2=0.0, nrg;
     double tot_samples=0;
@@ -268,11 +263,12 @@ int main(int argc, char *argv[])
     int remaining=0;
     int variable_duration=OPUS_FRAMESIZE_ARG;
     int delayed_decision=0;
+    int ret = EXIT_FAILURE;
 
     if (argc < 5 )
     {
        print_usage( argv );
-       return EXIT_FAILURE;
+       goto failure;
     }
 
     tot_in=tot_out=0;
@@ -291,7 +287,7 @@ int main(int argc, char *argv[])
     if (!decode_only && argc < 7 )
     {
        print_usage( argv );
-       return EXIT_FAILURE;
+       goto failure;
     }
 
     if (!decode_only)
@@ -303,7 +299,7 @@ int main(int argc, char *argv[])
        else if (strcmp(argv[args], "audio")!=0) {
           fprintf(stderr, "unknown application: %s\n", argv[args]);
           print_usage(argv);
-          return EXIT_FAILURE;
+          goto failure;
        }
        args++;
     }
@@ -316,7 +312,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "Supported sampling rates are 8000, 12000, "
                 "16000, 24000 and 48000.\n");
-        return EXIT_FAILURE;
+        goto failure;
     }
     frame_size = sampling_rate/50;
 
@@ -326,7 +322,7 @@ int main(int argc, char *argv[])
     if (channels < 1 || channels > 2)
     {
         fprintf(stderr, "Opus_demo supports only 1 or 2 channels.\n");
-        return EXIT_FAILURE;
+        goto failure;
     }
 
     if (!decode_only)
@@ -366,7 +362,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Unknown bandwidth %s. "
                                 "Supported are NB, MB, WB, SWB, FB.\n",
                                 argv[ args + 1 ]);
-                return EXIT_FAILURE;
+                goto failure;
             }
             args += 2;
         } else if( strcmp( argv[ args ], "-framesize" ) == 0 ) {
@@ -393,7 +389,7 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Unsupported frame size: %s ms. "
                                 "Supported are 2.5, 5, 10, 20, 40, 60, 80, 100, 120.\n",
                                 argv[ args + 1 ]);
-                return EXIT_FAILURE;
+                goto failure;
             }
             args += 2;
         } else if( strcmp( argv[ args ], "-max_payload" ) == 0 ) {
@@ -480,7 +476,7 @@ int main(int argc, char *argv[])
         } else {
             printf( "Error: unrecognized setting: %s\n\n", argv[ args ] );
             print_usage( argv );
-            return EXIT_FAILURE;
+            goto failure;
         }
     }
 
@@ -491,7 +487,7 @@ int main(int argc, char *argv[])
     {
         fprintf (stderr, "max_payload_bytes must be between 0 and %d\n",
                           MAX_PACKET);
-        return EXIT_FAILURE;
+        goto failure;
     }
 
     inFile = argv[argc-2];
@@ -499,7 +495,7 @@ int main(int argc, char *argv[])
     if (!fin)
     {
         fprintf (stderr, "Could not open input file %s\n", argv[argc-2]);
-        return EXIT_FAILURE;
+        goto failure;
     }
     if (mode_list)
     {
@@ -517,8 +513,7 @@ int main(int argc, char *argv[])
     if (!fout)
     {
         fprintf (stderr, "Could not open output file %s\n", argv[argc-1]);
-        fclose(fin);
-        return EXIT_FAILURE;
+        goto failure;
     }
 
     if (!decode_only)
@@ -527,9 +522,7 @@ int main(int argc, char *argv[])
        if (err != OPUS_OK)
        {
           fprintf(stderr, "Cannot create encoder: %s\n", opus_strerror(err));
-          fclose(fin);
-          fclose(fout);
-          return EXIT_FAILURE;
+          goto failure;
        }
        opus_encoder_ctl(enc, OPUS_SET_BITRATE(bitrate_bps));
        opus_encoder_ctl(enc, OPUS_SET_BANDWIDTH(bandwidth));
@@ -551,9 +544,7 @@ int main(int argc, char *argv[])
        if (err != OPUS_OK)
        {
           fprintf(stderr, "Cannot create decoder: %s\n", opus_strerror(err));
-          fclose(fin);
-          fclose(fout);
-          return EXIT_FAILURE;
+          goto failure;
        }
     }
 
@@ -729,9 +720,7 @@ int main(int argc, char *argv[])
             if (len[toggle] < 0)
             {
                 fprintf (stderr, "opus_encode() returned %d\n", len[toggle]);
-                fclose(fin);
-                fclose(fout);
-                return EXIT_FAILURE;
+                goto failure;
             }
             curr_mode_count += frame_size;
             if (curr_mode_count > mode_switch_time && curr_mode < nb_modes_in_list-1)
@@ -748,7 +737,7 @@ int main(int argc, char *argv[])
            if ((err = opus_packet_pad(data[toggle], len[toggle], new_len)) != OPUS_OK)
            {
               fprintf(stderr, "padding failed: %s\n", opus_strerror(err));
-              return EXIT_FAILURE;
+              goto failure;
            }
            len[toggle] = new_len;
         }
@@ -759,16 +748,16 @@ int main(int argc, char *argv[])
             int_to_char(len[toggle], int_field);
             if (fwrite(int_field, 1, 4, fout) != 4) {
                fprintf(stderr, "Error writing.\n");
-               return EXIT_FAILURE;
+               goto failure;
             }
             int_to_char(enc_final_range[toggle], int_field);
             if (fwrite(int_field, 1, 4, fout) != 4) {
                fprintf(stderr, "Error writing.\n");
-               return EXIT_FAILURE;
+               goto failure;
             }
             if (fwrite(data[toggle], 1, len[toggle], fout) != (unsigned)len[toggle]) {
                fprintf(stderr, "Error writing.\n");
-               return EXIT_FAILURE;
+               goto failure;
             }
             tot_samples += nb_encoded;
         } else {
@@ -811,7 +800,7 @@ int main(int argc, char *argv[])
                        }
                        if (fwrite(fbytes, sizeof(short)*channels, output_samples-skip, fout) != (unsigned)(output_samples-skip)){
                           fprintf(stderr, "Error writing.\n");
-                          return EXIT_FAILURE;
+                          goto failure;
                        }
                        tot_out += output_samples-skip;
                     }
@@ -837,9 +826,7 @@ int main(int argc, char *argv[])
                          (long)count,
                          (unsigned long)enc_final_range[toggle^use_inbandfec],
                          (unsigned long)dec_final_range);
-            fclose(fin);
-            fclose(fout);
-            return EXIT_FAILURE;
+            goto failure;
         }
 
         lost_prev = lost;
@@ -865,29 +852,41 @@ int main(int argc, char *argv[])
         toggle = (toggle + use_inbandfec) & 1;
     }
 
-    /* Print out bitrate statistics */
-    if(decode_only)
+    if(decode_only && count > 0)
         frame_size = (int)(tot_samples / count);
     count -= use_inbandfec;
-    fprintf (stderr, "average bitrate:             %7.3f kb/s\n",
-                     1e-3*bits*sampling_rate/tot_samples);
-    fprintf (stderr, "maximum bitrate:             %7.3f kb/s\n",
-                     1e-3*bits_max*sampling_rate/frame_size);
-    if (!decode_only)
-       fprintf (stderr, "active bitrate:              %7.3f kb/s\n",
-               1e-3*bits_act*sampling_rate/(1e-15+frame_size*(double)count_act));
-    fprintf (stderr, "bitrate standard deviation:  %7.3f kb/s\n",
-            1e-3*sqrt(bits2/count - bits*bits/(count*(double)count))*sampling_rate/frame_size);
+    if (tot_samples >= 1 && count > 0 && frame_size)
+    {
+       /* Print out bitrate statistics */
+       double var;
+       fprintf (stderr, "average bitrate:             %7.3f kb/s\n",
+                        1e-3*bits*sampling_rate/tot_samples);
+       fprintf (stderr, "maximum bitrate:             %7.3f kb/s\n",
+                        1e-3*bits_max*sampling_rate/frame_size);
+       if (!decode_only)
+          fprintf (stderr, "active bitrate:              %7.3f kb/s\n",
+                           1e-3*bits_act*sampling_rate/(1e-15+frame_size*(double)count_act));
+       var = bits2/count - bits*bits/(count*(double)count);
+       if (var < 0)
+          var = 0;
+       fprintf (stderr, "bitrate standard deviation:  %7.3f kb/s\n",
+                        1e-3*sqrt(var)*sampling_rate/frame_size);
+    } else {
+       fprintf(stderr, "bitrate statistics are undefined\n");
+    }
     silk_TimerSave("opus_timing.txt");
+    ret = EXIT_SUCCESS;
+failure:
     opus_encoder_destroy(enc);
     opus_decoder_destroy(dec);
     free(data[0]);
-    if (use_inbandfec)
-        free(data[1]);
-    fclose(fin);
-    fclose(fout);
+    free(data[1]);
+    if (fin)
+        fclose(fin);
+    if (fout)
+        fclose(fout);
     free(in);
     free(out);
     free(fbytes);
-    return EXIT_SUCCESS;
+    return ret;
 }

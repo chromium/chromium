@@ -21,8 +21,12 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
  public:
   VulkanImplementationScenic(ScenicSurfaceFactory* scenic_surface_factory,
                              SysmemBufferManager* sysmem_buffer_manager,
-                             bool allow_protected_memory,
-                             bool enforce_protected_memory);
+                             bool allow_protected_memory);
+
+  VulkanImplementationScenic(const VulkanImplementationScenic&) = delete;
+  VulkanImplementationScenic& operator=(const VulkanImplementationScenic&) =
+      delete;
+
   ~VulkanImplementationScenic() override;
 
   // VulkanImplementation:
@@ -35,6 +39,7 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
       const std::vector<VkQueueFamilyProperties>& queue_family_properties,
       uint32_t queue_family_index) override;
   std::vector<const char*> GetRequiredDeviceExtensions() override;
+  std::vector<const char*> GetOptionalDeviceExtensions() override;
   VkFence CreateVkFenceForGpuFence(VkDevice vk_device) override;
   std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
       VkDevice vk_device,
@@ -47,27 +52,26 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
       gfx::GpuMemoryBufferType memory_buffer_type) override;
-  bool CreateImageFromGpuMemoryHandle(
-      VkDevice vk_device,
+  std::unique_ptr<gpu::VulkanImage> CreateImageFromGpuMemoryHandle(
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkImage* vk_image,
-      VkImageCreateInfo* vk_image_info,
-      VkDeviceMemory* vk_device_memory,
-      VkDeviceSize* mem_allocation_size,
-      base::Optional<gpu::VulkanYCbCrInfo>* ycbcr_info) override;
+      VkFormat vk_format) override;
   std::unique_ptr<gpu::SysmemBufferCollection> RegisterSysmemBufferCollection(
       VkDevice device,
       gfx::SysmemBufferCollectionId id,
-      zx::channel token) override;
+      zx::channel token,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      gfx::Size size,
+      size_t min_buffer_count,
+      bool register_with_image_pipe) override;
 
  private:
   ScenicSurfaceFactory* const scenic_surface_factory_;
   SysmemBufferManager* const sysmem_buffer_manager_;
 
   gpu::VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationScenic);
 };
 
 }  // namespace ui

@@ -21,6 +21,9 @@ class GeometryStructTraitsTest : public testing::Test,
  public:
   GeometryStructTraitsTest() {}
 
+  GeometryStructTraitsTest(const GeometryStructTraitsTest&) = delete;
+  GeometryStructTraitsTest& operator=(const GeometryStructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::GeometryTraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::GeometryTraitsTestService> remote;
@@ -87,8 +90,6 @@ class GeometryStructTraitsTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<GeometryTraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeometryStructTraitsTest);
 };
 
 }  // namespace

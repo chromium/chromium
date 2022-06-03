@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/extensions/wallpaper_function_base.h"
 
-#include "base/memory/ref_counted_memory.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/task/lazy_task_runner.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
-#include "chrome/browser/image_decoder.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,16 +33,14 @@ const char* const kWallpaperLayoutArrays[] = {
 
 const int kWallpaperLayoutCount = base::size(kWallpaperLayoutArrays);
 
-base::LazySequencedTaskRunner g_blocking_task_runner =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
+base::LazyThreadPoolSequencedTaskRunner g_blocking_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(),
                          base::TaskPriority::USER_BLOCKING,
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
-base::LazySequencedTaskRunner g_non_blocking_task_runner =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
+base::LazyThreadPoolSequencedTaskRunner g_non_blocking_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(),
                          base::TaskPriority::USER_VISIBLE,
                          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN));
 
@@ -50,9 +48,10 @@ base::LazySequencedTaskRunner g_non_blocking_task_runner =
 // without distorting the |image|.  Unused areas are cropped away.
 gfx::ImageSkia ScaleAspectRatioAndCropCenter(const gfx::Size& size,
                                              const gfx::ImageSkia& image) {
-  float scale = std::min(float{image.width()} / float{size.width()},
-                         float{image.height()} / float{size.height()});
-  gfx::Size scaled_size = {scale * size.width(), scale * size.height()};
+  float scale = std::min(static_cast<float>(image.width()) / size.width(),
+                         static_cast<float>(image.height()) / size.height());
+  gfx::Size scaled_size = {base::ClampFloor(scale * size.width()),
+                           base::ClampFloor(scale * size.height())};
   gfx::Rect bounds{{0, 0}, image.size()};
   bounds.ClampToCenteredSize(scaled_size);
   auto scaled_and_cropped_image = gfx::ImageSkiaOperations::CreateTiledImage(
@@ -92,6 +91,9 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
   explicit UnsafeWallpaperDecoder(scoped_refptr<WallpaperFunctionBase> function)
       : function_(function) {}
 
+  UnsafeWallpaperDecoder(const UnsafeWallpaperDecoder&) = delete;
+  UnsafeWallpaperDecoder& operator=(const UnsafeWallpaperDecoder&) = delete;
+
   void Start(const std::vector<uint8_t>& image_data) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -99,8 +101,7 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
     // unsafe image decoder here. Before user login, a robust jpeg decoder will
     // be used.
     CHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
-    std::string image_data_str(image_data.begin(), image_data.end());
-    ImageDecoder::StartWithOptions(this, image_data_str,
+    ImageDecoder::StartWithOptions(this, image_data,
                                    ImageDecoder::DEFAULT_CODEC, true);
   }
 
@@ -137,8 +138,6 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
  private:
   scoped_refptr<WallpaperFunctionBase> function_;
   base::AtomicFlag cancel_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsafeWallpaperDecoder);
 };
 
 WallpaperFunctionBase::UnsafeWallpaperDecoder*
@@ -184,12 +183,12 @@ void WallpaperFunctionBase::OnFailure(const std::string& error) {
   Respond(Error(error));
 }
 
-void WallpaperFunctionBase::GenerateThumbnail(
+std::vector<uint8_t> WallpaperFunctionBase::GenerateThumbnail(
     const gfx::ImageSkia& image,
-    const gfx::Size& size,
-    scoped_refptr<base::RefCountedBytes>* thumbnail_data_out) {
-  *thumbnail_data_out = new base::RefCountedBytes();
+    const gfx::Size& size) {
+  std::vector<uint8_t> data_out;
   gfx::JPEGCodec::Encode(
       *wallpaper_api_util::ScaleAspectRatioAndCropCenter(size, image).bitmap(),
-      90 /*quality=*/, &(*thumbnail_data_out)->data());
+      90 /*quality=*/, &data_out);
+  return data_out;
 }

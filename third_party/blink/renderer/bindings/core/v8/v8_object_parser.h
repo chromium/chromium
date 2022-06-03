@@ -14,6 +14,7 @@
 namespace blink {
 
 class ExceptionState;
+class ExecutionContext;
 
 class CORE_EXPORT V8ObjectParser final {
   STATIC_ONLY(V8ObjectParser);
@@ -24,6 +25,7 @@ class CORE_EXPORT V8ObjectParser final {
   // Vector<String> type. It does not fail if the list contains invalid CSS
   // properties, to ensure forward compatibility.
   static bool ParseCSSPropertyList(v8::Local<v8::Context>,
+                                   const ExecutionContext*,
                                    v8::Local<v8::Object> constructor,
                                    const AtomicString list_name,
                                    Vector<CSSPropertyID>* native_properties,

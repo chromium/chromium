@@ -1,0 +1,29 @@
+<style>
+  :host {
+    display: flex;
+  }
+
+  /* "Cherry-picked" from iron-flex-layout. */
+  .flex {
+    flex: 1;
+    flex-basis: 0.000000001px;
+  }
+</style>
+
+<!-- There is no need to add an on-change listener, as the change event will
+     get bubbled up to the parent element. -->
+<cr-checkbox id="checkbox" class="flex" checked="{{checked}}"
+    disabled="[[disabled]]" aria-description="[[ariaDescription]]"
+    tab-index="[[getCheckboxTabIndex_(disabled, tabIndex)]]">
+  <slot></slot>
+</cr-checkbox>
+
+<template is="dom-if" if="[[disabled]]">
+  <iron-icon id="icon" class="policy" icon="cr20:domain" describedby="tooltip"
+      tab-index="[[getIconTabIndex_(disabled, tabIndex)]]">
+  </iron-icon>
+  <paper-tooltip for="icon" id="tooltip"
+      role="tooltip" tabindex="-1" position="left">
+    [[policyTooltip]]
+  </paper-tooltip>
+</template>

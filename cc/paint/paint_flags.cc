@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "cc/paint/paint_flags.h"
 
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_writer.h"
+#include "cc/paint/paint_shader.h"
 
 namespace {
 
 static bool affects_alpha(const SkColorFilter* cf) {
-  return cf && !(cf->getFlags() & SkColorFilter::kAlphaUnchanged_Flag);
+  return cf && !cf->isAlphaUnchanged();
 }
 
 }  // namespace
@@ -24,7 +27,8 @@ PaintFlags::PaintFlags() {
   bitfields_.cap_type_ = SkPaint::kDefault_Cap;
   bitfields_.join_type_ = SkPaint::kDefault_Join;
   bitfields_.style_ = SkPaint::kFill_Style;
-  bitfields_.filter_quality_ = SkFilterQuality::kNone_SkFilterQuality;
+  bitfields_.filter_quality_ =
+      static_cast<int>(PaintFlags::FilterQuality::kNone);
 
   static_assert(sizeof(bitfields_) <= sizeof(bitfields_uint_),
                 "Too many bitfields");
@@ -55,6 +59,14 @@ PaintFlags& PaintFlags::operator=(PaintFlags&& other) = default;
 
 void PaintFlags::setImageFilter(sk_sp<PaintFilter> filter) {
   image_filter_ = std::move(filter);
+}
+
+bool PaintFlags::ShaderIsOpaque() const {
+  return shader_->IsOpaque();
+}
+
+void PaintFlags::setShader(sk_sp<PaintShader> shader) {
+  shader_ = std::move(shader);
 }
 
 bool PaintFlags::nothingToDraw() const {
@@ -126,7 +138,7 @@ SkPaint PaintFlags::ToSkPaint() const {
   SkPaint paint;
   paint.setPathEffect(path_effect_);
   if (shader_)
-    paint.setShader(shader_->GetSkShader());
+    paint.setShader(shader_->GetSkShader(getFilterQuality()));
   paint.setMaskFilter(mask_filter_);
   paint.setColorFilter(color_filter_);
   if (image_filter_)
@@ -140,8 +152,23 @@ SkPaint PaintFlags::ToSkPaint() const {
   paint.setStrokeCap(static_cast<SkPaint::Cap>(getStrokeCap()));
   paint.setStrokeJoin(static_cast<SkPaint::Join>(getStrokeJoin()));
   paint.setStyle(static_cast<SkPaint::Style>(getStyle()));
-  paint.setFilterQuality(getFilterQuality());
   return paint;
+}
+
+SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
+    PaintFlags::FilterQuality filter_quality) {
+  switch (filter_quality) {
+    case PaintFlags::FilterQuality::kHigh:
+      return SkSamplingOptions(SkCubicResampler::CatmullRom());
+    case PaintFlags::FilterQuality::kMedium:
+      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+    case PaintFlags::FilterQuality::kLow:
+      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
+    case PaintFlags::FilterQuality::kNone:
+      return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
+    default:
+      NOTREACHED();
+  }
 }
 
 bool PaintFlags::IsValid() const {

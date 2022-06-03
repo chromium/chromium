@@ -19,8 +19,7 @@
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,17 +68,25 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
     return false;
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // If the Chrome Root Store is enabled as part of the default verifier, the
+  // trial does not make sense.
+  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed))
+    return false;
+#endif
+
   return is_official_build &&
          base::FeatureList::IsEnabled(
-             features::kCertDualVerificationTrialFeature) &&
+             net::features::kCertDualVerificationTrialFeature) &&
          !profile->IsOffTheRecord();
 }
 
 void TrialComparisonCertVerifierController::AddClient(
-    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+    mojo::PendingRemote<
+        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
         config_client,
     mojo::PendingReceiver<
-        network::mojom::TrialComparisonCertVerifierReportClient>
+        cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
         report_client_receiver) {
   receiver_set_.Add(this, std::move(report_client_receiver));
   config_client_set_.Add(std::move(config_client));
@@ -106,20 +113,24 @@ void TrialComparisonCertVerifierController::SendTrialReport(
     bool require_rev_checking_local_anchors,
     bool enable_sha1_local_anchors,
     bool disable_symantec_enforcement,
+    const std::vector<uint8_t>& stapled_ocsp,
+    const std::vector<uint8_t>& sct_list,
     const net::CertVerifyResult& primary_result,
     const net::CertVerifyResult& trial_result,
-    network::mojom::CertVerifierDebugInfoPtr debug_info) {
-  if (!IsAllowed() ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          features::kCertDualVerificationTrialFeature, "uma_only", false)) {
+    cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info) {
+  if (!IsAllowed() || base::GetFieldTrialParamByFeatureAsBool(
+                          net::features::kCertDualVerificationTrialFeature,
+                          "uma_only", false)) {
     return;
   }
 
-  CertificateErrorReport report(hostname, *unverified_cert, enable_rev_checking,
-                                require_rev_checking_local_anchors,
-                                enable_sha1_local_anchors,
-                                disable_symantec_enforcement, primary_result,
-                                trial_result, std::move(debug_info));
+  CertificateErrorReport report(
+      hostname, *unverified_cert, enable_rev_checking,
+      require_rev_checking_local_anchors, enable_sha1_local_anchors,
+      disable_symantec_enforcement,
+      std::string(stapled_ocsp.begin(), stapled_ocsp.end()),
+      std::string(sct_list.begin(), sct_list.end()), primary_result,
+      trial_result, std::move(debug_info));
 
   report.AddNetworkTimeInfo(g_browser_process->network_time_tracker());
   report.AddChromeChannel(chrome::GetChannel());

@@ -18,22 +18,20 @@ namespace ui {
 
 LayerAnimationSequence::LayerAnimationSequence()
     : properties_(LayerAnimationElement::UNKNOWN),
-      is_cyclic_(false),
+      is_repeating_(false),
       last_element_(0),
       waiting_for_group_start_(false),
       animation_group_id_(0),
-      last_progressed_fraction_(0.0),
-      animation_metrics_reporter_(nullptr) {}
+      last_progressed_fraction_(0.0) {}
 
 LayerAnimationSequence::LayerAnimationSequence(
     std::unique_ptr<LayerAnimationElement> element)
     : properties_(LayerAnimationElement::UNKNOWN),
-      is_cyclic_(false),
+      is_repeating_(false),
       last_element_(0),
       waiting_for_group_start_(false),
       animation_group_id_(0),
-      last_progressed_fraction_(0.0),
-      animation_metrics_reporter_(nullptr) {
+      last_progressed_fraction_(0.0) {
   AddElement(std::move(element));
 }
 
@@ -68,8 +66,9 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     last_start_ = start_time_;
 
   size_t current_index = last_element_ % elements_.size();
+  bool just_completed_sequence = false;
   base::TimeDelta element_duration;
-  while (is_cyclic_ || last_element_ < elements_.size()) {
+  while (is_repeating_ || last_element_ < elements_.size()) {
     elements_[current_index]->set_requested_start_time(last_start_);
     if (!elements_[current_index]->IsFinished(now, &element_duration))
       break;
@@ -82,9 +81,11 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     last_progressed_fraction_ =
         elements_[current_index]->last_progressed_fraction();
     current_index = last_element_ % elements_.size();
+    DCHECK_GT(last_element_, 0u);
+    just_completed_sequence = current_index == 0;
   }
 
-  if (is_cyclic_ || last_element_ < elements_.size()) {
+  if (is_repeating_ || last_element_ < elements_.size()) {
     if (!elements_[current_index]->Started()) {
       animation_group_id_ = cc::AnimationIdProvider::NextGroupId();
       elements_[current_index]->Start(delegate, animation_group_id_);
@@ -103,16 +104,20 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
   if (redraw_required)
     delegate->ScheduleDrawForAnimation();
 
-  if (!is_cyclic_ && last_element_ == elements_.size()) {
-    last_element_ = 0;
-    waiting_for_group_start_ = false;
-    animation_group_id_ = 0;
-    NotifyEnded();
+  if (just_completed_sequence) {
+    if (!is_repeating_) {
+      last_element_ = 0;
+      waiting_for_group_start_ = false;
+      animation_group_id_ = 0;
+      NotifyEnded();
+    } else {
+      NotifyWillRepeat();
+    }
   }
 }
 
 bool LayerAnimationSequence::IsFinished(base::TimeTicks time) {
-  if (is_cyclic_ || waiting_for_group_start_)
+  if (is_repeating_ || waiting_for_group_start_)
     return false;
 
   if (elements_.empty())
@@ -155,17 +160,19 @@ void LayerAnimationSequence::ProgressToEnd(LayerAnimationDelegate* delegate) {
   if (redraw_required)
     delegate->ScheduleDrawForAnimation();
 
-  if (!is_cyclic_) {
+  if (!is_repeating_) {
     last_element_ = 0;
     waiting_for_group_start_ = false;
     animation_group_id_ = 0;
     NotifyEnded();
+  } else {
+    NotifyWillRepeat();
   }
 }
 
 void LayerAnimationSequence::GetTargetValue(
     LayerAnimationElement::TargetValue* target) const {
-  if (is_cyclic_)
+  if (is_repeating_)
     return;
 
   for (size_t i = last_element_; i < elements_.size(); ++i)
@@ -186,7 +193,6 @@ void LayerAnimationSequence::Abort(LayerAnimationDelegate* delegate) {
 void LayerAnimationSequence::AddElement(
     std::unique_ptr<LayerAnimationElement> element) {
   properties_ |= element->properties();
-  element->set_animation_metrics_reporter(animation_metrics_reporter_);
   elements_.push_back(std::move(element));
 }
 
@@ -245,11 +251,15 @@ void LayerAnimationSequence::OnAnimatorDestroyed() {
   }
 }
 
-void LayerAnimationSequence::SetAnimationMetricsReporter(
-    AnimationMetricsReporter* reporter) {
-  animation_metrics_reporter_ = reporter;
-  for (auto& element : elements_)
-    element->set_animation_metrics_reporter(animation_metrics_reporter_);
+void LayerAnimationSequence::OnAnimatorAttached(
+    LayerAnimationDelegate* delegate) {
+  for (LayerAnimationObserver& observer : observers_)
+    observer.OnAnimatorAttachedToTimeline();
+}
+
+void LayerAnimationSequence::OnAnimatorDetached() {
+  for (LayerAnimationObserver& observer : observers_)
+    observer.OnAnimatorDetachedFromTimeline();
 }
 
 size_t LayerAnimationSequence::size() const {
@@ -258,7 +268,7 @@ size_t LayerAnimationSequence::size() const {
 
 LayerAnimationElement* LayerAnimationSequence::FirstElement() const {
   if (elements_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   return elements_[0].get();
@@ -277,6 +287,11 @@ void LayerAnimationSequence::NotifyStarted() {
 void LayerAnimationSequence::NotifyEnded() {
   for (auto& observer : observers_)
     observer.OnLayerAnimationEnded(this);
+}
+
+void LayerAnimationSequence::NotifyWillRepeat() {
+  for (auto& observer : observers_)
+    observer.OnLayerAnimationWillRepeat(this);
 }
 
 void LayerAnimationSequence::NotifyAborted() {
@@ -305,10 +320,10 @@ std::string LayerAnimationSequence::ElementsToString() const {
 std::string LayerAnimationSequence::ToString() const {
   return base::StringPrintf(
       "LayerAnimationSequence{size=%zu, properties=%s, "
-      "elements=[%s], is_cyclic=%d, group_id=%d}",
+      "elements=[%s], is_repeating=%d, group_id=%d}",
       size(),
       LayerAnimationElement::AnimatablePropertiesToString(properties_).c_str(),
-      ElementsToString().c_str(), is_cyclic_, animation_group_id_);
+      ElementsToString().c_str(), is_repeating_, animation_group_id_);
 }
 
 }  // namespace ui

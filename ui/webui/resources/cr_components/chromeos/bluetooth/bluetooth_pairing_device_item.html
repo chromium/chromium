@@ -1,0 +1,44 @@
+<style include="cr-shared-style">
+  :host([pairing-failed_]) #secondaryLabel {
+    color: var(--cros-text-color-alert);
+  }
+
+  #container {
+    max-height: 32px;
+  }
+
+  #container:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
+  }
+
+  .text-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-start: 24px;
+    min-height: var(--settings-row-min-height);
+  }
+
+  .cr-row {
+    padding: 0;
+  }
+
+  .secondary {
+    color: var(--cros-text-color-disabled);
+    font-size: 11px;
+  }
+
+</style>
+<div id="container" class="cr-row continuation"
+    on-click="onSelected_"
+    on-keydown="onKeydown_">
+  <bluetooth-icon device="[[device]]"></bluetooth-icon>
+  <div id="deviceName" class="text-row">
+    [[getDeviceName_(device.*)]]
+     <!-- TODO(crbug.com/1010321): Add A11Y. -->
+    <div id="secondaryLabel" class="secondary">
+      [[secondaryLabel_]]
+    </div>
+  </div>
+</div>

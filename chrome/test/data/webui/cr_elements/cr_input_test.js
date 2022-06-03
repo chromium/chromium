@@ -3,13 +3,19 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise, whenAttributeIs} from '../test_util.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from '../chai_assert.js';
+import {eventToPromise, isChildVisible, whenAttributeIs} from '../test_util.js';
 // clang-format on
 
 suite('cr-input', function() {
+  /** @type {!CrInputElement} */
   let crInput;
+
+  /** @type {!HTMLInputElement} */
   let input;
 
   setup(function() {
@@ -17,11 +23,12 @@ suite('cr-input', function() {
   });
 
   function regenerateNewInput() {
-    PolymerTest.clearBody();
-    crInput = document.createElement('cr-input');
+    document.body.innerHTML = '';
+    crInput =
+        /** @type {!CrInputElement} */ (document.createElement('cr-input'));
     document.body.appendChild(crInput);
-    input = crInput.$.input;
-    Polymer.dom.flush();
+    input = crInput.inputElement;
+    flush();
   }
 
   test('AttributesCorrectlySupported', function() {
@@ -38,6 +45,7 @@ suite('cr-input', function() {
       ['required', 'required', false, true],
       ['tabindex', 'tabIndex', 0, -1],
       ['type', 'type', 'text', 'password'],
+      ['inputmode', 'inputMode', '', 'none'],
     ];
 
     attributesToTest.forEach(attr => {
@@ -57,13 +65,13 @@ suite('cr-input', function() {
   test('togglingDisableModifiesTabIndexCorrectly', function() {
     // Do innerHTML instead of createElement to make sure it's correct right
     // after being attached, and not messed up by disabledChanged_.
-    PolymerTest.clearBody();
     document.body.innerHTML = `
       <cr-input tabindex="14"></cr-input>
     `;
-    crInput = document.querySelector('cr-input');
+    crInput =
+        /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
     input = crInput.$.input;
-    Polymer.dom.flush();
+    flush();
 
     assertEquals('14', crInput.getAttribute('tabindex'));
     assertEquals(14, input.tabIndex);
@@ -77,15 +85,15 @@ suite('cr-input', function() {
 
   test('startingWithDisableSetsTabIndexCorrectly', function() {
     // Makes sure tabindex is recorded even if cr-input starts as disabled
-    PolymerTest.clearBody();
     document.body.innerHTML = `
       <cr-input tabindex="14" disabled></cr-input>
     `;
-    crInput = document.querySelector('cr-input');
+    crInput =
+        /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
     input = crInput.$.input;
-    Polymer.dom.flush();
+    flush();
 
-    return test_util.whenAttributeIs(input, 'tabindex', null).then(() => {
+    return whenAttributeIs(input, 'tabindex', null).then(() => {
       assertEquals(null, crInput.getAttribute('tabindex'));
       assertEquals(true, input.disabled);
       crInput.disabled = false;
@@ -97,7 +105,7 @@ suite('cr-input', function() {
   test('pointerDownAndTabIndex', function() {
     crInput.fire('pointerdown');
     assertEquals(null, crInput.getAttribute('tabindex'));
-    return test_util.whenAttributeIs(crInput, 'tabindex', '0').then(() => {
+    return whenAttributeIs(crInput, 'tabindex', '0').then(() => {
       assertEquals(0, input.tabIndex);
     });
   });
@@ -174,42 +182,54 @@ suite('cr-input', function() {
   test('focusState', function() {
     assertFalse(crInput.hasAttribute('focused_'));
 
-    const underline = crInput.$.underline;
+    const underline = /** @type {!HTMLElement} */ (crInput.$$('#underline'));
     const label = crInput.$.label;
     const originalLabelColor = getComputedStyle(label).color;
+
+    /** @return {!Promise<!Array<!Event>>} */
+    function waitForTransitions() {
+      const events = [];
+      return eventToPromise('transitionend', underline)
+          .then(e => {
+            events.push(e);
+            return eventToPromise('transitionend', underline);
+          })
+          .then(e => {
+            events.push(e);
+            return events;
+          });
+    }
 
     assertEquals('0', getComputedStyle(underline).opacity);
     assertEquals(0, underline.offsetWidth);
 
-    let whenTransitionEnd =
-        test_util.eventToPromise('transitionend', underline);
+    let whenTransitionsEnd = waitForTransitions();
 
     input.focus();
     assertTrue(crInput.hasAttribute('focused_'));
-    assertTrue(originalLabelColor != getComputedStyle(label).color);
-    return whenTransitionEnd
-        .then(() => {
+    assertNotEquals(originalLabelColor, getComputedStyle(label).color);
+    return whenTransitionsEnd
+        .then(events => {
+          // Ensure transitions finished in the expected order.
+          assertEquals(2, events.length);
+          assertEquals('opacity', events[0].propertyName);
+          assertEquals('width', events[1].propertyName);
+
           assertEquals('1', getComputedStyle(underline).opacity);
-          assertTrue(0 != underline.offsetWidth);
-        })
-        .then(() => {
+          assertNotEquals(0, underline.offsetWidth);
+
+          whenTransitionsEnd = waitForTransitions();
           input.blur();
-          whenTransitionEnd =
-              test_util.eventToPromise('transitionend', underline);
-          // Wait for underline to fade out.
-          return whenTransitionEnd;
+          return whenTransitionsEnd;
         })
-        .then(() => {
-          whenTransitionEnd =
-              test_util.eventToPromise('transitionend', underline);
+        .then(events => {
+          // Ensure transitions finished in the expected order.
+          assertEquals(2, events.length);
+          assertEquals('opacity', events[0].propertyName);
+          assertEquals('width', events[1].propertyName);
+
           assertFalse(crInput.hasAttribute('focused_'));
           assertEquals('0', getComputedStyle(underline).opacity);
-          // The width transition has a delay larger than the opacity transition
-          // duration so that the width can be reset to 0 after the underline is
-          // no longer visible.
-          return whenTransitionEnd;
-        })
-        .then(() => {
           assertEquals(0, underline.offsetWidth);
         });
   });
@@ -217,29 +237,31 @@ suite('cr-input', function() {
   test('invalidState', function() {
     crInput.errorMessage = 'error';
     const errorLabel = crInput.$.error;
-    const underline = crInput.$.underline;
+    const underline = /** @type {!HTMLElement} */ (crInput.$$('#underline'));
     const label = crInput.$.label;
     const originalLabelColor = getComputedStyle(label).color;
     const originalLineColor = getComputedStyle(underline).borderBottomColor;
 
-    assertEquals(crInput.errorMessage, errorLabel.textContent);
+    assertEquals('', errorLabel.textContent);
+    assertFalse(errorLabel.hasAttribute('role'));
     assertEquals('0', getComputedStyle(underline).opacity);
     assertEquals(0, underline.offsetWidth);
     assertEquals('hidden', getComputedStyle(errorLabel).visibility);
 
-    const whenTransitionEnd =
-        test_util.eventToPromise('transitionend', underline);
+    const whenTransitionEnd = eventToPromise('transitionend', underline);
 
     crInput.invalid = true;
-    Polymer.dom.flush();
+    flush();
     assertTrue(crInput.hasAttribute('invalid'));
+    assertEquals('alert', errorLabel.getAttribute('role'));
+    assertEquals(crInput.errorMessage, errorLabel.textContent);
     assertEquals('visible', getComputedStyle(errorLabel).visibility);
-    assertTrue(originalLabelColor != getComputedStyle(label).color);
+    assertTrue(originalLabelColor !== getComputedStyle(label).color);
     assertTrue(
-        originalLineColor != getComputedStyle(underline).borderBottomColor);
+        originalLineColor !== getComputedStyle(underline).borderBottomColor);
     return whenTransitionEnd.then(() => {
       assertEquals('1', getComputedStyle(underline).opacity);
-      assertTrue(0 != underline.offsetWidth);
+      assertTrue(0 !== underline.offsetWidth);
     });
   });
 
@@ -309,6 +331,20 @@ suite('cr-input', function() {
     assertFalse(input.checkValidity());
   });
 
+  test('ariaDescriptionsCorrect', function() {
+    assertEquals(crInput.inputElement.getAttribute('aria-description'), null);
+
+    const ariaDescription = 'description';
+    crInput.ariaDescription = ariaDescription;
+    flush();
+    assertEquals(
+        crInput.inputElement.getAttribute('aria-description'), ariaDescription);
+
+    crInput.ariaDescription = undefined;
+    flush();
+    assertEquals(crInput.inputElement.getAttribute('aria-description'), null);
+  });
+
   test('ariaLabelsCorrect', function() {
     assertFalse(!!crInput.inputElement.getAttribute('aria-label'));
 
@@ -317,14 +353,15 @@ suite('cr-input', function() {
      * @param {!Array<string>} attributes
      */
     function testAriaLabel(attributes) {
-      PolymerTest.clearBody();
-      crInput = document.createElement('cr-input');
+      document.body.innerHTML = '';
+      crInput =
+          /** @type {!CrInputElement} */ (document.createElement('cr-input'));
       attributes.forEach(attribute => {
         // Using their name as the value out of convenience.
         crInput.setAttribute(attribute, attribute);
       });
       document.body.appendChild(crInput);
-      Polymer.dom.flush();
+      flush();
       // Assuming first attribute takes priority.
       assertEquals(
           attributes[0], crInput.inputElement.getAttribute('aria-label'));
@@ -355,5 +392,21 @@ suite('cr-input', function() {
     crInput.select();
     assertTrue(input.matches(':focus'));
     assertEquals('', window.getSelection().toString());
+  });
+
+  test('slots', function() {
+    document.body.innerHTML = `
+      <cr-input>
+        <div slot="inline-prefix" id="inline-prefix">One</div>
+        <div slot="suffix" id="suffix">Two</div>
+        <div slot="inline-suffix" id="inline-suffix">Three</div>
+      </cr-input>
+    `;
+    flush();
+    crInput =
+        /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
+    assertTrue(isChildVisible(crInput, '#inline-prefix', true));
+    assertTrue(isChildVisible(crInput, '#suffix', true));
+    assertTrue(isChildVisible(crInput, '#inline-suffix', true));
   });
 });

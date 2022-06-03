@@ -22,6 +22,10 @@ namespace sandbox {
 class ResolverThunk {
  public:
   ResolverThunk() {}
+
+  ResolverThunk(const ResolverThunk&) = delete;
+  ResolverThunk& operator=(const ResolverThunk&) = delete;
+
   virtual ~ResolverThunk() {}
 
   // Performs the actual interception of a function.
@@ -98,8 +102,6 @@ class ResolverThunk {
   void* target_;
   // Holds the resolved interception interceptor.
   const void* interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolverThunk);
 };
 
 }  // namespace sandbox

@@ -42,6 +42,11 @@ enum SyncProtocolErrorType {
   // should reset local data and restart syncing.
   CLIENT_DATA_OBSOLETE,
 
+  // Returned when the server detects that the encryption state (Nigori,
+  // keystore keys) has been reset/overridden, which means the local
+  // Nigori-related state is obsolete and should be cleared.
+  ENCRYPTION_OBSOLETE,
+
   // The default value.
   UNKNOWN_ERROR
 };
@@ -57,8 +62,8 @@ enum ClientAction {
   // settings page that account is disabled.
   STOP_SYNC_FOR_DISABLED_ACCOUNT,
 
-  // Generated in response to CLIENT_DATA_OBSOLETE error. ProfileSyncService
-  // should stop sync engine, delete directory and restart sync engine.
+  // Generated in response to CLIENT_DATA_OBSOLETE error. SyncServiceImpl
+  // should stop sync engine, delete the data and restart sync engine.
   RESET_LOCAL_SYNC_DATA,
 
   // The default. No action.
@@ -68,7 +73,6 @@ enum ClientAction {
 struct SyncProtocolError {
   SyncProtocolErrorType error_type;
   std::string error_description;
-  std::string url;
   ClientAction action;
   ModelTypeSet error_data_types;
   SyncProtocolError();

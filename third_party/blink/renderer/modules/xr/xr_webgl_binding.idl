@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://immersive-web.github.io/layers/#XRWebGLBindingtype
+[
+    SecureContext,
+    Exposed=Window
+] interface XRWebGLBinding {
+  [RaisesException] constructor(XRSession session, XRWebGLRenderingContext context);
+
+  // Lighting Estimation API
+  [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
+  WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);
+
+  [RuntimeEnabled=WebXRCameraAccess, RaisesException]
+  WebGLTexture? getCameraImage(XRCamera camera);
+
+  [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRWebGLBindingGetDepthInformation]
+  XRWebGLDepthInformation? getDepthInformation(XRView view);
+};

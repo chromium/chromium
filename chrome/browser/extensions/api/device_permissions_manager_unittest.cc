@@ -42,7 +42,7 @@ class DevicePermissionsManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
-    env_.reset(new extensions::TestExtensionEnvironment());
+    env_ = std::make_unique<extensions::TestExtensionEnvironment>();
     extension_ = env_->MakeExtension(*base::test::ParseJsonDeprecated(
         "{"
         "  \"app\": {"
@@ -75,13 +75,13 @@ class DevicePermissionsManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     device4_ = fake_hid_manager_.CreateAndAddDevice(
-        0, 0, "Test HID Device", "abcde", HidBusType::kHIDBusTypeUSB);
-    device5_ = fake_hid_manager_.CreateAndAddDevice(0, 0, "Test HID Device", "",
-                                                    HidBusType::kHIDBusTypeUSB);
+        "4", 0, 0, "Test HID Device", "abcde", HidBusType::kHIDBusTypeUSB);
+    device5_ = fake_hid_manager_.CreateAndAddDevice(
+        "5", 0, 0, "Test HID Device", "", HidBusType::kHIDBusTypeUSB);
     device6_ = fake_hid_manager_.CreateAndAddDevice(
-        0, 0, "Test HID Device", "67890", HidBusType::kHIDBusTypeUSB);
-    device7_ = fake_hid_manager_.CreateAndAddDevice(0, 0, "Test HID Device", "",
-                                                    HidBusType::kHIDBusTypeUSB);
+        "6", 0, 0, "Test HID Device", "67890", HidBusType::kHIDBusTypeUSB);
+    device7_ = fake_hid_manager_.CreateAndAddDevice(
+        "7", 0, 0, "Test HID Device", "", HidBusType::kHIDBusTypeUSB);
   }
 
   void TearDown() override { env_.reset(nullptr); }
@@ -129,15 +129,13 @@ TEST_F(DevicePermissionsManagerTest, AllowAndClearDevices) {
   EXPECT_FALSE(device_permissions->FindHidDeviceEntry(*device7_));
   EXPECT_EQ(4U, device_permissions->entries().size());
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Test Product from Test Manufacturer (serial number ABCDE)"),
+  EXPECT_EQ(u"Test Product from Test Manufacturer (serial number ABCDE)",
             device0_entry->GetPermissionMessageString());
-  EXPECT_EQ(base::ASCIIToUTF16("Test Product from Test Manufacturer"),
+  EXPECT_EQ(u"Test Product from Test Manufacturer",
             device1_entry->GetPermissionMessageString());
-  EXPECT_EQ(base::ASCIIToUTF16("Test HID Device (serial number abcde)"),
+  EXPECT_EQ(u"Test HID Device (serial number abcde)",
             device4_entry->GetPermissionMessageString());
-  EXPECT_EQ(base::ASCIIToUTF16("Test HID Device"),
-            device5_entry->GetPermissionMessageString());
+  EXPECT_EQ(u"Test HID Device", device5_entry->GetPermissionMessageString());
 
   manager->Clear(extension_->id());
   // The device_permissions object is deleted by Clear.
@@ -329,75 +327,70 @@ TEST_F(DevicePermissionsManagerTest, LoadPrefs) {
   EXPECT_FALSE(device_permissions->FindHidDeviceEntry(*device6_));
   EXPECT_FALSE(device_permissions->FindHidDeviceEntry(*device7_));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Test Product from Test Manufacturer (serial number ABCDE)"),
+  EXPECT_EQ(u"Test Product from Test Manufacturer (serial number ABCDE)",
             device0_entry->GetPermissionMessageString());
-  EXPECT_EQ(base::ASCIIToUTF16("Test HID Device (serial number abcde)"),
+  EXPECT_EQ(u"Test HID Device (serial number abcde)",
             device4_entry->GetPermissionMessageString());
 }
 
 TEST_F(DevicePermissionsManagerTest, PermissionMessages) {
-  base::string16 empty;
-  base::string16 product(base::ASCIIToUTF16("Widget"));
-  base::string16 manufacturer(base::ASCIIToUTF16("ACME"));
-  base::string16 serial_number(base::ASCIIToUTF16("A"));
+  std::u16string empty;
+  std::u16string product(u"Widget");
+  std::u16string manufacturer(u"ACME");
+  std::u16string serial_number(u"A");
 
-  EXPECT_EQ(base::ASCIIToUTF16("Unknown product 0001 from vendor 0000"),
+  EXPECT_EQ(u"Unknown product 0001 from vendor 0000",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0000, 0x0001, empty, empty, empty, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Unknown product 0001 from vendor 0000 (serial number A)"),
+  EXPECT_EQ(u"Unknown product 0001 from vendor 0000 (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
-                0x0000, 0x0001, empty, empty, base::ASCIIToUTF16("A"), false));
+                0x0000, 0x0001, empty, empty, u"A", false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Unknown product 0001 from Google Inc."),
+  EXPECT_EQ(u"Unknown product 0001 from Google Inc.",
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x0001, empty, empty, empty, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Unknown product 0001 from Google Inc. (serial number A)"),
+  EXPECT_EQ(u"Unknown product 0001 from Google Inc. (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x0001, empty, empty, serial_number, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Nexus One from Google Inc."),
+  EXPECT_EQ(u"Nexus One from Google Inc.",
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x4E11, empty, empty, empty, true));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Nexus One from Google Inc. (serial number A)"),
+  EXPECT_EQ(u"Nexus One from Google Inc. (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x4E11, empty, empty, serial_number, true));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Nexus One"),
-            DevicePermissionsManager::GetPermissionMessage(
-                0x18D1, 0x4E11, empty, empty, empty, false));
+  EXPECT_EQ(u"Nexus One", DevicePermissionsManager::GetPermissionMessage(
+                              0x18D1, 0x4E11, empty, empty, empty, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Nexus One (serial number A)"),
+  EXPECT_EQ(u"Nexus One (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x4E11, empty, empty, serial_number, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Unknown product 0001 from ACME"),
+  EXPECT_EQ(u"Unknown product 0001 from ACME",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0000, 0x0001, manufacturer, empty, empty, false));
 
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Unknown product 0001 from ACME (serial number A)"),
-      DevicePermissionsManager::GetPermissionMessage(
-          0x0000, 0x0001, manufacturer, empty, serial_number, false));
+  EXPECT_EQ(u"Unknown product 0001 from ACME (serial number A)",
+            DevicePermissionsManager::GetPermissionMessage(
+                0x0000, 0x0001, manufacturer, empty, serial_number, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Widget from ACME"),
+  EXPECT_EQ(u"Widget from ACME",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0001, 0x0000, manufacturer, product, empty, true));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Widget from ACME (serial number A)"),
+  EXPECT_EQ(u"Widget from ACME (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0001, 0x0000, manufacturer, product, serial_number, true));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Widget"),
+  EXPECT_EQ(u"Widget",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0001, 0x0000, manufacturer, product, empty, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Widget (serial number A)"),
+  EXPECT_EQ(u"Widget (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0001, 0x0000, manufacturer, product, serial_number, false));
 }

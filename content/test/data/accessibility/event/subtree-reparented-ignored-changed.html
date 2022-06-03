@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div class="foo">
+  <div class="ignore-me-1">
+    <div class="ignore-me-2">
+      <div role="search">
+        <input id="input" readonly aria-label="Search all issues">
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function go() {
+    setTimeout(() => {
+      var div = document.getElementsByClassName("foo")[0];
+      div.setAttribute("tabindex", "0");
+      document.getElementById("input").focus();
+    }, 1000);
+  }
+</script>
+</body>
+</html>

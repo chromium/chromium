@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/memory/ptr_util.h"
+#include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "net/http/http_response_headers.h"
 
@@ -161,14 +162,6 @@ bool NavigationContextImpl::IsLoadingHtmlString() const {
 
 void NavigationContextImpl::SetLoadingHtmlString(bool is_loading_html_string) {
   is_loading_html_string_ = is_loading_html_string;
-}
-
-bool NavigationContextImpl::IsPlaceholderNavigation() const {
-  return is_placeholder_navigation_;
-}
-
-void NavigationContextImpl::SetPlaceholderNavigation(bool flag) {
-  is_placeholder_navigation_ = flag;
 }
 
 void NavigationContextImpl::SetMimeType(NSString* mime_type) {

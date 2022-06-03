@@ -51,7 +51,7 @@ class IDBIndex final : public ScriptWrappable {
   IDBIndex(scoped_refptr<IDBIndexMetadata>, IDBObjectStore*, IDBTransaction*);
   ~IDBIndex() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Implement the IDL
   const String& name() const { return Metadata().name; }

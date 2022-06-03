@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ui/events/android/drag_event_android.h"
+
+#include <memory>
+
 #include "base/android/jni_android.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -15,7 +18,7 @@ DragEventAndroid::DragEventAndroid(
     int action,
     const gfx::PointF& location,
     const gfx::PointF& screen_location,
-    const std::vector<base::string16>& mime_types,
+    const std::vector<std::u16string>& mime_types,
     jstring content)
     : action_(action),
       location_(location),
@@ -43,9 +46,9 @@ std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
   gfx::PointF new_screen_location =
       new_location + (screen_location_f() - location_f());
   JNIEnv* env = AttachCurrentThread();
-  return std::unique_ptr<DragEventAndroid>(
-      new DragEventAndroid(env, action_, new_location, new_screen_location,
-                           mime_types_, content_.obj()));
+  return std::make_unique<DragEventAndroid>(env, action_, new_location,
+                                            new_screen_location, mime_types_,
+                                            content_.obj());
 }
 
 }  // namespace ui

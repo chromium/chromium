@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
@@ -66,6 +65,9 @@ class MEDIA_EXPORT SourceBufferStream {
   SourceBufferStream(const VideoDecoderConfig& video_config,
                      MediaLog* media_log);
   SourceBufferStream(const TextTrackConfig& text_config, MediaLog* media_log);
+
+  SourceBufferStream(const SourceBufferStream&) = delete;
+  SourceBufferStream& operator=(const SourceBufferStream&) = delete;
 
   ~SourceBufferStream();
 
@@ -484,6 +486,11 @@ class MEDIA_EXPORT SourceBufferStream {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 
   // The maximum amount of data in bytes the stream will keep in memory.
+  // |memory_limit_| is initialized based on the audio/video configuration in
+  // the constructor, but either user-setting of |memory_limit_| or
+  // memory-pressure-based adjustment to determine effective limit in the
+  // eviction heuristic can cause the result to vary from the value set in
+  // constructor.
   size_t memory_limit_;
 
   // Indicates that a kConfigChanged status has been reported by GetNextBuffer()
@@ -503,8 +510,6 @@ class MEDIA_EXPORT SourceBufferStream {
   int num_splice_logs_ = 0;
   int num_track_buffer_gap_warning_logs_ = 0;
   int num_garbage_collect_algorithm_logs_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceBufferStream);
 };
 
 }  // namespace media

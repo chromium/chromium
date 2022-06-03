@@ -46,7 +46,7 @@ String CSSMediaRule::cssText() const {
   result.Append("{\n");
   AppendCSSTextForItems(result);
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSMediaRule::conditionText() const {
@@ -71,7 +71,7 @@ void CSSMediaRule::Reattach(StyleRuleBase* rule) {
     media_cssom_wrapper_->Reattach(MediaQueries());
 }
 
-void CSSMediaRule::Trace(blink::Visitor* visitor) {
+void CSSMediaRule::Trace(Visitor* visitor) const {
   visitor->Trace(media_cssom_wrapper_);
   CSSConditionRule::Trace(visitor);
 }

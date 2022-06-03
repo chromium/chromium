@@ -7,9 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <utility>
 #include <vector>
 
-#include "base/strings/stringprintf.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/logging.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -17,7 +20,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/single_release_callback.h"
 
 namespace cc {
 
@@ -53,7 +55,6 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetFlipped(flipped_);
   texture_layer->SetUVTopLeft(uv_top_left_);
   texture_layer->SetUVBottomRight(uv_bottom_right_);
-  texture_layer->SetVertexOpacity(vertex_opacity_);
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
@@ -102,10 +103,10 @@ bool TextureLayerImpl::WillDraw(
     own_resource_ = false;
   }
 
-  return resource_id_;
+  return resource_id_ != viz::kInvalidResourceId;
 }
 
-void TextureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   DCHECK(resource_id_);
 
@@ -146,14 +147,11 @@ void TextureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
   if (visible_quad_rect.IsEmpty())
     return;
 
-  if (!vertex_opacity_[0] && !vertex_opacity_[1] && !vertex_opacity_[2] &&
-      !vertex_opacity_[3])
-    return;
-
+  float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color, vertex_opacity_, flipped_,
+               uv_bottom_right_, bg_color, vertex_opacity, flipped_,
                nearest_neighbor_, /*secure_output_only=*/false,
                gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
@@ -200,6 +198,10 @@ void TextureLayerImpl::ReleaseResources() {
   // all) instead.
 }
 
+gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
+  return transferable_resource_.color_space.GetContentColorUsage();
+}
+
 void TextureLayerImpl::SetPremultipliedAlpha(bool premultiplied_alpha) {
   premultiplied_alpha_ = premultiplied_alpha;
 }
@@ -228,19 +230,9 @@ void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
   uv_bottom_right_ = bottom_right;
 }
 
-// 1--2
-// |  |
-// 0--3
-void TextureLayerImpl::SetVertexOpacity(const float vertex_opacity[4]) {
-  vertex_opacity_[0] = vertex_opacity[0];
-  vertex_opacity_[1] = vertex_opacity[1];
-  vertex_opacity_[2] = vertex_opacity[2];
-  vertex_opacity_[3] = vertex_opacity[3];
-}
-
 void TextureLayerImpl::SetTransferableResource(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
   DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
   FreeTransferableResource();
   transferable_resource_ = resource;
@@ -289,16 +281,15 @@ void TextureLayerImpl::FreeTransferableResource() {
     if (release_callback_) {
       // We didn't use the resource, but the client might need the SyncToken
       // before it can use the resource with its own GL context.
-      release_callback_->Run(transferable_resource_.mailbox_holder.sync_token,
-                             false);
+      std::move(release_callback_)
+          .Run(transferable_resource_.mailbox_holder.sync_token, false);
     }
     transferable_resource_ = viz::TransferableResource();
-    release_callback_ = nullptr;
   } else if (resource_id_) {
     DCHECK(!own_resource_);
     auto* resource_provider = layer_tree_impl()->resource_provider();
     resource_provider->RemoveImportedResource(resource_id_);
-    resource_id_ = 0;
+    resource_id_ = viz::kInvalidResourceId;
   }
 }
 

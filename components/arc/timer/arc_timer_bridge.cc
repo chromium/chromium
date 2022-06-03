@@ -8,14 +8,13 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/timer/arc_timer_bridge.h"
 #include "components/arc/timer/arc_timer_mojom_traits.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -40,13 +39,12 @@ void OnStartTimer(mojom::TimerHost::StartTimerCallback callback, bool result) {
 
 // Unwraps a mojo handle to a file descriptor on the system.
 base::ScopedFD UnwrapScopedHandle(mojo::ScopedHandle handle) {
-  base::PlatformFile platform_file;
+  base::ScopedPlatformFile platform_file;
   if (mojo::UnwrapPlatformFile(std::move(handle), &platform_file) !=
       MOJO_RESULT_OK) {
     LOG(ERROR) << "Failed to unwrap mojo handle";
-    return base::ScopedFD();
   }
-  return base::ScopedFD(platform_file);
+  return platform_file;
 }
 
 // Returns true iff |arc_timer_requests| contains duplicate clock id values.
@@ -181,7 +179,7 @@ void ArcTimerBridge::OnDeleteArcTimers(bool result) {
 void ArcTimerBridge::OnCreateArcTimers(
     std::vector<clockid_t> clock_ids,
     CreateTimersCallback callback,
-    base::Optional<std::vector<TimerId>> timer_ids) {
+    absl::optional<std::vector<TimerId>> timer_ids) {
   // Any old timers associated with the same tag are always cleared by the API
   // regardless of the new timers being created successfully or not. Clear the
   // cached timer ids in that case.
@@ -218,11 +216,11 @@ void ArcTimerBridge::OnCreateArcTimers(
   std::move(callback).Run(mojom::ArcTimerResult::SUCCESS);
 }
 
-base::Optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
+absl::optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
     clockid_t clock_id) const {
   auto it = timer_ids_.find(clock_id);
-  return (it == timer_ids_.end()) ? base::nullopt
-                                  : base::make_optional<TimerId>(it->second);
+  return (it == timer_ids_.end()) ? absl::nullopt
+                                  : absl::make_optional<TimerId>(it->second);
 }
 
 }  // namespace arc

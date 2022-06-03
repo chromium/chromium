@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -28,11 +25,6 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
     virtual void IdentityManagerCreated(
         signin::IdentityManager* identity_manager) {}
 
-    // Called when a IdentityManager instance is being shut down. Observers
-    // of |identity_manager| should remove themselves at this point.
-    virtual void IdentityManagerShutdown(
-        signin::IdentityManager* identity_manager) {}
-
    protected:
     ~Observer() override {}
   };
@@ -42,6 +34,9 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
 
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
+
+  IdentityManagerFactory(const IdentityManagerFactory&) = delete;
+  IdentityManagerFactory& operator=(const IdentityManagerFactory&) = delete;
 
   // Ensures that IdentityManagerFactory and the factories on which it depends
   // are built.
@@ -61,15 +56,12 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  void BrowserContextShutdown(content::BrowserContext* profile) override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 
   // List of observers. Checks that list is empty on destruction.
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_

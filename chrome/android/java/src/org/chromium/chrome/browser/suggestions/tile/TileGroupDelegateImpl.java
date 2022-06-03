@@ -9,17 +9,19 @@ import android.content.Context;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.snackbar.Snackbar;
-import org.chromium.chrome.browser.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -36,9 +38,9 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private boolean mIsDestroyed;
     private SnackbarController mTileRemovedSnackbarController;
 
-    public TileGroupDelegateImpl(ChromeActivity activity, Profile profile,
+    public TileGroupDelegateImpl(Context context, Profile profile,
             SuggestionsNavigationDelegate navigationDelegate, SnackbarManager snackbarManager) {
-        mContext = activity;
+        mContext = context;
         mSnackbarManager = snackbarManager;
         mNavigationDelegate = navigationDelegate;
         mMostVisitedSites =
@@ -46,10 +48,10 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     }
 
     @Override
-    public void removeMostVisitedItem(Tile item, Callback<String> removalUndoneCallback) {
+    public void removeMostVisitedItem(Tile item, Callback<GURL> removalUndoneCallback) {
         assert !mIsDestroyed;
 
-        mMostVisitedSites.addBlacklistedUrl(item.getUrl());
+        mMostVisitedSites.addBlocklistedUrl(item.getUrl());
         showTileRemovedSnackbar(item.getUrl(), removalUndoneCallback);
     }
 
@@ -57,14 +59,27 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     public void openMostVisitedItem(int windowDisposition, Tile item) {
         assert !mIsDestroyed;
 
-        String url = item.getUrl();
+        String url = item.getUrl().getSpec();
 
         // TODO(treib): Should we call recordOpenedMostVisitedItem here?
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             recordOpenedTile(item);
         }
 
-        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url);
+        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url, false);
+        QueryTileUtils.onMostVisitedTileClicked();
+    }
+
+    @Override
+    public void openMostVisitedItemInGroup(int windowDisposition, Tile item) {
+        assert !mIsDestroyed;
+
+        String url = item.getUrl().getSpec();
+
+        recordOpenedTile(item);
+
+        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url, true);
+        QueryTileUtils.onMostVisitedTileClicked();
     }
 
     @Override
@@ -104,7 +119,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         mMostVisitedSites.destroy();
     }
 
-    private void showTileRemovedSnackbar(String url, final Callback<String> removalUndoneCallback) {
+    private void showTileRemovedSnackbar(GURL url, final Callback<GURL> removalUndoneCallback) {
         if (mTileRemovedSnackbarController == null) {
             mTileRemovedSnackbarController = new SnackbarController() {
                 @Override
@@ -114,9 +129,9 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                 @Override
                 public void onAction(Object actionData) {
                     if (mIsDestroyed) return;
-                    String url = (String) actionData;
+                    GURL url = (GURL) actionData;
                     removalUndoneCallback.onResult(url);
-                    mMostVisitedSites.removeBlacklistedUrl(url);
+                    mMostVisitedSites.removeBlocklistedUrl(url);
                 }
             };
         }
@@ -130,8 +145,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private void recordOpenedTile(Tile tile) {
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_MOST_VISITED_TILE);
         RecordUserAction.record("MobileNTPMostVisited");
-        NewTabPageUma.recordExplicitUserNavigation(
-                tile.getUrl(), NewTabPageUma.RAPPOR_ACTION_VISITED_SUGGESTED_TILE);
+        ReturnToChromeExperimentsUtil.onMVTileOpened();
         mMostVisitedSites.recordOpenedMostVisitedItem(tile);
     }
 }

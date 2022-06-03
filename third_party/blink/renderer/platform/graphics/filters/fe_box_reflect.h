@@ -15,14 +15,13 @@ namespace blink {
 class PLATFORM_EXPORT FEBoxReflect final : public FilterEffect {
  public:
   FEBoxReflect(Filter*, const BoxReflection&);
+  ~FEBoxReflect() final;
 
   // FilterEffect implementation
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
                                           int indentation) const final;
 
  private:
-  ~FEBoxReflect() final;
-
   FloatRect MapEffect(const FloatRect&) const final;
 
   sk_sp<PaintFilter> CreateImageFilter() final;

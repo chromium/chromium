@@ -1,4 +1,0 @@
-button { background-color : red }
-input { background-color : red }
-button:not(:enabled) { background-color : lime }
-input:not(:enabled)  { background-color : lime }

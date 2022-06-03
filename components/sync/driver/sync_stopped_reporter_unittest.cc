@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -33,9 +33,13 @@ const char kBirthday[] = "2263";
 const char kAuthHeaderPrefix[] = "Bearer ";
 
 class SyncStoppedReporterTest : public testing::Test {
+ public:
+  SyncStoppedReporterTest(const SyncStoppedReporterTest&) = delete;
+  SyncStoppedReporterTest& operator=(const SyncStoppedReporterTest&) = delete;
+
  protected:
-  SyncStoppedReporterTest() {}
-  ~SyncStoppedReporterTest() override {}
+  SyncStoppedReporterTest() = default;
+  ~SyncStoppedReporterTest() override = default;
 
   void SetUp() override {
     test_shared_loader_factory_ =
@@ -58,8 +62,8 @@ class SyncStoppedReporterTest : public testing::Test {
   std::string user_agent() const { return std::string(kTestUserAgent); }
 
   SyncStoppedReporter::ResultCallback callback() {
-    return base::Bind(&SyncStoppedReporterTest::RequestFinishedCallback,
-                      base::Unretained(this));
+    return base::BindOnce(&SyncStoppedReporterTest::RequestFinishedCallback,
+                          base::Unretained(this));
   }
 
   const SyncStoppedReporter::Result& request_result() const {
@@ -79,8 +83,6 @@ class SyncStoppedReporterTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   SyncStoppedReporter::Result request_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStoppedReporterTest);
 };
 
 // Test that the event URL gets constructed correctly.

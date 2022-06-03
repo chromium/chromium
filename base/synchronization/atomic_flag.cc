@@ -4,7 +4,7 @@
 
 #include "base/synchronization/atomic_flag.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 
@@ -24,6 +24,7 @@ void AtomicFlag::Set() {
 }
 
 void AtomicFlag::UnsafeResetForTesting() {
+  DETACH_FROM_SEQUENCE(set_sequence_checker_);
   flag_.store(0, std::memory_order_release);
 }
 

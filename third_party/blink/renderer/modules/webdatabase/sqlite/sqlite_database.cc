@@ -26,13 +26,41 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_database.h"
 
+#include "base/notreached.h"
+#include "sql/sandboxed_vfs.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
-#include "third_party/blink/renderer/modules/webdatabase/sqlite/sandboxed_vfs.h"
+#include "third_party/blink/renderer/modules/webdatabase/sqlite/sandboxed_vfs_delegate.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sql_log.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_statement.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kSqliteVfsName[] = "renderer_sandboxed_vfs";
+
+std::tuple<int, sqlite3*> OpenDatabase(const String& filename) {
+  sql::SandboxedVfs::Register(kSqliteVfsName,
+                              std::make_unique<SandboxedVfsDelegate>(),
+                              /*make_default=*/false);
+
+  sqlite3* connection;
+  constexpr int open_flags =
+      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_PRIVATECACHE;
+  int status = sqlite3_open_v2(filename.Utf8().c_str(), &connection, open_flags,
+                               kSqliteVfsName);
+  if (status != SQLITE_OK) {
+    // SQLite creates a connection handle in most cases where open fails.
+    if (connection) {
+      sqlite3_close(connection);
+      connection = nullptr;
+    }
+  }
+  return {status, connection};
+}
+
+}  // namespace
 
 const int kSQLResultDone = SQLITE_DONE;
 const int kSQLResultOk = SQLITE_OK;
@@ -60,8 +88,11 @@ SQLiteDatabase::~SQLiteDatabase() {
 bool SQLiteDatabase::Open(const String& filename) {
   Close();
 
-  std::tie(open_error_, db_) =
-      SandboxedVfs::GetInstance().OpenDatabase(filename);
+  // TODO(pwnall): This doesn't have to be synchronous. WebSQL's open sequence
+  //               is asynchronous, so we could open all the needed files (DB,
+  //               journal, etc.) asynchronously, and store them in a hash table
+  //               that would be used here.
+  std::tie(open_error_, db_) = OpenDatabase(filename);
   if (open_error_ != SQLITE_OK) {
     DCHECK_EQ(db_, nullptr);
 
@@ -101,6 +132,9 @@ bool SQLiteDatabase::Open(const String& filename) {
   }
 
   opening_thread_ = CurrentThread();
+
+  if (!SQLiteStatement(*this, "PRAGMA locking_mode = NORMAL;").ExecuteCommand())
+    DLOG(ERROR) << "SQLite database could not set locking_mode to normal";
 
   if (!SQLiteStatement(*this, "PRAGMA temp_store = MEMORY;").ExecuteCommand())
     DLOG(ERROR) << "SQLite database could not set temp_store to memory";

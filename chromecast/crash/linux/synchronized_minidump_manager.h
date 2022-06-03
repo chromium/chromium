@@ -49,6 +49,10 @@ class SynchronizedMinidumpManager {
   // Number of dumps allowed per period.
   static const int kRatelimitPeriodMaxDumps;
 
+  SynchronizedMinidumpManager(const SynchronizedMinidumpManager&) = delete;
+  SynchronizedMinidumpManager& operator=(const SynchronizedMinidumpManager&) =
+      delete;
+
   virtual ~SynchronizedMinidumpManager();
 
  protected:
@@ -91,6 +95,13 @@ class SynchronizedMinidumpManager {
   // Increment the number of dumps in the current ratelimit period.
   // Returns true on success, false on error.
   bool IncrementNumDumpsInCurrentPeriod();
+
+  // Decrement the number of dumps in the current ratelimit period.
+  // Returns true on success, false on error.
+  bool DecrementNumDumpsInCurrentPeriod();
+
+  // Start a new rate-limit period, thus allowing crash uploads to proceed.
+  void ResetRateLimitPeriod();
 
   // Returns true when dumps uploaded in current rate limit period is less than
   // |kRatelimitPeriodMaxDumps|. Resets rate limit period if period time has
@@ -136,8 +147,6 @@ class SynchronizedMinidumpManager {
   int lockfile_fd_;
   std::unique_ptr<base::Value> metadata_;
   std::unique_ptr<base::ListValue> dumps_;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronizedMinidumpManager);
 };
 
 }  // namespace chromecast

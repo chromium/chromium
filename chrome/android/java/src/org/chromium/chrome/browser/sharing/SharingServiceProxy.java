@@ -32,7 +32,7 @@ public class SharingServiceProxy {
         if (sNativeSharingServiceProxyAndroid == 0) {
             // The service hasn't been created yet.
             Natives jni = SharingServiceProxyJni.get();
-            jni.initSharingService(Profile.getLastUsedProfile());
+            jni.initSharingService(Profile.getLastUsedRegularProfile());
         }
 
         sInstance = new SharingServiceProxy();
@@ -56,22 +56,18 @@ public class SharingServiceProxy {
     /**
      * Sends a shared clipboard message to the device specified by GUID.
      * @param guid The guid of the receiver device.
-     * @param lastUpdatedTimestampMillis The last updated timestamp in milliseconds of the receiver
-     *         device.
      * @param text The text to send.
      * @param callback The result of the operation. Runs |callback| with a
      *         org.chromium.chrome.browser.sharing.SharingSendMessageResult enum value.
      */
-    public void sendSharedClipboardMessage(
-            String guid, long lastUpdatedTimestampMillis, String text, Callback<Integer> callback) {
+    public void sendSharedClipboardMessage(String guid, String text, Callback<Integer> callback) {
         if (sNativeSharingServiceProxyAndroid == 0) {
             callback.onResult(SharingSendMessageResult.INTERNAL_ERROR);
             return;
         }
 
         Natives jni = SharingServiceProxyJni.get();
-        jni.sendSharedClipboardMessage(sNativeSharingServiceProxyAndroid, guid,
-                lastUpdatedTimestampMillis, text, callback);
+        jni.sendSharedClipboardMessage(sNativeSharingServiceProxyAndroid, guid, text, callback);
     }
 
     /**
@@ -92,7 +88,7 @@ public class SharingServiceProxy {
         DeviceInfo device = new DeviceInfo();
         device.guid = guid;
         device.clientName = clientName;
-        device.deviceType = SyncEnums.DeviceType.valueOf(deviceType);
+        device.deviceType = SyncEnums.DeviceType.forNumber(deviceType);
         device.lastUpdatedTimestampMillis = lastUpdatedTimestampMillis;
         deviceInfo.add(device);
     }
@@ -132,7 +128,7 @@ public class SharingServiceProxy {
     interface Natives {
         void initSharingService(Profile profile);
         void sendSharedClipboardMessage(long nativeSharingServiceProxyAndroid, String guid,
-                long lastUpdatedTimestampMillis, String text, Callback<Integer> callback);
+                String text, Callback<Integer> callback);
         void getDeviceCandidates(long nativeSharingServiceProxyAndroid,
                 ArrayList<DeviceInfo> deviceInfo, int requiredFeature);
         void addDeviceCandidatesInitializedObserver(

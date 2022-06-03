@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/ui/list_model/list_item.h"
 
@@ -35,6 +36,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
 }
 
 @synthesize collapsableMode = _collapsableMode;
+@synthesize collapsableMediator = _collapsableMediator;
 
 - (instancetype)init {
   if ((self = [super init])) {
@@ -42,6 +44,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
     _sections = [[NSMutableArray alloc] init];
     _headers = [[NSMutableDictionary alloc] init];
     _footers = [[NSMutableDictionary alloc] init];
+    _collapsableMediator = [[ListModelCollapsedMediator alloc] init];
   }
   return self;
 }
@@ -360,33 +363,18 @@ typedef NSMutableArray<ListItem*> SectionItems;
 }
 
 - (void)setSection:(NSInteger)sectionIdentifier collapsed:(BOOL)collapsed {
-  // TODO(crbug.com/419346): Store in the browser state preference instead of
-  // NSUserDefaults.
   DCHECK([self hasSectionForSectionIdentifier:sectionIdentifier]);
   NSString* sectionKey = [self.collapsedKeys objectForKey:@(sectionIdentifier)];
   DCHECK(sectionKey);
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary* collapsedSections =
-      [defaults dictionaryForKey:kListModelCollapsedKey];
-  NSMutableDictionary* newCollapsedSection =
-      [NSMutableDictionary dictionaryWithDictionary:collapsedSections];
-  NSNumber* value = [NSNumber numberWithBool:collapsed];
-  [newCollapsedSection setValue:value forKey:sectionKey];
-  [defaults setObject:newCollapsedSection forKey:kListModelCollapsedKey];
+  [self.collapsableMediator setSectionKey:sectionKey collapsed:collapsed];
 }
 
 - (BOOL)sectionIsCollapsed:(NSInteger)sectionIdentifier {
-  // TODO(crbug.com/419346): Store in the profile's preference instead of the
-  // NSUserDefaults.
   DCHECK([self hasSectionForSectionIdentifier:sectionIdentifier]);
   NSString* sectionKey = [self.collapsedKeys objectForKey:@(sectionIdentifier)];
   if (!sectionKey)
     return NO;
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary* collapsedSections =
-      [defaults dictionaryForKey:kListModelCollapsedKey];
-  NSNumber* value = (NSNumber*)[collapsedSections valueForKey:sectionKey];
-  return [value boolValue];
+  return [self.collapsableMediator sectionKeyIsCollapsed:sectionKey];
 }
 
 // |_collapsedKeys| lazy instantiation.
@@ -444,6 +432,31 @@ typedef NSMutableArray<ListItem*> SectionItems;
   }
   DCHECK(found);
   return indexInItemType;
+}
+
+@end
+
+// TODO(crbug.com/419346): Store in the browser state preference or in
+// UISceneSession.unserInfo instead of NSUserDefaults.
+@implementation ListModelCollapsedMediator
+
+- (void)setSectionKey:(NSString*)sectionKey collapsed:(BOOL)collapsed {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* collapsedSections =
+      [defaults dictionaryForKey:kListModelCollapsedKey];
+  NSMutableDictionary* newCollapsedSection =
+      [NSMutableDictionary dictionaryWithDictionary:collapsedSections];
+  NSNumber* value = [NSNumber numberWithBool:collapsed];
+  [newCollapsedSection setValue:value forKey:sectionKey];
+  [defaults setObject:newCollapsedSection forKey:kListModelCollapsedKey];
+}
+
+- (BOOL)sectionKeyIsCollapsed:(NSString*)sectionKey {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* collapsedSections =
+      [defaults dictionaryForKey:kListModelCollapsedKey];
+  NSNumber* value = (NSNumber*)[collapsedSections valueForKey:sectionKey];
+  return [value boolValue];
 }
 
 @end

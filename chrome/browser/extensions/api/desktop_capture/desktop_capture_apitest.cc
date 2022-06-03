@@ -5,10 +5,11 @@
 #include <array>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -74,7 +76,7 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 // Flaky on Windows: http://crbug.com/301887
 // Fails on Chrome OS: http://crbug.com/718512
 // Flaky on macOS: http://crbug.com/804897
-#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MACOSX)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 #define MAYBE_ChooseDesktopMedia DISABLED_ChooseDesktopMedia
 #else
 #define MAYBE_ChooseDesktopMedia ChooseDesktopMedia
@@ -84,53 +86,53 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
   // chrome/test/data/extensions/api_test/desktop_capture/test.js .
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
     // pickerUiCanceled()
-    {true, true, false, false, DesktopMediaID()},
+    {true, true, false, false, false, DesktopMediaID()},
     // chooseMedia()
-    {true, true, false, false,
+    {true, true, false, false, false,
      DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId)},
     // screensOnly()
-    {true, false, false, false, DesktopMediaID()},
+    {true, false, false, false, false, DesktopMediaID()},
     // WindowsOnly()
-    {false, true, false, false, DesktopMediaID()},
+    {false, true, false, false, false, DesktopMediaID()},
     // tabOnly()
-    {false, false, true, false, DesktopMediaID()},
+    {false, false, true, false, false, DesktopMediaID()},
     // audioShareNoApproval()
-    {true, true, true, true,
+    {true, true, true, false, true,
      DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123, false)},
     // audioShareApproval()
-    {true, true, true, true,
+    {true, true, true, false, true,
      DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123, true)},
     // chooseMediaAndGetStream()
-    {true, true, false, false,
+    {true, true, false, false, false,
      DesktopMediaID(DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId)},
     // chooseMediaAndTryGetStreamWithInvalidId()
-    {true, true, false, false,
+    {true, true, false, false, false,
      DesktopMediaID(DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId)},
     // cancelDialog()
-    {true, true, false, false, DesktopMediaID(), true},
+    {true, true, false, false, false, DesktopMediaID(), true},
 // TODO(crbug.com/805145): Test fails; invalid device IDs being generated.
 #if 0
       // tabShareWithAudioGetStream()
-      {false, false, true, true, MakeFakeWebContentsMediaId(true)},
+      {false, false, true, false, true, MakeFakeWebContentsMediaId(true)},
 #endif
     // windowShareWithAudioGetStream()
-    {false, true, false, true,
+    {false, true, false, false, true,
      DesktopMediaID(DesktopMediaID::TYPE_WINDOW, DesktopMediaID::kFakeId,
                     true)},
     // screenShareWithAudioGetStream()
-    {true, false, false, true,
+    {true, false, false, false, true,
      DesktopMediaID(DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId,
                     true)},
 // TODO(crbug.com/805145): Test fails; invalid device IDs being generated.
 #if 0
       // tabShareWithoutAudioGetStream()
-      {false, false, true, true, MakeFakeWebContentsMediaId(false)},
+      {false, false, true, false, true, MakeFakeWebContentsMediaId(false)},
 #endif
     // windowShareWithoutAudioGetStream()
-    {false, true, false, true,
+    {false, true, false, false, true,
      DesktopMediaID(DesktopMediaID::TYPE_WINDOW, DesktopMediaID::kFakeId)},
     // screenShareWithoutAudioGetStream()
-    {true, false, false, true,
+    {true, false, false, false, true,
      DesktopMediaID(DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId)},
   };
   picker_factory_.SetTestFlags(test_flags, base::size(test_flags));
@@ -149,19 +151,18 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, DISABLED_Delegation) {
   // Load extension.
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("desktop_capture_delegate");
-  const Extension* extension = LoadExtensionWithFlags(
-      extension_path, ExtensionBrowserTest::kFlagNone);
+  const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
 
-  ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("example.com", "/example.com.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForPath("example.com", "/example.com.html")));
 
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
-      {true, true, false, false,
+      {true, true, false, false, false,
        DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId)},
-      {true, true, false, false,
+      {true, true, false, false, false,
        DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId)},
-      {true, true, false, false,
+      {true, true, false, false, false,
        DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId),
        true},
   };

@@ -12,41 +12,35 @@
 
 namespace web {
 
-bool IsSafeBrowsingWarningDisplayedInWebView(WKWebView* web_view) {
-  // A SafeBrowsing warning is a UIScrollView that is inserted on top of
-  // WKWebView's scroll view. This method uses heuristics to detect this view.
-  // It may break in the future if WebKit's implementation of SafeBrowsing
-  // warnings changes.
-  UIView* containing_view = web_view.scrollView.superview;
-  if (!containing_view)
-    return false;
-
-  UIView* top_view = containing_view.subviews.lastObject;
-
-  if (top_view == web_view.scrollView)
-    return false;
-
-  return [top_view isKindOfClass:[UIScrollView class]] &&
-         [NSStringFromClass([top_view class]) containsString:@"Warning"] &&
-         top_view.subviews.count > 0 &&
-         [top_view.subviews.firstObject.subviews.lastObject
-             isKindOfClass:[UIButton class]];
-}
-
-bool RequiresContentFilterBlockingWorkaround() {
-  // This is fixed in iOS13 beta 7.
-  if (@available(iOS 13, *))
-    return false;
-
-  if (@available(iOS 12.2, *))
-    return true;
-
-  return false;
-}
-
 bool RequiresProvisionalNavigationFailureWorkaround() {
   if (@available(iOS 12.2, *))
     return true;
   return false;
+}
+
+void CreateFullPagePdf(WKWebView* web_view,
+                       base::OnceCallback<void(NSData*)> callback) {
+
+  if (!web_view) {
+    std::move(callback).Run(nil);
+    return;
+  }
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    __block base::OnceCallback<void(NSData*)> callback_for_block =
+        std::move(callback);
+    WKPDFConfiguration* pdf_configuration = [[WKPDFConfiguration alloc] init];
+    [web_view createPDFWithConfiguration:pdf_configuration
+                       completionHandler:^(NSData* pdf_document_data,
+                                           NSError* error) {
+                         std::move(callback_for_block).Run(pdf_document_data);
+                       }];
+    return;
+  }
+#endif
+
+  // PDF generation is only supported on iOS 14+.
+  std::move(callback).Run(nil);
 }
 }  // namespace web

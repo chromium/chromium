@@ -1,10 +1,13 @@
 {
     "archives": {
+        "browse:media:earth:2020": {
+            "DEFAULT": "system_health_desktop_27ca4caf21.wprgo"
+        },
         "browse:media:flickr_infinite_scroll": {
             "DEFAULT": "system_health_desktop_057.wprgo"
         },
-        "browse:media:googleplaystore:2018": {
-            "DEFAULT": "system_health_desktop_ea41d8bc49.wprgo"
+        "browse:media:googleplaystore:2021": {
+            "DEFAULT": "system_health_desktop_3e15eebdff.wprgo"
         },
         "browse:media:imgur": {
             "DEFAULT": "system_health_desktop_025.wprgo"
@@ -34,47 +37,50 @@
         "browse:media:youtubetv:2019": {
             "DEFAULT": "system_health_desktop_e53598d1f4.wprgo"
         },
+        "browse:media:youtubetv_watch:2020": {
+            "DEFAULT": "system_health_desktop_9fdd303aad.wprgo"
+        },
         "browse:news:cnn": {
             "DEFAULT": "system_health_desktop_013.wprgo"
         },
-        "browse:news:cnn:2018": {
-            "DEFAULT": "system_health_desktop_060.wprgo"
+        "browse:news:cnn:2021": {
+            "DEFAULT": "system_health_desktop_56438410e1.wprgo"
         },
         "browse:news:flipboard": {
             "DEFAULT": "system_health_desktop_021.wprgo"
         },
-        "browse:news:flipboard:2018": {
-            "DEFAULT": "system_health_desktop_4c82ac641b.wprgo"
+        "browse:news:flipboard:2020": {
+            "DEFAULT": "system_health_desktop_c4fee655af.wprgo"
         },
         "browse:news:hackernews": {
             "DEFAULT": "system_health_desktop_014.wprgo"
         },
-        "browse:news:hackernews:2018": {
-            "DEFAULT": "system_health_desktop_45995e1b9c.wprgo"
+        "browse:news:hackernews:2020": {
+            "DEFAULT": "system_health_desktop_a28b400ce1.wprgo"
         },
         "browse:news:nytimes": {
             "DEFAULT": "system_health_desktop_015.wprgo"
         },
-        "browse:news:nytimes:2018": {
-            "DEFAULT": "system_health_desktop_e2dd18933f.wprgo"
+        "browse:news:nytimes:2020": {
+            "DEFAULT": "system_health_desktop_5a63eee637.wprgo"
         },
         "browse:news:reddit": {
             "DEFAULT": "system_health_desktop_016.wprgo"
         },
-        "browse:news:reddit:2018": {
-            "DEFAULT": "system_health_desktop_907087980d.wprgo"
+        "browse:news:reddit:2020": {
+            "DEFAULT": "system_health_desktop_91d2763cf0.wprgo"
         },
         "browse:search:google": {
             "DEFAULT": "system_health_desktop_037.wprgo"
         },
-        "browse:search:google:2018": {
-            "DEFAULT": "system_health_desktop_066.wprgo"
+        "browse:search:google:2020": {
+            "DEFAULT": "system_health_desktop_2b7904b984.wprgo"
         },
         "browse:search:google_india": {
             "DEFAULT": "system_health_desktop_039.wprgo"
         },
-        "browse:search:google_india:2018": {
-            "DEFAULT": "system_health_desktop_b576da862c.wprgo"
+        "browse:search:google_india:2021": {
+            "DEFAULT": "system_health_desktop_2335ecc28f.wprgo"
         },
         "browse:social:facebook_infinite_scroll": {
             "DEFAULT": "system_health_desktop_055.wprgo"
@@ -86,7 +92,7 @@
             "DEFAULT": "system_health_desktop_056.wprgo"
         },
         "browse:social:tumblr_infinite_scroll:2018": {
-            "DEFAULT": "system_health_desktop_e6232c2d50.wprgo"
+            "DEFAULT": "system_health_desktop_2015ed2b54.wprgo"
         },
         "browse:social:twitter": {
             "DEFAULT": "system_health_desktop_053.wprgo"
@@ -106,8 +112,35 @@
         "browse:tech:discourse_infinite_scroll:2018": {
             "DEFAULT": "system_health_desktop_065.wprgo"
         },
+        "browse:tools:autocad:2021": {
+            "DEFAULT": "system_health_desktop_68c808e107.wprgo"
+        },
+        "browse:tools:docs": {
+            "DEFAULT": "system_health_desktop_69209f77b1.wprgo"
+        },
+        "browse:tools:docs-scrolling": {
+            "DEFAULT": "system_health_desktop_4c81a0acbb.wprgo"
+        },
+        "browse:tools:docs_scrolling": {
+            "DEFAULT": "system_health_desktop_b34b0b8219.wprgo"
+        },
         "browse:tools:earth": {
             "DEFAULT": "system_health_desktop_050.wprgo"
+        },
+        "browse:tools:earth:2020": {
+            "DEFAULT": "system_health_desktop_df060e3191.wprgo"
+        },
+        "browse:tools:gmail-compose:2020": {
+            "DEFAULT": "system_health_desktop_1d2b5dbaab.wprgo"
+        },
+        "browse:tools:gmail-labelclick:2020": {
+            "DEFAULT": "system_health_desktop_60458a481a.wprgo"
+        },
+        "browse:tools:gmail-openconversation:2020": {
+            "DEFAULT": "system_health_desktop_beed31115c.wprgo"
+        },
+        "browse:tools:gmail-search:2020": {
+            "DEFAULT": "system_health_desktop_b704f9990b.wprgo"
         },
         "browse:tools:maps": {
             "DEFAULT": "system_health_desktop_052.wprgo"
@@ -136,8 +169,8 @@
         "load:games:bubbles": {
             "DEFAULT": "system_health_desktop_005.wprgo"
         },
-        "load:games:bubbles:2019": {
-            "DEFAULT": "system_health_desktop_615d4e02e4.wprgo"
+        "load:games:bubbles:2020": {
+            "DEFAULT": "system_health_desktop_215b0b9a77.wprgo"
         },
         "load:games:lazors": {
             "DEFAULT": "system_health_desktop_005.wprgo"
@@ -160,8 +193,17 @@
         "load:media:dailymotion": {
             "DEFAULT": "system_health_desktop_003.wprgo"
         },
+        "load:media:dailymotion:2019": {
+            "DEFAULT": "system_health_desktop_fb04043fc0.wprgo"
+        },
+        "load:media:facebook_feed:desktop:2020": {
+            "DEFAULT": "system_health_desktop_053fc8d414.wprgo"
+        },
         "load:media:facebook_photos:2018": {
             "DEFAULT": "system_health_desktop_eba368f102.wprgo"
+        },
+        "load:media:facebook_photos:desktop:2020": {
+            "DEFAULT": "system_health_desktop_3a819590eb.wprgo"
         },
         "load:media:flickr:2018": {
             "DEFAULT": "system_health_desktop_ae117f4f81.wprgo"
@@ -193,6 +235,9 @@
         "load:media:youtube:2018": {
             "DEFAULT": "system_health_desktop_cef8441ac0.wprgo"
         },
+        "load:media:youtubelivingroom:2020": {
+            "DEFAULT": "system_health_desktop_ffb5f36c56.wprgo"
+        },
         "load:news:bbc": {
             "DEFAULT": "system_health_desktop_002.wprgo"
         },
@@ -202,8 +247,8 @@
         "load:news:cnn": {
             "DEFAULT": "system_health_desktop_006.wprgo"
         },
-        "load:news:cnn:2018": {
-            "DEFAULT": "system_health_desktop_3c603ac582.wprgo"
+        "load:news:cnn:2020": {
+            "DEFAULT": "system_health_desktop_a41a5ba414.wprgo"
         },
         "load:news:flipboard": {
             "DEFAULT": "system_health_desktop_020.wprgo"
@@ -298,6 +343,9 @@
         "load:social:pinterest": {
             "DEFAULT": "system_health_desktop_001.wprgo"
         },
+        "load:social:pinterest:2019": {
+            "DEFAULT": "system_health_desktop_f399a24dd4.wprgo"
+        },
         "load:social:tumblr": {
             "DEFAULT": "system_health_desktop_001.wprgo"
         },
@@ -310,8 +358,14 @@
         "load:social:vk:2018": {
             "DEFAULT": "system_health_desktop_a099b947c2.wprgo"
         },
+        "load:tools:chat:2020": {
+            "DEFAULT": "system_health_desktop_62b68fb318.wprgo"
+        },
         "load:tools:docs": {
             "DEFAULT": "system_health_desktop_004.wprgo"
+        },
+        "load:tools:docs:2019": {
+            "DEFAULT": "system_health_desktop_5f62c3d808.wprgo"
         },
         "load:tools:drive": {
             "DEFAULT": "system_health_desktop_004.wprgo"
@@ -325,6 +379,9 @@
         "load:tools:gmail": {
             "DEFAULT": "system_health_desktop_004.wprgo"
         },
+        "load:tools:gmail:2019": {
+            "DEFAULT": "system_health_desktop_0e466e2324.wprgo"
+        },
         "load:tools:maps": {
             "DEFAULT": "system_health_desktop_004.wprgo"
         },
@@ -336,6 +393,9 @@
         },
         "load:tools:weather": {
             "DEFAULT": "system_health_desktop_004.wprgo"
+        },
+        "load:tools:weather:2019": {
+            "DEFAULT": "system_health_desktop_70d821feeb.wprgo"
         },
         "load_accessibility:media:wikipedia": {
             "DEFAULT": "system_health_desktop_059.wprgo"

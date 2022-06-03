@@ -19,7 +19,7 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
 #include "base/files/file_path.h"
@@ -30,20 +30,20 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/stress_support.h"
-#include "net/disk_cache/blockfile/trace.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 
@@ -363,7 +363,7 @@ void CrashCallback() {
 }
 
 void RunSoon(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  const base::TimeDelta kTaskDelay = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTaskDelay = base::Seconds(10);
   task_runner->PostDelayedTask(FROM_HERE, base::BindOnce(&CrashCallback),
                                kTaskDelay);
 }
@@ -386,20 +386,6 @@ void CrashHandler(const char* file,
   base::debug::BreakDebugger();
 }
 
-bool MessageHandler(int severity, const char* file, int line,
-                    size_t message_start, const std::string& str) {
-  const size_t kMaxMessageLen = 48;
-  char message[kMaxMessageLen];
-  size_t len = std::min(str.length() - message_start, kMaxMessageLen - 1);
-
-  memcpy(message, str.c_str() + message_start, len);
-  message[len] = '\0';
-#if !defined(DISK_CACHE_TRACE_TO_LOG)
-  disk_cache::Trace("%s", message);
-#endif
-  return false;
-}
-
 // -----------------------------------------------------------------------
 
 #if defined(OS_WIN)
@@ -417,8 +403,7 @@ int main(int argc, const char* argv[]) {
     return MasterCode();
 
   logging::ScopedLogAssertHandler scoped_assert_handler(
-      base::Bind(CrashHandler));
-  logging::SetLogMessageHandler(MessageHandler);
+      base::BindRepeating(CrashHandler));
 
 #if defined(OS_WIN)
   logging::LogEventProvider::Initialize(kStressCacheTraceProviderName);
@@ -431,7 +416,7 @@ int main(int argc, const char* argv[]) {
 #endif
 
   // Some time for the memory manager to flush stuff.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(3));
+  base::PlatformThread::Sleep(base::Seconds(3));
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   char* end;

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests WebInspector extension API returns valid data for redirected resources\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.navigatePromise('resources/extensions-network-redirect.html');
   ExtensionsTestRunner.runExtensionTests([
       function extension_doRequest(force, callback)
@@ -53,10 +53,11 @@
               var entries = har.entries;
               var urls = [];
               for (var i = 0; i < entries.length; ++i) {
-                  var url = entries[i].request.url;
-                  // Workaround for GTK DRT that requests favicon.ico along with the page.
-                  if (!/\/favicon\.ico$/.test(url))
-                      urls.push(url);
+                var url = entries[i].request.url;
+                // Workaround for GTK DRT that requests favicon.ico along with
+                // the page.
+                if (!/\/favicon\.ico$/.test(url))
+                  urls.push(url);
               }
               urls.sort();
               output("Requests in HAR:\n" + urls.join("\n"));

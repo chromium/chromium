@@ -5,8 +5,8 @@
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -90,7 +90,7 @@ void ChromeDataUseMeasurement::DeleteInstance() {
 ChromeDataUseMeasurement::ChromeDataUseMeasurement(
     network::NetworkConnectionTracker* network_connection_tracker,
     PrefService* local_state)
-    : DataUseMeasurement(network_connection_tracker),
+    : DataUseMeasurement(local_state, network_connection_tracker),
       local_state_(local_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -100,8 +100,9 @@ void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
     int64_t recv_bytes,
     int64_t sent_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Negative byte numbres is not a critical problem (i.e. should have no security implications) but
-  // is not expected. TODO(rajendrant): remove these DCHECKs or consider using uint in Mojo instead.
+  // Negative byte numbers is not a critical problem (i.e., should have no
+  // security implications) but is not expected. TODO(rajendrant): remove these
+  // DCHECKs or consider using uint in Mojo instead.
   DCHECK_GE(recv_bytes, 0);
   DCHECK_GE(sent_bytes, 0);
 
@@ -125,17 +126,14 @@ void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
       observer.OnServicesDataUse(network_traffic_annotation_id_hash, recv_bytes,
                                  sent_bytes);
   }
-  UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesReceived.Delegate", recv_bytes);
+  base::UmaHistogramCustomCounts("DataUse.BytesReceived2.Delegate", recv_bytes,
+                                 50, 10 * 1000 * 1000, 50);
   UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent.Delegate", sent_bytes);
-#if defined(OS_ANDROID)
-  bytes_transferred_since_last_traffic_stats_query_ += recv_bytes + sent_bytes;
-  MaybeRecordNetworkBytesOS();
-#endif
 }
 
 void ChromeDataUseMeasurement::ReportUserTrafficDataUse(bool is_tab_visible,
                                                         int64_t recv_bytes) {
-  RecordTrafficSizeMetric(true, true, is_tab_visible, recv_bytes);
+  RecordDownstreamUserTrafficSizeMetric(is_tab_visible, recv_bytes);
 }
 
 void ChromeDataUseMeasurement::RecordContentTypeMetric(
@@ -159,6 +157,11 @@ void ChromeDataUseMeasurement::UpdateMetricsUsagePrefs(
   metrics::DataUseTracker::UpdateMetricsUsagePrefs(
       base::saturated_cast<int>(total_bytes), is_cellular,
       is_metrics_service_usage, local_state_);
+}
+
+// static
+void ChromeDataUseMeasurement::RegisterPrefs(PrefRegistrySimple* registry) {
+  DataUseMeasurement::RegisterDataUseComponentLocalStatePrefs(registry);
 }
 
 }  // namespace data_use_measurement

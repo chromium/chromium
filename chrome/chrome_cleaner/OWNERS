@@ -1,5 +1,4 @@
-joenotcharles@chromium.org
-proberge@chromium.org
+file://chrome/browser/safe_browsing/OWNERS
 
-# TEAM: security-dev@chromium.org
-# COMPONENT: UI>Browser>Preferences>Protector
+joenotcharles@chromium.org  # emeritus
+proberge@chromium.org  # emeritus

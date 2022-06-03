@@ -1,0 +1,142 @@
+syntax = "proto2";
+
+package gallium.castos;
+
+option optimize_for = LITE_RUNTIME;
+
+message Rect {
+  optional int32 left = 1;
+  optional int32 top = 2;
+  optional int32 right = 3;
+  optional int32 bottom = 4;
+}
+
+message BooleanProperties {
+  optional bool has_checked_state = 1;
+  optional bool is_checked = 2;
+  optional bool is_selected = 3;
+  optional bool is_button = 4;
+  optional bool is_text_field = 5;
+  optional bool is_focused = 6;
+  optional bool has_enabled_state = 7;
+  optional bool is_enabled = 8;
+  optional bool is_in_mutually_exclusive_group = 9;
+  optional bool is_header = 10;
+  optional bool is_obscured = 11;
+  optional bool scopes_route = 12;
+  optional bool names_route = 13;
+  optional bool is_hidden = 14;
+  optional bool is_image = 15;
+  optional bool is_live_region = 16;
+  optional bool has_toggled_state = 17;
+  optional bool is_toggled = 18;
+  optional bool has_implicit_scrolling = 19;
+  optional bool is_lift_to_type = 20;
+}
+
+message ActionProperties {
+  optional bool tap = 1;
+  optional bool long_press = 2;
+  optional bool scroll_left = 3;
+  optional bool scroll_right = 4;
+  optional bool scroll_up = 5;
+  optional bool scroll_down = 6;
+  optional bool increase = 7;
+  optional bool decrease = 8;
+  optional bool show_on_screen = 9;
+  optional bool move_cursor_forward_by_character = 10;
+  optional bool move_cursor_backward_by_character = 11;
+  optional bool set_selection = 12;
+  optional bool copy = 13;
+  optional bool cut = 14;
+  optional bool paste = 15;
+  optional bool did_gain_accessibility_focus = 16;
+  optional bool did_lose_accessibility_focus = 17;
+  optional bool custom_action = 18;
+  optional bool dismiss = 19;
+  optional bool move_cursor_forward_by_word = 20;
+  optional bool move_cursor_backward_by_word = 21;
+}
+
+message CustomAction {
+  optional int32 id = 1;
+  optional string label = 2;
+}
+
+message SemanticsNode {
+  enum SortKeyType {
+    UNSPECIFIED = 0;
+    // sort_key_value and sort_key_order specified.
+    ORDINAL = 1;
+  }
+
+  optional int32 node_id = 1;
+  optional Rect bounds_in_screen = 2;
+  optional int32 window_id = 3;
+  repeated int32 child_node_ids = 4;
+  optional BooleanProperties boolean_properties = 5;
+  optional ActionProperties action_properties = 6;
+  optional string value = 7;
+  optional string label = 8;
+  optional string hint = 9;
+  optional string text_direction = 10;
+  optional int32 resource_id = 11;
+  optional int32 text_selection_base = 12;
+  optional int32 text_selection_extent = 13;
+  optional int32 scroll_children = 14;
+  optional int32 scroll_index = 15;
+  optional float scroll_position = 16;
+  optional int32 scroll_extent_max = 17;
+  optional int32 scroll_extent_min = 18;
+  repeated CustomAction custom_actions = 19;
+  // If set, indicates the semantics information for this node
+  // is provided by a platform plugin or some other native backed
+  // entity.
+  optional string plugin_id = 20;
+  optional SortKeyType sort_key_type = 21;
+  // For sort_key_type ORDINAL: An optional name that will group
+  // this sort key with other sort keys of the same name.
+  optional string sort_key_value = 22;
+  // For sort_key_type ORDINAL: Determines the placement of this
+  // key in a sequence of keys that defines the order in which
+  // this node is traversed.
+  optional double sort_key_order = 23;
+}
+
+message OnAccessibilityEventRequest {
+  enum EventType {
+    UNSPECIFIED = 0;
+    FOCUSED = 1;
+    FOCUS_CLEARED = 2;
+    HOVER_ENTER = 3;
+    HOVER_EXIT = 4;
+    CLICKED = 5;
+    LONG_CLICKED = 6;
+    WINDOW_STATE_CHANGED = 7;
+    TEXT_CHANGED = 8;
+    TEXT_SELECTION_CHANGED = 9;
+    CONTENT_CHANGED = 10;
+    SCROLLED = 11;
+    ANNOUNCEMENT = 12;
+  }
+  enum TextDirection {
+    DEFAULT = 0;
+    // Left to right
+    LTR = 1;
+    // Right to left
+    RTL = 2;
+  }
+  // Type of event this represents.
+  optional EventType event_type = 1;
+  // The node responsible for triggering this event.
+  optional int32 source_id = 2;
+  // Unique identifier for flutter window.
+  optional int32 window_id = 3;
+  // The 'flattened' semantic tree nodes.
+  repeated SemanticsNode node_data = 4;
+  // For announcements.
+  optional string text = 5;
+  optional TextDirection text_direction = 6;
+}
+
+message OnAccessibilityEventResponse {}

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 

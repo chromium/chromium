@@ -33,28 +33,15 @@ void LogicalRect::Unite(const LogicalRect& other) {
     return;
   }
 
-  LogicalOffset new_end_offset(Max(EndOffset(), other.EndOffset()));
-  offset = Min(offset, other.offset);
-  size = new_end_offset - offset;
+  UniteEvenIfEmpty(other);
 }
 
-PhysicalRect LogicalRect::ConvertToPhysical(
-    WritingMode writing_mode,
-    const PhysicalSize& outer_size) const {
-  if (IsHorizontalWritingMode(writing_mode)) {
-    return {offset.inline_offset, offset.block_offset, size.inline_size,
-            size.block_size};
-  }
-
-  // Vertical, clock-wise rotation.
-  if (writing_mode != WritingMode::kSidewaysLr) {
-    return {outer_size.width - BlockEndOffset(), offset.inline_offset,
-            size.block_size, size.inline_size};
-  }
-
-  // Vertical, counter-clock-wise rotation.
-  return {offset.block_offset, outer_size.height - InlineEndOffset(),
-          size.block_size, size.inline_size};
+void LogicalRect::UniteEvenIfEmpty(const LogicalRect& other) {
+  LogicalOffset new_end_offset(Max(EndOffset(), other.EndOffset()));
+  LogicalOffset new_start_offset(Min(offset, other.offset));
+  size = new_end_offset - new_start_offset;
+  offset = {new_end_offset.inline_offset - size.inline_size,
+            new_end_offset.block_offset - size.block_size};
 }
 
 String LogicalRect::ToString() const {

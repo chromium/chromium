@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that links are updated property when editing pseudo element property.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -47,9 +47,9 @@
       ElementsTestRunner.waitForStyleApplied(onPropertyInserted);
       treeElement.applyStyleText('PROPERTY: INSERTED;', true);
 
-      function onPropertyInserted() {
+      async function onPropertyInserted() {
         TestRunner.addResult('\n\n#### AFTER PROPERTY INSERTED ####\n\n');
-        ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+        await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
         var rules = ElementsTestRunner.getMatchedRules();
         ElementsTestRunner.validateRuleRanges('pseudo', rules, next);
       }

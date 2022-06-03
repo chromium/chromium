@@ -4,67 +4,71 @@
 
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
+#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_macros.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/ipc/color/gfx_param_traits_macros.h"
+#include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/ipc/buffer_types/gfx_ipc_export.h"
+#include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"
 
 namespace IPC {
 
 void ParamTraits<gfx::ColorSpace>::Write(base::Pickle* m,
                                          const gfx::ColorSpace& p) {
-  WriteParam(m, p.GetPrimaryID());
-  WriteParam(m, p.GetTransferID());
-  WriteParam(m, p.GetMatrixID());
-  WriteParam(m, p.GetRangeID());
-  if (p.GetPrimaryID() == gfx::ColorSpace::PrimaryID::CUSTOM) {
-    skcms_Matrix3x3 custom_primary_matrix;
-    p.GetPrimaryMatrix(&custom_primary_matrix);
-    ParamTraits<skcms_Matrix3x3>::Write(m, custom_primary_matrix);
-  }
-  if (p.GetTransferID() == gfx::ColorSpace::TransferID::CUSTOM) {
-    skcms_TransferFunction custom_transfer_params;
-    p.GetTransferFunction(&custom_transfer_params);
-    ParamTraits<skcms_TransferFunction>::Write(m, custom_transfer_params);
-  }
+  WriteParam(m, p.primaries_);
+  WriteParam(m, p.transfer_);
+  WriteParam(m, p.matrix_);
+  WriteParam(m, p.range_);
+  WriteParam(m, p.custom_primary_matrix_);
+  WriteParam(m, p.transfer_params_);
 }
 
 bool ParamTraits<gfx::ColorSpace>::Read(const base::Pickle* m,
                                         base::PickleIterator* iter,
                                         gfx::ColorSpace* r) {
-  gfx::ColorSpace::PrimaryID primaries = gfx::ColorSpace::PrimaryID::INVALID;
-  if (!ReadParam(m, iter, &primaries))
+  if (!ReadParam(m, iter, &r->primaries_))
     return false;
-  gfx::ColorSpace::TransferID transfer = gfx::ColorSpace::TransferID::INVALID;
-  if (!ReadParam(m, iter, &transfer))
+  if (!ReadParam(m, iter, &r->transfer_))
     return false;
-  gfx::ColorSpace::MatrixID matrix = gfx::ColorSpace::MatrixID::INVALID;
-  if (!ReadParam(m, iter, &matrix))
+  if (!ReadParam(m, iter, &r->matrix_))
     return false;
-  gfx::ColorSpace::RangeID range = gfx::ColorSpace::RangeID::INVALID;
-  if (!ReadParam(m, iter, &range))
+  if (!ReadParam(m, iter, &r->range_))
     return false;
-  skcms_Matrix3x3 custom_primary_matrix;
-  if (primaries == gfx::ColorSpace::PrimaryID::CUSTOM &&
-      !ParamTraits<skcms_Matrix3x3>::Read(m, iter, &custom_primary_matrix)) {
+  if (!ReadParam(m, iter, &r->custom_primary_matrix_))
     return false;
-  }
-  skcms_TransferFunction custom_transfer_params;
-  if (transfer == gfx::ColorSpace::TransferID::CUSTOM &&
-      !ParamTraits<skcms_TransferFunction>::Read(m, iter,
-                                                 &custom_transfer_params)) {
+  if (!ReadParam(m, iter, &r->transfer_params_))
     return false;
-  }
-  *r = gfx::ColorSpace(
-      primaries, transfer, matrix, range,
-      primaries == gfx::ColorSpace::PrimaryID::CUSTOM ? &custom_primary_matrix
-                                                      : nullptr,
-      transfer == gfx::ColorSpace::TransferID::CUSTOM ? &custom_transfer_params
-                                                      : nullptr);
   return true;
 }
 
 void ParamTraits<gfx::ColorSpace>::Log(const gfx::ColorSpace& p,
                                        std::string* l) {
   l->append("<gfx::ColorSpace>");
+}
+
+void ParamTraits<gfx::DisplayColorSpaces>::Write(
+    base::Pickle* m,
+    const gfx::DisplayColorSpaces& p) {
+  WriteParam(m, p.color_spaces_);
+  WriteParam(m, p.buffer_formats_);
+  WriteParam(m, p.sdr_white_level_);
+}
+
+bool ParamTraits<gfx::DisplayColorSpaces>::Read(const base::Pickle* m,
+                                                base::PickleIterator* iter,
+                                                gfx::DisplayColorSpaces* r) {
+  if (!ReadParam(m, iter, &r->color_spaces_))
+    return false;
+  if (!ReadParam(m, iter, &r->buffer_formats_))
+    return false;
+  if (!ReadParam(m, iter, &r->sdr_white_level_))
+    return false;
+  return true;
+}
+
+void ParamTraits<gfx::DisplayColorSpaces>::Log(const gfx::DisplayColorSpaces& p,
+                                               std::string* l) {
+  l->append("<gfx::DisplayColorSpaces>");
 }
 
 }  // namespace IPC

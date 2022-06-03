@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_CONTENT_CLIENT_VIEWS_CONTENT_CLIENT_H_
 #define UI_VIEWS_CONTENT_CLIENT_VIEWS_CONTENT_CLIENT_H_
 
+#include <utility>
+
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views_content_client/views_content_client_export.h"
@@ -32,7 +33,7 @@ namespace ui {
 //
 // #if defined(OS_WIN)
 // int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
-//   sandbox::SandboxInterfaceInfo sandbox_info = {0};
+//   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
 //   content::InitializeSandboxInfo(&sandbox_info);
 //   ui::ViewsContentClient params(instance, &sandbox_info);
 // #else
@@ -57,6 +58,9 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   ViewsContentClient(int argc, const char** argv);
 #endif
 
+  ViewsContentClient(const ViewsContentClient&) = delete;
+  ViewsContentClient& operator=(const ViewsContentClient&) = delete;
+
   ~ViewsContentClient();
 
   // Runs content::ContentMain() using the ExamplesMainDelegate.
@@ -69,11 +73,18 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
     on_pre_main_message_loop_run_callback_ = std::move(callback);
   }
 
+  void set_on_resources_loaded_callback(base::OnceClosure callback) {
+    on_resources_loaded_callback_ = std::move(callback);
+  }
+
   // Calls the OnPreMainMessageLoopRun callback. |browser_context| is the
   // current browser context. |window_context| is a candidate root window that
   // may be null.
   void OnPreMainMessageLoopRun(content::BrowserContext* browser_context,
                                gfx::NativeWindow window_context);
+
+  // Calls a callback to signal resources have been loaded.
+  void OnResourcesLoaded();
 
   // Called by ViewsContentClientMainParts to supply the quit-closure to use
   // to exit RunMain().
@@ -91,9 +102,8 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   const char** argv_;
 #endif
   OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
+  base::OnceClosure on_resources_loaded_callback_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClient);
 };
 
 }  // namespace ui

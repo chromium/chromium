@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+     <TextView
+          android:id="@+id/sheet_title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:layout_marginBottom="5dp"
+          android:layout_marginStart="15dp"
+          android:text="@string/bookmarks_bottom_sheet_title"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+     <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/sheet_item_list"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1" />
+
+</LinearLayout>

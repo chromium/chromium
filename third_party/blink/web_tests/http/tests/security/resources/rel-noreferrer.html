@@ -4,9 +4,7 @@
 <script>
 function runTest() {
     var link = document.getElementById("link");
-    var iframe = window.parent.document.getElementsByTagName("iframe")[0];
-    eventSender.mouseMoveTo(link.offsetLeft + iframe.offsetLeft + 2,
-                            link.offsetTop + iframe.offsetTop + 2);
+    eventSender.mouseMoveTo(link.offsetLeft, link.offsetTop);
     eventSender.mouseDown();
     eventSender.mouseUp();
 }

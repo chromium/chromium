@@ -25,7 +25,7 @@ void PermissionsUpdaterDelegateChromeOS::InitializePermissions(
       chromeos::DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
           extension->id()) ||
       !(*granted_permissions)
-           ->HasAPIPermission(APIPermission::kClipboardRead)) {
+           ->HasAPIPermission(mojom::APIPermissionID::kClipboardRead)) {
     return;
   }
   // Revoke kClipboardRead permission (used in Public Sessions to secure
@@ -33,7 +33,7 @@ void PermissionsUpdaterDelegateChromeOS::InitializePermissions(
   // since the clipboard pasting code checks for this permission before doing
   // the paste (the end result is just an empty paste).
   APIPermissionSet api_permission_set;
-  api_permission_set.insert(APIPermission::kClipboardRead);
+  api_permission_set.insert(mojom::APIPermissionID::kClipboardRead);
   *granted_permissions = PermissionSet::CreateDifference(
       **granted_permissions,
       PermissionSet(std::move(api_permission_set), ManifestPermissionSet(),

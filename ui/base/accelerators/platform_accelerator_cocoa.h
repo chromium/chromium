@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/component_export.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ui_base_export.h"
 
 namespace ui {
 
@@ -19,7 +19,8 @@ namespace ui {
 // accelerators have an associated NSMenuItem. Each NSMenuItem is specified with
 // a |key_equivalent| and |modifier_mask|. This function takes a ui::Accelerator
 // and returns the associated |key_equivalent| and |modifier_mask|.
-UI_BASE_EXPORT void GetKeyEquivalentAndModifierMaskFromAccelerator(
+COMPONENT_EXPORT(UI_BASE)
+void GetKeyEquivalentAndModifierMaskFromAccelerator(
     const ui::Accelerator& accelerator,
     NSString** key_equivalent,
     NSUInteger* modifier_mask);

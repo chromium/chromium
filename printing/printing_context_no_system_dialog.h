@@ -7,14 +7,19 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/component_export.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 
 namespace printing {
 
-class PRINTING_EXPORT PrintingContextNoSystemDialog : public PrintingContext {
+class COMPONENT_EXPORT(PRINTING) PrintingContextNoSystemDialog
+    : public PrintingContext {
  public:
   explicit PrintingContextNoSystemDialog(Delegate* delegate);
+  PrintingContextNoSystemDialog(const PrintingContextNoSystemDialog&) = delete;
+  PrintingContextNoSystemDialog& operator=(
+      const PrintingContextNoSystemDialog&) = delete;
   ~PrintingContextNoSystemDialog() override;
 
   // PrintingContext implementation.
@@ -22,21 +27,18 @@ class PRINTING_EXPORT PrintingContextNoSystemDialog : public PrintingContext {
                           bool has_selection,
                           bool is_scripted,
                           PrintSettingsCallback callback) override;
-  Result UseDefaultSettings() override;
+  mojom::ResultCode UseDefaultSettings() override;
   gfx::Size GetPdfPaperSizeDeviceUnits() override;
-  Result UpdatePrinterSettings(bool external_preview,
-                               bool show_system_dialog,
-                               int page_count) override;
-  Result NewDocument(const base::string16& document_name) override;
-  Result NewPage() override;
-  Result PageDone() override;
-  Result DocumentDone() override;
+  mojom::ResultCode UpdatePrinterSettings(bool external_preview,
+                                          bool show_system_dialog,
+                                          int page_count) override;
+  mojom::ResultCode NewDocument(const std::u16string& document_name) override;
+  mojom::ResultCode NewPage() override;
+  mojom::ResultCode PageDone() override;
+  mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;
   printing::NativeDrawingContext context() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintingContextNoSystemDialog);
 };
 
 }  // namespace printing

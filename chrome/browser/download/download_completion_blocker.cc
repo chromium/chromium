@@ -4,7 +4,6 @@
 
 #include "chrome/browser/download/download_completion_blocker.h"
 
-#include "base/logging.h"
 
 DownloadCompletionBlocker::DownloadCompletionBlocker()
   : is_complete_(false) {

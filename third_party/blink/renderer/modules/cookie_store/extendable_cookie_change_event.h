@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_COOKIE_STORE_EXTENDABLE_COOKIE_CHANGE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COOKIE_STORE_EXTENDABLE_COOKIE_CHANGE_EVENT_H_
 
-#include "third_party/blink/renderer/modules/cookie_store/cookie_list_item.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/extendable_event.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -57,7 +57,7 @@ class ExtendableCookieChangeEvent final : public ExtendableEvent {
   const AtomicString& InterfaceName() const override;
 
   // GarbageCollected
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
 

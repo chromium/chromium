@@ -21,11 +21,6 @@ class SVGTextPainter {
   void Paint(const PaintInfo&);
 
  private:
-  // Paint a hit test display item and record hit test data. This should be
-  // called when painting the background even if there is no other painted
-  // content.
-  void RecordHitTestData(const PaintInfo&);
-
   const LayoutSVGText& layout_svg_text_;
 };
 

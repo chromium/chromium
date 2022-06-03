@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -59,7 +59,7 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
           io_task_runner),
       profile_prefs_(profile_prefs),
       local_state_prefs_(local_state_prefs) {
-  const base::Closure proxy_change_callback = base::Bind(
+  const base::RepeatingClosure proxy_change_callback = base::BindRepeating(
       &ProxyConfigServiceImpl::OnProxyPrefChanged, base::Unretained(this));
 
   if (profile_prefs) {

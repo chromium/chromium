@@ -176,6 +176,9 @@ class Port : public base::RefCountedThreadSafe<Port> {
   Port(uint64_t next_sequence_num_to_send,
        uint64_t next_sequence_num_to_receive);
 
+  Port(const Port&) = delete;
+  Port& operator=(const Port&) = delete;
+
   void AssertLockAcquired() {
 #if DCHECK_IS_ON()
     lock_.AssertAcquired();
@@ -189,8 +192,6 @@ class Port : public base::RefCountedThreadSafe<Port> {
   ~Port();
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Port);
 };
 
 }  // namespace ports

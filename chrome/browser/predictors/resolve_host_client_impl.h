@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
+#include "services/network/public/mojom/host_resolver.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -39,6 +38,10 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
                         const net::NetworkIsolationKey& network_isolation_key,
                         ResolveHostCallback callback,
                         network::mojom::NetworkContext* network_context);
+
+  ResolveHostClientImpl(const ResolveHostClientImpl&) = delete;
+  ResolveHostClientImpl& operator=(const ResolveHostClientImpl&) = delete;
+
   // Cancels the request if it hasn't been completed yet.
   ~ResolveHostClientImpl() override;
 
@@ -46,15 +49,13 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   void OnConnectionError();
 
  private:
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolveHostClientImpl);
 };
 
 }  // namespace predictors

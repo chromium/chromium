@@ -35,30 +35,48 @@
 namespace blink {
 
 class FontDescription;
+class FontFallbackMap;
 
 const int kCAllFamiliesScanned = -1;
 
+// FontFallbackList caches FontData from FontSelector and FontCache. If font
+// updates occur (e.g., @font-face rule changes, web font is loaded, etc.),
+// the cached data becomes stale and hence, invalid.
 class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   USING_FAST_MALLOC(FontFallbackList);
 
  public:
-  static scoped_refptr<FontFallbackList> Create() {
-    return base::AdoptRef(new FontFallbackList());
+  static scoped_refptr<FontFallbackList> Create(
+      FontFallbackMap& font_fallback_map) {
+    return base::AdoptRef(new FontFallbackList(font_fallback_map));
   }
 
-  ~FontFallbackList() { ReleaseFontData(); }
-  bool IsValid() const;
-  void Invalidate(FontSelector*);
+  FontFallbackList(const FontFallbackList&) = delete;
+  FontFallbackList& operator=(const FontFallbackList&) = delete;
+  ~FontFallbackList();
 
-  bool LoadingCustomFonts() const;
+  // Returns whether the cached data is valid. We can use a FontFallbackList
+  // only when it's valid.
+  bool IsValid() const { return !is_invalid_; }
+
+  // Called when font updates (see class comment) have made the cached data
+  // invalid. Once marked, a Font object cannot reuse |this|, but have to work
+  // on a new instance obtained from FontFallbackMap.
+  void MarkInvalid() {
+    is_invalid_ = true;
+  }
+
   bool ShouldSkipDrawing() const;
 
-  FontSelector* GetFontSelector() const { return font_selector_.Get(); }
-  // FIXME: It should be possible to combine fontSelectorVersion and generation.
-  unsigned FontSelectorVersion() const { return font_selector_version_; }
+  // Returns false only after the WeakPersistent to FontFallbackMap is turned to
+  // nullptr due to GC.
+  bool HasFontFallbackMap() const { return font_fallback_map_; }
+  FontFallbackMap& GetFontFallbackMap() const { return *font_fallback_map_; }
+
+  FontSelector* GetFontSelector() const;
   uint16_t Generation() const { return generation_; }
 
-  ShapeCache* GetShapeCache(const FontDescription& font_description) const {
+  ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
       FallbackListCompositeKey key = CompositeKey(font_description);
       shape_cache_ =
@@ -79,32 +97,46 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
     }
     return cached_primary_simple_font_data_;
   }
-  const FontData* FontDataAt(const FontDescription&, unsigned index) const;
+  const FontData* FontDataAt(const FontDescription&, unsigned index);
+
+  bool CanShapeWordByWord(const FontDescription&);
+
+  void SetCanShapeWordByWordForTesting(bool b) {
+    can_shape_word_by_word_ = b;
+    can_shape_word_by_word_computed_ = true;
+  }
+
+  bool HasLoadingFallback() const { return has_loading_fallback_; }
+  bool HasCustomFont() const { return has_custom_font_; }
+
+ private:
+  explicit FontFallbackList(FontFallbackMap& font_fallback_map);
+
+  scoped_refptr<FontData> GetFontData(const FontDescription&);
+
+  const SimpleFontData* DeterminePrimarySimpleFontData(const FontDescription&);
+  const SimpleFontData* DeterminePrimarySimpleFontDataCore(
+      const FontDescription&);
 
   FallbackListCompositeKey CompositeKey(const FontDescription&) const;
 
- private:
-  FontFallbackList();
-
-  scoped_refptr<FontData> GetFontData(const FontDescription&, int& family_index) const;
-
-  const SimpleFontData* DeterminePrimarySimpleFontData(
-      const FontDescription&) const;
-
   void ReleaseFontData();
+  bool ComputeCanShapeWordByWord(const FontDescription&);
 
-  mutable Vector<scoped_refptr<FontData>, 1> font_list_;
-  mutable const SimpleFontData* cached_primary_simple_font_data_;
-  Persistent<FontSelector> font_selector_;
-  unsigned font_selector_version_;
-  mutable int family_index_;
+  Vector<scoped_refptr<FontData>, 1> font_list_;
+  const SimpleFontData* cached_primary_simple_font_data_;
+  const WeakPersistent<FontFallbackMap> font_fallback_map_;
+  int family_index_;
   uint16_t generation_;
-  mutable bool has_loading_fallback_ : 1;
-  mutable base::WeakPtr<ShapeCache> shape_cache_;
+  bool has_loading_fallback_ : 1;
+  bool has_custom_font_ : 1;
+  bool can_shape_word_by_word_ : 1;
+  bool can_shape_word_by_word_computed_ : 1;
+  bool is_invalid_ : 1;
 
-  DISALLOW_COPY_AND_ASSIGN(FontFallbackList);
+  base::WeakPtr<ShapeCache> shape_cache_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_LIST_H_

@@ -23,8 +23,8 @@ var R_FRAME_TOP = /frames\.html/;
 var ID_FRAME_SRCDOC;
 var R_FRAME_SRCDOC = /about:srcdoc/;
 // Frame with (unique-origin) sandboxed about:blank.
-var ID_FRAME_UNREACHABLE;
-var R_FRAME_UNREACHABLE = /about:blank/;
+var ID_FRAME_SANDBOXED;
+var R_FRAME_SANDBOXED = /about:blank/;
 // Frame with same-origin page.
 var ID_FRAME_SECOND;
 var R_FRAME_SECOND = /frame\.html/;
@@ -92,7 +92,7 @@ chrome.test.getConfig(function(config) {
       }
 
       ID_FRAME_SRCDOC = getFrameId(R_FRAME_SRCDOC);
-      ID_FRAME_UNREACHABLE = getFrameId(R_FRAME_UNREACHABLE);
+      ID_FRAME_SANDBOXED = getFrameId(R_FRAME_SANDBOXED);
       ID_FRAME_SECOND = getFrameId(R_FRAME_SECOND);
       ID_FRAME_THIRD = getFrameId(R_FRAME_THIRD);
       ID_FRAME_NOPERMISSION = getFrameId(R_FRAME_NOPERMISSION);
@@ -125,9 +125,10 @@ function runTests(config) {
             code: 'document.URL'
           },
           pass(function(results) {
-            assertEq(4, results.length);
+            assertEq(5, results.length);
             assertTrue(matchesAny(results, R_FRAME_TOP));
             assertTrue(matchesAny(results, R_FRAME_SRCDOC));
+            assertTrue(matchesAny(results, R_FRAME_SANDBOXED));
             assertTrue(matchesAny(results, R_FRAME_SECOND));
             assertTrue(matchesAny(results, R_FRAME_THIRD));
           }));
@@ -172,14 +173,14 @@ function runTests(config) {
     function executeScriptInSandboxedFrame() {
       chrome.tabs.executeScript(
           tabId, {
-            frameId: ID_FRAME_UNREACHABLE,
+            frameId: ID_FRAME_SANDBOXED,
             matchAboutBlank: true,
             code: 'document.URL'
           },
-          fail(
-              'Cannot access "about:blank" at origin "null". Extension must ' +
-              'have permission to access the frame\'s origin, and ' +
-              'matchAboutBlank must be true.'));
+          pass((results) => {
+            assertEq(1, results.length);
+            assertTrue(matchesAny(results, R_FRAME_SANDBOXED));
+          }));
     },
 
     function executeScriptInSubFrame() {
@@ -271,9 +272,10 @@ function runTests(config) {
       insertCSS(
           tabId, {frameId: 0, matchAboutBlank: true, allFrames: true},
           pass(function(results) {
-            assertEq(4, results.length);
+            assertEq(5, results.length);
             assertTrue(matchesAny(results, R_FRAME_TOP));
             assertTrue(matchesAny(results, R_FRAME_SRCDOC));
+            assertTrue(matchesAny(results, R_FRAME_SANDBOXED));
             assertTrue(matchesAny(results, R_FRAME_SECOND));
             assertTrue(matchesAny(results, R_FRAME_THIRD));
           }));
@@ -308,16 +310,17 @@ function runTests(config) {
     },
 
     function insertCSSInSandboxedFrame() {
-      chrome.tabs.insertCSS(
+      insertCSS(
           tabId, {
-            frameId: ID_FRAME_UNREACHABLE,
+            frameId: ID_FRAME_SANDBOXED,
             matchAboutBlank: true,
+            allFrames: true,
             code: 'body{color:red}'
           },
-          fail(
-              'Cannot access "about:blank" at origin "null". Extension must ' +
-              'have permission to access the frame\'s origin, and ' +
-              'matchAboutBlank must be true.'));
+          pass((results) => {
+            assertEq(1, results.length);
+            assertTrue(matchesAny(results, R_FRAME_SANDBOXED));
+          }));
     },
 
     function insertCSSInSubFrame() {

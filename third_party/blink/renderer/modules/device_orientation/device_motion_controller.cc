@@ -4,36 +4,34 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/hosts_using_features.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_pump.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
-DeviceMotionController::DeviceMotionController(Document& document)
-    : DeviceSingleWindowEventController(document),
-      Supplement<Document>(document) {}
+DeviceMotionController::DeviceMotionController(LocalDOMWindow& window)
+    : DeviceSingleWindowEventController(window),
+      Supplement<LocalDOMWindow>(window) {}
 
 DeviceMotionController::~DeviceMotionController() = default;
 
 const char DeviceMotionController::kSupplementName[] = "DeviceMotionController";
 
-DeviceMotionController& DeviceMotionController::From(Document& document) {
+DeviceMotionController& DeviceMotionController::From(LocalDOMWindow& window) {
   DeviceMotionController* controller =
-      Supplement<Document>::From<DeviceMotionController>(document);
+      Supplement<LocalDOMWindow>::From<DeviceMotionController>(window);
   if (!controller) {
-    controller = MakeGarbageCollected<DeviceMotionController>(document);
-    ProvideTo(document, controller);
+    controller = MakeGarbageCollected<DeviceMotionController>(window);
+    ProvideTo(window, controller);
   }
   return *controller;
 }
@@ -44,33 +42,29 @@ void DeviceMotionController::DidAddEventListener(
   if (event_type != EventTypeName())
     return;
 
-  // The document could be detached, e.g. if it is the `contentDocument` of an
+  // The window could be detached, e.g. if it is the `contentWindow` of an
   // <iframe> that has been removed from the DOM of its parent frame.
-  if (GetDocument().IsContextDestroyed())
+  if (GetWindow().IsContextDestroyed())
     return;
 
   // The API is not exposed to Workers or Worklets, so if the current realm
   // execution context is valid, it must have a responsible browsing context.
-  SECURITY_CHECK(GetDocument().GetFrame());
+  SECURITY_CHECK(GetWindow().GetFrame());
 
   // The event handler property on `window` is restricted to [SecureContext],
   // but nothing prevents a site from calling `window.addEventListener(...)`
   // from a non-secure browsing context.
-  if (!GetDocument().IsSecureContext())
+  if (!GetWindow().IsSecureContext())
     return;
 
-  UseCounter::Count(GetDocument(), WebFeature::kDeviceMotionSecureOrigin);
+  UseCounter::Count(GetWindow(), WebFeature::kDeviceMotionSecureOrigin);
 
   if (!has_event_listener_) {
-    if (!IsSameSecurityOriginAsMainFrame()) {
-      Platform::Current()->RecordRapporURL(
-          "DeviceSensors.DeviceMotionCrossOrigin", WebURL(GetDocument().Url()));
-    }
-
-    if (!CheckPolicyFeatures({mojom::FeaturePolicyFeature::kAccelerometer,
-                              mojom::FeaturePolicyFeature::kGyroscope})) {
+    if (!CheckPolicyFeatures(
+            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
       DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
-          GetDocument().GetFrame(), EventTypeName());
+          *GetWindow().GetFrame(), EventTypeName());
       return;
     }
   }
@@ -86,13 +80,8 @@ bool DeviceMotionController::HasLastData() {
 
 void DeviceMotionController::RegisterWithDispatcher() {
   if (!motion_event_pump_) {
-    LocalFrame* frame = GetDocument().GetFrame();
-    if (!frame)
-      return;
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        frame->GetTaskRunner(TaskType::kSensor);
     motion_event_pump_ =
-        MakeGarbageCollected<DeviceMotionEventPump>(task_runner);
+        MakeGarbageCollected<DeviceMotionEventPump>(*GetWindow().GetFrame());
   }
   motion_event_pump_->SetController(this);
 }
@@ -110,7 +99,7 @@ Event* DeviceMotionController::LastEvent() const {
 }
 
 bool DeviceMotionController::IsNullEvent(Event* event) const {
-  DeviceMotionEvent* motion_event = ToDeviceMotionEvent(event);
+  auto* motion_event = To<DeviceMotionEvent>(event);
   return !motion_event->GetDeviceMotionData()->CanProvideEventData();
 }
 
@@ -118,10 +107,10 @@ const AtomicString& DeviceMotionController::EventTypeName() const {
   return event_type_names::kDevicemotion;
 }
 
-void DeviceMotionController::Trace(blink::Visitor* visitor) {
+void DeviceMotionController::Trace(Visitor* visitor) const {
   DeviceSingleWindowEventController::Trace(visitor);
   visitor->Trace(motion_event_pump_);
-  Supplement<Document>::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 }  // namespace blink

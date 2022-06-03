@@ -4,23 +4,34 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_IMAGE_WRITER_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_IMAGE_WRITER_PRIVATE_API_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
+#include "extensions/browser/extension_function.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/image_writer.mojom.h"
+#endif
 
 namespace extensions {
 
-class ImageWriterPrivateBaseFunction : public ChromeAsyncExtensionFunction {
+class ImageWriterPrivateBaseFunction : public ExtensionFunction {
  public:
   ImageWriterPrivateBaseFunction();
 
+  ImageWriterPrivateBaseFunction(const ImageWriterPrivateBaseFunction&) =
+      delete;
+  ImageWriterPrivateBaseFunction& operator=(
+      const ImageWriterPrivateBaseFunction&) = delete;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  virtual void OnComplete(const absl::optional<std::string>& error);
+#else
   virtual void OnComplete(bool success, const std::string& error);
+#endif
 
  protected:
   ~ImageWriterPrivateBaseFunction() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterPrivateBaseFunction);
 };
 
 class ImageWriterPrivateWriteFromUrlFunction
@@ -32,7 +43,7 @@ class ImageWriterPrivateWriteFromUrlFunction
 
  private:
   ~ImageWriterPrivateWriteFromUrlFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class ImageWriterPrivateWriteFromFileFunction
@@ -44,7 +55,7 @@ class ImageWriterPrivateWriteFromFileFunction
 
  private:
   ~ImageWriterPrivateWriteFromFileFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class ImageWriterPrivateCancelWriteFunction
@@ -56,7 +67,7 @@ class ImageWriterPrivateCancelWriteFunction
 
  private:
   ~ImageWriterPrivateCancelWriteFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class ImageWriterPrivateDestroyPartitionsFunction
@@ -68,20 +79,25 @@ class ImageWriterPrivateDestroyPartitionsFunction
 
  private:
   ~ImageWriterPrivateDestroyPartitionsFunction() override;
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 class ImageWriterPrivateListRemovableStorageDevicesFunction
-    : public ChromeAsyncExtensionFunction {
-  public:
-   DECLARE_EXTENSION_FUNCTION("imageWriterPrivate.listRemovableStorageDevices",
-                              IMAGEWRITER_LISTREMOVABLESTORAGEDEVICES)
-   ImageWriterPrivateListRemovableStorageDevicesFunction();
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("imageWriterPrivate.listRemovableStorageDevices",
+                             IMAGEWRITER_LISTREMOVABLESTORAGEDEVICES)
+  ImageWriterPrivateListRemovableStorageDevicesFunction();
 
-  private:
-   ~ImageWriterPrivateListRemovableStorageDevicesFunction() override;
-   bool RunAsync() override;
-   void OnDeviceListReady(scoped_refptr<StorageDeviceList> device_list);
+ private:
+  ~ImageWriterPrivateListRemovableStorageDevicesFunction() override;
+  ResponseAction Run() override;
+  void OnDeviceListReady(scoped_refptr<StorageDeviceList> device_list);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnCrosapiDeviceListReady(
+      absl::optional<std::vector<crosapi::mojom::RemovableStorageDevicePtr>>
+          devices);
+#endif
 };
 
 }  // namespace extensions

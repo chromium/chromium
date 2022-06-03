@@ -22,12 +22,12 @@ TEST_F(ExtensionServiceTestWithInstall, TabHelperClearsExtensionOnUnload) {
   TabHelper::CreateForWebContents(web_contents.get());
   TabHelper* tab_helper = TabHelper::FromWebContents(web_contents.get());
   tab_helper->SetExtensionApp(extension);
-  EXPECT_EQ(extension->id(), tab_helper->GetAppId());
+  EXPECT_EQ(extension->id(), tab_helper->GetExtensionAppId());
   EXPECT_TRUE(tab_helper->is_app());
   service()->UnloadExtension(extension->id(),
                              UnloadedExtensionReason::TERMINATE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(ExtensionId(), tab_helper->GetAppId());
+  EXPECT_EQ(ExtensionId(), tab_helper->GetExtensionAppId());
 }
 
 }  // namespace extensions

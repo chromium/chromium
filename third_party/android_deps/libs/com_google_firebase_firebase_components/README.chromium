@@ -1,0 +1,13 @@
+Name: firebase-components
+Short Name: firebase-components
+URL: https://firebase.google.com
+Version: 16.1.0
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Provides dependency management for Firebase SDKs.
+
+Local Modifications:
+No modifications.

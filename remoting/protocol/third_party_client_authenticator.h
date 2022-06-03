@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/third_party_authenticator_base.h"
+#include "remoting/protocol/token_validator.h"
 
 namespace remoting {
 namespace protocol {
@@ -33,26 +34,30 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   ThirdPartyClientAuthenticator(
       const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
       const FetchThirdPartyTokenCallback& fetch_token_callback);
+
+  ThirdPartyClientAuthenticator(const ThirdPartyClientAuthenticator&) = delete;
+  ThirdPartyClientAuthenticator& operator=(
+      const ThirdPartyClientAuthenticator&) = delete;
+
   ~ThirdPartyClientAuthenticator() override;
 
  protected:
   // ThirdPartyAuthenticator implementation.
   void ProcessTokenMessage(const jingle_xmpp::XmlElement* message,
-                           const base::Closure& resume_callback) override;
+                           base::OnceClosure resume_callback) override;
   void AddTokenElements(jingle_xmpp::XmlElement* message) override;
 
  private:
-  void OnThirdPartyTokenFetched(const base::Closure& resume_callback,
-                                const std::string& third_party_token,
-                                const std::string& shared_secret);
+  void OnThirdPartyTokenFetched(
+      base::OnceClosure resume_callback,
+      const std::string& third_party_token,
+      const TokenValidator::ValidationResult& validation_result);
 
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
   FetchThirdPartyTokenCallback fetch_token_callback_;
   std::string token_;
 
   base::WeakPtrFactory<ThirdPartyClientAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyClientAuthenticator);
 };
 
 

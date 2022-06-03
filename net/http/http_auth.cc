@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -37,6 +37,7 @@ void HttpAuth::ChooseBestChallenge(
     HttpAuthHandlerFactory* http_auth_handler_factory,
     const HttpResponseHeaders& response_headers,
     const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key,
     Target target,
     const GURL& origin,
     const std::set<Scheme>& disabled_schemes,
@@ -54,7 +55,8 @@ void HttpAuth::ChooseBestChallenge(
   while (response_headers.EnumerateHeader(&iter, header_name, &cur_challenge)) {
     std::unique_ptr<HttpAuthHandler> cur;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
-        cur_challenge, target, ssl_info, origin, net_log, host_resolver, &cur);
+        cur_challenge, target, ssl_info, network_isolation_key, origin, net_log,
+        host_resolver, &cur);
     if (rv != OK) {
       VLOG(1) << "Unable to create AuthHandler. Status: "
               << ErrorToString(rv) << " Challenge: " << cur_challenge;

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GIN_PUBLIC_DEBUG_IMPL_H_
-#define GIN_PUBLIC_DEBUG_IMPL_H_
+#ifndef GIN_DEBUG_IMPL_H_
+#define GIN_DEBUG_IMPL_H_
 
 #include "gin/public/debug.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-callbacks.h"
 
 namespace gin {
 
@@ -17,4 +17,4 @@ class DebugImpl {
 
 }  // namespace gin
 
-#endif  // GIN_PUBLIC_DEBUG_IMPL_H_
+#endif  // GIN_DEBUG_IMPL_H_

@@ -4,7 +4,7 @@
 
 #include "content/common/android/gin_java_bridge_errors.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace content {
 

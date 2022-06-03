@@ -13,7 +13,7 @@ XRPose::XRPose(const TransformationMatrix& pose_model_matrix,
     : transform_(MakeGarbageCollected<XRRigidTransform>(pose_model_matrix)),
       emulated_position_(emulated_position) {}
 
-void XRPose::Trace(blink::Visitor* visitor) {
+void XRPose::Trace(Visitor* visitor) const {
   visitor->Trace(transform_);
   ScriptWrappable::Trace(visitor);
 }

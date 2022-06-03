@@ -6,31 +6,30 @@
 #define CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_LOAD_WAITER_H_
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
-
-class Browser;
 
 // Class used to run a message loop waiting for the TabRestoreService to finish
 // loading. Does nothing if the TabRestoreService was already loaded.
 class TabRestoreServiceLoadWaiter : public sessions::TabRestoreServiceObserver {
  public:
-  explicit TabRestoreServiceLoadWaiter(Browser* browser);
-
+  explicit TabRestoreServiceLoadWaiter(sessions::TabRestoreService* service);
   ~TabRestoreServiceLoadWaiter() override;
 
   void Wait();
 
  private:
-  // Overridden from TabRestoreServiceObserver:
+  // TabRestoreServiceObserver:
   void TabRestoreServiceDestroyed(
       sessions::TabRestoreService* service) override {}
   void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
 
-  sessions::TabRestoreService* const tab_restore_service_;
-  const bool do_wait_;
+  sessions::TabRestoreService* const service_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceLoadWaiter);
+  base::ScopedObservation<sessions::TabRestoreService,
+                          sessions::TabRestoreServiceObserver>
+      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_RESTORE_SERVICE_LOAD_WAITER_H_

@@ -4,12 +4,15 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/subresource_filter/jni_headers/TestRulesetPublisher_jni.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -50,8 +53,13 @@ void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting
   publisher.Reset(env, publisher_param);
   auto* ruleset_service =
       g_browser_process->subresource_filter_ruleset_service();
-  ruleset_service->SetRulesetPublishedCallbackForTesting(base::BindRepeating(
-      &OnRulesetPublished, base::Passed(&creator), ruleset_service, publisher));
+  ruleset_service->SetRulesetPublishedCallbackForTesting(base::BindOnce(
+      &OnRulesetPublished, std::move(creator), ruleset_service, publisher));
   ruleset_service->IndexAndStoreAndPublishRulesetIfNeeded(
       unindexed_ruleset_info);
+
+  // Set browser startup complete to start processing BEST_EFFORT task queues.
+  // This combined with disabling the delay reduces the time needed to publish
+  // the ruleset to 2-8 seconds on average.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 }

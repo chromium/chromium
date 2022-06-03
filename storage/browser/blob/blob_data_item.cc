@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,9 +23,10 @@ const base::FilePath::CharType kFutureFileName[] =
     FILE_PATH_LITERAL("_future_name_");
 }
 
-class MojoDataItem : public storage::BlobDataItem::DataHandle {
+class MojoDataItem : public BlobDataItem::DataHandle {
  public:
-  MojoDataItem(mojom::BlobDataItemPtr element) : item_(std::move(element)) {
+  explicit MojoDataItem(mojom::BlobDataItemPtr element)
+      : item_(std::move(element)) {
     reader_.Bind(std::move(item_->reader));
   }
 
@@ -50,17 +52,6 @@ class MojoDataItem : public storage::BlobDataItem::DataHandle {
     // TODO(enne): this is tricky to implement, as it's synchronous.
     // PrintTo should ideally be asynchronous.  See: http://crbug.com/809821
     *os << "<MojoDataItem>";
-  }
-
-  const char* BytesReadHistogramLabel() const override {
-    switch (item_->type) {
-      case mojom::BlobDataItemType::kUnknown:
-        return nullptr;
-      case mojom::BlobDataItemType::kCacheStorage:
-        return "DiskCache.CacheStorage";
-      case mojom::BlobDataItemType::kIndexedDB:
-        return "IndexedDB";
-    }
   }
 
  protected:
@@ -125,7 +116,7 @@ scoped_refptr<BlobDataItem> BlobDataItem::CreateFutureFile(uint64_t offset,
 
 // static
 scoped_refptr<BlobDataItem> BlobDataItem::CreateFileFilesystem(
-    const GURL& url,
+    const FileSystemURL& url,
     uint64_t offset,
     uint64_t length,
     base::Time expected_modification_time,
@@ -202,6 +193,7 @@ void BlobDataItem::ShrinkBytes(size_t new_length) {
   DCHECK_EQ(type_, Type::kBytes);
   length_ = new_length;
   bytes_.resize(length_);
+  bytes_.shrink_to_fit();
 }
 
 void BlobDataItem::PopulateFile(
@@ -260,7 +252,7 @@ void PrintTo(const BlobDataItem& x, ::std::ostream* os) {
           << ", expected_modification_time: " << x.expected_modification_time();
       break;
     case BlobDataItem::Type::kFileFilesystem:
-      *os << "kFileFilesystem, url: " << x.filesystem_url();
+      *os << "kFileFilesystem, url: " << x.filesystem_url().DebugString();
       break;
     case BlobDataItem::Type::kReadableDataHandle:
       *os << "kReadableDataHandle"

@@ -20,7 +20,7 @@
 
 #include <iosfwd>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "s2/_fpcontractoff.h"
 #include "s2/r1interval.h"
 #include "s2/r2.h"

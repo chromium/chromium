@@ -28,7 +28,7 @@
 [
     Exposed=Window
 ] interface StorageEvent : Event {
-    constructor(DOMString type, optional StorageEventInit eventInitDict);
+    constructor(DOMString type, optional StorageEventInit eventInitDict = {});
     readonly attribute DOMString? key;
     readonly attribute DOMString? oldValue;
     readonly attribute DOMString? newValue;

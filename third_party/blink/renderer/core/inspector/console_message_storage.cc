@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
 
@@ -48,14 +50,24 @@ const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
   return nullptr;
 }
 
+std::unique_ptr<TracedValue> MessageTracedValue(ConsoleMessage* message) {
+  auto value = std::make_unique<TracedValue>();
+  value->SetString("content", message->Message());
+  if (!message->Location()->Url().IsEmpty()) {
+    value->SetString("url", message->Location()->Url());
+  }
+  return value;
+}
+
 void TraceConsoleMessageEvent(ConsoleMessage* message) {
   // Change in this function requires adjustment of Catapult/Telemetry metric
   // tracing/tracing/metrics/console_error_metric.html.
   // See https://crbug.com/880432
   if (message->Level() == mojom::ConsoleMessageLevel::kError) {
-    TRACE_EVENT_INSTANT1("blink.console", "ConsoleMessage::Error",
+    TRACE_EVENT_INSTANT2("blink.console", "ConsoleMessage::Error",
                          TRACE_EVENT_SCOPE_THREAD, "source",
-                         MessageSourceToString(message->Source()));
+                         MessageSourceToString(message->Source()), "message",
+                         MessageTracedValue(message));
   }
 }
 }  // anonymous namespace
@@ -99,7 +111,7 @@ int ConsoleMessageStorage::ExpiredCount() const {
   return expired_count_;
 }
 
-void ConsoleMessageStorage::Trace(blink::Visitor* visitor) {
+void ConsoleMessageStorage::Trace(Visitor* visitor) const {
   visitor->Trace(messages_);
 }
 

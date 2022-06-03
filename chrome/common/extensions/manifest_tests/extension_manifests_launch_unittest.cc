@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -21,9 +22,7 @@ class AppLaunchManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
-  scoped_refptr<Extension> extension;
-
-  extension = LoadAndExpectSuccess("launch_tab.json");
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess("launch_tab.json");
   EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
@@ -106,8 +105,8 @@ TEST_F(AppLaunchManifestTest, AppLaunchURL) {
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 
-  scoped_refptr<Extension> extension;
-  extension = LoadAndExpectSuccess("launch_local_path.json");
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("launch_local_path.json");
   EXPECT_EQ(extension->url().spec() + "launch.html",
             AppLaunchInfo::GetFullLaunchURL(extension.get()).spec());
 

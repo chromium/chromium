@@ -13,25 +13,23 @@ namespace blink {
 TEST(FontStyleResolverTest, Simple) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  CSSParser::ParseValue(style, CSSPropertyID::kFont, "15px Ahem", true,
-                        SecureContextMode::kInsecureContext);
+  CSSParser::ParseValue(style, CSSPropertyID::kFont, "15px Ahem", true);
 
   FontDescription desc = FontStyleResolver::ComputeFont(*style, nullptr);
 
   EXPECT_EQ(desc.SpecifiedSize(), 15);
   EXPECT_EQ(desc.ComputedSize(), 15);
-  EXPECT_EQ(desc.Family().Family(), "Ahem");
+  EXPECT_EQ(desc.Family().FamilyName(), "Ahem");
 }
 
 TEST(FontStyleResolverTest, InvalidSize) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  CSSParser::ParseValue(style, CSSPropertyID::kFont, "-1px Ahem", true,
-                        SecureContextMode::kInsecureContext);
+  CSSParser::ParseValue(style, CSSPropertyID::kFont, "-1px Ahem", true);
 
   FontDescription desc = FontStyleResolver::ComputeFont(*style, nullptr);
 
-  EXPECT_EQ(desc.Family().Family(), nullptr);
+  EXPECT_EQ(desc.Family().FamilyName(), nullptr);
   EXPECT_EQ(desc.SpecifiedSize(), 0);
   EXPECT_EQ(desc.ComputedSize(), 0);
 }
@@ -39,12 +37,11 @@ TEST(FontStyleResolverTest, InvalidSize) {
 TEST(FontStyleResolverTest, InvalidWeight) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  CSSParser::ParseValue(style, CSSPropertyID::kFont, "wrong 1px Ahem", true,
-                        SecureContextMode::kInsecureContext);
+  CSSParser::ParseValue(style, CSSPropertyID::kFont, "wrong 1px Ahem", true);
 
   FontDescription desc = FontStyleResolver::ComputeFont(*style, nullptr);
 
-  EXPECT_EQ(desc.Family().Family(), nullptr);
+  EXPECT_EQ(desc.Family().FamilyName(), nullptr);
   EXPECT_EQ(desc.SpecifiedSize(), 0);
   EXPECT_EQ(desc.ComputedSize(), 0);
 }
@@ -53,12 +50,11 @@ TEST(FontStyleResolverTest, InvalidEverything) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   CSSParser::ParseValue(style, CSSPropertyID::kFont,
-                        "wrong wrong wrong 1px Ahem", true,
-                        SecureContextMode::kInsecureContext);
+                        "wrong wrong wrong 1px Ahem", true);
 
   FontDescription desc = FontStyleResolver::ComputeFont(*style, nullptr);
 
-  EXPECT_EQ(desc.Family().Family(), nullptr);
+  EXPECT_EQ(desc.Family().FamilyName(), nullptr);
   EXPECT_EQ(desc.SpecifiedSize(), 0);
   EXPECT_EQ(desc.ComputedSize(), 0);
 }
@@ -66,12 +62,11 @@ TEST(FontStyleResolverTest, InvalidEverything) {
 TEST(FontStyleResolverTest, RelativeSize) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  CSSParser::ParseValue(style, CSSPropertyID::kFont, "italic 2ex Ahem", true,
-                        SecureContextMode::kInsecureContext);
+  CSSParser::ParseValue(style, CSSPropertyID::kFont, "italic 2ex Ahem", true);
 
   FontDescription desc = FontStyleResolver::ComputeFont(*style, nullptr);
 
-  EXPECT_EQ(desc.Family().Family(), "Ahem");
+  EXPECT_EQ(desc.Family().FamilyName(), "Ahem");
   EXPECT_EQ(desc.SpecifiedSize(), 10);
   EXPECT_EQ(desc.ComputedSize(), 10);
 }

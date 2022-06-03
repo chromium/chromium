@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
-import android.support.test.filters.LargeTest;
+import android.os.Build;
+import android.view.WindowManager;
+
+import androidx.test.filters.LargeTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.webapps.WebDisplayMode;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
@@ -23,6 +27,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class WebappDisplayCutoutTest {
     @Rule
     public WebappDisplayCutoutTestRule mTestRule = new WebappDisplayCutoutTestRule();
@@ -32,14 +37,13 @@ public class WebappDisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @FlakyTest(message = "crbug.com/862728")
-    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = WebDisplayMode.UNDEFINED)
+    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.UNDEFINED)
     public void testViewportFitWebapp() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
         mTestRule.waitForLayoutInDisplayCutoutMode(
-                DisplayCutoutTestRule.LayoutParamsApi28.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
     /**
@@ -47,14 +51,14 @@ public class WebappDisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @FlakyTest(message = "crbug.com/862728")
-    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = WebDisplayMode.FULLSCREEN)
+    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.FULLSCREEN)
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1211064")
     public void testViewportFitWebapp_Fullscreen() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITH_CUTOUT);
         mTestRule.waitForLayoutInDisplayCutoutMode(
-                DisplayCutoutTestRule.LayoutParamsApi28.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
     }
 
     /**
@@ -63,14 +67,13 @@ public class WebappDisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @FlakyTest(message = "crbug.com/862728")
-    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = WebDisplayMode.MINIMAL_UI)
+    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.MINIMAL_UI)
     public void testViewportFitWebapp_MinimalUi() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
         mTestRule.waitForLayoutInDisplayCutoutMode(
-                DisplayCutoutTestRule.LayoutParamsApi28.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 
     /**
@@ -79,13 +82,12 @@ public class WebappDisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @FlakyTest(message = "crbug.com/862728")
-    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = WebDisplayMode.STANDALONE)
+    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
     public void testViewportFitWebapp_Standalone() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
         mTestRule.waitForLayoutInDisplayCutoutMode(
-                DisplayCutoutTestRule.LayoutParamsApi28.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
     }
 }

@@ -12,8 +12,6 @@ namespace blink {
 class DetachableUseCounter final
     : public GarbageCollected<DetachableUseCounter>,
       public UseCounter {
-  USING_GARBAGE_COLLECTED_MIXIN(DetachableUseCounter);
-
  public:
   // |use_counter| can be null, and in that case |this| is already detached.
   explicit DetachableUseCounter(UseCounter* use_counter)
@@ -31,7 +29,7 @@ class DetachableUseCounter final
       use_counter_->CountDeprecation(feature);
     }
   }
-  void Trace(Visitor* visitor) override { visitor->Trace(use_counter_); }
+  void Trace(Visitor* visitor) const override { visitor->Trace(use_counter_); }
 
   void Detach() { use_counter_ = nullptr; }
 

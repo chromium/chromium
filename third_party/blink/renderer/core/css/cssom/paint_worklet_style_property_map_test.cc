@@ -5,16 +5,16 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
 
 #include <memory>
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
-#include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -50,7 +50,7 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
   }
 
   void CheckUnregisteredProperty(base::WaitableEvent* waitable_event,
-                                 scoped_refptr<PaintWorkletInput> input) {
+                                 scoped_refptr<CSSPaintWorkletInput> input) {
     ASSERT_TRUE(!IsMainThread());
 
     PaintWorkletStylePropertyMap* map =
@@ -71,7 +71,7 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
   }
 
   void CheckCrossThreadData(base::WaitableEvent* waitable_event,
-                            scoped_refptr<PaintWorkletInput> input) {
+                            scoped_refptr<CSSPaintWorkletInput> input) {
     DCHECK(!IsMainThread());
 
     PaintWorkletStylePropertyMap* map =
@@ -98,9 +98,9 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
               "test");
     EXPECT_EQ(data.at("--gar")->ToCSSStyleValue()->GetType(),
               CSSStyleValue::StyleValueType::kUnsupportedColorType);
-    EXPECT_EQ(To<CSSUnsupportedColorValue>(data.at("--gar")->ToCSSStyleValue())
-                  ->Value(),
-              Color(255, 0, 0));
+    EXPECT_EQ(
+        To<CSSUnsupportedColor>(data.at("--gar")->ToCSSStyleValue())->Value(),
+        Color(255, 0, 0));
     EXPECT_EQ(data.at("display")->ToCSSStyleValue()->GetType(),
               CSSStyleValue::StyleValueType::kKeywordType);
     waitable_event->Signal();
@@ -115,7 +115,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
   Vector<CSSPropertyID> native_properties;
   Vector<AtomicString> custom_properties({"--x"});
 
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<div id='target' style='--x:50'></div>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -130,8 +130,8 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
 
   Vector<std::unique_ptr<CrossThreadStyleValue>> input_arguments;
   std::vector<cc::PaintWorkletInput::PropertyKey> property_keys;
-  scoped_refptr<PaintWorkletInput> input =
-      base::MakeRefCounted<PaintWorkletInput>(
+  scoped_refptr<CSSPaintWorkletInput> input =
+      base::MakeRefCounted<CSSPaintWorkletInput>(
           "test", FloatSize(100, 100), 1.0f, 1.0f, 1, std::move(data.value()),
           std::move(input_arguments), std::move(property_keys));
   ASSERT_TRUE(input);
@@ -162,7 +162,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
   css_test_helpers::RegisterProperty(GetDocument(), "--gar", "<color>",
                                      "rgb(0, 255, 0)", false);
 
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<div id='target' style='--foo:10px; --bar:15; --gar:rgb(255, 0, "
       "0)'></div>");
   UpdateAllLifecyclePhasesForTest();
@@ -178,8 +178,8 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
 
   EXPECT_TRUE(data.has_value());
   std::vector<cc::PaintWorkletInput::PropertyKey> property_keys;
-  scoped_refptr<PaintWorkletInput> input =
-      base::MakeRefCounted<PaintWorkletInput>(
+  scoped_refptr<CSSPaintWorkletInput> input =
+      base::MakeRefCounted<CSSPaintWorkletInput>(
           "test", FloatSize(100, 100), 1.0f, 1.0f, 1, std::move(data.value()),
           std::move(input_arguments), std::move(property_keys));
   DCHECK(input);
@@ -208,7 +208,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnsupportedCrossThreadData) {
   css_test_helpers::RegisterProperty(GetDocument(), "--loo", "test", "test",
                                      false);
 
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<div id='target' style='--foo:url(https://crbug.com/); "
       "--bar:15;'></div>");
   UpdateAllLifecyclePhasesForTest();

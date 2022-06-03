@@ -30,8 +30,7 @@ TEST_F(ElementTest, SupportsFocus) {
   Document& document = GetDocument();
   DCHECK(IsA<HTMLHtmlElement>(document.documentElement()));
   document.setDesignMode("on");
-  document.View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(document.documentElement()->SupportsFocus())
       << "<html> with designMode=on should be focusable.";
 }
@@ -66,19 +65,19 @@ TEST_F(ElementTest,
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
-  writer->SetInnerHTMLFromString(
-      "<div style='height: 100px; width: 700px;'></div>");
+  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
   // Requesting the bounding client rect should cause both layout and
   // compositing inputs clean to be run, and the sticky result shouldn't change.
   bounding_client_rect = sticky->getBoundingClientRect();
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
   EXPECT_EQ(0, bounding_client_rect->top());
   EXPECT_EQ(25, bounding_client_rect->left());
 }
@@ -111,33 +110,33 @@ TEST_F(ElementTest, OffsetTopAndLeftCorrectForStickyElementsAfterInsertion) {
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
-  writer->SetInnerHTMLFromString(
-      "<div style='height: 100px; width: 700px;'></div>");
+  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
   // Requesting either offset should cause both layout and compositing inputs
   // clean to be run, and the sticky result shouldn't change.
   EXPECT_EQ(scroller->scrollTop(), sticky->OffsetTop());
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
 
   // Dirty layout again, since |OffsetTop| will have cleaned it.
-  writer->SetInnerHTMLFromString(
-      "<div style='height: 100px; width: 700px;'></div>");
+  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
   // Again requesting an offset should cause layout and compositing to be clean.
   EXPECT_EQ(scroller->scrollLeft() + 25, sticky->OffsetLeft());
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
 }
 
 TEST_F(ElementTest, BoundsInViewportCorrectForStickyElementsAfterInsertion) {
@@ -164,26 +163,58 @@ TEST_F(ElementTest, BoundsInViewportCorrectForStickyElementsAfterInsertion) {
   // The sticky element should remain at (0, 25) relative to the viewport due to
   // the constraints.
   IntRect bounds_in_viewport = sticky->BoundsInViewport();
-  EXPECT_EQ(0, bounds_in_viewport.Y());
-  EXPECT_EQ(25, bounds_in_viewport.X());
+  EXPECT_EQ(0, bounds_in_viewport.y());
+  EXPECT_EQ(25, bounds_in_viewport.x());
 
   // Insert a new <div> above the sticky. This will dirty layout and invalidate
   // the sticky constraints.
-  writer->SetInnerHTMLFromString(
-      "<div style='height: 100px; width: 700px;'></div>");
+  writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             document.Lifecycle().GetState());
 
   // Requesting the bounds in viewport should cause both layout and compositing
   // inputs clean to be run, and the sticky result shouldn't change.
   bounds_in_viewport = sticky->BoundsInViewport();
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
-  EXPECT_EQ(0, bounds_in_viewport.Y());
-  EXPECT_EQ(25, bounds_in_viewport.X());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
+  EXPECT_EQ(0, bounds_in_viewport.y());
+  EXPECT_EQ(25, bounds_in_viewport.x());
+}
+
+TEST_F(ElementTest, OutlineRectsIncludesImgChildren) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <a id='link' href=''><img id='image' width='220' height='147'></a>
+  )HTML");
+
+  Element* a = document.getElementById("link");
+  Element* img = document.getElementById("image");
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(img);
+
+  // The a element should include the image in computing its bounds.
+  IntRect img_bounds_in_viewport = img->BoundsInViewport();
+  EXPECT_EQ(220, img_bounds_in_viewport.width());
+  EXPECT_EQ(147, img_bounds_in_viewport.height());
+  LOG(INFO) << "img_bounds_in_viewport: " << img_bounds_in_viewport;
+
+  Vector<IntRect> a_outline_rects = a->OutlineRectsInVisualViewport();
+  EXPECT_EQ(2u, a_outline_rects.size());
+
+  IntRect a_outline_rect;
+  for (auto& r : a_outline_rects) {
+    a_outline_rect.Union(r);
+    LOG(INFO) << "r: " << r;
+    LOG(INFO) << "a_outline_rect: " << a_outline_rect;
+  }
+
+  EXPECT_EQ(img_bounds_in_viewport.width(), a_outline_rect.width());
+  EXPECT_EQ(img_bounds_in_viewport.height(), a_outline_rect.height());
 }
 
 TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {
@@ -224,8 +255,7 @@ TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {
   // ensure that the sticky subtree update behavior survives forking.
   document.getElementById("child")->SetInlineStyleProperty(
       CSSPropertyID::kWebkitRubyPosition, CSSValueID::kAfter);
-  document.View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(DocumentLifecycle::kPaintClean, document.Lifecycle().GetState());
 
   EXPECT_EQ(RubyPosition::kBefore, outer_sticky->StyleRef().GetRubyPosition());
@@ -247,8 +277,7 @@ TEST_F(ElementTest, StickySubtreesAreTrackedCorrectly) {
   // fork it's StyleRareInheritedData to maintain the sticky subtree bit.
   document.getElementById("outerSticky")
       ->SetInlineStyleProperty(CSSPropertyID::kPosition, CSSValueID::kStatic);
-  document.View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
+  UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(DocumentLifecycle::kPaintClean, document.Lifecycle().GetState());
 
   EXPECT_FALSE(outer_sticky->StyleRef().SubtreeIsSticky());
@@ -483,16 +512,16 @@ class ScriptOnDestroyPlugin : public GarbageCollected<ScriptOnDestroyPlugin>,
   }
   WebPluginContainer* Container() const override { return container_; }
 
-  void UpdateAllLifecyclePhases(WebWidget::LifecycleUpdateReason) override {}
-  void Paint(cc::PaintCanvas*, const WebRect&) override {}
-  void UpdateGeometry(const WebRect&,
-                      const WebRect&,
-                      const WebRect&,
+  void UpdateAllLifecyclePhases(DocumentUpdateReason) override {}
+  void Paint(cc::PaintCanvas*, const gfx::Rect&) override {}
+  void UpdateGeometry(const gfx::Rect&,
+                      const gfx::Rect&,
+                      const gfx::Rect&,
                       bool) override {}
-  void UpdateFocus(bool, WebFocusType) override {}
+  void UpdateFocus(bool, mojom::blink::FocusType) override {}
   void UpdateVisibility(bool) override {}
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&,
-                                       WebCursorInfo&) override {
+                                       ui::Cursor*) override {
     return {};
   }
   void DidReceiveResponse(const WebURLResponse&) override {}
@@ -500,7 +529,7 @@ class ScriptOnDestroyPlugin : public GarbageCollected<ScriptOnDestroyPlugin>,
   void DidFinishLoading() override {}
   void DidFailLoading(const WebURLError&) override {}
 
-  void Trace(blink::Visitor*) {}
+  void Trace(Visitor*) const {}
 
   bool DestroyCalled() const { return destroy_called_; }
 
@@ -533,6 +562,14 @@ TEST_F(ElementTest, CreateAndAttachShadowRootSuspendsPluginDisposal) {
   auto* target = document.getElementById("target");
   target->CreateUserAgentShadowRoot();
   ASSERT_TRUE(plugin->DestroyCalled());
+}
+
+TEST_F(ElementTest, ParentComputedStyleForDocumentElement) {
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* document_element = GetDocument().documentElement();
+  ASSERT_TRUE(document_element);
+  EXPECT_FALSE(document_element->ParentComputedStyle());
 }
 
 }  // namespace blink

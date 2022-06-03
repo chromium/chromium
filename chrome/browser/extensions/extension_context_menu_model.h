@@ -8,12 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
-class ExtensionAction;
 class GURL;
 class Profile;
 
@@ -22,8 +20,9 @@ class WebContents;
 }
 
 namespace extensions {
-class Extension;
 class ContextMenuMatcher;
+class Extension;
+class ExtensionAction;
 
 // The context menu model for extension icons.
 class ExtensionContextMenuModel : public ui::SimpleMenuModel,
@@ -69,18 +68,18 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kMaxValue = kPageAccessLearnMore,
   };
 
-  // Type of action the extension icon represents.
-  enum ActionType { NO_ACTION = 0, BROWSER_ACTION, PAGE_ACTION };
-
-  // The current visibility of the button; this can affect the "hide"/"show"
+  // The current visibility of the extension; this affects the "pin" / "unpin"
   // strings in the menu.
+  // TODO(devlin): Rename this "PinState" when we finish removing the old UI
+  // bits.
   enum ButtonVisibility {
-    // The button is visible on the toolbar.
-    VISIBLE,
-    // The button is temporarily visible on the toolbar, as for showign a popup.
+    // The extension is pinned on the toolbar.
+    PINNED,
+    // The extension is temporarily visible on the toolbar, as for showing a
+    // popup.
     TRANSITIVELY_VISIBLE,
-    // The button is showed in the overflow menu.
-    OVERFLOWED
+    // The extension is not pinned (and is shown in the extensions menu).
+    UNPINNED,
   };
 
   // Delegate to handle showing an ExtensionAction popup.
@@ -104,6 +103,11 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                             ButtonVisibility visibility,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar);
+
+  ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
+  ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
+      delete;
+
   ~ExtensionContextMenuModel() override;
 
   // SimpleMenuModel::Delegate:
@@ -134,6 +138,10 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   void HandlePageAccessCommand(int command_id,
                                const Extension* extension) const;
 
+  // Logs a user action when an option is selected in the page access section of
+  // the context menu.
+  void LogPageAccessAction(int command_id) const;
+
   // Gets the extension we are displaying the menu for. Returns NULL if the
   // extension has been uninstalled and no longer exists.
   const Extension* GetExtension() const;
@@ -161,9 +169,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // The delegate which handles the 'inspect popup' menu command (or NULL).
   PopupDelegate* delegate_;
 
-  // The type of extension action to which this context menu is attached.
-  ActionType action_type_;
-
   // The visibility of the button at the time the menu opened.
   ButtonVisibility button_visibility_;
 
@@ -176,9 +181,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The action taken by the menu. Has a valid value when the menu is being
   // shown.
-  base::Optional<ContextMenuAction> action_taken_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuModel);
+  absl::optional<ContextMenuAction> action_taken_;
 };
 
 }  // namespace extensions

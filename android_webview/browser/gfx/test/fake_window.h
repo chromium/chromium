@@ -11,13 +11,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 
 namespace base {
-class Thread;
 class WaitableEvent;
 }
 
@@ -47,6 +46,10 @@ class WindowHooks {
 class FakeWindow {
  public:
   FakeWindow(BrowserViewRenderer* view, WindowHooks* hooks, gfx::Rect location);
+
+  FakeWindow(const FakeWindow&) = delete;
+  FakeWindow& operator=(const FakeWindow&) = delete;
+
   ~FakeWindow();
 
   void Detach();
@@ -88,7 +91,6 @@ class FakeWindow {
   base::SequenceChecker ui_checker_;
 
   // Render thread members.
-  std::unique_ptr<base::Thread> render_thread_;
   base::SequenceChecker rt_checker_;
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_loop_;
   scoped_refptr<gl::GLSurface> surface_;
@@ -96,8 +98,6 @@ class FakeWindow {
   bool context_current_;
 
   base::WeakPtrFactory<FakeWindow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindow);
 };
 
 class FakeFunctor {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "url/gurl.h"
@@ -19,8 +18,13 @@ class CredentialLeakDialogControllerImpl
  public:
   CredentialLeakDialogControllerImpl(
       PasswordsLeakDialogDelegate* delegate,
-      password_manager::CredentialLeakType leak_type,
-      const GURL& origin);
+      password_manager::CredentialLeakType leak_type);
+
+  CredentialLeakDialogControllerImpl(
+      const CredentialLeakDialogControllerImpl&) = delete;
+  CredentialLeakDialogControllerImpl& operator=(
+      const CredentialLeakDialogControllerImpl&) = delete;
+
   ~CredentialLeakDialogControllerImpl() override;
 
   // Pop up the credential leak dialog.
@@ -31,10 +35,10 @@ class CredentialLeakDialogControllerImpl
   void OnCancelDialog() override;
   void OnAcceptDialog() override;
   void OnCloseDialog() override;
-  base::string16 GetAcceptButtonLabel() const override;
-  base::string16 GetCancelButtonLabel() const override;
-  base::string16 GetDescription() const override;
-  base::string16 GetTitle() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetDescription() const override;
+  std::u16string GetTitle() const override;
   bool ShouldCheckPasswords() const override;
   bool ShouldShowCancelButton() const override;
 
@@ -45,9 +49,6 @@ class CredentialLeakDialogControllerImpl
   CredentialLeakPrompt* credential_leak_dialog_ = nullptr;
   PasswordsLeakDialogDelegate* delegate_;
   const password_manager::CredentialLeakType leak_type_;
-  const GURL origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialLeakDialogControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_

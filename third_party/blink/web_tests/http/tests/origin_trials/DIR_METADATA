@@ -1,0 +1,5 @@
+monorail {
+  component: "Internals>OriginTrials"
+}
+team_email: "experimentation-dev@chromium.org"
+

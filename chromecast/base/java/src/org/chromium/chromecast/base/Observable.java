@@ -34,12 +34,7 @@ public abstract class Observable<T> {
      * have occurred, but those events may occur in any order.
      */
     public final <U> Observable<Both<T, U>> and(Observable<U> other) {
-        Controller<Both<T, U>> controller = new Controller<>();
-        subscribe(t -> other.subscribe(u -> {
-            controller.set(Both.both(t, u));
-            return controller::reset;
-        }));
-        return controller;
+        return flatMap(t -> other.flatMap(u -> just(Both.both(t, u))));
     }
 
     /**
@@ -60,13 +55,33 @@ public abstract class Observable<T> {
     /**
      * Returns an Observable that applies the given Function to this Observable's activation values.
      */
-    public final <R> Observable<R> map(Function<? super T, ? extends R> transform) {
-        Controller<R> controller = new Controller<>();
-        subscribe((T value) -> {
-            controller.set(transform.apply(value));
-            return controller::reset;
-        });
-        return controller;
+    public final <R> Observable<R> map(Function<? super T, ? extends R> f) {
+        return flatMap(t -> just(f.apply(t)));
+    }
+
+    /**
+     * Returns an Observable that applies the given Function to this Observable's activation data,
+     * and notifies observers with the activation data of the Observable returned by the Function.
+     *
+     * If you have a function that returns an Observable, you can use this to avoid using map() to
+     * create an Observable of Observables.
+     *
+     * This is an extremely powerful operation! Observables are a monad where flatMap() is the
+     * "bind" operation that combines an Observable with a function that returns an Observable to
+     * create a new Observable.
+     *
+     * One use case could be using Observables as "promises" and using flatMap() with "async
+     * functions" that return Observables to create asynchronous programs:
+     *
+     *   Observable<Foo> getFooAsync();
+     *   Observable<Bar> getBarAsync(Foo foo);
+     *   Scope useBar(Bar bar);
+     *
+     *   getFooAsync().flatMap(foo -> getBarAsync(foo)).subscribe(bar -> useBar(bar));
+     */
+    public final <R> Observable<R> flatMap(
+            Function<? super T, ? extends Observable<? extends R>> f) {
+        return make(observer -> subscribe(t -> f.apply(t).subscribe(r -> observer.open(r))));
     }
 
     /**
@@ -74,14 +89,7 @@ public abstract class Observable<T> {
      * the given `predicate` returns true.
      */
     public final Observable<T> filter(Predicate<? super T> predicate) {
-        Controller<T> controller = new Controller<>();
-        subscribe((T value) -> {
-            if (predicate.test(value)) {
-                controller.set(value);
-            }
-            return controller::reset;
-        });
-        return controller;
+        return flatMap(t -> predicate.test(t) ? just(t) : empty());
     }
 
     /**
@@ -95,5 +103,35 @@ public abstract class Observable<T> {
             return () -> opposite.set(Unit.unit());
         });
         return opposite;
+    }
+
+    /**
+     * Allows creating an Observable with a functional interface.
+     */
+    public static <T> Observable<T> make(
+            Function<? super Observer<? super T>, ? extends Scope> impl) {
+        return new Observable<T>() {
+            @Override
+            public Subscription subscribe(Observer<? super T> observer) {
+                return impl.apply(observer)::close;
+            }
+        };
+    }
+
+    /**
+     * A degenerate Observable that has no data.
+     */
+    public static <T> Observable<T> empty() {
+        return make(observer -> Scopes.NO_OP);
+    }
+
+    /**
+     * Creates an Observable that notifies subscribers with a single immutable value.
+     *
+     * This is the "return" operation in the Observable monad.
+     */
+    public static <T> Observable<T> just(T value) {
+        if (value == null) return empty();
+        return make(observer -> observer.open(value));
     }
 }

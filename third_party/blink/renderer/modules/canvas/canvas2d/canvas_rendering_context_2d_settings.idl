@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md
-
 [PermissiveDictionaryConversion]
 dictionary CanvasRenderingContext2DSettings {
     boolean alpha = true;
-    [RuntimeEnabled=CanvasColorManagement] CanvasColorSpace colorSpace = "srgb";
-    [RuntimeEnabled=CanvasColorManagement] CanvasPixelFormat pixelFormat = "uint8";
-    [RuntimeEnabled=SurfaceEmbeddingFeatures] boolean desynchronized = false;
+    boolean desynchronized = false;
+    [RuntimeEnabled=CanvasColorManagement] PredefinedColorSpace colorSpace = "srgb";
+    [RuntimeEnabled=CanvasColorManagementV2] CanvasPixelFormat pixelFormat = "uint8";
+    [RuntimeEnabled=NewCanvas2DAPI] boolean willReadFrequently = false;
 };
 

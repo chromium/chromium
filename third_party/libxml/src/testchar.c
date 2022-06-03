@@ -120,7 +120,7 @@ static void testDocumentRangeByte2(xmlParserCtxtPtr ctxt, char *document,
 	}
 
 	/*
-	 * We should see no error in remaning cases
+	 * We should see no error in remaining cases
 	 */
 	else if ((lastError != 0) || (res == NULL)) {
 	    fprintf(stderr,
@@ -324,7 +324,7 @@ static void testCharRangeByte2(xmlParserCtxtPtr ctxt, char *data) {
 	    }
 
             /*
-	     * We should see no error in remaning cases
+	     * We should see no error in remaining cases
 	     */
 	    else if ((lastError != 0) || (len != 2)) {
 		fprintf(stderr,

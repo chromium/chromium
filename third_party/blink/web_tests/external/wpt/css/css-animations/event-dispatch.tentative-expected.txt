@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+PASS Idle -> Active
+PASS Idle -> After
+PASS Before -> Active
+PASS Before -> After
+PASS Active -> Idle, display: none
+PASS After -> Idle, display: none
+FAIL Active -> Idle, setting Animation.timeline = null assert_approx_equals: expected 0.1 +/- 0.0005 but got 0
+PASS Active -> Idle, calling Animation.cancel()
+PASS Active -> Before
+PASS Active -> After
+PASS After -> Before
+PASS After -> Active
+PASS Active -> Active (forwards)
+PASS Active -> Active (backwards)
+PASS Active -> Idle -> Active: animationstart is fired by restarting animation
+PASS Negative playbackRate sanity test(Before -> Active -> Before)
+PASS Redundant change, before -> active, then back
+PASS Redundant change, before -> after, then back
+PASS Redundant change, active -> before, then back
+PASS Redundant change, active -> after, then back
+PASS Redundant change, after -> before, then back
+PASS Redundant change, after -> active, then back
+PASS Call Animation.cancel after canceling animation.
+PASS Restart animation after canceling animation immediately.
+PASS Call Animation.cancel after restarting animation immediately.
+PASS Set timeline and play transition after clearing the timeline.
+PASS Set null target effect after canceling the animation.
+PASS Cancel the animation after clearing the target effect.
+Harness: the test ran to completion.
+

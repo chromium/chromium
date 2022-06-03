@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -129,6 +130,13 @@ enum CharacterWidth { kLikely8Bit, kForce8Bit, kForce16Bit };
 String AttemptStaticStringCreation(const LChar*, wtf_size_t);
 
 String AttemptStaticStringCreation(const UChar*, wtf_size_t, CharacterWidth);
+
+template <wtf_size_t inlineCapacity>
+inline static String AttemptStaticStringCreation(
+    const LiteralBuffer<UChar, inlineCapacity>& vector,
+    CharacterWidth width) {
+  return AttemptStaticStringCreation(vector.data(), vector.size(), width);
+}
 
 template <wtf_size_t inlineCapacity>
 inline static String AttemptStaticStringCreation(

@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/aligned_memory.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -22,12 +22,13 @@
 #include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -39,11 +40,12 @@ using ::testing::Return;
 
 using media::AudioParameters;
 
+using AnalogGainController =
+    webrtc::AudioProcessing::Config::GainController1::AnalogGainController;
+
 namespace blink {
 
 namespace {
-
-const int kAudioProcessingNumberOfChannel = 1;
 
 // The number of packers used for testing.
 const int kNumberOfPacketsForTest = 100;
@@ -74,7 +76,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
 
  protected:
   // Helper method to save duplicated code.
-  void ProcessDataAndVerifyFormat(
+  static void ProcessDataAndVerifyFormat(
       blink::MediaStreamAudioProcessor* audio_processor,
       int expected_output_sample_rate,
       int expected_output_channels,
@@ -84,7 +86,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     const int packet_size = params.frames_per_buffer() * 2 * params.channels();
     const size_t length = packet_size * kNumberOfPacketsForTest;
     std::unique_ptr<char[]> capture_data(new char[length]);
-    ReadDataFromSpeechFile(capture_data.get(), length);
+    ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
     const int16_t* data_ptr =
         reinterpret_cast<const int16_t*>(capture_data.get());
     std::unique_ptr<media::AudioBus> data_bus =
@@ -103,11 +105,10 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       data_bus_playout_to_use = data_bus_playout.get();
     }
 
-    const base::TimeDelta input_capture_delay =
-        base::TimeDelta::FromMilliseconds(20);
-    const base::TimeDelta output_buffer_duration =
-        expected_output_buffer_size * base::TimeDelta::FromSeconds(1) /
-        expected_output_sample_rate;
+    const base::TimeDelta input_capture_delay = base::Milliseconds(20);
+    const base::TimeDelta output_buffer_duration = expected_output_buffer_size *
+                                                   base::Seconds(1) /
+                                                   expected_output_sample_rate;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
       data_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
           data_ptr, data_bus->frames());
@@ -119,20 +120,24 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       const bool is_aec_enabled = ap && ap->GetConfig().echo_canceller.enabled;
       if (is_aec_enabled) {
         if (has_keyboard_mic) {
-          for (int i = 0; i < data_bus_playout->channels(); ++i) {
+          for (int channel = 0; channel < data_bus_playout->channels();
+               ++channel) {
             data_bus_playout->SetChannelData(
-                i, const_cast<float*>(data_bus->channel(i)));
+                channel, const_cast<float*>(data_bus->channel(channel)));
           }
         }
         audio_processor->OnPlayoutData(data_bus_playout_to_use,
-                                       params.sample_rate(), 10);
+                                       params.sample_rate(),
+                                       base::Milliseconds(10));
       }
 
       media::AudioBus* processed_data = nullptr;
       base::TimeDelta capture_delay;
-      int new_volume = 0;
+      absl::optional<double> new_volume;
+      int num_preferred_channels = -1;
       while (audio_processor->ProcessAndConsumeData(
-          255, false, &processed_data, &capture_delay, &new_volume)) {
+          1.0, num_preferred_channels, false, &processed_data, &capture_delay,
+          &new_volume)) {
         EXPECT_TRUE(processed_data);
         EXPECT_NEAR(input_capture_delay.InMillisecondsF(),
                     capture_delay.InMillisecondsF(),
@@ -146,6 +151,11 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
       }
 
       data_ptr += params.frames_per_buffer() * params.channels();
+
+      // Test different values of num_preferred_channels.
+      if (++num_preferred_channels > 5) {
+        num_preferred_channels = 0;
+      }
     }
   }
 
@@ -160,6 +170,8 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level, config.noise_suppression.kHigh);
     EXPECT_FALSE(config.voice_detection.enabled);
+    EXPECT_FALSE(config.gain_controller1.analog_gain_controller
+                     .clipping_predictor.enabled);
 #if defined(OS_ANDROID)
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
     EXPECT_EQ(config.gain_controller1.mode,
@@ -174,26 +186,33 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
   media::AudioParameters params_;
 };
 
+class MediaStreamAudioProcessorTestMultichannel
+    : public MediaStreamAudioProcessorTest,
+      public ::testing::WithParamInterface<bool> {};
+
 // Test crashing with ASAN on Android. crbug.com/468762
 #if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_WithAudioProcessing DISABLED_WithAudioProcessing
 #else
 #define MAYBE_WithAudioProcessing WithAudioProcessing
 #endif
-TEST_F(MediaStreamAudioProcessorTest, MAYBE_WithAudioProcessing) {
+TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
+  const bool use_multichannel_processing = GetParam();
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   blink::AudioProcessingProperties properties;
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, webrtc_audio_device.get()));
+          properties, use_multichannel_processing, webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
   audio_processor->OnCaptureFormatChanged(params_);
   VerifyDefaultComponents(audio_processor.get());
 
+  const int expected_output_channels =
+      use_multichannel_processing ? params_.channels() : 1;
   ProcessDataAndVerifyFormat(
       audio_processor.get(), blink::kAudioProcessingSampleRate,
-      kAudioProcessingNumberOfChannel, blink::kAudioProcessingSampleRate / 100);
+      expected_output_channels, blink::kAudioProcessingSampleRate / 100);
 
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
@@ -208,7 +227,8 @@ TEST_F(MediaStreamAudioProcessorTest, TurnOffDefaultConstraints) {
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, webrtc_audio_device.get()));
+          properties, /*use_capture_multi_channel_processing=*/true,
+          webrtc_audio_device));
   EXPECT_FALSE(audio_processor->has_audio_processing());
   audio_processor->OnCaptureFormatChanged(params_);
 
@@ -226,13 +246,14 @@ TEST_F(MediaStreamAudioProcessorTest, TurnOffDefaultConstraints) {
 #else
 #define MAYBE_TestAllSampleRates TestAllSampleRates
 #endif
-TEST_F(MediaStreamAudioProcessorTest, MAYBE_TestAllSampleRates) {
+TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
+  const bool use_multichannel_processing = GetParam();
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   blink::AudioProcessingProperties properties;
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, webrtc_audio_device.get()));
+          properties, use_multichannel_processing, webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
 
   static const int kSupportedSampleRates[] = {
@@ -261,8 +282,10 @@ TEST_F(MediaStreamAudioProcessorTest, MAYBE_TestAllSampleRates) {
 #else
         blink::kAudioProcessingSampleRate;
 #endif  // BUILDFLAG(IS_CHROMECAST)
+    const int expected_output_channels =
+        use_multichannel_processing ? params_.channels() : 1;
     ProcessDataAndVerifyFormat(audio_processor.get(), expected_sample_rate,
-                               kAudioProcessingNumberOfChannel,
+                               expected_output_channels,
                                expected_sample_rate / 100);
   }
 
@@ -284,7 +307,8 @@ TEST_F(MediaStreamAudioProcessorTest, StartStopAecDump) {
   {
     scoped_refptr<MediaStreamAudioProcessor> audio_processor(
         new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-            properties, webrtc_audio_device.get()));
+            properties, /*use_capture_multi_channel_processing=*/true,
+            webrtc_audio_device));
 
     // Start and stop recording.
     audio_processor->OnStartDump(base::File(
@@ -305,23 +329,13 @@ TEST_F(MediaStreamAudioProcessorTest, StartStopAecDump) {
   // The tempory file is deleted when temp_directory exists scope.
 }
 
-TEST_F(MediaStreamAudioProcessorTest, TestStereoAudio) {
+TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
+  const bool use_multichannel_processing = GetParam();
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
-  blink::AudioProcessingProperties properties;
-  // Turn off the audio processing and turn on the stereo channels mirroring.
-  properties.DisableDefaultProperties();
-  properties.goog_audio_mirroring = true;
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
-      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, webrtc_audio_device.get()));
-  EXPECT_FALSE(audio_processor->has_audio_processing());
   const media::AudioParameters source_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::CHANNEL_LAYOUT_STEREO, 48000, 480);
-  audio_processor->OnCaptureFormatChanged(source_params);
-  // There's no sense in continuing if this fails.
-  ASSERT_EQ(2, audio_processor->OutputFormat().channels());
 
   // Construct left and right channels, and assign different values to the
   // first data of the left channel and right channel.
@@ -339,28 +353,62 @@ TEST_F(MediaStreamAudioProcessorTest, TestStereoAudio) {
   float* left_channel_ptr = left_channel.get();
   left_channel_ptr[0] = 1.0f;
 
-  // Run the test consecutively to make sure the stereo channels are not
-  // flipped back and forth.
-  static const int kNumberOfPacketsForTest = 100;
-  const base::TimeDelta pushed_capture_delay =
-      base::TimeDelta::FromMilliseconds(42);
-  for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
-    audio_processor->PushCaptureData(*wrapper, pushed_capture_delay);
+  // Test without and with audio processing enabled.
+  for (int use_apm = 0; use_apm <= 1; ++use_apm) {
+    // No need to test stereo with APM if disabled.
+    if (use_apm && !use_multichannel_processing) {
+      continue;
+    }
 
+    blink::AudioProcessingProperties properties;
+    if (!use_apm) {
+      // Turn off the audio processing.
+      properties.DisableDefaultProperties();
+    }
+    // Turn on the stereo channels mirroring.
+    properties.goog_audio_mirroring = true;
+    scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+        new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+            properties, use_multichannel_processing, webrtc_audio_device));
+    EXPECT_EQ(audio_processor->has_audio_processing(), use_apm);
+    audio_processor->OnCaptureFormatChanged(source_params);
+    // There's no sense in continuing if this fails.
+    ASSERT_EQ(2, audio_processor->OutputFormat().channels());
+
+    // Run the test consecutively to make sure the stereo channels are not
+    // flipped back and forth.
+    static const int kNumberOfPacketsForTest = 100;
+    const base::TimeDelta pushed_capture_delay = base::Milliseconds(42);
     media::AudioBus* processed_data = nullptr;
-    base::TimeDelta capture_delay;
-    int new_volume = 0;
-    EXPECT_TRUE(audio_processor->ProcessAndConsumeData(
-        0, false, &processed_data, &capture_delay, &new_volume));
-    EXPECT_TRUE(processed_data);
-    EXPECT_EQ(processed_data->channel(0)[0], 0);
-    EXPECT_NE(processed_data->channel(1)[0], 0);
-    EXPECT_EQ(pushed_capture_delay, capture_delay);
-  }
 
-  // Stop |audio_processor| so that it removes itself from
-  // |webrtc_audio_device| and clears its pointer to it.
-  audio_processor->Stop();
+    for (int num_preferred_channels = 0; num_preferred_channels <= 5;
+         ++num_preferred_channels) {
+      for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
+        audio_processor->PushCaptureData(*wrapper, pushed_capture_delay);
+
+        base::TimeDelta capture_delay;
+        absl::optional<double> new_volume;
+        EXPECT_TRUE(audio_processor->ProcessAndConsumeData(
+            0.0, num_preferred_channels, false, &processed_data, &capture_delay,
+            &new_volume));
+        EXPECT_TRUE(processed_data);
+        EXPECT_EQ(pushed_capture_delay, capture_delay);
+      }
+      if (use_apm && num_preferred_channels <= 1) {
+        // Mono output. Output channels are averaged.
+        EXPECT_NE(processed_data->channel(0)[0], 0);
+        EXPECT_NE(processed_data->channel(1)[0], 0);
+      } else {
+        // Stereo output. Output channels are independent.
+        EXPECT_EQ(processed_data->channel(0)[0], 0);
+        EXPECT_NE(processed_data->channel(1)[0], 0);
+      }
+    }
+
+    // Stop |audio_processor| so that it removes itself from
+    // |webrtc_audio_device| and clears its pointer to it.
+    audio_processor->Stop();
+  }
 }
 
 // Disabled on android clang builds due to crbug.com/470499
@@ -369,13 +417,15 @@ TEST_F(MediaStreamAudioProcessorTest, TestStereoAudio) {
 #else
 #define MAYBE_TestWithKeyboardMicChannel TestWithKeyboardMicChannel
 #endif
-TEST_F(MediaStreamAudioProcessorTest, MAYBE_TestWithKeyboardMicChannel) {
+TEST_P(MediaStreamAudioProcessorTestMultichannel,
+       MAYBE_TestWithKeyboardMicChannel) {
+  const bool use_multichannel_processing = GetParam();
   scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
       new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
   blink::AudioProcessingProperties properties;
   scoped_refptr<MediaStreamAudioProcessor> audio_processor(
       new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-          properties, webrtc_audio_device.get()));
+          properties, use_multichannel_processing, webrtc_audio_device));
   EXPECT_TRUE(audio_processor->has_audio_processing());
 
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -383,13 +433,42 @@ TEST_F(MediaStreamAudioProcessorTest, MAYBE_TestWithKeyboardMicChannel) {
                                 48000, 480);
   audio_processor->OnCaptureFormatChanged(params);
 
+  const int expected_output_channels =
+      use_multichannel_processing ? params_.channels() : 1;
+
   ProcessDataAndVerifyFormat(
       audio_processor.get(), blink::kAudioProcessingSampleRate,
-      kAudioProcessingNumberOfChannel, blink::kAudioProcessingSampleRate / 100);
+      expected_output_channels, blink::kAudioProcessingSampleRate / 100);
 
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
   audio_processor->Stop();
 }
 
+// Ensure that discrete channel layouts do not crash with audio processing
+// enabled.
+TEST_F(MediaStreamAudioProcessorTest, DiscreteChannelLayout) {
+  blink::AudioProcessingProperties properties;
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, /*use_capture_multi_channel_processing=*/true,
+          webrtc_audio_device));
+  EXPECT_TRUE(audio_processor->has_audio_processing());
+
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::CHANNEL_LAYOUT_DISCRETE, 48000, 480);
+  // Test both 1 and 2 discrete channels.
+  for (int channels = 1; channels <= 2; ++channels) {
+    params.set_channels_for_discrete(channels);
+    audio_processor->OnCaptureFormatChanged(params);
+  }
+
+  audio_processor->Stop();
+}
+
+INSTANTIATE_TEST_CASE_P(MediaStreamAudioProcessorMultichannelAffectedTests,
+                        MediaStreamAudioProcessorTestMultichannel,
+                        ::testing::Values(false, true));
 }  // namespace blink

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   await TestRunner.NetworkAgent.setCacheDisabled(true);
@@ -18,7 +18,8 @@
   async function makeHAR() {
     var stream = new TestRunner.StringOutputStream(onSaved);
     var progress = new Common.Progress();
-    await Network.HARWriter.write(stream, NetworkTestRunner.networkRequests(), progress);
+    await NetworkTestRunner.writeHARLog(
+        stream, NetworkTestRunner.networkRequests(), progress);
     progress.done();
     stream.close();
   }

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_nss_types.h"
 
@@ -35,35 +36,39 @@ CRYPTO_EXPORT ScopedPK11Slot OpenSoftwareNSSDB(const base::FilePath& path,
 class CRYPTO_EXPORT AutoSECMODListReadLock {
  public:
   AutoSECMODListReadLock();
+
+  AutoSECMODListReadLock(const AutoSECMODListReadLock&) = delete;
+  AutoSECMODListReadLock& operator=(const AutoSECMODListReadLock&) = delete;
+
   ~AutoSECMODListReadLock();
 
  private:
   SECMODListLock* lock_;
-  DISALLOW_COPY_AND_ASSIGN(AutoSECMODListReadLock);
 };
 
-#if defined(OS_CHROMEOS)
-// Returns a reference to the system-wide TPM slot if it is loaded. If it is not
-// loaded and |callback| is non-null, the |callback| will be run once the slot
-// is loaded.
-CRYPTO_EXPORT ScopedPK11Slot GetSystemNSSKeySlot(
-    base::OnceCallback<void(ScopedPK11Slot)> callback) WARN_UNUSED_RESULT;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns path to the NSS database file in the provided profile
+// directory.
+CRYPTO_EXPORT base::FilePath GetSoftwareNSSDBPath(
+    const base::FilePath& profile_directory_path);
 
-// Sets the test system slot to |slot|, which means that |slot| will be exposed
-// through |GetSystemNSSKeySlot| and |IsTPMTokenReady| will return true.
-// |InitializeTPMTokenAndSystemSlot|, which triggers the TPM initialization,
-// does not have to be called if the test system slot is set.
-// This must must not be called consecutively with a |slot| != nullptr. If
-// |slot| is nullptr, the test system slot is unset.
-CRYPTO_EXPORT void SetSystemKeySlotForTesting(ScopedPK11Slot slot);
+// Returns a reference to the system-wide TPM slot (or nullptr if it will never
+// be loaded).
+CRYPTO_EXPORT void GetSystemNSSKeySlot(
+    base::OnceCallback<void(ScopedPK11Slot)> callback);
 
 // Injects the given |slot| as a system slot set by the future
 // |InitializeTPMTokenAndSystemSlot| call.
-// This must must not be called consecutively with a |slot| != nullptr. If
-// |slot| is nullptr and the system slot is already initialized to the
-// previously passed test value, the system slot is unset.
-CRYPTO_EXPORT void SetSystemKeySlotWithoutInitializingTPMForTesting(
-    ScopedPK11Slot slot);
+CRYPTO_EXPORT void PrepareSystemSlotForTesting(ScopedPK11Slot slot);
+
+// Attempt to unset the testing system slot.
+// Note: After this method is called, the system is in an undefined state; it is
+// NOT possible to call `PrepareSystemSlotForTesting()` and have it return to a
+// known-good state. The primary purpose is to attempt to release system
+// resources, such as file handles, to allow the cleanup of files on disk, but
+// because of the process-wide effect, it's not possible to unwind any/all
+// initialization that depended on this previously-configured system slot.
+CRYPTO_EXPORT void ResetSystemSlotForTesting();
 
 // Prepare per-user NSS slot mapping. It is safe to call this function multiple
 // times. Returns true if the user was added, or false if it already existed.
@@ -121,7 +126,7 @@ CRYPTO_EXPORT void CloseChromeOSUserForTesting(
 CRYPTO_EXPORT void SetPrivateSoftwareSlotForChromeOSUserForTesting(
     ScopedPK11Slot slot);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Loads the given module for this NSS session.
 SECMODModule* LoadNSSModule(const char* name,

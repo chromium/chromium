@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-onload = async function() {
+const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
   var getURL = chrome.extension.getURL;
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
 
@@ -199,7 +202,7 @@ onload = async function() {
     },
 
     // Navigates to a non-existent page (this test case must be last,
-    // otherwise the non-existant URL breaks tests that follow, since loading
+    // otherwise the non-existent URL breaks tests that follow, since loading
     // those test pages is seen as a non-extension -> extension URL
     // transition, which is forbidden by web_accessible_resources enforcement
     // in manifest version 2.)
@@ -226,4 +229,4 @@ onload = async function() {
       chrome.tabs.update(tab.id, { url: getURL('nonexistent.html') });
     },
   ]);
-};
+});

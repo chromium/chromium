@@ -1,0 +1,11 @@
+include_rules = [
+  "+base",
+  "+build",
+  "+components/prefs",
+  "+components/user_prefs",
+  "+components/variations",
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
+  "+url",
+]

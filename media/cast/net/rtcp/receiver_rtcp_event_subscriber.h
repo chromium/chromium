@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/raw_event_subscriber.h"
@@ -33,7 +32,7 @@ static const size_t kMaxEventsPerRTCP = 20;
 // - Internally, the map is capped at a maximum size configurable by the caller.
 //   The subscriber only keeps the most recent events (determined by RTP
 //   timestamp) up to the size limit.
-class ReceiverRtcpEventSubscriber : public RawEventSubscriber {
+class ReceiverRtcpEventSubscriber final : public RawEventSubscriber {
  public:
   typedef std::pair<RtpTimeTicks, RtcpEvent> RtcpEventPair;
   typedef std::vector<std::pair<RtpTimeTicks, RtcpEvent>> RtcpEvents;
@@ -46,6 +45,10 @@ class ReceiverRtcpEventSubscriber : public RawEventSubscriber {
   // events.
   ReceiverRtcpEventSubscriber(const size_t max_size_to_retain,
       EventMediaType type);
+
+  ReceiverRtcpEventSubscriber(const ReceiverRtcpEventSubscriber&) = delete;
+  ReceiverRtcpEventSubscriber& operator=(const ReceiverRtcpEventSubscriber&) =
+      delete;
 
   ~ReceiverRtcpEventSubscriber() final;
 
@@ -96,8 +99,6 @@ class ReceiverRtcpEventSubscriber : public RawEventSubscriber {
 
   // Ensures methods are only called on the main thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverRtcpEventSubscriber);
 };
 
 }  // namespace cast

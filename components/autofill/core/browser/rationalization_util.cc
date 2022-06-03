@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/rationalization_util.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 

@@ -8,7 +8,7 @@ function testShouldNotCrash()
     testRunner.dumpAsText();
 
     var host = document.createElement("blockquote");
-    var shadow = host.createShadowRoot();
+    var shadow = host.attachShadow({mode: 'open'});
     var children = shadow.childNodes;
     document.body.appendChild(host);
 

@@ -34,7 +34,7 @@ std::unique_ptr<net::test_server::HttpResponse>
 DelayedResponseProvider::GetEmbeddedTestServerResponse(const Request& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::TimeDelta::FromSecondsD(delay_)));
+          base::Seconds(delay_)));
   http_response->set_content_type("text/html");
   http_response->set_content("Slow Page");
   return std::move(http_response);

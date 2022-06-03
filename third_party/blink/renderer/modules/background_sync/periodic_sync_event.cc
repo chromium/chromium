@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/background_sync/periodic_sync_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_periodic_sync_event_init.h"
+
 namespace blink {
 
 PeriodicSyncEvent::PeriodicSyncEvent(const AtomicString& type,

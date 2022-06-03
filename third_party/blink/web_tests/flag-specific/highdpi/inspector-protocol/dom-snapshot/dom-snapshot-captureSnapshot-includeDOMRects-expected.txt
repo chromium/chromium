@@ -1,0 +1,133 @@
+Tests DOMSnapshot.getSnapshot reports offset, scroll, and client rects of each node.
+{
+    documents : [
+        [0] : {
+            baseURL : 0
+            contentHeight : 900
+            contentLanguage : -1
+            contentWidth : 1200
+            documentURL : 0
+            encodingName : 1
+            frameId : 2
+            layout : {
+                bounds : [
+                    [0] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 1200
+                        [3] : 900
+                    ]
+                    [1] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 1200
+                        [3] : 0
+                    ]
+                    [2] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 1200
+                        [3] : 0
+                    ]
+                    [3] : [
+                        [0] : 150
+                        [1] : 150
+                        [2] : 150
+                        [3] : 150
+                    ]
+                    [4] : [
+                        [0] : 150
+                        [1] : 150
+                        [2] : 144
+                        [3] : 24
+                    ]
+                ]
+                clientRects : [
+                    [0] : [
+                    ]
+                    [1] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 600
+                    ]
+                    [2] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 0
+                    ]
+                    [3] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 100
+                        [3] : 100
+                    ]
+                    [4] : [
+                    ]
+                ]
+                nodeIndex : <object>
+                offsetRects : [
+                    [0] : [
+                    ]
+                    [1] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 0
+                    ]
+                    [2] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 0
+                    ]
+                    [3] : [
+                        [0] : 100
+                        [1] : 100
+                        [2] : 100
+                        [3] : 100
+                    ]
+                    [4] : [
+                    ]
+                ]
+                scrollRects : [
+                    [0] : [
+                    ]
+                    [1] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 600
+                    ]
+                    [2] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 0
+                    ]
+                    [3] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 100
+                        [3] : 100
+                    ]
+                    [4] : [
+                    ]
+                ]
+                stackingContexts : <object>
+                styles : <object>
+                text : <object>
+            }
+            nodes : <object>
+            publicId : -1
+            scrollOffsetX : 0
+            scrollOffsetY : 0
+            systemId : -1
+            textBoxes : <object>
+            title : -1
+        }
+    ]
+    strings : <object>
+}
+

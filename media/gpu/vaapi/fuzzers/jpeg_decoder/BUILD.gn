@@ -1,0 +1,36 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("jpeg_decoder_fuzzer_input") {
+  sources = [ "jpeg_decoder_fuzzer_input.proto" ]
+}
+
+fuzzer_test("vaapi_jpeg_decoder_fuzzertest") {
+  sources = [ "jpeg_decoder_fuzzertest.cc" ]
+  deps = [
+    ":jpeg_decoder_fuzzer_input",
+    "//base",
+
+    # TODO(andrescj): we shouldn't need the next two dependencies, but
+    # //media/gpu/chromeos/BUILD.gn has some dependency issues manifested in a
+    # linker error when is_asan is true.
+    "//media/gpu:video_frame_mapper",
+    "//media/gpu/chromeos",
+    "//media/gpu/vaapi",
+    "//media/gpu/vaapi:common",
+    "//media/parsers",
+    "//third_party/libprotobuf-mutator",
+    "//ui/gfx/geometry",
+  ]
+
+  seed_corpus = "seed"
+
+  # This fuzzer is intended to be run manually and locally because it relies on
+  # having an actual VA-API driver on an actual device. ClusterFuzz does not
+  # currently support this use case.
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+}

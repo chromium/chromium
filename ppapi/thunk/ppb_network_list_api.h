@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "ppapi/c/ppb_network_list.h"
 #include "ppapi/thunk/ppapi_thunk_export.h"
 

@@ -35,12 +35,14 @@
 #include <memory>
 #include <utility>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_constraints.h"
-#include "third_party/blink/public/platform/web_media_stream_source.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/audio/audio_destination_consumer.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -48,6 +50,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class WebAudioDestinationConsumer;
 
 class PLATFORM_EXPORT MediaStreamSource final
     : public GarbageCollected<MediaStreamSource> {
@@ -58,6 +62,7 @@ class PLATFORM_EXPORT MediaStreamSource final
    public:
     virtual ~Observer() = default;
     virtual void SourceChangedState() = 0;
+    virtual void SourceChangedCaptureHandle(media::mojom::CaptureHandlePtr) = 0;
   };
 
   enum StreamType { kTypeAudio, kTypeVideo };
@@ -94,38 +99,75 @@ class PLATFORM_EXPORT MediaStreamSource final
     return platform_source_.get();
   }
   void SetPlatformSource(
-      std::unique_ptr<WebPlatformMediaStreamSource> platform_source) {
-    platform_source_ = std::move(platform_source);
-  }
+      std::unique_ptr<WebPlatformMediaStreamSource> platform_source);
 
   void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation_mode,
                                     bool auto_gain_control,
                                     bool noise_supression);
 
-  void GetSettings(WebMediaStreamTrack::Settings&);
+  void GetSettings(MediaStreamTrackPlatform::Settings&);
 
-  const WebMediaStreamSource::Capabilities& GetCapabilities() {
-    return capabilities_;
-  }
-  void SetCapabilities(const WebMediaStreamSource::Capabilities& capabilities) {
+  struct Capabilities {
+    // Vector is used to store an optional range for the below numeric
+    // fields. All of them should have 0 or 2 values representing min/max.
+    Vector<uint32_t> width;
+    Vector<uint32_t> height;
+    Vector<double> aspect_ratio;
+    Vector<double> frame_rate;
+    Vector<bool> echo_cancellation;
+    Vector<String> echo_cancellation_type;
+    Vector<bool> auto_gain_control;
+    Vector<bool> noise_suppression;
+    Vector<int32_t> sample_size;
+    Vector<int32_t> channel_count;
+    Vector<int32_t> sample_rate;
+    Vector<double> latency;
+
+    MediaStreamTrackPlatform::FacingMode facing_mode =
+        MediaStreamTrackPlatform::FacingMode::kNone;
+    String device_id;
+    String group_id;
+  };
+
+  const Capabilities& GetCapabilities() { return capabilities_; }
+  void SetCapabilities(const Capabilities& capabilities) {
     capabilities_ = capabilities;
   }
 
-  void SetAudioFormat(size_t number_of_channels, float sample_rate);
-  void ConsumeAudio(AudioBus*, size_t number_of_frames);
+  void SetAudioFormat(int number_of_channels, float sample_rate);
+  void ConsumeAudio(AudioBus*, int number_of_frames);
 
+  // Only used if this is a WebAudio source.
+  // The WebAudioDestinationConsumer is not owned, and has to be disposed of
+  // separately after calling removeAudioConsumer.
   bool RequiresAudioConsumer() const { return requires_consumer_; }
-  void AddAudioConsumer(AudioDestinationConsumer*);
-  bool RemoveAudioConsumer(AudioDestinationConsumer*);
-  const HashSet<AudioDestinationConsumer*>& AudioConsumers() {
-    return audio_consumers_;
-  }
+  void AddAudioConsumer(WebAudioDestinationConsumer*);
+  bool RemoveAudioConsumer(WebAudioDestinationConsumer*);
 
-  void Trace(blink::Visitor*);
+  void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
+
+  void Trace(Visitor*) const;
 
   void Dispose();
 
  private:
+  class PLATFORM_EXPORT ConsumerWrapper final
+      : public AudioDestinationConsumer {
+    USING_FAST_MALLOC(ConsumerWrapper);
+
+   public:
+    explicit ConsumerWrapper(WebAudioDestinationConsumer* consumer);
+
+    void SetFormat(int number_of_channels, float sample_rate) override;
+    void ConsumeAudio(AudioBus* bus, int number_of_frames) override;
+
+    // m_consumer is not owned by this class.
+    WebAudioDestinationConsumer* consumer_;
+    // bus_vector_ must only be used in ConsumeAudio. The only reason it's a
+    // member variable is to not have to reallocate it for each call.
+    Vector<const float*> bus_vector_;
+  };
+
   String id_;
   StreamType type_;
   String name_;
@@ -135,14 +177,14 @@ class PLATFORM_EXPORT MediaStreamSource final
   bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
   Mutex audio_consumers_lock_;
-  HashSet<AudioDestinationConsumer*> audio_consumers_
-      GUARDED_BY(audio_consumers_lock_);
+  HashMap<WebAudioDestinationConsumer*, std::unique_ptr<ConsumerWrapper>>
+      audio_consumers_ GUARDED_BY(audio_consumers_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
-  WebMediaConstraints constraints_;
-  WebMediaStreamSource::Capabilities capabilities_;
-  base::Optional<EchoCancellationMode> echo_cancellation_mode_;
-  base::Optional<bool> auto_gain_control_;
-  base::Optional<bool> noise_supression_;
+  MediaConstraints constraints_;
+  Capabilities capabilities_;
+  absl::optional<EchoCancellationMode> echo_cancellation_mode_;
+  absl::optional<bool> auto_gain_control_;
+  absl::optional<bool> noise_supression_;
 };
 
 typedef HeapVector<Member<MediaStreamSource>> MediaStreamSourceVector;

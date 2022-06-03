@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+
+var timezone = ["Asia/Taipei", "America/Chicago"];
+var i = 0;;
+
+test(function() {
+    assert_true('ontimezonechange' in window);
+}, "Test that timezonechange event handler API is present in window");
+
+test(function() {
+    var received = false;
+    window.ontimezonechange = function() {
+      received = true;
+    }
+
+    internals.setSystemTimeZone(timezone[i++ % timezone.length]);
+    assert_true(received);
+}, "Test that the timezonechange event fires on window.ontimezonechange");
+
+test(function() {
+    var received = false;
+    window.addEventListener('timezonechange', function() {
+        received = true;
+    });
+
+    internals.setSystemTimeZone(timezone[i++ % timezone.length]);
+    assert_true(received);
+}, "Test that the timezonechange event fires on window.addEventListener('timezonechange')");
+
+test(function() {
+    window.received = false; // We need a global variable here.
+    document.body.setAttribute('ontimezonechange', 'window.received = true;');
+
+    internals.setSystemTimeZone(timezone[i++ % timezone.length]);
+    assert_true(window.received);
+}, "Test that the timezonechange event fires on body ontimezonechange attribute");
+
+test(function() {
+    window.received = 0; // We need a global variable here.
+    var fromWindowHandler = false;
+    document.body.setAttribute('ontimezonechange', 'window.received++;');
+    window.ontimezonechange = function() {
+        received++;
+        fromWindowHandler = true;
+    }
+
+    internals.setSystemTimeZone(timezone[i++ % timezone.length]);
+    assert_equals(window.received, 1);
+    assert_true(fromWindowHandler);
+
+    window.received = 0;
+    fromWindowHandler = false;
+    window.ontimezonechange = function() {
+        received++;
+        fromWindowHandler = true;
+    }
+    document.body.setAttribute('ontimezonechange', 'window.received++;');
+
+    internals.setSystemTimeZone(timezone[i++ % timezone.length]);
+    assert_equals(window.received, 1);
+    assert_false(fromWindowHandler);
+}, "Test that the timezonechange event fires on body ontimezonechange attribute XOR window.ontimezonechange");
+
+test(function() {
+    window.addEventListener('timezonechange', function(e) {
+        assert_false(e.cancelable);
+        assert_false(e.bubbles);
+    });
+
+    internals.setSystemTimeZone(timezone[i++ % timezone.length]);
+}, "Test properties of the fired event.");
+
+</script>
+</body>
+</html>

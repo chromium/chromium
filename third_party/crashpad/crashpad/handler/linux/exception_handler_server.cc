@@ -93,23 +93,20 @@ PtraceScope GetPtraceScope() {
 }
 
 bool HaveCapSysPtrace() {
-  struct __user_cap_header_struct cap_header = {};
-  struct __user_cap_data_struct cap_data = {};
-
+  __user_cap_header_struct cap_header;
   cap_header.pid = getpid();
+  cap_header.version = _LINUX_CAPABILITY_VERSION_3;
 
+  __user_cap_data_struct cap_data[_LINUX_CAPABILITY_U32S_3];
   if (syscall(SYS_capget, &cap_header, &cap_data) != 0) {
     PLOG(ERROR) << "capget";
+    LOG_IF(ERROR, errno == EINVAL) << "cap_header.version " << std::hex
+                                   << cap_header.version;
     return false;
   }
 
-  if (cap_header.version != _LINUX_CAPABILITY_VERSION_3) {
-    LOG(ERROR) << "Unexpected capability version " << std::hex
-               << cap_header.version;
-    return false;
-  }
-
-  return (cap_data.effective & (1 << CAP_SYS_PTRACE)) != 0;
+  return (cap_data[CAP_TO_INDEX(CAP_SYS_PTRACE)].effective &
+          CAP_TO_MASK(CAP_SYS_PTRACE)) != 0;
 }
 
 bool SendMessageToClient(

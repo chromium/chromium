@@ -22,7 +22,7 @@ COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) extern const char kCountHistogramName[];
 // Creates a string describing media session metadata intended to be read out by
 // a screen reader.
 COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
-base::string16 GetAccessibleNameFromMetadata(
+std::u16string GetAccessibleNameFromMetadata(
     media_session::MediaMetadata session_metadata);
 
 // Returns actions that can be displayed as buttons in the media controller UI
@@ -49,9 +49,19 @@ COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
 media_session::mojom::MediaSessionAction GetPlayPauseIgnoredAction(
     media_session::mojom::MediaSessionAction current_action);
 
+// Returns the action on the enter/exit pip toggle button that should be
+// ignored when calculating the visible actions.
+COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
+media_session::mojom::MediaSessionAction GetPictureInPictureIgnoredAction(
+    media_session::mojom::MediaSessionAction current_action);
+
 // Records the concurrent number of media notifications displayed.
 COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
 void RecordConcurrentNotificationCount(size_t count);
+
+// Records the concurrent number of Cast media notifications displayed.
+COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
+void RecordConcurrentCastNotificationCount(size_t count);
 
 }  // namespace media_message_center
 

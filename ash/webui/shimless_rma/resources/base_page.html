@@ -1,0 +1,39 @@
+<style include="cr-shared-style shimless-rma-shared">
+  .page-wrapper {
+    padding: 50px 0 50px 0;
+    width:  100%;
+  }
+
+  :host([orientation=row]) .page-wrapper {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :host([orientation=column]) .page-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+
+  :host([orientation=row]) .header {
+  }
+  :host([orientation=row]) .body {
+  }
+
+  :host([orientation=column]) .header {
+    flex-grow: 1;
+  }
+
+  :host([orientation=column]) .body {
+    flex-basis: 500px;
+  }
+
+</style>
+<div class="page-wrapper">
+  <div class="header">
+    <slot name="header"></slot>
+  </div>
+  <div class="body">
+    <slot name="body"></slot>
+  </div>
+</div>

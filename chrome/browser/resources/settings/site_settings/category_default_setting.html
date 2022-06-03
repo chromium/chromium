@@ -1,38 +1,17 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="site_settings_behavior.html">
-<link rel="import" href="site_settings_prefs_browser_proxy.html">
-
-<dom-module id="category-default-setting">
-  <template>
     <style include="settings-shared">
       .indented {
         margin-inline-start: var(--cr-section-indent-width);
       }
     </style>
     <settings-toggle-button id="toggle"
-        class="first" pref="{{controlParams_}}"
+        pref="{{controlParams_}}"
         label="[[optionLabel_]]" sub-label="[[optionDescription_]]"
         disabled$="[[isToggleDisabled_(category)]]">
     </settings-toggle-button>
-    <template is="dom-if" if="[[showCookiesSubOption_(subOptionMode)]]">
-      <settings-toggle-button id="subOptionCookiesToggle"
-          pref="{{subControlParams_}}" label="[[subOptionLabel]]"
-          sub-label="[[subOptionDescription]]"
-          disabled$="[[!controlParams_.value]]">
-      </settings-toggle-button>
-    </template>
     <template is="dom-if" if="[[showPrefSubOption_(subOptionMode)]]">
       <settings-toggle-button id="subOptionPrefToggle"
-          class="continuation indented"
+          class="indented"
           hidden="[[!controlParams_.value]]" pref="{{subOptionPref}}"
           label="[[subOptionLabel]]" sub-label="[[subOptionDescription]]">
       </settings-toggle-button>
     </template>
-  </template>
-  <script src="category_default_setting.js"></script>
-</dom-module>

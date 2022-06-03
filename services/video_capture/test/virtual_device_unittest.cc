@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -139,14 +140,13 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithReceiver) {
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _))
       .Times(
           SharedMemoryVirtualDeviceMojoAdapter::max_buffer_pool_buffer_count());
-  EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _, _))
+  EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
       .Times(
           SharedMemoryVirtualDeviceMojoAdapter::max_buffer_pool_buffer_count());
   device_adapter_->Start(media::VideoCaptureParams(),
                          std::move(handler_remote));
   for (auto buffer_id : received_buffer_ids_) {
     media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New();
-    info->metadata = base::Value(base::Value::Type::DICTIONARY);
     device_adapter_->OnFrameReadyInBuffer(buffer_id, std::move(info));
   }
   wait_loop.RunUntilIdle();

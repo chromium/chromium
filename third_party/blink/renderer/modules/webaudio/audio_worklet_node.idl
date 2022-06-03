@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See https://webaudio.github.io/web-audio-api/#audioworkletnode
+// https://webaudio.github.io/web-audio-api/#audioworkletnode
 
 [
     Exposed=Window,
-    ActiveScriptWrappable,
-    MeasureAs=AudioWorkletNodeConstructor
+    ActiveScriptWrappable
 ] interface AudioWorkletNode : AudioNode {
-    [CallWith=ScriptState, RaisesException] constructor(BaseAudioContext context, DOMString name, optional AudioWorkletNodeOptions options);
+    [CallWith=ScriptState, RaisesException, MeasureAs=AudioWorkletNodeConstructor] constructor(BaseAudioContext context, DOMString name, optional AudioWorkletNodeOptions options = {});
     readonly attribute AudioParamMap parameters;
     readonly attribute MessagePort port;
     attribute EventHandler onprocessorerror;

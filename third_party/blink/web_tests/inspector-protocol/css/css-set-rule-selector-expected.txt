@@ -122,7 +122,7 @@ Running test: testEditSubSelector
 Expected protocol error: NotFoundError Source range didn't match existing source range
 
 Running test: testInvalidParameters
-Expected protocol error: Invalid parameters (range.startLine: integer value expected)
+Expected protocol error: Invalid parameters (Failed to deserialize params.range.startLine - BINDINGS: int32 value expected <somewhere>)
 
 Running test: testNegativeRangeParameters
 Expected protocol error: range.startLine must be a non-negative integer

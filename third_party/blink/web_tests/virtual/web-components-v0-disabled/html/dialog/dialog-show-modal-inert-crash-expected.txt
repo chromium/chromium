@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Dialog.showModal() called when we have a dirty shadow distribution should not crash. host.createShadowRoot is not a function
-Harness: the test ran to completion.
-

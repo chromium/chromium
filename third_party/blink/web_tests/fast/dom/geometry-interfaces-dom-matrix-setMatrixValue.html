@@ -233,59 +233,59 @@ test(() => {
   var actualMatrix = new DOMMatrix([1, 2, 3, 4, 5, 6]);
   var expectedMatrix = new DOMMatrix([1, 2, 3, 4, 5, 6]);
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("initial");
   }, "CSS-wide keywords are disallowed");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("notExistFunction()");
   }, "can't parse not exist function");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateY(50%)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(1.2em)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10ex)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10ch)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10rem)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10vw)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10vh)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10vmin)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(10vmax)");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(calc(10px + 1em))");
   }, "using relative units should throw a SyntaxError");
 
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(calc(10px + 1%))");
   }, "using relative units should throw a SyntaxError");
 
-    assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     actualMatrix.setMatrixValue("translateX(calc(10vw + 1%))");
   }, "using relative units should throw a SyntaxError");
 

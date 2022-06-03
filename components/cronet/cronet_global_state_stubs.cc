@@ -6,10 +6,12 @@
 
 #include "base/at_exit.h"
 #include "base/feature_list.h"
+#include "base/macros.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
 
 // This file provides minimal "stub" implementations of the Cronet global-state
 // functions for the native library build, sufficient to have cronet_tests and
@@ -34,7 +36,7 @@ scoped_refptr<base::SingleThreadTaskRunner> InitializeAndCreateTaskRunner() {
   // ThreadPoolInstance themselves.
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("cronet");
 
-  return base::CreateSingleThreadTaskRunner({base::ThreadPool()});
+  return base::ThreadPool::CreateSingleThreadTaskRunner({});
 }
 
 base::SingleThreadTaskRunner* InitTaskRunner() {
@@ -60,15 +62,15 @@ void PostTaskToInitThread(const base::Location& posted_from,
 
 std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
-  return net::ProxyResolutionService::CreateSystemProxyConfigService(
+  return net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
       io_task_runner);
 }
 
 std::unique_ptr<net::ProxyResolutionService> CreateProxyResolutionService(
     std::unique_ptr<net::ProxyConfigService> proxy_config_service,
     net::NetLog* net_log) {
-  return net::ProxyResolutionService::CreateUsingSystemProxyResolver(
-      std::move(proxy_config_service), net_log);
+  return net::ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
+      std::move(proxy_config_service), net_log, /*quick_check_enabled=*/true);
 }
 
 std::string CreateDefaultUserAgent(const std::string& partial_user_agent) {

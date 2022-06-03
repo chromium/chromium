@@ -19,8 +19,8 @@ InterpolationValue SVGInterpolationType::MaybeConvertSingle(
   if (keyframe.IsNeutral())
     return MaybeConvertNeutral(underlying, conversion_checkers);
 
-  SVGPropertyBase* svg_value =
-      ToSVGInterpolationEnvironment(environment)
+  auto* svg_value =
+      To<SVGInterpolationEnvironment>(environment)
           .SvgBaseValue()
           .CloneForAnimation(To<SVGPropertySpecificKeyframe>(keyframe).Value());
   return MaybeConvertSVGValue(*svg_value);
@@ -29,14 +29,14 @@ InterpolationValue SVGInterpolationType::MaybeConvertSingle(
 InterpolationValue SVGInterpolationType::MaybeConvertUnderlyingValue(
     const InterpolationEnvironment& environment) const {
   return MaybeConvertSVGValue(
-      ToSVGInterpolationEnvironment(environment).SvgBaseValue());
+      To<SVGInterpolationEnvironment>(environment).SvgBaseValue());
 }
 
 void SVGInterpolationType::Apply(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     InterpolationEnvironment& environment) const {
-  ToSVGInterpolationEnvironment(environment)
+  To<SVGInterpolationEnvironment>(environment)
       .SvgElement()
       .SetWebAnimatedAttribute(
           Attribute(),

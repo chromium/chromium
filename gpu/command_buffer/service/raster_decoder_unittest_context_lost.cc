@@ -34,13 +34,13 @@ class RasterDecoderOOMTest : public RasterDecoderManualInitTest {
     if (context_->HasRobustness()) {
       EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
           .WillOnce(Return(reset_status));
+      EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_CONTEXT_LOST_KHR));
+    } else {
+      EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_NO_ERROR));
     }
 
-    // glGetError merges driver error state with decoder error state.  Return
-    // GL_NO_ERROR from mock driver and GL_OUT_OF_MEMORY from decoder.
-    EXPECT_CALL(*gl_, GetError())
-        .WillOnce(Return(GL_NO_ERROR))
-        .RetiresOnSaturation();
+    // RasterDecoder::HandleGetError merges driver error state with decoder
+    // error state.  Return GL_OUT_OF_MEMORY from decoder.
     GetDecoder()->SetOOMErrorForTest();
 
     cmds::GetError cmd;
@@ -112,9 +112,9 @@ class RasterDecoderLostContextTest : public RasterDecoderManualInitTest {
 
   void DoGetErrorWithContextLost(GLenum reset_status) {
     DCHECK(context_->HasExtension("GL_KHR_robustness"));
-    EXPECT_CALL(*gl_, GetError())
-        .WillOnce(Return(GL_CONTEXT_LOST_KHR))
-        .RetiresOnSaturation();
+    // Once context loss has occurred, driver will always return
+    // GL_CONTEXT_LOST_KHR.
+    EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_CONTEXT_LOST_KHR));
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
         .WillOnce(Return(reset_status));
     cmds::GetError cmd;
@@ -136,11 +136,27 @@ class RasterDecoderLostContextTest : public RasterDecoderManualInitTest {
 
 TEST_P(RasterDecoderLostContextTest, LostFromMakeCurrent) {
   Init(/*has_robustness=*/false);
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   EXPECT_FALSE(decoder_->WasContextLost());
   decoder_->MakeCurrent();
   EXPECT_TRUE(decoder_->WasContextLost());
   EXPECT_EQ(error::kMakeCurrentFailed, GetContextLostReason());
+
+  // We didn't process commands, so we need to clear the decoder error,
+  // so that we can shut down cleanly.
+  ClearCurrentDecoderError();
+}
+
+TEST_P(RasterDecoderLostContextTest, LostFromDriverOOM) {
+  Init(/*has_robustness=*/false);
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*gl_, GetError()).WillOnce(Return(GL_OUT_OF_MEMORY));
+  EXPECT_FALSE(decoder_->WasContextLost());
+  decoder_->MakeCurrent();
+  EXPECT_TRUE(decoder_->WasContextLost());
+  EXPECT_EQ(error::kOutOfMemory, GetContextLostReason());
 
   // We didn't process commands, so we need to clear the decoder error,
   // so that we can shut down cleanly.
@@ -152,7 +168,8 @@ TEST_P(RasterDecoderLostContextTest, LostFromMakeCurrentWithRobustness) {
   // If we can't make the context current, we cannot query the robustness
   // extension.
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB()).Times(0);
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   decoder_->MakeCurrent();
   EXPECT_TRUE(decoder_->WasContextLost());
   EXPECT_FALSE(decoder_->WasContextLostByRobustnessExtension());
@@ -202,7 +219,8 @@ TEST_P(RasterDecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
   EXPECT_CALL(*gl_, DeleteSync(kGlSync)).Times(0).RetiresOnSaturation();
 
   // Force context lost for MakeCurrent().
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
 
   decoder_->MakeCurrent();
   EXPECT_TRUE(decoder_->WasContextLost());
@@ -214,7 +232,9 @@ TEST_P(RasterDecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
 TEST_P(RasterDecoderLostContextTest, LostFromResetAfterMakeCurrent) {
   Init(/*has_robustness=*/true);
   InSequence seq;
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*gl_, GetError()).WillOnce(Return(GL_CONTEXT_LOST_KHR));
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
       .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_KHR));
   decoder_->MakeCurrent();

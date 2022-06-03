@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 
-#include "chrome/browser/ssl/tls_deprecation_config.h"
-#include "chrome/browser/ssl/tls_deprecation_config.pb.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_config.h"
@@ -14,19 +12,6 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "url/gurl.h"
-
-void InitializeEmptyLegacyTLSConfig() {
-  auto config =
-      std::make_unique<chrome_browser_ssl::LegacyTLSExperimentConfig>();
-  SetRemoteTLSDeprecationConfigProto(std::move(config));
-}
-
-void InitializeLegacyTLSConfigWithControl() {
-  auto config =
-      std::make_unique<chrome_browser_ssl::LegacyTLSExperimentConfig>();
-  config->add_control_site_hashes(kLegacyTlsControlUrlHash);
-  SetRemoteTLSDeprecationConfigProto(std::move(config));
-}
 
 std::unique_ptr<content::NavigationSimulator> CreateTLSNavigation(
     const GURL& url,

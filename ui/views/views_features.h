@@ -13,12 +13,9 @@ namespace views {
 namespace features {
 
 // Please keep alphabetized.
-#if defined(OS_WIN)
-VIEWS_EXPORT extern const base::Feature kEnableAuraTooltipsOnWindows;
-#endif  // OS_WIN
-
-VIEWS_EXPORT extern const base::Feature kEnableMDRoundedCornersOnDialogs;
+VIEWS_EXPORT extern const base::Feature kEnablePlatformHighContrastInkDrop;
 VIEWS_EXPORT extern const base::Feature kEnableViewPaintOptimization;
+VIEWS_EXPORT extern const base::Feature kInheritNativeThemeFromParentWidget;
 
 }  // namespace features
 }  // namespace views

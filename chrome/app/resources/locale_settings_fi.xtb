@@ -47,7 +47,6 @@
 <translation id="IDS_STATIC_ENCODING_LIST">windows-1252,ISO-8859-15</translation>
 <translation id="IDS_BOOKMARK_MANAGER_DIALOG_WIDTH_CHARS">150</translation>
 <translation id="IDS_BOOKMARK_MANAGER_DIALOG_HEIGHT_LINES">40</translation>
-<translation id="IDS_DOWNLOAD_BIG_PROGRESS_SIZE">52</translation>
 <translation id="IDS_SELECT_PROFILE_DIALOG_WIDTH_CHARS">60</translation>
 <translation id="IDS_SELECT_PROFILE_DIALOG_HEIGHT_LINES">5</translation>
 <translation id="IDS_NEW_PROFILE_DIALOG_WIDTH_CHARS">60</translation>
@@ -60,6 +59,4 @@
 <translation id="IDS_DOWNLOAD_IN_PROGRESS_WIDTH_CHARS">67</translation>
 <translation id="IDS_DOWNLOAD_IN_PROGRESS_MINIMUM_HEIGHT_LINES">4</translation>
 <translation id="IDS_CONTENTS_SETTINGS_DIALOG_LISTBOX_WIDTH_CHARS">24</translation>
-<translation id="IDS_HELP_APP_DIALOG_WIDTH_PIXELS">720</translation>
-<translation id="IDS_HELP_APP_DIALOG_HEIGHT_PIXELS">405</translation>
 </translationbundle>

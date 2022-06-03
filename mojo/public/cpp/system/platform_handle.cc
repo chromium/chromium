@@ -4,32 +4,30 @@
 
 #include "mojo/public/cpp/system/platform_handle.h"
 
+#include "base/check_op.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-#include <mach/mach.h>
-#include "base/mac/mach_logging.h"
-#endif
 
 namespace mojo {
 
 namespace {
 
-uint64_t PlatformHandleValueFromPlatformFile(base::PlatformFile file) {
+uint64_t ReleasePlatformHandleValueFromPlatformFile(
+    base::ScopedPlatformFile file) {
 #if defined(OS_WIN)
-  return reinterpret_cast<uint64_t>(file);
+  return reinterpret_cast<uint64_t>(file.Take());
 #else
-  return static_cast<uint64_t>(file);
+  return static_cast<uint64_t>(file.release());
 #endif
 }
 
-base::PlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
+base::ScopedPlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
 #if defined(OS_WIN)
-  return reinterpret_cast<base::PlatformFile>(value);
+  return base::ScopedPlatformFile(reinterpret_cast<base::PlatformFile>(value));
 #else
-  return static_cast<base::PlatformFile>(value);
+  return base::ScopedPlatformFile(static_cast<base::PlatformFile>(value));
 #endif
 }
 
@@ -67,7 +65,7 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
 #elif defined(OS_FUCHSIA)
   platform_handles[0].type = MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE;
   platform_handles[0].value = static_cast<uint64_t>(handle.release());
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   platform_handles[0].type = MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT;
   platform_handles[0].value = static_cast<uint64_t>(handle.release());
 #elif defined(OS_ANDROID)
@@ -129,7 +127,7 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
   if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE)
     return base::subtle::PlatformSharedMemoryRegion();
   region_handle.reset(static_cast<zx_handle_t>(platform_handles[0].value));
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   if (num_platform_handles != 1)
     return base::subtle::PlatformSharedMemoryRegion();
   if (platform_handles[0].type != MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT)
@@ -201,12 +199,12 @@ PlatformHandle UnwrapPlatformHandle(ScopedHandle handle) {
   return PlatformHandle::FromMojoPlatformHandle(&platform_handle);
 }
 
-// Wraps a PlatformFile as a Mojo handle. Takes ownership of the file object.
-ScopedHandle WrapPlatformFile(base::PlatformFile platform_file) {
+ScopedHandle WrapPlatformFile(base::ScopedPlatformFile platform_file) {
   MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(MojoPlatformHandle);
   platform_handle.type = kPlatformFileHandleType;
-  platform_handle.value = PlatformHandleValueFromPlatformFile(platform_file);
+  platform_handle.value =
+      ReleasePlatformHandleValueFromPlatformFile(std::move(platform_file));
 
   MojoHandle mojo_handle;
   MojoResult result =
@@ -216,7 +214,8 @@ ScopedHandle WrapPlatformFile(base::PlatformFile platform_file) {
   return ScopedHandle(Handle(mojo_handle));
 }
 
-MojoResult UnwrapPlatformFile(ScopedHandle handle, base::PlatformFile* file) {
+MojoResult UnwrapPlatformFile(ScopedHandle handle,
+                              base::ScopedPlatformFile* file) {
   MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(MojoPlatformHandle);
   MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),
@@ -225,7 +224,7 @@ MojoResult UnwrapPlatformFile(ScopedHandle handle, base::PlatformFile* file) {
     return result;
 
   if (platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_INVALID) {
-    *file = base::kInvalidPlatformFile;
+    *file = base::ScopedPlatformFile();
   } else {
     CHECK_EQ(platform_handle.type, kPlatformFileHandleType);
     *file = PlatformFileFromPlatformHandleValue(platform_handle.value);
@@ -272,42 +271,5 @@ base::WritableSharedMemoryRegion UnwrapWritableSharedMemoryRegion(
   return base::WritableSharedMemoryRegion::Deserialize(
       UnwrapPlatformSharedMemoryRegion(std::move(handle)));
 }
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-ScopedHandle WrapMachPort(mach_port_t port) {
-  kern_return_t kr =
-      mach_port_mod_refs(mach_task_self(), port, MACH_PORT_RIGHT_SEND, 1);
-  MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
-      << "MachPortAttachmentMac mach_port_mod_refs";
-  if (kr != KERN_SUCCESS)
-    return ScopedHandle();
-
-  MojoPlatformHandle platform_handle;
-  platform_handle.struct_size = sizeof(MojoPlatformHandle);
-  platform_handle.type = MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT;
-  platform_handle.value = static_cast<uint64_t>(port);
-
-  MojoHandle mojo_handle;
-  MojoResult result =
-      MojoWrapPlatformHandle(&platform_handle, nullptr, &mojo_handle);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-
-  return ScopedHandle(Handle(mojo_handle));
-}
-
-MojoResult UnwrapMachPort(ScopedHandle handle, mach_port_t* port) {
-  MojoPlatformHandle platform_handle;
-  platform_handle.struct_size = sizeof(MojoPlatformHandle);
-  MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),
-                                               nullptr, &platform_handle);
-  if (result != MOJO_RESULT_OK)
-    return result;
-
-  CHECK(platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT ||
-        platform_handle.type == MOJO_PLATFORM_HANDLE_TYPE_INVALID);
-  *port = static_cast<mach_port_t>(platform_handle.value);
-  return MOJO_RESULT_OK;
-}
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
 
 }  // namespace mojo

@@ -14,19 +14,23 @@
 
 #include "absl/random/uniform_real_distribution.h"
 
+#include <cfloat>
 #include <cmath>
 #include <cstdint>
 #include <iterator>
 #include <random>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/numeric/internal/representation.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
+#include "absl/random/internal/pcg_engine.h"
 #include "absl/random/internal/sequence_urbg.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_cat.h"
@@ -54,10 +58,27 @@ namespace {
 template <typename RealType>
 class UniformRealDistributionTest : public ::testing::Test {};
 
-using RealTypes = ::testing::Types<float, double, long double>;
+// double-double arithmetic is not supported well by either GCC or Clang; see
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99048,
+// https://bugs.llvm.org/show_bug.cgi?id=49131, and
+// https://bugs.llvm.org/show_bug.cgi?id=49132. Don't bother running these tests
+// with double doubles until compiler support is better.
+using RealTypes =
+    std::conditional<absl::numeric_internal::IsDoubleDouble(),
+                     ::testing::Types<float, double>,
+                     ::testing::Types<float, double, long double>>::type;
+
 TYPED_TEST_SUITE(UniformRealDistributionTest, RealTypes);
 
 TYPED_TEST(UniformRealDistributionTest, ParamSerializeTest) {
+#if (defined(__i386__) || defined(_M_IX86)) && FLT_EVAL_METHOD != 0
+  // We're using an x87-compatible FPU, and intermediate operations are
+  // performed with 80-bit floats. This produces slightly different results from
+  // what we expect below.
+  GTEST_SKIP()
+      << "Skipping the test because we detected x87 floating-point semantics";
+#endif
+
   using param_type =
       typename absl::uniform_real_distribution<TypeParam>::param_type;
 
@@ -156,6 +177,10 @@ TYPED_TEST(UniformRealDistributionTest, ParamSerializeTest) {
   }
 }
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4756)  // Constant arithmetic overflow.
+#endif
 TYPED_TEST(UniformRealDistributionTest, ViolatesPreconditionsDeathTest) {
 #if GTEST_HAS_DEATH_TEST
   // Hi < Lo
@@ -190,12 +215,19 @@ TYPED_TEST(UniformRealDistributionTest, ViolatesPreconditionsDeathTest) {
   }
 #endif  // NDEBUG
 }
+#ifdef _MSC_VER
+#pragma warning(pop)  // warning(disable:4756)
+#endif
 
 TYPED_TEST(UniformRealDistributionTest, TestMoments) {
   constexpr int kSize = 1000000;
   std::vector<double> values(kSize);
 
-  absl::InsecureBitGen rng;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng{0x2B7E151628AED2A6};
+
   absl::uniform_real_distribution<TypeParam> dist;
   for (int i = 0; i < kSize; i++) {
     values[i] = dist(rng);
@@ -225,7 +257,11 @@ TYPED_TEST(UniformRealDistributionTest, ChiSquaredTest50) {
   const int kThreshold =
       absl::random_internal::ChiSquareValue(kBuckets - 1, 0.999999);
 
-  absl::InsecureBitGen rng;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng{0x2B7E151628AED2A6};
+
   for (const auto& param : {param_type(0, 1), param_type(5, 12),
                             param_type(-5, 13), param_type(-5, -2)}) {
     const double min_val = param.a();

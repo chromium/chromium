@@ -10,80 +10,94 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/task_surface_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp">
-        <include layout="@layout/fake_search_box_layout"/>
-        <ViewStub
-            android:id="@+id/incognito_description_layout_stub"
+        <LinearLayout
+            android:id="@+id/top_toolbar_placeholder"
             android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height_no_shadow"
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|snap">
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/fake_search_box"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout="@layout/incognito_description_layout"
-            app:layout_scrollFlags="scroll" />
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll">
+            <include layout="@layout/fake_search_box_layout"/>
+        </LinearLayout>
         <HorizontalScrollView android:id="@+id/mv_tiles_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/modern_primary_color"
             android:visibility="gone"
             android:scrollbars="none"
             app:layout_scrollFlags="scroll">
-            <LinearLayout android:id="@+id/mv_tiles_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/tasks_view_items_vertical_spacing" />
+            <include layout="@layout/mv_tiles_layout" />
         </HorizontalScrollView>
         <LinearLayout
             android:id="@+id/tab_switcher_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="12dp"
+            android:paddingStart="16dp"
             android:paddingEnd="4dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:visibility="gone"
-            android:background="@color/modern_primary_color"
             android:orientation="horizontal"
             app:layout_scrollFlags="scroll">
             <TextView
+                android:id="@+id/tab_switcher_title_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
                 android:layout_gravity="center_vertical"
-                android:gravity="center_vertical"
-                android:paddingStart="6dp"
+                android:gravity="center_vertical|start"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.BlackTitle2"
+                android:textAlignment="viewStart"
                 android:text="@string/tab_switcher_carousel_title" />
-            <org.chromium.ui.widget.ChromeImageView
+            <TextView
                 android:id="@+id/more_tabs"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical|end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="-16dp"
                 android:layout_marginBottom="-16dp"
-                android:scaleType="center"
-                app:srcCompat="@drawable/ic_arrow_right"
-                android:tint="@color/default_icon_color"
-                android:tintMode="src_in"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
-                android:contentDescription="@string/accessibility_tab_switcher_carousel_more_tabs"/>
+                android:paddingEnd="16dp"
+                android:text="@string/tab_switcher_carousel_view_all"/>
         </LinearLayout>
         <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
         <FrameLayout
             android:id="@+id/carousel_tab_switcher_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/tab_carousel_start_margin"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
             android:visibility="gone"
             app:layout_scrollFlags="scroll"/>
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- This incognito_description_container_layout_stub and the below tasks_surface_body
+         should be mutually exclusive, otherwise they will overlap each other. -->
+    <ViewStub
+        android:id="@+id/incognito_description_container_layout_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/incognito_description_container_layout"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <!-- Note that this FrameLayout can not be added to NestedScrollView, otherwise the
+         RecyclerView added to this FrameLayout won't recycle. -->
     <FrameLayout
         android:id="@+id/tasks_surface_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </org.chromium.chrome.browser.tasks.TasksView>

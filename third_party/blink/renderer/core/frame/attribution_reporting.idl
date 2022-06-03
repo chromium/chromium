@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Interface for the Attribution Reporting API:
+//
+// https://github.com/WICG/conversion-measurement-api/
+[
+    Exposed=Window,
+    RuntimeEnabled=ConversionMeasurementEventSources,
+    SecureContext
+] interface AttributionReporting {
+    [CallWith=ScriptState, RaisesException] Promise<void> registerAttributionSource(AttributionSourceParams params);
+};

@@ -38,11 +38,11 @@ namespace xpath {
 
 const Value::AdoptTag Value::kAdopt = {};
 
-void ValueData::Trace(blink::Visitor* visitor) {
+void ValueData::Trace(Visitor* visitor) const {
   visitor->Trace(node_set_);
 }
 
-void Value::Trace(blink::Visitor* visitor) {
+void Value::Trace(Visitor* visitor) const {
   visitor->Trace(data_);
 }
 

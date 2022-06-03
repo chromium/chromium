@@ -1,0 +1,21 @@
+<hr aria-label="Outside custom element">
+<div id="test-contents">
+  <div role="presentation">
+    <span>a</span>
+    <span style="display:none">b</span>
+    <span style="visibility:hidden">c</span>
+  </div>
+</div>
+<hr aria-label="Inside custom element">
+<test-element></test-element>
+<script>
+  class TestElement extends HTMLElement {
+    constructor() {
+      super();
+
+      const testContents = document.getElementById('test-contents');
+      this.attachShadow({mode: 'open'}).innerHTML = testContents.outerHTML;
+    }
+  }
+  customElements.define('test-element', TestElement);
+</script>

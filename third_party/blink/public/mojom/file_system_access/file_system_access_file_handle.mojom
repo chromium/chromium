@@ -1,0 +1,101 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file_info.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "third_party/blink/public/mojom/blob/blob.mojom";
+import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+
+// Representation of a regular file for an AccessHandle.
+// `os_file` is an OS-level file which provides direct read/write access.
+// `file_size` is the file size of `os_file` (in bytes).
+// `capacity_allocation_host` is a mojo pipe to manage capacity allocations for
+// this file.
+//
+// Each file has an associated capacity, which is the number of bytes of
+// disk space that the consumer is allowed to take up by writing that file.
+// Operations that extend an opened file past its current size, such as Write()
+// and truncate(), consume associated capacity. Operations that reduce the
+// file's size on disk, such as truncate() create capacity.
+//
+// Each file starts out with zero (0) capacity, and may call
+// RequestCapacityChange() on the capacity_allocation_host to obtain capacity
+// from the quota system. Capacity counts as quota usage by the storage key.
+// When the instance's mojo pipe is closed, any available capacity is
+// automatically returned to the quota system.
+//
+// Files should never take up more disk space than available capacity. Renderers
+// that deviate from this requirement will be terminated.
+struct FileSystemAccessRegularFile {
+  mojo_base.mojom.File os_file;
+  int64 file_size;
+  pending_remote<FileSystemAccessCapacityAllocationHost> capacity_allocation_host;
+};
+
+// Representation of a file for an AccessHandle.
+// `regular_file` is an OS-level file which provides direct read/write access.
+// 'incognito_file_delegate' is used only in Incognito mode. It routes all file
+// operations to the browser.
+union FileSystemAccessAccessHandleFile {
+    FileSystemAccessRegularFile regular_file;
+    pending_remote<FileSystemAccessFileDelegateHost> incognito_file_delegate;
+};
+
+// This interface represents a handle to a directory in the File System Access
+// API.
+interface FileSystemAccessFileHandle {
+  // Queries the current permission status for this handle.
+  GetPermissionStatus(bool writable) => (PermissionStatus status);
+
+  // Requests read and/or write permission for this handle. Returns the new
+  // permission status for this handle.
+  RequestPermission(bool writable) => (FileSystemAccessError result, PermissionStatus status);
+
+  // Returns a blob representing the current state of this file.
+  AsBlob() => (FileSystemAccessError result, mojo_base.mojom.FileInfo info, SerializedBlob? blob);
+
+  // Returns a FileWriter object. The FileWriter provides write operations on a file.
+  CreateFileWriter(bool keep_existing_data, bool auto_close) => (
+      FileSystemAccessError result, pending_remote<FileSystemAccessFileWriter>? writer);
+
+  // Renames the file represented by this handle to `new_entry_name`, which
+  // cannot be empty. This is guaranteed to be atomic.
+  // Returns an error if the file does not exist.
+  Rename(string new_entry_name) => (FileSystemAccessError result);
+
+  // Same as above, but `destination_directory` is resolved into a directory to
+  // be used as the destination directory for the move operation. This is only
+  // guaranteed to be atomic if the file is moved within the same file system.
+  // Moving across file systems may result in partially written data if the move
+  // fails. Returns an error if the file does not exist or the operation fails.
+  Move(pending_remote<FileSystemAccessTransferToken> destination_directory,
+       string new_entry_name) => (FileSystemAccessError result);
+
+  // Deletes the file represented by this handle.
+  // Returns an error if the file does not exist.
+  Remove() => (FileSystemAccessError result);
+
+  // Returns a file object and an access handle host. The file can be used to
+  // initiate file operations from the renderer. The access handle host acts as
+  // an exclusive write lock while the mojo pipe remains open.
+  OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
+
+  // Returns true if `other` represents the same file on disk as this handle.
+  IsSameEntry(pending_remote<FileSystemAccessTransferToken> other) =>
+      (FileSystemAccessError result, bool is_same);
+
+  // Create a TransferToken for this directory. This token can be used to pass
+  // a reference to this directory to other methods, for example to copy or move
+  // the file, or when transferring the handle over postMessage.
+  Transfer(pending_receiver<FileSystemAccessTransferToken> token);
+};

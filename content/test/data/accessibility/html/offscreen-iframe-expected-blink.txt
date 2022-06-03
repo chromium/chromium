@@ -1,7 +1,9 @@
 rootWebArea
-++genericContainer
-++++iframe
-++++++rootWebArea
-++++++++genericContainer ignored
-++++++++++genericContainer name='iframe_onscreen'
-++++++++++genericContainer offscreen name='iframe_offscreen'
+++genericContainer ignored
+++++genericContainer
+++++++iframe
+++++++++rootWebArea
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++group name='iframe_onscreen'
+++++++++++++++group offscreen name='iframe_offscreen'

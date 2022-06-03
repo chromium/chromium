@@ -140,7 +140,17 @@
 {%-     endfor %}
 {%-   else %}
 {%-     for packed_field in byte.packed_fields %}
-    val.{{packed_field.field.name}} = decoder.{{packed_field.field.kind|decode_snippet}};
+{%-       if packed_field.min_version > 0 %}
+    if (version >= {{packed_field.min_version}}) {
+      val.{{packed_field.field.name}} =
+          decoder.{{packed_field.field.kind|decode_snippet}};
+    } else {
+      val.{{packed_field.field.name}} = null;
+    }
+{%-       else %}
+    val.{{packed_field.field.name}} =
+        decoder.{{packed_field.field.kind|decode_snippet}};
+{%-       endif %}
 {%-     endfor %}
 {%-   endif %}
 {%-   if byte.is_padding %}

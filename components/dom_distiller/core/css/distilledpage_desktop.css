@@ -5,7 +5,7 @@
 /* This file should contain style used on desktop but not Android or iOS. */
 
 :root {
-  --google-blue-600: 26, 115, 232;
+  --google-grey-500: 154, 160, 166;
   --google-grey-700: 95, 99, 104;
   --google-grey-800: 60, 64, 67;
 }
@@ -19,8 +19,8 @@ fieldset {
   font-size: 1.5em;
 }
 
-#main-content article {
-  margin-top: 2em;
+#main-content #article-header {
+  margin-top: 32px;
 }
 
 .screen-reader-only {
@@ -35,9 +35,8 @@ fieldset {
 
 #main-content {
   margin-bottom: 1em;
-  margin-top: 1em;
   max-width: 100%;
-  padding: 1em;
+  padding: 0 1em;
   width: 35em;
 }
 
@@ -45,10 +44,8 @@ fieldset {
   border-bottom: thin solid gray;
   display: flex;
   flex: 1 1 auto;
+  height: 36px;
   justify-content: flex-end;
-  max-width: 90%;
-  position: absolute;
-  width: inherit;
 }
 
 #settings-container button {
@@ -86,6 +83,7 @@ fieldset {
 
 #settings-dialog {
   border: none;
+  border-radius: 2px;
   box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3),
               0 4px 8px 3px rgba(60, 64, 67, 0.15);
   box-sizing: border-box;
@@ -93,9 +91,9 @@ fieldset {
   font-family: 'Roboto Regular', 'Roboto', sans-serif;
   font-size: 13px;
   height: 168px;
-  left: auto;
   padding: 16px;
-  top: 3em;
+  position: fixed;
+  top: 0;
   width: 320px;
 
   /* The z-index is set so that any 'positioned' elements in the article text
@@ -103,9 +101,22 @@ fieldset {
   z-index: 1;
 }
 
-#settings-dialog h2 {
-  font-family: 'Roboto Medium', 'Roboto', sans-serif;
-  font-size: 14px;
+#settings-header h1 {
+  font-size: 15px;
+}
+
+#settings-dialog::backdrop {
+  display: none;
+}
+
+#dialog-backdrop {
+  bottom: 0;
+  display: none;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
 }
 
 #settings-header {
@@ -141,7 +152,12 @@ fieldset {
   width: 100%;
 }
 
+.font-family-container {
+  position: relative;
+}
+
 select#font-family-selection {
+  -webkit-appearance: none;
   background: transparent;
   border: 1px solid silver;
   border-radius: 2px;
@@ -149,7 +165,15 @@ select#font-family-selection {
   font-family: inherit;
   font-size: inherit;
   height: 32px;
+  padding: 0 8px 0 8px;
   width: 100%;
+}
+
+#arrow-drop-down {
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 4px;
 }
 
 select#font-family-selection:focus {
@@ -157,9 +181,11 @@ select#font-family-selection:focus {
 }
 
 #theme-selection ul {
+  column-gap: 16px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   list-style-type: none;
+  margin-inline-start: 16px;
 }
 
 .theme-option {
@@ -172,15 +198,12 @@ select#font-family-selection:focus {
 .theme-option input[type='radio'] {
   -webkit-appearance: none;
   appearance: none;
+  border: 1px solid rgb(var(--google-grey-500));
   border-radius: 50%;
   height: 32px;
   margin: 0;
   padding: 0;
   width: 32px;
-}
-
-.theme-option input[type='radio'].light {
-  border: 1px solid gray;
 }
 
 .theme-option input[type='radio']:focus {
@@ -189,11 +212,11 @@ select#font-family-selection:focus {
 }
 
 .checkmark {
-  bottom: 0;
+  bottom: -3px;
   display: none;
   height: 16px;
   position: absolute;
-  right: 0;
+  right: -3px;
   width: 16px;
 }
 
@@ -211,6 +234,7 @@ select#font-family-selection:focus {
 
 #font-size-wrapper {
   grid-area: size;
+  padding: 0 8px;
 }
 
 #font-size-selection {
@@ -286,7 +310,7 @@ select#font-family-selection:focus {
 
 .tickmarks option {
   padding: 0;
-  width: 1px;
+  width: 2px;
 }
 
 .tickmarks option.before-thumb {

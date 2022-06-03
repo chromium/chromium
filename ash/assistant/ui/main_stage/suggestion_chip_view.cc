@@ -9,12 +9,26 @@
 #include <utility>
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
+#include "ash/assistant/util/resource_util.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -23,36 +37,29 @@ namespace ash {
 
 namespace {
 
-constexpr SkColor kBackgroundColor = SK_ColorWHITE;
+using assistant::util::ResourceLinkType;
+
+// Appearance.
 constexpr SkColor kFocusColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
-constexpr SkColor kStrokeColor = SkColorSetA(gfx::kGoogleGrey900, 0x24);
-constexpr SkColor kTextColor = gfx::kGoogleGrey700;
+
 constexpr int kStrokeWidthDip = 1;
+constexpr int kFocusedStrokeWidthDip = 2;
+
 constexpr int kIconMarginDip = 8;
+constexpr int kIconSizeDip = 16;
 constexpr int kChipPaddingDip = 16;
 constexpr int kPreferredHeightDip = 32;
 
 }  // namespace
 
-// Params ----------------------------------------------------------------------
-
-SuggestionChipView::Params::Params() = default;
-
-SuggestionChipView::Params::~Params() = default;
-
 // SuggestionChipView ----------------------------------------------------------
 
-SuggestionChipView::SuggestionChipView(const Params& params,
-                                       views::ButtonListener* listener)
-    : Button(listener),
-      icon_view_(new views::ImageView()),
-      text_view_(new views::Label()) {
-  // Configure focus. Note that we don't install the default focus ring as we
-  // use custom highlighting instead.
-  SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetInstallFocusRingOnFocus(false);
-
-  InitLayout(params);
+SuggestionChipView::SuggestionChipView(AssistantViewDelegate* delegate,
+                                       const AssistantSuggestion& suggestion)
+    : delegate_(delegate),
+      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()),
+      suggestion_id_(suggestion.id) {
+  InitLayout(suggestion);
 }
 
 SuggestionChipView::~SuggestionChipView() = default;
@@ -77,9 +84,42 @@ void SuggestionChipView::ChildVisibilityChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-void SuggestionChipView::InitLayout(const Params& params) {
-  // Layout padding differs depending on icon visibility.
-  const int padding_left_dip = params.icon ? kIconMarginDip : kChipPaddingDip;
+void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
+  const std::u16string text = base::UTF8ToUTF16(suggestion.text);
+
+  // Accessibility.
+  SetAccessibleName(text);
+
+  // Focus.
+  // 1. Dark light mode is OFF
+  // We change background color of a suggestion chip view. No focus ring is
+  // used.
+  // 2. Dark light mode is ON
+  // We use focus ring. No background color change with focus.
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetInstallFocusRingOnFocus(use_dark_light_mode_colors_);
+
+  if (use_dark_light_mode_colors_) {
+    views::FocusRing* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetColor(ColorProvider::Get()->GetControlsLayerColor(
+        ColorProvider::ControlsLayerType::kFocusRingColor));
+    focus_ring->SetHaloThickness(kFocusedStrokeWidthDip);
+    focus_ring->SetHaloInset(0.0f);
+  } else {
+    // We don't call Button::OnFocus (views::OnFocus) in our OnFocus.
+    set_suppress_default_focus_handling();
+  }
+
+  // Path is used for the focus ring, i.e. path is not necessary for dark and
+  // light mode flag off case. But we always install this as it shouldn't be a
+  // problem even if we provide the path to the UI framework.
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                height() / 2);
+
+  // Layout.
+  // Note that padding differs depending on icon visibility.
+  const int padding_left_dip =
+      suggestion.icon_url.is_empty() ? kChipPaddingDip : kIconMarginDip;
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -89,60 +129,65 @@ void SuggestionChipView::InitLayout(const Params& params) {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Icon.
-  const int icon_size =
-      AppListConfig::instance().suggestion_chip_icon_dimension();
-  icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
-  icon_view_->SetPreferredSize(gfx::Size(icon_size, icon_size));
+  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_view_->SetImageSize(gfx::Size(kIconSizeDip, kIconSizeDip));
+  icon_view_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
 
-  if (params.icon)
-    icon_view_->SetImage(params.icon.value());
-  else
+  const GURL& url = suggestion.icon_url;
+  if (assistant::util::IsResourceLinkType(url, ResourceLinkType::kIcon)) {
+    // Handle local images.
+    icon_view_->SetImage(assistant::util::CreateVectorIcon(url, kIconSizeDip));
+  } else if (!suggestion.icon_url.is_empty()) {
+    // Handle remote images.
+    delegate_->DownloadImage(url, base::BindOnce(&SuggestionChipView::SetIcon,
+                                                 weak_factory_.GetWeakPtr()));
+  } else {
+    // Only hide the view if we have neither a local or a remote image. In the
+    // case of a remote image, this prevents layout jank that would otherwise
+    // occur if we updated the view visibility only after the image downloaded.
     icon_view_->SetVisible(false);
-
-  AddChildView(icon_view_);
-
-  // Text.
-  text_view_->SetAutoColorReadabilityEnabled(false);
-  text_view_->SetEnabledColor(kTextColor);
-  text_view_->SetSubpixelRenderingEnabled(false);
-  text_view_->SetFontList(
-      ash::assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(1));
-  SetText(params.text);
-  AddChildView(text_view_);
-}
-
-void SuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-
-  gfx::Rect bounds = GetContentsBounds();
-
-  // Background.
-  flags.setColor(kBackgroundColor);
-  canvas->DrawRoundRect(bounds, height() / 2, flags);
-  if (HasFocus()) {
-    flags.setColor(kFocusColor);
-    canvas->DrawRoundRect(bounds, height() / 2, flags);
   }
 
-  // Border.
-  // Stroke should be drawn within our contents bounds.
-  bounds.Inset(gfx::Insets(kStrokeWidthDip));
+  // Text.
+  text_view_ = AddChildView(std::make_unique<views::Label>());
+  text_view_->SetID(kSuggestionChipViewLabel);
+  text_view_->SetAutoColorReadabilityEnabled(false);
+  text_view_->SetSubpixelRenderingEnabled(false);
+  text_view_->SetFontList(
+      assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(1));
+  SetText(text);
 
-  // Stroke.
-  flags.setColor(kStrokeColor);
-  flags.setStrokeWidth(kStrokeWidthDip);
-  flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-  canvas->DrawRoundRect(bounds, height() / 2, flags);
+  if (!use_dark_light_mode_colors_) {
+    SetBackground(
+        views::CreateRoundedRectBackground(SK_ColorTRANSPARENT, height() / 2));
+  }
+
+  SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, height() / 2,
+                                           GetStrokeColor()));
 }
 
 void SuggestionChipView::OnFocus() {
-  SchedulePaint();
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  if (use_dark_light_mode_colors_) {
+    Button::OnFocus();
+  } else {
+    background()->SetNativeControlColor(kFocusColor);
+
+    // SetNativeControlColor doesn't trigger a paint.
+    SchedulePaint();
+
+    // Manually notify an event as we called
+    // set_suppress_default_focus_handling.
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  }
 }
 
 void SuggestionChipView::OnBlur() {
-  SchedulePaint();
+  if (use_dark_light_mode_colors_) {
+    Button::OnBlur();
+  } else {
+    background()->SetNativeControlColor(SK_ColorTRANSPARENT);
+    SchedulePaint();
+  }
 }
 
 bool SuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -151,17 +196,70 @@ bool SuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
   return Button::OnKeyPressed(event);
 }
 
-void SuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {
-  icon_view_->SetImage(icon);
-  icon_view_->SetVisible(true);
+void SuggestionChipView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  Button::OnBoundsChanged(previous_bounds);
+
+  // If there is no change in height, we don't need to do anything as the code
+  // below is to update corner radius values.
+  if (height() == previous_bounds.height())
+    return;
+
+  if (!use_dark_light_mode_colors_) {
+    SetBackground(views::CreateRoundedRectBackground(
+        HasFocus() ? kFocusColor : SK_ColorTRANSPARENT, height() / 2));
+  }
+
+  SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, height() / 2,
+                                           GetStrokeColor()));
+
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                height() / 2);
 }
 
-void SuggestionChipView::SetText(const base::string16& text) {
+void SuggestionChipView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
+
+  text_view_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorSecondary));
+
+  if (use_dark_light_mode_colors_) {
+    SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, height() / 2,
+                                             GetStrokeColor()));
+
+    views::FocusRing::Get(this)->SetColor(
+        ColorProvider::Get()->GetControlsLayerColor(
+            ColorProvider::ControlsLayerType::kFocusRingColor));
+  }
+}
+
+void SuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {
+  icon_view_->SetImage(icon);
+  icon_view_->SetVisible(!icon.isNull());
+}
+
+gfx::ImageSkia SuggestionChipView::GetIcon() const {
+  return icon_view_->GetImage();
+}
+
+void SuggestionChipView::SetText(const std::u16string& text) {
   text_view_->SetText(text);
 }
 
-const base::string16& SuggestionChipView::GetText() const {
+const std::u16string& SuggestionChipView::GetText() const {
   return text_view_->GetText();
 }
+
+SkColor SuggestionChipView::GetStrokeColor() const {
+  if (use_dark_light_mode_colors_) {
+    return ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+  return SkColorSetA(gfx::kGoogleGrey900, 0x24);
+}
+
+BEGIN_METADATA(SuggestionChipView, views::Button)
+END_METADATA
 
 }  // namespace ash

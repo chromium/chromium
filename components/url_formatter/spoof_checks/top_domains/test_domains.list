@@ -1,4 +1,8 @@
+#
+# List of top domains. Only used in unit tests.
+#
 d4000.com
+###END_TOP_500###
 digklmo68.com
 digklmo68.co.uk
 islkpx123.com
@@ -34,3 +38,5 @@ qq.com
 nn.com
 # A domain with the same skeleton as itself:
 test.net
+# Unicode domain:
+fóó.com

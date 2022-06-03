@@ -10,6 +10,15 @@ from json_parse import OrderedDict
 from memoize import memoize
 
 
+def _IsTypeFromManifestKeys(namespace, typename, fallback):
+  # type(Namespace, str, bool) -> bool
+  """Computes whether 'from_manifest_keys' is true for the given type.
+  """
+  if typename in namespace._manifest_referenced_types:
+    return True
+
+  return fallback
+
 class ParseException(Exception):
   """Thrown when data in the model is invalid.
   """
@@ -74,14 +83,14 @@ class SimpleFeature(object):
   - |unix_name| the unix_name of the feature
   - |channel| the channel where the feature is released
   - |extension_types| the types which can use the feature
-  - |whitelist| a list of extensions allowed to use the feature
+  - |allowlist| a list of extensions allowed to use the feature
   """
   def __init__(self, feature_name, feature_def):
     self.name = feature_name
     self.unix_name = UnixName(self.name)
     self.channel = feature_def['channel']
     self.extension_types = feature_def['extension_types']
-    self.whitelist = feature_def.get('whitelist')
+    self.allowlist = feature_def.get('allowlist')
 
 
 class Namespace(object):
@@ -103,6 +112,7 @@ class Namespace(object):
   - |properties| a map of property names to their model.Property
   - |compiler_options| the compiler_options dict, only not empty if
                        |include_compiler_options| is True
+  - |manifest_keys| is a Type representing the manifest keys for this namespace.
   """
   def __init__(self,
                json,
@@ -117,6 +127,7 @@ class Namespace(object):
                        'on the API summary page.' % self.name)
       json['description'] = ''
     self.description = json['description']
+    self.nodoc = json.get('nodoc', False)
     self.deprecated = json.get('deprecated', None)
     self.unix_name = UnixName(self.name)
     self.source_file = source_file
@@ -126,6 +137,13 @@ class Namespace(object):
     self.allow_inline_enums = allow_inline_enums
     self.platforms = _GetPlatforms(json)
     toplevel_origin = Origin(from_client=True, from_json=True)
+
+    # While parsing manifest keys, we store all the types referenced by manifest
+    # keys. This is useful for computing the correct Origin for types in the
+    # namespace. This also necessitates parsing manifest keys before types.
+    self._manifest_referenced_types = set()
+    self.manifest_keys = _GetManifestKeysType(self, json)
+
     self.types = _GetTypes(self, json, self, toplevel_origin)
     self.functions = _GetFunctions(self, json, self)
     self.events = _GetEvents(self, json, self)
@@ -145,16 +163,24 @@ class Origin(object):
                 generated code (for example, function results), or
   |from_json|   indicating that instances can originate from the JSON (for
                 example, function parameters)
+  |from_manifest_keys| indicating that instances for this type can be parsed
+                from manifest keys.
 
   It is possible for model objects to originate from both the client and json,
   for example Types defined in the top-level schema, in which case both
   |from_client| and |from_json| would be True.
   """
-  def __init__(self, from_client=False, from_json=False):
-    if not from_client and not from_json:
-      raise ValueError('One of from_client or from_json must be true')
+
+  def __init__(self,
+               from_client=False,
+               from_json=False,
+               from_manifest_keys=False):
+    if not from_client and not from_json and not from_manifest_keys:
+      raise ValueError(
+          'One of (from_client, from_json, from_manifest_keys) must be true')
     self.from_client = from_client
     self.from_json = from_json
+    self.from_manifest_keys = from_manifest_keys
 
 
 class Type(object):
@@ -179,31 +205,51 @@ class Type(object):
                name,
                json,
                namespace,
-               origin):
+               input_origin):
     self.name = name
+
+    # The typename "ManifestKeys" is reserved.
+    if name == 'ManifestKeys':
+      assert parent == namespace and input_origin.from_manifest_keys, \
+          'ManifestKeys type is reserved'
+
     self.namespace = namespace
     self.simple_name = _StripNamespace(self.name, namespace)
     self.unix_name = UnixName(self.name)
     self.description = json.get('description', None)
     self.jsexterns = json.get('jsexterns', None)
-    self.origin = origin
+    self.nodoc = json.get('nodoc', False)
+
+    # Copy the Origin and override the |from_manifest_keys| value as necessary.
+    # We need to do this to ensure types reference by manifest types have the
+    # correct value for |origin.from_manifest_keys|.
+    self.origin = Origin(
+      input_origin.from_client, input_origin.from_json,
+      _IsTypeFromManifestKeys(namespace, name, input_origin.from_manifest_keys))
+
     self.parent = parent
     self.instance_of = json.get('isInstanceOf', None)
-
+    self.is_serializable_function = json.get('serializableFunction', False)
     # TODO(kalman): Only objects need functions/events/properties, but callers
     # assume that all types have them. Fix this.
     self.functions = _GetFunctions(self, json, namespace)
     self.events = _GetEvents(self, json, namespace)
-    self.properties = _GetProperties(self, json, namespace, origin)
+    self.properties = _GetProperties(self, json, namespace, self.origin)
 
     json_type = json.get('type', None)
     if json_type == 'array':
       self.property_type = PropertyType.ARRAY
-      self.item_type = Type(
-          self, '%sType' % name, json['items'], namespace, origin)
+      self.item_type = Type(self, '%sType' % name, json['items'], namespace,
+                            self.origin)
     elif '$ref' in json:
       self.property_type = PropertyType.REF
       self.ref_type = json['$ref']
+
+      # Record all types referenced by manifest types so that the proper Origin
+      # can be set for them during type parsing.
+      if self.origin.from_manifest_keys:
+        namespace._manifest_referenced_types.add(self.ref_type)
+
     elif 'enum' in json and json_type == 'string':
       if not namespace.allow_inline_enums and not isinstance(parent, Namespace):
         raise ParseException(
@@ -241,7 +287,7 @@ class Type(object):
                generate_type_name(choice) or 'choice%s' % i,
                choice,
                namespace,
-               origin)
+               self.origin)
           for i, choice in enumerate(json['choices'])]
     elif json_type == 'object':
       if not (
@@ -258,7 +304,7 @@ class Type(object):
                                           'additionalProperties',
                                           additional_properties_json,
                                           namespace,
-                                          origin)
+                                          self.origin)
       else:
         self.additional_properties = None
     elif json_type == 'function':
@@ -266,10 +312,17 @@ class Type(object):
       # Sometimes we might have an unnamed function, e.g. if it's a property
       # of an object. Use the name of the property in that case.
       function_name = json.get('name', name)
-      self.function = Function(self, function_name, json, namespace, origin)
+      self.function = Function(
+        self, function_name, json, namespace, self.origin)
     else:
       raise ParseException(self, 'Unsupported JSON type %s' % json_type)
 
+  def IsRootManifestKeyType(self):
+    # type: () -> boolean
+    ''' Returns true if this type corresponds to the top level ManifestKeys
+    type.
+    '''
+    return self.name == 'ManifestKeys'
 
 class Function(object):
   """A Function defined in the API.
@@ -282,8 +335,9 @@ class Function(object):
              parameter is used for each choice of a 'choices' parameter
   - |deprecated| a reason and possible alternative for a deprecated function
   - |description| a description of the function (if provided)
-  - |callback| the callback parameter to the function. There should be exactly
-               one
+  - |returns_async| an asynchronous return for the function. This may be
+                    specified either though the returns_async field or a
+                    callback function at the end of the parameters, but not both
   - |optional| whether the Function is "optional"; this only makes sense to be
                present when the Function is representing a callback property
   - |simple_name| the name of this Function without a namespace
@@ -302,27 +356,55 @@ class Function(object):
     self.params = []
     self.description = json.get('description')
     self.deprecated = json.get('deprecated')
-    self.callback = None
-    self.optional = json.get('optional', False)
+    self.returns_async = None
+    self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
     self.parent = parent
     self.nocompile = json.get('nocompile')
-    self.nodefine = json.get('nodefine')
     options = json.get('options', {})
     self.conditions = options.get('conditions', [])
     self.actions = options.get('actions', [])
     self.supports_listeners = options.get('supportsListeners', True)
     self.supports_rules = options.get('supportsRules', False)
     self.supports_dom = options.get('supportsDom', False)
+    self.nodoc = json.get('nodoc', False)
 
     def GeneratePropertyFromParam(p):
       return Property(self, p['name'], p, namespace, origin)
 
     self.filters = [GeneratePropertyFromParam(filter_instance)
                     for filter_instance in json.get('filters', [])]
-    callback_param = None
+
+    returns_async = json.get('returns_async', None)
+    if returns_async:
+      returns_async_params = returns_async.get('parameters')
+      if (returns_async_params is None):
+        raise ValueError(
+            'parameters key not specified on returns_async: %s.%s in %s' %
+            (namespace.name, name, namespace.source_file))
+      if len(returns_async_params) > 1:
+        raise ValueError('Only a single parameter can be specific on '
+                         'returns_async: %s.%s in %s' %
+                         (namespace.name, name, namespace.source_file))
+      self.returns_async = ReturnsAsync(self, returns_async, namespace,
+                                        Origin(from_client=True), True)
+      # TODO(https://crbug.com/1143032): Returning a synchronous value is
+      # incompatible with returning a promise. There are APIs that specify this,
+      # though. Some appear to be incorrectly specified (i.e., don't return a
+      # value, but claim to), but others actually do return something. We'll
+      # need to handle those when converting them to allow promises.
+      if json.get('returns') is not None:
+        raise ValueError(
+            'Cannot specify both returns and returns_async: %s.%s'
+            % (namespace.name, name))
+
     params = json.get('parameters', [])
+    callback_param = None
     for i, param in enumerate(params):
-      if i == len(params) - 1 and param.get('type') == 'function':
+      # We consider the final function argument to the API to be the callback
+      # parameter if returns_async wasn't specified. Otherwise, we consider all
+      # function arguments to just be properties.
+      if i == len(params) - 1 and param.get(
+          'type') == 'function' and not self.returns_async:
         callback_param = param
       else:
         # Treat all intermediate function arguments as properties. Certain APIs,
@@ -330,11 +412,12 @@ class Function(object):
         self.params.append(GeneratePropertyFromParam(param))
 
     if callback_param:
-      self.callback = Function(self,
-                               callback_param['name'],
-                               callback_param,
-                               namespace,
-                               Origin(from_client=True))
+      # Even though we are creating a ReturnsAsync type here, this does not
+      # support being returned via a Promise, as this is implied by
+      # "returns_async" being found in the JSON.
+      # This is just a holder type for the callback.
+      self.returns_async = ReturnsAsync(self, callback_param, namespace,
+                                        Origin(from_client=True), False)
 
     self.returns = None
     if 'returns' in json:
@@ -343,6 +426,48 @@ class Function(object):
                           json['returns'],
                           namespace,
                           origin)
+
+
+class ReturnsAsync(object):
+  """A structure documenting asynchronous return values (through a callback or
+  promise) for an API function.
+
+  Properties:
+  - |name| the name of the asynchronous return, generally 'callback'
+  - |simple_name| the name of this ReturnsAsync without a namespace
+  - |description| a description of the ReturnsAsync (if provided)
+  - |optional| whether specifying the ReturnsAsync is "optional" (in situations
+               where promises are supported, this will be ignored as promises
+               inheriently make a callback optional)
+  - |params| a list of parameters supplied to the function in the case of using
+             callbacks, or the list of properties on the returned object in the
+             case of using promises
+  - |can_return_promise| whether this can be treated as a Promise as well as
+                         callback
+  """
+  def __init__(self, parent, json, namespace, origin, can_return_promise):
+    self.name = json.get('name')
+    self.simple_name = _StripNamespace(self.name, namespace)
+    self.description = json.get('description')
+    self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
+    self.nocompile = json.get('nocompile')
+    self.parent = parent
+    self.can_return_promise = can_return_promise
+
+    if json.get('returns') is not None:
+      raise ValueError('Cannot return a value from an asynchronous return: '
+                       '%s.%s' % (namespace.name, self.name))
+    if json.get('deprecated') is not None:
+      raise ValueError('Cannot specify deprecated on an asynchronous return: '
+                       '%s.%s' % (namespace.name, self.name))
+
+    def GeneratePropertyFromParam(p):
+      return Property(self, p['name'], p, namespace, origin)
+
+    params = json.get('parameters', [])
+    self.params = []
+    for _, param in enumerate(params):
+      self.params.append(GeneratePropertyFromParam(param))
 
 
 class Property(object):
@@ -370,6 +495,7 @@ class Property(object):
     self.optional = json.get('optional', None)
     self.instance_of = json.get('isInstanceOf', None)
     self.deprecated = json.get('deprecated')
+    self.nodoc = json.get('nodoc', False)
 
     # HACK: only support very specific value types.
     is_allowed_value = (
@@ -494,11 +620,131 @@ class PropertyType(object):
   REF = _PropertyTypeInfo(False, "ref")
   STRING = _PropertyTypeInfo(True, "string")
 
+def IsCPlusPlusKeyword(name):
+  """Returns true if `name` is a C++ reserved keyword.
+  """
+  # Obtained from https://en.cppreference.com/w/cpp/keyword.
+  keywords = {
+    "alignas",
+    "alignof",
+    "and",
+    "and_eq",
+    "asm",
+    "atomic_cancel",
+    "atomic_commit",
+    "atomic_noexcept",
+    "auto",
+    "bitand",
+    "bitor",
+    "bool",
+    "break",
+    "case",
+    "catch",
+    "char",
+    "char8_t",
+    "char16_t",
+    "char32_t",
+    "class",
+    "compl",
+    "concept",
+    "const",
+    "consteval",
+    "constexpr",
+    "constinit",
+    "const_cast",
+    "continue",
+    "co_await",
+    "co_return",
+    "co_yield",
+    "decltype",
+    "default",
+    "delete",
+    "do",
+    "double",
+    "dynamic_cast",
+    "else",
+    "enum",
+    "explicit",
+    "export",
+    "extern",
+    "false",
+    "float",
+    "for",
+    "friend",
+    "goto",
+    "if",
+    "inline",
+    "int",
+    "long",
+    "mutable",
+    "namespace",
+    "new",
+    "noexcept",
+    "not",
+    "not_eq",
+    "nullptr",
+    "operator",
+    "or",
+    "or_eq",
+    "private",
+    "protected",
+    "public",
+    "reflexpr",
+    "register",
+    "reinterpret_cast",
+    "requires",
+    "return",
+    "short",
+    "signed",
+    "sizeof",
+    "static",
+    "static_assert",
+    "static_cast",
+    "struct",
+    "switch",
+    "synchronized",
+    "template",
+    "this",
+    "thread_local",
+    "throw",
+    "true",
+    "try",
+    "typedef",
+    "typeid",
+    "typename",
+    "union",
+    "unsigned",
+    "using",
+    "virtual",
+    "void",
+    "volatile",
+    "wchar_t",
+    "while",
+    "xor",
+    "xor_eq"
+  }
+  return name in keywords
 
 @memoize
 def UnixName(name):
   '''Returns the unix_style name for a given lowerCamelCase string.
   '''
+  # Append an extra underscore to the |name|'s end if it's a reserved C++
+  # keyword in order to avoid compilation errors in generated code.
+  # Note: In some cases, this is overly greedy, because the unix name is
+  # appended to another string (such as in choices, where it becomes
+  # "as_double_"). We can fix this if this situation becomes common, but for now
+  # it's only hit in tests, and not worth the complexity.
+  if IsCPlusPlusKeyword(name):
+    name = name + '_'
+
+  # Prepend an extra underscore to the |name|'s start if it doesn't start with a
+  # letter or underscore to ensure the generated unix name follows C++
+  # identifier rules.
+  assert(name)
+  if name[0].isdigit():
+    name = '_' + name
+
   unix_name = []
   for i, c in enumerate(name):
     if c.isupper() and i > 0 and name[i - 1] != '_':
@@ -551,6 +797,9 @@ def _GetModelHierarchy(entity):
 def _GetTypes(parent, json, namespace, origin):
   """Creates Type objects extracted from |json|.
   """
+  assert hasattr(namespace, 'manifest_keys'), \
+    'Types should be parsed after parsing manifest keys.'
+
   types = OrderedDict()
   for type_json in json.get('types', []):
     type_ = Type(parent, type_json['id'], type_json, namespace, origin)
@@ -595,6 +844,30 @@ def _GetProperties(parent, json, namespace, origin):
   return properties
 
 
+def _GetManifestKeysType(self, json):
+  # type: (OrderedDict) -> Type
+  """Returns the Type for manifest keys parsing, or None if there are no
+  manifest keys in this namespace.
+  """
+  if not json.get('manifest_keys'):
+    return None
+
+  # Create a dummy object to parse "manifest_keys" as a type.
+  manifest_keys_type = {
+    'type': 'object',
+    'properties': json['manifest_keys'],
+  }
+  return Type(self, 'ManifestKeys', manifest_keys_type, self,
+              Origin(from_manifest_keys=True))
+
+def _GetWithDefaultChecked(self, json, key, default):
+  if json.get(key) == default:
+    raise ParseException(
+        self, 'The attribute "%s" is specified as "%s", but this is the '
+        'default value if the attribute is not included. It should be removed.'
+        % (key, default))
+  return json.get(key, default)
+
 class _PlatformInfo(_Enum):
   def __init__(self, name):
     _Enum.__init__(self, name)
@@ -604,7 +877,7 @@ class Platforms(object):
   """Enum of the possible platforms.
   """
   CHROMEOS = _PlatformInfo("chromeos")
-  CHROMEOS_TOUCH = _PlatformInfo("chromeos_touch")
+  LACROS = _PlatformInfo("lacros")
   LINUX = _PlatformInfo("linux")
   MAC = _PlatformInfo("mac")
   WIN = _PlatformInfo("win")
@@ -618,8 +891,12 @@ def _GetPlatforms(json):
     raise ValueError('"platforms" cannot be an empty list')
   platforms = []
   for platform_name in json['platforms']:
-    for platform_enum in _Enum.GetAll(Platforms):
-      if platform_name == platform_enum.name:
-        platforms.append(platform_enum)
+    platform_enum = None
+    for platform in _Enum.GetAll(Platforms):
+      if platform_name == platform.name:
+        platform_enum = platform
         break
+    if not platform_enum:
+      raise ValueError('Invalid platform specified: ' + platform_name)
+    platforms.append(platform_enum)
   return platforms

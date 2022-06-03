@@ -9,9 +9,7 @@ android_library("kb_java") {
 }
 
 android_aidl("aidl") {
-  sources = [
-    "com/google/vr/keyboard/IGvrKeyboardLoader.aidl",
-  ]
+  sources = [ "com/google/vr/keyboard/IGvrKeyboardLoader.aidl" ]
 }
 
 config("kb_config") {

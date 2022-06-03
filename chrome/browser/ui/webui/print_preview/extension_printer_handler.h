@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
 
@@ -44,6 +42,9 @@ class ExtensionPrinterHandler : public PrinterHandler {
 
   explicit ExtensionPrinterHandler(Profile* profile);
 
+  ExtensionPrinterHandler(const ExtensionPrinterHandler&) = delete;
+  ExtensionPrinterHandler& operator=(const ExtensionPrinterHandler&) = delete;
+
   ~ExtensionPrinterHandler() override;
 
   // PrinterHandler implementation:
@@ -52,7 +53,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
                         GetPrintersDoneCallback done_callback) override;
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
-  void StartPrint(const base::string16& job_title,
+  void StartPrint(const std::u16string& job_title,
                   base::Value settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
@@ -103,8 +104,6 @@ class ExtensionPrinterHandler : public PrinterHandler {
   int pending_enumeration_count_ = 0;
 
   base::WeakPtrFactory<ExtensionPrinterHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrinterHandler);
 };
 
 }  // namespace printing

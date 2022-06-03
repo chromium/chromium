@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body onload="loaded()">
+  <div role="dialog">Nonmodal</div>
+  <div role="dialog" aria-label="modal level 1" aria-modal="true">
+    <button id="buttonLevel1">Button 1</button>
+    <div role="dialog" aria-label="modal level 2" aria-modal="true">
+      <button id="buttonLevel2">Button 2</button>
+    </div>
+  </div>
+  <script>
+    // Test that when an ARIA modal dialog is nested within another ARIA modal
+    // dialog, the accessibility tree is pruned such that only the nested dialog
+    // and it's contents remain in the tree.
+
+    // Note: This test checks an edge case in the aria-modal pruning logic. This
+    // logic currently only runs on Mac, so there are only mac expectations for
+    // this test. See aria-modal.html for more information on tree pruning.
+    function loaded() {
+      buttonLevel2.focus();
+    }
+  </script>
+</body>
+</html>

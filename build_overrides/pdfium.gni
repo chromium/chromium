@@ -5,8 +5,8 @@
 # Enable use of Javascript in PDFs.
 pdf_enable_v8_override = true
 
-# Disable XFA forms in Chromium builds.
-pdf_enable_xfa_override = false
+# Enable XFA forms in Chromium builds on a per-platform basis
+pdf_enable_xfa_override = is_chromeos || is_linux || is_mac || is_win
 
 # Build PDFium either using the bundled FreeType, or using a third-party
 # FreeType, configured by the embedder in //build/config/freetype.

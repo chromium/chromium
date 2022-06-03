@@ -10,16 +10,12 @@ cast_source_set("static_sequence") {
     "static_sequence.cc",
     "static_sequence.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 cast_source_set("tests") {
   testonly = true
-  sources = [
-    "static_sequence_unittest.cc",
-  ]
+  sources = [ "static_sequence_unittest.cc" ]
 
   deps = [
     ":static_sequence",
@@ -34,9 +30,7 @@ cast_source_set("tests") {
 
 if (enable_nocompile_tests) {
   nocompile_test("nocompile_tests") {
-    sources = [
-      "static_sequence_unittest.nc",
-    ]
+    sources = [ "static_sequence_unittest.nc" ]
     deps = [
       ":static_sequence",
       "//base/test:run_all_unittests",

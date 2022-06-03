@@ -8,10 +8,14 @@
 #include "base/path_service.h"
 #include "chrome/common/chrome_constants.h"
 
+CocoaTestHelper::CocoaTestHelper() {
+  CocoaTest::BootstrapCocoa();
+}
+
+CocoaTestHelper::~CocoaTestHelper() = default;
+
 CocoaTest::CocoaTest() {
   BootstrapCocoa();
-
-  Init();
 }
 
 void CocoaTest::BootstrapCocoa() {

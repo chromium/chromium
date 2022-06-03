@@ -14,12 +14,6 @@ Sending GestureTapDown
 PASS triggeredLayout is true
 Sending GestureShowPress
 PASS triggeredLayout is true
-Sending GestureScrollBegin
-PASS triggeredLayout is true
-Sending GestureScrollUpdate
-PASS triggeredLayout is true
-Sending GestureScrollEnd
-PASS triggeredLayout is false
 PASS successfullyParsed is true
 
 TEST COMPLETE

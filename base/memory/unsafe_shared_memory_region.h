@@ -5,8 +5,6 @@
 #ifndef BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_UNSAFE_SHARED_MEMORY_REGION_H_
 
-#include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -31,12 +29,6 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   using MappingType = WritableSharedMemoryMapping;
   // Creates a new UnsafeSharedMemoryRegion instance of a given size that can be
   // used for mapping writable shared memory into the virtual address space.
-  //
-  // This call will fail if the process does not have sufficient permissions to
-  // create a shared memory region itself. See
-  // mojo::CreateUnsafeSharedMemoryRegion in
-  // mojo/public/cpp/base/shared_memory_utils.h for creating a shared memory
-  // region from a an unprivileged process where a broker must be used.
   static UnsafeSharedMemoryRegion Create(size_t size);
   using CreateFunction = decltype(Create);
 
@@ -62,6 +54,9 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   // Move operations are allowed.
   UnsafeSharedMemoryRegion(UnsafeSharedMemoryRegion&&);
   UnsafeSharedMemoryRegion& operator=(UnsafeSharedMemoryRegion&&);
+
+  UnsafeSharedMemoryRegion(const UnsafeSharedMemoryRegion&) = delete;
+  UnsafeSharedMemoryRegion& operator=(const UnsafeSharedMemoryRegion&) = delete;
 
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
@@ -118,8 +113,6 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsafeSharedMemoryRegion);
 };
 
 }  // namespace base

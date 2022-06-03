@@ -7,6 +7,7 @@
 #include "base/files/file.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 
@@ -71,10 +72,9 @@ void AecDumpManagerImpl::CreateFileAndStartDump(const base::FilePath& file_path,
           .AddExtensionASCII(kAecDumpFileNameAddition)
           .AddExtensionASCII(base::NumberToString(id));
 
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&CreateDumpFile, file_path_extended),
       base::BindOnce(&AecDumpManagerImpl::StartDump, weak_factory_.GetWeakPtr(),
@@ -90,9 +90,8 @@ void AecDumpManagerImpl::StartDump(int id, base::File file) {
   auto it = agents_.find(id);
   if (it == agents_.end()) {
     // Post the file close to avoid blocking the current thread.
-    base::PostTask(
-        FROM_HERE,
-        {base::ThreadPool(), base::TaskPriority::LOWEST, base::MayBlock()},
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::LOWEST, base::MayBlock()},
         base::BindOnce([](base::File) {}, std::move(file)));
     return;
   }

@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Telemetry Extension is Chrome OS only")
+assert(!is_official_build,
+       "Telemetry Extension is only built for unofficial builds")
+
+group("closure_compile") {
+  deps = [ ":worker_closure_compile" ]
+}
+
+js_type_check("worker_closure_compile") {
+  deps = [ ":worker" ]
+}
+
+js_library("worker") {
+  sources = [ "worker.js" ]
+}

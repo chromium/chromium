@@ -25,13 +25,15 @@
 
 #include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_dynamics_compressor_options.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
-#include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_options.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/dynamics_compressor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 // Set output to stereo by default.
 static const unsigned defaultNumberOfOutputChannels = 2;
@@ -78,14 +80,16 @@ DynamicsCompressorHandler::~DynamicsCompressorHandler() {
 }
 
 void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "DynamicsCompressorHandler::Process");
   AudioBus* output_bus = Output(0).Bus();
   DCHECK(output_bus);
 
-  float threshold = threshold_->Value();
-  float knee = knee_->Value();
-  float ratio = ratio_->Value();
-  float attack = attack_->Value();
-  float release = release_->Value();
+  float threshold = threshold_->FinalValue();
+  float knee = knee_->FinalValue();
+  float ratio = ratio_->FinalValue();
+  float attack = attack_->FinalValue();
+  float release = release_->FinalValue();
 
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamThreshold,
                                           threshold);
@@ -97,7 +101,8 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
   dynamics_compressor_->SetParameterValue(DynamicsCompressor::kParamRelease,
                                           release);
 
-  dynamics_compressor_->Process(Input(0).Bus(), output_bus, frames_to_process);
+  scoped_refptr<AudioBus> input_bus = Input(0).Bus();
+  dynamics_compressor_->Process(input_bus.get(), output_bus, frames_to_process);
 
   float reduction =
       dynamics_compressor_->ParameterValue(DynamicsCompressor::kParamReduction);
@@ -107,9 +112,9 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
 void DynamicsCompressorHandler::ProcessOnlyAudioParams(
     uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
-  float values[audio_utilities::kRenderQuantumFrames];
+  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
 
   threshold_->CalculateSampleAccurateValues(values, frames_to_process);
   knee_->CalculateSampleAccurateValues(values, frames_to_process);
@@ -272,7 +277,7 @@ DynamicsCompressorNode* DynamicsCompressorNode::Create(
   return node;
 }
 
-void DynamicsCompressorNode::Trace(blink::Visitor* visitor) {
+void DynamicsCompressorNode::Trace(Visitor* visitor) const {
   visitor->Trace(threshold_);
   visitor->Trace(knee_);
   visitor->Trace(ratio_);

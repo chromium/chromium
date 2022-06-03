@@ -3,20 +3,24 @@
 // found in the LICENSE file.
 
 // https://streams.spec.whatwg.org/#rs-class
+typedef (ReadableStreamDefaultReader or ReadableStreamBYOBReader) ReadableStreamReader;
+typedef (ReadableStreamDefaultController or ReadableByteStreamController) ReadableStreamController;
+
+enum ReadableStreamReaderMode { "byob" };
+enum ReadableStreamType { "bytes" };
+
 [
     Exposed=(Window,Worker,Worklet)
 ] interface ReadableStream {
     [CallWith=ScriptState, RaisesException] constructor(optional any underlyingSource, optional any strategy);
-    // As long as we use V8Extras, anything can raise an exception.
-    [RaisesException, CallWith=ScriptState, NotEnumerable] readonly attribute boolean locked;
+    readonly attribute boolean locked;
 
     // TODO(yhirano): function length is different from what's specced. Fix it.
-    [RaisesException, CallWith=ScriptState, NotEnumerable] Promise<any> cancel(
-        optional any reason);
-    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamGetReader] ReadableStreamDefaultReader getReader(optional any mode);
-    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamPipeThrough] any pipeThrough(
-        any transformStream, optional any options);
-    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
-        any destination, optional any option);
-    [RaisesException, CallWith=ScriptState, NotEnumerable] any tee();
+    [RaisesException, CallWith=ScriptState] Promise<any> cancel(optional any reason);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamGetReader] ReadableStreamReader getReader(optional ReadableStreamGetReaderOptions options);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeThrough] ReadableStream pipeThrough(
+        ReadableWritablePair transform, optional StreamPipeOptions options);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
+        WritableStream destination, optional StreamPipeOptions options);
+    [RaisesException, CallWith=ScriptState] sequence<ReadableStream> tee();
 };

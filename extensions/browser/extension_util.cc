@@ -4,10 +4,19 @@
 
 #include "extensions/browser/extension_util.h"
 
+#include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
+#include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/ui_util.h"
+#include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
@@ -16,14 +25,54 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/system/sys_info.h"
+#endif
 
 namespace extensions {
 namespace util {
 
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
+  if (extension->id() != extension_misc::kSigninProfileTestExtensionId)
+    return false;
+  base::SysInfo::CrashIfChromeOSNonTestImage();
+  return true;
+}
+#endif
+
+void SetCorsOriginAccessListForExtensionHelper(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+    base::OnceClosure closure) {
+  auto barrier_closure =
+      BarrierClosure(browser_contexts.size(), std::move(closure));
+  for (content::BrowserContext* browser_context : browser_contexts) {
+    // SetCorsOriginAccessListForExtensionHelper should only affect an incognito
+    // profile if the extension is actually allowed to run in an incognito
+    // profile (not just by the extension manifest, but also by user
+    // preferences).
+    if (browser_context->IsOffTheRecord())
+      DCHECK(IsIncognitoEnabled(extension.id(), browser_context));
+
+    content::CorsOriginPatternSetter::Set(
+        browser_context, extension.origin(), mojo::Clone(allow_patterns),
+        mojo::Clone(block_patterns), barrier_closure);
+  }
+}
+
+}  // namespace
+
 bool CanBeIncognitoEnabled(const Extension* extension) {
   return IncognitoInfo::IsIncognitoAllowed(extension) &&
          (!extension->is_platform_app() ||
-          extension->location() == Manifest::COMPONENT);
+          extension->location() == mojom::ManifestLocation::kComponent);
 }
 
 bool IsIncognitoEnabled(const std::string& extension_id,
@@ -40,6 +89,10 @@ bool IsIncognitoEnabled(const std::string& extension_id,
       return true;
     if (extension->is_login_screen_extension())
       return true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (IsSigninProfileTestExtensionOnTestImage(extension))
+      return true;
+#endif
   }
   return ExtensionPrefs::Get(context)->IsIncognitoEnabled(extension_id);
 }
@@ -54,27 +107,36 @@ bool CanCrossIncognito(const Extension* extension,
          !IncognitoInfo::IsSplitMode(extension);
 }
 
-GURL GetSiteForExtensionId(const std::string& extension_id,
-                           content::BrowserContext* context) {
-  GURL site = content::SiteInstance::GetSiteForURL(
-      context, Extension::GetBaseURLFromExtensionId(extension_id));
-  DCHECK_EQ(extension_id, site.host());
-  return site;
-}
-
 const std::string& GetPartitionDomainForExtension(const Extension* extension) {
   // Extensions use their own ID for a partition domain.
   return extension->id();
+}
+
+content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
+    const std::string& extension_id,
+    content::BrowserContext* browser_context) {
+  if (ExtensionsBrowserClient::Get()->HasIsolatedStorage(extension_id,
+                                                         browser_context)) {
+    // For extensions with isolated storage, the |extension_id| is
+    // the |partition_domain|. The |in_memory| and |partition_name| are only
+    // used in guest schemes so they are cleared here.
+    return content::StoragePartitionConfig::Create(
+        browser_context, extension_id, std::string() /* partition_name */,
+        false /*in_memory */);
+  }
+
+  return content::StoragePartitionConfig::CreateDefault(browser_context);
 }
 
 content::StoragePartition* GetStoragePartitionForExtensionId(
     const std::string& extension_id,
     content::BrowserContext* browser_context,
     bool can_create) {
-  GURL site_url = GetSiteForExtensionId(extension_id, browser_context);
+  auto storage_partition_config =
+      GetStoragePartitionConfigForExtensionId(extension_id, browser_context);
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartitionForSite(browser_context,
-                                                          site_url, can_create);
+      browser_context->GetStoragePartition(storage_partition_config,
+                                           can_create);
   return storage_partition;
 }
 
@@ -144,16 +206,68 @@ bool CanWithholdPermissionsFromExtension(const Extension& extension) {
 
 bool CanWithholdPermissionsFromExtension(const ExtensionId& extension_id,
                                          Manifest::Type type,
-                                         Manifest::Location location) {
+                                         mojom::ManifestLocation location) {
   // Some extensions must retain privilege to all requested host permissions.
   // Specifically, extensions that don't show up in chrome:extensions (where
   // withheld permissions couldn't be granted), extensions that are part of
   // chrome or corporate policy, and extensions that are whitelisted to script
   // everywhere must always have permission to run on a page.
-  return Extension::ShouldDisplayInExtensionSettings(type, location) &&
+  return ui_util::ShouldDisplayInExtensionSettings(type, location) &&
          !Manifest::IsPolicyLocation(location) &&
          !Manifest::IsComponentLocation(location) &&
          !PermissionsData::CanExecuteScriptEverywhere(extension_id, location);
+}
+
+// The below functionality maps a context to a unique id by increasing a static
+// counter.
+int GetBrowserContextId(content::BrowserContext* context) {
+  using ContextIdMap = std::map<content::BrowserContext*, int>;
+
+  static int next_id = 0;
+  static base::NoDestructor<ContextIdMap> context_map;
+
+  // we need to get the original context to make sure we take the right context.
+  content::BrowserContext* original_context =
+      ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  auto iter = context_map->find(original_context);
+  if (iter == context_map->end()) {
+    iter =
+        context_map->insert(std::make_pair(original_context, next_id++)).first;
+  }
+  return iter->second;
+}
+
+void SetCorsOriginAccessListForExtension(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    base::OnceClosure closure) {
+  SetCorsOriginAccessListForExtensionHelper(
+      browser_contexts, extension, CreateCorsOriginAccessAllowList(extension),
+      CreateCorsOriginAccessBlockList(extension), std::move(closure));
+}
+
+void ResetCorsOriginAccessListForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  SetCorsOriginAccessListForExtensionHelper({browser_context}, extension, {},
+                                            {}, base::DoNothing());
+}
+
+// Returns whether the |extension| should be loaded in the given
+// |browser_context|.
+bool IsExtensionVisibleToContext(const Extension& extension,
+                                 content::BrowserContext* browser_context) {
+  // Renderers don't need to know about themes.
+  if (extension.is_theme())
+    return false;
+
+  // Only extensions enabled in incognito mode should be loaded in an incognito
+  // renderer. However extensions which can't be enabled in the incognito mode
+  // (e.g. platform apps) should also be loaded in an incognito renderer to
+  // ensure connections from incognito tabs to such extensions work.
+  return !browser_context->IsOffTheRecord() ||
+         !CanBeIncognitoEnabled(&extension) ||
+         IsIncognitoEnabled(extension.id(), browser_context);
 }
 
 }  // namespace util

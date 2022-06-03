@@ -35,22 +35,23 @@ BluetoothLowEnergyCharacteristicsFinder::
         const RemoteAttribute& remote_service,
         const RemoteAttribute& to_peripheral_char,
         const RemoteAttribute& from_peripheral_char,
-        const SuccessCallback& success_callback,
-        const ErrorCallback& error_callback,
+        SuccessCallback success_callback,
+        base::OnceClosure error_callback,
         const multidevice::RemoteDeviceRef& remote_device,
-        std::unique_ptr<BackgroundEidGenerator> background_eid_generator)
+        std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
+        scoped_refptr<base::TaskRunner> task_runner)
     : adapter_(adapter),
       bluetooth_device_(device),
       remote_service_(remote_service),
       to_peripheral_char_(to_peripheral_char),
       from_peripheral_char_(from_peripheral_char),
-      success_callback_(success_callback),
-      error_callback_(error_callback),
+      success_callback_(std::move(success_callback)),
+      error_callback_(std::move(error_callback)),
       remote_device_(remote_device),
       background_eid_generator_(std::move(background_eid_generator)) {
-  adapter_->AddObserver(this);
-  if (device->IsGattServicesDiscoveryComplete())
-    ScanRemoteCharacteristics();
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothLowEnergyCharacteristicsFinder::Start,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 BluetoothLowEnergyCharacteristicsFinder::
@@ -63,6 +64,12 @@ BluetoothLowEnergyCharacteristicsFinder::
   if (adapter_) {
     adapter_->RemoveObserver(this);
   }
+}
+
+void BluetoothLowEnergyCharacteristicsFinder::Start() {
+  adapter_->AddObserver(this);
+  if (bluetooth_device_->IsGattServicesDiscoveryComplete())
+    ScanRemoteCharacteristics();
 }
 
 void BluetoothLowEnergyCharacteristicsFinder::GattServicesDiscovered(
@@ -143,8 +150,8 @@ void BluetoothLowEnergyCharacteristicsFinder::NotifySuccess(
   from_peripheral_char_.id = rx_id;
   to_peripheral_char_.id = tx_id;
   remote_service_.id = service_id;
-  success_callback_.Run(remote_service_, to_peripheral_char_,
-                        from_peripheral_char_);
+  std::move(success_callback_)
+      .Run(remote_service_, to_peripheral_char_, from_peripheral_char_);
 }
 
 void BluetoothLowEnergyCharacteristicsFinder::
@@ -153,24 +160,19 @@ void BluetoothLowEnergyCharacteristicsFinder::
     return;
   DCHECK(!has_callback_been_invoked_);
   has_callback_been_invoked_ = true;
-  error_callback_.Run();
+  std::move(error_callback_).Run();
 }
 
 void BluetoothLowEnergyCharacteristicsFinder::TryToVerifyEid(
     device::BluetoothRemoteGattCharacteristic* eid_char) {
-  eid_char->ReadRemoteCharacteristic(
-      base::BindOnce(
-          &BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead,
-          weak_ptr_factory_.GetWeakPtr(),
-          eid_char->GetService()->GetIdentifier()),
-      base::BindOnce(&BluetoothLowEnergyCharacteristicsFinder::
-                         OnReadRemoteCharacteristicError,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     eid_char->GetService()->GetIdentifier()));
+  eid_char->ReadRemoteCharacteristic(base::BindOnce(
+      &BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead,
+      weak_ptr_factory_.GetWeakPtr(), eid_char->GetService()->GetIdentifier()));
 }
 
 void BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead(
     const std::string& service_id,
+    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   auto it = service_ids_pending_eid_read_.find(service_id);
   if (it == service_ids_pending_eid_read_.end()) {
@@ -179,6 +181,15 @@ void BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead(
   }
 
   service_ids_pending_eid_read_.erase(it);
+
+  if (error_code.has_value()) {
+    PA_LOG(ERROR) << "OnWriteRemoteCharacteristicError() Error code: "
+                  << error_code.value();
+    service_ids_pending_eid_read_.erase(service_id);
+    if (!has_callback_been_invoked_)
+      NotifyFailureIfNoPendingEidCharReads();
+    return;
+  }
 
   if (has_callback_been_invoked_) {
     PA_LOG(VERBOSE) << "Characteristic read after callback was invoked.";
@@ -207,23 +218,6 @@ void BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead(
       service->GetCharacteristicsByUUID(from_peripheral_char_.uuid);
   NotifySuccess(service_id, tx_chars.front()->GetIdentifier(),
                 rx_chars.front()->GetIdentifier());
-}
-
-void BluetoothLowEnergyCharacteristicsFinder::OnReadRemoteCharacteristicError(
-    const std::string& service_id,
-    device::BluetoothRemoteGattService::GattErrorCode error) {
-  auto it = service_ids_pending_eid_read_.find(service_id);
-  if (it == service_ids_pending_eid_read_.end()) {
-    PA_LOG(WARNING) << "No request entry for " << service_id;
-    return;
-  }
-
-  service_ids_pending_eid_read_.erase(it);
-
-  PA_LOG(ERROR) << "OnWriteRemoteCharacteristicError() Error code: " << error;
-  service_ids_pending_eid_read_.erase(service_id);
-  if (!has_callback_been_invoked_)
-    NotifyFailureIfNoPendingEidCharReads();
 }
 
 bool BluetoothLowEnergyCharacteristicsFinder::DoesEidMatchExpectedDevice(

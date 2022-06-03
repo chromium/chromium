@@ -19,9 +19,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 
 RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
         : elevation_needed_(false),
@@ -41,8 +40,9 @@ RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
   pref_registrar_.Init(pref);
   pref_registrar_.Add(
       prefs::kRecoveryComponentNeedsElevation,
-      base::Bind(&RecoveryInstallGlobalError::OnElevationRequirementChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &RecoveryInstallGlobalError::OnElevationRequirementChanged,
+          base::Unretained(this)));
 }
 
 RecoveryInstallGlobalError::~RecoveryInstallGlobalError() {}
@@ -64,15 +64,13 @@ int RecoveryInstallGlobalError::MenuItemCommandID() {
   return IDC_ELEVATED_RECOVERY_DIALOG;
 }
 
-base::string16 RecoveryInstallGlobalError::MenuItemLabel() {
-  return l10n_util::GetStringUTF16(IDS_UPDATE_NOW);
+std::u16string RecoveryInstallGlobalError::MenuItemLabel() {
+  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 }
 
-gfx::Image RecoveryInstallGlobalError::MenuItemIcon() {
-  return gfx::Image(gfx::CreateVectorIcon(
-      kBrowserToolsUpdateIcon,
-      ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityHigh)));
+ui::ImageModel RecoveryInstallGlobalError::MenuItemIcon() {
+  return ui::ImageModel::FromVectorIcon(kBrowserToolsUpdateIcon,
+                                        ui::kColorAlertHighSeverity);
 }
 
 void RecoveryInstallGlobalError::ExecuteMenuItem(Browser* browser) {
@@ -96,23 +94,17 @@ bool RecoveryInstallGlobalError::ShouldCloseOnDeactivate() const {
   return false;
 }
 
-gfx::Image RecoveryInstallGlobalError::GetBubbleViewIcon() {
-  // TODO(estade): there shouldn't be an icon in the bubble, but
-  // GlobalErrorBubbleView currently requires it. See crbug.com/673995
-  return MenuItemIcon();
-}
-
-base::string16 RecoveryInstallGlobalError::GetBubbleViewTitle() {
+std::u16string RecoveryInstallGlobalError::GetBubbleViewTitle() {
   return l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TITLE);
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 RecoveryInstallGlobalError::GetBubbleViewMessages() {
-  return std::vector<base::string16>(1,
-      l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TEXT));
+  return std::vector<std::u16string>(
+      1, l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TEXT));
 }
 
-base::string16 RecoveryInstallGlobalError::GetBubbleViewAcceptButtonLabel() {
+std::u16string RecoveryInstallGlobalError::GetBubbleViewAcceptButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_RUN_RECOVERY);
 }
 
@@ -124,7 +116,7 @@ bool RecoveryInstallGlobalError::ShouldAddElevationIconToAcceptButton() {
   return true;
 }
 
-base::string16 RecoveryInstallGlobalError::GetBubbleViewCancelButtonLabel() {
+std::u16string RecoveryInstallGlobalError::GetBubbleViewCancelButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_DECLINE_RECOVERY);
 }
 

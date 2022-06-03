@@ -23,7 +23,7 @@ BrowserControls::BrowserControls(const Page& page)
       accumulated_scroll_delta_(0),
       permitted_state_(cc::BrowserControlsState::kBoth) {}
 
-void BrowserControls::Trace(blink::Visitor* visitor) {
+void BrowserControls::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
 }
 
@@ -38,16 +38,16 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
     return pending_delta;
 
   if ((permitted_state_ == cc::BrowserControlsState::kShown &&
-       pending_delta.Height() > 0) ||
+       pending_delta.height() > 0) ||
       (permitted_state_ == cc::BrowserControlsState::kHidden &&
-       pending_delta.Height() < 0))
+       pending_delta.height() < 0))
     return pending_delta;
 
   float page_scale = page_->GetVisualViewport().Scale();
 
   // Update accumulated vertical scroll and apply it to browser controls
   // Compute scroll delta in viewport space by applying page scale
-  accumulated_scroll_delta_ += pending_delta.Height() * page_scale;
+  accumulated_scroll_delta_ += pending_delta.height() * page_scale;
 
   // We want to base our calculations on top or bottom controls. After consuming
   // the scroll delta, we will calculate a shown ratio for the controls. The
@@ -64,7 +64,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float height = base_on_top_controls ? TopHeight() : BottomHeight();
   // Clamp and use the expected content offset so that we don't return
   // spurious remaining scrolls due to the imprecision of the shownRatio.
-  new_content_offset = clampTo(
+  new_content_offset = ClampTo(
       new_content_offset,
       base_on_top_controls ? TopMinHeight() : BottomMinHeight(), height);
 
@@ -74,7 +74,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float min_ratio =
       base_on_top_controls ? TopMinShownRatio() : BottomMinShownRatio();
   float normalized_shown_ratio =
-      (clampTo(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
+      (ClampTo(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
   // relative/normalized ratio to keep them in sync.
@@ -94,6 +94,32 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
              ? (old_top_offset - new_content_offset) / page_scale
              : 0);
   return pending_delta - applied_delta;
+}
+
+void BrowserControls::ScrollEnd() {
+  if ((top_shown_ratio_ == TopMinShownRatio() || top_shown_ratio_ == 1) &&
+      (bottom_shown_ratio_ == BottomMinShownRatio() ||
+       bottom_shown_ratio_ == 1)) {
+    return;
+  }
+
+  // Both threshold values are copied from LayerTreeSettings, which are used in
+  // BrowserControlsOffsetManager::ScrollEnd.
+  constexpr float kTopControlsShowThreshold = 0.5f;
+  constexpr float kTopControlsHideThreshold = 0.5f;
+  float normalized_top_ratio =
+      (top_shown_ratio_ - TopMinShownRatio()) / (1.f - TopMinShownRatio());
+  if (normalized_top_ratio >= 1.f - kTopControlsHideThreshold) {
+    // If we're showing so much that the hide threshold won't trigger, show.
+    UpdateConstraintsAndState(permitted_state_,
+                              cc::BrowserControlsState::kShown);
+  } else if (normalized_top_ratio < kTopControlsShowThreshold) {
+    // If we're showing so little that the show threshold won't trigger, hide.
+    UpdateConstraintsAndState(permitted_state_,
+                              cc::BrowserControlsState::kHidden);
+  } else {
+    NOTREACHED();
+  }
 }
 
 void BrowserControls::ResetBaseline() {
@@ -118,8 +144,10 @@ float BrowserControls::BottomContentOffset() {
 }
 
 void BrowserControls::SetShownRatio(float top_ratio, float bottom_ratio) {
-  top_ratio = clampTo(top_ratio, 0.f, 1.f);
-  bottom_ratio = clampTo(bottom_ratio, 0.f, 1.f);
+  // The ratios can be > 1 during height change animations, so we shouldn't
+  // clamp the values.
+  top_ratio = std::max(0.f, top_ratio);
+  bottom_ratio = std::max(0.f, bottom_ratio);
 
   if (top_shown_ratio_ == top_ratio && bottom_shown_ratio_ == bottom_ratio)
     return;
@@ -131,14 +159,22 @@ void BrowserControls::SetShownRatio(float top_ratio, float bottom_ratio) {
 
 void BrowserControls::UpdateConstraintsAndState(
     cc::BrowserControlsState constraints,
-    cc::BrowserControlsState current,
-    bool animate) {
+    cc::BrowserControlsState current) {
   permitted_state_ = constraints;
 
   DCHECK(!(constraints == cc::BrowserControlsState::kShown &&
            current == cc::BrowserControlsState::kHidden));
   DCHECK(!(constraints == cc::BrowserControlsState::kHidden &&
            current == cc::BrowserControlsState::kShown));
+
+  if (current == cc::BrowserControlsState::kShown) {
+    top_shown_ratio_ = 1;
+    bottom_shown_ratio_ = 1;
+  } else if (current == cc::BrowserControlsState::kHidden) {
+    top_shown_ratio_ = TopMinShownRatio();
+    bottom_shown_ratio_ = BottomMinShownRatio();
+  }
+  page_->GetChromeClient().DidUpdateBrowserControls();
 }
 
 void BrowserControls::SetParams(cc::BrowserControlsParams params) {

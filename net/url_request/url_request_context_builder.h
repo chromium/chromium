@@ -19,7 +19,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -51,9 +50,9 @@ class ApplicationStatusListener;
 namespace net {
 
 class CertVerifier;
+class ClientSocketFactory;
 class CookieStore;
 class CTPolicyEnforcer;
-class CTVerifier;
 class HttpAuthHandlerFactory;
 class HttpTransactionFactory;
 class HttpUserAgentSettings;
@@ -62,7 +61,6 @@ class HostResolverManager;
 class NetworkQualityEstimator;
 class ProxyConfigService;
 class URLRequestContext;
-class URLRequestInterceptor;
 
 #if BUILDFLAG(ENABLE_REPORTING)
 struct ReportingPolicy;
@@ -87,10 +85,6 @@ class PersistentReportingAndNelStore;
 // Builder may be used to create only a single URLRequestContext.
 class NET_EXPORT URLRequestContextBuilder {
  public:
-  using CreateInterceptingJobFactory =
-      base::OnceCallback<std::unique_ptr<URLRequestJobFactory>(
-          std::unique_ptr<URLRequestJobFactory> inner_job_factory)>;
-
   // Creates an HttpNetworkTransactionFactory given an HttpNetworkSession. Does
   // not take ownership of the session.
   using CreateHttpTransactionFactoryCallback =
@@ -119,6 +113,9 @@ class NET_EXPORT URLRequestContextBuilder {
     // based off available disk space.
     int max_size;
 
+    // Whether or not we need to reset the cache due to an experiment change.
+    bool reset_cache;
+
     // The cache path (when type is DISK).
     base::FilePath path;
 
@@ -130,12 +127,11 @@ class NET_EXPORT URLRequestContextBuilder {
   };
 
   URLRequestContextBuilder();
-  virtual ~URLRequestContextBuilder();
 
-  // Sets a name for this URLRequestContext. Currently the name is used in
-  // MemoryDumpProvier to annotate memory usage. The name does not need to be
-  // unique.
-  void set_name(const std::string& name) { name_ = name; }
+  URLRequestContextBuilder(const URLRequestContextBuilder&) = delete;
+  URLRequestContextBuilder& operator=(const URLRequestContextBuilder&) = delete;
+
+  virtual ~URLRequestContextBuilder();
 
   // Sets whether Brotli compression is enabled.  Disabled by default;
   void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
@@ -153,17 +149,17 @@ class NET_EXPORT URLRequestContextBuilder {
   // associated HttpNetworkSession are consistent.
   static void SetHttpNetworkSessionComponents(
       const URLRequestContext* request_context,
-      HttpNetworkSession::Context* session_context);
+      HttpNetworkSessionContext* session_context);
 
   // These functions are mutually exclusive.  The ProxyConfigService, if
-  // set, will be used to construct a ProxyResolutionService.
+  // set, will be used to construct a ConfiguredProxyResolutionService.
   void set_proxy_config_service(
       std::unique_ptr<ProxyConfigService> proxy_config_service) {
     proxy_config_service_ = std::move(proxy_config_service);
   }
 
   // Sets whether quick PAC checks are enabled. Defaults to true. Ignored if
-  // a ProxyResolutionService is set directly.
+  // a ConfiguredProxyResolutionService is set directly.
   void set_pac_quick_check_enabled(bool pac_quick_check_enabled) {
     pac_quick_check_enabled_ = pac_quick_check_enabled;
   }
@@ -194,11 +190,6 @@ class NET_EXPORT URLRequestContextBuilder {
   // The object will be live until the URLRequestContext is destroyed.
   void set_http_user_agent_settings(
       std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings);
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  // Control support for ftp:// requests. By default it's disabled.
-  void set_ftp_enabled(bool enable) { ftp_enabled_ = enable; }
-#endif
 
   // Sets a valid ProtocolHandler for a scheme.
   // A ProtocolHandler already exists for |scheme| will be overwritten.
@@ -234,7 +225,7 @@ class NET_EXPORT URLRequestContextBuilder {
   // used.
   void set_host_resolver_factory(HostResolver::Factory* factory);
 
-  // Uses BasicNetworkDelegate by default. Note that calling Build will unset
+  // Uses NetworkDelegateImpl by default. Note that calling Build will unset
   // any custom delegate in builder, so this must be called each time before
   // Build is called.
   void set_network_delegate(std::unique_ptr<NetworkDelegate> delegate) {
@@ -255,15 +246,16 @@ class NET_EXPORT URLRequestContextBuilder {
   void EnableHttpCache(const HttpCacheParams& params);
   void DisableHttpCache();
 
-  // Override default HttpNetworkSession::Params settings.
+  // Override default HttpNetworkSessionParams settings.
   void set_http_network_session_params(
-      const HttpNetworkSession::Params& http_network_session_params) {
+      const HttpNetworkSessionParams& http_network_session_params) {
     http_network_session_params_ = http_network_session_params;
   }
 
-  void set_transport_security_persister_path(
-      const base::FilePath& transport_security_persister_path) {
-    transport_security_persister_path_ = transport_security_persister_path;
+  void set_transport_security_persister_file_path(
+      const base::FilePath& transport_security_persister_file_path) {
+    transport_security_persister_file_path_ =
+        transport_security_persister_file_path;
   }
 
   void set_hsts_policy_bypass_list(
@@ -277,16 +269,13 @@ class NET_EXPORT URLRequestContextBuilder {
     throttling_enabled_ = throttling_enabled;
   }
 
-  void set_ct_verifier(std::unique_ptr<CTVerifier> ct_verifier);
   void set_ct_policy_enforcer(
       std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer);
+  void set_sct_auditing_delegate(
+      std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate);
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
 
   void SetCertVerifier(std::unique_ptr<CertVerifier> cert_verifier);
-  // Same as above, but does not take ownership. The CertVerifier must outlive
-  // the created URLRequestContext.
-  // TODO(mmenke): Remove once no longer needed.
-  void SetSharedCertVerifier(CertVerifier* shared_cert_verifier);
 
 #if BUILDFLAG(ENABLE_REPORTING)
   void set_reporting_policy(std::unique_ptr<ReportingPolicy> reporting_policy);
@@ -299,16 +288,6 @@ class NET_EXPORT URLRequestContextBuilder {
       std::unique_ptr<PersistentReportingAndNelStore>
           persistent_reporting_and_nel_store);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-
-  void SetInterceptors(std::vector<std::unique_ptr<URLRequestInterceptor>>
-                           url_request_interceptors);
-
-  // Sets a callback that is passed ownership of the URLRequestJobFactory, and
-  // can wrap it in another URLRequestJobFactory. URLRequestInterceptors can't
-  // handle intercepting unsupported protocols, while this case.
-  // TODO(mmenke): Remove this, once it's no longer needed.
-  void set_create_intercepting_job_factory(
-      CreateInterceptingJobFactory create_intercepting_job_factory);
 
   // Override the default in-memory cookie store. If |cookie_store| is NULL,
   // CookieStore will be disabled for this context.
@@ -327,6 +306,13 @@ class NET_EXPORT URLRequestContextBuilder {
       CreateHttpTransactionFactoryCallback
           create_http_network_transaction_factory);
 
+  // Sets a ClientSocketFactory so a test can mock out sockets. The
+  // ClientSocketFactory must be destroyed after the creates URLRequestContext.
+  void set_client_socket_factory_for_testing(
+      ClientSocketFactory* client_socket_factory_for_testing) {
+    client_socket_factory_for_testing_ = client_socket_factory_for_testing;
+  }
+
   // Creates a mostly self-contained URLRequestContext. May only be called once
   // per URLRequestContextBuilder. After this is called, the Builder can be
   // safely destroyed.
@@ -342,10 +328,10 @@ class NET_EXPORT URLRequestContextBuilder {
       URLRequestContext* url_request_context,
       HostResolver* host_resolver,
       NetworkDelegate* network_delegate,
-      NetLog* net_log);
+      NetLog* net_log,
+      bool pac_quick_check_enabled);
 
  private:
-  std::string name_;
   bool enable_brotli_ = false;
   NetworkQualityEstimator* network_quality_estimator_ = nullptr;
 
@@ -353,18 +339,14 @@ class NET_EXPORT URLRequestContextBuilder {
   std::string user_agent_;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  // Include support for ftp:// requests.
-  bool ftp_enabled_ = false;
-#endif
   bool http_cache_enabled_ = true;
   bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;
 
   HttpCacheParams http_cache_params_;
-  HttpNetworkSession::Params http_network_session_params_;
+  HttpNetworkSessionParams http_network_session_params_;
   CreateHttpTransactionFactoryCallback create_http_network_transaction_factory_;
-  base::FilePath transport_security_persister_path_;
+  base::FilePath transport_security_persister_file_path_;
   std::vector<std::string> hsts_policy_bypass_list_;
   NetLog* net_log_ = nullptr;
   std::unique_ptr<HostResolver> host_resolver_;
@@ -380,9 +362,8 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<CookieStore> cookie_store_;
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
   std::unique_ptr<CertVerifier> cert_verifier_;
-  CertVerifier* shared_cert_verifier_ = nullptr;
-  std::unique_ptr<CTVerifier> ct_verifier_;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
 #if BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<ReportingPolicy> reporting_policy_;
@@ -390,13 +371,11 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<PersistentReportingAndNelStore>
       persistent_reporting_and_nel_store_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-  std::vector<std::unique_ptr<URLRequestInterceptor>> url_request_interceptors_;
-  CreateInterceptingJobFactory create_intercepting_job_factory_;
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilder);
+  ClientSocketFactory* client_socket_factory_for_testing_ = nullptr;
 };
 
 }  // namespace net

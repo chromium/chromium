@@ -4,7 +4,7 @@
 
 package org.chromium.base.task;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,10 +28,6 @@ public class TaskRunnerImplTest {
         TaskRunner taskQueue = new TaskRunnerImpl(TaskTraits.USER_BLOCKING);
 
         // This should not time out.
-        try {
-            SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
-        } finally {
-            taskQueue.destroy();
-        }
+        SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
     }
 }

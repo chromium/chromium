@@ -6,41 +6,50 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
+#include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
-#include "ui/gfx/x/x11.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xinput.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace {
 
 // Converts ui::EventType to state for X*Events.
-unsigned int XEventState(int flags) {
-  return
-      ((flags & ui::EF_SHIFT_DOWN) ? ShiftMask : 0) |
-      ((flags & ui::EF_CAPS_LOCK_ON) ? LockMask : 0) |
-      ((flags & ui::EF_CONTROL_DOWN) ? ControlMask : 0) |
-      ((flags & ui::EF_ALT_DOWN) ? Mod1Mask : 0) |
-      ((flags & ui::EF_NUM_LOCK_ON) ? Mod2Mask : 0) |
-      ((flags & ui::EF_MOD3_DOWN) ? Mod3Mask : 0) |
-      ((flags & ui::EF_COMMAND_DOWN) ? Mod4Mask : 0) |
-      ((flags & ui::EF_ALTGR_DOWN) ? Mod5Mask : 0) |
-      ((flags & ui::EF_LEFT_MOUSE_BUTTON) ? Button1Mask: 0) |
-      ((flags & ui::EF_MIDDLE_MOUSE_BUTTON) ? Button2Mask: 0) |
-      ((flags & ui::EF_RIGHT_MOUSE_BUTTON) ? Button3Mask: 0);
+x11::KeyButMask XEventState(int flags) {
+  constexpr auto kNoMask = x11::KeyButMask{};
+  return ((flags & ui::EF_SHIFT_DOWN) ? x11::KeyButMask::Shift : kNoMask) |
+         ((flags & ui::EF_CAPS_LOCK_ON) ? x11::KeyButMask::Lock : kNoMask) |
+         ((flags & ui::EF_CONTROL_DOWN) ? x11::KeyButMask::Control : kNoMask) |
+         ((flags & ui::EF_ALT_DOWN) ? x11::KeyButMask::Mod1 : kNoMask) |
+         ((flags & ui::EF_NUM_LOCK_ON) ? x11::KeyButMask::Mod2 : kNoMask) |
+         ((flags & ui::EF_MOD3_DOWN) ? x11::KeyButMask::Mod3 : kNoMask) |
+         ((flags & ui::EF_COMMAND_DOWN) ? x11::KeyButMask::Mod4 : kNoMask) |
+         ((flags & ui::EF_ALTGR_DOWN) ? x11::KeyButMask::Mod5 : kNoMask) |
+         ((flags & ui::EF_LEFT_MOUSE_BUTTON) ? x11::KeyButMask::Button1
+                                             : kNoMask) |
+         ((flags & ui::EF_MIDDLE_MOUSE_BUTTON) ? x11::KeyButMask::Button2
+                                               : kNoMask) |
+         ((flags & ui::EF_RIGHT_MOUSE_BUTTON) ? x11::KeyButMask::Button3
+                                              : kNoMask);
 }
 
 // Converts EventType to XKeyEvent type.
-int XKeyEventType(ui::EventType type) {
+x11::KeyEvent::Opcode XKeyEventType(ui::EventType type) {
   switch (type) {
     case ui::ET_KEY_PRESSED:
-      return KeyPress;
+      return x11::KeyEvent::Press;
     case ui::ET_KEY_RELEASED:
-      return KeyRelease;
+      return x11::KeyEvent::Release;
     default:
-      return 0;
+      NOTREACHED();
+      return {};
   }
 }
 
@@ -48,9 +57,9 @@ int XKeyEventType(ui::EventType type) {
 int XIKeyEventType(ui::EventType type) {
   switch (type) {
     case ui::ET_KEY_PRESSED:
-      return XI_KeyPress;
+      return x11::Input::DeviceEvent::KeyPress;
     case ui::ET_KEY_RELEASED:
-      return XI_KeyRelease;
+      return x11::Input::DeviceEvent::KeyRelease;
     default:
       return 0;
   }
@@ -61,9 +70,9 @@ int XIButtonEventType(ui::EventType type) {
     case ui::ET_MOUSEWHEEL:
     case ui::ET_MOUSE_PRESSED:
       // The button release X events for mouse wheels are dropped by Aura.
-      return XI_ButtonPress;
+      return x11::Input::DeviceEvent::ButtonPress;
     case ui::ET_MOUSE_RELEASED:
-      return XI_ButtonRelease;
+      return x11::Input::DeviceEvent::ButtonRelease;
     default:
       NOTREACHED();
       return 0;
@@ -71,124 +80,104 @@ int XIButtonEventType(ui::EventType type) {
 }
 
 // Converts Aura event type and flag to X button event.
-unsigned int XButtonEventButton(ui::EventType type,
-                                int flags) {
+unsigned int XButtonEventButton(ui::EventType type, int flags) {
   // Aura events don't keep track of mouse wheel button, so just return
   // the first mouse wheel button.
   if (type == ui::ET_MOUSEWHEEL)
-    return Button4;
+    return 4;
 
   if (flags & ui::EF_LEFT_MOUSE_BUTTON)
-    return Button1;
+    return 1;
   if (flags & ui::EF_MIDDLE_MOUSE_BUTTON)
-    return Button2;
+    return 2;
   if (flags & ui::EF_RIGHT_MOUSE_BUTTON)
-    return Button3;
+    return 3;
 
   return 0;
 }
 
-void InitValuatorsForXIDeviceEvent(XIDeviceEvent* xiev) {
+void InitValuatorsForXIDeviceEvent(x11::Input::DeviceEvent* devev) {
   int valuator_count = ui::DeviceDataManagerX11::DT_LAST_ENTRY;
-  xiev->valuators.mask_len = (valuator_count / 8) + 1;
-  xiev->valuators.mask = new unsigned char[xiev->valuators.mask_len];
-  memset(xiev->valuators.mask, 0, xiev->valuators.mask_len);
-  xiev->valuators.values = new double[valuator_count];
+  auto mask_len = (valuator_count / 8) + 1;
+  devev->valuator_mask.resize((mask_len + 3) / 4);
+  devev->axisvalues.resize(valuator_count);
 }
 
-XEvent* CreateXInput2Event(int deviceid,
-                           int evtype,
-                           int tracking_id,
-                           const gfx::Point& location) {
-  XEvent* event = new XEvent;
-  memset(event, 0, sizeof(*event));
-  event->type = GenericEvent;
-  event->xcookie.data = new XIDeviceEvent;
-  XIDeviceEvent* xiev =
-      static_cast<XIDeviceEvent*>(event->xcookie.data);
-  memset(xiev, 0, sizeof(XIDeviceEvent));
-  xiev->deviceid = deviceid;
-  xiev->sourceid = deviceid;
-  xiev->evtype = evtype;
-  xiev->detail = tracking_id;
-  xiev->event_x = location.x();
-  xiev->event_y = location.y();
-  xiev->event = DefaultRootWindow(gfx::GetXDisplay());
-  if (evtype == XI_ButtonPress || evtype == XI_ButtonRelease) {
-    xiev->buttons.mask_len = 8;
-    xiev->buttons.mask = new unsigned char[xiev->buttons.mask_len];
-    memset(xiev->buttons.mask, 0, xiev->buttons.mask_len);
-  }
-  return event;
+template <typename T>
+x11::Input::Fp1616 ToFp1616(T x) {
+  return static_cast<x11::Input::Fp1616>(x * (1 << 16));
+}
+
+x11::Event CreateXInput2Event(int deviceid,
+                              int evtype,
+                              int tracking_id,
+                              const gfx::Point& location) {
+  x11::Input::DeviceEvent event;
+  event.deviceid = static_cast<x11::Input::DeviceId>(deviceid);
+  event.sourceid = static_cast<x11::Input::DeviceId>(deviceid);
+  event.opcode = static_cast<x11::Input::DeviceEvent::Opcode>(evtype);
+  event.detail = tracking_id;
+  event.event_x = ToFp1616(location.x()),
+  event.event_y = ToFp1616(location.y()),
+  event.event = x11::Connection::Get()->default_root();
+  event.button_mask = {0, 0};
+  return x11::Event(std::move(event));
 }
 
 }  // namespace
 
 namespace ui {
 
-// XInput2 events contain additional data that need to be explicitly freed (see
-// |CreateXInput2Event()|.
-void XEventDeleter::operator()(XEvent* event) {
-  if (event->type == GenericEvent) {
-    XIDeviceEvent* xiev =
-        static_cast<XIDeviceEvent*>(event->xcookie.data);
-    if (xiev) {
-      delete[] xiev->valuators.mask;
-      delete[] xiev->valuators.values;
-      delete[] xiev->buttons.mask;
-      delete xiev;
-    }
-  }
-  delete event;
-}
-
-ScopedXI2Event::ScopedXI2Event() {}
-ScopedXI2Event::~ScopedXI2Event() {}
+ScopedXI2Event::ScopedXI2Event() = default;
+ScopedXI2Event::~ScopedXI2Event() = default;
 
 void ScopedXI2Event::InitKeyEvent(EventType type,
                                   KeyboardCode key_code,
                                   int flags) {
-  XDisplay* display = gfx::GetXDisplay();
-  event_.reset(new XEvent);
-  memset(event_.get(), 0, sizeof(XEvent));
-  event_->type = XKeyEventType(type);
-  CHECK_NE(0, event_->type);
-  event_->xkey.serial = 0;
-  event_->xkey.send_event = 0;
-  event_->xkey.display = display;
-  event_->xkey.time = 0;
-  event_->xkey.window = 0;
-  event_->xkey.root = 0;
-  event_->xkey.subwindow = 0;
-  event_->xkey.x = 0;
-  event_->xkey.y = 0;
-  event_->xkey.x_root = 0;
-  event_->xkey.y_root = 0;
-  event_->xkey.state = XEventState(flags);
-  event_->xkey.keycode = XKeyCodeForWindowsKeyCode(key_code, flags, display);
-  event_->xkey.same_screen = 1;
+  x11::KeyEvent key_event{
+      .opcode = XKeyEventType(type),
+      .detail = static_cast<x11::KeyCode>(
+          XKeyCodeForWindowsKeyCode(key_code, flags, x11::Connection::Get())),
+      .state = static_cast<x11::KeyButMask>(XEventState(flags)),
+      .same_screen = true,
+  };
+
+  x11::Event x11_event(key_event);
+  event_ = std::move(x11_event);
 }
 
 void ScopedXI2Event::InitMotionEvent(const gfx::Point& location,
                                      const gfx::Point& root_location,
                                      int flags) {
-  XDisplay* display = gfx::GetXDisplay();
-  event_.reset(new XEvent);
-  memset(event_.get(), 0, sizeof(XEvent));
-  event_->type = MotionNotify;
-  event_->xmotion.serial = 0;
-  event_->xmotion.send_event = 0;
-  event_->xmotion.display = display;
-  event_->xmotion.time = 0;
-  event_->xmotion.window = 0;
-  event_->xmotion.root = 0;
-  event_->xkey.subwindow = 0;
-  event_->xmotion.x = location.x();
-  event_->xmotion.y = location.y();
-  event_->xmotion.x_root = root_location.x();
-  event_->xmotion.y_root = root_location.y();
-  event_->xmotion.state = XEventState(flags);
-  event_->xmotion.same_screen = 1;
+  x11::MotionNotifyEvent motion_event{
+      .root_x = static_cast<int16_t>(root_location.x()),
+      .root_y = static_cast<int16_t>(root_location.y()),
+      .event_x = static_cast<int16_t>(location.x()),
+      .event_y = static_cast<int16_t>(location.y()),
+      .state = static_cast<x11::KeyButMask>(XEventState(flags)),
+      .same_screen = true,
+  };
+
+  x11::Event x11_event(motion_event);
+  event_ = std::move(x11_event);
+}
+
+void ScopedXI2Event::InitButtonEvent(EventType type,
+                                     const gfx::Point& location,
+                                     int flags) {
+  x11::ButtonEvent button_event{
+      .opcode = type == ui::ET_MOUSE_PRESSED ? x11::ButtonEvent::Press
+                                             : x11::ButtonEvent::Release,
+      .detail = static_cast<x11::Button>(XButtonEventButton(type, flags)),
+      .root_x = static_cast<int16_t>(location.x()),
+      .root_y = static_cast<int16_t>(location.y()),
+      .event_x = static_cast<int16_t>(location.x()),
+      .event_y = static_cast<int16_t>(location.y()),
+      .same_screen = true,
+  };
+
+  x11::Event x11_event(button_event);
+  event_ = std::move(x11_event);
 }
 
 void ScopedXI2Event::InitGenericKeyEvent(int deviceid,
@@ -196,30 +185,28 @@ void ScopedXI2Event::InitGenericKeyEvent(int deviceid,
                                          EventType type,
                                          KeyboardCode key_code,
                                          int flags) {
-  event_.reset(
-      CreateXInput2Event(deviceid, XIKeyEventType(type), 0, gfx::Point()));
-  XIDeviceEvent* xievent = static_cast<XIDeviceEvent*>(event_->xcookie.data);
-  CHECK_NE(0, xievent->evtype);
-  XDisplay* display = gfx::GetXDisplay();
-  event_->xgeneric.display = display;
-  xievent->display = display;
-  xievent->mods.effective = XEventState(flags);
-  xievent->detail = XKeyCodeForWindowsKeyCode(key_code, flags, display);
-  xievent->sourceid = sourceid;
+  event_ = CreateXInput2Event(deviceid, XIKeyEventType(type), 0, gfx::Point());
+  auto* dev_event = event_.As<x11::Input::DeviceEvent>();
+  dev_event->mods.effective = static_cast<uint32_t>(XEventState(flags));
+  dev_event->detail =
+      XKeyCodeForWindowsKeyCode(key_code, flags, x11::Connection::Get());
+  dev_event->sourceid = static_cast<x11::Input::DeviceId>(sourceid);
 }
 
 void ScopedXI2Event::InitGenericButtonEvent(int deviceid,
                                             EventType type,
                                             const gfx::Point& location,
                                             int flags) {
-  event_.reset(CreateXInput2Event(deviceid,
-                                  XIButtonEventType(type), 0, gfx::Point()));
-  XIDeviceEvent* xievent = static_cast<XIDeviceEvent*>(event_->xcookie.data);
-  xievent->mods.effective = XEventState(flags);
-  xievent->detail = XButtonEventButton(type, flags);
-  xievent->event_x = location.x();
-  xievent->event_y = location.y();
-  XISetMask(xievent->buttons.mask, xievent->detail);
+  event_ =
+      CreateXInput2Event(deviceid, XIButtonEventType(type), 0, gfx::Point());
+
+  auto* dev_event = event_.As<x11::Input::DeviceEvent>();
+  dev_event->mods.effective = static_cast<uint32_t>(XEventState(flags));
+  dev_event->detail = XButtonEventButton(type, flags);
+  dev_event->event_x = ToFp1616(location.x()),
+  dev_event->event_y = ToFp1616(location.y()),
+  SetXinputMask(dev_event->button_mask.data(), XButtonEventButton(type, flags));
+
   // Setup an empty valuator list for generic button events.
   SetUpValuators(std::vector<Valuator>());
 }
@@ -228,8 +215,7 @@ void ScopedXI2Event::InitGenericMouseWheelEvent(int deviceid,
                                                 int wheel_delta,
                                                 int flags) {
   InitGenericButtonEvent(deviceid, ui::ET_MOUSEWHEEL, gfx::Point(), flags);
-  XIDeviceEvent* xievent = static_cast<XIDeviceEvent*>(event_->xcookie.data);
-  xievent->detail = wheel_delta > 0 ? Button4 : Button5;
+  event_.As<x11::Input::DeviceEvent>()->detail = wheel_delta > 0 ? 4 : 5;
 }
 
 void ScopedXI2Event::InitScrollEvent(int deviceid,
@@ -238,15 +224,15 @@ void ScopedXI2Event::InitScrollEvent(int deviceid,
                                      int x_offset_ordinal,
                                      int y_offset_ordinal,
                                      int finger_count) {
-  event_.reset(CreateXInput2Event(deviceid, XI_Motion, 0, gfx::Point()));
+  event_ = CreateXInput2Event(deviceid, x11::Input::DeviceEvent::Motion, 0,
+                              gfx::Point());
 
   Valuator valuators[] = {
-    Valuator(DeviceDataManagerX11::DT_CMT_SCROLL_X, x_offset),
-    Valuator(DeviceDataManagerX11::DT_CMT_SCROLL_Y, y_offset),
-    Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_offset_ordinal),
-    Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_offset_ordinal),
-    Valuator(DeviceDataManagerX11::DT_CMT_FINGER_COUNT, finger_count)
-  };
+      Valuator(DeviceDataManagerX11::DT_CMT_SCROLL_X, x_offset),
+      Valuator(DeviceDataManagerX11::DT_CMT_SCROLL_Y, y_offset),
+      Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_offset_ordinal),
+      Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_offset_ordinal),
+      Valuator(DeviceDataManagerX11::DT_CMT_FINGER_COUNT, finger_count)};
   SetUpValuators(
       std::vector<Valuator>(valuators, valuators + base::size(valuators)));
 }
@@ -257,15 +243,15 @@ void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
                                           int x_velocity_ordinal,
                                           int y_velocity_ordinal,
                                           bool is_cancel) {
-  event_.reset(CreateXInput2Event(deviceid, XI_Motion, deviceid, gfx::Point()));
+  event_ = CreateXInput2Event(deviceid, x11::Input::DeviceEvent::Motion,
+                              deviceid, gfx::Point());
 
   Valuator valuators[] = {
-    Valuator(DeviceDataManagerX11::DT_CMT_FLING_STATE, is_cancel ? 1 : 0),
-    Valuator(DeviceDataManagerX11::DT_CMT_FLING_Y, y_velocity),
-    Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_velocity_ordinal),
-    Valuator(DeviceDataManagerX11::DT_CMT_FLING_X, x_velocity),
-    Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_velocity_ordinal)
-  };
+      Valuator(DeviceDataManagerX11::DT_CMT_FLING_STATE, is_cancel ? 1 : 0),
+      Valuator(DeviceDataManagerX11::DT_CMT_FLING_Y, y_velocity),
+      Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_velocity_ordinal),
+      Valuator(DeviceDataManagerX11::DT_CMT_FLING_X, x_velocity),
+      Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_velocity_ordinal)};
 
   SetUpValuators(
       std::vector<Valuator>(valuators, valuators + base::size(valuators)));
@@ -276,7 +262,7 @@ void ScopedXI2Event::InitTouchEvent(int deviceid,
                                     int tracking_id,
                                     const gfx::Point& location,
                                     const std::vector<Valuator>& valuators) {
-  event_.reset(CreateXInput2Event(deviceid, evtype, tracking_id, location));
+  event_ = CreateXInput2Event(deviceid, evtype, tracking_id, location);
 
   // If a timestamp was specified, setup the event.
   for (size_t i = 0; i < valuators.size(); ++i) {
@@ -289,22 +275,19 @@ void ScopedXI2Event::InitTouchEvent(int deviceid,
 
   // No timestamp was specified. Use |ui::EventTimeForNow()|.
   std::vector<Valuator> valuators_with_time = valuators;
-  valuators_with_time.push_back(
-      Valuator(DeviceDataManagerX11::DT_TOUCH_RAW_TIMESTAMP,
-               (ui::EventTimeForNow() - base::TimeTicks()).InMicroseconds()));
+  valuators_with_time.emplace_back(
+      DeviceDataManagerX11::DT_TOUCH_RAW_TIMESTAMP,
+      (ui::EventTimeForNow() - base::TimeTicks()).InMicroseconds());
   SetUpValuators(valuators_with_time);
 }
 
 void ScopedXI2Event::SetUpValuators(const std::vector<Valuator>& valuators) {
-  CHECK(event_.get());
-  CHECK_EQ(GenericEvent, event_->type);
-  XIDeviceEvent* xiev = static_cast<XIDeviceEvent*>(event_->xcookie.data);
-  InitValuatorsForXIDeviceEvent(xiev);
+  auto* devev = event_.As<x11::Input::DeviceEvent>();
+  CHECK(devev);
+  InitValuatorsForXIDeviceEvent(devev);
   ui::DeviceDataManagerX11* manager = ui::DeviceDataManagerX11::GetInstance();
-  for (size_t i = 0; i < valuators.size(); ++i) {
-    manager->SetValuatorDataForTest(xiev, valuators[i].data_type,
-                                    valuators[i].value);
-  }
+  for (auto valuator : valuators)
+    manager->SetValuatorDataForTest(devev, valuator.data_type, valuator.value);
 }
 
 void SetUpTouchPadForTest(int deviceid) {

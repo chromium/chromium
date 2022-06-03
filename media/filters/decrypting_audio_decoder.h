@@ -8,17 +8,16 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "media/base/audio_decoder.h"
+#include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -35,19 +34,25 @@ class MediaLog;
 class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
  public:
   DecryptingAudioDecoder(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
+
+  DecryptingAudioDecoder(const DecryptingAudioDecoder&) = delete;
+  DecryptingAudioDecoder& operator=(const DecryptingAudioDecoder&) = delete;
+
   ~DecryptingAudioDecoder() override;
 
+  // Decoder implementation
+  bool SupportsDecryption() const override;
+  AudioDecoderType GetDecoderType() const override;
+
   // AudioDecoder implementation.
-  std::string GetDisplayName() const override;
   void Initialize(const AudioDecoderConfig& config,
                   CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure closure) override;
 
  private:
@@ -78,9 +83,8 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
                     Decryptor::Status status,
                     const Decryptor::AudioFrames& frames);
 
-  // Callback for the |decryptor_| to notify this object that a new key has been
-  // added.
-  void OnKeyAdded();
+  // Callback for the CDM to notify |this|.
+  void OnCdmContextEvent(CdmContext::Event event);
 
   // Resets decoder and calls |reset_cb_|.
   void DoReset();
@@ -89,7 +93,7 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
   void ProcessDecodedFrames(const Decryptor::AudioFrames& frames);
 
   // Set in constructor.
-  scoped_refptr<base::SingleThreadTaskRunner> const task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> const task_runner_;
   MediaLog* const media_log_;
 
   State state_ = kUninitialized;
@@ -121,10 +125,10 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
   // clear content, we want to ensure this decoder remains used.
   bool support_clear_content_ = false;
 
-  base::WeakPtr<DecryptingAudioDecoder> weak_this_;
-  base::WeakPtrFactory<DecryptingAudioDecoder> weak_factory_{this};
+  // To keep the CdmContext event callback registered.
+  std::unique_ptr<CallbackRegistration> event_cb_registration_;
 
-  DISALLOW_COPY_AND_ASSIGN(DecryptingAudioDecoder);
+  base::WeakPtrFactory<DecryptingAudioDecoder> weak_factory_{this};
 };
 
 }  // namespace media

@@ -18,11 +18,11 @@ LogoView::LogoView() = default;
 LogoView::~LogoView() = default;
 
 // static
-LogoView* LogoView::Create() {
+std::unique_ptr<LogoView> LogoView::Create() {
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  return new LogoViewImpl();
+  return std::make_unique<LogoViewImpl>();
 #else
-  return new LogoView();
+  return std::make_unique<LogoView>();
 #endif
 }
 

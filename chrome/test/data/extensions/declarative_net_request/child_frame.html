@@ -1,5 +1,16 @@
 <html>
   <head>
-    <script src="subresources/script.js"></script>
   </head>
+  <body>
+    <script type="text/javascript">
+      let params = (new URL(document.location)).searchParams;
+      let frameId = 'none';
+      if (params.has('frame'))
+        frameId = params.get('frame');
+
+      var script = document.createElement('script');
+      script.src = 'subresources/script.js?frameId=' + frameId;
+      document.body.appendChild(script);
+    </script>
+  </body>
 </html>

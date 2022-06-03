@@ -5,12 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 
-#include "base/macros.h"
-#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 
 namespace blink {
 namespace scheduler {
@@ -18,11 +17,12 @@ namespace scheduler {
 // Estimates how much idle time there is available.  Ignores nested tasks.
 class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
  public:
-  IdleTimeEstimator(const scoped_refptr<base::sequence_manager::TaskQueue>&
-                        compositor_task_runner,
-                    const base::TickClock* time_source,
-                    int sample_count,
-                    double estimation_percentile);
+  IdleTimeEstimator(
+      const base::TickClock* time_source,
+      int sample_count,
+      double estimation_percentile);
+  IdleTimeEstimator(const IdleTimeEstimator&) = delete;
+  IdleTimeEstimator& operator=(const IdleTimeEstimator&) = delete;
 
   ~IdleTimeEstimator() override;
 
@@ -40,8 +40,12 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
                        bool was_blocked_or_low_priority) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 
+  void AddCompositorTaskQueue(
+      scoped_refptr<MainThreadTaskQueue> compositor_task_queue);
+  void RemoveCompositorTaskQueue(
+      scoped_refptr<MainThreadTaskQueue> compositor_task_queue);
+
  private:
-  scoped_refptr<base::sequence_manager::TaskQueue> compositor_task_queue_;
   cc::RollingTimeDeltaHistory per_frame_compositor_task_runtime_;
   const base::TickClock* time_source_;  // NOT OWNED
   double estimation_percentile_;
@@ -51,8 +55,6 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
   base::TimeDelta cumulative_compositor_runtime_;
   int nesting_level_;
   bool did_commit_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleTimeEstimator);
 };
 
 }  // namespace scheduler

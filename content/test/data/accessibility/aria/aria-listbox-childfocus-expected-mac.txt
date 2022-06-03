@@ -1,5 +1,5 @@
 AXWebArea
-++AXList AXOrientation='AXVerticalOrientation' AXSelectedChildren=["AXStaticText 2"] AXVisibleChildren=["AXStaticText 1","AXStaticText 2","AXStaticText 3"]
+++AXList AXOrientation='AXVerticalOrientation' AXSelectedChildren=[:4] AXVisibleChildren=[:3, :4, :5]
 ++++AXStaticText AXValue='1'
 ++++AXStaticText AXValue='2'
 ++++AXStaticText AXValue='3'

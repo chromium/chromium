@@ -4,7 +4,6 @@
 
 #include "gin/per_context_data.h"
 
-#include "base/logging.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/wrapper_info.h"
 
@@ -12,8 +11,7 @@ namespace gin {
 
 PerContextData::PerContextData(ContextHolder* context_holder,
                                v8::Local<v8::Context> context)
-    : context_holder_(context_holder),
-      runner_(NULL) {
+    : context_holder_(context_holder), runner_(nullptr) {
   context->SetAlignedPointerInEmbedderData(
       kPerContextDataStartIndex + kEmbedderNativeGin, this);
 }

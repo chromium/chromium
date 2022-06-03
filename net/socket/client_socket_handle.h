@@ -6,14 +6,12 @@
 #define NET_SOCKET_CLIENT_SOCKET_HANDLE_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -28,6 +26,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -51,6 +50,10 @@ class NET_EXPORT ClientSocketHandle {
   };
 
   ClientSocketHandle();
+
+  ClientSocketHandle(const ClientSocketHandle&) = delete;
+  ClientSocketHandle& operator=(const ClientSocketHandle&) = delete;
+
   ~ClientSocketHandle();
 
   // Initializes a ClientSocketHandle object, which involves talking to the
@@ -85,7 +88,7 @@ class NET_EXPORT ClientSocketHandle {
   int Init(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       ClientSocketPool::RespectLimits respect_limits,
@@ -132,7 +135,7 @@ class NET_EXPORT ClientSocketHandle {
   void RemoveHigherLayeredPool(HigherLayeredPool* higher_pool);
 
   // Closes idle sockets that are in the same group with |this|.
-  void CloseIdleSocketsInGroup();
+  void CloseIdleSocketsInGroup(const char* net_log_reason_utf8);
 
   // Returns true when Init() has completed successfully.
   bool is_initialized() const { return is_initialized_; }
@@ -144,11 +147,6 @@ class NET_EXPORT ClientSocketHandle {
   // |socket_| is NULL.
   bool GetLoadTimingInfo(bool is_reused,
                          LoadTimingInfo* load_timing_info) const;
-
-  // Dumps memory allocation stats into |stats|. |stats| can be assumed as being
-  // default initialized upon entry. Implementation overrides fields in
-  // |stats|.
-  void DumpMemoryStats(StreamSocket::SocketMemoryStats* stats) const;
 
   // Used by ClientSocketPool to initialize the ClientSocketHandle.
   //
@@ -251,8 +249,6 @@ class NET_EXPORT ClientSocketHandle {
 
   // Timing information is set when a connection is successfully established.
   LoadTimingInfo::ConnectTiming connect_timing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketHandle);
 };
 
 }  // namespace net

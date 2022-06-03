@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 
-class SessionRestoreStatsCollector;
 class TabLoaderTester;
 
 // TabLoader is responsible for loading tabs after session restore has finished
@@ -64,6 +62,9 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   using RestoredTab = SessionRestoreDelegate::RestoredTab;
 
+  TabLoader(const TabLoader&) = delete;
+  TabLoader& operator=(const TabLoader&) = delete;
+
   // Called to start restoring tabs.
   static void RestoreTabs(const std::vector<RestoredTab>& tabs,
                           const base::TimeTicks& restore_started);
@@ -85,7 +86,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
     // For use with sorted STL containers.
     bool operator<(const LoadingTab& rhs) const {
       return std::tie(loading_start_time, contents) <
-             std::tie(rhs.loading_start_time, contents);
+             std::tie(rhs.loading_start_time, rhs.contents);
     }
   };
 
@@ -93,7 +94,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
   using TabSet = base::flat_set<content::WebContents*>;
   using TabVector = std::vector<std::pair<float, content::WebContents*>>;
 
-  explicit TabLoader(base::TimeTicks restore_started);
+  TabLoader();
   ~TabLoader() override;
 
   // TabLoaderCallback:
@@ -292,11 +293,6 @@ class TabLoader : public base::RefCounted<TabLoader>,
   // SessionRestoreImpls reference it.
   scoped_refptr<TabLoader> this_retainer_;
 
-  // The SessionRestoreStatsCollector associated with this TabLoader. This is
-  // explicitly referenced so that it can be notified of deferred tab loads due
-  // to memory pressure.
-  scoped_refptr<SessionRestoreStatsCollector> stats_collector_;
-
   // The tick clock used by this class. This is used as a testing seam. If not
   // overridden it defaults to a base::DefaultTickClock.
   const base::TickClock* clock_;
@@ -314,8 +310,6 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // Callback that is invoked by calls to SetTabLoadingEnabled.
   base::RepeatingCallback<void(bool)>* tab_loading_enabled_callback_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoader);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_H_

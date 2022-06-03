@@ -1,3 +1,2 @@
 AXWebArea
 ++AXStaticText AXValue='Done'
-<-- End-of-file -->

@@ -12,7 +12,7 @@ CustomElementReaction::CustomElementReaction(
     CustomElementDefinition& definition)
     : definition_(definition) {}
 
-void CustomElementReaction::Trace(Visitor* visitor) {
+void CustomElementReaction::Trace(Visitor* visitor) const {
   visitor->Trace(definition_);
 }
 

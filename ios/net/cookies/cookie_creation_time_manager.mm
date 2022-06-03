@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "ios/net/ios_net_buildflags.h"

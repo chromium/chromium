@@ -10,21 +10,24 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/net/nss_service.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/ssl/client_cert_identity.h"
 
 namespace content {
 class BrowserContext;
-class ResourceContext;
 }  // namespace content
 
-#if defined(OS_CHROMEOS)
-namespace chromeos {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
 class CertificateProvider;
+}  // namespace ash
+
+namespace chromeos {
 class PolicyCertificateProvider;
 }
 #endif
@@ -47,18 +50,22 @@ class CertificateManagerModel {
 
     CertInfo(net::ScopedCERTCertificate cert,
              net::CertType type,
-             base::string16 name,
+             std::u16string name,
              bool can_be_deleted,
              bool untrusted,
              Source source,
              bool web_trust_anchor,
              bool hardware_backed,
              bool device_wide);
+
+    CertInfo(const CertInfo&) = delete;
+    CertInfo& operator=(const CertInfo&) = delete;
+
     ~CertInfo();
 
     CERTCertificate* cert() const { return cert_.get(); }
     net::CertType type() const { return type_; }
-    const base::string16& name() const { return name_; }
+    const std::u16string& name() const { return name_; }
     bool can_be_deleted() const { return can_be_deleted_; }
     bool untrusted() const { return untrusted_; }
     Source source() const { return source_; }
@@ -78,7 +85,7 @@ class CertificateManagerModel {
     net::CertType type_;
 
     // A user readable certificate name.
-    base::string16 name_;
+    std::u16string name_;
 
     // false if the certificate is stored on a read-only slot or provided by
     // enterprise policy or an extension, otherwise true.
@@ -102,8 +109,6 @@ class CertificateManagerModel {
     // Note: can be true only on Chrome OS.
     bool device_wide_;
 
-    DISALLOW_COPY_AND_ASSIGN(CertInfo);
-
     FRIEND_TEST_ALL_PREFIXES(CertificateHandlerTest,
                              CanDeleteCertificateCommonTest);
     FRIEND_TEST_ALL_PREFIXES(CertificateHandlerTest,
@@ -121,30 +126,31 @@ class CertificateManagerModel {
 
   // Holds parameters during construction.
   struct Params {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // May be nullptr.
     chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
     // May be nullptr.
-    std::unique_ptr<chromeos::CertificateProvider>
-        extension_certificate_provider;
+    std::unique_ptr<ash::CertificateProvider> extension_certificate_provider;
 #endif
 
     Params();
-    Params(Params&& other);
-    ~Params();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Params);
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+
+    Params(Params&& other);
+
+    ~Params();
   };
 
   // Map from the subject organization name to the list of certs from that
   // organization.  If a cert does not have an organization name, the
   // subject's CertPrincipal::GetDisplayName() value is used instead.
-  typedef std::map<std::string, std::vector<std::unique_ptr<CertInfo>>>
-      OrgGroupingMap;
+  using OrgGroupingMap =
+      std::map<std::string, std::vector<std::unique_ptr<CertInfo>>>;
 
-  typedef base::Callback<void(std::unique_ptr<CertificateManagerModel>)>
-      CreationCallback;
+  using CreationCallback =
+      base::OnceCallback<void(std::unique_ptr<CertificateManagerModel>)>;
 
   class Observer {
    public:
@@ -162,19 +168,18 @@ class CertificateManagerModel {
   // |browser_context|.
   static void Create(content::BrowserContext* browser_context,
                      Observer* observer,
-                     const CreationCallback& callback);
+                     CreationCallback callback);
 
   // Use |Create| instead to create a |CertificateManagerModel| for a
   // |BrowserContext|.
   CertificateManagerModel(std::unique_ptr<Params> params,
                           Observer* observer,
-                          net::NSSCertDatabase* nss_cert_database,
-                          bool is_user_db_available,
-                          bool is_tpm_available);
-  ~CertificateManagerModel();
+                          net::NSSCertDatabase* nss_cert_database);
 
-  bool is_user_db_available() const { return is_user_db_available_; }
-  bool is_tpm_available() const { return is_tpm_available_; }
+  CertificateManagerModel(const CertificateManagerModel&) = delete;
+  CertificateManagerModel& operator=(const CertificateManagerModel&) = delete;
+
+  ~CertificateManagerModel();
 
   // Accessor for read-only access to the underlying NSSCertDatabase.
   const net::NSSCertDatabase* cert_db() const { return cert_db_; }
@@ -193,8 +198,10 @@ class CertificateManagerModel {
   // |data|, using the given |password|. If |is_extractable| is false,
   // mark the private key as unextractable from the slot.
   // Returns a net error code on failure.
-  int ImportFromPKCS12(PK11SlotInfo* slot_info, const std::string& data,
-                       const base::string16& password, bool is_extractable);
+  int ImportFromPKCS12(PK11SlotInfo* slot_info,
+                       const std::string& data,
+                       const std::u16string& password,
+                       bool is_extractable);
 
   // Import user certificate from DER encoded |data|.
   // Returns a net error code on failure.
@@ -252,19 +259,17 @@ class CertificateManagerModel {
   static void DidGetCertDBOnUIThread(
       std::unique_ptr<Params> params,
       CertificateManagerModel::Observer* observer,
-      const CreationCallback& callback,
-      net::NSSCertDatabase* cert_db,
-      bool is_user_db_available,
-      bool is_tpm_available);
+      CreationCallback callback,
+      net::NSSCertDatabase* cert_db);
   static void DidGetCertDBOnIOThread(
       std::unique_ptr<Params> params,
       CertificateManagerModel::Observer* observer,
-      const CreationCallback& callback,
+      CreationCallback callback,
       net::NSSCertDatabase* cert_db);
   static void GetCertDBOnIOThread(std::unique_ptr<Params> params,
-                                  content::ResourceContext* resource_context,
+                                  NssCertDatabaseGetter database_getter,
                                   CertificateManagerModel::Observer* observer,
-                                  const CreationCallback& callback);
+                                  CreationCallback callback);
 
   net::NSSCertDatabase* cert_db_;
 
@@ -275,15 +280,8 @@ class CertificateManagerModel {
 
   bool hold_back_updates_ = false;
 
-  // Whether the certificate database has a public slot associated with the
-  // profile. If not set, importing certificates is not allowed with this model.
-  bool is_user_db_available_;
-  bool is_tpm_available_;
-
   // The observer to notify when certificate list is refreshed.
   Observer* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerModel);
 };
 
 #endif  // CHROME_BROWSER_CERTIFICATE_MANAGER_MODEL_H_

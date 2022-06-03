@@ -20,9 +20,7 @@ frame.addEventListener('load', () => {
   // Throttling only happens after the first layout, so start the test after
   // that.
   requestAnimationFrame(() => {
-    setTimeout(() => {
-      frame.contentWindow.postMessage(null, '*');
-    });
+    frame.contentWindow.postMessage(null, '*');
   });
 });
 

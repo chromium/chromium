@@ -8,16 +8,16 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_migrator.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_export.h"
 
@@ -25,15 +25,24 @@ namespace policy {
 
 class PolicyMap;
 
+#if defined(OS_ANDROID)
+namespace android {
+class PolicyServiceAndroid;
+}
+#endif
+
 class POLICY_EXPORT PolicyServiceImpl
     : public PolicyService,
       public ConfigurationPolicyProvider::Observer {
  public:
   using Providers = std::vector<ConfigurationPolicyProvider*>;
+  using Migrators = std::vector<std::unique_ptr<PolicyMigrator>>;
 
   // Creates a new PolicyServiceImpl with the list of
   // ConfigurationPolicyProviders, in order of decreasing priority.
-  explicit PolicyServiceImpl(Providers providers);
+  explicit PolicyServiceImpl(
+      Providers providers,
+      Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>());
 
   // Creates a new PolicyServiceImpl with the list of
   // ConfigurationPolicyProviders, in order of decreasing priority.
@@ -41,7 +50,11 @@ class POLICY_EXPORT PolicyServiceImpl
   // initialization has completed (for any domain) after
   // |UnthrottleInitialization| has been called.
   static std::unique_ptr<PolicyServiceImpl> CreateWithThrottledInitialization(
-      Providers providers);
+      Providers providers,
+      Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>());
+
+  PolicyServiceImpl(const PolicyServiceImpl&) = delete;
+  PolicyServiceImpl& operator=(const PolicyServiceImpl&) = delete;
 
   ~PolicyServiceImpl() override;
 
@@ -55,7 +68,11 @@ class POLICY_EXPORT PolicyServiceImpl
   bool HasProvider(ConfigurationPolicyProvider* provider) const override;
   const PolicyMap& GetPolicies(const PolicyNamespace& ns) const override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
-  void RefreshPolicies(const base::Closure& callback) override;
+  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
+  void RefreshPolicies(base::OnceClosure callback) override;
+#if defined(OS_ANDROID)
+  android::PolicyServiceAndroid* GetPolicyServiceAndroid() override;
+#endif
 
   // If this PolicyServiceImpl has been created using
   // |CreateWithThrottledInitialization|, calling UnthrottleInitialization will
@@ -66,8 +83,7 @@ class POLICY_EXPORT PolicyServiceImpl
   void UnthrottleInitialization();
 
  private:
-  using Observers =
-      base::ObserverList<PolicyService::Observer, true>::Unchecked;
+  enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
 
   // This constructor is not publicly visible so callers that want a
   // PolicyServiceImpl with throttled initialization use
@@ -75,7 +91,9 @@ class POLICY_EXPORT PolicyServiceImpl
   // If |initialization_throttled| is true, this PolicyServiceImpl will only
   // notify observers that initialization has completed (for any domain) after
   // |UnthrottleInitialization| has been called.
-  PolicyServiceImpl(Providers providers, bool initialization_throttled);
+  PolicyServiceImpl(Providers providers,
+                    Migrators migrators,
+                    bool initialization_throttled);
 
   // ConfigurationPolicyProvider::Observer overrides:
   void OnUpdatePolicy(ConfigurationPolicyProvider* provider) override;
@@ -92,16 +110,19 @@ class POLICY_EXPORT PolicyServiceImpl
   // of namespaces whose policies have been modified.
   void MergeAndTriggerUpdates();
 
-  // Checks if all providers are initialized and sets |initialization_complete_|
-  // accordingly. If initialization is not throttled, will also notify the
-  // observers if the service just became initialized.
-  void CheckInitializationComplete();
+  // Checks if all providers are initialized or have loaded their policies and
+  // sets |policy_domain_status_| accordingly.
+  // Returns the updated domains. The returned domains should be passed to
+  // MaybeNotifyPolicyDomainStatusChange.
+  std::vector<PolicyDomain> UpdatePolicyDomainStatus();
 
-  // If initialization is complete for |policy_domain| and initialization is not
-  // throttled, will notify obserers for |policy_domain| that it has been
-  // initialized. This function should only be called when |policy_domain| just
-  // became initialized or when initialization has been unthrottled.
-  void MaybeNotifyInitializationComplete(PolicyDomain policy_domain);
+  // If initialization is not throttled, observers of |updated_domains| of the
+  // initialization will be notified of the domains' initialization and of the
+  // first policies being loaded. This function should only be called when
+  // |updated_domains| just became initialized, just got its first policies or
+  // when initialization has been unthrottled.
+  void MaybeNotifyPolicyDomainStatusChange(
+      const std::vector<PolicyDomain>& updated_domains);
 
   // Invokes all the refresh callbacks if there are no more refreshes pending.
   void CheckRefreshComplete();
@@ -109,14 +130,18 @@ class POLICY_EXPORT PolicyServiceImpl
   // The providers, in order of decreasing priority.
   Providers providers_;
 
+  Migrators migrators_;
+
   // Maps each policy namespace to its current policies.
   PolicyBundle policy_bundle_;
 
   // Maps each policy domain to its observer list.
-  std::map<PolicyDomain, std::unique_ptr<Observers>> observers_;
+  std::map<PolicyDomain,
+           base::ObserverList<PolicyService::Observer, /*check_empty=*/true>>
+      observers_;
 
-  // True if all the providers are initialized for the indexed policy domain.
-  bool initialization_complete_[POLICY_DOMAIN_SIZE];
+  // The status of all the providers for the indexed policy domain.
+  PolicyDomainStatus policy_domain_status_[POLICY_DOMAIN_SIZE];
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().
@@ -124,7 +149,7 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // List of callbacks to invoke once all providers refresh after a
   // RefreshPolicies() call.
-  std::vector<base::Closure> refresh_callbacks_;
+  std::vector<base::OnceClosure> refresh_callbacks_;
 
   // Observers for propagation of policy updates by
   // ConfigurationPolicyProviders.
@@ -143,14 +168,20 @@ class POLICY_EXPORT PolicyServiceImpl
   // initialization signal.
   bool initialization_throttled_;
 
-  // Used to verify thread-safe usage.
-  base::ThreadChecker thread_checker_;
+#if defined(OS_ANDROID)
+  std::unique_ptr<android::PolicyServiceAndroid> policy_service_android_;
+#endif
+
+  // Used to verify usage in correct sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to create tasks to delay new policy updates while we may be already
   // processing previous policy updates.
+  // All WeakPtrs will be reset in |RefreshPolicies| and |OnUpdatePolicy|.
   base::WeakPtrFactory<PolicyServiceImpl> update_task_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PolicyServiceImpl);
+  // Used to protect against crbug.com/747817 until crbug.com/1221454 is done.
+  base::WeakPtrFactory<PolicyServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace policy

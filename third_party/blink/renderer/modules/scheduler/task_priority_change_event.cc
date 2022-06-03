@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/modules/scheduler/task_priority_change_event.h"
+
+#include "third_party/blink/renderer/bindings/modules/v8/v8_task_priority_change_event_init.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
+
+namespace blink {
+
+// static
+TaskPriorityChangeEvent* TaskPriorityChangeEvent::Create(
+    const AtomicString& type,
+    const TaskPriorityChangeEventInit* initializer) {
+  return MakeGarbageCollected<TaskPriorityChangeEvent>(type, initializer);
+}
+
+TaskPriorityChangeEvent::TaskPriorityChangeEvent(
+    const AtomicString& type,
+    const TaskPriorityChangeEventInit* initializer)
+    : Event(type, initializer),
+      previous_priority_(initializer->previousPriority()) {}
+
+TaskPriorityChangeEvent::~TaskPriorityChangeEvent() = default;
+
+const AtomicString& TaskPriorityChangeEvent::InterfaceName() const {
+  return event_interface_names::kTaskPriorityChangeEvent;
+}
+
+V8TaskPriority TaskPriorityChangeEvent::previousPriority() const {
+  return previous_priority_;
+}
+
+}  // namespace blink

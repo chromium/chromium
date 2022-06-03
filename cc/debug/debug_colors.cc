@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
-
 #include "cc/debug/debug_colors.h"
+
+#include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace cc {
 
@@ -296,7 +297,7 @@ SkColor DebugColors::PictureBorderColor() {
 // ======= HUD widget colors =======
 
 SkColor DebugColors::HUDBackgroundColor() {
-  return SkColorSetARGB(208, 17, 17, 17);
+  return SkColorSetARGB(217, 0, 0, 0);
 }
 SkColor DebugColors::HUDSeparatorLineColor() {
   return SkColorSetARGB(64, 0, 255, 0);
@@ -312,6 +313,21 @@ SkColor DebugColors::PlatformLayerTreeTextColor() { return SK_ColorRED; }
 SkColor DebugColors::FPSDisplayTextAndGraphColor() {
   return SK_ColorGREEN;
 }
+
+// Color used to represent dropped compositor frames.
+SkColor DebugColors::FPSDisplayDroppedFrame() {
+  return SkColorSetRGB(202, 91, 29);
+}
+// Color used to represent a "partial" frame, i.e. a frame that missed
+// its commit deadline.
+SkColor DebugColors::FPSDisplayMissedFrame() {
+  return SkColorSetRGB(255, 245, 0);
+}
+// Color used to represent a frame that successfully rendered.
+SkColor DebugColors::FPSDisplaySuccessfulFrame() {
+  return SkColorSetARGB(191, 174, 221, 255);
+}
+
 SkColor DebugColors::MemoryDisplayTextColor() {
   return SK_ColorCYAN;
 }
@@ -319,6 +335,32 @@ SkColor DebugColors::MemoryDisplayTextColor() {
 // Paint time display in green (similar to paint times in the WebInspector)
 SkColor DebugColors::PaintTimeDisplayTextAndGraphColor() {
   return SkColorSetRGB(75, 155, 55);
+}
+
+SkColor DebugColors::NonLCDTextHighlightColor(LCDTextDisallowedReason reason) {
+  switch (reason) {
+    case LCDTextDisallowedReason::kNone:
+    case LCDTextDisallowedReason::kNoText:
+      return SK_ColorTRANSPARENT;
+    case LCDTextDisallowedReason::kSetting:
+      return SkColorSetARGB(96, 128, 255, 0);
+    case LCDTextDisallowedReason::kBackgroundColorNotOpaque:
+      return SkColorSetARGB(96, 128, 128, 0);
+    case LCDTextDisallowedReason::kContentsNotOpaque:
+      return SkColorSetARGB(96, 255, 0, 0);
+    case LCDTextDisallowedReason::kNonIntegralTranslation:
+      return SkColorSetARGB(96, 255, 128, 0);
+    case LCDTextDisallowedReason::kNonIntegralXOffset:
+    case LCDTextDisallowedReason::kNonIntegralYOffset:
+      return SkColorSetARGB(96, 255, 0, 128);
+    case LCDTextDisallowedReason::kWillChangeTransform:
+    case LCDTextDisallowedReason::kTransformAnimation:
+      return SkColorSetARGB(96, 128, 0, 255);
+    case LCDTextDisallowedReason::kPixelOrColorEffect:
+      return SkColorSetARGB(96, 0, 128, 0);
+  }
+  NOTREACHED();
+  return SK_ColorTRANSPARENT;
 }
 
 }  // namespace cc

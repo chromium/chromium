@@ -11,27 +11,38 @@
 #include "power_sampler.h"
 #include "system_information_sampler.h"
 
+// Unit for raw CPU usage data from Windows.
+constexpr int kTicksPerSecond = 10000000;
+
 // Result data structure contains a final set of values calculated based on
 // comparison of two snapshots. These are the values that the tool prints
 // in the output.
 struct Result {
   ULONG idle_wakeups_per_sec;
-  double cpu_usage;
-  ULONGLONG working_set;
+  DWORD handle_count;
+  double cpu_usage_percent;
+  double cpu_usage_seconds;
+  ULONGLONG memory;  // Private commit
   double power;
 };
 
 typedef std::vector<Result> ResultVector;
 
-// The following 4 functions are used for sorting of ResultVector.
+// The following functions are used for sorting of ResultVector.
 ULONG GetIdleWakeupsPerSec(const Result& r) {
   return r.idle_wakeups_per_sec;
 }
-double GetCpuUsage(const Result& r) {
-  return r.cpu_usage;
+DWORD GetHandleCount(const Result& r) {
+  return r.handle_count;
 }
-ULONGLONG GetWorkingSet(const Result& r) {
-  return r.working_set;
+double GetCpuUsagePercent(const Result& r) {
+  return r.cpu_usage_percent;
+}
+double GetCpuUsageSeconds(const Result& r) {
+  return r.cpu_usage_seconds;
+}
+ULONGLONG GetMemory(const Result& r) {
+  return r.memory;
 }
 double GetPower(const Result& r) {
   return r.power;
@@ -54,7 +65,33 @@ T GetMedian(ResultVector* results, T (*getter)(const Result&)) {
   }
 }
 
-// This class holds the app state and constains a number of utilities for
+template <typename T>
+T GetAverage(const ResultVector& results, T (*getter)(const Result&)) {
+  // |sum| is a 64-bit type (uint64_t if |T| is an integral type, double if not)
+  // to minimize the risk of overflow.
+  typedef typename std::conditional<std::is_integral<T>::value, uint64_t,
+                                    double>::type SumType;
+  SumType sum = SumType();
+  const size_t size = results.size();
+  for (size_t i = 0; i < size; i++) {
+    sum += getter(results[i]);
+  }
+  return static_cast<T>(sum / size);
+}
+
+// Count newly created processes: those in |processes| but not
+// |previous_processes|.
+size_t GetNumProcessesCreated(const ProcessDataMap& previous_processes,
+                              const ProcessDataMap& processes) {
+  size_t num_processes_created = 0;
+  for (auto& process : processes) {
+    if (previous_processes.find(process.first) == previous_processes.end())
+      num_processes_created++;
+  }
+  return num_processes_created;
+}
+
+// This class holds the app state and contains a number of utilities for
 // collecting and diffing snapshots of data, handling processes, etc.
 class IdleWakeups {
  public:
@@ -77,7 +114,7 @@ class IdleWakeups {
   static ULONG DiffContextSwitches(const ProcessData& prev_process_data,
                                    const ProcessData& process_data);
 
-  std::map<ProcessId, HANDLE> process_id_to_hanle_map;
+  std::map<ProcessId, HANDLE> process_id_to_handle_map;
 
   IdleWakeups& operator=(const IdleWakeups&) = delete;
   IdleWakeups(const IdleWakeups&) = delete;
@@ -96,25 +133,25 @@ void IdleWakeups::OpenProcesses(const ProcessDataSnapshot& snapshot) {
 }
 
 void IdleWakeups::CloseProcesses() {
-  for (auto& pair : process_id_to_hanle_map) {
+  for (auto& pair : process_id_to_handle_map) {
     CloseHandle(pair.second);
   }
-  process_id_to_hanle_map.clear();
+  process_id_to_handle_map.clear();
 }
 
 HANDLE IdleWakeups::GetProcessHandle(ProcessId process_id) {
-  return process_id_to_hanle_map[process_id];
+  return process_id_to_handle_map[process_id];
 }
 
 void IdleWakeups::OpenProcess(ProcessId process_id) {
-  process_id_to_hanle_map[process_id] = ::OpenProcess(
+  process_id_to_handle_map[process_id] = ::OpenProcess(
       PROCESS_QUERY_LIMITED_INFORMATION, FALSE, (DWORD)(ULONGLONG)process_id);
 }
 
 void IdleWakeups::CloseProcess(ProcessId process_id) {
   HANDLE handle = GetProcessHandle(process_id);
   CloseHandle(handle);
-  process_id_to_hanle_map.erase(process_id);
+  process_id_to_handle_map.erase(process_id);
 }
 
 ULONG IdleWakeups::CountContextSwitches(const ProcessData& process_data) {
@@ -177,7 +214,8 @@ Result IdleWakeups::DiffSnapshots(const ProcessDataSnapshot& prev_snapshot,
                                   const ProcessDataSnapshot& snapshot) {
   ULONG idle_wakeups_delta = 0;
   ULONGLONG cpu_usage_delta = 0;
-  ULONGLONG total_working_set = 0;
+  ULONGLONG total_memory = 0;
+  DWORD total_handle_count = 0;
 
   ProcessDataMap::const_iterator prev_it = prev_snapshot.processes.begin();
 
@@ -219,19 +257,19 @@ Result IdleWakeups::DiffSnapshots(const ProcessDataSnapshot& prev_snapshot,
     }
 
     cpu_usage_delta += process_data.cpu_time - prev_process_cpu_time;
-    total_working_set += process_data.working_set / 1024;
+    total_memory += process_data.memory / 1024;
+    total_handle_count += process_data.handle_count;
   }
 
   double time_delta = snapshot.timestamp - prev_snapshot.timestamp;
   Result result;
   result.idle_wakeups_per_sec =
       static_cast<ULONG>(idle_wakeups_delta / time_delta);
-  // brucedawson: Don't divide by number of processors so that all numbers are
-  // percentage of a core
-  // result.cpu_usage = (double)cpu_usage_delta * 100 / (time_delta * 10000000 *
-  // NumberOfprocessors());
-  result.cpu_usage = (double)cpu_usage_delta * 100 / (time_delta * 10000000);
-  result.working_set = total_working_set;
+  result.cpu_usage_percent =
+      (double)cpu_usage_delta * 100 / (time_delta * kTicksPerSecond);
+  result.cpu_usage_seconds = (double)cpu_usage_delta / kTicksPerSecond;
+  result.memory = total_memory;
+  result.handle_count = total_handle_count;
 
   return result;
 }
@@ -253,45 +291,75 @@ const DWORD sleep_time_sec = 2;
 void PrintHeader() {
   printf(
       "------------------------------------------------------------------------"
-      "----------\n");
+      "--------------------\n");
   printf(
-      "                                                            Private\n"
-      "                       Context switches/sec    CPU usage    Working set "
-      "     Power\n");
+      "                       Context switches/sec    CPU usage   Private "
+      "Commit    Power   Handles\n");
   printf(
       "------------------------------------------------------------------------"
-      "----------\n");
+      "--------------------\n");
 }
 
-#define RESULT_FORMAT_STRING "    %20lu    %8.2f%c    %6.2f MiB    %4.2f W\n"
+#define RESULT_FORMAT_STRING          \
+  "    %20lu    %8.2f%c    %7.2f MiB" \
+  "    %5.2f W   %7u\n"
 
 int wmain(int argc, wchar_t* argv[]) {
   ctrl_c_pressed = CreateEvent(NULL, FALSE, FALSE, NULL);
   SetConsoleCtrlHandler(HandlerFunction, TRUE);
 
   PowerSampler power_sampler;
-  SystemInformationSampler system_information_sampler(argc > 1 ? argv[1]
-                                                               : L"chrome.exe");
   IdleWakeups the_app;
+
+  // Parse command line for target process name and optional --cpu-seconds and
+  // --stop-on-exit flags.
+  wchar_t* target_process_name = nullptr;
+  bool cpu_usage_in_seconds = false;
+  bool stop_on_exit = false;
+  bool tabbed_summary_only = false;
+  for (int i = 1; i < argc; i++) {
+    if (wcscmp(argv[i], L"--cpu-seconds") == 0)
+      cpu_usage_in_seconds = true;
+    else if (wcscmp(argv[i], L"--stop-on-exit") == 0)
+      stop_on_exit = true;
+    else if (wcscmp(argv[i], L"--tabbed") == 0)
+      tabbed_summary_only = true;
+    else if (!target_process_name)
+      target_process_name = argv[i];
+
+    // Stop parsing if all possible args have been found.
+    if (cpu_usage_in_seconds && stop_on_exit && tabbed_summary_only &&
+        target_process_name) {
+      break;
+    }
+  }
+  const char cpu_usage_unit = cpu_usage_in_seconds ? 's' : '%';
+  SystemInformationSampler system_information_sampler(
+      target_process_name ? target_process_name : L"chrome.exe");
 
   // Take the initial snapshot.
   std::unique_ptr<ProcessDataSnapshot> previous_snapshot =
       system_information_sampler.TakeSnapshot();
 
   the_app.OpenProcesses(*previous_snapshot);
+  const size_t initial_number_of_processes =
+      previous_snapshot->processes.size();
+  size_t final_number_of_processes = initial_number_of_processes;
 
-  ULONG cumulative_idle_wakeups_per_sec = 0;
-  double cumulative_cpu_usage = 0.0;
-  ULONGLONG cumulative_working_set = 0;
-  double cumulative_energy = 0.0;
+  double cumulative_cpu_usage_seconds = 0.0;
+  size_t cumulative_processes_created = 0;
+  int num_idle_snapshots = 0;
 
   ResultVector results;
 
-  printf("Capturing perf data for all processes matching %ls\n",
-         system_information_sampler.target_process_name_filter());
+  if (!tabbed_summary_only) {
+    printf("Capturing perf data for all processes matching %ls\n",
+           system_information_sampler.target_process_name_filter());
 
-  PrintHeader();
+    PrintHeader();
+  }
 
+  bool target_process_seen = false;
   for (;;) {
     if (WaitForSingleObject(ctrl_c_pressed, sleep_time_sec * 1000) ==
         WAIT_OBJECT_0)
@@ -300,6 +368,10 @@ int wmain(int argc, wchar_t* argv[]) {
     std::unique_ptr<ProcessDataSnapshot> snapshot =
         system_information_sampler.TakeSnapshot();
     size_t number_of_processes = snapshot->processes.size();
+    final_number_of_processes = number_of_processes;
+
+    cumulative_processes_created += GetNumProcessesCreated(
+        previous_snapshot->processes, snapshot->processes);
 
     Result result = the_app.DiffSnapshots(*previous_snapshot, *snapshot);
     previous_snapshot = std::move(snapshot);
@@ -307,43 +379,93 @@ int wmain(int argc, wchar_t* argv[]) {
     power_sampler.SampleCPUPowerState();
     result.power = power_sampler.get_power(L"Processor");
 
-    printf("%9u processes" RESULT_FORMAT_STRING, (DWORD)number_of_processes,
-           result.idle_wakeups_per_sec, result.cpu_usage, '%',
-           result.working_set / 1024.0, result.power);
+    if (!tabbed_summary_only) {
+      printf("%9zu processes" RESULT_FORMAT_STRING, number_of_processes,
+             result.idle_wakeups_per_sec,
+             cpu_usage_in_seconds ? result.cpu_usage_seconds
+                                  : result.cpu_usage_percent,
+             cpu_usage_unit, result.memory / 1024.0, result.power,
+             result.handle_count);
+    }
 
-    cumulative_idle_wakeups_per_sec += result.idle_wakeups_per_sec;
-    cumulative_cpu_usage += result.cpu_usage;
-    cumulative_working_set += result.working_set;
-    cumulative_energy += result.power;
-
-    results.push_back(result);
+    if (number_of_processes > 0) {
+      cumulative_cpu_usage_seconds += result.cpu_usage_seconds;
+      results.push_back(result);
+      target_process_seen = true;
+    } else {
+      num_idle_snapshots++;
+      if (stop_on_exit && target_process_seen)
+        break;
+    }
   }
 
   CloseHandle(ctrl_c_pressed);
 
-  ULONG sample_count = (ULONG)results.size();
-  if (sample_count == 0)
+  if (results.empty())
     return 0;
+
+  Result average_result;
+  average_result.idle_wakeups_per_sec =
+      GetAverage(results, GetIdleWakeupsPerSec);
+  average_result.cpu_usage_percent = GetAverage(results, GetCpuUsagePercent);
+  average_result.cpu_usage_seconds = GetAverage(results, GetCpuUsageSeconds);
+  average_result.memory = GetAverage(results, GetMemory);
+  average_result.power = GetAverage(results, GetPower);
+  average_result.handle_count = GetAverage(results, GetHandleCount);
+
+  const size_t cumulative_processes_destroyed = initial_number_of_processes +
+                                                cumulative_processes_created -
+                                                final_number_of_processes;
+
+  if (tabbed_summary_only) {
+    printf(
+        "Processes created\tProcesses destroyed\t"
+        "Context switches/sec, average\tCPU usage (%%), average\t"
+        "CPU usage (s)\tPrivate commit (MiB), average\t"
+        "Power (W), average\n");
+    printf("%zu\t%zu\t%20lu\t%8.2f\t%8.2f\t%7.2f\t%5.2f\n",
+           cumulative_processes_created, cumulative_processes_destroyed,
+           average_result.idle_wakeups_per_sec,
+           average_result.cpu_usage_percent, cumulative_cpu_usage_seconds,
+           average_result.memory / 1024.0, average_result.power);
+    return 0;
+  }
 
   PrintHeader();
 
   printf("            Average" RESULT_FORMAT_STRING,
-         cumulative_idle_wakeups_per_sec / sample_count,
-         cumulative_cpu_usage / sample_count, '%',
-         (cumulative_working_set / 1024.0) / sample_count,
-         cumulative_energy / sample_count);
+         average_result.idle_wakeups_per_sec,
+         cpu_usage_in_seconds ? average_result.cpu_usage_seconds
+                              : average_result.cpu_usage_percent,
+         cpu_usage_unit, average_result.memory / 1024.0, average_result.power,
+         average_result.handle_count);
 
   Result median_result;
-
   median_result.idle_wakeups_per_sec =
-      GetMedian<ULONG>(&results, GetIdleWakeupsPerSec);
-  median_result.cpu_usage = GetMedian<double>(&results, GetCpuUsage);
-  median_result.working_set = GetMedian<ULONGLONG>(&results, GetWorkingSet);
-  median_result.power = GetMedian<double>(&results, GetPower);
+      GetMedian(&results, GetIdleWakeupsPerSec);
+  median_result.cpu_usage_percent = GetMedian(&results, GetCpuUsagePercent);
+  median_result.cpu_usage_seconds = GetMedian(&results, GetCpuUsageSeconds);
+  median_result.memory = GetMedian(&results, GetMemory);
+  median_result.power = GetMedian(&results, GetPower);
+  median_result.handle_count = GetMedian(&results, GetHandleCount);
 
   printf("             Median" RESULT_FORMAT_STRING,
-         median_result.idle_wakeups_per_sec, median_result.cpu_usage, '%',
-         median_result.working_set / 1024.0, median_result.power);
+         median_result.idle_wakeups_per_sec,
+         cpu_usage_in_seconds ? median_result.cpu_usage_seconds
+                              : median_result.cpu_usage_percent,
+         cpu_usage_unit, median_result.memory / 1024.0, median_result.power,
+         median_result.handle_count);
+
+  if (cpu_usage_in_seconds) {
+    printf("                Sum    %32.2f%c\n", cumulative_cpu_usage_seconds,
+           cpu_usage_unit);
+  }
+
+  printf("\n");
+  if (num_idle_snapshots > 0)
+    printf("Idle snapshots:      %d\n", num_idle_snapshots);
+  printf("Processes created:   %zu\n", cumulative_processes_created);
+  printf("Processes destroyed: %zu\n", cumulative_processes_destroyed);
 
   return 0;
 }

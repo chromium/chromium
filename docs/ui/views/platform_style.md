@@ -2,10 +2,14 @@
 
 ## Overview
 
+This document describes how to build Views UIs that will look good on all platforms
+with a minimum of manual intervention.
+
 Views controls may have different appearances on different platforms, so that
-Views UIs can fit better into the platform's native styling. This document
-describes how to build Views UIs that will look good on all platforms with a
-minimum of manual intervention.
+Views UIs can fit better into the platform's native styling. The Chrome UX
+terminology for platform-specific styling is *OS Citizenship*. You can check
+the current spec
+[on Carbon](https://carbon.googleplex.com/chrome-ux/pages/os-citizenship/desktop).
 
 UIs looking good happens at two levels: first, the individual controls must look
 and act appropriately for their platform, and second, the overall layout of the
@@ -78,24 +82,46 @@ subclassing a control require one subclass per platform as well. It's better to
 abstract the per-platform behavior into a separate model class, with a factory
 that produces the right model for the current platform.
 
-## UI Layout / Controls
-
-TODO(ellyjones): This section needs a bit more thought.
+## UI Layout, Controls and Text Casing
 
 Some platforms have conventions about the ordering of buttons in dialogs, or the
-presence or absence of certain common controls. For example, on Mac, dialogs are
-expected to have their "default" button at the bottom right, and expected not to
-have a "close" button in their top corner if they have a "Cancel"/"Dismiss"
-button in the dialog body. If you can design a layout that follows all
-platforms' conventions simultaneously, that is the lowest-effort route to
-follow, but if not, there are static booleans in PlatformStyle that hold the
-appropriate values for these decisions on the current platform, like:
+presence or absence of certain common controls.
 
-    static const bool PlatformStyle::kDialogsShouldHaveCloseButton;
+### Button Order
+On Mac, it is a convention that dialogs place an "OK" button on the right of an 
+"Cancel" button, while on Windows, this order should be reversed so that the
+"Cancel" button is on the right. This concept can be generalized to any dialogs
+with two buttons where one is affirmative and the other one is negative.
 
-You can then condition your dialog creation code like this:
+If you are designing a dialog that has customized buttons, you may want to use
+`PlatformStyle::kIsOkButtonLeading` to help you decide the ordering.
+Your code may look like this:
 
-    if (PlatformStyle::kDialogsShouldHaveCloseButton)
-        views::Button* close_button = ...;
+```C++
+views::View* button_container = ...;
+views::Button* cancel_button = button_container->AddChildView(...);
+views::Button* ok_button = button_container->AddChildViewAt(
+    ..., views::PlatformStyle::kIsOkButtonLeading ? 0 : 1);
+```
 
-TODO(ellyjones): Actually add these variables to PlatformStyle
+Note that unless you are using custom buttons, you don't need this if you are
+using DialogDelegate or any of its subclasses. Instead, use `DialogDelegate::SetButtons(buttons)`
+to add OK and cancel buttons to your dialog and they will automatically be in the
+right order.
+
+### Character Casing
+Strings in controls are usually saved in GRIT (.grd) files. These strings have different
+casing conventions on different platforms. For short noun phrases, Mac uses title case as
+in _"No Thanks"_ and Windows uses sentence case as in _"No thanks"_.
+
+You can use boolean `use_titlecase` in resource files to make conditional strings like this:
+
+```xml
+<if expr="use_titlecase">
+    <message name=... desc=...>No Thanks</message>
+</if>
+<if expr="not use_titlecase">
+    <message name=... desc=...>No thanks</message>
+</if>
+</message>
+```

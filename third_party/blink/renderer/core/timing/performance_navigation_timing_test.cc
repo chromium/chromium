@@ -17,13 +17,13 @@ class PerformanceNavigationTimingTest : public PageTestBase {
 };
 
 TEST_F(PerformanceNavigationTimingTest, GetNavigationType) {
-  GetPage().SetVisibilityState(PageVisibilityState::kHidden,
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                /*initial_state=*/false);
   AtomicString returned_type =
       GetNavigationType(kWebNavigationTypeBackForward, &GetDocument());
   EXPECT_EQ(returned_type, "back_forward");
 
-  GetPage().SetVisibilityState(PageVisibilityState::kVisible,
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                /*initial_state=*/false);
   returned_type =
       GetNavigationType(kWebNavigationTypeFormResubmitted, &GetDocument());

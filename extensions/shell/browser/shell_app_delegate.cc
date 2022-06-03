@@ -4,6 +4,7 @@
 
 #include "extensions/shell/browser/shell_app_delegate.h"
 
+#include "content/public/browser/color_chooser.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -23,11 +24,16 @@ void ShellAppDelegate::InitWebContents(content::WebContents* web_contents) {
   ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
-void ShellAppDelegate::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  // The views implementation of AppWindow takes focus via SetInitialFocus()
-  // and views::WebView but app_shell is aura-only and must do it manually.
-  content::WebContents::FromRenderViewHost(render_view_host)->Focus();
+void ShellAppDelegate::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  // Only do this for the primary main frame.
+  if (frame_host->IsInPrimaryMainFrame()) {
+    // The views implementation of AppWindow takes focus via SetInitialFocus()
+    // and views::WebView but app_shell is aura-only and must do it manually.
+    content::WebContents* contents =
+        content::WebContents::FromRenderFrameHost(frame_host);
+    contents->Focus();
+  }
 }
 
 void ShellAppDelegate::ResizeWebContents(content::WebContents* web_contents,
@@ -46,22 +52,16 @@ content::WebContents* ShellAppDelegate::OpenURLFromTab(
 void ShellAppDelegate::AddNewContents(
     content::BrowserContext* context,
     std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture) {
   NOTIMPLEMENTED();
 }
 
-content::ColorChooser* ShellAppDelegate::ShowColorChooser(
-    content::WebContents* web_contents,
-    SkColor initial_color) {
-  NOTIMPLEMENTED();
-  return NULL;
-}
-
 void ShellAppDelegate::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<content::FileSelectListener> listener,
+    scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
   NOTIMPLEMENTED();
   listener->FileSelectionCanceled();
@@ -100,7 +100,7 @@ bool ShellAppDelegate::IsWebContentsVisible(
   return true;
 }
 
-void ShellAppDelegate::SetTerminatingCallback(const base::Closure& callback) {
+void ShellAppDelegate::SetTerminatingCallback(base::OnceClosure callback) {
   // TODO(jamescook): Should app_shell continue to close the app window
   // manually or should it use a browser termination callback like Chrome?
 }

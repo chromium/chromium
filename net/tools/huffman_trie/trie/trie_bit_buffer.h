@@ -25,6 +25,10 @@ class BitWriter;
 class TrieBitBuffer {
  public:
   TrieBitBuffer();
+
+  TrieBitBuffer(const TrieBitBuffer&) = delete;
+  TrieBitBuffer& operator=(const TrieBitBuffer&) = delete;
+
   ~TrieBitBuffer();
 
   // Writes |bit| to the buffer.
@@ -81,8 +85,6 @@ class TrieBitBuffer {
   uint32_t used_ = 0;
 
   std::vector<BitsOrPosition> elements_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrieBitBuffer);
 };
 
 }  // namespace huffman_trie

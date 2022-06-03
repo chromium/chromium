@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_SERVER_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_SERVER_TIMING_H_
 
-#include "third_party/blink/public/platform/web_resource_timing_info.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -29,10 +29,14 @@ class CORE_EXPORT PerformanceServerTiming final : public ScriptWrappable {
   double duration() const { return duration_; }
   const String& description() const { return description_; }
 
-  static WebVector<WebServerTimingInfo> ParseServerTiming(
+  static Vector<mojom::blink::ServerTimingInfoPtr> ParseServerTimingToMojo(
+      const ResourceTimingInfo&);
+  static Vector<mojom::blink::ServerTimingInfoPtr>
+  ParseServerTimingFromHeaderValueToMojo(const String& value);
+  static HeapVector<Member<PerformanceServerTiming>> ParseServerTiming(
       const ResourceTimingInfo&);
   static HeapVector<Member<PerformanceServerTiming>> FromParsedServerTiming(
-      const WebVector<WebServerTimingInfo>&);
+      const Vector<mojom::blink::ServerTimingInfoPtr>&);
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 

@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
-#include "base/logging.h"
 #include "base/posix/safe_strerror.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
@@ -30,7 +30,9 @@ const char* AdditionalHintForSystemErrorCode(int error_code) {
 }
 #endif  // DCHECK_IS_ON()
 
-std::string SystemErrorCodeToString(int error_code) {
+}  // namespace
+
+BASE_EXPORT std::string SystemErrorCodeToString(int error_code) {
 #if DCHECK_IS_ON()
   return base::safe_strerror(error_code) + ". " +
          AdditionalHintForSystemErrorCode(error_code);
@@ -38,8 +40,6 @@ std::string SystemErrorCodeToString(int error_code) {
   return std::string();
 #endif  // DCHECK_IS_ON()
 }
-
-}  // namespace
 
 // Determines which platforms can consider using priority inheritance locks. Use
 // this define for platform code that may not compile if priority inheritance
@@ -80,24 +80,7 @@ LockImpl::~LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 }
 
-bool LockImpl::Try() {
-  int rv = pthread_mutex_trylock(&native_handle_);
-  DCHECK(rv == 0 || rv == EBUSY) << ". " << SystemErrorCodeToString(rv);
-  return rv == 0;
-}
-
-void LockImpl::Lock() {
-  // The ScopedLockAcquireActivity below is relatively expensive and so its
-  // actions can become significant due to the very large number of locks
-  // that tend to be used throughout the build. To avoid this cost in the
-  // vast majority of the calls, simply "try" the lock first and only do the
-  // (tracked) blocking call if that fails. Since "try" itself is a system
-  // call, and thus also somewhat expensive, don't bother with it unless
-  // tracking is actually enabled.
-  if (base::debug::GlobalActivityTracker::IsEnabled())
-    if (Try())
-      return;
-
+void LockImpl::LockInternalWithTracking() {
   base::debug::ScopedLockAcquireActivity lock_activity(this);
   int rv = pthread_mutex_lock(&native_handle_);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
@@ -107,7 +90,7 @@ void LockImpl::Lock() {
 bool LockImpl::PriorityInheritanceAvailable() {
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
   return true;
-#elif PRIORITY_INHERITANCE_LOCKS_POSSIBLE() && defined(OS_MACOSX)
+#elif PRIORITY_INHERITANCE_LOCKS_POSSIBLE() && defined(OS_APPLE)
   return true;
 #else
   // Security concerns prevent the use of priority inheritance mutexes on Linux.

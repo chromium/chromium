@@ -13,5 +13,5 @@ var rules = document.styleSheets[0].cssRules;
 shouldBe("rules.length", "3");
 shouldBe("rules[0].selectorText", "'::cue'");
 shouldBe("rules[1].selectorText", "'::cue(c)'");
-shouldBe("rules[2].selectorText", "'::cue(c,.class,#id:past,i:future)'");
+shouldBe("rules[2].selectorText", "'::cue(c, .class, #id:past, i:future)'");
 </script>

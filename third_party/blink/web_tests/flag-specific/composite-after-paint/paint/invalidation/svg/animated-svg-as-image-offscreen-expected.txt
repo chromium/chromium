@@ -20,7 +20,8 @@
     {
       "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

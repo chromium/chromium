@@ -6,14 +6,14 @@
 
 div#test {
   zoom: 0.5;
-  width: 140px;
+  width: 148px;
   display: block;
 }
 
 span {
   background-color: lime;
   float: left;
-  width: 68px;
+  width: 70px;
   border: 1.0px solid lime;
 }
 
@@ -29,7 +29,7 @@ span {
 
 <script>
 var prop = window.getComputedStyle(document.getElementById("measure")).getPropertyValue("border-width");
-document.getElementById("output").innerHTML = "The border width should be 1px, reported as: " + prop;
+document.getElementById("output").innerHTML = "The border width should be 2px, reported as: " + prop;
 </script>
 </body>
 </html>

@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -32,7 +32,7 @@ struct PrefsForManagedContentSettingsMapEntry {
   ContentSetting setting;
 };
 
-const PrefsForManagedContentSettingsMapEntry
+constexpr PrefsForManagedContentSettingsMapEntry
     kPrefsForManagedContentSettingsMap[] = {
         {prefs::kManagedCookiesAllowedForUrls, ContentSettingsType::COOKIES,
          CONTENT_SETTING_ALLOW},
@@ -56,10 +56,6 @@ const PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedNotificationsBlockedForUrls,
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK},
-        {prefs::kManagedPluginsAllowedForUrls, ContentSettingsType::PLUGINS,
-         CONTENT_SETTING_ALLOW},
-        {prefs::kManagedPluginsBlockedForUrls, ContentSettingsType::PLUGINS,
-         CONTENT_SETTING_BLOCK},
         {prefs::kManagedPopupsAllowedForUrls, ContentSettingsType::POPUPS,
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedPopupsBlockedForUrls, ContentSettingsType::POPUPS,
@@ -68,8 +64,96 @@ const PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_ASK},
         {prefs::kManagedWebUsbBlockedForUrls, ContentSettingsType::USB_GUARD,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedFileHandlingAllowedForUrls,
+         ContentSettingsType::FILE_HANDLING, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedFileHandlingBlockedForUrls,
+         ContentSettingsType::FILE_HANDLING, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedFileSystemReadAskForUrls,
+         ContentSettingsType::FILE_SYSTEM_READ_GUARD, CONTENT_SETTING_ASK},
+        {prefs::kManagedFileSystemReadBlockedForUrls,
+         ContentSettingsType::FILE_SYSTEM_READ_GUARD, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedFileSystemWriteAskForUrls,
+         ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_ASK},
+        {prefs::kManagedFileSystemWriteBlockedForUrls,
+         ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_BLOCK},
         {prefs::kManagedLegacyCookieAccessAllowedForDomains,
-         ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW}};
+         ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedSerialAskForUrls, ContentSettingsType::SERIAL_GUARD,
+         CONTENT_SETTING_ASK},
+        {prefs::kManagedSerialBlockedForUrls, ContentSettingsType::SERIAL_GUARD,
+         CONTENT_SETTING_BLOCK},
+        {prefs::kManagedSensorsAllowedForUrls, ContentSettingsType::SENSORS,
+         CONTENT_SETTING_ALLOW},
+        {prefs::kManagedSensorsBlockedForUrls, ContentSettingsType::SENSORS,
+         CONTENT_SETTING_BLOCK},
+        {prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
+         ContentSettingsType::INSECURE_PRIVATE_NETWORK, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedJavaScriptJitAllowedForSites,
+         ContentSettingsType::JAVASCRIPT_JIT, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedJavaScriptJitBlockedForSites,
+         ContentSettingsType::JAVASCRIPT_JIT, CONTENT_SETTING_BLOCK},
+};
+
+constexpr const char* kManagedPrefs[] = {
+    prefs::kManagedAutoSelectCertificateForUrls,
+    prefs::kManagedCookiesAllowedForUrls,
+    prefs::kManagedCookiesBlockedForUrls,
+    prefs::kManagedCookiesSessionOnlyForUrls,
+    prefs::kManagedFileHandlingAllowedForUrls,
+    prefs::kManagedFileHandlingBlockedForUrls,
+    prefs::kManagedFileSystemReadAskForUrls,
+    prefs::kManagedFileSystemReadBlockedForUrls,
+    prefs::kManagedFileSystemWriteAskForUrls,
+    prefs::kManagedFileSystemWriteBlockedForUrls,
+    prefs::kManagedImagesAllowedForUrls,
+    prefs::kManagedImagesBlockedForUrls,
+    prefs::kManagedInsecureContentAllowedForUrls,
+    prefs::kManagedInsecureContentBlockedForUrls,
+    prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
+    prefs::kManagedJavaScriptAllowedForUrls,
+    prefs::kManagedJavaScriptBlockedForUrls,
+    prefs::kManagedLegacyCookieAccessAllowedForDomains,
+    prefs::kManagedNotificationsAllowedForUrls,
+    prefs::kManagedNotificationsBlockedForUrls,
+    prefs::kManagedPopupsAllowedForUrls,
+    prefs::kManagedPopupsBlockedForUrls,
+    prefs::kManagedSensorsAllowedForUrls,
+    prefs::kManagedSensorsBlockedForUrls,
+    prefs::kManagedSerialAskForUrls,
+    prefs::kManagedSerialBlockedForUrls,
+    prefs::kManagedWebUsbAllowDevicesForUrls,
+    prefs::kManagedWebUsbAskForUrls,
+    prefs::kManagedWebUsbBlockedForUrls,
+    prefs::kManagedJavaScriptJitAllowedForSites,
+    prefs::kManagedJavaScriptJitBlockedForSites,
+};
+
+// The following preferences are only used to indicate if a default content
+// setting is managed and to hold the managed default setting value. If the
+// value for any of the following preferences is set then the corresponding
+// default content setting is managed. These preferences exist in parallel to
+// the preference default content settings. If a default content settings type
+// is managed any user defined exceptions (patterns) for this type are ignored.
+constexpr const char* kManagedDefaultPrefs[] = {
+    prefs::kManagedDefaultAdsSetting,
+    prefs::kManagedDefaultCookiesSetting,
+    prefs::kManagedDefaultFileHandlingGuardSetting,
+    prefs::kManagedDefaultFileSystemReadGuardSetting,
+    prefs::kManagedDefaultFileSystemWriteGuardSetting,
+    prefs::kManagedDefaultGeolocationSetting,
+    prefs::kManagedDefaultImagesSetting,
+    prefs::kManagedDefaultInsecureContentSetting,
+    prefs::kManagedDefaultInsecurePrivateNetworkSetting,
+    prefs::kManagedDefaultJavaScriptSetting,
+    prefs::kManagedDefaultMediaStreamSetting,
+    prefs::kManagedDefaultNotificationsSetting,
+    prefs::kManagedDefaultPopupsSetting,
+    prefs::kManagedDefaultSensorsSetting,
+    prefs::kManagedDefaultSerialGuardSetting,
+    prefs::kManagedDefaultWebBluetoothGuardSetting,
+    prefs::kManagedDefaultWebUsbGuardSetting,
+    prefs::kManagedDefaultJavaScriptJitSetting,
+};
 
 }  // namespace
 
@@ -100,67 +184,36 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultInsecureContentSetting},
         {ContentSettingsType::NOTIFICATIONS,
          prefs::kManagedDefaultNotificationsSetting},
-        {ContentSettingsType::PLUGINS, prefs::kManagedDefaultPluginsSetting},
         {ContentSettingsType::POPUPS, prefs::kManagedDefaultPopupsSetting},
         {ContentSettingsType::BLUETOOTH_GUARD,
          prefs::kManagedDefaultWebBluetoothGuardSetting},
         {ContentSettingsType::USB_GUARD,
          prefs::kManagedDefaultWebUsbGuardSetting},
-        {ContentSettingsType::LEGACY_COOKIE_ACCESS,
-         prefs::kManagedDefaultLegacyCookieAccessSetting}};
+        {ContentSettingsType::FILE_HANDLING,
+         prefs::kManagedDefaultFileHandlingGuardSetting},
+        {ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+         prefs::kManagedDefaultFileSystemReadGuardSetting},
+        {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+         prefs::kManagedDefaultFileSystemWriteGuardSetting},
+        {ContentSettingsType::SERIAL_GUARD,
+         prefs::kManagedDefaultSerialGuardSetting},
+        {ContentSettingsType::SENSORS, prefs::kManagedDefaultSensorsSetting},
+        {ContentSettingsType::INSECURE_PRIVATE_NETWORK,
+         prefs::kManagedDefaultInsecurePrivateNetworkSetting},
+        {ContentSettingsType::JAVASCRIPT_JIT,
+         prefs::kManagedDefaultJavaScriptJitSetting},
+};
 
 // static
 void PolicyProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kManagedAutoSelectCertificateForUrls);
-  registry->RegisterListPref(prefs::kManagedCookiesAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedCookiesBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedCookiesSessionOnlyForUrls);
-  registry->RegisterListPref(prefs::kManagedImagesAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedImagesBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedInsecureContentAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedInsecureContentBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedJavaScriptAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedJavaScriptBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedNotificationsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedNotificationsBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedPluginsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedPluginsBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedPopupsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedPopupsBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedWebUsbAllowDevicesForUrls);
-  registry->RegisterListPref(prefs::kManagedWebUsbAskForUrls);
-  registry->RegisterListPref(prefs::kManagedWebUsbBlockedForUrls);
-  registry->RegisterListPref(
-      prefs::kManagedLegacyCookieAccessAllowedForDomains);
+  for (const char* pref : kManagedPrefs)
+    registry->RegisterListPref(pref);
+
   // Preferences for default content setting policies. If a policy is not set of
   // the corresponding preferences below is set to CONTENT_SETTING_DEFAULT.
-  registry->RegisterIntegerPref(prefs::kManagedDefaultAdsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultCookiesSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultGeolocationSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultImagesSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultInsecureContentSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultJavaScriptSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultNotificationsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultMediaStreamSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultPluginsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultPopupsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultWebBluetoothGuardSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultWebUsbGuardSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultLegacyCookieAccessSetting,
-                                CONTENT_SETTING_DEFAULT);
+  for (const char* pref : kManagedDefaultPrefs)
+    registry->RegisterIntegerPref(pref, CONTENT_SETTING_DEFAULT);
 }
 
 PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
@@ -170,59 +223,11 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &PolicyProvider::OnPreferenceChanged, base::Unretained(this));
-  pref_change_registrar_.Add(
-      prefs::kManagedAutoSelectCertificateForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedCookiesAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedCookiesBlockedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedCookiesSessionOnlyForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedImagesAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedImagesBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedInsecureContentAllowedForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedInsecureContentBlockedForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedJavaScriptAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedJavaScriptBlockedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedNotificationsAllowedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedNotificationsBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPluginsAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPluginsBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPopupsAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPopupsBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedWebUsbAskForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedWebUsbBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedLegacyCookieAccessAllowedForDomains,
-                             callback);
-  // The following preferences are only used to indicate if a default content
-  // setting is managed and to hold the managed default setting value. If the
-  // value for any of the following preferences is set then the corresponding
-  // default content setting is managed. These preferences exist in parallel to
-  // the preference default content settings. If a default content settings type
-  // is managed any user defined exceptions (patterns) for this type are
-  // ignored.
-  pref_change_registrar_.Add(prefs::kManagedDefaultAdsSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultCookiesSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultGeolocationSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultImagesSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultInsecureContentSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultJavaScriptSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultNotificationsSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultMediaStreamSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultPluginsSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultPopupsSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultWebBluetoothGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultWebUsbGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultLegacyCookieAccessSetting,
-                             callback);
+  for (const char* pref : kManagedPrefs)
+    pref_change_registrar_.Add(pref, callback);
+
+  for (const char* pref : kManagedDefaultPrefs)
+    pref_change_registrar_.Add(pref, callback);
 }
 
 PolicyProvider::~PolicyProvider() {
@@ -231,41 +236,41 @@ PolicyProvider::~PolicyProvider() {
 
 std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
-  return value_map_.GetRuleIterator(content_type, resource_identifier, &lock_);
+  return value_map_.GetRuleIterator(content_type, &lock_);
 }
 
 void PolicyProvider::GetContentSettingsFromPreferences(
     OriginIdentifierValueMap* value_map) {
-  for (size_t i = 0; i < base::size(kPrefsForManagedContentSettingsMap); ++i) {
-    const char* pref_name = kPrefsForManagedContentSettingsMap[i].pref_name;
+  for (const auto& entry : kPrefsForManagedContentSettingsMap) {
     // Skip unset policies.
-    if (!prefs_->HasPrefPath(pref_name)) {
-      VLOG(2) << "Skipping unset preference: " << pref_name;
+    if (!prefs_->HasPrefPath(entry.pref_name)) {
+      VLOG(2) << "Skipping unset preference: " << entry.pref_name;
       continue;
     }
 
-    const PrefService::Preference* pref = prefs_->FindPreference(pref_name);
+    const PrefService::Preference* pref =
+        prefs_->FindPreference(entry.pref_name);
     DCHECK(pref);
-    DCHECK(!pref->HasUserSetting() && !pref->HasExtensionSetting());
+    DCHECK(!pref->HasUserSetting());
+    DCHECK(!pref->HasExtensionSetting());
 
-    const base::ListValue* pattern_str_list = nullptr;
-    if (!pref->GetValue()->GetAsList(&pattern_str_list)) {
-      NOTREACHED() << "Could not read patterns from " << pref_name;
+    if (!pref->GetValue()->is_list()) {
+      NOTREACHED() << "Could not read patterns from " << entry.pref_name;
       return;
     }
 
-    for (size_t j = 0; j < pattern_str_list->GetSize(); ++j) {
-      std::string original_pattern_str;
-      if (!pattern_str_list->GetString(j, &original_pattern_str)) {
-        NOTREACHED() << "Could not read content settings pattern #" << j
-                     << " from " << pref_name;
+    base::Value::ConstListView pattern_str_list = pref->GetValue()->GetList();
+    for (size_t i = 0; i < pattern_str_list.size(); ++i) {
+      if (!pattern_str_list[i].is_string()) {
+        NOTREACHED() << "Could not read content settings pattern #" << i
+                     << " from " << entry.pref_name;
         continue;
       }
 
+      const std::string& original_pattern_str = pattern_str_list[i].GetString();
       VLOG(2) << "Reading content settings pattern " << original_pattern_str
-              << " from " << pref_name;
+              << " from " << entry.pref_name;
 
       PatternPair pattern_pair = ParsePatternString(original_pattern_str);
       // Ignore invalid patterns.
@@ -275,9 +280,8 @@ void PolicyProvider::GetContentSettingsFromPreferences(
         continue;
       }
 
-      ContentSettingsType content_type =
-          kPrefsForManagedContentSettingsMap[i].content_type;
-      DCHECK_NE(content_type, ContentSettingsType::AUTO_SELECT_CERTIFICATE);
+      DCHECK_NE(entry.content_type,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE);
       // If only one pattern was defined auto expand it to a pattern pair.
       ContentSettingsPattern secondary_pattern =
           !pattern_pair.second.IsValid() ? ContentSettingsPattern::Wildcard()
@@ -286,29 +290,26 @@ void PolicyProvider::GetContentSettingsFromPreferences(
           << "Replacing invalid secondary pattern '"
           << pattern_pair.second.ToString() << "' with wildcard";
 
-      // Currently all settings that can set pattern pairs support embedded
-      // exceptions. However if a new content setting is added that doesn't,
-      // this DCHECK should be changed to an actual check which ignores such
-      // patterns for that type.
-      DCHECK(pattern_pair.first == pattern_pair.second ||
-             pattern_pair.second == ContentSettingsPattern::Wildcard() ||
-             content_settings::WebsiteSettingsRegistry::GetInstance()
-                 ->Get(content_type)
-                 ->SupportsEmbeddedExceptions());
+      // All settings that can set pattern pairs support embedded exceptions.
+      if (pattern_pair.first != pattern_pair.second &&
+          pattern_pair.second != ContentSettingsPattern::Wildcard() &&
+          !WebsiteSettingsRegistry::GetInstance()
+               ->Get(entry.content_type)
+               ->SupportsSecondaryPattern()) {
+        continue;
+      }
 
       // Don't set a timestamp for policy settings.
-      value_map->SetValue(
-          pattern_pair.first, secondary_pattern, content_type,
-          ResourceIdentifier(), base::Time(),
-          base::Value(kPrefsForManagedContentSettingsMap[i].setting));
+      value_map->SetValue(pattern_pair.first, secondary_pattern,
+                          entry.content_type, base::Time(),
+                          base::Value(entry.setting), {});
     }
   }
 }
 
 void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
     OriginIdentifierValueMap* value_map) {
-  const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
-
+  constexpr const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
   if (!prefs_->HasPrefPath(pref_name)) {
     VLOG(2) << "Skipping unset preference: " << pref_name;
     return;
@@ -316,10 +317,10 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
   const PrefService::Preference* pref = prefs_->FindPreference(pref_name);
   DCHECK(pref);
-  DCHECK(!pref->HasUserSetting() && !pref->HasExtensionSetting());
+  DCHECK(!pref->HasUserSetting());
+  DCHECK(!pref->HasExtensionSetting());
 
-  const base::ListValue* pattern_filter_str_list = nullptr;
-  if (!pref->GetValue()->GetAsList(&pattern_filter_str_list)) {
+  if (!pref->GetValue()->is_list()) {
     NOTREACHED();
     return;
   }
@@ -342,37 +343,34 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
   //   }
   // }
   std::unordered_map<std::string, base::DictionaryValue> filters_map;
-  for (size_t j = 0; j < pattern_filter_str_list->GetSize(); ++j) {
-    std::string pattern_filter_json;
-    if (!pattern_filter_str_list->GetString(j, &pattern_filter_json)) {
+  for (const auto& pattern_filter_str : pref->GetValue()->GetList()) {
+    if (!pattern_filter_str.is_string()) {
       NOTREACHED();
       continue;
     }
 
-    std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-        pattern_filter_json, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!value || !value->is_dict()) {
+    absl::optional<base::Value> pattern_filter = base::JSONReader::Read(
+        pattern_filter_str.GetString(), base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!pattern_filter || !pattern_filter->is_dict()) {
       VLOG(1) << "Ignoring invalid certificate auto select setting. Reason:"
-                 " Invalid JSON object: " << pattern_filter_json;
+              << " Invalid JSON object: " << pattern_filter_str.GetString();
       continue;
     }
 
-    std::unique_ptr<base::DictionaryValue> pattern_filter_pair =
-        base::DictionaryValue::From(std::move(value));
-    base::Value* pattern = pattern_filter_pair->FindKey("pattern");
-    base::Value* filter = pattern_filter_pair->FindKey("filter");
+    const base::Value* pattern = pattern_filter->FindKey("pattern");
+    const base::Value* filter = pattern_filter->FindKey("filter");
     if (!pattern || !filter) {
       VLOG(1) << "Ignoring invalid certificate auto select setting. Reason:"
-                 " Missing pattern or filter.";
+              << " Missing pattern or filter.";
       continue;
     }
-    std::string pattern_str = pattern->GetString();
 
+    const std::string& pattern_str = pattern->GetString();
     if (filters_map.find(pattern_str) == filters_map.end())
       filters_map[pattern_str].SetKey("filters", base::ListValue());
 
-    // Don't pass removed values from |value|, because base::Values read with
-    // JSONReader use a shared string buffer. Instead, Clone() here.
+    // Don't pass removed values from `pattern_filter`, because base::Values
+    // read with JSONReader use a shared string buffer. Instead, Clone() here.
     filters_map[pattern_str].FindKey("filters")->Append(filter->Clone());
   }
 
@@ -385,14 +383,13 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
     // Ignore invalid patterns.
     if (!pattern.IsValid()) {
       VLOG(1) << "Ignoring invalid certificate auto select setting:"
-                 " Invalid content settings pattern: "
-              << pattern.ToString();
+              << " Invalid content settings pattern: " << pattern.ToString();
       continue;
     }
 
     value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
                         ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-                        std::string(), base::Time(), setting.Clone());
+                        base::Time(), setting.Clone(), {});
   }
 }
 
@@ -420,22 +417,15 @@ void PolicyProvider::UpdateManagedDefaultSetting(
          prefs_->IsManagedPreference(entry.pref_name));
   base::AutoLock auto_lock(lock_);
   int setting = prefs_->GetInteger(entry.pref_name);
-  // TODO(wfh): Remove once HDB is enabled by default.
-  if (entry.pref_name == prefs::kManagedDefaultPluginsSetting) {
-    static constexpr base::Feature kIgnoreDefaultPluginsSetting = {
-        "IgnoreDefaultPluginsSetting", base::FEATURE_DISABLED_BY_DEFAULT};
-    if (base::FeatureList::IsEnabled(kIgnoreDefaultPluginsSetting))
-      setting = CONTENT_SETTING_DEFAULT;
-  }
   if (setting == CONTENT_SETTING_DEFAULT) {
     value_map_.DeleteValue(ContentSettingsPattern::Wildcard(),
                            ContentSettingsPattern::Wildcard(),
-                           entry.content_type, std::string());
+                           entry.content_type);
   } else if (info->IsSettingValid(IntToContentSetting(setting))) {
     // Don't set a timestamp for policy settings.
     value_map_.SetValue(ContentSettingsPattern::Wildcard(),
                         ContentSettingsPattern::Wildcard(), entry.content_type,
-                        std::string(), base::Time(), base::Value(setting));
+                        base::Time(), base::Value(setting), {});
   }
 }
 
@@ -449,13 +439,13 @@ void PolicyProvider::ReadManagedContentSettings(bool overwrite) {
 }
 
 // Since the PolicyProvider is a read only content settings provider, all
-// methodes of the ProviderInterface that set or delete any settings do nothing.
+// methods of the ProviderInterface that set or delete any settings do nothing.
 bool PolicyProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
-    std::unique_ptr<base::Value>&& value) {
+    std::unique_ptr<base::Value>&& value,
+    const ContentSettingConstraints& constraints) {
   return false;
 }
 
@@ -480,29 +470,14 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
       UpdateManagedDefaultSetting(entry);
   }
 
-  if (name == prefs::kManagedAutoSelectCertificateForUrls ||
-      name == prefs::kManagedCookiesAllowedForUrls ||
-      name == prefs::kManagedCookiesBlockedForUrls ||
-      name == prefs::kManagedCookiesSessionOnlyForUrls ||
-      name == prefs::kManagedImagesAllowedForUrls ||
-      name == prefs::kManagedImagesBlockedForUrls ||
-      name == prefs::kManagedInsecureContentAllowedForUrls ||
-      name == prefs::kManagedInsecureContentBlockedForUrls ||
-      name == prefs::kManagedJavaScriptAllowedForUrls ||
-      name == prefs::kManagedJavaScriptBlockedForUrls ||
-      name == prefs::kManagedNotificationsAllowedForUrls ||
-      name == prefs::kManagedNotificationsBlockedForUrls ||
-      name == prefs::kManagedPluginsAllowedForUrls ||
-      name == prefs::kManagedPluginsBlockedForUrls ||
-      name == prefs::kManagedPopupsAllowedForUrls ||
-      name == prefs::kManagedPopupsBlockedForUrls ||
-      name == prefs::kManagedLegacyCookieAccessAllowedForDomains) {
+  if (base::Contains(kManagedPrefs, name)) {
     ReadManagedContentSettings(true);
     ReadManagedDefaultSettings();
   }
 
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  ContentSettingsType::DEFAULT, std::string());
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(),
+                  ContentSettingsType::DEFAULT);
 }
 
 }  // namespace content_settings

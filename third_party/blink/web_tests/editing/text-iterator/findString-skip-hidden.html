@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 2000px;
+}
+.hidden-matchable {
+  content-visibility: hidden-matchable;
+}
+</style>
+
+<div class=spacer></div>
+<div class="hidden-matchable">match</div>
+<div class=spacer></div>
+<div id=match>match</div>
+
+<script>
+
+test(() => {
+  testRunner.findString('match', []);
+
+  // verify match is scrolled into view
+  const offsetBeforeScroll = window.pageYOffset;
+  match.scrollIntoView();
+  const offsetAfterScroll = window.pageYOffset;
+
+  assert_not_equals(window.pageYOffset, 0, 'find-in-page should scroll to something.');
+  assert_equals(offsetAfterScroll, offsetBeforeScroll,
+    `scrollIntoView shouldn't affect the scroll offset because the element should already be scrolled into view.`);
+
+}, `find-in-page should skip displaylocked items and scroll to the next match.`);
+
+</script>

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/tdresser/is-input-pending
+// https://github.com/WICG/is-input-pending
 [
-    Exposed=Window,
-    ImplementedAs=NavigatorScheduling,
+    ImplementedAs=Scheduling,
     RuntimeEnabled=ExperimentalIsInputPending
 ] partial interface Navigator {
   readonly attribute Scheduling scheduling;

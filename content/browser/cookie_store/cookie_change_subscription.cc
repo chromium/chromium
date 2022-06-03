@@ -7,6 +7,10 @@
 #include <utility>
 
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
+#include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
 
@@ -40,9 +44,10 @@ network::mojom::CookieMatchType CookieMatchTypeFromProto(
       return network::mojom::CookieMatchType::EQUALS;
     case proto::CookieMatchType::STARTS_WITH:
       return ::network::mojom::CookieMatchType::STARTS_WITH;
+    default:
+      // The on-disk value was corrupted.
+      return network::mojom::CookieMatchType::EQUALS;
   }
-  NOTREACHED();
-  return network::mojom::CookieMatchType::EQUALS;
 }
 
 }  // namespace
@@ -102,16 +107,13 @@ CookieChangeSubscription::ToMojoVector(
 std::unique_ptr<CookieChangeSubscription> CookieChangeSubscription::Create(
     proto::CookieChangeSubscriptionProto proto,
     int64_t service_worker_registration_id) {
-  if (!proto.has_url())
-    return nullptr;
-  GURL url = GURL(proto.url());
+  GURL url(proto.url());
   if (!url.is_valid())
     return nullptr;
 
-  std::string name = proto.has_name() ? proto.name() : "";
+  std::string name = proto.name();
   ::network::mojom::CookieMatchType match_type =
-      proto.has_match_type() ? CookieMatchTypeFromProto(proto.match_type())
-                             : ::network::mojom::CookieMatchType::EQUALS;
+      CookieMatchTypeFromProto(proto.match_type());
 
   return std::make_unique<CookieChangeSubscription>(
       std::move(url), std::move(name), match_type,
@@ -166,12 +168,24 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
       break;
   }
 
+  // We assume that this is a same-site, same-party context.
   net::CookieOptions net_options;
   net_options.set_same_site_cookie_context(
-      net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  net_options.set_same_party_context(net::SamePartyContext::MakeInclusive());
+  // It doesn't matter which we choose here, since both SameParty and SameSite
+  // semantics should allow this access. But we make a choice to be explicit.
+  net_options.set_is_in_nontrivial_first_party_set(true);
 
-  return cookie.IncludeForRequestURL(url_, net_options, access_semantics)
-      .IsInclude();
+  return cookie
+      .IncludeForRequestURL(
+          url_, net_options,
+          net::CookieAccessParams{
+              access_semantics,
+              network::IsUrlPotentiallyTrustworthy(url_),
+              net::cookie_util::GetSamePartyStatus(cookie, net_options),
+          })
+      .status.IsInclude();
 }
 
 bool operator==(const CookieChangeSubscription& lhs,

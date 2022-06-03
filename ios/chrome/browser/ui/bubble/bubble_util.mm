@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 
+#include <ostream>
+
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 

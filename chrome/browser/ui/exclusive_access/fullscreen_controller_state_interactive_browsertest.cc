@@ -6,15 +6,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller_state_test.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 
 // FullscreenControllerStateInteractiveTest ------------------------------------
 
@@ -33,6 +33,12 @@ class FullscreenControllerStateInteractiveTest
       public FullscreenControllerStateTest {
  public:
   FullscreenControllerStateInteractiveTest() = default;
+
+  FullscreenControllerStateInteractiveTest(
+      const FullscreenControllerStateInteractiveTest&) = delete;
+  FullscreenControllerStateInteractiveTest& operator=(
+      const FullscreenControllerStateInteractiveTest&) = delete;
+
   ~FullscreenControllerStateInteractiveTest() override = default;
 
   // InProcessBrowserTest:
@@ -47,9 +53,6 @@ class FullscreenControllerStateInteractiveTest
 
   // FullscreenControllerStateTest:
   Browser* GetBrowser() override { return InProcessBrowserTest::browser(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateInteractiveTest);
 };
 
 // Soak tests ------------------------------------------------------------------
@@ -122,4 +125,3 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
       = new content::MessageLoopRunner();
   message_loop->Run();
 }
-

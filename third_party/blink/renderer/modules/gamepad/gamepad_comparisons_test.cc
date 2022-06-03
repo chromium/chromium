@@ -16,6 +16,9 @@ class GamepadComparisonsTest : public testing::Test {
  public:
   GamepadComparisonsTest() = default;
 
+  GamepadComparisonsTest(const GamepadComparisonsTest&) = delete;
+  GamepadComparisonsTest& operator=(const GamepadComparisonsTest&) = delete;
+
  protected:
   void InitGamepadQuaternion(device::GamepadQuaternion& q) {
     q.not_null = true;
@@ -34,9 +37,9 @@ class GamepadComparisonsTest : public testing::Test {
 
   Gamepad* CreateGamepad() {
     base::TimeTicks dummy_time_origin =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(1000);
+        base::TimeTicks() + base::Microseconds(1000);
     base::TimeTicks dummy_time_floor =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(2000);
+        base::TimeTicks() + base::Microseconds(2000);
     return MakeGarbageCollected<Gamepad>(nullptr, 0, dummy_time_origin,
                                          dummy_time_floor);
   }
@@ -123,9 +126,6 @@ class GamepadComparisonsTest : public testing::Test {
     list->Set(0, gamepad);
     return list;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GamepadComparisonsTest);
 };
 
 TEST_F(GamepadComparisonsTest, EmptyListCausesNoActivation) {

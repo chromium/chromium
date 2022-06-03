@@ -33,10 +33,43 @@ TEST(LeakDetectionRequestUtils, PrepareSingleLeakRequestData) {
   EXPECT_CALL(
       callback,
       Run(AllOf(
-          Field(&LookupSingleLeakData::username_hash_prefix,
-                ElementsAre(61, 112, -45)),
-          Field(&LookupSingleLeakData::encrypted_payload, testing::Ne("")),
+          Field(&LookupSingleLeakData::payload,
+                AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
+                            ElementsAre(0x3D, 0x70, 0xD3, 0x40)),
+                      Field(&LookupSingleLeakPayload::encrypted_payload,
+                            testing::Ne("")))),
           Field(&LookupSingleLeakData::encryption_key, testing::Ne("")))));
+  task_env.RunUntilIdle();
+}
+
+TEST(LeakDetectionRequestUtils, PrepareSingleLeakRequestDataWithKey) {
+  base::test::SingleThreadTaskEnvironment task_env;
+  auto task_runner = task_env.GetMainThreadTaskRunner();
+  base::CancelableTaskTracker task_tracker;
+  base::MockOnceCallback<void(LookupSingleLeakPayload)> callback;
+
+  PrepareSingleLeakRequestData(task_tracker, *task_runner, "random_key",
+                               "jonsnow", "1234", callback.Get());
+  EXPECT_CALL(callback,
+              Run(AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
+                              ElementsAre(0x3D, 0x70, 0xD3, 0x40)),
+                        Field(&LookupSingleLeakPayload::encrypted_payload,
+                              testing::Ne("")))));
+  task_env.RunUntilIdle();
+}
+
+TEST(LeakDetectionRequestUtils, PrepareSingleLeakRequestDataCancelled) {
+  base::test::SingleThreadTaskEnvironment task_env;
+  auto task_runner = task_env.GetMainThreadTaskRunner();
+  base::MockOnceCallback<void(LookupSingleLeakPayload)> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  {
+    base::CancelableTaskTracker task_tracker;
+    PrepareSingleLeakRequestData(task_tracker, *task_runner, "random_key",
+                                 "jonsnow", "1234", callback.Get());
+  }
+
   task_env.RunUntilIdle();
 }
 
@@ -60,10 +93,10 @@ TEST(LeakDetectionRequestUtils, AnalyzeResponseResult_NoLeak) {
   auto response = std::make_unique<SingleLookupResponse>();
   std::string key_client;
   std::string encrypted_username_password =
-      CipherEncrypt(kUsernamePasswordHash, &key_client);
+      *CipherEncrypt(kUsernamePasswordHash, &key_client);
   std::string key_server;
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(encrypted_username_password, &key_server);
+      *CipherReEncrypt(encrypted_username_password, &key_server);
   SCOPED_TRACE(testing::Message()
                << "key_client="
                << testing::PrintToString(StringToArray(key_client))
@@ -71,7 +104,7 @@ TEST(LeakDetectionRequestUtils, AnalyzeResponseResult_NoLeak) {
                << testing::PrintToString(StringToArray(key_server)));
 
   response->encrypted_leak_match_prefixes.push_back(crypto::SHA256HashString(
-      CipherEncryptWithKey("unrelated_trash", key_server)));
+      *CipherEncryptWithKey("unrelated_trash", key_server)));
 
   base::MockCallback<SingleLeakResponseAnalysisCallback> callback;
   AnalyzeResponse(std::move(response), key_client, callback.Get());
@@ -86,10 +119,10 @@ TEST(LeakDetectionRequestUtils, AnalyzeResponseResult_Leak) {
   auto response = std::make_unique<SingleLookupResponse>();
   std::string key_client;
   std::string encrypted_username_password =
-      CipherEncrypt(kUsernamePasswordHash, &key_client);
+      *CipherEncrypt(kUsernamePasswordHash, &key_client);
   std::string key_server;
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(encrypted_username_password, &key_server);
+      *CipherReEncrypt(encrypted_username_password, &key_server);
   SCOPED_TRACE(testing::Message()
                << "key_client="
                << testing::PrintToString(StringToArray(key_client))
@@ -100,10 +133,10 @@ TEST(LeakDetectionRequestUtils, AnalyzeResponseResult_Leak) {
   // The server can pick any value.
   constexpr int kPrefixLength = 30;
   response->encrypted_leak_match_prefixes.push_back(crypto::SHA256HashString(
-      CipherEncryptWithKey("unrelated_trash", key_server)));
+      *CipherEncryptWithKey("unrelated_trash", key_server)));
   response->encrypted_leak_match_prefixes.push_back(
       crypto::SHA256HashString(
-          CipherEncryptWithKey(kUsernamePasswordHash, key_server))
+          *CipherEncryptWithKey(kUsernamePasswordHash, key_server))
           .substr(0, kPrefixLength));
 
   base::MockCallback<SingleLeakResponseAnalysisCallback> callback;

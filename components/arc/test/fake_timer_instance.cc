@@ -12,14 +12,15 @@ FakeTimerInstance::FakeTimerInstance() = default;
 
 FakeTimerInstance::~FakeTimerInstance() = default;
 
-void FakeTimerInstance::Init(mojom::TimerHostPtr host_ptr,
+void FakeTimerInstance::Init(mojo::PendingRemote<mojom::TimerHost> host_remote,
                              InitCallback callback) {
-  host_ptr_ = std::move(host_ptr);
+  host_remote_.reset();
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 
 mojom::TimerHost* FakeTimerInstance::GetTimerHost() const {
-  return host_ptr_.get();
+  return host_remote_.get();
 }
 
 }  // namespace arc

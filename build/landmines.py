@@ -4,9 +4,9 @@
 # found in the LICENSE file.
 
 """
-This script runs every build as the first hook (See DEPS). If it detects that
-the build should be clobbered, it will delete the contents of the build
-directory.
+This script runs every gclient runhooks as the first hook (See DEPS). If it
+detects that the build should be clobbered, it will delete the contents of the
+build directory.
 
 A landmine is tripped when a builder checks out a different revision, and the
 diff between the new landmines and the old ones is non-null. At this point, the
@@ -18,7 +18,7 @@ machine. This can be particularly problematic on Windows where the directory
 deletion may well fail (locked files, command prompt in the directory, etc.),
 and generated .sln and .vcxproj files will be deleted.
 
-This output directory deletion will be repated when going back and forth across
+This output directory deletion will be repeated when going back and forth across
 the change that added the landmine, adding to the cost. There are usually less
 troublesome alternatives.
 """
@@ -38,13 +38,10 @@ import landmine_utils
 
 def get_build_dir(src_dir):
   r"""
-  Returns output directory absolute path dependent on build and targets.
+  Returns the absolute path to the directory containing the build directories.
   Examples:
-    r'c:\b\build\slave\win\build\src\out'
-    '/mnt/data/b/build/slave/linux/build/src/out'
-    '/b/build/slave/ios_rel_device/build/src/out'
-
-  Keep this function in sync with tools/build/scripts/slave/compile.py
+    'C:\src\out'
+    '/b/s/w/ir/cache/builder/src/out'
   """
   if 'CHROMIUM_OUT_DIR' in os.environ:
     output_dir = os.environ.get('CHROMIUM_OUT_DIR').strip()
@@ -55,10 +52,9 @@ def get_build_dir(src_dir):
   return os.path.abspath(os.path.join(src_dir, output_dir))
 
 
-def clobber_if_necessary(new_landmines, src_dir):
+def clobber_if_necessary(new_landmines, src_dir, landmines_path):
   """Does the work of setting, planting, and triggering landmines."""
   out_dir = get_build_dir(src_dir)
-  landmines_path = os.path.normpath(os.path.join(src_dir, '.landmines'))
   try:
     os.makedirs(out_dir)
   except OSError as e:
@@ -95,6 +91,10 @@ def process_options():
   parser.add_option('-d', '--src-dir',
       help='Path of the source root dir. Overrides the default location of the '
            'source root dir when calculating the build directory.')
+  parser.add_option(
+      '-l',
+      '--landmines-path',
+      help='Path to the landmines file to use (defaults to .landmines)')
   parser.add_option('-v', '--verbose', action='store_true',
       default=('LANDMINES_VERBOSE' in os.environ),
       help=('Emit some extra debugging information (default off). This option '
@@ -137,7 +137,12 @@ def main():
                             universal_newlines=True)
     output, _ = proc.communicate()
     landmines.extend([('%s\n' % l.strip()) for l in output.splitlines()])
-  clobber_if_necessary(landmines, options.src_dir)
+  if options.landmines_path:
+    landmines_path = options.landmines_path
+  else:
+    landmines_path = os.path.join(options.src_dir, '.landmines')
+  clobber_if_necessary(landmines, options.src_dir,
+                       os.path.normpath(landmines_path))
 
   return 0
 

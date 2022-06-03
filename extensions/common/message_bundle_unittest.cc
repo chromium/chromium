@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -88,7 +88,7 @@ class MessageBundleTest : public testing::Test {
         dict->Set("n4", std::make_unique<base::DictionaryValue>());
         break;
       case MISSING_MESSAGE:
-        dict->Remove("n1.message", NULL);
+        RemoveDictionaryPath(dict.get(), {"n1", "message"});
         break;
       case PLACEHOLDER_NOT_A_TREE:
         dict->SetString("n1.placeholders", "whatever");
@@ -97,17 +97,31 @@ class MessageBundleTest : public testing::Test {
         dict->Set("n1.placeholders", std::make_unique<base::DictionaryValue>());
         break;
       case CONTENT_MISSING:
-         dict->Remove("n1.placeholders.a.content", NULL);
+        RemoveDictionaryPath(dict.get(),
+                             {"n1", "placeholders", "a", "content"});
         break;
       case MESSAGE_PLACEHOLDER_DOESNT_MATCH:
         base::DictionaryValue* value;
-        dict->Remove("n1.placeholders.a", NULL);
+        RemoveDictionaryPath(dict.get(), {"n1", "placeholders", "a"});
         dict->GetDictionary("n1.placeholders", &value);
         CreateContentTree("x", "X", value);
         break;
     }
 
     return dict;
+  }
+
+  void RemoveDictionaryPath(base::Value* dict,
+                            std::initializer_list<base::StringPiece> pieces) {
+    ASSERT_TRUE(dict->is_dict());
+    ASSERT_GE(pieces.size(), 2u);
+    base::span<const base::StringPiece> path =
+        base::make_span(pieces.begin(), pieces.size());
+    dict = dict->FindPath(path.first(path.size() - 1));
+    if (!dict)
+      return;
+    ASSERT_TRUE(dict->is_dict());
+    dict->RemoveKey(path.back());
   }
 
   unsigned int ReservedMessagesCount() {
@@ -182,9 +196,9 @@ TEST_F(MessageBundleTest, InitAppDictConsultedFirst) {
   // Flip placeholders in message of n1 tree.
   app_dict->SetString("n1.message", "message1 $b$ $a$");
   // Remove one message from app dict.
-  app_dict->Remove("n2", NULL);
+  app_dict->RemoveKey("n2");
   // Replace n3 with N3.
-  app_dict->Remove("n3", NULL);
+  app_dict->RemoveKey("n3");
   CreateMessageTree("N3", "message3_app_dict", false, app_dict);
 
   CreateMessageBundle();

@@ -18,10 +18,10 @@ struct Session;
 class Status;
 class WebView;
 
-typedef base::Callback<Status(Session* session,
-                              WebView* web_view,
-                              const base::DictionaryValue&,
-                              std::unique_ptr<base::Value>*)>
+typedef base::RepeatingCallback<Status(Session* session,
+                                       WebView* web_view,
+                                       const base::DictionaryValue&,
+                                       std::unique_ptr<base::Value>*)>
     AlertCommand;
 
 // Executes an alert command.

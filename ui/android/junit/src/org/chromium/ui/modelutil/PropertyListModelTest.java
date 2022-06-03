@@ -26,7 +26,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PropertyListModelTest implements ListObservable.ListObserver<PropertyKey> {
-    private static final int METHOD_COUNT = 32;
+    private static final int METHOD_COUNT = 35;
     private static final PropertyModel.WritableIntPropertyKey INTEGER_KEY =
             new PropertyModel.WritableIntPropertyKey();
 
@@ -97,6 +97,29 @@ public class PropertyListModelTest implements ListObservable.ListObserver<Proper
 
         // Index and parameters are that of the last call.
         assertThat(mIndex, equalTo(2));
+        assertThat(mCount, equalTo(1));
+        assertThat(mPayload, equalTo(INTEGER_KEY));
+    }
+
+    @Test
+    public void addAllSimpleList() {
+        ListModelBase<PropertyModel, Void> simpleList = new ListModelBase<>();
+        simpleList.add(new PropertyModel.Builder(INTEGER_KEY).build());
+        simpleList.add(new PropertyModel.Builder(INTEGER_KEY).build());
+        simpleList.add(new PropertyModel.Builder(INTEGER_KEY).build());
+        simpleList.add(new PropertyModel.Builder(INTEGER_KEY).build());
+
+        mListModel.addAll(simpleList);
+
+        // Verify that an observer was attached to each model.
+        simpleList.get(0).set(INTEGER_KEY, 1);
+        simpleList.get(1).set(INTEGER_KEY, 5);
+        simpleList.get(2).set(INTEGER_KEY, 10);
+        simpleList.get(3).set(INTEGER_KEY, 20);
+        assertThat(mOnRangeChangedCalled, equalTo(4));
+
+        // Index and parameters are that of the last call.
+        assertThat(mIndex, equalTo(3));
         assertThat(mCount, equalTo(1));
         assertThat(mPayload, equalTo(INTEGER_KEY));
     }

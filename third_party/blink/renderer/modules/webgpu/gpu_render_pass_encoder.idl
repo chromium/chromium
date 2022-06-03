@@ -11,14 +11,18 @@
                      float width, float height,
                      float minDepth, float maxDepth);
 
-    void setScissorRect(unsigned long x, unsigned long y,
-                        unsigned long width, unsigned long height);
+    void setScissorRect(GPUIntegerCoordinate x, GPUIntegerCoordinate y,
+                        GPUIntegerCoordinate width, GPUIntegerCoordinate height);
 
-    [RaisesException] void setBlendColor(GPUColor color);
-    void setStencilReference(unsigned long reference);
+    [RaisesException] void setBlendConstant(GPUColor color);
+    void setStencilReference(GPUStencilValue reference);
 
     void executeBundles(sequence<GPURenderBundle> bundles);
+    void beginOcclusionQuery(GPUSize32 queryIndex);
+    void endOcclusionQuery();
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
     void endPass();
 };
+GPURenderPassEncoder includes GPUObjectBase;
 GPURenderPassEncoder includes GPUProgrammablePassEncoder;
 GPURenderPassEncoder includes GPURenderEncoderBase;

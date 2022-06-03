@@ -4,6 +4,7 @@
 
 #include "net/tools/transport_security_state_generator/pinsets.h"
 
+#include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
 namespace net {
@@ -15,7 +16,8 @@ Pinsets::Pinsets() = default;
 Pinsets::~Pinsets() = default;
 
 void Pinsets::RegisterSPKIHash(base::StringPiece name, const SPKIHash& hash) {
-  spki_hashes_.insert(std::pair<std::string, SPKIHash>(name.as_string(), hash));
+  spki_hashes_.insert(
+      std::pair<std::string, SPKIHash>(std::string(name), hash));
 }
 
 void Pinsets::RegisterPinset(std::unique_ptr<Pinset> pinset) {

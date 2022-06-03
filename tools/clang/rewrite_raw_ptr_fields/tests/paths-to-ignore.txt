@@ -1,0 +1,27 @@
+# File that can be used as an argument of the --exclude-paths cmdline
+# parameter of rewrite_raw_ptr_fields tool.
+#
+# Each non-whitespace / non-comment line specifies a regex that is
+# matched against paths of the source files.  Paths matching any
+# regex will not be rewritten.
+
+# Next line is non-empty, but contains only whitespace.
+            
+
+# Next line contains a substring of the tests/path-filter-file-...cc file.
+th-filter-fi
+
+# Next line says to include a file if it contains "always-include" substring
+# (even if it also matches the "the-filter-fi" substring above)
+!always-include
+
+# The lines below don't match any test paths - these lines have been included to
+# exercise a bit further the regex # building code in
+# FilterFile::ContainsSubstringOf.
+#
+# Just a random substring that doesn't match any test paths.
+no-such-substring-any-where-in-test-files
+# Random regex characters that might need to be escaped.
+\( ( \) ) \| | [0-9] \[0-9\] .{}
+# A dot shouldn't match *any* character.
+.n  # anything other than .c and .cc should not match any test paths

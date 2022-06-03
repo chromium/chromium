@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(async function() {
+(async function () {
   TestRunner.addResult(`Verify that UISourceCodes are added and removed as iframe gets attached and detached.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   TestRunner.markStep('dumpInitialWorkspace');
   var snapshot = BindingsTestRunner.dumpWorkspace();
@@ -16,6 +16,5 @@
   TestRunner.markStep('detachFrame');
   await BindingsTestRunner.detachFrame('frame', '_test_detachFrame.js');
   snapshot = BindingsTestRunner.dumpWorkspace(snapshot);
-
   TestRunner.completeTest();
 })();

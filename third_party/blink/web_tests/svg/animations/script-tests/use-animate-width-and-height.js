@@ -65,8 +65,8 @@ function sample2() {
     shouldBe("use.width.baseVal.value", "100");
     shouldBe("use.height.animVal.value", "105");
     shouldBe("use.height.baseVal.value", "100");
-    shouldBe("use.getAttribute('width')", "'105'");
-    shouldBe("use.getAttribute('height')", "'105'");
+    shouldBe("use.getAttribute('width')", "'100'");
+    shouldBe("use.getAttribute('height')", "'100'");
     shouldBe("shadowRoot.firstChild.width.animVal.value", "105");
     shouldBe("shadowRoot.firstChild.height.animVal.value", "105");
 }
@@ -76,8 +76,8 @@ function sample3() {
     shouldBe("use.width.baseVal.value", "100");
     shouldBe("use.height.animVal.value", "115");
     shouldBe("use.height.baseVal.value", "100");
-    shouldBe("use.getAttribute('width')", "'115'");
-    shouldBe("use.getAttribute('height')", "'115'");
+    shouldBe("use.getAttribute('width')", "'100'");
+    shouldBe("use.getAttribute('height')", "'100'");
     shouldBe("shadowRoot.firstChild.width.animVal.value", "115");
     shouldBe("shadowRoot.firstChild.height.animVal.value", "115");
 }
@@ -87,8 +87,8 @@ function sample4() {
     shouldBe("use.width.baseVal.value", "100");
     shouldBe("use.height.animVal.value", "125");
     shouldBe("use.height.baseVal.value", "100");
-    shouldBe("use.getAttribute('width')", "'125'");
-    shouldBe("use.getAttribute('height')", "'125'");
+    shouldBe("use.getAttribute('width')", "'100'");
+    shouldBe("use.getAttribute('height')", "'100'");
     shouldBe("shadowRoot.firstChild.width.animVal.value", "125");
     shouldBe("shadowRoot.firstChild.height.animVal.value", "125");
 }
@@ -98,8 +98,8 @@ function sample5() {
     shouldBe("use.width.baseVal.value", "100");
     shouldBe("use.height.animVal.value", "135");
     shouldBe("use.height.baseVal.value", "100");
-    shouldBe("use.getAttribute('width')", "'135'");
-    shouldBe("use.getAttribute('height')", "'135'");
+    shouldBe("use.getAttribute('width')", "'100'");
+    shouldBe("use.getAttribute('height')", "'100'");
     shouldBe("shadowRoot.firstChild.width.animVal.value", "135");
     shouldBe("shadowRoot.firstChild.height.animVal.value", "135");
 }

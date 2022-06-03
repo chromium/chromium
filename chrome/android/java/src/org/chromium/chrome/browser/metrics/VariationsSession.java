@@ -15,6 +15,10 @@ public class VariationsSession {
     private boolean mRestrictModeFetchStarted;
     private String mRestrictMode;
 
+    public void initializeWithNative() {
+        // No-op, but overridden by the internal subclass for extra logic.
+    }
+
     /**
      * Triggers to the native VariationsService that the application has entered the foreground.
      */

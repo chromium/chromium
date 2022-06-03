@@ -7,14 +7,14 @@
 #include "base/i18n/rtl.h"
 #import "base/logging.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
+#import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/dynamic_color_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,15 +35,22 @@ const CGFloat kAnimationDuration = 0.15;
 
 @interface ToolbarAccessoryPresenter ()
 
-// The view controller to present views into.
-@property(nonatomic, weak, readonly) UIViewController* baseViewController;
+// The |presenting| public property redefined as readwrite.
+@property(nonatomic, assign, readwrite, getter=isPresenting) BOOL presenting;
 
 // The view that acts as the background for |presentedView|, redefined as
-// readonly. This is especially important on iPhone, as this view that holds
+// readwrite. This is especially important on iPhone, as this view that holds
 // everything around the safe area.
 @property(nonatomic, strong, readwrite) UIView* backgroundView;
-// The input view being presented, stored as a weak reference.
-@property(nonatomic, weak) UIView* presentedView;
+
+// Layout guide to center the presented view below the safe area layout guide on
+// iPhone.
+@property(nonatomic, strong) UILayoutGuide* centeringGuide;
+
+// A constraint that constrains any views to their pre-animation positions.
+// It should be deactiviated during the presentation animation and replaced with
+// a constraint that sets the views to their final position.
+@property(nonatomic, strong) NSLayoutConstraint* animationConstraint;
 
 @property(nonatomic, assign) BOOL isIncognito;
 
@@ -51,46 +58,88 @@ const CGFloat kAnimationDuration = 0.15;
 
 @implementation ToolbarAccessoryPresenter
 
+@synthesize baseViewController = _baseViewController;
+@synthesize presentedViewController = _presentedViewController;
+@synthesize delegate = _delegate;
+
 #pragma mark - Public
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                               isIncognito:(BOOL)isIncognito {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   if (self = [super init]) {
-    _baseViewController = baseViewController;
     _isIncognito = isIncognito;
   }
   return self;
 }
 
-- (void)addToolbarAccessoryView:(UIView*)toolbarAccessoryView
-                       animated:(BOOL)animated
-                     completion:(void (^)())completion {
-  if (self.backgroundView) {
-    DCHECK(toolbarAccessoryView == self.presentedView);
-    return;
-  }
+- (BOOL)isPresentingViewController:(UIViewController*)viewController {
+  return self.presenting && self.presentedViewController &&
+         self.presentedViewController == viewController;
+}
 
-  if (ShouldShowCompactToolbar()) {
-    [self showIPhoneToolbarAccessoryView:toolbarAccessoryView
-                                animated:animated
-                              completion:completion];
+- (void)prepareForPresentation {
+  self.presenting = YES;
+  self.backgroundView = [self createBackgroundView];
+  [self.baseViewController addChildViewController:self.presentedViewController];
+  [self.baseViewController.view addSubview:self.backgroundView];
+
+  if (ShouldShowCompactToolbar(self.baseViewController)) {
+    [self prepareForPresentationOnIPhone];
   } else {
-    [self showIPadToolbarAccessoryView:toolbarAccessoryView
-                              animated:animated
-                            completion:completion];
+    [self prepareForPresentationOnIPad];
   }
 }
 
-- (void)hideToolbarAccessoryViewAnimated:(BOOL)animated
-                              completion:(void (^)())completion {
-  // If view is nil, nothing to hide.
-  if (!self.backgroundView) {
-    return;
+- (void)presentAnimated:(BOOL)animated {
+  if (animated) {
+    // Force initial layout before the animation.
+    [self.baseViewController.view layoutIfNeeded];
   }
 
+  if (ShouldShowCompactToolbar(self.baseViewController)) {
+    [self setupFinalConstraintsOnIPhone];
+  } else {
+    [self setupFinalConstraintsOnIPad];
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^void(BOOL) {
+    [weakSelf.presentedViewController
+        didMoveToParentViewController:weakSelf.baseViewController];
+    if ([weakSelf.delegate
+            respondsToSelector:@selector(containedPresenterDidPresent:)]) {
+      [weakSelf.delegate containedPresenterDidPresent:weakSelf];
+    }
+  };
+
+  if (animated) {
+    [UIView animateWithDuration:kAnimationDuration
+                     animations:^() {
+                       [self.baseViewController.view layoutIfNeeded];
+                     }
+                     completion:completion];
+  } else {
+    completion(YES);
+  }
+}
+
+- (void)dismissAnimated:(BOOL)animated {
+  [self.presentedViewController willMoveToParentViewController:nil];
+
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^void(BOOL) {
+    [weakSelf.presentedViewController.view removeFromSuperview];
+    [weakSelf.presentedViewController removeFromParentViewController];
+    [weakSelf.backgroundView removeFromSuperview];
+    weakSelf.backgroundView = nil;
+    weakSelf.presenting = NO;
+    if ([weakSelf.delegate
+            respondsToSelector:@selector(containedPresenterDidDismiss:)]) {
+      [weakSelf.delegate containedPresenterDidDismiss:weakSelf];
+    }
+  };
   if (animated) {
     void (^animation)();
-    if (ShouldShowCompactToolbar()) {
+    if (ShouldShowCompactToolbar(self.baseViewController)) {
       CGRect oldFrame = self.backgroundView.frame;
       self.backgroundView.layer.anchorPoint = CGPointMake(0.5, 0);
       self.backgroundView.frame = oldFrame;
@@ -107,33 +156,49 @@ const CGFloat kAnimationDuration = 0.15;
     }
     [UIView animateWithDuration:kAnimationDuration
                      animations:animation
-                     completion:^(BOOL finished) {
-                       [self teardownView];
-                       if (completion) {
-                         completion();
-                       }
-                     }];
+                     completion:completion];
   } else {
-    [self teardownView];
-    if (completion) {
-      completion();
-    }
+    completion(YES);
   }
 }
 
 #pragma mark - Private Helpers
 
-// Animates accessory to iPad positioning: A small view in the top right, just
-// below the toolbar.
-- (void)showIPadToolbarAccessoryView:(UIView*)toolbarAccessoryView
-                            animated:(BOOL)animated
-                          completion:(void (^)())completion {
-  DCHECK(IsIPadIdiom());
-  self.backgroundView =
-      [self createBackgroundViewForToolbarAccessoryView:toolbarAccessoryView];
+// Positions the view into its initial, pre-animation position on iPhone.
+// Specifically, the final position will be on top of the toolbar. The
+// pre-animation position is that, but slid upwards so the view is offscreen.
+- (void)prepareForPresentationOnIPhone {
+  self.animationConstraint = [self.backgroundView.bottomAnchor
+      constraintEqualToAnchor:self.baseViewController.view.topAnchor];
+
+  // Use this constraint to force the greater than or equal constraint below to
+  // be as small as possible.
+  NSLayoutConstraint* centeringGuideTopConstraint =
+      [self.centeringGuide.topAnchor
+          constraintEqualToAnchor:self.backgroundView.topAnchor];
+  centeringGuideTopConstraint.priority = UILayoutPriorityDefaultLow;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.backgroundView.leadingAnchor
+        constraintEqualToAnchor:self.baseViewController.view.leadingAnchor],
+    [self.backgroundView.trailingAnchor
+        constraintEqualToAnchor:self.baseViewController.view.trailingAnchor],
+    [self.centeringGuide.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.backgroundView
+                                                 .safeAreaLayoutGuide
+                                                 .topAnchor],
+    centeringGuideTopConstraint,
+    self.animationConstraint,
+  ]];
+}
+
+// Positions the view into its initial, pre-animation position on iPad.
+// Specifically, the final position will be a small accessory just below the
+// toolbar on the upper right. The pre-animation position is that, but slid
+// offscreen to the right.
+- (void)prepareForPresentationOnIPad {
   self.backgroundView.layer.cornerRadius =
       kToolbarAccessoryCornerRadiusRegularRegular;
-  [self.baseViewController.view addSubview:self.backgroundView];
 
   UIImageView* shadow =
       [[UIImageView alloc] initWithImage:StretchableImageNamed(@"menu_shadow")];
@@ -148,9 +213,7 @@ const CGFloat kAnimationDuration = 0.15;
       constraintEqualToConstant:kToolbarAccessoryWidthRegularRegular];
   widthConstraint.priority = UILayoutPriorityRequired - 1;
 
-  // This constraint sets the view in the pre-animation state. It will be
-  // removed and replaced during the animation process.
-  NSLayoutConstraint* animationConstraint = [self.backgroundView.leadingAnchor
+  self.animationConstraint = [self.backgroundView.leadingAnchor
       constraintEqualToAnchor:self.baseViewController.view.trailingAnchor];
 
   UILayoutGuide* toolbarLayoutGuide =
@@ -158,17 +221,17 @@ const CGFloat kAnimationDuration = 0.15;
                            view:self.baseViewController.view];
 
   [NSLayoutConstraint activateConstraints:@[
-    // Anchors accessory below the |toolbarView|.
+    // Anchors accessory below the the toolbar.
     [self.backgroundView.topAnchor
         constraintEqualToAnchor:toolbarLayoutGuide.bottomAnchor],
-    animationConstraint,
+    self.animationConstraint,
     widthConstraint,
     [self.backgroundView.widthAnchor
         constraintLessThanOrEqualToAnchor:self.baseViewController.view
                                               .widthAnchor
                                  constant:-2 * kRegularRegularHorizontalMargin],
     [self.backgroundView.heightAnchor
-        constraintEqualToConstant:kAdaptiveToolbarHeight],
+        constraintEqualToConstant:kPrimaryToolbarHeight],
   ]];
   // Layouts |shadow| around |self.backgroundView|.
   AddSameConstraintsToSidesWithInsets(
@@ -176,115 +239,74 @@ const CGFloat kAnimationDuration = 0.15;
       LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
           LayoutSides::kTrailing,
       {-kShadowMargin, -kShadowMargin, -kShadowMargin, -kShadowMargin});
-
-  // Force everything to layout in the pre-animation state.
-  [self.baseViewController.view layoutIfNeeded];
-
-  // Set up the post-animation positioning constraints.
-  animationConstraint.active = NO;
-  [self.backgroundView.trailingAnchor
-      constraintEqualToAnchor:self.baseViewController.view.trailingAnchor
-                     constant:-kRegularRegularHorizontalMargin]
-      .active = YES;
-
-  CGFloat duration = animated ? kAnimationDuration : 0;
-  [UIView animateWithDuration:duration
-      animations:^() {
-        [self.backgroundView layoutIfNeeded];
-      }
-      completion:^(BOOL finished) {
-        if (completion) {
-          completion();
-        }
-      }];
 }
 
-// Animates accessory to iPhone positioning: covering the whole toolbar.
-- (void)showIPhoneToolbarAccessoryView:(UIView*)toolbarAccessoryView
-                              animated:(BOOL)animated
-                            completion:(nullable void (^)())completion {
-  self.backgroundView =
-      [self createBackgroundViewForToolbarAccessoryView:toolbarAccessoryView];
-  [self.baseViewController.view addSubview:self.backgroundView];
-
-  // This constraint sets up the view to where it should be before the animation
-  // starts. It will later be replaced with another constraint for its final
-  // position.
-  NSLayoutConstraint* animationConstraint = [self.backgroundView.bottomAnchor
-      constraintEqualToAnchor:self.baseViewController.view.topAnchor];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.backgroundView.leadingAnchor
-        constraintEqualToAnchor:self.baseViewController.view.leadingAnchor],
-    [self.backgroundView.trailingAnchor
-        constraintEqualToAnchor:self.baseViewController.view.trailingAnchor],
-    [self.presentedView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.backgroundView
-                                                 .safeAreaLayoutGuide
-                                                 .topAnchor],
-    animationConstraint,
-  ]];
-
-  // Force initial layout before the animation.
-  [self.baseViewController.view layoutIfNeeded];
-
-  animationConstraint.active = NO;
+// Sets up the constraints on iPhone such that the view is ready to be animated
+// to its final position.
+- (void)setupFinalConstraintsOnIPhone {
+  self.animationConstraint.active = NO;
   [self.backgroundView.topAnchor
       constraintEqualToAnchor:self.baseViewController.view.topAnchor]
       .active = YES;
 
-  CGFloat duration = animated ? kAnimationDuration : 0;
-  [UIView animateWithDuration:duration
-      animations:^() {
-        [self.backgroundView layoutIfNeeded];
-      }
-      completion:^(BOOL finished) {
-        if (completion) {
-          completion();
-        }
-      }];
+  // Make sure the background doesn't shrink when the toolbar goes to fullscreen
+  // mode.
+  UILayoutGuide* toolbarLayoutGuide =
+      [NamedGuide guideWithName:kPrimaryToolbarGuide
+                           view:self.baseViewController.view];
+  [self.backgroundView.bottomAnchor
+      constraintGreaterThanOrEqualToAnchor:toolbarLayoutGuide.bottomAnchor]
+      .active = YES;
 }
 
-// Creates the background view and adds the |toolbarAccessoryView| to it.
-- (UIView*)createBackgroundViewForToolbarAccessoryView:
-    (UIView*)toolbarAccessoryView {
+// Sets up the constraints on iPhone such that the view is ready to be animated
+// to its final position.
+- (void)setupFinalConstraintsOnIPad {
+  self.animationConstraint.active = NO;
+  [self.backgroundView.trailingAnchor
+      constraintEqualToAnchor:self.baseViewController.view.trailingAnchor
+                     constant:-kRegularRegularHorizontalMargin]
+      .active = YES;
+}
+
+// Creates the background view and adds |self.presentedViewController.view| to
+// it
+- (UIView*)createBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.accessibilityIdentifier = kToolbarAccessoryContainerViewID;
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |incognitoStyle| can be removed, as well as
-    // the incognito specific assets.
-    backgroundView.overrideUserInterfaceStyle =
-        self.isIncognito ? UIUserInterfaceStyleDark
-                         : UIUserInterfaceStyleUnspecified;
-  }
-  backgroundView.backgroundColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBackgroundColor], self.isIncognito,
-      [UIColor colorNamed:kBackgroundDarkColor]);
-  self.presentedView = toolbarAccessoryView;
 
-  [backgroundView addSubview:self.presentedView];
+  backgroundView.overrideUserInterfaceStyle =
+      self.isIncognito ? UIUserInterfaceStyleDark
+                       : UIUserInterfaceStyleUnspecified;
+  backgroundView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+  [backgroundView addSubview:self.presentedViewController.view];
+
+  self.centeringGuide = [[UILayoutGuide alloc] init];
+  [backgroundView addLayoutGuide:self.centeringGuide];
 
   [NSLayoutConstraint activateConstraints:@[
-    [self.presentedView.trailingAnchor
+    [self.centeringGuide.trailingAnchor
         constraintEqualToAnchor:backgroundView.trailingAnchor],
-    [self.presentedView.leadingAnchor
+    [self.centeringGuide.leadingAnchor
         constraintEqualToAnchor:backgroundView.leadingAnchor],
-    [self.presentedView.heightAnchor
-        constraintEqualToConstant:kAdaptiveToolbarHeight],
-    [self.presentedView.bottomAnchor
+    [self.centeringGuide.bottomAnchor
         constraintEqualToAnchor:backgroundView.bottomAnchor],
+    [self.centeringGuide.heightAnchor
+        constraintGreaterThanOrEqualToAnchor:self.presentedViewController.view
+                                                 .heightAnchor],
+    [self.presentedViewController.view.heightAnchor
+        constraintEqualToConstant:kPrimaryToolbarHeight],
+    [self.presentedViewController.view.leadingAnchor
+        constraintEqualToAnchor:self.centeringGuide.leadingAnchor],
+    [self.presentedViewController.view.trailingAnchor
+        constraintEqualToAnchor:self.centeringGuide.trailingAnchor],
+    [self.presentedViewController.view.centerYAnchor
+        constraintEqualToAnchor:self.centeringGuide.centerYAnchor],
   ]];
 
   return backgroundView;
-}
-
-// Removes the background view from the view hierarchy and performs any
-// necessary cleanup.
-- (void)teardownView {
-  [self.backgroundView removeFromSuperview];
-  self.backgroundView = nil;
 }
 
 @end

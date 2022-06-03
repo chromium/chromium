@@ -1,0 +1,28 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("logging") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_run_signin_logger.h",
+    "first_run_signin_logger.mm",
+    "upgrade_signin_logger.h",
+    "upgrade_signin_logger.mm",
+    "user_signin_logger.h",
+    "user_signin_logger.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/version_info",
+    "//ios/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+  ]
+}

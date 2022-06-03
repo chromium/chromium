@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.v4.view.MarginLayoutParamsCompat;
-import android.support.v7.widget.GridLayout;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
@@ -33,13 +31,15 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.MarginLayoutParamsCompat;
+import androidx.gridlayout.widget.GridLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ui.widget.TintedDrawable;
-import org.chromium.chrome.browser.ui.widget.animation.Interpolators;
-import org.chromium.chrome.browser.widget.prefeditor.EditableOption;
+import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.HorizontalListDividerDrawable;
 import org.chromium.ui.UiUtils;
 
@@ -366,7 +366,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         // The title is always displayed for the row at the top of the main section.
         mTitleView = new TextView(getContext());
         mTitleView.setText(sectionName);
-        ApiCompatibilityUtils.setTextAppearance(mTitleView, R.style.TextAppearance_BlueLink2);
+        ApiCompatibilityUtils.setTextAppearance(mTitleView, R.style.TextAppearance_TextMedium_Blue);
         mainSectionLayout.addView(
                 mTitleView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
@@ -374,11 +374,11 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         mSummaryLeftTextView = new TextView(getContext());
         mSummaryLeftTextView.setId(R.id.payments_left_summary_label);
         ApiCompatibilityUtils.setTextAppearance(
-                mSummaryLeftTextView, R.style.TextAppearance_BlackTitle1);
+                mSummaryLeftTextView, R.style.TextAppearance_TextLarge_Primary);
 
         mSummaryRightTextView = new TextView(getContext());
         ApiCompatibilityUtils.setTextAppearance(
-                mSummaryRightTextView, R.style.TextAppearance_BlackTitle1);
+                mSummaryRightTextView, R.style.TextAppearance_TextLarge_Primary);
         mSummaryRightTextView.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
 
         // The main TextView sucks up all the available space.
@@ -604,7 +604,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             // Create the view and set the text appearance and layout parameters.
             mUpdatedView = new TextView(context);
             ApiCompatibilityUtils.setTextAppearance(
-                    mUpdatedView, R.style.TextAppearance_BlackTitle1);
+                    mUpdatedView, R.style.TextAppearance_TextLarge_Primary);
             LinearLayout.LayoutParams updatedLayoutParams = new LinearLayout.LayoutParams(
                     LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             mUpdatedView.setTextAlignment(TEXT_ALIGNMENT_TEXT_END);
@@ -931,10 +931,10 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                     int drawableTint;
                     if (mRowType == OPTION_ROW_TYPE_WARNING) {
                         drawableId = R.drawable.ic_warning_white_24dp;
-                        drawableTint = R.color.error_text_color;
+                        drawableTint = R.color.default_text_color_error;
                     } else {
                         drawableId = R.drawable.plus;
-                        drawableTint = R.color.default_icon_color_blue;
+                        drawableTint = R.color.default_icon_color_accent1_tint_list;
                     }
 
                     TintedDrawable tintedDrawable = TintedDrawable.constructTintedDrawable(
@@ -997,7 +997,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                     columnSpan = 4;
 
                     ApiCompatibilityUtils.setTextAppearance(
-                            labelView, R.style.TextAppearance_BlackBody);
+                            labelView, R.style.TextAppearance_TextMedium_Secondary);
                     labelView.setId(R.id.payments_description_label);
                 } else if (mRowType == OPTION_ROW_TYPE_WARNING) {
                     // Warnings use three columns.
@@ -1338,17 +1338,18 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 // Section summary should be displayed as descriptive text style.
                 if (!mSummaryInDescriptiveText) {
                     ApiCompatibilityUtils.setTextAppearance(
-                            getSummaryLeftTextView(), R.style.TextAppearance_BlackBody);
+                            getSummaryLeftTextView(), R.style.TextAppearance_TextMedium_Secondary);
                     mSummaryInDescriptiveText = true;
                 }
                 SectionUiUtils.showSectionSummaryInTextViewInSingeLine(
                         getContext(), mSectionInformation, getSummaryLeftTextView());
             } else {
                 setLogoDrawable(selectedItem.getDrawableIcon());
-                // Selected item summary should be displayed as R.style.TextAppearance_BlackTitle1.
+                // Selected item summary should be displayed as
+                // R.style.TextAppearance_TextLarge_Primary.
                 if (mSummaryInDescriptiveText) {
                     ApiCompatibilityUtils.setTextAppearance(
-                            getSummaryLeftTextView(), R.style.TextAppearance_BlackTitle1);
+                            getSummaryLeftTextView(), R.style.TextAppearance_TextLarge_Primary);
                     mSummaryInDescriptiveText = false;
                 }
                 // Split summary in DISPLAY_MODE_NORMAL if caller specified. The first part is

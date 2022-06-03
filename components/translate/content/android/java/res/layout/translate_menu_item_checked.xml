@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+
+    <LinearLayout
+        style="@style/AppMenuItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/menu_item_text"
+            android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="start"
+            android:gravity="center_vertical"
+            android:paddingTop="13dp"
+            android:paddingBottom="13dp"
+            android:paddingEnd="16dp" />
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/menu_item_icon"
+            android:src="@drawable/ic_check_googblue_24dp"
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:gravity="center_vertical"
+            app:tint="@color/default_icon_color_tint_list" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/menu_item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_line_bg_color"
+        android:visibility="gone" />
+
+</LinearLayout>
+

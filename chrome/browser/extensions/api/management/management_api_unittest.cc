@@ -6,8 +6,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -20,6 +20,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/management/management_api_constants.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
@@ -33,6 +34,22 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/background/background_contents.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "content/public/browser/gpu_data_manager.h"
+#include "extensions/browser/api/management/management_api_constants.h"
+#include "extensions/common/error_utils.h"
+#endif
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -49,13 +66,15 @@ std::unique_ptr<KeyedService> BuildEventRouter(
       profile, ExtensionPrefs::Get(profile));
 }
 
-}  // namespace
-
 namespace constants = extension_management_api_constants;
 
 // TODO(devlin): Unittests are awesome. Test more with unittests and less with
 // heavy api/browser tests.
 class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
+ public:
+  ManagementApiUnitTest(const ManagementApiUnitTest&) = delete;
+  ManagementApiUnitTest& operator=(const ManagementApiUnitTest&) = delete;
+
  protected:
   ManagementApiUnitTest() {}
   ~ManagementApiUnitTest() override {}
@@ -63,44 +82,82 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   // A wrapper around extension_function_test_utils::RunFunction that runs with
   // the associated browser, no flags, and can take stack-allocated arguments.
   bool RunFunction(const scoped_refptr<ExtensionFunction>& function,
-                   const base::ListValue& args);
+                   const base::Value& args);
+
+  // Runs the management.setEnabled() function to enable an extension.
+  bool RunSetEnabledFunction(content::WebContents* web_contents,
+                             const std::string& extension_id,
+                             bool use_user_gesture,
+                             bool accept_dialog,
+                             std::string* error,
+                             bool enabled = true);
 
   Browser* browser() { return browser_.get(); }
 
- private:
+  // Returns the initialization parameters for the extension service.
+  virtual ExtensionServiceInitParams GetExtensionServiceInitParams() {
+    return CreateDefaultInitParams();
+  }
+
   // ExtensionServiceTestBase:
   void SetUp() override;
   void TearDown() override;
 
+ private:
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementApiUnitTest);
 };
 
 bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
-    const base::ListValue& args) {
+    const base::Value& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(), base::WrapUnique(args.DeepCopy()), browser(),
-      api_test_utils::NONE);
+      function.get(), base::Value::AsListValue(args).CreateDeepCopy(),
+      browser(), api_test_utils::NONE);
+}
+
+bool ManagementApiUnitTest::RunSetEnabledFunction(
+    content::WebContents* web_contents,
+    const std::string& extension_id,
+    bool use_user_gesture,
+    bool accept_dialog,
+    std::string* error,
+    bool enabled) {
+  ScopedTestDialogAutoConfirm auto_confirm(
+      accept_dialog ? ScopedTestDialogAutoConfirm::ACCEPT
+                    : ScopedTestDialogAutoConfirm::CANCEL);
+  absl::optional<ExtensionFunction::ScopedUserGestureForTests> gesture =
+      absl::nullopt;
+  if (use_user_gesture)
+    gesture.emplace();
+  scoped_refptr<ManagementSetEnabledFunction> function =
+      base::MakeRefCounted<ManagementSetEnabledFunction>();
+  if (web_contents)
+    function->SetRenderFrameHost(web_contents->GetMainFrame());
+  base::Value args(base::Value::Type::LIST);
+  args.Append(extension_id);
+  args.Append(enabled);
+  bool result = RunFunction(function, args);
+  if (error)
+    *error = function->GetError();
+  return result;
 }
 
 void ManagementApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
-  InitializeEmptyExtensionService();
+  InitializeExtensionService(GetExtensionServiceInitParams());
   ManagementAPI::GetFactoryInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildManagementApi));
 
   EventRouterFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildEventRouter));
 
-  browser_window_.reset(new TestBrowserWindow());
+  browser_window_ = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
-  browser_.reset(new Browser(params));
+  browser_.reset(Browser::Create(params));
 }
 
 void ManagementApiUnitTest::TearDown() {
@@ -121,18 +178,18 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
       new ManagementSetEnabledFunction());
   function->set_extension(source_extension);
 
-  base::ListValue disable_args;
-  disable_args.AppendString(extension_id);
-  disable_args.AppendBoolean(false);
+  base::Value disable_args(base::Value::Type::LIST);
+  disable_args.Append(extension_id);
+  disable_args.Append(false);
 
   // Test disabling an (enabled) extension.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
   EXPECT_TRUE(RunFunction(function, disable_args)) << function->GetError();
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
 
-  base::ListValue enable_args;
-  enable_args.AppendString(extension_id);
-  enable_args.AppendBoolean(true);
+  base::Value enable_args(base::Value::Type::LIST);
+  enable_args.Append(extension_id);
+  enable_args.Append(true);
 
   // Test re-enabling it.
   function = new ManagementSetEnabledFunction();
@@ -158,17 +215,21 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
 // Test that component extensions cannot be disabled, and that policy extensions
 // can be disabled only by component/policy extensions.
 TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
-  auto component =
-      ExtensionBuilder("component").SetLocation(Manifest::COMPONENT).Build();
-  auto component2 =
-      ExtensionBuilder("component2").SetLocation(Manifest::COMPONENT).Build();
-  auto policy =
-      ExtensionBuilder("policy").SetLocation(Manifest::EXTERNAL_POLICY).Build();
+  auto component = ExtensionBuilder("component")
+                       .SetLocation(ManifestLocation::kComponent)
+                       .Build();
+  auto component2 = ExtensionBuilder("component2")
+                        .SetLocation(ManifestLocation::kComponent)
+                        .Build();
+  auto policy = ExtensionBuilder("policy")
+                    .SetLocation(ManifestLocation::kExternalPolicy)
+                    .Build();
   auto policy2 = ExtensionBuilder("policy2")
-                     .SetLocation(Manifest::EXTERNAL_POLICY)
+                     .SetLocation(ManifestLocation::kExternalPolicy)
                      .Build();
-  auto internal =
-      ExtensionBuilder("internal").SetLocation(Manifest::INTERNAL).Build();
+  auto internal = ExtensionBuilder("internal")
+                      .SetLocation(ManifestLocation::kInternal)
+                      .Build();
 
   service()->AddExtension(component.get());
   service()->AddExtension(component2.get());
@@ -180,9 +241,9 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
       [this](scoped_refptr<const Extension> source_extension,
              scoped_refptr<const Extension> target_extension) {
         std::string id = target_extension->id();
-        base::ListValue args;
-        args.AppendString(id);
-        args.AppendBoolean(false /* disable the extension */);
+        base::Value args(base::Value::Type::LIST);
+        args.Append(id);
+        args.Append(false /* disable the extension */);
         auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
         function->set_extension(source_extension);
         bool did_disable = RunFunction(function, args);
@@ -211,15 +272,18 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
 // Test that policy extensions can be enabled only by component/policy
 // extensions.
 TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
-  auto component =
-      ExtensionBuilder("component").SetLocation(Manifest::COMPONENT).Build();
-  auto policy =
-      ExtensionBuilder("policy").SetLocation(Manifest::EXTERNAL_POLICY).Build();
+  auto component = ExtensionBuilder("component")
+                       .SetLocation(ManifestLocation::kComponent)
+                       .Build();
+  auto policy = ExtensionBuilder("policy")
+                    .SetLocation(ManifestLocation::kExternalPolicy)
+                    .Build();
   auto policy2 = ExtensionBuilder("policy2")
-                     .SetLocation(Manifest::EXTERNAL_POLICY)
+                     .SetLocation(ManifestLocation::kExternalPolicy)
                      .Build();
-  auto internal =
-      ExtensionBuilder("internal").SetLocation(Manifest::INTERNAL).Build();
+  auto internal = ExtensionBuilder("internal")
+                      .SetLocation(ManifestLocation::kInternal)
+                      .Build();
 
   service()->AddExtension(component.get());
   service()->AddExtension(policy.get());
@@ -232,9 +296,9 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
       [this, component](scoped_refptr<const Extension> source_extension,
                         scoped_refptr<const Extension> target_extension) {
         std::string id = target_extension->id();
-        base::ListValue args;
-        args.AppendString(id);
-        args.AppendBoolean(true /* enable the extension */);
+        base::Value args(base::Value::Type::LIST);
+        args.Append(id);
+        args.Append(true /* enable the extension */);
         auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
         function->set_extension(source_extension);
         bool did_enable = RunFunction(function, args);
@@ -262,8 +326,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   service()->AddExtension(extension.get());
   std::string extension_id = extension->id();
 
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(extension->id());
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(extension->id());
 
   // Auto-accept any uninstalls.
   {
@@ -306,8 +370,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
               function->GetError());
 
     // Try again, using showConfirmDialog: false.
-    std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-    options->SetBoolean("showConfirmDialog", false);
+    base::Value options(base::Value::Type::DICTIONARY);
+    options.SetBoolPath("showConfirmDialog", false);
     uninstall_args.Append(std::move(options));
     function = new ManagementUninstallFunction();
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
@@ -322,7 +386,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     // If we try uninstall the extension itself, the uninstall should succeed
     // (even though we auto-cancel any dialog), because the dialog is never
     // shown.
-    uninstall_args.Remove(0u, nullptr);
+    uninstall_args.EraseListIter(uninstall_args.GetList().begin());
     function = new ManagementUninstallSelfFunction();
     function->set_extension(extension);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
@@ -339,8 +403,8 @@ TEST_F(ManagementApiUnitTest, ManagementWebStoreUninstall) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
   std::string extension_id = extension->id();
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(extension->id());
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(extension->id());
 
   {
     ScopedTestDialogAutoConfirm auto_confirm(
@@ -394,8 +458,8 @@ TEST_F(ManagementApiUnitTest, ManagementProgrammaticUninstall) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
   std::string extension_id = extension->id();
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(extension->id());
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(extension->id());
   {
     scoped_refptr<ExtensionFunction> function(
         new ManagementUninstallFunction());
@@ -424,40 +488,40 @@ TEST_F(ManagementApiUnitTest, ManagementProgrammaticUninstall) {
     extensions::ExtensionUninstallDialog::SetOnShownCallbackForTesting(nullptr);
   }
 }
-// Tests uninstalling a blacklisted extension via management.uninstall.
-TEST_F(ManagementApiUnitTest, ManagementUninstallBlacklisted) {
+// Tests uninstalling a blocklisted extension via management.uninstall.
+TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
   std::string id = extension->id();
 
-  service()->BlacklistExtensionForTest(id);
+  service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
   scoped_refptr<ExtensionFunction> function(new ManagementUninstallFunction());
-  base::ListValue uninstall_args;
-  uninstall_args.AppendString(id);
+  base::Value uninstall_args(base::Value::Type::LIST);
+  uninstall_args.Append(id);
   EXPECT_TRUE(RunFunction(function, uninstall_args)) << function->GetError();
 
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(id));
 }
 
-TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlacklisted) {
+TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
   std::string id = extension->id();
 
-  service()->BlacklistExtensionForTest(id);
+  service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
 
   scoped_refptr<ExtensionFunction> function;
 
   // Test enabling it.
   {
-    base::ListValue enable_args;
-    enable_args.AppendString(id);
-    enable_args.AppendBoolean(true);
+    base::Value enable_args(base::Value::Type::LIST);
+    enable_args.Append(id);
+    enable_args.Append(true);
     function = new ManagementSetEnabledFunction();
     EXPECT_TRUE(RunFunction(function, enable_args)) << function->GetError();
     EXPECT_FALSE(registry()->enabled_extensions().Contains(id));
@@ -466,9 +530,9 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlacklisted) {
 
   // Test disabling it
   {
-    base::ListValue disable_args;
-    disable_args.AppendString(id);
-    disable_args.AppendBoolean(false);
+    base::Value disable_args(base::Value::Type::LIST);
+    disable_args.Append(id);
+    disable_args.Append(false);
 
     function = new ManagementSetEnabledFunction();
     EXPECT_TRUE(RunFunction(function, disable_args)) << function->GetError();
@@ -502,7 +566,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
     EXPECT_FALSE(info->may_enable.get());
   }
 
-  // Simulate blacklisting the extension and verify that the extension shows as
+  // Simulate blocklisting the extension and verify that the extension shows as
   // disabled with a false value of |may_enable|.
   ManagementPolicy* policy =
       ExtensionSystem::Get(profile())->management_policy();
@@ -631,35 +695,15 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   // Due to a permission increase, prefs will contain escalation information.
   EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
-  auto enable_extension_via_management_api = [this, &web_contents](
-      const std::string& extension_id, bool use_user_gesture,
-      bool accept_dialog, bool expect_success) {
-    ScopedTestDialogAutoConfirm auto_confirm(
-        accept_dialog ? ScopedTestDialogAutoConfirm::ACCEPT
-                      : ScopedTestDialogAutoConfirm::CANCEL);
-    std::unique_ptr<ExtensionFunction::ScopedUserGestureForTests> gesture;
-    if (use_user_gesture)
-      gesture.reset(new ExtensionFunction::ScopedUserGestureForTests);
-    scoped_refptr<ManagementSetEnabledFunction> function(
-        new ManagementSetEnabledFunction());
-    function->set_browser_context(profile());
-    function->SetRenderFrameHost(web_contents->GetMainFrame());
-    base::ListValue args;
-    args.AppendString(extension_id);
-    args.AppendBoolean(true);
-    if (expect_success) {
-      EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
-    } else {
-      EXPECT_FALSE(RunFunction(function, args)) << function->GetError();
-    }
-  };
-
   // 1) Confirm re-enable prompt without user gesture, expect the extension to
   // stay disabled.
   {
-    enable_extension_via_management_api(
-        extension_id, false /* use_user_gesture */, true /* accept_dialog */,
-        false /* expect_success */);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         false /* use_user_gesture */,
+                                         true /* accept_dialog */, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
     EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
     // Prefs should still contain permissions escalation information.
     EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
@@ -668,9 +712,12 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   // 2) Deny re-enable prompt without user gesture, expect the extension to stay
   // disabled.
   {
-    enable_extension_via_management_api(
-        extension_id, false /* use_user_gesture */, false /* accept_dialog */,
-        false /* expect_success */);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         false /* use_user_gesture */,
+                                         false /* accept_dialog */, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
     EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
     // Prefs should still contain permissions escalation information.
     EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
@@ -679,9 +726,12 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   // 3) Deny re-enable prompt with user gesture, expect the extension to stay
   // disabled.
   {
-    enable_extension_via_management_api(
-        extension_id, true /* use_user_gesture */, false /* accept_dialog */,
-        false /* expect_success */);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         true /* use_user_gesture */,
+                                         false /* accept_dialog */, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
     EXPECT_FALSE(registry()->enabled_extensions().Contains(extension_id));
     // Prefs should still contain permissions escalation information.
     EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
@@ -690,9 +740,12 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   // 4) Accept re-enable prompt with user gesture, expect the extension to be
   // enabled.
   {
-    enable_extension_via_management_api(
-        extension_id, true /* use_user_gesture */, true /* accept_dialog */,
-        true /* expect_success */);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents.get(), extension_id,
+                                         true /* use_user_gesture */,
+                                         true /* accept_dialog */, &error);
+    EXPECT_TRUE(success) << error;
+    EXPECT_TRUE(error.empty());
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
     // Prefs will no longer contain the escalation information as user has
     // accepted increased permissions.
@@ -705,4 +758,920 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   EXPECT_FALSE(known_perms->IsEmpty());
 }
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+// A delegate that senses when extensions are enabled or disabled.
+class TestManagementAPIDelegate : public ManagementAPIDelegate {
+ public:
+  TestManagementAPIDelegate() = default;
+  ~TestManagementAPIDelegate() override = default;
+
+  void LaunchAppFunctionDelegate(
+      const Extension* extension,
+      content::BrowserContext* context) const override {}
+  GURL GetFullLaunchURL(const Extension* extension) const override {
+    return GURL();
+  }
+  LaunchType GetLaunchType(const ExtensionPrefs* prefs,
+                           const Extension* extension) const override {
+    return LaunchType::LAUNCH_TYPE_DEFAULT;
+  }
+  void GetPermissionWarningsByManifestFunctionDelegate(
+      ManagementGetPermissionWarningsByManifestFunction* function,
+      const std::string& manifest_str) const override {}
+  std::unique_ptr<InstallPromptDelegate> SetEnabledFunctionDelegate(
+      content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
+      const Extension* extension,
+      base::OnceCallback<void(bool)> callback) const override {
+    return nullptr;
+  }
+  void EnableExtension(content::BrowserContext* context,
+                       const std::string& extension_id) const override {
+    ++enable_count_;
+  }
+  void DisableExtension(
+      content::BrowserContext* context,
+      const Extension* source_extension,
+      const std::string& extension_id,
+      disable_reason::DisableReason disable_reason) const override {}
+  std::unique_ptr<UninstallDialogDelegate> UninstallFunctionDelegate(
+      ManagementUninstallFunctionBase* function,
+      const Extension* target_extension,
+      bool show_programmatic_uninstall_ui) const override {
+    return nullptr;
+  }
+  bool UninstallExtension(content::BrowserContext* context,
+                          const std::string& transient_extension_id,
+                          UninstallReason reason,
+                          std::u16string* error) const override {
+    return true;
+  }
+  bool CreateAppShortcutFunctionDelegate(
+      ManagementCreateAppShortcutFunction* function,
+      const Extension* extension,
+      std::string* error) const override {
+    return true;
+  }
+  void SetLaunchType(content::BrowserContext* context,
+                     const std::string& extension_id,
+                     LaunchType launch_type) const override {}
+  std::unique_ptr<AppForLinkDelegate> GenerateAppForLinkFunctionDelegate(
+      ManagementGenerateAppForLinkFunction* function,
+      content::BrowserContext* context,
+      const std::string& title,
+      const GURL& launch_url) const override {
+    return nullptr;
+  }
+  bool CanContextInstallWebApps(
+      content::BrowserContext* context) const override {
+    return true;
+  }
+  void InstallOrLaunchReplacementWebApp(
+      content::BrowserContext* context,
+      const GURL& web_app_url,
+      InstallOrLaunchWebAppCallback callback) const override {}
+  bool CanContextInstallAndroidApps(
+      content::BrowserContext* context) const override {
+    return true;
+  }
+  void CheckAndroidAppInstallStatus(
+      const std::string& package_name,
+      AndroidAppInstallStatusCallback callback) const override {}
+  void InstallReplacementAndroidApp(
+      const std::string& package_name,
+      InstallAndroidAppCallback callback) const override {}
+  GURL GetIconURL(const Extension* extension,
+                  int icon_size,
+                  ExtensionIconSet::MatchType match,
+                  bool grayscale) const override {
+    return GURL();
+  }
+  GURL GetEffectiveUpdateURL(const extensions::Extension& extension,
+                             content::BrowserContext* context) const override {
+    return GURL();
+  }
+
+  // EnableExtension is const, so this is mutable.
+  mutable int enable_count_ = 0;
+};
+
+// A delegate that allows a child to try to install an extension and tracks
+// whether the parent permission dialog would have opened.
+class TestSupervisedUserExtensionsDelegate
+    : public SupervisedUserExtensionsDelegate {
+ public:
+  TestSupervisedUserExtensionsDelegate() = default;
+  ~TestSupervisedUserExtensionsDelegate() override = default;
+
+  // SupervisedUserExtensionsDelegate:
+  bool IsChild(content::BrowserContext* context) const override { return true; }
+
+  bool IsExtensionAllowedByParent(
+      const extensions::Extension& extension,
+      content::BrowserContext* context) const override {
+    SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForBrowserContext(context);
+    return supervised_user_service->IsExtensionAllowed(extension);
+  }
+
+  void PromptForParentPermissionOrShowError(
+      const extensions::Extension& extension,
+      content::BrowserContext* context,
+      content::WebContents* contents,
+      ParentPermissionDialogDoneCallback parent_permission_callback,
+      base::OnceClosure error_callback) override {
+    // Preconditions.
+    DCHECK(IsChild(context));
+    DCHECK(!IsExtensionAllowedByParent(extension, context));
+
+    if (CanInstallExtensions(context)) {
+      ShowParentPermissionDialogForExtension(
+          extension, context, contents, std::move(parent_permission_callback));
+    } else {
+      ShowExtensionEnableBlockedByParentDialogForExtension(
+          extension, contents, std::move(error_callback));
+    }
+  }
+
+  void set_next_parent_permission_dialog_result(
+      ParentPermissionDialogResult result) {
+    dialog_result_ = result;
+  }
+
+  int show_dialog_count() const { return show_dialog_count_; }
+  int show_block_dialog_count() const { return show_block_dialog_count_; }
+
+ private:
+  // Returns true if |context| represents a supervised child account who may
+  // install extensions with parent permission.
+  bool CanInstallExtensions(content::BrowserContext* context) const {
+    SupervisedUserService* supervised_user_service =
+        SupervisedUserServiceFactory::GetForBrowserContext(context);
+    return supervised_user_service->CanInstallExtensions();
+  }
+
+  // Shows a parent permission dialog for |extension| and call |done_callback|
+  // when it completes.
+  void ShowParentPermissionDialogForExtension(
+      const extensions::Extension& extension,
+      content::BrowserContext* context,
+      content::WebContents* contents,
+      ParentPermissionDialogDoneCallback done_callback) {
+    ++show_dialog_count_;
+    std::move(done_callback).Run(dialog_result_);
+  }
+
+  // Shows a dialog indicating that |extension| has been blocked and call
+  // |done_callback| when it completes.
+  void ShowExtensionEnableBlockedByParentDialogForExtension(
+      const extensions::Extension& extension,
+      content::WebContents* contents,
+      base::OnceClosure done_callback) {
+    show_block_dialog_count_++;
+    SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::EnablementState::
+            kFailedToEnable);
+    std::move(done_callback).Run();
+  }
+
+  ParentPermissionDialogResult dialog_result_ =
+      ParentPermissionDialogResult::kParentPermissionFailed;
+  int show_dialog_count_ = 0;
+  int show_block_dialog_count_ = 0;
+};
+
+// Tests for supervised users (child accounts). Supervised users are not allowed
+// to install apps or extensions unless their parent approves.
+class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
+ public:
+  ManagementApiSupervisedUserTest() = default;
+  ~ManagementApiSupervisedUserTest() override = default;
+
+  // ManagementApiUnitTest:
+  ExtensionServiceInitParams GetExtensionServiceInitParams() override {
+    ExtensionServiceInitParams params = CreateDefaultInitParams();
+    // Force a TestingPrefServiceSyncable to be created.
+    params.pref_file.clear();
+    params.profile_is_supervised = true;
+    return params;
+  }
+
+  SupervisedUserService* GetSupervisedUserService() {
+    return SupervisedUserServiceFactory::GetForProfile(profile());
+  }
+
+  void SetUp() override {
+    ManagementApiUnitTest::SetUp();
+
+    // Set up custodians (parents) for the child.
+    supervised_user_test_util::AddCustodians(browser()->profile());
+
+    GetSupervisedUserService()->Init();
+    // Set the pref to allow the child to request extension install.
+    GetSupervisedUserService()
+        ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
+
+    // Create a WebContents to simulate the Chrome Web Store.
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+    management_api_ = ManagementAPI::GetFactoryInstance()->Get(profile());
+
+    // Install a SupervisedUserExtensionsDelegate to sense the dialog state.
+    supervised_user_delegate_ = new TestSupervisedUserExtensionsDelegate;
+    management_api_->set_supervised_user_extensions_delegate_for_test(
+        base::WrapUnique(supervised_user_delegate_));
+  }
+
+  std::unique_ptr<content::WebContents> web_contents_;
+  ManagementAPI* management_api_ = nullptr;
+  TestSupervisedUserExtensionsDelegate* supervised_user_delegate_ = nullptr;
+};
+
+TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+  // The extension should be installed but disabled.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
+  const std::string extension_id = extension->id();
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(prefs->HasDisableReason(
+      extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
+
+  // Simulate disabling Permissions for sites, apps and extensions
+  // in the testing supervised user service delegate used by the Management API.
+  GetSupervisedUserService()
+      ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
+
+  // The supervised user trying to enable while Permissions for sites, apps and
+  // extensions is disabled should fail.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+
+    // The block dialog should have been shown.
+    EXPECT_EQ(supervised_user_delegate_->show_block_dialog_count(), 1);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kFailedToEnable,
+      1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 1);
+  EXPECT_EQ(
+      1,
+      user_action_tester.GetActionCount(
+          SupervisedUserExtensionsMetricsRecorder::kFailedToEnableActionName));
+}
+
+// Tests enabling an extension via management API after it was disabled due to
+// permission increase for supervised users.
+// Prevents a regression to crbug/1068660.
+TEST_F(ManagementApiSupervisedUserTest, SetEnabled_AfterIncreasedPermissions) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  base::HistogramTester histogram_tester;
+
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+  // The extension should be installed but disabled pending custodian approval.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
+  // Save the id, as |extension| will be destroyed during updating.
+  const std::string extension_id = extension->id();
+
+  // Simulate parent approval for the extension installation.
+  GetSupervisedUserService()->AddExtensionApproval(*extension);
+  // The extension should be enabled now.
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+
+  // Should see 1 kApprovalGranted UMA metric.
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kApprovalGranted,
+      1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName, 1);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  std::unique_ptr<const PermissionSet> known_perms =
+      prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  // v1 extension doesn't have any permissions.
+  EXPECT_TRUE(known_perms->IsEmpty());
+
+  // Update to a new version with increased permissions.
+  path = base_path.AppendASCII("v2");
+  PackCRXAndUpdateExtension(extension_id, path, pem_path, DISABLED);
+  // The extension should be disabled.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  // Due to a permission increase, prefs will contain escalation information.
+  EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
+
+  // Accept re-enable prompt with user gesture, expect the extension to be
+  // enabled.
+  {
+    // The supervised user will approve the additional permissions without
+    // parent approval.
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_TRUE(success) << error;
+    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+    // Prefs will no longer contain the escalation information as the supervised
+    // user has accepted the increased permissions.
+    EXPECT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
+  }
+
+  // Permissions for v2 extension should be granted now.
+  known_perms = prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  EXPECT_FALSE(known_perms->IsEmpty());
+
+  // The parent approval dialog should have not appeared.
+  EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
+
+  // Should see 1 kPermissionsIncreaseGranted UMA metric.
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kPermissionsIncreaseGranted,
+      1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName, 2);
+}
+
+// Tests that supervised users can't approve permission updates by themselves
+// when the "Permissions for sites, apps and extensions" toggle is off.
+TEST_F(ManagementApiSupervisedUserTest,
+       SetEnabled_CantApprovePermissionUpdatesToggleOff) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  base::HistogramTester histogram_tester;
+
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+  // The extension should be installed but disabled pending custodian approval.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
+  // Save the id, as |extension| will be destroyed during updating.
+  const std::string extension_id = extension->id();
+
+  // Simulate parent approval for the extension installation.
+  GetSupervisedUserService()->AddExtensionApproval(*extension);
+  // The extension should be enabled now.
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+
+  // There should be 1 kApprovalGranted UMA metric.
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+          kApprovalGranted,
+      1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName, 1);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  std::unique_ptr<const PermissionSet> known_perms =
+      prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  // v1 extension doesn't have any permissions.
+  EXPECT_TRUE(known_perms->IsEmpty());
+
+  // Update to a new version with increased permissions.
+  path = base_path.AppendASCII("v2");
+  PackCRXAndUpdateExtension(extension_id, path, pem_path, DISABLED);
+  // The extension should be disabled.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  // Due to a permission increase, prefs will contain escalation information.
+  EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
+
+  // If the "Permissions for sites, apps and extensions" toggle is off, then the
+  // enable attempt should fail.
+  {
+    GetSupervisedUserService()
+        ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+    // Prefs will still contain the escalation information as the enable attempt
+    // failed.
+    EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
+  }
+
+  // Permissions for v2 extension should not be granted.
+  known_perms = prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  EXPECT_TRUE(known_perms->IsEmpty());
+
+  // The parent approval dialog should have not appeared. The parent approval
+  // dialog should never appear when the "Permissions for sites, apps and
+  // extensions" toggle is off.
+  EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
+
+  // There should be no new UMA metrics.
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName, 1);
+}
+
+// Tests that if an extension still requires parental consent, the supervised
+// user approving it for permissions increase won't enable the extension and
+// bypass parental consent.
+// Prevents a regression to crbug/1070760.
+TEST_F(ManagementApiSupervisedUserTest,
+       SetEnabled_CustodianApprovalRequiredAndPermissionsIncrease) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+  // The extension should be installed but disabled pending custodian approval.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
+  // Save the id, as |extension| will be destroyed during updating.
+  const std::string extension_id = extension->id();
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  std::unique_ptr<const PermissionSet> known_perms =
+      prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  // v1 extension doesn't have any permissions.
+  EXPECT_TRUE(known_perms->IsEmpty());
+
+  // Update to a new version with increased permissions.
+  path = base_path.AppendASCII("v2");
+  PackCRXAndUpdateExtension(extension_id, path, pem_path, DISABLED);
+  // The extension should still be disabled.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  // This extension has two concurrent disable reasons.
+  EXPECT_TRUE(prefs->HasDisableReason(
+      extension_id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
+  EXPECT_TRUE(prefs->HasDisableReason(
+      extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
+
+  // The supervised user trying to enable without parent approval should fail.
+  {
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+    // Both disable reasons should still be present.
+    EXPECT_TRUE(prefs->HasDisableReason(
+        extension_id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
+    EXPECT_TRUE(prefs->HasDisableReason(
+        extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
+  }
+
+  // Permissions for v2 extension should not be granted.
+  known_perms = prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  EXPECT_TRUE(known_perms->IsEmpty());
+
+  // The parent approval dialog should have appeared.
+  EXPECT_EQ(1, supervised_user_delegate_->show_dialog_count());
+
+  // Now try again with parent approval, and this should succeed.
+  {
+    supervised_user_delegate_->set_next_parent_permission_dialog_result(
+        SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+            kParentPermissionReceived);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
+                                         /*use_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_TRUE(success) << error;
+    EXPECT_TRUE(error.empty());
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+    // All disable reasons are gone.
+    EXPECT_FALSE(prefs->DidExtensionEscalatePermissions(extension_id));
+    EXPECT_FALSE(prefs->HasDisableReason(
+        extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
+  }
+
+  // Permissions for v2 extension should now be granted.
+  known_perms = prefs->GetGrantedPermissions(extension_id);
+  ASSERT_TRUE(known_perms);
+  EXPECT_FALSE(known_perms->IsEmpty());
+
+  // The parent approval dialog should have appeared again.
+  EXPECT_EQ(2, supervised_user_delegate_->show_dialog_count());
+}
+
+// Tests that trying to enable an extension with parent approval for supervised
+// users still fails, if there's unsupported requirements.
+TEST_F(ManagementApiSupervisedUserTest, SetEnabled_UnsupportedRequirement) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+  ASSERT_EQ(0, supervised_user_delegate_->show_dialog_count());
+
+  // No WebGL will be the unsupported requirement.
+  content::GpuDataManager::GetInstance()->BlocklistWebGLForTesting();
+
+  base::FilePath base_path = data_dir().AppendASCII("requirements");
+  base::FilePath pem_path = base_path.AppendASCII("v1_good.pem");
+  base::FilePath path = base_path.AppendASCII("v2_bad_requirements");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+  // The extension should be installed but disabled pending custodian approval
+  // and unsupported requirements.
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(prefs->HasDisableReason(
+      extension->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
+  EXPECT_TRUE(prefs->HasDisableReason(
+      extension->id(), disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT));
+
+  // Parent approval should fail because of the unsupported requirements.
+  {
+    supervised_user_delegate_->set_next_parent_permission_dialog_result(
+        SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+            kParentPermissionReceived);
+    std::string error;
+    bool success = RunSetEnabledFunction(web_contents_.get(), extension->id(),
+                                         /*user_user_gesture=*/true,
+                                         /*accept_dialog=*/true, &error);
+    EXPECT_FALSE(success);
+    EXPECT_FALSE(error.empty());
+    // The parent permission dialog was never opened.
+    EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
+    // The extension should still require parent approval.
+    EXPECT_TRUE(prefs->HasDisableReason(
+        extension->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
+    EXPECT_TRUE(prefs->HasDisableReason(
+        extension->id(), disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT));
+  }
+}
+
+// Tests UMA metrics related to supervised users enabling and disabling
+// extensions.
+TEST_F(ManagementApiSupervisedUserTest, SetEnabledDisabled_UmaMetrics) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+
+  // The parent will approve.
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionReceived);
+
+  RunSetEnabledFunction(web_contents_.get(), extension->id(),
+                        /*use_user_gesture=*/true, /*accept_dialog=*/true,
+                        nullptr, /*enabled=*/true);
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kEnabled, 1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 1);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::kEnabledActionName));
+  EXPECT_EQ(0,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::kDisabledActionName));
+
+  // Simulate supervised user disabling extension.
+  RunSetEnabledFunction(web_contents_.get(), extension->id(),
+                        /*use_user_gesture=*/true, /*accept_dialog=*/true,
+                        nullptr, /*enabled=*/false);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kDisabled, 1);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 2);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::kEnabledActionName));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::kDisabledActionName));
+
+  // Simulate supervised user re-enabling extension.
+  RunSetEnabledFunction(web_contents_.get(), extension->id(),
+                        /*use_user_gesture=*/true, /*accept_dialog=*/true,
+                        nullptr, /*enabled=*/true);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kEnabled, 2);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName, 3);
+  EXPECT_EQ(2,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::kEnabledActionName));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                SupervisedUserExtensionsMetricsRecorder::kDisabledActionName));
+}
+
+// Tests for supervised users (child accounts) with additional setup code.
+class ManagementApiSupervisedUserTestWithSetup
+    : public ManagementApiSupervisedUserTest {
+ public:
+  ManagementApiSupervisedUserTestWithSetup() = default;
+  ~ManagementApiSupervisedUserTestWithSetup() override = default;
+
+  void SetUp() override {
+    ManagementApiSupervisedUserTest::SetUp();
+
+    // Install a ManagementAPIDelegate to sense extension enable.
+    delegate_ = new TestManagementAPIDelegate;
+    management_api_->set_delegate_for_test(base::WrapUnique(delegate_));
+
+    // Add a generic extension.
+    extension_ = ExtensionBuilder("Test").Build();
+    service()->AddExtension(extension_.get());
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
+  }
+
+  TestManagementAPIDelegate* delegate_ = nullptr;
+  scoped_refptr<const Extension> extension_;
+};
+
+TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentApproves) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+  ASSERT_EQ(0, delegate_->enable_count_);
+  ASSERT_EQ(0, supervised_user_delegate_->show_dialog_count());
+
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // The parent will approve.
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionReceived);
+
+  // Simulate a call to chrome.management.setEnabled(). It should succeed.
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents_.get(), extension_->id(),
+                                       /*use_user_gesture=*/true,
+                                       /*accept_dialog=*/true, &error);
+  EXPECT_TRUE(success) << error;
+  EXPECT_TRUE(error.empty());
+
+  // Parent permission dialog was opened.
+  EXPECT_EQ(1, supervised_user_delegate_->show_dialog_count());
+
+  // Extension was enabled.
+  EXPECT_EQ(1, delegate_->enable_count_);
+}
+
+TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_ParentDenies) {
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // The parent will deny the next dialog.
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionCanceled);
+
+  // Simulate a call to chrome.management.setEnabled(). It should not succeed.
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents_.get(), extension_->id(),
+                                       /*use_user_gesture=*/true,
+                                       /*accept_dialog=*/true, &error);
+  EXPECT_FALSE(success);
+  EXPECT_FALSE(error.empty());
+
+  // Parent permission dialog was opened.
+  EXPECT_EQ(1, supervised_user_delegate_->show_dialog_count());
+
+  // Extension was not enabled.
+  EXPECT_EQ(0, delegate_->enable_count_);
+}
+
+TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_DialogFails) {
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // The next dialog will close due to a failure (e.g. network failure while
+  // looking up parent information).
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionFailed);
+
+  // Simulate a call to chrome.management.setEnabled(). It should not succeed.
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents_.get(), extension_->id(),
+                                       /*use_user_gesture=*/true,
+                                       /*accept_dialog=*/true, &error);
+  EXPECT_FALSE(success);
+  EXPECT_FALSE(error.empty());
+
+  // Extension was not enabled.
+  EXPECT_EQ(0, delegate_->enable_count_);
+}
+
+TEST_F(ManagementApiSupervisedUserTestWithSetup, SetEnabled_PreviouslyAllowed) {
+  // Disable the extension.
+  service()->DisableExtension(extension_->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+
+  // Simulate previous parent approval.
+  GetSupervisedUserService()->AddExtensionApproval(*extension_);
+
+  // Simulate a call to chrome.management.setEnabled().
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents_.get(), extension_->id(),
+                                       /*use_user_gesture=*/true,
+                                       /*accept_dialog=*/true, &error);
+  EXPECT_TRUE(success) << error;
+  EXPECT_TRUE(error.empty());
+
+  // Parent permission dialog was not opened.
+  EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
+}
+
+// Tests launching the Parent Permission Dialog from a background page, where
+// there isn't active web contents. The parent approves the request.
+TEST_F(ManagementApiSupervisedUserTestWithSetup,
+       SetEnabled_ParentPermissionApprovedFromBackgroundPage) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // The parent will approve.
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionReceived);
+
+  // Simulate a call to chrome.management.setEnabled(). It should succeed
+  // despite a lack of web contents.
+  std::string error;
+  bool success = RunSetEnabledFunction(
+      /*web_contents=*/nullptr, extension_->id(), /*use_user_gesture=*/true,
+      /*accept_dialog=*/true, &error);
+  EXPECT_TRUE(success);
+  EXPECT_TRUE(error.empty());
+
+  // Parent Permission Dialog still opened despite the lack of web contents.
+  EXPECT_EQ(1, supervised_user_delegate_->show_dialog_count());
+  EXPECT_EQ(0, supervised_user_delegate_->show_block_dialog_count());
+
+  // Extension is now enabled.
+  EXPECT_EQ(1, delegate_->enable_count_);
+}
+
+// Tests launching the Parent Permission Dialog from a background page, where
+// there isn't active web contents. The parent cancels the request.
+TEST_F(ManagementApiSupervisedUserTestWithSetup,
+       SetEnabled_ParentPermissionCanceledFromBackgroundPage) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // The parent will cancel.
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionCanceled);
+
+  // Simulate a call to chrome.management.setEnabled() with no web contents.
+  std::string error;
+  bool success = RunSetEnabledFunction(
+      /*web_contents=*/nullptr, extension_->id(), /*use_user_gesture=*/true,
+      /*accept_dialog=*/true, &error);
+  EXPECT_FALSE(success);
+  EXPECT_EQ(extension_management_api_constants::kUserDidNotReEnableError,
+            error);
+
+  // Parent Permission Dialog still opened despite the lack of web contents.
+  EXPECT_EQ(1, supervised_user_delegate_->show_dialog_count());
+  EXPECT_EQ(0, supervised_user_delegate_->show_block_dialog_count());
+
+  // Extension was not enabled.
+  EXPECT_EQ(0, delegate_->enable_count_);
+}
+
+// Tests launching the Parent Permission Dialog from a background page, where
+// there isn't active web contents. The request will fail due to some sort of
+// error, such as a network error.
+TEST_F(ManagementApiSupervisedUserTestWithSetup,
+       SetEnabled_ParentPermissionFailedFromBackgroundPage) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // The request will fail.
+  supervised_user_delegate_->set_next_parent_permission_dialog_result(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
+          kParentPermissionFailed);
+
+  // Simulate a call to chrome.management.setEnabled() with no web contents.
+  std::string error;
+  bool success = RunSetEnabledFunction(
+      /*web_contents=*/nullptr, extension_->id(), /*use_user_gesture=*/true,
+      /*accept_dialog=*/true, &error);
+  EXPECT_FALSE(success);
+  EXPECT_EQ(extension_management_api_constants::kParentPermissionFailedError,
+            error);
+
+  // Parent Permission Dialog still opened despite the lack of web contents.
+  EXPECT_EQ(1, supervised_user_delegate_->show_dialog_count());
+  EXPECT_EQ(0, supervised_user_delegate_->show_block_dialog_count());
+
+  // Extension was not enabled.
+  EXPECT_EQ(0, delegate_->enable_count_);
+}
+
+// Tests launching the Extension Install Blocked By Parent Dialog from a
+// background page, where there isn't active web contents.
+TEST_F(ManagementApiSupervisedUserTestWithSetup,
+       SetEnabled_ExtensionInstallBlockedByParentFromBackgroundPage) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+
+  // Start with a disabled extension that needs parent permission.
+  service()->DisableExtension(
+      extension_->id(), disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+
+  // Simulate the parent disabling the "Permissions for sites, apps and
+  // extensions" toggle.
+  GetSupervisedUserService()
+      ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
+
+  // Simulate a call to chrome.management.setEnabled(). The enable attempt
+  // should be blocked.
+  std::string error;
+  bool success = RunSetEnabledFunction(
+      /*web_contents=*/nullptr, extension_->id(), /*use_user_gesture=*/true,
+      /*accept_dialog=*/true, &error);
+  EXPECT_FALSE(success);
+  const std::string expected_error = ErrorUtils::FormatErrorMessage(
+      extension_management_api_constants::kUserCantModifyError,
+      extension_->id());
+  EXPECT_EQ(expected_error, error);
+
+  // The Extension Install Blocked By Parent Dialog should have opened despite
+  // the lack of web contents.
+  EXPECT_EQ(1, supervised_user_delegate_->show_block_dialog_count());
+  EXPECT_EQ(0, supervised_user_delegate_->show_dialog_count());
+
+  // Extension was not enabled.
+  EXPECT_EQ(0, delegate_->enable_count_);
+}
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+}  // namespace
 }  // namespace extensions

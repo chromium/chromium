@@ -9,14 +9,30 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace display {
+class Display;
+}  // namespace display
 
 namespace ash {
+
+class Shelf;
 
 // Model class that stores UnifiedSystemTray's UI specific variables. Owned by
 // UnifiedSystemTray status area button. Not to be confused with UI agnostic
 // SystemTrayModel.
 class ASH_EXPORT UnifiedSystemTrayModel {
  public:
+  enum class StateOnOpen {
+    // The user has not made any changes to the quick settings state.
+    UNSET,
+    // Quick settings has been explicitly set to collapsed by the user.
+    COLLAPSED,
+    // Quick settings has been explicitly set to expanded by the user.
+    EXPANDED
+  };
+
   enum class NotificationTargetMode {
     // Notification list scrolls to the last notification.
     LAST_NOTIFICATION,
@@ -27,6 +43,19 @@ class ASH_EXPORT UnifiedSystemTrayModel {
     NOTIFICATION_ID,
   };
 
+  // Enumeration of possible sizes of the system tray button. Larger screen will
+  // have larger tray button with additional information.
+  enum class SystemTrayButtonSize {
+    // Display wifi, battery, notification counter icons and time.
+    kSmall = 0,
+    // Display those in small unified system tray, plus important notification
+    // icons.
+    kMedium = 1,
+    // Display those in medium unified system tray, plus the current date.
+    kLarge = 2,
+    kMaxValue = kLarge,
+  };
+
   class Observer {
    public:
     virtual ~Observer() {}
@@ -34,20 +63,31 @@ class ASH_EXPORT UnifiedSystemTrayModel {
     // |by_user| is true when brightness is changed by user action.
     virtual void OnDisplayBrightnessChanged(bool by_user) {}
     virtual void OnKeyboardBrightnessChanged(bool by_user) {}
+    virtual void OnSystemTrayButtonSizeChanged(
+        SystemTrayButtonSize system_tray_size) {}
   };
 
-  explicit UnifiedSystemTrayModel(views::View* owner_view);
+  explicit UnifiedSystemTrayModel(Shelf* shelf);
+
+  UnifiedSystemTrayModel(const UnifiedSystemTrayModel&) = delete;
+  UnifiedSystemTrayModel& operator=(const UnifiedSystemTrayModel&) = delete;
+
   ~UnifiedSystemTrayModel();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns true if the tray should be expanded when initially opened.
   bool IsExpandedOnOpen() const;
+
+  // Returns true if the user explicity set the tray to its
+  // expanded state.
+  bool IsExplicitlyExpanded() const;
 
   // Returns empty if it's not manually expanded/collapsed. Otherwise, the value
   // is true if the notification is manually expanded, and false if it's
   // manually collapsed.
-  base::Optional<bool> GetNotificationExpanded(
+  absl::optional<bool> GetNotificationExpanded(
       const std::string& notification_id) const;
 
   // Sets a notification of |notification_id| is manually |expanded|.
@@ -64,10 +104,13 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // NOTIFICATION_ID.
   void SetTargetNotification(const std::string& notification_id);
 
+  // Get the size of the system tray depends on the size of the display screen.
+  SystemTrayButtonSize GetSystemTrayButtonSize() const;
+
   float display_brightness() const { return display_brightness_; }
   float keyboard_brightness() const { return keyboard_brightness_; }
 
-  void set_expanded_on_open(bool expanded_on_open) {
+  void set_expanded_on_open(StateOnOpen expanded_on_open) {
     expanded_on_open_ = expanded_on_open;
   }
 
@@ -88,8 +131,15 @@ class ASH_EXPORT UnifiedSystemTrayModel {
  private:
   class DBusObserver;
 
+  // Keeps track all the sources that can change the size of system tray button.
+  class SizeObserver;
+
   void DisplayBrightnessChanged(float brightness, bool by_user);
   void KeyboardBrightnessChanged(float brightness, bool by_user);
+  void SystemTrayButtonSizeChanged(SystemTrayButtonSize system_tray_size);
+
+  // Get the display that owns the tray.
+  const display::Display GetDisplay() const;
 
   // Target mode which is used to decide the scroll position of the message
   // center on opening. See the comment in |NotificationTargetMode|.
@@ -101,7 +151,7 @@ class ASH_EXPORT UnifiedSystemTrayModel {
 
   // If UnifiedSystemTray bubble is expanded on its open. It's expanded by
   // default, and if a user collapses manually, it remembers previous state.
-  bool expanded_on_open_ = true;
+  StateOnOpen expanded_on_open_ = StateOnOpen::UNSET;
 
   // The last value of the display brightness slider. Between 0.0 and 1.0.
   float display_brightness_ = 1.f;
@@ -114,13 +164,15 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // <notification ID, if notification is manually expanded>
   std::map<std::string, bool> notification_changes_;
 
+  Shelf* const shelf_;
+
   std::unique_ptr<DBusObserver> dbus_observer_;
+
+  std::unique_ptr<SizeObserver> size_observer_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<PaginationModel> pagination_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayModel);
 };
 
 }  // namespace ash

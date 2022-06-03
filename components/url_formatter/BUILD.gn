@@ -2,13 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-jumbo_static_library("url_formatter") {
+static_library("skeleton_generator") {
+  sources = [
+    "spoof_checks/skeleton_generator.cc",
+    "spoof_checks/skeleton_generator.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+  ]
+}
+
+static_library("url_formatter") {
   sources = [
     "elide_url.cc",
     "elide_url.h",
@@ -18,19 +27,16 @@ jumbo_static_library("url_formatter") {
     "url_fixer.h",
     "url_formatter.cc",
     "url_formatter.h",
-    "url_formatter_android.cc",
   ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-
-    "//build/config/compiler:noshadowing",
-  ]
+  configs += [ "//build/config/compiler:noshadowing" ]
 
   deps = [
     "//base",
     "//base:i18n",
+    "//components/url_formatter:skeleton_generator",
+    "//components/url_formatter/spoof_checks/common_words:common",
+    "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",
     "//components/url_formatter/spoof_checks/top_domains:common",
     "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_trie",
     "//net",
@@ -39,16 +45,25 @@ jumbo_static_library("url_formatter") {
     "//url",
   ]
 
-  public_deps = [
-    "//third_party/icu",
-  ]
+  public_deps = [ "//third_party/icu" ]
 
   if (is_android) {
-    deps += [ "android:jni_headers" ]
+    sources += [ "url_formatter_android.cc" ]
+    deps += [
+      "android:jni_headers",
+      "//url:gurl_android",
+      "//url:origin_android",
+    ]
   }
 }
 
-jumbo_source_set("unit_tests") {
+if (is_android) {
+  java_cpp_enum("url_formatter_java_enums_srcjar") {
+    sources = [ "elide_url.h" ]
+  }
+}
+
+source_set("unit_tests") {
   testonly = true
   sources = [
     "elide_url_unittest.cc",

@@ -33,35 +33,13 @@ void MockLoginScreenClient::AuthenticateUserWithPasswordOrPin(
   }
 }
 
-void MockLoginScreenClient::AuthenticateUserWithExternalBinary(
-    const AccountId& account_id,
-    base::OnceCallback<void(bool)> callback) {
-  AuthenticateUserWithExternalBinary_(account_id, callback);
-  if (authenticate_user_with_external_binary_callback_storage_) {
-    *authenticate_user_with_external_binary_callback_storage_ =
-        std::move(callback);
-  } else {
-    std::move(callback).Run(authenticate_user_callback_result_);
-  }
-}
-
-void MockLoginScreenClient::EnrollUserWithExternalBinary(
-    base::OnceCallback<void(bool)> callback) {
-  EnrollUserWithExternalBinary_(callback);
-  if (enroll_user_with_external_binary_callback_storage_) {
-    *enroll_user_with_external_binary_callback_storage_ = std::move(callback);
-  } else {
-    std::move(callback).Run(authenticate_user_callback_result_);
-  }
-}
-
 void MockLoginScreenClient::AuthenticateUserWithChallengeResponse(
     const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
   AuthenticateUserWithChallengeResponse_(account_id, callback);
 }
 
-bool MockLoginScreenClient::ValidateParentAccessCode(
+ParentCodeValidationResult MockLoginScreenClient::ValidateParentAccessCode(
     const AccountId& account_id,
     const std::string& code,
     base::Time validation_time) {

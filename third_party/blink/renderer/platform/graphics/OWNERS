@@ -5,6 +5,7 @@ flackr@chromium.org
 fmalita@chromium.org
 fserb@chromium.org
 jbroman@chromium.org
+juanmihd@chromium.org
 kbr@chromium.org
 pdr@chromium.org
 schenney@chromium.org
@@ -12,21 +13,14 @@ senorblanco@chromium.org
 vollick@chromium.org
 
 # For surface ID propagation and synchronization
-samans@chromium.org
+jonross@chromium.org
 
 # lowLatency canvas
 mcasas@chromium.org
 
-# canvas resources and images
+# canvas and images
 khushalsagar@chromium.org
-
-# TEAM: paint-dev@chromium.org
-# COMPONENT: Blink>Paint
 
 # Video SurfaceLayer functionality.
 per-file video_frame*=file://media/OWNERS
-per-file video_frame*=mlamouri@chromium.org
-per-file video_frame*=lethalantidote@chromium.org
 per-file surface_layer_bridge*=file://media/OWNERS
-per-file surface_layer_bridge*=mlamouri@chromium.org
-per-file surface_layer_bridge*=lethalantidote@chromium.org

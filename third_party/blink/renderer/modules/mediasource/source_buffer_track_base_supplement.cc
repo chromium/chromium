@@ -38,13 +38,16 @@ SourceBuffer* SourceBufferTrackBaseSupplement::sourceBuffer(TrackBase& track) {
   return nullptr;
 }
 
+SourceBufferTrackBaseSupplement::SourceBufferTrackBaseSupplement()
+    : Supplement(nullptr) {}
+
 void SourceBufferTrackBaseSupplement::SetSourceBuffer(
     TrackBase& track,
     SourceBuffer* source_buffer) {
   From(track).source_buffer_ = source_buffer;
 }
 
-void SourceBufferTrackBaseSupplement::Trace(blink::Visitor* visitor) {
+void SourceBufferTrackBaseSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(source_buffer_);
   Supplement<TrackBase>::Trace(visitor);
 }

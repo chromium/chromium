@@ -1,6 +1,6 @@
 estade@chromium.org
 file://components/omnibox/OWNERS
 
-per-file custom_tab_bar_view*=harrisjay@chromium.org
-
-# COMPONENT: UI>Browser>Omnibox
+per-file permission_chip.*=olesiamarukhno@google.com
+per-file permission_request_chip.*=olesiamarukhno@google.com
+per-file permission_request_chip_browsertest.*=olesiamarukhno@google.com

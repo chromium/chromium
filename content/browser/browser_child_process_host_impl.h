@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/tracing/tracing_service_controller.h"
@@ -35,6 +35,10 @@
 
 namespace base {
 class CommandLine;
+}
+
+namespace tracing {
+class SystemTracingService;
 }
 
 namespace content {
@@ -66,11 +70,6 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // instance.
   static void TerminateAll();
 
-  // Copies kEnableFeatures and kDisableFeatures to the command line. Generates
-  // them from the FeatureList override state, to take into account overrides
-  // from FieldTrials.
-  static void CopyFeatureAndFieldTrialFlags(base::CommandLine* cmd_line);
-
   // Appends kTraceStartup and kTraceRecordMode flags to the command line, if
   // needed.
   static void CopyTraceStartupFlags(base::CommandLine* cmd_line);
@@ -90,7 +89,7 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   ChildProcessTerminationInfo GetTerminationInfo(bool known_dead) override;
   std::unique_ptr<base::PersistentMemoryAllocator> TakeMetricsAllocator()
       override;
-  void SetName(const base::string16& name) override;
+  void SetName(const std::u16string& name) override;
   void SetMetricsName(const std::string& metrics_name) override;
   void SetProcess(base::Process process) override;
 
@@ -128,6 +127,7 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
 
 #if defined(OS_ANDROID)
   void EnableWarmUpConnection();
+  void DumpProcessStack();
 #endif
 
   BrowserChildProcessHostDelegate* delegate() const { return delegate_; }
@@ -135,8 +135,6 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   mojo::OutgoingInvitation* GetInProcessMojoInvitation() {
     return &child_process_host_->GetMojoInvitation().value();
   }
-
-  IPC::Channel* child_channel() const { return channel_; }
 
   mojom::ChildProcess* child_process() const {
     return static_cast<ChildProcessHostImpl*>(child_process_host_.get())
@@ -147,6 +145,8 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
  private:
   friend class BrowserChildProcessHostIterator;
   friend class BrowserChildProcessObserver;
+
+  void OnProcessConnected();
 
   static BrowserChildProcessList* GetIterator();
 
@@ -183,6 +183,9 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
       base::WeakPtr<BrowserChildProcessHostImpl> process,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const std::string& error);
+  static void TerminateProcessForBadMessage(
+      base::WeakPtr<BrowserChildProcessHostImpl> process,
+      const std::string& error);
 
 #if defined(OS_WIN)
   // ObjectWatcher::Delegate implementation.
@@ -212,9 +215,8 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // transferred to the child process.
   base::WritableSharedMemoryRegion metrics_shared_region_;
 
-  IPC::Channel* channel_ = nullptr;
-  bool is_channel_connected_;
-  bool notify_child_disconnected_;
+  bool has_legacy_ipc_channel_ = false;
+  bool notify_child_connection_status_ = true;
 
 #if defined(OS_ANDROID)
   // whether the child process can use pre-warmed up connection for better
@@ -225,6 +227,11 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
   // Keeps this process registered with the tracing subsystem.
   std::unique_ptr<TracingServiceController::ClientRegistration>
       tracing_registration_;
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  // For child process to connect to the system tracing service.
+  std::unique_ptr<tracing::SystemTracingService> system_tracing_service_;
+#endif
 
   base::WeakPtrFactory<BrowserChildProcessHostImpl> weak_factory_{this};
 };

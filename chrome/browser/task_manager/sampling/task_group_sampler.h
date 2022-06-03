@@ -10,13 +10,12 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
 namespace task_manager {
@@ -29,13 +28,13 @@ class TaskGroupSampler : public base::RefCountedThreadSafe<TaskGroupSampler> {
  public:
   // Below are the types of callbacks that are invoked on the UI thread upon
   // completion of corresponding refresh tasks on the worker thread.
-  using OnCpuRefreshCallback = base::Callback<void(double)>;
-  using OnSwappedMemRefreshCallback = base::Callback<void(int64_t)>;
-  using OnIdleWakeupsCallback = base::Callback<void(int)>;
-#if defined(OS_LINUX) || defined(OS_MACOSX)
-  using OnOpenFdCountCallback = base::Callback<void(int)>;
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
-  using OnProcessPriorityCallback = base::Callback<void(bool)>;
+  using OnCpuRefreshCallback = base::RepeatingCallback<void(double)>;
+  using OnSwappedMemRefreshCallback = base::RepeatingCallback<void(int64_t)>;
+  using OnIdleWakeupsCallback = base::RepeatingCallback<void(int)>;
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+  using OnOpenFdCountCallback = base::RepeatingCallback<void(int)>;
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+  using OnProcessPriorityCallback = base::RepeatingCallback<void(bool)>;
 
   TaskGroupSampler(
       base::Process process,
@@ -43,10 +42,13 @@ class TaskGroupSampler : public base::RefCountedThreadSafe<TaskGroupSampler> {
       const OnCpuRefreshCallback& on_cpu_refresh,
       const OnSwappedMemRefreshCallback& on_memory_refresh,
       const OnIdleWakeupsCallback& on_idle_wakeups,
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
       const OnOpenFdCountCallback& on_open_fd_count,
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
       const OnProcessPriorityCallback& on_process_priority);
+
+  TaskGroupSampler(const TaskGroupSampler&) = delete;
+  TaskGroupSampler& operator=(const TaskGroupSampler&) = delete;
 
   // Refreshes the expensive process' stats (CPU usage, memory usage, and idle
   // wakeups per second) on the worker thread.
@@ -60,9 +62,9 @@ class TaskGroupSampler : public base::RefCountedThreadSafe<TaskGroupSampler> {
   double RefreshCpuUsage();
   int64_t RefreshSwappedMem();
   int RefreshIdleWakeupsPerSecond();
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
   int RefreshOpenFdCount();
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
   bool RefreshProcessPriority();
 
   // The process that holds the handle that we own so that we can use it for
@@ -84,15 +86,13 @@ class TaskGroupSampler : public base::RefCountedThreadSafe<TaskGroupSampler> {
   const OnCpuRefreshCallback on_cpu_refresh_callback_;
   const OnSwappedMemRefreshCallback on_swapped_mem_refresh_callback_;
   const OnIdleWakeupsCallback on_idle_wakeups_callback_;
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
   const OnOpenFdCountCallback on_open_fd_count_callback_;
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
   const OnProcessPriorityCallback on_process_priority_callback_;
 
   // To assert we're running on the correct thread.
   base::SequenceChecker worker_pool_sequenced_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskGroupSampler);
 };
 
 }  // namespace task_manager

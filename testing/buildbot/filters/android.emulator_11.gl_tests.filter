@@ -1,0 +1,17 @@
+# https://crbug.com/1189284
+# Not applicable to emulator due to not supporting VK_KHR_external_memory_fd
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureCubeMap/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureLevel/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/1
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/0
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/1
+-GLBGRAMipMapTest.GenerateMipmapsSucceeds
+-RasterInProcessCommandBufferTest.AllowedBetweenBeginEndRasterCHROMIUM
+-SharedImageBackingFactoryAHBTest.Basic
+-SharedImageBackingFactoryAHBTest.CanHaveMultipleReaders
+-SharedImageBackingFactoryAHBTest.CannotReadWhileWriting
+-SharedImageBackingFactoryAHBTest.CannotWriteWhileReading
+-SharedImageBackingFactoryAHBTest.GLSkiaGL
+-SharedImageBackingFactoryAHBTest.InitialData
+-SharedImageBackingFactoryAHBTest.Overlay

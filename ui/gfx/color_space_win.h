@@ -35,9 +35,13 @@ class COLOR_SPACE_EXPORT ColorSpaceWin {
   static DXGI_COLOR_SPACE_TYPE GetDXGIColorSpace(const ColorSpace& color_space,
                                                  bool force_yuv = false);
 
+  // Get DXGI format for swap chain. This will default to 8-bit, but will use
+  // 10-bit or half-float for HDR color spaces.
+  static DXGI_FORMAT GetDXGIFormat(const gfx::ColorSpace& color_space);
+
   static D3D11_VIDEO_PROCESSOR_COLOR_SPACE GetD3D11ColorSpace(
       const ColorSpace& color_space);
 };
 
 }  // namespace gfx
-#endif
+#endif  // UI_GFX_COLOR_SPACE_WIN_H_

@@ -24,22 +24,25 @@ interface VideoHost {
 // Next method ID: 2
 interface VideoInstance {
   // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(VideoHost host_ptr);
+  InitDeprecated@0(pending_remote<VideoHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=5] Init@1(VideoHost host_ptr) => ();
+  [MinVersion=5] Init@1(pending_remote<VideoHost> host_remote) => ();
 };
 
 // Deprecated method IDs: 0
 // Next method ID: 4
 interface VideoAcceleratorFactory {
   [MinVersion=1]
-  CreateEncodeAccelerator@1(VideoEncodeAccelerator& video_encoder);
+  CreateEncodeAccelerator@1(
+      pending_receiver<VideoEncodeAccelerator> video_encoder);
 
   [MinVersion=6]
-  CreateDecodeAccelerator@2(VideoDecodeAccelerator& video_decoder);
+  CreateDecodeAccelerator@2(
+      pending_receiver<VideoDecodeAccelerator> video_decoder);
 
   [Minversion=7]
   CreateProtectedBufferAllocator@3(
-      VideoProtectedBufferAllocator& video_protected_buffer_allocator);
+      pending_receiver<VideoProtectedBufferAllocator>
+           video_protected_buffer_allocator);
 };

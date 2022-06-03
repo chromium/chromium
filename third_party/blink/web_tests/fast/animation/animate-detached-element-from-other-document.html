@@ -1,0 +1,13 @@
+<body>
+PASS if no crash.
+<iframe id="i"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+  
+var doc = i.contentDocument;
+var div = document.createElement("div"); 
+doc.documentElement.appendChild(div);
+i.remove();
+div.animate({'right':['auto']})
+</script>

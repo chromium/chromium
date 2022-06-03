@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_COMMAND_LINE_CONFIG_POLICY_H_
 #define COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_COMMAND_LINE_CONFIG_POLICY_H_
 
-#include "base/macros.h"
 #include "components/update_client/command_line_config_policy.h"
 #include "url/gurl.h"
 
@@ -15,12 +14,19 @@ class CommandLine;
 
 namespace component_updater {
 
+extern const char kSwitchTestRequestParam[];
+
 // Component updater config policy implementation.
 class ComponentUpdaterCommandLineConfigPolicy final
     : public update_client::CommandLineConfigPolicy {
  public:
   explicit ComponentUpdaterCommandLineConfigPolicy(
       const base::CommandLine* cmdline);
+
+  ComponentUpdaterCommandLineConfigPolicy(
+      const ComponentUpdaterCommandLineConfigPolicy&) = delete;
+  ComponentUpdaterCommandLineConfigPolicy& operator=(
+      const ComponentUpdaterCommandLineConfigPolicy&) = delete;
 
   // update_client::CommandLineConfigPolicy overrides.
   bool BackgroundDownloadsEnabled() const override;
@@ -29,7 +35,7 @@ class ComponentUpdaterCommandLineConfigPolicy final
   bool PingsEnabled() const override;
   bool TestRequest() const override;
   GURL UrlSourceOverride() const override;
-  int InitialDelay() const override;
+  double InitialDelay() const override;
 
  private:
   bool background_downloads_enabled_ = false;
@@ -40,11 +46,9 @@ class ComponentUpdaterCommandLineConfigPolicy final
 
   // If non-zero, time interval in seconds until the first component
   // update check.
-  int initial_delay_ = 0;
+  double initial_delay_ = 0;
 
   GURL url_source_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterCommandLineConfigPolicy);
 };
 
 }  // namespace component_updater

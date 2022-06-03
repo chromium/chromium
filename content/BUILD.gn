@@ -82,24 +82,27 @@ if (!is_nacl_nonsfi) {
 if (is_component_build) {
   component("content") {
     public_deps =
-        content_shared_components + [ "//content/public/app:both_sources" ]
+        content_shared_components + [ "//content/public/app:app_sources" ]
   }
 } else if (is_nacl_nonsfi) {
   source_set("content") {
-    set_sources_assignment_filter([])
     sources = [
-      "//services/service_manager/sandbox/linux/sandbox_seccomp_bpf_linux.cc",
+      "//sandbox/policy/linux/sandbox_seccomp_bpf_linux.cc",
       "common/sandbox_init_linux.cc",
+      "common/zygote/send_zygote_child_ping_linux.cc",
       "public/common/content_switches.cc",
       "public/common/content_switches.h",
     ]
-    set_sources_assignment_filter(sources_assignment_filter)
     deps = [
       "//base",
+      "//build:chromeos_buildflags",
       "//media:media_buildflags",
+      "//ppapi/buildflags:buildflags",
+      "//printing/buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox",
-      "//services/service_manager/sandbox",
+      "//sandbox/policy",
+      "//sandbox/policy/mojom",
     ]
   }
 } else {
@@ -108,11 +111,8 @@ if (is_component_build) {
   }
 }
 
-grit("resources") {
+grit("content_resources") {
   source = "content_resources.grd"
-
-  # The .grd contains references to generated files.
-  source_is_generated = true
 
   outputs = [
     "grit/content_resources.h",
@@ -120,14 +120,27 @@ grit("resources") {
     "grit/content_resources_map.h",
     "content_resources.pak",
   ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  deps = [
+    "//gpu/ipc/common:vulkan_interface_webui_js",
+    "//ui/base/mojom:mojom_js",
+    "//ui/gfx/geometry/mojom:mojom_js",
+    "//ui/gfx/range/mojom:mojom_js",
+    "//url/mojom:url_mojom_origin_js",
+    "//url/mojom:url_mojom_origin_webui_js",
+  ]
+}
+
+grit("dev_ui_content_resources") {
+  source = "dev_ui_content_resources.grd"
+
+  outputs = [
+    "grit/dev_ui_content_resources.h",
+    "dev_ui_content_resources.pak",
   ]
   deps = [
-    "//content/browser/process_internals:mojo_bindings_js",
-    "//gpu/ipc/common:vulkan_interface_js",
-    "//url/mojom:url_mojom_origin_js",
+    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
+    "//content/browser/prerender:mojo_bindings_webui_js",
+    "//content/browser/process_internals:mojo_bindings_webui_js",
   ]
 }
 
@@ -136,9 +149,7 @@ grit("resources") {
 source_set("export") {
   # Must only be used inside of content.
   visibility = [ "//content/*" ]
-  sources = [
-    "common/content_export.h",
-  ]
+  sources = [ "common/content_export.h" ]
 }
 
 # In the GYP build, this file is listed in several targets. In GN just have
@@ -151,8 +162,6 @@ source_set("sandbox_helper_win") {
       "public/app/sandbox_helper_win.h",
     ]
 
-    deps = [
-      "//sandbox",
-    ]
+    deps = [ "//sandbox" ]
   }
 }

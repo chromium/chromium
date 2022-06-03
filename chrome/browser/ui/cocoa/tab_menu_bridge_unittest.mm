@@ -79,7 +79,7 @@ class TabMenuBridgeTest : public ::testing::Test {
   }
 
   int ModelIndexForTabNamed(const std::string& name) {
-    base::string16 title16 = base::UTF8ToUTF16(name);
+    std::u16string title16 = base::UTF8ToUTF16(name);
     for (int i = 0; i < model()->count(); ++i) {
       if (model()->GetWebContentsAt(i)->GetTitle() == title16)
         return i;
@@ -117,6 +117,12 @@ class TabMenuBridgeTest : public ::testing::Test {
     }
   }
 
+  void ActivateModelTabNamed(const std::string& name) {
+    int index = ModelIndexForTabNamed(name);
+    DCHECK(index >= 0);
+    model()->ActivateTabAt(index);
+  }
+
   NSMenuItem* MenuItemForTabNamed(const std::string& name) {
     return [menu() itemWithTitle:base::SysUTF8ToNSString(name)];
   }
@@ -135,6 +141,19 @@ class TabMenuBridgeTest : public ::testing::Test {
 
   std::string ActiveTabName() {
     return base::UTF16ToUTF8(model()->GetActiveWebContents()->GetTitle());
+  }
+
+  void ExpectActiveMenuItemNameIs(const std::string& name) {
+    std::vector<std::string> active_items;
+    // Check the static items too, to make sure none of them are checked.
+    for (int i = 0; i < menu().numberOfItems; ++i) {
+      NSMenuItem* item = [menu() itemAtIndex:i];
+      if (item.state == NSOnState)
+        active_items.push_back(base::SysNSStringToUTF8(item.title));
+    }
+
+    ASSERT_EQ(active_items.size(), 1u);
+    EXPECT_EQ(name, active_items[0]);
   }
 
  private:
@@ -242,4 +261,23 @@ TEST_F(TabMenuBridgeTest, SwappingBridgeRecreatesMenu) {
   // browser window close) while the TabMenuBridge still exists. If that code
   // does not correctly forget about the TabStripModel, this test will crash
   // here in ASAN builds.
+}
+
+TEST_F(TabMenuBridgeTest, ActiveItemTracksChanges) {
+  TabMenuBridge bridge(model(), menu_root());
+  bridge.BuildMenu();
+
+  AddModelTabNamed("Tab 1");
+  AddModelTabNamed("Tab 2");
+  AddModelTabNamed("Tab 3");
+  ExpectActiveMenuItemNameIs("Tab 3");
+
+  ActivateModelTabNamed("Tab 2");
+  ExpectActiveMenuItemNameIs("Tab 2");
+
+  ActivateModelTabNamed("Tab 3");
+  ExpectActiveMenuItemNameIs("Tab 3");
+
+  RemoveModelTabNamed("Tab 1");
+  ExpectActiveMenuItemNameIs("Tab 3");
 }

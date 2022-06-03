@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [8, 8, 100, 200],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 8, 100, 200]
       ]
     }
   ]

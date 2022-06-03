@@ -11,18 +11,10 @@
     #visited_color:visited {
         -internal-visited-color: red;
     }
-    #zoom {
-        zoom: 2;
-    }
-    #effective_zoom {
-        -internal-effective-zoom: 4;
-    }
 </style>
 <div id="container">
     <a href="" id="color"></a>
     <a href="" id="visited_color"></a>
-    <div id="zoom"></div>
-    <div id="effective_zoom"></div>
 </div>
 <script>
 
@@ -85,7 +77,7 @@ test(() => {
 test(() => {
     for (let element of elements) {
         let cs = element.computedStyleMap();
-        assert_throws(new TypeError(), () => {
+        assert_throws_js(TypeError, () => {
             assert_equals(cs.get('-internal-visited-color'), '');
         }, 'get() should throw when attempting to access internal property');
     }
@@ -93,7 +85,7 @@ test(() => {
 
 test(() => {
     for (let rule of style.sheet.cssRules) {
-        assert_throws(new TypeError(), () => {
+        assert_throws_js(TypeError, () => {
             assert_equals(rule.styleMap.get('-internal-visited-color'), '');
         }, 'get() should throw when attempting to access internal property');
     }
@@ -101,7 +93,7 @@ test(() => {
 
 test(() => {
     for (let rule of style.sheet.cssRules) {
-        assert_throws(new TypeError(), () => {
+        assert_throws_js(TypeError, () => {
             assert_equals(rule.styleMap.set('-internal-visited-color'), 'red');
         }, 'set() should throw when attempting to access internal property');
     }

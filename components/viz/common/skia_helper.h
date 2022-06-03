@@ -17,7 +17,7 @@ namespace viz {
 class VIZ_COMMON_EXPORT SkiaHelper {
  public:
   // |flush| is necessary for GLRenderer but not SkiaRenderer.
-  static sk_sp<SkImage> ApplyImageFilter(GrContext* context,
+  static sk_sp<SkImage> ApplyImageFilter(GrRecordingContext* context,
                                          sk_sp<SkImage> src_image,
                                          const gfx::RectF& src_rect,
                                          const gfx::RectF& dst_rect,

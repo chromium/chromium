@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -28,6 +29,9 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -35,8 +39,8 @@ namespace browsing_data_browsertest_utils {
 
 namespace {
 
-void AddServiceWorkerCallback(bool success) {
-  ASSERT_TRUE(success);
+void AddServiceWorkerCallback(blink::ServiceWorkerStatusCode status) {
+  ASSERT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
 }
 
 void GetServiceWorkersCallback(
@@ -49,6 +53,7 @@ void GetServiceWorkersCallback(
 
 }  // namespace
 
+// static
 void ServiceWorkerActivationObserver::SignalActivation(
     ServiceWorkerContextWrapper* context,
     base::OnceClosure callback) {
@@ -59,9 +64,8 @@ ServiceWorkerActivationObserver::ServiceWorkerActivationObserver(
     ServiceWorkerContextWrapper* context,
     base::OnceClosure callback)
     : context_(context),
-      scoped_observer_(this),
       callback_(std::move(callback)) {
-  scoped_observer_.Add(context);
+  scoped_observation_.Observe(context);
 }
 
 ServiceWorkerActivationObserver::~ServiceWorkerActivationObserver() {}
@@ -69,6 +73,7 @@ ServiceWorkerActivationObserver::~ServiceWorkerActivationObserver() {}
 void ServiceWorkerActivationObserver::OnVersionStateChanged(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     ServiceWorkerVersion::Status) {
   if (context_->GetLiveVersion(version_id)->status() ==
       ServiceWorkerVersion::ACTIVATED) {
@@ -103,19 +108,14 @@ void AddServiceWorker(const std::string& origin,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerContextWrapper::RegisterServiceWorker,
-                     base::Unretained(service_worker_context), js_url, options,
-                     base::BindOnce(&AddServiceWorkerCallback)));
+  blink::StorageKey key(url::Origin::Create(options.scope));
+  service_worker_context->RegisterServiceWorker(
+      js_url, key, options, base::BindOnce(&AddServiceWorkerCallback));
 
   // Wait for its activation.
   base::RunLoop run_loop;
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerActivationObserver::SignalActivation,
-                     base::Unretained(service_worker_context),
-                     run_loop.QuitClosure()));
+  ServiceWorkerActivationObserver::SignalActivation(service_worker_context,
+                                                    run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -129,13 +129,9 @@ std::vector<StorageUsageInfo> GetServiceWorkers(
   std::vector<StorageUsageInfo> service_workers;
   base::RunLoop run_loop;
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::GetAllOriginsInfo,
-          base::Unretained(service_worker_context),
-          base::BindOnce(&GetServiceWorkersCallback, run_loop.QuitClosure(),
-                         base::Unretained(&service_workers))));
+  service_worker_context->GetAllOriginsInfo(
+      base::BindOnce(&GetServiceWorkersCallback, run_loop.QuitClosure(),
+                     base::Unretained(&service_workers)));
   run_loop.Run();
 
   return service_workers;

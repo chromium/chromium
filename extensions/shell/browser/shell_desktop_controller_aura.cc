@@ -5,10 +5,11 @@
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
-#include "base/logging.h"
-#include "base/run_loop.h"
+#include "base/check_op.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -17,7 +18,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/image_cursors.h"
+#include "ui/base/cursor/cursor_loader.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/display/screen.h"
@@ -31,7 +33,7 @@
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/shell/browser/shell_screen.h"
@@ -45,7 +47,7 @@
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #else
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 namespace {
@@ -56,21 +58,24 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
  public:
   explicit ShellNativeCursorManager(
       ShellDesktopControllerAura* desktop_controller)
-      : desktop_controller_(desktop_controller),
-        image_cursors_(new ui::ImageCursors) {}
+      : desktop_controller_(desktop_controller) {}
+
+  ShellNativeCursorManager(const ShellNativeCursorManager&) = delete;
+  ShellNativeCursorManager& operator=(const ShellNativeCursorManager&) = delete;
+
   ~ShellNativeCursorManager() override {}
 
   // wm::NativeCursorManager overrides.
   void SetDisplay(const display::Display& display,
                   wm::NativeCursorManagerDelegate* delegate) override {
-    if (image_cursors_->SetDisplay(display, display.device_scale_factor()))
+    if (cursor_loader_.SetDisplayData(display.panel_rotation(),
+                                      display.device_scale_factor()))
       SetCursor(delegate->GetCursor(), delegate);
   }
 
   void SetCursor(gfx::NativeCursor cursor,
                  wm::NativeCursorManagerDelegate* delegate) override {
-    image_cursors_->SetPlatformCursor(&cursor);
-    cursor.set_device_scale_factor(image_cursors_->GetScale());
+    cursor_loader_.SetPlatformCursor(&cursor);
     delegate->CommitCursor(cursor);
 
     if (delegate->IsCursorVisible())
@@ -84,15 +89,15 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
     if (visible) {
       SetCursor(delegate->GetCursor(), delegate);
     } else {
-      gfx::NativeCursor invisible_cursor(ui::CursorType::kNone);
-      image_cursors_->SetPlatformCursor(&invisible_cursor);
+      gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
+      cursor_loader_.SetPlatformCursor(&invisible_cursor);
       SetCursorOnAllRootWindows(invisible_cursor);
     }
   }
 
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override {
-    image_cursors_->SetCursorSize(cursor_size);
+    cursor_loader_.SetSize(cursor_size);
     delegate->CommitCursorSize(cursor_size);
     if (delegate->IsCursorVisible())
       SetCursor(delegate->GetCursor(), delegate);
@@ -114,22 +119,21 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
 
   ShellDesktopControllerAura* desktop_controller_;  // Not owned.
 
-  std::unique_ptr<ui::ImageCursors> image_cursors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNativeCursorManager);
+  ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
 };
 
 class AppsFocusRules : public wm::BaseFocusRules {
  public:
   AppsFocusRules() {}
+
+  AppsFocusRules(const AppsFocusRules&) = delete;
+  AppsFocusRules& operator=(const AppsFocusRules&) = delete;
+
   ~AppsFocusRules() override {}
 
   bool SupportsChildActivation(const aura::Window* window) const override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppsFocusRules);
 };
 
 }  // namespace
@@ -140,9 +144,9 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
       app_window_client_(new ShellAppWindowClient) {
   extensions::AppWindowClient::Set(app_window_client_.get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->AddObserver(this);
-  display_configurator_.reset(new display::DisplayConfigurator);
+  display_configurator_ = std::make_unique<display::DisplayConfigurator>();
   display_configurator_->Init(
       ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate(), false);
   display_configurator_->ForceInitialConfigure();
@@ -154,20 +158,22 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
 
 ShellDesktopControllerAura::~ShellDesktopControllerAura() {
   TearDownWindowManager();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 #endif
   extensions::AppWindowClient::Set(NULL);
 }
 
-void ShellDesktopControllerAura::Run() {
+void ShellDesktopControllerAura::PreMainMessageLoopRun() {
   KeepAliveRegistry::GetInstance()->AddObserver(this);
+}
 
-  base::RunLoop run_loop;
-  run_loop_ = &run_loop;
-  run_loop.Run();
-  run_loop_ = nullptr;
+void ShellDesktopControllerAura::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  quit_when_idle_closure_ = run_loop->QuitWhenIdleClosure();
+}
 
+void ShellDesktopControllerAura::PostMainMessageLoopRun() {
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(true);
   KeepAliveRegistry::GetInstance()->RemoveObserver(this);
 }
@@ -206,10 +212,10 @@ void ShellDesktopControllerAura::CloseRootWindowController(
   MaybeQuit();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShellDesktopControllerAura::PowerButtonEventReceived(
     bool down,
-    const base::TimeTicks& timestamp) {
+    base::TimeTicks timestamp) {
   if (down) {
     chromeos::PowerManagerClient::Get()->RequestShutdown(
         power_manager::REQUEST_SHUTDOWN_FOR_USER, "AppShell power button");
@@ -312,13 +318,15 @@ void ShellDesktopControllerAura::InitWindowManager() {
 
   // Screen may be initialized in tests.
   if (!display::Screen::GetScreen()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     screen_ = std::make_unique<ShellScreen>(this, GetStartingWindowSize());
+    // TODO(pkasting): Make ShellScreen() call SetScreenInstance() as the
+    // classes in CreateDesktopScreen() do, and remove this.
+    display::Screen::SetScreenInstance(screen_.get());
 #else
     // TODO(crbug.com/756680): Refactor DesktopScreen out of views.
-    screen_.reset(views::CreateDesktopScreen());
+    screen_ = views::CreateDesktopScreen();
 #endif
-    display::Screen::SetScreenInstance(screen_.get());
   }
 
   focus_controller_ =
@@ -327,9 +335,9 @@ void ShellDesktopControllerAura::InitWindowManager() {
       std::make_unique<ShellNativeCursorManager>(this));
   cursor_manager_->SetDisplay(
       display::Screen::GetScreen()->GetPrimaryDisplay());
-  cursor_manager_->SetCursor(ui::CursorType::kPointer);
+  cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
@@ -342,14 +350,16 @@ void ShellDesktopControllerAura::TearDownWindowManager() {
     TearDownRootWindowController(pair.second.get());
   root_window_controllers_.clear();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   user_activity_notifier_.reset();
   user_activity_detector_.reset();
 #endif
   cursor_manager_.reset();
   focus_controller_.reset();
   if (screen_) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     display::Screen::SetScreenInstance(nullptr);
+#endif
     screen_.reset();
   }
   root_window_event_filter_.reset();
@@ -362,7 +372,7 @@ ShellDesktopControllerAura::CreateRootWindowControllerForDisplay(
   gfx::Rect bounds(gfx::ScaleToFlooredPoint(display.bounds().origin(),
                                             display.device_scale_factor()),
                    display.GetSizeInPixel());
-  std::unique_ptr<RootWindowController> root_window_controller =
+  auto root_window_controller =
       std::make_unique<RootWindowController>(this, bounds, browser_context_);
 
   // Initialize the root window with our clients.
@@ -391,21 +401,17 @@ void ShellDesktopControllerAura::TearDownRootWindowController(
 }
 
 void ShellDesktopControllerAura::MaybeQuit() {
-  // run_loop_ may be null in tests.
-  if (!run_loop_)
-    return;
-
   // Quit if there are no app windows open and no keep-alives waiting for apps
-  // to relaunch.
-  if (root_window_controllers_.empty() &&
+  // to relaunch.  |run_loop_| may be null in tests.
+  if (quit_when_idle_closure_ && root_window_controllers_.empty() &&
       !KeepAliveRegistry::GetInstance()->IsKeepingAlive()) {
-    run_loop_->QuitWhenIdle();
+    std::move(quit_when_idle_closure_).Run();
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::Size ShellDesktopControllerAura::GetStartingWindowSize() {
-  gfx::Size size;
+  gfx::Size size = GetPrimaryDisplaySize();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kAppShellHostWindowSize)) {
     const std::string size_str =
@@ -413,22 +419,16 @@ gfx::Size ShellDesktopControllerAura::GetStartingWindowSize() {
     int width, height;
     CHECK_EQ(2, sscanf(size_str.c_str(), "%dx%d", &width, &height));
     size = gfx::Size(width, height);
-  } else {
-    size = GetPrimaryDisplaySize();
   }
-  if (size.IsEmpty())
-    size = gfx::Size(1920, 1080);
-  return size;
+  return size.IsEmpty() ? gfx::Size(1920, 1080) : size;
 }
 
 gfx::Size ShellDesktopControllerAura::GetPrimaryDisplaySize() {
   const display::DisplayConfigurator::DisplayStateList& displays =
       display_configurator_->cached_displays();
-  if (displays.empty())
-    return gfx::Size();
-  const display::DisplayMode* mode = displays[0]->current_mode();
+  const display::DisplayMode* mode =
+      displays.empty() ? nullptr : displays[0]->current_mode();
   return mode ? mode->size() : gfx::Size();
-  return gfx::Size();
 }
 #endif
 

@@ -1,0 +1,5 @@
+rdar://problem/6166435 Inspector doesn't auto scroll when selecting text (20451)
+To do the test manually you have to try triggering the autoscroll by starting the dragging from within the blue iframe. If the autoscroll occurs the text has passed, if the autoscroll isn't working, the test has failed
+nb: Knowing that the iframe document has an overflow: hidden on its body but the whole iframe is embedded in a scrollable div, the scrollable div has to be able to trigger the autoscroll
+Though you should be able to write some long text in the input and to trigger the autoscroll within the input.
+FAILED : the autoscroll has not worked :-(

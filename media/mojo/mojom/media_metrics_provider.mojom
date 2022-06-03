@@ -7,6 +7,7 @@ module media.mojom;
 import "media/learning/mojo/public/mojom/learning_task_controller.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/video_decode_stats_recorder.mojom";
+import "media/mojo/mojom/playback_events_recorder.mojom";
 import "media/mojo/mojom/watch_time_recorder.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -36,7 +37,11 @@ interface MediaMetricsProvider {
   // Assigns a playback ID and sets up this provider instance with information
   // needed to make UKM reports. No other methods may be called until after
   // Initialize() has been called. |url_scheme| is only used if |!is_mse|.
-  Initialize(bool is_mse, MediaURLScheme url_scheme);
+  // If |stream_type| is one of the MediaStream types (i.e., not kNone),
+  // UMA metrics are not recorded.
+  Initialize(bool is_mse,
+             MediaURLScheme url_scheme,
+             MediaStreamType stream_type);
 
   // Called when a playback ends in error. The status is reported to UKM when
   // the provider is destructed.
@@ -49,6 +54,17 @@ interface MediaMetricsProvider {
   SetTimeToMetadata(mojo_base.mojom.TimeDelta elapsed);
   SetTimeToFirstFrame(mojo_base.mojom.TimeDelta elapsed);
   SetTimeToPlayReady(mojo_base.mojom.TimeDelta elapsed);
+
+  // Sets the RendererType used in the playback.
+  SetRendererType(RendererType renderer_type);
+
+  // Sets the EME key system used for an EME playback. For clear playback, or if
+  // the `key_system` is not recognized, value 0 (kUnknownKeySystemForUkm) will
+  // be reported.
+  SetKeySystem(string key_system);
+
+  // Called when the EME playback uses a hardware secure pipeline.
+  SetIsHardwareSecure();
 
   // For src= playbacks, this is the container (".mp4", ".webm", etc).
   SetContainerName(MediaContainerName container_name);
@@ -64,12 +80,17 @@ interface MediaMetricsProvider {
 
   // Returns a LearningTaskController for the given |taskName|.
   AcquireLearningTaskController(
-    string taskName,
-    pending_receiver<media.learning.mojom.LearningTaskController> controller);
+      string taskName,
+      pending_receiver<media.learning.mojom.LearningTaskController> controller);
+
+  // Returns a PlaybackEventsRecorder instance. Implementation may drop the
+  // |receiver| if it's not interested in recording playback events.
+  AcquirePlaybackEventsRecorder(
+       pending_receiver<PlaybackEventsRecorder> receiver);
 
   // Can be called multiple times to set properties about a playback.
   SetHasAudio(AudioCodec codec);
   SetHasVideo(VideoCodec codec);
-  SetVideoPipelineInfo(PipelineDecoderInfo info);
-  SetAudioPipelineInfo(PipelineDecoderInfo info);
+  SetVideoPipelineInfo(VideoPipelineInfo info);
+  SetAudioPipelineInfo(AudioPipelineInfo info);
 };

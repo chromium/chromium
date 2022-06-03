@@ -1,19 +1,19 @@
-document
-++group IsControlElement=false
-++++link Name='Link with image at start.'
-++++++img Name='Link'
-++++++description Name=' with image at start.' IsControlElement=false
-++++description Name=' '
-++++link Name='Link with image in the middle.'
-++++++description Name='Link with ' IsControlElement=false
-++++++img Name='image'
-++++++description Name=' in the middle.' IsControlElement=false
-++++description Name=' '
-++++link Name='Link with broken in the middle.'
-++++++description Name='Link with ' IsControlElement=false
-++++++img Name='broken'
-++++++description Name=' in the middle.' IsControlElement=false
-++++description Name=' '
-++++link Name='Link with image at the end'
-++++++description Name='Link with image at the ' IsControlElement=false
-++++++img Name='end'
+Document
+++Group IsControlElement=false
+++++Hyperlink Name='Link with image at start.'
+++++++Image Name='Link'
+++++++Text Name=' with image at start.' IsControlElement=false
+++++Text Name=' '
+++++Hyperlink Name='Link with image in the middle.'
+++++++Text Name='Link with ' IsControlElement=false
+++++++Image Name='image'
+++++++Text Name=' in the middle.' IsControlElement=false
+++++Text Name=' '
+++++Hyperlink Name='Link with broken in the middle.'
+++++++Text Name='Link with ' IsControlElement=false
+++++++Image Name='broken'
+++++++Text Name=' in the middle.' IsControlElement=false
+++++Text Name=' '
+++++Hyperlink Name='Link with image at the end'
+++++++Text Name='Link with image at the ' IsControlElement=false
+++++++Image Name='end'

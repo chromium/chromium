@@ -1,0 +1,9 @@
+{
+  "name": "ExtBgPage",
+  "version": "1.0",
+  "description": "Chromedriver extension with background page",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"]
+  }
+}

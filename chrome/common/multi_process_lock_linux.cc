@@ -13,13 +13,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 
 class MultiProcessLockLinux : public MultiProcessLock {
  public:
   explicit MultiProcessLockLinux(const std::string& name)
       : name_(name), fd_(-1) { }
+
+  MultiProcessLockLinux(const MultiProcessLockLinux&) = delete;
+  MultiProcessLockLinux& operator=(const MultiProcessLockLinux&) = delete;
 
   ~MultiProcessLockLinux() override {
     if (fd_ != -1) {
@@ -102,7 +104,6 @@ class MultiProcessLockLinux : public MultiProcessLock {
  private:
   std::string name_;
   int fd_;
-  DISALLOW_COPY_AND_ASSIGN(MultiProcessLockLinux);
 };
 
 std::unique_ptr<MultiProcessLock> MultiProcessLock::Create(

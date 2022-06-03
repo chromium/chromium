@@ -12,28 +12,30 @@ oobe-dialog {
   height: 100%;
 }
 
-cr-dialog {
-  --cr-dialog-native: {
-    max-width: 640px;
-    min-width: 512px;
-    width: calc(100% - var(--oobe-dialog-content-padding) * 2);
-  }
+cr-dialog::part(dialog)  {
+  max-width: 640px;
+  min-width: 512px;
+  width: calc(100% - var(--oobe-dialog-content-padding) * 2);
+}
+
+oobe-adaptive-dialog {
+  --oobe-dialog-header-padding-top: calc(var(--oobe-dialog-content-padding) -
+           var(--caption-bar-height));
+}
+
+oobe-adaptive-dialog,
+oobe-content-dialog {
+  --oobe-adaptive-dialog-back-button-vertical-padding:
+      calc(var(--oobe-adaptive-dialog-buttons-vertical-padding) -
+          var(--caption-bar-height) / 2);
+}
+
+:host-context([orientation=vertical]:not([screen=oobe])) oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-content-padding: 64px;
 }
 
 webview {
   user-select: none;
-}
-
-.container {
-  box-sizing: border-box;
-  height: 100%;
-  padding-bottom: 0;
-  padding-inline-end: var(--oobe-dialog-content-padding);
-  padding-inline-start: var(--oobe-dialog-content-padding);
-  padding-top: calc(var(--oobe-dialog-content-padding) -
-                    var(--caption-bar-height));
-  position: absolute;
-  width: 100%;
 }
 
 .line {
@@ -42,30 +44,54 @@ webview {
   margin: 8px 0 8px 0;
 }
 
-.title {
-  color: var(--google-grey-900);
-  font-family: 'Google Sans', Roboto, sans-serif;
-  font-size: 28px;
-  padding: 32px 0 16px 0;
-}
-
-.sub-title {
-  color: var(--google-grey-900);
-  font: 13px Roboto, sans-serif;
-}
-
 .content {
   color: var(--google-grey-700);
   font: 13px Roboto, sans-serif;
   line-height: 16px;
 }
 
-#logo {
-  height: 32px;
-  margin: 0;
-  width: 32px;
-}
-
 #next-button {
   margin-inline-end: 0;
+}
+
+:host-context([orientation=horizontal]) #animation-container {
+  height: 240px;
+  transform: translate(-40px, -12px);
+  width: 340px;
+}
+
+:host-context([orientation=horizontal][screen=oobe]) #animation-container {
+  transform: translate(-48px, -12px);
+}
+
+:host-context([orientation=vertical]) #animation-container {
+  min-height: 280px;
+  padding-bottom: 20px;
+  transform: translateX(-8px);
+  width: 100%;
+}
+
+@media screen and (max-height: 1040px) {
+  :host-context([orientation=vertical][screen=oobe]) #animation-container {
+    display: none;
+  }
+
+  :host-context([orientation=vertical][screen=oobe])
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
+  }
+}
+
+@media screen and (max-height: 825px) {
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      #animation-container {
+    display: none;
+  }
+
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
+  }
 }

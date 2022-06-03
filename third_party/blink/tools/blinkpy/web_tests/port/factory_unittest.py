@@ -41,33 +41,45 @@ from blinkpy.web_tests.port import win
 
 class FactoryTest(unittest.TestCase):
     """Test that the factory creates the proper port object for given combination of port_name, host.platform, and options."""
+
     # FIXME: The ports themselves should expose what options they require,
     # instead of passing generic "options".
 
     def setUp(self):
         self.webkit_options = optparse.Values({})
 
-    def assert_port(self, port_name=None, os_name=None, os_version=None, options=None, cls=None):
+    def assert_port(self,
+                    port_name=None,
+                    os_name=None,
+                    os_version=None,
+                    options=None,
+                    cls=None):
         host = MockHost(os_name=os_name, os_version=os_version)
         port = factory.PortFactory(host).get(port_name, options=options)
         self.assertIsInstance(port, cls)
 
     def test_mac(self):
-        self.assert_port(port_name='mac', os_name='mac', os_version='mac10.11',
-                         cls=mac.MacPort)
+        self.assert_port(
+            port_name='mac',
+            os_name='mac',
+            os_version='mac10.14',
+            cls=mac.MacPort)
 
     def test_linux(self):
-        self.assert_port(port_name='linux', os_name='linux', os_version='trusty',
-                         cls=linux.LinuxPort)
+        self.assert_port(
+            port_name='linux',
+            os_name='linux',
+            os_version='trusty',
+            cls=linux.LinuxPort)
 
     def test_android(self):
         self.assert_port(port_name='android', cls=android.AndroidPort)
 
     def test_win(self):
         self.assert_port(port_name='win-win7', cls=win.WinPort)
-        self.assert_port(port_name='win-win10', cls=win.WinPort)
-        self.assert_port(port_name='win', os_name='win', os_version='win7',
-                         cls=win.WinPort)
+        self.assert_port(port_name='win-win10.20h2', cls=win.WinPort)
+        self.assert_port(
+            port_name='win', os_name='win', os_version='win7', cls=win.WinPort)
 
     def test_unknown_specified(self):
         with self.assertRaises(NotImplementedError):
@@ -85,16 +97,21 @@ class FactoryTest(unittest.TestCase):
                 'specifiers': ['Mac10.12', 'Release'],
             }
         })
-        self.assertEqual(factory.PortFactory(host).get_from_builder_name('My Fake Mac10.12 Builder').name(),
-                         'mac-mac10.12')
+        self.assertEqual(
+            factory.PortFactory(host).get_from_builder_name(
+                'My Fake Mac10.12 Builder').name(), 'mac-mac10.12')
 
     def get_port(self, target=None, configuration=None, files=None):
         host = MockHost()
         finder = PathFinder(host.filesystem)
         files = files or {}
         for path, contents in files.items():
-            host.filesystem.write_text_file(finder.path_from_chromium_base(path), contents)
-        options = optparse.Values({'target': target, 'configuration': configuration})
+            host.filesystem.write_text_file(
+                finder.path_from_chromium_base(path), contents)
+        options = optparse.Values({
+            'target': target,
+            'configuration': configuration
+        })
         return factory.PortFactory(host).get(options=options)
 
     def test_default_target_and_configuration(self):
@@ -128,26 +145,33 @@ class FactoryTest(unittest.TestCase):
         self.assertEqual(port._options.target, 'Release_x64')
 
     def test_release_args_gn(self):
-        port = self.get_port(target='foo', files={'out/foo/args.gn': 'is_debug = false'})
+        port = self.get_port(
+            target='foo', files={'out/foo/args.gn': 'is_debug = false'})
         self.assertEqual(port._options.configuration, 'Release')
         self.assertEqual(port._options.target, 'foo')
 
         # Also test that we handle multi-line args files properly.
-        port = self.get_port(target='foo', files={'out/foo/args.gn': 'is_debug = false\nfoo = bar\n'})
+        port = self.get_port(
+            target='foo',
+            files={'out/foo/args.gn': 'is_debug = false\nfoo = bar\n'})
         self.assertEqual(port._options.configuration, 'Release')
         self.assertEqual(port._options.target, 'foo')
 
-        port = self.get_port(target='foo', files={'out/foo/args.gn': 'foo=bar\nis_debug=false\n'})
+        port = self.get_port(
+            target='foo',
+            files={'out/foo/args.gn': 'foo=bar\nis_debug=false\n'})
         self.assertEqual(port._options.configuration, 'Release')
         self.assertEqual(port._options.target, 'foo')
 
     def test_debug_args_gn(self):
-        port = self.get_port(target='foo', files={'out/foo/args.gn': 'is_debug = true'})
+        port = self.get_port(
+            target='foo', files={'out/foo/args.gn': 'is_debug = true'})
         self.assertEqual(port._options.configuration, 'Debug')
         self.assertEqual(port._options.target, 'foo')
 
     def test_default_gn_build(self):
-        port = self.get_port(target='Default', files={'out/Default/toolchain.ninja': ''})
+        port = self.get_port(
+            target='Default', files={'out/Default/toolchain.ninja': ''})
         self.assertEqual(port._options.configuration, 'Debug')
         self.assertEqual(port._options.target, 'Default')
 
@@ -162,5 +186,7 @@ class FactoryTest(unittest.TestCase):
 
     def test_both_configuration_and_target_is_an_error(self):
         with self.assertRaises(ValueError):
-            self.get_port(target='Debug', configuration='Release',
-                          files={'out/Debug/toolchain.ninja': ''})
+            self.get_port(
+                target='Debug',
+                configuration='Release',
+                files={'out/Debug/toolchain.ninja': ''})

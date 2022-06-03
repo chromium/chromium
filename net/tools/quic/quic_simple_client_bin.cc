@@ -36,9 +36,6 @@
 #include "base/logging.h"
 #include "net/base/net_errors.h"
 #include "net/quic/address_utils.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_str_cat.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
 #include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
@@ -59,16 +56,12 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
   std::unique_ptr<quic::QuicSpdyClientBase> CreateClient(
       std::string host_for_handshake,
       std::string host_for_lookup,
+      int address_family_for_lookup,
       uint16_t port,
       quic::ParsedQuicVersionVector versions,
-      std::unique_ptr<quic::ProofVerifier> verifier) override {
-    net::AddressList addresses;
-    int rv = net::SynchronousHostResolver::Resolve(host_for_lookup, &addresses);
-    if (rv != net::OK) {
-      LOG(ERROR) << "Unable to resolve '" << host_for_lookup
-                 << "' : " << net::ErrorToShortString(rv);
-      return nullptr;
-    }
+      const quic::QuicConfig& config,
+      std::unique_ptr<quic::ProofVerifier> verifier,
+      std::unique_ptr<quic::SessionCache> /*session_cache*/) override {
     // Determine IP address to connect to from supplied hostname.
     quic::QuicIpAddress ip_addr;
     if (!ip_addr.FromString(host_for_lookup)) {
@@ -85,7 +78,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
 
     quic::QuicServerId server_id(host_for_handshake, port, false);
     return std::make_unique<net::QuicSimpleClient>(
-        quic::QuicSocketAddress(ip_addr, port), server_id, versions,
+        quic::QuicSocketAddress(ip_addr, port), server_id, versions, config,
         std::move(verifier));
   }
 };

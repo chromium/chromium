@@ -26,9 +26,20 @@ TEST(IdentityExtensionTokenKeyTest, Ordering) {
   extension_ids.push_back(extension_id1);
   extension_ids.push_back(extension_id2);
 
-  std::vector<CoreAccountId> user_ids;
-  user_ids.push_back(CoreAccountId("user_id_1"));
-  user_ids.push_back(CoreAccountId("user_id_2"));
+  std::vector<CoreAccountInfo> user_infos;
+
+  CoreAccountInfo user_1;
+  user_1.account_id = CoreAccountId("user_id_1");
+  user_1.gaia = "user_id_1";
+  user_1.email = "user_email_1";
+
+  CoreAccountInfo user_2;
+  user_2.account_id = CoreAccountId("user_id_2");
+  user_2.gaia = "user_id_2";
+  user_2.email = "user_email_2";
+
+  user_infos.push_back(user_1);
+  user_infos.push_back(user_2);
 
   std::vector<std::set<std::string> > scopesets;
   scopesets.push_back(scopes1);
@@ -39,18 +50,10 @@ TEST(IdentityExtensionTokenKeyTest, Ordering) {
   typedef std::vector<extensions::ExtensionTokenKey>::const_iterator
       ExtensionTokenKeyIterator;
 
-  std::vector<std::string>::const_iterator extension_it;
-  std::vector<CoreAccountId>::const_iterator user_it;
-  std::vector<std::set<std::string> >::const_iterator scope_it;
-
-  for (extension_it = extension_ids.begin();
-       extension_it != extension_ids.end();
-       ++extension_it) {
-    for (user_it = user_ids.begin(); user_it != user_ids.end(); ++user_it) {
-      for (scope_it = scopesets.begin(); scope_it != scopesets.end();
-           ++scope_it) {
-        keys.push_back(
-            extensions::ExtensionTokenKey(*extension_it, *user_it, *scope_it));
+  for (const auto& extension_id : extension_ids) {
+    for (const auto& user_info : user_infos) {
+      for (const auto& scopes : scopesets) {
+        keys.emplace_back(extension_id, user_info, scopes);
       }
     }
   }

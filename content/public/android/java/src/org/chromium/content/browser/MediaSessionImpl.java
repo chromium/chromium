@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
@@ -34,6 +34,11 @@ public class MediaSessionImpl extends MediaSession {
     private ObserverList.RewindableIterator<MediaSessionObserver> mObserversIterator;
 
     private boolean mIsControllable;
+    private Boolean mIsSuspended;
+    private MediaMetadata mMetadata;
+    private List<MediaImage> mImagesList;
+    private HashSet<Integer> mActionSet;
+    private MediaPosition mPosition;
 
     public static MediaSessionImpl fromWebContents(WebContents webContents) {
         return MediaSessionImplJni.get().getMediaSessionFromWebContents(webContents);
@@ -41,6 +46,21 @@ public class MediaSessionImpl extends MediaSession {
 
     public void addObserver(MediaSessionObserver observer) {
         mObservers.addObserver(observer);
+        if (mIsSuspended != null) {
+            observer.mediaSessionStateChanged(mIsControllable, mIsSuspended);
+        }
+        if (mMetadata != null) {
+            observer.mediaSessionMetadataChanged(mMetadata);
+        }
+        if (mImagesList != null) {
+            observer.mediaSessionArtworkChanged(mImagesList);
+        }
+        if (mPosition != null) {
+            observer.mediaSessionPositionChanged(mPosition);
+        }
+        if (mActionSet != null) {
+            observer.mediaSessionActionsChanged(mActionSet);
+        }
     }
 
     public void removeObserver(MediaSessionObserver observer) {
@@ -69,7 +89,7 @@ public class MediaSessionImpl extends MediaSession {
 
     @Override
     public void seek(long millis) {
-        assert millis == 0 : "Attempted to seek by an unspecified number of milliseconds";
+        assert millis != 0 : "Attempted to seek by an unspecified number of milliseconds";
         MediaSessionImplJni.get().seek(mNativeMediaSessionAndroid, MediaSessionImpl.this, millis);
     }
 
@@ -116,6 +136,7 @@ public class MediaSessionImpl extends MediaSession {
     @CalledByNative
     private void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
         mIsControllable = isControllable;
+        mIsSuspended = isSuspended;
 
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().mediaSessionStateChanged(isControllable, isSuspended);
@@ -124,6 +145,7 @@ public class MediaSessionImpl extends MediaSession {
 
     @CalledByNative
     private void mediaSessionMetadataChanged(MediaMetadata metadata) {
+        mMetadata = metadata;
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().mediaSessionMetadataChanged(metadata);
         }
@@ -133,6 +155,7 @@ public class MediaSessionImpl extends MediaSession {
     private void mediaSessionActionsChanged(int[] actions) {
         HashSet<Integer> actionSet = new HashSet<Integer>();
         for (int action : actions) actionSet.add(action);
+        mActionSet = actionSet;
 
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().mediaSessionActionsChanged(actionSet);
@@ -141,15 +164,16 @@ public class MediaSessionImpl extends MediaSession {
 
     @CalledByNative
     private void mediaSessionArtworkChanged(MediaImage[] images) {
-        List<MediaImage> imagesList = Arrays.asList(images);
+        mImagesList = Arrays.asList(images);
 
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().mediaSessionArtworkChanged(imagesList);
+            mObserversIterator.next().mediaSessionArtworkChanged(mImagesList);
         }
     }
 
     @CalledByNative
     private void mediaSessionPositionChanged(@Nullable MediaPosition position) {
+        mPosition = position;
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().mediaSessionPositionChanged(position);
         }

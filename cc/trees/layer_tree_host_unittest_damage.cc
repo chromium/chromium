@@ -106,8 +106,8 @@ class LayerTreeHostDamageTestSetViewportRectAndScale
   void DidCommitAndDrawFrame() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
-        layer_tree_host()->SetViewportRectAndScale(
-            gfx::Rect(15, 15), 1.f, GetCurrentLocalSurfaceIdAllocation());
+        layer_tree_host()->SetViewportRectAndScale(gfx::Rect(15, 15), 1.f,
+                                                   GetCurrentLocalSurfaceId());
         break;
     }
   }
@@ -337,8 +337,11 @@ class LayerTreeHostScrollbarDamageTest : public LayerTreeHostDamageTest {
     content_layer_ = FakePictureLayer::Create(&client_);
     content_layer_->SetElementId(
         LayerIdToElementIdForTesting(content_layer_->id()));
-    content_layer_->SetScrollable(root_layer->bounds());
-    content_layer_->SetScrollOffset(gfx::ScrollOffset(10, 20));
+
+    // The size of the container in which scrolling contents are visible need
+    // to be smaller than the bounds of the layer itself.
+    content_layer_->SetScrollable(gfx::Size(80, 180));
+    content_layer_->SetScrollOffset(gfx::Vector2dF(10, 20));
     content_layer_->SetBounds(gfx::Size(100, 200));
     content_layer_->SetIsDrawable(true);
     root_layer->AddChild(content_layer_);

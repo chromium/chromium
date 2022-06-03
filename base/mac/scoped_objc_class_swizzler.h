@@ -26,6 +26,9 @@ class BASE_EXPORT ScopedObjCClassSwizzler {
   // and |alternate|.
   ScopedObjCClassSwizzler(Class target, SEL original, SEL alternate);
 
+  ScopedObjCClassSwizzler(const ScopedObjCClassSwizzler&) = delete;
+  ScopedObjCClassSwizzler& operator=(const ScopedObjCClassSwizzler&) = delete;
+
   ~ScopedObjCClassSwizzler();
 
   // Return a callable function pointer for the replaced method. To call this
@@ -49,8 +52,6 @@ class BASE_EXPORT ScopedObjCClassSwizzler {
 
   Method old_selector_impl_;
   Method new_selector_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedObjCClassSwizzler);
 };
 
 }  // namespace mac

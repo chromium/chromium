@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstring>
 #include <memory>
 #include <numeric>
 
+#include "base/cxx17_backports.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
-#include "base/stl_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

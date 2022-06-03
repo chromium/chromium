@@ -16,7 +16,9 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -458,7 +460,7 @@ void DiskCachePerfTest::ResetAndEvictSystemDiskCache() {
        file_path = enumerator.Next()) {
     ASSERT_TRUE(base::EvictFileFromSystemCache(file_path));
   }
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // And, cache directories, on platforms where the eviction utility supports
   // this (currently Linux and Android only).
   if (simple_cache_mode_) {
@@ -473,6 +475,9 @@ void DiskCachePerfTest::ResetAndEvictSystemDiskCache() {
 }
 
 void DiskCachePerfTest::CacheBackendPerformance(const std::string& story) {
+  base::test::ScopedRunLoopTimeout default_timeout(
+      FROM_HERE, TestTimeouts::action_max_timeout());
+
   LOG(ERROR) << "Using cache at:" << cache_path_.MaybeAsASCII();
   SetMaxSize(500 * 1024 * 1024);
   InitCache();
@@ -551,7 +556,7 @@ TEST_F(DiskCachePerfTest, BlockFilesPerformance) {
   base::RunLoop().RunUntilIdle();
 }
 
-void VerifyRvAndCallClosure(base::Closure* c, int expect_rv, int rv) {
+void VerifyRvAndCallClosure(base::RepeatingClosure* c, int expect_rv, int rv) {
   EXPECT_EQ(expect_rv, rv);
   c->Run();
 }
@@ -603,7 +608,7 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
 
   for (int i = 0; i < kIterations; ++i) {
     base::RunLoop event_loop;
-    base::Closure barrier =
+    base::RepeatingClosure barrier =
         base::BarrierClosure(kBatchSize, event_loop.QuitWhenIdleClosure());
     net::CompletionRepeatingCallback cb_batch(base::BindRepeating(
         VerifyRvAndCallClosure, base::Unretained(&barrier), kHeadersSize));
@@ -666,8 +671,7 @@ TEST(SimpleIndexPerfTest, EvictionPerformance) {
 
     for (int i = 0; i < kEntries; ++i) {
       index.InsertEntryForTesting(
-          i, disk_cache::EntryMetadata(start + base::TimeDelta::FromSeconds(i),
-                                       1u));
+          i, disk_cache::EntryMetadata(start + base::Seconds(i), 1u));
     }
 
     // Trigger an eviction.

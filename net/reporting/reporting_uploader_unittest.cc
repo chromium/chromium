@@ -14,6 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/http/http_status_code.h"
@@ -24,6 +26,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 namespace {
@@ -57,7 +61,7 @@ void CheckUpload(const test_server::HttpRequest& request) {
 std::unique_ptr<test_server::HttpResponse> AllowPreflight(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -118,7 +122,7 @@ class TestUploadCallback {
 
     if (waiting_) {
       waiting_ = false;
-      closure_.Run();
+      std::move(closure_).Run();
     }
   }
 
@@ -126,7 +130,7 @@ class TestUploadCallback {
   ReportingUploader::Outcome outcome_;
 
   bool waiting_;
-  base::Closure closure_;
+  base::OnceClosure closure_;
 };
 
 TEST_F(ReportingUploaderTest, Upload) {
@@ -136,8 +140,9 @@ TEST_F(ReportingUploaderTest, Upload) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 }
 
@@ -147,8 +152,9 @@ TEST_F(ReportingUploaderTest, Success) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback.outcome());
@@ -160,8 +166,8 @@ TEST_F(ReportingUploaderTest, NetworkError1) {
   ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, url, NetworkIsolationKey(), kUploadBody, 0,
-                         callback.callback());
+  uploader_->StartUpload(kOrigin, url, IsolationInfo::CreateTransient(),
+                         kUploadBody, 0, false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -173,8 +179,9 @@ TEST_F(ReportingUploaderTest, NetworkError2) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -187,8 +194,9 @@ TEST_F(ReportingUploaderTest, ServerError) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -198,7 +206,7 @@ std::unique_ptr<test_server::HttpResponse> VerifyPreflight(
     bool* preflight_received_out,
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   *preflight_received_out = true;
   return AllowPreflight(request);
@@ -212,8 +220,9 @@ TEST_F(ReportingUploaderTest, VerifyPreflight) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_TRUE(preflight_received);
@@ -230,8 +239,8 @@ TEST_F(ReportingUploaderTest, SkipPreflightForSameOrigin) {
   TestUploadCallback callback;
   auto server_origin = url::Origin::Create(server_.base_url());
   uploader_->StartUpload(server_origin, server_.GetURL("/"),
-                         NetworkIsolationKey(), kUploadBody, 0,
-                         callback.callback());
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_FALSE(preflight_received);
@@ -241,7 +250,7 @@ TEST_F(ReportingUploaderTest, SkipPreflightForSameOrigin) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightError(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_FORBIDDEN);
@@ -256,8 +265,9 @@ TEST_F(ReportingUploaderTest, FailedCorsPreflight) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -266,7 +276,7 @@ TEST_F(ReportingUploaderTest, FailedCorsPreflight) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutOrigin(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -286,8 +296,9 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutOrigin) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -296,7 +307,7 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutOrigin) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutMethods(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -316,8 +327,9 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutMethods) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -326,7 +338,7 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutMethods) {
 std::unique_ptr<test_server::HttpResponse> ReturnPreflightWithoutHeaders(
     const test_server::HttpRequest& request) {
   if (request.method_string != "OPTIONS") {
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
   }
   auto it = request.headers.find("Origin");
   EXPECT_TRUE(it != request.headers.end());
@@ -346,8 +358,9 @@ TEST_F(ReportingUploaderTest, CorsPreflightWithoutHeaders) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::FAILURE, callback.outcome());
@@ -360,8 +373,9 @@ TEST_F(ReportingUploaderTest, RemoveEndpoint) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_EQ(ReportingUploader::Outcome::REMOVE_ENDPOINT, callback.outcome());
@@ -373,7 +387,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnRedirect(
     const std::string& location,
     const test_server::HttpRequest& request) {
   if (request.relative_url != "/")
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
 
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_FOUND);
@@ -388,7 +402,7 @@ std::unique_ptr<test_server::HttpResponse> CheckRedirect(
     bool* redirect_followed_out,
     const test_server::HttpRequest& request) {
   if (request.relative_url != kRedirectPath)
-    return std::unique_ptr<test_server::HttpResponse>();
+    return nullptr;
 
   *redirect_followed_out = true;
   return ReturnResponse(HTTP_OK, request);
@@ -404,8 +418,9 @@ TEST_F(ReportingUploaderTest, FollowHttpsRedirect) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_TRUE(followed);
@@ -427,8 +442,9 @@ TEST_F(ReportingUploaderTest, DontFollowHttpRedirect) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, callback.callback());
   callback.WaitForCall();
 
   EXPECT_FALSE(followed);
@@ -446,20 +462,21 @@ TEST_F(ReportingUploaderTest, DontSendCookies) {
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
   ASSERT_TRUE(server_.Start());
 
-  ResultSavingCookieCallback<CanonicalCookie::CookieInclusionStatus>
-      cookie_callback;
+  ResultSavingCookieCallback<CookieAccessResult> cookie_callback;
   GURL url = server_.GetURL("/");
-  auto cookie = CanonicalCookie::Create(url, "foo=bar", base::Time::Now(),
-                                        base::nullopt /* server_time */);
+  auto cookie = CanonicalCookie::Create(
+      url, "foo=bar", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
   context_.cookie_store()->SetCanonicalCookieAsync(
-      std::move(cookie), url.scheme(), CookieOptions::MakeAllInclusive(),
+      std::move(cookie), url, CookieOptions::MakeAllInclusive(),
       cookie_callback.MakeCallback());
   cookie_callback.WaitUntilDone();
-  ASSERT_TRUE(cookie_callback.result().IsInclude());
+  ASSERT_TRUE(cookie_callback.result().status.IsInclude());
 
   TestUploadCallback upload_callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, upload_callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, upload_callback.callback());
   upload_callback.WaitForCall();
 }
 
@@ -479,13 +496,15 @@ TEST_F(ReportingUploaderTest, DontSaveCookies) {
   ASSERT_TRUE(server_.Start());
 
   TestUploadCallback upload_callback;
-  uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                         kUploadBody, 0, upload_callback.callback());
+  uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                         IsolationInfo::CreateTransient(), kUploadBody, 0,
+                         false, upload_callback.callback());
   upload_callback.WaitForCall();
 
   GetCookieListCallback cookie_callback;
   context_.cookie_store()->GetCookieListWithOptionsAsync(
       server_.GetURL("/"), CookieOptions::MakeAllInclusive(),
+      CookiePartitionKeychain(),
       base::BindOnce(&GetCookieListCallback::Run,
                      base::Unretained(&cookie_callback)));
   cookie_callback.WaitUntilDone();
@@ -518,16 +537,18 @@ TEST_F(ReportingUploaderTest, DontCacheResponse) {
 
   {
     TestUploadCallback callback;
-    uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                           kUploadBody, 0, callback.callback());
+    uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                           IsolationInfo::CreateTransient(), kUploadBody, 0,
+                           false, callback.callback());
     callback.WaitForCall();
   }
   EXPECT_EQ(1, request_count);
 
   {
     TestUploadCallback callback;
-    uploader_->StartUpload(kOrigin, server_.GetURL("/"), NetworkIsolationKey(),
-                           kUploadBody, 0, callback.callback());
+    uploader_->StartUpload(kOrigin, server_.GetURL("/"),
+                           IsolationInfo::CreateTransient(), kUploadBody, 0,
+                           false, callback.callback());
     callback.WaitForCall();
   }
   EXPECT_EQ(2, request_count);
@@ -546,10 +567,15 @@ TEST_F(ReportingUploaderTest, RespectsNetworkIsolationKey) {
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://origin2/"));
-  ASSERT_NE(kOrigin, kOrigin2);
-  const NetworkIsolationKey kNetworkIsolationKey1(kOrigin, kOrigin);
-  const NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  const SchemefulSite kSite1 = SchemefulSite(kOrigin);
+  const SchemefulSite kSite2(GURL("https://origin2/"));
+  ASSERT_NE(kSite1, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const IsolationInfo kIsolationInfo1 = IsolationInfo::CreatePartial(
+      IsolationInfo::RequestType::kOther, kNetworkIsolationKey1);
+  const IsolationInfo kIsolationInfo2 = IsolationInfo::CreatePartial(
+      IsolationInfo::RequestType::kOther, kNetworkIsolationKey2);
 
   MockClientSocketFactory socket_factory;
   TestURLRequestContext context(true /* delay_initialization */);
@@ -621,9 +647,8 @@ TEST_F(ReportingUploaderTest, RespectsNetworkIsolationKey) {
   TestUploadCallback callback1;
   std::unique_ptr<ReportingUploader> uploader1 =
       ReportingUploader::Create(&context);
-  uploader1->StartUpload(kOrigin, GURL("https://origin/1"),
-                         kNetworkIsolationKey1, kUploadBody, 0,
-                         callback1.callback());
+  uploader1->StartUpload(kOrigin, GURL("https://origin/1"), kIsolationInfo1,
+                         kUploadBody, 0, false, callback1.callback());
   callback1.WaitForCall();
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback1.outcome());
 
@@ -635,15 +660,13 @@ TEST_F(ReportingUploaderTest, RespectsNetworkIsolationKey) {
   TestUploadCallback callback2;
   std::unique_ptr<ReportingUploader> uploader2 =
       ReportingUploader::Create(&context);
-  uploader2->StartUpload(kOrigin, GURL("https://origin/2"),
-                         kNetworkIsolationKey2, kUploadBody, 0,
-                         callback2.callback());
+  uploader2->StartUpload(kOrigin, GURL("https://origin/2"), kIsolationInfo2,
+                         kUploadBody, 0, false, callback2.callback());
   TestUploadCallback callback3;
   std::unique_ptr<ReportingUploader> uploader3 =
       ReportingUploader::Create(&context);
-  uploader3->StartUpload(kOrigin, GURL("https://origin/3"),
-                         kNetworkIsolationKey1, kUploadBody, 0,
-                         callback3.callback());
+  uploader3->StartUpload(kOrigin, GURL("https://origin/3"), kIsolationInfo1,
+                         kUploadBody, 0, false, callback3.callback());
 
   callback2.WaitForCall();
   EXPECT_EQ(ReportingUploader::Outcome::SUCCESS, callback2.outcome());

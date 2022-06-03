@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/os/rebooter_api.h"
 
 namespace chrome_cleaner {
@@ -18,7 +17,7 @@ class Rebooter : public RebooterAPI {
  public:
   static bool IsPostReboot();
 
-  explicit Rebooter(const base::string16& product_shortname);
+  explicit Rebooter(const std::wstring& product_shortname);
   ~Rebooter() override {}
 
   // RebooterAPI implementation.
@@ -32,7 +31,7 @@ class Rebooter : public RebooterAPI {
   void UnregisterPostRebootRun() override;
 
  private:
-  base::string16 product_shortname_;
+  std::wstring product_shortname_;
   base::CommandLine switches_;
 };
 

@@ -12,7 +12,6 @@
 #include <ostream>
 
 #include "base/debug/proc_maps_linux.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 

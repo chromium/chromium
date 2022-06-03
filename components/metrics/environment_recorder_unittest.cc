@@ -17,13 +17,13 @@ class EnvironmentRecorderTest : public testing::Test {
     EnvironmentRecorder::RegisterPrefs(prefs_.registry());
   }
 
+  EnvironmentRecorderTest(const EnvironmentRecorderTest&) = delete;
+  EnvironmentRecorderTest& operator=(const EnvironmentRecorderTest&) = delete;
+
   ~EnvironmentRecorderTest() override {}
 
  protected:
   TestingPrefServiceSimple prefs_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnvironmentRecorderTest);
 };
 
 TEST_F(EnvironmentRecorderTest, LoadEnvironmentFromPrefs) {

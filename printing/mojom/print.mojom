@@ -1,0 +1,166 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+// Print job color mode values.
+[Stable, Extensible]
+enum ColorModel {
+  [Default] kUnknownColorModel,
+  kGray,
+  kColor,
+  kCMYK,
+  kCMY,
+  kKCMY,
+  kCMYPlusK,  // kCMYPlusK represents CMY+K.
+  kBlack,
+  kGrayscale,
+  kRGB,
+  kRGB16,
+  kRGBA,
+  kColorModeColor,              // Used in Samsung printer PPDs.
+  kColorModeMonochrome,         // Used in Samsung printer PPDs.
+  kHPColorColor,                // Used in HP color printer PPDs.
+  kHPColorBlack,                // Used in HP color printer PPDs.
+  kPrintoutModeNormal,          // Used in Foomatic PPDs.
+  kPrintoutModeNormalGray,      // Used in Foomatic PPDs.
+  kProcessColorModelCMYK,       // Used in Canon printer PPDs.
+  kProcessColorModelGreyscale,  // Used in Canon printer PPDs.
+  kProcessColorModelRGB,        // Used in Canon printer PPDs
+  kBrotherCUPSColor,            // Used in Brother color laser printer PPDs.
+  kBrotherCUPSMono,             // Used in Brother color laser printer PPDs.
+  kBrotherBRScript3Color,       // Used in Brother BRScript3 color printer PPDs.
+  kBrotherBRScript3Black,       // Used in Brother BRScript3 color printer PPDs.
+  kEpsonInkColor,               // Used in Epson printer PPDs.
+  kEpsonInkMono,                // Used in Epson printer PPDs.
+  kSharpARCModeCMColor,         // Used in Sharp printer PPDs.
+  kSharpARCModeCMBW,            // Used in Sharp printer PPDs.
+  kXeroxXRXColorAutomatic,      // Used in Xerox printer PPDs.
+  kXeroxXRXColorBW,             // Used in Xerox printer PPDs.
+  kColorModelLast = kXeroxXRXColorBW
+};
+
+// Print job duplex mode values.
+[Stable, Extensible]
+enum DuplexMode {
+  [Default] kUnknownDuplexMode = -1,
+  kSimplex,
+  kLongEdge,
+  kShortEdge,
+};
+
+// Struct that holds margin and content area sizes of a page. Units are
+// arbitrary and can be chosen by the programmer.
+struct PageSizeMargins {
+  double content_width;
+  double content_height;
+  double margin_top;
+  double margin_right;
+  double margin_bottom;
+  double margin_left;
+};
+
+// CSS @page page-orientation descriptor values.
+enum PageOrientation { kUpright, kRotateLeft, kRotateRight };
+
+// Describes whether to reduce/enlarge/retain the print contents to fit the
+// printable area. (This is used only by plugin printing).
+enum PrintScalingOption {
+  // Prints the upper left of a page without scaling. Crop the page contents
+  // that don't fit on the paper.
+  kNone,
+  // Reduces or enlarges each page to fit the printable area of the selected
+  // printer paper size.
+  kFitToPrintableArea,
+  // Print output page size is same as the actual source page size. Do not
+  // scale/center/fit to printable area.
+  kSourceSize,
+  // Reduces or enlarges each page to fit the selected printer paper size.
+  kFitToPaper,
+};
+
+// Document type that Skia graphics library generates.
+enum SkiaDocumentType {
+  // PDF document type.
+  kPDF,
+  // MultiPictureDocument type. kMSKP is an experimental, fragile, and
+  // diagnostic-only document type.
+  kMSKP,
+};
+
+// Metafile data type encapsulated by a player.
+enum MetafileDataType {
+  kPDF,
+  [EnableIf=is_win]
+  kEMF,
+};
+
+// What kind of margins to use.
+enum MarginType {
+  // Default varies depending on headers being enabled or not
+  kDefaultMargins,
+  kNoMargins,
+  kPrintableAreaMargins,
+  kCustomMargins,
+};
+
+// Allowed printing modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum ColorModeRestriction {
+  [Default] kUnset = 0x0,
+  kMonochrome = 0x1,
+  kColor = 0x2,
+};
+
+// Allowed duplex modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum DuplexModeRestriction {
+  [Default] kUnset = 0x0,
+  kSimplex = 0x1,
+  kLongEdge = 0x2,
+  kShortEdge = 0x4,
+  kDuplex = 0x6,
+};
+
+// Allowed PIN printing modes.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum PinModeRestriction {
+  [Default] kUnset = 0,
+  kPin = 1,
+  kNoPin = 2,
+};
+
+// Result codes distilled from system error codes.
+enum ResultCode {
+  kSuccess,
+  // Generic code for uncategorized errors.
+  kFailed,
+  // Insufficient permissions to perform the operation.
+  kAccessDenied,
+  // Operation was canceled.
+  kCanceled,
+};
+
+// Matches print_preview.PrinterType in
+// chrome/browser/resources/print_preview/data/destination_match.js
+[Stable, Extensible]
+enum PrinterType {
+  kPrivet,
+  kExtension,
+  kPdf,
+  kLocal,
+  kCloud
+};
+
+[EnableIf=is_win]
+enum PrinterLanguageType {
+  kNone = 0,
+  kTextOnly,
+  kXps,
+  kPostscriptLevel2,
+  kPostscriptLevel3,
+};

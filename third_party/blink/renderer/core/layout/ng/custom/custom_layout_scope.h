@@ -12,7 +12,7 @@ namespace blink {
 
 // The work queue is a list of work tasks which will either produce fragment(s)
 // or intrinsic-size(s) for the custom-layout class.
-typedef Vector<CustomLayoutWorkTask, 4> CustomLayoutWorkQueue;
+typedef HeapVector<Member<CustomLayoutWorkTask>, 4> CustomLayoutWorkQueue;
 
 // This heap allocated class is used to indicate which custom-layout (heap)
 // objects are still valid.
@@ -22,7 +22,7 @@ typedef Vector<CustomLayoutWorkTask, 4> CustomLayoutWorkQueue;
 class CustomLayoutToken : public GarbageCollected<CustomLayoutToken> {
  public:
   CustomLayoutToken() : is_detached_(false) {}
-  void Trace(Visitor* visitor) {}
+  void Trace(Visitor* visitor) const {}
   bool IsValid() const;
 
  private:
@@ -64,7 +64,7 @@ class CustomLayoutScope {
 
   CustomLayoutScope* prev_scope_;
   CustomLayoutWorkQueue queue_;
-  Member<CustomLayoutToken> token_;
+  CustomLayoutToken* token_;
 };
 
 inline bool CustomLayoutToken::IsValid() const {

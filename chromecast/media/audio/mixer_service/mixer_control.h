@@ -19,13 +19,22 @@ class ControlConnection;
 // Threadsafe process-wide mixer control.
 class MixerControl {
  public:
+  using ListPostprocessorsCallback =
+      base::OnceCallback<void(const std::vector<std::string>&)>;
+
   // Returns the mixer control instance for this process, or nullptr if the
   // mixer is not present on this system.
   static MixerControl* Get();
 
+  MixerControl(const MixerControl&) = delete;
+  MixerControl& operator=(const MixerControl&) = delete;
+
   // Sends arbitrary config data to a specific postprocessor.
   void ConfigurePostprocessor(std::string postprocessor_name,
                               std::string config);
+
+  // Sends the request to get the builtin postprocessors and run the callback.
+  void ListPostprocessors(ListPostprocessorsCallback callback);
 
   // Instructs the mixer to reload postprocessors based on the config file.
   void ReloadPostprocessors();
@@ -42,8 +51,6 @@ class MixerControl {
   ~MixerControl();
 
   base::SequenceBound<ControlConnection> control_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerControl);
 };
 
 }  // namespace mixer_service

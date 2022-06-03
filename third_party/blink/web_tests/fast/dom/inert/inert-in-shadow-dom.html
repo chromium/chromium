@@ -11,6 +11,8 @@
     <button slot="slot-2" id="button-2">Button 2 (not inert)</button>
   </div>
   <script>
+    setup({single_test: true});
+
     const shadowHost = document.getElementById('shadow-host');
     const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
     const inertDiv = document.createElement('div');

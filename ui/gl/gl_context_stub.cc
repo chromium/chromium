@@ -22,7 +22,7 @@ bool GLContextStub::Initialize(GLSurface* compatible_surface,
   return true;
 }
 
-bool GLContextStub::MakeCurrent(GLSurface* surface) {
+bool GLContextStub::MakeCurrentImpl(GLSurface* surface) {
   DCHECK(surface);
   BindGLApi();
   SetCurrent(surface);
@@ -50,7 +50,7 @@ std::string GLContextStub::GetGLRenderer() {
   return std::string("CHROMIUM");
 }
 
-unsigned int GLContextStub::CheckStickyGraphicsResetStatus() {
+unsigned int GLContextStub::CheckStickyGraphicsResetStatusImpl() {
   DCHECK(IsCurrent(nullptr));
   if ((graphics_reset_status_ == GL_NO_ERROR) && HasRobustness()) {
     graphics_reset_status_ = glGetGraphicsResetStatusARB();
@@ -75,7 +75,7 @@ bool GLContextStub::HasRobustness() {
          HasExtension("GL_KHR_robustness") || HasExtension("GL_EXT_robustness");
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 void GLContextStub::FlushForDriverCrashWorkaround() {}
 #endif
 

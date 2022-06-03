@@ -51,7 +51,7 @@ function addCompositionMarker(elem, start, end, underlineColor, thick, backgroun
     range.setStart(textNode, start);
     range.setEnd(textNode, end);
     if (typeof internals !== 'undefined')
-        internals.addCompositionMarker(range, underlineColor, thick, backgroundColor);
+        internals.addCompositionMarker(range, underlineColor, thick, 'solid', 'transparent', backgroundColor);
 };
 
 function addSpellingMarker(elem, start, end) {

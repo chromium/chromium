@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,11 +17,15 @@ class MemoryDataSourceTest : public ::testing::Test {
  public:
   MemoryDataSourceTest() = default;
 
+  MemoryDataSourceTest(const MemoryDataSourceTest&) = delete;
+  MemoryDataSourceTest& operator=(const MemoryDataSourceTest&) = delete;
+
  protected:
   void Initialize(size_t size) {
     data_.assign(size, 0);
     base::RandBytes(data_.data(), size);
-    memory_data_source_.reset(new MemoryDataSource(data_.data(), size));
+    memory_data_source_ =
+        std::make_unique<MemoryDataSource>(data_.data(), size);
     EXPECT_EQ(size, GetSize());
   }
 
@@ -35,7 +38,7 @@ class MemoryDataSourceTest : public ::testing::Test {
     EXPECT_CALL(*this, ReadCB(expected_read_size));
     memory_data_source_->Read(
         position, size, data.data(),
-        base::Bind(&MemoryDataSourceTest::ReadCB, base::Unretained(this)));
+        base::BindOnce(&MemoryDataSourceTest::ReadCB, base::Unretained(this)));
 
     if (expected_read_size != DataSource::kReadError) {
       EXPECT_EQ(
@@ -57,8 +60,6 @@ class MemoryDataSourceTest : public ::testing::Test {
  private:
   std::vector<uint8_t> data_;
   std::unique_ptr<MemoryDataSource> memory_data_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDataSourceTest);
 };
 
 TEST_F(MemoryDataSourceTest, EmptySource) {

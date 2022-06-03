@@ -1,5 +1,6 @@
 [document web]
 ++[dialog]
 ++++[static] name='Nonmodal'
-++[dialog] modal
+++[dialog] name='modal dialog' modal
 ++++[static] name='Modal'
+++++[push button] name='Focus Me'

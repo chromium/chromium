@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -111,6 +112,14 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
   if (!IsValid())
     return nullptr;
 
+  // Apply the 'size-adjust' descriptor before font selection.
+  // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
+  const FontDescription& size_adjusted_description =
+      font_face_->HasSizeAdjust()
+          ? font_description.SizeAdjustedFontDescription(
+                font_face_->GetSizeAdjust())
+          : font_description;
+
   // https://www.w3.org/TR/css-fonts-4/#src-desc
   // "When a font is needed the user agent iterates over the set of references
   // listed, using the first one it can successfully activate."
@@ -122,8 +131,15 @@ scoped_refptr<SimpleFontData> CSSFontFace::GetFontData(
     if (source->IsInFailurePeriod())
       return nullptr;
 
-    if (scoped_refptr<SimpleFontData> result = source->GetFontData(
-            font_description, font_face_->GetFontSelectionCapabilities())) {
+    if (scoped_refptr<SimpleFontData> result =
+            source->GetFontData(size_adjusted_description,
+                                font_face_->GetFontSelectionCapabilities())) {
+      if (font_face_->HasFontMetricsOverride()) {
+        // TODO(xiaochengh): Try not to create a temporary
+        // SimpleFontData.
+        result = result->MetricsOverriddenFontData(
+            font_face_->GetFontMetricsOverride());
+      }
       // The active source may already be loading or loaded. Adjust our
       // FontFace status accordingly.
       if (LoadStatus() == FontFace::kUnloaded &&
@@ -173,7 +189,7 @@ bool CSSFontFace::MaybeLoadFont(const FontDescription& font_description,
 void CSSFontFace::Load() {
   FontDescription font_description;
   FontFamily font_family;
-  font_family.SetFamily(font_face_->family());
+  font_family.SetFamily(font_face_->family(), FontFamily::Type::kFamilyName);
   font_description.SetFamily(font_family);
   Load(font_description);
 }
@@ -214,9 +230,12 @@ void CSSFontFace::SetLoadStatus(FontFace::LoadStatusType new_status) {
   if (segmented_font_faces_.IsEmpty() || !font_face_->GetExecutionContext())
     return;
 
-  if (auto* document = DynamicTo<Document>(font_face_->GetExecutionContext())) {
-    if (new_status == FontFace::kLoading)
-      FontFaceSetDocument::From(*document)->BeginFontLoading(font_face_);
+  if (auto* window =
+          DynamicTo<LocalDOMWindow>(font_face_->GetExecutionContext())) {
+    if (new_status == FontFace::kLoading) {
+      FontFaceSetDocument::From(*window->document())
+          ->BeginFontLoading(font_face_);
+    }
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(
                  font_face_->GetExecutionContext())) {
     if (new_status == FontFace::kLoading)
@@ -224,7 +243,18 @@ void CSSFontFace::SetLoadStatus(FontFace::LoadStatusType new_status) {
   }
 }
 
-void CSSFontFace::Trace(blink::Visitor* visitor) {
+bool CSSFontFace::UpdatePeriod() {
+  if (LoadStatus() == FontFace::kLoaded)
+    return false;
+  bool changed = false;
+  for (CSSFontFaceSource* source : sources_) {
+    if (source->UpdatePeriod())
+      changed = true;
+  }
+  return changed;
+}
+
+void CSSFontFace::Trace(Visitor* visitor) const {
   visitor->Trace(segmented_font_faces_);
   visitor->Trace(sources_);
   visitor->Trace(font_face_);

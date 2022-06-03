@@ -4,14 +4,13 @@
 
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+using testing::_;
 
 namespace video_capture {
-
-MockVideoFrameHandler::MockVideoFrameHandler()
-    : video_frame_handler_(this), should_store_access_permissions_(false) {}
 
 MockVideoFrameHandler::MockVideoFrameHandler(
     mojo::PendingReceiver<mojom::VideoFrameHandler> handler)
@@ -24,9 +23,12 @@ void MockVideoFrameHandler::HoldAccessPermissions() {
   should_store_access_permissions_ = true;
 }
 
-void MockVideoFrameHandler::ReleaseAccessPermissions() {
+void MockVideoFrameHandler::ReleaseAccessedFrames() {
   should_store_access_permissions_ = false;
-  access_permissions_.clear();
+  for (int32_t buffer_id : accessed_frame_ids_) {
+    frame_access_handler_->OnFinishedConsumingBuffer(buffer_id);
+  }
+  accessed_frame_ids_.clear();
 }
 
 void MockVideoFrameHandler::OnNewBuffer(
@@ -37,15 +39,25 @@ void MockVideoFrameHandler::OnNewBuffer(
   DoOnNewBuffer(buffer_id, &buffer_handle);
 }
 
+void MockVideoFrameHandler::OnFrameAccessHandlerReady(
+    mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+        pending_frame_access_handler) {
+  // The MockVideoFrameHandler should take care of frame access.
+  frame_access_handler_.Bind(std::move(pending_frame_access_handler));
+}
+
 void MockVideoFrameHandler::OnFrameReadyInBuffer(
-    int32_t buffer_id,
-    int32_t frame_feedback_id,
-    mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission,
-    media::mojom::VideoFrameInfoPtr frame_info) {
-  DoOnFrameReadyInBuffer(buffer_id, frame_feedback_id, access_permission,
-                         &frame_info);
-  if (should_store_access_permissions_)
-    access_permissions_.emplace_back(std::move(access_permission));
+    mojom::ReadyFrameInBufferPtr buffer,
+    std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+  accessed_frame_ids_.push_back(buffer->buffer_id);
+  for (auto& scaled_buffer : scaled_buffers) {
+    accessed_frame_ids_.push_back(scaled_buffer->buffer_id);
+  }
+  DoOnFrameReadyInBuffer(buffer->buffer_id, buffer->frame_feedback_id,
+                         &buffer->frame_info);
+  if (!should_store_access_permissions_) {
+    ReleaseAccessedFrames();
+  }
 }
 
 void MockVideoFrameHandler::OnBufferRetired(int32_t buffer_id) {
@@ -54,6 +66,29 @@ void MockVideoFrameHandler::OnBufferRetired(int32_t buffer_id) {
   CHECK(iter != known_buffer_ids_.end());
   known_buffer_ids_.erase(iter);
   DoOnBufferRetired(buffer_id);
+}
+
+FakeVideoFrameAccessHandler::FakeVideoFrameAccessHandler()
+    : FakeVideoFrameAccessHandler(base::BindRepeating([](int32_t) {})) {}
+
+FakeVideoFrameAccessHandler::FakeVideoFrameAccessHandler(
+    base::RepeatingCallback<void(int32_t)> callback)
+    : callback_(std::move(callback)) {}
+
+FakeVideoFrameAccessHandler::~FakeVideoFrameAccessHandler() = default;
+
+const std::vector<int32_t>& FakeVideoFrameAccessHandler::released_buffer_ids()
+    const {
+  return released_buffer_ids_;
+}
+
+void FakeVideoFrameAccessHandler::ClearReleasedBufferIds() {
+  released_buffer_ids_.clear();
+}
+
+void FakeVideoFrameAccessHandler::OnFinishedConsumingBuffer(int32_t buffer_id) {
+  released_buffer_ids_.push_back(buffer_id);
+  callback_.Run(buffer_id);
 }
 
 }  // namespace video_capture

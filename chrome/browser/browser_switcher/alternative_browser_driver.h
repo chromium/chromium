@@ -7,11 +7,10 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/values.h"
 #include "build/build_config.h"
 
 class GURL;
@@ -19,6 +18,19 @@ class GURL;
 namespace browser_switcher {
 
 class BrowserSwitcherPrefs;
+
+// Used for UMA metrics, so do NOT change the order and the numbers. If you want
+// to add a new type, only append/increment.
+enum class BrowserType {
+  kUnknown = 0,
+  kIE = 1,
+  kFirefox = 2,
+  kOpera = 3,
+  kSafari = 4,
+  kChrome = 5,
+  kEdge = 6,
+  kMaxValue = kEdge,
+};
 
 // Interface for a helper class that does I/O operations for an
 // |AlternativeBrowserLauncher|.
@@ -28,15 +40,22 @@ class BrowserSwitcherPrefs;
 // - Launching an external process
 class AlternativeBrowserDriver {
  public:
+  using LaunchCallback = base::OnceCallback<void(bool success)>;
+
   virtual ~AlternativeBrowserDriver();
 
   // Tries to launch |browser| at the specified URL, using whatever
   // method is most appropriate.
-  virtual bool TryLaunch(const GURL& url) = 0;
+  virtual void TryLaunch(const GURL& url, LaunchCallback cb) = 0;
 
-  // Returns the i18n code for the name of the alternative browser, if it was
-  // auto-detected. If the name couldn't be auto-detected, returns 0.
+  // Returns the localized string for the name of the alternative browser, if it
+  // was auto-detected. If the name couldn't be auto-detected, returns an empty
+  // string.
   virtual std::string GetBrowserName() const = 0;
+
+  // Returns the type of browser as an enum, if it was auto-detected. Otherwise,
+  // returns |BrowserType::kUnknown|.
+  virtual BrowserType GetBrowserType() const = 0;
 };
 
 // Default concrete implementation for |AlternativeBrowserDriver|. Uses a
@@ -46,9 +65,14 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
   explicit AlternativeBrowserDriverImpl(const BrowserSwitcherPrefs* prefs);
   ~AlternativeBrowserDriverImpl() override;
 
+  AlternativeBrowserDriverImpl(const AlternativeBrowserDriverImpl&) = delete;
+  AlternativeBrowserDriverImpl& operator=(const AlternativeBrowserDriverImpl&) =
+      delete;
+
   // AlternativeBrowserDriver
-  bool TryLaunch(const GURL& url) override;
+  void TryLaunch(const GURL& url, LaunchCallback cb) override;
   std::string GetBrowserName() const override;
+  BrowserType GetBrowserType() const override;
 
   // Create the CommandLine object that would be used to launch an external
   // process.
@@ -57,14 +81,7 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
  private:
   using StringType = base::FilePath::StringType;
 
-#if defined(OS_WIN)
-  bool TryLaunchWithDde(const GURL& url);
-  bool TryLaunchWithExec(const GURL& url);
-#endif
-
   const BrowserSwitcherPrefs* const prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlternativeBrowserDriverImpl);
 };
 
 }  // namespace browser_switcher

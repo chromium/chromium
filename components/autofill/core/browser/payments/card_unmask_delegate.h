@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -19,16 +18,13 @@ class CardUnmaskDelegate {
     ~UserProvidedUnmaskDetails();
 
     // User input data.
-    base::string16 cvc;
+    std::u16string cvc;
 
     // Two digit month.
-    base::string16 exp_month;
+    std::u16string exp_month;
 
     // Four digit year.
-    base::string16 exp_year;
-
-    // State of "copy to this device" checkbox.
-    bool should_store_pan;
+    std::u16string exp_year;
 
     // User is opting-in for FIDO Authentication for future card unmasking.
     bool enable_fido_auth = false;
@@ -41,6 +37,14 @@ class CardUnmaskDelegate {
 
   // Called when the unmask prompt is closed (e.g., cancelled).
   virtual void OnUnmaskPromptClosed() = 0;
+
+  // Returns whether or not the user, while on the CVC prompt, should be
+  // offered to switch to FIDO authentication for card unmasking. This will
+  // always be false for Desktop since FIDO authentication is offered as a
+  // separate prompt after the CVC prompt. On Android, however, this is offered
+  // through a checkbox on the CVC prompt. This feature does not yet exist on
+  // iOS.
+  virtual bool ShouldOfferFidoAuth() const = 0;
 };
 
 }  // namespace autofill

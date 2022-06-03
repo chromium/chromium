@@ -12,17 +12,21 @@ import android.os.CancellationSignal;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.MenuOrKeyboardActionController;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.widget.ScrimView;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -33,19 +37,20 @@ import java.util.function.Consumer;
  * the coordinator {@code mCoordinator}.
  */
 @TargetApi(29)
-public class DirectActionInitializer implements NativeInitObserver, Destroyable {
-    private Context mContext;
+public class DirectActionInitializer implements NativeInitObserver, DestroyObserver {
+    private final Context mContext;
+    private final BottomSheetController mBottomSheetController;
+    private final BrowserControlsStateProvider mBrowserControls;
+    private final CompositorViewHolder mCompositorViewHolder;
+    private final ActivityTabProvider mActivityTabProvider;
+    private final TabModelSelector mTabModelSelector;
+
     @ActivityType
     private int mActivityType;
     private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private Runnable mGoBackAction;
-    private TabModelSelector mTabModelSelector;
     @Nullable
     private FindToolbarManager mFindToolbarManager;
-    @Nullable
-    private BottomSheetController mBottomSheetController;
-    private ScrimView mScrim;
-
     private boolean mDirectActionsRegistered;
     @Nullable
     private DirectActionCoordinator mCoordinator;
@@ -61,12 +66,16 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
      * @param tabModelSelector The activity's {@link TabModelSelector}
      * @param findToolbarManager Manager to use for the "find_in_page" action, if it exists
      * @param bottomSheetController Controller for the activity's bottom sheet, if it exists
-     * @param scrim The activity's scrim view, if it exists
+     * @param browserControls Provider of browser controls of the activity
+     * @param compositorViewHolder Compositor view holder of the activity
+     * @param activityTabProvider Activity tab provider
      */
     public DirectActionInitializer(Context context, @ActivityType int activityType,
             MenuOrKeyboardActionController actionController, Runnable goBackAction,
             TabModelSelector tabModelSelector, @Nullable FindToolbarManager findToolbarManager,
-            @Nullable BottomSheetController bottomSheetController, ScrimView scrim) {
+            @Nullable BottomSheetController bottomSheetController,
+            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            ActivityTabProvider activityTabProvider) {
         mContext = context;
         mActivityType = activityType;
         mMenuOrKeyboardActionController = actionController;
@@ -74,7 +83,9 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
         mTabModelSelector = tabModelSelector;
         mFindToolbarManager = findToolbarManager;
         mBottomSheetController = bottomSheetController;
-        mScrim = scrim;
+        mBrowserControls = browserControls;
+        mCompositorViewHolder = compositorViewHolder;
+        mActivityTabProvider = activityTabProvider;
 
         mDirectActionsRegistered = false;
     }
@@ -105,9 +116,9 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
      * @param cancellationSignal Signal used to cancel a direct action from the caller.
      * @param callback Callback to run when the action is done.
      */
-    public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer callback) {
+    public void onGetDirectActions(CancellationSignal cancellationSignal, Consumer<List> callback) {
         if (mCoordinator == null || !mDirectActionsRegistered) {
-            callback.accept(Bundle.EMPTY);
+            callback.accept(Collections.emptyList());
             return;
         }
         mCoordinator.onGetDirectActions(callback);
@@ -124,22 +135,27 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
      * @param tabModelSelector The activity's {@link TabModelSelector}
      * @param findToolbarManager Manager to use for the "find_in_page" action, if it exists
      * @param bottomSheetController Controller for the activity's bottom sheet, if it exists
-     * @param scrim The activity's scrim view, if it exists
+     * @param browserControls Browser controls manager of the activity
+     * @param compositorViewHolder Compositor view holder of the activity
+     * @param activityTabProvider Activity tab provider
      */
-    void registerCommonChromeActions(Context context, @ActivityType int activityType,
+    private void registerCommonChromeActions(Context context, @ActivityType int activityType,
             MenuOrKeyboardActionController actionController, Runnable goBackAction,
             TabModelSelector tabModelSelector, @Nullable FindToolbarManager findToolbarManager,
-            @Nullable BottomSheetController bottomSheetController, ScrimView scrim) {
+            @Nullable BottomSheetController bottomSheetController,
+            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            ActivityTabProvider activityTabProvider) {
         mCoordinator.register(new GoBackDirectActionHandler(goBackAction));
         mCoordinator.register(
                 new FindInPageDirectActionHandler(tabModelSelector, findToolbarManager));
 
         registerMenuHandlerIfNecessary(actionController, tabModelSelector)
-                .whitelistActions(R.id.forward_menu_id, R.id.reload_menu_id);
+                .allowlistActions(R.id.forward_menu_id, R.id.reload_menu_id);
 
         if (AutofillAssistantFacade.areDirectActionsAvailable(activityType)) {
-            DirectActionHandler handler = AutofillAssistantFacade.createDirectActionHandler(
-                    context, bottomSheetController, scrim, tabModelSelector);
+            DirectActionHandler handler = AutofillAssistantFacade.createDirectActionHandler(context,
+                    bottomSheetController, browserControls, compositorViewHolder,
+                    activityTabProvider);
             if (handler != null) mCoordinator.register(handler);
         }
     }
@@ -165,12 +181,12 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
     void allowMenuActions(MenuOrKeyboardActionController actionController,
             TabModelSelector tabModelSelector, Integer... itemIds) {
         registerMenuHandlerIfNecessary(actionController, tabModelSelector)
-                .whitelistActions(itemIds);
+                .allowlistActions(itemIds);
     }
 
-    // Implements Destroyable
+    // Implements DestroyObserver
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mCoordinator = null;
         mDirectActionsRegistered = false;
     }
@@ -194,7 +210,7 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
                 AutofillAssistantFacade.areDirectActionsAvailable(mActivityType)
                         ? mBottomSheetController
                         : null,
-                mScrim);
+                mBrowserControls, mCompositorViewHolder, mActivityTabProvider);
 
         if (mActivityType == ActivityType.TABBED) {
             registerTabManipulationActions(mMenuOrKeyboardActionController, mTabModelSelector);

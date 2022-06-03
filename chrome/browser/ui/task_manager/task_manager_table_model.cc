@@ -10,11 +10,11 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -27,6 +27,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -36,12 +37,12 @@ namespace {
 
 const char kCpuTextFormatString[] = "%.1f";
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Match Activity Monitor's default refresh rate.
 const int64_t kRefreshTimeMS = 2000;
 #else
 const int64_t kRefreshTimeMS = 1000;
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 // The columns that are shared by a group will show the value of the column
 // only once per group.
@@ -115,61 +116,63 @@ class TaskManagerValuesStringifier {
  public:
   TaskManagerValuesStringifier()
       : n_a_string_(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_NA_CELL_TEXT)),
-        zero_string_(base::ASCIIToUTF16("0")),
-        backgrounded_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_BACKGROUNDED_TEXT)),
-        foregrounded_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_FOREGROUNDED_TEXT)),
-        asterisk_string_(base::ASCIIToUTF16("*")),
-        unknown_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT)),
+        zero_string_(u"0"),
+        backgrounded_string_(
+            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_BACKGROUNDED_TEXT)),
+        foregrounded_string_(
+            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_FOREGROUNDED_TEXT)),
+        asterisk_string_(u"*"),
+        unknown_string_(
+            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT)),
         disabled_nacl_debugging_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {
-  }
+            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {}
 
-  ~TaskManagerValuesStringifier() {}
+  TaskManagerValuesStringifier(const TaskManagerValuesStringifier&) = delete;
+  TaskManagerValuesStringifier& operator=(const TaskManagerValuesStringifier&) =
+      delete;
+  ~TaskManagerValuesStringifier() = default;
 
-  base::string16 GetCpuUsageText(double cpu_usage) {
+  std::u16string GetCpuUsageText(double cpu_usage) {
     if (std::isnan(cpu_usage))
       return n_a_string_;
     return base::UTF8ToUTF16(base::StringPrintf(kCpuTextFormatString,
                                                 cpu_usage));
   }
 
-  base::string16 GetStartTimeText(base::Time start_time) {
+  std::u16string GetStartTimeText(base::Time start_time) {
     if (start_time.is_null())
       return n_a_string_;
 
     return base::TimeFormatShortDateAndTime(start_time);
   }
 
-  base::string16 GetCpuTimeText(base::TimeDelta cpu_time) {
+  std::u16string GetCpuTimeText(base::TimeDelta cpu_time) {
     if (cpu_time.is_zero())
       return n_a_string_;
 
-    base::string16 duration;
+    std::u16string duration;
     return base::TimeDurationFormatWithSeconds(
                cpu_time, base::DURATION_WIDTH_NARROW, &duration)
                ? duration
                : n_a_string_;
   }
 
-  base::string16 GetMemoryUsageText(int64_t memory_usage, bool has_duplicates) {
+  std::u16string GetMemoryUsageText(int64_t memory_usage, bool has_duplicates) {
     if (memory_usage == -1)
       return n_a_string_;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     // System expectation is to show "100 kB", "200 MB", etc.
     // TODO(thakis): [This TODO has been taken as is from the old task manager]:
     // Switch to metric units (as opposed to powers of two).
-    base::string16 memory_text = ui::FormatBytes(memory_usage);
+    std::u16string memory_text = ui::FormatBytes(memory_usage);
 #else
-    base::string16 memory_text = base::FormatNumber(memory_usage / 1024);
+    std::u16string memory_text = base::FormatNumber(memory_usage / 1024);
     // Adjust number string if necessary.
     base::i18n::AdjustStringForLocaleDirection(&memory_text);
     memory_text = l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_MEM_CELL_TEXT,
                                              memory_text);
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
     if (has_duplicates)
       memory_text += asterisk_string_;
@@ -177,21 +180,21 @@ class TaskManagerValuesStringifier {
     return memory_text;
   }
 
-  base::string16 GetIdleWakeupsText(int idle_wakeups) {
+  std::u16string GetIdleWakeupsText(int idle_wakeups) {
     if (idle_wakeups == -1)
       return n_a_string_;
 
     return base::FormatNumber(idle_wakeups);
   }
 
-  base::string16 GetHardFaultsText(int hard_faults) {
+  std::u16string GetHardFaultsText(int hard_faults) {
     if (hard_faults == -1)
       return n_a_string_;
 
     return base::FormatNumber(hard_faults);
   }
 
-  base::string16 GetNaClPortText(int nacl_port) {
+  std::u16string GetNaClPortText(int nacl_port) {
     // Only called if NaCl debug stub ports are enabled.
 
     if (nacl_port == nacl::kGdbDebugStubPortUnused)
@@ -203,85 +206,83 @@ class TaskManagerValuesStringifier {
     return base::NumberToString16(nacl_port);
   }
 
-  base::string16 GetWindowsHandlesText(int64_t current, int64_t peak) {
+  std::u16string GetWindowsHandlesText(int64_t current, int64_t peak) {
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_HANDLES_CELL_TEXT,
                                       base::NumberToString16(current),
                                       base::NumberToString16(peak));
   }
 
-  base::string16 GetNetworkUsageText(int64_t network_usage) {
+  std::u16string GetNetworkUsageText(int64_t network_usage) {
     if (network_usage == -1)
       return n_a_string_;
 
     if (network_usage == 0)
       return zero_string_;
 
-    base::string16 net_byte = ui::FormatSpeed(network_usage);
+    std::u16string net_byte = ui::FormatSpeed(network_usage);
     // Force number string to have LTR directionality.
     return base::i18n::GetDisplayStringInLTRDirectionality(net_byte);
   }
 
-  base::string16 GetProcessIdText(base::ProcessId proc_id) {
+  std::u16string GetProcessIdText(base::ProcessId proc_id) {
     return base::NumberToString16(proc_id);
   }
 
-  base::string16 FormatAllocatedAndUsedMemory(int64_t allocated, int64_t used) {
+  std::u16string FormatAllocatedAndUsedMemory(int64_t allocated, int64_t used) {
     return l10n_util::GetStringFUTF16(
         IDS_TASK_MANAGER_CACHE_SIZE_CELL_TEXT,
         ui::FormatBytesWithUnits(allocated, ui::DATA_UNITS_KIBIBYTE, false),
         ui::FormatBytesWithUnits(used, ui::DATA_UNITS_KIBIBYTE, false));
   }
 
-  base::string16 GetWebCacheStatText(
+  std::u16string GetWebCacheStatText(
       const blink::WebCacheResourceTypeStat& stat) {
     return GetMemoryUsageText(stat.size, false);
   }
 
-  base::string16 GetKeepaliveCountText(int keepalive_count) const {
+  std::u16string GetKeepaliveCountText(int keepalive_count) const {
     if (keepalive_count < 0)
       return n_a_string();
     return base::NumberToString16(keepalive_count);
   }
 
-  const base::string16& n_a_string() const { return n_a_string_; }
-  const base::string16& zero_string() const { return zero_string_; }
-  const base::string16& backgrounded_string() const {
+  const std::u16string& n_a_string() const { return n_a_string_; }
+  const std::u16string& zero_string() const { return zero_string_; }
+  const std::u16string& backgrounded_string() const {
     return backgrounded_string_;
   }
-  const base::string16& foregrounded_string() const {
+  const std::u16string& foregrounded_string() const {
     return foregrounded_string_;
   }
-  const base::string16& asterisk_string() const { return asterisk_string_; }
-  const base::string16& unknown_string() const { return unknown_string_; }
-  const base::string16& disabled_nacl_debugging_string() const {
+  const std::u16string& asterisk_string() const { return asterisk_string_; }
+  const std::u16string& unknown_string() const { return unknown_string_; }
+  const std::u16string& disabled_nacl_debugging_string() const {
     return disabled_nacl_debugging_string_;
   }
 
  private:
   // The localized string "N/A".
-  const base::string16 n_a_string_;
+  const std::u16string n_a_string_;
 
   // The value 0 as a string "0".
-  const base::string16 zero_string_;
+  const std::u16string zero_string_;
 
   // The localized string "Backgrounded" for process priority.
-  const base::string16 backgrounded_string_;
+  const std::u16string backgrounded_string_;
 
   // The localized string "Foregrounded" for process priority.
-  const base::string16 foregrounded_string_;
+  const std::u16string foregrounded_string_;
 
   // The string "*" that is used to show that there exists duplicates in the
   // GPU memory.
-  const base::string16 asterisk_string_;
+  const std::u16string asterisk_string_;
 
   // The string "Unknown".
-  const base::string16 unknown_string_;
+  const std::u16string unknown_string_;
 
   // The string to show on the NaCl debug port column cells when the flag
   // #enable-nacl-debug is disabled.
-  const base::string16 disabled_nacl_debugging_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerValuesStringifier);
+  const std::u16string disabled_nacl_debugging_string_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +304,7 @@ TableSortDescriptor::TableSortDescriptor(int col_id, bool ascending)
 ////////////////////////////////////////////////////////////////////////////////
 
 TaskManagerTableModel::TaskManagerTableModel(TableViewDelegate* delegate)
-    : TaskManagerObserver(base::TimeDelta::FromMilliseconds(kRefreshTimeMS),
+    : TaskManagerObserver(base::Milliseconds(kRefreshTimeMS),
                           REFRESH_TYPE_NONE),
       table_view_delegate_(delegate),
       columns_settings_(new base::DictionaryValue),
@@ -328,9 +329,9 @@ int TaskManagerTableModel::RowCount() {
   return static_cast<int>(tasks_.size());
 }
 
-base::string16 TaskManagerTableModel::GetText(int row, int column) {
+std::u16string TaskManagerTableModel::GetText(int row, int column) {
   if (IsSharedByGroup(column) && !IsTaskFirstInGroup(row))
-    return base::string16();
+    return std::u16string();
 
   switch (column) {
     case IDS_TASK_MANAGER_TASK_COLUMN:
@@ -369,7 +370,7 @@ base::string16 TaskManagerTableModel::GetText(int row, int column) {
         // over conflicting pids.
         // TODO(b/122992194): Figure out if we need to change this to display
         // something for VM processes.
-        return base::string16();
+        return std::u16string();
       }
       return stringifier_->GetProcessIdText(
           observed_task_manager()->GetProcessId(tasks_[row]));
@@ -450,13 +451,13 @@ base::string16 TaskManagerTableModel::GetText(int row, int column) {
           ? stringifier_->backgrounded_string()
           : stringifier_->foregrounded_string();
 
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
     case IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN: {
       const int fd_count = observed_task_manager()->GetOpenFdCount(tasks_[row]);
       return fd_count >= 0 ? base::FormatNumber(fd_count)
                            : stringifier_->n_a_string();
     }
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 
     case IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN: {
       return stringifier_->GetKeepaliveCountText(
@@ -465,12 +466,13 @@ base::string16 TaskManagerTableModel::GetText(int row, int column) {
 
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-gfx::ImageSkia TaskManagerTableModel::GetIcon(int row) {
-  return observed_task_manager()->GetIcon(tasks_[row]);
+ui::ImageModel TaskManagerTableModel::GetIcon(int row) {
+  return ui::ImageModel::FromImageSkia(
+      observed_task_manager()->GetIcon(tasks_[row]));
 }
 
 void TaskManagerTableModel::SetObserver(
@@ -616,7 +618,7 @@ int TaskManagerTableModel::CompareValues(int row1,
       return BooleanCompare(is_proc1_bg, is_proc2_bg);
     }
 
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
     case IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN: {
       const int proc1_fd_count =
           observed_task_manager()->GetOpenFdCount(tasks_[row1]);
@@ -624,7 +626,7 @@ int TaskManagerTableModel::CompareValues(int row1,
           observed_task_manager()->GetOpenFdCount(tasks_[row2]);
       return ValueCompare(proc1_fd_count, proc2_fd_count);
     }
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 
     default:
       NOTREACHED();
@@ -790,11 +792,11 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
       type = REFRESH_TYPE_KEEPALIVE_COUNT;
       break;
 
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
     case IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN:
       type = REFRESH_TYPE_FD_COUNT;
       break;
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
 
     default:
       NOTREACHED();
@@ -866,7 +868,7 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
   base::DictionaryValue::Iterator it(*columns_settings_);
   while (!it.IsAtEnd()) {
-    dict_update->Set(it.key(), it.value().CreateDeepCopy());
+    dict_update->SetPath(it.key(), it.value().Clone());
     it.Advance();
   }
 

@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>CrashReporting"
+}
+team_email: "google-breakpad-dev@googlegroups.com"

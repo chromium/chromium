@@ -37,6 +37,10 @@ namespace url {
 class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
  public:
   StdStringCanonOutput(std::string* str);
+
+  StdStringCanonOutput(const StdStringCanonOutput&) = delete;
+  StdStringCanonOutput& operator=(const StdStringCanonOutput&) = delete;
+
   ~StdStringCanonOutput() override;
 
   // Must be called after writing has completed but before the string is used.
@@ -46,7 +50,6 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
 
  protected:
   std::string* str_;
-  DISALLOW_COPY_AND_ASSIGN(StdStringCanonOutput);
 };
 
 // An extension of the Replacements class that allows the setters to use
@@ -54,33 +57,55 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
 //
 // The contents of the StringPieces are not copied and must remain valid until
 // the StringPieceReplacements object goes out of scope.
-template<typename STR>
-class StringPieceReplacements : public Replacements<typename STR::value_type> {
+//
+// In order to make it harder to misuse the API the setters do not accept rvalue
+// references to std::strings.
+// Note: Extra const char* overloads are necessary to break ambiguities that
+// would otherwise exist for char literals.
+template <typename CharT>
+class StringPieceReplacements : public Replacements<CharT> {
+ private:
+  using StringT = std::basic_string<CharT>;
+  using StringPieceT = base::BasicStringPiece<CharT>;
+  using ParentT = Replacements<CharT>;
+  using SetterFun = void (ParentT::*)(const CharT*, const Component&);
+
+  void SetImpl(SetterFun fun, StringPieceT str) {
+    (this->*fun)(str.data(), Component(0, static_cast<int>(str.size())));
+  }
+
  public:
-  void SetSchemeStr(const base::BasicStringPiece<STR>& s) {
-    this->SetScheme(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetUsernameStr(const base::BasicStringPiece<STR>& s) {
-    this->SetUsername(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetPasswordStr(const base::BasicStringPiece<STR>& s) {
-    this->SetPassword(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetHostStr(const base::BasicStringPiece<STR>& s) {
-    this->SetHost(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetPortStr(const base::BasicStringPiece<STR>& s) {
-    this->SetPort(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetPathStr(const base::BasicStringPiece<STR>& s) {
-    this->SetPath(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetQueryStr(const base::BasicStringPiece<STR>& s) {
-    this->SetQuery(s.data(), Component(0, static_cast<int>(s.length())));
-  }
-  void SetRefStr(const base::BasicStringPiece<STR>& s) {
-    this->SetRef(s.data(), Component(0, static_cast<int>(s.length())));
-  }
+  void SetSchemeStr(const CharT* str) { SetImpl(&ParentT::SetScheme, str); }
+  void SetSchemeStr(StringPieceT str) { SetImpl(&ParentT::SetScheme, str); }
+  void SetSchemeStr(const StringT&&) = delete;
+
+  void SetUsernameStr(const CharT* str) { SetImpl(&ParentT::SetUsername, str); }
+  void SetUsernameStr(StringPieceT str) { SetImpl(&ParentT::SetUsername, str); }
+  void SetUsernameStr(const StringT&&) = delete;
+
+  void SetPasswordStr(const CharT* str) { SetImpl(&ParentT::SetPassword, str); }
+  void SetPasswordStr(StringPieceT str) { SetImpl(&ParentT::SetPassword, str); }
+  void SetPasswordStr(const StringT&&) = delete;
+
+  void SetHostStr(const CharT* str) { SetImpl(&ParentT::SetHost, str); }
+  void SetHostStr(StringPieceT str) { SetImpl(&ParentT::SetHost, str); }
+  void SetHostStr(const StringT&&) = delete;
+
+  void SetPortStr(const CharT* str) { SetImpl(&ParentT::SetPort, str); }
+  void SetPortStr(StringPieceT str) { SetImpl(&ParentT::SetPort, str); }
+  void SetPortStr(const StringT&&) = delete;
+
+  void SetPathStr(const CharT* str) { SetImpl(&ParentT::SetPath, str); }
+  void SetPathStr(StringPieceT str) { SetImpl(&ParentT::SetPath, str); }
+  void SetPathStr(const StringT&&) = delete;
+
+  void SetQueryStr(const CharT* str) { SetImpl(&ParentT::SetQuery, str); }
+  void SetQueryStr(StringPieceT str) { SetImpl(&ParentT::SetQuery, str); }
+  void SetQueryStr(const StringT&&) = delete;
+
+  void SetRefStr(const CharT* str) { SetImpl(&ParentT::SetRef, str); }
+  void SetRefStr(StringPieceT str) { SetImpl(&ParentT::SetRef, str); }
+  void SetRefStr(const StringT&&) = delete;
 };
 
 }  // namespace url

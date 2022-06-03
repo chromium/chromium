@@ -1,0 +1,42 @@
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  // Some scheduled events can hold Persistent references to RTCPeerConnection.
+  // See |RTCPeerConnection::ChangeIceGatheringState()| or
+  // |RTCPeerConnection::ChangePeerConnectionState()| for example.
+  // This test checks that such undelivered events don't prevent their parent
+  // RTCPeerConnection object from garbage collection after destroying
+  // corresponding execution context.
+
+  let iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+
+  let iframe_pc = new iframe.contentWindow.RTCPeerConnection();
+  assert_equals(iframe_pc.signalingState, 'stable');
+  iframe_pc.createDataChannel('foo');
+
+  let frameRemoved = new Promise(function(resolve, reject) {
+    // Destroy frame (and |iframe_pc| related execution context) just before
+    // delivering scheduled "icegatheringstatechange" event.
+    internals.waitForPeerConnectionDispatchEventsTaskCreated(iframe_pc)
+        .then(() => { iframe.remove(); resolve(); });
+    iframe_pc.createOffer()
+        .then((offer) => iframe_pc.setLocalDescription(offer));
+  });
+  await frameRemoved;
+
+  assert_equals(iframe_pc.signalingState, 'closed');
+  assert_equals(internals.peerConnectionCount(), 1);
+  iframe_pc = null;
+  await asyncGC();
+  assert_equals(internals.peerConnectionCount(), 0);
+}, 'PeerConnection with undelivered events is closed and garbage collected');
+</script>
+</body>
+</html>

@@ -1,0 +1,888 @@
+This test verifies the flex self-alignment value sent by the backend.
+
+flex-start{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        100,
+        0,
+        "L",
+        100,
+        100,
+        "L",
+        0,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        100,
+        0,
+        "L",
+        100,
+        100,
+        "L",
+        0,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        100,
+        0,
+        "L",
+        100,
+        100,
+        "L",
+        0,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        0,
+        "L",
+        800,
+        0,
+        "L",
+        800,
+        100,
+        "L",
+        0,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "flex-start",
+    "className": ".container",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        0,
+        0,
+        "L",
+        100,
+        0,
+        "L",
+        100,
+        100,
+        "L",
+        0,
+        100,
+        "Z"
+      ],
+      "lines": [
+        [
+          {
+            "itemBorder": [
+              "M",
+              0,
+              0,
+              "L",
+              0,
+              0,
+              "L",
+              0,
+              0,
+              "L",
+              0,
+              0,
+              "Z"
+            ],
+            "baseline": 0
+          }
+        ]
+      ],
+      "isHorizontalFlow": true,
+      "isReverse": false,
+      "alignItemsStyle": "flex-start",
+      "mainGap": 0,
+      "crossGap": 0,
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "lineSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "itemSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossAlignment": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+flex-end{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        100,
+        "L",
+        100,
+        100,
+        "L",
+        100,
+        200,
+        "L",
+        0,
+        200,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        100,
+        "L",
+        100,
+        100,
+        "L",
+        100,
+        200,
+        "L",
+        0,
+        200,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        100,
+        "L",
+        100,
+        100,
+        "L",
+        100,
+        200,
+        "L",
+        0,
+        200,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        100,
+        "L",
+        800,
+        100,
+        "L",
+        800,
+        200,
+        "L",
+        0,
+        200,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "flex-end",
+    "className": ".container",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        0,
+        100,
+        "L",
+        100,
+        100,
+        "L",
+        100,
+        200,
+        "L",
+        0,
+        200,
+        "Z"
+      ],
+      "lines": [
+        [
+          {
+            "itemBorder": [
+              "M",
+              0,
+              200,
+              "L",
+              0,
+              200,
+              "L",
+              0,
+              200,
+              "L",
+              0,
+              200,
+              "Z"
+            ],
+            "baseline": 0
+          }
+        ]
+      ],
+      "isHorizontalFlow": true,
+      "isReverse": false,
+      "alignItemsStyle": "flex-end",
+      "mainGap": 0,
+      "crossGap": 0,
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "lineSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "itemSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossAlignment": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+center{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        200,
+        "L",
+        100,
+        200,
+        "L",
+        100,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        200,
+        "L",
+        100,
+        200,
+        "L",
+        100,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        200,
+        "L",
+        100,
+        200,
+        "L",
+        100,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        200,
+        "L",
+        800,
+        200,
+        "L",
+        800,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "center",
+    "className": ".container",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        0,
+        200,
+        "L",
+        100,
+        200,
+        "L",
+        100,
+        300,
+        "L",
+        0,
+        300,
+        "Z"
+      ],
+      "lines": [
+        [
+          {
+            "itemBorder": [
+              "M",
+              0,
+              250,
+              "L",
+              0,
+              250,
+              "L",
+              0,
+              250,
+              "L",
+              0,
+              250,
+              "Z"
+            ],
+            "baseline": 0
+          }
+        ]
+      ],
+      "isHorizontalFlow": true,
+      "isReverse": false,
+      "alignItemsStyle": "center",
+      "mainGap": 0,
+      "crossGap": 0,
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "lineSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "itemSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossAlignment": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+stretch{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        300,
+        "L",
+        100,
+        300,
+        "L",
+        100,
+        400,
+        "L",
+        0,
+        400,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        300,
+        "L",
+        100,
+        300,
+        "L",
+        100,
+        400,
+        "L",
+        0,
+        400,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        300,
+        "L",
+        100,
+        300,
+        "L",
+        100,
+        400,
+        "L",
+        0,
+        400,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        300,
+        "L",
+        800,
+        300,
+        "L",
+        800,
+        400,
+        "L",
+        0,
+        400,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "stretch",
+    "className": ".container",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        0,
+        300,
+        "L",
+        100,
+        300,
+        "L",
+        100,
+        400,
+        "L",
+        0,
+        400,
+        "Z"
+      ],
+      "lines": [
+        [
+          {
+            "itemBorder": [
+              "M",
+              0,
+              300,
+              "L",
+              0,
+              300,
+              "L",
+              0,
+              400,
+              "L",
+              0,
+              400,
+              "Z"
+            ],
+            "baseline": 100
+          }
+        ]
+      ],
+      "isHorizontalFlow": true,
+      "isReverse": false,
+      "alignItemsStyle": "stretch",
+      "mainGap": 0,
+      "crossGap": 0,
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "lineSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "itemSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossAlignment": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+normal{
+  "paths": [
+    {
+      "path": [
+        "M",
+        0,
+        400,
+        "L",
+        100,
+        400,
+        "L",
+        100,
+        500,
+        "L",
+        0,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        400,
+        "L",
+        100,
+        400,
+        "L",
+        100,
+        500,
+        "L",
+        0,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        400,
+        "L",
+        100,
+        400,
+        "L",
+        100,
+        500,
+        "L",
+        0,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        0,
+        400,
+        "L",
+        800,
+        400,
+        "L",
+        800,
+        500,
+        "L",
+        0,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "normal",
+    "className": ".container",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        0,
+        400,
+        "L",
+        100,
+        400,
+        "L",
+        100,
+        500,
+        "L",
+        0,
+        500,
+        "Z"
+      ],
+      "lines": [
+        [
+          {
+            "itemBorder": [
+              "M",
+              0,
+              400,
+              "L",
+              0,
+              400,
+              "L",
+              0,
+              500,
+              "L",
+              0,
+              500,
+              "Z"
+            ],
+            "baseline": 100
+          }
+        ]
+      ],
+      "isHorizontalFlow": true,
+      "isReverse": false,
+      "alignItemsStyle": "normal",
+      "mainGap": 0,
+      "crossGap": 0,
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "lineSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "itemSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossAlignment": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+

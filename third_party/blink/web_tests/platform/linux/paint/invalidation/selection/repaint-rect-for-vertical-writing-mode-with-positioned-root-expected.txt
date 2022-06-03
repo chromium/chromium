@@ -1,16 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Some text in vertical mode'",
-          "rect": [184, 201, 19, 168],
-          "reason": "selection"
-        }
+      "invalidations": [
+        [181, 201, 20, 168]
       ]
     }
   ]

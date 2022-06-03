@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser.test.util;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content.browser.input.SelectPopup;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -14,8 +15,10 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Collection of test-only WebContents utilities.
@@ -122,9 +125,39 @@ public class WebContentsUtils {
         return SelectionPopupControllerImpl.createForTesting(webContents);
     }
 
+    /**
+     * Checks if the given WebContents has a valid {@link ActionMode.Callback} set in place.
+     * @return {@code true} if WebContents (its SelectionPopupController) has a valid
+     *         action mode callback object.
+     */
+    public static boolean isActionModeSupported(WebContents webContents) {
+        SelectionPopupControllerImpl controller =
+                ((SelectionPopupControllerImpl) SelectionPopupController.fromWebContents(
+                        webContents));
+        return controller.isActionModeSupported();
+    }
+
+    /** Cause the renderer process for the given WebContents to crash. */
+    public static void crashTabAndWait(WebContents webContents) throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        WebContentsObserver observer = new WebContentsObserver() {
+            @Override
+            public void renderProcessGone(boolean wasOoomProtected) {
+                callbackHelper.notifyCalled();
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            webContents.addObserver(observer);
+            nativeCrashTab(webContents);
+        });
+        callbackHelper.waitForFirst();
+        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.removeObserver(observer); });
+    }
+
     private static native void nativeReportAllFrameSubmissions(
             WebContents webContents, boolean enabled);
     private static native RenderFrameHost nativeGetFocusedFrame(WebContents webContents);
     private static native void nativeEvaluateJavaScriptWithUserGesture(
             WebContents webContents, String script);
+    private static native void nativeCrashTab(WebContents webContents);
 }

@@ -47,4 +47,8 @@ message SharedDBMetadataProto {
   };
 
   optional MigrationStatus migration_status = 3;
+
+  // Number of times the shared db failed to open. After a number of failures we
+  // try to delete the database and and create a new one.
+  optional uint32 failure_count = 4;
 }

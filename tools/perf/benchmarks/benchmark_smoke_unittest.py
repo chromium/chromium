@@ -40,13 +40,14 @@ from benchmarks import v8_browsing
 MAX_VALUES_PER_TEST_CASE = 1000
 
 
-def SmokeTestGenerator(benchmark_class, num_pages=1):
+def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
   """Generates a smoke test for the first N pages from a benchmark.
 
   Args:
     benchmark_class: a benchmark class to smoke test.
     num_pages: only smoke test the first N pages, since smoke testing
       everything would take too long to run.
+    story_tag_filter: only smoke test stories matching with tags.
   """
   # NOTE TO SHERIFFS: DO NOT DISABLE THIS TEST.
   #
@@ -54,7 +55,6 @@ def SmokeTestGenerator(benchmark_class, num_pages=1):
   # failing or flaky benchmark would disable a much wider swath of coverage
   # than is usually intended. Instead, if a particular benchmark is failing,
   # disable it in tools/perf/benchmarks/*.
-  @decorators.Disabled('chromeos')  # crbug.com/351114
   @decorators.Disabled('android')  # crbug.com/641934
   def BenchmarkSmokeTest(self):
     # Some benchmarks are running multiple iterations
@@ -66,11 +66,16 @@ def SmokeTestGenerator(benchmark_class, num_pages=1):
       options = testing.GetRunOptions(
           output_dir=temp_dir,
           benchmark_cls=benchmark_class,
-          overrides={'story_shard_end_index': num_pages},
+          overrides={
+              'story_shard_end_index': num_pages,
+              'story_tag_filter': story_tag_filter
+          },
           environment=chromium_config.GetDefaultChromiumConfig())
       options.pageset_repeat = 1  # For smoke testing only run the page once.
       options.output_formats = ['histograms']
       options.max_values_per_test_case = MAX_VALUES_PER_TEST_CASE
+      results_processor.ProcessOptions(options)
+
       return_code = benchmark_class().Run(options)
       # TODO(crbug.com/1019139): Make 111 be the exit code that means
       # "no stories were run.".
@@ -79,7 +84,7 @@ def SmokeTestGenerator(benchmark_class, num_pages=1):
       self.assertEqual(
           return_code, 0,
           msg='Benchmark run failed: %s' % benchmark_class.Name())
-      return_code = results_processor.ProcessResults(options)
+      return_code = results_processor.ProcessResults(options, is_unittest=True)
       self.assertEqual(
           return_code, 0,
           msg='Result processing failed: %s' % benchmark_class.Name())
@@ -99,11 +104,12 @@ _BLACK_LIST_TEST_MODULES = {
 
 # The list of benchmark names to be excluded from our smoke tests.
 _BLACK_LIST_TEST_NAMES = [
-   'memory.long_running_idle_gmail_background_tbmv2',
-   'tab_switching.typical_25',
-   'UNSCHEDULED_oortonline_tbmv2',
-   'webrtc',  # crbug.com/932036
-   'speedometer2-future' # Flaky on mac, crbug.com/1003776
+    'memory.long_running_idle_gmail_background_tbmv2',
+    'tab_switching.typical_25',
+    'UNSCHEDULED_oortonline_tbmv2',
+    'webrtc',  # crbug.com/932036
+    'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048
+    'wasmpspdfkit',  # Fails in Chrome OS, crbug.com/1191938
 ]
 
 
@@ -139,6 +145,11 @@ def load_tests(loader, standard_tests, pattern):
     # tab_switching needs more than one page to test correctly.
     if 'tab_switching' in benchmark.Name():
       method = SmokeTestGenerator(benchmark, num_pages=2)
+    elif 'desktop_ui' in benchmark.Name():
+      # Run tests with a specific smoke_test tag.
+      method = SmokeTestGenerator(benchmark,
+                                  num_pages=None,
+                                  story_tag_filter='smoke_test')
     else:
       method = SmokeTestGenerator(benchmark)
 

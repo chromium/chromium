@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
-#include "base/logging.h"
 
 using base::android::AttachCurrentThread;
 

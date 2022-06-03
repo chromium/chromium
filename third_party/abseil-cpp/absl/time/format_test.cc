@@ -173,7 +173,7 @@ TEST(ParseTime, WithTimeZone) {
   absl::Time t;
   std::string e;
 
-  // We can parse a std::string without a UTC offset if we supply a timezone.
+  // We can parse a string without a UTC offset if we supply a timezone.
   EXPECT_TRUE(
       absl::ParseTime("%Y-%m-%d %H:%M:%S", "2013-06-28 19:08:09", tz, &t, &e))
       << e;
@@ -327,7 +327,7 @@ TEST(ParseTime, InfiniteTime) {
   EXPECT_TRUE(absl::ParseTime("%H:%M blah", "  infinite-past  ", &t, &err));
   EXPECT_EQ(absl::InfinitePast(), t);
 
-  // "infinite-future" as literal std::string
+  // "infinite-future" as literal string
   absl::TimeZone tz = absl::UTCTimeZone();
   EXPECT_TRUE(absl::ParseTime("infinite-future %H:%M", "infinite-future 03:04",
                               &t, &err));
@@ -335,7 +335,7 @@ TEST(ParseTime, InfiniteTime) {
   EXPECT_EQ(3, tz.At(t).cs.hour());
   EXPECT_EQ(4, tz.At(t).cs.minute());
 
-  // "infinite-past" as literal std::string
+  // "infinite-past" as literal string
   EXPECT_TRUE(
       absl::ParseTime("infinite-past %H:%M", "infinite-past 03:04", &t, &err));
   EXPECT_NE(absl::InfinitePast(), t);

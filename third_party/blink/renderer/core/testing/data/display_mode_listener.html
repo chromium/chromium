@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <style>
+    #minimal { display: none; }
+</style>
+<body>
+
+<div id="minimal">minimal-ui</div>
+
+<div id="regular">regular-ui</div>
+
+<script>
+  function mediaquery() {
+      document.getElementById('minimal').style.display = "block";
+      document.getElementById('regular').style.display = "none";
+  }
+  window.matchMedia('(display-mode: minimal-ui)').addListener(mediaquery);
+</script>
+</body>
+</html>

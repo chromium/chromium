@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -16,7 +17,6 @@
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gl/trace_util.h"
 
@@ -74,20 +74,26 @@ void DumpMemoryForYUVImageTransferCacheEntry(
   DCHECK(entry->is_yuv());
 
   std::vector<size_t> plane_sizes = entry->GetPlaneCachedSizes();
+  if (plane_sizes.empty()) {
+    // This entry corresponds to an unmipped hardware decoded image.
+    MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(
+        dump_base_name + base::StringPrintf("/dma_buf"));
+    dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, entry->CachedSize());
+    // We don't need to establish shared ownership of the dump with Skia: the
+    // reason is that Skia doesn't own the textures for hardware decoded images,
+    // so it won't count them in its memory dump (because
+    // SkiaGpuTraceMemoryDump::shouldDumpWrappedObjects() returns false).
+    return;
+  }
+
   for (size_t i = 0u; i < entry->num_planes(); ++i) {
     MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(
         dump_base_name +
         base::StringPrintf("/plane_%0u", base::checked_cast<uint32_t>(i)));
-    if (plane_sizes.empty()) {
-      // Hardware-decoded image case.
-      dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                      MemoryAllocatorDump::kUnitsBytes,
-                      (i == SkYUVAIndex::kY_Index) ? entry->CachedSize() : 0u);
-    } else {
-      DCHECK_EQ(plane_sizes.size(), entry->num_planes());
-      dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                      MemoryAllocatorDump::kUnitsBytes, plane_sizes.at(i));
-    }
+    DCHECK_EQ(plane_sizes.size(), entry->num_planes());
+    dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, plane_sizes.at(i));
 
     // If entry->image() is backed by multiple textures,
     // getBackendTexture() would end up flattening them to RGB, which is
@@ -110,7 +116,7 @@ void DumpMemoryForYUVImageTransferCacheEntry(
 }  // namespace
 
 ServiceTransferCache::CacheEntryInternal::CacheEntryInternal(
-    base::Optional<ServiceDiscardableHandle> handle,
+    absl::optional<ServiceDiscardableHandle> handle,
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry)
     : handle(handle), entry(std::move(entry)) {}
 
@@ -123,9 +129,11 @@ ServiceTransferCache::CacheEntryInternal&
 ServiceTransferCache::CacheEntryInternal::operator=(
     CacheEntryInternal&& other) = default;
 
-ServiceTransferCache::ServiceTransferCache()
+ServiceTransferCache::ServiceTransferCache(const GpuPreferences& preferences)
     : entries_(EntryCache::NO_AUTO_EVICT),
-      cache_size_limit_(DiscardableCacheSizeLimit()),
+      cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
+                            ? preferences.force_gpu_mem_discardable_limit_bytes
+                            : DiscardableCacheSizeLimit()),
       max_cache_entries_(kMaxCacheEntries) {
   // In certain cases, ThreadTaskRunnerHandle isn't set (Android Webview).
   // Don't register a dump provider in these cases.
@@ -142,7 +150,7 @@ ServiceTransferCache::~ServiceTransferCache() {
 
 bool ServiceTransferCache::CreateLockedEntry(const EntryKey& key,
                                              ServiceDiscardableHandle handle,
-                                             GrContext* context,
+                                             GrDirectContext* context,
                                              base::span<uint8_t> data) {
   auto found = entries_.Peek(key);
   if (found != entries_.end())
@@ -181,7 +189,7 @@ void ServiceTransferCache::CreateLocalEntry(
     total_image_size_ += entry->CachedSize();
   }
 
-  entries_.Put(key, CacheEntryInternal(base::nullopt, std::move(entry)));
+  entries_.Put(key, CacheEntryInternal(absl::nullopt, std::move(entry)));
   EnforceLimits();
 }
 
@@ -249,21 +257,10 @@ void ServiceTransferCache::EnforceLimits() {
 
 void ServiceTransferCache::PurgeMemory(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-      // This function is only called with moderate or critical pressure.
-      NOTREACHED();
-      return;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
-      cache_size_limit_ = cache_size_limit_ / 4;
-      break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      cache_size_limit_ = 0u;
-      break;
-  }
-
+  base::AutoReset<size_t> reset_limit(
+      &cache_size_limit_, DiscardableCacheSizeLimitForPressure(
+                              cache_size_limit_, memory_pressure_level));
   EnforceLimits();
-  cache_size_limit_ = DiscardableCacheSizeLimit();
 }
 
 void ServiceTransferCache::DeleteAllEntriesForDecoder(int decoder_id) {
@@ -280,9 +277,10 @@ bool ServiceTransferCache::CreateLockedHardwareDecodedImageEntry(
     int decoder_id,
     uint32_t entry_id,
     ServiceDiscardableHandle handle,
-    GrContext* context,
+    GrDirectContext* context,
     std::vector<sk_sp<SkImage>> plane_images,
-    cc::YUVDecodeFormat plane_images_format,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
     SkYUVColorSpace yuv_color_space,
     size_t buffer_byte_size,
     bool needs_mips) {
@@ -294,7 +292,7 @@ bool ServiceTransferCache::CreateLockedHardwareDecodedImageEntry(
   // Create the service-side image transfer cache entry.
   auto entry = std::make_unique<cc::ServiceImageTransferCacheEntry>();
   if (!entry->BuildFromHardwareDecodedImage(
-          context, std::move(plane_images), plane_images_format,
+          context, std::move(plane_images), plane_config, subsampling,
           yuv_color_space, buffer_byte_size, needs_mips)) {
     return false;
   }

@@ -1,8 +1,0 @@
-CACHE MANIFEST
-/appcache/non-html.xhtml
-/resources/network-simulator.php?path=/appcache/resources/simple.txt
-/resources/network-simulator.php?path=/appcache/resources/abe.png
-/resources/network-simulator.php?path=/appcache/resources/non-html.manifest
-NETWORK:
-/favicon.ico
-/resources/network-simulator.php?command=

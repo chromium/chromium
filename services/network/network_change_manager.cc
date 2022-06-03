@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_posix.h"
@@ -49,7 +49,7 @@ void NetworkChangeManager::RequestNotifications(
   clients_.push_back(std::move(client_remote));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 void NetworkChangeManager::OnNetworkChanged(
     bool dns_changed,
     bool ip_address_changed,

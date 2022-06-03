@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/js-self-profiling/#the-profiler-interface
-[Exposed=(Window,Worker), RuntimeEnabled=ExperimentalJSProfiler]
-interface Profiler {
+[Exposed=Window, RuntimeEnabled=ExperimentalJSProfiler]
+interface Profiler : EventTarget {
   readonly attribute DOMHighResTimeStamp sampleInterval;
   readonly attribute boolean stopped;
+
+  [MeasureAs=JSSelfProfiling, CallWith=ScriptState, RaisesException] constructor(ProfilerInitOptions options);
   [CallWith=ScriptState] Promise<ProfilerTrace> stop();
 };

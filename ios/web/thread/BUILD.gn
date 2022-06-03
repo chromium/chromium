@@ -6,11 +6,7 @@ import("//ios/build/config.gni")
 
 source_set("thread") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [
-    "//ios/web/public",
-  ]
+  deps = [ "//ios/web/public" ]
 
-  sources = [
-    "web_task_traits.cc",
-  ]
+  sources = [ "web_task_traits.cc" ]
 }

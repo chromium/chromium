@@ -10,9 +10,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.webkit.JavascriptInterface;
 
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,11 +24,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.content_public.browser.MessagePort;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
@@ -187,7 +188,8 @@ public class PostMessageTest {
 
     // Call on non-UI thread.
     private void expectTitle(String title) {
-        CriteriaHelper.pollUiThread(Criteria.equals(title, () -> mAwContents.getTitle()));
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mAwContents.getTitle(), Matchers.is(title)));
     }
 
     private void loadPage(String page) throws Throwable {
@@ -307,7 +309,6 @@ public class PostMessageTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
-    @RetryOnFailure
     public void testStartedPortCannotBeTransferredUsingMessageChannel1() throws Throwable {
         loadPage(TEST_PAGE);
         final CountDownLatch latch = new CountDownLatch(1);
@@ -701,7 +702,6 @@ public class PostMessageTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
-    @RetryOnFailure
     public void testTransferPortsToWorker() throws Throwable {
         mWebServer.setResponse("/worker.js", WORKER_SCRIPT,
                 CommonResources.getTextJavascriptHeaders(true));

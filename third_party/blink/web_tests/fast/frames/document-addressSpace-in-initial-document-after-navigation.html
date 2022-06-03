@@ -1,0 +1,12 @@
+<body>
+PASS if no crash.
+<iframe id="i" src="resources/fail-and-notify-done.html"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var doc = i.contentDocument;
+i.src = "about:blank";
+doc.addressSpace;
+</script>
+</body>

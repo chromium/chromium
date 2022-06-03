@@ -9,41 +9,32 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
 
-// A structure to represent a CSS selector.
+// Convenience functions for creating SelectorProtos.
+SelectorProto ToSelectorProto(const std::string& s);
+SelectorProto ToSelectorProto(const std::vector<std::string>& s);
+
+// Returns the CSS name of a pseudo-type, without "::" prefix.
+std::string PseudoTypeName(PseudoType pseudoType);
+
+// Convenience wrapper around a SelectorProto that makes it simpler to work with
+// selectors.
+//
+// Selectors are comparables, can be used as std::map key or std::set elements
+// and converted to string with operator<<.
 struct Selector {
-  // A sequence of CSS selectors. Any non-final CSS selector is expected to
-  // arrive at a frame or an iframe, i.e. an element that contains another
-  // document.
-  std::vector<std::string> selectors;
-
-  // If true, only match visible elements. Visible elements are elements that
-  // have a box model. The box model is not checked at all, so an element with a
-  // zero size bounding box is considered visible.
-  bool must_be_visible = false;
-
-  // If non-empty, this must be a regular expression that matches the inner text
-  // of the element(s) matching selectors.
-  std::string inner_text_pattern;
-
-  // If non-empty, this must be a regular expression that matches the value
-  // of the element(s) matching selectors.
-  std::string value_pattern;
-
-  // An optional pseudo type. This pseudo type is associated to the final
-  // element matched by |selectors|, which means that we currently don't handle
-  // matching an element inside a pseudo element.
-  PseudoType pseudo_type = PseudoType::UNDEFINED;
+  SelectorProto proto;
 
   Selector();
-  explicit Selector(const ElementReferenceProto& element);
-  explicit Selector(std::vector<std::string> s);
-  Selector(std::vector<std::string> s, PseudoType p);
   ~Selector();
+
+  explicit Selector(const SelectorProto& proto);
+  explicit Selector(const std::vector<std::string>& s)
+      : Selector(ToSelectorProto(s)) {}
 
   Selector(Selector&& other);
   Selector(const Selector& other);
@@ -54,30 +45,57 @@ struct Selector {
   bool operator==(const Selector& other) const;
 
   // Convenience function to update the visible field in a fluent style.
-  Selector& MustBeVisible() {
-    must_be_visible = true;
-    return *this;
-  }
+  Selector& MustBeVisible();
 
-  // The output operator. The actual selectors are only available in debug
-  // builds.
-  friend std::ostream& operator<<(std::ostream& out, const Selector& selector);
-
-  // Checks whether this selector is empty.
+  // Checks whether this selector is empty or invalid.
   bool empty() const;
 
   // Convenience function to set inner_text_pattern in a fluent style.
   Selector& MatchingInnerText(const std::string& pattern) {
-    inner_text_pattern = pattern;
+    return MatchingInnerText(pattern, false);
+  }
+
+  // Convenience function  to set inner_text_pattern matching with case
+  // sensitivity.
+  Selector& MatchingInnerText(const std::string& pattern, bool case_sensitive) {
+    auto* text_filter = proto.add_filters()->mutable_inner_text();
+    text_filter->set_re2(pattern);
+    text_filter->set_case_sensitive(case_sensitive);
     return *this;
   }
 
   // Convenience function to set inner_text_pattern in a fluent style.
   Selector& MatchingValue(const std::string& pattern) {
-    value_pattern = pattern;
+    return MatchingValue(pattern, false);
+  }
+
+  // Convenience function to set value_pattern matchinng with case sensitivity.
+  Selector& MatchingValue(const std::string& pattern, bool case_sensitive) {
+    auto* text_filter = proto.add_filters()->mutable_value();
+    text_filter->set_re2(pattern);
+    text_filter->set_case_sensitive(case_sensitive);
+    return *this;
+  }
+
+  Selector& SetPseudoType(PseudoType pseudo_type) {
+    proto.add_filters()->set_pseudo_type(pseudo_type);
     return *this;
   }
 };
+
+// Debug output operator for selectors. The output is only useful in
+// debug builds.
+std::ostream& operator<<(std::ostream& out, const Selector& selector);
+
+// Debug output for selector protos. The output is only useful in
+// debug builds.
+std::ostream& operator<<(std::ostream& out, const SelectorProto& proto);
+
+// Debug output for selector filter protos. The output is only useful in
+// debug builds.
+std::ostream& operator<<(std::ostream& out,
+                         const SelectorProto::Filter& filter);
+
 }  // namespace autofill_assistant
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SELECTOR_H_

@@ -5,11 +5,12 @@
 #include "chrome/browser/profile_resetter/brandcode_config_fetcher.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
@@ -20,6 +21,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -51,10 +53,10 @@ std::string GetUploadData(const std::string& brand) {
 
 BrandcodeConfigFetcher::BrandcodeConfigFetcher(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const FetchCallback& callback,
+    FetchCallback callback,
     const GURL& url,
     const std::string& brandcode)
-    : fetch_callback_(callback), weak_ptr_factory_(this) {
+    : fetch_callback_(std::move(callback)), weak_ptr_factory_(this) {
   DCHECK(!brandcode.empty());
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("brandcode_config", R"(
@@ -93,16 +95,14 @@ BrandcodeConfigFetcher::BrandcodeConfigFetcher(
       base::BindOnce(&BrandcodeConfigFetcher::OnSimpleLoaderComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   // Abort the download attempt if it takes too long.
-  download_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromSeconds(kDownloadTimeoutSec),
-                        this,
+  download_timer_.Start(FROM_HERE, base::Seconds(kDownloadTimeoutSec), this,
                         &BrandcodeConfigFetcher::OnDownloadTimeout);
 }
 
 BrandcodeConfigFetcher::~BrandcodeConfigFetcher() {}
 
-void BrandcodeConfigFetcher::SetCallback(const FetchCallback& callback) {
-  fetch_callback_ = callback;
+void BrandcodeConfigFetcher::SetCallback(FetchCallback callback) {
+  fetch_callback_ = std::move(callback);
 }
 
 void BrandcodeConfigFetcher::OnSimpleLoaderComplete(
@@ -144,8 +144,10 @@ void BrandcodeConfigFetcher::OnXmlConfigParsed(
   // Extract the text JSON data from the "data" node to specify the new
   // settings.
   std::string master_prefs;
-  if (node && data_decoder::GetXmlElementText(*node, &master_prefs))
-    default_settings_.reset(new BrandcodedDefaultSettings(master_prefs));
+  if (node && data_decoder::GetXmlElementText(*node, &master_prefs)) {
+    default_settings_ =
+        std::make_unique<BrandcodedDefaultSettings>(master_prefs);
+  }
 }
 
 void BrandcodeConfigFetcher::OnDownloadTimeout() {

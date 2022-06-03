@@ -8,10 +8,6 @@
 
 namespace content {
 
-namespace {
-const int kNumSecondsForSlowOperation = 10;
-}
-
 CacheStorageOperation::CacheStorageOperation(
     base::OnceClosure closure,
     CacheStorageSchedulerId id,
@@ -33,27 +29,11 @@ CacheStorageOperation::~CacheStorageOperation() {
   RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA::kOperationDuration,
                                  client_type_, op_type_,
                                  base::TimeTicks::Now() - start_ticks_);
-
-  if (!was_slow_)
-    RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA::kIsOperationSlow,
-                                   client_type_, op_type_, was_slow_);
 }
 
 void CacheStorageOperation::Run() {
   start_ticks_ = base::TimeTicks::Now();
-
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CacheStorageOperation::NotifyOperationSlow,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kNumSecondsForSlowOperation));
   std::move(closure_).Run();
-}
-
-void CacheStorageOperation::NotifyOperationSlow() {
-  was_slow_ = true;
-  RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA::kIsOperationSlow,
-                                 client_type_, op_type_, was_slow_);
 }
 
 }  // namespace content

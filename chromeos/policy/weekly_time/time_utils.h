@@ -8,14 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
 class Clock;
-class TimeDelta;
 }  // namespace base
 
 namespace policy {
@@ -44,7 +43,7 @@ CHROMEOS_EXPORT bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
 // Similarly, the output will be "Donnerstag 05:00" in a German locale in a GMT
 // timezone (there may be slight changes in formatting due to different
 // standards in different locales).
-CHROMEOS_EXPORT base::string16 WeeklyTimeToLocalizedString(
+CHROMEOS_EXPORT std::u16string WeeklyTimeToLocalizedString(
     const WeeklyTime& weekly_time,
     base::Clock* clock);
 
@@ -53,18 +52,16 @@ CHROMEOS_EXPORT base::string16 WeeklyTimeToLocalizedString(
 CHROMEOS_EXPORT std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
     const std::vector<WeeklyTimeInterval>& intervals);
 
-// Return duration till next weekly time interval.
-CHROMEOS_EXPORT base::TimeDelta GetDeltaTillNextTimeInterval(
-    const WeeklyTime& current_time,
-    const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
+// Checks if |time| is contained in one of the |intervals|. Timezone agnostic
+// intervals are not supported.
+CHROMEOS_EXPORT bool Contains(const base::Time& time,
+                              const std::vector<WeeklyTimeInterval>& intervals);
 
-// Takes in a vector of weekly time intervals. If |clock->Now()|
-// is inside one of the intervals, then the function returns the
-// interval that contains |clock->Now()|. Otherwise, return |base::nullopt|.
-// The intervals must have a defined
-CHROMEOS_EXPORT base::Optional<WeeklyTimeInterval> GetIntervalForCurrentTime(
-    const std::vector<WeeklyTimeInterval>& intervals,
-    base::Clock* clock);
+// Returns next start or end interval time after |current_time|, or
+// absl::nullopt in case |weekly_time_intervals| is empty.
+CHROMEOS_EXPORT absl::optional<base::Time> GetNextEventTime(
+    const base::Time& current_time,
+    const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
 
 }  // namespace weekly_time_utils
 }  // namespace policy

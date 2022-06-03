@@ -15,8 +15,7 @@ namespace ios {
 
 // static
 scoped_refptr<content_settings::CookieSettings>
-CookieSettingsFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+CookieSettingsFactory::GetForBrowserState(ChromeBrowserState* browser_state) {
   return static_cast<content_settings::CookieSettings*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true).get());
 }
@@ -52,8 +51,8 @@ web::BrowserState* CookieSettingsFactory::GetBrowserStateToUse(
 scoped_refptr<RefcountedKeyedService>
 CookieSettingsFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return base::MakeRefCounted<content_settings::CookieSettings>(
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
       browser_state->GetPrefs(), browser_state->IsOffTheRecord());

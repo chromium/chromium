@@ -1,12 +1,13 @@
 rootWebArea
 ++genericContainer ignored
-++++descriptionList
-++++++descriptionListTerm
-++++++++staticText name='Term'
-++++++++++inlineTextBox name='Term'
-++++++descriptionListDetail
-++++++++staticText name='Description'
-++++++++++inlineTextBox name='Description'
-++++definition
-++++++staticText name='Definition'
-++++++++inlineTextBox name='Definition'
+++++genericContainer ignored
+++++++descriptionList
+++++++++descriptionListTerm
+++++++++++staticText name='Term'
+++++++++++++inlineTextBox name='Term'
+++++++++descriptionListDetail
+++++++++++staticText name='Description'
+++++++++++++inlineTextBox name='Description'
+++++++definition
+++++++++staticText name='Definition'
+++++++++++inlineTextBox name='Definition'

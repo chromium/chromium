@@ -22,18 +22,18 @@ import sys
 
 from mig_gen import MigInterface
 
+
 def _fix_user_implementation(implementation, fixed_implementation, header,
                              fixed_header):
     """Rewrites a MIG-generated user implementation (.c) file.
 
-    Rewrites the file at |implementation| by adding
-    “__attribute__((unused))” to the definition of any structure typedefed
-    as “__Reply” by searching for the pattern unique to those structure
-    definitions. These structures are in fact unused in the user
-    implementation file, and this will trigger a -Wunused-local-typedefs
-    warning in gcc unless removed or marked with the “unused” attribute.
-    Also changes header references to point to the new header filename, if
-    changed.
+    Rewrites the file at |implementation| by adding “__attribute__((unused))” to
+    the definition of any structure typedefed as “__Reply” by searching for the
+    pattern unique to those structure definitions. These structures are in fact
+    unused in the user implementation file, and this will trigger a
+    -Wunused-local-typedefs warning in gcc unless removed or marked with the
+    “unused” attribute. Also changes header references to point to the new
+    header filename, if changed.
 
     If |fixed_implementation| is None, overwrites the original; otherwise, puts
     the result in the file at |fixed_implementation|.
@@ -59,6 +59,7 @@ def _fix_user_implementation(implementation, fixed_implementation, header,
     file.write(contents)
     file.close()
 
+
 def _fix_server_implementation(implementation, fixed_implementation, header,
                                fixed_header):
     """Rewrites a MIG-generated server implementation (.c) file.
@@ -79,24 +80,25 @@ def _fix_server_implementation(implementation, fixed_implementation, header,
     contents = file.read()
 
     # Find interesting declarations.
-    declaration_pattern = \
-        re.compile('^mig_internal (kern_return_t __MIG_check__.*)$',
-                   re.MULTILINE)
+    declaration_pattern = re.compile(
+        '^mig_internal (kern_return_t __MIG_check__.*)$', re.MULTILINE)
     declarations = declaration_pattern.findall(contents)
 
     # Remove “__attribute__((__unused__))” from the declarations, and call them
     # “mig_external” or “extern” depending on whether “mig_external” is defined.
     attribute_pattern = re.compile(r'__attribute__\(\(__unused__\)\) ')
-    declarations = ['''\
+    declarations = [
+        '''\
 #ifdef mig_external
 mig_external
 #else
 extern
 #endif
-''' + attribute_pattern.sub('', x) + ';\n' for x in declarations]
+''' + attribute_pattern.sub('', x) + ';\n' for x in declarations
+    ]
 
     # Rewrite the declarations in this file as “mig_external”.
-    contents = declaration_pattern.sub(r'mig_external \1', contents);
+    contents = declaration_pattern.sub(r'mig_external \1', contents)
 
     # Crashpad never implements the mach_msg_server() MIG callouts. To avoid
     # needing to provide stub implementations, set KERN_FAILURE as the RetCode
@@ -124,6 +126,7 @@ extern
     file.write(contents)
     file.close()
     return declarations
+
 
 def _fix_header(header, fixed_header, declarations=[]):
     """Rewrites a MIG-generated header (.h) file.
@@ -161,6 +164,7 @@ extern "C" {
     file.write(contents)
     file.close()
 
+
 def fix_interface(interface, fixed_interface=None):
     if fixed_interface is None:
         fixed_interface = MigInterface(None, None, None, None)
@@ -175,6 +179,7 @@ def fix_interface(interface, fixed_interface=None):
     _fix_header(interface.server_h, fixed_interface.server_h,
                 server_declarations)
 
+
 def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('user_c')
@@ -187,11 +192,12 @@ def main(args):
     parser.add_argument('--fixed_server_h', default=None)
     parsed = parser.parse_args(args)
 
-    interface = MigInterface(parsed.user_c, parsed.server_c,
-                             parsed.user_h, parsed.server_h)
+    interface = MigInterface(parsed.user_c, parsed.server_c, parsed.user_h,
+                             parsed.server_h)
     fixed_interface = MigInterface(parsed.fixed_user_c, parsed.fixed_server_c,
                                    parsed.fixed_user_h, parsed.fixed_server_h)
     fix_interface(interface, fixed_interface)
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))

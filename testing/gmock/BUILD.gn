@@ -10,18 +10,10 @@ source_set("gmock") {
   testonly = true
   sources = [
     "include/gmock/gmock-actions.h",
-    "include/gmock/gmock-generated-function-mockers.h",
     "include/gmock/gmock-matchers.h",
     "include/gmock/gmock.h",
   ]
-  deps = [
-    "//third_party/googletest:gmock",
-  ]
-
-  public_configs = [
-    "//third_party/googletest:gmock_config",
-    "//third_party/googletest:gtest_config",
-  ]
+  public_deps = [ "//third_party/googletest:gmock" ]
 }
 
 # The file/directory layout of Google Test is not yet considered stable. Until
@@ -29,7 +21,5 @@ source_set("gmock") {
 # into //third_party/googletest.
 source_set("gmock_main") {
   testonly = true
-  deps = [
-    "//third_party/googletest:gmock_main",
-  ]
+  deps = [ "//third_party/googletest:gmock_main" ]
 }

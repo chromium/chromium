@@ -24,7 +24,6 @@ descriptorShouldBe("Date.prototype", "'toISOString'", {writable: true, enumerabl
 descriptorShouldBe("String.prototype", "'concat'", {writable: true, enumerable: false, configurable: true, value:"String.prototype.concat"});
 descriptorShouldBe("RegExp.prototype", "'exec'", {writable: true, enumerable: false, configurable: true, value:"RegExp.prototype.exec"});
 descriptorShouldBe("document.__proto__.__proto__", "'createElement'", {writable: true, enumerable: true, configurable: true, value:"document.createElement"});
-descriptorShouldBe("window", "'location'", {writable: false, enumerable: true, configurable: false, value: "window.location"});
 descriptorShouldBe("Number", "'NEGATIVE_INFINITY'", {writable: false, enumerable: false, configurable: false, value:"Number.NEGATIVE_INFINITY"});
 descriptorShouldBe("RegExp", "'$_'", {writable: true, enumerable: false, configurable: true, value:"RegExp.$_"});
 descriptorShouldBe("/a/g", "'global'", {writable: true, enumerable: false, configurable: false, value:true});
@@ -43,9 +42,7 @@ descriptorShouldBe("global", "'global'", {writable: true, enumerable: true, conf
 descriptorShouldBe("global", "'undefined'", {writable: false, enumerable: false, configurable: false, value:"undefined"});
 descriptorShouldBe("global", "'NaN'", {writable: false, enumerable: false, configurable: false, value:"NaN"});
 descriptorShouldBe("global", "'Infinity'", {writable: false, enumerable: false, configurable: false, value:"Infinity"});
-descriptorShouldBe("global", "'window'", {writable: false, enumerable: true, configurable: false, value:"global"});
 descriptorShouldBe("global", "'XMLHttpRequest'", {writable: true, enumerable: false, configurable: true, value:"XMLHttpRequest"});
-descriptorShouldBe("global", "'length'", {writable: true, enumerable: true, configurable: false, value:"global.length"});
 descriptorShouldBe("global", "0", {writable: false, enumerable: true, configurable: true, value:"global[0]"});
 
 var objectWithGetter = {};

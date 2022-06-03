@@ -55,7 +55,12 @@ public class UiThreadTaskTraitsImpl {
 
     public static final TaskTraits DEFAULT =
             TaskTraits.USER_VISIBLE.withExtension(DESCRIPTOR, new UiThreadTaskTraitsImpl());
-    public static final TaskTraits BOOTSTRAP = TaskTraits.USER_VISIBLE.withExtension(
+    // NOTE: Depending on browser configuration, the underlying C++ task executor executes bootstrap
+    // tasks either in a dedicated high-priority task queue or in the default priority-based task
+    // queues. While in the former case the priority of individual bootstrap tasks is ignored, in
+    // the latter case it is used. It is thus important that these tasks have USER_BLOCKING priority
+    // so that they are ordered correctly with C++ tasks of type kBootstrap in this latter case.
+    public static final TaskTraits BOOTSTRAP = TaskTraits.USER_BLOCKING.withExtension(
             DESCRIPTOR, new UiThreadTaskTraitsImpl().setTaskType(BrowserTaskType.BOOTSTRAP));
     public static final TaskTraits BEST_EFFORT = DEFAULT.taskPriority(TaskPriority.BEST_EFFORT);
     public static final TaskTraits USER_VISIBLE = DEFAULT.taskPriority(TaskPriority.USER_VISIBLE);

@@ -5,7 +5,9 @@
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 #include <atk/atk.h>
+#include <memory>
 
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -14,8 +16,12 @@ namespace test {
 
 class ViewAXPlatformNodeDelegateAuraLinuxTest : public ViewsTestBase {
  public:
-  ViewAXPlatformNodeDelegateAuraLinuxTest() = default;
+  ViewAXPlatformNodeDelegateAuraLinuxTest()
+      : ax_mode_setter_(ui::kAXModeComplete) {}
   ~ViewAXPlatformNodeDelegateAuraLinuxTest() override = default;
+
+ private:
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
@@ -24,14 +30,16 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(init_params));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(base::UTF8ToUTF16("Name"));
-  textfield->SetText(base::UTF8ToUTF16("Value"));
+  textfield->SetAccessibleName(u"Name");
   content->AddChildView(textfield);
 
+  ASSERT_EQ(0, atk_object_get_n_accessible_children(
+                   textfield->GetNativeViewAccessible()))
+      << "Text fields should be leaf nodes on this platform, otherwise no "
+         "descendants will be recognized by assistive software.";
   AtkText* atk_text = ATK_TEXT(textfield->GetNativeViewAccessible());
   ASSERT_NE(nullptr, atk_text);
 
@@ -51,49 +59,44 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   g_signal_connect(atk_text, "text-insert", callback, &text_insert_events);
   g_signal_connect(atk_text, "text-remove", callback, &text_remove_events);
 
-  textfield->NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  textfield->SetText(u"Value");
   ASSERT_EQ(text_remove_events.size(), 0ul);
   ASSERT_EQ(text_insert_events.size(), 1ul);
-  ASSERT_EQ(text_insert_events[0].position, 0);
-  ASSERT_EQ(text_insert_events[0].length, 5);
-  ASSERT_EQ(text_insert_events[0].text, "Value");
+  EXPECT_EQ(text_insert_events[0].position, 0);
+  EXPECT_EQ(text_insert_events[0].length, 5);
+  EXPECT_EQ(text_insert_events[0].text, "Value");
   text_insert_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Value A"));
-  textfield->NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
-
+  textfield->SetText(u"Value A");
   ASSERT_EQ(text_remove_events.size(), 0ul);
   ASSERT_EQ(text_insert_events.size(), 1ul);
-  ASSERT_EQ(text_insert_events[0].position, 5);
-  ASSERT_EQ(text_insert_events[0].length, 2);
-  ASSERT_EQ(text_insert_events[0].text, " A");
+  EXPECT_EQ(text_insert_events[0].position, 5);
+  EXPECT_EQ(text_insert_events[0].length, 2);
+  EXPECT_EQ(text_insert_events[0].text, " A");
   text_insert_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Value"));
-  textfield->NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  textfield->SetText(u"Value");
   ASSERT_EQ(text_remove_events.size(), 1ul);
   ASSERT_EQ(text_insert_events.size(), 0ul);
-  ASSERT_EQ(text_remove_events[0].position, 5);
-  ASSERT_EQ(text_remove_events[0].length, 2);
-  ASSERT_EQ(text_remove_events[0].text, " A");
+  EXPECT_EQ(text_remove_events[0].position, 5);
+  EXPECT_EQ(text_remove_events[0].length, 2);
+  EXPECT_EQ(text_remove_events[0].text, " A");
   text_remove_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Prefix Value"));
-  textfield->NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  textfield->SetText(u"Prefix Value");
   ASSERT_EQ(text_remove_events.size(), 0ul);
   ASSERT_EQ(text_insert_events.size(), 1ul);
-  ASSERT_EQ(text_insert_events[0].position, 0);
-  ASSERT_EQ(text_insert_events[0].length, 7);
-  ASSERT_EQ(text_insert_events[0].text, "Prefix ");
+  EXPECT_EQ(text_insert_events[0].position, 0);
+  EXPECT_EQ(text_insert_events[0].length, 7);
+  EXPECT_EQ(text_insert_events[0].text, "Prefix ");
   text_insert_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Value"));
-  textfield->NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  textfield->SetText(u"Value");
   ASSERT_EQ(text_remove_events.size(), 1ul);
   ASSERT_EQ(text_insert_events.size(), 0ul);
-  ASSERT_EQ(text_remove_events[0].position, 0);
-  ASSERT_EQ(text_remove_events[0].length, 7);
-  ASSERT_EQ(text_remove_events[0].text, "Prefix ");
+  EXPECT_EQ(text_remove_events[0].position, 0);
+  EXPECT_EQ(text_remove_events[0].length, 7);
+  EXPECT_EQ(text_remove_events[0].text, "Prefix ");
   text_insert_events.clear();
 }
 
@@ -139,6 +142,36 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
       atk_object_ref_accessible_child(root_view_accessible, 1);
   ASSERT_EQ(second_child, child_widget_accessible);
   g_object_unref(second_child);
+}
+
+// Tests if atk_object_get_index_in_parent doesn't DCHECK after the
+// corresponding View is removed from a Widget.
+TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
+  // Create the Widget that will represent the application
+  Widget parent_widget;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  parent_widget.Init(std::move(init_params));
+  parent_widget.Show();
+
+  // |widget| will be destroyed later.
+  std::unique_ptr<Widget> widget = std::make_unique<Widget>();
+  Widget::InitParams child_init_params =
+      CreateParams(Widget::InitParams::TYPE_POPUP);
+  child_init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  child_init_params.parent = parent_widget.GetNativeView();
+  widget->Init(std::move(child_init_params));
+  widget->Show();
+
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+
+  AtkObject* atk_object = contents->GetNativeViewAccessible();
+  EXPECT_EQ(0, atk_object_get_index_in_parent(atk_object));
+
+  std::unique_ptr<View> contents_unique =
+      widget->GetRootView()->RemoveChildViewT(contents);
+  EXPECT_EQ(-1, atk_object_get_index_in_parent(atk_object));
 }
 
 }  // namespace test

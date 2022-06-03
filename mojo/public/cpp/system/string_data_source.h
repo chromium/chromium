@@ -29,7 +29,11 @@ class MOJO_CPP_SYSTEM_EXPORT StringDataSource final
     STRING_STAYS_VALID_UNTIL_COMPLETION
   };
 
-  StringDataSource(base::StringPiece data, AsyncWritingMode mode);
+  StringDataSource(base::span<const char> data, AsyncWritingMode mode);
+
+  StringDataSource(const StringDataSource&) = delete;
+  StringDataSource& operator=(const StringDataSource&) = delete;
+
   ~StringDataSource() override;
 
  private:
@@ -39,8 +43,6 @@ class MOJO_CPP_SYSTEM_EXPORT StringDataSource final
 
   std::string data_;
   base::span<const char> data_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringDataSource);
 };
 
 }  // namespace mojo

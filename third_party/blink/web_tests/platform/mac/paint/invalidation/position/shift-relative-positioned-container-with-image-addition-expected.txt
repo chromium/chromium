@@ -1,38 +1,21 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 829],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 735, 785, 94],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [8, 86, 732, 94],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutImage IMG",
-          "rect": [58, 230, 489, 537],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutImage IMG",
-          "rect": [58, 136, 489, 537],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 735, 785, 94],
+        [8, 86, 732, 94],
+        [58, 230, 489, 537],
+        [58, 136, 489, 537]
       ]
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ]
 }

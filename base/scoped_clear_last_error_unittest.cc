@@ -10,10 +10,10 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+#include "base/logging.h"
 #endif  // defined(OS_WIN)
 
 namespace base {
-namespace internal {
 
 TEST(ScopedClearLastError, TestNoError) {
   errno = 1;
@@ -55,5 +55,4 @@ TEST(ScopedClearLastError, TestErrorWin) {
 
 #endif  // defined(OS_WIN)
 
-}  // namespace internal
 }  // namespace base

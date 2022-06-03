@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that computed styles expand and allow tracing to style rules.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -30,15 +30,15 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('==== All styles (should be no computed) ====');
-    ElementsTestRunner.dumpSelectedElementStyles(false, false);
+    await ElementsTestRunner.dumpSelectedElementStyles(false, false);
     ElementsTestRunner.computedStyleWidget().doUpdate().then(step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('==== All styles (computed should be there) ====');
-    ElementsTestRunner.dumpSelectedElementStyles(false, false);
+    await ElementsTestRunner.dumpSelectedElementStyles(false, false);
     TestRunner.completeTest();
   }
 })();

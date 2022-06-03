@@ -352,7 +352,7 @@ tr_introsort(saidx_it ISA, const_saidx_it ISAd,
 
         /* push */
         if(1 < (b - a)) {
-          STACK_PUSH5(NULL, a, b, 0, 0);
+          STACK_PUSH5(nullptr, a, b, 0, 0);
           STACK_PUSH5(ISAd - incr, first, last, -2, trlink);
           trlink = ssize - 2;
         }

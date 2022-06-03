@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILEAPI_MOCK_FILE_CHANGE_OBSERVER_H_
-#define CONTENT_BROWSER_FILEAPI_MOCK_FILE_CHANGE_OBSERVER_H_
+#ifndef STORAGE_BROWSER_TEST_MOCK_FILE_CHANGE_OBSERVER_H_
+#define STORAGE_BROWSER_TEST_MOCK_FILE_CHANGE_OBSERVER_H_
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -17,6 +17,10 @@ namespace storage {
 class MockFileChangeObserver : public FileChangeObserver {
  public:
   MockFileChangeObserver();
+
+  MockFileChangeObserver(const MockFileChangeObserver&) = delete;
+  MockFileChangeObserver& operator=(const MockFileChangeObserver&) = delete;
+
   ~MockFileChangeObserver() override;
 
   // Creates a ChangeObserverList which only contains given |observer|.
@@ -94,10 +98,8 @@ class MockFileChangeObserver : public FileChangeObserver {
   int modify_file_count_;
   int create_directory_count_;
   int remove_directory_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileChangeObserver);
 };
 
 }  // namespace storage
 
-#endif  // CONTENT_BROWSER_FILEAPI_MOCK_FILE_CHANGE_OBSERVER_H_
+#endif  // STORAGE_BROWSER_TEST_MOCK_FILE_CHANGE_OBSERVER_H_

@@ -9,7 +9,7 @@
  * @param {string} urlStr The URL to set on this entry.
  * @return {!HistoryEntry} An object representing a history entry.
  */
-function createHistoryEntry(timestamp, urlStr) {
+export function createHistoryEntry(timestamp, urlStr) {
   if (typeof timestamp === 'string') {
     timestamp += ' UTC';
   }
@@ -39,7 +39,7 @@ function createHistoryEntry(timestamp, urlStr) {
  * @param {string} urlStr The URL to set on this entry.
  * @return {!HistoryEntry} An object representing a history entry.
  */
-function createSearchEntry(timestamp, urlStr) {
+export function createSearchEntry(timestamp, urlStr) {
   const entry = createHistoryEntry(timestamp, urlStr);
   entry.dateShort = entry.dateRelativeDay;
   entry.dateTimeOfDay = '';
@@ -54,7 +54,7 @@ function createSearchEntry(timestamp, urlStr) {
  *     string if not specified.
  * @return {!HistoryQuery}
  */
-function createHistoryInfo(searchTerm) {
+export function createHistoryInfo(searchTerm) {
   return {finished: true, term: searchTerm || ''};
 }
 
@@ -63,7 +63,7 @@ function createHistoryInfo(searchTerm) {
  * @param {string} selector
  * @return {!NodeList<!Element>}
  */
-function polymerSelectAll(element, selector) {
+export function polymerSelectAll(element, selector) {
   return element.shadowRoot.querySelectorAll(selector);
 }
 
@@ -75,7 +75,7 @@ function polymerSelectAll(element, selector) {
  * @param {function(Event): boolean} predicate
  * @return {Promise}
  */
-function waitForEvent(element, eventName, predicate) {
+export function waitForEvent(element, eventName, predicate) {
   if (!predicate) {
     predicate = function() {
       return true;
@@ -100,7 +100,7 @@ function waitForEvent(element, eventName, predicate) {
  * Sends a shift click event to |element|.
  * @param {HTMLElement} element
  */
-function shiftClick(element) {
+export function shiftClick(element) {
   const xy = MockInteractions.middleOfNode(element);
   const props = {
     bubbles: true,
@@ -116,7 +116,7 @@ function shiftClick(element) {
   element.dispatchEvent(new MouseEvent('click', props));
 }
 
-function disableLinkClicks() {
+export function disableLinkClicks() {
   document.addEventListener('click', function(e) {
     if (e.defaultPrevented) {
       return;
@@ -142,7 +142,7 @@ function disableLinkClicks() {
   });
 }
 
-function createSession(name, windows) {
+export function createSession(name, windows) {
   return {
     collapsed: false,
     deviceType: '',
@@ -154,7 +154,7 @@ function createSession(name, windows) {
   };
 }
 
-function createWindow(tabUrls) {
+export function createWindow(tabUrls) {
   const tabs = tabUrls.map(function(tabUrl) {
     return {sessionId: 456, timestamp: 0, title: tabUrl, url: tabUrl};
   });

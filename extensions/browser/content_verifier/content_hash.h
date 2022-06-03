@@ -50,6 +50,9 @@ namespace extensions {
 // take long time. This cancellation can be performed through |is_cancelled|.
 class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
  public:
+  // The combined (network or http response) error code while fetching.
+  using FetchErrorCode = int;
+
   // Holds key to identify an extension for content verification, parameters to
   // fetch verified_contents.json and other supplementary info.
   struct FetchKey {
@@ -73,12 +76,14 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
                  url_loader_factory_remote,
              const GURL& fetch_url,
              ContentVerifierKey verifier_key);
+
+    FetchKey(const FetchKey&) = delete;
+    FetchKey& operator=(const FetchKey&) = delete;
+
     ~FetchKey();
 
     FetchKey(FetchKey&& other);
     FetchKey& operator=(FetchKey&& other);
-
-    DISALLOW_COPY_AND_ASSIGN(FetchKey);
   };
 
   // Result of checking tree hash root (typically calculated from block hashes
@@ -93,6 +98,9 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
     // Hash does not match the one from verified_contents.json.
     HASH_MISMATCH
   };
+
+  ContentHash(const ContentHash&) = delete;
+  ContentHash& operator=(const ContentHash&) = delete;
 
   // Factory:
   // Returns ContentHash through |created_callback|, the returned values are:
@@ -122,9 +130,16 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
 
   const ComputedHashes& computed_hashes() const;
 
+  // Returns loading status of hashes.
+  ComputedHashes::Status computed_hashes_status() const {
+    return computed_hashes_status_;
+  }
+
   // Returns whether or not computed_hashes.json (and, if needed,
   // verified_contents.json too) was read correctly and is ready to use.
-  bool succeeded() const { return succeeded_; }
+  bool succeeded() const {
+    return computed_hashes_status_ == ComputedHashes::Status::SUCCESS;
+  }
 
   // If ContentHash creation writes computed_hashes.json, then this returns the
   // FilePaths whose content hash didn't match expected hashes.
@@ -151,13 +166,13 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   using GetVerifiedContentsCallback = base::OnceCallback<void(
       FetchKey key,
       std::unique_ptr<VerifiedContents> verified_contents,
-      bool did_attempt_fetch)>;
+      bool did_attempt_fetch,
+      FetchErrorCode fetch_error)>;
 
   ContentHash(const ExtensionId& id,
               const base::FilePath& root,
               ContentVerifierDelegate::VerifierSourceType source_type,
-              std::unique_ptr<const VerifiedContents> verified_contents,
-              std::unique_ptr<const ComputedHashes> computed_hashes);
+              std::unique_ptr<const VerifiedContents> verified_contents);
   ~ContentHash();
 
   // Step 1/2: verified_contents.json.
@@ -175,7 +190,8 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   static void DidFetchVerifiedContents(
       GetVerifiedContentsCallback callback,
       FetchKey key,
-      std::unique_ptr<std::string> fetched_contents);
+      std::unique_ptr<std::string> fetched_contents,
+      FetchErrorCode fetch_error);
 
   // Step 2/2: computed_hashes.json.
   static void GetComputedHashes(
@@ -184,16 +200,18 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
       CreatedCallback created_callback,
       FetchKey key,
       std::unique_ptr<VerifiedContents> verified_contents,
-      bool did_attempt_fetch);
+      bool did_attempt_fetch,
+      FetchErrorCode fetch_error);
 
   static void DispatchFetchFailure(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
       ContentVerifierDelegate::VerifierSourceType source_type,
       CreatedCallback created_callback,
-      const IsCancelledCallback& is_cancelled);
+      const IsCancelledCallback& is_cancelled,
+      FetchErrorCode fetch_error);
 
-  static void RecordFetchResult(bool success);
+  static void RecordFetchResult(bool success, FetchErrorCode fetch_error);
 
   // Computes hashes for all files in |key_.extension_root|, and uses
   // a ComputedHashes::Writer to write that information into |hashes_file|.
@@ -229,7 +247,8 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   const base::FilePath extension_root_;
   ContentVerifierDelegate::VerifierSourceType source_type_;
 
-  bool succeeded_ = false;
+  ComputedHashes::Status computed_hashes_status_ =
+      ComputedHashes::Status::UNKNOWN;
 
   bool did_attempt_creating_computed_hashes_ = false;
 
@@ -245,8 +264,6 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   // TODO(asargent) - use the value from verified_contents.json for each
   // file, instead of using a constant.
   int block_size_ = extension_misc::kContentVerificationDefaultBlockSize;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentHash);
 };
 
 }  // namespace extensions

@@ -16,6 +16,12 @@ namespace keyboard_util {
 // Returns whether the given key code corresponds to one of the 4 arrow keys.
 ASH_EXPORT bool IsArrowKeyCode(const ui::KeyboardCode key_code);
 
+// Closes the active (Chrome OS or Android VK). Returns false if no keyboard was
+// active.
+// TODO(crbug.com/1060272): Move this to KeyboardControllerImpl once that class
+// handles both VKs.
+bool CloseKeyboardIfActive();
+
 }  // namespace keyboard_util
 
 }  // namespace ash

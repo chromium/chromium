@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 
@@ -20,18 +19,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   int lang_len = ch & 0xF;
   int html_lang_len = (ch >> 4) & 0xF;
   int text_len = static_cast<int>(size) - lang_len - html_lang_len;
-  if ((text_len < 0) || (text_len % 2 != 0)) {
+  if ((text_len < 0) || (text_len % sizeof(char16_t) != 0)) {
     return 0;
   }
   std::string lang(reinterpret_cast<const char*>(data), lang_len);
   std::string html_lang(reinterpret_cast<const char*>(data + lang_len),
                         html_lang_len);
-  base::string16 text(
-      reinterpret_cast<const base::char16*>(data + lang_len + html_lang_len),
-      text_len / 2);
-  std::string cld_lang;
-  bool is_cld_reliable;
-  translate::DeterminePageLanguage(lang, html_lang, text, &cld_lang,
-                                   &is_cld_reliable);
+  std::u16string text(
+      reinterpret_cast<const char16_t*>(data + lang_len + html_lang_len),
+      text_len / sizeof(char16_t));
+  std::string model_detected_language;
+  bool is_model_reliable;
+  float model_reliability_score;
+  translate::DeterminePageLanguage(lang, html_lang, text,
+                                   &model_detected_language, &is_model_reliable,
+                                   model_reliability_score);
   return 0;
 }

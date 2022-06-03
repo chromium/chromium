@@ -5,7 +5,7 @@
 #include <Cocoa/Cocoa.h>
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace content {
 namespace protocol {
@@ -16,16 +16,16 @@ namespace protocol {
 gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
     const NativeWebKeyboardEvent& event) {
   NSEventType type = NSKeyUp;
-  if (event.GetType() == blink::WebInputEvent::kRawKeyDown ||
-      event.GetType() == blink::WebInputEvent::kKeyDown)
+  if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
+      event.GetType() == blink::WebInputEvent::Type::kKeyDown)
     type = NSKeyDown;
-  const blink::WebUChar* textStartAddr = &event.text[0];
+  const char16_t* textStartAddr = &event.text[0];
   const int textLength =
       std::find(textStartAddr,
                 textStartAddr + NativeWebKeyboardEvent::kTextLengthCap, '\0') -
       textStartAddr;
   NSString* character =
-      base::SysUTF16ToNSString(base::string16(textStartAddr, textLength));
+      base::SysUTF16ToNSString(std::u16string(textStartAddr, textLength));
   int modifiers = event.GetModifiers();
   NSUInteger flags =
       (modifiers & blink::WebInputEvent::kShiftKey ? NSShiftKeyMask : 0) |

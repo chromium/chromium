@@ -13,9 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/synchronization/lock.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/origin_trials/chrome_origin_trial_policy.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "pdf/buildflags.h"
@@ -25,9 +25,13 @@
 #include "content/public/common/pepper_plugin_info.h"
 #endif
 
+namespace embedder_support {
+class OriginTrialPolicyImpl;
+}
+
 class ChromeContentClient : public content::ContentClient {
  public:
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // |kNotPresent| is a placeholder plugin location for plugins that are not
   // currently present in this installation of Chrome, but which can be fetched
   // on-demand and therefore should still appear in navigator.plugins.
@@ -81,27 +85,26 @@ class ChromeContentClient : public content::ContentClient {
   void AddContentDecryptionModules(
       std::vector<content::CdmInfo>* cdms,
       std::vector<media::CdmHostFilePath>* cdm_host_file_paths) override;
-
   void AddAdditionalSchemes(Schemes* schemes) override;
-  base::string16 GetLocalizedString(int message_id) override;
-  base::string16 GetLocalizedString(int message_id,
-                                    const base::string16& replacement) override;
-  base::StringPiece GetDataResource(int resource_id,
-                                    ui::ScaleFactor scale_factor) override;
+  std::u16string GetLocalizedString(int message_id) override;
+  std::u16string GetLocalizedString(int message_id,
+                                    const std::u16string& replacement) override;
+  std::u16string GetLocalizedProtocolName(const std::string& protocol) override;
+  base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
-  base::DictionaryValue GetNetLogConstants() override;
+#if defined(OS_MAC)
+  base::FilePath GetChildProcessPath(
+      int child_flags,
+      const base::FilePath& helpers_path) override;
+#endif  // OS_MAC
   std::string GetProcessTypeNameInEnglish(int type) override;
-
-  bool AllowScriptExtensionForServiceWorker(
-      const url::Origin& script_origin) override;
-
   blink::OriginTrialPolicy* GetOriginTrialPolicy() override;
-
 #if defined(OS_ANDROID)
   media::MediaDrmBridgeClient* GetMediaDrmBridgeClient() override;
 #endif  // OS_ANDROID
-
   void ExposeInterfacesToBrowser(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders) override;
@@ -109,7 +112,7 @@ class ChromeContentClient : public content::ContentClient {
  private:
   // Used to lock when |origin_trial_policy_| is initialized.
   base::Lock origin_trial_policy_lock_;
-  std::unique_ptr<ChromeOriginTrialPolicy> origin_trial_policy_;
+  std::unique_ptr<embedder_support::OriginTrialPolicyImpl> origin_trial_policy_;
 };
 
 #endif  // CHROME_COMMON_CHROME_CONTENT_CLIENT_H_

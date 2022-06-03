@@ -9,8 +9,8 @@ undefined
 undefined
 2console-repeat-count.js:15 Message
 2console-repeat-count.js:18 Error: Message with error
-    at dumpMessages (console-repeat-count.js:18)
-    at console-repeat-count.js:49
+    at dumpMessages (console-repeat-count.js:18:21)
+    at console-repeat-count.js:49:1
 console-repeat-count.js:21 {a: 1}
 dumpMessages @ console-repeat-count.js:21
 (anonymous) @ console-repeat-count.js:49
@@ -18,17 +18,17 @@ console-repeat-count.js:21 {a: 1}
 dumpMessages @ console-repeat-count.js:21
 (anonymous) @ console-repeat-count.js:49
 2console-repeat-count.js:31 Uncaught Primitive value
-setTimeout @ console-repeat-count.js:31
+(anonymous) @ console-repeat-count.js:31
 setTimeout (async)
 throwPrimitiveValues @ console-repeat-count.js:31
 (anonymous) @ console-repeat-count.js:50
 console-repeat-count.js:26 Uncaught {a: 1}
-setTimeout @ console-repeat-count.js:26
+(anonymous) @ console-repeat-count.js:26
 setTimeout (async)
 throwObjects @ console-repeat-count.js:26
 (anonymous) @ console-repeat-count.js:51
 console-repeat-count.js:26 Uncaught {a: 1}
-setTimeout @ console-repeat-count.js:26
+(anonymous) @ console-repeat-count.js:26
 setTimeout (async)
 throwObjects @ console-repeat-count.js:26
 (anonymous) @ console-repeat-count.js:51

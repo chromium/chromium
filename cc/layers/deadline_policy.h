@@ -6,10 +6,11 @@
 #define CC_LAYERS_DEADLINE_POLICY_H_
 
 #include <cstdint>
+#include <string>
 
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/check.h"
 #include "cc/cc_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -40,7 +41,7 @@ class CC_EXPORT DeadlinePolicy {
     return policy_type_ == DeadlinePolicy::kUseExistingDeadline;
   }
 
-  base::Optional<uint32_t> deadline_in_frames() const {
+  absl::optional<uint32_t> deadline_in_frames() const {
     DCHECK(policy_type_ == Type::kUseDefaultDeadline ||
            policy_type_ == Type::kUseSpecifiedDeadline ||
            policy_type_ == Type::kUseInfiniteDeadline);
@@ -58,13 +59,15 @@ class CC_EXPORT DeadlinePolicy {
     return !(*this == other);
   }
 
+  std::string ToString() const;
+
  private:
   explicit DeadlinePolicy(
       Type policy_type,
-      base::Optional<uint32_t> deadline_in_frames = base::nullopt);
+      absl::optional<uint32_t> deadline_in_frames = absl::nullopt);
 
   Type policy_type_;
-  base::Optional<uint32_t> deadline_in_frames_;
+  absl::optional<uint32_t> deadline_in_frames_;
 };
 
 }  // namespace cc

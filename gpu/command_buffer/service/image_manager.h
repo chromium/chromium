@@ -24,6 +24,10 @@ namespace gles2 {
 class GPU_EXPORT ImageManager {
  public:
   ImageManager();
+
+  ImageManager(const ImageManager&) = delete;
+  ImageManager& operator=(const ImageManager&) = delete;
+
   ~ImageManager();
 
   void AddImage(gl::GLImage* image, int32_t service_id);
@@ -33,8 +37,6 @@ class GPU_EXPORT ImageManager {
  private:
   typedef std::unordered_map<int32_t, scoped_refptr<gl::GLImage>> GLImageMap;
   GLImageMap images_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageManager);
 };
 
 }  // namespage gles2

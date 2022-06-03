@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests top frame navigation events.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
 
   // Reset resourceTreeModel.
-  TestRunner.resourceTreeModel.mainFrame._remove();
+  TestRunner.resourceTreeModel.mainFrame.remove();
 
   for (var eventName in SDK.ResourceTreeModel.Events)
     TestRunner.resourceTreeModel.addEventListener(
@@ -20,8 +20,11 @@
   function eventHandler(eventName, event) {
     switch (eventName) {
       case 'FrameAdded':
-      case 'FrameDetached':
         var frame = event.data;
+        TestRunner.addResult(`    ${eventName} : ${frame.id}`);
+        break;
+      case 'FrameDetached':
+        var frame = event.data.frame;
         TestRunner.addResult(`    ${eventName} : ${frame.id}`);
         break;
       case 'FrameNavigated':
@@ -45,25 +48,25 @@
 
   // Simulate navigation to new render view: do not attach root frame.
   TestRunner.addResult('Navigating root frame');
-  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('root1'));
+  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('root1'));
   TestRunner.addResult('Navigating child frame 1');
-  TestRunner.resourceTreeModel._frameAttached('child1', 'root1');
-  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('child1', 'root1'));
+  TestRunner.resourceTreeModel.frameAttached('child1', 'root1');
+  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('child1', 'root1'));
   TestRunner.addResult('Navigating child frame 1 to a different URL');
-  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('child1', 'root1', 'child1-new'));
+  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('child1', 'root1', 'child1-new'));
   TestRunner.addResult('Navigating child frame 2');
-  TestRunner.resourceTreeModel._frameAttached('child2', 'root1');
-  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('child2', 'root1'));
+  TestRunner.resourceTreeModel.frameAttached('child2', 'root1');
+  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('child2', 'root1'));
   TestRunner.addResult('Detaching child frame 1');
-  TestRunner.resourceTreeModel._frameDetached('child1');
+  TestRunner.resourceTreeModel.frameDetached('child1');
 
   TestRunner.addResult('Navigating root frame');
-  TestRunner.resourceTreeModel._frameAttached('root2');
-  TestRunner.resourceTreeModel._frameNavigated(createFramePayload('root2'));
+  TestRunner.resourceTreeModel.frameAttached('root2');
+  TestRunner.resourceTreeModel.frameNavigated(createFramePayload('root2'));
 
   TestRunner.addResult('Navigating root frame, unreachable');
-  TestRunner.resourceTreeModel._frameAttached('rootUnreachable');
-  TestRunner.resourceTreeModel._frameNavigated(createUnreachableFramePayload('rootUnreachable'));
+  TestRunner.resourceTreeModel.frameAttached('rootUnreachable');
+  TestRunner.resourceTreeModel.frameNavigated(createUnreachableFramePayload('rootUnreachable'));
 
   TestRunner.completeTest();
 

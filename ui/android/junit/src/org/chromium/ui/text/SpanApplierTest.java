@@ -179,38 +179,13 @@ public class SpanApplierTest {
 
     /*
      * Tests the attributes of two SpannableStrings and asserts expected equality.
-     *
-     * Prior to KitKat, there was no equals method for SpannableString, so we have to
-     * manually check that the objects are the same.
      */
     private void assertSpannableStringEquality(
             SpannableString expected, SpannableString actual) {
-        if (!areSpannableStringsEqual(expected, actual)) {
+        if (!expected.equals(actual)) {
             Assert.fail("Expected string is " + getSpannableStringDescription(expected)
                     + " Actual string is " + getSpannableStringDescription(actual));
         }
-    }
-
-    private boolean areSpannableStringsEqual(SpannableString expected, SpannableString actual) {
-        Object[] expectedSpans = expected.getSpans(0, expected.length(), Object.class);
-        Object[] actualSpans = actual.getSpans(0, actual.length(), Object.class);
-
-        if (!expected.toString().equals(actual.toString())
-                || expectedSpans.length != actualSpans.length) {
-            return false;
-        }
-
-        for (int i = 0; i < expectedSpans.length; i++) {
-            Object expectedSpan = expectedSpans[i];
-            Object actualSpan = actualSpans[i];
-            if (expectedSpan != actualSpan
-                    || expected.getSpanStart(expectedSpan) != actual.getSpanStart(actualSpan)
-                    || expected.getSpanEnd(expectedSpan) != actual.getSpanEnd(actualSpan)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private String getSpannableStringDescription(SpannableString spannableString) {

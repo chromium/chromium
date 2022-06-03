@@ -7,9 +7,10 @@
 #import <objc/runtime.h>
 #include <memory>
 
+#include "base/check.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/logging.h"
 #import "base/mac/foundation_util.h"
+#include "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

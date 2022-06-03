@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+PASS Property background-blend-mode value 'normal'
+PASS Property background-blend-mode value 'multiply'
+PASS Property background-blend-mode value 'screen'
+PASS Property background-blend-mode value 'overlay'
+PASS Property background-blend-mode value 'darken'
+PASS Property background-blend-mode value 'lighten'
+PASS Property background-blend-mode value 'color-dodge'
+PASS Property background-blend-mode value 'color-burn'
+PASS Property background-blend-mode value 'hard-light'
+PASS Property background-blend-mode value 'soft-light'
+PASS Property background-blend-mode value 'difference'
+PASS Property background-blend-mode value 'exclusion'
+PASS Property background-blend-mode value 'hue'
+PASS Property background-blend-mode value 'saturation'
+PASS Property background-blend-mode value 'color'
+PASS Property background-blend-mode value 'luminosity'
+FAIL Property background-blend-mode value 'normal, luminosity' assert_equals: expected "normal, luminosity" but got "normal"
+FAIL Property background-blend-mode value 'screen, overlay' assert_equals: expected "screen, overlay" but got "screen"
+FAIL Property background-blend-mode value 'color, saturation' assert_equals: expected "color, saturation" but got "color"
+Harness: the test ran to completion.
+

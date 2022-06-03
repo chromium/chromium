@@ -10,11 +10,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
+#include "base/logging.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync_sessions/switches.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -44,8 +43,12 @@ bool IsSessionRestoreInProgress(SyncSessionsClient* sessions_client) {
 }
 
 bool IsWindowSyncable(const SyncedWindowDelegate& window_delegate) {
-  return window_delegate.ShouldSync() && window_delegate.GetTabCount() &&
-         window_delegate.HasWindow();
+  // TODO(crbug.com/1039234): remove the feature toggle once the logic is rolled
+  // out.
+  return window_delegate.ShouldSync() && window_delegate.HasWindow() &&
+         (window_delegate.GetTabCount() ||
+          base::FeatureList::IsEnabled(
+              switches::kSyncConsiderEmptyWindowsSyncable));
 }
 
 // On Android, it's possible to not have any tabbed windows when only custom
@@ -60,6 +63,21 @@ bool ScanForTabbedWindow(SyncedWindowDelegatesGetter* delegates_getter) {
     }
   }
   return false;
+}
+
+sync_pb::SessionWindow_BrowserType BrowserTypeFromWindowDelegate(
+    const SyncedWindowDelegate& delegate) {
+  if (delegate.IsTypeNormal()) {
+    return sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
+  }
+
+  if (delegate.IsTypePopup()) {
+    return sync_pb::SessionWindow_BrowserType_TYPE_POPUP;
+  }
+
+  // This is a custom tab within an app. These will not be restored on
+  // startup if not present.
+  return sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB;
 }
 
 }  // namespace
@@ -89,7 +107,7 @@ LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
   }
 }
 
-LocalSessionEventHandlerImpl::~LocalSessionEventHandlerImpl() {}
+LocalSessionEventHandlerImpl::~LocalSessionEventHandlerImpl() = default;
 
 void LocalSessionEventHandlerImpl::OnSessionRestoreComplete() {
   std::unique_ptr<WriteBatch> batch = delegate_->CreateLocalSessionWriteBatch();
@@ -152,17 +170,16 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
 
   for (auto& window_iter_pair : windows) {
     const SyncedWindowDelegate* window_delegate = window_iter_pair.second;
-    if (option == RELOAD_TABS) {
-      UMA_HISTOGRAM_COUNTS_1M("Sync.SessionTabs",
-                              window_delegate->GetTabCount());
-    }
-
-    // Make sure the window has tabs and a viewable window. The viewable
-    // window check is necessary because, for example, when a browser is
-    // closed the destructor is not necessarily run immediately. This means
+    // Make sure the window is viewable and is not about to be closed. The
+    // viewable window check is necessary because, for example, when a browser
+    // is closed the destructor is not necessarily run immediately. This means
     // its possible for us to get a handle to a browser that is about to be
-    // removed. If the tab count is 0 or the window is null, the browser is
-    // about to be deleted, so we ignore it.
+    // removed. If the window is null, the browser is about to be deleted, so we
+    // ignore it. There is no check for having open tabs anymore. This is needed
+    // to handle a case when the last tab is closed (on Andorid it doesn't mean
+    // that the window is about to be removed). Instead, there is a check if the
+    // window is about to be closed. If the window is last for the profile, the
+    // latest state will be kept.
     if (!IsWindowSyncable(*window_delegate)) {
       continue;
     }
@@ -219,18 +236,8 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
     if (found_tabs) {
       SyncedSessionWindow* synced_session_window =
           current_session->windows[window_id].get();
-      if (window_delegate->IsTypeNormal()) {
-        synced_session_window->window_type =
-            sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
-      } else if (window_delegate->IsTypePopup()) {
-        synced_session_window->window_type =
-            sync_pb::SessionWindow_BrowserType_TYPE_POPUP;
-      } else {
-        // This is a custom tab within an app. These will not be restored on
-        // startup if not present.
-        synced_session_window->window_type =
-            sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB;
-      }
+      synced_session_window->window_type =
+          BrowserTypeFromWindowDelegate(*window_delegate);
     }
   }
 
@@ -298,13 +305,6 @@ void LocalSessionEventHandlerImpl::AssociateTab(
 
   // Write to the sync model itself.
   batch->Put(std::move(specifics));
-
-  int current_index = tab_delegate->GetCurrentEntryIndex();
-  const GURL new_url = tab_delegate->GetVirtualURLAtIndex(current_index);
-  if (current_index >= 0 && new_url != old_url) {
-    delegate_->OnFaviconVisited(
-        new_url, tab_delegate->GetFaviconURLAtIndex(current_index));
-  }
 }
 
 void LocalSessionEventHandlerImpl::WriteTasksIntoSpecifics(
@@ -351,16 +351,6 @@ void LocalSessionEventHandlerImpl::OnLocalTabModified(
   // "uninteresting", we remove it from the window's tab information.
   AssociateWindows(DONT_RELOAD_TABS, batch.get());
   batch->Commit();
-}
-
-void LocalSessionEventHandlerImpl::OnFaviconsChanged(
-    const std::set<GURL>& page_urls,
-    const GURL& /* icon_url */) {
-  for (const GURL& page_url : page_urls) {
-    if (page_url.is_valid()) {
-      delegate_->OnPageFaviconUpdated(page_url);
-    }
-  }
 }
 
 sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
@@ -414,15 +404,20 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
   }
 
   if (is_supervised) {
-    const std::vector<std::unique_ptr<const SerializedNavigationEntry>>&
-        blocked_navigations = *tab_delegate.GetBlockedNavigations();
-    for (size_t i = 0; i < blocked_navigations.size(); ++i) {
+    const std::vector<std::unique_ptr<const SerializedNavigationEntry>>*
+        blocked_navigations = tab_delegate.GetBlockedNavigations();
+    DCHECK(blocked_navigations);
+    for (const auto& entry_unique_ptr : *blocked_navigations) {
       sync_pb::TabNavigation* navigation = specifics.add_navigation();
-      SessionNavigationToSyncData(*blocked_navigations[i]).Swap(navigation);
+      SessionNavigationToSyncData(*entry_unique_ptr).Swap(navigation);
       navigation->set_blocked_state(
           sync_pb::TabNavigation_BlockedState_STATE_BLOCKED);
       // TODO(bauerb): Add categories
     }
+  }
+
+  if (window_delegate) {
+    specifics.set_browser_type(BrowserTypeFromWindowDelegate(*window_delegate));
   }
 
   return specifics;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resources for developer-facing page chrome://ntp-tiles-internals. -->
+<grit-part>
+  <include name="IDR_NTP_TILES_INTERNALS_HTML"
+           file="../ntp_tiles/webui/resources/ntp_tiles_internals.html"
+           type="BINDATA" />
+  <include name="IDR_NTP_TILES_INTERNALS_JS"
+           file="../ntp_tiles/webui/resources/ntp_tiles_internals.js"
+           preprocess="true"
+           type="BINDATA" />
+  <include name="IDR_NTP_TILES_INTERNALS_CSS"
+           file="../ntp_tiles/webui/resources/ntp_tiles_internals.css"
+           type="BINDATA" />
+</grit-part>

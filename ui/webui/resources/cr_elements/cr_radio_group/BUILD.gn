@@ -6,9 +6,8 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
-  deps = [
-    ":cr_radio_group",
-  ]
+  uses_legacy_modules = true
+  deps = [ ":cr_radio_group" ]
 }
 
 js_library("cr_radio_group") {
@@ -33,15 +32,11 @@ polymer_modulizer("cr_radio_group") {
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [
-    ":cr_radio_group.m",
-  ]
+  deps = [ ":cr_radio_group.m" ]
 }
 
 js_library("cr_radio_group.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/cr_radio_group/cr_radio_group.m.js",
-  ]
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_radio_group/cr_radio_group.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",

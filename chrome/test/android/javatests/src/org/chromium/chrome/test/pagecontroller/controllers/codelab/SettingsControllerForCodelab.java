@@ -7,16 +7,13 @@ package org.chromium.chrome.test.pagecontroller.controllers.codelab;
 import org.chromium.chrome.test.pagecontroller.controllers.PageController;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
 
-// TODO: Implement page controller for MainPreferences.java.  Read
+// TODO: Implement page controller for MainSettings.java.  Read
 // documentation in the PageController class and refer to implemented Page
 // Controllers in the pagecontroller directory for examples.
 
 /**
  * Settings Menu Page Controller for the Code Lab, representing
- * MainPreferences.java.
- *
- * @see <a
- *         href="https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/android/java/src/org/chromium/chrome/browser/preferences/MainPreferences.java">MainPreferences.java</a>
+ * {@link org.chromium.chrome.browser.settings.MainSettings}.
  */
 public class SettingsControllerForCodelab extends PageController {
     // TODO: Replace null with a an actual locator.  Hint, see

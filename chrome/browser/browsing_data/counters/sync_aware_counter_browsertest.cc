@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -22,9 +24,11 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 
 using browsing_data::BrowsingDataCounter;
 
@@ -36,12 +40,16 @@ static const int kFirstProfileIndex = 0;
 class SyncAwareCounterTest : public SyncTest {
  public:
   SyncAwareCounterTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SyncAwareCounterTest(const SyncAwareCounterTest&) = delete;
+  SyncAwareCounterTest& operator=(const SyncAwareCounterTest&) = delete;
+
   ~SyncAwareCounterTest() override {}
 
   void SetUpOnMainThread() override {
     fake_web_history_service_ =
         std::make_unique<history::FakeWebHistoryService>();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     SyncTest::SetUpOnMainThread();
   }
 
@@ -57,7 +65,7 @@ class SyncAwareCounterTest : public SyncTest {
 
   void WaitForCounting() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     finished_ = false;
   }
 
@@ -88,8 +96,6 @@ class SyncAwareCounterTest : public SyncTest {
 
   bool finished_;
   bool sync_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncAwareCounterTest);
 };
 
 // Test that the counting restarts when autofill sync state changes.
@@ -108,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::Bind(&SyncAwareCounterTest::OnCounterResult,
-                          base::Unretained(this)));
+               base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,
+                                   base::Unretained(this)));
 
   // We sync all datatypes by default, so starting Sync means that we start
   // syncing autofill, and this should restart the counter.
@@ -167,12 +173,14 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   browsing_data::PasswordsCounter counter(
       PasswordStoreFactory::GetForProfile(profile,
                                           ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
       sync_service);
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::Bind(&SyncAwareCounterTest::OnCounterResult,
-                          base::Unretained(this)));
+               base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,
+                                   base::Unretained(this)));
 
   // We sync all datatypes by default, so starting Sync means that we start
   // syncing passwords, and this should restart the counter.
@@ -237,14 +245,14 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
 
   browsing_data::HistoryCounter counter(
       HistoryServiceFactory::GetForProfileWithoutCreating(browser()->profile()),
-      base::Bind(&SyncAwareCounterTest::GetFakeWebHistoryService,
-                 base::Unretained(this), base::Unretained(profile)),
+      base::BindRepeating(&SyncAwareCounterTest::GetFakeWebHistoryService,
+                          base::Unretained(this), base::Unretained(profile)),
       sync_service);
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::Bind(&SyncAwareCounterTest::OnCounterResult,
-                          base::Unretained(this)));
+               base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,
+                                   base::Unretained(this)));
 
   // We sync all datatypes by default, so starting Sync means that we start
   // syncing history deletion, and this should restart the counter.
@@ -278,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   sync_service->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
                                                     only_passwords);
   sync_blocker.reset();
-  EXPECT_FALSE(counter.HasTrackedTasks());
+  EXPECT_FALSE(counter.HasTrackedTasksForTesting());
   EXPECT_FALSE(CountingFinishedSinceLastAsked());
 
   // Same in this case.
@@ -289,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   sync_service->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, autofill_and_passwords);
   sync_blocker.reset();
-  EXPECT_FALSE(counter.HasTrackedTasks());
+  EXPECT_FALSE(counter.HasTrackedTasksForTesting());
   EXPECT_FALSE(CountingFinishedSinceLastAsked());
 
   // We start syncing history deletion again. This restarts the counter.

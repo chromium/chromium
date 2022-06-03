@@ -87,7 +87,7 @@ void RecentTabsPagePrefs::SetForeignSessionCollapsed(
   if (is_collapsed)
     update.Get()->SetBoolean(ConvertJavaStringToUTF8(env, session_tag), true);
   else
-    update.Get()->Remove(ConvertJavaStringToUTF8(env, session_tag), NULL);
+    update.Get()->RemoveKey(ConvertJavaStringToUTF8(env, session_tag));
 }
 
 // static

@@ -1,0 +1,48 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [600, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [120, 120],
+      "bounds": [45, 45],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='C' class='overlap3'",
+      "position": [330, 450],
+      "bounds": [15, 15],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='D' class='overlap4')",
+      "position": [352, 450],
+      "bounds": [16, 15],
+      "backgroundColor": "#FFFF00"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [90, 90, 0, 1]
+      ]
+    }
+  ]
+}
+

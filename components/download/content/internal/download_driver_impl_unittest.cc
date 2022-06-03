@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
-#include "components/download/public/common//mock_simple_download_manager.h"
+#include "components/download/public/common/mock_simple_download_manager.h"
 #include "content/public/test/fake_download_item.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -57,6 +57,9 @@ class DownloadDriverImplTest : public testing::Test {
         task_runner_(new base::TestSimpleTaskRunner),
         handle_(task_runner_) {}
 
+  DownloadDriverImplTest(const DownloadDriverImplTest&) = delete;
+  DownloadDriverImplTest& operator=(const DownloadDriverImplTest&) = delete;
+
   ~DownloadDriverImplTest() override = default;
 
   void SetUp() override {
@@ -75,9 +78,6 @@ class DownloadDriverImplTest : public testing::Test {
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadDriverImplTest);
 };
 
 // Ensure the download manager can be initialized after the download driver.

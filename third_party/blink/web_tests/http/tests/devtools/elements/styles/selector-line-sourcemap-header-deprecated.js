@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that sourcemap is applied correctly when specified by the respective HTTP header.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">
@@ -29,8 +29,8 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step2);
   }
 
-  function step2() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function step2() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

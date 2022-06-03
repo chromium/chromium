@@ -42,10 +42,10 @@ suite(extension_manager_unit_tests.suiteName, function() {
   const testActivities = {activities: []};
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     service = new TestService();
-    Service.instance_ = service;
+    Service.setInstance(service);
 
     manager = document.createElement('extensions-manager');
     document.body.appendChild(manager);
@@ -124,15 +124,17 @@ suite(extension_manager_unit_tests.suiteName, function() {
     simulateExtensionInstall(extension);
 
     // The detail view is not present until navigation.
-    expectFalse(!!manager.$$('extensions-detail-view'));
+    expectFalse(!!manager.shadowRoot.querySelector('extensions-detail-view'));
     navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
-    const detailsView = manager.$$('extensions-detail-view');
+    const detailsView =
+        manager.shadowRoot.querySelector('extensions-detail-view');
     expectTrue(!!detailsView);  // View should now be present.
     expectEquals(extension.id, detailsView.data.id);
     expectEquals(description, detailsView.data.description);
     expectEquals(
         description,
-        detailsView.$$('.section .section-content').textContent.trim());
+        detailsView.shadowRoot.querySelector('.section .section-content')
+            .textContent.trim());
   });
 
   test(
@@ -150,7 +152,8 @@ suite(extension_manager_unit_tests.suiteName, function() {
         simulateExtensionInstall(secondExtension);
 
         navigation.navigateTo({page: Page.DETAILS, extensionId: extension.id});
-        const detailsView = manager.$$('extensions-detail-view');
+        const detailsView =
+            manager.shadowRoot.querySelector('extensions-detail-view');
 
         let extensionCopy = Object.assign({}, extension);
         extensionCopy.description = newDescription;
@@ -170,7 +173,8 @@ suite(extension_manager_unit_tests.suiteName, function() {
         expectEquals(newDescription, detailsView.data.description);
         expectEquals(
             newDescription,
-            detailsView.$$('.section .section-content').textContent.trim());
+            detailsView.shadowRoot.querySelector('.section .section-content')
+                .textContent.trim());
       });
 
   test(

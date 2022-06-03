@@ -12,8 +12,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 
-using storage::ScopedFile;
-
 namespace storage {
 
 namespace {

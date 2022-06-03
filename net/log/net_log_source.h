@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_source_type.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -25,9 +25,13 @@ struct NET_EXPORT NetLogSource {
 
   NetLogSource();
   NetLogSource(NetLogSourceType type, uint32_t id);
+  NetLogSource(NetLogSourceType type, uint32_t id, base::TimeTicks start_time);
+
+  bool operator==(const NetLogSource& rhs) const;
+
   bool IsValid() const;
 
-  // Adds the source to a DictionaryValue containing event parameters,
+  // Adds the source to a dictionary containing event parameters,
   // using the name "source_dependency".
   void AddToEventParameters(base::Value* event_params) const;
 
@@ -35,15 +39,9 @@ struct NET_EXPORT NetLogSource {
   // describes |this|.
   base::Value ToEventParameters() const;
 
-  // Attempts to extract a NetLogSource from a set of event parameters.  Returns
-  // true and writes the result to |source| on success.  Returns false and
-  // makes |source| an invalid source on failure.
-  // TODO(mmenke):  Long term, we want to remove this.
-  static bool FromEventParameters(const base::Value* event_params,
-                                  NetLogSource* source);
-
   NetLogSourceType type;
   uint32_t id;
+  base::TimeTicks start_time;
 };
 
 }  // namespace net

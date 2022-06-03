@@ -1,0 +1,25 @@
+<!doctype HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+  }
+</style>
+<div id="observeme"></div>
+
+<script>
+test(() => {
+  let previousNum = 0;
+  for (let i = 1; i < 50; ++i) {
+    new ResizeObserver(function() {
+      assert_equals(previousNum + 1, i);
+      previousNum = i;
+    }).observe(observeme);
+  }
+  observeme.style.height = "110px";
+}, "ResizeObserver notifications are delivered in order.");
+</script>
+

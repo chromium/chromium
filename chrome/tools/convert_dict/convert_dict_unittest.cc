@@ -7,11 +7,10 @@
 #include <map>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/icu_string_conversions.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/tools/convert_dict/aff_reader.h"
@@ -66,7 +65,7 @@ bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
 // * Creates bdict data.
 // * Verify the bdict data.
 void RunDictionaryTest(const char* codepage,
-                       const std::map<base::string16, bool>& word_list) {
+                       const std::map<std::u16string, bool>& word_list) {
   // Create an affix data and a dictionary data.
   std::string aff_data(base::StringPrintf("SET %s\n", codepage));
 
@@ -104,7 +103,7 @@ void RunDictionaryTest(const char* codepage,
     for (size_t i = 0; i < dic_reader.words().size(); ++i) {
       SCOPED_TRACE(base::StringPrintf("dic_reader.words()[%" PRIuS "]: %s",
                                       i, dic_reader.words()[i].first.c_str()));
-      base::string16 word(base::UTF8ToUTF16(dic_reader.words()[i].first));
+      std::u16string word(base::UTF8ToUTF16(dic_reader.words()[i].first));
       EXPECT_TRUE(word_list.find(word) != word_list.end());
     }
 
@@ -133,8 +132,8 @@ void RunDictionaryTest(const char* codepage,
   // Deletes the temporary files.
   // We need to delete them after the above AffReader and DicReader are deleted
   // since they close the input files in their destructors.
-  base::DeleteFile(aff_file, false);
-  base::DeleteFile(dic_file, false);
+  base::DeleteFile(aff_file);
+  base::DeleteFile(dic_file);
 }
 
 }  // namespace
@@ -146,11 +145,10 @@ TEST(ConvertDictTest, English) {
       L"I", L"he", L"she", L"it", L"we", L"you", L"they",
   };
 
-  std::map<base::string16, bool> word_list;
+  std::map<std::u16string, bool> word_list;
   for (size_t i = 0; i < base::size(kWords); ++i) {
-    word_list.insert(
-        std::make_pair<base::string16, bool>(base::WideToUTF16(kWords[i]),
-                                             true));
+    word_list.insert(std::make_pair<std::u16string, bool>(
+        base::WideToUTF16(kWords[i]), true));
   }
 
   RunDictionaryTest(kCodepage, word_list);
@@ -170,11 +168,10 @@ TEST(ConvertDictTest, Russian) {
       L"\x043e\x043d\x0438",
   };
 
-  std::map<base::string16, bool> word_list;
+  std::map<std::u16string, bool> word_list;
   for (size_t i = 0; i < base::size(kWords); ++i) {
-    word_list.insert(
-        std::make_pair<base::string16, bool>(base::WideToUTF16(kWords[i]),
-                                             true));
+    word_list.insert(std::make_pair<std::u16string, bool>(
+        base::WideToUTF16(kWords[i]), true));
   }
 
   RunDictionaryTest(kCodepage, word_list);
@@ -196,11 +193,10 @@ TEST(ConvertDictTest, Hungarian) {
       L"\x006d\x0061\x0067\x0075\x006b",
   };
 
-  std::map<base::string16, bool> word_list;
+  std::map<std::u16string, bool> word_list;
   for (size_t i = 0; i < base::size(kWords); ++i) {
-    word_list.insert(
-        std::make_pair<base::string16, bool>(base::WideToUTF16(kWords[i]),
-                                             true));
+    word_list.insert(std::make_pair<std::u16string, bool>(
+        base::WideToUTF16(kWords[i]), true));
   }
 
   RunDictionaryTest(kCodepage, word_list);

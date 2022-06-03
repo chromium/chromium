@@ -16,7 +16,9 @@ namespace internal {
 class ThreadGroupNative::ScopedCommandsExecutor
     : public ThreadGroup::BaseScopedCommandsExecutor {
  public:
-  ScopedCommandsExecutor(ThreadGroupNative* outer) : outer_(outer) {}
+  explicit ScopedCommandsExecutor(ThreadGroupNative* outer) : outer_(outer) {}
+  ScopedCommandsExecutor(const ScopedCommandsExecutor&) = delete;
+  ScopedCommandsExecutor& operator=(const ScopedCommandsExecutor&) = delete;
   ~ScopedCommandsExecutor() {
     CheckedLock::AssertNoLockHeldOnCurrentThread();
 
@@ -33,8 +35,6 @@ class ThreadGroupNative::ScopedCommandsExecutor
  private:
   ThreadGroupNative* const outer_;
   size_t num_threadpool_work_to_submit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCommandsExecutor);
 };
 
 ThreadGroupNative::ThreadGroupNative(TrackedRef<TaskTracker> task_tracker,
@@ -54,6 +54,8 @@ ThreadGroupNative::~ThreadGroupNative() {
 }
 
 void ThreadGroupNative::Start(WorkerEnvironment worker_environment) {
+  ThreadGroup::Start();
+
   worker_environment_ = worker_environment;
 
   StartImpl();
@@ -102,10 +104,13 @@ void ThreadGroupNative::RunNextTaskSourceImpl() {
 void ThreadGroupNative::UpdateMinAllowedPriorityLockRequired() {
   // Tasks should yield as soon as there is work of higher priority in
   // |priority_queue_|.
-  min_allowed_priority_.store(priority_queue_.IsEmpty()
-                                  ? TaskPriority::BEST_EFFORT
-                                  : priority_queue_.PeekSortKey().priority(),
-                              std::memory_order_relaxed);
+  if (priority_queue_.IsEmpty()) {
+    max_allowed_sort_key_.store(kMaxYieldSortKey, std::memory_order_relaxed);
+  } else {
+    max_allowed_sort_key_.store({priority_queue_.PeekSortKey().priority(),
+                                 priority_queue_.PeekSortKey().worker_count()},
+                                std::memory_order_relaxed);
+  }
 }
 
 RegisteredTaskSource ThreadGroupNative::GetWork() {
@@ -170,16 +175,13 @@ size_t ThreadGroupNative::GetMaxConcurrentNonBlockedTasksDeprecated() const {
   return std::max(3, num_cores - 1);
 }
 
-void ThreadGroupNative::ReportHeartbeatMetrics() const {
-  // Native thread pools do not provide the capability to determine the
-  // number of worker threads created.
-}
-
 void ThreadGroupNative::DidUpdateCanRunPolicy() {
   ScopedCommandsExecutor executor(this);
   CheckedAutoLock auto_lock(lock_);
   EnsureEnoughWorkersLockRequired(&executor);
 }
+
+void ThreadGroupNative::OnShutdownStarted() {}
 
 }  // namespace internal
 }  // namespace base

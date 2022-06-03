@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/site_isolation_mode.h"
 #include "url/origin.h"
 
 namespace content {
@@ -25,6 +25,9 @@ namespace content {
 // These methods can be called from any thread.
 class CONTENT_EXPORT SiteIsolationPolicy {
  public:
+  SiteIsolationPolicy(const SiteIsolationPolicy&) = delete;
+  SiteIsolationPolicy& operator=(const SiteIsolationPolicy&) = delete;
+
   // Returns true if every site should be placed in a dedicated process.
   static bool UseDedicatedProcessesForAllSites();
 
@@ -38,14 +41,31 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // Returns true if error page isolation is enabled.
   static bool IsErrorPageIsolationEnabled(bool in_main_frame);
 
-  // Returns true if the PDF compositor should be enabled to allow out-of-
-  // process iframes (OOPIF's) to print properly.
-  static bool ShouldPdfCompositorBeEnabledForOopifs();
-
   // Returns true if isolated origins may be added at runtime in response
-  // to hints such as users typing in a password or (in the future) an origin
-  // opting itself into isolation via a header.
+  // to hints such as users typing in a password or sites serving headers like
+  // Cross-Origin-Opener-Policy.
   static bool AreDynamicIsolatedOriginsEnabled();
+
+  // Returns true if isolated origins preloaded with the browser should be
+  // applied.  For example, this is used to apply memory limits to preloaded
+  // isolated origins on Android.
+  static bool ArePreloadedIsolatedOriginsEnabled();
+
+  // Returns true if the "Origin-Agent-Cluster" header should result in a
+  // separate process for isolated origins.  This is used to turn off opt-in
+  // origin isolation on low-memory Android devices.
+  static bool IsProcessIsolationForOriginAgentClusterEnabled();
+
+  // Returns true if the OriginAgentCluster header will be respected.
+  static bool IsOriginAgentClusterEnabled();
+
+  // Returns true if Cross-Origin-Opener-Policy headers may be used as
+  // heuristics for turning on site isolation.
+  static bool IsSiteIsolationForCOOPEnabled();
+
+  // Return true if sites that were isolated due to COOP headers should be
+  // persisted across restarts.
+  static bool ShouldPersistIsolatedCOOPSites();
 
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.
@@ -54,10 +74,9 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // startup.
   static void ApplyGlobalIsolatedOrigins();
 
-  // Records metrics about which site isolation command-line flags are present,
-  // and sets up a timer to keep recording them every 24 hours.  This should be
-  // called once on browser startup.
-  static void StartRecordingSiteIsolationFlagUsage();
+  // Forces other methods in this class to reread flag values instead of using
+  // their cached value.
+  static void DisableFlagCachingForTesting();
 
  private:
   SiteIsolationPolicy();  // Not instantiable.
@@ -65,11 +84,6 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // Gets isolated origins from cmdline and/or from field trial param.
   static std::string GetIsolatedOriginsFromCommandLine();
   static std::string GetIsolatedOriginsFromFieldTrial();
-
-  // Records metrics about which site isolation command-line flags are present.
-  static void RecordSiteIsolationFlagUsage();
-
-  DISALLOW_COPY_AND_ASSIGN(SiteIsolationPolicy);
 };
 
 }  // namespace content

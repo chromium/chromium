@@ -47,7 +47,11 @@ class ConfigureLoggingTestBase(unittest.TestCase):
         logger.propagate = False
 
         logging_level = self._logging_level()
-        self._handlers = configure_logging(logging_level=logging_level, logger=logger, stream=log_stream, include_time=False)
+        self._handlers = configure_logging(
+            logging_level=logging_level,
+            logger=logger,
+            stream=log_stream,
+            include_time=False)
         self._log = logger
         self._log_stream = log_stream
 
@@ -67,7 +71,6 @@ class ConfigureLoggingTestBase(unittest.TestCase):
 
 
 class ConfigureLoggingTest(ConfigureLoggingTestBase):
-
     """Tests configure_logging() with the default logging level."""
 
     def _logging_level(self):
@@ -92,12 +95,10 @@ class ConfigureLoggingTest(ConfigureLoggingTestBase):
     def test_two_messages(self):
         self._log.info('message1')
         self._log.info('message2')
-        self._assert_log_messages(['message1\n',
-                                   'message2\n'])
+        self._assert_log_messages(['message1\n', 'message2\n'])
 
 
 class ConfigureLoggingVerboseTest(ConfigureLoggingTestBase):
-
     def _logging_level(self):
         return logging.DEBUG
 
@@ -111,7 +112,6 @@ class ConfigureLoggingVerboseTest(ConfigureLoggingTestBase):
 
 
 class ConfigureLoggingCustomLevelTest(ConfigureLoggingTestBase):
-
     """Tests configure_logging() with a custom logging level."""
 
     _level = 36

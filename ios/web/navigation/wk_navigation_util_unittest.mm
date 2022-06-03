@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/test/test_url_constants.h"
 #include "net/base/escape.h"
 #import "net/base/mac/url_conversions.h"
@@ -58,10 +59,68 @@ base::JSONReader::ValueWithError ExtractSessionDict(GURL restore_session_url) {
 
 typedef PlatformTest WKNavigationUtilTest;
 
+// Tests various inputs for GetSafeItemRange.
+TEST_F(WKNavigationUtilTest, GetSafeItemRange) {
+  // Session size does not exceed kMaxSessionSize and last_committed_item_index
+  // is in range.
+  for (int item_count = 0; item_count <= kMaxSessionSize; item_count++) {
+    for (int item_index = 0; item_index < item_count; item_index++) {
+      int offset = 0;
+      int size = 0;
+      EXPECT_EQ(item_index,
+                GetSafeItemRange(item_index, item_count, &offset, &size))
+          << "item_count: " << item_count << " item_index: " << item_index;
+      EXPECT_EQ(0, offset) << "item_count: " << item_count
+                           << " item_index: " << item_index;
+      EXPECT_EQ(item_count, size)
+          << "item_count: " << item_count << " item_index: " << item_index;
+    }
+  }
+
+  // Session size is 1 item longer than kMaxSessionSize.
+  int offset = 0;
+  int size = 0;
+  EXPECT_EQ(0, GetSafeItemRange(0, kMaxSessionSize + 1, &offset, &size));
+  EXPECT_EQ(0, offset);
+  EXPECT_EQ(kMaxSessionSize, size);
+
+  offset = 0;
+  size = 0;
+  EXPECT_EQ(
+      kMaxSessionSize - 1,
+      GetSafeItemRange(kMaxSessionSize, kMaxSessionSize + 1, &offset, &size));
+  EXPECT_EQ(1, offset);
+  EXPECT_EQ(kMaxSessionSize, size);
+
+  offset = 0;
+  size = 0;
+  EXPECT_EQ(kMaxSessionSize / 2,
+            GetSafeItemRange(kMaxSessionSize / 2, kMaxSessionSize + 1, &offset,
+                             &size));
+  EXPECT_EQ(0, offset);
+  EXPECT_EQ(kMaxSessionSize, size);
+
+  offset = 0;
+  size = 0;
+  EXPECT_EQ(kMaxSessionSize / 2,
+            GetSafeItemRange(kMaxSessionSize / 2 + 1, kMaxSessionSize + 1,
+                             &offset, &size));
+  EXPECT_EQ(1, offset);
+  EXPECT_EQ(kMaxSessionSize, size);
+
+  offset = 0;
+  size = 0;
+  EXPECT_EQ(kMaxSessionSize / 2 - 1,
+            GetSafeItemRange(kMaxSessionSize / 2 - 1, kMaxSessionSize + 1,
+                             &offset, &size));
+  EXPECT_EQ(0, offset);
+  EXPECT_EQ(kMaxSessionSize, size);
+}
+
 TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrl) {
   auto item0 = std::make_unique<NavigationItemImpl>();
   item0->SetURL(GURL("http://www.0.com"));
-  item0->SetTitle(base::ASCIIToUTF16("Test Website 0"));
+  item0->SetTitle(u"Test Website 0");
   auto item1 = std::make_unique<NavigationItemImpl>();
   item1->SetURL(GURL("http://www.1.com"));
   // Create an App-specific URL
@@ -139,7 +198,6 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForLargeSession) {
   // Extract session JSON from restoration URL.
   base::JSONReader::ValueWithError value_with_error =
       ExtractSessionDict(restore_session_url);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, value_with_error.error_code);
   ASSERT_TRUE(value_with_error.value.has_value());
 
   // Verify that all titles and URLs are present.
@@ -174,7 +232,6 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForExtraLargeForwardList) {
   // Extract session JSON from restoration URL.
   base::JSONReader::ValueWithError value_with_error =
       ExtractSessionDict(restore_session_url);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, value_with_error.error_code);
   ASSERT_TRUE(value_with_error.value.has_value());
 
   // Verify that first kMaxSessionSize titles and URLs are present.
@@ -219,7 +276,6 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForExtraLargeBackList) {
   // Extract session JSON from restoration URL.
   base::JSONReader::ValueWithError value_with_error =
       ExtractSessionDict(restore_session_url);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, value_with_error.error_code);
   ASSERT_TRUE(value_with_error.value.has_value());
 
   // Verify that last kMaxSessionSize titles and URLs are present.
@@ -265,7 +321,6 @@ TEST_F(WKNavigationUtilTest,
   // Extract session JSON from restoration URL.
   base::JSONReader::ValueWithError value_with_error =
       ExtractSessionDict(restore_session_url);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, value_with_error.error_code);
   ASSERT_TRUE(value_with_error.value.has_value());
 
   // Verify that last kMaxSessionSize titles and URLs are present.
@@ -312,53 +367,6 @@ TEST_F(WKNavigationUtilTest, CreateAndExtractTargetURL) {
   EXPECT_EQ(target_url, extracted_url);
 }
 
-TEST_F(WKNavigationUtilTest, IsPlaceholderUrl) {
-  // Valid placeholder URLs.
-  EXPECT_TRUE(IsPlaceholderUrl(GURL("about:blank?for=")));
-  EXPECT_TRUE(IsPlaceholderUrl(GURL("about:blank?for=chrome%3A%2F%2Fnewtab")));
-  EXPECT_TRUE(IsPlaceholderUrl([NSURL URLWithString:@"about:blank?for="]));
-  EXPECT_TRUE(IsPlaceholderUrl(GURL("about:blank?for=chrome%3A%2F%2Fnewtab")));
-  EXPECT_TRUE(IsPlaceholderUrl(
-      [NSURL URLWithString:@"about:blank?for=chrome%3A%2F%2Fnewtab"]));
-
-  // Not an about:blank URL.
-  EXPECT_FALSE(IsPlaceholderUrl(GURL::EmptyGURL()));
-  EXPECT_FALSE(IsPlaceholderUrl([NSURL URLWithString:@""]));
-
-  // Missing ?for= query parameter.
-  EXPECT_FALSE(IsPlaceholderUrl(GURL("about:blank")));
-  EXPECT_FALSE(IsPlaceholderUrl([NSURL URLWithString:@"about:blank"]));
-  EXPECT_FALSE(IsPlaceholderUrl(GURL("about:blank?chrome:%3A%2F%2Fnewtab")));
-  EXPECT_FALSE(IsPlaceholderUrl(
-      [NSURL URLWithString:@"about:blank?chrome:%3A%2F%2Fnewtab"]));
-}
-
-TEST_F(WKNavigationUtilTest, EncodReturnsEmptyOnInvalidUrls) {
-  EXPECT_EQ(GURL::EmptyGURL(), CreatePlaceholderUrlForUrl(GURL::EmptyGURL()));
-  EXPECT_EQ(GURL::EmptyGURL(), CreatePlaceholderUrlForUrl(GURL("notaurl")));
-}
-
-TEST_F(WKNavigationUtilTest, EncodeDecodeValidUrls) {
-  {
-    GURL original("chrome://chrome-urls");
-    GURL encoded("about:blank?for=chrome%3A%2F%2Fchrome-urls");
-    EXPECT_EQ(encoded, CreatePlaceholderUrlForUrl(original));
-    EXPECT_EQ(original, ExtractUrlFromPlaceholderUrl(encoded));
-  }
-  {
-    GURL original("about:blank");
-    GURL encoded("about:blank?for=about%3Ablank");
-    EXPECT_EQ(encoded, CreatePlaceholderUrlForUrl(original));
-    EXPECT_EQ(original, ExtractUrlFromPlaceholderUrl(encoded));
-  }
-}
-
-// Tests that invalid URLs will be rejected in decoding.
-TEST_F(WKNavigationUtilTest, DecodeRejectInvalidUrls) {
-  GURL encoded("about:blank?for=thisisnotanurl");
-  EXPECT_EQ(GURL::EmptyGURL(), ExtractUrlFromPlaceholderUrl(encoded));
-}
-
 // Tests that app specific urls and non-placeholder about: urls do not need a
 // user agent type, but normal urls and placeholders do.
 TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
@@ -372,8 +380,9 @@ TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
   EXPECT_FALSE(URLNeedsUserAgentType(
       non_user_agent_urls.ReplaceComponents(scheme_replacements)));
 
-  // Not a placeholder or normal URL.
-  EXPECT_TRUE(URLNeedsUserAgentType(GURL("about:blank?for=")));
+  // about:blank pages.
+  EXPECT_FALSE(URLNeedsUserAgentType(GURL("about:blank")));
+  // Normal URL.
   EXPECT_TRUE(URLNeedsUserAgentType(GURL("http://www.0.com")));
 
   // file:// URL.
@@ -383,7 +392,6 @@ TEST_F(WKNavigationUtilTest, URLNeedsUserAgentType) {
   GURL app_specific(
       url::SchemeHostPort(kTestAppSpecificScheme, "foo", 0).Serialize());
   EXPECT_FALSE(URLNeedsUserAgentType(app_specific));
-  EXPECT_FALSE(URLNeedsUserAgentType(CreatePlaceholderUrlForUrl(app_specific)));
 }
 
 }  // namespace wk_navigation_util

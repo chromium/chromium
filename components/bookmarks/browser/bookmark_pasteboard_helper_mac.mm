@@ -94,8 +94,8 @@ void ConvertNSArrayToElements(
       url = GURL(base::SysNSStringToUTF8(url_string));
     }
 
-    auto new_node =
-        std::make_unique<BookmarkNode>(/*id=*/0, base::GenerateGUID(), url);
+    auto new_node = std::make_unique<BookmarkNode>(
+        /*id=*/0, base::GUID::GenerateRandomV4(), url);
 
     NSNumber* node_id =
         base::mac::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);
@@ -150,7 +150,7 @@ bool ReadWebURLsWithTitlesPboardType(
 
   NSUInteger len = [titles count];
   for (NSUInteger i = 0; i < len; ++i) {
-    base::string16 title = base::SysNSStringToUTF16(titles[i]);
+    std::u16string title = base::SysNSStringToUTF16(titles[i]);
     std::string url = base::SysNSStringToUTF8(urls[i]);
     if (!url.empty()) {
       BookmarkNodeData::Element element;

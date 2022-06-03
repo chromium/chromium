@@ -4,16 +4,17 @@
 
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/android_sms/fake_android_sms_app_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #endif
 
@@ -53,13 +54,12 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
   EXPECT_FALSE(manager.IsTabVisible(profile(), web_contents(), origin));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PushMessagingNotificationManagerTest,
        SkipEnforceUserVisibleOnlyRequirementsForAndroidMessages) {
   GURL app_url("https://example.com/test/");
-  chromeos::android_sms::FakeAndroidSmsAppManager*
-      fake_android_sms_app_manager =
-          new chromeos::android_sms::FakeAndroidSmsAppManager();
+  auto* fake_android_sms_app_manager =
+      new ash::android_sms::FakeAndroidSmsAppManager();
   fake_android_sms_app_manager->SetInstalledAppUrl(app_url);
 
   chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
@@ -75,8 +75,8 @@ TEST_F(PushMessagingNotificationManagerTest,
 
   bool was_called = false;
   manager.EnforceUserVisibleOnlyRequirements(
-      app_url.GetOrigin(), 0l,
-      base::BindRepeating(
+      app_url.DeprecatedGetOriginAsURL(), 0l,
+      base::BindOnce(
           [](bool* was_called, bool did_show_generic_notification) {
             *was_called = true;
           },

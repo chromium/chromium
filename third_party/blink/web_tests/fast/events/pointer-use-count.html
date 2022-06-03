@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<style>
+div.box {
+  margin: 5px;
+  padding: 20px;
+  float: left;
+  width: 50px;
+  height: 50px;
+}
+</style>
+
+<body>
+
+<div id="grey" class="box" style="background-color:grey">
+</div>
+
+</body>
+
+<script>
+
+var PointerEventAttributeCount = 1321; // Comes from enum Feature in UseCounter.h
+var PointerEventAddListenerCount = 1347; // Comes from enum Feature in UseCounter.h
+var PointerId = 3866; // Comes from enum WebFeature in web_feature.mojom
+
+promise_test(async () => {
+
+  var targetDiv = document.getElementById("grey");
+  var pid = 0;
+  var rect = document.getElementById("grey").getBoundingClientRect();
+  var x1 = rect.left + 5;
+  var y1 = rect.top + 5;
+
+  assert_false(internals.isUseCounted(document, PointerEventAddListenerCount));
+
+  targetDiv.addEventListener("pointerdown", function(event) {
+    // Read pointerId to trigger MeasureAs.
+    pid = event.pointerId;
+  });
+
+  assert_true(internals.isUseCounted(document, PointerEventAddListenerCount));
+
+  assert_false(internals.isUseCounted(document, PointerEventAttributeCount));
+
+  assert_false(internals.isUseCounted(document, PointerId));
+
+  await mouseClickOn(x1, y1);
+
+  await waitUntil( () => { return pid>0; } );
+
+  assert_true(internals.isUseCounted(document, PointerEventAttributeCount));
+
+  assert_true(internals.isUseCounted(document, PointerId));
+
+}, "Verifies that use of pointerEvents is measured by use counters.");
+
+</script>

@@ -6,7 +6,6 @@
 
 #include "content/browser/gpu/gpu_process_host.h"
 
-#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -38,8 +37,8 @@ void GpuProcessHost::BindHostReceiver(
     mojo::GenericPendingReceiver generic_receiver) {
 #if defined(OS_ANDROID)
   if (auto r = generic_receiver.As<media::mojom::AndroidOverlayProvider>()) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&BindAndroidOverlayProvider, std::move(r)));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&BindAndroidOverlayProvider, std::move(r)));
     return;
   }
 #endif

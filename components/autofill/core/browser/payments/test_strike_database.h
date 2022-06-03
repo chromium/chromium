@@ -9,9 +9,9 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
+#include "components/autofill/core/browser/proto/strike_data.pb.h"
+#include "components/autofill/core/browser/strike_database.h"
 
 namespace autofill {
 

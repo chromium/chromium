@@ -4,7 +4,7 @@
 
 #import <WebKit/WebKit.h>
 
-#import "ios/web/public/test/fakes/test_web_view_content_view.h"
+#import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/test/wk_web_view_crash_utils.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
@@ -22,8 +22,8 @@ class WebTestFixtureTest : public web::WebTestWithWebController {
   void SetUp() override {
     web::WebTestWithWebController::SetUp();
     web_view_ = web::BuildTerminatedWKWebView();
-    TestWebViewContentView* web_view_content_view =
-        [[TestWebViewContentView alloc]
+    CRWFakeWebViewContentView* web_view_content_view =
+        [[CRWFakeWebViewContentView alloc]
             initWithMockWebView:web_view_
                      scrollView:[web_view_ scrollView]];
     [web_controller() injectWebViewContentView:web_view_content_view];

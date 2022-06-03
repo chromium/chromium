@@ -25,7 +25,7 @@ void MediaControlAnimationEventListener::Detach() {
       event_type_names::kAnimationiteration, this, false);
 }
 
-void MediaControlAnimationEventListener::Trace(Visitor* visitor) {
+void MediaControlAnimationEventListener::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   EventListener::Trace(visitor);
 }
@@ -44,6 +44,6 @@ void MediaControlAnimationEventListener::Invoke(ExecutionContext* context,
   NOTREACHED();
 }
 
-void MediaControlAnimationEventListener::Observer::Trace(Visitor*) {}
+void MediaControlAnimationEventListener::Observer::Trace(Visitor*) const {}
 
 }  // namespace blink

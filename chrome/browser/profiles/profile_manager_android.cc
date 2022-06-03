@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profiles/profile_manager_android.h"
 
-#include "chrome/android/public/profiles/jni_headers/ProfileManager_jni.h"
+#include "chrome/browser/profiles/android/jni_headers/ProfileManager_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 
 ProfileManagerAndroid::ProfileManagerAndroid() = default;

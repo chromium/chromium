@@ -1,0 +1,17 @@
+This test documents the behavior of MouseEvent.offsetX/Y in response to HTMLElement.click().
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Simulated click with .click():
+PASS event.offsetX is 0
+PASS event.offsetY is 0
+Click with mouse at 0,0:
+PASS event.offsetX is 0
+PASS event.offsetY is 0
+Click with mouse at 40,50:
+PASS event.offsetX is 40
+PASS event.offsetY is 50
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

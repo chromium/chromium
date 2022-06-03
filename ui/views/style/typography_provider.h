@@ -5,8 +5,8 @@
 #ifndef UI_VIEWS_STYLE_TYPOGRAPHY_PROVIDER_H_
 #define UI_VIEWS_STYLE_TYPOGRAPHY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/views_export.h"
 
@@ -22,10 +22,18 @@ class View;
 class VIEWS_EXPORT TypographyProvider {
  public:
   TypographyProvider() = default;
+
+  TypographyProvider(const TypographyProvider&) = delete;
+  TypographyProvider& operator=(const TypographyProvider&) = delete;
+
   virtual ~TypographyProvider() = default;
 
-  // Gets the FontList for the given |context| and |style|.
-  virtual const gfx::FontList& GetFont(int context, int style) const;
+  // Gets the FontDetails for the given |context| and |style|.
+  virtual ui::ResourceBundle::FontDetails GetFontDetails(int context,
+                                                         int style) const;
+
+  // Convenience wrapper that gets a FontList for |context| and |style|.
+  const gfx::FontList& GetFont(int context, int style) const;
 
   // Gets the color for the given |context| and |style|. |view| is the View
   // requesting the color.
@@ -33,7 +41,7 @@ class VIEWS_EXPORT TypographyProvider {
                            int context,
                            int style) const;
 
-  // Gets the line spacing, or 0 if it should be provided by gfx::FontList.
+  // Gets the line spacing.  By default this is the font height.
   virtual int GetLineHeight(int context, int style) const;
 
   // Returns the weight that will result in the ResourceBundle returning an
@@ -42,9 +50,6 @@ class VIEWS_EXPORT TypographyProvider {
   // and for user configurations where the NORMAL font is already BOLD. In both
   // of these cases, NORMAL is returned instead.
   static gfx::Font::Weight MediumWeightForUI();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TypographyProvider);
 };
 
 }  // namespace views

@@ -1,12 +1,13 @@
-group
-++document Name='PDF document containing 1 page'
-++++region Name='Page 1'
-++++++group IsControlElement=false
-++++++++description Name='Hello'
-++++++++++description Name='Hello'
-++++++++description Name=', nice '
-++++++++description Name='meeting'
-++++++++++description Name='meeting'
-++++++++description Name=' y'
-++++++++++description Name=' y'
-++++++++description Name='ou'
+Document Name='PDF document containing 1 page'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Custom Name='Hello'
+++++++++Text Name='Hello' IsControlElement=false
+++++++++Group IsControlElement=false
+++++++++++Text Name='Text Note' IsControlElement=false
+++++++Text Name=', nice '
+++++++Custom Name='meeting'
+++++++++Text Name='meeting' IsControlElement=false
+++++++Custom Name=' y'
+++++++++Text Name=' y' IsControlElement=false
+++++++Text Name='ou'

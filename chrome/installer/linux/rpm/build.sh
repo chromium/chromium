@@ -24,7 +24,7 @@ gen_spec() {
   process_template "${SCRIPTDIR}/chrome.spec.template" "${SPEC}"
 }
 
-# Setup the installation directory hierachy in the package staging area.
+# Setup the installation directory hierarchy in the package staging area.
 prep_staging_rpm() {
   prep_staging_common
   install -m 755 -d "${STAGEDIR}/etc/cron.daily"
@@ -49,7 +49,7 @@ stage_install_rpm() {
   SHLIB_PERMS=755
   stage_install_common
   log_cmd echo "Staging RPM install files in '${STAGEDIR}'..."
-  process_template "${BUILDDIR}/installer/common/rpmrepo.cron" \
+  process_template "${OUTPUTDIR}/installer/common/rpmrepo.cron" \
     "${STAGEDIR}/etc/cron.daily/${PACKAGE}"
   chmod 755 "${STAGEDIR}/etc/cron.daily/${PACKAGE}"
 }
@@ -85,7 +85,7 @@ verify_package() {
 do_package() {
   log_cmd echo "Packaging ${ARCHITECTURE}..."
   PROVIDES="${PACKAGE}"
-  RPM_COMMON_DEPS="${BUILDDIR}/rpm_common.deps"
+  RPM_COMMON_DEPS="${OUTPUTDIR}/rpm_common.deps"
   DEPENDS=$(cat "${RPM_COMMON_DEPS}" | tr '\n' ',')
   gen_spec
 
@@ -107,6 +107,7 @@ do_package() {
     --define "_topdir $RPMBUILD_DIR" \
     --define "${COMPRESSION_OPT}" \
     --define "__os_install_post  %{nil}" \
+    --define "_build_id_links none" \
     "${SPEC}"
   PKGNAME="${PACKAGE}-${CHANNEL}-${VERSION}-${PACKAGE_RELEASE}"
   mv "$RPMBUILD_DIR/RPMS/$ARCHITECTURE/${PKGNAME}.${ARCHITECTURE}.rpm" \
@@ -126,10 +127,9 @@ cleanup() {
 }
 
 usage() {
-  echo "usage: $(basename $0) [-a target_arch] [-b 'dir'] -c channel"
-  echo "                      -d branding [-f] [-o 'dir'] -t target_os"
-  echo "-a arch     package architecture (ia32 or x64)"
-  echo "-b dir      build input directory    [${BUILDDIR}]"
+  echo "usage: $(basename $0) [-a target_arch] -c channel -d branding"
+  echo "                      [-f] [-o 'dir'] -t target_os"
+  echo "-a arch     rpm package architecture"
   echo "-c channel  the package channel (unstable, beta, stable)"
   echo "-d brand    either chromium or google_chrome"
   echo "-f          indicates that this is an official build"
@@ -164,10 +164,7 @@ process_opts() {
   do
     case $OPTNAME in
       a )
-        TARGETARCH="$OPTARG"
-        ;;
-      b )
-        BUILDDIR=$(readlink -f "${OPTARG}")
+        ARCHITECTURE="$OPTARG"
         ;;
       c )
         CHANNEL="$OPTARG"
@@ -210,73 +207,36 @@ process_opts() {
 
 SCRIPTDIR=$(readlink -f "$(dirname "$0")")
 OUTPUTDIR="${PWD}"
-# Default target architecture to same as build host.
-if [ "$(uname -m)" = "x86_64" ]; then
-  TARGETARCH="x64"
-else
-  TARGETARCH="ia32"
-fi
 
 # call cleanup() on exit
 trap cleanup 0
 process_opts "$@"
-BUILDDIR=${BUILDDIR:=$(readlink -f "${SCRIPTDIR}/../../../../out/Release")}
+export ARCHITECTURE="${ARCHITECTURE}"
 IS_OFFICIAL_BUILD=${IS_OFFICIAL_BUILD:=0}
 
-STAGEDIR="${BUILDDIR}/rpm-staging-${CHANNEL}"
+STAGEDIR="${OUTPUTDIR}/rpm-staging-${CHANNEL}"
 mkdir -p "${STAGEDIR}"
-TMPFILEDIR="${BUILDDIR}/rpm-tmp-${CHANNEL}"
+TMPFILEDIR="${OUTPUTDIR}/rpm-tmp-${CHANNEL}"
 mkdir -p "${TMPFILEDIR}"
-RPMBUILD_DIR="${BUILDDIR}/rpm-build-${CHANNEL}"
+RPMBUILD_DIR="${OUTPUTDIR}/rpm-build-${CHANNEL}"
 mkdir -p "${RPMBUILD_DIR}"
 SPEC="${TMPFILEDIR}/chrome.spec"
 
-source ${BUILDDIR}/installer/common/installer.include
+source ${OUTPUTDIR}/installer/common/installer.include
 
 get_version_info
 
 if [ "$BRANDING" = "google_chrome" ]; then
-  source "${BUILDDIR}/installer/common/google-chrome.info"
+  source "${OUTPUTDIR}/installer/common/google-chrome.info"
 else
-  source "${BUILDDIR}/installer/common/chromium-browser.info"
+  source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
 eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
-  "${BUILDDIR}/installer/theme/BRANDING")
+  "${OUTPUTDIR}/installer/theme/BRANDING")
 
-REPOCONFIG="http://dl.google.com/linux/${PACKAGE#google-}/rpm/stable"
+REPOCONFIG="https://dl.google.com/linux/${PACKAGE#google-}/rpm/stable"
 verify_channel
 export USR_BIN_SYMLINK_NAME="${PACKAGE}-${CHANNEL}"
 
-# Make everything happen in the OUTPUTDIR.
-cd "${OUTPUTDIR}"
-
-case "$TARGETARCH" in
-  arm )
-    export ARCHITECTURE="armhf"
-    stage_install_rpm
-    ;;
-  ia32 )
-    export ARCHITECTURE="i386"
-    stage_install_rpm
-    ;;
-  x64 )
-    export ARCHITECTURE="x86_64"
-    stage_install_rpm
-    ;;
-  mipsel )
-    export ARCHITECTURE="mipsel"
-    stage_install_rpm
-    ;;
-  mips64el )
-    export ARCHITECTURE="mips64el"
-    stage_install_rpm
-    ;;
-  * )
-    echo
-    echo "ERROR: Don't know how to build RPMs for '$TARGETARCH'."
-    echo
-    exit 1
-    ;;
-esac
-
+stage_install_rpm
 do_package

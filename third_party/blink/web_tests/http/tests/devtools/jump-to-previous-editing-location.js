@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests that jumping to previous location works as intended.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/example-fileset-for-test.js');
   await TestRunner.addScriptTag('resources/jump-text.js');
@@ -206,8 +207,8 @@
       function onScriptSource(uiSourceCode) {
         var linkifier = new Components.Linkifier();
         var anchorURI = uiSourceCode.url();
-        var anchor = linkifier.linkifyScriptLocation(SDK.targetManager.mainTarget(), null, anchorURI, 10, 1);
-        var info = Components.Linkifier._linkInfo(anchor);
+        var anchor = linkifier.linkifyScriptLocation(SDK.targetManager.mainTarget(), null, anchorURI, 10, {columnNumber: 1});
+        var info = Components.Linkifier.linkInfo(anchor);
         Common.Revealer.reveal(info.uiLocation).then(function() {
           TestRunner.addResult('Selection: ' + panel.visibleView.textEditor.selection().toString());
           dumpSelection('Showed anchor in ' + anchorURI.split('/').pop() + ' with line 333 column 3');

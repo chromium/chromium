@@ -27,9 +27,8 @@
 
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
-#include "base/strings/stringprintf.h"
 #include "tools/tool_support.h"
+#include "util/mach/bootstrap.h"
 #include "util/mach/exception_ports.h"
 #include "util/mach/mach_extensions.h"
 #include "util/mach/symbolic_constants_mach.h"
@@ -65,6 +64,9 @@ class MachSendRightPool {
       : send_rights_() {
   }
 
+  MachSendRightPool(const MachSendRightPool&) = delete;
+  MachSendRightPool& operator=(const MachSendRightPool&) = delete;
+
   ~MachSendRightPool() {
     for (mach_port_t send_right : send_rights_) {
       kern_return_t kr = mach_port_deallocate(mach_task_self(), send_right);
@@ -94,8 +96,6 @@ class MachSendRightPool {
 
  private:
   std::vector<mach_port_t> send_rights_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachSendRightPool);
 };
 
 struct ExceptionHandlerDescription {

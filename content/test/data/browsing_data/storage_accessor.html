@@ -1,0 +1,47 @@
+<html>
+  <script>
+    async function accessStorage() {
+      // Set cookie which persists across restart.
+      document.cookie = `persistent=persistent;max-age=3600;` +
+          'path=/;SameSite=None;Secure';
+
+      // Set a non-persistent cookie.
+      document.cookie = 'session_only=session_only; path=/;' +
+          'SameSite=None;Secure';
+
+      // Set a previously unseen cookie which has already expired.
+      document.cookie = 'expired=;expires=Thu, 01 Jan 1970 00:00:00 GMT;' +
+          'SameSite=None; Secure';
+
+      // Access local storage.
+      localStorage.setItem('foo', 'bar');
+
+      try {
+        // Third-party context WebSQL is disabled as of M97.
+        window.openDatabase('foo', '1.0', 'foo DB', 1024);
+      } catch (e) {}
+
+      // Access file system.
+      const file_system_promise = new Promise(function(resolve, reject) {
+        window.webkitRequestFileSystem(TEMPORARY, 1024, fs => {
+          fs.root.getFile("foo.txt");
+          resolve();
+        });
+      });
+      await file_system_promise;
+
+      // Access service worker.
+      await navigator.serviceWorker.register("empty.js");
+
+      // Access cache storage.
+      await caches.open('test');
+
+      // Access Indexed DB.
+      await indexedDB.open("test");
+
+      return true;
+     }
+  </script>
+  <body>
+  </body>
+</html>

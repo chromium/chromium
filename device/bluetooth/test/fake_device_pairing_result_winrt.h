@@ -20,6 +20,11 @@ class FakeDevicePairingResultWinrt
  public:
   explicit FakeDevicePairingResultWinrt(
       ABI::Windows::Devices::Enumeration::DevicePairingResultStatus status);
+
+  FakeDevicePairingResultWinrt(const FakeDevicePairingResultWinrt&) = delete;
+  FakeDevicePairingResultWinrt& operator=(const FakeDevicePairingResultWinrt&) =
+      delete;
+
   ~FakeDevicePairingResultWinrt() override;
 
   // IDevicePairingResult:
@@ -32,8 +37,6 @@ class FakeDevicePairingResultWinrt
 
  private:
   ABI::Windows::Devices::Enumeration::DevicePairingResultStatus status_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDevicePairingResultWinrt);
 };
 
 }  // namespace device

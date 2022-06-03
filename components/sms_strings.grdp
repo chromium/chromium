@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+    <message name="IDS_SMS_INFOBAR_TITLE" desc="Title shown when the browser is waiting for an SMS on the user's behalf">
+      Verify your phone number
+    </message>
+
+    <message name="IDS_SMS_INFOBAR_STATUS_SMS_RECEIVED" desc="Message shown when the browser has received an SMS on the user's behalf">
+      <ph name="ONE_TIME_CODE">$1<ex>123</ex></ph> is your code for <ph name="ORIGIN">$2<ex>example.com</ex></ph>
+    </message>
+
+    <message name="IDS_SMS_INFOBAR_STATUS_SMS_RECEIVED_FROM_EMBEDDED_FRAME" desc="Message shown when the browser has received an SMS on the user's behalf. User is on TOP_ORIGIN and they need to use service provided by EMBEDDED_ORIGIN. EMBEDDED_ORIGIN sends out an SMS to verify user identity.">
+      <ph name="ONE_TIME_CODE">$1<ex>123</ex></ph> is your code for <ph name="EMBEDDED_ORIGIN">$3<ex>iframe.com</ex></ph> to continue on <ph name="TOP_ORIGIN">$2<ex>example.com</ex></ph>
+    </message>
+
+    <message name="IDS_SMS_INFOBAR_BUTTON_OK" desc="Text for the button shown when the browser has received an SMS on the user's behalf">
+      Verify
+    </message>
+</grit-part>

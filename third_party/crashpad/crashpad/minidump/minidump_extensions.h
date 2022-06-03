@@ -25,14 +25,15 @@
 #include "util/misc/pdb_structures.h"
 #include "util/misc/uuid.h"
 
+#if defined(COMPILER_MSVC)
 // C4200 is "nonstandard extension used : zero-sized array in struct/union".
 // We would like to globally disable this warning, but unfortunately, the
 // compiler is buggy and only supports disabling it with a pragma, so we can't
-// disable it with other silly warnings in build/common.gypi. See:
+// disable it with other silly warnings in the build files. See:
 //   https://connect.microsoft.com/VisualStudio/feedback/details/1114440
-MSVC_PUSH_DISABLE_WARNING(4200)
+#pragma warning(push)
+#pragma warning(disable: 4200)
 
-#if defined(COMPILER_MSVC)
 #define PACKED
 #pragma pack(push, 1)
 #else
@@ -241,7 +242,7 @@ enum MinidumpOS : uint32_t {
   kMinidumpOSMacOSX = 0x8101,
 
   //! \brief iOS, Darwin for mobile devices.
-  kMinidumpOSiOS = 0x8102,
+  kMinidumpOSIOS = 0x8102,
 
   //! \brief Linux, not including Android.
   kMinidumpOSLinux = 0x8201,
@@ -262,7 +263,6 @@ enum MinidumpOS : uint32_t {
   //! \brief Unknown operating system.
   kMinidumpOSUnknown = 0xffffffff,
 };
-
 
 //! \brief A list of ::RVA pointers.
 struct ALIGNAS(4) PACKED MinidumpRVAList {
@@ -498,10 +498,9 @@ struct ALIGNAS(4) PACKED MinidumpCrashpadInfo {
 
 #if defined(COMPILER_MSVC)
 #pragma pack(pop)
+#pragma warning(pop)  // C4200
 #endif  // COMPILER_MSVC
 #undef PACKED
-
-MSVC_POP_WARNING()  // C4200
 
 }  // namespace crashpad
 

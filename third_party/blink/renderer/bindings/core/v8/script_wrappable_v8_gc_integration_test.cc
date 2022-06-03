@@ -46,38 +46,6 @@ TEST_F(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
 }
 
 TEST_F(ScriptWrappableV8GCIntegrationTest,
-       V8ReportsLiveObjectsDuringScavenger) {
-  V8TestingScope scope;
-  SetIsolate(scope.GetIsolate());
-
-  GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
-  {
-    v8::HandleScope handle_scope(GetIsolate());
-    auto* object = MakeGarbageCollected<DeathAwareScriptWrappable>();
-    observer.Observe(object);
-
-    v8::Local<v8::Value> wrapper =
-        ToV8(object, scope.GetContext()->Global(), GetIsolate());
-    EXPECT_TRUE(wrapper->IsObject());
-    v8::Local<v8::Object> wrapper_object =
-        wrapper->ToObject(scope.GetContext()).ToLocalChecked();
-    // V8 collects wrappers with unmodified maps (as they can be recreated
-    // without losing any data if needed). We need to create some property on
-    // wrapper so V8 will not see it as unmodified.
-    EXPECT_TRUE(
-        wrapper_object->CreateDataProperty(scope.GetContext(), 1, wrapper)
-            .IsJust());
-  }
-
-  // Scavenger should not collect JavaScript wrappers that are modified, even if
-  // they are otherwise unreachable.
-  RunV8MinorGC();
-  PreciselyCollectGarbage();
-
-  EXPECT_FALSE(observer.WasCollected());
-}
-
-TEST_F(ScriptWrappableV8GCIntegrationTest,
        OilpanDoesntCollectObjectsReachableFromV8) {
   V8TestingScope scope;
   SetIsolate(scope.GetIsolate());

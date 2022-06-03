@@ -5,10 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_PAGE_TEST_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_PAGE_TEST_BASE_H_
 
+#include <memory>
+
 #include <gtest/gtest.h>
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace base {
 class TickClock;
@@ -16,13 +21,37 @@ class TickClock;
 
 namespace blink {
 
+class BrowserInterfaceBrokerProxy;
 class Document;
+class FrameSelection;
 class LocalFrame;
+class PendingAnimations;
+class StyleEngine;
 
 class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   USING_FAST_MALLOC(PageTestBase);
 
  public:
+  // Helper class to provide a mock clipboard host for a LocalFrame.
+  class MockClipboardHostProvider {
+   public:
+    explicit MockClipboardHostProvider(
+        blink::BrowserInterfaceBrokerProxy& interface_broker);
+    MockClipboardHostProvider();
+    ~MockClipboardHostProvider();
+
+    // Installs a mock clipboard in the given interface provider.
+    // This is called automatically from the ctor that takes an
+    // |interface_broker| argument.
+    void Install(blink::BrowserInterfaceBrokerProxy& interface_broker);
+
+   private:
+    void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);
+
+    blink::BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
+    MockClipboardHost host_;
+  };
+
   PageTestBase();
   ~PageTestBase() override;
 
@@ -34,7 +63,7 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   using FrameSettingOverrideFunction = void (*)(Settings&);
 
   void SetUp(IntSize);
-  void SetupPageWithClients(Page::PageClients* = nullptr,
+  void SetupPageWithClients(ChromeClient* = nullptr,
                             LocalFrameClient* = nullptr,
                             FrameSettingOverrideFunction = nullptr);
   // TODO(shanmuga.m@samsung.com): These two function to be unified.
@@ -49,8 +78,7 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // Navigate to |url| providing an empty response but
   // URL and security origin of the Document will be set to |url|.
   void NavigateTo(const KURL& url,
-                  const String& feature_policy_header = String(),
-                  const String& csp_header = String());
+                  const WTF::HashMap<String, String>& headers = {});
 
   Document& GetDocument() const;
   Page& GetPage() const;
@@ -70,6 +98,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // platforms, but it's not guaranteed to be available.
   // See external/wpt/css/fonts/ahem/README for more about the 'Ahem' font.
   static void LoadAhem(LocalFrame&);
+
+  static std::string ToSimpleLayoutTree(const LayoutObject& layout_object);
 
  protected:
   void LoadAhem();
@@ -95,6 +125,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
       platform_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   bool enable_compositing_ = false;
+
+  MockClipboardHostProvider mock_clipboard_host_provider_;
 };
 
 }  // namespace blink

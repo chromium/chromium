@@ -32,13 +32,12 @@
 // implementations, and it's not exposed to the Web. WebPagePopupImpl class
 // enables this interface by provideContextFeaturesTo().
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     RuntimeEnabled=PagePopup
 ] interface PagePopupController {
     void setValueAndClosePopup(long numberValue, DOMString stringValue);
     void setValue(DOMString value);
     void closePopup();
-    void selectFontsFromOwnerDocument(Document targetDocument);
     DOMString localizeNumberString(DOMString numberString);
     DOMString formatMonth(long year, long zeroBaseMonth);
     DOMString formatShortMonth(long year, long zeroBaseMonth);

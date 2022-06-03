@@ -30,14 +30,16 @@
 
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dev_tools_host.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 
 namespace blink {
 
@@ -64,12 +66,15 @@ const char DevToolsFrontendImpl::kSupplementName[] = "DevToolsFrontendImpl";
 DevToolsFrontendImpl::DevToolsFrontendImpl(
     LocalFrame& frame,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend> receiver)
-    : Supplement<LocalFrame>(frame), receiver_(this, std::move(receiver)) {}
+    : Supplement<LocalFrame>(frame) {
+  receiver_.Bind(std::move(receiver),
+                 frame.GetTaskRunner(TaskType::kMiscPlatformAPI));
+}
 
 DevToolsFrontendImpl::~DevToolsFrontendImpl() = default;
 
 void DevToolsFrontendImpl::DidClearWindowObject() {
-  if (host_) {
+  if (host_.is_bound()) {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     // Use higher limit for DevTools isolate so that it does not OOM when
     // profiling large heaps.
@@ -77,6 +82,8 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
     ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
     DCHECK(script_state);
     ScriptState::Scope scope(script_state);
+    v8::MicrotasksScope microtasks_scope(
+        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
     if (devtools_host_)
       devtools_host_->DisconnectClient();
     devtools_host_ =
@@ -92,17 +99,21 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
   }
 
   if (!api_script_.IsEmpty()) {
-    GetSupplementable()->GetScriptController().ExecuteScriptInMainWorld(
-        api_script_);
+    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(api_script_))
+        ->RunScript(GetSupplementable()->DomWindow());
   }
 }
 
 void DevToolsFrontendImpl::SetupDevToolsFrontend(
     const String& api_script,
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsFrontendHost> host) {
-  DCHECK(GetSupplementable()->IsMainFrame());
+  LocalFrame* frame = GetSupplementable();
+  DCHECK(frame->IsMainFrame());
+  frame->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
+      cc::LayerTreeDebugState());
   api_script_ = api_script;
-  host_.Bind(std::move(host));
+  host_.Bind(std::move(host),
+             GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   host_.set_disconnect_handler(WTF::Bind(
       &DevToolsFrontendImpl::DestroyOnHostGone, WrapWeakPersistent(this)));
   GetSupplementable()->GetPage()->SetDefaultPageScaleLimits(1.f, 1.f);
@@ -114,9 +125,9 @@ void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(
   api_script_ = extension_api;
 }
 
-void DevToolsFrontendImpl::SendMessageToEmbedder(const String& message) {
-  if (host_)
-    host_->DispatchEmbedderMessage(message);
+void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value message) {
+  if (host_.is_bound())
+    host_->DispatchEmbedderMessage(std::move(message));
 }
 
 void DevToolsFrontendImpl::DestroyOnHostGone() {
@@ -125,8 +136,10 @@ void DevToolsFrontendImpl::DestroyOnHostGone() {
   GetSupplementable()->RemoveSupplement<DevToolsFrontendImpl>();
 }
 
-void DevToolsFrontendImpl::Trace(blink::Visitor* visitor) {
+void DevToolsFrontendImpl::Trace(Visitor* visitor) const {
   visitor->Trace(devtools_host_);
+  visitor->Trace(host_);
+  visitor->Trace(receiver_);
   Supplement<LocalFrame>::Trace(visitor);
 }
 

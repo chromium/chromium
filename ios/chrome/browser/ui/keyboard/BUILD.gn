@@ -17,9 +17,7 @@ source_set("keyboard") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "UIKeyCommand+ChromeTest.mm",
-  ]
+  sources = [ "UIKeyCommand+ChromeTest.mm" ]
   deps = [
     ":keyboard",
     "//base",
@@ -28,43 +26,17 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_tests") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "keyboard_commands_egtest.mm",
-  ]
-  deps = [
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/bookmarks:bookmarks_ui",
-    "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//net:test_support",
-  ]
-  libs = [
-    "UIKit.framework",
-    "XCTest.framework",
-  ]
-}
-
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "keyboard_commands_egtest.mm",
-  ]
+  sources = [ "keyboard_commands_egtest.mm" ]
   deps = [
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/bookmarks:bookmarks_ui",
+    "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -72,7 +44,7 @@ source_set("eg2_tests") {
     "//ios/third_party/earl_grey2:test_lib",
     "//net:test_support",
   ]
-  libs = [
+  frameworks = [
     "UIKit.framework",
     "XCTest.framework",
   ]

@@ -4,22 +4,24 @@
 
 package org.chromium.content_shell_apk;
 
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.PowerManager;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
-import android.text.TextUtils;
-import android.view.ViewGroup;
+import android.view.View;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
@@ -32,8 +34,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell.Shell;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Test can use this ActivityTestRule to launch or get ContentShellActivity.
  */
-public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellActivity> {
+public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentShellActivity> {
     /** The maximum time the waitForActiveShellToBeDoneLoading method will wait. */
     private static final long WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT = 10000L;
 
@@ -60,29 +60,28 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
 
     protected static final long WAIT_PAGE_LOADING_TIMEOUT_SECONDS = 15L;
 
-    private final boolean mLaunchActivity;
-
     public ContentShellActivityTestRule() {
-        this(false, false);
-    }
-
-    public ContentShellActivityTestRule(boolean initialTouchMode, boolean launchActivity) {
-        super(ContentShellActivity.class, initialTouchMode, launchActivity);
-        mLaunchActivity = launchActivity;
+        super(ContentShellActivity.class);
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
     @SuppressWarnings("deprecation")
-    protected void beforeActivityLaunched() {
-        PowerManager pm = (PowerManager) InstrumentationRegistry.getInstrumentation()
-                                  .getContext()
-                                  .getSystemService(Context.POWER_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            Assert.assertTrue("Many tests will fail if the screen is not on.", pm.isInteractive());
-        } else {
-            Assert.assertTrue("Many tests will fail if the screen is not on.", pm.isScreenOn());
-        }
+    public Statement apply(final Statement base, final Description desc) {
+        return super.apply(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                PowerManager pm = (PowerManager) InstrumentationRegistry.getInstrumentation()
+                                          .getContext()
+                                          .getSystemService(Context.POWER_SERVICE);
+                Assert.assertTrue(
+                        "Many tests will fail if the screen is not on.", pm.isInteractive());
+                base.evaluate();
+            }
+        }, desc);
+    }
+
+    public void runOnUiThread(Runnable r) {
+        TestThreadUtils.runOnUiThreadBlocking(r);
     }
 
     /**
@@ -90,9 +89,6 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      * The URL can be null, in which case will default to ContentShellActivity.DEFAULT_SHELL_URL.
      */
     public ContentShellActivity launchContentShellWithUrl(String url) {
-        Assert.assertFalse(
-                "Activity is already launched, setup the test rule to NOT auto-launch activity",
-                mLaunchActivity);
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -100,7 +96,8 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
         intent.setComponent(
                 new ComponentName(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         ContentShellActivity.class));
-        return launchActivity(intent);
+        launchActivity(intent);
+        return getActivity();
     }
 
     /**
@@ -113,7 +110,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
         ContentShellActivity activity = launchContentShellWithUrl(isolatedTestFileUrl);
         Assert.assertNotNull(getActivity());
         waitForActiveShellToBeDoneLoading();
-        Assert.assertEquals(isolatedTestFileUrl, getWebContents().getLastCommittedUrl());
+        Assert.assertEquals(isolatedTestFileUrl, getWebContents().getLastCommittedUrl().getSpec());
         return activity;
     }
 
@@ -219,7 +216,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
     /**
      * Returns the current container view or null if there is no WebContents.
      */
-    public ViewGroup getContainerView() {
+    public View getContainerView() {
         final WebContents webContents = getWebContents();
         try {
             return TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -233,7 +230,11 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
     }
 
     public JavascriptInjector getJavascriptInjector() {
-        return JavascriptInjector.fromWebContents(getWebContents());
+        return getJavascriptInjector(false);
+    }
+
+    public JavascriptInjector getJavascriptInjector(boolean useMojo) {
+        return JavascriptInjector.fromWebContents(getWebContents(), useMojo);
     }
 
     /**
@@ -244,28 +245,12 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public void waitForActiveShellToBeDoneLoading() {
         // Wait for the Content Shell to be initialized.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                Shell shell = getActivity().getActiveShell();
-                // There are two cases here that need to be accounted for.
-                // The first is that we've just created a Shell and it isn't
-                // loading because it has no URL set yet.  The second is that
-                // we've set a URL and it actually is loading.
-                if (shell == null) {
-                    updateFailureReason("Shell is null.");
-                    return false;
-                }
-                if (shell.isLoading()) {
-                    updateFailureReason("Shell is still loading.");
-                    return false;
-                }
-                if (TextUtils.isEmpty(shell.getWebContents().getLastCommittedUrl())) {
-                    updateFailureReason("Shell's URL is empty or null.");
-                    return false;
-                }
-                return true;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Shell shell = getActivity().getActiveShell();
+            Criteria.checkThat("Shell is null.", shell, Matchers.notNullValue());
+            Criteria.checkThat("Shell is still loading.", shell.isLoading(), Matchers.is(false));
+            Criteria.checkThat("Shell's URL is empty or null.",
+                    shell.getWebContents().getLastCommittedUrl().isEmpty(), Matchers.is(false));
         }, WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
@@ -319,7 +304,7 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
     public void handleBlockingCallbackAction(CallbackHelper callbackHelper, Runnable uiThreadAction)
             throws Throwable {
         int currentCallCount = callbackHelper.getCallCount();
-        runOnUiThread(uiThreadAction);
+        TestThreadUtils.runOnUiThreadBlocking(uiThreadAction);
         callbackHelper.waitForCallback(
                 currentCallCount, 1, WAIT_PAGE_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
@@ -332,13 +317,9 @@ public class ContentShellActivityTestRule extends ActivityTestRule<ContentShellA
      */
     public void assertWaitForPageScaleFactorMatch(float expectedScale) {
         final RenderCoordinatesImpl coord = getRenderCoordinates();
-        CriteriaHelper.pollInstrumentationThread(
-                Criteria.equals(expectedScale, new Callable<Float>() {
-                    @Override
-                    public Float call() {
-                        return coord.getPageScaleFactor();
-                    }
-                }));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(coord.getPageScaleFactor(), Matchers.is(expectedScale));
+        });
     }
 
     /**

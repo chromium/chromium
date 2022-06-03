@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body onload="loaded()">
+  <div role="dialog">Nonmodal</div>
+  <div id="focusableDialog" aria-label="modal dialog" role="dialog" aria-modal="true" tabindex="-1">Focusable</div>
+  <button id="btn" aria-label="not in tree">Click</btn>
+  <script>
+    // Test that when the ARIA modal dialog itself is focused, the tree pruning
+    // is performed correctly.
+
+    // Note: This test checks an edge case in the aria-modal pruning logic. This
+    // logic currently only runs on Mac, so there are only mac expectations for
+    // this test. See aria-modal.html for more information on tree pruning.
+    function loaded() {
+      focusableDialog.focus();
+    }
+  </script>
+</body>
+</html>

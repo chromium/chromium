@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/stl_util.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/cast_transport_defines.h"
@@ -115,10 +114,10 @@ struct EncodedFrame {
   std::string data;
 };
 
-typedef base::Callback<void(std::unique_ptr<Packet> packet)>
-    PacketReceiverCallback;
-typedef base::Callback<bool(std::unique_ptr<Packet> packet)>
-    PacketReceiverCallbackWithStatus;
+using PacketReceiverCallback =
+    base::RepeatingCallback<void(std::unique_ptr<Packet> packet)>;
+using PacketReceiverCallbackWithStatus =
+    base::RepeatingCallback<bool(std::unique_ptr<Packet> packet)>;
 
 class PacketTransport {
  public:
@@ -127,14 +126,14 @@ class PacketTransport {
   // SendPacket again until |cb| has been called. Any other errors that
   // occur will be reported through side channels, in such cases, this function
   // will return true indicating that the channel is not blocked.
-  virtual bool SendPacket(PacketRef packet, const base::Closure& cb) = 0;
+  virtual bool SendPacket(PacketRef packet, base::OnceClosure cb) = 0;
 
   // Returns the number of bytes ever sent.
   virtual int64_t GetBytesSent() = 0;
 
   // Start receiving packets. Pakets are submitted to |packet_receiver|.
   virtual void StartReceiving(
-      const PacketReceiverCallbackWithStatus& packet_receiver) = 0;
+      PacketReceiverCallbackWithStatus packet_receiver) = 0;
 
   // Stop receiving packets.
   virtual void StopReceiving() = 0;

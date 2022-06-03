@@ -5,6 +5,34 @@
 	<key>PreferenceSpecifiers</key>
 	<array>
 		<dict>
+			<key>Title</key>
+			<string>Discover Feed</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>DiscoverFeed Server URL</string>
+			<key>Key</key>
+			<string>AlternateDiscoverFeedServerURL</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Reset Notice Card</string>
+			<key>Key</key>
+			<string>ResetNoticeCard</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
@@ -45,6 +73,7 @@
 				<integer>1</integer>
 				<integer>2</integer>
 				<integer>3</integer>
+				<integer>4</integer>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -52,6 +81,7 @@
 				<string>Tip Command Test</string>
 				<string>Tip Move to Dock Promo</string>
 				<string>Tip Review Updated ToS</string>
+				<string>Set Default Browser Promo</string>
 			</array>
 		</dict>
 		<dict>
@@ -132,6 +162,110 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
+			<string>Enterprise Settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Sample Policies</string>
+			<key>Key</key>
+			<string>EnableSamplePolicies</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable SyncDisabled</string>
+			<key>Key</key>
+			<string>EnableSyncDisabledPolicy</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>SyncTypesListDisabled</string>
+			<key>File</key>
+			<string>ExperimentalSyncTypesListDisabled</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Incognito Mode</string>
+			<key>Key</key>
+			<string>IncognitoModeAvailability</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>Disabled</string>
+				<string>Forced</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Signin Mode</string>
+			<key>Key</key>
+			<string>BrowserSignin</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+			    <string>Default</string>
+				<string>Disable browser sign-in</string>
+				<string>Enable browser sign-in</string>
+				<string>Force browser sign-in</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>CBCM Enrollment Token</string>
+			<key>Key</key>
+			<string>CloudManagementEnrollmentToken</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Restrict accounts to pattern</string>
+			<key>Key</key>
+			<string>RestrictAccountsToPatterns</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
 			<string>Google App Ecosystem</string>
 		</dict>
 		<dict>
@@ -173,82 +307,6 @@
 			<string>Origin Server Host</string>
 			<key>Key</key>
 			<string>AlternateOriginServerHost</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>Extra Flags (one per line)</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Append Extra Flags</string>
-			<key>Key</key>
-			<string>EnableFreeformCommandLineFlags</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Flag1</string>
-			<key>Key</key>
-			<string>FreeformCommandLineFlag1</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Flag2</string>
-			<key>Key</key>
-			<string>FreeformCommandLineFlag2</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Flag3</string>
-			<key>Key</key>
-			<string>FreeformCommandLineFlag3</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Flag4</string>
-			<key>Key</key>
-			<string>FreeformCommandLineFlag4</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Flag5</string>
-			<key>Key</key>
-			<string>FreeformCommandLineFlag5</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>AutocorrectionType</key>

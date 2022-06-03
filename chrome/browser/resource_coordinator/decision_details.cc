@@ -4,7 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/decision_details.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace resource_coordinator {
@@ -17,7 +17,7 @@ namespace {
 const char* kDecisionFailureReasonStrings[] = {
     "Browser opted out via enterprise policy",
     "Tab opted out via origin trial",
-    "Origin is in global blacklist",
+    "Origin is in global disallowlist",
     "Origin has been observed playing audio while backgrounded",
     "Origin has been observed updating favicon while backgrounded",
     "Origin is temporarily protected while under observation",
@@ -38,6 +38,7 @@ const char* kDecisionFailureReasonStrings[] = {
     "Tab is currently holding a WebLock",
     "Tab is currently holding an IndexedDB lock",
     "Tab has notification permission ",
+    "Tab is a web application window",
 };
 static_assert(base::size(kDecisionFailureReasonStrings) ==
                   static_cast<size_t>(DecisionFailureReason::MAX),
@@ -45,7 +46,7 @@ static_assert(base::size(kDecisionFailureReasonStrings) ==
 
 const char* kDecisionSuccessReasonStrings[] = {
     "Tab opted in via origin trial",
-    "Origin is in global whitelist",
+    "Origin is in global allowlist",
     "Origin has locally been observed to be safe via heuristic logic",
 };
 static_assert(base::size(kDecisionSuccessReasonStrings) ==
@@ -61,8 +62,8 @@ void PopulateSuccessReason(
     case DecisionSuccessReason::ORIGIN_TRIAL_OPT_IN:
       ukm->SetSuccessOriginTrialOptIn(1);
       break;
-    case DecisionSuccessReason::GLOBAL_WHITELIST:
-      ukm->SetSuccessGlobalWhitelist(1);
+    case DecisionSuccessReason::GLOBAL_ALLOWLIST:
+      ukm->SetSuccessGlobalAllowlist(1);
       break;
     case DecisionSuccessReason::HEURISTIC_OBSERVED_TO_BE_SAFE:
       ukm->SetSuccessHeuristic(1);
@@ -85,8 +86,8 @@ void PopulateFailureReason(
     case DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT:
       ukm->SetFailureOriginTrialOptOut(1);
       break;
-    case DecisionFailureReason::GLOBAL_BLACKLIST:
-      ukm->SetFailureGlobalBlacklist(1);
+    case DecisionFailureReason::GLOBAL_DISALLOWLIST:
+      ukm->SetFailureGlobalDisallowlist(1);
       break;
     case DecisionFailureReason::HEURISTIC_AUDIO:
       ukm->SetFailureHeuristicAudio(1);
@@ -147,6 +148,9 @@ void PopulateFailureReason(
       break;
     case DecisionFailureReason::LIVE_STATE_HAS_NOTIFICATIONS_PERMISSION:
       ukm->SetFailureLiveStateHasNotificationsPermission(1);
+      break;
+    case DecisionFailureReason::LIVE_WEB_APP:
+      ukm->SetFailureLiveWebApp(1);
       break;
     case DecisionFailureReason::MAX:
       NOTREACHED();

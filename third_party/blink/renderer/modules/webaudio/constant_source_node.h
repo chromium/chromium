@@ -53,7 +53,7 @@ class ConstantSourceNode final : public AudioScheduledSourceNode {
                                     ExceptionState&);
 
   ConstantSourceNode(BaseAudioContext&);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   AudioParam* offset();
 

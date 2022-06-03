@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_helper.h"
+#include "components/heavy_ad_intervention/heavy_ad_helper.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,7 +26,11 @@ namespace {
 bool IsContentInDocument(content::RenderFrameHost* rfh, std::string content) {
   std::string script =
       "document.documentElement.innerHTML.includes('" + content + "');";
-  return EvalJs(rfh, script).ExtractBool();
+  // Execute script in an isolated world to avoid causing a Trusted Types
+  // violation due to eval.
+  return EvalJs(rfh, script, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                /*world_id=*/1)
+      .ExtractBool();
 }
 
 }  // namespace
@@ -55,15 +61,21 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   content::RenderFrameHost* child =
       ChildFrameAt(web_contents->GetMainFrame(), 0);
 
-  content::ConsoleObserverDelegate console_delegate(web_contents, "*");
-  web_contents->SetDelegate(&console_delegate);
+  content::WebContentsConsoleObserver console_observer(web_contents);
 
   content::TestNavigationObserver error_observer(web_contents);
   controller.LoadPostCommitErrorPage(
-      child, url, heavy_ads::PrepareHeavyAdPage(), net::ERR_BLOCKED_BY_CLIENT);
+      child, url,
+      heavy_ad_intervention::PrepareHeavyAdPage(
+          g_browser_process->GetApplicationLocale()),
+      net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 
-  EXPECT_TRUE(console_delegate.messages().empty());
+  for (const auto& message : console_observer.messages()) {
+    if (message.log_level == blink::mojom::ConsoleMessageLevel::kError) {
+      FAIL() << message.message;
+    }
+  }
 }
 
 // Checks that the heavy ad strings are in the html content of the rendered
@@ -82,8 +94,19 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
 
   content::TestNavigationObserver error_observer(web_contents);
   controller.LoadPostCommitErrorPage(
-      child, url, heavy_ads::PrepareHeavyAdPage(), net::ERR_BLOCKED_BY_CLIENT);
+      child, url,
+      heavy_ad_intervention::PrepareHeavyAdPage(
+          g_browser_process->GetApplicationLocale()),
+      net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
+
+  // With error page isolation, the error page will be loaded in the error
+  // page process, therefore it will have a different RenderFrameHost
+  // instance.
+  if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /* in_main_frame = */ false)) {
+    child = ChildFrameAt(web_contents->GetMainFrame(), 0);
+  }
 
   EXPECT_TRUE(IsContentInDocument(
       child,

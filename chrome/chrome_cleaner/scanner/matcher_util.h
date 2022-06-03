@@ -5,12 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_SCANNER_MATCHER_UTIL_H_
 #define CHROME_CHROME_CLEANER_SCANNER_MATCHER_UTIL_H_
 
-#include <set>
-#include <string>
-#include <vector>
-
-#include "base/strings/string16.h"
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -40,12 +34,12 @@ bool IsKnownFileByDigestInfo(const base::FilePath& path,
 
 bool IsKnownFileByOriginalFilename(const base::FilePath& path,
                                    const SignatureMatcherAPI* signature_matcher,
-                                   const base::char16* const names[],
+                                   const wchar_t* const names[],
                                    size_t names_length);
 
 bool IsKnownFileByCompanyName(const base::FilePath& path,
                               const SignatureMatcherAPI* signature_matcher,
-                              const base::char16* const names[],
+                              const wchar_t* const names[],
                               size_t names_length);
 
 }  // namespace chrome_cleaner

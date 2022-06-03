@@ -131,10 +131,13 @@ void FakeCrOSComponentManager::Load(const std::string& name,
 }
 
 bool FakeCrOSComponentManager::Unload(const std::string& name) {
-  registered_components_.erase(name);
+  {
+    base::AutoLock lock(registered_components_lock_);
+    registered_components_.erase(name);
+  }
   mounted_components_.erase(name);
   installed_components_.erase(name);
-  return true;
+  return unload_component_result_;
 }
 
 void FakeCrOSComponentManager::RegisterCompatiblePath(
@@ -156,7 +159,14 @@ base::FilePath FakeCrOSComponentManager::GetCompatiblePath(
   return it->second;
 }
 
-bool FakeCrOSComponentManager::IsRegistered(const std::string& name) const {
+void FakeCrOSComponentManager::SetRegisteredComponents(
+    const std::set<std::string>& components) {
+  base::AutoLock lock(registered_components_lock_);
+  registered_components_ = components;
+}
+
+bool FakeCrOSComponentManager::IsRegisteredMayBlock(const std::string& name) {
+  base::AutoLock lock(registered_components_lock_);
   return registered_components_.count(name);
 }
 
@@ -203,7 +213,11 @@ void FakeCrOSComponentManager::FinishComponentLoad(
     const std::string& name,
     bool mount_requested,
     const ComponentInfo& component_info) {
-  registered_components_.insert(name);
+  {
+    base::AutoLock lock(registered_components_lock_);
+    registered_components_.insert(name);
+  }
+
   if (component_info.load_response != Error::NONE)
     return;
 

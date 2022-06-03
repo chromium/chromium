@@ -6,15 +6,18 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_CROS_ACTION_HISTORY_CROS_ACTION_RECORDER_H_
 
 #include <cstdint>
+#include <map>
 #include <string>
 #include <tuple>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action.pb.h"
+
+class Profile;
 
 namespace app_list {
 
@@ -33,23 +36,47 @@ class CrOSActionRecorder {
   using CrOSAction = std::tuple<CrOSActionName>;
 
   CrOSActionRecorder();
+
+  CrOSActionRecorder(const CrOSActionRecorder&) = delete;
+  CrOSActionRecorder& operator=(const CrOSActionRecorder&) = delete;
+
   ~CrOSActionRecorder();
   // Get the pointer of the singleton.
   static CrOSActionRecorder* GetCrosActionRecorder();
 
   // Record a user |action| with |conditions|.
-  void RecordAction(
-      const CrOSAction& action,
-      const std::vector<std::pair<std::string, int>>& conditions = {});
+  void RecordAction(const CrOSAction& action,
+                    const std::map<std::string, int>& conditions = {});
+
+  // The sub-directory in profile path where the action history is stored.
+  static constexpr char kActionHistoryDir[] = "cros_action_history";
+
+  // The basename of the file for the copied action history.
+  static constexpr char kActionHistoryBasename[] = "cros_action_history.pb";
 
  private:
+  // Enum for recorder settings from flags.
+  enum CrOSActionRecorderType {
+    kDefault = 0,
+    kLogWithHash = 1,
+    kLogWithoutHash = 2,
+    kCopyToDownloadDir = 3,
+    kLogDisabled = 4,
+    kStructuredMetricsDisabled = 5,
+  };
+
   friend class CrOSActionRecorderTest;
+  friend class CrOSActionRecorderTabTrackerTest;
 
   // kSaveInternal controls how often we save the action history to disk.
-  static constexpr base::TimeDelta kSaveInternal =
-      base::TimeDelta::FromHours(1);
-  // The sub-directory in profile path where the action history is stored.
-  static constexpr char kActionHistoryDir[] = "cros_action_history/";
+  static constexpr base::TimeDelta kSaveInternal = base::Hours(1);
+
+  // Private constructor used for testing purpose. Which basically calls the
+  // Init function.
+  explicit CrOSActionRecorder(Profile* profile);
+
+  // Does the actual initialization of CrOSActionRecorder.
+  void Init(Profile* profile);
 
   // Saves the current |actions_| to disk and clear it when certain
   // criteria is met.
@@ -60,25 +87,32 @@ class CrOSActionRecorder {
   // |should_hash_| accordingly.
   void SetCrOSActionRecorderType();
 
+  // Re-maps action name and conditions into structured metrics.
+  void LogCrOSActionAsStructuredMetrics(
+      const CrOSAction& action,
+      const std::map<std::string, int>& conditions);
+
   // Hashes the |input| if |should_hash| is true; otherwise return |input|.
   static std::string MaybeHashed(const std::string& input, bool should_hash);
 
-  // Controls whether the logging is enabled.
-  bool should_log_ = false;
-  // Controls whether to hash the action and condition names before log.
-  bool should_hash_ = true;
+  // Recorder type set from the flag.
+  CrOSActionRecorderType type_ = CrOSActionRecorderType::kDefault;
+  // Sequence of the cros action.
+  int64_t sequence_id_ = 0;
+  // Time of the last cros action.
+  base::Time last_action_time_;
+  // Only log structured metrics when enabled.
+  bool structured_metrics_enabled_ = false;
   // The timestamp of last save to disk.
   base::Time last_save_timestamp_;
   // A list of actions since last save.
   CrOSActionHistoryProto actions_;
-  // Profile path to save the actions.
-  base::FilePath profile_path_;
+  // Path to save the actions history.
+  base::FilePath model_dir_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSActionRecorder);
 };
 
 }  // namespace app_list

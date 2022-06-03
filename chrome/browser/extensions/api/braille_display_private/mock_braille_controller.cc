@@ -4,31 +4,33 @@
 
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 
+#include <memory>
+
 namespace extensions {
 namespace api {
 namespace braille_display_private {
 
 MockBrailleController::MockBrailleController()
-    : available_(false), observer_(NULL) {}
+    : available_(false), observer_(nullptr) {}
 
 std::unique_ptr<DisplayState> MockBrailleController::GetDisplayState() {
   std::unique_ptr<DisplayState> state(new DisplayState());
   state->available = available_;
   if (available_) {
-    state->text_column_count.reset(new int(18));
-    state->text_row_count.reset(new int(18));
+    state->text_column_count = std::make_unique<int>(18);
+    state->text_row_count = std::make_unique<int>(18);
   }
   return state;
 }
 
 void MockBrailleController::AddObserver(BrailleObserver* observer) {
-  CHECK(observer_ == NULL);
+  CHECK(!observer_);
   observer_ = observer;
 }
 
 void MockBrailleController::RemoveObserver(BrailleObserver* observer) {
   CHECK(observer == observer_);
-  observer_ = NULL;
+  observer_ = nullptr;
 }
 
 void MockBrailleController::SetAvailable(bool available) {

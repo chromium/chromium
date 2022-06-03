@@ -14,4 +14,6 @@ bool WindowStateDelegate::ToggleFullscreen(WindowState* window_state) {
   return false;
 }
 
+void WindowStateDelegate::ToggleLockedFullscreen(WindowState* window_state) {}
+
 }  // namespace ash

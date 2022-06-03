@@ -4,15 +4,17 @@
 
 #include "chrome/chrome_cleaner/test/test_extensions.h"
 
+#include <string>
+
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 
 namespace chrome_cleaner {
 
 TestRegistryEntry::TestRegistryEntry(HKEY hkey,
-                                     const base::string16& path,
-                                     const base::string16& name,
-                                     const base::string16& value)
+                                     const std::wstring& path,
+                                     const std::wstring& name,
+                                     const std::wstring& value)
     : hkey(hkey), path(path), name(name), value(value) {}
 TestRegistryEntry::TestRegistryEntry(const TestRegistryEntry& other) = default;
 TestRegistryEntry& TestRegistryEntry::operator=(
@@ -20,8 +22,8 @@ TestRegistryEntry& TestRegistryEntry::operator=(
 
 bool CreateProfileWithExtensionAndFiles(
     const base::FilePath& profile_path,
-    const base::string16& extension_id,
-    const std::vector<base::string16>& extension_files) {
+    const std::wstring& extension_id,
+    const std::vector<std::wstring>& extension_files) {
   if (!base::CreateDirectory(profile_path))
     return false;
 
@@ -33,7 +35,7 @@ bool CreateProfileWithExtensionAndFiles(
   if (!base::CreateDirectory(extension_path))
     return false;
 
-  for (const base::string16& file_name : extension_files) {
+  for (const std::wstring& file_name : extension_files) {
     base::File extension_file(
         extension_path.Append(file_name),
         base::File::Flags::FLAG_CREATE | base::File::Flags::FLAG_READ);

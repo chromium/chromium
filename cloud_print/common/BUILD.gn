@@ -8,9 +8,7 @@ source_set("common") {
     "win/cloud_print_utils.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("install_utils") {

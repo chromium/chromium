@@ -19,9 +19,7 @@ source_set("common") {
 }
 
 mojom("mojo_interfaces") {
-  sources = [
-    "content_capture.mojom",
-  ]
+  sources = [ "content_capture.mojom" ]
 
   public_deps = [
     ":mojo_types",
@@ -31,36 +29,44 @@ mojom("mojo_interfaces") {
 }
 
 mojom("mojo_types") {
-  sources = [
-    "content_capture_data.mojom",
-  ]
+  sources = [ "content_capture_data.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content_capture.mojom.ContentCaptureData"
+          cpp = "::content_capture::ContentCaptureData"
+        },
+      ]
+      traits_headers = [ "content_capture_mojom_traits.h" ]
+      traits_sources = [ "content_capture_mojom_traits.cc" ]
+      traits_public_deps = [
+        ":common",
+        "//base",
+        "//ui/gfx/geometry/mojom:mojom_traits",
+      ]
+    },
+  ]
 }
 
 mojom("mojo_test_types") {
   testonly = true
-  sources = [
-    "traits_test_service.test-mojom",
-  ]
+  sources = [ "traits_test_service.test-mojom" ]
 
-  public_deps = [
-    ":mojo_types",
-  ]
+  public_deps = [ ":mojo_types" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "content_capture_mojom_traits_unittest.cc",
-  ]
+  sources = [ "content_capture_mojom_traits_unittest.cc" ]
 
-  public_deps = [
-    ":mojo_test_types",
-  ]
+  public_deps = [ ":mojo_test_types" ]
 
   deps = [
     ":common",

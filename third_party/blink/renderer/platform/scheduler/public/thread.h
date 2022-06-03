@@ -27,7 +27,6 @@
 
 #include <stdint.h>
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread.h"
@@ -110,6 +109,8 @@ class PLATFORM_EXPORT Thread {
   static Thread* CompositorThread();
 
   Thread();
+  Thread(const Thread&) = delete;
+  Thread& operator=(const Thread&) = delete;
   virtual ~Thread();
 
   // Must be called immediately after the construction.
@@ -126,7 +127,6 @@ class PLATFORM_EXPORT Thread {
   }
 
   bool IsCurrentThread() const;
-  virtual PlatformThreadId ThreadId() const { return 0; }
 
   // TaskObserver is an object that receives task notifications from the
   // MessageLoop.
@@ -165,8 +165,6 @@ class PLATFORM_EXPORT Thread {
   // This is used to identify the actual Thread instance. This should be
   // used only in Platform, and other users should ignore this.
   virtual bool IsSimpleMainThread() const { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(Thread);
 };
 
 }  // namespace blink

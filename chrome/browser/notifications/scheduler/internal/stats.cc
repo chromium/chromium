@@ -31,6 +31,10 @@ std::string ToHistogramSuffix(SchedulerClientType client_type) {
       return "WebUI";
     case SchedulerClientType::kChromeUpdate:
       return "ChromeUpdate";
+    case SchedulerClientType::kPrefetch:
+      return "Prefetch";
+    case SchedulerClientType::kReadingList:
+      return "ReadingList";
   }
 }
 

@@ -4,7 +4,8 @@
   "name": "callback test",
   "description": "Test that executeScript uses the result of the evaluated script in the callback.",
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://b.com/"]
 }

@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <include src="autocomplete_action_predictor.js">
-// <include src="resource_prefetch_predictor.js">
+import './autocomplete_action_predictor.js';
+import './resource_prefetch_predictor.js';
 
-if (cr.isWindows) {
+import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
+
+if (isWindows) {
   document.documentElement.setAttribute('os', 'win');
 }
 
-cr.ui.decorate('tabbox', cr.ui.TabBox);
+decorate('tabbox', TabBox);

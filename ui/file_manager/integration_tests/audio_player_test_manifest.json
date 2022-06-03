@@ -7,13 +7,12 @@
   "description": "Audio Player test extension",
   "web_accessible_resources": ["*"],
   "background": {
-    "scripts": [
-      "test_util.js",
-      "remote_call.js",
-      "audio_player/background.js",
-      "audio_player/click_control_buttons.js",
-      "audio_player/open_audio_files.js"
-    ]},
+    "page": "audio_player/background.html"
+  },
   "incognito" : "split",
-  "permissions": ["commandLinePrivate"]
+  "permissions": [
+    "commandLinePrivate",
+    "chrome://resources/"
+  ],
+  "content_security_policy": "script-src 'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj chrome://resources ;"
 }

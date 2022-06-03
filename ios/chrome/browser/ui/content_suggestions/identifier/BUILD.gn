@@ -9,17 +9,13 @@ source_set("identifier") {
     "content_suggestions_section_information.h",
     "content_suggestions_section_information.mm",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "content_suggestion_identifier_unittest.mm",
-  ]
+  sources = [ "content_suggestion_identifier_unittest.mm" ]
   deps = [
     ":identifier",
     "//testing/gtest",

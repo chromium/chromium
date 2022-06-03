@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that trial is enabled by third-party token, injected on demand</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/origintrials.js"></script>
+<script src="http://localhost:8000/origin_trials/resources/inject-third-party-token-on-demand.js"></script>
+<script>
+  // The trial is not enabled, as no token is provided.
+  expect_failure_third_party();
+
+  // Simulate initializing a third-party library, which then injects the
+  // third-party token. The initThirdParty() function is provied by the
+  // script, inject-third-party-token-on-demand.js
+  initThirdParty();
+
+  // The trial is now enabled, by the third-party token added.
+  expect_success_third_party();
+</script>

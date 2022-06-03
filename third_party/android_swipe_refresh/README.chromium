@@ -6,8 +6,9 @@ Security Critical: yes
 
 Description:
 This is a modified copy of the swipe refresh layout widget (and its two
-dependencies) from Android's app compat library (v4). The widget provides a
-pull-to-refresh styled layout for touch-activated refresh of view contents.
+dependencies) from Android's app compat library (v4). This has been
+migrated to use AndroidX libraries. The widget provides a pull-to-refresh
+styled layout for touch-activated refresh of view contents.
 
 Local Modifications:
 

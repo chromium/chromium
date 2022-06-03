@@ -2,68 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 23
+// Next MinVersion: 29
 
 module arc.mojom;
 
-// These values describe failure reason of sign-in.
+// These values describe failure reason of auth code retrieval.
+// This enum previously had provisioning status values such as GMS
+// sign-in and check-in failure codes from 0 to 22 that have been
+// removed and should not be re-introduced.
 [Extensible]
-enum ArcSignInStatus {
-  // Negative values are reserved for internal use.
-  // The values are shuffled to keep the backward compatibility and don't match
-  // ProvisioningResult in arc_optin_uma.h
-  // Next value: 22.
-  UNKNOWN_ERROR = 0,
-
-  // Mojo errors:
-  // MOJO_VERSION_MISMATCH: is sent when an API is not supported
-  //   due to Host/Instance version mismatch.
-  // MOJO_CALL_TIMEOUT: is sent when a Mojo invocation is started
-  //   but not completed with time out.
-  MOJO_VERSION_MISMATCH = 6,
-  MOJO_CALL_TIMEOUT = 7,
-
-  // Device check-in errors:
-  // DEVICE_CHECK_IN_FAILED: is sent when "check-in" procedure is completed
-  //   but is actually failed.
-  // DEVICE_CHECK_IN_TIMEOUT: is sent when "check-in" procedure started
-  //   but is not completed.
-  // DEVICE_CHECK_IN_INTERNAL_ERROR: is sent when "check-in" procedure is
-  //   started, but some unexpected error situation happens so that it could
-  //   not completed.
-  DEVICE_CHECK_IN_FAILED = 4,
-  DEVICE_CHECK_IN_TIMEOUT = 8,
-  DEVICE_CHECK_IN_INTERNAL_ERROR = 9,
-
-  // GMS errors:
-  // GMS_NETWORK_ERROR: is sent when GMS sign-in procedure is started, but
-  //   it reports NETWORK_ERROR.
-  // GMS_SERVICE_UNAVAILABLE: is sent when GMS sign-in procedure is started
-  //   but it reports SERVICE_UNAVAILABLE. Note that this is not generic
-  //   service unavailable error code.
-  // GMS_BAD_AUTHENTICATION: is sent when GMS sign-in procedure is started
-  //   but it reports BAD_AUTHENTICATION.
-  // GMS_SIGN_IN_FAILED: is sent when GMS sign in procedure is started but
-  //   it reports an error other than above NETWORK_ERROR, SERVICE_UNAVAILABLE
-  //   or BAD_AUTHENTICATION. In general, we do not expect this kind of cases.
-  // GMS_SIGN_IN_TIMEOUT: is sent when GMS sign in procedure is started but
-  //   not returned.
-  // GMS_SIGN_IN_INTERNAL_ERROR: is sent when GMS sign in procedure is started
-  //   but could not completed.
-  GMS_NETWORK_ERROR = 1,
-  GMS_SERVICE_UNAVAILABLE = 2,
-  GMS_BAD_AUTHENTICATION = 3,
-  GMS_SIGN_IN_FAILED = 10,
-  GMS_SIGN_IN_TIMEOUT = 11,
-  GMS_SIGN_IN_INTERNAL_ERROR = 12,
-
-  // Cloud provisioning errors.
-  CLOUD_PROVISION_FLOW_FAILED = 5,
-  CLOUD_PROVISION_FLOW_TIMEOUT = 13,
-  CLOUD_PROVISION_FLOW_INTERNAL_ERROR = 14,
-
-  // Network connection is unavailable.
-  [MinVersion=8] NO_NETWORK_CONNECTION = 15,
+enum ArcAuthCodeStatus {
+  // Next value: 23.
 
   // Server does not return authorization.
   [MinVersion=10] CHROME_SERVER_COMMUNICATION_ERROR = 16,
@@ -73,14 +22,179 @@ enum ArcSignInStatus {
 
   [MinVersion=10] SUCCESS = 18,
 
-  // ARC was already provisioned.
-  [MinVersion=11] SUCCESS_ALREADY_PROVISIONED = 19,
-
-  // Account type is not supported for authorization.
-  [MinVersion=16] UNSUPPORTED_ACCOUNT_TYPE = 20,
-
   // Account is not present in Chrome OS Account Manager.
   [MinVersion=21] CHROME_ACCOUNT_NOT_FOUND = 21,
+};
+
+[Extensible]
+enum GeneralSignInError {
+  // Next value: 8.
+  UNKNOWN_ERROR = 0,
+
+  // Mojo errors:
+  // MOJO_VERSION_MISMATCH: is sent when an API is not supported
+  //   due to Host/Instance version mismatch.
+  MOJO_VERSION_MISMATCH = 1,
+
+  // GENERIC_PROVISIONING_TIMEOUT: is sent when provisioning is started
+  //   but not completed with time out.
+  GENERIC_PROVISIONING_TIMEOUT = 2,
+
+  // Network connection is unavailable.
+  NO_NETWORK_CONNECTION = 3,
+
+  // Server does not return authorization.
+  CHROME_SERVER_COMMUNICATION_ERROR = 4,
+
+  // ARC was disabled for Active Directory user.
+  ARC_DISABLED = 5,
+
+  // Account type is not supported for authorization.
+  UNSUPPORTED_ACCOUNT_TYPE = 6,
+
+  // Account is not present in Chrome OS Account Manager.
+  CHROME_ACCOUNT_NOT_FOUND = 7,
+};
+
+[Extensible]
+enum GMSCheckInError {
+  // Next value: 4.
+
+  // GMS_CHECK_IN_FAILED: is sent when "check-in" procedure is completed
+  //   but is actually failed.
+  GMS_CHECK_IN_FAILED = 1,
+
+  // GMS_CHECK_IN_TIMEOUT: is sent when "check-in" procedure started
+  //   but is not completed.
+  GMS_CHECK_IN_TIMEOUT = 2,
+
+  // GMS_CHECK_IN_INTERNAL_ERROR: is sent when "check-in" procedure is
+  //   started, but some unexpected error situation happens so that it could
+  //   not completed.
+  GMS_CHECK_IN_INTERNAL_ERROR = 3,
+};
+
+[Extensible]
+enum GMSSignInError {
+  // Next value: 7.
+
+  // GMS_SIGN_IN_NETWORK_ERROR: is sent when GMS sign-in procedure is
+  //   started, but it reports NETWORK_ERROR.
+  GMS_SIGN_IN_NETWORK_ERROR = 1,
+
+  // GMS_SIGN_IN_SERVICE_UNAVAILABLE: is sent when GMS sign-in
+  //   procedure is started but it reports SERVICE_UNAVAILABLE. Note
+  //   that this is not generic service unavailable error code.
+  GMS_SIGN_IN_SERVICE_UNAVAILABLE = 2,
+
+  // GMS_SIGN_IN_BAD_AUTHENTICATION: is sent when GMS sign-in procedure
+  //   is started but it reports BAD_AUTHENTICATION.
+  GMS_SIGN_IN_BAD_AUTHENTICATION = 3,
+
+  // GMS_SIGN_IN_FAILED: is sent when GMS sign in procedure is started but
+  //   it reports an error other than above NETWORK_ERROR, SERVICE_UNAVAILABLE
+  //   or BAD_AUTHENTICATION. In general, we do not expect this kind of cases.
+  GMS_SIGN_IN_FAILED = 4,
+
+  // GMS_SIGN_IN_TIMEOUT: is sent when GMS sign in procedure is started but
+  //   not returned.
+  GMS_SIGN_IN_TIMEOUT = 5,
+
+  // GMS_SIGN_IN_INTERNAL_ERROR: is sent when GMS sign in procedure is started
+  //   but could not completed.
+  GMS_SIGN_IN_INTERNAL_ERROR = 6,
+};
+
+[Extensible]
+// These values must be in sync with ProvisionConstants in CloudDPC code
+enum CloudProvisionFlowError {
+    // Unknown or uncommon error.
+    ERROR_OTHER = 0,
+    // Enrollment token provided was invalid.
+    ERROR_ENROLLMENT_TOKEN_INVALID = 1,
+    // Enterprise hit device quota.
+    ERROR_DEVICE_QUOTA_EXCEEDED = 2,
+    // CloudDPS could not fulfill request because of a transient error.
+    ERROR_SERVER_TRANSIENT_ERROR = 3,
+    // Account could not be added.
+    ERROR_ADD_ACCOUNT_FAILED = 4,
+    // Could not get Android ID
+    ERROR_REQUEST_ANDROID_ID_FAILED = 5,
+    // Device got stuck in quarantine mode.
+    ERROR_QUARANTINE = 6,
+    // Setup step timed out.
+    ERROR_TIMEOUT = 7,
+    // There was no network, so device couldn't fulfill a request.
+    ERROR_NETWORK_UNAVAILABLE = 8,
+    // Enterprise is not registered with CloudDPx.
+    ERROR_ENTERPRISE_INVALID = 9,
+    // User cancelled the step.
+    ERROR_USER_CANCEL = 10,
+    // Either account migration failed or account was deleted by user during provisioning.
+    ERROR_NO_ACCOUNT_IN_WORK_PROFILE = 11,
+    // Policy got stuck in invalid state.
+    ERROR_INVALID_POLICY_STATE = 12,
+    // Issues with DpcSupport.
+    ERROR_DPC_SUPPORT = 13,
+    // Account wad not ready.
+    ERROR_ACCOUNT_NOT_READY = 14,
+    // Checkin failed.
+    ERROR_CHECKIN_FAILED = 15,
+    // Issues with allowlisting work account.
+    ERROR_ACCOUNT_NOT_ALLOWLISTED = 16,
+    // Error parsing JSON, most likely policy JSON
+    ERROR_JSON = 17,
+    // ManagedProvisioning failed.
+    ERROR_MANAGED_PROVISIONING_FAILED = 18,
+    // Setup intent could not be parsed.
+    ERROR_INVALID_SETUP_ACTION = 19,
+    // CloudDPS exception with an uncommon server code.
+    ERROR_SERVER = 20,
+    // Removing a previously existing unmanaged account failed.
+    ERROR_REMOVE_ACCOUNT_FAILED = 21,
+    // Error with getting OAuth token.
+    ERROR_OAUTH_TOKEN = 22,
+    // AccountException with no exception details.
+    ERROR_ACCOUNT_OTHER = 23,
+    // Error with getting OAuth token due to AuthenticatorException.
+    ERROR_OAUTH_TOKEN_AUTHENTICATOR_EXCEPTION = 24,
+    // Error with getting OAuth token due to IOException.
+    ERROR_OAUTH_TOKEN_IO_EXCEPTION = 25,
+    // Error with getting OAuth token due to OperationCanceledException.
+    ERROR_OAUTH_TOKEN_OPERATION_CANCELED_EXCEPTION = 26,
+};
+
+[Extensible]
+enum ArcSignInSuccess {
+  // Next value: 3.
+  [MinVersion=10] SUCCESS = 1,
+
+  // ARC was already provisioned.
+  [MinVersion=11] SUCCESS_ALREADY_PROVISIONED = 2
+};
+
+// Represents different kinds of errors that can happen during
+// sign-in.
+union ArcSignInError {
+  CloudProvisionFlowError cloud_provision_flow_error;
+  [MinVersion=26] GeneralSignInError general_error;
+  [MinVersion=26] GMSSignInError sign_in_error;
+  [MinVersion=26] GMSCheckInError check_in_error;
+};
+
+union ArcSignInResult {
+  ArcSignInSuccess success;
+  ArcSignInError? error;
+};
+
+union ArcSignInAccount {
+  // Placeholder value; if this is the union type, indicates the
+  // auth flow was for initial device provisioning.
+  uint8 initial_signin;
+
+  // If |account_name| is not present, it is assumed to be the Primary/Device
+  // account.
+  string? account_name;
 };
 
 // These values describe account check status.
@@ -103,6 +217,35 @@ enum AccountCheckStatus {
 
     // NOTE: If you add any entries to this enum, you must also update the
     // corresponding UMA callsite in Chrome arc::UpdateAuthAccountCheckStatus.
+};
+
+// These values describe AndroidId source during ARC provisioning.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum AndroidIdSource {
+    // AndroidId was not found.
+    [MinVersion=28] MISSING = 0,
+
+    // AndroidId was cached.
+    [MinVersion=28] CACHED = 1,
+
+    // AndroidId was found via GService flag.
+    [MinVersion=28] GSERVICE_FLAG = 2,
+
+    // AndroidId was found via GmsProxy api.
+    [MinVersion=28] GMS_PROXY = 3,
+};
+
+// These values describe the reason for reauth.
+[Extensible]
+enum ReauthReason {
+    // Device is provisioned but Android id is not set.
+    [MinVersion=27] ANDROID_ID_MISSING = 0,
+
+    // Main account set in system properties is not found in Android
+    // Account Manager.
+    [MinVersion=27] MAIN_ACCOUNT_UNKNOWN = 1,
 };
 
 [Extensible]
@@ -144,24 +287,24 @@ enum MainAccountResolutionStatus {
     // tools/metrics/histograms/enums.xml.
 };
 
-// These values describe the result of ARC attempting to change supervision
+// These values describe the result of ARC attempting to change management
 // state after an account type change.
 [Extensible]
-enum SupervisionChangeStatus {
-  // CloudDPC supervision was disabled successfully.
+enum ManagementChangeStatus {
+  // CloudDPC was disabled successfully.
   [MinVersion=13] CLOUD_DPC_DISABLED = 0,
 
-  // CloudDPC supervision was already disabled.
+  // CloudDPC was already disabled.
   [MinVersion=13] CLOUD_DPC_ALREADY_DISABLED = 1,
 
-  // CloudDPC supervision was enabled successfully.
+  // CloudDPC was enabled successfully.
   [MinVersion=13] CLOUD_DPC_ENABLED = 2,
 
-  // CloudDPC supervision was already enabled.
+  // CloudDPC was already enabled.
   [MinVersion=13] CLOUD_DPC_ALREADY_ENABLED = 3,
 
   // Invalid state returned from Chrome.
-  [MinVersion=13] INVALID_SUPERVISION_STATE = 4,
+  [MinVersion=13] INVALID_MANAGEMENT_STATE = 4,
 
   // Failed to disable CloudDPC due to an unspecified error.
   [MinVersion=13] CLOUD_DPC_DISABLING_FAILED = 5,
@@ -256,30 +399,13 @@ struct ArcAccountInfo {
   string gaia_id;
 };
 
-// Next Method ID: 18.
+// Next Method ID: 22.
 interface AuthHost {
   // Notifies Chrome that the authorization flow is completed and provides
-  // resulting |status|. If |initial_signin| is true then this indicates that
-  // authorization happened for initial device provisioning.
-  // If |account_name| is not present, it is assumed to be the Primary/Device
-  // account. It cannot/must not be supplied when |initial_signin| is true.
-  [MinVersion=11] OnAuthorizationComplete@10(
-      ArcSignInStatus status,
-      bool initial_signin,
-      [MinVersion=18] string? account_name);
-
-  // Notifies Chrome that the sign-in is completed successfully.
-  [MinVersion=2] OnSignInCompleteDeprecated@2();
-
-  // Notifies Chrome that the sign-in fails to complete and provides failure
-  // reason.
-  [MinVersion=2] OnSignInFailedDeprecated@3(ArcSignInStatus reason);
-
-  // Asynchronously requests an authorization code, as well as the account
-  // information. If |initial_signin| is true then that means request is for
-  // initial signin flow. Otherwise it is used for reauthorization flow.
-  [MinVersion=5] RequestAccountInfoDeprecated@7(
-      [MinVersion=11] bool initial_signin);
+  // |result| and |account| that was authorized.
+  [MinVersion=26] OnAuthorizationResult@19(
+      ArcSignInResult result,
+      ArcSignInAccount account);
 
   // Reports metrics to Chrome to be recorded in UMA.
   [MinVersion=7] ReportMetrics@8(MetricsType metrics_type, int32 value);
@@ -287,12 +413,19 @@ interface AuthHost {
   // Reports result of account check.
   [MinVersion=9] ReportAccountCheckStatus@9(AccountCheckStatus status);
 
-  // Reports to Chrome the result of changing the supervision state.
-  // Chrome informs ARC on every boot if a supervision transition is necessary
+  // Reports to Chrome the result of changing the management state.
+  // Chrome informs ARC on every boot if a management transition is necessary
   // or not (see https://crrev.com/c/1069031). ARC should report back only if
   // a transition was necessary.
-  [MinVersion=13] ReportSupervisionChangeStatus@11(
-      SupervisionChangeStatus status);
+  [MinVersion=13] ReportManagementChangeStatus@11(
+      ManagementChangeStatus status);
+
+  // Returns the primary account from Chrome.
+  // |account_name| is the email address of the primary account for consumer and
+  // managed Gaia accounts and empty for all other cases (like demo sessions,
+  // Active Directory sessions, etc).
+  [MinVersion=23] RequestPrimaryAccount@18()
+      => (string account_name, ChromeAccountType account_type);
 
   // Requests an authorization code, as well as the account information for the
   // Primary/Device Account in Chrome OS Account Manager.
@@ -302,7 +435,7 @@ interface AuthHost {
   // In case of an error, |status| must contain the reason of failure, other
   // than SUCCESS, and |account_info| is null.
   [MinVersion=15] RequestPrimaryAccountInfo@12()
-      => (ArcSignInStatus status, AccountInfo? account_info);
+      => (ArcAuthCodeStatus status, AccountInfo? account_info);
 
   // Requests an authorization code, as well as the account information for an
   // account in Chrome OS Account Manager.
@@ -311,8 +444,12 @@ interface AuthHost {
   // |account_info| is not null.
   // In case of an error, |status| must contain the reason of failure, other
   // than SUCCESS, and |account_info| is null.
+  // |persistent_error| flag set to true indicates that error cannot be
+  // eliminated by retrying the request.
   [MinVersion=15] RequestAccountInfo@13(string account_name)
-      => (ArcSignInStatus status, AccountInfo? account_info);
+      => (ArcAuthCodeStatus status,
+          AccountInfo? account_info,
+          [MinVersion=24] bool persistent_error);
 
   // Returns |true| if Chrome OS Account Manager is available for this session.
   // Account Manager is not available in Guest Sessions and Public Sessions
@@ -336,26 +473,18 @@ interface AuthHost {
   // OS Account Manager's re-authentication UI. |account_name| is the Google
   // email id for the account. |account_name| cannot be null or empty.
   [MinVersion=20] HandleUpdateCredentialsRequest@17(string account_name);
+
+  // Reports the reason for doing auth despite device being provisioned earlier.
+  [MinVersion=27] ReportAccountReauthReason@20(ReauthReason reason);
+
+  // Reports AndroidId source during provisioning.
+  [MinVersion=28] ReportAndroidIdSource@21(AndroidIdSource source);
 };
 
 // Next Method ID: 6
 interface AuthInstance {
-  // DEPRECATED: Please use Init@2 instead.
-  InitDeprecated@0(AuthHost host_ptr);
-
   // Establishes full-duplex communication with the host.
-  [MinVersion=12] Init@2(AuthHost host_ptr) => ();
-
-  // Callback from RequestAccountInfo. This cannot be a normal callback since
-  // the result can sometimes take a few minutes in some cases (Kiosk mode),
-  // and in other cases there is a UI that the user is shown and they can take
-  // an arbitrarily long amount of time to interact with.
-  // If the request completes successfully, |status| must be SUCCESS and
-  // |account_info| is not null.
-  // In case of an error, |status| must contain the reason of failure, other
-  // than SUCCESS, and |account_info| is null.
-  [MinVersion=5] OnAccountInfoReadyDeprecated@1(
-      AccountInfo? account_info, [MinVersion=10] ArcSignInStatus status);
+  [MinVersion=12] Init@2(pending_remote<AuthHost> host_remote) => ();
 
   // A notification that an account was updated (or inserted, or removed; see
   // |AccountUpdateType|) in Chrome OS Account Manager.

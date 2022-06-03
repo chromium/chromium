@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/common/media_router/issue.h"
+#include "components/media_router/common/issue.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -100,10 +100,13 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
       base::WeakPtr<MediaRouterFileDialogDelegate> delegate,
       std::unique_ptr<FileSystemDelegate> file_system_delegate);
 
+  MediaRouterFileDialog(const MediaRouterFileDialog&) = delete;
+  MediaRouterFileDialog& operator=(const MediaRouterFileDialog&) = delete;
+
   ~MediaRouterFileDialog() override;
 
   virtual GURL GetLastSelectedFileUrl();
-  virtual base::string16 GetLastSelectedFileName();
+  virtual std::u16string GetLastSelectedFileName();
 
   // Checks if a file has been recorded as being selected, then attempts to
   // report interesting information about the file, such as format.
@@ -128,7 +131,7 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
                                  void* params) override;
   void FileSelectionCanceled(void* params) override;
 
-  // Returns a reason for failure if the file is not valid, or base::nullopt if
+  // Returns a reason for failure if the file is not valid, or absl::nullopt if
   // it passes validation. Has to be run on seperate thread.
   ValidationResult ValidateFile(const ui::SelectedFileInfo& file_info);
 
@@ -148,15 +151,13 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   // Pointer to the file last indicated by the system.
-  base::Optional<ui::SelectedFileInfo> selected_file_;
+  absl::optional<ui::SelectedFileInfo> selected_file_;
 
   // The object which all file system calls go through.
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;
 
   // Object which the media router file dialog callbacks get sent to.
   base::WeakPtr<MediaRouterFileDialogDelegate> const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterFileDialog);
 };
 
 }  // namespace media_router

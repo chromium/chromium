@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EPHEMERAL_RANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EPHEMERAL_RANGE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 
 namespace blink {
 
 class Document;
+class AbstractRange;
 class Range;
 
 // We should restrict access to the unwanted version of |TraversalRange::end()|
@@ -29,7 +31,7 @@ class TraversalRangeNodes : private TraversalRange<Iterator> {
   Iterator end() { return Iterator(past_end_node_); }
 
  private:
-  const Member<const StartNodeType> past_end_node_;
+  const StartNodeType* const past_end_node_;
 };
 
 // This class acts like |TraversalNextIterator| but in addition
@@ -90,6 +92,7 @@ class EphemeralRangeTemplate final {
   // |position| should be |Position::isNull()| or in-document.
   explicit EphemeralRangeTemplate(
       const PositionTemplate<Strategy>& /* position */);
+  explicit EphemeralRangeTemplate(const AbstractRange*);
   // When |range| is nullptr, |EphemeralRangeTemplate| is |isNull()|.
   explicit EphemeralRangeTemplate(const Range* /* range */);
   EphemeralRangeTemplate();
@@ -158,4 +161,4 @@ ToEphemeralRangeInFlatTree(const EphemeralRange&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EPHEMERAL_RANGE_H_

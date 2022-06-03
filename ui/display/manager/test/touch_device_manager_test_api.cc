@@ -32,15 +32,19 @@ void TouchDeviceManagerTestApi::Associate(int64_t display_id,
 
 std::size_t TouchDeviceManagerTestApi::GetTouchDeviceCount(
     const ManagedDisplayInfo& info) const {
-  return touch_device_manager_->GetAssociatedTouchDevicesForDisplay(info.id())
-      .size();
+  std::size_t count = 0;
+  for (const auto& association :
+       touch_device_manager_->active_touch_associations_) {
+    if (association.second == info.id())
+      count++;
+  }
+  return count;
 }
 
 bool TouchDeviceManagerTestApi::AreAssociated(
     const ManagedDisplayInfo& info,
     const ui::TouchscreenDevice& device) const {
-  return touch_device_manager_->DisplayHasTouchDevice(
-      info.id(), TouchDeviceIdentifier::FromDevice(device));
+  return touch_device_manager_->DisplayHasTouchDevice(info.id(), device);
 }
 
 void TouchDeviceManagerTestApi::ResetTouchDeviceManager() {

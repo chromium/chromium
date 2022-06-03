@@ -8,7 +8,9 @@
 
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/notreached.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
@@ -47,6 +49,98 @@ int NetErrorFromOSStatus(OSStatus status) {
   }
 }
 
+// Maps errors from OSStatus codes to CertStatus flags.
+//
+// The selection of errors is based off of Apple's SecPolicyChecks.list, and
+// any unknown errors are mapped to CERT_STATUS_INVALID for safety.
+CertStatus CertStatusFromOSStatus(OSStatus status) {
+  switch (status) {
+    case errSecHostNameMismatch:
+      return CERT_STATUS_COMMON_NAME_INVALID;
+
+    case errSecCertificateExpired:
+    case errSecCertificateNotValidYet:
+      return CERT_STATUS_DATE_INVALID;
+
+    case errSecCreateChainFailed:
+    case errSecNotTrusted:
+    // errSecVerifyActionFailed is used when CT is required
+    // and not present. The OS rejected this chain, and so mapping
+    // to CERT_STATUS_CT_COMPLIANCE_FAILED (which is informational,
+    // as policy enforcement is not handled in the CertVerifier)
+    // would cause this error to be ignored and mapped to
+    // CERT_STATUS_INVALID. Rather than do that, mark it simply as
+    // "untrusted". The CT_COMPLIANCE_FAILED bit is not set, since
+    // it's not necessarily a compliance failure with the embedder's
+    // CT policy. It's a bit of a hack, but hopefully temporary.
+    // errSecNotTrusted is somewhat similar. It applies for
+    // situations where a root isn't trusted or an intermediate
+    // isn't trusted, when a key is restricted, or when the calling
+    // application requested CT enforcement (which CertVerifier
+    // should never being doing).
+    case errSecVerifyActionFailed:
+      return CERT_STATUS_AUTHORITY_INVALID;
+
+    case errSecInvalidIDLinkage:
+    case errSecNoBasicConstraintsCA:
+    case errSecInvalidSubjectName:
+    case errSecInvalidExtendedKeyUsage:
+    case errSecInvalidKeyUsageForPolicy:
+    case errSecMissingRequiredExtension:
+    case errSecNoBasicConstraints:
+    case errSecPathLengthConstraintExceeded:
+    case errSecUnknownCertExtension:
+    case errSecUnknownCriticalExtensionFlag:
+    // errSecCertificatePolicyNotAllowed and errSecCertificateNameNotAllowed
+    // are used for certificates that violate the constraints imposed upon the
+    // issuer. Nominally this could be mapped to CERT_STATUS_AUTHORITY_INVALID,
+    // except the trustd behaviour is to treat this as a fatal
+    // (non-recoverable) error. That behavior is preserved here for consistency
+    // with Safari.
+    case errSecCertificatePolicyNotAllowed:
+    case errSecCertificateNameNotAllowed:
+      return CERT_STATUS_INVALID;
+
+    // Unfortunately, iOS's handling of weak digest algorithms and key sizes
+    // doesn't map exactly to Chrome's. errSecInvalidDigestAlgorithm and
+    // errSecUnsupportedKeySize may indicate errors that iOS considers fatal
+    // (too weak to process at all) or recoverable (too weak according to
+    // compliance policies).
+    // Further, because SecTrustEvaluateWithError only returns a single error
+    // code, a fatal error may have occurred elsewhere in the chain, so the
+    // overall result can't be used to distinguish individual certificate
+    // errors. For this complicated reason, the weak key and weak digest cases
+    // also map to CERT_STATUS_INVALID for safety.
+    case errSecInvalidDigestAlgorithm:
+      return CERT_STATUS_WEAK_SIGNATURE_ALGORITHM | CERT_STATUS_INVALID;
+    case errSecUnsupportedKeySize:
+      return CERT_STATUS_WEAK_KEY | CERT_STATUS_INVALID;
+
+    case errSecCertificateRevoked:
+      return CERT_STATUS_REVOKED;
+
+    case errSecIncompleteCertRevocationCheck:
+      return CERT_STATUS_UNABLE_TO_CHECK_REVOCATION;
+
+    case errSecCertificateValidityPeriodTooLong:
+      return CERT_STATUS_VALIDITY_TOO_LONG;
+
+    case errSecInvalidCertificateRef:
+    case errSecInvalidName:
+    case errSecInvalidPolicyIdentifiers:
+      return CERT_STATUS_INVALID;
+
+    // This function should only be called on errors, so should always return a
+    // CertStatus code that is considered an error. If the input is unexpectedly
+    // errSecSuccess, return CERT_STATUS_INVALID for safety.
+    case errSecSuccess:
+    default:
+      OSSTATUS_LOG(WARNING, status)
+          << "Unknown error mapped to CERT_STATUS_INVALID";
+      return CERT_STATUS_INVALID;
+  }
+}
+
 // Creates a series of SecPolicyRefs to be added to a SecTrustRef used to
 // validate a certificate for an SSL server. |hostname| contains the name of
 // the SSL server that the certificate should be verified against. If
@@ -71,8 +165,8 @@ OSStatus CreateTrustPolicies(ScopedCFTypeRef<CFArrayRef>* policies) {
 
 // Builds and evaluates a SecTrustRef for the certificate chain contained
 // in |cert_array|, using the verification policies in |trust_policies|. On
-// success, returns OK, and updates |trust_ref| and |trust_result|. On failure,
-// no output parameters are modified.
+// success, returns OK, and updates |trust_ref|, |is_trusted|, and
+// |trust_error|. On failure, no output parameters are modified.
 //
 // Note: An OK return does not mean that |cert_array| is trusted, merely that
 // verification was performed successfully.
@@ -82,7 +176,8 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
                                 CFArrayRef sct_array_ref,
                                 ScopedCFTypeRef<SecTrustRef>* trust_ref,
                                 ScopedCFTypeRef<CFArrayRef>* verified_chain,
-                                SecTrustResultType* trust_result) {
+                                bool* is_trusted,
+                                ScopedCFTypeRef<CFErrorRef>* trust_error) {
   SecTrustRef tmp_trust = nullptr;
   OSStatus status =
       SecTrustCreateWithCertificates(cert_array, trust_policies, &tmp_trust);
@@ -110,10 +205,29 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
     }
   }
 
-  SecTrustResultType tmp_trust_result;
-  status = SecTrustEvaluate(tmp_trust, &tmp_trust_result);
-  if (status)
-    return NetErrorFromOSStatus(status);
+  ScopedCFTypeRef<CFErrorRef> tmp_error;
+  bool tmp_is_trusted = false;
+  if (__builtin_available(iOS 12.0, *)) {
+    tmp_is_trusted =
+        SecTrustEvaluateWithError(tmp_trust, tmp_error.InitializeInto());
+  } else {
+#if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
+    SecTrustResultType tmp_trust_result;
+    status = SecTrustEvaluate(tmp_trust, &tmp_trust_result);
+    if (status)
+      return NetErrorFromOSStatus(status);
+    switch (tmp_trust_result) {
+      case kSecTrustResultUnspecified:
+      case kSecTrustResultProceed:
+        tmp_is_trusted = true;
+        break;
+      case kSecTrustResultInvalid:
+        return ERR_FAILED;
+      default:
+        tmp_is_trusted = false;
+    }
+#endif
+  }
 
   ScopedCFTypeRef<CFMutableArrayRef> tmp_verified_chain(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
@@ -124,23 +238,24 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
   }
 
   trust_ref->swap(scoped_tmp_trust);
-  *trust_result = tmp_trust_result;
+  trust_error->swap(tmp_error);
   verified_chain->reset(tmp_verified_chain.release());
+  *is_trusted = tmp_is_trusted;
   return OK;
 }
 
 void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
   DCHECK_LT(0, CFArrayGetCount(cert_chain));
 
-  SecCertificateRef verified_cert = nullptr;
-  std::vector<SecCertificateRef> verified_chain;
+  base::ScopedCFTypeRef<SecCertificateRef> verified_cert;
+  std::vector<base::ScopedCFTypeRef<SecCertificateRef>> verified_chain;
   for (CFIndex i = 0, count = CFArrayGetCount(cert_chain); i < count; ++i) {
     SecCertificateRef chain_cert = reinterpret_cast<SecCertificateRef>(
         const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, i)));
     if (i == 0) {
-      verified_cert = chain_cert;
+      verified_cert.reset(chain_cert, base::scoped_policy::RETAIN);
     } else {
-      verified_chain.push_back(chain_cert);
+      verified_chain.emplace_back(chain_cert, base::scoped_policy::RETAIN);
     }
 
     base::ScopedCFTypeRef<CFDataRef> der_data(
@@ -164,7 +279,7 @@ void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
     CC_SHA256(spki_bytes.data(), spki_bytes.size(), sha256.data());
     verify_result->public_key_hashes.push_back(sha256);
   }
-  if (!verified_cert) {
+  if (!verified_cert.get()) {
     NOTREACHED();
     verify_result->cert_status |= CERT_STATUS_INVALID;
     return;
@@ -183,6 +298,23 @@ void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
 
 CertVerifyProcIOS::CertVerifyProcIOS() {}
 
+// static
+CertStatus CertVerifyProcIOS::GetCertFailureStatusFromError(CFErrorRef error) {
+  if (!error)
+    return CERT_STATUS_INVALID;
+
+  base::ScopedCFTypeRef<CFStringRef> error_domain(CFErrorGetDomain(error));
+  CFIndex error_code = CFErrorGetCode(error);
+
+  if (error_domain != kCFErrorDomainOSStatus) {
+    LOG(WARNING) << "Unhandled error domain: " << error;
+    return CERT_STATUS_INVALID;
+  }
+
+  return CertStatusFromOSStatus(error_code);
+}
+
+#if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
 // The iOS APIs don't expose an API-stable set of reasons for certificate
 // validation failures. However, internally, the reason is tracked, and it's
 // converted to user-facing localized strings.
@@ -264,6 +396,8 @@ CertStatus CertVerifyProcIOS::GetCertFailureStatusFromTrust(SecTrustRef trust) {
 
   return reason;
 }
+#endif  // !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED <
+        // __IPHONE_12_0
 
 bool CertVerifyProcIOS::SupportsAdditionalTrustAnchors() const {
   return false;
@@ -279,7 +413,8 @@ int CertVerifyProcIOS::VerifyInternal(
     int flags,
     CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
-    CertVerifyResult* verify_result) {
+    CertVerifyResult* verify_result,
+    const NetLogWithSource& net_log) {
   ScopedCFTypeRef<CFArrayRef> trust_policies;
   OSStatus status = CreateTrustPolicies(&trust_policies);
   if (status)
@@ -326,30 +461,49 @@ int CertVerifyProcIOS::VerifyInternal(
   }
 
   ScopedCFTypeRef<SecTrustRef> trust_ref;
-  SecTrustResultType trust_result = kSecTrustResultDeny;
+  bool is_trusted = false;
   ScopedCFTypeRef<CFArrayRef> final_chain;
+  ScopedCFTypeRef<CFErrorRef> trust_error;
 
-  status = BuildAndEvaluateSecTrustRef(
+  int err = BuildAndEvaluateSecTrustRef(
       cert_array, trust_policies, ocsp_response_ref.get(), sct_array_ref.get(),
-      &trust_ref, &final_chain, &trust_result);
-  if (status)
-    return NetErrorFromOSStatus(status);
+      &trust_ref, &final_chain, &is_trusted, &trust_error);
+  if (err)
+    return err;
 
   if (CFArrayGetCount(final_chain) == 0)
     return ERR_FAILED;
 
   // TODO(rsleevi): Support CRLSet revocation.
-  switch (trust_result) {
-    case kSecTrustResultUnspecified:
-    case kSecTrustResultProceed:
-      break;
-    case kSecTrustResultDeny:
-      verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
-      break;
-    default:
-      verify_result->cert_status |= GetCertFailureStatusFromTrust(trust_ref);
+  if (!is_trusted) {
+    if (__builtin_available(iOS 12.0, *)) {
+      verify_result->cert_status |= GetCertFailureStatusFromError(trust_error);
+    } else {
+#if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
+      SecTrustResultType trust_result = kSecTrustResultInvalid;
+      status = SecTrustGetTrustResult(trust_ref.get(), &trust_result);
+      if (status)
+        return NetErrorFromOSStatus(status);
+      switch (trust_result) {
+        case kSecTrustResultUnspecified:
+        case kSecTrustResultProceed:
+          NOTREACHED();
+          break;
+        case kSecTrustResultDeny:
+          verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+          break;
+        default:
+          verify_result->cert_status |=
+              GetCertFailureStatusFromTrust(trust_ref);
+      }
+#else
+      // It should be impossible to reach this code, but if somehow it is
+      // reached it would allow any certificate as valid since no errors would
+      // be added to cert_status. Therefore, add a CHECK as a fail safe.
+      CHECK(false);
+#endif
+    }
   }
-
   GetCertChainInfo(final_chain, verify_result);
 
   // While iOS lacks the ability to distinguish system-trusted versus

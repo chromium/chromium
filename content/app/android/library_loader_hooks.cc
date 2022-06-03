@@ -23,9 +23,6 @@ bool LibraryLoaded(JNIEnv* env,
     base::android::InitReachedCodeProfilerAtStartup(library_process_type);
   }
 
-  // Enable startup tracing asap to avoid early TRACE_EVENT calls being ignored.
-  tracing::EnableStartupTracingIfNeeded();
-
   // Android's main browser loop is custom so we set the browser name here as
   // early as possible if this is the browser process or main webview process.
   if (library_process_type ==
@@ -37,8 +34,8 @@ bool LibraryLoaded(JNIEnv* env,
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);
 
-  // Can only use event tracing after setting up the command line.
-  TRACE_EVENT0("jni", "JNI_OnLoad continuation");
+  // Tracing itself can only be enabled after mojo is initialized, we do so in
+  // ContentMainRunnerImpl::Initialize.
 
   logging::LoggingSettings settings;
   settings.logging_dest =

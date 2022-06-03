@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "cc/debug/debug_export.h"
+#include "cc/raster/lcd_text_disallowed_reason.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace cc {
@@ -123,8 +124,13 @@ class CC_DEBUG_EXPORT DebugColors {
 
   static SkColor PlatformLayerTreeTextColor();
   static SkColor FPSDisplayTextAndGraphColor();
+  static SkColor FPSDisplayDroppedFrame();
+  static SkColor FPSDisplayMissedFrame();
+  static SkColor FPSDisplaySuccessfulFrame();
   static SkColor MemoryDisplayTextColor();
   static SkColor PaintTimeDisplayTextAndGraphColor();
+
+  static SkColor NonLCDTextHighlightColor(LCDTextDisallowedReason);
 };
 
 }  // namespace cc

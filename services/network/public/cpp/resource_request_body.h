@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -32,7 +31,12 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
     : public base::RefCountedThreadSafe<ResourceRequestBody> {
  public:
+  using ReadOnlyOnce = DataElementChunkedDataPipe::ReadOnlyOnce;
+
   ResourceRequestBody();
+
+  ResourceRequestBody(const ResourceRequestBody&) = delete;
+  ResourceRequestBody& operator=(const ResourceRequestBody&) = delete;
 
   // Creates ResourceRequestBody that holds a copy of |bytes|.
   static scoped_refptr<ResourceRequestBody> CreateFromBytes(const char* bytes,
@@ -44,26 +48,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
                        uint64_t offset,
                        uint64_t length,
                        const base::Time& expected_modification_time);
-  // Appends the specified part of |file|. If |length| extends beyond the end of
-  // the file, it will be set to the end of the file.
-  void AppendRawFileRange(base::File file,
-                          const base::FilePath& file_path,
-                          uint64_t offset,
-                          uint64_t length,
-                          const base::Time& expected_modification_time);
-
-  // Appends a blob. If the 2-parameter version is used, the resulting body can
-  // be read by Blink, which is needed when the body is sent to Blink, e.g., for
-  // service worker interception. The length must be size of the entire blob,
-  // not a subrange of it. If the length is unknown, use the 1-parameter
-  // version, but this means the body/blob won't be readable by Blink (that's OK
-  // if this ResourceRequestBody will only be sent to the browser process and
-  // won't be sent to Blink).
-  //
-  // TODO(crbug.com/846167): Remove these functions when NetworkService is
-  // enabled, as blobs are passed via AppendDataPipe in that case.
-  void AppendBlob(const std::string& uuid);
-  void AppendBlob(const std::string& uuid, uint64_t length);
 
   void AppendDataPipe(
       mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter);
@@ -79,7 +63,18 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   // method should only be used when talking to servers that are are known to
   // support chunked uploads.
   void SetToChunkedDataPipe(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
-                                chunked_data_pipe_getter);
+                                chunked_data_pipe_getter,
+                            ReadOnlyOnce read_only_once);
+  // Almost same as above except |chunked_data_pipe_getter| is read only once
+  // and you must talk with a server supporting chunked upload.
+  void SetToReadOnceStream(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
+                               chunked_data_pipe_getter);
+  void SetAllowHTTP1ForStreamingUpload(bool allow) {
+    allow_http1_for_streaming_upload_ = allow;
+  }
+  bool AllowHTTP1ForStreamingUpload() const {
+    return allow_http1_for_streaming_upload_;
+  }
 
   const std::vector<DataElement>* elements() const { return &elements_; }
   std::vector<DataElement>* elements_mutable() { return &elements_; }
@@ -94,7 +89,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   int64_t identifier() const { return identifier_; }
 
   // Returns paths referred to by |elements| of type
-  // network::mojom::DataElementType::kFile.
+  // network::mojom::DataElementDataView::Tag::kFile.
   std::vector<base::FilePath> GetReferencedFiles() const;
 
   // Sets the flag which indicates whether the post data contains sensitive
@@ -112,12 +107,14 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
                                    scoped_refptr<network::ResourceRequestBody>>;
   ~ResourceRequestBody();
 
+  bool EnableToAppendElement() const;
+
   std::vector<DataElement> elements_;
   int64_t identifier_;
 
   bool contains_sensitive_info_;
 
-  DISALLOW_COPY_AND_ASSIGN(ResourceRequestBody);
+  bool allow_http1_for_streaming_upload_ = true;
 };
 
 }  // namespace network

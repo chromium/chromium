@@ -8,6 +8,7 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/language/content/browser/language_code_locator_provider.h"
@@ -22,7 +23,7 @@ namespace {
 
 // Don't start requesting updates to IP-based approximation geolocation until
 // this long after receiving the last one.
-constexpr base::TimeDelta kMinUpdatePeriod = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinUpdatePeriod = base::Days(1);
 
 GeoLanguageProvider::Binder& GetBinderOverride() {
   static base::NoDestructor<GeoLanguageProvider::Binder> binder;
@@ -36,9 +37,8 @@ const char GeoLanguageProvider::kCachedGeoLanguagesPref[] =
 
 GeoLanguageProvider::GeoLanguageProvider()
     : creation_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      background_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       prefs_(nullptr) {
   // Constructor is not required to run on |background_task_runner_|:
@@ -75,7 +75,7 @@ void GeoLanguageProvider::StartUp(PrefService* const prefs) {
 
   const base::ListValue* const cached_languages_list =
       prefs_->GetList(kCachedGeoLanguagesPref);
-  for (const auto& language_value : *cached_languages_list) {
+  for (const auto& language_value : cached_languages_list->GetList()) {
     languages_.push_back(language_value.GetString());
   }
 

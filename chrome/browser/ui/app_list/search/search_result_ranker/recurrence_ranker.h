@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_config.pb.h"
@@ -36,6 +36,10 @@ class RecurrenceRanker {
                    const base::FilePath& filepath,
                    const RecurrenceRankerConfigProto& config,
                    bool is_ephemeral_user);
+
+  RecurrenceRanker(const RecurrenceRanker&) = delete;
+  RecurrenceRanker& operator=(const RecurrenceRanker&) = delete;
+
   ~RecurrenceRanker();
 
   // Record the use of a given target, and train the predictor on it. This may
@@ -64,21 +68,35 @@ class RecurrenceRanker {
   std::map<std::string, float> Rank(
       const std::string& condition = std::string());
 
-  // Returns a sorted vector of <target, score> pairs.
+  // Returns a sorted vector of at most N <target, score> pairs.
   //  - Higher scores are better.
   //  - Score are guaranteed to be in the range [0,1].
   //  - Pairs are sorted in descending order of score.
-  //  - At most n results will be returned.
   // The user-supplied |condition| can be ignored if it isn't needed.
   std::vector<std::pair<std::string, float>> RankTopN(
       int n,
       const std::string& condition = std::string());
+
+  // Returns a sorted vector of <target, score> pairs.
+  //  - Higher scores are better.
+  //  - Score are guaranteed to be in the range [0,1].
+  //  - Pairs are sorted in descending order of score.
+  // The user-supplied |condition| can be ignored if it isn't needed.
+  std::vector<std::pair<std::string, float>> RankSorted(
+      const std::string& condition = std::string());
+
+  // Returns whether this ranker contains no targets.
+  bool empty() { return targets_->size() == 0; }
 
   // Force saving all model state to disk. If the user is an ephemeral user,
   // this does nothing. This is not necessary in normal operation, as the ranker
   // automatically saves at regular intervals. Example use: syncing to disk
   // after a target or condition is deleted.
   void SaveToDisk();
+
+  // Returns true if the model has been loaded from disk and is ready to use.
+  // Train and rank do nothing when this is false.
+  bool is_initialized() { return load_from_disk_completed_; }
 
   // Return a pointer to the underlying storage of the FrecencyStore for targets
   // or conditions. These should not be used under normal use or ranking.
@@ -146,8 +164,6 @@ class RecurrenceRanker {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<RecurrenceRanker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecurrenceRanker);
 };
 
 }  // namespace app_list

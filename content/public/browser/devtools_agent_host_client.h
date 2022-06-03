@@ -5,8 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DEVTOOLS_AGENT_HOST_CLIENT_H_
 #define CONTENT_PUBLIC_BROWSER_DEVTOOLS_AGENT_HOST_CLIENT_H_
 
-#include <string>
-
+#include "base/containers/span.h"
 #include "content/common/content_export.h"
 
 class GURL;
@@ -22,7 +21,7 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
 
   // Dispatches given protocol message on the client.
   virtual void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                                       const std::string& message) = 0;
+                                       base::span<const uint8_t> message) = 0;
 
   // This method is called when attached agent host is closed.
   virtual void AgentHostClosed(DevToolsAgentHost* agent_host) = 0;
@@ -43,6 +42,12 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
   // Returns true if the client is allowed to write local files over the
   // protocol. Example would be manipulating a deault downloads path.
   virtual bool MayWriteLocalFiles();
+
+  // Returns true if the client is allowed to perform operations
+  // they may potentially be used to gain privileges, e.g. providing
+  // JS compilation cache entries. This should only be true for clients
+  // that are already privileged, such as local automation clients.
+  virtual bool AllowUnsafeOperations();
 
   // Determines protocol message format.
   virtual bool UsesBinaryProtocol();

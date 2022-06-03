@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,8 +22,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/version_info/version_info.h"
 
 // static

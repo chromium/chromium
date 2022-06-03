@@ -58,7 +58,7 @@ int SolidColorScrollbarLayerImpl::ThumbThickness() const {
   if (thumb_thickness_ != -1)
     return thumb_thickness_;
 
-  if (orientation() == HORIZONTAL)
+  if (orientation() == ScrollbarOrientation::HORIZONTAL)
     return bounds().height();
   else
     return bounds().width();
@@ -73,7 +73,7 @@ int SolidColorScrollbarLayerImpl::ThumbLength() const {
 }
 
 float SolidColorScrollbarLayerImpl::TrackLength() const {
-  if (orientation() == HORIZONTAL)
+  if (orientation() == ScrollbarOrientation::HORIZONTAL)
     return bounds().width() - TrackStart() * 2;
   else
     return bounds().height() + vertical_adjust() - TrackStart() * 2;
@@ -86,7 +86,7 @@ bool SolidColorScrollbarLayerImpl::IsThumbResizable() const {
 }
 
 void SolidColorScrollbarLayerImpl::AppendQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();

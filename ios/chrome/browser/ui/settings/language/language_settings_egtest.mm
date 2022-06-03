@@ -2,26 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
-#include "components/language/core/browser/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
-#include "components/translate/core/browser/translate_prefs.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/settings/language/language_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
 #include "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,14 +25,11 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::GetOriginalBrowserState;
 using chrome_test_util::NavigationBarDoneButton;
-using chrome_test_util::SetBooleanUserPref;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSwitchCell;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TurnSettingsSwitchOn;
-using chrome_test_util::VerifyAccessibilityForCurrentScreen;
-using language::prefs::kAcceptLanguages;
 
 namespace {
 
@@ -142,7 +134,7 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
       ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-      grey_kindOfClass([UIButton class]),
+      grey_not(TabGridEditButton()), grey_kindOfClass([UIButton class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
       grey_sufficientlyVisible(), nil);
 }
@@ -152,54 +144,19 @@ id<GREYMatcher> NavigationBarEditButton() {
 @interface LanguageSettingsTestCase : ChromeTestCase
 @end
 
-@implementation LanguageSettingsTestCase {
-  base::test::ScopedFeatureList _featureList;
-
-  std::unique_ptr<translate::TranslatePrefs> _translatePrefs;
-}
+@implementation LanguageSettingsTestCase
 
 - (void)setUp {
   [super setUp];
 
-  // Enable the Language Settings UI.
-  _featureList.InitAndEnableFeature(kLanguageSettings);
-
-  // Create TranslatePrefs.
-  ios::ChromeBrowserState* browserState = GetOriginalBrowserState();
-  _translatePrefs =
-      ChromeIOSTranslateClient::CreateTranslatePrefs(browserState->GetPrefs());
-
-  // Make sure Translate is enabled.
-  SetBooleanUserPref(browserState, prefs::kOfferTranslateEnabled, YES);
-
-  // Make sure "en" is the only accept language.
-  std::vector<std::string> languages;
-  _translatePrefs->GetLanguageList(&languages);
-  for (const auto& language : languages) {
-    _translatePrefs->RemoveFromLanguageList(language);
-  }
-  _translatePrefs->AddToLanguageList("en", /*force_blocked=*/false);
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:translate::prefs::kOfferTranslateEnabled];
+  [LanguageSettingsAppInterface removeAllLanguages];
+  [LanguageSettingsAppInterface addLanguage:@"en"];
 }
 
 - (void)tearDown {
-  // Keep navigating back while a Language Settings subpage is displaying.
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      assertWithMatcher:grey_notNil()
-                  error:&error];
-  while (!error) {
-    [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-        performAction:grey_tap()];
-
-    error = nil;
-    [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-  }
-
-  // Close the general Settings menu.
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey dismissSettings];
 
   [super tearDown];
 }
@@ -214,14 +171,14 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
   [[EarlGrey selectElementWithMatcher:LanguageSettingsTableView()]
       assertWithMatcher:grey_notNil()];
-  VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Test accessibility on the Add Language page.
   [[EarlGrey selectElementWithMatcher:AddLanguageButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AddLanguageTableView()]
       assertWithMatcher:grey_notNil()];
-  VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Navigate back.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -235,12 +192,12 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:LanguageDetailsTableView()]
       assertWithMatcher:grey_notNil()];
-  VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that the Translate Switch enables/disables Translate and the UI gets
 // updated accordingly.
-- (void)testTransalteSwitch {
+- (void)testTranslateSwitch {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Go to the Language Settings page.
@@ -254,7 +211,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:TurnSettingsSwitchOn(NO)];
 
   // Verify the prefs are up-to-date.
-  GREYAssertFalse(_translatePrefs->IsOfferTranslateEnabled(),
+  GREYAssertFalse([LanguageSettingsAppInterface offersTranslation],
                   @"Translate is expected to be disabled.");
 
   // Verify that "English (United States)" does not feature a label indicating
@@ -274,7 +231,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:TurnSettingsSwitchOn(YES)];
 
   // Verify the prefs are up-to-date.
-  GREYAssertTrue(_translatePrefs->IsOfferTranslateEnabled(),
+  GREYAssertTrue([LanguageSettingsAppInterface offersTranslation],
                  @"Translate is expected to be enabled.");
 
   // Verify that "English (United States)" features a label indicating it is
@@ -357,10 +314,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify the prefs are up-to-date.
-  ios::ChromeBrowserState* browserState = GetOriginalBrowserState();
-  GREYAssertEqual("en,tr",
-                  browserState->GetPrefs()->GetString(kAcceptLanguages),
-                  @"Unexpected value for kAcceptLanguages pref");
+  GREYAssertEqualObjects([LanguageSettingsAppInterface languages], @"en,tr",
+                         @"Unexpected value for accept lang pref");
 }
 
 // Tests that the Language Details page allows blocking/unblocking languages.
@@ -368,9 +323,9 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Add "Turkish" to the list of accept languages.
-  _translatePrefs->AddToLanguageList("tr", /*force_blocked=*/false);
+  [LanguageSettingsAppInterface addLanguage:@"tr"];
   // Verify the prefs are up-to-date.
-  GREYAssertTrue(_translatePrefs->IsBlockedLanguage("tr"),
+  GREYAssertTrue([LanguageSettingsAppInterface isBlockedLanguage:@"tr"],
                  @"Turkish is expected to be Translate-blocked");
 
   // Go to the Language Settings page.
@@ -407,7 +362,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify the prefs are up-to-date.
-  GREYAssertFalse(_translatePrefs->IsBlockedLanguage("tr"),
+  GREYAssertFalse([LanguageSettingsAppInterface isBlockedLanguage:@"tr"],
                   @"Turkish should not be Translate-blocked");
 
   // Go to the "Turkish" Language Details page.
@@ -438,7 +393,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify the prefs are up-to-date.
-  GREYAssertTrue(_translatePrefs->IsBlockedLanguage("tr"),
+  GREYAssertTrue([LanguageSettingsAppInterface isBlockedLanguage:@"tr"],
                  @"Turkish is expected to be Translate-blocked");
 }
 
@@ -447,13 +402,13 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Add "Turkish" to the list of accept languages.
-  _translatePrefs->AddToLanguageList("tr", /*force_blocked=*/false);
+  [LanguageSettingsAppInterface addLanguage:@"tr"];
   // Verify the prefs are up-to-date.
-  GREYAssertTrue(_translatePrefs->IsBlockedLanguage("tr"),
+  GREYAssertTrue([LanguageSettingsAppInterface isBlockedLanguage:@"tr"],
                  @"Turkish is expected to be Translate-blocked");
 
   // Make "Turkish" the target language.
-  _translatePrefs->SetRecentTargetLanguage("tr");
+  [LanguageSettingsAppInterface setRecentTargetLanguage:@"tr"];
 
   // Go to the Language Settings page.
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
@@ -480,7 +435,7 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Make sure "Turkish" is the target language and not "en".
-  _translatePrefs->SetRecentTargetLanguage("tr");
+  [LanguageSettingsAppInterface setRecentTargetLanguage:@"tr"];
 
   // Go to the Language Settings page.
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
@@ -507,9 +462,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Add "Aragonese" to the list of accept languages.
-  _translatePrefs->AddToLanguageList("an", /*force_blocked=*/false);
+  [LanguageSettingsAppInterface addLanguage:@"tr"];
+  [LanguageSettingsAppInterface addLanguage:@"an"];
   // Verify the prefs are up-to-date.
-  GREYAssertTrue(_translatePrefs->IsBlockedLanguage("an"),
+  GREYAssertTrue([LanguageSettingsAppInterface isBlockedLanguage:@"an"],
                  @"Aragonese is expected to be Translate-blocked");
 
   // Go to the Language Settings page.
@@ -561,9 +517,9 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Add "Turkish" to the list of accept languages.
-  _translatePrefs->AddToLanguageList("tr", /*force_blocked=*/false);
+  [LanguageSettingsAppInterface addLanguage:@"tr"];
   // Verify the prefs are up-to-date.
-  GREYAssertTrue(_translatePrefs->IsBlockedLanguage("tr"),
+  GREYAssertTrue([LanguageSettingsAppInterface isBlockedLanguage:@"tr"],
                  @"Turkish is expected to be Translate-blocked");
 
   // Go to the Language Settings page.
@@ -602,9 +558,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_nil()];
 
   // Verify the prefs are up-to-date.
-  ios::ChromeBrowserState* browserState = GetOriginalBrowserState();
-  GREYAssertEqual("en", browserState->GetPrefs()->GetString(kAcceptLanguages),
-                  @"Unexpected value for kAcceptLanguages pref");
+  GREYAssertEqualObjects([LanguageSettingsAppInterface languages], @"en",
+                         @"Unexpected value for accept lang pref");
 
   // Swipe left on the "English" language entry.
   [[EarlGrey selectElementWithMatcher:LanguageEntry(englishLanguageEntryLabel)]

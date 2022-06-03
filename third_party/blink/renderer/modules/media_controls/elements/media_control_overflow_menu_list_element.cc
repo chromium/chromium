@@ -42,10 +42,12 @@ void MediaControlOverflowMenuListElement::DefaultEventHandler(Event& event) {
 void MediaControlOverflowMenuListElement::SetIsWanted(bool wanted) {
   MediaControlPopupMenuElement::SetIsWanted(wanted);
 
-  if (wanted)
+  if (wanted) {
     OpenOverflowMenu();
-  else if (!GetMediaControls().TextTrackListIsWanted())
+  } else if (!GetMediaControls().TextTrackListIsWanted() &&
+             !GetMediaControls().PlaybackSpeedListIsWanted()) {
     CloseOverflowMenu();
+  }
 }
 
 }  // namespace blink

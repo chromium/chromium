@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {
+class FrameTree;
 class RenderViewHost;
 class RenderViewHostDelegate;
 class RenderWidgetHostDelegate;
@@ -24,13 +24,16 @@ class RenderViewHostFactory {
   // Creates a RenderViewHost using the currently registered factory, or the
   // default one if no factory is registered. Ownership of the returned
   // pointer will be passed to the caller.
-  static RenderViewHost* Create(SiteInstance* instance,
+  static RenderViewHost* Create(FrameTree* frame_tree,
+                                SiteInstance* instance,
                                 RenderViewHostDelegate* delegate,
                                 RenderWidgetHostDelegate* widget_delegate,
-                                int32_t routing_id,
                                 int32_t main_frame_routing_id,
-                                int32_t widget_routing_id,
-                                bool swapped_out);
+                                bool swapped_out,
+                                bool renderer_initiated_creation);
+
+  RenderViewHostFactory(const RenderViewHostFactory&) = delete;
+  RenderViewHostFactory& operator=(const RenderViewHostFactory&) = delete;
 
   // Returns true if there is currently a globally-registered factory.
   static bool has_factory() {
@@ -56,6 +59,7 @@ class RenderViewHostFactory {
   // You can derive from this class and specify an implementation for this
   // function to create a different kind of RenderViewHost for testing.
   virtual RenderViewHost* CreateRenderViewHost(
+      FrameTree* frame_tree,
       SiteInstance* instance,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,
@@ -81,8 +85,6 @@ class RenderViewHostFactory {
   // Set to true if the RenderViewHost is not a test instance. Defaults to
   // false.
   CONTENT_EXPORT static bool is_real_render_view_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostFactory);
 };
 
 }  // namespace content

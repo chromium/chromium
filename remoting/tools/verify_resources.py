@@ -24,6 +24,8 @@ In addition, the script checks that all the messages are still in use; if
 this is not the case then a warning is issued, but the script still succeeds.
 """
 
+from __future__ import print_function
+
 import json
 import os
 import optparse
@@ -107,7 +109,7 @@ def VerifyFile(filename, messages, used_tags):
   matches = False
   f = open(filename, 'r')
   lines = f.readlines()
-  for i in xrange(0, len(lines)):
+  for i in range(0, len(lines)):
     tag = ExtractTagFromLine(file_type, lines[i])
     if tag:
       tag = tag.upper()
@@ -115,8 +117,8 @@ def VerifyFile(filename, messages, used_tags):
       matches = True
       if not tag in messages:
         result = False
-        print '%s/%s:%d: error: Undefined tag: %s' % \
-            (os.getcwd(), filename, i + 1, tag)
+        print('%s/%s:%d: error: Undefined tag: %s' %
+            (os.getcwd(), filename, i + 1, tag))
   f.close()
   return result
 
@@ -133,10 +135,10 @@ def main():
 
   options, args = parser.parse_args()
   if not options.touch:
-    print '-t is not specified.'
+    print('-t is not specified.')
     return 1
   if len(options.grd) == 0 or len(args) == 0:
-    print 'At least one GRD file needs to be specified.'
+    print('At least one GRD file needs to be specified.')
     return 1
 
   all_resources = []
@@ -159,11 +161,11 @@ def main():
     # For now, exclude Android strings from this check.
     for tag in non_android_resources:
       if tag not in used_tags:
-        print ('%s/%s:0: warning: %s is defined but not used') % \
-            (os.getcwd(), sys.argv[2], tag)
+        print('%s/%s:0: warning: %s is defined but not used' %
+            (os.getcwd(), sys.argv[2], tag))
         warnings = True
     if warnings:
-      print WARNING_MESSAGE
+      print(WARNING_MESSAGE)
 
   if exit_code == 0:
     f = open(options.touch, 'a')

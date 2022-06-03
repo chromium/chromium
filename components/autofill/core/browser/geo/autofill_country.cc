@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,16 +26,27 @@ const size_t kLocaleCapacity =
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
                                  const std::string& locale) {
-  auto result =
-      CountryDataMap::GetInstance()->country_data().find(country_code);
-  DCHECK(result != CountryDataMap::GetInstance()->country_data().end());
-  const CountryData& data = result->second;
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
-  country_code_ = country_code;
-  name_ = l10n_util::GetDisplayNameForCountry(country_code, locale);
-  postal_code_label_ = l10n_util::GetStringUTF16(data.postal_code_label_id);
-  state_label_ = l10n_util::GetStringUTF16(data.state_label_id);
-  address_required_fields_ = data.address_required_fields;
+  // If the country code is an alias (e.g. "GB" for "UK") expand the country
+  // code.
+  country_code_ = country_data_map->HasCountryCodeAlias(country_code)
+                      ? country_data_map->GetCountryCodeForAlias(country_code)
+                      : country_code;
+
+  // If there is no entry in the |CountryDataMap| for the
+  // |country_code_for_country_data| use the country code  derived from the
+  // locale. This reverts to US.
+  country_data_map->HasRequiredFieldsForAddressImport(country_code_)
+      ? country_code_
+      : CountryCodeForLocale(locale);
+
+  // Acquire the country address data.
+  required_fields_for_address_import_ =
+      country_data_map->GetRequiredFieldsForAddressImport(country_code_);
+
+  // Translate the country name by the supplied local.
+  name_ = l10n_util::GetDisplayNameForCountry(country_code_, locale);
 }
 
 AutofillCountry::~AutofillCountry() {}
@@ -63,12 +75,24 @@ const std::string AutofillCountry::CountryCodeForLocale(
 }
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
-                                 const base::string16& name,
-                                 const base::string16& postal_code_label,
-                                 const base::string16& state_label)
-    : country_code_(country_code),
-      name_(name),
-      postal_code_label_(postal_code_label),
-      state_label_(state_label) {}
+                                 const std::u16string& name,
+                                 const std::u16string& postal_code_label,
+                                 const std::u16string& state_label)
+    : country_code_(country_code), name_(name) {}
 
+// Prints a formatted log of a |AutofillCountry| to a |LogBuffer|.
+LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
+  buffer << LogMessage::kImportAddressProfileFromFormAddressRequirements;
+  buffer << Tag{"div"} << Attrib{"class", "country_data"};
+  buffer << Tag{"table"};
+  buffer << Tr{} << "Country code:" << country.country_code();
+  buffer << Tr{} << "Country name:" << country.name();
+  buffer << Tr{} << "State required:" << country.requires_state();
+  buffer << Tr{} << "Zip required:" << country.requires_zip();
+  buffer << Tr{} << "City required:" << country.requires_city();
+  buffer << CTag{"table"};
+  buffer << CTag{"div"};
+  buffer << CTag{};
+  return buffer;
+}
 }  // namespace autofill

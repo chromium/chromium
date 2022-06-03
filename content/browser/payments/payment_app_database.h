@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/payments/payment_app_info_fetcher.h"
 #include "content/browser/payments/payment_instrument_icon_fetcher.h"
@@ -52,6 +51,10 @@ class CONTENT_EXPORT PaymentAppDatabase {
 
   explicit PaymentAppDatabase(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  PaymentAppDatabase(const PaymentAppDatabase&) = delete;
+  PaymentAppDatabase& operator=(const PaymentAppDatabase&) = delete;
+
   ~PaymentAppDatabase();
 
   void ReadAllPaymentApps(ReadAllPaymentAppsCallback callback);
@@ -204,11 +207,11 @@ class CONTENT_EXPORT PaymentAppDatabase {
       const std::string& user_hint,
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration);
-  void DidGetPaymentAppInfoToSetUserHint(const std::string& user_hint,
-                                         int64_t registration_id,
-                                         const GURL& pattern,
-                                         const std::vector<std::string>& data,
-                                         blink::ServiceWorkerStatusCode status);
+  void DidGetPaymentAppInfoToSetUserHint(
+      const std::string& user_hint,
+      scoped_refptr<ServiceWorkerRegistration> registration,
+      const std::vector<std::string>& data,
+      blink::ServiceWorkerStatusCode status);
   void DidSetPaymentAppUserHint(blink::ServiceWorkerStatusCode status);
 
   // EnablePaymentAppDelegations callbacks.
@@ -220,8 +223,7 @@ class CONTENT_EXPORT PaymentAppDatabase {
   void DidGetPaymentAppInfoToEnableDelegations(
       const std::vector<payments::mojom::PaymentDelegation>& delegations,
       EnableDelegationsCallback callback,
-      int64_t registration_id,
-      const GURL& pattern,
+      scoped_refptr<ServiceWorkerRegistration> registration,
       const std::vector<std::string>& data,
       blink::ServiceWorkerStatusCode status);
   void DidEnablePaymentAppDelegations(EnableDelegationsCallback callback,
@@ -249,8 +251,6 @@ class CONTENT_EXPORT PaymentAppDatabase {
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   base::WeakPtrFactory<PaymentAppDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppDatabase);
 };
 
 }  // namespace content

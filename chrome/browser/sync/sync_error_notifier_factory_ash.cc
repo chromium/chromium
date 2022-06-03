@@ -6,22 +6,21 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_error_notifier_ash.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 SyncErrorNotifierFactory::SyncErrorNotifierFactory()
     : BrowserContextKeyedServiceFactory(
-        "SyncErrorNotifier",
-        BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+          "SyncErrorNotifier",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SyncErrorNotifierFactory::~SyncErrorNotifierFactory() {}
 
 // static
-SyncErrorNotifier* SyncErrorNotifierFactory::GetForProfile(
-    Profile* profile) {
+SyncErrorNotifier* SyncErrorNotifierFactory::GetForProfile(Profile* profile) {
   return static_cast<SyncErrorNotifier*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -35,7 +34,7 @@ KeyedService* SyncErrorNotifierFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   if (!sync_service)
     return nullptr;

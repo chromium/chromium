@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/environment.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"

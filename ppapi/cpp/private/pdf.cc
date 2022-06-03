@@ -70,6 +70,64 @@ void ConvertPrivateAccessibilityHighlightInfo(
   info->text_run_index = highlight.text_run_index;
   info->text_run_count = highlight.text_run_count;
   info->bounds = highlight.bounds;
+  info->color = highlight.color;
+}
+
+void ConvertPrivateAccessibilityTextFieldInfo(
+    const PDF::PrivateAccessibilityTextFieldInfo& text_field,
+    PP_PrivateAccessibilityTextFieldInfo* info) {
+  info->name = text_field.name.c_str();
+  info->name_length = text_field.name.size();
+  info->value = text_field.value.c_str();
+  info->value_length = text_field.value.size();
+  info->is_read_only = text_field.is_read_only;
+  info->is_required = text_field.is_required;
+  info->is_password = text_field.is_password;
+  info->index_in_page = text_field.index_in_page;
+  info->text_run_index = text_field.text_run_index;
+  info->bounds = text_field.bounds;
+}
+
+void ConvertPrivateAccessibilityChoiceFieldInfo(
+    const PDF::PrivateAccessibilityChoiceFieldInfo& choice_field,
+    PP_PrivateAccessibilityChoiceFieldInfo* info,
+    std::vector<PP_PrivateAccessibilityChoiceFieldOptionInfo>* option_info) {
+  info->name = choice_field.name.c_str();
+  info->name_length = choice_field.name.size();
+
+  option_info->resize(choice_field.options.size());
+  info->options = option_info->data();
+  for (size_t i = 0; i < choice_field.options.size(); i++) {
+    info->options[i].name = choice_field.options[i].name.c_str();
+    info->options[i].name_length = choice_field.options[i].name.size();
+    info->options[i].is_selected = choice_field.options[i].is_selected;
+    info->options[i].bounds = choice_field.options[i].bounds;
+  }
+  info->options_length = choice_field.options.size();
+  info->type = choice_field.type;
+  info->is_read_only = choice_field.is_read_only;
+  info->is_multi_select = choice_field.is_multi_select;
+  info->has_editable_text_box = choice_field.has_editable_text_box;
+  info->index_in_page = choice_field.index_in_page;
+  info->text_run_index = choice_field.text_run_index;
+  info->bounds = choice_field.bounds;
+}
+
+void ConvertPrivateAccessibilityButtonInfo(
+    const PDF::PrivateAccessibilityButtonInfo& button,
+    PP_PrivateAccessibilityButtonInfo* info) {
+  info->name = button.name.c_str();
+  info->name_length = button.name.size();
+  info->value = button.value.c_str();
+  info->value_length = button.value.size();
+  info->type = button.type;
+  info->is_read_only = button.is_read_only;
+  info->is_checked = button.is_checked;
+  info->control_count = button.control_count;
+  info->control_index = button.control_index;
+  info->index_in_page = button.index_in_page;
+  info->text_run_index = button.text_run_index;
+  info->bounds = button.bounds;
 }
 
 }  // namespace
@@ -282,6 +340,33 @@ void PDF::SetAccessibilityPageInfo(
                                                &highlight_info[i]);
     }
 
+    const std::vector<PrivateAccessibilityTextFieldInfo>& text_fields =
+        page_objects.form_fields.text_fields;
+    std::vector<PP_PrivateAccessibilityTextFieldInfo> text_field_info(
+        text_fields.size());
+    for (size_t i = 0; i < text_fields.size(); ++i) {
+      ConvertPrivateAccessibilityTextFieldInfo(text_fields[i],
+                                               &text_field_info[i]);
+    }
+
+    const std::vector<PrivateAccessibilityChoiceFieldInfo>& choice_fields =
+        page_objects.form_fields.choice_fields;
+    std::vector<PP_PrivateAccessibilityChoiceFieldInfo> choice_field_info(
+        choice_fields.size());
+    std::vector<std::vector<PP_PrivateAccessibilityChoiceFieldOptionInfo> >
+        choice_field_option_info(choice_fields.size());
+    for (size_t i = 0; i < choice_fields.size(); ++i) {
+      ConvertPrivateAccessibilityChoiceFieldInfo(choice_fields[i],
+                                                 &choice_field_info[i],
+                                                 &choice_field_option_info[i]);
+    }
+
+    const std::vector<PrivateAccessibilityButtonInfo>& buttons =
+        page_objects.form_fields.buttons;
+    std::vector<PP_PrivateAccessibilityButtonInfo> button_info(buttons.size());
+    for (size_t i = 0; i < buttons.size(); ++i)
+      ConvertPrivateAccessibilityButtonInfo(buttons[i], &button_info[i]);
+
     PP_PrivateAccessibilityPageObjects pp_page_objects;
     pp_page_objects.links = link_info.data();
     pp_page_objects.link_count = link_info.size();
@@ -289,6 +374,12 @@ void PDF::SetAccessibilityPageInfo(
     pp_page_objects.image_count = image_info.size();
     pp_page_objects.highlights = highlight_info.data();
     pp_page_objects.highlight_count = highlight_info.size();
+    pp_page_objects.form_fields.text_fields = text_field_info.data();
+    pp_page_objects.form_fields.text_field_count = text_field_info.size();
+    pp_page_objects.form_fields.choice_fields = choice_field_info.data();
+    pp_page_objects.form_fields.choice_field_count = choice_field_info.size();
+    pp_page_objects.form_fields.buttons = button_info.data();
+    pp_page_objects.form_fields.button_count = button_info.size();
 
     get_interface<PPB_PDF>()->SetAccessibilityPageInfo(
         instance.pp_instance(), page_info, text_run_info.data(), chars.data(),

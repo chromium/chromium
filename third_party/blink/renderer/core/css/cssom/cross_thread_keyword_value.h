@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_KEYWORD_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_KEYWORD_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -19,6 +18,8 @@ class CORE_EXPORT CrossThreadKeywordValue final : public CrossThreadStyleValue {
  public:
   explicit CrossThreadKeywordValue(const String& keyword)
       : keyword_value_(keyword) {}
+  CrossThreadKeywordValue(const CrossThreadKeywordValue&) = delete;
+  CrossThreadKeywordValue& operator=(const CrossThreadKeywordValue&) = delete;
   ~CrossThreadKeywordValue() override = default;
 
   StyleValueType GetType() const override {
@@ -34,7 +35,6 @@ class CORE_EXPORT CrossThreadKeywordValue final : public CrossThreadStyleValue {
   friend class CrossThreadStyleValueTest;
 
   String keyword_value_;
-  DISALLOW_COPY_AND_ASSIGN(CrossThreadKeywordValue);
 };
 
 template <>
@@ -47,4 +47,4 @@ struct DowncastTraits<CrossThreadKeywordValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CROSS_THREAD_KEYWORD_VALUE_H_

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -10,10 +9,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -25,7 +26,7 @@ constexpr int kSentinelValue = 42;
 
 // Returns the value of window.injectedSentinel from the active web contents of
 // |browser|.
-base::Optional<int> RetrieveSentinelValue(Browser* browser) {
+absl::optional<int> RetrieveSentinelValue(Browser* browser) {
   int result = 0;
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
@@ -33,7 +34,7 @@ base::Optional<int> RetrieveSentinelValue(Browser* browser) {
           web_contents,
           "domAutomationController.send(window.injectedSentinel);", &result)) {
     ADD_FAILURE() << "Failed to execute script.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return result;
@@ -43,6 +44,12 @@ class ExtensionBrowserTestWithCustomTestResourcesLocation
     : public ExtensionBrowserTest {
  public:
   ExtensionBrowserTestWithCustomTestResourcesLocation() = default;
+
+  ExtensionBrowserTestWithCustomTestResourcesLocation(
+      const ExtensionBrowserTestWithCustomTestResourcesLocation&) = delete;
+  ExtensionBrowserTestWithCustomTestResourcesLocation& operator=(
+      const ExtensionBrowserTestWithCustomTestResourcesLocation&) = delete;
+
   ~ExtensionBrowserTestWithCustomTestResourcesLocation() override = default;
 
  private:
@@ -53,8 +60,6 @@ class ExtensionBrowserTestWithCustomTestResourcesLocation
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
     return test_root_path.AppendASCII("extensions/test_resources_test");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBrowserTestWithCustomTestResourcesLocation);
 };
 
 }  // namespace
@@ -79,10 +84,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TestResourcesLoad) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
 
-  base::Optional<int> sentinel = RetrieveSentinelValue(browser());
+  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
   ASSERT_TRUE(sentinel);
   EXPECT_EQ(kSentinelValue, *sentinel);
 }
@@ -116,12 +121,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   const Extension* extension =
       LoadExtensionAsComponent(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  EXPECT_EQ(Manifest::COMPONENT, extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kComponent, extension->location());
 
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
 
-  base::Optional<int> sentinel = RetrieveSentinelValue(browser());
+  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
   ASSERT_TRUE(sentinel);
   EXPECT_EQ(kSentinelValue, *sentinel);
 }
@@ -150,10 +155,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTestWithCustomTestResourcesLocation,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
 
-  base::Optional<int> sentinel = RetrieveSentinelValue(browser());
+  absl::optional<int> sentinel = RetrieveSentinelValue(browser());
   ASSERT_TRUE(sentinel);
   EXPECT_EQ(kSentinelValue, *sentinel);
 }

@@ -1,3 +1,4 @@
+// META: global=window,worker
 // META: script=../resources/utils.js
 
 function checkNetworkError(url, method) {
@@ -5,7 +6,7 @@ function checkNetworkError(url, method) {
   const desc = "Fetching " + url.substring(0, 45) + " with method " + method + " is KO"
   promise_test(function(test) {
     var promise = fetch(url, { method: method });
-    return promise_rejects(test, new TypeError(), promise);
+    return promise_rejects_js(test, TypeError, promise);
   }, desc);
 }
 

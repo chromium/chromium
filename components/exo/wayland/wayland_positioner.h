@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WAYLAND_POSITIONER_H_
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_POSITIONER_H_
 
-#include <xdg-shell-unstable-v6-server-protocol.h>
+#include <xdg-shell-server-protocol.h>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -22,16 +21,22 @@ class WaylandPositioner {
   struct Result {
     gfx::Point origin;
     gfx::Size size;
-    bool x_flipped;
-    bool y_flipped;
   };
 
-  WaylandPositioner() = default;
+  // Represents the 1-dimensional projection of the gravity/anchor values.
+  enum Direction { kNegative = -1, kNeutral = 0, kPositive = 1 };
 
-  // Calculate and return position from current state.
-  Result CalculatePosition(const gfx::Rect& work_area,
-                           bool flip_x,
-                           bool flip_y) const;
+  // Controls whether anchor and gravity are set using the unstable bitfields or
+  // the stable enums.
+  enum Version { UNSTABLE, STABLE };
+
+  WaylandPositioner(Version v) : version_(v) {}
+
+  WaylandPositioner(const WaylandPositioner&) = delete;
+  WaylandPositioner& operator=(const WaylandPositioner&) = delete;
+
+  // Calculate and return bounds from current state.
+  Result CalculateBounds(const gfx::Rect& work_area) const;
 
   void SetSize(gfx::Size size) { size_ = std::move(size); }
 
@@ -39,34 +44,36 @@ class WaylandPositioner {
     anchor_rect_ = std::move(anchor_rect);
   }
 
-  void SetAnchor(uint32_t anchor) { anchor_ = anchor; }
+  void SetAnchor(uint32_t anchor);
 
-  void SetGravity(uint32_t gravity) { gravity_ = gravity; }
+  void SetGravity(uint32_t gravity);
 
   void SetAdjustment(uint32_t adjustment) { adjustment_ = adjustment; }
 
   void SetOffset(gfx::Vector2d offset) { offset_ = std::move(offset); }
 
  private:
+  Version version_;
+
   gfx::Size size_;
 
   gfx::Rect anchor_rect_;
 
-  uint32_t anchor_ = ZXDG_POSITIONER_V6_ANCHOR_NONE;
+  Direction anchor_x_ = kNeutral;
+  Direction anchor_y_ = kNeutral;
 
-  uint32_t gravity_ = ZXDG_POSITIONER_V6_GRAVITY_NONE;
+  Direction gravity_x_ = kNeutral;
+  Direction gravity_y_ = kNeutral;
 
   // A bitmask that defines the subset of modifications to the position/size
   // that are allowed, see zxdg_positioner.constraint_adjustment() for more
   // details.
-  uint32_t adjustment_ = ZXDG_POSITIONER_V6_CONSTRAINT_ADJUSTMENT_NONE;
+  uint32_t adjustment_ = XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_NONE;
 
   // Defines an absolute translation (i.e. unaffected by flipping, scaling or
   // resizing) for the placement of the window relative to the |anchor_rect_|.
   // See zxdg_positioner.set_offset() for more details.
   gfx::Vector2d offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPositioner);
 };
 
 }  // namespace wayland

@@ -35,7 +35,7 @@ IDBVersionChangeEvent::IDBVersionChangeEvent()
 IDBVersionChangeEvent::IDBVersionChangeEvent(
     const AtomicString& event_type,
     uint64_t old_version,
-    const base::Optional<uint64_t>& new_version,
+    const absl::optional<uint64_t>& new_version,
     mojom::IDBDataLoss data_loss,
     const String& data_loss_message)
     : Event(event_type, Bubbles::kNo, Cancelable::kNo),
@@ -56,11 +56,6 @@ IDBVersionChangeEvent::IDBVersionChangeEvent(
     data_loss_ = mojom::IDBDataLoss::Total;
 }
 
-uint64_t IDBVersionChangeEvent::newVersion(bool& is_null) const {
-  is_null = !new_version_.has_value();
-  return new_version_.value_or(0);
-}
-
 const AtomicString& IDBVersionChangeEvent::dataLoss() const {
   if (data_loss_ == mojom::IDBDataLoss::Total)
     return indexed_db_names::kTotal;
@@ -71,7 +66,7 @@ const AtomicString& IDBVersionChangeEvent::InterfaceName() const {
   return event_interface_names::kIDBVersionChangeEvent;
 }
 
-void IDBVersionChangeEvent::Trace(blink::Visitor* visitor) {
+void IDBVersionChangeEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 

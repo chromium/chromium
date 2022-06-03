@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -31,7 +29,7 @@ class SystemMediaControlsObserver;
 namespace internal {
 
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
-extern const char kMprisAPIServiceNamePrefix[];
+extern const char kMprisAPIServiceNameFormatString[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) extern const char kMprisAPIObjectPath[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIInterfaceName[];
@@ -43,10 +41,12 @@ extern const char kMprisAPIPlayerInterfaceName[];
 class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
     : public SystemMediaControls {
  public:
-  SystemMediaControlsLinux();
-  ~SystemMediaControlsLinux() override;
+  explicit SystemMediaControlsLinux(const std::string& product_name);
 
-  static SystemMediaControlsLinux* GetInstance();
+  SystemMediaControlsLinux(const SystemMediaControlsLinux&) = delete;
+  SystemMediaControlsLinux& operator=(const SystemMediaControlsLinux&) = delete;
+
+  ~SystemMediaControlsLinux() override;
 
   // Starts the DBus service.
   void StartService();
@@ -60,9 +60,9 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override {}
   void SetPlaybackStatus(PlaybackStatus value) override;
-  void SetTitle(const base::string16& value) override;
-  void SetArtist(const base::string16& value) override;
-  void SetAlbum(const base::string16& value) override;
+  void SetTitle(const std::u16string& value) override;
+  void SetArtist(const std::u16string& value) override;
+  void SetAlbum(const std::u16string& value) override;
   void SetThumbnail(const SkBitmap& bitmap) override {}
   void ClearThumbnail() override {}
   void ClearMetadata() override;
@@ -106,6 +106,8 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetMetadataPropertyInternal(const std::string& property_name,
                                    DbusVariant&& new_value);
 
+  const std::string product_name_;
+
   std::unique_ptr<DbusProperties> properties_;
 
   scoped_refptr<dbus::Bus> bus_;
@@ -123,8 +125,6 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   bool service_ready_ = false;
 
   base::ObserverList<SystemMediaControlsObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsLinux);
 };
 
 }  // namespace internal

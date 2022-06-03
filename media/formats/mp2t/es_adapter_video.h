@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -33,12 +32,17 @@ namespace mp2t {
 //   creating a hole in the video timeline.
 class MEDIA_EXPORT EsAdapterVideo {
  public:
-  typedef base::Callback<void(const VideoDecoderConfig&)> NewVideoConfigCB;
-  typedef base::Callback<void(scoped_refptr<StreamParserBuffer>)> EmitBufferCB;
+  using NewVideoConfigCB =
+      base::RepeatingCallback<void(const VideoDecoderConfig&)>;
+  using EmitBufferCB =
+      base::RepeatingCallback<void(scoped_refptr<StreamParserBuffer>)>;
 
-  EsAdapterVideo(
-      const NewVideoConfigCB& new_video_config_cb,
-      const EmitBufferCB& emit_buffer_cb);
+  EsAdapterVideo(NewVideoConfigCB new_video_config_cb,
+                 EmitBufferCB emit_buffer_cb);
+
+  EsAdapterVideo(const EsAdapterVideo&) = delete;
+  EsAdapterVideo& operator=(const EsAdapterVideo&) = delete;
+
   ~EsAdapterVideo();
 
   // Force the emission of the pending video buffers.
@@ -68,7 +72,7 @@ class MEDIA_EXPORT EsAdapterVideo {
   // (this one must be a key frame).
   void ReplaceDiscardedFrames(const StreamParserBuffer& stream_parser_buffer);
 
-  NewVideoConfigCB new_video_config_cb_;
+  const NewVideoConfigCB new_video_config_cb_;
   EmitBufferCB emit_buffer_cb_;
 
   bool has_valid_config_;
@@ -94,8 +98,6 @@ class MEDIA_EXPORT EsAdapterVideo {
 
   // Number of frames to replace with the first valid key frame.
   int discarded_frame_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsAdapterVideo);
 };
 
 }  // namespace mp2t

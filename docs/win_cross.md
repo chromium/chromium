@@ -37,11 +37,13 @@ builds ([.asm bug](https://crbug.com/762167)).
 
 1. `gclient sync`, follow instructions on screen.
 
-If you're at Google, this will automatically download the Windows SDK for you.
-If this fails with an error:
+### If you're at Google
+
+`gclient sync` should automatically download the Windows SDK for you. If this
+fails with an error:
 
     Please follow the instructions at
-    https://chromium.googlesource.com/chromium/src/+/master/docs/windows_build_instructions.md
+    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/win_cross.md
 
 then you may need to re-authenticate via:
 
@@ -49,8 +51,13 @@ then you may need to re-authenticate via:
     # Follow instructions, enter 0 as project id.
     download_from_google_storage --config
 
-If you are not at Google, you can package your Windows SDK installation
-into a zip file by running the following on a Windows machine:
+`gclient sync` should now succeed. Skip ahead to the [GN setup](#gn-setup)
+section.
+
+### If you're not at Google
+
+You can package your Windows SDK installation into a zip file by running the
+following on a Windows machine:
 
     cd path/to/depot_tools/win_toolchain
     # customize the Windows SDK version numbers
@@ -82,20 +89,7 @@ Add `target_os = "win"` to your args.gn.  Then just build, e.g.
 
 ## Goma
 
-For now, one needs to use the rbe backend, not the borg backend
-(default for Googlers).
-Use cloud backend instead.
-
-```shell
-    goma_auth.py login
-
-    # GOMA_* are needed for Googlers only
-    export GOMA_SERVER_HOST=goma.chromium.org
-    export GOMA_RPC_EXTRA_PARAMS=?rbe
-
-    goma_ctl.py ensure_start
-```
-
+This should be supported by the default (Goma RBE) backend.
 
 ## Copying and running chrome
 
@@ -110,7 +104,7 @@ to correctly symbolize stack traces (or if you want to attach a debugger).
 
 You can run the Windows binaries you built on swarming, like so:
 
-    tools/run-swarmed.py out/gnwin base_unittests [ --gtest_filter=... ]
+    tools/run-swarmed.py out/gnwin base_unittests -- [ --gtest_filter=... ]
 
 See the contents of run-swarmed.py for how to do this manually.
 

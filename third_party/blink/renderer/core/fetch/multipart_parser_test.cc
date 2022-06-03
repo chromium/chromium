@@ -24,8 +24,6 @@ String toString(const Vector<char>& data) {
 class MockMultipartParserClient final
     : public GarbageCollected<MockMultipartParserClient>,
       public MultipartParser::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(MockMultipartParserClient);
-
  public:
   struct Part {
     Part() = default;

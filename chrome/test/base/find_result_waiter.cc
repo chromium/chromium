@@ -5,15 +5,18 @@
 #include "chrome/test/base/find_result_waiter.h"
 
 #include "base/run_loop.h"
-#include "chrome/browser/ui/find_bar/find_tab_helper.h"
+#include "components/find_in_page/find_tab_helper.h"
 #include "content/public/test/test_utils.h"
 
 namespace ui_test_utils {
 
-FindResultWaiter::FindResultWaiter(content::WebContents* parent_tab) {
-  FindTabHelper* find_tab_helper = FindTabHelper::FromWebContents(parent_tab);
-  current_find_request_id_ = find_tab_helper->current_find_request_id();
-  observer_.Add(find_tab_helper);
+FindResultWaiter::FindResultWaiter(content::WebContents* parent_tab,
+                                   int request_offset) {
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(parent_tab);
+  current_find_request_id_ = find_tab_helper->current_find_request_id() +
+      request_offset;
+  observation_.Observe(find_tab_helper);
 }
 
 FindResultWaiter::~FindResultWaiter() = default;
@@ -27,8 +30,8 @@ void FindResultWaiter::Wait() {
 
 void FindResultWaiter::OnFindResultAvailable(
     content::WebContents* web_contents) {
-  const FindNotificationDetails& find_details =
-      FindTabHelper::FromWebContents(web_contents)->find_result();
+  const find_in_page::FindNotificationDetails& find_details =
+      find_in_page::FindTabHelper::FromWebContents(web_contents)->find_result();
 
   if (find_details.request_id() != current_find_request_id_)
     return;

@@ -17,7 +17,7 @@
                 InfobarBannerInteractionDelegate>
 
 // Delegate used to position the InfobarBanner.
-@property(nonatomic, assign) id<InfobarBannerPositioner> bannerPositioner;
+@property(nonatomic, weak) id<InfobarBannerPositioner> bannerPositioner;
 
 // Completes the banner presentation if taking place. This will stop the banner
 // animation and move it to the presenting ViewController hierarchy.

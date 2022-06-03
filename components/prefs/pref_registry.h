@@ -10,7 +10,6 @@
 #include <set>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
@@ -56,6 +55,9 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   typedef std::unordered_map<std::string, uint32_t> PrefRegistrationFlagsMap;
 
   PrefRegistry();
+
+  PrefRegistry(const PrefRegistry&) = delete;
+  PrefRegistry& operator=(const PrefRegistry&) = delete;
 
   // Retrieve the set of registration flags for the given preference. The return
   // value is a bitmask of PrefRegistrationFlags.
@@ -107,9 +109,6 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   PrefRegistrationFlagsMap registration_flags_;
 
   std::set<std::string> foreign_pref_keys_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefRegistry);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_REGISTRY_H_

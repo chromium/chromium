@@ -7,10 +7,10 @@
 #include "net/base/test_completion_callback.h"
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
 #include "net/test/test_with_task_environment.h"
@@ -23,12 +23,12 @@ namespace {
 
 const int kMagicResult = 8888;
 
-void CallClosureAfterCheckingResult(const base::Closure& closure,
+void CallClosureAfterCheckingResult(base::OnceClosure closure,
                                     bool* did_check_result,
                                     int result) {
   DCHECK_EQ(result, kMagicResult);
   *did_check_result = true;
-  closure.Run();
+  std::move(closure).Run();
 }
 
 // ExampleEmployer is a toy version of HostResolver
@@ -37,6 +37,8 @@ void CallClosureAfterCheckingResult(const base::Closure& closure,
 class ExampleEmployer {
  public:
   ExampleEmployer();
+  ExampleEmployer(const ExampleEmployer&) = delete;
+  ExampleEmployer& operator=(const ExampleEmployer&) = delete;
   ~ExampleEmployer();
 
   // Posts to the current thread a task which itself posts |callback| to the
@@ -47,7 +49,6 @@ class ExampleEmployer {
   class ExampleWorker;
   friend class ExampleWorker;
   scoped_refptr<ExampleWorker> request_;
-  DISALLOW_COPY_AND_ASSIGN(ExampleEmployer);
 };
 
 // Helper class; this is how ExampleEmployer schedules work.

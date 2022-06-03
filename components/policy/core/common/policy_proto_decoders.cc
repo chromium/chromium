@@ -4,16 +4,20 @@
 
 #include "components/policy/core/common/policy_proto_decoders.h"
 
+#include <cstring>
 #include <limits>
 #include <memory>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace policy {
 
@@ -46,63 +50,72 @@ bool GetPolicyLevel(const AnyPolicyProto& policy_proto, PolicyLevel* level) {
 }
 
 // Convert a BooleanPolicyProto to a bool base::Value.
-std::unique_ptr<base::Value> DecodeBooleanProto(
-    const em::BooleanPolicyProto& proto) {
-  return std::make_unique<base::Value>(proto.value());
+base::Value DecodeBooleanProto(const em::BooleanPolicyProto& proto) {
+  return base::Value(proto.value());
 }
 
 // Convert an IntegerPolicyProto to an int base::Value.
-std::unique_ptr<base::Value> DecodeIntegerProto(
-    const em::IntegerPolicyProto& proto,
-    std::string* error) {
+base::Value DecodeIntegerProto(const em::IntegerPolicyProto& proto,
+                               std::string* error) {
   google::protobuf::int64 value = proto.value();
 
   if (value < std::numeric_limits<int>::min() ||
       value > std::numeric_limits<int>::max()) {
     LOG(WARNING) << "Integer value " << value << " out of numeric limits";
     *error = "Number out of range - invalid int32";
-    return std::make_unique<base::Value>(std::to_string(value));
+    return base::Value(base::NumberToString(value));
   }
 
-  return std::make_unique<base::Value>(static_cast<int>(value));
+  return base::Value(static_cast<int>(value));
 }
 
 // Convert a StringPolicyProto to a string base::Value.
-std::unique_ptr<base::Value> DecodeStringProto(
-    const em::StringPolicyProto& proto) {
-  return std::make_unique<base::Value>(proto.value());
+base::Value DecodeStringProto(const em::StringPolicyProto& proto) {
+  return base::Value(proto.value());
 }
 
 // Convert a StringListPolicyProto to a List base::Value, where each list value
 // is of Type::STRING.
-std::unique_ptr<base::Value> DecodeStringListProto(
-    const em::StringListPolicyProto& proto) {
-  auto list_value = std::make_unique<base::ListValue>();
+base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
+  base::Value list_value(base::Value::Type::LIST);
   for (const auto& entry : proto.value().entries())
-    list_value->AppendString(entry);
-  return std::move(list_value);
+    list_value.Append(entry);
+  return list_value;
 }
 
 // Convert a StringPolicyProto to a base::Value of any type (for example,
 // Type::DICTIONARY or Type::LIST) by parsing it as JSON.
-std::unique_ptr<base::Value> DecodeJsonProto(const em::StringPolicyProto& proto,
-                                             std::string* error) {
+base::Value DecodeJsonProto(const em::StringPolicyProto& proto,
+                            std::string* error) {
   const std::string& json = proto.value();
-  std::unique_ptr<base::Value> parsed_value =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          json, base::JSON_ALLOW_TRAILING_COMMAS, nullptr, error);
+  base::JSONReader::ValueWithError value_with_error =
+      base::JSONReader::ReadAndReturnValueWithError(
+          json, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!parsed_value) {
+  if (!value_with_error.value) {
     // Can't parse as JSON so return it as a string, and leave it to the handler
     // to validate.
     LOG(WARNING) << "Invalid JSON: " << json;
-    return std::make_unique<base::Value>(json);
+    *error = value_with_error.error_message;
+    return base::Value(json);
   }
 
   // Accept any Value type that parsed as JSON, and leave it to the handler to
   // convert and check the concrete type.
   error->clear();
-  return parsed_value;
+  return std::move(value_with_error.value.value());
+}
+
+bool PerProfileMatches(bool policy_per_profile,
+                       PolicyPerProfileFilter per_profile_enum) {
+  switch (per_profile_enum) {
+    case PolicyPerProfileFilter::kTrue:
+      return policy_per_profile;
+    case PolicyPerProfileFilter::kFalse:
+      return !policy_per_profile;
+    case PolicyPerProfileFilter::kAny:
+      return true;
+  }
 }
 
 }  // namespace
@@ -112,13 +125,15 @@ void DecodeProtoFields(
     base::WeakPtr<CloudExternalDataManager> external_data_manager,
     PolicySource source,
     PolicyScope scope,
-    PolicyMap* map) {
+    PolicyMap* map,
+    PolicyPerProfileFilter per_profile) {
   PolicyLevel level;
 
   // Access arrays are terminated by a struct that contains only nullptrs.
   for (const BooleanPolicyAccess* access = &kBooleanPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::BooleanPolicyProto& proto = (policy.*access->get_proto)();
@@ -131,7 +146,8 @@ void DecodeProtoFields(
 
   for (const IntegerPolicyAccess* access = &kIntegerPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::IntegerPolicyProto& proto = (policy.*access->get_proto)();
@@ -142,12 +158,15 @@ void DecodeProtoFields(
     map->Set(access->policy_key, level, scope, source,
              DecodeIntegerProto(proto, &error), nullptr);
     if (!error.empty())
-      map->AddError(access->policy_key, error);
+      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+                      IDS_POLICY_PROTO_PARSING_ERROR,
+                      {base::UTF8ToUTF16(error)});
   }
 
   for (const StringPolicyAccess* access = &kStringPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::StringPolicyProto& proto = (policy.*access->get_proto)();
@@ -155,13 +174,20 @@ void DecodeProtoFields(
       continue;
 
     std::string error;
-    std::unique_ptr<base::Value> value =
-        (access->type == StringPolicyType::STRING)
-            ? DecodeStringProto(proto)
-            : DecodeJsonProto(proto, &error);
+    base::Value value = (access->type == StringPolicyType::STRING)
+                            ? DecodeStringProto(proto)
+                            : DecodeJsonProto(proto, &error);
 
+    // EXTERNAL policies represent a single piece of external data that is
+    // retrieved by an ExternalDataFetcher.
+    // kWebAppInstallForceList is currently the only policy that is a JSON
+    // policy (containing mostly non-external data) which can contain
+    // references to multiple pieces of external data as well. For that it
+    // needs an ExternalDataFetcher. If we ever create a second such policy,
+    // create a new type for it instead of special-casing the policies here.
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher =
-        (access->type == StringPolicyType::EXTERNAL)
+        (access->type == StringPolicyType::EXTERNAL ||
+         strcmp(access->policy_key, key::kWebAppInstallForceList) == 0)
             ? std::make_unique<ExternalDataFetcher>(external_data_manager,
                                                     access->policy_key)
             : nullptr;
@@ -169,12 +195,15 @@ void DecodeProtoFields(
     map->Set(access->policy_key, level, scope, source, std::move(value),
              std::move(external_data_fetcher));
     if (!error.empty())
-      map->AddError(access->policy_key, error);
+      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+                      IDS_POLICY_PROTO_PARSING_ERROR,
+                      {base::UTF8ToUTF16(error)});
   }
 
   for (const StringListPolicyAccess* access = &kStringListPolicyAccess[0];
        access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+    if (!PerProfileMatches(access->per_profile, per_profile) ||
+        !(policy.*access->has_proto)())
       continue;
 
     const em::StringListPolicyProto& proto = (policy.*access->get_proto)();

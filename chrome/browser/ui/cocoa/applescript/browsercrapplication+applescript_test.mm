@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/gfx/geometry/size.h"
@@ -26,9 +27,9 @@ typedef InProcessBrowserTest BrowserCrApplicationAppleScriptTest;
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
   // Create additional |Browser*| objects of different type.
   Profile* profile = browser()->profile();
-  Browser* b1 =
-      new Browser(Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
-  Browser* b2 = new Browser(Browser::CreateParams::CreateForApp(
+  Browser* b1 = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+  Browser* b2 = Browser::Create(Browser::CreateParams::CreateForApp(
       "Test", true /* trusted_source */, gfx::Rect(), profile, true));
 
   EXPECT_EQ(3U, [[NSApp appleScriptWindows] count]);
@@ -52,15 +53,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   base::scoped_nsobject<WindowAppleScript> aWindow(
       [[WindowAppleScript alloc] init]);
   base::scoped_nsobject<NSNumber> var([[aWindow.get() uniqueID] copy]);
-  [aWindow.get() setValue:[NSNumber numberWithBool:YES] forKey:@"isVisible"];
+  [aWindow.get() setValue:@YES forKey:@"isVisible"];
 
   [NSApp insertInAppleScriptWindows:aWindow.get()];
   chrome::testing::NSRunLoopRunAllPending();
 
   // Represents the window after it is added.
-  WindowAppleScript* window = [[NSApp appleScriptWindows] objectAtIndex:0];
-  EXPECT_NSEQ([NSNumber numberWithBool:YES],
-              [aWindow.get() valueForKey:@"isVisible"]);
+  WindowAppleScript* window = [NSApp appleScriptWindows][0];
+  EXPECT_NSEQ(@YES, [aWindow.get() valueForKey:@"isVisible"]);
   EXPECT_EQ([window container], NSApp);
   EXPECT_NSEQ(AppleScript::kWindowsProperty,
               [window containerProperty]);

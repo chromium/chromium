@@ -13,7 +13,5 @@ static_library("iccjpeg") {
   ]
 
   public_configs = [ ":iccjpeg_config" ]
-  deps = [
-    "//third_party:jpeg",
-  ]
+  deps = [ "//third_party:jpeg" ]
 }

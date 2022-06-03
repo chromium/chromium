@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOUSE_WHEEL_PHASE_HANDLER_H_
-#define MOUSE_WHEEL_PHASE_HANDLER_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_PHASE_HANDLER_H_
+#define CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_PHASE_HANDLER_H_
 
 #include "base/timer/timer.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/common/content_export.h"
-#include "content/public/common/input_event_ack_state.h"
-#include "third_party/blink/public/platform/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace content {
 class RenderWidgetHostViewBase;
@@ -17,7 +17,7 @@ class RenderWidgetHostViewBase;
 // The duration after which a synthetic wheel with zero deltas and
 // phase = |kPhaseEnded| will be sent after the last wheel event.
 constexpr base::TimeDelta kDefaultMouseWheelLatchingTransaction =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // Maximum allowed difference between coordinates of two mouse wheel events in
 // the same scroll sequence.
@@ -53,6 +53,10 @@ enum class FirstScrollUpdateAckState {
 class CONTENT_EXPORT MouseWheelPhaseHandler {
  public:
   MouseWheelPhaseHandler(RenderWidgetHostViewBase* const host_view);
+
+  MouseWheelPhaseHandler(const MouseWheelPhaseHandler&) = delete;
+  MouseWheelPhaseHandler& operator=(const MouseWheelPhaseHandler&) = delete;
+
   ~MouseWheelPhaseHandler() {}
 
   void AddPhaseIfNeededAndScheduleEndEvent(
@@ -73,7 +77,7 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
     return mouse_wheel_end_dispatch_timer_.IsRunning();
   }
   void GestureEventAck(const blink::WebGestureEvent& event,
-                       InputEventAckState ack_result);
+                       blink::mojom::InputEventResultState ack_result);
 
   // Used to verify the correctness of touchpad_scroll_phase_state_'s value in
   // testing.
@@ -127,11 +131,9 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
   // momentum_phase = kPhaseBegan before sending its previous wheel event with
   // phase = kPhaseEnded.
   base::TimeDelta max_time_between_phase_ended_and_momentum_phase_began_ =
-      base::TimeDelta::FromMilliseconds(100);
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelPhaseHandler);
+      base::Milliseconds(100);
 };
 
 }  // namespace content
 
-#endif  // MOUSE_WHEEL_PHASE_HANDLER_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_PHASE_HANDLER_H_

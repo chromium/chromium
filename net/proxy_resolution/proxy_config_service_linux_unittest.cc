@@ -9,20 +9,20 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -256,9 +256,7 @@ class MockSettingGetter : public ProxyConfigServiceLinux::SettingGetter {
 
   bool BypassListIsReversed() override { return false; }
 
-  ProxyBypassRules::ParseFormat GetBypassListFormat() override {
-    return ProxyBypassRules::ParseFormat::kDefault;
-  }
+  bool UseSuffixMatching() override { return false; }
 
   // Intentionally public, for convenience when setting up a test.
   GSettingsValues values;
@@ -288,7 +286,7 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
     // Start the main IO thread.
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    main_thread_.StartWithOptions(options);
+    main_thread_.StartWithOptions(std::move(options));
 
     // Make sure the thread started.
     main_thread_.task_runner()->PostTask(
@@ -328,7 +326,7 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
   // changes to |pac_url|. The way to use this function is:
   //
   //   SetExpectedPacUrl(..);
-  //   WriteFile(...)
+  //   EXPECT_TRUE(base::WriteFile(...))
   //   WaitUntilPacUrlMatchesExpectation();
   //
   // The expectation must be set *before* any file-level mutation is done,
@@ -435,7 +433,7 @@ class ProxyConfigServiceLinuxTest : public PlatformTest,
 
   void TearDown() override {
     // Delete the temporary KDE home directory.
-    base::DeleteFileRecursively(user_home_);
+    base::DeletePathRecursively(user_home_);
     PlatformTest::TearDown();
   }
 
@@ -1663,32 +1661,34 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEConfigParser) {
 
           // Input.
           "[Proxy Settings]\nProxyType=4\nhttpProxy=http_proxy\n"
-          "httpsProxy=https_proxy\nftpProxy=ftp_proxy\nNoProxyFor=no_proxy\n",
+          "httpsProxy=https_proxy\nftpProxy=ftp_proxy\nNoProxyFor=no_proxy\n"
+          "socksProxy=SOCKS_SERVER\n",
           {
               // env_values
-              nullptr,                  // DESKTOP_SESSION
-              nullptr,                  // HOME
-              nullptr,                  // KDEHOME
-              nullptr,                  // KDE_SESSION_VERSION
-              nullptr,                  // XDG_CURRENT_DESKTOP
-              nullptr,                  // auto_proxy
-              nullptr,                  // all_proxy
-              "www.normal.com",         // http_proxy
-              "www.secure.com",         // https_proxy
-              "ftp.foo.com",            // ftp_proxy
-              nullptr, nullptr,         // SOCKS
-              ".google.com, .kde.org",  // no_proxy
+              nullptr,                          // DESKTOP_SESSION
+              nullptr,                          // HOME
+              nullptr,                          // KDEHOME
+              nullptr,                          // KDE_SESSION_VERSION
+              nullptr,                          // XDG_CURRENT_DESKTOP
+              nullptr,                          // auto_proxy
+              nullptr,                          // all_proxy
+              "www.normal.com",                 // http_proxy
+              "www.secure.com",                 // https_proxy
+              "ftp.foo.com",                    // ftp_proxy
+              "socks.comfy.com:1234", nullptr,  // SOCKS
+              ".google.com, .kde.org",          // no_proxy
           },
 
           // Expected result.
           ProxyConfigService::CONFIG_VALID,
           false,   // auto_detect
           GURL(),  // pac_url
-          ProxyRulesExpectation::PerScheme(
-              "www.normal.com:80",        // http
-              "www.secure.com:80",        // https
-              "ftp.foo.com:80",           // ftp
-              "*.google.com,*.kde.org"),  // bypass rules
+          ProxyRulesExpectation::PerSchemeWithSocks(
+              "www.normal.com:80",              // http
+              "www.secure.com:80",              // https
+              "ftp.foo.com:80",                 // ftp
+              "socks5://socks.comfy.com:1234",  // socks
+              "*.google.com,*.kde.org"),        // bypass rules
       },
   };
 
@@ -1851,17 +1851,14 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
   }
 }
 
-void WriteFile(const base::FilePath& path, base::StringPiece data) {
-  EXPECT_TRUE(base::WriteFile(path, data.data(), data.size()));
-}
-
 // Tests that the KDE proxy config service watches for file and directory
 // changes.
 TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
   // Set up the initial .kde kioslaverc file.
-  WriteFile(kioslaverc_,
-            "[Proxy Settings]\nProxyType=2\n"
-            "Proxy Config Script=http://version1/wpad.dat\n");
+  EXPECT_TRUE(
+      base::WriteFile(kioslaverc_,
+                      "[Proxy Settings]\nProxyType=2\n"
+                      "Proxy Config Script=http://version1/wpad.dat\n"));
 
   // Initialize the config service using kioslaverc.
   std::unique_ptr<MockEnvironment> env(new MockEnvironment);
@@ -1887,9 +1884,10 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
   // observed.
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
-  WriteFile(kioslaverc_,
-            "[Proxy Settings]\nProxyType=2\n"
-            "Proxy Config Script=http://version2/wpad.dat\n");
+  EXPECT_TRUE(
+      base::WriteFile(kioslaverc_,
+                      "[Proxy Settings]\nProxyType=2\n"
+                      "Proxy Config Script=http://version2/wpad.dat\n"));
 
   // Wait for change to be noticed.
   sync_config_getter.WaitUntilPacUrlMatchesExpectation();
@@ -1903,9 +1901,10 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
   sync_config_getter.SetExpectedPacUrl("http://version3/wpad.dat");
 
   // Create a new file, and rename it into place.
-  WriteFile(kioslaverc_.AddExtension("new"),
-            "[Proxy Settings]\nProxyType=2\n"
-            "Proxy Config Script=http://version3/wpad.dat\n");
+  EXPECT_TRUE(
+      base::WriteFile(kioslaverc_.AddExtension("new"),
+                      "[Proxy Settings]\nProxyType=2\n"
+                      "Proxy Config Script=http://version3/wpad.dat\n"));
   base::Move(kioslaverc_, kioslaverc_.AddExtension("old"));
   base::Move(kioslaverc_.AddExtension("new"), kioslaverc_);
 
@@ -1919,9 +1918,10 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
   // change was observed (this final test probably isn't very useful).
   sync_config_getter.SetExpectedPacUrl("http://version4/wpad.dat");
 
-  WriteFile(kioslaverc_,
-            "[Proxy Settings]\nProxyType=2\n"
-            "Proxy Config Script=http://version4/wpad.dat\n");
+  EXPECT_TRUE(
+      base::WriteFile(kioslaverc_,
+                      "[Proxy Settings]\nProxyType=2\n"
+                      "Proxy Config Script=http://version4/wpad.dat\n"));
 
   // Wait for change to be noticed.
   sync_config_getter.WaitUntilPacUrlMatchesExpectation();

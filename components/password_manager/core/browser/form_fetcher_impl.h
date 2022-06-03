@@ -9,75 +9,66 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
 class PasswordManagerClient;
 
 // Production implementation of FormFetcher. Fetches credentials associated with
-// a particular origin. When adding new member fields to this class, please,
-// update the Clone() method accordingly.
+// a particular origin from both the profile and account (if it exists) password
+// stores. When adding new member fields to this class, please, update the
+// Clone() method accordingly.
 class FormFetcherImpl : public FormFetcher,
                         public PasswordStoreConsumer,
                         public HttpPasswordStoreMigrator::Consumer {
  public:
   // |form_digest| describes what credentials need to be retrieved and
   // |client| serves the PasswordStore, the logging information etc.
-  FormFetcherImpl(PasswordStore::FormDigest form_digest,
+  FormFetcherImpl(PasswordFormDigest form_digest,
                   const PasswordManagerClient* client,
                   bool should_migrate_http_passwords);
 
-  ~FormFetcherImpl() override;
+  FormFetcherImpl(const FormFetcherImpl&) = delete;
+  FormFetcherImpl& operator=(const FormFetcherImpl&) = delete;
 
-  // Returns a MultiStoreFormFetcher if  the password account storage feature is
-  // enabled. Returns a FormFetcherImpl otherwise.
-  static std::unique_ptr<FormFetcherImpl> CreateFormFetcherImpl(
-      PasswordStore::FormDigest form_digest,
-      const PasswordManagerClient* client,
-      bool should_migrate_http_passwords);
+  ~FormFetcherImpl() override;
 
   // FormFetcher:
   void AddConsumer(FormFetcher::Consumer* consumer) override;
   void RemoveConsumer(FormFetcher::Consumer* consumer) override;
+  void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
+  base::span<const InsecureCredential> GetInsecureCredentials() const override;
+  std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
+  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  bool IsBlocklisted() const override;
+  bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
+                       const std::u16string& username) const override;
 
-  std::vector<const autofill::PasswordForm*> GetNonFederatedMatches()
+  const std::vector<const PasswordForm*>& GetAllRelevantMatches()
       const override;
-  std::vector<const autofill::PasswordForm*> GetFederatedMatches()
-      const override;
-
-  bool IsBlacklisted() const override;
-
-  const std::vector<const autofill::PasswordForm*>& GetAllRelevantMatches()
-      const override;
-
-  const std::vector<const autofill::PasswordForm*>& GetBestMatches()
-      const override;
-
-  const autofill::PasswordForm* GetPreferredMatch() const override;
-
-  void Fetch() override;
+  const std::vector<const PasswordForm*>& GetBestMatches() const override;
+  const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
 
-  // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
-  void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
-
-  // HttpPasswordStoreMigrator::Consumer:
-  void ProcessMigratedForms(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override;
-
  protected:
+  // Actually finds best matches and notifies consumers.
+  void FindMatchesAndNotifyConsumers(
+      std::vector<std::unique_ptr<PasswordForm>> results);
+
+  // Splits |results| into |federated_|, |non_federated_|,
+  // |is_blocklisted_in_profile_store_| and |is_blocklisted_in_account_store_|.
+  void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
+
   // PasswordStore results will be fetched for this description.
-  const PasswordStore::FormDigest form_digest_;
+  const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
   const PasswordManagerClient* const client_;
@@ -89,39 +80,62 @@ class FormFetcherImpl : public FormFetcher,
   // password store returning results in the meantime.
   bool need_to_refetch_ = false;
 
-  // Processes password form results and forwards them to the |consumers_|.
-  void ProcessPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results);
-
- private:
-  // Splits |results| into |federated_|, |non_federated_| and |blacklisted_|.
-  void SplitResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results);
-
   // Results obtained from PasswordStore:
-  std::vector<std::unique_ptr<autofill::PasswordForm>> non_federated_;
+  std::vector<std::unique_ptr<PasswordForm>> non_federated_;
 
   // Federated credentials relevant to the observed form. They are neither
   // filled not saved by PasswordFormManager, so they are kept separately from
   // non-federated matches.
-  std::vector<std::unique_ptr<autofill::PasswordForm>> federated_;
+  std::vector<std::unique_ptr<PasswordForm>> federated_;
+
+  // List of insecure credentials for the current domain.
+  std::vector<InsecureCredential> insecure_credentials_;
+
+  // Indicates whether HTTP passwords should be migrated to HTTPS. This is
+  // always false for non HTML forms.
+  const bool should_migrate_http_passwords_;
+
+ private:
+  // PasswordStoreConsumer:
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsFrom(
+      PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
+
+  // HttpPasswordStoreMigrator::Consumer:
+  void ProcessMigratedForms(
+      std::vector<std::unique_ptr<PasswordForm>> forms) override;
+
+  void AggregatePasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results);
+
+  // Does the actual migration.
+  base::flat_map<PasswordStoreInterface*,
+                 std::unique_ptr<HttpPasswordStoreMigrator>>
+      http_migrators_;
 
   // Non-federated credentials of the same scheme as the observed form.
-  std::vector<const autofill::PasswordForm*> non_federated_same_scheme_;
+  std::vector<const PasswordForm*> non_federated_same_scheme_;
 
-  // Set of nonblacklisted PasswordForms from the password store that best match
+  // Set of nonblocklisted PasswordForms from the password store that best match
   // the form being managed by |this|.
-  std::vector<const autofill::PasswordForm*> best_matches_;
+  std::vector<const PasswordForm*> best_matches_;
 
   // Convenience pointer to entry in |best_matches_| that is marked as
   // preferred. This is only allowed to be null if there are no best matches at
   // all, since there will always be one preferred login when there are multiple
   // matches (when first saved, a login is marked preferred).
-  const autofill::PasswordForm* preferred_match_ = nullptr;
+  const PasswordForm* preferred_match_ = nullptr;
 
-  // Whether there were any blacklisted credentials obtained from the password
-  // store.
-  bool is_blacklisted_ = false;
+  // Whether there were any blocklisted credentials obtained from the profile
+  // and account password stores respectively.
+  bool is_blocklisted_in_profile_store_ = false;
+  bool is_blocklisted_in_account_store_ = false;
+
+  int wait_counter_ = 0;
+  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
 
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;
@@ -130,13 +144,7 @@ class FormFetcherImpl : public FormFetcher,
   // remove themselves from the list during their destruction.
   base::ObserverList<FormFetcher::Consumer> consumers_;
 
-  // Indicates whether HTTP passwords should be migrated to HTTPS.
-  const bool should_migrate_http_passwords_;
-
-  // Does the actual migration.
-  std::unique_ptr<HttpPasswordStoreMigrator> http_migrator_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormFetcherImpl);
+  base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DTLS_TRANSPORT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/dtls_transport_proxy.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
@@ -32,10 +32,9 @@ enum class RTCDtlsTransportState {
 //
 class MODULES_EXPORT RTCDtlsTransport final
     : public EventTargetWithInlineData,
-      public ContextClient,
+      public ExecutionContextClient,
       public DtlsTransportProxy::Delegate {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(RTCDtlsTransport);
 
  public:
   RTCDtlsTransport(
@@ -60,7 +59,7 @@ class MODULES_EXPORT RTCDtlsTransport final
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
   // For garbage collection.
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
   // Others
   void ChangeState(webrtc::DtlsTransportInformation info);
   webrtc::DtlsTransportInterface* native_transport();

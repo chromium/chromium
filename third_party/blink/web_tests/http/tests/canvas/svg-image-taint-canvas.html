@@ -41,7 +41,7 @@
         var referenceContext = referenceCanvas.getContext("2d");
         referenceContext.filter = "url(#reference-image)";
         referenceContext.fillRect(0, 0, 100, 100);
-        assert_throws("SecurityError", () => {
+        assert_throws_dom("SecurityError", () => {
           referenceContext.getImageData(0, 0, 1, 1)
         }, "feImage element with a reference should taint the canvas");
 
@@ -49,7 +49,7 @@
         var xOriginContext = xOriginCanvas.getContext("2d");
         xOriginContext.filter = "url(#x-origin-image)";
         xOriginContext.fillRect(0, 0, 100, 100);
-        assert_throws("SecurityError", () => {
+        assert_throws_dom("SecurityError", () => {
           xOriginContext.getImageData(0, 0, 1, 1)
         }, "feImage element with a cross-origin reference should taint the \
         canvas");

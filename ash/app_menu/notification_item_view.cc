@@ -5,6 +5,7 @@
 #include "ash/app_menu/notification_item_view.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"
@@ -47,8 +48,8 @@ constexpr SkColor kNotificationTitleTextColor =
 NotificationItemView::NotificationItemView(
     NotificationMenuView::Delegate* delegate,
     views::SlideOutControllerDelegate* slide_out_controller_delegate,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     const gfx::Image& icon,
     const std::string& notification_id)
     : delegate_(delegate),
@@ -95,8 +96,8 @@ NotificationItemView::NotificationItemView(
 
 NotificationItemView::~NotificationItemView() = default;
 
-void NotificationItemView::UpdateContents(const base::string16& title,
-                                          const base::string16& message,
+void NotificationItemView::UpdateContents(const std::u16string& title,
+                                          const std::u16string& message,
                                           const gfx::Image& icon) {
   if (title_ != title) {
     title_ = title;
@@ -111,9 +112,9 @@ void NotificationItemView::UpdateContents(const base::string16& title,
 }
 
 gfx::Size NotificationItemView::CalculatePreferredSize() const {
-  return gfx::Size(
-      views::MenuConfig::instance().touchable_menu_width - kBorderStrokeWidth,
-      kNotificationItemViewHeight);
+  return gfx::Size(views::MenuConfig::instance().touchable_menu_min_width -
+                       kBorderStrokeWidth,
+                   kNotificationItemViewHeight);
 }
 
 void NotificationItemView::Layout() {
@@ -122,7 +123,7 @@ void NotificationItemView::Layout() {
   // result of |text_container_| being too small to hold the full width of its
   // children labels.
   const gfx::Size text_container_size(
-      views::MenuConfig::instance().touchable_menu_width -
+      views::MenuConfig::instance().touchable_menu_min_width -
           kNotificationHorizontalPadding - kIconHorizontalPadding * 2 -
           kProportionalIconViewSize.width(),
       title_label_->GetPreferredSize().height() +

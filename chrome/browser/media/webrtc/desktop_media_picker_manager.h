@@ -5,13 +5,8 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_
 
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 // A singleton that acts as a rendezvous for dialog observers to register and
 // the dialog managers/delegates to post their activities.
@@ -29,6 +24,10 @@ class DesktopMediaPickerManager {
 
   static DesktopMediaPickerManager* Get();
 
+  DesktopMediaPickerManager(const DesktopMediaPickerManager&) = delete;
+  DesktopMediaPickerManager& operator=(const DesktopMediaPickerManager&) =
+      delete;
+
   // For the observers
   void AddObserver(DialogObserver* observer);
   void RemoveObserver(DialogObserver* observer);
@@ -44,8 +43,6 @@ class DesktopMediaPickerManager {
   ~DesktopMediaPickerManager();  // Never called.
 
   base::ObserverList<DesktopMediaPickerManager::DialogObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerManager);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_

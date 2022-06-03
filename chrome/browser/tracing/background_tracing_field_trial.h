@@ -5,14 +5,23 @@
 #ifndef CHROME_BROWSER_TRACING_BACKGROUND_TRACING_FIELD_TRIAL_H_
 #define CHROME_BROWSER_TRACING_BACKGROUND_TRACING_FIELD_TRIAL_H_
 
-#include <string>
-
 namespace tracing {
 
-void SetupBackgroundTracingFieldTrial();
+enum class BackgroundTracingSetupMode {
+  // Background tracing config comes from a field trial.
+  kFromFieldTrial,
 
-typedef void (*ConfigTextFilterForTesting)(std::string*);
-void SetConfigTextFilterForTesting(ConfigTextFilterForTesting predicate);
+  // Background tracing config comes from a config file passed on the
+  // command-line (for local testing).
+  kFromConfigFile,
+
+  // Background tracing is disabled due to invalid command-line flags.
+  kDisabledInvalidCommandLine,
+};
+
+BackgroundTracingSetupMode GetBackgroundTracingSetupMode();
+
+void SetupBackgroundTracingFieldTrial();
 
 }  // namespace tracing
 

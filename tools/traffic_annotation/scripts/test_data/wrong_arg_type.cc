@@ -5,4 +5,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation(should_be_a_string_literal, "XXX");
+    net::DefineNetworkTrafficAnnotation(
+        should_be_a_string_literal_and_has_a_long_name,
+        "XXX");

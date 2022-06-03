@@ -79,11 +79,12 @@ class MojoCdmFileIOTest : public testing::Test, public MojoCdmFileIO::Delegate {
   void SetUp() override {
     client_ = std::make_unique<MockFileIOClient>();
 
+    mojo::Remote<mojom::CdmStorage> cdm_storage_remote;
     cdm_storage_ = std::make_unique<MockCdmStorage>(
-        cdm_storage_remote_.BindNewPipeAndPassReceiver(), &cdm_file_);
+        cdm_storage_remote.BindNewPipeAndPassReceiver(), &cdm_file_);
 
     file_io_ = std::make_unique<MojoCdmFileIO>(this, client_.get(),
-                                               cdm_storage_remote_.get());
+                                               std::move(cdm_storage_remote));
   }
 
   // MojoCdmFileIO::Delegate implementation.
@@ -97,7 +98,6 @@ class MojoCdmFileIOTest : public testing::Test, public MojoCdmFileIO::Delegate {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MojoCdmFileIO> file_io_;
   std::unique_ptr<MockFileIOClient> client_;
-  mojo::Remote<mojom::CdmStorage> cdm_storage_remote_;
   std::unique_ptr<MockCdmStorage> cdm_storage_;
   MockCdmFile cdm_file_;
 };

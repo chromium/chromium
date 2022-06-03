@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -30,7 +29,7 @@ TEST_F(LayoutSVGForeignObjectTest, DivInForeignObject) {
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
   const auto& div = *GetLayoutObjectByElementId("div");
 
-  EXPECT_EQ(FloatRect(100, 100, 300, 200), foreign_object.ObjectBoundingBox());
+  EXPECT_EQ(gfx::RectF(100, 100, 300, 200), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalToSVGParentTransform());
 
@@ -48,12 +47,6 @@ TEST_F(LayoutSVGForeignObjectTest, DivInForeignObject) {
   EXPECT_EQ(PhysicalOffset(-150, -150),
             div.AncestorToLocalPoint(&GetLayoutView(), PhysicalOffset(),
                                      kTraverseDocumentBoundaries));
-
-  // PushMappingToContainer
-  LayoutGeometryMap rgm(kTraverseDocumentBoundaries);
-  rgm.PushMappingsToAncestor(&div, nullptr);
-  EXPECT_EQ(PhysicalRect(150, 150, 1, 2),
-            rgm.MapToAncestor(PhysicalRect(0, 0, 1, 2), nullptr));
 
   // Hit testing
   EXPECT_EQ(svg, HitTest(1, 1));
@@ -100,7 +93,7 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   const auto& iframe = *GetDocument().getElementById("iframe");
   const auto& div = *ChildDocument().getElementById("div")->GetLayoutObject();
 
-  EXPECT_EQ(FloatRect(100, 100, 300, 250), foreign_object.ObjectBoundingBox());
+  EXPECT_EQ(gfx::RectF(100, 100, 300, 250), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalToSVGParentTransform());
 
@@ -118,12 +111,6 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   EXPECT_EQ(PhysicalOffset(-200, -200),
             div.AncestorToLocalPoint(&GetLayoutView(), PhysicalOffset(),
                                      kTraverseDocumentBoundaries));
-
-  // PushMappingToContainer
-  LayoutGeometryMap rgm(kTraverseDocumentBoundaries);
-  rgm.PushMappingsToAncestor(&div, nullptr);
-  EXPECT_EQ(PhysicalRect(200, 200, 1, 2),
-            rgm.MapToAncestor(PhysicalRect(0, 0, 1, 2), nullptr));
 
   // Hit testing
   EXPECT_EQ(svg, HitTest(90, 90));
@@ -154,9 +141,9 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   SetBodyInnerHTML(R"HTML(
     <style>* { margin: 0; zoom: 150% }</style>
     <svg id='svg' style='width: 200px; height: 200px'>
-      <foreignObject id='foreign' x='10' y='10' width='100' height='150' style='overflow: visible'>
-        <div id='div' style='margin: 50px; width: 50px; height: 50px'>
-        </div>
+      <foreignObject id='foreign' x='10' y='10' width='100' height='150'
+                     style='overflow: visible'>
+        <div id='div' style='margin: 50px; width: 50px; height: 50px'></div>
       </foreignObject>
     </svg>
   )HTML");
@@ -166,32 +153,42 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
   const auto& div = *GetDocument().getElementById("div");
 
-  EXPECT_EQ(FloatRect(10, 10, 100, 150), foreign_object.ObjectBoundingBox());
+  EXPECT_EQ(gfx::RectF(10, 10, 100, 150), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
-  EXPECT_EQ(AffineTransform(), foreign_object.LocalToSVGParentTransform());
+  AffineTransform zoom;
+  zoom.Scale(1 / foreign_object.StyleRef().EffectiveZoom());
+  EXPECT_EQ(zoom, foreign_object.LocalToSVGParentTransform());
 
   // MapToVisualRectInAncestorSpace
   PhysicalRect div_rect(0, 0, 100, 50);
   EXPECT_TRUE(div.GetLayoutObject()->MapToVisualRectInAncestorSpace(
       &GetLayoutView(), div_rect));
-  EXPECT_EQ(PhysicalRect(286, 286, 339, 170), div_rect);
+  // Origin at x=y=(50 * 1.5 + 10) * 1.5 * 1.5 * 1.5 = 286.875
+  // Dimensions will be subjected to scaling with 1/1.5 because the
+  // accumulated zoom on the <fO> is one more than that of its parent <svg>.
+  EXPECT_EQ(PhysicalRect(286, 286, 68, 35), div_rect);
 
+  PhysicalOffset div_offset(LayoutUnit(286.875), LayoutUnit(286.875));
   // LocalToAncestorPoint
-  EXPECT_EQ(
-      PhysicalOffset(LayoutUnit(286.875), LayoutUnit(286.875)),
-      div.GetLayoutObject()->LocalToAncestorPoint(
-          PhysicalOffset(), &GetLayoutView(), kTraverseDocumentBoundaries));
+  EXPECT_EQ(div_offset, div.GetLayoutObject()->LocalToAncestorPoint(
+                            PhysicalOffset(), &GetLayoutView(),
+                            kTraverseDocumentBoundaries));
 
   // AncestorToLocalPoint
   EXPECT_EQ(PhysicalOffset(),
             div.GetLayoutObject()->AncestorToLocalPoint(
-                &GetLayoutView(),
-                PhysicalOffset(LayoutUnit(286.875), LayoutUnit(286.875)),
-                kTraverseDocumentBoundaries));
+                &GetLayoutView(), div_offset, kTraverseDocumentBoundaries));
 
   EXPECT_EQ(svg, HitTest(20, 20));
   EXPECT_EQ(foreign, HitTest(280, 280));
+  // Check all corners of the <div>.
   EXPECT_EQ(div, HitTest(290, 290));
+  EXPECT_EQ(div, HitTest(290, 286 + 250));
+  EXPECT_EQ(div, HitTest(286 + 250, 290));
+  EXPECT_EQ(div, HitTest(286 + 250, 286 + 250));
+  // Check (just) outside the <div>.
+  EXPECT_EQ(svg, HitTest(286 + 256, 290));
+  EXPECT_EQ(svg, HitTest(290, 286 + 256));
 
   // Rect based hit testing
   auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
@@ -375,6 +372,27 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
   GetDocument().GetLayoutView()->HitTest(location, result);
   EXPECT_EQ(target, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(450, 450), result.PointInInnerNodeFrame());
+}
+
+TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
+  GetFrame().SetPageZoomFactor(2);
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <g>
+        <foreignObject x="6" y="5" width="100" height="50" id="target"/>
+      </g>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& target = *GetLayoutObjectByElementId("target");
+  ASSERT_EQ(target.StyleRef().EffectiveZoom(), 2);
+
+  EXPECT_EQ(target.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
+  EXPECT_EQ(target.StrokeBoundingBox(), gfx::RectF(12, 10, 200, 100));
+  const auto& parent_g = *target.Parent();
+  EXPECT_EQ(parent_g.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
+  EXPECT_EQ(parent_g.StrokeBoundingBox(), gfx::RectF(6, 5, 100, 50));
 }
 
 }  // namespace blink

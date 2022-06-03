@@ -8,11 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
-#include <string>
-
 #include "base/big_endian.h"
-#include "base/macros.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
@@ -24,6 +20,10 @@ namespace cast {
 class RtcpBuilder {
  public:
   explicit RtcpBuilder(uint32_t sending_ssrc);
+
+  RtcpBuilder(const RtcpBuilder&) = delete;
+  RtcpBuilder& operator=(const RtcpBuilder&) = delete;
+
   ~RtcpBuilder();
 
   PacketRef BuildRtcpFromSender(const RtcpSenderInfo& sender_info);
@@ -55,8 +55,6 @@ class RtcpBuilder {
   const uint32_t local_ssrc_;
   char* ptr_of_length_;
   PacketRef packet_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtcpBuilder);
 };
 
 }  // namespace cast

@@ -22,7 +22,7 @@ void AbortController::abort() {
   signal_->SignalAbort();
 }
 
-void AbortController::Trace(Visitor* visitor) {
+void AbortController::Trace(Visitor* visitor) const {
   visitor->Trace(signal_);
   ScriptWrappable::Trace(visitor);
 }

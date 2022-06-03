@@ -8,12 +8,8 @@ import("//build/compiled_action.gni")
 action_foreach("generate_preload_list") {
   script = "//tools/media_engagement_preload/make_dafsa.py"
 
-  sources = [
-    "test.json",
-  ]
-  outputs = [
-    "$target_gen_dir/{{source_name_part}}.pb",
-  ]
+  sources = [ "test.json" ]
+  outputs = [ "$target_gen_dir/{{source_name_part}}.pb" ]
   args = [
     "{{source}}",
     rebase_path("${target_gen_dir}/{{source_name_part}}.pb", root_build_dir),
@@ -27,7 +23,5 @@ copy("test_data") {
     "empty.pb",
   ]
 
-  outputs = [
-    "$target_gen_dir/{{source_file_part}}",
-  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

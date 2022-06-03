@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Call initUIEvent without parameters assert_throws: function "function() { eventType.prototype[initFunction].call(event) }" did not throw
-FAIL Call initMouseEvent without parameters assert_throws: function "function() { eventType.prototype[initFunction].call(event) }" did not throw
-PASS Call initKeyboardEvent without parameters
-FAIL Call initCompositionEvent without parameters assert_throws: function "function() { eventType.prototype[initFunction].call(event) }" did not throw
-Harness: the test ran to completion.
-

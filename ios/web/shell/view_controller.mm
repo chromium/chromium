@@ -268,38 +268,49 @@ using web::NavigationManager;
 // -----------------------------------------------------------------------
 // WebStateDelegate implementation.
 
-- (void)webState:(web::WebState*)webState
-    handleContextMenu:(const web::ContextMenuParams&)params {
+- (void)webState:(web::WebState*)webView
+    contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                    completionHandler:
+                        (void (^)(UIContextMenuConfiguration*))completionHandler
+    API_AVAILABLE(ios(13.0)) {
   GURL link = params.link_url;
-  if (!link.is_valid()) {
-    return;
-  }
-
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:params.menu_title
-                       message:nil
-                preferredStyle:UIAlertControllerStyleActionSheet];
-  alert.popoverPresentationController.sourceView = params.view;
-  alert.popoverPresentationController.sourceRect =
-      CGRectMake(params.location.x, params.location.y, 1.0, 1.0);
-
-  void (^handler)(UIAlertAction*) = ^(UIAlertAction*) {
+  void (^copyHandler)(UIAction*) = ^(UIAction* action) {
     NSDictionary* item = @{
-      static_cast<NSString*>(kUTTypeURL) : net::NSURLWithGURL(link),
-      static_cast<NSString*>(kUTTypeUTF8PlainText) : [base::SysUTF8ToNSString(
-          link.spec()) dataUsingEncoding:NSUTF8StringEncoding],
+      (NSString*)(kUTTypeURL) : net::NSURLWithGURL(link),
+      (NSString*)(kUTTypeUTF8PlainText) : [base::SysUTF8ToNSString(link.spec())
+          dataUsingEncoding:NSUTF8StringEncoding],
     };
     [[UIPasteboard generalPasteboard] setItems:@[ item ]];
   };
-  [alert addAction:[UIAlertAction actionWithTitle:@"Copy Link"
-                                            style:UIAlertActionStyleDefault
-                                          handler:handler]];
 
-  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                            style:UIAlertActionStyleCancel
-                                          handler:nil]];
+  UIContextMenuConfiguration* configuration = [UIContextMenuConfiguration
+      configurationWithIdentifier:nil
+      previewProvider:^{
+        UIViewController* controller = [[UIViewController alloc] init];
+        CGRect frame = CGRectMake(10, 200, 200, 21);
+        UILabel* label = [[UILabel alloc] initWithFrame:frame];
+        label.text = @"iOS13 Preview Page";
+        [controller.view addSubview:label];
+        return controller;
+      }
+      actionProvider:^(id _) {
+        NSArray* actions = @[
+          [UIAction actionWithTitle:@"Copy Link"
+                              image:nil
+                         identifier:nil
+                            handler:copyHandler],
+          [UIAction actionWithTitle:@"Cancel"
+                              image:nil
+                         identifier:nil
+                            handler:^(id _){
+                            }]
+        ];
+        NSString* menuTitle = [NSString
+            stringWithFormat:@"iOS13 Context Menu: %s", link.spec().c_str()];
+        return [UIMenu menuWithTitle:menuTitle children:actions];
+      }];
 
-  [self presentViewController:alert animated:YES completion:nil];
+  completionHandler(configuration);
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {

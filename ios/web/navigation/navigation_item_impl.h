@@ -8,9 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
-#include "ios/web/navigation/error_retry_state_machine.h"
 #include "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -43,11 +42,11 @@ class NavigationItemImpl : public web::NavigationItem {
   const web::Referrer& GetReferrer() const override;
   void SetVirtualURL(const GURL& url) override;
   const GURL& GetVirtualURL() const override;
-  void SetTitle(const base::string16& title) override;
-  const base::string16& GetTitle() const override;
+  void SetTitle(const std::u16string& title) override;
+  const std::u16string& GetTitle() const override;
   void SetPageDisplayState(const PageDisplayState& display_state) override;
   const PageDisplayState& GetPageDisplayState() const override;
-  const base::string16& GetTitleForDisplay() const override;
+  const std::u16string& GetTitleForDisplay() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
   const FaviconStatus& GetFavicon() const override;
@@ -56,13 +55,13 @@ class NavigationItemImpl : public web::NavigationItem {
   SSLStatus& GetSSL() override;
   void SetTimestamp(base::Time timestamp) override;
   base::Time GetTimestamp() const override;
-  void SetUserAgentType(UserAgentType type,
-                        bool update_inherited_user_agent) override;
+  void SetUserAgentType(UserAgentType type) override;
   UserAgentType GetUserAgentType() const override;
-  UserAgentType GetUserAgentForInheritance() const override;
   bool HasPostData() const override;
   NSDictionary* GetHttpRequestHeaders() const override;
   void AddHttpRequestHeaders(NSDictionary* additional_headers) override;
+  void SetUpgradedToHttps() override;
+  bool IsUpgradedToHttps() const override;
 
   // Serialized representation of the state object that was used in conjunction
   // with a JavaScript window.history.pushState() or
@@ -71,18 +70,6 @@ class NavigationItemImpl : public web::NavigationItem {
   // will be nil in most cases.
   void SetSerializedStateObject(NSString* serialized_state_object);
   NSString* GetSerializedStateObject() const;
-
-  // Whether or not this item was created by calling history.pushState().
-  void SetIsCreatedFromPushState(bool push_state);
-  bool IsCreatedFromPushState() const;
-
-  // Whether the state for this navigation has been changed by
-  // history.replaceState().
-  // TODO(crbug.com/659816): This state is only tracked because of flaky early
-  // page script injection.  Once the root cause of this flake is found, this
-  // can be removed.
-  void SetHasStateBeenReplaced(bool replace_state);
-  bool HasStateBeenReplaced() const;
 
   // Whether this navigation is the result of a hash change.
   void SetIsCreatedFromHashChange(bool hash_change);
@@ -117,19 +104,18 @@ class NavigationItemImpl : public web::NavigationItem {
   // non-persisted state, as documented on the members below.
   void ResetForCommit();
 
-  // Returns the state machine that manages the displaying and retrying of load
-  // error for this item.
-  ErrorRetryStateMachine& error_retry_state_machine();
-
   // Returns the title string to be used for a page with |url| if that page
   // doesn't specify a title.
-  static base::string16 GetDisplayTitleForURL(const GURL& url);
+  static std::u16string GetDisplayTitleForURL(const GURL& url);
 
-  // Used only by WKBasedNavigationManager.  SetUntrusted() is only used for
+  // Used only by NavigationManagerImpl.  SetUntrusted() is only used for
   // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
   // due to timining problems or bugs in WKWebView.
   void SetUntrusted();
   bool IsUntrusted();
+
+  // Restores the state of the |other| navigation item in this item.
+  void RestoreStateFromItem(NavigationItem* other);
 
 #ifndef NDEBUG
   // Returns a human-readable description of the state for debugging purposes.
@@ -146,38 +132,38 @@ class NavigationItemImpl : public web::NavigationItem {
   GURL url_;
   Referrer referrer_;
   GURL virtual_url_;
-  base::string16 title_;
+  std::u16string title_;
   PageDisplayState page_display_state_;
   ui::PageTransition transition_type_;
   FaviconStatus favicon_;
   SSLStatus ssl_;
   base::Time timestamp_;
   UserAgentType user_agent_type_;
-  UserAgentType user_agent_type_inheritance_;
   NSMutableDictionary* http_request_headers_;
 
   NSString* serialized_state_object_;
-  bool is_created_from_push_state_;
-  bool has_state_been_replaced_;
   bool is_created_from_hash_change_;
   bool should_skip_repost_form_confirmation_;
   bool should_skip_serialization_;
   NSData* post_data_;
-  ErrorRetryStateMachine error_retry_state_machine_;
 
   // The navigation initiation type of the item.  This decides whether the URL
   // should be displayed before the navigation commits.  It is cleared in
   // |ResetForCommit| and not persisted.
   web::NavigationInitiationType navigation_initiation_type_;
 
-  // Used only by WKBasedNavigationManager.  |is_untrusted_| is only |true| for
+  // Used only by NavigationManagerImpl.  |is_untrusted_| is only |true| for
   // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
   // due to timining problems or bugs in WKWebView.
   bool is_untrusted_;
 
   // This is a cached version of the result of GetTitleForDisplay. When the URL,
   // virtual URL, or title is set, this should be cleared to force a refresh.
-  mutable base::string16 cached_display_title_;
+  mutable std::u16string cached_display_title_;
+
+  // True if this navigation was typed without a scheme and its URL is using
+  // https:// as the default scheme.
+  bool is_upgraded_to_https_;
 
   // Copy and assignment is explicitly allowed for this class.
 };

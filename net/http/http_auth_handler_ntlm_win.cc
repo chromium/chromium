@@ -22,6 +22,7 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key,
     const GURL& origin,
     CreateReason reason,
     int digest_nonce_count,
@@ -34,8 +35,8 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
   //                 method and only constructing when valid.
   std::unique_ptr<HttpAuthHandler> tmp_handler(
       new HttpAuthHandlerNTLM(sspi_library_.get(), http_auth_preferences()));
-  if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info, origin,
-                                      net_log))
+  if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
+                                      network_isolation_key, origin, net_log))
     return ERR_INVALID_RESPONSE;
   handler->swap(tmp_handler);
   return OK;

@@ -8,8 +8,8 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
@@ -25,13 +25,18 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
     virtual void OnItemRemoved(const ContentId& id) = 0;
     virtual void OnItemUpdated(
         const OfflineItem& item,
-        const base::Optional<UpdateDelta>& update_delta) = 0;
+        const absl::optional<UpdateDelta>& update_delta) = 0;
 
    protected:
     virtual ~Observer() = default;
   };
 
   FilteredOfflineItemObserver(OfflineContentProvider* provider);
+
+  FilteredOfflineItemObserver(const FilteredOfflineItemObserver&) = delete;
+  FilteredOfflineItemObserver& operator=(const FilteredOfflineItemObserver&) =
+      delete;
+
   ~FilteredOfflineItemObserver() override;
 
   void AddObserver(const ContentId& id, Observer* observer);
@@ -46,12 +51,14 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
       const OfflineContentProvider::OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
+  void OnContentProviderGoingDown() override;
 
   OfflineContentProvider* provider_;
+  base::ScopedObservation<OfflineContentProvider,
+                          OfflineContentProvider::Observer>
+      observation_{this};
   ObserversMap observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilteredOfflineItemObserver);
 };
 
 }  // namespace offline_items_collection

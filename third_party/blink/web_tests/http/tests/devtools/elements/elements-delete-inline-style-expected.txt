@@ -9,11 +9,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 After style property removal:
 [expanded] 
 element.style { ()
@@ -21,10 +16,5 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

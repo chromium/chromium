@@ -5,25 +5,48 @@
 #include "weblayer/renderer/content_renderer_client_impl.h"
 
 #include "base/feature_list.h"
-#include "base/i18n/rtl.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/content_capture/common/content_capture_features.h"
+#include "components/content_capture/renderer/content_capture_sender.h"
+#include "components/content_settings/renderer/content_settings_agent_impl.h"
+#include "components/error_page/common/error.h"
+#include "components/grit/components_scaled_resources.h"
+#include "components/js_injection/renderer/js_communication.h"
+#include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
+#include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
+#include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
+#include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
+#include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
+#include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
+#include "components/subresource_filter/core/common/common_features.h"
+#include "components/webapps/renderer/web_page_metadata_agent.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "net/base/escape.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/common/features.h"
-#include "weblayer/renderer/ssl_error_helper.h"
+#include "weblayer/renderer/error_page_helper.h"
+#include "weblayer/renderer/url_loader_throttle_provider.h"
+#include "weblayer/renderer/weblayer_render_frame_observer.h"
+#include "weblayer/renderer/weblayer_render_thread_observer.h"
 
 #if defined(OS_ANDROID)
-#include "android_webview/grit/aw_resources.h"
-#include "android_webview/grit/aw_strings.h"
+#include "components/android_system_error_page/error_page_populator.h"
+#include "components/cdm/renderer/android_key_systems.h"
 #include "components/spellcheck/renderer/spellcheck.h"           // nogncheck
 #include "components/spellcheck/renderer/spellcheck_provider.h"  // nogncheck
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
-#include "weblayer/renderer/url_loader_throttle_provider.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_security_policy.h"
 #endif
 
 namespace weblayer {
@@ -31,64 +54,15 @@ namespace weblayer {
 namespace {
 
 #if defined(OS_ANDROID)
-constexpr char kThrottledErrorDescription[] =
-    "Request throttled. Visit http://dev.chromium.org/throttling for more "
-    "information.";
-
-// Populates |error_html| (if it is not null), based on |error|.
-// NOTE: This function is taken from
-// AWContentRendererClient::PrepareErrorPage().
-// TODO(1024326): If this implementation becomes the long-term
-// implementation, this code should be shared rather than copied.
-void PopulateErrorPageHTML(const blink::WebURLError& error,
-                           std::string* error_html) {
-  std::string err;
-  if (error.reason() == net::ERR_TEMPORARILY_THROTTLED)
-    err = kThrottledErrorDescription;
-  else
-    err = net::ErrorToString(error.reason());
-
-  if (!error_html)
-    return;
-
-  // Create the error page based on the error reason.
-  GURL gurl(error.url());
-  std::string url_string = gurl.possibly_invalid_spec();
-  int reason_id = IDS_AW_WEBPAGE_CAN_NOT_BE_LOADED;
-
-  if (err.empty())
-    reason_id = IDS_AW_WEBPAGE_TEMPORARILY_DOWN;
-
-  std::string escaped_url = net::EscapeForHTML(url_string);
-  std::vector<std::string> replacements;
-  replacements.push_back(
-      l10n_util::GetStringUTF8(IDS_AW_WEBPAGE_NOT_AVAILABLE));
-  replacements.push_back(
-      l10n_util::GetStringFUTF8(reason_id, base::UTF8ToUTF16(escaped_url)));
-
-  // Having chosen the base reason, chose what extra information to add.
-  if (reason_id == IDS_AW_WEBPAGE_TEMPORARILY_DOWN) {
-    replacements.push_back(
-        l10n_util::GetStringUTF8(IDS_AW_WEBPAGE_TEMPORARILY_DOWN_SUGGESTIONS));
-  } else {
-    replacements.push_back(err);
-  }
-  if (base::i18n::IsRTL())
-    replacements.push_back("direction: rtl;");
-  else
-    replacements.push_back("");
-  *error_html = base::ReplaceStringPlaceholders(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_AW_LOAD_ERROR_HTML),
-      replacements, nullptr);
-}
-#endif  // OS_ANDROID
-
-#if defined(OS_ANDROID)
 class SpellcheckInterfaceProvider
     : public service_manager::LocalInterfaceProvider {
  public:
   SpellcheckInterfaceProvider() = default;
+
+  SpellcheckInterfaceProvider(const SpellcheckInterfaceProvider&) = delete;
+  SpellcheckInterfaceProvider& operator=(const SpellcheckInterfaceProvider&) =
+      delete;
+
   ~SpellcheckInterfaceProvider() override = default;
 
   // service_manager::LocalInterfaceProvider:
@@ -100,9 +74,6 @@ class SpellcheckInterfaceProvider
     content::RenderThread::Get()->BindHostReceiver(mojo::GenericPendingReceiver(
         interface_name, std::move(interface_pipe)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckInterfaceProvider);
 };
 #endif  // defined(OS_ANDROID)
 
@@ -117,15 +88,61 @@ void ContentRendererClientImpl::RenderThreadStarted() {
     local_interface_provider_ = std::make_unique<SpellcheckInterfaceProvider>();
     spellcheck_ = std::make_unique<SpellCheck>(local_interface_provider_.get());
   }
+  blink::WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
+      blink::WebString::FromUTF8(content::kAndroidAppScheme));
 #endif
+
+  content::RenderThread* thread = content::RenderThread::Get();
+  weblayer_observer_ = std::make_unique<WebLayerRenderThreadObserver>();
+  thread->AddObserver(weblayer_observer_.get());
 
   browser_interface_broker_ =
       blink::Platform::Current()->GetBrowserInterfaceBroker();
+
+  subresource_filter_ruleset_dealer_ =
+      std::make_unique<subresource_filter::UnverifiedRulesetDealer>();
+  thread->AddObserver(subresource_filter_ruleset_dealer_.get());
 }
 
 void ContentRendererClientImpl::RenderFrameCreated(
     content::RenderFrame* render_frame) {
-  SSLErrorHelper::Create(render_frame);
+  auto* render_frame_observer = new WebLayerRenderFrameObserver(render_frame);
+  new prerender::PrerenderRenderFrameObserver(render_frame);
+
+  ErrorPageHelper::Create(render_frame);
+
+  autofill::PasswordAutofillAgent* password_autofill_agent =
+      new autofill::PasswordAutofillAgent(
+          render_frame, render_frame_observer->associated_interfaces());
+  new autofill::AutofillAgent(render_frame, password_autofill_agent, nullptr,
+                              nullptr,
+                              render_frame_observer->associated_interfaces());
+  auto* agent = new content_settings::ContentSettingsAgentImpl(
+      render_frame, false /* should_whitelist */,
+      std::make_unique<content_settings::ContentSettingsAgentImpl::Delegate>());
+  if (weblayer_observer_) {
+    agent->SetContentSettingRules(weblayer_observer_->content_setting_rules());
+
+    if (weblayer_observer_->content_settings_manager()) {
+      mojo::Remote<content_settings::mojom::ContentSettingsManager> manager;
+      weblayer_observer_->content_settings_manager()->Clone(
+          manager.BindNewPipeAndPassReceiver());
+      agent->SetContentSettingsManager(std::move(manager));
+    }
+  }
+
+  auto* metrics_render_frame_observer =
+      new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+
+  auto ad_resource_tracker =
+      std::make_unique<subresource_filter::AdResourceTracker>();
+  metrics_render_frame_observer->SetAdResourceTracker(
+      ad_resource_tracker.get());
+  auto* subresource_filter_agent =
+      new subresource_filter::SubresourceFilterAgent(
+          render_frame, subresource_filter_ruleset_dealer_.get(),
+          std::move(ad_resource_tracker));
+  subresource_filter_agent->Initialize();
 
 #if defined(OS_ANDROID)
   // |SpellCheckProvider| manages its own lifetime (and destroys itself when the
@@ -133,10 +150,44 @@ void ContentRendererClientImpl::RenderFrameCreated(
   new SpellCheckProvider(render_frame, spellcheck_.get(),
                          local_interface_provider_.get());
 #endif
+  new js_injection::JsCommunication(render_frame);
+
+  if (render_frame->IsMainFrame())
+    new webapps::WebPageMetadataAgent(render_frame);
+
+  if (content_capture::features::IsContentCaptureEnabledInWebLayer()) {
+    new content_capture::ContentCaptureSender(
+        render_frame, render_frame_observer->associated_interfaces());
+  }
+
+  if (!render_frame->IsMainFrame()) {
+    auto* main_frame_no_state_prefetch_helper =
+        prerender::NoStatePrefetchHelper::Get(
+            render_frame->GetMainRenderFrame());
+    if (main_frame_no_state_prefetch_helper) {
+      // Avoid any race conditions from having the browser tell subframes that
+      // they're no-state prefetching.
+      new prerender::NoStatePrefetchHelper(
+          render_frame,
+          main_frame_no_state_prefetch_helper->histogram_prefix());
+    }
+  }
 }
 
-bool ContentRendererClientImpl::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400;
+void ContentRendererClientImpl::WebViewCreated(blink::WebView* web_view) {
+  new prerender::NoStatePrefetchClient(web_view);
+}
+
+SkBitmap* ContentRendererClientImpl::GetSadPluginBitmap() {
+  return const_cast<SkBitmap*>(ui::ResourceBundle::GetSharedInstance()
+                                   .GetImageNamed(IDR_SAD_PLUGIN)
+                                   .ToSkBitmap());
+}
+
+SkBitmap* ContentRendererClientImpl::GetSadWebViewBitmap() {
+  return const_cast<SkBitmap*>(ui::ResourceBundle::GetSharedInstance()
+                                   .GetImageNamed(IDR_SAD_WEBVIEW)
+                                   .ToSkBitmap());
 }
 
 void ContentRendererClientImpl::PrepareErrorPage(
@@ -144,29 +195,57 @@ void ContentRendererClientImpl::PrepareErrorPage(
     const blink::WebURLError& error,
     const std::string& http_method,
     std::string* error_html) {
-  auto* ssl_helper = SSLErrorHelper::GetForFrame(render_frame);
-  if (ssl_helper)
-    ssl_helper->PrepareErrorPage();
+  auto* error_page_helper = ErrorPageHelper::GetForFrame(render_frame);
+  if (error_page_helper)
+    error_page_helper->PrepareErrorPage();
 
 #if defined(OS_ANDROID)
-  PopulateErrorPageHTML(error, error_html);
+  // This does nothing if |error_html| is non-null (which happens if the
+  // embedder injects an error page).
+  android_system_error_page::PopulateErrorPageHtml(error, error_html);
 #endif
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 ContentRendererClientImpl::CreateURLLoaderThrottleProvider(
-    content::URLLoaderThrottleProviderType provider_type) {
-  if (base::FeatureList::IsEnabled(features::kWebLayerSafeBrowsing)) {
-#if defined(OS_ANDROID)
-    // Note: currently the throttle provider is only needed for safebrowsing.
-    return std::make_unique<URLLoaderThrottleProvider>(
-        browser_interface_broker_.get(), provider_type);
-#else
-    return nullptr;
-#endif
-  }
+    blink::URLLoaderThrottleProviderType provider_type) {
+  return std::make_unique<URLLoaderThrottleProvider>(
+      browser_interface_broker_.get(), provider_type);
+}
 
-  return nullptr;
+void ContentRendererClientImpl::AddSupportedKeySystems(
+    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
+#if defined(OS_ANDROID)
+  cdm::AddAndroidWidevine(key_systems);
+  cdm::AddAndroidPlatformKeySystems(key_systems);
+#endif
+}
+
+void ContentRendererClientImpl::
+    SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
+  blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
+#if defined(OS_ANDROID)
+  // Web Share is experimental by default, and explicitly enabled on Android
+  // (for both Chrome and WebLayer).
+  blink::WebRuntimeFeatures::EnableWebShare(true);
+#endif
+
+  if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging)) {
+    blink::WebRuntimeFeatures::EnableAdTagging(true);
+  }
+}
+
+bool ContentRendererClientImpl::IsPrefetchOnly(
+    content::RenderFrame* render_frame) {
+  return prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
+}
+
+bool ContentRendererClientImpl::DeferMediaLoad(
+    content::RenderFrame* render_frame,
+    bool has_played_media_before,
+    base::OnceClosure closure) {
+  return prerender::DeferMediaLoad(render_frame, has_played_media_before,
+                                   std::move(closure));
 }
 
 }  // namespace weblayer

@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 
+#import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,7 +16,8 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
+  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.navigationBar.accessibilityIdentifier = kBookmarkNavigationBarIdentifier;
 }
 
 - (BOOL)disablesAutomaticKeyboardDismissal {

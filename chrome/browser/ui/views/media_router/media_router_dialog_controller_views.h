@@ -7,16 +7,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/observer_list.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/media/router/media_router_dialog_controller.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
-#include "chrome/browser/ui/views/media_router/media_router_views_ui.h"
+#include "components/media_router/browser/media_router_dialog_controller.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace media_router {
+
+class MediaRouterUI;
+class StartPresentationContext;
 
 // A Views implementation of MediaRouterDialogController.
 class MediaRouterDialogControllerViews
@@ -25,10 +26,18 @@ class MediaRouterDialogControllerViews
       public views::WidgetObserver,
       public MediaRouterUIService::Observer {
  public:
+  MediaRouterDialogControllerViews(const MediaRouterDialogControllerViews&) =
+      delete;
+  MediaRouterDialogControllerViews& operator=(
+      const MediaRouterDialogControllerViews&) = delete;
+
   ~MediaRouterDialogControllerViews() override;
 
   // MediaRouterDialogController:
-  void CreateMediaRouterDialog() override;
+  bool ShowMediaRouterDialogForPresentation(
+      std::unique_ptr<StartPresentationContext> context) override;
+  void CreateMediaRouterDialog(
+      MediaRouterDialogOpenOrigin activation_location) override;
   void CloseMediaRouterDialog() override;
   bool IsShowingMediaRouterDialog() const override;
   void Reset() override;
@@ -41,7 +50,7 @@ class MediaRouterDialogControllerViews
 
  private:
   friend class content::WebContentsUserData<MediaRouterDialogControllerViews>;
-  friend class MediaRouterUiForTest;
+  friend class MediaRouterCastUiForTest;
 
   // Use MediaRouterDialogController::GetOrCreateForWebContents() to create
   // an instance.
@@ -57,24 +66,23 @@ class MediaRouterDialogControllerViews
   // toolbar action. It's owned by MediaRouterUIService and it may be nullptr.
   MediaRouterActionController* GetActionController();
 
-  MediaRouterViewsUI* ui() { return ui_.get(); }
+  MediaRouterUI* ui() { return ui_.get(); }
 
   // Responsible for notifying the dialog view of dialog model updates and
   // sending route requests to MediaRouter. Set to nullptr when the dialog is
-  // closed.
-  std::unique_ptr<MediaRouterViewsUI> ui_;
+  // closed. Not used for presentation requests when
+  // GlobalMediaControlsCastStartStopEnabled() returns true.
+  std::unique_ptr<MediaRouterUI> ui_;
 
   base::RepeatingClosure dialog_creation_callback_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> scoped_widget_observer_{
-      this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      scoped_widget_observations_{this};
 
   // Service that provides MediaRouterActionController. It outlives |this|.
   MediaRouterUIService* const media_router_ui_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerViews);
 };
 
 }  // namespace media_router

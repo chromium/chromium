@@ -1,0 +1,18 @@
+<style include="scanning-shared"></style>
+<scan-settings-section>
+  <span id="resolutionLabel" slot="label" aria-hidden="true">
+    [[i18n('resolutionDropdownLabel')]]
+  </span>
+  <div slot="settings">
+    <select id="resolutionSelect" class="md-select"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
+        aria-labelledby="resolutionLabel">
+      <template is="dom-repeat" items="[[options]]" as="resolution">
+        <option value="[[resolution]]"
+            selected$="[[isDefaultOption(resolution)]]">
+          [[getResolutionString_(resolution)]]
+        </option>
+      </template>
+    </select>
+  </div>
+</scan-settings-section>

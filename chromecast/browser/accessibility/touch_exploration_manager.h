@@ -36,6 +36,10 @@ class TouchExplorationManager : public ui::EventRewriter,
       AccessibilityFocusRingController* accessibility_focus_ring_controller,
       AccessibilitySoundPlayer* accessibility_sound_player,
       CastGestureHandler* cast_gesture_handler);
+
+  TouchExplorationManager(const TouchExplorationManager&) = delete;
+  TouchExplorationManager& operator=(const TouchExplorationManager&) = delete;
+
   ~TouchExplorationManager() override;
 
   // Enable or disable touch exploration.
@@ -48,8 +52,9 @@ class TouchExplorationManager : public ui::EventRewriter,
       const Continuation continuation) override;
 
   // TouchExplorationControllerDelegate overrides:
-  void HandleAccessibilityGesture(ax::mojom::Gesture gesture) override;
-  void HandleTap(const gfx::Point touch_location) override;
+  void HandleAccessibilityGesture(const ax::mojom::Gesture gesture,
+                                  const gfx::PointF& location) override;
+  void HandleTap(const gfx::Point& touch_location) override;
 
   // wm::ActivationChangeObserver overrides:
   void OnWindowActivated(
@@ -60,6 +65,10 @@ class TouchExplorationManager : public ui::EventRewriter,
   // Update the touch exploration controller so that synthesized touch
   // events are anchored at this point.
   void SetTouchAccessibilityAnchorPoint(const gfx::Point& anchor_point);
+
+  // Sets the bounds for virtual keyboard. Update the touch exploration
+  // controller so that it knows the bounds of the virtual keyboard.
+  void SetVirtualKeyboardBounds(const gfx::Rect& rect);
 
  private:
   void UpdateTouchExplorationState();
@@ -73,8 +82,6 @@ class TouchExplorationManager : public ui::EventRewriter,
   AccessibilityFocusRingController* accessibility_focus_ring_controller_;
   AccessibilitySoundPlayer* accessibility_sound_player_;
   CastGestureHandler* cast_gesture_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationManager);
 };
 
 }  // namespace shell

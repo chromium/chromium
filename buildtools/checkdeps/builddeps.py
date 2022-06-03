@@ -9,6 +9,8 @@ a dependency rule table to be used by subclasses.
 See README.md for the format of the deps file.
 """
 
+
+
 import copy
 import os.path
 import posixpath
@@ -58,11 +60,10 @@ def _GitSourceDirectories(base_directory):
   # FIXME: Use a context manager in Python 3.2+
   popen = subprocess.Popen(git_ls_files_cmd,
                            stdout=subprocess.PIPE,
-                           bufsize=1,  # line buffering, since read by line
                            cwd=base_directory)
   try:
     try:
-      for line in popen.stdout:
+      for line in popen.stdout.read().decode('utf-8').splitlines():
         dir_path = os.path.join(base_directory, os.path.dirname(line))
         dir_path_norm = NormalizePath(dir_path)
         # Add the directory as well as all the parent directories,
@@ -93,7 +94,8 @@ class DepsBuilder(object):
     Args:
       base_directory: local path to root of checkout, e.g. C:\chr\src.
       verbose: Set to True for debug output.
-      being_tested: Set to True to ignore the DEPS file at tools/checkdeps/DEPS.
+      being_tested: Set to True to ignore the DEPS file at
+                    buildtools/checkdeps/DEPS.
       ignore_temp_rules: Ignore rules that start with Rule.TEMP_ALLOW ("!").
     """
     base_directory = (base_directory or
@@ -179,7 +181,7 @@ class DepsBuilder(object):
     if self._ignore_specific_rules:
       return rules
 
-    for regexp, specific_rules in specific_includes.iteritems():
+    for regexp, specific_rules in specific_includes.items():
       for rule_str in specific_rules:
         ApplyOneRule(rule_str, regexp)
 
@@ -209,7 +211,7 @@ class DepsBuilder(object):
 
     # Check the DEPS file in this directory.
     if self.verbose:
-      print 'Applying rules from', dir_path_local_abs
+      print('Applying rules from', dir_path_local_abs)
     def FromImpl(*_):
       pass  # NOP function so "From" doesn't fail.
 
@@ -232,11 +234,12 @@ class DepsBuilder(object):
       'File': FileImpl,
       'From': FromImpl,
       'Var': _VarImpl(local_scope).Lookup,
+      'Str': str,
     }
     deps_file_path = os.path.join(dir_path_local_abs, 'DEPS')
 
     # The second conditional here is to disregard the
-    # tools/checkdeps/DEPS file while running tests.  This DEPS file
+    # buildtools/checkdeps/DEPS file while running tests.  This DEPS file
     # has a skip_child_includes for 'testdata' which is necessary for
     # running production tests, since there are intentional DEPS
     # violations under the testdata directory.  On the other hand when
@@ -246,9 +249,14 @@ class DepsBuilder(object):
     if os.path.isfile(deps_file_path) and not (
         self._under_test and
         os.path.basename(dir_path_local_abs) == 'checkdeps'):
-      execfile(deps_file_path, global_scope, local_scope)
+      try:
+        with open(deps_file_path) as file:
+          exec(file.read(), global_scope, local_scope)
+      except Exception as e:
+        print(' Error reading %s: %s' % (deps_file_path, str(e)))
+        raise
     elif self.verbose:
-      print '  No deps file found in', dir_path_local_abs
+      print('  No deps file found in', dir_path_local_abs)
 
     # Even if a DEPS file does not exist we still invoke ApplyRules
     # to apply the implicit "allow" rule for the current directory
@@ -300,7 +308,6 @@ class DepsBuilder(object):
         self._git_source_directories.update(_GitSourceDirectories(repo_path))
 
     # Collect a list of all files and directories to check.
-    files_to_check = []
     if dir_name and not os.path.isabs(dir_name):
       dir_name = os.path.join(self.base_directory, dir_name)
     dirs_to_check = [dir_name or self.base_directory]

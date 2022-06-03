@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** Overrides timeout and interval callbacks to mock timing behavior. */
-/* #export */ class MockTimer {
+export class MockTimer {
   constructor() {
     /**
      * Default versions of the timing functions.
@@ -23,10 +23,10 @@
 
     /**
      * Details for active timers.
-     * @type {Array<{callback: Function,
+     * @type {!Array<{callback: Function,
      *                delay: number,
      *                key: number,
-     *                repeats: boolean}>}
+     *                repeats: boolean}|undefined>}
      * @private
      */
     this.timers_ = [];

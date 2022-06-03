@@ -4,6 +4,7 @@ include_rules = [
   "-content",
   "-ios",
 
+  "+content/public/test/android",
   "+net",
   "+ui/gfx",
 ]

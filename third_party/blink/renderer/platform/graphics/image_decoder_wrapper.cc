@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
 
+#include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 
@@ -38,6 +40,8 @@ class ExternalMemoryAllocator final : public SkBitmap::Allocator {
                           void* pixels,
                           size_t row_bytes)
       : info_(info), pixels_(pixels), row_bytes_(row_bytes) {}
+  ExternalMemoryAllocator(const ExternalMemoryAllocator&) = delete;
+  ExternalMemoryAllocator& operator=(const ExternalMemoryAllocator&) = delete;
 
   bool allocPixelRef(SkBitmap* dst) override {
     const SkImageInfo& info = dst->info();
@@ -54,8 +58,6 @@ class ExternalMemoryAllocator final : public SkBitmap::Allocator {
   SkImageInfo info_;
   void* pixels_;
   size_t row_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMemoryAllocator);
 };
 
 }  // namespace
@@ -67,7 +69,7 @@ ImageDecoderWrapper::ImageDecoderWrapper(
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior decoder_color_behavior,
     ImageDecoder::HighBitDepthDecodingOption decoding_option,
-    size_t index,
+    wtf_size_t index,
     const SkImageInfo& info,
     void* pixels,
     size_t row_bytes,
@@ -89,7 +91,7 @@ ImageDecoderWrapper::ImageDecoderWrapper(
 ImageDecoderWrapper::~ImageDecoderWrapper() = default;
 
 bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
-                                 size_t* frame_count,
+                                 wtf_size_t* frame_count,
                                  bool* has_alpha) {
   DCHECK(frame_count);
   DCHECK(has_alpha);
@@ -112,7 +114,7 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
 
   // For multi-frame image decoders, we need to know how many frames are
   // in that image in order to release the decoder when all frames are
-  // decoded. frameCount() is reliable only if all data is received and set in
+  // decoded. FrameCount() is reliable only if all data is received and set in
   // decoder, particularly with GIF.
   if (all_data_received_)
     *frame_count = decoder->FrameCount();
@@ -199,11 +201,15 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
 }
 
 bool ImageDecoderWrapper::ShouldDecodeToExternalMemory(
-    size_t frame_count,
+    wtf_size_t frame_count,
     bool resume_decoding) const {
-  // Multi-frame images need their decode cached in the decoder to allow using
-  // subsequent frames to be decoded by caching dependent frames.
-  // Also external allocators don't work for multi-frame images right now.
+  // Some multi-frame images need their decode cached in the decoder to allow
+  // future frames to reference previous frames.
+  //
+  // This implies extra requirements on external memory allocators for
+  // multi-frame images. However, there is no enforcement of these extra
+  // requirements. As a result, do not attempt to use external memory
+  // allocators for multi-frame images.
   if (generator_->IsMultiFrame())
     return false;
 
@@ -255,7 +261,7 @@ bool ImageDecoderWrapper::ShouldRemoveDecoder(
 void ImageDecoderWrapper::PurgeAllFramesIfNecessary(
     ImageDecoder* decoder,
     bool frame_was_completely_decoded,
-    size_t frame_count) const {
+    wtf_size_t frame_count) const {
   // We only purge all frames when we have decoded the last frame for a
   // multi-frame image. This is because once the last frame is decoded, the
   // animation will loop back to the first frame which does not need the last
@@ -270,7 +276,7 @@ void ImageDecoderWrapper::PurgeAllFramesIfNecessary(
   if (!frame_was_completely_decoded)
     return;
 
-  const size_t last_frame_index = frame_count - 1;
+  const wtf_size_t last_frame_index = frame_count - 1;
   if (frame_index_ == last_frame_index)
     decoder->ClearCacheExceptFrame(kNotFound);
 }
@@ -287,7 +293,6 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
   // The newly created decoder just grabbed the data.  No need to reset it.
   return ImageDecoder::Create(data_, all_data_received_, alpha_option_,
                               decoding_option_, decoder_color_behavior_,
-                              ImageDecoder::OverrideAllowDecodeToYuv::kDeny,
                               scaled_size_);
 }
 

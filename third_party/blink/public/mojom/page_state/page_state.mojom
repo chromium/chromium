@@ -1,0 +1,134 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// WARNING: Please read the comments below, before including other Mojo types.
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This file contains the mojo IDL definitions for PageState and its constituent
+// parts. The resultant generated code is used to serialize and deserialize
+// PageState for the purpose of history restore.
+//
+// All structures here must maintain backward-compatibility (and hence must be
+// marked [Stable]) according to mojom backward-compatibility rules. Namely,
+// when adding new fields:
+// - Assign your new field an explicit ordinal(@n) and prefer to add fields to
+//   the end of the struct to simplify finding the latest ordinal.
+// - New fields must be tagged with a [MinVersion=x] attribute where x is larger
+//   than the MinVersion for any existing fields. The next available MinVersion
+//   value is specified at the bottom of this comment block for convenience.
+// - Only builtin mojom types or other user-defined [Stable] types are allowed
+//   as transitive dependencies here. This is enforced at build time.
+// - You'll also need to read/write the new field's value when decoding and
+//   encoding PageState, update PageStateSerializationTest to check that your
+//   new field is preserved across serialization, and add a BackwardsCompat
+//   test with associated serialized_vxx.dat file. Look for
+//   DumpExpectedPageStateForBackwardsCompat in
+//   page_state_serialization_unittest for how to do this.
+//
+// Don't remove, or change the type of fields; this will break
+// compatibility. If re-ordering fields, make sure to retain the original
+// ordinal value.
+//
+// Finally, note that any backward-incomptable changes will be caught by a
+// presubmit check.
+//
+// Update the below value if your change introduces fields using it.
+// Next MinVersion: 5
+
+// Next Ordinal: 4
+// FileSystemFile is no longer supported.
+[Stable, RenamedFrom="content.history.mojom.DEPRECATED_FileSystemFile"]
+struct DEPRECATED_FileSystemFile {
+  url.mojom.Url filesystem_url@0;
+  uint64 offset@1;
+  uint64 length@2;
+  mojo_base.mojom.Time modification_time@3;
+};
+
+// Next Ordinal: 4
+[Stable, RenamedFrom="content.history.mojom.File"]
+struct File {
+  mojo_base.mojom.String16 path@0;
+  uint64 offset@1;
+  uint64 length@2;
+  mojo_base.mojom.Time modification_time@3;
+};
+
+// Next Ordinal: 4
+[Stable, RenamedFrom="content.history.mojom.Element"]
+union Element {
+  string blob_uuid@0;
+  array<uint8> bytes@1;
+  File file@2;
+  // FileSystemFile is no longer supported.
+  DEPRECATED_FileSystemFile DEPRECATED_file_system_file@3;
+};
+
+// Next Ordinal: 3
+[Stable, RenamedFrom="content.history.mojom.RequestBody"]
+struct RequestBody {
+  array<Element> elements@0;
+  int64 identifier@1;
+  bool contains_sensitive_info@2;
+};
+
+// Next Ordinal: 3
+[Stable, RenamedFrom="content.history.mojom.HttpBody"]
+struct HttpBody {
+  mojo_base.mojom.String16? http_content_type@0;
+  RequestBody? request_body@1;
+  bool contains_passwords@2 = false;
+};
+
+[Stable, Extensible, RenamedFrom="content.history.mojom.ScrollRestorationType"]
+enum ScrollRestorationType {
+  kAuto = 0,
+  kManual = 1
+};
+
+// Next Ordinal: 6
+[Stable, RenamedFrom="content.history.mojom.ViewState"]
+struct ViewState {
+  gfx.mojom.PointF visual_viewport_scroll_offset@0;
+  gfx.mojom.Point scroll_offset@1;
+  double page_scale_factor@2;
+  // Serialized scroll anchor fields
+  [MinVersion=1] mojo_base.mojom.String16? scroll_anchor_selector@3;
+  [MinVersion=1] gfx.mojom.PointF? scroll_anchor_offset@4;
+  [MinVersion=1] uint64 scroll_anchor_simhash@5 = 0;
+};
+
+// Next Ordinal: 16
+[Stable, RenamedFrom="content.history.mojom.FrameState"]
+struct FrameState {
+  mojo_base.mojom.String16? url_string@0;
+  mojo_base.mojom.String16? referrer@1;
+  mojo_base.mojom.String16? target@2;
+  mojo_base.mojom.String16? state_object@3;
+  array<mojo_base.mojom.String16?> document_state@4;
+  ScrollRestorationType scroll_restoration_type@5;
+  ViewState? view_state@6;
+  int64 item_sequence_number@7;
+  int64 document_sequence_number@8;
+  network.mojom.ReferrerPolicy referrer_policy@9;
+  HttpBody http_body@10;
+  array<FrameState> children@11;
+  [MinVersion=2] string? initiator_origin@12;
+  [MinVersion=3] mojo_base.mojom.String16? app_history_key@13;
+  [MinVersion=3] mojo_base.mojom.String16? app_history_id@14;
+  [MinVersion=4] mojo_base.mojom.String16? app_history_state@15;
+};
+
+// Next Ordinal: 2
+[Stable, RenamedFrom="content.history.mojom.PageState"]
+struct PageState {
+  array<mojo_base.mojom.String16?> referenced_files@0;
+  FrameState top@1;
+};

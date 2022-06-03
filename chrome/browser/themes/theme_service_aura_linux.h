@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_
 #define CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_
 
-#include "base/macros.h"
 #include "chrome/browser/themes/theme_service.h"
 
 class Profile;
@@ -15,20 +14,20 @@ class Profile;
 class ThemeServiceAuraLinux : public ThemeService {
  public:
   using ThemeService::ThemeService;
+
+  ThemeServiceAuraLinux(const ThemeServiceAuraLinux&) = delete;
+  ThemeServiceAuraLinux& operator=(const ThemeServiceAuraLinux&) = delete;
+
   ~ThemeServiceAuraLinux() override;
 
   // Overridden from ThemeService:
   bool ShouldInitWithSystemTheme() const override;
   void UseSystemTheme() override;
   bool IsSystemThemeDistinctFromDefaultTheme() const override;
-  bool UsingDefaultTheme() const override;
   bool UsingSystemTheme() const override;
   void FixInconsistentPreferencesIfNeeded() override;
 
   static bool ShouldUseSystemThemeForProfile(const Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceAuraLinux);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_

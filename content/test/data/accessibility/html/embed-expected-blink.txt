@@ -1,3 +1,4 @@
 rootWebArea
-++genericContainer
-++++embeddedObject
+++genericContainer ignored
+++++genericContainer
+++++++embeddedObject

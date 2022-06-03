@@ -18,9 +18,9 @@ class BlobHandle;
 class RenderProcessHost;
 }
 
-namespace extensions {
+class ExtensionFunction;
 
-class ExtensionMessageFilter;
+namespace extensions {
 
 // Used for holding onto Blobs created into the browser process until a
 // renderer takes over ownership. This class operates on the UI thread.
@@ -29,6 +29,9 @@ class BlobHolder : public base::SupportsUserData::Data {
   // Will create the BlobHolder if it doesn't already exist.
   static BlobHolder* FromRenderProcessHost(
       content::RenderProcessHost* render_process_host);
+
+  BlobHolder(const BlobHolder&) = delete;
+  BlobHolder& operator=(const BlobHolder&) = delete;
 
   ~BlobHolder() override;
 
@@ -45,7 +48,7 @@ class BlobHolder : public base::SupportsUserData::Data {
   // If caller wishes to drop multiple references to the same blob,
   // |blob_uuids| may contain duplicate UUIDs.
   void DropBlobs(const std::vector<std::string>& blob_uuids);
-  friend class ExtensionMessageFilter;
+  friend class ::ExtensionFunction;
 
   bool ContainsBlobHandle(content::BlobHandle* handle) const;
 
@@ -53,8 +56,6 @@ class BlobHolder : public base::SupportsUserData::Data {
   content::RenderProcessHost* render_process_host_;
 
   BlobHandleMultimap held_blobs_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobHolder);
 };
 
 }  // namespace extensions

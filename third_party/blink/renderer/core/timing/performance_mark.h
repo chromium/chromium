@@ -43,22 +43,23 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PerformanceMark* Create(ScriptState* script_state,
-                                 const AtomicString& name,
-                                 double start_time,
-                                 const ScriptValue& detail,
-                                 ExceptionState& exception_state);
-
-  // This method is required by the constructor defined in performance_mark.idl.
+  // This method corresponds to the PerformanceMark constructor defined in the
+  // User Timing L3 spec
+  // (https://w3c.github.io/user-timing/#the-performancemark-constructor). It
+  // gets called as a subroutine of the `performance.mark` method as well as
+  // whenever script runs `new PerformanceMark(..)`.
   static PerformanceMark* Create(ScriptState*,
                                  const AtomicString& mark_name,
                                  PerformanceMarkOptions*,
                                  ExceptionState&);
 
+  // This constructor is only public so that MakeGarbageCollected can call it.
   PerformanceMark(const AtomicString& name,
                   double start_time,
+                  base::TimeTicks unsafe_time_for_traces,
                   scoped_refptr<SerializedScriptValue>,
                   ExceptionState& exception_state);
+  ~PerformanceMark() override = default;
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
@@ -67,16 +68,19 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
 
   ScriptValue detail(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
+
+  base::TimeTicks UnsafeTimeForTraces() const {
+    return unsafe_time_for_traces_;
+  }
 
  private:
-  ~PerformanceMark() override = default;
-
   scoped_refptr<SerializedScriptValue> serialized_detail_;
   // In order to prevent cross-world reference leak, we create a copy of the
   // detail for each world.
   HeapHashMap<WeakMember<ScriptState>, TraceWrapperV8Reference<v8::Value>>
       deserialized_detail_map_;
+  base::TimeTicks unsafe_time_for_traces_;
 };
 
 }  // namespace blink

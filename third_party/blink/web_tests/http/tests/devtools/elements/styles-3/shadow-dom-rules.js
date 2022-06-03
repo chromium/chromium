@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks that style sheets hosted inside shadow roots could be inspected.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="host"></div>
@@ -17,7 +17,7 @@
       function createShadowRoot()
       {
           var template = document.querySelector('#tmpl');
-          var root = document.querySelector('#host').createShadowRoot();
+          var root = document.querySelector('#host').attachShadow({mode: 'open'});
           root.appendChild(template.content.cloneNode(true));
       }
   `);
@@ -30,8 +30,8 @@
       }
     },
 
-    function testDumpStyles(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true);
+    async function testDumpStyles(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true);
       next();
     }
   ]);

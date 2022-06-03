@@ -14,7 +14,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -32,7 +31,6 @@ const char kKeyIdsTag[] = "kids";
 const char kTypeTag[] = "type";
 const char kTemporarySession[] = "temporary";
 const char kPersistentLicenseSession[] = "persistent-license";
-const char kPersistentUsageRecordSession[] = "persistent-usage-record";
 
 static std::string ShortenTo64Characters(const std::string& input) {
   // Convert |input| into a string with escaped characters replacing any
@@ -88,9 +86,9 @@ std::string GenerateJWKSet(const uint8_t* key,
 
 std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
                            CdmSessionType session_type) {
-  auto list = std::make_unique<base::ListValue>();
+  base::ListValue list;
   for (const auto& key_pair : keys) {
-    list->Append(CreateJSONDictionary(
+    list.Append(CreateJSONDictionary(
         reinterpret_cast<const uint8_t*>(key_pair.second.data()),
         key_pair.second.length(),
         reinterpret_cast<const uint8_t*>(key_pair.first.data()),
@@ -98,16 +96,13 @@ std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
   }
 
   base::DictionaryValue jwk_set;
-  jwk_set.Set(kKeysTag, std::move(list));
+  jwk_set.SetKey(kKeysTag, std::move(list));
   switch (session_type) {
     case CdmSessionType::kTemporary:
       jwk_set.SetString(kTypeTag, kTemporarySession);
       break;
     case CdmSessionType::kPersistentLicense:
       jwk_set.SetString(kTypeTag, kPersistentLicenseSession);
-      break;
-    case CdmSessionType::kPersistentUsageRecord:
-      jwk_set.SetString(kTypeTag, kPersistentUsageRecordSession);
       break;
   }
 
@@ -172,16 +167,15 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
     return false;
   }
 
-  std::unique_ptr<base::Value> root(
-      base::JSONReader().ReadToValueDeprecated(jwk_set));
-  if (!root.get() || root->type() != base::Value::Type::DICTIONARY) {
-    DVLOG(1) << "Not valid JSON: " << jwk_set << ", root: " << root.get();
+  absl::optional<base::Value> root = base::JSONReader::Read(jwk_set);
+  if (!root || root->type() != base::Value::Type::DICTIONARY) {
+    DVLOG(1) << "Not valid JSON: " << jwk_set;
     return false;
   }
 
   // Locate the set from the dictionary.
   base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(root.get());
+      static_cast<base::DictionaryValue*>(&root.value());
   base::ListValue* list_val = NULL;
   if (!dictionary->GetList(kKeysTag, &list_val)) {
     DVLOG(1) << "Missing '" << kKeysTag
@@ -192,7 +186,7 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // Create a local list of keys, so that |jwk_keys| only gets updated on
   // success.
   KeyIdAndKeyPairs local_keys;
-  for (size_t i = 0; i < list_val->GetSize(); ++i) {
+  for (size_t i = 0; i < list_val->GetList().size(); ++i) {
     base::DictionaryValue* jwk = NULL;
     if (!list_val->GetDictionary(i, &jwk)) {
       DVLOG(1) << "Unable to access '" << kKeysTag << "'[" << i
@@ -221,8 +215,6 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
     *session_type = CdmSessionType::kTemporary;
   } else if (session_type_id == kPersistentLicenseSession) {
     *session_type = CdmSessionType::kPersistentLicense;
-  } else if (session_type_id == kPersistentUsageRecordSession) {
-    *session_type = CdmSessionType::kPersistentUsageRecord;
   } else {
     DVLOG(1) << "Invalid '" << kTypeTag << "' value: " << session_type_id;
     return false;
@@ -242,9 +234,8 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
     return false;
   }
 
-  std::unique_ptr<base::Value> root(
-      base::JSONReader().ReadToValueDeprecated(input));
-  if (!root.get() || root->type() != base::Value::Type::DICTIONARY) {
+  absl::optional<base::Value> root = base::JSONReader::Read(input);
+  if (!root || root->type() != base::Value::Type::DICTIONARY) {
     error_message->assign("Not valid JSON: ");
     error_message->append(ShortenTo64Characters(input));
     return false;
@@ -252,7 +243,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
 
   // Locate the set from the dictionary.
   base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(root.get());
+      static_cast<base::DictionaryValue*>(&root.value());
   base::ListValue* list_val = NULL;
   if (!dictionary->GetList(kKeyIdsTag, &list_val)) {
     error_message->assign("Missing '");
@@ -264,7 +255,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   // Create a local list of key ids, so that |key_ids| only gets updated on
   // success.
   KeyIdList local_key_ids;
-  for (size_t i = 0; i < list_val->GetSize(); ++i) {
+  for (size_t i = 0; i < list_val->GetList().size(); ++i) {
     std::string encoded_key_id;
     if (!list_val->GetString(i, &encoded_key_id)) {
       error_message->assign("'");
@@ -305,8 +296,8 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
                           CdmSessionType session_type,
                           std::vector<uint8_t>* license) {
   // Create the license request.
-  auto request = std::make_unique<base::DictionaryValue>();
-  auto list = std::make_unique<base::ListValue>();
+  base::Value request(base::Value::Type::DICTIONARY);
+  base::Value list(base::Value::Type::LIST);
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
@@ -314,37 +305,32 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
                           key_id.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
-    list->AppendString(key_id_string);
+    list.Append(key_id_string);
   }
-  request->Set(kKeyIdsTag, std::move(list));
+  request.SetKey(kKeyIdsTag, std::move(list));
 
   switch (session_type) {
     case CdmSessionType::kTemporary:
-      request->SetString(kTypeTag, kTemporarySession);
+      request.SetStringKey(kTypeTag, kTemporarySession);
       break;
     case CdmSessionType::kPersistentLicense:
-      request->SetString(kTypeTag, kPersistentLicenseSession);
-      break;
-    case CdmSessionType::kPersistentUsageRecord:
-      request->SetString(kTypeTag, kPersistentUsageRecordSession);
+      request.SetStringKey(kTypeTag, kPersistentLicenseSession);
       break;
   }
 
   // Serialize the license request as a string.
   std::string json;
   JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*request);
+  serializer.Serialize(request);
 
   // Convert the serialized license request into std::vector and return it.
   std::vector<uint8_t> result(json.begin(), json.end());
   license->swap(result);
 }
 
-void CreateKeyIdsInitData(const KeyIdList& key_ids,
-                          std::vector<uint8_t>* init_data) {
-  // Create the init_data.
-  auto dictionary = std::make_unique<base::DictionaryValue>();
-  auto list = std::make_unique<base::ListValue>();
+base::Value MakeKeyIdsDictionary(const KeyIdList& key_ids) {
+  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value list(base::Value::Type::LIST);
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
@@ -352,18 +338,41 @@ void CreateKeyIdsInitData(const KeyIdList& key_ids,
                           key_id.size()),
         base::Base64UrlEncodePolicy::OMIT_PADDING, &key_id_string);
 
-    list->AppendString(key_id_string);
+    list.Append(key_id_string);
   }
-  dictionary->Set(kKeyIdsTag, std::move(list));
+  dictionary.SetKey(kKeyIdsTag, std::move(list));
+  return dictionary;
+}
 
+std::vector<uint8_t> SerializeDictionaryToVector(
+    const base::Value& dictionary) {
   // Serialize the dictionary as a string.
   std::string json;
   JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*dictionary);
+  serializer.Serialize(dictionary);
 
   // Convert the serialized data into std::vector and return it.
-  std::vector<uint8_t> result(json.begin(), json.end());
-  init_data->swap(result);
+  return std::vector<uint8_t>(json.begin(), json.end());
+}
+
+void CreateKeyIdsInitData(const KeyIdList& key_ids,
+                          std::vector<uint8_t>* init_data) {
+  // Create the init_data.
+  auto dictionary = MakeKeyIdsDictionary(key_ids);
+
+  auto data = SerializeDictionaryToVector(dictionary);
+  init_data->swap(data);
+}
+
+// The format is a JSON object. For sessions of type "persistent-license", the
+// object shall contain the following member:
+//    "kids"
+//      An array of key IDs. Each element of the array is the base64url encoding
+//      of the octet sequence containing the key ID value.
+std::vector<uint8_t> CreateLicenseReleaseMessage(const KeyIdList& key_ids) {
+  // Create the init_data.
+  auto dictionary = MakeKeyIdsDictionary(key_ids);
+  return SerializeDictionaryToVector(dictionary);
 }
 
 bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
@@ -376,16 +385,15 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
     return false;
   }
 
-  std::unique_ptr<base::Value> root(
-      base::JSONReader().ReadToValueDeprecated(license_as_str));
-  if (!root.get() || root->type() != base::Value::Type::DICTIONARY) {
+  absl::optional<base::Value> root = base::JSONReader::Read(license_as_str);
+  if (!root || root->type() != base::Value::Type::DICTIONARY) {
     DVLOG(1) << "Not valid JSON: " << license_as_str;
     return false;
   }
 
   // Locate the set from the dictionary.
   base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(root.get());
+      static_cast<base::DictionaryValue*>(&root.value());
   base::ListValue* list_val = NULL;
   if (!dictionary->GetList(kKeyIdsTag, &list_val)) {
     DVLOG(1) << "Missing '" << kKeyIdsTag << "' parameter or not a list";
@@ -393,7 +401,7 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   // Get the first key.
-  if (list_val->GetSize() < 1) {
+  if (list_val->GetList().size() < 1) {
     DVLOG(1) << "Empty '" << kKeyIdsTag << "' list";
     return false;
   }

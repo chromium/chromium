@@ -57,7 +57,7 @@ bool FirstRun::RemoveSentinel() {
   base::FilePath first_run_sentinel;
   if (!GetFirstRunSentinelFilePath(&first_run_sentinel))
     return false;
-  return base::DeleteFile(first_run_sentinel, false);
+  return base::DeleteFile(first_run_sentinel);
 }
 
 // static

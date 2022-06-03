@@ -5,16 +5,14 @@
 #include "content/public/browser/device_service.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/system_connector.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service.h"
@@ -39,22 +37,27 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
   DeviceServiceURLLoaderFactory() = default;
 
+  DeviceServiceURLLoaderFactory(const DeviceServiceURLLoaderFactory&) = delete;
+  DeviceServiceURLLoaderFactory& operator=(
+      const DeviceServiceURLLoaderFactory&) = delete;
+
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    GetContentClient()
-        ->browser()
-        ->GetSystemSharedURLLoaderFactory()
-        ->CreateLoaderAndStart(std::move(receiver), routing_id, request_id,
-                               options, url_request, std::move(client),
-                               traffic_annotation);
+    auto factory =
+        GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
+    if (!factory)
+      return;
+
+    factory->CreateLoaderAndStart(std::move(receiver), request_id, options,
+                                  url_request, std::move(client),
+                                  traffic_annotation);
   }
 
   // SharedURLLoaderFactory implementation:
@@ -72,80 +75,72 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
  private:
   friend class base::RefCounted<DeviceServiceURLLoaderFactory>;
   ~DeviceServiceURLLoaderFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceServiceURLLoaderFactory);
 };
 
 void BindDeviceServiceReceiver(
     mojo::PendingReceiver<device::mojom::DeviceService> receiver) {
+  // Bind the lifetime of the service instance to that of the sequence it's
+  // running on.
+  static base::SequenceLocalStorageSlot<std::unique_ptr<device::DeviceService>>
+      service_slot;
+  auto& service = service_slot.GetOrCreateValue();
+
+  if (service) {
+    service->AddReceiver(std::move(receiver));
+    return;
+  }
+
+  auto params = std::make_unique<device::DeviceServiceParams>();
+
   // This task runner may be used by some device service implementation bits
   // to interface with dbus client code, which in turn imposes some subtle
   // thread affinity on the clients. We therefore require a single-thread
   // runner.
-  scoped_refptr<base::SingleThreadTaskRunner> device_blocking_task_runner =
-      base::CreateSingleThreadTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                          base::TaskPriority::BEST_EFFORT});
+  params->file_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  // Bind the lifetime of the service instance to that of the sequence it's
-  // running on.
-  static base::NoDestructor<
-      base::SequenceLocalStorageSlot<std::unique_ptr<device::DeviceService>>>
-      service_slot;
-  auto& service = service_slot->GetOrCreateValue();
-
-  // This function should only be called once during the lifetime of the
-  // service's bound sequence.
-  DCHECK(!service);
+  params->io_task_runner = GetIOThreadTaskRunner({});
+  params->url_loader_factory =
+      base::MakeRefCounted<DeviceServiceURLLoaderFactory>();
+  params->network_connection_tracker = content::GetNetworkConnectionTracker();
+  params->geolocation_api_key =
+      GetContentClient()->browser()->GetGeolocationApiKey();
+  params->custom_location_provider_callback =
+      base::BindRepeating(&ContentBrowserClient::OverrideSystemLocationProvider,
+                          base::Unretained(GetContentClient()->browser()));
+  params->geolocation_manager =
+      GetContentClient()->browser()->GetGeolocationManager();
 
 #if defined(OS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaGlobalRef<jobject> java_nfc_delegate;
-  java_nfc_delegate.Reset(Java_ContentNfcDelegate_create(env));
-  DCHECK(!java_nfc_delegate.is_null());
+  params->java_nfc_delegate = Java_ContentNfcDelegate_create(env);
+  DCHECK(!params->java_nfc_delegate.is_null());
 
-  // See the comments on wake_lock_context_host.h, content_browser_client.h
-  // and ContentNfcDelegate.java respectively for comments on those
-  // parameters.
-  service = device::CreateDeviceService(
-      device_blocking_task_runner,
-      base::CreateSingleThreadTaskRunner({BrowserThread::IO}),
-      base::MakeRefCounted<DeviceServiceURLLoaderFactory>(),
-      content::GetNetworkConnectionTracker(),
-      GetContentClient()->browser()->GetGeolocationApiKey(),
-      GetContentClient()->browser()->ShouldUseGmsCoreGeolocationProvider(),
-      base::BindRepeating(&WakeLockContextHost::GetNativeViewForContext),
-      base::BindRepeating(&ContentBrowserClient::OverrideSystemLocationProvider,
-                          base::Unretained(GetContentClient()->browser())),
-      std::move(java_nfc_delegate), std::move(receiver));
-#else
-  service = device::CreateDeviceService(
-      device_blocking_task_runner,
-      base::CreateSingleThreadTaskRunner({BrowserThread::IO}),
-      base::MakeRefCounted<DeviceServiceURLLoaderFactory>(),
-      content::GetNetworkConnectionTracker(),
-      GetContentClient()->browser()->GetGeolocationApiKey(),
-      base::BindRepeating(&ContentBrowserClient::OverrideSystemLocationProvider,
-                          base::Unretained(GetContentClient()->browser())),
-      std::move(receiver));
+  params->wake_lock_context_callback =
+      base::BindRepeating(&WakeLockContextHost::GetNativeViewForContext);
+  params->use_gms_core_location_provider =
+      GetContentClient()->browser()->ShouldUseGmsCoreGeolocationProvider();
 #endif
+
+  service = device::CreateDeviceService(std::move(params), std::move(receiver));
 }
 
 }  // namespace
 
 device::mojom::DeviceService& GetDeviceService() {
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      mojo::Remote<device::mojom::DeviceService>>>
+  static base::SequenceLocalStorageSlot<
+      mojo::Remote<device::mojom::DeviceService>>
       remote_slot;
   mojo::Remote<device::mojom::DeviceService>& remote =
-      remote_slot->GetOrCreateValue();
+      remote_slot.GetOrCreateValue();
   if (!remote) {
     // This may be called very early in startup, too early for some Device
     // Service initialization steps (for example, in browser test environments,
     // the Device Service's connection to the Network Service could deadlock).
     // We post a task to defer until the main message loop has started, when
     // initialization is reliably safe.
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&BindDeviceServiceReceiver,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&BindDeviceServiceReceiver,
                                   remote.BindNewPipeAndPassReceiver()));
   }
   return *remote.get();

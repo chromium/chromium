@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
 
@@ -49,13 +50,13 @@ class ContentDecryptionModuleResultPromise
   // It is only valid to call this before completion.
   ScriptPromise Promise();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   // |interface_name| and |property_name| must have static life time.
-  explicit ContentDecryptionModuleResultPromise(ScriptState*,
-                                                const char* interface_name,
-                                                const char* property_name);
+  ContentDecryptionModuleResultPromise(ScriptState*,
+                                       const MediaKeysConfig&,
+                                       EmeApiType api_type);
 
   // Resolves the promise with |value|. Used by subclasses to resolve the
   // promise.
@@ -77,8 +78,8 @@ class ContentDecryptionModuleResultPromise
 
  private:
   Member<ScriptPromiseResolver> resolver_;
-  const char* const interface_name_;
-  const char* const property_name_;
+  const MediaKeysConfig config_;
+  const EmeApiType api_type_;
 };
 
 }  // namespace blink

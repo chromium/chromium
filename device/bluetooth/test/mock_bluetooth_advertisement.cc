@@ -10,10 +10,9 @@ MockBluetoothAdvertisement::MockBluetoothAdvertisement() = default;
 
 MockBluetoothAdvertisement::~MockBluetoothAdvertisement() = default;
 
-void MockBluetoothAdvertisement::Unregister(
-    const SuccessCallback& success_callback,
-    const ErrorCallback& error_callback) {
-  success_callback.Run();
+void MockBluetoothAdvertisement::Unregister(SuccessCallback success_callback,
+                                            ErrorCallback error_callback) {
+  std::move(success_callback).Run();
 }
 
 }  // namespace device

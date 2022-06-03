@@ -6,17 +6,17 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_manager_test_utils.h"
 #include "base/trace_event/memory_dump_scheduler.h"
-#include "base/trace_event/memory_infra_background_whitelist.h"
+#include "base/trace_event/memory_infra_background_allowlist.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_config_memory_test_util.h"
@@ -298,7 +298,7 @@ TEST_F(MemoryTracingIntegrationTest, InitializedAfterStartOfTracing) {
 // DETAILED, even if requested explicitly.
 TEST_F(MemoryTracingIntegrationTest, TestBackgroundTracingSetup) {
   InitializeClientProcess(mojom::ProcessType::BROWSER);
-  base::trace_event::SetDumpProviderWhitelistForTesting(kTestMDPWhitelist);
+  base::trace_event::SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
   auto mdp = std::make_unique<MockMemoryDumpProvider>();
   RegisterDumpProvider(&*mdp, nullptr, MemoryDumpProvider::Options(),
                        kWhitelistedMDPName);
@@ -444,7 +444,7 @@ TEST_F(MemoryTracingIntegrationTest, PeriodicDumpingWithMultipleModes) {
 
 TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
   InitializeClientProcess(mojom::ProcessType::RENDERER);
-  base::trace_event::SetDumpProviderWhitelistForTesting(kTestMDPWhitelist);
+  base::trace_event::SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
   std::unique_ptr<MockMemoryDumpProvider> mdp1(new MockMemoryDumpProvider);
   RegisterDumpProvider(mdp1.get(), nullptr);
   std::unique_ptr<MockMemoryDumpProvider> mdp2(new MockMemoryDumpProvider);

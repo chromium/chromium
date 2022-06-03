@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'Multiple requestLEScan receive a scan result.';
+
+let scan;
+let scan2;
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(async () => {
+    scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true});
+    scan2 = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true});
+  });
+
+  assert_true(scan.active);
+  assert_true(scan2.active);
+  scan2.stop()
+  assert_true(scan.active);
+  assert_false(scan2.active);
+
+  // We should still get an event because we called requestLEScan twice.
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let promise = eventWatcher.wait_for('advertisementreceived').then(e => {
+    verifyBluetoothAdvertisingEvent(e);
+  });
+  fake_central.simulateAdvertisementReceived(scanResult);
+  return promise;
+}, test_desc);
+</script>

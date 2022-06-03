@@ -39,8 +39,10 @@ KEY_IDLE_POWER = Tag(
     'key_idle_power', 'Key idle power stories')
 MAPS = Tag(
     'maps', 'Maps stories')
-MOTIONMARK = Tag(
-    'motionmark', 'Motionmark benchmark stories')
+MOTIONMARK = Tag('motionmark',
+                 'Motionmark benchmark stories (fixed complexity)')
+MOTIONMARK_RAMP = Tag('motionmark_ramp',
+                      'Motionmark benchmark stories (ramped complexity)')
 PATHOLOGICAL_MOBILE_SITES = Tag(
     'pathological_mobile_sites', 'Pathological mobile sites')
 POLYMER = Tag(
@@ -56,6 +58,7 @@ REPRESENTATIVE_MOBILE = Tag(
 REPRESENTATIVE_WIN_DESKTOP = Tag(
     'representative_win_desktop',
     'Rendering desktop representatives for windows')
+SIMPLE_CANVAS = Tag('simple_canvas', 'Simple canvas stories')
 SIMPLE_MOBILE_SITES = Tag(
     'simple_mobile_sites', 'Simple mobile sites')
 THROUGHPUT_TEST = Tag(
@@ -82,6 +85,8 @@ TOUGH_PINCH_ZOOM_MOBILE = Tag(
     'tough_pinch_zoom_mobile', 'Tough pinch zoom mobile stories')
 TOUGH_SCHEDULING = Tag(
     'tough_scheduling', 'Tough scheduling stories')
+TOUGH_SCROLLBAR_SCROLLING = Tag('tough_scrollbar_scrolling',
+                                'Tough Scrollbar Scrolling stories')
 TOUGH_SCROLLING = Tag(
     'tough_scrolling', 'Tough scrolling stories')
 TOUGH_TEXTURE_UPLOAD = Tag(

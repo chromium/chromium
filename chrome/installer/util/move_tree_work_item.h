@@ -31,7 +31,7 @@ class MoveTreeWorkItem : public WorkItem {
 
   // |source_path| specifies file or directory that will be moved to location
   // specified by |dest_path|. To facilitate rollback, the caller needs to
-  // supply a temporary directory, |temp_dir| to save the original files if
+  // supply a temporary directory, |temp_path| to save the original files if
   // they exist under dest_path.
   // If |check_duplicates| is CHECK_DUPLICATES, then Do() will first check
   // whether the directory tree in source_path is entirely contained in
@@ -40,7 +40,7 @@ class MoveTreeWorkItem : public WorkItem {
   // attempt to move source_path to dest_path as stated above.
   MoveTreeWorkItem(const base::FilePath& source_path,
                    const base::FilePath& dest_path,
-                   const base::FilePath& temp_dir,
+                   const base::FilePath& temp_path,
                    MoveTreeOption duplicate_option);
 
   // WorkItem:
@@ -54,7 +54,7 @@ class MoveTreeWorkItem : public WorkItem {
   base::FilePath dest_path_;
 
   // Temporary directory to backup dest_path_ (if it already exists).
-  base::FilePath temp_dir_;
+  base::FilePath temp_path_;
 
   // The temporary directory into which the original dest_path_ has been moved.
   base::ScopedTempDir backup_path_;

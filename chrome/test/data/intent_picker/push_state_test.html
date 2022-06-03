@@ -1,0 +1,17 @@
+<html>
+<head>
+<script>
+window.onload = function() {
+  history.pushState("", "");
+}
+
+function pushToNewUrl() {
+	history.pushState("", "", "/newurl.html");
+}
+</script>
+</head>
+
+<body>
+<button id="push_to_new_url_button" onclick="pushToNewUrl()">push to new url</button>
+</body>
+</html>

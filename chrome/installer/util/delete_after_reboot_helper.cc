@@ -17,6 +17,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
@@ -57,8 +58,8 @@ bool IsSafeDirectoryNameForDeletion(const base::FilePath& dir_name) {
 bool ScheduleFileSystemEntityForDeletion(const base::FilePath& path) {
   // Check if the file exists, return false if not.
   WIN32_FILE_ATTRIBUTE_DATA attrs = {0};
-  if (!::GetFileAttributesEx(path.value().c_str(),
-                             ::GetFileExInfoStandard, &attrs)) {
+  if (!::GetFileAttributesEx(path.value().c_str(), ::GetFileExInfoStandard,
+                             &attrs)) {
     PLOG(WARNING) << path.value() << " does not exist.";
     return false;
   }
@@ -69,7 +70,7 @@ bool ScheduleFileSystemEntityForDeletion(const base::FilePath& path) {
     flags |= MOVEFILE_REPLACE_EXISTING;
   }
 
-  if (!::MoveFileEx(path.value().c_str(), NULL, flags)) {
+  if (!::MoveFileEx(path.value().c_str(), nullptr, flags)) {
     PLOG(ERROR) << "Could not schedule " << path.value() << " for deletion.";
     return false;
   }
@@ -78,9 +79,9 @@ bool ScheduleFileSystemEntityForDeletion(const base::FilePath& path) {
   // Useful debugging code to track down what files are in use.
   if (flags & MOVEFILE_REPLACE_EXISTING) {
     // Attempt to open the file exclusively.
-    HANDLE file = ::CreateFileW(path.value().c_str(),
-                                GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                                OPEN_EXISTING, 0, NULL);
+    HANDLE file =
+        ::CreateFileW(path.value().c_str(), GENERIC_READ | GENERIC_WRITE, 0,
+                      nullptr, OPEN_EXISTING, 0, nullptr);
     if (file != INVALID_HANDLE_VALUE) {
       VLOG(1) << " file not in use: " << path.value();
       ::CloseHandle(file);
@@ -166,7 +167,8 @@ bool ScheduleDirectoryForDeletion(const base::FilePath& dir_name) {
 // contains all of the strings extracted from |buffer|.
 // Returns S_OK on success, E_INVALIDARG if buffer does not meet tha above
 // specification.
-HRESULT MultiSZBytesToStringArray(const char* buffer, size_t byte_count,
+HRESULT MultiSZBytesToStringArray(const char* buffer,
+                                  size_t byte_count,
                                   std::vector<PendingMove>* value) {
   DCHECK(buffer);
   DCHECK(value);
@@ -247,9 +249,8 @@ void StringArrayToMultiSZBytes(const std::vector<PendingMove>& strings,
 
 base::FilePath GetShortPathName(const base::FilePath& path) {
   std::wstring short_path;
-  DWORD length = GetShortPathName(path.value().c_str(),
-                                  base::WriteInto(&short_path, MAX_PATH),
-                                  MAX_PATH);
+  DWORD length = GetShortPathName(
+      path.value().c_str(), base::WriteInto(&short_path, MAX_PATH), MAX_PATH);
   DPLOG_IF(WARNING, length == 0 && GetLastError() != ERROR_PATH_NOT_FOUND)
       << __func__;
   if ((length == 0) || (length > MAX_PATH)) {
@@ -281,9 +282,9 @@ HRESULT GetPendingMovesValue(std::vector<PendingMove>* pending_moves) {
   std::vector<char> buffer;
   buffer.resize(1);
   DWORD type;
-  DWORD result = RegQueryValueEx(session_manager_handle, kPendingFileRenameOps,
-                                 0, &type, reinterpret_cast<BYTE*>(&buffer[0]),
-                                 &buffer_size);
+  DWORD result =
+      RegQueryValueEx(session_manager_handle, kPendingFileRenameOps, 0, &type,
+                      reinterpret_cast<BYTE*>(&buffer[0]), &buffer_size);
 
   if (result == ERROR_FILE_NOT_FOUND) {
     // No pending moves were found.
@@ -307,9 +308,9 @@ HRESULT GetPendingMovesValue(std::vector<PendingMove>* pending_moves) {
 
   // There are pending file renames. Read them in.
   buffer.resize(buffer_size);
-  result = RegQueryValueEx(session_manager_handle, kPendingFileRenameOps,
-                           0, &type, reinterpret_cast<LPBYTE>(&buffer[0]),
-                           &buffer_size);
+  result =
+      RegQueryValueEx(session_manager_handle, kPendingFileRenameOps, 0, &type,
+                      reinterpret_cast<LPBYTE>(&buffer[0]), &buffer_size);
   if (result != ERROR_SUCCESS) {
     DLOG(ERROR) << "Failed to read from " << kPendingFileRenameOps;
     return HRESULT_FROM_WIN32(result);
@@ -318,18 +319,18 @@ HRESULT GetPendingMovesValue(std::vector<PendingMove>* pending_moves) {
   // We now have a buffer of bytes that is actually a sequence of
   // null-terminated wchar_t strings terminated by an additional null character.
   // Stick this into a vector of strings for clarity.
-  HRESULT hr = MultiSZBytesToStringArray(&buffer[0], buffer.size(),
-                                         pending_moves);
+  HRESULT hr =
+      MultiSZBytesToStringArray(&buffer[0], buffer.size(), pending_moves);
   return hr;
 }
 
 bool MatchPendingDeletePath(const base::FilePath& short_form_needle,
                             const base::FilePath& reg_path) {
   // Stores the path stored in each entry.
-  base::string16 match_path(reg_path.value());
+  std::wstring match_path(reg_path.value());
 
   // First chomp the prefix since that will mess up GetShortPathName.
-  base::StringPiece16 prefix(L"\\??\\");
+  base::WStringPiece prefix(L"\\??\\");
   if (base::StartsWith(match_path, prefix, base::CompareCase::SENSITIVE))
     match_path = match_path.substr(prefix.size());
 
@@ -344,8 +345,8 @@ bool MatchPendingDeletePath(const base::FilePath& short_form_needle,
       base::saturated_cast<DWORD>(short_form_needle.value().size());
   return ::CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE,
                          short_match_path.value().data(), prefix_len,
-                         short_form_needle.value().data(), prefix_len) ==
-      CSTR_EQUAL;
+                         short_form_needle.value().data(),
+                         prefix_len) == CSTR_EQUAL;
 }
 
 // Removes all pending moves for the given |directory| and any contained
@@ -391,9 +392,9 @@ bool RemoveFromMovesPendingReboot(const base::FilePath& directory) {
   }
 
   if (strings_to_keep.size() <= 1) {
-    // We have only the trailing NULL string. Don't bother writing that.
+    // We have only the trailing empty string. Don't bother writing that.
     return (session_manager_key.DeleteValue(kPendingFileRenameOps) ==
-        ERROR_SUCCESS);
+            ERROR_SUCCESS);
   }
   std::vector<char> buffer;
   StringArrayToMultiSZBytes(strings_to_keep, &buffer);
@@ -401,5 +402,6 @@ bool RemoveFromMovesPendingReboot(const base::FilePath& directory) {
   if (buffer.empty())
     return false;
   return (session_manager_key.WriteValue(kPendingFileRenameOps, &buffer[0],
-      buffer.size(), REG_MULTI_SZ) == ERROR_SUCCESS);
+                                         buffer.size(),
+                                         REG_MULTI_SZ) == ERROR_SUCCESS);
 }

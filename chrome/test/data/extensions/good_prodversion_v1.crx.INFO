@@ -1,0 +1,3 @@
+CRX ID = ldnnhddmnhbkjipkidpdiheffobcpfmf
+
+This extension was created using the key good.pem in this directory. It has the same ID as other good*.crx files in this directory and was created because an extension was needed whose manifest.json points to good_prodversionmin_update_manifest.xml for updates. It was required to test the behaviour of "prodversionmin" attribute in the update manifest when an already installed extension is updated.

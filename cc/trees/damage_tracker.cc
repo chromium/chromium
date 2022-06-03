@@ -172,6 +172,35 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
   has_damage_from_contributing_content_ |=
       !damage_from_leftover_rects.IsEmpty();
 
+  gfx::Rect expanded_damage_rect;
+  bool valid = damage_from_leftover_rects.GetAsRect(&expanded_damage_rect);
+  bool expanded = false;
+  // Iterate through the surfaces rendering to the current target back to
+  // front, intersect their surface rects with the damage from leftover rects.
+  // Update surfaces' |intersects_damage_under| flags accordingly and expand the
+  // damage by surface rects for surfaces with pixel-moving backdrop filters
+  // when appropriate.
+  for (auto& contributing_surface : contributing_surfaces_) {
+    RenderSurfaceImpl* surface = contributing_surface.render_surface;
+    bool has_pixel_moving_backdrop_filters =
+        surface->BackdropFilters().HasFilterThatMovesPixels();
+    if (!surface->intersects_damage_under() ||
+        has_pixel_moving_backdrop_filters) {
+      if (!valid || contributing_surface.rect_in_target_space.Intersects(
+                        expanded_damage_rect)) {
+        surface->set_intersects_damage_under(true);
+        if (has_pixel_moving_backdrop_filters) {
+          expanded_damage_rect.Union(contributing_surface.rect_in_target_space);
+          expanded = true;
+        }
+      }
+    }
+  }
+  if (expanded)
+    damage_for_this_update_.Union(expanded_damage_rect);
+
+  contributing_surfaces_.clear();
+
   if (render_surface->SurfacePropertyChangedOnlyFromDescendant()) {
     damage_for_this_update_ = DamageAccumulator();
     damage_for_this_update_.Union(render_surface->content_rect());
@@ -186,7 +215,7 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
     bool is_rect_valid = damage_for_this_update_.GetAsRect(&damage_rect);
     if (is_rect_valid && !damage_rect.IsEmpty()) {
       damage_rect = render_surface->Filters().MapRect(
-          damage_rect, render_surface->SurfaceScale().matrix());
+          damage_rect, SkMatrix(render_surface->SurfaceScale().matrix()));
       damage_for_this_update_ = DamageAccumulator();
       damage_for_this_update_.Union(damage_rect);
     }
@@ -237,6 +266,7 @@ void DamageTracker::PrepareForUpdate() {
   mailboxId_++;
   damage_for_this_update_ = DamageAccumulator();
   has_damage_from_contributing_content_ = false;
+  contributing_surfaces_.clear();
 }
 
 DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromLeftoverRects() {
@@ -303,26 +333,6 @@ DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromLeftoverRects() {
   return damage;
 }
 
-void DamageTracker::ExpandDamageInsideRectWithFilters(
-    const gfx::Rect& pre_filter_rect,
-    const FilterOperations& filters) {
-  gfx::Rect damage_rect;
-  bool is_valid_rect = damage_for_this_update_.GetAsRect(&damage_rect);
-  // If the damage accumulated so far isn't a valid rect or empty, then there is
-  // no point in trying to make it bigger.
-  if (!is_valid_rect || damage_rect.IsEmpty())
-    return;
-
-  // Compute the pixels in the backdrop of the surface that could be affected
-  // by the damage in the content below.
-  gfx::Rect expanded_damage_rect = filters.MapRect(damage_rect, SkMatrix::I());
-
-  // Restrict it to the rectangle in which the backdrop filter is shown.
-  expanded_damage_rect.Intersect(pre_filter_rect);
-
-  damage_for_this_update_.Union(expanded_damage_rect);
-}
-
 void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
   // There are two ways that a layer can damage a region of the target surface:
   //   1. Property change (e.g. opacity, position, transforms):
@@ -344,19 +354,20 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
   // instead.
   bool layer_is_new = false;
   LayerRectMapData& data = RectDataForLayer(layer->id(), &layer_is_new);
-  gfx::Rect old_rect_in_target_space = data.rect_;
+  gfx::Rect old_visible_rect_in_target_space = data.rect_;
 
-  gfx::Rect rect_in_target_space = layer->GetEnclosingRectInTargetSpace();
-  data.Update(rect_in_target_space, mailboxId_);
+  gfx::Rect visible_rect_in_target_space =
+      layer->GetEnclosingVisibleRectInTargetSpace();
+  data.Update(visible_rect_in_target_space, mailboxId_);
 
   if (layer_is_new || layer->LayerPropertyChanged()) {
     // If a layer is new or has changed, then its entire layer rect affects the
     // target surface.
-    damage_for_this_update_.Union(rect_in_target_space);
+    damage_for_this_update_.Union(visible_rect_in_target_space);
 
     // The layer's old region is now exposed on the target surface, too.
-    // Note old_rect_in_target_space is already in target space.
-    damage_for_this_update_.Union(old_rect_in_target_space);
+    // Note old_visible_rect_in_target_space is already in target space.
+    damage_for_this_update_.Union(old_visible_rect_in_target_space);
   } else {
     // If the layer properties haven't changed, then the the target surface is
     // only affected by the layer's damaged area, which could be empty.
@@ -365,9 +376,10 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
     damage_rect.Intersect(gfx::Rect(layer->bounds()));
 
     if (!damage_rect.IsEmpty()) {
-      gfx::Rect damage_rect_in_target_space = MathUtil::MapEnclosingClippedRect(
-          layer->DrawTransform(), damage_rect);
-      damage_for_this_update_.Union(damage_rect_in_target_space);
+      gfx::Rect damage_visible_rect_in_target_space =
+          MathUtil::MapEnclosingClippedRect(layer->DrawTransform(),
+                                            damage_rect);
+      damage_for_this_update_.Union(damage_visible_rect_in_target_space);
     }
   }
 
@@ -421,6 +433,20 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
   gfx::Rect surface_rect_in_target_space =
       gfx::ToEnclosingRect(render_surface->DrawableContentRect());
   data.Update(surface_rect_in_target_space, mailboxId_);
+  contributing_surfaces_.emplace_back(render_surface,
+                                      surface_rect_in_target_space);
+
+  // If the render surface has pixel-moving backdrop filters and the surface
+  // rect intersects current accumulated damage, expand the damage by surface
+  // rect.
+  gfx::Rect damage_on_target;
+  bool valid = damage_for_this_update_.GetAsRect(&damage_on_target);
+  bool intersects_damage_under =
+      !valid || damage_on_target.Intersects(surface_rect_in_target_space);
+  if (render_surface->BackdropFilters().HasFilterThatMovesPixels() &&
+      intersects_damage_under) {
+    damage_for_this_update_.Union(surface_rect_in_target_space);
+  }
 
   if (surface_is_new || render_surface->SurfacePropertyChanged()) {
     // The entire surface contributes damage.
@@ -428,6 +454,7 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
 
     // The surface's old region is now exposed on the target surface, too.
     damage_for_this_update_.Union(old_surface_rect);
+    intersects_damage_under = true;
   } else {
     // Only the surface's damage_rect will damage the target surface.
     gfx::Rect damage_rect_in_local_space;
@@ -439,24 +466,15 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
       const gfx::Transform& draw_transform = render_surface->draw_transform();
       gfx::Rect damage_rect_in_target_space = MathUtil::MapEnclosingClippedRect(
           draw_transform, damage_rect_in_local_space);
+      damage_rect_in_target_space.Intersect(
+          gfx::ToEnclosingRect(render_surface->DrawableContentRect()));
       damage_for_this_update_.Union(damage_rect_in_target_space);
     } else if (!is_valid_rect) {
       damage_for_this_update_.Union(surface_rect_in_target_space);
     }
   }
 
-  // If the layer has a backdrop filter, this may cause pixels in our surface
-  // to be expanded, so we will need to expand any damage at or below this
-  // layer. We expand the damage from this layer too, as we need to readback
-  // those pixels from the surface with only the contents of layers below this
-  // one in them. This means we need to redraw any pixels in the surface being
-  // used for the blur in this layer this frame.
-  const FilterOperations& backdrop_filters = render_surface->BackdropFilters();
-  if (backdrop_filters.HasFilterThatMovesPixels()) {
-    ExpandDamageInsideRectWithFilters(surface_rect_in_target_space,
-                                      backdrop_filters);
-  }
-
+  render_surface->set_intersects_damage_under(intersects_damage_under);
   // True if any changes from contributing render surface.
   has_damage_from_contributing_content_ |= !damage_for_this_update_.IsEmpty();
 }

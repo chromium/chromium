@@ -39,7 +39,7 @@ class CORE_EXPORT CSSInheritedValue : public CSSValue {
 
   bool Equals(const CSSInheritedValue&) const { return true; }
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);
   }
 

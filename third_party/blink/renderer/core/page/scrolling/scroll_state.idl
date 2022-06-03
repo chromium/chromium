@@ -5,10 +5,11 @@
 // https://docs.google.com/document/d/1VnvAqeWFG9JFZfgG5evBqrLGDZYRE5w6G5jEDORekPY
 
 [
-  RuntimeEnabled = ScrollCustomization
+    Exposed=Window,
+    RuntimeEnabled=ScrollCustomization
 ] interface ScrollState
 {
-    constructor(optional ScrollStateInit scrollStateInit);
+    constructor(optional ScrollStateInit scrollStateInit = {});
     readonly attribute double deltaX;
     readonly attribute double deltaY;
     readonly attribute long positionX;

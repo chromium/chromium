@@ -44,7 +44,7 @@ class GenerationalFuzzer:
     utils.create_flags_file(ipcdump_testcase_path)
 
   def main(self):
-    for _ in xrange(self.args.no_of_files):
+    for _ in range(self.args.no_of_files):
       self.generate_ipcdump_testcase()
 
     return 0

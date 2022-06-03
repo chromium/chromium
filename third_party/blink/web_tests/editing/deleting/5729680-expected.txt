@@ -1,3 +1,0 @@
-This tests deleting a selection that ends just before a space. There was a bug where it would be treated like a smart delete (the space would be incorrectly removed). To run it outside of DRT, you must delete manually. Press delete and you should see "Th is a test".
-
-Th is a test.

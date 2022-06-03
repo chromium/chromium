@@ -14,15 +14,15 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/synchronization/waitable_event.h"
-#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/logging/proto/removal_status.pb.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"
 #include "chrome/chrome_cleaner/os/file_removal_status_updater.h"
+#include "chrome/chrome_cleaner/os/file_remover_allowlist.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/os/scoped_disable_wow64_redirection.h"
-#include "chrome/chrome_cleaner/os/whitelisted_directory.h"
 
 namespace chrome_cleaner {
 
@@ -42,14 +42,14 @@ bool RegisterFileForPostRebootRemoval(const base::FilePath path) {
 }
 
 void DeleteEmptyDirectories(base::FilePath directory) {
-  while (
-      base::DirectoryExists(directory) && base::IsDirectoryEmpty(directory) &&
-      !WhitelistedDirectory::GetInstance()->IsWhitelistedDirectory(directory)) {
+  while (base::DirectoryExists(directory) &&
+         base::IsDirectoryEmpty(directory) &&
+         !FileRemoverAllowlist::GetInstance()->IsAllowlisted(directory)) {
     // Empty directories deleted in this cleanup are not logged in the matched
     // folders list for the corresponding UwS, because they are not necessarily
     // matched by any rule by the scanner.
     LOG(INFO) << "Deleting empty directory " << SanitizePath(directory);
-    if (!base::DeleteFile(directory, /*recursive=*/false))
+    if (!base::DeleteFile(directory))
       break;
     directory = directory.DirName();
   }
@@ -62,15 +62,15 @@ bool IsSafeNameForDeletion(const base::FilePath& path) {
   if (path.empty())
     return false;
 
-  const base::string16& path_str = path.value();
+  const std::wstring& path_str = path.value();
   // Disallow anything with "\..\".
-  if (path_str.find(L"\\..\\") != base::string16::npos)
+  if (path_str.find(L"\\..\\") != std::wstring::npos)
     return false;
 
   // Ensure the path does not specify a drive root: require a character other
   // than \/:. after the last :
   size_t last_colon_pos = path_str.rfind(L':');
-  if (last_colon_pos == base::string16::npos)
+  if (last_colon_pos == std::wstring::npos)
     return true;
   for (size_t index = last_colon_pos + 1; index < path_str.size(); ++index) {
     wchar_t character = path_str[index];
@@ -149,7 +149,7 @@ FileRemoverAPI::DeletionValidationStatus FileRemover::CanRemove(
     LOG(ERROR) << "Cannot remove known file " << SanitizePath(file);
     return DeletionValidationStatus::FORBIDDEN;
   }
-  if (WhitelistedDirectory::GetInstance()->IsWhitelistedDirectory(file)) {
+  if (FileRemoverAllowlist::GetInstance()->IsAllowlisted(file)) {
     // We are logging the path in both sanitized and non-sanitized form since
     // this should never happen unless we are breaking something, in which
     // case we will need precise information.
@@ -194,7 +194,7 @@ void FileRemover::RemoveFile(const base::FilePath& path,
     return;
   }
 
-  if (!base::DeleteFile(path, /*recursive=*/false)) {
+  if (!base::DeleteFile(path)) {
     // If the attempt to delete the file fails, propagate the failure as
     // normal so that the engine knows about it and can try a backup action,
     // but also register the file for post-reboot removal in case the engine
@@ -270,7 +270,7 @@ void FileRemover::ValidateAndQuarantineFile(
       break;
     case DeletionValidationStatus::FORBIDDEN:
       removal_status_updater->UpdateRemovalStatus(
-          normalized_path, REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL);
+          normalized_path, REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL);
       std::move(done_callback).Run(false);
       return;
     case DeletionValidationStatus::ALLOWED:
@@ -288,7 +288,7 @@ void FileRemover::ValidateAndQuarantineFile(
 
   TryToQuarantine(normalized_path,
                   base::BindOnce(std::move(removal_callback), normalized_path,
-                                 base::Passed(&done_callback)));
+                                 std::move(done_callback)));
 }
 
 }  // namespace chrome_cleaner

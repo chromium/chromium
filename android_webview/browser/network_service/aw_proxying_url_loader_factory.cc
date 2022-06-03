@@ -13,37 +13,40 @@
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
-#include "android_webview/browser/input_stream.h"
-#include "android_webview/browser/network_service/android_stream_reader_url_loader.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
-#include "android_webview/browser/network_service/aw_web_resource_response.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/renderer_host/auto_login_parser.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/build_info.h"
 #include "base/bind.h"
-#include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
-#include "components/safe_browsing/common/safebrowsing_constants.h"
+#include "base/feature_list.h"
+#include "components/embedder_support/android/util/input_stream.h"
+#include "components/embedder_support/android/util/response_delegate_impl.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/resource_type.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace android_webview {
 
 namespace {
 
+const char kResponseHeaderViaShouldInterceptRequestName[] = "Client-Via";
+const char kResponseHeaderViaShouldInterceptRequestValue[] =
+    "shouldInterceptRequest";
 const char kAutoLoginHeaderName[] = "X-Auto-Login";
 
 // Handles intercepted, in-progress requests/responses, so that they can be
@@ -52,21 +55,27 @@ class InterceptedRequest : public network::mojom::URLLoader,
                            public network::mojom::URLLoaderClient {
  public:
   InterceptedRequest(
-      int process_id,
+      int frame_tree_node_id,
       uint64_t request_id,
-      int32_t routing_id,
       uint32_t options,
       const network::ResourceRequest& request,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
-      bool intercept_only);
+      bool intercept_only,
+      absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
+          security_options);
+
+  InterceptedRequest(const InterceptedRequest&) = delete;
+  InterceptedRequest& operator=(const InterceptedRequest&) = delete;
+
   ~InterceptedRequest() override;
 
   void Restart();
 
   // network::mojom::URLLoaderClient
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
@@ -80,9 +89,11 @@ class InterceptedRequest : public network::mojom::URLLoader,
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // network::mojom::URLLoader
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers,
-                      const base::Optional<GURL>& new_url) override;
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -90,7 +101,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   void ContinueAfterIntercept();
   void ContinueAfterInterceptWithOverride(
-      std::unique_ptr<AwWebResourceResponse> response);
+      std::unique_ptr<embedder_support::WebResourceResponse> response);
 
   void InterceptResponseReceived(
       std::unique_ptr<AwWebResourceInterceptResponse> intercept_response);
@@ -122,9 +133,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // only one.
   void SendErrorCallback(int error_code, bool safebrowsing_hit);
 
-  const int process_id_;
+  const int frame_tree_node_id_;
   const uint64_t request_id_;
-  const int32_t routing_id_;
   const uint32_t options_;
   bool input_stream_previously_failed_ = false;
   bool request_was_redirected_ = false;
@@ -135,6 +145,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // When true, the loader will not not proceed unless the
   // shouldInterceptRequest callback provided a non-null response.
   bool intercept_only_ = false;
+
+  absl::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
 
   // If the |target_loader_| called OnComplete with an error this stores it.
   // That way the destructor can send it to OnReceivedError if safe browsing
@@ -154,22 +166,24 @@ class InterceptedRequest : public network::mojom::URLLoader,
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
 
   base::WeakPtrFactory<InterceptedRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptedRequest);
 };
 
 // A ResponseDelegate for responses returned by shouldInterceptRequest.
 class InterceptResponseDelegate
-    : public AndroidStreamReaderURLLoader::ResponseDelegate {
+    : public embedder_support::ResponseDelegateImpl {
  public:
-  explicit InterceptResponseDelegate(
-      std::unique_ptr<AwWebResourceResponse> response,
+  InterceptResponseDelegate(
+      std::unique_ptr<embedder_support::WebResourceResponse> response,
       base::WeakPtr<InterceptedRequest> request)
-      : response_(std::move(response)), request_(request) {}
+      : ResponseDelegateImpl(std::move(response)), request_(request) {}
 
-  std::unique_ptr<android_webview::InputStream> OpenInputStream(
-      JNIEnv* env) override {
-    return response_->GetInputStream(env);
+  // AndroidStreamReaderURLLoader::ResponseDelegate implementation:
+  void AppendResponseHeaders(JNIEnv* env,
+                             net::HttpResponseHeaders* headers) override {
+    embedder_support::ResponseDelegateImpl::AppendResponseHeaders(env, headers);
+    // Indicate that the response had been obtained via shouldInterceptRequest.
+    headers->SetHeader(kResponseHeaderViaShouldInterceptRequestName,
+                       kResponseHeaderViaShouldInterceptRequestValue);
   }
 
   bool OnInputStreamOpenFailed() override {
@@ -179,36 +193,7 @@ class InterceptResponseDelegate
                     : true;
   }
 
-  bool GetMimeType(JNIEnv* env,
-                   const GURL& url,
-                   android_webview::InputStream* stream,
-                   std::string* mime_type) override {
-    return response_->GetMimeType(env, mime_type);
-  }
-
-  bool GetCharset(JNIEnv* env,
-                  const GURL& url,
-                  android_webview::InputStream* stream,
-                  std::string* charset) override {
-    return response_->GetCharset(env, charset);
-  }
-
-  void AppendResponseHeaders(JNIEnv* env,
-                             net::HttpResponseHeaders* headers) override {
-    int status_code;
-    std::string reason_phrase;
-    if (response_->GetStatusInfo(env, &status_code, &reason_phrase)) {
-      std::string status_line("HTTP/1.1 ");
-      status_line.append(base::NumberToString(status_code));
-      status_line.append(" ");
-      status_line.append(reason_phrase);
-      headers->ReplaceStatusLine(status_line);
-    }
-    response_->GetResponseHeaders(env, headers);
-  }
-
  private:
-  std::unique_ptr<AwWebResourceResponse> response_;
   base::WeakPtr<InterceptedRequest> request_;
 };
 
@@ -216,13 +201,13 @@ class InterceptResponseDelegate
 // protocols, such as content://, file:///android_asset, and file:///android_res
 // URLs.
 class ProtocolResponseDelegate
-    : public AndroidStreamReaderURLLoader::ResponseDelegate {
+    : public embedder_support::AndroidStreamReaderURLLoader::ResponseDelegate {
  public:
   ProtocolResponseDelegate(const GURL& url,
                            base::WeakPtr<InterceptedRequest> request)
       : url_(url), request_(request) {}
 
-  std::unique_ptr<android_webview::InputStream> OpenInputStream(
+  std::unique_ptr<embedder_support::InputStream> OpenInputStream(
       JNIEnv* env) override {
     return CreateInputStream(env, url_);
   }
@@ -236,22 +221,25 @@ class ProtocolResponseDelegate
 
   bool GetMimeType(JNIEnv* env,
                    const GURL& url,
-                   android_webview::InputStream* stream,
+                   embedder_support::InputStream* stream,
                    std::string* mime_type) override {
     return GetInputStreamMimeType(env, url, stream, mime_type);
   }
 
-  bool GetCharset(JNIEnv* env,
+  void GetCharset(JNIEnv* env,
                   const GURL& url,
-                  android_webview::InputStream* stream,
+                  embedder_support::InputStream* stream,
                   std::string* charset) override {
     // TODO: We should probably be getting this from the managed side.
-    return false;
   }
 
   void AppendResponseHeaders(JNIEnv* env,
                              net::HttpResponseHeaders* headers) override {
-    // no-op
+    // Indicate that the response had been obtained via shouldInterceptRequest.
+    // TODO(jam): why is this added for protocol handler (e.g. content scheme
+    // and file resources?). The old path does this as well.
+    headers->SetHeader(kResponseHeaderViaShouldInterceptRequestName,
+                       kResponseHeaderViaShouldInterceptRequestValue);
   }
 
  private:
@@ -260,21 +248,22 @@ class ProtocolResponseDelegate
 };
 
 InterceptedRequest::InterceptedRequest(
-    int process_id,
+    int frame_tree_node_id,
     uint64_t request_id,
-    int32_t routing_id,
     uint32_t options,
     const network::ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
-    bool intercept_only)
-    : process_id_(process_id),
+    bool intercept_only,
+    absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
+        security_options)
+    : frame_tree_node_id_(frame_tree_node_id),
       request_id_(request_id),
-      routing_id_(routing_id),
       options_(options),
       intercept_only_(intercept_only),
+      security_options_(security_options),
       request_(request),
       traffic_annotation_(traffic_annotation),
       proxied_loader_receiver_(this, std::move(loader_receiver)),
@@ -343,11 +332,10 @@ void InterceptedRequest::InterceptResponseReceived(
   // compatibility with previous WebView versions. This should not be visible to
   // shouldInterceptRequest. It should also not trigger CORS prefetch if
   // OOR-CORS is enabled.
-  if (!request_.headers.HasHeader(
-          content::kCorsExemptRequestedWithHeaderName)) {
+  std::string header = content::GetCorsExemptRequestedWithHeaderName();
+  if (!request_.headers.HasHeader(header)) {
     request_.cors_exempt_headers.SetHeader(
-        content::kCorsExemptRequestedWithHeaderName,
-        base::android::BuildInfo::GetInstance()->host_package_name());
+        header, base::android::BuildInfo::GetInstance()->host_package_name());
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -415,52 +403,52 @@ void InterceptedRequest::ContinueAfterIntercept() {
   if (!input_stream_previously_failed_ &&
       (request_.url.SchemeIs(url::kContentScheme) ||
        android_webview::IsAndroidSpecialFileUrl(request_.url))) {
-    AndroidStreamReaderURLLoader* loader = new AndroidStreamReaderURLLoader(
-        request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
-        traffic_annotation_,
-        std::make_unique<ProtocolResponseDelegate>(request_.url,
-                                                   weak_factory_.GetWeakPtr()));
+    embedder_support::AndroidStreamReaderURLLoader* loader =
+        new embedder_support::AndroidStreamReaderURLLoader(
+            request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+            traffic_annotation_,
+            std::make_unique<ProtocolResponseDelegate>(
+                request_.url, weak_factory_.GetWeakPtr()),
+            security_options_);
     loader->Start();
     return;
   }
 
   if (!target_loader_ && target_factory_) {
     target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), routing_id_, request_id_,
-        options_, request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+        target_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
         traffic_annotation_);
   }
 }
 
 void InterceptedRequest::ContinueAfterInterceptWithOverride(
-    std::unique_ptr<AwWebResourceResponse> response) {
-  AndroidStreamReaderURLLoader* loader = new AndroidStreamReaderURLLoader(
-      request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
-      traffic_annotation_,
-      std::make_unique<InterceptResponseDelegate>(std::move(response),
-                                                  weak_factory_.GetWeakPtr()));
+    std::unique_ptr<embedder_support::WebResourceResponse> response) {
+  embedder_support::AndroidStreamReaderURLLoader* loader =
+      new embedder_support::AndroidStreamReaderURLLoader(
+          request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+          traffic_annotation_,
+          std::make_unique<InterceptResponseDelegate>(
+              std::move(response), weak_factory_.GetWeakPtr()),
+          absl::nullopt);
   loader->Start();
 }
 
 namespace {
 // TODO(timvolodine): consider factoring this out of this file.
 
-AwContentsClientBridge* GetAwContentsClientBridgeFromID(int process_id,
-                                                        int render_frame_id) {
+AwContentsClientBridge* GetAwContentsClientBridgeFromID(
+    int frame_tree_node_id) {
   content::WebContents* wc =
-      process_id
-          ? content::WebContents::FromRenderFrameHost(
-                content::RenderFrameHost::FromID(process_id, render_frame_id))
-          : content::WebContents::FromFrameTreeNodeId(render_frame_id);
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   return AwContentsClientBridge::FromWebContents(wc);
 }
 
 void OnReceivedHttpErrorOnUiThread(
-    int process_id,
-    int render_frame_id,
+    int frame_tree_node_id,
     const AwWebResourceRequest& request,
     std::unique_ptr<AwContentsClientBridge::HttpErrorInfo> http_error_info) {
-  auto* client = GetAwContentsClientBridgeFromID(process_id, render_frame_id);
+  auto* client = GetAwContentsClientBridgeFromID(frame_tree_node_id);
   if (!client) {
     DLOG(WARNING) << "client is null, onReceivedHttpError dropped for "
                   << request.url;
@@ -469,26 +457,24 @@ void OnReceivedHttpErrorOnUiThread(
   client->OnReceivedHttpError(request, std::move(http_error_info));
 }
 
-void OnReceivedErrorOnUiThread(int process_id,
-                               int render_frame_id,
+void OnReceivedErrorOnUiThread(int frame_tree_node_id,
                                const AwWebResourceRequest& request,
                                int error_code,
                                bool safebrowsing_hit) {
-  auto* client = GetAwContentsClientBridgeFromID(process_id, render_frame_id);
+  auto* client = GetAwContentsClientBridgeFromID(frame_tree_node_id);
   if (!client) {
     DLOG(WARNING) << "client is null, onReceivedError dropped for "
                   << request.url;
     return;
   }
-  client->OnReceivedError(request, error_code, safebrowsing_hit);
+  client->OnReceivedError(request, error_code, safebrowsing_hit, true);
 }
 
-void OnNewLoginRequestOnUiThread(int process_id,
-                                 int render_frame_id,
+void OnNewLoginRequestOnUiThread(int frame_tree_node_id,
                                  const std::string& realm,
                                  const std::string& account,
                                  const std::string& args) {
-  auto* client = GetAwContentsClientBridgeFromID(process_id, render_frame_id);
+  auto* client = GetAwContentsClientBridgeFromID(frame_tree_node_id);
   if (!client) {
     return;
   }
@@ -498,6 +484,11 @@ void OnNewLoginRequestOnUiThread(int process_id,
 }  // namespace
 
 // URLLoaderClient methods.
+
+void InterceptedRequest::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  target_client_->OnReceiveEarlyHints(std::move(early_hints));
+}
 
 void InterceptedRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
@@ -511,15 +502,13 @@ void InterceptedRequest::OnReceiveResponse(
     std::unique_ptr<AwContentsClientBridge::HttpErrorInfo> error_info =
         AwContentsClientBridge::ExtractHttpErrorInfo(head->headers.get());
 
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&OnReceivedHttpErrorOnUiThread, process_id_,
-                       request_.render_frame_id, AwWebResourceRequest(request_),
-                       std::move(error_info)));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OnReceivedHttpErrorOnUiThread, frame_tree_node_id_,
+                       AwWebResourceRequest(request_), std::move(error_info)));
   }
 
-  if (request_.resource_type ==
-      static_cast<int>(content::ResourceType::kMainFrame)) {
+  if (request_.destination == network::mojom::RequestDestination::kDocument) {
     // Check for x-auto-login-header
     HeaderData header_data;
     std::string header_string;
@@ -528,11 +517,10 @@ void InterceptedRequest::OnReceiveResponse(
       if (ParseHeader(header_string, ALLOW_ANY_REALM, &header_data)) {
         // TODO(timvolodine): consider simplifying this and above callback
         // code, crbug.com/897149.
-        base::PostTask(
-            FROM_HERE, {content::BrowserThread::UI},
-            base::BindOnce(&OnNewLoginRequestOnUiThread, process_id_,
-                           request_.render_frame_id, header_data.realm,
-                           header_data.account, header_data.args));
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE, base::BindOnce(&OnNewLoginRequestOnUiThread,
+                                      frame_tree_node_id_, header_data.realm,
+                                      header_data.account, header_data.args));
       }
     }
   }
@@ -586,9 +574,12 @@ void InterceptedRequest::OnComplete(
 void InterceptedRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
-    const base::Optional<GURL>& new_url) {
-  if (target_loader_)
-    target_loader_->FollowRedirect(removed_headers, modified_headers, new_url);
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const absl::optional<GURL>& new_url) {
+  if (target_loader_) {
+    target_loader_->FollowRedirect(removed_headers, modified_headers,
+                                   modified_cors_exempt_headers, new_url);
+  }
 
   // If |OnURLLoaderClientError| was called then we're just waiting for the
   // connection error handler of |proxied_loader_receiver_|. Don't restart the
@@ -617,16 +608,12 @@ void InterceptedRequest::ResumeReadingBodyFromNet() {
 
 std::unique_ptr<AwContentsIoThreadClient>
 InterceptedRequest::GetIoThreadClient() {
-  if (request_.originated_from_service_worker) {
+  // |frame_tree_node_id_| is set to no kNoFrameTreeNodeId for service
+  // workers. |request_.originated_from_service_worker| is insufficient here
+  // because it is not set to true on browser side requested main scripts.
+  if (frame_tree_node_id_ == content::RenderFrameHost::kNoFrameTreeNodeId)
     return AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
-  }
-
-  // |process_id_| == 0 indicates this is a navigation, and so we should use the
-  // frame_tree_node_id API (with request_.render_frame_id).
-  return process_id_
-             ? AwContentsIoThreadClient::FromID(process_id_,
-                                                request_.render_frame_id)
-             : AwContentsIoThreadClient::FromID(request_.render_frame_id);
+  return AwContentsIoThreadClient::FromID(frame_tree_node_id_);
 }
 
 void InterceptedRequest::OnURLLoaderClientError() {
@@ -641,7 +628,7 @@ void InterceptedRequest::OnURLLoaderError(uint32_t custom_reason,
                                           const std::string& description) {
   if (custom_reason == network::mojom::URLLoader::kClientDisconnectReason) {
     if (description == safe_browsing::kCustomCancelReasonForURLLoader) {
-      SendErrorCallback(safe_browsing::GetNetErrorCodeForSafeBrowsing(), true);
+      SendErrorCallback(safe_browsing::kNetErrorCodeForSafeBrowsing, true);
     } else {
       int parsed_error_code;
       if (base::StringToInt(base::StringPiece(description),
@@ -703,12 +690,17 @@ void InterceptedRequest::SendErrorCallback(int error_code,
   if (sent_error_callback_)
     return;
 
+  // We can't get a |AwContentsClientBridge| based on the |render_frame_id| of
+  // the |request_| initiated by the service worker, so interrupt it as soon as
+  // possible.
+  if (request_.originated_from_service_worker)
+    return;
+
   sent_error_callback_ = true;
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&OnReceivedErrorOnUiThread, process_id_,
-                     request_.render_frame_id, AwWebResourceRequest(request_),
-                     error_code, safebrowsing_hit));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OnReceivedErrorOnUiThread, frame_tree_node_id_,
+                                AwWebResourceRequest(request_), error_code,
+                                safebrowsing_hit));
 }
 
 }  // namespace
@@ -718,11 +710,14 @@ void InterceptedRequest::SendErrorCallback(int error_code,
 //============================
 
 AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
-    int process_id,
+    int frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
-    bool intercept_only)
-    : process_id_(process_id), intercept_only_(intercept_only) {
+    bool intercept_only,
+    absl::optional<SecurityOptions> security_options)
+    : frame_tree_node_id_(frame_tree_node_id),
+      intercept_only_(intercept_only),
+      security_options_(security_options) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!(intercept_only_ && target_factory_remote));
   if (target_factory_remote) {
@@ -741,20 +736,20 @@ AwProxyingURLLoaderFactory::~AwProxyingURLLoaderFactory() {}
 
 // static
 void AwProxyingURLLoaderFactory::CreateProxy(
-    int process_id,
+    int frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        target_factory_remote) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
+    absl::optional<SecurityOptions> security_options) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // will manage its own lifetime
-  new AwProxyingURLLoaderFactory(process_id, std::move(loader_receiver),
-                                 std::move(target_factory_remote), false);
+  new AwProxyingURLLoaderFactory(frame_tree_node_id, std::move(loader_receiver),
+                                 std::move(target_factory_remote), false,
+                                 security_options);
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -764,20 +759,16 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   // webview), blocking, callbacks etc..
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_clone;
-  if (target_factory_)
+  if (target_factory_) {
     target_factory_->Clone(
         target_factory_clone.InitWithNewPipeAndPassReceiver());
+  }
 
   bool global_cookie_policy =
       AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
-  // process_id == 0 means the render_frame_id is actually a valid
-  // frame_tree_node_id, otherwise use it as a valid render_frame_id.
-  int frame_tree_node_id = process_id_
-                               ? content::RenderFrameHost::kNoFrameTreeNodeId
-                               : request.render_frame_id;
   bool third_party_cookie_policy =
       AwCookieAccessPolicy::GetInstance()->GetShouldAcceptThirdPartyCookies(
-          process_id_, request.render_frame_id, frame_tree_node_id);
+          /*render_process_id=*/0, MSG_ROUTING_NONE, frame_tree_node_id_);
   if (!global_cookie_policy) {
     options |= network::mojom::kURLLoadOptionBlockAllCookies;
   } else if (!third_party_cookie_policy && !request.url.SchemeIsFile()) {
@@ -790,9 +781,9 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   // manages its own lifecycle
   // TODO(timvolodine): consider keeping track of requests.
   InterceptedRequest* req = new InterceptedRequest(
-      process_id_, request_id, routing_id, options, request, traffic_annotation,
+      frame_tree_node_id_, request_id, options, request, traffic_annotation,
       std::move(loader), std::move(client), std::move(target_factory_clone),
-      intercept_only_);
+      intercept_only_, security_options_);
   req->Restart();
 }
 

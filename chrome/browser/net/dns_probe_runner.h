@@ -5,16 +5,13 @@
 #ifndef CHROME_BROWSER_NET_DNS_PROBE_RUNNER_H_
 #define CHROME_BROWSER_NET_DNS_PROBE_RUNNER_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
+#include "services/network/public/mojom/host_resolver.mojom-forward.h"
 
 namespace network {
 namespace mojom {
@@ -50,6 +47,10 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   // may be called multiple times.
   DnsProbeRunner(net::DnsConfigOverrides dns_config_overrides,
                  const NetworkContextGetter& network_context_getter);
+
+  DnsProbeRunner(const DnsProbeRunner&) = delete;
+  DnsProbeRunner& operator=(const DnsProbeRunner&) = delete;
+
   ~DnsProbeRunner() override;
 
   // Starts a probe. |callback| will be called asynchronously when the result
@@ -72,7 +73,11 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   void OnComplete(
       int32_t result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
+
+  net::DnsConfigOverrides GetConfigOverridesForTesting() {
+    return dns_config_overrides_;
+  }
 
  private:
   void CreateHostResolver();
@@ -92,8 +97,6 @@ class DnsProbeRunner : public network::ResolveHostClientBase {
   Result result_{UNKNOWN};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DnsProbeRunner);
 };
 
 }  // namespace chrome_browser_net

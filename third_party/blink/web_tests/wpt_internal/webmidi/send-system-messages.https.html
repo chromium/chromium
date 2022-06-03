@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+// See https://www.midi.org/specifications/item/table-1-summary-of-midi-message
+const systemMessages = (function(messages) {
+    // Prepare various combinations of messages from input message array.
+    let combinations = [];
+    for (let i = 0; i < messages.length; ++i) {
+        combinations.push(messages[i]);
+        for (let j = 0; j < messages.length; ++j) {
+            combinations.push(messages[i].concat(messages[j]));
+            for (let k = 0; k < messages.length; ++k) {
+                combinations.push(messages[i].concat(messages[j], messages[k]));
+            }
+        }
+    }
+    return combinations;
+})([[0xf1, 0x00],
+    [0xf2, 0x00, 0x00],
+    [0xf3, 0x00],
+    [0xf6]]);
+
+const reservedSystemMessages = [[0xf4], [0xf5]];
+const systemExclusiveMessages = [[0xf0, 0xf7], [0xf0, 0x00, 0xf7]];
+
+promise_test(async _ => {
+  await setMidiPermission({}, 'granted');
+  const access = await navigator.requestMIDIAccess();
+  const output = access.outputs.values().next().value;
+
+  for (const message of systemMessages) {
+    output.send(message);
+  }
+
+  for (const message of reservedSystemMessages) {
+    assert_throws_js(TypeError, () => output.send(message));
+  }
+
+  for (const message of systemExclusiveMessages) {
+    assert_throws_dom('InvalidAccessError', () => output.send(message));
+  }
+}, 'various types of system messages can be validated');
+
+</script>
+</body>
+</html>

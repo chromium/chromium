@@ -4,13 +4,15 @@
 
 #include "services/device/usb/webusb_descriptors.h"
 
+#include <limits>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_device_handle.h"
+#include "url/gurl.h"
 
 namespace device {
 
@@ -39,13 +41,16 @@ const uint8_t kWebUsbCapabilityUUID[16] = {
     0x38, 0xB6, 0x08, 0x34, 0xA9, 0x09, 0xA0, 0x47,
     0x8B, 0xFD, 0xA0, 0x76, 0x88, 0x15, 0xB6, 0x65};
 
+const size_t kMaxControlTransferLength = std::numeric_limits<uint8_t>::max();
 const int kControlTransferTimeoutMs = 2000;  // 2 seconds
 
-using ReadWebUsbDescriptorsCallback =
+using ReadCompatabilityDescriptorCallback = base::OnceCallback<void(
+    const absl::optional<WebUsbPlatformCapabilityDescriptor>& descriptor)>;
+using ReadLandingPageCallback =
     base::OnceCallback<void(const GURL& landing_page)>;
 
 void OnReadLandingPage(uint8_t landing_page_id,
-                       ReadWebUsbDescriptorsCallback callback,
+                       ReadLandingPageCallback callback,
                        UsbTransferStatus status,
                        scoped_refptr<base::RefCountedBytes> buffer,
                        size_t length) {
@@ -62,52 +67,35 @@ void OnReadLandingPage(uint8_t landing_page_id,
   std::move(callback).Run(url);
 }
 
-void ReadLandingPage(uint8_t vendor_code,
-                     uint8_t landing_page_id,
-                     scoped_refptr<UsbDeviceHandle> device_handle,
-                     ReadWebUsbDescriptorsCallback callback) {
-  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(255);
-  device_handle->ControlTransfer(
-      UsbTransferDirection::INBOUND, UsbControlTransferType::VENDOR,
-      UsbControlTransferRecipient::DEVICE, vendor_code, landing_page_id,
-      kGetUrlRequest, buffer, kControlTransferTimeoutMs,
-      base::BindOnce(&OnReadLandingPage, landing_page_id, std::move(callback)));
-}
-
 void OnReadBosDescriptor(scoped_refptr<UsbDeviceHandle> device_handle,
-                         ReadWebUsbDescriptorsCallback callback,
+                         ReadCompatabilityDescriptorCallback callback,
                          UsbTransferStatus status,
                          scoped_refptr<base::RefCountedBytes> buffer,
                          size_t length) {
   if (status != UsbTransferStatus::COMPLETED) {
     USB_LOG(EVENT) << "Failed to read BOS descriptor.";
-    std::move(callback).Run(GURL());
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   WebUsbPlatformCapabilityDescriptor descriptor;
   if (!descriptor.ParseFromBosDescriptor(
           std::vector<uint8_t>(buffer->front(), buffer->front() + length))) {
-    std::move(callback).Run(GURL());
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  if (descriptor.landing_page_id) {
-    ReadLandingPage(descriptor.vendor_code, descriptor.landing_page_id,
-                    device_handle, std::move(callback));
-  } else {
-    std::move(callback).Run(GURL());
-  }
+  std::move(callback).Run(descriptor);
 }
 
 void OnReadBosDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
-                               ReadWebUsbDescriptorsCallback callback,
+                               ReadCompatabilityDescriptorCallback callback,
                                UsbTransferStatus status,
                                scoped_refptr<base::RefCountedBytes> buffer,
                                size_t length) {
   if (status != UsbTransferStatus::COMPLETED || length != 5) {
     USB_LOG(EVENT) << "Failed to read BOS descriptor header.";
-    std::move(callback).Run(GURL());
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -119,6 +107,19 @@ void OnReadBosDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
       UsbControlTransferRecipient::DEVICE, kGetDescriptorRequest,
       kBosDescriptorType << 8, 0, new_buffer, kControlTransferTimeoutMs,
       base::BindOnce(&OnReadBosDescriptor, device_handle, std::move(callback)));
+}
+
+void OnReadWebUsbCapabilityDescriptor(
+    scoped_refptr<UsbDeviceHandle> device_handle,
+    ReadLandingPageCallback callback,
+    const absl::optional<WebUsbPlatformCapabilityDescriptor>& descriptor) {
+  if (!descriptor || !descriptor->landing_page_id) {
+    std::move(callback).Run(GURL());
+    return;
+  }
+
+  ReadWebUsbLandingPage(descriptor->vendor_code, descriptor->landing_page_id,
+                        device_handle, std::move(callback));
 }
 
 }  // namespace
@@ -251,8 +252,22 @@ bool ParseWebUsbUrlDescriptor(const std::vector<uint8_t>& bytes, GURL* output) {
   return true;
 }
 
-void ReadWebUsbDescriptors(scoped_refptr<UsbDeviceHandle> device_handle,
-                           ReadWebUsbDescriptorsCallback callback) {
+void ReadWebUsbLandingPage(uint8_t vendor_code,
+                           uint8_t landing_page_id,
+                           scoped_refptr<UsbDeviceHandle> device_handle,
+                           ReadLandingPageCallback callback) {
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(kMaxControlTransferLength);
+  device_handle->ControlTransfer(
+      UsbTransferDirection::INBOUND, UsbControlTransferType::VENDOR,
+      UsbControlTransferRecipient::DEVICE, vendor_code, landing_page_id,
+      kGetUrlRequest, buffer, kControlTransferTimeoutMs,
+      base::BindOnce(&OnReadLandingPage, landing_page_id, std::move(callback)));
+}
+
+void ReadWebUsbCapabilityDescriptor(
+    scoped_refptr<UsbDeviceHandle> device_handle,
+    ReadCompatabilityDescriptorCallback callback) {
   auto buffer = base::MakeRefCounted<base::RefCountedBytes>(5);
   device_handle->ControlTransfer(
       UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,
@@ -260,6 +275,13 @@ void ReadWebUsbDescriptors(scoped_refptr<UsbDeviceHandle> device_handle,
       kBosDescriptorType << 8, 0, buffer, kControlTransferTimeoutMs,
       base::BindOnce(&OnReadBosDescriptorHeader, device_handle,
                      std::move(callback)));
+}
+
+void ReadWebUsbDescriptors(scoped_refptr<UsbDeviceHandle> device_handle,
+                           ReadLandingPageCallback callback) {
+  ReadWebUsbCapabilityDescriptor(
+      device_handle, base::BindOnce(&OnReadWebUsbCapabilityDescriptor,
+                                    device_handle, std::move(callback)));
 }
 
 }  // namespace device

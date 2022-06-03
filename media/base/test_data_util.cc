@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "media/base/decoder_buffer.h"
 
 namespace media {
@@ -40,6 +40,7 @@ const char kMp4Vp9Profile2Video[] =
     "video/mp4; codecs=\"vp09.02.10.10.01.02.02.02.00\"";
 const char kMp4Vp9Video[] =
     "video/mp4; codecs=\"vp09.00.10.08.01.02.02.02.00\"";
+const char kMp4XheAacAudio[] = "audio/mp4; codecs=\"mp4a.40.42\"";
 // WebM
 const char kWebMAv110bitVideo[] = "video/webm; codecs=\"av01.0.04M.10\"";
 const char kWebMAv1Video[] = "video/webm; codecs=\"av01.0.04M.08\"";
@@ -139,6 +140,7 @@ const FileToMimeTypeMap& GetFileToMimeTypeMap() {
       {"bear-vp9.webm", kWebMVp9Video},
       {"frame_size_change-av_enc-v.webm", kWebMVorbisAudioVp8Video},
       {"icy_sfx.mp3", kMp3Audio},
+      {"noise-xhe-aac.mp4", kMp4XheAacAudio},
       {"opus-trimming-test.mp4", kMp4OpusAudio},
       {"opus-trimming-test.webm", kWebMOpusAudio},
       {"sfx-flac_frag.mp4", kMp4FlacAudio},
@@ -165,14 +167,14 @@ const uint8_t kKeyId[] = {0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
 // See http://crbug.com/592067
 
 // Common test results.
-const char kFailed[] = "FAILED";
+const char kFailedTitle[] = "FAILED";
 
 // Upper case event name set by Utils.installTitleEventHandler().
-const char kEnded[] = "ENDED";
-const char kErrorEvent[] = "ERROR";
+const char kEndedTitle[] = "ENDED";
+const char kErrorEventTitle[] = "ERROR";
 
 // Lower case event name as set by Utils.failTest().
-const char kError[] = "error";
+const char kErrorTitle[] = "error";
 
 const base::FilePath::CharType kTestDataPath[] =
     FILE_PATH_LITERAL("media/test/data");

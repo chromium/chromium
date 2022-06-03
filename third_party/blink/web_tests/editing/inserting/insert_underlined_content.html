@@ -1,0 +1,28 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a hang when pasting underlined content at the end of a
+// paragraph.
+selection_test(
+    '<div contenteditable><div>abc\u00A0</div>|</div>',
+    selection =>
+        selection.document.execCommand('InsertHTML', false,
+            '<span style="text-decoration: underline;"><div>XYZ</div></span>'),
+    [
+        '<div contenteditable><div>',
+            'abc\u00A0<span style="text-decoration-line: underline;">XYZ|</span>',
+        '</div></div>',
+    ], '1 insert <span>');
+selection_test(
+    '<div contenteditable><div>abc\u00A0</div>|</div>',
+    selection =>
+        selection.document.execCommand('InsertHTML', false,
+            '<u><div>XYZ</div></u>'),
+    [
+        '<div contenteditable><div>',
+            'abc\u00A0<span style="text-decoration-line: underline;">XYZ|</span>',
+        '</div></div>',
+    ], '2 insert <u>');
+</script>

@@ -27,11 +27,29 @@ struct EnumTraits<display::mojom::HDCPState, display::HDCPState> {
 };
 
 template <>
+struct EnumTraits<display::mojom::ContentProtectionMethod,
+                  display::ContentProtectionMethod> {
+  static display::mojom::ContentProtectionMethod ToMojom(
+      display::ContentProtectionMethod type);
+  static bool FromMojom(display::mojom::ContentProtectionMethod type,
+                        display::ContentProtectionMethod* out);
+};
+
+template <>
 struct EnumTraits<display::mojom::PanelOrientation, display::PanelOrientation> {
   static display::mojom::PanelOrientation ToMojom(
       display::PanelOrientation type);
   static bool FromMojom(display::mojom::PanelOrientation type,
                         display::PanelOrientation* out);
+};
+
+template <>
+struct EnumTraits<display::mojom::PrivacyScreenState,
+                  display::PrivacyScreenState> {
+  static display::mojom::PrivacyScreenState ToMojom(
+      display::PrivacyScreenState type);
+  static bool FromMojom(display::mojom::PrivacyScreenState type,
+                        display::PrivacyScreenState* out);
 };
 
 }  // namespace mojo

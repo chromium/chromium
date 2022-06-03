@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -62,7 +63,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
                        cardNumber:@"4111111111111112"  // This is invalid
                                                        // Card number.
                   expirationMonth:@"11"
-                   expirationYear:@"2020"];
+                   expirationYear:@"2030"
+                     cardNickname:@""];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
 
@@ -90,7 +92,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
       addCreditCardWithHolderName:@"Test"
                        cardNumber:@"4111111111111111"
                   expirationMonth:@"15"  // This is invalid month.
-                   expirationYear:@"2020"];
+                   expirationYear:@"2030"
+                     cardNickname:@""];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
 
@@ -115,12 +118,41 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
       addCreditCardViewController:nil
       addCreditCardWithHolderName:@"Test"
                        cardNumber:@"4111111111111111"
-                  expirationMonth:@"15"
-                   expirationYear:@"2010"];  // This is invalid year.
+                  expirationMonth:@"11"
+                   expirationYear:@"2010"  // This is invalid year.
+                     cardNickname:@""];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
 
   // A credit card with invalid expiration date shouldn't be saved so the number
+  // of credit cards has to equal zero.
+  int number_of_credit_cards = personal_data_manager_->GetCreditCards().size();
+  EXPECT_EQ(number_of_credit_cards, 0);
+
+  [add_credit_card_mediator_delegate_mock_ verify];
+}
+
+// Test saving a credit card with invalid nickname.
+TEST_F(AutofillAddCreditCardMediatorTest,
+       TestSavingCreditCardWithInvalidNickname) {
+  PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager_);
+
+  // |creditCardMediatorHasInvalidExpirationDate| expected to be called by
+  // |add_credit_card_mediator_| if the credit card has invalid expiration date.
+  OCMExpect([add_credit_card_mediator_delegate_mock_
+      creditCardMediatorHasInvalidNickname:[OCMArg any]]);
+
+  [add_credit_card_mediator_
+      addCreditCardViewController:nil
+      addCreditCardWithHolderName:@"Test"
+                       cardNumber:@"4111111111111111"
+                  expirationMonth:@"11"
+                   expirationYear:@"2030"
+                     cardNickname:@"cvc123"];  // This is an invalid nickname.
+
+  waiter.Wait();  // Wait for completion of the asynchronous operation.
+
+  // A credit card with invalid nickname shouldn't be saved so the number
   // of credit cards has to equal zero.
   int number_of_credit_cards = personal_data_manager_->GetCreditCards().size();
   EXPECT_EQ(number_of_credit_cards, 0);
@@ -141,7 +173,8 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
                              addCreditCardWithHolderName:@"Test"
                                               cardNumber:@"4111111111111111"
                                          expirationMonth:@"11"
-                                          expirationYear:@"2020"];
+                                          expirationYear:@"2030"
+                                            cardNickname:@"nickname"];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
 
@@ -166,7 +199,8 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
                              addCreditCardWithHolderName:@"Test2"
                                               cardNumber:@"4111111111111111"
                                          expirationMonth:@"12"
-                                          expirationYear:@"2022"];
+                                          expirationYear:@"2030"
+                                            cardNickname:@"nickname"];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
 
@@ -188,7 +222,9 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
             base::SysNSStringToUTF16(@"12"));
 
   EXPECT_EQ(savedCreditCard->Expiration4DigitYearAsString(),
-            base::SysNSStringToUTF16(@"2022"));
+            base::SysNSStringToUTF16(@"2030"));
+
+  EXPECT_TRUE(savedCreditCard->HasNonEmptyValidNickname());
 
   [add_credit_card_mediator_delegate_mock_ verify];
 }

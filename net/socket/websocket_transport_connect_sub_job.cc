@@ -4,8 +4,12 @@
 
 #include "net/socket/websocket_transport_connect_sub_job.h"
 
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
@@ -26,6 +30,9 @@ class WebSocketStreamSocket final : public StreamSocket {
       const IPEndPoint& address)
       : wrapped_socket_(std::move(wrapped_socket)),
         lock_releaser_(websocket_endpoint_lock_manager, address) {}
+
+  WebSocketStreamSocket(const WebSocketStreamSocket&) = delete;
+  WebSocketStreamSocket& operator=(const WebSocketStreamSocket&) = delete;
 
   ~WebSocketStreamSocket() override = default;
 
@@ -55,6 +62,12 @@ class WebSocketStreamSocket final : public StreamSocket {
   }
   int SetSendBufferSize(int32_t size) override {
     return wrapped_socket_->SetSendBufferSize(size);
+  }
+  void SetDnsAliases(std::vector<std::string> aliases) override {
+    wrapped_socket_->SetDnsAliases(aliases);
+  }
+  const std::vector<std::string>& GetDnsAliases() const override {
+    return wrapped_socket_->GetDnsAliases();
   }
 
   // StreamSocket implementation:
@@ -97,9 +110,6 @@ class WebSocketStreamSocket final : public StreamSocket {
   int64_t GetTotalReceivedBytes() const override {
     return wrapped_socket_->GetTotalReceivedBytes();
   }
-  void DumpMemoryStats(SocketMemoryStats* stats) const override {
-    wrapped_socket_->DumpMemoryStats(stats);
-  }
   void ApplySocketTag(const SocketTag& tag) override {
     wrapped_socket_->ApplySocketTag(tag);
   }
@@ -107,8 +117,6 @@ class WebSocketStreamSocket final : public StreamSocket {
  private:
   std::unique_ptr<StreamSocket> wrapped_socket_;
   WebSocketEndpointLockManager::LockReleaser lock_releaser_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketStreamSocket);
 };
 
 }  // namespace
@@ -237,8 +245,12 @@ int WebSocketTransportConnectSubJob::DoTransportConnect() {
   // ConnectInterval.
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   AddressList one_address(CurrentAddress());
+  // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+  NetworkQualityEstimator* network_quality_estimator = nullptr;
+
   transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
-      one_address, nullptr, net_log().net_log(), net_log().source());
+      one_address, nullptr, network_quality_estimator, net_log().net_log(),
+      net_log().source());
   // This use of base::Unretained() is safe because transport_socket_ is
   // destroyed in the destructor.
   return transport_socket_->Connect(base::BindOnce(

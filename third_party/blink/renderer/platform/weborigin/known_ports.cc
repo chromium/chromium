@@ -28,10 +28,22 @@
 
 #include "net/base/port_util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+
+Mutex& ExplicitlyAllowedPortsMutex() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
+  return mutex;
+}
+
+}  // namespace
 
 bool IsDefaultPortForProtocol(uint16_t port, const WTF::String& protocol) {
   if (protocol.IsEmpty())
@@ -44,12 +56,12 @@ bool IsDefaultPortForProtocol(uint16_t port, const WTF::String& protocol) {
       return protocol == "https" || protocol == "wss";
     case 21:
       return protocol == "ftp";
-    case 990:
-      return protocol == "ftps";
   }
   return false;
 }
 
+// Please keep blink::DefaultPortForProtocol and url::DefaultPortForProtocol in
+// sync.
 uint16_t DefaultPortForProtocol(const WTF::String& protocol) {
   if (protocol == "http" || protocol == "ws")
     return 80;
@@ -57,8 +69,6 @@ uint16_t DefaultPortForProtocol(const WTF::String& protocol) {
     return 443;
   if (protocol == "ftp")
     return 21;
-  if (protocol == "ftps")
-    return 990;
 
   return 0;
 }
@@ -75,7 +85,13 @@ bool IsPortAllowedForScheme(const KURL& url) {
   if (!effective_port)
     effective_port = DefaultPortForProtocol(protocol);
   StringUTF8Adaptor utf8(protocol);
+  MutexLocker locker(ExplicitlyAllowedPortsMutex());
   return net::IsPortAllowedForScheme(effective_port, utf8.AsStringPiece());
+}
+
+void SetExplicitlyAllowedPorts(base::span<const uint16_t> allowed_ports) {
+  MutexLocker locker(ExplicitlyAllowedPortsMutex());
+  net::SetExplicitlyAllowedPorts(allowed_ports);
 }
 
 }  // namespace blink

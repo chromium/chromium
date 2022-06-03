@@ -8,9 +8,10 @@
 #include "components/omnibox/browser/omnibox_view.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -19,18 +20,37 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
+
 #include "ui/gfx/paint_vector_icon.h"
+
 #endif
 
+namespace {
+
+// Return true if either non prefix or split autocompletion is enabled.
+bool RichAutocompletionEitherNonPrefixOrSplitEnabled() {
+  return OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.Get() ||
+         OmniboxFieldTrial::
+             kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get() ||
+         OmniboxFieldTrial::kRichAutocompletionSplitTitleCompletion.Get() ||
+         OmniboxFieldTrial::kRichAutocompletionSplitUrlCompletion.Get();
+}
+
+}  // namespace
+
+OmniboxView::State::State() = default;
+OmniboxView::State::State(const State& state) = default;
+
 // static
-base::string16 OmniboxView::StripJavascriptSchemas(const base::string16& text) {
-  const base::string16 kJsPrefix(
-      base::ASCIIToUTF16(url::kJavaScriptScheme) + base::ASCIIToUTF16(":"));
+std::u16string OmniboxView::StripJavascriptSchemas(const std::u16string& text) {
+  const std::u16string kJsPrefix(base::ASCIIToUTF16(url::kJavaScriptScheme) +
+                                 u":");
 
   bool found_JavaScript = false;
   size_t i = 0;
@@ -61,18 +81,18 @@ base::string16 OmniboxView::StripJavascriptSchemas(const base::string16& text) {
 }
 
 // static
-base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
+std::u16string OmniboxView::SanitizeTextForPaste(const std::u16string& text) {
   if (text.empty())
-    return base::string16();  // Nothing to do.
+    return std::u16string();  // Nothing to do.
 
   size_t end = text.find_first_not_of(base::kWhitespaceUTF16);
-  if (end == base::string16::npos)
-    return base::ASCIIToUTF16(" ");  // Convert all-whitespace to single space.
+  if (end == std::u16string::npos)
+    return u" ";  // Convert all-whitespace to single space.
   // Because |end| points at the first non-whitespace character, the loop
   // below will skip leading whitespace.
 
   // Reserve space for the sanitized output.
-  base::string16 output;
+  std::u16string output;
   output.reserve(text.size());  // Guaranteed to be large enough.
 
   // Copy all non-whitespace sequences.
@@ -85,10 +105,10 @@ base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
   bool seen_non_lf_whitespace = false;
   const auto copy_range = [&text, &output](size_t begin, size_t end) {
     output +=
-        text.substr(begin, (end == base::string16::npos) ? end : (end - begin));
+        text.substr(begin, (end == std::u16string::npos) ? end : (end - begin));
   };
-  constexpr base::char16 kNewline[] = {'\n', 0};
-  constexpr base::char16 kSpace[] = {' ', 0};
+  constexpr char16_t kNewline[] = {'\n', 0};
+  constexpr char16_t kSpace[] = {' ', 0};
   while (true) {
     // Copy this non-whitespace sequence.
     size_t begin = end;
@@ -96,11 +116,11 @@ base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
     copy_range(begin, end);
 
     // Now there is either a whitespace sequence, or the end of the string.
-    if (end != base::string16::npos) {
+    if (end != std::u16string::npos) {
       // There is a whitespace sequence; see if it contains CR/LF.
       begin = end;
       end = text.find_first_not_of(base::kWhitespaceNoCrLfUTF16, begin);
-      if ((end != base::string16::npos) && (text[end] != '\n') &&
+      if ((end != std::u16string::npos) && (text[end] != '\n') &&
           (text[end] != '\r')) {
         // Found a non-trailing whitespace sequence without CR/LF.  Copy it.
         seen_non_lf_whitespace = true;
@@ -110,9 +130,9 @@ base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
     }
 
     // |end| either points at the end of the string or a CR/LF.
-    if (end != base::string16::npos)
+    if (end != std::u16string::npos)
       end = text.find_first_not_of(base::kWhitespaceUTF16, end + 1);
-    if (end == base::string16::npos)
+    if (end == std::u16string::npos)
       break;  // Ignore any trailing whitespace.
 
     // The preceding whitespace sequence contained CR/LF.  Convert to a single
@@ -125,20 +145,19 @@ base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
   // sequences.
   if (output_needs_lf_conversion) {
     base::ReplaceChars(output, kNewline,
-                       seen_non_lf_whitespace ? kSpace : base::string16(),
+                       seen_non_lf_whitespace ? kSpace : std::u16string(),
                        &output);
   }
 
   return StripJavascriptSchemas(output);
 }
 
-OmniboxView::~OmniboxView() {
-}
+OmniboxView::~OmniboxView() = default;
 
 void OmniboxView::OpenMatch(const AutocompleteMatch& match,
                             WindowOpenDisposition disposition,
                             const GURL& alternate_nav_url,
-                            const base::string16& pasted_text,
+                            const std::u16string& pasted_text,
                             size_t selected_line,
                             base::TimeTicks match_selection_timestamp) {
   // Invalid URLs such as chrome://history can end up here.
@@ -159,13 +178,13 @@ bool OmniboxView::IsEditingOrEmpty() const {
 // icons. OmniboxPopupModel::GetMatchIcon also doesn't display default search
 // provider icons. It's possible they have other inconsistencies as well. We may
 // want to consider reusing the same code for both the popup and omnibox icons.
-gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
+ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color,
                                     IconFetchedCallback on_icon_fetched) const {
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // This is used on desktop only.
   NOTREACHED();
-  return gfx::ImageSkia();
+  return ui::ImageModel();
 #else
 
   // For tests, model_ will be null.
@@ -173,21 +192,13 @@ gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
     AutocompleteMatch fake_match;
     fake_match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
     const gfx::VectorIcon& vector_icon = fake_match.GetVectorIcon(false);
-    return gfx::CreateVectorIcon(vector_icon, dip_size, color);
+    return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
   }
 
   if (model_->ShouldShowCurrentPageIcon()) {
-    // Query in Omnibox.
     LocationBarModel* location_bar_model = controller_->GetLocationBarModel();
-    if (location_bar_model->GetDisplaySearchTerms(nullptr /* search_terms */)) {
-      gfx::Image icon = model_->client()->GetFaviconForDefaultSearchProvider(
-          std::move(on_icon_fetched));
-      if (!icon.IsEmpty())
-        return model_->client()->GetSizedIcon(icon).AsImageSkia();
-    }
-
-    return gfx::CreateVectorIcon(location_bar_model->GetVectorIcon(), dip_size,
-                                 color);
+    return ui::ImageModel::FromVectorIcon(location_bar_model->GetVectorIcon(),
+                                          color, dip_size);
   }
 
   gfx::Image favicon;
@@ -197,15 +208,14 @@ gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
     favicon = model_->client()->GetFaviconForDefaultSearchProvider(
         std::move(on_icon_fetched));
 
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kUIExperimentShowSuggestionFavicons)) {
+  } else {
     // For site suggestions, display site's favicon.
     favicon = model_->client()->GetFaviconForPageUrl(
         match.destination_url, std::move(on_icon_fetched));
   }
 
   if (!favicon.IsEmpty())
-    return model_->client()->GetSizedIcon(favicon).AsImageSkia();
+    return ui::ImageModel::FromImage(model_->client()->GetSizedIcon(favicon));
   // If the client returns an empty favicon, fall through to provide the
   // generic vector icon. |on_icon_fetched| may or may not be called later.
   // If it's never called, the vector icon we provide below should remain.
@@ -218,16 +228,15 @@ gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
 
   const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
 
-  return gfx::CreateVectorIcon(vector_icon, dip_size, color);
+  return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 }
 
-void OmniboxView::SetUserText(const base::string16& text) {
+void OmniboxView::SetUserText(const std::u16string& text) {
   SetUserText(text, true);
 }
 
-void OmniboxView::SetUserText(const base::string16& text,
-                              bool update_popup) {
+void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
   if (model_)
     model_->SetUserText(text);
   SetWindowTextAndCaretPos(text, text.length(), update_popup, true);
@@ -267,10 +276,12 @@ void OmniboxView::GetState(State* state) {
   state->keyword = model()->keyword();
   state->is_keyword_selected = model()->is_keyword_selected();
   GetSelectionBounds(&state->sel_start, &state->sel_end);
+  if (RichAutocompletionEitherNonPrefixOrSplitEnabled())
+    state->all_sel_length = GetAllSelectionsLength();
 }
 
 OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
-                                                     const State& after) {
+                                                       const State& after) {
   OmniboxView::StateChanges state_changes;
   state_changes.old_text = &before.text;
   state_changes.new_text = &after.text;
@@ -297,8 +308,14 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   // sure the caret, which should be after any insertion, hasn't moved
   // forward of the old selection start.)
   state_changes.just_deleted_text =
-      (before.text.length() > after.text.length()) &&
-      (after.sel_start <= std::min(before.sel_start, before.sel_end));
+      before.text.length() > after.text.length() &&
+      after.sel_start <= std::min(before.sel_start, before.sel_end);
+  if (RichAutocompletionEitherNonPrefixOrSplitEnabled()) {
+    state_changes.just_deleted_text =
+        state_changes.just_deleted_text &&
+        after.sel_start <=
+            std::max(before.sel_start, before.sel_end) - before.all_sel_length;
+  }
 
   return state_changes;
 }
@@ -308,7 +325,8 @@ OmniboxView::OmniboxView(OmniboxEditController* controller,
     : controller_(controller) {
   // |client| can be null in tests.
   if (client) {
-    model_.reset(new OmniboxEditModel(this, controller, std::move(client)));
+    model_ =
+        std::make_unique<OmniboxEditModel>(this, controller, std::move(client));
   }
 }
 
@@ -318,13 +336,13 @@ void OmniboxView::TextChanged() {
     model_->OnChanged();
 }
 
-bool OmniboxView::UpdateTextStyle(
-    const base::string16& display_text,
+void OmniboxView::UpdateTextStyle(
+    const std::u16string& display_text,
     const bool text_is_url,
     const AutocompleteSchemeClassifier& classifier) {
   if (!text_is_url) {
     SetEmphasis(true, gfx::Range::InvalidRange());
-    return false;  // Path not eligible for fading if it's not even a URL.
+    return;
   }
 
   enum DemphasizeComponents {
@@ -338,7 +356,7 @@ bool OmniboxView::UpdateTextStyle(
   AutocompleteInput::ParseForEmphasizeComponents(display_text, classifier,
                                                  &scheme, &host);
 
-  const base::string16 url_scheme =
+  const std::u16string url_scheme =
       display_text.substr(scheme.begin, scheme.len);
   // Extension IDs are not human-readable, so deemphasize everything to draw
   // attention to the human-readable name in the location icon text.
@@ -376,7 +394,4 @@ bool OmniboxView::UpdateTextStyle(
   // Emphasize the scheme for security UI display purposes (if necessary).
   if (!model()->user_input_in_progress() && scheme_range.IsValid())
     UpdateSchemeStyle(scheme_range);
-
-  // Path is eligible for fading only when the host is the only emphasized part.
-  return deemphasize == ALL_BUT_HOST;
 }

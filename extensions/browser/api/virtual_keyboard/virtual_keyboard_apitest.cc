@@ -15,6 +15,7 @@
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/shell/test/shell_apitest.h"
 
 namespace extensions {
@@ -23,11 +24,14 @@ class VirtualKeyboardApiTest : public ShellApiTest {
  public:
   VirtualKeyboardApiTest() {}
 
+  VirtualKeyboardApiTest(const VirtualKeyboardApiTest&) = delete;
+  VirtualKeyboardApiTest& operator=(const VirtualKeyboardApiTest&) = delete;
+
   ~VirtualKeyboardApiTest() override = default;
 
   void SetUp() override {
     feature_session_type_ =
-        ScopedCurrentFeatureSessionType(FeatureSessionType::KIOSK);
+        ScopedCurrentFeatureSessionType(mojom::FeatureSessionType::kKiosk);
     ShellApiTest::SetUp();
   }
 
@@ -37,9 +41,8 @@ class VirtualKeyboardApiTest : public ShellApiTest {
   }
 
  private:
-  std::unique_ptr<base::AutoReset<FeatureSessionType>> feature_session_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardApiTest);
+  std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>>
+      feature_session_type_;
 };
 
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardApiTest, Test) {

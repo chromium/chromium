@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width: 200px;
+  height: 200px;
+}
+@keyframes expand {
+  0% { --foo: 10; }
+  100% { --foo: 200; }
+}
+.animate {
+  background-image: paint(shdow);
+  animation: expand 1s;
+}
+</style>
+<div id="target"></div>;
+<script id="code" type="text/worklet">
+  registerPaint('shadow', class {
+    static get inputProperties() { return ['--foo']; }
+    paint(ctx, geom, properties) {
+      let fooValue = parseFloat(properties.get('--foo').toString());
+      ctx.fillStyle = 'green';
+      ctx.fillRect(0, 0, fooValue, fooValue);
+    }
+  });
+  </script>
+
+  <script>
+  CSS.registerProperty({
+    name: '--foo',
+    syntax: '<number>',
+    initialValue: '10',
+    inherits: false
+  });
+  </script>
+
+  <script>
+  var code = document.getElementById('code').textContent;
+  var blob = new Blob([code], {type: 'text/javascript'});
+  CSS.paintWorklet.addModule(URL.createObjectURL(blob)).then(function() {
+    document.getElementById('target').classList.add('animate');
+  });

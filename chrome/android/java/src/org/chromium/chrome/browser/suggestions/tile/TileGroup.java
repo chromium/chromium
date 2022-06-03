@@ -19,20 +19,20 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesCatalogUpdateRequestSource;
-import org.chromium.chrome.browser.favicon.IconType;
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -53,9 +53,11 @@ public class TileGroup implements MostVisitedSites.Observer {
          * @param removalUndoneCallback The callback to invoke if the removal is reverted. The
          *                              callback's argument is the URL being restored.
          */
-        void removeMostVisitedItem(Tile tile, Callback<String> removalUndoneCallback);
+        void removeMostVisitedItem(Tile tile, Callback<GURL> removalUndoneCallback);
 
         void openMostVisitedItem(int windowDisposition, Tile tile);
+
+        void openMostVisitedItemInGroup(int windowDisposition, Tile tile);
 
         /**
          * Gets the list of most visited sites.
@@ -199,7 +201,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * the tile backend.
      */
     @Nullable
-    private String mPendingRemovalUrl;
+    private GURL mPendingRemovalUrl;
 
     /**
      * URL of the most recently added tile. Used to identify when a given tile's insertion is
@@ -207,7 +209,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * then the user undoes the action and wants that tile back.
      */
     @Nullable
-    private String mPendingInsertionUrl;
+    private GURL mPendingInsertionUrl;
 
     private boolean mHasReceivedData;
     private boolean mExploreSitesLoaded;
@@ -268,7 +270,7 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (suggestion.url.equals(mPendingInsertionUrl)) insertionCompleted = true;
             if (suggestion.source == TileSource.EXPLORE && !mExploreSitesLoaded) {
                 mExploreSitesLoaded = true;
-                ExploreSitesBridge.initializeCatalog(Profile.getLastUsedProfile(),
+                ExploreSitesBridge.initializeCatalog(Profile.getLastUsedRegularProfile(),
                         ExploreSitesCatalogUpdateRequestSource.NEW_TAB_PAGE);
             }
         }
@@ -287,7 +289,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     @Override
-    public void onIconMadeAvailable(String siteUrl) {
+    public void onIconMadeAvailable(GURL siteUrl) {
         for (Tile tile : findTilesForUrl(siteUrl)) {
             mTileRenderer.updateIcon(tile.getData(),
                     new LargeIconCallbackImpl(tile.getData(), /* trackLoadTask = */ false));
@@ -340,6 +342,10 @@ public class TileGroup implements MostVisitedSites.Observer {
         if (trackLoadTask) addTask(TileTask.FETCH_DATA);
         if (mPendingTiles != null) loadTiles();
         if (trackLoadTask) removeTask(TileTask.FETCH_DATA);
+    }
+
+    public TileSetupDelegate getTileSetupDelegate() {
+        return mTileSetupDelegate;
     }
 
     /** Loads tile data from {@link #mPendingTiles} and clears it afterwards. */
@@ -412,7 +418,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * @param tiles The section to search in, represented by the contained list of tiles.
      * @return A tile matching the provided URL and section, or {@code null} if none is found.
      */
-    private Tile findTile(String url, @Nullable List<Tile> tiles) {
+    private Tile findTile(GURL url, @Nullable List<Tile> tiles) {
         if (tiles == null) return null;
         for (Tile tile : tiles) {
             if (tile.getUrl().equals(url)) return tile;
@@ -421,7 +427,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     /** @return All tiles matching the provided URL, or an empty list if none is found. */
-    private List<Tile> findTilesForUrl(String url) {
+    private List<Tile> findTilesForUrl(GURL url) {
         List<Tile> tiles = new ArrayList<>();
         for (int i = 0; i < mTileSections.size(); ++i) {
             for (Tile tile : mTileSections.valueAt(i)) {
@@ -465,11 +471,6 @@ public class TileGroup implements MostVisitedSites.Observer {
         return mPendingTasks.contains(task);
     }
 
-    @VisibleForTesting
-    TileSetupDelegate getTileSetupDelegate() {
-        return mTileSetupDelegate;
-    }
-
     @Nullable
     public SiteSuggestion getHomepageTileData() {
         for (Tile tile : mTileSections.get(TileSectionType.PERSONALIZED)) {
@@ -490,6 +491,15 @@ public class TileGroup implements MostVisitedSites.Observer {
         newTileData.put(TileSectionType.PERSONALIZED, new ArrayList<>());
 
         return newTileData;
+    }
+
+    /**
+     * Called before this instance is abandoned to the garbage collector.
+     */
+    public void destroy() {
+        // The mOfflineModelObserver which implements SuggestionsOfflineModelObserver adds itself
+        // as the offlinePageBridge's observer. Calling onDestroy() removes itself from subscribers.
+        mOfflineModelObserver.onDestroy();
     }
 
     // TODO(dgn): I would like to move that to TileRenderer, but setting the data on the tile,
@@ -551,6 +561,14 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         @Override
+        public void openItemInGroup(int windowDisposition) {
+            Tile tile = findTile(mSuggestion);
+            if (tile == null) return;
+
+            mTileGroupDelegate.openMostVisitedItemInGroup(windowDisposition, tile);
+        }
+
+        @Override
         public void removeItem() {
             Tile tile = findTile(mSuggestion);
             if (tile == null) return;
@@ -562,7 +580,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         @Override
-        public String getUrl() {
+        public GURL getUrl() {
             return mSuggestion.url;
         }
 
@@ -579,8 +597,6 @@ public class TileGroup implements MostVisitedSites.Observer {
                 case ContextMenuItemId.REMOVE:
                     return mSuggestion.sectionType == TileSectionType.PERSONALIZED
                             && mSuggestion.source != TileSource.EXPLORE;
-                case ContextMenuItemId.LEARN_MORE:
-                    return SuggestionsConfig.scrollToLoad();
                 case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                     return mSuggestion.source != TileSource.EXPLORE;
                 default:

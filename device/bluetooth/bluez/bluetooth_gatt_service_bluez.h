@@ -20,6 +20,10 @@ class BluetoothDeviceBlueZ;
 // for GATT services on platforms that use BlueZ.
 class BluetoothGattServiceBlueZ : public virtual device::BluetoothGattService {
  public:
+  BluetoothGattServiceBlueZ(const BluetoothGattServiceBlueZ&) = delete;
+  BluetoothGattServiceBlueZ& operator=(const BluetoothGattServiceBlueZ&) =
+      delete;
+
   // device::BluetoothGattService overrides.
   std::string GetIdentifier() const override;
 
@@ -47,8 +51,6 @@ class BluetoothGattServiceBlueZ : public virtual device::BluetoothGattService {
 
   // Object path of the GATT service.
   dbus::ObjectPath object_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattServiceBlueZ);
 };
 
 }  // namespace bluez

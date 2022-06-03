@@ -35,6 +35,10 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
 
   bool HasInitialVariables() const { return !variables_.IsEmpty(); }
 
+  void CollectVariableNames(HashSet<AtomicString>& names) const {
+    return variables_.CollectNames(names);
+  }
+
   CSSVariableData* GetVariableData(const AtomicString& name) const {
     return variables_.GetData(name).value_or(nullptr);
   }

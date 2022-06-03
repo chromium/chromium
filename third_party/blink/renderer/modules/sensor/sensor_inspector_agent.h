@@ -9,14 +9,18 @@
 
 namespace blink {
 
-class Document;
+class LocalDOMWindow;
 class LocalFrame;
 class SensorProviderProxy;
 
 class SensorInspectorAgent : public GarbageCollected<SensorInspectorAgent> {
  public:
-  explicit SensorInspectorAgent(Document* document);
-  virtual void Trace(blink::Visitor*);
+  explicit SensorInspectorAgent(LocalDOMWindow* window);
+
+  SensorInspectorAgent(const SensorInspectorAgent&) = delete;
+  SensorInspectorAgent& operator=(const SensorInspectorAgent&) = delete;
+
+  virtual void Trace(Visitor*) const;
 
   void DidCommitLoadForLocalFrame(LocalFrame* frame);
 
@@ -26,8 +30,6 @@ class SensorInspectorAgent : public GarbageCollected<SensorInspectorAgent> {
 
  private:
   Member<SensorProviderProxy> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorInspectorAgent);
 };
 
 }  // namespace blink

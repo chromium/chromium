@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_CSS_ANIMATION_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_CSS_ANIMATION_WORKLET_H_
 
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -14,24 +14,20 @@
 
 namespace blink {
 
-class Document;
-
 class MODULES_EXPORT CSSAnimationWorklet final
     : public GarbageCollected<CSSAnimationWorklet>,
       public Supplement<LocalDOMWindow>,
-      public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(CSSAnimationWorklet);
-
+      public ExecutionContextLifecycleObserver {
  public:
   static const char kSupplementName[];
 
   static AnimationWorklet* animationWorklet(ScriptState*);
 
-  explicit CSSAnimationWorklet(Document*);
+  explicit CSSAnimationWorklet(LocalDOMWindow&);
 
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   static CSSAnimationWorklet& From(LocalDOMWindow&);

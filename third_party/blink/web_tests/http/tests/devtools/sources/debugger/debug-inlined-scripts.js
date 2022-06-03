@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that all inlined scripts from the same document are shown in the same source frame with html script tags.`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/debug-inline-scripts.html');
 
@@ -21,11 +21,11 @@
     SourcesTestRunner.showScriptSource('debug-inline-scripts.html', step2);
   }
 
-  function step2(sourceFrame) {
+  async function step2(sourceFrame) {
     TestRunner.addResult('Script source was shown.');
 
-    SourcesTestRunner.setBreakpoint(sourceFrame, 2, '', true);
-    SourcesTestRunner.setBreakpoint(sourceFrame, 9, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 2, '', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 9, '', true);
 
     SourcesTestRunner.waitDebuggerPluginBreakpoints(sourceFrame).then(() => {
       TestRunner.reloadPage(() => SourcesTestRunner.completeDebuggerTest());
@@ -34,9 +34,9 @@
     SourcesTestRunner.waitUntilPaused(step3);
   }
 
-  function step3(callFrames) {
+  async function step3(callFrames) {
     TestRunner.addResult('Script execution paused.');
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     TestRunner.addResult('Call stack status: ' + callstackStatus());
     SourcesTestRunner.showScriptSource('debug-inline-scripts.html', step4);
   }
@@ -47,7 +47,7 @@
         SourcesTestRunner.waitUntilPaused.bind(null, step5));
   }
 
-  function step5(callFrames) {
+  async function step5(callFrames) {
     if (callFrames[0].location().lineNumber !== 9) {
       SourcesTestRunner.resumeExecution(
           SourcesTestRunner.waitUntilPaused.bind(null, step5));
@@ -55,7 +55,7 @@
     }
 
     TestRunner.addResult('Script execution paused.');
-    SourcesTestRunner.captureStackTrace(callFrames);
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.showScriptSource('debug-inline-scripts.html', step6);
   }
 

@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+// clang-format on
+
 /** @fileoverview Suite of tests for zoom-levels. */
 suite('ZoomLevels', function() {
   /**
@@ -40,9 +47,8 @@ suite('ZoomLevels', function() {
   ];
 
   setup(async function() {
-    await settings.forceLazyLoaded();
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    settings.SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     return initPage();
   });
 
@@ -58,7 +64,7 @@ suite('ZoomLevels', function() {
     testElement = document.createElement('zoom-levels');
     document.body.appendChild(testElement);
     return browserProxy.whenCalled('fetchZoomLevels').then(() => {
-      return test_util.waitBeforeNextRender(testElement);
+      return waitBeforeNextRender(testElement);
     });
   }
 
@@ -94,7 +100,7 @@ suite('ZoomLevels', function() {
               2, testElement.shadowRoot.querySelectorAll('.list-item').length);
 
           const removeButton = getRemoveButton(testElement.$.listContainer, 0);
-          assert(!!removeButton);
+          assertTrue(!!removeButton);
           removeButton.click();
           return browserProxy.whenCalled('removeZoomLevel');
         })

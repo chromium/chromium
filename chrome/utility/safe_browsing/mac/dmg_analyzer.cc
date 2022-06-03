@@ -10,8 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -20,7 +19,7 @@
 #include "chrome/common/safe_browsing/mach_o_image_reader_mac.h"
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 
@@ -38,6 +37,10 @@ const double kDmgAnalysisTimeoutMs = 10000;
 class MachOFeatureExtractor {
  public:
   MachOFeatureExtractor();
+
+  MachOFeatureExtractor(const MachOFeatureExtractor&) = delete;
+  MachOFeatureExtractor& operator=(const MachOFeatureExtractor&) = delete;
+
   ~MachOFeatureExtractor();
 
   // Tests if the stream references a Mach-O image by examinig its magic
@@ -57,8 +60,6 @@ class MachOFeatureExtractor {
 
   scoped_refptr<BinaryFeatureExtractor> bfe_;
   std::vector<uint8_t> buffer_;  // Buffer that contains read stream data.
-
-  DISALLOW_COPY_AND_ASSIGN(MachOFeatureExtractor);
 };
 
 MachOFeatureExtractor::MachOFeatureExtractor()
@@ -153,7 +154,7 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
     if (!stream)
       continue;
     if (base::Time::Now() - start_time >=
-        base::TimeDelta::FromMilliseconds(kDmgAnalysisTimeoutMs)) {
+        base::Milliseconds(kDmgAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }
@@ -191,6 +192,7 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
       if (feature_extractor.ExtractFeatures(stream.get(), binary)) {
         binary->set_download_type(
             ClientDownloadRequest_DownloadType_MAC_EXECUTABLE);
+        binary->set_is_executable(true);
         results->has_executable = true;
       } else {
         results->archived_binary.RemoveLast();

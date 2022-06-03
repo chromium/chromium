@@ -1,5 +1,0 @@
-WebData is not allowed to depend on content/, because it is used by iOS.
-If dependences on content/ need to be added to WebData, it will have to be made
-into a layered component: see
-http://www.chromium.org/developers/design-documents/layered-components-design
-for more information.

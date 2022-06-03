@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {

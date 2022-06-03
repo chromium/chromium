@@ -1,0 +1,11 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-char-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-char-actual.cc:::1478:::12:::raw_ptr<const char>
+r:::gen-char-actual.cc:::1508:::15:::raw_ptr<const wchar_t>
+r:::gen-char-actual.cc:::1995:::6:::raw_ptr<char>
+r:::gen-char-actual.cc:::2013:::9:::raw_ptr<wchar_t>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+MyStruct::const_char_ptr  # const-char
+MyStruct::const_wide_char_ptr  # const-char
+==== END FIELD FILTERS ====

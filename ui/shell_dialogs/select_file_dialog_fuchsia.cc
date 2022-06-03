@@ -4,14 +4,14 @@
 
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
+#include "ui/shell_dialogs/select_file_policy.h"
 
 namespace ui {
 
 SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy) {
-  // TODO(fuchsia): Port once we have UI, see https://crbug.com/746674.
   NOTREACHED();
   return nullptr;
 }

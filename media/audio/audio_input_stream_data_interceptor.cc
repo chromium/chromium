@@ -24,13 +24,13 @@ AudioInputStreamDataInterceptor::~AudioInputStreamDataInterceptor() {
 }
 
 // Implementation of AudioInputStream.
-bool AudioInputStreamDataInterceptor::Open() {
+AudioInputStream::OpenOutcome AudioInputStreamDataInterceptor::Open() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return stream_->Open();
 }
 
 void AudioInputStreamDataInterceptor::Start(
-    media::AudioInputStream::AudioInputCallback* callback) {
+    AudioInputStream::AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
   debug_recorder_ = create_debug_recorder_cb_.Run();

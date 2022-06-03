@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 #include "components/prefs/pref_service.h"
@@ -45,11 +44,14 @@ class DownloadArchivesTask : public Task {
   DownloadArchivesTask(PrefetchStore* prefetch_store,
                        PrefetchDownloader* prefetch_downloader,
                        PrefService* prefs);
+
+  DownloadArchivesTask(const DownloadArchivesTask&) = delete;
+  DownloadArchivesTask& operator=(const DownloadArchivesTask&) = delete;
+
   ~DownloadArchivesTask() override;
 
-  void Run() override;
-
  private:
+  void Run() override;
   void SendItemsToPrefetchDownloader(
       std::unique_ptr<ItemsToDownload> items_to_download);
 
@@ -61,8 +63,6 @@ class DownloadArchivesTask : public Task {
   PrefService* prefs_;
 
   base::WeakPtrFactory<DownloadArchivesTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadArchivesTask);
 };
 
 }  // namespace offline_pages

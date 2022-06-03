@@ -23,7 +23,7 @@
 #include "chrome/browser/vr/model/ui_mode.h"
 #include "chrome/browser/vr/model/web_vr_model.h"
 #include "chrome/browser/vr/vr_ui_export.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 
@@ -32,7 +32,6 @@ struct VR_UI_EXPORT Model {
   ~Model();
 
   // VR browsing state.
-  bool browsing_disabled = false;
   bool loading = false;
   float load_progress = 0.0f;
   bool incognito = false;
@@ -58,6 +57,7 @@ struct VR_UI_EXPORT Model {
   bool standalone_vr_device = false;
   bool menu_button_long_pressed = false;
   float floor_height = 0.0f;
+  bool gvr_input_support = false;
   base::TimeTicks current_time;
 
   // WebVR state.

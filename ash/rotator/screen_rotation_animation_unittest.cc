@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -16,13 +15,18 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 
 class ScreenRotationAnimationTest : public AshTestBase {
  public:
   ScreenRotationAnimationTest() = default;
+
+  ScreenRotationAnimationTest(const ScreenRotationAnimationTest&) = delete;
+  ScreenRotationAnimationTest& operator=(const ScreenRotationAnimationTest&) =
+      delete;
+
   ~ScreenRotationAnimationTest() override = default;
 
   // AshTestBase:
@@ -30,14 +34,13 @@ class ScreenRotationAnimationTest : public AshTestBase {
 
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimationTest);
 };
 
 void ScreenRotationAnimationTest::SetUp() {
   AshTestBase::SetUp();
-  non_zero_duration_mode_.reset(new ui::ScopedAnimationDurationScaleMode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION));
+  non_zero_duration_mode_ =
+      std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 }
 
 TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {
@@ -48,8 +51,8 @@ TEST_F(ScreenRotationAnimationTest, LayerTransformGetsSetToTargetWhenAborted) {
       std::make_unique<ScreenRotationAnimation>(
           layer, 45 /* start_degrees */, 0 /* end_degrees */,
           0.5f /* initial_opacity */, 1.0f /* target_opacity */,
-          gfx::Point(10, 10) /* pivot */,
-          base::TimeDelta::FromSeconds(10) /* duration */, gfx::Tween::LINEAR);
+          gfx::Point(10, 10) /* pivot */, base::Seconds(10) /* duration */,
+          gfx::Tween::LINEAR);
 
   ui::LayerAnimator* animator = layer->GetAnimator();
   animator->set_preemption_strategy(
@@ -76,14 +79,14 @@ TEST_F(ScreenRotationAnimationTest, DestroyLayerDuringAnimation) {
   // finishes all of its animation before destroying its layer.
   std::unique_ptr<ui::Layer> layer = std::make_unique<ui::Layer>();
 
-  ui::Layer* root_layer = CurrentContext()->layer();
+  ui::Layer* root_layer = GetContext()->layer();
   layer->SetBounds(gfx::Rect(root_layer->bounds().size()));
   root_layer->Add(layer.get());
 
   std::unique_ptr<ScreenRotationAnimation> screen_rotation =
-      std::make_unique<ScreenRotationAnimation>(
-          layer.get(), 45, 0, 1.0f, 1.0f, gfx::Point(),
-          base::TimeDelta::FromSeconds(1), gfx::Tween::LINEAR);
+      std::make_unique<ScreenRotationAnimation>(layer.get(), 45, 0, 1.0f, 1.0f,
+                                                gfx::Point(), base::Seconds(1),
+                                                gfx::Tween::LINEAR);
   ui::LayerAnimator* animator = layer->GetAnimator();
   std::unique_ptr<ui::LayerAnimationSequence> animation_sequence =
       std::make_unique<ui::LayerAnimationSequence>(std::move(screen_rotation));

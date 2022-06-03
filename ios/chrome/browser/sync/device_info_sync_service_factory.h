@@ -11,6 +11,8 @@
 #include "base/macros.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
+
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
@@ -21,18 +23,18 @@ class DeviceInfoSyncService;
 class DeviceInfoTracker;
 }  // namespace syncer
 
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
-
 // Singleton that owns all DeviceInfoSyncService and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static syncer::DeviceInfoSyncService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   static DeviceInfoSyncServiceFactory* GetInstance();
+
+  DeviceInfoSyncServiceFactory(const DeviceInfoSyncServiceFactory&) = delete;
+  DeviceInfoSyncServiceFactory& operator=(const DeviceInfoSyncServiceFactory&) =
+      delete;
 
   // Iterates over browser states and returns any trackers that can be found.
   static void GetAllDeviceInfoTrackers(
@@ -47,8 +49,6 @@ class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_SERVICE_FACTORY_H_

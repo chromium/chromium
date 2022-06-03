@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "url/url_constants.h"
 
 class Browser;
 class BrowserList;
@@ -29,14 +29,18 @@ class GestureEvent;
 class TabDragControllerTest : public InProcessBrowserTest {
  public:
   TabDragControllerTest();
+  TabDragControllerTest(const TabDragControllerTest&) = delete;
+  TabDragControllerTest& operator=(const TabDragControllerTest&) = delete;
   ~TabDragControllerTest() override;
 
   // Cover for TabStrip::StopAnimating(true).
   void StopAnimating(TabStrip* tab_strip);
 
-  // Adds a new blank tab to |browser|, stops animations and resets the ids of
-  // the tabs in |browser|.
-  void AddTabsAndResetBrowser(Browser* browser, int additional_tabs);
+  // Adds a new tab to |browser| using provided |url| or blank. Stops animations
+  // and resets the ids of the tabs in |browser|.
+  void AddTabsAndResetBrowser(Browser* browser,
+                              int additional_tabs,
+                              const GURL& url = GURL(url::kAboutBlankURL));
 
   // Resizes browser1 and browser2 to be side by side.
   void Resize(Browser* browser1, Browser* browser2);
@@ -57,9 +61,6 @@ class TabDragControllerTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabDragControllerTest);
 };
 
 namespace test {

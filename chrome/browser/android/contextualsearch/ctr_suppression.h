@@ -21,6 +21,10 @@ class CtrSuppression : public contextual_search::WeeklyActivityStorage {
  public:
   // Constructs a new CtrSuppression linked to the given Java object.
   CtrSuppression(JNIEnv* env, jobject obj);
+
+  CtrSuppression(const CtrSuppression&) = delete;
+  CtrSuppression& operator=(const CtrSuppression&) = delete;
+
   ~CtrSuppression() override;
 
   // Calls the destructor.  Should be called when this native object is no
@@ -66,8 +70,6 @@ class CtrSuppression : public contextual_search::WeeklyActivityStorage {
 
   // The linked Java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(CtrSuppression);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CTR_SUPPRESSION_H_

@@ -19,13 +19,12 @@ namespace blink {
 class ModuleMap::Entry final : public GarbageCollected<Entry>,
                                public NameClient,
                                public ModuleScriptLoaderClient {
-  USING_GARBAGE_COLLECTED_MIXIN(ModuleMap::Entry);
 
  public:
   explicit Entry(ModuleMap*);
   ~Entry() override {}
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "ModuleMap::Entry"; }
 
   // Notify fetched |m_moduleScript| to the client asynchronously.
@@ -53,7 +52,7 @@ ModuleMap::Entry::Entry(ModuleMap* map) : map_(map) {
   DCHECK(map_);
 }
 
-void ModuleMap::Entry::Trace(Visitor* visitor) {
+void ModuleMap::Entry::Trace(Visitor* visitor) const {
   visitor->Trace(module_script_);
   visitor->Trace(map_);
   visitor->Trace(clients_);
@@ -100,7 +99,7 @@ ModuleMap::ModuleMap(Modulator* modulator)
   DCHECK(modulator);
 }
 
-void ModuleMap::Trace(Visitor* visitor) {
+void ModuleMap::Trace(Visitor* visitor) const {
   visitor->Trace(map_);
   visitor->Trace(modulator_);
   visitor->Trace(loader_registry_);
@@ -121,7 +120,8 @@ void ModuleMap::FetchSingleModuleScript(
   // <spec step="2">If moduleMap[url] is "fetching", wait in parallel until that
   // entry's value changes, then queue a task on the networking task source to
   // proceed with running the following steps.</spec>
-  MapImpl::AddResult result = map_.insert(request.Url(), nullptr);
+  MapImpl::AddResult result = map_.insert(
+      std::make_pair(request.Url(), request.GetExpectedModuleType()), nullptr);
   Member<Entry>& entry = result.stored_value->value;
   if (result.is_new_entry) {
     entry = MakeGarbageCollected<Entry>(this);
@@ -143,8 +143,9 @@ void ModuleMap::FetchSingleModuleScript(
     entry->AddClient(client);
 }
 
-ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url) const {
-  MapImpl::const_iterator it = map_.find(url);
+ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url,
+                                                ModuleType module_type) const {
+  MapImpl::const_iterator it = map_.find(std::make_pair(url, module_type));
   if (it == map_.end())
     return nullptr;
   return it->value->GetModuleScript();

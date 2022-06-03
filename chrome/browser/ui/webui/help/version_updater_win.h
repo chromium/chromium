@@ -8,9 +8,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_WIN_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_WIN_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/google/google_update_win.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
@@ -22,20 +22,23 @@ class VersionUpdaterWin : public VersionUpdater,
   // will be parented to this widget. |owner_widget| may be given a value of
   // nullptr in which case the UAC prompt will be parented to the desktop.
   explicit VersionUpdaterWin(gfx::AcceleratedWidget owner_widget);
+
+  VersionUpdaterWin(const VersionUpdaterWin&) = delete;
+  VersionUpdaterWin& operator=(const VersionUpdaterWin&) = delete;
+
   ~VersionUpdaterWin() override;
 
   // VersionUpdater:
-  void CheckForUpdate(const StatusCallback& callback,
-                      const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
 
   // UpdateCheckDelegate:
-  void OnUpdateCheckComplete(const base::string16& new_version) override;
+  void OnUpdateCheckComplete(const std::u16string& new_version) override;
   void OnUpgradeProgress(int progress,
-                         const base::string16& new_version) override;
-  void OnUpgradeComplete(const base::string16& new_version) override;
+                         const std::u16string& new_version) override;
+  void OnUpgradeComplete(const std::u16string& new_version) override;
   void OnError(GoogleUpdateErrorCode error_code,
-               const base::string16& html_error_message,
-               const base::string16& new_version) override;
+               const std::u16string& html_error_message,
+               const std::u16string& new_version) override;
 
  private:
   void DoBeginUpdateCheck(bool install_update_if_possible);
@@ -52,8 +55,6 @@ class VersionUpdaterWin : public VersionUpdater,
 
   // Used for callbacks.
   base::WeakPtrFactory<VersionUpdaterWin> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterWin);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_WIN_H_

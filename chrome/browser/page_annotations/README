@@ -1,0 +1,6 @@
+This directory stores files related to Chrome's Page Annotations Service.
+
+Page Annotations Service is a URL-to-metadata mapping service where the metadata
+(aka annotations) can be generated on either the client or the server side. The
+service abstracts the details of the data acquisition and maintenance and
+exposes a simple URL lookup interface for consumers.

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script>
+  "use strict";
+  const createChildAndExecuteSigningOp = function() {
+    // Assuming the /nocontent URL is handled by a server returning HTTP 204,
+    // which is the case for EmbeddedTestServers using the default handlers,
+    // |child| will not commit a navigation.
+    const child = document.createElement('iframe');
+    child.src = '/nocontent';
+    document.body.appendChild(child);
+
+    // Without the fix to crbug.com/1111735, the following will lead to a
+    // renderer kill.
+    const childDocument = child.contentDocument;
+    const myFrame = childDocument.createElement('iframe');
+    myFrame.trustToken = JSON.stringify({
+      type: 'send-redemption-record',
+      issuers: ['https://issuer.example']
+    });
+    myFrame.src = '/title1.html'; // arbitrary URL, no need for handling logic
+    childDocument.body.appendChild(myFrame);
+  };
+
+  window.onload = createChildAndExecuteSigningOp;
+</script>

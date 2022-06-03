@@ -15,16 +15,16 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
+#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -33,13 +33,13 @@
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
-#include "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -145,10 +145,9 @@ void CheckField(const FormStructure& form,
   FAIL() << "Missing field " << name;
 }
 
-AutofillEntry CreateAutofillEntry(const base::string16& value) {
+AutofillEntry CreateAutofillEntry(const std::u16string& value) {
   const base::Time kNow = AutofillClock::Now();
-  return AutofillEntry(AutofillKey(base::ASCIIToUTF16("Name"), value), kNow,
-                       kNow);
+  return AutofillEntry(AutofillKey(u"Name", value), kNow, kNow);
 }
 
 // Forces rendering of a UIView. This is used in tests to make sure that UIKit
@@ -187,6 +186,10 @@ class AutofillControllerTest : public ChromeWebTest {
  public:
   AutofillControllerTest()
       : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+
+  AutofillControllerTest(const AutofillControllerTest&) = delete;
+  AutofillControllerTest& operator=(const AutofillControllerTest&) = delete;
+
   ~AutofillControllerTest() override {}
 
  protected:
@@ -204,7 +207,7 @@ class AutofillControllerTest : public ChromeWebTest {
   void WaitForSuggestionRetrieval(BOOL wait_for_trigger);
 
   // Blocks until |expected_size| forms have been fecthed.
-  bool WaitForFormFetched(AutofillManager* manager,
+  bool WaitForFormFetched(BrowserAutofillManager* manager,
                           size_t expected_number_of_forms) WARN_UNUSED_RESULT;
 
   // Loads the page and wait until the initial form processing has been done.
@@ -212,6 +215,8 @@ class AutofillControllerTest : public ChromeWebTest {
   bool LoadHtmlAndWaitForFormFetched(NSString* html,
                                      size_t expected_number_of_forms)
       WARN_UNUSED_RESULT;
+
+  void LoadHtmlAndInitRendererIds(NSString* html);
 
   // Fails if the specified metric was not registered the given number of times.
   void ExpectMetric(const std::string& histogram_name, int sum);
@@ -237,7 +242,7 @@ class AutofillControllerTest : public ChromeWebTest {
   // Retrieves accessory views according to form events.
   FormInputAccessoryMediator* accessory_mediator_;
 
-  DISALLOW_COPY_AND_ASSIGN(AutofillControllerTest);
+  PasswordController* passwordController_;
 };
 
 void AutofillControllerTest::SetUp() {
@@ -247,6 +252,12 @@ void AutofillControllerTest::SetUp() {
   // WebDataService; this is not initialized on a TestChromeBrowserState by
   // default.
   chrome_browser_state_->CreateWebDataService();
+
+  // Create a PasswordController instance that will handle set up for renderer
+  // ids.
+  UniqueIDDataTabHelper::CreateForWebState(web_state());
+  passwordController_ =
+      [[PasswordController alloc] initWithWebState:web_state()];
 
   autofill_agent_ = [[AutofillAgent alloc]
       initWithPrefService:chrome_browser_state_->GetPrefs()
@@ -266,21 +277,19 @@ void AutofillControllerTest::SetUp() {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale,
-      autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 
   accessory_mediator_ =
       [[FormInputAccessoryMediator alloc] initWithConsumer:nil
-                                                  delegate:nil
+                                                   handler:nil
                                               webStateList:NULL
                                        personalDataManager:NULL
-                                             passwordStore:nullptr];
+                                             passwordStore:nullptr
+                                      securityAlertHandler:nil
+                                    reauthenticationModule:nil];
 
   [accessory_mediator_ injectWebState:web_state()];
   [accessory_mediator_ injectProvider:suggestion_controller_];
-  auto suggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
-      [web_state()->GetJSInjectionReceiver()
-          instanceOfClass:[JsSuggestionManager class]]);
-  [accessory_mediator_ injectSuggestionManager:suggestionManager];
 
   histogram_tester_.reset(new base::HistogramTester());
 }
@@ -307,7 +316,7 @@ void AutofillControllerTest::WaitForSuggestionRetrieval(BOOL wait_for_trigger) {
 }
 
 bool AutofillControllerTest::WaitForFormFetched(
-    AutofillManager* manager,
+    BrowserAutofillManager* manager,
     size_t expected_number_of_forms) {
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForPageLoadTimeout, ^bool {
@@ -318,10 +327,10 @@ bool AutofillControllerTest::WaitForFormFetched(
 bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
     NSString* html,
     size_t expected_number_of_forms) {
-  LoadHtml(html);
+  ChromeWebTest::LoadHtml(html);
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
   return WaitForFormFetched(autofill_manager, expected_number_of_forms);
@@ -338,12 +347,12 @@ void AutofillControllerTest::ExpectHappinessMetric(
 }
 
 // Checks that viewing an HTML page containing a form results in the form being
-// registered as a FormStructure by the AutofillManager.
+// registered as a FormStructure by the BrowserAutofillManager.
 TEST_F(AutofillControllerTest, ReadForm) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
   const auto& forms = autofill_manager->form_structures();
@@ -358,18 +367,18 @@ TEST_F(AutofillControllerTest, ReadForm) {
 }
 
 // Checks that viewing an HTML page containing a form with an 'id' results in
-// the form being registered as a FormStructure by the AutofillManager, and the
-// name is correctly set.
+// the form being registered as a FormStructure by the BrowserAutofillManager,
+// and the name is correctly set.
 TEST_F(AutofillControllerTest, ReadFormName) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kMinimalFormWithNameHtml, 1));
   web::WebFrame* main_frame =
       web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
   const auto& forms = autofill_manager->form_structures();
   const auto& form = *(forms.begin()->second);
-  EXPECT_EQ(base::UTF8ToUTF16("form1"), form.ToFormData().name);
+  EXPECT_EQ(u"form1", form.ToFormData().name);
 }
 
 // Checks that an HTML page containing a profile-type form which is submitted
@@ -378,7 +387,7 @@ TEST_F(AutofillControllerTest, ReadFormName) {
 TEST_F(AutofillControllerTest, ProfileImport) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ios::ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(GetBrowserState()));
   // Check there are no registered profiles already.
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
@@ -396,16 +405,14 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   if (profiles.size() != 1)
     FAIL() << "Not exactly one profile found after attempted import";
   const AutofillProfile& profile = *profiles[0];
-  EXPECT_EQ(base::UTF8ToUTF16("Homer Simpson"),
+  EXPECT_EQ(u"Homer Simpson",
             profile.GetInfo(AutofillType(NAME_FULL), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("123 Main Street"),
+  EXPECT_EQ(u"123 Main Street",
             profile.GetInfo(AutofillType(ADDRESS_HOME_LINE1), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("Springfield"),
+  EXPECT_EQ(u"Springfield",
             profile.GetInfo(AutofillType(ADDRESS_HOME_CITY), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("IL"),
-            profile.GetInfo(AutofillType(ADDRESS_HOME_STATE), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("55123"),
-            profile.GetInfo(AutofillType(ADDRESS_HOME_ZIP), "en-US"));
+  EXPECT_EQ(u"IL", profile.GetInfo(AutofillType(ADDRESS_HOME_STATE), "en-US"));
+  EXPECT_EQ(u"55123", profile.GetInfo(AutofillType(ADDRESS_HOME_ZIP), "en-US"));
 }
 
 void AutofillControllerTest::SetUpForSuggestions(
@@ -413,13 +420,13 @@ void AutofillControllerTest::SetUpForSuggestions(
     size_t expected_number_of_forms) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ios::ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(GetBrowserState()));
   AutofillProfile profile(base::GenerateGUID(), "https://www.example.com/");
-  profile.SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Homer Simpson"));
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("123 Main Street"));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Springfield"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("IL"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("55123"));
+  profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
   personal_data_manager->SaveImportedProfile(profile);
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
@@ -478,15 +485,15 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
 TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ios::ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(GetBrowserState()));
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
   AutofillProfile profile(base::GenerateGUID(), "https://www.example.com/");
-  profile.SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Homer Simpson"));
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("123 Main Street"));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Springfield"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("IL"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("55123"));
+  profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
 
   personal_data_manager->SaveImportedProfile(profile);
@@ -494,12 +501,11 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
 
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
   AutofillProfile profile2(base::GenerateGUID(), "https://www.example.com/");
-  profile2.SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Larry Page"));
-  profile2.SetRawInfo(ADDRESS_HOME_LINE1,
-                      base::UTF8ToUTF16("1600 Amphitheatre Parkway"));
-  profile2.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Mountain View"));
-  profile2.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("CA"));
-  profile2.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("94043"));
+  profile2.SetRawInfo(NAME_FULL, u"Larry Page");
+  profile2.SetRawInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheatre Parkway");
+  profile2.SetRawInfo(ADDRESS_HOME_CITY, u"Mountain View");
+  profile2.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
   personal_data_manager->SaveImportedProfile(profile2);
   EXPECT_EQ(2U, personal_data_manager->GetProfiles().size());
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
@@ -520,28 +526,32 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   scoped_refptr<AutofillWebDataService> web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
           chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
-  __block TestConsumer consumer;
+  TestConsumer consumer;
   const int limit = 1;
-  consumer.result_ = {CreateAutofillEntry(base::ASCIIToUTF16("Should")),
-                      CreateAutofillEntry(base::ASCIIToUTF16("get")),
-                      CreateAutofillEntry(base::ASCIIToUTF16("overwritten"))};
-  web_data_service->GetFormValuesForElementName(
-      base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
+  consumer.result_ = {CreateAutofillEntry(u"Should"),
+                      CreateAutofillEntry(u"get"),
+                      CreateAutofillEntry(u"overwritten")};
+  web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
+                                                limit, &consumer);
   base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // No value should be returned before anything is loaded via form submission.
   ASSERT_EQ(0U, consumer.result_.size());
   ExecuteJavaScript(@"submit.click()");
+  // We can't make |consumer| a __block variable because TestConsumer lacks copy
+  // construction. We just pass a pointer instead as we know that the callback
+  // is executed within the life-cyle of |consumer|.
+  TestConsumer* consumer_ptr = &consumer;
   WaitForCondition(^bool {
-    web_data_service->GetFormValuesForElementName(
-        base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
-    return consumer.result_.size();
+    web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
+                                                  limit, consumer_ptr);
+    return consumer_ptr->result_.size();
   });
   base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // One result should be returned, matching the filled value.
   ASSERT_EQ(1U, consumer.result_.size());
-  EXPECT_EQ(base::UTF8ToUTF16("Hello"), consumer.result_[0].key().value());
+  EXPECT_EQ(u"Hello", consumer.result_[0].key().value());
 }
 
 void AutofillControllerTest::SetUpKeyValueData() {
@@ -551,8 +561,8 @@ void AutofillControllerTest::SetUpKeyValueData() {
   // Load value into database.
   std::vector<FormFieldData> values;
   FormFieldData fieldData;
-  fieldData.name = base::UTF8ToUTF16("greeting");
-  fieldData.value = base::UTF8ToUTF16("Bonjour");
+  fieldData.name = u"greeting";
+  fieldData.value = u"Bonjour";
   values.push_back(fieldData);
   web_data_service->AddFormFields(values);
 
@@ -601,7 +611,7 @@ TEST_F(AutofillControllerTest, KeyValueFocusChange) {
   // Focus the dummy field and confirm no suggestions are presented.
   ExecuteJavaScript(@"document.forms[0].dummy.focus()");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  EXPECT_EQ(0U, [suggestion_controller() suggestions].count);
+  ASSERT_EQ(0U, [suggestion_controller() suggestions].count);
 
   // Enter 'B' in the dummy field and confirm no suggestions are presented.
   ExecuteJavaScript(@"event = document.createEvent('TextEvent');");
@@ -609,7 +619,7 @@ TEST_F(AutofillControllerTest, KeyValueFocusChange) {
       @"event.initTextEvent('textInput', true, true, window, 'B');");
   ExecuteJavaScript(@"document.forms[0].dummy.dispatchEvent(event);");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  EXPECT_EQ(0U, [suggestion_controller() suggestions].count);
+  ASSERT_EQ(0U, [suggestion_controller() suggestions].count);
 
   // Enter 'B' in the greeting field and confirm that one suggestion ("Bonjour")
   // is presented.
@@ -620,7 +630,7 @@ TEST_F(AutofillControllerTest, KeyValueFocusChange) {
       @"event.initTextEvent('textInput', true, true, window, 'B');");
   ExecuteJavaScript(@"document.forms[0].greeting.dispatchEvent(event);");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
-  EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
+  ASSERT_EQ(1U, [suggestion_controller() suggestions].count);
   FormSuggestion* suggestion = [suggestion_controller() suggestions][0];
   EXPECT_NSEQ(@"Bonjour", suggestion.value);
 }
@@ -644,7 +654,7 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
-          ios::ChromeBrowserState::FromBrowserState(GetBrowserState()));
+          ChromeBrowserState::FromBrowserState(GetBrowserState()));
 
   // Check there are no registered profiles already.
   EXPECT_EQ(0U, personal_data_manager->GetCreditCards().size());
@@ -676,15 +686,14 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
       personal_data_manager->GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
-  EXPECT_EQ(base::UTF8ToUTF16("Superman"),
+  EXPECT_EQ(u"Superman",
             credit_card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("4000444444444444"),
+  EXPECT_EQ(u"4000444444444444",
             credit_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("11"),
+  EXPECT_EQ(u"11",
             credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
-  EXPECT_EQ(
-      base::UTF8ToUTF16("2999"),
-      credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+  EXPECT_EQ(u"2999", credit_card.GetInfo(
+                         AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
 }
 
 }  // namespace

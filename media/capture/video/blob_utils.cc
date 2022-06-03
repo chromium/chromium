@@ -121,8 +121,11 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
 
   mojom::BlobPtr blob = mojom::Blob::New();
   const gfx::PNGCodec::ColorFormat codec_color_format =
-      (kN32_SkColorType == kRGBA_8888_SkColorType) ? gfx::PNGCodec::FORMAT_RGBA
-                                                   : gfx::PNGCodec::FORMAT_BGRA;
+#if SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+      gfx::PNGCodec::FORMAT_RGBA;
+#else
+      gfx::PNGCodec::FORMAT_BGRA;
+#endif
   const bool result = gfx::PNGCodec::Encode(
       tmp_argb.get(), codec_color_format, frame_size, frame_size.width() * 4,
       true /* discard_transparency */, std::vector<gfx::PNGCodec::Comment>(),

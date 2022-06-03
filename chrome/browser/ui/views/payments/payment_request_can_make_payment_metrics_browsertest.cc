@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -15,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/core/journey_logger.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
@@ -22,6 +22,12 @@ namespace payments {
 
 class PaymentRequestCanMakePaymentMetricsTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestCanMakePaymentMetricsTest(
+      const PaymentRequestCanMakePaymentMetricsTest&) = delete;
+  PaymentRequestCanMakePaymentMetricsTest& operator=(
+      const PaymentRequestCanMakePaymentMetricsTest&) = delete;
+
  protected:
   PaymentRequestCanMakePaymentMetricsTest() = default;
 
@@ -49,9 +55,6 @@ class PaymentRequestCanMakePaymentMetricsTest
     // Wait for all callbacks to run.
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCanMakePaymentMetricsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
@@ -66,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   CheckPaymentSupportAndThenShow();
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -200,19 +203,16 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
 
   // Add a test credit card.
   OpenCreditCardEditorScreen();
-  SetEditorTextfieldValue(base::UTF8ToUTF16("Bob Simpson"),
-                          autofill::CREDIT_CARD_NAME_FULL);
-  SetEditorTextfieldValue(base::UTF8ToUTF16("4111111111111111"),
-                          autofill::CREDIT_CARD_NUMBER);
-  SetComboboxValue(base::UTF8ToUTF16("05"), autofill::CREDIT_CARD_EXP_MONTH);
-  SetComboboxValue(base::UTF8ToUTF16("2026"),
-                   autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  SetEditorTextfieldValue(u"Bob Simpson", autofill::CREDIT_CARD_NAME_FULL);
+  SetEditorTextfieldValue(u"4111111111111111", autofill::CREDIT_CARD_NUMBER);
+  SetComboboxValue(u"05", autofill::CREDIT_CARD_EXP_MONTH);
+  SetComboboxValue(u"2026", autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
   SelectBillingAddress(billing_address.guid());
   ResetEventWaiter(DialogEvent::BACK_TO_PAYMENT_SHEET_NAVIGATION);
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   WaitForObservedEvent();
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure that no canMakePayment events were logged.
   std::vector<base::Bucket> buckets =
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   ResetEventWaiterForSequence({DialogEvent::DIALOG_CLOSED});
   GURL other_origin_url =
       https_server()->GetURL("b.com", "/payment_request_email_test.html");
-  ui_test_utils::NavigateToURL(browser(), other_origin_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_origin_url));
   WaitForObservedEvent();
 
   // Make sure the correct events were logged.

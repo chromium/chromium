@@ -1,0 +1,215 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This is a .pyl, or "Python Literal", file. You can treat it just like a
+# .json file, with the following exceptions:
+# * all keys must be quoted (use single quotes, please);
+# * comments are allowed, using '#' syntax; and
+# * trailing commas are allowed.
+#
+# List of files that are known to be _not_ deterministic. This is a "temporary"
+# workaround to find regression on the deterministic builders.
+#
+# TODO(sebmarchand): Remove this once all the files are deterministic.
+{
+  # TODO(thakis): Move android det bots to use two distinct build dirs,
+  # https://crbug.com/899438
+  'android': [
+  ],
+
+  'fuchsia': [
+  ],
+
+  'linux': [
+
+    # https://crbug.com/1047205
+    'nacl_test_data/extension_vcache_test/glibc/extension_validation_cache_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/pm_exit_status_test_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/simple_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/sysconf_nprocessors_onln_test_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/nonsfi/irt_exception_test_pnacl_newlib_x32_nonsfi.nexe',
+    'nacl_test_data/nonsfi/irt_manifest_file_pnacl_newlib_x32_nonsfi.nexe',
+    'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
+    'test_data/ppapi/tests/extensions/packaged_app/nonsfi/ppapi_tests_extensions_packaged_app_pnacl_newlib_x32_nonsfi.nexe',
+
+    # https://crbug.com/1040247
+    'nacl_irt_x86_64.nexe',
+    'nacl_irt_x86_64.nexe.debug',
+
+    # https://crbug.com/1047205
+    'nacl_test_data/extension_vcache_test/newlib/extension_validation_cache_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/irt_exception_test_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/irt_manifest_file_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/pm_exit_status_test_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_in_callback_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_off_main_thread_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_ppapi_off_main_thread_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_via_check_failure_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_via_exit_call_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_extension_mime_handler_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_ppb_core_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_ppb_instance_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_ppp_instance_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_progress_events_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/simple_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/sysconf_nprocessors_onln_test_newlib_x86_64.nexe',
+    'nacl_test_data/pnacl/pnacl_debug_url_newlib_pnacl.pexe.debug',
+    'nacl_test_data/pnacl/pnacl_errors_newlib_pnacl.pexe',
+    'ppapi_nacl_tests_pnacl_newlib_x32_nonsfi.nexe',
+    'ppapi_nacl_tests_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/background_keepalive/newlib/ppapi_tests_extensions_background_keepalive_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/load_unload/newlib/ppapi_tests_extensions_load_unload_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/media_galleries/newlib/ppapi_tests_extensions_media_galleries_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/multicast_permissions/newlib/ppapi_tests_extensions_multicast_permissions_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/no_socket_permissions/newlib/ppapi_tests_extensions_no_socket_permissions_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/packaged_app/newlib/ppapi_tests_extensions_packaged_app_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/popup/newlib/ppapi_tests_extensions_popup_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/socket_permissions/newlib/ppapi_tests_extensions_socket_permissions_newlib_x86_64.nexe',
+
+    # https://crbug.com/1135151
+    'args.gn',
+  ],
+
+  'linux_component': [
+    # https://crbug.com/954056
+    'nacl_test_data/nonsfi/irt_exception_test_pnacl_newlib_x32_nonsfi.nexe',
+    'nacl_test_data/nonsfi/irt_manifest_file_pnacl_newlib_x32_nonsfi.nexe',
+    'test_data/ppapi/tests/extensions/packaged_app/nonsfi/ppapi_tests_extensions_packaged_app_pnacl_newlib_x32_nonsfi.nexe',
+
+    # https://crbug.com/1008035
+    'nacl_test_data/extension_vcache_test/glibc/extension_validation_cache_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/pm_exit_status_test_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/simple_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/sysconf_nprocessors_onln_test_libs/lib64/libppapi_cpp_lib.so',
+    'ppapi_nacl_tests_libs/lib64/glibc_x64/libppapi_cpp_lib.so',
+
+    # https://crbug.com/1040247
+    'nacl_irt_x86_64.nexe',
+    'nacl_irt_x86_64.nexe.debug',
+    'nacl_test_data/extension_vcache_test/newlib/extension_validation_cache_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/irt_exception_test_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/irt_manifest_file_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/pm_exit_status_test_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_in_callback_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_off_main_thread_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_ppapi_off_main_thread_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_via_check_failure_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_crash_via_exit_call_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_extension_mime_handler_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_ppb_core_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_ppb_instance_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_ppp_instance_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/ppapi_progress_events_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/simple_newlib_x86_64.nexe',
+    'nacl_test_data/newlib/sysconf_nprocessors_onln_test_newlib_x86_64.nexe',
+    'nacl_test_data/pnacl/pnacl_debug_url_newlib_pnacl.pexe.debug',
+    'nacl_test_data/pnacl/pnacl_errors_newlib_pnacl.pexe',
+    'ppapi_nacl_tests_pnacl_newlib_x32_nonsfi.nexe',
+    'ppapi_nacl_tests_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/background_keepalive/newlib/ppapi_tests_extensions_background_keepalive_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/load_unload/newlib/ppapi_tests_extensions_load_unload_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/media_galleries/newlib/ppapi_tests_extensions_media_galleries_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/multicast_permissions/newlib/ppapi_tests_extensions_multicast_permissions_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/no_socket_permissions/newlib/ppapi_tests_extensions_no_socket_permissions_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/packaged_app/newlib/ppapi_tests_extensions_packaged_app_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/popup/newlib/ppapi_tests_extensions_popup_newlib_x86_64.nexe',
+    'test_data/ppapi/tests/extensions/socket_permissions/newlib/ppapi_tests_extensions_socket_permissions_newlib_x86_64.nexe',
+
+    # https://crbug.com/1093166
+    'test_data/ppapi/tests/extensions/packaged_app/pnacl/ppapi_tests_extensions_packaged_app_newlib_pnacl.pexe',
+  ],
+
+  # TODO(thakis): Move mac det bots to use two distinct build dirs,
+  # https://crbug.com/899438
+  'mac': [
+  ],
+
+  # https://crbug.com/330260
+  'win': [
+    # https://crbug.com/1008035
+    'ppapi_nacl_tests_pnacl_newlib_x32.nexe',
+    'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
+
+    # https://crbug.com/429358
+    'nacl_test_data\\extension_vcache_test\\glibc\\extension_validation_cache_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\extension_vcache_test\\glibc\\extension_validation_cache_libs\\lib64\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\pm_exit_status_test_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\pm_exit_status_test_libs\\lib64\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\simple_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\simple_libs\\lib64\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\sysconf_nprocessors_onln_test_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\sysconf_nprocessors_onln_test_libs\\lib64\\libppapi_cpp_lib.dll',
+
+    # https://crbug.com/1040247
+    'nacl_irt_x86_32.nexe',
+    'nacl_irt_x86_32.nexe.debug',
+    'nacl_irt_x86_64.nexe',
+    'nacl_irt_x86_64.nexe.debug',
+    r'nacl_test_data\extension_vcache_test\newlib\extension_validation_cache_newlib_x86_32.nexe',
+    r'nacl_test_data\extension_vcache_test\newlib\extension_validation_cache_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\irt_exception_test_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\irt_exception_test_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\irt_manifest_file_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\irt_manifest_file_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\pm_exit_status_test_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\pm_exit_status_test_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_in_callback_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_in_callback_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_off_main_thread_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_off_main_thread_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_ppapi_off_main_thread_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_ppapi_off_main_thread_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_via_check_failure_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_via_check_failure_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_via_exit_call_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_crash_via_exit_call_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_extension_mime_handler_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_extension_mime_handler_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_ppb_core_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_ppb_core_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_ppb_instance_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_ppb_instance_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_ppp_instance_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_ppp_instance_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\ppapi_progress_events_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\ppapi_progress_events_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\simple_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\simple_newlib_x86_64.nexe',
+    r'nacl_test_data\newlib\sysconf_nprocessors_onln_test_newlib_x86_32.nexe',
+    r'nacl_test_data\newlib\sysconf_nprocessors_onln_test_newlib_x86_64.nexe',
+    r'nacl_test_data\pnacl\pnacl_debug_url_newlib_pnacl.pexe.debug',
+    r'nacl_test_data\pnacl\pnacl_errors_newlib_pnacl.pexe',
+    r'ppapi_nacl_tests_newlib_x86_32.nexe',
+    r'ppapi_nacl_tests_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\background_keepalive\newlib\ppapi_tests_extensions_background_keepalive_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\background_keepalive\newlib\ppapi_tests_extensions_background_keepalive_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\load_unload\newlib\ppapi_tests_extensions_load_unload_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\load_unload\newlib\ppapi_tests_extensions_load_unload_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\media_galleries\newlib\ppapi_tests_extensions_media_galleries_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\media_galleries\newlib\ppapi_tests_extensions_media_galleries_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\multicast_permissions\newlib\ppapi_tests_extensions_multicast_permissions_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\multicast_permissions\newlib\ppapi_tests_extensions_multicast_permissions_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\no_socket_permissions\newlib\ppapi_tests_extensions_no_socket_permissions_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\no_socket_permissions\newlib\ppapi_tests_extensions_no_socket_permissions_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\packaged_app\newlib\ppapi_tests_extensions_packaged_app_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\packaged_app\newlib\ppapi_tests_extensions_packaged_app_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\popup\newlib\ppapi_tests_extensions_popup_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\popup\newlib\ppapi_tests_extensions_popup_newlib_x86_64.nexe',
+    r'test_data\ppapi\tests\extensions\socket_permissions\newlib\ppapi_tests_extensions_socket_permissions_newlib_x86_32.nexe',
+    r'test_data\ppapi\tests\extensions\socket_permissions\newlib\ppapi_tests_extensions_socket_permissions_newlib_x86_64.nexe',
+
+    # TODO(thakis): Figure out what's up with these three (and their isolate).
+    'mini_installer.exe',
+    'mini_installer.exe.pdb',
+    'previous_version_mini_installer.exe',
+
+    # https://crbug.com/1163310
+    r'swiftshader\libGLESv2.dll',
+    r'swiftshader\libGLESv2.dll.pdb',
+
+    # These probably have mtimes in the zip headers and the scripts creating
+    # them probably should use build_utils.ZipDir() instead.
+    'mini_installer_tests.zip',
+  ],
+}

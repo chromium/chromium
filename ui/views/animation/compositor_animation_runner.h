@@ -5,23 +5,27 @@
 #ifndef UI_VIEWS_ANIMATION_COMPOSITOR_ANIMATION_RUNNER_H_
 #define UI_VIEWS_ANIMATION_COMPOSITOR_ANIMATION_RUNNER_H_
 
-#include "base/scoped_observer.h"
+#include "base/location.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/gfx/animation/animation_container.h"
+#include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Widget;
 
 // An animation runner based on ui::Compositor.
-class CompositorAnimationRunner : public gfx::AnimationRunner,
-                                  public ui::CompositorAnimationObserver,
-                                  public WidgetObserver {
+class VIEWS_EXPORT CompositorAnimationRunner
+    : public gfx::AnimationRunner,
+      public ui::CompositorAnimationObserver,
+      public WidgetObserver {
  public:
-  explicit CompositorAnimationRunner(Widget* widget);
+  explicit CompositorAnimationRunner(
+      Widget* widget,
+      const base::Location& location = FROM_HERE);
   CompositorAnimationRunner(CompositorAnimationRunner&) = delete;
   CompositorAnimationRunner& operator=(CompositorAnimationRunner&) = delete;
   ~CompositorAnimationRunner() override;
@@ -41,6 +45,10 @@ class CompositorAnimationRunner : public gfx::AnimationRunner,
   void OnStart(base::TimeDelta min_interval, base::TimeDelta elapsed) override;
 
  private:
+  // Called when an animation is stopped, the compositor is shutting down, or
+  // the widget is destroyed.
+  void StopInternal();
+
   // When |widget_| is nullptr, it means the widget has been destroyed and
   // |compositor_| must also be nullptr.
   Widget* widget_;

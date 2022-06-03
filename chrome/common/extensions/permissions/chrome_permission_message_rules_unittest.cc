@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -18,10 +18,10 @@ namespace extensions {
 
 namespace {
 
-std::string PermissionIDsToString(const std::set<APIPermission::ID>& ids) {
+std::string PermissionIDsToString(const std::set<mojom::APIPermissionID>& ids) {
   std::vector<std::string> strs;
   for (auto id : ids)
-    strs.push_back(base::NumberToString(id));
+    strs.push_back(base::NumberToString(static_cast<int>(id)));
   return base::JoinString(strs, " ");
 }
 
@@ -42,8 +42,8 @@ bool MakesRedundant(const ChromePermissionMessageRule& first_rule,
   // (i.e., A, B, and C are all there), then the requirements for 1 are also
   // satisfied. Since 1 comes first, it will always take A and B, and so the
   // requirements for 2 can never be satisfied by the time it's applied.
-  return base::STLIncludes(second_rule.required_permissions(),
-                           first_rule.required_permissions());
+  return base::ranges::includes(second_rule.required_permissions(),
+                                first_rule.required_permissions());
 }
 
 }  // namespace

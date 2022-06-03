@@ -27,14 +27,17 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -52,7 +55,14 @@ static void RemoveFromNullOriginMapIfNecessary(const KURL& blob_url) {
 }  // namespace
 
 PublicURLManager::PublicURLManager(ExecutionContext* context)
-    : ContextLifecycleObserver(context), is_stopped_(false) {}
+    : ExecutionContextLifecycleObserver(context),
+      is_stopped_(false),
+      url_store_(context) {
+  BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
+      context->GetSecurityOrigin(),
+      url_store_.BindNewEndpointAndPassReceiver(
+          context->GetTaskRunner(TaskType::kFileReading)));
+}
 
 String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   if (is_stopped_)
@@ -66,14 +76,11 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   if (registrable->IsMojoBlob()) {
     // Measure how much jank the following synchronous IPC introduces.
     SCOPED_UMA_HISTOGRAM_TIMER("Storage.Blob.RegisterPublicURLTime");
-    if (!url_store_) {
-      BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-          origin, url_store_.BindNewEndpointAndPassReceiver());
-    }
     mojo::PendingRemote<mojom::blink::Blob> blob_remote;
     mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
         blob_remote.InitWithNewPipeAndPassReceiver();
-    url_store_->Register(std::move(blob_remote), url);
+    url_store_->Register(std::move(blob_remote), url,
+                         GetExecutionContext()->GetAgentClusterID());
     mojo_urls_.insert(url_string);
     registrable->CloneMojoBlob(std::move(blob_receiver));
   } else {
@@ -99,11 +106,6 @@ void PublicURLManager::Revoke(const KURL& url) {
           GetExecutionContext()->GetSecurityOrigin()))
     return;
 
-  if (!url_store_) {
-    BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-        GetExecutionContext()->GetSecurityOrigin(),
-        url_store_.BindNewEndpointAndPassReceiver());
-  }
   url_store_->Revoke(url);
   mojo_urls_.erase(url.GetString());
 
@@ -123,12 +125,20 @@ void PublicURLManager::Resolve(
     return;
 
   DCHECK(url.ProtocolIs("blob"));
-  if (!url_store_) {
-    BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-        GetExecutionContext()->GetSecurityOrigin(),
-        url_store_.BindNewEndpointAndPassReceiver());
-  }
-  url_store_->ResolveAsURLLoaderFactory(url, std::move(factory_receiver));
+  url_store_->ResolveAsURLLoaderFactory(
+      url, std::move(factory_receiver),
+      WTF::Bind(
+          [](ExecutionContext* execution_context,
+             const absl::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id) {
+            if (execution_context->GetAgentClusterID() !=
+                unsafe_agent_cluster_id) {
+              execution_context->CountUse(
+                  WebFeature::
+                      kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory);
+            }
+          },
+          WrapPersistent(GetExecutionContext())));
 }
 
 void PublicURLManager::Resolve(
@@ -138,15 +148,23 @@ void PublicURLManager::Resolve(
     return;
 
   DCHECK(url.ProtocolIs("blob"));
-  if (!url_store_) {
-    BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(
-        GetExecutionContext()->GetSecurityOrigin(),
-        url_store_.BindNewEndpointAndPassReceiver());
-  }
-  url_store_->ResolveForNavigation(url, std::move(token_receiver));
+  url_store_->ResolveForNavigation(
+      url, std::move(token_receiver),
+      WTF::Bind(
+          [](ExecutionContext* execution_context,
+             const absl::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id) {
+            if (execution_context->GetAgentClusterID() !=
+                unsafe_agent_cluster_id) {
+              execution_context->CountUse(
+                  WebFeature::
+                      kBlobStoreAccessAcrossAgentClustersInResolveForNavigation);
+            }
+          },
+          WrapPersistent(GetExecutionContext())));
 }
 
-void PublicURLManager::ContextDestroyed(ExecutionContext*) {
+void PublicURLManager::ContextDestroyed() {
   if (is_stopped_)
     return;
 
@@ -160,12 +178,11 @@ void PublicURLManager::ContextDestroyed(ExecutionContext*) {
 
   url_to_registry_.clear();
   mojo_urls_.clear();
-
-  url_store_.reset();
 }
 
-void PublicURLManager::Trace(blink::Visitor* visitor) {
-  ContextLifecycleObserver::Trace(visitor);
+void PublicURLManager::Trace(Visitor* visitor) const {
+  visitor->Trace(url_store_);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

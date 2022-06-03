@@ -10,16 +10,12 @@ component("tab_count_metrics") {
 
   defines = [ "IS_TAB_COUNT_METRICS_IMPL" ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "tab_count_metrics_unittest.cc",
-  ]
+  sources = [ "tab_count_metrics_unittest.cc" ]
 
   deps = [
     ":tab_count_metrics",

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -23,6 +23,10 @@ namespace extensions {
 class ProcessesEventRouter : public task_manager::TaskManagerObserver {
  public:
   explicit ProcessesEventRouter(content::BrowserContext* context);
+
+  ProcessesEventRouter(const ProcessesEventRouter&) = delete;
+  ProcessesEventRouter& operator=(const ProcessesEventRouter&) = delete;
+
   ~ProcessesEventRouter() override;
 
   // Called when an extension process wants to listen to process events.
@@ -44,7 +48,7 @@ class ProcessesEventRouter : public task_manager::TaskManagerObserver {
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::unique_ptr<base::ListValue> event_args) const;
+                     std::vector<base::Value> event_args) const;
 
   // Determines whether there is a registered listener for the specified event.
   // It helps to avoid collecting data if no one is interested in it.
@@ -64,8 +68,6 @@ class ProcessesEventRouter : public task_manager::TaskManagerObserver {
 
   // Count of listeners, so we avoid sending updates if no one is interested.
   int listeners_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessesEventRouter);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +76,10 @@ class ProcessesAPI : public BrowserContextKeyedAPI,
                      public EventRouter::Observer {
  public:
   explicit ProcessesAPI(content::BrowserContext* context);
+
+  ProcessesAPI(const ProcessesAPI&) = delete;
+  ProcessesAPI& operator=(const ProcessesAPI&) = delete;
+
   ~ProcessesAPI() override;
 
   // BrowserContextKeyedAPI:
@@ -103,8 +109,6 @@ class ProcessesAPI : public BrowserContextKeyedAPI,
 
   // Created lazily on first access.
   std::unique_ptr<ProcessesEventRouter> processes_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessesAPI);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

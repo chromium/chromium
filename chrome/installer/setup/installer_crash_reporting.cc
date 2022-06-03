@@ -11,9 +11,8 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
@@ -22,7 +21,7 @@
 #include "chrome/installer/setup/installer_crash_reporter_client.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "components/crash/content/app/crashpad.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
 
@@ -105,29 +104,29 @@ void SetInitialCrashKeys(const InstallerState& state) {
 
   // This is a Windows registry key, which maxes out at 255 chars.
   static CrashKeyString<256> state_crash_key("state-key");
-  const base::string16 state_key = state.state_key();
+  const std::wstring state_key = state.state_key();
   if (!state_key.empty())
-    state_crash_key.Set(base::UTF16ToUTF8(state_key));
+    state_crash_key.Set(base::WideToUTF8(state_key));
 
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/579504.
   const auto& details = install_static::InstallDetails::Get();
 
   static CrashKeyString<50> ap_value("ap");
-  ap_value.Set(base::UTF16ToUTF8(details.update_ap()));
+  ap_value.Set(base::WideToUTF8(details.update_ap()));
 
   static CrashKeyString<32> update_cohort_name("cohort-name");
-  update_cohort_name.Set(base::UTF16ToUTF8(details.update_cohort_name()));
+  update_cohort_name.Set(base::WideToUTF8(details.update_cohort_name()));
 }
 
 void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
   crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
 }
 
-void SetCurrentVersionCrashKey(const base::Version* current_version) {
+void SetCurrentVersionCrashKey(const base::Version& current_version) {
   static crash_reporter::CrashKeyString<32> version_key("current-version");
-  if (current_version)
-    version_key.Set(current_version->GetString());
+  if (current_version.IsValid())
+    version_key.Set(current_version.GetString());
   else
     version_key.Clear();
 }

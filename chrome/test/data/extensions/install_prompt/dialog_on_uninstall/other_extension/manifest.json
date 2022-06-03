@@ -1,0 +1,6 @@
+{
+  "name": "chrome_extension_name__other",
+  "description": "chrome_extension_desc__other",
+  "version": "1",
+  "manifest_version": 2
+}

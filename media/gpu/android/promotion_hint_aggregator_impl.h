@@ -5,10 +5,7 @@
 #ifndef MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 #define MEDIA_GPU_ANDROID_PROMOTION_HINT_AGGREGATOR_IMPL_H_
 
-#include <memory>
-
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
@@ -23,6 +20,11 @@ class MEDIA_GPU_EXPORT PromotionHintAggregatorImpl
   // |tick_clock| may be null, in which case we will use wall clock.  If it is
   // not null, then it must outlive |this|.  It is provided for tests.
   PromotionHintAggregatorImpl(const base::TickClock* tick_clock = nullptr);
+
+  PromotionHintAggregatorImpl(const PromotionHintAggregatorImpl&) = delete;
+  PromotionHintAggregatorImpl& operator=(const PromotionHintAggregatorImpl&) =
+      delete;
+
   ~PromotionHintAggregatorImpl() override;
 
   void NotifyPromotionHint(const Hint& hint) override;
@@ -42,8 +44,6 @@ class MEDIA_GPU_EXPORT PromotionHintAggregatorImpl
   int consecutive_promotable_frames_ = 0;
 
   base::WeakPtrFactory<PromotionHintAggregatorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PromotionHintAggregatorImpl);
 };
 
 }  // namespace media

@@ -22,9 +22,9 @@ void AudioGraphTracer::ProvideAudioGraphTracerTo(Page& page) {
 }
 
 AudioGraphTracer::AudioGraphTracer()
-    : inspector_agent_(nullptr) {}
+    : Supplement(nullptr), inspector_agent_(nullptr) {}
 
-void AudioGraphTracer::Trace(blink::Visitor* visitor) {
+void AudioGraphTracer::Trace(Visitor* visitor) const {
   visitor->Trace(inspector_agent_);
   visitor->Trace(contexts_);
   Supplement<Page>::Trace(visitor);

@@ -4,10 +4,8 @@ All objects in Blink are expected to be allocated with PartitionAlloc or Oilpan.
 
 Blink uses different PartitionAlloc partitions, for different kinds of objects:
 
-* LayoutObject partition: A partition to allocate `LayoutObject`s.
-The LayoutObject partition is a `SizeSpecificPartitionAllocator`. This means
-that no extra padding is needed to allocate a `LayoutObject` object. Different
-sizes of `LayoutObject`s are allocated in different buckets. Having a dedicated
+* LayoutObject partition: A partition to allocate `LayoutObject`s.  The
+LayoutObject partition is a `ThreadUnsafePartitionAllocator`. Having a dedicated
 partition for `LayoutObject`s improves cache locality and thus performance.
 
 * Buffer partition: A partition to allocate objects that have a strong risk

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -23,6 +24,8 @@ class KeyboardStatusRow;
 // of the virtual keyboard.
 class ImeListView : public TrayDetailedView {
  public:
+  METADATA_HEADER(ImeListView);
+
   enum SingleImeBehavior {
     // Shows the IME menu if there's only one IME in system.
     SHOW_SINGLE_IME,
@@ -30,10 +33,9 @@ class ImeListView : public TrayDetailedView {
     HIDE_SINGLE_IME
   };
 
-  // The former uses default for |use_unified_theme|.
   explicit ImeListView(DetailedViewDelegate* delegate);
-  ImeListView(DetailedViewDelegate* delegate, bool use_unified_theme);
-
+  ImeListView(const ImeListView&) = delete;
+  ImeListView& operator=(const ImeListView&) = delete;
   ~ImeListView() override;
 
   // Initializes the contents of a newly-instantiated ImeListView.
@@ -71,12 +73,9 @@ class ImeListView : public TrayDetailedView {
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
-  void HandleButtonPressed(views::Button* sender,
-                           const ui::Event& event) override;
 
   // views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
-  const char* GetClassName() const override;
 
  private:
   friend class ImeListViewTestApi;
@@ -89,6 +88,8 @@ class ImeListView : public TrayDetailedView {
 
   // Initializes |keyboard_status_row_| and adds it above the scrollable list.
   void PrependKeyboardStatusRow();
+
+  void KeyboardStatusTogglePressed();
 
   // Requests focus on the current IME if it was selected with keyboard so that
   // accessible text will alert the user of the IME change.
@@ -103,23 +104,23 @@ class ImeListView : public TrayDetailedView {
   std::string last_selected_item_id_;
 
   // True if the last item is selected with keyboard.
-  bool last_item_selected_with_keyboard_;
+  bool last_item_selected_with_keyboard_ = false;
 
   // True if focus should be requested after switching IMEs with keyboard in
   // order to trigger spoken feedback with ChromeVox enabled.
-  bool should_focus_ime_after_selection_with_keyboard_;
+  bool should_focus_ime_after_selection_with_keyboard_ = false;
 
   // The item view of the current selected IME.
-  views::View* current_ime_view_;
-
-  const bool use_unified_theme_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeListView);
+  views::View* current_ime_view_ = nullptr;
 };
 
 class ASH_EXPORT ImeListViewTestApi {
  public:
   explicit ImeListViewTestApi(ImeListView* ime_list_view);
+
+  ImeListViewTestApi(const ImeListViewTestApi&) = delete;
+  ImeListViewTestApi& operator=(const ImeListViewTestApi&) = delete;
+
   virtual ~ImeListViewTestApi();
 
   views::View* GetToggleView() const;
@@ -130,8 +131,6 @@ class ASH_EXPORT ImeListViewTestApi {
 
  private:
   ImeListView* ime_list_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeListViewTestApi);
 };
 
 }  // namespace ash

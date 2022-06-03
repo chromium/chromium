@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STUB_H_
 #define CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STUB_H_
 
-#include "base/macros.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 
 namespace chromeos {
@@ -14,6 +13,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
     : public NetworkPortalDetector {
  public:
   NetworkPortalDetectorStub();
+
+  NetworkPortalDetectorStub(const NetworkPortalDetectorStub&) = delete;
+  NetworkPortalDetectorStub& operator=(const NetworkPortalDetectorStub&) =
+      delete;
+
   ~NetworkPortalDetectorStub() override;
 
  private:
@@ -21,16 +25,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   void AddObserver(Observer* observer) override;
   void AddAndFireObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  CaptivePortalState GetCaptivePortalState(
-      const std::string& service_path) override;
+  CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable(bool start_detection) override;
-  bool StartPortalDetection(bool force) override;
+  void StartPortalDetection() override;
   void SetStrategy(PortalDetectorStrategy::StrategyId id) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorStub);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::NetworkPortalDetectorStub;
+}
 
 #endif  // CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STUB_H_

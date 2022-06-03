@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -185,10 +184,13 @@ class PickleTest : public testing::Test {
   class ScopedForceMessageSerialization {
    public:
     ScopedForceMessageSerialization() { ForceMessageSerialization(true); }
-    ~ScopedForceMessageSerialization() { ForceMessageSerialization(false); }
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedForceMessageSerialization);
+    ScopedForceMessageSerialization(const ScopedForceMessageSerialization&) =
+        delete;
+    ScopedForceMessageSerialization& operator=(
+        const ScopedForceMessageSerialization&) = delete;
+
+    ~ScopedForceMessageSerialization() { ForceMessageSerialization(false); }
   };
 
  private:

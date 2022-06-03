@@ -28,6 +28,9 @@ class QueryableData {
  public:
   using ValueMap = base::flat_map<std::string, base::Value>;
 
+  QueryableData(const QueryableData&) = delete;
+  QueryableData& operator=(const QueryableData&) = delete;
+
   // Stores a value for the current process. If the key already exists, the
   // value is replaced.
   static void RegisterQueryableValue(const std::string& query_key,
@@ -46,8 +49,6 @@ class QueryableData {
 
   SEQUENCE_CHECKER(sequence_checker_);
   ValueMap queryable_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryableData);
 };
 
 }  // namespace chromecast

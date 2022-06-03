@@ -4,6 +4,8 @@
 
 #include "media/audio/android/opensles_util.h"
 
+#include "base/logging.h"
+
 namespace media {
 
 #define SL_ANDROID_SPEAKER_QUAD                                            \

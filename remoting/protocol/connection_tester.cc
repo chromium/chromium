@@ -73,10 +73,11 @@ void StreamConnectionTester::DoWrite() {
 
     int bytes_to_write = std::min(output_buffer_->BytesRemaining(),
                                   message_size_);
-    result = client_socket_->Write(
-        output_buffer_.get(), bytes_to_write,
-        base::Bind(&StreamConnectionTester::OnWritten, base::Unretained(this)),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+    result =
+        client_socket_->Write(output_buffer_.get(), bytes_to_write,
+                              base::BindOnce(&StreamConnectionTester::OnWritten,
+                                             base::Unretained(this)),
+                              TRAFFIC_ANNOTATION_FOR_TESTS);
     HandleWriteResult(result);
   }
 }
@@ -100,10 +101,9 @@ void StreamConnectionTester::DoRead() {
   int result = 1;
   while (result > 0) {
     input_buffer_->SetCapacity(input_buffer_->offset() + message_size_);
-    result = host_socket_->Read(
-        input_buffer_.get(),
-        message_size_,
-        base::Bind(&StreamConnectionTester::OnRead, base::Unretained(this)));
+    result = host_socket_->Read(input_buffer_.get(), message_size_,
+                                base::BindOnce(&StreamConnectionTester::OnRead,
+                                               base::Unretained(this)));
     HandleReadResult(result);
   };
 }
@@ -149,7 +149,7 @@ class MessagePipeConnectionTester::MessageSender
       for (int p = 0; p < message_size_; ++p) {
         message->mutable_data()[0] = static_cast<char>(i + p);
       }
-      pipe_->Send(message.get(), base::Closure());
+      pipe_->Send(message.get(), {});
       sent_messages_.push_back(std::move(message));
     }
   }

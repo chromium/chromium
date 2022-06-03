@@ -48,7 +48,7 @@ class SQLStatement final : public GarbageCollected<SQLStatement> {
   class OnSuccessCallback : public GarbageCollected<OnSuccessCallback> {
    public:
     virtual ~OnSuccessCallback() = default;
-    virtual void Trace(blink::Visitor*) {}
+    virtual void Trace(Visitor*) const {}
     virtual bool OnSuccess(SQLTransaction*, SQLResultSet*) = 0;
 
    protected:
@@ -65,7 +65,7 @@ class SQLStatement final : public GarbageCollected<SQLStatement> {
     explicit OnSuccessV8Impl(V8SQLStatementCallback* callback)
         : callback_(callback) {}
 
-    void Trace(blink::Visitor*) override;
+    void Trace(Visitor*) const override;
     bool OnSuccess(SQLTransaction*, SQLResultSet*) override;
 
    private:
@@ -75,7 +75,7 @@ class SQLStatement final : public GarbageCollected<SQLStatement> {
   class OnErrorCallback : public GarbageCollected<OnErrorCallback> {
    public:
     virtual ~OnErrorCallback() = default;
-    virtual void Trace(blink::Visitor*) {}
+    virtual void Trace(Visitor*) const {}
     virtual bool OnError(SQLTransaction*, SQLError*) = 0;
 
    protected:
@@ -91,7 +91,7 @@ class SQLStatement final : public GarbageCollected<SQLStatement> {
     explicit OnErrorV8Impl(V8SQLStatementErrorCallback* callback)
         : callback_(callback) {}
 
-    void Trace(blink::Visitor*) override;
+    void Trace(Visitor*) const override;
     bool OnError(SQLTransaction*, SQLError*) override;
 
    private:
@@ -102,7 +102,7 @@ class SQLStatement final : public GarbageCollected<SQLStatement> {
 
   SQLStatement(Database*, OnSuccessCallback*, OnErrorCallback*);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   bool PerformCallback(SQLTransaction*);
 

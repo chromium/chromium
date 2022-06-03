@@ -59,7 +59,7 @@ static String BuildCircleString(const String& radius,
     result.Append(center_y);
   }
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 static String SerializePositionOffset(const CSSValuePair& offset,
@@ -143,7 +143,8 @@ bool CSSBasicShapeCircleValue::Equals(
          DataEquivalent(radius_, other.radius_);
 }
 
-void CSSBasicShapeCircleValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSBasicShapeCircleValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   visitor->Trace(center_x_);
   visitor->Trace(center_y_);
   visitor->Trace(radius_);
@@ -180,7 +181,7 @@ static String BuildEllipseString(const String& radius_x,
     result.Append(center_y);
   }
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSBasicShapeEllipseValue::CustomCSSText() const {
@@ -226,7 +227,8 @@ bool CSSBasicShapeEllipseValue::Equals(
          DataEquivalent(radius_y_, other.radius_y_);
 }
 
-void CSSBasicShapeEllipseValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSBasicShapeEllipseValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   visitor->Trace(center_x_);
   visitor->Trace(center_y_);
   visitor->Trace(radius_x_);
@@ -269,7 +271,7 @@ static String BuildPolygonString(const WindRule& wind_rule,
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSBasicShapePolygonValue::CustomCSSText() const {
@@ -287,7 +289,8 @@ bool CSSBasicShapePolygonValue::Equals(
   return CompareCSSValueVector(values_, other.values_);
 }
 
-void CSSBasicShapePolygonValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSBasicShapePolygonValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   visitor->Trace(values_);
   CSSValue::TraceAfterDispatch(visitor);
 }
@@ -380,7 +383,7 @@ static String BuildInsetString(const String& top,
   }
   result.Append(')');
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 static inline void UpdateCornerRadiusWidthAndHeight(
@@ -435,7 +438,8 @@ bool CSSBasicShapeInsetValue::Equals(
          DataEquivalent(bottom_left_radius_, other.bottom_left_radius_);
 }
 
-void CSSBasicShapeInsetValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSBasicShapeInsetValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   visitor->Trace(top_);
   visitor->Trace(right_);
   visitor->Trace(bottom_);

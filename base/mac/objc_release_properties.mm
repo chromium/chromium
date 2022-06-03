@@ -8,7 +8,7 @@
 
 #include <objc/runtime.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/free_deleter.h"
 
 namespace {

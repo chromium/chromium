@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -32,6 +31,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
   using ThrottleCallback = base::RepeatingCallback<void(int, int64_t)>;
 
   ThrottlingNetworkInterceptor();
+
+  ThrottlingNetworkInterceptor(const ThrottlingNetworkInterceptor&) = delete;
+  ThrottlingNetworkInterceptor& operator=(const ThrottlingNetworkInterceptor&) =
+      delete;
+
   virtual ~ThrottlingNetworkInterceptor();
 
   base::WeakPtr<ThrottlingNetworkInterceptor> GetWeakPtr();
@@ -39,16 +43,51 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
   // Applies network emulation configuration.
   void UpdateConditions(std::unique_ptr<NetworkConditions> conditions);
 
-  // Throttles with |is_upload == true| always succeed, even in offline mode.
+  // This function implements throttling logic. It is meant to be called after
+  // the interaction with a real network to delay invocation of a client
+  // callback.
+  // * 'result' holds the result of a real network operation from
+  //    net/base/net_error_list.h.
+  // * 'bytes' is the amount of data transferred over the network. It is used
+  //    to calculate the delay.
+  // * 'send_end' is the time when the the real network operation was finished.
+  // * 'start' is true if this is invoked for starting HTTP transaction (as
+  //    opposed to other operations such as reading ressponse or uploading
+  //    data).
+  // * 'is_upload' is true if this is invoked for sending data over the network
+  //    (as opposed to reading data from the network). NetworkConditions could
+  //    specify different speed for upload and download and this parameter is
+  //    used to pick the right speed.
+  // * 'callback' is what needs to be invoked later, if extra delay is
+  //    introduced to emulate a slow network.
+  //
+  // This function returns net::ERR_IO_PENDING if the delay is introduced and
+  // 'callack' will be invoked after this delay.
+  // When no throttling is needed, this function simply returns 'result' and
+  // ignores the rest of the arguments including 'callback'.
+  // The same happens if 'result' corresponds to an error (i.e. is negative
+  // meaning that the real network operation has failed).
+  // When emulating offline network, the function returns
+  // net::ERR_INTERNET_DISCONNECTED and also ignores the arguments including
+  // 'callback'.
+  // Note, however, that if 'is_upload' is true the function will
+  // return 'result' insead of net::ERR_INTERNET_DISCONNECTED. (But why?)
   int StartThrottle(int result,
                     int64_t bytes,
                     base::TimeTicks send_end,
                     bool start,
                     bool is_upload,
                     const ThrottleCallback& callback);
+
+  // Cancels throttling, previously started with the given 'callback'.
+  // This is useful to call if the client is being destructed or otherwise is
+  // no longer interested in throttling.
   void StopThrottle(const ThrottleCallback& callback);
 
+  // Whether offline network is emulated.
   bool IsOffline();
+
+  void SetSuspendWhenOffline(bool suspend);
 
  private:
   struct ThrottleRecord {
@@ -99,10 +138,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
   base::TimeDelta latency_length_;
   uint64_t download_last_tick_;
   uint64_t upload_last_tick_;
+  bool suspend_when_offline_ = false;
 
   base::WeakPtrFactory<ThrottlingNetworkInterceptor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingNetworkInterceptor);
 };
 
 }  // namespace network

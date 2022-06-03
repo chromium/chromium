@@ -23,8 +23,6 @@ import java.lang.annotation.RetentionPolicy;
  * Properties defined here reflect the visible state of the TouchToFill-components.
  */
 class TouchToFillProperties {
-    static final String FIELD_TRIAL_PARAM_SHOW_CONFIRMATION_BUTTON = "show_confirmation_button";
-
     static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
     static final PropertyModel

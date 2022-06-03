@@ -31,8 +31,9 @@ BrowserSkiaGoldPixelDiff::BrowserSkiaGoldPixelDiff() = default;
 BrowserSkiaGoldPixelDiff::~BrowserSkiaGoldPixelDiff() = default;
 
 void BrowserSkiaGoldPixelDiff::Init(views::Widget* widget,
-                                    const std::string& screenshot_prefix) {
-  SkiaGoldPixelDiff::Init(screenshot_prefix);
+                                    const std::string& screenshot_prefix,
+                                    const std::string& corpus) {
+  SkiaGoldPixelDiff::Init(screenshot_prefix, corpus);
   DCHECK(widget);
   widget_ = widget;
 }
@@ -55,7 +56,8 @@ bool BrowserSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
 
 bool BrowserSkiaGoldPixelDiff::CompareScreenshot(
     const std::string& screenshot_name,
-    const views::View* view) const {
+    const views::View* view,
+    const ui::test::SkiaGoldMatchingAlgorithm* algorithm) const {
   DCHECK(Initialized()) << "Initialize the class before using this method.";
   gfx::Rect rc = view->GetBoundsInScreen();
   gfx::Rect bounds_in_screen = widget_->GetRootView()->GetBoundsInScreen();
@@ -69,5 +71,5 @@ bool BrowserSkiaGoldPixelDiff::CompareScreenshot(
     return false;
   }
   return SkiaGoldPixelDiff::CompareScreenshot(screenshot_name,
-                                              *image.ToSkBitmap());
+                                              *image.ToSkBitmap(), algorithm);
 }

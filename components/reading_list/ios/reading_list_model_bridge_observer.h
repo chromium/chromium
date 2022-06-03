@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
 // Protocol duplicating all Reading List Model Observer methods in Objective-C.
@@ -50,6 +49,10 @@ class ReadingListModelBridge : public ReadingListModelObserver {
  public:
   explicit ReadingListModelBridge(id<ReadingListModelBridgeObserver> observer,
                                   ReadingListModel* model);
+
+  ReadingListModelBridge(const ReadingListModelBridge&) = delete;
+  ReadingListModelBridge& operator=(const ReadingListModelBridge&) = delete;
+
   ~ReadingListModelBridge() override;
 
  private:
@@ -77,8 +80,6 @@ class ReadingListModelBridge : public ReadingListModelObserver {
   __unsafe_unretained id<ReadingListModelBridgeObserver> observer_;
 
   ReadingListModel* model_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelBridge);
 };
 
 #endif  // COMPONENTS_READING_LIST_IOS_READING_LIST_MODEL_BRIDGE_OBSERVER_H_

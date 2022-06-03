@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/pup_data/pup_cleaner_util.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -35,14 +37,14 @@ class PUPCleanerUtilTest : public testing::Test {
         temp_dir_.GetPath(), L"subfolder", &subfolder_path_));
   }
 
-  base::FilePath CreateFileInTopDir(const base::string16& basename,
+  base::FilePath CreateFileInTopDir(const std::wstring& basename,
                                     const char* content) {
     base::FilePath file_path = temp_dir_.GetPath().Append(basename);
     CreateFileWithContent(file_path, content, strlen(content));
     return file_path;
   }
 
-  base::FilePath CreateFileInSubfolder(const base::string16& basename,
+  base::FilePath CreateFileInSubfolder(const std::wstring& basename,
                                        const char* content) {
     base::FilePath file_path = subfolder_path_.Append(basename);
     CreateFileWithContent(file_path, content, strlen(content));

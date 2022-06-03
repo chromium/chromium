@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(OS_FUCHSIA)
+#include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #endif
@@ -39,9 +40,19 @@ enum class PlatformWindowOpacity {
   kTranslucentWindow,
 };
 
+enum class PlatformWindowShadowType {
+  kDefault,
+  kNone,
+  kDrop,
+};
+
 class WorkspaceExtensionDelegate;
 
-#if defined(OS_LINUX)
+#if defined(OS_FUCHSIA)
+class ScenicWindowDelegate;
+#endif
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 class X11ExtensionDelegate;
 #endif
 
@@ -51,7 +62,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowInitProperties();
 
   // Initializes properties with the specified |bounds|.
-  explicit PlatformWindowInitProperties(const gfx::Rect& bounds);
+  explicit PlatformWindowInitProperties(
+      const gfx::Rect& bounds,
+      bool enable_compositing_based_throttling = false);
 
   PlatformWindowInitProperties(PlatformWindowInitProperties&& props);
 
@@ -69,8 +82,22 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowOpacity opacity = PlatformWindowOpacity::kOpaqueWindow;
 
 #if defined(OS_FUCHSIA)
+  // Scenic 3D API uses `view_token` for links, whereas Flatland
+  // API uses `view_creation_token`. Therefore, at most one of these fields must
+  // be set. If `allow_null_view_token_for_test` is true, they may both be
+  // false.
   fuchsia::ui::views::ViewToken view_token;
+  fuchsia::ui::views::ViewCreationToken view_creation_token;
+
   scenic::ViewRefPair view_ref_pair;
+
+  // Specifies whether handling of keypress events from the system is enabled.
+  bool enable_keyboard = false;
+
+  // Specifies whether system virtual keyboard support is enabled.
+  bool enable_virtual_keyboard = false;
+
+  ScenicWindowDelegate* scenic_window_delegate = nullptr;
 #endif
 
   bool activatable = true;
@@ -82,10 +109,12 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   WorkspaceExtensionDelegate* workspace_extension_delegate = nullptr;
 
-#if defined(OS_LINUX)
+  PlatformWindowShadowType shadow_type = PlatformWindowShadowType::kDefault;
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool prefer_dark_theme = false;
   gfx::ImageSkia* icon = nullptr;
-  base::Optional<int> background_color;
+  absl::optional<int> background_color;
 
   // Specifies the res_name and res_class fields,
   // respectively, of the WM_CLASS window property. Controls window grouping
@@ -94,11 +123,10 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   std::string wm_class_name;
   std::string wm_class_class;
 
-  // Stores visual id for the system tray in X11.
-  base::Optional<int> x_visual_id;
-
   X11ExtensionDelegate* x11_extension_delegate = nullptr;
 #endif
+
+  bool enable_compositing_based_throttling = false;
 };
 
 }  // namespace ui

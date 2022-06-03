@@ -4,10 +4,10 @@
 
 #include "extensions/browser/policy_check.h"
 
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_system.h"
@@ -27,7 +27,7 @@ namespace extensions {
 
 namespace {
 
-const char kDummyPolicyError[] = "Cannot install extension";
+const char16_t kDummyPolicyError[] = u"Cannot install extension";
 
 class ManagementPolicyMock : public ManagementPolicy::Provider {
  public:
@@ -39,10 +39,10 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
   }
 
   bool UserMayLoad(const Extension* extension,
-                   base::string16* error) const override {
+                   std::u16string* error) const override {
     EXPECT_EQ(extension_, extension);
     if (!may_load_)
-      *error = base::ASCIIToUTF16(kDummyPolicyError);
+      *error = kDummyPolicyError;
     return may_load_;
   }
 
@@ -108,9 +108,8 @@ TEST_F(PolicyCheckTest, PolicyFailure) {
   runner_.Run(&policy_check);
   EXPECT_TRUE(runner_.called());
   EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
-                                    PreloadCheck::DISALLOWED_BY_POLICY));
-  EXPECT_EQ(base::ASCIIToUTF16(kDummyPolicyError),
-            policy_check.GetErrorMessage());
+                                    PreloadCheck::Error::kDisallowedByPolicy));
+  EXPECT_EQ(kDummyPolicyError, policy_check.GetErrorMessage());
 }
 
 }  // namespace extensions

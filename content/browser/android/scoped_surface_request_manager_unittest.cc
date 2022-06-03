@@ -5,7 +5,6 @@
 #include "content/browser/android/scoped_surface_request_manager.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
@@ -30,6 +29,11 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
     mock_texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
         0, nullptr, nullptr);
   }
+
+  ScopedSurfaceRequestManagerUnitTest(
+      const ScopedSurfaceRequestManagerUnitTest&) = delete;
+  ScopedSurfaceRequestManagerUnitTest& operator=(
+      const ScopedSurfaceRequestManagerUnitTest&) = delete;
 
   ScopedSurfaceRequestManager::ScopedSurfaceRequestCB CreateNoopCallback() {
     return base::BindOnce(&ScopedSurfaceRequestManagerUnitTest::DummyCallback,
@@ -59,8 +63,6 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
   ScopedSurfaceRequestManager* manager_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSurfaceRequestManagerUnitTest);
 };
 
 // Makes sure we can successfully register a callback.

@@ -3,5 +3,3 @@ AXWebArea
 ++++AXStaticText AXValue='blockDisplay'
 ++AXGroup
 ++++AXStaticText AXValue='blockDisplay Hiddenfalse'
-++AXGroup
-++AXGroup AXTitle='blockDisplay Hiddentruefocusable'

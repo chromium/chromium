@@ -6,8 +6,9 @@ package org.chromium.android_webview.test;
 
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.util.Pair;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,11 +19,10 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
@@ -490,7 +490,7 @@ public class LoadDataWithBaseUrlTest {
         final int callCount = onPageFinishedHelper.getCallCount();
         mActivityTestRule.loadDataWithBaseUrlAsync(
                 mAwContents, pageHtml, "text/html", false, baseUrl, null);
-        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42");
+        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42+42");
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals(baseUrl, onPageFinishedHelper.getUrl());
     }
@@ -507,46 +507,11 @@ public class LoadDataWithBaseUrlTest {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
         mActivityTestRule.loadDataWithBaseUrlAsync(
                 mAwContents, pageHtml, "text/html", false, invalidBaseUrl, null);
-        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42");
+        mActivityTestRule.loadUrlAsync(mAwContents, "javascript:42+42");
         onPageFinishedHelper.waitForCallback(callCount);
         // Verify that the load succeeds. The actual base url is undefined.
         Assert.assertEquals(
                 CommonResources.ABOUT_TITLE, mActivityTestRule.getTitleOnUiThread(mAwContents));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testBaseUrlMetrics_empty() throws Throwable {
-        loadContentAndCheckMetrics(null, AwContents.UrlScheme.EMPTY);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testBaseUrlMetrics_data() throws Throwable {
-        loadContentAndCheckMetrics("data:text/html", AwContents.UrlScheme.DATA_SCHEME);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testBaseUrlMetrics_http() throws Throwable {
-        loadContentAndCheckMetrics("http://www.google.com/", AwContents.UrlScheme.HTTP_SCHEME);
-    }
-
-    private void loadContentAndCheckMetrics(String baseUrl, int expectedSchemeEnum)
-            throws Throwable {
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AwContents.DATA_BASE_URL_SCHEME_HISTOGRAM_NAME));
-        loadDataWithBaseUrlSync(SIMPLE_HTML, "text/html", false, baseUrl, null);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        AwContents.DATA_BASE_URL_SCHEME_HISTOGRAM_NAME));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        AwContents.DATA_BASE_URL_SCHEME_HISTOGRAM_NAME, expectedSchemeEnum));
     }
 
     @Test
@@ -621,10 +586,10 @@ public class LoadDataWithBaseUrlTest {
         // Intercept TEXT URI request, and respond with 'SUCCESS'.
         TestAwContentsClient client = new TestAwContentsClient() {
             @Override
-            public AwWebResourceResponse shouldInterceptRequest(AwWebResourceRequest request) {
+            public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
                 String url = request.url;
                 if (textUri.equals(url)) {
-                    return new AwWebResourceResponse(
+                    return new WebResourceResponseInfo(
                             "text/plaintext", "utf-8", createInputStreamForString(successMsg));
                 } else {
                     return super.shouldInterceptRequest(request);

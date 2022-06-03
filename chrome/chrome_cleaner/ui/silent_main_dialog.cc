@@ -4,11 +4,7 @@
 
 #include "chrome/chrome_cleaner/ui/silent_main_dialog.h"
 
-#include <utility>
-#include <vector>
-
-#include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace chrome_cleaner {
 
@@ -30,7 +26,7 @@ void SilentMainDialog::NoPUPsFound() {
 void SilentMainDialog::ConfirmCleanup(
     const std::vector<UwSId>& found_pups,
     const FilePathSet& files_to_remove,
-    const std::vector<base::string16>& registry_keys) {
+    const std::vector<std::wstring>& registry_keys) {
   delegate()->AcceptedCleanup(true);
 }
 
@@ -40,12 +36,6 @@ void SilentMainDialog::CleanupDone(ResultCode cleanup_result) {
 
 void SilentMainDialog::Close() {
   delegate()->OnClose();
-}
-
-void SilentMainDialog::DisableExtensions(
-    const std::vector<base::string16>& extensions,
-    base::OnceCallback<void(bool)> on_disable) {
-  std::move(on_disable).Run(true);
 }
 
 }  // namespace chrome_cleaner

@@ -7,10 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
@@ -33,12 +31,13 @@ ResolveHostClientImpl::ResolveHostClientImpl(
       network::mojom::ResolveHostParameters::New();
   parameters->initial_priority = net::RequestPriority::IDLE;
   parameters->is_speculative = true;
+  parameters->purpose =
+      network::mojom::ResolveHostParameters::Purpose::kPreconnect;
   network_context->ResolveHost(
       net::HostPortPair::FromURL(url), network_isolation_key,
       std::move(parameters),
-      receiver_.BindNewPipeAndPassRemote(base::CreateSingleThreadTaskRunner(
-          {content::BrowserThread::UI,
-           content::BrowserTaskType::kPreconnect})));
+      receiver_.BindNewPipeAndPassRemote(content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kPreconnect})));
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostClientImpl::OnConnectionError, base::Unretained(this)));
 }
@@ -48,7 +47,7 @@ ResolveHostClientImpl::~ResolveHostClientImpl() = default;
 void ResolveHostClientImpl::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   std::move(callback_).Run(result == net::OK);
 }
 

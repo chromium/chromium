@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -55,8 +56,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // Parent ViewGroup, or null.
         private ViewGroup mParent;
 
-        public SurfaceState(Context context, int format, boolean useSurfaceControl,
-                SurfaceHolder.Callback2 callback) {
+        public SurfaceState(Context context, int format, SurfaceHolder.Callback2 callback) {
             surfaceView = new SurfaceView(context);
 
             // Media overlays require a translucent surface for the compositor which should be
@@ -66,9 +66,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
             // stacked on top of the translucent one, the framework doesn't draw any content
             // underneath it and shows its background instead when it has no content during the
             // transition.
-            if (format == PixelFormat.TRANSLUCENT && !useSurfaceControl) {
-                surfaceView.setZOrderMediaOverlay(true);
-            }
+            if (format == PixelFormat.TRANSLUCENT) surfaceView.setZOrderMediaOverlay(true);
             surfaceView.setVisibility(View.INVISIBLE);
             surfaceHolder().setFormat(format);
             surfaceHolder().addCallback(callback);
@@ -82,7 +80,9 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         }
 
         public boolean isValid() {
-            return surfaceHolder().getSurface().isValid();
+            Surface surface = surfaceHolder().getSurface();
+            if (surface == null) return false;
+            return surface.isValid();
         }
 
         // Attach to |parent|, such that isAttached() will be correct immediately.  Otherwise,
@@ -110,7 +110,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     private static final String TAG = "CompositorSurfaceMgr";
 
     // SurfaceView with a translucent PixelFormat.
-    private SurfaceState mTranslucent;
+    private final SurfaceState mTranslucent;
 
     // SurfaceView with an opaque PixelFormat.
     private final SurfaceState mOpaque;
@@ -130,15 +130,12 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     // View to which we'll attach the SurfaceView.
     private final ViewGroup mParentView;
 
-    public CompositorSurfaceManagerImpl(
-            ViewGroup parentView, SurfaceManagerCallbackTarget client, boolean useSurfaceControl) {
+    public CompositorSurfaceManagerImpl(ViewGroup parentView, SurfaceManagerCallbackTarget client) {
         mParentView = parentView;
         mClient = client;
 
-        mTranslucent = new SurfaceState(
-                parentView.getContext(), PixelFormat.TRANSLUCENT, useSurfaceControl, this);
-        mOpaque = new SurfaceState(
-                mParentView.getContext(), PixelFormat.OPAQUE, useSurfaceControl, this);
+        mTranslucent = new SurfaceState(parentView.getContext(), PixelFormat.TRANSLUCENT, this);
+        mOpaque = new SurfaceState(mParentView.getContext(), PixelFormat.OPAQUE, this);
     }
 
     /**
@@ -152,6 +149,12 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
         mTranslucent.surfaceHolder().removeCallback(this);
         mOpaque.surfaceHolder().removeCallback(this);
+    }
+
+    @Override
+    public int getFormatOfOwnedSurface() {
+        if (mOwnedByClient == null) return PixelFormat.UNKNOWN;
+        return mOwnedByClient.format;
     }
 
     @Override
@@ -190,7 +193,10 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // which is fine.  We'll send destroy / create for it.  Also note that we don't actually
         // start tear-down of the owned surface; the client notifies us via doneWithUnownedSurface
         // when it is safe to do that.
-        disownClientSurface(mOwnedByClient);
+        disownClientSurface(mOwnedByClient, false);
+
+        // `disownClientSurface` may recursively shutdown.
+        if (mRequestedByClient == null) return;
 
         // The client now owns |mRequestedByClient|.  Notify it that it's ready.
         mOwnedByClient = mRequestedByClient;
@@ -238,23 +244,11 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
             public void run() {
                 if (mOwnedByClient == null) return;
                 SurfaceState owned = mOwnedByClient;
-                mClient.surfaceDestroyed(owned.surfaceHolder().getSurface());
+                mClient.surfaceDestroyed(owned.surfaceHolder().getSurface(), true);
                 mOwnedByClient = null;
                 detachSurfaceNow(owned);
             }
         });
-    }
-
-    @Override
-    public void recreateTranslucentSurfaceForSurfaceControl() {
-        // Recreate the translucent surface only if it hasn't been used or requested by client yet.
-        // This should be very early in the flow and until now the opaque one should be the one
-        // being used.
-        if (mTranslucent.isAttached() || mTranslucent == mRequestedByClient) return;
-
-        mTranslucent.surfaceHolder().removeCallback(this);
-        mTranslucent =
-                new SurfaceState(mParentView.getContext(), PixelFormat.TRANSLUCENT, true, this);
     }
 
     @Override
@@ -309,7 +303,12 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // since we would have removed ownership when we got surfaceDestroyed.  It's okay if the
         // client doesn't own either surface.
         assert mOwnedByClient != state;
-        disownClientSurface(mOwnedByClient);
+        disownClientSurface(mOwnedByClient, false);
+
+        // TODO(crbug.com/1242632): `disownClientSurface` may recursively shutdown which sets
+        // `mRequestedByClient` to null. However testing shows throwing an NPE in this case
+        // is caught by SurfaceView implementation and does not crash, and throwing actually
+        // avoids an ANR due to some unexplained reason.
 
         // The client now owns this surface, so notify it.
         mOwnedByClient = mRequestedByClient;
@@ -340,7 +339,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // This can happen if Android destroys the surface on its own.  It's also possible that
         // we've detached it, if a destroy was pending.  Either way, notify the client.
         if (state == mOwnedByClient) {
-            disownClientSurface(mOwnedByClient);
+            disownClientSurface(mOwnedByClient, true);
 
             // Do not re-request the surface here.  If android gives the surface back, then we'll
             // re-signal the client about construction.
@@ -438,10 +437,10 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
      * the surface has been destroyed (recall that ownership involves getting created).  It's okay
      * if |state| is null or isn't owned by the client.
      */
-    private void disownClientSurface(SurfaceState state) {
+    private void disownClientSurface(SurfaceState state, boolean surfaceDestroyed) {
         if (mOwnedByClient != state || state == null) return;
 
-        mClient.surfaceDestroyed(mOwnedByClient.surfaceHolder().getSurface());
+        mClient.surfaceDestroyed(mOwnedByClient.surfaceHolder().getSurface(), surfaceDestroyed);
         mOwnedByClient = null;
     }
 
@@ -472,7 +471,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
         // The surface isn't attached, or was attached but wasn't currently valid.  Either way,
         // we're not going to get a destroy, so notify the client now if needed.
-        disownClientSurface(state);
+        disownClientSurface(state, false);
 
         // If the client has since re-requested the surface, then start construction.
         if (state == mRequestedByClient) attachSurfaceNow(mRequestedByClient);

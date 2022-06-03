@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "base/files/file_path.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 
 namespace chromeos {
 namespace disks {
@@ -79,6 +79,12 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk {
 
   // Device type.
   DeviceType device_type() const { return device_type_; }
+
+  // USB bus number of the device.
+  int bus_number() const { return bus_number_; }
+
+  // USB device number of the device.
+  int device_number() const { return device_number_; }
 
   // Total size of the device in bytes.
   uint64_t total_size_in_bytes() const { return total_size_in_bytes_; }
@@ -154,6 +160,8 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk {
   std::string fs_uuid_;
   std::string storage_device_path_;
   DeviceType device_type_ = DEVICE_TYPE_UNKNOWN;
+  int bus_number_ = 0;
+  int device_number_ = 0;
   uint64_t total_size_in_bytes_ = 0;
   bool is_parent_ = false;
   bool is_read_only_hardware_ = false;
@@ -171,6 +179,10 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk {
 class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk::Builder {
  public:
   Builder();
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder();
 
   Builder& SetDevicePath(const std::string& device_path);
@@ -186,6 +198,8 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk::Builder {
   Builder& SetFileSystemUUID(const std::string& fs_uuid);
   Builder& SetStorageDevicePath(const std::string& storage_device_path_);
   Builder& SetDeviceType(DeviceType device_type);
+  Builder& SetBusNumber(int bus_number);
+  Builder& SetDeviceNumber(int device_number);
   Builder& SetSizeInBytes(uint64_t total_size_in_bytes);
   Builder& SetIsParent(bool is_parent);
   Builder& SetIsReadOnlyHardware(bool is_read_only_hardware);
@@ -201,9 +215,9 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk::Builder {
 
  private:
   std::unique_ptr<Disk> disk_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
+
+COMPONENT_EXPORT(CHROMEOS_DISKS) base::FilePath GetStatefulPartitionPath();
 
 }  // namespace disks
 }  // namespace chromeos

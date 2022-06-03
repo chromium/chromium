@@ -58,20 +58,19 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   ScrollOffset consumed_delta = ComputeDeltaToConsume(delta);
   ScrollOffset new_pos = current_offset_ + consumed_delta;
   if (current_offset_ == new_pos)
-    return ScrollResult(false, false, delta.Width(), delta.Height());
+    return ScrollResult(false, false, delta.width(), delta.height());
 
-  current_offset_ = new_pos;
-
+  SetCurrentOffset(new_pos);
   NotifyOffsetChanged();
 
-  return ScrollResult(consumed_delta.Width(), consumed_delta.Height(),
-                      delta.Width() - consumed_delta.Width(),
-                      delta.Height() - consumed_delta.Height());
+  return ScrollResult(consumed_delta.width(), consumed_delta.height(),
+                      delta.width() - consumed_delta.width(),
+                      delta.height() - consumed_delta.height());
 }
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset) {
-  current_offset_ = offset;
+  SetCurrentOffset(offset);
   NotifyOffsetChanged();
 }
 
@@ -84,10 +83,10 @@ ScrollOffset ScrollAnimatorBase::CurrentOffset() const {
 }
 
 void ScrollAnimatorBase::NotifyOffsetChanged() {
-  ScrollOffsetChanged(current_offset_, kUserScroll);
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
-void ScrollAnimatorBase::Trace(blink::Visitor* visitor) {
+void ScrollAnimatorBase::Trace(Visitor* visitor) const {
   visitor->Trace(scrollable_area_);
   ScrollAnimatorCompositorCoordinator::Trace(visitor);
 }

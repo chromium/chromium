@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_for_range_set.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 class SimpleFontData;
 
@@ -61,7 +62,12 @@ class PLATFORM_EXPORT SegmentedFontData : public FontData {
   Vector<scoped_refptr<FontDataForRangeSet>, 1> faces_;
 };
 
-DEFINE_FONT_DATA_TYPE_CASTS(SegmentedFontData, true);
+template <>
+struct DowncastTraits<SegmentedFontData> {
+  static bool AllowFrom(const FontData& fontData) {
+    return fontData.IsSegmented();
+  }
+};
 
 }  // namespace blink
 

@@ -22,11 +22,10 @@ var checkStreamTracks = function(stream, has_video, has_audio) {
   }
 };
 
-var makeAsyncTest = function(value, expected) {
+const makeEmptyDataTest = function(value, expected) {
   async_test(function(test) {
     const recorderOnDataAvailable = test.step_func_done(function(event) {
       assert_equals(event.data.size, 0, 'Recorded data size should be == 0');
-      assert_equals(event.data.type, value['mimeType']);
       assert_not_equals(event.timecode, NaN, 'timecode');
     });
 
@@ -41,9 +40,10 @@ var makeAsyncTest = function(value, expected) {
 
       var recorder = new MediaRecorder(stream);
 
-      assert_throws("InvalidStateError", function() { recorder.requestData(); },
-                    "recorder throws InvalidStateError if requestData() " +
-                    "while  state is not 'recording'");
+      assert_throws_dom("InvalidStateError",
+                        function() { recorder.requestData(); },
+                        "recorder throws InvalidStateError if requestData() " +
+                        "while state is not 'recording'");
 
       recorder.ondataavailable = recorderOnDataAvailable;
       recorder.onstop = recorderOnStop;
@@ -56,15 +56,48 @@ var makeAsyncTest = function(value, expected) {
 
     const onError = test.unreached_func('Error creating MediaStream.');
     navigator.webkitGetUserMedia(value, gotStream, onError);
-  });
-};
+  }, "MediaRecorder requestData causes blobs without contained data to " +
+     `trigger ondataavailable after start (${JSON.stringify(value)})`);
+}
 
-generate_tests(makeAsyncTest,
-    [["video-only",
+const makeNonEmptyDataTest = function(value, expected) {
+  promise_test(async function(test) {
+    const recorderOnDataAvailable = test.step_func_done(function(event) {
+      assert_greater_than(event.data.size, 0,
+          'Recorded data size should be > 0');
+      assert_equals(event.data.type, value['mimeType']);
+    });
+
+    const gotStream = test.step_func(async function(stream) {
+      checkStreamTracks(stream, value['video'], value['audio']);
+      var recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = recorderOnDataAvailable;
+      const onstartPromise = new Promise(r => recorder.onstart = r);
+      recorder.start();
+      await onstartPromise;
+      recorder.requestData();
+    });
+
+    const onError = test.unreached_func('Error creating MediaStream.');
+    navigator.webkitGetUserMedia(value, gotStream, onError);
+  }, "MediaRecorder requestData causes blobs with contained " +
+  `trigger ondataavailable after onstart (${JSON.stringify(value)})`);
+}
+
+generate_tests(makeEmptyDataTest,
+    [["empty-video-only",
          {video: true,  audio: false, mimeType: "video/webm;codecs=vp8"}],
-     ["audio-only",
+     ["empty-audio-only",
          {video: false, audio: true, mimeType: "audio/webm;codecs=opus"}],
-     ["audio-video",
+     ["empty-audio-video",
+         {video: true,  audio: true, mimeType: "video/webm;codecs=vp8,opus"}]]);
+
+generate_tests(makeNonEmptyDataTest,
+    [["nonempty-video-only",
+         {video: true,  audio: false, mimeType: "video/webm;codecs=vp8"}],
+     ["nonempty-audio-only",
+         {video: false, audio: true, mimeType: "audio/webm;codecs=opus"}],
+     ["nonempty-audio-video",
          {video: true,  audio: true, mimeType: "video/webm;codecs=vp8,opus"}]]);
 
 </script>

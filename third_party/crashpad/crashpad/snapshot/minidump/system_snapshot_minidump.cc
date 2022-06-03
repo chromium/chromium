@@ -14,6 +14,7 @@
 
 #include "snapshot/minidump/system_snapshot_minidump.h"
 
+#include "base/notreached.h"
 #include "snapshot/minidump/minidump_string_reader.h"
 
 namespace crashpad {

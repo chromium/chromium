@@ -15,7 +15,7 @@
 
 extern "C" int WINAPI wWinMain(HINSTANCE instance,
                                HINSTANCE prev_instance,
-                               base::char16* command_line,
+                               wchar_t* command_line,
                                int show_command) {
   // Initialize the CommandLine singleton from the environment.
   base::CommandLine::Init(0, nullptr);

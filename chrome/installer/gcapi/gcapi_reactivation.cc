@@ -47,12 +47,12 @@ bool SetReactivationBrandCode(const std::wstring& brand_code, int shell_mode) {
   path += L"\\";
   path += google_update::kChromeUpgradeCode;
 
-  RegKey client_state_key(
-      HKEY_CURRENT_USER, path.c_str(), KEY_SET_VALUE | KEY_WOW64_32KEY);
+  RegKey client_state_key(HKEY_CURRENT_USER, path.c_str(),
+                          KEY_SET_VALUE | KEY_WOW64_32KEY);
   if (client_state_key.Valid()) {
     success = client_state_key.WriteValue(
-        google_update::kRegRLZReactivationBrandField,
-        brand_code.c_str()) == ERROR_SUCCESS;
+                  google_update::kRegRLZReactivationBrandField,
+                  brand_code.c_str()) == ERROR_SUCCESS;
   }
 
   if (success) {
@@ -63,13 +63,10 @@ bool SetReactivationBrandCode(const std::wstring& brand_code, int shell_mode) {
                             KEY_WRITE | KEY_WOW64_32KEY);
     if (reactivation_key.Valid()) {
       int64_t timestamp = Time::Now().ToInternalValue();
-      reactivation_key.WriteValue(brand_code.c_str(),
-                                  &timestamp,
-                                  sizeof(timestamp),
-                                  REG_QWORD);
+      reactivation_key.WriteValue(brand_code.c_str(), &timestamp,
+                                  sizeof(timestamp), REG_QWORD);
     }
   }
 
   return success;
 }
-

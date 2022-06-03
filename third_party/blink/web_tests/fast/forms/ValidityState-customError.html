@@ -54,10 +54,10 @@ debug('Set some value for customError.');
 v = document.getElementsByName("set");
 for (i = 0; i < v.length; i++)
     v[i].setCustomValidity("Custom validation message");
-shouldBeFalse('customErrorFor("fieldset-set")');
+shouldBeTrue('customErrorFor("fieldset-set")');
 shouldBeTrue('customErrorFor("button-set")');
-shouldBeFalse('customErrorFor("button-button-set")');
-shouldBeFalse('customErrorFor("button-reset-set")');
+shouldBeTrue('customErrorFor("button-button-set")');
+shouldBeTrue('customErrorFor("button-reset-set")');
 shouldBeTrue('customErrorFor("select-set")');
 shouldBeTrue('customErrorFor("textarea-set")');
 shouldBeTrue('customErrorFor("input-set")');
@@ -104,10 +104,10 @@ for (i = 0; i < v.length; i++) {
     }
     v[i].setCustomValidity(undefined);
 }
-shouldBeFalse('customErrorFor("fieldset-many-changes")');
+shouldBeTrue('customErrorFor("fieldset-many-changes")');
 shouldBeTrue('customErrorFor("button-many-changes")');
-shouldBeFalse('customErrorFor("button-button-many-changes")');
-shouldBeFalse('customErrorFor("button-reset-many-changes")');
+shouldBeTrue('customErrorFor("button-button-many-changes")');
+shouldBeTrue('customErrorFor("button-reset-many-changes")');
 shouldBeTrue('customErrorFor("select-many-changes")');
 shouldBeTrue('customErrorFor("textarea-many-changes")');
 shouldBeTrue('customErrorFor("input-many-changes")');
@@ -116,10 +116,10 @@ shouldBeTrue('customErrorFor("input-submit-many-changes")');
 debug('Set with three arguments.');
 for (i = 0; i < v.length; i++)
     v[i].setCustomValidity("one", "two", "three");
-shouldBeFalse('customErrorFor("fieldset-many-changes")');
+shouldBeTrue('customErrorFor("fieldset-many-changes")');
 shouldBeTrue('customErrorFor("button-many-changes")');
-shouldBeFalse('customErrorFor("button-button-many-changes")');
-shouldBeFalse('customErrorFor("button-reset-many-changes")');
+shouldBeTrue('customErrorFor("button-button-many-changes")');
+shouldBeTrue('customErrorFor("button-reset-many-changes")');
 shouldBeTrue('customErrorFor("select-many-changes")');
 shouldBeTrue('customErrorFor("textarea-many-changes")');
 shouldBeTrue('customErrorFor("input-many-changes")');
@@ -128,10 +128,10 @@ shouldBeTrue('customErrorFor("input-submit-many-changes")');
 debug('Set null.');
 for (i = 0; i < v.length; i++)
     v[i].setCustomValidity(null);
-shouldBeFalse('customErrorFor("fieldset-many-changes")');
+shouldBeTrue('customErrorFor("fieldset-many-changes")');
 shouldBeTrue('customErrorFor("button-many-changes")');
-shouldBeFalse('customErrorFor("button-button-many-changes")');
-shouldBeFalse('customErrorFor("button-reset-many-changes")');
+shouldBeTrue('customErrorFor("button-button-many-changes")');
+shouldBeTrue('customErrorFor("button-reset-many-changes")');
 shouldBeTrue('customErrorFor("select-many-changes")');
 shouldBeTrue('customErrorFor("textarea-many-changes")');
 shouldBeTrue('customErrorFor("input-many-changes")');
@@ -142,10 +142,10 @@ for (i = 0; i < v.length; i++) {
     v[i].setCustomValidity("Custom string");
     v[i].setCustomValidity(undefined);
 }
-shouldBeFalse('customErrorFor("fieldset-many-changes")');
+shouldBeTrue('customErrorFor("fieldset-many-changes")');
 shouldBeTrue('customErrorFor("button-many-changes")');
-shouldBeFalse('customErrorFor("button-button-many-changes")');
-shouldBeFalse('customErrorFor("button-reset-many-changes")');
+shouldBeTrue('customErrorFor("button-button-many-changes")');
+shouldBeTrue('customErrorFor("button-reset-many-changes")');
 shouldBeTrue('customErrorFor("select-many-changes")');
 shouldBeTrue('customErrorFor("textarea-many-changes")');
 shouldBeTrue('customErrorFor("input-many-changes")');

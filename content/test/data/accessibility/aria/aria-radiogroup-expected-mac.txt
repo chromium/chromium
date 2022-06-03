@@ -1,4 +1,4 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXRadioGroup AXRoleDescription='radio group' AXDescription='My group'
-++++AXRadioButton AXRoleDescription='radio' AXTitle='Radio 1' AXValue='0' AXLinkedUIElements=["AXRadioButton Radio 1","AXRadioButton Radio 2"]
-++++AXRadioButton AXRoleDescription='radio' AXTitle='Radio 2' AXValue='0' AXLinkedUIElements=["AXRadioButton Radio 1","AXRadioButton Radio 2"]
+++AXRadioGroup AXDescription='My group' AXRoleDescription='radio group'
+++++AXRadioButton AXLinkedUIElements=[:3, :4] AXRoleDescription='radio' AXTitle='Radio 1' AXValue=0
+++++AXRadioButton AXLinkedUIElements=[:3, :4] AXRoleDescription='radio' AXTitle='Radio 2' AXValue=0

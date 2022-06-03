@@ -27,7 +27,7 @@ ASH_EXPORT std::vector<aura::Window*> GetAppWindowList();
 // launcher, the caller is responsible for making sure the transition
 // will happen. (This is because the detecting the home launcher state
 // correctly isn't trivial).
-// Returns true if the closure is already invoked.
+// Returns true if the closure has been invoked.
 ASH_EXPORT bool WaitForLauncherState(AppListViewState state,
                                      base::OnceClosure closure);
 

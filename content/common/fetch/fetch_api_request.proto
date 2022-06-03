@@ -31,7 +31,7 @@ message FetchAPIRequest {
   // Other params.
   optional int32 mode = 6;  // network::mojom::FetchRequestMode.
   optional bool is_main_resource_load = 7;
-  optional int32 request_context_type = 8;  // content::RequestContextType.
+  reserved 8;  // Obsolete: used to be request_context_type.
   optional int32 credentials_mode = 9;  // network::mojom::FetchCredentialsMode.
   optional int32 cache_mode = 10;       // blink::mojom::FetchCacheMode.
   optional int32 redirect_mode = 11;    // network::mojom::FetchRedirectMode.

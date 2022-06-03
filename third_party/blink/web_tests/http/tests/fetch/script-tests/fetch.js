@@ -2,6 +2,8 @@ if (self.importScripts) {
   importScripts('../resources/fetch-test-helpers.js');
 }
 
+var {BASE_ORIGIN, OTHER_ORIGIN} = get_fetch_test_options();
+
 promise_test(function(t) {
     return fetch('http://')
       .then(

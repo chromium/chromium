@@ -4,11 +4,11 @@
 
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -23,6 +23,7 @@
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -42,7 +43,7 @@ class FakeSecureChannelInitializerFactory
   ~FakeSecureChannelInitializerFactory() override = default;
 
   // SecureChannelInitializer::Factory:
-  std::unique_ptr<SecureChannelBase> BuildInstance(
+  std::unique_ptr<SecureChannelBase> CreateInstance(
       scoped_refptr<base::TaskRunner> task_runner) override {
     EXPECT_TRUE(fake_secure_channel_);
     return std::move(fake_secure_channel_);
@@ -58,7 +59,7 @@ class FakeConnectionAttemptFactory : public ConnectionAttemptImpl::Factory {
   ~FakeConnectionAttemptFactory() override = default;
 
   // ConnectionAttemptImpl::Factory:
-  std::unique_ptr<ConnectionAttemptImpl> BuildInstance() override {
+  std::unique_ptr<ConnectionAttemptImpl> CreateInstance() override {
     return std::make_unique<FakeConnectionAttempt>();
   }
 };
@@ -73,7 +74,7 @@ class FakeClientChannelImplFactory : public ClientChannelImpl::Factory {
   }
 
   // ClientChannelImpl::Factory:
-  std::unique_ptr<ClientChannel> BuildInstance(
+  std::unique_ptr<ClientChannel> CreateInstance(
       mojo::PendingRemote<mojom::Channel> channel,
       mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver)
       override {
@@ -97,7 +98,7 @@ class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
     client_channels_.push_back(std::move(channel));
   }
 
-  base::Optional<mojom::ConnectionAttemptFailureReason>
+  absl::optional<mojom::ConnectionAttemptFailureReason>
   last_connection_attempt_failure_reason() {
     return last_connection_attempt_failure_reason_;
   }
@@ -107,7 +108,7 @@ class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
   }
 
  private:
-  base::Optional<mojom::ConnectionAttemptFailureReason>
+  absl::optional<mojom::ConnectionAttemptFailureReason>
       last_connection_attempt_failure_reason_;
   std::vector<std::unique_ptr<ClientChannel>> client_channels_;
 };
@@ -115,6 +116,11 @@ class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
 }  // namespace
 
 class SecureChannelClientImplTest : public testing::Test {
+ public:
+  SecureChannelClientImplTest(const SecureChannelClientImplTest&) = delete;
+  SecureChannelClientImplTest& operator=(const SecureChannelClientImplTest&) =
+      delete;
+
  protected:
   SecureChannelClientImplTest()
       : test_remote_device_list_(
@@ -146,13 +152,12 @@ class SecureChannelClientImplTest : public testing::Test {
         std::make_unique<TestConnectionAttemptDelegate>();
 
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    service_ = SecureChannelInitializer::Factory::Get()->BuildInstance(
-        test_task_runner_);
+    service_ = SecureChannelInitializer::Factory::Create(test_task_runner_);
 
     mojo::PendingRemote<mojom::SecureChannel> channel;
     service_->BindReceiver(channel.InitWithNewPipeAndPassReceiver());
-    client_ = SecureChannelClientImpl::Factory::Get()->BuildInstance(
-        std::move(channel), test_task_runner_);
+    client_ = SecureChannelClientImpl::Factory::Create(std::move(channel),
+                                                       test_task_runner_);
   }
 
   void TearDown() override {
@@ -163,9 +168,11 @@ class SecureChannelClientImplTest : public testing::Test {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     auto connection_attempt = client_->ListenForConnectionFromDevice(
-        device_to_connect, local_device, feature, connection_priority);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority);
     auto fake_connection_attempt = base::WrapUnique(
         static_cast<FakeConnectionAttempt*>(connection_attempt.release()));
     fake_connection_attempt->SetDelegate(
@@ -182,9 +189,11 @@ class SecureChannelClientImplTest : public testing::Test {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) {
     auto connection_attempt = client_->InitiateConnectionToDevice(
-        device_to_connect, local_device, feature, connection_priority);
+        device_to_connect, local_device, feature, connection_medium,
+        connection_priority);
     auto fake_connection_attempt = base::WrapUnique(
         static_cast<FakeConnectionAttempt*>(connection_attempt.release()));
     fake_connection_attempt->SetDelegate(
@@ -219,15 +228,13 @@ class SecureChannelClientImplTest : public testing::Test {
 
   const multidevice::RemoteDeviceList test_remote_device_list_;
   const multidevice::RemoteDeviceRefList test_remote_device_ref_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientImplTest);
 };
 
 TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {
   auto fake_connection_attempt = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -249,7 +256,8 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {
 TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice_Failure) {
   auto fake_connection_attempt = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -270,7 +278,8 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice_Failure) {
 TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice) {
   auto fake_connection_attempt = CallListenForConnectionFromDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -292,7 +301,8 @@ TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice) {
 TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice_Failure) {
   auto fake_connection_attempt = CallListenForConnectionFromDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
 
   base::RunLoop run_loop;
 
@@ -313,7 +323,8 @@ TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice_Failure) {
 TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
   auto fake_connection_attempt_1 = CallInitiateConnectionToDevice(
       test_remote_device_ref_list_[1], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
   base::RunLoop run_loop_1;
   fake_connection_attempt_1->set_on_connection_callback(
       run_loop_1.QuitClosure());
@@ -331,7 +342,8 @@ TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
 
   auto fake_connection_attempt_2 = CallListenForConnectionFromDevice(
       test_remote_device_ref_list_[2], test_remote_device_ref_list_[0],
-      "feature", ConnectionPriority::kLow);
+      "feature", ConnectionMedium::kBluetoothLowEnergy,
+      ConnectionPriority::kLow);
   base::RunLoop run_loop_2;
   fake_connection_attempt_2->set_on_connection_callback(
       run_loop_2.QuitClosure());

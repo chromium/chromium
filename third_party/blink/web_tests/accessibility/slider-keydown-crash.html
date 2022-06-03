@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<body id=body>
+
+<div id=slider role=slider></div>
+
+<script>
+async_test((t) => {
+  function handleKeyDown() {
+    document.getElementById("body").removeChild(document.getElementById("slider"));
+    t.done();
+  }
+  document.getElementById("slider").addEventListener('keydown', t.step_func(handleKeyDown));
+  var axSlider = accessibilityController.accessibleElementById("slider");
+  axSlider.increment();
+}, "Decrementing a slider that is destroyed and has a keyup listener doesn't crash");
+</script>
+
+</body>

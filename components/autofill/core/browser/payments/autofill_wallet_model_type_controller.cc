@@ -7,11 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/feature_list.h"
+#include "build/build_config.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_auth_util.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace browser_sync {
@@ -26,10 +30,9 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
       pref_service_(pref_service),
       sync_service_(sync_service) {
   DCHECK(type == syncer::AUTOFILL_WALLET_DATA ||
-         type == syncer::AUTOFILL_WALLET_METADATA);
+         type == syncer::AUTOFILL_WALLET_METADATA ||
+         type == syncer::AUTOFILL_WALLET_OFFER);
   SubscribeToPrefChanges();
-  // TODO(crbug.com/906995): remove this observing mechanism once all sync
-  // datatypes are stopped by ProfileSyncService, when sync is paused.
   sync_service_->AddObserver(this);
 }
 
@@ -47,10 +50,9 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
       pref_service_(pref_service),
       sync_service_(sync_service) {
   DCHECK(type == syncer::AUTOFILL_WALLET_DATA ||
-         type == syncer::AUTOFILL_WALLET_METADATA);
+         type == syncer::AUTOFILL_WALLET_METADATA ||
+         type == syncer::AUTOFILL_WALLET_OFFER);
   SubscribeToPrefChanges();
-  // TODO(crbug.com/906995): remove this observing mechanism once all sync
-  // datatypes are stopped by ProfileSyncService, when sync is paused.
   sync_service_->AddObserver(this);
 }
 
@@ -63,13 +65,13 @@ void AutofillWalletModelTypeController::Stop(
     StopCallback callback) {
   DCHECK(CalledOnValidThread());
   switch (shutdown_reason) {
-    case syncer::STOP_SYNC:
-      // Special case: For AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_METADATA, we
-      // want to clear all data even when Sync is stopped temporarily.
-      shutdown_reason = syncer::DISABLE_SYNC;
+    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+      // Special case: For Wallet-related data types, we want to clear all data
+      // even when Sync is stopped temporarily.
+      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
       break;
-    case syncer::DISABLE_SYNC:
-    case syncer::BROWSER_SHUTDOWN:
+    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       break;
   }
   ModelTypeController::Stop(shutdown_reason, std::move(callback));
@@ -78,10 +80,6 @@ void AutofillWalletModelTypeController::Stop(
 syncer::DataTypeController::PreconditionState
 AutofillWalletModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  // Not being in a persistent error state implies not being in a web signout
-  // state.
-  // TODO(https://crbug.com/819729): Add integration tests for web signout and
-  // other persistent auth errors.
   bool preconditions_met =
       pref_service_->GetBoolean(
           autofill::prefs::kAutofillWalletImportEnabled) &&
@@ -89,6 +87,22 @@ AutofillWalletModelTypeController::GetPreconditionState() const {
       !sync_service_->GetAuthError().IsPersistentError();
   return preconditions_met ? PreconditionState::kPreconditionsMet
                            : PreconditionState::kMustStopAndClearData;
+}
+
+bool AutofillWalletModelTypeController::ShouldRunInTransportOnlyMode() const {
+  if (type() != syncer::AUTOFILL_WALLET_DATA) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableAccountWalletStorage)) {
+    return false;
+  }
+  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
+      !base::FeatureList::IsEnabled(
+          switches::kSyncAllowWalletDataInTransportModeWithCustomPassphrase)) {
+    return false;
+  }
+  return true;
 }
 
 void AutofillWalletModelTypeController::OnUserPrefChanged() {

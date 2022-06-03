@@ -5,6 +5,7 @@
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/command_line.h"
@@ -14,31 +15,30 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/prerender_messages.h"
-#include "chrome/common/render_messages.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
-#include "chrome/renderer/content_settings_agent_impl.h"
 #include "chrome/renderer/custom_menu_commands.h"
-#include "chrome/renderer/plugins/plugin_preroller.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
+#include "components/content_settings/renderer/content_settings_agent_impl.h"
+#include "components/no_state_prefetch/renderer/prerender_observer_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/context_menu_params.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/render_view.h"
 #include "gin/object_template_builder.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/platform/web_mouse_event.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -56,6 +56,36 @@ using content::RenderView;
 
 namespace {
 const ChromePluginPlaceholder* g_last_active_menu = nullptr;
+
+const char kPlaceholderSetKey[] = "kPlaceholderSetKey";
+
+class PlaceholderSet : public base::SupportsUserData::Data {
+ public:
+  ~PlaceholderSet() override = default;
+
+  static PlaceholderSet* Get(content::RenderFrame* render_frame) {
+    DCHECK(render_frame);
+    return static_cast<PlaceholderSet*>(
+        render_frame->GetUserData(kPlaceholderSetKey));
+  }
+
+  static PlaceholderSet* GetOrCreate(content::RenderFrame* render_frame) {
+    PlaceholderSet* set = Get(render_frame);
+    if (!set) {
+      set = new PlaceholderSet();
+      render_frame->SetUserData(kPlaceholderSetKey, base::WrapUnique(set));
+    }
+    return set;
+  }
+
+  std::set<ChromePluginPlaceholder*>& placeholders() { return placeholders_; }
+
+ private:
+  PlaceholderSet() = default;
+
+  std::set<ChromePluginPlaceholder*> placeholders_;
+};
+
 }  // namespace
 
 gin::WrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
@@ -65,18 +95,29 @@ ChromePluginPlaceholder::ChromePluginPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
     const std::string& html_data,
-    const base::string16& title)
+    const std::u16string& title)
     : plugins::LoadablePluginPlaceholder(render_frame, params, html_data),
       status_(chrome::mojom::PluginStatus::kAllowed),
-      title_(title),
-      context_menu_request_id_(0) {
+      title_(title) {
   RenderThread::Get()->AddObserver(this);
+  prerender::PrerenderObserverList::AddObserverForFrame(render_frame, this);
+
+  // Keep track of all placeholders associated with |render_frame|.
+  PlaceholderSet::GetOrCreate(render_frame)->placeholders().insert(this);
 }
 
 ChromePluginPlaceholder::~ChromePluginPlaceholder() {
   RenderThread::Get()->RemoveObserver(this);
-  if (context_menu_request_id_ && render_frame())
-    render_frame()->CancelContextMenu(context_menu_request_id_);
+
+  // The render frame may already be gone.
+  if (render_frame()) {
+    PlaceholderSet* set = PlaceholderSet::Get(render_frame());
+    if (set)
+      set->placeholders().erase(this);
+
+    prerender::PrerenderObserverList::RemoveObserverForFrame(render_frame(),
+                                                             this);
+  }
 }
 
 mojo::PendingRemote<chrome::mojom::PluginRenderer>
@@ -89,9 +130,9 @@ ChromePluginPlaceholder::BindPluginRenderer() {
 ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params) {
-  const base::StringPiece template_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_BLOCKED_PLUGIN_HTML));
+  std::string template_html =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_BLOCKED_PLUGIN_HTML);
 
   base::DictionaryValue values;
   values.SetString("name", "");
@@ -111,10 +152,9 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
     const blink::WebPluginParams& params,
     const content::WebPluginInfo& info,
     const std::string& identifier,
-    const base::string16& name,
+    const std::u16string& name,
     int template_id,
-    const base::string16& message,
-    const PowerSaverInfo& power_saver_info) {
+    const std::u16string& message) {
   base::DictionaryValue values;
   values.SetString("message", message);
   values.SetString("name", name);
@@ -126,30 +166,9 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
           ? "document"
           : "embedded");
 
-  if (!power_saver_info.poster_attribute.empty()) {
-    values.SetString("poster", power_saver_info.poster_attribute);
-    values.SetString("baseurl", power_saver_info.base_url.spec());
-
-    if (!power_saver_info.custom_poster_size.IsEmpty()) {
-      float zoom_factor = blink::PageZoomLevelToZoomFactor(
-          render_frame->GetWebFrame()->View()->ZoomLevel());
-      int width =
-          roundf(power_saver_info.custom_poster_size.width() / zoom_factor);
-      int height =
-          roundf(power_saver_info.custom_poster_size.height() / zoom_factor);
-      values.SetString("visibleWidth", base::NumberToString(width) + "px");
-      values.SetString("visibleHeight", base::NumberToString(height) + "px");
-    } else {
-      // Need to populate these to please $i18n{...} replacement mechanism.
-      // 'undefined' is used on purpose as an invalid value for width and
-      // height, which is ignored by CSS.
-      values.SetString("visibleWidth", "undefined");
-      values.SetString("visibleHeight", "undefined");
-    }
-  }
-
-  const base::StringPiece template_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(template_id));
+  std::string template_html =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          template_id);
 
   DCHECK(!template_html.empty()) << "unable to load template. ID: "
                                  << template_id;
@@ -159,38 +178,25 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
   ChromePluginPlaceholder* blocked_plugin =
       new ChromePluginPlaceholder(render_frame, params, html_data, name);
 
-  if (!power_saver_info.poster_attribute.empty())
-    blocked_plugin->BlockForPowerSaverPoster();
   blocked_plugin->SetPluginInfo(info);
   blocked_plugin->SetIdentifier(identifier);
-
-  blocked_plugin->set_power_saver_enabled(power_saver_info.power_saver_enabled);
-  blocked_plugin->set_blocked_for_background_tab(
-      power_saver_info.blocked_for_background_tab);
 
   return blocked_plugin;
 }
 
+// static
+void ChromePluginPlaceholder::ForEach(
+    content::RenderFrame* render_frame,
+    const base::RepeatingCallback<void(ChromePluginPlaceholder*)>& callback) {
+  PlaceholderSet* set = PlaceholderSet::Get(render_frame);
+  if (set) {
+    for (auto* placeholder : set->placeholders())
+      callback.Run(placeholder);
+  }
+}
+
 void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
   status_ = status;
-}
-
-bool ChromePluginPlaceholder::OnMessageReceived(const IPC::Message& message) {
-  // We don't swallow these messages because multiple blocked plugins and other
-  // objects have an interest in them.
-  IPC_BEGIN_MESSAGE_MAP(ChromePluginPlaceholder, message)
-    IPC_MESSAGE_HANDLER(PrerenderMsg_SetIsPrerendering, OnSetPrerenderMode)
-    IPC_MESSAGE_HANDLER(ChromeViewMsg_LoadBlockedPlugins, OnLoadBlockedPlugins)
-  IPC_END_MESSAGE_MAP()
-
-  return false;
-}
-
-void ChromePluginPlaceholder::ShowPermissionBubbleCallback() {
-  mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      plugin_host.BindNewEndpointAndPassReceiver());
-  plugin_host->ShowFlashPermissionBubble();
 }
 
 void ChromePluginPlaceholder::FinishedDownloading() {
@@ -210,10 +216,8 @@ void ChromePluginPlaceholder::UpdateFailure() {
                                         plugin_name_));
 }
 
-void ChromePluginPlaceholder::OnSetPrerenderMode(
-    prerender::PrerenderMode mode,
-    const std::string& histogram_prefix) {
-  OnSetIsPrerendering(mode != prerender::NO_PRERENDER);
+void ChromePluginPlaceholder::SetIsPrerendering(bool is_prerendering) {
+  OnSetIsPrerendering(is_prerendering);
 }
 
 void ChromePluginPlaceholder::PluginListChanged() {
@@ -238,15 +242,78 @@ void ChromePluginPlaceholder::PluginListChanged() {
   }
 }
 
-void ChromePluginPlaceholder::OnMenuAction(int request_id, unsigned action) {
-  DCHECK_EQ(context_menu_request_id_, request_id);
+v8::Local<v8::Value> ChromePluginPlaceholder::GetV8Handle(
+    v8::Isolate* isolate) {
+  return gin::CreateHandle(isolate, this).ToV8();
+}
+
+void ChromePluginPlaceholder::ShowContextMenu(
+    const blink::WebMouseEvent& event) {
+  if (context_menu_client_receiver_.is_bound())
+    return;  // Don't allow nested context menu requests.
+
+  if (!render_frame())
+    return;
+
+  blink::UntrustworthyContextMenuParams params;
+
+  if (!title_.empty()) {
+    auto name_item = blink::mojom::CustomContextMenuItem::New();
+    name_item->label = title_;
+    params.custom_items.push_back(std::move(name_item));
+
+    auto separator_item = blink::mojom::CustomContextMenuItem::New();
+    separator_item->type = blink::mojom::CustomContextMenuItemType::kSeparator;
+    params.custom_items.push_back(std::move(separator_item));
+  }
+
+  if (!GetPluginInfo().path.value().empty()) {
+    auto run_item = blink::mojom::CustomContextMenuItem::New();
+    run_item->action = MENU_COMMAND_PLUGIN_RUN;
+    // Disable this menu item if the plugin is blocked by policy.
+    run_item->enabled = LoadingAllowed();
+    run_item->label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_RUN);
+    params.custom_items.push_back(std::move(run_item));
+  }
+
+  auto hide_item = blink::mojom::CustomContextMenuItem::New();
+  hide_item->action = MENU_COMMAND_PLUGIN_HIDE;
+  bool is_main_frame_plugin_document =
+      render_frame()->IsMainFrame() &&
+      render_frame()->GetWebFrame()->GetDocument().IsPluginDocument();
+  hide_item->enabled = !is_main_frame_plugin_document;
+  hide_item->label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_HIDE);
+  params.custom_items.push_back(std::move(hide_item));
+
+  gfx::Point point =
+      gfx::Point(event.PositionInWidget().x(), event.PositionInWidget().y());
+  if (plugin() && plugin()->Container())
+    point = plugin()->Container()->LocalToRootFramePoint(point);
+
+  // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
+  // Determine if rounding is more appropriate.
+  gfx::Rect position_in_dips =
+      render_frame()
+          ->GetWebFrame()
+          ->LocalRoot()
+          ->FrameWidget()
+          ->BlinkSpaceToEnclosedDIPs(gfx::Rect(point.x(), point.y(), 0, 0));
+
+  params.x = position_in_dips.x();
+  params.y = position_in_dips.y();
+
+  render_frame()->GetWebFrame()->ShowContextMenuFromExternal(
+      params, context_menu_client_receiver_.BindNewEndpointAndPassRemote());
+
+  g_last_active_menu = this;
+}
+
+void ChromePluginPlaceholder::CustomContextMenuAction(uint32_t action) {
   if (g_last_active_menu != this)
     return;
   switch (action) {
     case MENU_COMMAND_PLUGIN_RUN: {
       RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_Menu"));
-      MarkPluginEssential(
-          content::PluginInstanceThrottler::UNTHROTTLE_METHOD_BY_CLICK);
       LoadPlugin();
       break;
     }
@@ -255,113 +322,24 @@ void ChromePluginPlaceholder::OnMenuAction(int request_id, unsigned action) {
       HidePlugin();
       break;
     }
-    case MENU_COMMAND_ENABLE_FLASH: {
-      ShowPermissionBubbleCallback();
-      break;
-    }
     default:
       NOTREACHED();
   }
 }
 
-void ChromePluginPlaceholder::OnMenuClosed(int request_id) {
-  DCHECK_EQ(context_menu_request_id_, request_id);
-  context_menu_request_id_ = 0;
-}
-
-v8::Local<v8::Value> ChromePluginPlaceholder::GetV8Handle(
-    v8::Isolate* isolate) {
-  return gin::CreateHandle(isolate, this).ToV8();
-}
-
-void ChromePluginPlaceholder::ShowContextMenu(
-    const blink::WebMouseEvent& event) {
-  if (context_menu_request_id_)
-    return;  // Don't allow nested context menu requests.
-  if (!render_frame())
-    return;
-
-  content::ContextMenuParams params;
-
-  if (!title_.empty()) {
-    content::MenuItem name_item;
-    name_item.label = title_;
-    params.custom_items.push_back(name_item);
-
-    content::MenuItem separator_item;
-    separator_item.type = content::MenuItem::SEPARATOR;
-    params.custom_items.push_back(separator_item);
-  }
-
-  bool flash_hidden =
-      status_ == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml;
-  if (!GetPluginInfo().path.value().empty() && !flash_hidden) {
-    content::MenuItem run_item;
-    run_item.action = MENU_COMMAND_PLUGIN_RUN;
-    // Disable this menu item if the plugin is blocked by policy.
-    run_item.enabled = LoadingAllowed();
-    run_item.label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_RUN);
-    params.custom_items.push_back(run_item);
-  }
-
-  if (flash_hidden) {
-    content::MenuItem enable_flash_item;
-    enable_flash_item.action = MENU_COMMAND_ENABLE_FLASH;
-    enable_flash_item.enabled = true;
-    enable_flash_item.label =
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_ENABLE_FLASH);
-    params.custom_items.push_back(enable_flash_item);
-  }
-
-  content::MenuItem hide_item;
-  hide_item.action = MENU_COMMAND_PLUGIN_HIDE;
-  bool is_main_frame_plugin_document =
-      render_frame()->IsMainFrame() &&
-      render_frame()->GetWebFrame()->GetDocument().IsPluginDocument();
-  hide_item.enabled = !is_main_frame_plugin_document;
-  hide_item.label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PLUGIN_HIDE);
-  params.custom_items.push_back(hide_item);
-
-  blink::WebPoint point(event.PositionInWidget().x(),
-                        event.PositionInWidget().y());
-  if (plugin() && plugin()->Container())
-    point = plugin()->Container()->LocalToRootFramePoint(point);
-
-  params.x = point.x;
-  params.y = point.y;
-
-  context_menu_request_id_ = render_frame()->ShowContextMenu(this, params);
-  g_last_active_menu = this;
+void ChromePluginPlaceholder::ContextMenuClosed(const GURL&) {
+  context_menu_client_receiver_.reset();
+  render_frame()->GetWebFrame()->View()->DidCloseContextMenu();
 }
 
 blink::WebPlugin* ChromePluginPlaceholder::CreatePlugin() {
-  std::unique_ptr<content::PluginInstanceThrottler> throttler;
-  // If the plugin has already been marked essential in its placeholder form,
-  // we shouldn't create a new throttler and start the process all over again.
-  if (power_saver_enabled()) {
-    throttler = content::PluginInstanceThrottler::Create(
-        heuristic_run_before_ ? content::RenderFrame::DONT_RECORD_DECISION
-                              : content::RenderFrame::RECORD_DECISION);
-    // PluginPreroller manages its own lifetime.
-    new PluginPreroller(render_frame(), GetPluginParams(), GetPluginInfo(),
-                        GetIdentifier(), title_,
-                        l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, title_),
-                        throttler.get());
-  }
-  return render_frame()->CreatePlugin(GetPluginInfo(), GetPluginParams(),
-                                      std::move(throttler));
+  return render_frame()->CreatePlugin(GetPluginInfo(), GetPluginParams());
 }
 
 void ChromePluginPlaceholder::OnBlockedContent(
     content::RenderFrame::PeripheralContentStatus status,
     bool is_same_origin) {
   DCHECK(render_frame());
-
-  if (status ==
-      content::RenderFrame::PeripheralContentStatus::CONTENT_STATUS_TINY) {
-    ContentSettingsAgentImpl::Get(render_frame())
-        ->DidBlockContentType(ContentSettingsType::PLUGINS);
-  }
 
   std::string message = base::StringPrintf(
       is_same_origin ? "Same-origin plugin content from %s must have a visible "
@@ -385,9 +363,7 @@ gin::ObjectTemplateBuilder ChromePluginPlaceholder::GetObjectTemplateBuilder(
               "load", &ChromePluginPlaceholder::LoadCallback)
           .SetMethod<void (ChromePluginPlaceholder::*)()>(
               "didFinishLoading",
-              &ChromePluginPlaceholder::DidFinishLoadingCallback)
-          .SetMethod("showPermissionBubble",
-                     &ChromePluginPlaceholder::ShowPermissionBubbleCallback);
+              &ChromePluginPlaceholder::DidFinishLoadingCallback);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePluginPlaceholderTesting)) {

@@ -5,16 +5,46 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_
 
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
 
 class LayoutObject;
 
 // Put data inside a forward-declared struct, to avoid including LayoutObject.h.
-struct DepthOrderedLayoutObjectListData;
+class DepthOrderedLayoutObjectListData;
+
+struct LayoutObjectWithDepth {
+  DISALLOW_NEW();
+
+ public:
+  explicit LayoutObjectWithDepth(LayoutObject* in_object)
+      : object(in_object), depth(DetermineDepth(in_object)) {}
+  LayoutObjectWithDepth() = default;
+  void Trace(Visitor*) const;
+
+  Member<LayoutObject> object = nullptr;
+  unsigned depth = 0u;
+
+  LayoutObject& operator*() const { return *object; }
+  LayoutObject* operator->() const { return object; }
+
+  bool operator<(const LayoutObjectWithDepth& other) const {
+    return depth > other.depth;
+  }
+
+  void operator=(LayoutObject* obj) {
+    object = obj;
+    depth = DetermineDepth(obj);
+  }
+
+ private:
+  static unsigned DetermineDepth(LayoutObject*);
+};
 
 class DepthOrderedLayoutObjectList {
   DISALLOW_NEW();
@@ -22,6 +52,7 @@ class DepthOrderedLayoutObjectList {
  public:
   DepthOrderedLayoutObjectList();
   ~DepthOrderedLayoutObjectList();
+  void Trace(Visitor*) const;
 
   void Add(LayoutObject&);
   void Remove(LayoutObject&);
@@ -30,34 +61,15 @@ class DepthOrderedLayoutObjectList {
   int size() const;
   bool IsEmpty() const;
 
-  struct LayoutObjectWithDepth {
-    LayoutObjectWithDepth(LayoutObject* in_object)
-        : object(in_object), depth(DetermineDepth(in_object)) {}
-
-    LayoutObjectWithDepth() : object(nullptr), depth(0) {}
-
-    LayoutObject* object;
-    unsigned depth;
-
-    LayoutObject& operator*() const { return *object; }
-    LayoutObject* operator->() const { return object; }
-
-    bool operator<(const DepthOrderedLayoutObjectList::LayoutObjectWithDepth&
-                       other) const {
-      return depth > other.depth;
-    }
-
-   private:
-    static unsigned DetermineDepth(LayoutObject*);
-  };
-
-  const HashSet<LayoutObject*>& Unordered() const;
-  const Vector<LayoutObjectWithDepth>& Ordered();
+  const HeapHashSet<Member<LayoutObject>>& Unordered() const;
+  const HeapVector<LayoutObjectWithDepth>& Ordered();
 
  private:
-  DepthOrderedLayoutObjectListData* data_;
+  Member<DepthOrderedLayoutObjectListData> data_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::LayoutObjectWithDepth)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_

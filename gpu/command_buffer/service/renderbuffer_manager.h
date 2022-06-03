@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/gpu_gles2_export.h"
@@ -152,6 +153,10 @@ class GPU_GLES2_EXPORT RenderbufferManager
                       GLint max_renderbuffer_size,
                       GLint max_samples,
                       FeatureInfo* feature_info);
+
+  RenderbufferManager(const RenderbufferManager&) = delete;
+  RenderbufferManager& operator=(const RenderbufferManager&) = delete;
+
   ~RenderbufferManager() override;
 
   GLint max_renderbuffer_size() const {
@@ -227,8 +232,6 @@ class GPU_GLES2_EXPORT RenderbufferManager
   typedef std::unordered_map<GLuint, scoped_refptr<Renderbuffer>>
       RenderbufferMap;
   RenderbufferMap renderbuffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderbufferManager);
 };
 
 }  // namespace gles2

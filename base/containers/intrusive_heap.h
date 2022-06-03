@@ -132,14 +132,16 @@
 #include <algorithm>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/containers/stack_container.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 
 namespace base {
 
@@ -404,6 +406,49 @@ class IntrusiveHeap {
   // "front" or "take").
   void pop() { erase(0u); }
 
+  // Erases every element that matches the predicate. This is done in-place for
+  // maximum efficiency. Also, to avoid re-entrancy issues, elements are deleted
+  // at the very end.
+  // Note: This function is currently tuned for a use-case where there are
+  // usually 8 or less elements removed at a time. Consider adding a template
+  // parameter if a different tuning is needed.
+  template <typename Functor>
+  void EraseIf(Functor predicate) {
+    // Stable partition ensures that if no elements are erased, the heap remains
+    // intact.
+    auto erase_start = std::stable_partition(
+        impl_.heap_.begin(), impl_.heap_.end(),
+        [&](const auto& element) { return !predicate(element); });
+
+    // Clear the heap handle of every element that will be erased.
+    for (size_t i = erase_start - impl_.heap_.begin(); i < impl_.heap_.size();
+         ++i) {
+      ClearHeapHandle(i);
+    }
+
+    // Deleting an element can potentially lead to reentrancy, we move all the
+    // elements to be erased into a temporary container before deleting them.
+    // This is to avoid changing the underlying container during the erase()
+    // call.
+    StackVector<value_type, 8> elements_to_delete;
+    std::move(erase_start, impl_.heap_.end(),
+              std::back_inserter(elements_to_delete.container()));
+
+    impl_.heap_.erase(erase_start, impl_.heap_.end());
+
+    // If no elements were removed, then the heap is still intact.
+    if (elements_to_delete->empty())
+      return;
+
+    // Repair the heap and ensure handles are pointing to the right index.
+    ranges::make_heap(impl_.heap_, value_comp());
+    for (size_t i = 0; i < size(); ++i)
+      SetHeapHandle(i);
+
+    // Explicitly delete elements last.
+    elements_to_delete->clear();
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // Updating.
   //
@@ -443,6 +488,16 @@ class IntrusiveHeap {
   template <typename P>
   const_iterator Update(P pos) {
     return Update(ToIndex(pos));
+  }
+
+  // Applies a modification function to the object at the given location, then
+  // repairs the heap. To be used to modify an element in the heap in-place
+  // while keeping the heap intact.
+  template <typename P, typename UnaryOperation>
+  const_iterator Modify(P pos, UnaryOperation unary_op) {
+    size_type index = ToIndex(pos);
+    unary_op(impl_.heap_.at(index));
+    return Update(index);
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -35,7 +35,6 @@
 
 #include <iterator>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -52,10 +51,14 @@ class DequeConstIterator;
 template <typename T,
           wtf_size_t inlineCapacity = 0,
           typename Allocator = PartitionAllocator>
-class Deque : public ConditionalDestructor<Deque<T, INLINE_CAPACITY, Allocator>,
-                                           (INLINE_CAPACITY == 0) &&
-                                               Allocator::kIsGarbageCollected> {
+class Deque
+    : public ConditionalDestructor<Deque<T, INLINE_CAPACITY, Allocator>,
+                                   !VectorTraits<T>::kNeedsDestruction &&
+                                       Allocator::kIsGarbageCollected> {
   USE_ALLOCATOR(Deque, Allocator);
+
+  static_assert((inlineCapacity == 0) || !Allocator::kIsGarbageCollected,
+                "inlineCapacity not supported with garbage collection.");
 
  public:
   typedef DequeIterator<T, inlineCapacity, Allocator> iterator;
@@ -146,7 +149,7 @@ class Deque : public ConditionalDestructor<Deque<T, INLINE_CAPACITY, Allocator>,
   void clear();
 
   template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher);
+  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
 
   static_assert(!std::is_polymorphic<T>::value ||
                     !VectorTraits<T>::kCanInitializeWithMemset,
@@ -162,6 +165,7 @@ class Deque : public ConditionalDestructor<Deque<T, INLINE_CAPACITY, Allocator>,
 
  protected:
   T** GetBufferSlot() { return buffer_.BufferSlot(); }
+  const T* const* GetBufferSlot() const { return buffer_.BufferSlot(); }
 
  private:
   friend class DequeIteratorBase<T, inlineCapacity, Allocator>;
@@ -169,15 +173,18 @@ class Deque : public ConditionalDestructor<Deque<T, INLINE_CAPACITY, Allocator>,
   class BackingBuffer : public VectorBuffer<T, INLINE_CAPACITY, Allocator> {
    private:
     using Base = VectorBuffer<T, INLINE_CAPACITY, Allocator>;
+    using Base::BufferSafe;
     using Base::size_;
+
+    friend class Deque;
 
    public:
     BackingBuffer() : Base() {}
     explicit BackingBuffer(wtf_size_t capacity) : Base(capacity) {}
+    BackingBuffer(const BackingBuffer&) = delete;
+    BackingBuffer& operator=(const BackingBuffer&) = delete;
 
     void SetSize(wtf_size_t size) { size_ = size; }
-
-    DISALLOW_COPY_AND_ASSIGN(BackingBuffer);
   };
 
   typedef VectorTypeOperations<T, Allocator> TypeOperations;
@@ -236,6 +243,7 @@ class DequeIterator : public DequeIteratorBase<T, inlineCapacity, Allocator> {
   typedef T& reference;
   typedef std::bidirectional_iterator_tag iterator_category;
 
+  DequeIterator() = default;
   DequeIterator(Deque<T, inlineCapacity, Allocator>* deque, wtf_size_t index)
       : Base(deque, index) {}
 
@@ -255,12 +263,23 @@ class DequeIterator : public DequeIteratorBase<T, inlineCapacity, Allocator> {
     Base::Increment();
     return *this;
   }
-  // postfix ++ intentionally omitted
+
+  Iterator operator++(int) {
+    Iterator tmp = *this;
+    ++*this;
+    return tmp;
+  }
+
   Iterator& operator--() {
     Base::Decrement();
     return *this;
   }
-  // postfix -- intentionally omitted
+
+  Iterator operator--(int) {
+    Iterator tmp = *this;
+    --*this;
+    return tmp;
+  }
 };
 
 template <typename T,
@@ -305,12 +324,23 @@ class DequeConstIterator
     Base::Increment();
     return *this;
   }
-  // postfix ++ intentionally omitted
+
+  Iterator operator++(int) {
+    Iterator tmp = *this;
+    ++*this;
+    return tmp;
+  }
+
   Iterator& operator--() {
     Base::Decrement();
     return *this;
   }
-  // postfix -- intentionally omitted
+
+  Iterator operator--(int) {
+    Iterator tmp = *this;
+    --*this;
+    return tmp;
+  }
 };
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
@@ -604,7 +634,7 @@ inline void Deque<T, inlineCapacity, Allocator>::erase(wtf_size_t position) {
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline DequeIteratorBase<T, inlineCapacity, Allocator>::DequeIteratorBase()
-    : deque_(0) {}
+    : deque_(nullptr) {}
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline DequeIteratorBase<T, inlineCapacity, Allocator>::DequeIteratorBase(
@@ -676,39 +706,15 @@ inline T* DequeIteratorBase<T, inlineCapacity, Allocator>::Before() const {
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 template <typename VisitorDispatcher, typename A>
 std::enable_if_t<A::kIsGarbageCollected>
-Deque<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) {
+Deque<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
+  static_assert(inlineCapacity == 0,
+                "Heap allocated Deque should not use inline buffer");
   static_assert(Allocator::kIsGarbageCollected,
                 "Garbage collector must be enabled.");
-  if (buffer_.HasOutOfLineBuffer()) {
-    Allocator::TraceVectorBacking(visitor, buffer_.Buffer(),
-                                  buffer_.BufferSlot());
-  } else {
-    Allocator::TraceVectorBacking(visitor, static_cast<T*>(nullptr),
-                                  buffer_.BufferSlot());
-    const T* buffer_begin = buffer_.Buffer();
-    const T* end = buffer_begin + end_;
-    if (IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
-      if (start_ <= end_) {
-        for (const T* buffer_entry = buffer_begin + start_; buffer_entry != end;
-             buffer_entry++) {
-          Allocator::template Trace<T, VectorTraits<T>>(
-              visitor, *const_cast<T*>(buffer_entry));
-        }
-      } else {
-        for (const T* buffer_entry = buffer_begin; buffer_entry != end;
-             buffer_entry++) {
-          Allocator::template Trace<T, VectorTraits<T>>(
-              visitor, *const_cast<T*>(buffer_entry));
-        }
-        const T* buffer_end = buffer_.Buffer() + buffer_.capacity();
-        for (const T* buffer_entry = buffer_begin + start_;
-             buffer_entry != buffer_end; buffer_entry++) {
-          Allocator::template Trace<T, VectorTraits<T>>(
-              visitor, *const_cast<T*>(buffer_entry));
-        }
-      }
-    }
-  }
+  const T* buffer = buffer_.BufferSafe();
+
+  DCHECK(!buffer || buffer_.IsOutOfLineBuffer(buffer));
+  Allocator::TraceVectorBacking(visitor, buffer, buffer_.BufferSlot());
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>

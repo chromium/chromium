@@ -1,0 +1,27 @@
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+config("opencv_warnings") {
+  cflags = [ "-Wno-unused-function" ]
+}
+
+source_set("emd") {
+  sources = [
+    "src/emd.cpp",
+    "src/emd_wrapper.h",
+  ]
+
+  defines = [ "CHROMIUM_OPENCV" ]
+
+  public_deps = [ "//base" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":opencv_warnings",
+  ]
+}
+
+fuzzer_test("opencv_emd_fuzzer") {
+  sources = [ "src/emd_fuzzer.cc" ]
+  deps = [ ":emd" ]
+}

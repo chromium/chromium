@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL <base href> assert_true: expected substring %E5 got http://web-platform.test:8001/html/infrastructure/urls/resolving-urls/query-encoding/resources/resource.py?q=%C3%A5&encoding=windows-1252&type= expected true got false
+Harness: the test ran to completion.
+

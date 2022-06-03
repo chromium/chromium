@@ -5,7 +5,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #include "base/command_line.h"
-#include "base/task/post_task.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -18,7 +17,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,7 +103,8 @@ class RelaunchIgnoreUnloadHandlersTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(RelaunchIgnoreUnloadHandlersTest, Do) {
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(
@@ -110,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(RelaunchIgnoreUnloadHandlersTest, Do) {
       "window.addEventListener('beforeunload',"
       "function(event) { event.returnValue = 'Foo'; });"));
   content::PrepContentsForBeforeUnloadTest(tab);
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&chrome::RelaunchIgnoreUnloadHandlers));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&chrome::RelaunchIgnoreUnloadHandlers));
   ui_test_utils::WaitForBrowserToClose(browser());
 }

@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule: [cron: "40 1 * * *"]
+
+jobs:
+  test:
+    name: Rust ${{matrix.rust}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [1.31.0, stable, beta]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+      - run: cargo test
+      - run: cargo test --no-default-features
+      - run: cargo test --features span-locations
+      - run: RUSTFLAGS='--cfg procmacro2_semver_exempt' cargo test
+      - run: RUSTFLAGS='--cfg procmacro2_semver_exempt' cargo test --no-default-features
+
+  nightly:
+    name: Rust nightly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo test
+      - run: cargo test --no-default-features
+      - run: cargo test --no-default-features -- --ignored # run the ignored test to make sure the `proc-macro` feature is disabled
+      - run: cargo test --features span-locations
+      - run: cargo test --manifest-path tests/ui/Cargo.toml
+      - run: RUSTFLAGS='--cfg procmacro2_semver_exempt' cargo test
+      - run: RUSTFLAGS='--cfg procmacro2_semver_exempt' cargo test --no-default-features
+      - run: RUSTFLAGS='-Z allow-features=' cargo test
+      - run: cargo update -Z minimal-versions && cargo build
+
+  webassembly:
+    name: WebAssembly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          target: wasm32-unknown-unknown
+      - run: cargo test --target wasm32-unknown-unknown --no-run
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/rust-toolchain@clippy
+      - run: cargo clippy --tests -- -Dclippy::all -Dclippy::pedantic
+      - run: cargo clippy --tests --all-features -- -Dclippy::all -Dclippy::pedantic
+
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v2
+      - run: cargo outdated --exit-code 1

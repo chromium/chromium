@@ -15,17 +15,29 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   void SetDelegate(Delegate*) override {}
   void Show() override {}
   void Hide() override {}
-  void UpdateAppLaunchState(AppLaunchState state) override {}
+  void UpdateAppLaunchState(AppLaunchState state) override;
   void ToggleNetworkConfig(bool) override {}
   void ShowNetworkConfigureUI() override {}
-
+  void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+
+  KioskAppLaunchError::Error GetErrorMessageType() const;
   void SetNetworkReady(bool ready);
+  AppLaunchState GetAppLaunchState();
 
  private:
+  KioskAppLaunchError::Error error_message_type_ =
+      KioskAppLaunchError::Error::kNone;
   bool network_ready_ = false;
+  AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeAppLaunchSplashScreenHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_FAKE_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_

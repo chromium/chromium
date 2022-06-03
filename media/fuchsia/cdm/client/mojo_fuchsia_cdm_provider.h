@@ -5,7 +5,6 @@
 #ifndef MEDIA_FUCHSIA_CDM_CLIENT_MOJO_FUCHSIA_CDM_PROVIDER_H_
 #define MEDIA_FUCHSIA_CDM_CLIENT_MOJO_FUCHSIA_CDM_PROVIDER_H_
 
-#include "base/macros.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_provider.h"
 #include "media/fuchsia/mojom/fuchsia_cdm_provider.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,6 +20,10 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
   // |interface_broker| must outlive this class.
   explicit MojoFuchsiaCdmProvider(
       blink::BrowserInterfaceBrokerProxy* interface_broker);
+
+  MojoFuchsiaCdmProvider(const MojoFuchsiaCdmProvider&) = delete;
+  MojoFuchsiaCdmProvider& operator=(const MojoFuchsiaCdmProvider&) = delete;
+
   ~MojoFuchsiaCdmProvider() override;
 
   // FuchsiaCdmProvider implementation:
@@ -32,8 +35,6 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
  private:
   blink::BrowserInterfaceBrokerProxy* const interface_broker_;
   mojo::Remote<media::mojom::FuchsiaCdmProvider> cdm_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoFuchsiaCdmProvider);
 };
 
 }  // namespace media

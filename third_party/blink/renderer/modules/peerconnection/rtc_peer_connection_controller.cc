@@ -41,7 +41,7 @@ void RTCPeerConnectionController::MaybeReportComplexSdp(
       .Record(GetSupplementable()->UkmRecorder());
 }
 
-void RTCPeerConnectionController::Trace(Visitor* visitor) {
+void RTCPeerConnectionController::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 

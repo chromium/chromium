@@ -12,6 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Fetches a favicon for active WebContents in a Tab.
@@ -31,7 +32,7 @@ public class TabFavicon extends TabWebContentsUserData {
     private Bitmap mFavicon;
     private int mFaviconWidth;
     private int mFaviconHeight;
-    private String mFaviconUrl;
+    private GURL mFaviconUrl;
 
     static TabFavicon from(Tab tab) {
         TabFavicon favicon = get(tab);
@@ -121,7 +122,7 @@ public class TabFavicon extends TabWebContentsUserData {
     @CalledByNative
     private void onFaviconAvailable(Bitmap icon) {
         if (icon == null) return;
-        String url = mTab.getUrl();
+        GURL url = mTab.getUrl();
         boolean pageUrlChanged = !url.equals(mFaviconUrl);
         // This method will be called multiple times if the page has more than one favicon.
         // We are trying to use the |mIdealFaviconSize|x|mIdealFaviconSize| DP icon here, or the

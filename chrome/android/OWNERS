@@ -6,11 +6,11 @@ nyquist@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
 yfriedman@chromium.org
-yusufo@chromium.org
 
-per-file static_initializers.gni=*
+per-file static_initializers.gni=file://build/OWNERS
 per-file java_sources.gni=*
 per-file chrome_java_sources.gni=*
+per-file chrome_java_resources.gni=*
 per-file chrome_test_java_sources.gni=*
 per-file chrome_junit_test_java_sources.gni=*
 
@@ -21,7 +21,4 @@ per-file BUILD.gn=bsheedy@chromium.org
 per-file *.gn*=file://build/android/OWNERS
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
-
-# COMPONENT: Mobile
-# OS: Android
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

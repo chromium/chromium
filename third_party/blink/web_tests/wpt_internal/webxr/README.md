@@ -16,4 +16,4 @@ Those should be the only changes required other than those required by wpt lint.
 
 For more details, please reference the wpt_internal [README] [WPT Readme].
 
-[WPT Readme]: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/web_tests/wpt_internal/README
+[WPT Readme]: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/web_tests/wpt_internal/README.md

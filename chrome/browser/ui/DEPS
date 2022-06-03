@@ -1,15 +1,43 @@
 include_rules = [
+  "+chrome/browser/image_decoder",
   "-chrome/browser/ui/views",
+  "+chrome/updater",
+  "+components/browser_ui/client_certificate",
+  "+components/browser_ui/util/android/url_constants.h",
+  "+components/country_codes",
+  "+components/enterprise",
+  "+components/infobars/android",
+  "+components/live_caption",
+  "+components/omnibox",
   "+components/page_load_metrics/browser",
-  "+mash/public/mojom",
+  "+components/qr_code_generator",
+  "+components/safety_check",
+  "+components/soda",
+  "+components/translate/content/android",
   "+services/content/public",
   "+services/device/public/mojom",
 ]
 
 specific_include_rules = {
+  "application_launch_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
   "browser_finder_chromeos_browsertest\.cc": [
     "+ash/wm/desks/desk.h",
     "+ash/wm/desks/desks_controller.h",
     "+ash/wm/desks/desks_test_util.h",
   ],
+  "fullscreen_controller_interactive_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
+  "popup_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
+  "sad_tab_helper.cc": [
+    "+content/common/content_navigation_policy.h",
+  ],
+  "startup_browser_creator_browsertest.cc": [
+    "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
+    "+chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
+  ]
 }

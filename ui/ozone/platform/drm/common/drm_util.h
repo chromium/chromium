@@ -12,9 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/ozone/common/gpu/ozone_gpu_message_params.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
@@ -30,6 +28,12 @@ class Point;
 
 namespace ui {
 
+// It is safe to assume there will be no more than 256 connected DRM devices.
+constexpr int kMaxDrmCount = 256u;
+
+// It is safe to assume there will be no more than 256 connectors per DRM.
+constexpr int kMaxDrmConnectors = 256u;
+
 // Representation of the information required to initialize and configure a
 // native display. |index| is the position of the connection and will be
 // used to generate a unique identifier for the display.
@@ -37,19 +41,22 @@ class HardwareDisplayControllerInfo {
  public:
   HardwareDisplayControllerInfo(ScopedDrmConnectorPtr connector,
                                 ScopedDrmCrtcPtr crtc,
-                                size_t index);
+                                uint8_t index);
+
+  HardwareDisplayControllerInfo(const HardwareDisplayControllerInfo&) = delete;
+  HardwareDisplayControllerInfo& operator=(
+      const HardwareDisplayControllerInfo&) = delete;
+
   ~HardwareDisplayControllerInfo();
 
   drmModeConnector* connector() const { return connector_.get(); }
   drmModeCrtc* crtc() const { return crtc_.get(); }
-  size_t index() const { return index_; }
+  uint8_t index() const { return index_; }
 
  private:
   ScopedDrmConnectorPtr connector_;
   ScopedDrmCrtcPtr crtc_;
-  size_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayControllerInfo);
+  uint8_t index_;
 };
 
 // Looks-up and parses the native display configurations returning all available
@@ -71,24 +78,14 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     const display::DisplayMode** out_current_mode,
     const display::DisplayMode** out_native_mode);
 
-display::DisplayConnectionType GetDisplayType(
-    const drmModeConnector* connector);
-
 // |info| provides the DRM information related to the display, |fd| is the
 // connection to the DRM device.
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    size_t device_index,
+    uint8_t device_index,
     const gfx::Point& origin);
-
-std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
-    const DisplaySnapshot_Params& params);
-
-// Creates a serialized version of MovableDisplaySnapshots for IPC transmission.
-std::vector<DisplaySnapshot_Params> CreateDisplaySnapshotParams(
-    const MovableDisplaySnapshots& displays);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
 
@@ -100,11 +97,6 @@ ScopedDrmPropertyPtr FindDrmProperty(int fd,
 
 bool HasColorCorrectionMatrix(int fd, drmModeCrtc* crtc);
 
-DisplayMode_Params GetDisplayModeParams(const display::DisplayMode& mode);
-
-std::unique_ptr<display::DisplayMode> CreateDisplayModeFromParams(
-    const DisplayMode_Params& pmode);
-
 bool MatchMode(const display::DisplayMode& display_mode,
                const drmModeModeInfo& m);
 
@@ -113,6 +105,10 @@ const gfx::Size ModeSize(const drmModeModeInfo& mode);
 float ModeRefreshRate(const drmModeModeInfo& mode);
 
 bool ModeIsInterlaced(const drmModeModeInfo& mode);
+
+uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
+
+std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
 
 }  // namespace ui
 

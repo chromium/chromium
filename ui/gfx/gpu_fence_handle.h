@@ -8,42 +8,45 @@
 #include "build/build_config.h"
 #include "ui/gfx/gfx_export.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
-#include "base/file_descriptor_posix.h"
+#if defined(OS_POSIX)
+#include "base/files/scoped_file.h"
+#endif
+
+#if defined(OS_FUCHSIA)
+#include <lib/zx/event.h>
+#endif
+
+#if defined(OS_WIN)
+#include "base/win/scoped_handle.h"
 #endif
 
 namespace gfx {
 
-enum class GpuFenceHandleType {
-  // A null handle for transport. It cannot be used for making a waitable fence
-  // object.
-  kEmpty,
-
-  // A file descriptor for a native fence object as used by the
-  // EGL_ANDROID_native_fence_sync extension.
-  kAndroidNativeFenceSync,
-
-  kLast = kAndroidNativeFenceSync
-};
-
 struct GFX_EXPORT GpuFenceHandle {
+  GpuFenceHandle(const GpuFenceHandle&) = delete;
+  GpuFenceHandle& operator=(const GpuFenceHandle&) = delete;
+
   GpuFenceHandle();
-  GpuFenceHandle(const GpuFenceHandle& other);
-  GpuFenceHandle& operator=(const GpuFenceHandle& other);
+  GpuFenceHandle(GpuFenceHandle&& other);
+  GpuFenceHandle& operator=(GpuFenceHandle&& other);
   ~GpuFenceHandle();
 
-  bool is_null() const { return type == GpuFenceHandleType::kEmpty; }
+  bool is_null() const;
 
-  GpuFenceHandleType type;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
-  base::FileDescriptor native_fd;
+  // Returns an instance of |handle| which can be sent over IPC. This duplicates
+  // the handle so that IPC code can take ownership of it without invalidating
+  // |handle| itself.
+  GpuFenceHandle Clone() const;
+
+  // TODO(crbug.com/1142962): Make this a class instead of struct.
+#if defined(OS_POSIX)
+  base::ScopedFD owned_fd;
+#elif defined(OS_FUCHSIA)
+  zx::event owned_event;
+#elif defined(OS_WIN)
+  base::win::ScopedHandle owned_handle;
 #endif
 };
-
-// Returns an instance of |handle| which can be sent over IPC. This duplicates
-// the file-handles as appropriate, so that the IPC code take ownership of them,
-// without invalidating |handle| itself.
-GFX_EXPORT GpuFenceHandle CloneHandleForIPC(const GpuFenceHandle& handle);
 
 }  // namespace gfx
 

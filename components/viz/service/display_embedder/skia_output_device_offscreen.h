@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -19,27 +18,34 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
  public:
   SkiaOutputDeviceOffscreen(
       scoped_refptr<gpu::SharedContextState> context_state,
-      bool flipped,
+      gfx::SurfaceOrigin origin,
       bool has_alpha,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceOffscreen(const SkiaOutputDeviceOffscreen&) = delete;
+  SkiaOutputDeviceOffscreen& operator=(const SkiaOutputDeviceOffscreen&) =
+      delete;
+
   ~SkiaOutputDeviceOffscreen() override;
 
   // SkiaOutputDevice implementation:
   bool Reshape(const gfx::Size& size,
                float device_scale_factor,
                const gfx::ColorSpace& color_space,
-               bool has_alpha,
+               gfx::BufferFormat format,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
-                   std::vector<ui::LatencyInfo> latency_info) override;
+                   OutputSurfaceFrame frame) override;
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
-                     std::vector<ui::LatencyInfo> latency_info) override;
+                     OutputSurfaceFrame frame) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
-  SkSurface* BeginPaint() override;
-  void EndPaint(const GrBackendSemaphore& semaphore) override;
+  SkSurface* BeginPaint(
+      bool allocate_frame_buffer,
+      std::vector<GrBackendSemaphore>* end_semaphores) override;
+  void EndPaint() override;
 
  protected:
   scoped_refptr<gpu::SharedContextState> context_state_;
@@ -47,13 +53,12 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   sk_sp<SkSurface> sk_surface_;
   GrBackendTexture backend_texture_;
   bool supports_rgbx_ = true;
-
- private:
   gfx::Size size_;
-  uint64_t backbuffer_estimated_size_ = 0;
+  gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
   sk_sp<SkColorSpace> sk_color_space_;
 
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceOffscreen);
+ private:
+  uint64_t backbuffer_estimated_size_ = 0;
 };
 
 }  // namespace viz

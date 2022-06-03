@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -129,7 +129,7 @@ def ConvertFileToDataURL(filename, base_path, distribution, inlined_files,
     raise Exception('%s is of an an unknown type and '
                     'cannot be stored in a data url.' % filename)
   inline_data = base64.standard_b64encode(util.ReadFile(filepath, util.BINARY))
-  return 'data:%s;base64,%s' % (mimetype, inline_data)
+  return 'data:%s;base64,%s' % (mimetype, inline_data.decode('utf-8'))
 
 
 def SrcInlineAsDataURL(
@@ -255,6 +255,52 @@ class InlinedData:
     self.inlined_data = inlined_data
     self.inlined_files = inlined_files
 
+
+def CheckConditionalElements(grd_node, str):
+  def IsConditionSatisfied(src_match):
+    expr1 = src_match.group('expr1') or ''
+    expr2 = src_match.group('expr2') or ''
+    return grd_node is None or grd_node.EvaluateCondition(expr1 + expr2)
+
+  """Helper function to conditionally inline inner elements"""
+  while True:
+    begin_if = _BEGIN_IF_BLOCK.search(str)
+    if begin_if is None:
+      if _END_IF_BLOCK.search(str) is not None:
+        raise Exception('Unmatched </if>')
+      return str
+
+    condition_satisfied = IsConditionSatisfied(begin_if)
+    leading = str[0:begin_if.start()]
+    content_start = begin_if.end()
+
+    # Find matching "if" block end.
+    count = 1
+    pos = begin_if.end()
+    while True:
+      end_if = _END_IF_BLOCK.search(str, pos)
+      if end_if is None:
+        raise Exception('Unmatched <if>')
+
+      next_if = _BEGIN_IF_BLOCK.search(str, pos)
+      if next_if is None or next_if.start() >= end_if.end():
+        count = count - 1
+        if count == 0:
+          break
+        pos = end_if.end()
+      else:
+        count = count + 1
+        pos = next_if.end()
+
+    content = str[content_start:end_if.start()]
+    trailing = str[end_if.end():]
+
+    if condition_satisfied:
+      str = leading + CheckConditionalElements(grd_node, content) + trailing
+    else:
+      str = leading + trailing
+
+
 def DoInline(
     input_filename, grd_node, allow_external_script=False,
     preprocess_only=False, names_only=False, strip_whitespace=False,
@@ -316,50 +362,6 @@ def DoInline(
     if filename_expansion_function:
       filename = filename_expansion_function(filename)
     return os.path.normpath(os.path.join(base_path, filename))
-
-  def IsConditionSatisfied(src_match):
-    expr1 = src_match.group('expr1') or ''
-    expr2 = src_match.group('expr2') or ''
-    return grd_node is None or grd_node.EvaluateCondition(expr1 + expr2)
-
-  def CheckConditionalElements(str):
-    """Helper function to conditionally inline inner elements"""
-    while True:
-      begin_if = _BEGIN_IF_BLOCK.search(str)
-      if begin_if is None:
-        if _END_IF_BLOCK.search(str) is not None:
-          raise Exception('Unmatched </if>')
-        return str
-
-      condition_satisfied = IsConditionSatisfied(begin_if)
-      leading = str[0:begin_if.start()]
-      content_start = begin_if.end()
-
-      # Find matching "if" block end.
-      count = 1
-      pos = begin_if.end()
-      while True:
-        end_if = _END_IF_BLOCK.search(str, pos)
-        if end_if is None:
-          raise Exception('Unmatched <if>')
-
-        next_if = _BEGIN_IF_BLOCK.search(str, pos)
-        if next_if is None or next_if.start() >= end_if.end():
-          count = count - 1
-          if count == 0:
-            break
-          pos = end_if.end()
-        else:
-          count = count + 1
-          pos = next_if.end()
-
-      content = str[content_start:end_if.start()]
-      trailing = str[end_if.end():]
-
-      if condition_satisfied:
-        str = leading + CheckConditionalElements(content) + trailing
-      else:
-        str = leading + trailing
 
   def InlineFileContents(src_match,
                          pattern,
@@ -435,8 +437,7 @@ def DoInline(
     inlined_files.add(filepath)
 
     # Inline stylesheets included in this css file.
-    text = _INCLUDE_RE.sub(InlineIncludeFiles,
-                           util.ReadFile(filepath, util.BINARY))
+    text = _INCLUDE_RE.sub(InlineIncludeFiles, util.ReadFile(filepath, 'utf-8'))
     # When resolving CSS files we need to pass in the path so that relative URLs
     # can be resolved.
 
@@ -478,19 +479,20 @@ def DoInline(
                   text)
 
 
-  flat_text = util.ReadFile(input_filename, util.BINARY)
+  flat_text = util.ReadFile(input_filename, 'utf-8')
 
   # Check conditional elements, remove unsatisfied ones from the file. We do
   # this twice. The first pass is so that we don't even bother calling
   # InlineScript, InlineCSSFile and InlineIncludeFiles on text we're eventually
   # going to throw out anyway.
-  flat_text = CheckConditionalElements(flat_text)
+  flat_text = CheckConditionalElements(grd_node, flat_text)
 
   flat_text = _INCLUDE_RE.sub(InlineIncludeFiles, flat_text)
 
   if not preprocess_only:
     if strip_whitespace:
-      flat_text = minifier.Minify(flat_text, input_filename)
+      flat_text = minifier.Minify(flat_text.encode('utf-8'),
+                                  input_filename).decode('utf-8')
 
     if not allow_external_script:
       # We need to inline css and js before we inline images so that image
@@ -506,7 +508,7 @@ def DoInline(
 
   # Check conditional elements, second pass. This catches conditionals in any
   # of the text we just inlined.
-  flat_text = CheckConditionalElements(flat_text)
+  flat_text = CheckConditionalElements(grd_node, flat_text)
 
   # Allow custom modifications before inlining images.
   if rewrite_function:

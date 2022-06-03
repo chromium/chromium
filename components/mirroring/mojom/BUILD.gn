@@ -18,13 +18,9 @@ mojom("common") {
 }
 
 mojom("host") {
-  sources = [
-    "mirroring_service_host.mojom",
-  ]
+  sources = [ "mirroring_service_host.mojom" ]
 
-  public_deps = [
-    ":common",
-  ]
+  public_deps = [ ":common" ]
 }
 
 mojom("service") {
@@ -38,6 +34,7 @@ mojom("service") {
     "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
+    "//sandbox/policy/mojom",
     "//services/network/public/mojom",
     "//services/viz/public/mojom",
     "//ui/gfx/geometry/mojom",

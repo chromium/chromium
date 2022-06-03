@@ -20,12 +20,6 @@
 
 namespace {
 
-MultiProcessLock* TakeServiceInitializingLock(bool waiting) {
-  std::string lock_name =
-      GetServiceProcessScopedName("_service_initializing");
-  return TakeNamedLock(lock_name, waiting);
-}
-
 std::string GetBaseDesktopName() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "google-chrome-service.desktop";
@@ -35,10 +29,10 @@ std::string GetBaseDesktopName() {
 }
 }  // namespace
 
-MultiProcessLock* TakeServiceRunningLock(bool waiting) {
+std::unique_ptr<MultiProcessLock> TakeServiceRunningLock() {
   std::string lock_name =
       GetServiceProcessScopedName("_service_running");
-  return TakeNamedLock(lock_name, waiting);
+  return TakeNamedLock(lock_name);
 }
 
 bool ForceServiceProcessShutdown(const std::string& version,
@@ -60,12 +54,13 @@ mojo::NamedPlatformChannel::ServerName GetServiceProcessServerName() {
 }
 
 bool CheckServiceProcessReady() {
-  std::unique_ptr<MultiProcessLock> running_lock(TakeServiceRunningLock(false));
-  return running_lock.get() == NULL;
+  std::unique_ptr<MultiProcessLock> running_lock(TakeServiceRunningLock());
+  return !running_lock.get();
 }
 
 bool ServiceProcessState::TakeSingletonLock() {
-  state_->initializing_lock.reset(TakeServiceInitializingLock(true));
+  state_->initializing_lock =
+      TakeNamedLock(GetServiceProcessScopedName("_service_initializing"));
   return state_->initializing_lock.get();
 }
 

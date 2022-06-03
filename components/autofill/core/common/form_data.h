@@ -10,9 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -22,20 +23,125 @@ class LogBuffer;
 
 // Pair of a button title (e.g. "Register") and its type (e.g.
 // INPUT_ELEMENT_SUBMIT_TYPE).
-using ButtonTitleInfo = std::pair<base::string16, mojom::ButtonTitleType>;
+using ButtonTitleInfo = std::pair<std::u16string, mojom::ButtonTitleType>;
 
 // List of button titles of a given form.
 using ButtonTitleList = std::vector<ButtonTitleInfo>;
 
-// Holds information about a form to be filled and/or submitted.
+// Element of FormData::child_frames.
+struct FrameTokenWithPredecessor {
+  FrameTokenWithPredecessor();
+  FrameTokenWithPredecessor(const FrameTokenWithPredecessor&);
+  FrameTokenWithPredecessor(FrameTokenWithPredecessor&&);
+  FrameTokenWithPredecessor& operator=(const FrameTokenWithPredecessor&);
+  FrameTokenWithPredecessor& operator=(FrameTokenWithPredecessor&&);
+  ~FrameTokenWithPredecessor();
+
+  // An identifier of the child frame.
+  FrameToken token;
+  // This index represents which field, if any, precedes the frame in DOM order.
+  // It shall be the maximum integer |i| such that the |i|th field precedes the
+  // frame |token|. If there is no such field, it shall be -1.
+  int predecessor = -1;
+
+  friend bool operator==(const FrameTokenWithPredecessor& a,
+                         const FrameTokenWithPredecessor& b);
+  friend bool operator!=(const FrameTokenWithPredecessor& a,
+                         const FrameTokenWithPredecessor& b);
+};
+
+// Autofill represents forms and fields as FormData and FormFieldData objects.
+//
+// On the renderer side, there are roughly one-to-one correspondences
+//  - between FormData and blink::WebFormElement, and
+//  - between FormFieldData and blink::WebFormControlElement,
+// where the Blink classes directly correspond to DOM elements.
+//
+// On the browser side, there are one-to-one correspondences
+//  - between FormData and AutofillField, and
+//  - between FormFieldData and FormStructure,
+// where AutofillField and FormStructure hold additional information, such as
+// Autofill type predictions and sectioning.
+//
+// A FormData is essentially a collection of FormFieldDatas with additional
+// metadata.
+//
+// FormDatas and FormFieldDatas are used in the renderer-browser communication:
+//  - The renderer passes a FormData and/or FormFieldData to the browser when it
+//    has found a new form in the DOM, a form was submitted, etc. (see
+//    mojom::AutofillDriver).
+//  - The browser passes a FormData and/or FormFieldData to the renderer for
+//    preview, filling, etc. (see mojom::AutofillAgent). In the preview and
+//    filling cases, the browser sets the field values to the values to be
+//    previewed or filled.
+//
+// There are a few exceptions to the aforementioned one-to-one correspondences
+// between Autofill's data types and Blink's:
+// - Autofill only supports certain types of WebFormControlElements: select,
+//   textarea, and input elements whose type [4] is one of the following:
+//   checkbox, email, month, number, password, radio, search, tel, text, url
+//   (where values not listed in [4] default to "text", and "checkbox" and
+//   "radio" inputs are currently not filled). In particular, form-associated
+//   custom elements [3] are not supported.
+// - Autofill has the concept of an unowned form, which does not correspond to
+//   an existing blink::WebFormElement.
+// - Autofill may move FormFieldDatas to other FormDatas across shadow/main
+//   DOMs and across frames.
+//
+// In Blink, a field can, but does not have to be associated with a form. A
+// field is *associated* with a form iff either:
+// - it is a descendant of a <form> element, or
+// - it has its "form" attribute set to the ID of a <form> element.
+// Note that this association does not transcend DOMs. See [1] for details.
+//
+// In Autofill, we lift Blink's form association across DOMs. We say a field is
+// *owned* by a form iff:
+// - the field is associated with that form, or
+// - the field is unassociated and the form is its nearest shadow-including
+//   ancestor [2].
+// So the difference between the two terms is that a field in a shadow DOM may
+// be unassociated but owned (by a <form> in an ancestor DOM).
+//
+// Example:
+// <body>
+//   <form>
+//     <input id=A>
+//   </form>
+//   <input id=B>
+//   <form>
+//     #shadow-root
+//       <input id=C>
+//   </form>
+// </body>
+// The input A is an associated and owned field.
+// The input B is an unassociated and unowned field.
+// The input C is an unassociated but an owned field.
+//
+// TODO(crbug.com/1243730): Currently, Autofill ignores unowned fields in shadow
+// DOMs.
+//
+// The unowned fields of the frame constitute that frame's *unowned form*.
+//
+// Forms from different frames of the same WebContents may furthermore be
+// merged. For details, see ContentAutofillRouter.
+//
+// clang-format off
+// [1] https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner
+// [2] https://dom.spec.whatwg.org/#concept-shadow-including-descendant
+// [3] https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-face-example
+// [4] https://html.spec.whatwg.org/multipage/input.html#attr-input-type
+// clang-format on
 struct FormData {
   // Less-than relation for STL containers. Compares only members needed to
   // uniquely identify a form.
+  // TODO(crbug.com/1215333): Remove once `AutofillUseNewFormExtraction` is
+  // launched.
   struct IdentityComparator {
     bool operator()(const FormData& a, const FormData& b) const;
   };
 
-  static constexpr uint32_t kNotSetRendererId = std::numeric_limits<uint32_t>::max();
+  // Returns true if all members of forms |a| and |b| are identical.
+  static bool DeepEqual(const FormData& a, const FormData& b);
 
   FormData();
   FormData(const FormData&);
@@ -44,25 +150,34 @@ struct FormData {
   FormData& operator=(FormData&&);
   ~FormData();
 
-  // Returns true if two forms are the same, not counting the values of the
-  // form elements.
+  // An identifier that is unique across all forms in all frames.
+  // Must not be leaked to renderer process. See FieldGlobalId for details.
+  FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+
+  // TODO(crbug/1211834): This function is deprecated. Use FormData::DeepEqual()
+  // instead.
+  // Returns true if two forms are the same, not counting the values of the form
+  // elements.
   bool SameFormAs(const FormData& other) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // Same as SameFormAs() except calling FormFieldData.SimilarFieldAs() to
   // compare fields.
   bool SimilarFormAs(const FormData& other) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // If |form| is the same as this from the POV of dynamic refills.
   bool DynamicallySameFormAs(const FormData& form) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // Allow FormData to be a key in STL containers.
   bool operator<(const FormData& form) const;
 
   // The id attribute of the form.
-  base::string16 id_attribute;
+  std::u16string id_attribute;
 
   // The name attribute of the form.
-  base::string16 name_attribute;
+  std::u16string name_attribute;
 
   // NOTE: update IdentityComparator                when adding new a member.
   // NOTE: update SameFormAs()            if needed when adding new a member.
@@ -74,11 +189,16 @@ struct FormData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
-  base::string16 name;
+  std::u16string name;
   // Titles of form's buttons.
   ButtonTitleList button_titles;
-  // The URL (minus query parameters) containing the form.
+  // The URL (minus query parameters and fragment) containing the form.
+  // This value should not be sent via mojo.
   GURL url;
+  // The full URL, including query parameters and fragment.
+  // This value should be set only for password forms.
+  // This value should not be sent via mojo.
+  GURL full_url;
   // The action target of the form.
   GURL action;
   // If the form in the DOM has an empty action attribute, the |action| field in
@@ -86,18 +206,20 @@ struct FormData {
   // indicates whether the action attribute is empty in the form in the DOM.
   bool is_action_empty = false;
   // The URL of main frame containing this form.
+  // This value should not be sent via mojo.
   url::Origin main_frame_origin;
   // True if this form is a form tag.
   bool is_form_tag = true;
-  // True if the form is made of unowned fields (i.e., not within a <form> tag)
-  // in what appears to be a checkout flow. This attribute is only calculated
-  // and used if features::kAutofillRestrictUnownedFieldsToFormlessCheckout is
-  // enabled, to prevent heuristics from running on formless non-checkout.
-  bool is_formless_checkout = false;
-  // Unique renderer id returned by WebFormElement::UniqueRendererFormId(). It
-  // is not persistent between page loads, so it is not saved and not used in
-  // comparison in SameFormAs().
-  uint32_t unique_renderer_id = kNotSetRendererId;
+  // A unique identifier of the containing frame. This value is not serialized
+  // because LocalFrameTokens must not be leaked to other renderer processes.
+  LocalFrameToken host_frame;
+  // An identifier of the form that is unique among the forms from the same
+  // frame. In the browser process, it should only be used in conjunction with
+  // |host_frame| to identify a field; see global_id(). It is not persistent
+  // between page loads and therefore not used in comparison in SameFieldAs().
+  FormRendererId unique_renderer_id;
+  // A vector of all frames in the form.
+  std::vector<FrameTokenWithPredecessor> child_frames;
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is filled only in Password
   // Manager for submitted password forms.
@@ -110,10 +232,16 @@ struct FormData {
   // of being a username (the first one is the most likely username). Can
   // contain IDs of elements which are not in |fields|. This is only used during
   // parsing into PasswordForm, and hence not serialised for storage.
-  std::vector<uint32_t> username_predictions;
+  std::vector<FieldRendererId> username_predictions;
   // True if this is a Gaia form which should be skipped on saving.
   bool is_gaia_with_skip_save_password_form = false;
+#if defined(OS_IOS)
+  std::string frame_id;
+#endif
 };
+
+// Whether any of the fields in |form| is a non-empty password field.
+bool FormHasNonEmptyPasswordField(const FormData& form);
 
 // For testing.
 std::ostream& operator<<(std::ostream& os, const FormData& form);

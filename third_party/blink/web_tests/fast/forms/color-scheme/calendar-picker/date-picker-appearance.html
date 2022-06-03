@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../resources/picker-common.js"></script>
+<input type=date id=date value="10000-12-31">
+<script>
+openPickerAppearanceOnly(document.getElementById('date'), () => testRunner.notifyDone());
+</script>

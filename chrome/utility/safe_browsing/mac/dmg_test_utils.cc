@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"

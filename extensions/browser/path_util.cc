@@ -8,14 +8,14 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #endif
@@ -24,7 +24,7 @@ namespace extensions {
 namespace path_util {
 
 namespace {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 
 // Retrieves the localized display name for the base name of the given path.
 // If the path is not localized, this will just return the base name.
@@ -43,16 +43,16 @@ std::string GetDisplayBaseName(const base::FilePath& path) {
   return result;
 }
 
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 const base::FilePath::CharType kHomeShortcut[] = FILE_PATH_LITERAL("~");
 
 void OnDirectorySizeCalculated(
     int message_id,
-    base::OnceCallback<void(const base::string16&)> callback,
+    base::OnceCallback<void(const std::u16string&)> callback,
     int64_t size_in_bytes) {
   const int one_mebibyte_in_bytes = 1024 * 1024;
-  base::string16 response =
+  std::u16string response =
       size_in_bytes < one_mebibyte_in_bytes
           ? l10n_util::GetStringUTF16(message_id)
           : ui::FormatBytesWithUnits(size_in_bytes, ui::DATA_UNITS_MEBIBYTE,
@@ -74,7 +74,7 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   if (source_path == home_path)
     return display_path;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   DCHECK(source_path.IsAbsolute());
 
   // Break down the incoming path into components, and grab the display name
@@ -99,17 +99,17 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   }
   DCHECK_EQ(actual_path.value(), source_path.value());
   return display_path;
-#else  // defined(OS_MACOSX)
+#else   // defined(OS_MAC)
   if (home_path.AppendRelativePath(source_path, &display_path))
     return display_path;
   return source_path;
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 }
 
 void CalculateAndFormatExtensionDirectorySize(
     const base::FilePath& extension_path,
     int message_id,
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   base::PostTaskAndReplyWithResult(
       GetExtensionFileTaskRunner().get(), FROM_HERE,
       base::BindOnce(&base::ComputeDirectorySize, extension_path),

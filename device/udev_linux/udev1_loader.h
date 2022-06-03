@@ -17,12 +17,17 @@ namespace device {
 class Udev1Loader : public UdevLoader {
  public:
   Udev1Loader();
+
+  Udev1Loader(const Udev1Loader&) = delete;
+  Udev1Loader& operator=(const Udev1Loader&) = delete;
+
   ~Udev1Loader() override;
 
  private:
   bool Init() override;
   const char* udev_device_get_action(udev_device* udev_device) override;
   const char* udev_device_get_devnode(udev_device* udev_device) override;
+  const char* udev_device_get_devtype(udev_device* udev_device) override;
   udev_device* udev_device_get_parent(udev_device* udev_device) override;
   udev_device* udev_device_get_parent_with_subsystem_devtype(
       udev_device* udev_device,
@@ -76,8 +81,6 @@ class Udev1Loader : public UdevLoader {
   void udev_unref(udev* udev) override;
 
   std::unique_ptr<LibUdev1Loader> lib_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(Udev1Loader);
 };
 
 }  // namespace device

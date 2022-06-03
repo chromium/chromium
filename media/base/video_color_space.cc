@@ -305,4 +305,140 @@ VideoColorSpace VideoColorSpace::JPEG() {
                          MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::FULL);
 }
 
+// static
+VideoColorSpace VideoColorSpace::FromGfxColorSpace(
+    const gfx::ColorSpace& color_space) {
+  media::VideoColorSpace::PrimaryID primaries =
+      media::VideoColorSpace::PrimaryID::INVALID;
+  switch (color_space.GetPrimaryID()) {
+    case gfx::ColorSpace::PrimaryID::BT709:
+      primaries = media::VideoColorSpace::PrimaryID::BT709;
+      break;
+    case gfx::ColorSpace::PrimaryID::BT470M:
+      primaries = media::VideoColorSpace::PrimaryID::BT470M;
+      break;
+    case gfx::ColorSpace::PrimaryID::BT470BG:
+      primaries = media::VideoColorSpace::PrimaryID::BT470BG;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+      primaries = media::VideoColorSpace::PrimaryID::SMPTE170M;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      primaries = media::VideoColorSpace::PrimaryID::SMPTE240M;
+      break;
+    case gfx::ColorSpace::PrimaryID::FILM:
+      primaries = media::VideoColorSpace::PrimaryID::FILM;
+      break;
+    case gfx::ColorSpace::PrimaryID::BT2020:
+      primaries = media::VideoColorSpace::PrimaryID::BT2020;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
+      primaries = media::VideoColorSpace::PrimaryID::SMPTEST428_1;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
+      primaries = media::VideoColorSpace::PrimaryID::SMPTEST431_2;
+      break;
+    case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
+      primaries = media::VideoColorSpace::PrimaryID::SMPTEST432_1;
+      break;
+    default:
+      break;
+  }
+
+  media::VideoColorSpace::TransferID transfer =
+      media::VideoColorSpace::TransferID::INVALID;
+  switch (color_space.GetTransferID()) {
+    case gfx::ColorSpace::TransferID::BT709:
+      transfer = media::VideoColorSpace::TransferID::BT709;
+      break;
+    case gfx::ColorSpace::TransferID::GAMMA22:
+      transfer = media::VideoColorSpace::TransferID::GAMMA22;
+      break;
+    case gfx::ColorSpace::TransferID::GAMMA28:
+      transfer = media::VideoColorSpace::TransferID::GAMMA28;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+      transfer = media::VideoColorSpace::TransferID::SMPTE170M;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      transfer = media::VideoColorSpace::TransferID::SMPTE240M;
+      break;
+    case gfx::ColorSpace::TransferID::LINEAR:
+      transfer = media::VideoColorSpace::TransferID::LINEAR;
+      break;
+    case gfx::ColorSpace::TransferID::LOG:
+      transfer = media::VideoColorSpace::TransferID::LOG;
+      break;
+    case gfx::ColorSpace::TransferID::LOG_SQRT:
+      transfer = media::VideoColorSpace::TransferID::LOG_SQRT;
+      break;
+    case gfx::ColorSpace::TransferID::IEC61966_2_4:
+      transfer = media::VideoColorSpace::TransferID::IEC61966_2_4;
+      break;
+    case gfx::ColorSpace::TransferID::BT1361_ECG:
+      transfer = media::VideoColorSpace::TransferID::BT1361_ECG;
+      break;
+    case gfx::ColorSpace::TransferID::IEC61966_2_1:
+      transfer = media::VideoColorSpace::TransferID::IEC61966_2_1;
+      break;
+    case gfx::ColorSpace::TransferID::BT2020_10:
+      transfer = media::VideoColorSpace::TransferID::BT2020_10;
+      break;
+    case gfx::ColorSpace::TransferID::BT2020_12:
+      transfer = media::VideoColorSpace::TransferID::BT2020_12;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTEST2084:
+      transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
+      break;
+    case gfx::ColorSpace::TransferID::SMPTEST428_1:
+      transfer = media::VideoColorSpace::TransferID::SMPTEST428_1;
+      break;
+    case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+      transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
+      break;
+    default:
+      break;
+  }
+
+  media::VideoColorSpace::MatrixID matrix =
+      media::VideoColorSpace::MatrixID::INVALID;
+  switch (color_space.GetMatrixID()) {
+    case gfx::ColorSpace::MatrixID::RGB:
+      matrix = media::VideoColorSpace::MatrixID::RGB;
+      break;
+    case gfx::ColorSpace::MatrixID::BT709:
+      matrix = media::VideoColorSpace::MatrixID::BT709;
+      break;
+    case gfx::ColorSpace::MatrixID::FCC:
+      matrix = media::VideoColorSpace::MatrixID::FCC;
+      break;
+    case gfx::ColorSpace::MatrixID::BT470BG:
+      matrix = media::VideoColorSpace::MatrixID::BT470BG;
+      break;
+    case gfx::ColorSpace::MatrixID::SMPTE170M:
+      matrix = media::VideoColorSpace::MatrixID::SMPTE170M;
+      break;
+    case gfx::ColorSpace::MatrixID::SMPTE240M:
+      matrix = media::VideoColorSpace::MatrixID::SMPTE240M;
+      break;
+    case gfx::ColorSpace::MatrixID::YCOCG:
+      matrix = media::VideoColorSpace::MatrixID::YCOCG;
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_NCL:
+      matrix = media::VideoColorSpace::MatrixID::BT2020_NCL;
+      break;
+    case gfx::ColorSpace::MatrixID::BT2020_CL:
+      matrix = media::VideoColorSpace::MatrixID::BT2020_CL;
+      break;
+    case gfx::ColorSpace::MatrixID::YDZDX:
+      matrix = media::VideoColorSpace::MatrixID::YDZDX;
+      break;
+    default:
+      break;
+  }
+
+  return media::VideoColorSpace(primaries, transfer, matrix,
+                                color_space.GetRangeID());
+}
+
 }  // namespace

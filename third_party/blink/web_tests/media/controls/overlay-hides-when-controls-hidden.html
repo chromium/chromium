@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>Hiding the controls should hide the overflow menu</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<script src="../overflow-menu.js"></script>
+
+<!--Padding ensures the overflow menu is visible for the tests. -->
+<body style="padding-top: 200px; padding-left: 100px">
+<video controls></video>
+<script>
+async_test(function(t) {
+  // Set up video.
+  var video = document.querySelector("video");
+  video.src = "../content/test.ogv";
+  video.setAttribute("width", "60");
+  video.setAttribute("height", "100");
+
+  enableTestMode(video);
+
+  video.onloadeddata = t.step_func_done(() => {
+    var overflowList = getOverflowList(video);
+    var overflowMenu = getOverflowMenuButton(video);
+
+    // Initially the overflow menu should not be visible.
+    assert_false(isControlVisible(overflowList), 'Initally the overflow menu should not be visible');
+
+    // Click on the overflow menu button.
+    var coords = elementCoordinates(overflowMenu);
+    clickAtCoordinates(coords[0], coords[1]);
+
+    // The overflow menu should now be visible.
+    assert_true(isControlVisible(overflowList), 'The menu should now be visible');
+
+    // Hide the controls.
+    video.controls = false;
+
+    // The overflow menu should no longer be visible.
+    assert_false(isControlVisible(overflowList), 'The menu should no longer be visible');
+  });
+});
+</script>
+</body>

@@ -26,10 +26,13 @@ class StoragePartition;
 class CONTENT_EXPORT BackgroundSyncLauncher {
  public:
   static BackgroundSyncLauncher* Get();
-  static void GetSoonestWakeupDelta(
+
+  BackgroundSyncLauncher(const BackgroundSyncLauncher&) = delete;
+  BackgroundSyncLauncher& operator=(const BackgroundSyncLauncher&) = delete;
+
+  static base::TimeDelta GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType sync_type,
-      BrowserContext* browser_context,
-      base::OnceCallback<void(base::TimeDelta)> callback);
+      BrowserContext* browser_context);
 #if defined(OS_ANDROID)
   static void FireBackgroundSyncEvents(
       BrowserContext* browser_context,
@@ -47,10 +50,9 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   BackgroundSyncLauncher();
   ~BackgroundSyncLauncher();
 
-  void GetSoonestWakeupDeltaImpl(
+  base::TimeDelta GetSoonestWakeupDeltaImpl(
       blink::mojom::BackgroundSyncType sync_type,
-      BrowserContext* browser_context,
-      base::OnceCallback<void(base::TimeDelta)> callback);
+      BrowserContext* browser_context);
 #if defined(OS_ANDROID)
   void FireBackgroundSyncEventsImpl(
       BrowserContext* browser_context,
@@ -59,7 +61,6 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
 #endif
   void GetSoonestWakeupDeltaForStoragePartition(
       blink::mojom::BackgroundSyncType sync_type,
-      base::OnceClosure done_closure,
       StoragePartition* storage_partition);
   void SendSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType sync_type,
@@ -69,13 +70,12 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   // or |soonest_wakeup_delta_periodic_| based on |sync_type|.
   void SetGlobalSoonestWakeupDelta(blink::mojom::BackgroundSyncType sync_type,
                                    base::TimeDelta set_to);
-  base::TimeDelta& GetGlobalSoonestWakeupDelta(
+  base::TimeDelta GetGlobalSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType sync_type);
 
   base::TimeDelta soonest_wakeup_delta_one_shot_ = base::TimeDelta::Max();
   base::TimeDelta soonest_wakeup_delta_periodic_ = base::TimeDelta::Max();
   base::Time last_browser_wakeup_for_periodic_sync_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncLauncher);
 };
 
 }  // namespace content

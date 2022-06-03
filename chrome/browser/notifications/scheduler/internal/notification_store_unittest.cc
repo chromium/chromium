@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/scheduler/internal/notification_store.h"
 
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/scheduler/internal/proto_conversion.h"
@@ -29,6 +30,8 @@ const char kGuid[] = "1234";
 class NotificationStoreTest : public testing::Test {
  public:
   NotificationStoreTest() : load_result_(false) {}
+  NotificationStoreTest(const NotificationStoreTest&) = delete;
+  NotificationStoreTest& operator=(const NotificationStoreTest&) = delete;
   ~NotificationStoreTest() override = default;
 
   void SetUp() override {}
@@ -96,8 +99,6 @@ class NotificationStoreTest : public testing::Test {
   std::unique_ptr<CollectionStore<NotificationEntry>> store_;
   Entries loaded_entries_;
   bool load_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationStoreTest);
 };
 
 // Verifies initialization with empty database.
@@ -150,7 +151,7 @@ TEST_F(NotificationStoreTest, AddAndUpdate) {
   VerifyDataInDb(std::move(expected));
 
   // Update and verified the new data.
-  entry.notification_data.title = base::UTF8ToUTF16("test_title");
+  entry.notification_data.title = u"test_title";
   expected = std::make_unique<DbEntries>();
   expected->emplace_back(entry);
   store()->Update(kGuid, entry,

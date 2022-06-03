@@ -1,0 +1,12 @@
+{
+  "name": "chrome.dom shadow root test",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "tests that a content script from an extension can access the closed shadow root via chrome.dom",
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1/*"],
+      "js": ["content-script.js"]
+    }
+  ]
+}

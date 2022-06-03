@@ -9,12 +9,14 @@
 #include <memory>
 #include <string>
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class FrameSelection;
+class HTMLElement;
 
 class EditingTestBase : public PageTestBase {
   USING_FAST_MALLOC(EditingTestBase);

@@ -7,11 +7,11 @@
 typedef (DOMString or TrustedHTML or TrustedScript or TrustedScriptURL) TrustedString;
 
 [
-    Exposed=Window,
+    Exposed=(Window, Worker),
     RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedTypePolicy {
-    [Unforgeable] readonly attribute DOMString name;
-    [CallWith=ScriptState, RaisesException, Unforgeable] TrustedHTML createHTML(DOMString input);
-    [CallWith=ScriptState, RaisesException, Unforgeable] TrustedScript createScript(DOMString input);
-    [CallWith=ScriptState, RaisesException, Unforgeable] TrustedScriptURL createScriptURL(DOMString input);
+    readonly attribute DOMString name;
+    [CallWith=ScriptState, RaisesException] TrustedHTML createHTML(DOMString input, any... args);
+    [CallWith=ScriptState, RaisesException] TrustedScript createScript(DOMString input, any... args);
+    [CallWith=ScriptState, RaisesException] TrustedScriptURL createScriptURL(DOMString input, any... args);
 };

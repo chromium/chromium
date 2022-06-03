@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
 namespace sync_file_system {

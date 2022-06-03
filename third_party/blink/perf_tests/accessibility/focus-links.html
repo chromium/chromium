@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/runner.js"></script>
+
+<table id="testElement">
+  <tr>
+    <th>Sender</th>
+    <td>Message</td>
+  </tr>
+</table>
+
+<script>
+var isDone = false;
+var startTime;
+
+// Before the test starts, add 2000 rows to the table, something like a
+// message board with lots of replies on a long thread.
+
+let table = document.getElementById('testElement');
+for (let i = 0; i < 2000; i++) {
+    let tr = document.createElement('tr');
+    table.appendChild(tr);
+    let sender = document.createElement('td');
+    sender.innerHTML = 'user' + Math.floor(10000*Math.random());
+    tr.appendChild(sender);
+    let message = document.createElement('td');
+    message.innerHTML = '<div>Message content ' +
+        Math.floor(10000*Math.random()) + '</div>';
+    let link = document.createElement('a');
+    link.href = '#';
+    link.id = 'link' + i;
+    link.innerHTML = 'Reply';
+    message.appendChild(link);
+    tr.appendChild(message);
+}
+
+function runTest() {
+    if (startTime) {
+        PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+        PerfTestRunner.addRunTestEndMarker();
+    }
+    if (!isDone) {
+        PerfTestRunner.addRunTestStartMarker();
+        startTime = PerfTestRunner.now();
+
+        // Iterate over some of the links and focus each one with a different
+        // delay. Just focusing a link shouldn't incur a large cost,
+        // even if the page has a lot of elements.
+        for (let i = 0; i < 100; i++) {
+            window.setTimeout(() => {
+                document.getElementById('link' + i).focus();
+            }, 10 * i);
+        }
+
+        // Wait to allow the asynchronous accessibility code that's
+        // covered by traceEventsToMeasure to have a chance to run.
+        setTimeout(runTest, 1500);
+    }
+}
+
+PerfTestRunner.startMeasureValuesAsync({
+    description: 'Test accessibility performance when appending to a textarea.',
+    unit: 'ms',
+    done: function () {
+        isDone = true;
+    },
+    run: function() {
+        runTest();
+    },
+    iterationCount: 6,
+    tracingCategories: 'accessibility',
+    traceEventsToMeasure: [
+        'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+    ]
+});
+</script>
+
+</html>

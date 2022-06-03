@@ -50,7 +50,8 @@ class PLATFORM_EXPORT FormDataEncoder {
   static Vector<char> GenerateUniqueBoundaryString();
   static void BeginMultiPartHeader(Vector<char>&,
                                    const std::string& boundary,
-                                   const std::string& name);
+                                   const std::string& name,
+                                   Mode mode);
   static void AddBoundaryToMultiPartHeader(Vector<char>&,
                                            const std::string& boundary,
                                            bool is_last_boundary = false);
@@ -74,4 +75,4 @@ class PLATFORM_EXPORT FormDataEncoder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_FORM_DATA_ENCODER_H_

@@ -18,7 +18,7 @@ TEMPLATE_PLACEHOLDER = "TEMPLATE_PLACEHOLDER"
 
 
 def Error(msg):
-  print >> sys.stderr, msg
+  print(msg, file=sys.stderr)
   sys.exit(1)
 
 

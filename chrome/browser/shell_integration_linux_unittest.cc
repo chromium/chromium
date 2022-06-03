@@ -13,21 +13,28 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 using ::testing::ElementsAre;
 
@@ -40,13 +47,16 @@ class MockEnvironment : public base::Environment {
  public:
   MockEnvironment() {}
 
+  MockEnvironment(const MockEnvironment&) = delete;
+  MockEnvironment& operator=(const MockEnvironment&) = delete;
+
   void Set(base::StringPiece name, const std::string& value) {
-    variables_[name.as_string()] = value;
+    variables_[std::string(name)] = value;
   }
 
   bool GetVar(base::StringPiece variable_name, std::string* result) override {
-    if (base::Contains(variables_, variable_name.as_string())) {
-      *result = variables_[variable_name.as_string()];
+    if (base::Contains(variables_, std::string(variable_name))) {
+      *result = variables_[std::string(variable_name)];
       return true;
     }
 
@@ -66,8 +76,6 @@ class MockEnvironment : public base::Environment {
 
  private:
   std::map<std::string, std::string> variables_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockEnvironment);
 };
 
 // This helps EXPECT_THAT(..., ElementsAre(...)) print out more meaningful
@@ -78,18 +86,6 @@ std::vector<std::string> FilePathsToStrings(
   for (const auto& path : paths)
     values.push_back(path.value());
   return values;
-}
-
-bool WriteEmptyFile(const base::FilePath& path) {
-  return base::WriteFile(path, "", 0) == 0;
-}
-
-bool WriteString(const base::FilePath& path, const base::StringPiece& str) {
-  int bytes_written = base::WriteFile(path, str.data(), str.size());
-  if (bytes_written < 0)
-    return false;
-
-  return static_cast<size_t>(bytes_written) == str.size();
 }
 
 }  // namespace
@@ -200,11 +196,11 @@ TEST(ShellIntegrationTest, GetExistingShortcutContents) {
     MockEnvironment env;
     env.Set("XDG_DATA_HOME", temp_dir.GetPath().value());
     // Create a file in a non-applications directory. This should be ignored.
-    ASSERT_TRUE(
-        WriteString(temp_dir.GetPath().Append(kTemplateFilename), kTestData2));
+    ASSERT_TRUE(base::WriteFile(temp_dir.GetPath().Append(kTemplateFilename),
+                                kTestData2));
     ASSERT_TRUE(
         base::CreateDirectory(temp_dir.GetPath().Append("applications")));
-    ASSERT_TRUE(WriteString(
+    ASSERT_TRUE(base::WriteFile(
         temp_dir.GetPath().Append("applications").Append(kTemplateFilename),
         kTestData1));
     std::string contents;
@@ -224,10 +220,10 @@ TEST(ShellIntegrationTest, GetExistingShortcutContents) {
                                            false /* create? */);
     ASSERT_TRUE(base::CreateDirectory(
         temp_dir.GetPath().Append(".local/share/applications")));
-    ASSERT_TRUE(WriteString(temp_dir.GetPath()
-                                .Append(".local/share/applications")
-                                .Append(kTemplateFilename),
-                            kTestData1));
+    ASSERT_TRUE(base::WriteFile(temp_dir.GetPath()
+                                    .Append(".local/share/applications")
+                                    .Append(kTemplateFilename),
+                                kTestData1));
     std::string contents;
     ASSERT_TRUE(
         GetExistingShortcutContents(&env, kTemplateFilepath, &contents));
@@ -243,7 +239,7 @@ TEST(ShellIntegrationTest, GetExistingShortcutContents) {
     env.Set("XDG_DATA_DIRS", temp_dir.GetPath().value());
     ASSERT_TRUE(
         base::CreateDirectory(temp_dir.GetPath().Append("applications")));
-    ASSERT_TRUE(WriteString(
+    ASSERT_TRUE(base::WriteFile(
         temp_dir.GetPath().Append("applications").Append(kTemplateFilename),
         kTestData2));
     std::string contents;
@@ -263,12 +259,12 @@ TEST(ShellIntegrationTest, GetExistingShortcutContents) {
     env.Set("XDG_DATA_DIRS",
             temp_dir1.GetPath().value() + ":" + temp_dir2.GetPath().value());
     // Create a file in a non-applications directory. This should be ignored.
-    ASSERT_TRUE(
-        WriteString(temp_dir1.GetPath().Append(kTemplateFilename), kTestData1));
+    ASSERT_TRUE(base::WriteFile(temp_dir1.GetPath().Append(kTemplateFilename),
+                                kTestData1));
     // Only create a findable desktop file in the second path.
     ASSERT_TRUE(
         base::CreateDirectory(temp_dir2.GetPath().Append("applications")));
-    ASSERT_TRUE(WriteString(
+    ASSERT_TRUE(base::WriteFile(
         temp_dir2.GetPath().Append("applications").Append(kTemplateFilename),
         kTestData2));
     std::string contents;
@@ -288,10 +284,11 @@ TEST(ShellIntegrationTest, GetExistingProfileShortcutFilenames) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  ASSERT_TRUE(WriteEmptyFile(temp_dir.GetPath().Append(kApp1Filename)));
-  ASSERT_TRUE(WriteEmptyFile(temp_dir.GetPath().Append(kApp2Filename)));
+  ASSERT_TRUE(base::WriteFile(temp_dir.GetPath().Append(kApp1Filename), ""));
+  ASSERT_TRUE(base::WriteFile(temp_dir.GetPath().Append(kApp2Filename), ""));
   // This file should not be returned in the results.
-  ASSERT_TRUE(WriteEmptyFile(temp_dir.GetPath().Append(kUnrelatedAppFilename)));
+  ASSERT_TRUE(
+      base::WriteFile(temp_dir.GetPath().Append(kUnrelatedAppFilename), ""));
   std::vector<base::FilePath> paths =
       GetExistingProfileShortcutFilenames(kProfilePath, temp_dir.GetPath());
   // Path order is arbitrary. Sort the output for consistency.
@@ -438,7 +435,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Type=Application\n"
        "Name=Paint\n"
        "MimeType=image/png;image/jpg\n"
-       "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %F\n"
+       "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %U\n"
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
        "StartupWMClass=paint.app\n"},
@@ -468,29 +465,83 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
             GURL(test_cases[i].url), std::string(),
             base::ASCIIToUTF16(test_cases[i].title), test_cases[i].icon_name,
             base::FilePath(), test_cases[i].categories, test_cases[i].mime_type,
-            test_cases[i].nodisplay));
+            test_cases[i].nodisplay, "", {}));
   }
 }
 
-TEST(ShellIntegrationTest, GetDesktopFileContentsAppList) {
+TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDesktopPWAsAppIconShortcutsMenuUI);
   const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
-  base::CommandLine command_line(kChromeExePath);
-  command_line.AppendSwitch("--show-app-list");
-  EXPECT_EQ(
-      "#!/usr/bin/env xdg-open\n"
-      "[Desktop Entry]\n"
-      "Version=1.0\n"
-      "Terminal=false\n"
-      "Type=Application\n"
-      "Name=Chrome App Launcher\n"
-      "Exec=/opt/google/chrome/google-chrome --show-app-list\n"
-      "Icon=chrome_app_list\n"
-      "Categories=Network;WebBrowser;\n"
-      "StartupWMClass=chrome-app-list\n",
-      GetDesktopFileContentsForCommand(
-          command_line, "chrome-app-list", GURL(),
-          base::ASCIIToUTF16("Chrome App Launcher"), "chrome_app_list",
-          "Network;WebBrowser;", "", false));
+  const struct {
+    const char* const url;
+    const char* const title;
+    const char* const icon_name;
+    bool nodisplay;
+    std::set<web_app::DesktopActionInfo> action_info;
+    const char* const expected_output;
+  } test_cases[] = {
+      // Test Shortcut Menu actions.
+      {"https://example.app",
+       "Lawful example",
+       "IconName",
+       false,
+       {
+           web_app::DesktopActionInfo("action1", "Action 1",
+                                      GURL("https://example.com/action1")),
+           web_app::DesktopActionInfo("action2", "Action 2",
+                                      GURL("https://example.com/action2")),
+           web_app::DesktopActionInfo("action3", "Action 3",
+                                      GURL("https://example.com/action3")),
+           web_app::DesktopActionInfo("action4", "Action 4",
+                                      GURL("https://example.com/action4")),
+       },
+
+       "#!/usr/bin/env xdg-open\n"
+       "[Desktop Entry]\n"
+       "Version=1.0\n"
+       "Terminal=false\n"
+       "Type=Application\n"
+       "Name=Lawful example\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId\n"
+       "Icon=IconName\n"
+       "StartupWMClass=example.app\n"
+       "Actions=action1;action2;action3;action4\n\n"
+       "[Desktop Action action1]\n"
+       "Name=Action 1\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action1\n\n"
+       "[Desktop Action action2]\n"
+       "Name=Action 2\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action2\n\n"
+       "[Desktop Action action3]\n"
+       "Name=Action 3\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action3\n\n"
+       "[Desktop Action action4]\n"
+       "Name=Action 4\n"
+       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
+       "action4\n"},
+  };
+
+  for (size_t i = 0; i < base::size(test_cases); i++) {
+    SCOPED_TRACE(i);
+    EXPECT_EQ(
+        test_cases[i].expected_output,
+        GetDesktopFileContents(
+            kChromeExePath,
+            web_app::GenerateApplicationNameFromURL(GURL(test_cases[i].url)),
+            GURL(test_cases[i].url), "TestAppId",
+            base::ASCIIToUTF16(test_cases[i].title), test_cases[i].icon_name,
+            base::FilePath(), "", "", test_cases[i].nodisplay, "",
+            test_cases[i].action_info));
+  }
 }
 
 TEST(ShellIntegrationTest, GetDirectoryFileContents) {
@@ -531,10 +582,101 @@ TEST(ShellIntegrationTest, GetDirectoryFileContents) {
   }
 }
 
+TEST(ShellIntegrationTest, GetMimeTypesRegistrationFilename) {
+  const struct {
+    const char* const profile_path;
+    const char* const app_id;
+    const char* const expected_filename;
+  } test_cases[] = {
+      {"Default", "app-id", "-app-id-Default.xml"},
+      {"Default Profile", "app-id", "-app-id-Default_Profile.xml"},
+      {"foo/Default", "app-id", "-app-id-Default.xml"},
+      {"Default*Profile", "app-id", "-app-id-Default_Profile.xml"}};
+  std::string browser_name(chrome::kBrowserProcessExecutableName);
+
+  for (const auto& test_case : test_cases) {
+    const base::FilePath filename =
+        GetMimeTypesRegistrationFilename(base::FilePath(test_case.profile_path),
+                                         web_app::AppId(test_case.app_id));
+    EXPECT_EQ(browser_name + test_case.expected_filename, filename.value());
+  }
+}
+
+TEST(ShellIntegrationTest, GetMimeTypesRegistrationFileContents) {
+  apps::FileHandlers file_handlers;
+  {
+    apps::FileHandler file_handler;
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foo";
+      accept_entry.file_extensions.insert(".foo");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handler.display_name = u"FoO";
+    file_handlers.push_back(file_handler);
+  }
+  {
+    apps::FileHandler file_handler;
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foobar";
+      accept_entry.file_extensions.insert(".foobar");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+  {
+    apps::FileHandler file_handler;
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/bar";
+      // A name that has a reserved XML character.
+      file_handler.display_name = u"ba<r";
+      accept_entry.file_extensions.insert(".bar");
+      accept_entry.file_extensions.insert(".baz");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const std::string file_contents =
+      GetMimeTypesRegistrationFileContents(file_handlers);
+  const std::string expected_file_contents =
+      "<?xml version=\"1.0\"?>\n"
+      "<mime-info "
+      "xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">\n"
+      " <mime-type type=\"application/foo\">\n"
+      "  <comment>FoO</comment>\n"
+      "  <glob pattern=\"*.foo\"/>\n"
+      " </mime-type>\n"
+      " <mime-type type=\"application/foobar\">\n"
+      "  <glob pattern=\"*.foobar\"/>\n"
+      " </mime-type>\n"
+      " <mime-type type=\"application/bar\">\n"
+      "  <comment>ba&lt;r</comment>\n"
+      "  <glob pattern=\"*.bar\"/>\n"
+      "  <glob pattern=\"*.baz\"/>\n"
+      " </mime-type>\n"
+      "</mime-info>\n";
+
+  EXPECT_EQ(file_contents, expected_file_contents);
+}
+
+// The WM class name may be either capitalised or not, depending on the
+// platform.
+void CheckProgramClassClass(const std::string& class_name) {
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
+    EXPECT_EQ("Foo", class_name);
+  } else {
+    EXPECT_EQ("foo", class_name);
+  }
+}
+
 TEST(ShellIntegrationTest, WmClass) {
   base::CommandLine command_line((base::FilePath()));
   EXPECT_EQ("foo", internal::GetProgramClassName(command_line, "foo.desktop"));
-  EXPECT_EQ("Foo", internal::GetProgramClassClass(command_line, "foo.desktop"));
+  CheckProgramClassClass(
+      internal::GetProgramClassClass(command_line, "foo.desktop"));
 
   command_line.AppendSwitchASCII("class", "baR");
   EXPECT_EQ("foo", internal::GetProgramClassName(command_line, "foo.desktop"));
@@ -544,7 +686,8 @@ TEST(ShellIntegrationTest, WmClass) {
   command_line.AppendSwitchASCII("user-data-dir", "/tmp/baz");
   EXPECT_EQ("foo (/tmp/baz)",
             internal::GetProgramClassName(command_line, "foo.desktop"));
-  EXPECT_EQ("Foo", internal::GetProgramClassClass(command_line, "foo.desktop"));
+  CheckProgramClassClass(
+      internal::GetProgramClassClass(command_line, "foo.desktop"));
 }
 
 }  // namespace shell_integration_linux

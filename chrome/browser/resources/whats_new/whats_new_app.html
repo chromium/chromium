@@ -1,0 +1,11 @@
+<style include="cr-hidden-style">
+  #content {
+    border: none;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<template is="dom-if" if="[[showErrorPage_]]">
+  <whats-new-error-page></whats-new-error-page>
+</template>
+<iframe id="content" hidden$="[[!canHandleMessages_]]" src="[[url_]]"></iframe>

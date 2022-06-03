@@ -16,37 +16,46 @@
 
 namespace android_webview {
 
+class AwVulkanContextProvider;
+
 class HardwareRendererViz : public HardwareRenderer {
  public:
   HardwareRendererViz(RenderThreadManager* state,
-                      RootFrameSinkGetter root_frame_sink_getter);
+                      RootFrameSinkGetter root_frame_sink_getter,
+                      AwVulkanContextProvider* context_provider);
+
+  HardwareRendererViz(const HardwareRendererViz&) = delete;
+  HardwareRendererViz& operator=(const HardwareRendererViz&) = delete;
+
   ~HardwareRendererViz() override;
 
   // HardwareRenderer overrides.
-  void DrawAndSwap(HardwareRendererDrawParams* params) override;
+  void DrawAndSwap(const HardwareRendererDrawParams& params,
+                   const OverlaysParams& overlays_params) override;
+  void RemoveOverlays(
+      OverlaysParams::MergeTransactionFn merge_transaction) override;
+  void AbandonContext() override;
 
  private:
   class OnViz;
 
   void InitializeOnViz(RootFrameSinkGetter root_frame_sink_getter);
-  void DestroyOnViz();
   bool IsUsingVulkan() const;
+  void MergeTransactionIfNeeded(
+      OverlaysParams::MergeTransactionFn merge_transaction);
 
   // Information about last delegated frame.
-  gfx::Size surface_size_;
   float device_scale_factor_ = 0;
 
   viz::SurfaceId surface_id_;
 
   // Used to create viz::OutputSurface and gl::GLSurface
-  OutputSurfaceProviderWebview output_surface_provider_;
+  OutputSurfaceProviderWebView output_surface_provider_;
 
   // These are accessed on the viz thread.
   std::unique_ptr<OnViz> on_viz_;
 
   THREAD_CHECKER(render_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareRendererViz);
 };
 
 }  // namespace android_webview

@@ -6,7 +6,6 @@
 #define MEDIA_AUDIO_AUDIO_OUTPUT_PROXY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_io.h"
@@ -16,7 +15,7 @@ namespace media {
 
 class AudioOutputDispatcher;
 
-// AudioOutputProxy is an audio otput stream that uses resources more
+// AudioOutputProxy is an audio output stream that uses resources more
 // efficiently than a regular audio output stream: it opens audio
 // device only when sound is playing, i.e. between Start() and Stop()
 // (there is still one physical stream per each audio output proxy in
@@ -28,6 +27,9 @@ class MEDIA_EXPORT AudioOutputProxy : public AudioOutputStream {
  public:
   // Caller keeps ownership of |dispatcher|.
   explicit AudioOutputProxy(base::WeakPtr<AudioOutputDispatcher> dispatcher);
+
+  AudioOutputProxy(const AudioOutputProxy&) = delete;
+  AudioOutputProxy& operator=(const AudioOutputProxy&) = delete;
 
   // AudioOutputStream interface.
   bool Open() override;
@@ -62,8 +64,6 @@ class MEDIA_EXPORT AudioOutputProxy : public AudioOutputStream {
   double volume_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputProxy);
 };
 
 }  // namespace media

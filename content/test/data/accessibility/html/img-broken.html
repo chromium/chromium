@@ -1,0 +1,23 @@
+<!--
+@MAC-ALLOW:AXRoleDescription='image'
+@WIN-ALLOW:xml-roles:*
+@AURALINUX-ALLOW:xml-roles:*
+@ANDROID-ALLOW:has_image
+@WAIT-FOR:done
+-->
+<!-- When an image changes its broken state, it can get an extra user agent
+shadow DOM content that visibly displays the alt text. This should not accidentally
+cause extra ax children of the image to be created, since an image must be a leaf.
+The test toggles the broken state back and forth several times in order to ensure
+no illegal states in Blink are triggered (DCHECKs) -->
+<img src="pipe.jpg" alt="pipe"><img src="pipe.jpg" alt="control"><img src="pipe-broken.jpg" alt="broken-control">
+<script>
+  let counter = 0;
+  function changeImageName() {
+    const first_img = document.querySelector('img');
+    first_img.src = first_img.src == 'pipe.jpg' ? 'pipe-broken.jpg' : 'pipe.jpg';
+    if (++counter == 4)
+      document.title = 'done';
+  }
+  setInterval(changeImageName, 15);
+</script>

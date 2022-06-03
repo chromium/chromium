@@ -7,14 +7,17 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "remoting/base/grpc_support/grpc_async_unary_request.h"
-#include "remoting/base/grpc_support/grpc_channel.h"
+#include "remoting/base/protobuf_http_client.h"
+#include "remoting/base/protobuf_http_request.h"
+#include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
+#include "remoting/proto/remoting/v1/telemetry_messages.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
 
@@ -46,24 +49,55 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
     false,
 };
 
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_telemetry_log_writer",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Sends telemetry logs for Chrome Remote Desktop."
+          trigger:
+            "These requests are sent periodically by Chrome Remote Desktop "
+            "(CRD) Android and iOS clients when a session is connected, i.e. "
+            "CRD app is running and is connected to a host."
+          data:
+            "Anonymous usage statistics, which includes CRD host version, "
+            "connection time, authentication type, connection error, and "
+            "round trip latency."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the user does not use Chrome Remote Desktop."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr char kCreateEventPath[] = "/v1/telemetry:createevent";
 }
 
 const int kMaxSendAttempts = 5;
 
 TelemetryLogWriter::TelemetryLogWriter(
     std::unique_ptr<OAuthTokenGetter> token_getter)
-    : token_getter_(std::move(token_getter)),
-      stub_(apis::v1::RemotingTelemetryService::NewStub(
-          CreateSslChannelForEndpoint(
-              ServiceUrls::GetInstance()->remoting_server_endpoint()))),
-      executor_(token_getter_.get()),
-      backoff_(&kBackoffPolicy) {
+    : token_getter_(std::move(token_getter)), backoff_(&kBackoffPolicy) {
   DETACH_FROM_THREAD(thread_checker_);
   DCHECK(token_getter_);
 }
 
 TelemetryLogWriter::~TelemetryLogWriter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void TelemetryLogWriter::Init(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!http_client_);
+  http_client_ = std::make_unique<ProtobufHttpClient>(
+      ServiceUrls::GetInstance()->remoting_server_endpoint(),
+      token_getter_.get(), url_loader_factory);
 }
 
 void TelemetryLogWriter::Log(const ChromotingEvent& entry) {
@@ -95,19 +129,23 @@ void TelemetryLogWriter::SendPendingEntries() {
                      std::move(request)));
 }
 
-void TelemetryLogWriter::DoSend(apis::v1::CreateEventRequest request) {
-  executor_.ExecuteRpc(CreateGrpcAsyncUnaryRequest(
-      base::BindOnce(
-          &apis::v1::RemotingTelemetryService::Stub::AsyncCreateEvent,
-          base::Unretained(stub_.get())),
-      request,
-      base::BindOnce(&TelemetryLogWriter::OnSendLogResult,
-                     base::Unretained(this))));
+void TelemetryLogWriter::DoSend(const apis::v1::CreateEventRequest& request) {
+  DCHECK(http_client_);
+  auto request_config =
+      std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
+  request_config->path = kCreateEventPath;
+  request_config->request_message =
+      std::make_unique<apis::v1::CreateEventRequest>(request);
+  auto http_request =
+      std::make_unique<ProtobufHttpRequest>(std::move(request_config));
+  http_request->SetResponseCallback(base::BindOnce(
+      &TelemetryLogWriter::OnSendLogResult, base::Unretained(this)));
+  http_client_->ExecuteRequest(std::move(http_request));
 }
 
 void TelemetryLogWriter::OnSendLogResult(
-    const grpc::Status& status,
-    const apis::v1::CreateEventResponse& response) {
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::CreateEventResponse> response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!status.ok()) {
     backoff_.InformOfRequest(false);
@@ -128,6 +166,10 @@ void TelemetryLogWriter::OnSendLogResult(
   }
   sending_entries_.clear();
   SendPendingEntries();
+}
+
+bool TelemetryLogWriter::IsIdleForTesting() {
+  return sending_entries_.empty() && pending_entries_.empty();
 }
 
 }  // namespace remoting

@@ -6,8 +6,8 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TEXT_BOUNDARY_H_
 
 #include "build/build_config.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_text_boundary.h"
 #include "ui/base/buildflags.h"
 
 #if BUILDFLAG(USE_ATK)
@@ -24,21 +24,23 @@
 namespace ui {
 
 #if BUILDFLAG(USE_ATK)
-// Converts from an ATK text boundary to an AXTextBoundary.
-AX_EXPORT AXTextBoundary FromAtkTextBoundary(AtkTextBoundary boundary);
+// Converts from an ATK text boundary to an ax::mojom::TextBoundary.
+AX_EXPORT ax::mojom::TextBoundary FromAtkTextBoundary(AtkTextBoundary boundary);
 
 #if ATK_CHECK_VERSION(2, 10, 0)
 // Same as above, but for an older version of the API.
-AX_EXPORT AXTextBoundary FromAtkTextGranularity(AtkTextGranularity granularity);
+AX_EXPORT ax::mojom::TextBoundary FromAtkTextGranularity(
+    AtkTextGranularity granularity);
 #endif  // ATK_CHECK_VERSION(2, 10, 0)
 #endif  // BUILDFLAG(USE_ATK)
 
 #ifdef OS_WIN
-// Converts from an IAccessible2 text boundary to an AXTextBoundary.
-AX_EXPORT AXTextBoundary FromIA2TextBoundary(IA2TextBoundaryType boundary);
+// Converts from an IAccessible2 text boundary to an ax::mojom::TextBoundary.
+AX_EXPORT ax::mojom::TextBoundary FromIA2TextBoundary(
+    IA2TextBoundaryType boundary);
 
-// Converts from a UI Automation text unit to an AXTextBoundary.
-AX_EXPORT AXTextBoundary FromUIATextUnit(TextUnit unit);
+// Converts from a UI Automation text unit to an ax::mojom::TextBoundary.
+AX_EXPORT ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit);
 #endif  // OS_WIN
 
 }  // namespace ui

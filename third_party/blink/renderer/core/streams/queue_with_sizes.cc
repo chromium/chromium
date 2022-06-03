@@ -8,8 +8,6 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -29,12 +27,12 @@ class QueueWithSizes::ValueSizePair final
       : value_(isolate, value), size_(size) {}
 
   v8::Local<v8::Value> Value(v8::Isolate* isolate) {
-    return value_.NewLocal(isolate);
+    return value_.Get(isolate);
   }
 
   double Size() { return size_; }
 
-  void Trace(Visitor* visitor) { visitor->Trace(value_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
  private:
   TraceWrapperV8Reference<v8::Value> value_;
@@ -111,7 +109,7 @@ void QueueWithSizes::ResetQueue() {
   queue_total_size_ = 0;
 }
 
-void QueueWithSizes::Trace(Visitor* visitor) {
+void QueueWithSizes::Trace(Visitor* visitor) const {
   visitor->Trace(queue_);
 }
 

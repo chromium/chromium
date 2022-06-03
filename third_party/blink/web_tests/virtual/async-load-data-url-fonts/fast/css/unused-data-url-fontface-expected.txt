@@ -1,0 +1,10 @@
+Tests that unused font with a data: URL is not loaded. No console warning for font load error is expected.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS faces.length is 1
+PASS faces[0].status is "unloaded"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

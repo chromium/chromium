@@ -91,8 +91,6 @@ struct DowncastTraits<JSBasedEventListener> {
   }
 };
 
-extern const V8PrivateProperty::SymbolKey kPrivatePropertyGlobalEvent;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_JS_BASED_EVENT_LISTENER_H_

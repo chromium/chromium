@@ -7,7 +7,7 @@
 #include <limits>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,10 +16,10 @@
 namespace cbor {
 
 TEST(CBORWriterTest, TestWriteUint) {
-  typedef struct {
+  struct UintTestCase {
     const int64_t value;
     const base::StringPiece cbor;
-  } UintTestCase;
+  };
 
   static const UintTestCase kUintTestCases[] = {
       // Reminder: must specify length when creating string pieces
@@ -76,10 +76,10 @@ TEST(CBORWriterTest, TestWriteNegativeInteger) {
 }
 
 TEST(CBORWriterTest, TestWriteBytes) {
-  typedef struct {
+  struct BytesTestCase {
     const std::vector<uint8_t> bytes;
     const base::StringPiece cbor;
-  } BytesTestCase;
+  };
 
   static const BytesTestCase kBytesTestCases[] = {
       {{}, base::StringPiece("\x40")},
@@ -94,10 +94,10 @@ TEST(CBORWriterTest, TestWriteBytes) {
 }
 
 TEST(CBORWriterTest, TestWriteString) {
-  typedef struct {
+  struct StringTestCase {
     const std::string string;
     const base::StringPiece cbor;
-  } StringTestCase;
+  };
 
   static const StringTestCase kStringTestCases[] = {
       {"", base::StringPiece("\x60")},

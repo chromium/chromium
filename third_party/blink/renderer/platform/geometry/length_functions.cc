@@ -40,7 +40,7 @@ float FloatValueForLength(const Length& length, float maximum_value) {
     case Length::kFixed:
       return length.GetFloatValue();
     case Length::kPercent:
-      return static_cast<float>(maximum_value * length.Percent() / 100.0f);
+      return ClampTo<float>(maximum_value * length.Percent() / 100.0f);
     case Length::kFillAvailable:
     case Length::kAuto:
       return static_cast<float>(maximum_value);
@@ -48,11 +48,13 @@ float FloatValueForLength(const Length& length, float maximum_value) {
       return length.NonNanCalculatedValue(LayoutUnit(maximum_value));
     case Length::kMinContent:
     case Length::kMaxContent:
+    case Length::kMinIntrinsic:
     case Length::kFitContent:
+    case Length::kContent:
     case Length::kExtendToZoom:
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
-    case Length::kMaxSizeNone:
+    case Length::kNone:
       NOTREACHED();
       return 0;
   }
@@ -76,11 +78,13 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kFixed:
     case Length::kMinContent:
     case Length::kMaxContent:
+    case Length::kMinIntrinsic:
     case Length::kFitContent:
+    case Length::kContent:
     case Length::kExtendToZoom:
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
-    case Length::kMaxSizeNone:
+    case Length::kNone:
       NOTREACHED();
       return LayoutUnit();
   }
@@ -99,11 +103,13 @@ LayoutUnit ValueForLength(const Length& length, LayoutUnit maximum_value) {
       return maximum_value;
     case Length::kMinContent:
     case Length::kMaxContent:
+    case Length::kMinIntrinsic:
     case Length::kFitContent:
+    case Length::kContent:
     case Length::kExtendToZoom:
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
-    case Length::kMaxSizeNone:
+    case Length::kNone:
       NOTREACHED();
       return LayoutUnit();
   }
@@ -114,14 +120,14 @@ LayoutUnit ValueForLength(const Length& length, LayoutUnit maximum_value) {
 FloatSize FloatSizeForLengthSize(const LengthSize& length_size,
                                  const FloatSize& box_size) {
   return FloatSize(
-      FloatValueForLength(length_size.Width(), box_size.Width()),
-      FloatValueForLength(length_size.Height(), box_size.Height()));
+      FloatValueForLength(length_size.Width(), box_size.width()),
+      FloatValueForLength(length_size.Height(), box_size.height()));
 }
 
 FloatPoint FloatPointForLengthPoint(const LengthPoint& length_point,
                                     const FloatSize& box_size) {
-  return FloatPoint(FloatValueForLength(length_point.X(), box_size.Width()),
-                    FloatValueForLength(length_point.Y(), box_size.Height()));
+  return FloatPoint(FloatValueForLength(length_point.X(), box_size.width()),
+                    FloatValueForLength(length_point.Y(), box_size.height()));
 }
 
 }  // namespace blink

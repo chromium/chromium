@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/style/style_ray.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 scoped_refptr<StyleRay> StyleRay::Create(float angle,
@@ -23,7 +25,7 @@ bool StyleRay::operator==(const BasicShape& o) const {
          contain_ == other.contain_;
 }
 
-void StyleRay::GetPath(Path&, const FloatRect&) {
+void StyleRay::GetPath(Path&, const FloatRect&, float) {
   // ComputedStyle::ApplyMotionPathTransform cannot call GetPath
   // for rays as they may have infinite length.
   NOTREACHED();

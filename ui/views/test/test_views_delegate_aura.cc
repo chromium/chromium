@@ -5,7 +5,7 @@
 #include "ui/views/test/test_views_delegate.h"
 
 #include "build/build_config.h"
-#include "ui/aura/env.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views/buildflags.h"
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
@@ -27,6 +27,10 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
+#if defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!params->parent && !params->context)
+    params->context = context_;
+#endif
   if (params->opacity == Widget::InitParams::WindowOpacity::kInferred) {
     params->opacity = use_transparent_windows_
                           ? Widget::InitParams::WindowOpacity::kTranslucent
@@ -36,22 +40,6 @@ void TestViewsDelegate::OnBeforeWidgetInit(
   if (!params->native_widget && use_desktop_native_widgets_)
     params->native_widget = new DesktopNativeWidgetAura(delegate);
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
-}
-
-ui::ContextFactory* TestViewsDelegate::GetContextFactory() {
-  if (context_factory_)
-    return context_factory_;
-  if (aura::Env::GetInstance())
-    return aura::Env::GetInstance()->context_factory();
-  return nullptr;
-}
-
-ui::ContextFactoryPrivate* TestViewsDelegate::GetContextFactoryPrivate() {
-  if (context_factory_private_)
-    return context_factory_private_;
-  if (aura::Env::GetInstance())
-    return aura::Env::GetInstance()->context_factory_private();
-  return nullptr;
 }
 
 }  // namespace views

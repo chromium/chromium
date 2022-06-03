@@ -16,7 +16,5 @@ source_set("power_monitor") {
     "//services/service_manager/public/cpp",
   ]
 
-  public_deps = [
-    "//services/device/public/mojom",
-  ]
+  public_deps = [ "//services/device/public/mojom" ]
 }

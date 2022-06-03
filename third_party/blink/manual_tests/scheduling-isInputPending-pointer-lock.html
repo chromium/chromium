@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title>IsInputPending: pointer locked elements may detect pending input</title>
+  </title>
+  <p>
+    This test should be run under <code>--enable-blink-features=ExperimentalIsInputPending</code>.
+  </p>
+  <p>
+    Verify that input is detected with and without pointer locking for each frame, and that sibling and child frames cannot observe pending input.
+  </p>
+</head>
+<p id="text-detected" style="color: green; display: none">Input detected</p>
+<p id="text-not-detected" style="color: red">Input not detected</p>
+<p><button id="pointer-locker">Lock pointer</button></p>
+<script>
+
+const NUM_CHILD_FRAMES = 2;
+const PERIOD_MS = 20;
+
+const iipOptions = {includeContinuous: true};
+
+const detectedText = document.querySelector('#text-detected');
+const notDetectedText = document.querySelector('#text-not-detected');
+
+setInterval(() => {
+  for (const end = performance.now() + PERIOD_MS; performance.now() < end;) {}
+  const detected = navigator.scheduling.isInputPending(iipOptions);
+
+  detectedText.style.display = detected ? '' : 'none';
+  notDetectedText.style.display = detected ? 'none' : '';
+}, PERIOD_MS);
+
+document.querySelector('#pointer-locker').addEventListener('click', e => {
+  e.target.requestPointerLock();
+});
+
+if (window.top === window.self) {
+  for (let i = 0; i < NUM_CHILD_FRAMES; i++) {
+    // Add child frames if we're not already one.
+    const subframe = document.createElement('iframe');
+    subframe.width = 640;
+    subframe.height = 240;
+    subframe.src = location.href;
+    document.body.appendChild(subframe);
+  }
+}
+
+</script>
+</html>

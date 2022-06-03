@@ -12,21 +12,24 @@ class OverlayWindow;
 class WebContents;
 
 // Interface for Picture in Picture window controllers. This is currently tied
-// to a WebContents |initiator| and created when a Picture in Picture window is
-// to be shown. This allows creation of a single window for the initiator
+// to a WebContents |web_contents| and created when a Picture in Picture window
+// is to be shown. This allows creation of a single window for the WebContents
 // WebContents.
 class PictureInPictureWindowController {
  public:
-  // Gets a reference to the controller associated with |initiator| and creates
-  // one if it does not exist. The returned pointer is guaranteed to be
+  // Gets a reference to the controller associated with |web_contents| and
+  // creates one if it does not exist. The returned pointer is guaranteed to be
   // non-null.
   CONTENT_EXPORT static PictureInPictureWindowController*
-  GetOrCreateForWebContents(WebContents* initiator);
+  GetOrCreateForWebContents(WebContents* web_contents);
 
   virtual ~PictureInPictureWindowController() = default;
 
   // Shows the Picture-in-Picture window.
   virtual void Show() = 0;
+
+  // Called to notify the controller that initiator should be focused.
+  virtual void FocusInitiator() = 0;
 
   // Called to notify the controller that the window was requested to be closed
   // by the user or the content.
@@ -38,15 +41,12 @@ class PictureInPictureWindowController {
 
   // Called by the window implementation to notify the controller that the
   // window was requested to be closed and destroyed by the system.
-  virtual void OnWindowDestroyed() = 0;
+  virtual void OnWindowDestroyed(bool should_pause_video) = 0;
 
   virtual OverlayWindow* GetWindowForTesting() = 0;
   virtual void UpdateLayerBounds() = 0;
   virtual bool IsPlayerActive() = 0;
-  virtual WebContents* GetInitiatorWebContents() = 0;
-  virtual void UpdatePlaybackState(bool is_playing,
-                                   bool reached_end_of_stream) = 0;
-  virtual void SetAlwaysHidePlayPauseButton(bool is_visible) = 0;
+  virtual WebContents* GetWebContents() = 0;
 
   // Called when the user interacts with the "Skip Ad" control.
   virtual void SkipAd() = 0;
@@ -61,6 +61,15 @@ class PictureInPictureWindowController {
   // Returns true if the player is active (i.e. currently playing) after this
   // call.
   virtual bool TogglePlayPause() = 0;
+
+  // Called when the user interacts with the "Toggle Microphone" control.
+  virtual void ToggleMicrophone() = 0;
+
+  // Called when the user interacts with the "Toggle Camera" control.
+  virtual void ToggleCamera() = 0;
+
+  // Called when the user interacts with the "Hang Up" control.
+  virtual void HangUp() = 0;
 
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to

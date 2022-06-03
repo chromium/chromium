@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script'">
+<script>
+    // The majority of Trusted Types-related tests can be found in the WPT
+    // test suite. This particular test tests the interaction of Trusted Types
+    // with isolated worlds, which is not accessible from WPT tests.
+
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+
+    function trigger() {
+      try {
+        document.getElementById("target").innerHTML = "abc";
+      } catch {
+      }
+    }
+
+    function trigger_in_world() {
+      testRunner.evaluateScriptInIsolatedWorld(1, trigger.toString() + "trigger();");
+    }
+
+    function test() {
+        alert("Case #1: Trigger TT error on main page.");
+        trigger();
+
+        alert("Case #2: Trigger TT error in main world, via test runner.");
+        testRunner.setIsolatedWorldInfo(1, null, null);
+        trigger_in_world();
+
+        alert("Case #3: Trigger TT error in extension.");
+        testRunner.setIsolatedWorldInfo(1, 'chrome-extension://123', '');
+        trigger_in_world();
+
+        alert("Case #4: Set default policy on main page. Trigger TT error in main 0page.");
+        trustedTypes.createPolicy("default", { createHTML: x => x });
+        testRunner.setIsolatedWorldInfo(1, null, null);
+        trigger_in_world();
+
+        alert("Case #5: Default policy on main page. Trigger TT error in extension");
+        testRunner.setIsolatedWorldInfo(1, 'chrome-extension://123', '');
+        trigger_in_world();
+
+        alert("Cleanup & done.");
+        document.getElementById("target").textContent = "";
+        testRunner.setIsolatedWorldInfo(1, null, null);
+        testRunner.notifyDone();
+    }
+</script>
+</head>
+<body onload='test();'>
+  <p>
+    The majority of Trusted Types-related tests can be found in the WPT
+    test suite. This particular test tests the interaction of Trusted Types
+    with isolated worlds, which is not accessible from WPT tests.
+  </p>
+  <p id="target"></p>
+</body>
+</html>

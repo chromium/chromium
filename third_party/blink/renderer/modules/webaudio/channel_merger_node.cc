@@ -28,11 +28,12 @@
 
 #include "third_party/blink/renderer/modules/webaudio/channel_merger_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_merger_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/channel_merger_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -72,7 +73,7 @@ scoped_refptr<ChannelMergerHandler> ChannelMergerHandler::Create(
 }
 
 void ChannelMergerHandler::Process(uint32_t frames_to_process) {
-  AudioNodeOutput& output = this->Output(0);
+  AudioNodeOutput& output = Output(0);
   DCHECK_EQ(frames_to_process, output.Bus()->length());
 
   unsigned number_of_output_channels = output.NumberOfChannels();
@@ -80,7 +81,7 @@ void ChannelMergerHandler::Process(uint32_t frames_to_process) {
 
   // Merge multiple inputs into one output.
   for (unsigned i = 0; i < number_of_output_channels; ++i) {
-    AudioNodeInput& input = this->Input(i);
+    AudioNodeInput& input = Input(i);
     DCHECK_EQ(input.NumberOfChannels(), 1u);
     AudioChannel* output_channel = output.Bus()->Channel(i);
     if (input.IsConnected()) {

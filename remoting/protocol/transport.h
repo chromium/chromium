@@ -51,7 +51,8 @@ struct TransportRoute {
 // Implementations should provide other methods to send and receive data.
 class Transport {
  public:
-  typedef base::Callback<void(std::unique_ptr<jingle_xmpp::XmlElement> transport_info)>
+  typedef base::RepeatingCallback<void(
+      std::unique_ptr<jingle_xmpp::XmlElement> transport_info)>
       SendTransportInfoCallback;
 
   virtual ~Transport() {}

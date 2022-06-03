@@ -3,8 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 about_credits_file = "$target_gen_dir/about_credits.html"
 
@@ -12,15 +17,14 @@ group("resources") {
   public_deps = [
     ":components_resources",
     ":components_scaled_resources",
+    ":dev_ui_components_resources",
   ]
 }
 
 grit("components_resources") {
   source = "components_resources.grd"
 
-  inputs = [
-    about_credits_file,
-  ]
+  inputs = [ about_credits_file ]
 
   outputs = [
     "grit/components_resources.h",
@@ -34,14 +38,35 @@ grit("components_resources") {
     "-E",
     "about_credits_file=" + rebase_path(about_credits_file, root_build_dir),
   ]
+
   defines = [
     "enable_basic_printing=$enable_basic_printing",
     "enable_print_preview=$enable_print_preview",
+    "safe_browsing_mode=$safe_browsing_mode",
+    "is_fuchsia=$is_fuchsia",
   ]
 
-  deps = [
-    ":about_credits",
+  deps = [ ":about_credits" ]
+
+  if (!is_ios) {
+    deps += [ "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf" ]
+  }
+
+  if (safe_browsing_mode > 0) {
+    deps += [
+      "//components/safe_browsing/content/resources:make_file_types_protobuf",
+    ]
+  }
+}
+
+grit("dev_ui_components_resources") {
+  source = "dev_ui_components_resources.grd"
+
+  outputs = [
+    "grit/dev_ui_components_resources.h",
+    "dev_ui_components_resources.pak",
   ]
+  output_dir = "$root_gen_dir/components"
 }
 
 grit("components_scaled_resources") {
@@ -67,9 +92,7 @@ action("about_credits") {
     "../about_ui/resources/about_credits_entry.tmpl",
   ]
 
-  outputs = [
-    about_credits_file,
-  ]
+  outputs = [ about_credits_file ]
 
   args = [
     "--target-os=$target_os",
@@ -78,4 +101,24 @@ action("about_credits") {
     "credits",
     rebase_path(about_credits_file, root_build_dir),
   ]
+
+  # Defined by downstream projects.
+  if (defined(extra_third_party_notice_dirs)) {
+    args += [ "--extra-third-party-dirs=$extra_third_party_notice_dirs" ]
+  }
+}
+
+if (is_android) {
+  source_set("android_resources") {
+    sources = [
+      "android/blocked_content_resource_id.h",
+      "android/page_info_resource_id.h",
+      "android/permissions_resource_id.h",
+      "android/sms_resource_id.h",
+      "android/theme_resources.h",
+      "android/webxr_resource_id.h",
+    ]
+
+    public_deps = [ "//device/vr/buildflags" ]
+  }
 }

@@ -4,13 +4,12 @@
 
 #include "base/android/callback_android.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "chrome/android/chrome_jni_headers/DownloadBackgroundTask_jni.h"
 #include "chrome/browser/download/android/download_manager_service.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "content/public/browser/browser_context.h"
 
@@ -19,10 +18,11 @@ using base::android::JavaParamRef;
 namespace download {
 namespace android {
 
-DownloadService* GetDownloadService(const JavaParamRef<jobject>& jkey) {
+BackgroundDownloadService* GetDownloadService(
+    const JavaParamRef<jobject>& jkey) {
   ProfileKey* key = ProfileKeyAndroid::FromProfileKeyAndroid(jkey);
   DCHECK(key);
-  return DownloadServiceFactory::GetForKey(key);
+  return BackgroundDownloadServiceFactory::GetForKey(key);
 }
 
 AutoResumptionHandler* GetAutoResumptionHandler() {
@@ -42,17 +42,17 @@ void JNI_DownloadBackgroundTask_StartBackgroundTask(
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback));
 
-  switch (static_cast<DownloadTaskType>(task_type)) {
-    case download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK: {
+  auto type = static_cast<DownloadTaskType>(task_type);
+  switch (type) {
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
+    case DownloadTaskType::DOWNLOAD_LATER_TASK:
       GetAutoResumptionHandler()->OnStartScheduledTask(
-          std::move(finish_callback));
+          type, std::move(finish_callback));
       break;
-    }
-    case download::DownloadTaskType::DOWNLOAD_TASK:
-      FALLTHROUGH;
-    case download::DownloadTaskType::CLEANUP_TASK:
+    case DownloadTaskType::DOWNLOAD_TASK:
+    case DownloadTaskType::CLEANUP_TASK:
       GetDownloadService(jkey)->OnStartScheduledTask(
-          static_cast<DownloadTaskType>(task_type), std::move(finish_callback));
+          type, std::move(finish_callback));
       break;
   }
 }
@@ -63,16 +63,15 @@ jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jobject>& jkey,
     jint task_type) {
-  switch (static_cast<DownloadTaskType>(task_type)) {
-    case download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK: {
-      GetAutoResumptionHandler()->OnStopScheduledTask();
+  auto type = static_cast<DownloadTaskType>(task_type);
+  switch (type) {
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
+    case DownloadTaskType::DOWNLOAD_LATER_TASK:
+      GetAutoResumptionHandler()->OnStopScheduledTask(type);
       break;
-    }
-    case download::DownloadTaskType::DOWNLOAD_TASK:
-      FALLTHROUGH;
-    case download::DownloadTaskType::CLEANUP_TASK:
-      return GetDownloadService(jkey)->OnStopScheduledTask(
-          static_cast<DownloadTaskType>(task_type));
+    case DownloadTaskType::DOWNLOAD_TASK:
+    case DownloadTaskType::CLEANUP_TASK:
+      return GetDownloadService(jkey)->OnStopScheduledTask(type);
   }
   return false;
 }

@@ -9,43 +9,8 @@
         <attr name="url" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="LearnMorePreference">
-        <!-- The context that should be sent to HelpAndFeedback activity. -->
-        <attr name="helpContext" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="ChromeBasePreference">
-        <!-- The tint color for the icon set by android:icon. -->
-        <attr name="iconTint" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="ChromeSwitchPreference">
-        <!-- Prevents the summary text from being styled like title text in the
-             case that the title is empty. -->
-        <attr name="dontUseSummaryAsTitle" format="boolean" />
-        <!-- Draws a horizontal divider line at the bottom of the preference. -->
-        <attr name="drawDivider" format="boolean" />
-    </declare-styleable>
-
-    <declare-styleable name="FloatLabelLayout">
-        <attr name="floatLabelTextAppearance" format="reference" />
-        <attr name="floatLabelPaddingLeft" format="reference|dimension" />
-        <attr name="floatLabelPaddingRight" format="reference|dimension" />
-        <attr name="floatLabelPaddingTop" format="reference|dimension" />
-        <attr name="floatLabelPaddingBottom" format="reference|dimension" />
-        <!-- The hint to display in the floating label -->
-        <attr name="floatLabelHint" format="reference|string" />
-    </declare-styleable>
-
     <declare-styleable name="BookmarkTextInputLayout">
         <attr name="emptyErrorMessage" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="SpinnerPreference">
-        <!-- Used to change the SpinnerPreference to display the TextView and the Spinner on the
-             same line. Devices with a smallest width of less than 360dp will still use two separate
-             lines. -->
-        <attr name="singleLine" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="TileGridLayout">
@@ -54,11 +19,5 @@
 
     <declare-styleable name="ExploreSitesTileView">
         <attr name="iconCornerRadius" format="dimension"/>
-    </declare-styleable>
-
-    <declare-styleable name="ChromeTextInputLayout">
-        <attr name="hintTextAppearance" format="reference" />
-        <attr name="hint" format="reference|string" />
-        <attr name="errorTextAppearance" format="reference" />
     </declare-styleable>
 </resources>

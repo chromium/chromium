@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "url/gurl.h"
@@ -69,7 +70,7 @@ const std::string& ReplacementAppsInfo::GetReplacementAndroidApp(
 }
 
 bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   const base::Value* app_value = nullptr;
   if (!extension->manifest()->Get(keys::kReplacementWebApp, &app_value)) {
     return true;
@@ -92,7 +93,7 @@ bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
 }
 
 bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
-                                         base::string16* error) {
+                                         std::u16string* error) {
   const base::Value* app_value = nullptr;
   if (!extension->manifest()->Get(keys::kReplacementAndroidApp, &app_value)) {
     return true;
@@ -109,7 +110,7 @@ bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
 }
 
 bool ReplacementAppsInfo::Parse(const Extension* extension,
-                                base::string16* error) {
+                                std::u16string* error) {
   if (!LoadWebApp(extension, error) || !LoadAndroidApp(extension, error)) {
     return false;
   }
@@ -121,7 +122,7 @@ ReplacementAppsHandler::ReplacementAppsHandler() {}
 ReplacementAppsHandler::~ReplacementAppsHandler() {}
 
 bool ReplacementAppsHandler::Parse(Extension* extension,
-                                   base::string16* error) {
+                                   std::u16string* error) {
   std::unique_ptr<ReplacementAppsInfo> info(new ReplacementAppsInfo);
 
   if (!info->Parse(extension, error)) {

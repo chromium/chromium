@@ -44,7 +44,7 @@ source_set("motion_animator_objc") {
     "src/src/MotionAnimator.h",
   ]
 
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "Foundation.framework",
     "QuartzCore.framework",
@@ -65,7 +65,5 @@ source_set("motion_animator_objc") {
     "//build/config/compiler:default_include_dirs",
   ]
 
-  public_deps = [
-    "//ios/third_party/motion_interchange_objc",
-  ]
+  public_deps = [ "//ios/third_party/motion_interchange_objc" ]
 }

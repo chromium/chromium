@@ -7,25 +7,25 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-class FrameOrImportedDocument;
+class Document;
+class DocumentLoader;
 
 // FrameResourceFetcherProperties is a ResourceFetcherProperties implementation
 // for Frame.
 class CORE_EXPORT FrameResourceFetcherProperties final
     : public ResourceFetcherProperties {
  public:
-  explicit FrameResourceFetcherProperties(FrameOrImportedDocument&);
+  FrameResourceFetcherProperties(DocumentLoader& document_loader,
+                                 Document& document);
   ~FrameResourceFetcherProperties() override = default;
 
-  void Trace(Visitor*) override;
-
-  const FrameOrImportedDocument& GetFrameOrImportedDocument() const {
-    return *frame_or_imported_document_;
-  }
+  void Trace(Visitor*) const override;
 
   // ResourceFetcherProperties implementation
   const FetchClientSettingsObject& GetFetchClientSettingsObject()
@@ -36,16 +36,22 @@ class CORE_EXPORT FrameResourceFetcherProperties final
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override;
   int64_t ServiceWorkerId() const override;
   bool IsPaused() const override;
+  LoaderFreezeMode FreezeMode() const override;
   bool IsDetached() const override { return false; }
   bool IsLoadComplete() const override;
   bool ShouldBlockLoadingSubResource() const override;
   bool IsSubframeDeprioritizationEnabled() const override;
   scheduler::FrameStatus GetFrameStatus() const override;
   const KURL& WebBundlePhysicalUrl() const override;
+  int GetOutstandingThrottledLimit() const override;
+  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const override;
 
  private:
-  const Member<FrameOrImportedDocument> frame_or_imported_document_;
+  const Member<DocumentLoader> document_loader_;
+  const Member<Document> document_;
   Member<const FetchClientSettingsObject> fetch_client_settings_object_;
+  const KURL web_bundle_physical_url_;
 };
 
 }  // namespace blink

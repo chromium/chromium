@@ -21,7 +21,7 @@ int64_t ToDatabaseTime(base::Time time) {
 
 base::Time FromDatabaseTime(int64_t serialized_time) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(serialized_time));
+      base::Microseconds(serialized_time));
 }
 
 std::string ToDatabaseFilePath(const base::FilePath& file_path) {

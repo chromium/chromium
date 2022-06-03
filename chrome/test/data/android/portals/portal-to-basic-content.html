@@ -11,10 +11,17 @@
   </head>
   <body>
     <h1>Test Portal</h1>
-    <portal id="myPortal" src="basic-content.html"></portal>
     <script>
-      function activatePortal() {
-        document.getElementById('myPortal').activate();
+      var portal = document.createElement('portal');
+      var portalLoaded = new Promise((resolve) => {
+        portal.onload = resolve;
+      });
+      portal.src = 'basic-content.html';
+      document.body.appendChild(portal);
+
+      async function activatePortal() {
+        await portalLoaded;
+        await portal.activate();
       }
     </script>
   </body>

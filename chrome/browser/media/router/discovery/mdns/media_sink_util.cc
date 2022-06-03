@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "components/cast_channel/cast_socket.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
@@ -51,9 +52,6 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
     service_data[key] = val;
   }
 
-  // When use this "sink" within browser, please note it will have a different
-  // ID when it is sent to the extension, because it derives a different sink ID
-  // using the given sink ID.
   std::string unique_id = service_data["id"];
   if (unique_id.empty())
     return CreateCastMediaSinkResult::kMissingID;
@@ -75,7 +73,7 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
   std::string sink_id = base::StringPrintf("cast:<%s>", processed_uuid.c_str());
   MediaSink sink(sink_id, friendly_name,
                  GetCastSinkIconType(extra_data.capabilities),
-                 MediaRouteProviderId::CAST);
+                 mojom::MediaRouteProviderId::CAST);
 
   cast_sink->set_sink(sink);
   cast_sink->set_cast_data(extra_data);
@@ -122,8 +120,6 @@ std::vector<MediaSinkInternal> GetFixedIPSinksFromCommandLine() {
     CreateCastMediaSinkResult result = CreateCastMediaSink(service, &sink);
     if (result == CreateCastMediaSinkResult::kOk) {
       sinks.push_back(sink);
-    } else {
-      DVLOG(2) << "Failed to create sink from " << ip;
     }
   }
   return sinks;

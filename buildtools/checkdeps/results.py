@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
 """Results object and results formatters for checkdeps tool."""
+
 
 
 import json
@@ -96,9 +96,9 @@ class NormalResultsFormatter(ResultsFormatter):
 
   def PrintResults(self):
     for result in self.results:
-      print result
+      print(result)
     if self.results:
-      print '\nFAILED\n'
+      print('\nFAILED\n')
 
 
 class JSONResultsFormatter(ResultsFormatter):
@@ -133,7 +133,7 @@ class JSONResultsFormatter(ResultsFormatter):
       self.wrapped_formatter.PrintResults()
       return
 
-    print self.results
+    print(self.results)
 
 
 class TemporaryRulesFormatter(ResultsFormatter):
@@ -154,7 +154,7 @@ class TemporaryRulesFormatter(ResultsFormatter):
 
   def PrintResults(self):
     for result in self.GetResults():
-      print result
+      print(result)
 
 
 class CountViolationsFormatter(ResultsFormatter):
@@ -175,4 +175,4 @@ class CountViolationsFormatter(ResultsFormatter):
     return '%d' % self.count
 
   def PrintResults(self):
-    print self.count
+    print(self.count)

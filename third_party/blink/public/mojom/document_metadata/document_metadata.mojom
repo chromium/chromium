@@ -1,0 +1,19 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "components/schema_org/common/metadata.mojom";
+import "url/mojom/url.mojom";
+
+struct WebPage {
+  url.mojom.Url url;
+  string title;
+  array<schema_org.mojom.Entity> entities;
+};
+
+// Null page denotes no results.
+interface DocumentMetadata {
+  GetEntities() => (WebPage? page);
+};

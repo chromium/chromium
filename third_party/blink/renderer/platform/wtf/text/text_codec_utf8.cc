@@ -497,7 +497,7 @@ TextCodec::EncodeIntoResult TextCodecUTF8::EncodeIntoCommon(
     const CharType* characters,
     wtf_size_t length,
     unsigned char* destination,
-    wtf_size_t capacity) {
+    size_t capacity) {
   TextCodec::EncodeIntoResult encode_into_result{0, 0};
 
   wtf_size_t i = 0;
@@ -544,7 +544,7 @@ TextCodec::EncodeIntoResult TextCodecUTF8::EncodeInto(
     const UChar* characters,
     wtf_size_t length,
     unsigned char* destination,
-    wtf_size_t capacity) {
+    size_t capacity) {
   return EncodeIntoCommon(characters, length, destination, capacity);
 }
 
@@ -552,7 +552,7 @@ TextCodec::EncodeIntoResult TextCodecUTF8::EncodeInto(
     const LChar* characters,
     wtf_size_t length,
     unsigned char* destination,
-    wtf_size_t capacity) {
+    size_t capacity) {
   return EncodeIntoCommon(characters, length, destination, capacity);
 }
 

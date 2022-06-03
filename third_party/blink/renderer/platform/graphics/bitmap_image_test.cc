@@ -31,18 +31,21 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/tiles/mipmap_util.h"
+#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -66,9 +69,9 @@ class FrameSettingImageProvider : public cc::ImageProvider {
     DCHECK(!draw_image.paint_image().IsPaintWorklet());
     auto sk_image =
         draw_image.paint_image().GetSkImageForFrame(frame_index_, client_id_);
-    return ScopedResult(
-        cc::DecodedDrawImage(sk_image, SkSize::MakeEmpty(), SkSize::Make(1, 1),
-                             draw_image.filter_quality(), true));
+    return ScopedResult(cc::DecodedDrawImage(
+        sk_image, nullptr, SkSize::MakeEmpty(), SkSize::Make(1, 1),
+        draw_image.filter_quality(), true));
   }
 
  private:
@@ -89,7 +92,7 @@ void GenerateBitmapForPaintImage(cc::PaintImage paint_image,
   bitmap->eraseColor(SK_AlphaTRANSPARENT);
   FrameSettingImageProvider image_provider(frame_index, client_id);
   cc::SkiaPaintCanvas canvas(*bitmap, &image_provider);
-  canvas.drawImage(paint_image, 0u, 0u, nullptr);
+  canvas.drawImage(paint_image, 0u, 0u);
 }
 
 }  // namespace
@@ -100,6 +103,10 @@ class TestingPlatformSupportWithMaxDecodedBytes
     : public TestingPlatformSupportWithMockScheduler {
  public:
   TestingPlatformSupportWithMaxDecodedBytes() {}
+  TestingPlatformSupportWithMaxDecodedBytes(
+      const TestingPlatformSupportWithMaxDecodedBytes&) = delete;
+  TestingPlatformSupportWithMaxDecodedBytes& operator=(
+      const TestingPlatformSupportWithMaxDecodedBytes&) = delete;
   ~TestingPlatformSupportWithMaxDecodedBytes() override {}
 
   void SetMaxDecodedImageBytes(size_t max_decoded_image_bytes) {
@@ -110,16 +117,12 @@ class TestingPlatformSupportWithMaxDecodedBytes
 
  private:
   size_t max_decoded_image_bytes_ = Platform::kNoDecodedImageByteLimit;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPlatformSupportWithMaxDecodedBytes);
 };
 
 class BitmapImageTest : public testing::Test {
  public:
   class FakeImageObserver : public GarbageCollected<FakeImageObserver>,
                             public ImageObserver {
-    USING_GARBAGE_COLLECTED_MIXIN(FakeImageObserver);
-
    public:
     FakeImageObserver()
         : last_decoded_size_(0), last_decoded_size_changed_delta_(0) {}
@@ -147,7 +150,14 @@ class BitmapImageTest : public testing::Test {
   void DestroyDecodedData() { image_->DestroyDecodedData(); }
   size_t FrameCount() { return image_->FrameCount(); }
 
+  void CreateImage() {
+    image_observer_ = MakeGarbageCollected<FakeImageObserver>();
+    image_ = BitmapImage::Create(image_observer_.Get());
+  }
+
   void LoadImage(const char* file_name) {
+    CreateImage();
+
     scoped_refptr<SharedBuffer> image_data = ReadFile(file_name);
     ASSERT_TRUE(image_data.get());
 
@@ -174,12 +184,12 @@ class BitmapImageTest : public testing::Test {
     CHECK(paint_image);
 
     SkBitmap bitmap;
-    SkImageInfo info = SkImageInfo::MakeN32Premul(image->Size().Width(),
-                                                  image->Size().Height());
-    bitmap.allocPixels(info, image->Size().Width() * 4);
+    SkImageInfo info = SkImageInfo::MakeN32Premul(image->Size().width(),
+                                                  image->Size().height());
+    bitmap.allocPixels(info, image->Size().width() * 4);
     bitmap.eraseColor(SK_AlphaTRANSPARENT);
     cc::SkiaPaintCanvas canvas(bitmap);
-    canvas.drawImage(paint_image, 0u, 0u, nullptr);
+    canvas.drawImage(paint_image, 0u, 0u);
     return bitmap;
   }
 
@@ -235,11 +245,6 @@ class BitmapImageTest : public testing::Test {
   scoped_refptr<SharedBuffer> Data() { return image_->Data(); }
 
  protected:
-  void SetUp() override {
-    image_observer_ = MakeGarbageCollected<FakeImageObserver>();
-    image_ = BitmapImage::Create(image_observer_.Get());
-  }
-
   Persistent<FakeImageObserver> image_observer_;
   scoped_refptr<BitmapImage> image_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMaxDecodedBytes>
@@ -269,12 +274,6 @@ TEST_F(BitmapImageTest, isAllDataReceived) {
   EXPECT_FALSE(image->IsAllDataReceived());
 
   image->SetData(image_data, false);
-  EXPECT_FALSE(image->IsAllDataReceived());
-
-  image->SetData(image_data, true);
-  EXPECT_TRUE(image->IsAllDataReceived());
-
-  image->SetData(SharedBuffer::Create("data", sizeof("data")), false);
   EXPECT_FALSE(image->IsAllDataReceived());
 
   image->SetData(image_data, true);
@@ -349,12 +348,13 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
 
   // First partial load. Repeated calls for a PaintImage should have the same
   // image until the data changes or the decoded data is destroyed.
+  CreateImage();
   ASSERT_EQ(image_->SetData(partial_buffer, false), Image::kSizeAvailable);
   auto image1 = image_->PaintImageForCurrentFrame();
   auto image2 = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image1, image2);
-  auto sk_image1 = image1.GetSkImage();
-  auto sk_image2 = image2.GetSkImage();
+  auto sk_image1 = image1.GetSwSkImage();
+  auto sk_image2 = image2.GetSwSkImage();
   EXPECT_EQ(sk_image1->uniqueID(), sk_image2->uniqueID());
 
   // Frame keys should be the same for these PaintImages.
@@ -365,7 +365,7 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
   // image ids for partial decodes.
   DestroyDecodedData();
   auto image3 = image_->PaintImageForCurrentFrame();
-  auto sk_image3 = image3.GetSkImage();
+  auto sk_image3 = image3.GetSwSkImage();
   EXPECT_NE(sk_image1, sk_image3);
   EXPECT_NE(sk_image1->uniqueID(), sk_image3->uniqueID());
 
@@ -377,7 +377,7 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
   // Load complete. This should generate a new image id.
   image_->SetData(image_data, true);
   auto complete_image = image_->PaintImageForCurrentFrame();
-  auto complete_sk_image = complete_image.GetSkImage();
+  auto complete_sk_image = complete_image.GetSwSkImage();
   EXPECT_NE(sk_image3, complete_sk_image);
   EXPECT_NE(sk_image3->uniqueID(), complete_sk_image->uniqueID());
   EXPECT_NE(complete_image.GetKeyForFrame(PaintImage::kDefaultFrameIndex),
@@ -388,7 +388,7 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
   // uniqueIDs.
   DestroyDecodedData();
   auto new_complete_image = image_->PaintImageForCurrentFrame();
-  auto new_complete_sk_image = new_complete_image.GetSkImage();
+  auto new_complete_sk_image = new_complete_image.GetSwSkImage();
   EXPECT_NE(new_complete_sk_image, complete_sk_image);
   EXPECT_EQ(new_complete_image.GetKeyForFrame(PaintImage::kDefaultFrameIndex),
             complete_image.GetKeyForFrame(PaintImage::kDefaultFrameIndex));
@@ -406,8 +406,8 @@ TEST_F(BitmapImageTest, ImageForDefaultFrame_MultiFrame) {
   auto paint_image1 = default_image1->PaintImageForCurrentFrame();
   auto paint_image2 = default_image2->PaintImageForCurrentFrame();
   EXPECT_EQ(paint_image1, paint_image2);
-  EXPECT_EQ(paint_image1.GetSkImage()->uniqueID(),
-            paint_image2.GetSkImage()->uniqueID());
+  EXPECT_EQ(paint_image1.GetSwSkImage()->uniqueID(),
+            paint_image2.GetSwSkImage()->uniqueID());
 }
 
 TEST_F(BitmapImageTest, ImageForDefaultFrame_SingleFrame) {
@@ -603,29 +603,28 @@ class BitmapImageTestWithMockDecoder : public BitmapImageTest,
                                        public MockImageDecoderClient {
  public:
   void SetUp() override {
-    BitmapImageTest::SetUp();
-
     auto decoder = std::make_unique<MockImageDecoder>(this);
-    decoder->SetSize(10, 10);
+    decoder->SetSize(10u, 10u);
+    CreateImage();
     image_->SetDecoderForTesting(
         DeferredImageDecoder::CreateForTesting(std::move(decoder)));
   }
 
   void DecoderBeingDestroyed() override {}
   void DecodeRequested() override {}
-  ImageFrame::Status GetStatus(size_t index) override {
+  ImageFrame::Status GetStatus(wtf_size_t index) override {
     if (index < frame_count_ - 1 || last_frame_complete_)
       return ImageFrame::Status::kFrameComplete;
     return ImageFrame::Status::kFramePartial;
   }
-  size_t FrameCount() override { return frame_count_; }
+  wtf_size_t FrameCount() override { return frame_count_; }
   int RepetitionCount() const override { return repetition_count_; }
   base::TimeDelta FrameDuration() const override { return duration_; }
 
  protected:
   base::TimeDelta duration_;
   int repetition_count_;
-  size_t frame_count_;
+  wtf_size_t frame_count_;
   bool last_frame_complete_;
 };
 
@@ -644,7 +643,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   EXPECT_EQ(image.repetition_count(), repetition_count_);
   for (size_t i = 0; i < image.GetFrameMetadata().size(); ++i) {
     const auto& data = image.GetFrameMetadata()[i];
-    EXPECT_EQ(data.duration, base::TimeDelta::FromMilliseconds(100));
+    EXPECT_EQ(data.duration, base::Milliseconds(100));
     if (i == frame_count_ - 1 && !last_frame_complete_)
       EXPECT_FALSE(data.complete);
     else
@@ -652,7 +651,7 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   }
 
   // Now the load is finished.
-  duration_ = base::TimeDelta::FromSeconds(1);
+  duration_ = base::Seconds(1);
   repetition_count_ = kAnimationLoopInfinite;
   frame_count_ = 6u;
   last_frame_complete_ = true;
@@ -666,9 +665,9 @@ TEST_F(BitmapImageTestWithMockDecoder, ImageMetadataTracking) {
   for (size_t i = 0; i < image.GetFrameMetadata().size(); ++i) {
     const auto& data = image.GetFrameMetadata()[i];
     if (i < 4u)
-      EXPECT_EQ(data.duration, base::TimeDelta::FromMilliseconds(100));
+      EXPECT_EQ(data.duration, base::Milliseconds(100));
     else
-      EXPECT_EQ(data.duration, base::TimeDelta::FromSeconds(1));
+      EXPECT_EQ(data.duration, base::Seconds(1));
     EXPECT_TRUE(data.complete);
   }
 }
@@ -686,17 +685,20 @@ TEST_F(BitmapImageTestWithMockDecoder,
   // In all cases, the image shouldn't animate.
 
   // Only one loop allowed.
-  image_->SetAnimationPolicy(kImageAnimationPolicyAnimateOnce);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // No animation allowed.
-  image_->SetAnimationPolicy(kImageAnimationPolicyNoAnimation);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // Default policy.
-  image_->SetAnimationPolicy(kImageAnimationPolicyAllowed);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 }
@@ -715,17 +717,20 @@ TEST_F(BitmapImageTestWithMockDecoder,
   // other cases, it remains loop once.
 
   // Only one loop allowed.
-  image_->SetAnimationPolicy(kImageAnimationPolicyAnimateOnce);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationLoopOnce);
 
   // No animation allowed.
-  image_->SetAnimationPolicy(kImageAnimationPolicyNoAnimation);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // Default policy.
-  image_->SetAnimationPolicy(kImageAnimationPolicyAllowed);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationLoopOnce);
 }
@@ -743,17 +748,20 @@ TEST_F(BitmapImageTestWithMockDecoder,
   // The repetition count is determined by the animation policy.
 
   // Only one loop allowed.
-  image_->SetAnimationPolicy(kImageAnimationPolicyAnimateOnce);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationLoopOnce);
 
   // No animation allowed.
-  image_->SetAnimationPolicy(kImageAnimationPolicyNoAnimation);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), kAnimationNone);
 
   // Default policy.
-  image_->SetAnimationPolicy(kImageAnimationPolicyAllowed);
+  image_->SetAnimationPolicy(
+      mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
   image = image_->PaintImageForCurrentFrame();
   EXPECT_EQ(image.repetition_count(), repetition_count_);
 }
@@ -786,108 +794,71 @@ TEST_F(BitmapImageTestWithMockDecoder, PaintImageForStaticBitmapImage) {
                    .ShouldAnimate());
 }
 
-template <typename HistogramEnumType>
-struct HistogramTestParams {
-  HistogramTestParams(const char* filename, HistogramEnumType type, int count)
-      : filename(filename), type(type), count(count) {}
-  HistogramTestParams(const char* filename, HistogramEnumType type)
-      : HistogramTestParams(filename, type, 1) {}
-
-  const char* filename;
-  HistogramEnumType type;
-
-  // The number of events reported in the histogram when |type| is not
-  // kNoSamplesReported, otherwise is ignored.
-  int count;
-};
-
-template <typename HistogramEnumType>
-class BitmapHistogramTest : public BitmapImageTest,
-                            public testing::WithParamInterface<
-                                HistogramTestParams<HistogramEnumType>> {
- public:
-  // Flag to tell the test that no samples should have been reported in this
-  // case. Only useful when the parametric type is int.
-  static const int kNoSamplesReported = -1;
-
+class BitmapHistogramTest : public BitmapImageTest {
  protected:
-  void RunTest(const char* histogram_name) {
-    HistogramTester histogram_tester;
-    LoadImage(this->GetParam().filename);
-    if (std::is_same<HistogramEnumType, int>::value &&
-        this->GetParam().type == kNoSamplesReported) {
-      histogram_tester.ExpectTotalCount(histogram_name, 0);
-    } else {
-      histogram_tester.ExpectUniqueSample(histogram_name, this->GetParam().type,
-                                          this->GetParam().count);
-    }
+  template <typename MetricType>
+  void ExpectImageRecordsSample(const char* filename,
+                                const char* name,
+                                MetricType bucket,
+                                int count = 1) {
+    base::HistogramTester histogram_tester;
+    LoadImage(filename);
+    histogram_tester.ExpectUniqueSample(name, bucket, count);
   }
 };
 
-using DecodedImageTypeHistogramTest =
-    BitmapHistogramTest<BitmapImageMetrics::DecodedImageType>;
-
-TEST_P(DecodedImageTypeHistogramTest, ImageType) {
-  RunTest("Blink.DecodedImageType");
+TEST_F(BitmapHistogramTest, DecodedImageType) {
+  ExpectImageRecordsSample("green.jpg", "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kJPEG);
+  ExpectImageRecordsSample("palatted-color-png-gamma-one-color-profile.png",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kPNG);
+  ExpectImageRecordsSample("animated-10color.gif", "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kGIF);
+  ExpectImageRecordsSample("webp-color-profile-lossy.webp",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kWebP);
+  ExpectImageRecordsSample("wrong-frame-dimensions.ico",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kICO);
+  ExpectImageRecordsSample("gracehopper.bmp", "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kBMP);
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  ExpectImageRecordsSample("red-full-ranged-8bpc.avif",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kAVIF);
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 }
 
-const DecodedImageTypeHistogramTest::ParamType
-    kDecodedImageTypeHistogramTestparams[] = {
-        {"green.jpg", BitmapImageMetrics::kImageJPEG},
-        {"palatted-color-png-gamma-one-color-profile.png",
-         BitmapImageMetrics::kImagePNG},
-        {"animated-10color.gif", BitmapImageMetrics::kImageGIF},
-        {"webp-color-profile-lossy.webp", BitmapImageMetrics::kImageWebP},
-        {"wrong-frame-dimensions.ico", BitmapImageMetrics::kImageICO},
-        {"lenna.bmp", BitmapImageMetrics::kImageBMP}};
+TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
+  {
+    // Test images that don't report any density metrics.
+    base::HistogramTester histogram_tester;
+    LoadImage("rgb-jpeg-red.jpg");           // 64x64
+    LoadImage("red-full-ranged-8bpc.avif");  // 3x3
+    LoadImage("animated-10color.gif");       // 100x100 but GIF is not reported.
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.JpegDensity.KiBWeighted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.WebPDensity.KiBWeighted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.AvifDensity.KiBWeighted", 0);
+  }
 
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageTypeHistogramTest,
-    DecodedImageTypeHistogramTest,
-    testing::ValuesIn(kDecodedImageTypeHistogramTestparams));
+  // 439x154, 23220 bytes --> 2.74 bpp, 23 KiB (rounded up)
+  ExpectImageRecordsSample("cropped_mandrill.jpg",
+                           "Blink.DecodedImage.JpegDensity.KiBWeighted", 274,
+                           23);
 
-using DecodedImageOrientationHistogramTest =
-    BitmapHistogramTest<ImageOrientationEnum>;
+  // 320x320, 74017 bytes --> 5.78, 72 KiB (rounded down)
+  ExpectImageRecordsSample("blue-wheel-srgb-color-profile.jpg",
+                           "Blink.DecodedImage.JpegDensity.KiBWeighted", 578,
+                           72);
 
-TEST_P(DecodedImageOrientationHistogramTest, ImageOrientation) {
-  RunTest("Blink.DecodedImage.Orientation");
+  // 800x800, 19436 bytes --> 0.24, 19 KiB
+  ExpectImageRecordsSample("webp-color-profile-lossy.webp",
+                           "Blink.DecodedImage.WebPDensity.KiBWeighted", 24,
+                           19);
 }
-
-const DecodedImageOrientationHistogramTest::ParamType
-    kDecodedImageOrientationHistogramTestParams[] = {
-        {"exif-orientation-1-ul.jpg", kOriginTopLeft},
-        {"exif-orientation-2-ur.jpg", kOriginTopRight},
-        {"exif-orientation-3-lr.jpg", kOriginBottomRight},
-        {"exif-orientation-4-lol.jpg", kOriginBottomLeft},
-        {"exif-orientation-5-lu.jpg", kOriginLeftTop},
-        {"exif-orientation-6-ru.jpg", kOriginRightTop},
-        {"exif-orientation-7-rl.jpg", kOriginRightBottom},
-        {"exif-orientation-8-llo.jpg", kOriginLeftBottom}};
-
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageOrientationHistogramTest,
-    DecodedImageOrientationHistogramTest,
-    testing::ValuesIn(kDecodedImageOrientationHistogramTestParams));
-
-using DecodedImageDensityHistogramTestKiBWeighted = BitmapHistogramTest<int>;
-
-TEST_P(DecodedImageDensityHistogramTestKiBWeighted, JpegDensity) {
-  RunTest("Blink.DecodedImage.JpegDensity.KiBWeighted");
-}
-
-const DecodedImageDensityHistogramTestKiBWeighted::ParamType
-    kDecodedImageDensityHistogramTestKiBWeightedParams[] = {
-        // 64x64 too small to report any metric
-        {"rgb-jpeg-red.jpg",
-         DecodedImageDensityHistogramTestKiBWeighted::kNoSamplesReported},
-        // 439x154, 23220 bytes --> 2.74 bpp, 23 KiB (rounded up)
-        {"cropped_mandrill.jpg", 274, 23},
-        // 320x320, 74017 bytes --> 5.78, 72 KiB (rounded down)
-        {"blue-wheel-srgb-color-profile.jpg", 578, 72}};
-
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageDensityHistogramTestKiBWeighted,
-    DecodedImageDensityHistogramTestKiBWeighted,
-    testing::ValuesIn(kDecodedImageDensityHistogramTestKiBWeightedParams));
 
 }  // namespace blink

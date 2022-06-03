@@ -1,0 +1,129 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Implemented by HTMLMediaElement in the renderer process to allow the
+// browser to control media playback.
+interface MediaPlayer {
+  // Requests the media player to start or resume media playback.
+  RequestPlay();
+
+  // Requests the media player to pause media playback.
+  RequestPause(bool triggered_by_user);
+
+  // Requests the media player to move forward the media playback position.
+  RequestSeekForward(mojo_base.mojom.TimeDelta seek_time);
+
+  // Requests the media player to move backward the media playback position.
+  RequestSeekBackward(mojo_base.mojom.TimeDelta seek_time);
+
+  // Requests the media player to move to a specific time.
+  RequestSeekTo(mojo_base.mojom.TimeDelta seek_time);
+
+  // Requests the media player to enter the Picture-in-Picture mode.
+  RequestEnterPictureInPicture();
+
+  // Requests the media player to exit the Picture-in-Picture mode.
+  RequestExitPictureInPicture();
+
+  // Requests the media player to mute or unmute.
+  RequestMute(bool mute);
+
+  // Set the volume multiplier to control audio ducking.
+  // Output volume should be set to |player_volume| * |multiplier|. The range
+  // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
+  SetVolumeMultiplier(double multiplier);
+
+  // Set the player as the persistent video. Persistent video should hide its
+  // controls and go fullscreen.
+  SetPersistentState(bool persistent);
+
+  // Notify the player that it is now eligible to start recording power
+  // measurements if |state| is true, else it is no longer eligible.
+  SetPowerExperimentState(bool enabled);
+
+  // Set the media player sink id to |sink_id|.
+  SetAudioSinkId(string sink_id);
+
+  // Suspends the media player when the host frame is closed.
+  SuspendForFrameClosed();
+};
+
+// Implemented by the MediaWebContentsObserver. The remote lives in the renderer
+// process and the receiver lives in the browser process.
+interface MediaPlayerObserverClient {
+  // Gets a flag indicating whether media has been played before.
+  GetHasPlayedBefore() => (bool has_played_before);
+};
+
+// Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the
+// browser process.
+interface MediaPlayerObserver {
+  // Notifies that the media player started playing content.
+  OnMediaPlaying();
+
+  // Notifies that the media player stopped playing content,
+  // indicating in |stream_ended| if playback has reached the end of the stream.
+  OnMediaPaused(bool stream_ended);
+
+  // Notifies that the muted status of the media player has changed.
+  OnMutedStatusChanged(bool muted);
+
+  // Notifies that the media metadata of the media player has changed, along
+  // with the kind of tracks the media player has, and the type of content.
+  OnMediaMetadataChanged(
+      bool has_audio, bool has_video, MediaContentType content_type);
+
+  // Notifies the browser process that the media playback position has changed,
+  // and reports the new current position via |media_position|.
+  OnMediaPositionStateChanged(media_session.mojom.MediaPosition media_position);
+
+  // Notifies that the player has entered fullscreen.
+  // This does not differentiate native controls fullscreen and custom controls
+  // fullscreen. |status| is used by MediaWebContentsObserver to trigger
+  // automatically Picture-in-Picture for fullscreen videos.
+  OnMediaEffectivelyFullscreenChanged(FullscreenVideoStatus status);
+
+  // Notifies that the size of the media player has changed.
+  OnMediaSizeChanged(gfx.mojom.Size size);
+
+  // Notifies the browser process of PictureinPicture playback's availability.
+  OnPictureInPictureAvailabilityChanged(bool available);
+
+  // Notifies that the audio output sink has changed.
+  OnAudioOutputSinkChanged(string hashed_device_id);
+
+  // Notifies that the playback starts/stops using AudioService.
+  OnUseAudioServiceChanged(bool uses_audio_service);
+
+  // Notifies the browser process that the ability to switch audio output
+  // devices for the associated media player has been disabled.
+  OnAudioOutputSinkChangingDisabled();
+
+  // Notifies that a buffer underflow event happened for the media player.
+  OnBufferUnderflow();
+
+  // Notifies that a playback seek event happened for the media player.
+  OnSeek();
+};
+
+// Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser
+// process.
+interface MediaPlayerHost {
+  // Sends a message to the browser notifying the render frame associated to the
+  // document owning the HTMLMediaElement that a new MediaPlayer is available,
+  // passing a pending remote (i.e. |player_remote|) that will be used in the
+  // browser process to establish a channel with the HTMLMediaElement.
+  // |observer| starts observing the MediaPlayer as soon as the player is
+  // created.
+  OnMediaPlayerAdded(pending_associated_remote<MediaPlayer> player_remote,
+                     pending_associated_receiver<MediaPlayerObserver> observer,
+                     int32 player_id);
+};

@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/backend/desktop/media_pipeline_backend_desktop.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chromecast/media/cma/backend/desktop/audio_decoder_desktop.h"
 #include "chromecast/media/cma/backend/desktop/video_decoder_desktop.h"
 #include "media/base/timestamp_constants.h"
@@ -45,11 +45,11 @@ bool MediaPipelineBackendDesktop::Start(int64_t start_pts) {
     return false;
 
   if (audio_decoder_) {
-    audio_decoder_->Start(base::TimeDelta::FromMicroseconds(start_pts));
+    audio_decoder_->Start(base::Microseconds(start_pts));
     audio_decoder_->SetPlaybackRate(rate_);
   }
   if (video_decoder_) {
-    video_decoder_->Start(base::TimeDelta::FromMicroseconds(start_pts));
+    video_decoder_->Start(base::Microseconds(start_pts));
     video_decoder_->SetPlaybackRate(rate_);
   }
   state_ = kStatePlaying;

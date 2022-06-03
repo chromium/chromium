@@ -6,11 +6,13 @@ import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
-declare_args() {
-  # Defines bounds for the output buffer size (in frames)
-  minimum_output_buffer_size_in_frames = 512
-  maximum_output_buffer_size_in_frames = 8192
-  default_output_buffer_size_in_frames = 2048
+cast_source_set("audio_log") {
+  sources = [
+    "audio_log.cc",
+    "audio_log.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 cast_source_set("audio_io_thread") {
@@ -19,25 +21,25 @@ cast_source_set("audio_io_thread") {
     "audio_io_thread.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
-cast_source_set("fader") {
+cast_source_set("wav_header") {
+  sources = [ "wav_header.h" ]
+}
+
+cast_source_set("processing") {
   sources = [
+    "audio_clock_simulator.cc",
+    "audio_clock_simulator.h",
     "audio_fader.cc",
     "audio_fader.h",
+    "audio_provider.h",
+    "cast_audio_bus.cc",
+    "cast_audio_bus.h",
   ]
 
-  deps = [
-    "//base",
-    "//media",
-  ]
-
-  public_deps = [
-    "//chromecast/public/media",
-  ]
+  deps = [ "//base" ]
 
   # Use fastest possible float math.
   configs -= [ "//build/config/compiler:default_optimization" ]
@@ -45,22 +47,17 @@ cast_source_set("fader") {
   cflags = [ "-ffast-math" ]
 }
 
-cast_source_set("audio_resampler") {
+cast_source_set("playback_rate_shifter") {
   sources = [
-    "audio_resampler.cc",
-    "audio_resampler.h",
+    "playback_rate_shifter.cc",
+    "playback_rate_shifter.h",
   ]
 
   deps = [
+    ":processing",
     "//base",
-    "//chromecast/media/cma/base",
     "//media",
   ]
-
-  # Use fastest possible float math.
-  configs -= [ "//build/config/compiler:default_optimization" ]
-  configs += [ "//build/config/compiler:optimize_speed" ]
-  cflags = [ "-ffast-math" ]
 }
 
 cast_source_set("interleaved_channel_mixer") {
@@ -68,15 +65,63 @@ cast_source_set("interleaved_channel_mixer") {
     "interleaved_channel_mixer.cc",
     "interleaved_channel_mixer.h",
   ]
+
   deps = [
     "//base",
     "//media",
   ]
+}
 
-  # Use fastest possible float math.
-  configs -= [ "//build/config/compiler:default_optimization" ]
-  configs += [ "//build/config/compiler:optimize_speed" ]
-  cflags = [ "-ffast-math" ]
+cast_source_set("cma_audio_output") {
+  sources = [
+    "cma_audio_output.cc",
+    "cma_audio_output.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/base",
+    "//chromecast/common/mojom",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/backend",
+    "//chromecast/media/cma/base",
+    "//chromecast/public/media",
+    "//media",
+  ]
+}
+
+cast_source_set("resampler") {
+  sources = [ "cast_audio_resampler_impl.cc" ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/api",
+    "//media",
+  ]
+}
+
+cast_source_set("audio_renderer") {
+  sources = [
+    "cast_audio_renderer.cc",
+    "cast_audio_renderer.h",
+  ]
+
+  public_deps = [ "//chromecast/media/audio/audio_output_service:proto" ]
+
+  deps = [
+    ":audio_io_thread",
+    "//base",
+    "//chromecast/common/mojom",
+    "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/cma/base",
+    "//chromecast/public/media",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//third_party/blink/public/common",
+  ]
 }
 
 cast_source_set("audio") {
@@ -85,23 +130,33 @@ cast_source_set("audio") {
     "cast_audio_input_stream.h",
     "cast_audio_manager.cc",
     "cast_audio_manager.h",
+    "cast_audio_manager_helper.cc",
+    "cast_audio_manager_helper.h",
     "cast_audio_mixer.cc",
     "cast_audio_mixer.h",
     "cast_audio_output_stream.cc",
     "cast_audio_output_stream.h",
+    "cast_audio_output_utils.cc",
+    "cast_audio_output_utils.h",
     "cma_audio_output_stream.cc",
     "cma_audio_output_stream.h",
   ]
 
   deps = [
     ":audio_buildflags",
+    ":cma_audio_output",
     "//base",
     "//chromecast/base",
     "//chromecast/common/mojom",
+    "//chromecast/external_mojo/external_service_support:external_service",
+    "//chromecast/media/api",
+    "//chromecast/media/audio/capture_service:common",
     "//chromecast/media/audio/capture_service:receiver",
+    "//chromecast/media/audio/capture_service:utils",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:output_stream_connection",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/base",
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/cma/backend",
@@ -117,13 +172,37 @@ cast_source_set("audio") {
       "cast_audio_manager_alsa.cc",
       "cast_audio_manager_alsa.h",
     ]
-    deps += [
-      ":audio_buildflags",
-      "//content/public/browser",
+    deps += [ ":audio_buildflags" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "cast_audio_manager_android.cc",
+      "cast_audio_manager_android.h",
     ]
   }
 
   configs += [ "//media/audio:platform_config" ]
+}
+
+cast_source_set("cast_audio_output_device") {
+  sources = [
+    "cast_audio_output_device.cc",
+    "cast_audio_output_device.h",
+  ]
+
+  deps = [
+    ":audio_io_thread",
+    "//base",
+    "//chromecast/common/mojom",
+    "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/audio_output_service:proto",
+    "//chromecast/media/base:monotonic_clock",
+    "//content/renderer:renderer",
+    "//media",
+    "//media/mojo/mojom",
+    "//net",
+  ]
 }
 
 if (is_android) {
@@ -134,27 +213,26 @@ if (is_android) {
     ]
 
     deps = [
+      ":cast_audio_output_device",
       "//base",
+      "//chromecast/base",
+      "//content/public/renderer",
       "//content/renderer:renderer",
       "//media",
+      "//third_party/blink/public:blink",
+      "//third_party/blink/public/common",
     ]
   }
 }
 
 source_set("dummy_external_audio_pipeline") {
-  sources = [
-    "external_audio_pipeline_dummy.cc",
-  ]
+  sources = [ "external_audio_pipeline_dummy.cc" ]
 
-  public_deps = [
-    "//chromecast/public/media",
-  ]
+  public_deps = [ "//chromecast/public/media" ]
 }
 
 cast_shared_library("libcast_external_audio_pipeline_1.0") {
-  public_deps = [
-    ":dummy_external_audio_pipeline",
-  ]
+  public_deps = [ ":dummy_external_audio_pipeline" ]
 }
 
 source_set("fake_external_audio_pipeline") {
@@ -173,13 +251,7 @@ source_set("fake_external_audio_pipeline") {
 buildflag_header("audio_buildflags") {
   header = "audio_buildflags.h"
 
-  flags = [
-    "MINIMUM_OUTPUT_BUFFER_SIZE_IN_FRAMES=$minimum_output_buffer_size_in_frames",
-    "MAXIMUM_OUTPUT_BUFFER_SIZE_IN_FRAMES=$maximum_output_buffer_size_in_frames",
-    "DEFAULT_OUTPUT_BUFFER_SIZE_IN_FRAMES=$default_output_buffer_size_in_frames",
-    "ENABLE_AUDIO_CAPTURE_SERVICE=$enable_audio_capture_service",
-    "USE_UNIX_SOCKETS=$use_unix_sockets",
-  ]
+  flags = [ "ENABLE_AUDIO_CAPTURE_SERVICE=$enable_audio_capture_service" ]
 
   if (use_alsa) {
     # Currently, this flag will only be used in cast_audio_manager_alsa.cc
@@ -187,18 +259,30 @@ buildflag_header("audio_buildflags") {
   }
 }
 
+cast_source_set("rate_adjuster") {
+  sources = [
+    "rate_adjuster.cc",
+    "rate_adjuster.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/base",
+  ]
+}
+
 cast_source_set("test_support") {
   testonly = true
 
   sources = [
     "mock_audio_input_callback.h",
+    "mock_cast_audio_manager_helper_delegate.h",
   ]
 
-  public_deps = [
-    "//testing/gmock",
-  ]
+  public_deps = [ "//testing/gmock" ]
 
   deps = [
+    ":audio",
     "//media",
   ]
 }
@@ -206,13 +290,18 @@ cast_source_set("test_support") {
 cast_source_set("unittests") {
   testonly = true
   sources = [
+    "audio_clock_simulator_unittest.cc",
     "audio_fader_unittest.cc",
     "interleaved_channel_mixer_unittest.cc",
+    "playback_rate_shifter_unittest.cc",
+    "rate_adjuster_unittest.cc",
   ]
 
   deps = [
-    ":fader",
     ":interleaved_channel_mixer",
+    ":playback_rate_shifter",
+    ":processing",
+    ":rate_adjuster",
     "//base",
     "//media",
     "//testing/gmock",

@@ -26,11 +26,7 @@ class TestProxyDelegate : public ProxyDelegate {
     return on_before_tunnel_request_called_;
   }
 
-  void set_trusted_spdy_proxy(const ProxyServer& proxy_server) {
-    trusted_spdy_proxy_ = proxy_server;
-  }
-
-  void VerifyOnHttp1TunnelHeadersReceived(
+  void VerifyOnTunnelHeadersReceived(
       const ProxyServer& proxy_server,
       const std::string& response_header_name,
       const std::string& response_header_value) const;
@@ -41,26 +37,16 @@ class TestProxyDelegate : public ProxyDelegate {
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override;
   void OnFallback(const ProxyServer& bad_proxy, int net_error) override;
-  void OnBeforeHttp1TunnelRequest(const ProxyServer& proxy_server,
-                                  HttpRequestHeaders* extra_headers) override;
-  Error OnHttp1TunnelHeadersReceived(
+  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+                             HttpRequestHeaders* extra_headers) override;
+  Error OnTunnelHeadersReceived(
       const ProxyServer& proxy_server,
       const HttpResponseHeaders& response_headers) override;
-
-  void set_alternative_proxy_server(
-      const ProxyServer& alternative_proxy_server) {
-    alternative_proxy_server_ = alternative_proxy_server;
-  }
-  const ProxyServer& alternative_proxy_server() const {
-    return alternative_proxy_server_;
-  }
 
  private:
   bool on_before_tunnel_request_called_ = false;
   ProxyServer on_tunnel_headers_received_proxy_server_;
   scoped_refptr<HttpResponseHeaders> on_tunnel_headers_received_headers_;
-  ProxyServer trusted_spdy_proxy_;
-  ProxyServer alternative_proxy_server_;
 };
 
 }  // namespace net

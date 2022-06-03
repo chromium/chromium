@@ -1,18 +1,24 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<p>This tests copy/paste of styled elements, like images.  The image in the region below should be centered after its copied and pasted.</p>
-<p><b>This demonstrates a bug: createMarkup puts the text-align property on the image, which doesn't center it, so its left aligned on paste.</b></p>
-<div contenteditable="true" id="copy"><center><img src="../resources/abe.png"></center></div>
-<div contenteditable="true" id="paste"></div>
-
-<script>;
-window.getSelection().collapse(document.getElementById("copy"));
-document.execCommand("SelectAll");
-document.execCommand("Copy");
-window.getSelection().collapse(document.getElementById("paste"));
-document.execCommand("Paste");
+// This tests copy/paste of styled elements, like images. The image in the
+// region below should be centered after its copied and pasted.
+selection_test(
+    [
+        '<div>^<center><img></center>|</div>',
+        '<div contenteditable id="target"></div>',
+    ],
+    selection => {
+        selection.document.execCommand('Copy');
+        selection.collapse(selection.document.getElementById('target'), 0);
+        selection.document.execCommand('Paste');
+    },
+    [
+        '<div><center><img></center></div>',
+        '<div contenteditable id="target">',
+            '<img style="text-align: -webkit-center;">|',
+        '</div>',
+    ]);
 </script>

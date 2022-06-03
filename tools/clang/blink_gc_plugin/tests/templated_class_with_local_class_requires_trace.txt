@@ -12,7 +12,7 @@ class TemplatedObject final : public GarbageCollected<TemplatedObject<T>> {
     std::unique_ptr<HeapObject> m_object;
     ^
 ./templated_class_with_local_class_requires_trace.h:31:5: warning: [blink-gc] Class 'Local' has untraced or not traceable fields.
-    void Trace(Visitor* visitor) {
+    void Trace(Visitor* visitor) const {
     ^
 ./templated_class_with_local_class_requires_trace.h:38:5: note: [blink-gc] Untraceable field 'm_object' declared here:
     std::unique_ptr<HeapObject> m_object;

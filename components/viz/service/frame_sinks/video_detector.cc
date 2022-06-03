@@ -4,13 +4,17 @@
 
 #include "components/viz/service/frame_sinks/video_detector.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
 
@@ -22,6 +26,9 @@ constexpr base::TimeDelta VideoDetector::kMinVideoDuration;
 class VideoDetector::ClientInfo {
  public:
   ClientInfo() = default;
+
+  ClientInfo(const ClientInfo&) = delete;
+  ClientInfo& operator=(const ClientInfo&) = delete;
 
   // Called when a Surface belonging to this client is drawn. Returns true if we
   // determine that video is playing in this client.
@@ -38,8 +45,8 @@ class VideoDetector::ClientInfo {
     const CompositorFrame& frame = surface->GetActiveFrame();
 
     gfx::Rect damage =
-        gfx::ConvertRectToDIP(frame.device_scale_factor(),
-                              frame.render_pass_list.back()->damage_rect);
+        gfx::ScaleToEnclosingRect(frame.render_pass_list.back()->damage_rect,
+                                  1.f / frame.device_scale_factor());
 
     if (damage.width() < kMinDamageWidth || damage.height() < kMinDamageHeight)
       return false;
@@ -55,7 +62,7 @@ class VideoDetector::ClientInfo {
 
     const bool in_video =
         (buffer_size_ == kMinFramesPerSecond) &&
-        (now - update_times_[buffer_start_] <= base::TimeDelta::FromSeconds(1));
+        (now - update_times_[buffer_start_] <= base::Seconds(1));
 
     if (in_video && video_start_time_.is_null())
       video_start_time_ = update_times_[buffer_start_];
@@ -85,8 +92,6 @@ class VideoDetector::ClientInfo {
   // whether a new frame was submitted since the last time the Surface was
   // drawn.
   uint64_t last_drawn_frame_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientInfo);
 };
 
 VideoDetector::VideoDetector(

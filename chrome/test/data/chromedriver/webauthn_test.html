@@ -28,7 +28,8 @@ async function registerCredential(options = {}) {
         id: credential.id,
         rawId: Array.from(new Uint8Array(credential.rawId)),
         transports: credential.response.getTransports(),
-      }
+      },
+      extensions: credential.getClientExtensionResults(),
     };
   } catch (error) {
     return {status: error.toString()};
@@ -45,10 +46,16 @@ async function getCredential(credential, options = {}) {
 
   try {
     const attestation = await navigator.credentials.get({publicKey: options});
-    return {
+    let result = {
       status: "OK",
       attestation,
+      extensions: attestation.getClientExtensionResults(),
     };
+    if (attestation.getClientExtensionResults()?.largeBlob?.blob) {
+      result.blob = new TextDecoder().decode(
+          attestation.getClientExtensionResults().largeBlob.blob);
+    }
+    return result;
   } catch (error) {
     return {status: error.toString()};
   }

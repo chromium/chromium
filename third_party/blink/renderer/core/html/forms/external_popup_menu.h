@@ -33,23 +33,24 @@
 
 #include <memory>
 #include "cc/paint/paint_canvas.h"
-#include "third_party/blink/public/web/web_external_popup_menu_client.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 class HTMLSelectElement;
 class LocalFrame;
-class WebExternalPopupMenu;
 class WebMouseEvent;
-struct WebPopupMenuInfo;
 
 // The ExternalPopupMenu is a PopupMenu implementation for macOS and Android.
 // It uses a OS-native menu implementation.
-class CORE_EXPORT ExternalPopupMenu final : public PopupMenu,
-                                            public WebExternalPopupMenuClient {
+class CORE_EXPORT ExternalPopupMenu final
+    : public PopupMenu,
+      public mojom::blink::PopupMenuClient {
  public:
   ExternalPopupMenu(LocalFrame&, HTMLSelectElement&);
   ~ExternalPopupMenu() override;
@@ -58,25 +59,30 @@ class CORE_EXPORT ExternalPopupMenu final : public PopupMenu,
   // PopupMenuClient associated with this ExternalPopupMenu.
   // FIXME: public only for test access. Need to revert once gtest
   // helpers from chromium are available for blink.
-  static void GetPopupMenuInfo(WebPopupMenuInfo&, HTMLSelectElement&);
+  static void GetPopupMenuInfo(HTMLSelectElement&,
+                               int32_t* item_height,
+                               double* font_size,
+                               int32_t* selected_item,
+                               Vector<mojom::blink::MenuItemPtr>* menu_items,
+                               bool* right_aligned,
+                               bool* allow_multiple_selection);
   static int ToPopupMenuItemIndex(int index, HTMLSelectElement&);
   static int ToExternalPopupMenuItemIndex(int index, HTMLSelectElement&);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // PopupMenu methods:
-  void Show() override;
+  void Show(ShowEventType type) override;
   void Hide() override;
   void UpdateFromElement(UpdateReason) override;
   void DisconnectClient() override;
 
-  // WebExternalPopupClient methods:
-  void DidChangeSelection(int index) override;
-  void DidAcceptIndex(int index) override;
-  void DidAcceptIndices(const WebVector<int>& indices) override;
+  // mojom::blink::PopupMenuClient methods:
+  void DidAcceptIndices(const Vector<int32_t>& indices) override;
   void DidCancel() override;
 
+  void Reset();
   bool ShowInternal();
   void DispatchEvent(TimerBase*);
   void Update();
@@ -84,9 +90,9 @@ class CORE_EXPORT ExternalPopupMenu final : public PopupMenu,
   Member<HTMLSelectElement> owner_element_;
   Member<LocalFrame> local_frame_;
   std::unique_ptr<WebMouseEvent> synthetic_event_;
-  TaskRunnerTimer<ExternalPopupMenu> dispatch_event_timer_;
+  HeapTaskRunnerTimer<ExternalPopupMenu> dispatch_event_timer_;
   // The actual implementor of the show menu.
-  WebExternalPopupMenu* web_external_popup_menu_;
+  HeapMojoReceiver<mojom::blink::PopupMenuClient, ExternalPopupMenu> receiver_;
   bool needs_update_ = false;
 };
 

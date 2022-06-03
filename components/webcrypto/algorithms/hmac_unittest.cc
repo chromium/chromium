@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -52,10 +52,13 @@ class WebCryptoHmacTest : public WebCryptoTestBase {};
 TEST_F(WebCryptoHmacTest, HMACSampleSets) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("hmac.json", &tests));
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
-    base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoAlgorithm test_hash = GetDigestAlgorithm(test, "hash");
     const std::vector<uint8_t> test_key = GetBytesFromHexString(test, "key");
@@ -231,10 +234,10 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkKeyOpsSignVerify) {
   base::DictionaryValue dict;
   dict.SetString("kty", "oct");
   dict.SetString("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::ListValue* key_ops =
-      dict.SetList("key_ops", std::make_unique<base::ListValue>());
+  base::Value* key_ops =
+      dict.SetKey("key_ops", base::Value(base::Value::Type::LIST));
 
-  key_ops->AppendString("sign");
+  key_ops->Append("sign");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(dict,
@@ -244,7 +247,7 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkKeyOpsSignVerify) {
 
   EXPECT_EQ(blink::kWebCryptoKeyUsageSign, key.Usages());
 
-  key_ops->AppendString("verify");
+  key_ops->Append("verify");
 
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(dict,
@@ -264,11 +267,11 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkUseInconsisteWithKeyOps) {
   dict.SetString("alg", "HS256");
   dict.SetString("use", "sig");
 
-  auto key_ops = std::make_unique<base::ListValue>();
-  key_ops->AppendString("sign");
-  key_ops->AppendString("verify");
-  key_ops->AppendString("encrypt");
-  dict.Set("key_ops", std::move(key_ops));
+  base::ListValue key_ops;
+  key_ops.Append("sign");
+  key_ops.Append("verify");
+  key_ops.Append("encrypt");
+  dict.SetKey("key_ops", std::move(key_ops));
   EXPECT_EQ(
       Status::ErrorJwkUseAndKeyopsInconsistent(),
       ImportKeyJwkFromDict(
@@ -387,7 +390,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
                       extractable, usages, &key));
 
   // Pass: JWK alg missing but input algorithm specified: use input value
-  dict.Remove("alg", nullptr);
+  dict.RemoveKey("alg");
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(dict,
                                  CreateHmacImportAlgorithmNoLength(

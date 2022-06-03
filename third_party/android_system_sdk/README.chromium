@@ -1,8 +1,8 @@
 Name: Android System SDK
-URL: http://go/ab
+URL: https://android.googlesource.com/platform/frameworks/base
 Short Name:  Android System SDK
 Version: 0
-Revision: QPP6.190730.006
+Revision: SPB3.210618.010
 License: GPL v2
 License File: LICENSE
 Security Critical: No
@@ -10,6 +10,9 @@ Security Critical: No
 Description:
 System SDK stubs for compiling Android Webview and Monochrome targets.
 Revision is the BUILD ID of the Android release build.
+
+Because prebuilt system SDKs are not distributed publicly, Googlers will need to
+follow http://go/clank-webview/rolling_the_android_sdk.md to update this.
 
 Local Modifications:
 None

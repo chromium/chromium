@@ -9,17 +9,22 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/check.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace cc {
+class PaintOpBuffer;
+}
 
 namespace viz {
 
@@ -35,8 +40,12 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     ImageContext(const gpu::MailboxHolder& mailbox_holder,
                  const gfx::Size& size,
                  ResourceFormat resource_format,
-                 const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+                 const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                  sk_sp<SkColorSpace> color_space);
+
+    ImageContext(const ImageContext&) = delete;
+    ImageContext& operator=(const ImageContext&) = delete;
+
     virtual ~ImageContext();
     virtual void OnContextLost();
 
@@ -52,18 +61,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     ResourceFormat resource_format() const { return resource_format_; }
     sk_sp<SkColorSpace> color_space() const { return color_space_; }
 
-    // NOTE: This is metadata that should be set to match any factor baked into
-    // the |color_space| of this context. It is theoretically possible that the
-    // context's image could be updated using SkImage::reinterpretColorSpace
-    // if just the scale factor changes across frames. However, to respect the
-    // thread safety rules, a new SDR scale factor currently requires making a
-    // new ImageContext if its image has already been created.
-    float sdr_scale_factor() const { return sdr_scale_factor_; }
-    void set_sdr_scale_factor(float sdr_scale_factor) {
-      DCHECK(!image_);
-      sdr_scale_factor_ = sdr_scale_factor;
-    }
-
     SkAlphaType alpha_type() const { return alpha_type_; }
     void set_alpha_type(SkAlphaType alpha_type) {
       DCHECK(!image_);
@@ -76,13 +73,23 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       origin_ = origin;
     }
 
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
 
     bool has_image() { return !!image_; }
     sk_sp<SkImage> image() { return image_; }
     void SetImage(sk_sp<SkImage> image, GrBackendFormat backend_format);
     void clear_image() { image_.reset(); }
     const GrBackendFormat& backend_format() { return backend_format_; }
+    const cc::PaintOpBuffer* paint_op_buffer() const {
+      return paint_op_buffer_;
+    }
+    void set_paint_op_buffer(const cc::PaintOpBuffer* buffer) {
+      paint_op_buffer_ = buffer;
+    }
+    const absl::optional<SkColor>& clear_color() const { return clear_color_; }
+    void set_clear_color(const absl::optional<SkColor>& color) {
+      clear_color_ = color;
+    }
 
    private:
     gpu::MailboxHolder mailbox_holder_;
@@ -90,34 +97,32 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     const gfx::Size size_;
     const ResourceFormat resource_format_;
     const sk_sp<SkColorSpace> color_space_;
-    // Records the SDR white level scaling factor applied to |color_space_| when
-    // the ImageContext was made. Since this is already in the SkColorSpace,
-    // this is only used by the DisplayResourceProvider to determine if a cached
-    // ImageContext matches the requested white level.
-    float sdr_scale_factor_ = 1.0f;
 
     SkAlphaType alpha_type_ = kPremul_SkAlphaType;
     GrSurfaceOrigin origin_ = kTopLeft_GrSurfaceOrigin;
 
     // Sampler conversion information which is used in vulkan context for
     // android video.
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     GrBackendFormat backend_format_;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageContext);
+    const cc::PaintOpBuffer* paint_op_buffer_ = nullptr;
+    absl::optional<SkColor> clear_color_;
   };
 
+  // If |maybe_concurrent_reads| is true then there can be concurrent reads to
+  // the texture that modify GL texture parameters.
   virtual std::unique_ptr<ImageContext> CreateImageContext(
       const gpu::MailboxHolder& holder,
       const gfx::Size& size,
       ResourceFormat format,
-      const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
+      bool maybe_concurrent_reads,
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) = 0;
 
-  virtual void ReleaseImageContexts(
+  virtual gpu::SyncToken ReleaseImageContexts(
       std::vector<std::unique_ptr<ImageContext>> image_contexts) = 0;
 };
 

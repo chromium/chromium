@@ -20,11 +20,13 @@ namespace {
 struct SymbolMatchIndex {
   SymbolMatchIndex() {}
   SymbolMatchIndex(caspian::SectionId id,
+                   std::string_view container_name,
                    std::string_view name,
                    std::string_view path,
                    int size_without_padding)
       : nonempty(true),
         id(id),
+        container_name(container_name),
         name(name),
         path(path),
         size_without_padding(size_without_padding) {
@@ -34,12 +36,14 @@ struct SymbolMatchIndex {
   operator bool() const { return nonempty; }
 
   bool operator==(const SymbolMatchIndex& other) const {
-    return id == other.id && name == other.name && path == other.path &&
+    return id == other.id && container_name == other.container_name &&
+           name == other.name && path == other.path &&
            size_without_padding == other.size_without_padding;
   }
 
   bool nonempty = false;
   caspian::SectionId id;
+  std::string_view container_name;
   std::string_view name;
   std::string_view path;
   int size_without_padding;
@@ -53,6 +57,7 @@ struct hash<SymbolMatchIndex> {
   static constexpr size_t kPrime2 = 8543;
   size_t operator()(const SymbolMatchIndex& k) const {
     return ((kPrime1 * static_cast<size_t>(k.id)) ^
+            hash<string_view>()(k.container_name) ^
             hash<string_view>()(k.name) ^ hash<string_view>()(k.path) ^
             (kPrime2 * k.size_without_padding));
   }
@@ -148,15 +153,16 @@ class DiffHelper {
 
   MatchFunc SectionAndFullNameAndPathAndSize() {
     return [](const caspian::Symbol& sym) {
-      return SymbolMatchIndex(sym.section_id_, sym.full_name_, GetIdPath(sym),
-                              sym.Pss());
+      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
+                              sym.full_name_, GetIdPath(sym), sym.Pss());
     };
   }
 
   MatchFunc SectionAndFullNameAndPath() {
     return [this](const caspian::Symbol& sym) {
-      return SymbolMatchIndex(sym.section_id_, StripNumbers(sym.full_name_),
-                              GetIdPath(sym), 0.0f);
+      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
+                              StripNumbers(sym.full_name_), GetIdPath(sym),
+                              0.0f);
     };
   }
 
@@ -167,7 +173,8 @@ class DiffHelper {
       if (!name.empty() && name[0] == '*') {
         name = NormalizeStarSymbols(name);
       }
-      return SymbolMatchIndex(sym.section_id_, name, GetIdPath(sym), 0.0f);
+      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(), name,
+                              GetIdPath(sym), 0.0f);
     };
   }
 
@@ -177,7 +184,8 @@ class DiffHelper {
       if (!sym.IsNameUnique()) {
         return SymbolMatchIndex();
       }
-      return SymbolMatchIndex(sym.section_id_, sym.full_name_, "", 0.0f);
+      return SymbolMatchIndex(sym.section_id_, sym.ContainerName(),
+                              sym.full_name_, "", 0.0f);
     };
   }
 

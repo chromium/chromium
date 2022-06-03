@@ -7,7 +7,7 @@
 
 #include "chrome/browser/vr/model/camera_model.h"
 #include "chrome/browser/vr/vr_base_export.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

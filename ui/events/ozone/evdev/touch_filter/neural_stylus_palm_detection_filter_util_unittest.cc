@@ -21,6 +21,11 @@ class NeuralStylusPalmDetectionFilterUtilTest : public testing::Test {
  public:
   NeuralStylusPalmDetectionFilterUtilTest() = default;
 
+  NeuralStylusPalmDetectionFilterUtilTest(
+      const NeuralStylusPalmDetectionFilterUtilTest&) = delete;
+  NeuralStylusPalmDetectionFilterUtilTest& operator=(
+      const NeuralStylusPalmDetectionFilterUtilTest&) = delete;
+
   void SetUp() override {
     EXPECT_TRUE(
         CapabilitiesToDeviceInfo(kNocturneTouchScreen, &nocturne_touchscreen_));
@@ -36,8 +41,6 @@ class NeuralStylusPalmDetectionFilterUtilTest : public testing::Test {
   InProgressTouchEvdev touch_;
   EventDeviceInfo nocturne_touchscreen_;
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusPalmDetectionFilterUtilTest);
 };
 
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, DistilledNocturneTest) {
@@ -93,7 +96,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, DistilledLinkTest) {
 }
 
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, PalmFilterSampleTest) {
-  base::TimeTicks time = base::TimeTicks() + base::TimeDelta::FromSeconds(30);
+  base::TimeTicks time = base::TimeTicks() + base::Seconds(30);
   const PalmFilterDeviceInfo nocturne_distilled =
       CreatePalmFilterDeviceInfo(nocturne_touchscreen_);
   const PalmFilterSample sample =
@@ -109,14 +112,14 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, PalmFilterSampleTest) {
 
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, LinkTouchscreenSampleTest) {
   EventDeviceInfo link_touchscreen;
-  base::TimeTicks time = base::TimeTicks() + base::TimeDelta::FromSeconds(30);
+  base::TimeTicks time = base::TimeTicks() + base::Seconds(30);
   ASSERT_TRUE(CapabilitiesToDeviceInfo(kLinkTouchscreen, &link_touchscreen));
   const PalmFilterDeviceInfo link_distilled =
       CreatePalmFilterDeviceInfo(link_touchscreen);
   touch_.minor = 0;  // no minor from link.
   // use 40 as a base since model is trained on that kind of device.
   model_config_.radius_polynomial_resize = {
-      link_touchscreen.GetAbsResolution(ABS_MT_POSITION_X) / 40.0, 0.0};
+      link_touchscreen.GetAbsResolution(ABS_MT_POSITION_X) / 40.0f, 0.0};
   const PalmFilterSample sample =
       CreatePalmFilterSample(touch_, time, model_config_, link_distilled);
   EXPECT_FLOAT_EQ(12.5, sample.major_radius);
@@ -129,7 +132,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, PalmFilterStrokeTest) {
   // With no points, center is 0.
   EXPECT_EQ(gfx::PointF(0., 0.), stroke.GetCentroid());
 
-  base::TimeTicks time = base::TimeTicks() + base::TimeDelta::FromSeconds(30);
+  base::TimeTicks time = base::TimeTicks() + base::Seconds(30);
   const PalmFilterDeviceInfo nocturne_distilled =
       CreatePalmFilterDeviceInfo(nocturne_touchscreen_);
   // Deliberately long test to ensure floating point continued accuracy.
@@ -167,7 +170,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest,
   PalmFilterStroke no_minor_stroke(3);  // maxsize: 3.
   EXPECT_EQ(0, stroke.BiggestSize());
 
-  base::TimeTicks time = base::TimeTicks() + base::TimeDelta::FromSeconds(30);
+  base::TimeTicks time = base::TimeTicks() + base::Seconds(30);
   const PalmFilterDeviceInfo nocturne_distilled =
       CreatePalmFilterDeviceInfo(nocturne_touchscreen_);
   for (int i = 0; i < 500; ++i) {
@@ -191,8 +194,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest,
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, StrokeGetMaxMajorTest) {
   PalmFilterStroke stroke(3);
   EXPECT_FLOAT_EQ(0, stroke.MaxMajorRadius());
-  base::TimeTicks time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromSeconds(30);
+  base::TimeTicks time = base::TimeTicks::UnixEpoch() + base::Seconds(30);
   const PalmFilterDeviceInfo nocturne_distilled =
       CreatePalmFilterDeviceInfo(nocturne_touchscreen_);
   for (int i = 1; i < 50; ++i) {
@@ -200,7 +202,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, StrokeGetMaxMajorTest) {
     touch_.minor = i - 1;
     PalmFilterSample sample =
         CreatePalmFilterSample(touch_, time, model_config_, nocturne_distilled);
-    time += base::TimeDelta::FromMilliseconds(8);
+    time += base::Milliseconds(8);
     EXPECT_EQ(static_cast<uint64_t>(i - 1), stroke.samples_seen());
     stroke.AddSample(sample);
     EXPECT_FLOAT_EQ(i, stroke.MaxMajorRadius());
@@ -210,8 +212,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, StrokeGetMaxMajorTest) {
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, SampleRadiusConversion) {
   // A single number: a _constant_.
   model_config_.radius_polynomial_resize = {71.3};
-  base::TimeTicks time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromSeconds(30);
+  base::TimeTicks time = base::TimeTicks::UnixEpoch() + base::Seconds(30);
   const PalmFilterDeviceInfo nocturne_distilled =
       CreatePalmFilterDeviceInfo(nocturne_touchscreen_);
   PalmFilterSample sample =

@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
@@ -50,7 +51,7 @@ bool IsUIZeroCopyEnabled() {
   // Match the behavior of IsZeroCopyUploadEnabled() in content/browser/gpu.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   return !command_line.HasSwitch(switches::kUIDisableZeroCopy);
 #else
   return command_line.HasSwitch(switches::kUIEnableZeroCopy);

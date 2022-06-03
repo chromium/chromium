@@ -1,0 +1,5 @@
+notclipped: layer(800x600) has hit test rect (1,51 200x25)
+
+clipped: no rects
+
+

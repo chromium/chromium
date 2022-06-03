@@ -1,0 +1,33 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- macro namespace_begin() %}
+{%-   for namespace in namespaces_as_array %}
+namespace {{namespace}} {
+{%-   endfor %}
+{%-   if variant %}
+namespace {{variant}} {
+{%-   endif %}
+{%- endmacro %}
+
+{%- macro namespace_end() %}
+{%-   if variant %}
+}  // namespace {{variant}}
+{%-   endif %}
+{%-   for namespace in namespaces_as_array|reverse %}
+}  // namespace {{namespace}}
+{%-   endfor %}
+{%- endmacro %}
+
+{{namespace_begin()}}
+
+{%-  for interface in interfaces %}
+class {{interface.name}}TestClass {
+ public:
+  explicit {{interface.name}}TestClass() {}
+  bool ReturnTrue() { return true; }
+};
+{%- endfor %}
+
+{{namespace_end()}}

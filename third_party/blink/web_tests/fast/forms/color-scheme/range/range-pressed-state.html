@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../resources/common.js"></script>
+<body>
+<input type="range"/>
+<br>
+<input type="range" id="pressTarget"/>
+<script>
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('pressTarget');
+  pressElement(target)
+}, true);
+</script>
+</body>

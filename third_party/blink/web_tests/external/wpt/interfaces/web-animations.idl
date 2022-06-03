@@ -1,11 +1,12 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Web Animations (https://drafts.csswg.org/web-animations-1/)
 
 [Exposed=Window]
 interface AnimationTimeline {
     readonly attribute double? currentTime;
+    readonly attribute TimelinePhase phase;
 };
 
 dictionary DocumentTimelineOptions {
@@ -23,9 +24,7 @@ interface Animation : EventTarget {
                 optional AnimationTimeline? timeline);
              attribute DOMString                id;
              attribute AnimationEffect?         effect;
-    readonly attribute AnimationTimeline?       timeline;
-             attribute double?                  startTime;
-             attribute double?                  currentTime;
+             attribute AnimationTimeline?       timeline;
              attribute double                   playbackRate;
     readonly attribute AnimationPlayState       playState;
     readonly attribute AnimationReplaceState    replaceState;
@@ -35,25 +34,27 @@ interface Animation : EventTarget {
              attribute EventHandler             onfinish;
              attribute EventHandler             oncancel;
              attribute EventHandler             onremove;
-    void cancel();
-    void finish();
-    void play();
-    void pause();
-    void updatePlaybackRate(double playbackRate);
-    void reverse();
-    void persist();
-    void commitStyles();
+    undefined cancel();
+    undefined finish();
+    undefined play();
+    undefined pause();
+    undefined updatePlaybackRate(double playbackRate);
+    undefined reverse();
+    undefined persist();
+    undefined commitStyles();
 };
 
 enum AnimationPlayState { "idle", "running", "paused", "finished" };
 
 enum AnimationReplaceState { "active", "removed", "persisted" };
 
+enum TimelinePhase { "inactive", "before", "active", "after" };
+
 [Exposed=Window]
 interface AnimationEffect {
     EffectTiming         getTiming();
     ComputedEffectTiming getComputedTiming();
-    void                 updateTiming(optional OptionalEffectTiming timing = {});
+    undefined            updateTiming(optional OptionalEffectTiming timing = {});
 };
 
 dictionary EffectTiming {
@@ -62,7 +63,6 @@ dictionary EffectTiming {
     FillMode                           fill = "auto";
     double                             iterationStart = 0.0;
     unrestricted double                iterations = 1.0;
-    (unrestricted double or DOMString) duration = "auto";
     PlaybackDirection                  direction = "normal";
     DOMString                          easing = "linear";
 };
@@ -83,10 +83,6 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };
 
 dictionary ComputedEffectTiming : EffectTiming {
-    unrestricted double  endTime;
-    unrestricted double  activeDuration;
-    double?              localTime;
-    double?              progress;
     unrestricted double? currentIteration;
 };
 
@@ -96,11 +92,11 @@ interface KeyframeEffect : AnimationEffect {
                 object? keyframes,
                 optional (unrestricted double or KeyframeEffectOptions) options = {});
     constructor(KeyframeEffect source);
-    attribute Element? target;
-    attribute CSSOMString? pseudoElement;
-    attribute CompositeOperation             composite;
+    attribute Element?           target;
+    attribute CSSOMString?       pseudoElement;
+    attribute CompositeOperation composite;
     sequence<object> getKeyframes();
-    void             setKeyframes(object? keyframes);
+    undefined        setKeyframes(object? keyframes);
 };
 
 dictionary BaseComputedKeyframe {
@@ -139,6 +135,7 @@ interface mixin Animatable {
 
 dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
     DOMString id = "";
+    AnimationTimeline? timeline;
 };
 
 dictionary GetAnimationsOptions {
@@ -154,14 +151,3 @@ partial interface mixin DocumentOrShadowRoot {
 };
 
 Element includes Animatable;
-
-[Exposed=Window]
-interface AnimationPlaybackEvent : Event {
-    constructor(DOMString type, optional AnimationPlaybackEventInit eventInitDict = {});
-    readonly attribute double? currentTime;
-    readonly attribute double? timelineTime;
-};
-dictionary AnimationPlaybackEventInit : EventInit {
-    double? currentTime = null;
-    double? timelineTime = null;
-};

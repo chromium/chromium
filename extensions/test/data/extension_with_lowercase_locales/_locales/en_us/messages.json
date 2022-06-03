@@ -1,0 +1,11 @@
+{
+  "chrome_extension_name": {
+    "message": "My extension 1"
+  },
+  "chrome_extension_description": {
+    "message": "The first extension that I made."
+  },
+  "color": {
+    "message": "color lowercase"
+  }
+}

@@ -1,0 +1,52 @@
+<!doctype HTML>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resize-observer/resources/resizeTestHelper.js"></script>
+<body>
+  <svg height="430" width="500" >
+    <rect x="0" y="380" width="10.5" height="10" style="fill:orange; stroke:black; stroke-width:1" />
+  </svg>
+</body>
+
+<script>
+'use strict';
+
+function test() {
+  let t = document.querySelector('rect');
+  let helper = new ResizeTestHelper(
+    "An observation is fired for an svg rect when device-pixel-content-box is being " +
+    "observed and device scale factor is 2",
+  [
+    {
+      setup: observer => {
+        observer.observe(t, {box: "device-pixel-content-box"});
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 10.5, "target width");
+        assert_equals(entries[0].contentRect.height, 10, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 10.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize,10,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 10.5,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 10,
+                      "target border-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 21,
+                      "target device-pixel-content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 20,
+                      "target device-pixel-content-box block size");
+      }
+    }
+  ]);
+
+  return helper.start(() => t.remove());
+}
+
+
+test();
+
+
+</script>

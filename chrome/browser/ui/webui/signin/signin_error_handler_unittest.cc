@@ -27,18 +27,22 @@ class TestingSigninErrorHandler : public SigninErrorHandler {
                             content::WebUI* web_ui)
       : SigninErrorHandler(browser, is_system_profile),
         browser_modal_dialog_did_close_(false),
-        user_manager_profile_dialog_did_close_(false) {
+        profile_picker_force_signin_dialog_did_close_(false) {
     set_web_ui(web_ui);
   }
+
+  TestingSigninErrorHandler(const TestingSigninErrorHandler&) = delete;
+  TestingSigninErrorHandler& operator=(const TestingSigninErrorHandler&) =
+      delete;
 
   void CloseBrowserModalSigninDialog() override {
     browser_modal_dialog_did_close_ = true;
     SigninErrorHandler::CloseBrowserModalSigninDialog();
   }
 
-  void CloseUserManagerProfileDialog() override {
-    user_manager_profile_dialog_did_close_ = true;
-    SigninErrorHandler::CloseUserManagerProfileDialog();
+  void CloseProfilePickerForceSigninDialog() override {
+    profile_picker_force_signin_dialog_did_close_ = true;
+    SigninErrorHandler::CloseProfilePickerForceSigninDialog();
   }
 
   using SigninErrorHandler::HandleSwitchToExistingProfile;
@@ -50,21 +54,22 @@ class TestingSigninErrorHandler : public SigninErrorHandler {
     return browser_modal_dialog_did_close_;
   }
 
-  bool user_manager_profile_dialog_did_close() {
-    return user_manager_profile_dialog_did_close_;
+  bool profile_picker_force_signin_dialog_did_close() {
+    return profile_picker_force_signin_dialog_did_close_;
   }
 
  private:
   bool browser_modal_dialog_did_close_;
-  bool user_manager_profile_dialog_did_close_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingSigninErrorHandler);
+  bool profile_picker_force_signin_dialog_did_close_;
 };
 
 class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
  public:
   SigninErrorHandlerTest()
       : web_ui_(new content::TestWebUI), handler_(nullptr) {}
+
+  SigninErrorHandlerTest(const SigninErrorHandlerTest&) = delete;
+  SigninErrorHandlerTest& operator=(const SigninErrorHandlerTest&) = delete;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -89,7 +94,7 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
     web_ui()->AddMessageHandler(std::move(handler));
   }
 
-  void CreateHandlerInUserManager() {
+  void CreateHandlerInProfilePicker() {
     DCHECK(!handler_);
     auto handler = std::make_unique<TestingSigninErrorHandler>(
         nullptr /* browser */, true /* is_system_profile */, web_ui());
@@ -110,8 +115,6 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SigninErrorUI> signin_error_ui_;
   TestingSigninErrorHandler* handler_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorHandlerTest);
 };
 
 TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
@@ -168,13 +171,13 @@ TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
 }
 
-TEST_F(SigninErrorHandlerTest, InUserManagerTestConfirm) {
-  CreateHandlerInUserManager();
+TEST_F(SigninErrorHandlerTest, InProfilePickerTestConfirm) {
+  CreateHandlerInProfilePicker();
   base::ListValue args;
   handler()->HandleConfirm(&args);
 
   // Confirm simply closes the dialog.
-  EXPECT_TRUE(handler()->user_manager_profile_dialog_did_close());
+  EXPECT_TRUE(handler()->profile_picker_force_signin_dialog_did_close());
 }
 
 }  // namespace

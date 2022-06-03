@@ -43,18 +43,18 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
 static const LayoutBlock* EnclosingScrollableAncestor(
     const LayoutObject* layout_object) {
-  DCHECK(!layout_object->IsLayoutView());
+  DCHECK(!IsA<LayoutView>(layout_object));
 
   // Trace up the containingBlocks until we reach either the layoutObject view
   // or a scrollable object.
   const LayoutBlock* container = layout_object->ContainingBlock();
-  while (!container->HasOverflowClip() && !container->IsLayoutView())
+  while (!container->IsScrollContainer() && !IsA<LayoutView>(container))
     container = container->ContainingBlock();
   return container;
 }
@@ -64,7 +64,7 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
                                   const LayoutBlock* container) {
   DCHECK(layout_object);
 
-  DCHECK(container || layout_object->IsLayoutView());
+  DCHECK(container || IsA<LayoutView>(layout_object));
   if (!container)
     return FloatRect();
 
@@ -74,10 +74,10 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
   PhysicalRect overflow_rect = container->FlipForWritingMode(
       LayoutRect(LayoutPoint(), container->MaxLayoutOverflow()));
 
-  // For overflow:scroll we need to get where the actual origin is independently
-  // of the scroll.
-  if (container->HasOverflowClip())
-    overflow_rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
+  // For scrolling we need to get where the actual origin is independently of
+  // the scroll.
+  if (container->IsScrollContainer())
+    overflow_rect.Move(-container->ScrolledContentOffset());
 
   FloatRect container_rect(container->LocalToAbsoluteRect(overflow_rect));
 
@@ -88,10 +88,10 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
   // Since we work with rects enclosing quad unions this is still
   // transform-friendly.
   FloatRect normalized_rect = absolute_rect;
-  normalized_rect.MoveBy(-container_rect.Location());
+  normalized_rect.MoveBy(-container_rect.origin());
 
-  normalized_rect.Scale(1 / container_rect.Width(),
-                        1 / container_rect.Height());
+  normalized_rect.Scale(1 / container_rect.width(),
+                        1 / container_rect.height());
   return normalized_rect;
 }
 
@@ -111,21 +111,21 @@ FloatRect FindInPageRectFromAbsoluteRect(
   for (const LayoutBox* layout_object = base_container; layout_object;) {
     // Go up the layout tree until we reach the root of the current frame (the
     // LayoutView).
-    while (!layout_object->IsLayoutView()) {
+    while (!IsA<LayoutView>(layout_object)) {
       const LayoutBlock* container = EnclosingScrollableAncestor(layout_object);
 
       // Compose the normalized rects.
       FloatRect normalized_box_rect =
           ToNormalizedRect(FloatRect(layout_object->AbsoluteBoundingBoxRect()),
                            layout_object, container);
-      normalized_rect.Scale(normalized_box_rect.Width(),
-                            normalized_box_rect.Height());
-      normalized_rect.MoveBy(normalized_box_rect.Location());
+      normalized_rect.Scale(normalized_box_rect.width(),
+                            normalized_box_rect.height());
+      normalized_rect.MoveBy(normalized_box_rect.origin());
 
       layout_object = container;
     }
 
-    DCHECK(layout_object->IsLayoutView());
+    DCHECK(IsA<LayoutView>(layout_object));
 
     // Jump to the layoutObject owning the frame, if any.
     layout_object = layout_object->GetFrame()

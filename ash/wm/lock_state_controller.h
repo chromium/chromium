@@ -8,18 +8,16 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/shutdown_reason.h"
-#include "ash/wallpaper/wallpaper_property.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/lock_state_observer.h"
 #include "ash/wm/session_state_animator.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tree_host_observer.h"
 
 namespace ash {
@@ -54,6 +52,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   static const int kPreLockContainersMask;
 
   explicit LockStateController(ShutdownController* shutdown_controller);
+
+  LockStateController(const LockStateController&) = delete;
+  LockStateController& operator=(const LockStateController&) = delete;
+
   ~LockStateController() override;
 
   void AddObserver(LockStateObserver* observer);
@@ -107,6 +109,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void set_animator_for_test(SessionStateAnimator* animator) {
     animator_.reset(animator);
   }
+  bool animating_lock_for_test() const { return animating_lock_; }
 
  private:
   friend class LockStateControllerTestApi;
@@ -140,10 +143,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void StartUnlockAnimationAfterUIDestroyed();
 
   // These methods are called when corresponding animation completes.
-  void LockAnimationCancelled();
-  void PreLockAnimationFinished(bool request_lock);
-  void PostLockAnimationFinished();
-  void UnlockAnimationAfterUIDestroyedFinished();
+  void LockAnimationCancelled(bool aborted);
+  void PreLockAnimationFinished(bool request_lock, bool aborted);
+  void PostLockAnimationFinished(bool aborted);
+  void UnlockAnimationAfterUIDestroyedFinished(bool aborted);
 
   // Stores properties of UI that have to be temporarily modified while locking.
   void StoreUnlockedProperties();
@@ -151,12 +154,12 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // Fades in wallpaper layer with |speed| if it was hidden in unlocked state.
   void AnimateWallpaperAppearanceIfNecessary(
-      ash::SessionStateAnimator::AnimationSpeed speed,
+      SessionStateAnimator::AnimationSpeed speed,
       SessionStateAnimator::AnimationSequence* animation_sequence);
 
   // Fades out wallpaper layer with |speed| if it was hidden in unlocked state.
   void AnimateWallpaperHidingIfNecessary(
-      ash::SessionStateAnimator::AnimationSpeed speed,
+      SessionStateAnimator::AnimationSpeed speed,
       SessionStateAnimator::AnimationSequence* animation_sequence);
 
   // Notifies observers.
@@ -171,7 +174,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   bool shutting_down_ = false;
 
   // The reason (e.g. user action) for a pending shutdown.
-  base::Optional<ShutdownReason> shutdown_reason_;
+  absl::optional<ShutdownReason> shutdown_reason_;
 
   // Indicates whether controller should proceed to (cancellable) shutdown after
   // locking.
@@ -208,15 +211,13 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   ScopedSessionObserver scoped_session_observer_;
 
-  // The wallpaper property before entring lock state. Used to restore the
-  // wallpaper blur and opacity after exiting lock state.
-  WallpaperProperty saved_property_;
+  // The wallpaper blur before entering lock state. Used to restore the
+  // wallpaper blur after exiting lock state.
+  float saved_blur_;
 
   base::ObserverList<LockStateObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockStateController);
 };
 
 }  // namespace ash

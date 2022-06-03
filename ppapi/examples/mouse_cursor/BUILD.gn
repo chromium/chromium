@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("mouse_cursor") {
   output_name = "ppapi_example_mouse_cursor"
-  sources = [
-    "mouse_cursor.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "mouse_cursor.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

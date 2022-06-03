@@ -14,7 +14,6 @@
 
 """A pure Python implementation of the JSON5 configuration language."""
 
-from . import tool
 from .lib import load, loads, dump, dumps
 from .version import VERSION
 
@@ -25,5 +24,4 @@ __all__ = [
     'dumps',
     'load',
     'loads',
-    'tool',
 ]

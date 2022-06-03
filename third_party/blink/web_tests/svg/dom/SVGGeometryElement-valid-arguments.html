@@ -6,8 +6,8 @@
 test(function() {
   var pathElement = document.createElementNS("http://www.w3.org/2000/svg","path");
 
-  assert_throws(new TypeError(), function() { pathElement.getPointAtLength(); });
-  assert_throws(new TypeError(), function() { pathElement.getPointAtLength(NaN); });
-  assert_throws(new TypeError(), function() { pathElement.getPointAtLength(Infinity); });
+  assert_throws_js(TypeError, function() { pathElement.getPointAtLength(); });
+  assert_throws_js(TypeError, function() { pathElement.getPointAtLength(NaN); });
+  assert_throws_js(TypeError, function() { pathElement.getPointAtLength(Infinity); });
 });
 </script>

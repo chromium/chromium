@@ -56,7 +56,7 @@ def Bitstring(value):
   Returns:
     encoded TLV value.
   """
-  return Data(BIT_STRING, '\x00' + value)
+  return Data(BIT_STRING, b'\x00' + value)
 
 def Sequence(values):
   """Encodes a sequence of other values.
@@ -66,4 +66,4 @@ def Sequence(values):
   Returns:
     encoded TLV value.
   """
-  return Data(SEQUENCE, ''.join(values))
+  return Data(SEQUENCE, b''.join(values))

@@ -4,7 +4,8 @@
 
 #include "media/capture/video/win/pin_base_win.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace media {
 
@@ -15,7 +16,7 @@ class TypeEnumerator final : public IEnumMediaTypes,
   explicit TypeEnumerator(PinBase* pin) : pin_(pin), index_(0) {}
 
   // Implement from IUnknown.
-  STDMETHOD(QueryInterface)(REFIID iid, void** object_ptr) override {
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** object_ptr) override {
     if (iid == IID_IEnumMediaTypes || iid == IID_IUnknown) {
       AddRef();
       *object_ptr = static_cast<IEnumMediaTypes*>(this);
@@ -24,18 +25,20 @@ class TypeEnumerator final : public IEnumMediaTypes,
     return E_NOINTERFACE;
   }
 
-  STDMETHOD_(ULONG, AddRef)() override {
+  IFACEMETHODIMP_(ULONG) AddRef() override {
     base::RefCounted<TypeEnumerator>::AddRef();
     return 1;
   }
 
-  STDMETHOD_(ULONG, Release)() override {
+  IFACEMETHODIMP_(ULONG) Release() override {
     base::RefCounted<TypeEnumerator>::Release();
     return 1;
   }
 
   // Implement IEnumMediaTypes.
-  STDMETHOD(Next)(ULONG count, AM_MEDIA_TYPE** types, ULONG* fetched) override {
+  IFACEMETHODIMP Next(ULONG count,
+                      AM_MEDIA_TYPE** types,
+                      ULONG* fetched) override {
     ULONG types_fetched = 0;
 
     while (types_fetched < count) {
@@ -74,17 +77,17 @@ class TypeEnumerator final : public IEnumMediaTypes,
     return types_fetched == count ? S_OK : S_FALSE;
   }
 
-  STDMETHOD(Skip)(ULONG count) override {
+  IFACEMETHODIMP Skip(ULONG count) override {
     index_ += count;
     return S_OK;
   }
 
-  STDMETHOD(Reset)() override {
+  IFACEMETHODIMP Reset() override {
     index_ = 0;
     return S_OK;
   }
 
-  STDMETHOD(Clone)(IEnumMediaTypes** clone) override {
+  IFACEMETHODIMP Clone(IEnumMediaTypes** clone) override {
     TypeEnumerator* type_enum = new TypeEnumerator(pin_.get());
     type_enum->AddRef();
     type_enum->index_ = index_;
@@ -117,8 +120,7 @@ void PinBase::SetOwner(IBaseFilter* owner) {
 
 // Called on an output pin to and establish a
 //   connection.
-STDMETHODIMP PinBase::Connect(IPin* receive_pin,
-                              const AM_MEDIA_TYPE* media_type) {
+HRESULT PinBase::Connect(IPin* receive_pin, const AM_MEDIA_TYPE* media_type) {
   if (!receive_pin || !media_type)
     return E_POINTER;
 
@@ -132,8 +134,8 @@ STDMETHODIMP PinBase::Connect(IPin* receive_pin,
 
 // Called from an output pin on an input pin to and establish a
 // connection.
-STDMETHODIMP PinBase::ReceiveConnection(IPin* connector,
-                                        const AM_MEDIA_TYPE* media_type) {
+HRESULT PinBase::ReceiveConnection(IPin* connector,
+                                   const AM_MEDIA_TYPE* media_type) {
   if (!IsMediaTypeValid(media_type))
     return VFW_E_TYPE_NOT_ACCEPTED;
 
@@ -143,7 +145,7 @@ STDMETHODIMP PinBase::ReceiveConnection(IPin* connector,
   return S_OK;
 }
 
-STDMETHODIMP PinBase::Disconnect() {
+HRESULT PinBase::Disconnect() {
   if (!connected_pin_.Get())
     return S_FALSE;
 
@@ -151,7 +153,7 @@ STDMETHODIMP PinBase::Disconnect() {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::ConnectedTo(IPin** pin) {
+HRESULT PinBase::ConnectedTo(IPin** pin) {
   *pin = connected_pin_.Get();
   if (!connected_pin_.Get())
     return VFW_E_NOT_CONNECTED;
@@ -160,14 +162,14 @@ STDMETHODIMP PinBase::ConnectedTo(IPin** pin) {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::ConnectionMediaType(AM_MEDIA_TYPE* media_type) {
+HRESULT PinBase::ConnectionMediaType(AM_MEDIA_TYPE* media_type) {
   if (!connected_pin_.Get())
     return VFW_E_NOT_CONNECTED;
   *media_type = current_media_type_;
   return S_OK;
 }
 
-STDMETHODIMP PinBase::QueryPinInfo(PIN_INFO* info) {
+HRESULT PinBase::QueryPinInfo(PIN_INFO* info) {
   info->dir = PINDIR_INPUT;
   info->pFilter = owner_;
   if (owner_)
@@ -177,67 +179,65 @@ STDMETHODIMP PinBase::QueryPinInfo(PIN_INFO* info) {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::QueryDirection(PIN_DIRECTION* pin_dir) {
+HRESULT PinBase::QueryDirection(PIN_DIRECTION* pin_dir) {
   *pin_dir = PINDIR_INPUT;
   return S_OK;
 }
 
-STDMETHODIMP PinBase::QueryId(LPWSTR* id) {
+HRESULT PinBase::QueryId(LPWSTR* id) {
   NOTREACHED();
   return E_OUTOFMEMORY;
 }
 
-STDMETHODIMP PinBase::QueryAccept(const AM_MEDIA_TYPE* media_type) {
+HRESULT PinBase::QueryAccept(const AM_MEDIA_TYPE* media_type) {
   return S_FALSE;
 }
 
-STDMETHODIMP PinBase::EnumMediaTypes(IEnumMediaTypes** types) {
+HRESULT PinBase::EnumMediaTypes(IEnumMediaTypes** types) {
   *types = new TypeEnumerator(this);
   (*types)->AddRef();
   return S_OK;
 }
 
-STDMETHODIMP PinBase::QueryInternalConnections(IPin** pins, ULONG* no_pins) {
+HRESULT PinBase::QueryInternalConnections(IPin** pins, ULONG* no_pins) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP PinBase::EndOfStream() {
+HRESULT PinBase::EndOfStream() {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::BeginFlush() {
+HRESULT PinBase::BeginFlush() {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::EndFlush() {
+HRESULT PinBase::EndFlush() {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::NewSegment(REFERENCE_TIME start,
-                                 REFERENCE_TIME stop,
-                                 double rate) {
+HRESULT PinBase::NewSegment(REFERENCE_TIME start,
+                            REFERENCE_TIME stop,
+                            double rate) {
   NOTREACHED();
   return E_NOTIMPL;
 }
 
 // Inherited from IMemInputPin.
-STDMETHODIMP PinBase::GetAllocator(IMemAllocator** allocator) {
+HRESULT PinBase::GetAllocator(IMemAllocator** allocator) {
   return VFW_E_NO_ALLOCATOR;
 }
 
-STDMETHODIMP PinBase::NotifyAllocator(IMemAllocator* allocator,
-                                      BOOL read_only) {
+HRESULT PinBase::NotifyAllocator(IMemAllocator* allocator, BOOL read_only) {
   return S_OK;
 }
 
-STDMETHODIMP PinBase::GetAllocatorRequirements(
-    ALLOCATOR_PROPERTIES* properties) {
+HRESULT PinBase::GetAllocatorRequirements(ALLOCATOR_PROPERTIES* properties) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP PinBase::ReceiveMultiple(IMediaSample** samples,
-                                      long sample_count,
-                                      long* processed) {
+HRESULT PinBase::ReceiveMultiple(IMediaSample** samples,
+                                 long sample_count,
+                                 long* processed) {
   DCHECK(samples);
 
   HRESULT hr = S_OK;
@@ -252,12 +252,12 @@ STDMETHODIMP PinBase::ReceiveMultiple(IMediaSample** samples,
   return hr;
 }
 
-STDMETHODIMP PinBase::ReceiveCanBlock() {
+HRESULT PinBase::ReceiveCanBlock() {
   return S_FALSE;
 }
 
 // Inherited from IUnknown.
-STDMETHODIMP PinBase::QueryInterface(REFIID id, void** object_ptr) {
+HRESULT PinBase::QueryInterface(REFIID id, void** object_ptr) {
   if (id == IID_IPin || id == IID_IUnknown) {
     *object_ptr = static_cast<IPin*>(this);
   } else if (id == IID_IMemInputPin) {
@@ -269,12 +269,12 @@ STDMETHODIMP PinBase::QueryInterface(REFIID id, void** object_ptr) {
   return S_OK;
 }
 
-STDMETHODIMP_(ULONG) PinBase::AddRef() {
+ULONG PinBase::AddRef() {
   base::RefCounted<PinBase>::AddRef();
   return 1;
 }
 
-STDMETHODIMP_(ULONG) PinBase::Release() {
+ULONG PinBase::Release() {
   base::RefCounted<PinBase>::Release();
   return 1;
 }

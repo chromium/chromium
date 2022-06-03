@@ -16,7 +16,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/events/event_constants.h"
+#include "ui/base/models/image_model.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/vector_icons.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -43,7 +44,8 @@ void ShelfWindowWatcherItemDelegate::ItemSelected(
     std::unique_ptr<ui::Event> event,
     int64_t display_id,
     ShelfLaunchSource source,
-    ItemSelectedCallback callback) {
+    ItemSelectedCallback callback,
+    const ItemFilterPredicate& filter_predicate) {
   if (wm::IsActiveWindow(window_)) {
     if (event && event->type() == ui::ET_KEY_RELEASED) {
       ::wm::AnimateWindow(window_, ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -63,8 +65,9 @@ void ShelfWindowWatcherItemDelegate::GetContextMenu(
     GetContextMenuCallback callback) {
   auto menu = std::make_unique<ShelfContextMenuModel>(this, display_id);
   // Show a default context menu with just an extra close item.
-  menu->AddItemWithStringIdAndIcon(kCloseCommandId, IDS_CLOSE,
-                                   views::kCloseIcon);
+  menu->AddItemWithStringIdAndIcon(
+      kCloseCommandId, IDS_CLOSE,
+      ui::ImageModel::FromVectorIcon(views::kCloseIcon));
   std::move(callback).Run(std::move(menu));
 }
 

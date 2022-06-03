@@ -1,7 +1,7 @@
 Name: ARCore SDK
 Short Name: arcore
 URL: https://github.com/google-ar/arcore-android-sdk
-Version: 1.5
+Version: 1.22
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -10,21 +10,29 @@ Description:
 The ARCore Android SDK provides augmented reality capabilities to Android
 devices.
 
+This dependency is needed to obtain the header file that is required to use the
+ARCore SDK. The actual client binaries can be found in
+third_party/arcore-android-sdk-client.
+
 Local Modifications:
 Added BUILD.gn for compilation in chrome.
 
 Added the test-apks/ subdirectory for storing production versions of AR APKs,
 namely ArCore, for testing.
 
-IMPORTANT: make sure to change chrome/android/java/AndroidManifest.xml
-com.google.ar.core.min_apk_version attribute if a newer version of the
-ARCore APK is required to maintain compatibility with this SDK.
-
 The LICENSE file is taken from
  * https://github.com/google-ar/arcore-unity-sdk/blob/master/LICENSE
 
 Changes:
+2021-06-19 - Upgrade test-apks/arcore_current.apk to v1.25.
+2021-02-19 - Upgrade test-apks/arcore_current.apk to v1.23.
+2021-02-01 - Upgrade SDK to v1.22.
+             Upgrade test-apks/arcore_current.apk to v1.22.
+2020-07-13 - Upgrade SDK to v1.18.
+             Upgrade test-apks/arcore_current.apk to v1.18.
+2019-12-18 - Upgrade test-apks/arcore_current.apk to v1.14.
 2019-07-22 - Upgrade test-apks/arcore_current.apk to v1.10.
+2019-07-18 - Upgrade SDK to v1.10.
 2019-04-02 - Upgrade test-apks/arcore_current.apk to v1.8.
 2018-12-11 - Upgrade ARCore to v1.5. Remove checked in .so files - we now
              extract them from ARCore's .aar file at build time.

@@ -23,13 +23,18 @@ ChromeExtensionOptionsGuestDelegate::~ChromeExtensionOptionsGuestDelegate() {
 }
 
 bool ChromeExtensionOptionsGuestDelegate::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  ContextMenuDelegate* menu_delegate = ContextMenuDelegate::FromWebContents(
-      extension_options_guest()->web_contents());
+  content::WebContents* web_contents =
+      extension_options_guest()->web_contents();
+  ContextMenuDelegate* menu_delegate =
+      ContextMenuDelegate::FromWebContents(web_contents);
   DCHECK(menu_delegate);
+  DCHECK_EQ(web_contents,
+            content::WebContents::FromRenderFrameHost(&render_frame_host));
 
-  std::unique_ptr<RenderViewContextMenuBase> menu = menu_delegate->BuildMenu(
-      extension_options_guest()->web_contents(), params);
+  std::unique_ptr<RenderViewContextMenuBase> menu =
+      menu_delegate->BuildMenu(render_frame_host, params);
   menu_delegate->ShowMenu(std::move(menu));
   return true;
 }

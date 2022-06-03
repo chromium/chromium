@@ -9,21 +9,21 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
+#include "build/build_config.h"
+#include "content/public/test/test_utils.h"
+#include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
-
-#ifdef OS_MACOSX
-#include "content/public/browser/browser_message_filter.h"
-#endif
 
 #if defined(USE_AURA)
 #include "ui/events/event_constants.h"
 #endif
 
-namespace ipc {
-class Message;
-}
+#if defined(OS_MAC)
+#include "content/public/test/fake_local_frame.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#endif
 
 namespace gfx {
 class Range;
@@ -35,14 +35,11 @@ struct ImeTextSpan;
 
 namespace content {
 
-class MessageLoopRunner;
 class RenderFrameHost;
-class RenderProcessHost;
 class RenderWidgetHost;
 class RenderWidgetHostView;
 class RenderWidgetHostViewBase;
 class WebContents;
-struct TextInputState;
 
 // Returns the |TextInputState.type| from the TextInputManager owned by
 // |web_contents|.
@@ -77,7 +74,7 @@ bool DoesFrameHaveFocusedEditableElement(RenderFrameHost* frame);
 // given |text|.
 void SendImeCommitTextToWidget(
     RenderWidgetHost* rwh,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int relative_cursor_pos);
@@ -86,7 +83,7 @@ void SendImeCommitTextToWidget(
 // composition text and update the corresponding IME params.
 void SendImeSetCompositionTextToWidget(
     RenderWidgetHost* rwh,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
@@ -101,6 +98,10 @@ bool DestroyRenderWidgetHost(int32_t process_id, int32_t local_root_routing_id);
 class TextInputManagerTester {
  public:
   TextInputManagerTester(WebContents* web_contents);
+
+  TextInputManagerTester(const TextInputManagerTester&) = delete;
+  TextInputManagerTester& operator=(const TextInputManagerTester&) = delete;
+
   virtual ~TextInputManagerTester();
 
   // Sets a callback which is invoked when a RWHV calls UpdateTextInputState
@@ -126,6 +127,21 @@ class TextInputManagerTester {
   // Returns true if there is a focused <input> and populates |value| with
   // |TextInputState.value| of the TextInputManager.
   bool GetTextInputValue(std::string* value);
+
+  // Returns true if there is a focused editable element and populates
+  // |vk_policy| with |TextInputState.vk_policy| of the TextInputManager.
+  bool GetTextInputVkPolicy(ui::mojom::VirtualKeyboardPolicy* vk_policy);
+
+  // Returns true if there is a focused editable element and populates
+  // |last_vk_visibility_request| with
+  // |TextInputState.last_vk_visibility_request| of the TextInputManager.
+  bool GetTextInputVkVisibilityRequest(
+      ui::mojom::VirtualKeyboardVisibilityRequest* last_vk_visibility_request);
+
+  // Returns true if there is a focused editable element tapped by the user
+  //  and populates |show_ime_if_needed| with
+  // |TextInputState.show_ime_if_needed| of the TextInputManager.
+  bool GetTextInputShowImeIfNeeded(bool* show_ime_if_needed);
 
   // Returns true if there is a focused <input> and populates |length| with the
   // length of the selected text range in the focused view.
@@ -156,14 +172,82 @@ class TextInputManagerTester {
   class InternalObserver;
 
   std::unique_ptr<InternalObserver> observer_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TextInputManagerTester);
+// TextInputManager Observers
+
+// A base class for observing the TextInputManager owned by the given
+// WebContents. Subclasses can observe the TextInputManager for different
+// changes. The class wraps a public tester which accepts callbacks that
+// are run after specific changes in TextInputManager. Different observers can
+// be subclassed from this by providing their specific callback methods.
+class TextInputManagerObserverBase {
+ public:
+  explicit TextInputManagerObserverBase(content::WebContents* web_contents);
+
+  virtual ~TextInputManagerObserverBase();
+
+  TextInputManagerObserverBase(const TextInputManagerObserverBase&) = delete;
+  TextInputManagerObserverBase& operator=(const TextInputManagerObserverBase&) =
+      delete;
+
+  // Wait for derived class's definition of success.
+  void Wait();
+
+  bool success() const { return success_; }
+
+ protected:
+  content::TextInputManagerTester* tester() { return tester_.get(); }
+
+  void OnSuccess();
+
+ private:
+  std::unique_ptr<content::TextInputManagerTester> tester_;
+  bool success_;
+  base::OnceClosure quit_;
+};
+
+// This class observes TextInputManager for changes in |TextInputState.value|.
+class TextInputManagerValueObserver : public TextInputManagerObserverBase {
+ public:
+  TextInputManagerValueObserver(content::WebContents* web_contents,
+                                const std::string& expected_value);
+
+  TextInputManagerValueObserver(const TextInputManagerValueObserver&) = delete;
+  TextInputManagerValueObserver& operator=(
+      const TextInputManagerValueObserver&) = delete;
+
+ private:
+  void VerifyValue();
+  const std::string expected_value_;
+};
+
+// This class observes TextInputManager for changes in |TextInputState.type|.
+class TextInputManagerTypeObserver : public TextInputManagerObserverBase {
+ public:
+  TextInputManagerTypeObserver(content::WebContents* web_contents,
+                               ui::TextInputType expected_type);
+
+  TextInputManagerTypeObserver(const TextInputManagerTypeObserver&) = delete;
+  TextInputManagerTypeObserver& operator=(const TextInputManagerTypeObserver&) =
+      delete;
+
+ private:
+  void VerifyType();
+
+  const ui::TextInputType expected_type_;
 };
 
 // This class observes the lifetime of a RenderWidgetHostView.
 class TestRenderWidgetHostViewDestructionObserver {
  public:
   TestRenderWidgetHostViewDestructionObserver(RenderWidgetHostView* view);
+
+  TestRenderWidgetHostViewDestructionObserver(
+      const TestRenderWidgetHostViewDestructionObserver&) = delete;
+  TestRenderWidgetHostViewDestructionObserver& operator=(
+      const TestRenderWidgetHostViewDestructionObserver&) = delete;
+
   virtual ~TestRenderWidgetHostViewDestructionObserver();
 
   // Waits for the RWHV which is being observed to get destroyed.
@@ -174,8 +258,6 @@ class TestRenderWidgetHostViewDestructionObserver {
   class InternalObserver;
 
   std::unique_ptr<InternalObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRenderWidgetHostViewDestructionObserver);
 };
 
 // Helper class to create TextInputState structs on the browser side and send it
@@ -184,6 +266,10 @@ class TestRenderWidgetHostViewDestructionObserver {
 class TextInputStateSender {
  public:
   explicit TextInputStateSender(RenderWidgetHostView* view);
+
+  TextInputStateSender(const TextInputStateSender&) = delete;
+  TextInputStateSender& operator=(const TextInputStateSender&) = delete;
+
   virtual ~TextInputStateSender();
 
   void Send();
@@ -203,10 +289,8 @@ class TextInputStateSender {
 #endif
 
  private:
-  std::unique_ptr<TextInputState> text_input_state_;
+  ui::mojom::TextInputStatePtr text_input_state_;
   RenderWidgetHostViewBase* const view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputStateSender);
 };
 
 // This class is intended to observe the InputMethod.
@@ -229,40 +313,37 @@ class TestInputMethodObserver {
   TestInputMethodObserver();
 };
 
-#ifdef OS_MACOSX
-// The test message filter for TextInputClientMac incoming messages from the
-// renderer.
-// NOTE: This filter should be added to the intended RenderProcessHost before
-// the actual TextInputClientMessageFilter, otherwise, the messages
-// will be handled and will never receive this filter.
-class TestTextInputClientMessageFilter : public BrowserMessageFilter {
+#if defined(OS_MAC)
+// Helper class to test LocalFrame::GetStringForRange.
+class TextInputTestLocalFrame : public FakeLocalFrame {
  public:
-  // Creates the filter and adds itself to |host|.
-  TestTextInputClientMessageFilter(RenderProcessHost* host);
+  TextInputTestLocalFrame();
 
-  // Wait until the IPC TextInputClientReplyMsg_GotStringForRange arrives.
-  void WaitForStringFromRange();
+  TextInputTestLocalFrame(const TextInputTestLocalFrame&) = delete;
+  TextInputTestLocalFrame& operator=(const TextInputTestLocalFrame&) = delete;
 
-  // BrowserMessageFilter overrides.
-  bool OnMessageReceived(const IPC::Message& message) override;
+  ~TextInputTestLocalFrame() override;
 
-  // Sets a callback for the string for range IPC arriving from the renderer.
-  // The callback is invoked before that of TextInputClientMac and is handled on
-  // UI thread.
+  void SetUp(content::RenderFrameHost* render_frame_host);
+  void WaitForGetStringForRange();
+  // Sets a callback for the string for range message arriving from the
+  // renderer. The callback is invoked before that of TextInputClientMac.
   void SetStringForRangeCallback(base::RepeatingClosure callback);
 
-  RenderProcessHost* process() const { return host_; }
-  std::string string_from_range() { return string_from_range_; }
+  std::string GetStringFromRange() { return string_from_range_; }
+  void SetStringFromRange(std::string string_from_range) {
+    string_from_range_ = string_from_range;
+  }
+
+  // blink::mojom::LocalFrame:
+  void GetStringForRange(const gfx::Range& range,
+                         GetStringForRangeCallback callback) override;
 
  private:
-  ~TestTextInputClientMessageFilter() override;
-  RenderProcessHost* const host_;
-  std::string string_from_range_;
-  bool received_string_from_range_;
+  base::OnceClosure quit_closure_;
   base::RepeatingClosure string_for_range_callback_;
-  scoped_refptr<MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTextInputClientMessageFilter);
+  std::string string_from_range_;
+  mojo::AssociatedRemote<blink::mojom::LocalFrame> local_frame_;
 };
 
 // Requests the |tab_view| for the definition of the word identified by the
@@ -272,9 +353,6 @@ class TestTextInputClientMessageFilter : public BrowserMessageFilter {
 void AskForLookUpDictionaryForRange(RenderWidgetHostView* tab_view,
                                     const gfx::Range& range);
 
-// Returns the total count of NSWindows instances which belong to the currently
-// running NSApplication.
-size_t GetOpenNSWindowsCount();
 #endif
 
 }  // namespace content

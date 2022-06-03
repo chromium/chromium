@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_monitor_source.h"
@@ -26,6 +27,11 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
  public:
   PowerMonitorBroadcastSource(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  PowerMonitorBroadcastSource(const PowerMonitorBroadcastSource&) = delete;
+  PowerMonitorBroadcastSource& operator=(const PowerMonitorBroadcastSource&) =
+      delete;
+
   ~PowerMonitorBroadcastSource() override;
 
   // Completes initialization by setting up the connection with the Device
@@ -48,11 +54,11 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
   class Client : public device::mojom::PowerMonitorClient {
    public:
     Client();
-    ~Client() override;
 
-    // Called on main thread when the source is destroyed. Prevents data race
-    // on the power monitor and source due to use on task runner thread.
-    void Shutdown();
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
+
+    ~Client() override;
 
     void Init(mojo::PendingRemote<mojom::PowerMonitor> remote_monitor);
 
@@ -68,12 +74,7 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
    private:
     mojo::Receiver<device::mojom::PowerMonitorClient> receiver_{this};
 
-    base::Lock is_shutdown_lock_;
-    bool is_shutdown_ = false;
-
     bool last_reported_on_battery_power_state_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Client);
   };
 
   // This constructor is used by test code to mock the Client class.
@@ -83,12 +84,10 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
 
   Client* client_for_testing() const { return client_.get(); }
 
-  bool IsOnBatteryPowerImpl() override;
+  bool IsOnBatteryPower() override;
 
   std::unique_ptr<Client> client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorBroadcastSource);
 };
 
 }  // namespace device

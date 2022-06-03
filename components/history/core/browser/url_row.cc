@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace history {
@@ -43,7 +45,68 @@ size_t URLRow::EstimateMemoryUsage() const {
          base::trace_event::EstimateMemoryUsage(title_);
 }
 
-URLResult::URLResult() {}
+// Annotations
+// ----------------------------------------------------------
+VisitContentModelAnnotations::Category::Category(const std::string& id,
+                                                 int weight)
+    : id(id), weight(weight) {}
+VisitContentModelAnnotations::Category::Category() = default;
+
+// static
+absl::optional<VisitContentModelAnnotations::Category>
+VisitContentModelAnnotations::Category::FromStringVector(
+    const std::vector<std::string>& vector) {
+  if (vector.size() != 2)
+    return absl::nullopt;
+
+  VisitContentModelAnnotations::Category category;
+  category.id = vector[0];
+  if (!base::StringToInt(vector[1], &category.weight))
+    return absl::nullopt;
+  return category;
+}
+
+std::string VisitContentModelAnnotations::Category::ToString() const {
+  return base::StrCat({id, ":", base::NumberToString(weight)});
+}
+
+bool VisitContentModelAnnotations::Category::operator==(
+    const VisitContentModelAnnotations::Category& other) const {
+  return id == other.id && weight == other.weight;
+}
+
+bool VisitContentModelAnnotations::Category::operator!=(
+    const VisitContentModelAnnotations::Category& other) const {
+  return !(*this == other);
+}
+
+VisitContentModelAnnotations::VisitContentModelAnnotations(
+    float visibility_score,
+    const std::vector<Category>& categories,
+    int64_t page_topics_model_version,
+    const std::vector<Category>& entities)
+    : visibility_score(visibility_score),
+      categories(categories),
+      page_topics_model_version(page_topics_model_version),
+      entities(entities) {}
+VisitContentModelAnnotations::VisitContentModelAnnotations() = default;
+VisitContentModelAnnotations::VisitContentModelAnnotations(
+    const VisitContentModelAnnotations&) = default;
+VisitContentModelAnnotations::~VisitContentModelAnnotations() = default;
+
+VisitContentAnnotations::VisitContentAnnotations(
+    VisitContentAnnotationFlags annotation_flags,
+    VisitContentModelAnnotations model_annotations,
+    const std::vector<std::string>& related_searches)
+    : annotation_flags(annotation_flags),
+      model_annotations(model_annotations),
+      related_searches(related_searches) {}
+VisitContentAnnotations::VisitContentAnnotations() = default;
+VisitContentAnnotations::VisitContentAnnotations(
+    const VisitContentAnnotations&) = default;
+VisitContentAnnotations::~VisitContentAnnotations() = default;
+
+URLResult::URLResult() = default;
 
 URLResult::URLResult(const GURL& url, base::Time visit_time)
     : URLRow(url), visit_time_(visit_time) {}
@@ -57,9 +120,11 @@ URLResult::URLResult(const URLResult& other) = default;
 URLResult::URLResult(URLResult&& other) noexcept
     : URLRow(std::move(other)),
       visit_time_(other.visit_time_),
+      content_annotations_(other.content_annotations_),
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
-      blocked_visit_(other.blocked_visit_) {}
+      blocked_visit_(other.blocked_visit_) {
+}
 
 URLResult::~URLResult() {
 }
@@ -69,6 +134,7 @@ URLResult& URLResult::operator=(const URLResult&) = default;
 void URLResult::SwapResult(URLResult* other) {
   URLRow::Swap(other);
   std::swap(visit_time_, other->visit_time_);
+  std::swap(content_annotations_, other->content_annotations_);
   snippet_.Swap(&other->snippet_);
   title_match_positions_.swap(other->title_match_positions_);
   std::swap(blocked_visit_, other->blocked_visit_);

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_OBSERVER_H_
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_OBSERVER_H_
 
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
@@ -26,11 +24,8 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
   virtual void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) {}
 
   // Called when a CompositorFrame within a surface corresponding to
-  // |surface_id| activates. If the CompositorFrame was blocked on activation
-  // dependencies then |duration| specifies the amount of time that frame was
-  // blocked.
-  virtual void OnSurfaceActivated(const SurfaceId& surface_id,
-                                  base::Optional<base::TimeDelta> duration) {}
+  // |surface_id| activates.
+  virtual void OnSurfaceActivated(const SurfaceId& surface_id) {}
 
   // Called when a surface is marked for destruction (i.e. becomes a candidate
   // for garbage collection).

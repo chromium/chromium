@@ -4,7 +4,7 @@
 
 #include "media/formats/mp4/sample_to_group_iterator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace media {
 namespace mp4 {

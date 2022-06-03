@@ -29,15 +29,15 @@ int ConcatMenuModel::GetCommandIdAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetCommandIdAt, index);
 }
 
-base::string16 ConcatMenuModel::GetLabelAt(int index) const {
+std::u16string ConcatMenuModel::GetLabelAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetLabelAt, index);
 }
 
-base::string16 ConcatMenuModel::GetMinorTextAt(int index) const {
+std::u16string ConcatMenuModel::GetMinorTextAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetMinorTextAt, index);
 }
 
-const gfx::VectorIcon* ConcatMenuModel::GetMinorIconAt(int index) const {
+ui::ImageModel ConcatMenuModel::GetMinorIconAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetMinorIconAt, index);
 }
 
@@ -58,8 +58,8 @@ int ConcatMenuModel::GetGroupIdAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetGroupIdAt, index);
 }
 
-bool ConcatMenuModel::GetIconAt(int index, gfx::Image* icon) const {
-  return GetterImpl(&ui::MenuModel::GetGroupIdAt, index);
+ui::ImageModel ConcatMenuModel::GetIconAt(int index) const {
+  return GetterImpl(&ui::MenuModel::GetIconAt, index);
 }
 
 ui::ButtonMenuItemModel* ConcatMenuModel::GetButtonMenuItemAt(int index) const {

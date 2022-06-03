@@ -16,7 +16,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='software'",
       "bounds": [125, 125],
-      "backgroundColor": "#008000"
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

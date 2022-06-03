@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Alignment of the base on the baseline
+FAIL Dimensions of the scripted elements assert_approx_equals: height of multi0 expected 30 +/- 5 but got 45
+FAIL Vertical positions of scripts assert_approx_equals: multi2 1 presup script expected 21 +/- 3 but got 26
+PASS Horizontal alignment of scripts
+PASS Horizontal positions of scripts
+Harness: the test ran to completion.
+

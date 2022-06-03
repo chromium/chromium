@@ -7,8 +7,9 @@
 async_test(function(t) {
     var video = document.createElement('video');
     video.src = '../content/test.ogv';
+    video.play();
 
-    video.oncanplaythrough = t.step_func_done(function() {
+    video.onplaying = t.step_func_done(function() {
         addTracks();
         testCueActiveState();
         testCueVisibility();

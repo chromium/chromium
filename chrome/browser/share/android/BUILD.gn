@@ -5,11 +5,50 @@
 import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
-  # TODO(gayane): remove dependency on chrome/android:chrome_app_java_resources
-  # once strings and common styles move out of chrome/android
-  deps = [
-    "//chrome/android:chrome_app_java_resources",
+  sources = [
+    "java/res/drawable-ldrtl/text_icon.xml",
+    "java/res/drawable/camera_img.xml",
+    "java/res/drawable/delete_icon.xml",
+    "java/res/drawable/edit_icon.xml",
+    "java/res/drawable/generic_favicon.xml",
+    "java/res/drawable/generic_file.xml",
+    "java/res/drawable/ink_highlighter.xml",
+    "java/res/drawable/lightweight_reactions_icon.xml",
+    "java/res/drawable/link.xml",
+    "java/res/drawable/link_off.xml",
+    "java/res/drawable/preview_icon_border_background.xml",
+    "java/res/drawable/qrcode_background.xml",
+    "java/res/drawable/save_icon.xml",
+    "java/res/drawable/save_to_device.xml",
+    "java/res/drawable/share_icon.xml",
+    "java/res/drawable/text_icon.xml",
+    "java/res/drawable/webnote.xml",
+    "java/res/layout/qrcode_camera_error_layout.xml",
+    "java/res/layout/qrcode_dialog.xml",
+    "java/res/layout/qrcode_open_settings_layout.xml",
+    "java/res/layout/qrcode_permission_layout.xml",
+    "java/res/layout/qrcode_share_layout.xml",
+    "java/res/layout/screenshot_share_sheet.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values-sw600dp/dimens.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
   ]
-  resource_dirs = [ "java/res" ]
-  custom_package = "org.chromium.chrome.browser.share.qrcode"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
+    "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
+    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
+    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
+    "java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfEntry.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfModelObserverBridge.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
+  ]
 }

@@ -7,7 +7,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/app/main_controller.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -23,7 +23,7 @@
   id<BrowserInterface> interface =
       mainController.interfaceProvider.mainInterface;
   web::WebState* webState =
-      interface.tabModel.webStateList->GetActiveWebState();
+      interface.browser->GetWebStateList()->GetActiveWebState();
   infobars::InfoBarManager* manager =
       InfoBarManagerImpl::FromWebState(webState);
   return totalInfobars == (NSInteger)manager->infobar_count();
@@ -34,7 +34,7 @@
   id<BrowserInterface> interface =
       mainController.interfaceProvider.mainInterface;
   web::WebState* webState =
-      interface.tabModel.webStateList->GetActiveWebState();
+      interface.browser->GetWebStateList()->GetActiveWebState();
   infobars::InfoBarManager* manager =
       InfoBarManagerImpl::FromWebState(webState);
   TestInfoBarDelegate* testInfobarDelegate = new TestInfoBarDelegate(message);

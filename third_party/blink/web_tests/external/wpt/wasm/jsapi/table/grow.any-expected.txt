@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Missing arguments
+PASS Branding
+PASS Basic
+PASS Reached maximum
+PASS Exceeded maximum
+PASS Out-of-range argument: undefined
+PASS Out-of-range argument: NaN
+PASS Out-of-range argument: Infinity
+PASS Out-of-range argument: -Infinity
+PASS Out-of-range argument: -1
+PASS Out-of-range argument: 4294967296
+PASS Out-of-range argument: 68719476736
+PASS Out-of-range argument: "0x100000000"
+PASS Out-of-range argument: object "[object Object]"
+PASS Stray argument
+FAIL Grow with exported-function argument assert_equals: expected (function) function "function 0() { [native code] }" but got (object) null
+FAIL Grow with non-function argument assert_throws_js: function "() => table.grow(2, {})" did not throw
+FAIL Grow with JS-function argument assert_throws_js: function "() => table.grow(2, () => true)" did not throw
+Harness: the test ran to completion.
+

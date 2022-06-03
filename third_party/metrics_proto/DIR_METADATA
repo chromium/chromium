@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>Metrics"
+}
+team_email: "chromium-dev@chromium.org"

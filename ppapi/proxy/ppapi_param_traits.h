@@ -34,8 +34,6 @@ struct PPBFlash_DrawGlyphs_Params;
 struct PPBURLLoader_UpdateProgress_Params;
 struct SerializedDirEntry;
 struct SerializedFontDescription;
-struct SerializedTrueTypeFontDesc;
-class SerializedFlashMenu;
 class SerializedHandle;
 class SerializedVar;
 
@@ -107,17 +105,6 @@ struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::proxy::SerializedFontDescription> {
 };
 
 template<>
-struct PPAPI_PROXY_EXPORT
-    ParamTraits<ppapi::proxy::SerializedTrueTypeFontDesc> {
-  typedef ppapi::proxy::SerializedTrueTypeFontDesc param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template<>
 struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::proxy::SerializedHandle> {
   typedef ppapi::proxy::SerializedHandle param_type;
   static void Write(base::Pickle* m, const param_type& p);
@@ -179,15 +166,6 @@ struct ParamTraits<ppapi::PepperFilePath> {
   static void Log(const param_type& p, std::string* l);
 };
 
-template<>
-struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::proxy::SerializedFlashMenu> {
-  typedef ppapi::proxy::SerializedFlashMenu param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
 #endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
 
 template<>

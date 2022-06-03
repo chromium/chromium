@@ -1,0 +1,31 @@
+Tests that device emulation of viewport segments is propagated and powers VisualViewport segments API.
+No segments:
+Main frame segments:
+0
+Iframe segments:
+0
+Side-by-side segments
+Main frame segments:
+2
+0 0 390 600
+410 0 390 600
+Iframe segments:
+0
+Unspecified display feature with scale
+Main frame segments:
+0
+Iframe segments:
+0
+Stacked segments
+Main frame segments:
+2
+0 0 800 290
+0 310 800 290
+Iframe segments:
+0
+Emulation disabled
+Main frame segments:
+0
+Iframe segments:
+0
+

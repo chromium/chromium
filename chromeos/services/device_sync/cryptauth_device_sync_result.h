@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "chromeos/services/device_sync/proto/cryptauth_directive.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -21,53 +21,52 @@ class CryptAuthDeviceSyncResult {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. If entries are added, kMaxValue
   // should be updated.
-  // TODO(nohle): Add numeric values.
   enum class ResultCode {
-    kSuccess,
-    kFinishedWithNonFatalErrors,
-    kErrorClientAppMetadataFetchFailed,
-    kErrorMissingUserKeyPair,
-    kErrorCreatingGroupKey,
-    kErrorEncryptingDeviceMetadata,
-    kErrorEstablishingGroupPublicKey,
-    kErrorNoMetadataInResponse,
-    kErrorAllResponseMetadataInvalid,
-    kErrorNoLocalDeviceMetadataInResponse,
-    kErrorMissingLocalDeviceFeatureStatuses,
-    kErrorMissingLocalDeviceSyncBetterTogetherKey,
-    kErrorDecryptingGroupPrivateKey,
-    kErrorEncryptingGroupPrivateKey,
-    kErrorSyncMetadataApiCallOffline,
-    kErrorSyncMetadataApiCallEndpointNotFound,
-    kErrorSyncMetadataApiCallAuthenticationError,
-    kErrorSyncMetadataApiCallBadRequest,
-    kErrorSyncMetadataApiCallResponseMalformed,
-    kErrorSyncMetadataApiCallInternalServerError,
-    kErrorSyncMetadataApiCallUnknownError,
-    kErrorBatchGetFeatureStatusesApiCallOffline,
-    kErrorBatchGetFeatureStatusesApiCallEndpointNotFound,
-    kErrorBatchGetFeatureStatusesApiCallAuthenticationError,
-    kErrorBatchGetFeatureStatusesApiCallBadRequest,
-    kErrorBatchGetFeatureStatusesApiCallResponseMalformed,
-    kErrorBatchGetFeatureStatusesApiCallInternalServerError,
-    kErrorBatchGetFeatureStatusesApiCallUnknownError,
-    kErrorShareGroupPrivateKeyApiCallOffline,
-    kErrorShareGroupPrivateKeyApiCallEndpointNotFound,
-    kErrorShareGroupPrivateKeyApiCallAuthenticationError,
-    kErrorShareGroupPrivateKeyApiCallBadRequest,
-    kErrorShareGroupPrivateKeyApiCallResponseMalformed,
-    kErrorShareGroupPrivateKeyApiCallInternalServerError,
-    kErrorShareGroupPrivateKeyApiCallUnknownError,
-    kErrorTimeoutWaitingForGroupKeyCreation,
-    kErrorTimeoutWaitingForClientAppMetadata,
-    kErrorTimeoutWaitingForLocalDeviceMetadataEncryption,
-    kErrorTimeoutWaitingForFirstSyncMetadataResponse,
-    kErrorTimeoutWaitingForSecondSyncMetadataResponse,
-    kErrorTimeoutWaitingForGroupPrivateKeyDecryption,
-    kErrorTimeoutWaitingForDeviceMetadataDecryption,
-    kErrorTimeoutWaitingForBatchGetFeatureStatusesResponse,
-    kErrorTimeoutWaitingForGroupPrivateKeyEncryption,
-    kErrorTimeoutWaitingForShareGroupPrivateKeyResponse,
+    kSuccess = 0,
+    kFinishedWithNonFatalErrors = 1,
+    kErrorClientAppMetadataFetchFailed = 2,
+    kErrorMissingUserKeyPair = 3,
+    kErrorCreatingGroupKey = 4,
+    kErrorEncryptingDeviceMetadata = 5,
+    kErrorEstablishingGroupPublicKey = 6,
+    kErrorNoMetadataInResponse = 7,
+    kErrorAllResponseMetadataInvalid = 8,
+    kErrorNoLocalDeviceMetadataInResponse = 9,
+    kErrorMissingLocalDeviceFeatureStatuses = 10,
+    kErrorMissingLocalDeviceSyncBetterTogetherKey = 11,
+    kErrorDecryptingGroupPrivateKey = 12,
+    kErrorEncryptingGroupPrivateKey = 13,
+    kErrorSyncMetadataApiCallOffline = 14,
+    kErrorSyncMetadataApiCallEndpointNotFound = 15,
+    kErrorSyncMetadataApiCallAuthenticationError = 16,
+    kErrorSyncMetadataApiCallBadRequest = 17,
+    kErrorSyncMetadataApiCallResponseMalformed = 18,
+    kErrorSyncMetadataApiCallInternalServerError = 19,
+    kErrorSyncMetadataApiCallUnknownError = 20,
+    kErrorBatchGetFeatureStatusesApiCallOffline = 21,
+    kErrorBatchGetFeatureStatusesApiCallEndpointNotFound = 22,
+    kErrorBatchGetFeatureStatusesApiCallAuthenticationError = 23,
+    kErrorBatchGetFeatureStatusesApiCallBadRequest = 24,
+    kErrorBatchGetFeatureStatusesApiCallResponseMalformed = 25,
+    kErrorBatchGetFeatureStatusesApiCallInternalServerError = 26,
+    kErrorBatchGetFeatureStatusesApiCallUnknownError = 27,
+    kErrorShareGroupPrivateKeyApiCallOffline = 28,
+    kErrorShareGroupPrivateKeyApiCallEndpointNotFound = 29,
+    kErrorShareGroupPrivateKeyApiCallAuthenticationError = 30,
+    kErrorShareGroupPrivateKeyApiCallBadRequest = 31,
+    kErrorShareGroupPrivateKeyApiCallResponseMalformed = 32,
+    kErrorShareGroupPrivateKeyApiCallInternalServerError = 33,
+    kErrorShareGroupPrivateKeyApiCallUnknownError = 34,
+    kErrorTimeoutWaitingForGroupKeyCreation = 35,
+    kErrorTimeoutWaitingForClientAppMetadata = 36,
+    kErrorTimeoutWaitingForLocalDeviceMetadataEncryption = 37,
+    kErrorTimeoutWaitingForFirstSyncMetadataResponse = 38,
+    kErrorTimeoutWaitingForSecondSyncMetadataResponse = 39,
+    kErrorTimeoutWaitingForGroupPrivateKeyDecryption = 40,
+    kErrorTimeoutWaitingForDeviceMetadataDecryption = 41,
+    kErrorTimeoutWaitingForBatchGetFeatureStatusesResponse = 42,
+    kErrorTimeoutWaitingForGroupPrivateKeyEncryption = 43,
+    kErrorTimeoutWaitingForShareGroupPrivateKeyResponse = 44,
     // Used for UMA logs.
     kMaxValue = kErrorTimeoutWaitingForShareGroupPrivateKeyResponse
   };
@@ -76,11 +75,10 @@ class CryptAuthDeviceSyncResult {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. If entries are added, kMaxValue
   // should be updated.
-  // TODO(nohle): Add numeric values.
   enum class ResultType {
-    kSuccess,
-    kNonFatalError,
-    kFatalError,
+    kSuccess = 0,
+    kNonFatalError = 1,
+    kFatalError = 2,
     // Used for UMA logs.
     kMaxValue = kFatalError
   };
@@ -90,14 +88,14 @@ class CryptAuthDeviceSyncResult {
   CryptAuthDeviceSyncResult(
       ResultCode result_code,
       bool did_device_registry_change,
-      const base::Optional<cryptauthv2::ClientDirective>& client_directive);
+      const absl::optional<cryptauthv2::ClientDirective>& client_directive);
   CryptAuthDeviceSyncResult(const CryptAuthDeviceSyncResult& other);
 
   ~CryptAuthDeviceSyncResult();
 
   ResultCode result_code() const { return result_code_; }
 
-  const base::Optional<cryptauthv2::ClientDirective>& client_directive() const {
+  const absl::optional<cryptauthv2::ClientDirective>& client_directive() const {
     return client_directive_;
   }
 
@@ -114,7 +112,7 @@ class CryptAuthDeviceSyncResult {
  private:
   ResultCode result_code_;
   bool did_device_registry_change_;
-  base::Optional<cryptauthv2::ClientDirective> client_directive_;
+  absl::optional<cryptauthv2::ClientDirective> client_directive_;
 };
 
 std::ostream& operator<<(

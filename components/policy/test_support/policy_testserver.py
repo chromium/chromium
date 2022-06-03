@@ -48,12 +48,6 @@ Example:
   ],
   "current_key_index": 0,
   "robot_api_auth_code": "",
-  "invalidation_source": 1025,
-  "invalidation_name": "UENUPOL",
-   "token_enrollment": {
-      "token": "abcd-ef01-123123123",
-      "username": "admin@example.com"
-   },
    "expected_errors": {
      "register": 500,
    }
@@ -70,8 +64,7 @@ Example:
 """
 
 import base64
-import BaseHTTPServer
-import cgi
+from six.moves import BaseHTTPServer
 import glob
 import google.protobuf.text_format
 import hashlib
@@ -80,15 +73,16 @@ import logging
 import os
 import random
 import re
+import six
 import sys
 import time
 import tlslite
 import tlslite.api
 import tlslite.utils
 import tlslite.utils.cryptomath
-import urllib
-import urllib2
-import urlparse
+from six.moves import urllib
+from six.moves.urllib import request as urllib_request
+from six.moves.urllib import parse as urlparse
 
 import asn1der
 import testserver_base
@@ -96,6 +90,8 @@ import testserver_base
 import device_management_backend_pb2 as dm
 import cloud_policy_pb2 as cp
 import policy_common_definitions_pb2 as cd
+import private_membership_pb2 as psm
+import private_membership_rlwe_pb2 as psm_rlwe
 
 # Policy for extensions is not supported on Android.
 try:
@@ -109,12 +105,24 @@ try:
 except ImportError:
   dp = None
 
+# pyopenssl is only reliably available on Chrome OS builds.
+# This is currently OK because policy_testserver.py's support for certificate
+# provisioning is only used in Tast test for now.
+try:
+  from OpenSSL import crypto
+except ImportError:
+  crypto = None
+
 # ASN.1 object identifier for PKCS#1/RSA.
-PKCS1_RSA_OID = '\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01'
+PKCS1_RSA_OID = b'\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01'
 
 # List of machines that trigger the server to send kiosk enrollment response
 # for the register request.
 KIOSK_MACHINE_IDS = [ 'KIOSK' ]
+
+# List of all IDs that will be used to construct PSM ID, and have membership.
+PSM_MEMBERSHIP_SERIAL_NUMBER_IDS = [b"111111"]
+PSM_MEMBERSHIP_BRAND_CODES = [b"TEST"]
 
 # Dictionary containing base64-encoded policy signing keys plus per-domain
 # signatures. Format is:
@@ -207,6 +215,41 @@ POLICY_COMMON_DEFINITIONS_TYPES = [
   'StringListPolicyProto'
 ]
 
+# Private key used for issuing certificates for issuing certificates
+# for the built-in certificate provisioning feature.
+CERT_PROVISIONING_CA_PRIVATE_KEY_PEM="""\
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAyh01PGm57kraP7TJpCtGEpvSx6OwKJmqCQp/kmr9hfFTrWW3
+W4QgdmprzmYNt8vxtJkRLCz9/4K1lk1hfoDu5Qpx5VaNZ0bcwfzRG/PxcB9+XzZp
+gppqpyq1HACYudqPi9wsxw1qSrB4Av1W+paOpdM6/blchwJpRuOmrb1iwooVYmR/
+CnSDIEppPk5I8iwN3VTq3cSErDrC4Xtquw3jHs4aaq55ZcD31WRumiTkZY6oBZsH
+gzFsy+uCqwfv8aIA6wU0nPo5tfq0xzIjDhAA/ZSkSx05UrEk1S7rgvpRIJMZ/+Pi
+Jz/VX32XOBXyrGuwD+pS9zvtsPQ2rzz9aPhDFwIDAQABAoIBAH8tPdBT3rD43Lf1
+dGQe7qrK7ii88R27A2lI99kUBY8AuVyEgonNa/fXIxru0Hb0l5TCNDIN5Y2fm8+F
+xXEqhCgPGHfsrHFt/375LENgjm21A3m57U5HCBFEKE4EehWIV4bz9iESae2xePK4
+osBveDcT4SzCNFynwcLfgIQWhUxPI7TlwEkR79vcM+l6CtbUVxUW+wTTS/Zp72FM
+sBBNsXIBB0yHh0m30vg43jv3apBaZxogAPx2crWOu1A2NK20gQPgrCIHIjn1Of4e
+JvWSwKFnmF9UzwDQ1KZo25EX4BEirVYYlk84Eq9Ds2ojOVD+mCEfbrEsqPorYl+c
+F2d9CQECgYEA96kRVjhrS/Hbo5KNUOnOBs0uD8hCJ0cGlTRAvkwhGAENolewIuyj
+wwXGfkAV0Rs3qf4HjzVeEiX1QegsHxqFPOhjuDK34pH6caU6UI1R6BAr9H6QmEO9
+53LlKvlX+6kJ+RjXxvmftRFWgPhY526IbXgY4judI1+LR9FPmzyCLEECgYEA0OuD
+Oc//mZomtnBVFiw0RiamERTMsWO6G7QVDs814utHaFVzJWkqVn6eIns5NgfyZ0ZE
+xand7/wUtz0YM0wvdZPllhL0zXSujfqScO3qeE3XLPspv4dom+jdgwr1uR8rE5Av
+8qeLrZaItSWDMKL2+1QX0Frn3k1cMO/wiw+w+VcCgYEAgtK5SL1W2HAzIK3anmJT
+Jb6e1VFouIzJSmmmxZ87YA22YQpHDbvJKczUNH6vx5zEA7Uf0yNSxO1uJ9l37Ro6
+RZlQi82m2zVXgU7RhhmQqbBZN7bftL8cArXrno7GTjbWANKBsSbNmX1GH6yQcfgu
+cv0cz+zDrhrbXR2RGqSU8sECgYBmf3VVMsfq+ycNENWd2DgZRrLo5HR8fzn6h4Jh
+TqXYW6gf9vRUIWFlKB+7OQtbh9CUfHQXKfy51cnwEGhEGpeaLuJPm6NA/YL6Izof
+b4o+VapA5kSYM/3NqBStSv49QZ5nrbDocuzjUFxnyyyu+vUDX0GDtmXVucyGMeGo
+yB0CZwKBgQDZ8RwInbSZbAo2/fjIxFGxxV0tSRH1n5L27QB5jzikXW+6jBOYRDQh
+fHXdC808L+jJ0zgOBlJbbCM3TliiVqDE6Lcc3GShA1mrjvGmAy05e1ejgGZYX7c5
+C97TFZS6CD+9uC2FV4RWJuO56kCGlDVLI3/iwIThtywvDt0qKnSsGA==
+-----END RSA PRIVATE KEY-----"""
+
+# The obfuscated_customer_id that will be served in device policy PolicyData
+# responses.
+OBFUSCATED_CUSTOMER_ID = 'policy_testserver_customer_id'
+
 class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
   """Decodes and handles device management requests from clients.
 
@@ -236,7 +279,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       unique.
     """
     if not hasattr(self, '_params'):
-      self._params = cgi.parse_qs(self.path[self.path.find('?') + 1:])
+      self._params = urlparse.parse_qs(self.path[self.path.find('?') + 1:])
 
     param_list = self._params.get(name, [])
     if len(param_list) == 1:
@@ -257,18 +300,20 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       # when the test is complete.
       self.server.stop = True
       http_response = 200
-      raw_reply = 'OK'
+      raw_reply = b'OK'
     elif path == '/test/ping':
       # This path and reply are used by the test setup of host-driven tests for
       # Android to determine if the server is up, and are not part of the
       # DM protocol.
       http_response = 200
-      raw_reply = 'Policy server is up.'
+      raw_reply = b'Policy server is up.'
     else:
       http_response = 404
-      raw_reply = 'Invalid path'
+      raw_reply = b'Invalid path'
     self.send_response(http_response)
     self.end_headers()
+    if six.PY3 and isinstance(raw_reply, str):
+      raw_reply = raw_reply.encode()
     self.wfile.write(raw_reply)
 
   def do_POST(self):
@@ -277,16 +322,18 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if (http_response == 200):
       self.send_header('Content-Type', 'application/x-protobuffer')
     self.end_headers()
+    if six.PY3 and isinstance(raw_reply, str):
+      raw_reply = raw_reply.encode()
     self.wfile.write(raw_reply)
 
   def HandleExternalPolicyDataRequest(self):
     """Handles a request to download policy data for a component."""
     policy_key = self.GetUniqueParam('key')
     if not policy_key:
-      return (400, 'Missing key parameter')
+      return (400, b'Missing key parameter')
     data = self.server.ReadPolicyDataFromDataDir(policy_key)
     if data is None:
-      return (404, 'Policy not found for ' + policy_key)
+      return (404, b'Policy not found for ' + policy_key.encode('utf-8'))
     return (200, data)
 
   def HandleRequest(self):
@@ -299,11 +346,11 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       A tuple of HTTP status code and response data to send to the client.
     """
     rmsg = dm.DeviceManagementRequest()
-    length = int(self.headers.getheader('content-length'))
+    length = int(self.headers.get('content-length'))
     rmsg.ParseFromString(self.rfile.read(length))
 
     logging.debug('gaia auth token -> ' +
-                  self.headers.getheader('Authorization', ''))
+                  self.headers.get('Authorization', ''))
     logging.debug('oauth token -> ' + str(self.GetUniqueParam('oauth_token')))
     logging.debug('deviceid -> ' + str(self.GetUniqueParam('deviceid')))
     self.DumpMessage('Request', rmsg)
@@ -334,6 +381,9 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       response = self.ProcessPolicy(rmsg, request_type)
     elif request_type == 'enterprise_check':
       response = self.ProcessAutoEnrollment(rmsg.auto_enrollment_request)
+    elif request_type == 'enterprise_psm_check':
+      response = self.ProcessPsmAutoEnrollment(
+          rmsg.private_set_membership_request)
     elif request_type == 'device_initial_enrollment_state':
       response = self.ProcessDeviceInitialEnrollmentState(
           rmsg.device_initial_enrollment_state_request)
@@ -362,10 +412,13 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     elif request_type == 'app_install_report':
       response = self.ProcessAppInstallReportRequest(
           rmsg.app_install_report_request)
+    elif request_type == 'client_cert_provisioning':
+      response = self.ProcessClientCertProvisioningRequest(
+          rmsg.client_certificate_provisioning_request)
     else:
       return (400, 'Invalid request parameter')
 
-    if isinstance(response[1], basestring):
+    if isinstance(response[1], str):
       body = response[1]
     elif isinstance(response[1], google.protobuf.message.Message):
       self.DumpMessage('Response', response[1])
@@ -408,19 +461,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       return oauth_token
 
     match = re.match('GoogleLogin auth=(\\w+)',
-                     self.headers.getheader('Authorization', ''))
-    if match:
-      return match.group(1)
-
-    return None
-
-  def CheckEnrollmentToken(self):
-    """Extracts the enrollment token from the request and returns it. The token
-    is GoogleEnrollmentToken token from an Authorization header. Returns None
-    if no token is present.
-    """
-    match = re.match('GoogleEnrollmentToken token=(\\S+)',
-                     self.headers.getheader('Authorization', ''))
+                     self.headers.get('Authorization', ''))
     if match:
       return match.group(1)
 
@@ -429,8 +470,10 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
   def ProcessRegister(self, msg):
     """Handles a register request.
 
-    Checks the query for authorization and device identifier, registers the
-    device with the server and constructs a response.
+    Checks the query for authorization, device identifier and existence
+    of PSM execution fields (if their expected values have been set in
+    the config). Then, registers the device with the server and
+    constructs a response.
 
     Args:
       msg: The DeviceRegisterRequest message received from the client.
@@ -450,6 +493,23 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if ('*' not in policy['managed_users'] and
         username not in policy['managed_users']):
       return (403, 'Unmanaged')
+
+    # Checks for PSM execution fields.
+
+    brand_machine_id = msg.brand_code + '_' + msg.machine_id
+    psm_result_dict = self.server.GetPolicies().get('psm_result', {})
+    psm_result = psm_result_dict.get(brand_machine_id, {})
+
+    for field in psm_result:
+      if not msg.HasField(field):
+        return (400, 'DeviceRegisterRequest must have all required '
+                'PSM execution fields')
+
+      # The casting is necessary because int64_t fields won't have the same
+      # equality otherwise.
+      if int(psm_result[field]) != int(getattr(msg, field)):
+        return (400, 'DeviceRegisterRequest must have all correct '
+                'PSM execution values')
 
     return self.RegisterDeviceAndSendResponse(msg, username)
 
@@ -473,30 +533,11 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     except (IOError):
       return(400, 'Invalid request')
 
-    # TODO(drcrash): Check the certificate itself.
     if req.certificate_type != dm.CertificateBasedDeviceRegistrationData.\
         ENTERPRISE_ENROLLMENT_CERTIFICATE:
       return(403, 'Invalid certificate type for registration')
 
-    register_req = req.device_register_request
-    username = None
-
-    if (register_req.flavor == dm.DeviceRegisterRequest.
-        FLAVOR_ENROLLMENT_ATTESTATION_USB_ENROLLMENT):
-      enrollment_token = self.CheckEnrollmentToken()
-      policy = self.server.GetPolicies()
-      if not enrollment_token:
-        return (401, 'Missing enrollment token.')
-
-      if ((not policy['token_enrollment']) or
-              (not policy['token_enrollment']['token']) or
-              (not policy['token_enrollment']['username'])):
-        return (500, 'Error in config - no token-based enrollment')
-      if policy['token_enrollment']['token'] != enrollment_token:
-        return (403, 'Invalid enrollment token')
-      username = policy['token_enrollment']['username']
-
-    return self.RegisterDeviceAndSendResponse(register_req, username)
+    return self.RegisterDeviceAndSendResponse(req.device_register_request, None)
 
   def RegisterDeviceAndSendResponse(self, msg, username):
     """Registers a device and send a response to the client.
@@ -531,7 +572,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     Returns:
       CertificateBasedDeviceRegistrationData
     """
-    # TODO(drcrash): Verify signature.
     rdata = dm.CertificateBasedDeviceRegistrationData()
     rdata.ParseFromString(msg.data[:len(msg.data) - msg.extra_data_bytes])
     return rdata
@@ -688,6 +728,107 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     response.auto_enrollment_response.CopyFrom(auto_enrollment_response)
     return (200, response)
 
+  def GetPsmMembershipResponse(self, encrypted_id):
+    """Retrieves the PSM membership for a given encrypted_id.
+
+    Args:
+      encrypted_id: A string which contains an encrypted ID.
+
+    Returns a boolean:
+      1. True, if encrypted_id has a PSM membership.
+      2. False, otherwise.
+    """
+    for serial_number in PSM_MEMBERSHIP_SERIAL_NUMBER_IDS:
+      for brand_code in PSM_MEMBERSHIP_BRAND_CODES:
+        psm_id = b'%s/%s' % (brand_code.hex().encode('ascii'), serial_number)
+        if psm_id == encrypted_id:
+          return True
+    return False
+
+  def GetPsmRlweOprfResponse(self, oprf_request):
+    """Retrieves the fake PSM RLWE OPRF response for a given PSM OPRF request.
+
+    Args:
+      oprf_request: A PrivateMembershipRlweOprfRequest proto message.
+
+    Returns:
+    A PrivateMembershipRlweOprfResponse proto message which will include the
+    passed encrypted_id, from the oprf_request, inside the
+    doubly_encrypted_ids field.
+    """
+    oprf_response = psm_rlwe.PrivateMembershipRlweOprfResponse()
+    encrypted_id = psm.DoublyEncryptedId()
+    encrypted_id.queried_encrypted_id = oprf_request.encrypted_ids[0]
+    oprf_response.doubly_encrypted_ids.append(encrypted_id)
+    return oprf_response
+
+  def GetPsmRlweQueryResponse(self, query_request):
+    """Retrieves the fake PSM RLWE query response for a given PSM query request.
+
+    Args:
+      query_request: A PrivateMembershipRlweQueryRequest proto message.
+
+    Returns:
+    A PrivateMembershipRlweQueryResponse proto message which will include the
+    following:
+        1. The first passed encrypted_id, from queried_encrypted_id field,
+        inside PrivateMembershipRlwePirResponse.queried_encrypted_id field.
+        2. The membership response as a signal data inside
+        PirResponse.plaintext_entry_size  field.
+    """
+    query_response = psm_rlwe.PrivateMembershipRlweQueryResponse()
+    encrypted_id = query_request.queries[0].queried_encrypted_id
+    pir_response = psm_rlwe.PrivateMembershipRlwePirResponse()
+    pir_response.queried_encrypted_id = encrypted_id
+    pir_response.pir_response.plaintext_entry_size =\
+        self.GetPsmMembershipResponse(encrypted_id)
+    query_response.pir_responses.append(pir_response)
+    return query_response
+
+  def ProcessPsmAutoEnrollment(self, msg):
+    """Handles an auto-enrollment PSM check request.
+
+    The reply depends on which PSM request phases is received, as follows:
+      1. In case RLWE OPRF request is filled, replies by sending OPRF response
+      that contain the first received encrypted id.
+      2. In case RLWE Query request is filled, replies by sending Query response
+      that contain the first queried encrypted id. Also, sending out a signal
+      data (inside PirResponse.plaintext_entry_size) to indicate whether there
+      is a membership or not, depending on the received encrypted id.
+      3. Otherwise, it will return an error.
+
+    These allow the client to pick the testing scenario it wants to simulate.
+
+    Args:
+      msg: The PrivateSetMembershipRequest message received from the client.
+
+    Returns:
+      A tuple of HTTP status code and response data to send to the client.
+    """
+    psm_response = dm.PrivateSetMembershipResponse()
+
+    rlwe_request = msg.rlwe_request
+
+    if rlwe_request.HasField('oprf_request'):
+      oprf_request = rlwe_request.oprf_request
+      if not len(oprf_request.encrypted_ids):
+        return (400, 'PSM RLWE OPRF request must contains encrypted_ids field')
+      psm_response.rlwe_response.oprf_response.CopyFrom(
+          self.GetPsmRlweOprfResponse(oprf_request))
+    elif rlwe_request.HasField('query_request'):
+      query_request = rlwe_request.query_request
+      if not len(query_request.queries):
+        return (400, 'PSM RLWE query request must contains queries field')
+      psm_response.rlwe_response.query_response.CopyFrom(
+          self.GetPsmRlweQueryResponse(query_request))
+    else:
+      return (400,
+              'PSM RLWE oprf_request, or query_request fields must be filled')
+
+    response = dm.DeviceManagementResponse()
+    response.private_set_membership_response.CopyFrom(psm_response)
+    return (200, response)
+
   def ProcessDeviceInitialEnrollmentState(self, msg):
     """Handles a device initial enrollment state request.
 
@@ -839,7 +980,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """
     enrollment_token = None
     match = re.match('GoogleEnrollmentToken token=(\\w+)',
-                     self.headers.getheader('Authorization', ''))
+                     self.headers.get('Authorization', ''))
     if match:
       enrollment_token = match.group(1)
     if not enrollment_token:
@@ -849,8 +990,8 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if not device_id:
       return (400, 'Parameter deviceid is missing.')
 
-    if not msg.machine_name:
-      return (400, 'Invalid machine name: ')
+    if not msg.machine_name and not msg.device_model:
+      return (400, 'Either machine name or device model must be non-empty.')
 
     if enrollment_token == INVALID_ENROLLMENT_TOKEN:
       return (401, 'Invalid enrollment token')
@@ -916,10 +1057,16 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if field.type == field.TYPE_BOOL:
       assert type(field_value) == bool
     elif field.type == field.TYPE_STRING:
-      assert type(field_value) in [str, unicode]
+      if six.PY3:
+        assert isinstance(field_value, str)
+      else:
+        assert type(field_value) in [str, unicode]
     elif field.type == field.TYPE_BYTES:
-      assert type(field_value) in [str, unicode]
-      field_value = field_value.decode('hex')
+      if six.PY3:
+        assert isinstance(field_value, str)
+      else:
+        assert type(field_value) in [str, unicode]
+      field_value = bytes.fromhex(field_value)
     elif (field.type == field.TYPE_INT64 or
           field.type == field.TYPE_INT32 or
           field.type == field.TYPE_ENUM):
@@ -1057,7 +1204,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       # Fetch the ids from the policy JSON, if none in the config directory.
       policy = self.server.GetPolicies()
       ext_policies = policy.get(request.policy_type, {})
-      ids = ext_policies.keys()
+      ids = list(ext_policies.keys())
 
     for settings_entity_id in ids:
       # Reuse the extension policy request, to trigger the same signature
@@ -1151,7 +1298,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     # Fill the policy data protobuf.
     policy_data = dm.PolicyData()
     policy_data.policy_type = msg.policy_type
-    policy_data.timestamp = int(time.time() * 1000)
+    policy_data.timestamp = int(policy.get('timestamp', time.time() * 1000))
     policy_data.request_token = token_info['device_token']
     policy_data.policy_value = payload
     policy_data.machine_name = token_info['machine_name']
@@ -1159,14 +1306,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     policy_data.service_account_identity = policy.get(
         'service_account_identity',
         'policy_testserver.py-service_account_identity@gmail.com')
-    invalidation_source = policy.get('invalidation_source')
-    if invalidation_source is not None:
-      policy_data.invalidation_source = invalidation_source
-    # Since invalidation_name is type bytes in the proto, the Unicode name
-    # provided needs to be encoded as ASCII to set the correct byte pattern.
-    invalidation_name = policy.get('invalidation_name')
-    if invalidation_name is not None:
-      policy_data.invalidation_name = invalidation_name.encode('ascii')
 
     policy_invalidation_topic = policy.get('policy_invalidation_topic')
     if policy_invalidation_topic is not None:
@@ -1193,6 +1332,12 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if user_affiliation_ids:
       policy_data.user_affiliation_ids.extend(user_affiliation_ids)
 
+    if msg.policy_type == 'google/chromeos/device':
+      # Fill |obfuscated_customer_id| for PolicyData in device policy fetches.
+      # Verified Access attestation using the Enterprise Machine Key (EMK)
+      # requires it since https://crbug.com/1073974.
+      policy_data.obfuscated_customer_id = OBFUSCATED_CUSTOMER_ID
+
     response.policy_data = policy_data.SerializeToString()
 
     # Sign the serialized policy data
@@ -1203,8 +1348,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         response.new_public_key = signing_key['public_key']
 
         # Set the verification signature appropriate for the policy domain.
-        # TODO(atwilson): Use the enrollment domain for public accounts when
-        # we add key validation for ChromeOS (http://crbug.com/328038).
         if 'signatures' in signing_key:
           verification_sig = self.GetSignatureForDomain(
               signing_key['signatures'], policy_data.username)
@@ -1220,6 +1363,89 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
               client_key['private_key'].hashAndSign(response.new_public_key))
 
     return (200, response.SerializeToString())
+
+  def ProcessClientCertProvisioningRequest(self, msg):
+    """Handles a client certificate provisioning request.
+
+    Issues a client certificate generated with the public key provided and
+    sends it back to the requesting client.
+
+    Args:
+      msg: The ClientCertificateProvisioningRequest message received from the
+        client. Contains one of start_csr_request, finish_csr_request, or
+        download_cert_request.
+
+    Returns:
+      A tuple of HTTP status code and a ClientCertificateProvisioningResponse
+      message that is filled with hard coded data and in the case of a
+      download_cert_request in addition with the generated certificate.
+    """
+
+    if crypto == None:
+      return (400, 'Could not find pyopenssl.')
+
+    if msg.HasField('start_csr_request'):
+      start_csr_response = dm.StartCsrResponse()
+
+      # real but outdated b64 encoded verified access challenge received from
+      # the Enterprise Verified Access Test extension
+      va_challenge_b64 = (
+        'CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIO6YSl1AvTjbEvRukIFMF2pA4AwCc1w4f'
+        'ZX3n3sGcLInGOPh+IWKLhKAAm/WHGk7ahCjPk4IXLfDlUUmmZdfW1scNcwkKk/x24Znvb'
+        'T7tyrmxLzO5nG69ycW7f+2bacbtfGlf0UOGeljcqBIIoHjJPlm0d2gCTa2msghS9ovaSg'
+        '/wbY5DPeNkcG5drDq5Es5hzlZ49Bhvv5cAbDDsGNobPJQ3ojbu/mrdlb3mlB1oNTmbfoP'
+        'TBrr6n9JXvywsJmHyInTySiFPOR8TT1cQoDA0pZ0ccHMJfLia1/FCW/pGpI6GpSzCQLq2'
+        'hH0cFVuef3lGn09EeUHTPejbm6gcrHe9VDAFXMI8SzUlgMBBjHtTpo9GXJbwkTrGFXdkE'
+        'U5BY1KukrsIVqdmAGFTDM='
+      )
+
+      va_challenge = base64.b64decode(va_challenge_b64)
+      start_csr_response.invalidation_topic = 'invalidation_topic_123'
+      start_csr_response.va_challenge = va_challenge
+      start_csr_response.hashing_algorithm = 2
+      start_csr_response.signing_algorithm = 1
+      start_csr_response.data_to_sign = b'data_to_sign_123'
+
+      response = dm.DeviceManagementResponse()
+      response.client_certificate_provisioning_response.start_csr_response.\
+          CopyFrom(start_csr_response)
+      return (200, response)
+
+    if msg.HasField('finish_csr_request'):
+      finish_csr_response = dm.FinishCsrResponse()
+
+      response = dm.DeviceManagementResponse()
+      response.client_certificate_provisioning_response.finish_csr_response.\
+          CopyFrom(finish_csr_response)
+      return (200, response)
+
+    if msg.HasField('download_cert_request'):
+      download_cert_response = dm.DownloadCertResponse()
+
+      pubKey = crypto.load_publickey(crypto.FILETYPE_ASN1, msg.public_key)
+
+      caPrivKey = crypto.load_privatekey(
+        crypto.FILETYPE_PEM, CERT_PROVISIONING_CA_PRIVATE_KEY_PEM, b'pass')
+
+      cert = crypto.X509()
+      cert.set_serial_number(3)
+      cert.gmtime_adj_notBefore(0)
+      cert.gmtime_adj_notAfter(365*24*60*60)
+      cert.get_subject().CN = "TastTest"
+      cert.set_issuer(cert.get_subject())
+      cert.set_issuer(cert.get_subject())
+      cert.set_pubkey(pubKey)
+      cert.sign(caPrivKey, 'sha256')
+
+      download_cert_response.pem_encoded_certificate  =\
+        crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
+
+      response = dm.DeviceManagementResponse()
+      response.client_certificate_provisioning_response.\
+        download_cert_response.CopyFrom(download_cert_response)
+      return (200, response)
+
+    return (400, 'Invalid request parameter')
 
   def GetSignatureForDomain(self, signatures, username):
     parsed_username = username.split("@", 1)
@@ -1255,7 +1481,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     dmtoken = None
     request_device_id = self.GetUniqueParam('deviceid')
     match = re.match('GoogleDMToken token=(\\w+)',
-                     self.headers.getheader('Authorization', ''))
+                     self.headers.get('Authorization', ''))
     if match:
       dmtoken = match.group(1)
     if not dmtoken:
@@ -1331,12 +1557,15 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
       # Load specified keys from the filesystem.
       for key_path in private_key_paths:
         try:
-          key_str = open(key_path).read()
+          key_str = open(key_path, 'rb').read()
         except IOError:
-          print 'Failed to load private key from %s' % key_path
+          print('Failed to load private key from %s' % key_path)
           continue
         try:
-          key = tlslite.api.parsePEMKey(key_str, private=True)
+          # Decode with replacement characters to avoid decode errors if was
+          # actually DER.
+          key = tlslite.api.parsePEMKey(key_str.decode('utf-8', 'replace'),
+                                        private=True)
         except SyntaxError:
           key = tlslite.utils.python_rsakey.Python_RSAKey._parsePKCS8(
               bytearray(key_str))
@@ -1346,11 +1575,11 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
 
         # Now try to read in a signature, if one exists.
         try:
-          key_sig = open(key_path + '.sig').read()
+          key_sig = open(key_path + '.sig', 'rb').read()
           # Create a dictionary with the wildcard domain + signature
           key_info['signatures'] = {'*': key_sig}
         except IOError:
-          print 'Failed to read validation signature from %s.sig' % key_path
+          print('Failed to read validation signature from %s.sig' % key_path)
         self.keys.append(key_info)
     else:
       # Use the canned private keys if none were passed from the command line.
@@ -1374,7 +1603,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
 
       algorithm = asn1der.Sequence(
           [ asn1der.Data(asn1der.OBJECT_IDENTIFIER, PKCS1_RSA_OID),
-            asn1der.Data(asn1der.NULL, '') ])
+            asn1der.Data(asn1der.NULL, b'') ])
       rsa_pubkey = asn1der.Sequence([ asn1der.Integer(key.n),
                                       asn1der.Integer(key.e) ])
       pubkey = asn1der.Sequence([ algorithm, asn1der.Bitstring(rsa_pubkey) ])
@@ -1393,7 +1622,9 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     policy = {}
     if json is None:
       logging.error('No JSON module, cannot parse policy information')
-    else :
+    elif not os.path.exists(self.policy_path):
+      logging.warning('Missing policies file %s' % self.policy_path)
+    else:
       try:
         policy = json.loads(open(self.policy_path).read(), strict=False)
       except IOError:
@@ -1453,8 +1684,8 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     token_info_url = config.get('token_info_url')
     if token_info_url is not None:
       try:
-        token_info = urllib2.urlopen(token_info_url + '?' +
-            urllib.urlencode({'access_token': auth_token})).read()
+        token_info = urllib_request.urlopen(token_info_url + '?' +
+            urlparse.urlencode({'access_token': auth_token})).read()
         return json.loads(token_info)['email']
       except Exception as e:
         logging.info('Failed to resolve user: %s', e)
@@ -1529,8 +1760,9 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
       state_keys: The state keys to set.
     """
     if dmtoken in self._registered_tokens:
-      self._registered_tokens[dmtoken]['state_keys'] = map(
-          lambda key : key.encode('hex'), state_keys)
+      self._registered_tokens[dmtoken]['state_keys'] = [
+          key.hex() for key in state_keys
+      ]
       self.WriteClientState()
 
   def LookupToken(self, dmtoken):
@@ -1557,8 +1789,8 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
       no matching record.
     """
     self.ReadClientStateFile()
-    for client in self._registered_tokens.values():
-      if state_key.encode('hex') in client.get('state_keys', []):
+    for client in list(self._registered_tokens.values()):
+      if state_key.hex() in client.get('state_keys', []):
         return client
 
     return None
@@ -1571,12 +1803,14 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     """
     self.ReadClientStateFile()
     state_keys = sum([ c.get('state_keys', [])
-                       for c in self._registered_tokens.values() ], [])
-    hashed_keys = map(lambda key: hashlib.sha256(key.decode('hex')).digest(),
-                      set(state_keys))
-    return filter(
-        lambda hash : int(hash.encode('hex'), 16) % modulus == remainder,
-        hashed_keys)
+                       for c in list(self._registered_tokens.values()) ], [])
+    hashed_keys = [
+        hashlib.sha256(bytes.fromhex(key)).digest() for key in set(state_keys)
+    ]
+    return [
+        hash for hash in hashed_keys
+        if int.from_bytes(hash, 'big') % modulus == remainder
+    ]
 
   def GetMatchingSerialHashes(self, modulus, remainder):
     """Returns all serial hashes from configuration.
@@ -1584,13 +1818,14 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     Returns:
       The list of hashes
     """
-    brand_serial_keys = (self.GetPolicies().get('initial_enrollment_state', {}).
-                         keys())
-    hashed_keys = map(lambda key: hashlib.sha256(key).digest()[0:8],
-                      brand_serial_keys)
-    return filter(
-        lambda hash : int(hash.encode('hex'), 16) % modulus == remainder,
-        hashed_keys)
+    brand_serial_keys = \
+        list(self.GetPolicies().get('initial_enrollment_state', {}).keys())
+    hashed_keys = [hashlib.sha256(key).digest()[0:8] for key in
+               brand_serial_keys]
+    return [
+        hash for hash in hashed_keys
+        if int.from_bytes(hash, 'big') % modulus == remainder
+    ]
 
 
   def UnregisterDevice(self, dmtoken):
@@ -1599,7 +1834,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     Args:
       dmtoken: The device management token provided by the client.
     """
-    if dmtoken in self._registered_tokens.keys():
+    if dmtoken in list(self._registered_tokens.keys()):
       del self._registered_tokens[dmtoken]
       self.WriteClientState()
 
@@ -1674,7 +1909,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
 
     # Try the binary payload file first.
     try:
-      return open(base_filename + '.bin').read()
+      return open(base_filename + '.bin', 'rb').read()
     except IOError:
       pass
 
@@ -1702,7 +1937,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     """
     base_filename = self.GetBaseFilename(policy_selector)
     try:
-      return open(base_filename + '.data').read()
+      return open(base_filename + '.data', 'rb').read()
     except IOError:
       return None
 

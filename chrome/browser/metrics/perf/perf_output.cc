@@ -5,8 +5,9 @@
 #include "chrome/browser/metrics/perf/perf_output.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -28,9 +29,8 @@ PerfOutputCall::PerfOutputCall(chromeos::DebugDaemonClient* debug_daemon_client,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   perf_data_pipe_reader_ =
-      std::make_unique<chromeos::PipeReader>(base::CreateTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+      std::make_unique<chromeos::PipeReader>(base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 
   base::ScopedFD pipe_write_end =
@@ -63,24 +63,26 @@ void PerfOutputCall::Stop() {
   StopImpl();
 }
 
-void PerfOutputCall::OnIOComplete(base::Optional<std::string> result) {
+void PerfOutputCall::OnIOComplete(absl::optional<std::string> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   perf_data_pipe_reader_.reset();
-  // Use the r-value variant of base::Optional::value_or() to move |result| to
+  // Use the r-value variant of absl::optional::value_or() to move |result| to
   // the callback argument. Callback can safely use |result| after |this| is
   // deleted.
   std::move(done_callback_).Run(std::move(result).value_or(std::string()));
-  // The callback may delete us, so it's hammertime: Can't touch |this|.
+  // NOTE: |this| may be deleted at this point!
 }
 
-void PerfOutputCall::OnGetPerfOutput(base::Optional<uint64_t> result) {
+void PerfOutputCall::OnGetPerfOutput(absl::optional<uint64_t> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Signal pipe reader to shut down.
   if (!result.has_value() && perf_data_pipe_reader_.get()) {
     perf_data_pipe_reader_.reset();
     std::move(done_callback_).Run(std::string());
+    // NOTE: |this| may be deleted at this point!
+    return;
   }
 
   // DBus method GetPerfOutputFd returns a generated session ID back to the

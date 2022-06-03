@@ -4,11 +4,13 @@
 
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 
+#import <MaterialComponents/MaterialTypography.h>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "components/strings/grit/components_strings.h"
@@ -20,8 +22,8 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -40,7 +42,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCVC = kItemTypeEnumZero,
   ItemTypeStatus,
-  ItemTypeStorageSwitch,
 };
 
 }  // namespace
@@ -84,7 +85,7 @@ void CardUnmaskPromptViewBridge::DisableAndWaitForVerification() {
 }
 
 void CardUnmaskPromptViewBridge::GotVerificationResult(
-    const base::string16& error_message,
+    const std::u16string& error_message,
     bool allow_retry) {
   if (error_message.empty()) {
     [view_controller_ showSuccess];
@@ -125,7 +126,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   UIBarButtonItem* _verifyButton;
   CVCItem* _CVCItem;
   StatusItem* _statusItem;
-  CollectionViewSwitchItem* _storageSwitchItem;
 
   // Owns |self|.
   autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
@@ -214,18 +214,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   _CVCItem.CVCImageResourceID = CVCImageResourceID;
   [model addItem:_CVCItem toSectionWithIdentifier:SectionIdentifierMain];
 
-  if (controller->CanStoreLocally()) {
-    _storageSwitchItem =
-        [[CollectionViewSwitchItem alloc] initWithType:ItemTypeStorageSwitch];
-    _storageSwitchItem.text = l10n_util::GetNSString(
-        IDS_AUTOFILL_CARD_UNMASK_PROMPT_STORAGE_CHECKBOX);
-    _storageSwitchItem.on = controller->GetStoreLocallyStartState();
-    [model addItem:_storageSwitchItem
-        toSectionWithIdentifier:SectionIdentifierMain];
-  } else {
-    _storageSwitchItem = nil;
-  }
-
   // No status item when loading the model.
   _statusItem = nil;
 }
@@ -247,14 +235,11 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   // didn't and there was an error, show the "New card?" link which will show
   // the date inputs on click. This link is intended to remind the user that
   // they might have recently received a new card with updated expiration date
-  // and CVC. At the same time, we only put the CVC input in an error state if
-  // we're not requesting a new date. Because if we're asking the user for both,
-  // we don't know which is incorrect.
+  // and CVC.
   if (_bridge->GetController()->ShouldRequestExpirationDate()) {
     _CVCItem.showDateInput = YES;
   } else if (errorMessage) {
     _CVCItem.showNewCardButton = YES;
-    _CVCItem.showCVCInputError = YES;
   }
 }
 
@@ -283,7 +268,25 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
 }
 
 - (void)updateWithStatus:(StatusItemState)state text:(NSString*)text {
-  if (!_statusItem) {
+  // As per a crash analysis in https://crbug.com/1193779#c15, there were
+  // situations where the collectionViewModel contained a StatusItem but
+  // the view showed a CVCCell (probably due to some asynchronous update
+  // of the view that is outside of our control). In this situation,
+  // clobber the current model's and view's entries by setting hasStatusCell
+  // to NO.
+  BOOL collectionViewShouldReload = !_statusItem;
+  if (_statusItem && [self.collectionViewModel hasItem:_statusItem]) {
+    NSIndexPath* indexPath =
+        [self.collectionViewModel indexPathForItem:_statusItem];
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:indexPath];
+    if (cell) {
+      collectionViewShouldReload = ![cell isKindOfClass:[StatusCell class]];
+    }
+  }
+
+  // Create or update the status cell.
+  if (collectionViewShouldReload) {
     _statusItem = [[StatusItem alloc] initWithType:ItemTypeStatus];
     _statusItem.text = text;
     _statusItem.state = state;
@@ -311,19 +314,12 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   const CGFloat preferredHeightForCVC =
       [MDCCollectionViewCell cr_preferredHeightForWidth:collectionViewWidth
                                                 forItem:_CVCItem];
-  CGFloat preferredHeightForStorageSwitch = 0;
-  if (_storageSwitchItem) {
-    preferredHeightForStorageSwitch =
-        [MDCCollectionViewCell cr_preferredHeightForWidth:collectionViewWidth
-                                                  forItem:_storageSwitchItem];
-  }
   const CGFloat preferredHeightForStatus =
       [MDCCollectionViewCell cr_preferredHeightForWidth:collectionViewWidth
                                                 forItem:_statusItem];
   // Return the size of the replaced content, but make sure it is at least the
   // minimal status cell height.
-  return MAX(preferredHeightForCVC + preferredHeightForStorageSwitch,
-             preferredHeightForStatus);
+  return MAX(preferredHeightForCVC, preferredHeightForStatus);
 }
 
 - (BOOL)inputCVCIsValid:(CVCItem*)item {
@@ -370,21 +366,16 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
 }
 
 - (void)focusInputIfNeeded:(CVCCell*)CVC {
-  // Focus the first visible input, unless the orientation is landscape. In
-  // landscape, the keyboard covers up the storage checkbox shown below this
-  // view and the user might never see it.
-  if (UIInterfaceOrientationIsPortrait(
-          [UIApplication sharedApplication].statusBarOrientation)) {
-    // Also check whether any of the inputs are already the first responder and
-    // are non-empty, in which case the focus should be left there.
-    if ((!CVC.monthInput.isFirstResponder || CVC.monthInput.text.length == 0) &&
-        (!CVC.yearInput.isFirstResponder || CVC.yearInput.text.length == 0) &&
-        (!CVC.CVCInput.isFirstResponder || CVC.CVCInput.text.length == 0)) {
-      if (_CVCItem.showDateInput) {
-        [CVC.monthInput becomeFirstResponder];
-      } else {
-        [CVC.CVCInput becomeFirstResponder];
-      }
+  // Focus the first visible input. Also check whether any of the inputs are
+  // already the first responder and are non-empty, in which case the focus
+  // should be left there.
+  if ((!CVC.monthInput.isFirstResponder || CVC.monthInput.text.length == 0) &&
+      (!CVC.yearInput.isFirstResponder || CVC.yearInput.text.length == 0) &&
+      (!CVC.CVCInput.isFirstResponder || CVC.CVCInput.text.length == 0)) {
+    if (_CVCItem.showDateInput) {
+      [CVC.monthInput becomeFirstResponder];
+    } else {
+      [CVC.CVCInput becomeFirstResponder];
     }
   }
 }
@@ -410,17 +401,11 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   controller->OnUnmaskPromptAccepted(
       base::SysNSStringToUTF16(_CVCItem.CVCText),
       base::SysNSStringToUTF16(_CVCItem.monthText),
-      base::SysNSStringToUTF16(yearText), _storageSwitchItem.on,
-      /*enable_fido_auth=*/false);
+      base::SysNSStringToUTF16(yearText), /*enable_fido_auth=*/false);
 }
 
 - (void)onCancel:(id)sender {
   _bridge->PerformClose();
-}
-
-- (void)onStorageSwitchChanged:(UISwitch*)switchView {
-  // Update the item.
-  _storageSwitchItem.on = switchView.on;
 }
 
 - (void)onNewCardLinkTapped:(UIButton*)button {
@@ -433,7 +418,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   _CVCItem.errorMessage = @"";
   _CVCItem.showDateInput = YES;
   _CVCItem.showNewCardButton = NO;
-  _CVCItem.showCVCInputError = NO;
 
   [self reconfigureCellsForItems:@[ _CVCItem ]];
   [self.collectionViewLayout invalidateLayout];
@@ -460,7 +444,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   [self inputsDidChange:_CVCItem];
   if (_bridge->GetController()->InputCvcIsValid(
           base::SysNSStringToUTF16(textField.text))) {
-    _CVCItem.showCVCInputError = NO;
     [self updateDateErrorState:_CVCItem];
   }
 }
@@ -513,17 +496,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
       [cellForCVC.buttonForNewCard addTarget:self
                                       action:@selector(onNewCardLinkTapped:)
                             forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-    case ItemTypeStorageSwitch: {
-      CollectionViewSwitchCell* storageSwitchCell =
-          base::mac::ObjCCastStrict<CollectionViewSwitchCell>(cell);
-      storageSwitchCell.textLabel.font = [MDCTypography body2Font];
-      storageSwitchCell.textLabel.textColor =
-          [UIColor colorNamed:kTextSecondaryColor];
-      [storageSwitchCell.switchView addTarget:self
-                                       action:@selector(onStorageSwitchChanged:)
-                             forControlEvents:UIControlEventValueChanged];
       break;
     }
     default:

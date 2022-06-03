@@ -4312,6 +4312,16 @@ extern __typeof (xmlHashCreateDict) xmlHashCreateDict__internal_alias __attribut
 #endif
 
 #ifdef bottom_hash
+#undef xmlHashDefaultDeallocator
+extern __typeof (xmlHashDefaultDeallocator) xmlHashDefaultDeallocator __attribute((alias("xmlHashDefaultDeallocator__internal_alias")));
+#else
+#ifndef xmlHashDefaultDeallocator
+extern __typeof (xmlHashDefaultDeallocator) xmlHashDefaultDeallocator__internal_alias __attribute((visibility("hidden")));
+#define xmlHashDefaultDeallocator xmlHashDefaultDeallocator__internal_alias
+#endif
+#endif
+
+#ifdef bottom_hash
 #undef xmlHashFree
 extern __typeof (xmlHashFree) xmlHashFree __attribute((alias("xmlHashFree__internal_alias")));
 #else

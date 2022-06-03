@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/try_chrome_dialog_win/button_layout.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 

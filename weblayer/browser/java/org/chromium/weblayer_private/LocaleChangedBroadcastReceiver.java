@@ -32,6 +32,7 @@ public class LocaleChangedBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (!Intent.ACTION_LOCALE_CHANGED.equals(intent.getAction())) return;
         LocaleChangedBroadcastReceiverJni.get().localeChanged();
+        WebLayerNotificationChannels.onLocaleChanged();
     }
 
     @NativeMethods

@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_GOOGLE_GOOGLE_UPDATE_POLICY_FETCHER_WIN_UTIL_H_
+#define CHROME_BROWSER_GOOGLE_GOOGLE_UPDATE_POLICY_FETCHER_WIN_UTIL_H_
+
+#include <wtypes.h>
+#include <memory>
+
+#include "base/callback.h"
+#include "base/values.h"
+#include "components/policy/core/common/policy_map.h"
+#include "google_update/google_update_idl.h"
+
+using PolicyValueOverrideFunction = base::RepeatingCallback<base::Value(BSTR)>;
+
+// Converts a |policy| into a PolicyMap::Entry. |value_override_function|
+// is an optional callback that modifies the value of the resulting policy.
+std::unique_ptr<policy::PolicyMap::Entry> ConvertPolicyStatusValueToPolicyEntry(
+    IPolicyStatusValue* policy,
+    const PolicyValueOverrideFunction& value_override_function);
+
+#endif  // CHROME_BROWSER_GOOGLE_GOOGLE_UPDATE_POLICY_FETCHER_WIN_UTIL_H_

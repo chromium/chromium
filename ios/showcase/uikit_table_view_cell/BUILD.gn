@@ -7,6 +7,6 @@ source_set("uikit_table_view_cell") {
     "uikit_table_view_cell_view_controller.h",
     "uikit_table_view_cell_view_controller.mm",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

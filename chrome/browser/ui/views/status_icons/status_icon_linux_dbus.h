@@ -9,10 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/status_icons/concat_menu_model.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
@@ -37,9 +36,12 @@ class StatusIconLinuxDbus : public views::StatusIconLinux,
  public:
   StatusIconLinuxDbus();
 
+  StatusIconLinuxDbus(const StatusIconLinuxDbus&) = delete;
+  StatusIconLinuxDbus& operator=(const StatusIconLinuxDbus&) = delete;
+
   // StatusIcon:
   void SetIcon(const gfx::ImageSkia& image) override;
-  void SetToolTip(const base::string16& tool_tip) override;
+  void SetToolTip(const std::u16string& tool_tip) override;
   void UpdatePlatformContextMenu(ui::MenuModel* model) override;
   void RefreshPlatformContextMenu() override;
 
@@ -130,8 +132,6 @@ class StatusIconLinuxDbus : public views::StatusIconLinux,
   base::FilePath icon_file_;
 
   base::WeakPtrFactory<StatusIconLinuxDbus> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconLinuxDbus);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_LINUX_DBUS_H_

@@ -4,12 +4,16 @@
 
 #include "ui/base/dragdrop/os_exchange_data.h"
 
+#include <objbase.h>
 #include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_hglobal.h"
@@ -17,17 +21,100 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/dragdrop/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #include "url/gurl.h"
 
 namespace ui {
 
 namespace {
+
 const std::vector<DWORD> kStorageMediaTypesForVirtualFiles = {
     TYMED_ISTORAGE,
     TYMED_ISTREAM,
     TYMED_HGLOBAL,
+};
+
+class RefCountMockStream : public IStream {
+ public:
+  RefCountMockStream() = default;
+  ~RefCountMockStream() = default;
+
+  ULONG GetRefCount() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return ref_count_;
+  }
+
+  // Overridden from IUnknown:
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** object) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (iid == IID_IUnknown || iid == IID_ISequentialStream ||
+        iid == IID_IStream) {
+      *object = static_cast<IStream*>(this);
+      AddRef();
+      return S_OK;
+    }
+
+    *object = nullptr;
+    return E_NOINTERFACE;
+  }
+
+  IFACEMETHODIMP_(ULONG) AddRef(void) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return ++ref_count_;
+  }
+
+  IFACEMETHODIMP_(ULONG) Release(void) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    EXPECT_GT(ref_count_, 0u);
+    return --ref_count_;
+  }
+  // Overridden from ISequentialStream:
+  MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             Read,
+                             HRESULT(void* pv, ULONG cb, ULONG* pcbRead));
+
+  MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             Write,
+                             HRESULT(void const* pv, ULONG cb, ULONG* pcbW));
+
+  // Overridden from IStream:
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             SetSize,
+                             HRESULT(ULARGE_INTEGER));
+
+  MOCK_METHOD4_WITH_CALLTYPE(
+      STDMETHODCALLTYPE,
+      CopyTo,
+      HRESULT(IStream*, ULARGE_INTEGER, ULARGE_INTEGER*, ULARGE_INTEGER*));
+
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, Commit, HRESULT(DWORD));
+
+  MOCK_METHOD0_WITH_CALLTYPE(STDMETHODCALLTYPE, Revert, HRESULT());
+
+  MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             LockRegion,
+                             HRESULT(ULARGE_INTEGER, ULARGE_INTEGER, DWORD));
+
+  MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             UnlockRegion,
+                             HRESULT(ULARGE_INTEGER, ULARGE_INTEGER, DWORD));
+
+  MOCK_METHOD1_WITH_CALLTYPE(STDMETHODCALLTYPE, Clone, HRESULT(IStream**));
+
+  MOCK_METHOD3_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             Seek,
+                             HRESULT(LARGE_INTEGER liDistanceToMove,
+                                     DWORD dwOrigin,
+                                     ULARGE_INTEGER* lpNewFilePointer));
+
+  MOCK_METHOD2_WITH_CALLTYPE(STDMETHODCALLTYPE,
+                             Stat,
+                             HRESULT(STATSTG* pStatstg, DWORD grfStatFlag));
+
+ private:
+  ULONG ref_count_ = 0u;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace
@@ -59,7 +146,7 @@ class OSExchangeDataWinTest : public ::testing::Test {
 TEST_F(OSExchangeDataWinTest, StringDataAccessViaCOM) {
   OSExchangeData data;
   std::wstring input = L"O hai googlz.";
-  data.SetString(input);
+  data.SetString(base::AsString16(input));
   Microsoft::WRL::ComPtr<IDataObject> com_data(
       OSExchangeDataProviderWin::GetIDataObject(data));
 
@@ -100,12 +187,12 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   // Construct a new object with the old object so that we can use our access
   // APIs.
   OSExchangeData data2(data.provider().Clone());
-  EXPECT_TRUE(data2.HasURL(OSExchangeData::CONVERT_FILENAMES));
+  EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   GURL url_from_data;
-  std::wstring title;
-  EXPECT_TRUE(data2.GetURLAndTitle(
-      OSExchangeData::CONVERT_FILENAMES, &url_from_data, &title));
-  GURL reference_url(input);
+  std::u16string title;
+  EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
+                                   &url_from_data, &title));
+  GURL reference_url(base::AsStringPiece16(input));
   EXPECT_EQ(reference_url.spec(), url_from_data.spec());
 }
 
@@ -148,18 +235,18 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
   // Construct a new object with the old object so that we can use our access
   // APIs.
   OSExchangeData data2(data.provider().Clone());
-  EXPECT_TRUE(data2.HasURL(OSExchangeData::CONVERT_FILENAMES));
+  EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   GURL url_from_data;
-  std::wstring title;
-  EXPECT_TRUE(data2.GetURLAndTitle(
-      OSExchangeData::CONVERT_FILENAMES, &url_from_data, &title));
-  EXPECT_EQ(GURL(input2).spec(), url_from_data.spec());
+  std::u16string title;
+  EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
+                                   &url_from_data, &title));
+  EXPECT_EQ(GURL(base::AsStringPiece16(input2)).spec(), url_from_data.spec());
 }
 
 TEST_F(OSExchangeDataWinTest, URLDataAccessViaCOM) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  data.SetURL(url, L"");
+  data.SetURL(url, std::u16string());
   Microsoft::WRL::ComPtr<IDataObject> com_data(
       OSExchangeDataProviderWin::GetIDataObject(data));
 
@@ -180,8 +267,8 @@ TEST_F(OSExchangeDataWinTest, MultipleFormatsViaCOM) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  std::wstring text = L"O hai googlz.";
-  data.SetURL(url, L"Google");
+  std::u16string text = u"O hai googlz.";
+  data.SetURL(url, u"Google");
   data.SetString(text);
 
   Microsoft::WRL::ComPtr<IDataObject> com_data(
@@ -213,8 +300,8 @@ TEST_F(OSExchangeDataWinTest, MultipleFormatsViaCOM) {
 
 TEST_F(OSExchangeDataWinTest, EnumerationViaCOM) {
   OSExchangeData data;
-  data.SetURL(GURL("http://www.google.com/"), L"");
-  data.SetString(L"O hai googlz.");
+  data.SetURL(GURL("http://www.google.com/"), std::u16string());
+  data.SetString(u"O hai googlz.");
 
   CLIPFORMAT cfstr_file_group_descriptor =
       RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR);
@@ -223,8 +310,7 @@ TEST_F(OSExchangeDataWinTest, EnumerationViaCOM) {
   Microsoft::WRL::ComPtr<IDataObject> com_data(
       OSExchangeDataProviderWin::GetIDataObject(data));
   Microsoft::WRL::ComPtr<IEnumFORMATETC> enumerator;
-  EXPECT_EQ(S_OK, com_data.Get()->EnumFormatEtc(DATADIR_GET,
-                                                enumerator.GetAddressOf()));
+  EXPECT_EQ(S_OK, com_data.Get()->EnumFormatEtc(DATADIR_GET, &enumerator));
 
   // Test that we can get one item.
   {
@@ -277,7 +363,7 @@ TEST_F(OSExchangeDataWinTest, EnumerationViaCOM) {
     EXPECT_EQ(S_OK, enumerator->Reset());
     EXPECT_EQ(S_OK, enumerator->Skip(1));
     Microsoft::WRL::ComPtr<IEnumFORMATETC> cloned_enumerator;
-    EXPECT_EQ(S_OK, enumerator.Get()->Clone(cloned_enumerator.GetAddressOf()));
+    EXPECT_EQ(S_OK, enumerator.Get()->Clone(&cloned_enumerator));
     EXPECT_EQ(S_OK, enumerator.Get()->Reset());
 
     {
@@ -304,7 +390,7 @@ TEST_F(OSExchangeDataWinTest, TestURLExchangeFormatsViaCOM) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  std::wstring url_title = L"www.google.com";
+  std::u16string url_title = u"www.google.com";
   data.SetURL(url, url_title);
 
   // File contents access via COM
@@ -406,8 +492,8 @@ TEST_F(OSExchangeDataWinTest, VirtualFiles) {
       } else {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
-        EXPECT_TRUE(read_contents.find(kTestFilenamesAndContents[i].second) !=
-                    std::string::npos);
+        EXPECT_TRUE(
+            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -542,8 +628,8 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNames) {
       } else {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
-        EXPECT_TRUE(read_contents.find(kTestFilenamesAndContents[i].second) !=
-                    std::string::npos);
+        EXPECT_TRUE(
+            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -625,24 +711,23 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNamesCaseInsensitivity) {
       } else {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
-        EXPECT_TRUE(read_contents.find(kTestFilenamesAndContents[i].second) !=
-                    std::string::npos);
+        EXPECT_TRUE(
+            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
       }
     }
   }
 }
 
 TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
-  const base::string16 kInvalidFileNameCharacters(
+  const std::wstring kInvalidFileNameCharacters(
       FILE_PATH_LITERAL("\\/:*?\"<>|"));
-  const base::string16 kInvalidFilePathCharacters(
-      FILE_PATH_LITERAL("/*?\"<>|"));
+  const std::wstring kInvalidFilePathCharacters(FILE_PATH_LITERAL("/*?\"<>|"));
   const base::FilePath kPathWithInvalidFileNameCharacters =
       base::FilePath(kInvalidFileNameCharacters)
           .AddExtension(FILE_PATH_LITERAL("txt"));
   const base::FilePath kEmptyDisplayName(FILE_PATH_LITERAL(""));
   const base::FilePath kMaxPathDisplayName =
-      base::FilePath(base::string16(MAX_PATH - 5, L'a'))
+      base::FilePath(std::wstring(MAX_PATH - 5, L'a'))
           .AddExtension(FILE_PATH_LITERAL("txt"));
 
   const std::vector<std::pair<base::FilePath, std::string>>
@@ -678,7 +763,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
     EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
     for (size_t i = 0; i < file_infos.size(); i++) {
       // Check that display name does not contain invalid characters.
-      EXPECT_EQ(std::string::npos,
+      EXPECT_EQ(std::wstring::npos,
                 file_infos[i].display_name.value().find_first_of(
                     kInvalidFileNameCharacters));
       // Check that display name is unique.
@@ -706,7 +791,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
     EXPECT_EQ(kTestFilenamesAndContents.size(), file_infos.size());
     for (size_t i = 0; i < retrieved_virtual_files_.size(); i++) {
       // Check that display name does not contain invalid characters.
-      EXPECT_EQ(std::string::npos,
+      EXPECT_EQ(std::wstring::npos,
                 retrieved_virtual_files_[i].display_name.value().find_first_of(
                     kInvalidFileNameCharacters));
       // Check that display name is unique.
@@ -717,7 +802,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
       }
       // Check that temp file path does not contain invalid characters (except
       // for separator).
-      EXPECT_EQ(std::string::npos,
+      EXPECT_EQ(std::wstring::npos,
                 retrieved_virtual_files_[i].path.value().find_first_of(
                     kInvalidFilePathCharacters));
       // Check that temp file path is unique.
@@ -747,8 +832,8 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
       } else {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
-        EXPECT_TRUE(read_contents.find(kTestFilenamesAndContents[i].second) !=
-                    std::string::npos);
+        EXPECT_TRUE(
+            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -819,10 +904,10 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesEmptyContents) {
 TEST_F(OSExchangeDataWinTest, CFHtml) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  std::wstring html(
-      L"<HTML>\n<BODY>\n"
-      L"<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
-      L"</BODY>\n</HTML>");
+  std::u16string html(
+      u"<HTML>\n<BODY>\n"
+      u"<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
+      u"</BODY>\n</HTML>");
   data.SetHtml(html, url);
 
   // Check the CF_HTML too.
@@ -831,10 +916,10 @@ TEST_F(OSExchangeDataWinTest, CFHtml) {
       "StartFragment:0000000175\r\nEndFragment:0000000252\r\n"
       "SourceURL:http://www.google.com/\r\n<html>\r\n<body>\r\n"
       "<!--StartFragment-->");
-  expected_cf_html += base::WideToUTF8(html);
+  expected_cf_html += base::UTF16ToUTF8(html);
   expected_cf_html.append("<!--EndFragment-->\r\n</body>\r\n</html>");
 
-  FORMATETC format = ClipboardFormatType::GetHtmlType().ToFormatEtc();
+  FORMATETC format = ClipboardFormatType::HtmlType().ToFormatEtc();
   STGMEDIUM medium;
   IDataObject* data_object = OSExchangeDataProviderWin::GetIDataObject(data);
   EXPECT_EQ(S_OK, data_object->GetData(&format, &medium));
@@ -846,24 +931,24 @@ TEST_F(OSExchangeDataWinTest, CFHtml) {
 
 TEST_F(OSExchangeDataWinTest, SetURLWithMaxPath) {
   OSExchangeData data;
-  std::wstring long_title(L'a', MAX_PATH + 1);
+  std::u16string long_title(MAX_PATH + 1, u'a');
   data.SetURL(GURL("http://google.com"), long_title);
 }
 
 TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
   OSExchangeData data;
-  data.SetString(L"http://google.com");
+  data.SetString(u"http://google.com");
 
   OSExchangeData data2(data.provider().Clone());
-  ASSERT_TRUE(data2.HasURL(OSExchangeData::CONVERT_FILENAMES));
+  ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   GURL read_url;
-  std::wstring title;
-  EXPECT_TRUE(data2.GetURLAndTitle(
-      OSExchangeData::CONVERT_FILENAMES, &read_url, &title));
+  std::u16string title;
+  EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
+                                   &read_url, &title));
   EXPECT_EQ(GURL("http://google.com"), read_url);
 }
 
-class MockDownloadFileProvider : public ui::DownloadFileProvider {
+class MockDownloadFileProvider : public DownloadFileProvider {
  public:
   MockDownloadFileProvider() = default;
   ~MockDownloadFileProvider() override = default;
@@ -890,7 +975,7 @@ TEST_F(OSExchangeDataWinTest, OnDownloadCompleted) {
 
   auto download_file_provider = std::make_unique<MockDownloadFileProvider>();
   auto weak_ptr = download_file_provider->GetWeakPtr();
-  OSExchangeData::DownloadFileInfo file_info(
+  DownloadFileInfo file_info(
       base::FilePath(FILE_PATH_LITERAL("file_with_no_contents.txt")),
       std::move(download_file_provider));
   provider.SetDownloadFileInfo(&file_info);
@@ -898,6 +983,64 @@ TEST_F(OSExchangeDataWinTest, OnDownloadCompleted) {
   OSExchangeDataProviderWin::GetDataObjectImpl(data)->OnDownloadCompleted(
       base::FilePath());
   EXPECT_TRUE(weak_ptr);
+}
+
+// Verifies the data set by DataObjectImpl::SetData with |fRelease| is released
+// correctly after the DataObjectImpl instance is destroyed.
+TEST_F(OSExchangeDataWinTest, SetDataRelease) {
+  RefCountMockStream stream;
+
+  ASSERT_EQ(stream.AddRef(), 1u);
+  {
+    OSExchangeDataProviderWin data_provider;
+    IDataObject* data_object = data_provider.data_object();
+
+    ClipboardFormatType format(
+        /* cfFormat= */ CF_TEXT, /* lindex= */ -1, /* tymed= */ TYMED_ISTREAM);
+    FORMATETC format_etc = format.ToFormatEtc();
+
+    STGMEDIUM medium;
+    medium.tymed = TYMED_ISTREAM;
+    medium.pstm = &stream;
+    medium.pUnkForRelease = nullptr;
+
+    // |stream| should be released when |data_object| is destroyed since it
+    // takes responsibility to release |stream| after used.
+    EXPECT_EQ(S_OK,
+              data_object->SetData(&format_etc, &medium, /* fRelease= */ TRUE));
+    ASSERT_EQ(stream.GetRefCount(), 1u);
+  }
+
+  EXPECT_EQ(stream.GetRefCount(), 0u);
+}
+
+// Verifies the data duplicated by DataObjectImpl::SetData without |fRelease|
+// is released correctly after the DataObjectImpl instance destroyed.
+TEST_F(OSExchangeDataWinTest, SetDataNoRelease) {
+  RefCountMockStream stream;
+
+  ASSERT_EQ(stream.GetRefCount(), 0u);
+  {
+    OSExchangeDataProviderWin data_provider;
+    IDataObject* data_object = data_provider.data_object();
+
+    ClipboardFormatType format(
+        /* cfFormat= */ CF_TEXT, /* lindex= */ -1, /* tymed= */ TYMED_ISTREAM);
+    FORMATETC format_etc = format.ToFormatEtc();
+
+    STGMEDIUM medium;
+    medium.tymed = TYMED_ISTREAM;
+    medium.pstm = &stream;
+    medium.pUnkForRelease = nullptr;
+
+    EXPECT_EQ(S_OK, data_object->SetData(&format_etc, &medium,
+                                         /* fRelease= */ FALSE));
+    ASSERT_EQ(stream.GetRefCount(), 1u);
+  }
+
+  // Reference count should be the same as before if |data_object| is
+  // destroyed.
+  EXPECT_EQ(stream.GetRefCount(), 0u);
 }
 
 }  // namespace ui

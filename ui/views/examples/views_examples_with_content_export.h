@@ -19,7 +19,8 @@
 
 #else  // defined(WIN32)
 #if defined(VIEWS_EXAMPLES_WITH_CONTENT_IMPLEMENTATION)
-#define VIEWS_EXAMPLES_WITH_CONTENT_EXPORT __attribute__((visibility("default")))
+#define VIEWS_EXAMPLES_WITH_CONTENT_EXPORT \
+  __attribute__((visibility("default")))
 #else
 #define VIEWS_EXAMPLES_WITH_CONTENT_EXPORT
 #endif

@@ -4,44 +4,21 @@
 
 #include "net/base/hex_utils.h"
 
-#include <algorithm>
-
-#include "base/strings/stringprintf.h"
+#include "base/strings/abseil_string_conversions.h"
+#include "base/strings/string_number_conversions.h"
+#include "net/third_party/quiche/src/common/quiche_text_utils.h"
 
 namespace net {
 
-std::string HexDump(base::StringPiece input) {
-  const int kBytesPerLine = 16;  // Maximum bytes dumped per line.
-  int offset = 0;
-  const char* buf = input.data();
-  int bytes_remaining = input.size();
+std::string HexDecode(base::StringPiece hex) {
   std::string output;
-  const char* p = buf;
-  while (bytes_remaining > 0) {
-    const int line_bytes = std::min(bytes_remaining, kBytesPerLine);
-    base::StringAppendF(&output, "0x%04x:  ", offset);
-    for (int i = 0; i < kBytesPerLine; ++i) {
-      if (i < line_bytes) {
-        base::StringAppendF(&output, "%02x", static_cast<unsigned char>(p[i]));
-      } else {
-        output += "  ";
-      }
-      if (i % 2) {
-        output += ' ';
-      }
-    }
-    output += ' ';
-    for (int i = 0; i < line_bytes; ++i) {
-      // Replace non-printable characters and 0x20 (space) with '.'
-      output += (p[i] > 0x20 && p[i] < 0x7f) ? p[i] : '.';
-    }
-
-    bytes_remaining -= line_bytes;
-    offset += line_bytes;
-    p += line_bytes;
-    output += '\n';
-  }
+  const bool success = base::HexStringToString(hex, &output);
+  DCHECK(success);
   return output;
+}
+
+std::string HexDump(base::StringPiece input) {
+  return quiche::QuicheTextUtils::HexDump(base::StringPieceToStringView(input));
 }
 
 }  // namespace net

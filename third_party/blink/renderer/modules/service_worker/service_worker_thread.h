@@ -32,6 +32,7 @@
 
 #include <memory>
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -53,7 +54,8 @@ class MODULES_EXPORT ServiceWorkerThread final : public WorkerThread {
       std::unique_ptr<ServiceWorkerInstalledScriptsManager>,
       mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
       scoped_refptr<base::SingleThreadTaskRunner>
-          parent_thread_default_task_runner);
+          parent_thread_default_task_runner,
+      const ServiceWorkerToken& service_worker_token);
   ~ServiceWorkerThread() override;
 
   WorkerBackingThread& GetWorkerBackingThread() override {
@@ -77,6 +79,8 @@ class MODULES_EXPORT ServiceWorkerThread final : public WorkerThread {
   std::unique_ptr<ServiceWorkerInstalledScriptsManager>
       installed_scripts_manager_;
   mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote_;
+
+  const ServiceWorkerToken service_worker_token_;
 };
 
 }  // namespace blink

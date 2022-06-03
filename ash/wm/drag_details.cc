@@ -10,7 +10,6 @@
 #include "ash/wm/window_resizer.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
-#include "ui/compositor/layer.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -45,9 +44,7 @@ int GetSizeChangeDirectionForWindowComponent(int window_component) {
 }
 
 gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
-  const bool is_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
-  if (is_tablet_mode) {
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       gfx::Rect bounds = *override_bounds;
@@ -58,46 +55,50 @@ gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
   return window->bounds();
 }
 
+gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
+  if (window_component != HTCAPTION)
+    return gfx::Rect();
+
+  // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
+  // and let it return the right value.
+  gfx::Rect restore_bounds;
+  WindowState* window_state = WindowState::Get(window);
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
+    if (override_bounds && !override_bounds->IsEmpty()) {
+      restore_bounds = *override_bounds;
+      wm::ConvertRectFromScreen(window->parent(), &restore_bounds);
+    }
+  } else if (window_state->HasRestoreBounds() &&
+             (window_state->IsNormalOrSnapped() ||
+              window_state->IsMaximized())) {
+    // TODO(sammiequon): Snapped and maximized windows should always have
+    // restore bounds. This is currently not the case for lacros browser after
+    // closing and reopening, see https://crbug.com/1238928. DCHECK for restore
+    // bounds if the window is snapped or maximized after the bug is fixed.
+    restore_bounds = window_state->GetRestoreBoundsInParent();
+  }
+  return restore_bounds;
+}
+
 }  // namespace
 
 DragDetails::DragDetails(aura::Window* window,
-                         const gfx::Point& location,
+                         const gfx::PointF& location,
                          int window_component,
-                         ::wm::WindowMoveSource source)
+                         wm::WindowMoveSource source)
     : initial_state_type(WindowState::Get(window)->GetStateType()),
       initial_bounds_in_parent(GetWindowInitialBoundsInParent(window)),
+      restore_bounds_in_parent(
+          GetRestoreBoundsInParent(window, window_component)),
       initial_location_in_parent(location),
-      // When drag starts, we might be in the middle of a window opacity
-      // animation, on drag completion we must set the opacity to the target
-      // opacity rather than the current opacity (crbug.com/687003).
-      initial_opacity(window->layer()->GetTargetOpacity()),
       window_component(window_component),
       bounds_change(
           WindowResizer::GetBoundsChangeForWindowComponent(window_component)),
-      position_change_direction(
-          WindowResizer::GetPositionChangeDirectionForWindowComponent(
-              window_component)),
       size_change_direction(
           GetSizeChangeDirectionForWindowComponent(window_component)),
       is_resizable(bounds_change != WindowResizer::kBoundsChangeDirection_None),
-      source(source) {
-  if (window_component != HTCAPTION)
-    return;
-
-  WindowState* window_state = WindowState::Get(window);
-  const bool is_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
-  // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
-  // and let it return the right value.
-  if (!is_tablet_mode && window_state->IsNormalOrSnapped() &&
-      window_state->HasRestoreBounds()) {
-    restore_bounds = window_state->GetRestoreBoundsInScreen();
-  } else if (is_tablet_mode) {
-    gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
-    if (override_bounds && !override_bounds->IsEmpty())
-      restore_bounds = *override_bounds;
-  }
-}
+      source(source) {}
 
 DragDetails::~DragDetails() = default;
 

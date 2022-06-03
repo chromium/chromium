@@ -3,6 +3,9 @@
 <title>Original Title</title>
 <link rel="shortcut icon" type="image/x-icon" href="http://test.com/oldfavicon.ico"/>
 <script>
+if (window.testRunner)
+    testRunner.waitUntilDone();
+
 function debugOutput(str) {
     text = document.createTextNode(str);
     debugDiv = document.getElementById('debugDiv');
@@ -64,11 +67,13 @@ function runTests() {
     var docHead = getHeadElement();
     docHead.insertBefore(createFavIconElement("http://example.org/icon1.ico"), docHead.firstChild);
     docHead.appendChild(createFavIconElement("http://example.org/icon2.ico"));
+    if (window.testRunner)
+        testRunner.notifyDone();
 }
 
 </script>
 </head>
-<body onload='runTests();'>
+<body onload="setTimeout(runTests, 0);">
 <div id='debugDiv'>
 </div>
 </body>

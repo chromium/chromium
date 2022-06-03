@@ -2,47 +2,81 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":management_browser_proxy",
-    ":management_ui",
+assert(!is_android, "!is_android check failed")
+
+preprocess_folder = "preprocessed"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/management_resources.h",
+    "grit/management_resources_map.cc",
+    "grit/management_resources_map.h",
+    "management_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "management"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "management.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "management_browser_proxy.ts" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "icons.ts",
+    "management_ui.ts",
   ]
 }
 
-js_library("management_ui") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+html_to_js("web_components") {
+  js_files = [
+    "icons.ts",
+    "management_ui.ts",
   ]
 }
 
-js_library("management_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "icons.ts",
+    "management_browser_proxy.ts",
+    "management_ui.ts",
   ]
-}
-
-polymer_modulizer("management_ui") {
-  js_file = "management_ui.js"
-  html_file = "management_ui.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("icons") {
-  js_file = "icons.js"
-  html_file = "icons.html"
-  html_type = "v3-ready"
-}
-
-group("polymer3_elements") {
   deps = [
-    ":icons_module",
-    ":management_ui_module",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
   ]
 }

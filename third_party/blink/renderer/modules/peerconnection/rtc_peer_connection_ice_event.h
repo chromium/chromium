@@ -51,7 +51,7 @@ class MODULES_EXPORT RTCPeerConnectionIceEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<RTCIceCandidate> candidate_;

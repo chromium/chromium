@@ -30,6 +30,9 @@ class DawnPlatform : public dawn_platform::Platform {
                          const unsigned char* arg_types,
                          const uint64_t* arg_values,
                          unsigned char flags) override;
+
+  std::unique_ptr<dawn_platform::WorkerTaskPool> CreateWorkerTaskPool()
+      override;
 };
 
 }  // namespace webgpu

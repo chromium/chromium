@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 6: Uncaught TypeError: document.querySelector(...).createShadowRoot is not a function

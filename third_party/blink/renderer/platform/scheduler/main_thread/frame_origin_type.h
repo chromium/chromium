@@ -14,9 +14,9 @@ namespace scheduler {
 // and should not be renumbered.
 enum class FrameOriginType {
   kMainFrame = 0,
-  kSameOriginFrame = 1,
-  kCrossOriginFrame = 2,
-  kCount = 3
+  kSameOriginToMainFrame = 1,
+  kCrossOriginToMainFrame = 2,
+  kMaxValue = kCrossOriginToMainFrame,
 };
 
 FrameOriginType GetFrameOriginType(FrameScheduler* frame_scheduler);

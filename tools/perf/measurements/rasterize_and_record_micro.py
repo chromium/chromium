@@ -64,60 +64,38 @@ class RasterizeAndRecordMicro(legacy_page_test.LegacyPageTest):
     data = tab.EvaluateJavaScript('window.benchmark_results.results')
 
     pixels_recorded = data['pixels_recorded']
-    record_time = data['record_time_ms']
     pixels_rasterized = data['pixels_rasterized']
-    rasterize_time = data['rasterize_time_ms']
     painter_memory_usage = data.get('painter_memory_usage', 0)
     paint_op_memory_usage = data.get('paint_op_memory_usage', 0)
     paint_op_count = data.get('paint_op_count', 0)
 
     results.AddMeasurement('pixels_recorded', 'count', pixels_recorded)
     results.AddMeasurement('pixels_rasterized', 'count', pixels_rasterized)
-    results.AddMeasurement('rasterize_time', 'ms', rasterize_time)
-    results.AddMeasurement('record_time', 'ms', record_time)
     results.AddMeasurement('painter_memory_usage', 'bytes',
                            painter_memory_usage)
     results.AddMeasurement('paint_op_memory_usage', 'bytes',
                            paint_op_memory_usage)
     results.AddMeasurement('paint_op_count', 'count', paint_op_count)
 
-    record_time_painting_disabled = data['record_time_painting_disabled_ms']
-    record_time_caching_disabled = data['record_time_caching_disabled_ms']
-    record_time_construction_disabled = \
-        data['record_time_construction_disabled_ms']
-    record_time_subsequence_caching_disabled = \
-        data['record_time_subsequence_caching_disabled_ms']
-    record_time_partial_invalidation = \
-        data['record_time_partial_invalidation_ms']
-    results.AddMeasurement('record_time_painting_disabled', 'ms',
-                           record_time_painting_disabled)
-    results.AddMeasurement('record_time_caching_disabled', 'ms',
-                           record_time_caching_disabled)
-    results.AddMeasurement('record_time_construction_disabled', 'ms',
-                           record_time_construction_disabled)
-    results.AddMeasurement('record_time_subsequence_caching_disabled', 'ms',
-                           record_time_subsequence_caching_disabled)
-    results.AddMeasurement('record_time_partial_invalidation_ms', 'ms',
-                           record_time_partial_invalidation)
+    for metric in ('rasterize_time', 'record_time',
+                   'record_time_caching_disabled',
+                   'record_time_subsequence_caching_disabled',
+                   'raster_invalidation_and_convert_time',
+                   'paint_artifact_compositor_update_time'):
+      results.AddMeasurement(metric, 'ms', data.get(metric + '_ms', 0))
 
     if self._report_detailed_results:
-      pixels_rasterized_with_non_solid_color = \
-          data['pixels_rasterized_with_non_solid_color']
-      pixels_rasterized_as_opaque = data['pixels_rasterized_as_opaque']
-      total_layers = data['total_layers']
-      total_picture_layers = data['total_picture_layers']
-      total_picture_layers_with_no_content = \
-          data['total_picture_layers_with_no_content']
-      total_picture_layers_off_screen = data['total_picture_layers_off_screen']
+      for metric in ('pixels_rasterized_with_non_solid_color',
+                     'pixels_rasterized_as_opaque', 'total_layers',
+                     'total_picture_layers',
+                     'total_picture_layers_with_no_content',
+                     'total_picture_layers_off_screen'):
+        results.AddMeasurement(metric, 'count', data[metric])
 
-      results.AddMeasurement('pixels_rasterized_with_non_solid_color',
-                             'count', pixels_rasterized_with_non_solid_color)
-      results.AddMeasurement('pixels_rasterized_as_opaque', 'count',
-                             pixels_rasterized_as_opaque)
-      results.AddMeasurement('total_layers', 'count', total_layers)
-      results.AddMeasurement('total_picture_layers', 'count',
-                             total_picture_layers)
-      results.AddMeasurement('total_picture_layers_with_no_content', 'count',
-                             total_picture_layers_with_no_content)
-      results.AddMeasurement('total_picture_layers_off_screen', 'count',
-                             total_picture_layers_off_screen)
+      lcd_text_pixels = data['visible_pixels_by_lcd_text_disallowed_reason']
+      for reason in lcd_text_pixels:
+        if reason == 'none':
+          name = 'visible_pixels_lcd_text'
+        else:
+          name = 'visible_pixels_non_lcd_text:' + reason
+        results.AddMeasurement(name, 'count', lcd_text_pixels[reason])

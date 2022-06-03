@@ -42,6 +42,7 @@ class DelayDSPKernel final : public AudioDelayDSPKernel {
   void CalculateSampleAccurateValues(float* delay_times,
                                      uint32_t frames_to_process) override;
   double DelayTime(float sample_rate) override;
+  bool IsAudioRate() override;
 
   void ProcessOnlyAudioParams(uint32_t frames_to_process) override;
 

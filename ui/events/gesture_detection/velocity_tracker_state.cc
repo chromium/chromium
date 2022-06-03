@@ -4,7 +4,7 @@
 
 #include "ui/events/gesture_detection/velocity_tracker_state.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/events/gesture_detection/motion_event.h"
 
 namespace ui {

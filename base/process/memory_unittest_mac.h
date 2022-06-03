@@ -21,15 +21,6 @@ void* AllocateViaCFAllocatorSystemDefault(ssize_t size);
 void* AllocateViaCFAllocatorMalloc(ssize_t size);
 void* AllocateViaCFAllocatorMallocZone(ssize_t size);
 
-#if !defined(ARCH_CPU_64_BITS)
-// See process_util_unittest_mac.mm for an explanation of why this function
-// isn't implemented for the 64-bit environment.
-
-// Allocates a huge Objective C object.
-void* AllocatePsychoticallyBigObjCObject();
-
-#endif  // !ARCH_CPU_64_BITS
-
 }  // namespace base
 
 #endif  // BASE_PROCESS_MEMORY_UNITTEST_MAC_H_

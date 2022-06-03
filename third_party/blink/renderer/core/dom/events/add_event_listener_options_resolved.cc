@@ -18,6 +18,8 @@ AddEventListenerOptionsResolved::AddEventListenerOptionsResolved(
     setPassive(options->passive());
   if (options->hasOnce())
     setOnce(options->once());
+  if (options->hasSignal())
+    setSignal(options->signal());
   // EventListenerOptions
   if (options->hasCapture())
     setCapture(options->capture());
@@ -25,7 +27,7 @@ AddEventListenerOptionsResolved::AddEventListenerOptionsResolved(
 
 AddEventListenerOptionsResolved::~AddEventListenerOptionsResolved() = default;
 
-void AddEventListenerOptionsResolved::Trace(Visitor* visitor) {
+void AddEventListenerOptionsResolved::Trace(Visitor* visitor) const {
   AddEventListenerOptions::Trace(visitor);
 }
 

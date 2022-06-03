@@ -15,13 +15,13 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:lineSpacingExtra="4dp"
-        android:textAppearance="@style/TextAppearance.BlackTitle1" />
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
     <TextView
         android:id="@+id/origin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:paddingTop="8dp"
-        android:textAppearance="@style/TextAppearance.BlackBody" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
 </LinearLayout>

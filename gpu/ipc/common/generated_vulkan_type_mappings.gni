@@ -1,0 +1,46 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is auto-generated from
+# gpu/ipc/common/generate_vulkan_types.py
+# DO NOT EDIT!
+
+generated_vulkan_type_mappings = [
+  {
+    mojom = "gpu.mojom.VkExtensionProperties"
+    cpp = "::VkExtensionProperties"
+  },
+  {
+    mojom = "gpu.mojom.VkLayerProperties"
+    cpp = "::VkLayerProperties"
+  },
+  {
+    mojom = "gpu.mojom.VkPhysicalDeviceProperties"
+    cpp = "::VkPhysicalDeviceProperties"
+  },
+  {
+    mojom = "gpu.mojom.VkPhysicalDeviceType"
+    cpp = "::VkPhysicalDeviceType"
+  },
+  {
+    mojom = "gpu.mojom.VkPhysicalDeviceLimits"
+    cpp = "::VkPhysicalDeviceLimits"
+  },
+  {
+    mojom = "gpu.mojom.VkPhysicalDeviceSparseProperties"
+    cpp = "::VkPhysicalDeviceSparseProperties"
+  },
+  {
+    mojom = "gpu.mojom.VkPhysicalDeviceFeatures"
+    cpp = "::VkPhysicalDeviceFeatures"
+  },
+  {
+    mojom = "gpu.mojom.VkQueueFamilyProperties"
+    cpp = "::VkQueueFamilyProperties"
+  },
+  {
+    mojom = "gpu.mojom.VkExtent3D"
+    cpp = "::VkExtent3D"
+  },
+]

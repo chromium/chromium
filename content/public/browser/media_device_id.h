@@ -14,6 +14,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/resource_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
 
@@ -51,7 +52,7 @@ CONTENT_EXPORT void GetMediaDeviceIDForHMAC(
     std::string salt,
     url::Origin security_origin,
     std::string hmac_device_id,
-    base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
 CONTENT_EXPORT bool IsValidDeviceId(const std::string& device_id);
 

@@ -16,11 +16,13 @@ import android.widget.TextView;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.datareduction.DataReductionPreferenceFragment;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.third_party.android.datausagechart.ChartDataUsageView;
@@ -68,6 +70,18 @@ public class DataReductionMainMenuItem extends FrameLayout implements View.OnCli
             itemText.setText(
                     getContext().getString(R.string.data_reduction_saved_label, dataSaved));
             itemSummary.setText(getContext().getString(R.string.data_reduction_date_label, date));
+            // TODO (https://crbug.com/1048632): Use the TabModel-specific profile instead of
+            // calling Profile.getLastUsedRegularProfile().
+            Profile profile =
+                    ProfileManager.isInitialized() ? Profile.getLastUsedRegularProfile() : null;
+            if (profile != null) {
+                Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+                tracker.addOnInitializedCallback((success) -> {
+                    if (success) {
+                        tracker.notifyEvent(EventConstants.OVERFLOW_OPENED_WITH_DATA_SAVER_SHOWN);
+                    }
+                });
+            }
         } else {
             DataReductionProxyUma.dataReductionProxyUIAction(
                     DataReductionProxyUma.ACTION_MAIN_MENU_DISPLAYED_OFF);
@@ -84,10 +98,14 @@ public class DataReductionMainMenuItem extends FrameLayout implements View.OnCli
         RecordUserAction.record("MobileMenuDataSaverOpened");
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putBoolean(DataReductionPreferenceFragment.FROM_MAIN_MENU, true);
-        SettingsLauncher.launchSettingsPage(
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(
                 getContext(), DataReductionPreferenceFragment.class, fragmentArgs);
 
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedProfile());
+        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now, but
+        // it is not safe.
+        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.notifyEvent(EventConstants.DATA_SAVER_DETAIL_OPENED);
     }
 }

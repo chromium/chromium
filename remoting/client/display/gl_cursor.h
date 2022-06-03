@@ -27,6 +27,10 @@ class GlRenderLayer;
 class GlCursor : public Drawable {
  public:
   GlCursor();
+
+  GlCursor(const GlCursor&) = delete;
+  GlCursor& operator=(const GlCursor&) = delete;
+
   ~GlCursor() override;
 
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape);
@@ -63,8 +67,6 @@ class GlCursor : public Drawable {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<Drawable> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlCursor);
 };
 
 }  // namespace remoting

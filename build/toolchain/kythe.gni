@@ -1,0 +1,11 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file defines configuration for Kythe, an indexer and cross-referencer
+# that powers codesearch.
+
+declare_args() {
+  # Enables Kythe annotations necessary to build cross references.
+  enable_kythe_annotations = false
+}

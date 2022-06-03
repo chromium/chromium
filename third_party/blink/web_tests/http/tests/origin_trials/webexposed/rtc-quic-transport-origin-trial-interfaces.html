@@ -4,32 +4,23 @@
 tools/origin_trials/generate_token.py http://127.0.0.1:8000 RTCQuicTransport --expire-timestamp=2000000000
 -->
 <meta http-equiv="origin-trial" content="Atq6Jbo2/q1/mFJ9lErFsAqkyeHIwkjR2qIq0jIhkh3UCvNEYAwfwd0cMLR9EF/qobLllgi4vGKKAJ23kdnCNgUAAABYeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiUlRDUXVpY1RyYW5zcG9ydCIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
-<title>RTCQuicTransport and RTCIceTransport - interfaces exposed by origin trial</title>
+<title>RTCIceTransport - interfaces exposed by origin trial</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/origin-trials-helper.js"></script>
 <script>
 
 properties_to_check = {
-    'RTCQuicTransport': ['transport', 'state', 'getKey', 'connect', 'listen',
-                         'stop', 'createStream', 'onstatechange', 'onerror',
-                         'onquicstream'],
     'RTCIceTransport': ['role', 'state', 'gatheringState', 'getLocalCandidates',
                         'getRemoteCandidates', 'getSelectedCandidatePair',
                         'getLocalParameters', 'getRemoteParameters',
                         'onstatechange', 'ongatheringstatechange',
                         'onselectedcandidatepairchange', 'gather', 'start',
                         'addRemoteCandidate', 'onicecandidate'],
-    'RTCQuicStream': ['transport', 'state', 'readBufferedAmount',
-                      'maxReadBufferedAmount', 'writeBufferedAmount',
-                      'readInto', 'write', 'reset',
-                      'waitForWriteBufferedAmountBelow',
-                      'waitForReadable', 'onstatechange'],
-    'RTCQuicStreamEvent': ['stream']
 };
 
 test(t => {
   OriginTrialsHelper.check_properties_exist(this, properties_to_check);
-}, 'RTCQuicTransport and RTCIceTransport properties are available.');
+}, 'RTCIceTransport properties are available.');
 
 </script>

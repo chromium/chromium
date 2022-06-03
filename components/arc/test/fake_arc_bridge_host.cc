@@ -5,6 +5,7 @@
 #include "components/arc/test/fake_arc_bridge_host.h"
 
 #include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "components/arc/mojom/adbd.mojom.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/appfuse.mojom.h"
@@ -18,19 +19,24 @@
 #include "components/arc/mojom/cast_receiver.mojom.h"
 #include "components/arc/mojom/cert_store.mojom.h"
 #include "components/arc/mojom/clipboard.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/crash_collector.mojom.h"
+#include "components/arc/mojom/dark_theme.mojom.h"
 #include "components/arc/mojom/disk_quota.mojom.h"
 #include "components/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "components/arc/mojom/input_method_manager.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "components/arc/mojom/keymaster.mojom.h"
 #include "components/arc/mojom/kiosk.mojom.h"
 #include "components/arc/mojom/lock_screen.mojom.h"
 #include "components/arc/mojom/media_session.mojom.h"
+#include "components/arc/mojom/memory.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/midis.mojom.h"
+#include "components/arc/mojom/nearby_share.mojom.h"
 #include "components/arc/mojom/net.mojom.h"
 #include "components/arc/mojom/notifications.mojom.h"
 #include "components/arc/mojom/obb_mounter.mojom.h"
@@ -38,20 +44,19 @@
 #include "components/arc/mojom/pip.mojom.h"
 #include "components/arc/mojom/policy.mojom.h"
 #include "components/arc/mojom/power.mojom.h"
-#include "components/arc/mojom/print.mojom.h"
 #include "components/arc/mojom/print_spooler.mojom.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/arc/mojom/property.mojom.h"
 #include "components/arc/mojom/rotation_lock.mojom.h"
 #include "components/arc/mojom/screen_capture.mojom.h"
+#include "components/arc/mojom/sensor.mojom.h"
+#include "components/arc/mojom/sharesheet.mojom.h"
 #include "components/arc/mojom/storage_manager.mojom.h"
 #include "components/arc/mojom/timer.mojom.h"
 #include "components/arc/mojom/tracing.mojom.h"
 #include "components/arc/mojom/tts.mojom.h"
 #include "components/arc/mojom/usb_host.mojom.h"
 #include "components/arc/mojom/video.mojom.h"
-#include "components/arc/mojom/voice_interaction_arc_home.mojom.h"
-#include "components/arc/mojom/voice_interaction_framework.mojom.h"
 #include "components/arc/mojom/volume_mounter.mojom.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "components/arc/mojom/wallpaper.mojom.h"
@@ -63,150 +68,194 @@ FakeArcBridgeHost::FakeArcBridgeHost() = default;
 FakeArcBridgeHost::~FakeArcBridgeHost() = default;
 
 void FakeArcBridgeHost::OnAccessibilityHelperInstanceReady(
-    mojom::AccessibilityHelperInstancePtr accessibility_helper_ptr) {}
+    mojo::PendingRemote<mojom::AccessibilityHelperInstance>
+        accessibility_helper_remote) {}
 
-void FakeArcBridgeHost::OnAppInstanceReady(mojom::AppInstancePtr app_ptr) {}
+void FakeArcBridgeHost::OnAdbdMonitorInstanceReady(
+    mojo::PendingRemote<mojom::AdbdMonitorInstance> adbd_monitor_remote) {}
+
+void FakeArcBridgeHost::OnAppInstanceReady(
+    mojo::PendingRemote<mojom::AppInstance> app_ptr) {}
 
 void FakeArcBridgeHost::OnAppPermissionsInstanceReady(
-    mojom::AppPermissionsInstancePtr app_permissions_ptr) {}
+    mojo::PendingRemote<mojom::AppPermissionsInstance> app_permissions_remote) {
+}
 
 void FakeArcBridgeHost::OnAppfuseInstanceReady(
-    mojom::AppfuseInstancePtr app_ptr) {}
+    mojo::PendingRemote<mojom::AppfuseInstance> app_remote) {}
 
 void FakeArcBridgeHost::OnAudioInstanceReady(
-    mojom::AudioInstancePtr audio_ptr) {}
+    mojo::PendingRemote<mojom::AudioInstance> audio_remote) {}
 
-void FakeArcBridgeHost::OnAuthInstanceReady(mojom::AuthInstancePtr auth_ptr) {}
+void FakeArcBridgeHost::OnAuthInstanceReady(
+    mojo::PendingRemote<mojom::AuthInstance> auth_remote) {}
 
 void FakeArcBridgeHost::OnBackupSettingsInstanceReady(
-    mojom::BackupSettingsInstancePtr backup_settings_ptr) {}
+    mojo::PendingRemote<mojom::BackupSettingsInstance> backup_settings_remote) {
+}
 
 void FakeArcBridgeHost::OnBluetoothInstanceReady(
-    mojom::BluetoothInstancePtr bluetooth_ptr) {}
+    mojo::PendingRemote<mojom::BluetoothInstance> bluetooth_remote) {}
 
 void FakeArcBridgeHost::OnBootPhaseMonitorInstanceReady(
-    mojom::BootPhaseMonitorInstancePtr boot_phase_monitor_ptr) {}
+    mojo::PendingRemote<mojom::BootPhaseMonitorInstance>
+        boot_phase_monitor_remote) {}
 
 void FakeArcBridgeHost::OnCameraInstanceReady(
-    mojom::CameraInstancePtr camera_ptr) {}
+    mojo::PendingRemote<mojom::CameraInstance> camera_remote) {}
 
 void FakeArcBridgeHost::OnCastReceiverInstanceReady(
-    mojom::CastReceiverInstancePtr cast_receiver_ptr) {}
+    mojo::PendingRemote<mojom::CastReceiverInstance> cast_receiver_remote) {}
 
 void FakeArcBridgeHost::OnCertStoreInstanceReady(
-    mojom::CertStoreInstancePtr instance_ptr) {}
+    mojo::PendingRemote<mojom::CertStoreInstance> instance_remote) {}
 
 void FakeArcBridgeHost::OnClipboardInstanceReady(
-    mojom::ClipboardInstancePtr clipboard_ptr) {}
+    mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) {}
+
+void FakeArcBridgeHost::OnCompatibilityModeInstanceReady(
+    mojo::PendingRemote<mojom::CompatibilityModeInstance>
+        compatibility_mode_remote) {}
 
 void FakeArcBridgeHost::OnCrashCollectorInstanceReady(
-    mojom::CrashCollectorInstancePtr crash_collector_ptr) {}
+    mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote) {
+}
+
+void FakeArcBridgeHost::OnDarkThemeInstanceReady(
+    mojo::PendingRemote<mojom::DarkThemeInstance> dark_theme_remote) {}
+
+void FakeArcBridgeHost::OnDigitalGoodsInstanceReady(
+    mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote) {}
 
 void FakeArcBridgeHost::OnDiskQuotaInstanceReady(
-    mojom::DiskQuotaInstancePtr disk_quota_ptr) {}
+    mojo::PendingRemote<mojom::DiskQuotaInstance> disk_quota_remote) {}
 
 void FakeArcBridgeHost::OnEnterpriseReportingInstanceReady(
-    mojom::EnterpriseReportingInstancePtr enterprise_reporting_ptr) {}
+    mojo::PendingRemote<mojom::EnterpriseReportingInstance>
+        enterprise_reporting_remote) {}
 
 void FakeArcBridgeHost::OnFileSystemInstanceReady(
-    mojom::FileSystemInstancePtr file_system_ptr) {}
+    mojo::PendingRemote<mojom::FileSystemInstance> file_system_remote) {}
 
-void FakeArcBridgeHost::OnImeInstanceReady(mojom::ImeInstancePtr ime_ptr) {}
+void FakeArcBridgeHost::OnIioSensorInstanceReady(
+    mojo::PendingRemote<mojom::IioSensorInstance> iio_sensor_remote) {}
+
+void FakeArcBridgeHost::OnImeInstanceReady(
+    mojo::PendingRemote<mojom::ImeInstance> ime_remote) {}
 
 void FakeArcBridgeHost::OnInputMethodManagerInstanceReady(
-    mojom::InputMethodManagerInstancePtr input_method_manager_ptr) {}
+    mojo::PendingRemote<mojom::InputMethodManagerInstance>
+        input_method_manager_remote) {}
 
 void FakeArcBridgeHost::OnIntentHelperInstanceReady(
-    mojom::IntentHelperInstancePtr intent_helper_ptr) {}
+    mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote) {}
+
+void FakeArcBridgeHost::OnKeyboardShortcutInstanceReady(
+    mojo::PendingRemote<mojom::KeyboardShortcutInstance>
+        keyboard_shortcut_remote) {}
 
 void FakeArcBridgeHost::OnKeymasterInstanceReady(
-    mojom::KeymasterInstancePtr keymaster_ptr) {}
+    mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) {}
 
 void FakeArcBridgeHost::OnKioskInstanceReady(
-    mojom::KioskInstancePtr kiosk_ptr) {}
+    mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) {}
 
 void FakeArcBridgeHost::OnLockScreenInstanceReady(
-    mojom::LockScreenInstancePtr lock_screen_ptr) {}
+    mojo::PendingRemote<mojom::LockScreenInstance> lock_screen_remote) {}
 
 void FakeArcBridgeHost::OnMediaSessionInstanceReady(
-    mojom::MediaSessionInstancePtr media_sesssion_ptr) {}
+    mojo::PendingRemote<mojom::MediaSessionInstance> media_sesssion_remote) {}
+
+void FakeArcBridgeHost::OnMemoryInstanceReady(
+    mojo::PendingRemote<mojom::MemoryInstance> memory_remote) {}
 
 void FakeArcBridgeHost::OnMetricsInstanceReady(
-    mojom::MetricsInstancePtr metrics_ptr) {}
+    mojo::PendingRemote<mojom::MetricsInstance> metrics_remote) {}
 
 void FakeArcBridgeHost::OnMidisInstanceReady(
-    mojom::MidisInstancePtr midis_ptr) {}
+    mojo::PendingRemote<mojom::MidisInstance> midis_remote) {}
 
-void FakeArcBridgeHost::OnNetInstanceReady(mojom::NetInstancePtr net_ptr) {}
+void FakeArcBridgeHost::OnNearbyShareInstanceReady(
+    mojo::PendingRemote<mojom::NearbyShareInstance> nearby_share_remote) {}
+
+void FakeArcBridgeHost::OnNetInstanceReady(
+    mojo::PendingRemote<mojom::NetInstance> net_remote) {}
 
 void FakeArcBridgeHost::OnNotificationsInstanceReady(
-    mojom::NotificationsInstancePtr notifications_ptr) {}
+    mojo::PendingRemote<mojom::NotificationsInstance> notifications_remote) {}
 
 void FakeArcBridgeHost::OnObbMounterInstanceReady(
-    mojom::ObbMounterInstancePtr obb_mounter_ptr) {}
+    mojo::PendingRemote<mojom::ObbMounterInstance> obb_mounter_remote) {}
 
 void FakeArcBridgeHost::OnOemCryptoInstanceReady(
-    mojom::OemCryptoInstancePtr oemcrypto_ptr) {}
+    mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) {}
 
-void FakeArcBridgeHost::OnPipInstanceReady(mojom::PipInstancePtr pip_ptr) {}
+void FakeArcBridgeHost::OnPaymentAppInstanceReady(
+    mojo::PendingRemote<mojom::PaymentAppInstance> payment_app_remote) {}
+
+void FakeArcBridgeHost::OnPipInstanceReady(
+    mojo::PendingRemote<mojom::PipInstance> pip_remote) {}
 
 void FakeArcBridgeHost::OnPolicyInstanceReady(
-    mojom::PolicyInstancePtr policy_ptr) {}
+    mojo::PendingRemote<mojom::PolicyInstance> policy_remote) {}
 
 void FakeArcBridgeHost::OnPowerInstanceReady(
-    mojom::PowerInstancePtr power_ptr) {}
-
-void FakeArcBridgeHost::OnPrintInstanceReady(
-    mojom::PrintInstancePtr print_ptr) {}
+    mojo::PendingRemote<mojom::PowerInstance> power_remote) {}
 
 void FakeArcBridgeHost::OnPrintSpoolerInstanceReady(
-    mojom::PrintSpoolerInstancePtr print_spooler_ptr) {}
+    mojo::PendingRemote<mojom::PrintSpoolerInstance> print_spooler_remote) {}
 
 void FakeArcBridgeHost::OnProcessInstanceReady(
-    mojom::ProcessInstancePtr process_ptr) {}
+    mojo::PendingRemote<mojom::ProcessInstance> process_remote) {}
 
 void FakeArcBridgeHost::OnPropertyInstanceReady(
-    mojom::PropertyInstancePtr property_ptr) {}
+    mojo::PendingRemote<mojom::PropertyInstance> property_remote) {}
 
 void FakeArcBridgeHost::OnRotationLockInstanceReady(
-    mojom::RotationLockInstancePtr rotation_lock_ptr) {}
+    mojo::PendingRemote<mojom::RotationLockInstance> rotation_lock_remote) {}
 
 void FakeArcBridgeHost::OnScreenCaptureInstanceReady(
-    mojom::ScreenCaptureInstancePtr screen_capture_ptr) {}
+    mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote) {}
+
+void FakeArcBridgeHost::OnSensorInstanceReady(
+    mojo::PendingRemote<mojom::SensorInstance> sensor_remote) {}
+
+void FakeArcBridgeHost::OnSharesheetInstanceReady(
+    mojo::PendingRemote<mojom::SharesheetInstance> sharesheet_remote) {}
 
 void FakeArcBridgeHost::OnSmartCardManagerInstanceReady(
-    mojom::SmartCardManagerInstancePtr smart_cardManager_ptr) {}
+    mojo::PendingRemote<mojom::SmartCardManagerInstance>
+        smart_cardManager_remote) {}
 
 void FakeArcBridgeHost::OnStorageManagerInstanceReady(
-    mojom::StorageManagerInstancePtr storage_manager_ptr) {}
+    mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
+}
 
 void FakeArcBridgeHost::OnTimerInstanceReady(
-    mojom::TimerInstancePtr timer_ptr) {}
+    mojo::PendingRemote<mojom::TimerInstance> timer_remote) {}
 
 void FakeArcBridgeHost::OnTracingInstanceReady(
-    mojom::TracingInstancePtr trace_ptr) {}
+    mojo::PendingRemote<mojom::TracingInstance> trace_remote) {}
 
-void FakeArcBridgeHost::OnTtsInstanceReady(mojom::TtsInstancePtr tts_ptr) {}
+void FakeArcBridgeHost::OnTtsInstanceReady(
+    mojo::PendingRemote<mojom::TtsInstance> tts_remote) {}
 
 void FakeArcBridgeHost::OnUsbHostInstanceReady(
-    mojom::UsbHostInstancePtr usb_ptr) {}
+    mojo::PendingRemote<mojom::UsbHostInstance> usb_remote) {}
 
 void FakeArcBridgeHost::OnVideoInstanceReady(
-    mojom::VideoInstancePtr video_ptr) {}
-
-void FakeArcBridgeHost::OnVoiceInteractionArcHomeInstanceReady(
-    mojom::VoiceInteractionArcHomeInstancePtr home_ptr) {}
-
-void FakeArcBridgeHost::OnVoiceInteractionFrameworkInstanceReady(
-    mojom::VoiceInteractionFrameworkInstancePtr framework_ptr) {}
+    mojo::PendingRemote<mojom::VideoInstance> video_remote) {}
 
 void FakeArcBridgeHost::OnVolumeMounterInstanceReady(
-    mojom::VolumeMounterInstancePtr volume_mounter_ptr) {}
+    mojo::PendingRemote<mojom::VolumeMounterInstance> volume_mounter_remote) {}
 
 void FakeArcBridgeHost::OnWakeLockInstanceReady(
-    mojom::WakeLockInstancePtr wakelock_ptr) {}
+    mojo::PendingRemote<mojom::WakeLockInstance> wakelock_remote) {}
 
 void FakeArcBridgeHost::OnWallpaperInstanceReady(
-    mojom::WallpaperInstancePtr wallpaper_ptr) {}
+    mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) {}
+
+void FakeArcBridgeHost::OnWebApkInstanceReady(
+    mojo::PendingRemote<mojom::WebApkInstance> wallpaper_remote) {}
 
 }  // namespace arc

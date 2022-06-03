@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -148,8 +148,8 @@ TEST_F(CencDecryptorTest, ExtraData) {
 
   auto encrypted_buffer =
       CreateEncryptedBuffer(encrypted_block, iv_, subsamples);
-  encrypted_buffer->set_timestamp(base::TimeDelta::FromDays(2));
-  encrypted_buffer->set_duration(base::TimeDelta::FromMinutes(5));
+  encrypted_buffer->set_timestamp(base::Days(2));
+  encrypted_buffer->set_duration(base::Minutes(5));
   encrypted_buffer->set_is_key_frame(true);
   encrypted_buffer->CopySideDataFrom(encrypted_block.data(),
                                      encrypted_block.size());

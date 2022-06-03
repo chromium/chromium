@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 139 tests; 135 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 138 tests; 136 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
@@ -10,10 +10,10 @@ PASS Response includes Body: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Window includes AnimationFrameProvider: member names are unique
 PASS Window includes WindowSessionStorage: member names are unique
 PASS Window includes WindowLocalStorage: member names are unique
-PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Headers interface: existence and properties of interface object
 PASS Headers interface object length
 PASS Headers interface object name
@@ -60,7 +60,7 @@ FAIL Request interface: attribute isReloadNavigation assert_true: The prototype 
 PASS Request interface: attribute isHistoryNavigation
 PASS Request interface: attribute signal
 PASS Request interface: operation clone()
-FAIL Request interface: attribute body assert_true: The prototype object must have a property "body" expected true got false
+PASS Request interface: attribute body
 PASS Request interface: attribute bodyUsed
 PASS Request interface: operation arrayBuffer()
 PASS Request interface: operation blob()
@@ -85,7 +85,7 @@ FAIL Request interface: new Request('about:blank') must inherit property "isRelo
 PASS Request interface: new Request('about:blank') must inherit property "isHistoryNavigation" with the proper type
 PASS Request interface: new Request('about:blank') must inherit property "signal" with the proper type
 PASS Request interface: new Request('about:blank') must inherit property "clone()" with the proper type
-FAIL Request interface: new Request('about:blank') must inherit property "body" with the proper type assert_inherits: property "body" not found in prototype chain
+PASS Request interface: new Request('about:blank') must inherit property "body" with the proper type
 PASS Request interface: new Request('about:blank') must inherit property "bodyUsed" with the proper type
 PASS Request interface: new Request('about:blank') must inherit property "arrayBuffer()" with the proper type
 PASS Request interface: new Request('about:blank') must inherit property "blob()" with the proper type
@@ -99,7 +99,7 @@ PASS Response interface: existence and properties of interface prototype object
 PASS Response interface: existence and properties of interface prototype object's "constructor" property
 PASS Response interface: existence and properties of interface prototype object's @@unscopables property
 PASS Response interface: operation error()
-PASS Response interface: operation redirect(USVString, unsigned short)
+PASS Response interface: operation redirect(USVString, optional unsigned short)
 PASS Response interface: attribute type
 PASS Response interface: attribute url
 PASS Response interface: attribute redirected
@@ -118,8 +118,8 @@ PASS Response interface: operation text()
 PASS Response must be primary interface of new Response()
 PASS Stringification of new Response()
 PASS Response interface: new Response() must inherit property "error()" with the proper type
-PASS Response interface: new Response() must inherit property "redirect(USVString, unsigned short)" with the proper type
-PASS Response interface: calling redirect(USVString, unsigned short) on new Response() with too few arguments must throw TypeError
+PASS Response interface: new Response() must inherit property "redirect(USVString, optional unsigned short)" with the proper type
+PASS Response interface: calling redirect(USVString, optional unsigned short) on new Response() with too few arguments must throw TypeError
 PASS Response interface: new Response() must inherit property "type" with the proper type
 PASS Response interface: new Response() must inherit property "url" with the proper type
 PASS Response interface: new Response() must inherit property "redirected" with the proper type
@@ -135,9 +135,8 @@ PASS Response interface: new Response() must inherit property "blob()" with the 
 PASS Response interface: new Response() must inherit property "formData()" with the proper type
 PASS Response interface: new Response() must inherit property "json()" with the proper type
 PASS Response interface: new Response() must inherit property "text()" with the proper type
-PASS Window interface: operation fetch(RequestInfo, RequestInit)
-PASS Window interface: window must inherit property "fetch(RequestInfo, RequestInit)" with the proper type
-PASS Window interface: calling fetch(RequestInfo, RequestInit) on window with too few arguments must throw TypeError
-PASS WorkerGlobalScope interface: existence and properties of interface object
+PASS Window interface: operation fetch(RequestInfo, optional RequestInit)
+PASS Window interface: window must inherit property "fetch(RequestInfo, optional RequestInit)" with the proper type
+PASS Window interface: calling fetch(RequestInfo, optional RequestInit) on window with too few arguments must throw TypeError
 Harness: the test ran to completion.
 

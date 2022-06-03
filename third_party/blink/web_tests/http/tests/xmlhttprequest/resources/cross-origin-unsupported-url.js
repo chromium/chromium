@@ -10,7 +10,7 @@ function testSync(url, contentType) {
     if (contentType) {
       xhr.setRequestHeader('Content-Type', contentType);
     }
-    assert_throws('NetworkError', () => xhr.send());
+    assert_throws_dom('NetworkError', () => xhr.send());
   }, `sync test for url=${url}, contentType=${contentType}`);
 }
 

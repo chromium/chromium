@@ -1,4 +1,0 @@
-HTTP/1.0 200 OK
-Content-Type: text/html
-Sec-Origin-Policy: policy=policy-with-307redirect
-

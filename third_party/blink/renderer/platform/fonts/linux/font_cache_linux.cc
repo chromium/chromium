@@ -75,7 +75,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // underlying system for the font family.
   if (font_manager_) {
     AtomicString family_name = GetFamilyNameForCharacter(
-        font_manager_.get(), c, font_description, fallback_priority);
+        font_manager_.get(), c, font_description, nullptr, fallback_priority);
     if (family_name.IsEmpty())
       return GetLastResortFallbackFont(font_description, kDoNotRetain);
     return FontDataFromFontPlatformData(
@@ -104,7 +104,10 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 
   gfx::FallbackFontData fallback_font;
   if (!FontCache::GetFontForCharacter(
-          c, font_description.LocaleOrDefault().Ascii().c_str(),
+          c,
+          fallback_priority == FontFallbackPriority::kEmojiEmoji
+              ? kColorEmojiLocale
+              : font_description.LocaleOrDefault().Ascii().c_str(),
           &fallback_font))
     return nullptr;
 
@@ -121,13 +124,15 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   FontDescription description(font_description);
   if (fallback_font.is_bold && description.Weight() < BoldThreshold())
     description.SetWeight(BoldWeightValue());
-  if (!fallback_font.is_bold && description.Weight() >= BoldThreshold()) {
+  if (!fallback_font.is_bold && description.Weight() >= BoldThreshold() &&
+      font_description.SyntheticBoldAllowed()) {
     should_set_synthetic_bold = true;
     description.SetWeight(NormalWeightValue());
   }
   if (fallback_font.is_italic && description.Style() == NormalSlopeValue())
     description.SetStyle(ItalicSlopeValue());
-  if (!fallback_font.is_italic && (description.Style() == ItalicSlopeValue())) {
+  if (!fallback_font.is_italic && (description.Style() == ItalicSlopeValue()) &&
+      font_description.SyntheticItalicAllowed()) {
     should_set_synthetic_italic = true;
     description.SetStyle(NormalSlopeValue());
   }

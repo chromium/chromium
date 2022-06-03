@@ -9,16 +9,17 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/sample_format.h"
+#include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,7 +39,7 @@ class MockDemuxerStream;
 // Return a callback that expects to be run once.
 base::OnceClosure NewExpectedClosure();
 base::OnceCallback<void(bool)> NewExpectedBoolCB(bool success);
-PipelineStatusCB NewExpectedStatusCB(PipelineStatus status);
+PipelineStatusCallback NewExpectedStatusCB(PipelineStatus status);
 
 // Helper class for running a message loop until a callback has run. Useful for
 // testing classes that run on more than a single thread.
@@ -48,11 +49,15 @@ class WaitableMessageLoopEvent {
  public:
   WaitableMessageLoopEvent();
   explicit WaitableMessageLoopEvent(base::TimeDelta timeout);
+
+  WaitableMessageLoopEvent(const WaitableMessageLoopEvent&) = delete;
+  WaitableMessageLoopEvent& operator=(const WaitableMessageLoopEvent&) = delete;
+
   ~WaitableMessageLoopEvent();
 
   // Returns a thread-safe closure that will signal |this| when executed.
-  base::Closure GetClosure();
-  PipelineStatusCB GetPipelineStatusCB();
+  base::OnceClosure GetClosure();
+  PipelineStatusCallback GetPipelineStatusCB();
 
   // Runs the current message loop until |this| has been signaled.
   //
@@ -77,39 +82,49 @@ class WaitableMessageLoopEvent {
   const base::TimeDelta timeout_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableMessageLoopEvent);
 };
 
 // Provides pre-canned VideoDecoderConfig. These types are used for tests that
 // don't care about detailed parameters of the config.
 class TestVideoConfig {
  public:
+  TestVideoConfig(const TestVideoConfig&) = delete;
+  TestVideoConfig& operator=(const TestVideoConfig&) = delete;
+
   // Returns a configuration that is invalid.
   static VideoDecoderConfig Invalid();
 
-  static VideoDecoderConfig Normal(VideoCodec codec = kCodecVP8);
+  static VideoDecoderConfig Normal(VideoCodec codec = VideoCodec::kVP8);
   static VideoDecoderConfig NormalWithColorSpace(
       VideoCodec codec,
       const VideoColorSpace& color_space);
   static VideoDecoderConfig NormalH264(VideoCodecProfile = H264PROFILE_MIN);
   static VideoDecoderConfig NormalCodecProfile(
-      VideoCodec codec = kCodecVP8,
+      VideoCodec codec = VideoCodec::kVP8,
       VideoCodecProfile profile = VP8PROFILE_MIN);
-  static VideoDecoderConfig NormalEncrypted(VideoCodec codec = kCodecVP8,
+  static VideoDecoderConfig NormalEncrypted(VideoCodec codec = VideoCodec::kVP8,
                                             VideoCodecProfile = VP8PROFILE_MIN);
   static VideoDecoderConfig NormalRotated(VideoRotation rotation);
 
   // Returns a configuration that is larger in dimensions than Normal().
-  static VideoDecoderConfig Large(VideoCodec codec = kCodecVP8);
-  static VideoDecoderConfig LargeEncrypted(VideoCodec codec = kCodecVP8);
+  static VideoDecoderConfig Large(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig LargeEncrypted(VideoCodec codec = VideoCodec::kVP8);
+
+  // Returns a configuration that is larger in dimensions that Large().
+  static VideoDecoderConfig ExtraLarge(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig ExtraLargeEncrypted(
+      VideoCodec codec = VideoCodec::kVP8);
+
+  static VideoDecoderConfig Custom(gfx::Size size,
+                                   VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig CustomEncrypted(
+      gfx::Size size,
+      VideoCodec codec = VideoCodec::kVP8);
 
   // Returns coded size for Normal and Large config.
   static gfx::Size NormalCodedSize();
   static gfx::Size LargeCodedSize();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestVideoConfig);
+  static gfx::Size ExtraLargeCodedSize();
 };
 
 // Provides pre-canned AudioDecoderConfig. These types are used for tests that
@@ -118,15 +133,23 @@ class TestAudioConfig {
  public:
   static AudioDecoderConfig Normal();
   static AudioDecoderConfig NormalEncrypted();
+
+  // Returns configurations that have a higher sample rate than Normal()
+  static AudioDecoderConfig HighSampleRate();
+  static AudioDecoderConfig HighSampleRateEncrypted();
+
+  // Returns coded sample rate for Normal and HighSampleRate config.
+  static int NormalSampleRateValue();
+  static int HighSampleRateValue();
 };
 
 // Provides pre-canned AudioParameters objects.
 class TestAudioParameters {
  public:
-  static AudioParameters Normal();
+  TestAudioParameters(const TestAudioParameters&) = delete;
+  TestAudioParameters& operator=(const TestAudioParameters&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAudioParameters);
+  static AudioParameters Normal();
 };
 
 // Create an AudioBuffer containing |frames| frames of data, where each sample
@@ -156,6 +179,18 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
                                            T increment,
                                            size_t frames,
                                            base::TimeDelta timestamp);
+
+// Similar to above, but for float types where the maximum range is limited to
+// [-1.0f, 1.0f]. Here the stored values will be divided by 65536.
+template <>
+scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
+                                                  ChannelLayout channel_layout,
+                                                  size_t channel_count,
+                                                  int sample_rate,
+                                                  float start,
+                                                  float increment,
+                                                  size_t frames,
+                                                  base::TimeDelta timestamp);
 
 // Create an AudioBuffer containing bitstream data. |start| and |increment| are
 // used to specify the values for the data. The value is determined by:
@@ -198,6 +233,26 @@ bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
 // Create a MockDemuxerStream for testing purposes.
 std::unique_ptr<::testing::StrictMock<MockDemuxerStream>>
 CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
+
+// Compares two media::Status by StatusCode only.
+MATCHER_P(SameStatusCode, status, "") {
+  return arg.code() == status.code();
+}
+
+// Compares an `arg` Status.code() to a test-supplied StatusCode.
+MATCHER_P(HasStatusCode, status_code, "") {
+  return arg.code() == status_code;
+}
+
+MATCHER(IsOkStatus, "") {
+  return arg.is_ok();
+}
+
+// True if and only if the Status would be interpreted as an error from a decode
+// callback (not okay, not aborted).
+MATCHER(IsDecodeErrorStatus, "") {
+  return !arg.is_ok() && arg.code() != StatusCode::kAborted;
+}
 
 // Compares two {Audio|Video}DecoderConfigs
 MATCHER_P(DecoderConfigEq, config, "") {
@@ -312,7 +367,14 @@ MATCHER_P2(AudioNonKeyframe, pts_microseconds, dts_microseconds, "") {
                base::NumberToString(pts_microseconds) + "us and DTS " +
                base::NumberToString(dts_microseconds) +
                "us indicated the frame is not a random access point (key "
-               "frame). All audio frames are expected to be key frames.");
+               "frame). All audio frames are expected to be key frames for "
+               "the current audio codec.");
+}
+
+MATCHER(AudioNonKeyframeOutOfOrder, "") {
+  return CONTAINS_STRING(arg,
+                         "Dependent audio frame with invalid decreasing "
+                         "presentation timestamp detected.");
 }
 
 MATCHER_P2(SkippingSpliceAtOrBefore,
@@ -354,11 +416,6 @@ MATCHER(WebMSimpleBlockDurationEstimatedAny, "") {
 MATCHER_P(WebMSimpleBlockDurationEstimated, estimated_duration_ms, "") {
   return CONTAINS_STRING(arg, "Estimating WebM block duration=" +
                                   base::NumberToString(estimated_duration_ms));
-}
-
-MATCHER_P(WebMNegativeTimecodeOffset, timecode_string, "") {
-  return CONTAINS_STRING(arg, "Got a block with negative timecode offset " +
-                                  std::string(timecode_string));
 }
 
 MATCHER(WebMOutOfOrderTimecode, "") {
@@ -433,6 +490,20 @@ MATCHER_P3(DroppedFrameCheckAppendWindow,
              arg, "outside append window [" +
                       base::NumberToString(append_window_start_us) + "us," +
                       base::NumberToString(append_window_end_us) + "us");
+}
+
+MATCHER_P3(DroppedAppendWindowUnusedPreroll,
+           pts_us,
+           delta_us,
+           next_pts_us,
+           "") {
+  return CONTAINS_STRING(
+      arg,
+      "Partial append window trimming dropping unused audio preroll buffer "
+      "with PTS " +
+          base::NumberToString(pts_us) + "us that ends too far (" +
+          base::NumberToString(delta_us) + "us) from next buffer with PTS " +
+          base::NumberToString(next_pts_us) + "us");
 }
 
 }  // namespace media

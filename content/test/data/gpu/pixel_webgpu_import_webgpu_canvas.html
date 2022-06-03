@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGPU experimentalImportTexture test</title>
+  <style type="text/css">
+  .nomargin {
+    margin: 0px auto;
+  }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    async function main() {
+      const gpuCanvas1 = document.getElementById('canvas_gpu1');
+      const [gpuDevice1, gpuContext1] = await webGpuUtils.init(gpuCanvas1);
+      if (!gpuDevice1 || !gpuContext1) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const gpuCanvas2 = document.getElementById('canvas_gpu2');
+      const [gpuDevice2, gpuContext2] = await webGpuUtils.init(gpuCanvas2);
+      if (!gpuDevice2 || !gpuContext2) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const renderCallback = function() {
+        webGpuUtils.fourColorsTest(gpuDevice1, gpuContext1, gpuCanvas1.width,
+                                   gpuCanvas1.height);
+        
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice2,
+                                           gpuContext2,
+                                           gpuCanvas1, 
+                                           {useImport: true, isWebGLCanvas: false});
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+  </script>
+</head>
+<body onload="main()">
+  <canvas id="canvas_gpu1" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_gpu2" width="200" height="200" class="nomargin"></canvas>
+</body>
+</html>

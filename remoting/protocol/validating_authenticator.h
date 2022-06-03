@@ -31,15 +31,19 @@ class ValidatingAuthenticator : public Authenticator {
     ERROR_TOO_MANY_CONNECTIONS
   };
 
-  typedef base::Callback<void(Result validation_result)> ResultCallback;
+  typedef base::OnceCallback<void(Result validation_result)> ResultCallback;
 
-  typedef base::Callback<void(const std::string& remote_jid,
-                              const ResultCallback& callback)>
+  typedef base::RepeatingCallback<void(const std::string& remote_jid,
+                                       ResultCallback callback)>
       ValidationCallback;
 
   ValidatingAuthenticator(const std::string& remote_jid,
                           const ValidationCallback& validation_callback,
                           std::unique_ptr<Authenticator> current_authenticator);
+
+  ValidatingAuthenticator(const ValidatingAuthenticator&) = delete;
+  ValidatingAuthenticator& operator=(const ValidatingAuthenticator&) = delete;
+
   ~ValidatingAuthenticator() override;
 
   // Authenticator interface.
@@ -50,17 +54,17 @@ class ValidatingAuthenticator : public Authenticator {
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
-                      const base::Closure& resume_callback) override;
+                      base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
 
  private:
   // Checks |result|.  If the connection was rejected, |state_| and
   // |rejection_reason_| are updated.  |callback| is always run.
-  void OnValidateComplete(const base::Closure& callback, Result result);
+  void OnValidateComplete(base::OnceClosure callback, Result result);
 
   // Updates |state_| to reflect the current underlying authenticator state.
   // |resume_callback| is called after the state is updated.
-  void UpdateState(const base::Closure& resume_callback);
+  void UpdateState(base::OnceClosure resume_callback);
 
   // The JID of the remote user.
   std::string remote_jid_;
@@ -79,8 +83,6 @@ class ValidatingAuthenticator : public Authenticator {
   std::unique_ptr<jingle_xmpp::XmlElement> pending_auth_message_;
 
   base::WeakPtrFactory<ValidatingAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticator);
 };
 
 }  // namespace protocol

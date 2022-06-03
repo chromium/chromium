@@ -1,0 +1,60 @@
+This test checks min-width|height auto behavior for grids
+
+XXXX
+PASS
+XXXX
+PASS
+XXXX
+PASS
+XXXX
+PASS
+XXXX
+PASS
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid itemsStart">
+        <div class="ahem" data-expected-width="100" data-expected-height="25">XXXX</div>
+    </div>
+</div>
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid itemsStart">
+        <div class="ahem minSmaller" data-expected-width="100" data-expected-height="25">XXXX</div>
+    </div>
+</div>
+XXXX
+PASS
+XXXX
+PASS
+XXXX
+FAIL:
+Expected 100 for width, but got 99. 
+
+<div class="container">
+    <div class="grid itemsStart">
+        <div class="ahem maxBigger" data-expected-width="100" data-expected-height="25">XXXX</div>
+    </div>
+</div>
+XXX X
+PASS
+XXX X
+FAIL:
+Expected 75 for width, but got 74. 
+
+<div class="container">
+    <div class="grid itemsStart">
+        <div class="ahem" data-expected-width="75" data-expected-height="50">XXX X</div>
+    </div>
+</div>
+XXXX
+PASS
+XXXX
+PASS
+XXXX
+PASS

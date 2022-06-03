@@ -35,17 +35,17 @@ namespace net {
 namespace {
 
 void SaveIdentitiesAndQuitCallback(ClientCertIdentityList* out_identities,
-                                   base::Closure quit_closure,
+                                   base::OnceClosure quit_closure,
                                    ClientCertIdentityList in_identities) {
   *out_identities = std::move(in_identities);
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void SavePrivateKeyAndQuitCallback(scoped_refptr<net::SSLPrivateKey>* out_key,
-                                   base::Closure quit_closure,
+                                   base::OnceClosure quit_closure,
                                    scoped_refptr<net::SSLPrivateKey> in_key) {
   *out_key = std::move(in_key);
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 }  // namespace
@@ -106,9 +106,10 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
 
     ClientCertIdentityList selected_identities;
     base::RunLoop loop;
-    store->GetClientCerts(*request.get(),
-                          base::Bind(SaveIdentitiesAndQuitCallback,
-                                     &selected_identities, loop.QuitClosure()));
+    store->GetClientCerts(
+        *request.get(),
+        base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
+                       loop.QuitClosure()));
     loop.Run();
 
     // The result be |client_1| with no intermediates.
@@ -140,9 +141,10 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
 
     ClientCertIdentityList selected_identities;
     base::RunLoop loop;
-    store->GetClientCerts(*request.get(),
-                          base::Bind(SaveIdentitiesAndQuitCallback,
-                                     &selected_identities, loop.QuitClosure()));
+    store->GetClientCerts(
+        *request.get(),
+        base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
+                       loop.QuitClosure()));
     loop.Run();
 
     // The result be |client_1| with |client_1_ca| as an intermediate.
@@ -218,9 +220,9 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
 
   ClientCertIdentityList selected_identities;
   base::RunLoop loop;
-  store->GetClientCerts(*request.get(),
-                        base::Bind(SaveIdentitiesAndQuitCallback,
-                                   &selected_identities, loop.QuitClosure()));
+  store->GetClientCerts(
+      *request.get(), base::BindOnce(SaveIdentitiesAndQuitCallback,
+                                     &selected_identities, loop.QuitClosure()));
   loop.Run();
 
   // The result be |cert| with no intermediates.

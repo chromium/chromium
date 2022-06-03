@@ -8,6 +8,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
 ACTION_XML_PATH = '../../../tools/metrics/actions/actions.xml'
 
 
@@ -93,13 +94,6 @@ def CheckHtml(input_api, output_api):
       input_api, output_api, 80, lambda x: x.LocalPath().endswith('.html'))
 
 
-def RunOptimizeWebUiTests(input_api, output_api):
-  presubmit_path = input_api.PresubmitLocalPath()
-  sources = ['optimize_webui_test.py', 'unpack_pak_test.py']
-  tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
-  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
-
-
 def _CheckSvgsOptimized(input_api, output_api):
   results = []
   try:
@@ -135,11 +129,6 @@ def _CheckChangeOnUploadOrCommit(input_api, output_api):
   affected = input_api.AffectedFiles()
   if any(f for f in affected if f.LocalPath().endswith('.html')):
     results += CheckHtml(input_api, output_api)
-
-  webui_sources = set(['optimize_webui.py', 'unpack_pak.py'])
-  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
-  if webui_sources.intersection(set(affected_files)):
-    results += RunOptimizeWebUiTests(input_api, output_api)
   results += _CheckSvgsOptimized(input_api, output_api)
   results += _CheckWebDevStyle(input_api, output_api)
   results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,

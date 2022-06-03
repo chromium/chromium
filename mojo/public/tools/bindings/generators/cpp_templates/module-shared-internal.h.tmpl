@@ -9,10 +9,12 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
+{%- if not contains_only_enums %}
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/map_data_internal.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
+{%- endif %}
 
 {%- for import in imports %}
 #include "{{import.path}}-shared-internal.h"

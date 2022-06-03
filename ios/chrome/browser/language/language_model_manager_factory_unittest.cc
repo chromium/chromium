@@ -25,7 +25,7 @@ TEST_F(LanguageModelManagerFactoryTest, SharedWithIncognito) {
       LanguageModelManagerFactory::GetForBrowserState(state.get());
   EXPECT_THAT(manager, Not(IsNull()));
 
-  ios::ChromeBrowserState* const incognito =
+  ChromeBrowserState* const incognito =
       state->GetOffTheRecordChromeBrowserState();
   ASSERT_THAT(incognito, Not(IsNull()));
   EXPECT_THAT(LanguageModelManagerFactory::GetForBrowserState(incognito),

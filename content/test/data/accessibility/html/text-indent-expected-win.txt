@@ -1,0 +1,15 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION text-indent:13.23mm
+++++ROLE_SYSTEM_STATICTEXT name='Text indent 50px'
+++IA2_ROLE_SECTION text-indent:-13.23mm
+++++ROLE_SYSTEM_STATICTEXT name='Text indent -50px'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Text indent 0px'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Text indent initial'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Text indent inherit'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='No text indent specified'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Invalid text indent'

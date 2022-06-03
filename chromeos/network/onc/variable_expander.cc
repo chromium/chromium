@@ -4,6 +4,9 @@
 
 #include "chromeos/network/onc/variable_expander.h"
 
+#include <algorithm>
+
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -41,8 +44,7 @@ bool ParseRange(base::StringPiece range, size_t* start, size_t* count) {
 bool Expand(base::StringPiece variable_name,
             base::StringPiece replacement,
             std::string* str) {
-  std::string token("${");
-  variable_name.AppendToString(&token);
+  std::string token = base::StrCat({"${", variable_name});
   size_t token_start = 0;
   bool no_error = true;
   int count = 0;
@@ -86,8 +88,8 @@ bool Expand(base::StringPiece variable_name,
       }
     }
 
-    const base::StringPiece replacement_part =
-        replacement.substr(replacement_start, replacement_count);
+    const base::StringPiece replacement_part = replacement.substr(
+        std::min(replacement_start, replacement.size()), replacement_count);
     // Don't use ReplaceSubstringsAfterOffset here, it can lead to a doubling
     // of tokens, see VariableExpanderTest.DoesNotRecurse test.
     base::ReplaceFirstSubstringAfterOffset(str, token_start, full_token,
@@ -126,7 +128,7 @@ bool VariableExpander::ExpandValue(base::Value* value) const {
     }
 
     case base::Value::Type::DICTIONARY: {
-      for (const auto& child : value->DictItems())
+      for (const auto child : value->DictItems())
         no_error &= ExpandValue(&child.second);
       break;
     }
@@ -143,12 +145,6 @@ bool VariableExpander::ExpandValue(base::Value* value) const {
     case base::Value::Type::BINARY:
     case base::Value::Type::NONE: {
       // Nothing to do here.
-      break;
-    }
-
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD: {
-      CHECK(false);
       break;
     }
   }

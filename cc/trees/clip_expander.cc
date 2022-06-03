@@ -5,7 +5,7 @@
 #include "cc/trees/clip_expander.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/property_tree.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 
@@ -13,6 +13,8 @@ ClipExpander::ClipExpander(int filter_effect_id)
     : target_effect_id_(filter_effect_id) {}
 
 ClipExpander::ClipExpander(const ClipExpander& other) = default;
+
+ClipExpander& ClipExpander::operator=(const ClipExpander& other) = default;
 
 bool ClipExpander::operator==(const ClipExpander& other) const {
   return target_effect_id_ == other.target_effect_id_;
@@ -25,7 +27,8 @@ gfx::Rect ClipExpander::MapRect(const gfx::Rect& rect,
   gfx::Transform filter_draw_transform;
   filter_draw_transform.Scale(effect_node->surface_contents_scale.x(),
                               effect_node->surface_contents_scale.y());
-  return effect_node->filters.MapRect(rect, filter_draw_transform.matrix());
+  return effect_node->filters.MapRect(rect,
+                                      SkMatrix(filter_draw_transform.matrix()));
 }
 
 gfx::Rect ClipExpander::MapRectReverse(
@@ -36,8 +39,8 @@ gfx::Rect ClipExpander::MapRectReverse(
   gfx::Transform filter_draw_transform;
   filter_draw_transform.Scale(effect_node->surface_contents_scale.x(),
                               effect_node->surface_contents_scale.y());
-  return effect_node->filters.MapRectReverse(rect,
-                                             filter_draw_transform.matrix());
+  return effect_node->filters.MapRectReverse(
+      rect, SkMatrix(filter_draw_transform.matrix()));
 }
 
 }  // namespace cc

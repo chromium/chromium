@@ -17,7 +17,8 @@
 <div id="footer"></div>
 <script>
 'use strict';
-eventSender.setPageZoomFactor(2);
+if (window.testRunner)
+  testRunner.setPageZoomFactor(2);
 
 [
   '10px 10px 10px',

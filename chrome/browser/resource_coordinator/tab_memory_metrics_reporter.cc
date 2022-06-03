@@ -68,7 +68,7 @@ void TabMemoryMetricsReporter::MonitorWebContents(
   base::TimeTicks current_time = NowTicks();
   WebContentsData data;
   data.page_loaded_time = current_time;
-  data.next_emit_time = data.page_loaded_time + base::TimeDelta::FromMinutes(1);
+  data.next_emit_time = data.page_loaded_time + base::Minutes(1);
   data.state = NO_METRICS_EMITTED;
   data.web_contents = web_contents;
 
@@ -162,8 +162,7 @@ bool TabMemoryMetricsReporter::EmitMemoryMetricsAfterPageLoaded(
 base::TimeDelta TabMemoryMetricsReporter::NextEmitTimeAfterPageLoaded(
     TabMemoryMetricsReporter::ReportState state) {
   static constexpr base::TimeDelta next_emit_time_after_page_loaded[] = {
-      base::TimeDelta::FromMinutes(1), base::TimeDelta::FromMinutes(5),
-      base::TimeDelta::FromMinutes(10), base::TimeDelta::FromMinutes(15)};
+      base::Minutes(1), base::Minutes(5), base::Minutes(10), base::Minutes(15)};
   DCHECK(NO_METRICS_EMITTED <= state && state < EMITTED_ALL_METRICS);
   return next_emit_time_after_page_loaded[state];
 }
@@ -171,13 +170,13 @@ base::TimeDelta TabMemoryMetricsReporter::NextEmitTimeAfterPageLoaded(
 TabMemoryMetricsReporter::ReportState
 TabMemoryMetricsReporter::NextStateOfEmitMemoryDumpAfterPageLoaded(
     base::TimeDelta time_passed) {
-  if (time_passed >= base::TimeDelta::FromMinutes(15))
+  if (time_passed >= base::Minutes(15))
     return EMITTED_ALL_METRICS;
-  if (time_passed >= base::TimeDelta::FromMinutes(10))
+  if (time_passed >= base::Minutes(10))
     return EMITTED_10MIN_METRIC;
-  if (time_passed >= base::TimeDelta::FromMinutes(5))
+  if (time_passed >= base::Minutes(5))
     return EMITTED_5MIN_METRIC;
-  if (time_passed >= base::TimeDelta::FromMinutes(1))
+  if (time_passed >= base::Minutes(1))
     return EMITTED_1MIN_METRIC;
   return NO_METRICS_EMITTED;
 }

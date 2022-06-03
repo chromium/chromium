@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -56,10 +55,14 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
           policy_response)>
       AssembleAndSignPolicyAsyncCallback;
 
-  typedef base::RepeatingCallback<void(bool is_owner)> IsOwnerCallback;
+  using IsOwnerCallback = base::OnceCallback<void(bool is_owner)>;
 
   explicit OwnerSettingsService(
       const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
+
+  OwnerSettingsService(const OwnerSettingsService&) = delete;
+  OwnerSettingsService& operator=(const OwnerSettingsService&) = delete;
+
   ~OwnerSettingsService() override;
 
   base::WeakPtr<OwnerSettingsService> as_weak_ptr() {
@@ -82,7 +85,7 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   // Determines whether current user is owner or not, responds via |callback|.
   // Reliably returns the correct value, but will not respond on the callback
   // until IsReady() returns true.
-  virtual void IsOwnerAsync(const IsOwnerCallback& callback);
+  virtual void IsOwnerAsync(IsOwnerCallback callback);
 
   // Assembles and signs |policy| on the |task_runner|, responds on
   // the original thread via |callback|.
@@ -119,6 +122,10 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   bool SetDouble(const std::string& setting, double value);
   bool SetString(const std::string& setting, const std::string& value);
 
+  // Run callbacks in test setting. Mocks ownership when full device setup is
+  // not needed.
+  void RunPendingIsOwnerCallbacksForTesting(bool is_owner);
+
  protected:
   void ReloadKeypair();
 
@@ -126,9 +133,10 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
                        const scoped_refptr<PrivateKey>& private_key);
 
   // Platform-specific keypair loading algorithm.
-  virtual void ReloadKeypairImpl(const base::Callback<
-      void(const scoped_refptr<PublicKey>& public_key,
-           const scoped_refptr<PrivateKey>& private_key)>& callback) = 0;
+  virtual void ReloadKeypairImpl(
+      base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
+                              const scoped_refptr<PrivateKey>& private_key)>
+          callback) = 0;
 
   // Plafrom-specific actions which should be performed when keypair is loaded.
   virtual void OnPostKeypairLoadedActions() = 0;
@@ -147,8 +155,6 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
 
  private:
   base::WeakPtrFactory<OwnerSettingsService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsService);
 };
 
 }  // namespace ownership

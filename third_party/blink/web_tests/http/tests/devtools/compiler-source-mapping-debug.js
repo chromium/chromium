@@ -4,9 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests installing compiler source map in scripts panel.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addScriptTag('resources/compiled-2.js');
@@ -29,15 +29,15 @@
   SourcesTestRunner.runDebuggerTestSuite([function testSetBreakpoint(next) {
     SourcesTestRunner.showScriptSource('add-elements.js', didShowSource);
 
-    function didShowSource(sourceFrame) {
+    async function didShowSource(sourceFrame) {
       TestRunner.addResult('Script source was shown.');
-      SourcesTestRunner.setBreakpoint(sourceFrame, 14, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 14, '', true);
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPage('setTimeout(clickButton, 0)');
     }
 
-    function paused(callFrames) {
-      SourcesTestRunner.captureStackTrace(callFrames);
+    async function paused(callFrames) {
+      await SourcesTestRunner.captureStackTrace(callFrames);
       SourcesTestRunner.resumeExecution(next);
     }
   }]);

@@ -1,0 +1,10 @@
+{
+  "name": "No Immediate Update Extension",
+  "version": "2.0",
+  "manifest_version": 2,
+  "description": "The extension that prevents immediate updates",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
+}

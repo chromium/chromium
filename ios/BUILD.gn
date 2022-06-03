@@ -5,6 +5,7 @@
 assert(!is_component_build, "component build is unsupported on iOS")
 
 import("//build/config/gclient_args.gni")
+import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//ios/features.gni")
 
@@ -15,25 +16,19 @@ import("//ios/features.gni")
 group("all") {
   testonly = true
   if (is_cronet_build) {
-    deps = [
-      "//components/cronet/ios:cronet_package_ios",
-    ]
-  } else {
-    assert(xcode_version_int >= 1000, "Xcode 10 is required.")
-
+    deps = [ "//components/cronet/ios:cronet_package_ios" ]
+  } else if (is_webkit_only_build) {
+    deps = [ "//ios/third_party/webkit" ]
+  } else if (ios_build_chrome) {
     deps = [
       # List all the targets that need to be built on iOS by default.
       "//ios/chrome/app:chrome",
-      "//ios/chrome/content_widget_extension",
-      "//ios/chrome/search_widget_extension",
-      "//ios/chrome/share_extension",
       "//ios/showcase",
       "//ios/web/shell:ios_web_shell",
       "//ios/web_view/shell:ios_web_view_shell",
 
       # List all the test targets that need to be built on iOS by default.
       "//ios/chrome/test:all_tests",
-      "//ios/chrome/test/earl_grey:all_tests",
       "//ios/chrome/test/earl_grey2:all_tests",
       "//ios/chrome/test/wpt:all_tests",
       "//ios/components:all_tests",
@@ -43,7 +38,6 @@ group("all") {
       "//ios/web:all_tests",
       "//ios/web/shell/test:all_tests",
       "//ios/web_view:all_tests",
-      "//ios/web_view/shell/test:all_tests",
     ]
   }
 }

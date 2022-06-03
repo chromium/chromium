@@ -27,6 +27,7 @@ public class CrashTestRule implements TestRule {
 
     private File mCrashDir;
     private File mCacheDir;
+    private @LibraryProcessType int mLibraryProcessType;
 
     @Override
     public Statement apply(final Statement base, final Description desc) {
@@ -48,8 +49,16 @@ public class CrashTestRule implements TestRule {
         return mCacheDir;
     }
 
+    public CrashTestRule(@LibraryProcessType int libraryProcessType) {
+        mLibraryProcessType = libraryProcessType;
+    }
+
+    public CrashTestRule() {
+        this(LibraryProcessType.PROCESS_BROWSER);
+    }
+
     private void setUp() throws Exception {
-        LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
+        LibraryLoader.getInstance().setLibraryProcessType(mLibraryProcessType);
         LibraryLoader.getInstance().ensureInitialized();
         if (mCacheDir == null) {
             mCacheDir = getExistingCacheDir();

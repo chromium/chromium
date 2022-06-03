@@ -1,0 +1,21 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug where deleting everything in a paragraph of colored text
+// would prevent the user from changing the text color.
+selection_test(
+    '<div contenteditable>^abc|</div>',
+    selection => {
+        selection.document.execCommand('ForeColor', false, 'red');
+        selection.document.execCommand('Delete');
+        selection.document.execCommand('ForeColor', false, 'blue');
+        selection.document.execCommand('InsertText', false, 'XYZ');
+    },
+    [
+        '<div contenteditable>',
+            '<font color="#0000ff">XYZ|</font>',
+        '</div>',
+    ]);
+</script>

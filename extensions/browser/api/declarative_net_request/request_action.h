@@ -9,70 +9,125 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/api/declarative_net_request.h"
+#include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
 namespace declarative_net_request {
 
+namespace flat {
+struct ModifyHeaderInfo;
+}  // namespace flat
+
 // A struct representing an action to be applied to a request based on DNR rule
 // matches. Each action is attributed to exactly one extension.
 struct RequestAction {
+  // A copyable version of api::declarative_net_request::ModifyHeaderInfo.
+  // This is used instead of ModifyHeaderInfo so it can be copied in Clone().
+  struct HeaderInfo {
+    HeaderInfo(std::string header,
+               api::declarative_net_request::HeaderOperation operation,
+               absl::optional<std::string> value);
+    explicit HeaderInfo(const flat::ModifyHeaderInfo& info);
+    ~HeaderInfo();
+    HeaderInfo(const HeaderInfo& other);
+    HeaderInfo& operator=(const HeaderInfo& other);
+    HeaderInfo(HeaderInfo&&);
+    HeaderInfo& operator=(HeaderInfo&&);
+
+    // The name of the header to be modified, specified in lowercase.
+    std::string header;
+    api::declarative_net_request::HeaderOperation operation;
+    // The value for |header| to be appended or set.
+    absl::optional<std::string> value;
+  };
+
   enum class Type {
     // Block the network request.
     BLOCK,
     // Block the network request and collapse the corresponding DOM element.
     COLLAPSE,
     // Allow the network request, preventing it from being intercepted by other
-    // matching rules. Only used for tracking a matched allow rule.
+    // matching rules.
     ALLOW,
     // Redirect the network request.
     REDIRECT,
-    // Remove request/response headers.
-    REMOVE_HEADERS,
+    // Upgrade the scheme of the network request.
+    UPGRADE,
+    // Allow the network request. This request is either for an allowlisted
+    // frame or originated from one.
+    ALLOW_ALL_REQUESTS,
+    // Modify request/response headers.
+    MODIFY_HEADERS,
   };
 
   RequestAction(Type type,
                 uint32_t rule_id,
-                uint32_t rule_priority,
-                api::declarative_net_request::SourceType source_type,
+                uint64_t index_priority,
+                RulesetID ruleset_id,
                 const ExtensionId& extension_id);
   ~RequestAction();
   RequestAction(RequestAction&&);
   RequestAction& operator=(RequestAction&&);
 
+  // Helper to create a copy.
+  RequestAction Clone() const;
+
   Type type = Type::BLOCK;
 
-  // Valid iff |type| is |REDIRECT|.
-  base::Optional<GURL> redirect_url;
+  // Valid iff |IsRedirectOrUpgrade()| is true.
+  absl::optional<GURL> redirect_url;
 
   // The ID of the matching rule for this action.
   uint32_t rule_id;
 
-  // The priority of the matching rule for this action. Only really valid for
-  // redirect actions.
-  uint32_t rule_priority;
+  // The priority of this action in the index. This is a combination of the
+  // rule's priority and the rule's action's priority.
+  uint64_t index_priority;
 
-  // The source type of the matching rule for this action.
-  api::declarative_net_request::SourceType source_type;
+  // The id of the ruleset corresponding to the matched rule.
+  RulesetID ruleset_id;
 
   // The id of the extension the action is attributed to.
   ExtensionId extension_id;
 
-  // Valid iff |type| is |REMOVE_HEADERS|. The vectors point to strings of
-  // static storage duration.
-  std::vector<const char*> request_headers_to_remove;
-  std::vector<const char*> response_headers_to_remove;
+  // Valid iff |type| is |MODIFY_HEADERS|.
+  // TODO(crbug.com/1074530): Constructing these vectors could involve lots of
+  // string copies. One potential enhancement involves storing a WeakPtr to the
+  // flatbuffer index that contain the actual header strings.
+  std::vector<HeaderInfo> request_headers_to_modify;
+  std::vector<HeaderInfo> response_headers_to_modify;
 
   // Whether the action has already been tracked by the ActionTracker.
   // TODO(crbug.com/983761): Move the tracking of actions matched to
   // ActionTracker.
   mutable bool tracked = false;
 
-  DISALLOW_COPY_AND_ASSIGN(RequestAction);
+  bool IsBlockOrCollapse() const {
+    return type == Type::BLOCK || type == Type::COLLAPSE;
+  }
+  bool IsRedirectOrUpgrade() const {
+    return type == Type::REDIRECT || type == Type::UPGRADE;
+  }
+  bool IsAllowOrAllowAllRequests() const {
+    return type == Type::ALLOW || type == Type::ALLOW_ALL_REQUESTS;
+  }
+
+ private:
+  RequestAction(const RequestAction&);
 };
+
+// Compares RequestAction by |index_priority|, breaking ties by |ruleset_id|
+// then |rule_id|.
+bool operator<(const RequestAction& lhs, const RequestAction& rhs);
+bool operator>(const RequestAction& lhs, const RequestAction& rhs);
+
+absl::optional<RequestAction> GetMaxPriorityAction(
+    absl::optional<RequestAction> lhs,
+    absl::optional<RequestAction> rhs);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

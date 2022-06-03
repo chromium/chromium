@@ -5,136 +5,175 @@
 #include "ash/system/unified/unified_slider_view.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
+#include "ash/style/element_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
+using ContentLayerType = AshColorProvider::ContentLayerType;
+
 namespace {
 
-views::Slider* CreateSlider(UnifiedSliderListener* listener, bool readonly) {
-  if (readonly)
-    return new ReadOnlySlider();
+// Custom the slider to use different colors.
+class SystemSlider : public views::Slider {
+ public:
+  explicit SystemSlider(views::SliderListener* listener = nullptr)
+      : views::Slider(listener) {}
+  SystemSlider(const SystemSlider&) = delete;
+  SystemSlider& operator=(const SystemSlider&) = delete;
+  ~SystemSlider() override {}
 
-  return new views::Slider(listener);
+ private:
+  // views::Slider:
+  SkColor GetThumbColor() const override {
+    using Type = AshColorProvider::ContentLayerType;
+    return AshColorProvider::Get()->GetContentLayerColor(
+        (style() == RenderingStyle::kMinimalStyle) ? Type::kSliderColorInactive
+                                                   : Type::kSliderColorActive);
+  }
+
+  // views::Slider:
+  SkColor GetTroughColor() const override {
+    return AshColorProvider::Get()->GetSecondToneColor(GetThumbColor());
+  }
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::Slider::OnThemeChanged();
+    SchedulePaint();
+  }
+};
+
+// A slider that ignores inputs.
+class ReadOnlySlider : public SystemSlider {
+ public:
+  ReadOnlySlider() : SystemSlider() {}
+  ReadOnlySlider(const ReadOnlySlider&) = delete;
+  ReadOnlySlider& operator=(const ReadOnlySlider&) = delete;
+  ~ReadOnlySlider() override {}
+
+ private:
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override { return false; }
+  bool OnMouseDragged(const ui::MouseEvent& event) override { return false; }
+  void OnMouseReleased(const ui::MouseEvent& event) override {}
+  bool OnKeyPressed(const ui::KeyEvent& event) override { return false; }
+  const char* GetClassName() const override { return "ReadOnlySlider"; }
+
+  // ui::EventHandler:
+  void OnGestureEvent(ui::GestureEvent* event) override {}
+};
+
+std::unique_ptr<views::Slider> CreateSlider(UnifiedSliderListener* listener,
+                                            bool readonly) {
+  return readonly ? std::make_unique<ReadOnlySlider>()
+                  : std::make_unique<SystemSlider>(listener);
 }
 
 }  // namespace
 
-ReadOnlySlider::ReadOnlySlider() : Slider(nullptr) {}
-
-bool ReadOnlySlider::OnMousePressed(const ui::MouseEvent& event) {
-  return false;
-}
-
-bool ReadOnlySlider::OnMouseDragged(const ui::MouseEvent& event) {
-  return false;
-}
-
-void ReadOnlySlider::OnMouseReleased(const ui::MouseEvent& event) {}
-
-bool ReadOnlySlider::OnKeyPressed(const ui::KeyEvent& event) {
-  return false;
-}
-
-const char* ReadOnlySlider::GetClassName() const {
-  return "ReadOnlySlider";
-}
-
-void ReadOnlySlider::OnGestureEvent(ui::GestureEvent* event) {}
-
-UnifiedSliderButton::UnifiedSliderButton(views::ButtonListener* listener,
+UnifiedSliderButton::UnifiedSliderButton(PressedCallback callback,
                                          const gfx::VectorIcon& icon,
                                          int accessible_name_id)
-    : TopShortcutButton(listener, accessible_name_id) {
+    : views::ImageButton(std::move(callback)) {
+  SetImageHorizontalAlignment(ALIGN_CENTER);
+  SetImageVerticalAlignment(ALIGN_MIDDLE);
+  if (accessible_name_id)
+    SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
+
   SetVectorIcon(icon);
-  SetBorder(views::CreateEmptyBorder(kUnifiedCircularButtonFocusPadding));
-  views::InstallCircleHighlightPathGenerator(this);
+
+  // Focus ring is around the whole view's bounds, but the ink drop should be
+  // the same size as the content.
+  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  views::FocusRing::Get(this)->SetPathGenerator(
+      std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
+  views::InstallCircleHighlightPathGenerator(
+      this, kUnifiedCircularButtonFocusPadding);
 }
 
 UnifiedSliderButton::~UnifiedSliderButton() = default;
 
-gfx::Size UnifiedSliderButton::CalculatePreferredSize() const {
-  return gfx::Size(kTrayItemSize + kUnifiedCircularButtonFocusPadding.width(),
-                   kTrayItemSize + kUnifiedCircularButtonFocusPadding.height());
-}
-
-const char* UnifiedSliderButton::GetClassName() const {
-  return "UnifiedSliderButton";
-}
-
 void UnifiedSliderButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconPrimary,
-      AshColorProvider::AshColorMode::kDark);
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon, icon_color));
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(icon, icon_color));
+  icon_ = &icon;
+  UpdateVectorIcon();
 }
 
 void UnifiedSliderButton::SetToggled(bool toggled) {
   toggled_ = toggled;
-  SchedulePaint();
+  UpdateVectorIcon();
 }
 
 void UnifiedSliderButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::Rect rect(GetContentsBounds());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(
+  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
       toggled_
-          ? AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::kActiveControlBackground,
-                kUnifiedMenuButtonColorActive)
-          : AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::kInactiveControlBackground,
-                kUnifiedMenuButtonColor));
+          ? AshColorProvider::ControlsLayerType::kControlBackgroundColorActive
+          : AshColorProvider::ControlsLayerType::
+                kControlBackgroundColorInactive));
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), kTrayItemSize / 2, flags);
+  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
 
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-std::unique_ptr<views::InkDropMask> UnifiedSliderButton::CreateInkDropMask()
-    const {
-  gfx::Rect bounds = GetContentsBounds();
-  return std::make_unique<views::CircleInkDropMask>(
-      size(), bounds.CenterPoint(), bounds.width() / 2);
-}
-
 void UnifiedSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!GetEnabled())
-    return;
-  TopShortcutButton::GetAccessibleNodeData(node_data);
+  views::ImageButton::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kToggleButton;
   node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
                                       : ax::mojom::CheckedState::kFalse);
 }
 
-UnifiedSliderView::UnifiedSliderView(UnifiedSliderListener* listener,
+const char* UnifiedSliderButton::GetClassName() const {
+  return "UnifiedSliderButton";
+}
+
+void UnifiedSliderButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  UpdateVectorIcon();
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
+  SchedulePaint();
+}
+
+void UnifiedSliderButton::UpdateVectorIcon() {
+  if (!icon_)
+    return;
+
+  element_style::DecorateSmallIconButton(this, *icon_, toggled_,
+                                         /*has_border=*/true);
+}
+
+UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
+                                     UnifiedSliderListener* listener,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id,
                                      bool readonly)
-    : button_(new UnifiedSliderButton(listener, icon, accessible_name_id)),
-      slider_(CreateSlider(listener, readonly)) {
+    : button_(AddChildView(
+          std::make_unique<UnifiedSliderButton>(std::move(callback),
+                                                icon,
+                                                accessible_name_id))),
+      slider_(AddChildView(CreateSlider(listener, readonly))) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kUnifiedSliderRowPadding,
       kUnifiedSliderViewSpacing));
-
-  AddChildView(button_);
-  AddChildView(slider_);
 
   // Prevent an accessibility event while initiallizing this view. Typically
   // the first update of the slider value is conducted by the caller function
@@ -172,5 +211,19 @@ const char* UnifiedSliderView::GetClassName() const {
 }
 
 UnifiedSliderView::~UnifiedSliderView() = default;
+
+void UnifiedSliderView::CreateToastLabel() {
+  toast_label_ = AddChildView(std::make_unique<views::Label>());
+  TrayPopupUtils::SetLabelFontList(toast_label_,
+                                   TrayPopupUtils::FontStyle::kPodMenuHeader);
+}
+
+void UnifiedSliderView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (toast_label_) {
+    toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
+}
 
 }  // namespace ash

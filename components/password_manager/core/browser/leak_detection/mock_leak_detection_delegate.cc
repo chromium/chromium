@@ -11,4 +11,9 @@ MockLeakDetectionDelegateInterface::MockLeakDetectionDelegateInterface() =
 MockLeakDetectionDelegateInterface::~MockLeakDetectionDelegateInterface() =
     default;
 
+MockBulkLeakCheckDelegateInterface::MockBulkLeakCheckDelegateInterface() =
+    default;
+MockBulkLeakCheckDelegateInterface::~MockBulkLeakCheckDelegateInterface() =
+    default;
+
 }  // namespace password_manager

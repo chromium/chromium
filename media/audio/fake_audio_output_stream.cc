@@ -5,9 +5,9 @@
 #include "media/audio/fake_audio_output_stream.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_manager_base.h"
 
@@ -23,7 +23,7 @@ FakeAudioOutputStream::FakeAudioOutputStream(AudioManagerBase* manager,
                                              const AudioParameters& params)
     : audio_manager_(manager),
       fixed_data_delay_(FakeAudioWorker::ComputeFakeOutputDelay(params)),
-      callback_(NULL),
+      callback_(nullptr),
       fake_worker_(manager->GetWorkerTaskRunner(), params),
       audio_bus_(AudioBus::Create(params)) {}
 
@@ -47,7 +47,7 @@ void FakeAudioOutputStream::Start(AudioSourceCallback* callback)  {
 void FakeAudioOutputStream::Stop() {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   fake_worker_.Stop();
-  callback_ = NULL;
+  callback_ = nullptr;
 }
 
 void FakeAudioOutputStream::Close() {

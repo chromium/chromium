@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/translate_prefs.h"
 
@@ -11,7 +12,7 @@ namespace translate {
 
 namespace testing {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char* preferred_languages_prefs = "settings.language.preferred_languages";
 #else
 const char* preferred_languages_prefs = nullptr;
@@ -33,8 +34,7 @@ PrefService* MockTranslateClient::GetPrefs() {
 }
 
 std::unique_ptr<TranslatePrefs> MockTranslateClient::GetTranslatePrefs() {
-  return std::make_unique<TranslatePrefs>(prefs_, accept_languages_prefs,
-                                          preferred_languages_prefs);
+  return std::make_unique<TranslatePrefs>(prefs_);
 }
 
 }  // namespace testing

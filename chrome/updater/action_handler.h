@@ -5,7 +5,7 @@
 #ifndef CHROME_UPDATER_ACTION_HANDLER_H_
 #define CHROME_UPDATER_ACTION_HANDLER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 
 namespace update_client {

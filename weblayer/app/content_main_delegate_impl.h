@@ -22,14 +22,21 @@ class ContentUtilityClientImpl;
 class ContentMainDelegateImpl : public content::ContentMainDelegate {
  public:
   explicit ContentMainDelegateImpl(MainParams params);
+
+  ContentMainDelegateImpl(const ContentMainDelegateImpl&) = delete;
+  ContentMainDelegateImpl& operator=(const ContentMainDelegateImpl&) = delete;
+
   ~ContentMainDelegateImpl() override;
 
   // ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
+  bool ShouldCreateFeatureList() override;
+  variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  void PostEarlyInitialization(bool is_running_tests) override;
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
@@ -43,8 +50,6 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   std::unique_ptr<ContentRendererClientImpl> renderer_client_;
   std::unique_ptr<ContentUtilityClientImpl> utility_client_;
   std::unique_ptr<ContentClientImpl> content_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentMainDelegateImpl);
 };
 
 }  // namespace weblayer

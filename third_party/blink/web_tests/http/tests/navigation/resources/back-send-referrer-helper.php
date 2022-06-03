@@ -6,26 +6,38 @@
 
 <html>
 
-<script>
-    window.name = parseInt(window.name) + 1;
-</script>
-
-Referrer: <?php echo $_SERVER['HTTP_REFERER']; ?>
-<br/>
-window.name: <script>document.write(window.name)</script>
+Referrer: <?php echo $_SERVER['HTTP_REFERER']; ?><br>
+sessionStorage.name : <span id="name"></span>
 
 <form name=loopback action="" method=GET></form>
 
 <script>
-    if (window.name == 1) {
+  // This test consists of following 3 pages in its history.
+  //   a. back-send-referrer.html
+  //   b. back-send-referrer-helper.php
+  //   c. back-send-referrer-helper.php?
+  // It expects to navigate a.->b.->c.-(back)->b. and the last navigation
+  // handles the referrer correctly.
+  window.addEventListener('pageshow', () => {
+    sessionStorage.setItem("name", parseInt(sessionStorage.getItem("name")) + 1);
+    document.getElementById("name").innerText = sessionStorage.getItem("name");
+
+    setTimeout(function() {
+      const name = sessionStorage.getItem("name");
+      if (name == 1) {
+        // Showing b. for the first time.
         // Navigate once more (in a timeout) to add a history entry.
-        setTimeout(function() {document.loopback.submit();}, 0);
-    } else if (window.name == 2) {
-        history.go(-1);
-    } else {
+        document.loopback.submit();
+      } else if (name == 2) {
+        // Showing c. The query means nothing.
+        history.back();
+      } else {
+        // Should be showing b. for the second time.
         if (window.testRunner)
-            testRunner.notifyDone();
-    }
+          testRunner.notifyDone();
+      }
+    }, 0);
+  });
 </script>
 
 </html>

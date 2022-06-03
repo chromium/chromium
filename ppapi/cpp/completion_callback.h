@@ -10,8 +10,8 @@
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/cpp/logging.h"
-#include "ppapi/cpp/module.h"
-#include "ppapi/cpp/output_traits.h"
+#include "ppapi/cpp/module.h"         // nogncheck http://crbug.com/1228394
+#include "ppapi/cpp/output_traits.h"  // nogncheck http://crbug.com/1228394
 
 /// @file
 /// This file defines the API to create and run a callback.

@@ -56,10 +56,6 @@ void FakeBlobDataHandle::ReadSideData(
   std::move(callback).Run(side_data_.size(), std::move(buffer));
 }
 
-const char* FakeBlobDataHandle::BytesReadHistogramLabel() const {
-  return nullptr;
-}
-
 FakeBlobDataHandle::~FakeBlobDataHandle() = default;
 
 }  // namespace storage

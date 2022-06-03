@@ -12,63 +12,14 @@
   },
   "WebRTC Chromium FYI Android Builder (dbg)": {},
   "WebRTC Chromium FYI Android Builder ARM64 (dbg)": {},
-  "WebRTC Chromium FYI Android Tests (dbg) (K Nexus5)": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--gtest_filter=WebRtc*",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "content_browsertests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "K",
-              "device_os_type": "userdebug",
-              "device_type": "hammerhead",
-              "os": "Android"
-            }
-          ],
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ]
-        },
-        "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
-      }
-    ]
-  },
   "WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)": {
     "gtest_tests": [
       {
         "args": [
           "--gtest_filter=WebRtc*",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter"
         ],
         "merge": {
           "args": [
@@ -105,10 +56,63 @@
               ],
               "name": "shard #${SHARD_INDEX} logcats"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      }
+    ]
+  },
+  "WebRTC Chromium FYI Android Tests (dbg) (N Nexus5X)": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=WebRtc*",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "device_os": "N",
+              "device_os_type": "userdebug",
+              "device_type": "bullhead",
+              "os": "Android"
+            }
+          ],
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       }
     ]
   },
@@ -142,10 +146,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
-        "test_target": "//chrome/test:browser_tests"
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
       {
         "args": [
@@ -164,10 +169,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests_apprtc",
-        "test_target": "//chrome/test:browser_tests_apprtc"
+        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
       },
       {
         "args": [
@@ -184,10 +190,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -208,10 +215,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -228,10 +236,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
-        "test_target": "//content/test:content_unittests"
+        "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
         "merge": {
@@ -245,10 +254,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "jingle_unittests",
-        "test_target": "//jingle:jingle_unittests"
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [
@@ -265,10 +275,11 @@
               "cpu": "x86-64",
               "os": "Ubuntu-16.04"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
-        "test_target": "//remoting:remoting_unittests"
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
       }
     ]
   },
@@ -299,13 +310,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
-        "test_target": "//chrome/test:browser_tests"
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
       {
         "args": [
@@ -321,13 +334,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests_apprtc",
-        "test_target": "//chrome/test:browser_tests_apprtc"
+        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
       },
       {
         "args": [
@@ -341,13 +356,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -365,13 +382,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -385,13 +404,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
-        "test_target": "//content/test:content_unittests"
+        "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
         "merge": {
@@ -402,13 +423,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "jingle_unittests",
-        "test_target": "//jingle:jingle_unittests"
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [
@@ -422,13 +445,15 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.12.6"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
-        "test_target": "//remoting:remoting_unittests"
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
       }
     ]
   },
@@ -460,12 +485,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
-        "test_target": "//chrome/test:browser_tests"
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
       {
         "args": [
@@ -482,12 +508,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests_apprtc",
-        "test_target": "//chrome/test:browser_tests_apprtc"
+        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
       },
       {
         "args": [
@@ -502,12 +529,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -526,12 +554,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -546,12 +575,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
-        "test_target": "//content/test:content_unittests"
+        "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
         "merge": {
@@ -563,12 +593,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "jingle_unittests",
-        "test_target": "//jingle:jingle_unittests"
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [
@@ -583,12 +614,13 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Windows-10-15063"
+              "os": "Windows-10-19042"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
-        "test_target": "//remoting:remoting_unittests"
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
       }
     ]
   },
@@ -612,10 +644,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
-        "test_target": "//chrome/test:browser_tests"
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
       {
         "args": [
@@ -634,10 +667,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests_apprtc",
-        "test_target": "//chrome/test:browser_tests_apprtc"
+        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
       },
       {
         "args": [
@@ -654,10 +688,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -678,10 +713,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -698,10 +734,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
-        "test_target": "//content/test:content_unittests"
+        "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
         "merge": {
@@ -715,10 +752,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "jingle_unittests",
-        "test_target": "//jingle:jingle_unittests"
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [
@@ -735,10 +773,11 @@
               "cpu": "x86-64",
               "os": "Windows-7-SP1"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
-        "test_target": "//remoting:remoting_unittests"
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
       }
     ]
   },
@@ -762,10 +801,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
-        "test_target": "//chrome/test:browser_tests"
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       },
       {
         "args": [
@@ -784,10 +824,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests_apprtc",
-        "test_target": "//chrome/test:browser_tests_apprtc"
+        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
       },
       {
         "args": [
@@ -804,10 +845,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -828,10 +870,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
-        "test_target": "//content/test:content_browsertests"
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
         "args": [
@@ -848,10 +891,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
-        "test_target": "//content/test:content_unittests"
+        "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
         "merge": {
@@ -865,10 +909,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "jingle_unittests",
-        "test_target": "//jingle:jingle_unittests"
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [
@@ -885,10 +930,11 @@
               "cpu": "x86-64",
               "os": "Windows-8.1-SP0"
             }
-          ]
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
-        "test_target": "//remoting:remoting_unittests"
+        "test_id_prefix": "ninja://remoting:remoting_unittests/"
       }
     ]
   }

@@ -4,8 +4,9 @@
 
 #include "content/public/test/test_storage_partition.h"
 
+#include "base/macros.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "content/public/browser/native_file_system_entry_factory.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace content {
@@ -15,6 +16,10 @@ TestStoragePartition::~TestStoragePartition() {}
 
 base::FilePath TestStoragePartition::GetPath() {
   return file_path_;
+}
+
+base::FilePath TestStoragePartition::GetBucketBasePath() {
+  return file_path_.Append(storage::kWebStorageDirectory);
 }
 
 network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
@@ -41,24 +46,26 @@ TestStoragePartition::GetCookieManagerForBrowserProcess() {
   return cookie_manager_for_browser_process_;
 }
 
-void TestStoragePartition::CreateRestrictedCookieManager(
-    network::mojom::RestrictedCookieManagerRole role,
-    const url::Origin& origin,
-    const GURL& site_for_cookies,
-    const url::Origin& top_frame_origin,
-    bool is_service_worker,
-    int process_id,
-    int routing_id,
-    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
-  NOTREACHED();
+void TestStoragePartition::CreateHasTrustTokensAnswerer(
+    mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+    const url::Origin& top_frame_origin) {
+  NOTREACHED() << "Not implemented.";
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+TestStoragePartition::CreateURLLoaderNetworkObserverForFrame(int process_id,
+                                                             int routing_id) {
+  return mojo::NullRemote();
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+TestStoragePartition::CreateURLLoaderNetworkObserverForNavigationRequest(
+    int frame_tree_id) {
+  return mojo::NullRemote();
 }
 
 storage::QuotaManager* TestStoragePartition::GetQuotaManager() {
   return quota_manager_;
-}
-
-AppCacheService* TestStoragePartition::GetAppCacheService() {
-  return app_cache_service_;
 }
 
 BackgroundSyncContext* TestStoragePartition::GetBackgroundSyncContext() {
@@ -77,12 +84,29 @@ DOMStorageContext* TestStoragePartition::GetDOMStorageContext() {
   return dom_storage_context_;
 }
 
-IndexedDBContext* TestStoragePartition::GetIndexedDBContext() {
-  return indexed_db_context_;
+storage::mojom::LocalStorageControl*
+TestStoragePartition::GetLocalStorageControl() {
+  // Bind and throw away the receiver. If testing is required, then add a method
+  // to set the remote.
+  if (!local_storage_control_.is_bound())
+    ignore_result(local_storage_control_.BindNewPipeAndPassReceiver());
+  return local_storage_control_.get();
 }
 
-NativeFileSystemEntryFactory*
-TestStoragePartition::GetNativeFileSystemEntryFactory() {
+storage::mojom::IndexedDBControl& TestStoragePartition::GetIndexedDBControl() {
+  // Bind and throw away the receiver. If testing is required, then add a method
+  // to set the remote.
+  if (!indexed_db_control_.is_bound())
+    ignore_result(indexed_db_control_.BindNewPipeAndPassReceiver());
+  return *indexed_db_control_;
+}
+
+FileSystemAccessEntryFactory*
+TestStoragePartition::GetFileSystemAccessEntryFactory() {
+  return nullptr;
+}
+
+FontAccessContext* TestStoragePartition::GetFontAccessContext() {
   return nullptr;
 }
 
@@ -90,12 +114,21 @@ ServiceWorkerContext* TestStoragePartition::GetServiceWorkerContext() {
   return service_worker_context_;
 }
 
+DedicatedWorkerService* TestStoragePartition::GetDedicatedWorkerService() {
+  return dedicated_worker_service_;
+}
+
 SharedWorkerService* TestStoragePartition::GetSharedWorkerService() {
   return shared_worker_service_;
 }
 
-CacheStorageContext* TestStoragePartition::GetCacheStorageContext() {
-  return cache_storage_context_;
+storage::mojom::CacheStorageControl*
+TestStoragePartition::GetCacheStorageControl() {
+  // Bind and throw away the receiver. If testing is required, then add a method
+  // to set the remote.
+  if (!cache_storage_control_.is_bound())
+    ignore_result(cache_storage_control_.BindNewPipeAndPassReceiver());
+  return cache_storage_control_.get();
 }
 
 GeneratedCodeCacheContext*
@@ -117,6 +150,10 @@ ContentIndexContext* TestStoragePartition::GetContentIndexContext() {
   return content_index_context_;
 }
 
+NativeIOContext* TestStoragePartition::GetNativeIOContext() {
+  return native_io_context_;
+}
+
 leveldb_proto::ProtoDatabaseProvider*
 TestStoragePartition::GetProtoDatabaseProvider() {
   return nullptr;
@@ -125,7 +162,11 @@ TestStoragePartition::GetProtoDatabaseProvider() {
 void TestStoragePartition::SetProtoDatabaseProvider(
     std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider) {}
 
-#if !defined(OS_ANDROID)
+leveldb_proto::ProtoDatabaseProvider*
+TestStoragePartition::GetProtoDatabaseProviderForTesting() {
+  return nullptr;
+}
+
 HostZoomMap* TestStoragePartition::GetHostZoomMap() {
   return host_zoom_map_;
 }
@@ -137,12 +178,12 @@ HostZoomLevelContext* TestStoragePartition::GetHostZoomLevelContext() {
 ZoomLevelDelegate* TestStoragePartition::GetZoomLevelDelegate() {
   return zoom_level_delegate_;
 }
-#endif  // !defined(OS_ANDROID)
 
 void TestStoragePartition::ClearDataForOrigin(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,
-    const GURL& storage_origin) {}
+    const GURL& storage_origin,
+    base::OnceClosure callback) {}
 
 void TestStoragePartition::ClearData(
     uint32_t remove_mask,
@@ -172,6 +213,18 @@ void TestStoragePartition::Flush() {}
 
 void TestStoragePartition::ResetURLLoaderFactories() {}
 
+void TestStoragePartition::AddObserver(DataRemovalObserver* observer) {
+  data_removal_observer_count_++;
+}
+
+void TestStoragePartition::RemoveObserver(DataRemovalObserver* observer) {
+  data_removal_observer_count_--;
+}
+
+int TestStoragePartition::GetDataRemovalObserverCount() {
+  return data_removal_observer_count_;
+}
+
 void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
@@ -179,5 +232,9 @@ void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
 
 void TestStoragePartition::WaitForCodeCacheShutdownForTesting() {}
+
+void TestStoragePartition::SetNetworkContextForTesting(
+    mojo::PendingRemote<network::mojom::NetworkContext>
+        network_context_remote) {}
 
 }  // namespace content

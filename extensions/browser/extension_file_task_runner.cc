@@ -4,9 +4,10 @@
 
 #include "extensions/browser/extension_file_task_runner.h"
 
-#include "base/sequenced_task_runner.h"
-#include "base/task/lazy_task_runner.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 
 namespace extensions {
 
@@ -18,10 +19,9 @@ namespace {
 // user action), and others are low priority (like garbage collection). Split
 // the difference and use USER_VISIBLE, which is the default priority and what a
 // task posted to a named thread (like the FILE thread) would receive.
-base::LazySequencedTaskRunner g_task_runner =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
+base::LazyThreadPoolSequencedTaskRunner g_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(),
                          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
                          base::TaskPriority::USER_VISIBLE));
 
@@ -29,6 +29,13 @@ base::LazySequencedTaskRunner g_task_runner =
 
 scoped_refptr<base::SequencedTaskRunner> GetExtensionFileTaskRunner() {
   return g_task_runner.Get();
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetOneShotFileTaskRunner(
+    base::TaskPriority priority) {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+       priority});
 }
 
 }  // namespace extensions

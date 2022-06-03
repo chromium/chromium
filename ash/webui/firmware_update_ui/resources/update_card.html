@@ -1,0 +1,39 @@
+<style include="firmware-fonts firmware-shared">
+  #container {
+    border-bottom: var(--cr-separator-line);
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+  }
+
+  #priorityText::before {
+    content: '•';
+    margin-inline: 8px;
+  }
+
+  .update-info {
+    width: 80%;
+  }
+
+  .update-info > div {
+    margin: 8px 0;
+  }
+</style>
+<div id="container">
+  <div class="update-info">
+    <div id="name">[[update.deviceName]]</div>
+    <div id="version">
+      <span>[[update.version]]</span>
+      <span id ="priorityText"
+          hidden$="[[!isCriticalUpdate_(update.priority)]]">
+        <!-- TODO(michaelcheco): i18n string -->
+        Critical update
+      </span>
+    </div>
+    <div id="description">[[update.description]]</div>
+  </div>
+  <cr-button id="updateButton" on-click="onUpdateButtonClicked_">
+    <!-- TODO(michaelcheco): i18n string -->
+    Update
+  </cr-button>
+</div>

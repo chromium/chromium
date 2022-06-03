@@ -1,60 +1,52 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_tooltip_view.h"
 
+#include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/vector_icons.h"
 
 namespace ash {
 
 namespace {
 
-// Horizontal and vertical padding of login tooltip view.
-constexpr int kHorizontalPaddingLoginTooltipViewDp = 8;
-constexpr int kVerticalPaddingLoginTooltipViewDp = 8;
+// The size of the info icon in the tooltip view.
+constexpr int kInfoIconSizeDp = 20;
 
 }  // namespace
 
-LoginTooltipView::LoginTooltipView(const base::string16& message,
+LoginTooltipView::LoginTooltipView(const std::u16string& message,
                                    views::View* anchor_view)
     : LoginBaseBubbleView(anchor_view) {
-  SetText(message);
+  info_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  info_icon_->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
+
+  label_ = AddChildView(login_views_utils::CreateBubbleLabel(message, this));
 }
 
 LoginTooltipView::~LoginTooltipView() = default;
-
-void LoginTooltipView::SetText(const base::string16& message) {
-  views::Label* text =
-      login_views_utils::CreateBubbleLabel(message, SK_ColorWHITE);
-  text->SetMultiLine(true);
-  RemoveAllChildViews(true /*delete_children*/);
-  AddChildView(text);
-}
 
 void LoginTooltipView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTooltip;
 }
 
-gfx::Size LoginTooltipView::CalculatePreferredSize() const {
-  gfx::Size size;
-
-  if (GetAnchorView())
-    size.set_width(GetAnchorView()->width());
-
-  size.set_height(GetHeightForWidth(size.width()));
-  return size;
-}
-
-gfx::Point LoginTooltipView::CalculatePosition() {
-  return CalculatePositionUsingDefaultStrategy(
-      PositioningStrategy::kShowOnLeftSideOrRightSide,
-      kHorizontalPaddingLoginTooltipViewDp, kVerticalPaddingLoginTooltipViewDp);
+void LoginTooltipView::OnThemeChanged() {
+  LoginBaseBubbleView::OnThemeChanged();
+  info_icon_->SetImage(gfx::CreateVectorIcon(
+      views::kInfoIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 }  // namespace ash

@@ -1,0 +1,26 @@
+Tests errors when finding DOM nodes by computed styles.
+{
+    error : {
+        code : -32000
+        message : DOM agent hasn't been enabled
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : Could not find node with given id
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Invalid CSS property name
+    }
+    id : <number>
+    sessionId : <string>
+}
+

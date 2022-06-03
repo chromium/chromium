@@ -25,8 +25,9 @@ enum class CompositorElementIdNamespace {
   kEffectClipPath,
   kVerticalScrollbar,
   kHorizontalScrollbar,
+  kDOMNodeId,
   // The following values are for internal usage only.
-  kMax = kHorizontalScrollbar,
+  kMax = kDOMNodeId,
   // A sentinel to indicate the maximum representable namespace id
   // (the maximum is one less than this value).
   kMaxRepresentable = 1 << kCompositorNamespaceBitCount
@@ -59,6 +60,9 @@ CompositorElementId PLATFORM_EXPORT CompositorElementIdFromDOMNodeId(DOMNodeId);
 
 CompositorElementIdNamespace PLATFORM_EXPORT
     NamespaceFromCompositorElementId(CompositorElementId);
+
+// Maps a CompositorElementId in the kDOMNodeId namespace back to a DOMNodeId.
+DOMNodeId PLATFORM_EXPORT DOMNodeIdFromCompositorElementId(CompositorElementId);
 
 }  // namespace blink
 

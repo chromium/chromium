@@ -4,59 +4,91 @@
 
 import sys
 
-import mako.lookup
+import mako.runtime
 import mako.template
+import mako.util
+
+_MAKO_TEMPLATE_PASS_KEY = object()
+
+
+class MakoTemplate(object):
+    """Represents a compiled template object."""
+
+    _mako_template_cache = {}
+
+    def __init__(self, template_text):
+        assert isinstance(template_text, str)
+
+        template_params = {
+            "strict_undefined": True,
+        }
+
+        template = self._mako_template_cache.get(template_text)
+        if template is None:
+            template = mako.template.Template(
+                text=template_text, **template_params)
+            self._mako_template_cache[template_text] = template
+        self._template = template
+
+    def mako_template(self, pass_key=None):
+        assert pass_key is _MAKO_TEMPLATE_PASS_KEY
+        return self._template
 
 
 class MakoRenderer(object):
     """Represents a renderer object implemented with Mako templates."""
 
-    def __init__(self, template_dirs=None):
-        self._template_params = {
-            "strict_undefined": True,
-        }
-
-        self._template_lookup = mako.lookup.TemplateLookup(
-            directories=template_dirs, **self._template_params)
-
+    def __init__(self):
+        self._text_buffer = None
+        self._is_invalidated = False
         self._caller_stack = []
         self._caller_stack_on_error = []
 
-    def render(self,
-               caller,
-               template_path=None,
-               template_text=None,
-               template_vars=None):
+    def reset(self):
+        """
+        Resets the rendering states of this object.  Must be called before
+        the first call to |render| or |render_text|.
+        """
+        self._text_buffer = mako.util.FastEncodingBuffer()
+        self._is_invalidated = False
+
+    def is_rendering_complete(self):
+        return not (self._is_invalidated or self._text_buffer is None
+                    or self._caller_stack)
+
+    def invalidate_rendering_result(self):
+        self._is_invalidated = True
+
+    def to_text(self):
+        """Returns the rendering result."""
+        assert self._text_buffer is not None
+        return self._text_buffer.getvalue()
+
+    def render(self, caller, template, template_vars):
         """
         Renders the template with variable bindings.
 
         It's okay to invoke |render| method recursively and |caller| is pushed
-        onto the call stack, which is accessible via |callers| and |last_caller|
-        methods.
+        onto the call stack, which is accessible via
+        |callers_from_first_to_last| method, etc.
 
         Args:
-            template_path: A filepath to a template file.
-            template_text: A text content to be used as a template.  Either of
-                |template_path| or |template_text| must be specified.
-            template_vars: Template variable bindings.
             caller: An object to be pushed onto the call stack.
+            template: A MakoTemplate.
+            template_vars: A dict of template variable bindings.
         """
-
-        assert template_path is not None or template_text is not None
-        assert template_path is None or template_text is None
-        assert isinstance(template_vars, dict)
         assert caller is not None
+        assert isinstance(template, MakoTemplate)
+        assert isinstance(template_vars, dict)
 
         self._caller_stack.append(caller)
 
         try:
-            if template_path is not None:
-                template = self._template_lookup.get_template(template_path)
-            elif template_text is not None:
-                template = mako.template.Template(
-                    text=template_text, **self._template_params)
-
-            text = template.render(**template_vars)
+            mako_template = template.mako_template(
+                pass_key=_MAKO_TEMPLATE_PASS_KEY)
+            mako_context = mako.runtime.Context(self._text_buffer,
+                                                **template_vars)
+            mako_template.render_context(mako_context)
         except:
             # Print stacktrace of template rendering.
             sys.stderr.write("\n")
@@ -64,16 +96,16 @@ class MakoRenderer(object):
             sys.stderr.write("  * name: {}, type: {}\n".format(
                 _guess_caller_name(self.last_caller), type(self.last_caller)))
             sys.stderr.write("  * depth: {}, module_id: {}\n".format(
-                len(self._caller_stack), template.module_id))
+                len(self._caller_stack), mako_template.module_id))
             sys.stderr.write("---- template source ----\n")
-            sys.stderr.write(template.source)
+            sys.stderr.write(mako_template.source)
 
             # Save the error state at the deepest call.
             current = self._caller_stack
             on_error = self._caller_stack_on_error
             if (len(current) <= len(on_error)
                     and all(current[i] == on_error[i]
-                            for i in xrange(len(current)))):
+                            for i in range(len(current)))):
                 pass  # Error happened in a deeper caller.
             else:
                 self._caller_stack_on_error = list(self._caller_stack)
@@ -82,7 +114,16 @@ class MakoRenderer(object):
         finally:
             self._caller_stack.pop()
 
-        return text
+    def render_text(self, text):
+        """Renders a plain text as is."""
+        assert isinstance(text, str)
+        self._text_buffer.write(text)
+
+    def push_caller(self, caller):
+        self._caller_stack.append(caller)
+
+    def pop_caller(self):
+        self._caller_stack.pop()
 
     @property
     def callers_from_first_to_last(self):
@@ -125,7 +166,7 @@ def _guess_caller_name(caller):
     """Returns the best-guessed name of |caller|."""
     try:
         # Outer CodeNode may have a binding to the caller.
-        for name, value in caller.outer.template_vars.iteritems():
+        for name, value in caller.outer.template_vars.items():
             if value is caller:
                 return name
         try:

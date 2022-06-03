@@ -5,7 +5,7 @@
 <body onload="runTest();">
 
 <template id="shadow-tree">
-<a href="" id="targetLink" style="-webkit-tap-highlight-color: rgb(0, 255, 0)"><content></content></a>
+<a href="" id="targetLink" style="-webkit-tap-highlight-color: rgb(0, 255, 0)"><slot></slot></a>
 </template>
 
 <div id="host" style="transform: translateZ(0); padding: 20px;">
@@ -14,7 +14,7 @@
 
 <script>
 useMockHighlight();
-var shadowRoot = document.querySelector('#host').createShadowRoot();
+var shadowRoot = document.querySelector('#host').attachShadow({mode: 'open'});
 shadowRoot.appendChild(document.importNode(document.querySelector('#shadow-tree').content, true));
 var targetLink = shadowRoot.querySelector('#targetLink');
 

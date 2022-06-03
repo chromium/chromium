@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -30,6 +31,8 @@ class TransitionalURLLoaderFactoryOwner;
 // Houses the global resources on which the Chromoting components run
 // (e.g. message loops and task runners).
 namespace remoting {
+
+class DirectoryServiceClient;
 
 class ChromotingClientRuntime {
  public:
@@ -52,10 +55,15 @@ class ChromotingClientRuntime {
 
   static ChromotingClientRuntime* GetInstance();
 
+  ChromotingClientRuntime(const ChromotingClientRuntime&) = delete;
+  ChromotingClientRuntime& operator=(const ChromotingClientRuntime&) = delete;
+
   // Must be called before calling any other methods on this object.
   void Init(ChromotingClientRuntime::Delegate* delegate);
 
   std::unique_ptr<OAuthTokenGetter> CreateOAuthTokenGetter();
+
+  base::SequenceBound<DirectoryServiceClient> CreateDirectoryServiceClient();
 
   scoped_refptr<AutoThreadTaskRunner> network_task_runner() {
     return network_task_runner_;
@@ -117,8 +125,6 @@ class ChromotingClientRuntime {
   ChromotingClientRuntime::Delegate* delegate_ = nullptr;
 
   friend struct base::DefaultSingletonTraits<ChromotingClientRuntime>;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingClientRuntime);
 };
 
 }  // namespace remoting

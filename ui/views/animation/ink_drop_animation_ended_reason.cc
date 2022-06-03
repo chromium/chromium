@@ -4,7 +4,9 @@
 
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace views {
 

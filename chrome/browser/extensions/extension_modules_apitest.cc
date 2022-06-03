@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_host_resolver.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -31,6 +32,9 @@ class ExtensionModuleTest : public ExtensionApiTest {
  public:
   ExtensionModuleTest() = default;
 
+  ExtensionModuleTest(const ExtensionModuleTest&) = delete;
+  ExtensionModuleTest& operator=(const ExtensionModuleTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     ExtensionApiTest::SetUpCommandLine(command_line);
@@ -40,8 +44,6 @@ class ExtensionModuleTest : public ExtensionApiTest {
     host_resolver()->AddRule(kExampleURL, "127.0.0.1");
     ExtensionApiTest::SetUpOnMainThread();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionModuleTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionModuleTest, TestModulesAvailable) {

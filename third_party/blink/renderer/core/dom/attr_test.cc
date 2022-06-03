@@ -24,7 +24,7 @@ class AttrTest : public testing::Test {
 };
 
 void AttrTest::SetUp() {
-  document_ = MakeGarbageCollected<Document>();
+  document_ = Document::CreateForTest();
   value_ = "value";
 }
 

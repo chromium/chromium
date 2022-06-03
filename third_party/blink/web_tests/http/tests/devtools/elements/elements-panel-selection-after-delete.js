@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel correctly updates selection on node removal.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <head>
@@ -70,13 +70,13 @@
   }
 
   function removeElementAsUser(element, callback) {
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateModifiedNodes', callback);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
     element.remove();
   }
 
   function removeElementExternally(element, callback) {
     var node = element.node();
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateChildren', callback);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateChildren', callback);
     node.removeNode();
   }
 

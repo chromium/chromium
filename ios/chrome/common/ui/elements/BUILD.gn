@@ -1,0 +1,54 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/ios/ios_sdk.gni")
+
+source_set("elements") {
+  sources = [
+    "highlight_button.h",
+    "highlight_button.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  deps = [ "//ios/chrome/common:timing" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("popover_label_view_controller") {
+  sources = [
+    "popover_label_view_controller.h",
+    "popover_label_view_controller.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  deps = [
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("form_input_accessory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_input_accessory_view.h",
+    "form_input_accessory_view.mm",
+    "form_input_accessory_view_text_data.h",
+    "form_input_accessory_view_text_data.mm",
+  ]
+  deps = [
+    "resources:mf_arrow_down",
+    "resources:mf_arrow_up",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

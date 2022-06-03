@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -22,6 +22,7 @@
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,9 +57,8 @@ class MockFetchSuccessCallbackListener {
 
 ExternalPolicyDataUpdater::FetchSuccessCallback
     MockFetchSuccessCallbackListener::CreateCallback(const std::string& key) {
-  return base::Bind(&MockFetchSuccessCallbackListener::OnFetchSuccess,
-                    base::Unretained(this),
-                    key);
+  return base::BindRepeating(&MockFetchSuccessCallbackListener::OnFetchSuccess,
+                             base::Unretained(this), key);
 }
 
 }  // namespace
@@ -70,9 +70,10 @@ class ExternalPolicyDataUpdaterTest : public testing::Test {
   void CreateUpdater(size_t max_parallel_fetches);
   ExternalPolicyDataUpdater::Request CreateRequest(
       const std::string& url) const;
-  void RequestExternalDataFetch(int key_index, int url_index);
+  void RequestExternalDataFetchAndWait(int index);
+  void RequestExternalDataFetchAndWait(int key_index, int url_index);
   void RequestExternalDataFetch(int index);
-
+  void RequestExternalDataFetch(int key_index, int url_index);
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   MockFetchSuccessCallbackListener callback_listener_;
@@ -95,18 +96,29 @@ void ExternalPolicyDataUpdaterTest::CreateUpdater(size_t max_parallel_fetches) {
       max_parallel_fetches);
 }
 
-void ExternalPolicyDataUpdaterTest::RequestExternalDataFetch(int key_index,
-                                                             int url_index) {
-  updater_->FetchExternalData(
-      kExternalPolicyDataKeys[key_index],
-      CreateRequest(kExternalPolicyDataURLs[url_index]),
-      callback_listener_.CreateCallback(kExternalPolicyDataKeys[key_index]));
+void ExternalPolicyDataUpdaterTest::RequestExternalDataFetchAndWait(int index) {
+  RequestExternalDataFetchAndWait(index, index);
+}
+
+void ExternalPolicyDataUpdaterTest::RequestExternalDataFetchAndWait(
+    int key_index,
+    int url_index) {
+  RequestExternalDataFetch(key_index, url_index);
+
   base::RunLoop().RunUntilIdle();
   backend_task_runner_->RunPendingTasks();
 }
 
 void ExternalPolicyDataUpdaterTest::RequestExternalDataFetch(int index) {
   RequestExternalDataFetch(index, index);
+}
+
+void ExternalPolicyDataUpdaterTest::RequestExternalDataFetch(int key_index,
+                                                             int url_index) {
+  updater_->FetchExternalData(
+      kExternalPolicyDataKeys[key_index],
+      CreateRequest(kExternalPolicyDataURLs[url_index]),
+      callback_listener_.CreateCallback(kExternalPolicyDataKeys[key_index]));
 }
 
 ExternalPolicyDataUpdater::Request
@@ -122,8 +134,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, FetchSuccess) {
   CreateUpdater(1);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that only the first fetch has been started.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kExternalPolicyDataURLs[0]));
@@ -155,8 +167,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, PayloadSizeExceedsLimit) {
   CreateUpdater(1);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that only the first fetch has been started.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -182,8 +194,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, FetchFailure) {
   CreateUpdater(1);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that only the first fetch has been started.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -211,8 +223,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, ServerFailure) {
   CreateUpdater(1);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that only the first fetch has been started.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -240,7 +252,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, RetryLimit) {
   CreateUpdater(1);
 
   // Make a fetch request.
-  RequestExternalDataFetch(0);
+  RequestExternalDataFetchAndWait(0);
 
   // Verify that client failures cause the fetch to be retried three times.
   for (int i = 0; i < 3; ++i) {
@@ -288,10 +300,10 @@ TEST_F(ExternalPolicyDataUpdaterTest, RetryWithBackoff) {
   CreateUpdater(1);
 
   // Make a fetch request.
-  RequestExternalDataFetch(0);
+  RequestExternalDataFetchAndWait(0);
 
-  base::TimeDelta expected_delay = base::TimeDelta::FromSeconds(15);
-  const base::TimeDelta delay_cap = base::TimeDelta::FromHours(12);
+  base::TimeDelta expected_delay = base::Seconds(15);
+  const base::TimeDelta delay_cap = base::Hours(12);
 
   // The backoff delay is capped at 12 hours, which is reached after 12 retries:
   // 15 * 2^12 == 61440 > 43200 == 12 * 60 * 60
@@ -318,8 +330,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, RetryWithBackoff) {
     // to 100%.
     base::TimeDelta delay = backend_task_runner_->NextPendingTaskDelay();
     EXPECT_GT(delay,
-              base::TimeDelta::FromMilliseconds(
-                  0.799 * expected_delay.InMilliseconds()));
+              base::Milliseconds(0.799 * expected_delay.InMilliseconds()));
     EXPECT_LE(delay, expected_delay);
 
     if (i < 12) {
@@ -340,13 +351,68 @@ TEST_F(ExternalPolicyDataUpdaterTest, RetryWithBackoff) {
   }
 }
 
+TEST_F(ExternalPolicyDataUpdaterTest, CancelDelayedTsaks) {
+  // Create an updater that runs one fetch at a time.
+  CreateUpdater(1);
+
+  // Make a fetch request.
+  RequestExternalDataFetchAndWait(0);
+
+  // Verify that the fetch has been started.
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kExternalPolicyDataURLs[0]));
+
+  // Make the fetch fail with a server error.
+  test_url_loader_factory_.AddResponse(kExternalPolicyDataURLs[0],
+                                       std::string(),
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+  base::RunLoop().RunUntilIdle();
+  backend_task_runner_->RunPendingTasks();
+  test_url_loader_factory_.ClearResponses();
+
+  // Verify that the fetch is no longer running.
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+
+  // Verify that a retry has been scheduled.
+  EXPECT_EQ(1u, backend_task_runner_->NumPendingTasks());
+
+  // Make second fetch request.
+  RequestExternalDataFetch(0);
+
+  // Verify that the fetch has been started and retry is still scheduled.
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kExternalPolicyDataURLs[0]));
+  EXPECT_EQ(1u, backend_task_runner_->NumPendingTasks());
+
+  // Fast-forward time to the scheduled retry.
+  backend_task_runner_->RunPendingTasks();
+
+  // Verify that retry has been canceled and no additional requests started.
+  EXPECT_FALSE(backend_task_runner_->HasPendingTask());
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+  // Complete the fetch successfully.
+  test_url_loader_factory_.AddResponse(kExternalPolicyDataURLs[0],
+                                       kExternalPolicyDataPayload);
+  EXPECT_CALL(callback_listener_, OnFetchSuccess(kExternalPolicyDataKeys[0],
+                                                 kExternalPolicyDataPayload))
+      .Times(1)
+      .WillOnce(Return(true));
+  base::RunLoop().RunUntilIdle();
+  backend_task_runner_->RunPendingTasks();
+
+  // Verify that all tasks are completed.
+  EXPECT_FALSE(backend_task_runner_->HasPendingTask());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
 TEST_F(ExternalPolicyDataUpdaterTest, HashInvalid) {
   // Create an updater that runs one fetch at a time.
   CreateUpdater(1);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that only the first fetch has been started.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -373,7 +439,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, DataRejectedByCallback) {
   CreateUpdater(1);
 
   // Make a fetch request.
-  RequestExternalDataFetch(0);
+  RequestExternalDataFetchAndWait(0);
 
   // Verify that the fetch has been started.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kExternalPolicyDataURLs[0]));
@@ -429,13 +495,13 @@ TEST_F(ExternalPolicyDataUpdaterTest, URLChanged) {
   CreateUpdater(1);
 
   // Make a fetch request.
-  RequestExternalDataFetch(0);
+  RequestExternalDataFetchAndWait(0);
 
   // Verify that the fetch has been started.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kExternalPolicyDataURLs[0]));
 
   // Make another fetch request with the same key but an updated URL.
-  RequestExternalDataFetch(0, 1);
+  RequestExternalDataFetchAndWait(0, 1);
 
   // Verify that the original fetch is no longer running and a new fetch has
   // been started with the updated URL.
@@ -451,8 +517,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, JobInvalidated) {
   CreateUpdater(1);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that only the first fetch has been started.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -460,7 +526,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, JobInvalidated) {
 
   // Make another fetch request with the same key as the second request but an
   // updated URL.
-  RequestExternalDataFetch(1, 2);
+  RequestExternalDataFetchAndWait(1, 2);
 
   // Verify that the first fetch is still the only one running.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
@@ -484,7 +550,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, FetchCanceled) {
   CreateUpdater(1);
 
   // Make a fetch request.
-  RequestExternalDataFetch(0);
+  RequestExternalDataFetchAndWait(0);
 
   // Verify that the fetch has been started.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kExternalPolicyDataURLs[0]));
@@ -506,9 +572,9 @@ TEST_F(ExternalPolicyDataUpdaterTest, ParallelJobs) {
   CreateUpdater(2);
 
   // Make three fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
-  RequestExternalDataFetch(2);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
+  RequestExternalDataFetchAndWait(2);
 
   // Verify that only the first and second fetches have been started.
   EXPECT_EQ(2, test_url_loader_factory_.NumPending());
@@ -578,9 +644,9 @@ TEST_F(ExternalPolicyDataUpdaterTest, ParallelJobsFinishingOutOfOrder) {
   CreateUpdater(2);
 
   // Make three fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
-  RequestExternalDataFetch(2);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
+  RequestExternalDataFetchAndWait(2);
 
   // Verify that only the first and second fetches have been started.
   EXPECT_EQ(2, test_url_loader_factory_.NumPending());
@@ -650,9 +716,9 @@ TEST_F(ExternalPolicyDataUpdaterTest, ParallelJobsWithRetry) {
   CreateUpdater(2);
 
   // Make three fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
-  RequestExternalDataFetch(2);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
+  RequestExternalDataFetchAndWait(2);
 
   // Verify that only the first and second fetches have been started.
   EXPECT_EQ(2, test_url_loader_factory_.NumPending());
@@ -711,9 +777,9 @@ TEST_F(ExternalPolicyDataUpdaterTest, ParallelJobsWithCancel) {
   CreateUpdater(2);
 
   // Make three fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
-  RequestExternalDataFetch(2);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
+  RequestExternalDataFetchAndWait(2);
 
   // Verify that only the first and second fetches have been started.
   EXPECT_EQ(2, test_url_loader_factory_.NumPending());
@@ -775,8 +841,8 @@ TEST_F(ExternalPolicyDataUpdaterTest, ParallelJobsWithInvalidatedJob) {
   CreateUpdater(2);
 
   // Make two fetch requests.
-  RequestExternalDataFetch(0);
-  RequestExternalDataFetch(1);
+  RequestExternalDataFetchAndWait(0);
+  RequestExternalDataFetchAndWait(1);
 
   // Verify that the first and second fetches has been started.
   EXPECT_EQ(2, test_url_loader_factory_.NumPending());
@@ -785,7 +851,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, ParallelJobsWithInvalidatedJob) {
 
   // Make another fetch request with the same key as the second request but an
   // updated URL.
-  RequestExternalDataFetch(1, 2);
+  RequestExternalDataFetchAndWait(1, 2);
 
   // Verify that the first fetch is still running, the second has been canceled
   // and a third fetch has been started.

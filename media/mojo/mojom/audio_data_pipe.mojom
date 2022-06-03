@@ -27,10 +27,10 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 // consumer.
 struct ReadWriteAudioDataPipe {
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory;
-  handle socket;
+  handle<platform> socket;
 };
 
 struct ReadOnlyAudioDataPipe {
   mojo_base.mojom.ReadOnlySharedMemoryRegion shared_memory;
-  handle socket;
+  handle<platform> socket;
 };

@@ -1,0 +1,24 @@
+<!doctype HTML>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+onload = () => {
+  runAfterLayoutAndPaint(() => {
+    target1.style.webkitMaskBoxImage = "linear-gradient(transparent, green)";
+    runAfterLayoutAndPaint(() => {
+      target2.style.webkitMaskBoxImage = "linear-gradient(transparent, green)";
+      runAfterLayoutAndPaint(() => {
+        target3.style.webkitMaskBoxImage = "initial";
+        if (window.testRunner)
+          testRunner.notifyDone();
+      });
+    });
+  });
+};
+</script>
+<div id="target1" style="width: 100px; height: 100px; background: blue"></div>
+<div id="target2" style="width: 100px; height: 100px; background: green;
+                        -webkit-mask-box-image: linear-gradient(green, transparent)"></div>
+<div id="target3" style="width: 100px; height: 100px; background: cyan;
+                        -webkit-mask-box-image: linear-gradient(green, transparent)"></div>

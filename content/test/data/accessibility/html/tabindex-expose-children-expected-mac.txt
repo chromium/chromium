@@ -1,0 +1,14 @@
+AXWebArea
+++AXGroup
+++++AXGroup
+++++++AXGroup AXTitle='1.'
+++++++++AXStaticText AXValue='1.'
+++++++AXGroup AXTitle='2.'
+++++++++AXStaticText AXValue='2.'
+++AXGroup AXDescription='3. 4.'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup AXTitle='3.'
+++++++++++AXStaticText AXValue='3.'
+++++++++AXGroup AXTitle='4.'
+++++++++++AXStaticText AXValue='4.'

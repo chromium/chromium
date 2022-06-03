@@ -5,17 +5,10 @@
 #ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace base {
 class CommandLine;
-}
-
-namespace policy {
-class ChromeBrowserPolicyConnector;
 }
 
 // A base class for platform-specific BrowserProcessPlatformPart
@@ -23,6 +16,12 @@ class ChromeBrowserPolicyConnector;
 class BrowserProcessPlatformPartBase {
  public:
   BrowserProcessPlatformPartBase();
+
+  BrowserProcessPlatformPartBase(const BrowserProcessPlatformPartBase&) =
+      delete;
+  BrowserProcessPlatformPartBase& operator=(
+      const BrowserProcessPlatformPartBase&) = delete;
+
   virtual ~BrowserProcessPlatformPartBase();
 
   // Called after creating the process singleton or when another chrome
@@ -30,7 +29,10 @@ class BrowserProcessPlatformPartBase {
   virtual void PlatformSpecificCommandLineProcessing(
       const base::CommandLine& command_line);
 
-  // Called from BrowserProcessImpl::StartTearDown().
+  // Called at the very beginning of BrowserProcessImpl::StartTearDown().
+  virtual void BeginStartTearDown();
+
+  // Called in the middle of BrowserProcessImpl::StartTearDown().
   virtual void StartTearDown();
 
   // Called from AttemptExitInternal().
@@ -38,12 +40,6 @@ class BrowserProcessPlatformPartBase {
 
   // Called at the end of BrowserProcessImpl::PreMainMessageLoopRun().
   virtual void PreMainMessageLoopRun();
-
-  virtual std::unique_ptr<policy::ChromeBrowserPolicyConnector>
-  CreateBrowserPolicyConnector();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPartBase);
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_

@@ -1,0 +1,15 @@
+noparent = True
+include_rules = [
+  "+base/android",
+  "+base/test/android",
+  "+chrome/browser/profiles/android",
+  "+chrome/browser/util",
+  "+chrome/test/android",
+  "+components/browser_ui/util/android",
+  "+components/browser_ui/widget/android",
+  "+components/embedder_support/android",
+  "+components/url_formatter/android",
+  "+content/public/android",
+  "+ui/android",
+  "+url/android",
+]

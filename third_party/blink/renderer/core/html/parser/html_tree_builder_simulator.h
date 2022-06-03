@@ -42,6 +42,8 @@ class CORE_EXPORT HTMLTreeBuilderSimulator {
  private:
   enum Namespace { HTML, SVG, kMathML };
 
+  enum class TemplateType { kRegular, kShadow };
+
  public:
   enum SimulatedToken {
     kValidScriptStart,
@@ -49,6 +51,7 @@ class CORE_EXPORT HTMLTreeBuilderSimulator {
     kLink,
     kStyleEnd,
     kCustomElementBegin,
+    kDeclarativeShadowDOMEnd,
     kOtherToken
   };
 
@@ -71,8 +74,12 @@ class CORE_EXPORT HTMLTreeBuilderSimulator {
   HTMLParserOptions options_;
   State namespace_stack_;
   bool in_select_insertion_mode_;
+
+  // TODO(crbug.com/901056, masonfreed) Remove all of this template tracking
+  // code once the synchronous HTML parser lands.
+  Vector<TemplateType, 1> template_stack_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_SIMULATOR_H_

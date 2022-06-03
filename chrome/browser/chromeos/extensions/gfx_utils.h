@@ -9,6 +9,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "chrome/browser/extensions/chrome_app_icon.h"
+
 namespace content {
 class BrowserContext;
 }
@@ -52,9 +54,8 @@ bool ShouldApplyChromeBadge(content::BrowserContext* context,
 bool ShouldApplyChromeBadgeToWebApp(content::BrowserContext* context,
                                     const std::string& web_app_id);
 
-// Applies an additional badge in order to distinguish dual apps from Chrome
-// and Android side.
-void ApplyChromeBadge(gfx::ImageSkia* icon_out);
+// Applies an additional badge identified by |badge_type|.
+void ApplyBadge(gfx::ImageSkia* icon_out, ChromeAppIcon::Badge badge_type);
 
 }  // namespace util
 }  // namespace extensions

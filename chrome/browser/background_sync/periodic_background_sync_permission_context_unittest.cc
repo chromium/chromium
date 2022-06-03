@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/common/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -44,15 +44,30 @@ class TestPeriodicBackgroundSyncPermissionContext
   }
 #endif
 
+  GURL GetDefaultSearchEngineUrl() const override {
+    return default_search_engine_url_;
+  }
+
+  void set_default_search_engine_url(const GURL& default_search_engine_url) {
+    default_search_engine_url_ = default_search_engine_url;
+  }
+
  private:
   std::set<GURL> installed_pwas_;
 #if defined(OS_ANDROID)
   std::set<GURL> installed_twas_;
 #endif
+  GURL default_search_engine_url_;
 };
 
 class PeriodicBackgroundSyncPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PeriodicBackgroundSyncPermissionContextTest(
+      const PeriodicBackgroundSyncPermissionContextTest&) = delete;
+  PeriodicBackgroundSyncPermissionContextTest& operator=(
+      const PeriodicBackgroundSyncPermissionContextTest&) = delete;
+
  protected:
   PeriodicBackgroundSyncPermissionContextTest() = default;
   ~PeriodicBackgroundSyncPermissionContextTest() override = default;
@@ -91,8 +106,7 @@ class PeriodicBackgroundSyncPermissionContextTest
     ASSERT_TRUE(host_content_settings_map);
     host_content_settings_map->SetContentSettingDefaultScope(
         /* primary_url= */ url, /* secondary_url= */ url,
-        ContentSettingsType::BACKGROUND_SYNC,
-        /* resource_identifier= */ std::string(), setting);
+        ContentSettingsType::BACKGROUND_SYNC, setting);
   }
 
   void InstallPwa(const GURL& url) { permission_context_->InstallPwa(url); }
@@ -105,10 +119,13 @@ class PeriodicBackgroundSyncPermissionContextTest
     SetBackgroundSyncContentSetting(url, CONTENT_SETTING_ALLOW);
   }
 
+  void SetDefaultSearchEngineUrl(const GURL& url) {
+    permission_context_->set_default_search_engine_url(url);
+  }
+
  private:
   std::unique_ptr<TestPeriodicBackgroundSyncPermissionContext>
       permission_context_;
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncPermissionContextTest);
 };
 
 TEST_F(PeriodicBackgroundSyncPermissionContextTest, DenyWhenFeatureDisabled) {
@@ -162,5 +179,34 @@ TEST_F(PeriodicBackgroundSyncPermissionContextTest, Twa) {
   EXPECT_EQ(GetPermissionStatus(url), CONTENT_SETTING_ALLOW);
 }
 #endif
+
+TEST_F(PeriodicBackgroundSyncPermissionContextTest, DefaultSearchEngine) {
+  GURL requesting_origin("https://example.com");
+
+  // 1. Flag disabled (by default)
+  SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
+  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
+
+  // Enable the flag for the rest of the test
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      "PeriodicSyncPermissionForDefaultSearchEngine", "");
+
+  // 2. No default search engine
+  SetDefaultSearchEngineUrl(GURL());
+  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
+
+  // 3. Default search engine doesn't match
+  SetDefaultSearchEngineUrl(GURL("https://differentexample.com"));
+  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
+
+  // 4. Default search engine matches
+  SetDefaultSearchEngineUrl(GURL("https://example.com/foo?q=asdf"));
+  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_ALLOW);
+
+  // 5. Default search engine matches but no BACKGROUND_SYNC permission.
+  SetBackgroundSyncContentSetting(requesting_origin, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(GetPermissionStatus(requesting_origin), CONTENT_SETTING_BLOCK);
+}
 
 }  // namespace

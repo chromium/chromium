@@ -1,9 +1,6 @@
+set noparent
+ajgo@chromium.org
 jorgelo@chromium.org
-jschuh@chromium.org
-palmer@chromium.org
 rsesek@chromium.org
 tsepez@chromium.org
 wfh@chromium.org
-
-# TEAM: security-dev@chromium.org
-# COMPONENT: Internals>Sandbox

@@ -5,7 +5,6 @@
 #include "chrome/common/multi_process_lock.h"
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 
@@ -14,6 +13,9 @@
 class MultiProcessLockWin : public MultiProcessLock {
  public:
   explicit MultiProcessLockWin(const std::string& name) : name_(name) { }
+
+  MultiProcessLockWin(const MultiProcessLockWin&) = delete;
+  MultiProcessLockWin& operator=(const MultiProcessLockWin&) = delete;
 
   ~MultiProcessLockWin() override {
     if (event_.Get() != NULL) {
@@ -33,7 +35,7 @@ class MultiProcessLockWin : public MultiProcessLock {
       return false;
     }
 
-    base::string16 wname = base::UTF8ToUTF16(name_);
+    std::wstring wname = base::UTF8ToWide(name_);
     event_.Set(CreateEvent(NULL, FALSE, FALSE, wname.c_str()));
     if (event_.Get() && GetLastError() != ERROR_ALREADY_EXISTS) {
       return true;
@@ -54,7 +56,6 @@ class MultiProcessLockWin : public MultiProcessLock {
  private:
   std::string name_;
   base::win::ScopedHandle event_;
-  DISALLOW_COPY_AND_ASSIGN(MultiProcessLockWin);
 };
 
 std::unique_ptr<MultiProcessLock> MultiProcessLock::Create(

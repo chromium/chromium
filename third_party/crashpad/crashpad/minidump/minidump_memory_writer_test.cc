@@ -16,8 +16,8 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_extensions.h"
@@ -235,6 +235,9 @@ class TestMemoryStream final : public internal::MinidumpStreamWriter {
   TestMemoryStream(uint64_t base_address, size_t size, uint8_t value)
       : MinidumpStreamWriter(), memory_(base_address, size, value) {}
 
+  TestMemoryStream(const TestMemoryStream&) = delete;
+  TestMemoryStream& operator=(const TestMemoryStream&) = delete;
+
   ~TestMemoryStream() override {}
 
   TestMinidumpMemoryWriter* memory() {
@@ -266,8 +269,6 @@ class TestMemoryStream final : public internal::MinidumpStreamWriter {
 
  private:
   TestMinidumpMemoryWriter memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMemoryStream);
 };
 
 TEST(MinidumpMemoryWriter, ExtraMemory) {

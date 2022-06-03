@@ -8,5 +8,6 @@ FAIL addTrack with existing sender with null track, same kind, and recvonly dire
 FAIL addTrack with existing sender that has not been used to send should reuse the sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTrack with existing sender that has been used to send should create new sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL addTrack with existing sender with null track, different kind, and recvonly direction should create new sender promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Adding more tracks does not generate more candidates if bundled promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 Harness: the test ran to completion.
 

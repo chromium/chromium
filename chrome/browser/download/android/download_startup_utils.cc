@@ -16,28 +16,31 @@
 static void JNI_DownloadStartupUtils_EnsureDownloadSystemInitialized(
     JNIEnv* env,
     jboolean is_full_browser_started,
-    jboolean is_incognito) {
-  DCHECK(is_full_browser_started || !is_incognito)
-      << "Incognito mode must load full browser.";
-  Profile* profile = nullptr;
-  if (is_full_browser_started) {
-    profile = ProfileManager::GetActiveUserProfile();
-    if (is_incognito) {
-      if (profile->HasOffTheRecordProfile())
-        profile = profile->GetOffTheRecordProfile();
-      else
-        return;
-    }
+    jboolean is_off_the_record) {
+  DCHECK(is_full_browser_started || !is_off_the_record)
+      << "OffTheRecord mode must load full browser.";
+  if (!is_full_browser_started) {
+    DownloadStartupUtils::EnsureDownloadSystemInitialized(nullptr);
+    return;
   }
-  DownloadStartupUtils::EnsureDownloadSystemInitialized(profile);
+
+  std::vector<Profile*> profiles;
+  Profile* active_profile = ProfileManager::GetActiveUserProfile();
+  if (is_off_the_record)
+    profiles = active_profile->GetAllOffTheRecordProfiles();
+  else
+    profiles.push_back(active_profile);
+  for (Profile* profile : profiles) {
+    DownloadStartupUtils::EnsureDownloadSystemInitialized(
+        profile->GetProfileKey());
+  }
 }
 
 // static
 ProfileKey* DownloadStartupUtils::EnsureDownloadSystemInitialized(
-    Profile* profile) {
-  ProfileKey* profile_key =
-      profile ? profile->GetProfileKey()
-              : ProfileKeyStartupAccessor::GetInstance()->profile_key();
+    ProfileKey* profile_key) {
+  if (!profile_key)
+    profile_key = ProfileKeyStartupAccessor::GetInstance()->profile_key();
   DownloadManagerUtils::GetInProgressDownloadManager(profile_key);
   return profile_key;
 }

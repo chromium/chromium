@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,13 +60,12 @@
                           injectionHandler:injectionHandler];
   if (self) {
     _addressViewController = [[AddressViewController alloc] init];
-    _addressViewController.contentInsetsAlwaysEqualToSafeArea = YES;
 
     // Service must use regular browser state, even if the Browser has an
     // OTR browser state.
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
-            super.browserState->GetOriginalChromeBrowserState());
+            super.browser->GetBrowserState()->GetOriginalChromeBrowserState());
     DCHECK(_personalDataManager);
 
     _personalDataManagerObserver.reset(
@@ -103,7 +102,7 @@
   __weak id<AddressCoordinatorDelegate> delegate = self.delegate;
   [self dismissIfNecessaryThenDoCompletion:^{
     [delegate openAddressSettings];
-    if (IsIPadIdiom()) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // Settings close the popover but don't send a message to reopen it.
       [delegate fallbackCoordinatorDidDismissPopover:self];
     }

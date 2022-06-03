@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -63,6 +64,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
+                          const NetworkIsolationKey& network_isolation_key,
                           const GURL& origin,
                           CreateReason reason,
                           int digest_nonce_count,
@@ -94,7 +96,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
  protected:
   // HttpAuthHandler
   bool Init(HttpAuthChallengeTokenizer* challenge,
-            const SSLInfo& ssl_info) override;
+            const SSLInfo& ssl_info,
+            const NetworkIsolationKey& network_isolation_key) override;
   int GenerateAuthTokenImpl(const AuthCredentials* credentials,
                             const HttpRequestInfo* request,
                             CompletionOnceCallback callback,
@@ -125,6 +128,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
 
   std::unique_ptr<HttpAuthMechanism> auth_system_;
   HostResolver* const resolver_;
+
+  NetworkIsolationKey network_isolation_key_;
 
   // Members which are needed for DNS lookup + SPN.
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;

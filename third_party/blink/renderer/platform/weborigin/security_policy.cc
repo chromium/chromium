@@ -30,15 +30,19 @@
 
 #include <memory>
 
+#include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -59,31 +63,6 @@ static network::cors::OriginAccessList& GetOriginAccessList() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(network::cors::OriginAccessList,
                                   origin_access_list, ());
   return origin_access_list;
-}
-
-using OriginSet = HashSet<String>;
-
-static OriginSet& TrustworthyOriginSafelist() {
-  DEFINE_STATIC_LOCAL(OriginSet, safelist, ());
-  return safelist;
-}
-
-network::mojom::ReferrerPolicy ReferrerPolicyResolveDefault(
-    network::mojom::ReferrerPolicy referrer_policy) {
-  if (referrer_policy == network::mojom::ReferrerPolicy::kDefault) {
-    if (RuntimeEnabledFeatures::ReducedReferrerGranularityEnabled()) {
-      return network::mojom::ReferrerPolicy::
-          kNoReferrerWhenDowngradeOriginWhenCrossOrigin;
-    } else {
-      return network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
-    }
-  }
-
-  return referrer_policy;
-}
-
-void SecurityPolicy::Init() {
-  TrustworthyOriginSafelist();
 }
 
 bool SecurityPolicy::ShouldHideReferrer(const KURL& url, const KURL& referrer) {
@@ -108,69 +87,58 @@ Referrer SecurityPolicy::GenerateReferrer(
     const KURL& url,
     const String& referrer) {
   network::mojom::ReferrerPolicy referrer_policy_no_default =
-      ReferrerPolicyResolveDefault(referrer_policy);
+      ReferrerUtils::MojoReferrerPolicyResolveDefault(referrer_policy);
   if (referrer == Referrer::NoReferrer())
     return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
   DCHECK(!referrer.IsEmpty());
 
-  KURL referrer_url = KURL(NullURL(), referrer);
-  String scheme = referrer_url.Protocol();
-  if (!SchemeRegistry::ShouldTreatURLSchemeAsAllowedForReferrer(scheme))
+  KURL referrer_url = KURL(NullURL(), referrer).UrlStrippedForUseAsReferrer();
+
+  if (!referrer_url.IsValid())
     return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
 
-  if (SecurityOrigin::ShouldUseInnerURL(url))
-    return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
+  // 5. Let referrerOrigin be the result of stripping referrerSource for use as
+  // a referrer, with the origin-only flag set to true.
+  KURL referrer_origin = referrer_url;
+  referrer_origin.SetPath(String());
+  referrer_origin.SetQuery(String());
+
+  // 6. If the result of serializing referrerURL is a string whose length is
+  // greater than 4096, set referrerURL to referrerOrigin.
+  if (referrer_url.GetString().length() > 4096)
+    referrer_url = referrer_origin;
 
   switch (referrer_policy_no_default) {
     case network::mojom::ReferrerPolicy::kNever:
       return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
     case network::mojom::ReferrerPolicy::kAlways:
-      return Referrer(referrer, referrer_policy_no_default);
+      return Referrer(referrer_url, referrer_policy_no_default);
     case network::mojom::ReferrerPolicy::kOrigin: {
-      String origin = SecurityOrigin::Create(referrer_url)->ToString();
-      // A security origin is not a canonical URL as it lacks a path. Add /
-      // to turn it into a canonical URL we can use as referrer.
-      return Referrer(origin + "/", referrer_policy_no_default);
+      return Referrer(referrer_origin, referrer_policy_no_default);
     }
     case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin: {
-      scoped_refptr<const SecurityOrigin> referrer_origin =
-          SecurityOrigin::Create(referrer_url);
-      scoped_refptr<const SecurityOrigin> url_origin =
-          SecurityOrigin::Create(url);
-      if (!url_origin->IsSameOriginWith(referrer_origin.get())) {
-        String origin = referrer_origin->ToString();
-        return Referrer(origin + "/", referrer_policy_no_default);
+      if (!SecurityOrigin::AreSameOrigin(referrer_url, url)) {
+        return Referrer(referrer_origin, referrer_policy_no_default);
       }
       break;
     }
     case network::mojom::ReferrerPolicy::kSameOrigin: {
-      scoped_refptr<const SecurityOrigin> referrer_origin =
-          SecurityOrigin::Create(referrer_url);
-      scoped_refptr<const SecurityOrigin> url_origin =
-          SecurityOrigin::Create(url);
-      if (!url_origin->IsSameOriginWith(referrer_origin.get())) {
+      if (!SecurityOrigin::AreSameOrigin(referrer_url, url)) {
         return Referrer(Referrer::NoReferrer(), referrer_policy_no_default);
       }
-      return Referrer(referrer, referrer_policy_no_default);
+      return Referrer(referrer_url, referrer_policy_no_default);
     }
     case network::mojom::ReferrerPolicy::kStrictOrigin: {
-      String origin = SecurityOrigin::Create(referrer_url)->ToString();
       return Referrer(ShouldHideReferrer(url, referrer_url)
                           ? Referrer::NoReferrer()
-                          : origin + "/",
+                          : referrer_origin,
                       referrer_policy_no_default);
     }
-    case network::mojom::ReferrerPolicy::
-        kNoReferrerWhenDowngradeOriginWhenCrossOrigin: {
-      scoped_refptr<const SecurityOrigin> referrer_origin =
-          SecurityOrigin::Create(referrer_url);
-      scoped_refptr<const SecurityOrigin> url_origin =
-          SecurityOrigin::Create(url);
-      if (!url_origin->IsSameOriginWith(referrer_origin.get())) {
-        String origin = referrer_origin->ToString();
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin: {
+      if (!SecurityOrigin::AreSameOrigin(referrer_url, url)) {
         return Referrer(ShouldHideReferrer(url, referrer_url)
                             ? Referrer::NoReferrer()
-                            : origin + "/",
+                            : referrer_origin,
                         referrer_policy_no_default);
       }
       break;
@@ -182,52 +150,9 @@ Referrer SecurityPolicy::GenerateReferrer(
       break;
   }
 
-  return Referrer(
-      ShouldHideReferrer(url, referrer_url) ? Referrer::NoReferrer() : referrer,
-      referrer_policy_no_default);
-}
-
-void SecurityPolicy::AddOriginToTrustworthySafelist(
-    const String& origin_or_pattern) {
-#if DCHECK_IS_ON()
-  // Must be called before we start other threads.
-  DCHECK(WTF::IsBeforeThreadCreated());
-#endif
-  // Origins and hostname patterns must be canonicalized (including
-  // canonicalization to 8-bit strings) before being inserted into
-  // TrustworthyOriginSafelist().
-  CHECK(origin_or_pattern.Is8Bit());
-  TrustworthyOriginSafelist().insert(origin_or_pattern);
-}
-
-bool SecurityPolicy::IsOriginTrustworthySafelisted(
-    const SecurityOrigin& origin) {
-  // Early return if |origin| cannot possibly be matched.
-  if (origin.IsOpaque() || TrustworthyOriginSafelist().IsEmpty())
-    return false;
-
-  if (TrustworthyOriginSafelist().Contains(origin.ToRawString()))
-    return true;
-
-  // KURL and SecurityOrigin hosts should be canonicalized to 8-bit strings.
-  CHECK(origin.Host().Is8Bit());
-  StringUTF8Adaptor host_adaptor(origin.Host());
-  for (const auto& origin_or_pattern : TrustworthyOriginSafelist()) {
-    StringUTF8Adaptor origin_or_pattern_adaptor(origin_or_pattern);
-    if (base::MatchPattern(host_adaptor.AsStringPiece(),
-                           origin_or_pattern_adaptor.AsStringPiece())) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool SecurityPolicy::IsUrlTrustworthySafelisted(const KURL& url) {
-  // Early return to avoid initializing the SecurityOrigin.
-  if (TrustworthyOriginSafelist().IsEmpty())
-    return false;
-  return IsOriginTrustworthySafelisted(*SecurityOrigin::Create(url).get());
+  return Referrer(ShouldHideReferrer(url, referrer_url) ? Referrer::NoReferrer()
+                                                        : referrer_url,
+                  referrer_policy_no_default);
 }
 
 bool SecurityPolicy::IsOriginAccessAllowed(
@@ -328,13 +253,16 @@ bool SecurityPolicy::ReferrerPolicyFromString(
     return true;
   }
   if (EqualIgnoringASCIICase(policy, "strict-origin-when-cross-origin")) {
-    *result = network::mojom::ReferrerPolicy::
-        kNoReferrerWhenDowngradeOriginWhenCrossOrigin;
+    *result = network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "no-referrer-when-downgrade") ||
-      (support_legacy_keywords && EqualIgnoringASCIICase(policy, "default"))) {
+  if (EqualIgnoringASCIICase(policy, "no-referrer-when-downgrade")) {
     *result = network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+    return true;
+  }
+  if (support_legacy_keywords && EqualIgnoringASCIICase(policy, "default")) {
+    *result = ReferrerUtils::NetToMojoReferrerPolicy(
+        ReferrerUtils::GetDefaultNetReferrerPolicy());
     return true;
   }
   return false;
@@ -381,6 +309,47 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
 
   *result = referrer_policy;
   return true;
+}
+
+#if defined(OS_FUCHSIA)
+namespace {
+std::vector<url::Origin> GetSharedArrayBufferOrigins() {
+  std::string switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kSharedArrayBufferAllowedOrigins);
+  std::vector<std::string> list =
+      SplitString(switch_value, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+                  base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::vector<url::Origin> result;
+  for (auto& origin : list) {
+    GURL url(origin);
+    if (!url.is_valid() || url.scheme() != url::kHttpsScheme) {
+      LOG(FATAL) << "Invalid --" << switches::kSharedArrayBufferAllowedOrigins
+                 << " specified: " << switch_value;
+    }
+    result.push_back(url::Origin::Create(url));
+  }
+  return result;
+}
+}  // namespace
+#endif  // defined(OS_FUCHSIA)
+
+// static
+bool SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
+    const SecurityOrigin* security_origin) {
+#if defined(OS_FUCHSIA)
+  static base::NoDestructor<std::vector<url::Origin>> allowed_origins(
+      GetSharedArrayBufferOrigins());
+  url::Origin origin = security_origin->ToUrlOrigin();
+  for (const url::Origin& allowed_origin : *allowed_origins) {
+    if (origin.scheme() == allowed_origin.scheme() &&
+        origin.DomainIs(allowed_origin.host()) &&
+        origin.port() == allowed_origin.port()) {
+      return true;
+    }
+  }
+#endif
+  return false;
 }
 
 }  // namespace blink

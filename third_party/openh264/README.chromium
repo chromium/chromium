@@ -2,8 +2,8 @@ Name: OpenH264
 Short Name: openh264
 URL: http://www.openh264.org/
 Version: unknown
-(Cut at 6f26bce0b1c4e8ce0e13332f7c0083788def5fdf, which is between 1.9.0 and
-1.10.0)
+CPEPrefix: cpe:/a:cisco:openh264:2.1.1
+(Cut at 3dd5b80bc4f172dd82925bb259cb7c82348409c5, which is 2.1.1)
 License: 2-Clause BSD
 License File: src/LICENSE
 Security Critical: yes

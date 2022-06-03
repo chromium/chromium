@@ -14,14 +14,10 @@ const char* const kAllowedTransformSchemes[4] = {
     url::kHttpScheme, url::kHttpsScheme, url::kFtpScheme,
     extensions::kExtensionScheme};
 
+const char kErrorRequestMethodDuplicated[] =
+    "Rule with id * includes and excludes the same request method.";
 const char kErrorResourceTypeDuplicated[] =
     "Rule with id * includes and excludes the same resource.";
-const char kErrorEmptyRedirectRuleKey[] =
-    "Rule with id * does not specify the value for * key. This is required "
-    "for redirect rules.";
-const char kErrorEmptyUpgradeRulePriority[] =
-    "Rule with id * does not specify the value for priority key. This is "
-    "required for upgradeScheme rules.";
 const char kErrorInvalidRuleKey[] =
     "Rule with id * has an invalid value for * key. This should be greater "
     "than or equal to *.";
@@ -39,9 +35,6 @@ const char kErrorDuplicateIDs[] = "Rule with id * does not have a unique ID.";
 const char kErrorPersisting[] = "Internal error while parsing rules.";
 const char kErrorNonAscii[] =
     "Rule with id * cannot have non-ascii characters as part of \"*\" key.";
-const char kErrorEmptyRemoveHeadersList[] =
-    "Rule with id * does not specify the value for \"*\" key. This is required "
-    "for \"removeHeaders\" rules.";
 const char kErrorInvalidKey[] =
     "Rule with id * specifies an incorrect value for the \"*\" key.";
 const char kErrorInvalidTransformScheme[] =
@@ -57,33 +50,101 @@ const char kErrorMultipleFilters[] =
 const char kErrorRegexSubstitutionWithoutFilter[] =
     "Rule with id * can't specify the \"*\" key without specifying the \"*\" "
     "key.";
+const char kErrorInvalidAllowAllRequestsResourceType[] =
+    "Rule with id * is an \"allowAllRequests\" rule and must specify the "
+    "\"resourceTypes\" key. It may only include the \"main_frame\" and "
+    "\"sub_frame\" resource types.";
+const char kErrorRegexTooLarge[] =
+    "Rule with id * specified a more complex regex than allowed as part of the "
+    "\"*\" key.";
+const char kErrorNoHeaderListsSpecified[] =
+    "Rule with id * does not specify a value for \"*\" or \"*\" key. At least "
+    "one of these keys must be specified with a non-empty list.";
+const char kErrorInvalidHeaderName[] =
+    "Rule with id * must specify a valid header name to be modified.";
+const char kErrorInvalidHeaderValue[] =
+    "Rule with id * specifies an invalid header value.";
+const char kErrorNoHeaderValueSpecified[] =
+    "Rule with id * must provide a value for a header to be appended/set.";
+const char kErrorHeaderValuePresent[] =
+    "Rule with id * must not provide a header value for a header to be "
+    "removed.";
+const char kErrorCannotAppendRequestHeader[] =
+    "Rule with id * must not specify a request header to be appended.";
+const char kErrorTabIdsOnNonSessionRule[] =
+    "Rule with id * specifies a value for \"*\" or \"*\" key. These are only "
+    "supported for session-scoped rules.";
+const char kErrorTabIdDuplicated[] =
+    "Rule with id * includes and excludes the same tab ID.";
 
 const char kErrorListNotPassed[] = "Rules file must contain a list.";
 
 const char kRuleCountExceeded[] =
-    "Declarative Net Request: Rule count exceeded. Some rules were ignored.";
+    "Rule count exceeded. Some rules were ignored.";
+const char kRegexRuleCountExceeded[] =
+    "Regular expression rule count exceeded. Some rules were ignored.";
+const char kEnabledRuleCountExceeded[] =
+    "The number of enabled rules exceeds the API limits. Some rulesets will be "
+    "ignored.";
+const char kEnabledRegexRuleCountExceeded[] =
+    "The number of enabled regular expression rules exceeds the API limits. "
+    "Some rulesets will be ignored.";
 const char kRuleNotParsedWarning[] =
-    "Declarative Net Request: Rule with * couldn't be parsed. Parse error: "
-    "*.";
+    "Rule with * couldn't be parsed. Parse error: *.";
 const char kTooManyParseFailuresWarning[] =
-    "Declarative Net Request: Too many rule parse failures; Reporting the "
-    "first *.";
+    "Too many rule parse failures; Reporting the first *.";
+const char kIndexingRuleLimitExceeded[] =
+    "Ruleset with id * exceeds the indexing rule limit and will be ignored.";
 const char kInternalErrorUpdatingDynamicRules[] =
     "Internal error while updating dynamic rules.";
 const char kInternalErrorGettingDynamicRules[] =
     "Internal error while getting dynamic rules.";
 const char kDynamicRuleCountExceeded[] = "Dynamic rule count exceeded.";
+const char kDynamicRegexRuleCountExceeded[] =
+    "Dynamic rule count for regex rules exceeded.";
+
+const char kSessionRuleCountExceeded[] = "Session rule count exceeded.";
+const char kSessionRegexRuleCountExceeded[] =
+    "Session rule count for regex rules exceeded.";
+
+const char kInvalidRulesetIDError[] = "Invalid ruleset id: *.";
+const char kEnabledRulesetsRuleCountExceeded[] =
+    "The set of enabled rulesets exceeds the rule count limit.";
+const char kEnabledRulesetsRegexRuleCountExceeded[] =
+    "The set of enabled rulesets exceeds the regular expression rule count "
+    "limit.";
+const char kInternalErrorUpdatingEnabledRulesets[] = "Internal error.";
+const char kEnabledRulesetCountExceeded[] =
+    "The number of enabled static rulesets exceeds the enabled ruleset count "
+    "limit.";
+
+const char kTabNotFoundError[] = "No tab with id: *.";
+const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
+    "Cannot increment action count unless displaying action count as badge "
+    "text.";
+
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";
-const char kManifestRulesCountHistogram[] =
-    "Extensions.DeclarativeNetRequest.ManifestRulesCount";
+const char kManifestEnabledRulesCountHistogram[] =
+    "Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2";
 const char kUpdateDynamicRulesStatusHistogram[] =
     "Extensions.DeclarativeNetRequest.UpdateDynamicRulesStatus";
 const char kReadDynamicRulesJSONStatusHistogram[] =
     "Extensions.DeclarativeNetRequest.ReadDynamicRulesJSONStatus";
+const char kIsLargeRegexHistogram[] =
+    "Extensions.DeclarativeNetRequest.IsLargeRegexRule";
+const char kLoadRulesetResultHistogram[] =
+    "Extensions.DeclarativeNetRequest.LoadRulesetResult";
 
 const char kActionCountPlaceholderBadgeText[] =
     "<<declarativeNetRequestActionCount>>";
+
+const char kErrorGetMatchedRulesMissingPermissions[] =
+    "The extension must have the declarativeNetRequestFeedback permission or "
+    "have activeTab granted for the specified tab ID in order to call this "
+    "function.";
+
+const char kEmbedderConditionsBufferIdentifier[] = "EMBR";
 
 }  // namespace declarative_net_request
 }  // namespace extensions

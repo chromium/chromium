@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import json
 import logging
 import os
@@ -37,7 +38,7 @@ class ScriptsSmokeTest(unittest.TestCase):
                             env=env)
     stdout = proc.communicate()[0]
     return_code = proc.returncode
-    return return_code, stdout
+    return return_code, stdout.decode('utf-8')
 
   def testRunBenchmarkHelp(self):
     return_code, stdout = self.RunPerfScript('run_benchmark --help')
@@ -46,8 +47,15 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   @decorators.Disabled('chromeos')  # crbug.com/754913
   def testRunBenchmarkListBenchmarks(self):
-    return_code, stdout = self.RunPerfScript(
-        ['run_benchmark', 'list', '--browser', self.options.browser_type])
+    cmdline = ['run_benchmark', 'list', '--browser', self.options.browser_type]
+    if self.options.browser_type == 'exact':
+      # If we're running with an exact browser and it was not specified with
+      # an absolute path, then there's no guarantee that we can actually find it
+      # now, so make the test a no-op.
+      if not os.path.isabs(self.options.browser_executable):
+        return
+      cmdline.extend(['--browser-executable', self.options.browser_executable])
+    return_code, stdout = self.RunPerfScript(cmdline)
     self.assertRegexpMatches(stdout, r'Available benchmarks .*? are:')
     self.assertEqual(return_code, 0)
 
@@ -82,17 +90,22 @@ class ScriptsSmokeTest(unittest.TestCase):
     tempdir = tempfile.mkdtemp()
     benchmarks = ['dummy_benchmark.stable_benchmark_1',
                   'dummy_benchmark.noisy_benchmark_1']
-    return_code, stdout = self.RunPerfScript(
-        '../../testing/scripts/run_performance_tests.py '
-        '../../tools/perf/run_benchmark '
-        '--benchmarks=%s '
-        '--browser=%s '
-        '--isolated-script-test-also-run-disabled-tests '
-        '--isolated-script-test-output=%s' % (
-            ','.join(benchmarks),
-            self.options.browser_type,
-            os.path.join(tempdir, 'output.json')
-        ))
+    cmdline = ('../../testing/scripts/run_performance_tests.py '
+               '../../tools/perf/run_benchmark '
+               '--benchmarks=%s '
+               '--browser=%s '
+               '--isolated-script-test-also-run-disabled-tests '
+               '--isolated-script-test-output=%s' %
+               (','.join(benchmarks), self.options.browser_type,
+                os.path.join(tempdir, 'output.json')))
+    if self.options.browser_type == 'exact':
+      # If the path to the browser executable is not absolute, there is no
+      # guarantee that we can actually find it at this point, so no-op the
+      # test.
+      if not os.path.isabs(self.options.browser_executable):
+        return
+      cmdline += ' --browser-executable=%s' % self.options.browser_executable
+    return_code, stdout = self.RunPerfScript(cmdline)
     self.assertEquals(return_code, 0, stdout)
     try:
       with open(os.path.join(tempdir, 'output.json')) as f:
@@ -162,8 +175,11 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   # Android: crbug.com/932301
   # ChromeOS: crbug.com/754913
+  # Windows: crbug.com/1024767
   # Linux: crbug.com/1024767
-  @decorators.Disabled('chromeos', 'android', 'linux')
+  # all: Disabled everywhere because the smoke test shard map
+  # needed to be changed to fix crbug.com/1024767.
+  @decorators.Disabled('all')
   def testRunPerformanceTestsTelemetrySharded_end2end(self):
     tempdir = tempfile.mkdtemp()
     env = os.environ.copy()
@@ -188,22 +204,26 @@ class ScriptsSmokeTest(unittest.TestCase):
       self.assertEquals(return_code, 0)
       expected_benchmark_folders = (
           'dummy_benchmark.stable_benchmark_1',
-          'dummy_benchmark.stable_benchmark_1.reference')
+          'dummy_benchmark.stable_benchmark_1.reference',
+          'dummy_gtest')
       with open(os.path.join(tempdir, 'output.json')) as f:
         test_results = json.load(f)
       self.assertIsNotNone(
           test_results, 'json_test_results should be populated.')
-      test_repeats = test_results['num_failures_by_type']['PASS']
+      test_runs = test_results['num_failures_by_type']['PASS']
+      # 1 gtest runs (since --isolated-script-test-repeat doesn't work for gtest
+      # yet) plus 2 dummy_benchmark runs = 3 runs.
       self.assertEqual(
-          test_repeats, 2, '--isolated-script-test-repeat=2 should work.')
+          test_runs, 3, '--isolated-script-test-repeat=2 should work.')
       for folder in expected_benchmark_folders:
         with open(os.path.join(tempdir, folder, 'test_results.json')) as f:
           test_results = json.load(f)
         self.assertIsNotNone(
             test_results, 'json test results should be populated.')
         test_repeats = test_results['num_failures_by_type']['PASS']
-        self.assertEqual(
-            test_repeats, 2, '--isolated-script-test-repeat=2 should work.')
+        if 'dummy_gtest' not in folder:  # Repeats don't work for gtest yet.
+          self.assertEqual(
+              test_repeats, 2, '--isolated-script-test-repeat=2 should work.')
         with open(os.path.join(tempdir, folder, 'perf_results.json')) as f:
           perf_results = json.load(f)
         self.assertIsNotNone(
@@ -231,11 +251,22 @@ class ScriptsSmokeTest(unittest.TestCase):
              if generate_trace else '') +
         ' --non-telemetry=true '
         '--this-arg=passthrough '
+        '--argument-to-check-that-arguments-work '
         '--gtest-benchmark-name dummy_gtest '
         '--isolated-script-test-output=%s' % (
             os.path.join(tempdir, 'output.json')
         ))
-    self.assertEquals(return_code, 0, stdout)
+    try:
+      self.assertEquals(return_code, 0, stdout)
+    except AssertionError:
+      try:
+        with open(os.path.join(tempdir, benchmark, 'benchmark_log.txt')) as fh:
+          print(fh.read())
+      # pylint: disable=bare-except
+      except:
+        # pylint: enable=bare-except
+        pass
+      raise
     try:
       with open(os.path.join(tempdir, 'output.json')) as f:
         test_results = json.load(f)
@@ -266,7 +297,7 @@ class ScriptsSmokeTest(unittest.TestCase):
   def testRunPerformanceTestsGtestTrace_end2end(self):
     self.RunGtest(generate_trace=True)
 
-  def testRunPerformanceTestsTelemetryArgsParser(self):
+  def testRunPerformanceTestsShardedArgsParser(self):
     options = run_performance_tests.parse_arguments([
         '../../tools/perf/run_benchmark', '-v', '--browser=release_x64',
         '--upload-results', '--run-ref-build',
@@ -333,16 +364,42 @@ class ScriptsSmokeTest(unittest.TestCase):
     self.assertIn('--run-abridged-story-set', command)
 
   def testRunPerformanceTestsGtestArgsParser(self):
-     options = run_performance_tests.parse_arguments([
-        'media_perftests', '--non-telemetry=true', '--single-process-tests',
+    options = run_performance_tests.parse_arguments([
+        'media_perftests',
+        '--non-telemetry=true',
+        '--single-process-tests',
         '--test-launcher-retry-limit=0',
         '--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::'
         '*unoptimized_aligned',
-        '--gtest-benchmark-name', 'media_perftests',
+        '--gtest-benchmark-name',
+        'media_perftests',
         '--isolated-script-test-output=/x/y/z/output.json',
-     ])
-     self.assertIn('--single-process-tests', options.passthrough_args)
-     self.assertIn('--test-launcher-retry-limit=0', options.passthrough_args)
-     self.assertEqual(options.executable, 'media_perftests')
-     self.assertEqual(options.isolated_script_test_output,
-                      r'/x/y/z/output.json')
+    ])
+    self.assertIn('--single-process-tests', options.passthrough_args)
+    self.assertIn('--test-launcher-retry-limit=0', options.passthrough_args)
+    self.assertEqual(options.executable, 'media_perftests')
+    self.assertEqual(options.isolated_script_test_output, r'/x/y/z/output.json')
+
+  def testRunPerformanceTestsExecuteGtest_OSError(self):
+    class FakeCommandGenerator(object):
+      def __init__(self):
+        self.executable_name = 'binary_that_doesnt_exist'
+        self._ignore_shard_env_vars = False
+
+      def generate(self, unused_path):
+        return [self.executable_name]
+
+    tempdir = tempfile.mkdtemp()
+    try:
+      fake_command_generator = FakeCommandGenerator()
+      output_paths = run_performance_tests.OutputFilePaths(
+          tempdir, 'fake_gtest')
+      output_paths.SetUp()
+      return_code = run_performance_tests.execute_gtest_perf_test(
+          fake_command_generator, output_paths, is_unittest=True)
+      self.assertEqual(return_code, 1)
+      with open(output_paths.test_results) as fh:
+        json_test_results = json.load(fh)
+      self.assertGreater(json_test_results['num_failures_by_type']['FAIL'], 0)
+    finally:
+      shutil.rmtree(tempdir)

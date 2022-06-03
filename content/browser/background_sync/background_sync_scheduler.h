@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -21,9 +20,6 @@ namespace content {
 
 class StoragePartitionImpl;
 
-// Key name on BrowserContext.
-extern const char kBackgroundSyncSchedulerKey[];
-
 // This contains the logic to schedule delayed processing of (periodic)
 // Background Sync registrations.
 // It keeps track of all storage partitions, and the soonest time we should
@@ -35,6 +31,9 @@ class CONTENT_EXPORT BackgroundSyncScheduler
   static BackgroundSyncScheduler* GetFor(BrowserContext* browser_context);
 
   BackgroundSyncScheduler();
+
+  BackgroundSyncScheduler(const BackgroundSyncScheduler&) = delete;
+  BackgroundSyncScheduler& operator=(const BackgroundSyncScheduler&) = delete;
 
   // Schedules delayed_processing for |sync_type| for |storage_partition|.
   // On non-Android platforms, runs |delayed_task| after |delay| has passed.
@@ -57,6 +56,7 @@ class CONTENT_EXPORT BackgroundSyncScheduler
 
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
   friend class base::DeleteHelper<BackgroundSyncScheduler>;
+  friend class BackgroundSyncSchedulerTest;
 
   std::map<StoragePartitionImpl*, std::unique_ptr<base::OneShotTimer>>&
   GetDelayedProcessingInfoMap(blink::mojom::BackgroundSyncType sync_type);
@@ -74,9 +74,13 @@ class CONTENT_EXPORT BackgroundSyncScheduler
   std::map<StoragePartitionImpl*, std::unique_ptr<base::OneShotTimer>>
       delayed_processing_info_periodic_;
 
-  base::WeakPtrFactory<BackgroundSyncScheduler> weak_ptr_factory_{this};
+  std::map<blink::mojom::BackgroundSyncType, base::TimeTicks>
+      scheduled_wakeup_time_{
+          {blink::mojom::BackgroundSyncType::ONE_SHOT, base::TimeTicks::Max()},
+          {blink::mojom::BackgroundSyncType::PERIODIC, base::TimeTicks::Max()},
+      };
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncScheduler);
+  base::WeakPtrFactory<BackgroundSyncScheduler> weak_ptr_factory_{this};
 };
 
 }  // namespace content

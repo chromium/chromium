@@ -10,8 +10,8 @@
 #include "base/memory/singleton.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/wake_lock/arc_wake_lock_bridge.h"
 #include "content/public/browser/device_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,6 +52,10 @@ class ArcWakeLockBridge::WakeLockRequester {
   WakeLockRequester(device::mojom::WakeLockType type,
                     device::mojom::WakeLockProvider* provider)
       : type_(type), provider_(provider) {}
+
+  WakeLockRequester(const WakeLockRequester&) = delete;
+  WakeLockRequester& operator=(const WakeLockRequester&) = delete;
+
   ~WakeLockRequester() = default;
 
   // Increments the number of outstanding requests from Android and requests a
@@ -114,8 +118,6 @@ class ArcWakeLockBridge::WakeLockRequester {
 
   // Lazily initialized in response to first request.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockRequester);
 };
 
 // static

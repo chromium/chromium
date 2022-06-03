@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 namespace sql {
 class Database;
@@ -33,6 +32,9 @@ namespace extensions {
 class DatabaseStringTable {
  public:
   explicit DatabaseStringTable(const std::string& table);
+
+  DatabaseStringTable(const DatabaseStringTable&) = delete;
+  DatabaseStringTable& operator=(const DatabaseStringTable&) = delete;
 
   ~DatabaseStringTable();
 
@@ -70,8 +72,6 @@ class DatabaseStringTable {
   std::string table_;
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseStringTableTest, Prune);
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseStringTable);
 };
 
 }  // namespace extensions

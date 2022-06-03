@@ -19,9 +19,9 @@ CalculationValue::DataUnion::~DataUnion() {
 }
 
 // static
-scoped_refptr<CalculationValue> CalculationValue::CreateSimplified(
+scoped_refptr<const CalculationValue> CalculationValue::CreateSimplified(
     scoped_refptr<const CalculationExpressionNode> expression,
-    ValueRange range) {
+    Length::ValueRange range) {
   if (expression->IsLeaf()) {
     return Create(
         To<CalculationExpressionLeafNode>(*expression).GetPixelsAndPercent(),
@@ -32,10 +32,10 @@ scoped_refptr<CalculationValue> CalculationValue::CreateSimplified(
 
 CalculationValue::CalculationValue(
     scoped_refptr<const CalculationExpressionNode> expression,
-    ValueRange range)
+    Length::ValueRange range)
     : data_(std::move(expression)),
       is_expression_(true),
-      is_non_negative_(range == kValueRangeNonNegative) {}
+      is_non_negative_(range == Length::ValueRange::kNonNegative) {}
 
 CalculationValue::~CalculationValue() {
   if (is_expression_)
@@ -45,8 +45,9 @@ CalculationValue::~CalculationValue() {
 }
 
 float CalculationValue::Evaluate(float max_value) const {
-  float value = is_expression_ ? value = data_.expression->Evaluate(max_value)
-                               : value = Pixels() + Percent() / 100 * max_value;
+  float value =
+      ClampTo<float>(is_expression_ ? data_.expression->Evaluate(max_value)
+                                    : Pixels() + Percent() / 100 * max_value);
   return (IsNonNegative() && value < 0) ? 0 : value;
 }
 
@@ -65,10 +66,10 @@ CalculationValue::GetOrCreateExpression() const {
       GetPixelsAndPercent());
 }
 
-scoped_refptr<CalculationValue> CalculationValue::Blend(
+scoped_refptr<const CalculationValue> CalculationValue::Blend(
     const CalculationValue& from,
     double progress,
-    ValueRange range) const {
+    Length::ValueRange range) const {
   if (!IsExpression() && !from.IsExpression()) {
     PixelsAndPercent from_pixels_and_percent = from.GetPixelsAndPercent();
     PixelsAndPercent to_pixels_and_percent = GetPixelsAndPercent();
@@ -89,21 +90,23 @@ scoped_refptr<CalculationValue> CalculationValue::Blend(
   return CreateSimplified(std::move(result_expression), range);
 }
 
-scoped_refptr<CalculationValue>
+scoped_refptr<const CalculationValue>
 CalculationValue::SubtractFromOneHundredPercent() const {
   if (!IsExpression()) {
     PixelsAndPercent result(-Pixels(), 100 - Percent());
-    return Create(result, kValueRangeAll);
+    return Create(result, Length::ValueRange::kAll);
   }
   auto hundred_percent = base::MakeRefCounted<CalculationExpressionLeafNode>(
       PixelsAndPercent(0, 100));
   auto result_expression = CalculationExpressionAdditiveNode::CreateSimplified(
       std::move(hundred_percent), GetOrCreateExpression(),
       CalculationExpressionAdditiveNode::Type::kSubtract);
-  return CreateSimplified(std::move(result_expression), kValueRangeAll);
+  return CreateSimplified(std::move(result_expression),
+                          Length::ValueRange::kAll);
 }
 
-scoped_refptr<CalculationValue> CalculationValue::Zoom(double factor) const {
+scoped_refptr<const CalculationValue> CalculationValue::Zoom(
+    double factor) const {
   if (!IsExpression()) {
     PixelsAndPercent result(Pixels() * factor, Percent());
     return Create(result, GetValueRange());

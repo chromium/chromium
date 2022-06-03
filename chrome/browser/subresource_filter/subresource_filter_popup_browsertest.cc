@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/content_settings/tab_specific_content_settings.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-#include "chrome/browser/ui/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/safe_browsing/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -31,6 +32,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -41,55 +43,29 @@ namespace subresource_filter {
 
 namespace {
 
-base::LazyInstance<std::vector<std::string>>::DestructorAtExit error_messages_ =
-    LAZY_INSTANCE_INITIALIZER;
+// Checks console messages.
+void RoundTripAndVerifyLogMessages(
+    const content::WebContentsConsoleObserver& observer,
+    content::WebContents* web_contents,
+    std::set<std::string> messages_expected,
+    std::set<std::string> messages_not_expected) {
+  // Round trip to the renderer to ensure the message would have gotten sent.
+  EXPECT_TRUE(content::ExecJs(web_contents, "var a = 1;"));
 
-class ScopedLoggingObserver {
- public:
-  ScopedLoggingObserver() {
-    logging::SetLogMessageHandler(&ScopedLoggingObserver::LogHandler);
-  }
-
-  void RoundTripAndVerifyLogMessages(
-      content::WebContents* web_contents,
-      std::vector<std::string> messages_expected,
-      std::vector<std::string> messages_not_expected) {
-    // Round trip to the renderer to ensure the message would have gotten sent.
-    EXPECT_TRUE(content::ExecuteScript(web_contents, "var a = 1;"));
-    std::deque<bool> verify_messages_expected(messages_expected.size(), false);
-    for (size_t i = 0; i < messages_expected.size(); i++)
-      verify_messages_expected[i] = false;
-
-    for (const auto& message : error_messages_.Get()) {
-      for (size_t i = 0; i < messages_expected.size(); i++) {
-        verify_messages_expected[i] |=
-            (message.find(messages_expected[i]) != std::string::npos);
-      }
-      for (const auto& message_not_expected : messages_not_expected)
-        EXPECT_EQ(std::string::npos, message.find(message_not_expected))
-            << message_not_expected;
+  for (size_t i = 0u; i < observer.messages().size(); ++i) {
+    std::string message = observer.GetMessageAt(i);
+    if (base::Contains(messages_expected, message)) {
+      messages_expected.erase(message);
+      continue;
     }
-    for (size_t i = 0; i < messages_expected.size(); i++)
-      EXPECT_TRUE(verify_messages_expected[i]) << messages_expected[i];
+    if (base::Contains(messages_not_expected, message))
+      ADD_FAILURE() << "Saw anti-expected message: " << message;
   }
-
- private:
-  // Intercepts all console messages. Only used when the ConsoleObserverDelegate
-  // cannot be (e.g. when we need the standard delegate).
-  static bool LogHandler(int severity,
-                         const char* file,
-                         int line,
-                         size_t message_start,
-                         const std::string& str) {
-    if (file && std::string("CONSOLE") == file)
-      error_messages_.Get().push_back(str);
-    return false;
-  }
-};
+  EXPECT_THAT(messages_expected, ::testing::IsEmpty())
+      << "Missing expected messages.";
+}
 
 }  // namespace
-
-const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
 // Tests that subresource_filter interacts well with the abusive enforcement in
 // chrome/browser/ui/blocked_content/safe_browsing_triggered_popup_blocker.
@@ -132,10 +108,9 @@ class SubresourceFilterPopupBrowserTest
             ->GetURL("/subresource_filter/included_script.js")
             .spec()
             .c_str());
-    bool loaded;
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractBool(web_contents(), script, &loaded));
-    return !loaded;
+    return !content::EvalJs(web_contents(), script,
+                            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                .ExtractBool();
   }
 };
 
@@ -149,22 +124,21 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   ConfigureAsPhishingURL(a_url);
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
-  bool opened_window = false;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
-                                                   &opened_window));
-  EXPECT_TRUE(opened_window);
-  EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_EQ(true, content::EvalJs(web_contents, "openWindow()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Navigate again to trigger histogram logging. Make sure the navigation
   // happens in the original WebContents.
   browser()->tab_strip_model()->ToggleSelectionAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 }
 
 class SubresourceFilterPopupBrowserTestWithParam
@@ -195,42 +169,38 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
       SubresourceFilterLevel::WARN /* bas_level */);
 
   // Navigate to a_url, should trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
-  bool opened_window = false;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
-                                                   &opened_window));
-  EXPECT_FALSE(opened_window);
+  EXPECT_EQ(false, content::EvalJs(web_contents, "openWindow()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   tester.ExpectTotalCount(kSubresourceFilterActionsHistogram, 0);
   // Make sure the popup UI was shown.
-  EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Block again.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
-                                                   &opened_window));
-  EXPECT_FALSE(opened_window);
+  EXPECT_EQ(false, content::EvalJs(web_contents, "openWindow()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   const bool enable_adblock_on_abusive_sites = GetParam();
   EXPECT_EQ(enable_adblock_on_abusive_sites, AreDisallowedRequestsBlocked());
 
   // Navigate to |b_url|, which should successfully open the popup.
-  ui_test_utils::NavigateToURL(browser(), b_url);
-  opened_window = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
-                                                   &opened_window));
-  EXPECT_TRUE(opened_window);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  EXPECT_EQ(true, content::EvalJs(web_contents, "openWindow()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   // Popup UI should not be shown.
-  EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
                        BlockCreatingNewWindows_LogsToConsole) {
-  content::ConsoleObserverDelegate console_observer(web_contents(),
-                                                    kAbusiveEnforceMessage);
-  web_contents()->SetDelegate(&console_observer);
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(blocked_content::kAbusiveEnforceMessage);
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
   ConfigureAsAbusiveAndBetterAds(
@@ -238,13 +208,12 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
       SubresourceFilterLevel::ENFORCE /* bas_level */);
 
   // Navigate to a_url, should trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
-  bool opened_window = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "openWindow()", &opened_window));
-  EXPECT_FALSE(opened_window);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  EXPECT_EQ(false, content::EvalJs(web_contents(), "openWindow()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   console_observer.Wait();
-  EXPECT_EQ(kAbusiveEnforceMessage, console_observer.message());
+  EXPECT_EQ(blocked_content::kAbusiveEnforceMessage,
+            console_observer.GetMessageAt(0u));
 
   EXPECT_TRUE(AreDisallowedRequestsBlocked());
 }
@@ -258,21 +227,18 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
       a_url, SubresourceFilterLevel::WARN /* abusive_level */,
       SubresourceFilterLevel::WARN /* bas_level */);
 
+  content::WebContentsConsoleObserver console_observer(web_contents());
+
   // Navigate to a_url, should log a warning and not trigger the popup blocker.
-  ScopedLoggingObserver log_observer;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
 
-  ui_test_utils::NavigateToURL(browser(), a_url);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  log_observer.RoundTripAndVerifyLogMessages(
-      web_contents, {kActivationWarningConsoleMessage, kAbusiveWarnMessage},
+  RoundTripAndVerifyLogMessages(
+      console_observer, web_contents(),
+      {kActivationWarningConsoleMessage, blocked_content::kAbusiveWarnMessage},
       {});
 
-  bool opened_window = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
-                                                   &opened_window));
-  EXPECT_TRUE(opened_window);
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "openWindow()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   EXPECT_FALSE(AreDisallowedRequestsBlocked());
 }
 
@@ -288,26 +254,24 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   settings_map->SetContentSettingDefaultScope(
-      a_url, a_url, ContentSettingsType::POPUPS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      a_url, a_url, ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ScopedLoggingObserver log_observer;
-
-  ui_test_utils::NavigateToURL(browser(), a_url);
-  bool opened_window = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "openWindow()", &opened_window));
-  EXPECT_TRUE(opened_window);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "openWindow()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   EXPECT_FALSE(AreDisallowedRequestsBlocked());
 
-  log_observer.RoundTripAndVerifyLogMessages(
-      web_contents(), {kAbusiveWarnMessage, kActivationWarningConsoleMessage},
+  RoundTripAndVerifyLogMessages(
+      console_observer, web_contents(),
+      {blocked_content::kAbusiveWarnMessage, kActivationWarningConsoleMessage},
       {});
 }
 
-// Whitelisted sites should not have console logging.
+// Allowlisted sites should not have console logging.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
                        AllowCreatingNewWindows_NoLogToConsole) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
@@ -321,24 +285,24 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   settings_map->SetContentSettingDefaultScope(
-      a_url, a_url, ContentSettingsType::POPUPS, std::string(),
-      CONTENT_SETTING_ALLOW);
+      a_url, a_url, ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ScopedLoggingObserver log_observer;
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   EXPECT_TRUE(AreDisallowedRequestsBlocked());
 
-  bool opened_window = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "openWindow()", &opened_window));
-  EXPECT_TRUE(opened_window);
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "openWindow()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
-  // On the new window, requests should be allowed.
-  EXPECT_FALSE(AreDisallowedRequestsBlocked());
+  // On the new window, requests should be blocked due to the popup inheriting
+  // the activation state.
+  EXPECT_TRUE(AreDisallowedRequestsBlocked());
 
-  log_observer.RoundTripAndVerifyLogMessages(
-      web_contents(), {kActivationConsoleMessage}, {kAbusiveEnforceMessage});
+  RoundTripAndVerifyLogMessages(console_observer, web_contents(),
+                                {kActivationConsoleMessage},
+                                {blocked_content::kAbusiveEnforceMessage});
 }
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
@@ -353,29 +317,31 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
       SubresourceFilterLevel::WARN /* bas_level */);
 
   // Navigate to a_url, should trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "openWindow()"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "openWindow()"));
   tester.ExpectTotalCount(kSubresourceFilterActionsHistogram, 0);
 
-  EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
   const bool enable_adblock_on_abusive_sites = GetParam();
   EXPECT_EQ(enable_adblock_on_abusive_sites, AreDisallowedRequestsBlocked());
 
   // Navigate to |b_url|, which should successfully open the popup.
 
-  ui_test_utils::NavigateToURL(browser(), b_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
-  EXPECT_TRUE(content::ExecuteScript(web_contents, "openWindow()"));
+  EXPECT_TRUE(content::ExecJs(web_contents, "openWindow()"));
   navigation_observer.Wait();
 
   // Popup UI should not be shown.
-  EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
   EXPECT_FALSE(AreDisallowedRequestsBlocked());
 }
@@ -389,14 +355,13 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
       SubresourceFilterLevel::WARN /* bas_level */);
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
-  bool sent_open = false;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
-                                                   &sent_open));
-  EXPECT_TRUE(sent_open);
-  EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_EQ(true, content::EvalJs(web_contents, "openWindow()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
+                  web_contents->GetMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
   const bool enable_adblock_on_abusive_sites = GetParam();
   EXPECT_EQ(enable_adblock_on_abusive_sites, AreDisallowedRequestsBlocked());
@@ -408,17 +373,19 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
   ConfigureAsAbusiveAndBetterAds(
       url, SubresourceFilterLevel::ENFORCE /* abusive_level */,
       SubresourceFilterLevel::WARN /* bas_level */);
-  ui_test_utils::NavigateToURL(browser(), GetTestUrl("/title1.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl("/title1.html")));
 
   // Should not trigger the popup blocker because internally opens the tab with
   // a user gesture.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
+  EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
+                   web_contents->GetMainFrame())
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
   const bool enable_adblock_on_abusive_sites = GetParam();
   EXPECT_EQ(enable_adblock_on_abusive_sites, AreDisallowedRequestsBlocked());

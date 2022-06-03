@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sk">
+<translation id="1113173431709655881">Režim kamery</translation>
+<translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Otočiť o 90 stupňov v smere hodinových ručičiek</translation>
+<translation id="1276998909102132017">Obrázky galérie</translation>
+<translation id="1300209025925956156">Skenovanie dokumentu</translation>
+<translation id="1303487788671416818">Povoliť snímky videa v plnej veľkosti</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Prístup získate stlačením klávesa vyhľadávania + šípky doľava.</translation>
+<translation id="1430915738399379752">Tlačiť</translation>
+<translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojená.</translation>
+<translation id="1473110567575736769">Trojsekundový časovač</translation>
+<translation id="1545749641540134597">Naskenovať kód QR</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normálny</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1627744224761163218">4 × 4</translation>
+<translation id="1664224225747386870">Nič sa nezaznamenalo</translation>
+<translation id="1838104802459806957">Naklonenie nahor</translation>
+<translation id="1851169887664797861">K dispozícii je ďalšie ovládanie kamery</translation>
+<translation id="1851616744363735765">POZASTAVENÉ</translation>
+<translation id="1862930711583847113"><ph name="FILE" /> sa nepodarilo exportovať</translation>
+<translation id="1899697626337024495">Rozlíšenie fotky</translation>
+<translation id="2022953316617983419">QR kód</translation>
+<translation id="2036868001356139588">Trvanie časovača</translation>
+<translation id="2050339315714019657">Na výšku</translation>
+<translation id="2064538373111010176">Aktívny fotoaparát: <ph name="CAMERA" /></translation>
+<translation id="2144806332417375165">Vlastné parametre videa</translation>
+<translation id="2175927920773552910">QR kód</translation>
+<translation id="229579744168541441">Exportovať na disk</translation>
+<translation id="2320741269052147773">Posunúť doľava</translation>
+<translation id="2501278716633472235">Prejsť späť</translation>
+<translation id="2501853267655415902">Zaznamenávanie bolo zastavené</translation>
+<translation id="2501953888035679275">Foťte a zaznamenávajte videá fotoaparátom.</translation>
+<translation id="2517472476991765520">Skenovať</translation>
+<translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
+<translation id="2599796128805996109">Zadný fotoaparát</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Typ vyhľadávania</translation>
+<translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je pripojená.</translation>
+<translation id="2968794441791257519">Fotky a videá nasnímané fotoaparátom budú presunuté do priečinka Stiahnuté súbory. Dostanete sa k nim v Súboroch.
+
+        Fotky aj videá budú môcť používať aplikácie s povoleniami pre úložisko.</translation>
+<translation id="3067436040345934772">Posunutie doprava</translation>
+<translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
+<translation id="313467653172006084">30 sním./s</translation>
+<translation id="3183731565330012717">Typ mriežky</translation>
+<translation id="3227137524299004712">Mikrofón</translation>
+<translation id="3240426699337459095">Odkaz bol skopírovaný</translation>
+<translation id="3259149966178251584">Rozlíšenie fotoaparátu</translation>
+<translation id="3260401663013584785">Nepodarilo sa rozpoznať dokument</translation>
+<translation id="3305962767867348165">Opraviť</translation>
+<translation id="3448774564454087943">Video sa neuložilo, pretože je príliš krátke</translation>
+<translation id="346539236881580388">Odfotiť znova</translation>
+<translation id="3517926952904427380">Nepodarilo sa nasnímať portrétovú fotku</translation>
+<translation id="3569311554794739032">Naozaj chcete odstrániť <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Prepnúť na režim skenovania</translation>
+<translation id="3789724198583203151">Otočiť o 90 stupňov proti smeru hodinových ručičiek</translation>
+<translation id="3810838688059735925">Video</translation>
+<translation id="3838931309141338733">Skenovať čiarový kód</translation>
+<translation id="3892148308691398805">Kopírovať text</translation>
+<translation id="4118525110028899586">Pozastaviť nahrávanie</translation>
+<translation id="4121305183798804752">Bol rozpoznaný dokument</translation>
+<translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
+<translation id="4279490309300973883">Zrkadlenie</translation>
+<translation id="4329152592498422850">Prepnúť na snímanie štvorcových fotiek</translation>
+<translation id="4383571725254449280">Tlačiť denníky výkonnosti</translation>
+<translation id="4445542136948522167">Zastaviť fotenie</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Mpx</translation>
+<translation id="4570032796877367747">Predný fotoaparát</translation>
+<translation id="4628948037717959914">Fotografia</translation>
+<translation id="4649291346448517080">Súbor sa nepodarilo uložiť</translation>
+<translation id="4890010094662541459">3 × 3</translation>
+<translation id="491895758387112773">Streamovať záznam videa vo viacerých platformách</translation>
+<translation id="5057360777601936059">Fotoaparát je momentálne nedostupný.
+        Skontrolujte, či je správne pripojený.</translation>
+<translation id="5152121255775685072">Prejsť do galérie</translation>
+<translation id="520537883758714667">Skenovanie dokumentov je teraz k dispozícii</translation>
+<translation id="5317780077021120954">Uložiť</translation>
+<translation id="5444515100983837161">Umiestnite všetky rohy dokumentu do rámu. Skenovanie funguje najlepšie vtedy, keď má dokument inú farbu ako pozadie.</translation>
+<translation id="5671277269877808209">Štvorec</translation>
+<translation id="5746169159649715125">Uložiť ako PDF</translation>
+<translation id="5753488212459587150">Povoliť expertný režim</translation>
+<translation id="5759254179196327752">Skenovať dokument</translation>
+<translation id="5775960006311140197">Expertný režim</translation>
+<translation id="5869546221129391014">Mriežka</translation>
+<translation id="5975083100439434680">Oddialiť</translation>
+<translation id="6073451960410192870">Zastaviť zaznamenávanie</translation>
+<translation id="6197807149213783179">Uložiť metadáta</translation>
+<translation id="6233780560267770709">3 na 3</translation>
+<translation id="6243827288366940320">Zlatý rez</translation>
+<translation id="6248749904681914629">Externý fotoaparát</translation>
+<translation id="6353688143752491039">Ďakujeme za spätnú väzbu na aplikáciu Fotoaparát.
+
+Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a opíšte, čo nie je v poriadku. (Napríklad fotka je príliš tmavá alebo snímaný objekt nie je zaostrený).</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> Mpx</translation>
+<translation id="6527303717912515753">Zdieľať</translation>
+<translation id="667999046851023355">Dokument</translation>
+<translation id="6681668084120808868">Zaznamenať fotografiu</translation>
+<translation id="6778482348691154169">Fotka sa nedá nasnímať</translation>
+<translation id="695140971690006676">Resetovať všetko</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 sekundy</translation>
+<translation id="712848772518857951">Naozaj chcete odstrániť položky (počet: <ph name="COUNT" />)?</translation>
+<translation id="7134221860976209830">Desaťsekundový časovač</translation>
+<translation id="7191890674911603392">Typ záznamu</translation>
+<translation id="7243947652761655814">Rozlíšenie videa</translation>
+<translation id="7337660886763914220">Chyby systému súborov.</translation>
+<translation id="7450541714075000668">Text bol skopírovaný</translation>
+<translation id="7476762461674917065">Zobraziť možnosť nahrávania gifov</translation>
+<translation id="7488619942230388918">Nahrať video typu gif</translation>
+<translation id="7557677699350329807">Prepnúť na ďalší fotoaparát</translation>
+<translation id="7607002721634913082">Pozastavené</translation>
+<translation id="7608223098072244877">4 na 4</translation>
+<translation id="7649070708921625228">Pomocník</translation>
+<translation id="7658239707568436148">Zrušiť</translation>
+<translation id="7670511624014457267">60 sním./s</translation>
+<translation id="7726641833034062494">Nahrať normálne video</translation>
+<translation id="7983668134180549431">Bol rozpoznaný text.</translation>
+<translation id="8067883171444229417">Prehrať video</translation>
+<translation id="8120146556401698679">Posunúť nakloniť priblížiť</translation>
+<translation id="8131740175452115882">Potvrdiť</translation>
+<translation id="8145038249676204903">Prepnúť na fotenie</translation>
+<translation id="8167081290930651932">Uložiť ako fotku</translation>
+<translation id="8239780215768881278">Vytvoriť snímku videa</translation>
+<translation id="8261506727792406068">Odstrániť</translation>
+<translation id="8425673304802773841">Naklonenie nadol</translation>
+<translation id="8428213095426709021">Nastavenia</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Dobre</translation>
+<translation id="8730621377337864115">Hotovo</translation>
+<translation id="8732462232047530626">Zobraziť ukážku metadát</translation>
+<translation id="8815966864175525708">Prepnúť na nasnímanie portrétovej fotky</translation>
+<translation id="8828441885228359828">Pokračovať v nahrávaní</translation>
+<translation id="8870695351537079478">Zaznamenávanie sa nedá spustiť</translation>
+<translation id="8903921497873541725">Priblížiť</translation>
+<translation id="9045010116236796332">Umiestnite všetky okraje dokumentu do rámu</translation>
+<translation id="9045155556724273246">10 sekúnd</translation>
+<translation id="906331135292332864">Obrázok sa spracúva…</translation>
+<translation id="945522503751344254">Odoslať spätnú väzbu</translation>
+</translationbundle>

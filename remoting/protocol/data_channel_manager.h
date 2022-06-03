@@ -20,9 +20,9 @@ class MessagePipe;
 // register a function to handle data from a named data channel.
 class DataChannelManager final {
  public:
-  using CreateHandlerCallback = base::Callback<void(
-      const std::string& name,
-      std::unique_ptr<MessagePipe> pipe)>;
+  using CreateHandlerCallback =
+      base::RepeatingCallback<void(const std::string& name,
+                                   std::unique_ptr<MessagePipe> pipe)>;
 
   DataChannelManager();
   ~DataChannelManager();

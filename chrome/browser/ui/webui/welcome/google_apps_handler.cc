@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -93,24 +92,25 @@ GoogleAppsHandler::GoogleAppsHandler() {
 GoogleAppsHandler::~GoogleAppsHandler() {}
 
 void GoogleAppsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cacheGoogleAppIcon",
       base::BindRepeating(&GoogleAppsHandler::HandleCacheGoogleAppIcon,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getGoogleAppsList",
       base::BindRepeating(&GoogleAppsHandler::HandleGetGoogleAppsList,
                           base::Unretained(this)));
 }
 
 void GoogleAppsHandler::HandleCacheGoogleAppIcon(const base::ListValue* args) {
-  int appId;
-  args->GetInteger(0, &appId);
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 1u);
+  int app_id = list[0].GetInt();
 
   const BookmarkItem* selectedApp = nullptr;
   for (const auto& google_app : google_apps_) {
-    if (google_app.id == appId) {
+    if (google_app.id == app_id) {
       selectedApp = &google_app;
       break;
     }
@@ -132,7 +132,7 @@ void GoogleAppsHandler::HandleCacheGoogleAppIcon(const base::ListValue* args) {
 
 void GoogleAppsHandler::HandleGetGoogleAppsList(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   ResolveJavascriptCallback(

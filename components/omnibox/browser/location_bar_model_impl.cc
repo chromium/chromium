@@ -4,33 +4,32 @@
 
 #include "components/omnibox/browser/location_bar_model_impl.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
-#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/dom_distiller/core/url_constants.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/common/origin_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "url/origin.h"
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
-#include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
 using metrics::OmniboxEventProto;
@@ -44,44 +43,84 @@ LocationBarModelImpl::LocationBarModelImpl(LocationBarModelDelegate* delegate,
 LocationBarModelImpl::~LocationBarModelImpl() {}
 
 // LocationBarModelImpl Implementation.
-base::string16 LocationBarModelImpl::GetFormattedFullURL() const {
+std::u16string LocationBarModelImpl::GetFormattedFullURL() const {
   return GetFormattedURL(url_formatter::kFormatUrlOmitDefaults);
 }
 
-base::string16 LocationBarModelImpl::GetURLForDisplay() const {
+std::u16string LocationBarModelImpl::GetURLForDisplay() const {
   url_formatter::FormatUrlTypes format_types =
       url_formatter::kFormatUrlOmitDefaults;
-
-  // Early exit to prevent elision of URLs when relevant extension is enabled.
-  if (delegate_->ShouldPreventElision()) {
-    return GetFormattedURL(format_types);
+  if (delegate_->ShouldTrimDisplayUrlAfterHostName()) {
+    format_types |= url_formatter::kFormatUrlTrimAfterHost;
   }
 
 #if defined(OS_IOS)
   format_types |= url_formatter::kFormatUrlTrimAfterHost;
 #endif
 
-  if (OmniboxFieldTrial::IsHideSteadyStateUrlSchemeEnabled())
+  format_types |= url_formatter::kFormatUrlOmitHTTPS;
+  format_types |= url_formatter::kFormatUrlOmitTrivialSubdomains;
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // On desktop, the File chip makes the scheme redundant in the steady state.
+  format_types |= url_formatter::kFormatUrlOmitFileScheme;
+#endif
+
+  if (dom_distiller::url_utils::IsDistilledPage(GetURL())) {
+    // We explicitly elide the scheme here to ensure that HTTPS and HTTP will
+    // be removed for display: Reader mode pages should not display a scheme,
+    // and should only run on HTTP/HTTPS pages.
+    // Users will be able to see the scheme when the URL is focused or being
+    // edited in the omnibox.
+    format_types |= url_formatter::kFormatUrlOmitHTTP;
     format_types |= url_formatter::kFormatUrlOmitHTTPS;
-
-  if (OmniboxFieldTrial::IsHideSteadyStateUrlTrivialSubdomainsEnabled())
-    format_types |= url_formatter::kFormatUrlOmitTrivialSubdomains;
-
-  if (base::FeatureList::IsEnabled(omnibox::kHideFileUrlScheme))
-    format_types |= url_formatter::kFormatUrlOmitFileScheme;
+  }
 
   return GetFormattedURL(format_types);
 }
 
-base::string16 LocationBarModelImpl::GetFormattedURL(
+std::u16string LocationBarModelImpl::GetFormattedURL(
     url_formatter::FormatUrlTypes format_types) const {
   if (!ShouldDisplayURL())
-    return base::string16{};
+    return std::u16string{};
+
+  // Reset |format_types| to prevent elision of URLs when relevant extension or
+  // pref is enabled.
+  if (delegate_->ShouldPreventElision()) {
+    format_types = url_formatter::kFormatUrlOmitDefaults &
+                   ~url_formatter::kFormatUrlOmitHTTP;
+  }
+
   GURL url(GetURL());
+
+#if defined(OS_IOS)
+  // On iOS, the blob: display URLs should be simply the domain name. However,
+  // url_formatter parses everything past blob: as path, not domain, so swap
+  // the url here to be just origin.
+  if (url.SchemeIsBlob()) {
+    url = url::Origin::Create(url).GetURL();
+  }
+#endif  // defined(OS_IOS)
+
+  // Special handling for dom-distiller:. Instead of showing internal reader
+  // mode URLs, show the original article URL in the omnibox.
+  // Note that this does not disallow the user from seeing the distilled page
+  // URL in the view-source url or devtools. Note that this also impacts
+  // GetFormattedFullURL which uses GetFormattedURL as a helper.
+  // Virtual URLs were not a good solution for Reader Mode URLs because some
+  // security UI is based off of the virtual URL rather than the original URL,
+  // and Reader Mode has its own security chip. In addition virtual URLs would
+  // add a lot of complexity around passing necessary URL parameters to the
+  // Reader Mode pages.
+  // Note: if the URL begins with dom-distiller:// but is invalid we display it
+  // as-is because it cannot be transformed into an article URL.
+  if (dom_distiller::url_utils::IsDistilledPage(url))
+    url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
+
   // Note that we can't unescape spaces here, because if the user copies this
   // and pastes it into another program, that program may think the URL ends at
   // the space.
-  const base::string16 formatted_text =
+  const std::u16string formatted_text =
       delegate_->FormattedStringWithEquivalentMeaning(
           url,
           url_formatter::FormatUrl(url, format_types, net::UnescapeRule::NORMAL,
@@ -111,30 +150,12 @@ security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel() const {
   return delegate_->GetSecurityLevel();
 }
 
-bool LocationBarModelImpl::GetDisplaySearchTerms(base::string16* search_terms) {
-  if (!base::FeatureList::IsEnabled(omnibox::kQueryInOmnibox) ||
-      delegate_->ShouldPreventElision())
-    return false;
+net::CertStatus LocationBarModelImpl::GetCertStatus() const {
+  // When empty, assume no cert status.
+  if (!ShouldDisplayURL())
+    return 0;
 
-  // Only show the search terms if the site is secure. However, make an
-  // exception before the security state is initialized to prevent a UI flicker.
-  std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      delegate_->GetVisibleSecurityState();
-  security_state::SecurityLevel security_level = delegate_->GetSecurityLevel();
-  if (visible_security_state->connection_info_initialized &&
-      security_level != security_state::SecurityLevel::SECURE &&
-      security_level != security_state::SecurityLevel::EV_SECURE) {
-    return false;
-  }
-
-  base::string16 extracted_search_terms = ExtractSearchTermsInternal(GetURL());
-  if (extracted_search_terms.empty())
-    return false;
-
-  if (search_terms)
-    *search_terms = extracted_search_terms;
-
-  return true;
+  return delegate_->GetCertStatus();
 }
 
 OmniboxEventProto::PageClassification
@@ -145,9 +166,7 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
   if (!delegate_->GetURL(&gurl))
     return OmniboxEventProto::OTHER;
 
-  if (focus_source == OmniboxFocusSource::SEARCH_BUTTON)
-    return OmniboxEventProto::SEARCH_BUTTON_AS_STARTING_FOCUS;
-  if (delegate_->IsInstantNTP()) {
+  if (delegate_->IsNewTabPage()) {
     // Note that we treat OMNIBOX as the source if focus_source_ is INVALID,
     // i.e., if input isn't actually in progress.
     return (focus_source == OmniboxFocusSource::FAKEBOX)
@@ -156,7 +175,7 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
   }
   if (!gurl.is_valid())
     return OmniboxEventProto::INVALID_SPEC;
-  if (delegate_->IsNewTabPage(gurl))
+  if (delegate_->IsNewTabPageURL(gurl))
     return OmniboxEventProto::NTP;
   if (gurl.spec() == url::kAboutBlankURL)
     return OmniboxEventProto::BLANK;
@@ -167,11 +186,7 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
   if (template_url_service &&
       template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
           gurl)) {
-    return GetDisplaySearchTerms(nullptr)
-               ? OmniboxEventProto::
-                     SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT
-               : OmniboxEventProto::
-                     SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
+    return OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
   }
 
   return OmniboxEventProto::OTHER;
@@ -186,71 +201,32 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
   if (IsOfflinePage())
     return omnibox::kOfflinePinIcon;
 
-  security_state::SecurityLevel security_level = GetSecurityLevel();
-  switch (security_level) {
-    case security_state::NONE:
-      return omnibox::kHttpIcon;
-    case security_state::WARNING:
-      // When kMarkHttpAsParameterDangerWarning is enabled, show a danger
-      // triangle icon.
-      if (security_state::ShouldShowDangerTriangleForWarningLevel()) {
-        return omnibox::kNotSecureWarningIcon;
-      }
-      return omnibox::kHttpIcon;
-    case security_state::EV_SECURE:
-    case security_state::SECURE:
-      return omnibox::kHttpsValidIcon;
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return vector_icons::kBusinessIcon;
-    case security_state::DANGEROUS:
-      return omnibox::kNotSecureWarningIcon;
-    case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
-      return omnibox::kHttpIcon;
+  if (GetSecurityLevel() == security_state::SecurityLevel::SECURE &&
+      delegate_->IsShowingAccuracyTip()) {
+    return omnibox::kHttpIcon;
   }
-  NOTREACHED();
-  return omnibox::kHttpIcon;
-#else
-  NOTREACHED();
-  static const gfx::VectorIcon dummy = {};
-  return dummy;
 #endif
+
+  return location_bar_model::GetSecurityVectorIcon(
+      GetSecurityLevel(),
+      delegate_->ShouldUseUpdatedConnectionSecurityIndicators());
 }
 
-LocationBarModelImpl::SecureChipText LocationBarModelImpl::GetSecureChipText()
-    const {
-  // Note that displayed text (the first output) will be implicitly used as the
-  // accessibility text unless no display text has been specified.
+std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
+  // Note that display text will be implicitly used as the accessibility text.
+  // GetSecureAccessibilityText() handles special cases when no display text is
+  // set.
 
   if (IsOfflinePage())
-    return SecureChipText(l10n_util::GetStringUTF16(IDS_OFFLINE_VERBOSE_STATE));
+    return l10n_util::GetStringUTF16(IDS_OFFLINE_VERBOSE_STATE);
 
   switch (GetSecurityLevel()) {
     case security_state::WARNING:
-      return SecureChipText(
-          l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE));
-    case security_state::EV_SECURE: {
-      if (base::FeatureList::IsEnabled(omnibox::kSimplifyHttpsIndicator)) {
-        return SecureChipText(base::string16(), l10n_util::GetStringUTF16(
-                                                    IDS_SECURE_VERBOSE_STATE));
-      }
-
-      // Note: Cert is guaranteed non-NULL or the security level would be NONE.
-      scoped_refptr<net::X509Certificate> cert = delegate_->GetCertificate();
-      DCHECK(cert);
-
-      // EV are required to have an organization name and country.
-      DCHECK(!cert->subject().organization_names.empty());
-      DCHECK(!cert->subject().country_name.empty());
-
-      return SecureChipText(l10n_util::GetStringFUTF16(
-          IDS_SECURE_CONNECTION_EV,
-          base::UTF8ToUTF16(cert->subject().organization_names[0]),
-          base::UTF8ToUTF16(cert->subject().country_name)));
-    }
+      return l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE);
     case security_state::SECURE:
-      return SecureChipText(base::string16(), l10n_util::GetStringUTF16(
-                                                  IDS_SECURE_VERBOSE_STATE));
+      return delegate_->IsShowingAccuracyTip()
+                 ? l10n_util::GetStringUTF16(IDS_ACCURACY_CHECK_VERBOSE_STATE)
+                 : std::u16string();
     case security_state::DANGEROUS: {
       std::unique_ptr<security_state::VisibleSecurityState>
           visible_security_state = delegate_->GetVisibleSecurityState();
@@ -259,34 +235,32 @@ LocationBarModelImpl::SecureChipText LocationBarModelImpl::GetSecureChipText()
       // interstitial list.
       if (visible_security_state->malicious_content_status ==
           security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
-#if defined(OS_IOS)
-        // On iOS, we never expect this status, because there are no billing
-        // interstitials.
-        NOTREACHED();
-#endif
-        return SecureChipText(base::string16());
+        return std::u16string();
       }
 
       bool fails_malware_check =
           visible_security_state->malicious_content_status !=
           security_state::MALICIOUS_CONTENT_STATUS_NONE;
-      return SecureChipText(l10n_util::GetStringUTF16(
-          fails_malware_check ? IDS_DANGEROUS_VERBOSE_STATE
-                              : IDS_NOT_SECURE_VERBOSE_STATE));
+      return l10n_util::GetStringUTF16(fails_malware_check
+                                           ? IDS_DANGEROUS_VERBOSE_STATE
+                                           : IDS_NOT_SECURE_VERBOSE_STATE);
     }
     default:
-      return SecureChipText(base::string16());
+      return std::u16string();
   }
 }
 
-base::string16 LocationBarModelImpl::GetSecureDisplayText() const {
-  return GetSecureChipText().display_text_;
-}
+std::u16string LocationBarModelImpl::GetSecureAccessibilityText() const {
+  auto display_text = GetSecureDisplayText();
+  if (!display_text.empty())
+    return display_text;
 
-base::string16 LocationBarModelImpl::GetSecureAccessibilityText() const {
-  auto labels = GetSecureChipText();
-  return labels.display_text_.empty() ? labels.accessibility_label_
-                                      : labels.display_text_;
+  switch (GetSecurityLevel()) {
+    case security_state::SECURE:
+      return l10n_util::GetStringUTF16(IDS_SECURE_VERBOSE_STATE);
+    default:
+      return std::u16string();
+  }
 }
 
 bool LocationBarModelImpl::ShouldDisplayURL() const {
@@ -297,44 +271,11 @@ bool LocationBarModelImpl::IsOfflinePage() const {
   return delegate_->IsOfflinePage();
 }
 
-base::string16 LocationBarModelImpl::ExtractSearchTermsInternal(
-    const GURL& url) {
-  AutocompleteClassifier* autocomplete_classifier =
-      delegate_->GetAutocompleteClassifier();
-  TemplateURLService* template_url_service = delegate_->GetTemplateURLService();
-  if (!autocomplete_classifier || !template_url_service)
-    return base::string16();
+bool LocationBarModelImpl::ShouldPreventElision() const {
+  return delegate_->ShouldPreventElision();
+}
 
-  if (url.is_empty())
-    return base::string16();
-
-  // Because we cache keyed by URL, if the user changes the default search
-  // provider, we will continue to extract the search terms from the cached URL
-  // (even if it's no longer from the default search provider) until the user
-  // changes tabs or navigates the tab. That is intentional, as it would be
-  // weird otherwise if the omnibox text changed without any user gesture.
-  if (url != cached_url_) {
-    cached_url_ = url;
-    cached_search_terms_.clear();
-
-    const TemplateURL* default_provider =
-        template_url_service->GetDefaultSearchProvider();
-    if (default_provider) {
-      // If |url| doesn't match the default search provider,
-      // |cached_search_terms_| will remain empty.
-      default_provider->ExtractSearchTermsFromURL(
-          url, template_url_service->search_terms_data(),
-          &cached_search_terms_);
-
-      // Clear out the search terms if it looks like a URL.
-      AutocompleteMatch match;
-      autocomplete_classifier->Classify(
-          cached_search_terms_, false, false,
-          metrics::OmniboxEventProto::INVALID_SPEC, &match, nullptr);
-      if (!AutocompleteMatch::IsSearchType(match.type))
-        cached_search_terms_.clear();
-    }
-  }
-
-  return cached_search_terms_;
+bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
 }

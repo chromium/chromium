@@ -23,6 +23,13 @@ class SuggestionMarkerListImplTest : public testing::Test {
                                                   SuggestionMarkerProperties());
   }
 
+  SuggestionMarker* CreateMarker(unsigned start_offset,
+                                 unsigned end_offset,
+                                 const SuggestionMarkerProperties& properties) {
+    return MakeGarbageCollected<SuggestionMarker>(start_offset, end_offset,
+                                                  properties);
+  }
+
   Persistent<SuggestionMarkerListImpl> marker_list_;
 };
 
@@ -335,6 +342,37 @@ TEST_F(SuggestionMarkerListImplTest, RemoveMarkerByTag_Found) {
   marker_list_->Add(marker2);
 
   EXPECT_TRUE(marker_list_->RemoveMarkerByTag(marker1->Tag()));
+
+  DocumentMarkerVector markers = marker_list_->GetMarkers();
+  EXPECT_EQ(1u, markers.size());
+
+  EXPECT_EQ(10u, markers[0]->StartOffset());
+  EXPECT_EQ(20u, markers[0]->EndOffset());
+}
+
+TEST_F(SuggestionMarkerListImplTest, RemoveMarkerByType_NotFound) {
+  SuggestionMarker* const marker = CreateMarker(0, 10);
+  marker_list_->Add(marker);
+  EXPECT_TRUE(marker->GetSuggestionType() !=
+              SuggestionMarker::SuggestionType::kAutocorrect);
+  EXPECT_FALSE(marker_list_->RemoveMarkerByType(
+      SuggestionMarker::SuggestionType::kAutocorrect));
+}
+
+TEST_F(SuggestionMarkerListImplTest, RemoveMarkerByType_Found) {
+  SuggestionMarker* const marker1 = CreateMarker(0, 10);
+  SuggestionMarker* const marker2 =
+      CreateMarker(10, 20,
+                   SuggestionMarkerProperties::Builder()
+                       .SetType(SuggestionMarker::SuggestionType::kAutocorrect)
+                       .Build());
+
+  marker_list_->Add(marker1);
+  marker_list_->Add(marker2);
+
+  EXPECT_TRUE(marker1->GetSuggestionType() !=
+              SuggestionMarker::SuggestionType::kAutocorrect);
+  EXPECT_TRUE(marker_list_->RemoveMarkerByType(marker1->GetSuggestionType()));
 
   DocumentMarkerVector markers = marker_list_->GetMarkers();
   EXPECT_EQ(1u, markers.size());

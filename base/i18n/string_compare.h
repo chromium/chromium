@@ -5,10 +5,6 @@
 #ifndef BASE_I18N_STRING_COMPARE_H_
 #define BASE_I18N_STRING_COMPARE_H_
 
-#include <algorithm>
-#include <string>
-#include <vector>
-
 #include "base/i18n/base_i18n_export.h"
 #include "base/strings/string_piece.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"

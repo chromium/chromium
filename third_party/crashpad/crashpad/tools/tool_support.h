@@ -18,7 +18,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -27,6 +26,10 @@ namespace crashpad {
 //! \brief Common functions used by command line tools.
 class ToolSupport {
  public:
+  ToolSupport() = delete;
+  ToolSupport(const ToolSupport&) = delete;
+  ToolSupport& operator=(const ToolSupport&) = delete;
+
   //! \brief Handles `--version`.
   //!
   //! \param[in] me The tool’s name, the basename of `argv[0]`.
@@ -83,9 +86,6 @@ class ToolSupport {
   //! Wmain().
   static std::string FilePathToCommandLineArgument(
       const base::FilePath& file_path);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ToolSupport);
 };
 
 }  // namespace crashpad

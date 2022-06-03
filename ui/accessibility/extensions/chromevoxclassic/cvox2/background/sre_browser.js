@@ -151,7 +151,7 @@ goog.DEBUG = !0;
 goog.LOCALE = 'en';
 goog.TRUSTED_SITE = !0;
 goog.STRICT_MODE_COMPATIBLE = !1;
-goog.DISALLOW_TEST_ONLY_CODE = COMPILED && !goog.DEBUG;
+goog.DENY_TEST_ONLY_CODE = COMPILED && !goog.DEBUG;
 goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING = !1;
 goog.provide = function(a) {
   if (goog.isInModuleLoader_())
@@ -212,7 +212,7 @@ goog.module.declareLegacyNamespace = function() {
   goog.moduleLoaderState_.declareLegacyNamespace = !0
 };
 goog.setTestOnly = function(a) {
-  if (goog.DISALLOW_TEST_ONLY_CODE)
+  if (goog.DENY_TEST_ONLY_CODE)
     throw a = a || '',
           Error(
               'Importing test-only code into non-debug environment' +

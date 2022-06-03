@@ -20,11 +20,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_LIST_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -45,14 +44,15 @@ class MediaQuerySet;
 class CORE_EXPORT MediaQueryList final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<MediaQueryList>,
-      public ContextLifecycleObserver {
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(MediaQueryList);
 
  public:
   MediaQueryList(ExecutionContext*,
                  MediaQueryMatcher*,
                  scoped_refptr<MediaQuerySet>);
+  MediaQueryList(const MediaQueryList&) = delete;
+  MediaQueryList& operator=(const MediaQueryList&) = delete;
   ~MediaQueryList() override;
 
   String media() const;
@@ -74,13 +74,13 @@ class CORE_EXPORT MediaQueryList final
   bool MediaFeaturesChanged(
       HeapVector<Member<MediaQueryListListener>>* listeners_to_notify);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // From ScriptWrappable
   bool HasPendingActivity() const final;
 
-  // From ContextLifecycleObserver
-  void ContextDestroyed(ExecutionContext*) override;
+  // From ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
 
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
@@ -94,7 +94,6 @@ class CORE_EXPORT MediaQueryList final
   ListenerList listeners_;
   bool matches_dirty_;
   bool matches_;
-  DISALLOW_COPY_AND_ASSIGN(MediaQueryList);
 };
 
 }  // namespace blink

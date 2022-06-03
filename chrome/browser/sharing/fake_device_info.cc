@@ -1,17 +1,26 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/sharing/fake_device_info.h"
 
+#include "components/sync_device_info/device_info_util.h"
+
 std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
-    const std::string& id,
+    const std::string& guid,
     const std::string& name,
-    const base::Optional<syncer::DeviceInfo::SharingInfo>& sharing_info,
+    const absl::optional<syncer::DeviceInfo::SharingInfo>& sharing_info,
     sync_pb::SyncEnums_DeviceType device_type,
-    base::SysInfo::HardwareInfo hardware_info,
+    const std::string& manufacturer_name,
+    const std::string& model_name,
+    const std::string& full_hardware_class,
     base::Time last_updated_timestamp) {
   return std::make_unique<syncer::DeviceInfo>(
-      id, name, "chrome_version", "user_agent", device_type, "device_id",
-      hardware_info, last_updated_timestamp,
-      /*send_tab_to_self_receiving_enabled=*/false, sharing_info);
+      guid, name, "chrome_version", "user_agent", device_type, "device_id",
+      manufacturer_name, model_name, full_hardware_class,
+      last_updated_timestamp, syncer::DeviceInfoUtil::GetPulseInterval(),
+      /*send_tab_to_self_receiving_enabled=*/false, sharing_info,
+      /*paask_info=*/absl::nullopt,
+      /*fcm_registration_token=*/std::string(),
+      /*interested_data_types=*/syncer::ModelTypeSet());
 }

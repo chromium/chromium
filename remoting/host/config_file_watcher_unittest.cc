@@ -4,6 +4,8 @@
 
 #include "remoting/host/config_file_watcher.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
@@ -26,13 +28,15 @@ namespace {
 class ConfigFileWatcherDelegate : public ConfigFileWatcher::Delegate {
  public:
   ConfigFileWatcherDelegate() = default;
+
+  ConfigFileWatcherDelegate(const ConfigFileWatcherDelegate&) = delete;
+  ConfigFileWatcherDelegate& operator=(const ConfigFileWatcherDelegate&) =
+      delete;
+
   ~ConfigFileWatcherDelegate() override = default;
 
   MOCK_METHOD1(OnConfigUpdated, void(const std::string&));
   MOCK_METHOD0(OnConfigWatcherError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcherDelegate);
 };
 
 }  // namespace
@@ -83,14 +87,14 @@ void ConfigFileWatcherTest::SetUp() {
                                  base::MessagePumpType::IO);
 
   // Create an instance of the config watcher.
-  watcher_.reset(
-      new ConfigFileWatcher(task_runner, io_task_runner, config_file_));
+  watcher_ = std::make_unique<ConfigFileWatcher>(task_runner, io_task_runner,
+                                                 config_file_);
 }
 
 void ConfigFileWatcherTest::TearDown() {
   // Delete the test file.
   if (!config_file_.empty())
-    base::DeleteFile(config_file_, false);
+    base::DeleteFile(config_file_);
 }
 
 // Verifies that the initial notification is delivered.

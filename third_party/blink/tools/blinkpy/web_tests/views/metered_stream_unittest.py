@@ -26,12 +26,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import StringIO
 import logging
 import re
 import unittest
 
 from blinkpy.web_tests.views.metered_stream import MeteredStream
+
+from six import StringIO
 
 
 class RegularTest(unittest.TestCase):
@@ -39,7 +40,7 @@ class RegularTest(unittest.TestCase):
     isatty = False
 
     def setUp(self):
-        self.stream = StringIO.StringIO()
+        self.stream = StringIO()
         self.buflist = self.stream.buflist
         self.stream.isatty = lambda: self.isatty
 
@@ -51,7 +52,8 @@ class RegularTest(unittest.TestCase):
         # add a dummy time counter for a default behavior.
         self.times = range(10)
 
-        self.meter = MeteredStream(self.stream, self.verbose, self.logger, self.time_fn, 8675)
+        self.meter = MeteredStream(self.stream, self.verbose, self.logger,
+                                   self.time_fn, 8675)
 
     def tearDown(self):
         if self.meter:
@@ -64,14 +66,15 @@ class RegularTest(unittest.TestCase):
     def test_logging_not_included(self):
         # This tests that if we don't hand a logger to the MeteredStream,
         # nothing is logged.
-        logging_stream = StringIO.StringIO()
+        logging_stream = StringIO()
         handler = logging.StreamHandler(logging_stream)
         root_logger = logging.getLogger()
         orig_level = root_logger.level
         root_logger.addHandler(handler)
         root_logger.setLevel(logging.DEBUG)
         try:
-            self.meter = MeteredStream(self.stream, self.verbose, None, self.time_fn, 8675)
+            self.meter = MeteredStream(self.stream, self.verbose, None,
+                                       self.time_fn, 8675)
             self.meter.write_throttled_update('foo')
             self.meter.write_update('bar')
             self.meter.write('baz')
@@ -114,20 +117,24 @@ class TtyTest(RegularTest):
 
     def test_basic(self):
         buflist = self._basic([0, 1, 1.05, 1.1, 2])
-        self.assertEqual(buflist, ['foo',
-                                   MeteredStream._erasure('foo'), 'bar',
-                                   MeteredStream._erasure('bar'), 'baz 2',
-                                   MeteredStream._erasure('baz 2'), 'done\n'])
+        self.assertEqual(buflist, [
+            'foo',
+            MeteredStream._erasure('foo'), 'bar',
+            MeteredStream._erasure('bar'), 'baz 2',
+            MeteredStream._erasure('baz 2'), 'done\n'
+        ])
 
     def test_log_after_update(self):
         buflist = self._log_after_update()
-        self.assertEqual(buflist, ['foo',
-                                   MeteredStream._erasure('foo'), 'bar\n'])
+        self.assertEqual(buflist,
+                         ['foo', MeteredStream._erasure('foo'), 'bar\n'])
 
     def test_bytestream(self):
         self.meter.write('German umlauts: \xe4\xf6\xfc')
         self.meter.write(u'German umlauts: \xe4\xf6\xfc')
-        self.assertEqual(self.buflist, ['German umlauts: ???', 'German umlauts: ???'])
+        self.assertEqual(
+            self.buflist,
+            ['German umlauts: \xe4\xf6\xfc', u'German umlauts: \xe4\xf6\xfc'])
 
 
 class VerboseTest(RegularTest):
@@ -149,7 +156,8 @@ class VerboseTest(RegularTest):
         self.assertTrue(re.match(r'\d\d:\d\d:00.000 8675 foo\n', buflist[0]))
 
         # The second argument should have a real timestamp and pid, so we just check the format.
-        self.assertTrue(re.match(r'\d\d:\d\d:\d\d.\d\d\d \d+ bar\n', buflist[1]))
+        self.assertTrue(
+            re.match(r'\d\d:\d\d:\d\d.\d\d\d \d+ bar\n', buflist[1]))
 
         self.assertEqual(len(buflist), 2)
 

@@ -61,14 +61,14 @@ test(function(t) {
 test(function(t) {
   var animation = createRunningAnimation(t);
   assert_times_equal(animation.startTime, document.timeline.currentTime - animation.currentTime);
-  assert_equals(animation.currentTime, 0);
+  assert_times_equal(animation.currentTime, 0);
   assert_equals(animation.playState, 'running');
 }, "Play state is running after playing and setting start time of a canceled animation");
 
 test(function(t) {
   var animation = createPausedAnimation(t);
   assert_equals(animation.startTime, null);
-  assert_equals(animation.currentTime, 0);
+  assert_times_equal(animation.currentTime, 0);
   assert_equals(animation.playState, 'paused');
 }, "Play state is paused after pausing and setting current time of a canceled animation");
 
@@ -206,13 +206,20 @@ test(function(t) {
   assert_equals(animation.playState, 'running');
 }, "Setting startTime on a pending starttime animation");
 
-test(function(t) {
+promise_test(async (t) => {
   var animation = createRunningAnimation(t);
+  assert_false(animation.pending);
+  // Advance the animation from the start boundary. Otherwise the test is
+  // prone to flaking. The initial value of current time is 0 +/- epsilon. If
+  // negative, the hold time is reset and a pending play is triggered, clamped
+  // to the starting boundary per spec. Conversely, if the animation is playing
+  // and current time is within bounds, then play is a no-op.
+  await waitForAnimationFrames(1);
   var startTime = animation.startTime;
   var currentTime = animation.currentTime;
   animation.play();
-  assert_equals(animation.startTime, startTime);
-  assert_equals(animation.currentTime, currentTime);
+  assert_times_equal(animation.startTime, startTime);
+  assert_times_equal(animation.currentTime, currentTime);
   assert_false(animation.pending);
   assert_equals(animation.playState, 'running');
 }, "Setting play() on a running animation");
@@ -221,7 +228,7 @@ async_test(function(t) {
   var animation = createRunningAnimation(t);
   animation.pause();
   assert_not_equals(animation.startTime, null);
-  assert_equals(animation.currentTime, 0);
+  assert_times_equal(animation.currentTime, 0);
   assert_true(animation.pending);
   assert_equals(animation.playState, 'paused');
   animation.ready.then(t.step_func_done(() => {
@@ -251,13 +258,19 @@ test(function(t) {
 
 test(function(t) {
   var animation = createRunningAnimation(t);
+  // Ensure the current time is precisely zero. We create a non-pending running
+  // animation by explicitly setting the start time to the timeline time. This
+  // is insufficient to ensure that we are precisely on the starting boundary
+  // due to floating point precision errors. If the resulting value of current
+  // time is slightly greater than zero, rather than snapping to the end point,
+  // the animation will simply reverse direction per spec.
+  animation.currentTime = 0;
   animation.reverse();
   assert_equals(animation.startTime, null);
-  assert_equals(animation.currentTime, 100000);
+  assert_times_equal(animation.currentTime, 100000);
   assert_true(animation.pending);
   assert_equals(animation.playState, 'running');
 }, "Setting reverse() on a running animation");
-
 
 test(function(t) {
   var animation = createRunningAnimation(t);
@@ -404,8 +417,10 @@ async_test(function(t) {
   var timelineCurrentTime = document.timeline.currentTime;
   animation.ready.then(t.step_func_done(() => {
     assert_equals(animation.playState, 'running');
-    assert_greater_than_equal(animation.startTime, timelineCurrentTime);
-    assert_greater_than_equal(animation.currentTime, animationCurrentTime);
+    assert_time_greater_than_equal(animation.startTime,
+                                   timelineCurrentTime);
+    assert_time_greater_than_equal(animation.currentTime,
+                                   animationCurrentTime);
   }));
 }, "PlayState is 'running' while playing a cancelled animation");
 
@@ -416,7 +431,8 @@ async_test(function(t) {
   animation.ready.then(t.step_func_done(() => {
     assert_equals(animation.playState, 'paused');
     assert_equals(animation.startTime, null);
-    assert_greater_than_equal(animation.currentTime, animationCurrentTime);
+    assert_time_greater_than_equal(animation.currentTime,
+                                   animationCurrentTime);
   }));
 }, "PlayState is 'running' while pausing a running animation");
 </script>

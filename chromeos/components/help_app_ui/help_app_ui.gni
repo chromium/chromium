@@ -1,7 +1,0 @@
-import("//build/config/chrome_build.gni")
-
-declare_args() {
-  # Whether to enable the "real" ChromeOS Help App. When false, a mock app is
-  # bundled for testing integration points.
-  enable_cros_help_app = is_chromeos && is_chrome_branded
-}

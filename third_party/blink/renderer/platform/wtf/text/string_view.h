@@ -5,21 +5,30 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_
 
+#include <cstring>
+#include <type_traits>
+
+#include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+
 #if DCHECK_IS_ON()
 #include "base/memory/scoped_refptr.h"
 #endif
-#include <cstring>
-#include "base/containers/span.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace WTF {
 
 class AtomicString;
 class String;
+
+enum UTF8ConversionMode {
+  kLenientUTF8Conversion,
+  kStrictUTF8Conversion,
+  kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
+};
 
 // A string like object that wraps either an 8bit or 16bit byte sequence
 // and keeps track of the length and the type, it does NOT own the bytes.
@@ -33,6 +42,47 @@ class WTF_EXPORT StringView {
   DISALLOW_NEW();
 
  public:
+  // A buffer that allows for short strings to be held on the stack during a
+  // transform. This is a performance optimization for very hot paths and
+  // should rarely need to be used.
+  class StackBackingStore {
+   public:
+    // Returns a pointer to a buffer of size |length| that is valid for as long
+    // the StackBackingStore object is alive and Realloc() has not been called
+    // again.
+    template <typename CharT>
+    CharT* Realloc(int length) {
+      size_t size = length * sizeof(CharT);
+      if (UNLIKELY(size > sizeof(stackbuf16_))) {
+        heapbuf_.reset(reinterpret_cast<char*>(
+            WTF::Partitions::BufferMalloc(size, "StackBackingStore")));
+        return reinterpret_cast<CharT*>(heapbuf_.get());
+      }
+
+      // If the Realloc() shrinks the buffer size, |heapbuf_| will keep a copy
+      // of the old string. A reset can be added here, but given this is a
+      // transient usage, deferring to the destructor is just as good and avoids
+      // another branch.
+      static_assert(alignof(decltype(stackbuf16_)) % alignof(CharT) == 0,
+                    "stack buffer must be sufficiently aligned");
+      return reinterpret_cast<CharT*>(&stackbuf16_[0]);
+    }
+
+   public:
+    struct BufferDeleter {
+      void operator()(void* buffer) { WTF::Partitions::BufferFree(buffer); }
+    };
+
+    static_assert(sizeof(UChar) != sizeof(char),
+                  "A char array will trigger -fstack-protect an produce "
+                  "overkill stack canaries all over v8 bindings");
+
+    // The size 64 is just a guess on a good size. No data was used in its
+    // selection.
+    UChar stackbuf16_[64];
+    std::unique_ptr<char[], BufferDeleter> heapbuf_;
+  };
+
   // Null string.
   StringView() { Clear(); }
 
@@ -58,19 +108,19 @@ class WTF_EXPORT StringView {
   StringView(StringImpl&, unsigned offset);
   StringView(StringImpl&, unsigned offset, unsigned length);
 
-  // From a String, implemented in String.h
+  // From a String, implemented in wtf_string.h
   inline StringView(const String&, unsigned offset, unsigned length);
   inline StringView(const String&, unsigned offset);
   inline StringView(const String&);
 
-  // From an AtomicString, implemented in AtomicString.h
+  // From an AtomicString, implemented in atomic_string.h
   inline StringView(const AtomicString&, unsigned offset, unsigned length);
   inline StringView(const AtomicString&, unsigned offset);
   inline StringView(const AtomicString&);
 
   // From a literal string or LChar buffer:
   StringView(const LChar* chars, unsigned length)
-      : impl_(StringImpl::empty_), characters8_(chars), length_(length) {}
+      : impl_(StringImpl::empty_), bytes_(chars), length_(length) {}
   StringView(const char* chars, unsigned length)
       : StringView(reinterpret_cast<const LChar*>(chars), length) {}
   StringView(const LChar* chars)
@@ -83,12 +133,8 @@ class WTF_EXPORT StringView {
 
   // From a wide literal string or UChar buffer.
   StringView(const UChar* chars, unsigned length)
-      : impl_(StringImpl::empty16_bit_),
-        characters16_(chars),
-        length_(length) {}
+      : impl_(StringImpl::empty16_bit_), bytes_(chars), length_(length) {}
   StringView(const UChar* chars);
-  StringView(const char16_t* chars)
-      : StringView(reinterpret_cast<const UChar*>(chars)) {}
 
 #if DCHECK_IS_ON()
   ~StringView();
@@ -104,6 +150,21 @@ class WTF_EXPORT StringView {
     return impl_->Is8Bit();
   }
 
+  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const
+      WARN_UNUSED_RESULT;
+
+  bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
+
+  bool IsLowerASCII() const {
+    if (StringImpl* impl = SharedImpl())
+      return impl->IsLowerASCII();
+    if (Is8Bit())
+      return WTF::IsLowerASCII(Characters8(), length());
+    return WTF::IsLowerASCII(Characters16(), length());
+  }
+
+  bool ContainsOnlyASCIIOrEmpty() const;
+
   void Clear();
 
   UChar operator[](unsigned i) const {
@@ -115,32 +176,29 @@ class WTF_EXPORT StringView {
 
   const LChar* Characters8() const {
     DCHECK(Is8Bit());
-    return characters8_;
+    return static_cast<const LChar*>(bytes_);
   }
 
   const UChar* Characters16() const {
     DCHECK(!Is8Bit());
-    return characters16_;
+    return static_cast<const UChar*>(bytes_);
   }
 
   base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
-    return {characters8_, length_};
+    return {static_cast<const LChar*>(bytes_), length_};
   }
 
   base::span<const UChar> Span16() const {
     DCHECK(!Is8Bit());
-    return {characters16_, length_};
+    return {static_cast<const UChar*>(bytes_), length_};
   }
 
-  UChar32 CodepointAt(unsigned i) const {
-    SECURITY_DCHECK(i < length());
-    if (Is8Bit())
-      return (*this)[i];
-    UChar32 codepoint;
-    U16_GET(Characters16(), 0, i, length(), codepoint);
-    return codepoint;
-  }
+  UChar32 CodepointAt(unsigned i) const;
+
+  // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
+  // Returns i+1 otherwise.
+  unsigned NextCodePointOffset(unsigned i) const;
 
   const void* Bytes() const { return bytes_; }
 
@@ -156,6 +214,15 @@ class WTF_EXPORT StringView {
       return GetPtr(impl_);
     return nullptr;
   }
+
+  // This will return a StringView with a version of |this| that has all ASCII
+  // characters lowercased. The returned StringView is guarantee to be valid for
+  // as long as |backing_store| is valid.
+  //
+  // The odd lifetime of the returned object occurs because lowercasing may
+  // require allocation. When that happens, |backing_store| is used as the
+  // backing store and the returned StringView has the same lifetime.
+  StringView LowerASCIIMaybeUsingBuffer(StackBackingStore& backing_store) const;
 
   String ToString() const;
   AtomicString ToAtomicString() const;
@@ -174,11 +241,7 @@ class WTF_EXPORT StringView {
 #else
   StringImpl* impl_;
 #endif
-  union {
-    const LChar* characters8_;
-    const UChar* characters16_;
-    const void* bytes_;
-  };
+  const void* bytes_;
   unsigned length_;
 };
 
@@ -188,9 +251,9 @@ inline StringView::StringView(const StringView& view,
     : impl_(view.impl_), length_(length) {
   SECURITY_DCHECK(offset + length <= view.length());
   if (Is8Bit())
-    characters8_ = view.Characters8() + offset;
+    bytes_ = view.Characters8() + offset;
   else
-    characters16_ = view.Characters16() + offset;
+    bytes_ = view.Characters16() + offset;
 }
 
 inline StringView::StringView(const StringImpl* impl) {
@@ -236,9 +299,9 @@ inline void StringView::Set(const StringImpl& impl,
   length_ = length;
   impl_ = const_cast<StringImpl*>(&impl);
   if (impl.Is8Bit())
-    characters8_ = impl.Characters8() + offset;
+    bytes_ = impl.Characters8() + offset;
   else
-    characters16_ = impl.Characters16() + offset;
+    bytes_ = impl.Characters16() + offset;
 }
 
 // Unicode aware case insensitive string matching. Non-ASCII characters might
@@ -252,6 +315,15 @@ WTF_EXPORT bool DeprecatedEqualIgnoringCaseAndNullity(const StringView&,
                                                       const StringView&);
 
 WTF_EXPORT bool EqualIgnoringASCIICase(const StringView&, const StringView&);
+
+template <size_t N>
+inline bool EqualIgnoringASCIICase(const StringView& a,
+                                   const char (&literal)[N]) {
+  if (a.length() != N - 1 || (N == 1 && a.IsNull()))
+    return false;
+  return a.Is8Bit() ? EqualIgnoringASCIICase(a.Characters8(), literal, N - 1)
+                    : EqualIgnoringASCIICase(a.Characters16(), literal, N - 1);
+}
 
 // TODO(esprehn): Can't make this an overload of WTF::equal since that makes
 // calls to equal() that pass literal strings ambiguous. Figure out if we can
@@ -295,4 +367,4 @@ using WTF::EqualIgnoringASCIICase;
 using WTF::DeprecatedEqualIgnoringCase;
 using WTF::IsAllSpecialCharacters;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_VIEW_H_

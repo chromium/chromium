@@ -18,24 +18,18 @@ title: test1
 	ResourceFetchers
 	AdSubframes
 	DetachedScriptStates
-	V8CallInDetachedWindowByNavigations
-	V8CallInDetachedWindowByNavigationAfter10s
-	V8CallInDetachedWindowByNavigationAfter1mins
-	V8CallInDetachedWindowByClosings
-	V8CallInDetachedWindowByClosingAfter10s
-	V8CallInDetachedWindowByClosingAfter1mins
-	V8CallInDetachedWindowByOtherReasons
-	V8CallInDetachedWindowByOtherReasonAfter10s
-	V8CallInDetachedWindowByOtherReasonAfter1mins
+	ArrayBufferContents
 	LayoutCount
 	RecalcStyleCount
 	LayoutDuration
 	RecalcStyleDuration
+	DevToolsCommandDuration
 	ScriptDuration
 	V8CompileDuration
 	TaskDuration
 	TaskOtherDuration
 	ThreadTime
+	ProcessTime
 	JSHeapUsedSize
 	JSHeapTotalSize
 	FirstMeaningfulPaint
@@ -60,24 +54,18 @@ title: test1
 	ResourceFetchers
 	AdSubframes
 	DetachedScriptStates
-	V8CallInDetachedWindowByNavigations
-	V8CallInDetachedWindowByNavigationAfter10s
-	V8CallInDetachedWindowByNavigationAfter1mins
-	V8CallInDetachedWindowByClosings
-	V8CallInDetachedWindowByClosingAfter10s
-	V8CallInDetachedWindowByClosingAfter1mins
-	V8CallInDetachedWindowByOtherReasons
-	V8CallInDetachedWindowByOtherReasonAfter10s
-	V8CallInDetachedWindowByOtherReasonAfter1mins
+	ArrayBufferContents
 	LayoutCount
 	RecalcStyleCount
 	LayoutDuration
 	RecalcStyleDuration
+	DevToolsCommandDuration
 	ScriptDuration
 	V8CompileDuration
 	TaskDuration
 	TaskOtherDuration
 	ThreadTime
+	ProcessTime
 	JSHeapUsedSize
 	JSHeapTotalSize
 	FirstMeaningfulPaint
@@ -102,24 +90,18 @@ title:
 	ResourceFetchers
 	AdSubframes
 	DetachedScriptStates
-	V8CallInDetachedWindowByNavigations
-	V8CallInDetachedWindowByNavigationAfter10s
-	V8CallInDetachedWindowByNavigationAfter1mins
-	V8CallInDetachedWindowByClosings
-	V8CallInDetachedWindowByClosingAfter10s
-	V8CallInDetachedWindowByClosingAfter1mins
-	V8CallInDetachedWindowByOtherReasons
-	V8CallInDetachedWindowByOtherReasonAfter10s
-	V8CallInDetachedWindowByOtherReasonAfter1mins
+	ArrayBufferContents
 	LayoutCount
 	RecalcStyleCount
 	LayoutDuration
 	RecalcStyleDuration
+	DevToolsCommandDuration
 	ScriptDuration
 	V8CompileDuration
 	TaskDuration
 	TaskOtherDuration
 	ThreadTime
+	ProcessTime
 	JSHeapUsedSize
 	JSHeapTotalSize
 	FirstMeaningfulPaint

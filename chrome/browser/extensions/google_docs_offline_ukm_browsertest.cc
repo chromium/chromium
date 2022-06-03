@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace extensions {
@@ -19,7 +20,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       "/import_docs_offline_extension_resource.html"));
 
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
 
@@ -37,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       "/fetch_docs_offline_extension_resource.html"));
 
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -53,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       "/import_none_docs_offline_extension_resource.html"));
 
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_TRUE(entries.empty());

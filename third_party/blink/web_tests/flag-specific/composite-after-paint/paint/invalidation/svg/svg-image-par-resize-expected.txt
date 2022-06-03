@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGImage image",
-          "rect": [8, 8, 200, 200],
-          "reason": "full"
-        }
+      "invalidations": [
+        [8, 8, 200, 200]
       ]
     }
   ]

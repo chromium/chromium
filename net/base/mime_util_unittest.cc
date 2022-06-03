@@ -4,10 +4,11 @@
 
 #include "net/base/mime_util.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -33,7 +34,9 @@ TEST(MimeUtilTest, ExtensionTest) {
     {FILE_PATH_LITERAL("js"), "text/javascript", true},
     {FILE_PATH_LITERAL("webm"), "video/webm", true},
     {FILE_PATH_LITERAL("weba"), "audio/webm", true},
-#if defined(OS_CHROMEOS)
+    {FILE_PATH_LITERAL("avif"), "image/avif", true},
+    {FILE_PATH_LITERAL("jxl"), "image/jxl", true},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // These are test cases for testing platform mime types on Chrome OS.
     {FILE_PATH_LITERAL("epub"), "application/epub+zip", true},
     {FILE_PATH_LITERAL("apk"), "application/vnd.android.package-archive", true},
@@ -189,6 +192,76 @@ TEST(MimeUtilTest, MatchesMimeType) {
   EXPECT_TRUE(MatchesMimeType("ab/*cd", "ab/xxxcd"));
 }
 
+TEST(MimeUtilTest, TestParseMimeType) {
+  const struct {
+    std::string type_str;
+    std::string mime_type;
+    base::StringPairs params;
+  } tests[] = {
+      // Simple tests.
+      {"image/jpeg", "image/jpeg"},
+      {"application/octet-stream;foo=bar;name=\"test.jpg\"",
+       "application/octet-stream",
+       {{"foo", "bar"}, {"name", "test.jpg"}}},
+      // Quoted string parsing.
+      {"t/s;name=\"t\\\\est\\\".jpg\"", "t/s", {{"name", "t\\est\".jpg"}}},
+      {"t/s;name=\"test.jpg\"", "t/s", {{"name", "test.jpg"}}},
+      {"t/s;name=\"test;jpg\"", "t/s", {{"name", "test;jpg"}}},
+      // Lenient for no closing quote.
+      {"t/s;name=\"test.jpg", "t/s", {{"name", "test.jpg"}}},
+      {"t/s;name=\"ab\\\"", "t/s", {{"name", "ab\""}}},
+      // Strip whitespace from start/end of mime_type.
+      {" t/s", "t/s"},
+      {"t/s ", "t/s"},
+      {" t/s ", "t/s"},
+      {"t/=", "t/="},
+      // Generally ignore whitespace.
+      {"t/s;a=1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s ;a=1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s; a=1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      // Special case, include whitespace after param name until equals.
+      {"t/s;a =1;b=2", "t/s", {{"a ", "1"}, {"b", "2"}}},
+      {"t/s;a= 1;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s;a=1 ;b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s;a=1; b=2", "t/s", {{"a", "1"}, {"b", "2"}}},
+      {"t/s; a = 1;b=2", "t/s", {{"a ", "1"}, {"b", "2"}}},
+      // Do not trim whitespace from quoted-string param values.
+      {"t/s;a=\" 1\";b=2", "t/s", {{"a", " 1"}, {"b", "2"}}},
+      {"t/s;a=\"1 \";b=2", "t/s", {{"a", "1 "}, {"b", "2"}}},
+      {"t/s;a=\" 1 \";b=2", "t/s", {{"a", " 1 "}, {"b", "2"}}},
+      // Ignore incomplete params.
+      {"t/s;a", "t/s", {}},
+      {"t/s;a=", "t/s", {}},
+      {"t/s;a=1;", "t/s", {{"a", "1"}}},
+      {"t/s;a=1;b", "t/s", {{"a", "1"}}},
+      {"t/s;a=1;b=", "t/s", {{"a", "1"}}},
+      // Allow empty subtype.
+      {"t/", "t/", {}},
+      {"ts/", "ts/", {}},
+      {"t/;", "t/", {}},
+      {"t/ s", "t/", {}},
+      // Questionable: allow anything as long as there is a slash somewhere.
+      {"/ts", "/ts", {}},
+      {"/s", "/s", {}},
+      {"/", "/", {}},
+  };
+  for (const auto& test : tests) {
+    std::string mime_type;
+    base::StringPairs params;
+    EXPECT_TRUE(ParseMimeType(test.type_str, &mime_type, &params));
+    EXPECT_EQ(test.mime_type, mime_type);
+    EXPECT_EQ(test.params, params);
+  }
+  for (auto* type_str : {
+           // Must have slash in mime type.
+           "",
+           "ts",
+           "t / s",
+       }) {
+    EXPECT_FALSE(ParseMimeType(type_str, nullptr, nullptr));
+  }
+}
+
 TEST(MimeUtilTest, TestParseMimeTypeWithoutParameter) {
   std::string nonAscii("application/nonutf8");
   EXPECT_TRUE(ParseMimeTypeWithoutParameter(nonAscii, nullptr, nullptr));
@@ -273,6 +346,7 @@ TEST(MimeUtilTest, TestIsValidTopLevelMimeType) {
   EXPECT_TRUE(IsValidTopLevelMimeType("application"));
   EXPECT_TRUE(IsValidTopLevelMimeType("audio"));
   EXPECT_TRUE(IsValidTopLevelMimeType("example"));
+  EXPECT_TRUE(IsValidTopLevelMimeType("font"));
   EXPECT_TRUE(IsValidTopLevelMimeType("image"));
   EXPECT_TRUE(IsValidTopLevelMimeType("message"));
   EXPECT_TRUE(IsValidTopLevelMimeType("model"));
@@ -309,6 +383,8 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
       {"message/*", 1, "eml"},
       {"MeSsAge/*", 1, "eml"},
       {"message/", 0, nullptr, true},
+      {"image/avif", 1, "avif"},
+      {"image/jxl", 1, "jxl"},
       {"image/bmp", 1, "bmp"},
       {"video/*", 6, "mp4"},
       {"video/*", 6, "mpeg"},

@@ -12,7 +12,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_direction.h"
@@ -20,19 +19,23 @@
 #include "media/base/media_export.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
 class VideoColorSpace;
-struct HDRMetadata;
 
 // Configuration info for MediaCodec.
 class MEDIA_EXPORT VideoCodecConfig {
  public:
   VideoCodecConfig();
+
+  VideoCodecConfig(const VideoCodecConfig&) = delete;
+  VideoCodecConfig& operator=(const VideoCodecConfig&) = delete;
+
   ~VideoCodecConfig();
 
-  VideoCodec codec = kUnknownVideoCodec;
+  VideoCodec codec = VideoCodec::kUnknown;
 
   CodecType codec_type = CodecType::kAny;
 
@@ -54,7 +57,7 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // VP9 HDR metadata is only embedded in the container. HDR10 metadata is
   // embedded in the video stream.
-  base::Optional<HDRMetadata> hdr_metadata;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   // Enables the async MediaCodec.Callback API. |on_buffers_available_cb|
   // will be called when input or output buffers are available. This will be
@@ -62,9 +65,6 @@ class MEDIA_EXPORT VideoCodecConfig {
   //
   // May only be used on API level 23 and higher.
   base::RepeatingClosure on_buffers_available_cb;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCodecConfig);
 };
 
 // A bridge to a Java MediaCodec.
@@ -78,7 +78,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // Creates and starts a new MediaCodec configured for encoding. Returns
   // nullptr on failure.
   static std::unique_ptr<MediaCodecBridge> CreateVideoEncoder(
-      VideoCodec codec,       // e.g. media::kCodecVP8
+      VideoCodec codec,       // e.g. media::VideoCodec::kVP8
       const gfx::Size& size,  // input frame size
       int bit_rate,           // bits/second
       int frame_rate,         // frames/second
@@ -102,6 +102,9 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // creating a MediaCodec. Does nothing unless on API level 23+.
   static void SetupCallbackHandlerForTesting();
 
+  MediaCodecBridgeImpl(const MediaCodecBridgeImpl&) = delete;
+  MediaCodecBridgeImpl& operator=(const MediaCodecBridgeImpl&) = delete;
+
   ~MediaCodecBridgeImpl() override;
 
   // MediaCodecBridge implementation.
@@ -110,6 +113,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   MediaCodecStatus GetOutputSize(gfx::Size* size) override;
   MediaCodecStatus GetOutputSamplingRate(int* sampling_rate) override;
   MediaCodecStatus GetOutputChannelCount(int* channel_count) override;
+  MediaCodecStatus GetOutputColorSpace(gfx::ColorSpace* color_space) override;
   MediaCodecStatus QueueInputBuffer(int index,
                                     const uint8_t* data,
                                     size_t data_size,
@@ -122,7 +126,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
       EncryptionScheme encryption_scheme,
-      base::Optional<EncryptionPattern> encryption_pattern,
+      absl::optional<EncryptionPattern> encryption_pattern,
       base::TimeDelta presentation_time) override;
   void QueueEOS(int input_buffer_index) override;
   MediaCodecStatus DequeueInputBuffer(base::TimeDelta timeout,
@@ -148,6 +152,7 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   void SetVideoBitrate(int bps, int frame_rate) override;
   void RequestKeyFrameSoon() override;
   CodecType GetCodecType() const override;
+  size_t GetMaxInputSize() override;
 
  private:
   MediaCodecBridgeImpl(CodecType codec_type,
@@ -181,7 +186,8 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // The Java MediaCodecBridge instance.
   base::android::ScopedJavaGlobalRef<jobject> j_bridge_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecBridgeImpl);
+  // Controls if we return real color space or hardcode sRGB.
+  const bool use_real_color_space_;
 };
 
 }  // namespace media

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
@@ -36,8 +37,14 @@ const char kDarkNumBytesKey[] = "dark_num_bytes";
 const char kAnimatedUrlKey[] = "animated_url";
 const char kDarkAnimatedUrlKey[] = "dark_animated_url";
 const char kLogUrlKey[] = "log_url";
+const char kDarkLogUrlKey[] = "dark_log_url";
 const char kCtaLogUrlKey[] = "cta_log_url";
+const char kDarkCtaLogUrlKey[] = "dark_cta_log_url";
 const char kShortLinkKey[] = "short_link";
+const char kWidthPx[] = "width_px";
+const char kHeightPx[] = "height_px";
+const char kDarkWidthPx[] = "dark_width_px";
+const char kDarkHeightPx[] = "dark_height_px";
 const char kIframeWidthPx[] = "iframe_width_px";
 const char kIframeHeightPx[] = "iframe_height_px";
 const char kDarkBackgroundColorKey[] = "dark_background_color";
@@ -74,7 +81,7 @@ void SetTimeValue(base::DictionaryValue& dict,
                   const std::string& key,
                   const base::Time& time) {
   int64_t internal_time_value = time.ToInternalValue();
-  dict.SetString(key, base::NumberToString(internal_time_value));
+  dict.SetStringKey(key, base::NumberToString(internal_time_value));
 }
 
 LogoType LogoTypeFromString(base::StringPiece type) {
@@ -212,6 +219,34 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
   if (!value || !value->GetAsDictionary(&dict))
     return nullptr;
 
+  // These helpers replace the deprecated analogous methods on
+  // base::DictionaryValue, so as to maintain the early exit behavior in the if
+  // predicate below.
+  auto get_string = [dict](const char* key, std::string* ret) -> bool {
+    const std::string* v = dict->FindStringKey(key);
+    if (v)
+      *ret = *v;
+    return v != nullptr;
+  };
+  auto get_boolean = [dict](const char* key, bool* ret) -> bool {
+    absl::optional<bool> v = dict->FindBoolKey(key);
+    if (v.has_value())
+      *ret = v.value();
+    return v.has_value();
+  };
+  auto get_integer = [dict](const char* key, int* ret) -> bool {
+    absl::optional<int> v = dict->FindIntKey(key);
+    if (v.has_value())
+      *ret = v.value();
+    return v.has_value();
+  };
+  auto get_double = [dict](const char* key, double* ret) -> bool {
+    absl::optional<double> v = dict->FindDoubleKey(key);
+    if (v.has_value())
+      *ret = v.value();
+    return v.has_value();
+  };
+
   std::unique_ptr<LogoMetadata> metadata(new LogoMetadata());
   std::string source_url;
   std::string type;
@@ -220,41 +255,47 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
   std::string animated_url;
   std::string dark_animated_url;
   std::string log_url;
+  std::string dark_log_url;
   std::string cta_log_url;
+  std::string dark_cta_log_url;
   std::string short_link;
-  if (!dict->GetString(kSourceUrlKey, &source_url) ||
-      !dict->GetString(kFingerprintKey, &metadata->fingerprint) ||
-      !dict->GetString(kTypeKey, &type) ||
-      !dict->GetString(kOnClickURLKey, &on_click_url) ||
-      !dict->GetString(kFullPageURLKey, &full_page_url) ||
-      !dict->GetString(kAltTextKey, &metadata->alt_text) ||
-      !dict->GetString(kAnimatedUrlKey, &animated_url) ||
-      !dict->GetString(kDarkAnimatedUrlKey, &dark_animated_url) ||
-      !dict->GetString(kLogUrlKey, &log_url) ||
-      !dict->GetString(kCtaLogUrlKey, &cta_log_url) ||
-      !dict->GetString(kShortLinkKey, &short_link) ||
-      !dict->GetString(kMimeTypeKey, &metadata->mime_type) ||
-      !dict->GetString(kDarkMimeTypeKey, &metadata->dark_mime_type) ||
-      !dict->GetBoolean(kCanShowAfterExpirationKey,
-                        &metadata->can_show_after_expiration) ||
-      !dict->GetInteger(kNumBytesKey, logo_num_bytes) ||
-      !dict->GetInteger(kDarkNumBytesKey, dark_logo_num_bytes) ||
-      !dict->GetInteger(kShareButtonX, &metadata->share_button_x) ||
-      !dict->GetInteger(kShareButtonY, &metadata->share_button_y) ||
-      !dict->GetDouble(kShareButtonOpacity, &metadata->share_button_opacity) ||
-      !dict->GetString(kShareButtonIcon, &metadata->share_button_icon) ||
-      !dict->GetString(kShareButtonBg, &metadata->share_button_bg) ||
-      !dict->GetInteger(kDarkShareButtonX, &metadata->dark_share_button_x) ||
-      !dict->GetInteger(kDarkShareButtonY, &metadata->dark_share_button_y) ||
-      !dict->GetDouble(kDarkShareButtonOpacity,
-                       &metadata->dark_share_button_opacity) ||
-      !dict->GetString(kDarkShareButtonIcon,
-                       &metadata->dark_share_button_icon) ||
-      !dict->GetString(kDarkShareButtonBg, &metadata->dark_share_button_bg) ||
-      !dict->GetInteger(kIframeWidthPx, &metadata->iframe_width_px) ||
-      !dict->GetInteger(kIframeHeightPx, &metadata->iframe_height_px) ||
-      !dict->GetString(kDarkBackgroundColorKey,
-                       &metadata->dark_background_color) ||
+  if (!get_string(kSourceUrlKey, &source_url) ||
+      !get_string(kFingerprintKey, &metadata->fingerprint) ||
+      !get_string(kTypeKey, &type) ||
+      !get_string(kOnClickURLKey, &on_click_url) ||
+      !get_string(kFullPageURLKey, &full_page_url) ||
+      !get_string(kAltTextKey, &metadata->alt_text) ||
+      !get_string(kAnimatedUrlKey, &animated_url) ||
+      !get_string(kDarkAnimatedUrlKey, &dark_animated_url) ||
+      !get_string(kLogUrlKey, &log_url) ||
+      !get_string(kDarkLogUrlKey, &dark_log_url) ||
+      !get_string(kCtaLogUrlKey, &cta_log_url) ||
+      !get_string(kDarkCtaLogUrlKey, &dark_cta_log_url) ||
+      !get_string(kShortLinkKey, &short_link) ||
+      !get_string(kMimeTypeKey, &metadata->mime_type) ||
+      !get_string(kDarkMimeTypeKey, &metadata->dark_mime_type) ||
+      !get_boolean(kCanShowAfterExpirationKey,
+                   &metadata->can_show_after_expiration) ||
+      !get_integer(kNumBytesKey, logo_num_bytes) ||
+      !get_integer(kDarkNumBytesKey, dark_logo_num_bytes) ||
+      !get_integer(kShareButtonX, &metadata->share_button_x) ||
+      !get_integer(kShareButtonY, &metadata->share_button_y) ||
+      !get_double(kShareButtonOpacity, &metadata->share_button_opacity) ||
+      !get_string(kShareButtonIcon, &metadata->share_button_icon) ||
+      !get_string(kShareButtonBg, &metadata->share_button_bg) ||
+      !get_integer(kDarkShareButtonX, &metadata->dark_share_button_x) ||
+      !get_integer(kDarkShareButtonY, &metadata->dark_share_button_y) ||
+      !get_double(kDarkShareButtonOpacity,
+                  &metadata->dark_share_button_opacity) ||
+      !get_string(kDarkShareButtonIcon, &metadata->dark_share_button_icon) ||
+      !get_string(kDarkShareButtonBg, &metadata->dark_share_button_bg) ||
+      !get_integer(kWidthPx, &metadata->width_px) ||
+      !get_integer(kHeightPx, &metadata->height_px) ||
+      !get_integer(kDarkWidthPx, &metadata->dark_width_px) ||
+      !get_integer(kDarkHeightPx, &metadata->dark_height_px) ||
+      !get_integer(kIframeWidthPx, &metadata->iframe_width_px) ||
+      !get_integer(kIframeHeightPx, &metadata->iframe_height_px) ||
+      !get_string(kDarkBackgroundColorKey, &metadata->dark_background_color) ||
       !GetTimeValue(*dict, kExpirationTimeKey, &metadata->expiration_time)) {
     return nullptr;
   }
@@ -265,7 +306,9 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
   metadata->animated_url = GURL(animated_url);
   metadata->dark_animated_url = GURL(dark_animated_url);
   metadata->log_url = GURL(log_url);
+  metadata->dark_log_url = GURL(dark_log_url);
   metadata->cta_log_url = GURL(cta_log_url);
+  metadata->dark_cta_log_url = GURL(dark_cta_log_url);
   metadata->short_link = GURL(short_link);
 
   return metadata;
@@ -277,36 +320,43 @@ void LogoCache::LogoMetadataToString(const LogoMetadata& metadata,
                                      int dark_num_bytes,
                                      std::string* str) {
   base::DictionaryValue dict;
-  dict.SetString(kSourceUrlKey, metadata.source_url.spec());
-  dict.SetString(kFingerprintKey, metadata.fingerprint);
-  dict.SetString(kTypeKey, LogoTypeToString(metadata.type));
-  dict.SetString(kOnClickURLKey, metadata.on_click_url.spec());
-  dict.SetString(kFullPageURLKey, metadata.full_page_url.spec());
-  dict.SetString(kAltTextKey, metadata.alt_text);
-  dict.SetString(kAnimatedUrlKey, metadata.animated_url.spec());
-  dict.SetString(kDarkAnimatedUrlKey, metadata.dark_animated_url.spec());
-  dict.SetString(kLogUrlKey, metadata.log_url.spec());
-  dict.SetString(kCtaLogUrlKey, metadata.cta_log_url.spec());
-  dict.SetString(kShortLinkKey, metadata.short_link.spec());
-  dict.SetString(kMimeTypeKey, metadata.mime_type);
-  dict.SetString(kDarkMimeTypeKey, metadata.dark_mime_type);
-  dict.SetBoolean(kCanShowAfterExpirationKey,
+  dict.SetStringKey(kSourceUrlKey, metadata.source_url.spec());
+  dict.SetStringKey(kFingerprintKey, metadata.fingerprint);
+  dict.SetStringKey(kTypeKey, LogoTypeToString(metadata.type));
+  dict.SetStringKey(kOnClickURLKey, metadata.on_click_url.spec());
+  dict.SetStringKey(kFullPageURLKey, metadata.full_page_url.spec());
+  dict.SetStringKey(kAltTextKey, metadata.alt_text);
+  dict.SetStringKey(kAnimatedUrlKey, metadata.animated_url.spec());
+  dict.SetStringKey(kDarkAnimatedUrlKey, metadata.dark_animated_url.spec());
+  dict.SetStringKey(kLogUrlKey, metadata.log_url.spec());
+  dict.SetStringKey(kDarkLogUrlKey, metadata.dark_log_url.spec());
+  dict.SetStringKey(kCtaLogUrlKey, metadata.cta_log_url.spec());
+  dict.SetStringKey(kDarkCtaLogUrlKey, metadata.dark_cta_log_url.spec());
+  dict.SetStringKey(kShortLinkKey, metadata.short_link.spec());
+  dict.SetStringKey(kMimeTypeKey, metadata.mime_type);
+  dict.SetStringKey(kDarkMimeTypeKey, metadata.dark_mime_type);
+  dict.SetBoolKey(kCanShowAfterExpirationKey,
                   metadata.can_show_after_expiration);
-  dict.SetInteger(kNumBytesKey, num_bytes);
-  dict.SetInteger(kDarkNumBytesKey, dark_num_bytes);
-  dict.SetInteger(kShareButtonX, metadata.share_button_x);
-  dict.SetInteger(kShareButtonY, metadata.share_button_y);
-  dict.SetDouble(kShareButtonOpacity, metadata.share_button_opacity);
-  dict.SetString(kShareButtonIcon, metadata.share_button_icon);
-  dict.SetString(kShareButtonBg, metadata.share_button_bg);
-  dict.SetInteger(kDarkShareButtonX, metadata.dark_share_button_x);
-  dict.SetInteger(kDarkShareButtonY, metadata.dark_share_button_y);
-  dict.SetDouble(kDarkShareButtonOpacity, metadata.dark_share_button_opacity);
-  dict.SetString(kDarkShareButtonIcon, metadata.dark_share_button_icon);
-  dict.SetString(kDarkShareButtonBg, metadata.dark_share_button_bg);
-  dict.SetInteger(kIframeWidthPx, metadata.iframe_width_px);
-  dict.SetInteger(kIframeHeightPx, metadata.iframe_height_px);
-  dict.SetString(kDarkBackgroundColorKey, metadata.dark_background_color);
+  dict.SetIntKey(kNumBytesKey, num_bytes);
+  dict.SetIntKey(kDarkNumBytesKey, dark_num_bytes);
+  dict.SetIntKey(kShareButtonX, metadata.share_button_x);
+  dict.SetIntKey(kShareButtonY, metadata.share_button_y);
+  dict.SetDoubleKey(kShareButtonOpacity, metadata.share_button_opacity);
+  dict.SetStringKey(kShareButtonIcon, metadata.share_button_icon);
+  dict.SetStringKey(kShareButtonBg, metadata.share_button_bg);
+  dict.SetIntKey(kDarkShareButtonX, metadata.dark_share_button_x);
+  dict.SetIntKey(kDarkShareButtonY, metadata.dark_share_button_y);
+  dict.SetDoubleKey(kDarkShareButtonOpacity,
+                    metadata.dark_share_button_opacity);
+  dict.SetStringKey(kDarkShareButtonIcon, metadata.dark_share_button_icon);
+  dict.SetStringKey(kDarkShareButtonBg, metadata.dark_share_button_bg);
+  dict.SetIntKey(kWidthPx, metadata.width_px);
+  dict.SetIntKey(kHeightPx, metadata.height_px);
+  dict.SetIntKey(kDarkWidthPx, metadata.dark_width_px);
+  dict.SetIntKey(kDarkHeightPx, metadata.dark_height_px);
+  dict.SetIntKey(kIframeWidthPx, metadata.iframe_width_px);
+  dict.SetIntKey(kIframeHeightPx, metadata.iframe_height_px);
+  dict.SetStringKey(kDarkBackgroundColorKey, metadata.dark_background_color);
   SetTimeValue(dict, kExpirationTimeKey, metadata.expiration_time);
   base::JSONWriter::Write(dict, str);
 }
@@ -374,20 +424,20 @@ void LogoCache::WriteLogo(
   base::FilePath dark_logo_path = GetDarkLogoPath();
   base::FilePath metadata_path = GetMetadataPath();
 
-  if (!base::DeleteFile(metadata_path, false))
+  if (!base::DeleteFile(metadata_path))
     return;
 
   if (encoded_image &&
       base::WriteFile(logo_path, encoded_image->front_as<char>(),
                       static_cast<int>(encoded_image->size())) == -1) {
-    base::DeleteFile(logo_path, false);
+    base::DeleteFile(logo_path);
     return;
   }
   if (dark_encoded_image &&
       base::WriteFile(dark_logo_path, dark_encoded_image->front_as<char>(),
                       static_cast<int>(dark_encoded_image->size())) == -1) {
-    base::DeleteFile(logo_path, false);
-    base::DeleteFile(dark_logo_path, false);
+    base::DeleteFile(logo_path);
+    base::DeleteFile(dark_logo_path);
     return;
   }
 
@@ -395,9 +445,9 @@ void LogoCache::WriteLogo(
 }
 
 void LogoCache::DeleteLogoAndMetadata() {
-  base::DeleteFile(GetLogoPath(), false);
-  base::DeleteFile(GetDarkLogoPath(), false);
-  base::DeleteFile(GetMetadataPath(), false);
+  base::DeleteFile(GetLogoPath());
+  base::DeleteFile(GetDarkLogoPath());
+  base::DeleteFile(GetMetadataPath());
 }
 
 bool LogoCache::EnsureCacheDirectoryExists() {

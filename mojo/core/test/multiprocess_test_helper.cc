@@ -11,19 +11,19 @@
 #include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -50,6 +50,7 @@ const char kNamedPipeName[] = "named-pipe-name";
 const char kRunAsBrokerClient[] = "run-as-broker-client";
 const char kAcceptInvitationAsync[] = "accept-invitation-async";
 const char kTestChildMessagePipeName[] = "test_pipe";
+const char kDisableAllCapabilities[] = "disable-all-capabilities";
 
 // For use (and only valid) in a test child process:
 base::LazyInstance<IsolatedConnection>::Leaky g_child_isolated_connection;
@@ -66,7 +67,7 @@ int RunClientFunction(base::OnceCallback<int(MojoHandle)> handler,
 
 }  // namespace
 
-MultiprocessTestHelper::MultiprocessTestHelper() {}
+MultiprocessTestHelper::MultiprocessTestHelper() = default;
 
 MultiprocessTestHelper::~MultiprocessTestHelper() {
   CHECK(!test_child_.IsValid());
@@ -114,6 +115,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   base::LaunchOptions options;
   switch (launch_type) {
     case LaunchType::CHILD:
+    case LaunchType::CHILD_WITHOUT_CAPABILITIES:
     case LaunchType::PEER:
     case LaunchType::ASYNC:
       channel.PrepareToPassRemoteEndpoint(&options, &command_line);
@@ -121,7 +123,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
 #if !defined(OS_FUCHSIA)
     case LaunchType::NAMED_CHILD:
     case LaunchType::NAMED_PEER: {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       server_name = NamedPlatformChannel::ServerNameFromUTF8(
           "mojo.test." + base::NumberToString(base::RandUint64()));
 #elif defined(OS_POSIX)
@@ -131,7 +133,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
           temp_dir.AppendASCII(base::NumberToString(base::RandUint64()))
               .value();
 #elif defined(OS_WIN)
-      server_name = base::NumberToString16(base::RandUint64());
+      server_name = base::NumberToWString(base::RandUint64());
 #else
 #error "Platform not yet supported."
 #endif
@@ -160,6 +162,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   PlatformChannelServerEndpoint server_endpoint;
   switch (launch_type) {
     case LaunchType::CHILD:
+    case LaunchType::CHILD_WITHOUT_CAPABILITIES:
     case LaunchType::PEER:
     case LaunchType::ASYNC:
       local_channel_endpoint = channel.TakeLocalEndpoint();
@@ -179,8 +182,12 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   OutgoingInvitation child_invitation;
   ScopedMessagePipeHandle pipe;
   switch (launch_type) {
+    case LaunchType::CHILD_WITHOUT_CAPABILITIES:
     case LaunchType::ASYNC:
-      command_line.AppendSwitch(kAcceptInvitationAsync);
+      // It's one or the other
+      command_line.AppendSwitch(launch_type == LaunchType::ASYNC
+                                    ? kAcceptInvitationAsync
+                                    : kDisableAllCapabilities);
       FALLTHROUGH;
     case LaunchType::CHILD:
 #if !defined(OS_FUCHSIA)
@@ -210,12 +217,14 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   test_child_ =
       base::SpawnMultiProcessTestChild(test_child_main, command_line, options);
 
-  if (launch_type == LaunchType::CHILD || launch_type == LaunchType::PEER ||
-      launch_type == LaunchType::ASYNC) {
+  if (launch_type == LaunchType::CHILD ||
+      launch_type == LaunchType::CHILD_WITHOUT_CAPABILITIES ||
+      launch_type == LaunchType::PEER || launch_type == LaunchType::ASYNC) {
     channel.RemoteProcessLaunchAttempted();
   }
 
-  if (launch_type == LaunchType::CHILD) {
+  if (launch_type == LaunchType::CHILD ||
+      launch_type == LaunchType::CHILD_WITHOUT_CAPABILITIES) {
     DCHECK(local_channel_endpoint.is_valid());
     OutgoingInvitation::Send(std::move(child_invitation), test_child_.Handle(),
                              std::move(local_channel_endpoint),

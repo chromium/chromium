@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "ash/session/session_observer.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -22,14 +21,21 @@ class PowerTrayView : public TrayItemView,
  public:
   explicit PowerTrayView(Shelf* shelf);
 
+  PowerTrayView(const PowerTrayView&) = delete;
+  PowerTrayView& operator=(const PowerTrayView&) = delete;
+
   ~PowerTrayView() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
+
+  // TrayItemView:
+  void HandleLocaleChange() override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -39,16 +45,14 @@ class PowerTrayView : public TrayItemView,
 
  private:
   void UpdateStatus();
-  void UpdateImage();
+  void UpdateImage(bool icon_color_changed);
 
-  base::string16 accessible_name_;
-  base::string16 tooltip_;
-  base::Optional<PowerStatus::BatteryImageInfo> info_;
-  session_manager::SessionState icon_session_state_color_ =
+  std::u16string accessible_name_;
+  std::u16string tooltip_;
+  absl::optional<PowerStatus::BatteryImageInfo> info_;
+  session_manager::SessionState session_state_ =
       session_manager::SessionState::UNKNOWN;
   ScopedSessionObserver session_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerTrayView);
 };
 
 }  // namespace tray

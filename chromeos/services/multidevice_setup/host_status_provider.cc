@@ -13,7 +13,7 @@ namespace multidevice_setup {
 
 HostStatusProvider::HostStatusWithDevice::HostStatusWithDevice(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device)
+    const absl::optional<multidevice::RemoteDeviceRef>& host_device)
     : host_status_(host_status), host_device_(host_device) {
   if (host_status_ == mojom::HostStatus::kNoEligibleHosts ||
       host_status_ == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
@@ -21,8 +21,8 @@ HostStatusProvider::HostStatusWithDevice::HostStatusWithDevice(
       PA_LOG(ERROR) << "HostStatusWithDevice::HostStatusWithDevice(): Tried to "
                     << "construct a HostStatusWithDevice with a status "
                     << "indicating no device, but a device was provided. "
-                    << "Status: " << host_status_ << ", Device ID: "
-                    << host_device_->GetTruncatedDeviceIdForLogs();
+                    << "Status: " << host_status_ << ", IDs: "
+                    << host_device_->GetInstanceIdDeviceIdForLogs();
       NOTREACHED();
     }
   } else if (!host_device_) {
@@ -64,7 +64,7 @@ void HostStatusProvider::RemoveObserver(Observer* observer) {
 
 void HostStatusProvider::NotifyHostStatusChange(
     mojom::HostStatus host_status,
-    const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+    const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
   HostStatusWithDevice host_status_with_device(host_status, host_device);
   for (auto& observer : observer_list_)
     observer.OnHostStatusChange(host_status_with_device);

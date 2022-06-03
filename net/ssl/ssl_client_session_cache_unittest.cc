@@ -13,6 +13,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -271,7 +272,7 @@ TEST_F(SSLClientSessionCacheTest, MaxEntries) {
 TEST_F(SSLClientSessionCacheTest, Expiration) {
   const size_t kNumEntries = 20;
   const size_t kExpirationCheckCount = 10;
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+  const base::TimeDelta kTimeout = base::Seconds(1000);
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
@@ -320,7 +321,7 @@ TEST_F(SSLClientSessionCacheTest, LookupExpirationCheck) {
   // kExpirationCheckCount is set to a suitably large number so the automated
   // pruning never triggers.
   const size_t kExpirationCheckCount = 1000;
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+  const base::TimeDelta kTimeout = base::Seconds(1000);
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
@@ -358,7 +359,7 @@ TEST_F(SSLClientSessionCacheTest, LookupExpirationCheck) {
   EXPECT_EQ(1u, cache.size());
 
   // Sessions also are treated as expired if the clock rewinds.
-  clock->Advance(base::TimeDelta::FromSeconds(-2));
+  clock->Advance(base::Seconds(-2));
   EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("key")).get());
   EXPECT_EQ(0u, cache.size());
 }
@@ -370,7 +371,7 @@ TEST_F(SSLClientSessionCacheTest, TestFlushOnMemoryNotifications) {
   // kExpirationCheckCount is set to a suitably large number so the automated
   // pruning never triggers.
   const size_t kExpirationCheckCount = 1000;
-  const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+  const base::TimeDelta kTimeout = base::Seconds(1000);
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
@@ -415,8 +416,8 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   SSLClientSessionCache::Config config;
   SSLClientSessionCache cache(config);
 
-  const url::Origin kOriginA = url::Origin::Create(GURL("https://a.test"));
-  const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
+  const SchemefulSite kSiteA(GURL("https://a.test"));
+  const SchemefulSite kSiteB(GURL("https://b.test"));
 
   // Insert a number of cache entries.
   SSLClientSessionCache::Key key1;
@@ -427,7 +428,7 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   SSLClientSessionCache::Key key2;
   key2.server = HostPortPair("a.test", 443);
   key2.dest_ip_addr = IPAddress::IPv4Localhost();
-  key2.network_isolation_key = NetworkIsolationKey(kOriginB, kOriginB);
+  key2.network_isolation_key = NetworkIsolationKey(kSiteB, kSiteB);
   key2.privacy_mode = PRIVACY_MODE_ENABLED;
   auto session2 = NewSSLSession();
   cache.Insert(key2, bssl::UpRef(session2));
@@ -444,7 +445,7 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
 
   SSLClientSessionCache::Key key5;
   key5.server = HostPortPair("b.test", 443);
-  key5.network_isolation_key = NetworkIsolationKey(kOriginA, kOriginA);
+  key5.network_isolation_key = NetworkIsolationKey(kSiteA, kSiteA);
   auto session5 = NewSSLSession();
   cache.Insert(key5, bssl::UpRef(session5));
 
@@ -483,63 +484,6 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   EXPECT_EQ(nullptr, cache.Lookup(key3).get());
   EXPECT_EQ(nullptr, cache.Lookup(key4).get());
   EXPECT_EQ(nullptr, cache.Lookup(key5).get());
-}
-
-class SSLClientSessionCacheMemoryDumpTest
-    : public SSLClientSessionCacheTest,
-      public testing::WithParamInterface<
-          base::trace_event::MemoryDumpLevelOfDetail> {};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SSLClientSessionCacheMemoryDumpTest,
-    ::testing::Values(base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
-                      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND));
-
-// Basic test for dumping memory stats.
-TEST_P(SSLClientSessionCacheMemoryDumpTest, TestDumpMemoryStats) {
-  SSLClientSessionCache::Config config;
-  SSLClientSessionCache cache(config);
-
-  bssl::UniquePtr<SSL_SESSION> session1 = NewSSLSession();
-  bssl::UniquePtr<SSL_SESSION> session2 = NewSSLSession();
-  bssl::UniquePtr<SSL_SESSION> session3 = NewSSLSession();
-
-  // Insert three entries.
-  cache.Insert(MakeTestKey("key1"), bssl::UpRef(session1));
-  cache.Insert(MakeTestKey("key2"), bssl::UpRef(session2));
-  cache.Insert(MakeTestKey("key3"), bssl::UpRef(session3));
-  EXPECT_EQ(session1.get(), cache.Lookup(MakeTestKey("key1")).get());
-  EXPECT_EQ(session2.get(), cache.Lookup(MakeTestKey("key2")).get());
-  EXPECT_EQ(session3.get(), cache.Lookup(MakeTestKey("key3")).get());
-  EXPECT_EQ(3u, cache.size());
-
-  base::trace_event::MemoryDumpArgs dump_args = {GetParam()};
-  std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
-      new base::trace_event::ProcessMemoryDump(dump_args));
-
-  const std::string parent_absolute_name =
-      "net/http_network_session_0xdeadbeef";
-  const std::string expected_dump_name =
-      parent_absolute_name + "/ssl_client_session_cache";
-
-  cache.DumpMemoryStats(process_memory_dump.get(), parent_absolute_name);
-
-  using Entry = base::trace_event::MemoryAllocatorDump::Entry;
-  const base::trace_event::MemoryAllocatorDump* dump =
-      process_memory_dump->GetAllocatorDump(expected_dump_name);
-  ASSERT_NE(nullptr, dump);
-  const std::vector<Entry>& entries = dump->entries();
-  EXPECT_THAT(entries, Contains(Field(&Entry::name, Eq("cert_count"))));
-  EXPECT_THAT(entries, Contains(Field(&Entry::name, Eq("cert_size"))));
-  EXPECT_THAT(entries,
-              Contains(Field(&Entry::name, Eq("undeduped_cert_size"))));
-  EXPECT_THAT(entries,
-              Contains(Field(&Entry::name, Eq("undeduped_cert_count"))));
-  EXPECT_THAT(
-      entries,
-      Contains(Field(&Entry::name,
-                     Eq(base::trace_event::MemoryAllocatorDump::kNameSize))));
 }
 
 }  // namespace net

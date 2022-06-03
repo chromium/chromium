@@ -5,6 +5,8 @@
 package org.chromium.net.urlconnection;
 
 import android.annotation.SuppressLint;
+import android.net.TrafficStats;
+import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
 
@@ -297,10 +299,10 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         }
         // Set HTTP method.
         requestBuilder.setHttpMethod(method);
-        if (mTrafficStatsTagSet) {
+        if (checkTrafficStatsTag()) {
             requestBuilder.setTrafficStatsTag(mTrafficStatsTag);
         }
-        if (mTrafficStatsUidSet) {
+        if (checkTrafficStatsUid()) {
             requestBuilder.setTrafficStatsUid(mTrafficStatsUid);
         }
 
@@ -308,6 +310,39 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         // Start the request.
         mRequest.start();
         connected = true;
+    }
+
+    private boolean checkTrafficStatsTag() {
+        if (mTrafficStatsTagSet) {
+            return true;
+        }
+
+        int tag = TrafficStats.getThreadStatsTag();
+        if (tag != -1) {
+            mTrafficStatsTag = tag;
+            mTrafficStatsTagSet = true;
+        }
+
+        return mTrafficStatsTagSet;
+    }
+
+    private boolean checkTrafficStatsUid() {
+        if (mTrafficStatsUidSet) {
+            return true;
+        }
+
+        // TrafficStats#getThreadStatsUid() is available on API level 28+.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            return false;
+        }
+
+        int uid = TrafficStats.getThreadStatsUid();
+        if (uid != -1) {
+            mTrafficStatsUid = uid;
+            mTrafficStatsUidSet = true;
+        }
+
+        return mTrafficStatsUidSet;
     }
 
     /**

@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -15,8 +17,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #endif
 
 // TODO(jamescook): We probably shouldn't compile this class at all on Android.
@@ -44,8 +46,9 @@ extensions::AppWindow* ChromeAppWindowClient::CreateAppWindow(
 #if defined(OS_ANDROID)
   return NULL;
 #else
-  return new extensions::AppWindow(context, new ChromeAppDelegate(true),
-                                   extension);
+  Profile* profile = Profile::FromBrowserContext(context);
+  return new extensions::AppWindow(
+      context, new ChromeAppDelegate(profile, true), extension);
 #endif
 }
 
@@ -54,8 +57,9 @@ ChromeAppWindowClient::CreateAppWindowForLockScreenAction(
     content::BrowserContext* context,
     const extensions::Extension* extension,
     extensions::api::app_runtime::ActionType action) {
-#if defined(OS_CHROMEOS)
-  auto app_delegate = std::make_unique<ChromeAppDelegate>(true /*keep_alive*/);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto app_delegate = std::make_unique<ChromeAppDelegate>(
+      Profile::FromBrowserContext(context), true /*keep_alive*/);
   app_delegate->set_for_lock_screen_app(true);
 
   return lock_screen_apps::StateController::Get()
@@ -78,7 +82,7 @@ extensions::NativeAppWindow* ChromeAppWindowClient::CreateNativeAppWindow(
 
 void ChromeAppWindowClient::OpenDevToolsWindow(
     content::WebContents* web_contents,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   scoped_refptr<content::DevToolsAgentHost> agent(
       content::DevToolsAgentHost::GetOrCreateFor(web_contents));
   DevToolsWindow::OpenDevToolsWindow(web_contents);
@@ -86,9 +90,9 @@ void ChromeAppWindowClient::OpenDevToolsWindow(
   DevToolsWindow* devtools_window =
       DevToolsWindow::FindDevToolsWindow(agent.get());
   if (devtools_window)
-    devtools_window->SetLoadCompletedCallback(callback);
+    devtools_window->SetLoadCompletedCallback(std::move(callback));
   else
-    callback.Run();
+    std::move(callback).Run();
 }
 
 bool ChromeAppWindowClient::IsCurrentChannelOlderThanDev() {

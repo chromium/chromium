@@ -7,10 +7,10 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -81,7 +81,7 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
   }
 
   GURL GetUrlToBeSaved() {
-    return SavePackage::GetUrlToBeSaved(save_package_success_->web_contents());
+    return SavePackage::GetUrlToBeSaved(contents()->GetMainFrame());
   }
 
  protected:
@@ -93,13 +93,13 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     save_package_success_ = new SavePackage(
-        contents(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+        contents()->GetPrimaryPage(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
         temp_dir_.GetPath().AppendASCII("testfile" HTML_EXTENSION),
         temp_dir_.GetPath().AppendASCII("testfile_files"));
 
     base::FilePath::StringType long_file_name = GetLongFileName();
     save_package_fail_ = new SavePackage(
-        contents(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+        contents()->GetPrimaryPage(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
         temp_dir_.GetPath().Append(long_file_name + FPL_HTML_EXTENSION),
         temp_dir_.GetPath().Append(long_file_name + FPL("_files")));
   }

@@ -54,14 +54,14 @@ FakeCryptAuthFeatureStatusSetterFactory::
     ~FakeCryptAuthFeatureStatusSetterFactory() = default;
 
 std::unique_ptr<CryptAuthFeatureStatusSetter>
-FakeCryptAuthFeatureStatusSetterFactory::BuildInstance(
-    ClientAppMetadataProvider* client_app_metadata_provider,
+FakeCryptAuthFeatureStatusSetterFactory::CreateInstance(
+    const std::string& instance_id,
+    const std::string& instance_id_token,
     CryptAuthClientFactory* client_factory,
-    CryptAuthGCMManager* gcm_manager,
     std::unique_ptr<base::OneShotTimer> timer) {
-  last_client_app_metadata_provider_ = client_app_metadata_provider;
+  last_instance_id_ = instance_id;
+  last_instance_id_token_ = instance_id_token;
   last_client_factory_ = client_factory;
-  last_gcm_manager_ = gcm_manager;
 
   auto instance = std::make_unique<FakeCryptAuthFeatureStatusSetter>();
   instances_.push_back(instance.get());

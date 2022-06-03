@@ -1,17 +1,12 @@
 <html>
 <body>
-<img alt="long_placeholder_text" src="private_url_image.png" />
+<img alt="long_placeholder_text"/>
+<script src="common.js"></script>
 <script>
-function checkImage() {
-	sendValueToTest((document.images[0].complete && (document.images[0].naturalWidth > 0)));
-}
-
-function imageSrc() {
-	sendValueToTest(document.images[0].src);
-}
-
-function sendValueToTest(value) {
-  window.domAutomationController.send(value);
+window.onload = () => {
+  setTimeout(() => {
+    document.images[0].src = "private_url_image.png"
+  }, 1000)
 }
 </script>
 </body>

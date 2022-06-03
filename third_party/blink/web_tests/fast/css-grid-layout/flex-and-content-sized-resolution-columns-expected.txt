@@ -1,10 +1,10 @@
 PASS window.getComputedStyle(gridFixedAndMinContentAndFlex, '').getPropertyValue('grid-template-columns') is "20px 30px 50px"
 PASS window.getComputedStyle(gridFixedAndMinContentAndFlexMultipleOverlap, '').getPropertyValue('grid-template-columns') is "20px 10px 70px"
-PASS window.getComputedStyle(gridMinMaxFixedFlexAndMaxContentAndAuto, '').getPropertyValue('grid-template-columns') is "30px 50px 20px"
-PASS window.getComputedStyle(gridMinMaxFixedFlexAndMaxContentAndAutoNoFlexSpanningItems, '').getPropertyValue('grid-template-columns') is "30px 70px 0px"
+PASS window.getComputedStyle(gridMinMaxFixedFlexAndMaxContentAndAuto, '').getPropertyValue('grid-template-columns') is "60px 20px 20px"
+PASS window.getComputedStyle(gridMinMaxFixedFlexAndMaxContentAndAutoNoFlexSpanningItems, '').getPropertyValue('grid-template-columns') is "100px 0px 0px"
 PASS window.getComputedStyle(gridMinMaxAutoFixedAndMinContentAndFixed, '').getPropertyValue('grid-template-columns') is "35px 20px 25px"
 PASS window.getComputedStyle(gridMinContentAndMinMaxFixedMinContentAndFlex, '').getPropertyValue('grid-template-columns') is "20px 20px 60px"
-PASS window.getComputedStyle(gridMaxContentAndMinMaxFixedMaxContentAndFlex, '').getPropertyValue('grid-template-columns') is "70px 20px 30px"
+PASS window.getComputedStyle(gridMaxContentAndMinMaxFixedMaxContentAndFlex, '').getPropertyValue('grid-template-columns') is "70px 20px 10px"
 PASS successfullyParsed is true
 
 TEST COMPLETE

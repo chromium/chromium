@@ -100,36 +100,6 @@
         }
       },
       {
-        "id": "ChromeUIOverrides",
-        "type": "object",
-        "description": "Chrome user interface features which can be overriden by an extension.",
-        "properties": {
-          "bookmarks_ui": {
-            "type": "object",
-            "description": "Settings to permit bookmarks user interface customization by extensions.",
-            "optional": true,
-            "properties": {
-              "remove_button": {
-                "type": "boolean",
-                "description": "If <code>true</code>, the built-in bookmark button will be removed from the user interface.",
-                "optional": true
-              },
-              "remove_bookmark_shortcut": {
-                "type": "boolean",
-                "description": "If <code>true</code>, the built-in \"Bookmark this page...\" shortcut key is removed and the extension is permitted to override the shortcut by binding it in the commands section of the manifest.",
-                "optional": true
-              },
-              "remove_bookmark_open_pages_shortcut": {
-                "type": "boolean",
-                "nodoc": true,
-                "description": "[Private] If <code>true</code>, the built-in \"Bookmark open pages...\" shortcut key and corresponding menu item is removed.",
-                "optional": true
-              }
-            }
-          }
-        }
-      },
-      {
         "id": "FileSystemProviderSource",
         "type": "string",
         "description": "For <code>\"file\"</code> the source is a file passed via <code>onLaunched</code> event. For <code>\"device\"</code> contents are fetched from an external device (eg. plugged via USB), without using <code>file_handlers</code>. Finally, for <code>\"network\"</code> source, contents should be fetched via network.",

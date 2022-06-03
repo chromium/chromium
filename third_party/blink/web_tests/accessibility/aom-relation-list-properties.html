@@ -185,6 +185,47 @@ test(function(t) {
 }, "AccessibleNode.flowTo");
 </script>
 
+<h1 id="elem1" aria-details="elem2 elem3"></h1>
+
+<div id="elem2">Content 2</div>
+<div id="elem3">Content 3</div>
+<div id="elem4">Content 4</div>
+
+<p id="description"></p>
+<div id="console"></div>
+
+<script>
+test(function(t) {
+    var axElem1 = accessibilityController.accessibleElementById("elem1");
+    var axElem2 = accessibilityController.accessibleElementById("elem2");
+    var axElem3 = accessibilityController.accessibleElementById("elem3");
+    var axElem4 = accessibilityController.accessibleElementById("elem4");
+
+    assert_true(axElem1.ariaDetailsElementAtIndex(0).isEqual(axElem2));
+    assert_true(axElem1.ariaDetailsElementAtIndex(1).isEqual(axElem3));
+
+    var elem1 = document.getElementById("elem1");
+    var elem2 = document.getElementById("elem2");
+    var elem3 = document.getElementById("elem3");
+    var elem4 = document.getElementById("elem4");
+
+    elem1.accessibleNode.details = new AccessibleNodeList();
+    elem1.accessibleNode.details.add(elem4.accessibleNode);
+
+    assert_true(axElem1.ariaDetailsElementAtIndex(0).isEqual(axElem2));
+    assert_true(axElem1.ariaDetailsElementAtIndex(1).isEqual(axElem3));
+
+    elem1.accessibleNode.details.add(elem2.accessibleNode);
+
+    assert_true(axElem1.ariaDetailsElementAtIndex(1).isEqual(axElem3));
+
+    elem1.accessibleNode.details = null;
+
+    assert_true(axElem1.ariaDetailsElementAtIndex(0).isEqual(axElem2));
+    assert_true(axElem1.ariaDetailsElementAtIndex(1).isEqual(axElem3));
+}, "AccessibleNode.details");
+</script>
+
 <div class="container">
     <ul id="list1" role="listbox" aria-owns="listitem3">
         <li role="option">One</li>

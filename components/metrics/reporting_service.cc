@@ -6,10 +6,14 @@
 
 #include "components/metrics/reporting_service.h"
 
+#include <cstdio>
+#include <memory>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/data_use_tracker.h"
 #include "components/metrics/log_store.h"
@@ -45,11 +49,11 @@ void ReportingService::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!upload_scheduler_);
   log_store()->LoadPersistedUnsentLogs();
-  base::Closure send_next_log_callback = base::Bind(
+  base::RepeatingClosure send_next_log_callback = base::BindRepeating(
       &ReportingService::SendNextLog, self_ptr_factory_.GetWeakPtr());
   bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
-  upload_scheduler_.reset(new MetricsUploadScheduler(send_next_log_callback,
-                                                     fast_startup_for_testing));
+  upload_scheduler_ = std::make_unique<MetricsUploadScheduler>(
+      send_next_log_callback, fast_startup_for_testing);
 }
 
 void ReportingService::Start() {
@@ -113,6 +117,25 @@ void ReportingService::SendNextLog() {
     log_store()->StageNextLog();
   }
 
+  // Check whether the log should be uploaded based on user id. If it should not
+  // be sent, then discard the log from the store and notify the scheduler.
+  auto staged_user_id = log_store()->staged_log_user_id();
+  if (staged_user_id.has_value() &&
+      !client_->ShouldUploadMetricsForUserId(staged_user_id.value())) {
+    // Remove the log and update list to disk.
+    log_store()->DiscardStagedLog();
+    log_store()->TrimAndPersistUnsentLogs();
+
+    // Notify the scheduler that the next log should be uploaded. If there are
+    // no more logs, then stop the scheduler.
+    if (!log_store()->has_unsent_logs()) {
+      DVLOG(1) << "Stopping upload_scheduler_.";
+      upload_scheduler_->Stop();
+    }
+    upload_scheduler_->UploadFinished(true);
+    return;
+  }
+
   // Proceed to stage the log for upload if log size satisfies cellular log
   // upload constrains.
   bool upload_canceled = false;
@@ -143,8 +166,8 @@ void ReportingService::SendStagedLog() {
     log_uploader_ = client_->CreateUploader(
         GetUploadUrl(), GetInsecureUploadUrl(), upload_mime_type(),
         service_type(),
-        base::Bind(&ReportingService::OnLogUploadComplete,
-                   self_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&ReportingService::OnLogUploadComplete,
+                            self_ptr_factory_.GetWeakPtr()));
   }
 
   reporting_info_.set_attempt_count(reporting_info_.attempt_count() + 1);
@@ -180,9 +203,11 @@ void ReportingService::OnLogUploadComplete(int response_code,
   if (log_store()->has_staged_log()) {
     // Provide boolean for error recovery (allow us to ignore response_code).
     bool discard_log = false;
-    const size_t log_size = log_store()->staged_log().length();
+    const std::string& staged_log = log_store()->staged_log();
+    const size_t log_size = staged_log.length();
     if (upload_succeeded) {
-      LogSuccess(log_size);
+      LogSuccessLogSize(log_size);
+      LogSuccessMetadata(staged_log);
     } else if (log_size > max_retransmit_size_) {
       LogLargeRejection(log_size);
       discard_log = true;
@@ -192,9 +217,12 @@ void ReportingService::OnLogUploadComplete(int response_code,
     }
 
     if (upload_succeeded || discard_log) {
+      if (upload_succeeded)
+        log_store()->MarkStagedLogAsSent();
+
       log_store()->DiscardStagedLog();
       // Store the updated list to disk now that the removed log is uploaded.
-      log_store()->PersistUnsentLogs();
+      log_store()->TrimAndPersistUnsentLogs();
     }
   }
 

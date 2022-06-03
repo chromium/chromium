@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -220,13 +221,14 @@ void HTMLTrackElement::LoadTimerFired(TimerBase*) {
 
 bool HTMLTrackElement::CanLoadUrl(const KURL& url) {
   HTMLMediaElement* parent = MediaElement();
-  if (!parent)
+  if (!parent || !GetExecutionContext())
     return false;
 
   if (url.IsEmpty())
     return false;
 
-  if (!GetDocument().GetContentSecurityPolicy()->AllowMediaFromSource(url)) {
+  if (!GetExecutionContext()->GetContentSecurityPolicy()->AllowMediaFromSource(
+          url)) {
     DVLOG(TRACK_LOG_LEVEL) << "canLoadUrl(" << UrlForLoggingTrack(url)
                            << ") -> rejected by Content Security Policy";
     return false;
@@ -338,9 +340,10 @@ HTMLMediaElement* HTMLTrackElement::MediaElement() const {
   return DynamicTo<HTMLMediaElement>(parentElement());
 }
 
-void HTMLTrackElement::Trace(Visitor* visitor) {
+void HTMLTrackElement::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   visitor->Trace(loader_);
+  visitor->Trace(load_timer_);
   HTMLElement::Trace(visitor);
 }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
@@ -23,37 +24,6 @@
 
 using content::BrowserContext;
 using content::BrowserThread;
-
-namespace {
-
-void TriggerNotificationsForProfile(Profile* profile) {
-  auto* service = PlatformNotificationServiceFactory::GetForProfile(profile);
-  base::Time next_trigger = service->ReadNextTriggerTimestamp();
-
-  // Skip this profile if there are no pending notifications.
-  if (next_trigger > base::Time::Now()) {
-    // Reschedule in case there are some in the future.
-    if (next_trigger < base::Time::Max())
-      service->ScheduleTrigger(next_trigger);
-    return;
-  }
-
-  // Reset the next trigger time. It will be set again if there are more
-  // scheduled notifications for any storage partition of this profile.
-  profile->GetPrefs()->SetTime(prefs::kNotificationNextTriggerTime,
-                               base::Time::Max());
-
-  // Unretained is safe here because BrowserContext::ForEachStoragePartition is
-  // synchronous and the profile just got fetched via GetLoadedProfiles.
-  BrowserContext::ForEachStoragePartition(
-      profile,
-      base::BindRepeating(
-          &NotificationTriggerScheduler::
-              TriggerNotificationsForStoragePartition,
-          base::Unretained(service->GetNotificationTriggerScheduler())));
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<NotificationTriggerScheduler>
@@ -74,10 +44,14 @@ void NotificationTriggerScheduler::TriggerNotifications() {
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   for (Profile* profile : profiles) {
     TriggerNotificationsForProfile(profile);
-    // Notifications are technically not supported in Incognito, but in case we
-    // ever change that lets handle these profiles too.
-    if (profile->HasOffTheRecordProfile())
-      TriggerNotificationsForProfile(profile->GetOffTheRecordProfile());
+    // Notifications are technically not supported in OffTheRecord, but in case
+    // we ever change that lets handle these profiles too.
+    if (profile->HasAnyOffTheRecordProfile()) {
+      std::vector<Profile*> otr_profiles =
+          profile->GetAllOffTheRecordProfiles();
+      for (Profile* otr : otr_profiles)
+        TriggerNotificationsForProfile(otr);
+    }
   }
 }
 
@@ -101,4 +75,29 @@ void NotificationTriggerScheduler::ScheduleTrigger(base::Time timestamp) {
 void NotificationTriggerScheduler::TriggerNotificationsForStoragePartition(
     content::StoragePartition* partition) {
   partition->GetPlatformNotificationContext()->TriggerNotifications();
+}
+
+void NotificationTriggerScheduler::TriggerNotificationsForProfile(
+    Profile* profile) {
+  auto* service = PlatformNotificationServiceFactory::GetForProfile(profile);
+  base::Time next_trigger = service->ReadNextTriggerTimestamp();
+
+  // Skip this profile if there are no pending notifications.
+  if (next_trigger > base::Time::Now()) {
+    // Reschedule in case there are some in the future.
+    if (next_trigger < base::Time::Max())
+      service->ScheduleTrigger(next_trigger);
+    return;
+  }
+
+  // Reset the next trigger time. It will be set again if there are more
+  // scheduled notifications for any storage partition of this profile.
+  profile->GetPrefs()->SetTime(prefs::kNotificationNextTriggerTime,
+                               base::Time::Max());
+
+  // Unretained is safe here because BrowserContext::ForEachStoragePartition is
+  // synchronous and the profile just got fetched via GetLoadedProfiles.
+  profile->ForEachStoragePartition(base::BindRepeating(
+      &NotificationTriggerScheduler::TriggerNotificationsForStoragePartition,
+      base::Unretained(service->GetNotificationTriggerScheduler())));
 }

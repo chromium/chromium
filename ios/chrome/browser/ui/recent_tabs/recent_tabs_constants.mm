@@ -13,3 +13,5 @@ NSString* const kRecentTabsTableViewControllerAccessibilityIdentifier =
     @"recent_tabs_view_controller";
 NSString* const kRecentTabsShowFullHistoryCellAccessibilityIdentifier =
     @"kRecentTabsShowFullHistoryCellAccessibilityIdentifier";
+NSString* const kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier =
+    @"kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier";

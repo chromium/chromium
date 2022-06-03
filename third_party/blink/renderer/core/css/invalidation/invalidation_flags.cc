@@ -15,4 +15,13 @@ void InvalidationFlags::Merge(const InvalidationFlags& other) {
   invalidates_parts_ |= other.invalidates_parts_;
 }
 
+bool InvalidationFlags::operator==(const InvalidationFlags& other) const {
+  return invalidate_custom_pseudo_ == other.invalidate_custom_pseudo_ &&
+         tree_boundary_crossing_ == other.tree_boundary_crossing_ &&
+         insertion_point_crossing_ == other.insertion_point_crossing_ &&
+         whole_subtree_invalid_ == other.whole_subtree_invalid_ &&
+         invalidates_slotted_ == other.invalidates_slotted_ &&
+         invalidates_parts_ == other.invalidates_parts_;
+}
+
 }  // namespace blink

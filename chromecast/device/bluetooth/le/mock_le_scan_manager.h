@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/le_scan_manager.h"
 #include "chromecast/device/bluetooth/le/scan_filter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,19 +36,24 @@ class MockLeScanManager : public LeScanManager {
     observer_ = nullptr;
   }
 
-  MOCK_METHOD0(RequestScan, std::unique_ptr<ScanHandle>());
+  MOCK_METHOD(void,
+              Initialize,
+              (scoped_refptr<base::SingleThreadTaskRunner> io_task_runner),
+              (override));
+  MOCK_METHOD(void, Finalize, (), (override));
+  MOCK_METHOD(std::unique_ptr<ScanHandle>, RequestScan, ());
   void RequestScan(RequestScanCallback cb) override {
     std::move(cb).Run(RequestScan());
   }
 
-  MOCK_METHOD1(
-      GetScanResults,
-      std::vector<LeScanResult>(base::Optional<ScanFilter> scan_filter));
+  MOCK_METHOD(std::vector<LeScanResult>,
+              GetScanResults,
+              (absl::optional<ScanFilter> scan_filter));
   void GetScanResults(GetScanResultsCallback cb,
-                      base::Optional<ScanFilter> scan_filter) override {
+                      absl::optional<ScanFilter> scan_filter) override {
     std::move(cb).Run(GetScanResults(std::move(scan_filter)));
   }
-  MOCK_METHOD0(ClearScanResults, void());
+  MOCK_METHOD(void, ClearScanResults, (), (override));
 
   Observer* observer_ = nullptr;
 };

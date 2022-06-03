@@ -4,11 +4,7 @@
 
 #include "ash/wm/wm_default_layout_manager.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
-#include "ui/wm/core/window_properties.h"
-#include "ui/wm/core/window_util.h"
 
 namespace ash {
 

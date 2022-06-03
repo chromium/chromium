@@ -9,3 +9,5 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 
+
+Back-forward cache keeps and restores the resource timing of the iframe on back navigation. Back-forward cache needs to be disabled to run this test.

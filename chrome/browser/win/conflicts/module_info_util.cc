@@ -16,60 +16,42 @@
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/i18n/case_conversion.h"
+#include "base/logging.h"
 #include "base/scoped_generic.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/pe_image_reader.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wincrypt_shim.h"
-#include "chrome/common/safe_browsing/pe_image_reader_win.h"
+#include "crypto/scoped_capi_types.h"
 
 // This must be after wincrypt and wintrust.
 #include <mscat.h>
 
 namespace {
 
-// Helper for scoped tracking an HCERTSTORE.
-struct ScopedHCERTSTORETraits {
-  static HCERTSTORE InvalidValue() { return nullptr; }
-  static void Free(HCERTSTORE store) { ::CertCloseStore(store, 0); }
-};
-using ScopedHCERTSTORE =
-    base::ScopedGeneric<HCERTSTORE, ScopedHCERTSTORETraits>;
-
-// Helper for scoped tracking an HCRYPTMSG.
-struct ScopedHCRYPTMSGTraits {
-  static HCRYPTMSG InvalidValue() { return nullptr; }
-  static void Free(HCRYPTMSG message) { ::CryptMsgClose(message); }
-};
-using ScopedHCRYPTMSG = base::ScopedGeneric<HCRYPTMSG, ScopedHCRYPTMSGTraits>;
-
 // Returns the "Subject" field from the digital signature in the provided
 // binary, if any is present. Returns an empty string on failure.
-base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
-  ScopedHCERTSTORE store;
-  ScopedHCRYPTMSG message;
-
+std::u16string GetSubjectNameInFile(const base::FilePath& filename) {
   // Find the crypto message for this filename.
-  {
-    HCERTSTORE temp_store = nullptr;
-    HCRYPTMSG temp_message = nullptr;
-    bool result =
-        !!CryptQueryObject(CERT_QUERY_OBJECT_FILE, filename.value().c_str(),
-                           CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
-                           CERT_QUERY_FORMAT_FLAG_BINARY, 0, nullptr, nullptr,
-                           nullptr, &temp_store, &temp_message, nullptr);
-    store.reset(temp_store);
-    message.reset(temp_message);
-    if (!result)
-      return base::string16();
+  crypto::ScopedHCERTSTORE store;
+  crypto::ScopedHCRYPTMSG message;
+  if (!CryptQueryObject(
+          CERT_QUERY_OBJECT_FILE, filename.value().c_str(),
+          CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED,
+          CERT_QUERY_FORMAT_FLAG_BINARY, 0, nullptr, nullptr, nullptr,
+          crypto::ScopedHCERTSTORE::Receiver(store).get(),
+          crypto::ScopedHCRYPTMSG::Receiver(message).get(), nullptr)) {
+    return std::u16string();
   }
 
   // Determine the size of the signer info data.
   DWORD signer_info_size = 0;
-  bool result = !!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0,
-                                   nullptr, &signer_info_size);
-  if (!result)
-    return base::string16();
+  if (!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0, nullptr,
+                        &signer_info_size)) {
+    return std::u16string();
+  }
 
   // Allocate enough space to hold the signer info.
   std::unique_ptr<BYTE[]> signer_info_buffer(new BYTE[signer_info_size]);
@@ -77,44 +59,44 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
       reinterpret_cast<CMSG_SIGNER_INFO*>(signer_info_buffer.get());
 
   // Obtain the signer info.
-  result = !!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0,
-                              signer_info, &signer_info_size);
-  if (!result)
-    return base::string16();
+  if (!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0, signer_info,
+                        &signer_info_size)) {
+    return std::u16string();
+  }
 
   // Search for the signer certificate.
   CERT_INFO CertInfo = {0};
-  PCCERT_CONTEXT cert_context = nullptr;
   CertInfo.Issuer = signer_info->Issuer;
   CertInfo.SerialNumber = signer_info->SerialNumber;
 
-  cert_context = CertFindCertificateInStore(
+  crypto::ScopedPCCERT_CONTEXT cert_context(CertFindCertificateInStore(
       store.get(), X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0,
-      CERT_FIND_SUBJECT_CERT, &CertInfo, nullptr);
+      CERT_FIND_SUBJECT_CERT, &CertInfo, nullptr));
   if (!cert_context)
-    return base::string16();
+    return std::u16string();
 
   // Determine the size of the Subject name.
-  DWORD subject_name_size = CertGetNameString(
-      cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, nullptr, 0);
+  DWORD subject_name_size =
+      CertGetNameString(cert_context.get(), CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
+                        nullptr, nullptr, 0);
   if (!subject_name_size)
-    return base::string16();
+    return std::u16string();
 
-  base::string16 subject_name;
+  std::wstring subject_name;
   subject_name.resize(subject_name_size);
 
   // Get subject name.
-  if (!(CertGetNameString(cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
-                          nullptr, const_cast<LPWSTR>(subject_name.c_str()),
-                          subject_name_size))) {
-    return base::string16();
+  if (!CertGetNameString(cert_context.get(), CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
+                         nullptr, const_cast<LPWSTR>(subject_name.c_str()),
+                         subject_name_size)) {
+    return std::u16string();
   }
 
   // The subject name is normalized because it can contain trailing null
   // characters.
   internal::NormalizeCertificateSubject(&subject_name);
 
-  return subject_name;
+  return base::AsString16(subject_name);
 }
 
 // Helper for scoped tracking a catalog admin context.
@@ -213,7 +195,7 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
   // Attempt to get the "Subject" field from the signature of the catalog file
   // itself.
   base::FilePath catalog_path(catalog_info.wszCatalogFile);
-  base::string16 subject = GetSubjectNameInFile(catalog_path);
+  std::u16string subject = GetSubjectNameInFile(catalog_path);
 
   if (subject.empty())
     return;
@@ -243,7 +225,7 @@ void GetCertificateInfo(const base::FilePath& filename,
   if (certificate_info->type == CertificateInfo::Type::CERTIFICATE_IN_CATALOG)
     return;
 
-  base::string16 subject = GetSubjectNameInFile(filename);
+  std::u16string subject = GetSubjectNameInFile(filename);
   if (subject.empty())
     return;
 
@@ -253,22 +235,22 @@ void GetCertificateInfo(const base::FilePath& filename,
 }
 
 bool IsMicrosoftModule(base::StringPiece16 subject) {
-  static constexpr wchar_t kMicrosoft[] = L"Microsoft ";
-  return subject.starts_with(kMicrosoft);
+  static constexpr char16_t kMicrosoft[] = u"Microsoft ";
+  return base::StartsWith(subject, kMicrosoft);
 }
 
 StringMapping GetEnvironmentVariablesMapping(
-    const std::vector<base::string16>& environment_variables) {
+    const std::vector<std::wstring>& environment_variables) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
 
   StringMapping string_mapping;
-  for (const base::string16& variable : environment_variables) {
+  for (const std::wstring& variable : environment_variables) {
     std::string value;
-    if (environment->GetVar(base::UTF16ToASCII(variable).c_str(), &value)) {
-      value = base::TrimString(value, "\\", base::TRIM_TRAILING).as_string();
-      string_mapping.push_back(
-          std::make_pair(base::i18n::ToLower(base::UTF8ToUTF16(value)),
-                         L"%" + base::i18n::ToLower(variable) + L"%"));
+    if (environment->GetVar(base::WideToASCII(variable).c_str(), &value)) {
+      value = std::string(base::TrimString(value, "\\", base::TRIM_TRAILING));
+      string_mapping.push_back(std::make_pair(
+          base::i18n::ToLower(base::UTF8ToUTF16(value)),
+          u"%" + base::i18n::ToLower(base::AsString16(variable)) + u"%"));
     }
   }
 
@@ -276,22 +258,21 @@ StringMapping GetEnvironmentVariablesMapping(
 }
 
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  base::string16* path) {
-  const base::string16 path_copy = *path;
+                                  std::u16string* path) {
+  const std::u16string path_copy = *path;
   DCHECK_EQ(base::i18n::ToLower(path_copy), path_copy);
 
   size_t min_length = std::numeric_limits<size_t>::max();
   for (const auto& mapping : prefix_mapping) {
     DCHECK_EQ(base::i18n::ToLower(mapping.first), mapping.first);
-    if (base::StartsWith(path_copy, mapping.first,
-                         base::CompareCase::SENSITIVE)) {
+    if (base::StartsWith(path_copy, mapping.first)) {
       // Make sure the matching prefix is a full path component.
       if (path_copy[mapping.first.length()] != '\\' &&
           path_copy[mapping.first.length()] != '\0') {
         continue;
       }
 
-      base::string16 collapsed_path = path_copy;
+      std::u16string collapsed_path = path_copy;
       base::ReplaceFirstSubstringAfterOffset(&collapsed_path, 0, mapping.first,
                                              mapping.second);
       size_t length = collapsed_path.length() - mapping.second.length();
@@ -322,7 +303,7 @@ bool GetModuleImageSizeAndTimeDateStamp(const base::FilePath& path,
   if (bytes_read == -1)
     return false;
 
-  safe_browsing::PeImageReader pe_image_reader;
+  base::win::PeImageReader pe_image_reader;
   if (!pe_image_reader.Initialize(buffer.get(), bytes_read))
     return false;
 
@@ -334,9 +315,9 @@ bool GetModuleImageSizeAndTimeDateStamp(const base::FilePath& path,
 
 namespace internal {
 
-void NormalizeCertificateSubject(base::string16* subject) {
+void NormalizeCertificateSubject(std::wstring* subject) {
   size_t first_null = subject->find(L'\0');
-  if (first_null != base::string16::npos)
+  if (first_null != std::wstring::npos)
     subject->resize(first_null);
 }
 

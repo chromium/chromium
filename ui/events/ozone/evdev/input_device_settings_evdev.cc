@@ -4,9 +4,14 @@
 
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 
+#include "base/feature_list.h"
+#include "ui/events/ozone/features.h"
+
 namespace ui {
 
 InputDeviceSettingsEvdev::InputDeviceSettingsEvdev() {
+  touch_event_logging_enabled =
+      base::FeatureList::IsEnabled(ui::kEnableInputEventLogging);
 }
 
 InputDeviceSettingsEvdev::InputDeviceSettingsEvdev(

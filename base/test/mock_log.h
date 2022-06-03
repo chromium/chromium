@@ -49,6 +49,9 @@ class MockLog {
   // UNDEFINED behavior).
   MockLog();
 
+  MockLog(const MockLog&) = delete;
+  MockLog& operator=(const MockLog&) = delete;
+
   // When the object is destructed, it stops intercepting logs.
   ~MockLog();
 
@@ -90,8 +93,6 @@ class MockLog {
 
   // The previous handler to restore when the MockLog is destroyed.
   logging::LogMessageHandlerFunction previous_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLog);
 };
 
 }  // namespace test

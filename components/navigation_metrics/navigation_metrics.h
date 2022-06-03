@@ -13,6 +13,15 @@ enum class BrowserProfileType;
 
 namespace navigation_metrics {
 
+// Names of the metrics logged by RecordPrimaryMainFrameNavigation() function.
+extern const char kMainFrameScheme[];
+extern const char kMainFrameSchemeDifferentPage[];
+extern const char kMainFrameSchemeOTR[];
+extern const char kMainFrameSchemeDifferentPageOTR[];
+extern const char kMainFrameHasRTLDomain[];
+extern const char kMainFrameHasRTLDomainDifferentPage[];
+extern const char kMainFrameProfileType[];
+
 // A Scheme is an C++ enum type loggable in UMA for a histogram of UMA enum type
 // NavigationScheme.
 //
@@ -43,7 +52,7 @@ enum class Scheme {
 
 Scheme GetScheme(const GURL& url);
 
-void RecordMainFrameNavigation(
+void RecordPrimaryMainFrameNavigation(
     const GURL& url,
     bool is_same_document,
     bool is_off_the_record,

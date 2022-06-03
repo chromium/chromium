@@ -17,7 +17,7 @@ void MockOAuthClient::GetCredentialsFromAuthCode(
     const std::string& auth_code,
     bool need_user_email,
     CompletionCallback on_done) {
-  on_done.Run(need_user_email ? user_email_ : "", refresh_token_);
+  std::move(on_done).Run(need_user_email ? user_email_ : "", refresh_token_);
 }
 
 }  // namespace remoting

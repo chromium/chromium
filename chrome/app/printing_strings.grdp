@@ -7,6 +7,10 @@
     </message>
   </if>
 
+  <message name="IDS_UTILITY_PROCESS_PRINT_BACKEND_SERVICE_NAME" desc="The name of the utility process used for backend interactions with printer drivers.">
+    Print Backend Service
+  </message>
+
   <message name="IDS_PRINT_INVALID_PRINTER_SETTINGS" desc="Message to display when selected printer is not reachable or its settings are invalid.">
     The selected printer is not available or not installed correctly. Check your printer or try selecting another printer.
   </message>
@@ -15,6 +19,9 @@
   <if expr="enable_print_preview">
     <message name="IDS_PRINT_PREVIEW_TITLE" desc="Fallback title for print preview page.">
       Print
+    </message>
+    <message name="IDS_PRINT_PREVIEW_DESCRIPTION" desc="Accessibility text: title/description of the Print Preview dialog Web Contents, read by screenreaders.">
+      Print preview dialog
     </message>
     <message name="IDS_PRINT_PREVIEW_LOADING" desc="Message to display while the print preview is still loading.">
       Loading preview
@@ -42,6 +49,12 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_ALL_PAGES" desc="Option to print all pages.">
       All
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_ODD_PAGES" desc="Option to print odd numbered pages only.">
+      Odd pages only
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_EVEN_PAGES" desc="Option to print even numbered pages only.">
+      Even pages only
     </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_CUSTOM_PAGES" desc="Option to print custom pages.">
       Custom
@@ -104,27 +117,15 @@
              desc="Option shown on printer drop-down list for saving previewed document as a PDF.">
       Save as PDF
     </message>
-    <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
-             desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
-      Save to Google Drive
+    <message name="IDS_PRINT_PREVIEW_SHEET_SUMMARY_LABEL" desc="Print summary, explaining to the user how many pages will be printed.">
+    {COUNT, plural,
+      =1 {1 sheet of paper}
+      other {{COUNT} sheets of paper}}
     </message>
-    <message name="IDS_PRINT_PREVIEW_SUMMARY_FORMAT_SHORT" desc="Print summary, explaining to the user how many pages will be printed.">
-      Total: <ph name="NUMBER_OF_SHEETS">$1<ex>10</ex></ph> <ph name="SHEETS_LABEL">$2<ex>sheets of paper</ex></ph>
-    </message>
-    <message name="IDS_PRINT_PREVIEW_NEW_SUMMARY_FORMAT_SHORT" desc="Print summary, explaining to the user how many pages will be printed. Same use as above, but omits the 'Total: '.">
-      <ph name="NUMBER_OF_SHEETS">$1<ex>10</ex></ph> <ph name="SHEETS_LABEL">$2<ex>sheets of paper</ex></ph>
-    </message>
-    <message name="IDS_PRINT_PREVIEW_SHEETS_LABEL_PLURAL" desc="Label shown in the print preview summary.">
-      sheets of paper
-    </message>
-    <message name="IDS_PRINT_PREVIEW_SHEETS_LABEL_SINGULAR" desc="Label shown in the print preview summary.">
-      sheet of paper
-    </message>
-    <message name="IDS_PRINT_PREVIEW_PAGE_LABEL_SINGULAR" desc="Label shown in the print preview summary.">
-      page
-    </message>
-    <message name="IDS_PRINT_PREVIEW_PAGE_LABEL_PLURAL" desc="Label shown in the print preview summary.">
-      pages
+    <message name="IDS_PRINT_PREVIEW_PAGE_SUMMARY_LABEL" desc="Print summary, explaining to the user how many pages will be saved.">
+    {COUNT, plural,
+      =1 {1 page}
+      other {{COUNT} pages}}
     </message>
     <message name="IDS_PRINT_PREVIEW_PAGE_RANGE_SYNTAX_INSTRUCTION" desc="Instruction shown when the user enters an invalid page range.">
       Invalid page range, use <ph name="EXAMPLE_PAGE_RANGE">$1<ex>e.g. 1-5, 8, 11-13</ex></ph>
@@ -133,7 +134,7 @@
       Out of bounds page reference, limit is <ph name="MAXIMUM_PAGE">$1<ex>1</ex></ph>
     </message>
     <message name="IDS_PRINT_PREVIEW_COPIES_INSTRUCTION" desc="Instruction shown when the user enters an invalid number of copies.">
-      Use a number to indicate how many copies to print (1 to 999).
+      Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES">$1<ex>1</ex></ph>).
     </message>
     <message name="IDS_PRINT_PREVIEW_SCALING_INSTRUCTION" desc="Instruction shown when the user enters an invalid scaling value.">
       Scale amount must be a number between 10 and 200.
@@ -165,16 +166,16 @@
     <message name="IDS_PRINT_PREVIEW_MARGINS_LABEL" desc="Margins option label. Provides user the option to change the margins of the printed page.">
       Margins
     </message>
-    <message name="IDS_PRINT_PREVIEW_DEFAULT_MARGINS" desc="Option that specifies the page be printed with default margins.">
+    <message name="IDS_PRINT_PREVIEW_DEFAULT_MARGINS" desc="Option that specifies the page be printed with default margins." meaning="Default print margins">
       Default
     </message>
-    <message name="IDS_PRINT_PREVIEW_NO_MARGINS" desc="Option that specifies the page be printed with no margins.">
+    <message name="IDS_PRINT_PREVIEW_NO_MARGINS" desc="Option that specifies the page be printed with no margins." meaning="No print margins">
       None
     </message>
-    <message name="IDS_PRINT_PREVIEW_CUSTOM_MARGINS" desc="Option that specifies the page be printed with user-specified custom margins.">
+    <message name="IDS_PRINT_PREVIEW_CUSTOM_MARGINS" desc="Option that specifies the page be printed with user-specified custom margins." meaning="Custom print margins">
       Custom
     </message>
-    <message name="IDS_PRINT_PREVIEW_MINIMUM_MARGINS" desc="Option that specifies the page be printed with the minimum allowed margins by the printer.">
+    <message name="IDS_PRINT_PREVIEW_MINIMUM_MARGINS" desc="Option that specifies the page be printed with the minimum allowed margins by the printer." meaning="Minimum print margins">
       Minimum
     </message>
     <message name="IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL" desc="ARIA label used by screen reader to explain the purpose of the top margin textbox.">
@@ -209,9 +210,6 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_ADD_ACCOUNT_TITLE" desc="Title of the selection control item to let user to sign into another account.">
       Add account...
-    </message>
-    <message name="IDS_PRINT_PREVIEW_CLOUD_PRINT_PROMOTION" desc="Message describing features of Google Cloud Print.">
-      Print to Google Docs and other cloud destinations. <ph name="BEGIN_LINK">$1<ex>&lt;span&gt;</ex></ph>Sign in<ph name="END_LINK">$2<ex>&lt;/span&gt;</ex></ph> to print to Google Cloud Print.
     </message>
     <message name="IDS_PRINT_PREVIEW_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a search box when user has not entered a search query.">
       Search destinations
@@ -276,21 +274,6 @@
     <message name="IDS_PRINT_PREVIEW_NEW_SHOW_ADVANCED_OPTIONS" desc="The text for the button to open the printer's advanced settings dialog in the new UI.">
       Advanced settings
     </message>
-    <message name="IDS_PRINT_PREVIEW_ACCEPT_INVITE" desc="Text for the button to accept the printer-sharing invitation.">
-      Accept
-    </message>
-    <message name="IDS_PRINT_PREVIEW_ACCEPT_GROUP_INVITE" desc="Text for the button to accept the printer-sharing invitation for the group of users.">
-      Accept for group
-    </message>
-    <message name="IDS_PRINT_PREVIEW_REJECT_INVITE" desc="Text for the button to reject the printer-sharing invitation.">
-      Reject
-    </message>
-    <message name="IDS_PRINT_PREVIEW_GROUP_INVITE_TEXT" desc="Message to show when the user has pending printer-sharing invitation for the group of users they are a manager of.">
-      &lt;strong&gt;<ph name="SENDER">$1</ph>&lt;/strong&gt; wants to share a printer &lt;strong&gt;<ph name="PRINTER_NAME">$2</ph>&lt;/strong&gt; with a group you own: &lt;strong&gt;<ph name="GROUP_NAME">$3</ph>&lt;/strong&gt;. If you accept, all group members will be able to print to the printer.
-    </message>
-    <message name="IDS_PRINT_PREVIEW_INVITE_TEXT" desc="Message to show when the user has pending printer-sharing invitation.">
-      &lt;strong&gt;<ph name="SENDER">$1</ph>&lt;/strong&gt; wants to share a printer &lt;strong&gt;<ph name="PRINTER_NAME">$2</ph>&lt;/strong&gt; with you.
-    </message>
     <message name="IDS_PRINT_PREVIEW_BUTTON_SELECT" desc="Label for a button in a dialog asking a user to confirm selection of a printer in print preview UI. The printer gets selected if the user clicks the button.">
       Select
     </message>
@@ -309,7 +292,14 @@
     <message name="IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT" desc="Text shown when hovering over the enterprise managed icon in the header">
       These settings are enforced by your administrator
     </message>
-    <if expr="chromeos">
+    <if expr="chromeos or lacros">
+      <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
+               desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
+        Save to Google Drive
+      </message>
+      <message name="IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER" desc="Text to put in a print server search box when user has not entered a search query.">
+        Print servers
+      </message>
       <message name="IDS_PRINT_PREVIEW_OPTION_PIN" desc="Option to print with pin.">
         Enable user pin
       </message>
@@ -328,8 +318,55 @@
       <message name="IDS_PRINT_PREVIEW_EULA_URL" desc="Message shown to user when their printer has a EULA associated with its PPD. This message is hyperlinked to the EULA.">
         End User License Agreement
       </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_DEVICE_ERROR" desc="Error label to show under the destination dropdown when there is a mechanical error inside the printer.">
+         Mechanical issue. Check printer
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_DOOR_OPEN" desc="Error label to show under the destination dropdown when the printer has an open cover or door.">
+         Printer door is open
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_LOW_ON_INK" desc="Error label to show under the destination dropdown when the printer is low on ink.">
+         Low on ink
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_LOW_ON_PAPER" desc="Error label to show under the destination dropdown when the printer is low on paper">
+         Low on paper
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_OUT_OF_INK" desc="Error label to show under the destination dropdown when the printer is out of ink.">
+         Out of ink
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_OUT_OF_PAPER" desc="Error label to show under the destination dropdown when the printer is out of paper.">
+         Out of paper
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_OUPUT_ALMOST_FULL" desc="Error label to show under the destination dropdown when the printer's output tray is almost full.">
+         Output tray is almost full
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_OUPUT_FULL" desc="Error label to show under the destination dropdown when the printer's output tray is full.">
+         Output tray is full
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_PAPER_JAM" desc="Error label to show under the destination dropdown when the printer has a paper jam.">
+         Paper is jammed
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_PAUSED" desc="Error label to show under the destination dropdown when someone has put the printer into a paused state.">
+         Printer is paused
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_QUEUE_FULL" desc="Error label to show under the destination dropdown when the printer's job queue is full and is temporarily unable to accept more print jobs.">
+         Printer queue is full
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_UNREACHABLE" desc="Error label to show under the destination dropdown when the device is attempting to schedule a print job on the printer but can't get a connection to the printer">
+         Can’t connect to printer
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_STOPPED" desc="Error label to show under the destination dropdown when the printer is in the process of stopping or the printer is powered down.">
+         Printer has stopped
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PRINTER_STATUS_TRAY_MISSING" desc="Error label to show under the destination dropdown when the printer is missing a tray.">
+         Tray is missing
+      </message>
+      <message name="IDS_PRINT_PREVIEW_SHEETS_LIMIT_ERROR_MESSAGE" desc="Sheets limit error message, explaining to the user why printing is blocked.">
+      {COUNT, plural,
+        =1 {Exceeds limit of 1 sheet of paper}
+        other {Exceeds limit of {COUNT} sheets of paper}}
+      </message>
     </if>
-    <if expr="not chromeos">
+    <if expr="not chromeos and not lacros">
       <message name="IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION" desc="Option allowing the user to access advanced printer settings using the native print system dialog instead of printing through the print preview mechanism. Shortcut key is not translated">
         Print using system dialog... <ph name="SHORTCUT_KEY">$1<ex>(Shift+Ctrl+P)</ex></ph>
       </message>

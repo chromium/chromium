@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +22,7 @@
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -42,9 +42,9 @@ void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
   entry->SetString("encoding", "UTF-8");
   entry->SetInteger("id", 1001);
   entry->SetString("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  auto alternate_urls = std::make_unique<base::ListValue>();
-  alternate_urls->AppendString("http://foo.com/alternate?q={searchTerms}");
-  entry->Set("alternate_urls", std::move(alternate_urls));
+  base::ListValue alternate_urls;
+  alternate_urls.Append("http://foo.com/alternate?q={searchTerms}");
+  entry->SetKey("alternate_urls", std::move(alternate_urls));
   overrides->Append(std::move(entry));
 
   entry = std::make_unique<base::DictionaryValue>();
@@ -82,8 +82,12 @@ class DefaultSearchManagerTest : public testing::Test {
  public:
   DefaultSearchManagerTest() {}
 
+  DefaultSearchManagerTest(const DefaultSearchManagerTest&) = delete;
+  DefaultSearchManagerTest& operator=(const DefaultSearchManagerTest&) = delete;
+
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable);
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     DefaultSearchManager::RegisterProfilePrefs(pref_service_->registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
   }
@@ -93,9 +97,9 @@ class DefaultSearchManagerTest : public testing::Test {
   }
 
  private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchManagerTest);
 };
 
 // Test that a TemplateURLData object is properly written and read from Prefs.
@@ -103,8 +107,8 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
   DefaultSearchManager manager(pref_service(),
                                DefaultSearchManager::ObserverCallback());
   TemplateURLData data;
-  data.SetShortName(base::UTF8ToUTF16("name1"));
-  data.SetKeyword(base::UTF8ToUTF16("key1"));
+  data.SetShortName(u"name1");
+  data.SetKeyword(u"key1");
   data.SetURL("http://foo1/{searchTerms}");
   data.suggestions_url = "http://sugg1";
   data.alternate_urls.push_back("http://foo1/alt");
@@ -265,4 +269,33 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByExtension) {
   RemoveExtensionDefaultSearchFromPrefs(pref_service());
   ExpectSimilar(data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+// Verify that DefaultSearchManager preserves search engine parameters for
+// search engine created from Play API data.
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPlayAPI) {
+  DefaultSearchManager manager(pref_service(),
+                               DefaultSearchManager::ObserverCallback());
+  const TemplateURLData* prepopulated_data =
+      manager.GetDefaultSearchEngine(nullptr);
+
+  // The test tries to set DSE to the one with prepopulate_id, matching existing
+  // prepopulated search engine.
+  std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData(
+      base::UTF16ToUTF8(prepopulated_data->keyword()));
+  data->prepopulate_id = prepopulated_data->prepopulate_id;
+  data->favicon_url = prepopulated_data->favicon_url;
+
+  // If the new search engine was not created form Play API data its parameters
+  // should be overwritten with prepopulated data.
+  manager.SetUserSelectedDefaultSearchEngine(*data);
+  const TemplateURLData* read_data = manager.GetDefaultSearchEngine(nullptr);
+  ExpectSimilar(prepopulated_data, read_data);
+
+  // If the new search engine was created form Play API data its parameters
+  // should be preserved.
+  data->created_from_play_api = true;
+  manager.SetUserSelectedDefaultSearchEngine(*data);
+  read_data = manager.GetDefaultSearchEngine(nullptr);
+  ExpectSimilar(data.get(), read_data);
 }

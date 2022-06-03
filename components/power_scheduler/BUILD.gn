@@ -1,0 +1,67 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+component("power_scheduler") {
+  sources = [
+    "power_mode.cc",
+    "power_mode.h",
+    "power_mode_arbiter.cc",
+    "power_mode_arbiter.h",
+    "power_mode_voter.cc",
+    "power_mode_voter.h",
+    "traced_power_mode.cc",
+    "traced_power_mode.h",
+  ]
+
+  if (is_android) {
+    sources += [
+      "power_scheduler.cc",
+      "power_scheduler.h",
+      "power_scheduler_features.cc",
+      "power_scheduler_features.h",
+    ]
+  }
+
+  defines = [ "IS_POWER_SCHEDULER_IMPL" ]
+
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "power_mode_arbiter_unittest.cc" ]
+
+  if (is_android) {
+    sources += [ "power_scheduler_unittest.cc" ]
+  }
+
+  deps = [
+    ":power_scheduler",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":power_scheduler_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "power_scheduler_features.cc" ]
+    template = "java/src/org/chromium/components/power_scheduler/PowerSchedulerFeatures.java.tmpl"
+  }
+
+  android_library("power_scheduler_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
+}

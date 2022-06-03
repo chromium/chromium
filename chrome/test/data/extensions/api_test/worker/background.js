@@ -22,6 +22,42 @@ function createWorker(workerFactory, onsuccess, onerror) {
   worker.onerror = onerror;
 }
 
+function fetchFromWorker(workerFactory, fetchUrl, allowed, rejected) {
+  const worker = workerFactory();
+  const onmessage = message => {
+    if (message.data)
+      allowed();
+    else
+      rejected();
+  };
+  if (worker.constructor === Worker) {
+    worker.postMessage(fetchUrl);
+    worker.onmessage = onmessage;
+  } else {
+    worker.port.postMessage(fetchUrl);
+    worker.port.onmessage = onmessage;
+  }
+  worker.onerror = () => chrome.test.fail();
+}
+
+function fetchFromSameOriginWorkerTest(workerFactory, fetchUrl) {
+  fetchFromWorker(
+      workerFactory,
+      fetchUrl,
+      () => { chrome.test.succeed(); },
+      () => { chrome.test.fail(); }
+  );
+}
+
+function fetchFromCrossOriginWorkerTest(workerFactory, fetchUrl) {
+  fetchFromWorker(
+      workerFactory,
+      fetchUrl,
+      () => { chrome.test.succeed(); },
+      () => { chrome.test.fail(); }
+  );
+}
+
 function noRedirectTest(workerFactory, expectedUrl) {
   createWorker(
     workerFactory,
@@ -70,7 +106,27 @@ chrome.test.getConfig(function(config) {
   const crossOriginRedirectedSharedWorkerUrl =
     crossOriginBaseUrl + '/server-redirect?' + sharedWorkerUrl;
 
+  const workerForFetchUrl = baseUrl + '/worker/fetch.js';
+  const sameOriginFetchUrl = baseUrl + '/worker/empty.js';
+  const crossOriginFetchUrl = crossOriginBaseUrl + '/worker/empty.js';
+
   chrome.test.runTests([
+    fetchFromSameOriginWorkerTest.bind(
+      undefined,
+      () => { return new Worker(workerForFetchUrl) },
+      sameOriginFetchUrl),
+    fetchFromCrossOriginWorkerTest.bind(
+      undefined,
+      () => { return new Worker(workerForFetchUrl) },
+      crossOriginFetchUrl),
+    fetchFromSameOriginWorkerTest.bind(
+      undefined,
+      () => { return new SharedWorker(workerForFetchUrl) },
+      sameOriginFetchUrl),
+    fetchFromCrossOriginWorkerTest.bind(
+      undefined,
+      () => { return new SharedWorker(workerForFetchUrl) },
+      crossOriginFetchUrl),
     noRedirectTest.bind(
       undefined,
       () => { return new Worker(workerUrl) },
@@ -81,7 +137,19 @@ chrome.test.getConfig(function(config) {
       workerUrl),
     noRedirectTest.bind(
       undefined,
-      () => { return new SharedWorker(sharedWorkerUrl) },
+      () => {
+        return new SharedWorker(
+            sharedWorkerUrl,
+            {name: 'noRedirectTest-classic'})
+      },
+      sharedWorkerUrl),
+    noRedirectTest.bind(
+      undefined,
+      () => {
+        return new SharedWorker(
+            sharedWorkerUrl,
+            {name: 'noRedirectTest-module', type: 'module'})
+      },
       sharedWorkerUrl),
 
     sameOriginRedirectTest.bind(
@@ -94,7 +162,19 @@ chrome.test.getConfig(function(config) {
       workerUrl),
     sameOriginRedirectTest.bind(
       undefined,
-      () => { return new SharedWorker(redirectedSharedWorkerUrl) },
+      () => {
+        return new SharedWorker(
+            redirectedSharedWorkerUrl,
+            {name: 'sameOriginRedirectTest-classic'});
+      },
+      sharedWorkerUrl),
+    sameOriginRedirectTest.bind(
+      undefined,
+      () => {
+        return new SharedWorker(
+            redirectedSharedWorkerUrl,
+            {name: 'sameOriginRedirectTest-module', type: 'module'});
+      },
       sharedWorkerUrl),
 
     crossOriginRedirectTest.bind(
@@ -107,6 +187,17 @@ chrome.test.getConfig(function(config) {
       }),
     crossOriginRedirectTest.bind(
       undefined,
-      () => { return new SharedWorker(crossOriginRedirectedSharedWorkerUrl) }),
+      () => {
+        return new SharedWorker(
+            crossOriginRedirectedSharedWorkerUrl,
+            {name: 'crossOriginRedirectTest-classic'});
+      }),
+    crossOriginRedirectTest.bind(
+      undefined,
+      () => {
+        return new SharedWorker(
+            crossOriginRedirectedSharedWorkerUrl,
+            {name: 'crossOriginRedirectTest-module', type: 'module'});
+      }),
   ]);
 });

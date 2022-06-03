@@ -15,8 +15,8 @@ XRTransientInputHitTestResult::XRTransientInputHitTestResult(
     const Vector<device::mojom::blink::XRHitResultPtr>& results)
     : input_source_(input_source) {
   for (const auto& result : results) {
-    results_.push_back(
-        MakeGarbageCollected<XRHitTestResult>(result->hit_matrix.matrix()));
+    results_.push_back(MakeGarbageCollected<XRHitTestResult>(
+        input_source->session(), *result));
   }
 }
 
@@ -28,7 +28,7 @@ HeapVector<Member<XRHitTestResult>> XRTransientInputHitTestResult::results() {
   return results_;
 }
 
-void XRTransientInputHitTestResult::Trace(blink::Visitor* visitor) {
+void XRTransientInputHitTestResult::Trace(Visitor* visitor) const {
   visitor->Trace(input_source_);
   visitor->Trace(results_);
   ScriptWrappable::Trace(visitor);

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_TARGET_IMPL_H_
 
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 class ScriptState;
@@ -21,16 +21,14 @@ namespace blink {
 // that are mostly unnecessary for them, resulting in a performance
 // decrease.
 class CORE_EXPORT EventTargetImpl final : public EventTargetWithInlineData,
-                                          public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(EventTargetImpl);
-
+                                          public ExecutionContextClient {
  public:
   explicit EventTargetImpl(ScriptState*);
   ~EventTargetImpl() override = default;
 
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

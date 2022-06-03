@@ -4,36 +4,37 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
+import java.util.List;
+
 /**
  * Represents a request to let the user choose a single date/time value.
  */
 public class AssistantDateChoiceOptions {
-    private final AssistantDateTime mInitialValue;
-    private final AssistantDateTime mMinValue;
-    private final AssistantDateTime mMaxValue;
+    private final AssistantDateTime mMinDate;
+    private final AssistantDateTime mMaxDate;
+    private final List<String> mTimeSlots;
 
     /**
-     *
-     * @param initialValue The initial value for the date/time value.
-     * @param minValue The minimum allowed value for the date/time value.
-     * @param maxValue The maximum allowed value for the date/time value.
+     * @param minDate The minimum allowed value for the date/time value.
+     * @param maxDate The maximum allowed value for the date/time value.
+     * @param timeSlots The list of allowed time slots to pick from.
      */
-    public AssistantDateChoiceOptions(AssistantDateTime initialValue, AssistantDateTime minValue,
-            AssistantDateTime maxValue) {
-        mInitialValue = initialValue;
-        mMinValue = minValue;
-        mMaxValue = maxValue;
+    public AssistantDateChoiceOptions(
+            AssistantDateTime minDate, AssistantDateTime maxDate, List<String> timeSlots) {
+        mMinDate = minDate;
+        mMaxDate = maxDate;
+        mTimeSlots = timeSlots;
     }
 
-    AssistantDateTime getInitialValue() {
-        return mInitialValue;
+    AssistantDateTime getMinDate() {
+        return mMinDate;
     }
 
-    AssistantDateTime getMinValue() {
-        return mMinValue;
+    AssistantDateTime getMaxDate() {
+        return mMaxDate;
     }
 
-    AssistantDateTime getMaxValue() {
-        return mMaxValue;
+    List<String> getTimeSlots() {
+        return mTimeSlots;
     }
 }

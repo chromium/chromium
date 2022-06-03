@@ -39,11 +39,10 @@ enum FontFaceLoadStatus {
 
 [
     ActiveScriptWrappable,
-    Exposed=(Window,Worker),
-    MeasureAs=FontFaceConstructor
+    Exposed=(Window,Worker)
 ] interface FontFace {
     // FIXME: This should be (DOMString or BinaryData), where BinaryData is typedef of (ArrayBuffer or ArrayBufferView)
-    [CallWith=ExecutionContext] constructor(DOMString family, (DOMString or ArrayBuffer or ArrayBufferView) source, optional FontFaceDescriptors descriptors);
+    [CallWith=ExecutionContext, MeasureAs=FontFaceConstructor] constructor(DOMString family, (DOMString or ArrayBuffer or ArrayBufferView) source, optional FontFaceDescriptors descriptors = {});
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString family;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString style;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString weight;
@@ -52,6 +51,10 @@ enum FontFaceLoadStatus {
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString variant;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString featureSettings;
     [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString display;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString ascentOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString descentOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString lineGapOverride;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext, RuntimeEnabled=CSSFontFaceSizeAdjust] attribute DOMString sizeAdjust;
 
     readonly attribute FontFaceLoadStatus status;
 

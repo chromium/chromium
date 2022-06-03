@@ -6,25 +6,31 @@
 
 namespace device {
 
+namespace {
+
+const float kButtonAxisDeadzone = 0.01f;
+
+GamepadButton ValueToButton(float value) {
+  bool pressed = value > GamepadButton::kDefaultButtonPressedThreshold;
+  bool touched = value > 0.f;
+  return GamepadButton(pressed, touched, value);
+}
+
+}  // namespace
+
 GamepadButton AxisToButton(float input) {
   float value = (input + 1.f) / 2.f;
-  bool pressed = value > GamepadButton::kDefaultButtonPressedThreshold;
-  bool touched = value > 0.0f;
-  return GamepadButton(pressed, touched, value);
+  return ValueToButton(value);
 }
 
 GamepadButton AxisNegativeAsButton(float input) {
-  float value = (input < -0.5f) ? 1.f : 0.f;
-  bool pressed = value > GamepadButton::kDefaultButtonPressedThreshold;
-  bool touched = value > 0.0f;
-  return GamepadButton(pressed, touched, value);
+  float value = input < -kButtonAxisDeadzone ? -input : 0.f;
+  return ValueToButton(value);
 }
 
 GamepadButton AxisPositiveAsButton(float input) {
-  float value = (input > 0.5f) ? 1.f : 0.f;
-  bool pressed = value > GamepadButton::kDefaultButtonPressedThreshold;
-  bool touched = value > 0.0f;
-  return GamepadButton(pressed, touched, value);
+  float value = input > kButtonAxisDeadzone ? input : 0.f;
+  return ValueToButton(value);
 }
 
 GamepadButton ButtonFromButtonAndAxis(GamepadButton button, float axis) {
@@ -33,7 +39,7 @@ GamepadButton ButtonFromButtonAndAxis(GamepadButton button, float axis) {
 }
 
 GamepadButton NullButton() {
-  return GamepadButton(false, false, 0.0);
+  return GamepadButton();
 }
 
 void DpadFromAxis(Gamepad* mapped, float dir) {
@@ -70,6 +76,34 @@ void DpadFromAxis(Gamepad* mapped, float dir) {
 float RenormalizeAndClampAxis(float value, float min, float max) {
   value = (2.f * (value - min) / (max - min)) - 1.f;
   return value < -1.f ? -1.f : (value > 1.f ? 1.f : value);
+}
+
+void MapperSwitchPro(const Gamepad& input, Gamepad* mapped) {
+  *mapped = input;
+  mapped->buttons_length = SWITCH_PRO_BUTTON_COUNT;
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void MapperSwitchJoyCon(const Gamepad& input, Gamepad* mapped) {
+  *mapped = input;
+  mapped->buttons_length = BUTTON_INDEX_COUNT;
+  mapped->axes_length = 2;
+}
+
+void MapperSwitchComposite(const Gamepad& input, Gamepad* mapped) {
+  // In composite mode, the inputs from two Joy-Cons are combined to form one
+  // virtual gamepad. Some buttons do not have equivalents in the Standard
+  // Gamepad and are exposed as extra buttons:
+  // * Capture button (Joy-Con L):  BUTTON_INDEX_COUNT
+  // * SL (Joy-Con L):              BUTTON_INDEX_COUNT + 1
+  // * SR (Joy-Con L):              BUTTON_INDEX_COUNT + 2
+  // * SL (Joy-Con R):              BUTTON_INDEX_COUNT + 3
+  // * SR (Joy-Con R):              BUTTON_INDEX_COUNT + 4
+  constexpr size_t kSwitchCompositeExtraButtonCount = 5;
+  *mapped = input;
+  mapped->buttons_length =
+      BUTTON_INDEX_COUNT + kSwitchCompositeExtraButtonCount;
+  mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
 }  // namespace device

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
@@ -27,11 +26,8 @@ class BleListenerOperation
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>>
-    BuildInstance(
+    static std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>>
+    Create(
         BleConnectionManager* ble_connection_manager,
         ConnectToDeviceOperation<
             BleListenerFailureType>::ConnectionSuccessCallback success_callback,
@@ -41,10 +37,27 @@ class BleListenerOperation
         ConnectionPriority connection_priority,
         scoped_refptr<base::TaskRunner> task_runner =
             base::ThreadTaskRunnerHandle::Get());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>>
+    CreateInstance(
+        BleConnectionManager* ble_connection_manager,
+        ConnectToDeviceOperation<
+            BleListenerFailureType>::ConnectionSuccessCallback success_callback,
+        const ConnectToDeviceOperation<
+            BleListenerFailureType>::ConnectionFailedCallback& failure_callback,
+        const DeviceIdPair& device_id_pair,
+        ConnectionPriority connection_priority,
+        scoped_refptr<base::TaskRunner> task_runner) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  BleListenerOperation(const BleListenerOperation&) = delete;
+  BleListenerOperation& operator=(const BleListenerOperation&) = delete;
 
   ~BleListenerOperation() override;
 
@@ -74,8 +87,6 @@ class BleListenerOperation
 
   bool is_attempt_active_ = false;
   base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleListenerOperation);
 };
 
 }  // namespace secure_channel

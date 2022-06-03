@@ -11,11 +11,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/gestures/gesture_recognizer.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
@@ -33,6 +33,10 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   typedef std::map<int, GestureConsumer*> TouchIdToConsumerMap;
 
   GestureRecognizerImpl();
+
+  GestureRecognizerImpl(const GestureRecognizerImpl&) = delete;
+  GestureRecognizerImpl& operator=(const GestureRecognizerImpl&) = delete;
+
   ~GestureRecognizerImpl() override;
 
   std::vector<GestureEventHelper*>& helpers() { return helpers_; }
@@ -80,7 +84,7 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
 
   Gestures AckTouchEvent(uint32_t unique_event_id,
                          ui::EventResult result,
-                         bool is_source_touch_event_set_non_blocking,
+                         bool is_source_touch_event_set_blocking,
                          GestureConsumer* consumer) override;
 
   void CancelActiveTouchesExceptImpl(GestureConsumer* not_cancelled);
@@ -89,6 +93,8 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   bool CleanupStateForConsumer(GestureConsumer* consumer) override;
   void AddGestureEventHelper(GestureEventHelper* helper) override;
   void RemoveGestureEventHelper(GestureEventHelper* helper) override;
+  bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const override;
+  void SendSynthesizedEndEvents(GestureConsumer* consumer) override;
 
   // Overridden from GestureProviderAuraClient
   void OnGestureEvent(GestureConsumer* raw_input_consumer,
@@ -112,8 +118,6 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   TouchIdToConsumerMap touch_id_target_;
 
   std::vector<GestureEventHelper*> helpers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerImpl);
 };
 
 }  // namespace ui

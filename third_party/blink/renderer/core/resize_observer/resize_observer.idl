@@ -10,10 +10,10 @@ callback ResizeObserverCallback = void (sequence<ResizeObserverEntry> entries, R
 
 [
     Exposed=Window,
-    ActiveScriptWrappable,
-    MeasureAs=ResizeObserver_Constructor
+    ActiveScriptWrappable
 ] interface ResizeObserver {
-    [CallWith=Document] constructor(ResizeObserverCallback callback);
+    [CallWith=ScriptState, MeasureAs=ResizeObserver_Constructor] constructor(ResizeObserverCallback callback);
+    void observe(Element target, ResizeObserverOptions options);
     void observe(Element target);
     void unobserve(Element target);
     void disconnect();

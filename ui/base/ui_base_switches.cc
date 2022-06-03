@@ -6,7 +6,15 @@
 
 namespace switches {
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_ANDROID)
+// Disable overscroll edge effects like those found in Android views.
+const char kDisableOverscrollEdgeEffect[] = "disable-overscroll-edge-effect";
+
+// Disable the pull-to-refresh effect when vertically overscrolling content.
+const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
+#endif
+
+#if defined(OS_MAC)
 // Disable use of AVFoundation to draw video content.
 const char kDisableAVFoundationOverlays[] = "disable-avfoundation-overlays";
 
@@ -25,18 +33,11 @@ const char kDisableRemoteCoreAnimation[] = "disable-remote-core-animation";
 const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
 #endif
 
-// Scale factor to apply to every animation duration. Must be >= 0.0. This will
-// only apply to LinearAnimation and its subclasses.
-const char kAnimationDurationScale[] = "animation-duration-scale";
-
 // Disables layer-edge anti-aliasing in the compositor.
 const char kDisableCompositedAntialiasing[] = "disable-composited-antialiasing";
 
 // Disables use of DWM composition for top level windows.
 const char kDisableDwmComposition[] = "disable-dwm-composition";
-
-// Disables touch adjustment.
-const char kDisableTouchAdjustment[] = "disable-touch-adjustment";
 
 // Disables touch event based drag and drop.
 const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";
@@ -86,8 +87,8 @@ const char kShowOverdrawFeedback[] = "show-overdraw-feedback";
 const char kSlowDownCompositingScaleFactor[] =
     "slow-down-compositing-scale-factor";
 
-// Tint GL-composited color.
-const char kTintGlCompositedContent[] = "tint-gl-composited-content";
+// Tint composited color.
+const char kTintCompositedContent[] = "tint-composited-content";
 
 // Controls touch-optimized UI layout for top chrome.
 const char kTopChromeTouchUi[] = "top-chrome-touch-ui";

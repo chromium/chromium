@@ -1,0 +1,15 @@
+<html>
+  <script>
+    async function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        await screen.orientation.lock("landscape-primary");
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+  <body style="height:5000px" onclick="toggleFullscreen();">
+    <p>A page that will rotate on touch.</p>
+  </body>
+</html>

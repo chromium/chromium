@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
 
-#include "base/logging.h"
 #include "content/public/browser/web_contents.h"
 
 namespace chromeos {

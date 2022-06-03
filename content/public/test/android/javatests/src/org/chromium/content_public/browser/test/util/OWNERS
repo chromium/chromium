@@ -1,3 +1,0 @@
-# Screen Orientation API related
-per-file MockOrientationObserver.java=mlamouri@chromium.org
-per-file OrientationChangeObserverCriteria.java=mlamouri@chromium.org

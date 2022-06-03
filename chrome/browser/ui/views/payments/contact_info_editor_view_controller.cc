@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -27,9 +28,9 @@
 namespace payments {
 
 ContactInfoEditorViewController::ContactInfoEditorViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog,
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog,
     BackNavigationType back_navigation_type,
     base::OnceClosure on_edited,
     base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,
@@ -53,6 +54,9 @@ bool ContactInfoEditorViewController::IsEditingExistingItem() {
 std::vector<EditorField>
 ContactInfoEditorViewController::GetFieldDefinitions() {
   std::vector<EditorField> fields;
+  if (!spec())
+    return fields;
+
   if (spec()->request_payer_name()) {
     fields.push_back(EditorField(
         autofill::NAME_FULL,
@@ -75,18 +79,11 @@ ContactInfoEditorViewController::GetFieldDefinitions() {
   return fields;
 }
 
-base::string16 ContactInfoEditorViewController::GetInitialValueForType(
+std::u16string ContactInfoEditorViewController::GetInitialValueForType(
     autofill::ServerFieldType type) {
   if (!profile_to_edit_)
-    return base::string16();
+    return std::u16string();
   return GetValueForType(*profile_to_edit_, type);
-
-  if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
-    return autofill::i18n::GetFormattedPhoneNumberForDisplay(
-        *profile_to_edit_, state()->GetApplicationLocale());
-  }
-
-  return profile_to_edit_->GetInfo(type, state()->GetApplicationLocale());
 }
 
 bool ContactInfoEditorViewController::ValidateModelAndSave() {
@@ -128,7 +125,7 @@ ContactInfoEditorViewController::GetComboboxModelForType(
   return nullptr;
 }
 
-base::string16 ContactInfoEditorViewController::GetSheetTitle() {
+std::u16string ContactInfoEditorViewController::GetSheetTitle() {
   // TODO(crbug.com/712074): Title should reflect the missing information, if
   // applicable.
   return profile_to_edit_ ? l10n_util::GetStringUTF16(
@@ -140,8 +137,10 @@ base::string16 ContactInfoEditorViewController::GetSheetTitle() {
 void ContactInfoEditorViewController::PopulateProfile(
     autofill::AutofillProfile* profile) {
   for (const auto& field : text_fields()) {
-    profile->SetInfo(autofill::AutofillType(field.second.type),
-                     field.first->GetText(), state()->GetApplicationLocale());
+    profile->SetInfoWithVerificationStatus(
+        autofill::AutofillType(field.second.type), field.first->GetText(),
+        state()->GetApplicationLocale(),
+        autofill::structured_address::VerificationStatus::kUserVerified);
   }
   profile->set_origin(autofill::kSettingsOrigin);
 }
@@ -151,7 +150,7 @@ bool ContactInfoEditorViewController::GetSheetId(DialogViewID* sheet_id) {
   return true;
 }
 
-base::string16 ContactInfoEditorViewController::GetValueForType(
+std::u16string ContactInfoEditorViewController::GetValueForType(
     const autofill::AutofillProfile& profile,
     autofill::ServerFieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
@@ -176,9 +175,9 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
   return field_.type == autofill::PHONE_HOME_WHOLE_NUMBER;
 }
 
-base::string16
+std::u16string
 ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
-    const base::string16& text) {
+    const std::u16string& text) {
   return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
       base::UTF16ToUTF8(text),
       autofill::AutofillCountry::CountryCodeForLocale(locale_)));
@@ -186,7 +185,7 @@ ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     IsValidTextfield(views::Textfield* textfield,
-                     base::string16* error_message) {
+                     std::u16string* error_message) {
   return ValidateTextfield(textfield, error_message);
 }
 
@@ -195,7 +194,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
   if (!was_blurred)
     return true;
 
-  base::string16 error_message;
+  std::u16string error_message;
   bool is_valid = ValidateTextfield(textfield, &error_message);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
   return is_valid;
@@ -203,8 +202,9 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     ValidateTextfield(views::Textfield* textfield,
-                      base::string16* error_message) {
-  bool is_valid = true;
+                      std::u16string* error_message) {
+  if (!controller_->spec())
+    return false;
 
   // Show errors from merchant's retry() call.
   autofill::AutofillProfile* invalid_contact_profile =
@@ -217,6 +217,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
       return false;
   }
 
+  bool is_valid = true;
   if (textfield->GetText().empty()) {
     is_valid = false;
     if (error_message) {
@@ -267,14 +268,15 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
-    IsValidCombobox(views::Combobox* combobox, base::string16* error_message) {
+    IsValidCombobox(ValidatingCombobox* combobox,
+                    std::u16string* error_message) {
   // This UI doesn't contain any comboboxes.
   NOTREACHED();
   return true;
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
-    ComboboxValueChanged(views::Combobox* combobox) {
+    ComboboxValueChanged(ValidatingCombobox* combobox) {
   // This UI doesn't contain any comboboxes.
   NOTREACHED();
   return true;

@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/version_info",
   "+mojo/public",
   "+third_party/blink/public/common/messaging",
   "+third_party/blink/public/mojom/messaging",

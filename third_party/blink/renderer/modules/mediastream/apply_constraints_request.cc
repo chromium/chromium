@@ -12,24 +12,24 @@
 namespace blink {
 
 ApplyConstraintsRequest::ApplyConstraintsRequest(
-    const WebMediaStreamTrack& track,
-    const WebMediaConstraints& constraints,
+    MediaStreamComponent* component,
+    const MediaConstraints& constraints,
     ScriptPromiseResolver* resolver)
-    : track_(track), constraints_(constraints), resolver_(resolver) {}
+    : component_(component), constraints_(constraints), resolver_(resolver) {}
 
-WebMediaStreamTrack ApplyConstraintsRequest::Track() const {
-  return track_;
+MediaStreamComponent* ApplyConstraintsRequest::Track() const {
+  return component_;
 }
 
-WebMediaConstraints ApplyConstraintsRequest::Constraints() const {
+MediaConstraints ApplyConstraintsRequest::Constraints() const {
   return constraints_;
 }
 
 void ApplyConstraintsRequest::RequestSucceeded() {
-  track_.SetConstraints(constraints_);
+  component_->SetConstraints(constraints_);
   if (resolver_)
     resolver_->Resolve();
-  track_.Reset();
+  component_ = nullptr;
 }
 
 void ApplyConstraintsRequest::RequestFailed(const String& constraint,
@@ -38,10 +38,11 @@ void ApplyConstraintsRequest::RequestFailed(const String& constraint,
     resolver_->Reject(
         MakeGarbageCollected<OverconstrainedError>(constraint, message));
   }
-  track_.Reset();
+  component_ = nullptr;
 }
 
-void ApplyConstraintsRequest::Trace(blink::Visitor* visitor) {
+void ApplyConstraintsRequest::Trace(Visitor* visitor) const {
+  visitor->Trace(component_);
   visitor->Trace(resolver_);
 }
 

@@ -75,7 +75,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   matcher.ShouldDisableFilteringForDocument(
       url_to_check, url::Origin(),
       url_pattern_index::proto::ACTIVATION_TYPE_DOCUMENT);
-  matcher.ShouldDisallowResourceLoad(
+  matcher.GetLoadPolicyForResourceLoad(
       url_to_check, subresource_filter::FirstPartyOrigin(url::Origin()),
       url_pattern_index::proto::ELEMENT_TYPE_SCRIPT,
       false /* disable_generic_rules */);

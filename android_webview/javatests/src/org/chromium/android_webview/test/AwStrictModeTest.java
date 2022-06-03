@@ -6,7 +6,8 @@ package org.chromium.android_webview.test;
 
 import android.os.StrictMode;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
+
+import androidx.test.filters.LargeTest;
 
 import org.junit.After;
 import org.junit.Before;

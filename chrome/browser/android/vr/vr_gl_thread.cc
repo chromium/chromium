@@ -4,10 +4,10 @@
 
 #include "chrome/browser/android/vr/vr_gl_thread.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
 #include "chrome/browser/android/vr/metrics_util_android.h"
 #include "chrome/browser/android/vr/ui_factory.h"
@@ -21,7 +21,6 @@
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "chrome/browser/vr/sounds_manager_audio_delegate.h"
 #include "chrome/browser/vr/ui_test_input.h"
-#include "chrome/common/chrome_features.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -104,11 +103,10 @@ void VrGLThread::DialogSurfaceCreated(jobject surface,
                                 surface, base::Unretained(texture)));
 }
 
-void VrGLThread::GvrDelegateReady(gvr::ViewerType viewer_type) {
+void VrGLThread::GvrDelegateReady() {
   DCHECK(OnGlThread());
   main_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VrShell::GvrDelegateReady, weak_vr_shell_, viewer_type));
+      FROM_HERE, base::BindOnce(&VrShell::GvrDelegateReady, weak_vr_shell_));
 }
 
 void VrGLThread::SendRequestPresentReply(device::mojom::XRSessionPtr session) {
@@ -404,7 +402,7 @@ void VrGLThread::SetSpeechRecognitionEnabled(bool enabled) {
                      weak_browser_ui_, enabled));
 }
 
-void VrGLThread::SetRecognitionResult(const base::string16& result) {
+void VrGLThread::SetRecognitionResult(const std::u16string& result) {
   DCHECK(OnMainThread());
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BrowserUiInterface::SetRecognitionResult,
@@ -485,46 +483,45 @@ void VrGLThread::UpdateWebInputIndices(int selection_start,
                                        int composition_end) {
   task_runner()->PostTask(
       FROM_HERE,
-      base::BindRepeating(&BrowserUiInterface::UpdateWebInputIndices,
-                          weak_browser_ui_, selection_start, selection_end,
-                          composition_start, composition_end));
+      base::BindOnce(&BrowserUiInterface::UpdateWebInputIndices,
+                     weak_browser_ui_, selection_start, selection_end,
+                     composition_start, composition_end));
 }
 
 void VrGLThread::OnSwapContents(int new_content_id) {
-  task_runner()->PostTask(
-      FROM_HERE, base::BindRepeating(&BrowserUiInterface::OnSwapContents,
-                                     weak_browser_ui_, new_content_id));
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&BrowserUiInterface::OnSwapContents,
+                                         weak_browser_ui_, new_content_id));
 }
 
 void VrGLThread::SetDialogLocation(float x, float y) {
-  task_runner()->PostTask(
-      FROM_HERE, base::BindRepeating(&BrowserUiInterface::SetDialogLocation,
-                                     weak_browser_ui_, x, y));
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&BrowserUiInterface::SetDialogLocation,
+                                         weak_browser_ui_, x, y));
 }
 
 void VrGLThread::SetDialogFloating(bool floating) {
-  task_runner()->PostTask(
-      FROM_HERE, base::BindRepeating(&BrowserUiInterface::SetDialogFloating,
-                                     weak_browser_ui_, floating));
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&BrowserUiInterface::SetDialogFloating,
+                                         weak_browser_ui_, floating));
 }
 
-void VrGLThread::ShowPlatformToast(const base::string16& text) {
-  task_runner()->PostTask(
-      FROM_HERE, base::BindRepeating(&BrowserUiInterface::ShowPlatformToast,
-                                     weak_browser_ui_, text));
+void VrGLThread::ShowPlatformToast(const std::u16string& text) {
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&BrowserUiInterface::ShowPlatformToast,
+                                         weak_browser_ui_, text));
 }
 
 void VrGLThread::CancelPlatformToast() {
   task_runner()->PostTask(
-      FROM_HERE, base::BindRepeating(&BrowserUiInterface::CancelPlatformToast,
-                                     weak_browser_ui_));
+      FROM_HERE, base::BindOnce(&BrowserUiInterface::CancelPlatformToast,
+                                weak_browser_ui_));
 }
 
 void VrGLThread::OnContentBoundsChanged(int width, int height) {
   task_runner()->PostTask(
-      FROM_HERE,
-      base::BindRepeating(&BrowserUiInterface::OnContentBoundsChanged,
-                          weak_browser_ui_, width, height));
+      FROM_HERE, base::BindOnce(&BrowserUiInterface::OnContentBoundsChanged,
+                                weak_browser_ui_, width, height));
 }
 
 void VrGLThread::PerformKeyboardInputForTesting(

@@ -9,19 +9,22 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/media/audio/audio_fader.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/audio_log.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector_input.h"
+#include "chromecast/media/cma/backend/mixer/channel_layout.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
+#include "chromecast/media/cma/base/decoder_config_adapter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/channel_layout.h"
 #include "media/base/channel_mixer.h"
@@ -34,10 +37,23 @@ namespace {
 using Patterns = std::vector<std::pair<AudioContentType, std::string>>;
 
 constexpr int kDefaultBufferSize = 2048;
-constexpr int kMaxChannels = 8;
+constexpr int kMaxChannels = 32;
 
 constexpr int kAudioMessageHeaderSize =
     mixer_service::MixerSocket::kAudioMessageHeaderSize;
+
+::media::ChannelLayout GetMediaChannelLayout(
+    chromecast::media::ChannelLayout layout,
+    int num_channels) {
+  if (layout == media::ChannelLayout::UNSUPPORTED) {
+    return mixer::GuessChannelLayout(num_channels);
+  }
+  return DecoderConfigAdapter::ToMediaChannelLayout(layout);
+}
+
+enum MessageTypes : int {
+  kStreamConfig = 1,
+};
 
 }  // namespace
 
@@ -46,7 +62,7 @@ class AudioOutputRedirector::RedirectionConnection
  public:
   explicit RedirectionConnection(
       std::unique_ptr<mixer_service::MixerSocket> socket,
-      scoped_refptr<base::SequencedTaskRunner> mixer_task_runner,
+      scoped_refptr<base::TaskRunner> mixer_task_runner,
       base::WeakPtr<AudioOutputRedirector> redirector)
       : socket_(std::move(socket)),
         mixer_task_runner_(std::move(mixer_task_runner)),
@@ -57,6 +73,9 @@ class AudioOutputRedirector::RedirectionConnection
     socket_->SetDelegate(this);
   }
 
+  RedirectionConnection(const RedirectionConnection&) = delete;
+  RedirectionConnection& operator=(const RedirectionConnection&) = delete;
+
   ~RedirectionConnection() override = default;
 
   void SetStreamConfig(SampleFormat sample_format,
@@ -66,11 +85,11 @@ class AudioOutputRedirector::RedirectionConnection
     mixer_service::Generic message;
     mixer_service::StreamConfig* config = message.mutable_stream_config();
     config->set_sample_format(
-        mixer_service::ConvertSampleFormat(sample_format));
+        audio_service::ConvertSampleFormat(sample_format));
     config->set_sample_rate(sample_rate);
     config->set_num_channels(num_channels);
     config->set_data_size(data_size);
-    socket_->SendProto(message);
+    socket_->SendProto(kStreamConfig, message);
 
     sent_stream_config_ = true;
   }
@@ -94,8 +113,9 @@ class AudioOutputRedirector::RedirectionConnection
 
     Patterns new_patterns;
     for (const auto& p : message.redirected_stream_patterns().patterns()) {
-      new_patterns.emplace_back(ConvertContentType(p.content_type()),
-                                p.device_id_pattern());
+      new_patterns.emplace_back(
+          audio_service::ConvertContentType(p.content_type()),
+          p.device_id_pattern());
     }
     mixer_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AudioOutputRedirector::UpdatePatterns,
@@ -104,7 +124,7 @@ class AudioOutputRedirector::RedirectionConnection
   }
 
  private:
-  bool HandleAudioData(char* data, int size, int64_t timestamp) override {
+  bool HandleAudioData(char* data, size_t size, int64_t timestamp) override {
     return true;
   }
 
@@ -119,13 +139,11 @@ class AudioOutputRedirector::RedirectionConnection
   }
 
   const std::unique_ptr<mixer_service::MixerSocket> socket_;
-  const scoped_refptr<base::SequencedTaskRunner> mixer_task_runner_;
+  const scoped_refptr<base::TaskRunner> mixer_task_runner_;
   const base::WeakPtr<AudioOutputRedirector> redirector_;
 
   bool error_ = false;
   bool sent_stream_config_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RedirectionConnection);
 };
 
 class AudioOutputRedirector::InputImpl : public AudioOutputRedirectorInput {
@@ -133,6 +151,10 @@ class AudioOutputRedirector::InputImpl : public AudioOutputRedirectorInput {
   using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
 
   InputImpl(AudioOutputRedirector* output_redirector, MixerInput* mixer_input);
+
+  InputImpl(const InputImpl&) = delete;
+  InputImpl& operator=(const InputImpl&) = delete;
+
   ~InputImpl() override;
 
   // AudioOutputRedirectorInput implementation:
@@ -148,14 +170,13 @@ class AudioOutputRedirector::InputImpl : public AudioOutputRedirectorInput {
  private:
   AudioOutputRedirector* const output_redirector_;
   MixerInput* const mixer_input_;
+  const ::media::ChannelLayout output_channel_layout_;
   const int num_output_channels_;
 
   bool previous_ended_in_silence_;
 
   std::unique_ptr<::media::ChannelMixer> channel_mixer_;
   std::unique_ptr<::media::AudioBus> temp_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImpl);
 };
 
 AudioOutputRedirector::InputImpl::InputImpl(
@@ -163,6 +184,7 @@ AudioOutputRedirector::InputImpl::InputImpl(
     MixerInput* mixer_input)
     : output_redirector_(output_redirector),
       mixer_input_(mixer_input),
+      output_channel_layout_(output_redirector_->output_channel_layout()),
       num_output_channels_(output_redirector_->num_output_channels()),
       previous_ended_in_silence_(true) {
   DCHECK_LE(num_output_channels_, kMaxChannels);
@@ -170,11 +192,14 @@ AudioOutputRedirector::InputImpl::InputImpl(
   DCHECK(mixer_input_);
 
   if (mixer_input_->num_channels() != num_output_channels_) {
-    LOG(INFO) << "Remixing channels for " << mixer_input_->source() << " from "
-              << mixer_input_->num_channels() << " to " << num_output_channels_;
+    AUDIO_LOG(INFO) << "Remixing channels for " << mixer_input_->source()
+                    << " from " << mixer_input_->num_channels() << " to "
+                    << num_output_channels_;
     channel_mixer_ = std::make_unique<::media::ChannelMixer>(
-        ::media::GuessChannelLayout(mixer_input_->num_channels()),
-        ::media::GuessChannelLayout(num_output_channels_));
+        mixer::CreateAudioParametersForChannelMixer(
+            mixer_input_->channel_layout(), mixer_input_->num_channels()),
+        mixer::CreateAudioParametersForChannelMixer(output_channel_layout_,
+                                                    num_output_channels_));
   }
 
   temp_buffer_ =
@@ -251,6 +276,13 @@ AudioOutputRedirector::Config AudioOutputRedirector::ParseConfig(
   if (request.has_num_channels()) {
     config.num_output_channels = request.num_channels();
   }
+  if (request.has_channel_layout() &&
+      request.channel_layout() != audio_service::CHANNEL_LAYOUT_BITSTREAM) {
+    config.output_channel_layout =
+        audio_service::ConvertChannelLayout(request.channel_layout());
+  } else {
+    config.output_channel_layout = media::ChannelLayout::UNSUPPORTED;
+  }
   if (request.has_order()) {
     config.order = request.order();
   }
@@ -269,6 +301,9 @@ AudioOutputRedirector::AudioOutputRedirector(
     const mixer_service::Generic& message)
     : mixer_(mixer),
       config_(ParseConfig(message)),
+      output_channel_layout_(
+          GetMediaChannelLayout(config_.output_channel_layout,
+                                config_.num_output_channels)),
       io_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       buffer_pool_(
           base::MakeRefCounted<IOBufferPool>(kDefaultBufferSize,
@@ -428,8 +463,7 @@ void AudioOutputRedirector::FinishBuffer() {
 
   // Hard limit to [1.0, -1.0].
   for (int s = 0; s < config_.num_output_channels * next_num_frames_; ++s) {
-    current_mix_data_[s] =
-        base::ClampToRange(current_mix_data_[s], -1.0f, 1.0f);
+    current_mix_data_[s] = base::clamp(current_mix_data_[s], -1.0f, 1.0f);
   }
 
   io_task_runner_->PostTask(

@@ -28,6 +28,9 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   // Adopts the provided socket, which must not be a connected socket.
   explicit TCPServerSocket(std::unique_ptr<TCPSocket> socket);
 
+  TCPServerSocket(const TCPServerSocket&) = delete;
+  TCPServerSocket& operator=(const TCPServerSocket&) = delete;
+
   ~TCPServerSocket() override;
 
   // Takes ownership of |socket|, which has been opened, but may or may not be
@@ -41,8 +44,11 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   int GetLocalAddress(IPEndPoint* address) const override;
   int Accept(std::unique_ptr<StreamSocket>* socket,
              CompletionOnceCallback callback) override;
+  int Accept(std::unique_ptr<StreamSocket>* socket,
+             CompletionOnceCallback callback,
+             IPEndPoint* peer_address) override;
 
-  // Detachs from the current thread, to allow the socket to be transferred to
+  // Detaches from the current thread, to allow the socket to be transferred to
   // a new thread. Should only be called when the object is no longer used by
   // the old thread.
   void DetachFromThread();
@@ -54,9 +60,11 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   // set to NULL in any case.
   int ConvertAcceptedSocket(
       int result,
-      std::unique_ptr<StreamSocket>* output_accepted_socket);
+      std::unique_ptr<StreamSocket>* output_accepted_socket,
+      IPEndPoint* output_accepted_address);
   // Completion callback for calling TCPSocket::Accept().
   void OnAcceptCompleted(std::unique_ptr<StreamSocket>* output_accepted_socket,
+                         IPEndPoint* output_accepted_address,
                          CompletionOnceCallback forward_callback,
                          int result);
 
@@ -65,8 +73,6 @@ class NET_EXPORT TCPServerSocket : public ServerSocket {
   std::unique_ptr<TCPSocket> accepted_socket_;
   IPEndPoint accepted_address_;
   bool pending_accept_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocket);
 };
 
 }  // namespace net

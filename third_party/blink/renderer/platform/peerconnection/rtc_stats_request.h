@@ -74,7 +74,7 @@ class RTCStatsRequest : public GarbageCollected<RTCStatsRequest> {
   virtual MediaStreamComponent* Component() = 0;
   virtual void RequestSucceeded(RTCStatsResponseBase*) = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
  protected:
   RTCStatsRequest() = default;

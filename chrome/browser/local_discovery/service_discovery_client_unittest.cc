@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/local_discovery/service_discovery_client_impl.h"
@@ -219,7 +219,7 @@ class ServiceDiscoveryTest : public ::testing::Test {
  protected:
   void RunFor(base::TimeDelta time_period) {
     base::RunLoop run_loop;
-    base::CancelableCallback<void()> callback(run_loop.QuitWhenIdleClosure());
+    base::CancelableOnceClosure callback(run_loop.QuitWhenIdleClosure());
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, callback.callback(), time_period);
     run_loop.Run();
@@ -231,7 +231,8 @@ class ServiceDiscoveryTest : public ::testing::Test {
   net::MockMDnsSocketFactory socket_factory_;
   net::MDnsClientImpl mdns_client_;
   ServiceDiscoveryClientImpl service_discovery_client_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(ServiceDiscoveryTest, AddRemoveService) {
@@ -253,7 +254,7 @@ TEST_F(ServiceDiscoveryTest, AddRemoveService) {
                                          "hello._privet._tcp.local"))
       .Times(Exactly(1));
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 }
 
 TEST_F(ServiceDiscoveryTest, DiscoverNewServices) {
@@ -271,7 +272,7 @@ TEST_F(ServiceDiscoveryTest, DiscoverNewServices) {
 
   EXPECT_CALL(socket_factory_, OnSendTo(_)).Times(2);
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 }
 
 // Test that we can query the network with a service name that includes
@@ -291,7 +292,7 @@ TEST_F(ServiceDiscoveryTest, DiscoverNewServicesUnrestricted) {
 
   EXPECT_CALL(socket_factory_, OnSendTo(_)).Times(2);
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 }
 
 TEST_F(ServiceDiscoveryTest, ReadCachedServices) {
@@ -421,7 +422,7 @@ TEST_F(ServiceDiscoveryTest, ActivelyRefreshServices) {
                                          "hello._privet._tcp.local"))
       .Times(Exactly(1));
 
-  RunFor(base::TimeDelta::FromSeconds(2));
+  RunFor(base::Seconds(2));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -514,7 +515,7 @@ TEST_F(ServiceResolverTest, JustSrv) {
 
   // TODO(noamsml): When NSEC record support is added, change this to use an
   // NSEC record.
-  RunFor(base::TimeDelta::FromSeconds(4));
+  RunFor(base::Seconds(4));
 }
 
 TEST_F(ServiceResolverTest, WithNothing) {
@@ -527,7 +528,7 @@ TEST_F(ServiceResolverTest, WithNothing) {
 
   // TODO(noamsml): When NSEC record support is added, change this to use an
   // NSEC record.
-  RunFor(base::TimeDelta::FromSeconds(4));
+  RunFor(base::Seconds(4));
 }
 
 }  // namespace

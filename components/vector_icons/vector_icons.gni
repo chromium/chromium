@@ -8,7 +8,7 @@
 #
 # Parameters
 #
-#   icons (required)
+#   sources (required)
 #       A list of icon filenames to use as inputs.
 #
 #   icon_directory (required)
@@ -22,11 +22,13 @@
 #
 #   See BUILD.gn in this directory (//components/vector_icons/) for an example.
 template("aggregate_vector_icons") {
-  assert(defined(invoker.icons),
-         "Need icons in $target_name listing the icon files.")
+  assert(defined(invoker.sources),
+         "Need sources in $target_name listing the icon files.")
   assert(
       defined(invoker.icon_directory),
       "Need icon_directory in $target_name where the icons and templates live.")
+
+  public_deps = [ "//base" ]
 
   action(target_name) {
     visibility = [ ":*" ]
@@ -41,7 +43,7 @@ template("aggregate_vector_icons") {
       "vector_icons.h.template",
     ]
     inputs =
-        rebase_path(templates + invoker.icons, ".", invoker.icon_directory) +
+        rebase_path(templates + invoker.sources, ".", invoker.icon_directory) +
         [ "//components/vector_icons/aggregate_vector_icons.py" ]
 
     outputs = [
@@ -50,7 +52,7 @@ template("aggregate_vector_icons") {
     ]
 
     response_file_contents =
-        rebase_path(invoker.icons, root_build_dir, invoker.icon_directory)
+        rebase_path(invoker.sources, root_build_dir, invoker.icon_directory)
 
     args = [
       "--working_directory=" +

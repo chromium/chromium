@@ -437,6 +437,7 @@ TEST(SkBitmapOperationsTest, DownsampleByTwoUntilSize) {
 TEST(SkBitmapOperationsTest, UnPreMultiply) {
   SkBitmap input;
   input.allocN32Pixels(2, 2);
+  EXPECT_EQ(input.alphaType(), kPremul_SkAlphaType);
 
   // Set PMColors into the bitmap
   *input.getAddr32(0, 0) = SkPackARGB32NoCheck(0x80, 0x00, 0x00, 0x00);
@@ -445,13 +446,36 @@ TEST(SkBitmapOperationsTest, UnPreMultiply) {
   *input.getAddr32(1, 1) = SkPackARGB32NoCheck(0x00, 0x00, 0xCC, 0x88);
 
   SkBitmap result = SkBitmapOperations::UnPreMultiply(input);
+  EXPECT_EQ(result.alphaType(), kUnpremul_SkAlphaType);
   EXPECT_EQ(2, result.width());
   EXPECT_EQ(2, result.height());
+  EXPECT_NE(result.getPixels(), input.getPixels());
 
   EXPECT_EQ(0x80000000, *result.getAddr32(0, 0));
   EXPECT_EQ(0x80FFFFFF, *result.getAddr32(1, 0));
   EXPECT_EQ(0xFF00CC88, *result.getAddr32(0, 1));
   EXPECT_EQ(0x00000000u, *result.getAddr32(1, 1));  // "Division by zero".
+}
+
+TEST(SkBitmapOperationsTest, UnPreMultiplyOpaque) {
+  SkBitmap input;
+  input.allocN32Pixels(2, 2, true);
+  EXPECT_EQ(input.alphaType(), kOpaque_SkAlphaType);
+
+  SkBitmap result = SkBitmapOperations::UnPreMultiply(input);
+  EXPECT_EQ(result.alphaType(), kOpaque_SkAlphaType);
+  EXPECT_EQ(result.getPixels(), input.getPixels());
+}
+
+TEST(SkBitmapOperationsTest, UnPreMultiplyAlreadyUnPreMultiplied) {
+  SkBitmap input;
+  input.allocN32Pixels(2, 2);
+  input.setAlphaType(kUnpremul_SkAlphaType);
+  EXPECT_EQ(input.alphaType(), kUnpremul_SkAlphaType);
+
+  SkBitmap result = SkBitmapOperations::UnPreMultiply(input);
+  EXPECT_EQ(result.alphaType(), kUnpremul_SkAlphaType);
+  EXPECT_EQ(result.getPixels(), input.getPixels());
 }
 
 TEST(SkBitmapOperationsTest, CreateTransposedBitmap) {
@@ -501,7 +525,7 @@ TEST(SkBitmapOperationsTest, RotateImage) {
   // GGGYYY
   src.allocN32Pixels(src_w, src_h);
 
-  SkCanvas canvas(src);
+  SkCanvas canvas(src, SkSurfaceProps{});
   src.eraseARGB(0, 0, 0, 0);
 
   // This region is a semi-transparent red to test non-opaque pixels.

@@ -8,7 +8,8 @@
 
 #import "remoting/ios/app/help_and_feedback.h"
 
-#import "base/logging.h"
+#import "base/check.h"
+#import "base/notreached.h"
 
 static HelpAndFeedback* g_helpAndFeedback;
 

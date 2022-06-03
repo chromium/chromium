@@ -13,7 +13,5 @@
 # limitations under the License.
 
 source_set("glibc") {
-  sources = [
-    "elf/elf.h",
-  ]
+  sources = [ "elf/elf.h" ]
 }

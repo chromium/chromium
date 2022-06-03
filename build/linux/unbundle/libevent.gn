@@ -10,8 +10,6 @@ shim_headers("libevent_shim") {
 }
 
 source_set("libevent") {
-  deps = [
-    ":libevent_shim",
-  ]
+  deps = [ ":libevent_shim" ]
   libs = [ "event" ]
 }

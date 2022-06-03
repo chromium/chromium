@@ -5,6 +5,7 @@ namespace blink {
 
 enum ParserSynchronizationPolicy {
   kAllowAsynchronousParsing,
+  kAllowDeferredParsing,
   kForceSynchronousParsing,
 };
 }

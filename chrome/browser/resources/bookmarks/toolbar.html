@@ -10,7 +10,6 @@
   }
 
   cr-icon-button {
-    --cr-icon-button-fill-color-focus: var(--cr-toolbar-background-color);
     justify-content: flex-end;
     margin: 4px;
   }
@@ -18,6 +17,7 @@
   @media (prefers-color-scheme: light) {
     cr-icon-button {
       --cr-icon-button-fill-color: currentColor;
+      --cr-icon-button-focus-outline-color: white;
     }
   }
 
@@ -32,6 +32,7 @@
     clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}"
     narrow="{{narrow_}}"
+    autofocus always-show-logo
     on-search-changed="onSearchChanged_">
   <cr-icon-button iron-icon="cr:more-vert"
         id="menuButton"

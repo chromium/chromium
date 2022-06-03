@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
@@ -103,6 +103,7 @@ bool NetworkConnectionTracker::IsConnectionCellular(
     case network::mojom::ConnectionType::CONNECTION_2G:
     case network::mojom::ConnectionType::CONNECTION_3G:
     case network::mojom::ConnectionType::CONNECTION_4G:
+    case network::mojom::ConnectionType::CONNECTION_5G:
       is_cellular = true;
       break;
     case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
@@ -173,9 +174,9 @@ void NetworkConnectionTracker::Initialize() {
   manager_remote->RequestNotifications(receiver_.BindNewPipeAndPassRemote());
 
   // base::Unretained is safe as |receiver_| is owned by |this|.
-  receiver_.set_disconnect_handler(base::BindRepeating(
-      &NetworkConnectionTracker::HandleNetworkServicePipeBroken,
-      base::Unretained(this)));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&NetworkConnectionTracker::HandleNetworkServicePipeBroken,
+                     base::Unretained(this)));
 }
 
 void NetworkConnectionTracker::HandleNetworkServicePipeBroken() {

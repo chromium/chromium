@@ -50,7 +50,7 @@ SVGParsingError SVGAnimatedLength::AttributeChanged(const String& value) {
   return parse_status;
 }
 
-void SVGAnimatedLength::Trace(blink::Visitor* visitor) {
+void SVGAnimatedLength::Trace(Visitor* visitor) const {
   SVGAnimatedProperty<SVGLength>::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }

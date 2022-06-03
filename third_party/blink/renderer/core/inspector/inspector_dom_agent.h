@@ -32,13 +32,12 @@
 
 #include <memory>
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/DOM.h"
+#include "third_party/blink/renderer/core/inspector/protocol/dom.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -60,7 +59,6 @@ class FloatQuad;
 class HTMLFrameOwnerElement;
 class HTMLPortalElement;
 class HTMLSlotElement;
-class V0InsertionPoint;
 class InspectedFrames;
 class InspectorHistory;
 class Node;
@@ -75,8 +73,7 @@ class CORE_EXPORT InspectorDOMAgent final
   struct CORE_EXPORT DOMListener : public GarbageCollectedMixin {
     virtual ~DOMListener() = default;
     virtual void DidAddDocument(Document*) = 0;
-    virtual void DidRemoveDocument(Document*) = 0;
-    virtual void DidRemoveDOMNode(Node*) = 0;
+    virtual void WillRemoveDOMNode(Node*) = 0;
     virtual void DidModifyDOMAttr(Element*) = 0;
   };
 
@@ -87,23 +84,27 @@ class CORE_EXPORT InspectorDOMAgent final
         : source_location_(std::move(source_location)) {}
 
     SourceLocation& GetSourceLocation() { return *source_location_; }
-    virtual void Trace(blink::Visitor* visitor) {}
+    virtual void Trace(Visitor* visitor) const {}
 
    private:
     std::unique_ptr<SourceLocation> source_location_;
   };
 
   static protocol::Response ToResponse(ExceptionState&);
-  static bool GetPseudoElementType(PseudoId, String*);
+  static protocol::DOM::PseudoType ProtocolPseudoElementType(PseudoId);
   static protocol::DOM::ShadowRootType GetShadowRootType(ShadowRoot*);
+  static protocol::DOM::CompatibilityMode GetDocumentCompatibilityMode(
+      Document*);
   static ShadowRoot* UserAgentShadowRoot(Node*);
   static Color ParseColor(protocol::DOM::RGBA*);
 
   InspectorDOMAgent(v8::Isolate*,
                     InspectedFrames*,
                     v8_inspector::V8InspectorSession*);
+  InspectorDOMAgent(const InspectorDOMAgent&) = delete;
+  InspectorDOMAgent& operator=(const InspectorDOMAgent&) = delete;
   ~InspectorDOMAgent() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void Restore() override;
 
@@ -117,6 +118,12 @@ class CORE_EXPORT InspectorDOMAgent final
       protocol::Maybe<int> depth,
       protocol::Maybe<bool> traverse_frames,
       std::unique_ptr<protocol::DOM::Node>* root) override;
+  protocol::Response getNodesForSubtreeByStyle(
+      int node_id,
+      std::unique_ptr<protocol::Array<protocol::DOM::CSSComputedStyleProperty>>
+          computed_styles,
+      protocol::Maybe<bool> pierce,
+      std::unique_ptr<protocol::Array<int>>* node_ids) override;
   protocol::Response getFlattenedDocument(
       protocol::Maybe<int> depth,
       protocol::Maybe<bool> pierce,
@@ -234,6 +241,11 @@ class CORE_EXPORT InspectorDOMAgent final
       protocol::Maybe<int> depth,
       protocol::Maybe<bool> pierce,
       std::unique_ptr<protocol::DOM::Node>*) override;
+  protocol::Response scrollIntoViewIfNeeded(
+      protocol::Maybe<int> node_id,
+      protocol::Maybe<int> backend_node_id,
+      protocol::Maybe<String> object_id,
+      protocol::Maybe<protocol::DOM::Rect> rect) override;
 
   protocol::Response getFrameOwner(const String& frame_id,
                                    int* backend_node_id,
@@ -242,12 +254,23 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response getFileInfo(const String& object_id,
                                  String* path) override;
 
+  protocol::Response getContainerForNode(
+      int node_id,
+      protocol::Maybe<String> container_name,
+      protocol::Maybe<int>* container_node_id) override;
+  protocol::Response getQueryingDescendantsForContainer(
+      int node_id,
+      std::unique_ptr<protocol::Array<int>>* node_ids) override;
+  static const HeapVector<Member<Element>> GetContainerQueryingDescendants(
+      Element* container);
+
   bool Enabled() const;
   void ReleaseDanglingNodes();
 
   // Methods called from the InspectorInstrumentation.
   void DomContentLoadedEventFired(LocalFrame*);
   void DidCommitLoad(LocalFrame*, DocumentLoader*);
+  void DidRestoreFromBackForwardCache(LocalFrame*);
   void DidInsertDOMNode(Node*);
   void WillRemoveDOMNode(Node*);
   void WillModifyDOMAttr(Element*,
@@ -262,7 +285,6 @@ class CORE_EXPORT InspectorDOMAgent final
   void DidInvalidateStyleAttr(Node*);
   void DidPushShadowRoot(Element* host, ShadowRoot*);
   void WillPopShadowRoot(Element* host, ShadowRoot*);
-  void DidPerformElementShadowDistribution(Element*);
   void DidPerformSlotDistribution(HTMLSlotElement*);
   void FrameDocumentUpdated(LocalFrame*);
   void FrameOwnerContentUpdated(LocalFrame*, HTMLFrameOwnerElement*);
@@ -271,9 +293,10 @@ class CORE_EXPORT InspectorDOMAgent final
   void NodeCreated(Node* node);
   void PortalRemoteFrameCreated(HTMLPortalElement*);
 
-  Node* NodeForId(int node_id);
-  int BoundNodeId(Node*);
-  void SetDOMListener(DOMListener*);
+  Node* NodeForId(int node_id) const;
+  int BoundNodeId(Node*) const;
+  void AddDOMListener(DOMListener*);
+  void RemoveDOMListener(DOMListener*);
   int PushNodePathToFrontend(Node*);
   protocol::Response NodeForRemoteObjectId(const String& remote_object_id,
                                            Node*&);
@@ -312,10 +335,14 @@ class CORE_EXPORT InspectorDOMAgent final
   // For idempotence, call enable().
   void EnableAndReset();
 
+  void NotifyDidAddDocument(Document*);
+  void NotifyWillRemoveDOMNode(Node*);
+  void NotifyDidModifyDOMAttr(Element*);
+
   // Node-related methods.
   typedef HeapHashMap<Member<Node>, int> NodeToIdMap;
   int Bind(Node*, NodeToIdMap*);
-  void Unbind(Node*, NodeToIdMap*);
+  void Unbind(Node*);
 
   protocol::Response AssertEditableNode(int node_id, Node*&);
   protocol::Response AssertEditableChildNode(Element* parent_element,
@@ -349,9 +376,9 @@ class CORE_EXPORT InspectorDOMAgent final
   std::unique_ptr<protocol::Array<protocol::DOM::Node>>
   BuildArrayForPseudoElements(Element*, NodeToIdMap* nodes_map);
   std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
-  BuildArrayForDistributedNodes(V0InsertionPoint*);
-  std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
   BuildDistributedNodesForSlot(HTMLSlotElement*);
+
+  static bool ContainerQueriedByElement(Element* container, Element* element);
 
   Node* NodeForPath(const String& path);
 
@@ -362,7 +389,7 @@ class CORE_EXPORT InspectorDOMAgent final
   v8::Isolate* isolate_;
   Member<InspectedFrames> inspected_frames_;
   v8_inspector::V8InspectorSession* v8_session_;
-  Member<DOMListener> dom_listener_;
+  HeapHashSet<Member<DOMListener>> dom_listeners_;
   Member<NodeToIdMap> document_node_to_id_map_;
   // Owns node mappings for dangling nodes.
   HeapVector<Member<NodeToIdMap>> dangling_node_to_id_maps_;
@@ -375,7 +402,7 @@ class CORE_EXPORT InspectorDOMAgent final
   HashMap<int, int> cached_child_count_;
   int last_node_id_;
   Member<Document> document_;
-  typedef HeapHashMap<String, HeapVector<Member<Node>>> SearchResults;
+  typedef HeapHashMap<String, Member<HeapVector<Member<Node>>>> SearchResults;
   SearchResults search_results_;
   Member<InspectorRevalidateDOMTask> revalidate_task_;
   Member<InspectorHistory> history_;
@@ -383,7 +410,6 @@ class CORE_EXPORT InspectorDOMAgent final
   bool suppress_attribute_modified_event_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean capture_node_stack_traces_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorDOMAgent);
 };
 
 }  // namespace blink

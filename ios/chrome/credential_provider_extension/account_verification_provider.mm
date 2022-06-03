@@ -1,0 +1,30 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/credential_provider_extension/account_verification_provider.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation AccountVerificationProvider
+
+- (void)validationIDForAccountID:(NSString*)accountID
+               completionHandler:
+                   (void (^)(NSString*, NSError*))completionHandler {
+  // Default implementation always return nil.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    completionHandler(nil, nil);
+  });
+}
+
+- (void)validateValidationID:(NSString*)validationID
+           completionHandler:(void (^)(BOOL, NSError*))completionHandler {
+  // Default implementation always return true.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    completionHandler(YES, nil);
+  });
+}
+
+@end

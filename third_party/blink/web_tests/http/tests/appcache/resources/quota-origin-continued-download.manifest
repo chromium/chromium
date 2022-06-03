@@ -1,8 +1,0 @@
-CACHE MANIFEST
-
-# This should succeed. The quota will be reached, but the delegate
-# will fire at the end, allowing an increase, and then successfully
-# cache with the new quota.
-
-CACHE:
-abe.png

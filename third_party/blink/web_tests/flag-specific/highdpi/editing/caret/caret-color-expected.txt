@@ -1,0 +1,18 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {P} at (0,0) size 1176x54
+        LayoutText {#text} at (0,0) size 1145x53
+          text run at (0,0) width 1145: "This tests to make sure that the caret is visible in the black background by getting the caret color from the color of the"
+          text run at (0,27) width 974: "element(span) containing the text, not the parent element(div) that has the contentEditable attribute."
+      LayoutNGBlockFlow {DIV} at (0,78) size 1176x84 [border: (3px solid #FF0000)]
+        LayoutInline {SPAN} at (21,22) size 279x40 [color=#FFFFFF] [bgcolor=#000000]
+          LayoutText {#text} at (21,22) size 279x40
+            text run at (21,22) width 279: "Where is my caret?"
+        LayoutText {#text} at (0,0) size 0x0
+caret: position 17 of child 0 {#text} of child 1 {SPAN} of child 3 {DIV} of body

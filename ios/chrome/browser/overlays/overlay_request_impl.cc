@@ -21,6 +21,10 @@ OverlayCallbackManager* OverlayRequestImpl::GetCallbackManager() {
   return &callback_manager_;
 }
 
+web::WebState* OverlayRequestImpl::GetQueueWebState() {
+  return queue_web_state_;
+}
+
 base::SupportsUserData* OverlayRequestImpl::data() {
   return this;
 }

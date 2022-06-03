@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//third_party/blink/renderer/config.gni")
 
-if (is_mac) {
+if (host_os == "mac") {
   import("//build/config/mac/mac_sdk.gni")
 }
 
@@ -71,7 +72,9 @@ make_trie_helpers_files =
 # on Posix we want to run the system one on the path.
 if (host_os == "win") {
   gperf_exe = rebase_path("//third_party/gperf/bin/gperf.exe", root_build_dir)
-} else if (is_mac) {
+} else if (host_os == "mac") {
+  # TODO(thakis): This should probably run in the host toolchain and check
+  # is_mac instead of checking host_os.
   gperf_exe = mac_bin_path + "gperf"
 } else {
   gperf_exe = "gperf"
@@ -93,9 +96,7 @@ make_core_generated_deps = [
 template("blink_python_runner") {
   action(target_name) {
     script = "$_scripts_dir/run_with_pythonpath.py"
-    sources = [
-      invoker.script,
-    ]
+    sources = [ invoker.script ]
     if (defined(invoker.sources)) {
       sources += invoker.sources
     }

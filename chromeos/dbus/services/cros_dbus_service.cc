@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
@@ -35,6 +35,9 @@ class CrosDBusServiceImpl : public CrosDBusService {
     DCHECK(!service_name_.empty());
     DCHECK(object_path_.IsValid());
   }
+
+  CrosDBusServiceImpl(const CrosDBusServiceImpl&) = delete;
+  CrosDBusServiceImpl& operator=(const CrosDBusServiceImpl&) = delete;
 
   ~CrosDBusServiceImpl() override = default;
 
@@ -88,8 +91,6 @@ class CrosDBusServiceImpl : public CrosDBusService {
 
   // Service providers that form CrosDBusService.
   ServiceProviderList service_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosDBusServiceImpl);
 };
 
 // The stub CrosDBusService implementation used on Linux desktop,
@@ -97,10 +98,11 @@ class CrosDBusServiceImpl : public CrosDBusService {
 class CrosDBusServiceStubImpl : public CrosDBusService {
  public:
   CrosDBusServiceStubImpl() = default;
-  ~CrosDBusServiceStubImpl() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosDBusServiceStubImpl);
+  CrosDBusServiceStubImpl(const CrosDBusServiceStubImpl&) = delete;
+  CrosDBusServiceStubImpl& operator=(const CrosDBusServiceStubImpl&) = delete;
+
+  ~CrosDBusServiceStubImpl() override = default;
 };
 
 // static

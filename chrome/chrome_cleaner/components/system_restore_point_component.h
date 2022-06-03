@@ -10,10 +10,10 @@
 #include <srrestoreptapi.h>
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/native_library.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/components/component_api.h"
 
 namespace chrome_cleaner {
@@ -21,7 +21,7 @@ namespace chrome_cleaner {
 // This class manages the setting and clearing of a system restore point.
 class SystemRestorePointComponent : public ComponentAPI {
  public:
-  explicit SystemRestorePointComponent(const base::string16& product_fullname);
+  explicit SystemRestorePointComponent(const std::wstring& product_fullname);
 
   // ComponentAPI methods.
   void PreScan() override;
@@ -50,7 +50,7 @@ class SystemRestorePointComponent : public ComponentAPI {
 
   base::NativeLibrary srclient_dll_;
   int64_t sequence_number_;
-  base::string16 product_fullname_;
+  std::wstring product_fullname_;
 };
 
 }  // namespace chrome_cleaner

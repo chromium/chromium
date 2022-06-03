@@ -48,7 +48,7 @@ HRESULT CreateIBufferFromData(const uint8_t* data,
     return hr;
 
   Microsoft::WRL::ComPtr<IBuffer> internal_buffer;
-  hr = buffer_factory->Create(length, internal_buffer.GetAddressOf());
+  hr = buffer_factory->Create(length, &internal_buffer);
   if (FAILED(hr))
     return hr;
 

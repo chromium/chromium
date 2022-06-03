@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -26,12 +26,7 @@ void PressTranslate(Browser* browser) {
   TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
   DCHECK(bubble);
 
-  views::LabelButton button(nullptr, base::string16());
-  button.SetID(TranslateBubbleView::BUTTON_ID_TRANSLATE);
-
-  bubble->ButtonPressed(&button,
-                        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
-                                     ui::DomCode::ENTER, ui::EF_NONE));
+  bubble->TabSelectedAt(1);
 }
 
 void PressRevert(Browser* browser) {
@@ -39,16 +34,11 @@ void PressRevert(Browser* browser) {
   TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
   DCHECK(bubble);
 
-  views::LabelButton button(nullptr, base::string16());
-  button.SetID(TranslateBubbleView::BUTTON_ID_SHOW_ORIGINAL);
-
-  bubble->ButtonPressed(&button,
-                        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
-                                     ui::DomCode::ENTER, ui::EF_NONE));
+  bubble->TabSelectedAt(0);
 }
 
 void SelectTargetLanguageByDisplayName(Browser* browser,
-                                       const base::string16& display_name) {
+                                       const std::u16string& display_name) {
   DCHECK(browser);
 
   TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
@@ -59,8 +49,8 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
 
   // Get index of the language with the matching display name.
   int language_index = -1;
-  for (int i = 0; i < model->GetNumberOfLanguages(); ++i) {
-    const base::string16& language_name = model->GetLanguageNameAt(i);
+  for (int i = 0; i < model->GetNumberOfTargetLanguages(); ++i) {
+    const std::u16string& language_name = model->GetTargetLanguageNameAt(i);
 
     if (language_name == display_name) {
       language_index = i;
@@ -71,8 +61,7 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
 
   // Simulate selecting the correct index of the target language combo box.
   bubble->target_language_combobox_->SetSelectedIndex(language_index);
-  bubble->HandleComboboxPerformAction(
-      TranslateBubbleView::COMBOBOX_ID_TARGET_LANGUAGE);
+  bubble->TargetLanguageChanged();
 }
 
 }  // namespace test_utils

@@ -38,6 +38,10 @@ class METRICS_EXPORT MojoUkmRecorder : public UkmRecorder {
  public:
   explicit MojoUkmRecorder(
       mojo::PendingRemote<mojom::UkmRecorderInterface> recorder_interface);
+
+  MojoUkmRecorder(const MojoUkmRecorder&) = delete;
+  MojoUkmRecorder& operator=(const MojoUkmRecorder&) = delete;
+
   ~MojoUkmRecorder() override;
 
   base::WeakPtr<MojoUkmRecorder> GetWeakPtr();
@@ -45,7 +49,9 @@ class METRICS_EXPORT MojoUkmRecorder : public UkmRecorder {
  private:
   // UkmRecorder:
   void UpdateSourceURL(SourceId source_id, const GURL& url) override;
-  void UpdateAppURL(SourceId source_id, const GURL& url) override;
+  void UpdateAppURL(SourceId source_id,
+                    const GURL& url,
+                    const AppType app_type) override;
   void RecordNavigation(
       SourceId source_id,
       const UkmSource::NavigationData& navigation_data) override;
@@ -55,8 +61,6 @@ class METRICS_EXPORT MojoUkmRecorder : public UkmRecorder {
   mojo::Remote<mojom::UkmRecorderInterface> interface_;
 
   base::WeakPtrFactory<MojoUkmRecorder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoUkmRecorder);
 };
 
 }  // namespace ukm

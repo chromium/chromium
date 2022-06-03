@@ -32,7 +32,7 @@ const AtomicString& XRReferenceSpaceEvent::InterfaceName() const {
   return event_interface_names::kXRReferenceSpaceEvent;
 }
 
-void XRReferenceSpaceEvent::Trace(blink::Visitor* visitor) {
+void XRReferenceSpaceEvent::Trace(Visitor* visitor) const {
   visitor->Trace(reference_space_);
   visitor->Trace(transform_);
   Event::Trace(visitor);

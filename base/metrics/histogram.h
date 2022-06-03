@@ -73,16 +73,17 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/values.h"
 
 namespace base {
 
@@ -103,6 +104,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
   static const uint32_t kBucketCount_MAX;
 
   typedef std::vector<Count> Counts;
+
+  Histogram(const Histogram&) = delete;
+  Histogram& operator=(const Histogram&) = delete;
 
   ~Histogram() override;
 
@@ -217,8 +221,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   void AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
-  void WriteHTMLGraph(std::string* output) const override;
-  void WriteAscii(std::string* output) const override;
+  base::Value ToGraphDict() const override;
 
   // Validates the histogram contents and CHECKs on errors.
   // TODO(bcwhite): Remove this after https://crbug/836875.
@@ -257,12 +260,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // HistogramBase implementation:
   void SerializeInfoImpl(base::Pickle* pickle) const override;
 
-  // Method to override to skip the display of the i'th bucket if it's empty.
-  virtual bool PrintEmptyBucket(uint32_t index) const;
-
-  // Get normalized size, relative to the ranges(i).
-  virtual double GetBucketSize(Count current, uint32_t i) const;
-
   // Return a string description of what goes in a given bucket.
   // Most commonly this is the numeric value, but in derived classes it may
   // be a name (or string description) given to the bucket.
@@ -290,35 +287,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // Create a copy of unlogged samples.
   std::unique_ptr<SampleVector> SnapshotUnloggedSamples() const;
 
-  //----------------------------------------------------------------------------
-  // Helpers for emitting Ascii graphic.  Each method appends data to output.
-
-  void WriteAsciiImpl(bool graph_it,
-                      const std::string& newline,
-                      std::string* output) const;
-
-  // Find out how large (graphically) the largest bucket will appear to be.
-  double GetPeakBucketSize(const SampleVectorBase& samples) const;
-
-  // Write a common header message describing this histogram.
-  void WriteAsciiHeader(const SampleVectorBase& samples,
-                        Count sample_count,
-                        std::string* output) const;
-
-  // Write information about previous, current, and next buckets.
-  // Information such as cumulative percentage, etc.
-  void WriteAsciiBucketContext(const int64_t past,
-                               const Count current,
-                               const int64_t remaining,
-                               const uint32_t i,
-                               std::string* output) const;
-
-  // WriteJSON calls these.
-  void GetParameters(DictionaryValue* params) const override;
-
-  void GetCountAndBucketData(Count* count,
-                             int64_t* sum,
-                             ListValue* buckets) const override;
+  // Writes the type, min, max, and bucket count information of the histogram in
+  // |params|.
+  Value GetParameters() const override;
 
   // Samples that have not yet been logged with SnapshotDelta().
   std::unique_ptr<SampleVectorBase> unlogged_samples_;
@@ -331,8 +302,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // used to DCHECK that a final delta is not created multiple times.
   mutable bool final_delta_created_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Histogram);
 };
 
 //------------------------------------------------------------------------------
@@ -341,6 +310,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
 // buckets.
 class BASE_EXPORT LinearHistogram : public Histogram {
  public:
+  LinearHistogram(const LinearHistogram&) = delete;
+  LinearHistogram& operator=(const LinearHistogram&) = delete;
+
   ~LinearHistogram() override;
 
   /* minimum should start from 1. 0 is as minimum is invalid. 0 is an implicit
@@ -423,15 +395,9 @@ class BASE_EXPORT LinearHistogram : public Histogram {
                   HistogramSamples::Metadata* meta,
                   HistogramSamples::Metadata* logged_meta);
 
-  double GetBucketSize(Count current, uint32_t i) const override;
-
   // If we have a description for a bucket, then return that.  Otherwise
   // let parent class provide a (numeric) description.
   const std::string GetAsciiBucketRange(uint32_t i) const override;
-
-  // Skip printing of name for numeric range if we have a name (and if this is
-  // an empty bucket).
-  bool PrintEmptyBucket(uint32_t index) const override;
 
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
@@ -443,8 +409,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   // to provide a description.
   typedef std::map<Sample, std::string> BucketDescriptionMap;
   BucketDescriptionMap bucket_description_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearHistogram);
 };
 
 //------------------------------------------------------------------------------
@@ -469,6 +433,15 @@ class BASE_EXPORT ScaledLinearHistogram {
                         uint32_t bucket_count,
                         int32_t scale,
                         int32_t flags);
+  ScaledLinearHistogram(const std::string& name,
+                        Sample minimum,
+                        Sample maximum,
+                        uint32_t bucket_count,
+                        int32_t scale,
+                        int32_t flags);
+
+  ScaledLinearHistogram(const ScaledLinearHistogram&) = delete;
+  ScaledLinearHistogram& operator=(const ScaledLinearHistogram&) = delete;
 
   ~ScaledLinearHistogram();
 
@@ -478,12 +451,13 @@ class BASE_EXPORT ScaledLinearHistogram {
   void AddScaledCount(Sample value, int count);
 
   int32_t scale() const { return scale_; }
-  LinearHistogram* histogram() { return histogram_; }
+  HistogramBase* histogram() { return histogram_; }
 
  private:
   // Pointer to the underlying histogram. Ownership of it remains with
-  // the statistics-recorder.
-  LinearHistogram* const histogram_;
+  // the statistics-recorder. This is typed as HistogramBase because it may be a
+  // DummyHistogram if expired.
+  HistogramBase* const histogram_;
 
   // The scale factor of the sample counts.
   const int32_t scale_;
@@ -492,8 +466,6 @@ class BASE_EXPORT ScaledLinearHistogram {
   // may be negative as the scaled count is actually bumped once the
   // remainder is 1/2 way to the scale value (thus "rounding").
   std::vector<AtomicCount> remainders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScaledLinearHistogram);
 };
 
 //------------------------------------------------------------------------------
@@ -507,6 +479,9 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
   // to avoid code bloat from the std::string constructor being inlined into
   // call sites.
   static HistogramBase* FactoryGet(const char* name, int32_t flags);
+
+  BooleanHistogram(const BooleanHistogram&) = delete;
+  BooleanHistogram& operator=(const BooleanHistogram&) = delete;
 
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
@@ -534,8 +509,6 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
       base::PickleIterator* iter);
   static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
-
-  DISALLOW_COPY_AND_ASSIGN(BooleanHistogram);
 };
 
 //------------------------------------------------------------------------------
@@ -557,6 +530,9 @@ class BASE_EXPORT CustomHistogram : public Histogram {
   static HistogramBase* FactoryGet(const char* name,
                                    const std::vector<Sample>& custom_ranges,
                                    int32_t flags);
+
+  CustomHistogram(const CustomHistogram&) = delete;
+  CustomHistogram& operator=(const CustomHistogram&) = delete;
 
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
@@ -593,16 +569,12 @@ class BASE_EXPORT CustomHistogram : public Histogram {
   // HistogramBase implementation:
   void SerializeInfoImpl(base::Pickle* pickle) const override;
 
-  double GetBucketSize(Count current, uint32_t i) const override;
-
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
       base::PickleIterator* iter);
   static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
 
   static bool ValidateCustomRanges(const std::vector<Sample>& custom_ranges);
-
-  DISALLOW_COPY_AND_ASSIGN(CustomHistogram);
 };
 
 }  // namespace base

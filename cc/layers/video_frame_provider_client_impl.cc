@@ -85,14 +85,12 @@ VideoFrameProviderClientImpl::AcquireLockAndCurrentFrame() {
 
 void VideoFrameProviderClientImpl::PutCurrentFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  provider_lock_.AssertAcquired();
   provider_->PutCurrentFrame();
   needs_put_current_frame_ = false;
 }
 
 void VideoFrameProviderClientImpl::ReleaseLock() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  provider_lock_.AssertAcquired();
   provider_lock_.Release();
 }
 

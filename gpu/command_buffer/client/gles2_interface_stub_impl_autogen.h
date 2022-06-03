@@ -274,6 +274,9 @@ GLint GLES2InterfaceStub::GetAttribLocation(GLuint /* program */,
 }
 void GLES2InterfaceStub::GetBooleanv(GLenum /* pname */,
                                      GLboolean* /* params */) {}
+void GLES2InterfaceStub::GetBooleani_v(GLenum /* pname */,
+                                       GLuint /* index */,
+                                       GLboolean* /* data */) {}
 void GLES2InterfaceStub::GetBufferParameteri64v(GLenum /* target */,
                                                 GLenum /* pname */,
                                                 GLint64* /* params */) {}
@@ -491,7 +494,6 @@ void GLES2InterfaceStub::ShaderSource(GLuint /* shader */,
                                       const GLchar* const* /* str */,
                                       const GLint* /* length */) {}
 void GLES2InterfaceStub::ShallowFinishCHROMIUM() {}
-void GLES2InterfaceStub::ShallowFlushCHROMIUM() {}
 void GLES2InterfaceStub::OrderingBarrierCHROMIUM() {}
 void GLES2InterfaceStub::MultiDrawArraysWEBGL(GLenum /* mode */,
                                               const GLint* /* firsts */,
@@ -965,7 +967,7 @@ void GLES2InterfaceStub::UnmapTexSubImage2DCHROMIUM(const void* /* mem */) {}
 void GLES2InterfaceStub::ResizeCHROMIUM(GLuint /* width */,
                                         GLuint /* height */,
                                         GLfloat /* scale_factor */,
-                                        GLenum /* color_space */,
+                                        GLcolorSpace /* color_space */,
                                         GLboolean /* alpha */) {}
 const GLchar* GLES2InterfaceStub::GetRequestableExtensionsCHROMIUM() {
   return 0;
@@ -1156,116 +1158,6 @@ void GLES2InterfaceStub::ScheduleDCLayerCHROMIUM(
     GLint /* clip_height */,
     GLuint /* protected_video_type */) {}
 void GLES2InterfaceStub::SetActiveURLCHROMIUM(const char* /* url */) {}
-void GLES2InterfaceStub::MatrixLoadfCHROMIUM(GLenum /* matrixMode */,
-                                             const GLfloat* /* m */) {}
-void GLES2InterfaceStub::MatrixLoadIdentityCHROMIUM(GLenum /* matrixMode */) {}
-GLuint GLES2InterfaceStub::GenPathsCHROMIUM(GLsizei /* range */) {
-  return 0;
-}
-void GLES2InterfaceStub::DeletePathsCHROMIUM(GLuint /* path */,
-                                             GLsizei /* range */) {}
-GLboolean GLES2InterfaceStub::IsPathCHROMIUM(GLuint /* path */) {
-  return 0;
-}
-void GLES2InterfaceStub::PathCommandsCHROMIUM(GLuint /* path */,
-                                              GLsizei /* numCommands */,
-                                              const GLubyte* /* commands */,
-                                              GLsizei /* numCoords */,
-                                              GLenum /* coordType */,
-                                              const GLvoid* /* coords */) {}
-void GLES2InterfaceStub::PathParameterfCHROMIUM(GLuint /* path */,
-                                                GLenum /* pname */,
-                                                GLfloat /* value */) {}
-void GLES2InterfaceStub::PathParameteriCHROMIUM(GLuint /* path */,
-                                                GLenum /* pname */,
-                                                GLint /* value */) {}
-void GLES2InterfaceStub::PathStencilFuncCHROMIUM(GLenum /* func */,
-                                                 GLint /* ref */,
-                                                 GLuint /* mask */) {}
-void GLES2InterfaceStub::StencilFillPathCHROMIUM(GLuint /* path */,
-                                                 GLenum /* fillMode */,
-                                                 GLuint /* mask */) {}
-void GLES2InterfaceStub::StencilStrokePathCHROMIUM(GLuint /* path */,
-                                                   GLint /* reference */,
-                                                   GLuint /* mask */) {}
-void GLES2InterfaceStub::CoverFillPathCHROMIUM(GLuint /* path */,
-                                               GLenum /* coverMode */) {}
-void GLES2InterfaceStub::CoverStrokePathCHROMIUM(GLuint /* path */,
-                                                 GLenum /* coverMode */) {}
-void GLES2InterfaceStub::StencilThenCoverFillPathCHROMIUM(
-    GLuint /* path */,
-    GLenum /* fillMode */,
-    GLuint /* mask */,
-    GLenum /* coverMode */) {}
-void GLES2InterfaceStub::StencilThenCoverStrokePathCHROMIUM(
-    GLuint /* path */,
-    GLint /* reference */,
-    GLuint /* mask */,
-    GLenum /* coverMode */) {}
-void GLES2InterfaceStub::StencilFillPathInstancedCHROMIUM(
-    GLsizei /* numPaths */,
-    GLenum /* pathNameType */,
-    const GLvoid* /* paths */,
-    GLuint /* pathBase */,
-    GLenum /* fillMode */,
-    GLuint /* mask */,
-    GLenum /* transformType */,
-    const GLfloat* /* transformValues */) {}
-void GLES2InterfaceStub::StencilStrokePathInstancedCHROMIUM(
-    GLsizei /* numPaths */,
-    GLenum /* pathNameType */,
-    const GLvoid* /* paths */,
-    GLuint /* pathBase */,
-    GLint /* reference */,
-    GLuint /* mask */,
-    GLenum /* transformType */,
-    const GLfloat* /* transformValues */) {}
-void GLES2InterfaceStub::CoverFillPathInstancedCHROMIUM(
-    GLsizei /* numPaths */,
-    GLenum /* pathNameType */,
-    const GLvoid* /* paths */,
-    GLuint /* pathBase */,
-    GLenum /* coverMode */,
-    GLenum /* transformType */,
-    const GLfloat* /* transformValues */) {}
-void GLES2InterfaceStub::CoverStrokePathInstancedCHROMIUM(
-    GLsizei /* numPaths */,
-    GLenum /* pathNameType */,
-    const GLvoid* /* paths */,
-    GLuint /* pathBase */,
-    GLenum /* coverMode */,
-    GLenum /* transformType */,
-    const GLfloat* /* transformValues */) {}
-void GLES2InterfaceStub::StencilThenCoverFillPathInstancedCHROMIUM(
-    GLsizei /* numPaths */,
-    GLenum /* pathNameType */,
-    const GLvoid* /* paths */,
-    GLuint /* pathBase */,
-    GLenum /* fillMode */,
-    GLuint /* mask */,
-    GLenum /* coverMode */,
-    GLenum /* transformType */,
-    const GLfloat* /* transformValues */) {}
-void GLES2InterfaceStub::StencilThenCoverStrokePathInstancedCHROMIUM(
-    GLsizei /* numPaths */,
-    GLenum /* pathNameType */,
-    const GLvoid* /* paths */,
-    GLuint /* pathBase */,
-    GLint /* reference */,
-    GLuint /* mask */,
-    GLenum /* coverMode */,
-    GLenum /* transformType */,
-    const GLfloat* /* transformValues */) {}
-void GLES2InterfaceStub::BindFragmentInputLocationCHROMIUM(
-    GLuint /* program */,
-    GLint /* location */,
-    const char* /* name */) {}
-void GLES2InterfaceStub::ProgramPathFragmentInputGenCHROMIUM(
-    GLuint /* program */,
-    GLint /* location */,
-    GLenum /* genMode */,
-    GLint /* components */,
-    const GLfloat* /* coeffs */) {}
 void GLES2InterfaceStub::ContextVisibilityHintCHROMIUM(
     GLboolean /* visibility */) {}
 void GLES2InterfaceStub::CoverageModulationCHROMIUM(GLenum /* components */) {}
@@ -1285,17 +1177,6 @@ GLint GLES2InterfaceStub::GetFragDataIndexEXT(GLuint /* program */,
                                               const char* /* name */) {
   return 0;
 }
-void GLES2InterfaceStub::UniformMatrix4fvStreamTextureMatrixCHROMIUM(
-    GLint /* location */,
-    GLboolean /* transpose */,
-    const GLfloat* /* transform */) {}
-void GLES2InterfaceStub::OverlayPromotionHintCHROMIUM(
-    GLuint /* texture */,
-    GLboolean /* promotion_hint */,
-    GLint /* display_x */,
-    GLint /* display_y */,
-    GLint /* display_width */,
-    GLint /* display_height */) {}
 void GLES2InterfaceStub::SwapBuffersWithBoundsCHROMIUM(GLuint64 /* swap_id */,
                                                        GLsizei /* count */,
                                                        const GLint* /* rects */,
@@ -1321,7 +1202,7 @@ void GLES2InterfaceStub::TexStorage2DImageCHROMIUM(GLenum /* target */,
                                                    GLsizei /* height */) {}
 void GLES2InterfaceStub::SetColorSpaceMetadataCHROMIUM(
     GLuint /* texture_id */,
-    GLColorSpace /* color_space */) {}
+    GLcolorSpace /* color_space */) {}
 void GLES2InterfaceStub::WindowRectanglesEXT(GLenum /* mode */,
                                              GLsizei /* count */,
                                              const GLint* /* box */) {}
@@ -1359,4 +1240,30 @@ void GLES2InterfaceStub::BeginSharedImageAccessDirectCHROMIUM(
     GLenum /* mode */) {}
 void GLES2InterfaceStub::EndSharedImageAccessDirectCHROMIUM(
     GLuint /* texture */) {}
+void GLES2InterfaceStub::BeginBatchReadAccessSharedImageCHROMIUM() {}
+void GLES2InterfaceStub::EndBatchReadAccessSharedImageCHROMIUM() {}
+void GLES2InterfaceStub::EnableiOES(GLenum /* target */, GLuint /* index */) {}
+void GLES2InterfaceStub::DisableiOES(GLenum /* target */, GLuint /* index */) {}
+void GLES2InterfaceStub::BlendEquationiOES(GLuint /* buf */,
+                                           GLenum /* mode */) {}
+void GLES2InterfaceStub::BlendEquationSeparateiOES(GLuint /* buf */,
+                                                   GLenum /* modeRGB */,
+                                                   GLenum /* modeAlpha */) {}
+void GLES2InterfaceStub::BlendFunciOES(GLuint /* buf */,
+                                       GLenum /* src */,
+                                       GLenum /* dst */) {}
+void GLES2InterfaceStub::BlendFuncSeparateiOES(GLuint /* buf */,
+                                               GLenum /* srcRGB */,
+                                               GLenum /* dstRGB */,
+                                               GLenum /* srcAlpha */,
+                                               GLenum /* dstAlpha */) {}
+void GLES2InterfaceStub::ColorMaskiOES(GLuint /* buf */,
+                                       GLboolean /* r */,
+                                       GLboolean /* g */,
+                                       GLboolean /* b */,
+                                       GLboolean /* a */) {}
+GLboolean GLES2InterfaceStub::IsEnablediOES(GLenum /* target */,
+                                            GLuint /* index */) {
+  return 0;
+}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

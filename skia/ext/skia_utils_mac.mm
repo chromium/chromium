@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
@@ -126,23 +126,49 @@ CGRect SkRectToCGRect(const SkRect& rect) {
   return cg_rect;
 }
 
+SkColor NSSystemColorToSkColor(NSColor* color) {
+  // System colors use the an NSNamedColorSpace called "System", so first step
+  // is to convert the color into something that can be worked with.
+  NSColor* device_color =
+      [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
+  if (device_color)
+    return NSDeviceColorToSkColor(device_color);
+
+  // Sometimes the conversion is not possible, but we can get an approximation
+  // by going through a CGColorRef. Note that simply using NSColor methods for
+  // accessing components for system colors results in exceptions like
+  // "-numberOfComponents not valid for the NSColor NSNamedColorSpace System
+  // windowBackgroundColor; need to first convert colorspace." Hence the
+  // conversion first to CGColor.
+  CGColorRef cg_color = [color CGColor];
+  const size_t component_count = CGColorGetNumberOfComponents(cg_color);
+  if (component_count == 4)
+    return CGColorRefToSkColor(cg_color);
+
+  CHECK(component_count == 1 || component_count == 2);
+  // 1-2 components means a grayscale channel and maybe an alpha channel, which
+  // CGColorRefToSkColor will not like. But RGB is additive, so the conversion
+  // is easy (RGB to grayscale is less easy).
+  const CGFloat* components = CGColorGetComponents(cg_color);
+  CGFloat alpha = component_count == 2 ? components[1] : 1.0f;
+  return SkColor4f{components[0], components[0], components[0], alpha}
+      .toSkColor();
+}
+
 SkColor CGColorRefToSkColor(CGColorRef color) {
   // TODO(ccameron): This assumes that |color| is already in sRGB. Ideally we'd
   // use something like CGColorCreateCopyByMatchingToColorSpace, but that's
   // only available in macOS 10.11.
   DCHECK(CGColorGetNumberOfComponents(color) == 4);
   const CGFloat* components = CGColorGetComponents(color);
-  return SkColorSetARGB(SkScalarRoundToInt(255.0 * components[3]), // alpha
-                        SkScalarRoundToInt(255.0 * components[0]), // red
-                        SkScalarRoundToInt(255.0 * components[1]), // green
-                        SkScalarRoundToInt(255.0 * components[2])); // blue
+  return SkColor4f{components[0], components[1], components[2], components[3]}
+      .toSkColor();
 }
 
 CGColorRef CGColorCreateFromSkColor(SkColor color) {
-  double components[] = {SkColorGetR(color) / 255.0,
-                         SkColorGetG(color) / 255.0,
-                         SkColorGetB(color) / 255.0,
-                         SkColorGetA(color) / 255.0};
+  CGFloat components[] = {
+      SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
+      SkColorGetB(color) / 255.0f, SkColorGetA(color) / 255.0f};
   return CGColorCreate(base::mac::GetSRGBColorSpace(), components);
 }
 
@@ -153,34 +179,28 @@ SkColor NSDeviceColorToSkColor(NSColor* color) {
   CGFloat red, green, blue, alpha;
   color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
   [color getRed:&red green:&green blue:&blue alpha:&alpha];
-  return SkColorSetARGB(SkScalarRoundToInt(255.0 * alpha),
-                        SkScalarRoundToInt(255.0 * red),
-                        SkScalarRoundToInt(255.0 * green),
-                        SkScalarRoundToInt(255.0 * blue));
+  return SkColor4f{red, green, blue, alpha}.toSkColor();
 }
 
 // Converts ARGB to NSColor.
 NSColor* SkColorToCalibratedNSColor(SkColor color) {
-  return [NSColor colorWithCalibratedRed:SkColorGetR(color) / 255.0
-                                   green:SkColorGetG(color) / 255.0
-                                    blue:SkColorGetB(color) / 255.0
-                                   alpha:SkColorGetA(color) / 255.0];
+  return [NSColor colorWithCalibratedRed:SkColorGetR(color) / 255.0f
+                                   green:SkColorGetG(color) / 255.0f
+                                    blue:SkColorGetB(color) / 255.0f
+                                   alpha:SkColorGetA(color) / 255.0f];
 }
 
 NSColor* SkColorToDeviceNSColor(SkColor color) {
-  return [NSColor colorWithDeviceRed:SkColorGetR(color) / 255.0
-                               green:SkColorGetG(color) / 255.0
-                                blue:SkColorGetB(color) / 255.0
-                               alpha:SkColorGetA(color) / 255.0];
+  return [NSColor colorWithDeviceRed:SkColorGetR(color) / 255.0f
+                               green:SkColorGetG(color) / 255.0f
+                                blue:SkColorGetB(color) / 255.0f
+                               alpha:SkColorGetA(color) / 255.0f];
 }
 
 NSColor* SkColorToSRGBNSColor(SkColor color) {
   const CGFloat components[] = {
-    SkColorGetR(color) / 255.0,
-    SkColorGetG(color) / 255.0,
-    SkColorGetB(color) / 255.0,
-    SkColorGetA(color) / 255.0
-  };
+      SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
+      SkColorGetB(color) / 255.0f, SkColorGetA(color) / 255.0f};
   return [NSColor colorWithColorSpace:[NSColorSpace sRGBColorSpace]
                            components:components
                                 count:4];

@@ -12,14 +12,15 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/mac/scoped_objc_class_swizzler.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/mac/attributed_string_type_converters.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
@@ -53,9 +54,10 @@ namespace {
 
 content::RenderWidgetHostViewMac* GetRenderWidgetHostViewMac(NSObject* object) {
   for (auto* contents : WebContentsImpl::GetAllWebContents()) {
-    if (!contents->GetBrowserPluginGuest()) {
-      RenderWidgetHostViewMac* rwhv_mac = static_cast<RenderWidgetHostViewMac*>(
-          contents->GetRenderWidgetHostView());
+    auto* rwhv_base = static_cast<RenderWidgetHostViewBase*>(
+        contents->GetRenderWidgetHostView());
+    if (rwhv_base && !rwhv_base->IsRenderWidgetHostViewChildFrame()) {
+      auto* rwhv_mac = static_cast<RenderWidgetHostViewMac*>(rwhv_base);
       if (rwhv_mac->GetInProcessNSView() == object)
         return rwhv_mac;
     }
@@ -136,10 +138,13 @@ void GetStringAtPointForRenderWidget(
           base::RetainBlock(^(
               base::OnceCallback<void(const std::string&, const gfx::Point&)>
                   callback,
-              const mac::AttributedStringCoder::EncodedString& encoded_string,
-              gfx::Point baseline_point) {
-            std::string string = base::SysNSStringToUTF8(
-                [mac::AttributedStringCoder::Decode(&encoded_string) string]);
+              ui::mojom::AttributedStringPtr attributed_string,
+              const gfx::Point& baseline_point) {
+            std::string string =
+                attributed_string
+                    ? base::SysNSStringToUTF8(
+                          [attributed_string.To<NSAttributedString*>() string])
+                    : std::string();
             std::move(callback).Run(string, baseline_point);
           }),
           std::move(result_callback)));
@@ -156,10 +161,13 @@ void GetStringFromRangeForRenderWidget(
           base::RetainBlock(^(
               base::OnceCallback<void(const std::string&, const gfx::Point&)>
                   callback,
-              const mac::AttributedStringCoder::EncodedString& encoded_string,
-              gfx::Point baseline_point) {
-            std::string string = base::SysNSStringToUTF8(
-                [mac::AttributedStringCoder::Decode(&encoded_string) string]);
+              ui::mojom::AttributedStringPtr attributed_string,
+              const gfx::Point& baseline_point) {
+            std::string string =
+                attributed_string
+                    ? base::SysNSStringToUTF8(
+                          [attributed_string.To<NSAttributedString*>() string])
+                    : std::string();
             std::move(callback).Run(string, baseline_point);
           }),
           std::move(result_callback)));

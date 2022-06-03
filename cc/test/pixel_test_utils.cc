@@ -52,6 +52,8 @@ bool ReadPNGFile(const base::FilePath& file_path, SkBitmap* bitmap) {
 bool MatchesBitmap(const SkBitmap& gen_bmp,
                    const SkBitmap& ref_bmp,
                    const PixelComparator& comparator) {
+  bool pixels_match = true;
+
   // Check if images size matches
   if (gen_bmp.width() != ref_bmp.width() ||
       gen_bmp.height() != ref_bmp.height()) {
@@ -60,22 +62,25 @@ bool MatchesBitmap(const SkBitmap& gen_bmp,
         << "Actual: " << gen_bmp.width() << "x" << gen_bmp.height()
         << "; "
         << "Expected: " << ref_bmp.width() << "x" << ref_bmp.height();
-    return false;
+    pixels_match = false;
   }
 
   // Shortcut for empty images. They are always equal.
-  if (gen_bmp.width() == 0 || gen_bmp.height() == 0)
+  if (pixels_match && (gen_bmp.width() == 0 || gen_bmp.height() == 0))
     return true;
 
-  bool compare = comparator.Compare(gen_bmp, ref_bmp);
-  if (!compare) {
-    std::string gen_bmp_data_url = GetPNGDataUrl(gen_bmp);
-    std::string ref_bmp_data_url = GetPNGDataUrl(ref_bmp);
+  if (pixels_match && !comparator.Compare(gen_bmp, ref_bmp)) {
     LOG(ERROR) << "Pixels do not match!";
-    LOG(ERROR) << "Actual pixels (open in browser):\n" << gen_bmp_data_url;
-    LOG(ERROR) << "Expected pixels (open in browser):\n" << ref_bmp_data_url;
+    pixels_match = false;
   }
-  return compare;
+
+  if (!pixels_match) {
+    LOG(ERROR) << "Actual pixels (open in browser):\n"
+               << GetPNGDataUrl(gen_bmp);
+    LOG(ERROR) << "Expected pixels (open in browser):\n"
+               << GetPNGDataUrl(ref_bmp);
+  }
+  return pixels_match;
 }
 
 bool MatchesPNGFile(const SkBitmap& gen_bmp,

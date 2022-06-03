@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_mac || is_ios)
+assert(is_apple)
 
 config("ocmock_config") {
   include_dirs = [ "//third_party/ocmock" ]
@@ -97,9 +97,7 @@ source_set("ocmock") {
     "OCMock/OCProtocolMockObject.m",
   ]
 
-  deps = [
-    "//testing/gtest",
-  ]
+  deps = [ "//testing/gtest" ]
   public_configs = [ ":ocmock_config" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [

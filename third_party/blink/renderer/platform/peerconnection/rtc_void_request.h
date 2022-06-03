@@ -44,7 +44,7 @@ class RTCVoidRequest : public GarbageCollected<RTCVoidRequest> {
   virtual void RequestSucceeded() = 0;
   virtual void RequestFailed(const webrtc::RTCError&) = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
  protected:
   RTCVoidRequest() = default;

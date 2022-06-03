@@ -22,6 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RESOLVER_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/text/bidi_character_run.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/bidi_run_list.h"
@@ -213,16 +214,17 @@ class NoIsolatedRun {};
 // http://unicode.org/reports/tr9
 template <class Iterator, class Run, class IsolatedRun = NoIsolatedRun>
 class BidiResolver final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   BidiResolver()
       : direction_(WTF::unicode::kOtherNeutral),
         reached_end_of_line_(false),
         empty_run_(true),
-        nested_isolate_count_(0),
         trailing_space_run_(nullptr),
         needs_trailing_space_(false) {}
+  BidiResolver(const BidiResolver&) = delete;
+  BidiResolver& operator=(const BidiResolver&) = delete;
 
 #if DCHECK_IS_ON()
   ~BidiResolver();
@@ -352,7 +354,7 @@ class BidiResolver final {
 
   MidpointState<Iterator> midpoint_state_;
 
-  unsigned nested_isolate_count_;
+  unsigned nested_isolate_count_ = 0;
   Vector<IsolatedRun> isolated_runs_;
   Run* trailing_space_run_;
   bool needs_trailing_space_;
@@ -380,8 +382,6 @@ class BidiResolver final {
 
   Vector<BidiEmbedding, 8> current_explicit_embedding_sequence_;
   HashMap<Run*, MidpointState<Iterator>> midpoint_state_for_isolated_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidiResolver);
 };
 
 #if DCHECK_IS_ON()

@@ -14,55 +14,61 @@
 
 #include "snapshot/sanitized/sanitization_information.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_linux.h"
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#endif
+
 namespace crashpad {
 namespace test {
 namespace {
 
-class WhitelistTest : public testing::Test {
+class AllowedAnnotationsTest : public testing::Test {
  public:
   void SetUp() override {
-    ASSERT_TRUE(memory_.Initialize(getpid()));
+    ASSERT_TRUE(connection_.Initialize(getpid()));
+
 #if defined(ARCH_CPU_64_BITS)
-    ASSERT_TRUE(range_.Initialize(&memory_, true));
+    ASSERT_TRUE(range_.Initialize(connection_.Memory(), true));
 #else
-    ASSERT_TRUE(range_.Initialize(&memory_, false));
+    ASSERT_TRUE(range_.Initialize(connection_.Memory(), false));
 #endif
   }
 
  protected:
-  bool ReadWhitelist(const char* const* address) {
-    return ReadAnnotationsWhitelist(
-        range_, FromPointerCast<VMAddress>(address), &whitelist_);
+  bool DoReadAllowedAnnotations(const char* const* address) {
+    return ReadAllowedAnnotations(
+        range_, FromPointerCast<VMAddress>(address), &allowed_annotations_);
   }
 
-  ProcessMemoryLinux memory_;
+  FakePtraceConnection connection_;
   ProcessMemoryRange range_;
-  std::vector<std::string> whitelist_;
+  std::vector<std::string> allowed_annotations_;
 };
 
-const char* const kEmptyWhitelist[] = {nullptr};
+const char* const kEmptyAllowedAnnotations[] = {nullptr};
 
-TEST_F(WhitelistTest, EmptyWhitelist) {
-  ASSERT_TRUE(ReadWhitelist(kEmptyWhitelist));
-  EXPECT_EQ(whitelist_, std::vector<std::string>());
+TEST_F(AllowedAnnotationsTest, EmptyAllowedAnnotations) {
+  ASSERT_TRUE(DoReadAllowedAnnotations(kEmptyAllowedAnnotations));
+  EXPECT_EQ(allowed_annotations_, std::vector<std::string>());
 }
 
-const char* const kNonEmptyWhitelist[] = {"string1",
-                                          "another_string",
-                                          "",
-                                          nullptr};
+const char* const kNonEmptyAllowedAnnotations[] = {"string1",
+                                                   "another_string",
+                                                   "",
+                                                   nullptr};
 
-TEST_F(WhitelistTest, NonEmptyWhitelist) {
-  ASSERT_TRUE(ReadWhitelist(kNonEmptyWhitelist));
-  ASSERT_EQ(whitelist_.size(), base::size(kNonEmptyWhitelist) - 1);
-  for (size_t index = 0; index < base::size(kNonEmptyWhitelist) - 1; ++index) {
-    EXPECT_EQ(whitelist_[index], kNonEmptyWhitelist[index]);
+TEST_F(AllowedAnnotationsTest, NonEmptyAllowedAnnotations) {
+  ASSERT_TRUE(DoReadAllowedAnnotations(kNonEmptyAllowedAnnotations));
+  ASSERT_EQ(allowed_annotations_.size(),
+            base::size(kNonEmptyAllowedAnnotations) - 1);
+  for (size_t index = 0; index < allowed_annotations_.size(); ++index) {
+    EXPECT_EQ(allowed_annotations_[index], kNonEmptyAllowedAnnotations[index]);
   }
 }
 

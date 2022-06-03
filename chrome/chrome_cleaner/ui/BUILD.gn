@@ -47,7 +47,7 @@ source_set("unittest_sources") {
     "//base",
     "//base/test:test_support",
     "//chrome/chrome_cleaner/constants:uws_id",
-    "//chrome/chrome_cleaner/ipc:mock_chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_test_util",
     "//chrome/chrome_cleaner/test:test_pup_data",
     "//chrome/chrome_cleaner/test:test_util",
     "//components/chrome_cleaner/test:test_name_helper",

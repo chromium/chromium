@@ -5,6 +5,8 @@
 #ifndef BASE_PROFILER_NATIVE_UNWINDER_WIN_H_
 #define BASE_PROFILER_NATIVE_UNWINDER_WIN_H_
 
+#include <vector>
+
 #include "base/macros.h"
 #include "base/profiler/unwinder.h"
 
@@ -19,10 +21,9 @@ class NativeUnwinderWin : public Unwinder {
   NativeUnwinderWin& operator=(const NativeUnwinderWin&) = delete;
 
   // Unwinder:
-  bool CanUnwindFrom(const Frame* current_frame) const override;
+  bool CanUnwindFrom(const Frame& current_frame) const override;
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override;
 };
 

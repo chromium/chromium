@@ -11,7 +11,7 @@ ResourceType(other): SearchableView > widget vbox json-view
 
 MIME JSON
 Testing with MimeType: application/vnd.document+json, and StatusCode: 200
-Content: {foo0foo: 123}
+Content: {"foo0foo": 123}
 
 ResourceType(xhr): SearchableView > widget vbox json-view
 ResourceType(fetch): SearchableView > widget vbox json-view
@@ -29,7 +29,7 @@ ResourceType(other): SearchableView > widget shadow-xml-view source-code
 
 XML MIME But JSON
 Testing with MimeType: text/xml, and StatusCode: 200
-Content: {foo0: 'barr', 'barr': 'fooo'}
+Content: {"foo0": "barr", "barr": "fooo"}
 
 ResourceType(xhr): SearchableView > widget vbox json-view
 ResourceType(fetch): SearchableView > widget vbox json-view
@@ -38,7 +38,7 @@ ResourceType(other): SearchableView > widget vbox json-view
 
 HTML MIME But JSON
 Testing with MimeType: text/html, and StatusCode: 200
-Content: {hi: "hi"}
+Content: {"hi": "hi"}
 
 ResourceType(xhr): SearchableView > widget vbox json-view
 ResourceType(fetch): SearchableView > widget vbox json-view
@@ -47,7 +47,7 @@ ResourceType(other): SearchableView > widget vbox json-view
 
 TEXT MIME But JSON
 Testing with MimeType: text/html, and StatusCode: 200
-Content: {hi: "hi"}
+Content: {"hi": "hi"}
 
 ResourceType(xhr): SearchableView > widget vbox json-view
 ResourceType(fetch): SearchableView > widget vbox json-view
@@ -78,10 +78,10 @@ XML With Unknown MIME
 Testing with MimeType: text/foobar, and StatusCode: 200
 Content: <bar><foo/></bar>
 
-ResourceType(xhr): _SearchableContainer > SearchableView > widget vbox
-ResourceType(fetch): _SearchableContainer > SearchableView > widget vbox
-ResourceType(document): _SearchableContainer > SearchableView > widget vbox
-ResourceType(other): _SearchableContainer > SearchableView > widget vbox
+ResourceType(xhr): SearchableContainer > SearchableView > widget vbox
+ResourceType(fetch): SearchableContainer > SearchableView > widget vbox
+ResourceType(document): SearchableContainer > SearchableView > widget vbox
+ResourceType(other): SearchableContainer > SearchableView > widget vbox
 
 XML With Error 500
 Testing with MimeType: text/xml, and StatusCode: 500
@@ -96,10 +96,10 @@ Unknown MIME Text With Error 500
 Testing with MimeType: text/foobar, and StatusCode: 500
 Content: Foo Bar
 
-ResourceType(xhr): _SearchableContainer > SearchableView > widget vbox
-ResourceType(fetch): _SearchableContainer > SearchableView > widget vbox
-ResourceType(document): _SearchableContainer > SearchableView > widget vbox
-ResourceType(other): _SearchableContainer > SearchableView > widget vbox
+ResourceType(xhr): SearchableContainer > SearchableView > widget vbox
+ResourceType(fetch): SearchableContainer > SearchableView > widget vbox
+ResourceType(document): SearchableContainer > SearchableView > widget vbox
+ResourceType(other): SearchableContainer > SearchableView > widget vbox
 
 Binary Image File
 Testing with MimeType: image/png, and StatusCode: 200

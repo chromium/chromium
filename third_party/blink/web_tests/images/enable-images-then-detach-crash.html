@@ -1,0 +1,18 @@
+<body>
+PASS if no crash.
+<script>
+if (window.localStorage.getItem("finish-during-reload") == null) {
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.setImagesAllowed(false);
+  }
+
+  setTimeout(() => {
+    window.localStorage.setItem("finish-during-reload", "reload");
+    if (window.testRunner)
+      testRunner.setImagesAllowed(true);
+    internals.forceReload(false);
+  }, 0);
+}
+</script>
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABVJREFUeNpiZPjPgAyYGBgo4gMEGABPkgEJUvO9mgAAAABJRU5ErkJggg==">

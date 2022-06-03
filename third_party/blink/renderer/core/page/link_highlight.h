@@ -16,19 +16,20 @@ class AnimationHost;
 }
 
 namespace blink {
-class GraphicsContext;
-class Page;
-class LinkHighlightImpl;
 class CompositorAnimationTimeline;
-class LocalFrame;
+class GraphicsContext;
+class LinkHighlightImpl;
 class LayoutObject;
+class LocalFrame;
+class Node;
+class Page;
 
 class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
  public:
   explicit LinkHighlight(Page&);
   virtual ~LinkHighlight();
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
   void ResetForPageNavigation();
 
@@ -39,8 +40,8 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
   void AnimationHostInitialized(cc::AnimationHost&);
   void WillCloseAnimationHost();
 
-  bool NeedsHighlightEffect(const LayoutObject& object) const {
-    return impl_ && NeedsHighlightEffectInternal(object);
+  bool IsHighlighting(const LayoutObject& object) const {
+    return impl_ && IsHighlightingInternal(object);
   }
 
   void UpdateBeforePrePaint();
@@ -59,7 +60,7 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
     return *page_;
   }
 
-  bool NeedsHighlightEffectInternal(const LayoutObject& object) const;
+  bool IsHighlightingInternal(const LayoutObject& object) const;
 
   Member<Page> page_;
   std::unique_ptr<LinkHighlightImpl> impl_;

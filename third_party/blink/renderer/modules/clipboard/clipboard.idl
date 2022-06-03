@@ -9,9 +9,13 @@
     Exposed=Window
 ] interface Clipboard : EventTarget {
     [MeasureAs=AsyncClipboardAPIRead,
-     CallWith=ScriptState,
-     RuntimeEnabled=AsyncClipboard
+     CallWith=ScriptState
     ] Promise<sequence<ClipboardItem>> read();
+
+    [MeasureAs=AsyncClipboardAPIRead,
+     CallWith=ScriptState,
+     RuntimeEnabled=ClipboardCustomFormats
+    ] Promise<sequence<ClipboardItem>> read(ClipboardItemOptions options);
 
     [MeasureAs=AsyncClipboardAPIReadText,
      CallWith=ScriptState
@@ -19,8 +23,7 @@
 
 
     [MeasureAs=AsyncClipboardAPIWrite,
-     CallWith=ScriptState,
-     RuntimeEnabled=AsyncClipboard
+     CallWith=ScriptState
     ] Promise<void> write(sequence<ClipboardItem> data);
 
     [MeasureAs=AsyncClipboardAPIWriteText,

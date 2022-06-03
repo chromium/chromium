@@ -51,8 +51,8 @@ void PipeMessagingChannel::Start(EventHandler* event_handler) {
   DCHECK(event_handler_);
 
   native_messaging_reader_.Start(
-      base::Bind(&PipeMessagingChannel::ProcessMessage, weak_ptr_),
-      base::Bind(&PipeMessagingChannel::Shutdown, weak_ptr_));
+      base::BindRepeating(&PipeMessagingChannel::ProcessMessage, weak_ptr_),
+      base::BindOnce(&PipeMessagingChannel::Shutdown, weak_ptr_));
 }
 
 void PipeMessagingChannel::ProcessMessage(

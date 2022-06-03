@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/draw_polygon.h"
 #include "testing/gtest/include/gtest/gtest.h"

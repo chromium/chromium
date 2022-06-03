@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -33,6 +34,7 @@ class FormTracker : public content::RenderFrameObserver {
       SELECT_CHANGED,
     };
 
+    // TODO(crbug.com/1126017): Find a better name for this method.
     // Invoked when form needs to be saved because of |source|, |element| is
     // valid if the callback caused by source other than
     // WILL_SEND_SUBMIT_EVENT, |form| is valid for the callback caused by
@@ -61,6 +63,10 @@ class FormTracker : public content::RenderFrameObserver {
   };
 
   FormTracker(content::RenderFrame* render_frame);
+
+  FormTracker(const FormTracker&) = delete;
+  FormTracker& operator=(const FormTracker&) = delete;
+
   ~FormTracker() override;
 
   void AddObserver(Observer* observer);
@@ -71,6 +77,11 @@ class FormTracker : public content::RenderFrameObserver {
   void AjaxSucceeded();
   void TextFieldDidChange(const blink::WebFormControlElement& element);
   void SelectControlDidChange(const blink::WebFormControlElement& element);
+
+  // Tells the tracker to track the autofilled `element`. Since autofilling a
+  // form or field won't trigger the regular *DidChange events, the tracker
+  // won't be notified of this `element` otherwise.
+  void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
   void set_ignore_control_changes(bool ignore_control_changes) {
     ignore_control_changes_ = ignore_control_changes;
@@ -87,12 +98,12 @@ class FormTracker : public content::RenderFrameObserver {
                            FormSubmittedBySameDocumentNavigation);
 
   // content::RenderFrameObserver:
-  void DidCommitProvisionalLoad(bool is_same_document_navigation,
-                                ui::PageTransition transition) override;
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
+  void DidFinishSameDocumentNavigation() override;
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
-  void FrameDetached() override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
+  void WillDetach() override;
   void WillSendSubmitEvent(const blink::WebFormElement& form) override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void OnDestruct() override;
@@ -125,8 +136,6 @@ class FormTracker : public content::RenderFrameObserver {
   SEQUENCE_CHECKER(form_tracker_sequence_checker_);
 
   base::WeakPtrFactory<FormTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FormTracker);
 };
 
 }  // namespace autofill

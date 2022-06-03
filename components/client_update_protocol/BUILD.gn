@@ -16,9 +16,7 @@ static_library("client_update_protocol") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "ecdsa_unittest.cc",
-  ]
+  sources = [ "ecdsa_unittest.cc" ]
 
   deps = [
     ":client_update_protocol",

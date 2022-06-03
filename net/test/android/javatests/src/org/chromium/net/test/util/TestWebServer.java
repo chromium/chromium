@@ -13,7 +13,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -353,8 +352,9 @@ public class TestWebServer extends WebServer {
      */
     public HTTPRequest getLastRequest(String requestPath) {
         synchronized (mLock) {
-            if (!mLastRequestMap.containsKey(requestPath))
+            if (!mLastRequestMap.containsKey(requestPath)) {
                 throw new IllegalArgumentException("Path not set: " + requestPath);
+            }
             return mLastRequestMap.get(requestPath);
         }
     }
@@ -393,12 +393,13 @@ public class TestWebServer extends WebServer {
         boolean copyBinaryBodyToResponse = false;
         boolean contentLengthAlreadyIncluded = false;
         boolean contentTypeAlreadyIncluded = false;
-        String path = URI.create(request.getURI()).getPath();
         StringBuilder textBody = new StringBuilder();
+
+        String requestURI = request.getURI();
 
         Response response;
         synchronized (mLock) {
-            response = mResponseMap.get(path);
+            response = mResponseMap.get(requestURI);
         }
 
         if (response == null || response.mIsNotFound) {
@@ -415,13 +416,13 @@ public class TestWebServer extends WebServer {
                 copyHeadersToResponse = false;
             }
         } else if (response.mIsNoContent) {
-            stream.println("HTTP/1.0 200 OK");
+            stream.println("HTTP/1.0 204 No Content");
             copyHeadersToResponse = false;
         } else if (response.mIsRedirect) {
             stream.println("HTTP/1.0 302 Found");
             textBody.append(String.format(bodyTemplate, "Found", "Found"));
         } else if (response.mIsEmptyResponse) {
-            stream.println("HTTP/1.0 403 Forbidden");
+            stream.println("HTTP/1.0 200 OK");
             copyHeadersToResponse = false;
         } else {
             if (response.mResponseAction != null) response.mResponseAction.run();
@@ -442,9 +443,9 @@ public class TestWebServer extends WebServer {
                 }
             }
             synchronized (mLock) {
-                mResponseCountMap.put(
-                        path, Integer.valueOf(mResponseCountMap.get(path).intValue() + 1));
-                mLastRequestMap.put(path, request);
+                mResponseCountMap.put(requestURI,
+                        Integer.valueOf(mResponseCountMap.get(requestURI).intValue() + 1));
+                mLastRequestMap.put(requestURI, request);
             }
         }
 
@@ -457,17 +458,18 @@ public class TestWebServer extends WebServer {
         stream.println();
 
         if (textBody.length() != 0) {
-            if (!contentTypeAlreadyIncluded && (path.endsWith(".html") || path.endsWith(".htm"))) {
+            if (!contentTypeAlreadyIncluded
+                    && (requestURI.endsWith(".html") || requestURI.endsWith(".htm"))) {
                 stream.println("Content-Type: text/html");
             }
             stream.println("Content-Length: " + textBody.length());
             stream.println();
             stream.print(textBody.toString());
         } else if (copyBinaryBodyToResponse) {
-            if (!contentTypeAlreadyIncluded && path.endsWith(".js")) {
+            if (!contentTypeAlreadyIncluded && requestURI.endsWith(".js")) {
                 stream.println("Content-Type: application/javascript");
             } else if (!contentTypeAlreadyIncluded
-                    && (path.endsWith(".html") || path.endsWith(".htm"))) {
+                    && (requestURI.endsWith(".html") || requestURI.endsWith(".htm"))) {
                 stream.println("Content-Type: text/html");
             }
             if (!contentLengthAlreadyIncluded) {

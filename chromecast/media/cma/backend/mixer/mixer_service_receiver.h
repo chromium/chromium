@@ -24,6 +24,10 @@ class MixerSocket;
 class MixerServiceReceiver : public mixer_service::Receiver {
  public:
   MixerServiceReceiver(StreamMixer* mixer, LoopbackHandler* loopback_handler);
+
+  MixerServiceReceiver(const MixerServiceReceiver&) = delete;
+  MixerServiceReceiver& operator=(const MixerServiceReceiver&) = delete;
+
   ~MixerServiceReceiver() override;
 
   // Called by the mixer when the active stream count changes.
@@ -54,8 +58,6 @@ class MixerServiceReceiver : public mixer_service::Receiver {
       control_connections_;
   int primary_stream_count_ = 0;
   int sfx_stream_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerServiceReceiver);
 };
 
 }  // namespace media

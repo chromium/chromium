@@ -14,9 +14,9 @@ MojoRendererWrapper::MojoRendererWrapper(
 
 MojoRendererWrapper::~MojoRendererWrapper() = default;
 
-void MojoRendererWrapper::Initialize(media::MediaResource* media_resource,
-                                     media::RendererClient* client,
-                                     media::PipelineStatusCallback init_cb) {
+void MojoRendererWrapper::Initialize(MediaResource* media_resource,
+                                     RendererClient* client,
+                                     PipelineStatusCallback init_cb) {
   mojo_renderer_->Initialize(media_resource, client, std::move(init_cb));
 }
 
@@ -36,13 +36,13 @@ void MojoRendererWrapper::SetVolume(float volume) {
   mojo_renderer_->SetVolume(volume);
 }
 
-void MojoRendererWrapper::SetCdm(media::CdmContext* cdm_context,
-                                 media::CdmAttachedCB cdm_attached_cb) {
+void MojoRendererWrapper::SetCdm(CdmContext* cdm_context,
+                                 CdmAttachedCB cdm_attached_cb) {
   mojo_renderer_->SetCdm(cdm_context, std::move(cdm_attached_cb));
 }
 
 void MojoRendererWrapper::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   mojo_renderer_->SetLatencyHint(latency_hint);
 }
 

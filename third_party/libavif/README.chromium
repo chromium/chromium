@@ -1,0 +1,12 @@
+Name: libavif - Library for encoding and decoding .avif files
+Short Name: avif
+URL: https://github.com/AOMediaCodec/libavif
+Version: master
+License: 2-Clause BSD
+License File: LICENSE
+Security Critical: yes
+Source: https://github.com/AOMediaCodec/libavif
+
+--[ DESCRIPTION ] ------------------
+This contains the source to the AV1 image format demuxer; used for demuxing and
+decoding .avif files in Chromium.

@@ -131,6 +131,16 @@ void ConsentAuditorImpl::RecordAssistantActivityControlConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
+void ConsentAuditorImpl::RecordAccountPasswordsConsent(
+    const CoreAccountId& account_id,
+    const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) {
+  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
+      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+  specifics->mutable_account_passwords_consent()->CopyFrom(consent);
+
+  consent_sync_bridge_->RecordConsent(std::move(specifics));
+}
+
 void ConsentAuditorImpl::RecordLocalConsent(
     const std::string& feature,
     const std::string& description_text,

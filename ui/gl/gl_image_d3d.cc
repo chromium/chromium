@@ -11,49 +11,30 @@
 #ifndef EGL_ANGLE_image_d3d11_texture
 #define EGL_D3D11_TEXTURE_ANGLE 0x3484
 #define EGL_TEXTURE_INTERNAL_FORMAT_ANGLE 0x345D
+#define EGL_D3D11_TEXTURE_PLANE_ANGLE 0x3492
+#define EGL_D3D11_TEXTURE_ARRAY_SLICE_ANGLE 0x3493
 #endif /* EGL_ANGLE_image_d3d11_texture */
 
 namespace gl {
 
-namespace {
-
-bool ValidGLInternalFormat(unsigned internal_format) {
-  switch (internal_format) {
-    case GL_RGB:
-    case GL_RGBA:
-    case GL_BGRA_EXT:
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool ValidGLDataType(unsigned data_type) {
-  switch (data_type) {
-    case GL_UNSIGNED_BYTE:
-    case GL_HALF_FLOAT_OES:
-      return true;
-    default:
-      return false;
-  }
-}
-
-}  // namespace
-
 GLImageD3D::GLImageD3D(const gfx::Size& size,
                        unsigned internal_format,
                        unsigned data_type,
+                       const gfx::ColorSpace& color_space,
                        Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+                       size_t array_slice,
+                       size_t plane_index,
                        Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain)
     : GLImage(),
       size_(size),
       internal_format_(internal_format),
       data_type_(data_type),
       texture_(std::move(texture)),
+      array_slice_(array_slice),
+      plane_index_(plane_index),
       swap_chain_(std::move(swap_chain)) {
+  GLImage::SetColorSpace(color_space);
   DCHECK(texture_);
-  DCHECK(ValidGLInternalFormat(internal_format_));
-  DCHECK(ValidGLDataType(data_type_));
 }
 
 GLImageD3D::~GLImageD3D() {
@@ -69,7 +50,12 @@ GLImageD3D::~GLImageD3D() {
 bool GLImageD3D::Initialize() {
   DCHECK_EQ(egl_image_, EGL_NO_IMAGE_KHR);
   const EGLint attribs[] = {EGL_TEXTURE_INTERNAL_FORMAT_ANGLE,
-                            GetInternalFormat(), EGL_NONE};
+                            static_cast<EGLint>(internal_format_),
+                            EGL_D3D11_TEXTURE_ARRAY_SLICE_ANGLE,
+                            static_cast<EGLint>(array_slice_),
+                            EGL_D3D11_TEXTURE_PLANE_ANGLE,
+                            static_cast<EGLint>(plane_index_),
+                            EGL_NONE};
   egl_image_ =
       eglCreateImageKHR(GLSurfaceEGL::GetHardwareDisplay(), EGL_NO_CONTEXT,
                         EGL_D3D11_TEXTURE_ANGLE,
@@ -128,18 +114,6 @@ void GLImageD3D::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                               uint64_t process_tracing_id,
                               const std::string& dump_name) {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-bool GLImageD3D::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  NOTREACHED();
-  return false;
 }
 
 }  // namespace gl

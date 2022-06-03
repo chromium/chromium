@@ -34,28 +34,15 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
-#include "third_party/blink/renderer/core/html/html_view_source_document.h"
-#include "third_party/blink/renderer/core/html/image_document.h"
-#include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/core/html/media/media_document.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
 #include "third_party/blink/renderer/core/html/text_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/loader/frame_loader.h"
-#include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/network/mime/content_type.h"
-#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -73,6 +60,8 @@ DocumentType* DOMImplementation::createDocumentType(
   if (!Document::ParseQualifiedName(qualified_name, prefix, local_name,
                                     exception_state))
     return nullptr;
+  if (!document_->GetExecutionContext())
+    return nullptr;
 
   return MakeGarbageCollected<DocumentType>(document_, qualified_name,
                                             public_id, system_id);
@@ -84,14 +73,12 @@ XMLDocument* DOMImplementation::createDocument(
     DocumentType* doctype,
     ExceptionState& exception_state) {
   XMLDocument* doc = nullptr;
-  DocumentInit init = DocumentInit::Create()
-                          .WithContextDocument(document_->ContextDocument())
-                          .WithOwnerDocument(document_->ContextDocument());
+  ExecutionContext* context = document_->GetExecutionContext();
+  DocumentInit init = DocumentInit::Create().WithExecutionContext(context);
   if (namespace_uri == svg_names::kNamespaceURI) {
     doc = XMLDocument::CreateSVG(init);
   } else if (namespace_uri == html_names::xhtmlNamespaceURI) {
-    doc = XMLDocument::CreateXHTML(
-        init.WithRegistrationContext(document_->RegistrationContext()));
+    doc = XMLDocument::CreateXHTML(init);
   } else {
     doc = MakeGarbageCollected<XMLDocument>(init);
   }
@@ -114,85 +101,11 @@ XMLDocument* DOMImplementation::createDocument(
   return doc;
 }
 
-bool DOMImplementation::IsXMLMIMEType(const String& mime_type) {
-  if (EqualIgnoringASCIICase(mime_type, "text/xml") ||
-      EqualIgnoringASCIICase(mime_type, "application/xml") ||
-      EqualIgnoringASCIICase(mime_type, "text/xsl"))
-    return true;
-
-  // Per RFCs 3023 and 2045, an XML MIME type is of the form:
-  // ^[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+/[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+\+xml$
-
-  int length = mime_type.length();
-  if (length < 7)
-    return false;
-
-  if (mime_type[0] == '/' || mime_type[length - 5] == '/' ||
-      !mime_type.EndsWithIgnoringASCIICase("+xml"))
-    return false;
-
-  bool has_slash = false;
-  for (int i = 0; i < length - 4; ++i) {
-    UChar ch = mime_type[i];
-    if (ch >= '0' && ch <= '9')
-      continue;
-    if (ch >= 'a' && ch <= 'z')
-      continue;
-    if (ch >= 'A' && ch <= 'Z')
-      continue;
-    switch (ch) {
-      case '_':
-      case '-':
-      case '+':
-      case '~':
-      case '!':
-      case '$':
-      case '^':
-      case '{':
-      case '}':
-      case '|':
-      case '.':
-      case '%':
-      case '\'':
-      case '`':
-      case '#':
-      case '&':
-      case '*':
-        continue;
-      case '/':
-        if (has_slash)
-          return false;
-        has_slash = true;
-        continue;
-      default:
-        return false;
-    }
-  }
-
-  return true;
-}
-
-static bool IsTextPlainType(const String& mime_type) {
-  return mime_type.StartsWithIgnoringASCIICase("text/") &&
-         !(EqualIgnoringASCIICase(mime_type, "text/html") ||
-           EqualIgnoringASCIICase(mime_type, "text/xml") ||
-           EqualIgnoringASCIICase(mime_type, "text/xsl"));
-}
-
-bool DOMImplementation::IsTextMIMEType(const String& mime_type) {
-  return MIMETypeRegistry::IsSupportedJavaScriptMIMEType(mime_type) ||
-         MIMETypeRegistry::IsJSONMimeType(mime_type) ||
-         IsTextPlainType(mime_type);
-}
-
 Document* DOMImplementation::createHTMLDocument(const String& title) {
-  DocumentInit init =
-      DocumentInit::Create()
-          .WithContextDocument(document_->ContextDocument())
-          .WithOwnerDocument(document_->ContextDocument())
-          .WithRegistrationContext(document_->RegistrationContext())
-          .WithContentSecurityPolicyFromContextDoc();
+  DocumentInit init = DocumentInit::Create().WithExecutionContext(
+      document_->GetExecutionContext());
   auto* d = MakeGarbageCollected<HTMLDocument>(init);
+  d->setAllowDeclarativeShadowRoots(false);
   d->open();
   d->write("<!doctype html><html><head></head><body></body></html>");
   if (!title.IsNull()) {
@@ -206,87 +119,7 @@ Document* DOMImplementation::createHTMLDocument(const String& title) {
   return d;
 }
 
-Document* DOMImplementation::createDocument(const String& type,
-                                            const DocumentInit& init,
-                                            bool in_view_source_mode) {
-  if (in_view_source_mode)
-    return MakeGarbageCollected<HTMLViewSourceDocument>(init, type);
-
-  // Plugins cannot take HTML and XHTML from us, and we don't even need to
-  // initialize the plugin database for those.
-  if (type == "text/html")
-    return MakeGarbageCollected<HTMLDocument>(init);
-  if (type == "application/xhtml+xml")
-    return XMLDocument::CreateXHTML(init);
-
-  PluginData* plugin_data = nullptr;
-  if (init.GetFrame() && init.GetFrame()->GetPage() &&
-      init.GetFrame()->Loader().AllowPlugins(kNotAboutToInstantiatePlugin)) {
-    // If the document is being created for the main frame,
-    // init.frame()->tree().top()->securityContext() returns nullptr.
-    // For that reason, the origin must be retrieved directly from init.url().
-    if (init.GetFrame()->IsMainFrame()) {
-      scoped_refptr<const SecurityOrigin> origin =
-          SecurityOrigin::Create(init.Url());
-      plugin_data = init.GetFrame()->GetPage()->GetPluginData(origin.get());
-    } else {
-      plugin_data =
-          init.GetFrame()->GetPage()->GetPluginData(init.GetFrame()
-                                                        ->Tree()
-                                                        .Top()
-                                                        .GetSecurityContext()
-                                                        ->GetSecurityOrigin());
-    }
-  }
-
-  if (plugin_data && plugin_data->IsExternalPluginMimeType(type)) {
-    // Plugins handled by MimeHandlerView do not create a PluginDocument. They
-    // are rendered inside cross-process frames and the notion of a PluginView
-    // (which is associated with PluginDocument) is irrelevant here.
-    auto* html_document = MakeGarbageCollected<HTMLDocument>(init);
-    html_document->SetIsForExternalHandler();
-    return html_document;
-  }
-
-  // PDF is one image type for which a plugin can override built-in support.
-  // We do not want QuickTime to take over all image types, obviously.
-  if ((type == "application/pdf" || type == "text/pdf") && plugin_data &&
-      plugin_data->SupportsMimeType(type)) {
-    return MakeGarbageCollected<PluginDocument>(
-        init, plugin_data->PluginBackgroundColorForMimeType(type));
-  }
-  // multipart/x-mixed-replace is only supported for images.
-  if (MIMETypeRegistry::IsSupportedImageResourceMIMEType(type) ||
-      type == "multipart/x-mixed-replace") {
-    return MakeGarbageCollected<ImageDocument>(init);
-  }
-
-  // Check to see if the type can be played by our media player, if so create a
-  // MediaDocument
-  if (HTMLMediaElement::GetSupportsType(ContentType(type)))
-    return MakeGarbageCollected<MediaDocument>(init);
-
-  // Everything else except text/plain can be overridden by plugins. In
-  // particular, Adobe SVG Viewer should be used for SVG, if installed.
-  // Disallowing plugins to use text/plain prevents plugins from hijacking a
-  // fundamental type that the browser is expected to handle, and also serves as
-  // an optimization to prevent loading the plugin database in the common case.
-  if (type != "text/plain" && plugin_data &&
-      plugin_data->SupportsMimeType(type)) {
-    return MakeGarbageCollected<PluginDocument>(
-        init, plugin_data->PluginBackgroundColorForMimeType(type));
-  }
-  if (IsTextMIMEType(type))
-    return MakeGarbageCollected<TextDocument>(init);
-  if (type == "image/svg+xml")
-    return XMLDocument::CreateSVG(init);
-  if (IsXMLMIMEType(type))
-    return MakeGarbageCollected<XMLDocument>(init);
-
-  return MakeGarbageCollected<HTMLDocument>(init);
-}
-
-void DOMImplementation::Trace(Visitor* visitor) {
+void DOMImplementation::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   ScriptWrappable::Trace(visitor);
 }

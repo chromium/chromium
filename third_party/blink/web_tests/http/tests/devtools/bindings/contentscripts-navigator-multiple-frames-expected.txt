@@ -5,21 +5,25 @@ Running: initialWorkspace
 
 Running: attachFrame1
 top
-  (no domain)
-    content-script-42.js
+  frame1 (contentscript-frame.html)
+    (no domain)
+      content-script-42.js
 
 Running: attachFrame2
 top
-  (no domain)
-    content-script-42.js
+  frame1 (contentscript-frame.html)
+    (no domain)
+      content-script-42.js
+  frame2 (contentscript-frame.html)
+    (no domain)
+      content-script-42.js
 
 Running: detachFrame1
 top
-  (no domain)
-    content-script-42.js
+  frame2 (contentscript-frame.html)
+    (no domain)
+      content-script-42.js
 
 Running: detachFrame2
 top
-  (no domain)
-    content-script-42.js
 

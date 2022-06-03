@@ -21,7 +21,7 @@ cr.define('options', function() {
     __proto__: Page.prototype,
 
     /** @override */
-    initializePage: function() {
+    initializePage() {
       chrome.bluetoothPrivate.onPairing.addListener(
           BluetoothPairing.onBluetoothPairingEvent);
     }

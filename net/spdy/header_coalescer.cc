@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/abseil_string_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -29,8 +31,8 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
                      dict.SetKey("header_name", NetLogStringValue(header_name));
                      dict.SetKey("header_value",
                                  NetLogStringValue(ElideHeaderValueForNetLog(
-                                     capture_mode, header_name.as_string(),
-                                     header_value.as_string())));
+                                     capture_mode, std::string(header_name),
+                                     std::string(header_value))));
                      dict.SetString("error", error_message);
                      return dict;
                    });
@@ -46,21 +48,18 @@ HeaderCoalescer::HeaderCoalescer(uint32_t max_header_list_size,
                                  const NetLogWithSource& net_log)
     : max_header_list_size_(max_header_list_size), net_log_(net_log) {}
 
-void HeaderCoalescer::OnHeader(base::StringPiece key, base::StringPiece value) {
+void HeaderCoalescer::OnHeader(absl::string_view key, absl::string_view value) {
   if (error_seen_)
     return;
-  if (!AddHeader(key, value))
+  if (!AddHeader(base::StringViewToStringPiece(key),
+                 base::StringViewToStringPiece(value)))
     error_seen_ = true;
 }
 
-spdy::SpdyHeaderBlock HeaderCoalescer::release_headers() {
+spdy::Http2HeaderBlock HeaderCoalescer::release_headers() {
   DCHECK(headers_valid_);
   headers_valid_ = false;
   return std::move(headers_);
-}
-
-size_t HeaderCoalescer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(headers_);
 }
 
 bool HeaderCoalescer::AddHeader(base::StringPiece key,
@@ -122,7 +121,8 @@ bool HeaderCoalescer::AddHeader(base::StringPiece key,
     }
   }
 
-  headers_.AppendValueOrAddHeader(key, value);
+  headers_.AppendValueOrAddHeader(base::StringPieceToStringView(key),
+                                  base::StringPieceToStringView(value));
   return true;
 }
 

@@ -1,0 +1,87 @@
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+
+<dom-module id="managed-terms-of-service-element">
+  <template>
+    <style include="oobe-dialog-host-styles"></style>
+    <link rel="stylesheet" href="chrome://resources/css/throbber.css">
+
+    <!-- ERROR DIALOG -->
+    <oobe-adaptive-dialog id="termsOfServiceErrorDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'termsOfServiceError')]]"
+        for-step="error">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'termsOfServiceError')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'termsOfServiceTryAgain')]]
+      </p>
+      <div slot="back-navigation">
+        <oobe-back-button id="errorBackButton"
+            disabled="[[backButtonDisabled_]]"
+            on-click="onTosBackButtonPressed_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="retryButton" inverse
+            class="focus-on-show"
+            text-key="termsOfServiceRetryButton"
+            disabled="[[retryButtonDisabled_]]"
+            on-click="onTosRetryButtonPressed_"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- LOADING DIALOG -->
+    <oobe-loading-dialog title-key="termsOfServiceLoading" for-step="loading">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+    </oobe-loading-dialog>
+
+    <!-- NORMAL DIALOG -->
+    <!-- As this dialog have pre-loading logic that require access to elements,
+         dialog is marked as no-lazy. -->
+    <oobe-adaptive-dialog id="termsOfServiceDialog" role="dialog"
+        aria-labelledby="title" for-step="loaded" no-lazy>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+
+      <h1 id="tosHeading" slot="title">[[i18nDynamic(locale,
+        'termsOfServiceScreenHeading', tosManager_)]]</h1>
+      <p id="tosSubheading" slot="subtitle">[[i18nDynamic(locale,
+        'termsOfServiceScreenSubheading', tosManager_)]]</p>
+      <div slot="content" class="flex layout center-justified vertical">
+        <webview id="termsOfServiceFrame"
+            role="document" allowTransparency
+            class="focus-on-show flex oobe-tos-webview">
+        </webview>
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="backButton" disabled="[[backButtonDisabled_]]"
+            on-click="onTosBackButtonPressed_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="acceptButton" inverse
+            text-key="termsOfServiceAcceptButton"
+            disabled="[[acceptButtonDisabled_]]"
+            on-click="onTermsOfServiceAccepted_"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+  <script src="managed_terms_of_service.js"></script>
+</dom-module>

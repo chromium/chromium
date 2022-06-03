@@ -5,8 +5,9 @@
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 
 #include <algorithm>
+#include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/bluetooth_common.h"
 
@@ -95,6 +96,10 @@ BluetoothDiscoveryFilter::GetDeviceFilters() const {
   return &device_filters_;
 }
 
+void BluetoothDiscoveryFilter::ClearDeviceFilters() {
+  device_filters_.clear();
+}
+
 void BluetoothDiscoveryFilter::CopyFrom(
     const BluetoothDiscoveryFilter& filter) {
   transport_ = filter.transport_;
@@ -117,7 +122,7 @@ BluetoothDiscoveryFilter::Merge(
     return result;
   }
 
-  result.reset(new BluetoothDiscoveryFilter(BLUETOOTH_TRANSPORT_DUAL));
+  result = std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_DUAL);
 
   if (!filter_a || !filter_b || filter_a->IsDefault() ||
       filter_b->IsDefault()) {

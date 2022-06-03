@@ -8,8 +8,8 @@
     Exposed=PaintWorklet,
     Global=(Worklet,PaintWorklet)
 ] interface PaintWorkletGlobalScope : WorkletGlobalScope {
-    [Measure] readonly attribute unrestricted double devicePixelRatio;
-    [Measure, RaisesException] void registerPaint(DOMString name, NoArgumentConstructor paintCtor);
+    [HighEntropy=Direct, Measure] readonly attribute unrestricted double devicePixelRatio;
+    [Measure, RaisesException, CallWith=ScriptState] void registerPaint(DOMString name, NoArgumentConstructor paintCtor);
 };
 
 // Blink-specific type for paint function

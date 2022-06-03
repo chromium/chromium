@@ -16,7 +16,7 @@ function testSimpleShadow()
     var container = document.createElement('div');
     document.body.appendChild(container);
     container.innerHTML = 'BEFORE<span id="host">DOCUMENT</span>AFTER';
-    document.getElementById('host').createShadowRoot().innerHTML = '<span>SHADOW</span>';
+    document.getElementById('host').attachShadow({mode: 'open'}).innerHTML = '<span>SHADOW</span>';
 
     var selection = getSelection();
     selection.empty();
@@ -58,9 +58,9 @@ function testNestedShadows()
     var container = document.createElement('div');
     document.body.appendChild(container);
     container.innerHTML = '<span id="host">DOCUMENT</span>';
-    var outerShadowRoot = document.getElementById('host').createShadowRoot();
+    var outerShadowRoot = document.getElementById('host').attachShadow({mode: 'open'});
     outerShadowRoot.innerHTML = '<span>OUTER<span id="host">SHADOW</span></span>';
-    outerShadowRoot.getElementById('host').createShadowRoot().innerHTML = '<span>INNER</span>';
+    outerShadowRoot.getElementById('host').attachShadow({mode: 'open'}).innerHTML = '<span>INNER</span>';
 
     var selection = getSelection();
     selection.empty();
@@ -82,7 +82,7 @@ function testDistribution()
     var container = document.createElement('div');
     document.body.appendChild(container);
     container.innerHTML = '<span id="host">DOCUMENT</span>';
-    document.getElementById('host').createShadowRoot().innerHTML = '<span>BEFORE<content></content>AFTER</span>';
+    document.getElementById('host').attachShadow({mode: 'open'}).innerHTML = '<span>BEFORE<slot></slot>AFTER</span>';
 
     var selection = getSelection();
     selection.empty();

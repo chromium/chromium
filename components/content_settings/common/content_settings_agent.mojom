@@ -1,0 +1,16 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content_settings.mojom;
+
+// An interface to the content settings agent running in the renderer process.
+interface ContentSettingsAgent {
+  // Sent to allow the running of insecure mixed-content. If received by the
+  // main frame, it will also reload the frame afterwards.
+  SetAllowRunningInsecureContent();
+
+  // Sent to inform the renderer automatic upgrades for mixed content are
+  // disabled.
+  SetDisabledMixedContentUpgrades();
+};

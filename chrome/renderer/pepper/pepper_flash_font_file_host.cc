@@ -9,15 +9,16 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 
 #include "ppapi/c/pp_errors.h"
+#include "ppapi/c/trusted/ppb_browser_font_trusted.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/serialized_structs.h"
 
-#if defined(OS_LINUX) || defined(OS_OPENBSD)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 #include "components/services/font/public/cpp/font_loader.h"
-#include "content/public/common/common_sandbox_support_linux.h"
+#include "pdf/font_table_linux.h"
 #elif defined(OS_WIN)
 #include "third_party/skia/include/core/SkFontMgr.h"
 #endif
@@ -29,7 +30,7 @@ PepperFlashFontFileHost::PepperFlashFontFileHost(
     const ppapi::proxy::SerializedFontDescription& description,
     PP_PrivateFontCharset charset)
     : ResourceHost(host->GetPpapiHost(), instance, resource) {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // The global SkFontConfigInterface is configured and initialized with a
   // SkFontconfigInterface compatible font_service::FontLoader in
   // RendererBlinkPlatformImpl (called from RenderThreadImpl::Init) at startup
@@ -74,11 +75,11 @@ bool PepperFlashFontFileHost::GetFontData(uint32_t table,
                                           void* buffer,
                                           size_t* length) {
   bool result = false;
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (font_file_.IsValid()) {
-    result = content::GetFontTable(font_file_.GetPlatformFile(), table,
-                                   0 /* offset */,
-                                   reinterpret_cast<uint8_t*>(buffer), length);
+    result =
+        pdf::GetFontTable(font_file_.GetPlatformFile(), table, /*offset=*/0,
+                          reinterpret_cast<uint8_t*>(buffer), length);
   }
 #elif defined(OS_WIN)
   if (typeface_) {

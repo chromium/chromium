@@ -44,12 +44,13 @@ class DevToolsFileWatcherTest : public testing::Test {
 
 TEST_F(DevToolsFileWatcherTest, BasicUsage) {
   std::unique_ptr<DevToolsFileWatcher, DevToolsFileWatcher::Deleter> watcher(
-      new DevToolsFileWatcher(base::Bind(&DevToolsFileWatcherTest::Callback,
-                                         base::Unretained(this)),
-                              base::SequencedTaskRunnerHandle::Get()));
+      new DevToolsFileWatcher(
+          base::BindRepeating(&DevToolsFileWatcherTest::Callback,
+                              base::Unretained(this)),
+          base::SequencedTaskRunnerHandle::Get()));
 
   base::FilePath changed_path = base_path_.Append(FILE_PATH_LITERAL("file1"));
-  base::WriteFile(changed_path, "test", 4);
+  base::WriteFile(changed_path, "test");
 
   watcher->AddWatch(base_path_);
   expected_changed_paths_.insert(changed_path.AsUTF8Unsafe());
@@ -59,19 +60,19 @@ TEST_F(DevToolsFileWatcherTest, BasicUsage) {
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     // Just for the first operation, repeat it until we get the callback, as
     // watcher may take some time to start on another thread.
-    base::WriteFile(changed_path, "test", 4);
+    base::WriteFile(changed_path, "test");
   }
 
   base::FilePath added_path = base_path_.Append(FILE_PATH_LITERAL("file2"));
   expected_added_paths_.insert(added_path.AsUTF8Unsafe());
-  base::WriteFile(added_path, "test", 4);
+  base::WriteFile(added_path, "test");
   while (!expected_added_paths_.empty()) {
     task_environment_.RunUntilIdle();
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   }
 
   expected_removed_paths_.insert(added_path.AsUTF8Unsafe());
-  base::DeleteFile(added_path, false);
+  base::DeleteFile(added_path);
   while (!expected_removed_paths_.empty()) {
     task_environment_.RunUntilIdle();
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());

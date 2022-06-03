@@ -2,9 +2,9 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = include . doc example xstc $(PYTHON_SUBDIR)
+SUBDIRS = include . doc example fuzz xstc $(PYTHON_SUBDIR)
 
-DIST_SUBDIRS = include . doc example python xstc
+DIST_SUBDIRS = include . doc example fuzz python xstc
 
 AM_CPPFLAGS = -I$(top_builddir)/include -I$(srcdir)/include
 
@@ -210,6 +210,7 @@ runtests: runtest$(EXEEXT) testrecurse$(EXEEXT) testapi$(EXEEXT) \
 	    $(CHECKER) ./runxmlconf$(EXEEXT)
 	@(if [ "$(PYTHON_SUBDIR)" != "" ] ; then cd python ; \
 	    $(MAKE) tests ; fi)
+	@cd fuzz; $(MAKE) tests
 
 check: all runtests
 
@@ -906,16 +907,21 @@ Regexptests: testRegexp$(EXEEXT)
 	  if [ ! -d $$i ] ; then \
 	  if [ ! -f $(srcdir)/result/regexp/$$name ] ; then \
 	      echo New test file $$name ; \
-	      $(CHECKER) $(top_builddir)/testRegexp -i $$i > $(srcdir)/result/regexp/$$name; \
+	      $(CHECKER) $(top_builddir)/testRegexp -i $$i > $(srcdir)/result/regexp/$$name 2> $(srcdir)/result/regexp/$$name.err ; \
+	      if [ ! -s "$(srcdir)/result/regexp/$$name.err" ] ; then rm $(srcdir)/result/regexp/$$name.err; fi ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
-	      log=`$(CHECKER) $(top_builddir)/testRegexp -i $$i 2>&1 > result.$$name ; \
+	      log=`$(CHECKER) $(top_builddir)/testRegexp -i $$i > result.$$name 2> error.$$name ; \
 	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
-	      diff $(srcdir)/result/regexp/$$name result.$$name` ; \
-	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
-	      rm result.$$name ; \
+	      diff $(srcdir)/result/regexp/$$name result.$$name ; \
+	      if [ -s "$(srcdir)/result/regexp/$$name.err" -o -s "error.$$name" ] ; then diff $(srcdir)/result/regexp/$$name.err error.$$name ; fi` ; \
+	      if [ -n "$$log" ] ; then echo $$name result ; echo $$log ; fi ; \
+	      rm result.$$name error.$$name ; \
 	  fi ; fi ; done)
-	@echo "## Formal expresssions regression tests"
+
+# Disabled for now
+Exptests: testRegexp$(EXEEXT)
+	@echo "## Formal expressions regression tests"
 	-@(for i in $(srcdir)/test/expr/* ; do \
 	  name=`basename $$i`; \
 	  if [ ! -d $$i ] ; then \
@@ -1231,6 +1237,7 @@ xml2Conf.sh: xml2Conf.sh.in Makefile
 	    -e 's?\@XML_INCLUDEDIR\@?$(XML_INCLUDEDIR)?g' \
 	    -e 's?\@VERSION\@?$(VERSION)?g' \
 	    -e 's?\@XML_LIBS\@?$(XML_LIBS)?g' \
+	    -e 's?\@XML_PRIVATE_LIBS\@?$(XML_PRIVATE_LIBS)?g' \
 	       < $(srcdir)/xml2Conf.sh.in > xml2Conf.tmp \
 	&& mv xml2Conf.tmp xml2Conf.sh
 
@@ -1253,6 +1260,7 @@ EXTRA_DIST = xml2-config.in xml2Conf.sh.in libxml.spec.in libxml2.spec \
 	     dbgen.pl dbgenattr.pl regressions.py regressions.xml \
 	     README.tests Makefile.tests libxml2.syms timsort.h \
 	     README.zOS \
+	     CMakeLists.txt config.h.cmake.in libxml2-config.cmake.cmake.in \
 	     $(CVS_EXTRA_DIST)
 
 

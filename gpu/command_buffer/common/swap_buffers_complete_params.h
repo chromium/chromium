@@ -5,8 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_SWAP_BUFFERS_COMPLETE_PARAMS_H_
 #define GPU_COMMAND_BUFFER_COMMON_SWAP_BUFFERS_COMPLETE_PARAMS_H_
 
+#include <vector>
+
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_params.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/swap_result.h"
 
 namespace gpu {
@@ -20,12 +25,27 @@ struct GPU_EXPORT SwapBuffersCompleteParams {
   ~SwapBuffersCompleteParams();
 
   gfx::SwapResponse swap_response;
+
+  // Damage area of the current backing buffer compare to the previous swapped
+  // buffer. The renderer can use it as hint for minimizing drawing area for the
+  // next frame.
+  absl::optional<gfx::Rect> frame_buffer_damage_area;
+
+  // The mailbox corresponding to the primary plane that was just swapped to
+  // the front buffer. The overlay processor can use it to extract the buffer
+  // for page flip tests.
+  Mailbox primary_plane_mailbox;
+
   // Used only on macOS, for coordinating IOSurface reuse with the system
   // WindowServer.
   gpu::TextureInUseResponses texture_in_use_responses;
+
   // Used only on macOS, to allow the browser hosted NSWindow to display
   // content populated in the GPU process.
   gfx::CALayerParams ca_layer_params;
+
+  // Used only on macOS, for released overlays with SkiaRenderer.
+  std::vector<Mailbox> released_overlays;
 };
 
 }  // namespace gpu

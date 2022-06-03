@@ -114,7 +114,7 @@ class NackStringBuilder {
 }  // namespace
 
 RtcpBuilder::RtcpBuilder(uint32_t sending_ssrc)
-    : writer_(NULL, 0), local_ssrc_(sending_ssrc), ptr_of_length_(NULL) {}
+    : writer_(nullptr, 0), local_ssrc_(sending_ssrc), ptr_of_length_(nullptr) {}
 
 RtcpBuilder::~RtcpBuilder() = default;
 
@@ -127,7 +127,7 @@ void RtcpBuilder::PatchLengthField() {
         << "Packets must be a multiple of 32 bits long";
     *ptr_of_length_ = this_packet_length >> 10;
     *(ptr_of_length_ + 1) = (this_packet_length >> 2) & 0xFF;
-    ptr_of_length_ = NULL;
+    ptr_of_length_ = nullptr;
   }
 }
 
@@ -154,7 +154,7 @@ void RtcpBuilder::Start() {
 PacketRef RtcpBuilder::Finish() {
   PatchLengthField();
   packet_->data.resize(kMaxIpPacketSize - writer_.remaining());
-  writer_ = base::BigEndianWriter(NULL, 0);
+  writer_ = base::BigEndianWriter(nullptr, 0);
   PacketRef ret = packet_;
   packet_.reset();
   return ret;

@@ -15,14 +15,17 @@
 package org.chromium.net;
 
 import android.os.Build;
-import android.support.test.filters.SmallTest;
 
+import androidx.test.filters.SmallTest;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 import java.net.Proxy;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.Properties;
 
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AndroidProxySelectorTest {
     Properties mProperties;
 
@@ -43,6 +47,11 @@ public class AndroidProxySelectorTest {
 
     @Before
     public void setUp() {
+        System.setProperties(mProperties);
+    }
+
+    @After
+    public void tearDown() {
         System.setProperties(mProperties);
     }
 
@@ -318,4 +327,3 @@ public class AndroidProxySelectorTest {
         checkMapping("http://example.com/", "PROXY defaultproxy.com:80");
     }
 }
-

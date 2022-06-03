@@ -26,10 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EXTERNAL_DATE_TIME_CHOOSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EXTERNAL_DATE_TIME_CHOOSER_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -40,7 +40,7 @@ class CORE_EXPORT ExternalDateTimeChooser final : public DateTimeChooser {
  public:
   explicit ExternalDateTimeChooser(DateTimeChooserClient*);
   ~ExternalDateTimeChooser() override;
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // |frame| must not be null.
   void OpenDateTimeChooser(LocalFrame* frame, const DateTimeChooserParameters&);
@@ -59,9 +59,9 @@ class CORE_EXPORT ExternalDateTimeChooser final : public DateTimeChooser {
 
   mojom::blink::DateTimeChooser& GetDateTimeChooser(LocalFrame* frame);
 
-  mojo::Remote<mojom::blink::DateTimeChooser> date_time_chooser_;
+  HeapMojoRemote<mojom::blink::DateTimeChooser> date_time_chooser_;
 
   Member<DateTimeChooserClient> client_;
 };
-}
-#endif
+}  // namespace blink
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EXTERNAL_DATE_TIME_CHOOSER_H_

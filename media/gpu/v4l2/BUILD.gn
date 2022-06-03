@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
-import("//ui/ozone/ozone.gni")
 
 assert(use_v4l2_codec)
 
@@ -17,15 +17,15 @@ if (use_v4lplugin) {
     extra_header = "v4l2_stub_header.fragment"
     sigs = [ "v4l2.sig" ]
     output_name = "v4l2_stubs"
-    deps = [
-      "//base",
-    ]
+    deps = [ "//base" ]
   }
 }
 
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "buffer_affinity_tracker.cc",
+    "buffer_affinity_tracker.h",
     "generic_v4l2_device.cc",
     "generic_v4l2_device.h",
     "v4l2_decode_surface.cc",
@@ -35,34 +35,43 @@ source_set("v4l2") {
     "v4l2_device.h",
     "v4l2_device_poller.cc",
     "v4l2_device_poller.h",
-    "v4l2_h264_accelerator.cc",
-    "v4l2_h264_accelerator.h",
-    "v4l2_h264_accelerator_legacy.cc",
-    "v4l2_h264_accelerator_legacy.h",
-    "v4l2_image_processor.cc",
-    "v4l2_image_processor.h",
+    "v4l2_framerate_control.cc",
+    "v4l2_framerate_control.h",
+    "v4l2_image_processor_backend.cc",
+    "v4l2_image_processor_backend.h",
     "v4l2_slice_video_decode_accelerator.cc",
     "v4l2_slice_video_decode_accelerator.h",
-    "v4l2_slice_video_decoder.cc",
-    "v4l2_slice_video_decoder.h",
     "v4l2_stateful_workaround.cc",
     "v4l2_stateful_workaround.h",
+    "v4l2_status.h",
+    "v4l2_utils.cc",
+    "v4l2_utils.h",
     "v4l2_vda_helpers.cc",
     "v4l2_vda_helpers.h",
     "v4l2_video_decode_accelerator.cc",
     "v4l2_video_decode_accelerator.h",
+    "v4l2_video_decoder.cc",
+    "v4l2_video_decoder.h",
     "v4l2_video_decoder_backend.cc",
     "v4l2_video_decoder_backend.h",
+    "v4l2_video_decoder_backend_stateful.cc",
+    "v4l2_video_decoder_backend_stateful.h",
     "v4l2_video_decoder_backend_stateless.cc",
     "v4l2_video_decoder_backend_stateless.h",
+    "v4l2_video_decoder_delegate_h264.cc",
+    "v4l2_video_decoder_delegate_h264.h",
+    "v4l2_video_decoder_delegate_h264_legacy.cc",
+    "v4l2_video_decoder_delegate_h264_legacy.h",
+    "v4l2_video_decoder_delegate_vp8.cc",
+    "v4l2_video_decoder_delegate_vp8.h",
+    "v4l2_video_decoder_delegate_vp8_legacy.cc",
+    "v4l2_video_decoder_delegate_vp8_legacy.h",
+    "v4l2_video_decoder_delegate_vp9_chromium.cc",
+    "v4l2_video_decoder_delegate_vp9_chromium.h",
+    "v4l2_video_decoder_delegate_vp9_legacy.cc",
+    "v4l2_video_decoder_delegate_vp9_legacy.h",
     "v4l2_video_encode_accelerator.cc",
     "v4l2_video_encode_accelerator.h",
-    "v4l2_vp8_accelerator.cc",
-    "v4l2_vp8_accelerator.h",
-    "v4l2_vp8_accelerator_legacy.cc",
-    "v4l2_vp8_accelerator_legacy.h",
-    "v4l2_vp9_accelerator.cc",
-    "v4l2_vp9_accelerator.h",
   ]
 
   libs = [
@@ -70,18 +79,17 @@ source_set("v4l2") {
     "GLESv2",
   ]
 
-  if (current_cpu == "arm") {
+  if (use_v4l2_codec_aml) {
     sources += [
-      "tegra_v4l2_device.cc",
-      "tegra_v4l2_device.h",
+      "aml_v4l2_device.cc",
+      "aml_v4l2_device.h",
     ]
+    defines += [ "AML_V4L2" ]
   }
 
   configs += [ "//third_party/libyuv:libyuv_config" ]
 
-  public_deps = [
-    "//ui/gl",
-  ]
+  public_deps = [ "//ui/gl" ]
 
   deps = [
     "//base",
@@ -91,6 +99,7 @@ source_set("v4l2") {
     "//media/gpu:buildflags",
     "//media/gpu:common",
     "//media/gpu/chromeos:common",
+    "//media/parsers",
     "//third_party/libyuv",
     "//ui/gfx/geometry",
     "//ui/ozone",
@@ -100,7 +109,7 @@ source_set("v4l2") {
     deps += [ ":libv4l2_stubs" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "v4l2_jpeg_encode_accelerator.cc",
       "v4l2_jpeg_encode_accelerator.h",
@@ -112,7 +121,6 @@ source_set("v4l2") {
       "//components/chromeos_camera:jpeg_encode_accelerator",
       "//components/chromeos_camera:mjpeg_decode_accelerator",
       "//media/gpu:video_frame_mapper_common",
-      "//media/parsers",
     ]
   }
 }
@@ -121,12 +129,33 @@ source_set("unit_test") {
   testonly = true
   sources = [
     "v4l2_device_unittest.cc",
+    "v4l2_stateful_workaround_unittest.cc",
   ]
   deps = [
     ":v4l2",
+    "//base",
+    "//media",
     "//media:test_support",
     "//testing/gtest",
     "//ui/gfx:test_support",
     "//ui/gl",
+  ]
+}
+
+executable("v4l2_stateless_decoder") {
+  testonly = true
+  sources = [
+    "test/v4l2_ioctl_shim.cc",
+    "test/v4l2_ioctl_shim.h",
+    "test/v4l2_stateless_decoder.cc",
+    "test/vp9_decoder.cc",
+    "test/vp9_decoder.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media:test_support",
+    "//media/gpu:common",
   ]
 }

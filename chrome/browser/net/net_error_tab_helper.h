@@ -9,17 +9,17 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/net/dns_probe_service.h"
+#include "chrome/common/net/net_error_page_support.mojom.h"
 #include "chrome/common/network_diagnostics.mojom.h"
 #include "chrome/common/network_easter_egg.mojom.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/reload_type.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace user_prefs {
@@ -34,6 +34,7 @@ namespace chrome_browser_net {
 class NetErrorTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<NetErrorTabHelper>,
+      public chrome::mojom::NetErrorPageSupport,
       public chrome::mojom::NetworkDiagnostics,
       public chrome::mojom::NetworkEasterEgg {
  public:
@@ -43,10 +44,25 @@ class NetErrorTabHelper
     TESTING_FORCE_ENABLED
   };
 
-  typedef base::Callback<void(error_page::DnsProbeStatus)>
-      DnsProbeStatusSnoopCallback;
+  using DnsProbeStatusSnoopCallback =
+      base::RepeatingCallback<void(error_page::DnsProbeStatus)>;
+
+  NetErrorTabHelper(const NetErrorTabHelper&) = delete;
+  NetErrorTabHelper& operator=(const NetErrorTabHelper&) = delete;
 
   ~NetErrorTabHelper() override;
+
+  static void BindNetErrorPageSupport(
+      mojo::PendingAssociatedReceiver<chrome::mojom::NetErrorPageSupport>
+          receiver,
+      content::RenderFrameHost* rfh);
+  static void BindNetworkDiagnostics(
+      mojo::PendingAssociatedReceiver<chrome::mojom::NetworkDiagnostics>
+          receiver,
+      content::RenderFrameHost* rfh);
+  static void BindNetworkEasterEgg(
+      mojo::PendingAssociatedReceiver<chrome::mojom::NetworkEasterEgg> receiver,
+      content::RenderFrameHost* rfh);
 
   static void set_state_for_testing(TestingState testing_state);
 
@@ -68,12 +84,15 @@ class NetErrorTabHelper
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
+
+  // chrome::mojom::NetErrorPageSupport:
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  void DownloadPageLater() override;
+  void SetIsShowingDownloadButtonInErrorPage(
+      bool showing_download_button) override;
+#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
  protected:
   // |contents| is the WebContents of the tab this NetErrorTabHelper is
@@ -87,15 +106,10 @@ class NetErrorTabHelper
     return dns_probe_status_;
   }
 
-  content::WebContentsFrameReceiverSet<chrome::mojom::NetworkDiagnostics>&
+  content::RenderFrameHostReceiverSet<chrome::mojom::NetworkDiagnostics>&
   network_diagnostics_receivers_for_testing() {
     return network_diagnostics_receivers_;
   }
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  void OnDownloadPageLater();
-  void OnSetIsShowingDownloadButtonInErrorPage(bool is_showing_download_button);
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
  private:
   friend class content::WebContentsUserData<NetErrorTabHelper>;
@@ -122,10 +136,12 @@ class NetErrorTabHelper
   virtual void DownloadPageLaterHelper(const GURL& url);
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-  content::WebContentsFrameReceiverSet<chrome::mojom::NetworkDiagnostics>
+  content::RenderFrameHostReceiverSet<chrome::mojom::NetworkDiagnostics>
       network_diagnostics_receivers_;
-  content::WebContentsFrameReceiverSet<chrome::mojom::NetworkEasterEgg>
+  content::RenderFrameHostReceiverSet<chrome::mojom::NetworkEasterEgg>
       network_easter_egg_receivers_;
+  content::RenderFrameHostReceiverSet<chrome::mojom::NetErrorPageSupport>
+      net_error_page_support_;
 
   // True if the last provisional load that started was for an error page.
   bool is_error_page_;
@@ -161,8 +177,6 @@ class NetErrorTabHelper
   base::WeakPtrFactory<NetErrorTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorTabHelper);
 };
 
 }  // namespace chrome_browser_net

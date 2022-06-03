@@ -4,16 +4,69 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_response.h"
 
+#include <utility>
+
+#include "base/logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/credentialmanager/authenticator_assertion_response.h"
+#include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
+#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
-#include "third_party/blink/renderer/modules/payments/payment_validation_errors.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+namespace {
+
+using payments::mojom::blink::SecurePaymentConfirmationResponsePtr;
+
+v8::Local<v8::Value> BuildDetails(
+    ScriptState* script_state,
+    const String& json,
+    SecurePaymentConfirmationResponsePtr secure_payment_confirmation) {
+  if (secure_payment_confirmation) {
+    const auto& info = secure_payment_confirmation->credential_info;
+    auto* authenticator_response =
+        MakeGarbageCollected<AuthenticatorAssertionResponse>(
+            std::move(info->client_data_json),
+            std::move(info->authenticator_data),
+            std::move(secure_payment_confirmation->signature),
+            secure_payment_confirmation->user_handle);
+
+    auto* result = MakeGarbageCollected<PublicKeyCredential>(
+        secure_payment_confirmation->credential_info->id,
+        DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
+                               info->raw_id.size()),
+        authenticator_response, secure_payment_confirmation->has_transport,
+        secure_payment_confirmation->transport,
+        AuthenticationExtensionsClientOutputs::Create());
+    return result->Wrap(script_state).ToLocalChecked();
+  }
+
+  if (json.IsEmpty()) {
+    return V8ObjectBuilder(script_state).V8Value();
+  }
+
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionState::kConstructionContext,
+                                 "PaymentResponse");
+  v8::Local<v8::Value> parsed_value =
+      FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
+                     json, exception_state);
+  if (exception_state.HadException()) {
+    exception_state.ClearException();
+    return V8ObjectBuilder(script_state).V8Value();
+  }
+
+  return parsed_value;
+}
+
+}  // namespace
 
 PaymentResponse::PaymentResponse(
     ScriptState* script_state,
@@ -21,7 +74,7 @@ PaymentResponse::PaymentResponse(
     PaymentAddress* shipping_address,
     PaymentStateResolver* payment_state_resolver,
     const String& request_id)
-    : ContextLifecycleObserver(ExecutionContext::From(script_state)),
+    : ExecutionContextClient(ExecutionContext::From(script_state)),
       request_id_(request_id),
       method_name_(response->method_name),
       shipping_address_(shipping_address),
@@ -31,7 +84,10 @@ PaymentResponse::PaymentResponse(
       payer_phone_(response->payer->phone),
       payment_state_resolver_(payment_state_resolver) {
   DCHECK(payment_state_resolver_);
-  UpdateDetailsFromJSON(script_state, response->stringified_details);
+  ScriptState::Scope scope(script_state);
+  details_.Set(script_state->GetIsolate(),
+               BuildDetails(script_state, response->stringified_details,
+                            std::move(response->secure_payment_confirmation)));
 }
 
 PaymentResponse::~PaymentResponse() = default;
@@ -48,7 +104,10 @@ void PaymentResponse::Update(
   payer_name_ = response->payer->name;
   payer_email_ = response->payer->email;
   payer_phone_ = response->payer->phone;
-  UpdateDetailsFromJSON(script_state, response->stringified_details);
+  ScriptState::Scope scope(script_state);
+  details_.Set(script_state->GetIsolate(),
+               BuildDetails(script_state, response->stringified_details,
+                            std::move(response->secure_payment_confirmation)));
 }
 
 void PaymentResponse::UpdatePayerDetail(
@@ -57,30 +116,6 @@ void PaymentResponse::UpdatePayerDetail(
   payer_name_ = detail->name;
   payer_email_ = detail->email;
   payer_phone_ = detail->phone;
-}
-
-void PaymentResponse::UpdateDetailsFromJSON(ScriptState* script_state,
-                                            const String& json) {
-  ScriptState::Scope scope(script_state);
-  if (json.IsEmpty()) {
-    details_.Set(script_state->GetIsolate(),
-                 V8ObjectBuilder(script_state).V8Value());
-    return;
-  }
-
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
-                                 "PaymentResponse");
-  v8::Local<v8::Value> parsed_value =
-      FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                     json, exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
-    details_.Set(script_state->GetIsolate(),
-                 V8ObjectBuilder(script_state).V8Value());
-    return;
-  }
-  details_.Set(script_state->GetIsolate(), parsed_value);
 }
 
 ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
@@ -109,20 +144,27 @@ ScriptValue PaymentResponse::details(ScriptState* script_state) const {
 }
 
 ScriptPromise PaymentResponse::complete(ScriptState* script_state,
-                                        const String& result) {
+                                        const String& result,
+                                        ExceptionState& exception_state) {
+  VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8()
+          << "): complete(" << result << ")";
   PaymentStateResolver::PaymentComplete converted_result =
       PaymentStateResolver::PaymentComplete::kUnknown;
   if (result == "success")
     converted_result = PaymentStateResolver::PaymentComplete::kSuccess;
   else if (result == "fail")
     converted_result = PaymentStateResolver::PaymentComplete::kFail;
-  return payment_state_resolver_->Complete(script_state, converted_result);
+  return payment_state_resolver_->Complete(script_state, converted_result,
+                                           exception_state);
 }
 
 ScriptPromise PaymentResponse::retry(
     ScriptState* script_state,
-    const PaymentValidationErrors* error_fields) {
-  return payment_state_resolver_->Retry(script_state, error_fields);
+    const PaymentValidationErrors* error_fields,
+    ExceptionState& exception_state) {
+  VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8() << "): retry()";
+  return payment_state_resolver_->Retry(script_state, error_fields,
+                                        exception_state);
 }
 
 bool PaymentResponse::HasPendingActivity() const {
@@ -134,15 +176,15 @@ const AtomicString& PaymentResponse::InterfaceName() const {
 }
 
 ExecutionContext* PaymentResponse::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
-void PaymentResponse::Trace(blink::Visitor* visitor) {
+void PaymentResponse::Trace(Visitor* visitor) const {
   visitor->Trace(details_);
   visitor->Trace(shipping_address_);
   visitor->Trace(payment_state_resolver_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

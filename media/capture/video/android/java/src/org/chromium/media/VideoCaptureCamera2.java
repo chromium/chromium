@@ -367,7 +367,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
             PhotoCapabilities.Builder builder = new PhotoCapabilities.Builder();
-
+            if (cameraCharacteristics == null) {
+                VideoCaptureJni.get().onGetPhotoCapabilitiesReply(mNativeVideoCaptureDeviceAndroid,
+                        VideoCaptureCamera2.this, mCallbackId, builder.build());
+                return;
+            }
             int minIso = 0;
             int maxIso = 0;
             final Range<Integer> iso_range =
@@ -575,7 +579,9 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 }
             }
             try {
-                if (cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_LOCK_AVAILABLE)) {
+                Boolean ae_lock_available =
+                        cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_LOCK_AVAILABLE);
+                if (ae_lock_available != null && ae_lock_available.booleanValue()) {
                     exposureModes.add(Integer.valueOf(AndroidMeteringMode.FIXED));
                 }
             } catch (NoSuchFieldError e) {
@@ -622,7 +628,9 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 }
             }
             try {
-                if (cameraCharacteristics.get(CameraCharacteristics.CONTROL_AWB_LOCK_AVAILABLE)) {
+                Boolean awb_lock_available =
+                        cameraCharacteristics.get(CameraCharacteristics.CONTROL_AWB_LOCK_AVAILABLE);
+                if (awb_lock_available != null && awb_lock_available.booleanValue()) {
                     whiteBalanceModes.add(Integer.valueOf(AndroidMeteringMode.FIXED));
                 }
             } catch (NoSuchFieldError e) {
@@ -749,6 +757,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) return;
             final Rect canvas =
                     cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
 
@@ -771,7 +780,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
             if (mOptions.exposureMode != AndroidMeteringMode.NOT_SET) {
                 mExposureMode = mOptions.exposureMode;
             }
-            if (mOptions.exposureTime != 0) mLastExposureTimeNs = (long) mOptions.exposureTime;
+            if (mOptions.exposureTime != 0) {
+                // The web API (https://w3c.github.io/mediacapture-image/#exposure-time) provides
+                // exposureTime in 100 microsecond units.
+                mLastExposureTimeNs =
+                        (long) (mOptions.exposureTime * kNanosecondsPer100Microsecond);
+            }
             if (mOptions.whiteBalanceMode != AndroidMeteringMode.NOT_SET) {
                 mWhiteBalanceMode = mOptions.whiteBalanceMode;
             }
@@ -847,8 +861,16 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // have to do with preview, e.g. the ImageReader and its associated Surface.
                 configureCommonCaptureSettings(mPreviewRequestBuilder);
 
+                if (mOptions.fillLightMode != AndroidFillLightMode.NOT_SET) {
+                    // Run the precapture sequence for capturing a still image.
+                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                            CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+                }
+
+                mPreviewRequest = mPreviewRequestBuilder.build();
+
                 try {
-                    mPreviewSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, null);
+                    mPreviewSession.setRepeatingRequest(mPreviewRequest, null, null);
                 } catch (CameraAccessException | SecurityException | IllegalStateException
                         | IllegalArgumentException ex) {
                     Log.e(TAG, "setRepeatingRequest: ", ex);
@@ -877,6 +899,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) {
+                Log.e(TAG, "cameraCharacteristics error");
+                notifyTakePhotoError(mCallbackId);
+                return;
+            }
             final StreamConfigurationMap streamMap = cameraCharacteristics.get(
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             final Size[] supportedSizes = streamMap.getOutputSizes(ImageFormat.JPEG);
@@ -1016,13 +1043,10 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 (CameraManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.CAMERA_SERVICE);
         try {
-            final String[] cameraIdList = manager.getCameraIdList();
-            if (id >= cameraIdList.length) {
-                Log.e(TAG, "Invalid camera Id: ", id);
-                return null;
-            }
-            return manager.getCameraCharacteristics(cameraIdList[id]);
-        } catch (CameraAccessException | IllegalArgumentException | AssertionError ex) {
+            final String str_id = String.valueOf(id);
+            return manager.getCameraCharacteristics(str_id);
+        } catch (CameraAccessException | IllegalArgumentException | AssertionError
+                | NullPointerException ex) {
             Log.e(TAG, "getCameraCharacteristics: ", ex);
         }
         return null;
@@ -1080,6 +1104,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             // available, see https://crbug.com/718387.
             // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#CONTROL_VIDEO_STABILIZATION_MODE
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) return false;
             final int[] stabilizationModes = cameraCharacteristics.get(
                     CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
             for (int mode : stabilizationModes) {
@@ -1152,18 +1177,14 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // We need to configure by hand the exposure time when AE mode is off.  Set it to
                 // the last known exposure interval if known, otherwise set it to the middle of the
                 // allowed range. Further tuning will be done via |mIso| and
-                // |mExposureCompensation|. mLastExposureTimeNs and range are in nanoseconds (from
-                // Android platform), but spec expects exposureTime to be in 100 microsecond units.
-                // https://w3c.github.io/mediacapture-image/#exposure-time
+                // |mExposureCompensation|.
                 if (mLastExposureTimeNs != 0) {
-                    requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-                            mLastExposureTimeNs / kNanosecondsPer100Microsecond);
-                } else {
+                    requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mLastExposureTimeNs);
+                } else if (cameraCharacteristics != null) {
                     Range<Long> range = cameraCharacteristics.get(
                             CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                     requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-                            (range.getLower() + (range.getUpper() + range.getLower()) / 2)
-                                    / kNanosecondsPer100Microsecond);
+                            range.getLower() + (range.getUpper() + range.getLower()) / 2);
                 }
 
             } else {
@@ -1226,9 +1247,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 requestBuilder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
             }
             if (mColorTemperature > 0) {
-                final int colorSetting = getClosestWhiteBalance(mColorTemperature,
-                        cameraCharacteristics.get(
-                                CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES));
+                int colorSetting = -1;
+                if (cameraCharacteristics != null) {
+                    colorSetting = getClosestWhiteBalance(mColorTemperature,
+                            cameraCharacteristics.get(
+                                    CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES));
+                }
                 Log.d(TAG, " Color temperature (%d ==> %d)", mColorTemperature, colorSetting);
                 if (colorSetting != -1) {
                     requestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, colorSetting);
@@ -1337,17 +1361,36 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static int getCaptureApiType(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static int getCaptureApiType(int index) {
+        final CameraCharacteristics cameraCharacteristics =
+                getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) {
             return VideoCaptureApi.UNKNOWN;
         }
 
         final int supportedHWLevel =
                 cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+
+        // https://crbug.com/1155568: We must explicitly check for
+        // BACKWARD_COMPATIBLE, except for LEGACY, where it's implied. See also
+        // https://developer.android.com/reference/android/hardware/camera2/CameraMetadata#INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY
+        if (supportedHWLevel == CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
+            return VideoCaptureApi.ANDROID_API2_LEGACY;
+        }
+        final int[] capabilities =
+                cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+        boolean backwardCompatible = false;
+        for (int cap : capabilities) {
+            if (cap == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE) {
+                backwardCompatible = true;
+                break;
+            }
+        }
+        if (!backwardCompatible) {
+            return VideoCaptureApi.UNKNOWN;
+        }
+
         switch (supportedHWLevel) {
-            case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY:
-                return VideoCaptureApi.ANDROID_API2_LEGACY;
             case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
                 return VideoCaptureApi.ANDROID_API2_FULL;
             case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
@@ -1357,8 +1400,22 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static int getFacingMode(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static boolean isZoomSupported(int index) {
+        final CameraCharacteristics cameraCharacteristics =
+                getCameraCharacteristics(getDeviceIdInt(index));
+        if (cameraCharacteristics == null) {
+            return false;
+        }
+
+        final float maxZoom =
+                cameraCharacteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+        final boolean isZoomSupported = maxZoom > 1.0f;
+        return isZoomSupported;
+    }
+
+    public static int getFacingMode(int index) {
+        final CameraCharacteristics cameraCharacteristics =
+                getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) {
             return VideoFacingMode.MEDIA_VIDEO_FACING_NONE;
         }
@@ -1374,8 +1431,9 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    public static String getName(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    public static String getName(int index) {
+        final CameraCharacteristics cameraCharacteristics =
+                getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) return null;
         final int facing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
 
@@ -1387,52 +1445,110 @@ public class VideoCaptureCamera2 extends VideoCapture {
                     && infoColor.equals(
                             CameraCharacteristics.SENSOR_INFO_COLOR_FILTER_ARRANGEMENT_NIR);
         }
-        return "camera2 " + id + ", facing "
+        return "camera2 " + index + ", facing "
                 + ((facing == CameraCharacteristics.LENS_FACING_FRONT) ? "front" : "back")
                 + (isInfrared ? " infrared" : "");
     }
 
-    public static VideoCaptureFormat[] getDeviceSupportedFormats(int id) {
-        final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(id);
+    // Retrieves the index within the camera ID list for the specified camera ID; returns
+    // -1 if the specified camera ID is not found
+    public static int getDeviceIndex(int id) {
+        final CameraManager manager =
+                (CameraManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.CAMERA_SERVICE);
+        try {
+            final String[] cameraIdList = manager.getCameraIdList();
+            for (int index = 0; index < cameraIdList.length; ++index) {
+                try {
+                    if (Integer.parseInt(cameraIdList[index]) == id) {
+                        return index;
+                    }
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+            }
+        } catch (CameraAccessException ex) {
+            Log.e(TAG, "manager.getCameraIdList: ", ex);
+        }
+        return -1;
+    }
+
+    // Helper to retrieve the camera device ID, as an integer, at the specified
+    // index within the camera ID list; returns -1 if camera does not exist at the
+    // specified index
+    private static int getDeviceIdInt(int index) {
+        try {
+            return Integer.parseInt(getDeviceId(index));
+        } catch (NumberFormatException ex) {
+            Log.e(TAG, "Invalid camera index: ", index);
+            return -1;
+        }
+    }
+
+    static String getDeviceId(int index) {
+        final CameraManager manager =
+                (CameraManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.CAMERA_SERVICE);
+        try {
+            final String[] cameraIdList = manager.getCameraIdList();
+            if (index >= cameraIdList.length) {
+                Log.e(TAG, "Invalid camera index: ", index);
+                return null;
+            }
+            return cameraIdList[index];
+        } catch (CameraAccessException ex) {
+            Log.e(TAG, "manager.getCameraIdList: ", ex);
+            return null;
+        }
+    }
+
+    public static VideoCaptureFormat[] getDeviceSupportedFormats(int index) {
+        final CameraCharacteristics cameraCharacteristics =
+                getCameraCharacteristics(getDeviceIdInt(index));
         if (cameraCharacteristics == null) return null;
 
-        final int[] capabilities =
-                cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
-        // Per-format frame rate via getOutputMinFrameDuration() is only available if the
-        // property REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR is set.
-        boolean minFrameDurationAvailable = false;
-        for (int cap : capabilities) {
-            if (cap == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR) {
-                minFrameDurationAvailable = true;
-                break;
-            }
-        }
-
-        ArrayList<VideoCaptureFormat> formatList = new ArrayList<VideoCaptureFormat>();
-        final StreamConfigurationMap streamMap =
-                cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        final int[] formats = streamMap.getOutputFormats();
-        for (int format : formats) {
-            final Size[] sizes = streamMap.getOutputSizes(format);
-            if (sizes == null) continue;
-            for (Size size : sizes) {
-                double minFrameRate = 0.0f;
-                if (minFrameDurationAvailable) {
-                    final long minFrameDurationInNanoseconds =
-                            streamMap.getOutputMinFrameDuration(format, size);
-                    minFrameRate = (minFrameDurationInNanoseconds == 0)
-                            ? 0.0f
-                            : (kNanosecondsPerSecond / minFrameDurationInNanoseconds);
-                } else {
-                    // TODO(mcasas): find out where to get the info from in this case.
-                    // Hint: perhaps using SCALER_AVAILABLE_PROCESSED_MIN_DURATIONS.
-                    minFrameRate = 0.0;
+        try {
+            final int[] capabilities =
+                    cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+            // Per-format frame rate via getOutputMinFrameDuration() is only available if the
+            // property REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR is set.
+            boolean minFrameDurationAvailable = false;
+            for (int cap : capabilities) {
+                if (cap == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR) {
+                    minFrameDurationAvailable = true;
+                    break;
                 }
-                formatList.add(new VideoCaptureFormat(
-                        size.getWidth(), size.getHeight(), (int) minFrameRate, format));
             }
+
+            ArrayList<VideoCaptureFormat> formatList = new ArrayList<VideoCaptureFormat>();
+            final StreamConfigurationMap streamMap = cameraCharacteristics.get(
+                    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            final int[] formats = streamMap.getOutputFormats();
+            for (int format : formats) {
+                final Size[] sizes = streamMap.getOutputSizes(format);
+                if (sizes == null) continue;
+                for (Size size : sizes) {
+                    double minFrameRate = 0.0f;
+                    if (minFrameDurationAvailable) {
+                        final long minFrameDurationInNanoseconds =
+                                streamMap.getOutputMinFrameDuration(format, size);
+                        minFrameRate = (minFrameDurationInNanoseconds == 0)
+                                ? 0.0f
+                                : (kNanosecondsPerSecond / minFrameDurationInNanoseconds);
+                    } else {
+                        // TODO(mcasas): find out where to get the info from in this case.
+                        // Hint: perhaps using SCALER_AVAILABLE_PROCESSED_MIN_DURATIONS.
+                        minFrameRate = 0.0;
+                    }
+                    formatList.add(new VideoCaptureFormat(
+                            size.getWidth(), size.getHeight(), (int) minFrameRate, format));
+                }
+            }
+            return formatList.toArray(new VideoCaptureFormat[formatList.size()]);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to catch device supported video formats: ", e);
+            return null;
         }
-        return formatList.toArray(new VideoCaptureFormat[formatList.size()]);
     }
 
     VideoCaptureCamera2(int id, long nativeVideoCaptureDeviceAndroid) {
@@ -1469,12 +1585,33 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
         }
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+        if (cameraCharacteristics == null) return false;
         final StreamConfigurationMap streamMap =
                 cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
+        mCameraNativeOrientation =
+                cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+
+        // Update the capture width and height based on the camera orientation.
+        // With device's native orientation being Portrait for Android devices,
+        // for cameras that are mounted 0 or 180 degrees in respect to device's
+        // native orientation, we will need to swap the width and height in
+        // order to capture upright frames in respect to device's current
+        // orientation.
+        int capture_width = width;
+        int capture_height = height;
+        if (mCameraNativeOrientation == 0 || mCameraNativeOrientation == 180) {
+            Log.d(TAG,
+                    "Flipping capture width and height to match device's "
+                            + "natural orientation");
+            capture_width = height;
+            capture_height = width;
+        }
+
         // Find closest supported size.
         final Size[] supportedSizes = streamMap.getOutputSizes(ImageFormat.YUV_420_888);
-        final Size closestSupportedSize = findClosestSizeInArray(supportedSizes, width, height);
+        final Size closestSupportedSize =
+                findClosestSizeInArray(supportedSizes, capture_width, capture_height);
         if (closestSupportedSize == null) {
             Log.e(TAG, "No supported resolutions.");
             return false;
@@ -1505,8 +1642,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         // |mCaptureFormat| is also used to configure the ImageReader.
         mCaptureFormat = new VideoCaptureFormat(closestSupportedSize.getWidth(),
                 closestSupportedSize.getHeight(), frameRate, ImageFormat.YUV_420_888);
-        mCameraNativeOrientation =
-                cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+
         // TODO(mcasas): The following line is correct for N5 with prerelease Build,
         // but NOT for N7 with a dev Build. Figure out which one to support.
         mInvertDeviceOrientationReadings =
@@ -1530,13 +1666,14 @@ public class VideoCaptureCamera2 extends VideoCapture {
         final CrStateListener stateListener = new CrStateListener();
         try {
             final String[] cameraIdList = manager.getCameraIdList();
-            if (mId >= cameraIdList.length) {
+            final int cameraIndex = getDeviceIndex(mId);
+            if (cameraIndex < 0) {
                 Log.e(TAG, "Invalid camera Id: ", mId);
                 return false;
             }
             TraceEvent.instant("VideoCaptureCamera2.java",
                     "VideoCaptureCamera2.startCaptureMaybeAsync calling manager.openCamera");
-            manager.openCamera(cameraIdList[mId], stateListener, mCameraThreadHandler);
+            manager.openCamera(cameraIdList[cameraIndex], stateListener, mCameraThreadHandler);
         } catch (CameraAccessException | IllegalArgumentException | SecurityException ex) {
             Log.e(TAG, "allocate: manager.openCamera: ", ex);
             return false;

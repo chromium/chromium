@@ -5,15 +5,23 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_AUTOMATION_INTERNAL_CHROME_AUTOMATION_INTERNAL_API_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOMATION_INTERNAL_CHROME_AUTOMATION_INTERNAL_API_DELEGATE_H_
 
+#include <string>
+
 #include "extensions/browser/api/automation_internal/automation_internal_api_delegate.h"
 
 namespace extensions {
+
+class AutomationEventRouterInterface;
 
 // A delegate for chrome specific automation api logic.
 class ChromeAutomationInternalApiDelegate
     : public AutomationInternalApiDelegate {
  public:
   ChromeAutomationInternalApiDelegate();
+  ChromeAutomationInternalApiDelegate(
+      const ChromeAutomationInternalApiDelegate&) = delete;
+  ChromeAutomationInternalApiDelegate& operator=(
+      const ChromeAutomationInternalApiDelegate&) = delete;
   ~ChromeAutomationInternalApiDelegate() override;
 
   bool CanRequestAutomation(const Extension* extension,
@@ -27,12 +35,12 @@ class ChromeAutomationInternalApiDelegate
   int GetTabId(content::WebContents* contents) override;
   content::WebContents* GetActiveWebContents(
       ExtensionFunction* function) override;
+  bool EnableTree(const ui::AXTreeID& tree_id) override;
   void EnableDesktop() override;
   ui::AXTreeID GetAXTreeID() override;
-  void SetEventBundleSink(ui::AXEventBundleSink* sink) override;
+  void SetAutomationEventRouterInterface(
+      AutomationEventRouterInterface* router) override;
   content::BrowserContext* GetActiveUserContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAutomationInternalApiDelegate);
 };
 
 }  // namespace extensions

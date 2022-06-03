@@ -1,31 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'SUCCESS'",
-          "rect": [76, 116, 64, 18],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox 'SUCCESS'",
-          "rect": [9, 87, 63, 16],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'FAILURE'",
-          "rect": [81, 116, 54, 18],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "InlineTextBox 'FAILURE'",
-          "rect": [9, 87, 53, 16],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [76, 117, 64, 16],
+        [9, 87, 63, 16]
       ]
     }
   ]

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ROTATE_TO_FULLSCREEN_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ROTATE_TO_FULLSCREEN_DELEGATE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -37,7 +37,7 @@ class MediaControlsRotateToFullscreenDelegate final
   // EventListener implementation.
   void Invoke(ExecutionContext*, Event*) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class MediaControlsRotateToFullscreenDelegateTest;
@@ -54,7 +54,7 @@ class MediaControlsRotateToFullscreenDelegate final
   MODULES_EXPORT SimpleOrientation ComputeVideoOrientation() const;
   SimpleOrientation ComputeScreenOrientation() const;
 
-  base::Optional<bool> device_orientation_supported_;
+  absl::optional<bool> device_orientation_supported_;
 
   SimpleOrientation current_screen_orientation_ = SimpleOrientation::kUnknown;
 

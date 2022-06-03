@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+PASS Redirect 301 in "follow" mode without location
+PASS Redirect 301 in "manual" mode without location
+PASS Redirect 301 in "follow" mode with invalid location
+PASS Redirect 301 in "manual" mode with invalid location
+PASS Redirect 301 in "follow" mode with data location
+FAIL Redirect 301 in "manual" mode with data location promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS Redirect 302 in "follow" mode without location
+PASS Redirect 302 in "manual" mode without location
+PASS Redirect 302 in "follow" mode with invalid location
+PASS Redirect 302 in "manual" mode with invalid location
+PASS Redirect 302 in "follow" mode with data location
+FAIL Redirect 302 in "manual" mode with data location promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS Redirect 303 in "follow" mode without location
+PASS Redirect 303 in "manual" mode without location
+PASS Redirect 303 in "follow" mode with invalid location
+PASS Redirect 303 in "manual" mode with invalid location
+PASS Redirect 303 in "follow" mode with data location
+FAIL Redirect 303 in "manual" mode with data location promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS Redirect 307 in "follow" mode without location
+PASS Redirect 307 in "manual" mode without location
+PASS Redirect 307 in "follow" mode with invalid location
+PASS Redirect 307 in "manual" mode with invalid location
+PASS Redirect 307 in "follow" mode with data location
+FAIL Redirect 307 in "manual" mode with data location promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS Redirect 308 in "follow" mode without location
+PASS Redirect 308 in "manual" mode without location
+PASS Redirect 308 in "follow" mode with invalid location
+PASS Redirect 308 in "manual" mode with invalid location
+PASS Redirect 308 in "follow" mode with data location
+FAIL Redirect 308 in "manual" mode with data location promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+Harness: the test ran to completion.
+

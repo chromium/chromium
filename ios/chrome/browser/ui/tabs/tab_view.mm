@@ -5,24 +5,20 @@
 
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 
-#include "base/i18n/rtl.h"
-#include "base/logging.h"
+#import <MaterialComponents/MaterialActivityIndicator.h>
 
+#include "base/i18n/rtl.h"
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
-#include "ios/chrome/browser/drag_and_drop/drop_and_navigate_delegate.h"
-#include "ios/chrome/browser/drag_and_drop/drop_and_navigate_interaction.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/highlight_button.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MaterialActivityIndicator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -37,17 +33,16 @@
 namespace {
 
 // Tab close button insets.
-const CGFloat kTabCloseTopInset = -1.0;
+const CGFloat kTabCloseTopInset = 1.0;
 const CGFloat kTabCloseLeftInset = 0.0;
 const CGFloat kTabCloseBottomInset = 0.0;
 const CGFloat kTabCloseRightInset = 0.0;
 const CGFloat kTabBackgroundLeftCapInset = 34.0;
-const CGFloat kFaviconLeftInset = 23.5;
-const CGFloat kFaviconVerticalOffset = 2.0;
+const CGFloat kFaviconLeftInset = 28;
+const CGFloat kFaviconVerticalOffset = 1.0;
 const CGFloat kTabStripLineMargin = 2.5;
 const CGFloat kTabStripLineHeight = 0.5;
-const CGFloat kCloseButtonHorizontalShift = 19;
-const CGFloat kCloseButtonVerticalShift = 4.0;
+const CGFloat kCloseButtonHorizontalShift = 22;
 const CGFloat kTitleLeftMargin = 8.0;
 const CGFloat kTitleRightMargin = 0.0;
 
@@ -63,7 +58,7 @@ UIImage* DefaultFaviconImage() {
 }
 }
 
-@interface TabView ()<DropAndNavigateDelegate> {
+@interface TabView () <UIPointerInteractionDelegate> {
   __weak id<TabViewDelegate> _delegate;
 
   // Close button for this tab.
@@ -87,7 +82,8 @@ UIImage* DefaultFaviconImage() {
 
   MDCActivityIndicator* _activityIndicator;
 
-  API_AVAILABLE(ios(11.0)) DropAndNavigateInteraction* _dropInteraction;
+  // Adds hover interaction to background tabs.
+  API_AVAILABLE(ios(13.4)) UIPointerInteraction* _pointerInteraction;
 }
 @end
 
@@ -127,12 +123,6 @@ UIImage* DefaultFaviconImage() {
     [self addTarget:self
                   action:@selector(tabWasTapped)
         forControlEvents:UIControlEventTouchUpInside];
-
-    if (DragAndDropIsEnabled()) {
-      _dropInteraction =
-          [[DropAndNavigateInteraction alloc] initWithDelegate:self];
-      [self addInteraction:_dropInteraction];
-    }
   }
   return self;
 }
@@ -181,22 +171,17 @@ UIImage* DefaultFaviconImage() {
   }
   _incognitoStyle = incognitoStyle;
 
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |incognitoStyle| can be removed, as well as the
-    // incognito specific assets.
-    self.overrideUserInterfaceStyle = _incognitoStyle
-                                          ? UIUserInterfaceStyleDark
-                                          : UIUserInterfaceStyleUnspecified;
-    return;
-  }
-  [self updateStyleForSelected:self.selected];
+  self.overrideUserInterfaceStyle = _incognitoStyle
+                                        ? UIUserInterfaceStyleDark
+                                        : UIUserInterfaceStyleUnspecified;
+  return;
 }
 
 - (void)startProgressSpinner {
   [_activityIndicator startAnimating];
   [_activityIndicator setHidden:NO];
   [_faviconView setHidden:YES];
+  [_faviconView setImage:DefaultFaviconImage()];
 }
 
 - (void)stopProgressSpinner {
@@ -244,16 +229,14 @@ UIImage* DefaultFaviconImage() {
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
-    // This triggers the styling again, where the image is resolved instead of
-    // relying in the system's magic. Radar filled:
-    // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      [self updateStyleForSelected:self.selected];
-    }
+  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
+  // This triggers the styling again, where the image is resolved instead of
+  // relying in the system's magic. Radar filled:
+  // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self updateStyleForSelected:self.selected];
   }
 }
 
@@ -298,6 +281,8 @@ UIImage* DefaultFaviconImage() {
                    action:@selector(closeButtonPressed)
          forControlEvents:UIControlEventTouchUpInside];
 
+  _closeButton.pointerInteractionEnabled = YES;
+
   [self addSubview:_closeButton];
 
   // Add fade truncating label.
@@ -333,22 +318,19 @@ UIImage* DefaultFaviconImage() {
     @"H:|-faviconLeftInset-[favicon(faviconSize)]",
     @"V:|-faviconVerticalOffset-[favicon]-0-|",
     @"H:[close(==closeButtonSize)]-closeButtonHorizontalShift-|",
-    @"V:|-closeButtonVerticalShift-[close]-0-|",
+    @"V:|-0-[close]-0-|",
     @"H:[favicon]-titleLeftMargin-[title]-titleRightMargin-[close]",
     @"V:[title(==titleHeight)]",
   ];
 
-  CGFloat faviconLeftInset = kFaviconLeftInset;
-  CGFloat faviconVerticalOffset = kFaviconVerticalOffset;
   NSDictionary* metrics = @{
     @"closeButtonSize" : @(kCloseButtonSize),
     @"closeButtonHorizontalShift" : @(kCloseButtonHorizontalShift),
-    @"closeButtonVerticalShift" : @(kCloseButtonVerticalShift),
     @"titleLeftMargin" : @(kTitleLeftMargin),
     @"titleRightMargin" : @(kTitleRightMargin),
     @"titleHeight" : @(kFaviconSize),
-    @"faviconLeftInset" : @(AlignValueToPixel(faviconLeftInset)),
-    @"faviconVerticalOffset" : @(faviconVerticalOffset),
+    @"faviconLeftInset" : @(kFaviconLeftInset),
+    @"faviconVerticalOffset" : @(kFaviconVerticalOffset),
     @"faviconSize" : @(kFaviconSize),
   };
   ApplyVisualConstraintsWithMetrics(constraints, viewsDictionary, metrics);
@@ -360,16 +342,9 @@ UIImage* DefaultFaviconImage() {
 // Updates this tab's style based on the value of |selected| and the current
 // incognito style.
 - (void)updateStyleForSelected:(BOOL)selected {
-  // On iOS 13 there is no need to pick custom incognito assets because
-  // |overrideUserInterfaceStyle| is set to dark mode when in incognito.
-  using base::ios::IsRunningOnIOS13OrLater;
-  BOOL useIncognitoFallback = self.incognitoStyle && !IsRunningOnIOS13OrLater();
-
   // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
-  NSString* incognito = useIncognitoFallback ? @"incognito_" : @"";
-  NSString* imageName =
-      [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
+  NSString* imageName = [NSString stringWithFormat:@"tabstrip_%@_tab", state];
   CGFloat leftInset = kTabBackgroundLeftCapInset;
   // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
   // Radar filled: b/137942721.
@@ -380,31 +355,30 @@ UIImage* DefaultFaviconImage() {
       StretchableImageFromUIImage(resolvedImage, leftInset, 0);
   _backgroundImageView.image = backgroundImage;
 
-  // Style the close button tint color.
-  NSString* closeButtonColorName;
   if (selected) {
-    closeButtonColorName = useIncognitoFallback ? @"close_button_dark_color"
-                                                : @"close_button_color";
+    if (_pointerInteraction)
+      [self removeInteraction:_pointerInteraction];
   } else {
-    closeButtonColorName = @"tabstrip_inactive_tab_close_button_color";
+    if (!_pointerInteraction)
+      _pointerInteraction =
+          [[UIPointerInteraction alloc] initWithDelegate:self];
+    [self addInteraction:_pointerInteraction];
   }
+
+  // Style the close button tint color.
+  NSString* closeButtonColorName = selected ? kGrey600Color : kGrey500Color;
   _closeButton.tintColor = [UIColor colorNamed:closeButtonColorName];
 
-  // Style the favicon tint color and the title label.
-  NSString* faviconColorName;
-  if (selected) {
-    faviconColorName =
-        useIncognitoFallback ? kTextPrimaryDarkColor : kTextPrimaryColor;
-  } else {
-    faviconColorName = @"tabstrip_inactive_tab_text_color";
-  }
+  // Style the favicon tint color.
+  NSString* faviconColorName = selected ? kGrey600Color : kGrey500Color;
   _faviconView.tintColor = [UIColor colorNamed:faviconColorName];
-  _titleLabel.textColor = _faviconView.tintColor;
 
-  // Update font weight and accessibility label.
-  UIFontWeight fontWeight =
-      selected ? UIFontWeightSemibold : UIFontWeightMedium;
-  _titleLabel.font = [UIFont systemFontOfSize:kFontSize weight:fontWeight];
+  // Style the title tint color.
+  NSString* titleColorName = selected ? kTextPrimaryColor : kGrey600Color;
+  _titleLabel.textColor = [UIColor colorNamed:titleColorName];
+
+  _titleLabel.font = [UIFont systemFontOfSize:kFontSize
+                                       weight:UIFontWeightMedium];
   // It would make more sense to set active/inactive on tab_view itself, but
   // tab_view is not an an accessible element, and making it one would add
   // several complicated layers to UIA.  Instead, simply set active/inactive
@@ -412,16 +386,94 @@ UIImage* DefaultFaviconImage() {
   [_titleLabel setAccessibilityValue:(selected ? @"active" : @"inactive")];
 }
 
-#pragma mark - DropAndNavigateDelegate
+// Bezier path for the border shape of the tab. While the shape of the tab is an
+// illusion achieved with a background image, the actual border path is required
+// for the hover pointer interaction.
+- (UIBezierPath*)borderPath {
+  CGFloat margin = 15;
+  CGFloat width = self.frame.size.width - margin * 2;
+  CGFloat height = self.frame.size.height;
+  CGFloat cornerRadius = 12;
+  UIBezierPath* path = [UIBezierPath bezierPath];
+  [path moveToPoint:CGPointMake(margin - cornerRadius, height)];
+  // Lower left arc.
+  [path
+      addArcWithCenter:CGPointMake(margin - cornerRadius, height - cornerRadius)
+                radius:cornerRadius
+            startAngle:M_PI / 2
+              endAngle:0
+             clockwise:NO];
+  // Left vertical line.
+  [path addLineToPoint:CGPointMake(margin, cornerRadius)];
+  // Upper left arc.
+  [path addArcWithCenter:CGPointMake(margin + cornerRadius, cornerRadius)
+                  radius:cornerRadius
+              startAngle:M_PI
+                endAngle:3 * M_PI / 2
+               clockwise:YES];
+  // Top horizontal line.
+  [path addLineToPoint:CGPointMake(width + margin - cornerRadius, 0)];
+  // Upper right arc.
+  [path
+      addArcWithCenter:CGPointMake(width + margin - cornerRadius, cornerRadius)
+                radius:cornerRadius
+            startAngle:3 * M_PI / 2
+              endAngle:0
+             clockwise:YES];
+  // Right vertical line.
+  [path addLineToPoint:CGPointMake(width + margin, height - cornerRadius)];
+  // Lower right arc.
+  [path addArcWithCenter:CGPointMake(width + margin + cornerRadius,
+                                     height - cornerRadius)
+                  radius:cornerRadius
+              startAngle:M_PI
+                endAngle:M_PI / 2
+               clockwise:NO];
+  [path closePath];
+  return path;
+}
 
-- (void)URLWasDropped:(GURL const&)url {
-  [_delegate tabView:self receivedDroppedURL:url];
+#pragma mark UIPointerInteractionDelegate
+
+- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
+                      regionForRequest:(UIPointerRegionRequest*)request
+                         defaultRegion:(UIPointerRegion*)defaultRegion
+    API_AVAILABLE(ios(13.4)) {
+  return defaultRegion;
+}
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region
+    API_AVAILABLE(ios(13.4)) {
+  // Hovering over this tab view and closing the tab simultaneously could result
+  // in this tab view having been removed from the window at the beginning of
+  // this method. If this tab view has already been removed from the view
+  // hierarchy, a nil pointer style should be returned so that the pointer
+  // remains with a default style. Attempting to construct a UITargetedPreview
+  // with a tab view that has already been removed from the hierarchy will
+  // result in a crash with an exception stating that the view has no window.
+  if (!_backgroundImageView.window) {
+    return nil;
+  }
+
+  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
+  parameters.visiblePath = [self borderPath];
+
+  // Use the background view for the preview so that z-order of overlapping tabs
+  // is respected.
+  UIPointerHoverEffect* effect = [UIPointerHoverEffect
+      effectWithPreview:[[UITargetedPreview alloc]
+                            initWithView:_backgroundImageView
+                              parameters:parameters]];
+  effect.prefersScaledContent = NO;
+  effect.prefersShadow = NO;
+  return [UIPointerStyle styleWithEffect:effect shape:nil];
 }
 
 #pragma mark - Touch events
 
 - (void)closeButtonPressed {
-  [_delegate tabViewcloseButtonPressed:self];
+  [_delegate tabViewCloseButtonPressed:self];
 }
 
 - (void)tabWasTapped {

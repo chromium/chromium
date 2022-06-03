@@ -26,7 +26,7 @@ extern "C" {
  *       of namespaces. If "foo" is the prefix for "http://foo.com/"
  *       then the link detection layer will expand role="foo:myrole"
  *       to "http://foo.com/:myrole".
- * NOTE: the link detection layer will expand URI-Refences found on
+ * NOTE: the link detection layer will expand URI-References found on
  *       href attributes by using the base mechanism if found.
  */
 typedef xmlChar *xlinkHRef;

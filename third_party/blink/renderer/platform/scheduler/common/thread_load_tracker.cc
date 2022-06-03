@@ -117,8 +117,7 @@ void ThreadLoadTracker::Advance(base::TimeTicks now, TaskState task_state) {
 }
 
 double ThreadLoadTracker::Load() {
-  return run_time_inside_window_.InSecondsF() /
-         reporting_interval_.InSecondsF();
+  return run_time_inside_window_ / reporting_interval_;
 }
 
 }  // namespace scheduler

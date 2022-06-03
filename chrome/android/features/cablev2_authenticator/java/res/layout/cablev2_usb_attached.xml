@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+    a:layout_width="match_parent"
+    a:layout_height="match_parent"
+    a:gravity="center"
+    a:orientation="vertical">
+
+  <TextView
+      a:id="@+id/usb_label"
+      xmlns:tools="http://schemas.android.com/tools"
+      style="@style/TextAppearance.Headline.Primary"
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:layout_marginBottom="40dp"
+      a:gravity="center"
+      a:text="@string/cablev2_usb_discon_title" />
+
+  <ImageView
+      a:id="@+id/usb_icon_disconnect"
+      a:layout_height="203dp"
+      a:layout_width="296dp"
+      a:layout_marginLeft="100dp"
+      a:layout_marginRight="100dp"
+      a:layout_marginBottom="25dp"
+      a:contentDescription="@null"
+      a:gravity="center_horizontal"
+      a:src="@drawable/usb_conn_disconnect"/>
+
+  <TextView
+      a:id="@+id/usb_title"
+      xmlns:tools="http://schemas.android.com/tools"
+      style="@style/TextAppearance.TextLarge.Secondary"
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:gravity="center"
+      a:text="@string/cablev2_usb_discon_body" />
+
+</LinearLayout>

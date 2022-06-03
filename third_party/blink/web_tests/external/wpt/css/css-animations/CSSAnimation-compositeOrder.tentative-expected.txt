@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Animations are composited by their order in the animation-name property. assert_equals: expected "100px" but got "50px"
+PASS Web-animation replaces CSS animation
+Harness: the test ran to completion.
+

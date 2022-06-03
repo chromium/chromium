@@ -9,9 +9,14 @@ def maximize(session):
         "POST", "session/{session_id}/window/maximize".format(**vars(session)))
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     response = maximize(session)
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    response = maximize(session)
+    assert_success(response)
 
 
 def test_fully_exit_fullscreen(session):
@@ -79,6 +84,7 @@ def test_maximize_when_resized_to_max_size(session):
     session.end()
     session.window.maximize()
     available = session.window.size
+    session.window.size = (800, 600)
     session.end()
 
     session.window.size = available
@@ -90,4 +96,5 @@ def test_maximize_when_resized_to_max_size(session):
     # its expected dimensions.
     before = session.window.size
     session.window.maximize()
-    assert session.window.size == before
+    after = session.window.size
+    assert after == before

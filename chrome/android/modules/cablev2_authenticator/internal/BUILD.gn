@@ -1,0 +1,45 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/modules/buildflags.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/modules/cablev2_authenticator/ModuleImpl.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/android/features/cablev2_authenticator:java",
+    "//chrome/android/modules/cablev2_authenticator/public:java",
+  ]
+}
+
+# This group is effectively alias representing the module's native code,
+# allowing it to be named "native" for clarity in module descriptors. The
+# component target must be named according to the feature, so that the
+# component build's .cr.co library is named properly (ie.
+# libcablev2_authenticator.cr.so).
+group("native") {
+  deps = [ ":cablev2_authenticator" ]
+}
+
+component("cablev2_authenticator") {
+  sources = [ "entrypoints.cc" ]
+  deps = [
+    ":jni_registration",
+    "//base",
+    "//chrome/android/features/cablev2_authenticator:native",
+  ]
+
+  # caBLE v2 authenticator native entrypoints belong in the partition.
+  if (use_native_partitions) {
+    cflags = [ "-fsymbol-partition=cablev2_authenticator_partition" ]
+  }
+}
+
+generate_jni_registration("jni_registration") {
+  no_transitive_deps = true
+  targets = [ "//chrome/android/features/cablev2_authenticator:java" ]
+  header_output = "$target_gen_dir/jni_registration.h"
+  namespace = "cablev2_authenticator"
+}

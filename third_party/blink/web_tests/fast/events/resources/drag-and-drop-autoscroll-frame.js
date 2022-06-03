@@ -1,26 +1,5 @@
 function $(id) { return document.getElementById(id); }
 
-// Convert client coordinates in this frame into client coordinates of the root
-// frame, usable with event sender.
-function toRootWindow(rect) {
-    var w = window;
-    var curRect = {
-      left: rect.left,
-      top: rect.top,
-      right: rect.right,
-      bottom: rect.bottom
-    };
-    while(w.parent != w) {
-      var frameRect = w.frameElement.getBoundingClientRect();
-      curRect.left += frameRect.left;
-      curRect.right += frameRect.left;
-      curRect.top += frameRect.top;
-      curRect.bottom += frameRect.top;
-      w = window.parent;
-    }
-    return curRect
-}
-
 var lastScrollLeft;
 var lastScrollTop;
 
@@ -47,8 +26,6 @@ window.onload = function() {
           bottom: window.innerHeight,
       };
     }
-
-    scrollerRect = toRootWindow(scrollerRect);
 
     var eastX = scrollerRect.right - scrollBarWidth - 10;
     var northY = scrollerRect.top + 10;
@@ -146,7 +123,7 @@ window.onload = function() {
     eventSender.dragMode = false;
 
     // Grab draggable
-    const draggable_rect = toRootWindow(draggable.getBoundingClientRect());
+    const draggable_rect = draggable.getBoundingClientRect();
     eventSender.mouseMoveTo(draggable_rect.left + 5, draggable_rect.top + 5);
     eventSender.mouseDown();
 };

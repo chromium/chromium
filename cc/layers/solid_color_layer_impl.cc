@@ -26,7 +26,7 @@ std::unique_ptr<LayerImpl> SolidColorLayerImpl::CreateLayerImpl(
 }
 
 void SolidColorLayerImpl::AppendSolidQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     const Occlusion& occlusion_in_layer_space,
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& visible_layer_rect,
@@ -53,12 +53,15 @@ void SolidColorLayerImpl::AppendSolidQuads(
 
   gfx::Rect visible_quad_rect =
       occlusion_in_layer_space.GetUnoccludedContentRect(visible_layer_rect);
+  if (visible_quad_rect.IsEmpty())
+    return;
+
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_quad_state, visible_layer_rect, visible_quad_rect, color,
                force_anti_aliasing_off);
 }
 
-void SolidColorLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void SolidColorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                       AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();

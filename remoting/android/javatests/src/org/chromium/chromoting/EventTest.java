@@ -6,8 +6,9 @@ package org.chromium.chromoting;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;

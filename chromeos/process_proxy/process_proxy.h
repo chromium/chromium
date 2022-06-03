@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "chromeos/process_proxy/process_output_watcher.h"
@@ -41,6 +40,9 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
 
   ProcessProxy();
 
+  ProcessProxy(const ProcessProxy&) = delete;
+  ProcessProxy& operator=(const ProcessProxy&) = delete;
+
   // Opens a process using command |command| for the user with hash
   // |user_id_hash|.  Returns process ID on success, -1 on failure.
   bool Open(const base::CommandLine& cmdline,
@@ -66,7 +68,7 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
   void AckOutput();
 
   // Get the process handle for testing purposes.
-  base::ProcessHandle GetProcessHandleForTesting();
+  const base::Process* GetProcessForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<ProcessProxy>;
@@ -122,8 +124,6 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
   base::Process process_;
 
   int pt_pair_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessProxy);
 };
 
 }  // namespace chromeos

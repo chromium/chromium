@@ -63,31 +63,28 @@
                         android:layout_marginBottom="@dimen/fre_vertical_spacing"
                         android:gravity="start"
                         android:lineSpacingMultiplier="1.4"
-                        android:textAppearance="@style/TextAppearance.BlackHint2" />
+                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
-                    <android.support.v7.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/enable_data_saver_switch"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingMultiplier="1.4"
                         android:showText="false"
                         android:text="@string/data_reduction_enabled_switch_lite_mode"
-                        style="@style/TextAppearance.BlackTitle2" />
+                        style="@style/TextAppearance.TextMediumThick.Primary" />
 
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <!-- fre_button_bar_height = 52dp = layout_height + layout_marginBottom -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:paddingStart="@dimen/fre_button_padding"
-        android:paddingEnd="@dimen/fre_button_padding"
         android:text="@string/next"
         style="@style/FilledButton.Flat" />
 </org.chromium.chrome.browser.firstrun.FirstRunView>

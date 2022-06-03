@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_OOBE_DISPLAY_CHOOSER_H_
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -23,6 +22,10 @@ namespace chromeos {
 class OobeDisplayChooser : public ui::InputDeviceEventObserver {
  public:
   OobeDisplayChooser();
+
+  OobeDisplayChooser(const OobeDisplayChooser&) = delete;
+  OobeDisplayChooser& operator=(const OobeDisplayChooser&) = delete;
+
   ~OobeDisplayChooser() override;
 
   // Tries to put the OOBE UI on a connected touch display (if available).
@@ -48,13 +51,11 @@ class OobeDisplayChooser : public ui::InputDeviceEventObserver {
   void OnTouchDeviceAssociationChanged() override;
   void OnDeviceListsComplete() override;
 
-  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
-      scoped_observer_{this};
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      scoped_observation_{this};
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 
   base::WeakPtrFactory<OobeDisplayChooser> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeDisplayChooser);
 };
 
 }  // namespace chromeos

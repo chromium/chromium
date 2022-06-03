@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/browser/tabpersistence",
+  "+chrome/browser/page_annotations",
+  "+components/payments/content/android",
+  "+net/android",
+]

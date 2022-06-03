@@ -27,6 +27,13 @@ gfx::NativeWindow ScreenBase::GetWindowAtScreenPoint(const gfx::Point& point) {
   return nullptr;
 }
 
+gfx::NativeWindow ScreenBase::GetLocalProcessWindowAtPoint(
+    const gfx::Point& screen_point,
+    const std::set<gfx::NativeWindow>& ignore) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+}
+
 Display ScreenBase::GetPrimaryDisplay() const {
   auto iter = display_list_.GetPrimaryDisplayIterator();
   if (iter == display_list_.displays().end())

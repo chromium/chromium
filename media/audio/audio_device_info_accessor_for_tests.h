@@ -20,6 +20,11 @@ class AudioDeviceInfoAccessorForTests {
  public:
   explicit AudioDeviceInfoAccessorForTests(AudioManager* audio_manager);
 
+  AudioDeviceInfoAccessorForTests(const AudioDeviceInfoAccessorForTests&) =
+      delete;
+  AudioDeviceInfoAccessorForTests& operator=(
+      const AudioDeviceInfoAccessorForTests&) = delete;
+
   bool HasAudioOutputDevices();
 
   bool HasAudioInputDevices();
@@ -48,8 +53,6 @@ class AudioDeviceInfoAccessorForTests {
 
  private:
   AudioManager* const audio_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceInfoAccessorForTests);
 };
 
 }  // namespace media

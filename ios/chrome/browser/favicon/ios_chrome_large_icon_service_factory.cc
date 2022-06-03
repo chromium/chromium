@@ -25,8 +25,8 @@ const char kGoogleServerClientParam[] = "chrome";
 
 std::unique_ptr<KeyedService> BuildLargeIconService(
     web::BrowserState* context) {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<favicon::LargeIconServiceImpl>(
       ios::FaviconServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS),
@@ -41,7 +41,7 @@ std::unique_ptr<KeyedService> BuildLargeIconService(
 
 // static
 favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<favicon::LargeIconService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

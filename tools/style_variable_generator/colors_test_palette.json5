@@ -1,0 +1,12 @@
+{
+  options: {
+    // No CSS prefix for the google palette.
+    proto: {
+      field_name: 'palette_colors',
+      field_id: 1,
+    },
+  },
+  colors: {
+    google_grey_900: "#202124",
+  },
+}

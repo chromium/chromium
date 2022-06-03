@@ -4,17 +4,15 @@
 
 #include "content/common/font_list.h"
 
-#include "base/task/lazy_task_runner.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 
 namespace content {
 
 namespace {
 
-base::LazySequencedTaskRunner g_font_list_task_runner =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
-                         base::TaskPriority::USER_VISIBLE));
+base::LazyThreadPoolSequencedTaskRunner g_font_list_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE));
 
 }  // namespace
 

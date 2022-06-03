@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos",
+  "+components/back_forward_cache",
   "+components/guest_view",
   "+components/keyed_service",
   "+components/pref_registry",
@@ -11,6 +12,7 @@ include_rules = [
   "+components/sync",
   "+components/sync_preferences",
   "+components/update_client",
+  "+components/value_store",
   "+components/variations",
   "+components/version_info",
   "+components/web_cache",
@@ -23,16 +25,23 @@ include_rules = [
   "+grit/extensions_strings.h",
   "+net",
   "-net/url_request",
+  "+net/url_request/redirect_info.h",
+  "+net/url_request/redirect_util.h",
+  # Needed for a flag.
+  "+net/url_request/url_request.h",
+  "+pdf/buildflags.h",
+  "+pdf/pdf_features.h",
   # This directory contains build flags and does not pull all of PPAPI in.
   "+ppapi/buildflags",
   "+services/data_decoder/public",
   "+services/device/public",
+  "+services/metrics/public/cpp",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network",
   "+services/preferences/public/cpp",
   "+services/service_manager/public/cpp",
-  "+skia/ext/image_operations.h",
+  "+skia/ext",
   "+third_party/leveldatabase",
   "+third_party/re2",
   "+third_party/blink/public/common",
@@ -45,7 +54,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
-    "+components/app_modal",
+    "+components/javascript_dialogs",
     "+components/user_prefs",
 
     "+storage/browser/test",
@@ -66,5 +75,9 @@ specific_include_rules = {
   "sandboxed_unpacker_unittest.cc": [
     "+components/services/unzip",
     "+services/data_decoder",
+  ],
+  "extension_prefs.cc": [
+    # For CONTENT_SETTING_ALLOW / BLOCK.
+    "+components/content_settings/core/common",
   ],
 }

@@ -49,7 +49,7 @@ public class ShoppingCart {
 
     /**
      * Returns the shopping cart items, including both the original items and the additional items
-     * that vary depending on the selected payment instrument, e.g., debut card discounts.
+     * that vary depending on the selected payment apps, e.g., debit card discounts.
      *
      * @return The shopping cart items. Can be null. Should not be modified.
      */
@@ -73,8 +73,8 @@ public class ShoppingCart {
     }
 
     /**
-     * Update the additional shopping cart items that vary depending on the selected payment
-     * instrument, e.g., debit card discounts.
+     * Update the additional shopping cart items that vary depending on the selected payment app,
+     * e.g., debit card discounts.
      *
      * @param additionalContents The additional shopping cart items. Can be null.
      */

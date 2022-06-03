@@ -35,7 +35,7 @@ namespace blink {
 scoped_refptr<TransformOperation> Matrix3DTransformOperation::Accumulate(
     const TransformOperation& other_op) {
   DCHECK(other_op.IsSameType(*this));
-  const auto& other = ToMatrix3DTransformOperation(other_op);
+  const auto& other = To<Matrix3DTransformOperation>(other_op);
 
   // If either matrix is non-invertible, fail and fallback to replace.
   if (!matrix_.IsInvertible() || !other.matrix_.IsInvertible())
@@ -93,8 +93,7 @@ scoped_refptr<TransformOperation> Matrix3DTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
-  if (from && !from->IsSameType(*this))
-    return this;
+  DCHECK(!from || CanBlendWith(*from));
 
   // Convert the TransformOperations into matrices. Fail the blend operation
   // if either of the matrices is non-invertible.

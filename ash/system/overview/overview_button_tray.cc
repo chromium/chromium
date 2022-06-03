@@ -4,14 +4,17 @@
 
 #include "ash/system/overview/overview_button_tray.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -21,6 +24,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -29,15 +33,51 @@
 
 namespace ash {
 
+namespace {
+
+gfx::ImageSkia GetIconImage() {
+  return gfx::CreateVectorIcon(
+      kShelfOverviewIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
+}
+
+bool ShouldButtonBeVisible() {
+  auto* shell = Shell::Get();
+  SessionControllerImpl* session_controller = shell->session_controller();
+  if (session_controller->GetSessionState() !=
+          session_manager::SessionState::ACTIVE ||
+      session_controller->IsRunningInAppMode()) {
+    return false;
+  }
+
+  // Check whether the button should be visible for 'kOverviewButton' feature,
+  // which is running as an experiment now. It is only enabled for a specific
+  // group of existing desks users, see `kUserHasUsedDesksRecently` for more
+  // details. But we also want to enable it if the user has explicitly enabled
+  // `kOverviewButton` from chrome://flags or from the command line. Even though
+  // the user is not in the group of existing desks users. Note, can be removed
+  // once the experiment is done.
+  if (base::FeatureList::IsEnabled(features::kOverviewButton) &&
+      (desks_restore_util::HasPrimaryUserUsedDesksRecently() ||
+       base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+           features::kOverviewButton.name))) {
+    return true;
+  }
+
+  return shell->tablet_mode_controller()->ShouldShowOverviewButton() &&
+         ShelfConfig::Get()->shelf_controls_shown();
+}
+
+}  // namespace
+
 constexpr base::TimeDelta OverviewButtonTray::kDoubleTapThresholdMs;
 
 OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
-      kShelfOverviewIcon, ShelfConfig::Get()->shelf_icon_color());
-  icon_->SetImage(image);
+  const gfx::ImageSkia image = GetIconImage();
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
@@ -48,8 +88,11 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
   // horizontal shelf, no separator is required.
   set_separator_visibility(false);
 
+  set_use_bounce_in_animation(false);
+
   Shell::Get()->overview_controller()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  Shell::Get()->shelf_config()->AddObserver(this);
 }
 
 OverviewButtonTray::~OverviewButtonTray() {
@@ -57,21 +100,24 @@ OverviewButtonTray::~OverviewButtonTray() {
     Shell::Get()->overview_controller()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller())
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+  Shell::Get()->shelf_config()->RemoveObserver(this);
 }
 
-void OverviewButtonTray::UpdateAfterLoginStatusChange(LoginStatus status) {
+void OverviewButtonTray::UpdateAfterLoginStatusChange() {
   UpdateIconVisibility();
 }
 
 void OverviewButtonTray::SnapRippleToActivated() {
-  GetInkDrop()->SnapToActivated();
+  views::InkDrop::Get(this)->GetInkDrop()->SnapToActivated();
 }
 
 void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
   Button::OnGestureEvent(event);
   if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
-    Shell::Get()->overview_controller()->OnOverviewButtonTrayLongPressed(
-        event->location());
+    // TODO(crbug.com/970013): Properly implement the multi-display behavior (in
+    // tablet position with an external pointing device).
+    SplitViewController::Get(Shell::GetPrimaryRootWindow())
+        ->OnOverviewButtonTrayLongPressed(event->location());
   }
 }
 
@@ -97,13 +143,10 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
     // Switch to the second most recently used window (most recent is the
     // current window) if it exists, unless splitview mode is active. Do not
     // switch if we entered overview mode with all windows minimized.
-    const OverviewSession::EnterExitOverviewType enter_exit_type =
+    const OverviewEnterExitType enter_exit_type =
         overview_controller->overview_session()->enter_exit_overview_type();
     if (mru_window_list.size() > 1u &&
-        enter_exit_type !=
-            OverviewSession::EnterExitOverviewType::kFadeInEnter &&
-        enter_exit_type !=
-            OverviewSession::EnterExitOverviewType::kSlideInEnter) {
+        enter_exit_type != OverviewEnterExitType::kFadeInEnter) {
       aura::Window* new_active_window = mru_window_list[1];
 
       // In tablet split view mode, quick switch will only affect the windows on
@@ -123,9 +166,10 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
         }
       }
 
-      AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+      views::InkDrop::Get(this)->AnimateToState(
+          views::InkDropState::DEACTIVATED, nullptr);
       wm::ActivateWindow(new_active_window);
-      last_press_event_time_ = base::nullopt;
+      last_press_event_time_ = absl::nullopt;
       return true;
     }
   }
@@ -133,13 +177,13 @@ bool OverviewButtonTray::PerformAction(const ui::Event& event) {
   // If not in overview mode record the time of this tap. A subsequent tap will
   // be checked against this to see if we should quick switch.
   last_press_event_time_ = overview_controller->InOverviewSession()
-                               ? base::nullopt
-                               : base::make_optional(event.time_stamp());
+                               ? absl::nullopt
+                               : absl::make_optional(event.time_stamp());
 
   if (overview_controller->InOverviewSession())
-    overview_controller->EndOverview();
+    overview_controller->EndOverview(OverviewEndAction::kOverviewButton);
   else
-    overview_controller->StartOverview();
+    overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
   Shell::Get()->metrics()->RecordUserMetricsAction(UMA_TRAY_OVERVIEW);
 
   // The return value doesn't matter here. OnOverviewModeStarting() and
@@ -159,6 +203,10 @@ void OverviewButtonTray::OnTabletModeEventsBlockingChanged() {
   UpdateIconVisibility();
 }
 
+void OverviewButtonTray::OnShelfConfigUpdated() {
+  UpdateIconVisibility();
+}
+
 void OverviewButtonTray::OnOverviewModeStarting() {
   SetIsActive(true);
 }
@@ -169,33 +217,26 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 
 void OverviewButtonTray::ClickedOutsideBubble() {}
 
-base::string16 OverviewButtonTray::GetAccessibleNameForTray() {
+std::u16string OverviewButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME);
 }
+
+void OverviewButtonTray::HandleLocaleChange() {}
 
 void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   // This class has no bubbles to hide.
 }
 
-const char* OverviewButtonTray::GetClassName() const {
-  return "OverviewButtonTray";
+void OverviewButtonTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(GetIconImage());
 }
 
 void OverviewButtonTray::UpdateIconVisibility() {
-  // The visibility of the OverviewButtonTray has diverged from
-  // OverviewController::CanSelect. The visibility of the button should
-  // not change during transient times in which CanSelect is false. Such as when
-  // a modal dialog is present.
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  bool active_session = session_controller->GetSessionState() ==
-                        session_manager::SessionState::ACTIVE;
-  bool app_mode = session_controller->IsRunningInAppMode();
-
-  bool should_show =
-      Shell::Get()->tablet_mode_controller()->ShouldShowOverviewButton();
-
-  SetVisiblePreferred(should_show && active_session && !app_mode);
+  SetVisiblePreferred(ShouldButtonBeVisible());
 }
+
+BEGIN_METADATA(OverviewButtonTray, TrayBackgroundView)
+END_METADATA
 
 }  // namespace ash

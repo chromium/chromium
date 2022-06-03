@@ -5,15 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERY_CHECKBOX_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERY_CHECKBOX_VIEW_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 struct MediaGalleryPrefInfo;
 
 namespace views {
-class ButtonListener;
 class Checkbox;
 class ContextMenuController;
 class Label;
@@ -24,24 +23,24 @@ class Label;
 // MediaGalleriesDialogViews.
 class MediaGalleryCheckboxView : public views::View {
  public:
+  METADATA_HEADER(MediaGalleryCheckboxView);
   MediaGalleryCheckboxView(const MediaGalleryPrefInfo& pref_info,
                            int trailing_vertical_space,
-                           views::ButtonListener* button_listener,
                            views::ContextMenuController* menu_controller);
+  MediaGalleryCheckboxView(const MediaGalleryCheckboxView&) = delete;
+  MediaGalleryCheckboxView& operator=(const MediaGalleryCheckboxView&) = delete;
   ~MediaGalleryCheckboxView() override;
-
-  // Overrides from views::View.
-  void Layout() override;
 
   views::Checkbox* checkbox() { return checkbox_; }
   views::Label* secondary_text() { return secondary_text_; }
+
+  // views::View:
+  void Layout() override;
 
  private:
   // Owned by the parent class (views::View).
   views::Checkbox* checkbox_;
   views::Label* secondary_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleryCheckboxView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERY_CHECKBOX_VIEW_H_

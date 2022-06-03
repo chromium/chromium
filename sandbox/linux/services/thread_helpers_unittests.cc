@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
@@ -38,13 +38,15 @@ class ScopedProc {
     CHECK_LE(0, fd_);
   }
 
+  ScopedProc(const ScopedProc&) = delete;
+  ScopedProc& operator=(const ScopedProc&) = delete;
+
   ~ScopedProc() { PCHECK(0 == IGNORE_EINTR(close(fd_))); }
 
   int fd() { return fd_; }
 
  private:
   int fd_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedProc);
 };
 
 TEST(ThreadHelpers, IsSingleThreadedBasic) {

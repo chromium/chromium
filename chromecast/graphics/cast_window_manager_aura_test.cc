@@ -21,6 +21,10 @@ namespace {
 class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   CastTestWindowDelegate() : key_code_(ui::VKEY_UNKNOWN) {}
+
+  CastTestWindowDelegate(const CastTestWindowDelegate&) = delete;
+  CastTestWindowDelegate& operator=(const CastTestWindowDelegate&) = delete;
+
   ~CastTestWindowDelegate() override {}
 
   // Overridden from TestWindowDelegate:
@@ -32,62 +36,24 @@ class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
 
  private:
   ui::KeyboardCode key_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTestWindowDelegate);
 };
 
 class TestWindow {
  public:
   explicit TestWindow(int id) : window_(&delegate_) {
     window_.Init(ui::LAYER_NOT_DRAWN);
-    window_.set_id(id);
+    window_.SetId(id);
     window_.SetBounds(gfx::Rect(0, 0, 1280, 720));
   }
+
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
 
   aura::Window* window() { return &window_; }
 
  private:
   CastTestWindowDelegate delegate_;
   aura::Window window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
-};
-
-class PretendManagedApp {
- public:
-  explicit PretendManagedApp(CastWindowManager* window_manager)
-      : test_window_(static_cast<int>(CastWindowManager::APP)),
-        window_manager_(window_manager) {
-    window_manager->AddWindow(test_window_.window());
-    test_window_.window()->Show();
-  }
-
-  ~PretendManagedApp() { test_window_.window()->Hide(); }
-
-  void SetEnableCorners(bool enable) {
-    window_manager_->SetEnableRoundedCorners(enable);
-  }
-
- private:
-  TestWindow test_window_;
-  CastWindowManager* window_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PretendManagedApp);
-};
-
-class PretendUnmanagedApp {
- public:
-  explicit PretendUnmanagedApp(CastWindowManager* window_manager)
-      : test_window_(static_cast<int>(CastWindowManager::UNMANAGED_APP)) {
-    window_manager->AddWindow(test_window_.window());
-    test_window_.window()->Show();
-  }
-  ~PretendUnmanagedApp() { test_window_.window()->Hide(); }
-
- private:
-  TestWindow test_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(PretendUnmanagedApp);
 };
 
 }  // namespace
@@ -103,7 +69,7 @@ TEST_F(CastWindowManagerAuraTest, InitialWindowId) {
 
   // We have chosen WindowId::BOTTOM to match the initial window ID of an Aura
   // window so that z-ordering works correctly.
-  EXPECT_EQ(window.id(), CastWindowManager::WindowId::BOTTOM);
+  EXPECT_EQ(window.GetId(), CastWindowManager::WindowId::BOTTOM);
 }
 
 TEST_F(CastWindowManagerAuraTest, WindowInput) {
@@ -165,8 +131,8 @@ TEST_F(CastWindowManagerAuraTest, WindowInputDisabled) {
 
 void VerifyWindowOrder(aura::Window* root_window) {
   for (size_t i = 0; i < root_window->children().size() - 1; ++i)
-    EXPECT_LE(root_window->children()[i]->id(),
-              root_window->children()[i + 1]->id());
+    EXPECT_LE(root_window->children()[i]->GetId(),
+              root_window->children()[i + 1]->GetId());
 }
 
 TEST_F(CastWindowManagerAuraTest, CheckProperWindowOrdering) {
@@ -215,75 +181,6 @@ TEST_F(CastWindowManagerAuraTest, CheckProperWindowOrdering) {
   window2.window()->Show();
   // Verify update ordering with same window ID.
   EXPECT_EQ(window2.window(), window_manager->GetRootWindow()->children()[3]);
-}
-
-TEST_F(CastWindowManagerAuraTest, CheckRoundedCorners) {
-  std::unique_ptr<CastWindowManagerAura> window_manager =
-      std::make_unique<CastWindowManagerAura>(false /* enable input */);
-
-  window_manager->Setup();
-
-  // Adding an unmanaged app should enable rounded corners. Removing it should
-  // disable them.
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  auto unmanaged = std::make_unique<PretendUnmanagedApp>(window_manager.get());
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  unmanaged.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-
-  // Managed apps provide their own rounded corners, so having one there means
-  // the window manager should not add them itself.
-  auto managed = std::make_unique<PretendManagedApp>(window_manager.get());
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  managed->SetEnableCorners(true);
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  managed->SetEnableCorners(false);
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  managed.reset();
-
-  // A mixture of managed and unmanaged should get rounded, no matter what.
-  managed = std::make_unique<PretendManagedApp>(window_manager.get());
-  managed->SetEnableCorners(true);
-  unmanaged = std::make_unique<PretendUnmanagedApp>(window_manager.get());
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  managed->SetEnableCorners(false);
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  unmanaged.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  managed.reset();
-
-  // Try with managed apps that have don't use SetEnableCorners (render their
-  // own externally)
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  managed = std::make_unique<PretendManagedApp>(window_manager.get());
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  unmanaged = std::make_unique<PretendUnmanagedApp>(window_manager.get());
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  unmanaged.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  managed.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-
-  // Going from unmanaged to managed has rounded until the unmanaged goes away.
-  unmanaged = std::make_unique<PretendUnmanagedApp>(window_manager.get());
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  managed = std::make_unique<PretendManagedApp>(window_manager.get());
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  unmanaged.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  managed.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-
-  // Managed (without corners) to unmanaged
-  managed = std::make_unique<PretendManagedApp>(window_manager.get());
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
-  unmanaged = std::make_unique<PretendUnmanagedApp>(window_manager.get());
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  // Managed goes away, so we'll get corners for the unmanaged...
-  managed.reset();
-  EXPECT_TRUE(window_manager->HasRoundedWindowCorners());
-  unmanaged.reset();
-  EXPECT_FALSE(window_manager->HasRoundedWindowCorners());
 }
 
 }  // namespace test

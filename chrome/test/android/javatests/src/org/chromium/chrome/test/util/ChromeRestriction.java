@@ -30,6 +30,6 @@ public final class ChromeRestriction {
     /** Specifies the test is valid only if run via SVR (smartphone VR), i.e. not on a standalone
      *  VR device. */
     public static final String RESTRICTION_TYPE_SVR = "Smartphone_VR";
-    /** Specifies the test is only valid if the VR settings service is enabled */
-    public static final String RESTRICTION_TYPE_VR_SETTINGS_SERVICE = "VR_Settings_Service";
+    /** Specifies the test is only valid if the VR DON flow is enabled */
+    public static final String RESTRICTION_TYPE_VR_DON_ENABLED = "VR_DON_Enabled";
 }

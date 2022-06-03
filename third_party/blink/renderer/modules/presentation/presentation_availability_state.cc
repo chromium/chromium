@@ -4,12 +4,8 @@
 
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -136,7 +132,7 @@ void PresentationAvailabilityState::UpdateAvailability(
   }
 }
 
-void PresentationAvailabilityState::Trace(blink::Visitor* visitor) {
+void PresentationAvailabilityState::Trace(Visitor* visitor) const {
   visitor->Trace(availability_listeners_);
 }
 
@@ -261,7 +257,7 @@ PresentationAvailabilityState::AvailabilityListener::~AvailabilityListener() =
     default;
 
 void PresentationAvailabilityState::AvailabilityListener::Trace(
-    blink::Visitor* visitor) {
+    blink::Visitor* visitor) const {
   visitor->Trace(availability_callbacks);
   visitor->Trace(availability_observers);
 }

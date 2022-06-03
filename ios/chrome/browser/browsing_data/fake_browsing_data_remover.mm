@@ -15,3 +15,6 @@ bool FakeBrowsingDataRemover::IsRemoving() const {
 void FakeBrowsingDataRemover::Remove(browsing_data::TimePeriod time_period,
                                      BrowsingDataRemoveMask remove_mask,
                                      base::OnceClosure callback) {}
+
+void FakeBrowsingDataRemover::RemoveSessionsData(
+    NSArray<NSString*>* session_ids) {}

@@ -6,12 +6,12 @@
 #define UI_AURA_TEST_TEST_CURSOR_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/cursor_client.h"
 
 namespace ui {
 class KeyEvent;
+enum class CursorSize;
 }
 
 namespace aura {
@@ -20,6 +20,10 @@ namespace test {
 class TestCursorClient : public aura::client::CursorClient {
  public:
   explicit TestCursorClient(aura::Window* root_window);
+
+  TestCursorClient(const TestCursorClient&) = delete;
+  TestCursorClient& operator=(const TestCursorClient&) = delete;
+
   ~TestCursorClient() override;
 
   // Used to track the number of times SetCursor() was called.
@@ -34,6 +38,7 @@ class TestCursorClient : public aura::client::CursorClient {
   // Overridden from aura::client::CursorClient:
   void SetCursor(gfx::NativeCursor cursor) override;
   gfx::NativeCursor GetCursor() const override;
+  void SetCursorForced(gfx::NativeCursor cursor) override;
   void ShowCursor() override;
   void HideCursor() override;
   void SetCursorSize(ui::CursorSize cursor_size) override;
@@ -59,8 +64,6 @@ class TestCursorClient : public aura::client::CursorClient {
   int calls_to_set_cursor_;
   base::ObserverList<aura::client::CursorClientObserver>::Unchecked observers_;
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCursorClient);
 };
 
 }  // namespace test

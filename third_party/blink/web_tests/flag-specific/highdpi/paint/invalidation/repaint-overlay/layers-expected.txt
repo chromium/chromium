@@ -1,0 +1,115 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 3024],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "bounds": [150, 150],
+      "backgroundColor": "#0000FF80",
+      "invalidations": [
+        [30, 30, 15, 15]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrollable'",
+      "bounds": [453, 453],
+      "transform": 3
+    },
+    {
+      "name": "Horizontal Scrollbar Layer",
+      "position": [1, 452],
+      "bounds": [450, 0],
+      "transform": 3
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [452, 1],
+      "bounds": [0, 450],
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "invalidations": [
+        [30, 30, 15, 15]
+      ],
+      "transform": 6
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [1200, 0],
+      "bounds": [0, 900]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -30, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 75, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [96, 80, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -45, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [134, 117, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [3.53553390593274, 3.53553390593274, 0, 0],
+        [-3.53553390593274, 3.53553390593274, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    }
+  ]
+}
+

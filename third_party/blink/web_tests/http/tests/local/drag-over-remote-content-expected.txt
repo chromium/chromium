@@ -1,4 +1,0 @@
-This page just embeds drag-over-remote-content-iframe.html in an iframe. See its results below:
-
-PASS: ondragover saw a URL of ''
-

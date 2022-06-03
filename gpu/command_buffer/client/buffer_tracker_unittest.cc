@@ -30,8 +30,11 @@ class MockClientCommandBufferImpl : public MockClientCommandBuffer {
         context_lost_(false) {}
   ~MockClientCommandBufferImpl() override = default;
 
-  scoped_refptr<gpu::Buffer> CreateTransferBuffer(uint32_t size,
-                                                  int32_t* id) override {
+  scoped_refptr<gpu::Buffer> CreateTransferBuffer(
+      uint32_t size,
+      int32_t* id,
+      TransferBufferAllocationOption option =
+          TransferBufferAllocationOption::kLoseContextOnOOM) override {
     if (context_lost_) {
       *id = -1;
       return nullptr;
@@ -54,12 +57,12 @@ class BufferTrackerTest : public testing::Test {
       kNumCommandEntries * sizeof(CommandBufferEntry);
 
   void SetUp() override {
-    command_buffer_.reset(new MockClientCommandBufferImpl());
-    helper_.reset(new GLES2CmdHelper(command_buffer_.get()));
+    command_buffer_ = std::make_unique<MockClientCommandBufferImpl>();
+    helper_ = std::make_unique<GLES2CmdHelper>(command_buffer_.get());
     helper_->Initialize(kCommandBufferSizeBytes);
-    mapped_memory_.reset(
-        new MappedMemoryManager(helper_.get(), MappedMemoryManager::kNoLimit));
-    buffer_tracker_.reset(new BufferTracker(mapped_memory_.get()));
+    mapped_memory_ = std::make_unique<MappedMemoryManager>(
+        helper_.get(), MappedMemoryManager::kNoLimit);
+    buffer_tracker_ = std::make_unique<BufferTracker>(mapped_memory_.get());
   }
 
   void TearDown() override {

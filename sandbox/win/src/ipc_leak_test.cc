@@ -8,8 +8,8 @@
 
 #include <stdlib.h>
 
-#include "base/process/process_metrics.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/memory/page_size.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/filesystem_interception.h"
@@ -46,7 +46,8 @@ enum TestId {
 
 // Helper function to allocate space (on the heap) for policy.
 PolicyGlobal* MakePolicyMemory() {
-  const size_t kTotalPolicySz = 4096 * 8;
+  // Should not exceed kPolMemSize from |sandbox_policy_base.cc|.
+  const size_t kTotalPolicySz = 4096 * 6;
   char* mem = new char[kTotalPolicySz];
   memset(mem, 0, kTotalPolicySz);
   PolicyGlobal* policy = reinterpret_cast<PolicyGlobal*>(mem);

@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/file_stream.h"
@@ -20,6 +22,9 @@ const int kOpenFlagsForWrite =
     base::File::FLAG_OPEN | base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
 const int kCreateFlagsForWrite =
     base::File::FLAG_CREATE | base::File::FLAG_WRITE | base::File::FLAG_ASYNC;
+const int kCreateFlagsForWriteAlways = base::File::FLAG_CREATE_ALWAYS |
+                                       base::File::FLAG_WRITE |
+                                       base::File::FLAG_ASYNC;
 
 }  // namespace
 
@@ -100,7 +105,7 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
   DCHECK(has_pending_operation_);
   DCHECK(!stream_impl_.get());
 
-  stream_impl_.reset(new net::FileStream(task_runner_));
+  stream_impl_ = std::make_unique<net::FileStream>(task_runner_);
 
   int open_flags = 0;
   switch (open_or_create_) {
@@ -109,6 +114,9 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
       break;
     case CREATE_NEW_FILE:
       open_flags = kCreateFlagsForWrite;
+      break;
+    case CREATE_NEW_FILE_ALWAYS:
+      open_flags = kCreateFlagsForWriteAlways;
       break;
   }
 

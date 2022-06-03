@@ -8,6 +8,10 @@ source_set("lib") {
   sources = [
     "av_products.cc",
     "av_products.h",
+    "processor_metrics.cc",
+    "processor_metrics.h",
+    "util_read_icon.cc",
+    "util_read_icon.h",
     "util_win_impl.cc",
     "util_win_impl.h",
   ]
@@ -31,11 +35,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "av_products_unittest.cc",
+    "processor_metrics_unittest.cc",
   ]
 
   deps = [
     ":lib",
     "//base",
+    "//base/test:test_support",
     "//components/variations",
     "//testing/gtest",
   ]

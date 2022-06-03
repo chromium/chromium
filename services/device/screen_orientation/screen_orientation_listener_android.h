@@ -17,6 +17,11 @@ class ScreenOrientationListenerAndroid
   static void Create(
       mojo::PendingReceiver<mojom::ScreenOrientationListener> receiver);
 
+  ScreenOrientationListenerAndroid(const ScreenOrientationListenerAndroid&) =
+      delete;
+  ScreenOrientationListenerAndroid& operator=(
+      const ScreenOrientationListenerAndroid&) = delete;
+
   ~ScreenOrientationListenerAndroid() override;
 
  private:
@@ -25,8 +30,6 @@ class ScreenOrientationListenerAndroid
   // mojom::ScreenOrientationListener:
   void IsAutoRotateEnabledByUser(
       IsAutoRotateEnabledByUserCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationListenerAndroid);
 };
 
 }  // namespace device

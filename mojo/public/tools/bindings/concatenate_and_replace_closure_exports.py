@@ -51,9 +51,9 @@ def ConcatenateAndReplaceExports(filenames):
     return False
 
   try:
-    with open(filenames[-1], "wb") as target:
+    with open(filenames[-1], "w") as target:
       for filename in filenames[:-1]:
-        with open(filename, "rb") as current:
+        with open(filename, "r") as current:
           for line in current.readlines():
             FilterLine(filename, line, target)
     return True

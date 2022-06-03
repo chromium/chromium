@@ -4,24 +4,46 @@
 
 #include "net/dns/dns_config_service.h"
 
+#include <memory>
 #include <string>
 
+#include "base/bind.h"
+#include "base/check_op.h"
+#include "base/files/file_path.h"
+#include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/sequence_checker.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "net/dns/dns_hosts.h"
+#include "net/dns/serial_worker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
-DnsConfigService::DnsConfigService()
+// static
+const base::TimeDelta DnsConfigService::kInvalidationTimeout =
+    base::Milliseconds(150);
+
+DnsConfigService::DnsConfigService(
+    base::FilePath::StringPieceType hosts_file_path,
+    absl::optional<base::TimeDelta> config_change_delay)
     : watch_failed_(false),
       have_config_(false),
       have_hosts_(false),
       need_update_(false),
-      last_sent_empty_(true) {
+      last_sent_empty_(true),
+      config_change_delay_(config_change_delay),
+      hosts_file_path_(hosts_file_path) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 DnsConfigService::~DnsConfigService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (hosts_reader_)
+    hosts_reader_->Cancel();
 }
 
 void DnsConfigService::ReadConfig(const CallbackType& callback) {
@@ -29,7 +51,8 @@ void DnsConfigService::ReadConfig(const CallbackType& callback) {
   DCHECK(!callback.is_null());
   DCHECK(callback_.is_null());
   callback_ = callback;
-  ReadNow();
+  ReadConfigNow();
+  ReadHostsNow();
 }
 
 void DnsConfigService::WatchConfig(const CallbackType& callback) {
@@ -38,7 +61,8 @@ void DnsConfigService::WatchConfig(const CallbackType& callback) {
   DCHECK(callback_.is_null());
   callback_ = callback;
   watch_failed_ = !StartWatching();
-  ReadNow();
+  ReadConfigNow();
+  ReadHostsNow();
 }
 
 void DnsConfigService::RefreshConfig() {
@@ -46,14 +70,98 @@ void DnsConfigService::RefreshConfig() {
   NOTREACHED();
 }
 
+DnsConfigService::Watcher::Watcher(DnsConfigService& service)
+    : service_(&service) {}
+
+DnsConfigService::Watcher::~Watcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void DnsConfigService::Watcher::OnConfigChanged(bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  service_->OnConfigChanged(succeeded);
+}
+
+void DnsConfigService::Watcher::OnHostsChanged(bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  service_->OnHostsChanged(succeeded);
+}
+
+void DnsConfigService::Watcher::CheckOnCorrectSequence() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+DnsConfigService::HostsReader::HostsReader(
+    base::FilePath::StringPieceType hosts_file_path,
+    DnsConfigService& service)
+    : service_(&service), hosts_file_path_(hosts_file_path) {}
+
+DnsConfigService::HostsReader::~HostsReader() = default;
+
+DnsConfigService::HostsReader::WorkItem::WorkItem(
+    std::unique_ptr<DnsHostsParser> dns_hosts_parser)
+    : dns_hosts_parser_(std::move(dns_hosts_parser)) {
+  DCHECK(dns_hosts_parser_);
+}
+
+DnsConfigService::HostsReader::WorkItem::~WorkItem() = default;
+
+absl::optional<DnsHosts> DnsConfigService::HostsReader::WorkItem::ReadHosts() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  DnsHosts dns_hosts;
+  if (!dns_hosts_parser_->ParseHosts(&dns_hosts))
+    return absl::nullopt;
+
+  return dns_hosts;
+}
+
+bool DnsConfigService::HostsReader::WorkItem::AddAdditionalHostsTo(
+    DnsHosts& in_out_dns_hosts) {
+  // Nothing to add in base implementation.
+  return true;
+}
+
+void DnsConfigService::HostsReader::WorkItem::DoWork() {
+  hosts_ = ReadHosts();
+  if (!hosts_.has_value())
+    return;
+
+  if (!AddAdditionalHostsTo(hosts_.value()))
+    hosts_.reset();
+}
+
+std::unique_ptr<SerialWorker::WorkItem>
+DnsConfigService::HostsReader::CreateWorkItem() {
+  return std::make_unique<WorkItem>(
+      std::make_unique<DnsHostsFileParser>(hosts_file_path_));
+}
+
+void DnsConfigService::HostsReader::OnWorkFinished(
+    std::unique_ptr<SerialWorker::WorkItem> serial_worker_work_item) {
+  DCHECK(serial_worker_work_item);
+
+  WorkItem* work_item = static_cast<WorkItem*>(serial_worker_work_item.get());
+  if (work_item->hosts_.has_value()) {
+    service_->OnHostsRead(std::move(work_item->hosts_).value());
+  } else {
+    LOG(WARNING) << "Failed to read DnsHosts.";
+  }
+}
+
+void DnsConfigService::ReadHostsNow() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!hosts_reader_) {
+    DCHECK(!hosts_file_path_.empty());
+    hosts_reader_ =
+        std::make_unique<HostsReader>(hosts_file_path_.value(), *this);
+  }
+  hosts_reader_->WorkNow();
+}
+
 void DnsConfigService::InvalidateConfig() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_invalidate_config_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.ConfigNotifyInterval",
-                             now - last_invalidate_config_time_);
-  }
-  last_invalidate_config_time_ = now;
   if (!have_config_)
     return;
   have_config_ = false;
@@ -62,53 +170,33 @@ void DnsConfigService::InvalidateConfig() {
 
 void DnsConfigService::InvalidateHosts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_invalidate_hosts_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.HostsNotifyInterval",
-                             now - last_invalidate_hosts_time_);
-  }
-  last_invalidate_hosts_time_ = now;
   if (!have_hosts_)
     return;
   have_hosts_ = false;
   StartTimer();
 }
 
-void DnsConfigService::OnConfigRead(const DnsConfig& config) {
+void DnsConfigService::OnConfigRead(DnsConfig config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValid());
 
-  bool changed = false;
   if (!config.EqualsIgnoreHosts(dns_config_)) {
     dns_config_.CopyIgnoreHosts(config);
     need_update_ = true;
-    changed = true;
   }
-  if (!changed && !last_sent_empty_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.UnchangedConfigInterval",
-                             base::TimeTicks::Now() - last_sent_empty_time_);
-  }
-  UMA_HISTOGRAM_BOOLEAN("AsyncDNS.ConfigChange", changed);
 
   have_config_ = true;
   if (have_hosts_ || watch_failed_)
     OnCompleteConfig();
 }
 
-void DnsConfigService::OnHostsRead(const DnsHosts& hosts) {
+void DnsConfigService::OnHostsRead(DnsHosts hosts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  bool changed = false;
   if (hosts != dns_config_.hosts) {
-    dns_config_.hosts = hosts;
+    dns_config_.hosts = std::move(hosts);
     need_update_ = true;
-    changed = true;
   }
-  if (!changed && !last_sent_empty_time_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("AsyncDNS.UnchangedHostsInterval",
-                             base::TimeTicks::Now() - last_sent_empty_time_);
-  }
-  UMA_HISTOGRAM_BOOLEAN("AsyncDNS.HostsChange", changed);
 
   have_hosts_ = true;
   if (have_config_ || watch_failed_)
@@ -128,15 +216,7 @@ void DnsConfigService::StartTimer() {
   // outage (when using the wrong config) but at the same time avoid
   // unnecessary Job aborts in HostResolverImpl. The signals come from multiple
   // sources so it might receive multiple events during a config change.
-
-  // DHCP and user-induced changes are on the order of seconds, so 150ms should
-  // not add perceivable delay. On the other hand, config readers should finish
-  // within 150ms with the rare exception of I/O block or extra large HOSTS.
-  const base::TimeDelta kTimeout = base::TimeDelta::FromMilliseconds(150);
-
-  timer_.Start(FROM_HERE,
-               kTimeout,
-               this,
+  timer_.Start(FROM_HERE, kInvalidationTimeout, this,
                &DnsConfigService::OnTimeout);
 }
 
@@ -148,7 +228,6 @@ void DnsConfigService::OnTimeout() {
   need_update_ = true;
   // Empty config is considered invalid.
   last_sent_empty_ = true;
-  last_sent_empty_time_ = base::TimeTicks::Now();
   callback_.Run(DnsConfig());
 }
 
@@ -163,6 +242,39 @@ void DnsConfigService::OnCompleteConfig() {
     callback_.Run(DnsConfig());
   } else {
     callback_.Run(dns_config_);
+  }
+}
+
+void DnsConfigService::OnConfigChanged(bool succeeded) {
+  if (config_change_delay_) {
+    // Ignore transient flutter of config source by delaying the signal a bit.
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DnsConfigService::OnConfigChangedDelayed,
+                       weak_factory_.GetWeakPtr(), succeeded),
+        config_change_delay_.value());
+  } else {
+    OnConfigChangedDelayed(succeeded);
+  }
+}
+
+void DnsConfigService::OnHostsChanged(bool succeeded) {
+  InvalidateHosts();
+  if (succeeded) {
+    ReadHostsNow();
+  } else {
+    LOG(ERROR) << "DNS hosts watch failed.";
+    watch_failed_ = true;
+  }
+}
+
+void DnsConfigService::OnConfigChangedDelayed(bool succeeded) {
+  InvalidateConfig();
+  if (succeeded) {
+    ReadConfigNow();
+  } else {
+    LOG(ERROR) << "DNS config watch failed.";
+    watch_failed_ = true;
   }
 }
 

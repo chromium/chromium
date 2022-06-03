@@ -5,9 +5,7 @@
 #ifndef UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 #define UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 
-#include "base/macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
 namespace ui {
@@ -19,14 +17,18 @@ class LabelButton;
 
 // A bubble that contains actions available for the selected text. An object of
 // this type, as a BubbleDialogDelegateView, manages its own lifetime.
-class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView,
-                                             public ButtonListener {
+class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
  public:
   METADATA_HEADER(TouchSelectionMenuViews);
+
+  enum ButtonViewId : int { kEllipsisButton = 1 };
 
   TouchSelectionMenuViews(TouchSelectionMenuRunnerViews* owner,
                           ui::TouchSelectionMenuClient* client,
                           aura::Window* context);
+
+  TouchSelectionMenuViews(const TouchSelectionMenuViews&) = delete;
+  TouchSelectionMenuViews& operator=(const TouchSelectionMenuViews&) = delete;
 
   void ShowMenu(const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size);
@@ -45,13 +47,15 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView,
   virtual void CreateButtons();
 
   // Helper method to create a single button.
-  LabelButton* CreateButton(const base::string16& title, int tag);
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
+  LabelButton* CreateButton(const std::u16string& title,
+                            Button::PressedCallback callback);
 
  private:
   friend class TouchSelectionMenuRunnerViews::TestApi;
+
+  void ButtonPressed(int command, const ui::Event& event);
+
+  void EllipsisPressed(const ui::Event& event);
 
   // Helper to disconnect this menu object from its owning menu runner.
   void DisconnectOwner();
@@ -59,12 +63,9 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView,
   // BubbleDialogDelegateView:
   void OnPaint(gfx::Canvas* canvas) override;
   void WindowClosing() override;
-  int GetDialogButtons() const override;
 
   TouchSelectionMenuRunnerViews* owner_;
   ui::TouchSelectionMenuClient* const client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuViews);
 };
 
 }  // namespace views

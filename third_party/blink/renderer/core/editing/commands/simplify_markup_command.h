@@ -34,7 +34,7 @@ class SimplifyMarkupCommand final : public CompositeEditCommand {
  public:
   SimplifyMarkupCommand(Document&, Node* first_node, Node* node_after_last);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

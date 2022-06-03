@@ -14,11 +14,15 @@ if (window.testRunner) {
   testRunner.setBlockThirdPartyCookies(false);
 }
 
+// There must be an |options| object in scope before running this script, which
+// is obtained via either get_thorough_test_options() or
+// get_fetch_test_options().
+//
 // How tests starts:
 // 1. http://127.0.0.1:8000/.../X.html is loaded.
 // 2. init(): Do initialization.
 //    In thorough/* tests
-//    (see init() in thorough-util.js):
+//    (see init() in each test category's TEMPLATE file):
 //    - Login to HTTP pages.
 //      This is done first from HTTP origin to avoid mixed content blocking.
 //    - Login to HTTPS pages.
@@ -35,7 +39,7 @@ if (location.protocol != 'https:') {
         // Initialization done. In thorough/* tests, login done.
         if (location.pathname.indexOf('base-https') >= 0) {
           // Step 3b. For base-https tests, redirect to HTTPS page here.
-          location = 'https://127.0.0.1:8443' + location.pathname;
+          location = options["BASE_ORIGIN"] + location.pathname;
         } else {
           // Step 3a. For non-base-https tests, start tests here.
           start(t);

@@ -3,21 +3,15 @@
 # found in the LICENSE file.
 
 source_set("utilities") {
-  sources = [
-    "file_existence_checker.h",
-  ]
+  sources = [ "file_existence_checker.h" ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "file_existence_checker_unittest.cc",
-  ]
+  sources = [ "file_existence_checker_unittest.cc" ]
 
   deps = [
     ":utilities",

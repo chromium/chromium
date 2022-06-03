@@ -12,16 +12,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/shared_memory_tracker.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -33,7 +32,7 @@
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -56,6 +55,11 @@ class MojoDiscardableSharedMemoryManagerImpl
       base::WeakPtr<::discardable_memory::DiscardableSharedMemoryManager>
           manager)
       : client_id_(client_id), manager_(manager) {}
+
+  MojoDiscardableSharedMemoryManagerImpl(
+      const MojoDiscardableSharedMemoryManagerImpl&) = delete;
+  MojoDiscardableSharedMemoryManagerImpl& operator=(
+      const MojoDiscardableSharedMemoryManagerImpl&) = delete;
 
   ~MojoDiscardableSharedMemoryManagerImpl() override {
     // Remove this client from the |manager_|, so all allocated discardable
@@ -85,24 +89,25 @@ class MojoDiscardableSharedMemoryManagerImpl
  private:
   const int32_t client_id_;
   base::WeakPtr<::discardable_memory::DiscardableSharedMemoryManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDiscardableSharedMemoryManagerImpl);
 };
 
 class DiscardableMemoryImpl : public base::DiscardableMemory {
  public:
   DiscardableMemoryImpl(
       std::unique_ptr<base::DiscardableSharedMemory> shared_memory,
-      const base::Closure& deleted_callback)
+      base::OnceClosure deleted_callback)
       : shared_memory_(std::move(shared_memory)),
-        deleted_callback_(deleted_callback),
+        deleted_callback_(std::move(deleted_callback)),
         is_locked_(true) {}
+
+  DiscardableMemoryImpl(const DiscardableMemoryImpl&) = delete;
+  DiscardableMemoryImpl& operator=(const DiscardableMemoryImpl&) = delete;
 
   ~DiscardableMemoryImpl() override {
     if (is_locked_)
       shared_memory_->Unlock(0, 0);
 
-    deleted_callback_.Run();
+    std::move(deleted_callback_).Run();
   }
 
   // Overridden from base::DiscardableMemory:
@@ -146,10 +151,8 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
 
  private:
   std::unique_ptr<base::DiscardableSharedMemory> shared_memory_;
-  const base::Closure deleted_callback_;
+  base::OnceClosure deleted_callback_;
   bool is_locked_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableMemoryImpl);
 };
 
 // Returns the default memory limit to use for discardable memory, taking
@@ -162,12 +165,6 @@ int64_t GetDefaultMemoryLimit() {
   // Bypass IsLowEndDevice() check and fix max_default_memory_limit to 64MB on
   // Chromecast devices. Set value here as IsLowEndDevice() is used on some, but
   // not all Chromecast devices.
-  int64_t max_default_memory_limit = 64 * kMegabyte;
-#elif defined(OS_FUCHSIA)
-  // Fuchsia doesn't implement MemoryPressureMonitor and the default limit is
-  // too high for some devices. Set it to the same value as for low-end devices.
-  // TODO(crbug.com/996030): Implement MemoryPressureMonitor for Fuchsia and
-  // remove this ifdef.
   int64_t max_default_memory_limit = 64 * kMegabyte;
 #else
 #if defined(OS_ANDROID)
@@ -182,7 +179,7 @@ int64_t GetDefaultMemoryLimit() {
     max_default_memory_limit /= 8;
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   base::FilePath shmem_dir;
   if (base::GetShmemTempDir(false, &shmem_dir)) {
     int64_t shmem_dir_amount_of_free_space =
@@ -234,19 +231,20 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
       memory_limit_(default_memory_limit_),
       bytes_allocated_(0),
       memory_pressure_listener_(new base::MemoryPressureListener(
-          base::Bind(&DiscardableSharedMemoryManager::OnMemoryPressure,
-                     base::Unretained(this)))),
+          FROM_HERE,
+          base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
+                              base::Unretained(this)))),
       // Current thread might not have a task runner in tests.
       enforce_memory_policy_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       enforce_memory_policy_pending_(false),
-      mojo_thread_message_loop_(base::MessageLoopCurrent::GetNull()) {
+      mojo_thread_message_loop_(base::CurrentThread::GetNull()) {
   DCHECK(!g_instance)
       << "A DiscardableSharedMemoryManager already exists in this process.";
   g_instance = this;
   DCHECK_NE(memory_limit_, 0u);
   enforce_memory_policy_callback_ =
-      base::Bind(&DiscardableSharedMemoryManager::EnforceMemoryPolicy,
-                 weak_ptr_factory_.GetWeakPtr());
+      base::BindRepeating(&DiscardableSharedMemoryManager::EnforceMemoryPolicy,
+                          weak_ptr_factory_.GetWeakPtr());
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DiscardableSharedMemoryManager",
       base::ThreadTaskRunnerHandle::Get());
@@ -259,9 +257,9 @@ DiscardableSharedMemoryManager::~DiscardableSharedMemoryManager() {
   if (mojo_thread_message_loop_) {
     // TODO(etiennep): Get rid of mojo_thread_message_loop_ entirely.
     DCHECK(mojo_thread_task_runner_);
-    if (mojo_thread_message_loop_ == base::MessageLoopCurrent::Get()) {
+    if (mojo_thread_message_loop_ == base::CurrentThread::Get()) {
       mojo_thread_message_loop_->RemoveDestructionObserver(this);
-      mojo_thread_message_loop_ = base::MessageLoopCurrent::GetNull();
+      mojo_thread_message_loop_ = base::CurrentThread::GetNull();
       mojo_thread_task_runner_ = nullptr;
     } else {
       // If mojom::DiscardableSharedMemoryManager implementation is running in
@@ -293,10 +291,10 @@ DiscardableSharedMemoryManager* DiscardableSharedMemoryManager::Get() {
 void DiscardableSharedMemoryManager::Bind(
     mojo::PendingReceiver<mojom::DiscardableSharedMemoryManager> receiver) {
   DCHECK(!mojo_thread_message_loop_ ||
-         mojo_thread_message_loop_ == base::MessageLoopCurrent::Get());
+         mojo_thread_message_loop_ == base::CurrentThread::Get());
   if (!mojo_thread_task_runner_) {
     DCHECK(!mojo_thread_message_loop_);
-    mojo_thread_message_loop_ = base::MessageLoopCurrent::Get();
+    mojo_thread_message_loop_ = base::CurrentThread::Get();
     mojo_thread_message_loop_->AddDestructionObserver(this);
     mojo_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   }
@@ -326,7 +324,7 @@ DiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(size_t size) {
   memory->Close();
   return std::make_unique<DiscardableMemoryImpl>(
       std::move(memory),
-      base::Bind(
+      base::BindOnce(
           &DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory,
           base::Unretained(this), new_id, kInvalidUniqueClientID));
 }
@@ -638,7 +636,7 @@ void DiscardableSharedMemoryManager::ScheduleEnforceMemoryPolicy() {
   DCHECK(enforce_memory_policy_task_runner_);
   enforce_memory_policy_task_runner_->PostDelayedTask(
       FROM_HERE, enforce_memory_policy_callback_,
-      base::TimeDelta::FromMilliseconds(kEnforceMemoryPolicyDelayMs));
+      base::Milliseconds(kEnforceMemoryPolicyDelayMs));
 }
 
 void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
@@ -646,7 +644,7 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
   DCHECK(mojo_thread_task_runner_->RunsTasksInCurrentSequence());
   mojo_thread_weak_ptr_factory_.InvalidateWeakPtrs();
   mojo_thread_message_loop_->RemoveDestructionObserver(this);
-  mojo_thread_message_loop_ = base::MessageLoopCurrent::GetNull();
+  mojo_thread_message_loop_ = base::CurrentThread::GetNull();
   if (event)
     event->Signal();
 }

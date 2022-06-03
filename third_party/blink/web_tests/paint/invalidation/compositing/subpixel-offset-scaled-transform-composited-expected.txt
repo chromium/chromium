@@ -1,95 +1,82 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='container1' class='container scale'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='child1' class='child composited'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child1' class='child composited'",
+      "position": [1, 0],
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
+      "invalidations": [
+        {
+          "rect": [0, 0, 1, 1],
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='child1' class='child composited'",
+          "reason": "full layer"
+        }
+      ],
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='child2' class='child scale composited'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child2' class='child scale composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 4
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='container3' class='container scale composited'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container3' class='container scale composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "transform": 6
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='container4' class='container composited'",
-      "position": [9, 158],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container4' class='container composited'",
+      "position": [1, 0],
       "bounds": [40, 40],
-      "paintInvalidations": [
+      "invalidations": [
         {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='child4' class='child scale'",
           "rect": [0, 0, 40, 40],
-          "reason": "paint property change"
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container4' class='container composited'",
+          "reason": "full layer"
         },
         {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='container4' class='container composited'",
           "rect": [0, 0, 40, 40],
-          "reason": "full"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='container4' class='container composited'",
-          "rect": [0, 0, 40, 40],
-          "reason": "full"
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='container4' class='container composited'",
+          "reason": "full layer"
         }
-      ]
+      ],
+      "transform": 7
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='container5' class='container scale composited'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container5' class='container scale composited'",
       "contentsOpaque": true,
       "drawsContent": false,
-      "transform": 8
+      "transform": 9
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='child5' class='child composited'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child5' class='child composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 8
+      "transform": 9
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='container6' class='container composited'",
-      "position": [8, 258],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container6' class='container composited'",
       "contentsOpaque": true,
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='child6' class='child scale composited'",
-      "bounds": [1, 1],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
+      "drawsContent": false,
       "transform": 10
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child6' class='child scale composited'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 12
     }
   ],
   "transforms": [
@@ -159,12 +146,21 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 208, 0, 1]
+        [8, 158, 0, 1]
       ]
     },
     {
       "id": 8,
-      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 208, 0, 1]
+      ]
+    },
+    {
+      "id": 9,
+      "parent": 8,
       "transform": [
         [40, 0, 0, 0],
         [0, 40, 0, 0],
@@ -174,17 +170,27 @@
       "origin": [0, 0]
     },
     {
-      "id": 9,
+      "id": 10,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [9, 258, 0, 1]
+        [8, 258, 0, 1]
       ]
     },
     {
-      "id": 10,
-      "parent": 9,
+      "id": 11,
+      "parent": 10,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 12,
+      "parent": 11,
       "transform": [
         [40, 0, 0, 0],
         [0, 40, 0, 0],

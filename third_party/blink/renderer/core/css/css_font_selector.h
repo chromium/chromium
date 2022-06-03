@@ -27,9 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_SELECTOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_font_selector_base.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -39,15 +39,14 @@
 namespace blink {
 
 class FontDescription;
+class FontFamily;
 
-class CORE_EXPORT CSSFontSelector : public FontSelector {
+class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
  public:
-  explicit CSSFontSelector(Document*);
+  explicit CSSFontSelector(const TreeScope&);
   ~CSSFontSelector() override;
 
-  unsigned Version() const override { return font_face_cache_.Version(); }
-
-  void ReportNotDefGlyph() const override;
+  unsigned Version() const override { return font_face_cache_->Version(); }
 
   void ReportSuccessfulFontFamilyMatch(
       const AtomicString& font_family_name) override;
@@ -59,18 +58,36 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
 
   void ReportFailedLocalFontMatch(const AtomicString& font_name) override;
 
-  scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const AtomicString&) override;
-  void WillUseFontData(const FontDescription&,
-                       const AtomicString& family,
-                       const String& text) override;
-  void WillUseRange(const FontDescription&,
-                    const AtomicString& family_name,
-                    const FontDataForRangeSet&) override;
-  bool IsPlatformFamilyMatchAvailable(const FontDescription&,
-                                      const AtomicString& family) override;
+  void ReportFontLookupByUniqueOrFamilyName(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override;
 
-  void FontFaceInvalidated() override;
+  void ReportFontLookupByUniqueNameOnly(
+      const AtomicString& name,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data,
+      bool is_loading_fallback = false) override;
+
+  void ReportFontLookupByFallbackCharacter(
+      UChar32 fallback_character,
+      FontFallbackPriority fallback_priority,
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override;
+
+  void ReportLastResortFallbackFontLookup(
+      const FontDescription& font_description,
+      SimpleFontData* resulting_font_data) override;
+
+  void ReportNotDefGlyph() const override;
+
+  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
+                                       unsigned num_broken_clusters) override;
+
+  scoped_refptr<FontData> GetFontData(const FontDescription&,
+                                      const FontFamily&) override;
+
+  void FontFaceInvalidated(FontInvalidationReason) override;
 
   // FontCacheClient implementation
   void FontCacheInvalidated() override;
@@ -78,28 +95,34 @@ class CORE_EXPORT CSSFontSelector : public FontSelector {
   void RegisterForInvalidationCallbacks(FontSelectorClient*) override;
   void UnregisterForInvalidationCallbacks(FontSelectorClient*) override;
 
-  ExecutionContext* GetExecutionContext() const override { return document_; }
-  FontFaceCache* GetFontFaceCache() override { return &font_face_cache_; }
+  ExecutionContext* GetExecutionContext() const override {
+    return tree_scope_ ? GetDocument().GetExecutionContext() : nullptr;
+  }
+  FontFaceCache* GetFontFaceCache() override { return font_face_cache_; }
 
   const GenericFontFamilySettings& GetGenericFontFamilySettings() const {
     return generic_font_family_settings_;
   }
   void UpdateGenericFontFamilySettings(Document&);
 
-  void Trace(blink::Visitor*) override;
+  const TreeScope* GetTreeScope() const { return tree_scope_; }
+  Document& GetDocument() const {
+    DCHECK(tree_scope_);
+    return tree_scope_->GetDocument();
+  }
+
+  void Trace(Visitor*) const override;
 
  protected:
-  void DispatchInvalidationCallbacks();
+  UseCounter* GetUseCounter() override;
+  void DispatchInvalidationCallbacks(FontInvalidationReason);
 
  private:
   // TODO(Oilpan): Ideally this should just be a traced Member but that will
   // currently leak because ComputedStyle and its data are not on the heap.
   // See crbug.com/383860 for details.
-  WeakMember<Document> document_;
-  // FIXME: Move to Document or StyleEngine.
-  FontFaceCache font_face_cache_;
+  WeakMember<const TreeScope> tree_scope_;
   HeapHashSet<WeakMember<FontSelectorClient>> clients_;
-  GenericFontFamilySettings generic_font_family_settings_;
 };
 
 }  // namespace blink

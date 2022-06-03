@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "services/viz/privileged/cpp/overlay_strategy_mojom_traits.h"
-#include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
+#include "services/viz/privileged/mojom/compositing/renderer_settings.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 #if defined(USE_OZONE)
@@ -18,8 +18,42 @@
 
 namespace mojo {
 template <>
+struct StructTraits<viz::mojom::DebugRendererSettingsDataView,
+                    viz::DebugRendererSettings> {
+  static bool tint_composited_content(const viz::DebugRendererSettings& input) {
+    return input.tint_composited_content;
+  }
+
+  static bool tint_composited_content_modulate(
+      const viz::DebugRendererSettings& input) {
+    return input.tint_composited_content_modulate;
+  }
+
+  static bool show_overdraw_feedback(const viz::DebugRendererSettings& input) {
+    return input.show_overdraw_feedback;
+  }
+
+  static bool show_dc_layer_debug_borders(
+      const viz::DebugRendererSettings& input) {
+    return input.show_dc_layer_debug_borders;
+  }
+
+  static bool show_aggregated_damage(const viz::DebugRendererSettings& input) {
+    return input.show_aggregated_damage;
+  }
+
+  static bool Read(viz::mojom::DebugRendererSettingsDataView data,
+                   viz::DebugRendererSettings* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::RendererSettingsDataView,
                     viz::RendererSettings> {
+  static bool apply_simple_frame_rate_throttling(
+      const viz::RendererSettings& input) {
+    return input.apply_simple_frame_rate_throttling;
+  }
+
   static bool allow_antialiasing(const viz::RendererSettings& input) {
     return input.allow_antialiasing;
   }
@@ -46,18 +80,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.release_overlay_resources_after_gpu_query;
   }
 
-  static bool tint_gl_composited_content(const viz::RendererSettings& input) {
-    return input.tint_gl_composited_content;
-  }
-
-  static bool show_overdraw_feedback(const viz::RendererSettings& input) {
-    return input.show_overdraw_feedback;
-  }
-
-  static bool show_aggregated_damage(const viz::RendererSettings& input) {
-    return input.show_aggregated_damage;
-  }
-
   static int highp_threshold_min(const viz::RendererSettings& input) {
     return input.highp_threshold_min;
   }
@@ -71,10 +93,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.use_skia_renderer;
   }
 
-  static bool record_sk_picture(const viz::RendererSettings& input) {
-    return input.record_sk_picture;
-  }
-
   static bool allow_overlays(const viz::RendererSettings& input) {
     return input.allow_overlays;
   }
@@ -85,10 +103,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
 
   static bool requires_alpha_channel(const viz::RendererSettings& input) {
     return input.requires_alpha_channel;
-  }
-
-  static bool show_dc_layer_debug_borders(const viz::RendererSettings& input) {
-    return input.show_dc_layer_debug_borders;
   }
 
 #if defined(OS_ANDROID)

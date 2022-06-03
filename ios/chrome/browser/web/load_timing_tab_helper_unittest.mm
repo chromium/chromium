@@ -10,10 +10,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 class LoadTimingTabHelperTest : public PlatformTest {
  protected:
@@ -32,7 +36,7 @@ class LoadTimingTabHelperTest : public PlatformTest {
                     .empty());
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   base::HistogramTester histogram_tester_;
 };
 

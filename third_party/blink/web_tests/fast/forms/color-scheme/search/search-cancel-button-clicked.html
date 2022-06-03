@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <meta name="color-scheme" content="light dark">
+        <script>
+            function drag()
+            {
+                var search = document.getElementById('search');
+                var x = search.offsetLeft + search.offsetWidth - 6;
+                var y = search.offsetTop + search.offsetHeight / 2;
+                eventSender.mouseMoveTo(x, y);
+                eventSender.mouseDown();
+            }
+        </script>
+    </head>
+    <body onload="drag()">
+        <input id="search" type="search" value="foo">
+    </body>
+</html>

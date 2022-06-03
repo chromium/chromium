@@ -1,0 +1,58 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+if (is_chromeos_ash) {
+  js_type_check("closure_compile_local") {
+    is_polymer3 = true
+    closure_flags = default_closure_args + [
+                      "js_module_root=../../chrome/test/data/webui/",
+                      "js_module_root=./gen/chrome/test/data/webui/",
+                    ]
+    deps = [ ":fake_network_config_mojom" ]
+  }
+
+  js_library("fake_network_config_mojom") {
+    deps = [
+      "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+      "//ui/webui/resources/js:assert",
+      "//ui/webui/resources/js:promise_resolver",
+    ]
+  }
+}
+
+js_modulizer("modulize") {
+  input_files = [ "fake_network_config_mojom.js" ]
+}
+
+js_library("fake_network_config_mojom.m") {
+  sources = []
+  if (is_chromeos_ash) {
+    sources += [ "$root_gen_dir/chrome/test/data/webui/chromeos/fake_network_config_mojom.m.js" ]
+  }
+  extra_deps = [ ":modulize" ]
+}
+
+group("closure_compile") {
+  public_deps = []
+
+  if (is_chromeos_ash) {
+    public_deps += [
+      ":closure_compile_local",
+      "account_manager:closure_compile",
+      "ash_common:closure_compile",
+      "diagnostics:closure_compile",
+      "emoji_picker:closure_compile",
+      "firmware_update:closure_compile",
+      "gaia_action_buttons:closure_compile",
+      "os_feedback_ui:closure_compile",
+      "scanning:closure_compile",
+      "shimless_rma:closure_compile",
+      "shortcut_customization:closure_compile",
+    ]
+  }
+}

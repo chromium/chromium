@@ -45,7 +45,7 @@ const char* UsbIds::GetProductName(uint16_t vendor_id, uint16_t product_id) {
   if (!vendor)
     return NULL;
 
-  const UsbProduct key = {product_id, NULL};
+  const UsbProduct key = {product_id, nullptr};
   void* result = bsearch(&key, vendor->products, vendor->product_size,
                          sizeof(vendor->products[0]), &CompareProducts);
   if (!result)

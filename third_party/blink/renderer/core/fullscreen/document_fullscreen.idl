@@ -24,10 +24,10 @@
 [
     ImplementedAs=DocumentFullscreen
 ] partial interface Document {
-    [LenientSetter] readonly attribute boolean fullscreenEnabled;
-    [LenientSetter, Unscopable, ImplementedAs=fullscreenElement] readonly attribute boolean fullscreen;
+    [LegacyLenientSetter] readonly attribute boolean fullscreenEnabled;
+    [LegacyLenientSetter, Unscopable, ImplementedAs=fullscreenElement] readonly attribute boolean fullscreen;
 
-    [CallWith=ScriptState] Promise<void> exitFullscreen();
+    [CallWith=ScriptState, RaisesException] Promise<void> exitFullscreen();
 
     attribute EventHandler onfullscreenchange;
     attribute EventHandler onfullscreenerror;

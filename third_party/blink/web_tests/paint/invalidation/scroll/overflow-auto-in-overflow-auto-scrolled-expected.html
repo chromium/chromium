@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script>
+onload = () => {
+  outerDiv.scrollTop = 300;
+  innerDiv.scrollTop = 400;
+}
+</script>
+<div style="height: 300px; overflow-y: auto;" id="outerDiv">
+  <div style="height: 300px;"></div>
+  <div style="height: 400px; overflow-y: auto;" id="innerDiv">
+    <div style="height: 800px; width: 300px; background: green;"></div>
+  </div>
+</div>

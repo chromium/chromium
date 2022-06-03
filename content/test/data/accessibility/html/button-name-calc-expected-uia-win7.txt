@@ -1,20 +1,20 @@
-document
-++button Name='InnerText0'
-++button Name='InnerText1'
-++button Name='AriaLabel2'
-++button Name='LabelledBy3'
-++button Name='LabelledBy4'
-++button Name='InnerText5'
-++button Name='Outer inner'
-++++description Name='Outer' IsControlElement=false
-++++group IsControlElement=false
-++++++description Name='inner' IsControlElement=false
-++button Name='Outer inner1'
-++++description Name='Outer' IsControlElement=false
-++++group Name='inner1'
-++++++description Name='inner2' IsControlElement=false
-++button Name='Outer grandchild'
-++++description Name='Outer' IsControlElement=false
-++++group
-++++++group IsControlElement=false
-++++++++description Name='grandchild' IsControlElement=false
+Document
+++Button Name='InnerText0'
+++Button Name='InnerText1'
+++Button Name='AriaLabel2'
+++Button Name='LabelledBy3'
+++Button Name='LabelledBy4'
+++Button Name='InnerText5'
+++Button Name='Outer inner'
+++++Text Name='Outer' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='inner' IsControlElement=false
+++Button Name='Outer inner1'
+++++Text Name='Outer' IsControlElement=false
+++++Group Name='inner1'
+++++++Text Name='inner2' IsControlElement=false
+++Button Name='Outer grandchild'
+++++Text Name='Outer' IsControlElement=false
+++++Group
+++++++Group IsControlElement=false
+++++++++Text Name='grandchild' IsControlElement=false

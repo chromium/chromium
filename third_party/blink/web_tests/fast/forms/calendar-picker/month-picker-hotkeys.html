@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="month" id="month-0" value="2018-06">
+<script>
+
+promise_test(() => {
+  let monthElement = document.getElementById('month-0');
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    eventSender.keyDown('Home');
+    assert_equals(monthElement.value, "2018-01", "Home hotkey should go to the first of the year");
+
+    eventSender.keyDown('Home');
+    assert_equals(monthElement.value, "2017-01", "Home hotkey should go to the previous year");
+
+    eventSender.keyDown('End');
+    assert_equals(monthElement.value, "2017-12", "End hotkey should go to the end of the year");
+
+    eventSender.keyDown('End');
+    assert_equals(monthElement.value, "2018-12", "End hotkey should go to the next year");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should have closed popup.");
+  });
+}, "Month picker: Home/end month hotkeys");
+
+</script>
+</body>
+</html>

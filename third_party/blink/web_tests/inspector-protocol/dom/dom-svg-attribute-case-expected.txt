@@ -1,4 +1,4 @@
-Test that DOM attribute case is preserved when modified in XML documents.
+Test that DOM attribute case is preserved when modifying SVG elements.
 Original attributes:
 id=main
 xmlns=http://www.w3.org/2000/svg

@@ -16,11 +16,7 @@ declare_args() {
   if (is_android_arc) {
     cast_product_type = 7  # CAST_PRODUCT_TYPE_CHROME_OS
   } else if (is_android) {
-    if (is_android_things) {
-      cast_product_type = 6  # CAST_PRODUCT_TYPE_ANDROID_THINGS
-    } else {
-      cast_product_type = 4  # CAST_PRODUCT_TYPE_ANDROID_TV
-    }
+    cast_product_type = 4  # CAST_PRODUCT_TYPE_ANDROID_TV
   } else if (is_fuchsia) {
     cast_product_type = 8  # CAST_PRODUCT_TYPE_FUCHSIA_OS
   } else {
@@ -42,12 +38,6 @@ cast_source_set("base") {
   sources = [
     "alarm_manager.cc",
     "alarm_manager.h",
-    "android/cast_settings_manager.cc",
-    "android/cast_settings_manager.h",
-    "android/dumpstate_writer.cc",
-    "android/dumpstate_writer.h",
-    "android/system_time_change_notifier_android.cc",
-    "android/system_time_change_notifier_android.h",
     "bind_to_task_runner.h",
     "bitstream_audio_codecs.cc",
     "bitstream_audio_codecs.h",
@@ -64,6 +54,9 @@ cast_source_set("base") {
     "device_capabilities_impl.h",
     "error_codes.cc",
     "error_codes.h",
+    "hash_util.cc",
+    "hash_util.h",
+    "legacy_app_id_mapper.h",
     "observer.h",
     "path_utils.cc",
     "path_utils.h",
@@ -71,8 +64,6 @@ cast_source_set("base") {
     "pref_names.h",
     "process_utils.cc",
     "process_utils.h",
-    "serializers.cc",
-    "serializers.h",
     "statistics/weighted_mean.cc",
     "statistics/weighted_mean.h",
     "statistics/weighted_moving_average.cc",
@@ -88,27 +79,36 @@ cast_source_set("base") {
   public_deps = [
     ":chromecast_switches",
     ":init_shlib",
+    "//base",
     "//chromecast/base/metrics",
     "//chromecast/public",
   ]
 
   deps = [
-    "//base",
+    ":cast_version",
     "//chromecast:chromecast_buildflags",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-  }
-
   if (chromecast_branding == "public") {
-    sources += [ "cast_features_internal.cc" ]
+    sources += [
+      "cast_features_internal.cc",
+      "legacy_app_id_mapper_dummy.cc",
+    ]
   } else {
+    sources += [ "//chromecast/internal/base/legacy_app_id_mapper_impl.cc" ]
     deps += [ "//chromecast/internal/base:cast_internal_features" ]
   }
 
   if (is_android) {
-    sources += [ "chromecast_config_android.h" ]
+    sources += [
+      "android/dumpstate_writer.cc",
+      "android/dumpstate_writer.h",
+      "android/system_time_change_notifier_android.cc",
+      "android/system_time_change_notifier_android.h",
+      "chromecast_config_android.h",
+    ]
+    deps += [ ":jni_headers" ]
     if (chromecast_branding == "public") {
       sources += [ "chromecast_config_android_dummy.cc" ]
     } else {
@@ -130,9 +130,7 @@ cast_source_set("chromecast_switches") {
     "chromecast_switches.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 # command line initialization code for shared libs
@@ -165,15 +163,14 @@ cast_source_set("test_support") {
 test("cast_base_unittests") {
   sources = [
     "alarm_manager_unittest.cc",
-    "bind_to_task_runner_unittest.cc",
     "cast_features_unittest.cc",
     "device_capabilities_impl_unittest.cc",
     "error_codes_unittest.cc",
+    "hash_util_test.cc",
     "metrics/cast_metrics_helper_unittest.cc",
     "observer_unittest.cc",
     "path_utils_unittest.cc",
     "process_utils_unittest.cc",
-    "serializers_unittest.cc",
     "statistics/weighted_moving_average_unittest.cc",
     "statistics/weighted_moving_linear_regression_unittest.cc",
     "system_time_change_notifier_unittest.cc",
@@ -193,9 +190,7 @@ test("cast_base_unittests") {
 
 # Declares CreateSysInfo() without defining the implementation (see below).
 cast_source_set("cast_sys_info_util") {
-  public = [
-    "cast_sys_info_util.h",
-  ]
+  public = [ "cast_sys_info_util.h" ]
 }
 
 # Defines a CastSysInfoDummy suitable for use in tests, and public builds.
@@ -212,15 +207,9 @@ cast_source_set("dummy_cast_sys_info") {
 
 # Links a CreateSysInfo() implementation that returns CastSysInfoDummy.
 cast_source_set("dummy_create_sys_info") {
-  sources = [
-    "cast_sys_info_util_simple.cc",
-  ]
-  deps = [
-    ":dummy_cast_sys_info",
-  ]
-  public_deps = [
-    ":cast_sys_info_util",
-  ]
+  sources = [ "cast_sys_info_util_simple.cc" ]
+  deps = [ ":dummy_cast_sys_info" ]
+  public_deps = [ ":cast_sys_info_util" ]
 }
 
 # Links the default CreateSysInfo() implementation for Android.
@@ -229,45 +218,35 @@ if (is_android) {
     deps = [
       ":cast_version",
       "//base",
-      "//chromecast:chromecast_buildflags",
       "//chromecast/browser:jni_headers",
       "//chromecast/public",
     ]
-    public_deps = [
-      ":cast_sys_info_util",
-    ]
+    public_deps = [ ":cast_sys_info_util" ]
     sources = [
       "cast_sys_info_android.cc",
       "cast_sys_info_android.h",
       "cast_sys_info_android_factory.cc",
     ]
-    if (is_android_things) {
-      sources += [
-        "cast_sys_info_android_things.cc",
-        "cast_sys_info_android_things.h",
-      ]
-    }
   }
 } else {  # !is_android
   # Target for OEM partners to override sys_info shared library, i.e.
   # libcast_sys_info_1.0.so.
   cast_shared_library("libcast_sys_info_1.0") {
-    sources = [
-      "cast_sys_info_shlib.cc",
-    ]
+    sources = [ "cast_sys_info_shlib.cc" ]
 
     deps = [
       ":cast_sys_info_util",
+      ":chromecast_switches",
       ":dummy_cast_sys_info",
+      ":init_shlib",
+      "//base",
       "//chromecast/public",
     ]
   }
 
   # Links a CreateSysInfo() that loads libcast_sys_info_1.0.so.
   cast_source_set("shlib_create_sys_info") {
-    sources = [
-      "cast_sys_info_util_shlib.cc",
-    ]
+    sources = [ "cast_sys_info_util_shlib.cc" ]
 
     deps = [
       ":libcast_sys_info_1.0",
@@ -275,26 +254,21 @@ if (is_android) {
       "//chromecast/public",
     ]
 
-    public_deps = [
-      ":cast_sys_info_util",
-    ]
+    public_deps = [ ":cast_sys_info_util" ]
   }
 }  # is_android
 
 # Links the default CreateSysInfo() for this build configuration.
 group("default_create_sys_info") {
   if (is_android) {
-    public_deps = [
-      ":android_create_sys_info",
-    ]
+    public_deps = [ ":android_create_sys_info" ]
   } else if (chromecast_branding == "public") {
-    public_deps = [
-      ":dummy_create_sys_info",
-    ]
+    public_deps = [ ":dummy_create_sys_info" ]
+  } else if (enable_cast_media_runtime) {
+    # TODO(b/200723084): Replace the dummy implementation with real one.
+    public_deps = [ ":dummy_create_sys_info" ]
   } else {
-    public_deps = [
-      ":shlib_create_sys_info",
-    ]
+    public_deps = [ ":shlib_create_sys_info" ]
   }
 }
 
@@ -313,9 +287,7 @@ process_version("cast_version") {
   template_file = "version.h.in"
   output = "$target_gen_dir/version.h"
 
-  sources = [
-    "//chrome/VERSION",
-  ]
+  sources = [ "//chrome/VERSION" ]
   extra_args = [
     "-e",
     "VERSION_FULL=\"%s.%s.%s.%s\"%(MAJOR,MINOR,BUILD,PATCH)",
@@ -343,7 +315,6 @@ process_version("cast_version") {
 if (is_android) {
   generate_jni("jni_headers") {
     sources = [
-      "java/src/org/chromium/chromecast/base/CastSettingsManager.java",
       "java/src/org/chromium/chromecast/base/DumpstateWriter.java",
       "java/src/org/chromium/chromecast/base/SystemTimeChangeNotifierAndroid.java",
     ]
@@ -351,7 +322,7 @@ if (is_android) {
 
   android_library("base_java") {
     java_src_dir = "//chromecast/base/java/src"
-    java_files = [
+    sources = [
       "$java_src_dir/org/chromium/chromecast/base/BiConsumer.java",
       "$java_src_dir/org/chromium/chromecast/base/BiFunction.java",
       "$java_src_dir/org/chromium/chromecast/base/BiPredicate.java",
@@ -361,11 +332,11 @@ if (is_android) {
       "$java_src_dir/org/chromium/chromecast/base/Observable.java",
       "$java_src_dir/org/chromium/chromecast/base/Observer.java",
       "$java_src_dir/org/chromium/chromecast/base/Observers.java",
+      "$java_src_dir/org/chromium/chromecast/base/Predicate.java",
       "$java_src_dir/org/chromium/chromecast/base/Scope.java",
       "$java_src_dir/org/chromium/chromecast/base/Scopes.java",
-      "$java_src_dir/org/chromium/chromecast/base/Predicate.java",
-      "$java_src_dir/org/chromium/chromecast/base/Subscription.java",
       "$java_src_dir/org/chromium/chromecast/base/Sequencer.java",
+      "$java_src_dir/org/chromium/chromecast/base/Subscription.java",
       "$java_src_dir/org/chromium/chromecast/base/Unit.java",
 
       # TODO(sanfin): Move these files to another target.
@@ -377,7 +348,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -385,7 +356,7 @@ if (is_android) {
   android_library("cast_base_test_utils_java") {
     java_test_dir = "//chromecast/base/java/test"
     testonly = true
-    java_files = [
+    sources = [
       "$java_test_dir/org/chromium/chromecast/base/Inheritance.java",
       "$java_test_dir/org/chromium/chromecast/base/ReactiveRecorder.java",
     ]
@@ -398,7 +369,7 @@ if (is_android) {
 
   junit_binary("cast_base_junit_tests") {
     java_test_dir = "//chromecast/base/java/test"
-    java_files = [
+    sources = [
       "$java_test_dir/org/chromium/chromecast/base/BothTest.java",
       "$java_test_dir/org/chromium/chromecast/base/CastSettingsManagerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ControllerTest.java",
@@ -406,17 +377,19 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndThenTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableFilterTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ObservableFlatMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMiscellaneousTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableNotTest.java",
-      "$java_test_dir/org/chromium/chromecast/base/ReactiveRecorderTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObserversTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ReactiveRecorderTest.java",
       "$java_test_dir/org/chromium/chromecast/base/SequencerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/UnitTest.java",
     ]
     deps = [
       ":base_java",
       ":cast_base_test_utils_java",
+      "//base:base_java",
       "//base:base_junit_test_support",
       "//third_party/hamcrest:hamcrest_java",
     ]

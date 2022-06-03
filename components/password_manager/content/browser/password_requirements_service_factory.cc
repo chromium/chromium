@@ -36,7 +36,8 @@ PasswordRequirementsServiceFactory::PasswordRequirementsServiceFactory()
           "PasswordRequirementsServiceFactory",
           BrowserContextDependencyManager::GetInstance()) {}
 
-PasswordRequirementsServiceFactory::~PasswordRequirementsServiceFactory() {}
+PasswordRequirementsServiceFactory::~PasswordRequirementsServiceFactory() =
+    default;
 
 KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
@@ -44,7 +45,7 @@ KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   return CreatePasswordRequirementsService(
-             content::BrowserContext::GetDefaultStoragePartition(context)
+             context->GetDefaultStoragePartition()
                  ->GetURLLoaderFactoryForBrowserProcess())
       .release();
 }

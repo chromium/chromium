@@ -7,8 +7,12 @@ import datetime
 import json
 import logging
 import re
-import urllib2
+import six
+
 from collections import namedtuple
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.error import URLError
+from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
 from blinkpy.w3c.common import WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL
@@ -27,9 +31,14 @@ class WPTGitHub(object):
     GitHubError will be raised if an API call fails.
     """
 
-    def __init__(self, host, user=None, token=None, pr_history_window=MAX_PR_HISTORY_WINDOW):
+    def __init__(self,
+                 host,
+                 user=None,
+                 token=None,
+                 pr_history_window=MAX_PR_HISTORY_WINDOW):
         if pr_history_window > MAX_PR_HISTORY_WINDOW:
-            raise ValueError("GitHub only provides up to %d results per search" % MAX_PR_HISTORY_WINDOW)
+            raise ValueError("GitHub only provides up to %d results per search"
+                             % MAX_PR_HISTORY_WINDOW)
         self.host = host
         self.user = user
         self.token = token
@@ -41,15 +50,17 @@ class WPTGitHub(object):
 
     def auth_token(self):
         assert self.has_credentials()
-        return base64.b64encode('{}:{}'.format(self.user, self.token))
+        data = '{}:{}'.format(self.user, self.token).encode('utf-8')
+        return base64.b64encode(data).decode('utf-8')
 
-    def request(self, path, method, body=None):
+    def request(self, path, method, body=None, accept_header=None):
         """Sends a request to GitHub API and deserializes the response.
 
         Args:
             path: API endpoint without base URL (starting with '/').
             method: HTTP method to be used for this request.
             body: Optional payload in the request body (default=None).
+            accept_header: Custom media type in the Accept header (default=None).
 
         Returns:
             A JSONResponse instance.
@@ -57,19 +68,21 @@ class WPTGitHub(object):
         assert path.startswith('/')
 
         if body:
-            body = json.dumps(body)
+            if six.PY3:
+                body = json.dumps(body).encode("utf-8")
+            else:
+                body = json.dumps(body)
 
-        headers = {'Accept': 'application/vnd.github.v3+json'}
+        if accept_header:
+            headers = {'Accept': accept_header}
+        else:
+            headers = {'Accept': 'application/vnd.github.v3+json'}
 
         if self.has_credentials():
             headers['Authorization'] = 'Basic {}'.format(self.auth_token())
 
         response = self.host.web.request(
-            method=method,
-            url=API_BASE + path,
-            data=body,
-            headers=headers
-        )
+            method=method, url=API_BASE + path, data=body, headers=headers)
         return JSONResponse(response)
 
     @staticmethod
@@ -121,7 +134,16 @@ class WPTGitHub(object):
             'head': remote_branch_name,
             'base': 'master',
         }
-        response = self.request(path, method='POST', body=body)
+        try:
+            response = self.request(path, method='POST', body=body)
+        except HTTPError as e:
+            _log.error(e.reason)
+            if e.code == 422:
+                _log.error('Please check if branch already exists; If so, '
+                           'please remove the PR description and '
+                           'delete the branch')
+            raise GitHubError(201, e.code,
+                              'create PR branch %s' % remote_branch_name)
 
         if response.status_code != 201:
             raise GitHubError(201, response.status_code, 'create PR')
@@ -133,11 +155,8 @@ class WPTGitHub(object):
 
         API doc: https://developer.github.com/v3/pulls/#update-a-pull-request
         """
-        path = '/repos/{}/{}/pulls/{}'.format(
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            pr_number
-        )
+        path = '/repos/{}/{}/pulls/{}'.format(WPT_GH_ORG, WPT_GH_REPO_NAME,
+                                              pr_number)
         payload = {}
         if desc_title:
             payload['title'] = desc_title
@@ -148,23 +167,22 @@ class WPTGitHub(object):
         response = self.request(path, method='PATCH', body=payload)
 
         if response.status_code != 200:
-            raise GitHubError(200, response.status_code, 'update PR %d' % pr_number)
+            raise GitHubError(200, response.status_code,
+                              'update PR %d' % pr_number)
 
     def add_label(self, number, label):
         """Adds a label to a GitHub issue (or PR).
 
         API doc: https://developer.github.com/v3/issues/labels/#add-labels-to-an-issue
         """
-        path = '/repos/%s/%s/issues/%d/labels' % (
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            number
-        )
+        path = '/repos/%s/%s/issues/%d/labels' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
+                                                  number)
         body = [label]
         response = self.request(path, method='POST', body=body)
 
         if response.status_code != 200:
-            raise GitHubError(200, response.status_code, 'add label %s to issue %d' % (label, number))
+            raise GitHubError(200, response.status_code,
+                              'add label %s to issue %d' % (label, number))
 
     def remove_label(self, number, label):
         """Removes a label from a GitHub issue (or PR).
@@ -175,30 +193,31 @@ class WPTGitHub(object):
             WPT_GH_ORG,
             WPT_GH_REPO_NAME,
             number,
-            urllib2.quote(label),
+            quote(label),
         )
         response = self.request(path, method='DELETE')
 
         # The GitHub API documentation claims that this endpoint returns a 204
         # on success. However in reality it returns a 200.
         if response.status_code not in (200, 204):
-            raise GitHubError((200, 204), response.status_code, 'remove label %s from issue %d' % (label, number))
+            raise GitHubError(
+                (200, 204), response.status_code,
+                'remove label %s from issue %d' % (label, number))
 
     def add_comment(self, number, comment_body):
         """Add a comment for an issue (or PR).
 
         API doc: https://developer.github.com/v3/issues/comments/#create-a-comment
         """
-        path = '/repos/%s/%s/issues/%d/comments' % (
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            number
-        )
+        path = '/repos/%s/%s/issues/%d/comments' % (WPT_GH_ORG,
+                                                    WPT_GH_REPO_NAME, number)
         body = {'body': comment_body}
         response = self.request(path, method='POST', body=body)
 
         if response.status_code != 201:
-            raise GitHubError(201, response.status_code, 'add comment %s to issue %d' % (comment_body, number))
+            raise GitHubError(
+                201, response.status_code,
+                'add comment %s to issue %d' % (comment_body, number))
 
     def make_pr_from_item(self, item):
         labels = [label['name'] for label in item['labels']]
@@ -224,14 +243,9 @@ class WPTGitHub(object):
             '?q=repo:{}/{}%20type:pr+is:open%20label:{}%20status:failure%20updated:>{}'
             '&sort=updated'
             '&page=1'
-            '&per_page={}'
-        ).format(
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            EXPORT_PR_LABEL,
-            one_month_ago.isoformat(),
-            MAX_PER_PAGE
-        )
+            '&per_page={}').format(WPT_GH_ORG,
+                                   WPT_GH_REPO_NAME, EXPORT_PR_LABEL,
+                                   one_month_ago.isoformat(), MAX_PER_PAGE)
 
         failing_prs = []
         while path is not None:
@@ -239,9 +253,13 @@ class WPTGitHub(object):
             if response.status_code == 200:
                 if response.data['incomplete_results']:
                     raise GitHubError('complete results', 'incomplete results',
-                                      'fetch failing open chromium exports', path)
+                                      'fetch failing open chromium exports',
+                                      path)
 
-                prs = [self.make_pr_from_item(item) for item in response.data['items']]
+                prs = [
+                    self.make_pr_from_item(item)
+                    for item in response.data['items']
+                ]
                 failing_prs += prs
             else:
                 raise GitHubError(200, response.status_code,
@@ -266,29 +284,29 @@ class WPTGitHub(object):
         Returns:
             A list of PullRequest namedtuples.
         """
-        path = (
-            '/search/issues'
-            '?q=repo:{}/{}%20type:pr%20label:{}'
-            '&sort=updated'
-            '&page=1'
-            '&per_page={}'
-        ).format(
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            EXPORT_PR_LABEL,
-            min(MAX_PER_PAGE, self._pr_history_window)
-        )
+        path = ('/search/issues'
+                '?q=repo:{}/{}%20type:pr%20label:{}'
+                '&sort=updated'
+                '&page=1'
+                '&per_page={}').format(
+                    WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL,
+                    min(MAX_PER_PAGE, self._pr_history_window))
         all_prs = []
         while path is not None and len(all_prs) < self._pr_history_window:
             response = self.request(path, method='GET')
             if response.status_code == 200:
                 if response.data['incomplete_results']:
-                    raise GitHubError('complete results', 'incomplete results', 'fetch all pull requests', path)
+                    raise GitHubError('complete results', 'incomplete results',
+                                      'fetch all pull requests', path)
 
-                prs = [self.make_pr_from_item(item) for item in response.data['items']]
+                prs = [
+                    self.make_pr_from_item(item)
+                    for item in response.data['items']
+                ]
                 all_prs += prs[:self._pr_history_window - len(all_prs)]
             else:
-                raise GitHubError(200, response.status_code, 'fetch all pull requests', path)
+                raise GitHubError(200, response.status_code,
+                                  'fetch all pull requests', path)
             path = self.extract_link_next(response.getheader('Link'))
 
         # There are way more than 1000 exported PRs on GitHub, so we should
@@ -301,26 +319,6 @@ class WPTGitHub(object):
         _log.info('Fetched %d PRs from GitHub.', len(all_prs))
         return all_prs
 
-    def get_branch_statuses(self, branch_name):
-        """Gets the status of a PR.
-
-        API doc: https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
-
-        Returns:
-            The list of check statuses of the PR.
-        """
-        path = '/repos/{}/{}/commits/{}/status'.format(
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            branch_name
-        )
-        response = self.request(path, method='GET')
-
-        if response.status_code != 200:
-            raise GitHubError(200, response.status_code, 'get the statuses of PR %d' % branch_name)
-
-        return response.data['statuses']
-
     def get_pr_branch(self, pr_number):
         """Gets the remote branch name of a PR.
 
@@ -329,17 +327,42 @@ class WPTGitHub(object):
         Returns:
             The remote branch name.
         """
-        path = '/repos/{}/{}/pulls/{}'.format(
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            pr_number
-        )
+        path = '/repos/{}/{}/pulls/{}'.format(WPT_GH_ORG, WPT_GH_REPO_NAME,
+                                              pr_number)
         response = self.request(path, method='GET')
 
         if response.status_code != 200:
-            raise GitHubError(200, response.status_code, 'get the branch of PR %d' % pr_number)
+            raise GitHubError(200, response.status_code,
+                              'get the branch of PR %d' % pr_number)
 
         return response.data['head']['ref']
+
+    def get_branch_check_runs(self, remote_branch_name):
+        """Returns the check runs of a remote branch.
+
+        API doc: https://developer.github.com/v3/checks/runs/#list-check-runs-for-a-git-reference
+
+        Returns:
+            The list of check runs from the HEAD of the branch.
+        """
+        path = '/repos/%s/%s/commits/%s/check-runs?page=1&per_page=%d' % (
+            WPT_GH_ORG, WPT_GH_REPO_NAME, remote_branch_name, MAX_PER_PAGE)
+        accept_header = 'application/vnd.github.antiope-preview+json'
+
+        check_runs = []
+        while path is not None:
+            response = self.request(path,
+                                    method='GET',
+                                    accept_header=accept_header)
+            if response.status_code != 200:
+                raise GitHubError(
+                    200, response.status_code,
+                    'get branch check runs %s' % remote_branch_name)
+
+            check_runs += response.data['check_runs']
+            path = self.extract_link_next(response.getheader('Link'))
+
+        return check_runs
 
     def is_pr_merged(self, pr_number):
         """Checks if a PR has been merged.
@@ -349,22 +372,29 @@ class WPTGitHub(object):
         Returns:
             True if merged, False if not.
         """
-        path = '/repos/%s/%s/pulls/%d/merge' % (
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            pr_number
-        )
-        try:
-            response = self.request(path, method='GET')
-            if response.status_code == 204:
-                return True
-            else:
-                raise GitHubError(204, response.status_code, 'check if PR %d is merged' % pr_number)
-        except urllib2.HTTPError as e:
-            if e.code == 404:
-                return False
-            else:
-                raise
+        path = '/repos/%s/%s/pulls/%d/merge' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
+                                                pr_number)
+        cached_error = None
+        for i in range(5):
+            try:
+                response = self.request(path, method='GET')
+                if response.status_code == 204:
+                    return True
+                else:
+                    raise GitHubError(204, response.status_code,
+                                      'check if PR %d is merged' % pr_number)
+            except HTTPError as e:
+                if e.code == 404:
+                    return False
+                else:
+                    raise
+            except URLError as e:
+                # After migrate to py3 we met random timeout issue here,
+                # Retry this request in this case
+                _log.warning("Meet URLError...")
+                cached_error = e
+        else:
+            raise cached_error
 
     def merge_pr(self, pr_number):
         """Merges a PR.
@@ -374,25 +404,23 @@ class WPTGitHub(object):
 
         API doc: https://developer.github.com/v3/pulls/#merge-a-pull-request-merge-button
         """
-        path = '/repos/%s/%s/pulls/%d/merge' % (
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            pr_number
-        )
+        path = '/repos/%s/%s/pulls/%d/merge' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
+                                                pr_number)
         body = {
             'merge_method': 'rebase',
         }
 
         try:
             response = self.request(path, method='PUT', body=body)
-        except urllib2.HTTPError as e:
+        except HTTPError as e:
             if e.code == 405:
                 raise MergeError(pr_number)
             else:
                 raise
 
         if response.status_code != 200:
-            raise GitHubError(200, response.status_code, 'merge PR %d' % pr_number)
+            raise GitHubError(200, response.status_code,
+                              'merge PR %d' % pr_number)
 
     def delete_remote_branch(self, remote_branch_name):
         """Deletes a remote branch.
@@ -400,14 +428,12 @@ class WPTGitHub(object):
         API doc: https://developer.github.com/v3/git/refs/#delete-a-reference
         """
         path = '/repos/%s/%s/git/refs/heads/%s' % (
-            WPT_GH_ORG,
-            WPT_GH_REPO_NAME,
-            remote_branch_name
-        )
+            WPT_GH_ORG, WPT_GH_REPO_NAME, remote_branch_name)
         response = self.request(path, method='DELETE')
 
         if response.status_code != 204:
-            raise GitHubError(204, response.status_code, 'delete remote branch %s' % remote_branch_name)
+            raise GitHubError(204, response.status_code,
+                              'delete remote branch %s' % remote_branch_name)
 
     def pr_for_chromium_commit(self, chromium_commit):
         """Returns a PR corresponding to the given ChromiumCommit, or None."""
@@ -419,7 +445,8 @@ class WPTGitHub(object):
         for pull_request in self.all_pull_requests():
             # Note: Search all 'Change-Id's so that we can manually put multiple
             # CLs in one PR. (The exporter always creates one PR for each CL.)
-            change_ids = self.extract_metadata('Change-Id: ', pull_request.body, all_matches=True)
+            change_ids = self.extract_metadata(
+                'Change-Id: ', pull_request.body, all_matches=True)
             if target_change_id in change_ids:
                 return pull_request
         return None
@@ -458,7 +485,10 @@ class JSONResponse(object):
         """Gets the value of the header with the given name.
 
         Delegates to HTTPMessage.getheader(), which is case-insensitive."""
-        return self._raw_response.info().getheader(header)
+        if six.PY3:
+            return self._raw_response.getheader(header)
+        else:
+            return self._raw_response.info().getheader(header)
 
 
 class GitHubError(Exception):
@@ -466,8 +496,7 @@ class GitHubError(Exception):
 
     def __init__(self, expected, received, action, extra_data=None):
         message = 'Expected {}, but received {} from GitHub when attempting to {}'.format(
-            expected, received, action
-        )
+            expected, received, action)
         if extra_data:
             message += '\n' + str(extra_data)
         super(GitHubError, self).__init__(message)
@@ -484,4 +513,5 @@ class MergeError(GitHubError):
         super(MergeError, self).__init__(200, 405, 'merge PR %d' % pr_number)
 
 
-PullRequest = namedtuple('PullRequest', ['title', 'number', 'body', 'state', 'labels'])
+PullRequest = namedtuple('PullRequest',
+                         ['title', 'number', 'body', 'state', 'labels'])

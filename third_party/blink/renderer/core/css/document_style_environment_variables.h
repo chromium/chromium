@@ -12,6 +12,7 @@
 namespace blink {
 
 class Document;
+class FeatureContext;
 
 // DocumentStyleEnvironmentVariables is bound 1:1 to a document and provides
 // document level invalidation logic.
@@ -32,12 +33,16 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
   // style. If |record_metrics| is true we will record UseCounter metrics when
   // this function is called.
   CSSVariableData* ResolveVariable(const AtomicString& name,
+                                   WTF::Vector<unsigned> indices,
                                    bool record_metrics);
 
   // Resolve the variable |name| and return the data. This will also cause
   // future changes to this variable to invalidate the associated document's
   // style. UseCounter metrics will be recorded when this function is used.
-  CSSVariableData* ResolveVariable(const AtomicString& name) override;
+  CSSVariableData* ResolveVariable(const AtomicString& name,
+                                   WTF::Vector<unsigned> indices) override;
+
+  const FeatureContext* GetFeatureContext() const override;
 
  protected:
   // Called when variable |name| is changed. This will notify any children that

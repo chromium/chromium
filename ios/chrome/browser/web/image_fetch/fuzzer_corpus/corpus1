@@ -1,0 +1,4 @@
+body: "{\n   \"id\": 3526.0,\n   \"data\": \"c29tZSB0ZXh0IHRvIGVuY29kZQ==\",\n   \"from\": \"https://www.w3schools.com\"\n}\n"
+user_interacting: true
+main_frame: true
+url: "http://www.chromium.org"

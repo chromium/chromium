@@ -8,3 +8,5 @@ package: chromium/third_party/proguard
 data:
   - file: lib/proguard603.jar
   - file: lib/retrace603.jar
+# Run on swarming, so symlinks don't work.
+install_mode: copy

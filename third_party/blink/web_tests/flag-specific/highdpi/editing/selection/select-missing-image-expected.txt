@@ -1,0 +1,18 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {DIV} at (0,0) size 1176x192 [border: (3px solid #FF0000)]
+        LayoutNGBlockFlow {IMG} at (21,21) size 825x150
+        LayoutText {#text} at (0,0) size 0x0
+layer at (33,33) size 825x150 clip at (35,35) size 822x147
+  LayoutNGBlockFlow {SPAN} at (0,0) size 825x150 [border: (1.50px solid #C0C0C0)]
+    LayoutImage (floating) {IMG} at (3,3) size 24x24
+    LayoutInline {SPAN} at (27,4) size 712x40
+      LayoutText {#text} at (27,4) size 712x40
+        text run at (27,4) width 712: "Should see selection tint over this missing image."
+selection start: position 0 of child 1 {IMG} of child 1 {DIV} of body
+selection end:   position 1 of child 1 {IMG} of child 1 {DIV} of body

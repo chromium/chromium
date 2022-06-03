@@ -12,6 +12,7 @@ source_set("cpp") {
 
   deps = [
     "//chromeos/services/network_config/public/mojom",
+    "//services/network/public/cpp:ip_address_mojom_support",
   ]
 }
 

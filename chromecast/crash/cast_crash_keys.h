@@ -5,14 +5,17 @@
 #ifndef CHROMECAST_CRASH_CAST_CRASH_KEYS_H_
 #define CHROMECAST_CRASH_CAST_CRASH_KEYS_H_
 
-#include "components/crash/core/common/crash_key.h"
-
 namespace chromecast {
 namespace crash_keys {
 
-extern crash_reporter::CrashKeyString<64> last_app;
+// Names of crash keys to be shared by multiple platforms.
+extern const char kLastApp[];
 
-extern crash_reporter::CrashKeyString<64> previous_app;
+extern const char kCurrentApp[];
+
+extern const char kPreviousApp[];
+
+extern const char kStadiaSessionId[];
 
 }  // namespace crash_keys
 }  // namespace chromecast

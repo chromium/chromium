@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_ANDROID_ERROR_PAGE_LOAD_ERROR_HTML" file="../android_system_error_page/resources/load_error.html" flattenhtml="true" type="BINDATA" />
+</grit-part>

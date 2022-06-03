@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that source data are extracted correctly from external stylesheets in UTF-8 with BOM. Bug 59322.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <h1 id="inspected">
@@ -16,8 +16,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step1);
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

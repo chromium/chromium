@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "base/metrics/histogram.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -16,10 +17,9 @@ namespace {
 
 void RecordIntervalTypeHistogram(const std::string& histogram_name,
                                  DailyEvent::IntervalType type) {
-  const int num_types = static_cast<int>(DailyEvent::IntervalType::NUM_TYPES);
-  base::Histogram::FactoryGet(histogram_name, 1, num_types, num_types + 1,
-                              base::HistogramBase::kUmaTargetedHistogramFlag)
-      ->Add(static_cast<int>(type));
+  if (histogram_name.empty())
+    return;
+  base::UmaHistogramEnumeration(histogram_name, type);
 }
 
 }  // namespace
@@ -43,7 +43,7 @@ DailyEvent::~DailyEvent() {
 
 // static
 void DailyEvent::RegisterPref(PrefRegistrySimple* registry,
-                              const char* pref_name) {
+                              const std::string& pref_name) {
   registry->RegisterInt64Pref(pref_name, 0);
 }
 
@@ -57,8 +57,8 @@ void DailyEvent::CheckInterval() {
   base::Time now = base::Time::Now();
   if (last_fired_.is_null()) {
     // The first time we call CheckInterval, we read the time stored in prefs.
-    last_fired_ = base::Time() + base::TimeDelta::FromMicroseconds(
-                                     pref_service_->GetInt64(pref_name_));
+    last_fired_ =
+        base::Time() + base::Microseconds(pref_service_->GetInt64(pref_name_));
 
     DVLOG(1) << "DailyEvent time loaded: " << last_fired_;
     if (last_fired_.is_null()) {

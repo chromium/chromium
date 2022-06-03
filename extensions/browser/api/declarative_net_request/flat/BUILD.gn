@@ -5,10 +5,6 @@
 import("//third_party/flatbuffers/flatbuffer.gni")
 
 flatbuffer("extension_ruleset") {
-  sources = [
-    "extension_ruleset.fbs",
-  ]
-  public_deps = [
-    "//components/url_pattern_index/flat:url_pattern_index",
-  ]
+  sources = [ "extension_ruleset.fbs" ]
+  public_deps = [ "//components/url_pattern_index/flat:url_pattern_index" ]
 }

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PAYMENTS_PAYMENT_REQUEST_FACTORY_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom-forward.h"
 
 namespace content {
 class RenderFrameHost;

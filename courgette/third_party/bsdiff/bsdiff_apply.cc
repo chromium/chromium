@@ -230,19 +230,17 @@ BSDiffStatus ApplyBinaryPatch(const base::FilePath& old_file_path,
                               const base::FilePath& patch_file_path,
                               const base::FilePath& new_file_path) {
   BSDiffStatus result = ApplyBinaryPatch(
-      base::File(
-          old_file_path,
-          base::File::FLAG_OPEN | base::File::FLAG_READ),
-      base::File(
-          patch_file_path,
-          base::File::FLAG_OPEN | base::File::FLAG_READ),
-      base::File(
-          new_file_path,
-          base::File::FLAG_CREATE_ALWAYS |
-              base::File::FLAG_WRITE |
-              base::File::FLAG_EXCLUSIVE_WRITE));
+      base::File(old_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_SHARE_DELETE),
+      base::File(patch_file_path, base::File::FLAG_OPEN |
+                                      base::File::FLAG_READ |
+                                      base::File::FLAG_SHARE_DELETE),
+      base::File(new_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                    base::File::FLAG_WRITE |
+                                    base::File::FLAG_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_SHARE_DELETE));
   if (result != OK)
-    base::DeleteFile(new_file_path, false);
+    base::DeleteFile(new_file_path);
   return result;
 }
 

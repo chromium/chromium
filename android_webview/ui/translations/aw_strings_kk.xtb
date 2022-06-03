@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
-<translation id="6106989379647458772"><ph name="PAGE" /> мекенжайындағы веб-бет уақытша өшірілген немесе біржола жаңа мекенжайға көшірілген болуы мүмкін.</translation>
-<translation id="6312113039770857350">Веб-бет қол жетімді емес</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> мекенжайындағы веб-бетті жүктеу мүмкін болмады, себебі:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Ұсыныстар:<ph name="MARKUP_2" />Деректер қосылымы бар екендігін тексеріңіз<ph name="MARKUP_3" />Бұл веб-бетті кейінірек қайта жүктеңіз<ph name="MARKUP_4" />Енгізген мекенжайды тексеріңіз<ph name="MARKUP_5" /></translation>
 </translationbundle>

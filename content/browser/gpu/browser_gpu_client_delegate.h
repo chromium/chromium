@@ -12,14 +12,15 @@ namespace content {
 class BrowserGpuClientDelegate : public viz::GpuClientDelegate {
  public:
   BrowserGpuClientDelegate();
+
+  BrowserGpuClientDelegate(const BrowserGpuClientDelegate&) = delete;
+  BrowserGpuClientDelegate& operator=(const BrowserGpuClientDelegate&) = delete;
+
   ~BrowserGpuClientDelegate() override;
 
   // GpuClientDelegate:
   viz::GpuHostImpl* EnsureGpuHost() override;
   viz::HostGpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserGpuClientDelegate);
 };
 
 }  // namespace content

@@ -1,14 +1,11 @@
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-frame "f1" - didReceiveTitle: 
 frame "f1" - BeginNavigation request to 'http://127.0.0.1:8000/misc/resources/200.html', http method GET
 frame "f1" - DidStartNavigation
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 frame "f1" - ReadyToCommitNavigation
 frame "f1" - didCommitLoadForFrame
-frame "f1" - didReceiveTitle: 
 frame "f1" - didFinishDocumentLoadForFrame
 frame "f1" - didHandleOnloadEventsForFrame
 frame "f1" - didFinishLoadForFrame

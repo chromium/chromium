@@ -1,0 +1,160 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_ios)
+
+source_set("browser") {
+  sources = [
+    "banners/app_banner_manager.cc",
+    "banners/app_banner_manager.h",
+    "banners/app_banner_metrics.cc",
+    "banners/app_banner_metrics.h",
+    "banners/app_banner_settings_helper.cc",
+    "banners/app_banner_settings_helper.h",
+    "installable/installable_data.cc",
+    "installable/installable_data.h",
+    "installable/installable_logging.cc",
+    "installable/installable_logging.h",
+    "installable/installable_manager.cc",
+    "installable/installable_manager.h",
+    "installable/installable_metrics.cc",
+    "installable/installable_metrics.h",
+    "installable/installable_params.cc",
+    "installable/installable_params.h",
+    "installable/installable_task_queue.cc",
+    "installable/installable_task_queue.h",
+    "pwa_install_path_tracker.cc",
+    "pwa_install_path_tracker.h",
+    "webapps_client.cc",
+    "webapps_client.h",
+  ]
+  deps = [
+    "//base",
+    "//components/back_forward_cache",
+    "//components/content_settings/core/browser",
+    "//components/permissions",
+    "//components/security_state/core",
+    "//components/site_engagement/content",
+    "//components/variations",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/add_to_homescreen_coordinator.cc",
+      "android/add_to_homescreen_coordinator.h",
+      "android/add_to_homescreen_data_fetcher.cc",
+      "android/add_to_homescreen_data_fetcher.h",
+      "android/add_to_homescreen_installer.cc",
+      "android/add_to_homescreen_installer.h",
+      "android/add_to_homescreen_mediator.cc",
+      "android/add_to_homescreen_mediator.h",
+      "android/add_to_homescreen_params.cc",
+      "android/add_to_homescreen_params.h",
+      "android/app_banner_manager_android.cc",
+      "android/app_banner_manager_android.h",
+      "android/features.cc",
+      "android/features.h",
+      "android/installable/installable_ambient_badge_client.h",
+      "android/installable/installable_ambient_badge_infobar.cc",
+      "android/installable/installable_ambient_badge_infobar.h",
+      "android/installable/installable_ambient_badge_infobar_delegate.cc",
+      "android/installable/installable_ambient_badge_infobar_delegate.h",
+      "android/installable/installable_ambient_badge_message_controller.cc",
+      "android/installable/installable_ambient_badge_message_controller.h",
+      "android/shortcut_info.cc",
+      "android/shortcut_info.h",
+      "android/webapk/webapk_icon_hasher.cc",
+      "android/webapk/webapk_icon_hasher.h",
+      "android/webapk/webapk_proto_builder.cc",
+      "android/webapk/webapk_proto_builder.h",
+      "android/webapk/webapk_types.h",
+      "android/webapps_icon_utils.cc",
+      "android/webapps_icon_utils.h",
+      "android/webapps_utils.cc",
+      "android/webapps_utils.h",
+    ]
+
+    public_deps = [ "android:webapps_jni_headers" ]
+
+    deps += [
+      "//base",
+      "//components/dom_distiller/core",
+      "//components/favicon/content",
+      "//components/favicon/core",
+      "//components/favicon_base",
+      "//components/feature_engagement",
+      "//components/infobars/android",
+      "//components/infobars/content",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
+      "//components/strings",
+      "//components/url_formatter",
+      "//components/version_info",
+      "//components/version_info/android:channel_getter",
+      "//components/webapk:proto",
+      "//components/webapps/common:mojo_bindings",
+      "//services/device/public/mojom",
+      "//third_party/smhasher:murmurhash2",
+      "//ui/android:android",
+      "//ui/base",
+      "//ui/gfx",
+      "//url:gurl_android",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "installable/fake_installable_manager.cc",
+    "installable/fake_installable_manager.h",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//skia",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "banners/app_banner_settings_helper_unittest.cc",
+    "installable/installable_manager_unittest.cc",
+    "installable/installable_task_queue_unittest.cc",
+    "pwa_install_path_tracker_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/permissions:test_support",
+    "//components/prefs:test_support",
+    "//components/site_engagement/content",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+  ]
+
+  if (is_android) {
+    sources += [ "android/installable/installable_ambient_badge_message_controller_unittest.cc" ]
+    deps += [ "//components/messages/android:test_support" ]
+  }
+}

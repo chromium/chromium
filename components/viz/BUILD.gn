@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//testing/test.gni")
 
 viz_test("viz_unittests") {
-  sources = [
-    "test/run_all_unittests.cc",
-  ]
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [ "test/run_all_unittests.cc" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -22,11 +23,10 @@ viz_test("viz_unittests") {
     "//mojo/core/embedder",
   ]
 
-  data = [
-    "test/data/",
-  ]
+  data = [ "test/data/" ]
 
   data_deps = [
+    "//testing/buildbot/filters:viz_unittests_filters",
     "//third_party/mesa_headers",
   ]
 
@@ -34,12 +34,19 @@ viz_test("viz_unittests") {
     # The top level test target must depend on the java library directly.
     deps += [ "//components/viz/service:service_java" ]
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
+  }
 }
 
 viz_test("viz_perftests") {
-  sources = [
-    "test/run_all_perftests.cc",
-  ]
+  sources = [ "test/run_all_perftests.cc" ]
 
   deps = [
     "//base",
@@ -47,9 +54,12 @@ viz_test("viz_perftests") {
     "//components/viz/common:perf_tests",
     "//components/viz/service:perf_tests",
     "//components/viz/test:test_suite",
+    "//components/viz/test:test_support",
     "//mojo/core/embedder",
     "//skia",
   ]
+
+  data = [ "test/data/" ]
 
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]
@@ -58,4 +68,19 @@ viz_test("viz_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":viz_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "common/features.cc" ]
+    template = "common/java/src/org/chromium/components/viz/common/VizFeatures.java.tmpl"
+  }
+
+  android_library("viz_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }

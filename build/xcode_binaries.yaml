@@ -1,10 +1,18 @@
 # This yaml file is used to package binaries from Xcode.app.
 # To use this:
-#   1) Move Xcode.app to the same directory as this file.
-#   2) Rename Xcode.app to xcode_binaries
-#   3) Call `cipd create --pkg-def xcode_binaries.yaml`
+#   1) Move Xcode.app to the same directory as this file,
+#      and rename Xcode.app to xcode_binaries. Or make a symlink:
+#      $ rm -rf build/xcode_binaries && \
+#        ln -s /Applications/Xcode.app build/xcode_binaries
+#   2) Call `cipd create --pkg-def build/xcode_binaries.yaml`
 # To deploy the newly created cipd package across the fleet, modify
 # mac_toolchain.py to point to the new cipd hash.
+#
+# Note that runhooks extracts the cipd file to build/mac/xcode_binaries -- your
+# build/xcode_binaries you're creating in step 1 above isn't used as part of
+# the Chromium build, build/mac_files/xcode_binaries is. So you need to
+# `runhooks` after updating the hash in mac_toolchain.py like everyone else to
+# get the new bits for your local build.
 #
 # The ACLs for this package are determined by the directory structure. The
 # nomenclature mirrors that of the hermetic toolchain to avoid ACL duplication.
@@ -18,22 +26,31 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gm4
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-nm
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-otool
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-size
-  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/mig
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool-classic
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size-classic
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip
-  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libtapi.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libcodedirectory.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libswiftDemangle.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libtapi.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/migcom
+  - file: Contents/Developer/usr/bin/atos
   - file: Contents/Resources/English.lproj/License.rtf
   - file: Contents/Resources/LicenseInfo.plist
+  - dir: Contents/SharedFrameworks/CoreSymbolicationDT.framework
+  - dir: Contents/SharedFrameworks/DebugSymbolsDT.framework
+  - dir: Contents/SharedFrameworks/MallocStackLoggingDT.framework
+  - dir: Contents/SharedFrameworks/SymbolicationDT.framework
   - file: Contents/version.plist
 # llvm-size and size are run on swarming, those are symlinked to out of
 # isolated tree and produce invdalid symlink if we don't use copy mode here.

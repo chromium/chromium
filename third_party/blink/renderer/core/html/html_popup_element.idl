@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Popup/explainer.md
+[Exposed=Window,HTMLConstructor,RuntimeEnabled=HTMLPopupElement]
+interface HTMLPopupElement : HTMLElement {
+    [CEReactions] readonly attribute boolean open;
+    [CEReactions, Reflect] attribute boolean initiallyOpen;
+    [CEReactions, Measure] void show();
+    [CEReactions, Measure] void hide();
+
+    readonly attribute Element anchor;
+};

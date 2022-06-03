@@ -5,11 +5,11 @@
 </div>
 <script>
   const host = document.querySelector("#host");
-  const shadow_root = host.attachShadow({ mode: 'open', slotting: 'manual' });
+  const shadow_root = host.attachShadow({ mode: 'open', slotAssignment: 'manual' });
   const slot1 = document.createElement("slot");
   const child1 = document.createElement("child");
   const child = document.querySelector("#child");
-  slot1.assign([child1]);
+  slot1.assign(child1);
   shadow_root.appendChild(slot1);
   window.onload = function() {
     PerfTestRunner.measureTime({

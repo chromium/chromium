@@ -26,12 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -48,11 +47,11 @@ enum TableHeightChangingValue { kTableHeightNotChanging, kTableHeightChanging };
 // LayoutTable is the LayoutObject associated with
 // display: table or inline-table.
 //
-// LayoutTable is the master coordinator for determining the overall table
-// structure. The reason is that LayoutTableSection children have a local
-// view over what their structure is but don't account for other
-// LayoutTableSection. Thus LayoutTable helps keep consistency across
-// LayoutTableSection. See e.g. |m_effectiveColumns| below.
+// LayoutTable is the coordinator for determining the overall table structure.
+// The reason is that LayoutTableSection children have a local view over what
+// their structure is but don't account for other LayoutTableSection. Thus
+// LayoutTable helps keep consistency across LayoutTableSection. See e.g.
+// |m_effectiveColumns| below.
 //
 // LayoutTable expects only 3 types of children:
 // - zero or more LayoutTableCol
@@ -139,15 +138,23 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
  public:
   explicit LayoutTable(Element*);
   ~LayoutTable() override;
+  void Trace(Visitor*) const override;
 
   // Per CSS 3 writing-mode: "The first and second values of the
   // 'border-spacing' property represent spacing between columns and rows
   // respectively, not necessarily the horizontal and vertical spacing
   // respectively".
-  int16_t HBorderSpacing() const final { return h_spacing_; }
-  int16_t VBorderSpacing() const final { return v_spacing_; }
+  int16_t HBorderSpacing() const final {
+    NOT_DESTROYED();
+    return h_spacing_;
+  }
+  int16_t VBorderSpacing() const final {
+    NOT_DESTROYED();
+    return v_spacing_;
+  }
 
   bool ShouldCollapseBorders() const final {
+    NOT_DESTROYED();
     return StyleRef().BorderCollapse() == EBorderCollapse::kCollapse;
   }
 
@@ -167,17 +174,21 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   };
 
   void ForceSectionsRecalc() final {
+    NOT_DESTROYED();
     SetNeedsSectionRecalc();
     RecalcSections();
   }
 
   const Vector<ColumnStruct>& EffectiveColumns() const {
+    NOT_DESTROYED();
     return effective_columns_;
   }
   const Vector<int>& EffectiveColumnPositions() const {
+    NOT_DESTROYED();
     return effective_column_positions_;
   }
   void SetEffectiveColumnPosition(unsigned index, int position) {
+    NOT_DESTROYED();
     // Note that if our horizontal border-spacing changed, our position will
     // change but not our column's width. In practice, horizontal border-spacing
     // won't change often.
@@ -187,29 +198,36 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   }
 
   LayoutTableSection* Header() const {
+    NOT_DESTROYED();
     DCHECK(!NeedsSectionRecalc());
     return head_;
   }
   LayoutTableSection* Footer() const {
+    NOT_DESTROYED();
     DCHECK(!NeedsSectionRecalc());
     return foot_;
   }
   LayoutTableSection* FirstBody() const {
+    NOT_DESTROYED();
     DCHECK(!NeedsSectionRecalc());
     return first_body_;
   }
 
   void SetRowOffsetFromRepeatingHeader(LayoutUnit offset) {
+    NOT_DESTROYED();
     row_offset_from_repeating_header_ = offset;
   }
   LayoutUnit RowOffsetFromRepeatingHeader() const final {
+    NOT_DESTROYED();
     return row_offset_from_repeating_header_;
   }
 
   void SetRowOffsetFromRepeatingFooter(LayoutUnit offset) {
+    NOT_DESTROYED();
     row_offset_from_repeating_footer_ = offset;
   }
   LayoutUnit RowOffsetFromRepeatingFooter() const final {
+    NOT_DESTROYED();
     return row_offset_from_repeating_footer_;
   }
 
@@ -222,18 +240,24 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutTableSection* BottomNonEmptySection() const;
 
   unsigned LastEffectiveColumnIndex() const {
+    NOT_DESTROYED();
     return NumEffectiveColumns() - 1;
   }
 
   void SplitEffectiveColumn(unsigned index, unsigned first_span);
   void AppendEffectiveColumn(unsigned span);
-  unsigned NumEffectiveColumns() const { return effective_columns_.size(); }
+  unsigned NumEffectiveColumns() const {
+    NOT_DESTROYED();
+    return effective_columns_.size();
+  }
   unsigned SpanOfEffectiveColumn(unsigned effective_column_index) const {
+    NOT_DESTROYED();
     return effective_columns_[effective_column_index].span;
   }
 
   unsigned AbsoluteColumnToEffectiveColumn(
       unsigned absolute_column_index) const final {
+    NOT_DESTROYED();
     if (absolute_column_index < no_cell_colspan_at_least_)
       return absolute_column_index;
 
@@ -250,6 +274,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
   unsigned EffectiveColumnToAbsoluteColumn(
       unsigned effective_column_index) const {
+    NOT_DESTROYED();
     if (effective_column_index < no_cell_colspan_at_least_)
       return effective_column_index;
 
@@ -261,6 +286,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   }
 
   LayoutUnit BorderSpacingInRowDirection() const {
+    NOT_DESTROYED();
     if (unsigned effective_column_count = NumEffectiveColumns())
       return static_cast<LayoutUnit>(effective_column_count + 1) *
              HBorderSpacing();
@@ -277,6 +303,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutUnit PaddingRight() const override;
 
   LayoutUnit BordersPaddingAndSpacingInRowDirection() const {
+    NOT_DESTROYED();
     // 'border-spacing' only applies to separate borders (see 17.6.1 The
     // separated borders model).
     return BorderStart() + BorderEnd() +
@@ -289,29 +316,35 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutTableCol* FirstColumn() const;
 
   struct ColAndColGroup {
-    ColAndColGroup()
-        : col(nullptr),
-          colgroup(nullptr),
-          adjoins_start_border_of_col_group(false),
-          adjoins_end_border_of_col_group(false) {}
-    LayoutTableCol* col;
-    LayoutTableCol* colgroup;
-    bool adjoins_start_border_of_col_group;
-    bool adjoins_end_border_of_col_group;
+    STACK_ALLOCATED();
+
+   public:
+    LayoutTableCol* col = nullptr;
+    LayoutTableCol* colgroup = nullptr;
+    bool adjoins_start_border_of_col_group = false;
+    bool adjoins_end_border_of_col_group = false;
     LayoutTableCol* InnermostColOrColGroup() { return col ? col : colgroup; }
   };
   ColAndColGroup ColElementAtAbsoluteColumn(
       unsigned absolute_column_index) const {
+    NOT_DESTROYED();
     // The common case is to not have col/colgroup elements, make that case
     // fast.
     if (!has_col_elements_)
       return ColAndColGroup();
     return SlowColElementAtAbsoluteColumn(absolute_column_index);
   }
-  bool HasColElements() const final { return has_col_elements_; }
+  bool HasColElements() const final {
+    NOT_DESTROYED();
+    return has_col_elements_;
+  }
 
-  bool NeedsSectionRecalc() const { return needs_section_recalc_; }
+  bool NeedsSectionRecalc() const {
+    NOT_DESTROYED();
+    return needs_section_recalc_;
+  }
   void SetNeedsSectionRecalc() {
+    NOT_DESTROYED();
     if (DocumentBeingDestroyed())
       return;
     // For all we know, sections may have been deleted at this point. Don't
@@ -351,38 +384,29 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   void InvalidateCollapsedBordersForAllCellsIfNeeded();
 
   bool HasCollapsedBorders() const final {
+    NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return has_collapsed_borders_;
   }
   bool NeedsAdjustCollapsedBorderJoints() const {
+    NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return needs_adjust_collapsed_border_joints_;
   }
 
-  // Returns true if the table has collapsed borders and any row doesn't paint
-  // onto the same compositing layer as the table (which is rare), and the table
-  // will create one display item for all collapsed borders. Otherwise each row
-  // will create one display item for collapsed borders.
-  // It always returns false for CAP.
-  bool ShouldPaintAllCollapsedBorders() const {
-    DCHECK(collapsed_borders_valid_);
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      DCHECK(!should_paint_all_collapsed_borders_);
-    return should_paint_all_collapsed_borders_;
+  bool HasSections() const {
+    NOT_DESTROYED();
+    return Header() || Footer() || FirstBody();
   }
 
-  bool HasSections() const { return Header() || Footer() || FirstBody(); }
-
   void RecalcSectionsIfNeeded() const final {
+    NOT_DESTROYED();
     if (needs_section_recalc_)
       RecalcSections();
   }
 
-  static LayoutTable* CreateAnonymousWithParent(const LayoutObject*);
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
-      const LayoutObject* parent) const override {
-    return CreateAnonymousWithParent(parent);
-  }
+      const LayoutObject* parent) const override;
 
   void AddCaption(const LayoutTableCaption*);
   void RemoveCaption(const LayoutTableCaption*);
@@ -400,13 +424,17 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
   bool IsLogicalWidthAuto() const;
 
-  const char* GetName() const override { return "LayoutTable"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutTable";
+  }
 
   // Whether a table has opaque foreground depends on many factors, e.g. border
   // spacing, missing cells, etc. For simplicity, just conservatively assume
   // foreground of all tables are not opaque.
   bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
                                          unsigned) const override {
+    NOT_DESTROYED();
     return false;
   }
 
@@ -416,28 +444,36 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   bool IsAbsoluteColumnCollapsed(unsigned absolute_column_index) const;
 
   bool IsAnyColumnEverCollapsed() const {
+    NOT_DESTROYED();
     return is_any_column_ever_collapsed_;
   }
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void SimplifiedNormalFlowLayout() override;
 
-  bool RecalcLayoutOverflow() final;
+  RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
   void RecalcVisualOverflow() final;
 
   void EnsureIsReadyForPaintInvalidation() override;
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
-  bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override;
   void ColumnStructureChanged();
 
   // LayoutNGTableInterface methods start.
 
   const LayoutNGTableInterface* ToLayoutNGTableInterface() const final {
+    NOT_DESTROYED();
     return this;
   }
-  const LayoutObject* ToLayoutObject() const final { return this; }
-  LayoutObject* ToMutableLayoutObject() final { return this; }
+  const LayoutObject* ToLayoutObject() const final {
+    NOT_DESTROYED();
+    return this;
+  }
+  LayoutObject* ToMutableLayoutObject() final {
+    NOT_DESTROYED();
+    return this;
+  }
   bool IsFixedTableLayout() const final {
+    NOT_DESTROYED();
     return StyleRef().IsFixedTableLayout();
   }
   LayoutNGTableSectionInterface* FirstBodyInterface() const final;
@@ -454,15 +490,15 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectTable || LayoutBlock::IsOfType(type);
   }
 
   void PaintObject(const PaintInfo&,
                    const PhysicalOffset& paint_offset) const override;
   void UpdateLayout() override;
-  void ComputeIntrinsicLogicalWidths(LayoutUnit& min_width,
-                                     LayoutUnit& max_width) const override;
-  void ComputePreferredLogicalWidths() override;
+  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
+  MinMaxSizes PreferredLogicalWidths() const override;
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
@@ -489,10 +525,9 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutUnit ConvertStyleLogicalHeightToComputedHeight(
       const Length& style_logical_height) const;
 
-  PhysicalRect OverflowClipRect(
-      const PhysicalOffset& location,
-      OverlayScrollbarClipBehavior =
-          kIgnorePlatformOverlayScrollbarSize) const override;
+  PhysicalRect OverflowClipRect(const PhysicalOffset& location,
+                                OverlayScrollbarClipBehavior =
+                                    kIgnoreOverlayScrollbarSize) const override;
 
   void ComputeVisualOverflow(bool recompute_floats) final;
 
@@ -520,7 +555,10 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
 
   void DistributeExtraLogicalHeight(int extra_logical_height);
 
-  void SetIsAnyColumnEverCollapsed() { is_any_column_ever_collapsed_ = true; }
+  void SetIsAnyColumnEverCollapsed() {
+    NOT_DESTROYED();
+    is_any_column_ever_collapsed_ = true;
+  }
 
   // TODO(layout-dev): All mutables in this class are lazily updated by
   // recalcSections() which is called by various getter methods (e.g.
@@ -541,17 +579,17 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   mutable Vector<int> effective_column_positions_;
 
   // The captions associated with this object.
-  mutable Vector<LayoutTableCaption*> captions_;
+  mutable HeapVector<Member<LayoutTableCaption>> captions_;
 
   // Holds pointers to LayoutTableCol objects for <col>s and <colgroup>s under
   // this table.
   // There is no direct relationship between the size of and index into this
   // vector and those of m_effectiveColumns because they hold different things.
-  mutable Vector<LayoutTableCol*> column_layout_objects_;
+  mutable HeapVector<Member<LayoutTableCol>> column_layout_objects_;
 
-  mutable LayoutTableSection* head_;
-  mutable LayoutTableSection* foot_;
-  mutable LayoutTableSection* first_body_;
+  mutable Member<LayoutTableSection> head_;
+  mutable Member<LayoutTableSection> foot_;
+  mutable Member<LayoutTableSection> first_body_;
 
   // The layout algorithm used by this table.
   //
@@ -564,7 +602,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   //
   // As the algorithm is dependent on the style, this field is nullptr before
   // the first style is applied in styleDidChange().
-  std::unique_ptr<TableLayoutAlgorithm> table_layout_;
+  Member<TableLayoutAlgorithm> table_layout_;
 
   // Collapsed borders are SUPER EXPENSIVE to compute. The reason is that we
   // need to compare a cells border against all the adjoining cells, rows,
@@ -575,8 +613,6 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   bool needs_adjust_collapsed_border_joints_ : 1;
   bool needs_invalidate_collapsed_borders_for_all_cells_ : 1;
   mutable bool collapsed_outer_borders_valid_ : 1;
-
-  bool should_paint_all_collapsed_borders_ : 1;
 
   // Whether any column in the table section is or has been collapsed.
   bool is_any_column_ever_collapsed_ : 1;
@@ -594,6 +630,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   mutable bool column_layout_objects_valid_ : 1;
   mutable unsigned no_cell_colspan_at_least_;
   unsigned CalcNoCellColspanAtLeast() const {
+    NOT_DESTROYED();
     for (unsigned c = 0; c < NumEffectiveColumns(); c++) {
       if (effective_columns_[c].span > 1)
         return c;
@@ -602,10 +639,11 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   }
 
   LogicalToPhysical<unsigned> LogicalCollapsedOuterBorderToPhysical() const {
+    NOT_DESTROYED();
     return LogicalToPhysical<unsigned>(
-        StyleRef().GetWritingMode(), StyleRef().Direction(),
-        collapsed_outer_border_start_, collapsed_outer_border_end_,
-        collapsed_outer_border_before_, collapsed_outer_border_after_);
+        StyleRef().GetWritingDirection(), collapsed_outer_border_start_,
+        collapsed_outer_border_end_, collapsed_outer_border_before_,
+        collapsed_outer_border_after_);
   }
 
   int16_t h_spacing_;
@@ -636,7 +674,9 @@ inline LayoutTableSection* LayoutTable::TopSection() const {
 // To<LayoutTable>() helper.
 template <>
 struct DowncastTraits<LayoutTable> {
-  static bool AllowFrom(const LayoutObject& object) { return object.IsTable(); }
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsTable() && !object.IsLayoutNGObject();
+  }
 };
 
 }  // namespace blink

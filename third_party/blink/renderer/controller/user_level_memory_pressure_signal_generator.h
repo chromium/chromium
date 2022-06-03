@@ -31,6 +31,7 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
  public:
   // Returns the shared instance.
   static UserLevelMemoryPressureSignalGenerator& Instance();
+  static bool Enabled();
 
   UserLevelMemoryPressureSignalGenerator();
   ~UserLevelMemoryPressureSignalGenerator() override;
@@ -55,7 +56,6 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   // MemoryUsageMonitor::Observer:
   void OnMemoryPing(MemoryUsage) override;
 
-  bool monitoring_ = false;
   bool is_loading_ = false;
   base::TimeTicks last_generated_;
   double memory_threshold_mb_;

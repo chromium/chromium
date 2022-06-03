@@ -125,13 +125,14 @@ void AudioFocusRequest::ReleaseTransientHold() {
     return;
 
   was_suspended_ = false;
-  session_->Resume(mojom::MediaSession::SuspendType::kSystem);
 
-  if (!delayed_action_)
+  if (delayed_action_) {
+    PerformUIAction(*delayed_action_);
+    delayed_action_.reset();
     return;
+  }
 
-  PerformUIAction(*delayed_action_);
-  delayed_action_.reset();
+  session_->Resume(mojom::MediaSession::SuspendType::kSystem);
 }
 
 void AudioFocusRequest::PerformUIAction(mojom::MediaSessionAction action) {

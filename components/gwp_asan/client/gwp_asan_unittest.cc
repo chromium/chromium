@@ -10,17 +10,17 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gwp_asan {
 namespace internal {
 
-base::Optional<AllocatorSettings> GetAllocatorSettings(
+absl::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
     bool boost_sampling);
 

@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/installer/util/work_item.h"
@@ -34,7 +34,7 @@ class MoveTreeWorkItemTest : public testing::Test {
 void CreateTextFile(const std::wstring& filename,
                     const std::wstring& contents) {
   std::wofstream file;
-  file.open(base::UTF16ToASCII(filename).c_str());
+  file.open(base::WideToASCII(filename).c_str());
   ASSERT_TRUE(file.is_open());
   file << contents;
   file.close();
@@ -44,7 +44,7 @@ void CreateTextFile(const std::wstring& filename,
 std::wstring ReadTextFile(const base::FilePath& path) {
   WCHAR contents[64];
   std::wifstream file;
-  file.open(base::UTF16ToASCII(path.value()).c_str());
+  file.open(base::WideToASCII(path.value()).c_str());
   EXPECT_TRUE(file.is_open());
   file.getline(contents, base::size(contents));
   file.close();
@@ -261,7 +261,7 @@ TEST_F(MoveTreeWorkItemTest, MoveFileDestInUse) {
   ASSERT_TRUE(base::PathExists(to_dir));
 
   wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(NULL, exe_full_path_str, MAX_PATH);
+  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
   base::FilePath exe_full_path(exe_full_path_str);
   base::FilePath to_file(to_dir);
   to_file = to_file.AppendASCII("To_File");
@@ -271,11 +271,9 @@ TEST_F(MoveTreeWorkItemTest, MoveFileDestInUse) {
   // Run the executable in destination path
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
-  ASSERT_TRUE(::CreateProcess(NULL,
-                              const_cast<wchar_t*>(to_file.value().c_str()),
-                              NULL, NULL, FALSE,
-                              CREATE_NO_WINDOW | CREATE_SUSPENDED,
-                              NULL, NULL, &si, &pi));
+  ASSERT_TRUE(::CreateProcess(
+      nullptr, const_cast<wchar_t*>(to_file.value().c_str()), nullptr, nullptr,
+      FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr, &si, &pi));
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(
@@ -310,7 +308,7 @@ TEST_F(MoveTreeWorkItemTest, MoveFileInUse) {
   ASSERT_TRUE(base::PathExists(from_dir));
 
   wchar_t exe_full_path_str[MAX_PATH];
-  ::GetModuleFileName(NULL, exe_full_path_str, MAX_PATH);
+  ::GetModuleFileName(nullptr, exe_full_path_str, MAX_PATH);
   base::FilePath exe_full_path(exe_full_path_str);
   base::FilePath from_file(from_dir);
   from_file = from_file.AppendASCII("From_File");
@@ -331,11 +329,10 @@ TEST_F(MoveTreeWorkItemTest, MoveFileInUse) {
   // Run the executable in source path
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
-  ASSERT_TRUE(::CreateProcess(NULL,
-                              const_cast<wchar_t*>(from_file.value().c_str()),
-                              NULL, NULL, FALSE,
-                              CREATE_NO_WINDOW | CREATE_SUSPENDED,
-                              NULL, NULL, &si, &pi));
+  ASSERT_TRUE(::CreateProcess(
+      nullptr, const_cast<wchar_t*>(from_file.value().c_str()), nullptr,
+      nullptr, FALSE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr,
+      &si, &pi));
 
   // test Do()
   std::unique_ptr<MoveTreeWorkItem> work_item(WorkItem::CreateMoveTreeWorkItem(

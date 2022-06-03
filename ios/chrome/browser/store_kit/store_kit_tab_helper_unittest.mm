@@ -15,10 +15,11 @@
 class StoreKitTabHelperTest : public web::WebTestWithWebState {
  public:
   StoreKitTabHelperTest() = default;
-  ~StoreKitTabHelperTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(StoreKitTabHelperTest);
+  StoreKitTabHelperTest(const StoreKitTabHelperTest&) = delete;
+  StoreKitTabHelperTest& operator=(const StoreKitTabHelperTest&) = delete;
+
+  ~StoreKitTabHelperTest() override = default;
 };
 
 TEST_F(StoreKitTabHelperTest, Constructor) {

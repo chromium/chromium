@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_BHO_BHO_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_BHO_BHO_H_
 
-#include "base/win/atl.h"
+#include "chrome/browser/browser_switcher/bho/atl.h"
 
 #include <exdispid.h>  // NOLINT(build/include_order)
 #include <shlguid.h>   // NOLINT(build/include_order)

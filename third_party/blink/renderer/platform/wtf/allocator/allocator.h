@@ -7,9 +7,26 @@
 
 #include <atomic>
 
+#include "base/allocator/buildflags.h"
+#include "base/check_op.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !defined(OS_APPLE)
+// FastMalloc() defers to malloc() in this case, and including its header
+// ensures that the compiler knows that malloc() is "special", e.g. that it
+// returns properly-aligned, distinct memory locations.
+#include <malloc.h>
+#elif defined(OS_APPLE)
+// malloc.h doesn't exist on Apple OSes (it's in malloc/malloc.h), but the
+// definitions we want are actually in stdlib.h.
+#include <stdlib.h>
+#endif  // defined(OS_APPLE)
+#else
+#include "base/allocator/partition_allocator/partition_alloc.h"
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace WTF {
 
@@ -25,10 +42,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 // non-garbage-collected objects to avoid unintended allocations.
 //
 // STACK_ALLOCATED(): Use if the object is only stack allocated.
-// Garbage-collected objects should be in Members but you do not need the
-// trace method as they are on the stack.  (Down the line these might turn
-// in to raw pointers, but for now Members indicate that we have thought
-// about them and explicitly taken care of them.)
+// Garbage-collected objects should be in raw pointers.
 //
 // DISALLOW_NEW(): Cannot be allocated with new operators but can be a
 // part of object, a value object in collections or stack allocated. If it has
@@ -54,22 +68,6 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   void* operator new(size_t) = delete;                    \
   void* operator new(size_t, NotNullTag, void*) = delete; \
   void* operator new(size_t, void*) = delete
-
-#define IS_GARBAGE_COLLECTED_TYPE()         \
- public:                                    \
-  using IsGarbageCollectedTypeMarker = int; \
-                                            \
- private:                                   \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
-
-#define IS_GARBAGE_COLLECTED_CONTAINER_TYPE()         \
-  IS_GARBAGE_COLLECTED_TYPE();                        \
-                                                      \
- public:                                              \
-  using IsGarbageCollectedCollectionTypeMarker = int; \
-                                                      \
- private:                                             \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 #if defined(__clang__)
 #define ANNOTATE_STACK_ALLOCATED \
@@ -106,6 +104,58 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 //    };
 //
 
+// In official builds, do not include type info string literals to avoid
+// bloating the binary.
+#if defined(OFFICIAL_BUILD)
+#define WTF_HEAP_PROFILER_TYPE_NAME(T) nullptr
+#else
+#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::WTF::GetStringWithTypeName<T>()
+#endif
+
+// Both of these macros enable fast malloc and provide type info to the heap
+// profiler. The regular macro does not provide type info in official builds,
+// to avoid bloating the binary with type name strings. The |WITH_TYPE_NAME|
+// variant provides type info unconditionally, so it should be used sparingly.
+// Furthermore, the |WITH_TYPE_NAME| variant does not work if |type| is a
+// template argument; |USING_FAST_MALLOC| does.
+#define USING_FAST_MALLOC(type) \
+  USING_FAST_MALLOC_INTERNAL(type, WTF_HEAP_PROFILER_TYPE_NAME(type))
+#define USING_FAST_MALLOC_WITH_TYPE_NAME(type) \
+  USING_FAST_MALLOC_INTERNAL(type, #type)
+
+// FastMalloc doesn't provide isolation, only a (hopefully fast) malloc(). When
+// PartitionAlloc is already the malloc() implementation, there is nothing to
+// do.
+//
+// Note that we could keep the two heaps separate, but each PartitionAlloc's
+// root has a cost, both in used memory and in virtual address space. Don't pay
+// it when we don't have to.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// Still using operator overaloading to be closer to the other case, and not
+// require code changes to DISALLOW_NEW() objects.
+#define USING_FAST_MALLOC_INTERNAL(type, typeName)           \
+ public:                                                     \
+  void* operator new(size_t, void* p) { return p; }          \
+  void* operator new[](size_t, void* p) { return p; }        \
+                                                             \
+  void* operator new(size_t size) { return malloc(size); }   \
+                                                             \
+  void operator delete(void* p) { free(p); }                 \
+                                                             \
+  void* operator new[](size_t size) { return malloc(size); } \
+                                                             \
+  void operator delete[](void* p) { free(p); }               \
+  void* operator new(size_t, NotNullTag, void* location) {   \
+    DCHECK(location);                                        \
+    return location;                                         \
+  }                                                          \
+                                                             \
+ private:                                                    \
+  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+
+#else
+
 #define USING_FAST_MALLOC_INTERNAL(type, typeName)                    \
  public:                                                              \
   void* operator new(size_t, void* p) { return p; }                   \
@@ -130,24 +180,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
  private:                                                             \
   friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
-// In official builds, do not include type info string literals to avoid
-// bloating the binary.
-#if defined(OFFICIAL_BUILD)
-#define WTF_HEAP_PROFILER_TYPE_NAME(T) nullptr
-#else
-#define WTF_HEAP_PROFILER_TYPE_NAME(T) ::WTF::GetStringWithTypeName<T>()
-#endif
-
-// Both of these macros enable fast malloc and provide type info to the heap
-// profiler. The regular macro does not provide type info in official builds,
-// to avoid bloating the binary with type name strings. The |WITH_TYPE_NAME|
-// variant provides type info unconditionally, so it should be used sparingly.
-// Furthermore, the |WITH_TYPE_NAME| variant does not work if |type| is a
-// template argument; |USING_FAST_MALLOC| does.
-#define USING_FAST_MALLOC(type) \
-  USING_FAST_MALLOC_INTERNAL(type, WTF_HEAP_PROFILER_TYPE_NAME(type))
-#define USING_FAST_MALLOC_WITH_TYPE_NAME(type) \
-  USING_FAST_MALLOC_INTERNAL(type, #type)
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // TOOD(omerkatz): replace these casts with std::atomic_ref (C++20) once it
 // becomes available
@@ -160,29 +193,201 @@ ALWAYS_INLINE const std::atomic<T>* AsAtomicPtr(const T* t) {
   return reinterpret_cast<const std::atomic<T>*>(t);
 }
 
+// Copies |bytes| bytes from |from| to |to| using atomic reads. Assumes |to|
+// and |from| are size_t-aligned and point to buffers of size |bytes|. Note
+// that atomicity is guaranteed only per word, not for the entire |bytes|
+// bytes as a whole. When copying arrays of elements, If |to| and |from|
+// are overlapping, should move the elements one by one.
+WTF_EXPORT void AtomicReadMemcpy(void* to, const void* from, size_t bytes);
+template <size_t bytes>
+ALWAYS_INLINE void AtomicReadMemcpy(void* to, const void* from) {
+  static_assert(bytes > 0, "Number of copied bytes should be greater than 0");
+  AtomicReadMemcpy(to, from, bytes);
+}
+
+// AtomicReadMemcpy specializations:
+
+#if defined(ARCH_CPU_X86_64)
+template <>
+ALWAYS_INLINE void AtomicReadMemcpy<sizeof(uint32_t)>(void* to,
+                                                      const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(uint32_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(uint32_t) - 1));
+  *reinterpret_cast<uint32_t*>(to) =
+      AsAtomicPtr(reinterpret_cast<const uint32_t*>(from))
+          ->load(std::memory_order_relaxed);
+}
+#endif  // ARCH_CPU_X86_64
+
+template <>
+ALWAYS_INLINE void AtomicReadMemcpy<sizeof(size_t)>(void* to,
+                                                    const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
+  *reinterpret_cast<size_t*>(to) =
+      AsAtomicPtr(reinterpret_cast<const size_t*>(from))
+          ->load(std::memory_order_relaxed);
+}
+
+template <>
+ALWAYS_INLINE void AtomicReadMemcpy<2 * sizeof(size_t)>(void* to,
+                                                        const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
+  *reinterpret_cast<size_t*>(to) =
+      AsAtomicPtr(reinterpret_cast<const size_t*>(from))
+          ->load(std::memory_order_relaxed);
+  *(reinterpret_cast<size_t*>(to) + 1) =
+      AsAtomicPtr(reinterpret_cast<const size_t*>(from) + 1)
+          ->load(std::memory_order_relaxed);
+}
+
+template <>
+ALWAYS_INLINE void AtomicReadMemcpy<3 * sizeof(size_t)>(void* to,
+                                                        const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
+  *reinterpret_cast<size_t*>(to) =
+      AsAtomicPtr(reinterpret_cast<const size_t*>(from))
+          ->load(std::memory_order_relaxed);
+  *(reinterpret_cast<size_t*>(to) + 1) =
+      AsAtomicPtr(reinterpret_cast<const size_t*>(from) + 1)
+          ->load(std::memory_order_relaxed);
+  *(reinterpret_cast<size_t*>(to) + 2) =
+      AsAtomicPtr(reinterpret_cast<const size_t*>(from) + 2)
+          ->load(std::memory_order_relaxed);
+}
+
+// Copies |bytes| bytes from |from| to |to| using atomic writes. Assumes |to|
+// and |from| are size_t-aligned and point to buffers of size |bytes|. Note
+// that atomicity is guaranteed only per word, not for the entire |bytes|
+// bytes as a whole. When copying arrays of elements, If |to| and |from| are
+// overlapping, should move the elements one by one.
+WTF_EXPORT void AtomicWriteMemcpy(void* to, const void* from, size_t bytes);
+template <size_t bytes>
+ALWAYS_INLINE void AtomicWriteMemcpy(void* to, const void* from) {
+  static_assert(bytes > 0, "Number of copied bytes should be greater than 0");
+  AtomicWriteMemcpy(to, from, bytes);
+}
+
+// AtomicReadMemcpy specializations:
+
+#if defined(ARCH_CPU_X86_64)
+template <>
+ALWAYS_INLINE void AtomicWriteMemcpy<sizeof(uint32_t)>(void* to,
+                                                       const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(uint32_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(uint32_t) - 1));
+  AsAtomicPtr(reinterpret_cast<uint32_t*>(to))
+      ->store(*reinterpret_cast<const uint32_t*>(from),
+              std::memory_order_relaxed);
+}
+#endif  // ARCH_CPU_X86_64
+
+template <>
+ALWAYS_INLINE void AtomicWriteMemcpy<sizeof(size_t)>(void* to,
+                                                     const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
+  AsAtomicPtr(reinterpret_cast<size_t*>(to))
+      ->store(*reinterpret_cast<const size_t*>(from),
+              std::memory_order_relaxed);
+}
+
+template <>
+ALWAYS_INLINE void AtomicWriteMemcpy<2 * sizeof(size_t)>(void* to,
+                                                         const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
+  AsAtomicPtr(reinterpret_cast<size_t*>(to))
+      ->store(*reinterpret_cast<const size_t*>(from),
+              std::memory_order_relaxed);
+  AsAtomicPtr(reinterpret_cast<size_t*>(to) + 1)
+      ->store(*(reinterpret_cast<const size_t*>(from) + 1),
+              std::memory_order_relaxed);
+}
+
+template <>
+ALWAYS_INLINE void AtomicWriteMemcpy<3 * sizeof(size_t)>(void* to,
+                                                         const void* from) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1));
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1));
+  AsAtomicPtr(reinterpret_cast<size_t*>(to))
+      ->store(*reinterpret_cast<const size_t*>(from),
+              std::memory_order_relaxed);
+  AsAtomicPtr(reinterpret_cast<size_t*>(to) + 1)
+      ->store(*(reinterpret_cast<const size_t*>(from) + 1),
+              std::memory_order_relaxed);
+  AsAtomicPtr(reinterpret_cast<size_t*>(to) + 2)
+      ->store(*(reinterpret_cast<const size_t*>(from) + 2),
+              std::memory_order_relaxed);
+}
+
+// Set the first |bytes| bytes of |buf| to 0 using atomic writes. Assumes |buf|
+// is size_t-aligned and points to a buffer of size at least |bytes|. Note
+// that atomicity is guaranteed only per word, not for the entire |bytes| bytes
+// as a whole.
+WTF_EXPORT void AtomicMemzero(void* buf, size_t bytes);
+
+template <size_t bytes>
+ALWAYS_INLINE void AtomicMemzero(void* buf) {
+  static_assert(bytes > 0, "Number of copied bytes should be greater than 0");
+  AtomicMemzero(buf, bytes);
+}
+
+// AtomicReadMemcpy specializations:
+
+#if defined(ARCH_CPU_X86_64)
+template <>
+ALWAYS_INLINE void AtomicMemzero<sizeof(uint32_t)>(void* buf) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(buf) & (sizeof(uint32_t) - 1));
+  AsAtomicPtr(reinterpret_cast<uint32_t*>(buf))
+      ->store(0, std::memory_order_relaxed);
+}
+#endif  // ARCH_CPU_X86_64
+
+template <>
+ALWAYS_INLINE void AtomicMemzero<sizeof(size_t)>(void* buf) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1));
+  AsAtomicPtr(reinterpret_cast<size_t*>(buf))
+      ->store(0, std::memory_order_relaxed);
+}
+
+template <>
+ALWAYS_INLINE void AtomicMemzero<2 * sizeof(size_t)>(void* buf) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1));
+  AsAtomicPtr(reinterpret_cast<size_t*>(buf))
+      ->store(0, std::memory_order_relaxed);
+  AsAtomicPtr(reinterpret_cast<size_t*>(buf) + 1)
+      ->store(0, std::memory_order_relaxed);
+}
+
+template <>
+ALWAYS_INLINE void AtomicMemzero<3 * sizeof(size_t)>(void* buf) {
+  DCHECK_EQ(0u, reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1));
+  AsAtomicPtr(reinterpret_cast<size_t*>(buf))
+      ->store(0, std::memory_order_relaxed);
+  AsAtomicPtr(reinterpret_cast<size_t*>(buf) + 1)
+      ->store(0, std::memory_order_relaxed);
+  AsAtomicPtr(reinterpret_cast<size_t*>(buf) + 2)
+      ->store(0, std::memory_order_relaxed);
+}
+
+// Swaps values using atomic writes.
+template <typename T>
+ALWAYS_INLINE void AtomicWriteSwap(T& lhs, T& rhs) {
+  T tmp_val = rhs;
+  AsAtomicPtr(&rhs)->store(lhs, std::memory_order_relaxed);
+  AsAtomicPtr(&lhs)->store(tmp_val, std::memory_order_relaxed);
+}
+
 }  // namespace WTF
 
 // This version of placement new omits a 0 check.
-enum NotNullTag { NotNull };
+enum class NotNullTag { kNotNull };
 inline void* operator new(size_t, NotNullTag, void* location) {
   DCHECK(location);
   return location;
 }
 
-#if defined(__clang__) && __has_attribute(uninitialized)
-// Attribute "uninitialized" disables -ftrivial-auto-var-init=pattern for
-// the specified variable.
-//
-// -ftrivial-auto-var-init is security risk mitigation feature, so attribute
-// should not be used "just in case", but only to fix real performance
-// bottlenecks when other approaches do not work. In general the compiler is
-// quite effective at eliminating unneeded initializations introduced by the
-// flag, e.g. when they are followed by actual initialization by a program.
-// However if compiler optimization fails and code refactoring is hard, the
-// attribute can be used as a workaround.
-#define STACK_UNINITIALIZED __attribute__((uninitialized))
-#else
-#define STACK_UNINITIALIZED
-#endif
-
-#endif /* WTF_Allocator_h */
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_ALLOCATOR_H_

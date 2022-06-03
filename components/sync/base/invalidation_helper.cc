@@ -6,32 +6,21 @@
 
 #include <string>
 
-#include "google/cacheinvalidation/types.pb.h"
+#include "base/logging.h"
 
 namespace syncer {
 
-bool RealModelTypeToObjectId(ModelType model_type,
-                             invalidation::ObjectId* object_id) {
-  std::string notification_type;
-  if (!RealModelTypeToNotificationType(model_type, &notification_type)) {
-    return false;
-  }
-  object_id->Init(ipc::invalidation::ObjectSource::CHROME_SYNC,
-                  notification_type);
-  return true;
-}
-
-ObjectIdSet ModelTypeSetToObjectIdSet(ModelTypeSet model_types) {
-  ObjectIdSet ids;
+invalidation::TopicSet ModelTypeSetToTopicSet(ModelTypeSet model_types) {
+  invalidation::TopicSet topics;
   for (ModelType type : model_types) {
-    invalidation::ObjectId model_type_as_id;
-    if (!RealModelTypeToObjectId(type, &model_type_as_id)) {
+    invalidation::Topic topic;
+    if (!RealModelTypeToNotificationType(type, &topic)) {
       DLOG(WARNING) << "Invalid model type " << type;
       continue;
     }
-    ids.insert(model_type_as_id);
+    topics.insert(topic);
   }
-  return ids;
+  return topics;
 }
 
 }  // namespace syncer

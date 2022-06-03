@@ -27,7 +27,7 @@ const AtomicString& HIDInputReportEvent::InterfaceName() const {
   return event_interface_names::kHIDInputReportEvent;
 }
 
-void HIDInputReportEvent::Trace(blink::Visitor* visitor) {
+void HIDInputReportEvent::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(data_);
   Event::Trace(visitor);

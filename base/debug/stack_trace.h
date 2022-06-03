@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX)
@@ -84,10 +83,16 @@ class BASE_EXPORT StackTrace {
   StackTrace(const _CONTEXT* context);
 #endif
 
+  // Returns true if this current test environment is expected to have
+  // symbolized frames when printing a stack trace.
+  static bool WillSymbolizeToStreamForTesting();
+
   // Copying and assignment are allowed with the default functions.
 
   // Gets an array of instruction pointer values. |*count| will be set to the
-  // number of elements in the returned array.
+  // number of elements in the returned array. Addresses()[0] will contain an
+  // address from the leaf function, and Addresses()[count-1] will contain an
+  // address from the root function (i.e.; the thread's entry point).
   const void* const* Addresses(size_t* count) const;
 
   // Prints the stack trace to stderr.
@@ -97,7 +102,7 @@ class BASE_EXPORT StackTrace {
   // each output line.
   void PrintWithPrefix(const char* prefix_string) const;
 
-#if !defined(__UCLIBC__) & !defined(_AIX)
+#if !defined(__UCLIBC__) && !defined(_AIX)
   // Resolves backtrace to symbols and write to stream.
   void OutputToStream(std::ostream* os) const;
   // Resolves backtrace to symbols and write to stream, with the provided
@@ -142,6 +147,20 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, const StackTrace& s);
 BASE_EXPORT size_t CollectStackTrace(void** trace, size_t count);
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+
+// For stack scanning to be efficient it's very important for the thread to
+// be started by Chrome. In that case we naturally terminate unwinding once
+// we reach the origin of the stack (i.e. GetStackEnd()). If the thread is
+// not started by Chrome (e.g. Android's main thread), then we end up always
+// scanning area at the origin of the stack, wasting time and not finding any
+// frames (since Android libraries don't have frame pointers). Scanning is not
+// enabled on other posix platforms due to legacy reasons.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+constexpr bool kEnableScanningByDefault = true;
+#else
+constexpr bool kEnableScanningByDefault = false;
+#endif
+
 // Traces the stack by using frame pointers. This function is faster but less
 // reliable than StackTrace. It should work for debug and profiling builds,
 // but not for release builds (although there are some exceptions).
@@ -149,10 +168,25 @@ BASE_EXPORT size_t CollectStackTrace(void** trace, size_t count);
 // Writes at most |max_depth| frames (instruction pointers) into |out_trace|
 // after skipping |skip_initial| frames. Note that the function itself is not
 // added to the trace so |skip_initial| should be 0 in most cases.
-// Returns number of frames written.
-BASE_EXPORT size_t TraceStackFramePointers(const void** out_trace,
-                                           size_t max_depth,
-                                           size_t skip_initial);
+// Returns number of frames written. |enable_scanning| enables scanning on
+// platforms that do not enable scanning by default.
+BASE_EXPORT size_t
+TraceStackFramePointers(const void** out_trace,
+                        size_t max_depth,
+                        size_t skip_initial,
+                        bool enable_scanning = kEnableScanningByDefault);
+
+// Same as above function, but allows to pass in frame pointer and stack end
+// address for unwinding. This is useful when unwinding based on a copied stack
+// segment. Note that the client has to take care of rewriting all the pointers
+// in the stack pointing within the stack to point to the copied addresses.
+BASE_EXPORT size_t TraceStackFramePointersFromBuffer(
+    uintptr_t fp,
+    uintptr_t stack_end,
+    const void** out_trace,
+    size_t max_depth,
+    size_t skip_initial,
+    bool enable_scanning = kEnableScanningByDefault);
 
 // Links stack frame |fp| to |parent_fp|, so that during stack unwinding
 // TraceStackFramePointers() visits |parent_fp| after visiting |fp|.
@@ -194,14 +228,16 @@ BASE_EXPORT size_t TraceStackFramePointers(const void** out_trace,
 class BASE_EXPORT ScopedStackFrameLinker {
  public:
   ScopedStackFrameLinker(void* fp, void* parent_fp);
+
+  ScopedStackFrameLinker(const ScopedStackFrameLinker&) = delete;
+  ScopedStackFrameLinker& operator=(const ScopedStackFrameLinker&) = delete;
+
   ~ScopedStackFrameLinker();
 
  private:
   void* fp_;
   void* parent_fp_;
   void* original_parent_fp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStackFrameLinker);
 };
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)

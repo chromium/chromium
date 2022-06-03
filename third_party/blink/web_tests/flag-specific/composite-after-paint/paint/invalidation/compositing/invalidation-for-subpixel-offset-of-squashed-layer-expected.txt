@@ -16,14 +16,11 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "position": [50, 50],
-      "bounds": [251, 251],
-      "backgroundColor": "#ADD8E6",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='target'",
-          "rect": [50, 50, 201, 201],
-          "reason": "background"
-        }
+      "bounds": [250, 250],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF0000",
+      "invalidations": [
+        [50, 50, 200, 200]
       ]
     }
   ],

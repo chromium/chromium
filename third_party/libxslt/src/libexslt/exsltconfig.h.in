@@ -18,7 +18,7 @@ extern "C" {
  *
  * the version string like "1.2.3"
  */
-#define LIBEXSLT_DOTTED_VERSION "@VERSION@"
+#define LIBEXSLT_DOTTED_VERSION "@LIBEXSLT_VERSION@"
 
 /**
  * LIBEXSLT_VERSION:

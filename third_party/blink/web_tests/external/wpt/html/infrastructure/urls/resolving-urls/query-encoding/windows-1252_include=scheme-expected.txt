@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+PASS Scheme ftp (getting <a>.href)
+PASS Scheme file (getting <a>.href)
+FAIL Scheme gopher (getting <a>.href) assert_true: expected substring %E5 got gopher://example.invalid/?x=%C3%A5 expected true got false
+PASS Scheme http (getting <a>.href)
+PASS Scheme https (getting <a>.href)
+FAIL Scheme ws (getting <a>.href) assert_true: expected substring %C3%A5 got ws://example.invalid/?x=%E5 expected true got false
+FAIL Scheme wss (getting <a>.href) assert_true: expected substring %C3%A5 got wss://example.invalid/?x=%E5 expected true got false
+PASS Scheme mailto (getting <a>.href)
+PASS Scheme data (getting <a>.href)
+PASS Scheme javascript (getting <a>.href)
+PASS Scheme ftps (getting <a>.href)
+PASS Scheme httpbogus (getting <a>.href)
+PASS Scheme bitcoin (getting <a>.href)
+PASS Scheme geo (getting <a>.href)
+PASS Scheme im (getting <a>.href)
+PASS Scheme irc (getting <a>.href)
+PASS Scheme ircs (getting <a>.href)
+PASS Scheme magnet (getting <a>.href)
+PASS Scheme mms (getting <a>.href)
+PASS Scheme news (getting <a>.href)
+PASS Scheme nntp (getting <a>.href)
+PASS Scheme sip (getting <a>.href)
+PASS Scheme sms (getting <a>.href)
+PASS Scheme smsto (getting <a>.href)
+PASS Scheme ssh (getting <a>.href)
+PASS Scheme tel (getting <a>.href)
+PASS Scheme urn (getting <a>.href)
+PASS Scheme webcal (getting <a>.href)
+PASS Scheme wtai (getting <a>.href)
+PASS Scheme xmpp (getting <a>.href)
+PASS Scheme web+http (getting <a>.href)
+Harness: the test ran to completion.
+

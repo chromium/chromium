@@ -6,23 +6,22 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 #include "url/gurl.h"
 
 namespace password_manager {
 
-using ::autofill::PasswordForm;
-
 namespace {
 
 // Convert() unescapes a CSV field |str| and converts the result to a 16-bit
 // string. |str| is assumed to exclude the outer pair of quotation marks, if
 // originally present.
-base::string16 Convert(base::StringPiece str) {
+std::u16string Convert(base::StringPiece str) {
   std::string str_copy(str);
   base::ReplaceSubstringsAfterOffset(&str_copy, 0, "\"\"", "\"");
   return base::UTF8ToUTF16(str_copy);
@@ -102,10 +101,12 @@ CSVPassword::Status CSVPassword::ParseImpl(PasswordForm* form) const {
   // regular and Android credentials.
   form->signon_realm = IsValidAndroidFacetURI(origin.spec())
                            ? origin.spec()
-                           : origin.GetOrigin().spec();
-  form->origin = std::move(origin);
+                           : origin.DeprecatedGetOriginAsURL().spec();
+  form->url = std::move(origin);
   form->username_value = Convert(username);
   form->password_value = Convert(password);
+  form->date_created = base::Time::Now();
+  form->date_password_modified = form->date_created;
   return Status::kOK;
 }
 

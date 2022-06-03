@@ -1,0 +1,40 @@
+# The network. There should be at least one. Hosts in the same network can
+# talk to each other without any restrictions.
+network {
+  name: "primary"
+}
+
+# An ActiveDirectory domain.
+ad_domain {
+  name: "webprotect.com"
+  netbios_name: "webprotect"
+
+  # The domain controller of this AD Domain.
+  domain_controller {
+    windows_machine: "win2016-dc"
+  }
+}
+
+# A Windows machine as the domain conroller of test1.com
+windows_machine {
+  name: "win2016-dc"
+  machine_type: "win2016"
+  network_interface { network: "primary" }
+}
+
+# Multiple client machines that will join the domain,
+# and each one will be used for E2E test case
+windows_machine {
+  name: "webprotect-1"
+  machine_type: "win2016"
+  network_interface { network: "primary" }
+  container { ad_domain: "webprotect.com" }
+}
+
+windows_machine {
+  name: "webprotect-2"
+  machine_type: "win2016"
+  network_interface { network: "primary" }
+  container { ad_domain: "webprotect.com" }
+}
+

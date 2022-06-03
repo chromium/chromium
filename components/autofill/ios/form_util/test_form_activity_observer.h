@@ -31,9 +31,20 @@ struct TestFormActivityInfo {
   FormActivityParams form_activity;
 };
 
+// Arguments passed to |FormRemovalRegistered|.
+struct TestFormRemovalInfo {
+  web::WebState* web_state = nullptr;
+  web::WebFrame* sender_frame = nullptr;
+  FormRemovalParams form_removal_params;
+};
+
 class TestFormActivityObserver : public autofill::FormActivityObserver {
  public:
   explicit TestFormActivityObserver(web::WebState* web_state);
+
+  TestFormActivityObserver(const TestFormActivityObserver&) = delete;
+  TestFormActivityObserver& operator=(const TestFormActivityObserver&) = delete;
+
   ~TestFormActivityObserver() override;
 
   // Arguments passed to |DocumentSubmitted|.
@@ -41,6 +52,9 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
 
   // Arguments passed to |FormActivityRegistered|.
   TestFormActivityInfo* form_activity_info();
+
+  // Arguments passed to |FormRemoved|.
+  TestFormRemovalInfo* form_removal_info();
 
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
@@ -53,12 +67,15 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
                               web::WebFrame* sender_frame,
                               const FormActivityParams& params) override;
 
+  void FormRemoved(web::WebState* web_state,
+                   web::WebFrame* sender_frame,
+                   const FormRemovalParams& params) override;
+
  private:
   web::WebState* web_state_ = nullptr;
   std::unique_ptr<TestSubmitDocumentInfo> submit_document_info_;
   std::unique_ptr<TestFormActivityInfo> form_activity_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFormActivityObserver);
+  std::unique_ptr<TestFormRemovalInfo> form_removal_info_;
 };
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_IOS_FORM_UTIL_TEST_FORM_ACTIVITY_OBSERVER_H_

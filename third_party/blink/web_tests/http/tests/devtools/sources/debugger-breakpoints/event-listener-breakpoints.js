@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests event listener breakpoints.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" id="test">
@@ -84,8 +84,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('addListenerAndClick()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:click', false);
         SourcesTestRunner.resumeExecution(resumed);
@@ -101,8 +101,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('addListenerAndAuxclick()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:auxclick', false);
         SourcesTestRunner.resumeExecution(resumed);
@@ -118,8 +118,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPage('setTimeout(timerFired, 10)');
 
-      function paused(callFrames) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         SourcesTestRunner.setEventListenerBreakpoint('instrumentation:setTimeout.callback', false);
         SourcesTestRunner.resumeExecution(next);
       }
@@ -131,8 +131,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('addLoadListeners()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:load', false, 'xmlhttprequest');
         SourcesTestRunner.setEventListenerBreakpoint('listener:error', false, 'xmlhttprequest');
@@ -149,8 +149,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('playVideo()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:play', false, 'audio');
         SourcesTestRunner.resumeExecution(next);
@@ -164,8 +164,8 @@
       SourcesTestRunner.waitUntilPaused(paused);
       TestRunner.evaluateInPageWithTimeout('addListenerAndPointerDown()');
 
-      function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function paused(callFrames, reason, breakpointIds, asyncStackTrace, auxData) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         printEventTargetName(auxData);
         SourcesTestRunner.setEventListenerBreakpoint('listener:pointerdown', false);
         SourcesTestRunner.resumeExecution(resumed);

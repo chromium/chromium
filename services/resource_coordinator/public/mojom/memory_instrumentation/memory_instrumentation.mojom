@@ -119,6 +119,7 @@ struct VmRegion {
   uint64 byte_stats_shared_clean_resident;
 
   uint64 byte_stats_swapped;
+  uint64 byte_locked;
 
   // For multiprocess accounting.
   uint64 byte_stats_proportional_resident;
@@ -193,6 +194,10 @@ struct AllocatorMemDump {
   // The entries for the allocator which are of scalar types (i.e. not strings).
   // Examples include: effective_size, size, object_count.
   map<string, uint64> numeric_entries;
+
+  // If details were requested for this allocator to include descendants then
+  // |children| describes the immediate child nodes.
+  map<string, AllocatorMemDump> children;
 };
 
 // This struct is used for the public-facing API
@@ -201,8 +206,8 @@ struct ProcessMemoryDump {
   ProcessType process_type;
   OSMemDump os_dump;
 
-  // The chrome allocator dumps specified by the input args.
-  // (See GlobalRequestArgs.allocator_dump_names).
+  // Details for each of the Chrome allocators specified by the input args.
+  // See the |RequestGlobalMemoryDump()| argument |allocator_dump_names|.
   map<string, AllocatorMemDump> chrome_allocator_dumps;
 
   // |pid| is necessary to correlate a ProcessMemoryDump with the URLs for the
@@ -285,7 +290,9 @@ interface HeapProfiler {
   // |strip_path_from_mapped_files| should only be true for traces that will be
   // uploaded to the crash servers - this strips potential PII, but prevents
   // symbolization of local builds.
-  DumpProcessesForTracing(bool strip_path_from_mapped_files) =>
+  // |write_proto| will additionally write proto heap profiles to traces.
+  DumpProcessesForTracing(bool strip_path_from_mapped_files,
+                          bool write_proto) =>
       (array<HeapProfileResult> results);
 };
 
@@ -303,13 +310,17 @@ interface HeapProfilerHelper {
 // processes and polls them whenever a global dump is required.
 interface Coordinator {
   // Broadcasts a dump request to all registered client processes and returns a
-  // global dump which includes allocator dumps specified in |allocator_dump_names|.
-  // For example, given an allocator dump name such as "malloc" or "cc/resource_memory",
-  // this method returns all information corresponding to this name including numeric
-  // entries which contain fields such as "size" and "effective_size".
+  // global dump with details.
+  // If |dump_type| is SUMMARY_ONLY then details will additionally be returned
+  // for allocators listed in |allocator_dump_names|. If an entry has a trailing
+  // "/*" then details will be returned for the named node, and all descendents.
+  // e.g. { "malloc", "v8/*" } will include details for "malloc", and might
+  // also include "v8", "v8/main/heap", etc.
+  // Allocator dumps provide a set of numeric values such as "size",
+  // "effective_size", etc.
   RequestGlobalMemoryDump(DumpType dump_type,
                           LevelOfDetail level_of_detail,
-                          Determinism determinsm,
+                          Determinism determinism,
                           array<string> allocator_dump_names) =>
       (bool success, GlobalMemoryDump? global_memory_dump);
 
@@ -333,28 +344,12 @@ interface Coordinator {
       (bool success, uint64 dump_id);
 };
 
-// An interface which can be used by client processes to register themselves
-// with a CoordinatorController client (like the browser), who can then pass the
-// registration along to the service with authoritative information about the
-// process's identity.
+// An interface used by client processes to register themselves with a
+// memory_instrumentation::Registry. The implementation must already know the
+// calling process. It adds authoritative information about the calling process'
+// identity when forwarding the registration to a
+// memory_instrumentation::Registry.
 interface CoordinatorConnector {
-  // Registers the calling process. The implementation of this API must already
-  // know who the calling process is and should forward these arguments along to
-  // the CoordinatorController along with information about the process.
   RegisterCoordinatorClient(pending_receiver<Coordinator> receiver,
                             pending_remote<ClientProcess> client_process);
-};
-
-// Main interface to the memory instrumentation coordinator. This is considered
-// privileged and the browser should effectively be the only client.
-interface CoordinatorController {
-  // Binds a new Coordinator interface endpoint for a unique client process.
-  // Should be called once for each process, including the browser itself.
-  // |client_process| is an endpoint the service can use to push client events
-  // to the process.
-  RegisterClientProcess(pending_receiver<Coordinator> receiver,
-                        pending_remote<ClientProcess> client_process,
-                        ProcessType process_type,
-                        mojo_base.mojom.ProcessId process_id,
-                        string? service_name);
 };

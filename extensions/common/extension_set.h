@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/common/extension.h"
@@ -63,6 +62,10 @@ class ExtensionSet {
   };
 
   ExtensionSet();
+
+  ExtensionSet(const ExtensionSet&) = delete;
+  ExtensionSet& operator=(const ExtensionSet&) = delete;
+
   ~ExtensionSet();
 
   size_t size() const;
@@ -130,10 +133,14 @@ class ExtensionSet {
   // permissions the given extension has been granted.
   bool ExtensionBindingsAllowed(const GURL& url) const;
 
+  // Decodes extension ID encoded in URL. Returns the extension ID corresponding
+  // to the given extension resource URL. This ignores hosted apps' web extent.
+  //
+  // Returns ExtensionId() if not an extension URL.
+  static ExtensionId GetExtensionIdByURL(const GURL& url);
+
  private:
   ExtensionMap extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSet);
 };
 
 }  // namespace extensions

@@ -4,7 +4,6 @@
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
 <script src="resources/webxr_test_asserts.js"></script>
-<canvas></canvas>
 
 <script>
 let testName =
@@ -12,6 +11,7 @@ let testName =
 
 let fakeDeviceInitParams = {
     supportsImmersive: true,
+    supportedModes: ["inline", "immersive-vr"],
     views: VALID_VIEWS,
     viewerOrigin: IDENTITY_TRANSFORM,
     floorOrigin: VALID_FLOOR_ORIGIN,
@@ -26,7 +26,7 @@ let testFunction = function(session, fakeDeviceController, t) {
           t.step(() => {
               // A bounded space may be created if no bounds have been set but the system has the capability to support bounded-floor
               // A lack of bounds is indicated by an empty boundsGeometry
-              assert_true(referenceSpace.boundsGeometry.length == 0);
+              assert_equals(referenceSpace.boundsGeometry.length, 0);
           });
 
           function onFrame(time, xrFrame) {
@@ -48,7 +48,7 @@ let testFunction = function(session, fakeDeviceController, t) {
 
           // Now set the bounds explicitly and check again on the next frame.
           fakeDeviceController.setBoundsGeometry(VALID_BOUNDS);
-          session.requestAnimationFrame(onFrame);
+          requestSkipAnimationFrame(session, onFrame);
         });
     });
 };

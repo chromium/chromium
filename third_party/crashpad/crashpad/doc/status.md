@@ -18,24 +18,27 @@ limitations under the License.
 
 ## Completed
 
-Crashpad currently consists of a crash-reporting client and some related tools
-for macOS and Windows. The core client work for both platforms is substantially
-complete. Crashpad became the crash reporter client for
-[Chromium](https://www.chromium.org/Home) on macOS as of [March
+Crashpad has complete crash-reporting clients and some related tools for macOS,
+Windows, Fuchsia, and Linux (including Android and Chromium OS). Crashpad became
+the crash reporter client for [Chromium](https://www.chromium.org/Home) on macOS
+as of [March
 2015](https://chromium.googlesource.com/chromium/src/\+/d413b2dcb54d523811d386f1ff4084f677a6d089),
-and on Windows as of [November
-2015](https://chromium.googlesource.com/chromium/src/\+/cfa5b01bb1d06bf96967bd37e21a44752801948c).
+Windows as of [November
+2015](https://chromium.googlesource.com/chromium/src/\+/cfa5b01bb1d06bf96967bd37e21a44752801948c),
+and Android as of [January
+2019](https://chromium.googlesource.com/chromium/src/+/f890e4b5495ab693d2d37aec3c378239946154f7).
+
 
 ## In Progress
 
-Initial work on a Crashpad client for
-[Android](https://crashpad.chromium.org/bug/30) has begun. This is currently in
-the early implementation phase.
+Chromium is transitioning to Crashpad for [Chromium OS and Desktop
+Linux](https://crbug.com/942279).
+
+Work has begun on a Crashpad client for
+[iOS](https://crashpad.chromium.org/bug/31).
 
 ## Future
 
-There are plans to bring Crashpad clients to other operating systems in the
-future, including a more generic non-Android Linux implementation. There are
-also plans to implement a [crash report
+There are also plans to implement a [crash report
 processor](https://crashpad.chromium.org/bug/29) as part of Crashpad. No
 timeline for completing this work has been set yet.

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/ts_section.h"
 
@@ -21,6 +20,10 @@ namespace mp2t {
 class TsSectionPsi : public TsSection {
  public:
   TsSectionPsi();
+
+  TsSectionPsi(const TsSectionPsi&) = delete;
+  TsSectionPsi& operator=(const TsSectionPsi&) = delete;
+
   ~TsSectionPsi() override;
 
   // TsSection implementation.
@@ -47,8 +50,6 @@ class TsSectionPsi : public TsSection {
 
   // Number of leading bytes to discard (pointer field).
   int leading_bytes_to_discard_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionPsi);
 };
 
 }  // namespace mp2t

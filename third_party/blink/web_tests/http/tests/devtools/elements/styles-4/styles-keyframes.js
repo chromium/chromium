@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that keyframes are shown in styles pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -24,44 +24,44 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('element', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('=== Before key modification ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
-    var section = UI.panels.elements._stylesWidget._sectionBlocks[2].sections[1];
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    var section = UI.panels.elements.stylesWidget.sectionBlocks[1].sections[1];
     section.startEditingSelector();
-    section._selectorElement.textContent = '1%';
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.textContent = '1%';
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     ElementsTestRunner.waitForSelectorCommitted(step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('=== After key modification ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     SDK.domModelUndoStack.undo();
     ElementsTestRunner.waitForStyles('element', step3, true);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('=== After undo ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
 
     SDK.domModelUndoStack.redo();
     ElementsTestRunner.waitForStyles('element', step4, true);
   }
 
-  function step4() {
+  async function step4() {
     TestRunner.addResult('=== After redo ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
-    var section = UI.panels.elements._stylesWidget._sectionBlocks[2].sections[1];
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    var section = UI.panels.elements.stylesWidget.sectionBlocks[1].sections[1];
     section.startEditingSelector();
-    section._selectorElement.textContent = '1% /*';
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.textContent = '1% /*';
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     ElementsTestRunner.waitForSelectorCommitted(step5);
   }
 
-  function step5() {
+  async function step5() {
     TestRunner.addResult('=== After invalid key modification ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Property text-decoration-thickness value 'auto' assert_true: text-decoration-thickness doesn't seem to be supported in the computed style expected true got false
-FAIL Property text-decoration-thickness value 'from-font' assert_true: text-decoration-thickness doesn't seem to be supported in the computed style expected true got false
-FAIL Property text-decoration-thickness value 'calc(10px - 8px)' assert_true: text-decoration-thickness doesn't seem to be supported in the computed style expected true got false
-Harness: the test ran to completion.
-

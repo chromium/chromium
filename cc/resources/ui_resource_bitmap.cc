@@ -7,8 +7,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "build/build_config.h"
+#include "gpu/config/gpu_finch_features.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -48,20 +54,48 @@ void UIResourceBitmap::Create(sk_sp<SkPixelRef> pixel_ref,
 }
 
 void UIResourceBitmap::DrawToCanvas(SkCanvas* canvas, SkPaint* paint) {
+  DCHECK_NE(info_.colorType(), kUnknown_SkColorType);
+
   SkBitmap bitmap;
   bitmap.setInfo(info_, pixel_ref_.get()->rowBytes());
   bitmap.setPixelRef(pixel_ref_, 0, 0);
-  canvas->drawBitmap(bitmap, 0, 0, paint);
+  canvas->drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), paint);
   canvas->flush();
 }
 
+size_t UIResourceBitmap::SizeInBytes() const {
+  if (!pixel_ref_)
+    return 0u;
+  base::CheckedNumeric<size_t> size_in_bytes = pixel_ref_->rowBytes();
+  size_in_bytes *= info_.height();
+  return size_in_bytes.ValueOrDie();
+}
+
 UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
-  DCHECK_EQ(skbitmap.width(), skbitmap.rowBytesAsPixels());
   DCHECK(skbitmap.isImmutable());
 
-  sk_sp<SkPixelRef> pixel_ref = sk_ref_sp(skbitmap.pixelRef());
-  Create(std::move(pixel_ref), skbitmap.info(),
-         SkColorTypeToUIResourceFormat(skbitmap.colorType()));
+  const SkBitmap* target = &skbitmap;
+#if defined(OS_ANDROID)
+  SkBitmap copy;
+  if (features::IsDrDcEnabled()) {
+    // TODO(vikassoni): Forcing everything to N32 while android backing cannot
+    // support some other formats.
+    if (skbitmap.colorType() != kN32_SkColorType) {
+      SkImageInfo new_info = skbitmap.info().makeColorType(kN32_SkColorType);
+      copy.allocPixels(new_info, new_info.minRowBytes());
+      SkCanvas copy_canvas(copy);
+      copy_canvas.drawImage(skbitmap.asImage(), 0, 0, SkSamplingOptions(),
+                            nullptr);
+      copy.setImmutable();
+      target = &copy;
+    }
+    DCHECK_EQ(target->width(), target->rowBytesAsPixels());
+    DCHECK(target->isImmutable());
+  }
+#endif
+  sk_sp<SkPixelRef> pixel_ref = sk_ref_sp(target->pixelRef());
+  Create(std::move(pixel_ref), target->info(),
+         SkColorTypeToUIResourceFormat(target->colorType()));
 }
 
 UIResourceBitmap::UIResourceBitmap(const gfx::Size& size, bool is_opaque) {
@@ -76,8 +110,10 @@ UIResourceBitmap::UIResourceBitmap(const gfx::Size& size, bool is_opaque) {
 
 UIResourceBitmap::UIResourceBitmap(sk_sp<SkPixelRef> pixel_ref,
                                    const gfx::Size& size) {
-  SkImageInfo info =
-      SkImageInfo::MakeN32(size.width(), size.height(), kOpaque_SkAlphaType);
+  // TODO(khushalsagar): It doesn't make sense to SkPixelRef to pass around
+  // encoded data.
+  SkImageInfo info = SkImageInfo::Make(
+      size.width(), size.height(), kUnknown_SkColorType, kOpaque_SkAlphaType);
   Create(std::move(pixel_ref), info, UIResourceBitmap::ETC1);
 }
 

@@ -1,0 +1,24 @@
+<!--
+@WAIT-FOR:done
+-->
+<!-- Try unusual markup with a <map> to ensure no crashes occur, and that area
+     children still belong to the image. -->
+<!DOCTYPE html>
+<html>
+<body>
+
+<img src="pipe.jpg" width="145" height="126" alt="pipe" usemap="#pipe">
+<map name="pipe">
+  <area shape="rect" coords="0,0,145,126" alt="pipe1" href="fake.htm">
+</map>
+
+<script>
+  setTimeout(() => {
+    document.querySelector('map').setAttribute('role', 'doc-bibliography');
+    document.querySelector('map').setAttribute('aria-label', 'bar');
+    document.title = 'done';
+  }, 50);
+</script>
+
+</body>
+</html>

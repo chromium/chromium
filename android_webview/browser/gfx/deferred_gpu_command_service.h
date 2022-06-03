@@ -8,6 +8,10 @@
 #include "base/macros.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 
+namespace gl {
+class GLShareGroup;
+}
+
 namespace android_webview {
 
 class GpuServiceWebView;
@@ -18,6 +22,10 @@ class DeferredGpuCommandService : public gpu::CommandBufferTaskExecutor {
  public:
   static DeferredGpuCommandService* GetInstance();
 
+  DeferredGpuCommandService(const DeferredGpuCommandService&) = delete;
+  DeferredGpuCommandService& operator=(const DeferredGpuCommandService&) =
+      delete;
+
   // gpu::CommandBufferTaskExecutor implementation.
   bool ForceVirtualizedGLContexts() const override;
   bool ShouldCreateMemoryTracker() const override;
@@ -26,6 +34,7 @@ class DeferredGpuCommandService : public gpu::CommandBufferTaskExecutor {
   void ScheduleDelayedWork(base::OnceClosure task) override;
   void PostNonNestableToClient(base::OnceClosure callback) override;
   scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
+  scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
  protected:
   ~DeferredGpuCommandService() override;
@@ -40,8 +49,7 @@ class DeferredGpuCommandService : public gpu::CommandBufferTaskExecutor {
 
   TaskQueueWebView* task_queue_;
   GpuServiceWebView* gpu_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredGpuCommandService);
+  scoped_refptr<gl::GLShareGroup> share_group_;
 };
 
 }  // namespace android_webview

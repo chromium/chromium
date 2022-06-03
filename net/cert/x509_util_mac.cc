@@ -6,7 +6,7 @@
 
 #include <CommonCrypto/CommonDigest.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/apple_apsl/cssmapplePriv.h"
@@ -85,32 +85,32 @@ CreateSecCertificateFromX509Certificate(const X509Certificate* cert) {
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain) {
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain) {
   return CreateX509CertificateFromSecCertificate(sec_cert, sec_chain, {});
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain,
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
     X509Certificate::UnsafeCreateOptions options) {
   CSSM_DATA der_data;
   if (!sec_cert || SecCertificateGetData(sec_cert, &der_data) != noErr)
     return nullptr;
   bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
       X509Certificate::CreateCertBufferFromBytes(
-          reinterpret_cast<const char*>(der_data.Data), der_data.Length));
+          base::make_span(der_data.Data, der_data.Length)));
   if (!cert_handle)
     return nullptr;
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-  for (const SecCertificateRef& sec_intermediate : sec_chain) {
+  for (const auto& sec_intermediate : sec_chain) {
     if (!sec_intermediate ||
         SecCertificateGetData(sec_intermediate, &der_data) != noErr) {
       return nullptr;
     }
     bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
         X509Certificate::CreateCertBufferFromBytes(
-            reinterpret_cast<const char*>(der_data.Data), der_data.Length));
+            base::make_span(der_data.Data, der_data.Length)));
     if (!intermediate_cert_handle)
       return nullptr;
     intermediates.push_back(std::move(intermediate_cert_handle));

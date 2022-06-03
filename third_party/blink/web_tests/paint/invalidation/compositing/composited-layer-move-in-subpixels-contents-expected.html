@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<style>
+#container div {
+  height: 50px;
+  border: 1px solid black;
+  margin-top: 2px;
+}
+#container {
+  margin-top: 110px;
+}
+</style>
+<div id="container">
+<!-- The geometries below matches the imperfect subpixel painting after
+     the composited layers are moved in subpixels. -->
+  <div></div>
+  <div style="height: 51px"></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div style="height: 51px"></div>
+</div>

@@ -5,7 +5,6 @@
 #include "chromecast/graphics/cast_window_manager_default.h"
 
 #include "base/memory/ptr_util.h"
-#include "chromecast/graphics/cast_touch_activity_observer.h"
 
 namespace chromecast {
 

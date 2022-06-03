@@ -4,9 +4,27 @@
 
 #include "ui/base/models/combobox_model.h"
 
+#include "ui/base/models/image_model.h"
+
 namespace ui {
 
-bool ComboboxModel::IsItemSeparatorAt(int index) {
+std::u16string ComboboxModel::GetDropDownTextAt(int index) const {
+  return GetItemAt(index);
+}
+
+std::u16string ComboboxModel::GetDropDownSecondaryTextAt(int index) const {
+  return std::u16string();
+}
+
+ImageModel ComboboxModel::GetIconAt(int index) const {
+  return ui::ImageModel();
+}
+
+ImageModel ComboboxModel::GetDropDownIconAt(int index) const {
+  return GetIconAt(index);
+}
+
+bool ComboboxModel::IsItemSeparatorAt(int index) const {
   return false;
 }
 

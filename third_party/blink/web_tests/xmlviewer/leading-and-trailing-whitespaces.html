@@ -1,46 +1,34 @@
 <html>
 <head>
-    <script>
-        if (window.testRunner) {
-           testRunner.dumpAsText();
-           testRunner.setCanOpenWindows();
-           testRunner.waitUntilDone();
-        }
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+async_test((t) => {
+  let xmlWindow;
 
-        var xmlWindow;
+  t.add_cleanup(() => { xmlWindow.close(); });
 
-        function print(str)
-        {
-            document.getElementById('output').textContent = str;
-            xmlWindow.close();
-            testRunner.notifyDone();
-        }
+  function checkWhitespaces() {
+    var sourcePretty = xmlWindow.document.getElementsByClassName('pretty-print')[0];
 
-        function checkWhiteSpaces()
-        {
-            var sourcePretty = xmlWindow.document.getElementsByClassName("pretty-print")[0];
+    if (!sourcePretty || !sourcePretty.innerText) {
+      requestAnimationFrame(t.step_func(checkWhitespaces));
+      return;
+    }
 
-            if (!sourcePretty || !sourcePretty.innerText) {
-                requestAnimationFrame(checkWhiteSpaces);
-                return;
-            }
+    assert_true(sourcePretty.innerText.includes(' bar '));
 
-            if (sourcePretty.innerText.includes(" bar "))
-                print('SUCCESS');
-            else
-                print('FAIL');
-        }
+    t.done();
+  }
 
-        function onload()
-        {
-            xmlWindow = window.open('resources/leading-and-trailing-whitespaces.xml', "XMLViewerTestWindow");
-            xmlWindow.onload = checkWhiteSpaces;
-        }
-
-    </script>
+  window.addEventListener("load", (e) => {
+    xmlWindow = window.open('resources/leading-and-trailing-whitespaces.xml',
+                            'XMLViewerTestWindow');
+    xmlWindow.onload = t.step_func(checkWhitespaces);
+  });
+}, 'XMLTreeConverted');
+</script>
 </head>
-<body onload="onload();">
-    <p>Tests leading and trailing whitespaces in xml viewer.</p>
-    <div id='output'></div>
+<body>
 </body>
 </html>

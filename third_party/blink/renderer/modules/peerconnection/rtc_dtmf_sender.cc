@@ -28,13 +28,12 @@
 #include <memory>
 
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtmf_tone_change_event.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -56,7 +55,7 @@ RTCDTMFSender* RTCDTMFSender::Create(
 
 RTCDTMFSender::RTCDTMFSender(ExecutionContext* context,
                              std::unique_ptr<RtcDtmfSenderHandler> handler)
-    : ContextLifecycleObserver(context),
+    : ExecutionContextLifecycleObserver(context),
       handler_(std::move(handler)),
       stopped_(false) {
   handler_->SetClient(this);
@@ -142,7 +141,7 @@ void RTCDTMFSender::PlayoutTask() {
     DispatchEvent(*event.Release());
     return;
   }
-  WebString this_tone = tone_buffer_.Substring(0, 1);
+  String this_tone = tone_buffer_.Substring(0, 1);
   tone_buffer_ = tone_buffer_.Substring(1, tone_buffer_.length() - 1);
   // InsertDTMF handles both tones and ",", and calls DidPlayTone after
   // the specified delay.
@@ -165,7 +164,7 @@ void RTCDTMFSender::DidPlayTone(const String& tone) {
         ->PostDelayedTask(
             FROM_HERE,
             WTF::Bind(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
-            base::TimeDelta::FromMilliseconds(inter_tone_gap_));
+            base::Milliseconds(inter_tone_gap_));
   }
 }
 
@@ -174,18 +173,18 @@ const AtomicString& RTCDTMFSender::InterfaceName() const {
 }
 
 ExecutionContext* RTCDTMFSender::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
-void RTCDTMFSender::ContextDestroyed(ExecutionContext*) {
+void RTCDTMFSender::ContextDestroyed() {
   stopped_ = true;
   handler_->SetClient(nullptr);
 }
 
-void RTCDTMFSender::Trace(blink::Visitor* visitor) {
+void RTCDTMFSender::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   RtcDtmfSenderHandler::Client::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

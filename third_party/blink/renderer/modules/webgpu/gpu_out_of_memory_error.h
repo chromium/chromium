@@ -16,8 +16,8 @@ class GPUOutOfMemoryError : public ScriptWrappable {
   static GPUOutOfMemoryError* Create();
   GPUOutOfMemoryError();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUOutOfMemoryError);
+  GPUOutOfMemoryError(const GPUOutOfMemoryError&) = delete;
+  GPUOutOfMemoryError& operator=(const GPUOutOfMemoryError&) = delete;
 };
 
 }  // namespace blink

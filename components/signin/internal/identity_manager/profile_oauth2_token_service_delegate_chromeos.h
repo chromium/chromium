@@ -11,10 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chromeos/components/account_manager/account_manager.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -23,17 +24,23 @@ class AccountTrackerService;
 namespace signin {
 class ProfileOAuth2TokenServiceDelegateChromeOS
     : public ProfileOAuth2TokenServiceDelegate,
-      public chromeos::AccountManager::Observer,
+      public account_manager::AccountManagerFacade::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  // Accepts non-owning pointers to |AccountTrackerService|,
-  // |NetworkConnectorTracker|, and |chromeos::AccountManager|. These objects
-  // must all outlive |this| delegate.
+  // Accepts non-owning pointers to `AccountTrackerService`,
+  // `NetworkConnectorTracker`, and `account_manager::AccountManagerFacade`.
+  // These objects must all outlive `this` delegate.
   ProfileOAuth2TokenServiceDelegateChromeOS(
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
-      chromeos::AccountManager* account_manager,
+      account_manager::AccountManagerFacade* account_manager_facade,
       bool is_regular_profile);
+
+  ProfileOAuth2TokenServiceDelegateChromeOS(
+      const ProfileOAuth2TokenServiceDelegateChromeOS&) = delete;
+  ProfileOAuth2TokenServiceDelegateChromeOS& operator=(
+      const ProfileOAuth2TokenServiceDelegateChromeOS&) = delete;
+
   ~ProfileOAuth2TokenServiceDelegateChromeOS() override;
 
   // ProfileOAuth2TokenServiceDelegate overrides.
@@ -44,6 +51,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
   void UpdateAuthError(const CoreAccountId& account_id,
                        const GoogleServiceAuthError& error) override;
+  void UpdateAuthErrorInternal(const CoreAccountId& account_id,
+                               const GoogleServiceAuthError& error,
+                               bool fire_auth_error_changed = true);
   GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
@@ -56,11 +66,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   void RevokeAllCredentials() override;
   const net::BackoffEntry* BackoffEntry() const override;
 
-  // |chromeos::AccountManager::Observer| overrides.
-  void OnTokenUpserted(
-      const chromeos::AccountManager::Account& account) override;
-  void OnAccountRemoved(
-      const chromeos::AccountManager::Account& account) override;
+  // `account_manager::AccountManagerFacade::Observer` overrides.
+  void OnAccountUpserted(const account_manager::Account& account) override;
+  void OnAccountRemoved(const account_manager::Account& account) override;
 
   // |NetworkConnectionTracker::NetworkConnectionObserver| overrides.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
@@ -77,17 +85,33 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
     GoogleServiceAuthError last_auth_error;
   };
 
-  // Callback handler for |chromeos::AccountManager::GetAccounts|.
-  void OnGetAccounts(
-      const std::vector<chromeos::AccountManager::Account>& accounts);
+  // Callback handler for `account_manager::AccountManagerFacade::GetAccounts`.
+  void OnGetAccounts(const std::vector<account_manager::Account>& accounts);
+
+  void FinishLoadingCredentials(
+      const std::vector<account_manager::Account>& accounts,
+      const std::map<account_manager::AccountKey, GoogleServiceAuthError>&
+          persistent_errors);
+
+  // Callback handler for |AccountManagerFacade::GetPersistentError|.
+  void FinishAddingPendingAccount(const account_manager::Account& account,
+                                  const GoogleServiceAuthError& error);
 
   // Non-owning pointers.
   AccountTrackerService* const account_tracker_service_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
-  chromeos::AccountManager* const account_manager_;
+  account_manager::AccountManagerFacade* const account_manager_facade_;
+
+  // When the delegate receives an account from either `GetAccounts` or
+  // `OnAccountUpserted`, this account is first added to pending accounts, until
+  // the persistent error for this account is obtained. When the persistent
+  // error status is known, the account is moved from `pending_accounts_` to
+  // `account_keys_`.
+  std::map<account_manager::AccountKey, account_manager::Account>
+      pending_accounts_;
 
   // A cache of AccountKeys.
-  std::set<chromeos::AccountManager::AccountKey> account_keys_;
+  std::set<account_manager::AccountKey> account_keys_;
 
   // A map from account id to the last seen error for that account.
   std::map<CoreAccountId, AccountErrorStatus> errors_;
@@ -101,8 +125,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ProfileOAuth2TokenServiceDelegateChromeOS> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegateChromeOS);
 };
 
 }  // namespace signin

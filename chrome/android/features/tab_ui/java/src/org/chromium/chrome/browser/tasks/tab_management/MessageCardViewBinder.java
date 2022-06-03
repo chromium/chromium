@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
+
 import android.view.ViewGroup;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -30,7 +32,8 @@ class MessageCardViewBinder {
 
                 MessageCardView.DismissActionProvider uiDismissProvider =
                         model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
-                if (uiDismissProvider != null) {
+                if (uiDismissProvider != null
+                        && !model.get(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW)) {
                     uiDismissProvider.dismiss(model.get(MessageCardViewProperties.MESSAGE_TYPE));
                 }
             });
@@ -54,6 +57,12 @@ class MessageCardViewBinder {
                         MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER);
                 if (serviceProvider != null) serviceProvider.dismiss(type);
             });
+        } else if (CARD_ALPHA == propertyKey) {
+            itemView.setAlpha(model.get(CARD_ALPHA));
+        } else if (MessageCardViewProperties.IS_ICON_VISIBLE == propertyKey) {
+            itemView.setIconVisibility(model.get(MessageCardViewProperties.IS_ICON_VISIBLE));
+        } else if (MessageCardViewProperties.IS_INCOGNITO == propertyKey) {
+            itemView.updateMessageCardColor(model.get(MessageCardViewProperties.IS_INCOGNITO));
         }
     }
 }

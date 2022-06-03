@@ -63,8 +63,9 @@ PageAgentViews::PageAgentViews(DOMAgent* dom_agent) : PageAgent(dom_agent) {}
 PageAgentViews::~PageAgentViews() {}
 
 protocol::Response PageAgentViews::disable() {
-  // Set bubble lock flag back to false.
-  views::BubbleDialogDelegateView::devtools_dismiss_override_ = false;
+  // Don't disable widget activation handling any more.
+  views::Widget::SetDisableActivationChangeHandling(
+      views::Widget::DisableActivationChangeHandlingType::kNone);
 
   // Remove debug bounds rects if enabled.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -73,19 +74,23 @@ protocol::Response PageAgentViews::disable() {
         base::CommandLine::ForCurrentProcess()->argv());
     PaintRectVector(dom_agent_->element_root()->children());
   }
-  return protocol::Response::OK();
+  return protocol::Response::Success();
 }
 
 protocol::Response PageAgentViews::reload(protocol::Maybe<bool> bypass_cache) {
   if (!bypass_cache.isJust())
-    return protocol::Response::OK();
+    return protocol::Response::Success();
 
   bool shift_pressed = bypass_cache.fromMaybe(false);
 
-  // Ctrl+Shift+R called to toggle bubble lock.
+  // Ctrl+Shift+R called to toggle widget lock.
   if (shift_pressed) {
-    views::BubbleDialogDelegateView::devtools_dismiss_override_ =
-        !views::BubbleDialogDelegateView::devtools_dismiss_override_;
+    views::Widget::SetDisableActivationChangeHandling(
+        views::Widget::GetDisableActivationChangeHandling() ==
+                views::Widget::DisableActivationChangeHandlingType::kNone
+            ? views::Widget::DisableActivationChangeHandlingType::
+                  kIgnoreDeactivationOnly
+            : views::Widget::DisableActivationChangeHandlingType::kNone);
   } else {
     // Ctrl+R called to toggle debug bounds rectangles.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -98,7 +103,7 @@ protocol::Response PageAgentViews::reload(protocol::Maybe<bool> bypass_cache) {
     }
     PaintRectVector(dom_agent_->element_root()->children());
   }
-  return protocol::Response::OK();
+  return protocol::Response::Success();
 }
 
 protocol::Response PageAgentViews::getResourceTree(
@@ -128,7 +133,7 @@ protocol::Response PageAgentViews::getResourceTree(
           .setResources(std::move(subresources))
           .build();
   *object = std::move(result);
-  return protocol::Response::OK();
+  return protocol::Response::Success();
 }
 
 protocol::Response PageAgentViews::getResourceContent(
@@ -139,21 +144,23 @@ protocol::Response PageAgentViews::getResourceContent(
   auto split_url = base::SplitStringUsingSubstr(
       in_url, "src/", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (split_url.size() != 2)
-    return protocol::Response::Error("Invalid URL");
+    return protocol::Response::ServerError("Invalid URL");
 
   auto split_path = base::SplitStringUsingSubstr(
       split_url[1], "?l=", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (split_path.size() != 2)
-    return protocol::Response::Error("Invalid URL");
+    return protocol::Response::ServerError("Invalid URL");
 
   if (GetSourceCode(split_path[0], out_content))
-    return protocol::Response::OK();
+    return protocol::Response::Success();
   else
-    return protocol::Response::Error("Could not read source file");
+    return protocol::Response::ServerError("Could not read source file");
 }
 
-bool PageAgentViews::devtools_dismiss_override() {
-  return views::BubbleDialogDelegateView::devtools_dismiss_override_;
+bool PageAgentViews::GetDevtoolsDismissOverrideForTesting() const {
+  return views::Widget::GetDisableActivationChangeHandling() ==
+         views::Widget::DisableActivationChangeHandlingType::
+             kIgnoreDeactivationOnly;
 }
 
 }  // namespace ui_devtools

@@ -1,0 +1,207 @@
+# Initially copied from
+# https://git.launchpad.net/~chromium-team/chromium-browser/+git/snap-from-source/tree/snapcraft.yaml?h=stable
+
+name: @@SNAPNAME@@
+adopt-info: chromium
+summary: @@SHORTDESC@@
+description: @@FULLDESC@@
+confinement: strict
+base: core18
+assumes:
+  - snapd2.43 # for 'snapctl is-connected', used in chrome.launcher
+
+apps:
+  @@SNAPNAME@@:
+    command: bin/desktop-launch "$SNAP/bin/chrome.launcher"
+    desktop: bin/@@SNAPNAME@@.desktop
+    environment:
+      DISABLE_WAYLAND: 1
+      CHROME_DESKTOP: @@SNAPNAME@@.desktop
+      CHROME_CONFIG_HOME: $SNAP_USER_COMMON
+    plugs:
+      - audio-playback
+      - audio-record
+      - bluez # for Web Bluetooth (https://launchpad.net/bugs/1887201)
+      - camera
+      - cups-control
+      - desktop
+      - gsettings
+      - home
+      - joystick
+      - mount-observe
+      - network
+      - network-manager
+      - opengl
+      - password-manager-service
+      - pulseaudio # remove once snapd 2.41 is available everywhere
+      - raw-usb # for WebUSB (https://launchpad.net/bugs/1780678)
+      - removable-media
+      - screen-inhibit-control
+      - u2f-devices
+      - unity7 # required for xdg-open to work
+      - upower-observe
+      - x11
+    slots:
+      - mpris
+
+plugs:
+  browser-sandbox:
+    interface: browser-support
+    allow-sandbox: true
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+  @@SNAPNAME@@-config:
+    interface: personal-files
+    read: [$HOME/.config/@@SNAPNAME@@]
+
+parts:
+  chromium:
+    plugin: nil
+    source: .
+    after: [desktop-gtk3, gtk-key-themes]
+    stage-packages:
+      - libgbm1
+      - libgl1-mesa-glx
+      - libgtk-3-0
+      - libnss3
+      - libsecret-1-0
+      - libxss1
+      - pulseaudio
+      - shared-mime-info
+      - ubuntu-settings
+    override-pull: |
+      set -eux
+      snapcraftctl pull
+      . $SNAPCRAFT_PART_SRC/version.txt
+      snapcraftctl set-version "$MAJOR.$MINOR.$BUILD.$PATCH"
+    override-build: |
+      set -eux
+      snapcraftctl build
+
+      # Launcher script
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp $SNAPCRAFT_PART_SRC/chrome.launcher $SNAPCRAFT_PART_INSTALL/bin/
+
+      # @@SNAPNAME@@ build artifacts (installed by stage_install_common)
+      cp -R $SNAPCRAFT_PART_SRC/chrome/* $SNAPCRAFT_PART_INSTALL/
+
+      # Custom desktop file
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      sed \
+          -e "s:Exec=/usr/bin/:Exec=@@SNAPNAME@@:g" \
+          -e "s:Icon=@@PACKAGE@@:Icon=@@INSTALLDIR@@/product_logo_256.png:" \
+          $SNAPCRAFT_PART_SRC/chrome/usr/share/applications/@@PACKAGE@@.desktop \
+          > $SNAPCRAFT_PART_INSTALL/bin/@@SNAPNAME@@.desktop
+    prime:
+      - -etc/gss
+      - -etc/init.d
+      - -etc/sensors.d
+      - -etc/ucf.conf
+      - -etc/xdg
+      - -usr/include
+      - -usr/lib/tmpfiles.d
+      - -usr/share/apport
+      - -usr/share/bash-completion
+      - -usr/share/bug
+      - -usr/share/doc
+      - -usr/share/doc-base
+      - -usr/share/gettext
+      - -usr/share/gnome-control-center
+      - -usr/share/GConf
+      - -usr/share/icons
+      - -usr/share/lintian
+      - -usr/share/man
+      - -usr/share/pam-configs
+      - -usr/share/pkgconfig
+      - -usr/share/polkit-1
+      - -usr/share/session-migration
+      - -usr/share/sounds
+      - -usr/share/ubuntu
+      - -usr/share/ubuntu-wayland
+      - -usr/share/upstart
+      - -usr/share/zsh
+      - -var
+
+  desktop-gtk3:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    plugin: make
+    make-parameters: ["FLAVOR=gtk3"]
+    build-packages:
+      - build-essential
+      - libgtk-3-dev
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - shared-mime-info
+      - libgtk-3-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk-3-bin
+      - unity-gtk3-module
+      - locales-all
+      - xdg-user-dirs
+      - ibus-gtk3
+      - libibus-1.0-5
+      - fcitx-frontend-gtk3
+    prime:
+      - -etc/gss
+      - -etc/presage.xml
+      - -etc/ucf.conf
+      - -etc/X11
+      - -usr/lib/glib-networking
+      - -usr/lib/systemd
+      - -usr/share/apport
+      - -usr/share/bash-completion
+      - -usr/share/doc
+      - -usr/share/doc-base
+      - -usr/share/gettext
+      - -usr/share/GConf
+      - -usr/share/icons
+      - -usr/share/lintian
+      - -usr/share/man
+      - -usr/share/pkgconfig
+      - -usr/share/presage
+      - -usr/share/upstart
+      - -var
+
+  shared-mime-info:
+    after: [chromium]
+    plugin: nil
+    override-pull: ""
+    override-prime: |
+      set -eux
+      glib-compile-schemas usr/share/glib-2.0/schemas
+      update-mime-database usr/share/mime
+
+  # Install the keybindings themes (see https://launchpad.net/bugs/1849163)
+  gtk-key-themes:
+    plugin: nil
+    stage-packages:
+      - libgtk-3-common
+    prime:
+      - usr/share/themes/Default/
+      - usr/share/themes/Emacs/
+
+  # Create a symlink xdg-email -> xdg-open, as the latter is perfectly able to
+  # handle mailto: URLs (see https://launchpad.net/bugs/1849774).
+  # xdg-open is a wrapper provided by the core snap.
+  # TODO: remove once https://launchpad.net/bugs/1863625 is fixed.
+  xdg-email:
+    plugin: nil
+    override-pull: ""
+    override-prime: |
+      set -eux
+      mkdir -p usr/bin
+      cd usr/bin
+      ln -s /usr/bin/xdg-open xdg-email

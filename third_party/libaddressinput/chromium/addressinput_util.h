@@ -13,8 +13,8 @@
 namespace i18n {
 namespace addressinput {
 struct AddressData;
-}
-}
+}  // namespace addressinput
+}  // namespace i18n
 
 namespace autofill {
 namespace addressinput {
@@ -28,13 +28,28 @@ bool HasAllRequiredFields(
 // of its parameters.
 //
 // See documentation of ::i18n::addressinput::AddressValidator::Validate() for
-// description of |filter| and |problems|.
+// description of |inclusion_filter| and |problems|.
 void ValidateRequiredFields(
     const ::i18n::addressinput::AddressData& address_to_check,
-    const std::multimap< ::i18n::addressinput::AddressField,
-                         ::i18n::addressinput::AddressProblem>* filter,
-    std::multimap< ::i18n::addressinput::AddressField,
-                   ::i18n::addressinput::AddressProblem>* problems);
+    const std::multimap<::i18n::addressinput::AddressField,
+                        ::i18n::addressinput::AddressProblem>* inclusion_filter,
+    std::multimap<::i18n::addressinput::AddressField,
+                  ::i18n::addressinput::AddressProblem>* problems);
+
+// Validates required fields in |address_to_check| without loading rules from
+// the server. The |problems| parameter cannot be NULL. Does not take ownership
+// of its parameters.
+//
+// Usage of |exclusion_filter| differs from the description in
+// ::i18n::addressinput::AddressValidator::Validate() in that it excludes
+// contained elements instead of including them. It behaves the same for NULL
+// or empty filters.
+void ValidateRequiredFieldsExceptFilteredOut(
+    const ::i18n::addressinput::AddressData& address_to_check,
+    const std::multimap<::i18n::addressinput::AddressField,
+                        ::i18n::addressinput::AddressProblem>* exclusion_filter,
+    std::multimap<::i18n::addressinput::AddressField,
+                  ::i18n::addressinput::AddressProblem>* problems);
 
 }  // namespace addressinput
 }  // namespace autofill

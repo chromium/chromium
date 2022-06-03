@@ -1,0 +1,6 @@
+monorail {
+  component: "Tools>ChromeOS-Wide-Profiling"
+}
+
+team_email: "cwp-team@google.com"
+os: CHROME_OS

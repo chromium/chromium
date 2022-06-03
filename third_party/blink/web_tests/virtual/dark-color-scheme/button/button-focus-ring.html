@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="dark">
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+
+<body>
+  <li>Focus: <input type="button" value="button" />
+  </li> <br><br>
+  <li>Non-Focus: <input type="button" value="button" /></li>
+  <script>
+    runAfterLayoutAndPaint(function () {
+      eventSender.keyDown('Tab');
+    }, true);
+  </script>
+</body>

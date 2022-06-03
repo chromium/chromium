@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/mac/process_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -45,6 +44,9 @@ namespace crashpad {
 //! have this bit set (they don’t). These odd sections are reminiscent of unwind
 //! information stored in `MH_OBJECT` images, although `cl_kernels` images claim
 //! to be `MH_BUNDLE`.
+//!
+//! These `cl_kernels` modules have only been observed on x86, not on arm64.
+//! This function always returns `false` on arm64.
 //!
 //! This function is exposed for testing purposes only.
 //!
@@ -75,6 +77,10 @@ bool IsMalformedCLKernelsModule(uint32_t mach_o_file_type,
 class MachOImageSegmentReader {
  public:
   MachOImageSegmentReader();
+
+  MachOImageSegmentReader(const MachOImageSegmentReader&) = delete;
+  MachOImageSegmentReader& operator=(const MachOImageSegmentReader&) = delete;
+
   ~MachOImageSegmentReader();
 
   //! \brief Reads the segment load command from another process.
@@ -288,8 +294,6 @@ class MachOImageSegmentReader {
 
   InitializationStateDcheck initialized_;
   InitializationStateDcheck initialized_slide_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachOImageSegmentReader);
 };
 
 }  // namespace crashpad

@@ -30,7 +30,7 @@ void HostVideoStatsDispatcher::OnVideoFrameStats(uint32_t frame_id,
   FrameStatsMessage message;
   message.set_frame_id(frame_id);
   stats.ToFrameStatsMessage(&message);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void HostVideoStatsDispatcher::OnIncomingMessage(

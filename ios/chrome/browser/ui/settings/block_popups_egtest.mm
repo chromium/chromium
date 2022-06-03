@@ -12,8 +12,8 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -24,18 +24,10 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BlockPopupsAppInterface);
-#endif  // defined(CHROME_EARL_GREY_2)
-
 using chrome_test_util::ContentSettingsButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::TabGridEditButton;
 
 namespace {
 
@@ -67,6 +59,11 @@ class ScopedBlockPopupsException {
     [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_ALLOW
                                  forPattern:pattern_];
   }
+
+  ScopedBlockPopupsException(const ScopedBlockPopupsException&) = delete;
+  ScopedBlockPopupsException& operator=(const ScopedBlockPopupsException&) =
+      delete;
+
   ~ScopedBlockPopupsException() {
     [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_DEFAULT
                                  forPattern:pattern_];
@@ -75,13 +72,11 @@ class ScopedBlockPopupsException {
  private:
   // The exception pattern that this object is managing.
   NSString* pattern_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBlockPopupsException);
 };
 }  // namespace
 
 // Block Popups tests for Chrome.
-@interface BlockPopupsTestCase : ChromeTestCase
+@interface BlockPopupsTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BlockPopupsTestCase
@@ -220,6 +215,7 @@ class ScopedBlockPopupsException {
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                                 IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                            grey_not(TabGridEditButton()),
                             grey_not(grey_accessibilityTrait(
                                 UIAccessibilityTraitNotEnabled)),
                             nil)] assertWithMatcher:grey_sufficientlyVisible()];

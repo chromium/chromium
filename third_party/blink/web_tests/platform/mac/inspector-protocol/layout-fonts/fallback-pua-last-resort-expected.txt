@@ -1,7 +1,0 @@
-Test passes if the fallback font selected for the Unicode Private Use Area test text matches known last resort fonts on each platform.
-󰀀󺪪󿿿􀀀􊪪􏿿
-#pua_test_run:
-"Times" : 11
-
-PASS
-

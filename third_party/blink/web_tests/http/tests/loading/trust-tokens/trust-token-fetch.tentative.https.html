@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests the prototype Trust Token API's functionality through its Fetch interface.</title>
+<link rel="help" href="https://github.com/WICG/trust-token-api#trust-token-redemption" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  'use strict';
+
+  promise_test((t) => promise_rejects_dom(t, 'InvalidStateError', (() => {
+      t.add_cleanup(async () => {
+        if (window.testRunner)
+          await new Promise(res => window.testRunner.clearTrustTokenState(res));
+      });
+      return fetch('https://trusttoken.test', {
+        trustToken: {
+          type: 'token-request'
+        }
+      });
+    })(), 'Trust Token issuance should error.'),
+    'No keys for the issuer -> expect issuance to fail');
+
+  promise_test((t) => promise_rejects_dom(t, 'InvalidStateError', (() => {
+      t.add_cleanup(async () => {
+        if (window.testRunner)
+          await new Promise(res => window.testRunner.clearTrustTokenState(res));
+      });
+      return fetch('https://trusttoken.test', {
+        trustToken: {
+          type: 'token-redemption'
+        }
+      });
+    })(), 'Trust Token redemption should error.'),
+    'No token for the issuer -> expect redemption to fail');
+
+  promise_test((t) => promise_rejects_js(t, TypeError, (() => {
+      t.add_cleanup(async () => {
+        if (window.testRunner)
+          await new Promise(res => window.testRunner.clearTrustTokenState(res));
+      });
+      return fetch('https://destination.test', {
+        trustToken: {
+          type: 'send-redemption-record',
+          issuers: ['https://issuer.test']
+        }
+      });
+    })(), 'Trust Token signing should not fail a request.'),
+    'No RR for the issuer -> expect signing to fail, but an error while' +
+    ' signing shouldn\'t result in the request being aborted');
+</script>

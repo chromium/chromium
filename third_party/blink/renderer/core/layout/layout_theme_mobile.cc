@@ -57,23 +57,12 @@ void LayoutThemeMobile::AdjustInnerSpinButtonStyle(ComputedStyle& style) const {
     // Match Linux spin button style in web tests.
     // FIXME: Consider removing the conditional if a future Android theme
     // matches this.
-    IntSize size = Platform::Current()->ThemeEngine()->GetSize(
-        WebThemeEngine::kPartInnerSpinButton);
+    IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
+        WebThemeEngine::kPartInnerSpinButton));
 
-    style.SetWidth(Length::Fixed(size.Width()));
-    style.SetMinWidth(Length::Fixed(size.Width()));
+    style.SetWidth(Length::Fixed(size.width()));
+    style.SetMinWidth(Length::Fixed(size.width()));
   }
-}
-
-bool LayoutThemeMobile::ShouldUseFallbackTheme(
-    const ComputedStyle& style) const {
-#if defined(OS_MACOSX)
-  // Mac WebThemeEngine cannot handle these controls.
-  ControlPart part = style.EffectiveAppearance();
-  if (part == kCheckboxPart || part == kRadioPart)
-    return true;
-#endif
-  return LayoutThemeDefault::ShouldUseFallbackTheme(style);
 }
 
 }  // namespace blink

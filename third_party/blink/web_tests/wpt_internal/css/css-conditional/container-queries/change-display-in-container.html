@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Container Queries: Change display and box inside a container</title>
+<link rel="match" href="change-display-in-container-ref.html">
+<style>
+  .fail { display: inline; }
+  .pass { display: none; }
+  #container { contain: size layout style; width: 100px; }
+  @container (min-width: 200px) {
+    .fail { display: none; }
+    .pass { display: inline; }
+  }
+</style>
+<p>You should see the word PASS below.</p>
+<div id="container">
+  <span>
+    <span class="fail">FAIL</span>
+  </span>
+  <span>
+    <span class="pass">PASS</span>
+    <span class="fail">FAIL</span>
+  </span>
+</div>
+<script>
+  container.offsetTop;
+  container.style.width = "auto";
+</script>

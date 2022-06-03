@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
-<translation id="6106989379647458772"><ph name="PAGE" /> veb səhifəsi müvəqqəti işləməyə bilər və ya yeni veb ünvana köçürülmüş ola bilər.</translation>
-<translation id="6312113039770857350">Veb səhifə əlçatan deyil</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> veb səhifəsi yüklənə bilmir, çünki:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Təkliflər:<ph name="MARKUP_2" />Data bağlantınızın olduğuna əmin olun<ph name="MARKUP_3" />Bu veb səhifəni daha sonra yenidən yükləyin<ph name="MARKUP_4" />Daxil etdiyiniz ünvanları yoxlayın<ph name="MARKUP_5" /></translation>
 </translationbundle>

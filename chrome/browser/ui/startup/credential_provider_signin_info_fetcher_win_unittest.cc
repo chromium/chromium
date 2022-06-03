@@ -7,17 +7,20 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +41,9 @@ constexpr char kRefreshTokenValue[] = "test_refresh_token_value";
 class CredentialProviderFetcherTest : public ::testing::Test {
  protected:
   CredentialProviderFetcherTest();
+  CredentialProviderFetcherTest(const CredentialProviderFetcherTest&) = delete;
+  CredentialProviderFetcherTest& operator=(
+      const CredentialProviderFetcherTest&) = delete;
   ~CredentialProviderFetcherTest() override;
 
   void OnFetchComplete(base::OnceClosure done_closure,
@@ -71,8 +77,6 @@ class CredentialProviderFetcherTest : public ::testing::Test {
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderFetcherTest);
 };
 
 CredentialProviderFetcherTest::CredentialProviderFetcherTest()
@@ -132,8 +136,10 @@ void CredentialProviderFetcherTest::RunFetcher(
       base::BindOnce(&CredentialProviderFetcherTest::OnFetchComplete,
                      base::Unretained(this), run_loop.QuitClosure());
 
-  CredentialProviderSigninInfoFetcher fetcher(kRefreshTokenValue,
-                                              shared_factory());
+  CredentialProviderSigninInfoFetcher fetcher(
+      kRefreshTokenValue,
+      /*consumer_name=*/"credential_provider_signin_info_fetcher_win_unittest",
+      shared_factory());
   fetcher.SetCompletionCallbackAndStart(
       kAccessTokenValue, additional_oauth_scopes, std::move(fetcher_callback));
   run_loop.Run();

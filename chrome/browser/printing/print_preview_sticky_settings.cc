@@ -36,7 +36,7 @@ const std::string* PrintPreviewStickySettings::printer_app_state() const {
 }
 
 void PrintPreviewStickySettings::StoreAppState(const std::string& data) {
-  printer_app_state_ = base::make_optional(data);
+  printer_app_state_ = absl::make_optional(data);
 }
 
 void PrintPreviewStickySettings::SaveInPrefs(PrefService* prefs) const {
@@ -57,11 +57,21 @@ void PrintPreviewStickySettings::RestoreFromPrefs(PrefService* prefs) {
 
 base::flat_map<std::string, int>
 PrintPreviewStickySettings::GetPrinterRecentlyUsedRanks() {
+  auto recently_used_printers = GetRecentlyUsedPrinters();
+  int current_rank = 0;
+  std::vector<std::pair<std::string, int>> recently_used_ranks;
+  recently_used_ranks.reserve(recently_used_printers.size());
+  for (std::string& printer_id : recently_used_printers)
+    recently_used_ranks.emplace_back(std::move(printer_id), current_rank++);
+  return recently_used_ranks;
+}
+
+std::vector<std::string> PrintPreviewStickySettings::GetRecentlyUsedPrinters() {
   const std::string* sticky_settings_state = printer_app_state();
   if (!sticky_settings_state)
     return {};
 
-  base::Optional<base::Value> sticky_settings_state_value =
+  absl::optional<base::Value> sticky_settings_state_value =
       base::JSONReader::Read(*sticky_settings_state);
   if (!sticky_settings_state_value || !sticky_settings_state_value->is_dict())
     return {};
@@ -71,15 +81,15 @@ PrintPreviewStickySettings::GetPrinterRecentlyUsedRanks() {
   if (!recent_destinations)
     return {};
 
-  base::flat_map<std::string, int> recently_used_ranks;
-  int current_rank = 0;
+  std::vector<std::string> printers;
+  printers.reserve(recent_destinations->GetList().size());
   for (const auto& recent_destination : recent_destinations->GetList()) {
     const std::string* printer_id = recent_destination.FindStringKey(kId);
     if (!printer_id)
       continue;
-    recently_used_ranks[*printer_id] = current_rank++;
+    printers.push_back(*printer_id);
   }
-  return recently_used_ranks;
+  return printers;
 }
 
 // static

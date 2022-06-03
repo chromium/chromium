@@ -31,7 +31,7 @@ AccountReconcilorFactory::~AccountReconcilorFactory() {}
 
 // static
 AccountReconcilor* AccountReconcilorFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<AccountReconcilor*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -44,8 +44,8 @@ AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
 
 std::unique_ptr<KeyedService> AccountReconcilorFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   auto* identity_manager =
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
   std::unique_ptr<AccountReconcilor> reconcilor(new AccountReconcilor(

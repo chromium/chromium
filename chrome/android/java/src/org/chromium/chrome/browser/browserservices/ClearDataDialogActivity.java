@@ -8,14 +8,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
-import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,8 +88,8 @@ public class ClearDataDialogActivity extends AppCompatActivity {
 
     private void recordDecision(boolean accepted) {
         boolean appUninstalled = getIsAppUninstalledFromIntent(getIntent());
-        ChromeApplication.getComponent().resolveTwaClearDataDialogRecorder()
-                .handleDialogResult(accepted, appUninstalled);
+        ChromeApplicationImpl.getComponent().resolveTwaClearDataDialogRecorder().handleDialogResult(
+                accepted, appUninstalled);
     }
 
     @VisibleForTesting

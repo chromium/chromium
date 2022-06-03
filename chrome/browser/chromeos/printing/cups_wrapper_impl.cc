@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "printing/backend/cups_printer.h"
 #include "url/gurl.h"
@@ -26,9 +28,8 @@ class CupsWrapperImpl : public CupsWrapper {
  public:
   CupsWrapperImpl()
       : backend_(std::make_unique<Backend>()),
-        backend_task_runner_(base::CreateSequencedTaskRunner(
-            {base::ThreadPool(), base::MayBlock(),
-             base::TaskPriority::BEST_EFFORT,
+        backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
   ~CupsWrapperImpl() override {
@@ -81,7 +82,11 @@ class CupsWrapperImpl : public CupsWrapper {
  private:
   class Backend {
    public:
-    Backend() : cups_connection_(GURL(), HTTP_ENCRYPT_NEVER, false) {
+    Backend()
+        : cups_connection_(
+              ::printing::CupsConnection::Create(GURL(),
+                                                 HTTP_ENCRYPT_NEVER,
+                                                 false)) {
       DETACH_FROM_SEQUENCE(sequence_checker_);
     }
     ~Backend() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
@@ -95,7 +100,7 @@ class CupsWrapperImpl : public CupsWrapper {
       auto result = std::make_unique<CupsWrapperImpl::QueryResult>();
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
-      result->success = cups_connection_.GetJobs(printer_ids, &result->queues);
+      result->success = cups_connection_->GetJobs(printer_ids, &result->queues);
       return result;
     }
 
@@ -105,7 +110,7 @@ class CupsWrapperImpl : public CupsWrapper {
           FROM_HERE, base::BlockingType::MAY_BLOCK);
 
       std::unique_ptr<::printing::CupsPrinter> printer =
-          cups_connection_.GetPrinter(printer_id);
+          cups_connection_->GetPrinter(printer_id);
       if (!printer) {
         LOG(WARNING) << "Printer not found: " << printer_id;
         return;
@@ -123,13 +128,13 @@ class CupsWrapperImpl : public CupsWrapper {
       auto result = std::make_unique<::printing::PrinterStatus>();
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
-      if (!cups_connection_.GetPrinterStatus(printer_id, result.get()))
+      if (!cups_connection_->GetPrinterStatus(printer_id, result.get()))
         return nullptr;
       return result;
     }
 
    private:
-    ::printing::CupsConnection cups_connection_;
+    std::unique_ptr<::printing::CupsConnection> cups_connection_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };

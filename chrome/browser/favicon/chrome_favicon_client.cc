@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/dom_distiller/core/url_constants.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "extensions/common/constants.h"
 #include "url/gurl.h"
 
@@ -33,6 +35,16 @@ ChromeFaviconClient::~ChromeFaviconClient() {
 bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) ||
          url.SchemeIs(extensions::kExtensionScheme);
+}
+
+bool ChromeFaviconClient::IsReaderModeURL(const GURL& url) {
+  return url.SchemeIs(dom_distiller::kDomDistillerScheme);
+}
+
+const GURL ChromeFaviconClient::GetOriginalUrlFromReaderModeUrl(
+    const GURL& url) {
+  DCHECK(IsReaderModeURL(url));
+  return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
 }
 
 base::CancelableTaskTracker::TaskId

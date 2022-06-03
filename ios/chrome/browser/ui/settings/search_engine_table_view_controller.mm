@@ -8,7 +8,10 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -19,8 +22,9 @@
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -43,7 +47,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const CGFloat kTableViewSeparatorLeadingInset = 56;
 const int kFaviconDesiredSizeInPoint = 32;
 const int kFaviconMinSizeInPoint = 16;
-constexpr base::TimeDelta kMaxVisitAge = base::TimeDelta::FromDays(2);
+constexpr base::TimeDelta kMaxVisitAge = base::Days(2);
 const size_t kMaxcustomSearchEngines = 3;
 const char kUmaSelectDefaultSearchEngine[] =
     "Search.iOS.SelectDefaultSearchEngine";
@@ -51,13 +55,18 @@ const char kUmaSelectDefaultSearchEngine[] =
 }  // namespace
 
 @interface SearchEngineTableViewController () <SearchEngineObserving>
+
+// Prevent unnecessary notifications when we write to the setting.
+@property(nonatomic, assign) BOOL updatingBackend;
+
+// Whether the search engines have changed while the backend was being updated.
+@property(nonatomic, assign) BOOL searchEngineChangedInBackground;
+
 @end
 
 @implementation SearchEngineTableViewController {
   TemplateURLService* _templateURLService;  // weak
   std::unique_ptr<SearchEngineObserverBridge> _observer;
-  // Prevent unnecessary notifications when we write to the setting.
-  BOOL _updatingBackend;
   // The first list in the page which contains prepopulted search engines and
   // search engines that are created by policy, and possibly one custom search
   // engine if it's selected as default search engine.
@@ -72,13 +81,10 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 #pragma mark - Initialization
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(browserState);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithTableViewStyle:style
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _templateURLService =
         ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
@@ -88,15 +94,84 @@ const char kUmaSelectDefaultSearchEngine[] =
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kSupportForAddPasswordsInSettings)) {
+      self.shouldDisableDoneButtonOnEdit = YES;
+    }
     [self updateUIForEditState];
   }
   return self;
+}
+
+#pragma mark - Properties
+
+- (void)setUpdatingBackend:(BOOL)updatingBackend {
+  if (_updatingBackend == updatingBackend)
+    return;
+
+  _updatingBackend = updatingBackend;
+
+  if (!self.searchEngineChangedInBackground)
+    return;
+
+  [self loadSearchEngines];
+
+  BOOL hasSecondSection = [self.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierSecondList];
+  BOOL secondSectionExistenceChanged = hasSecondSection == _secondList.empty();
+  BOOL numberOfCustomItemDifferent =
+      secondSectionExistenceChanged ||
+      (hasSecondSection &&
+       [self.tableViewModel
+           itemsInSectionWithIdentifier:SectionIdentifierSecondList]
+               .count != _secondList.size());
+
+  BOOL numberOfPrepopulatedItemDifferent =
+      [self.tableViewModel
+          itemsInSectionWithIdentifier:SectionIdentifierFirstList]
+          .count != _firstList.size();
+
+  if (numberOfPrepopulatedItemDifferent || numberOfCustomItemDifferent) {
+    // The number of items has changed.
+    [self reloadData];
+    return;
+  }
+
+  NSArray* firstListItem = [self.tableViewModel
+      itemsInSectionWithIdentifier:SectionIdentifierFirstList];
+  for (NSUInteger index = 0; index < firstListItem.count; index++) {
+    if ([self isItem:firstListItem[index]
+            differentForTemplateURL:_firstList[index]]) {
+      // Item has changed, reload the TableView.
+      [self reloadData];
+      return;
+    }
+  }
+
+  if (hasSecondSection) {
+    NSArray* secondListItem = [self.tableViewModel
+        itemsInSectionWithIdentifier:SectionIdentifierSecondList];
+    for (NSUInteger index = 0; index < secondListItem.count; index++) {
+      if ([self isItem:secondListItem[index]
+              differentForTemplateURL:_secondList[index]]) {
+        // Item has changed, reload the TableView.
+        [self reloadData];
+        return;
+      }
+    }
+  }
 }
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  // With no header on first appearance, UITableView adds a 35 points space at
+  // the beginning of the table view. This space remains after this table view
+  // reloads with headers. Setting a small tableHeaderView avoids this.
+  self.tableView.tableHeaderView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
 
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.separatorInset =
@@ -105,12 +180,26 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self loadModel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.navigationController.toolbarHidden = NO;
+  }
+}
+
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+  if (editing) {
+    base::RecordAction(
+        base::UserMetricsAction("IOS.SearchEngines.RecentlyViewed.Edit"));
+  }
+
   [super setEditing:editing animated:animated];
 
   // Disable prepopulated engines and remove the checkmark in editing mode, and
   // recover them in normal mode.
   [self updatePrepopulatedEnginesForEditing:editing];
+  [self updateUIForEditState];
 }
 
 #pragma mark - ChromeTableViewController
@@ -149,20 +238,43 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
 }
 
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobileSearchEngineSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(base::UserMetricsAction("MobileSearchEngineSettingsBack"));
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.SearchEngines.RecentlyViewed.Delete"));
   // Do not call super as this also deletes the section if it is empty.
   [self deleteItemAtIndexPaths:indexPaths];
 }
 
 // Hide toolbar for non-editing mode or when no items are selected.
 - (BOOL)shouldHideToolbar {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    return NO;
+  }
   return !self.editing || self.tableView.indexPathsForSelectedRows.count == 0;
 }
 
 - (BOOL)shouldShowEditButton {
-  return YES;
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 - (BOOL)editButtonEnabled {
@@ -170,6 +282,14 @@ const char kUmaSelectDefaultSearchEngine[] =
                                sectionIdentifier:SectionIdentifierFirstList] ||
          [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
                                sectionIdentifier:SectionIdentifierSecondList];
+}
+
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    [self updatedToolbarForEditState];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -180,6 +300,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   // Keep selection in editing mode.
   if (self.editing) {
+    self.deleteButton.enabled = YES;
     return;
   }
 
@@ -238,7 +359,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   cell.accessoryType = UITableViewCellAccessoryCheckmark;
 
   // Set the new engine as the default.
-  _updatingBackend = YES;
+  self.updatingBackend = YES;
   if (indexPath.section ==
       [model sectionForSectionIdentifier:SectionIdentifierFirstList]) {
     _templateURLService->SetUserSelectedDefaultSearchProvider(
@@ -248,7 +369,17 @@ const char kUmaSelectDefaultSearchEngine[] =
         _secondList[indexPath.row]);
   }
   [self recordUmaOfDefaultSearchEngine];
-  _updatingBackend = NO;
+  self.updatingBackend = NO;
+}
+
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
+  if (!self.tableView.editing)
+    return;
+
+  if (self.tableView.indexPathsForSelectedRows.count == 0)
+    self.deleteButton.enabled = NO;
 }
 
 #pragma mark - UITableViewDataSource
@@ -304,8 +435,11 @@ const char kUmaSelectDefaultSearchEngine[] =
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  if (!_updatingBackend)
+  if (!self.updatingBackend) {
     [self reloadData];
+  } else {
+    self.searchEngineChangedInBackground = YES;
+  }
 }
 
 #pragma mark - Private methods
@@ -329,17 +463,9 @@ const char kUmaSelectDefaultSearchEngine[] =
     else
       _secondList.push_back(url);
   }
-  // Sort |fixedCutomeSearchEngines_| by TemplateURL's prepopulate_id. If
-  // prepopulated_id == 0, it's a custom search engine and should be put in the
-  // end of the list.
-  std::sort(_firstList.begin(), _firstList.end(),
-            [](const TemplateURL* lhs, const TemplateURL* rhs) {
-              if (lhs->prepopulate_id() == 0)
-                return false;
-              if (rhs->prepopulate_id() == 0)
-                return true;
-              return lhs->prepopulate_id() < rhs->prepopulate_id();
-            });
+
+  // Do not sort prepopulated search engines, they are already sorted by
+  // locale use.
 
   // Partially sort |_secondList| by TemplateURL's last_visited time.
   auto begin = _secondList.begin();
@@ -368,7 +494,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     // favicons may be fetched from Google server which doesn't suppoprt
     // icon URL.
     std::string emptyPageUrl = templateURL->url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(base::string16()),
+        TemplateURLRef::SearchTermsArgs(std::u16string()),
         _templateURLService->search_terms_data());
     item.URL = GURL(emptyPageUrl);
   } else {
@@ -522,26 +648,19 @@ const char kUmaSelectDefaultSearchEngine[] =
     } else {
       engineItem.accessoryType = UITableViewCellAccessoryNone;
     }
+  }
+  [self.tableView reloadRowsAtIndexPaths:indexPaths
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
+}
 
-    // This function might be called inside the completion handler of
-    // [UITableView performBatchUpdates:completion:], which will cause a crash
-    // in iOS 12.
-    // TODO(crbug.com/1028546): Remove this workaround once iOS 12 is
-    // deprecated.
-    if (@available(iOS 13, *)) {
-    } else {
-      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-      if (cell) {
-        TableViewCell* tableViewCell =
-            base::mac::ObjCCastStrict<TableViewCell>(cell);
-        [item configureCell:tableViewCell withStyler:self.styler];
-      }
-    }
-  }
-  if (@available(iOS 13, *)) {
-    [self.tableView reloadRowsAtIndexPaths:indexPaths
-                          withRowAnimation:UITableViewRowAnimationAutomatic];
-  }
+// Returns whether the |item| is different from an item that would be created
+// from |templateURL|.
+- (BOOL)isItem:(SearchEngineItem*)item
+    differentForTemplateURL:(TemplateURL*)templateURL {
+  NSString* name = base::SysUTF16ToNSString(templateURL->short_name());
+  NSString* keyword = base::SysUTF16ToNSString(templateURL->keyword());
+  return ![item.text isEqualToString:name] ||
+         ![item.detailText isEqualToString:keyword];
 }
 
 @end

@@ -14,8 +14,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace base {
@@ -32,6 +30,10 @@ class BreakIterator;
 class SpellcheckCharAttribute {
  public:
   SpellcheckCharAttribute();
+
+  SpellcheckCharAttribute(const SpellcheckCharAttribute&) = delete;
+  SpellcheckCharAttribute& operator=(const SpellcheckCharAttribute&) = delete;
+
   ~SpellcheckCharAttribute();
 
   // Sets the language of the spellchecker. When this function is called with an
@@ -40,16 +42,20 @@ class SpellcheckCharAttribute {
   // GetRuleSet() returns the rule-sets created in this function.
   void SetDefaultLanguage(const std::string& language);
 
+  // Returns true if all the characters in a text string are in the script
+  // associated with the spellcheck language.
+  bool IsTextInSameScript(const std::u16string& text) const;
+
   // Returns a custom rule-set string used by the ICU break iterator. This class
   // has two rule-sets, one splits a contraction and the other does not, so we
   // can split a concaticated word (e.g. "seven-year-old") into words (e.g.
   // "seven", "year", and "old") and check their spellings. The result stirng is
   // encoded in UTF-16 since ICU needs UTF-16 strings.
-  base::string16 GetRuleSet(bool allow_contraction) const;
+  std::u16string GetRuleSet(bool allow_contraction) const;
 
   // Outputs a character only if it is a word character. (Please read the
   // comments in CreateRuleSets() why we need this function.)
-  bool OutputChar(UChar c, base::string16* output) const;
+  bool OutputChar(UChar c, std::u16string* output) const;
 
  private:
   // Creates the rule-sets that return words possibly used by the given
@@ -61,21 +67,19 @@ class SpellcheckCharAttribute {
 
   // Outputs a character only if it is one used by the given language. These
   // functions are called from OutputChar().
-  bool OutputArabic(UChar c, base::string16* output) const;
-  bool OutputHangul(UChar c, base::string16* output) const;
-  bool OutputHebrew(UChar c, base::string16* output) const;
-  bool OutputDefault(UChar c, base::string16* output) const;
+  bool OutputArabic(UChar c, std::u16string* output) const;
+  bool OutputHangul(UChar c, std::u16string* output) const;
+  bool OutputHebrew(UChar c, std::u16string* output) const;
+  bool OutputDefault(UChar c, std::u16string* output) const;
 
   // The custom rule-set strings used by ICU break iterator. Since it is not so
   // easy to create custom rule-sets from an ISO language code, this class
   // saves these rule-set strings created when we set the language.
-  base::string16 ruleset_allow_contraction_;
-  base::string16 ruleset_disallow_contraction_;
+  std::u16string ruleset_allow_contraction_;
+  std::u16string ruleset_disallow_contraction_;
 
   // The script code used by this language.
   UScriptCode script_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckCharAttribute);
 };
 
 // A class which extracts words that can be checked for spelling from a
@@ -101,11 +105,11 @@ class SpellcheckCharAttribute {
 //   // Set up a SpellcheckWordIterator object which extracts English words,
 //   // and retrieve them.
 //   SpellcheckWordIterator iterator;
-//   base::string16 text(base::UTF8ToUTF16("this is a test."));
+//   std::u16string text(u"this is a test.");
 //   iterator.Initialize(&attribute, true);
 //   iterator.SetText(text.c_str(), text_.length());
 //
-//   base::string16 word;
+//   std::u16string word;
 //   int offset;
 //   int length;
 //   while (iterator.GetNextWord(&word, &offset, &length)) {
@@ -126,6 +130,10 @@ class SpellcheckWordIterator {
   };
 
   SpellcheckWordIterator();
+
+  SpellcheckWordIterator(const SpellcheckWordIterator&) = delete;
+  SpellcheckWordIterator& operator=(const SpellcheckWordIterator&) = delete;
+
   ~SpellcheckWordIterator();
 
   // Initializes a word-iterator object with the language-specific attribute. If
@@ -141,7 +149,7 @@ class SpellcheckWordIterator {
   // Set text to be iterated. (This text does not have to be NULL-terminated.)
   // This function also resets internal state so we can reuse this iterator
   // without calling Initialize().
-  bool SetText(const base::char16* text, size_t length);
+  bool SetText(const char16_t* text, size_t length);
 
   // Advances |iterator_| through |text_| and gets the current status of the
   // word iterator within |text|:
@@ -166,7 +174,7 @@ class SpellcheckWordIterator {
   //
   //  - Returns IS_END_OF_TEXT if the iterator has reached the end of |text_|.
   SpellcheckWordIterator::WordIteratorStatus GetNextWord(
-      base::string16* word_string,
+      std::u16string* word_string,
       size_t* word_start,
       size_t* word_length);
 
@@ -183,10 +191,10 @@ class SpellcheckWordIterator {
   // characters.
   bool Normalize(size_t input_start,
                  size_t input_length,
-                 base::string16* output_string) const;
+                 std::u16string* output_string) const;
 
   // The pointer to the input string from which we are extracting words.
-  const base::char16* text_;
+  const char16_t* text_;
 
   // The language-specific attributes used for filtering out non-word
   // characters.
@@ -194,9 +202,6 @@ class SpellcheckWordIterator {
 
   // The break iterator.
   std::unique_ptr<base::i18n::BreakIterator> iterator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckWordIterator);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_WORDITERATOR_H_
-

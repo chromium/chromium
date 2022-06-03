@@ -1,11 +1,32 @@
 <head>
 <script>
+let useAlternateContent = false;
+
+function tick() {
+  let destination = document.getElementById('content');
+  let content = '';
+  if (useAlternateContent) {
+    content = '.';
+  }
+  useAlternateContent = !useAlternateContent;
+  destination.innerText = content;
+  setTimeout(tick, 1000);
+}
+
 function main() {
   if (window.domAutomationController) {
     domAutomationController.send("FINISHED");
   }
+
+  // This page is used in the main tab in a couple of dual-GPU tests
+  // on macOS. When running on the passthrough command decoder and
+  // ANGLE, ANGLE can only detect the need to switch GPUs upon context
+  // switch. Schedule a small amount of periodic rasterization work so
+  // that context switches occur in the GPU process.
+  setTimeout(tick, 1000);
 }
 </script>
 </head>
 <body onload="main()">
+<div id="content"></div>
 </body>

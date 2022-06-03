@@ -7,9 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/time/time.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/surfaces/surface_manager.h"
-#include "content/browser/compositor/surface_utils.h"
 
 namespace content {
 
@@ -31,7 +30,7 @@ EmbeddedFrameSinkImpl::EmbeddedFrameSinkImpl(
 }
 
 EmbeddedFrameSinkImpl::~EmbeddedFrameSinkImpl() {
-  if (has_created_compositor_frame_sink_) {
+  if (has_registered_compositor_frame_sink_) {
     host_frame_sink_manager_->UnregisterFrameSinkHierarchy(
         parent_frame_sink_id_, frame_sink_id_);
   }
@@ -41,9 +40,24 @@ EmbeddedFrameSinkImpl::~EmbeddedFrameSinkImpl() {
 void EmbeddedFrameSinkImpl::CreateCompositorFrameSink(
     mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
+  CreateFrameSink(/*bundle_id=*/absl::nullopt, std::move(client),
+                  std::move(receiver));
+}
+
+void EmbeddedFrameSinkImpl::CreateBundledCompositorFrameSink(
+    const viz::FrameSinkBundleId& bundle_id,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
+  CreateFrameSink(bundle_id, std::move(client), std::move(receiver));
+}
+
+void EmbeddedFrameSinkImpl::CreateFrameSink(
+    const absl::optional<viz::FrameSinkBundleId>& bundle_id,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
   // We might recreate the CompositorFrameSink on context loss or GPU crash.
   // Only register frame sink hierarchy the first time.
-  if (!has_created_compositor_frame_sink_) {
+  if (!has_registered_compositor_frame_sink_) {
     // The request to create an embedded frame sink and the lifetime of the
     // parent are controlled by different IPC channels. It's possible the parent
     // FrameSinkId has been invalidated by the time this request has arrived. In
@@ -54,10 +68,15 @@ void EmbeddedFrameSinkImpl::CreateCompositorFrameSink(
     }
   }
 
-  host_frame_sink_manager_->CreateCompositorFrameSink(
-      frame_sink_id_, std::move(receiver), std::move(client));
+  if (bundle_id.has_value()) {
+    host_frame_sink_manager_->CreateBundledCompositorFrameSink(
+        frame_sink_id_, *bundle_id, std::move(receiver), std::move(client));
+  } else {
+    host_frame_sink_manager_->CreateCompositorFrameSink(
+        frame_sink_id_, std::move(receiver), std::move(client));
+  }
 
-  has_created_compositor_frame_sink_ = true;
+  has_registered_compositor_frame_sink_ = true;
 }
 
 void EmbeddedFrameSinkImpl::ConnectToEmbedder(
@@ -69,9 +88,33 @@ void EmbeddedFrameSinkImpl::ConnectToEmbedder(
 void EmbeddedFrameSinkImpl::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {}
 
-void EmbeddedFrameSinkImpl::OnFrameTokenChanged(uint32_t frame_token) {
+void EmbeddedFrameSinkImpl::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
   // TODO(yiyix, fsamuel): To complete plumbing of frame tokens for offscreen
   // canvas
+}
+
+void EmbeddedFrameSinkImpl::RegisterFrameSinkHierarchy() {
+  if (!has_registered_compositor_frame_sink_ &&
+      host_frame_sink_manager_->RegisterFrameSinkHierarchy(
+          parent_frame_sink_id_, frame_sink_id_)) {
+    has_registered_compositor_frame_sink_ = true;
+    return;
+  }
+  DLOG(ERROR) << "Unable to register " << parent_frame_sink_id_
+              << " as parent of " << frame_sink_id_;
+}
+
+void EmbeddedFrameSinkImpl::UnregisterFrameSinkHierarchy() {
+  if (has_registered_compositor_frame_sink_) {
+    host_frame_sink_manager_->UnregisterFrameSinkHierarchy(
+        parent_frame_sink_id_, frame_sink_id_);
+    has_registered_compositor_frame_sink_ = false;
+    return;
+  }
+  DLOG(ERROR) << "Unable to unregister " << parent_frame_sink_id_
+              << " as parent of " << frame_sink_id_;
 }
 
 }  // namespace content

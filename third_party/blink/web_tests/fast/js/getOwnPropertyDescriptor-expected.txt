@@ -33,11 +33,6 @@ PASS Object.getOwnPropertyDescriptor(document.__proto__.__proto__, 'createElemen
 PASS Object.getOwnPropertyDescriptor(document.__proto__.__proto__, 'createElement').hasOwnProperty('set') is false
 PASS Object.getOwnPropertyDescriptor(document.__proto__.__proto__, 'createElement').enumerable is true
 PASS Object.getOwnPropertyDescriptor(document.__proto__.__proto__, 'createElement').configurable is true
-PASS Object.getOwnPropertyDescriptor(window, 'location').value is window.location
-PASS Object.getOwnPropertyDescriptor(window, 'location').hasOwnProperty('get') is false
-PASS Object.getOwnPropertyDescriptor(window, 'location').hasOwnProperty('set') is false
-PASS Object.getOwnPropertyDescriptor(window, 'location').enumerable is true
-PASS Object.getOwnPropertyDescriptor(window, 'location').configurable is false
 PASS Object.getOwnPropertyDescriptor(Number, 'NEGATIVE_INFINITY').value is Number.NEGATIVE_INFINITY
 PASS Object.getOwnPropertyDescriptor(Number, 'NEGATIVE_INFINITY').hasOwnProperty('get') is false
 PASS Object.getOwnPropertyDescriptor(Number, 'NEGATIVE_INFINITY').hasOwnProperty('set') is false
@@ -48,11 +43,11 @@ FAIL Object.getOwnPropertyDescriptor(RegExp, '$_').hasOwnProperty('get') should 
 FAIL Object.getOwnPropertyDescriptor(RegExp, '$_').hasOwnProperty('set') should be false. Was true.
 PASS Object.getOwnPropertyDescriptor(RegExp, '$_').enumerable is false
 PASS Object.getOwnPropertyDescriptor(RegExp, '$_').configurable is true
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').value should be true. Threw exception TypeError: Cannot read property 'value' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('get') should be false. Threw exception TypeError: Cannot read property 'hasOwnProperty' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('set') should be false. Threw exception TypeError: Cannot read property 'hasOwnProperty' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').enumerable should be false. Threw exception TypeError: Cannot read property 'enumerable' of undefined
-FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').configurable should be false. Threw exception TypeError: Cannot read property 'configurable' of undefined
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').value should be true. Threw exception TypeError: Cannot read properties of undefined (reading 'value')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('get') should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'hasOwnProperty')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').hasOwnProperty('set') should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'hasOwnProperty')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').enumerable should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'enumerable')
+FAIL Object.getOwnPropertyDescriptor(/a/g, 'global').configurable should be false. Threw exception TypeError: Cannot read properties of undefined (reading 'configurable')
 PASS Object.getOwnPropertyDescriptor(Node, 'DOCUMENT_POSITION_DISCONNECTED').value is Node.DOCUMENT_POSITION_DISCONNECTED
 PASS Object.getOwnPropertyDescriptor(Node, 'DOCUMENT_POSITION_DISCONNECTED').hasOwnProperty('get') is false
 PASS Object.getOwnPropertyDescriptor(Node, 'DOCUMENT_POSITION_DISCONNECTED').hasOwnProperty('set') is false
@@ -123,21 +118,11 @@ PASS Object.getOwnPropertyDescriptor(global, 'Infinity').hasOwnProperty('get') i
 PASS Object.getOwnPropertyDescriptor(global, 'Infinity').hasOwnProperty('set') is false
 PASS Object.getOwnPropertyDescriptor(global, 'Infinity').enumerable is false
 PASS Object.getOwnPropertyDescriptor(global, 'Infinity').configurable is false
-PASS Object.getOwnPropertyDescriptor(global, 'window').value is global
-PASS Object.getOwnPropertyDescriptor(global, 'window').hasOwnProperty('get') is false
-PASS Object.getOwnPropertyDescriptor(global, 'window').hasOwnProperty('set') is false
-PASS Object.getOwnPropertyDescriptor(global, 'window').enumerable is true
-PASS Object.getOwnPropertyDescriptor(global, 'window').configurable is false
 PASS Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').value is XMLHttpRequest
 PASS Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').hasOwnProperty('get') is false
 PASS Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').hasOwnProperty('set') is false
 PASS Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').enumerable is false
 PASS Object.getOwnPropertyDescriptor(global, 'XMLHttpRequest').configurable is true
-PASS Object.getOwnPropertyDescriptor(global, 'length').value is global.length
-PASS Object.getOwnPropertyDescriptor(global, 'length').hasOwnProperty('get') is false
-PASS Object.getOwnPropertyDescriptor(global, 'length').hasOwnProperty('set') is false
-PASS Object.getOwnPropertyDescriptor(global, 'length').enumerable is true
-FAIL Object.getOwnPropertyDescriptor(global, 'length').configurable should be false. Was true.
 PASS Object.getOwnPropertyDescriptor(global, 0).value is global[0]
 PASS Object.getOwnPropertyDescriptor(global, 0).hasOwnProperty('get') is false
 PASS Object.getOwnPropertyDescriptor(global, 0).hasOwnProperty('set') is false

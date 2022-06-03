@@ -4,7 +4,9 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")  # For branding_file_path.
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
+import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
@@ -14,12 +16,9 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
-
-if (enable_pdf) {
-  assert(enable_plugins, "PDF support requires plugins be enabled.")
-}
 
 grit("resources") {
   source = "common_resources.grd"
@@ -39,17 +38,18 @@ buildflag_header("buildflags") {
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_BASIC_PRINT_DIALOG=$enable_basic_print_dialog",
-    "ENABLE_CAPTIVE_PORTAL_DETECTION=$enable_captive_portal_detection",
+    "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
     "ENABLE_CLICK_TO_CALL=$enable_click_to_call",
+    "ENABLE_DOWNGRADE_PROCESSING=$enable_downgrade_processing",
     "ENABLE_HANGOUT_SERVICES_EXTENSION=$enable_hangout_services_extension",
     "ENABLE_ONE_CLICK_SIGNIN=$enable_one_click_signin",
-    "ENABLE_NATIVE_NOTIFICATIONS=$enable_native_notifications",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
     "ENABLE_SESSION_SERVICE=$enable_session_service",
+    "ENABLE_SIDE_SEARCH=$enable_side_search",
     "ENABLE_SUPERVISED_USERS=$enable_supervised_users",
+    "ENABLE_SYSTEM_NOTIFICATIONS=$enable_system_notifications",
     "ENABLE_WAYLAND_SERVER=$enable_wayland_server",
     "ENABLE_WEBUI_TAB_STRIP=$enable_webui_tab_strip",
-    "PGO_BUILD=$pgo_build",
     "OPTIMIZE_WEBUI=$optimize_webui",
   ]
 }
@@ -58,29 +58,33 @@ source_set("channel_info") {
   sources = [
     "channel_info.cc",
     "channel_info.h",
-    "channel_info_android.cc",
-    "channel_info_chromeos.cc",
-    "channel_info_mac.mm",
-    "channel_info_win.cc",
   ]
-  if (is_posix && !is_android && !is_chromeos && !is_mac) {
-    sources += [ "channel_info_posix.cc" ]
-  }
-
   deps = [
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
   ]
-
   public_deps = [
     "//base",
     "//components/version_info",
     "//components/version_info:version_string",
   ]
   if (is_win) {
+    sources += [ "channel_info_win.cc" ]
     public_deps += [ "//chrome/install_static:install_static_util" ]
-  }
-  if (is_android) {
+  } else if (is_mac) {
+    sources += [ "channel_info_mac.mm" ]
+  } else if (is_android) {
+    sources += [ "channel_info_android.cc" ]
     public_deps += [ "//components/version_info/android:channel_getter" ]
+  } else if (is_chromeos_ash) {
+    sources += [ "channel_info_chromeos.cc" ]
+    deps += [ "//chromeos/crosapi/cpp" ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "channel_info_lacros.cc" ]
+  } else if (is_posix) {
+    sources += [ "channel_info_posix.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "channel_info_fuchsia.cc" ]
   }
 }
 
@@ -89,9 +93,7 @@ source_set("ini_parser") {
     "ini_parser.cc",
     "ini_parser.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -99,80 +101,45 @@ source_set("ini_parser") {
 static_library("common") {
   sources = [
     "all_messages.h",
-    "attrition_experiments.h",
-    "auto_start_linux.cc",
-    "auto_start_linux.h",
+    "child_process_host_flags.h",
     "child_process_logging.h",
-    "child_process_logging_win.cc",
     "chrome_content_client.cc",
     "chrome_content_client.h",
     "chrome_content_client_constants.cc",
     "chrome_descriptors.h",
     "chrome_isolated_world_ids.h",
+    "chrome_resource_request_blocked_reason.h",
     "chrome_result_codes.h",
-    "client_hints/client_hints.cc",
-    "client_hints/client_hints.h",
     "common_message_generator.cc",
     "common_message_generator.h",
-    "component_flash_hint_file_linux.cc",
-    "component_flash_hint_file_linux.h",
-    "conflicts/module_watcher_win.cc",
-    "conflicts/module_watcher_win.h",
-    "conflicts/remote_module_watcher_win.cc",
-    "conflicts/remote_module_watcher_win.h",
     "content_restriction.h",
     "crash_keys.cc",
     "crash_keys.h",
-    "custom_handlers/protocol_handler.cc",
-    "custom_handlers/protocol_handler.h",
     "google_url_loader_throttle.cc",
     "google_url_loader_throttle.h",
-    "heap_profiler_controller.cc",
-    "heap_profiler_controller.h",
-    "instant_mojom_traits.h",
     "logging_chrome.cc",
     "logging_chrome.h",
-    "mac/launchd.h",
-    "mac/launchd.mm",
-    "mac/service_management.h",
-    "mac/service_management.mm",
-    "mac/staging_watcher.h",
-    "mac/staging_watcher.mm",
+    "media/cdm_registration.cc",
+    "media/cdm_registration.h",
     "media/media_resource_provider.cc",
     "media/media_resource_provider.h",
     "media_galleries/metadata_types.h",
     "multi_process_lock.h",
-    "multi_process_lock_linux.cc",
-    "multi_process_lock_mac.cc",
-    "multi_process_lock_win.cc",
-    "origin_trials/chrome_origin_trial_policy.cc",
-    "origin_trials/chrome_origin_trial_policy.h",
     "pdf_util.cc",
     "pdf_util.h",
     "pref_names_util.cc",
     "pref_names_util.h",
-    "prerender_messages.h",
-    "prerender_types.h",
-    "prerender_url_loader_throttle.cc",
-    "prerender_url_loader_throttle.h",
-    "prerender_util.cc",
-    "prerender_util.h",
     "ref_counted_util.h",
-    "render_messages.h",
+    "search/instant_mojom_traits.h",
     "search/instant_types.cc",
     "search/instant_types.h",
     "search/ntp_logging_events.h",
-    "secure_origin_whitelist.cc",
-    "secure_origin_whitelist.h",
+    "secure_origin_allowlist.cc",
+    "secure_origin_allowlist.h",
     "ssl_insecure_content.cc",
     "ssl_insecure_content.h",
     "url_constants.cc",
     "url_constants.h",
-    "web_application_info.cc",
-    "web_application_info.h",
-    "web_application_info_provider_param_traits.h",
-    "web_components_prefs.cc",
-    "web_components_prefs.h",
     "webui_url_constants.cc",
     "webui_url_constants.h",
   ]
@@ -194,20 +161,26 @@ static_library("common") {
     "//base",
     "//base:base_static",
     "//base:i18n",
+    "//build:branding_buildflags",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/app/theme:theme_resources",
     "//chrome/common:constants",
     "//chrome/common/net",
+    "//chrome/common/privacy_budget",
     "//chrome/common/profiler",
+    "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
+    "//chromeos/components/chromebox_for_meetings/buildflags",
     "//components/cast_certificate",
     "//components/cdm/common",
+    "//components/client_hints/common",
     "//components/cloud_devices/common",
     "//components/component_updater",
     "//components/content_settings/core/common",
     "//components/crash/core/common",
     "//components/dom_distiller/core",
+    "//components/embedder_support/origin_trials",
     "//components/error_page/common",
     "//components/favicon_base",
     "//components/flags_ui:switches",
@@ -229,7 +202,8 @@ static_library("common") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/web_ui:constants",
+    "//components/safe_browsing/core/common",
+    "//components/services/app_service/public/cpp:app_share_target",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",
     "//components/translate/content/common",
@@ -250,7 +224,7 @@ static_library("common") {
     "//pdf:buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
-    "//services/service_manager/sandbox",
+    "//sandbox/policy",
     "//skia",
     "//third_party/icu",
     "//third_party/re2",
@@ -268,11 +242,19 @@ static_library("common") {
   ]
 
   deps = [
-    "//build:branding_buildflags",
-    "//components/crash/content/app",
+    "//build:chromeos_buildflags",
+    "//build:os_buildflags",
+    "//components/google/core/common",
+    "//components/live_caption:constants",
     "//components/metrics:call_stack_profile_builder",
+    "//components/no_state_prefetch/common",
+    "//components/no_state_prefetch/common:mojo_bindings",
     "//components/page_load_metrics/common:common",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/common" ]
+  }
 
   if (enable_plugins) {
     public_deps += [ "//ppapi/shared_impl" ]
@@ -280,20 +262,14 @@ static_library("common") {
 
   if (enable_extensions) {
     sources += [
-      "cast_messages.cc",
-      "cast_messages.h",
       "extensions/api/commands/commands_handler.cc",
       "extensions/api/commands/commands_handler.h",
-      "extensions/api/extension_action/action_info.cc",
-      "extensions/api/extension_action/action_info.h",
       "extensions/api/notifications/notification_style.cc",
       "extensions/api/notifications/notification_style.h",
       "extensions/api/omnibox/omnibox_handler.cc",
       "extensions/api/omnibox/omnibox_handler.h",
       "extensions/api/speech/tts_engine_manifest_handler.cc",
       "extensions/api/speech/tts_engine_manifest_handler.h",
-      "extensions/api/spellcheck/spellcheck_handler.cc",
-      "extensions/api/spellcheck/spellcheck_handler.h",
       "extensions/api/storage/storage_schema_manifest_handler.cc",
       "extensions/api/storage/storage_schema_manifest_handler.h",
       "extensions/api/system_indicator/system_indicator_handler.cc",
@@ -314,18 +290,8 @@ static_library("common") {
       "extensions/extension_constants.h",
       "extensions/extension_metrics.cc",
       "extensions/extension_metrics.h",
-      "extensions/image_writer/image_writer_util_mac.cc",
-      "extensions/image_writer/image_writer_util_mac.h",
-      "extensions/manifest_handlers/app_display_mode_info.cc",
-      "extensions/manifest_handlers/app_display_mode_info.h",
-      "extensions/manifest_handlers/app_icon_color_info.cc",
-      "extensions/manifest_handlers/app_icon_color_info.h",
       "extensions/manifest_handlers/app_launch_info.cc",
       "extensions/manifest_handlers/app_launch_info.h",
-      "extensions/manifest_handlers/app_theme_color_info.cc",
-      "extensions/manifest_handlers/app_theme_color_info.h",
-      "extensions/manifest_handlers/extension_action_handler.cc",
-      "extensions/manifest_handlers/extension_action_handler.h",
       "extensions/manifest_handlers/linked_app_icons.cc",
       "extensions/manifest_handlers/linked_app_icons.h",
       "extensions/manifest_handlers/minimum_chrome_version_checker.cc",
@@ -336,8 +302,6 @@ static_library("common") {
       "extensions/manifest_handlers/settings_overrides_handler.h",
       "extensions/manifest_handlers/theme_handler.cc",
       "extensions/manifest_handlers/theme_handler.h",
-      "extensions/manifest_handlers/ui_overrides_handler.cc",
-      "extensions/manifest_handlers/ui_overrides_handler.h",
       "extensions/permissions/chrome_api_permissions.cc",
       "extensions/permissions/chrome_api_permissions.h",
       "extensions/permissions/chrome_permission_message_provider.cc",
@@ -363,26 +327,41 @@ static_library("common") {
       "//media/cast:net",
       "//services/device/public/cpp/usb",
     ]
-    if (is_chromeos) {
-      sources += [
-        "extensions/api/file_browser_handlers/file_browser_handler.cc",
-        "extensions/api/file_browser_handlers/file_browser_handler.h",
-        "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
-        "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
-        "extensions/api/input_ime/input_components_handler.cc",
-        "extensions/api/input_ime/input_components_handler.h",
-      ]
+  }
 
-      # This dependency is for a header used only by extensions code.
-      public_deps += [ "//ash/keyboard/ui" ]
-    }
+  if (!is_fuchsia) {
+    deps += [ "//components/crash/core/app" ]
   }
 
   if (is_mac) {
+    assert(enable_extensions)
+    sources += [
+      "extensions/image_writer/image_writer_util_mac.cc",
+      "extensions/image_writer/image_writer_util_mac.h",
+      "mac/launchd.h",
+      "mac/launchd.mm",
+      "mac/service_management.h",
+      "mac/service_management.mm",
+      "multi_process_lock_mac.cc",
+    ]
     public_deps += [ ":app_mode_app_support" ]
   }
-  if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+
+  if (is_chromeos_ash) {
+    assert(enable_extensions)
+    sources += [
+      "extensions/api/file_browser_handlers/file_browser_handler.cc",
+      "extensions/api/file_browser_handlers/file_browser_handler.h",
+      "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
+      "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
+      "extensions/api/input_ime/input_components_handler.cc",
+      "extensions/api/input_ime/input_components_handler.h",
+    ]
+    public_deps += [ "//ash/keyboard/ui" ]
+    deps += [
+      "//ash/constants",
+      "//chrome/common/chromeos/extensions",
+    ]
   }
 
   if (enable_nacl) {
@@ -396,28 +375,38 @@ static_library("common") {
       "//components/printing/common",
       "//printing",
     ]
-    if (enable_print_preview && !is_chromeos && !is_android) {
-      # |enable_print_preview| should be false if |is_android| is true.
-      # However, that is somewhat indirect. Part of The service_process_util
-      # code below is based on a model where the cloud print service is a
-      # long-lived process independent of chrome, which is not appropriate
-      # on android. To make that explicit |!is_android| is used above.
+    if (enable_print_preview && !is_chromeos_ash) {
+      # Part of the service_process_util code below is based on a model where
+      # the cloud print service is a long-lived process independent of chrome,
+      # which is not appropriate on android.
+      assert(!is_android)
       sources += [
         "service_process_util.cc",
         "service_process_util.h",
-        "service_process_util_linux.cc",
-        "service_process_util_mac.mm",
-        "service_process_util_win.cc",
       ]
+      if (is_linux || is_chromeos) {
+        sources += [ "service_process_util_linux.cc" ]
+      }
+      if (is_mac) {
+        sources += [ "service_process_util_mac.mm" ]
+      }
       if (is_posix) {
         sources += [
           "service_process_util_posix.cc",
           "service_process_util_posix.h",
         ]
       }
-    }
-    if (enable_print_preview && is_win) {
-      sources += [ "chrome_utility_printing_messages.h" ]
+      if (is_win) {
+        sources += [
+          "chrome_utility_printing_param_traits_macros.h",
+          "service_process_util_win.cc",
+        ]
+
+        public_deps += [
+          "//printing/backend",
+          "//printing/mojom",
+        ]
+      }
     }
   }
 
@@ -433,10 +422,20 @@ static_library("common") {
   }
 
   if (is_win) {
+    sources += [
+      "child_process_logging_win.cc",
+      "conflicts/module_watcher_win.cc",
+      "conflicts/module_watcher_win.h",
+      "conflicts/remote_module_watcher_win.cc",
+      "conflicts/remote_module_watcher_win.h",
+      "multi_process_lock_win.cc",
+      "protobuf_init.cc",
+      "protobuf_init.h",
+    ]
     deps += [
       "//chrome/chrome_elf:chrome_elf_main_include",
       "//chrome/common/win:eventlog_messages",
-      "//components/crash/content/app:crash_export_thunk_include",
+      "//components/crash/core/app:crash_export_thunk_include",
     ]
 
     public_deps += [
@@ -457,19 +456,14 @@ static_library("common") {
   if (is_mac) {
     public_deps += [ "//third_party/google_toolbox_for_mac" ]
 
-    libs = [ "ServiceManagement.framework" ]
+    frameworks = [ "ServiceManagement.framework" ]
   }
 
   if (enable_plugins) {
     sources += [
-      "pepper_flash.cc",
-      "pepper_flash.h",
-      "plugin_utils.cc",
-      "plugin_utils.h",
       "ppapi_utils.cc",
       "ppapi_utils.h",
     ]
-    public_deps += [ "//third_party/adobe/flash:flapper_version_h" ]
   }
   if (enable_plugins && enable_extensions) {
     sources += [
@@ -479,14 +473,10 @@ static_library("common") {
   }
 
   if (enable_library_cdms) {
-    sources += [
-      "media/cdm_manifest.cc",
-      "media/cdm_manifest.h",
-    ]
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by chrome_content_client.cc
 
     if (enable_widevine) {
-      if (is_desktop_linux) {
+      if (is_linux || is_chromeos_lacros) {
         sources += [
           "media/component_widevine_cdm_hint_file_linux.cc",
           "media/component_widevine_cdm_hint_file_linux.h",
@@ -500,14 +490,16 @@ static_library("common") {
     public_deps += [ "//chrome/common/safe_browsing" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
+    sources += [
+      "auto_start_linux.cc",
+      "auto_start_linux.h",
+      "multi_process_lock_linux.cc",
+    ]
     deps += [ "//sandbox/linux:sandbox_services" ]
   }
 
   if (enable_cdm_host_verification) {
-    if (is_win && is_multi_dll_chrome) {
-      defines += [ "CHROME_MULTIPLE_DLL" ]
-    }
     sources += [
       "media/cdm_host_file_path.cc",
       "media/cdm_host_file_path.h",
@@ -537,22 +529,25 @@ static_library("non_code_constants") {
   sources = [
     "chrome_constants.cc",
     "chrome_constants.h",
-    "chrome_icon_resources_win.h",
     "chrome_switches.cc",
     "chrome_switches.h",
     "env_vars.cc",
     "env_vars.h",
   ]
+  if (is_win) {
+    sources += [ "chrome_icon_resources_win.h" ]
+  }
 
   deps = [
     ":buildflags",
     ":version_header",
     "//base",
-    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//ppapi/buildflags",
   ]
 
   public_deps = [
+    "//build:branding_buildflags",
     "//printing/buildflags",
     "//ui/base:buildflags",
   ]
@@ -570,6 +565,7 @@ component("chrome_features") {
     ":buildflags",
     ":non_code_constants",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/offline_pages/buildflags",
     "//device/vr/buildflags",
     "//extensions/buildflags",
@@ -580,20 +576,14 @@ component("chrome_features") {
     "//rlz/buildflags",
   ]
 
-  public_deps = [
-    "//ui/base:buildflags",
-  ]
+  public_deps = [ "//ui/base:buildflags" ]
 }
 
 static_library("constants") {
   sources = [
     "chrome_paths.cc",
     "chrome_paths.h",
-    "chrome_paths_android.cc",
     "chrome_paths_internal.h",
-    "chrome_paths_linux.cc",
-    "chrome_paths_mac.mm",
-    "chrome_paths_win.cc",
     "chrome_result_codes.h",
     "pref_font_script_names-inl.h",
     "pref_font_webkit_names.h",
@@ -607,6 +597,7 @@ static_library("constants") {
     ":non_code_constants",
     "//content/public/common:result_codes",
     "//rlz/buildflags",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   deps = [
@@ -615,6 +606,7 @@ static_library("constants") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//components/bookmarks/common",
     "//components/nacl/common:switches",
     "//components/offline_pages/buildflags",
@@ -625,11 +617,9 @@ static_library("constants") {
     "//third_party/widevine/cdm:buildflags",
   ]
 
-  if (enable_extensions) {
-    public_deps += [ "//components/services/app_service/public/mojom" ]
-  }
-
   if (is_android) {
+    sources += [ "chrome_paths_android.cc" ]
+
     # This dependency must only be added for Android.
     #
     # On Windows, //chrome/installer/util depends on this target to get
@@ -642,29 +632,30 @@ static_library("constants") {
     # implemented in //ui/base, so we need that dependency.
     deps += [ "//ui/base" ]
   }
-
+  if (is_chromeos_lacros) {
+    sources += [
+      "chrome_paths_lacros.cc",
+      "chrome_paths_lacros.h",
+    ]
+    deps += [ "//chromeos/crosapi/cpp" ]
+  } else if (is_linux || is_chromeos) {
+    sources += [ "chrome_paths_linux.cc" ]
+  }
+  if (is_mac) {
+    sources += [ "chrome_paths_mac.mm" ]
+  }
   if (is_win) {
+    sources += [ "chrome_paths_win.cc" ]
     deps += [ "//chrome/install_static:install_static_util" ]
+  }
+  if (is_fuchsia) {
+    sources += [ "chrome_paths_fuchsia.cc" ]
   }
 
   if (enable_widevine && enable_library_cdms) {
     deps += [
       "//media/cdm:cdm_paths",  # Needed by chrome_paths.cc.
       "//third_party/widevine/cdm:headers",
-    ]
-  }
-}
-
-if (is_win) {
-  source_set("metrics_constants_util_win") {
-    sources = [
-      "metrics_constants_util_win.cc",
-      "metrics_constants_util_win.h",
-    ]
-
-    deps = [
-      "//base",
-      "//chrome/install_static:install_static_util",
     ]
   }
 }
@@ -682,13 +673,11 @@ static_library("test_support") {
 
   deps = [
     ":common",
-    ":search_mojom",
     "//base",
+    "//chrome/common/search:mojo_bindings",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   if (enable_extensions) {
     sources += [
@@ -699,20 +688,22 @@ static_library("test_support") {
   }
 }
 
-source_set("app_mode_app_support") {
-  sources = [
-    "mac/app_mode_chrome_locator.h",
-    "mac/app_mode_chrome_locator.mm",
-    "mac/app_mode_common.h",
-    "mac/app_mode_common.mm",
-  ]
+if (is_mac) {
+  source_set("app_mode_app_support") {
+    sources = [
+      "mac/app_mode_chrome_locator.h",
+      "mac/app_mode_chrome_locator.mm",
+      "mac/app_mode_common.h",
+      "mac/app_mode_common.mm",
+    ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    ":constants",
-    "//base",
-  ]
+    deps = [
+      ":constants",
+      "//base",
+    ]
+  }
 }
 
 mojom("mojo_bindings") {
@@ -721,18 +712,19 @@ mojom("mojo_bindings") {
   sources = [
     "cache_stats_recorder.mojom",
     "chrome_render_frame.mojom",
-    "content_settings_agent.mojom",
-    "content_settings_manager.mojom",
+    "draggable_regions.mojom",
+    "lite_video_service.mojom",
     "media/webrtc_logging.mojom",
     "metrics.mojom",
-    "navigation_corrector.mojom",
+    "net/net_error_page_support.mojom",
     "net_benchmarking.mojom",
     "network_diagnostics.mojom",
     "network_easter_egg.mojom",
     "open_search_description_document_handler.mojom",
     "plugin.mojom",
-    "prerender.mojom",
+    "previews_resource_loading_hints.mojom",
     "renderer_configuration.mojom",
+    "subresource_redirect_service.mojom",
     "sync_encryption_keys_extension.mojom",
   ]
 
@@ -753,11 +745,13 @@ mojom("mojo_bindings") {
   if (enable_offline_pages) {
     sources += [ "mhtml_page_notifier.mojom" ]
     deps += [ "//third_party/blink/public/mojom:mojom_mhtml_load_result" ]
+    enabled_features = [ "enable_offline_pages" ]
   }
 
   public_deps = [
+    "//components/content_settings/common:mojom",
     "//components/content_settings/core/common:mojo_bindings",
-    "//content/public/common:client_hints_mojom",
+    "//components/no_state_prefetch/common:mojo_bindings",
     "//content/public/common:interfaces",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mojom_platform",
@@ -783,49 +777,48 @@ mojom("mojo_bindings") {
   component_deps = [ "//content/public/common" ]
 }
 
-mojom("search_mojom") {
-  sources = [
-    "search.mojom",
-  ]
-
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//url/mojom:url_mojom_gurl",
-  ]
-}
-
-if (enable_print_preview && !is_chromeos) {
+if (enable_print_preview && !is_chromeos_ash) {
   mojom("service_process_mojom") {
     sources = [
       "cloud_print.mojom",
       "service_process.mojom",
     ]
-    public_deps = [
-      "//mojo/public/mojom/base",
-    ]
+    public_deps = [ "//mojo/public/mojom/base" ]
   }
 }
 
 mojom("supervised_user_commands_mojom") {
-  sources = [
-    "supervised_user_commands.mojom",
-  ]
+  sources = [ "supervised_user_commands.mojom" ]
 }
 
 mojom("available_offline_content_mojom") {
-  sources = [
-    "available_offline_content.mojom",
-  ]
-  public_deps = [
-    "//url/mojom:url_mojom_gurl",
-  ]
+  sources = [ "available_offline_content.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
 
 mojom("offline_page_auto_fetcher_mojom") {
-  sources = [
-    "offline_page_auto_fetcher.mojom",
-  ]
-  public_deps = [
-    "//url/mojom:url_mojom_gurl",
-  ]
+  sources = [ "offline_page_auto_fetcher.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+}
+
+if (enable_basic_printing && is_win) {
+  mojom("cloud_print_utility_mojom") {
+    sources = [ "cloud_print_utility.mojom" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "chrome.mojom.PrinterCapsAndDefaults"
+            cpp = "::printing::PrinterCapsAndDefaults"
+          },
+          {
+            mojom = "chrome.mojom.PrinterSemanticCapsAndDefaults"
+            cpp = "::printing::PrinterSemanticCapsAndDefaults"
+          },
+        ]
+        traits_headers = [ "chrome_utility_printing_param_traits_macros.h" ]
+        traits_public_deps = [ ":common" ]
+      },
+    ]
+  }
 }

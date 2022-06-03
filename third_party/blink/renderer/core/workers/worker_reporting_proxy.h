@@ -52,7 +52,6 @@ class CORE_EXPORT WorkerReportingProxy {
   virtual ~WorkerReportingProxy() = default;
 
   virtual void CountFeature(WebFeature) {}
-  virtual void CountDeprecation(WebFeature) {}
   virtual void ReportException(const String& error_message,
                                std::unique_ptr<SourceLocation>,
                                int exception_id) {}
@@ -98,13 +97,9 @@ class CORE_EXPORT WorkerReportingProxy {
   // Invoked when the worker's main module script is about to be evaluated.
   virtual void WillEvaluateModuleScript() {}
 
-  // Invoked when the main classic script is evaluated. |success| is true if the
+  // Invoked when the worker main script is evaluated. |success| is true if the
   // evaluation completed with no uncaught exception.
-  virtual void DidEvaluateClassicScript(bool success) {}
-
-  // Invoked when the worker's main module script is evaluated. |success| is
-  // true if the evaluation completed with no uncaught exception.
-  virtual void DidEvaluateModuleScript(bool success) {}
+  virtual void DidEvaluateTopLevelScript(bool success) {}
 
   // Invoked when close() is invoked on the worker context.
   virtual void DidCloseWorkerGlobalScope() {}

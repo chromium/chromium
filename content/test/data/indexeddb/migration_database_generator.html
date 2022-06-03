@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<!--
+  Copyright 2020 The Chromium Authors. All rights reserved.
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<head>
+<body>
+<input type="file" id="files" name="file1" multiple
+       onchange="handleFilesAndStart(this.files)">
+</form>
+</body>
+<!-- Create a database to be migrated & verified by a browsertest. -->
+<title>IDB Database generator</title>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+const dbName = 'db_migration_test';
+const objectStoreName = 'storeName';
+const indexes = [
+  { name: 'name', value: 'name' },
+  { name: 'nameAndFlagged', value: ['name', 'flagged'] },
+];
+
+const objectStoreData = [
+  { id: 0, name: 'Daniel', flagged: true, data: new Blob(['testData1']) },
+  { id: 1, name: 'Henry', flagged: false,
+    data: new Blob(['testData2'], { type: 'application/test' }) },
+  { id: 2, name: 'Sarah', flagged: true, data: null },
+  { id: 3, name: 'Dave', flagged: false, data: null },
+  { id: 4, name: 'Courtney', flagged: true, data: null },
+  { id: 5, name: 'Ruthie', flagged: false, data: new Blob() },
+];
+
+
+function upgradeCallback(db) {
+  debug('upgrade called');
+  var os = db.createObjectStore(objectStoreName, { keyPath : 'id' });
+  for (let index of indexes)
+    os.createIndex(index.name, index.value);
+  for (let row of objectStoreData)
+    os.add(row);
+  debug('upgrade done');
+}
+
+
+async function handleFilesAndStart(files) {
+  if (files.length != 3) {
+    fail('There needs to be 3 files: ' + files);
+    return;
+  }
+  objectStoreData[2].data = files[0];
+  objectStoreData[3].data = files[1];
+  objectStoreData[4].data = files[2];
+
+  let db = await promiseDeleteThenOpenDb('blob_corrupt_db', upgradeCallback);
+  done('database opened');
+}
+
+</script>
+</head>
+<div id="status">
+Select 3 files from the dialog above, and they will be saved into the database.
+<br/>Waiting for files...
+</div>
+</html>

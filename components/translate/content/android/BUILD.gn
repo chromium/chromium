@@ -1,0 +1,110 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-hdpi/infobar_translate_compact.png",
+    "java/res/drawable-mdpi/infobar_translate_compact.png",
+    "java/res/drawable-xhdpi/infobar_translate_compact.png",
+    "java/res/drawable-xxhdpi/infobar_translate_compact.png",
+    "java/res/drawable-xxxhdpi/infobar_translate_compact.png",
+    "java/res/layout/infobar_translate_tab_content.xml",
+    "java/res/layout/translate_menu_extended_item.xml",
+    "java/res/layout/translate_menu_item.xml",
+    "java/res/layout/translate_menu_item_checked.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:components_strings_grd",
+    "//third_party/android_deps:material_design_java",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/translate/TranslateFeatureList.java",
+    "java/src/org/chromium/components/translate/TranslateMenu.java",
+    "java/src/org/chromium/components/translate/TranslateMenuHelper.java",
+    "java/src/org/chromium/components/translate/TranslateOptions.java",
+    "java/src/org/chromium/components/translate/TranslateTabContent.java",
+    "java/src/org/chromium/components/translate/TranslateTabLayout.java",
+  ]
+  resources_package = "org.chromium.components.translate"
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+static_library("android") {
+  sources = [
+    "translate_feature_list.cc",
+    "translate_utils.cc",
+    "translate_utils.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/language/core/common",
+    "//components/metrics",
+    "//components/translate/core/browser",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/translate/TranslateFeatureList.java" ]
+}
+
+java_cpp_enum("translate_android_enums") {
+  sources = [ "translate_utils.h" ]
+}
+
+android_library("translate_android_enums_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+  srcjar_deps = [ ":translate_android_enums" ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources =
+      [ "java/src/org/chromium/components/translate/TranslateOptionsTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "translate_utils_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base",
+    "//components/infobars/core",
+    "//components/metrics:metrics",
+    "//components/translate/core/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

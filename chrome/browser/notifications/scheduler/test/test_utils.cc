@@ -7,7 +7,8 @@
 #include <sstream>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
@@ -17,13 +18,19 @@ namespace test {
 
 ImpressionTestData::ImpressionTestData(
     SchedulerClientType type,
-    int current_max_daily_show,
+    size_t current_max_daily_show,
     std::vector<Impression> impressions,
-    base::Optional<SuppressionInfo> suppression_info)
+    absl::optional<SuppressionInfo> suppression_info,
+    size_t negative_events_count,
+    absl::optional<base::Time> last_negative_event_ts,
+    absl::optional<base::Time> last_shown_ts)
     : type(type),
       current_max_daily_show(current_max_daily_show),
       impressions(std::move(impressions)),
-      suppression_info(std::move(suppression_info)) {}
+      suppression_info(std::move(suppression_info)),
+      negative_events_count(negative_events_count),
+      last_negative_event_ts(last_negative_event_ts),
+      last_shown_ts(last_shown_ts) {}
 
 ImpressionTestData::ImpressionTestData(const ImpressionTestData& other) =
     default;
@@ -39,13 +46,16 @@ void AddImpressionTestData(const ImpressionTestData& data,
     client_state->impressions.emplace_back(impression);
   }
   client_state->suppression_info = data.suppression_info;
+  client_state->negative_events_count = data.negative_events_count;
+  client_state->last_shown_ts = data.last_shown_ts;
+  client_state->last_negative_event_ts = data.last_negative_event_ts;
 }
 
 void AddImpressionTestData(
-    const std::vector<ImpressionTestData>& test_data,
+    const std::vector<ImpressionTestData>& test_data_vec,
     ImpressionHistoryTracker::ClientStates* client_states) {
   DCHECK(client_states);
-  for (const auto& test_data : test_data) {
+  for (const auto& test_data : test_data_vec) {
     auto client_state = std::make_unique<ClientState>();
     AddImpressionTestData(test_data, client_state.get());
     client_states->emplace(test_data.type, std::move(client_state));
@@ -53,10 +63,10 @@ void AddImpressionTestData(
 }
 
 void AddImpressionTestData(
-    const std::vector<ImpressionTestData>& test_data,
+    const std::vector<ImpressionTestData>& test_data_vec,
     std::vector<std::unique_ptr<ClientState>>* client_states) {
   DCHECK(client_states);
-  for (const auto& test_data : test_data) {
+  for (const auto& test_data : test_data_vec) {
     auto client_state = std::make_unique<ClientState>();
     AddImpressionTestData(test_data, client_state.get());
     client_states->emplace_back(std::move(client_state));
@@ -110,9 +120,6 @@ std::string DebugString(const NotificationEntry* entry) {
     stream << " \n large_icons_id:"
            << entry->icons_uuid.at(IconType::kLargeIcon);
 
-  if (entry->schedule_params.custom_suppression_duration.has_value())
-    stream << " \n custom_suppression_duration:"
-           << entry->schedule_params.custom_suppression_duration.value();
   return stream.str();
 }
 
@@ -121,9 +128,25 @@ std::string DebugString(const ClientState* client_state) {
   std::string log = base::StringPrintf(
       "Client state: type: %d \n"
       "current_max_daily_show: %d \n"
-      "impressions.size(): %zu \n",
+      "impressions.size(): %zu \n"
+      "negative_events_count: %zu \n",
       static_cast<int>(client_state->type),
-      client_state->current_max_daily_show, client_state->impressions.size());
+      client_state->current_max_daily_show, client_state->impressions.size(),
+      client_state->negative_events_count);
+
+  if (client_state->last_negative_event_ts.has_value()) {
+    std::ostringstream stream;
+    stream << "last negative event timestamp: ",
+        client_state->last_negative_event_ts.value();
+    log += stream.str();
+  }
+
+  if (client_state->last_shown_ts.has_value()) {
+    std::ostringstream stream;
+    stream << "last shown notification timestamp: ",
+        client_state->last_shown_ts.value();
+    log += stream.str();
+  }
 
   for (const auto& impression : client_state->impressions) {
     std::ostringstream stream;
@@ -149,10 +172,6 @@ std::string DebugString(const ClientState* client_state) {
              << " value: " << pair.second;
     }
 
-    if (impression.custom_suppression_duration.has_value()) {
-      stream << " \n custom suppression duration  "
-             << impression.custom_suppression_duration.value();
-    }
     log += stream.str();
   }
 
@@ -164,7 +183,6 @@ std::string DebugString(const ClientState* client_state) {
            << "recover_goal:" << client_state->suppression_info->recover_goal;
     log += stream.str();
   }
-
   return log;
 }
 

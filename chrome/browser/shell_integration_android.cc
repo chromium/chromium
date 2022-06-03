@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/shell_integration.h"
 
 namespace shell_integration {
@@ -23,9 +23,9 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
   return SET_DEFAULT_NOT_ALLOWED;
 }
 
-base::string16 GetApplicationNameForProtocol(const GURL& url) {
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
   NOTIMPLEMENTED();
-  return base::string16();
+  return std::u16string();
 }
 
 DefaultWebClientState GetDefaultBrowser() {

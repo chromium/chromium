@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -51,7 +51,7 @@ enum class WorkerType {
   DEDICATED_WORKER = 1,
   SHARED_WORKER = 2,
   SERVICE_WORKER = 3,
-  MAX
+  kMaxValue = SERVICE_WORKER,
 };
 }  // namespace
 
@@ -64,10 +64,7 @@ FileReaderSync::FileReaderSync(ExecutionContext* context)
     type = WorkerType::SHARED_WORKER;
   else if (context->IsServiceWorkerGlobalScope())
     type = WorkerType::SERVICE_WORKER;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      EnumerationHistogram, worker_type_histogram,
-      ("FileReaderSync.WorkerType", static_cast<int>(WorkerType::MAX)));
-  worker_type_histogram.Count(static_cast<int>(type));
+  base::UmaHistogramEnumeration("FileReaderSync.WorkerType", type);
 }
 
 DOMArrayBuffer* FileReaderSync::readAsArrayBuffer(

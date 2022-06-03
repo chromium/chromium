@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -177,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(), ui::AXMode(),
                                           ax::mojom::Event::kLoadComplete);
-  BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
       ui::AXMode::kScreenReader);
   waiter2.WaitForNotification();
 
@@ -187,6 +188,26 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
   EXPECT_TRUE(
       textbox2->HasStringAttribute(ax::mojom::StringAttribute::kPlaceholder));
   EXPECT_EQ(original_id, textbox2->GetId());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
+                       ReEnablingAccessibilityDoesNotTimeout) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
+  ASSERT_TRUE(web_contents()->GetAccessibilityMode().is_mode_off());
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents());
+  web_contents()->AddAccessibilityMode(ui::kAXModeWebContentsOnly);
+  EXPECT_TRUE(web_contents()->GetAccessibilityMode() ==
+              ui::kAXModeWebContentsOnly);
+  waiter.WaitForNotification();
+  EXPECT_EQ(nullptr, GetManager());
+
+  AccessibilityNotificationWaiter waiter2(shell()->web_contents());
+  web_contents()->SetAccessibilityMode(ui::AXMode());
+  web_contents()->AddAccessibilityMode(ui::kAXModeComplete);
+  EXPECT_TRUE(web_contents()->GetAccessibilityMode() == ui::kAXModeComplete);
+  waiter2.WaitForNotification();
+  EXPECT_NE(nullptr, GetManager());
 }
 
 }  // namespace content

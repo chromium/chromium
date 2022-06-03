@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/passwords/account_chooser_dialog_view.h"
 
+#include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -16,11 +18,12 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -34,69 +37,26 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
-// Maximum height of the credential list. The unit is one row's height.
-constexpr double kMaxHeightAccounts = 3.5;
-
-// Creates a list view of credentials in |forms|.
-views::ScrollView* CreateCredentialsView(
-    const CredentialManagerDialogController::FormsVector& forms,
-    views::ButtonListener* button_listener,
-    network::mojom::URLLoaderFactory* loader_factory) {
-  auto list_view = std::make_unique<views::View>();
-  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  int item_height = 0;
-  for (const auto& form : forms) {
-    std::pair<base::string16, base::string16> titles =
-        GetCredentialLabelsForAccountChooser(*form);
-    CredentialsItemView* credential_view =
-        new CredentialsItemView(button_listener, titles.first, titles.second,
-                                kButtonHoverColor, form.get(), loader_factory);
-    credential_view->SetLowerLabelColor(kAutoSigninTextColor);
-    ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-    gfx::Insets insets =
-        layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
-    const int vertical_padding = layout_provider->GetDistanceMetric(
-        views::DISTANCE_RELATED_CONTROL_VERTICAL);
-    credential_view->SetBorder(views::CreateEmptyBorder(
-        vertical_padding, insets.left(), vertical_padding, insets.right()));
-    item_height = std::max(item_height, credential_view->GetPreferredHeight());
-    list_view->AddChildView(credential_view);
-  }
-  views::ScrollView* scroll_view = new views::ScrollView;
-  scroll_view->ClipHeightTo(0, kMaxHeightAccounts * item_height);
-  scroll_view->SetContents(std::move(list_view));
-  return scroll_view;
-}
-
-std::unique_ptr<views::View> CreateGoogleAccountFooter() {
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
-      ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY);
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return label;
-}
-
-}  // namespace
-
 AccountChooserDialogView::AccountChooserDialogView(
     CredentialManagerDialogController* controller,
     content::WebContents* web_contents)
-    : controller_(controller),
-      web_contents_(web_contents),
-      show_signin_button_(false) {
+    : controller_(controller), web_contents_(web_contents) {
   DCHECK(controller);
   DCHECK(web_contents);
-  DialogDelegate::set_button_label(
+  SetButtons(ui::DIALOG_BUTTON_CANCEL);
+  SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   set_close_on_deactivate(false);
-  if (controller_->ShouldShowFooter())
-    DialogDelegate::SetFootnoteView(CreateGoogleAccountFooter());
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  if (controller_->ShouldShowFooter()) {
+    auto* label = SetFootnoteView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
+        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+    label->SetMultiLine(true);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
   SetArrow(views::BubbleBorder::NONE);
   set_margins(gfx::Insets(margins().top(), 0, margins().bottom(), 0));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ACCOUNT_CHOOSER);
@@ -105,7 +65,12 @@ AccountChooserDialogView::AccountChooserDialogView(
 AccountChooserDialogView::~AccountChooserDialogView() = default;
 
 void AccountChooserDialogView::ShowAccountChooser() {
-  show_signin_button_ = controller_->ShouldShowSignInButton();
+  // It isn't known until after the creation of this dialog whether the sign-in
+  // button should be shown, so always reset the button state here.
+  SetButtons(controller_->ShouldShowSignInButton()
+                 ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
+                 : ui::DIALOG_BUTTON_CANCEL);
+  DialogModelChanged();
   InitWindow();
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
 }
@@ -117,11 +82,7 @@ void AccountChooserDialogView::ControllerGone() {
   controller_ = nullptr;
 }
 
-ui::ModalType AccountChooserDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-base::string16 AccountChooserDialogView::GetWindowTitle() const {
+std::u16string AccountChooserDialogView::GetWindowTitle() const {
   return controller_->GetAccoutChooserTitle();
 }
 
@@ -135,40 +96,59 @@ void AccountChooserDialogView::WindowClosing() {
 }
 
 bool AccountChooserDialogView::Accept() {
-  DCHECK(show_signin_button_);
   DCHECK(controller_);
   controller_->OnSignInClicked();
   // The dialog is closed by the controller.
   return false;
 }
 
-int AccountChooserDialogView::GetDialogButtons() const {
-  if (show_signin_button_)
-    return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
-  return ui::DIALOG_BUTTON_CANCEL;
+void AccountChooserDialogView::InitWindow() {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  views::ScrollView* scroll_view =
+      AddChildView(std::make_unique<views::ScrollView>());
+  auto* list_view = scroll_view->SetContents(std::make_unique<views::View>());
+  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  int item_height = 0;
+  for (const auto& form : controller_->GetLocalForms()) {
+    const auto titles = GetCredentialLabelsForAccountChooser(*form);
+    auto* credential_view =
+        list_view->AddChildView(std::make_unique<CredentialsItemView>(
+            base::BindRepeating(
+                &AccountChooserDialogView::CredentialsItemPressed,
+                base::Unretained(this), base::Unretained(form.get())),
+            titles.first, titles.second, form.get(),
+            web_contents_->GetBrowserContext()
+                ->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess()
+                .get()));
+    credential_view->SetStoreIndicatorIcon(form->in_store);
+    ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+    gfx::Insets insets =
+        layout_provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
+    const int vertical_padding = layout_provider->GetDistanceMetric(
+        views::DISTANCE_RELATED_CONTROL_VERTICAL);
+    credential_view->SetBorder(views::CreateEmptyBorder(
+        vertical_padding, insets.left(), vertical_padding, insets.right()));
+    item_height = std::max(item_height, credential_view->GetPreferredHeight());
+  }
+  constexpr float kMaxVisibleItems = 3.5;
+  scroll_view->ClipHeightTo(0, kMaxVisibleItems * item_height);
 }
 
-void AccountChooserDialogView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  CredentialsItemView* view = static_cast<CredentialsItemView*>(sender);
+void AccountChooserDialogView::CredentialsItemPressed(
+    const password_manager::PasswordForm* form) {
   // On Mac the button click event may be dispatched after the dialog was
-  // hidden. Thus, the controller can be NULL.
+  // hidden. Thus, the controller can be null.
   if (controller_) {
     controller_->OnChooseCredentials(
-        *view->form(),
-        password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
+        *form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
   }
 }
 
-void AccountChooserDialogView::InitWindow() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(CreateCredentialsView(
-      controller_->GetLocalForms(), this,
-      content::BrowserContext::GetDefaultStoragePartition(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get()));
-}
+BEGIN_METADATA(AccountChooserDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 AccountChooserPrompt* CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,

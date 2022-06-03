@@ -1,0 +1,4 @@
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org
+# Translation artifacts:
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/filters/ivf_parser.h"
 #include "media/filters/vp9_parser.h"

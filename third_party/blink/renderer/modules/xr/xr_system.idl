@@ -1,0 +1,18 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://immersive-web.github.io/webxr/#xrsystem-interface
+[
+    SecureContext,
+    Exposed=Window,
+    RuntimeEnabled=WebXR
+] interface XRSystem : EventTarget {
+  attribute EventHandler ondevicechange;
+  [CallWith=ScriptState, DeprecateAs=XRSupportsSession, RaisesException] Promise<void> supportsSession(XRSessionMode mode);
+  [CallWith=ScriptState, MeasureAs=XRIsSessionSupported, RaisesException] Promise<boolean> isSessionSupported(XRSessionMode mode);
+  [CallWith=ScriptState, MeasureAs=XRRequestSession, RaisesException] Promise<XRSession> requestSession(XRSessionMode mode, optional XRSessionInit options = {});
+};
+
+// For backwards compatibility with previous interface name.
+typedef XRSystem XR;

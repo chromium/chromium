@@ -12,6 +12,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 namespace {
 
@@ -29,11 +31,9 @@ scoped_refptr<Extension> LoadManifest(const std::string& dir,
 
   std::string error;
   scoped_refptr<Extension> extension =
-      Extension::Create(path,
-                        Manifest::INVALID_LOCATION,
+      Extension::Create(path, mojom::ManifestLocation::kInvalidLocation,
                         *static_cast<base::DictionaryValue*>(result.get()),
-                        Extension::NO_FLAGS,
-                        &error);
+                        Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get()) << error;
 
   return extension;
@@ -71,42 +71,26 @@ TEST_F(ChromeInfoMapTest, CheckPermissions) {
   // chrome-extension URL or from its web extent.
   const Extension* match = info_map->extensions().GetExtensionOrAppByURL(
       app->GetResourceURL("a.html"));
-  EXPECT_TRUE(match &&
-              match->permissions_data()->HasAPIPermission(
-                  APIPermission::kNotifications));
+  EXPECT_TRUE(match && match->permissions_data()->HasAPIPermission(
+                           APIPermissionID::kNotifications));
   match = info_map->extensions().GetExtensionOrAppByURL(app_url);
-  EXPECT_TRUE(match &&
-              match->permissions_data()->HasAPIPermission(
-                  APIPermission::kNotifications));
-  EXPECT_FALSE(
-      match &&
-      match->permissions_data()->HasAPIPermission(APIPermission::kTab));
+  EXPECT_TRUE(match && match->permissions_data()->HasAPIPermission(
+                           APIPermissionID::kNotifications));
+  EXPECT_FALSE(match && match->permissions_data()->HasAPIPermission(
+                            APIPermissionID::kTab));
 
   // The extension should have the tabs permission.
   match = info_map->extensions().GetExtensionOrAppByURL(
       extension->GetResourceURL("a.html"));
-  EXPECT_TRUE(match &&
-              match->permissions_data()->HasAPIPermission(APIPermission::kTab));
-  EXPECT_FALSE(match &&
-               match->permissions_data()->HasAPIPermission(
-                   APIPermission::kNotifications));
+  EXPECT_TRUE(match && match->permissions_data()->HasAPIPermission(
+                           APIPermissionID::kTab));
+  EXPECT_FALSE(match && match->permissions_data()->HasAPIPermission(
+                            APIPermissionID::kNotifications));
 
   // Random URL should not have any permissions.
   GURL evil_url("http://evil.com/a.html");
   match = info_map->extensions().GetExtensionOrAppByURL(evil_url);
   EXPECT_FALSE(match);
-}
-
-TEST_F(ChromeInfoMapTest, TestNotificationsDisabled) {
-  scoped_refptr<InfoMap> info_map(new InfoMap());
-  scoped_refptr<Extension> app(
-      LoadManifest("manifest_tests", "valid_app.json"));
-  info_map->AddExtension(app.get(), base::Time(), false, false);
-
-  EXPECT_FALSE(info_map->AreNotificationsDisabled(app->id()));
-  info_map->SetNotificationsDisabled(app->id(), true);
-  EXPECT_TRUE(info_map->AreNotificationsDisabled(app->id()));
-  info_map->SetNotificationsDisabled(app->id(), false);
 }
 
 }  // namespace extensions

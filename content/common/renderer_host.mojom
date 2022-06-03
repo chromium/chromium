@@ -4,6 +4,8 @@
 
 module content.mojom;
 
+import "url/mojom/url.mojom";
+
 // The primordial interface implemented by a render process host. This should be
 // used for implementing renderer-to-browser messages.
 interface RendererHost {
@@ -18,4 +20,7 @@ interface RendererHost {
   // Notify the browser that this render process can or can't be suddenly
   // terminated.
   SuddenTerminationChanged(bool enabled);
+
+  // Sends a string to be recorded by UserMetrics.
+  RecordUserMetricsAction(string action);
 };

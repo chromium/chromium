@@ -73,7 +73,7 @@ PASS MIDIOutput interface object name
 PASS MIDIOutput interface: existence and properties of interface prototype object
 PASS MIDIOutput interface: existence and properties of interface prototype object's "constructor" property
 PASS MIDIOutput interface: existence and properties of interface prototype object's @@unscopables property
-PASS MIDIOutput interface: operation send([object Object], DOMHighResTimeStamp)
+PASS MIDIOutput interface: operation send(sequence<octet>, optional DOMHighResTimeStamp)
 FAIL MIDIOutput interface: operation clear() assert_own_property: interface prototype object missing non-static operation expected property "clear" missing
 PASS MIDIMessageEvent interface: existence and properties of interface object
 PASS MIDIMessageEvent interface object length
@@ -92,6 +92,6 @@ PASS MIDIConnectionEvent interface: attribute port
 PASS MIDIConnectionEvent must be primary interface of new MIDIConnectionEvent("type")
 PASS Stringification of new MIDIConnectionEvent("type")
 PASS MIDIConnectionEvent interface: new MIDIConnectionEvent("type") must inherit property "port" with the proper type
-PASS Navigator interface: operation requestMIDIAccess(MIDIOptions)
+PASS Navigator interface: operation requestMIDIAccess(optional MIDIOptions)
 Harness: the test ran to completion.
 

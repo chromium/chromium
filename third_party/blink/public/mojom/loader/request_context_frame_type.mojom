@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module network.mojom;
+module blink.mojom;
 
 // Corresponds to Fetch's "context frame type", the frame type of the requester
 // of the resource fetching. However, it has been removed in spec, see the

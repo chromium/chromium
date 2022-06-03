@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div> <!-- Default is left-aligned. -->
+    <div id="l0"></div>
+    <div id="l1"></div>
+    <div id="l2"></div>
+    <div id="l3"></div>
+    <div id="l4"></div>
+    <div id="l5"></div>
+    <div id="l6"></div>
+    <div id="l7"></div>
+    <div id="l8"></div>
+    <div id="l9"></div>
+    <div id="l10" style="text-align: left"></div>
+  </div>
+  <div style="text-align: right">
+    <div id="r0"></div>
+    <div id="r1"></div>
+    <div id="r2"></div>
+    <div id="r3"></div>
+    <div id="r4"></div>
+    <div id="r5"></div>
+    <div id="r6"></div>
+    <div id="r7"></div>
+    <div id="r8"></div>
+    <div id="r9"></div>
+    <div id="r10" style="text-align: left"></div>
+  </div>
+  <script>
+    function go() {
+      // Should fire an event when text-align changes to something that does not
+      // resolve to the default left.
+      document.getElementById('l0').style.setProperty('text-align', 'none');
+      document.getElementById('l1').style.setProperty('text-align', 'left');
+      document.getElementById('l2').style.setProperty('text-align', 'right');
+      document.getElementById('l3').style.setProperty('text-align', 'center');
+      document.getElementById('l4').style.setProperty('text-align', 'justify');
+      document.getElementById('l5').style.setProperty('text-align', '-webkit-left');
+      document.getElementById('l6').style.setProperty('text-align', '-webkit-right');
+      document.getElementById('l7').style.setProperty('text-align', '-webkit-center');
+      document.getElementById('l8').style.setProperty('text-align', 'start');
+      document.getElementById('l9').style.setProperty('text-align', 'end');
+      document.getElementById('l10').style.removeProperty('text-align');
+
+      // Should fire an event when text-align changes to something that does not
+      // resolve to the parent element's text-align right.
+      document.getElementById('r0').style.setProperty('text-align', 'none');
+      document.getElementById('r1').style.setProperty('text-align', 'left');
+      document.getElementById('r2').style.setProperty('text-align', 'right');
+      document.getElementById('r3').style.setProperty('text-align', 'center');
+      document.getElementById('r4').style.setProperty('text-align', 'justify');
+      document.getElementById('r5').style.setProperty('text-align', '-webkit-left');
+      document.getElementById('r6').style.setProperty('text-align', '-webkit-right');
+      document.getElementById('r7').style.setProperty('text-align', '-webkit-center');
+      document.getElementById('r8').style.setProperty('text-align', 'start');
+      document.getElementById('r9').style.setProperty('text-align', 'end');
+      document.getElementById('r10').style.removeProperty('text-align');
+    }
+  </script>
+</body>
+</html>

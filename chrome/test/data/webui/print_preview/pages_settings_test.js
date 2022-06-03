@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {selectOption, triggerInputEvent} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {eventToPromise, fakeDataBind} from 'chrome://test/test_util.m.js';
+import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
+import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
 window.pages_settings_test = {};
 pages_settings_test.suiteName = 'PagesSettingsTest';
 /** @enum {string} */
 pages_settings_test.TestNames = {
   PagesDropdown: 'pages dropdown',
+  NoParityOptions: 'no parity options',
+  ParitySelectionMemorized: 'parity selection memorized',
   ValidPageRanges: 'valid page ranges',
   InvalidPageRanges: 'invalid page ranges',
   NupChangesPages: 'nup changes pages',
@@ -75,24 +78,43 @@ suite(pages_settings_test.suiteName, function() {
       assertEquals(range.from, rangesValue[index].from);
     });
     assertEquals(!invalid, pagesSection.getSetting('pages').valid);
-    assertEquals(expectedError !== '', pagesSection.$$('cr-input').invalid);
-    assertEquals(expectedError, pagesSection.$$('cr-input').errorMessage);
+    assertEquals(
+        expectedError !== '',
+        pagesSection.shadowRoot.querySelector('cr-input').invalid);
+    assertEquals(
+        expectedError,
+        pagesSection.shadowRoot.querySelector('cr-input').errorMessage);
   }
 
   // Verifies that the pages setting updates correctly when the dropdown
   // changes.
   test(assert(pages_settings_test.TestNames.PagesDropdown), async () => {
-    pagesSection.pageCount = 3;
+    pagesSection.pageCount = 5;
 
     // Default value is all pages.
-    const pagesSelect = pagesSection.$$('select');
-    const customInputCollapse = pagesSection.$$('iron-collapse');
+    const pagesSelect = pagesSection.shadowRoot.querySelector('select');
+    const customInputCollapse =
+        pagesSection.shadowRoot.querySelector('iron-collapse');
     const pagesCrInput = pagesSection.$.pageSettingsCustomInput;
     const pagesInput = pagesCrInput.inputElement;
 
     assertFalse(pagesSection.getSetting('ranges').setFromUi);
-    validateState([1, 2, 3], [], '', false);
+    validateState([1, 2, 3, 4, 5], [], '', false);
     assertFalse(customInputCollapse.opened);
+
+    // Set selection to odd pages.
+    await selectOption(
+        pagesSection, pagesSection.pagesValueEnum_.ODDS.toString());
+    assertFalse(customInputCollapse.opened);
+    validateState(
+        [1, 3, 5], [{from: 1, to: 1}, {from: 3, to: 3}, {from: 5, to: 5}], '',
+        false);
+
+    // Set selection to even pages.
+    await selectOption(
+        pagesSection, pagesSection.pagesValueEnum_.EVENS.toString());
+    assertFalse(customInputCollapse.opened);
+    validateState([2, 4], [{from: 2, to: 2}, {from: 4, to: 4}], '', false);
 
     // Set selection of pages 1 and 2.
     await selectOption(
@@ -107,7 +129,7 @@ suite(pages_settings_test.suiteName, function() {
     await selectOption(
         pagesSection, pagesSection.pagesValueEnum_.ALL.toString());
     assertFalse(customInputCollapse.opened);
-    validateState([1, 2, 3], [], '', false);
+    validateState([1, 2, 3, 4, 5], [], '', false);
 
     // Re-select custom. The previously entered value should be
     // restored.
@@ -118,9 +140,52 @@ suite(pages_settings_test.suiteName, function() {
 
     // Set a selection equal to the full page range. This should set ranges to
     // empty, so that reselecting "all" does not regenerate the preview.
-    await setCustomInput('1-3');
-    validateState([1, 2, 3], [], '', false);
+    await setCustomInput('1-5');
+    validateState([1, 2, 3, 4, 5], [], '', false);
   });
+
+  // Tests that the odd-only and even-only options are hidden when the document
+  // has only one page.
+  test(assert(pages_settings_test.TestNames.NoParityOptions), async () => {
+    pagesSection.pageCount = 1;
+
+    const oddOption = pagesSection.shadowRoot.querySelector(
+        `[value="${pagesSection.pagesValueEnum_.ODDS}"]`);
+    assertTrue(oddOption.hidden);
+
+    const evenOption = pagesSection.shadowRoot.querySelector(
+        `[value="${pagesSection.pagesValueEnum_.EVENS}"]`);
+    assertTrue(evenOption.hidden);
+  });
+
+  // Tests that the odd-only and even-only selections are preserved when the
+  // page counts change.
+  test(
+      assert(pages_settings_test.TestNames.ParitySelectionMemorized),
+      async () => {
+        const select = pagesSection.shadowRoot.querySelector('select');
+
+        pagesSection.pageCount = 2;
+        assertEquals(pagesSection.pagesValueEnum_.ALL.toString(), select.value);
+
+        await selectOption(
+            pagesSection, pagesSection.pagesValueEnum_.ODDS.toString());
+        assertEquals(
+            pagesSection.pagesValueEnum_.ODDS.toString(), select.value);
+
+        let whenValueChanged =
+            eventToPromise('process-select-change', pagesSection);
+        pagesSection.pageCount = 1;
+        await whenValueChanged;
+        assertEquals(pagesSection.pagesValueEnum_.ALL.toString(), select.value);
+
+        whenValueChanged =
+            eventToPromise('process-select-change', pagesSection);
+        pagesSection.pageCount = 2;
+        await whenValueChanged;
+        assertEquals(
+            pagesSection.pagesValueEnum_.ODDS.toString(), select.value);
+      });
 
   // Tests that the page ranges set are valid for different user inputs.
   test(assert(pages_settings_test.TestNames.ValidPageRanges), async () => {
@@ -244,7 +309,7 @@ suite(pages_settings_test.suiteName, function() {
   test(assert(pages_settings_test.TestNames.ClearInput), async () => {
     pagesSection.pageCount = 3;
     const input = pagesSection.$.pageSettingsCustomInput.inputElement;
-    const select = pagesSection.$$('select');
+    const select = pagesSection.shadowRoot.querySelector('select');
     const allValue = pagesSection.pagesValueEnum_.ALL.toString();
     const customValue = pagesSection.pagesValueEnum_.CUSTOM.toString();
     assertEquals(allValue, select.value);
@@ -378,7 +443,7 @@ suite(pages_settings_test.suiteName, function() {
 
         // Setup an empty input by selecting custom..
         const customValue = pagesSection.pagesValueEnum_.CUSTOM.toString();
-        const pagesSelect = pagesSection.$$('select');
+        const pagesSelect = pagesSection.shadowRoot.querySelector('select');
         await Promise.all([
           selectOption(pagesSection, customValue),
           eventToPromise('focus', input)

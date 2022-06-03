@@ -30,6 +30,11 @@ class PushSubscriptionCallbacks final
   PushSubscriptionCallbacks(
       ScriptPromiseResolver* resolver,
       ServiceWorkerRegistration* service_worker_registration);
+
+  PushSubscriptionCallbacks(const PushSubscriptionCallbacks&) = delete;
+  PushSubscriptionCallbacks& operator=(const PushSubscriptionCallbacks&) =
+      delete;
+
   ~PushSubscriptionCallbacks() override;
 
   // WebCallbacks<S, T> interface.
@@ -39,8 +44,6 @@ class PushSubscriptionCallbacks final
  private:
   Persistent<ScriptPromiseResolver> resolver_;
   Persistent<ServiceWorkerRegistration> service_worker_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushSubscriptionCallbacks);
 };
 
 }  // namespace blink

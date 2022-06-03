@@ -1,4 +1,4 @@
-// META: global=!default,sharedworker
+// META: global=sharedworker
 
 var expected = [
   // https://html.spec.whatwg.org/
@@ -55,7 +55,7 @@ var expected = [
   "ErrorEvent",
   "Event",
   "CustomEvent",
-  // http://heycam.github.io/webidl/
+  // https://webidl.spec.whatwg.org/
   "DOMException",
   // https://streams.spec.whatwg.org/
   "ReadableStream",

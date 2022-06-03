@@ -10,6 +10,7 @@ include_rules = [
   "+content/grit",
   "+content/public/common",
   "+content/public/test",
+  "+content/services/auction_worklet/public",
   "+content/test",
   "+blink/public/resources/grit",
   "+cc",
@@ -24,8 +25,11 @@ include_rules = [
   # as autofill or extensions, and chrome implementation details such as
   # settings, packaging details, installation or crash reporting.
 
+  "+components/memory_pressure",
+  "+components/power_scheduler",
   "+components/services/filesystem",
   "+components/services/font/public",
+  "+components/variations",
 
   "+crypto",
   "+grit/blink_resources.h",
@@ -40,8 +44,6 @@ include_rules = [
   "+printing",
   "+sandbox",
   "+services/proxy_resolver/public/mojom",
-  "+services/service_manager/embedder",
-  "+services/service_manager/sandbox",
   "+services/service_manager/zygote",
   "+skia",
 
@@ -81,6 +83,7 @@ include_rules = [
   # Aura is analogous to Win32 or a Gtk, so it is allowed.
   "+ui/aura",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",
@@ -89,6 +92,8 @@ include_rules = [
   "+ui/latency",
   "+ui/native_theme",
   "+ui/resources/grit/ui_resources.h",
+  "+ui/resources/grit/webui_generated_resources.h",
+  "+ui/resources/grit/webui_generated_resources_map.h",
   "+ui/resources/grit/webui_resources.h",
   "+ui/resources/grit/webui_resources_map.h",
   "+ui/shell_dialogs",

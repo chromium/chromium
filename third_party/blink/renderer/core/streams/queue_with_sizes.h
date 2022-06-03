@@ -10,12 +10,12 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class ExceptionState;
-class Visitor;
 
 // Implementation of the "Queue-with-sizes" operations from the standard. Unlike
 // the standard, these operations do not operate polymorphically on the
@@ -48,7 +48,7 @@ class CORE_EXPORT QueueWithSizes final
   // https://streams.spec.whatwg.org/#reset-queue
   void ResetQueue();
 
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
  private:
   class ValueSizePair;

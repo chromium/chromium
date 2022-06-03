@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ALTERNATE_SIGNED_EXCHANGE_RESOURCE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ALTERNATE_SIGNED_EXCHANGE_RESOURCE_INFO_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -69,6 +68,8 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
           header_integrity_(header_integrity),
           variants_(variants),
           variant_key_(variant_key) {}
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
     const KURL& anchor_url() const { return anchor_url_; }
     const KURL& alternative_url() const { return alternative_url_; }
     const String& header_integrity() const { return header_integrity_; }
@@ -81,8 +82,6 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
     const String header_integrity_;
     const String variants_;
     const String variant_key_;
-
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
   using EntryMap =
@@ -92,7 +91,11 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
       const String& outer_link_header,
       const String& inner_link_header);
 
-  AlternateSignedExchangeResourceInfo(EntryMap alternative_resources);
+  explicit AlternateSignedExchangeResourceInfo(EntryMap alternative_resources);
+  AlternateSignedExchangeResourceInfo(
+      const AlternateSignedExchangeResourceInfo&) = delete;
+  AlternateSignedExchangeResourceInfo& operator=(
+      const AlternateSignedExchangeResourceInfo&) = delete;
   ~AlternateSignedExchangeResourceInfo() = default;
 
   // Returns the best matching alternate resource. If the first entry which
@@ -103,10 +106,10 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
   // [1]
   // https://httpwg.org/http-extensions/draft-ietf-httpbis-variants.html#cache
   Entry* FindMatchingEntry(const KURL& url,
-                           base::Optional<ResourceType> resource_type,
+                           absl::optional<ResourceType> resource_type,
                            const Vector<String>& languages) const;
   Entry* FindMatchingEntry(const KURL& url,
-                           mojom::RequestContextType request_context,
+                           mojom::blink::RequestContextType request_context,
                            const Vector<String>& languages) const;
 
  private:
@@ -117,8 +120,6 @@ class CORE_EXPORT AlternateSignedExchangeResourceInfo {
                            const Vector<String>& languages) const;
 
   const EntryMap alternative_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlternateSignedExchangeResourceInfo);
 };
 
 }  // namespace blink

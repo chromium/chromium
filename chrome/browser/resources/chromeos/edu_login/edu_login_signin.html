@@ -1,0 +1,54 @@
+<style include="edu-login-css">
+  .container,
+  .signin-frame {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-top: calc(-1 * var(--dialog-top-border-size));
+  }
+
+  .signin-frame {
+    background-color: white;
+    overflow: hidden;
+  }
+
+  paper-spinner-lite {
+    --spinner-size: 25px;
+    display: none;
+    height: var(--spinner-size);
+    width: var(--spinner-size);
+  }
+
+  paper-spinner-lite[active] {
+    display: inline-block;
+  }
+
+  .action-buttons {
+    margin-inline-start: auto;
+  }
+</style>
+<edu-login-template>
+  <span slot="main">
+    <div class="container">
+      <webview id="signinFrame" name="signin-frame" class="signin-frame"
+          hidden$="[[loading_]]" allowscaling></webview>
+      <paper-spinner-lite class="spinner" active="[[loading_]]">
+      </paper-spinner-lite>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-login-button button-type="back" on-go-back="handleGoBack_">
+    </edu-login-button>
+    <div class="action-buttons" hidden$="[[!enableGaiaActionButtons_]]">
+      <gaia-action-buttons authenticator="[[authExtHost_]]">
+      </gaia-action-buttons>
+    </div>
+  </span>
+</edu-login-template>

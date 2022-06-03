@@ -7,30 +7,35 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/portal/portal.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/url_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
+namespace {
+
+// A URL where developers can learn more about why this navigation throttle may
+// have cancelled their request.
+const char* GetBlockedInfoURL() {
+  return "https://www.chromium.org/blink/origin-trials/portals";
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<PortalNavigationThrottle>
 PortalNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* navigation_handle) {
-  if (!IsEnabled() || !navigation_handle->IsInMainFrame())
+  if (!Portal::IsEnabled() || !navigation_handle->IsInMainFrame())
     return nullptr;
 
   return base::WrapUnique(new PortalNavigationThrottle(navigation_handle));
-}
-
-// static
-bool PortalNavigationThrottle::IsEnabled() {
-  return Portal::IsEnabled() &&
-         !base::FeatureList::IsEnabled(blink::features::kPortalsCrossOrigin);
 }
 
 PortalNavigationThrottle::PortalNavigationThrottle(
@@ -61,21 +66,36 @@ PortalNavigationThrottle::WillStartOrRedirectRequest() {
   if (!portal)
     return PROCEED;
 
-  url::Origin origin = url::Origin::Create(navigation_handle()->GetURL());
-  url::Origin first_party_origin =
-      portal->owner_render_frame_host()->GetLastCommittedOrigin();
+  GURL url = navigation_handle()->GetURL();
+  CHECK(!HasWebUIScheme(url))
+      << "Portals should not even be able to attempt to reach WebUI";
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    base::StringPiece scheme = url.scheme_piece();
+    portal->owner_render_frame_host()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf("Navigating a portal to scheme '%.*s' was blocked.",
+                           static_cast<int>(scheme.size()), scheme.data()));
+    return CANCEL;
+  }
 
-  if (origin == first_party_origin)
-    return PROCEED;
+  if (!base::FeatureList::IsEnabled(blink::features::kPortalsCrossOrigin)) {
+    url::Origin origin = url::Origin::Create(url);
+    url::Origin first_party_origin =
+        portal->owner_render_frame_host()->GetLastCommittedOrigin();
 
-  // TODO(crbug.com/1013389): Update this message to refer to external
-  // documentation if we write any.
-  portal->owner_render_frame_host()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintf("Navigating a portal to cross-origin content (from "
-                         "%s) is not currently permitted and was blocked.",
-                         origin.Serialize().c_str()));
-  return BLOCK_REQUEST;
+    if (origin != first_party_origin) {
+      portal->owner_render_frame_host()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          base::StringPrintf(
+              "Navigating a portal to cross-origin content (from %s) "
+              "is not currently permitted and was blocked. "
+              "See %s for more information.",
+              origin.Serialize().c_str(), GetBlockedInfoURL()));
+      return CANCEL;
+    }
+  }
+
+  return PROCEED;
 }
 
 }  // namespace content

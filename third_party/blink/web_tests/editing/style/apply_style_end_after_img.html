@@ -1,0 +1,22 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a bug where style would not be applied to a selection that
+// ended just after an image.
+selection_test(
+    [
+        '<div contenteditable>',
+            '^<br>',
+            '<div>abc<img src="../resources/abe.png">|</div>',
+        '</div>',
+    ],
+    'bold',
+    [
+        '<div contenteditable>',
+            '<b>^<br></b>',
+            '<div><b>abc<img src="../resources/abe.png">|</b></div>',
+        '</div>',
+    ]);
+</script>

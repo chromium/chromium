@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
@@ -14,7 +15,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 
@@ -29,8 +32,10 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     URLLoaderThrottlesGetter loader_throttles_getter,
     network::mojom::URLLoaderClient* forwarding_client,
+    const net::NetworkIsolationKey& network_isolation_key,
     scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
-    const std::string& accept_langs)
+    const std::string& accept_langs,
+    bool keep_entry_for_prefetch_cache)
     : forwarding_client_(forwarding_client) {
   network::mojom::URLLoaderClientEndpointsPtr endpoints =
       network::mojom::URLLoaderClientEndpoints::New(
@@ -38,26 +43,21 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       std::move(network_loader_factory);
 
-  // We need the SSLInfo as the prefetched signed exchange may be used as a main
-  // frame main resource. Users can inspect the certificate for the main frame
-  // using the info bubble in Omnibox.
-  const uint32_t url_loader_options =
-      network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
-
   auto reporter = SignedExchangeReporter::MaybeCreate(
       resource_request.url, resource_request.referrer.spec(), *response_head,
-      frame_tree_node_id);
+      network_isolation_key, frame_tree_node_id);
   auto devtools_proxy = std::make_unique<SignedExchangeDevToolsProxy>(
       resource_request.url, response_head.Clone(), frame_tree_node_id,
-      base::nullopt /* devtools_navigation_token */,
-      resource_request.report_raw_headers);
+      absl::nullopt /* devtools_navigation_token */,
+      resource_request.devtools_request_id.has_value());
   signed_exchange_loader_ = std::make_unique<SignedExchangeLoader>(
       resource_request, std::move(response_head), std::move(response_body),
       loader_client_receiver_.BindNewPipeAndPassRemote(), std::move(endpoints),
-      url_loader_options, false /* should_redirect_to_fallback */,
-      std::move(devtools_proxy), std::move(reporter),
-      std::move(url_loader_factory), loader_throttles_getter,
-      frame_tree_node_id, std::move(metric_recorder), accept_langs);
+      network::mojom::kURLLoadOptionNone,
+      false /* should_redirect_to_fallback */, std::move(devtools_proxy),
+      std::move(reporter), std::move(url_loader_factory),
+      loader_throttles_getter, network_isolation_key, frame_tree_node_id,
+      std::move(metric_recorder), accept_langs, keep_entry_for_prefetch_cache);
 }
 
 SignedExchangePrefetchHandler::~SignedExchangePrefetchHandler() = default;
@@ -74,17 +74,15 @@ SignedExchangePrefetchHandler::FollowRedirect(
   return pending_receiver;
 }
 
-base::Optional<net::SHA256HashValue>
-SignedExchangePrefetchHandler::ComputeHeaderIntegrity() const {
-  if (!signed_exchange_loader_)
-    return base::nullopt;
-  return signed_exchange_loader_->ComputeHeaderIntegrity();
+std::unique_ptr<PrefetchedSignedExchangeCacheEntry>
+SignedExchangePrefetchHandler::TakePrefetchedSignedExchangeCacheEntry() {
+  DCHECK(signed_exchange_loader_);
+  return signed_exchange_loader_->TakePrefetchedSignedExchangeCacheEntry();
 }
 
-base::Time SignedExchangePrefetchHandler::GetSignatureExpireTime() const {
-  if (!signed_exchange_loader_)
-    return base::Time();
-  return signed_exchange_loader_->GetSignatureExpireTime();
+void SignedExchangePrefetchHandler::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  NOTREACHED();
 }
 
 void SignedExchangePrefetchHandler::OnReceiveResponse(

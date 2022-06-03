@@ -10,12 +10,13 @@
 @WIN-ALLOW:invalid*
 @WIN-DENY:name=''
 @AURALINUX-ALLOW:invalid-entry
+@AURALINUX-ALLOW:hypertext*
 -->
 <html>
 <body>
   <div aria-invalid="true">invalid=true</div>
-  <p contenteditable role="textbox" spellcheck="false">An <span aria-invalid="spelling">eror</span> via invalid=spelling</p>
-  <p contenteditable role="textbox" spellcheck="false">An <span aria-invalid="grammar">errors</span> via invalid=grammar</p>
+  <p contenteditable role="textbox" spellcheck="false">An <span aria-invalid="spelling">error</span> via invalid=spelling</p>
+  <p contenteditable role="textbox" spellcheck="false">An <span aria-invalid="grammar">error</span> via invalid=grammar</p>
   <div aria-invalid="false">invalid=false</div>
   <div aria-invalid="">invalid=&lt;empty&gt;</div>
   <div>invalid=&lt;default&gt;</div>
@@ -23,5 +24,8 @@
   <form>
     <input type="text" name="invalid_text_field" pattern="[a-z]*" value="1234">
   </form>
+  <input type="email" value="a">
+  <input type="email" value="a" aria-invalid="false">
+  <input type="email" value="a" aria-invalid="true">
 </body>
 </html>

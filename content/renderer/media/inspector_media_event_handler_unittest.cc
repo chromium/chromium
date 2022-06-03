@@ -22,18 +22,39 @@ class MockMediaInspectorContext : public blink::MediaInspectorContext {
 
   blink::WebString CreatePlayer() override { return "TestPlayer"; }
 
+  void DestroyPlayer(const blink::WebString& playerId) override {
+    MockDestroyPlayer();
+  }
+
   void NotifyPlayerEvents(blink::WebString id,
-                          blink::InspectorPlayerEvents events) override {
+                          const blink::InspectorPlayerEvents& events) override {
     MockNotifyPlayerEvents(events);
   }
 
-  void SetPlayerProperties(blink::WebString id,
-                           blink::InspectorPlayerProperties props) override {
+  void SetPlayerProperties(
+      blink::WebString id,
+      const blink::InspectorPlayerProperties& props) override {
     MockSetPlayerProperties(props);
+  }
+
+  void NotifyPlayerErrors(blink::WebString id,
+                          const blink::InspectorPlayerErrors& errors) override {
+    MockNotifyPlayerErrors(errors);
+  }
+
+  void NotifyPlayerMessages(
+      blink::WebString id,
+      const blink::InspectorPlayerMessages& messages) override {
+    MockNotifyPlayerMessages(messages);
   }
 
   MOCK_METHOD1(MockNotifyPlayerEvents, void(blink::InspectorPlayerEvents));
   MOCK_METHOD1(MockSetPlayerProperties, void(blink::InspectorPlayerProperties));
+  MOCK_METHOD1(MockNotifyPlayerErrors, void(blink::InspectorPlayerErrors));
+  MOCK_METHOD1(MockNotifyPlayerMessages, void(blink::InspectorPlayerMessages));
+  MOCK_METHOD0(MockDestroyPlayer, void());
+  MOCK_METHOD0(MockIncrementActiveSessionCount, void());
+  MOCK_METHOD0(MockDecrementActiveSessionCount, void());
 };
 
 class InspectorMediaEventHandlerTest : public testing::Test {
@@ -44,34 +65,55 @@ class InspectorMediaEventHandlerTest : public testing::Test {
         std::make_unique<InspectorMediaEventHandler>(mock_context_.get());
   }
 
+  InspectorMediaEventHandlerTest(const InspectorMediaEventHandlerTest&) =
+      delete;
+  InspectorMediaEventHandlerTest& operator=(
+      const InspectorMediaEventHandlerTest&) = delete;
+
  protected:
   std::unique_ptr<InspectorMediaEventHandler> handler_;
   std::unique_ptr<MockMediaInspectorContext> mock_context_;
 
-  media::MediaLogEvent CreateEvent(media::MediaLogEvent::Type type) {
-    media::MediaLogEvent event;
+  template <media::MediaLogEvent T>
+  media::MediaLogRecord CreateEvent() {
+    media::MediaLogRecord event;
     event.id = 0;
-    event.type = type;
+    event.type = media::MediaLogRecord::Type::kMediaEventTriggered;
     event.time = base::TimeTicks();
+    event.params.SetString("event",
+                           media::MediaLogEventTypeSupport<T>::TypeName());
     return event;
   }
 
-  media::MediaLogEvent CreatePropChangeEvent(
+  media::MediaLogRecord CreatePropChange(
       std::vector<std::pair<std::string, std::string>> props) {
-    auto event = CreateEvent(media::MediaLogEvent::PROPERTY_CHANGE);
+    media::MediaLogRecord event;
+    event.id = 0;
+    event.type = media::MediaLogRecord::Type::kMediaPropertyChange;
+    event.time = base::TimeTicks();
     for (auto p : props) {
       event.params.SetString(std::get<0>(p), std::get<1>(p));
     }
     return event;
   }
 
-  media::MediaLogEvent CreateLogEvent(std::string msg) {
-    auto event = CreateEvent(media::MediaLogEvent::MEDIA_WARNING_LOG_ENTRY);
+  media::MediaLogRecord CreateMessage(std::string msg) {
+    media::MediaLogRecord event;
+    event.id = 0;
+    event.type = media::MediaLogRecord::Type::kMessage;
+    event.time = base::TimeTicks();
     event.params.SetString("warning", msg);
     return event;
   }
 
-  DISALLOW_COPY_AND_ASSIGN(InspectorMediaEventHandlerTest);
+  media::MediaLogRecord CreateError(int errorcode) {
+    media::MediaLogRecord error;
+    error.id = 0;
+    error.type = media::MediaLogRecord::Type::kMediaStatus;
+    error.time = base::TimeTicks();
+    error.params.SetIntPath(media::MediaLog::kStatusText, errorcode);
+    return error;
+  }
 };
 
 bool operator==(const blink::InspectorPlayerProperty& lhs,
@@ -86,12 +128,31 @@ bool operator!=(const blink::InspectorPlayerProperty& lhs,
 
 bool operator==(const blink::InspectorPlayerEvent& lhs,
                 const blink::InspectorPlayerEvent& rhs) {
-  return lhs.type == rhs.type && lhs.timestamp == rhs.timestamp &&
-         lhs.key == rhs.key && lhs.value == rhs.value;
+  return lhs.timestamp == rhs.timestamp && lhs.value == rhs.value;
 }
 
 bool operator!=(const blink::InspectorPlayerEvent& lhs,
                 const blink::InspectorPlayerEvent& rhs) {
+  return !(lhs == rhs);
+}
+
+bool operator==(const blink::InspectorPlayerMessage& lhs,
+                const blink::InspectorPlayerMessage& rhs) {
+  return lhs.level == rhs.level && lhs.message == rhs.message;
+}
+
+bool operator!=(const blink::InspectorPlayerMessage& lhs,
+                const blink::InspectorPlayerMessage& rhs) {
+  return !(lhs == rhs);
+}
+
+bool operator==(const blink::InspectorPlayerError& lhs,
+                const blink::InspectorPlayerError& rhs) {
+  return lhs.errorCode == rhs.errorCode;
+}
+
+bool operator!=(const blink::InspectorPlayerError& lhs,
+                const blink::InspectorPlayerError& rhs) {
   return !(lhs == rhs);
 }
 
@@ -113,9 +174,27 @@ MATCHER_P(EventsEqualTo, events, "") {
   return true;
 }
 
+MATCHER_P(MessagesEqualTo, messages, "") {
+  if (messages.size() != arg.size())
+    return false;
+  for (size_t i = 0; i < messages.size(); i++)
+    if (messages[i] != arg[i])
+      return false;
+  return true;
+}
+
+MATCHER_P(ErrorsEqualTo, errors, "") {
+  if (errors.size() != arg.size())
+    return false;
+  for (size_t i = 0; i < errors.size(); i++)
+    if (errors[i] != arg[i])
+      return false;
+  return true;
+}
+
 TEST_F(InspectorMediaEventHandlerTest, ConvertsProperties) {
-  std::vector<media::MediaLogEvent> events = {
-      CreatePropChangeEvent({{"test_key", "test_value"}})};
+  std::vector<media::MediaLogRecord> events = {
+      CreatePropChange({{"test_key", "test_value"}})};
 
   blink::InspectorPlayerProperties expected;
   blink::InspectorPlayerProperty prop = {
@@ -131,8 +210,8 @@ TEST_F(InspectorMediaEventHandlerTest, ConvertsProperties) {
 }
 
 TEST_F(InspectorMediaEventHandlerTest, SplitsDoubleProperties) {
-  std::vector<media::MediaLogEvent> events = {
-      CreatePropChangeEvent({{"test_key", "test_value"}, {"foo", "bar"}})};
+  std::vector<media::MediaLogRecord> events = {
+      CreatePropChange({{"test_key", "test_value"}, {"foo", "bar"}})};
 
   blink::InspectorPlayerProperties expected;
   blink::InspectorPlayerProperty prop_test = {
@@ -151,37 +230,36 @@ TEST_F(InspectorMediaEventHandlerTest, SplitsDoubleProperties) {
 }
 
 TEST_F(InspectorMediaEventHandlerTest, ConvertsMessageEvent) {
-  std::vector<media::MediaLogEvent> events = {
-      CreateLogEvent("Has Anyone Really Been Far Even as Decided to Use Even "
-                     "Go Want to do Look More Like?")};
+  std::vector<media::MediaLogRecord> events = {
+      CreateMessage("Has Anyone Really Been Far Even as Decided to Use Even "
+                    "Go Want to do Look More Like?")};
 
-  blink::InspectorPlayerEvents expected;
-  blink::InspectorPlayerEvent e = {
-      blink::InspectorPlayerEvent::MESSAGE_EVENT, base::TimeTicks(),
-      blink::WebString::FromUTF8("warning"),
+  blink::InspectorPlayerMessages expected;
+  blink::InspectorPlayerMessage e = {
+      blink::InspectorPlayerMessage::Level::kWarning,
       blink::WebString::FromUTF8("Has Anyone Really Been Far Even as Decided "
                                  "to Use Even Go Want to do Look More Like?")};
   expected.emplace_back(e);
 
   EXPECT_CALL(*mock_context_, MockSetPlayerProperties(_)).Times(0);
-  EXPECT_CALL(*mock_context_, MockNotifyPlayerEvents(EventsEqualTo(expected)))
+  EXPECT_CALL(*mock_context_,
+              MockNotifyPlayerMessages(MessagesEqualTo(expected)))
       .Times(1);
 
   handler_->SendQueuedMediaEvents(events);
 }
 
 TEST_F(InspectorMediaEventHandlerTest, ConvertsEventsAndProperties) {
-  std::vector<media::MediaLogEvent> events = {
-      CreateLogEvent("100% medically accurate"),
-      CreatePropChangeEvent(
+  std::vector<media::MediaLogRecord> events = {
+      CreateMessage("100% medically accurate"),
+      CreatePropChange(
           {{"free_puppies", "all_taken"}, {"illuminati", "confirmed"}})};
 
-  blink::InspectorPlayerEvents expected_events;
-  blink::InspectorPlayerEvent e = {
-      blink::InspectorPlayerEvent::MESSAGE_EVENT, base::TimeTicks(),
-      blink::WebString::FromUTF8("warning"),
+  blink::InspectorPlayerMessages expected_messages;
+  blink::InspectorPlayerMessage e = {
+      blink::InspectorPlayerMessage::Level::kWarning,
       blink::WebString::FromUTF8("100% medically accurate")};
-  expected_events.emplace_back(e);
+  expected_messages.emplace_back(e);
 
   blink::InspectorPlayerProperties expected_properties;
   blink::InspectorPlayerProperty puppies = {
@@ -197,24 +275,22 @@ TEST_F(InspectorMediaEventHandlerTest, ConvertsEventsAndProperties) {
               MockSetPlayerProperties(PropertiesEqualTo(expected_properties)))
       .Times(1);
   EXPECT_CALL(*mock_context_,
-              MockNotifyPlayerEvents(EventsEqualTo(expected_events)))
+              MockNotifyPlayerMessages(MessagesEqualTo(expected_messages)))
       .Times(1);
 
   handler_->SendQueuedMediaEvents(events);
 }
 
 TEST_F(InspectorMediaEventHandlerTest, PassesPlayAndPauseEvents) {
-  std::vector<media::MediaLogEvent> events = {
-      CreateEvent(media::MediaLogEvent::PLAY),
-      CreateEvent(media::MediaLogEvent::PAUSE)};
+  std::vector<media::MediaLogRecord> events = {
+      CreateEvent<media::MediaLogEvent::kPlay>(),
+      CreateEvent<media::MediaLogEvent::kPause>()};
 
   blink::InspectorPlayerEvents expected_events;
   blink::InspectorPlayerEvent play = {
-      blink::InspectorPlayerEvent::PLAYBACK_EVENT, base::TimeTicks(),
-      blink::WebString::FromUTF8("Event"), blink::WebString::FromUTF8("PLAY")};
+      base::TimeTicks(), blink::WebString::FromUTF8("{\"event\":\"kPlay\"}")};
   blink::InspectorPlayerEvent pause = {
-      blink::InspectorPlayerEvent::PLAYBACK_EVENT, base::TimeTicks(),
-      blink::WebString::FromUTF8("Event"), blink::WebString::FromUTF8("PAUSE")};
+      base::TimeTicks(), blink::WebString::FromUTF8("{\"event\":\"kPause\"}")};
   expected_events.emplace_back(play);
   expected_events.emplace_back(pause);
 
@@ -223,6 +299,26 @@ TEST_F(InspectorMediaEventHandlerTest, PassesPlayAndPauseEvents) {
       .Times(1);
 
   handler_->SendQueuedMediaEvents(events);
+}
+
+TEST_F(InspectorMediaEventHandlerTest, PassesErrorEvents) {
+  std::vector<media::MediaLogRecord> errors = {CreateError(5), CreateError(7)};
+
+  blink::InspectorPlayerErrors expected_errors;
+  blink::InspectorPlayerError first = {
+      blink::InspectorPlayerError::Type::kPipelineError,
+      blink::WebString::FromUTF8("5")};
+  blink::InspectorPlayerError second = {
+      blink::InspectorPlayerError::Type::kPipelineError,
+      blink::WebString::FromUTF8("7")};
+  expected_errors.emplace_back(first);
+  expected_errors.emplace_back(second);
+
+  EXPECT_CALL(*mock_context_,
+              MockNotifyPlayerErrors(ErrorsEqualTo(expected_errors)))
+      .Times(1);
+
+  handler_->SendQueuedMediaEvents(errors);
 }
 
 }  // namespace content

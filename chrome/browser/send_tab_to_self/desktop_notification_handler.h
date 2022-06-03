@@ -24,6 +24,11 @@ class DesktopNotificationHandler : public NotificationHandler,
                                    public ReceivingUiHandler {
  public:
   explicit DesktopNotificationHandler(Profile* profile);
+
+  DesktopNotificationHandler(const DesktopNotificationHandler&) = delete;
+  DesktopNotificationHandler& operator=(const DesktopNotificationHandler&) =
+      delete;
+
   ~DesktopNotificationHandler() override;
 
   // ReceivingUiHandler implementation.
@@ -40,8 +45,8 @@ class DesktopNotificationHandler : public NotificationHandler,
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<base::string16>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
 
   // When the user share a tab, a confirmation notification will be shown.
@@ -53,11 +58,10 @@ class DesktopNotificationHandler : public NotificationHandler,
   void DisplayFailureMessage(const GURL& url);
 
   // Retrieves the Profile for which this Handler will manage notifications.
-  const Profile* GetProfile() const;
+  const Profile* profile() const override;
 
  protected:
   Profile* const profile_;
-  DISALLOW_COPY_AND_ASSIGN(DesktopNotificationHandler);
 };
 
 }  // namespace send_tab_to_self

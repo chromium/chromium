@@ -22,7 +22,16 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sys_byteorder.h"
+#include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
+#include "media/media_buildflags.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
@@ -34,6 +43,13 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+#include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+#include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
+#endif
 namespace blink {
 
 namespace {
@@ -51,12 +67,34 @@ cc::ImageType FileExtensionToImageType(String image_extension) {
     return cc::ImageType::kICO;
   if (image_extension == "bmp")
     return cc::ImageType::kBMP;
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  if (image_extension == "avif")
+    return cc::ImageType::kAVIF;
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (image_extension == "jxl")
+    return cc::ImageType::kJXL;
+#endif
   return cc::ImageType::kInvalid;
 }
 
-}  // namespace
+wtf_size_t CalculateMaxDecodedBytes(
+    ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
+    const SkISize& desired_size) {
+  const wtf_size_t max_decoded_bytes =
+      Platform::Current()
+          ? static_cast<wtf_size_t>(Platform::Current()->MaxDecodedImageBytes())
+          : ImageDecoder::kNoDecodedImageByteLimit;
+  if (desired_size.isEmpty())
+    return max_decoded_bytes;
 
-const size_t ImageDecoder::kNoDecodedImageByteLimit;
+  const wtf_size_t num_pixels = desired_size.width() * desired_size.height();
+  if (high_bit_depth_decoding_option == ImageDecoder::kDefaultBitDepth)
+    return std::min(4 * num_pixels, max_decoded_bytes);
+
+  // ImageDecoder::kHighBitDepthToHalfFloat
+  return std::min(8 * num_pixels, max_decoded_bytes);
+}
 
 inline bool MatchesJPEGSignature(const char* contents) {
   return !memcmp(contents, "\xFF\xD8\xFF", 3);
@@ -86,87 +124,18 @@ inline bool MatchesBMPSignature(const char* contents) {
   return !memcmp(contents, "BM", 2) || !memcmp(contents, "BA", 2);
 }
 
-static constexpr size_t kLongestSignatureLength = sizeof("RIFF????WEBPVP") - 1;
-static const size_t k4BytesPerPixel = 4;
-static const size_t k8BytesPerPixel = 8;
-
-std::unique_ptr<ImageDecoder> ImageDecoder::Create(
-    scoped_refptr<SegmentReader> data,
-    bool data_complete,
-    AlphaOption alpha_option,
-    HighBitDepthDecodingOption high_bit_depth_decoding_option,
-    const ColorBehavior& color_behavior,
-    const OverrideAllowDecodeToYuv allow_decode_to_yuv,
-    const SkISize& desired_size) {
-  // At least kLongestSignatureLength bytes are needed to sniff the signature.
-  if (data->size() < kLongestSignatureLength)
-    return nullptr;
-  // On low end devices, always decode to 8888.
-  if (high_bit_depth_decoding_option == kHighBitDepthToHalfFloat &&
-      Platform::Current() && Platform::Current()->IsLowEndDevice()) {
-    high_bit_depth_decoding_option = kDefaultBitDepth;
-  }
-
-  size_t max_decoded_bytes = Platform::Current()
-                                 ? Platform::Current()->MaxDecodedImageBytes()
-                                 : kNoDecodedImageByteLimit;
-  if (!desired_size.isEmpty()) {
-    size_t num_pixels = desired_size.width() * desired_size.height();
-    if (high_bit_depth_decoding_option == kDefaultBitDepth) {
-      max_decoded_bytes =
-          std::min(k4BytesPerPixel * num_pixels, max_decoded_bytes);
-    } else {  // kHighBitDepthToHalfFloat
-      max_decoded_bytes =
-          std::min(k8BytesPerPixel * num_pixels, max_decoded_bytes);
-    }
-  }
-
-  // Access the first kLongestSignatureLength chars to sniff the signature.
-  // (note: FastSharedBufferReader only makes a copy if the bytes are segmented)
-  char buffer[kLongestSignatureLength];
-  const FastSharedBufferReader fast_reader(data);
-  const char* contents =
-      fast_reader.GetConsecutiveData(0, kLongestSignatureLength, buffer);
-
-  std::unique_ptr<ImageDecoder> decoder;
-  if (MatchesJPEGSignature(contents)) {
-    decoder.reset(new JPEGImageDecoder(alpha_option, color_behavior,
-                                       max_decoded_bytes, allow_decode_to_yuv));
-  } else if (MatchesPNGSignature(contents)) {
-    decoder.reset(new PNGImageDecoder(alpha_option,
-                                      high_bit_depth_decoding_option,
-                                      color_behavior, max_decoded_bytes));
-  } else if (MatchesGIFSignature(contents)) {
-    decoder.reset(
-        new GIFImageDecoder(alpha_option, color_behavior, max_decoded_bytes));
-  } else if (MatchesWebPSignature(contents)) {
-    decoder.reset(
-        new WEBPImageDecoder(alpha_option, color_behavior, max_decoded_bytes));
-  } else if (MatchesICOSignature(contents) || MatchesCURSignature(contents)) {
-    decoder.reset(
-        new ICOImageDecoder(alpha_option, color_behavior, max_decoded_bytes));
-  } else if (MatchesBMPSignature(contents)) {
-    decoder.reset(
-        new BMPImageDecoder(alpha_option, color_behavior, max_decoded_bytes));
-  }
-
-  if (decoder)
-    decoder->SetData(std::move(data), data_complete);
-
-  return decoder;
-}
-
-bool ImageDecoder::HasSufficientDataToSniffImageType(const SharedBuffer& data) {
-  return data.size() >= kLongestSignatureLength;
-}
+constexpr wtf_size_t kLongestSignatureLength = sizeof("RIFF????WEBPVP") - 1;
 
 // static
-String ImageDecoder::SniffImageType(scoped_refptr<SharedBuffer> image_data) {
+String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
+  // At least kLongestSignatureLength bytes are needed to sniff the signature.
+  if (reader->size() < kLongestSignatureLength)
+    return String();
+
   // Access the first kLongestSignatureLength chars to sniff the signature.
   // (note: FastSharedBufferReader only makes a copy if the bytes are segmented)
   char buffer[kLongestSignatureLength];
-  const FastSharedBufferReader fast_reader(
-      SegmentReader::CreateFromSharedBuffer(std::move(image_data)));
+  const FastSharedBufferReader fast_reader(reader);
   const char* contents =
       fast_reader.GetConsecutiveData(0, kLongestSignatureLength, buffer);
 
@@ -182,7 +151,134 @@ String ImageDecoder::SniffImageType(scoped_refptr<SharedBuffer> image_data) {
     return "image/x-icon";
   if (MatchesBMPSignature(contents))
     return "image/bmp";
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  if (AVIFImageDecoder::MatchesAVIFSignature(fast_reader))
+    return "image/avif";
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  if (base::FeatureList::IsEnabled(features::kJXL) &&
+      JXLImageDecoder::MatchesJXLSignature(fast_reader)) {
+    return "image/jxl";
+  }
+#endif
+
   return String();
+}
+
+}  // namespace
+
+const wtf_size_t ImageDecoder::kNoDecodedImageByteLimit =
+    static_cast<wtf_size_t>(-1);
+
+std::unique_ptr<ImageDecoder> ImageDecoder::Create(
+    scoped_refptr<SegmentReader> data,
+    bool data_complete,
+    AlphaOption alpha_option,
+    HighBitDepthDecodingOption high_bit_depth_decoding_option,
+    const ColorBehavior& color_behavior,
+    const SkISize& desired_size,
+    AnimationOption animation_option) {
+  auto type = SniffMimeTypeInternal(data);
+  if (type.IsEmpty())
+    return nullptr;
+
+  return CreateByMimeType(type, std::move(data), data_complete, alpha_option,
+                          high_bit_depth_decoding_option, color_behavior,
+                          desired_size, animation_option);
+}
+
+std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
+    String mime_type,
+    scoped_refptr<SegmentReader> data,
+    bool data_complete,
+    AlphaOption alpha_option,
+    HighBitDepthDecodingOption high_bit_depth_decoding_option,
+    const ColorBehavior& color_behavior,
+    const SkISize& desired_size,
+    AnimationOption animation_option) {
+  const wtf_size_t max_decoded_bytes =
+      CalculateMaxDecodedBytes(high_bit_depth_decoding_option, desired_size);
+
+  // Note: The mime types below should match those supported by
+  // MimeUtil::IsSupportedImageMimeType() (which forces lowercase).
+  std::unique_ptr<ImageDecoder> decoder;
+  mime_type = mime_type.LowerASCII();
+  if (mime_type == "image/jpeg" || mime_type == "image/pjpeg" ||
+      mime_type == "image/jpg") {
+    decoder = std::make_unique<JPEGImageDecoder>(alpha_option, color_behavior,
+                                                 max_decoded_bytes);
+  } else if (mime_type == "image/png" || mime_type == "image/x-png" ||
+             mime_type == "image/apng") {
+    decoder = std::make_unique<PNGImageDecoder>(
+        alpha_option, high_bit_depth_decoding_option, color_behavior,
+        max_decoded_bytes);
+  } else if (mime_type == "image/gif") {
+    decoder = std::make_unique<GIFImageDecoder>(alpha_option, color_behavior,
+                                                max_decoded_bytes);
+  } else if (mime_type == "image/webp") {
+    decoder = std::make_unique<WEBPImageDecoder>(alpha_option, color_behavior,
+                                                 max_decoded_bytes);
+  } else if (mime_type == "image/x-icon" ||
+             mime_type == "image/vnd.microsoft.icon") {
+    decoder = std::make_unique<ICOImageDecoder>(alpha_option, color_behavior,
+                                                max_decoded_bytes);
+  } else if (mime_type == "image/bmp" || mime_type == "image/x-xbitmap") {
+    decoder = std::make_unique<BMPImageDecoder>(alpha_option, color_behavior,
+                                                max_decoded_bytes);
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  } else if (mime_type == "image/avif") {
+    decoder = std::make_unique<AVIFImageDecoder>(
+        alpha_option, high_bit_depth_decoding_option, color_behavior,
+        max_decoded_bytes, animation_option);
+#endif
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  } else if (base::FeatureList::IsEnabled(features::kJXL) &&
+             mime_type == "image/jxl") {
+    decoder = std::make_unique<JXLImageDecoder>(
+        alpha_option, high_bit_depth_decoding_option, color_behavior,
+        max_decoded_bytes);
+#endif
+  }
+
+  if (decoder)
+    decoder->SetData(std::move(data), data_complete);
+
+  return decoder;
+}
+
+bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
+  // At least kLongestSignatureLength bytes are needed to sniff the signature.
+  if (data.size() < kLongestSignatureLength)
+    return false;
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  {
+    // Check for an ISO BMFF File Type Box. Assume that 'largesize' is not used.
+    // The first eight bytes would be a big-endian 32-bit unsigned integer
+    // 'size' and a four-byte 'type'.
+    struct {
+      uint32_t size;  // unsigned int(32) size;
+      char type[4];   // unsigned int(32) type = boxtype;
+    } box;
+    static_assert(sizeof(box) == 8, "");
+    static_assert(8 <= kLongestSignatureLength, "");
+    bool ok = data.GetBytes(&box, 8u);
+    DCHECK(ok);
+    if (memcmp(box.type, "ftyp", 4) == 0) {
+      // Returns whether we have received the File Type Box in its entirety.
+      box.size = base::NetToHost32(box.size);
+      return box.size <= data.size();
+    }
+  }
+#endif
+
+  return true;
+}
+
+// static
+String ImageDecoder::SniffMimeType(scoped_refptr<SharedBuffer> image_data) {
+  return SniffMimeTypeInternal(
+      SegmentReader::CreateFromSharedBuffer(std::move(image_data)));
 }
 
 // static
@@ -196,14 +292,14 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   // (for example, due to a misconfigured web server), then it is possible that
   // the wrong compression format will be returned. However, this case should be
   // exceedingly rare.
-  if (image_data && HasSufficientDataToSniffImageType(*image_data.get()))
-    mime_type = SniffImageType(image_data);
+  if (image_data && HasSufficientDataToSniffMimeType(*image_data.get()))
+    mime_type = SniffMimeType(image_data);
   if (!mime_type)
     return kUndefinedFormat;
 
   // Attempt to sniff whether a WebP image is using a lossy or lossless
-  // compression algorithm. Note: Will return kUndefinedFormat in the case of an
-  // animated WebP image.
+  // compression algorithm. Note: Will return kWebPAnimationFormat in the case
+  // of an animated WebP image.
   size_t available_data = image_data ? image_data->size() : 0;
   if (EqualIgnoringASCIICase(mime_type, "image/webp") && available_data >= 16) {
     // Attempt to sniff only 8 bytes (the second half of the first 16). This
@@ -239,12 +335,22 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
         return webp_features.has_animation
                    ? CompressionFormat::kWebPAnimationFormat
                    : static_cast<CompressionFormat>(webp_features.format);
+      } else if (status != VP8_STATUS_NOT_ENOUGH_DATA) {
+        return kUndefinedFormat;
       }
-      DCHECK_EQ(status, VP8_STATUS_NOT_ENOUGH_DATA);
     } else {
       NOTREACHED();
     }
   }
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  // Attempt to sniff whether an AVIF image is using a lossy or lossless
+  // compression algorithm.
+  // TODO(wtc): Implement this. Figure out whether to return kUndefinedFormat or
+  // a new kAVIFAnimationFormat in the case of an animated AVIF image.
+  if (EqualIgnoringASCIICase(mime_type, "image/avif"))
+    return kLossyFormat;
+#endif
 
   if (MIMETypeRegistry::IsLossyImageMIMEType(mime_type))
     return kLossyFormat;
@@ -254,23 +360,52 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   return kUndefinedFormat;
 }
 
+bool ImageDecoder::IsSizeAvailable() {
+  if (failed_)
+    return false;
+  if (!size_available_)
+    DecodeSize();
+
+  if (!IsDecodedSizeAvailable())
+    return false;
+
+#if defined(OS_FUCHSIA)
+  unsigned decoded_bytes_per_pixel = 4;
+  if (ImageIsHighBitDepth() &&
+      high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
+    decoded_bytes_per_pixel = 8;
+  }
+
+  const IntSize size = DecodedSize();
+  const wtf_size_t decoded_size_bytes =
+      size.width() * size.height() * decoded_bytes_per_pixel;
+  if (decoded_size_bytes > max_decoded_bytes_) {
+    LOG(WARNING) << "Blocked decode of oversized image: " << size.width() << "x"
+                 << size.height();
+    return SetFailed();
+  }
+#endif
+
+  return true;
+}
+
 cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
     const {
   DCHECK(IsDecodedSizeAvailable());
   cc::ImageHeaderMetadata image_metadata{};
   image_metadata.image_type = FileExtensionToImageType(FilenameExtension());
   image_metadata.yuv_subsampling = GetYUVSubsampling();
-  image_metadata.image_size = static_cast<gfx::Size>(size_);
+  image_metadata.image_size = ToGfxSize(size_);
   image_metadata.has_embedded_color_profile = HasEmbeddedColorProfile();
   return image_metadata;
 }
 
-size_t ImageDecoder::FrameCount() {
-  const size_t old_size = frame_buffer_cache_.size();
-  const size_t new_size = DecodeFrameCount();
+wtf_size_t ImageDecoder::FrameCount() {
+  const wtf_size_t old_size = frame_buffer_cache_.size();
+  const wtf_size_t new_size = DecodeFrameCount();
   if (old_size != new_size) {
     frame_buffer_cache_.resize(new_size);
-    for (size_t i = old_size; i < new_size; ++i) {
+    for (wtf_size_t i = old_size; i < new_size; ++i) {
       frame_buffer_cache_[i].SetPremultiplyAlpha(premultiply_alpha_);
       InitializeNewFrame(i);
     }
@@ -278,7 +413,7 @@ size_t ImageDecoder::FrameCount() {
   return new_size;
 }
 
-ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(size_t index) {
+ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(wtf_size_t index) {
   TRACE_EVENT0("blink", "ImageDecoder::DecodeFrameBufferAtIndex");
 
   if (index >= FrameCount())
@@ -287,47 +422,64 @@ ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(size_t index) {
   if (frame->GetStatus() != ImageFrame::kFrameComplete) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "Decode Image",
                  "imageType", FilenameExtension().Ascii());
+    if (metrics_frame_index_ != index) {
+      metrics_frame_index_ = index;
+      metrics_time_delta_ = base::TimeDelta();
+    }
+    base::ElapsedTimer timer;
     Decode(index);
+    metrics_time_delta_ += timer.Elapsed();
+    if (frame->GetStatus() == ImageFrame::kFrameComplete) {
+      BitmapImageMetrics::CountDecodedImageFrameTime(
+          FilenameExtension(), metrics_time_delta_,
+          frame->OriginalFrameRect().size().Area(),
+          metrics_first_ && (index == 0));
+      metrics_frame_index_ = kNotFound;
+      metrics_time_delta_ = base::TimeDelta();
+      if (index == 0) {
+        metrics_first_ = false;
+      }
+    }
   }
 
   frame->NotifyBitmapIfPixelsChanged();
   return frame;
 }
 
-bool ImageDecoder::FrameHasAlphaAtIndex(size_t index) const {
+bool ImageDecoder::FrameHasAlphaAtIndex(wtf_size_t index) const {
   return !FrameIsReceivedAtIndex(index) ||
          frame_buffer_cache_[index].HasAlpha();
 }
 
-bool ImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool ImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   // Animated images override this method to return the status based on the data
   // received for the queried frame.
   return IsAllDataReceived();
 }
 
-bool ImageDecoder::FrameIsDecodedAtIndex(size_t index) const {
+bool ImageDecoder::FrameIsDecodedAtIndex(wtf_size_t index) const {
   return index < frame_buffer_cache_.size() &&
          frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameComplete;
 }
 
-size_t ImageDecoder::FrameBytesAtIndex(size_t index) const {
+wtf_size_t ImageDecoder::FrameBytesAtIndex(wtf_size_t index) const {
   if (index >= frame_buffer_cache_.size() ||
       frame_buffer_cache_[index].GetStatus() == ImageFrame::kFrameEmpty)
     return 0;
 
-  size_t decoded_bytes_per_pixel = k4BytesPerPixel;
+  wtf_size_t decoded_bytes_per_pixel = 4;
   if (frame_buffer_cache_[index].GetPixelFormat() ==
       ImageFrame::PixelFormat::kRGBA_F16) {
-    decoded_bytes_per_pixel = k8BytesPerPixel;
+    decoded_bytes_per_pixel = 8;
   }
   IntSize size = FrameSizeAtIndex(index);
-  base::CheckedNumeric<size_t> area = size.Width();
-  area *= size.Height();
+  base::CheckedNumeric<wtf_size_t> area = size.width();
+  area *= size.height();
   area *= decoded_bytes_per_pixel;
   return area.ValueOrDie();
 }
 
-size_t ImageDecoder::ClearCacheExceptFrame(size_t clear_except_frame) {
+wtf_size_t ImageDecoder::ClearCacheExceptFrame(wtf_size_t clear_except_frame) {
   // Don't clear if there are no frames or only one frame.
   if (frame_buffer_cache_.size() <= 1)
     return 0;
@@ -346,7 +498,7 @@ size_t ImageDecoder::ClearCacheExceptFrame(size_t clear_except_frame) {
   //
   // If either 1 or 2 is true, store the required previous frame in
   // |clear_except_frame2| so it won't be cleared.
-  size_t clear_except_frame2 = kNotFound;
+  wtf_size_t clear_except_frame2 = kNotFound;
   if (clear_except_frame < frame_buffer_cache_.size()) {
     const ImageFrame& frame = frame_buffer_cache_[clear_except_frame];
     if (!FrameStatusSufficientForSuccessors(clear_except_frame) ||
@@ -369,10 +521,11 @@ size_t ImageDecoder::ClearCacheExceptFrame(size_t clear_except_frame) {
   return ClearCacheExceptTwoFrames(clear_except_frame, clear_except_frame2);
 }
 
-size_t ImageDecoder::ClearCacheExceptTwoFrames(size_t clear_except_frame1,
-                                               size_t clear_except_frame2) {
-  size_t frame_bytes_cleared = 0;
-  for (size_t i = 0; i < frame_buffer_cache_.size(); ++i) {
+wtf_size_t ImageDecoder::ClearCacheExceptTwoFrames(
+    wtf_size_t clear_except_frame1,
+    wtf_size_t clear_except_frame2) {
+  wtf_size_t frame_bytes_cleared = 0;
+  for (wtf_size_t i = 0; i < frame_buffer_cache_.size(); ++i) {
     if (frame_buffer_cache_[i].GetStatus() != ImageFrame::kFrameEmpty &&
         i != clear_except_frame1 && i != clear_except_frame2) {
       frame_bytes_cleared += FrameBytesAtIndex(i);
@@ -382,14 +535,14 @@ size_t ImageDecoder::ClearCacheExceptTwoFrames(size_t clear_except_frame1,
   return frame_bytes_cleared;
 }
 
-void ImageDecoder::ClearFrameBuffer(size_t frame_index) {
+void ImageDecoder::ClearFrameBuffer(wtf_size_t frame_index) {
   frame_buffer_cache_[frame_index].ClearPixelData();
 }
 
-Vector<size_t> ImageDecoder::FindFramesToDecode(size_t index) const {
+Vector<wtf_size_t> ImageDecoder::FindFramesToDecode(wtf_size_t index) const {
   DCHECK_LT(index, frame_buffer_cache_.size());
 
-  Vector<size_t> frames_to_decode;
+  Vector<wtf_size_t> frames_to_decode;
   do {
     frames_to_decode.push_back(index);
     index = frame_buffer_cache_[index].RequiredPreviousFrameIndex();
@@ -398,7 +551,7 @@ Vector<size_t> ImageDecoder::FindFramesToDecode(size_t index) const {
   return frames_to_decode;
 }
 
-bool ImageDecoder::PostDecodeProcessing(size_t index) {
+bool ImageDecoder::PostDecodeProcessing(wtf_size_t index) {
   DCHECK(index < frame_buffer_cache_.size());
 
   if (frame_buffer_cache_[index].GetStatus() != ImageFrame::kFrameComplete)
@@ -410,13 +563,13 @@ bool ImageDecoder::PostDecodeProcessing(size_t index) {
   return true;
 }
 
-void ImageDecoder::CorrectAlphaWhenFrameBufferSawNoAlpha(size_t index) {
+void ImageDecoder::CorrectAlphaWhenFrameBufferSawNoAlpha(wtf_size_t index) {
   DCHECK(index < frame_buffer_cache_.size());
   ImageFrame& buffer = frame_buffer_cache_[index];
 
   // When this frame spans the entire image rect we can SetHasAlpha to false,
   // since there are logically no transparent pixels outside of the frame rect.
-  if (buffer.OriginalFrameRect().Contains(IntRect(IntPoint(), Size()))) {
+  if (buffer.OriginalFrameRect().Contains(IntRect(gfx::Point(), Size()))) {
     buffer.SetHasAlpha(false);
     buffer.SetRequiredPreviousFrameIndex(kNotFound);
   } else if (buffer.RequiredPreviousFrameIndex() != kNotFound) {
@@ -461,7 +614,7 @@ void ImageDecoder::CorrectAlphaWhenFrameBufferSawNoAlpha(size_t index) {
   }
 }
 
-bool ImageDecoder::InitFrameBuffer(size_t frame_index) {
+bool ImageDecoder::InitFrameBuffer(wtf_size_t frame_index) {
   DCHECK(frame_index < frame_buffer_cache_.size());
 
   ImageFrame* const buffer = &frame_buffer_cache_[frame_index];
@@ -470,10 +623,11 @@ bool ImageDecoder::InitFrameBuffer(size_t frame_index) {
   if (buffer->GetStatus() != ImageFrame::kFrameEmpty)
     return true;
 
-  size_t required_previous_frame_index = buffer->RequiredPreviousFrameIndex();
+  wtf_size_t required_previous_frame_index =
+      buffer->RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
     // This frame doesn't rely on any previous data.
-    if (!buffer->AllocatePixelData(Size().Width(), Size().Height(),
+    if (!buffer->AllocatePixelData(Size().width(), Size().height(),
                                    ColorSpaceForSkImages())) {
       return false;
     }
@@ -497,10 +651,14 @@ bool ImageDecoder::InitFrameBuffer(size_t frame_index) {
       // We want to clear the previous frame to transparent, without
       // affecting pixels in the image outside of the frame.
       const IntRect& prev_rect = prev_buffer->OriginalFrameRect();
-      DCHECK(!prev_rect.Contains(IntRect(IntPoint(), Size())));
+      DCHECK(!prev_rect.Contains(IntRect(gfx::Point(), Size())));
       buffer->ZeroFillFrameRect(prev_rect);
     }
   }
+
+  DCHECK_EQ(high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat &&
+                ImageIsHighBitDepth(),
+            buffer->GetPixelFormat() == ImageFrame::kRGBA_F16);
 
   OnInitFrameBuffer(frame_index);
 
@@ -510,7 +668,7 @@ bool ImageDecoder::InitFrameBuffer(size_t frame_index) {
   return true;
 }
 
-void ImageDecoder::UpdateAggressivePurging(size_t index) {
+void ImageDecoder::UpdateAggressivePurging(wtf_size_t index) {
   if (purge_aggressively_)
     return;
 
@@ -526,11 +684,11 @@ void ImageDecoder::UpdateAggressivePurging(size_t index) {
   // As we decode we will learn the total number of frames, and thus total
   // possible image memory used.
 
-  size_t decoded_bytes_per_pixel = k4BytesPerPixel;
+  wtf_size_t decoded_bytes_per_pixel = 4;
 
   if (frame_buffer_cache_.size() && frame_buffer_cache_[0].GetPixelFormat() ==
                                         ImageFrame::PixelFormat::kRGBA_F16) {
-    decoded_bytes_per_pixel = k8BytesPerPixel;
+    decoded_bytes_per_pixel = 8;
   }
   const uint64_t frame_memory_usage =
       DecodedSize().Area() * decoded_bytes_per_pixel;
@@ -550,8 +708,8 @@ void ImageDecoder::UpdateAggressivePurging(size_t index) {
   }
 }
 
-size_t ImageDecoder::FindRequiredPreviousFrame(size_t frame_index,
-                                               bool frame_rect_is_opaque) {
+wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
+                                                   bool frame_rect_is_opaque) {
   DCHECK_LT(frame_index, frame_buffer_cache_.size());
   if (!frame_index) {
     // The first frame doesn't rely on any previous data.
@@ -561,12 +719,12 @@ size_t ImageDecoder::FindRequiredPreviousFrame(size_t frame_index,
   const ImageFrame* curr_buffer = &frame_buffer_cache_[frame_index];
   if ((frame_rect_is_opaque ||
        curr_buffer->GetAlphaBlendSource() == ImageFrame::kBlendAtopBgcolor) &&
-      curr_buffer->OriginalFrameRect().Contains(IntRect(IntPoint(), Size())))
+      curr_buffer->OriginalFrameRect().Contains(IntRect(gfx::Point(), Size())))
     return kNotFound;
 
   // The starting state for this frame depends on the previous frame's
   // disposal method.
-  size_t prev_frame = frame_index - 1;
+  wtf_size_t prev_frame = frame_index - 1;
   const ImageFrame* prev_buffer = &frame_buffer_cache_[prev_frame];
 
   // Frames that use the DisposeOverwritePrevious method are effectively
@@ -595,7 +753,7 @@ size_t ImageDecoder::FindRequiredPreviousFrame(size_t frame_index,
       // this frame is a blank frame, so it can again be decoded alone.
       // Otherwise, the previous frame contributes to this frame.
       return (prev_buffer->OriginalFrameRect().Contains(
-                  IntRect(IntPoint(), Size())) ||
+                  IntRect(gfx::Point(), Size())) ||
               (prev_buffer->RequiredPreviousFrameIndex() == kNotFound))
                  ? kNotFound
                  : prev_frame;
@@ -607,29 +765,29 @@ size_t ImageDecoder::FindRequiredPreviousFrame(size_t frame_index,
 }
 
 ImagePlanes::ImagePlanes() {
-  for (int i = 0; i < 3; ++i) {
+  color_type_ = kUnknown_SkColorType;
+  for (int i = 0; i < cc::kNumYUVPlanes; ++i) {
     planes_[i] = nullptr;
     row_bytes_[i] = 0;
   }
 }
 
-ImagePlanes::ImagePlanes(void* planes[3], const size_t row_bytes[3]) {
-  for (int i = 0; i < 3; ++i) {
+ImagePlanes::ImagePlanes(void* planes[cc::kNumYUVPlanes],
+                         const wtf_size_t row_bytes[cc::kNumYUVPlanes],
+                         SkColorType color_type)
+    : color_type_(color_type) {
+  for (int i = 0; i < cc::kNumYUVPlanes; ++i) {
     planes_[i] = planes[i];
     row_bytes_[i] = row_bytes[i];
   }
 }
 
-void* ImagePlanes::Plane(int i) {
-  DCHECK_GE(i, 0);
-  DCHECK_LT(i, 3);
-  return planes_[i];
+void* ImagePlanes::Plane(cc::YUVIndex index) {
+  return planes_[static_cast<wtf_size_t>(index)];
 }
 
-size_t ImagePlanes::RowBytes(int i) const {
-  DCHECK_GE(i, 0);
-  DCHECK_LT(i, 3);
-  return row_bytes_[i];
+wtf_size_t ImagePlanes::RowBytes(cc::YUVIndex index) const {
+  return row_bytes_[static_cast<wtf_size_t>(index)];
 }
 
 ColorProfile::ColorProfile(const skcms_ICCProfile& profile,

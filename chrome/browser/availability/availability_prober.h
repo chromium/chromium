@@ -11,10 +11,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -27,6 +25,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -42,8 +41,7 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-typedef base::RepeatingCallback<void(bool)>
-    AvailabilityProberOnCompleteCallback;
+typedef base::OnceCallback<void(bool)> AvailabilityProberOnCompleteCallback;
 
 // This class is a utility to probe a given URL with a given set of behaviors.
 // This can be used for determining whether a specific network resource is
@@ -71,13 +69,24 @@ class AvailabilityProber
 
   // Callers who wish to use this class should add a value to this enum. This
   // enum is mapped to a string value which is then used in histograms and
-  // prefs.
+  // prefs. Be sure to update the |Availability.Prober.Clients| histogram suffix
+  // in //tools/metrics/histograms.xml whenever a change is made to this enum.
+  //
+  // Please add the header file of the client when new items are added.
   enum class ClientName {
-    kLitepages = 0,
+    kLitepages_DEPRECATED = 0,
+    kLitepagesOriginCheck_DEPRECATED = 1,
 
-    kLitepagesOriginCheck = 1,
+    // chrome/browser/prefetch/prefetch_proxy/
+    // prefetch_proxy_url_loader_interceptor.h
+    kIsolatedPrerenderOriginCheck = 2,
 
-    kMaxValue = kLitepagesOriginCheck,
+    // chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h
+    kIsolatedPrerenderCanaryCheck_DEPRECATED = 3,
+    kIsolatedPrerenderTLSCanaryCheck = 4,
+    kIsolatedPrerenderDNSCanaryCheck = 5,
+
+    kMaxValue = kIsolatedPrerenderDNSCanaryCheck,
   };
 
   // This enum describes the different algorithms that can be used to calculate
@@ -126,7 +135,7 @@ class AvailabilityProber
     //   LINEAR: Each probe times out in |base_timeout|.
     //   EXPONENTIAL: Each probe times out in
     //                (|base_timeout| * 2 ^ |successive_timeout_count_|).
-    base::TimeDelta base_timeout = base::TimeDelta::FromSeconds(60);
+    base::TimeDelta base_timeout = base::Seconds(60);
   };
 
   enum class HttpMethod {
@@ -147,6 +156,10 @@ class AvailabilityProber
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const size_t max_cache_entries,
       base::TimeDelta revalidate_cache_after);
+
+  AvailabilityProber(const AvailabilityProber&) = delete;
+  AvailabilityProber& operator=(const AvailabilityProber&) = delete;
+
   ~AvailabilityProber() override;
 
   // Registers the prefs used in this class.
@@ -154,6 +167,8 @@ class AvailabilityProber
 
   // Clears the prefs used in this class.
   static void ClearData(PrefService* pref_service);
+
+  base::WeakPtr<AvailabilityProber> AsWeakPtr() const;
 
   // Sends a probe now if the prober is currently inactive. If the probe is
   // active (i.e.: there are probes in flight), this is a no-op. If
@@ -170,7 +185,7 @@ class AvailabilityProber
   // Returns the successfulness of the last probe, if there was one. If the last
   // probe status was cached and needs to be revalidated, this may activate the
   // prober.
-  base::Optional<bool> LastProbeWasSuccessful();
+  absl::optional<bool> LastProbeWasSuccessful();
 
   // True if probes are being attempted, including retries.
   bool is_active() const { return time_when_set_active_.has_value(); }
@@ -293,7 +308,7 @@ class AvailabilityProber
   const base::Clock* clock_;
 
   // Remembers the last time the prober became active.
-  base::Optional<base::Time> time_when_set_active_;
+  absl::optional<base::Time> time_when_set_active_;
 
   // This reference is kept around for unregistering |this| as an observer on
   // any thread.
@@ -328,8 +343,6 @@ class AvailabilityProber
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AvailabilityProber> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityProber);
 };
 
 #endif  // CHROME_BROWSER_AVAILABILITY_AVAILABILITY_PROBER_H_

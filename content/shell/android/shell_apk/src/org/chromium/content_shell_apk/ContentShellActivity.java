@@ -22,6 +22,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 
 /**
  * Activity for managing the Content Shell.
@@ -40,6 +41,7 @@ public class ContentShellActivity extends Activity {
     private ActivityWindowAndroid mWindowAndroid;
     private Intent mLastSentIntent;
     private String mStartupUrl;
+    private IntentRequestTracker mIntentRequestTracker;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -61,8 +63,10 @@ public class ContentShellActivity extends Activity {
         setContentView(R.layout.content_shell_activity);
         mShellManager = findViewById(R.id.shell_container);
         final boolean listenToActivityState = true;
-        mWindowAndroid = new ActivityWindowAndroid(this, listenToActivityState);
-        mWindowAndroid.restoreInstanceState(savedInstanceState);
+        mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        mWindowAndroid =
+                new ActivityWindowAndroid(this, listenToActivityState, mIntentRequestTracker);
+        mIntentRequestTracker.restoreInstanceState(savedInstanceState);
         mShellManager.setWindow(mWindowAndroid);
         // Set up the animation placeholder to be the SurfaceView. This disables the
         // SurfaceView's 'hole' clipping during animations that are notified to the window.
@@ -75,22 +79,22 @@ public class ContentShellActivity extends Activity {
         }
 
         if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
-            BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                    .startBrowserProcessesSync(false);
+            BrowserStartupController.getInstance().startBrowserProcessesSync(
+                    LibraryProcessType.PROCESS_BROWSER, false);
         } else {
-            BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                    .startBrowserProcessesAsync(
-                            true, false, new BrowserStartupController.StartupCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    finishInitialization(savedInstanceState);
-                                }
+            BrowserStartupController.getInstance().startBrowserProcessesAsync(
+                    LibraryProcessType.PROCESS_BROWSER, true, false,
+                    new BrowserStartupController.StartupCallback() {
+                        @Override
+                        public void onSuccess() {
+                            finishInitialization(savedInstanceState);
+                        }
 
-                                @Override
-                                public void onFailure() {
-                                    initializationFailed();
-                                }
-                            });
+                        @Override
+                        public void onFailure() {
+                            initializationFailed();
+                        }
+                    });
         }
     }
 
@@ -122,10 +126,11 @@ public class ContentShellActivity extends Activity {
         super.onSaveInstanceState(outState);
         WebContents webContents = getActiveWebContents();
         if (webContents != null) {
-            outState.putString(ACTIVE_SHELL_URL_KEY, webContents.getLastCommittedUrl());
+            // TODO(yfriedman): crbug/783819 - This should use GURL serialize/deserialize.
+            outState.putString(ACTIVE_SHELL_URL_KEY, webContents.getLastCommittedUrl().getSpec());
         }
 
-        mWindowAndroid.saveInstanceState(outState);
+        mIntentRequestTracker.saveInstanceState(outState);
     }
 
     @Override
@@ -169,7 +174,7 @@ public class ContentShellActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mWindowAndroid.onActivityResult(requestCode, resultCode, data);
+        mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -181,6 +186,7 @@ public class ContentShellActivity extends Activity {
     @Override
     protected void onDestroy() {
         if (mShellManager != null) mShellManager.destroy();
+        mWindowAndroid.destroy();
         super.onDestroy();
     }
 

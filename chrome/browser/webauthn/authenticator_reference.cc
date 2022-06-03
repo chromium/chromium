@@ -6,17 +6,9 @@
 
 AuthenticatorReference::AuthenticatorReference(
     base::StringPiece authenticator_id,
-    base::StringPiece16 authenticator_display_name,
-    device::FidoTransportProtocol transport,
-    bool is_in_pairing_mode,
-    bool is_paired,
-    bool requires_ble_pairing_pin)
+    device::FidoTransportProtocol transport)
     : authenticator_id(authenticator_id),
-      authenticator_display_name(authenticator_display_name),
-      transport(transport),
-      is_in_pairing_mode(is_in_pairing_mode),
-      is_paired(is_paired),
-      requires_ble_pairing_pin(requires_ble_pairing_pin) {}
+      transport(transport) {}
 
 AuthenticatorReference::AuthenticatorReference(AuthenticatorReference&& data) =
     default;

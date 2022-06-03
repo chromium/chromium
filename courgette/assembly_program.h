@@ -42,6 +42,10 @@ class EncodedProgram;
 class AssemblyProgram {
  public:
   AssemblyProgram(ExecutableType kind, uint64_t image_base);
+
+  AssemblyProgram(const AssemblyProgram&) = delete;
+  AssemblyProgram& operator=(const AssemblyProgram&) = delete;
+
   ~AssemblyProgram();
 
   ExecutableType kind() const { return kind_; }
@@ -54,10 +58,6 @@ class AssemblyProgram {
 
   // Traverses RVAs in |abs32_visitor| and |rel32_visitor| to precompute Labels.
   void PrecomputeLabels(RvaVisitor* abs32_visitor, RvaVisitor* rel32_visitor);
-
-  // Removes underused Labels. Thresholds used (0 = no trimming) is
-  // architecture-dependent.
-  void TrimLabels();
 
   void UnassignIndexes();
   void DefaultAssignIndexes();
@@ -78,7 +78,7 @@ class AssemblyProgram {
  private:
   static const int kLabelLowerLimit;
 
-  // Looks up a label or creates a new one.  Might return NULL.
+  // Looks up a label or creates a new one.  Might return nullptr.
   Label* FindLabel(RVA rva, RVAToLabel* labels);
 
   const ExecutableType kind_;
@@ -93,8 +93,6 @@ class AssemblyProgram {
   // These are used by Label adjustment during patch generation.
   std::vector<Label*> abs32_label_annotations_;
   std::vector<Label*> rel32_label_annotations_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssemblyProgram);
 };
 
 }  // namespace courgette

@@ -51,7 +51,8 @@ bool CSSBorderImageSliceValue::Equals(
   return fill_ == other.fill_ && DataEquivalent(slices_, other.slices_);
 }
 
-void CSSBorderImageSliceValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSBorderImageSliceValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   visitor->Trace(slices_);
   CSSValue::TraceAfterDispatch(visitor);
 }

@@ -13,8 +13,10 @@ namespace media_session {
 base::android::ScopedJavaLocalRef<jobject> MediaPosition::CreateJavaObject(
     JNIEnv* env) const {
   return Java_MediaPosition_create(
-      env, duration_.InMilliseconds(), position_.InMilliseconds(),
-      playback_rate_,
+      env,
+      (duration_.is_max() || duration_.is_zero()) ? -1
+                                                  : duration_.InMilliseconds(),
+      position_.InMilliseconds(), playback_rate_,
       (last_updated_time_ - base::TimeTicks::UnixEpoch()).InMilliseconds());
 }
 

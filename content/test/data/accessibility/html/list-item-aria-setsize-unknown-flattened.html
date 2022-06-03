@@ -1,0 +1,56 @@
+<!--
+@BLINK-ALLOW:hierarchicalLevel*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:setSize*
+@WIN-ALLOW:group_level*
+@WIN-ALLOW:similar_items_in_group*
+@WIN-ALLOW:position_in_group*
+@UIA-WIN-ALLOW:Level*
+@UIA-WIN-ALLOW:PositionInSet*
+@UIA-WIN-ALLOW:SizeOfSet*
+@UIA-WIN-DENY:IsControlElement*
+-->
+<html>
+<body>
+  <!-- Nested list items in flattened structure. -->
+  <ol role="list" start="1">
+    <li aria-setsize="-1" aria-posinset="1" role="listitem" aria-level="1">Level 1, item 1 of set size unknown</li>
+  </ol>
+  <ol role="list" start="1">
+    <li aria-setsize="-1" aria-posinset="1" role="listitem" aria-level="2">++Level 2, item 1 of set size unknown</li>
+  </ol>
+  <ol role="list" start="2">
+    <li aria-setsize="-1" aria-posinset="2" role="listitem" aria-level="2">++Level 2, item 2 of set size unknown</li>
+  </ol>
+  <ol role="list" start="3">
+    <li aria-setsize="-1" aria-posinset="3" role="listitem" aria-level="2">++Level 2, item 3 of set size unknown</li>
+  </ol>
+  <ol role="list" start="1">
+    <li aria-setsize="-1" aria-posinset="1" role="listitem" aria-level="3">++++Level 3, item 1 of set size unknown</li>
+  </ol>
+  <ol role="list" start="2">
+    <li aria-setsize="-1" aria-posinset="2" role="listitem" aria-level="3">++++Level 3, item 2 of set size unknown</li>
+  </ol>
+  <ol role="list" start="2">
+    <li aria-setsize="-1" aria-posinset="2" role="listitem" aria-level="1">Level 1, item 2 of set size unknown</li>
+  </ol>
+  <ol role="list" start="3">
+    <li aria-setsize="-1" aria-posinset="3" role="listitem" aria-level="1">Level 1, item 3 of set size unknown</li>
+  </ol>
+  <div role="list">
+    <ol role="list" start="4">
+      <li aria-posinset="4" role="listitem">Level Unspecified, aria-setsize attribute does not exist, item 4 of set size 4</li>
+    </ol>
+    <ol role="list" start="5">
+      <li aria-posinset="5" role="listitem">Level Unspecified, aria-setsize attribute does not exist, item 5 of set size 5</li>
+    </ol>
+  </div>
+
+  <style>
+    li {
+      list-style-type: none;
+    }
+  </style>
+</body>
+
+</html>

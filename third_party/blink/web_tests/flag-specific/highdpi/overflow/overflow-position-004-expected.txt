@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL absolute position with rtl scrollbars assert_equals: left expected 15 but got 14.666666984558105
+Harness: the test ran to completion.
+

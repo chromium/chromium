@@ -4,18 +4,97 @@
 
 static_library("content") {
   sources = [
+    "browsing_data_helper.cc",
+    "browsing_data_helper.h",
+    "cache_storage_helper.cc",
+    "cache_storage_helper.h",
+    "canonical_cookie_hash.cc",
+    "canonical_cookie_hash.h",
     "conditional_cache_counting_helper.cc",
     "conditional_cache_counting_helper.h",
+    "cookie_helper.cc",
+    "cookie_helper.h",
+    "database_helper.cc",
+    "database_helper.h",
+    "file_system_helper.cc",
+    "file_system_helper.h",
+    "indexed_db_helper.cc",
+    "indexed_db_helper.h",
+    "local_shared_objects_container.cc",
+    "local_shared_objects_container.h",
+    "local_storage_helper.cc",
+    "local_storage_helper.h",
+    "service_worker_helper.cc",
+    "service_worker_helper.h",
+    "shared_worker_helper.cc",
+    "shared_worker_helper.h",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   deps = [
     "//base",
     "//components/browsing_data/core",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/no_state_prefetch/browser",
+    "//components/prefs",
+    "//components/services/storage/public/cpp",
+    "//components/services/storage/public/mojom",
+    "//components/site_isolation",
     "//content/public/browser",
     "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browsing_data_helper_unittest.cc",
+    "cache_storage_helper_unittest.cc",
+    "cookie_helper_unittest.cc",
+    "database_helper_unittest.cc",
+    "file_system_helper_unittest.cc",
+    "indexed_db_helper_unittest.cc",
+    "local_storage_helper_unittest.cc",
+    "service_worker_helper_unittest.cc",
+    "shared_worker_helper_unittest.cc",
+  ]
+
+  deps = [
+    ":content",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_cache_storage_helper.cc",
+    "mock_cache_storage_helper.h",
+    "mock_cookie_helper.cc",
+    "mock_cookie_helper.h",
+    "mock_database_helper.cc",
+    "mock_database_helper.h",
+    "mock_file_system_helper.cc",
+    "mock_file_system_helper.h",
+    "mock_indexed_db_helper.cc",
+    "mock_indexed_db_helper.h",
+    "mock_local_storage_helper.cc",
+    "mock_local_storage_helper.h",
+    "mock_service_worker_helper.cc",
+    "mock_service_worker_helper.h",
+    "mock_shared_worker_helper.cc",
+    "mock_shared_worker_helper.h",
+  ]
+  deps = [
+    ":content",
+    "//base",
+    "//components/services/storage/public/cpp",
+    "//content/public/browser",
+    "//testing/gtest",
+    "//url",
   ]
 }

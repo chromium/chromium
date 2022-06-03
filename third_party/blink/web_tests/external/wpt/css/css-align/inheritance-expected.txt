@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS Property align-content has initial value normal
+FAIL Property align-content does not inherit assert_equals: expected "last baseline" but got "normal"
+PASS Property align-items has initial value normal
+FAIL Property align-items does not inherit assert_equals: expected "last baseline" but got "normal"
+PASS Property align-self has initial value auto
+FAIL Property align-self does not inherit assert_equals: expected "last baseline" but got "auto"
+PASS Property column-gap has initial value normal
+PASS Property column-gap does not inherit
+PASS Property justify-content has initial value normal
+PASS Property justify-content does not inherit
+PASS Property justify-items has initial value legacy center
+FAIL Property justify-items does not inherit assert_equals: expected "last baseline" but got "normal"
+PASS Property justify-self has initial value auto
+FAIL Property justify-self does not inherit assert_equals: expected "last baseline" but got "auto"
+PASS Property row-gap has initial value normal
+PASS Property row-gap does not inherit
+Harness: the test ran to completion.
+

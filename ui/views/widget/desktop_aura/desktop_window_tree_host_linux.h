@@ -5,7 +5,12 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
-#include "base/macros.h"
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/base/buildflags.h"
@@ -14,14 +19,15 @@
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
-class SkPath;
-
 namespace aura {
 class ScopedWindowTargeter;
 }  // namespace aura
 
 namespace ui {
+class DeskExtension;
+class PinnedModeExtension;
 class X11Extension;
+class WaylandExtension;
 }  // namespace ui
 
 namespace views {
@@ -36,15 +42,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   DesktopWindowTreeHostLinux(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  DesktopWindowTreeHostLinux(const DesktopWindowTreeHostLinux&) = delete;
+  DesktopWindowTreeHostLinux& operator=(const DesktopWindowTreeHostLinux&) =
+      delete;
+
   ~DesktopWindowTreeHostLinux() override;
-
-  // A way of converting a |widget| into the content_window()
-  // of the associated DesktopNativeWidgetAura.
-  static aura::Window* GetContentWindowForWidget(gfx::AcceleratedWidget widget);
-
-  // A way of converting a |widget| into this object.
-  static DesktopWindowTreeHostLinux* GetHostForWidget(
-      gfx::AcceleratedWidget widget);
 
   // Get all open top-level windows. This includes windows that may not be
   // visible. This list is sorted in their stacking order, i.e. the first window
@@ -55,9 +58,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // internal list of open windows.
   static void CleanUpWindowList(void (*func)(aura::Window* window));
 
-  // This must be called before the window is created, because the visual cannot
-  // be changed after. Useful for X11. Not in use for Wayland.
-  void SetPendingXVisualId(int x_visual_id);
+  // Casts from a base WindowTreeHost instance.
+  static DesktopWindowTreeHostLinux* From(WindowTreeHost* wth);
 
   // Returns the current bounds in terms of the X11 Root Window including the
   // borders provided by the window manager (if any). Not in use for Wayland.
@@ -75,12 +77,24 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Disables event listening to make |dialog| modal.
   base::OnceClosure DisableEventListening();
 
+  ui::WaylandExtension* GetWaylandExtension();
+  const ui::WaylandExtension* GetWaylandExtension() const;
+
+  ui::DeskExtension* GetDeskExtension();
+  const ui::DeskExtension* GetDeskExtension() const;
+
+  ui::PinnedModeExtension* GetPinnedModeExtension();
+  const ui::PinnedModeExtension* GetPinnedModeExtension() const;
+
  protected:
   // Overridden from DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
-  base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   void InitModalType(ui::ModalType modal_type) override;
+  Widget::MoveLoopResult RunMoveLoop(
+      const gfx::Vector2d& drag_offset,
+      Widget::MoveLoopSource source,
+      Widget::MoveLoopEscapeBehavior escape_behavior) override;
 
   // PlatformWindowDelegate:
   void DispatchEvent(ui::Event* event) override;
@@ -88,12 +102,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override;
   void OnActivationChanged(bool active) override;
 
+  ui::X11Extension* GetX11Extension();
+  const ui::X11Extension* GetX11Extension() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostLinuxTest, HitTest);
-
-  // Overridden from display::DisplayObserver via aura::WindowTreeHost:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostLinuxTest, MouseNCEvents);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostLinuxHighDPITest,
+                           MouseNCEvents);
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(
@@ -107,19 +123,15 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   void DestroyNonClientEventFilter();
 
   // X11ExtensionDelegate overrides:
-  void OnXWindowMapped() override;
-  void OnXWindowUnmapped() override;
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
   void OnLostMouseGrab() override;
 #if BUILDFLAG(USE_ATK)
-  bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event) override;
+  bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event, bool transient) override;
 #endif
+  bool IsOverrideRedirect() const override;
+  gfx::Rect GetGuessedFullScreenSizeInPx() const override;
 
   // Enables event listening after closing |dialog|.
   void EnableEventListening();
-
-  ui::X11Extension* GetX11Extension();
-  const ui::X11Extension* GetX11Extension() const;
 
   // See comment for variable open_windows_.
   static std::list<gfx::AcceleratedWidget>& open_windows();
@@ -128,11 +140,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // A posthandler for events intended for non client area. Handles events if no
   // other consumer handled them.
   std::unique_ptr<WindowEventFilterLinux> non_client_window_event_filter_;
-
-  // X11 may set set a visual id for the system tray icon before the host is
-  // initialized. This value will be passed down to PlatformWindow during
-  // initialization of the host.
-  base::Optional<int> pending_x_visual_id_;
 
   std::unique_ptr<CompositorObserver> compositor_observer_;
 
@@ -146,8 +153,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   // The display and the native X window hosting the root window.
   base::WeakPtrFactory<DesktopWindowTreeHostLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostLinux);
 };
 
 }  // namespace views

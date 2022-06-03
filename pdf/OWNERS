@@ -1,9 +1,10 @@
-dsinclair@chromium.org
-hnakashima@chromium.org
-jochen@chromium.org
+set noparent
+dhoss@chromium.org
+kmoon@chromium.org
 thestig@chromium.org
 
-# Pepper-related questions/reviews only.
-raymes@chromium.org
+# Security/XFA-related questions/reviews only.
+tsepez@chromium.org
 
-# COMPONENT: Internals>Plugins>PDF
+# V8/gin-related questions/reviews only.
+jochen@chromium.org

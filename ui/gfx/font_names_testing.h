@@ -13,4 +13,4 @@ extern const char kCJKFontName[];
 
 } // end namespace gfx
 
-#endif
+#endif  // UI_GFX_FONT_NAMES_TESTING_H_

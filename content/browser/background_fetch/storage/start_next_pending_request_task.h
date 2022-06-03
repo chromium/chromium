@@ -28,6 +28,10 @@ class StartNextPendingRequestTask : public DatabaseTask {
       const BackgroundFetchRegistrationId& registration_id,
       NextRequestCallback callback);
 
+  StartNextPendingRequestTask(const StartNextPendingRequestTask&) = delete;
+  StartNextPendingRequestTask& operator=(const StartNextPendingRequestTask&) =
+      delete;
+
   ~StartNextPendingRequestTask() override;
 
   // DatabaseTask implementation:
@@ -62,8 +66,6 @@ class StartNextPendingRequestTask : public DatabaseTask {
 
   base::WeakPtrFactory<StartNextPendingRequestTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(StartNextPendingRequestTask);
 };
 
 }  // namespace background_fetch

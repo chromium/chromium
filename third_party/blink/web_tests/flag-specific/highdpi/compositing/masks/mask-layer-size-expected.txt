@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='masked'",
+      "bounds": [600, 300],
+      "backgroundColor": "#000000",
+      "transform": 1
+    },
+    {
+      "name": "Mask Layer",
+      "bounds": [600, 300],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    }
+  ]
+}
+

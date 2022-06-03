@@ -22,7 +22,7 @@ FakeNotificationPresenter::FakeNotificationPresenter()
 
 FakeNotificationPresenter::~FakeNotificationPresenter() = default;
 
-base::Optional<multidevice::RemoteDeviceRef>
+absl::optional<multidevice::RemoteDeviceRef>
 FakeNotificationPresenter::GetPotentialHotspotRemoteDevice() {
   EXPECT_EQ(potential_hotspot_state_,
             NotificationPresenter::PotentialHotspotNotificationState::

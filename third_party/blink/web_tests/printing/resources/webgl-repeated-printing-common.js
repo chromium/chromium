@@ -6,7 +6,6 @@ function main()
     testFailed("Requires window.testRunner");
   } else {
     testRunner.waitUntilDone();
-    testRunner.setPrinting();
     testRunner.dumpAsText();
     window.requestAnimationFrame(initTest);
   }
@@ -36,7 +35,6 @@ function nextTest() {
   if (testIndex >= testsAndExpectations.length) {
     // Without clearing this bit, the output comes out as a render
     // tree, which is difficult to read.
-    testRunner.clearPrinting();
     testRunner.notifyDone();
     return;
   }
@@ -45,7 +43,8 @@ function nextTest() {
   var color = test['clearColor'];
   try {
     draw(color[0], color[1], color[2], color[3]);
-    testRunner.capturePixelsAsyncThen(completionCallback);
+    testRunner.updateAllLifecyclePhasesAndCompositeThen(
+      ()=>testRunner.capturePrintingPixelsThen(completionCallback));
   } catch (e) {
     debug('error in nextTest');
     debug(e);

@@ -7,7 +7,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/system_tray_client.h"
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -15,15 +16,18 @@ namespace ash {
 class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
  public:
   TestSystemTrayClient();
+
+  TestSystemTrayClient(const TestSystemTrayClient&) = delete;
+  TestSystemTrayClient& operator=(const TestSystemTrayClient&) = delete;
+
   ~TestSystemTrayClient() override;
 
   // SystemTrayClient:
-  void ShowSettings() override;
+  void ShowSettings(int64_t display_id) override;
   void ShowBluetoothSettings() override;
-  void ShowBluetoothPairingDialog(const std::string& address,
-                                  const base::string16& name_for_display,
-                                  bool paired,
-                                  bool connected) override;
+  void ShowBluetoothSettings(const std::string& device_id) override;
+  void ShowBluetoothPairingDialog(
+      absl::optional<base::StringPiece> device_address) override;
   void ShowDateSettings() override;
   void ShowSetTimeDialog() override;
   void ShowDisplaySettings() override;
@@ -31,16 +35,22 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowChromeSlow() override;
   void ShowIMESettings() override;
   void ShowConnectedDevicesSettings() override;
+  void ShowTetherNetworkSettings() override;
+  void ShowWifiSyncSettings() override;
   void ShowAboutChromeOS() override;
   void ShowHelp() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
+  void ShowGestureEducationHelp() override;
   void ShowPaletteHelp() override;
   void ShowPaletteSettings() override;
+  void ShowPrivacyAndSecuritySettings() override;
   void ShowPublicAccountInfo() override;
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
   void ShowNetworkCreate(const std::string& type) override;
+  void ShowSettingsCellularSetup(bool show_psim_flow) override;
+  void ShowSettingsSimUnlock() override;
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;
@@ -51,19 +61,44 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;
   }
+
+  int show_bluetooth_pairing_dialog_count() const {
+    return show_bluetooth_pairing_dialog_count_;
+  }
+
   int show_multi_device_setup_count() const {
     return show_multi_device_setup_count_;
   }
+
   int show_connected_devices_settings_count() const {
     return show_connected_devices_settings_count_;
   }
 
+  int show_os_settings_privacy_and_security_count() const {
+    return show_os_settings_privacy_and_security_count_;
+  }
+
+  int show_wifi_sync_settings_count() const {
+    return show_wifi_sync_settings_count_;
+  }
+
+  int show_sim_unlock_settings_count() const {
+    return show_sim_unlock_settings_count_;
+  }
+
+  const std::string& last_bluetooth_settings_device_id() const {
+    return last_bluetooth_settings_device_id_;
+  }
+
  private:
   int show_bluetooth_settings_count_ = 0;
+  int show_bluetooth_pairing_dialog_count_ = 0;
   int show_multi_device_setup_count_ = 0;
   int show_connected_devices_settings_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSystemTrayClient);
+  int show_os_settings_privacy_and_security_count_ = 0;
+  int show_wifi_sync_settings_count_ = 0;
+  int show_sim_unlock_settings_count_ = 0;
+  std::string last_bluetooth_settings_device_id_;
 };
 
 }  // namespace ash

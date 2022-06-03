@@ -22,7 +22,7 @@ that needs to be maintained in sync.
 
 ```c++
 interface TeleporterFactory {
-  Create(Location start, Location end) => (Teleporter);
+  Create(Location start, Location end) => (pending_remote<Teleporter>);
 };
 
 interface Teleporter {
@@ -64,8 +64,9 @@ interface Teleporter {
   TeleportGoat(Goat) = ();
   TeleportPlant(Plant) => ();
 
-  // TeleportStats is only non-null if success is true.
-  GetStats() => (bool success, TeleporterStats?);
+  // TeleporterStats will be have a value if and only if the call was
+  // successful.
+  GetStats() => (TeleporterStats?);
 };
 ```
 
@@ -78,7 +79,7 @@ interface Teleporter {
   // supposed to only pass one non-null argument per call?
   Teleport(Animal?, Fungi?, Goat?, Plant?) => ();
 
-  // Does this return all stats if sucess is true? Or just the categories that
+  // Does this return all stats if success is true? Or just the categories that
   // the teleporter already has stats for? The intent is uncertain, so wrapping
   // the disparate values into a result struct would be cleaner.
   GetStats() =>
@@ -114,11 +115,9 @@ interface Teleporter {
   TeleportGoat(Goat) => ();
   TeleportPlant(Plant) => ();
 
-  // Returns current teleportation stats. On failure (e.g. a teleportation
-  // operation is currently in progress) success will be false and a null stats
-  // object will be returned.
-  GetStats() =>
-      (bool success, TeleportationStats?);
+  // Returns current teleporter stats. On failure (e.g. a teleportation
+  // operation is currently in progress) a null stats object will be returned.
+  GetStats() => (TeleporterStats?);
 };
 ```
 
@@ -164,7 +163,7 @@ callee to trust the caller.
 
 ### Do not send unnecessary or privilege-presuming data
 
-> Each `InterfaceProvider` for frames and workers is strongly associated with an
+> Each `BrowserInterfaceBroker` for frames and workers is strongly associated with an
 > origin. Where possible, prefer to use this associated origin rather than
 > sending it over IPC. (See <https://crbug.com/734210> and
 > <https://crbug.com/775792/>).
@@ -208,11 +207,6 @@ the previous section), then such data should be verified before being used.
       messages handled asynchronously).  For legacy IPC, the renderer process
       may be terminated by calling the `ReceivedBadMessage` function (separate
       implementations exist for `//content`, `//chrome` and other layers).
-
-* NetworkService process:
-    - Do not trust `network::ResourceRequest::request_initiator` - verify it
-      using `VerifyRequestInitiatorLock` and fall back to a fail-safe origin
-      (e.g. an opaque origin) when verification fails.
 
 
 ### Do not define unused or unimplemented things
@@ -522,6 +516,87 @@ for (size_t i = 0; i < request->element_size(); ++i) {
 ```
 
 
+### All possible message values are semantically valid
+
+When possible, messages should be defined in such a way that all possible values
+are semantically valid. As a corollary, avoid having the value of one field
+dictate the validity of other fields.
+
+**_Good_**
+
+```c++
+union CreateTokenResult {
+  // Implies success.
+  string token;
+
+  // Implies failure.
+  string error_message;
+};
+
+struct TokenManager {
+  CreateToken() => (CreateTokenResult result);
+};
+```
+
+**_Bad_**
+```c++
+struct TokenManager {
+  // Requires caller to handle edge case where |success| is set to true, but
+  // |token| is null.
+  CreateToken() => (bool success, string? token, string? error_message);
+
+  // Requires caller to handle edge case where both |token| and |error_message|
+  // are set, or both are null.
+  CreateToken() => (string? token, string? error_message);
+};
+```
+
+There are some known exceptions to this rule because mojo does not handle
+optional primitives.
+
+**_Allowed because mojo has no support for optional primitives_**
+```c++
+  struct Foo {
+    int32 x;
+    bool has_x;  // does the value of `x` have meaning?
+    int32 y;
+    bool has_y;  // does the value of `y` have meaning?
+  };
+```
+
+Another common case where we tolerate imperfect message semantics is
+with weakly typed integer [bitfields](#handling-bitfields).
+
+### Handling bitfields
+
+Mojom has no native support for bitfields. There are two common approaches: a
+type-safe struct of bools which is a bit clunky (preferred) and an integer-based
+approach (allowed but not preferred).
+
+**_Type-safe bitfields_**
+```c++
+struct VehicleBits {
+  bool has_car;
+  bool has_bicycle;
+  bool has_boat;
+};
+
+struct Person {
+  VehicleBits bits;
+};
+```
+
+**_Integer based approach_**
+```c++
+struct Person {
+  const uint64 kHasCar = 1;
+  const uint64 kHasBicycle = 2;
+  const uint64 kHasGoat= 4;
+
+  uint32 vehicle_bitfield;
+};
+```
+
 ## C++ Best Practices
 
 
@@ -533,8 +608,8 @@ destroyed, e.g.:
 
 ```c++
   {
-    base::Callback<int> cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        base::Bind([](int) { ... }), -1);
+    base::OnceCallback<int> cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        base::BindOnce([](int) { ... }), -1);
   }  // |cb| is automatically invoked with an argument of -1.
 ```
 
@@ -543,7 +618,7 @@ This can be useful for detecting interface errors:
 ```c++
   process->GetMemoryStatistics(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::Bind(&MemoryProfiler::OnReplyFromRenderer), <failure args>));
+          base::BindOnce(&MemoryProfiler::OnReplyFromRenderer), <failure args>));
   // If the remote process dies, &MemoryProfiler::OnReplyFromRenderer will be
   // invoked with <failure args> when Mojo drops outstanding callbacks due to
   // a connection error on |process|.
@@ -605,7 +680,9 @@ bool StructTraits<url::mojom::UrlDataView, GURL>::Read(
   if (url_string.length() > url::kMaxURLChars)
     return false;
   *out = GURL(url_string);
-  return !url_string.empty() && out->is_valid();
+  if (!url_string.empty() && !out->is_valid())
+    return false;
+  return true;
 }
 ```
 
@@ -801,5 +878,5 @@ safe, vulnerabilities could arise.
 
 [security-tips-for-ipc]: https://www.chromium.org/Home/chromium-security/education/security-tips-for-ipc
 [NfcTypeConverter.java]: https://chromium.googlesource.com/chromium/src/+/e97442ee6e8c4cf6bcf7f5623c6fb2cc8cce92ac/services/device/nfc/android/java/src/org/chromium/device/nfc/NfcTypeConverter.java
-[mojo-doc-process-crashes]: https://chromium.googlesource.com/chromium/src/+/master/mojo/public/cpp/bindings#Best-practices-for-dealing-with-process-crashes-and-callbacks
+[mojo-doc-process-crashes]: https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings#Best-practices-for-dealing-with-process-crashes-and-callbacks
 [serialize-struct-tm-safely]: https://chromium-review.googlesource.com/c/chromium/src/+/679441

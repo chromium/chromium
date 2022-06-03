@@ -5,9 +5,8 @@
 #include "chrome/browser/extensions/extension_icon_manager.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "chrome/app/vector_icons/vector_icons.h"
+#include "base/check_op.h"
+#include "components/vector_icons/vector_icons.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -89,6 +88,6 @@ void ExtensionIconManager::OnImageLoaded(const std::string& extension_id,
 void ExtensionIconManager::EnsureDefaultIcon() {
   if (default_icon_.IsEmpty()) {
     default_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        kExtensionIcon, gfx::kFaviconSize, gfx::kChromeIconGrey));
+        vector_icons::kExtensionIcon, gfx::kFaviconSize, gfx::kChromeIconGrey));
   }
 }

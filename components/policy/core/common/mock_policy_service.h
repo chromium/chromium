@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_MOCK_POLICY_SERVICE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_MOCK_POLICY_SERVICE_H_
 
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,6 +20,7 @@ class MockPolicyServiceObserver : public PolicyService::Observer {
                                      const PolicyMap& previous,
                                      const PolicyMap& current));
   MOCK_METHOD1(OnPolicyServiceInitialized, void(PolicyDomain));
+  MOCK_METHOD1(OnFirstPoliciesLoaded, void(PolicyDomain));
 };
 
 class MockPolicyServiceProviderUpdateObserver
@@ -44,7 +46,12 @@ class MockPolicyService : public PolicyService {
 
   MOCK_CONST_METHOD1(GetPolicies, const PolicyMap&(const PolicyNamespace&));
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
-  MOCK_METHOD1(RefreshPolicies, void(const base::Closure&));
+  MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
+  MOCK_METHOD1(RefreshPolicies, void(base::OnceClosure));
+
+#if defined(OS_ANDROID)
+  MOCK_METHOD0(GetPolicyServiceAndroid, android::PolicyServiceAndroid*());
+#endif
 };
 
 }  // namespace policy

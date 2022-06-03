@@ -4,6 +4,6 @@
 <script>
 if (window.testRunner)
     testRunner.dumpAsText();
-host.createShadowRoot();
+host.attachShadow({mode: 'open'});
 window.getComputedStyle(host).length;
 </script>

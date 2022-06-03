@@ -4,12 +4,11 @@
 
 #include "components/sync/engine/events/protocol_event.h"
 
-
 namespace syncer {
 
-ProtocolEvent::ProtocolEvent() {}
+ProtocolEvent::ProtocolEvent() = default;
 
-ProtocolEvent::~ProtocolEvent() {}
+ProtocolEvent::~ProtocolEvent() = default;
 
 std::unique_ptr<base::DictionaryValue> ProtocolEvent::ToValue(
     bool include_specifics) const {
@@ -17,7 +16,8 @@ std::unique_ptr<base::DictionaryValue> ProtocolEvent::ToValue(
   dict->SetDouble("time", GetTimestamp().ToJsTime());
   dict->SetString("type", GetType());
   dict->SetString("details", GetDetails());
-  dict->Set("proto", GetProtoMessage(include_specifics));
+  dict->SetKey("proto", base::Value::FromUniquePtrValue(
+                            GetProtoMessage(include_specifics)));
   return dict;
 }
 

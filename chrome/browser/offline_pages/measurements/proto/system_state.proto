@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.offline_pages.measurements.proto";
+option java_outer_classname = "OfflineMeasurementsProto";
+
+package offline_measurements_system_state.proto;
+
+// This message is used by OfflineMeasurementsBackgroundTask to capture the
+// state of the system for some duration of time.
+message SystemState {
+  // Defined in tools/metrics/histograms/enums.xml. These values are persisted
+  // to logs. Entries should not be renumbered and numeric values should never
+  // be reused. These values are also defined in
+  // OfflineMeasurementsBackgroundTask.
+  enum UserState {
+    INVALID_USER_STATE = 0;
+    PHONE_OFF = 1;
+    NOT_USING_PHONE = 2;
+    USING_PHONE_NOT_CHROME = 3;
+    USING_CHROME = 4;
+  }
+  optional UserState user_state = 1;
+
+  // Defined in tools/metrics/histograms/enums.xml. These values are persisted
+  // to logs. Entries should not be renumbered and numeric values should never
+  // be reused. These values are also defined in
+  // OfflineMeasurementsBackgroundTask.
+  enum ProbeResult {
+    INVALID_PROBE_RESULT = 0;
+    NO_INTERNET = 1;
+    SERVER_ERROR = 2;
+    UNEXPECTED_RESPONSE = 3;
+    VALIDATED = 4;
+    CANCELLED = 5;
+    MULTIPLE_URL_CONNECTIONS_OPEN = 6;
+  }
+  optional ProbeResult probe_result = 2;
+  optional bool is_roaming = 3;
+  optional bool is_airplane_mode_enabled = 4;
+  optional int32 local_hour_of_day_start = 5;
+  optional int64 time_since_last_check_millis = 6;
+}
+
+// This message is used by OfflineMeasurementsBackgroundTask to write a list of
+// SystemStates to Prefs.
+message SystemStateList {
+  repeated SystemState system_states = 1;
+}

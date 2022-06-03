@@ -1,0 +1,6 @@
+{
+  "url_domain": {
+    "message": "com",
+    "description": "TLD for the search provider"
+  }
+}

@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/file.h"
 #include "net/disk_cache/blockfile/file_block.h"
@@ -28,6 +29,9 @@ namespace disk_cache {
 class NET_EXPORT_PRIVATE MappedFile : public File {
  public:
   MappedFile() : File(true), init_(false) {}
+
+  MappedFile(const MappedFile&) = delete;
+  MappedFile& operator=(const MappedFile&) = delete;
 
   // Performs object initialization. name is the file to use, and size is the
   // amount of data to memory map from the file. If size is 0, the whole file
@@ -61,8 +65,6 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
 #if BUILDFLAG(POSIX_AVOID_MMAP)
   void* snapshot_;  // Copy of the buffer taken when it was last flushed.
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MappedFile);
 };
 
 // Helper class for calling Flush() on exit from the current scope.

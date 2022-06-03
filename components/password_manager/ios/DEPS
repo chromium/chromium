@@ -6,4 +6,6 @@ include_rules = [
   "+components/security_state/ios",
   "+ios/web/public",
   "+ios/web/common",
+  "+services/network/public/cpp",
+  "+third_party/ocmock",
 ]

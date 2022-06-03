@@ -4,7 +4,7 @@
 
 #include "content/browser/gpu/gpu_feature_checker_impl.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/browser/browser_thread.h"

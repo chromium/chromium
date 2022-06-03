@@ -95,8 +95,7 @@ PaintInfo::PaintInfo(const PaintInfo& other)
       paint_recording_bounds_(other.paint_recording_bounds_),
       offset_from_parent_(other.offset_from_parent_),
       context_(other.context(), gfx::Vector2d()),
-      root_context_(nullptr),
-      needs_paint_(false) {}
+      root_context_(nullptr) {}
 
 // The root layer should use the ScaleToEnclosingRect, the same logic that
 // cc(chrome compositor) is using.

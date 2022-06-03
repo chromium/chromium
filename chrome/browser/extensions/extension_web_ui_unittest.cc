@@ -4,18 +4,23 @@
 
 #include "chrome/browser/extensions/extension_web_ui.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -24,10 +29,12 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -46,7 +53,7 @@ class ExtensionWebUITest : public testing::Test {
 
  protected:
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     TestExtensionSystem* system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
     extension_service_ = system->CreateExtensionService(
@@ -65,9 +72,9 @@ class ExtensionWebUITest : public testing::Test {
   ExtensionService* extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
-#if defined OS_CHROMEOS
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 };
 
@@ -80,12 +87,12 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   manifest.Set(manifest_keys::kName, "ext1")
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
-      .Set(std::string(manifest_keys::kChromeURLOverrides),
+      .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
            DictionaryBuilder().Set("bookmarks", kOverrideResource).Build());
   scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
           .SetManifest(manifest.Build())
-          .SetLocation(Manifest::UNPACKED)
+          .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
   extension_service_->AddExtension(ext_unpacked.get());
@@ -116,12 +123,12 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   manifest2.Set(manifest_keys::kName, "ext2")
       .Set(manifest_keys::kVersion, "0.1")
       .Set(manifest_keys::kManifestVersion, 2)
-      .Set(std::string(manifest_keys::kChromeURLOverrides),
+      .Set(api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
            DictionaryBuilder().Set("bookmarks", kOverrideResource2).Build());
   scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()
           .SetManifest(manifest2.Build())
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .SetID("bbabcdefghijabcdefghijabcdefghij")
           .Build());
   extension_service_->AddComponentExtension(ext_component.get());
@@ -237,8 +244,8 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   base::RunLoop run_loop;
   ExtensionWebUI::GetFaviconForURL(
       profile_.get(), kExtensionManifestURL,
-      base::BindRepeating(set_favicon_results, &favicon_results,
-                          run_loop.QuitClosure()));
+      base::BindOnce(set_favicon_results, &favicon_results,
+                     run_loop.QuitClosure()));
 
   run_loop.Run();
   EXPECT_FALSE(favicon_results.empty());
@@ -255,6 +262,49 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
     EXPECT_FALSE(bitmap.isNull());
     EXPECT_FALSE(bitmap.drawsNothing());
   }
+}
+
+TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
+  auto load_extension_overriding_newtab = [this](const char* name) {
+    std::unique_ptr<base::Value> chrome_url_overrides =
+        DictionaryBuilder().Set("newtab", "newtab.html").Build();
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(name)
+            .SetLocation(ManifestLocation::kInternal)
+            .SetManifestKey("chrome_url_overrides",
+                            std::move(chrome_url_overrides))
+            .Build();
+
+    extension_service_->AddExtension(extension.get());
+    EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
+                             GURL(chrome::kChromeUINewTabURL), profile_.get()));
+
+    return extension.get();
+  };
+
+  const GURL ntp_url(chrome::kChromeUINewTabURL);
+
+  // Load a series of extensions that override the new tab page.
+  const Extension* extension1 = load_extension_overriding_newtab("one");
+  ASSERT_TRUE(extension1);
+  EXPECT_EQ(1u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+                    ntp_url, profile_.get()));
+
+  const Extension* extension2 = load_extension_overriding_newtab("two");
+  ASSERT_TRUE(extension2);
+  EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+                    ntp_url, profile_.get()));
+
+  const Extension* extension3 = load_extension_overriding_newtab("three");
+  ASSERT_TRUE(extension3);
+  EXPECT_EQ(3u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+                    ntp_url, profile_.get()));
+
+  // Disabling an extension should remove it from the override count.
+  extension_service_->DisableExtension(extension2->id(),
+                                       disable_reason::DISABLE_USER_ACTION);
+  EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+                    ntp_url, profile_.get()));
 }
 
 }  // namespace extensions

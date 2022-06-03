@@ -40,16 +40,22 @@ the `$PATH` environment variable:
     * On macOS, install [Xcode](https://developer.apple.com/xcode/). The latest
       version is generally recommended.
     * On Windows, install [Visual Studio](https://www.visualstudio.com/) with
-      C++ support and the Windows SDK. MSVS 2015 and MSVS 2017 are both
-      supported. Some tests also require the CDB debugger, installed with
+      C++ support and the Windows SDK. The latest version is generally
+      recommended. Some tests also require the CDB debugger, installed with
       [Debugging Tools for
       Windows](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/).
+    * On Linux, obtain appropriate tools for C++ development through any
+      appropriate means including the system’s package manager. On Debian and
+      Debian-based distributions, the `build-essential` and `zlib1g-dev`
+      packages should suffice.
  * Chromium’s
    [depot_tools](https://www.chromium.org/developers/how-tos/depottools).
- * [Git](https://git-scm.com/). This is provided by Xcode on macOS and by
-   depot_tools on Windows.
+ * [Git](https://git-scm.com/). This is provided by Xcode on macOS, by
+   depot_tools on Windows, and through any appropriate means including the
+   system’s package manager on Linux.
  * [Python](https://www.python.org/). This is provided by the operating system
-   on macOS, and by depot_tools on Windows.
+   on macOS, by depot_tools on Windows, and through any appropriate means
+   including the system’s package manager on Linux.
 
 ## Getting the Source Code
 
@@ -88,7 +94,7 @@ $ gclient sync
 
 ### Windows, Mac, Linux, Fuchsia
 
-On Windows, Mac, Linux, and Fuchsia Crashpad uses
+On Windows, Mac, Linux, and Fuchsia, Crashpad uses
 [GN](https://gn.googlesource.com/gn) to generate
 [Ninja](https://ninja-build.org/) build files. For example,
 
@@ -109,7 +115,7 @@ no need to install them separately.
 #### Fuchsia
 
 In order to instruct gclient to download the Fuchsia SDK, you need to add the
-following to `~/crashpad/.gclient`.
+following to `~/crashpad/.gclient`:
 
 ```
 target_os=["fuchsia"]
@@ -136,37 +142,24 @@ target_sysroot = "//third_party/linux/sysroot"
 ### Android
 
 This build relies on cross-compilation. It’s possible to develop Crashpad for
-Android on any platform that the [Android NDK (Native Development Kit)]
-(https://developer.android.com/ndk/) runs on.
+Android on any platform that the [Android NDK (Native Development
+Kit)](https://developer.android.com/ndk/) runs on.
 
 If it’s not already present on your system, [download the NDK package for your
 system](https://developer.android.com/ndk/downloads/) and expand it to a
 suitable location. These instructions assume that it’s been expanded to
-`~/android-ndk-r20`.
+`~/android-ndk-r21b`.
 
-Note that Chrome uses Android API level 21 for 64-bit platforms and 16 for
+Note that Chrome uses Android API level 21 for both 64-bit platforms and
 32-bit platforms. See Chrome’s
 [`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/master/build/config/android/config.gni)
-which sets `_android_api_level` and `_android64_api_level`.
+which sets `android32_ndk_api_level` and `android64_ndk_api_level`.
 
-To configure a Crashpad build for Android use `gyp_crashpad_android.py`. This
-script is a wrapper for `gyp_crashpad.py` that sets several environment
-variables directing the build to the toolchain, and several GYP options to
-identify an Android build. This must be done after any `gclient sync`, or
-instead of any `gclient runhooks` operation.
-
+Set these gn args
 ```
-$ cd ~/crashpad/crashpad
-python build/gyp_crashpad_android.py \
-  --ndk ~/usr/lib/android-ndk-r20 --arch arm64 --api-level 21 \
-  --generator-output=out/android_arm64_api21 \
-```
-
-To build, direct `ninja` to the specific `out` directory chosen by the
-`--generator-output` argument to `gyp_crashpad_android.py`.
-
-```
-$ ninja -C out/android_arm64_api21/out/Debug all
+target_os = "android"
+android_ndk_root = ~/android-ndk-r21b
+android_api_level = 21
 ```
 
 ## Testing
@@ -192,24 +185,25 @@ $ cd ~/crashpad/crashpad
 $ python build/run_tests.py out/Debug
 ```
 
-To run a subset of the tests, use the --gtest\_filter flag, e.g., to run all the
-tests for MinidumpStringWriter:
+To run a subset of the tests, use the `--gtest_filter` flag, e.g., to run all
+the tests for MinidumpStringWriter:
 
-```sh
-$ python build/run_tests.py out/Debug --gtest_filter MinidumpStringWriter*
+```
+$ python build/run_tests.py out/Debug --gtest_filter MinidumpStringWriter\*
 ```
 
 ### Windows
 
 On Windows, `end_to_end_test.py` requires the CDB debugger, installed with
 [Debugging Tools for
-Windows](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/).
-This can be installed either as part of the [Windows Driver
-Kit](https://go.microsoft.com/fwlink/p?LinkID=239721) or the [Windows
-SDK](https://go.microsoft.com/fwlink/p?LinkID=271979). If the Windows SDK has
-already been installed (possibly with Visual Studio) but Debugging Tools for
-Windows is not present, it can be installed from Add or remove programs→Windows
-Software Development Kit.
+Windows](https://docs.microsoft.com/windows-hardware/drivers/debugger/). This
+can be installed either as part of the [Windows Driver
+Kit](https://docs.microsoft.com/windows-hardware/drivers/download-the-wdk) or
+the [Windows
+SDK](https://developer.microsoft.com/windows/downloads/windows-10-sdk/). If the
+Windows SDK has already been installed (possibly with Visual Studio) but
+Debugging Tools for Windows is not present, it can be installed from Add or
+remove programs→Windows Software Development Kit.
 
 ### Android
 
@@ -228,10 +222,10 @@ when done.
 
 ### Fuchsia
 
-To test on Fuchsia, you need a connected device running Fuchsia and then run:
+To test on Fuchsia, you need a connected device running Fuchsia. Run:
 
-```sh
-$ gn gen out/fuchsia --args='target_os="fuchsia" target_cpu="x64" is_debug=true'
+```
+$ gn gen out/fuchsia --args 'target_os="fuchsia" target_cpu="x64" is_debug=true'
 $ ninja -C out/fuchsia
 $ python build/run_tests.py out/fuchsia
 ```
@@ -239,16 +233,14 @@ $ python build/run_tests.py out/fuchsia
 If you have multiple devices running, you will need to specify which device you
 want using their hostname, for instance:
 
-```sh
-$ export ZIRCON_NODENAME=scare-brook-skip-dried; \
-  python build/run_tests.py out/fuchsia; \
-  unset ZIRCON_NODENAME
+```
+$ ZIRCON_NODENAME=scare-brook-skip-dried python build/run_tests.py out/fuchsia
 ```
 
 ## Contributing
 
 Crashpad’s contribution process is very similar to [Chromium’s contribution
-process](https://www.chromium.org/developers/contributing-code).
+process](https://chromium.googlesource.com/chromium/src/+/master/docs/contributing.md).
 
 ### Code Review
 
@@ -286,23 +278,23 @@ committing your changes locally with `git commit`. You can then upload a new
 patch set with `git cl upload` and let your reviewer know you’ve addressed the
 feedback.
 
-The most recently uploaded patch set on a review may be tested on a [try
-server](https://www.chromium.org/developers/testing/try-server-usage) by running
-`git cl try` or by clicking the “CQ Dry Run” button in Gerrit. These set the
-“Commit-Queue: +1” label. This does not mean that the patch will be committed,
-but the try server and commit queue share infrastructure and a Gerrit label. The
-patch will be tested on try bots in a variety of configurations. Status
-information will be available on Gerrit. Try server access is available to
+The most recently uploaded patch set on a review may be tested on a
+[trybot](https://chromium.googlesource.com/chromium/src/+/master/docs/infra/trybot_usage.md)
+by running `git cl try` or by clicking the “CQ Dry Run” button in Gerrit. These
+set the “Commit-Queue: +1” label. This does not mean that the patch will be
+committed, but the trybot and commit queue share infrastructure and a Gerrit
+label. The patch will be tested on trybots in a variety of configurations.
+Status information will be available on Gerrit. Trybot access is available to
 Crashpad and Chromium committers.
 
 ### Landing Changes
 
 After code review is complete and “Code-Review: +1” has been received from all
 reviewers, the patch can be submitted to Crashpad’s [commit
-queue](https://www.chromium.org/developers/testing/commit-queue) by clicking the
-“Submit to CQ” button in Gerrit. This sets the “Commit-Queue: +2” label, which
-tests the patch on the try server before landing it. Commit queue access is
-available to Crashpad and Chromium committers.
+queue](https://chromium.googlesource.com/chromium/src/+/master/docs/infra/cq.md)
+by clicking the “Submit to CQ” button in Gerrit. This sets the “Commit-Queue:
++2” label, which tests the patch on trybots before landing it. Commit queue
+access is available to Crashpad and Chromium committers.
 
 Although the commit queue is recommended, if needed, project members can bypass
 the commit queue and land patches without testing by using the “Submit” button
@@ -317,9 +309,9 @@ $ git cl land
 ### External Contributions
 
 Copyright holders must complete the [Individual Contributor License
-Agreement](https://developers.google.com/open-source/cla/individual) or
+Agreement](https://cla.developers.google.com/about/google-individual) or
 [Corporate Contributor License
-Agreement](https://developers.google.com/open-source/cla/corporate) as
+Agreement](https://cla.developers.google.com/about/google-corporate) as
 appropriate before any submission can be accepted, and must be listed in the
 [`AUTHORS`](https://chromium.googlesource.com/crashpad/crashpad/+/master/AUTHORS)
 file. Contributors may be listed in the
@@ -328,7 +320,7 @@ file.
 
 ## Buildbot
 
-The [Crashpad Buildbot](https://build.chromium.org/p/client.crashpad/) performs
-automated builds and tests of Crashpad. Before checking out or updating the
-Crashpad source code, and after checking in a new change, it is prudent to check
-the Buildbot to ensure that “the tree is green.”
+The [Crashpad Buildbot](https://ci.chromium.org/p/crashpad/g/main/console)
+performs automated builds and tests of Crashpad. Before checking out or updating
+the Crashpad source code, and after checking in a new change, it is prudent to
+check the Buildbot to ensure that “the tree is green.”

@@ -70,6 +70,11 @@ size_t ComputeMissingGlyphsForGivenTypeface(base::StringPiece16 text,
     if (typeface->unicharToGlyph(codepoint) != 0)
       continue;
 
+    // Do not count missing codepoints when they are ignorable as they will be
+    // ignored by the shaping engine.
+    if (u_hasBinaryProperty(codepoint, UCHAR_DEFAULT_IGNORABLE_CODE_POINT))
+      continue;
+
     // No glyph is present in the font for the codepoint. Try the decomposed
     // codepoints instead.
     icu::UnicodeString decomposed_text;

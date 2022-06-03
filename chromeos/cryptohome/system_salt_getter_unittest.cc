@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -28,7 +28,7 @@ class SystemSaltGetterTest : public testing::Test {
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
-    CryptohomeClient::InitializeFake();
+    CryptohomeMiscClient::InitializeFake();
 
     EXPECT_FALSE(SystemSaltGetter::IsInitialized());
     SystemSaltGetter::Initialize();
@@ -38,7 +38,7 @@ class SystemSaltGetterTest : public testing::Test {
 
   void TearDown() override {
     SystemSaltGetter::Shutdown();
-    CryptohomeClient::Shutdown();
+    CryptohomeMiscClient::Shutdown();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -46,7 +46,7 @@ class SystemSaltGetterTest : public testing::Test {
 
 TEST_F(SystemSaltGetterTest, GetSystemSalt) {
   // Try to get system salt before the service becomes available.
-  FakeCryptohomeClient::Get()->SetServiceIsAvailable(false);
+  FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
   std::string system_salt;
   SystemSaltGetter::Get()->GetSystemSalt(
       base::BindOnce(&CopySystemSalt, &system_salt));
@@ -54,11 +54,11 @@ TEST_F(SystemSaltGetterTest, GetSystemSalt) {
   EXPECT_TRUE(system_salt.empty());  // System salt is not returned yet.
 
   // Service becomes available.
-  FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+  FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   base::RunLoop().RunUntilIdle();
   const std::string expected_system_salt =
       SystemSaltGetter::ConvertRawSaltToHexString(
-          FakeCryptohomeClient::GetStubSystemSalt());
+          FakeCryptohomeMiscClient::GetStubSystemSalt());
   EXPECT_EQ(expected_system_salt, system_salt);  // System salt is returned.
 }
 

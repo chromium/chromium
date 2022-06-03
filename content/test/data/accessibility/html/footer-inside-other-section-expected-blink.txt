@@ -1,17 +1,18 @@
 rootWebArea
 ++genericContainer ignored
-++++article
-++++++footerAsNonLandmark
-++++++++paragraph
-++++++++++staticText name='footer inside article.'
-++++++++++++inlineTextBox name='footer inside article.'
-++++section
-++++++footerAsNonLandmark
-++++++++paragraph
-++++++++++staticText name='footer inside section.'
-++++++++++++inlineTextBox name='footer inside section.'
-++++main
-++++++footerAsNonLandmark
-++++++++paragraph
-++++++++++staticText name='footer inside main.'
-++++++++++++inlineTextBox name='footer inside main.'
+++++genericContainer ignored
+++++++article
+++++++++footerAsNonLandmark
+++++++++++paragraph
+++++++++++++staticText name='footer inside article.'
+++++++++++++++inlineTextBox name='footer inside article.'
+++++++section
+++++++++footerAsNonLandmark
+++++++++++paragraph
+++++++++++++staticText name='footer inside section.'
+++++++++++++++inlineTextBox name='footer inside section.'
+++++++main
+++++++++footerAsNonLandmark
+++++++++++paragraph
+++++++++++++staticText name='footer inside main.'
+++++++++++++++inlineTextBox name='footer inside main.'

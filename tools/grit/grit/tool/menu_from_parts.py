@@ -49,7 +49,7 @@ to being one message for the whole menu.'''
           msg.append(part[1])
       if len(msg):
         xtb[msg_id] = ''.join(msg)
-    with open(xtb_file) as f:
+    with open(xtb_file, 'rb') as f:
       xtb_reader.Parse(f, Callback)
 
     translations = []  # list of translations as per transl2tc.WriteTranslations
@@ -75,5 +75,5 @@ to being one message for the whole menu.'''
         if len(translation):
           translations.append([message.GetId(), ''.join(translation)])
 
-    with util.WrapOutputStream(open(output_file, 'w')) as f:
+    with util.WrapOutputStream(open(output_file, 'wb')) as f:
       transl2tc.TranslationToTc.WriteTranslations(f, translations)

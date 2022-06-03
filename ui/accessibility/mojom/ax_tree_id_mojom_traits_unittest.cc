@@ -13,22 +13,22 @@ using mojo::test::SerializeAndDeserialize;
 TEST(AXTreeIDMojomTraitsTest, TestSerializeAndDeserializeAXTreeID) {
   ui::AXTreeID empty_input = ui::AXTreeID();
   ui::AXTreeID empty_output;
-  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeID>(&empty_input,
-                                                           &empty_output));
+  EXPECT_TRUE(
+      SerializeAndDeserialize<ax::mojom::AXTreeID>(empty_input, empty_output));
   EXPECT_EQ(empty_input, empty_output);
   EXPECT_EQ("", empty_output.ToString());
 
   ui::AXTreeID unknown_input = ui::AXTreeIDUnknown();
   ui::AXTreeID unknown_output;
-  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeID>(&unknown_input,
-                                                           &unknown_output));
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeID>(unknown_input,
+                                                           unknown_output));
   EXPECT_EQ(unknown_input, unknown_output);
   EXPECT_EQ("", unknown_output.ToString());
 
   ui::AXTreeID token_input = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeID token_output;
-  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeID>(&token_input,
-                                                           &token_output));
+  EXPECT_TRUE(
+      SerializeAndDeserialize<ax::mojom::AXTreeID>(token_input, token_output));
   EXPECT_EQ(token_input, token_output);
   // It should be a 32-char hex string.
   EXPECT_EQ(32U, token_output.ToString().size());

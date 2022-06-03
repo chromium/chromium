@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENT_CURRENCY_AMOUNT_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_CURRENCY_AMOUNT_H_
 
-#include <memory>
-#include <string>
-
 #include "components/payments/mojom/payment_request_data.mojom.h"
 
 // C++ bindings for the PaymentRequest API PaymentCurrencyAmount. Conforms to
@@ -15,20 +12,19 @@
 // https://w3c.github.io/browser-payment-api/#dom-paymentcurrencyamount
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
 
 // Populates the properties of |amount| from |value|. Returns true if the
 // required values are present.
-bool PaymentCurrencyAmountFromDictionaryValue(
-    const base::DictionaryValue& dictionary_value,
-    mojom::PaymentCurrencyAmount* amount);
+bool PaymentCurrencyAmountFromValue(const base::Value& dictionary_value,
+                                    mojom::PaymentCurrencyAmount* amount);
 
-// Creates a base::DictionaryValue with the properties of the given
+// Creates a base::Value dictionary with the properties of the given
 // PaymentCurrencyAmount.
-std::unique_ptr<base::DictionaryValue> PaymentCurrencyAmountToDictionaryValue(
+base::Value PaymentCurrencyAmountToValue(
     const mojom::PaymentCurrencyAmount& amount);
 
 }  // namespace payments

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 
+#include <limits>
+
 namespace blink {
 
 UniqueObjectId NewUniqueObjectId() {
@@ -34,8 +36,8 @@ CompositorElementId PLATFORM_EXPORT CompositorElementIdFromUniqueObjectId(
 CompositorElementId PLATFORM_EXPORT
 CompositorElementIdFromDOMNodeId(DOMNodeId id) {
   DCHECK_GE(id, 0);
-  return CreateCompositorElementId(
-      id, CompositorElementIdNamespace::kUniqueObjectId);
+  return CreateCompositorElementId(id,
+                                   CompositorElementIdNamespace::kDOMNodeId);
 }
 
 CompositorElementId PLATFORM_EXPORT
@@ -49,6 +51,13 @@ CompositorElementIdNamespace NamespaceFromCompositorElementId(
   return static_cast<CompositorElementIdNamespace>(
       element_id.GetStableId() %
       static_cast<uint64_t>(CompositorElementIdNamespace::kMaxRepresentable));
+}
+
+DOMNodeId DOMNodeIdFromCompositorElementId(CompositorElementId element_id) {
+  DCHECK_EQ(NamespaceFromCompositorElementId(element_id),
+            CompositorElementIdNamespace::kDOMNodeId);
+  return static_cast<DOMNodeId>(element_id.GetStableId() >>
+                                kCompositorNamespaceBitCount);
 }
 
 }  // namespace blink

@@ -1,0 +1,64 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("interfaces") {
+  sources = [ "safe_browsing.mojom" ]
+
+  public_deps = [
+    "//components/safe_browsing/core/common:interfaces",
+    "//services/network/public/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  enabled_features = []
+  if (safe_browsing_mode > 0) {
+    enabled_features += [ "full_safe_browsing" ]
+  }
+}
+
+if (safe_browsing_mode != 0) {
+  source_set("file_type_policies") {
+    sources = [
+      "file_type_policies.cc",
+      "file_type_policies.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    ]
+
+    deps = [
+      "//components/resources:components_resources",
+      "//ui/base",
+    ]
+  }
+
+  source_set("file_type_policies_test_support") {
+    testonly = true
+    sources = [
+      "file_type_policies_test_util.cc",
+      "file_type_policies_test_util.h",
+    ]
+
+    deps = [ ":file_type_policies" ]
+  }
+
+  source_set("file_type_policies_unittest") {
+    testonly = true
+    sources = [ "file_type_policies_unittest.cc" ]
+
+    deps = [
+      ":file_type_policies",
+      "//base:base",
+      "//build:chromeos_buildflags",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest",
+    ]
+  }
+}

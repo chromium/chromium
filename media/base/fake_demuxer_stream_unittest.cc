@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
@@ -30,6 +29,10 @@ class FakeDemuxerStreamTest : public testing::Test {
       : status_(DemuxerStream::kAborted),
         read_pending_(false),
         num_buffers_received_(0) {}
+
+  FakeDemuxerStreamTest(const FakeDemuxerStreamTest&) = delete;
+  FakeDemuxerStreamTest& operator=(const FakeDemuxerStreamTest&) = delete;
+
   ~FakeDemuxerStreamTest() override = default;
 
   void BufferReady(DemuxerStream::Status status,
@@ -45,15 +48,16 @@ class FakeDemuxerStreamTest : public testing::Test {
   enum ReadResult { OK, ABORTED, CONFIG_CHANGED, READ_ERROR, EOS, PENDING };
 
   void EnterNormalReadState() {
-    stream_.reset(
-        new FakeDemuxerStream(kNumConfigs, kNumBuffersInOneConfig, false));
+    stream_ = std::make_unique<FakeDemuxerStream>(
+        kNumConfigs, kNumBuffersInOneConfig, false);
     for (int i = 0; i < kNumBuffersToReadFirst; ++i)
       ReadAndExpect(OK);
     DCHECK_EQ(kNumBuffersToReadFirst, num_buffers_received_);
   }
 
   void EnterBeforeEOSState() {
-    stream_.reset(new FakeDemuxerStream(1, kNumBuffersInOneConfig, false));
+    stream_ =
+        std::make_unique<FakeDemuxerStream>(1, kNumBuffersInOneConfig, false);
     for (int i = 0; i < kNumBuffersInOneConfig; ++i)
       ReadAndExpect(OK);
     DCHECK_EQ(kNumBuffersInOneConfig, num_buffers_received_);
@@ -170,8 +174,8 @@ class FakeDemuxerStreamTest : public testing::Test {
   void TestRead(int num_configs,
                 int num_buffers_in_one_config,
                 bool is_encrypted) {
-    stream_.reset(new FakeDemuxerStream(
-        num_configs, num_buffers_in_one_config, is_encrypted));
+    stream_ = std::make_unique<FakeDemuxerStream>(
+        num_configs, num_buffers_in_one_config, is_encrypted);
 
     const VideoDecoderConfig& config = stream_->video_decoder_config();
     EXPECT_TRUE(config.IsValidConfig());
@@ -187,9 +191,6 @@ class FakeDemuxerStreamTest : public testing::Test {
   scoped_refptr<DecoderBuffer> buffer_;
   bool read_pending_;
   int num_buffers_received_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDemuxerStreamTest);
 };
 
 TEST_F(FakeDemuxerStreamTest, Read_OneConfig) {
@@ -296,8 +297,8 @@ TEST_F(FakeDemuxerStreamTest, Error_BeforeEOS) {
 }
 
 TEST_F(FakeDemuxerStreamTest, NoConfigChanges) {
-  stream_.reset(
-      new FakeDemuxerStream(1, kNumBuffersInOneConfig, false));
+  stream_ =
+      std::make_unique<FakeDemuxerStream>(1, kNumBuffersInOneConfig, false);
   EXPECT_FALSE(stream_->SupportsConfigChanges());
   for (int i = 0; i < kNumBuffersInOneConfig; ++i)
     ReadAndExpect(OK);

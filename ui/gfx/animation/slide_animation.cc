@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
 namespace gfx {
@@ -17,17 +17,17 @@ SlideAnimation::SlideAnimation(AnimationDelegate* target)
 SlideAnimation::~SlideAnimation() = default;
 
 void SlideAnimation::Reset(double value) {
-  showing_ = value == 1;
+  direction_ = absl::nullopt;
   value_current_ = value;
   Stop();
 }
 
 void SlideAnimation::Show() {
-  BeginAnimating(true);
+  BeginAnimating(Direction::kShowing);
 }
 
 void SlideAnimation::Hide() {
-  BeginAnimating(false);
+  BeginAnimating(Direction::kHiding);
 }
 
 void SlideAnimation::SetSlideDuration(base::TimeDelta duration) {
@@ -44,18 +44,18 @@ double SlideAnimation::GetCurrentValue() const {
 
 base::TimeDelta SlideAnimation::GetDuration() {
   const double current_progress =
-      showing_ ? value_current_ : 1.0 - value_current_;
+      direction_ == Direction::kShowing ? value_current_ : 1.0 - value_current_;
 
   return slide_duration_ * (1 - pow(current_progress, dampening_value_));
 }
 
-void SlideAnimation::BeginAnimating(bool showing) {
-  if (showing_ == showing)
+void SlideAnimation::BeginAnimating(Direction direction) {
+  if (direction_ == direction)
     return;
 
-  showing_ = showing;
+  direction_ = direction;
   value_start_ = value_current_;
-  value_end_ = showing ? 1.0 : 0.0;
+  value_end_ = (direction_ == Direction::kShowing) ? 1.0 : 0.0;
 
   // Make sure we actually have something to do.
   if (slide_duration_.is_zero()) {
@@ -72,8 +72,10 @@ void SlideAnimation::BeginAnimating(bool showing) {
 }
 
 void SlideAnimation::AnimateToState(double state) {
-  state =
-      Tween::CalculateValue(tween_type_, base::ClampToRange(state, 0.0, 1.0));
+  state = Tween::CalculateValue(tween_type_, base::clamp(state, 0.0, 1.0));
+  if (state == 1.0)
+    direction_ = absl::nullopt;
+
   value_current_ = value_start_ + (value_end_ - value_start_) * state;
 
   // Correct for any overshoot (while state may be capped at 1.0, let's not

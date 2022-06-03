@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <winspool.h>
 
+#include <string>
+
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "cloud_print/virtual_driver/win/port_monitor/spooler_win.h"
@@ -36,7 +36,9 @@ const wchar_t kCloudPrintRegKey[] = L"Software\\Google\\CloudPrint";
 
 class PortMonitorTest : public testing::Test {
  public:
-  PortMonitorTest() {}
+  PortMonitorTest() = default;
+  PortMonitorTest(const PortMonitorTest&) = delete;
+  PortMonitorTest& operator=(const PortMonitorTest&) = delete;
 
  protected:
   // Creates a registry entry pointing at a chrome
@@ -82,19 +84,15 @@ class PortMonitorTest : public testing::Test {
     base::FilePath path;
     base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path);
     base::FilePath main_path = path.Append(kChromeExePath);
-    ASSERT_TRUE(base::DeleteFileRecursively(main_path));
+    ASSERT_TRUE(base::DeletePathRecursively(main_path));
     base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path);
     base::FilePath alternate_path = path.Append(kAlternateChromeExePath);
-    ASSERT_TRUE(base::DeleteFileRecursively(alternate_path));
+    ASSERT_TRUE(base::DeletePathRecursively(alternate_path));
   }
 
- protected:
   void SetUp() override { SetUpChromeExeRegistry(); }
 
   void TearDown() override { DeleteChromeExeRegistry(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PortMonitorTest);
 };
 
 TEST_F(PortMonitorTest, GetChromeExePathTest) {
@@ -112,7 +110,7 @@ TEST_F(PortMonitorTest, GetChromeExePathTest) {
 }
 
 TEST_F(PortMonitorTest, GetPrintCommandTemplateTest) {
-  base::string16 print_command = cloud_print::GetPrintCommandTemplate();
+  std::wstring print_command = cloud_print::GetPrintCommandTemplate();
   EXPECT_FALSE(print_command.empty());
   EXPECT_EQ(print_command, kTestPrintCommand);
   DeleteChromeExeRegistry();

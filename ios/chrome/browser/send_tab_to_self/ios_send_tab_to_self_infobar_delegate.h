@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
@@ -25,19 +27,28 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   explicit IOSSendTabToSelfInfoBarDelegate(const SendTabToSelfEntry* entry,
                                            SendTabToSelfModel* model);
+
+  IOSSendTabToSelfInfoBarDelegate(const IOSSendTabToSelfInfoBarDelegate&) =
+      delete;
+  IOSSendTabToSelfInfoBarDelegate& operator=(
+      const IOSSendTabToSelfInfoBarDelegate&) = delete;
+
   ~IOSSendTabToSelfInfoBarDelegate() override;
 
  private:
 
   // ConfirmInfoBarDelegate:
-  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+  InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   int GetIconId() const override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
   bool Cancel() override;
+
+  // Send the notice of conclusion of this infobar to other windows.
+  void SendConclusionNotification();
 
   // The entry that was share to this device. Must outlive this instance.
   const SendTabToSelfEntry* entry_ = nullptr;
@@ -45,7 +56,10 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The SendTabToSelfModel that holds the |entry_|. Must outlive this instance.
   SendTabToSelfModel* model_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(IOSSendTabToSelfInfoBarDelegate);
+  // Registration with NSNotificationCenter for this window.
+  __strong id<NSObject> registration_ = nil;
+
+  base::WeakPtrFactory<IOSSendTabToSelfInfoBarDelegate> weak_ptr_factory_;
 };
 
 }  // namespace send_tab_to_self

@@ -13,10 +13,12 @@
 namespace blink {
 
 class DocumentModulatorImplTest : public PageTestBase {
-  DISALLOW_COPY_AND_ASSIGN(DocumentModulatorImplTest);
 
  public:
   DocumentModulatorImplTest() = default;
+  DocumentModulatorImplTest(const DocumentModulatorImplTest&) = delete;
+  DocumentModulatorImplTest& operator=(const DocumentModulatorImplTest&) =
+      delete;
   void SetUp() override;
 
  protected:

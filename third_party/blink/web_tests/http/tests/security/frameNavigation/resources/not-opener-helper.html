@@ -1,6 +1,7 @@
 <script>
 window.addEventListener("message", function(e) {
     if (e.data == "set") {
+        // This uses the same site as the opener window.
         win = window.open("http://127.0.0.1:8000/security/frameNavigation/resources/ready.html", "targetWindow");
     } else if (e.data == "ready") {
         opener.postMessage("pass", "*");

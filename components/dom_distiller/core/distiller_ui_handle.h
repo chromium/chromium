@@ -5,23 +5,20 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLER_UI_HANDLE_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_DISTILLER_UI_HANDLE_H_
 
-#include "base/macros.h"
-#include "url/gurl.h"
-
 namespace dom_distiller {
 
 // ExternalFeedbackReporter handles reporting distillation quality through an
 // external source.
 class DistillerUIHandle {
  public:
-  DistillerUIHandle() {}
-  virtual ~DistillerUIHandle() {}
+  DistillerUIHandle() = default;
+  virtual ~DistillerUIHandle() = default;
 
   // Open the UI settings for dom distiller.
   virtual void OpenSettings() = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DistillerUIHandle);
+  DistillerUIHandle(const DistillerUIHandle&) = delete;
+  DistillerUIHandle& operator=(const DistillerUIHandle&) = delete;
 };
 
 }  // namespace dom_distiller

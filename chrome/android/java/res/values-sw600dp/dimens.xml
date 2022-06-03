@@ -14,9 +14,6 @@
     <!-- Data Saver -->
     <dimen name="data_usage_chart_height">325dp</dimen>
 
-    <!-- Tab Strip Dimensions -->
-    <dimen name="tab_strip_height">40dp</dimen>
-
     <!-- Full Screen Dimensions -->
     <dimen name="control_container_height">96dp</dimen>
     <dimen name="custom_tabs_control_container_height">64dp</dimen>
@@ -25,10 +22,11 @@
     <dimen name="tab_strip_and_toolbar_height">96dp</dimen>
 
     <dimen name="location_bar_icon_width">40dp</dimen>
+    <dimen name="location_bar_icon_margin_end">0dp</dimen>
+    <dimen name="location_bar_icon_end_padding">0dp</dimen>
+    <dimen name="location_bar_status_icon_width">40dp</dimen>
     <dimen name="location_bar_action_icon_width">40dp</dimen>
-    <dimen name="location_bar_url_action_offset">0dp</dimen>
     <dimen name="omnibox_suggestion_start_offset_without_icon">@dimen/location_bar_icon_width</dimen>
-    <dimen name="omnibox_suggestion_start_offset_with_icon">@dimen/omnibox_suggestion_start_offset_without_icon</dimen>
 
     <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>
     <dimen name="omnibox_suggestion_36dp_icon_margin_start">0dp</dimen>
@@ -42,12 +40,6 @@
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">28dp</dimen>
 
-    <!-- Payments UI -->
-    <dimen name="payments_ui_max_dialog_width">600dp</dimen>
-
     <!-- Preferences dimensions -->
     <dimen name="pref_spinner_padding_end">16dp</dimen>
-
-    <!-- Download manager dimensions -->
-    <dimen name="download_manager_ideal_image_width">240dp</dimen>
 </resources>

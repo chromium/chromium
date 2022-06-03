@@ -36,7 +36,7 @@ CSSValuePool& CssValuePool() {
   Persistent<CSSValuePool>& pool_handle = *thread_specific_pool;
   if (!pool_handle) {
     pool_handle = MakeGarbageCollected<CSSValuePool>();
-    pool_handle.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&pool_handle);
   }
   return *pool_handle;
 }
@@ -45,39 +45,32 @@ CSSValuePool::CSSValuePool()
     : inherited_value_(MakeGarbageCollected<CSSInheritedValue>()),
       initial_value_(MakeGarbageCollected<CSSInitialValue>()),
       unset_value_(MakeGarbageCollected<CSSUnsetValue>(PassKey())),
+      revert_value_(MakeGarbageCollected<CSSRevertValue>(PassKey())),
+      revert_layer_value_(MakeGarbageCollected<CSSRevertLayerValue>(PassKey())),
       invalid_variable_value_(MakeGarbageCollected<CSSInvalidVariableValue>()),
+      cyclic_variable_value_(
+          MakeGarbageCollected<CSSCyclicVariableValue>(PassKey())),
+      initial_color_value_(
+          MakeGarbageCollected<CSSInitialColorValue>(PassKey())),
       color_transparent_(
-          MakeGarbageCollected<cssvalue::CSSColorValue>(Color::kTransparent)),
-      color_white_(
-          MakeGarbageCollected<cssvalue::CSSColorValue>(Color::kWhite)),
-      color_black_(
-          MakeGarbageCollected<cssvalue::CSSColorValue>(Color::kBlack)) {
-  {
-    using Value = cssvalue::CSSPendingInterpolationValue;
-    using Type = cssvalue::CSSPendingInterpolationValue::Type;
-    pending_interpolation_values_[0] =
-        MakeGarbageCollected<Value>(Type::kCSSProperty);
-    pending_interpolation_values_[1] =
-        MakeGarbageCollected<Value>(Type::kPresentationAttribute);
-    static_assert(static_cast<size_t>(Type::kCSSProperty) == 0u,
-                  "kCSSProperty must be 0");
-    static_assert(static_cast<size_t>(Type::kPresentationAttribute) == 1u,
-                  "kPresentationAttribute must be 1");
-  }
-
+          MakeGarbageCollected<cssvalue::CSSColor>(Color::kTransparent)),
+      color_white_(MakeGarbageCollected<cssvalue::CSSColor>(Color::kWhite)),
+      color_black_(MakeGarbageCollected<cssvalue::CSSColor>(Color::kBlack)) {
   identifier_value_cache_.resize(numCSSValueKeywords);
   pixel_value_cache_.resize(kMaximumCacheableIntegerValue + 1);
   percent_value_cache_.resize(kMaximumCacheableIntegerValue + 1);
   number_value_cache_.resize(kMaximumCacheableIntegerValue + 1);
 }
 
-void CSSValuePool::Trace(blink::Visitor* visitor) {
+void CSSValuePool::Trace(Visitor* visitor) const {
   visitor->Trace(inherited_value_);
   visitor->Trace(initial_value_);
   visitor->Trace(unset_value_);
+  visitor->Trace(revert_value_);
+  visitor->Trace(revert_layer_value_);
   visitor->Trace(invalid_variable_value_);
-  visitor->Trace(pending_interpolation_values_[0]);
-  visitor->Trace(pending_interpolation_values_[1]);
+  visitor->Trace(cyclic_variable_value_);
+  visitor->Trace(initial_color_value_);
   visitor->Trace(color_transparent_);
   visitor->Trace(color_white_);
   visitor->Trace(color_black_);

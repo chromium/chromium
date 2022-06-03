@@ -16,7 +16,6 @@ TestingProfileKey::~TestingProfileKey() = default;
 
 leveldb_proto::ProtoDatabaseProvider*
 TestingProfileKey::GetProtoDatabaseProvider() {
-  auto* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(testing_profile_);
+  auto* storage_partition = testing_profile_->GetDefaultStoragePartition();
   return storage_partition->GetProtoDatabaseProvider();
 }

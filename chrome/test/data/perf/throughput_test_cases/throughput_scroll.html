@@ -1,0 +1,78 @@
+<html>
+<style>
+.spacer {
+  width: 100%;
+  height: 10000px;
+  background: linear-gradient(to bottom,
+    #5d9634,
+    #5d9634 50%,
+    #538c2b 50%,
+    #538c2b
+  );
+  /* The rectangle in which to repeat.
+     It can be fully wide in this case */
+  background-size: 100% 50px;
+  text-align: right;
+}
+
+.scroller {
+  width: 200px;
+  height: 100px;
+  overflow: auto;
+}
+
+.composited {
+  will-change: transform;
+}
+
+.uncomposited {
+  position: absolute;
+  top: 400px;
+  clip: rect(0px, 200px, 200px, 50px);
+}
+
+</style>
+</head>
+<body>
+  <div class="scroller uncomposited">
+    <div class="spacer">Uncomposited</div>
+  </div>
+
+  <div class="scroller composited" id="composited">
+    <div class="spacer">Composited</div>
+  </div>
+
+  <div class="scroller composited" id="handler_passive">
+    <div class="spacer">Composited With Passive Handler</div>
+  </div>
+  <div class="scroller composited" id="handler_active">
+    <div class="spacer">Composited With Active Handler</div>
+  </div>
+
+  <script>
+    handler_passive.addEventListener('touchstart', ()=> {
+      console.log('Passive touchstart');
+      const start = new Date();
+      while ((new Date() - start) < 500) {}
+    }, {passive: true})
+
+    handler_passive.addEventListener('touchmove', ()=> {
+      console.log('Passive touchmove');
+      const start = new Date();
+      while ((new Date() - start) < 500) {}
+    }, {passive: true})
+
+    handler_active.addEventListener('touchstart', ()=> {
+      console.log('Blocking touchstart');
+      const start = new Date();
+      while ((new Date() - start) < 500) {}
+    }, {passive: false})
+
+    handler_active.addEventListener('touchmove', ()=> {
+      console.log('Blocking touchmove');
+      const start = new Date();
+      while ((new Date() - start) < 500) {}
+    }, {passive: false})
+  </script>
+</body>
+</html>

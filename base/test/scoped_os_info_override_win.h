@@ -26,6 +26,10 @@ class ScopedOSInfoOverride {
   // Types of windows machines that can be used for overriding.  Add new
   // machine types as needed.
   enum class Type {
+    kWin11Pro,
+    kWin11Home,
+    kWinServer2022,
+    kWin10Pro21H1,
     kWin10Pro,
     kWin10Home,
     kWinServer2016,
@@ -35,6 +39,10 @@ class ScopedOSInfoOverride {
   };
 
   explicit ScopedOSInfoOverride(Type type);
+
+  ScopedOSInfoOverride(const ScopedOSInfoOverride&) = delete;
+  ScopedOSInfoOverride& operator=(const ScopedOSInfoOverride&) = delete;
+
   ~ScopedOSInfoOverride();
 
  private:
@@ -54,8 +62,6 @@ class ScopedOSInfoOverride {
   // Because the dtor of OSInfo is private, a custom deleter is needed to use
   // unique_ptr.
   static void deleter(base::win::OSInfo* info);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOSInfoOverride);
 };
 
 }  // namespace test

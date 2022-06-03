@@ -18,22 +18,21 @@ source_set("audio") {
     "//remoting/client/audio",
   ]
 
-  public_deps = [
-    "//remoting/proto",
-  ]
+  public_deps = [ "//remoting/proto" ]
 
-  libs = [ "AudioToolbox.framework" ]
+  frameworks = [ "AudioToolbox.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "audio_playback_sink_ios_unittest.cc",
-  ]
+  sources = [ "audio_playback_sink_ios_unittest.cc" ]
   deps = [
     ":audio",
+    "//base",
+    "//base/test:test_support",
+    "//remoting/client/audio",
     "//remoting/client/audio:test_support",
     "//testing/gmock",
     "//testing/gtest",

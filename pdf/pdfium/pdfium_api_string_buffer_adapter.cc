@@ -6,13 +6,12 @@
 
 #include <stddef.h>
 
-#include <string>
-
-#include "base/logging.h"
-#include "base/strings/string16.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 
 namespace chrome_pdf {
+
+namespace internal {
 
 template <class StringType>
 PDFiumAPIStringBufferAdapter<StringType>::PDFiumAPIStringBufferAdapter(
@@ -52,36 +51,30 @@ void PDFiumAPIStringBufferAdapter<StringType>::Close(size_t actual_size) {
   }
 }
 
-template <class StringType>
-PDFiumAPIStringBufferSizeInBytesAdapter<StringType>::
-    PDFiumAPIStringBufferSizeInBytesAdapter(StringType* str,
+PDFiumAPIStringBufferSizeInBytesAdapter::
+    PDFiumAPIStringBufferSizeInBytesAdapter(std::u16string* str,
                                             size_t expected_size,
                                             bool check_expected_size)
-    : adapter_(str,
-               expected_size / sizeof(typename StringType::value_type),
-               check_expected_size) {
-  DCHECK(expected_size % sizeof(typename StringType::value_type) == 0);
+    : adapter_(str, expected_size / sizeof(char16_t), check_expected_size) {
+  DCHECK(expected_size % sizeof(char16_t) == 0);
 }
 
-template <class StringType>
-PDFiumAPIStringBufferSizeInBytesAdapter<
-    StringType>::~PDFiumAPIStringBufferSizeInBytesAdapter() = default;
+PDFiumAPIStringBufferSizeInBytesAdapter::
+    ~PDFiumAPIStringBufferSizeInBytesAdapter() = default;
 
-template <class StringType>
-void* PDFiumAPIStringBufferSizeInBytesAdapter<StringType>::GetData() {
+void* PDFiumAPIStringBufferSizeInBytesAdapter::GetData() {
   return adapter_.GetData();
 }
 
-template <class StringType>
-void PDFiumAPIStringBufferSizeInBytesAdapter<StringType>::Close(
-    size_t actual_size) {
-  DCHECK(actual_size % sizeof(typename StringType::value_type) == 0);
-  adapter_.Close(actual_size / sizeof(typename StringType::value_type));
+void PDFiumAPIStringBufferSizeInBytesAdapter::Close(size_t actual_size) {
+  DCHECK(actual_size % sizeof(char16_t) == 0);
+  adapter_.Close(actual_size / sizeof(char16_t));
 }
 
 // explicit instantiations
 template class PDFiumAPIStringBufferAdapter<std::string>;
-template class PDFiumAPIStringBufferAdapter<base::string16>;
-template class PDFiumAPIStringBufferSizeInBytesAdapter<base::string16>;
+template class PDFiumAPIStringBufferAdapter<std::u16string>;
+
+}  // namespace internal
 
 }  // namespace chrome_pdf

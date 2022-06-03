@@ -15,8 +15,8 @@ FakeAuthenticator::FakeAuthenticator() {}
 FakeAuthenticator::~FakeAuthenticator() {}
 
 void FakeAuthenticator::Authenticate(
-    const Authenticator::AuthenticationCallback& callback) {
-  last_callback_ = callback;
+    Authenticator::AuthenticationCallback callback) {
+  last_callback_ = std::move(callback);
 }
 
 }  // namespace secure_channel

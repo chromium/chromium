@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/spdy/spdy_buffer.h"
 
 namespace net {

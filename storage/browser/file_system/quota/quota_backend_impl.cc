@@ -6,30 +6,34 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
-#include "storage/browser/quota/quota_client.h"
+#include "storage/browser/file_system/file_system_util.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace storage {
 
 QuotaBackendImpl::QuotaBackendImpl(
-    base::SequencedTaskRunner* file_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
     ObfuscatedFileUtil* obfuscated_file_util,
     FileSystemUsageCache* file_system_usage_cache,
-    storage::QuotaManagerProxy* quota_manager_proxy)
-    : file_task_runner_(file_task_runner),
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy)
+    : file_task_runner_(std::move(file_task_runner)),
       obfuscated_file_util_(obfuscated_file_util),
       file_system_usage_cache_(file_system_usage_cache),
-      quota_manager_proxy_(quota_manager_proxy) {}
+      quota_manager_proxy_(std::move(quota_manager_proxy)) {}
 
 QuotaBackendImpl::~QuotaBackendImpl() = default;
 
@@ -45,7 +49,8 @@ void QuotaBackendImpl::ReserveQuota(const url::Origin& origin,
   }
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->GetUsageAndQuota(
-      file_task_runner_.get(), origin, FileSystemTypeToQuotaStorageType(type),
+      blink::StorageKey(origin), FileSystemTypeToQuotaStorageType(type),
+      file_task_runner_,
       base::BindOnce(&QuotaBackendImpl::DidGetUsageAndQuotaForReserveQuota,
                      weak_ptr_factory_.GetWeakPtr(),
                      QuotaReservationInfo(origin, type, delta),
@@ -138,8 +143,9 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
   DCHECK(!info.origin.opaque());
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->NotifyStorageModified(
-      storage::QuotaClient::kFileSystem, info.origin,
-      FileSystemTypeToQuotaStorageType(info.type), info.delta);
+      QuotaClientType::kFileSystem, blink::StorageKey(info.origin),
+      FileSystemTypeToQuotaStorageType(info.type), info.delta,
+      base::Time::Now());
 }
 
 base::File::Error QuotaBackendImpl::GetUsageCachePath(
@@ -151,8 +157,8 @@ base::File::Error QuotaBackendImpl::GetUsageCachePath(
   DCHECK(usage_file_path);
   base::File::Error error = base::File::FILE_OK;
   *usage_file_path =
-      SandboxFileSystemBackendDelegate::GetUsageCachePathForOriginAndType(
-          obfuscated_file_util_, origin.GetURL(), type, &error);
+      SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
+          obfuscated_file_util_, blink::StorageKey(origin), type, &error);
   return error;
 }
 

@@ -6,9 +6,10 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
@@ -37,21 +38,21 @@
   // Registrar for pref change notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 
-  // Pref observer to track changes to prefs::kOfferTranslateEnabled.
+  // Pref observer to track changes to translate::prefs::kOfferTranslateEnabled.
   std::unique_ptr<PrefObserverBridge> _offerTranslatePrefObserverBridge;
 
   // Pref observer to track changes to language::prefs::kAcceptLanguages.
   std::unique_ptr<PrefObserverBridge> _acceptLanguagesPrefObserverBridge;
 
-  // Pref observer to track changes to language::prefs::kFluentLanguages.
-  std::unique_ptr<PrefObserverBridge> _fluentLanguagesPrefObserverBridge;
+  // Pref observer to track changes to prefs::kBlockedLanguages.
+  std::unique_ptr<PrefObserverBridge> _blockedLanguagesPrefObserverBridge;
 
   // Translate wrapper for the PrefService.
   std::unique_ptr<translate::TranslatePrefs> _translatePrefs;
 }
 
 // The BrowserState passed to this instance.
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+@property(nonatomic, assign) ChromeBrowserState* browserState;
 
 @end
 
@@ -59,7 +60,7 @@
 
 @synthesize consumer = _consumer;
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(browserState);
   self = [super init];
   if (self) {
@@ -70,15 +71,15 @@
     _offerTranslatePrefObserverBridge =
         std::make_unique<PrefObserverBridge>(self);
     _offerTranslatePrefObserverBridge->ObserveChangesForPreference(
-        prefs::kOfferTranslateEnabled, _prefChangeRegistrar.get());
+        translate::prefs::kOfferTranslateEnabled, _prefChangeRegistrar.get());
     _acceptLanguagesPrefObserverBridge =
         std::make_unique<PrefObserverBridge>(self);
     _acceptLanguagesPrefObserverBridge->ObserveChangesForPreference(
         language::prefs::kAcceptLanguages, _prefChangeRegistrar.get());
-    _fluentLanguagesPrefObserverBridge =
+    _blockedLanguagesPrefObserverBridge =
         std::make_unique<PrefObserverBridge>(self);
-    _fluentLanguagesPrefObserverBridge->ObserveChangesForPreference(
-        language::prefs::kFluentLanguages, _prefChangeRegistrar.get());
+    _blockedLanguagesPrefObserverBridge->ObserveChangesForPreference(
+        translate::prefs::kBlockedLanguages, _prefChangeRegistrar.get());
 
     _translatePrefs = ChromeIOSTranslateClient::CreateTranslatePrefs(
         browserState->GetPrefs());
@@ -93,16 +94,16 @@
 
 #pragma mark - PrefObserverDelegate
 
-// Called when the value of prefs::kOfferTranslateEnabled,
+// Called when the value of translate::prefs::kOfferTranslateEnabled,
 // language::prefs::kAcceptLanguages or
-// language::prefs::kFluentLanguages change.
+// translate::prefs::kBlockedLanguages change.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  DCHECK(preferenceName == prefs::kOfferTranslateEnabled ||
+  DCHECK(preferenceName == translate::prefs::kOfferTranslateEnabled ||
          preferenceName == language::prefs::kAcceptLanguages ||
-         preferenceName == language::prefs::kFluentLanguages);
+         preferenceName == translate::prefs::kBlockedLanguages);
 
   // Inform the consumer.
-  if (preferenceName == prefs::kOfferTranslateEnabled) {
+  if (preferenceName == translate::prefs::kOfferTranslateEnabled) {
     [self.consumer translateEnabled:[self translateEnabled]];
   } else {
     [self.consumer languagePrefsChanged];
@@ -204,21 +205,27 @@
 
 - (BOOL)translateEnabled {
   return self.browserState->GetPrefs()->GetBoolean(
-      prefs::kOfferTranslateEnabled);
+      translate::prefs::kOfferTranslateEnabled);
+}
+
+- (BOOL)translateManaged {
+  return self.browserState->GetPrefs()->IsManagedPreference(
+      translate::prefs::kOfferTranslateEnabled);
 }
 
 - (void)stopObservingModel {
   _offerTranslatePrefObserverBridge.reset();
   _acceptLanguagesPrefObserverBridge.reset();
-  _fluentLanguagesPrefObserverBridge.reset();
+  _blockedLanguagesPrefObserverBridge.reset();
   _prefChangeRegistrar.reset();
+  _translatePrefs.reset();
 }
 
 #pragma mark - LanguageSettingsCommands
 
 - (void)setTranslateEnabled:(BOOL)enabled {
-  self.browserState->GetPrefs()->SetBoolean(prefs::kOfferTranslateEnabled,
-                                            enabled);
+  self.browserState->GetPrefs()->SetBoolean(
+      translate::prefs::kOfferTranslateEnabled, enabled);
 
   UMA_HISTOGRAM_ENUMERATION(
       kLanguageSettingsActionsHistogram,

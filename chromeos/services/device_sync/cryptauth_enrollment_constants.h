@@ -12,7 +12,7 @@ namespace device_sync {
 // The special strings used in SyncSingleKeyRequest::key_name. These strings are
 // not arbitrary; CryptAuth must be able to identify these names.
 extern const char kCryptAuthUserKeyPairName[];
-extern const char kCryptAuthLegacyMasterKeyName[];
+extern const char kCryptAuthLegacyAuthzenKeyName[];
 extern const char kCryptAuthDeviceSyncBetterTogetherKeyName[];
 
 // CryptAuth demands that the kUserKeyPair key bundle have a lone key with this

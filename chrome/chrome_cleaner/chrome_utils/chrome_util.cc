@@ -33,7 +33,7 @@ const wchar_t kChromeShortcutFilename[] = L"Google Chrome.lnk";
 // The KO language version doesn't have the term Google in the filename.
 const wchar_t kKOChromeShortcutFilename[] = L"Chrome.lnk";
 
-bool RetrieveChromeVersionAndInstalledDomain(base::string16* chrome_version,
+bool RetrieveChromeVersionAndInstalledDomain(std::wstring* chrome_version,
                                              bool* system_install) {
   DCHECK(chrome_version);
 
@@ -79,7 +79,7 @@ bool RetrieveChromeExePathFromCommandLine(base::FilePath* chrome_exe_path) {
   return true;
 }
 
-void ListChromeExePaths(std::set<base::FilePath>* paths) {
+void ListChromeExeDirectories(std::set<base::FilePath>* paths) {
   DCHECK(paths);
 
   static const unsigned int install_paths[] = {
@@ -106,10 +106,10 @@ void ListChromeExePaths(std::set<base::FilePath>* paths) {
 void ListChromeInstallationPaths(std::set<base::FilePath>* paths) {
   DCHECK(paths);
 
-  std::set<base::FilePath> exe_paths;
-  ListChromeExePaths(&exe_paths);
+  std::set<base::FilePath> chrome_exe_directories;
+  ListChromeExeDirectories(&chrome_exe_directories);
 
-  for (const base::FilePath& exe_path : exe_paths) {
+  for (const base::FilePath& exe_path : chrome_exe_directories) {
     base::FilePath pattern = exe_path.Append(L"??.*.*.*");
     std::vector<base::FilePath> matches;
     CollectMatchingPaths(pattern, &matches);

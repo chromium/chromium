@@ -63,9 +63,6 @@ std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
 NullRemoteObject(v8_inspector::V8InspectorSession* v8_session,
                  LocalFrame* frame,
                  const String& object_group) {
-  if (!frame)
-    return nullptr;
-
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
   if (!script_state)
     return nullptr;

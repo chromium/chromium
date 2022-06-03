@@ -4,38 +4,69 @@
 
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
-const base::Feature kBrowserContainerKeepsContentView{
-    "BrowserContainerKeepsContentView", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCommercePriceTracking{"CommercePriceTracking",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kOmniboxPopupShortcutIconsInZeroState{
-    "OmniboxPopupShortcutIconsInZeroState", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// TODO(crbug.com/945811): Using |-drawViewHierarchyInRect:afterScreenUpdates:|
-// has adverse flickering when taking a snapshot of the NTP while in the app
-// switcher.
-const base::Feature kSnapshotDrawView{"SnapshotDrawView",
+const base::Feature kExpandedTabStrip{"ExpandedTabStrip",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSettingsRefresh{"SettingsRefresh",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kTestFeature{"TestFeature",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kNewOmniboxPopupLayout{"NewOmniboxPopupLayout",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kOmniboxUseDefaultSearchEngineFavicon{
-    "OmniboxUseDefaultSearchEngineFavicon", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableFREDefaultBrowserScreenTesting{
+    "EnableFREDefaultBrowserScreenTesting", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kLanguageSettings{"LanguageSettings",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOS",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEmbedderBlockRestoreUrl{"EmbedderBlockRestoreUrl",
+const base::Feature kOldSyncStringFRE{"OldSyncStringFRE",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
+// finished.
+const base::Feature kModernTabStrip{"ModernTabStrip",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIncognitoBrandConsistencyForIOS{
+    "IncognitoBrandConsistencyForIOS", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDefaultBrowserFullscreenPromoExperiment{
+    "DefaultBrowserFullscreenPromoExperiment",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIOSNewOmniboxImplementation{
+    "kIOSNewOmniboxImplementation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kIOSOmniboxAllowEditsDuringDictation{
+    "IOSOmniboxAllowEditsDuringDictation", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kIOSPersistCrashRestore{"IOSPersistCrashRestore",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kUpdateHistoryEntryPointsInIncognito{
+    "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextMenuActionsRefresh{
+    "ContextMenuActionsRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDisableAnimationOnLowBattery{
-    "DisableAnimationOnLowBattery", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCredentialProviderExtensionPromo{
+    "CredentialProviderExtensionPromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kVoiceOverUnstackedTabstrip{
-    "VoiceOverUnstackedTabstrip", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kRemoveExcessNTPs{"RemoveExcessNTPs",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kForceUnstackedTabstrip{"ForceUnstackedTabstrip",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+bool IsContextMenuActionsRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
+}

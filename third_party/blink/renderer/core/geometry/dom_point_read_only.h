@@ -44,4 +44,4 @@ class CORE_EXPORT DOMPointReadOnly : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_POINT_READ_ONLY_H_

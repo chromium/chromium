@@ -1,90 +1,127 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../controls/controlled_button.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="downloads_browser_proxy.html">
-<if expr="chromeos">
-<link rel="import" href="smb_shares_page.html">
-</if>
-
-<dom-module id="settings-downloads-page">
-  <template>
-    <style include="settings-shared">
-      .block {
-        display: block;
+    <style include="cr-shared-style settings-shared iron-flex">
+      #defaultDownloadPath {
+        word-break: break-word;
       }
     </style>
-  <settings-animated-pages id="pages" section="downloads"
-      focus-config="[[focusConfig_]]">
-    <div route-path="default">
-      <div class="settings-box first two-line">
-        <div class="start settings-box-text">
-          <div>$i18n{downloadLocation}</div>
-          <div class="secondary" id="defaultDownloadPath">
-<if expr="not chromeos">
-            [[prefs.download.default_directory.value]]
-</if>
-<if expr="chromeos">
-            [[downloadLocation_]]
-</if>
+    <template is="dom-if" if="[[showConnection_]]">
+      <template is="dom-if" if="[[!connectionAccountInfo_.linked]]">
+      <div class="cr-row first" id="downloadsRoutingConnectionUnlinked">
+        <div class="flex cr-padded-text">
+          <div id="connectionLabel">
+            $i18n{downloadsConnectionTitle}
+          </div>
+          <div class="secondary" id="connectionMessage">
+            $i18n{downloadsConnectionUnlinkedMessage}
+            <a href="[[connectionLearnMoreLink_]]" target="_blank"
+               id="learnMore" aria-labelledby="connectionMessage learnMore">
+              $i18n{downloadConnectionLearnMore}
+            </a>
           </div>
         </div>
         <div class="separator"></div>
-        <controlled-button id="changeDownloadsPath"
-            label="$i18n{changeDownloadLocation}"
-            on-click="selectDownloadLocation_"
-            pref="[[prefs.download.default_directory]]"
-            end-justified>
-        </controlled-button>
+        <cr-button class="action-button cr-button-gap" id="linkAccountButton"
+            on-click="onLinkDownloadsConnectionClick_"
+            disabled="[[connectionSetupInProgress_]]"
+            aria-labelledby="connectionLabel linkAccountButton">
+            $i18n{downloadsConnectionLinkButton}
+        </cr-button>
       </div>
-      <settings-toggle-button
-          pref="{{prefs.download.prompt_for_download}}"
-          label="$i18n{promptForDownload}">
-      </settings-toggle-button>
-<if expr="chromeos">
-      <settings-toggle-button class="continuation"
-          pref="{{prefs.gdata.disabled}}"
-          label="$i18n{disconnectGoogleDriveAccount}"
-          hidden="[[!pageVisibility.googleDrive]]">
-      </settings-toggle-button>
-      <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
-          hidden="[[!pageVisibility.smbShares]]" label="$i18n{smbSharesTitle}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-</if>
-      <template is="dom-if" if="[[autoOpenDownloads_]]" restamp>
-        <div class="settings-box">
-          <div class="start">
-            $i18n{openFileTypesAutomatically}
+      </template>
+      <template is="dom-if" if="[[connectionAccountInfo_.linked]]">
+        <div class="cr-row first" id="downloadsRoutingConnectionLinked">
+          <div class="flex cr-padded-text">
+            <div id="connectionLabel">
+              $i18n{downloadsConnectionTitle}
+            </div>
+            <div class="secondary" id="connectionLinkedMessage">
+              $i18n{downloadsConnectionLinkedMessage}
+              <a href="[[connectionLearnMoreLink_]]" target="_blank"
+                  id="learnMore"
+                  aria-labelledby="connectionLinkedMessage learnMore">
+                $i18n{downloadConnectionLearnMore}
+              </a>
+            </div>
           </div>
           <div class="separator"></div>
-          <cr-button id="resetAutoOpenFileTypes"
-              on-click="onClearAutoOpenFileTypesTap_">
-            $i18n{clear}
+          <cr-button class="action-button cr-button-gap"
+              id="unlinkAccountButton"
+              on-click="onUnlinkDownloadsConnectionClick_"
+              disabled="[[connectionSetupInProgress_]]"
+              aria-labelledby="connectionLabel connectionAccountLabel
+                  connectionAccountName connectionAccountLogin
+                  unlinkAccountButton">
+              $i18n{downloadsConnectionUnlinkButton}
           </cr-button>
         </div>
+        <div class="cr-row first" id="downloadsRoutingConnectionAccount">
+          <div class="flex cr-padded-text">
+            <div id="connectionAccountLabel">
+              $i18n{downloadConnectionAccountTitle}
+            </div>
+            <div class="secondary" id="connectionAccountName">
+              [[connectionAccountInfo_.account.name]]
+            </div>
+            <div class="secondary" id="connectionAccountLogin">
+              [[connectionAccountInfo_.account.login]]
+            </div>
+          </div>
+          <div class="flex cr-padded-text">
+            <div id="connectionFolderLabel">
+              $i18n{downloadConnectionLinkedFolder}
+            </div>
+            <div class="secondary">
+              <a href="[[connectionAccountInfo_.folder.link]]" target="_blank"
+                  id="connectionFolderLink"
+                  aria-labelledby="connectionFolderLabel connectionFolderLink">
+                [[connectionAccountInfo_.folder.name]]
+              </a>
+            </div>
+          </div>
+        </div>
       </template>
-    </div>
-
-<if expr="chromeos">
-    <template is="dom-if" route-path="/smbShares">
-      <settings-subpage
-          hidden="[[!pageVisibility.smbShares]]"
-          associated-control="[[$$('#smbShares')]]"
-          page-title="$i18n{smbSharesTitle}">
-        <settings-smb-shares-page prefs="[[prefs]]">
-        </settings-smb-shares-page>
-      </settings-subpage>
     </template>
+    <div class="cr-row first">
+      <div class="flex cr-padded-text">
+        <template is="dom-if" if="[[showConnection_]]">
+          <div id="locationLabel">
+            $i18n{downloadLocalLocation}
+          </div>
+        </template>
+        <template is="dom-if" if="[[!showConnection_]]">
+          <div id="locationLabel">
+            $i18n{downloadLocation}
+          </div>
+        </template>
+        <div class="secondary" id="defaultDownloadPath" aria-hidden="true">
+<if expr="not chromeos">
+          [[prefs.download.default_directory.value]]
 </if>
-  </settings-animated-pages>
-  </template>
-  <script src="downloads_page.js"></script>
-</dom-module>
+<if expr="chromeos">
+          [[downloadLocation_]]
+</if>
+        </div>
+      </div>
+      <div class="separator"></div>
+      <controlled-button id="changeDownloadsPath"
+          label="$i18n{changeDownloadLocation}"
+          aria-labelledby="locationLabel defaultDownloadPath"
+          on-click="selectDownloadLocation_"
+          pref="[[prefs.download.default_directory]]"
+          end-justified>
+      </controlled-button>
+    </div>
+    <settings-toggle-button
+        class="hr"
+        pref="{{prefs.download.prompt_for_download}}"
+        label="$i18n{promptForDownload}">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[autoOpenDownloads_]]" restamp>
+      <div class="cr-row">
+        <div class="flex">$i18n{openFileTypesAutomatically}</div>
+        <div class="separator"></div>
+        <cr-button id="resetAutoOpenFileTypes"
+            on-click="onClearAutoOpenFileTypesTap_">
+          $i18n{clear}
+        </cr-button>
+      </div>
+    </template>

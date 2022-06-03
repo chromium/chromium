@@ -5,35 +5,52 @@
 #ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_FACTORY_H_
 #define MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_FACTORY_H_
 
+#include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "media/base/cdm_factory.h"
+#include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_provider.h"
 
 namespace media {
 
-class MEDIA_EXPORT FuchsiaCdmFactory : public CdmFactory {
+class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
  public:
   // |interface_provider| must outlive this class.
   explicit FuchsiaCdmFactory(std::unique_ptr<FuchsiaCdmProvider> provider);
-  ~FuchsiaCdmFactory() final;
+
+  FuchsiaCdmFactory(const FuchsiaCdmFactory&) = delete;
+  FuchsiaCdmFactory& operator=(const FuchsiaCdmFactory&) = delete;
+
+  ~FuchsiaCdmFactory() override;
 
   // CdmFactory implementation.
   void Create(const std::string& key_system,
-              const url::Origin& security_origin,
               const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
-              const CdmCreatedCB& cdm_created_cb) final;
+              CdmCreatedCB cdm_created_cb) override;
 
  private:
-  std::unique_ptr<FuchsiaCdmProvider> cdm_provider_;
+  void OnCdmReady(uint32_t creation_id,
+                  CdmCreatedCB cdm_created_cb,
+                  bool success,
+                  const std::string& error_message);
 
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaCdmFactory);
+  std::unique_ptr<FuchsiaCdmProvider> cdm_provider_;
+  uint32_t creation_id_ = 0;
+
+  // Map between creation id and pending cdms
+  base::flat_map<uint32_t, scoped_refptr<ContentDecryptionModule>>
+      pending_cdms_;
+
+  base::WeakPtrFactory<FuchsiaCdmFactory> weak_factory_{this};
 };
 
 }  // namespace media

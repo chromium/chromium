@@ -2,7 +2,6 @@ include_rules = [
   "+components/invalidation",
   "+components/keyed_service",
   "+google_apis",
-  "+google/cacheinvalidation/types.pb.h",
   "+mojo/public",
   "+net",
   "+services/device/public/mojom",

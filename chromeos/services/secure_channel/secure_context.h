@@ -14,7 +14,7 @@ namespace secure_channel {
 // An interface used to decode and encode messages.
 class SecureContext {
  public:
-  typedef base::Callback<void(const std::string& message)> MessageCallback;
+  typedef base::OnceCallback<void(const std::string& message)> MessageCallback;
 
   // The protocol version used during authentication.
   enum ProtocolVersion {
@@ -28,13 +28,12 @@ class SecureContext {
   // This function is asynchronous because the ChromeOS implementation requires
   // a DBus call.
   virtual void Decode(const std::string& encoded_message,
-                      const MessageCallback& callback) = 0;
+                      MessageCallback callback) = 0;
 
   // Encodes the |message| and returns the result.
   // This function is asynchronous because the ChromeOS implementation requires
   // a DBus call.
-  virtual void Encode(const std::string& message,
-                      const MessageCallback& callback) = 0;
+  virtual void Encode(const std::string& message, MessageCallback callback) = 0;
 
   // Returns the protocol version that was used during authentication.
   virtual ProtocolVersion GetProtocolVersion() const = 0;

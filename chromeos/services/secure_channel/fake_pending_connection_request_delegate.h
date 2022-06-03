@@ -8,9 +8,8 @@
 #include <unordered_map>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -21,9 +20,15 @@ class FakePendingConnectionRequestDelegate
     : public PendingConnectionRequestDelegate {
  public:
   FakePendingConnectionRequestDelegate();
+
+  FakePendingConnectionRequestDelegate(
+      const FakePendingConnectionRequestDelegate&) = delete;
+  FakePendingConnectionRequestDelegate& operator=(
+      const FakePendingConnectionRequestDelegate&) = delete;
+
   ~FakePendingConnectionRequestDelegate() override;
 
-  const base::Optional<FailedConnectionReason>& GetFailedConnectionReasonForId(
+  const absl::optional<FailedConnectionReason>& GetFailedConnectionReasonForId(
       const base::UnguessableToken& request_id);
 
   void set_closure_for_next_delegate_callback(base::OnceClosure closure) {
@@ -37,13 +42,11 @@ class FakePendingConnectionRequestDelegate
       FailedConnectionReason reason) override;
 
   std::unordered_map<base::UnguessableToken,
-                     base::Optional<FailedConnectionReason>,
+                     absl::optional<FailedConnectionReason>,
                      base::UnguessableTokenHash>
       request_id_to_failed_connection_reason_map_;
 
   base::OnceClosure closure_for_next_delegate_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionRequestDelegate);
 };
 
 }  // namespace secure_channel

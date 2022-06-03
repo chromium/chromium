@@ -9,13 +9,9 @@
 
 #include <jni.h>
 
-#include <string>
-#include <vector>
-
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -23,9 +19,12 @@ namespace safe_browsing {
 class SafeBrowsingApiHandlerBridge : public SafeBrowsingApiHandler {
  public:
   SafeBrowsingApiHandlerBridge();
-  ~SafeBrowsingApiHandlerBridge() override;
 
-  std::string GetSafetyNetId() override;
+  SafeBrowsingApiHandlerBridge(const SafeBrowsingApiHandlerBridge&) = delete;
+  SafeBrowsingApiHandlerBridge& operator=(const SafeBrowsingApiHandlerBridge&) =
+      delete;
+
+  ~SafeBrowsingApiHandlerBridge() override;
 
   // Makes Native->Java call to check the URL against Safe Browsing lists.
   void StartURLCheck(std::unique_ptr<URLCheckCallbackMeta> callback,
@@ -52,8 +51,6 @@ class SafeBrowsingApiHandlerBridge : public SafeBrowsingApiHandler {
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore.
   jlong next_callback_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingApiHandlerBridge);
 };
 
 }  // namespace safe_browsing

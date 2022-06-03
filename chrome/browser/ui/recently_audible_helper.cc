@@ -39,8 +39,8 @@ bool RecentlyAudibleHelper::WasRecentlyAudible() const {
   return tick_clock_->NowTicks() < recently_audible_time_limit;
 }
 
-std::unique_ptr<RecentlyAudibleHelper::Subscription>
-RecentlyAudibleHelper::RegisterCallback(const Callback& callback) {
+base::CallbackListSubscription
+RecentlyAudibleHelper::RegisterCallbackForTesting(const Callback& callback) {
   return callback_list_.Add(callback);
 }
 
@@ -77,6 +77,14 @@ void RecentlyAudibleHelper::OnRecentlyAudibleTimerFired() {
          tick_clock_->NowTicks());
   // Notify of the transition to no longer being recently audible.
   callback_list_.Notify(false);
+
+  // This notification is redundant in most cases, because WebContents is
+  // notified by AudioStreamMonitor of changes due to audio in its own frames
+  // (but not in inner contents) directly.
+  //
+  // TODO(https://crbug.com/846374): Remove this once WebContents is notified
+  // via |callback_list_| in this class instead.
+  web_contents()->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_AUDIO);
 }
 
 void RecentlyAudibleHelper::TransitionToNotCurrentlyAudible() {
@@ -109,4 +117,4 @@ void RecentlyAudibleHelper::SetNotRecentlyAudibleForTesting() {
   recently_audible_timer_.Stop();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentlyAudibleHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentlyAudibleHelper);

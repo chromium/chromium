@@ -10,7 +10,7 @@ namespace disk_cache {
 namespace simple_util {
 
 bool SimpleCacheDeleteFile(const base::FilePath& path) {
-  return base::DeleteFile(path, false);
+  return base::DeleteFile(path);
 }
 
 }  // namespace simple_util

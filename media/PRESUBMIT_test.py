@@ -147,5 +147,28 @@ class HistogramOffByOneTest(unittest.TestCase):
                      '                          kFooMax + 2 /* The max */ );',
                      1)
 
+class NoV4L2AggregateInitializationTest(unittest.TestCase):
+
+  def testValid(self):
+    self._testChange(['struct v4l2_format_ format;'], 0)
+
+  def testInvalid(self):
+    self._testChange(['struct v4l2_format format = {};'], 1)
+    self._testChange(['  struct v4l2_format format = {};'], 1)
+    self._testChange(['  struct std::vector<v4l2_format> format[] = {};'], 1)
+    self._testChange(['  struct std::vector<v4l2_format> format[] = {{}};'], 1)
+
+  def _testChange(self, content, expected_warnings):
+    mock_input_api = MockInputApi()
+    mock_input_api.files.append(MockFile('test.cc', content))
+    results = PRESUBMIT._CheckForNoV4L2AggregateInitialization(mock_input_api,
+                                                               MockOutputApi())
+    if expected_warnings:
+      self.assertEqual(1, len(results))
+      self.assertEqual(expected_warnings, len(results[0].items))
+    else:
+      self.assertEqual(0, len(results))
+
+
 if __name__ == '__main__':
   unittest.main()

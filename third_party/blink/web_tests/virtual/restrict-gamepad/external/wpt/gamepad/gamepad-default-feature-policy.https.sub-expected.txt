@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Feature-Policy allow="gamepad" allows same-origin by default.
+PASS Feature-Policy allow="gamepad" allows cross-origin with feature allowed.
+PASS Feature-Policy allow="gamepad" disallows cross-origin by default.
+Harness: the test ran to completion.
+

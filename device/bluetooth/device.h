@@ -32,6 +32,9 @@ namespace bluetooth {
 // instance closes the binding which causes the instance to be deleted.
 class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
  public:
+  Device(const Device&) = delete;
+  Device& operator=(const Device&) = delete;
+
   ~Device() override;
 
   static void Create(
@@ -87,12 +90,10 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
   mojom::ServiceInfoPtr ConstructServiceInfoStruct(
       const device::BluetoothRemoteGattService& service);
 
-  void OnReadRemoteCharacteristic(ReadValueForCharacteristicCallback callback,
-                                  const std::vector<uint8_t>& value);
-
-  void OnReadRemoteCharacteristicError(
+  void OnReadRemoteCharacteristic(
       ReadValueForCharacteristicCallback callback,
-      device::BluetoothGattService::GattErrorCode error_code);
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   void OnWriteRemoteCharacteristic(
       WriteValueForCharacteristicCallback callback);
@@ -101,12 +102,10 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
       WriteValueForCharacteristicCallback callback,
       device::BluetoothGattService::GattErrorCode error_code);
 
-  void OnReadRemoteDescriptor(ReadValueForDescriptorCallback callback,
-                              const std::vector<uint8_t>& value);
-
-  void OnReadRemoteDescriptorError(
+  void OnReadRemoteDescriptor(
       ReadValueForDescriptorCallback callback,
-      device::BluetoothGattService::GattErrorCode error_code);
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   void OnWriteRemoteDescriptor(WriteValueForDescriptorCallback callback);
 
@@ -129,8 +128,6 @@ class Device : public mojom::Device, public device::BluetoothAdapter::Observer {
   std::vector<base::OnceClosure> pending_services_requests_;
 
   base::WeakPtrFactory<Device> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Device);
 };
 
 }  // namespace bluetooth

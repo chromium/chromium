@@ -16,7 +16,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "gaia_password_reuse.proto";
+import "components/sync/protocol/gaia_password_reuse.proto";
 
 message SecurityEventSpecifics {
   // The specific security event to record.

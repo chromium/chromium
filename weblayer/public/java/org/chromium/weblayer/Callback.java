@@ -8,4 +8,6 @@ package org.chromium.weblayer;
  * Simple callback that takes a generic value.
  * @param <T> The type of value passed into the callback.
  */
-public interface Callback<T> { void onResult(T result); }
+public interface Callback<T> {
+    void onResult(T result);
+}

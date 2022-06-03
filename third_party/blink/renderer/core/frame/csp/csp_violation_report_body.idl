@@ -5,7 +5,7 @@
 // https://www.w3.org/TR/CSP3/#cspviolationreportbody
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface CSPViolationReportBody : ReportBody {
   readonly attribute USVString documentURL;
   readonly attribute USVString? referrer;

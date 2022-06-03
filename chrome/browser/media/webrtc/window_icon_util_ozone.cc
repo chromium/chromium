@@ -6,12 +6,16 @@
 
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_utils.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
+  // TODO(https://crbug.com/1094460): Hook up Window Icons for lacros.
   DCHECK_EQ(content::DesktopMediaID::TYPE_WINDOW, id.type);
-  // TODO(tonikitoo): can we make the implementation of
-  // chrome/browser/media/webrtc/window_icon_util_chromeos.cc generic
-  // enough so we can reuse it here?
-  NOTIMPLEMENTED();
+  if (auto* platform_utils =
+          ui::OzonePlatform::GetInstance()->GetPlatformUtils()) {
+    return platform_utils->GetNativeWindowIcon(id.id);
+  }
+  NOTIMPLEMENTED_LOG_ONCE();
   return gfx::ImageSkia();
 }

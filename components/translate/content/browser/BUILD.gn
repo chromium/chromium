@@ -10,6 +10,12 @@ static_library("browser") {
     "content_record_page_language.h",
     "content_translate_driver.cc",
     "content_translate_driver.h",
+    "content_translate_util.cc",
+    "content_translate_util.h",
+    "per_frame_content_translate_driver.cc",
+    "per_frame_content_translate_driver.h",
+    "translate_model_service.cc",
+    "translate_model_service.h",
   ]
 
   public_deps = [
@@ -17,13 +23,47 @@ static_library("browser") {
     "//components/translate/content/common",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//content/public/browser",
   ]
   deps = [
+    "//components/keyed_service/core",
     "//components/language/core/browser",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines:search_engines",
+    "//components/services/language_detection/public/cpp",
+    "//components/services/language_detection/public/mojom",
+    "//components/translate/core/language_detection:language_detection",
     "//components/ukm/content",
-    "//content/public/browser",
     "//content/public/common",
     "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "per_frame_content_translate_driver_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//components/services/language_detection/public/mojom",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "translate_waiter.cc",
+    "translate_waiter.h",
+  ]
+  public_deps = [
+    ":browser",
+    "//base",
+    "//components/translate/core/common",
   ]
 }

@@ -2,28 +2,40 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
-import("//ui/display/display.gni")
 
-jumbo_component("manager") {
+assert(is_chromeos_ash || is_chromecast)
+
+component("manager") {
   sources = [
-    "display_layout_store.cc",
-    "display_layout_store.h",
-    "display_manager.cc",
-    "display_manager.h",
     "display_manager_export.h",
     "display_manager_utilities.cc",
     "display_manager_utilities.h",
     "display_util.cc",
     "display_util.h",
-    "json_converter.cc",
-    "json_converter.h",
     "managed_display_info.cc",
     "managed_display_info.h",
   ]
 
-  if (build_display_configuration) {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//ui/display" ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//ui/base",
+    "//ui/display/mojom:mojom",
+    "//ui/display/util",
+    "//ui/events:platform_event",
+    "//ui/events/devices",
+    "//ui/strings",
+  ]
+
+  defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
+
+  if (is_chromeos_ash) {
     sources += [
       "apply_content_protection_task.cc",
       "apply_content_protection_task.h",
@@ -38,6 +50,12 @@ jumbo_component("manager") {
       "display_configurator.cc",
       "display_configurator.h",
       "display_layout_manager.h",
+      "display_layout_store.cc",
+      "display_layout_store.h",
+      "display_manager.cc",
+      "display_manager.h",
+      "json_converter.cc",
+      "json_converter.h",
       "query_content_protection_task.cc",
       "query_content_protection_task.h",
       "touch_device_manager.cc",
@@ -48,27 +66,6 @@ jumbo_component("manager") {
       "update_display_configuration_task.cc",
       "update_display_configuration_task.h",
     ]
-  }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  public_deps = [
-    "//ui/display",
-  ]
-
-  deps = [
-    "//base",
-    "//ui/base",
-    "//ui/display/mojom:mojom",
-    "//ui/display/util",
-    "//ui/events:platform_event",
-    "//ui/events/devices",
-    "//ui/strings",
-  ]
-
-  defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
-
-  if (is_chromeos) {
     deps += [ "//chromeos/system" ]
   }
 }

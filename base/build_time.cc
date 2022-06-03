@@ -7,7 +7,7 @@
 // Imports the generated build date, i.e. BUILD_DATE.
 #include "base/generated_build_date.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/time.h"
 
 namespace base {

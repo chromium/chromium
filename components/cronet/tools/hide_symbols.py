@@ -12,10 +12,13 @@
 # This way, we can reduce risk of symbol conflict when linking it into apps
 # by exposing internal symbols, especially in third-party libraries.
 
+from __future__ import print_function
+
 import glob
 import optparse
 import os
 import subprocess
+import sys
 
 
 # Mapping from GN's target_cpu attribute to ld's -arch parameter.
@@ -59,12 +62,12 @@ def main():
   assert not args
 
   developer_dir = subprocess.check_output(
-      ['xcode-select', '--print-path']).strip()
+      ['xcode-select', '--print-path'], universal_newlines=True).strip()
 
   xctoolchain_libs = glob.glob(developer_dir
       + '/Toolchains/XcodeDefault.xctoolchain/usr/lib'
       + '/clang/*/lib/darwin/*.ios.a')
-  print "Adding xctoolchain_libs: ", xctoolchain_libs
+  print("Adding xctoolchain_libs: ", xctoolchain_libs)
 
   # ld -r concatenates multiple .o files and .a files into a single .o file,
   # while "hiding" symbols not marked as visible.
@@ -114,13 +117,26 @@ def main():
     options.output_lib,
     options.output_obj,
   ]
+
+  # When compiling for 64bit targets, the symbols in call_with_eh_frame.o are
+  # referenced in assembly and eventually stripped by the call to ld -r above,
+  # perhaps because the linker incorrectly assumes that those symbols are not
+  # used. Using -keep_private_externs fixes the compile issue, but breaks
+  # other parts of cronet. Instead, simply add a second .o file with the
+  # personality routine. Note that this issue was not caught by Chrome tests,
+  # it was only detected when apps tried to link the resulting .a file.
+  if options.current_cpu == 'x64' or options.current_cpu == 'arm64':
+    command += [ 'obj/base/base/call_with_eh_frame.o' ]
+
   subprocess.check_call(command)
 
   if options.use_custom_libcxx:
-    ret = os.system('xcrun nm -u "' + options.output_obj + '" | grep ___cxa_pure_virtual')
+    ret = os.system('xcrun nm -u "' + options.output_obj +
+                    '" | grep ___cxa_pure_virtual')
     if ret == 0:
-      print "ERROR: Found undefined libc++ symbols, is libc++ indcluded in dependencies?"
-      exit(2)
+      print("ERROR: Found undefined libc++ symbols, "
+            "is libc++ included in dependencies?")
+      sys.exit(2)
 
 
 if __name__ == "__main__":

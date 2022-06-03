@@ -2,48 +2,60 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//gpu/vulkan/features.gni")
+import("//ui/base/ui_features.gni")
 
 visibility = [ "//ui/ozone/*" ]
+
+assert(is_linux || is_chromeos)
 
 source_set("x11") {
   sources = [
     "client_native_pixmap_factory_x11.cc",
     "client_native_pixmap_factory_x11.h",
+    "gl_egl_utility_x11.cc",
+    "gl_egl_utility_x11.h",
     "gl_ozone_glx.cc",
     "gl_ozone_glx.h",
-    "gl_surface_egl_ozone_x11.cc",
-    "gl_surface_egl_ozone_x11.h",
     "gl_surface_egl_readback_x11.cc",
     "gl_surface_egl_readback_x11.h",
-    "gl_surface_glx_ozone.cc",
-    "gl_surface_glx_ozone.h",
     "ozone_platform_x11.cc",
     "ozone_platform_x11.h",
     "x11_canvas_surface.cc",
     "x11_canvas_surface.h",
     "x11_clipboard_ozone.cc",
     "x11_clipboard_ozone.h",
-    "x11_cursor_factory_ozone.cc",
-    "x11_cursor_factory_ozone.h",
-    "x11_cursor_ozone.cc",
-    "x11_cursor_ozone.h",
+    "x11_global_shortcut_listener_ozone.cc",
+    "x11_global_shortcut_listener_ozone.h",
+    "x11_keyboard_hook_ozone.cc",
+    "x11_keyboard_hook_ozone.h",
+    "x11_menu_utils.cc",
+    "x11_menu_utils.h",
     "x11_screen_ozone.cc",
     "x11_screen_ozone.h",
     "x11_surface_factory.cc",
     "x11_surface_factory.h",
-    "x11_window_ozone.cc",
-    "x11_window_ozone.h",
+    "x11_user_input_monitor.cc",
+    "x11_user_input_monitor.h",
+    "x11_utils.cc",
+    "x11_utils.h",
   ]
 
   deps = [
     "//base",
+    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//gpu/vulkan:buildflags",
     "//skia",
-    "//ui/base",
+    "//ui/base:base",
+    "//ui/base:buildflags",
+    "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
+    "//ui/base/cursor:cursor_base",
     "//ui/base/ime",
     "//ui/base/x",
+    "//ui/base/x:gl",
     "//ui/display/fake",
     "//ui/events",
     "//ui/events/devices",
@@ -54,17 +66,19 @@ source_set("x11") {
     "//ui/events/x",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/gfx/linux:gbm",
+    "//ui/gfx/linux:gpu_memory_buffer_support_x11",
     "//ui/gfx/x",
     "//ui/gl",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
     "//ui/platform_window",
-    "//ui/platform_window/platform_window_handler",
+    "//ui/platform_window/wm",
     "//ui/platform_window/x11",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//ui/base/ime/chromeos" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ui/base/ime/ash" ]
   } else {
     deps += [ "//ui/base/ime/linux" ]
   }
@@ -73,10 +87,9 @@ source_set("x11") {
     deps += [ "//gpu/vulkan/x" ]
   }
 
-  configs += [
-    "//build/config/linux:x11",
-    "//build/config/linux:xrandr",
-  ]
+  if (use_xkbcommon) {
+    configs += [ "//ui/events/ozone/layout:xkbcommon" ]
+  }
 
   public_configs = [ "//third_party/khronos:khronos_headers" ]
 }
@@ -84,7 +97,6 @@ source_set("x11") {
 source_set("x11_unittests") {
   testonly = true
   sources = [
-    "x11_cursor_factory_ozone_unittest.cc",
     "x11_screen_ozone_unittest.cc",
     "x11_window_ozone_unittest.cc",
   ]
@@ -101,5 +113,19 @@ source_set("x11_unittests") {
     "//ui/ozone:test_support",
     "//ui/ozone/common",
     "//ui/platform_window/x11:x11",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "x11_ozone_ui_controls_test_helper.cc",
+    "x11_ozone_ui_controls_test_helper.h",
+  ]
+
+  deps = [
+    "//ui/base/x",
+    "//ui/base/x:test_support",
   ]
 }

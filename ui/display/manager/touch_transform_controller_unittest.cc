@@ -99,6 +99,11 @@ void CheckPointsOfInterests(const int touch_id,
 class TouchTransformControllerTest : public testing::Test {
  public:
   TouchTransformControllerTest() {}
+
+  TouchTransformControllerTest(const TouchTransformControllerTest&) = delete;
+  TouchTransformControllerTest& operator=(const TouchTransformControllerTest&) =
+      delete;
+
   ~TouchTransformControllerTest() override {}
 
   gfx::Transform GetTouchTransform(
@@ -157,8 +162,6 @@ class TouchTransformControllerTest : public testing::Test {
   std::unique_ptr<DisplayManager> display_manager_;
   std::unique_ptr<TouchTransformController> touch_transform_controller_;
   TouchDeviceManager* touch_device_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTransformControllerTest);
 };
 
 TEST_F(TouchTransformControllerTest, MirrorModeLetterboxing) {
@@ -557,9 +560,8 @@ TEST_F(TouchTransformControllerTest, AccurateUserTouchCalibration) {
 
   const std::string msg = GetTouchPointString(user_input);
 
-  touch_device_manager()->AddTouchCalibrationData(
-      display::TouchDeviceIdentifier::FromDevice(touchscreen), display.id(),
-      touch_data);
+  touch_device_manager()->AddTouchCalibrationData(touchscreen, display.id(),
+                                                  touch_data);
 
   EXPECT_FALSE(touch_device_manager()
                    ->GetCalibrationData(touchscreen, display.id())
@@ -607,9 +609,8 @@ TEST_F(TouchTransformControllerTest, ErrorProneUserTouchCalibration) {
 
   const std::string msg = GetTouchPointString(user_input);
 
-  touch_device_manager()->AddTouchCalibrationData(
-      display::TouchDeviceIdentifier::FromDevice(touchscreen), display.id(),
-      touch_data);
+  touch_device_manager()->AddTouchCalibrationData(touchscreen, display.id(),
+                                                  touch_data);
 
   EXPECT_FALSE(touch_device_manager()
                    ->GetCalibrationData(touchscreen, display.id())
@@ -659,9 +660,8 @@ TEST_F(TouchTransformControllerTest, ResolutionChangeUserTouchCalibration) {
 
   const std::string msg = GetTouchPointString(user_input);
 
-  touch_device_manager()->AddTouchCalibrationData(
-      display::TouchDeviceIdentifier::FromDevice(touchscreen), display.id(),
-      touch_data);
+  touch_device_manager()->AddTouchCalibrationData(touchscreen, display.id(),
+                                                  touch_data);
 
   EXPECT_FALSE(touch_device_manager()
                    ->GetCalibrationData(touchscreen, display.id())
@@ -706,9 +706,8 @@ TEST_F(TouchTransformControllerTest, DifferentBoundsUserTouchCalibration) {
 
   const std::string msg = GetTouchPointString(user_input);
 
-  touch_device_manager()->AddTouchCalibrationData(
-      display::TouchDeviceIdentifier::FromDevice(touchscreen), display.id(),
-      touch_data);
+  touch_device_manager()->AddTouchCalibrationData(touchscreen, display.id(),
+                                                  touch_data);
 
   EXPECT_FALSE(touch_device_manager()
                    ->GetCalibrationData(touchscreen, display.id())
@@ -770,8 +769,7 @@ TEST_F(TouchTransformControllerTest, LetterboxingUserTouchCalibration) {
   // The calibration was performed at the native display resolution.
   TouchCalibrationData touch_data(user_input, kNativeDisplaySize);
   touch_device_manager()->AddTouchCalibrationData(
-      display::TouchDeviceIdentifier::FromDevice(internal_touchscreen),
-      internal_display_info.id(), touch_data);
+      internal_touchscreen, internal_display_info.id(), touch_data);
 
   EXPECT_FALSE(
       touch_device_manager()
@@ -849,8 +847,7 @@ TEST_F(TouchTransformControllerTest, PillarBoxingUserTouchCalibration) {
   TouchCalibrationData touch_data(user_input, kNativeDisplaySize);
 
   touch_device_manager()->AddTouchCalibrationData(
-      display::TouchDeviceIdentifier::FromDevice(internal_touchscreen),
-      internal_display_info.id(), touch_data);
+      internal_touchscreen, internal_display_info.id(), touch_data);
 
   EXPECT_FALSE(
       touch_device_manager()

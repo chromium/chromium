@@ -11,6 +11,7 @@ source_set("lib") {
   public_deps = [
     "//base",
     "//chrome/services/removable_storage_writer/public/mojom",
+    "//chrome/utility/image_writer",
     "//mojo/public/cpp/bindings",
   ]
 }

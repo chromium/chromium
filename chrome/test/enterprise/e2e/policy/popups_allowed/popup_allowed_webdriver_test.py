@@ -16,7 +16,7 @@ def main(argv):
   driver.implicitly_wait(5)
   driver.get(testSite)
   handles = driver.window_handles
-  print len(handles)
+  print(len(handles))
   driver.quit()
 
 

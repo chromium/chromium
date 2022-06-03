@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # TODO(crbug/1251346): Remove.
+  "ambient_backend_controller_impl.cc": [
+    "+components/user_manager/user_manager.h",
+  ],
+}

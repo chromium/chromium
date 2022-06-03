@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_opener.h"
-#include "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -52,10 +52,9 @@ class AllWebStateObservationForwarderTest : public PlatformTest,
         &web_state_list_, &observer_);
   }
 
-  web::TestWebState* AddWebStateToList(bool activate) {
-    std::unique_ptr<web::TestWebState> web_state(
-        std::make_unique<web::TestWebState>());
-    web::TestWebState* web_state_ptr = web_state.get();
+  web::FakeWebState* AddWebStateToList(bool activate) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* web_state_ptr = web_state.get();
     web_state_list_.InsertWebState(0, std::move(web_state),
                                    activate ? WebStateList::INSERT_ACTIVATE
                                             : WebStateList::INSERT_NO_FLAGS,
@@ -78,8 +77,8 @@ class AllWebStateObservationForwarderTest : public PlatformTest,
 TEST_F(AllWebStateObservationForwarderTest, TestInsertActiveWebState) {
   // Insert two webstates into the list and mark the second one active.  Send
   // observer notifications for both and verify the result.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(true);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(true);
   ASSERT_EQ(web_state_b, web_state_list_.GetActiveWebState());
 
   web_state_a->OnRenderProcessGone();
@@ -93,8 +92,8 @@ TEST_F(AllWebStateObservationForwarderTest, TestInsertActiveWebState) {
 TEST_F(AllWebStateObservationForwarderTest, TestInsertNonActiveWebState) {
   // Insert two webstates into the list, but do not mark the second one active.
   // Send observer notifications for both and verify the result.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(false);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(false);
   ASSERT_EQ(web_state_a, web_state_list_.GetActiveWebState());
 
   web_state_a->OnRenderProcessGone();
@@ -107,9 +106,9 @@ TEST_F(AllWebStateObservationForwarderTest, TestInsertNonActiveWebState) {
 
 TEST_F(AllWebStateObservationForwarderTest, TestDetachActiveWebState) {
   // Insert three webstates into the list.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(true);
-  web::TestWebState* web_state_c = AddWebStateToList(true);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(true);
+  web::FakeWebState* web_state_c = AddWebStateToList(true);
   ASSERT_EQ(web_state_c, web_state_list_.GetActiveWebState());
 
   // Remove the active web state and send observer notifications.
@@ -128,9 +127,9 @@ TEST_F(AllWebStateObservationForwarderTest, TestDetachActiveWebState) {
 
 TEST_F(AllWebStateObservationForwarderTest, TestDetachNonActiveWebState) {
   // Insert three webstates into the list.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(true);
-  web::TestWebState* web_state_c = AddWebStateToList(true);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(true);
+  web::FakeWebState* web_state_c = AddWebStateToList(true);
   ASSERT_EQ(web_state_c, web_state_list_.GetActiveWebState());
 
   // Remove a non-active web state and send observer notifications.
@@ -151,14 +150,13 @@ TEST_F(AllWebStateObservationForwarderTest, TestDetachNonActiveWebState) {
 
 TEST_F(AllWebStateObservationForwarderTest, TestReplaceActiveWebState) {
   // Insert two webstates into the list and mark the second one active.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(true);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(true);
   ASSERT_EQ(web_state_b, web_state_list_.GetActiveWebState());
 
   // Replace the active web state.  Send notifications and verify the result.
-  std::unique_ptr<web::TestWebState> replacement_web_state(
-      std::make_unique<web::TestWebState>());
-  web::TestWebState* web_state_c = replacement_web_state.get();
+  auto replacement_web_state(std::make_unique<web::FakeWebState>());
+  web::FakeWebState* web_state_c = replacement_web_state.get();
 
   std::unique_ptr<web::WebState> detached_web_state =
       web_state_list_.ReplaceWebStateAt(
@@ -177,8 +175,8 @@ TEST_F(AllWebStateObservationForwarderTest, TestReplaceActiveWebState) {
 
 TEST_F(AllWebStateObservationForwarderTest, TestChangeActiveWebState) {
   // Insert two webstates into the list and mark the second one active.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(true);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(true);
   ASSERT_EQ(web_state_b, web_state_list_.GetActiveWebState());
 
   // Make web state A active and send notifications.
@@ -205,8 +203,8 @@ TEST_F(AllWebStateObservationForwarderTest, TestChangeActiveWebState) {
 
 TEST_F(AllWebStateObservationForwarderTest, TestNonEmptyInitialWebStateList) {
   // Insert two webstates into the list.
-  web::TestWebState* web_state_a = AddWebStateToList(true);
-  web::TestWebState* web_state_b = AddWebStateToList(true);
+  web::FakeWebState* web_state_a = AddWebStateToList(true);
+  web::FakeWebState* web_state_b = AddWebStateToList(true);
   ASSERT_EQ(web_state_b, web_state_list_.GetActiveWebState());
 
   // Recreate the multi observer to simulate creation with an already-populated

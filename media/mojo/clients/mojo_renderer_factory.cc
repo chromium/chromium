@@ -6,13 +6,12 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/renderers/decrypting_renderer.h"
 #include "media/renderers/video_overlay_factory.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace media {
@@ -27,11 +26,11 @@ MojoRendererFactory::~MojoRendererFactory() = default;
 
 std::unique_ptr<Renderer> MojoRendererFactory::CreateRenderer(
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
-    const scoped_refptr<base::TaskRunner>& /* worker_task_runner */,
-    AudioRendererSink* /* audio_renderer_sink */,
+    const scoped_refptr<base::TaskRunner>& worker_task_runner,
+    AudioRendererSink* audio_renderer_sink,
     VideoRendererSink* video_renderer_sink,
-    const RequestOverlayInfoCB& /* request_overlay_info_cb */,
-    const gfx::ColorSpace& /* target_color_space */) {
+    RequestOverlayInfoCB request_overlay_info_cb,
+    const gfx::ColorSpace& target_color_space) {
   DCHECK(interface_factory_);
 
   auto overlay_factory = std::make_unique<VideoOverlayFactory>();
@@ -44,6 +43,27 @@ std::unique_ptr<Renderer> MojoRendererFactory::CreateRenderer(
       media_task_runner, std::move(overlay_factory), video_renderer_sink,
       std::move(renderer_remote));
 }
+
+#if defined(OS_WIN)
+std::unique_ptr<MojoRenderer>
+MojoRendererFactory::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
+    mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver,
+    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    VideoRendererSink* video_renderer_sink) {
+  DCHECK(interface_factory_);
+  mojo::PendingRemote<mojom::Renderer> renderer_remote;
+  interface_factory_->CreateMediaFoundationRenderer(
+      std::move(media_log_remote),
+      renderer_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(renderer_extension_receiver));
+
+  return std::make_unique<MojoRenderer>(
+      media_task_runner, /*video_overlay_factory=*/nullptr, video_renderer_sink,
+      std::move(renderer_remote));
+}
+#endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 std::unique_ptr<MojoRenderer> MojoRendererFactory::CreateCastRenderer(

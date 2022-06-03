@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.autofill_assistant.carousel;
 
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 
 /**
  * The {@link ViewHolder} responsible for reflecting an {@link AssistantChip} to a {@link
@@ -17,6 +22,7 @@ import org.chromium.chrome.autofill_assistant.R;
  */
 public class AssistantChipViewHolder extends ViewHolder {
     private final ButtonView mView;
+    private @Nullable PopupMenu mPopupMenu;
 
     /** The type of this ViewHolder, as returned by {@link #getViewType(AssistantChip)}. */
     private final int mType;
@@ -28,9 +34,9 @@ public class AssistantChipViewHolder extends ViewHolder {
     }
 
     public static AssistantChipViewHolder create(ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        LayoutInflater layoutInflater = LayoutUtils.createInflater(parent.getContext());
         ButtonView view = null;
-        switch (viewType % AssistantChip.Type.NUM_ENTRIES) {
+        switch (viewType) {
             case AssistantChip.Type.CHIP_ASSISTIVE:
                 view = (ButtonView) layoutInflater.inflate(
                         R.layout.autofill_assistant_button_assistive, /* root= */ null);
@@ -49,21 +55,11 @@ public class AssistantChipViewHolder extends ViewHolder {
 
         view.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        if (viewType >= AssistantChip.Type.NUM_ENTRIES) {
-            view.setEnabled(false);
-        }
 
         return new AssistantChipViewHolder(view, viewType);
     }
 
     public static int getViewType(AssistantChip chip) {
-        // We add AssistantChip.Type.CHIP_TYPE_NUMBER to differentiate between enabled and disabled
-        // chips of the same type. Ideally, we should return a (type, disabled) tuple but
-        // RecyclerView does not allow that.
-        if (chip.isDisabled()) {
-            return chip.getType() + AssistantChip.Type.NUM_ENTRIES;
-        }
-
         return chip.getType();
     }
 
@@ -76,6 +72,9 @@ public class AssistantChipViewHolder extends ViewHolder {
     }
 
     public void bind(AssistantChip chip) {
+        mView.setEnabled(!chip.isDisabled());
+        mView.setVisibility(chip.isVisible() ? View.VISIBLE : View.GONE);
+
         String text = chip.getText();
         if (text.isEmpty()) {
             mView.getPrimaryTextView().setVisibility(View.GONE);
@@ -86,13 +85,34 @@ public class AssistantChipViewHolder extends ViewHolder {
 
         // Setting this view to clickable may be required for a11y to correctly announce it.
         mView.setClickable(true);
-        mView.setOnClickListener(ignoredView -> chip.getSelectedListener().run());
+
+        // If a popup is specified, show the popup menu and invoke the popup callback.
+        if (chip.getPopupItems() != null) {
+            mPopupMenu = new PopupMenu(mView.getContext(), mView);
+            for (int i = 0; i < chip.getPopupItems().size(); i++) {
+                mPopupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, chip.getPopupItems().get(i));
+            }
+            mPopupMenu.setOnMenuItemClickListener(item -> {
+                chip.getOnPopupItemSelectedCallback().onResult(item.getItemId());
+                return true;
+            });
+            mView.setOnClickListener(ignoredView -> {
+                if (chip.getSelectedListener() != null) {
+                    chip.getSelectedListener().run();
+                }
+                mPopupMenu.show();
+            });
+        } else {
+            if (chip.getSelectedListener() != null) {
+                mView.setOnClickListener(ignoredView -> chip.getSelectedListener().run());
+            }
+        }
 
         int iconResource;
         int iconDescriptionResource = 0;
         switch (chip.getIcon()) {
             case AssistantChip.Icon.CLEAR:
-                iconResource = R.drawable.ic_clear_black_24dp;
+                iconResource = R.drawable.ic_clear_black_chrome_24dp;
                 iconDescriptionResource = R.string.close;
                 break;
             case AssistantChip.Icon.DONE:
@@ -103,6 +123,10 @@ public class AssistantChipViewHolder extends ViewHolder {
                 iconResource = R.drawable.ic_refresh_black_24dp;
                 iconDescriptionResource = R.string.menu_refresh;
                 break;
+            case AssistantChip.Icon.OVERFLOW:
+                iconResource = R.drawable.ic_overflow_black_24dp;
+                iconDescriptionResource = R.string.autofill_assistant_overflow_options;
+                break;
             default:
                 iconResource = ButtonView.INVALID_ICON_ID;
                 break;
@@ -110,7 +134,10 @@ public class AssistantChipViewHolder extends ViewHolder {
 
         mView.setIcon(iconResource, /* tintWithTextColor= */ true);
 
-        if (iconDescriptionResource != 0 && text.isEmpty()) {
+        String contentDescription = chip.getContentDescription();
+        if (contentDescription != null) {
+            mView.setContentDescription(contentDescription);
+        } else if (iconDescriptionResource != 0 && text.isEmpty()) {
             mView.setContentDescription(mView.getContext().getString(iconDescriptionResource));
         } else {
             mView.setContentDescription(text);

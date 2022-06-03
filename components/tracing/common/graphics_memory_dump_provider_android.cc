@@ -11,10 +11,12 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <unistd.h>
 
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
@@ -121,17 +123,15 @@ void GraphicsMemoryDumpProvider::ParseResponseAndAddToDump(
     std::string column_name = "memtrack_";
     size_t key_split_point = row_name.find_last_of('_');
     if (key_split_point > 0 && key_split_point < row_name.size() - 1) {
-      row_name.substr(key_split_point + 1).AppendToString(&column_name);
+      column_name.append(row_name.begin() + key_split_point + 1,
+                         row_name.end());
       row_name = row_name.substr(0, key_split_point);
     } else {
       column_name += "unknown";
     }
 
     // Append a row to the memory dump.
-    std::string dump_name;
-    dump_name.reserve(base::size(kDumpBaseName) + row_name.size() + 1);
-    dump_name.assign(kDumpBaseName);
-    row_name.AppendToString(&dump_name);
+    std::string dump_name = base::StrCat({kDumpBaseName, row_name});
     MemoryAllocatorDump* mad = pmd->GetOrCreateAllocatorDump(dump_name);
     const auto& long_lived_column_name = key_names_.insert(column_name).first;
     mad->AddScalar(long_lived_column_name->c_str(),

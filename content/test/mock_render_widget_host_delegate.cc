@@ -29,13 +29,19 @@ MockRenderWidgetHostDelegate::PreHandleKeyboardEvent(
 
 void MockRenderWidgetHostDelegate::ExecuteEditCommand(
     const std::string& command,
-    const base::Optional<base::string16>& value) {}
+    const absl::optional<std::u16string>& value) {}
+
+void MockRenderWidgetHostDelegate::Undo() {}
+
+void MockRenderWidgetHostDelegate::Redo() {}
 
 void MockRenderWidgetHostDelegate::Cut() {}
 
 void MockRenderWidgetHostDelegate::Copy() {}
 
 void MockRenderWidgetHostDelegate::Paste() {}
+
+void MockRenderWidgetHostDelegate::PasteAndMatchStyle() {}
 
 void MockRenderWidgetHostDelegate::SelectAll() {}
 
@@ -63,12 +69,16 @@ TextInputManager* MockRenderWidgetHostDelegate::GetTextInputManager() {
   return &text_input_manager_;
 }
 
-bool MockRenderWidgetHostDelegate::IsFullscreenForCurrentTab() {
+bool MockRenderWidgetHostDelegate::IsFullscreen() {
   return is_fullscreen_;
 }
 
 RenderViewHostDelegateView* MockRenderWidgetHostDelegate::GetDelegateView() {
   return &rvh_delegate_view_;
+}
+
+bool MockRenderWidgetHostDelegate::ShouldIgnoreInputEvents() {
+  return should_ignore_input_events_;
 }
 
 }  // namespace content

@@ -25,6 +25,12 @@ class HorizontalImageSequenceAnimationDecoder
   HorizontalImageSequenceAnimationDecoder(const gfx::ImageSkia& image,
                                           base::TimeDelta duration,
                                           int num_frames);
+
+  HorizontalImageSequenceAnimationDecoder(
+      const HorizontalImageSequenceAnimationDecoder&) = delete;
+  HorizontalImageSequenceAnimationDecoder& operator=(
+      const HorizontalImageSequenceAnimationDecoder&) = delete;
+
   ~HorizontalImageSequenceAnimationDecoder() override;
 
   // AnimatedRoundedImageView::AnimationDecoder:
@@ -37,8 +43,6 @@ class HorizontalImageSequenceAnimationDecoder
   base::TimeDelta duration_;
   // The total number of frames in the animation.
   int num_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(HorizontalImageSequenceAnimationDecoder);
 };
 
 }  // namespace ash

@@ -4,20 +4,19 @@
 
 #include "media/mojo/services/mojo_cdm_helper.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/macros.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/mojo/services/mojo_cdm_allocator.h"
 #include "media/mojo/services/mojo_cdm_file_io.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/service_manager/public/cpp/connect.h"
 
 namespace media {
 
-MojoCdmHelper::MojoCdmHelper(
-    service_manager::mojom::InterfaceProvider* interface_provider)
-    : interface_provider_(interface_provider) {}
+MojoCdmHelper::MojoCdmHelper(mojom::FrameInterfaceFactory* frame_interfaces)
+    : frame_interfaces_(frame_interfaces) {}
 
 MojoCdmHelper::~MojoCdmHelper() = default;
 
@@ -26,11 +25,13 @@ void MojoCdmHelper::SetFileReadCB(FileReadCB file_read_cb) {
 }
 
 cdm::FileIO* MojoCdmHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
-  ConnectToCdmStorage();
+  mojo::Remote<mojom::CdmStorage> cdm_storage;
+  frame_interfaces_->CreateCdmStorage(cdm_storage.BindNewPipeAndPassReceiver());
+  // No reset_on_disconnect() since when document is destroyed the CDM should be
+  // destroyed as well.
 
-  // Pass a reference to CdmStorage so that MojoCdmFileIO can open a file.
   auto mojo_cdm_file_io =
-      std::make_unique<MojoCdmFileIO>(this, client, cdm_storage_remote_.get());
+      std::make_unique<MojoCdmFileIO>(this, client, std::move(cdm_storage));
 
   cdm::FileIO* cdm_file_io = mojo_cdm_file_io.get();
   DVLOG(3) << __func__ << ": cdm_file_io = " << cdm_file_io;
@@ -39,26 +40,28 @@ cdm::FileIO* MojoCdmHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
   return cdm_file_io;
 }
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-cdm::CdmProxy* MojoCdmHelper::CreateCdmProxy(cdm::CdmProxyClient* client) {
-  DVLOG(3) << __func__;
-  if (cdm_proxy_) {
-    DVLOG(1) << __func__ << ": Only one outstanding CdmProxy allowed.";
-    return nullptr;
-  }
-
-  mojo::PendingRemote<mojom::CdmProxy> cdm_proxy_remote;
-  service_manager::GetInterface<mojom::CdmProxy>(
-      interface_provider_, cdm_proxy_remote.InitWithNewPipeAndPassReceiver());
-  cdm_proxy_ =
-      std::make_unique<MojoCdmProxy>(std::move(cdm_proxy_remote), client);
-  return cdm_proxy_.get();
+url::Origin MojoCdmHelper::GetCdmOrigin() {
+  url::Origin cdm_origin;
+  // Since the CDM is created asynchronously, by the time this function is
+  // called, the render frame host in the browser process may already be gone.
+  // It's safe to ignore the error since the origin is used for crash reporting.
+  ignore_result(frame_interfaces_->GetCdmOrigin(&cdm_origin));
+  return cdm_origin;
 }
 
-int MojoCdmHelper::GetCdmProxyCdmId() {
-  return cdm_proxy_ ? cdm_proxy_->GetCdmId() : CdmContext::kInvalidCdmId;
+#if defined(OS_WIN)
+void MojoCdmHelper::GetMediaFoundationCdmData(
+    GetMediaFoundationCdmDataCB callback) {
+  ConnectToCdmDocumentService();
+  cdm_document_service_->GetMediaFoundationCdmData(std::move(callback));
 }
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
+
+void MojoCdmHelper::SetCdmClientToken(
+    const std::vector<uint8_t>& client_token) {
+  ConnectToCdmDocumentService();
+  cdm_document_service_->SetCdmClientToken(client_token);
+}
+#endif  // defined(OS_WIN)
 
 cdm::Buffer* MojoCdmHelper::CreateCdmBuffer(size_t capacity) {
   return GetAllocator()->CreateCdmBuffer(capacity);
@@ -90,16 +93,16 @@ void MojoCdmHelper::ChallengePlatform(const std::string& service_id,
   ChallengePlatformCB scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false,
                                                   "", "", "");
-  ConnectToPlatformVerification();
-  platform_verification_->ChallengePlatform(service_id, challenge,
-                                            std::move(scoped_callback));
+  ConnectToCdmDocumentService();
+  cdm_document_service_->ChallengePlatform(service_id, challenge,
+                                           std::move(scoped_callback));
 }
 
 void MojoCdmHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
   StorageIdCB scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), version, std::vector<uint8_t>());
-  ConnectToPlatformVerification();
-  platform_verification_->GetStorageId(version, std::move(scoped_callback));
+  ConnectToCdmDocumentService();
+  cdm_document_service_->GetStorageId(version, std::move(scoped_callback));
 }
 
 void MojoCdmHelper::CloseCdmFileIO(MojoCdmFileIO* cdm_file_io) {
@@ -116,10 +119,23 @@ void MojoCdmHelper::ReportFileReadSize(int file_size_bytes) {
     file_read_cb_.Run(file_size_bytes);
 }
 
-void MojoCdmHelper::ConnectToCdmStorage() {
-  if (!cdm_storage_remote_) {
-    service_manager::GetInterface<mojom::CdmStorage>(
-        interface_provider_, cdm_storage_remote_.BindNewPipeAndPassReceiver());
+void MojoCdmHelper::ConnectToOutputProtection() {
+  if (!output_protection_) {
+    DVLOG(2) << "Connect to mojom::OutputProtection";
+    frame_interfaces_->BindEmbedderReceiver(
+        output_protection_.BindNewPipeAndPassReceiver());
+    // No reset_on_disconnect() since MediaInterfaceProxy should be destroyed
+    // when document is destroyed, which will destroy MojoCdmHelper as well.
+  }
+}
+
+void MojoCdmHelper::ConnectToCdmDocumentService() {
+  if (!cdm_document_service_) {
+    DVLOG(2) << "Connect to mojom::CdmDocumentService";
+    frame_interfaces_->BindEmbedderReceiver(
+        cdm_document_service_.BindNewPipeAndPassReceiver());
+    // No reset_on_disconnect() since MediaInterfaceProxy should be destroyed
+    // when document is destroyed, which will destroy MojoCdmHelper as well.
   }
 }
 
@@ -127,21 +143,6 @@ CdmAllocator* MojoCdmHelper::GetAllocator() {
   if (!allocator_)
     allocator_ = std::make_unique<MojoCdmAllocator>();
   return allocator_.get();
-}
-
-void MojoCdmHelper::ConnectToOutputProtection() {
-  if (!output_protection_) {
-    service_manager::GetInterface<mojom::OutputProtection>(
-        interface_provider_, output_protection_.BindNewPipeAndPassReceiver());
-  }
-}
-
-void MojoCdmHelper::ConnectToPlatformVerification() {
-  if (!platform_verification_) {
-    interface_provider_->GetInterface(
-        mojom::PlatformVerification::Name_,
-        platform_verification_.BindNewPipeAndPassReceiver().PassPipe());
-  }
 }
 
 }  // namespace media

@@ -5,8 +5,6 @@
 #ifndef UI_LATENCY_LATENCY_TRACKER_H_
 #define UI_LATENCY_LATENCY_TRACKER_H_
 
-#include "base/macros.h"
-#include "ui/latency/average_lag_tracker.h"
 #include "ui/latency/latency_info.h"
 
 namespace ui {
@@ -16,22 +14,18 @@ namespace ui {
 class LatencyTracker {
  public:
   LatencyTracker();
+
+  LatencyTracker(const LatencyTracker&) = delete;
+  LatencyTracker& operator=(const LatencyTracker&) = delete;
+
   ~LatencyTracker();
 
   // Terminates latency tracking for events that triggered rendering, also
   // performing relevant UMA latency reporting.
   // Called when GPU buffers swap completes.
   void OnGpuSwapBuffersCompleted(
-      const std::vector<LatencyInfo>& latency_info,
+      std::vector<LatencyInfo> latency_info,
       bool top_controls_visible_height_changed = false);
-  void OnGpuSwapBuffersCompleted(
-      const LatencyInfo& latency,
-      bool top_controls_visible_height_changed = false);
-
-  using LatencyInfoProcessor =
-      base::RepeatingCallback<void(const std::vector<ui::LatencyInfo>&)>;
-  static void SetLatencyInfoProcessorForTesting(
-      const LatencyInfoProcessor& processor);
 
  private:
   enum class InputMetricEvent {
@@ -42,6 +36,17 @@ class LatencyTracker {
 
     INPUT_METRIC_EVENT_MAX = SCROLL_UPDATE_WHEEL
   };
+
+  // Data holder for all intermediate state for jank tracking.
+  struct JankTrackerState {
+    int total_update_events_ = 0;
+    int janky_update_events_ = 0;
+    bool prev_scroll_update_reported_ = false;
+    base::TimeDelta prev_duration_;
+    base::TimeDelta total_update_duration_;
+    base::TimeDelta janky_update_duration_;
+  };
+  JankTrackerState jank_state_;
 
   void ReportUkmScrollLatency(
       const InputMetricEvent& metric_event,
@@ -57,9 +62,10 @@ class LatencyTracker {
       const LatencyInfo& latency,
       bool top_controls_visible_height_changed);
 
-  AverageLagTracker average_lag_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(LatencyTracker);
+  void ReportJankyFrame(base::TimeTicks gpu_swap_begin_timestamp,
+                        base::TimeTicks gpu_swap_end_timestamp,
+                        const LatencyInfo& latency,
+                        bool first_frame);
 };
 
 }  // namespace latency

@@ -33,16 +33,32 @@
 
 namespace blink {
 
-PopStateEvent::PopStateEvent()
-    : serialized_state_(nullptr), history_(nullptr) {}
+PopStateEvent* PopStateEvent::Create() {
+  return MakeGarbageCollected<PopStateEvent>();
+}
+
+PopStateEvent* PopStateEvent::Create(ScriptState* script_state,
+                                     const AtomicString& type,
+                                     const PopStateEventInit* initializer) {
+  return MakeGarbageCollected<PopStateEvent>(script_state, type, initializer);
+}
+
+PopStateEvent* PopStateEvent::Create(
+    scoped_refptr<SerializedScriptValue> serialized_state,
+    History* history) {
+  return MakeGarbageCollected<PopStateEvent>(std::move(serialized_state),
+                                             history);
+}
 
 PopStateEvent::PopStateEvent(ScriptState* script_state,
                              const AtomicString& type,
                              const PopStateEventInit* initializer)
-    : Event(type, initializer), history_(nullptr) {
+    : Event(type, initializer) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   if (initializer->hasState()) {
-    world_ = WrapRefCounted(&script_state->World());
-    state_.Set(script_state->GetIsolate(), initializer->state().V8Value());
+    state_.Set(isolate, initializer->state().V8Value());
+  } else {
+    state_.Set(isolate, v8::Null(isolate));
   }
 }
 
@@ -53,50 +69,34 @@ PopStateEvent::PopStateEvent(
       serialized_state_(std::move(serialized_state)),
       history_(history) {}
 
-PopStateEvent::~PopStateEvent() = default;
-
-ScriptValue PopStateEvent::state(ScriptState* script_state) const {
-  if (state_.IsEmpty())
-    return ScriptValue();
-
+ScriptValue PopStateEvent::state(ScriptState* script_state,
+                                 ExceptionState& exception_state) {
   v8::Isolate* isolate = script_state->GetIsolate();
-  if (world_->GetWorldId() != script_state->World().GetWorldId()) {
-    v8::Local<v8::Value> value = state_.NewLocal(isolate);
-    scoped_refptr<SerializedScriptValue> serialized =
-        SerializedScriptValue::SerializeAndSwallowExceptions(isolate, value);
-    return ScriptValue(isolate, serialized->Deserialize(isolate));
+
+  if (!state_.IsEmpty())
+    return ScriptValue(isolate, state_.GetAcrossWorld(script_state));
+
+  if (history_ && history_->IsSameAsCurrentState(serialized_state_.get())) {
+    return history_->state(script_state, exception_state);
   }
-  return ScriptValue(isolate, state_.NewLocal(isolate));
-}
 
-PopStateEvent* PopStateEvent::Create() {
-  return MakeGarbageCollected<PopStateEvent>();
-}
+  v8::Local<v8::Value> v8_state;
+  if (serialized_state_) {
+    ScriptState::EscapableScope target_context_scope(script_state);
+    v8_state =
+        target_context_scope.Escape(serialized_state_->Deserialize(isolate));
+  } else {
+    v8_state = v8::Null(isolate);
+  }
 
-PopStateEvent* PopStateEvent::Create(
-    scoped_refptr<SerializedScriptValue> serialized_state,
-    History* history) {
-  return MakeGarbageCollected<PopStateEvent>(std::move(serialized_state),
-                                             history);
-}
-
-PopStateEvent* PopStateEvent::Create(ScriptState* script_state,
-                                     const AtomicString& type,
-                                     const PopStateEventInit* initializer) {
-  return MakeGarbageCollected<PopStateEvent>(script_state, type, initializer);
-}
-
-void PopStateEvent::SetSerializedState(
-    scoped_refptr<SerializedScriptValue> state) {
-  DCHECK(!serialized_state_);
-  serialized_state_ = std::move(state);
+  return ScriptValue(isolate, v8_state);
 }
 
 const AtomicString& PopStateEvent::InterfaceName() const {
   return event_interface_names::kPopStateEvent;
 }
 
-void PopStateEvent::Trace(blink::Visitor* visitor) {
+void PopStateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(state_);
   visitor->Trace(history_);
   Event::Trace(visitor);

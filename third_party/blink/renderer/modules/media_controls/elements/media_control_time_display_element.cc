@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_time_display_element.h"
 
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_shared_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 
@@ -41,9 +41,9 @@ double MediaControlTimeDisplayElement::CurrentValue() const {
   return current_value_;
 }
 
-WebSize MediaControlTimeDisplayElement::GetSizeOrDefault() const {
+gfx::Size MediaControlTimeDisplayElement::GetSizeOrDefault() const {
   return MediaControlElementsHelper::GetSizeOrDefault(
-      *this, WebSize(EstimateElementWidth(), kDefaultTimeDisplayHeight));
+      *this, gfx::Size(EstimateElementWidth(), kDefaultTimeDisplayHeight));
 }
 
 int MediaControlTimeDisplayElement::EstimateElementWidth() const {

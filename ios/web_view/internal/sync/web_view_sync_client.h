@@ -9,36 +9,40 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/browser_sync_client.h"
-
-namespace autofill {
-class AutofillWebDataService;
-}  // namespace autofill
-
-namespace browser_sync {
-class ProfileSyncComponentsFactoryImpl;
-}  // namespace browser_sync
-
-namespace password_manager {
-class PasswordStore;
-}  // namespace password_manager
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
+#include "components/browser_sync/profile_sync_components_factory_impl.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 
-class WebViewBrowserState;
-
 class WebViewSyncClient : public browser_sync::BrowserSyncClient {
  public:
-  explicit WebViewSyncClient(WebViewBrowserState* browser_state);
+  static std::unique_ptr<WebViewSyncClient> Create(
+      WebViewBrowserState* browser_state);
+
+  explicit WebViewSyncClient(
+      autofill::AutofillWebDataService* profile_web_data_service,
+      autofill::AutofillWebDataService* account_web_data_service,
+      password_manager::PasswordStoreInterface* profile_password_store,
+      password_manager::PasswordStoreInterface* account_password_store,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      syncer::ModelTypeStoreService* model_type_store_service,
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      invalidation::InvalidationService* invalidation_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service);
+
+  WebViewSyncClient(const WebViewSyncClient&) = delete;
+  WebViewSyncClient& operator=(const WebViewSyncClient&) = delete;
+
   ~WebViewSyncClient() override;
 
   // BrowserSyncClient implementation.
   PrefService* GetPrefService() override;
+  signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
@@ -47,36 +51,36 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   history::HistoryService* GetHistoryService() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
+  sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
-  base::RepeatingClosure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   invalidation::InvalidationService* GetInvalidationService() override;
+  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;
   BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::ModelType type) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
-  scoped_refptr<syncer::ModelSafeWorker> CreateModelWorkerForGroup(
-      syncer::ModelSafeGroup group) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
+  void OnLocalSyncTransportDataCleared() override;
 
  private:
-  WebViewBrowserState* browser_state_ = nullptr;
-  scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;
-  scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  autofill::AutofillWebDataService* profile_web_data_service_;
+  autofill::AutofillWebDataService* account_web_data_service_;
+  password_manager::PasswordStoreInterface* profile_password_store_;
+  password_manager::PasswordStoreInterface* account_password_store_;
+  PrefService* pref_service_;
+  signin::IdentityManager* identity_manager_;
+  syncer::ModelTypeStoreService* model_type_store_service_;
+  syncer::DeviceInfoSyncService* device_info_sync_service_;
+  invalidation::InvalidationService* invalidation_service_;
+  syncer::SyncInvalidationsService* sync_invalidations_service_;
 
-  // TODO(crbug.com/915154): Revert to SyncApiComponentFactory once common
-  // controller creation is moved elsewhere.
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
-  scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewSyncClient);
+  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 };
 
 }  // namespace ios_web_view

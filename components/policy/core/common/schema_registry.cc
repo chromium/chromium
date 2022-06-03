@@ -4,7 +4,8 @@
 
 #include "components/policy/core/common/schema_registry.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace policy {
@@ -46,7 +47,7 @@ void SchemaRegistry::RegisterComponents(PolicyDomain domain,
   DomainMap map(schema_map_->GetDomains());
   for (auto it = components.begin(); it != components.end(); ++it)
     map[domain][it->first] = it->second;
-  schema_map_ = new SchemaMap(map);
+  schema_map_ = new SchemaMap(std::move(map));
   Notify(true);
 }
 
@@ -54,7 +55,7 @@ void SchemaRegistry::UnregisterComponent(const PolicyNamespace& ns) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DomainMap map(schema_map_->GetDomains());
   if (map[ns.domain].erase(ns.component_id) != 0) {
-    schema_map_ = new SchemaMap(map);
+    schema_map_ = new SchemaMap(std::move(map));
     Notify(false);
   } else {
     // Extension might be uninstalled before install so the associated policies
@@ -150,7 +151,7 @@ void CombinedSchemaRegistry::RegisterComponents(
   DomainMap map(own_schema_map_->GetDomains());
   for (auto it = components.begin(); it != components.end(); ++it)
     map[domain][it->first] = it->second;
-  own_schema_map_ = new SchemaMap(map);
+  own_schema_map_ = new SchemaMap(std::move(map));
   Combine(true);
 }
 
@@ -158,7 +159,7 @@ void CombinedSchemaRegistry::UnregisterComponent(const PolicyNamespace& ns) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DomainMap map(own_schema_map_->GetDomains());
   if (map[ns.domain].erase(ns.component_id) != 0) {
-    own_schema_map_ = new SchemaMap(map);
+    own_schema_map_ = new SchemaMap(std::move(map));
     Combine(false);
   } else {
     NOTREACHED();
@@ -209,7 +210,7 @@ void CombinedSchemaRegistry::Combine(bool has_new_schemas) {
       }
     }
   }
-  schema_map_ = new SchemaMap(map);
+  schema_map_ = new SchemaMap(std::move(map));
   Notify(has_new_schemas);
 }
 

@@ -41,6 +41,9 @@ extern const char kGroupPublicKey[];
 // the group private key.
 extern const int64_t kGroupPublicKeyHash;
 
+// Bluetooth address for the local device.
+extern const char kDefaultLocalDeviceBluetoothAddress[];
+
 // Three test devices: The local device, a remote device that needs the group
 // private key, and a remote device that has the group private key.
 const CryptAuthDevice& GetLocalDeviceForTest();

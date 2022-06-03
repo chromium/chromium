@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -15,7 +16,7 @@ NavigationRateLimiter::NavigationRateLimiter(Frame& frame)
       time_first_count_(base::TimeTicks::Now()),
       enabled(frame_->GetSettings()->GetShouldProtectAgainstIpcFlooding()) {}
 
-void NavigationRateLimiter::Trace(blink::Visitor* visitor) {
+void NavigationRateLimiter::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
 }
 
@@ -30,7 +31,7 @@ bool NavigationRateLimiter::CanProceed() {
   // can increase this threshold somewhat.
   static constexpr int kStateUpdateLimit = 200;
   static constexpr base::TimeDelta kStateUpdateLimitResetInterval =
-      base::TimeDelta::FromSeconds(10);
+      base::Seconds(10);
 
   if (++count_ <= kStateUpdateLimit)
     return true;
@@ -48,11 +49,11 @@ bool NavigationRateLimiter::CanProceed() {
   if (!error_message_sent_) {
     error_message_sent_ = true;
     if (auto* local_frame = DynamicTo<LocalFrame>(frame_.Get())) {
-      local_frame->Console().AddMessage(ConsoleMessage::Create(
+      local_frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kWarning,
           "Throttling navigation to prevent the browser from hanging. See "
-          "https://crbug.com/882238. Command line switch "
+          "https://crbug.com/1038223. Command line switch "
           "--disable-ipc-flooding-protection can be used to bypass the "
           "protection"));
     }

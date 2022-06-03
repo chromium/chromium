@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_model_test_util.h"
 #include "ios/web/common/features.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -53,7 +53,7 @@ class FullscreenWebViewResizerTest : public PlatformTest {
   FullscreenModel _model;
   UIView* _webStateSuperview;
   UIView* _webStateView;
-  web::TestWebState _webState;
+  web::FakeWebState _webState;
 };
 
 // Tests that updating the resizer works as expected.
@@ -101,7 +101,7 @@ TEST_F(FullscreenWebViewResizerTest, WebStateNoSuperview) {
   UIView* webStateView = [[UIView alloc] initWithFrame:webViewFrame];
 
   // WebState setup.
-  web::TestWebState webState;
+  web::FakeWebState webState;
   webState.SetView(webStateView);
 
   FullscreenWebViewResizer* resizer =

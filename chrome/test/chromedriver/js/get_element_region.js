@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Return the portion of the element that should be made visible.
+// Based on the WebDriver spec, this function only considers the first rectangle
+// returned by element.getClientRects function.
+// * When the rectangle is already partially visible in the enclosing viewport,
+//   return the portion that is currently visible. According to WebDriver spec,
+//   no scrolling should be done to bring more of the element into view.
+// * When the rectangle is completely outside of the enclosing viewport,
+//   return the entire rectangle, as WebDriver spec requires us to scroll the
+//   entire rectangle into view. (However, scrolling is NOT the responsibility
+//   of this function.)
+//
+// The returned value is an object with the following properties about the
+// region mentioned above: left, top, height, width. Note that left and top are
+// relative to the upper-left corner of the element's bounding client rect (as
+// returned by element.getBoundingClientRect).
 function getElementRegion(element) {
   // Check that node type is element.
   if (element.nodeType != 1)
@@ -18,10 +33,10 @@ function getElementRegion(element) {
     // Given two regions, determines if any intersection occurs.
     // Overlapping edges are not considered intersections.
     function getIntersectingSubregion(region1, region2) {
-      if (!(region2.right  <= region1.left   ||
-            region2.left   >= region1.right  ||
-            region2.top    >= region1.bottom ||
-            region2.bottom <= region1.top)) {
+      if (!(Math.round(region2.right)  <= Math.round(region1.left)   ||
+            Math.round(region2.left)   >= Math.round(region1.right)  ||
+            Math.round(region2.top)    >= Math.round(region1.bottom) ||
+            Math.round(region2.bottom) <= Math.round(region1.top))) {
         // Determines region of intersection.
         // If region2 contains region1, returns region1.
         // If region1 contains region2, returns region2.
@@ -99,8 +114,7 @@ function getElementRegion(element) {
         throw new Error('shape=' + element.shape + ' is not supported');
       }
     } else {
-      boundingRect = element.getBoundingClientRect();
-      clientRect = Object.assign({}, boundingRect);
+      clientRect = boundingRect = element.getBoundingClientRect();
     }
   } else {
     boundingRect = element.getBoundingClientRect();

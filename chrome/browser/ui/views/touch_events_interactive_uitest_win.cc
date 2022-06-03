@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "ui/aura/env.h"
@@ -25,6 +26,9 @@ class TouchEventHandler : public ui::EventHandler {
         num_touch_presses_(0),
         num_pointers_down_(0),
         recursion_enabled_(false) {}
+
+  TouchEventHandler(const TouchEventHandler&) = delete;
+  TouchEventHandler& operator=(const TouchEventHandler&) = delete;
 
   ~TouchEventHandler() override {}
 
@@ -86,15 +90,18 @@ class TouchEventHandler : public ui::EventHandler {
   int max_call_depth_;
   int num_touch_presses_;
   int num_pointers_down_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   bool recursion_enabled_;
   gfx::Point touch_point_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventHandler);
 };
 
 class TestingGestureRecognizer : public ui::GestureRecognizerImpl {
  public:
   TestingGestureRecognizer() = default;
+
+  TestingGestureRecognizer(const TestingGestureRecognizer&) = delete;
+  TestingGestureRecognizer& operator=(const TestingGestureRecognizer&) = delete;
+
   ~TestingGestureRecognizer() override = default;
 
   int num_touch_press_events() const { return num_touch_press_events_; }
@@ -122,32 +129,32 @@ class TestingGestureRecognizer : public ui::GestureRecognizerImpl {
  private:
   int num_touch_press_events_ = 0;
   int num_touch_release_events_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestingGestureRecognizer);
 };
 
 }  // namespace
 
 class TouchEventsViewTest : public ViewEventTestBase {
  public:
-  TouchEventsViewTest() : ViewEventTestBase(), touch_view_(nullptr) {}
+  TouchEventsViewTest() = default;
+
+  TouchEventsViewTest(const TouchEventsViewTest&) = delete;
+  TouchEventsViewTest& operator=(const TouchEventsViewTest&) = delete;
 
   // ViewEventTestBase:
   void SetUp() override {
-    touch_view_ = new views::View();
     ViewEventTestBase::SetUp();
+
+    auto gesture_recognizer = std::make_unique<TestingGestureRecognizer>();
+    gesture_recognizer_ = gesture_recognizer.get();
     aura::test::EnvTestHelper().SetGestureRecognizer(
-        std::make_unique<TestingGestureRecognizer>());
-    gesture_recognizer_ = static_cast<TestingGestureRecognizer*>(
-        aura::Env::GetInstance()->gesture_recognizer());
+        std::move(gesture_recognizer));
   }
 
-  void TearDown() override {
-    touch_view_ = nullptr;
-    gesture_recognizer_ = nullptr;
-    ViewEventTestBase::TearDown();
+  std::unique_ptr<views::View> CreateContentsView() override {
+    auto touch_view = std::make_unique<views::View>();
+    touch_view_ = touch_view.get();
+    return touch_view;
   }
-
-  views::View* CreateContentsView() override { return touch_view_; }
 
   gfx::Size GetPreferredSizeForContents() const override {
     return gfx::Size(600, 600);
@@ -163,7 +170,7 @@ class TouchEventsViewTest : public ViewEventTestBase {
 
     const int touch_pointer_count = 3;
     TouchEventHandler touch_event_handler;
-    GetWidget()->GetNativeWindow()->GetHost()->window()->AddPreTargetHandler(
+    window()->GetNativeWindow()->GetHost()->window()->AddPreTargetHandler(
         &touch_event_handler);
     gfx::Point in_content(touch_view_->width() / 2, touch_view_->height() / 2);
     views::View::ConvertPointToScreen(touch_view_, &in_content);
@@ -181,7 +188,7 @@ class TouchEventsViewTest : public ViewEventTestBase {
     EXPECT_EQ(touch_pointer_count,
               gesture_recognizer_->num_touch_release_events());
 
-    GetWidget()->GetNativeWindow()->GetHost()->window()->RemovePreTargetHandler(
+    window()->GetNativeWindow()->GetHost()->window()->RemovePreTargetHandler(
         &touch_event_handler);
     Done();
   }
@@ -190,15 +197,25 @@ class TouchEventsViewTest : public ViewEventTestBase {
   views::View* touch_view_ = nullptr;
   TestingGestureRecognizer* gesture_recognizer_ = nullptr;
   ui::GestureRecognizer* initial_gr_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventsViewTest);
 };
 
-VIEW_TEST(TouchEventsViewTest, CheckWindowsNativeMessageForTouchEvents)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_CheckWindowsNativeMessageForTouchEvents \
+  DISABLED_CheckWindowsNativeMessageForTouchEvents
+#else
+#define MAYBE_CheckWindowsNativeMessageForTouchEvents \
+  CheckWindowsNativeMessageForTouchEvents
+#endif
+VIEW_TEST(TouchEventsViewTest, MAYBE_CheckWindowsNativeMessageForTouchEvents)
 
 class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
  public:
   TouchEventsRecursiveViewTest() {}
+
+  TouchEventsRecursiveViewTest(const TouchEventsRecursiveViewTest&) = delete;
+  TouchEventsRecursiveViewTest& operator=(const TouchEventsRecursiveViewTest&) =
+      delete;
 
   void DoTestOnMessageLoop() override {
     // ui_controls::SendTouchEvents which uses InjectTouchInput API only works
@@ -210,7 +227,7 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
 
     const int touch_pointer_count = 1;
     TouchEventHandler touch_event_handler;
-    GetWidget()->GetNativeWindow()->GetHost()->window()->AddPreTargetHandler(
+    window()->GetNativeWindow()->GetHost()->window()->AddPreTargetHandler(
         &touch_event_handler);
     gfx::Point in_content(touch_view_->width() / 2, touch_view_->height() / 2);
     views::View::ConvertPointToScreen(touch_view_, &in_content);
@@ -224,13 +241,16 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
     EXPECT_EQ(touch_pointer_count + 1, touch_event_handler.num_touch_presses());
     EXPECT_EQ(0, touch_event_handler.num_pointers_down());
     EXPECT_EQ(2, touch_event_handler.max_call_depth());
-    GetWidget()->GetNativeWindow()->GetHost()->window()->RemovePreTargetHandler(
+    window()->GetNativeWindow()->GetHost()->window()->RemovePreTargetHandler(
         &touch_event_handler);
     Done();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchEventsRecursiveViewTest);
 };
 
-VIEW_TEST(TouchEventsRecursiveViewTest, CheckWindowsRecursiveHandler)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_CheckWindowsRecursiveHandler DISABLED_CheckWindowsRecursiveHandler
+#else
+#define MAYBE_CheckWindowsRecursiveHandler CheckWindowsRecursiveHandler
+#endif
+VIEW_TEST(TouchEventsRecursiveViewTest, MAYBE_CheckWindowsRecursiveHandler)

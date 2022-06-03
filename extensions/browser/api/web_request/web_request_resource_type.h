@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "content/public/common/resource_type.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace extensions {
 
@@ -27,13 +27,15 @@ enum class WebRequestResourceType : uint8_t {
   CSP_REPORT,
   MEDIA,
   WEB_SOCKET,
+  WEB_TRANSPORT,
+  WEBBUNDLE,
 
   OTHER,  // The type is unknown, or differs from all the above.
 };
 
-// Multiple content::ResourceTypes may map to the same WebRequestResourceType,
-// but the converse is not possible.
-WebRequestResourceType ToWebRequestResourceType(content::ResourceType type);
+WebRequestResourceType ToWebRequestResourceType(
+    const network::ResourceRequest& request,
+    bool is_download);
 
 // Returns a string representation of |type|.
 const char* WebRequestResourceTypeToString(WebRequestResourceType type);

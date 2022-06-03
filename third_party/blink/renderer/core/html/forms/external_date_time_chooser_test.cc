@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser_client.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -28,13 +29,11 @@ class ExternalDateTimeChooserTest : public testing::Test {
 class TestDateTimeChooserClient final
     : public GarbageCollected<TestDateTimeChooserClient>,
       public DateTimeChooserClient {
-  USING_GARBAGE_COLLECTED_MIXIN(TestDateTimeChooserClient);
-
  public:
   explicit TestDateTimeChooserClient(Element* element) : element_(element) {}
   ~TestDateTimeChooserClient() override {}
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(element_);
     visitor->Trace(date_time_chooser_);
     DateTimeChooserClient::Trace(visitor);
@@ -62,7 +61,7 @@ class TestDateTimeChooserClient final
 // when it's called twice because |client_| was already nullptr.
 TEST_F(ExternalDateTimeChooserTest, EndChooserShouldNotCrash) {
   ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
-  auto* document = MakeGarbageCollected<Document>();
+  auto* document = Document::CreateForTest();
   auto* element = document->CreateRawElement(html_names::kInputTag);
   auto* client = MakeGarbageCollected<TestDateTimeChooserClient>(element);
   auto* external_date_time_chooser =
@@ -79,7 +78,7 @@ TEST_F(ExternalDateTimeChooserTest, EndChooserShouldNotCrash) {
 TEST_F(ExternalDateTimeChooserTest,
        OpenDateTimeChooserShouldNotCrashWhenLabelAndValueIsTheSame) {
   ScopedInputMultipleFieldsUIForTest input_multiple_fields_ui(false);
-  GetDocument().documentElement()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
       <input id=test type="date" list="src" />
         <datalist id="src">
           <option value='2019-12-31'>Hint</option>
@@ -88,9 +87,8 @@ TEST_F(ExternalDateTimeChooserTest,
                                       // value attribute.
         </datalist>
       )HTML");
-  GetDocument().View()->UpdateAllLifecyclePhases(
-      DocumentLifecycle::LifecycleUpdateReason::kTest);
-  GetDocument().View()->RunPostLifecycleSteps();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
   auto* input = To<HTMLInputElement>(GetDocument().getElementById("test"));
   ASSERT_TRUE(input);
 

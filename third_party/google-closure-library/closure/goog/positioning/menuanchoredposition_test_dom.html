@@ -1,0 +1,23 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<!-- Force offscreen menus to count as FAIL_X -->
+<body style="overflow: hidden">
+  <div id="offscreen-anchor" style="position: absolute; left: -1000px; top: -1000px">
+  </div>
+  <div id="onscreen-anchor" style="position: absolute; left: 5px; top: 5px">
+  </div>
+  <!-- The x and y position of this anchor will be reset on each setUp -->
+  <div id="custom-anchor" style="position: absolute;">
+  </div>
+  <div id="menu" style="position: absolute; left: 20px; top: 20px">
+   Menu Item 1
+   <br />
+   Menu Item 2
+   <br />
+   Menu Item 3
+  </div>
+</body>

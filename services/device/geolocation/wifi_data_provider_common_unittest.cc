@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
@@ -63,6 +63,11 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
  public:
   WifiDataProviderCommonWithMock() : wlan_api_(new MockWlanApi) {}
 
+  WifiDataProviderCommonWithMock(const WifiDataProviderCommonWithMock&) =
+      delete;
+  WifiDataProviderCommonWithMock& operator=(
+      const WifiDataProviderCommonWithMock&) = delete;
+
   // WifiDataProviderCommon
   std::unique_ptr<WlanApiInterface> CreateWlanApi() override {
     return std::move(wlan_api_);
@@ -79,8 +84,6 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
 
  private:
   ~WifiDataProviderCommonWithMock() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderCommonWithMock);
 };
 
 // Main test fixture
@@ -203,10 +206,10 @@ TEST_F(GeolocationWifiDataProviderCommonTest, DoScanWithResults) {
   EXPECT_CALL(*polling_policy_, PollingInterval()).Times(AtLeast(1));
   AccessPointData single_access_point;
   single_access_point.channel = 2;
-  single_access_point.mac_address = 3;
+  single_access_point.mac_address = u"00:11:22:33:44:55";
   single_access_point.radio_signal_strength = 4;
   single_access_point.signal_to_noise = 5;
-  single_access_point.ssid = base::ASCIIToUTF16("foossid");
+  single_access_point.ssid = u"foossid";
 
   WifiData::AccessPointDataSet data_out({single_access_point});
 

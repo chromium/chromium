@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_FOCUS_WIDGET_FOCUS_MANAGER_H_
 #define UI_VIEWS_FOCUS_WIDGET_FOCUS_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "ui/gfx/native_widget_types.h"
@@ -53,13 +52,13 @@ class VIEWS_EXPORT WidgetFocusManager {
   friend class base::NoDestructor<WidgetFocusManager>;
 
   WidgetFocusManager();
+  WidgetFocusManager(const WidgetFocusManager&) = delete;
+  WidgetFocusManager& operator=(const WidgetFocusManager&) = delete;
 
   base::ObserverList<WidgetFocusChangeListener>::Unchecked
       focus_change_listeners_;
 
   bool enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetFocusManager);
 };
 
 // A basic helper class that is used to disable native focus change
@@ -67,10 +66,12 @@ class VIEWS_EXPORT WidgetFocusManager {
 class VIEWS_EXPORT AutoNativeNotificationDisabler {
  public:
   AutoNativeNotificationDisabler();
-  ~AutoNativeNotificationDisabler();
+  AutoNativeNotificationDisabler(const AutoNativeNotificationDisabler&) =
+      delete;
+  AutoNativeNotificationDisabler& operator=(
+      const AutoNativeNotificationDisabler&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoNativeNotificationDisabler);
+  ~AutoNativeNotificationDisabler();
 };
 
 }  // namespace views

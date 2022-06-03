@@ -157,6 +157,10 @@ class NET_EXPORT IPAddress {
   // IPv4-mapped-to-IPv6 addresses are considered publicly routable.
   bool IsPubliclyRoutable() const;
 
+  // Let future IsPubliclyRoutable() calls in the current process always return
+  // true for a loopback ip.
+  static void ConsiderLoopbackIPToBePubliclyRoutableForTesting();
+
   // Returns true if the IP is "zero" (e.g. the 0.0.0.0 IPv4 address).
   bool IsZero() const;
 
@@ -266,7 +270,7 @@ NET_EXPORT bool IPAddressMatchesPrefix(const IPAddress& ip_address,
 //    10.10.3.1/20
 //    a:b:c::/46
 //    ::1/128
-NET_EXPORT bool ParseCIDRBlock(const std::string& cidr_literal,
+NET_EXPORT bool ParseCIDRBlock(base::StringPiece cidr_literal,
                                IPAddress* ip_address,
                                size_t* prefix_length_in_bits);
 

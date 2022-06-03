@@ -19,14 +19,14 @@
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<BrowsingDataRemover*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<BrowsingDataRemover*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
@@ -47,8 +47,8 @@ BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
 std::unique_ptr<KeyedService>
 BrowsingDataRemoverFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<BrowsingDataRemoverImpl>(
       browser_state, [SessionServiceIOS sharedService]);
 }

@@ -34,6 +34,7 @@ struct UrlLoadParams {
       const web::NavigationManager::WebLoadParams& web_params);
   static UrlLoadParams InNewTab(const GURL& url);
   static UrlLoadParams InNewTab(const GURL& url, const GURL& virtual_url);
+  static UrlLoadParams InNewTab(const GURL& url, int insertion_index);
 
   // Initializes a UrlLoadParams intended to switch to tab.
   static UrlLoadParams SwitchToTab(
@@ -59,6 +60,10 @@ struct UrlLoadParams {
   // Location where the new tab should be opened. Defaults to |kLastTab|.
   OpenPosition append_to;
 
+  // Specific index where tab should be opened if |append_to| is
+  // |kSpecifiedIndex|
+  int insertion_index;
+
   // Origin point of the action triggering this command, in main window
   // coordinates. Defaults to |CGPointZero|.
   CGPoint origin_point;
@@ -76,6 +81,9 @@ struct UrlLoadParams {
   // Whether the new tab command should also trigger the omnibox to be focused.
   // Only used when the |web_params.url| isn't valid. Defaults to |false|.
   bool should_focus_omnibox;
+
+  // Whether the new tab should inherit opener.
+  bool inherit_opener;
 
   // Opaque way of changing loading behavior.
   UrlLoadStrategy load_strategy;

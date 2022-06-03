@@ -5,15 +5,12 @@
 #ifndef CC_PAINT_RECORD_PAINT_CANVAS_H_
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
-#include "base/logging.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
 namespace cc {
@@ -47,12 +44,19 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void translate(SkScalar dx, SkScalar dy) override;
   void scale(SkScalar sx, SkScalar sy) override;
   void rotate(SkScalar degrees) override;
+  // TODO(crbug.com/1167153): The concat and setMatrix methods that take an
+  // SkMatrix should be removed in favor of the SkM44 versions.
   void concat(const SkMatrix& matrix) override;
   void setMatrix(const SkMatrix& matrix) override;
+  void concat(const SkM44& matrix) override;
+  void setMatrix(const SkM44& matrix) override;
 
   void clipRect(const SkRect& rect, SkClipOp op, bool antialias) override;
   void clipRRect(const SkRRect& rrect, SkClipOp op, bool antialias) override;
-  void clipPath(const SkPath& path, SkClipOp op, bool antialias) override;
+  void clipPath(const SkPath& path,
+                SkClipOp op,
+                bool antialias,
+                UsePaintCache use_paint_cache) override;
   SkRect getLocalClipBounds() const override;
   bool getLocalClipBounds(SkRect* bounds) const override;
   SkIRect getDeviceClipBounds() const override;
@@ -76,19 +80,24 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                      SkScalar rx,
                      SkScalar ry,
                      const PaintFlags& flags) override;
-  void drawPath(const SkPath& path, const PaintFlags& flags) override;
+  void drawPath(const SkPath& path,
+                const PaintFlags& flags,
+                UsePaintCache use_paint_cache) override;
   void drawImage(const PaintImage& image,
                  SkScalar left,
                  SkScalar top,
+                 const SkSamplingOptions&,
                  const PaintFlags* flags) override;
   void drawImageRect(const PaintImage& image,
                      const SkRect& src,
                      const SkRect& dst,
+                     const SkSamplingOptions&,
                      const PaintFlags* flags,
-                     SrcRectConstraint constraint) override;
+                     SkCanvas::SrcRectConstraint constraint) override;
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
-                   float t) override;
+                   float t,
+                   SkottieFrameDataMap images) override;
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,
@@ -102,12 +111,16 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void drawPicture(sk_sp<const PaintRecord> record) override;
 
   bool isClipEmpty() const override;
-  const SkMatrix& getTotalMatrix() const override;
+  SkMatrix getTotalMatrix() const override;
+  SkM44 getLocalToDevice() const override;
 
   void Annotate(AnnotationType type,
                 const SkRect& rect,
                 sk_sp<SkData> data) override;
   void recordCustomData(uint32_t id) override;
+  void setNodeId(int) override;
+
+  bool NeedsFlush() const override;
 
   // Don't shadow non-virtual helper functions.
   using PaintCanvas::clipRect;
@@ -117,7 +130,46 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   using PaintCanvas::drawImage;
   using PaintCanvas::drawPicture;
 
+#if DCHECK_IS_ON()
+  void EnterDisableFlushCheckScope() { ++disable_flush_check_scope_; }
+  void LeaveDisableFlushCheckScope() { DCHECK(disable_flush_check_scope_--); }
+  bool IsInDisableFlushCheckScope() { return disable_flush_check_scope_; }
+#endif
+
+  class DisableFlushCheckScope {
+    // Create an object of this type to temporarily allow draw commands to be
+    // recorded while the recording is marked as needing to be flushed.  This is
+    // meant to be used to allow client code to issue the commands necessary to
+    // reach a state where the recording can be safely flushed before beginning
+    // to enforce a check that forbids recording additional draw commands after
+    // a flush was requested.
+   public:
+    explicit DisableFlushCheckScope(RecordPaintCanvas* canvas) {
+#if DCHECK_IS_ON()
+      // We require that NeedsFlush be false upon entering a top-level scope
+      // to prevent consecutive scopes from evading evading flush checks
+      // indefinitely.
+      DCHECK(!canvas->NeedsFlush() || canvas->IsInDisableFlushCheckScope());
+      canvas->EnterDisableFlushCheckScope();
+      canvas_ = canvas;
+#endif
+    }
+    ~DisableFlushCheckScope() {
+#if DCHECK_IS_ON()
+      canvas_->LeaveDisableFlushCheckScope();
+#endif
+    }
+
+   private:
+#if DCHECK_IS_ON()
+    RecordPaintCanvas* canvas_;
+#endif
+  };
+
  private:
+  template <typename T, typename... Args>
+  size_t push(Args&&... args);
+
   const SkNoDrawCanvas* GetCanvas() const;
   SkNoDrawCanvas* GetCanvas();
 
@@ -133,8 +185,12 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   //
   // This is mutable so that const functions (e.g. quickReject) that may
   // lazy initialize the canvas can still be const.
-  mutable base::Optional<SkNoDrawCanvas> canvas_;
+  mutable absl::optional<SkNoDrawCanvas> canvas_;
   SkRect recording_bounds_;
+  bool needs_flush_ = false;
+#if DCHECK_IS_ON()
+  unsigned disable_flush_check_scope_ = 0;
+#endif
 };
 
 }  // namespace cc

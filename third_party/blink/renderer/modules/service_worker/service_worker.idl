@@ -48,7 +48,7 @@ enum ServiceWorkerState {
 ] interface ServiceWorker : EventTarget {
 
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);
-    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options);
+    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options = {});
 
     readonly attribute USVString scriptURL;
     readonly attribute ServiceWorkerState  state;

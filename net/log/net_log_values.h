@@ -5,8 +5,10 @@
 #ifndef NET_LOG_NET_LOG_VALUES_H_
 #define NET_LOG_NET_LOG_VALUES_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 
@@ -46,6 +48,7 @@ NET_EXPORT base::Value NetLogStringValue(base::StringPiece raw);
 // serializing them.
 //
 // This wrapper encodes |bytes| as a Base64 encoded string.
+NET_EXPORT base::Value NetLogBinaryValue(base::span<const uint8_t> bytes);
 NET_EXPORT base::Value NetLogBinaryValue(const void* bytes, size_t length);
 
 // Creates a base::Value() to represent integers, including 64-bit ones.
@@ -57,6 +60,7 @@ NET_EXPORT base::Value NetLogBinaryValue(const void* bytes, size_t length);
 // no loss of precision when de-serializing from JavaScript.
 NET_EXPORT base::Value NetLogNumberValue(int64_t num);
 NET_EXPORT base::Value NetLogNumberValue(uint64_t num);
+NET_EXPORT base::Value NetLogNumberValue(uint32_t num);
 
 }  // namespace net
 

@@ -9,8 +9,14 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "gpu/command_buffer/common/webgpu_cmd_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_MAC)
+#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
+#endif
 
 namespace viz {
 class TestGpuServiceHolder;
@@ -21,11 +27,11 @@ namespace gpu {
 class SharedImageInterface;
 class WebGPUInProcessContext;
 
-void OnRequestDeviceCallback(bool is_request_device_success);
-
 namespace webgpu {
 
-class WebGPUInterface;
+class WebGPUCmdHelper;
+class WebGPUDecoder;
+class WebGPUImplementation;
 
 }  // namespace webgpu
 
@@ -49,16 +55,36 @@ class WebGPUTest : public testing::Test {
 
   void Initialize(const Options& options);
 
-  webgpu::WebGPUInterface* webgpu() const;
+  webgpu::WebGPUImplementation* webgpu() const;
+  webgpu::WebGPUCmdHelper* webgpu_cmds() const;
   SharedImageInterface* GetSharedImageInterface() const;
+  webgpu::WebGPUDecoder* GetDecoder() const;
 
   void RunPendingTasks();
   void WaitForCompletion(wgpu::Device device);
 
+  wgpu::Device GetNewDevice();
+
+  viz::TestGpuServiceHolder* GetGpuServiceHolder() {
+    return gpu_service_holder_.get();
+  }
+
+  uint32_t GetAdapterId() const { return adapter_id_; }
+
+  const WGPUDeviceProperties& GetDeviceProperties() const {
+    return device_properties_;
+  }
+
  private:
   std::unique_ptr<viz::TestGpuServiceHolder> gpu_service_holder_;
   std::unique_ptr<WebGPUInProcessContext> context_;
-  bool is_initialized_ = false;
+  std::unique_ptr<webgpu::WebGPUCmdHelper> cmd_helper_;
+#if defined(OS_MAC)
+  // SharedImages on macOS require a valid image factory.
+  GpuMemoryBufferFactoryIOSurface image_factory_;
+#endif
+  uint32_t adapter_id_;
+  WGPUDeviceProperties device_properties_;
 };
 
 }  // namespace gpu

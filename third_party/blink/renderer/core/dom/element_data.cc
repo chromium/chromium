@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -43,8 +44,7 @@ struct SameSizeAsElementData final
   void* pointers[2];
 };
 
-static_assert(sizeof(ElementData) == sizeof(SameSizeAsElementData),
-              "ElementData should stay small");
+ASSERT_SIZE(ElementData, SameSizeAsElementData);
 
 static AdditionalBytes AdditionalBytesForShareableElementDataWithAttributeCount(
     unsigned count) {
@@ -52,27 +52,27 @@ static AdditionalBytes AdditionalBytesForShareableElementDataWithAttributeCount(
 }
 
 ElementData::ElementData()
-    : is_unique_(true),
-      array_size_(0),
-      presentation_attribute_style_is_dirty_(false),
-      style_attribute_is_dirty_(false),
-      animated_svg_attributes_are_dirty_(false) {}
+    : bit_field_(IsUniqueFlag::encode(true) | ArraySize::encode(0) |
+                 PresentationAttributeStyleIsDirty::encode(false) |
+                 StyleAttributeIsDirty::encode(false) |
+                 SvgAttributesAreDirty::encode(false)) {}
 
 ElementData::ElementData(unsigned array_size)
-    : is_unique_(false),
-      array_size_(array_size),
-      presentation_attribute_style_is_dirty_(false),
-      style_attribute_is_dirty_(false),
-      animated_svg_attributes_are_dirty_(false) {}
+    : bit_field_(IsUniqueFlag::encode(false) | ArraySize::encode(array_size) |
+                 PresentationAttributeStyleIsDirty::encode(false) |
+                 StyleAttributeIsDirty::encode(false) |
+                 SvgAttributesAreDirty::encode(false)) {}
 
 ElementData::ElementData(const ElementData& other, bool is_unique)
-    : is_unique_(is_unique),
-      array_size_(is_unique ? 0 : other.Attributes().size()),
-      presentation_attribute_style_is_dirty_(
-          other.presentation_attribute_style_is_dirty_),
-      style_attribute_is_dirty_(other.style_attribute_is_dirty_),
-      animated_svg_attributes_are_dirty_(
-          other.animated_svg_attributes_are_dirty_),
+    : bit_field_(
+          IsUniqueFlag::encode(is_unique) |
+          ArraySize::encode(is_unique ? 0 : other.Attributes().size()) |
+          PresentationAttributeStyleIsDirty::encode(
+              other.bit_field_.get<PresentationAttributeStyleIsDirty>()) |
+          StyleAttributeIsDirty::encode(
+              other.bit_field_.get<StyleAttributeIsDirty>()) |
+          SvgAttributesAreDirty::encode(
+              other.bit_field_.get<SvgAttributesAreDirty>())),
       class_names_(other.class_names_),
       id_for_style_resolution_(other.id_for_style_resolution_) {
   // NOTE: The inline style is copied by the subclass copy constructor since we
@@ -110,25 +110,26 @@ bool ElementData::IsEquivalent(const ElementData* other) const {
   return true;
 }
 
-void ElementData::Trace(Visitor* visitor) {
-  if (auto* unique_element_data = DynamicTo<UniqueElementData>(this))
-    unique_element_data->TraceAfterDispatch(visitor);
-  else
-    To<ShareableElementData>(this)->TraceAfterDispatch(visitor);
+void ElementData::Trace(Visitor* visitor) const {
+  if (bit_field_.get_concurrently<IsUniqueFlag>()) {
+    static_cast<const UniqueElementData*>(this)->TraceAfterDispatch(visitor);
+  } else {
+    static_cast<const ShareableElementData*>(this)->TraceAfterDispatch(visitor);
+  }
 }
 
-void ElementData::TraceAfterDispatch(blink::Visitor* visitor) {
+void ElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(inline_style_);
 }
 
 ShareableElementData::ShareableElementData(const Vector<Attribute>& attributes)
     : ElementData(attributes.size()) {
-  for (unsigned i = 0; i < array_size_; ++i)
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     new (&attribute_array_[i]) Attribute(attributes[i]);
 }
 
 ShareableElementData::~ShareableElementData() {
-  for (unsigned i = 0; i < array_size_; ++i)
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     attribute_array_[i].~Attribute();
 }
 
@@ -140,7 +141,7 @@ ShareableElementData::ShareableElementData(const UniqueElementData& other)
     inline_style_ = other.inline_style_->ImmutableCopyIfNeeded();
   }
 
-  for (unsigned i = 0; i < array_size_; ++i)
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     new (&attribute_array_[i]) Attribute(other.attribute_vector_.at(i));
 }
 
@@ -182,7 +183,7 @@ ShareableElementData* UniqueElementData::MakeShareableCopy() const {
       *this);
 }
 
-void UniqueElementData::TraceAfterDispatch(blink::Visitor* visitor) {
+void UniqueElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(presentation_attribute_style_);
   ElementData::TraceAfterDispatch(visitor);
 }

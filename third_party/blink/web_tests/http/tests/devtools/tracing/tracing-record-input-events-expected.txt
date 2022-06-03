@@ -1,0 +1,9 @@
+Test tracing recording input events detail
+
+Tracing started
+Tracing complete
+mousedown at 100,100
+mousemove at 150,50
+mouseup at 150,50
+Event sanity test done
+

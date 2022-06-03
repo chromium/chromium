@@ -1,0 +1,13 @@
+This test verifies the hit test regions are updated correctly when composited layer are created and destroyed without triggering layout update during fast path animation.
+
+[object HTMLDivElement]: layer(1200x900) has hit test rect (300,300 75x75)
+
+[object HTMLDivElement]: layer(75x75) has hit test rect (0,0 75x75)
+
+[object HTMLDivElement]: layer(1200x900) has hit test rect (262,262 151x151)
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

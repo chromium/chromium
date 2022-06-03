@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -22,16 +21,25 @@ namespace signin {
 class IdentityManager;
 }
 
+// WebUI message handler for the sync confirmation dialog. IdentityManager calls
+// in this class use signin::ConsentLevel::kSignin because the user hasn't
+// consented to sync yet.
 class SyncConfirmationHandler : public content::WebUIMessageHandler,
                                 public signin::IdentityManager::Observer,
                                 public BrowserListObserver {
  public:
-  // Creates a SyncConfirmationHandler for the |browser|. All strings in the
+  // Creates a SyncConfirmationHandler for the |profile|. All strings in the
   // corresponding Web UI should be represented in |string_to_grd_id_map| and
-  // mapped to their GRD IDs.
+  // mapped to their GRD IDs. If |browser| is provided, its signin view
+  // controller will be notified of the rendered size of the web page.
   SyncConfirmationHandler(
-      Browser* browser,
-      const std::unordered_map<std::string, int>& string_to_grd_id_map);
+      Profile* profile,
+      const std::unordered_map<std::string, int>& string_to_grd_id_map,
+      Browser* browser = nullptr);
+
+  SyncConfirmationHandler(const SyncConfirmationHandler&) = delete;
+  SyncConfirmationHandler& operator=(const SyncConfirmationHandler&) = delete;
+
   ~SyncConfirmationHandler() override;
 
   // content::WebUIMessageHandler:
@@ -65,10 +73,10 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // a single integer value for the height the native view should resize to.
   virtual void HandleInitializedWithSize(const base::ListValue* args);
 
-  // Handles the "accountImageRequest" message sent after the
-  // "account-image-changed" WebUIListener was added. This method calls
-  // |SetUserImageURL| with the signed-in user's picture url.
-  virtual void HandleAccountImageRequest(const base::ListValue* args);
+  // Handles the "accountInfoRequest" message sent after the
+  // "account-info-changed" WebUIListener was added. This method calls
+  // |SetAccountInfo| with the signed-in user's picture url.
+  virtual void HandleAccountInfoRequest(const base::ListValue* args);
 
   // Records the user's consent to sync. Called from |HandleConfirm| and
   // |HandleGoToSettings|, and expects two parameters to be passed through
@@ -80,8 +88,9 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // manner, i.e. clicks on the confirmation button or the settings link.
   virtual void RecordConsent(const base::ListValue* args);
 
-  // Sets the profile picture shown in the dialog to the image at |url|.
-  virtual void SetUserImageURL(const std::string& url);
+  // Sets the account image shown in the dialog based on |info|, which is
+  // expected to be valid.
+  virtual void SetAccountInfo(const AccountInfo& info);
 
   // Closes the modal signin window and calls
   // LoginUIService::SyncConfirmationUIClosed with |result|. |result| indicates
@@ -92,9 +101,6 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
  private:
   Profile* profile_;
 
-  // Weak reference to the browser that showed the sync confirmation dialog.
-  Browser* browser_;
-
   // Records whether the user clicked on Undo, Ok, or Settings.
   bool did_user_explicitly_interact_ = false;
 
@@ -102,9 +108,11 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // and their respective GRD IDs.
   std::unordered_map<std::string, int> string_to_grd_id_map_;
 
-  signin::IdentityManager* identity_manager_;
+  // Weak reference to the browser that showed the sync confirmation dialog (if
+  // such a dialog exists).
+  Browser* browser_;
 
-  DISALLOW_COPY_AND_ASSIGN(SyncConfirmationHandler);
+  signin::IdentityManager* identity_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_

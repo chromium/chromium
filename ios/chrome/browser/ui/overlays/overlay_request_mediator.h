@@ -9,11 +9,16 @@
 
 class OverlayRequest;
 @protocol OverlayRequestMediatorDelegate;
+class OverlayRequestSupport;
 
 // Mediator used to configure overlay UI consumers using an OverlayRequest.
 // Subclasses should use the request passed on initialization to set up overlay
 // UI via consumer protocols specific to that config type.
 @interface OverlayRequestMediator : NSObject
+
+// Returns the request support for this mediator.  Must return a non-null value.
+@property(class, nonatomic, readonly)
+    const OverlayRequestSupport* requestSupport;
 
 // Initializer for a mediator that sets ups its consumer with |request|'s
 // config.

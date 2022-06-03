@@ -13,13 +13,13 @@
 #include <set>
 
 #include "base/containers/stack.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
@@ -29,9 +29,9 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-namespace {
+namespace storage {
 
-void PickleFromFileInfo(const storage::SandboxDirectoryDatabase::FileInfo& info,
+void PickleFromFileInfo(const SandboxDirectoryDatabase::FileInfo& info,
                         base::Pickle* pickle) {
   DCHECK(pickle);
   std::string data_path;
@@ -40,8 +40,8 @@ void PickleFromFileInfo(const storage::SandboxDirectoryDatabase::FileInfo& info,
       base::Time::FromDoubleT(floor(info.modification_time.ToDoubleT()));
   std::string name;
 
-  data_path = storage::FilePathToString(info.data_path);
-  name = storage::FilePathToString(base::FilePath(info.name));
+  data_path = FilePathToString(info.data_path);
+  name = FilePathToString(base::FilePath(info.name));
 
   pickle->WriteInt64(info.parent_id);
   pickle->WriteString(data_path);
@@ -50,7 +50,7 @@ void PickleFromFileInfo(const storage::SandboxDirectoryDatabase::FileInfo& info,
 }
 
 bool FileInfoFromPickle(const base::Pickle& pickle,
-                        storage::SandboxDirectoryDatabase::FileInfo* info) {
+                        SandboxDirectoryDatabase::FileInfo* info) {
   base::PickleIterator iter(pickle);
   std::string data_path;
   std::string name;
@@ -58,8 +58,8 @@ bool FileInfoFromPickle(const base::Pickle& pickle,
 
   if (iter.ReadInt64(&info->parent_id) && iter.ReadString(&data_path) &&
       iter.ReadString(&name) && iter.ReadInt64(&internal_time)) {
-    info->data_path = storage::StringToFilePath(data_path);
-    info->name = storage::StringToFilePath(name).value();
+    info->data_path = StringToFilePath(data_path);
+    info->name = StringToFilePath(name).value();
     info->modification_time = base::Time::FromInternalValue(internal_time);
     return true;
   }
@@ -97,17 +97,16 @@ enum class SandboxDirectoryRepairResult {
   DB_REPAIR_MAX
 };
 
-std::string GetChildLookupKey(
-    storage::SandboxDirectoryDatabase::FileId parent_id,
-    const base::FilePath::StringType& child_name) {
+std::string GetChildLookupKey(SandboxDirectoryDatabase::FileId parent_id,
+                              const base::FilePath::StringType& child_name) {
   std::string name;
-  name = storage::FilePathToString(base::FilePath(child_name));
+  name = FilePathToString(base::FilePath(child_name));
   return std::string(kChildLookupPrefix) + base::NumberToString(parent_id) +
          std::string(kChildLookupSeparator) + name;
 }
 
 std::string GetChildListingKeyPrefix(
-    storage::SandboxDirectoryDatabase::FileId parent_id) {
+    SandboxDirectoryDatabase::FileId parent_id) {
   return std::string(kChildLookupPrefix) + base::NumberToString(parent_id) +
          std::string(kChildLookupSeparator);
 }
@@ -120,8 +119,7 @@ const char* LastIntegerKey() {
   return kSandboxDirectoryLastIntegerKey;
 }
 
-std::string GetFileLookupKey(
-    storage::SandboxDirectoryDatabase::FileId file_id) {
+std::string GetFileLookupKey(SandboxDirectoryDatabase::FileId file_id) {
   return base::NumberToString(file_id);
 }
 
@@ -139,10 +137,10 @@ std::string GetFileLookupKey(
 //  - Directory structure is tree, i.e. connected and acyclic.
 class DatabaseCheckHelper {
  public:
-  using FileId = storage::SandboxDirectoryDatabase::FileId;
-  using FileInfo = storage::SandboxDirectoryDatabase::FileInfo;
+  using FileId = SandboxDirectoryDatabase::FileId;
+  using FileInfo = SandboxDirectoryDatabase::FileInfo;
 
-  DatabaseCheckHelper(storage::SandboxDirectoryDatabase* dir_db,
+  DatabaseCheckHelper(SandboxDirectoryDatabase* dir_db,
                       leveldb::DB* db,
                       const base::FilePath& path);
 
@@ -160,7 +158,7 @@ class DatabaseCheckHelper {
   bool ScanDirectory();
   bool ScanHierarchy();
 
-  storage::SandboxDirectoryDatabase* dir_db_;
+  SandboxDirectoryDatabase* dir_db_;
   leveldb::DB* db_;
   base::FilePath path_;
 
@@ -174,10 +172,9 @@ class DatabaseCheckHelper {
   FileId last_integer_;
 };
 
-DatabaseCheckHelper::DatabaseCheckHelper(
-    storage::SandboxDirectoryDatabase* dir_db,
-    leveldb::DB* db,
-    const base::FilePath& path)
+DatabaseCheckHelper::DatabaseCheckHelper(SandboxDirectoryDatabase* dir_db,
+                                         leveldb::DB* db,
+                                         const base::FilePath& path)
     : dir_db_(dir_db),
       db_(db),
       path_(path),
@@ -284,7 +281,7 @@ bool DatabaseCheckHelper::ScanDirectory() {
   // has a database entry.
   const base::FilePath kExcludes[] = {
       base::FilePath(kDirectoryDatabaseName),
-      base::FilePath(storage::FileSystemUsageCache::kUsageFileName),
+      base::FilePath(FileSystemUsageCache::kUsageFileName),
   };
 
   // Any path in |pending_directories| is relative to |path_|.
@@ -320,7 +317,7 @@ bool DatabaseCheckHelper::ScanDirectory() {
       // Check if the file has a database entry.
       auto itr = files_in_db_.find(relative_file_path);
       if (itr == files_in_db_.end()) {
-        if (!base::DeleteFile(absolute_file_path, false))
+        if (!base::DeleteFile(absolute_file_path))
           return false;
       } else {
         files_in_db_.erase(itr);
@@ -360,7 +357,6 @@ bool DatabaseCheckHelper::ScanHierarchy() {
         return false;
 
       // Check if the child knows the parent as its parent.
-      FileInfo file_info;
       if (!dir_db_->GetFileInfo(id, &file_info))
         return false;
       if (file_info.parent_id != dir_id)
@@ -398,7 +394,7 @@ bool VerifyDataPath(const base::FilePath& data_path) {
   // See if it's not pointing to the special system paths.
   const base::FilePath kExcludes[] = {
       base::FilePath(kDirectoryDatabaseName),
-      base::FilePath(storage::FileSystemUsageCache::kUsageFileName),
+      base::FilePath(FileSystemUsageCache::kUsageFileName),
   };
   for (const auto& exclude : kExcludes) {
     if (data_path == exclude || exclude.IsParent(data_path))
@@ -406,10 +402,6 @@ bool VerifyDataPath(const base::FilePath& data_path) {
   }
   return true;
 }
-
-}  // namespace
-
-namespace storage {
 
 SandboxDirectoryDatabase::FileInfo::FileInfo() : parent_id(0) {}
 
@@ -806,7 +798,7 @@ bool SandboxDirectoryDatabase::IsFileSystemConsistent() {
 void SandboxDirectoryDatabase::ReportInitStatus(const leveldb::Status& status) {
   base::Time now = base::Time::Now();
   const base::TimeDelta minimum_interval =
-      base::TimeDelta::FromHours(kSandboxDirectoryMinimumReportIntervalHours);
+      base::Hours(kSandboxDirectoryMinimumReportIntervalHours);
   if (last_reported_time_ + minimum_interval >= now)
     return;
   last_reported_time_ = now;

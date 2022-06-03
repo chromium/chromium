@@ -10,17 +10,23 @@
 namespace chromeos {
 namespace assistant {
 
-// Instance of |AssistantState| where every base::Optional value has a non-null
+// Instance of |AssistantState| where every absl::optional value has a non-null
 // value. All values will be set to their equivalent of enabled.
 class FullyInitializedAssistantState : public ash::AssistantState {
  public:
   FullyInitializedAssistantState();
+
+  FullyInitializedAssistantState(const FullyInitializedAssistantState&) =
+      delete;
+  FullyInitializedAssistantState& operator=(
+      const FullyInitializedAssistantState&) = delete;
+
   ~FullyInitializedAssistantState() override = default;
+
+  void SetAssistantEnabled(bool enabled);
 
  private:
   void InitializeAllValues();
-
-  DISALLOW_COPY_AND_ASSIGN(FullyInitializedAssistantState);
 };
 
 }  // namespace assistant

@@ -24,11 +24,11 @@ bool IsDefaultDevice(const std::string& device_id) {
 
 AudioRendererMixerInput::AudioRendererMixerInput(
     AudioRendererMixerPool* mixer_pool,
-    int owner_id,
+    const base::UnguessableToken& owner_token,
     const std::string& device_id,
     AudioLatency::LatencyType latency)
     : mixer_pool_(mixer_pool),
-      owner_id_(owner_id),
+      owner_token_(owner_token),
       device_id_(device_id),
       latency_(latency) {
   DCHECK(mixer_pool_);
@@ -77,7 +77,7 @@ void AudioRendererMixerInput::Start() {
   DCHECK_EQ(device_info_->device_status(), OUTPUT_DEVICE_STATUS_OK);
 
   started_ = true;
-  mixer_ = mixer_pool_->GetMixer(owner_id_, params_, latency_, *device_info_,
+  mixer_ = mixer_pool_->GetMixer(owner_token_, params_, latency_, *device_info_,
                                  std::move(sink_));
 
   // Note: OnRenderError() may be called immediately after this call returns.
@@ -153,7 +153,7 @@ void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
   device_info_.reset();
 
   // If we don't have a sink yet start the process of getting one.
-  sink_ = mixer_pool_->GetSink(owner_id_, device_id_);
+  sink_ = mixer_pool_->GetSink(owner_token_, device_id_);
 
   // Retain a ref to this sink to ensure it is not destructed while this occurs.
   // The callback is guaranteed to execute on this thread, so there are no
@@ -200,7 +200,7 @@ void AudioRendererMixerInput::SwitchOutputDevice(
   // Request a new sink using the new device id. This process may fail, so to
   // avoid interrupting working audio, don't set any class variables until we
   // know it's a success.
-  auto new_sink = mixer_pool_->GetSink(owner_id_, device_id);
+  auto new_sink = mixer_pool_->GetSink(owner_token_, device_id);
 
   // Retain a ref to this sink to ensure it is not destructed while this occurs.
   // The callback is guaranteed to execute on this thread, so there are no

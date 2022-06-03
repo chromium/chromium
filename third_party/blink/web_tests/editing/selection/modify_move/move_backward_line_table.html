@@ -1,32 +1,88 @@
 <!doctype html>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<p>This tests for a bug moving down by a line from a line just above a ToDo,
-and moving up by a line from just below a ToDo.</p>
-<div id="sample" contenteditable>
-<div id="above">Click anywhere in this line and move down.</div>
-<table border="1" contenteditable="false"><tr><td>The caret <span style="color: blue;" contenteditable id="anchor">should</span> always go into the editable region.</td></tr></table>
-<div id="below">Click anywhere in this line and move up.</div>
-</div>
-<div id="log"</div>
+<script src="../../assert_selection.js"></script>
 <script>
-test(function() {
-    var selection = window.getSelection();
-    var above = document.getElementById('above').firstChild;
-    selection.collapse(above, 0);
-    selection.modify('move', 'forward', 'line');
-    selection.collapse(above, above.length);
-    selection.modify('move', 'forward', 'line');
-    var below = document.getElementById('below').firstChild;
-    selection.collapse(below, 0);
-    selection.modify('move', 'backward', 'line');
-    selection.collapse(below, below.length);
-    selection.modify('move', 'backward', 'line');
-
-    var anchor = document.getElementById('anchor');
-    assert_equals(selection.anchorNode, anchor.firstChild, 'anchorNode');
-    assert_equals(selection.anchorOffset, 6, 'anchorOffset');
-    assert_equals(selection.focusNode, anchor.firstChild, 'focusNode');
-    assert_equals(selection.focusOffset, 6, 'focusOffset');
-});
+// This tests for a bug moving down by a line from a line just above a table,
+// and moving up by a line from just below a table.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>|above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below</div>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable>',
+            '<div>above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>|cd</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below</div>',
+        '</div>',
+    ], 'start of "above"');
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>above|</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below</div>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable>',
+            '<div>above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd|</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below</div>',
+        '</div>',
+    ], 'end of "above"');
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below|</div>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        '<div contenteditable>',
+            '<div>above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd|</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below</div>',
+        '</div>',
+    ], 'start of "below"');
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below|</div>',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+        '<div contenteditable>',
+            '<div>above</div>',
+            '<table border="1" contenteditable="false"><tbody><tr>',
+                '<td>ab <span contenteditable>cd|</span> ef</td>',
+            '</tr></tbody></table>',
+            '<div>below</div>',
+        '</div>',
+    ], 'end of "below"');
 </script>

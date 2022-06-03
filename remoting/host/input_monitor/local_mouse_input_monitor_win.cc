@@ -9,7 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_input_monitor_win.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
@@ -29,6 +30,10 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       LocalInputMonitor::PointerMoveCallback on_mouse_move,
       base::OnceClosure disconnect_callback);
+
+  MouseRawInputHandlerWin(const MouseRawInputHandlerWin&) = delete;
+  MouseRawInputHandlerWin& operator=(const MouseRawInputHandlerWin&) = delete;
+
   ~MouseRawInputHandlerWin() override;
 
   // LocalInputMonitorWin::RawInputHandler implementation.
@@ -47,8 +52,6 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
 
   // Tracks whether the instance is registered to receive raw input events.
   bool registered_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseRawInputHandlerWin);
 };
 
 MouseRawInputHandlerWin::MouseRawInputHandlerWin(

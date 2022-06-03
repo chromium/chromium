@@ -21,15 +21,14 @@ Window* global_capture_window_ = nullptr;
 
 DefaultCaptureClient::DefaultCaptureClient(Window* root_window)
     : root_window_(root_window), capture_window_(nullptr) {
-  if (root_window_)
-    SetCaptureClient(root_window_, this);
+  DCHECK(root_window_);
+  SetCaptureClient(root_window_, this);
 }
 
 DefaultCaptureClient::~DefaultCaptureClient() {
   if (global_capture_window_ == capture_window_)
     global_capture_window_ = nullptr;
-  if (root_window_)
-    SetCaptureClient(root_window_, nullptr);
+  SetCaptureClient(root_window_, nullptr);
 }
 
 void DefaultCaptureClient::SetCapture(Window* window) {

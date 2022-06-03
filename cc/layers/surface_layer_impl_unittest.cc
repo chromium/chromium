@@ -5,7 +5,10 @@
 #include "cc/layers/surface_layer_impl.h"
 
 #include <stddef.h>
+#include <utility>
 
+#include "base/test/bind.h"
+#include "base/threading/thread.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,8 +33,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   viz::SurfaceId surface_id(kArbitraryFrameSinkId, kArbitraryLocalSurfaceId);
-  surface_layer_impl->SetRange(viz::SurfaceRange(base::nullopt, surface_id),
-                               base::nullopt);
+  surface_layer_impl->SetRange(viz::SurfaceRange(absl::nullopt, surface_id),
+                               absl::nullopt);
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -100,7 +103,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   gfx::Size viewport_size(1000, 1000);
   impl.CalcDrawProps(viewport_size);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   {
     AppendQuadsData data;
     surface_layer_impl->AppendQuads(render_pass.get(), &data);
@@ -117,7 +120,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   // viz::SurfaceInfo.
   {
     AppendQuadsData data;
-    surface_layer_impl->SetRange(viz::SurfaceRange(base::nullopt, surface_id1),
+    surface_layer_impl->SetRange(viz::SurfaceRange(absl::nullopt, surface_id1),
                                  0u);
     surface_layer_impl->AppendQuads(render_pass.get(), &data);
     // The primary viz::SurfaceInfo should be added to activation_dependencies.
@@ -161,7 +164,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
 
   EXPECT_EQ(surface_id1, surface_draw_quad2->surface_range.end());
   EXPECT_EQ(SK_ColorBLUE, surface_draw_quad2->default_background_color);
-  EXPECT_EQ(base::nullopt, surface_draw_quad2->surface_range.start());
+  EXPECT_EQ(absl::nullopt, surface_draw_quad2->surface_range.start());
 
   EXPECT_EQ(surface_id1, surface_draw_quad3->surface_range.end());
   EXPECT_EQ(SK_ColorBLUE, surface_draw_quad3->default_background_color);
@@ -199,9 +202,9 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
   surface_layer_impl2->SetBounds(layer_size);
   surface_layer_impl2->SetDrawsContent(true);
   surface_layer_impl2->SetRange(viz::SurfaceRange(surface_id1, surface_id2),
-                                base::nullopt);
+                                absl::nullopt);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   surface_layer_impl->AppendQuads(render_pass.get(), &data);
   EXPECT_EQ(1u, data.deadline_in_frames);
@@ -238,7 +241,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   gfx::Size viewport_size(1000, 1000);
   impl.CalcDrawProps(viewport_size);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   surface_layer_impl->AppendQuads(render_pass.get(), &data);
   EXPECT_THAT(data.activation_dependencies, UnorderedElementsAre(surface_id1));
@@ -275,8 +278,91 @@ TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
   // GetEnclosingRectInTargetSpace() and GetScaledEnclosingRectInTargetSpace()
   // should return the same value, otherwise we may not damage the right
   // pixels.
-  EXPECT_EQ(surface_layer_impl->GetScaledEnclosingRectInTargetSpace(1.33),
-            surface_layer_impl->GetEnclosingRectInTargetSpace());
+  EXPECT_EQ(
+      surface_layer_impl->GetScaledEnclosingVisibleRectInTargetSpace(1.33),
+      surface_layer_impl->GetEnclosingVisibleRectInTargetSpace());
+}
+
+TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
+  auto thread = std::make_unique<base::Thread>("VideoCompositor");
+  ASSERT_TRUE(thread->StartAndWaitForTesting());
+  scoped_refptr<base::TaskRunner> task_runner = thread->task_runner();
+
+  bool updated = false;
+  UpdateSubmissionStateCB callback = base::BindLambdaForTesting(
+      [task_runner, &updated](bool draw, base::WaitableEvent* done) {
+        // SurfaceLayerImpl also notifies the callback on destruction with draw
+        // = false. Ignore that call, since it's not really a part of the test.
+        if (!draw)
+          return;
+        // We're going to return control to the compositor, without signalling
+        // |done| for a bit.
+        task_runner->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](bool* updated, base::WaitableEvent* done) {
+                  *updated = true;
+                  if (done)
+                    done->Signal();
+                },
+                base::Unretained(&updated), base::Unretained(done)),
+            base::Milliseconds(100));
+      });
+
+  // Note that this has to be created after the callback so that the layer is
+  // destroyed first (it will call the callback in the dtor).
+  LayerTreeImplTestBase impl;
+  impl.host_impl()->client()->set_is_synchronous_composite(true);
+
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayer<SurfaceLayerImpl>(std::move(callback));
+  surface_layer_impl->SetBounds(gfx::Size(500, 500));
+  surface_layer_impl->SetDrawsContent(true);
+
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+  impl.CalcDrawProps(gfx::Size(500, 500));
+
+  surface_layer_impl->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+
+  // This would not be set to true if WillDraw() completed before the task
+  // posted by `callback` runs and completes. That task is posted with a delay
+  // to ensure that the current thread really did wait.
+  EXPECT_TRUE(updated);
+}
+
+TEST(SurfaceLayerImplTest, WillDrawNotifiesAsynchronously) {
+  bool updated = false;
+  UpdateSubmissionStateCB callback = base::BindLambdaForTesting(
+      [&updated](bool draw, base::WaitableEvent* done) {
+        // SurfaceLayerImpl also notifies the callback on destruction with draw
+        // = false. Ignore that call, since it's not really a part of the test.
+        if (!draw)
+          return;
+
+        // Note that the event should always be null here, meaning we don't
+        // synchronize anything if posted across threads. This is because we're
+        // using threaded compositing in this test (see
+        // set_is_synchronous_composite(false) call below).
+        EXPECT_FALSE(done);
+        updated = true;
+      });
+
+  // Note that this has to be created after the callback so that the layer is
+  // destroyed first (it will call the callback in the dtor).
+  LayerTreeImplTestBase impl;
+  impl.host_impl()->client()->set_is_synchronous_composite(false);
+
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayer<SurfaceLayerImpl>(std::move(callback));
+  surface_layer_impl->SetBounds(gfx::Size(500, 500));
+  surface_layer_impl->SetDrawsContent(true);
+
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+  impl.CalcDrawProps(gfx::Size(500, 500));
+
+  surface_layer_impl->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+  // We should have called the callback, which would set `updated` to true.
+  EXPECT_TRUE(updated);
 }
 
 }  // namespace

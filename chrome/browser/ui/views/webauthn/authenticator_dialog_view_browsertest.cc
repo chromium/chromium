@@ -12,12 +12,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "content/public/test/browser_test.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 
@@ -26,54 +26,54 @@ namespace {
 class TestSheetModel : public AuthenticatorRequestSheetModel {
  public:
   TestSheetModel() = default;
+
+  TestSheetModel(const TestSheetModel&) = delete;
+  TestSheetModel& operator=(const TestSheetModel&) = delete;
+
   ~TestSheetModel() override = default;
 
   // Getters for data on step specific content:
-  base::string16 GetStepSpecificLabelText() {
-    return base::ASCIIToUTF16("Test Label");
-  }
+  std::u16string GetStepSpecificLabelText() { return u"Test Label"; }
 
  private:
   // AuthenticatorRequestSheetModel:
   bool IsActivityIndicatorVisible() const override { return true; }
   bool IsBackButtonVisible() const override { return true; }
   bool IsCancelButtonVisible() const override { return true; }
-  base::string16 GetCancelButtonLabel() const override {
-    return base::ASCIIToUTF16("Test Cancel");
+  std::u16string GetCancelButtonLabel() const override {
+    return u"Test Cancel";
   }
 
   bool IsAcceptButtonVisible() const override { return true; }
   bool IsAcceptButtonEnabled() const override { return true; }
-  base::string16 GetAcceptButtonLabel() const override {
-    return base::ASCIIToUTF16("Test OK");
-  }
+  std::u16string GetAcceptButtonLabel() const override { return u"Test OK"; }
 
   const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const override {
     return gfx::kNoneIcon;
   }
 
-  base::string16 GetStepTitle() const override {
-    return base::ASCIIToUTF16("Test Title");
+  std::u16string GetStepTitle() const override { return u"Test Title"; }
+
+  std::u16string GetStepDescription() const override {
+    return u"Test Description That Is Super Long So That It No Longer Fits On "
+           u"One "
+           u"Line Because Life Would Be Just Too Simple That Way";
   }
 
-  base::string16 GetStepDescription() const override {
-    return base::ASCIIToUTF16(
-        "Test Description That Is Super Long So That It No Longer Fits On One "
-        "Line Because Life Would Be Just Too Simple That Way");
+  std::u16string GetAdditionalDescription() const override {
+    return u"More description text.";
   }
 
-  base::Optional<base::string16> GetAdditionalDescription() const override {
-    return base::ASCIIToUTF16("More description text.");
+  std::u16string GetError() const override {
+    return u"You must construct additional pylons.";
   }
 
-  ui::MenuModel* GetOtherTransportsMenuModel() override { return nullptr; }
+  ui::MenuModel* GetOtherMechanismsMenuModel() override { return nullptr; }
 
   void OnBack() override {}
   void OnAccept() override {}
   void OnCancel() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestSheetModel);
 };
 
 class TestSheetView : public AuthenticatorRequestSheetView {
@@ -83,6 +83,9 @@ class TestSheetView : public AuthenticatorRequestSheetView {
     ReInitChildViews();
   }
 
+  TestSheetView(const TestSheetView&) = delete;
+  TestSheetView& operator=(const TestSheetView&) = delete;
+
   ~TestSheetView() override = default;
 
  private:
@@ -91,12 +94,12 @@ class TestSheetView : public AuthenticatorRequestSheetView {
   }
 
   // AuthenticatorRequestSheetView:
-  std::unique_ptr<views::View> BuildStepSpecificContent() override {
-    return std::make_unique<views::Label>(
-        test_sheet_model()->GetStepSpecificLabelText());
+  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
+      override {
+    return std::make_pair(std::make_unique<views::Label>(
+                              test_sheet_model()->GetStepSpecificLabelText()),
+                          AutoFocus::kNo);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestSheetView);
 };
 
 }  // namespace
@@ -105,6 +108,10 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
   AuthenticatorDialogViewTest() = default;
 
+  AuthenticatorDialogViewTest(const AuthenticatorDialogViewTest&) = delete;
+  AuthenticatorDialogViewTest& operator=(const AuthenticatorDialogViewTest&) =
+      delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* const web_contents =
@@ -112,7 +119,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
     auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>(
         /*relying_party_id=*/"example.com");
-    dialog_model->SetCurrentStep(
+    dialog_model->SetCurrentStepForTesting(
         AuthenticatorRequestDialogModel::Step::kTimedOut);
     AuthenticatorRequestDialogView* dialog =
         test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
@@ -121,9 +128,6 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
         dialog,
         std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorDialogViewTest);
 };
 
 // Test the dialog with a custom delegate.

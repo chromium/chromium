@@ -14,7 +14,7 @@
               test.failOnEvent(mediaElement, 'error');
               assert_equals(mediaSource.readyState, 'open');
 
-              assert_throws(new TypeError(),
+              assert_throws_js(TypeError,
                   function() { mediaSource.endOfStream('garbage'); },
                   'endOfStream(\'garbage\') throws TypeError');
 
@@ -27,7 +27,7 @@
               test.failOnEvent(mediaElement, 'error');
               assert_equals(mediaSource.readyState, 'open');
 
-              assert_throws(new TypeError(),
+              assert_throws_js(TypeError,
                   function() { mediaSource.endOfStream(''); },
                   'endOfStream(\'\') throws TypeError');
 
@@ -44,7 +44,7 @@
               mediaSource.endOfStream();
 
               assert_equals(mediaSource.readyState, 'ended');
-              assert_throws("InvalidStateError",
+              assert_throws_dom("InvalidStateError",
                   function() {  mediaSource.endOfStream(); },
                   "endofStream() threw an exception when in ended state");
              
@@ -60,7 +60,7 @@
               mediaSource.endOfStream();
 
               assert_equals(mediaSource.readyState, 'ended');
-              assert_throws("InvalidStateError",
+              assert_throws_dom("InvalidStateError",
                   function() {  mediaSource.endOfStream("decode"); },
                   "endofStream() threw an exception when in ended state");
    
@@ -76,7 +76,7 @@
               mediaSource.endOfStream();
 
               assert_equals(mediaSource.readyState, 'ended');
-              assert_throws("InvalidStateError",
+              assert_throws_dom("InvalidStateError",
                   function() {  mediaSource.endOfStream("network"); },
                   "endofStream() threw an exception when in ended state");
               
@@ -88,7 +88,7 @@
               test.failOnEvent(mediaElement, 'error');
               assert_equals(mediaSource.readyState, 'open');
 
-              assert_throws(new TypeError(),
+              assert_throws_js(TypeError,
                   function() { mediaSource.endOfStream(null); },
                   'endOfStream(null) throws TypeError');
 

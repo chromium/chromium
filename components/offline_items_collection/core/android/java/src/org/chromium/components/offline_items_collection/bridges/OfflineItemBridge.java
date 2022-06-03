@@ -10,6 +10,7 @@ import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
+import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
@@ -50,11 +51,12 @@ public final class OfflineItemBridge {
             boolean isAccelerated, boolean promoteOrigin, long totalSizeBytes,
             boolean externallyRemoved, long creationTimeMs, long completionTimeMs,
             long lastAccessedTimeMs, boolean isOpenable, String filePath, String mimeType,
-            String pageUrl, String originalUrl, boolean isOffTheRecord, @OfflineItemState int state,
-            @FailState int failState, @PendingState int pendingState, boolean isResumable,
-            boolean allowMetered, long receivedBytes, long progressValue, long progressMax,
-            @OfflineItemProgressUnit int progressUnit, long timeRemainingMs, boolean isDangerous,
-            boolean canRename, boolean ignoreVisuals, double contentQualityScore) {
+            String url, String originalUrl, boolean isOffTheRecord, String otrProfileId,
+            @OfflineItemState int state, @FailState int failState, @PendingState int pendingState,
+            boolean isResumable, boolean allowMetered, long receivedBytes, long progressValue,
+            long progressMax, @OfflineItemProgressUnit int progressUnit, long timeRemainingMs,
+            boolean isDangerous, boolean canRename, boolean ignoreVisuals,
+            double contentQualityScore, OfflineItemSchedule schedule) {
         OfflineItem item = new OfflineItem();
         item.id.namespace = nameSpace;
         item.id.id = id;
@@ -73,9 +75,10 @@ public final class OfflineItemBridge {
         item.isOpenable = isOpenable;
         item.filePath = filePath;
         item.mimeType = mimeType;
-        item.pageUrl = pageUrl;
+        item.url = url;
         item.originalUrl = originalUrl;
         item.isOffTheRecord = isOffTheRecord;
+        item.otrProfileId = otrProfileId;
         item.state = state;
         item.failState = failState;
         item.pendingState = pendingState;
@@ -89,6 +92,8 @@ public final class OfflineItemBridge {
         item.canRename = canRename;
         item.ignoreVisuals = ignoreVisuals;
         item.contentQualityScore = contentQualityScore;
+        item.schedule = schedule;
+
         if (list != null) list.add(item);
         return item;
     }
@@ -104,5 +109,11 @@ public final class OfflineItemBridge {
         updateDelta.stateChanged = stateChanged;
         updateDelta.visualsChanged = visualsChanged;
         return updateDelta;
+    }
+
+    @CalledByNative
+    private static OfflineItemSchedule createOfflineItemSchedule(
+            boolean onlyOnWifi, long startTimeMs) {
+        return new OfflineItemSchedule(onlyOnWifi, startTimeMs);
     }
 }

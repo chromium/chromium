@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import org.chromium.url.GURL;
+
 /**
  * Represents a recently closed tab.
  */
 public class RecentlyClosedTab {
     public final int id;
     public final String title;
-    public final String url;
+    public final GURL url;
 
-    public RecentlyClosedTab(int id, String title, String url) {
+    public RecentlyClosedTab(int id, String title, GURL url) {
         this.id = id;
         this.title = title;
         this.url = url;

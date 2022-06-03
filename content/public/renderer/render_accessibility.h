@@ -22,6 +22,7 @@ class CONTENT_EXPORT RenderAccessibility {
   // PluginAXTreeSource, into the page's accessibility tree.
   virtual void SetPluginTreeSource(PluginAXTreeSource* source) = 0;
   virtual void OnPluginRootNodeUpdated() = 0;
+  virtual void ShowPluginContextMenu() = 0;
 
  protected:
   ~RenderAccessibility() {}

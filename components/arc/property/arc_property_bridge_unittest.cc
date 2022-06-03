@@ -31,10 +31,10 @@ class FakePropertyInstance : public mojom::PropertyInstance {
     minimize_on_back_ = enable;
   }
 
-  base::Optional<bool> minimize_on_back() const { return minimize_on_back_; }
+  absl::optional<bool> minimize_on_back() const { return minimize_on_back_; }
 
  private:
-  base::Optional<bool> minimize_on_back_;
+  absl::optional<bool> minimize_on_back_;
 };
 
 }  // namespace
@@ -76,7 +76,7 @@ class ArcPropertyBridgeTest : public testing::Test {
     instance_ = nullptr;
   }
 
-  base::Optional<bool> GetMinimizeOnBackState() const {
+  absl::optional<bool> GetMinimizeOnBackState() const {
     return instance_->minimize_on_back();
   }
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
@@ -14,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
 
 using extensions::ResultCatcher;
@@ -58,12 +59,10 @@ gcm::GCMClient::SendErrorDetails CreateErrorDetails(
 namespace extensions {
 
 class GcmApiTest : public ExtensionApiTest {
- public:
-  GcmApiTest() : fake_gcm_profile_service_(NULL) {}
-
  protected:
+  // BrowserTestBase overrides.
   void SetUpCommandLine(base::CommandLine* command_line) override;
-  void SetUpOnMainThread() override;
+  void SetUpInProcessBrowserTestFixture() override;
 
   void StartCollecting();
 
@@ -72,12 +71,14 @@ class GcmApiTest : public ExtensionApiTest {
   gcm::FakeGCMProfileService* service() const;
 
  private:
-  gcm::FakeGCMProfileService* fake_gcm_profile_service_;
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
+
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   // We now always create the GCMProfileService instance in
-  // ProfileSyncServiceFactory that is called when a profile is being
+  // SyncServiceFactory that is called when a profile is being
   // initialized. In order to prevent it from being created, we add the switch
   // to disable the sync logic.
   command_line->AppendSwitch(switches::kDisableSync);
@@ -85,15 +86,19 @@ void GcmApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionApiTest::SetUpCommandLine(command_line);
 }
 
-void GcmApiTest::SetUpOnMainThread() {
-  gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-      browser()->profile(),
-      base::BindRepeating(&gcm::FakeGCMProfileService::Build));
-  fake_gcm_profile_service_ = static_cast<gcm::FakeGCMProfileService*>(
-      gcm::GCMProfileServiceFactory::GetInstance()->GetForProfile(
-          browser()->profile()));
+void GcmApiTest::SetUpInProcessBrowserTestFixture() {
+  create_services_subscription_ =
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &GcmApiTest::OnWillCreateBrowserContextServices,
+              base::Unretained(this)));
+  ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+}
 
-  ExtensionApiTest::SetUpOnMainThread();
+void GcmApiTest::OnWillCreateBrowserContextServices(
+    content::BrowserContext* context) {
+  gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&gcm::FakeGCMProfileService::Build));
 }
 
 void GcmApiTest::StartCollecting() {
@@ -101,7 +106,9 @@ void GcmApiTest::StartCollecting() {
 }
 
 gcm::FakeGCMProfileService* GcmApiTest::service() const {
-  return fake_gcm_profile_service_;
+  return static_cast<gcm::FakeGCMProfileService*>(
+      gcm::GCMProfileServiceFactory::GetInstance()->GetForProfile(
+          browser()->profile()));
 }
 
 const Extension* GcmApiTest::LoadTestExtension(
@@ -110,8 +117,8 @@ const Extension* GcmApiTest::LoadTestExtension(
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(extension_path));
   if (extension) {
-    ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL(page_name));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension->GetResourceURL(page_name)));
   }
   return extension;
 }
@@ -258,9 +265,10 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, Incognito) {
   catcher.RestrictToBrowserContext(profile());
   ResultCatcher incognito_catcher;
   incognito_catcher.RestrictToBrowserContext(
-      profile()->GetOffTheRecordProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  ASSERT_TRUE(RunExtensionTestIncognito("gcm/functions/incognito"));
+  ASSERT_TRUE(RunExtensionTest("gcm/functions/incognito", {},
+                               {.allow_in_incognito = true}));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(incognito_catcher.GetNextResult()) << incognito_catcher.message();

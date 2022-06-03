@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<h4 id="test">non-empty content to be clicked</h4>
+<script type="module">
+import {vibration_test} from './resources/vibration-helpers.js';
+
+vibration_test(vibration => {
+  assert_true(vibration instanceof Object);
+  assert_true(vibration.mockVibrationManager instanceof Object);
+}, 'VibrationManager Mojo bindings and mock interfaces are available to tests.');
+
+// Ensure a click has occurred so we can vibrate; but only one is necessary,
+// hence the single promise shared among tests.
+const click = test_driver.click(document.getElementById('test'));
+
+vibration_test(async vibration => {
+  const msgPromise= new Promise(
+      resolve => window.addEventListener('message', resolve, {once: true}));
+  await click;
+  navigator.vibrate(1234);
+  const {data}  = await msgPromise;
+  assert_equals(data, 'Vibrate');
+  assert_equals(vibration.mockVibrationManager.getDuration(), 1234);
+  assert_false(vibration.mockVibrationManager.isCancelled());
+}, 'navigator.vibrate(1234) triggers vibration correctly.');
+
+vibration_test(async vibration => {
+  const msgPromise = new Promise(
+      resolve => window.addEventListener('message', resolve, {once: true}));
+  await click;
+  navigator.vibrate(0);
+  const {data} = await msgPromise;
+  assert_equals(data, 'Cancel');
+  assert_true(vibration.mockVibrationManager.isCancelled());
+}, 'navigator.vibrate(0) triggers cancel correctly.');
+
+</script>

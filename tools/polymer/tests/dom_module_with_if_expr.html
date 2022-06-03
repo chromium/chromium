@@ -1,0 +1,23 @@
+<if expr="chromeos">
+<link rel="import" href="../shared_vars_chromeos_css.html">
+</if>
+<link rel="import" href="../../../ui/webui/resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
+<link rel="import" href="../shared_vars_css.html">
+<link rel="import" href="foo.html">
+<if expr="chromeos">
+<link rel="import" href="bar.html">
+</if>
+
+<dom-module id="cr-test-foo">
+  <template>
+    <style>
+      div {
+        font-size: 2rem;
+      }
+    </style>
+    <div>Hello world</div>
+  </template>
+  <script src="dom_module.js"></script>
+</dom-module>

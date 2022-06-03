@@ -291,13 +291,13 @@ TEST_F(LocaleMacTest, monthLabels) {
 }
 
 TEST_F(LocaleMacTest, weekDayShortLabels) {
-  EXPECT_EQ("Sun", WeekDayShortLabel("en_US", kSunday));
-  EXPECT_EQ("Wed", WeekDayShortLabel("en_US", kWednesday));
-  EXPECT_EQ("Sat", WeekDayShortLabel("en_US", kSaturday));
+  EXPECT_EQ("S", WeekDayShortLabel("en_US", kSunday));
+  EXPECT_EQ("W", WeekDayShortLabel("en_US", kWednesday));
+  EXPECT_EQ("S", WeekDayShortLabel("en_US", kSaturday));
 
-  EXPECT_EQ("dim.", WeekDayShortLabel("fr_FR", kSunday));
-  EXPECT_EQ("mer.", WeekDayShortLabel("fr_FR", kWednesday));
-  EXPECT_EQ("sam.", WeekDayShortLabel("fr_FR", kSaturday));
+  EXPECT_EQ("D", WeekDayShortLabel("fr_FR", kSunday));
+  EXPECT_EQ("M", WeekDayShortLabel("fr_FR", kWednesday));
+  EXPECT_EQ("S", WeekDayShortLabel("fr_FR", kSaturday));
 
   EXPECT_EQ("\xE6\x97\xA5", WeekDayShortLabel("ja_JP", kSunday).Utf8());
   EXPECT_EQ("\xE6\xB0\xB4", WeekDayShortLabel("ja_JP", kWednesday).Utf8());

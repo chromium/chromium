@@ -1,12 +1,13 @@
 specific_include_rules = {
   # Parts of this class use Ash, but only when run in classic Ash mode.
-  "browser_non_client_frame_view_ash\.*": [
+  "browser_non_client_frame_view_chromeos\.*": [
     "+ash",
   ],
   "browser_frame_ash\.*": [
     "+ash",
+    "+components/app_restore",
   ],
-  "global_menu_bar_.*x11\.*": [
+  "dbus_appmenu\.*": [
     "+dbus",
   ],
   "top_controls_slide_controller_chromeos_browsertest.cc": [

@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom";
+
+// Used for a list of files in clipboard or drag-and-drop.
+struct DataTransferFile {
+  // Absolute file system path.
+  mojo_base.mojom.FilePath path;
+  // Display name (typically last part of path).
+  mojo_base.mojom.FilePath display_name;
+  // Unguessable token associated with this file. Passed back from renderer to
+  // browser in mojo FileSystemAccessManager GetEntryFromDataTransferToken() to
+  // retrieve a FileSystemAccessEntry.
+  pending_remote<FileSystemAccessDataTransferToken>? file_system_access_token;
+};

@@ -43,7 +43,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           <a class="back" href="./index.html">Back</a>
         </p>
         <div id="warning-zone"></div>
-        <button id="xr-button" disabled>XR not found</button>
+        <button id="xr-button" class="barebones-button" disabled>XR not found</button>
       </details>
     </header>
     <main style='text-align: center;'>
@@ -72,7 +72,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             xrButton.innerHTML = 'XR not found';
           }
 
-          xrButton.disabled = supported;
+          xrButton.disabled = !supported;
         });
       }
 

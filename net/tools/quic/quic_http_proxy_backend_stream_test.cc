@@ -4,10 +4,13 @@
 
 #include "net/tools/quic/quic_http_proxy_backend_stream.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -56,13 +59,13 @@ std::unique_ptr<test_server::HttpResponse> HandleDefaultResponseLarge(
   return std::move(http_response);
 }
 
-int ParseHeaderStatusCode(const spdy::SpdyHeaderBlock& header) {
+int ParseHeaderStatusCode(const spdy::Http2HeaderBlock& header) {
   int status_code;
-  spdy::SpdyHeaderBlock::const_iterator it = header.find(kHttp2StatusHeader);
+  spdy::Http2HeaderBlock::const_iterator it = header.find(kHttp2StatusHeader);
   if (it == header.end()) {
     return -1;
   }
-  const base::StringPiece status(it->second);
+  const base::StringPiece status = base::StringViewToStringPiece(it->second);
   if (status.size() != 3) {
     return -1;
   }
@@ -108,7 +111,7 @@ class TestQuicServerStreamDelegate
   }
 
   void StartHttpRequestToBackendAndWait(
-      spdy::SpdyHeaderBlock* incoming_request_headers,
+      spdy::Http2HeaderBlock* incoming_request_headers,
       const std::string& incoming_body) {
     send_success_ = quic_backend_stream_->SendRequestToBackend(
         incoming_request_headers, incoming_body);
@@ -128,8 +131,7 @@ class TestQuicServerStreamDelegate
   std::string peer_host() const override { return "127.0.0.1"; }
 
   void OnResponseBackendComplete(
-      const quic::QuicBackendResponse* response,
-      std::list<quic::QuicBackendResponse::ServerPushInfo> resources) override {
+      const quic::QuicBackendResponse* response) override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     EXPECT_FALSE(did_complete_);
     EXPECT_TRUE(quic_backend_stream_);
@@ -181,7 +183,7 @@ class QuicHttpProxyBackendStreamTest : public QuicTest {
   // Initializes |test_server_| without starting it.  Allows subclasses to use
   // their own server configuration.
   void SetUpServer() {
-    test_server_.reset(new EmbeddedTestServer);
+    test_server_ = std::make_unique<EmbeddedTestServer>();
     test_server_->AddDefaultHandlers(base::FilePath());
     test_server_->RegisterDefaultHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/defaultresponselarge",
@@ -198,7 +200,7 @@ class QuicHttpProxyBackendStreamTest : public QuicTest {
 
 TEST_F(QuicHttpProxyBackendStreamTest,
        DISABLED_SendRequestToBackendGetDefault) {
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = kDefaultResponsePath;
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/1.1";
@@ -217,7 +219,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
 }
 
 TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendGetLarge) {
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/defaultresponselarge";
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/1.1";
@@ -239,7 +241,7 @@ TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendGetLarge) {
 
 TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendPostBody) {
   const char kUploadData[] = "bobsyeruncle";
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/echo";
   request_headers[":version"] = "HTTP/2.0";
   request_headers[":version"] = "HTTP/1.1";
@@ -263,7 +265,7 @@ TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendPostBody) {
 TEST_F(QuicHttpProxyBackendStreamTest,
        DISABLED_SendRequestToBackendPostEmptyString) {
   const char kUploadData[] = "";
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/echo";
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/2.0";
@@ -289,7 +291,7 @@ TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendPostFile) {
   base::FilePath upload_path = GetUploadFileTestPath();
   ASSERT_TRUE(base::ReadFileToString(upload_path, &kUploadData));
 
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/echo";
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/2.0";
@@ -312,7 +314,7 @@ TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendPostFile) {
 TEST_F(QuicHttpProxyBackendStreamTest,
        DISABLED_SendRequestToBackendResponse500) {
   const char kUploadData[] = "bobsyeruncle";
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/echo?status=500";
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/2.0";
@@ -332,7 +334,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
 
 TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendFail) {
   const char kUploadData[] = "bobsyeruncle";
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/echo";
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/2.0";
@@ -352,7 +354,7 @@ TEST_F(QuicHttpProxyBackendStreamTest, DISABLED_SendRequestToBackendFail) {
 TEST_F(QuicHttpProxyBackendStreamTest,
        DISABLED_SendRequestToBackendOnRedirect) {
   const std::string kRedirectTarget = backend_url_.append("/echo");
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = std::string("/server-redirect?") + kRedirectTarget;
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/2.0";
@@ -377,7 +379,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
   const char kGzipData[] =
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!";
   uint64_t rawBodyLength = strlen(kGzipData);
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = std::string("/gzip-body?") + kGzipData;
   request_headers[":authority"] = "www.example.org";
   request_headers[":version"] = "HTTP/2.0";
@@ -394,14 +396,14 @@ TEST_F(QuicHttpProxyBackendStreamTest,
             quic_response->response_type());
   EXPECT_EQ(200, ParseHeaderStatusCode(quic_response->headers()));
   EXPECT_EQ(kGzipData, quic_response->body());
-  spdy::SpdyHeaderBlock quic_response_headers =
+  spdy::Http2HeaderBlock quic_response_headers =
       quic_response->headers().Clone();
 
   // Ensure that the content length is set to the raw body size (unencoded)
   auto responseLength = quic_response_headers.find("content-length");
   uint64_t response_header_content_length = 0;
   if (responseLength != quic_response_headers.end()) {
-    base::StringToUint64(responseLength->second,
+    base::StringToUint64(base::StringViewToStringPiece(responseLength->second),
                          &response_header_content_length);
   }
   EXPECT_EQ(rawBodyLength, response_header_content_length);
@@ -414,7 +416,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
 // Ensure cookies are not saved/updated at the proxy
 TEST_F(QuicHttpProxyBackendStreamTest,
        DISABLED_SendRequestToBackendCookiesNotSaved) {
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":authority"] = "www.example.org";
   request_headers[":method"] = "GET";
 
@@ -429,7 +431,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
         delegate.get_proxy_backend_stream()->GetBackendResponse();
 
     EXPECT_EQ(200, ParseHeaderStatusCode(quic_response->headers()));
-    spdy::SpdyHeaderBlock quic_response_headers =
+    spdy::Http2HeaderBlock quic_response_headers =
         quic_response->headers().Clone();
     EXPECT_TRUE(quic_response_headers.end() !=
                 quic_response_headers.find("set-cookie"));
@@ -459,7 +461,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
 // backend
 TEST_F(QuicHttpProxyBackendStreamTest,
        DISABLED_SendRequestToBackendHopHeaders) {
-  spdy::SpdyHeaderBlock request_headers;
+  spdy::Http2HeaderBlock request_headers;
   request_headers[":path"] = "/echoall";
   request_headers[":authority"] = "www.example.org";
   request_headers[":method"] = "GET";
@@ -482,7 +484,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
   quic::QuicBackendResponse* quic_response =
       delegate.get_proxy_backend_stream()->GetBackendResponse();
   EXPECT_EQ(200, ParseHeaderStatusCode(quic_response->headers()));
-  spdy::SpdyHeaderBlock quic_response_headers =
+  spdy::Http2HeaderBlock quic_response_headers =
       quic_response->headers().Clone();
   for (it = QuicHttpProxyBackendStream::kHopHeaders.begin();
        it != QuicHttpProxyBackendStream::kHopHeaders.end(); ++it) {

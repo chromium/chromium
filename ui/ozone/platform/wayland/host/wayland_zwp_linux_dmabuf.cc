@@ -7,34 +7,59 @@
 #include <drm_fourcc.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
 
 namespace {
-constexpr uint32_t kImmedVerstion = 3;
+constexpr uint32_t kMaxLinuxDmabufVersion = 3;
+}
+
+// static
+constexpr char WaylandZwpLinuxDmabuf::kInterfaceName[];
+
+// static
+void WaylandZwpLinuxDmabuf::Instantiate(WaylandConnection* connection,
+                                        wl_registry* registry,
+                                        uint32_t name,
+                                        const std::string& interface,
+                                        uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
+  if (connection->zwp_dmabuf())
+    return;
+
+  auto zwp_linux_dmabuf = wl::Bind<zwp_linux_dmabuf_v1>(
+      registry, name, std::min(version, kMaxLinuxDmabufVersion));
+  if (!zwp_linux_dmabuf) {
+    LOG(ERROR) << "Failed to bind zwp_linux_dmabuf_v1";
+    return;
+  }
+  connection->zwp_dmabuf_ = std::make_unique<WaylandZwpLinuxDmabuf>(
+      zwp_linux_dmabuf.release(), connection);
 }
 
 WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
     zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
     WaylandConnection* connection)
     : zwp_linux_dmabuf_(zwp_linux_dmabuf), connection_(connection) {
-  static const zwp_linux_dmabuf_v1_listener dmabuf_listener = {
-      &WaylandZwpLinuxDmabuf::Format,
-      &WaylandZwpLinuxDmabuf::Modifiers,
+  static constexpr zwp_linux_dmabuf_v1_listener dmabuf_listener = {
+      &Format,
+      &Modifiers,
   };
   zwp_linux_dmabuf_v1_add_listener(zwp_linux_dmabuf_.get(), &dmabuf_listener,
                                    this);
 
   // A roundtrip after binding guarantees that the client has received all
   // supported formats.
-  wl_display_roundtrip(connection_->display());
+  connection_->RoundTripQueue();
 }
 
 WaylandZwpLinuxDmabuf::~WaylandZwpLinuxDmabuf() = default;
 
-void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
+void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
                                          const gfx::Size& size,
                                          const std::vector<uint32_t>& strides,
                                          const std::vector<uint32_t>& offsets,
@@ -42,9 +67,8 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
                                          uint32_t format,
                                          uint32_t planes_count,
                                          wl::OnRequestBufferCallback callback) {
-  static const struct zwp_linux_buffer_params_v1_listener params_listener = {
-      &WaylandZwpLinuxDmabuf::CreateSucceeded,
-      &WaylandZwpLinuxDmabuf::CreateFailed};
+  static constexpr zwp_linux_buffer_params_v1_listener params_listener = {
+      &CreateSucceeded, &CreateFailed};
 
   struct zwp_linux_buffer_params_v1* params =
       zwp_linux_dmabuf_v1_create_params(zwp_linux_dmabuf_.get());
@@ -56,9 +80,9 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
   }
 
   // It's possible to avoid waiting until the buffer is created and have it
-  // immediately. This method is only available since the protocol version 3.
-  if (zwp_linux_dmabuf_v1_get_version(zwp_linux_dmabuf_.get()) >=
-      kImmedVerstion) {
+  // immediately. This method is only available since the protocol version 2.
+  if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >=
+      ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION) {
     wl::Object<wl_buffer> buffer(zwp_linux_buffer_params_v1_create_immed(
         params, size.width(), size.height(), format, 0));
     std::move(callback).Run(std::move(buffer));
@@ -76,7 +100,7 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
 
 void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
     uint32_t fourcc_format,
-    base::Optional<uint64_t> modifier) {
+    absl::optional<uint64_t> modifier) {
   // Return on not supported fourcc formats.
   if (!IsValidBufferFormat(fourcc_format))
     return;
@@ -134,7 +158,7 @@ void WaylandZwpLinuxDmabuf::Format(void* data,
                                    uint32_t format) {
   WaylandZwpLinuxDmabuf* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
   if (self)
-    self->AddSupportedFourCCFormatAndModifier(format, base::nullopt);
+    self->AddSupportedFourCCFormatAndModifier(format, absl::nullopt);
 }
 
 // static

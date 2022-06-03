@@ -67,7 +67,7 @@ double BaseTemporalInputType::ValueAsDate() const {
 }
 
 void BaseTemporalInputType::SetValueAsDate(
-    const base::Optional<base::Time>& value,
+    const absl::optional<base::Time>& value,
     ExceptionState&) const {
   GetElement().setValue(SerializeWithDate(value));
 }
@@ -94,6 +94,11 @@ bool BaseTemporalInputType::TypeMismatch() const {
   return TypeMismatchFor(GetElement().value());
 }
 
+String BaseTemporalInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL_DATETIME,
+                                 LocalizeValue(Serialize(value)));
+}
+
 String BaseTemporalInputType::RangeOverflowText(const Decimal& maximum) const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_OVERFLOW_DATETIME,
                                  LocalizeValue(Serialize(maximum)));
@@ -102,6 +107,16 @@ String BaseTemporalInputType::RangeOverflowText(const Decimal& maximum) const {
 String BaseTemporalInputType::RangeUnderflowText(const Decimal& minimum) const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_UNDERFLOW_DATETIME,
                                  LocalizeValue(Serialize(minimum)));
+}
+
+String BaseTemporalInputType::RangeInvalidText(const Decimal& minimum,
+                                               const Decimal& maximum) const {
+  DCHECK(minimum > maximum)
+      << "RangeInvalidText should only be called with minimum>maximum";
+
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_INVALID_DATETIME,
+                                 LocalizeValue(Serialize(minimum)),
+                                 LocalizeValue(Serialize(maximum)));
 }
 
 Decimal BaseTemporalInputType::DefaultValueForStepUp() const {
@@ -156,7 +171,7 @@ String BaseTemporalInputType::SerializeWithComponents(
 }
 
 String BaseTemporalInputType::SerializeWithDate(
-    const base::Optional<base::Time>& value) const {
+    const absl::optional<base::Time>& value) const {
   if (!value)
     return g_empty_string;
   return Serialize(Decimal::FromDouble(value->ToJsTimeIgnoringNull()));
@@ -190,7 +205,11 @@ bool BaseTemporalInputType::ShouldRespectListAttribute() {
 }
 
 bool BaseTemporalInputType::ValueMissing(const String& value) const {
-  return GetElement().IsRequired() && value.IsEmpty();
+  // For text-mode input elements (including dates), the value is missing only
+  // if it is mutable.
+  // https://html.spec.whatwg.org/multipage/input.html#the-required-attribute
+  return GetElement().IsRequired() && value.IsEmpty() &&
+         !GetElement().IsDisabledOrReadOnly();
 }
 
 bool BaseTemporalInputType::MayTriggerVirtualKeyboard() const {

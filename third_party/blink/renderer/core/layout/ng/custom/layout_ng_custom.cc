@@ -15,6 +15,27 @@ LayoutNGCustom::LayoutNGCustom(Element* element)
   DCHECK(element);
 }
 
+void LayoutNGCustom::AddChild(LayoutObject* new_child,
+                              LayoutObject* before_child) {
+  // Only use the block-flow AddChild logic when we are unloaded, i.e. we
+  // should behave exactly like a block-flow.
+  if (state_ == kUnloaded) {
+    LayoutNGBlockFlow::AddChild(new_child, before_child);
+    return;
+  }
+  LayoutBlock::AddChild(new_child, before_child);
+}
+
+void LayoutNGCustom::RemoveChild(LayoutObject* child) {
+  // Only use the block-flow RemoveChild logic when we are unloaded, i.e. we
+  // should behave exactly like a block-flow.
+  if (state_ == kUnloaded) {
+    LayoutNGBlockFlow::RemoveChild(child);
+    return;
+  }
+  LayoutBlock::RemoveChild(child);
+}
+
 void LayoutNGCustom::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
   if (state_ == kUnloaded) {
@@ -34,6 +55,11 @@ void LayoutNGCustom::StyleDidChange(StyleDifference diff,
         state_ = kBlock;
     }
   }
+
+  // Make our children "block-level" before invoking StyleDidChange. As the
+  // current multi-col logic may invoke a call to AddChild, failing a DCHECK.
+  if (state_ != kUnloaded)
+    SetChildrenInline(false);
 
   // TODO(ikilpatrick): Investigate reducing the properties which
   // LayoutNGBlockFlow::StyleDidChange invalidates upon. (For example margins).

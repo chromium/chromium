@@ -1,0 +1,40 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style type="text/css">
+  #widthProvider {
+    width: 100px;
+  }
+
+  #maxWidthProvider {
+    width: 200px;
+  }
+
+  #viewport {
+    width: 400px;
+    height: 200px;
+    overflow: hidden; /* Suppress scroll bars to get consistent cross-browser resizing */
+    position: relative;
+  }
+</style>
+<div id="someElement">
+ Click target
+</div>
+<div id="widthProvider">
+ Providing width
+</div>
+<div id="maxWidthProvider">
+ Providing max width
+</div>
+<div id="target">
+ Target
+</div>
+<div id="viewport">
+ Parent (viewport) element for some tests
+ <div id="viewportTarget">
+  Target for viewport tests
+ </div>
+</div>

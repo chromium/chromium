@@ -12,12 +12,12 @@ import json
 import os
 import sys
 
-#Import pystache from //third_party/pystache
+#Import chevron from //third_party
 src_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
                        os.pardir, os.pardir)
-sys.path.insert(0, os.path.join(src_dir, 'third_party'))
-import pystache
-sys.path.insert(0, os.path.join(src_dir, 'build/android/gyp'))
+sys.path.insert(1, os.path.join(src_dir, 'third_party'))
+import chevron
+sys.path.insert(1, os.path.join(src_dir, 'build/android/gyp'))
 from util import build_utils  # pylint: disable=import-error
 
 
@@ -63,9 +63,9 @@ def main():
                                      parser.error)
 
   with open(options.template, 'r') as f:
-    render = pystache.render(f.read(), variables)
-    with codecs.open(options.output, 'w', 'utf-8') as output_file:
-      output_file.write(render)
+    rendered = chevron.render(f, variables)
+  with open(options.output, 'w') as output_file:
+    output_file.write(rendered)
 
 
 if __name__ == '__main__':

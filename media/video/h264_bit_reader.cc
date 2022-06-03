@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "media/video/h264_bit_reader.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace media {
 
 H264BitReader::H264BitReader()
-    : data_(NULL),
+    : data_(nullptr),
       bytes_left_(0),
       curr_byte_(0),
       num_remaining_bits_in_curr_byte_(0),

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 
@@ -9,12 +10,7 @@ assert(enable_extensions)
 
 schema_sources_ = [
   "accessibility_features.json",
-  "accessibility_private.json",
   "activity_log_private.json",
-  "cast_streaming_receiver_session.idl",
-  "cast_streaming_rtp_stream.idl",
-  "cast_streaming_session.idl",
-  "cast_streaming_udp_transport.idl",
   "autofill_private.idl",
   "autotest_private.idl",
   "bookmark_manager_private.json",
@@ -23,18 +19,18 @@ schema_sources_ = [
   "chrome_web_view_internal.json",
   "command_line_private.json",
   "content_settings.json",
-  "context_menus_internal.json",
   "context_menus.json",
   "cookies.json",
   "cryptotoken_private.idl",
   "dashboard_private.json",
-  "data_reduction_proxy.json",
   "debugger.json",
   "desktop_capture.json",
   "developer_private.idl",
+  "crash_report_private.idl",
   "downloads.idl",
   "downloads_internal.idl",
   "enterprise_hardware_platform.idl",
+  "enterprise_reporting_private.idl",
   "font_settings.json",
   "gcm.json",
   "history.json",
@@ -44,7 +40,6 @@ schema_sources_ = [
   "image_writer_private.idl",
   "instance_id.json",
   "language_settings_private.idl",
-  "manifest_types.json",
   "notifications.idl",
   "omnibox.json",
   "page_capture.json",
@@ -52,14 +47,17 @@ schema_sources_ = [
   "permissions.json",
   "resources_private.idl",
   "safe_browsing_private.idl",
+  "scripting.idl",
+  "search.idl",
   "sessions.json",
   "settings_private.idl",
   "signed_in_devices.idl",
-  "system_indicator.idl",
   "system_private.json",
   "tab_capture.idl",
+  "tab_groups.json",
   "tabs.json",
   "types.json",
+  "web_authentication_proxy.idl",
   "web_navigation.json",
 
   # Despite the name, these APIs do not rely on any WebRTC-specific bits and as
@@ -76,18 +74,30 @@ if (!is_android) {
   schema_sources_ += [ "processes.idl" ]
 }
 
-if (is_chromeos || is_mac || is_win) {
-  schema_sources_ += [ "networking_cast_private.idl" ]
-}
-
 if (is_chromeos) {
   schema_sources_ += [
-    "certificate_provider.idl",
-    "certificate_provider_internal.idl",
-    "echo_private.json",
     "enterprise_device_attributes.idl",
+    "enterprise_networking_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
+    "login_state.idl",
+    "platform_keys_internal.idl",
+    "platform_keys.idl",
+    "quick_unlock_private.idl",
+  ]
+
+  if (use_cups) {
+    schema_sources_ += [ "printing.idl" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  schema_sources_ += [
+    "accessibility_private.json",
+    "certificate_provider.idl",
+    "certificate_provider_internal.idl",
+    "document_scan.idl",
+    "echo_private.json",
     "enterprise_platform_keys_private.json",
     "file_browser_handler_internal.json",
     "file_manager_private.idl",
@@ -96,37 +106,29 @@ if (is_chromeos) {
     "file_system_provider_internal.idl",
     "input_ime.json",
     "input_method_private.json",
-    "launcher_search_provider.idl",
     "login.idl",
     "login_screen_storage.idl",
     "login_screen_ui.idl",
-    "login_state.idl",
-    "platform_keys.idl",
-    "platform_keys_internal.idl",
-    "printing_metrics.idl",
-    "quick_unlock_private.idl",
+    "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",
     "wallpaper.json",
     "wallpaper_private.json",
+    "wm_desks_private.idl",
   ]
   if (use_cups) {
-    schema_sources_ += [ "printing.idl" ]
+    schema_sources_ += [ "printing_metrics.idl" ]
   }
-} else if (is_linux || is_win) {
+} else if (is_linux || is_chromeos || is_win) {
   schema_sources_ += [ "input_ime.json" ]
-}
-
-if (!is_chromeos) {
-  schema_sources_ += [ "enterprise_reporting_private.idl" ]
-}
-
-if (enable_print_preview && !is_chromeos) {
-  schema_sources_ += [ "cloud_print_private.json" ]
 }
 
 if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
+}
+
+if (is_linux || is_mac || is_win) {
+  schema_sources_ += [ "system_indicator.idl" ]
 }
 
 uncompiled_sources_ = [
@@ -139,7 +141,7 @@ uncompiled_sources_ = [
   "top_sites.json",
 ]
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   uncompiled_sources_ += [
     "chromeos_info_private.json",
     "media_player_private.json",
@@ -147,6 +149,13 @@ if (is_chromeos) {
 }
 
 chrome_extensions_api_schema_sources = get_path_info(schema_sources_, "abspath")
+
+chrome_extensions_manifest_only_schema_sources =
+    get_path_info([
+                    "manifest_types.json",
+                    "chrome_url_overrides.idl",
+                  ],
+                  "abspath")
 
 chrome_extensions_api_uncompiled_sources =
     get_path_info(uncompiled_sources_, "abspath")

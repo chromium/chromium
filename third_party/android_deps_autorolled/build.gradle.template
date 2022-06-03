@@ -1,0 +1,47 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+apply plugin: ChromiumPlugin
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+}
+
+repositories {
+    maven {
+        // Maven central according to
+        // https://maven.apache.org/guides/mini/guide-mirror-settings.html
+        url 'https://repo.maven.apache.org/maven2'
+    }
+}
+
+dependencies {
+    // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
+
+    // Upstream guava introduced versions with -android suffix starting with version
+    // 22 to remove incompatible code with android. Thus we keep two jars, one for
+    // the full guava and one that supports android.
+    compile "com.google.guava:guava:{{guava_version}}-android"
+
+    // buildCompile targets have supports_android = false.
+    buildCompile "com.google.guava:guava:{{guava_version}}-jre"
+
+    compile "com.google.guava:failureaccess:1.0.1"
+
+    // Dedicated configuration to avoid using higher version number. The 9999 version is empty.
+    compileListenableFuture "com.google.guava:listenablefuture:1.0"
+}
+
+task setUpRepository(type: BuildConfigGenerator) {
+    // Paths are relative to the chromium source root.
+    repositoryPath 'third_party/android_deps_autorolled'
+    chromiumSourceRoot '../..'
+    cipdBucket 'chromium'
+    internalTargetVisibility = [ '//third_party/android_deps:*', ':*' ]
+    ignoreDEPS = true
+}

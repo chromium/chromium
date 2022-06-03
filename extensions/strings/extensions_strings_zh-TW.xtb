@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">哎呀！產生隨機 RSA 私密金鑰失敗。</translation>
 <translation id="1445572445564823378">這個擴充功能使得 <ph name="PRODUCT_NAME" /> 運作變慢。建議你停用這個擴充功能，以恢復 <ph name="PRODUCT_NAME" /> 的效能。</translation>
 <translation id="1468038450257740950">系統不支援 WebGL。</translation>
-<translation id="149347756975725155">無法載入擴充功能圖示「<ph name="ICON" />」。</translation>
 <translation id="1803557475693955505">無法載入背景頁面「<ph name="BACKGROUND_PAGE" />」。</translation>
 <translation id="2159915644201199628">無法將圖片解碼：「<ph name="IMAGE_NAME" />」</translation>
 <translation id="2350172092385603347">已使用語言代碼，但是仍未在資訊清單中指定 default_locale。</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">讀取私密金鑰失敗。</translation>
 <translation id="6391538222494443604">輸入項目目錄必須存在</translation>
 <translation id="641087317769093025">無法將擴充功能解壓縮</translation>
-<translation id="6413453408918378296">「<ph name="ICON" />」圖示不夠明顯。</translation>
 <translation id="6542618148162044354">「<ph name="APP_NAME" />」要求存取你的一或多個裝置：</translation>
 <translation id="657064425229075395">無法載入背景指令碼「<ph name="BACKGROUND_SCRIPT" />」。</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> 的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>

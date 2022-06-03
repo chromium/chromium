@@ -19,7 +19,7 @@ group("extensions") {
     ":ppapi_tests_extensions_popup($newlib)",
     ":ppapi_tests_extensions_socket_permissions($newlib)",
   ]
-  if ((target_cpu == "x86" || target_cpu == "x64") && is_linux &&
+  if ((target_cpu == "x86" || target_cpu == "x64") && (is_linux || is_chromeos) &&
       enable_nacl_nonsfi) {
     nonsfi = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
     data_deps += [ ":ppapi_tests_extensions_packaged_app($nonsfi)" ]
@@ -28,12 +28,8 @@ group("extensions") {
 
 if (is_nacl && !is_nacl_nonsfi) {
   nacl_test_data("ppapi_tests_extensions_background_keepalive") {
-    sources = [
-      "background_keepalive/background.cc",
-    ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    sources = [ "background_keepalive/background.cc" ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/background_keepalive"
     test_files = [
       "background_keepalive/background.js",
@@ -42,12 +38,8 @@ if (is_nacl && !is_nacl_nonsfi) {
   }
 
   nacl_test_data("ppapi_tests_extensions_load_unload") {
-    sources = [
-      "load_unload/load_unload.cc",
-    ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    sources = [ "load_unload/load_unload.cc" ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/load_unload"
     test_files = [
       "load_unload/background.js",
@@ -62,9 +54,7 @@ if (is_nacl && !is_nacl_nonsfi) {
       "//ppapi/tests/test_utils.h",
       "media_galleries/test_galleries.cc",
     ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/media_galleries"
     test_files = [
       "media_galleries/background.js",
@@ -75,12 +65,8 @@ if (is_nacl && !is_nacl_nonsfi) {
   }
 
   nacl_test_data("ppapi_tests_extensions_multicast_permissions") {
-    sources = [
-      "multicast_permissions/test_multicast_permissions.cc",
-    ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    sources = [ "multicast_permissions/test_multicast_permissions.cc" ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/multicast_permissions"
     test_files = [
       "multicast_permissions/controller.js",
@@ -91,12 +77,8 @@ if (is_nacl && !is_nacl_nonsfi) {
   }
 
   nacl_test_data("ppapi_tests_extensions_no_socket_permissions") {
-    sources = [
-      "no_socket_permissions/test_no_socket_permissions.cc",
-    ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    sources = [ "no_socket_permissions/test_no_socket_permissions.cc" ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/no_socket_permissions"
     test_files = [
       "no_socket_permissions/controller.js",
@@ -107,12 +89,8 @@ if (is_nacl && !is_nacl_nonsfi) {
   }
 
   nacl_test_data("ppapi_tests_extensions_popup") {
-    sources = [
-      "popup/module.cc",
-    ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    sources = [ "popup/module.cc" ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/popup"
     test_files = [
       "popup/background.js",
@@ -123,12 +101,8 @@ if (is_nacl && !is_nacl_nonsfi) {
   }
 
   nacl_test_data("ppapi_tests_extensions_socket_permissions") {
-    sources = [
-      "socket_permissions/test_socket_permissions.cc",
-    ]
-    deps = [
-      "//ppapi/cpp",
-    ]
+    sources = [ "socket_permissions/test_socket_permissions.cc" ]
+    deps = [ "//ppapi/cpp" ]
     destination_dir = "test_data/ppapi/tests/extensions/socket_permissions"
     test_files = [
       "socket_permissions/controller.js",
@@ -141,9 +115,7 @@ if (is_nacl && !is_nacl_nonsfi) {
 
 if (is_nacl) {
   nacl_test_data("ppapi_tests_extensions_packaged_app") {
-    sources = [
-      "packaged_app/test_packaged_app.cc",
-    ]
+    sources = [ "packaged_app/test_packaged_app.cc" ]
     deps = [
       "//ipc:message_support",
       "//ppapi/cpp",

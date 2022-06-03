@@ -13,6 +13,7 @@ ModeIndicatorObserver::ModeIndicatorObserver() : active_widget_(nullptr) {}
 ModeIndicatorObserver::~ModeIndicatorObserver() {
   if (active_widget_)
     active_widget_->RemoveObserver(this);
+  CHECK(!IsInObserverList());
 }
 
 void ModeIndicatorObserver::AddModeIndicatorWidget(views::Widget* widget) {

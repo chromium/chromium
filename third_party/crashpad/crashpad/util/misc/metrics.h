@@ -17,8 +17,12 @@
 
 #include <inttypes.h>
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "util/file/file_io.h"
+
+#if defined(OS_IOS)
+#include "util/ios/ios_intermediate_dump_format.h"
+#endif
 
 namespace crashpad {
 
@@ -30,6 +34,10 @@ namespace crashpad {
 //! Chromium's base, they allow integration with its metrics system.
 class Metrics {
  public:
+  Metrics() = delete;
+  Metrics(const Metrics&) = delete;
+  Metrics& operator=(const Metrics&) = delete;
+
   //! \brief Values for CrashReportPending().
   //!
   //! \note These are used as metrics enumeration values, so new values should
@@ -195,8 +203,15 @@ class Metrics {
   //! This is currently only reported on Windows.
   static void HandlerCrashed(uint32_t exception_code);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Metrics);
+#if defined(OS_IOS) || DOXYGEN
+  //! \brief Records a missing key from an intermediate dump.
+  static void MissingIntermediateDumpKey(
+      const internal::IntermediateDumpKey& key);
+
+  //! \brief Records a key with an invalid key size from an intermediate dump.
+  static void InvalidIntermediateDumpKeySize(
+      const internal::IntermediateDumpKey& key);
+#endif
 };
 
 }  // namespace crashpad

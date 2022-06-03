@@ -21,20 +21,20 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kIconFetchTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kIconFetchTimeout = base::Seconds(30);
 
 void FetchIcon(ExecutionContext* execution_context,
                const KURL& icon_url,
-               const WebSize& icon_size,
+               const gfx::Size& icon_size,
+               ThreadedIconLoader* threaded_icon_loader,
                ThreadedIconLoader::IconCallback callback) {
   ResourceRequest resource_request(icon_url);
-  resource_request.SetRequestContext(mojom::RequestContextType::IMAGE);
+  resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   resource_request.SetRequestDestination(
       network::mojom::RequestDestination::kImage);
   resource_request.SetPriority(ResourceLoadPriority::kMedium);
   resource_request.SetTimeoutInterval(kIconFetchTimeout);
 
-  auto* threaded_icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
   threaded_icon_loader->Start(execution_context, resource_request, icon_size,
                               std::move(callback));
 }
@@ -49,25 +49,25 @@ WebVector<Manifest::ImageResource> ToImageResource(
     image_resource.type = WebString(icon_definition->type).Utf16();
     for (const auto& size :
          WebIconSizesParser::ParseIconSizes(icon_definition->sizes)) {
-      image_resource.sizes.emplace_back(size.width, size.height);
+      image_resource.sizes.emplace_back(size);
     }
     if (image_resource.sizes.empty())
       image_resource.sizes.emplace_back(0, 0);
-    image_resource.purpose.push_back(Manifest::ImageResource::Purpose::ANY);
+    image_resource.purpose.push_back(mojom::ManifestImageResource_Purpose::ANY);
     image_resources.emplace_back(std::move(image_resource));
   }
   return image_resources;
 }
 
 KURL FindBestIcon(WebVector<Manifest::ImageResource> image_resources,
-                  const WebSize& icon_size) {
+                  const gfx::Size& icon_size) {
   return KURL(ManifestIconSelector::FindBestMatchingIcon(
       image_resources.ReleaseVector(),
-      /* ideal_icon_height_in_px= */ icon_size.height,
+      /* ideal_icon_height_in_px= */ icon_size.height(),
       /* minimum_icon_size_in_px= */ 0,
-      /* max_width_to_height_ratio= */ icon_size.width * 1.0f /
-          icon_size.height,
-      Manifest::ImageResource::Purpose::ANY));
+      /* max_width_to_height_ratio= */ icon_size.width() * 1.0f /
+          icon_size.height(),
+      mojom::ManifestImageResource_Purpose::ANY));
 }
 
 }  // namespace
@@ -77,7 +77,7 @@ ContentIndexIconLoader::ContentIndexIconLoader() = default;
 void ContentIndexIconLoader::Start(
     ExecutionContext* execution_context,
     mojom::blink::ContentDescriptionPtr description,
-    const Vector<WebSize>& icon_sizes,
+    const Vector<gfx::Size>& icon_sizes,
     IconsCallback callback) {
   DCHECK(!description->icons.IsEmpty());
   DCHECK(!icon_sizes.IsEmpty());
@@ -100,16 +100,21 @@ void ContentIndexIconLoader::Start(
     if (icon_url.IsEmpty())
       icon_url = KURL(image_resources[0].src);
 
+    auto* threaded_icon_loader = MakeGarbageCollected<ThreadedIconLoader>();
     // |icons_ptr| is safe to use since it is owned by |barrier_closure|.
     FetchIcon(
-        execution_context, icon_url, icon_size,
+        execution_context, icon_url, icon_size, threaded_icon_loader,
         WTF::Bind(
             [](base::OnceClosure done_closure, Vector<SkBitmap>* icons_ptr,
-               SkBitmap icon, double resize_scale) {
+               ThreadedIconLoader* icon_loader, SkBitmap icon,
+               double resize_scale) {
               icons_ptr->push_back(std::move(icon));
               std::move(done_closure).Run();
             },
-            barrier_closure, WTF::Unretained(icons_ptr)));
+            barrier_closure, WTF::Unretained(icons_ptr),
+            // Pass |threaded_icon_loader| to the callback to make sure it
+            // doesn't get destroyed.
+            WrapPersistent(threaded_icon_loader)));
   }
 }
 

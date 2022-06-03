@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
@@ -40,6 +40,10 @@ R AbortCallback(base::WeakPtr<IndexedDBTransaction> transaction) {
       blink::mojom::IDBError::New(error.code(), error.message()));
 }
 
+template <>
+mojo::PendingReceiver<blink::mojom::IDBDatabaseGetAllResultSink> AbortCallback(
+    base::WeakPtr<IndexedDBTransaction> transaction);
+
 template <typename R>
 base::OnceCallback<R()> CreateAbortCallback(
     base::WeakPtr<IndexedDBTransaction> transaction) {
@@ -63,6 +67,10 @@ class CallbackAbortOnDestruct {
       : callback_(std::move(callback)),
         args_at_destroy_(CreateAbortCallback<R>(transaction)),
         called_(false) {}
+
+  CallbackAbortOnDestruct(const CallbackAbortOnDestruct&) = delete;
+  CallbackAbortOnDestruct& operator=(const CallbackAbortOnDestruct&) = delete;
+
   ~CallbackAbortOnDestruct() {
     if (called_)
       return;
@@ -79,7 +87,6 @@ class CallbackAbortOnDestruct {
   T callback_;
   base::OnceCallback<R()> args_at_destroy_;
   bool called_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackAbortOnDestruct);
 };
 
 }  //  namespace indexed_db_callback_helpers_internal

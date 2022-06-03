@@ -8,17 +8,18 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
-#include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,8 +29,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/cloud_devices/common/cloud_devices_switches.h"
-#include "components/crash/content/app/crashpad.h"
-#include "components/crash/content/app/crash_switches.h"
+#include "components/crash/core/app/crash_switches.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_paths.h"
@@ -38,7 +39,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/base/ui_base_switches.h"
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
 namespace {
 
@@ -84,7 +85,7 @@ bool ServiceProcessState::GetServiceProcessData(std::string* version,
     *pid = service_data->service_process_pid;
   return true;
 }
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC
 
 // Return a name that is scoped to this instance of the service process. We
 // use the hash of the user-data-dir as a scoping prefix. We can't use
@@ -115,9 +116,9 @@ std::unique_ptr<base::CommandLine> CreateServiceProcessCommandLine() {
   command_line->AppendArg(switches::kPrefetchArgumentOther);
 #endif  // defined(OS_WIN)
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (crash_reporter::IsCrashpadEnabled()) {
-    command_line->AppendSwitch(crash_reporter::kEnableCrashpad);
+    command_line->AppendSwitch(switches::kEnableCrashpad);
 
     pid_t pid;
     if (crash_reporter::GetHandlerSocket(nullptr, &pid)) {
@@ -126,16 +127,13 @@ std::unique_ptr<base::CommandLine> CreateServiceProcessCommandLine() {
           base::NumberToString(pid));
     }
   }
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   static const char* const kSwitchesToCopy[] = {
     network::switches::kIgnoreUrlFetcherCertRequests,
     switches::kCloudPrintSetupProxy,
     switches::kCloudPrintURL,
     switches::kCloudPrintXmppEndpoint,
-#if defined(OS_WIN)
-    switches::kEnableCloudPrintXps,
-#endif
     switches::kEnableLogging,
     switches::kLang,
     switches::kLoggingLevel,
@@ -152,29 +150,29 @@ std::unique_ptr<base::CommandLine> CreateServiceProcessCommandLine() {
   return command_line;
 }
 
-ServiceProcessState::ServiceProcessState() : state_(NULL) {
+ServiceProcessState::ServiceProcessState() : state_(nullptr) {
   autorun_command_line_ = CreateServiceProcessCommandLine();
   CreateState();
 }
 
 ServiceProcessState::~ServiceProcessState() {
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   if (service_process_data_region_.IsValid()) {
     service_process_data_region_ = {};
     DeleteServiceProcessDataRegion();
   }
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC
   TearDownState();
 }
 
 void ServiceProcessState::SignalStopped() {
   TearDownState();
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   service_process_data_region_ = {};
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC
 }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 bool ServiceProcessState::Initialize() {
   if (!TakeSingletonLock()) {
     return false;
@@ -288,4 +286,4 @@ ServiceProcessState::GetServiceProcessServerName() {
   return ::GetServiceProcessServerName();
 }
 
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC

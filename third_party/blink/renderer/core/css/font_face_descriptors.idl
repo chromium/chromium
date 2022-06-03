@@ -12,4 +12,8 @@ dictionary FontFaceDescriptors {
     DOMString variant = "normal";
     DOMString featureSettings = "normal";
     DOMString display = "auto";
+    [MeasureAs=FontFaceAscentOverride] DOMString ascentOverride = "normal";
+    [MeasureAs=FontFaceDescentOverride] DOMString descentOverride = "normal";
+    [MeasureAs=FontFaceLineGapOverride] DOMString lineGapOverride = "normal";
+    [RuntimeEnabled=CSSFontFaceSizeAdjust, MeasureAs=FontFaceSizeAdjust] DOMString sizeAdjust = "100%";
 };

@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
-import("//ui/ozone/ozone.gni")
+import("//ui/base/ui_features.gni")
 
-jumbo_source_set("xkb") {
+source_set("xkb") {
   sources = [
     "keyboard_code_conversion_xkb.cc",
     "keyboard_code_conversion_xkb.h",
@@ -16,16 +16,18 @@ jumbo_source_set("xkb") {
 
   public_deps = [
     "//ui/base:buildflags",
+    "//ui/gfx/x/keysyms",
   ]
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/events:dom_keycode_converter",
   ]
 }
 
-if (use_x11 || ozone_platform_x11) {
-  jumbo_component("x11") {
+if (ozone_platform_x11) {
+  component("x11") {
     output_name = "keycodes_x11"
 
     sources = [
@@ -44,7 +46,5 @@ if (use_x11 || ozone_platform_x11) {
       "//ui/events:dom_keycode_converter",
       "//ui/gfx/x",
     ]
-
-    configs += [ "//build/config/linux:x11" ]
   }
 }

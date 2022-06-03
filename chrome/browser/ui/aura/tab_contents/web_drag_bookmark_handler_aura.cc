@@ -15,9 +15,7 @@
 using content::WebContents;
 
 WebDragBookmarkHandlerAura::WebDragBookmarkHandlerAura()
-    : bookmark_tab_helper_(NULL),
-      web_contents_(NULL) {
-}
+    : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
 WebDragBookmarkHandlerAura::~WebDragBookmarkHandlerAura() {
 }

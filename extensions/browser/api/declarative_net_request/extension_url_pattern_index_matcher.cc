@@ -10,7 +10,9 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/notreached.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -28,176 +30,120 @@ using FindRuleStrategy =
 std::vector<url_pattern_index::UrlPatternIndexMatcher> GetMatchers(
     const ExtensionUrlPatternIndexMatcher::UrlPatternIndexList* index_list) {
   DCHECK(index_list);
-  DCHECK_EQ(flat::ActionIndex_count, index_list->size());
+  DCHECK_EQ(flat::IndexType_count, index_list->size());
 
   std::vector<url_pattern_index::UrlPatternIndexMatcher> matchers;
-  matchers.reserve(flat::ActionIndex_count);
+  matchers.reserve(flat::IndexType_count);
   for (const flat_rule::UrlPatternIndex* index : *index_list)
     matchers.emplace_back(index);
   return matchers;
 }
 
-bool HasAnyRules(const flat_rule::UrlPatternIndex* index) {
-  DCHECK(index);
-
-  if (index->fallback_rules()->size() > 0)
-    return true;
-
-  // Iterate over all ngrams and check their corresponding rules.
-  for (auto* ngram_to_rules : *index->ngram_index()) {
-    if (ngram_to_rules == index->ngram_index_empty_slot())
-      continue;
-
-    if (ngram_to_rules->rule_list()->size() > 0)
-      return true;
-  }
-
-  return false;
-}
-
 bool IsExtraHeadersMatcherInternal(
-    const ExtensionUrlPatternIndexMatcher::UrlPatternIndexList* index_list) {
-  // We only support removing a subset of extra headers currently. If that
-  // changes, the implementation here should change as well.
-  static_assert(flat::ActionIndex_count == 7,
+    const std::vector<url_pattern_index::UrlPatternIndexMatcher>& matchers) {
+  static_assert(flat::IndexType_count == 3,
                 "Modify this method to ensure IsExtraHeadersMatcherInternal is "
                 "updated as new actions are added.");
-  static const flat::ActionIndex extra_header_indices[] = {
-      flat::ActionIndex_remove_cookie_header,
-      flat::ActionIndex_remove_referer_header,
-      flat::ActionIndex_remove_set_cookie_header,
-  };
+  return matchers[flat::IndexType_modify_headers].GetRulesCount() > 0;
+}
 
-  for (flat::ActionIndex index : extra_header_indices) {
-    if (HasAnyRules(index_list->Get(index)))
-      return true;
-  }
+size_t GetRulesCountInternal(
+    const std::vector<url_pattern_index::UrlPatternIndexMatcher>& matchers) {
+  size_t rules_count = 0;
+  for (const auto& matcher : matchers)
+    rules_count += matcher.GetRulesCount();
 
-  return false;
+  return rules_count;
 }
 
 }  // namespace
 
 ExtensionUrlPatternIndexMatcher::ExtensionUrlPatternIndexMatcher(
     const ExtensionId& extension_id,
-    api::declarative_net_request::SourceType source_type,
+    RulesetID ruleset_id,
     const ExtensionUrlPatternIndexMatcher::UrlPatternIndexList* index_list,
     const ExtensionMetadataList* metadata_list)
-    : RulesetMatcherBase(extension_id, source_type),
+    : RulesetMatcherBase(extension_id, ruleset_id),
       metadata_list_(metadata_list),
       matchers_(GetMatchers(index_list)),
-      is_extra_headers_matcher_(IsExtraHeadersMatcherInternal(index_list)) {}
+      is_extra_headers_matcher_(IsExtraHeadersMatcherInternal(matchers_)),
+      rules_count_(GetRulesCountInternal(matchers_)) {}
 
 ExtensionUrlPatternIndexMatcher::~ExtensionUrlPatternIndexMatcher() = default;
 
-base::Optional<RequestAction>
-ExtensionUrlPatternIndexMatcher::GetBlockOrCollapseAction(
+absl::optional<RequestAction>
+ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {
   const flat_rule::UrlRule* rule =
-      GetMatchingRule(params, flat::ActionIndex_block);
-  if (!rule)
-    return base::nullopt;
-
-  return CreateBlockOrCollapseRequestAction(params, *rule);
-}
-
-base::Optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetAllowAction(
-    const RequestParams& params) const {
-  const flat_rule::UrlRule* rule =
-      GetMatchingRule(params, flat::ActionIndex_allow);
-  if (!rule)
-    return base::nullopt;
-
-  return CreateAllowAction(params, *rule);
-}
-
-base::Optional<RequestAction>
-ExtensionUrlPatternIndexMatcher::GetRedirectAction(
-    const RequestParams& params) const {
-  const flat_rule::UrlRule* redirect_rule = GetMatchingRule(
-      params, flat::ActionIndex_redirect, FindRuleStrategy::kHighestPriority);
-  if (!redirect_rule)
-    return base::nullopt;
-
-  return CreateRedirectActionFromMetadata(params, *redirect_rule,
-                                          *metadata_list_);
-}
-
-base::Optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetUpgradeAction(
-    const RequestParams& params) const {
-  DCHECK(IsUpgradeableRequest(params));
-
-  const flat_rule::UrlRule* upgrade_rule =
-      GetMatchingRule(params, flat::ActionIndex_upgrade_scheme,
+      GetMatchingRule(params, flat::IndexType_allow_all_requests,
                       FindRuleStrategy::kHighestPriority);
-  if (!upgrade_rule)
-    return base::nullopt;
+  if (!rule)
+    return absl::nullopt;
 
-  return CreateUpgradeAction(params, *upgrade_rule);
+  return CreateAllowAllRequestsAction(params, *rule);
 }
 
-uint8_t ExtensionUrlPatternIndexMatcher::GetRemoveHeadersMask(
+std::vector<RequestAction>
+ExtensionUrlPatternIndexMatcher::GetModifyHeadersActions(
     const RequestParams& params,
-    uint8_t excluded_remove_headers_mask,
-    std::vector<RequestAction>* remove_headers_actions) const {
-  // The same flat_rule::UrlRule may be split across different action indices.
-  // To ensure we return one RequestAction for one ID/rule, maintain a map from
-  // the rule to the mask of rules removed for that rule.
-  base::flat_map<const flat_rule::UrlRule*, uint8_t> rule_to_mask_map;
-  auto handle_remove_header_bit = [this, &params, excluded_remove_headers_mask,
-                                   &rule_to_mask_map](uint8_t bit,
-                                                      flat::ActionIndex index) {
-    if (excluded_remove_headers_mask & bit)
-      return;
+    absl::optional<uint64_t> min_priority) const {
+  // TODO(crbug.com/1083178): Plumb |min_priority| into UrlPatternIndexMatcher
+  // to prune more rules before matching on url filters.
+  std::vector<const flat_rule::UrlRule*> rules =
+      GetAllMatchingRules(params, flat::IndexType_modify_headers);
 
-    const flat_rule::UrlRule* rule = GetMatchingRule(params, index);
-    if (!rule)
-      return;
-
-    rule_to_mask_map[rule] |= bit;
-  };
-
-  // Iterate over each RemoveHeaderType value.
-  uint8_t bit = 0;
-  for (int i = 0; i <= dnr_api::REMOVE_HEADER_TYPE_LAST; ++i) {
-    switch (i) {
-      case dnr_api::REMOVE_HEADER_TYPE_NONE:
-        break;
-      case dnr_api::REMOVE_HEADER_TYPE_COOKIE:
-        bit = flat::RemoveHeaderType_cookie;
-        handle_remove_header_bit(bit, flat::ActionIndex_remove_cookie_header);
-        break;
-      case dnr_api::REMOVE_HEADER_TYPE_REFERER:
-        bit = flat::RemoveHeaderType_referer;
-        handle_remove_header_bit(bit, flat::ActionIndex_remove_referer_header);
-        break;
-      case dnr_api::REMOVE_HEADER_TYPE_SETCOOKIE:
-        bit = flat::RemoveHeaderType_set_cookie;
-        handle_remove_header_bit(bit,
-                                 flat::ActionIndex_remove_set_cookie_header);
-        break;
-    }
+  if (min_priority) {
+    base::EraseIf(rules, [&min_priority](const flat_rule::UrlRule* rule) {
+      return rule->priority() <= *min_priority;
+    });
   }
 
-  uint8_t mask = 0;
-  for (const auto& it : rule_to_mask_map) {
-    uint8_t mask_for_rule = it.second;
-    DCHECK(mask_for_rule);
-    mask |= mask_for_rule;
+  return GetModifyHeadersActionsFromMetadata(params, rules, *metadata_list_);
+}
 
-    remove_headers_actions->push_back(
-        GetRemoveHeadersActionForMask(*it.first, mask_for_rule));
+absl::optional<RequestAction>
+ExtensionUrlPatternIndexMatcher::GetBeforeRequestActionIgnoringAncestors(
+    const RequestParams& params) const {
+  return GetMaxPriorityAction(GetBeforeRequestActionHelper(params),
+                              GetAllowAllRequestsAction(params));
+}
+
+absl::optional<RequestAction>
+ExtensionUrlPatternIndexMatcher::GetBeforeRequestActionHelper(
+    const RequestParams& params) const {
+  const flat_rule::UrlRule* rule = GetMatchingRule(
+      params, flat::IndexType_before_request_except_allow_all_requests,
+      FindRuleStrategy::kHighestPriority);
+  if (!rule)
+    return absl::nullopt;
+
+  const flat::UrlRuleMetadata* metadata =
+      metadata_list_->LookupByKey(rule->id());
+  DCHECK(metadata);
+  DCHECK_EQ(metadata->id(), rule->id());
+  switch (metadata->action()) {
+    case flat::ActionType_block:
+      return CreateBlockOrCollapseRequestAction(params, *rule);
+    case flat::ActionType_allow:
+      return CreateAllowAction(params, *rule);
+    case flat::ActionType_redirect:
+      return CreateRedirectActionFromMetadata(params, *rule, *metadata_list_);
+    case flat::ActionType_upgrade_scheme:
+      return CreateUpgradeAction(params, *rule);
+    case flat::ActionType_allow_all_requests:
+    case flat::ActionType_modify_headers:
+    case flat::ActionType_count:
+      NOTREACHED();
   }
 
-  DCHECK(!(mask & excluded_remove_headers_mask));
-  return mask;
+  return absl::nullopt;
 }
 
 const flat_rule::UrlRule* ExtensionUrlPatternIndexMatcher::GetMatchingRule(
     const RequestParams& params,
-    flat::ActionIndex index,
+    flat::IndexType index,
     FindRuleStrategy strategy) const {
-  DCHECK_LT(index, flat::ActionIndex_count);
+  DCHECK_LT(index, flat::IndexType_count);
   DCHECK_GE(index, 0);
   DCHECK(params.url);
 
@@ -207,8 +153,26 @@ const flat_rule::UrlRule* ExtensionUrlPatternIndexMatcher::GetMatchingRule(
 
   return matchers_[index].FindMatch(
       *params.url, params.first_party_origin, params.element_type,
-      flat_rule::ActivationType_NONE, params.is_third_party,
-      kDisableGenericRules, strategy);
+      flat_rule::ActivationType_NONE, params.method, params.is_third_party,
+      kDisableGenericRules, params.embedder_conditions_matcher, strategy);
+}
+
+std::vector<const url_pattern_index::flat::UrlRule*>
+ExtensionUrlPatternIndexMatcher::GetAllMatchingRules(
+    const RequestParams& params,
+    flat::IndexType index) const {
+  DCHECK_LT(index, flat::IndexType_count);
+  DCHECK_GE(index, 0);
+  DCHECK(params.url);
+
+  // Don't exclude generic rules from being matched. A generic rule is one with
+  // an empty included domains list.
+  const bool kDisableGenericRules = false;
+
+  return matchers_[index].FindAllMatches(
+      *params.url, params.first_party_origin, params.element_type,
+      flat_rule::ActivationType_NONE, params.method, params.is_third_party,
+      kDisableGenericRules, params.embedder_conditions_matcher);
 }
 
 }  // namespace declarative_net_request

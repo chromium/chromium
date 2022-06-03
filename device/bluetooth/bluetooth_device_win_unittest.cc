@@ -8,9 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "device/bluetooth/bluetooth_service_record_win.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
@@ -50,7 +51,7 @@ class BluetoothDeviceWinTest : public testing::Test {
         BluetoothSocketThread::Get());
 
     // Add device with audio/video services.
-    device_state_.reset(new BluetoothTaskManagerWin::DeviceState());
+    device_state_ = std::make_unique<BluetoothTaskManagerWin::DeviceState>();
     device_state_->name = std::string(kDeviceName);
     device_state_->address = kDeviceAddress;
 
@@ -66,15 +67,16 @@ class BluetoothDeviceWinTest : public testing::Test {
     base::HexStringToBytes(kTestVideoSdpBytes, &video_state->sdp_bytes);
     device_state_->service_record_states.push_back(std::move(video_state));
 
-    device_.reset(new BluetoothDeviceWin(nullptr, *device_state_,
-                                         ui_task_runner, socket_thread));
+    device_ = std::make_unique<BluetoothDeviceWin>(
+        nullptr, *device_state_, ui_task_runner, socket_thread);
 
     // Add empty device.
-    empty_device_state_.reset(new BluetoothTaskManagerWin::DeviceState());
+    empty_device_state_ =
+        std::make_unique<BluetoothTaskManagerWin::DeviceState>();
     empty_device_state_->name = std::string(kDeviceName);
     empty_device_state_->address = kDeviceAddress;
-    empty_device_.reset(new BluetoothDeviceWin(nullptr, *empty_device_state_,
-                                               ui_task_runner, socket_thread));
+    empty_device_ = std::make_unique<BluetoothDeviceWin>(
+        nullptr, *empty_device_state_, ui_task_runner, socket_thread);
   }
 
  protected:

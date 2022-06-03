@@ -43,7 +43,8 @@ namespace blink {
 bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
                             const String& property,
                             const String& value) {
-  CSSPropertyID unresolved_property = unresolvedCSSPropertyID(property);
+  CSSPropertyID unresolved_property =
+      UnresolvedCSSPropertyID(execution_context, property);
   if (unresolved_property == CSSPropertyID::kInvalid)
     return false;
   if (unresolved_property == CSSPropertyID::kVariable) {
@@ -58,28 +59,27 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(CSSProperty::Get(resolveCSSPropertyID(unresolved_property))
-             .IsWebExposed());
+  DCHECK(CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
+             .IsWebExposed(execution_context));
 #endif
 
   // This will return false when !important is present
   auto* dummy_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   return CSSParser::ParseValue(dummy_style, unresolved_property, value, false,
-                               execution_context->GetSecureContextMode())
+                               execution_context)
       .did_parse;
 }
 
 bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
                             const String& condition_text) {
-  return CSSParser::ParseSupportsCondition(
-      condition_text, execution_context->GetSecureContextMode());
+  return CSSParser::ParseSupportsCondition(condition_text, execution_context);
 }
 
 String DOMWindowCSS::escape(const String& ident) {
   StringBuilder builder;
   SerializeIdentifier(ident, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

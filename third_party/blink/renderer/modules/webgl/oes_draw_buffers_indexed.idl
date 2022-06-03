@@ -1,0 +1,39 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/OES_draw_buffers_indexed/
+
+[
+    LegacyNoInterfaceObject,
+    DoNotCheckConstants
+] interface OESDrawBuffersIndexed {
+    void enableiOES(GLenum target, GLuint index);
+
+    void disableiOES(GLenum target, GLuint index);
+
+    void blendEquationiOES(GLuint buf, GLenum mode);
+
+    void blendEquationSeparateiOES(GLuint buf,
+                                    GLenum modeRGB, GLenum modeAlpha);
+
+    void blendFunciOES(GLuint buf,
+                        GLenum src, GLenum dst);
+
+    void blendFuncSeparateiOES(GLuint buf,
+                                GLenum srcRGB, GLenum dstRGB,
+                                GLenum srcAlpha, GLenum dstAlpha);
+
+    void colorMaskiOES(GLuint buf,
+                        GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+
+    GLboolean isEnablediOES(GLenum target, GLuint index);
+
+    const unsigned long BLEND_EQUATION_RGB = 0x8009;
+    const unsigned long BLEND_EQUATION_ALPHA = 0x883D;
+    const unsigned long BLEND_SRC_RGB = 0x80C9;
+    const unsigned long BLEND_SRC_ALPHA = 0x80CB;
+    const unsigned long BLEND_DST_RGB = 0x80C8;
+    const unsigned long BLEND_DST_ALPHA = 0x80CA;
+    const unsigned long COLOR_WRITEMASK = 0x0C23;
+};

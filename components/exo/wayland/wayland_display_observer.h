@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 
@@ -15,43 +16,72 @@ struct wl_resource;
 
 namespace exo {
 namespace wayland {
+class WaylandDisplayOutput;
 
-class WaylandDisplayObserver : public display::DisplayObserver {
+// An observer that allows display information changes to be sent
+// via different protocols while being synced with the wl_output's
+// "done" event through WaylandDisplayHandler.
+class WaylandDisplayObserver : public base::CheckedObserver {
  public:
-  class ScaleObserver : public base::SupportsWeakPtr<ScaleObserver> {
-   public:
-    ScaleObserver() {}
+  WaylandDisplayObserver() {}
 
-    virtual void OnDisplayScalesChanged(const display::Display& display) = 0;
+  // Returns |true| if the observer reported any changes and needs
+  // to be followed by "done" event, |false| otherwise.
+  virtual bool SendDisplayMetrics(const display::Display& display,
+                                  uint32_t changed_metrics) = 0;
 
-   protected:
-    virtual ~ScaleObserver() {}
-  };
+ protected:
+  ~WaylandDisplayObserver() override {}
+};
 
-  WaylandDisplayObserver(int64_t id, wl_resource* output_resource);
-  ~WaylandDisplayObserver() override;
-  void SetScaleObserver(base::WeakPtr<ScaleObserver> scale_observer);
-  bool HasScaleObserver() const;
+class WaylandDisplayHandler : public display::DisplayObserver,
+                              public WaylandDisplayObserver {
+ public:
+  WaylandDisplayHandler(WaylandDisplayOutput* output,
+                        wl_resource* output_resource);
+
+  WaylandDisplayHandler(const WaylandDisplayHandler&) = delete;
+  WaylandDisplayHandler& operator=(const WaylandDisplayHandler&) = delete;
+
+  ~WaylandDisplayHandler() override;
+  void Initialize();
+  void AddObserver(WaylandDisplayObserver* observer);
+  int64_t id() const;
 
   // Overridden from display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
+  // Called when an xdg_output object is created through get_xdg_output()
+  // request by the wayland client.
+  void OnXdgOutputCreated(wl_resource* xdg_output_resource);
+  // Unset the xdg output object.
+  void UnsetXdgOutputResource();
+
+ protected:
+  wl_resource* output_resource() const { return output_resource_; }
+
  private:
-  void SendDisplayMetrics();
+  // Overridden from WaylandDisplayObserver:
+  bool SendDisplayMetrics(const display::Display& display,
+                          uint32_t changed_metrics) override;
+
   // Returns the transform that a compositor will apply to a surface to
   // compensate for the rotation of an output device.
   wl_output_transform OutputTransform(display::Display::Rotation rotation);
 
-  // The ID of the display being observed.
-  const int64_t id_;
+  // Output.
+  WaylandDisplayOutput* output_;
 
   // The output resource associated with the display.
   wl_resource* const output_resource_;
 
-  base::WeakPtr<ScaleObserver> scale_observer_;
+  // Resource associated with a zxdg_output_v1 object.
+  wl_resource* xdg_output_resource_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandDisplayObserver);
+  base::ObserverList<WaylandDisplayObserver> observers_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace wayland

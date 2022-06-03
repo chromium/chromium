@@ -5,26 +5,33 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_FILE_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_FILE_UTILS_H_
 
+#include <map>
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
 // A testing implementation to intercept calls to the file system.
 class TestFileUtils : public FileUtilsWrapper {
  public:
-  TestFileUtils();
-  TestFileUtils(const TestFileUtils&);
-  ~TestFileUtils() override;
+  // Initializer list type deduction does not work through std::make_unique so
+  // provide this helper function.
+  static scoped_refptr<TestFileUtils> Create(
+      std::map<base::FilePath, base::FilePath> read_file_rerouting);
+
+  explicit TestFileUtils(
+      std::map<base::FilePath, base::FilePath> read_file_rerouting = {});
+  TestFileUtils(const TestFileUtils&) = delete;
+  TestFileUtils& operator=(const TestFileUtils&) = delete;
 
   // FileUtilsWrapper:
-  std::unique_ptr<FileUtilsWrapper> Clone() override;
   int WriteFile(const base::FilePath& filename,
                 const char* data,
                 int size) override;
+  bool ReadFileToString(const base::FilePath& path,
+                        std::string* contents) override;
   bool DeleteFileRecursively(const base::FilePath& path) override;
 
   static constexpr int kNoLimit = -1;
@@ -32,13 +39,14 @@ class TestFileUtils : public FileUtilsWrapper {
   // Simulate "disk full" error: limit disk space for |WriteFile| operations.
   void SetRemainingDiskSpaceSize(int remaining_disk_space);
 
-  void SetNextDeleteFileRecursivelyResult(base::Optional<bool> delete_result);
+  void SetNextDeleteFileRecursivelyResult(absl::optional<bool> delete_result);
 
  private:
-  base::Optional<bool> delete_file_recursively_result_;
-  int remaining_disk_space_ = kNoLimit;
+  ~TestFileUtils() override;
 
-  DISALLOW_ASSIGN(TestFileUtils);
+  std::map<base::FilePath, base::FilePath> read_file_rerouting_;
+  absl::optional<bool> delete_file_recursively_result_;
+  int remaining_disk_space_ = kNoLimit;
 };
 
 }  // namespace web_app

@@ -2,15 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/viz/common/debugger/viz_debugger.gni")
 import("//components/viz/viz.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
 
+import("//third_party/inspector_protocol/inspector_protocol.gni")
+
 source_set("resource_format") {
-  sources = [
-    "resources/resource_format.h",
-  ]
+  sources = [ "resources/resource_format.h" ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "USE_VIZ_DEBUGGER=$use_viz_debugger" ]
 }
 
 viz_component("resource_format_utils") {
@@ -27,9 +34,7 @@ viz_component("resource_format_utils") {
 
   configs = [ "//third_party/khronos:khronos_headers" ]
 
-  public_deps = [
-    ":resource_format",
-  ]
+  public_deps = [ ":resource_format" ]
 
   deps = [
     "//base",
@@ -40,9 +45,15 @@ viz_component("resource_format_utils") {
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry:geometry",
   ]
+  if (enable_vulkan) {
+    deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+  }
+  if (is_mac) {
+    sources += [ "resources/resource_format_utils_mac.mm" ]
+  }
 }
 
-# TODO(sgilhuly): To reduce link times, merge these context provider components
+# TODO(rivr): To reduce link times, merge these context provider components
 # into a single gr_context_provider component.
 if (is_mac) {
   viz_component("metal_context_provider") {
@@ -58,19 +69,18 @@ if (is_mac) {
       "viz_metal_context_provider_export.h",
     ]
 
-    public_deps = [
-      "//skia",
-    ]
+    public_deps = [ "//skia" ]
 
     deps = [
       "//base",
       "//components/crash/core/common:crash_key",
       "//components/metal_util",
+      "//gpu/config",
       "//ui/gfx",
       "//ui/gl",
     ]
 
-    libs = [
+    frameworks = [
       "Metal.framework",
       "Foundation.framework",
     ]
@@ -96,16 +106,14 @@ if (enable_vulkan) {
       "gpu/vulkan_in_process_context_provider.h",
       "viz_vulkan_context_provider_export.h",
     ]
-    configs = [ "//third_party/vulkan:vulkan_config" ]
 
-    public_deps = [
-      "//skia",
-    ]
+    public_deps = [ "//skia" ]
 
     deps = [
       "//base",
       "//gpu/vulkan",
       "//gpu/vulkan:buildflags",
+      "//gpu/vulkan/init:skia",
       "//ui/gfx",
     ]
   }
@@ -130,10 +138,9 @@ if (skia_use_dawn) {
 
     deps = [
       "//base",
-      "//third_party/dawn:libdawn_native",
-      "//third_party/dawn:libdawn_native_sources",
+      "//third_party/dawn/src/dawn:dawn_proc",
       "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn:libdawn_proc",
+      "//third_party/dawn/src/dawn_native",
     ]
   }
 }
@@ -146,6 +153,7 @@ viz_component("common") {
   sources = [
     "constants.cc",
     "constants.h",
+    "delegated_ink_prediction_configuration.h",
     "display/de_jelly.cc",
     "display/de_jelly.h",
     "display/overlay_strategy.cc",
@@ -159,6 +167,8 @@ viz_component("common") {
     "frame_sinks/begin_frame_args.h",
     "frame_sinks/begin_frame_source.cc",
     "frame_sinks/begin_frame_source.h",
+    "frame_sinks/blit_request.cc",
+    "frame_sinks/blit_request.h",
     "frame_sinks/copy_output_request.cc",
     "frame_sinks/copy_output_request.h",
     "frame_sinks/copy_output_result.cc",
@@ -169,12 +179,10 @@ viz_component("common") {
     "frame_sinks/delay_based_time_source.h",
     "frame_timing_details.h",
     "frame_timing_details_map.h",
-    "gl_helper.cc",
-    "gl_helper.h",
-    "gl_helper_scaling.cc",
-    "gl_helper_scaling.h",
     "gl_i420_converter.cc",
     "gl_i420_converter.h",
+    "gl_nv12_converter.cc",
+    "gl_nv12_converter.h",
     "gl_scaler.cc",
     "gl_scaler.h",
     "gpu/context_cache_controller.cc",
@@ -190,10 +198,20 @@ viz_component("common") {
     "hit_test/aggregated_hit_test_region.h",
     "hit_test/hit_test_region_list.cc",
     "hit_test/hit_test_region_list.h",
+    "quads/aggregated_render_pass.cc",
+    "quads/aggregated_render_pass.h",
+    "quads/aggregated_render_pass_draw_quad.cc",
+    "quads/aggregated_render_pass_draw_quad.h",
     "quads/compositor_frame.cc",
     "quads/compositor_frame.h",
     "quads/compositor_frame_metadata.cc",
     "quads/compositor_frame_metadata.h",
+    "quads/compositor_frame_transition_directive.cc",
+    "quads/compositor_frame_transition_directive.h",
+    "quads/compositor_render_pass.cc",
+    "quads/compositor_render_pass.h",
+    "quads/compositor_render_pass_draw_quad.cc",
+    "quads/compositor_render_pass_draw_quad.h",
     "quads/content_draw_quad_base.cc",
     "quads/content_draw_quad_base.h",
     "quads/debug_border_draw_quad.cc",
@@ -206,13 +224,17 @@ viz_component("common") {
     "quads/largest_draw_quad.h",
     "quads/picture_draw_quad.cc",
     "quads/picture_draw_quad.h",
-    "quads/render_pass.cc",
-    "quads/render_pass.h",
-    "quads/render_pass_draw_quad.cc",
-    "quads/render_pass_draw_quad.h",
+    "quads/quad_list.cc",
+    "quads/quad_list.h",
+    "quads/render_pass_draw_quad_internal.cc",
+    "quads/render_pass_draw_quad_internal.h",
+    "quads/render_pass_internal.cc",
+    "quads/render_pass_internal.h",
     "quads/render_pass_io.cc",
     "quads/render_pass_io.h",
     "quads/selection.h",
+    "quads/shared_element_draw_quad.cc",
+    "quads/shared_element_draw_quad.h",
     "quads/shared_quad_state.cc",
     "quads/shared_quad_state.h",
     "quads/solid_color_draw_quad.cc",
@@ -237,29 +259,34 @@ viz_component("common") {
     "resources/resource_settings.cc",
     "resources/resource_settings.h",
     "resources/return_callback.h",
+    "resources/returned_resource.cc",
     "resources/returned_resource.h",
     "resources/shared_bitmap.cc",
     "resources/shared_bitmap.h",
-    "resources/single_release_callback.cc",
-    "resources/single_release_callback.h",
     "resources/transferable_resource.cc",
     "resources/transferable_resource.h",
+    "shared_element_resource_id.cc",
+    "shared_element_resource_id.h",
     "skia_helper.cc",
     "skia_helper.h",
     "surfaces/child_local_surface_id_allocator.cc",
     "surfaces/child_local_surface_id_allocator.h",
+    "surfaces/frame_sink_bundle_id.h",
     "surfaces/frame_sink_id.cc",
     "surfaces/frame_sink_id.h",
     "surfaces/frame_sink_id_allocator.cc",
     "surfaces/frame_sink_id_allocator.h",
     "surfaces/local_surface_id.cc",
     "surfaces/local_surface_id.h",
-    "surfaces/local_surface_id_allocation.cc",
-    "surfaces/local_surface_id_allocation.h",
     "surfaces/parent_local_surface_id_allocator.cc",
     "surfaces/parent_local_surface_id_allocator.h",
+    "surfaces/region_capture_bounds.cc",
+    "surfaces/region_capture_bounds.h",
     "surfaces/scoped_surface_id_allocator.cc",
     "surfaces/scoped_surface_id_allocator.h",
+    "surfaces/subtree_capture_id.cc",
+    "surfaces/subtree_capture_id.h",
+    "surfaces/subtree_capture_id_allocator.h",
     "surfaces/surface_id.cc",
     "surfaces/surface_id.h",
     "surfaces/surface_info.cc",
@@ -270,6 +297,8 @@ viz_component("common") {
     "switches.h",
     "traced_value.cc",
     "traced_value.h",
+    "transition_utils.cc",
+    "transition_utils.h",
     "vertical_scroll_direction.h",
     "viz_common_export.h",
     "viz_utils.cc",
@@ -278,7 +307,7 @@ viz_component("common") {
 
   deps = [
     "//base",
-    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
 
     # TODO(staraz): cc/base was added because SharedQuadState includes
     # cc::MathUtil. Remove it once cc/base/math_util* are moved to viz.
@@ -291,14 +320,15 @@ viz_component("common") {
     "//gpu/config",
     "//gpu/ipc/common:common",
     "//gpu/vulkan:buildflags",
+    "//media:media_buildflags",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp:cpp",
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl",
     "//ui/latency",
   ]
@@ -320,12 +350,14 @@ viz_component("common") {
   }
 
   public_deps = [
+    ":buildflags",
     ":resource_format_utils",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
     "//skia",
   ]
+
   if (enable_vulkan) {
     public_deps += [ ":vulkan_context_provider" ]
   }
@@ -338,8 +370,6 @@ viz_component("common") {
 }
 
 viz_source_set("unit_tests") {
-  # Not ready for jumbo compilation. Too much repeated test code.
-  never_build_jumbo = true
   testonly = true
   sources = [
     "display/overlay_strategy_unittest.cc",
@@ -347,19 +377,12 @@ viz_source_set("unit_tests") {
     "frame_sinks/begin_frame_source_unittest.cc",
     "frame_sinks/copy_output_util_unittest.cc",
     "frame_sinks/delay_based_time_source_unittest.cc",
-    "gl_helper_unittest.cc",
-    "gl_i420_converter_pixeltest.cc",
-    "gl_i420_converter_unittest.cc",
-    "gl_scaler_overscan_pixeltest.cc",
-    "gl_scaler_pixeltest.cc",
-    "gl_scaler_shader_pixeltest.cc",
-    "gl_scaler_test_util.cc",
-    "gl_scaler_test_util.h",
-    "gl_scaler_unittest.cc",
     "gpu/context_cache_controller_unittest.cc",
+    "quads/compositor_frame_metadata_unittest.cc",
+    "quads/compositor_frame_transition_directive_unittest.cc",
+    "quads/compositor_render_pass_unittest.cc",
     "quads/draw_quad_unittest.cc",
     "quads/render_pass_io_unittest.cc",
-    "quads/render_pass_unittest.cc",
     "resources/resource_sizes_unittest.cc",
     "surfaces/child_local_surface_id_allocator_unittest.cc",
     "surfaces/local_surface_id_unittest.cc",
@@ -369,6 +392,21 @@ viz_source_set("unit_tests") {
     "yuv_readback_unittest.cc",
   ]
 
+  if (enable_gl_renderer_tests) {
+    sources += [
+      "gl_i420_converter_pixeltest.cc",
+      "gl_i420_converter_unittest.cc",
+      "gl_nv12_converter_pixeltest.cc",
+      "gl_scaler_overscan_pixeltest.cc",
+      "gl_scaler_pixeltest.cc",
+      "gl_scaler_shader_pixeltest.cc",
+      "gl_scaler_unittest.cc",
+    ]
+  }
+
+  if (enable_vulkan) {
+    sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
+  }
   deps = [
     ":common",
     "//base/test:test_support",
@@ -383,47 +421,15 @@ viz_source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:color_space",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
-  ]
-}
-
-# Microbenchmark to measure performance of GLHelper code, for use in
-# debugging, profiling, and optimizing.
-viz_test("viz_benchmark") {
-  sources = [
-    "gl_helper_benchmark.cc",
-  ]
-
-  configs = [
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//third_party/khronos:khronos_headers",
-  ]
-
-  deps = [
-    ":common",
-    "//base",
-    "//base/test:test_support",
-    "//components/test:run_all_unittests",
-    "//components/viz/test:test_support",
-    "//gpu/command_buffer/client",
-    "//gpu/command_buffer/client:gles2_implementation",
-    "//gpu/ipc:gl_in_process_context",
-    "//gpu/ipc:gpu_thread_holder",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/gfx",
-  ]
-
-  data_deps = [
-    "//third_party/mesa_headers",
+    "//ui/latency",
   ]
 }
 
 viz_source_set("perf_tests") {
   testonly = true
-  sources = [
-    "quads/draw_quad_perftest.cc",
-  ]
+  sources = [ "quads/draw_quad_perftest.cc" ]
 
   deps = [
     ":common",
@@ -437,12 +443,10 @@ viz_source_set("perf_tests") {
 
 if (is_android) {
   android_library("common_java") {
-    deps = [
-      "//base:base_java",
-    ]
-    java_files = [
-      "java/src/org/chromium/components/viz/common/display/DeJellyUtils.java",
+    deps = [ "//base:base_java" ]
+    sources = [
       "java/src/org/chromium/components/viz/common/VizSwitches.java",
+      "java/src/org/chromium/components/viz/common/display/DeJellyUtils.java",
     ]
   }
 

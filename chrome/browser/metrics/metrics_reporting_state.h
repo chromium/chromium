@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "components/metrics/metrics_service_client.h"
 
-typedef base::Callback<void(bool)> OnMetricsReportingCallbackType;
+using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 
 // Changes metrics reporting state without caring about the success of the
 // change.
@@ -22,7 +22,7 @@ void ChangeMetricsReportingState(bool enabled);
 // TODO(https://crbug.com/880936): Support setting the pref on all platforms.
 void ChangeMetricsReportingStateWithReply(
     bool enabled,
-    const OnMetricsReportingCallbackType& callback_fn);
+    OnMetricsReportingCallbackType callback_fn);
 
 // Update metrics prefs on a permission (opt-in/out) change. When opting out,
 // this clears various client ids. When opting in, this resets saving crash

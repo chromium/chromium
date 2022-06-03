@@ -17,7 +17,5 @@ json_features("extension_features_unittest") {
 }
 
 group("test_features") {
-  public_deps = [
-    ":extension_features_unittest",
-  ]
+  public_deps = [ ":extension_features_unittest" ]
 }

@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/chromoting_event_log_writer.h"
 #include "remoting/base/url_request.h"
@@ -30,6 +31,10 @@ class ClientTelemetryLogger {
   ClientTelemetryLogger(ChromotingEventLogWriter* log_writer,
                         ChromotingEvent::Mode mode,
                         ChromotingEvent::SessionEntryPoint entry_point);
+
+  ClientTelemetryLogger(const ClientTelemetryLogger&) = delete;
+  ClientTelemetryLogger& operator=(const ClientTelemetryLogger&) = delete;
+
   ~ClientTelemetryLogger();
 
   void SetAuthMethod(ChromotingEvent::AuthMethod auth_method);
@@ -118,8 +123,6 @@ class ClientTelemetryLogger {
   ChromotingEventLogWriter* log_writer_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientTelemetryLogger);
 };
 
 }  // namespace remoting

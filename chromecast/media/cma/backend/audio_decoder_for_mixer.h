@@ -9,10 +9,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "chromecast/media/api/cast_audio_decoder.h"
 #include "chromecast/media/audio/mixer_service/output_stream_connection.h"
-#include "chromecast/media/cma/decoder/cast_audio_decoder.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -26,7 +25,6 @@ namespace chromecast {
 class IOBufferPool;
 
 namespace media {
-class AudioResampler;
 class DecoderBufferBase;
 class MediaPipelineBackendForMixer;
 
@@ -38,6 +36,10 @@ class AudioDecoderForMixer
   using BufferStatus = MediaPipelineBackend::BufferStatus;
 
   explicit AudioDecoderForMixer(MediaPipelineBackendForMixer* backend);
+
+  AudioDecoderForMixer(const AudioDecoderForMixer&) = delete;
+  AudioDecoderForMixer& operator=(const AudioDecoderForMixer&) = delete;
+
   ~AudioDecoderForMixer() override;
 
   virtual void Initialize();
@@ -60,7 +62,7 @@ class AudioDecoderForMixer
 
   // This allows for very small changes in the rate of audio playback that are
   // (supposedly) imperceptible.
-  float SetAvSyncPlaybackRate(float rate);
+  double SetAvSyncPlaybackRate(double rate);
   void RestartPlaybackAt(int64_t pts, int64_t timestamp);
 
   RenderingDelay GetMixerRenderingDelay();
@@ -72,7 +74,8 @@ class AudioDecoderForMixer
   // mixer_service::OutputStreamConnection::Delegate implementation:
   void FillNextBuffer(void* buffer,
                       int frames,
-                      int64_t playout_timestamp) override;
+                      int64_t delay_timestamp,
+                      int64_t delay) override;
   void OnAudioReadyForPlayback(int64_t mixer_delay) override;
   void OnEosPlayed() override;
   void OnMixerError() override;
@@ -83,7 +86,6 @@ class AudioDecoderForMixer
   void ResetMixerInputForNewConfig(const AudioConfig& config);
   void CreateDecoder();
 
-  void OnDecoderInitialized(bool success);
   void OnBufferDecoded(uint64_t input_bytes,
                        bool has_config,
                        CastAudioDecoder::Status status,
@@ -104,14 +106,15 @@ class AudioDecoderForMixer
   bool pending_buffer_complete_ = false;
   bool mixer_error_ = false;
   bool paused_ = false;
+  float playback_rate_ = 1.0f;
   bool reported_ready_for_playback_ = false;
   RenderingDelay mixer_delay_;
 
-  AudioConfig config_;
+  AudioConfig input_config_;
+  AudioConfig decoded_config_;
   std::unique_ptr<CastAudioDecoder> decoder_;
 
-  std::unique_ptr<AudioResampler> audio_resampler_;
-  float av_sync_clock_rate_ = 1.0f;
+  double av_sync_clock_rate_ = 1.0;
 
   std::unique_ptr<mixer_service::OutputStreamConnection> mixer_input_;
 
@@ -129,8 +132,6 @@ class AudioDecoderForMixer
   bool start_playback_asap_ = false;
 
   base::WeakPtrFactory<AudioDecoderForMixer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderForMixer);
 };
 
 }  // namespace media

@@ -10,8 +10,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
 
@@ -20,25 +18,28 @@ namespace media {
 class MEDIA_EXPORT CdmSessionTracker {
  public:
   CdmSessionTracker();
+
+  CdmSessionTracker(const CdmSessionTracker&) = delete;
+  CdmSessionTracker& operator=(const CdmSessionTracker&) = delete;
+
   ~CdmSessionTracker();
 
-  // Adds |session_id| to the list of sessions being tracked.
+  // Adds `session_id` to the list of sessions being tracked.
   void AddSession(const std::string& session_id);
 
-  // Removes |session_id| from the list of sessions being tracked.
+  // Removes `session_id` from the list of sessions being tracked.
   void RemoveSession(const std::string& session_id);
 
-  // Calls |session_closed_cb| on any remaining sessions in the list and then
-  // clear the list.
-  void CloseRemainingSessions(const SessionClosedCB& session_closed_cb);
+  // Calls `session_closed_cb` with `reason` on any remaining sessions in the
+  // list and then clear the list.
+  void CloseRemainingSessions(const SessionClosedCB& session_closed_cb,
+                              CdmSessionClosedReason reason);
 
   // Returns whether there are any remaining sessions being tracked.
   bool HasRemainingSessions() const;
 
  private:
   std::unordered_set<std::string> session_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmSessionTracker);
 };
 
 }  // namespace media

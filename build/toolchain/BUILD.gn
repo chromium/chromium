@@ -4,17 +4,18 @@
 
 import("//build/toolchain/concurrent_links.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 
 declare_args() {
   # Pool for non goma tasks.
   action_pool_depth = -1
 }
 
-if (action_pool_depth == -1 || use_goma) {
-  action_pool_depth = exec_script("get_cpu_count.py", [], "value")
-}
-
 if (current_toolchain == default_toolchain) {
+  if (action_pool_depth == -1 || (use_goma || use_remoteexec)) {
+    action_pool_depth = exec_script("get_cpu_count.py", [], "value")
+  }
+
   pool("link_pool") {
     depth = concurrent_links
   }

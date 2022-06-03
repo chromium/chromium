@@ -6,9 +6,10 @@
 #define SQL_RECOVER_MODULE_PAYLOAD_H_
 
 #include <cstdint>
+#include <ostream>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/sequence_checker.h"
 #include "sql/recover_module/pager.h"
 

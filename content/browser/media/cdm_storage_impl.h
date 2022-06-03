@@ -10,11 +10,10 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
@@ -31,9 +30,8 @@ class RenderFrameHost;
 // PluginPrivateFileSystem for backwards compatibility with CDMs running
 // as a pepper plugin.
 class CONTENT_EXPORT CdmStorageImpl final
-    : public content::FrameServiceBase<media::mojom::CdmStorage> {
+    : public content::DocumentService<media::mojom::CdmStorage> {
  public:
-
   // Check if |cdm_file_system_id| is valid.
   static bool IsValidCdmFileSystemId(const std::string& cdm_file_system_id);
 
@@ -42,6 +40,9 @@ class CONTENT_EXPORT CdmStorageImpl final
   static void Create(RenderFrameHost* render_frame_host,
                      const std::string& cdm_file_system_id,
                      mojo::PendingReceiver<media::mojom::CdmStorage> receiver);
+
+  CdmStorageImpl(const CdmStorageImpl&) = delete;
+  CdmStorageImpl& operator=(const CdmStorageImpl&) = delete;
 
   // media::mojom::CdmStorage implementation.
   void Open(const std::string& file_name, OpenCallback callback) final;
@@ -97,8 +98,6 @@ class CONTENT_EXPORT CdmStorageImpl final
   mojo::UniqueAssociatedReceiverSet<media::mojom::CdmFile> cdm_file_receivers_;
 
   base::WeakPtrFactory<CdmStorageImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CdmStorageImpl);
 };
 
 }  // namespace content

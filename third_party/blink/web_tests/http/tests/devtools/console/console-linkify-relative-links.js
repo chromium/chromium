@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test that logging an error in console would linkify relative URLs\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
 console.log(\`Error with relative links
@@ -17,9 +17,9 @@ console.log(\`Error with relative links
 //# sourceURL=console-linkify-relative-links.js
     `);
 
-    ConsoleTestRunner.dumpConsoleMessages();
+    await ConsoleTestRunner.dumpConsoleMessages();
     var consoleView = Console.ConsoleView.instance();
-    var links = consoleView._visibleViewMessages[0].element().querySelectorAll('.console-message-text .devtools-link');
+    var links = consoleView.visibleViewMessages[0].element().querySelectorAll('.console-message-text .devtools-link');
     for (var link of links)
       TestRunner.addResult(`Link: ${link.textContent}, href: ${link.href}`);
     TestRunner.completeTest();

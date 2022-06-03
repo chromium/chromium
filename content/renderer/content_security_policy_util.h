@@ -5,31 +5,34 @@
 #ifndef CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_
 #define CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_
 
-#include "content/common/content_security_policy/content_security_policy.h"
-#include "content/common/content_security_policy/csp_context.h"
+#include "content/common/content_export.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
+#include "third_party/blink/public/platform/web_vector.h"
 
 namespace content {
 
 // Convert a WebContentSecurityPolicy into a ContentSecurityPolicy. These two
 // classes represent the exact same thing, but one is in content, the other is
 // in blink.
-ContentSecurityPolicy BuildContentSecurityPolicy(
+// TODO(arthursonzogni): Remove this when BeginNavigation IPC will be called
+// directly from blink.
+CONTENT_EXPORT
+network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
     const blink::WebContentSecurityPolicy&);
 
-// Convert a WebContentSecurityPolicyList into a list of ContentSecurityPolicy.
-std::vector<ContentSecurityPolicy> BuildContentSecurityPolicyList(
-    const blink::WebContentSecurityPolicyList&);
+// Convert a ContentSecurityPolicy into a WebContentSecurityPolicy. These two
+// classes represent the exact same thing, but one is in content, the other is
+// in blink.
+CONTENT_EXPORT
+blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
+    network::mojom::ContentSecurityPolicyPtr);
 
-CSPSource BuildCSPSource(
-    const blink::WebContentSecurityPolicySourceExpression&);
-
-// Convert a CSPViolationParams into a WebContentSecurityPolicyViolation. These
-// two classes represent the exact same thing, but one is in content, the other
-// is in blink.
-blink::WebContentSecurityPolicyViolation BuildWebContentSecurityPolicyViolation(
-    const content::CSPViolationParams& violation_params);
+// Helper function to perform ToWebContentSecurityPolicy on an array.
+CONTENT_EXPORT
+blink::WebVector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>);
 
 }  // namespace content
 
-#endif /* CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_ */
+#endif  // CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_

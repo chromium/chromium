@@ -6,22 +6,19 @@
 #define COMPONENTS_FAVICON_CONTENT_FAVICON_URL_UTIL_H_
 
 #include <vector>
-
-namespace content {
-struct FaviconURL;
-}
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 namespace favicon {
 
 struct FaviconURL;
 
-// Creates a favicon::FaviconURL from a content::FaviconURL.
+// Creates a favicon::FaviconURL from a blink::mojom::FaviconURL.
 FaviconURL FaviconURLFromContentFaviconURL(
-    const content::FaviconURL& favicon_url);
+    const blink::mojom::FaviconURLPtr& favicon_url);
 
-// Creates favicon::FaviconURLs from content::FaviconURLs.
+// Creates favicon::FaviconURLs from blink::mojom::FaviconURLPtrs.
 std::vector<FaviconURL> FaviconURLsFromContentFaviconURLs(
-    const std::vector<content::FaviconURL>& favicon_urls);
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls);
 
 }  // namespace favicon
 

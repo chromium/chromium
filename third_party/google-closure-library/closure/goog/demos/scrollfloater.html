@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<title>ScrollFloater</title>
+<script src="../base.js"></script>
+
+<script>
+  goog.require('goog.dom');
+  goog.require('goog.events');
+  goog.require('goog.ui.ScrollFloater');
+  goog.require('goog.ui.ToggleButton');
+</script>
+<link rel="stylesheet" href="../css/button.css">
+<style>
+table {
+  border: 1px solid black;
+  width: 100%;
+  height: 1500px;
+}
+
+.left-cell {
+  color: black;
+  background-color: lightgray;
+  width: 33%;
+  vertical-align: top;
+}
+
+.cell {
+  background-color: lightblue;
+  width: 33%;
+  vertical-align: top;
+}
+
+.spacer {
+  border: 1px solid black;
+  height: 200px;
+}
+
+.goog-scrollfloater {
+  border: 1px solid black;
+  height: 150px;
+  width: 90%;
+  color: black;
+  background-color: blue;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a4e7fc), color-stop(100%,#00aadd));
+  background: gradient(linear, left top, left bottom, color-stop(0%,#a4e7fc), color-stop(100%,#00aadd));
+}
+
+#floater3 {
+  padding-top: 500px;
+}
+</style>
+</head>
+<body>
+  <form action="javascript:void(0)">
+    <table style="border: 1px solid black">
+      <tr>
+        <td class="left-cell">
+          <div class="spacer">
+            This content does not float.
+          </div>
+          <div class="spacer">
+            This content does not float.
+          </div>
+          <div id="floater1">
+            This floater is constrained within a container and has a top offset of 50px.
+          </div>
+        </td>
+        <td class="cell">
+          <div class="spacer">
+            This content does not float.
+          </div>
+          <div id="floater2container">
+          </div>
+        </td>
+        <td class="cell">
+          <div class="spacer">
+            This content does not float.
+          </div>
+          <!-- The purpose of this position:relative element is to ensure that
+               we're checking more than just the offsetTop of the floating
+               child. -->
+          <div style="position: relative">
+            <div id="floater3">
+              This floater is very tall.
+              <p>
+                This tall floater is pinned to the bottom of the window when
+                your window is shorter and floats at the top when it is taller.
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div style="height:1500px"></div>
+    <p>This is the bottom of the page.</p>
+  </form>
+
+  <script>
+    var parentForm = document.getElementsByTagName('form')[0];
+
+    var scrollfloater1 = new goog.ui.ScrollFloater();
+    var button1 = new goog.ui.ToggleButton("Enable Floater 1");
+    button1.render(goog.dom.getElement('floater1'));
+    scrollfloater1.setViewportTopOffset(50);
+    scrollfloater1.setContainerElement(goog.dom.getElement('floater1').parentElement);
+    scrollfloater1.decorate(goog.dom.getElement('floater1'));
+
+    var scrollfloater2 = new goog.ui.ScrollFloater();
+
+    var button2 = new goog.ui.ToggleButton("Enable Floater 2");
+    scrollfloater2.addChild(button2, true);
+    scrollfloater2.render(goog.dom.getElement('floater2container'));
+
+    var scrollfloater3 = new goog.ui.ScrollFloater();
+    scrollfloater3.decorate(goog.dom.getElement('floater3'));
+
+    function setupClickHandler(ctrl, floater) {
+      goog.events.listen(ctrl, goog.ui.Component.EventType.ACTION,
+                         function() {
+                           floater.setScrollingEnabled(ctrl.isChecked());
+                         });
+    }
+
+    button1.setState(goog.ui.Component.State.CHECKED, true);
+    button2.setState(goog.ui.Component.State.CHECKED, true);
+    setupClickHandler(button1, scrollfloater1);
+    setupClickHandler(button2, scrollfloater2);
+  </script>
+</body>
+</html>

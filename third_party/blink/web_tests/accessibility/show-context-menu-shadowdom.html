@@ -43,7 +43,7 @@
 <script>
 var target = document.getElementById('target');
 var shadowHost = document.getElementById('shadowHost');
-var shadowRoot = shadowHost.createShadowRoot();
+var shadowRoot = shadowHost.attachShadow({mode: 'open'});
 shadowRoot.appendChild(document.getElementById('inner'));
 
 async_test(function(t)

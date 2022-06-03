@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -20,11 +20,15 @@ OmniboxController::OmniboxController(OmniboxEditModel* omnibox_edit_model,
                                      OmniboxClient* client)
     : omnibox_edit_model_(omnibox_edit_model),
       client_(client),
-      popup_(nullptr),
       autocomplete_controller_(new AutocompleteController(
           client_->CreateAutocompleteProviderClient(),
-          this,
-          AutocompleteClassifier::DefaultOmniboxProviders())) {}
+          AutocompleteClassifier::DefaultOmniboxProviders())) {
+  autocomplete_controller_->AddObserver(this);
+
+  OmniboxControllerEmitter* emitter = client_->GetOmniboxControllerEmitter();
+  if (emitter)
+    autocomplete_controller_->AddObserver(emitter);
+}
 
 OmniboxController::~OmniboxController() {
 }
@@ -33,22 +37,16 @@ void OmniboxController::StartAutocomplete(
     const AutocompleteInput& input) const {
   ClearPopupKeywordMode();
 
-  if (client_->GetOmniboxControllerEmitter()) {
-    client_->GetOmniboxControllerEmitter()->NotifyOmniboxQuery(
-        autocomplete_controller_.get(), input);
-  }
-
   // We don't explicitly clear OmniboxPopupModel::manually_selected_match, as
   // Start ends up invoking OmniboxPopupModel::OnResultChanged which clears it.
   autocomplete_controller_->Start(input);
 }
 
-void OmniboxController::OnResultChanged(bool default_match_changed) {
-  if (client_->GetOmniboxControllerEmitter())
-    client_->GetOmniboxControllerEmitter()->NotifyOmniboxResultChanged(
-        default_match_changed, autocomplete_controller_.get());
+void OmniboxController::OnResultChanged(AutocompleteController* controller,
+                                        bool default_match_changed) {
+  DCHECK(controller == autocomplete_controller_.get());
 
-  const bool was_open = popup_ && popup_->IsOpen();
+  const bool was_open = omnibox_edit_model_->PopupIsOpen();
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
@@ -57,20 +55,27 @@ void OmniboxController::OnResultChanged(bool default_match_changed) {
       omnibox_edit_model_->OnCurrentMatchChanged();
     } else {
       InvalidateCurrentMatch();
-      if (popup_)
-        popup_->OnResultChanged();
-      omnibox_edit_model_->OnPopupDataChanged(base::string16(),
-                                              /*is_temporary_text=*/false,
-                                              base::string16(), false);
+      omnibox_edit_model_->OnPopupResultChanged();
+      omnibox_edit_model_->OnPopupDataChanged(
+          std::u16string(),
+          /*is_temporary_text=*/false, std::u16string(), std::u16string(), {},
+          std::u16string(), false, std::u16string());
     }
-  } else if (popup_) {
-    popup_->OnResultChanged();
+  } else {
+    omnibox_edit_model_->OnPopupResultChanged();
   }
 
-  if (was_open && !popup_->IsOpen()) {
+  if (was_open && !omnibox_edit_model_->PopupIsOpen()) {
     // Accept the temporary text as the user text, because it makes little sense
     // to have temporary text when the popup is closed.
     omnibox_edit_model_->AcceptTemporaryTextAsUserText();
+    // Closing the popup can change the default suggestion. This usually occurs
+    // when it's unclear whether the input represents a search or URL; e.g.,
+    // 'a.com/b c' or when title autocompleting. Clear the additional text to
+    // avoid suggesting the omnibox contains a URL suggestion when that may no
+    // longer be the case; i.e. when the default suggestion changed from a URL
+    // to a search suggestion upon closing the popup.
+    omnibox_edit_model_->ClearAdditionalText();
   }
 
   // Note: The client outlives |this|, so bind a weak pointer to the callback
@@ -86,14 +91,16 @@ void OmniboxController::InvalidateCurrentMatch() {
 }
 
 void OmniboxController::ClearPopupKeywordMode() const {
-  // |popup_| can be nullptr in tests.
-  if (popup_ && popup_->IsOpen() &&
-      popup_->selected_line_state() == OmniboxPopupModel::KEYWORD) {
-    popup_->SetSelectedLineState(OmniboxPopupModel::NORMAL);
+  if (omnibox_edit_model_->PopupIsOpen()) {
+    OmniboxPopupSelection selection = omnibox_edit_model_->GetPopupSelection();
+    if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
+      selection.state = OmniboxPopupSelection::NORMAL;
+      omnibox_edit_model_->SetPopupSelection(selection);
+    }
   }
 }
 
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
                                                 const SkBitmap& bitmap) {
-  popup_->SetRichSuggestionBitmap(result_index, bitmap);
+  omnibox_edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
 }

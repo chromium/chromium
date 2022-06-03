@@ -9,15 +9,12 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
+#include "base/command_line.h"
+#include "base/cxx17_backports.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_delegate.h"
-
-namespace {
-
-double g_duration_scale_factor = 1.0;
-
-}  // namespace
+#include "ui/gfx/switches.h"
 
 namespace gfx {
 
@@ -25,7 +22,7 @@ static base::TimeDelta CalculateInterval(int frame_rate) {
   int timer_interval = 1000000 / frame_rate;
   if (timer_interval < 10000)
     timer_interval = 10000;
-  return base::TimeDelta::FromMicroseconds(timer_interval);
+  return base::Microseconds(timer_interval);
 }
 
 const int LinearAnimation::kDefaultFrameRate = 60;
@@ -47,9 +44,8 @@ double LinearAnimation::GetCurrentValue() const {
 }
 
 void LinearAnimation::SetCurrentValue(double new_value) {
-  new_value = base::ClampToRange(new_value, 0.0, 1.0);
-  base::TimeDelta time_delta = base::TimeDelta::FromMicroseconds(
-      static_cast<int64_t>(duration_.InMicroseconds() * (new_value - state_)));
+  new_value = base::clamp(new_value, 0.0, 1.0);
+  const base::TimeDelta time_delta = duration_ * (new_value - state_);
   SetStartTime(start_time() - time_delta);
   state_ = new_value;
 }
@@ -65,25 +61,23 @@ void LinearAnimation::End() {
 }
 
 void LinearAnimation::SetDuration(base::TimeDelta duration) {
-  duration_ = duration * g_duration_scale_factor;
-  if (duration_ < timer_interval())
-    duration_ = timer_interval();
+  static const double duration_scale_factor = []() {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    double animation_duration_scale;
+    return (base::StringToDouble(command_line->GetSwitchValueASCII(
+                                     switches::kAnimationDurationScale),
+                                 &animation_duration_scale) &&
+            (animation_duration_scale >= 0.0))
+               ? animation_duration_scale
+               : 1.0;
+  }();
+  duration_ = std::max(duration * duration_scale_factor, timer_interval());
   if (is_animating())
     SetStartTime(container()->last_tick_time());
 }
 
-// static
-void LinearAnimation::SetDurationScale(const double scale_factor) {
-  if (scale_factor >= 0.0)
-    g_duration_scale_factor = scale_factor;
-}
-
 void LinearAnimation::Step(base::TimeTicks time_now) {
-  base::TimeDelta elapsed_time = time_now - start_time();
-  state_ = static_cast<double>(elapsed_time.InMicroseconds()) /
-           static_cast<double>(duration_.InMicroseconds());
-  if (state_ >= 1.0)
-    state_ = 1.0;
+  state_ = std::min((time_now - start_time()) / duration_, 1.0);
 
   AnimateToState(state_);
 

@@ -4,7 +4,10 @@
 
 #include "ui/base/page_transition_types.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace ui {
 
@@ -87,7 +90,7 @@ const char* PageTransitionGetCoreTransitionString(PageTransition type) {
     case PAGE_TRANSITION_KEYWORD: return "keyword";
     case PAGE_TRANSITION_KEYWORD_GENERATED: return "keyword_generated";
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace ui

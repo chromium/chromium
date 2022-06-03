@@ -17,8 +17,9 @@ var globals = [];
 // List of builtin JS constructors; Blink is not controlling what properties these
 // objects have, so exercising them in a Blink test doesn't make sense.
 //
-// This list should be kept in sync with the one at LayoutTests/resources/global-interface-listing.js
+// This list should be kept in sync with the one at web_tests/resources/global-interface-listing.js
 var js_builtins = new Set([
+    'AggregateError',
     'Array',
     'ArrayBuffer',
     'Atomics',
@@ -30,6 +31,7 @@ var js_builtins = new Set([
     'Date',
     'Error',
     'EvalError',
+    'FinalizationRegistry',
     'Float32Array',
     'Float64Array',
     'Function',
@@ -62,6 +64,7 @@ var js_builtins = new Set([
     'Uint8Array',
     'Uint8ClampedArray',
     'WeakMap',
+    'WeakRef',
     'WeakSet',
     'WebAssembly',
     'decodeURI',

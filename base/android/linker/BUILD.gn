@@ -13,6 +13,7 @@ shared_library("chromium_android_linker") {
     "legacy_linker_jni.h",
     "linker_jni.cc",
     "linker_jni.h",
+    "linker_jni_onload.cc",
     "modern_linker_jni.cc",
     "modern_linker_jni.h",
   ]
@@ -28,6 +29,18 @@ shared_library("chromium_android_linker") {
   # Export JNI symbols.
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+
+  # Disable coverage to avoid linker issue.
+  configs -= [ "//build/config/coverage:default_coverage" ]
+
+  # ThinLTO optimizations save a few bytes of binary size.
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
+  # Disable orderfile instrumentation. Code in this target is in a different
+  # .so, cannot call unexported instrumentation functions from another one (link
+  # time error).
+  configs -= [ "//build/config/android:default_orderfile_instrumentation" ]
 
   # Avoid linking libc++ and support libraries, to avoid 100 kiB of
   # un-necessary code.

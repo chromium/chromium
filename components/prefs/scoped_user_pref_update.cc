@@ -4,7 +4,7 @@
 
 #include "components/prefs/scoped_user_pref_update.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_service.h"
 

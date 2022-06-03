@@ -4,7 +4,8 @@
 
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
@@ -44,8 +45,10 @@ size_t CalculateRequiredBufferSize(
     }
     return result;
   } else {
-    return media::VideoCaptureFormat(dimensions, 0.0f, format)
-        .ImageAllocationSize();
+    const auto& frame_format =
+        media::VideoCaptureFormat(dimensions, 0.0f, format);
+    return media::VideoFrame::AllocationSize(frame_format.pixel_format,
+                                             frame_format.frame_size);
   }
 }
 

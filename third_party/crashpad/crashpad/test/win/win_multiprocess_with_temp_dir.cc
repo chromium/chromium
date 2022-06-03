@@ -16,6 +16,7 @@
 
 #include <tlhelp32.h>
 
+#include "base/logging.h"
 #include "test/errors.h"
 #include "util/process/process_id.h"
 #include "util/win/process_info.h"

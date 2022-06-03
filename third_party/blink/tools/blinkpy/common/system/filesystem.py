@@ -25,25 +25,31 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Wrapper object for functions that access the filesystem.
 
 A FileSystem object can be used to represent dependency on the
 filesystem, and can be replaced with a MockFileSystem in tests.
 """
+from __future__ import unicode_literals
 
 import codecs
 import errno
-import exceptions
 import glob
 import hashlib
 import logging
 import os
 import shutil
 import stat
+import subprocess
 import sys
 import tempfile
 import time
+
+try:
+    import exceptions
+except ImportError:
+    # In py3, exceptions were moved into builtins
+    import builtins as exceptions
 
 _log = logging.getLogger(__name__)
 
@@ -74,7 +80,8 @@ class FileSystem(object):
         (https://msdn.microsoft.com/en-us/library/aa365247.aspx#maxpath)
         """
         if sys.platform == 'win32' and len(path) >= self.WINDOWS_MAX_PATH:
-            return ur'\\?\%s' % (self.abspath(path),)
+            assert not path.startswith(r'\\'), "must not already be UNC"
+            return r'\\?\%s' % (self.abspath(path), )
         return path
 
     def abspath(self, path):
@@ -102,7 +109,8 @@ class FileSystem(object):
 
     def copyfile(self, source, destination):
         # shutil.copyfile() uses open() underneath, which supports UNC paths.
-        shutil.copyfile(self._path_for_access(source), self._path_for_access(destination))
+        shutil.copyfile(
+            self._path_for_access(source), self._path_for_access(destination))
 
     def dirname(self, path):
         return os.path.dirname(path)
@@ -173,7 +181,8 @@ class FileSystem(object):
         return os.listdir(path)
 
     def walk(self, top, topdown=True, onerror=None, followlinks=False):
-        return os.walk(top, topdown=topdown, onerror=onerror, followlinks=followlinks)
+        return os.walk(
+            top, topdown=topdown, onerror=onerror, followlinks=followlinks)
 
     def mkdtemp(self, **kwargs):
         """Creates and returns a uniquely-named directory.
@@ -188,8 +197,8 @@ class FileSystem(object):
         of the string methods. If you need a string, coerce the object to a
         string and go from there.
         """
-        class TemporaryDirectory(object):
 
+        class TemporaryDirectory(object):
             def __init__(self, **kwargs):
                 self._kwargs = kwargs
                 self._directory_path = tempfile.mkdtemp(**self._kwargs)
@@ -238,10 +247,10 @@ class FileSystem(object):
         return f, temp_name
 
     def open_binary_file_for_reading(self, path):
-        return file(self._path_for_access(path), 'rb')
+        return open(self._path_for_access(path), 'rb')
 
     def open_binary_file_for_writing(self, path):
-        return file(self._path_for_access(path), 'wb')
+        return open(self._path_for_access(path), 'wb')
 
     def read_binary_file(self, path):
         """Returns the contents of the file as a byte string."""
@@ -272,6 +281,9 @@ class FileSystem(object):
 
     def open_text_file_for_writing(self, path):
         return codecs.open(self._path_for_access(path), 'w', 'utf8')
+
+    def open_text_file_for_appending(self, path):
+        return codecs.open(self._path_for_access(path), 'a', 'utf8')
 
     def read_text_file(self, path):
         """Returns the contents of the file as a Unicode string.
@@ -327,8 +339,35 @@ class FileSystem(object):
 
     def rmtree(self, path, ignore_errors=True, onerror=None):
         """Deletes the directory rooted at path, whether empty or not."""
-        # shutil.rmtree() uses os.path.join() which doesn't support UNC paths.
-        shutil.rmtree(path, ignore_errors=ignore_errors, onerror=onerror)
+        if sys.platform == 'win32':
+            assert not path.startswith(r'\\'), 'root path cannot be UNC-style'
+            path_abs = self.abspath(path)
+
+            # Ensure the root of the tree being rmtree'd is not a long path.
+            # We can't convert it to a long path (using _path_for_access),
+            # because long paths are not supported in 'rmdir' on Windows 7.
+            assert len(path_abs) < self.WINDOWS_MAX_PATH, \
+                'root path is too long'
+
+            # Ensure (hopefully) that the quoting done on the next line is safe.
+            assert '"' not in path_abs, 'path contains a quotation mark (")'
+
+            # Create a shell command to call rmdir. (Note rmdir is a shell
+            # built-in, so it cannot be called as an executable.)
+            cmd = 'rmdir /s /q "{}"'.format(path_abs)
+            try:
+                subprocess.check_call(cmd, shell=True)
+            except subprocess.CalledProcessError as e:
+                if not ignore_errors:
+                    if onerror:
+                        # Unfortunately we can't know the exact file that failed,
+                        # so we conjure up error info from the top level.
+                        onerror('FileSystem.rmtree', path, sys.exc_info())
+                    else:
+                        raise e
+        else:
+            # shutil.rmtree() uses os.path.join() which doesn't support UNC paths.
+            shutil.rmtree(path, ignore_errors=ignore_errors, onerror=onerror)
 
     def remove_contents(self, dirname):
         """Attempts to remove the contents of a directory tree.
@@ -354,7 +393,9 @@ class FileSystem(object):
         return os.path.splitext(path)
 
     def make_executable(self, file_path):
-        os.chmod(file_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP)
+        os.chmod(
+            file_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR
+            | stat.S_IRGRP | stat.S_IXGRP)
 
     def symlink(self, source, link_name):
         """Create a symbolic link. Unix only."""
@@ -431,11 +472,14 @@ def _remove_contents(fs, dirname, sleep=time.sleep):
         return True
 
     _log.warning('Unable to remove %s', dirname)
-    for dirpath, dirnames, filenames in fs.walk(dirname, onerror=onerror, topdown=False):
+    for dirpath, dirnames, filenames in fs.walk(
+            dirname, onerror=onerror, topdown=False):
         for fname in filenames:
-            _log.warning('File %s still in output dir.', fs.join(dirpath, fname))
+            _log.warning('File %s still in output dir.', fs.join(
+                dirpath, fname))
         for dname in dirnames:
-            _log.warning('Dir %s still in output dir.', fs.join(dirpath, dname))
+            _log.warning('Dir %s still in output dir.', fs.join(
+                dirpath, dname))
 
     return False
 

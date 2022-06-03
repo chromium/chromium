@@ -5,18 +5,25 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_VIEW_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
+
+#if defined(OS_MAC)
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif
 
 namespace gfx {
 class Insets;
@@ -38,7 +45,6 @@ namespace content {
 
 class RenderWidgetHost;
 class TouchSelectionControllerClientManager;
-struct ScreenInfo;
 
 // RenderWidgetHostView is an interface implemented by an object that acts as
 // the "View" portion of a RenderWidgetHost. The RenderWidgetHost and its
@@ -78,9 +84,6 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Tells the View to size and move itself to the specified size and point in
   // screen space.
   virtual void SetBounds(const gfx::Rect& rect) = 0;
-
-  // Indicates whether the scroll offset of the view is at top.
-  virtual bool IsScrollOffsetAtTop() = 0;
 
   // Sets a flag that indicates if it is in virtual reality mode.
   virtual void SetIsInVR(bool is_in_vr) = 0;
@@ -141,7 +144,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Returns the currently selected text in both of editable text fields and
   // non-editable texts.
-  virtual base::string16 GetSelectedText() = 0;
+  virtual std::u16string GetSelectedText() = 0;
 
   // This only returns non-null on platforms that implement touch
   // selection editing (TSE), currently Aura and Android.
@@ -156,10 +159,19 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // which is shown if the background color of the renderer is not available.
   virtual void SetBackgroundColor(SkColor color) = 0;
   // GetBackgroundColor returns the current background color of the view.
-  virtual base::Optional<SkColor> GetBackgroundColor() = 0;
+  virtual absl::optional<SkColor> GetBackgroundColor() = 0;
+  // Copy background color from another view if other view has background color.
+  virtual void CopyBackgroundColorIfPresentFrom(
+      const RenderWidgetHostView& other) = 0;
 
-  // Return value indicates whether the mouse is locked successfully or not.
-  virtual bool LockMouse(bool request_unadjusted_movement) = 0;
+  // Return value indicates whether the mouse is locked successfully or a
+  // reason why it failed.
+  virtual blink::mojom::PointerLockResult LockMouse(
+      bool request_unadjusted_movement) = 0;
+  // Return value indicates whether the MouseLock was changed successfully
+  // or a reason why the change failed.
+  virtual blink::mojom::PointerLockResult ChangeMouseLock(
+      bool request_unadjusted_movement) = 0;
   virtual void UnlockMouse() = 0;
   // Returns true if the mouse pointer is currently locked.
   virtual bool IsMouseLocked() = 0;
@@ -169,7 +181,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Start/Stop intercepting future system keyboard events.
   virtual bool LockKeyboard(
-      base::Optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
+      absl::optional<base::flat_set<ui::DomCode>> dom_codes) = 0;
   virtual void UnlockKeyboard() = 0;
   // Returns true if keyboard lock is active.
   virtual bool IsKeyboardLocked() = 0;
@@ -228,24 +240,20 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
   CreateVideoCapturer() = 0;
 
-  // Informs the view that its associated render widget has frames to draw and
-  // wants to have BeginFrame messages sent to it.  This should only be called
-  // when the value has changed.  Views must initially default to false.
-  virtual void SetNeedsBeginFrames(bool needs_begin_frames) = 0;
-
-  // Informs the view that its associated render widget also wants to receive
-  // animate_only BeginFrames.
-  virtual void SetWantsAnimateOnlyBeginFrames() = 0;
-
   // This method returns the ScreenInfo used by the view to render. If the
   // information is not knowable (e.g, because the view is not attached to a
   // screen yet), then a default best-guess will be used.
-  virtual void GetScreenInfo(ScreenInfo* screen_info) = 0;
+  virtual display::ScreenInfo GetScreenInfo() const = 0;
+
+  // This method returns the ScreenInfos used by the view to render. If the
+  // information is not knowable (e.g, because the view is not attached to a
+  // screen yet), then a default best-guess will be used.
+  virtual display::ScreenInfos GetScreenInfos() const = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
-  virtual float GetDeviceScaleFactor() = 0;
+  virtual float GetDeviceScaleFactor() const = 0;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Set the view's active state (i.e., tint state of controls).
   virtual void SetActive(bool active) = 0;
 
@@ -254,17 +262,46 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Tells the view to speak the currently selected text.
   virtual void SpeakSelection() = 0;
-#endif  // defined(OS_MACOSX)
+
+  // Allows to update the widget's screen rects when it is not attached to
+  // a window (e.g. in headless mode).
+  virtual void SetWindowFrameInScreen(const gfx::Rect& rect) = 0;
+
+  // Invoked by browser implementation of the navigator.share() to trigger the
+  // NSSharingServicePicker.
+  //
+  // |title|, |text|, |url| makes up the requested data that is passed to the
+  // picker after being converted to NSString.
+  // |file_paths| is the set of paths to files to be shared passed onto the
+  // picker after being converted to NSURL.
+  // |callback| returns the result from the NSSharingServicePicker depending
+  // upon the user's action.
+  virtual void ShowSharePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      blink::mojom::ShareService::ShareCallback callback) = 0;
+
+#endif  // defined(OS_MAC)
 
   // Indicates that this view should show the contents of |view| if it doesn't
   // have anything to show.
   virtual void TakeFallbackContentFrom(RenderWidgetHostView* view) = 0;
 
-  // Set the last time a tab change starts to be processed for this
-  // RenderWidgetHostView. Will overwrite any previously stored value.
-  virtual void SetRecordTabSwitchTimeRequest(base::TimeTicks start_time,
-                                             bool destination_is_loaded,
-                                             bool destination_is_frozen) = 0;
+  // Returns true if the overlaycontent flag is set in the JS, else false.
+  // This determines whether to fire geometrychange event to JS and also not
+  // resize the visual/layout viewports in response to keyboard visibility
+  // changes.
+  virtual bool ShouldVirtualKeyboardOverlayContent() = 0;
+
+  // Create a geometrychange event and forward it to the JS with the
+  // keyboard coordinates.
+  virtual void NotifyVirtualKeyboardOverlayRect(
+      const gfx::Rect& keyboard_rect) = 0;
+
+  // Returns true if this widget is a HTML popup, e.g. a <select> menu.
+  virtual bool IsHTMLFormPopup() const = 0;
 };
 
 }  // namespace content

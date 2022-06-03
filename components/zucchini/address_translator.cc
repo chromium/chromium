@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 
 namespace zucchini {
 
@@ -62,6 +62,8 @@ offset_t AddressTranslator::RvaToOffsetCache::Convert(rva_t rva) const {
 /******** AddressTranslator ********/
 
 AddressTranslator::AddressTranslator() = default;
+
+AddressTranslator::AddressTranslator(AddressTranslator&&) = default;
 
 AddressTranslator::~AddressTranslator() = default;
 

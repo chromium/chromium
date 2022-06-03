@@ -6,6 +6,8 @@ source_set("session") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
+    "//ios/web/common:features",
+    "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/security",
     "//ios/web/public/session",

@@ -4,9 +4,12 @@
 
 #include "ui/base/text/bytes_formatting.h"
 
+#include <ostream>
+
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/number_formatting.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,14 +38,14 @@ const int kSpeedStrings[] = {
   IDS_APP_PEBIBYTES_PER_SECOND
 };
 
-base::string16 FormatBytesInternal(int64_t bytes,
+std::u16string FormatBytesInternal(int64_t bytes,
                                    DataUnits units,
                                    bool show_units,
                                    const int* const suffix) {
   DCHECK(units >= DATA_UNITS_BYTE && units <= DATA_UNITS_PEBIBYTE);
   if (bytes < 0) {
     NOTREACHED() << "Negative bytes value";
-    return base::string16();
+    return std::u16string();
   }
 
   // Put the quantity in the right units.
@@ -54,7 +57,7 @@ base::string16 FormatBytesInternal(int64_t bytes,
   if (bytes != 0 && units != DATA_UNITS_BYTE && unit_amount < 100)
     fractional_digits = 1;
 
-  base::string16 result = base::FormatDouble(unit_amount, fractional_digits);
+  std::u16string result = base::FormatDouble(unit_amount, fractional_digits);
 
   if (show_units)
     result = l10n_util::GetStringFUTF16(suffix[units], result);
@@ -92,23 +95,23 @@ DataUnits GetByteDisplayUnits(int64_t bytes) {
   return DataUnits(unit_index);
 }
 
-base::string16 FormatBytesWithUnits(int64_t bytes,
+std::u16string FormatBytesWithUnits(int64_t bytes,
                                     DataUnits units,
                                     bool show_units) {
   return FormatBytesInternal(bytes, units, show_units, kByteStrings);
 }
 
-base::string16 FormatSpeedWithUnits(int64_t bytes,
+std::u16string FormatSpeedWithUnits(int64_t bytes,
                                     DataUnits units,
                                     bool show_units) {
   return FormatBytesInternal(bytes, units, show_units, kSpeedStrings);
 }
 
-base::string16 FormatBytes(int64_t bytes) {
+std::u16string FormatBytes(int64_t bytes) {
   return FormatBytesWithUnits(bytes, GetByteDisplayUnits(bytes), true);
 }
 
-base::string16 FormatSpeed(int64_t bytes) {
+std::u16string FormatSpeed(int64_t bytes) {
   return FormatSpeedWithUnits(bytes, GetByteDisplayUnits(bytes), true);
 }
 

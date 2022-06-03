@@ -10,6 +10,9 @@
 #include "base/supports_user_data.h"
 
 class OverlayCallbackManager;
+namespace web {
+class WebState;
+}
 
 // Model object used to track overlays requested for OverlayManager.
 class OverlayRequest {
@@ -43,6 +46,12 @@ class OverlayRequest {
   // Returns the request's callback controller, which can be used to communicate
   // user interaction information back to the reqeuster.
   virtual OverlayCallbackManager* GetCallbackManager() = 0;
+
+  // Returns the WebState into whose OverlayRequestQueue this request was added.
+  // Default value before being added to a queue is null.  After being added to
+  // a queue, the WebState will be set for the remainder of the request's
+  // lifetime.
+  virtual web::WebState* GetQueueWebState() = 0;
 
  protected:
   OverlayRequest() = default;

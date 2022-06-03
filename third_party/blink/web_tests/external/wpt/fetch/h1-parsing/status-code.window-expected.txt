@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+FAIL HTTP/1.1  (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 BLAH (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS HTTP/1.1 0 OK 
+PASS HTTP/1.1 1 OK 
+PASS HTTP/1.1 99 NOT OK 
+PASS HTTP/1.1 077 77 
+PASS HTTP/1.1 099 HELLO 
+PASS HTTP/1.1 200 
+PASS HTTP/1.1 999 DOES IT MATTER 
+FAIL HTTP/1.1 1000 BOO (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 0200 BOO (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 65736 NOT 200 OR SOME SUCH (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 131072 HI (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 -200 TEST (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 0xA (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL HTTP/1.1 C8 (network error) assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

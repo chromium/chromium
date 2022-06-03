@@ -8,10 +8,11 @@
 #include <stddef.h>
 #include <sys/types.h>
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "base/macros.h"
 
 struct iovec;  // Declared in <sys/uio.h>

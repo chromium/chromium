@@ -16,9 +16,10 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_mac.h"
@@ -78,8 +79,12 @@ scoped_refptr<HidDeviceInfo> CreateDeviceInfo(
     HID_LOG(DEBUG) << "Device report descriptor not available.";
   }
 
+  int32_t location_id = GetIntProperty(service, CFSTR(kIOHIDLocationIDKey));
+  std::string physical_device_id = base::NumberToString(location_id);
+
   return new HidDeviceInfo(
-      entry_id, GetIntProperty(service, CFSTR(kIOHIDVendorIDKey)),
+      entry_id, physical_device_id,
+      GetIntProperty(service, CFSTR(kIOHIDVendorIDKey)),
       GetIntProperty(service, CFSTR(kIOHIDProductIDKey)),
       GetStringProperty(service, CFSTR(kIOHIDProductKey)),
       GetStringProperty(service, CFSTR(kIOHIDSerialNumberKey)),
@@ -100,7 +105,7 @@ HidServiceMac::HidServiceMac() : weak_factory_(this) {
       IOServiceMatching(kIOHIDDeviceKey), FirstMatchCallback, this,
       devices_added_iterator_.InitializeInto());
   if (result != kIOReturnSuccess) {
-    HID_LOG(ERROR) << "Failed to listen for device arrival: "
+    HID_LOG(DEBUG) << "Failed to listen for device arrival: "
                    << HexErrorCode(result);
     return;
   }
@@ -113,7 +118,7 @@ HidServiceMac::HidServiceMac() : weak_factory_(this) {
       IOServiceMatching(kIOHIDDeviceKey), TerminatedCallback, this,
       devices_removed_iterator_.InitializeInto());
   if (result != kIOReturnSuccess) {
-    HID_LOG(ERROR) << "Failed to listen for device removal: "
+    HID_LOG(DEBUG) << "Failed to listen for device removal: "
                    << HexErrorCode(result);
     return;
   }
@@ -126,6 +131,8 @@ HidServiceMac::HidServiceMac() : weak_factory_(this) {
 HidServiceMac::~HidServiceMac() {}
 
 void HidServiceMac::Connect(const std::string& device_guid,
+                            bool allow_protected_reports,
+                            bool allow_fido_reports,
                             ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -136,11 +143,12 @@ void HidServiceMac::Connect(const std::string& device_guid,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kBlockingTaskTraits,
       base::BindOnce(&HidServiceMac::OpenOnBlockingThread, map_entry->second),
       base::BindOnce(&HidServiceMac::DeviceOpened, weak_factory_.GetWeakPtr(),
-                     map_entry->second, std::move(callback)));
+                     map_entry->second, allow_protected_reports,
+                     allow_fido_reports, std::move(callback)));
 }
 
 base::WeakPtr<HidService> HidServiceMac::GetWeakPtr() {
@@ -150,11 +158,14 @@ base::WeakPtr<HidService> HidServiceMac::GetWeakPtr() {
 // static
 base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
     scoped_refptr<HidDeviceInfo> device_info) {
+  DCHECK_EQ(device_info->platform_device_id_map().size(), 1u);
+  const auto& platform_device_id =
+      device_info->platform_device_id_map().front().platform_device_id;
   base::ScopedCFTypeRef<CFDictionaryRef> matching_dict(
-      IORegistryEntryIDMatching(device_info->platform_device_id()));
+      IORegistryEntryIDMatching(platform_device_id));
   if (!matching_dict.get()) {
-    HID_LOG(EVENT) << "Failed to create matching dictionary for ID: "
-                   << device_info->platform_device_id();
+    HID_LOG(DEBUG) << "Failed to create matching dictionary for ID: "
+                   << platform_device_id;
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
@@ -163,21 +174,20 @@ base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
   base::mac::ScopedIOObject<io_service_t> service(IOServiceGetMatchingService(
       kIOMasterPortDefault, matching_dict.release()));
   if (!service.get()) {
-    HID_LOG(EVENT) << "IOService not found for ID: "
-                   << device_info->platform_device_id();
+    HID_LOG(DEBUG) << "IOService not found for ID: " << platform_device_id;
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device(
       IOHIDDeviceCreate(kCFAllocatorDefault, service));
   if (!hid_device) {
-    HID_LOG(EVENT) << "Unable to create IOHIDDevice object.";
+    HID_LOG(DEBUG) << "Unable to create IOHIDDevice object.";
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   IOReturn result = IOHIDDeviceOpen(hid_device, kIOHIDOptionsTypeNone);
   if (result != kIOReturnSuccess) {
-    HID_LOG(EVENT) << "Failed to open device: " << HexErrorCode(result);
+    HID_LOG(DEBUG) << "Failed to open device: " << HexErrorCode(result);
     return base::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
@@ -186,11 +196,14 @@ base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
 
 void HidServiceMac::DeviceOpened(
     scoped_refptr<HidDeviceInfo> device_info,
+    bool allow_protected_reports,
+    bool allow_fido_reports,
     ConnectCallback callback,
     base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device) {
   if (hid_device) {
     std::move(callback).Run(base::MakeRefCounted<HidConnectionMac>(
-        std::move(hid_device), std::move(device_info)));
+        std::move(hid_device), std::move(device_info), allow_protected_reports,
+        allow_fido_reports));
   } else {
     std::move(callback).Run(nullptr);
   }

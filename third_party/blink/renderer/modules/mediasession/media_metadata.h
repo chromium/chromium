@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_METADATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_METADATA_H_
 
-#include "third_party/blink/renderer/modules/mediasession/media_image.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_image.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -54,7 +54,7 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   // Called by MediaSession to associate or de-associate itself.
   void SetSession(MediaSession*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Called when one of the metadata fields is updated from script. It will
@@ -78,7 +78,7 @@ class MODULES_EXPORT MediaMetadata final : public ScriptWrappable {
   HeapVector<Member<MediaImage>> artwork_;
 
   Member<MediaSession> session_;
-  TaskRunnerTimer<MediaMetadata> notify_session_timer_;
+  HeapTaskRunnerTimer<MediaMetadata> notify_session_timer_;
 };
 
 }  // namespace blink

@@ -26,7 +26,7 @@ test(function() {
   assert_false(matrix.is2D);
   assert_false(matrix.isIdentity);
   assert_array_equals(matrix.toFloat64Array(), result.toFloat64Array());
-  assert_throws(new TypeError(), () => { matrix.multiplySelf({a: 2, m11: 3}) });
+  assert_throws_js(TypeError, () => { matrix.multiplySelf({a: 2, m11: 3}) });
 }, "DOMMatrix.multiply(other) and DOMMatrix.multiplySelf(other)");
 
 test(function() {
@@ -49,6 +49,6 @@ test(function() {
   var result = matrix.preMultiplySelf(other);
   assert_3d_matrix_equals(result, [16, 2, 0, 0, 38, 4, 0, 0, 4, 0, 3, 0, 62, 6, 1, 1]);
   assert_array_equals(matrix.toFloat64Array(), result.toFloat64Array());
-  assert_throws(new TypeError(), () => { matrix.preMultiplySelf({b: 3, m12: 2}) });
+  assert_throws_js(TypeError, () => { matrix.preMultiplySelf({b: 3, m12: 2}) });
 }, "DOMMatrix.preMultiplySelf(other)");
 </script>

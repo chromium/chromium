@@ -1,7 +1,7 @@
 # The Passkey Pattern
 
 For the Chromium implementation of this pattern, see
-[//base/util/type_safety/pass_key.h].
+[//base/types/pass_key.h].
 
 The Passkey pattern is used when you need to expose a subset of a class's
 methods to another class in a more granular way than simply friending the other
@@ -10,7 +10,7 @@ constructed by specific other classes, and requiring an instance of that passkey
 class to be passed in when calling methods you wish to restrict the use of. It
 is used like this:
 
-```
+```cpp
 class Foo {
  public:
   Foo();
@@ -49,4 +49,4 @@ are used to pass in the Passkey object.
 It is encouraged to leave the `BarPasskey` parameter unnamed to reinforce that it
 carries no semantic information and is not actually used for anything.
 
-[//base/util/type_safety/pass_key.h]: ../../base/util/type_safety/pass_key.h
+[//base/types/pass_key.h]: ../../base/types/pass_key.h

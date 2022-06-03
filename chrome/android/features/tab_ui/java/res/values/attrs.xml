@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<resources>
+    <declare-styleable name="TabThumbnailPlaceHolder">
+        <attr name="colorTileBase" format="color" />
+        <attr name="elevationTileBase" format="dimension" />
+    </declare-styleable>
+
+    <!-- Tab grid cards attributes -->
+    <attr name="tabGridDividerVisible" format="integer" />
+    <attr name="tabGridBackground" format="reference" />
+    <attr name="tabGridMargin" format="dimension" />
+    <attr name="tabGridHeaderHeight" format="dimension" />
+    <attr name="tabGridFaviconStyle" format="reference" />
+    <attr name="tabGridThumbnailStyle" format="reference" />
+    <attr name="tabGridActionButtonStyle" format="reference" />
+    <attr name="tabGridTitleStyle" format="reference" />
+
+    <!-- Tab grid dialog attributes -->
+    <attr name="tabGridDialogCornerRadius" format="dimension" />
+    <attr name="tabGridDialogAppBarPadding" format="dimension" />
+    <attr name="tabGridDialogUngroupBarDividerStyle" format="reference" />
+</resources>

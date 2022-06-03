@@ -10,9 +10,15 @@ for guidance on how to release fixes based on severity.
 
 Any significant mitigating factors, such as unusual or additional user
 interaction, or running Chrome with a specific command line flag or non-default
-feature enabled, may reduce an issue’s severity by one or more levels. Also note
-that most crashes do not indicate vulnerabilities. Chromium is designed to crash
-in a controlled manner (e.g., with a ```__debugBreak```) when memory is
+feature enabled, may reduce an issue’s severity by one or more levels.
+
+Conversely, we do not consider it a mitigating factor if a vulnerability applies
+only to a particular group of users. For instance, a Critical vulnerability is
+still considered Critical even if it applies only to Linux or to those users
+running with accessibility features enabled.
+
+Also note that most crashes do not indicate vulnerabilities. Chromium is designed
+to crash in a controlled manner (e.g., with a ```__debugBreak```) when memory is
 exhausted or in other exceptional circumstances.
 
 
@@ -55,7 +61,8 @@ Bugs which would normally be
 critical severity with unusual mitigating factors may be rated as high severity.
 For example, renderer sandbox escapes fall into this category as their impact is
 that of a critical severity bug, but they require the precondition of a
-compromised renderer.
+compromised renderer. (Bugs which involve using [MojoJS](../../mojo/public/js/README.md)
+to trigger an exploitable browser process crash usually fall into this category).
 
 They are normally assigned priority **Pri-1** and assigned to the current stable
 milestone (or earliest milestone affected). For high severity bugs,
@@ -146,5 +153,18 @@ Example bugs:
 * An uncontrolled single-byte out-of-bounds read
 ([128163](https://crbug.com/128163)).
 
+
+## Can't impact Chrome users by default {#TOC-No-impact}
+
+If the bug can't impact Chrome users by default, this is denoted instead by
+the **Security-Impact_None** label. See
+[the security labels document](security-labels.md#TOC-Security_Impact-None)
+for more information. The bug should still have a severity set according
+to these guidelines.
+
+
+## Not a security bug {#TOC-Not-a-security-bug}
+
 The [security FAQ](faq.md) covers many of the cases that we do not consider to
-be security bugs, such as [denial of service](faq.md#TOC-Are-denial-of-service-issues-considered-security-bugs-).
+be security bugs, such as [denial of service](faq.md#TOC-Are-denial-of-service-issues-considered-security-bugs-)
+and, in particular, null pointer dereferences with consistent fixed offsets.

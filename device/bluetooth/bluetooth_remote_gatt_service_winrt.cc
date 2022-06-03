@@ -33,15 +33,15 @@ BluetoothRemoteGattServiceWinrt::Create(
   GUID guid;
   HRESULT hr = gatt_service->get_Uuid(&guid);
   if (FAILED(hr)) {
-    VLOG(2) << "Getting UUID failed: " << logging::SystemErrorCodeToString(hr);
+    DVLOG(2) << "Getting UUID failed: " << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
   uint16_t attribute_handle;
   hr = gatt_service->get_AttributeHandle(&attribute_handle);
   if (FAILED(hr)) {
-    VLOG(2) << "Getting AttributeHandle failed: "
-            << logging::SystemErrorCodeToString(hr);
+    DVLOG(2) << "Getting AttributeHandle failed: "
+             << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 

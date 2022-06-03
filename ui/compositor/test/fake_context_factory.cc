@@ -17,14 +17,14 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/switches.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
 namespace ui {
 
 FakeContextFactory::FakeContextFactory() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   renderer_settings_.release_overlay_resources_after_gpu_query = true;
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();
@@ -41,7 +41,7 @@ void FakeContextFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<ui::Compositor> compositor) {
   auto frame_sink = cc::FakeLayerTreeFrameSink::Create3d();
   frame_sink_ = frame_sink.get();
-  compositor->SetLayerTreeFrameSink(std::move(frame_sink));
+  compositor->SetLayerTreeFrameSink(std::move(frame_sink), nullptr);
 }
 
 scoped_refptr<viz::ContextProvider>

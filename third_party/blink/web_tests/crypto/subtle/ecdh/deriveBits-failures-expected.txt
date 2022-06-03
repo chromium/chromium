@@ -4,25 +4,25 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 deriveBits() without algorithm name or public key...
-error is: TypeError: Algorithm: name: Missing or not a string
+error is: TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': Algorithm: name: Missing or not a string
 
 deriveBits() without public key...
-error is: TypeError: EcdhKeyDeriveParams: public: Missing required property
+error is: TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Missing required property
 
 deriveBits() with algorithm that is null...
-error is: TypeError: Algorithm: Not an object
+error is: NotSupportedError: Failed to execute 'deriveBits' on 'SubtleCrypto': Algorithm: Unrecognized name
 
 deriveBits() with algorithm that is -1...
-error is: NotSupportedError: Algorithm: Unrecognized name
+error is: NotSupportedError: Failed to execute 'deriveBits' on 'SubtleCrypto': Algorithm: Unrecognized name
 
 deriveBits() with public key that is null...
-error is: TypeError: EcdhKeyDeriveParams: public: Must be a CryptoKey
+error is: TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Must be a CryptoKey
 
 deriveBits() with public key that is -1...
-error is: TypeError: EcdhKeyDeriveParams: public: Must be a CryptoKey
+error is: TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Must be a CryptoKey
 
 deriveBits() with public key that is a string...
-error is: TypeError: EcdhKeyDeriveParams: public: Must be a CryptoKey
+error is: TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Must be a CryptoKey
 
 deriveBits() with wrong curve public key...
 error is: InvalidAccessError: The public parameter for ECDH key derivation is for a different named curve

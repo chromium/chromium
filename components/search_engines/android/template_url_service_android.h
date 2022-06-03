@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_
 #define COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_
 
-#include <memory>
-
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -18,6 +15,11 @@
 class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
  public:
   explicit TemplateUrlServiceAndroid(TemplateURLService* template_url_service);
+
+  TemplateUrlServiceAndroid(const TemplateUrlServiceAndroid&) = delete;
+  TemplateUrlServiceAndroid& operator=(const TemplateUrlServiceAndroid&) =
+      delete;
+
   ~TemplateUrlServiceAndroid() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -40,20 +42,21 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   jboolean IsSearchResultsPageFromDefaultSearchProvider(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jurl);
+      const base::android::JavaParamRef<jobject>& jurl);
   base::android::ScopedJavaLocalRef<jstring> GetUrlForSearchQuery(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jquery);
+      const base::android::JavaParamRef<jstring>& jquery,
+      const base::android::JavaParamRef<jobjectArray>& jsearch_params);
   base::android::ScopedJavaLocalRef<jstring> GetSearchQueryForUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jurl);
-  base::android::ScopedJavaLocalRef<jstring> GetUrlForVoiceSearchQuery(
+      const base::android::JavaParamRef<jobject>& jurl);
+  base::android::ScopedJavaLocalRef<jobject> GetUrlForVoiceSearchQuery(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jquery);
-  base::android::ScopedJavaLocalRef<jstring> GetUrlForContextualSearchQuery(
+  base::android::ScopedJavaLocalRef<jobject> GetUrlForContextualSearchQuery(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jquery,
@@ -80,7 +83,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const base::android::JavaParamRef<jstring>& jkeyword,
       const base::android::JavaParamRef<jstring>& jsearch_url,
       const base::android::JavaParamRef<jstring>& jsuggest_url,
-      const base::android::JavaParamRef<jstring>& jfavicon_url);
+      const base::android::JavaParamRef<jstring>& jfavicon_url,
+      jboolean set_as_default);
 
   // Adds a custom search engine, sets |jkeyword| as its short_name and keyword,
   // and sets its date_created as |age_in_days| days before the current time.
@@ -120,9 +124,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // Pointer to the TemplateUrlService for the main profile.
   TemplateURLService* template_url_service_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateUrlServiceAndroid);
+  base::CallbackListSubscription template_url_subscription_;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_

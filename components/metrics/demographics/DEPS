@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/network_time",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/sync",
+  "+components/sync_preferences",
+  "+google_apis",
+]

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<style>
+html, body { margin: 0; padding: 0; }
+</style>
+<body>
+<canvas id ="canvas" width="200" height="200" style="position:relative;"></canvas>
+<script>
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext("2d");
+context.rotate(45 * Math.PI / 180);
+context.translate(40, 60);
+context.fillStyle = 'green';
+context.fillRect(0, 0, 200, 200);
+</script>
+</body>
+</html>

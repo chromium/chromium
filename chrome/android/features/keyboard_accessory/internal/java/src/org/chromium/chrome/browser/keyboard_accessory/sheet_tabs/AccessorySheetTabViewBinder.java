@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,9 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -28,7 +29,7 @@ class AccessorySheetTabViewBinder {
     /**
      * Holds any View that represents a list entry.
      */
-    static abstract class ElementViewHolder<T, V extends View> extends RecyclerView.ViewHolder {
+    abstract static class ElementViewHolder<T, V extends View> extends RecyclerView.ViewHolder {
         ElementViewHolder(ViewGroup parent, int layout) {
             super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
         }
@@ -53,6 +54,8 @@ class AccessorySheetTabViewBinder {
                 return new TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return new FooterCommandViewHolder(parent);
+            case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
+                return new OptionToggleViewHolder(parent);
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
@@ -92,6 +95,33 @@ class AccessorySheetTabViewBinder {
             view.setText(footerCommand.getDisplayText());
             view.setContentDescription(footerCommand.getDisplayText());
             view.setOnClickListener(v -> footerCommand.execute());
+        }
+    }
+
+    /**
+     *  Holds a title, subtitle which shows the state of the toggle and a toggle.
+     */
+    static class OptionToggleViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.OptionToggle, LinearLayout> {
+        OptionToggleViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_option_toggle);
+        }
+
+        @Override
+        protected void bind(KeyboardAccessoryData.OptionToggle optionToggle, LinearLayout view) {
+            view.setClickable(true);
+            view.setOnClickListener(
+                    v -> optionToggle.getCallback().onResult(!optionToggle.isEnabled()));
+
+            TextView titleText = view.findViewById(R.id.option_toggle_title);
+            titleText.setText(optionToggle.getDisplayText());
+
+            TextView subtitleText = view.findViewById(R.id.option_toggle_subtitle);
+            subtitleText.setText(optionToggle.isEnabled() ? R.string.text_on : R.string.text_off);
+
+            SwitchCompat switchView = view.findViewById(R.id.option_toggle_switch);
+            switchView.setChecked(optionToggle.isEnabled());
+            switchView.setBackground(null);
         }
     }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#import "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -16,7 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -146,7 +147,7 @@ void TestFormResponseProvider::GetResponseHeadersAndBody(
 }  // namespace
 
 // Tests submition of HTTP forms POST data including cases involving navigation.
-@interface FormsTestCase : ChromeTestCase
+@interface FormsTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation FormsTestCase
@@ -229,8 +230,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
         std::make_unique<ScopedSynchronizationDisabler>();
     // TODO(crbug.com/989615): Investigate why this is necessary even with a
     // visible check below.
-    base::test::ios::SpinRunLoopWithMinDelay(
-        base::TimeDelta::FromSecondsD(0.5));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
@@ -274,8 +274,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
         std::make_unique<ScopedSynchronizationDisabler>();
       // TODO(crbug.com/989615): Investigate why this is necessary even with a
       // visible check below.
-      base::test::ios::SpinRunLoopWithMinDelay(
-          base::TimeDelta::FromSecondsD(0.5));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
@@ -318,8 +317,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
         std::make_unique<ScopedSynchronizationDisabler>();
       // TODO(crbug.com/989615): Investigate why this is necessary even with a
       // visible check below.
-      base::test::ios::SpinRunLoopWithMinDelay(
-          base::TimeDelta::FromSecondsD(0.5));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
@@ -350,7 +348,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   // Mimic |web::GetDisplayTitleForUrl| behavior which uses FormatUrl
   // internally. It can't be called directly from the EarlGrey 2 test process.
-  base::string16 title = url_formatter::FormatUrl(destinationURL);
+  std::u16string title = url_formatter::FormatUrl(destinationURL);
   id<GREYMatcher> historyItem = grey_text(base::SysUTF16ToNSString(title));
   [[EarlGrey selectElementWithMatcher:historyItem] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -399,14 +397,13 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-    // WKBasedNavigationManager displays repost on |reload|. So after
-    // cancelling, web view should show |destinationURL|.
-    [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
-    [[EarlGrey
-        selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-        assertWithMatcher:grey_interactable()];
+  // NavigationManagerImpl displays repost on |reload|. So after
+  // cancelling, web view should show |destinationURL|.
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationText];
+  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      assertWithMatcher:grey_interactable()];
 }
 
 // A new navigation dismisses the repost dialog.
@@ -498,13 +495,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // Tests that pressing the button on a POST-based form with same-page action
 // does not change the page URL and that the back button works as expected
 // afterwards.
-// TODO(crbug.com/714303): Re-enable this test on devices.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testPostFormToSamePage testPostFormToSamePage
-#else
-#define MAYBE_testPostFormToSamePage FLAKY_testPostFormToSamePage
-#endif
-- (void)MAYBE_testPostFormToSamePage {
+- (void)testPostFormToSamePage {
   web::test::SetUpHttpServer(std::make_unique<TestFormResponseProvider>());
   const GURL formURL = GetFormPostOnSamePageUrl();
 
@@ -533,7 +524,13 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // Tests that submitting a POST-based form by tapping the 'Go' button on the
 // keyboard navigates to the correct URL and the back button works as expected
 // afterwards.
-- (void)testPostFormEntryWithKeyboard {
+// TODO:(crbug.com/1147654): re-enable after figuring out why it is failing.
+- (void)DISABLE_testPostFormEntryWithKeyboard {
+  // Test fails on iPad Air 2 13.4 crbug.com/1102608.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails in iOS 13 on iPads.");
+  }
+
   [self setUpFormTestSimpleHttpServer];
   const GURL destinationURL = GetDestinationUrl();
 

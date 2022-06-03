@@ -6,8 +6,8 @@
 #define ASH_ASSISTANT_UI_MAIN_STAGE_SUGGESTION_CHIP_VIEW_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {
@@ -18,47 +18,56 @@ class Label;
 
 namespace ash {
 
-// TODO(dmblack): Move to /ash/assistant/ui/base/.
+class AssistantViewDelegate;
+
 // View representing a suggestion chip.
 class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
  public:
-  // Initialization parameters.
-  struct Params {
-    Params();
-    ~Params();
+  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
 
-    // Display text.
-    base::string16 text;
-    // Optional icon.
-    base::Optional<gfx::ImageSkia> icon;
-  };
+  METADATA_HEADER(SuggestionChipView);
 
-  SuggestionChipView(const Params& params, views::ButtonListener* listener);
+  SuggestionChipView(AssistantViewDelegate* delegate,
+                     const AssistantSuggestion& suggestion);
+  SuggestionChipView(const SuggestionChipView&) = delete;
+  SuggestionChipView& operator=(const SuggestionChipView&) = delete;
   ~SuggestionChipView() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void ChildVisibilityChanged(views::View* child) override;
-  void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnThemeChanged() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void SetIcon(const gfx::ImageSkia& icon);
+  gfx::ImageSkia GetIcon() const;
 
-  void SetText(const base::string16& text);
-  const base::string16& GetText() const;
+  void SetText(const std::u16string& text);
+  const std::u16string& GetText() const;
+
+  const base::UnguessableToken& suggestion_id() const { return suggestion_id_; }
 
  private:
-  void InitLayout(const Params& params);
+  void InitLayout(const AssistantSuggestion& suggestion);
 
-  views::ImageView* icon_view_;  // Owned by view hierarchy.
-  views::Label* text_view_;      // Owned by view hierarchy.
+  SkColor GetStrokeColor() const;
+
+  AssistantViewDelegate* const delegate_;
+
+  // Whether to use dark/light mode colors, which default to dark.
+  const bool use_dark_light_mode_colors_;
+
+  const base::UnguessableToken suggestion_id_;
 
   views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
+  views::ImageView* icon_view_;       // Owned by view hierarchy.
+  views::Label* text_view_;           // Owned by view hierarchy.
 
-  DISALLOW_COPY_AND_ASSIGN(SuggestionChipView);
+  base::WeakPtrFactory<SuggestionChipView> weak_factory_{this};
 };
 
 }  // namespace ash

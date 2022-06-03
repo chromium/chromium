@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS Overall test to make sure there are no exceptions
+PASS Basic table
+PASS Basic caption
+PASS Table and narrower caption
+PASS Table and wider caption
+PASS Table with padding
+FAIL Table with padding and content-box sizing assert_equals: Table with padding and content-box sizing scrollWidth expected 26 but got 20
+FAIL Table with separated border assert_equals: Table with separated border scrollWidth expected 26 but got 14
+FAIL Table with collapsed border assert_equals: Table with collapsed border scrollWidth expected 26 but got 14
+PASS Caption with padding
+PASS Caption with border
+FAIL Caption with margin assert_equals: Caption with margin scrollWidth expected 46 but got 44
+PASS Bottom caption
+Harness: the test ran to completion.
+

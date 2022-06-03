@@ -15,6 +15,10 @@ class SkFont;
 
 namespace blink {
 
+// TODO: Width functions are affected by issue
+// https://bugs.chromium.org/p/skia/issues/detail?id=10123 in Skia, which
+// currently does not return trak-free advances on Mac OS 10.15.
+
 void SkFontGetGlyphWidthForHarfBuzz(const SkFont&,
                                     hb_codepoint_t,
                                     hb_position_t* width);
@@ -38,4 +42,4 @@ hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SKIA_SKIA_TEXT_METRICS_H_

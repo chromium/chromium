@@ -9,21 +9,19 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_ui_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
+
+class ChromeBrowserState;
 
 @protocol ApplicationCommands;
 @protocol InfobarBadgeUIDelegate;
-@protocol InfobarContainer;
+@protocol InfobarBannerContained;
 
 @class InfobarBannerTransitionDriver;
 @class InfobarBannerViewController;
 @class InfobarModalTransitionDriver;
 @class InfobarModalViewController;
 
-namespace ios {
-class ChromeBrowserState;
-}
 namespace infobars {
 class InfoBarDelegate;
 }
@@ -35,9 +33,8 @@ class WebState;
 enum class InfobarBannerPresentationState;
 
 // Must be subclassed. Defines common behavior for all Infobars.
-@interface InfobarCoordinator : ChromeCoordinator <InfobarUIDelegate,
-                                                   InfobarBannerDelegate,
-                                                   InfobarModalDelegate>
+@interface InfobarCoordinator
+    : ChromeCoordinator <InfobarBannerDelegate, InfobarModalDelegate>
 
 // Designated Initializer. |infoBarDelegate| is used to configure the Infobar
 // and subsequently perform related actions. |badgeSupport| should be YES if the
@@ -53,8 +50,7 @@ enum class InfobarBannerPresentationState;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
     NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:
-                                  (ios::ChromeBrowserState*)browserState
+                              browserState:(ChromeBrowserState*)browserState
     NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
@@ -74,11 +70,15 @@ enum class InfobarBannerPresentationState;
 // Stops this Coordinator.
 - (void)stop NS_REQUIRES_SUPER;
 
+// The InfobarType for this Infobar.
+@property(nonatomic, assign) InfobarType infobarType;
+
 // YES if the Coordinator has been started.
 @property(nonatomic, assign) BOOL started;
 
 // BannerViewController owned by this Coordinator. Can be nil.
-@property(nonatomic, strong, readonly) UIViewController* bannerViewController;
+@property(nonatomic, strong, readonly)
+    UIViewController<InfobarBannerContained>* bannerViewController;
 
 // ModalViewController owned by this Coordinator. Can be nil.
 @property(nonatomic, strong, readonly) UIViewController* modalViewController;
@@ -87,10 +87,10 @@ enum class InfobarBannerPresentationState;
 // Coordinator doesn't support a badge.
 @property(nonatomic, weak) id<InfobarBadgeUIDelegate> badgeDelegate;
 
-// The ChromeBrowserState owned by the Coordinator.
+// The Browser owned by the Coordinator.
 // TODO(crbug.com/927064): Once we create the coordinators in the UI Hierarchy
-// browserState will be set on init.
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+// browser will be set on init.
+@property(nonatomic, assign, readwrite) Browser* browser;
 
 // The WebState that the InfobarCoordinator is associated with. Can be nil.
 @property(nonatomic, assign) web::WebState* webState;
@@ -100,11 +100,8 @@ enum class InfobarBannerPresentationState;
 // baseViewController will be set on init.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
-// The dispatcher for this Coordinator.
-@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
-
-// The InfobarContainer for this InfobarCoordinator.
-@property(nonatomic, weak) id<InfobarContainer> infobarContainer;
+// The commands handler for this Coordinator.
+@property(nonatomic, weak) id<ApplicationCommands> handler;
 
 // The InfobarBanner presentation state.
 @property(nonatomic, assign) InfobarBannerPresentationState infobarBannerState;
@@ -118,6 +115,10 @@ enum class InfobarBannerPresentationState;
 // auto-dismiss and/or jumping the queue and being the next banner to present,
 // etc.
 @property(nonatomic, assign) BOOL highPriorityPresentation;
+
+// If YES, then InfobarCoordinator will handle dismissing any infobar shown.
+// If NO, then the coordinator should handle dismissal itself. Defaults to YES.
+@property(nonatomic, assign) BOOL shouldUseDefaultDismissal;
 
 @end
 

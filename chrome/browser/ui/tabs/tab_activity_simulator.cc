@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -18,12 +18,11 @@ class TabActivitySimulator::TestWebContentsObserver
     : public content::WebContentsObserver {
  public:
   explicit TestWebContentsObserver(content::WebContents* web_contents);
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
 TabActivitySimulator::TestWebContentsObserver::TestWebContentsObserver(

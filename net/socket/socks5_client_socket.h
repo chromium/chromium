@@ -40,6 +40,9 @@ class NET_EXPORT_PRIVATE SOCKS5ClientSocket : public StreamSocket {
                      const HostPortPair& destination,
                      const NetworkTrafficAnnotationTag& traffic_annotation);
 
+  SOCKS5ClientSocket(const SOCKS5ClientSocket&) = delete;
+  SOCKS5ClientSocket& operator=(const SOCKS5ClientSocket&) = delete;
+
   // On destruction Disconnect() is called.
   ~SOCKS5ClientSocket() override;
 
@@ -158,8 +161,6 @@ class NET_EXPORT_PRIVATE SOCKS5ClientSocket : public StreamSocket {
 
   // Traffic annotation for socket control.
   NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SOCKS5ClientSocket);
 };
 
 }  // namespace net

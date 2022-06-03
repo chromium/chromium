@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js';
 import './strings.m.js';
 
+import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
@@ -31,7 +30,7 @@ import {OmniboxOutput} from './omnibox_output.js';
 /**
  * @typedef {{
  *   inputText: string,
- *   callback: function(!mojom.OmniboxResponse):Promise,
+ *   callback: function(!OmniboxResponse):Promise,
  *   display: boolean,
  * }}
  */
@@ -49,7 +48,7 @@ let BatchSpecifier;
  * @typedef {{
  *   queryInputs: QueryInputs,
  *   displayInputs: DisplayInputs,
- *   responsesHistory: !Array<!Array<!mojom.OmniboxResponse>>,
+ *   responsesHistory: !Array<!Array<!OmniboxResponse>>,
  * }}
  */
 let OmniboxExport;
@@ -66,8 +65,8 @@ let exportDelegate;
 class BrowserProxy {
   /** @param {!OmniboxOutput} omniboxOutput */
   constructor(omniboxOutput) {
-    /** @private {!mojom.OmniboxPageCallbackRouter} */
-    this.callbackRouter_ = new mojom.OmniboxPageCallbackRouter;
+    /** @private {!OmniboxPageCallbackRouter} */
+    this.callbackRouter_ = new OmniboxPageCallbackRouter;
 
     this.callbackRouter_.handleNewAutocompleteResponse.addListener(
         this.handleNewAutocompleteResponse.bind(this));
@@ -76,9 +75,8 @@ class BrowserProxy {
     this.callbackRouter_.handleAnswerImageData.addListener(
         omniboxOutput.updateAnswerImage.bind(omniboxOutput));
 
-    /** @private {!mojom.OmniboxPageHandlerRemote} */
-    this.handler_ =
-        mojom.OmniboxPageHandler.getRemote(/*useBrowserInterfaceBroker=*/ true);
+    /** @private {!OmniboxPageHandlerRemote} */
+    this.handler_ = OmniboxPageHandler.getRemote();
     this.handler_.setClientPage(
         this.callbackRouter_.$.bindNewPipeAndPassRemote());
 
@@ -86,19 +84,13 @@ class BrowserProxy {
     this.lastRequest;
   }
 
-
   /**
-   * @param {!mojom.OmniboxResponse} response
+   * @param {!OmniboxResponse} response
    * @param {boolean} isPageController
    */
   handleNewAutocompleteResponse(response, isPageController) {
-    // Note: Using inputText is a sufficient fix for the way this is used today,
-    // but in principle it would be better to associate requests with responses
-    // using a unique session identifier, for example by rolling an integer each
-    // time a request is made. Doing so would require extra bookkeeping on the
-    // host side, so for now we keep it simple.
-    const isForLastPageRequest = isPageController && this.lastRequest &&
-        this.lastRequest.inputText === response.inputText;
+    const isForLastPageRequest =
+        this.isForLastPageRequest(response.inputText, isPageController);
 
     // When unfocusing the browser omnibox, the autocomplete controller
     // sends a response with no combined results. This response is ignored
@@ -127,8 +119,7 @@ class BrowserProxy {
   handleNewAutocompleteQuery(isPageController, inputText) {
     // If the request originated from the debug page and is not for display,
     // then we don't want to clear the omniboxOutput.
-    if (isPageController && this.lastRequest &&
-            this.lastRequest.inputText === inputText &&
+    if (this.isForLastPageRequest(inputText, isPageController) &&
             this.lastRequest.display ||
         omniboxInput.connectWindowOmnibox && !isPageController) {
       omniboxOutput.prepareNewQuery();
@@ -158,6 +149,21 @@ class BrowserProxy {
           preventInlineAutocomplete, preferKeyword, currentUrl,
           pageClassification);
     });
+  }
+
+  /**
+   * @param {string} inputText
+   * @param {boolean} isPageController
+   * @return {boolean}
+   */
+  isForLastPageRequest(inputText, isPageController) {
+    // Note: Using inputText is a sufficient fix for the way this is used today,
+    // but in principle it would be better to associate requests with responses
+    // using a unique session identifier, for example by rolling an integer each
+    // time a request is made. Doing so would require extra bookkeeping on the
+    // host side, so for now we keep it simple.
+    return isPageController && this.lastRequest !== null &&
+        this.lastRequest.inputText.trimStart() === inputText;
   }
 }
 
@@ -193,6 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   omniboxOutput.addEventListener(
       'responses-count-changed', e => omniboxInput.responsesCount = e.detail);
+
+  omniboxOutput.updateDisplayInputs(omniboxInput.displayInputs);
 });
 
 class ExportDelegate {
@@ -254,11 +262,6 @@ class ExportDelegate {
     const variationInfo =
         await sendWithPromise('requestVariationInfo', true);
     const pathInfo = await sendWithPromise('requestPathInfo');
-    const loadTimeDataKeys = ['cl', 'command_line', 'executable_path',
-        'language', 'official', 'os_type', 'profile_path', 'useragent',
-        'version', 'version_bitsize', 'version_modifier'];
-    const versionDetails = Object.fromEntries(
-        loadTimeDataKeys.map(key => [key, loadTimeData.getValue(key)]));
 
     const now = new Date();
     const fileName = `omnibox_batch_${ExportDelegate.getTimeStamp(now)}.json`;
@@ -271,7 +274,7 @@ class ExportDelegate {
       description: '',
       authorTool: 'chrome://omnibox',
       batchName,
-      versionDetails,
+      versionDetails : ExportDelegate.getVersionDetails_(),
       variationInfo,
       pathInfo,
       appVersion: navigator.appVersion,
@@ -314,8 +317,8 @@ class ExportDelegate {
   }
 
   exportClipboard() {
-    navigator.clipboard.writeText(JSON.stringify(this.exportData_)).catch(
-        error => console.error('unable to export to clipboard:', error));
+    navigator.clipboard.writeText(JSON.stringify(this.exportData_, null, 2))
+        .catch(error => console.error('unable to export to clipboard:', error));
   }
 
   exportFile() {
@@ -329,6 +332,7 @@ class ExportDelegate {
   /** @private @return {OmniboxExport} */
   get exportData_() {
     return {
+      versionDetails : ExportDelegate.getVersionDetails_(),
       queryInputs: this.omniboxInput_.queryInputs,
       displayInputs: this.omniboxInput_.displayInputs,
       responsesHistory: this.omniboxOutput_.responsesHistory,
@@ -360,6 +364,15 @@ class ExportDelegate {
     }
     const iso = date.toISOString();
     return iso.replace(/:/g, '').split('.')[0];
+  }
+
+  /** @private @return {Object} */
+  static getVersionDetails_() {
+    const loadTimeDataKeys = ['cl', 'command_line', 'executable_path',
+      'language', 'official', 'os_type', 'profile_path', 'useragent',
+      'version', 'version_processor_variation', 'version_modifier'];
+    return Object.fromEntries(
+        loadTimeDataKeys.map(key => [key, loadTimeData.getValue(key)]));
   }
 }
 

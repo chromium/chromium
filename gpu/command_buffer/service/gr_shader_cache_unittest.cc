@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 
+#include <thread>
+
 #include "base/base64.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -181,6 +183,41 @@ TEST_F(GrShaderCacheTest, PopulateFromDiskAfterStoring) {
     EXPECT_TRUE(cached_shader->equals(shader.get()));
   }
   EXPECT_EQ(disk_cache_.size(), 1u);
+}
+
+// This test creates GrShaderCache::ScopedCacheUse object from 2 different
+// thread which exists together. In a non thread safe GrShaderCache, this will
+// hit DCHECKS in ScopedCacheUse::ScopedCacheUse() since the current_client_id
+// already exists from 1st object. In a thread safe model, it will not hit
+// DCHECKS.
+TEST_F(GrShaderCacheTest, MultipleThreadsUsingSameCache) {
+  int32_t regular_client_id = 3;
+  int32_t new_client_id = 4;
+  cache_.CacheClientIdOnDisk(regular_client_id);
+
+  auto key = SkData::MakeWithCopy(kShaderKey, strlen(kShaderKey));
+  auto shader = SkData::MakeWithCString(kShader);
+
+  GrShaderCache::ScopedCacheUse cache_use1(&cache_, regular_client_id);
+  EXPECT_EQ(cache_.load(*key), nullptr);
+  cache_.store(*key, *shader);
+
+  EXPECT_EQ(cache_.num_cache_entries(), 1u);
+  EXPECT_EQ(cache_.curr_size_bytes_for_testing(), shader->size());
+
+  // Different client id to use cache on a different thread.
+  std::thread second_thread([&]() {
+    auto key2 = SkData::MakeWithCString("key2");
+    GrShaderCache::ScopedCacheUse cache_use2(&cache_, new_client_id);
+    EXPECT_EQ(cache_.load(*key2), nullptr);
+
+    // Store same shader on a different key.
+    cache_.store(*key2, *shader);
+  });
+  second_thread.join();
+
+  EXPECT_EQ(cache_.num_cache_entries(), 2u);
+  EXPECT_EQ(cache_.curr_size_bytes_for_testing(), 2 * shader->size());
 }
 
 }  // namespace raster

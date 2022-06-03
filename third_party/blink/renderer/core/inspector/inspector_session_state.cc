@@ -36,7 +36,7 @@ const mojom::blink::DevToolsSessionState* InspectorSessionState::ReattachState()
 
 void InspectorSessionState::EnqueueUpdate(const WTF::String& key,
                                           const WebVector<uint8_t>* value) {
-  base::Optional<WTF::Vector<uint8_t>> updated_value;
+  absl::optional<WTF::Vector<uint8_t>> updated_value;
   if (value) {
     WTF::Vector<uint8_t> payload;
     payload.AppendRange(value->begin(), value->end());
@@ -128,7 +128,7 @@ void InspectorAgentState::Serialize(const WTF::String& v,
 bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
   CBORTokenizer tokenizer(in);
   if (tokenizer.TokenTag() == CBORTokenTag::STRING8) {
-    *v = WTF::String(
+    *v = WTF::String::FromUTF8(
         reinterpret_cast<const char*>(tokenizer.GetString8().data()),
         static_cast<size_t>(tokenizer.GetString8().size()));
     return true;

@@ -7,9 +7,10 @@
 
 #include <vector>
 
-#include "ash/components/fast_ink/fast_ink_points.h"
-#include "ash/components/fast_ink/fast_ink_view.h"
+#include "ash/fast_ink/fast_ink_points.h"
+#include "ash/fast_ink/fast_ink_view.h"
 #include "base/time/time.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace aura {
 class Window;
@@ -32,24 +33,35 @@ enum class HighlighterGestureType;
 // touch points.
 class HighlighterView : public fast_ink::FastInkView {
  public:
-  static const SkColor kPenColor;
   static const gfx::SizeF kPenTipSize;
 
-  HighlighterView(const base::TimeDelta presentation_delay,
-                  aura::Window* container);
+  HighlighterView(const HighlighterView&) = delete;
+  HighlighterView& operator=(const HighlighterView&) = delete;
+
   ~HighlighterView() override;
+
+  // Function to create a container Widget, initialize |highlighter_view| and
+  // pass ownership as the contents view to the Widget.
+  static views::UniqueWidgetPtr Create(const base::TimeDelta presentation_delay,
+                                       aura::Window* container);
 
   const fast_ink::FastInkPoints& points() const { return points_; }
   bool animating() const { return animation_timer_.get(); }
 
+  void ChangeColor(SkColor color);
   void AddNewPoint(const gfx::PointF& new_point, const base::TimeTicks& time);
   void AddGap();
   void Animate(const gfx::PointF& pivot,
                HighlighterGestureType gesture_type,
                base::OnceClosure done);
+  // Deletes the last stroke.
+  void UndoLastStroke();
 
  private:
   friend class HighlighterControllerTestApi;
+  friend class MarkerControllerTestApi;
+
+  explicit HighlighterView(const base::TimeDelta presentation_delay);
 
   void FadeOut(const gfx::PointF& pivot,
                HighlighterGestureType gesture_type,
@@ -64,9 +76,9 @@ class HighlighterView : public fast_ink::FastInkView {
   std::unique_ptr<base::OneShotTimer> animation_timer_;
   gfx::Rect highlighter_damage_rect_;
   bool pending_update_buffer_ = false;
-  base::WeakPtrFactory<HighlighterView> weak_ptr_factory_{this};
+  SkColor pen_color_ = fast_ink::FastInkPoints::kDefaultColor;
 
-  DISALLOW_COPY_AND_ASSIGN(HighlighterView);
+  base::WeakPtrFactory<HighlighterView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

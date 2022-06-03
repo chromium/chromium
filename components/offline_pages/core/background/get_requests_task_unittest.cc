@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
@@ -17,10 +18,10 @@
 
 namespace offline_pages {
 namespace {
+
 const int64_t kRequestId1 = 42;
 const int64_t kRequestId2 = 44;
-const GURL kUrl1("http://example.com");
-const GURL kUrl2("http://otherexample.com");
+
 const ClientId kClientId1("download", "1234");
 const ClientId kClientId2("download", "5678");
 
@@ -54,13 +55,13 @@ class GetRequestsTaskTest : public RequestQueueTaskTestBase {
 
 void GetRequestsTaskTest::AddItemsToStore(RequestQueueStore* store) {
   base::Time creation_time = OfflineTimeNow();
-  SavePageRequest request_1(kRequestId1, kUrl1, kClientId1, creation_time,
-                            true);
+  SavePageRequest request_1(kRequestId1, GURL("http://example.com"), kClientId1,
+                            creation_time, true);
   store->AddRequest(request_1, RequestQueue::AddOptions(),
                     base::BindOnce(&GetRequestsTaskTest::AddRequestDone));
   creation_time = OfflineTimeNow();
-  SavePageRequest request_2(kRequestId2, kUrl2, kClientId2, creation_time,
-                            true);
+  SavePageRequest request_2(kRequestId2, GURL("http://otherexample.com"),
+                            kClientId2, creation_time, true);
   store->AddRequest(request_2, RequestQueue::AddOptions(),
                     base::BindOnce(&GetRequestsTaskTest::AddRequestDone));
   PumpLoop();
@@ -79,7 +80,7 @@ TEST_F(GetRequestsTaskTest, GetFromEmptyStore) {
   GetRequestsTask task(&store_,
                        base::BindOnce(&GetRequestsTaskTest::GetRequestsCallback,
                                       base::Unretained(this)));
-  task.Run();
+  task.Execute(base::DoNothing());
   PumpLoop();
   EXPECT_TRUE(callback_called());
   EXPECT_TRUE(last_call_successful());
@@ -93,7 +94,7 @@ TEST_F(GetRequestsTaskTest, GetMultipleRequests) {
   GetRequestsTask task(&store_,
                        base::BindOnce(&GetRequestsTaskTest::GetRequestsCallback,
                                       base::Unretained(this)));
-  task.Run();
+  task.Execute(base::DoNothing());
   PumpLoop();
   EXPECT_TRUE(callback_called());
   EXPECT_TRUE(last_call_successful());

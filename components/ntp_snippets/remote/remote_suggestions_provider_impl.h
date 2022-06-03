@@ -16,8 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,13 +25,13 @@
 #include "components/ntp_snippets/content_suggestions_provider.h"
 #include "components/ntp_snippets/remote/cached_image_fetcher.h"
 #include "components/ntp_snippets/remote/json_to_categories.h"
-#include "components/ntp_snippets/remote/prefetched_pages_tracker.h"
 #include "components/ntp_snippets/remote/remote_suggestion.h"
 #include "components/ntp_snippets/remote/remote_suggestions_fetcher.h"
 #include "components/ntp_snippets/remote/remote_suggestions_provider.h"
 #include "components/ntp_snippets/remote/remote_suggestions_status_service.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/remote/request_throttler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -69,8 +67,11 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
       std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
       std::unique_ptr<RemoteSuggestionsDatabase> database,
       std::unique_ptr<RemoteSuggestionsStatusService> status_service,
-      std::unique_ptr<PrefetchedPagesTracker> prefetched_pages_tracker,
       std::unique_ptr<base::OneShotTimer> fetch_timeout_timer);
+
+  RemoteSuggestionsProviderImpl(const RemoteSuggestionsProviderImpl&) = delete;
+  RemoteSuggestionsProviderImpl& operator=(
+      const RemoteSuggestionsProviderImpl&) = delete;
 
   ~RemoteSuggestionsProviderImpl() override;
 
@@ -107,7 +108,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   void ClearHistory(
       base::Time begin,
       base::Time end,
-      const base::Callback<bool(const GURL& url)>& filter) override;
+      const base::RepeatingCallback<bool(const GURL& url)>& filter) override;
   void ClearCachedSuggestions() override;
   void OnSignInStateChanged(bool has_signed_in) override;
   void GetDismissedSuggestionsForDebugging(
@@ -398,7 +399,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // fetches at most |count_to_fetch| suggestions only from |fetched_category|.
   // TODO(vitaliii): Also support |count_to_fetch| when |fetched_category| is
   // nullopt.
-  RequestParams BuildFetchParams(base::Optional<Category> fetched_category,
+  RequestParams BuildFetchParams(absl::optional<Category> fetched_category,
                                  int count_to_fetch) const;
 
   bool AreArticlesEmpty() const;
@@ -451,10 +452,6 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // A clock for getting the time. This allows to inject a clock in tests.
   base::Clock* clock_;
 
-  // Prefetched pages tracker to query which urls have been prefetched.
-  // |nullptr| is handled gracefully and just disables the functionality.
-  std::unique_ptr<PrefetchedPagesTracker> prefetched_pages_tracker_;
-
   // A Timer for canceling too long fetches.
   std::unique_ptr<base::OneShotTimer> fetch_timeout_timer_;
 
@@ -463,8 +460,6 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // tracked by this variable (as they do not need any special actions on
   // completion).
   FetchRequestStatus request_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsProviderImpl);
 };
 
 }  // namespace ntp_snippets

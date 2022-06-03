@@ -4,19 +4,26 @@
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
-#include <string>
+// parkable_string.h is a widely included header and its size impacts build
+// time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#pragma clang max_tokens_here 760000
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/crypto.h"
+#include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -24,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -33,37 +41,58 @@ namespace blink {
 
 namespace {
 
-enum class ParkingAction { kParked, kUnparked };
+ParkableStringImpl::Age MakeOlder(ParkableStringImpl::Age age) {
+  switch (age) {
+    case ParkableStringImpl::Age::kYoung:
+      return ParkableStringImpl::Age::kOld;
+    case ParkableStringImpl::Age::kOld:
+    case ParkableStringImpl::Age::kVeryOld:
+      return ParkableStringImpl::Age::kVeryOld;
+  }
+}
+
+enum class ParkingAction { kParked, kUnparked, kWritten, kRead };
 
 void RecordStatistics(size_t size,
                       base::TimeDelta duration,
                       ParkingAction action) {
-  size_t throughput_mb_s =
-      static_cast<size_t>(size / duration.InSecondsF()) / 1000000;
-  size_t size_kb = size / 1000;
-  if (action == ParkingAction::kParked) {
-    UMA_HISTOGRAM_COUNTS_10000("Memory.ParkableString.Compression.SizeKb",
-                               size_kb);
-    // Size is at least 10kB, and at most ~1MB, and compression throughput
-    // ranges from single-digit MB/s to ~40MB/s depending on the CPU, hence
-    // the range.
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Memory.ParkableString.Compression.Latency", duration,
-        base::TimeDelta::FromMicroseconds(500), base::TimeDelta::FromSeconds(1),
-        100);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Memory.ParkableString.Compression.ThroughputMBps", throughput_mb_s);
-  } else {
-    UMA_HISTOGRAM_COUNTS_10000("Memory.ParkableString.Decompression.SizeKb",
-                               size_kb);
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Memory.ParkableString.Decompression.Latency", duration,
-        base::TimeDelta::FromMicroseconds(500), base::TimeDelta::FromSeconds(1),
-        100);
-    // Decompression speed can go up to >500MB/s.
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Memory.ParkableString.Decompression.ThroughputMBps", throughput_mb_s);
+  int throughput_mb_s =
+      base::ClampRound(size / duration.InSecondsF() / 1000000);
+  int size_kb = static_cast<int>(size / 1000);
+
+  const char *size_histogram, *latency_histogram, *throughput_histogram;
+  switch (action) {
+    case ParkingAction::kParked:
+      size_histogram = "Memory.ParkableString.Compression.SizeKb";
+      latency_histogram = "Memory.ParkableString.Compression.Latency";
+      throughput_histogram = "Memory.ParkableString.Compression.ThroughputMBps";
+      break;
+    case ParkingAction::kUnparked:
+      size_histogram = "Memory.ParkableString.Decompression.SizeKb";
+      latency_histogram = "Memory.ParkableString.Decompression.Latency";
+      throughput_histogram =
+          "Memory.ParkableString.Decompression.ThroughputMBps";
+      break;
+    case ParkingAction::kWritten:
+      size_histogram = "Memory.ParkableString.Write.SizeKb";
+      latency_histogram = "Memory.ParkableString.Write.Latency";
+      throughput_histogram = "Memory.ParkableString.Write.ThroughputMBps";
+      break;
+    case ParkingAction::kRead:
+      size_histogram = "Memory.ParkableString.Read.SizeKb";
+      latency_histogram = "Memory.ParkableString.Read.Latency";
+      throughput_histogram = "Memory.ParkableString.Read.ThroughputMBps";
+      break;
   }
+
+  // Size should be <1MiB in most cases.
+  base::UmaHistogramCounts1000(size_histogram, size_kb);
+  // Size is at least 10kB, and at most ~10MB, and throughput ranges from
+  // single-digit MB/s to ~1000MB/s depending on the CPU/disk, hence the ranges.
+  base::UmaHistogramCustomMicrosecondsTimes(latency_histogram, duration,
+                                            base::Microseconds(500),
+                                            base::Seconds(1), 100);
+  base::UmaHistogramCounts1000(throughput_histogram, throughput_mb_s);
 }
 
 void AsanPoisonString(const String& string) {
@@ -102,6 +131,9 @@ class NullableCharBuffer final {
     size_ = size;
   }
 
+  NullableCharBuffer(const NullableCharBuffer&) = delete;
+  NullableCharBuffer& operator=(const NullableCharBuffer&) = delete;
+
   ~NullableCharBuffer() {
     if (data_)
       WTF::Partitions::BufferPartition()->Free(data_);
@@ -114,8 +146,6 @@ class NullableCharBuffer final {
  private:
   char* data_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullableCharBuffer);
 };
 
 }  // namespace
@@ -123,55 +153,55 @@ class NullableCharBuffer final {
 // Created and destroyed on the same thread, accessed on a background thread as
 // well. |string|'s reference counting is *not* thread-safe, hence |string|'s
 // reference count must *not* change on the background thread.
-struct CompressionTaskParams final {
-  CompressionTaskParams(
+struct BackgroundTaskParams final {
+  BackgroundTaskParams(
       scoped_refptr<ParkableStringImpl> string,
       const void* data,
       size_t size,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner)
-      : string(string),
+      : callback_task_runner(callback_task_runner),
+        string(string),
         data(data),
-        size(size),
-        callback_task_runner(std::move(callback_task_runner)) {
-    DCHECK(IsMainThread());
-  }
+        size(size) {}
 
-  ~CompressionTaskParams() { DCHECK(IsMainThread()); }
+  BackgroundTaskParams(const BackgroundTaskParams&) = delete;
+  BackgroundTaskParams& operator=(const BackgroundTaskParams&) = delete;
+  ~BackgroundTaskParams() { DCHECK(IsMainThread()); }
 
+  const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
   const void* data;
   const size_t size;
-  const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
-
-  CompressionTaskParams(CompressionTaskParams&&) = delete;
-  DISALLOW_COPY_AND_ASSIGN(CompressionTaskParams);
 };
 
 // Valid transitions are:
-// 1. kUnparked -> kParkingInProgress: Parking started asynchronously
-// 2. kParkingInProgress -> kUnparked: Parking did not complete
-// 3. kParkingInProgress -> kParked: Parking completed normally
+//
+// Compression:
+// 1. kUnparked -> kParked: Parking completed normally
 // 4. kParked -> kUnparked: String has been unparked.
 //
-// See |Park()| for (1), |OnParkingCompleteOnMainThread()| for 2-3, and
-// |Unpark()| for (4).
+// Disk:
+// 1. kParked -> kOnDisk: Writing completed successfully
+// 4. kOnDisk -> kUnParked: The string is requested, triggering a read and
+//    decompression
+//
+// Since parking and disk writing are not synchronous operations the first time,
+// when the asynchronous background task is posted,
+// |background_task_in_progress_| is set to true. This prevents further string
+// aging, and protects against concurrent background tasks.
 //
 // Each state can be combined with a string that is either old or
 // young. Examples below:
 // - kUnParked:
-//   - Old: old strings are not necessarily parked
+//   - (Very) Old: old strings are not necessarily parked
 //   - Young: a string starts young and unparked.
-// - kParkingInProgress:
-//   - Old: The string wasn't touched since parking started
-//   - Young: The string was either touched or locked since parking started
 // - kParked:
-//   - Old: Parked, and not touched nor locked since then
+//   - (Very) Old: Parked, and not touched nor locked since then
 //   - Young: Lock() makes a string young but doesn't unpark it.
-enum class ParkableStringImpl::State : uint8_t {
-  kUnparked,
-  kParkingInProgress,
-  kParked
-};
+// - kOnDisk:
+//   - Very Old: On disk, and not touched nor locked since then
+//   - Young: Lock() makes a string young but doesn't unpark it.
+enum class ParkableStringImpl::State : uint8_t { kUnparked, kParked, kOnDisk };
 
 // Current "ownership" status of the underlying data.
 //
@@ -185,6 +215,19 @@ enum class ParkableStringImpl::Status : uint8_t {
   kTooManyReferences,
   kLocked
 };
+
+ParkableStringImpl::ParkableMetadata::ParkableMetadata(
+    String string,
+    std::unique_ptr<SecureDigest> digest)
+    : mutex_(),
+      lock_depth_(0),
+      state_(State::kUnparked),
+      background_task_in_progress_(false),
+      compressed_(nullptr),
+      digest_(*digest),
+      age_(Age::kYoung),
+      is_8bit_(string.Is8Bit()),
+      length_(string.length()) {}
 
 // static
 std::unique_ptr<ParkableStringImpl::SecureDigest>
@@ -224,15 +267,10 @@ scoped_refptr<ParkableStringImpl> ParkableStringImpl::MakeParkable(
 
 ParkableStringImpl::ParkableStringImpl(scoped_refptr<StringImpl>&& impl,
                                        std::unique_ptr<SecureDigest> digest)
-    : mutex_(),
-      lock_depth_(0),
-      state_(State::kUnparked),
-      string_(std::move(impl)),
-      compressed_(nullptr),
-      digest_(std::move(digest)),
-      is_young_(true),
-      is_8bit_(string_.Is8Bit()),
-      length_(string_.length())
+    : string_(std::move(impl)),
+      metadata_(digest ? std::make_unique<ParkableMetadata>(string_,
+                                                            std::move(digest))
+                       : nullptr)
 #if DCHECK_IS_ON()
       ,
       owning_thread_(CurrentThread())
@@ -248,39 +286,36 @@ ParkableStringImpl::~ParkableStringImpl() {
 
   DCHECK_EQ(0, lock_depth_for_testing());
   AsanUnpoisonString(string_);
-  DCHECK(state_ == State::kParked || state_ == State::kUnparked);
+  // Cannot destroy while parking is in progress, as the object is kept alive by
+  // the background task.
+  DCHECK(!metadata_->background_task_in_progress_);
 
-  ParkableStringManager::Instance().Remove(this);
+  auto& manager = ParkableStringManager::Instance();
+  manager.Remove(this);
+
+  if (has_on_disk_data())
+    manager.data_allocator().Discard(std::move(metadata_->on_disk_metadata_));
 }
 
 void ParkableStringImpl::Lock() {
   if (!may_be_parked())
     return;
 
-  MutexLocker locker(mutex_);
-  lock_depth_ += 1;
+  MutexLocker locker(metadata_->mutex_);
+  metadata_->lock_depth_ += 1;
+  CHECK_NE(metadata_->lock_depth_, 0u);
   // Make young as this is a strong (but not certain) indication that the string
   // will be accessed soon.
   MakeYoung();
 }
 
-#if defined(ADDRESS_SANITIZER)
-
-void ParkableStringImpl::LockWithoutMakingYoung() {
-  DCHECK(may_be_parked());
-  MutexLocker locker(mutex_);
-  lock_depth_ += 1;
-}
-
-#endif  // defined(ADDRESS_SANITIZER)
-
 void ParkableStringImpl::Unlock() {
   if (!may_be_parked())
     return;
 
-  MutexLocker locker(mutex_);
-  DCHECK_GT(lock_depth_, 0);
-  lock_depth_ -= 1;
+  MutexLocker locker(metadata_->mutex_);
+  metadata_->lock_depth_ -= 1;
+  CHECK_NE(metadata_->lock_depth_, std::numeric_limits<unsigned int>::max());
 
 #if defined(ADDRESS_SANITIZER) && DCHECK_IS_ON()
   // There are no external references to the data, nobody should touch the data.
@@ -300,52 +335,75 @@ void ParkableStringImpl::Unlock() {
 #endif  // defined(ADDRESS_SANITIZER) && DCHECK_IS_ON()
 }
 
-void ParkableStringImpl::PurgeMemory() {
-  AssertOnValidThread();
-  if (state_ == State::kUnparked)
-    compressed_ = nullptr;
-}
-
-void ParkableStringImpl::MakeYoung() {
-  mutex_.AssertAcquired();
-  is_young_ = true;
-}
-
 const String& ParkableStringImpl::ToString() {
   AssertOnValidThread();
   if (!may_be_parked())
     return string_;
 
-  MutexLocker locker(mutex_);
+  MutexLocker locker(metadata_->mutex_);
   MakeYoung();
   AsanUnpoisonString(string_);
   Unpark();
   return string_;
 }
 
-unsigned ParkableStringImpl::CharactersSizeInBytes() const {
+size_t ParkableStringImpl::CharactersSizeInBytes() const {
   AssertOnValidThread();
-  return length_ * (is_8bit() ? sizeof(LChar) : sizeof(UChar));
+  if (!may_be_parked())
+    return string_.CharactersSizeInBytes();
+
+  return metadata_->length_ * (is_8bit() ? sizeof(LChar) : sizeof(UChar));
+}
+
+size_t ParkableStringImpl::MemoryFootprintForDump() const {
+  AssertOnValidThread();
+  size_t size = sizeof(ParkableStringImpl);
+
+  if (!may_be_parked())
+    return size + string_.CharactersSizeInBytes();
+
+  size += sizeof(ParkableMetadata);
+
+  if (!is_parked())
+    size += string_.CharactersSizeInBytes();
+
+  if (metadata_->compressed_)
+    size += metadata_->compressed_->size();
+
+  return size;
 }
 
 ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
-  MutexLocker locker(mutex_);
+  MutexLocker locker(metadata_->mutex_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
-  DCHECK(!is_parked());
+  DCHECK(!is_on_disk());
+
+  // No concurrent background tasks.
+  if (metadata_->background_task_in_progress_)
+    return AgeOrParkResult::kSuccessOrTransientFailure;
+
+  // TODO(lizeb): Simplify logic below.
+  if (is_parked()) {
+    if (metadata_->age_ == Age::kVeryOld) {
+      bool ok = ParkInternal(ParkingMode::kToDisk);
+      if (!ok)
+        return AgeOrParkResult::kNonTransientFailure;
+    } else {
+      metadata_->age_ = MakeOlder(metadata_->age_);
+    }
+    return AgeOrParkResult::kSuccessOrTransientFailure;
+  }
 
   Status status = CurrentStatus();
-  if (is_young_) {
+  Age age = metadata_->age_;
+  if (age == Age::kYoung) {
     if (status == Status::kUnreferencedExternally)
-      is_young_ = false;
-  } else {
-    if (state_ == State::kParkingInProgress)
-      return AgeOrParkResult::kSuccessOrTransientFailure;
-
-    if (CanParkNow()) {
-      ParkInternal(ParkingMode::kAlways);
-      return AgeOrParkResult::kSuccessOrTransientFailure;
-    }
+      metadata_->age_ = MakeOlder(age);
+  } else if (age == Age::kOld && CanParkNow()) {
+    bool ok = ParkInternal(ParkingMode::kCompress);
+    DCHECK(ok);
+    return AgeOrParkResult::kSuccessOrTransientFailure;
   }
 
   // External references to a string can be long-lived, cannot provide a
@@ -356,16 +414,16 @@ ParkableStringImpl::AgeOrParkResult ParkableStringImpl::MaybeAgeOrParkString() {
 }
 
 bool ParkableStringImpl::Park(ParkingMode mode) {
-  MutexLocker locker(mutex_);
+  MutexLocker locker(metadata_->mutex_);
   AssertOnValidThread();
   DCHECK(may_be_parked());
 
-  if (state_ == State::kParkingInProgress || state_ == State::kParked)
+  if (metadata_->state_ == State::kParked)
     return true;
 
   // Making the string old to cancel parking if it is accessed/locked before
   // parking is complete.
-  is_young_ = false;
+  metadata_->age_ = Age::kOld;
   if (!CanParkNow())
     return false;
 
@@ -373,83 +431,159 @@ bool ParkableStringImpl::Park(ParkingMode mode) {
   return true;
 }
 
-void ParkableStringImpl::ParkInternal(ParkingMode mode) {
-  mutex_.AssertAcquired();
-  DCHECK_EQ(State::kUnparked, state_);
-  DCHECK(!is_young_);
+// Returns false if parking fails and will fail in the future (non-transient
+// failure).
+bool ParkableStringImpl::ParkInternal(ParkingMode mode) {
+  DCHECK(metadata_->state_ == State::kUnparked ||
+         metadata_->state_ == State::kParked);
+  DCHECK(metadata_->age_ != Age::kYoung);
   DCHECK(CanParkNow());
 
-  // Parking can proceed synchronously.
-  if (has_compressed_data()) {
-    state_ = State::kParked;
-    ParkableStringManager::Instance().OnParked(this);
+  // No concurrent background tasks.
+  if (metadata_->background_task_in_progress_)
+    return true;
 
-    // Must unpoison the memory before releasing it.
-    AsanUnpoisonString(string_);
-    string_ = String();
-  } else if (mode == ParkingMode::kAlways) {
-    // |string_|'s data should not be touched except in the compression task.
-    AsanPoisonString(string_);
-    // |params| keeps |this| alive until |OnParkingCompleteOnMainThread()|.
-    auto params = std::make_unique<CompressionTaskParams>(
-        this, string_.Bytes(), string_.CharactersSizeInBytes(),
-        Thread::Current()->GetTaskRunner());
-    worker_pool::PostTask(
-        FROM_HERE,
-        CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
-                            WTF::Passed(std::move(params))));
-    state_ = State::kParkingInProgress;
+  switch (mode) {
+    case ParkingMode::kSynchronousOnly:
+      if (has_compressed_data())
+        DiscardUncompressedData();
+      break;
+    case ParkingMode::kCompress:
+      if (has_compressed_data())
+        DiscardUncompressedData();
+      else
+        PostBackgroundCompressionTask();
+      break;
+    case ParkingMode::kToDisk:
+      auto& manager = ParkableStringManager::Instance();
+      if (has_on_disk_data()) {
+        DiscardCompressedData();
+      } else {
+        // If the disk allocator doesn't accept writes, then the failure is not
+        // transient, notify the caller. This is important so that
+        // ParkableStringManager doesn't endlessly schedule aging tasks when
+        // writing to disk is not possible.
+        if (!manager.data_allocator().may_write())
+          return false;
+        PostBackgroundWritingTask();
+      }
+      break;
   }
+  return true;
+}
+
+void ParkableStringImpl::DiscardUncompressedData() {
+  // Must unpoison the memory before releasing it.
+  AsanUnpoisonString(string_);
+  string_ = String();
+
+  metadata_->state_ = State::kParked;
+  ParkableStringManager::Instance().OnParked(this);
+}
+
+void ParkableStringImpl::DiscardCompressedData() {
+  metadata_->compressed_ = nullptr;
+  metadata_->state_ = State::kOnDisk;
+  metadata_->last_disk_parking_time_ = base::TimeTicks::Now();
+  ParkableStringManager::Instance().OnWrittenToDisk(this);
 }
 
 bool ParkableStringImpl::is_parked() const {
-  return state_ == State::kParked;
+  return metadata_->state_ == State::kParked;
+}
+
+bool ParkableStringImpl::is_on_disk() const {
+  return metadata_->state_ == State::kOnDisk;
 }
 
 ParkableStringImpl::Status ParkableStringImpl::CurrentStatus() const {
   AssertOnValidThread();
-  mutex_.AssertAcquired();
   DCHECK(may_be_parked());
   // Can park iff:
   // - |this| is not locked.
   // - There are no external reference to |string_|. Since |this| holds a
   //   reference to |string_|, it must the only one.
-  if (lock_depth_ != 0)
+  if (metadata_->lock_depth_ != 0)
     return Status::kLocked;
+  // Can be null if it is compressed or on disk.
+  if (string_.IsNull())
+    return Status::kUnreferencedExternally;
+
   if (!string_.Impl()->HasOneRef())
     return Status::kTooManyReferences;
+
   return Status::kUnreferencedExternally;
 }
 
 bool ParkableStringImpl::CanParkNow() const {
-  return CurrentStatus() == Status::kUnreferencedExternally && !is_young_;
+  return CurrentStatus() == Status::kUnreferencedExternally &&
+         metadata_->age_ != Age::kYoung;
 }
 
 void ParkableStringImpl::Unpark() {
   AssertOnValidThread();
   DCHECK(may_be_parked());
-  mutex_.AssertAcquired();
-  if (state_ != State::kParked)
+
+  if (metadata_->state_ == State::kUnparked)
     return;
 
-  TRACE_EVENT1("blink", "ParkableStringImpl::Unpark", "size",
-               CharactersSizeInBytes());
-  DCHECK(compressed_);
+  TRACE_EVENT(
+      "blink", "ParkableStringImpl::Unpark", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_parkable_string_unpark();
+        data->set_size_bytes(
+            base::saturated_cast<int32_t>(CharactersSizeInBytes()));
+        int32_t write_time = base::saturated_cast<int32_t>(
+            metadata_->last_disk_parking_time_.is_null()
+                ? -1
+                : (base::TimeTicks::Now() - metadata_->last_disk_parking_time_)
+                      .InSeconds());
+        data->set_time_since_last_disk_write_sec(write_time);
+      });
+
+  DCHECK(metadata_->compressed_ || metadata_->on_disk_metadata_);
   string_ = UnparkInternal();
-  state_ = State::kUnparked;
+  metadata_->state_ = State::kUnparked;
+  if (metadata_->last_disk_parking_time_ != base::TimeTicks()) {
+    // Can be quite short, can be multiple hours, hence long times, and 100
+    // buckets.
+    base::UmaHistogramLongTimes100(
+        "Memory.ParkableString.Read.SinceLastDiskWrite",
+        base::TimeTicks::Now() - metadata_->last_disk_parking_time_);
+    metadata_->last_disk_parking_time_ = base::TimeTicks();
+  }
   ParkableStringManager::Instance().OnUnparked(this);
 }
 
-String ParkableStringImpl::UnparkInternal() const {
+String ParkableStringImpl::UnparkInternal() {
   AssertOnValidThread();
-  DCHECK(is_parked());
+  DCHECK(is_parked() || is_on_disk());
   // Note: No need for |mutex_| to be held, this doesn't touch any member
   // variable protected by it.
 
   base::ElapsedTimer timer;
+  auto& manager = ParkableStringManager::Instance();
+
+  if (is_on_disk()) {
+    TRACE_EVENT("blink", "ParkableStringImpl::ReadFromDisk");
+    base::ElapsedTimer disk_read_timer;
+    DCHECK(has_on_disk_data());
+    metadata_->compressed_ = std::make_unique<Vector<uint8_t>>();
+    metadata_->compressed_->Grow(
+        base::checked_cast<wtf_size_t>(metadata_->on_disk_metadata_->size()));
+    manager.data_allocator().Read(*metadata_->on_disk_metadata_,
+                                  metadata_->compressed_->data());
+    base::TimeDelta elapsed = disk_read_timer.Elapsed();
+    RecordStatistics(metadata_->on_disk_metadata_->size(), elapsed,
+                     ParkingAction::kRead);
+    manager.OnReadFromDisk(this);
+    manager.RecordDiskReadTime(elapsed);
+  }
+
+  TRACE_EVENT("blink", "ParkableStringImpl::Decompress");
   base::StringPiece compressed_string_piece(
-      reinterpret_cast<const char*>(compressed_->data()),
-      compressed_->size() * sizeof(uint8_t));
+      reinterpret_cast<const char*>(metadata_->compressed_->data()),
+      metadata_->compressed_->size() * sizeof(uint8_t));
   String uncompressed;
   base::StringPiece uncompressed_string_piece;
   size_t size = CharactersSizeInBytes();
@@ -475,59 +609,45 @@ String ParkableStringImpl::UnparkInternal() const {
   //
   // (1) is data corruption, and (2) is OOM. In all cases, we cannot
   // recover the string we need, nothing else to do than to abort.
-  //
-  // Stability sheriffs: If you see this, this is likely an OOM.
-  CHECK(compression::GzipUncompress(compressed_string_piece,
-                                    uncompressed_string_piece));
+  if (!compression::GzipUncompress(compressed_string_piece,
+                                   uncompressed_string_piece)) {
+    // Since this is almost always OOM, report it as such. We don't have
+    // certainty, but memory corruption should be much rarer, and could make us
+    // crash anywhere else.
+    OOM_CRASH(uncompressed_string_piece.size());
+  }
 
   base::TimeDelta elapsed = timer.Elapsed();
-  ParkableStringManager::Instance().RecordUnparkingTime(elapsed);
+  manager.RecordUnparkingTime(elapsed);
   RecordStatistics(CharactersSizeInBytes(), elapsed, ParkingAction::kUnparked);
 
   return uncompressed;
 }
 
-void ParkableStringImpl::OnParkingCompleteOnMainThread(
-    std::unique_ptr<CompressionTaskParams> params,
-    std::unique_ptr<Vector<uint8_t>> compressed,
-    base::TimeDelta parking_thread_time) {
-  MutexLocker locker(mutex_);
-  DCHECK_EQ(State::kParkingInProgress, state_);
-
-  // Always keep the compressed data. Compression is expensive, so even if the
-  // uncompressed representation cannot be discarded now, avoid compressing
-  // multiple times. This will allow synchronous parking next time.
-  DCHECK(!compressed_);
-  if (compressed)
-    compressed_ = std::move(compressed);
-
-  // Between |Park()| and now, things may have happened:
-  // 1. |ToString()| or
-  // 2. |Lock()| may have been called.
-  //
-  // Both of these will make the string young again, and if so we don't
-  // discard the compressed representation yet.
-  if (CanParkNow() && compressed_) {
-    state_ = State::kParked;
-    ParkableStringManager::Instance().OnParked(this);
-
-    // Must unpoison the memory before releasing it.
-    AsanUnpoisonString(string_);
-    string_ = String();
-  } else {
-    state_ = State::kUnparked;
-  }
-  // Record the time no matter whether the string was parked or not, as the
-  // parking cost was paid.
-  ParkableStringManager::Instance().RecordParkingThreadTime(
-      parking_thread_time);
+void ParkableStringImpl::PostBackgroundCompressionTask() {
+  DCHECK(!metadata_->background_task_in_progress_);
+  // |string_|'s data should not be touched except in the compression task.
+  AsanPoisonString(string_);
+  metadata_->background_task_in_progress_ = true;
+  // |params| keeps |this| alive until |OnParkingCompleteOnMainThread()|.
+  auto params = std::make_unique<BackgroundTaskParams>(
+      this, string_.Bytes(), string_.CharactersSizeInBytes(),
+      Thread::Current()->GetTaskRunner());
+  worker_pool::PostTask(
+      FROM_HERE, CrossThreadBindOnce(&ParkableStringImpl::CompressInBackground,
+                                     std::move(params)));
 }
 
 // static
 void ParkableStringImpl::CompressInBackground(
-    std::unique_ptr<CompressionTaskParams> params) {
-  TRACE_EVENT1("blink", "ParkableStringImpl::CompressInBackground", "size",
-               params->size);
+    std::unique_ptr<BackgroundTaskParams> params) {
+  TRACE_EVENT(
+      "blink", "ParkableStringImpl::CompressInBackground",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_parkable_string_compress_in_background();
+        data->set_size_bytes(base::saturated_cast<int32_t>(params->size));
+      });
 
   base::ElapsedTimer timer;
 #if defined(ADDRESS_SANITIZER)
@@ -545,7 +665,7 @@ void ParkableStringImpl::CompressInBackground(
   bool ok;
   base::StringPiece data(reinterpret_cast<const char*>(params->data),
                          params->size);
-  std::unique_ptr<Vector<uint8_t>> compressed = nullptr;
+  std::unique_ptr<Vector<uint8_t>> compressed;
 
   // This runs in background, making CPU starvation likely, and not an issue.
   // Hence, report thread time instead of wall clock time.
@@ -584,7 +704,7 @@ void ParkableStringImpl::CompressInBackground(
       // Not using realloc() as we want the compressed data to be a regular
       // WTF::Vector.
       compressed->Append(reinterpret_cast<const uint8_t*>(buffer.data()),
-                         compressed_size);
+                         base::checked_cast<wtf_size_t>(compressed_size));
     }
   }
   base::TimeDelta thread_elapsed = thread_timer.Elapsed();
@@ -594,16 +714,118 @@ void ParkableStringImpl::CompressInBackground(
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(
-          [](std::unique_ptr<CompressionTaskParams> params,
+          [](std::unique_ptr<BackgroundTaskParams> params,
              std::unique_ptr<Vector<uint8_t>> compressed,
              base::TimeDelta parking_thread_time) {
             auto* string = params->string.get();
             string->OnParkingCompleteOnMainThread(
                 std::move(params), std::move(compressed), parking_thread_time);
           },
-          WTF::Passed(std::move(params)), WTF::Passed(std::move(compressed)),
-          thread_elapsed));
+          std::move(params), std::move(compressed), thread_elapsed));
   RecordStatistics(size, timer.Elapsed(), ParkingAction::kParked);
+}
+
+void ParkableStringImpl::OnParkingCompleteOnMainThread(
+    std::unique_ptr<BackgroundTaskParams> params,
+    std::unique_ptr<Vector<uint8_t>> compressed,
+    base::TimeDelta parking_thread_time) {
+  DCHECK(metadata_->background_task_in_progress_);
+  MutexLocker locker(metadata_->mutex_);
+  DCHECK_EQ(State::kUnparked, metadata_->state_);
+  metadata_->background_task_in_progress_ = false;
+
+  // Always keep the compressed data. Compression is expensive, so even if the
+  // uncompressed representation cannot be discarded now, avoid compressing
+  // multiple times. This will allow synchronous parking next time.
+  DCHECK(!metadata_->compressed_);
+  if (compressed)
+    metadata_->compressed_ = std::move(compressed);
+
+  // Between |Park()| and now, things may have happened:
+  // 1. |ToString()| or
+  // 2. |Lock()| may have been called.
+  //
+  // Both of these will make the string young again, and if so we don't
+  // discard the compressed representation yet.
+  if (CanParkNow() && metadata_->compressed_) {
+    DiscardUncompressedData();
+  } else {
+    metadata_->state_ = State::kUnparked;
+  }
+  // Record the time no matter whether the string was parked or not, as the
+  // parking cost was paid.
+  ParkableStringManager::Instance().RecordParkingThreadTime(
+      parking_thread_time);
+}
+
+void ParkableStringImpl::PostBackgroundWritingTask() {
+  DCHECK(!metadata_->background_task_in_progress_);
+  DCHECK_EQ(State::kParked, metadata_->state_);
+  auto& manager = ParkableStringManager::Instance();
+  auto& data_allocator = manager.data_allocator();
+  if (!has_on_disk_data() && data_allocator.may_write()) {
+    metadata_->background_task_in_progress_ = true;
+    auto params = std::make_unique<BackgroundTaskParams>(
+        this, metadata_->compressed_->data(), metadata_->compressed_->size(),
+        Thread::Current()->GetTaskRunner());
+    worker_pool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
+                            std::move(params),
+                            WTF::CrossThreadUnretained(&data_allocator)));
+  }
+}
+
+// static
+void ParkableStringImpl::WriteToDiskInBackground(
+    std::unique_ptr<BackgroundTaskParams> params,
+    DiskDataAllocator* data_allocator) {
+  base::ElapsedTimer timer;
+  auto metadata = data_allocator->Write(params->data, params->size);
+  base::TimeDelta elapsed = timer.Elapsed();
+  RecordStatistics(params->size, elapsed, ParkingAction::kWritten);
+
+  auto* task_runner = params->callback_task_runner.get();
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          [](std::unique_ptr<BackgroundTaskParams> params,
+             std::unique_ptr<DiskDataMetadata> metadata,
+             base::TimeDelta elapsed) {
+            auto* string = params->string.get();
+            string->OnWritingCompleteOnMainThread(std::move(params),
+                                                  std::move(metadata), elapsed);
+          },
+          std::move(params), std::move(metadata), elapsed));
+}
+
+void ParkableStringImpl::OnWritingCompleteOnMainThread(
+    std::unique_ptr<BackgroundTaskParams> params,
+    std::unique_ptr<DiskDataMetadata> on_disk_metadata,
+    base::TimeDelta writing_time) {
+  DCHECK(metadata_->background_task_in_progress_);
+  DCHECK(!metadata_->on_disk_metadata_);
+
+  metadata_->background_task_in_progress_ = false;
+
+  // Writing failed.
+  if (!on_disk_metadata)
+    return;
+
+  metadata_->on_disk_metadata_ = std::move(on_disk_metadata);
+  // State can be:
+  // - kParked: unparking didn't happen in the meantime.
+  // - Unparked: unparking happened in the meantime.
+  DCHECK(metadata_->state_ == State::kUnparked ||
+         metadata_->state_ == State::kParked);
+  if (metadata_->state_ == State::kParked) {
+    DiscardCompressedData();
+    DCHECK_EQ(metadata_->state_, State::kOnDisk);
+  }
+
+  // Record the time no matter whether the string was discarded or not, as the
+  // writing cost was paid.
+  ParkableStringManager::Instance().RecordDiskWriteTime(writing_time);
 }
 
 ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl) {
@@ -634,14 +856,16 @@ void ParkableString::Unlock() const {
 
 void ParkableString::OnMemoryDump(WebProcessMemoryDump* pmd,
                                   const String& name) const {
-  // Parkable strings are reported by ParkableStringManager.
-  if (!impl_ || may_be_parked())
+  if (!impl_)
     return;
 
   auto* dump = pmd->CreateMemoryAllocatorDump(name);
-  dump->AddScalar("size", "bytes", CharactersSizeInBytes());
-  pmd->AddSuballocation(dump->Guid(),
-                        String(WTF::Partitions::kAllocatedObjectPoolName));
+  dump->AddScalar("size", "bytes", impl_->MemoryFootprintForDump());
+
+  const char* parent_allocation =
+      may_be_parked() ? ParkableStringManager::kAllocatorDumpName
+                      : WTF::Partitions::kAllocatedObjectPoolName;
+  pmd->AddSuballocation(dump->Guid(), parent_allocation);
 }
 
 bool ParkableString::Is8Bit() const {
@@ -652,7 +876,7 @@ const String& ParkableString::ToString() const {
   return impl_ ? impl_->ToString() : g_empty_string;
 }
 
-wtf_size_t ParkableString::CharactersSizeInBytes() const {
+size_t ParkableString::CharactersSizeInBytes() const {
   return impl_ ? impl_->CharactersSizeInBytes() : 0;
 }
 

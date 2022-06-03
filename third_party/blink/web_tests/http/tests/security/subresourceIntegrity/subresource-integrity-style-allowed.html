@@ -15,6 +15,7 @@
         <p id="p3">Test 3</p>
 
         <script>
+        setup({single_test: true});
         var color = window.getComputedStyle(document.querySelector('#p1')).color;
         assert_equals(color, "rgb(0, 128, 0)", "The p#1 element's text should be green.");
         color = window.getComputedStyle(document.querySelector('#p2')).color;

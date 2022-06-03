@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "remoting/base/constants.h"
 #include "remoting/proto/control.pb.h"
@@ -50,11 +50,11 @@ VideoFramePump::VideoFramePump(
       video_stub_(video_stub),
       keep_alive_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kKeepAlivePacketIntervalMs),
-          base::Bind(&VideoFramePump::SendKeepAlivePacket,
-                     base::Unretained(this))),
-      capture_scheduler_(base::Bind(&VideoFramePump::CaptureNextFrame,
-                                    base::Unretained(this))) {
+          base::Milliseconds(kKeepAlivePacketIntervalMs),
+          base::BindRepeating(&VideoFramePump::SendKeepAlivePacket,
+                              base::Unretained(this))),
+      capture_scheduler_(base::BindRepeating(&VideoFramePump::CaptureNextFrame,
+                                             base::Unretained(this))) {
   DCHECK(encoder_);
   DCHECK(video_stub_);
 
@@ -131,16 +131,16 @@ void VideoFramePump::OnCaptureResult(
   // that we don't start capturing frame n+2 before frame n is freed.
   base::PostTaskAndReplyWithResult(
       encode_task_runner_.get(), FROM_HERE,
-      base::Bind(&VideoFramePump::EncodeFrame, encoder_.get(),
-                 base::Passed(&frame),
-                 base::Passed(&captured_frame_timestamps_)),
-      base::Bind(&VideoFramePump::OnFrameEncoded, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&VideoFramePump::EncodeFrame, encoder_.get(),
+                     std::move(frame), std::move(captured_frame_timestamps_)),
+      base::BindOnce(&VideoFramePump::OnFrameEncoded,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void VideoFramePump::CaptureNextFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  captured_frame_timestamps_.reset(new FrameTimestamps());
+  captured_frame_timestamps_ = std::make_unique<FrameTimestamps>();
   captured_frame_timestamps_->capture_started_time = base::TimeTicks::Now();
 
   if (event_timestamps_source_) {
@@ -166,7 +166,7 @@ VideoFramePump::EncodeFrame(VideoEncoder* encoder,
   // If |frame| is NULL, or the encoder returned nothing, return an empty
   // packet.
   if (!packet)
-    packet.reset(new VideoPacket());
+    packet = std::make_unique<VideoPacket>();
 
   if (frame)
     packet->set_capture_time_ms(frame->capture_time_ms());

@@ -1,0 +1,72 @@
+URL: https://github.com/hyphenation/tex-hyphen
+Version: ff4fb0d804ded27440a716fee15542a4289a2e04
+License: various
+License File: NOTICE
+
+Description:
+Hyphenation patterns for automatic hyphenation from TeX hyphenation patterns
+project at http://www.hyphenation.org.
+
+Local Modifications:
+The patterns are taken from the hyph-utf8/tex/generic/hyph-utf8/patterns/txt directory.
+
+Only the following patterns are included from that directory:
+
+* Armenian (hy)
+* Assamese (as)
+* Basque (eu)
+* Belarusian (be)
+* Bengali (bn)
+* Bulgarian (bg)
+* Church Slavonic (cu)
+* Croation (hr)
+* Danish (da)
+* Estonian (et)
+* Ethiopic script (und-Ethi)
+* French (fr)
+* German (de)
+* Gujarati (gu)
+* Hindi (hi)
+* Hungarian (hu)
+* Irish (ga)
+* Kannada (kn)
+* Latin (la)
+* Malayalam (ml)
+* Marathi (mr)
+* Mongolian written in Cyrillic (mn-cyrl)
+* Norwegian Bokmål (nb)
+* Norwegian Nynorsk (nn)
+* Oriya (or)
+* Portuguese (pt)
+* Punjabi (pa)
+* Sanskrit (sa)
+* Slovenian (sl)
+* Spanish (es)
+* Tamil (ta)
+* Telugu (te)
+* Turkmen (tk)
+* US English (en-US)
+* Welsh (cy)
+
+The Ethiopic script pattern files have been renamed from mul-ethi to und-ethi,
+to properly follow BCP 47 naming.
+
+In case hyphenation patterns are licensed under dual licenses,
+hyph-{lang}.lic.txt files are edited to keep only the license Android applies
+as listed in the corresponding NOTICE files.
+
+For the German (de) patterns, the *.chr.txt has been automatically generated
+based on the contents of the pattern files, using the the create_chr.py script
+created by Android engineers.
+
+British English (en-GB) patterns are taken from a different part of the
+tex-hyphen repository. Please see the README.android file in the 'en-GB'
+directory.
+
+US English (en-US) patterns have been modified to remove patterns added to
+the end of the file that had been incorrectly computed based on the TUGboat
+hyphenation exception list. To compensate for that, the TUGboat hyphenation
+exception list for US English has been downloaded from
+<http://mirror.ctan.org/info/digests/tugboat/hyphenex/ushyphex.tex> and
+explicitly added to the end of the hyphenation exception file for US
+English.

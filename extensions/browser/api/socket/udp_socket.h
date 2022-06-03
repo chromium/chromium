@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -76,16 +76,16 @@ class UDPSocket : public Socket, public network::mojom::UDPSocketListener {
 
   // network::mojom::UDPSocketListener implementation.
   void OnReceived(int32_t result,
-                  const base::Optional<net::IPEndPoint>& src_addr,
-                  base::Optional<base::span<const uint8_t>> data) override;
+                  const absl::optional<net::IPEndPoint>& src_addr,
+                  absl::optional<base::span<const uint8_t>> data) override;
 
   void OnConnectCompleted(net::CompletionOnceCallback user_callback,
                           const net::IPEndPoint& remote_addr,
                           int result,
-                          const base::Optional<net::IPEndPoint>& local_addr);
+                          const absl::optional<net::IPEndPoint>& local_addr);
   void OnBindCompleted(net::CompletionOnceCallback user_callback,
                        int result,
-                       const base::Optional<net::IPEndPoint>& local_addr);
+                       const absl::optional<net::IPEndPoint>& local_addr);
   void OnSendToCompleted(net::CompletionOnceCallback user_callback,
                          size_t byte_count,
                          int result);
@@ -104,8 +104,8 @@ class UDPSocket : public Socket, public network::mojom::UDPSocketListener {
 
   bool is_bound_;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver_{this};
-  base::Optional<net::IPEndPoint> local_addr_;
-  base::Optional<net::IPEndPoint> peer_addr_;
+  absl::optional<net::IPEndPoint> local_addr_;
+  absl::optional<net::IPEndPoint> peer_addr_;
 
   ReadCompletionCallback read_callback_;
 

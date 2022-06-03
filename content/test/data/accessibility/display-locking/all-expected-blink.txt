@@ -1,28 +1,23 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer
-++++++++staticText name='<newline>    '
+++++++genericContainer ignored
 ++++++++genericContainer
-++++++++++staticText name='child'
-++++++++staticText name='<newline>    '
-++++++++genericContainer
-++++++++++staticText name='nested locked element!'
-++++++++staticText name='<newline>    '
-++++++++genericContainer
-++++++++staticText name='<newline>    '
-++++++++staticText name='<newline>    '
-++++++++genericContainer invisible
-++++++++++staticText name='display:none text'
-++++++++staticText name='<newline>    '
-++++++++staticText name='<newline>      '
-++++++++genericContainer
-++++++++++staticText name='role=presentation item'
-++++++++staticText name='<newline>    '
-++++++++staticText name='<newline>    '
-++++++++genericContainer invisible
-++++++++++staticText name='visibility:hidden text'
-++++++++staticText name='<newline>    '
-++++++++genericContainer invisible
-++++++++++staticText invisible name='aria-hidden text'
-++++++++staticText name='<newline>  '
+++++++++++staticText name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++++++++++++inlineTextBox name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++++++++genericContainer offscreen
+++++++++++staticText offscreen name='<newline>    '
+++++++++++genericContainer offscreen
+++++++++++++staticText offscreen name='child text will be in AX tree but without layout'
+++++++++++staticText offscreen name='<newline>    '
+++++++++++genericContainer offscreen
+++++++++++++staticText offscreen name='<newline>      nested activatable locked element will be in AX tree but without layout<newline>    '
+++++++++++staticText offscreen name='<newline>  '
+++++++++staticText offscreen name='normal text 1'
+++++++++++inlineTextBox offscreen name='normal text 1'
+++++++++genericContainer offscreen
+++++++++staticText offscreen name='normal text 2'
+++++++++++inlineTextBox offscreen name='normal text 2'
+++++++++genericContainer offscreen
+++++++++staticText offscreen name='normal text 3'
+++++++++++inlineTextBox offscreen name='normal text 3'

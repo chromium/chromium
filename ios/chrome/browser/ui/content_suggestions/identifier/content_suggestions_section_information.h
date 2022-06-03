@@ -19,11 +19,10 @@ typedef NS_ENUM(NSInteger, ContentSuggestionsSectionLayout) {
 // different ID.
 typedef NS_ENUM(NSInteger, ContentSuggestionsSectionID) {
   ContentSuggestionsSectionLogo = 0,
+  ContentSuggestionsSectionReturnToRecentTab,
   ContentSuggestionsSectionPromo,
   ContentSuggestionsSectionMostVisited,
-  ContentSuggestionsSectionArticles,
-  ContentSuggestionsSectionReadingList,
-  ContentSuggestionsSectionLearnMore,
+  ContentSuggestionsSectionDiscover,
 
   // Do not use this. It will trigger a DCHECK.
   // Do not add value after this one.

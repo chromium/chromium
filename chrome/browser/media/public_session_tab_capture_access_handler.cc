@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -56,14 +56,15 @@ void PublicSessionTabCaptureAccessHandler::HandleRequest(
 
   // This Unretained is safe because the lifetime of this object is until
   // process exit (living inside a base::Singleton object).
-  auto prompt_resolved_callback = base::AdaptCallbackForRepeating(
+  auto prompt_resolved_callback =
       base::BindOnce(&PublicSessionTabCaptureAccessHandler::ChainHandleRequest,
                      base::Unretained(this), web_contents, request,
-                     std::move(callback), base::RetainedRef(extension)));
+                     std::move(callback), base::RetainedRef(extension));
 
   extensions::permission_helper::HandlePermissionRequest(
-      *extension, {extensions::APIPermission::kTabCapture}, web_contents,
-      prompt_resolved_callback, extensions::permission_helper::PromptFactory());
+      *extension, {extensions::mojom::APIPermissionID::kTabCapture},
+      web_contents, std::move(prompt_resolved_callback),
+      extensions::permission_helper::PromptFactory());
 }
 
 void PublicSessionTabCaptureAccessHandler::ChainHandleRequest(
@@ -76,7 +77,8 @@ void PublicSessionTabCaptureAccessHandler::ChainHandleRequest(
 
   // If the user denied tab capture, here the request gets filtered out before
   // being passed on to the actual implementation.
-  if (!allowed_permissions.ContainsID(extensions::APIPermission::kTabCapture)) {
+  if (!allowed_permissions.ContainsID(
+          extensions::mojom::APIPermissionID::kTabCapture)) {
     request_copy.audio_type = blink::mojom::MediaStreamType::NO_SERVICE;
     request_copy.video_type = blink::mojom::MediaStreamType::NO_SERVICE;
   }

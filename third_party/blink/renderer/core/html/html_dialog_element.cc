@@ -25,9 +25,11 @@
 
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -81,8 +83,10 @@ static void SetFocusForDialog(HTMLDialogElement* dialog) {
   if (!doc.IsActive())
     return;
   if (!doc.IsInMainFrame() &&
-      !doc.TopFrameOrigin()->CanAccess(doc.GetSecurityOrigin()))
+      !doc.TopFrameOrigin()->CanAccess(
+          doc.GetExecutionContext()->GetSecurityOrigin())) {
     return;
+  }
 
   // 6. Empty topDocument's autofocus candidates.
   // 7. Set topDocument's autofocus processed flag to true.
@@ -105,9 +109,9 @@ static void InertSubtreesChanged(Document& document) {
 
 HTMLDialogElement::HTMLDialogElement(Document& document)
     : HTMLElement(html_names::kDialogTag, document),
-      centering_mode_(kNotCentered),
-      centered_position_(0),
-      return_value_("") {
+      is_modal_(false),
+      return_value_(""),
+      previously_focused_element_(nullptr) {
   UseCounter::Count(document, WebFeature::kDialogElement);
 }
 
@@ -117,6 +121,7 @@ void HTMLDialogElement::close(const String& return_value) {
   if (!FastHasAttribute(html_names::kOpenAttr))
     return;
   SetBooleanAttribute(html_names::kOpenAttr, false);
+  SetIsModal(false);
 
   HTMLDialogElement* active_modal_dialog = GetDocument().ActiveModalDialog();
   GetDocument().RemoveFromTopLayer(this);
@@ -127,13 +132,23 @@ void HTMLDialogElement::close(const String& return_value) {
     return_value_ = return_value;
 
   ScheduleCloseEvent();
+
+  // We should call focus() last since it will fire a focus event which could
+  // modify this element.
+  if (RuntimeEnabledFeatures::DialogFocusNewSpecBehaviorEnabled() &&
+      previously_focused_element_) {
+    FocusOptions* focus_options = FocusOptions::Create();
+    focus_options->setPreventScroll(true);
+    Element* previously_focused_element = previously_focused_element_;
+    previously_focused_element_ = nullptr;
+    previously_focused_element->focus(focus_options);
+  }
 }
 
-void HTMLDialogElement::ForceLayoutForCentering() {
-  centering_mode_ = kNeedsCentering;
-  GetDocument().UpdateStyleAndLayout();
-  if (centering_mode_ == kNeedsCentering)
-    SetNotCentered();
+void HTMLDialogElement::SetIsModal(bool is_modal) {
+  if (is_modal != is_modal_)
+    PseudoStateChanged(CSSSelector::kPseudoModal);
+  is_modal_ = is_modal;
 }
 
 void HTMLDialogElement::ScheduleCloseEvent() {
@@ -147,9 +162,16 @@ void HTMLDialogElement::show() {
     return;
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
+  // Showing a <dialog> should hide all open popups.
+  if (RuntimeEnabledFeatures::HTMLPopupElementEnabled()) {
+    GetDocument().HideAllPopupsUntil(nullptr);
+  }
+
   // The layout must be updated here because setFocusForDialog calls
   // Element::isFocusable, which requires an up-to-date layout.
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+
+  previously_focused_element_ = GetDocument().FocusedElement();
 
   SetFocusForDialog(this);
 }
@@ -174,51 +196,31 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
                       WebFeature::kShowModalForElementInFullscreenStack);
   }
 
+  // Showing a <dialog> should hide all open popups.
+  if (RuntimeEnabledFeatures::HTMLPopupElementEnabled()) {
+    GetDocument().HideAllPopupsUntil(nullptr);
+  }
+
   GetDocument().AddToTopLayer(this);
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
-  ForceLayoutForCentering();
+  SetIsModal(true);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   // Throw away the AX cache first, so the subsequent steps don't have a chance
   // of queuing up AX events on objects that would be invalidated when the cache
   // is thrown away.
   InertSubtreesChanged(GetDocument());
 
+  previously_focused_element_ = GetDocument().FocusedElement();
+
   SetFocusForDialog(this);
 }
 
 void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-  SetNotCentered();
-
-  // TODO(671907): Calling UpdateDistributionForFlatTreeTraversal here is a
-  // workaround for https://crbug.com/895511. This shouldn't be done during DOM
-  // mutation. However, Shadow DOM v0 will be removed, at which point this call
-  // can be removed.
-  GetDocument().UpdateDistributionForFlatTreeTraversal();
-
   InertSubtreesChanged(GetDocument());
-}
-
-void HTMLDialogElement::SetCentered(LayoutUnit centered_position) {
-  DCHECK_EQ(centering_mode_, kNeedsCentering);
-  centered_position_ = centered_position;
-  centering_mode_ = kCentered;
-}
-
-void HTMLDialogElement::SetNotCentered() {
-  centering_mode_ = kNotCentered;
-}
-
-bool HTMLDialogElement::IsPresentationAttribute(
-    const QualifiedName& name) const {
-  // FIXME: Workaround for <https://bugs.webkit.org/show_bug.cgi?id=91058>:
-  // modifying an attribute for which there is an attribute selector in html.css
-  // sometimes does not trigger a style recalc.
-  if (name == html_names::kOpenAttr)
-    return true;
-
-  return HTMLElement::IsPresentationAttribute(name);
+  SetIsModal(false);
 }
 
 void HTMLDialogElement::DefaultEventHandler(Event& event) {
@@ -228,6 +230,11 @@ void HTMLDialogElement::DefaultEventHandler(Event& event) {
     return;
   }
   HTMLElement::DefaultEventHandler(event);
+}
+
+void HTMLDialogElement::Trace(Visitor* visitor) const {
+  visitor->Trace(previously_focused_element_);
+  HTMLElement::Trace(visitor);
 }
 
 }  // namespace blink

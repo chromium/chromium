@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_GUEST_VIEW_APP_VIEW_CHROME_APP_VIEW_GUEST_DELEGATE_H_
 #define CHROME_BROWSER_GUEST_VIEW_APP_VIEW_CHROME_APP_VIEW_GUEST_DELEGATE_H_
 
-#include "base/macros.h"
-#include "content/public/common/context_menu_params.h"
+#include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
 
 namespace extensions {
@@ -14,15 +13,17 @@ namespace extensions {
 class ChromeAppViewGuestDelegate : public AppViewGuestDelegate {
  public:
   ChromeAppViewGuestDelegate();
+
+  ChromeAppViewGuestDelegate(const ChromeAppViewGuestDelegate&) = delete;
+  ChromeAppViewGuestDelegate& operator=(const ChromeAppViewGuestDelegate&) =
+      delete;
+
   ~ChromeAppViewGuestDelegate() override;
 
   // AppViewGuestDelegate:
-  bool HandleContextMenu(content::WebContents* web_contents,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
-  AppDelegate* CreateAppDelegate() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppViewGuestDelegate);
+  AppDelegate* CreateAppDelegate(content::WebContents* web_contents) override;
 };
 
 }  // namespace extensions

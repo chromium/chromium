@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        style="@style/AlertDialogContent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/download_dialog_title_margin_bottom"
+            android:textAppearance="@style/TextAppearance.DownloadDialogTitle"
+            android:text="@string/download_later_dialog_title" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/download_dialog_subtitle_margin_bottom"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/download_later_dialog_subtitle" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+            android:id="@+id/radio_button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- TODO(xingliu): Adjust margin between RadioButtonWithDescription. See crbug.com/1090155 -->
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/download_now"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/download_dialog_radio_button_margin_start"
+                app:primaryText="@string/download_later_download_now_text" />
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/on_wifi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/download_dialog_radio_button_margin_start"
+                app:primaryText="@string/download_later_on_wifi_text" />
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/choose_date_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/download_dialog_radio_button_margin_start"
+                app:primaryText="@string/download_later_pick_time_text" />
+
+        </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+        <CheckBox
+            android:id="@+id/show_again_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/download_dialog_checkbox_margin_top"
+            android:layout_marginBottom="11dp"
+            android:layout_marginStart="@dimen/download_dialog_checkbox_margin_start"
+            android:text="@string/download_location_dialog_checkbox"
+            style="@style/DefaultCheckboxStyle"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/edit_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/download_later_edit_location"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogView>

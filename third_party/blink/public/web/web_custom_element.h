@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CUSTOM_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CUSTOM_ELEMENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -52,12 +51,14 @@ class WebCustomElement {
   class BLINK_EXPORT EmbedderNamesAllowedScope {
    public:
     EmbedderNamesAllowedScope();
+    EmbedderNamesAllowedScope(const EmbedderNamesAllowedScope&) = delete;
+    EmbedderNamesAllowedScope& operator=(const EmbedderNamesAllowedScope&) =
+        delete;
     ~EmbedderNamesAllowedScope();
 
     static bool IsAllowed();
 
    private:
-    DISALLOW_COPY_AND_ASSIGN(EmbedderNamesAllowedScope);
     void* operator new(size_t) = delete;
   };
 
@@ -67,4 +68,4 @@ class WebCustomElement {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_CUSTOM_ELEMENT_H_

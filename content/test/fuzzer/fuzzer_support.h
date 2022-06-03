@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/at_exit.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "content/public/test/render_view_test.h"
 
 namespace content {
@@ -16,7 +17,10 @@ namespace content {
 // Adapter to GUnit's test case.
 class RenderViewTestAdapter : public RenderViewTest {
  public:
-  RenderViewTestAdapter() : RenderViewTest() {}
+  RenderViewTestAdapter();
+
+  RenderViewTestAdapter(const RenderViewTestAdapter&) = delete;
+  RenderViewTestAdapter& operator=(const RenderViewTestAdapter&) = delete;
 
   void TestBody() override {}
   // make SetUp visible.
@@ -29,7 +33,7 @@ class RenderViewTestAdapter : public RenderViewTest {
   using RenderViewTest::GetMainFrame;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewTestAdapter);
+  const base::test::ScopedRunLoopTimeout increased_timeout_;
 };
 
 // Static environment. Initialized only once.

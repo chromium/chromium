@@ -14,6 +14,7 @@ proto_library("proto") {
     "email_opt_in_ui.proto",
     "gaia_user_context_ui.proto",
     "get_settings_ui.proto",
+    "header.proto",
     "settings_ui.proto",
   ]
 }

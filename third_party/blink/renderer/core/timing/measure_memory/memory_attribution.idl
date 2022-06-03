@@ -1,0 +1,12 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/performance-measure-memory/#dictdef-memoryattribution
+
+// Describes a context to which the memory was attributed.
+dictionary MemoryAttribution {
+  required USVString url;
+  MemoryAttributionContainer container;
+  required DOMString scope;
+};

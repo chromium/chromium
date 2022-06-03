@@ -19,7 +19,7 @@ ModelTypeSyncBridge::ModelTypeSyncBridge(
   change_processor_->OnModelStarting(this);
 }
 
-ModelTypeSyncBridge::~ModelTypeSyncBridge() {}
+ModelTypeSyncBridge::~ModelTypeSyncBridge() = default;
 
 void ModelTypeSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {}
@@ -52,6 +52,16 @@ void ModelTypeSyncBridge::ApplyStopSyncChanges(
     ApplySyncChanges(std::move(delete_metadata_change_list),
                      EntityChangeList());
   }
+}
+
+void ModelTypeSyncBridge::OnCommitAttemptErrors(
+    const syncer::FailedCommitResponseDataList& error_response_list) {
+  // By default the bridge just ignores failed commit items.
+}
+
+ModelTypeSyncBridge::CommitAttemptFailedBehavior
+ModelTypeSyncBridge::OnCommitAttemptFailed(SyncCommitError commit_error) {
+  return CommitAttemptFailedBehavior::kDontRetryOnNextCycle;
 }
 
 size_t ModelTypeSyncBridge::EstimateSyncOverheadMemoryUsage() const {

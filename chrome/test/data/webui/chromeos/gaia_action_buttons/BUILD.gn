@@ -1,0 +1,27 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=../../chrome/browser/resources/chromeos/gaia_action_buttons/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+                  ]
+  deps = [ ":gaia_action_buttons_test" ]
+}
+
+js_library("gaia_action_buttons_test") {
+  deps = [
+    "../..:chai_assert",
+    "//chrome/browser/resources/chromeos/gaia_action_buttons:gaia_action_buttons",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}

@@ -64,6 +64,12 @@ interface DeviceFactory {
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_receiver<TextureVirtualDevice> virtual_device_receiver);
 
+  // Add a virtual device with video frames backed by GpuMemoryBufferHandle.
+  // The buffers are allocated and managed by the caller.
+  AddGpuMemoryBufferVirtualDevice(
+      media.mojom.VideoCaptureDeviceInfo device_info,
+      pending_receiver<GpuMemoryBufferVirtualDevice> virtual_device_receiver);
+
   // Registered observers will get notified whenever a virtual device is added
   // or removed. Note: Changes to non-virtual devices are currently being
   // monitored outside the video capture service, and therefore the service

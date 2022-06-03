@@ -3,7 +3,7 @@
 <script>
 test(function () {
     var blobUrl = URL.createObjectURL(new Blob());
-    assert_throws('SecurityError', function () {
+    assert_throws_dom('SecurityError', function () {
         history.pushState(null, null, blobUrl);
     });
 }, 'pushState to blob:-URL should fail with SecurityError');

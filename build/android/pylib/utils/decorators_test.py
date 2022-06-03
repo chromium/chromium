@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -35,8 +35,8 @@ class NoRaiseExceptionDecoratorTest(unittest.TestCase):
     def doesNotRaiseException():
       return 999
 
-    self.assertEquals(raiseException(), 111)
-    self.assertEquals(doesNotRaiseException(), 999)
+    self.assertEqual(raiseException(), 111)
+    self.assertEqual(doesNotRaiseException(), 999)
 
 
 class MemoizeDecoratorTest(unittest.TestCase):
@@ -79,13 +79,13 @@ class MemoizeDecoratorTest(unittest.TestCase):
       return notMemoized.count
     notMemoized.count = 0
 
-    self.assertEquals(memoized(), 1)
-    self.assertEquals(memoized(), 1)
-    self.assertEquals(memoized(), 1)
+    self.assertEqual(memoized(), 1)
+    self.assertEqual(memoized(), 1)
+    self.assertEqual(memoized(), 1)
 
-    self.assertEquals(notMemoized(), 1)
-    self.assertEquals(notMemoized(), 2)
-    self.assertEquals(notMemoized(), 3)
+    self.assertEqual(notMemoized(), 1)
+    self.assertEqual(notMemoized(), 2)
+    self.assertEqual(notMemoized(), 3)
 
   def testFunctionMemoizedBasedOnArgs(self):
     """Tests that |Memoize| caches results based on args and kwargs."""
@@ -94,10 +94,10 @@ class MemoizeDecoratorTest(unittest.TestCase):
     def returnValueBasedOnArgsKwargs(a, k=0):
       return a + k
 
-    self.assertEquals(returnValueBasedOnArgsKwargs(1, 1), 2)
-    self.assertEquals(returnValueBasedOnArgsKwargs(1, 2), 3)
-    self.assertEquals(returnValueBasedOnArgsKwargs(2, 1), 3)
-    self.assertEquals(returnValueBasedOnArgsKwargs(3, 3), 6)
+    self.assertEqual(returnValueBasedOnArgsKwargs(1, 1), 2)
+    self.assertEqual(returnValueBasedOnArgsKwargs(1, 2), 3)
+    self.assertEqual(returnValueBasedOnArgsKwargs(2, 1), 3)
+    self.assertEqual(returnValueBasedOnArgsKwargs(3, 3), 6)
 
 
 if __name__ == '__main__':

@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_KIOSK_AUTOLAUNCH_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "content/public/browser/web_ui.h"
+
+namespace ash {
+class KioskAutolaunchScreen;
+}
 
 namespace chromeos {
-
-class KioskAutolaunchScreen;
 
 // Interface between reset screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
@@ -24,7 +24,7 @@ class KioskAutolaunchScreenView {
   virtual ~KioskAutolaunchScreenView() {}
 
   virtual void Show() = 0;
-  virtual void SetDelegate(KioskAutolaunchScreen* delegate) = 0;
+  virtual void SetDelegate(ash::KioskAutolaunchScreen* delegate) = 0;
 };
 
 // WebUI implementation of KioskAutolaunchScreenActor.
@@ -35,11 +35,16 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   using TView = KioskAutolaunchScreenView;
 
   explicit KioskAutolaunchScreenHandler(JSCallsContainer* js_calls_container);
+
+  KioskAutolaunchScreenHandler(const KioskAutolaunchScreenHandler&) = delete;
+  KioskAutolaunchScreenHandler& operator=(const KioskAutolaunchScreenHandler&) =
+      delete;
+
   ~KioskAutolaunchScreenHandler() override;
 
   // KioskAutolaunchScreenView:
   void Show() override;
-  void SetDelegate(KioskAutolaunchScreen* delegate) override;
+  void SetDelegate(ash::KioskAutolaunchScreen* delegate) override;
 
   // KioskAppManagerObserver:
   void OnKioskAppsSettingsChanged() override;
@@ -62,15 +67,20 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   void HandleOnConfirm();
   void HandleOnVisible();
 
-  KioskAutolaunchScreen* delegate_ = nullptr;
+  ash::KioskAutolaunchScreen* delegate_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
   bool is_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAutolaunchScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::KioskAutolaunchScreenHandler;
+using ::chromeos::KioskAutolaunchScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_KIOSK_AUTOLAUNCH_SCREEN_HANDLER_H_

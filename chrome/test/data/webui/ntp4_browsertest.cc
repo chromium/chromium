@@ -16,5 +16,6 @@ NTP4LoggedInWebUITest::~NTP4LoggedInWebUITest() {}
 void NTP4LoggedInWebUITest::SetLoginName(const std::string& name) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  signin::SetPrimaryAccount(identity_manager, name);
+  signin::SetPrimaryAccount(identity_manager, name,
+                            signin::ConsentLevel::kSync);
 }

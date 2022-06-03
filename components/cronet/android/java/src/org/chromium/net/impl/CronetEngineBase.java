@@ -54,13 +54,17 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
      * @param trafficStatsUid UID to attribute traffic used to perform this request.
      * @param requestFinishedListener callback to get invoked with metrics when request is finished.
      *        Set to {@code null} if not used.
+     * @param idempotency idempotency of the request which should be one of the
+     *         {@link ExperimentalUrlRequest.Builder#DEFAULT_IDEMPOTENCY IDEMPOTENT NOT_IDEMPOTENT}
+     *         values.
      * @return new request.
      */
     protected abstract UrlRequestBase createRequest(String url, UrlRequest.Callback callback,
             Executor executor, @RequestPriority int priority, Collection<Object> requestAnnotations,
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, @Nullable RequestFinishedInfo.Listener requestFinishedListener);
+            int trafficStatsUid, @Nullable RequestFinishedInfo.Listener requestFinishedListener,
+            @Idempotency int idempotency);
 
     /**
      * Creates a {@link BidirectionalStream} object. {@code callback} methods will
@@ -117,4 +121,10 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface StreamPriority {}
+
+    @IntDef({ExperimentalUrlRequest.Builder.DEFAULT_IDEMPOTENCY,
+            ExperimentalUrlRequest.Builder.IDEMPOTENT,
+            ExperimentalUrlRequest.Builder.NOT_IDEMPOTENT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Idempotency {}
 }

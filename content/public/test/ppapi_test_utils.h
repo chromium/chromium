@@ -37,12 +37,8 @@ bool RegisterTestPluginWithExtraParameters(
     const base::FilePath::StringType& extra_registration_parameters)
     WARN_UNUSED_RESULT;
 
-// Registers the Flash-imitating CORB-testing plugin.
+// Registers the PDF-imitating CORB-testing plugin.
 bool RegisterCorbTestPlugin(base::CommandLine* command_line) WARN_UNUSED_RESULT;
-
-// Registers the Flash-imitating Power-Saver-testing plugin.
-bool RegisterFlashTestPlugin(base::CommandLine* command_line)
-    WARN_UNUSED_RESULT;
 
 // Registers the Blink test plugin to application/x-blink-test-plugin.
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line)

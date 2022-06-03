@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that automapping works property when UISourceCodes come and go.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var foo_js = {content: 'console.log(\'foo.js!\');', time: new Date('December 1, 1989')};
 

@@ -4,7 +4,7 @@
 
 #include "ppapi/shared_impl/file_growth.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ppapi {
 

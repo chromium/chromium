@@ -25,6 +25,10 @@ class TestNetworkConnectionTracker : public NetworkConnectionTracker {
   // CreateInstance() must have been called before calling this.
   static TestNetworkConnectionTracker* GetInstance();
 
+  // Returns true if TestNetworkConnectionTracker instance already exists.
+  // It means that CreateInstance() was already called.
+  static bool HasInstance();
+
   // Creates a NetworkConnectionTrackerGetter that will return the active
   // TestNetworkConnectionTracker instance when called.
   static NetworkConnectionTrackerGetter CreateGetter();

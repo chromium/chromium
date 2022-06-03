@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner_host.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -25,7 +26,7 @@ XMLParserScriptRunner::~XMLParserScriptRunner() {
   DCHECK(!parser_blocking_script_);
 }
 
-void XMLParserScriptRunner::Trace(Visitor* visitor) {
+void XMLParserScriptRunner::Trace(Visitor* visitor) const {
   visitor->Trace(parser_blocking_script_);
   visitor->Trace(host_);
   PendingScriptClient::Trace(visitor);
@@ -46,7 +47,7 @@ void XMLParserScriptRunner::PendingScriptFinished(
 
   pending_script->StopWatchingForLoad();
 
-  CHECK_EQ(pending_script->GetScriptType(), mojom::ScriptType::kClassic);
+  CHECK_EQ(pending_script->GetScriptType(), mojom::blink::ScriptType::kClassic);
 
   // <spec label="Parsing" step="4">Execute the pending parsing-blocking
   // script.</spec>
@@ -76,14 +77,15 @@ void XMLParserScriptRunner::ProcessScriptElement(
   bool success = script_loader->PrepareScript(
       script_start_position, ScriptLoader::kAllowLegacyTypeInTypeAttribute);
 
-  if (script_loader->GetScriptType() != mojom::ScriptType::kClassic) {
+  if (script_loader->GetScriptType() ==
+      ScriptLoader::ScriptTypeAtPrepare::kModule) {
     // XMLDocumentParser does not support a module script, and thus ignores it.
     success = false;
-    document.AddConsoleMessage(
-        ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript,
-                               mojom::ConsoleMessageLevel::kError,
-                               "Module scripts in XML documents are currently "
-                               "not supported. See crbug.com/717643"));
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kError,
+        "Module scripts in XML documents are currently "
+        "not supported. See crbug.com/717643"));
   }
 
   if (!success)

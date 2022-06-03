@@ -1,21 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutButton BUTTON",
-          "rect": [3, 4, 56, 29],
-          "reason": "subtree"
-        },
-        {
-          "object": "InlineTextBox 'Reset'",
-          "rect": [16, 11, 30, 14],
-          "reason": "subtree"
-        }
+      "invalidations": [
+        [7, 7, 53, 23]
       ]
     }
   ]

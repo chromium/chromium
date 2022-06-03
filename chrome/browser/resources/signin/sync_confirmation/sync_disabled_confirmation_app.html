@@ -1,0 +1,41 @@
+<style include="signin-dialog-shared">
+  .container {
+    width: 100%;
+  }
+
+  .details {
+    padding: 0 24px;
+  }
+
+  #syncDisabledDetails {
+    line-height: 20px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    padding: 0 24px;
+  }
+</style>
+<!--
+  Use the 'consent-description' attribute to annotate all the UI elements
+  that are part of the text the user reads before consenting to the Sync
+  data collection . Similarly, use 'consent-confirmation' on UI elements on
+  which user clicks to indicate consent.
+-->
+<div class="container">
+  <div class="top-title-bar" consent-description>
+    $i18n{syncDisabledConfirmationTitle}
+  </div>
+  <div class="details" id="syncDisabledDetails">
+    <div class="body text" consent-description>
+      $i18n{syncDisabledConfirmationDetails}
+    </div>
+  </div>
+  <div class="action-container">
+    <cr-button class="action-button" id="confirmButton"
+        consent-confirmation on-click="onConfirm_">
+      $i18n{syncDisabledConfirmationConfirmLabel}
+    </cr-button>
+    <cr-button id="undoButton" on-click="onUndo_">
+      $i18n{syncDisabledConfirmationUndoLabel}
+    </cr-button>
+  </div>
+</div>

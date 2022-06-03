@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <title>Scroll example</title>
+    <style type="text/css">
+      ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+      }
+      body {
+        margin: 0;
+
+        position: fixed;
+        overflow: hidden;
+
+        width: 100%;
+        height: 100%;
+      }
+
+      .spage-body{
+        position: fixed;
+        overflow-y: auto;
+        width: 100%;
+        height: 100%
+      }
+
+      *,
+      ::after,
+      ::before {
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="spage-body">
+      <h1 style="margin-top: 100px">Heading</h1>
+
+      <p>
+        Test
+      </p>
+
+      <div style="height: 2000px">Spacer</div>
+    </div>
+    <script>
+      document.querySelector('.spage-body').scrollTop = 120;
+    </script>
+  </body>
+</html>

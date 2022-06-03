@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MANIFEST_MANIFEST_ICON_SELECTOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MANIFEST_MANIFEST_ICON_SELECTOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -16,6 +16,10 @@ namespace blink {
 // This follows very basic heuristics -- improvements are welcome.
 class BLINK_COMMON_EXPORT ManifestIconSelector {
  public:
+  ManifestIconSelector() = delete;
+  ManifestIconSelector(const ManifestIconSelector&) = delete;
+  ManifestIconSelector& operator=(const ManifestIconSelector&) = delete;
+
   // Runs the algorithm to find the best matching icon in the icons listed in
   // the Manifest. Size is defined in pixels.
   //
@@ -29,7 +33,7 @@ class BLINK_COMMON_EXPORT ManifestIconSelector {
       const std::vector<blink::Manifest::ImageResource>& icons,
       int ideal_icon_size_in_px,
       int minimum_icon_size_in_px,
-      blink::Manifest::ImageResource::Purpose purpose);
+      blink::mojom::ManifestImageResource_Purpose purpose);
 
   // Identical to FindBestMatchingSquareIcon, but finds landscape icons as well
   // as square icons.
@@ -38,10 +42,7 @@ class BLINK_COMMON_EXPORT ManifestIconSelector {
       int ideal_icon_height_in_px,
       int minimum_icon_height_in_px,
       float max_width_to_height_ratio,
-      blink::Manifest::ImageResource::Purpose purpose);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ManifestIconSelector);
+      blink::mojom::ManifestImageResource_Purpose purpose);
 };
 
 }  // namespace blink

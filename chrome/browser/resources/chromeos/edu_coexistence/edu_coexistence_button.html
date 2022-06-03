@@ -1,0 +1,20 @@
+
+<style>
+  .no-border {
+    border: 0;
+  }
+
+  .button-radius {
+    border-radius: 20px;
+  }
+</style>
+<cr-button class$="[[buttonClasses]]" on-tap="onTap_"
+    disabled="[[disabled]]">
+  <template is="dom-if" if="[[hasIconBeforeText_(buttonType)]]">
+    <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>
+  </template>
+  [[getDisplayName_(buttonType)]]
+  <template is="dom-if" if="[[hasIconAfterText_(buttonType)]]">
+    <iron-icon icon="[[getIcon_(buttonType)]]"></iron-icon>
+  </template>
+</cr-button>

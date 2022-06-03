@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCELERATOR_KEY_HOLD_DETECTOR_H_
-#define ASH_ACCELERATOR_KEY_HOLD_DETECTOR_H_
+#ifndef ASH_ACCELERATORS_KEY_HOLD_DETECTOR_H_
+#define ASH_ACCELERATORS_KEY_HOLD_DETECTOR_H_
 
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -44,6 +43,8 @@ class ASH_EXPORT KeyHoldDetector : public ui::EventHandler {
   };
 
   explicit KeyHoldDetector(std::unique_ptr<Delegate> delegate);
+  KeyHoldDetector(const KeyHoldDetector&) = delete;
+  KeyHoldDetector& operator=(const KeyHoldDetector&) = delete;
   ~KeyHoldDetector() override;
 
   // ui::EventHandler overrides:
@@ -63,10 +64,8 @@ class ASH_EXPORT KeyHoldDetector : public ui::EventHandler {
 
   State state_;
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyHoldDetector);
 };
 
 }  // namespace ash
 
-#endif  // ASH_ACCELERATOR_KEY_HOLD_DETECTOR_H_
+#endif  // ASH_ACCELERATORS_KEY_HOLD_DETECTOR_H_

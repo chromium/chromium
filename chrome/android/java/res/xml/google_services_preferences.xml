@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Note: If a synced pref is added/removed from this file, the method
+     |GetSyncedServicePrefNames| in
+     chrome/browser/unified_consent/unified_consent_service_factory.cc has to be
+     updated accordingly. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="allow_signin"
+        android:title="@string/allow_chrome_signin_title"
+        android:summary="@string/allow_chrome_signin_summary"
+        android:persistent="false"/>
+    <!-- Only shown when metrics-settings-android flag is on. -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="metrics_settings"
+        android:title="@string/manage_metrics_settings"
+        android:fragment="org.chromium.chrome.browser.metrics_settings.MetricsSettingsFragment"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="search_suggestions"
+        android:title="@string/autocomplete_searches_and_urls_title"
+        android:summary="@string/autocomplete_searches_and_urls_summary"
+        android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="usage_and_crash_reports"
+        android:title="@string/usage_and_crash_reports_title"
+        android:summary="@string/usage_and_crash_reports_summary"
+        android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="url_keyed_anonymized_data"
+        android:title="@string/url_keyed_anonymized_data_title"
+        android:summary="@string/url_keyed_anonymized_data_summary"
+        android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="autofill_assistant"
+        android:title="@string/prefs_autofill_assistant_title"
+        android:summary="@string/prefs_autofill_assistant_get_help_summary"
+        android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="autofill_assistant_subsection"
+        android:title="@string/prefs_autofill_assistant_title"
+        android:summary="@string/prefs_autofill_assistant_summary"
+        android:fragment="org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment"
+        app:isPreferenceVisible="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="contextual_search"
+        android:title="@string/contextual_search_title"
+        android:fragment="org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment"/>
+</PreferenceScreen>

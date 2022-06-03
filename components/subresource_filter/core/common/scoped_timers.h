@@ -13,13 +13,12 @@
 //
 // TODO(pkalinnikov): Consider moving this file to "base/metrics/".
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_TIMERS_
-#define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_TIMERS_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_TIMERS_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_TIMERS_H_
 
 #include <type_traits>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace subresource_filter {
@@ -79,6 +78,9 @@ class ScopedTimerImpl {
     return *this;
   }
 
+  ScopedTimerImpl(const ScopedTimerImpl&) = delete;
+  ScopedTimerImpl& operator=(const ScopedTimerImpl&) = delete;
+
   ~ScopedTimerImpl() {
     if (activated_)
       export_functor_(TimeProvider::Now() - construction_time_);
@@ -91,8 +93,6 @@ class ScopedTimerImpl {
   ExportFunctor export_functor_;
   TimeType construction_time_;
   bool activated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTimerImpl);
 };
 
 // TimeProvider implementations ------------------------------------------------
@@ -153,4 +153,4 @@ using ScopedThreadTimers =
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_TIMERS_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_SCOPED_TIMERS_H_

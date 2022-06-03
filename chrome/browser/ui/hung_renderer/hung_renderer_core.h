@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_HUNG_RENDERER_HUNG_RENDERER_CORE_H_
 #define CHROME_BROWSER_UI_HUNG_RENDERER_HUNG_RENDERER_CORE_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 namespace content {
 class RenderProcessHost;
@@ -24,7 +24,7 @@ std::vector<content::WebContents*> GetHungWebContentsList(
 // Given a RenderProcessHost of a hung process, and a WebContents that is
 // affected by it, returns the title of the WebContents that should be used in
 // the "Hung Page" dialog.
-base::string16 GetHungWebContentsTitle(
+std::u16string GetHungWebContentsTitle(
     content::WebContents* affected_web_contents,
     content::RenderProcessHost* hung_process);
 

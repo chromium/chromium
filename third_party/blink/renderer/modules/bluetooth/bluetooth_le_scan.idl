@@ -5,6 +5,7 @@
 // https://webbluetoothcg.github.io/web-bluetooth/scanning.html#bluetoothlescan
 
 [
+    Exposed=Window,
     RuntimeEnabled=WebBluetoothScanning,
     SecureContext
 ] interface BluetoothLEScan {

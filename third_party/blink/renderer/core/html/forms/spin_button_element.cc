@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 
-#include "build/build_config.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -47,13 +46,13 @@ SpinButtonElement::SpinButtonElement(Document& document,
     : HTMLDivElement(document),
       spin_button_owner_(&spin_button_owner),
       capturing_(false),
-      up_down_state_(kIndeterminate),
-      press_starting_state_(kIndeterminate),
+      up_down_state_(kDown),
+      press_starting_state_(kDown),
       repeating_timer_(document.GetTaskRunner(TaskType::kInternalDefault),
                        this,
                        &SpinButtonElement::RepeatingTimerFired) {
   SetShadowPseudoId(AtomicString("-webkit-inner-spin-button"));
-  setAttribute(html_names::kIdAttr, shadow_element_names::SpinButton());
+  setAttribute(html_names::kIdAttr, shadow_element_names::kIdSpinButton);
 }
 
 void SpinButtonElement::DetachLayoutTree(bool performing_reattach) {
@@ -62,7 +61,8 @@ void SpinButtonElement::DetachLayoutTree(bool performing_reattach) {
 }
 
 void SpinButtonElement::DefaultEventHandler(Event& event) {
-  if (!event.IsMouseEvent()) {
+  auto* mouse_event = DynamicTo<MouseEvent>(event);
+  if (!mouse_event) {
     if (!event.DefaultHandled())
       HTMLDivElement::DefaultEventHandler(event);
     return;
@@ -81,17 +81,14 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  auto& mouse_event = ToMouseEvent(event);
-  IntPoint local = RoundedIntPoint(box->AbsoluteToLocalFloatPoint(
-      FloatPoint(mouse_event.AbsoluteLocation())));
-  if (mouse_event.type() == event_type_names::kMousedown &&
-      mouse_event.button() ==
+  gfx::Point local = RoundedIntPoint(box->AbsoluteToLocalFloatPoint(
+      FloatPoint(mouse_event->AbsoluteLocation())));
+  if (mouse_event->type() == event_type_names::kMousedown &&
+      mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-    if (box->PixelSnappedBorderBoxRect().Contains(local)) {
       if (spin_button_owner_)
         spin_button_owner_->FocusAndSelectSpinButtonOwner();
       if (GetLayoutObject()) {
-        if (up_down_state_ != kIndeterminate) {
           // A JavaScript event handler called in doStepAction() below
           // might change the element state and we might need to
           // cancel the repeating timer by the state change. If we
@@ -99,7 +96,6 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
           // chance to cancel the timer.
           StartRepeatingTimer();
           DoStepAction(up_down_state_ == kUp ? 1 : -1);
-        }
       }
       // Check |GetLayoutObject| again to make sure element is not removed by
       // |DoStepAction|
@@ -113,21 +109,16 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
         }
       }
       event.SetDefaultHandled();
-    }
-  } else if (mouse_event.type() == event_type_names::kMouseup &&
-             mouse_event.button() ==
+  } else if (mouse_event->type() == event_type_names::kMouseup &&
+             mouse_event->button() ==
                  static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
     ReleaseCapture();
   } else if (event.type() == event_type_names::kMousemove) {
-    if (box->PixelSnappedBorderBoxRect().Contains(local)) {
       UpDownState old_up_down_state = up_down_state_;
-      up_down_state_ = (local.Y() < box->Size().Height() / 2) ? kUp : kDown;
-      if (up_down_state_ != old_up_down_state)
+      up_down_state_ = (local.y() < box->Size().Height() / 2) ? kUp : kDown;
+      if (up_down_state_ != old_up_down_state) {
         GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-    } else {
-      ReleaseCapture();
-      up_down_state_ = kIndeterminate;
-    }
+      }
   }
 
   if (!event.DefaultHandled())
@@ -136,7 +127,6 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
 
 void SpinButtonElement::WillOpenPopup() {
   ReleaseCapture();
-  up_down_state_ = kIndeterminate;
 }
 
 void SpinButtonElement::ForwardEvent(Event& event) {
@@ -152,11 +142,11 @@ void SpinButtonElement::ForwardEvent(Event& event) {
   if (!spin_button_owner_->ShouldSpinButtonRespondToWheelEvents())
     return;
 
-  DoStepAction(ToWheelEvent(event).wheelDeltaY());
+  DoStepAction(To<WheelEvent>(event).wheelDeltaY());
   event.SetDefaultHandled();
 }
 
-bool SpinButtonElement::WillRespondToMouseMoveEvents() {
+bool SpinButtonElement::WillRespondToMouseMoveEvents() const {
   if (GetLayoutBox() && ShouldRespondToMouseEvents())
     return true;
 
@@ -219,34 +209,21 @@ void SpinButtonElement::StopRepeatingTimer() {
 void SpinButtonElement::Step(int amount) {
   if (!ShouldRespondToMouseEvents())
     return;
-// On Mac OS, NSStepper updates the value for the button under the mouse
-// cursor regardless of the button pressed at the beginning. So the
-// following check is not needed for Mac OS.
-#if !defined(OS_MACOSX)
-  if (up_down_state_ != press_starting_state_)
-    return;
-#endif
   DoStepAction(amount);
 }
 
 void SpinButtonElement::RepeatingTimerFired(TimerBase*) {
-  if (up_down_state_ != kIndeterminate)
     Step(up_down_state_ == kUp ? 1 : -1);
 }
 
-void SpinButtonElement::SetHovered(bool hovered) {
-  if (!hovered)
-    up_down_state_ = kIndeterminate;
-  HTMLDivElement::SetHovered(hovered);
-}
-
-bool SpinButtonElement::ShouldRespondToMouseEvents() {
+bool SpinButtonElement::ShouldRespondToMouseEvents() const {
   return !spin_button_owner_ ||
          spin_button_owner_->ShouldSpinButtonRespondToMouseEvents();
 }
 
-void SpinButtonElement::Trace(Visitor* visitor) {
+void SpinButtonElement::Trace(Visitor* visitor) const {
   visitor->Trace(spin_button_owner_);
+  visitor->Trace(repeating_timer_);
   HTMLDivElement::Trace(visitor);
 }
 

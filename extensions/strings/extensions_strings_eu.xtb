@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Ezin izan da sortu ausazko RSA gako pribatua.</translation>
 <translation id="1445572445564823378">Luzapen hau <ph name="PRODUCT_NAME" /> moteltzen ari da. Hori desgaitzea gomendatzen dizugu <ph name="PRODUCT_NAME" />-ren errendimendua leheneratzeko..</translation>
 <translation id="1468038450257740950">WebGL ez da bateragarria.</translation>
-<translation id="149347756975725155">Ezin izan da kargatu "<ph name="ICON" />" luzapen-ikonoa.</translation>
 <translation id="1803557475693955505">Ezin izan da atzeko planoko orria ("<ph name="BACKGROUND_PAGE" />") kargatu.</translation>
 <translation id="2159915644201199628">Ezin izan da deskodetu irudia: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
@@ -29,7 +28,7 @@
 <translation id="4115165561519362854"><ph name="EXTENSION_NAME" /> luzapenaren bertsioak gutxienez <ph name="EXTENSION_VERSION" /> izatea behar du makinaren administratzaileak. Ezin da gaitu eguneratzen ez den arte (bertsio horretara edo berriago batera).</translation>
 <translation id="4233778200880751280">Ezin izan da "<ph name="ABOUT_PAGE" />" orria kargatu.</translation>
 <translation id="471800408830181311">Ezin izan da gako pribatua eman.</translation>
-<translation id="4811956658694082538">Ezin izan da paketea instalatu utilitate-prozesuak huts egin duelako. Berrabiarazi Chrome eta saiatu berriro.</translation>
+<translation id="4811956658694082538">Ezin izan da paketea instalatu zerbitzu-aplikazioaren prozesuak huts egin duelako. Berrabiarazi Chrome eta saiatu berriro.</translation>
 <translation id="4988792151665380515">Ezin izan da gako publikoa esportatu.</translation>
 <translation id="5026754133087629784">Web-ikuspegia: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Ezin da aurkitu bide absolutu bat paketatu nahi den direktoriorako.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Ezin izan da irakurri gako pribatua.</translation>
 <translation id="6391538222494443604">Sarrerako direktorioa falta da.</translation>
 <translation id="641087317769093025">Ezin izan da luzapena deskonprimatu</translation>
-<translation id="6413453408918378296">"<ph name="ICON" />" ikonoa ez da behar bezain ondo ikusten.</translation>
 <translation id="6542618148162044354">Gailu baterako edo gehiagotarako sarbidea eskatzen ari da "<ph name="APP_NAME" />" aplikazioa:</translation>
 <translation id="657064425229075395">Ezin izan da kargatu atzeko planoko "<ph name="BACKGROUND_SCRIPT" />" scripta.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_NAME" /> produktua (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>

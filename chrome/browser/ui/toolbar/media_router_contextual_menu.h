@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 #define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
@@ -29,12 +30,15 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   MediaRouterContextualMenu(Browser* browser,
                             bool shown_by_policy,
                             Observer* observer);
+
+  MediaRouterContextualMenu(const MediaRouterContextualMenu&) = delete;
+  MediaRouterContextualMenu& operator=(const MediaRouterContextualMenu&) =
+      delete;
+
   ~MediaRouterContextualMenu() override;
 
-  // Transfers the ownership of |menu_model_| to the caller.
-  std::unique_ptr<ui::SimpleMenuModel> TakeMenuModel();
-
-  ui::SimpleMenuModel* menu_model() { return menu_model_.get(); }
+  // Creates a menu model with |this| as its delegate.
+  std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaRouterContextualMenuUnitTest,
@@ -62,26 +66,20 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   void OnMenuWillShow(ui::SimpleMenuModel* source) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
-  // Toggles the enabled/disabled state of cloud services. This may show a
-  // dialog asking the user to acknowledge the Google Privacy Policy before
-  // enabling the services.
-  void ToggleCloudServices();
-
   // Toggles the preference to enable or disable media remoting.
   void ToggleMediaRemoting();
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Opens feedback page loaded from the media router extension.
   void ReportIssue();
+#endif
 
   Browser* const browser_;
-
   Observer* const observer_;
 
-  // TODO(takumif): |menu_model_| is required by MediaRouterAction but not by
-  // CastToolbarButton. Remove |menu_model_| when removing MediaRouterAction.
-  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterContextualMenu);
+  // Whether the Cast toolbar icon this context menu is shown for is shown by
+  // the administrator policy.
+  const bool shown_by_policy_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_

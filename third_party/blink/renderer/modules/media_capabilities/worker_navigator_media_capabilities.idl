@@ -6,7 +6,7 @@
 
 [
     Exposed=Worker,
-    ImplementedAs=WorkerNavigatorMediaCapabilities
+    ImplementedAs=MediaCapabilities
 ] partial interface WorkerNavigator {
     [SameObject] readonly attribute MediaCapabilities mediaCapabilities;
 };

@@ -55,3 +55,9 @@ struct AssistantExtra {
   gfx.mojom.Rect bounds_pixel;
   mojo_base.mojom.String16 title;
 };
+
+// Assistant structure, including Assistant tree and extra.
+struct AssistantStructure {
+  AssistantTree? assistant_tree;
+  AssistantExtra? assistant_extra;
+};

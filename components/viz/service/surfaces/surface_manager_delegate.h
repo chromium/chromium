@@ -17,6 +17,10 @@ class VIZ_SERVICE_EXPORT SurfaceManagerDelegate {
   // Returns the debug label associated with |frame_sink_id| if any.
   virtual base::StringPiece GetFrameSinkDebugLabel(
       const FrameSinkId& frame_sink_id) const = 0;
+
+  // Indicates that the set of frame sinks being aggregated for display has
+  // changed since the previous aggregation.
+  virtual void AggregatedFrameSinksChanged() = 0;
 };
 
 }  // namespace viz

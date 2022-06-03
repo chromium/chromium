@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
@@ -26,7 +27,7 @@ struct CachedImageFetcherRequest {
   // The url to be fetched.
   const GURL url;
 
-  const ImageFetcherParams params;
+  ImageFetcherParams params;
 
   // Analytic events below.
 
@@ -34,7 +35,7 @@ struct CachedImageFetcherRequest {
   bool cache_hit_before_network_request;
 
   // The start time of the fetch sequence.
-  const base::Time start_time;
+  base::Time start_time;
 };
 
 namespace {
@@ -108,8 +109,9 @@ void CachedImageFetcher::FetchImageAndData(
   ImageFetcherMetricsReporter::ReportEvent(request.params.uma_client_name(),
                                            ImageFetcherEvent::kImageRequest);
 
-  if (params.skip_disk_cache_read()) {
-    EnqueueFetchImageFromNetwork(request, std::move(image_data_callback),
+  if (request.params.skip_disk_cache_read()) {
+    EnqueueFetchImageFromNetwork(std::move(request),
+                                 std::move(image_data_callback),
                                  std::move(image_callback));
   } else {
     // First, try to load the image from the cache, then try the network.
@@ -151,8 +153,7 @@ void CachedImageFetcher::OnImageFetchedFromCache(
           image_data, gfx::Size(),
           base::BindOnce(&CachedImageFetcher::OnImageDecodedFromCache,
                          weak_ptr_factory_.GetWeakPtr(), std::move(request),
-                         std::move(image_data_callback),
-                         std::move(image_callback),
+                         ImageDataFetcherCallback(), std::move(image_callback),
                          cache_result_needs_transcoding));
     }
   }
@@ -165,15 +166,15 @@ void CachedImageFetcher::OnImageDecodedFromCache(
     bool cache_result_needs_transcoding,
     const gfx::Image& image) {
   if (image.IsEmpty()) {
+    ImageFetcherMetricsReporter::ReportEvent(
+        request.params.uma_client_name(),
+        ImageFetcherEvent::kCacheDecodingError);
+
     // Upon failure, fetch from the network.
     request.cache_hit_before_network_request = true;
     EnqueueFetchImageFromNetwork(std::move(request),
                                  std::move(image_data_callback),
                                  std::move(image_callback));
-
-    ImageFetcherMetricsReporter::ReportEvent(
-        request.params.uma_client_name(),
-        ImageFetcherEvent::kCacheDecodingError);
   } else {
     ImageCallbackIfPresent(std::move(image_callback), image, RequestMetadata());
     ImageFetcherMetricsReporter::ReportImageLoadFromCacheTime(
@@ -182,12 +183,12 @@ void CachedImageFetcher::OnImageDecodedFromCache(
     // If cache_result_needs_transcoding is true, then this should be stored
     // again to replace the image data already on disk with the transcoded data.
     if (cache_result_needs_transcoding) {
-      EncodeAndStoreData(/* cache_result_needs_transcoding */ true,
-                         /* is_image_data_transcoded */ true,
-                         std::move(request), image);
       ImageFetcherMetricsReporter::ReportEvent(
           request.params.uma_client_name(),
           ImageFetcherEvent::kImageQueuedForTranscodingDecoded);
+      EncodeAndStoreData(/* cache_result_needs_transcoding */ true,
+                         /* is_image_data_transcoded */ true,
+                         std::move(request), image);
     }
   }
 }
@@ -214,6 +215,7 @@ void CachedImageFetcher::FetchImageFromNetwork(
   ImageFetcherCallback wrapper_image_callback;
 
   bool skip_transcoding = request.params.skip_transcoding();
+  ImageFetcherParams params_copy(request.params);
   if (skip_transcoding) {
     wrapper_data_callback =
         base::BindOnce(&CachedImageFetcher::OnImageFetchedWithoutTranscoding,
@@ -223,8 +225,9 @@ void CachedImageFetcher::FetchImageFromNetwork(
     // Transcode the image when its downloaded from the network.
     // 1. Download the data.
     // 2. Decode the data to a gfx::Image in a utility process.
-    // 3. Encode the data as a PNG in the browser process using base::PostTask.
-    // 3. Cache the result.
+    // 3. Encode the data as a PNG in the browser process using
+    //    base::ThreadPool.
+    // 4. Cache the result.
     wrapper_data_callback = std::move(image_data_callback);
     wrapper_image_callback =
         base::BindOnce(&CachedImageFetcher::OnImageFetchedForTranscoding,
@@ -233,7 +236,7 @@ void CachedImageFetcher::FetchImageFromNetwork(
   }
   image_fetcher_->FetchImageAndData(url, std::move(wrapper_data_callback),
                                     std::move(wrapper_image_callback),
-                                    std::move(request.params));
+                                    std::move(params_copy));
 }
 
 void CachedImageFetcher::OnImageFetchedWithoutTranscoding(
@@ -290,7 +293,7 @@ void CachedImageFetcher::EncodeAndStoreData(bool cache_result_needs_transcoding,
   } else {
     std::string uma_client_name = request.params.uma_client_name();
     // Post a task to another thread to encode the image data downloaded.
-    base::PostTaskAndReplyWithResult(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&EncodeSkBitmapToPNG, uma_client_name, *bitmap),
         base::BindOnce(&CachedImageFetcher::StoreData,
@@ -326,7 +329,8 @@ void CachedImageFetcher::StoreData(bool cache_result_needs_transcoding,
     bool needs_transcoding = !is_image_data_transcoded &&
                              request.params.allow_needs_transcoding_file();
     image_cache_->SaveImage(std::move(url), std::move(image_data),
-                            /* needs_transcoding */ needs_transcoding);
+                            /* needs_transcoding */ needs_transcoding,
+                            request.params.expiration_interval());
   }
 }
 

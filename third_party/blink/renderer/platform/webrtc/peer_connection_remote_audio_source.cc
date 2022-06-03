@@ -4,9 +4,14 @@
 
 #include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
 
-#include "base/logging.h"
+#include <string>
+#include <utility>
+
+#include "base/check_op.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 
 namespace blink {
 
@@ -14,19 +19,26 @@ namespace {
 // Used as an identifier for the down-casters.
 void* const kPeerConnectionRemoteTrackIdentifier =
     const_cast<void**>(&kPeerConnectionRemoteTrackIdentifier);
+
+void SendLogMessage(const std::string& message) {
+  blink::WebRtcLogMessage("PCRAS::" + message);
+}
+
 }  // namespace
 
 PeerConnectionRemoteAudioTrack::PeerConnectionRemoteAudioTrack(
     scoped_refptr<webrtc::AudioTrackInterface> track_interface)
     : MediaStreamAudioTrack(false /* is_local_track */),
       track_interface_(std::move(track_interface)) {
-  DVLOG(1)
-      << "PeerConnectionRemoteAudioTrack::PeerConnectionRemoteAudioTrack()";
+  blink::WebRtcLogMessage(
+      base::StringPrintf("PCRAT::PeerConnectionRemoteAudioTrack({id=%s})",
+                         track_interface_->id().c_str()));
 }
 
 PeerConnectionRemoteAudioTrack::~PeerConnectionRemoteAudioTrack() {
-  DVLOG(1)
-      << "PeerConnectionRemoteAudioTrack::~PeerConnectionRemoteAudioTrack()";
+  blink::WebRtcLogMessage(
+      base::StringPrintf("PCRAT::~PeerConnectionRemoteAudioTrack([id=%s])",
+                         track_interface_->id().c_str()));
   // Ensure the track is stopped.
   MediaStreamAudioTrack::Stop();
 }
@@ -42,6 +54,9 @@ PeerConnectionRemoteAudioTrack* PeerConnectionRemoteAudioTrack::From(
 
 void PeerConnectionRemoteAudioTrack::SetEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  blink::WebRtcLogMessage(base::StringPrintf(
+      "PCRAT::SetEnabled([id=%s] {enabled=%s})", track_interface_->id().c_str(),
+      (enabled ? "true" : "false")));
 
   // This affects the shared state of the source for whether or not it's a part
   // of the mixed audio that's rendered for remote tracks from WebRTC.
@@ -67,13 +82,13 @@ PeerConnectionRemoteAudioSource::PeerConnectionRemoteAudioSource(
       track_interface_(std::move(track_interface)),
       is_sink_of_peer_connection_(false) {
   DCHECK(track_interface_);
-  DVLOG(1)
-      << "PeerConnectionRemoteAudioSource::PeerConnectionRemoteAudioSource()";
+  SendLogMessage(base::StringPrintf("PeerConnectionRemoteAudioSource([id=%s])",
+                                    track_interface_->id().c_str()));
 }
 
 PeerConnectionRemoteAudioSource::~PeerConnectionRemoteAudioSource() {
-  DVLOG(1)
-      << "PeerConnectionRemoteAudioSource::~PeerConnectionRemoteAudioSource()";
+  SendLogMessage(base::StringPrintf("~PeerConnectionRemoteAudioSource([id=%s])",
+                                    track_interface_->id().c_str()));
   EnsureSourceIsStopped();
 }
 
@@ -88,8 +103,8 @@ bool PeerConnectionRemoteAudioSource::EnsureSourceIsStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_sink_of_peer_connection_)
     return true;
-  VLOG(1) << "Starting PeerConnection remote audio source with id="
-          << track_interface_->id();
+  SendLogMessage(base::StringPrintf("EnsureSourceIsStarted([id=%s])",
+                                    track_interface_->id().c_str()));
   track_interface_->AddSink(this);
   is_sink_of_peer_connection_ = true;
   return true;
@@ -98,10 +113,10 @@ bool PeerConnectionRemoteAudioSource::EnsureSourceIsStarted() {
 void PeerConnectionRemoteAudioSource::EnsureSourceIsStopped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_sink_of_peer_connection_) {
+    SendLogMessage(base::StringPrintf("EnsureSourceIsStopped([id=%s])",
+                                      track_interface_->id().c_str()));
     track_interface_->RemoveSink(this);
     is_sink_of_peer_connection_ = false;
-    VLOG(1) << "Stopped PeerConnection remote audio source with id="
-            << track_interface_->id();
   }
 }
 
@@ -125,31 +140,35 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
   // TODO(tommi): We should get the timestamp from WebRTC.
   base::TimeTicks playout_time(base::TimeTicks::Now());
 
-  if (!audio_bus_ ||
-      static_cast<size_t>(audio_bus_->channels()) != number_of_channels ||
-      static_cast<size_t>(audio_bus_->frames()) != number_of_frames) {
-    audio_bus_ = media::AudioBus::Create(number_of_channels, number_of_frames);
+  int channels_int = base::checked_cast<int>(number_of_channels);
+  int frames_int = base::checked_cast<int>(number_of_frames);
+  if (!audio_bus_ || audio_bus_->channels() != channels_int ||
+      audio_bus_->frames() != frames_int) {
+    audio_bus_ = media::AudioBus::Create(channels_int, frames_int);
   }
 
-  audio_bus_->FromInterleaved(audio_data, number_of_frames,
-                              bits_per_sample / 8);
+  // Only 16 bits per sample is ever used. The FromInterleaved() call should
+  // be updated if that is no longer the case.
+  DCHECK_EQ(bits_per_sample, 16);
+  audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
+      reinterpret_cast<const int16_t*>(audio_data), frames_int);
 
   media::AudioParameters params = MediaStreamAudioSource::GetAudioParameters();
   if (!params.IsValid() ||
       params.format() != media::AudioParameters::AUDIO_PCM_LOW_LATENCY ||
-      static_cast<size_t>(params.channels()) != number_of_channels ||
+      params.channels() != channels_int ||
       params.sample_rate() != sample_rate ||
-      static_cast<size_t>(params.frames_per_buffer()) != number_of_frames) {
-    MediaStreamAudioSource::SetFormat(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::GuessChannelLayout(number_of_channels),
-                               sample_rate, number_of_frames));
+      params.frames_per_buffer() != frames_int) {
+    MediaStreamAudioSource::SetFormat(media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::GuessChannelLayout(channels_int), sample_rate, frames_int));
   }
 
   MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_, playout_time);
 
 #ifndef NDEBUG
-  single_audio_thread_guard_.Release();
+  if (is_only_thread_here)
+    single_audio_thread_guard_.Release();
 #endif
 }
 

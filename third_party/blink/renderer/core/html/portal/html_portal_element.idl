@@ -9,10 +9,8 @@ interface HTMLPortalElement : HTMLElement {
   [CEReactions, Reflect, URL] attribute USVString src;
   [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
 
-  [CallWith=ScriptState, RaisesException, Measure] Promise<void> activate(optional PortalActivateOptions options);
-  [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, DOMString targetOrigin,
-                                                                    optional sequence<object> transfer = []);
-  [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, optional WindowPostMessageOptions options);
+  [CallWith=ScriptState, RaisesException, Measure] Promise<void> activate(optional PortalActivateOptions options = {});
+  [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, optional PostMessageOptions options = {});
 
   attribute EventHandler onmessage;
   attribute EventHandler onmessageerror;

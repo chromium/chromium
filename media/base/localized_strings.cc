@@ -4,7 +4,6 @@
 
 #include "media/base/localized_strings.h"
 
-#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
@@ -21,9 +20,9 @@ std::string GetLocalizedStringUTF8(MessageId message_id) {
   return base::UTF16ToUTF8(GetLocalizedStringUTF16(message_id));
 }
 
-base::string16 GetLocalizedStringUTF16(MessageId message_id) {
+std::u16string GetLocalizedStringUTF16(MessageId message_id) {
   return g_localized_string_provider ? g_localized_string_provider(message_id)
-                                     : base::string16();
+                                     : std::u16string();
 }
 #endif
 

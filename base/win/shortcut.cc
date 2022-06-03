@@ -33,26 +33,32 @@ using Microsoft::WRL::ComPtr;
 void InitializeShortcutInterfaces(const wchar_t* shortcut,
                                   ComPtr<IShellLink>* i_shell_link,
                                   ComPtr<IPersistFile>* i_persist_file) {
-  i_shell_link->Reset();
+  // Reset in the inverse order of acquisition.
   i_persist_file->Reset();
+  i_shell_link->Reset();
+
+  ComPtr<IShellLink> shell_link;
   if (FAILED(::CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER,
-                                IID_PPV_ARGS(i_shell_link->GetAddressOf()))) ||
-      FAILED(i_shell_link->CopyTo(i_persist_file->GetAddressOf())) ||
-      (shortcut && FAILED((*i_persist_file)->Load(shortcut, STGM_READWRITE)))) {
-    i_shell_link->Reset();
-    i_persist_file->Reset();
+                                IID_PPV_ARGS(&shell_link)))) {
+    return;
   }
+  ComPtr<IPersistFile> persist_file;
+  if (FAILED(shell_link.As(&persist_file)))
+    return;
+  if (shortcut && FAILED(persist_file->Load(shortcut, STGM_READWRITE)))
+    return;
+  i_shell_link->Swap(shell_link);
+  i_persist_file->Swap(persist_file);
 }
 
 }  // namespace
 
-ShortcutProperties::ShortcutProperties()
-    : icon_index(-1), dual_mode(false), options(0U) {}
+ShortcutProperties::ShortcutProperties() = default;
 
 ShortcutProperties::ShortcutProperties(const ShortcutProperties& other) =
     default;
 
-ShortcutProperties::~ShortcutProperties() {}
+ShortcutProperties::~ShortcutProperties() = default;
 
 bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
                                 const ShortcutProperties& properties,
@@ -143,8 +149,7 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
        ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID) != 0;
   if (has_app_id || has_dual_mode || has_toast_activator_clsid) {
     ComPtr<IPropertyStore> property_store;
-    if (FAILED(i_shell_link.CopyTo(property_store.GetAddressOf())) ||
-        !property_store.Get())
+    if (FAILED(i_shell_link.As(&property_store)) || !property_store.Get())
       return false;
 
     if (has_app_id && !SetAppIdForPropertyStore(property_store.Get(),
@@ -212,7 +217,7 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
 
   ComPtr<IPersistFile> persist;
   // Query IShellLink for the IPersistFile interface.
-  if (FAILED(i_shell_link.CopyTo(persist.GetAddressOf())))
+  if (FAILED(i_shell_link.As(&persist)))
     return false;
 
   // Load the shell link.
@@ -262,7 +267,7 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
                  ShortcutProperties::PROPERTIES_DUAL_MODE |
                  ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID)) {
     ComPtr<IPropertyStore> property_store;
-    if (FAILED(i_shell_link.CopyTo(property_store.GetAddressOf())))
+    if (FAILED(i_shell_link.As(&property_store)))
       return false;
 
     if (options & ShortcutProperties::PROPERTIES_APP_ID) {

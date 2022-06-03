@@ -7,10 +7,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ash/assistant/assistant_client.h"
+#include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/assistant/assistant_context_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -31,6 +30,9 @@ class AssistantStructureWaiter {
  public:
   AssistantStructureWaiter() = default;
 
+  AssistantStructureWaiter(const AssistantStructureWaiter&) = delete;
+  AssistantStructureWaiter& operator=(const AssistantStructureWaiter&) = delete;
+
   void Wait() { loop_.Run(); }
 
   std::unique_ptr<ui::AssistantTree> take_structure() {
@@ -46,8 +48,6 @@ class AssistantStructureWaiter {
  private:
   std::unique_ptr<ui::AssistantTree> structure_;
   base::RunLoop loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantStructureWaiter);
 };
 
 }  // namespace
@@ -55,13 +55,18 @@ class AssistantStructureWaiter {
 class AssistantContextBrowserTest : public InProcessBrowserTest {
  public:
   AssistantContextBrowserTest() = default;
+
+  AssistantContextBrowserTest(const AssistantContextBrowserTest&) = delete;
+  AssistantContextBrowserTest& operator=(const AssistantContextBrowserTest&) =
+      delete;
+
   ~AssistantContextBrowserTest() override = default;
 
  protected:
   std::unique_ptr<ui::AssistantTree> GetAssistantStructure(
       const std::string& html) {
     GURL url("data:text/html," + html);
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
     AssistantStructureWaiter waiter;
@@ -72,9 +77,6 @@ class AssistantContextBrowserTest : public InProcessBrowserTest {
     waiter.Wait();
     return waiter.take_structure();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantContextBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantContextBrowserTest,
@@ -88,14 +90,18 @@ IN_PROC_BROWSER_TEST_F(AssistantContextBrowserTest,
   ui::AssistantNode* root = assistant_tree->nodes[0].get();
 
   ASSERT_EQ(root->children_indices.size(), 1ul);
-  ui::AssistantNode* child =
+  ui::AssistantNode* div =
       assistant_tree->nodes[root->children_indices[0]].get();
 
-  ui::AssistantNode* grad_child =
-      assistant_tree->nodes[child->children_indices[0]].get();
-  ASSERT_EQ(base::UTF16ToUTF8(grad_child->text), "Hello");
-  ASSERT_EQ(grad_child->rect.x(), 20);
-  ASSERT_EQ(grad_child->rect.y(), 20);
+  ui::AssistantNode* para =
+      assistant_tree->nodes[div->children_indices[0]].get();
+  EXPECT_TRUE(para->text.empty());
+  EXPECT_EQ(para->rect.x(), 20);
+  EXPECT_EQ(para->rect.y(), 20);
+
+  ui::AssistantNode* static_text =
+      assistant_tree->nodes[para->children_indices[0]].get();
+  ASSERT_EQ(base::UTF16ToUTF8(static_text->text), "Hello");
 }
 
 }  // namespace assistant

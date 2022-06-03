@@ -18,18 +18,24 @@ namespace viz {
 class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
  public:
   FakeCompositorFrameSinkClient();
+
+  FakeCompositorFrameSinkClient(const FakeCompositorFrameSinkClient&) = delete;
+  FakeCompositorFrameSinkClient& operator=(
+      const FakeCompositorFrameSinkClient&) = delete;
+
   ~FakeCompositorFrameSinkClient() override;
 
   mojo::PendingRemote<mojom::CompositorFrameSinkClient> BindInterfaceRemote();
 
   // mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const std::vector<ReturnedResource>& resources) override;
+      std::vector<ReturnedResource> resources) override;
   void OnBeginFrame(const BeginFrameArgs& args,
                     const FrameTimingDetailsMap& timing_details) override;
-  void ReclaimResources(
-      const std::vector<ReturnedResource>& resources) override;
+  void ReclaimResources(std::vector<ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   void clear_returned_resources() { returned_resources_.clear(); }
   const std::vector<ReturnedResource>& returned_resources() const {
@@ -37,13 +43,11 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
   }
 
  private:
-  void InsertResources(const std::vector<ReturnedResource>& resources);
+  void InsertResources(std::vector<ReturnedResource> resources);
 
   std::vector<ReturnedResource> returned_resources_;
 
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCompositorFrameSinkClient);
 };
 
 }  // namespace viz

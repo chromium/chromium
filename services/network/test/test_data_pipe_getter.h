@@ -22,6 +22,10 @@ class TestDataPipeGetter : public mojom::DataPipeGetter {
  public:
   TestDataPipeGetter(const std::string& string_to_write,
                      mojo::PendingReceiver<mojom::DataPipeGetter> receiver);
+
+  TestDataPipeGetter(const TestDataPipeGetter&) = delete;
+  TestDataPipeGetter& operator=(const TestDataPipeGetter&) = delete;
+
   ~TestDataPipeGetter() override;
 
   // If set to anything other than net::OK, won't bother to write the data.
@@ -52,8 +56,6 @@ class TestDataPipeGetter : public mojom::DataPipeGetter {
   // Must be below |pipe_|, so it's deleted first.
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
   size_t write_position_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataPipeGetter);
 };
 
 }  // namespace network

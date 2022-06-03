@@ -92,6 +92,14 @@ Polymer({
       value: false,
     },
 
+    // Whether or not non-digit pins are allowed.
+    // If allowNonDigit is false, any characters typed in the pin dialog
+    // will be swallowed.
+    allowNonDigit: {
+      type: Boolean,
+      value: false,
+    },
+
     hasError: Boolean,
 
     disabled: {
@@ -210,8 +218,20 @@ Polymer({
   /**
    * Transfers blur to the input element.
    */
-  blur: function() {
+  blur() {
     this.passwordElement_().blur();
+  },
+
+  /**
+   * Schedules a call to focusInputSynchronously().
+   * @param {number=} opt_selectionStart
+   * @param {number=} opt_selectionEnd
+   */
+  focusInput(opt_selectionStart, opt_selectionEnd) {
+    setTimeout(
+        () =>
+            this.focusInputSynchronously(opt_selectionStart, opt_selectionEnd),
+        0);
   },
 
   /**
@@ -221,19 +241,17 @@ Polymer({
    * @param {number=} opt_selectionStart
    * @param {number=} opt_selectionEnd
    */
-  focusInput: function(opt_selectionStart, opt_selectionEnd) {
-    setTimeout(function() {
-      this.passwordElement_().focus();
-      this.selectionStart_ = opt_selectionStart || 0;
-      this.selectionEnd_ = opt_selectionEnd || 0;
-    }.bind(this), 0);
+  focusInputSynchronously(opt_selectionStart, opt_selectionEnd) {
+    this.passwordElement_().focus();
+    this.selectionStart_ = opt_selectionStart || 0;
+    this.selectionEnd_ = opt_selectionEnd || 0;
   },
 
   /**
    * Transfers focus to the input. Called when a non button element on the
    * PIN button area is clicked to prevent focus from leaving the input.
    */
-  onRootTap_: function() {
+  onRootTap_() {
     // Focus the input and place the selected region to its exact previous
     // location, as this function will not be called by something that will also
     // modify the input value.
@@ -241,12 +259,12 @@ Polymer({
   },
 
   /** @private */
-  onFocus_: function() {
+  onFocus_() {
     this.focused_ = true;
   },
 
   /** @private */
-  onBlur_: function() {
+  onBlur_() {
     this.focused_ = false;
   },
 
@@ -255,7 +273,7 @@ Polymer({
    * @param {!Event} event The event object.
    * @private
    */
-  onNumberTap_: function(event) {
+  onNumberTap_(event) {
     const numberValue = event.target.getAttribute('value');
 
     // Add the number where the caret is, then update the selection range of the
@@ -269,13 +287,13 @@ Polymer({
     // button is tabbed into, it should keep focus, so users can use tab and
     // spacebar/return to enter their PIN.
     if (!receivedEventFromKeyboard(event)) {
-      this.focusInput(selectionStart + 1, selectionStart + 1);
+      this.focusInputSynchronously(selectionStart + 1, selectionStart + 1);
     }
     event.stopImmediatePropagation();
   },
 
   /** Fires a submit event with the current PIN value. */
-  firePinSubmitEvent_: function() {
+  firePinSubmitEvent_() {
     this.fire('submit', {pin: this.value});
   },
 
@@ -285,7 +303,7 @@ Polymer({
    * @param {string} value
    * @param {string} previous
    */
-  onPinValueChange_: function(value, previous) {
+  onPinValueChange_(value, previous) {
     if (this.passwordElement) {
       this.passwordElement.value = value;
     }
@@ -297,13 +315,13 @@ Polymer({
    * PIN value.
    * @private
    */
-  onPinClear_: function() {
+  onPinClear_() {
     // If the input is shown, clear the text based on the caret location or
     // selected region of the input element. If it is just a caret, remove the
     // character in front of the caret.
     let selectionStart = this.selectionStart_;
     const selectionEnd = this.selectionEnd_;
-    if (selectionStart == selectionEnd && selectionStart) {
+    if (selectionStart === selectionEnd && selectionStart) {
       selectionStart--;
     }
 
@@ -324,7 +342,7 @@ Polymer({
    * @param {!Event} event The event object.
    * @private
    */
-  onBackspaceTap_: function(event) {
+  onBackspaceTap_(event) {
     if (!receivedEventFromKeyboard(event)) {
       return;
     }
@@ -341,7 +359,7 @@ Polymer({
    * @param {!Event} event The event object.
    * @private
    */
-  onBackspacePointerDown_: function(event) {
+  onBackspacePointerDown_(event) {
     this.startAutoBackspaceId_ = setTimeout(function() {
       this.repeatBackspaceIntervalId_ =
           setInterval(this.onPinClear_.bind(this), REPEAT_BACKSPACE_DELAY_MS);
@@ -357,7 +375,7 @@ Polymer({
    * Helper function which clears the timer / interval ids and resets them.
    * @private
    */
-  clearAndReset_: function() {
+  clearAndReset_() {
     clearInterval(this.repeatBackspaceIntervalId_);
     this.repeatBackspaceIntervalId_ = 0;
     clearTimeout(this.startAutoBackspaceId_);
@@ -371,7 +389,7 @@ Polymer({
    * @param {!Event} event The event object.
    * @private
    */
-  onBackspacePointerUp_: function(event) {
+  onBackspacePointerUp_(event) {
     // If an interval has started, do not fire event on pointer up.
     if (!this.repeatBackspaceIntervalId_) {
       this.onPinClear_();
@@ -391,11 +409,16 @@ Polymer({
 
   /**
    * Helper function to check whether a given |event| should be processed by
-   * the numeric only input.
+   * the input.
    * @param {Event} event The event object.
    * @private
    */
-  isValidEventForInput_: function(event) {
+  isValidEventForInput_(event) {
+    // Valid if the key is a non-digit and allowNonDigit is enabled.
+    if (this.allowNonDigit) {
+      return true;
+    }
+
     // Valid if the key is a number, and shift is not pressed.
     if ((event.keyCode >= 48 && event.keyCode <= 57) && !event.shiftKey) {
       return true;
@@ -409,7 +432,18 @@ Polymer({
 
     // Valid if the key is CTRL+A to allow users to quickly select the entire
     // PIN.
-    if (event.keyCode == 65 && event.ctrlKey) {
+    if (event.keyCode === 65 && event.ctrlKey) {
+      return true;
+    }
+
+    // Valid if the key is CTRL+-, CTRL+=, or CTRL+0 to zoom in, zoom out, and
+    // zoom reset the screen.
+    if (event.ctrlKey && [48, 187, 189].includes(event.keyCode)) {
+      return true;
+    }
+
+    // Valid for the ChromeVox combination.
+    if (event.ctrlKey && event.altKey && event.key === 'z') {
       return true;
     }
 
@@ -422,25 +456,27 @@ Polymer({
    * @param {Event} event The event object.
    * @private
    */
-  onInputKeyDown_: function(event) {
+  onInputKeyDown_(event) {
     // Up/down pressed, swallow the event to prevent the input value from
     // being incremented or decremented.
-    if (event.keyCode == 38 || event.keyCode == 40) {
+    if (event.keyCode === 38 || event.keyCode === 40) {
       event.preventDefault();
       return;
     }
 
     // Enter pressed.
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
       this.firePinSubmitEvent_();
       event.preventDefault();
       return;
     }
 
-    // Do not pass events that are not numbers or special keys we care about. We
-    // use this instead of input type number because there are several issues
-    // with input type number, such as no selectionStart/selectionEnd and
-    // entered non numbers causes the caret to jump to the left.
+    // If only digits are allowed in the pin input (allowNonDigit is set to
+    // false), then do not pass events that are not numbers or special keys we
+    // care about. We use this instead of input type number because there are
+    // several issues with input type number, such as no
+    // selectionStart/selectionEnd and entered non numbers causes the caret to
+    // jump to the left.
     if (!this.isValidEventForInput_(event)) {
       event.preventDefault();
       return;
@@ -451,7 +487,7 @@ Polymer({
    * Indicates if something is entered.
    * @private
    */
-  hasInput_: function(value) {
+  hasInput_(value) {
     return value.length > 0;
   },
 
@@ -459,7 +495,7 @@ Polymer({
    * Determines if the pin input should be contrasted.
    * @private
    */
-  hasInputOrFocus_: function(value, focused) {
+  hasInputOrFocus_(value, focused) {
     return this.hasInput_(value) || focused;
   },
 
@@ -469,7 +505,7 @@ Polymer({
    * @param {boolean} enablePlaceholder
    * @private
    */
-  getInputPlaceholder_: function(enablePassword, enablePlaceholder) {
+  getInputPlaceholder_(enablePassword, enablePlaceholder) {
     if (!enablePlaceholder) {
       return '';
     }
@@ -483,7 +519,7 @@ Polymer({
    * @param {string} password
    * @private
    */
-  isInputRtl_: function(password) {
+  isInputRtl_(password) {
     // +password will convert a string to a number or to NaN if that's not
     // possible. Number.isInteger will verify the value is not a NaN and that it
     // does not contain decimals.
@@ -492,14 +528,14 @@ Polymer({
     // Since we still support users entering their passwords through the PIN
     // keyboard, we swap the input box to rtl when we think it is a password
     // (just numbers), if the document direction is rtl.
-    return (document.dir == 'rtl') && !Number.isInteger(+password);
+    return (document.dir === 'rtl') && !Number.isInteger(+password);
   },
 
   /**
    * @param {!MouseEvent} e
    * @private
    */
-  onBackspaceContextMenu_: function(e) {
+  onBackspaceContextMenu_(e) {
     // Note: If e.which is 0, this represents "no button" (i.e., a long-press).
     // If this event was triggered by another value (e.g., right click - 3),
     // return early and allow the context menu to be shown.
@@ -518,7 +554,7 @@ Polymer({
    * @return {!HTMLElement} Returns the native input element of |pinInput|.
    * @private
    */
-  passwordElement_: function() {
+  passwordElement_() {
     // |passwordElement| is null by default. It can be set to override the
     // input field that will be populated with the keypad.
     return this.passwordElement ||

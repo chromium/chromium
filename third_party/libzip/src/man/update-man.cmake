@@ -1,0 +1,7 @@
+# expect variables IN, OUT, and DIR
+EXECUTE_PROCESS(COMMAND mandoc -T man ${DIR}/${IN} OUTPUT_VARIABLE MAN)
+STRING(REGEX REPLACE "NetBSD [0-9.]*" "NiH" MAN "${MAN}")
+FILE(WRITE ${DIR}/${OUT}.new "${MAN}")
+CONFIGURE_FILE(${DIR}/${OUT}.new ${DIR}/${OUT} COPYONLY)
+FILE(REMOVE ${DIR}/${OUT}.new)
+

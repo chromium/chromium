@@ -1,0 +1,18 @@
+<!--
+@WIN-ALLOW:ia2_hypertext=*
+@WAIT-FOR:done
+-->
+<body>
+</body>
+<script>
+  const iframe = document.createElement('iframe');
+  iframe.onload = () => {
+    iframe.onload = () => {
+      setTimeout(() => { document.title = 'done' }, 99);
+    };
+    iframe.srcdoc = '';
+  };
+  iframe.srcdoc = '<a href="/">link inside iframe</a>';
+  document.body.appendChild(iframe);
+</script>
+

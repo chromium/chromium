@@ -1,5 +1,5 @@
 // META: title=Cookie Store API: cookiechange event in ServiceWorker with single subscription
-// META: global=!default,serviceworker
+// META: global=serviceworker
 
 'use strict';
 
@@ -18,9 +18,7 @@ const kCookieChangeReceivedPromise = new Promise(resolve => {
 promise_test(async testCase => {
   await kServiceWorkerActivatedPromise;
 
-  const subscriptions = [
-    { name: 'cookie-name', matchType: 'equals', url: `${kScope}/path` },
-  ];
+  const subscriptions = [{ name: 'cookie-name', url: `${kScope}/path` }];
   await registration.cookies.subscribe(subscriptions);
   testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
 

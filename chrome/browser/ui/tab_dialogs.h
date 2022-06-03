@@ -13,7 +13,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
-class Profile;
 
 namespace content {
 class RenderWidgetHost;
@@ -54,8 +53,8 @@ class TabDialogs : public base::SupportsUserData::Data {
   // Shows a dialog asking the user to confirm linking to a managed account.
   virtual void ShowProfileSigninConfirmation(
       Browser* browser,
-      Profile* profile,
       const std::string& username,
+      bool prompt_for_new_profile,
       std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) = 0;
 
   // Shows or hides the ManagePasswords bubble.

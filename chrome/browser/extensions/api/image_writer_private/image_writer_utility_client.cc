@@ -4,16 +4,18 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/sandbox_type.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -44,6 +46,11 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
                        image_writer_utility_client_));
   }
 
+  RemovableStorageWriterClientImpl(const RemovableStorageWriterClientImpl&) =
+      delete;
+  RemovableStorageWriterClientImpl& operator=(
+      const RemovableStorageWriterClientImpl&) = delete;
+
   ~RemovableStorageWriterClientImpl() override = default;
 
  private:
@@ -51,7 +58,7 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
     image_writer_utility_client_->OperationProgress(progress);
   }
 
-  void Complete(const base::Optional<std::string>& error) override {
+  void Complete(const absl::optional<std::string>& error) override {
     if (error) {
       image_writer_utility_client_->OperationFailed(error.value());
     } else {
@@ -63,8 +70,6 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
 
   // |image_writer_utility_client_| owns |this|.
   ImageWriterUtilityClient* const image_writer_utility_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovableStorageWriterClientImpl);
 };
 
 ImageWriterUtilityClient::ImageWriterUtilityClient(
@@ -93,17 +98,17 @@ void ImageWriterUtilityClient::SetFactoryForTesting(
   g_factory_for_testing = factory;
 }
 
-void ImageWriterUtilityClient::Write(const ProgressCallback& progress_callback,
-                                     const SuccessCallback& success_callback,
-                                     const ErrorCallback& error_callback,
+void ImageWriterUtilityClient::Write(ProgressCallback progress_callback,
+                                     SuccessCallback success_callback,
+                                     ErrorCallback error_callback,
                                      const base::FilePath& source,
                                      const base::FilePath& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!removable_storage_writer_client_);
 
-  progress_callback_ = progress_callback;
-  success_callback_ = success_callback;
-  error_callback_ = error_callback;
+  progress_callback_ = std::move(progress_callback);
+  success_callback_ = std::move(success_callback);
+  error_callback_ = std::move(error_callback);
 
   BindServiceIfNeeded();
 
@@ -115,17 +120,17 @@ void ImageWriterUtilityClient::Write(const ProgressCallback& progress_callback,
   removable_storage_writer_->Write(source, target, std::move(remote_client));
 }
 
-void ImageWriterUtilityClient::Verify(const ProgressCallback& progress_callback,
-                                      const SuccessCallback& success_callback,
-                                      const ErrorCallback& error_callback,
+void ImageWriterUtilityClient::Verify(ProgressCallback progress_callback,
+                                      SuccessCallback success_callback,
+                                      ErrorCallback error_callback,
                                       const base::FilePath& source,
                                       const base::FilePath& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!removable_storage_writer_client_);
 
-  progress_callback_ = progress_callback;
-  success_callback_ = success_callback;
-  error_callback_ = error_callback;
+  progress_callback_ = std::move(progress_callback);
+  success_callback_ = std::move(success_callback);
+  error_callback_ = std::move(error_callback);
 
   BindServiceIfNeeded();
 
@@ -137,12 +142,13 @@ void ImageWriterUtilityClient::Verify(const ProgressCallback& progress_callback,
   removable_storage_writer_->Verify(source, target, std::move(remote_client));
 }
 
-void ImageWriterUtilityClient::Cancel(const CancelCallback& cancel_callback) {
+void ImageWriterUtilityClient::Cancel(CancelCallback cancel_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(cancel_callback);
 
   ResetRequest();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, cancel_callback);
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(cancel_callback));
 }
 
 void ImageWriterUtilityClient::Shutdown() {
@@ -158,17 +164,10 @@ void ImageWriterUtilityClient::BindServiceIfNeeded() {
   if (removable_storage_writer_)
     return;
 
-#if defined(OS_WIN)
-  constexpr auto kSandboxType =
-      service_manager::SandboxType::kNoSandboxAndElevatedPrivileges;
-#else
-  constexpr auto kSandboxType = service_manager::SandboxType::kNoSandbox;
-#endif
   content::ServiceProcessHost::Launch(
       removable_storage_writer_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_IMAGE_WRITER_NAME)
-          .WithSandboxType(kSandboxType)
           .Pass());
   removable_storage_writer_.set_disconnect_handler(
       base::BindOnce(&ImageWriterUtilityClient::OnConnectionError, this));
@@ -188,17 +187,17 @@ void ImageWriterUtilityClient::OperationProgress(int64_t progress) {
 }
 
 void ImageWriterUtilityClient::OperationSucceeded() {
-  SuccessCallback success_callback = success_callback_;
+  SuccessCallback success_callback = std::move(success_callback_);
   ResetRequest();
   if (success_callback)
-    success_callback.Run();
+    std::move(success_callback).Run();
 }
 
 void ImageWriterUtilityClient::OperationFailed(const std::string& error) {
-  ErrorCallback error_callback = error_callback_;
+  ErrorCallback error_callback = std::move(error_callback_);
   ResetRequest();
   if (error_callback)
-    error_callback.Run(error);
+    std::move(error_callback).Run(error);
 }
 
 void ImageWriterUtilityClient::ResetRequest() {

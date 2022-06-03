@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -48,7 +47,7 @@ class CONTENT_EXPORT BluetoothScanningPrompt {
   // false.
   virtual void AddOrUpdateDevice(const std::string& device_id,
                                  bool should_update_name,
-                                 const base::string16& device_name) {}
+                                 const std::u16string& device_name) {}
 };
 
 }  // namespace content

@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "media/base/audio_bus.h"
@@ -21,6 +21,7 @@
 #include "services/audio/test/fake_consumer.h"
 #include "services/audio/test/fake_loopback_group_member.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 namespace {
@@ -35,13 +36,12 @@ constexpr double kRightChannelFrequency = 1200.0;
 constexpr double kSourceVolume = 0.5;
 
 // The duration of the audio that flows through the SnooperNode for each test.
-constexpr base::TimeDelta kTestDuration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTestDuration = base::Seconds(10);
 
 // The amount of time in the future where the inbound audio is being recorded.
 // This simulates an audio output stream that has rendered audio that is
 // scheduled to be played out in the near future.
-constexpr base::TimeDelta kInputAdvanceTime =
-    base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kInputAdvanceTime = base::Milliseconds(2);
 
 // Command-line switch to request dumping the recorded output to a WAV file for
 // analyzing the recorded output from one of the tests.
@@ -87,8 +87,7 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     // be rendered. Use 20 ms as a reasonable baseline--the same as the initial
     // setting in audio::LoopbackStream--which will work for almost all normal
     // use cases.
-    constexpr base::TimeDelta kBaselineOutputDelay =
-        base::TimeDelta::FromMilliseconds(20);
+    constexpr base::TimeDelta kBaselineOutputDelay = base::Milliseconds(20);
     output_delay_ = kBaselineOutputDelay;
 
     // Increase the output delay in special cases...
@@ -129,8 +128,7 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     // Initialize a test clock and task runner. The starting TimeTicks value is
     // "huge" to ensure time calculations are being tested for overflow cases.
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
-        base::Time(), base::TimeTicks() +
-                          base::TimeDelta::FromMicroseconds(INT64_C(1) << 62));
+        base::Time(), base::TimeTicks() + base::Microseconds(INT64_C(1) << 62));
   }
 
   void TearDown() override {
@@ -221,7 +219,7 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     // |bus|. Don't do this check if there is already a test failure, and this
     // would just keep spamming the test output.
     if (!HasFailure()) {
-      const base::Optional<base::TimeTicks> suggestion =
+      const absl::optional<base::TimeTicks> suggestion =
           node_->SuggestLatestRenderTime(bus->frames());
       if (suggestion) {
         EXPECT_LE(output_time, *suggestion)
@@ -248,7 +246,7 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     const double time_step = skew / input_params().sample_rate();
     for (int position = 0;; position += input_params().frames_per_buffer()) {
       const base::TimeTicks task_time =
-          start_time + base::TimeDelta::FromSecondsD(position * time_step);
+          start_time + base::Seconds(position * time_step);
       if (task_time >= end_time) {
         break;
       }
@@ -269,7 +267,7 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     const double time_step = skew / output_params().sample_rate();
     for (int position = 0;; position += output_params().frames_per_buffer()) {
       const base::TimeTicks task_time =
-          start_time + base::TimeDelta::FromSecondsD(position * time_step);
+          start_time + base::Seconds(position * time_step);
       if (task_time >= end_time) {
         break;
       }
@@ -295,9 +293,9 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
   double max_relative_error_ = 0.0;
 
   // The pipeline from source to consumer.
-  base::Optional<FakeLoopbackGroupMember> group_member_;
-  base::Optional<SnooperNode> node_;
-  base::Optional<FakeConsumer> consumer_;
+  absl::optional<FakeLoopbackGroupMember> group_member_;
+  absl::optional<SnooperNode> node_;
+  absl::optional<FakeConsumer> consumer_;
 };
 
 // The skew test here is generating 10 seconds of audio per iteration, with
@@ -335,7 +333,8 @@ TEST_P(SnooperNodeTest, MAYBE_ContinuousAudioFlowAdaptsToSkew) {
            (output_skew * output_delay().InSecondsF())) *
           output_params().sample_rate();
       const double frames_in_one_millisecond =
-          output_params().sample_rate() / 1000.0;
+          output_params().sample_rate() /
+          double{base::Time::kMillisecondsPerSecond};
       EXPECT_NEAR(expected_end_of_silence_position,
                   consumer()->FindEndOfSilence(0, 0),
                   frames_in_one_millisecond);
@@ -393,7 +392,7 @@ TEST_P(SnooperNodeTest, HandlesMissingInput) {
       next_drop_position += input_frames_in_one_second;
     }
     const base::TimeTicks task_time =
-        start_time + base::TimeDelta::FromSecondsD(position * time_step);
+        start_time + base::Seconds(position * time_step);
     if (task_time >= end_time) {
       break;
     }
@@ -415,7 +414,7 @@ TEST_P(SnooperNodeTest, HandlesMissingInput) {
   const int output_frames_in_one_second = output_params().sample_rate();
   const int output_frames_in_a_quarter_second = output_frames_in_one_second / 4;
   const int output_frames_in_20_milliseconds =
-      output_frames_in_one_second * 20 / 1000;
+      output_frames_in_one_second * 20 / base::Time::kMillisecondsPerSecond;
   int output_silence_position =
       ((kInputAdvanceTime + output_delay()).InSecondsF() + 1.0) *
       output_params().sample_rate();
@@ -486,7 +485,7 @@ TEST_P(SnooperNodeTest, HandlesBackwardsInput) {
   int position_offset = 0;
   for (int position = 0;; position += input_params().frames_per_buffer()) {
     const base::TimeTicks task_time =
-        start_time + base::TimeDelta::FromSecondsD(position * time_step);
+        start_time + base::Seconds(position * time_step);
     if (task_time >= end_time) {
       break;
     }
@@ -508,7 +507,7 @@ TEST_P(SnooperNodeTest, HandlesBackwardsInput) {
     }
     const base::TimeTicks reference_time =
         start_time + kInputAdvanceTime +
-        base::TimeDelta::FromSecondsD((position + position_offset) * time_step);
+        base::Seconds((position + position_offset) * time_step);
     task_runner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FakeLoopbackGroupMember::RenderMoreAudio,
@@ -556,8 +555,7 @@ TEST_P(SnooperNodeTest, HandlesBackwardsInput) {
 // Tests that reasonable render times are suggested as audio is feeding into, or
 // not feeding into, the SnooperNode.
 TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
-  constexpr base::TimeDelta kTwentyMilliseconds =
-      base::TimeDelta::FromMilliseconds(20);
+  constexpr base::TimeDelta kTwentyMilliseconds = base::Milliseconds(20);
 
   CreateNewPipeline();
 
@@ -572,10 +570,10 @@ TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
   // further details.) The suggestion should also not be too far in the past.
   const base::TimeTicks first_input_time = task_runner()->NowTicks();
   group_member()->RenderMoreAudio(first_input_time);
-  const base::Optional<base::TimeTicks> first_suggestion =
+  const absl::optional<base::TimeTicks> first_suggestion =
       node()->SuggestLatestRenderTime(output_params().frames_per_buffer());
   ASSERT_TRUE(first_suggestion);
-  const base::TimeTicks time_at_end_of_input =
+  base::TimeTicks time_at_end_of_input =
       first_input_time + input_params().GetBufferDuration();
   const base::TimeDelta required_duration_buffered =
       output_params().GetBufferDuration() * 3 / 2;
@@ -597,15 +595,13 @@ TEST_P(SnooperNodeTest, SuggestsRenderTimes) {
   for (int i = 1; i <= 3; ++i) {
     const base::TimeTicks next_input_time =
         first_input_time +
-        base::TimeDelta::FromSecondsD(
-            i * input_params().frames_per_buffer() /
-            static_cast<double>(input_params().sample_rate()));
+        base::Seconds(i * input_params().frames_per_buffer() /
+                      static_cast<double>(input_params().sample_rate()));
     group_member()->RenderMoreAudio(next_input_time);
-    const base::Optional<base::TimeTicks> next_suggestion =
+    const absl::optional<base::TimeTicks> next_suggestion =
         node()->SuggestLatestRenderTime(output_params().frames_per_buffer());
     ASSERT_TRUE(next_suggestion);
-    const base::TimeTicks time_at_end_of_input =
-        next_input_time + input_params().GetBufferDuration();
+    time_at_end_of_input = next_input_time + input_params().GetBufferDuration();
     EXPECT_GT(time_at_end_of_input - required_duration_buffered,
               *next_suggestion);
     EXPECT_LT(
@@ -623,7 +619,7 @@ double MapTimeOffsetToATone(base::TimeDelta offset) {
   constexpr double kMaxFrequency = 2000;
   constexpr int kNumToneSteps = 10;
 
-  const int64_t step_number = offset / (kTestDuration / kNumToneSteps);
+  const int64_t step_number = offset.IntDiv(kTestDuration / kNumToneSteps);
   const double t = static_cast<double>(step_number) / kNumToneSteps;
   return kMinFrequency + t * (kMaxFrequency - kMinFrequency);
 }
@@ -633,8 +629,7 @@ double MapTimeOffsetToATone(base::TimeDelta offset) {
 // Tests that the SnooperNode can be asked to seek (forward or backward) its
 // Render() positions, as the needs of the system demand.
 TEST_P(SnooperNodeTest, HandlesSeekedRenderTimes) {
-  constexpr base::TimeDelta kQuarterSecond =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kQuarterSecond = base::Milliseconds(250);
 
   CreateNewPipeline();
 
@@ -646,7 +641,7 @@ TEST_P(SnooperNodeTest, HandlesSeekedRenderTimes) {
   double time_step = 1.0 / input_params().sample_rate();
   for (int position = 0;; position += input_params().frames_per_buffer()) {
     const base::TimeTicks task_time =
-        start_time + base::TimeDelta::FromSecondsD(position * time_step);
+        start_time + base::Seconds(position * time_step);
     if (task_time >= end_time) {
       break;
     }
@@ -671,7 +666,7 @@ TEST_P(SnooperNodeTest, HandlesSeekedRenderTimes) {
   time_step = 1.0 / output_params().sample_rate();
   for (int position = 0;; position += output_params().frames_per_buffer()) {
     const base::TimeTicks task_time =
-        start_time + base::TimeDelta::FromSecondsD(position * time_step);
+        start_time + base::Seconds(position * time_step);
     if (task_time >= end_time) {
       break;
     }

@@ -7,13 +7,14 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/crostini/crostini_features.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -33,7 +34,7 @@ bool g_crostini_update_filesystem_should_show = false;
 // The time to delay before showing the upgrade container dialog (to decrease
 // flashiness).
 constexpr base::TimeDelta kDelayBeforeUpgradeContainerDialog =
-    base::TimeDelta::FromMilliseconds(400);
+    base::Milliseconds(400);
 
 constexpr char kCrostiniUpgradeContainerSourceHistogram[] =
     "Crostini.UpgradeContainerSource";
@@ -52,7 +53,7 @@ void PrepareShowCrostiniUpdateFilesystemView(
 
   base::TimeDelta delay =
       g_crostini_update_filesystem_should_skip_delay_for_testing
-          ? base::TimeDelta::FromMilliseconds(0)
+          ? base::Milliseconds(0)
           : kDelayBeforeUpgradeContainerDialog;
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -80,7 +81,10 @@ void CloseCrostiniUpdateFilesystemView() {
 }  // namespace crostini
 
 void CrostiniUpdateFilesystemView::Show(Profile* profile) {
-  DCHECK(crostini::CrostiniFeatures::Get()->IsUIAllowed(profile));
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+    return;
+  }
+
   if (!g_crostini_update_filesystem_view_dialog) {
     g_crostini_update_filesystem_view_dialog =
         new CrostiniUpdateFilesystemView();
@@ -88,25 +92,6 @@ void CrostiniUpdateFilesystemView::Show(Profile* profile) {
                        nullptr);
   }
   g_crostini_update_filesystem_view_dialog->GetWidget()->Show();
-}
-
-int CrostiniUpdateFilesystemView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
-}
-
-base::string16 CrostiniUpdateFilesystemView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_CROSTINI_UPGRADING_LABEL);
-}
-
-bool CrostiniUpdateFilesystemView::ShouldShowCloseButton() const {
-  return false;
-}
-
-gfx::Size CrostiniUpdateFilesystemView::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
 }
 
 // static
@@ -118,13 +103,20 @@ CrostiniUpdateFilesystemView::GetActiveViewForTesting() {
 CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
   constexpr int kDialogSpacingVertical = 32;
 
+  SetShowCloseButton(false);
+  SetTitle(IDS_CROSTINI_UPGRADING_LABEL);
+  SetButtons(ui::DIALOG_BUTTON_OK);
+
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
+
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       kDialogSpacingVertical));
 
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_CROSTINI_UPGRADING_SUBTEXT);
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
@@ -138,3 +130,6 @@ CrostiniUpdateFilesystemView::CrostiniUpdateFilesystemView() {
 CrostiniUpdateFilesystemView::~CrostiniUpdateFilesystemView() {
   g_crostini_update_filesystem_view_dialog = nullptr;
 }
+
+BEGIN_METADATA(CrostiniUpdateFilesystemView, views::BubbleDialogDelegateView)
+END_METADATA

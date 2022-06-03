@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
 #define COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
+#include "base/callback.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/event.h"
 
 namespace gfx {
 class Range;
@@ -24,11 +26,16 @@ namespace arc {
 // Chromium and the ARC container.
 class ArcImeBridge {
  public:
+  ArcImeBridge(const ArcImeBridge&) = delete;
+  ArcImeBridge& operator=(const ArcImeBridge&) = delete;
+
   virtual ~ArcImeBridge() {}
 
   // Received IPCs are deserialized and passed to this delegate.
   class Delegate {
    public:
+    using KeyEventDoneCallback = base::OnceCallback<void(bool)>;
+
     virtual void OnTextInputTypeChanged(ui::TextInputType type,
                                         bool is_personalized_learning_allowed,
                                         int flags) = 0;
@@ -39,10 +46,11 @@ class ArcImeBridge {
     virtual void OnCursorRectChangedWithSurroundingText(
         const gfx::Rect& rect,
         const gfx::Range& text_range,
-        const base::string16& text_in_range,
+        const std::u16string& text_in_range,
         const gfx::Range& selection_range,
         bool is_screen_coordinates) = 0;
-    virtual void RequestHideIme() = 0;
+    virtual void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
+                              KeyEventDoneCallback callback) = 0;
   };
 
   // Serializes and sends IME related requests through IPCs.
@@ -50,16 +58,15 @@ class ArcImeBridge {
       const ui::CompositionText& composition) = 0;
   virtual void SendConfirmCompositionText() = 0;
   virtual void SendSelectionRange(const gfx::Range& selection_range) = 0;
-  virtual void SendInsertText(const base::string16& text) = 0;
+  virtual void SendInsertText(const std::u16string& text,
+                              int new_cursor_position) = 0;
   virtual void SendExtendSelectionAndDelete(size_t before, size_t after) = 0;
   virtual void SendOnKeyboardAppearanceChanging(const gfx::Rect& new_bounds,
                                                 bool is_available) = 0;
+  virtual void SendSetComposingRegion(const gfx::Range& composing_range) = 0;
 
  protected:
   ArcImeBridge() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcImeBridge);
 };
 
 }  // namespace arc

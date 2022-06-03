@@ -32,17 +32,23 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
  public:
   MojoVideoEncodeAccelerator(
       mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
-      const gpu::VideoEncodeAcceleratorSupportedProfiles& supported_profiles);
+      const SupportedProfiles& supported_profiles);
+
+  MojoVideoEncodeAccelerator(const MojoVideoEncodeAccelerator&) = delete;
+  MojoVideoEncodeAccelerator& operator=(const MojoVideoEncodeAccelerator&) =
+      delete;
 
   // VideoEncodeAccelerator implementation.
   SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate_num) override;
   void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
                                        uint32_t framerate) override;
+  bool IsFlushSupported() override;
+  void Flush(FlushCallback flush_callback) override;
   void Destroy() override;
 
  private:
@@ -54,11 +60,9 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
   // Constructed during Initialize().
   std::unique_ptr<mojom::VideoEncodeAcceleratorClient> vea_client_;
 
-  const gpu::VideoEncodeAcceleratorSupportedProfiles supported_profiles_;
+  const SupportedProfiles supported_profiles_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAccelerator);
 };
 
 }  // namespace media

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -34,7 +35,12 @@ MediaNotificationService* MediaNotificationServiceFactory::GetForProfile(
 
 KeyedService* MediaNotificationServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new MediaNotificationService(Profile::FromBrowserContext(context));
+  bool show_from_all_profiles = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  show_from_all_profiles = true;
+#endif
+  return new MediaNotificationService(Profile::FromBrowserContext(context),
+                                      show_from_all_profiles);
 }
 
 content::BrowserContext*

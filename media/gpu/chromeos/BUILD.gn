@@ -2,27 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 
 assert(use_v4l2_codec || use_vaapi)
 
-# V4L2 or Vaapi imply the OS is Linux.
-assert(is_linux)
+# V4L2 or Vaapi imply the OS is Linux or ChromeOS
+assert(is_linux || is_chromeos)
 
 # This target can depend on targets in //media/gpu/{v4l2,vaapi}.
 source_set("chromeos") {
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "chromeos_video_decoder_factory.cc",
-    "chromeos_video_decoder_factory.h",
     "image_processor_factory.cc",
+    "video_decoder_pipeline.cc",
   ]
 
-  public_deps = [
-    ":common",
-  ]
+  public_deps = [ ":common" ]
 
   deps = [
     "//base",
@@ -33,7 +31,10 @@ source_set("chromeos") {
   ]
 
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi" ]
+    deps += [
+      "//media/gpu/vaapi",
+      "//media/gpu/vaapi:common",
+    ]
   }
 
   if (use_v4l2_codec) {
@@ -45,6 +46,7 @@ source_set("chromeos") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
     "gpu_buffer_layout.cc",
@@ -56,28 +58,31 @@ source_set("common") {
     "image_processor_factory.h",
     "image_processor_with_pool.cc",
     "image_processor_with_pool.h",
-    "libyuv_image_processor.cc",
-    "libyuv_image_processor.h",
+    "libyuv_image_processor_backend.cc",
+    "libyuv_image_processor_backend.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
     "platform_video_frame_utils.cc",
     "platform_video_frame_utils.h",
-    "video_decoder_pipeline.cc",
+    "vd_video_decode_accelerator.cc",
+    "vd_video_decode_accelerator.h",
+    "vda_video_frame_pool.cc",
+    "vda_video_frame_pool.h",
     "video_decoder_pipeline.h",
     "video_frame_converter.cc",
     "video_frame_converter.h",
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
-  public_deps = [
-    ":fourcc",
-  ]
+  public_deps = [ ":fourcc" ]
 
   deps = [
     ":fourcc",
     "//base",
+    "//build:chromeos_buildflags",
+    "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
     "//media/gpu:buildflags",
@@ -88,8 +93,18 @@ source_set("common") {
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
+    "//ui/gfx/linux:drm",
+    "//ui/gfx/linux:gbm",
     "//ui/gl",
   ]
+  if (is_chromeos_ash) {
+    sources += [
+      "decoder_buffer_transcryptor.cc",
+      "decoder_buffer_transcryptor.h",
+    ]
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
 }
 
 # Although fourcc is platform-agnostic; however, it is restricted by the above
@@ -133,7 +148,9 @@ source_set("unit_tests") {
     ":common",
     "//base",
     "//base/test:test_support",
+    "//gpu/ipc/service:service",
     "//media",
+    "//media:test_support",
     "//media/gpu:buildflags",
     "//skia",
     "//testing/gmock",
@@ -147,22 +164,27 @@ source_set("unit_tests") {
     "mailbox_video_frame_converter_unittest.cc",
     "platform_video_frame_pool_unittest.cc",
     "platform_video_frame_utils_unittest.cc",
+    "video_decoder_pipeline_unittest.cc",
   ]
+  if (is_chromeos_ash) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
 }
 
 test("image_processor_test") {
-  sources = [
-    "image_processor_test.cc",
-  ]
+  sources = [ "image_processor_test.cc" ]
   deps = [
     ":chromeos",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//media:test_support",
     "//media/gpu:buildflags",
     "//media/gpu/test:frame_file_writer",
     "//media/gpu/test:frame_validator",
     "//media/gpu/test:helpers",
     "//media/gpu/test:image_processor",
+    "//media/gpu/test:video_test_environment",
     "//mojo/core/embedder",
     "//testing/gtest",
   ]

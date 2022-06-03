@@ -30,11 +30,6 @@ declare_args() {
   # Set true to enable assistant features.
   enable_assistant = false
 
-  # Set to true on devices that support multizone. Only indicates that the
-  # device supports multizone. The command line flag --enable-multizone must
-  # still be used to enable multizone.
-  supports_multizone = is_cast_audio_only && !is_cast_desktop_build
-
   # Set to true if there is a full mixer implementation; if not, we create a
   # shim mixer service receiver that pushes audio to the CMA backend.
   have_full_mixer = is_cast_audio_only
@@ -50,24 +45,9 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  # Set true for builds targeting Android Things.
-  is_android_things = false
-
   # Set true if the platform works as a single volume device, mapping all
   # volume streams to a single one.
   is_single_volume = false
-
-  # Set to true to keep Android activities alive when they are moved to the
-  # background.
-  enable_background_activities = false
-
-  # Set to true to use CastWebContentsFragment instead of CastWebContentsActivity
-  # to run cast receiver app.
-  # TODO(thoren) merge this flag with display_web_contents_in_service
-  enable_cast_fragment = false
-
-  # Set the number of lines for LogcatExtractor to send.
-  logcat_extractor_size = 512
 
   if (is_android) {
     # Set to true to get logcat from a remote service
@@ -95,17 +75,14 @@ declare_args() {
   use_android_user_agent = false
 
   # Contain default command line switches we want to set.
-  # The syntax: "test-flag-one=public,test-flag-two=true,test-flag-three=1,".
-  # This arg can be overridden but not supports += operator.
+  # This will get joined into a comma-separated list that looks like:
+  #   "test-flag-one=public,test-flag-two=true,test-flag-three=1,"
   # TODO(ziyangch): make the parsing logic have ability to quote/escape characters.
-  default_command_line_flags = ""
+  default_command_line_flags = []
 
   # Set to true to disable secure flac/opus support in EME, when using
   # cast CMA media backend and supporting Widevine or Playready.
   disable_secure_flac_and_opus_decoding = false
-
-  # Set to true to enable wayland server
-  enable_cast_wayland_server = false
 
   # Set to true to enable mixing in CastAudioManager. Only needed on devices
   # that do not have a mixer in the CMA backend.
@@ -117,26 +94,39 @@ declare_args() {
 
   # Set to true to enable external Mojo services to communicate with services
   # within cast_shell.
-  enable_external_mojo_services = is_linux
+  enable_external_mojo_services = is_linux || is_chromeos
+
+  # Support Perfetto tracing of processes that depend on entry points in
+  # //chromecast/external_mojo/external_service_support
+  enable_external_mojo_tracing = false
 
   # Recording happens at this sample rate. Must be 16000, 48000 or 96000 Hz.
   audio_input_sample_rate = 16000
 
   # Whether use unix sockets in Cast input/output stream.
-  use_unix_sockets = is_linux
+  use_unix_sockets = is_linux || is_chromeos || is_android
 
   # Set to true to enable audio capture service for audio input.
   enable_audio_capture_service = false
 
   # Extra rpath to use for standalone services.
   iot_service_rpath = ""
-}
 
-declare_args() {
-  enable_volume_tables_access =
-      is_android_things && chromecast_branding != "public"
-  is_android_things_non_public =
-      is_android_things && chromecast_branding != "public"
+  # Set to true to enable media overlay for volume bar, etc.
+  enable_media_overlay = false
+
+  # Set to true to forward crashes to the system's crash handler instead of
+  # handling them internally.  This disables the built-in crash handler.
+  use_system_crash_handler = false
+
+  # True to use the Chromium runtime for cast rendering.
+  enable_chromium_runtime_cast_renderer = false
+
+  # True to link in alternate build targets for the Cast Media Runtime.
+  enable_cast_media_runtime = false
+
+  # device specific string to append to User string.
+  device_user_agent_suffix = ""
 }
 
 declare_args() {
@@ -155,18 +145,22 @@ if (chromecast_branding == "public") {
 }
 
 # All locales supported by Cast builds. This provides a single point of
-# reference for all GN files referencing a locales list. |locales| is declared
-# in //build/config/locales.gni.
-cast_locales = locales
+# reference for all GN files referencing a locales list.
+# |locales_without_pseudolocales| is declared in //build/config/locales.gni.
+# See https://chromium-review.googlesource.com/488166/ for why we can't use
+# pseudolocales in chromecast.
+cast_locales = locales_without_pseudolocales
 
 # Android currently supports more locales than Desktop and ChromeOS.
 # If Cast will also the android files update this and the Cast grd files.
 if (is_android) {
   # Subtract out additional Android locales
-  cast_locales -= [ "af" ]
+  cast_locales -= android_bundle_only_locales
 }
 
-enable_chromecast_extensions = enable_extensions
+declare_args() {
+  enable_chromecast_extensions = enable_extensions
+}
 
 # Use Chromecast CDMs for protected content. Some Android platforms use
 # MediaDrm for CDM support.

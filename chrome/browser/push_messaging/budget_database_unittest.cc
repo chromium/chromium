@@ -12,12 +12,12 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/push_messaging/budget.pb.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,27 +43,28 @@ class BudgetDatabaseTest : public ::testing::Test {
         db_(&profile_),
         origin_(url::Origin::Create(GURL(kTestOrigin))) {}
 
-  void WriteBudgetComplete(base::Closure run_loop_closure, bool success) {
+  void WriteBudgetComplete(base::OnceClosure run_loop_closure, bool success) {
     success_ = success;
-    run_loop_closure.Run();
+    std::move(run_loop_closure).Run();
   }
 
   // Spend budget for the origin.
   bool SpendBudget(double amount) {
     base::RunLoop run_loop;
-    db_.SpendBudget(origin(),
-                    base::Bind(&BudgetDatabaseTest::WriteBudgetComplete,
-                               base::Unretained(this), run_loop.QuitClosure()),
-                    amount);
+    db_.SpendBudget(
+        origin(),
+        base::BindOnce(&BudgetDatabaseTest::WriteBudgetComplete,
+                       base::Unretained(this), run_loop.QuitClosure()),
+        amount);
     run_loop.Run();
     return success_;
   }
 
-  void GetBudgetDetailsComplete(base::Closure run_loop_closure,
+  void GetBudgetDetailsComplete(base::OnceClosure run_loop_closure,
                                 std::vector<BudgetState> predictions) {
     success_ = !predictions.empty();
     prediction_.swap(predictions);
-    run_loop_closure.Run();
+    std::move(run_loop_closure).Run();
   }
 
   // Get the full set of budget predictions for the origin.
@@ -88,7 +89,8 @@ class BudgetDatabaseTest : public ::testing::Test {
   }
 
   void SetSiteEngagementScore(double score) {
-    SiteEngagementService* service = SiteEngagementService::Get(&profile_);
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(&profile_);
     service->ResetBaseScoreForURL(GURL(kTestOrigin), score);
   }
 
@@ -115,7 +117,7 @@ TEST_F(BudgetDatabaseTest, GetBudgetNoBudgetOrSES) {
 TEST_F(BudgetDatabaseTest, AddEngagementBudgetTest) {
   base::SimpleTestClock* clock = SetClockForTesting();
   base::Time expiration_time =
-      clock->Now() + base::TimeDelta::FromDays(kDefaultExpirationInDays);
+      clock->Now() + base::Days(kDefaultExpirationInDays);
 
   // Set the default site engagement.
   SetSiteEngagementScore(kEngagement);
@@ -123,7 +125,8 @@ TEST_F(BudgetDatabaseTest, AddEngagementBudgetTest) {
   // The budget should include kDefaultExpirationInDays days worth of
   // engagement.
   double daily_budget =
-      kMaxDailyBudget * (kEngagement / SiteEngagementScore::kMaxPoints);
+      kMaxDailyBudget *
+      (kEngagement / site_engagement::SiteEngagementScore::kMaxPoints);
   GetBudgetDetails();
   ASSERT_TRUE(success_);
   ASSERT_EQ(2U, prediction_.size());
@@ -133,7 +136,7 @@ TEST_F(BudgetDatabaseTest, AddEngagementBudgetTest) {
   ASSERT_EQ(expiration_time.ToJsTime(), prediction_[1].time);
 
   // Advance time 1 day and add more engagement budget.
-  clock->Advance(base::TimeDelta::FromDays(1));
+  clock->Advance(base::Days(1));
   GetBudgetDetails();
 
   // The budget should now have 1 full share plus 1 daily budget.
@@ -144,12 +147,11 @@ TEST_F(BudgetDatabaseTest, AddEngagementBudgetTest) {
   ASSERT_DOUBLE_EQ(daily_budget, prediction_[1].budget_at);
   ASSERT_EQ(expiration_time.ToJsTime(), prediction_[1].time);
   ASSERT_DOUBLE_EQ(0, prediction_[2].budget_at);
-  ASSERT_EQ((expiration_time + base::TimeDelta::FromDays(1)).ToJsTime(),
-            prediction_[2].time);
+  ASSERT_EQ((expiration_time + base::Days(1)).ToJsTime(), prediction_[2].time);
 
   // Advance time by 59 minutes and check that no engagement budget is added
   // since budget should only be added for > 1 hour increments.
-  clock->Advance(base::TimeDelta::FromMinutes(59));
+  clock->Advance(base::Minutes(59));
   GetBudgetDetails();
 
   // The budget should be the same as before the attempted add.
@@ -167,9 +169,9 @@ TEST_F(BudgetDatabaseTest, SpendBudgetTest) {
 
   // Intialize the budget with several chunks.
   GetBudgetDetails();
-  clock->Advance(base::TimeDelta::FromDays(1));
+  clock->Advance(base::Days(1));
   GetBudgetDetails();
-  clock->Advance(base::TimeDelta::FromDays(1));
+  clock->Advance(base::Days(1));
   GetBudgetDetails();
 
   // Spend an amount of budget less than the daily budget.
@@ -179,7 +181,8 @@ TEST_F(BudgetDatabaseTest, SpendBudgetTest) {
   // There should still be three chunks of budget of size daily_budget-1,
   // daily_budget, and kDefaultExpirationInDays * daily_budget.
   double daily_budget =
-      kMaxDailyBudget * (kEngagement / SiteEngagementScore::kMaxPoints);
+      kMaxDailyBudget *
+      (kEngagement / site_engagement::SiteEngagementScore::kMaxPoints);
   ASSERT_EQ(4U, prediction_.size());
   ASSERT_DOUBLE_EQ((2 + kDefaultExpirationInDays) * daily_budget - 1,
                    prediction_[0].budget_at);
@@ -203,7 +206,7 @@ TEST_F(BudgetDatabaseTest, SpendBudgetTest) {
 
   // Advance time until the last remaining chunk should be expired, then query
   // for the full engagement worth of budget.
-  clock->Advance(base::TimeDelta::FromDays(kDefaultExpirationInDays + 1));
+  clock->Advance(base::Days(kDefaultExpirationInDays + 1));
   EXPECT_TRUE(SpendBudget(daily_budget * kDefaultExpirationInDays));
 }
 
@@ -219,7 +222,7 @@ TEST_F(BudgetDatabaseTest, GetBudgetNegativeTime) {
 
   // Initialize the budget with two chunks.
   GetBudgetDetails();
-  clock->Advance(base::TimeDelta::FromDays(1));
+  clock->Advance(base::Days(1));
   GetBudgetDetails();
 
   // Save off the budget total.
@@ -227,7 +230,7 @@ TEST_F(BudgetDatabaseTest, GetBudgetNegativeTime) {
   double budget = prediction_[0].budget_at;
 
   // Move the clock backwards in time to before the budget awards.
-  clock->SetNow(clock->Now() - base::TimeDelta::FromDays(5));
+  clock->SetNow(clock->Now() - base::Days(5));
 
   // Make sure the budget is the same.
   GetBudgetDetails();
@@ -236,7 +239,7 @@ TEST_F(BudgetDatabaseTest, GetBudgetNegativeTime) {
 
   // Now move the clock back to the original time and check that no extra budget
   // is awarded.
-  clock->SetNow(clock->Now() + base::TimeDelta::FromDays(5));
+  clock->SetNow(clock->Now() + base::Days(5));
   GetBudgetDetails();
   ASSERT_EQ(3U, prediction_.size());
   ASSERT_EQ(budget, prediction_[0].budget_at);
@@ -252,11 +255,11 @@ TEST_F(BudgetDatabaseTest, CheckBackgroundBudgetHistogram) {
   // engagement), 15 budget (half of the engagement), 0 budget (less than an
   // hour), and then after the first two expire, another 30 budget.
   GetBudgetDetails();
-  clock->Advance(base::TimeDelta::FromDays(kDefaultExpirationInDays / 2));
+  clock->Advance(base::Days(kDefaultExpirationInDays / 2));
   GetBudgetDetails();
-  clock->Advance(base::TimeDelta::FromMinutes(59));
+  clock->Advance(base::Minutes(59));
   GetBudgetDetails();
-  clock->Advance(base::TimeDelta::FromDays(kDefaultExpirationInDays + 1));
+  clock->Advance(base::Days(kDefaultExpirationInDays + 1));
   GetBudgetDetails();
 
   // The BackgroundBudget UMA is recorded when budget is added to the origin.
@@ -266,7 +269,7 @@ TEST_F(BudgetDatabaseTest, CheckBackgroundBudgetHistogram) {
   ASSERT_EQ(2U, buckets.size());
   // First bucket is for full award, which should have 2 entries.
   double full_award = kMaxDailyBudget * kEngagement /
-                      SiteEngagementScore::kMaxPoints *
+                      site_engagement::SiteEngagementScore::kMaxPoints *
                       kDefaultExpirationInDays;
   EXPECT_EQ(floor(full_award), buckets[0].min);
   EXPECT_EQ(2, buckets[0].count);
@@ -281,7 +284,8 @@ TEST_F(BudgetDatabaseTest, CheckEngagementHistograms) {
   // Manipulate the engagement so that the budget is twice the cost of an
   // action.
   double cost = 2;
-  double engagement = 2 * cost * SiteEngagementScore::kMaxPoints /
+  double engagement = 2 * cost *
+                      site_engagement::SiteEngagementScore::kMaxPoints /
                       kDefaultExpirationInDays / kMaxDailyBudget;
   SetSiteEngagementScore(engagement);
 
@@ -298,7 +302,7 @@ TEST_F(BudgetDatabaseTest, CheckEngagementHistograms) {
   // Advance the clock by 12 days (to guarantee a full new engagement grant)
   // then change the SES score to get a different UMA entry, then spend the
   // budget again.
-  clock->Advance(base::TimeDelta::FromDays(12));
+  clock->Advance(base::Days(12));
   GetBudgetDetails();
   SetSiteEngagementScore(engagement * 2);
   ASSERT_TRUE(SpendBudget(cost));
@@ -326,7 +330,8 @@ TEST_F(BudgetDatabaseTest, CheckEngagementHistograms) {
 
 TEST_F(BudgetDatabaseTest, DefaultSiteEngagementInIncognitoProfile) {
   TestingProfile second_profile;
-  Profile* second_profile_incognito = second_profile.GetOffTheRecordProfile();
+  Profile* second_profile_incognito =
+      second_profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // Create a second BudgetDatabase instance for the off-the-record version of
   // a second profile. This will not have been influenced by the |profile_|.

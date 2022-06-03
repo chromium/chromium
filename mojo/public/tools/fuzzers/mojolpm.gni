@@ -1,0 +1,147 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# Generate a MojoLPM-based fuzzer test.
+#
+# This rule will copy the proto file defining the fuzzer testcases into the
+# output directory so that it can be compiled against the generated MojoLPM
+# protos. It then adds a rule to compile that proto, and finally a fuzzer
+# test target which uses the compiled proto.
+#
+# Optionally it can also handle converting a seed corpus of text protos into
+# a binary corpus as part of the build.
+#
+# Parameters:
+#   sources
+#       List of source .cc files to compile.
+#
+#   deps
+#       List of dependencies to compile this target.
+#
+#   proto_source
+#       Single source .proto file defining the structure of a testcase.
+#
+#   proto_deps
+#       List of additional dependencies for compiling proto_source.
+#
+#   testcase_proto_kind (optional, required if seed_corpus_sources provided)
+#       Name of proto message type representing a testcase.
+#
+#   seed_corpus_sources (optional)
+#       List of source .textproto files used to build a seed corpus.
+#
+# Example:
+#  mojolpm_fuzzer_test("foo_mojolpm_fuzzer") {
+#    sources = [ "foo_mojolpm_fuzzer.cc" ]
+#
+#    deps = [
+#      "//content/browser/foo:foo_mojolpm_fuzzer_proto",
+#      "//content/browser:for_content_tests",
+#      "//content/public/browser:browser_sources",
+#      "//content/test:test_support",
+#      "//mojo/core/embedder",
+#      "//mojo/public/tools/fuzzers:mojolpm",
+#      "//third_party/libprotobuf-mutator",
+#    ]
+#
+#    proto_deps = [
+#      "//content/browser/bar/mojom:mojom_mojolpm","
+#    ]
+#
+#    testcase_proto = "foo_mojolpm_fuzzer.proto"
+#    testcase_proto_kind = "foo.mojolpm.proto.Testcase"
+#
+#    seed_corpus_sources = [
+#      "foo_mojolpm_fuzzer_corpus/seed_one.textproto",
+#      "foo_mojolpm_fuzzer_corpus/seed_two.textproto",
+#    ]
+#  }
+template("mojolpm_fuzzer_test") {
+  assert(defined(invoker.sources) && defined(invoker.proto_source),
+         "\"sources\" and \"proto_source\" must be defined for $target_name")
+
+  assert(
+      !defined(invoker.seed_corpus_sources) ||
+          defined(invoker.testcase_proto_kind),
+      "\"testcase_proto_kind\" must be defined for $target_name since \"seed_corpus_sources\" is defined.")
+
+  if (enable_mojom_fuzzer) {
+    proto_target_name = "${target_name}_proto"
+
+    proto_library(proto_target_name) {
+      # Work relative to src (//) instead of (by default) the BUILD file.
+      proto_in_dir = "//"
+
+      sources = [ invoker.proto_source ]
+      generate_python = false
+
+      proto_deps = []
+
+      import_dirs = [ root_gen_dir ]
+
+      link_deps = []
+
+      if (defined(invoker.proto_deps)) {
+        proto_deps += invoker.proto_deps
+        link_deps += invoker.proto_deps
+      }
+
+      testonly = true
+    }
+
+    if (defined(invoker.seed_corpus_sources)) {
+      protoc_convert_target_name = "${target_name}_protoc_convert"
+      seed_corpus_path = "${target_gen_dir}/${target_name}_seed_corpus"
+
+      protoc_convert(protoc_convert_target_name) {
+        sources = invoker.seed_corpus_sources
+
+        inputs = [ invoker.proto_source ]
+
+        output_pattern = "${seed_corpus_path}/{{source_name_part}}.binarypb"
+
+        args = [
+          "--encode=${invoker.testcase_proto_kind}",
+          "-I",
+          rebase_path(root_gen_dir),
+          "-I",
+          rebase_path("//"),
+          rebase_path(inputs[0]),
+        ]
+
+        deps = []
+
+        if (defined(invoker.proto_deps)) {
+          deps += invoker.proto_deps
+        }
+
+        testonly = true
+      }
+    }
+
+    fuzzer_test(target_name) {
+      sources = invoker.sources
+      deps = [
+        ":${proto_target_name}",
+        "//mojo/core/embedder",
+        "//mojo/public/tools/fuzzers:mojolpm",
+        "//third_party/libprotobuf-mutator",
+      ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+
+      if (defined(invoker.seed_corpus_sources)) {
+        seed_corpus = seed_corpus_path
+        seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
+      }
+    }
+  } else {
+    not_needed(invoker, "*")
+  }
+}

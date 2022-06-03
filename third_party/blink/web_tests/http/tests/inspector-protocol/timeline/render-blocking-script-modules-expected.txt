@@ -1,0 +1,8 @@
+Tests render blocking status of module script in traces.
+es_module.php?url=empty.js?async: non_blocking
+es_module.php?url=empty.js?async_dynamic: non_blocking
+es_module.php?url=empty.js?defer: non_blocking
+es_module.php?url=empty.js?defer_dynamic: non_blocking
+es_module.php?url=importer.js: non_blocking
+es_module.php?url=importer_async.js: non_blocking
+

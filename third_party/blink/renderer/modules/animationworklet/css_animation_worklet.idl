@@ -6,6 +6,6 @@
     ImplementedAs=CSSAnimationWorklet,
     RuntimeEnabled=AnimationWorklet,
     SecureContext
-] partial interface CSS {
-    [CallWith=ScriptState] static readonly attribute Worklet animationWorklet;
+] partial namespace CSS {
+    [CallWith=ScriptState] readonly attribute Worklet animationWorklet;
 };

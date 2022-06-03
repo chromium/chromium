@@ -27,6 +27,10 @@ class PPAPI_PROXY_EXPORT WebSocketResource : public PluginResource,
                                              public thunk::PPB_WebSocket_API {
  public:
   WebSocketResource(Connection connection, PP_Instance instance);
+
+  WebSocketResource(const WebSocketResource&) = delete;
+  WebSocketResource& operator=(const WebSocketResource&) = delete;
+
   ~WebSocketResource() override;
 
   // PluginResource implementation.
@@ -148,8 +152,6 @@ class PPAPI_PROXY_EXPORT WebSocketResource : public PluginResource,
   // This value is used to calculate bufferedAmount in the WebSocket API
   // specification. The calculated value can be read via GetBufferedAmount().
   uint64_t buffered_amount_after_close_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketResource);
 };
 
 }  // namespace proxy

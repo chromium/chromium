@@ -8,13 +8,13 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,9 +26,11 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 // This file tests that net::LoadTimingInfo is correctly hooked up to the
@@ -71,12 +73,10 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
 
     // Unlike the above times, secureConnectionStart will be zero when not
     // applicable.  In that case, leave ssl_start as null.
-    bool ssl_start_zero = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-                    browser()->tab_strip_model()->GetActiveWebContents(),
-                    "window.domAutomationController.send("
-                        "performance.timing.secureConnectionStart == 0);",
-                    &ssl_start_zero));
+    bool ssl_start_zero =
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        "performance.timing.secureConnectionStart == 0;")
+            .ExtractBool();
     if (!ssl_start_zero)
       navigation_deltas->ssl_start = GetResultDelta("secureConnectionStart");
     else
@@ -97,15 +97,13 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
   // Returns the time between performance.timing.fetchStart and the time with
   // the specified name.  This time must be non-negative.
   int GetResultDelta(const std::string& name) {
-    int time_ms = 0;
     std::string command(base::StringPrintf(
-        "window.domAutomationController.send("
-            "performance.timing.%s - performance.timing.fetchStart);",
+        "performance.timing.%s - performance.timing.fetchStart;",
         name.c_str()));
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-                    browser()->tab_strip_model()->GetActiveWebContents(),
-                    command.c_str(),
-                    &time_ms));
+    int time_ms =
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        command.c_str())
+            .ExtractInt();
     // Basic sanity check.
     EXPECT_GE(time_ms, 0);
     return time_ms;
@@ -113,9 +111,9 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
-  ASSERT_TRUE(spawned_test_server()->Start());
-  GURL url = spawned_test_server()->GetURL("chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/chunked?waitBeforeHeaders=100");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -130,13 +128,13 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
   EXPECT_EQ(navigation_deltas.ssl_start, -1);
 }
 
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTPS) {
-  net::SpawnedTestServer https_server(net::SpawnedTestServer::TYPE_HTTPS,
-                                      net::BaseTestServer::SSLOptions(),
-                                      base::FilePath());
+// TODO(crbug.com/1128033): Flaky on all platforms
+IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, DISABLED_HTTPS) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers();
   ASSERT_TRUE(https_server.Start());
-  GURL url = https_server.GetURL("chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  GURL url = https_server.GetURL("/chunked?waitBeforeHeaders=100");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -150,25 +148,19 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTPS) {
             navigation_deltas.receive_headers_end);
 }
 
-// Flaky on Win10: crbug.com/997823
-#if defined(OS_WIN)
-#define MAYBE_Proxy DISABLED_Proxy
-#else
-#define MAYBE_Proxy Proxy
-#endif
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, MAYBE_Proxy) {
-  ASSERT_TRUE(spawned_test_server()->Start());
+IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
+  ASSERT_TRUE(embedded_test_server()->Start());
 
   browser()->profile()->GetPrefs()->Set(
       proxy_config::prefs::kProxy,
       ProxyConfigDictionary::CreateFixedServers(
-          spawned_test_server()->host_port_pair().ToString(), std::string()));
+          embedded_test_server()->host_port_pair().ToString(), std::string()));
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
       ->FlushProxyConfigMonitorForTesting();
 
   // This request will fail if it doesn't go through proxy.
   GURL url("http://does.not.resolve.test/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -180,38 +172,6 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, MAYBE_Proxy) {
   EXPECT_LT(navigation_deltas.send_start,
             navigation_deltas.receive_headers_end);
 
-  EXPECT_EQ(navigation_deltas.ssl_start, -1);
-}
-
-// Test fixture for tests that depend on FTP support. Moved out to a separate
-// fixture since remaining functionality should be tested without FTP support.
-//
-// TODO(https://crbug.com/333943): Remove FTP specific tests and test fixtures.
-class LoadTimingBrowserTestWithFtp : public LoadTimingBrowserTest {
- public:
-  LoadTimingBrowserTestWithFtp() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFtpProtocol);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTestWithFtp, FTP) {
-  net::SpawnedTestServer ftp_server(net::SpawnedTestServer::TYPE_FTP,
-                                    base::FilePath());
-  ASSERT_TRUE(ftp_server.Start());
-  GURL url = ftp_server.GetURL("/");
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  TimingDeltas navigation_deltas;
-  GetResultDeltas(&navigation_deltas);
-
-  EXPECT_EQ(navigation_deltas.dns_start, 0);
-  EXPECT_EQ(navigation_deltas.dns_end, 0);
-  EXPECT_EQ(navigation_deltas.connect_start, 0);
-  EXPECT_EQ(navigation_deltas.connect_end, 0);
-  EXPECT_EQ(navigation_deltas.receive_headers_end, 0);
   EXPECT_EQ(navigation_deltas.ssl_start, -1);
 }
 

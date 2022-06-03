@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -124,9 +124,9 @@ void HostScanSchedulerImpl::ScanFinished() {
 
   last_scan_end_timestamp_ = clock_->Now();
   host_scan_batch_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaxNumSecondsBetweenBatchScans),
-      base::Bind(&HostScanSchedulerImpl::LogHostScanBatchMetric,
-                 weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::Seconds(kMaxNumSecondsBetweenBatchScans),
+      base::BindOnce(&HostScanSchedulerImpl::LogHostScanBatchMetric,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HostScanSchedulerImpl::OnSessionStateChanged() {
@@ -199,11 +199,11 @@ void HostScanSchedulerImpl::LogHostScanBatchMetric() {
 
   base::TimeDelta batch_duration =
       last_scan_end_timestamp_ - last_scan_batch_start_timestamp_;
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "InstantTethering.HostScanBatchDuration", batch_duration,
-      base::TimeDelta::FromSeconds(kMinScanMetricSeconds) /* min */,
-      base::TimeDelta::FromDays(kMaxScanMetricsDays) /* max */,
-      kNumMetricsBuckets /* bucket_count */);
+  UMA_HISTOGRAM_CUSTOM_TIMES("InstantTethering.HostScanBatchDuration",
+                             batch_duration,
+                             base::Seconds(kMinScanMetricSeconds) /* min */,
+                             base::Days(kMaxScanMetricsDays) /* max */,
+                             kNumMetricsBuckets /* bucket_count */);
 
   PA_LOG(VERBOSE) << "Logging host scan batch duration. Duration was "
                   << batch_duration.InSeconds() << " seconds.";

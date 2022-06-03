@@ -17,7 +17,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/random/internal/randen_detect.h"
 
-// RANDen = RANDom generator or beetroots in Swiss German.
+// RANDen = RANDom generator or beetroots in Swiss High German.
 // 'Strong' (well-distributed, unpredictable, backtracking-resistant) random
 // generator, faster in some benchmarks than std::mt19937_64 and pcg64_c32.
 //
@@ -41,6 +41,7 @@
 // structured/low-entropy counters to digits of Pi.
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 namespace {
 
@@ -86,4 +87,5 @@ Randen::Randen() {
 }
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

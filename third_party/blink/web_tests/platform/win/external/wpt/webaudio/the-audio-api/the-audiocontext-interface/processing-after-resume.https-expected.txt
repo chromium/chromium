@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test consistency of processing after resume() assert_equals: construct time before resume expected 0.040634920634920635 but got 0
+Harness: the test ran to completion.
+

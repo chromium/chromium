@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINTER_BASE_H_
 
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
@@ -21,9 +22,10 @@ class ComputedStyle;
 class Document;
 class FillLayer;
 class FloatRoundedRect;
-class GraphicsContext;
 class ImageResourceObserver;
 class IntRect;
+class LayoutBox;
+class Node;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -60,36 +62,34 @@ class BoxPainterBase {
                        const PhysicalRect&,
                        const ImageResourceObserver&,
                        BackgroundImageGeometry&,
-                       bool include_logical_left_edge,
-                       bool include_logical_right_edge);
+                       PhysicalBoxSides sides_to_include);
 
-  static void PaintNormalBoxShadow(const PaintInfo&,
-                                   const PhysicalRect&,
-                                   const ComputedStyle&,
-                                   bool include_logical_left_edge = true,
-                                   bool include_logical_right_edge = true,
-                                   bool background_is_skipped = true);
+  static void PaintNormalBoxShadow(
+      const PaintInfo&,
+      const PhysicalRect&,
+      const ComputedStyle&,
+      PhysicalBoxSides sides_to_include = PhysicalBoxSides(),
+      bool background_is_skipped = true);
 
   static void PaintInsetBoxShadowWithBorderRect(
       const PaintInfo&,
       const PhysicalRect&,
       const ComputedStyle&,
-      bool include_logical_left_edge = true,
-      bool include_logical_right_edge = true);
+      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
   static void PaintInsetBoxShadowWithInnerRect(const PaintInfo&,
                                                const PhysicalRect&,
                                                const ComputedStyle&);
 
-  static void PaintBorder(const ImageResourceObserver&,
-                          const Document&,
-                          Node*,
-                          const PaintInfo&,
-                          const PhysicalRect&,
-                          const ComputedStyle&,
-                          BackgroundBleedAvoidance = kBackgroundBleedNone,
-                          bool include_logical_left_edge = true,
-                          bool include_logical_right_edge = true);
+  static void PaintBorder(
+      const ImageResourceObserver&,
+      const Document&,
+      Node*,
+      const PaintInfo&,
+      const PhysicalRect&,
+      const ComputedStyle&,
+      BackgroundBleedAvoidance = kBackgroundBleedNone,
+      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
   static bool ShouldForceWhiteBackgroundForPrintEconomy(const Document&,
                                                         const ComputedStyle&);
@@ -103,43 +103,48 @@ class BoxPainterBase {
       FillLayerOcclusionOutputList& reversed_paint_list,
       const FillLayer&);
 
+  static bool ShouldSkipPaintUnderInvalidationChecking(const LayoutBox&);
+
   struct FillLayerInfo {
     STACK_ALLOCATED();
 
    public:
     FillLayerInfo(const Document&,
                   const ComputedStyle&,
-                  bool has_overflow_clip,
+                  bool is_scroll_container,
                   Color bg_color,
                   const FillLayer&,
                   BackgroundBleedAvoidance,
                   RespectImageOrientationEnum,
-                  bool include_left_edge,
-                  bool include_right_edge,
-                  bool is_inline);
+                  PhysicalBoxSides sides_to_include,
+                  bool is_inline,
+                  bool is_painting_background_in_contents_space);
 
     // FillLayerInfo is a temporary, stack-allocated container which cannot
     // outlive the StyleImage.  This would normally be a raw pointer, if not for
     // the Oilpan tooling complaints.
-    Member<StyleImage> image;
+    StyleImage* image;
     Color color;
 
     RespectImageOrientationEnum respect_image_orientation;
-    bool include_left_edge;
-    bool include_right_edge;
+    PhysicalBoxSides sides_to_include;
     bool is_bottom_layer;
     bool is_border_fill;
     bool is_clipped_with_local_scrolling;
     bool is_rounded_fill;
+    bool is_printing;
     bool should_paint_image;
     bool should_paint_color;
+    // True if we paint background color off main thread, design doc here:
+    // https://docs.google.com/document/d/1usCnwWs8HsH5FU_185q6MsrZehFmpl5QgbbB4pvHIjI/edit
+    bool should_paint_color_with_paint_worklet_image;
   };
 
  protected:
   virtual LayoutRectOutsets ComputeBorders() const = 0;
   virtual LayoutRectOutsets ComputePadding() const = 0;
   LayoutRectOutsets AdjustedBorderOutsets(const FillLayerInfo&) const;
-  void PaintFillLayerTextFillBox(GraphicsContext&,
+  void PaintFillLayerTextFillBox(const PaintInfo&,
                                  const FillLayerInfo&,
                                  Image*,
                                  SkBlendMode composite_op,
@@ -147,7 +152,7 @@ class BoxPainterBase {
                                  const PhysicalRect&,
                                  const PhysicalRect& scrolled_paint_rect,
                                  bool object_has_multiple_boxes);
-  virtual void PaintTextClipMask(GraphicsContext&,
+  virtual void PaintTextClipMask(const PaintInfo&,
                                  const IntRect& mask_rect,
                                  const PhysicalOffset& paint_offset,
                                  bool object_has_multiple_boxes) = 0;
@@ -155,21 +160,26 @@ class BoxPainterBase {
   virtual PhysicalRect AdjustRectForScrolledContent(const PaintInfo&,
                                                     const FillLayerInfo&,
                                                     const PhysicalRect&) = 0;
-  virtual FillLayerInfo GetFillLayerInfo(const Color&,
-                                         const FillLayer&,
-                                         BackgroundBleedAvoidance) const = 0;
-  static void PaintInsetBoxShadow(const PaintInfo&,
-                                  const FloatRoundedRect&,
-                                  const ComputedStyle&,
-                                  bool include_logical_left_edge = true,
-                                  bool include_logical_right_edge = true);
+  virtual FillLayerInfo GetFillLayerInfo(
+      const Color&,
+      const FillLayer&,
+      BackgroundBleedAvoidance,
+      bool is_painting_background_in_contents_space) const = 0;
+  virtual bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const = 0;
+  static void PaintInsetBoxShadow(
+      const PaintInfo&,
+      const FloatRoundedRect&,
+      const ComputedStyle&,
+      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
  private:
-  Member<const Document> document_;
+  LayoutRectOutsets ComputeSnappedBorders() const;
+
+  const Document* document_;
   const ComputedStyle& style_;
-  Member<Node> node_;
+  Node* node_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINTER_BASE_H_

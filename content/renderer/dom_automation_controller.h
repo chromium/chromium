@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "content/common/dom_automation_controller.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace blink {
 class WebLocalFrame;
@@ -27,8 +28,6 @@ class RenderFrame;
 // Javascript can call domAutomationController.send(...) to send arbitrary data
 // to the browser.  On the browser side, the data is received via one of the
 // following:
-// - Product code:
-//   - Explicit handlers of FrameHostMsg_DomOperationResponse IPC
 // - Test code:
 //   - DOMMessageQueue class
 //   - ExecuteScriptAndExtractInt/Bool/String functions
@@ -36,6 +35,9 @@ class DomAutomationController : public gin::Wrappable<DomAutomationController>,
                                 public RenderFrameObserver {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  DomAutomationController(const DomAutomationController&) = delete;
+  DomAutomationController& operator=(const DomAutomationController&) = delete;
 
   static void Install(RenderFrame* render_frame, blink::WebLocalFrame* frame);
 
@@ -58,7 +60,11 @@ class DomAutomationController : public gin::Wrappable<DomAutomationController>,
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int32_t world_id) override;
 
-  DISALLOW_COPY_AND_ASSIGN(DomAutomationController);
+  const mojo::AssociatedRemote<mojom::DomAutomationControllerHost>&
+  GetDomAutomationControllerHost();
+
+  mojo::AssociatedRemote<mojom::DomAutomationControllerHost>
+      dom_automation_controller_host_;
 };
 
 }  // namespace content

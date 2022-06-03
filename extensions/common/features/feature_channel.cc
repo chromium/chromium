@@ -4,7 +4,9 @@
 
 #include "extensions/common/features/feature_channel.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "components/version_info/version_info.h"
 
 namespace {

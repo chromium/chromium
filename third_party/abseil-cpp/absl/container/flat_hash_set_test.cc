@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/unordered_set_constructor_test.h"
 #include "absl/container/internal/unordered_set_lookup_test.h"
@@ -25,14 +26,27 @@
 #include "absl/strings/string_view.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 namespace {
 
 using ::absl::container_internal::hash_internal::Enum;
 using ::absl::container_internal::hash_internal::EnumClass;
+using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
+
+// Check that absl::flat_hash_set works in a global constructor.
+struct BeforeMain {
+  BeforeMain() {
+    absl::flat_hash_set<int> x;
+    x.insert(1);
+    ABSL_RAW_CHECK(!x.contains(0), "x should not contain 0");
+    ABSL_RAW_CHECK(x.contains(1), "x should contain 1");
+  }
+};
+const BeforeMain before_main;
 
 template <class T>
 using Set =
@@ -123,6 +137,42 @@ TEST(FlatHashSet, MergeExtractInsert) {
   EXPECT_THAT(set2, UnorderedElementsAre(Pointee(7), Pointee(23)));
 }
 
+bool IsEven(int k) { return k % 2 == 0; }
+
+TEST(FlatHashSet, EraseIf) {
+  // Erase all elements.
+  {
+    flat_hash_set<int> s = {1, 2, 3, 4, 5};
+    erase_if(s, [](int) { return true; });
+    EXPECT_THAT(s, IsEmpty());
+  }
+  // Erase no elements.
+  {
+    flat_hash_set<int> s = {1, 2, 3, 4, 5};
+    erase_if(s, [](int) { return false; });
+    EXPECT_THAT(s, UnorderedElementsAre(1, 2, 3, 4, 5));
+  }
+  // Erase specific elements.
+  {
+    flat_hash_set<int> s = {1, 2, 3, 4, 5};
+    erase_if(s, [](int k) { return k % 2 == 1; });
+    EXPECT_THAT(s, UnorderedElementsAre(2, 4));
+  }
+  // Predicate is function reference.
+  {
+    flat_hash_set<int> s = {1, 2, 3, 4, 5};
+    erase_if(s, IsEven);
+    EXPECT_THAT(s, UnorderedElementsAre(1, 3, 5));
+  }
+  // Predicate is function pointer.
+  {
+    flat_hash_set<int> s = {1, 2, 3, 4, 5};
+    erase_if(s, &IsEven);
+    EXPECT_THAT(s, UnorderedElementsAre(1, 3, 5));
+  }
+}
+
 }  // namespace
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

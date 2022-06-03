@@ -22,7 +22,7 @@ bool TestProxyConfigRoundTrip(net::ProxyConfigWithAnnotation& original_config) {
   net::ProxyConfigWithAnnotation copied_config;
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::ProxyConfigWithAnnotation>(
-          &original_config, &copied_config));
+          original_config, copied_config));
 
   return original_config.value().Equals(copied_config.value()) &&
          original_config.traffic_annotation() ==
@@ -38,6 +38,14 @@ TEST(ProxyConfigTraitsTest, AutoDetect) {
 TEST(ProxyConfigTraitsTest, Direct) {
   net::ProxyConfigWithAnnotation proxy_config =
       net::ProxyConfigWithAnnotation::CreateDirect();
+  EXPECT_TRUE(TestProxyConfigRoundTrip(proxy_config));
+}
+
+TEST(ProxyConfigTraitsTest, FromSystem) {
+  net::ProxyConfig base_config;
+  base_config.set_from_system(true);
+  net::ProxyConfigWithAnnotation proxy_config(base_config,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_TRUE(TestProxyConfigRoundTrip(proxy_config));
 }
 
@@ -62,8 +70,8 @@ TEST(ProxyConfigTraitsTest, ProxyRules) {
       "ftp=ftp1,ftp2,ftp3",
       "http=http1,http2; http=http3",
       "ftp=ftp1,ftp2,ftp3 ; http=http1,http2; ",
-      "http=https://secure_proxy; ftp=socks4://socks_proxy; "
-      "https=socks://foo",
+      ("http=https://secure_proxy; ftp=socks4://socks_proxy; "
+       "https=socks://foo"),
       "socks=foopy",
       "http=httpproxy ; https=httpsproxy ; ftp=ftpproxy ; socks=foopy ",
       "http=httpproxy ; https=httpsproxy ; socks=socks5://foopy ",

@@ -7,14 +7,15 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_token.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/simple_thread.h"
+#include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,13 +28,14 @@ class RunCallbackThread : public SimpleThread {
   explicit RunCallbackThread(OnceClosure callback)
       : SimpleThread("RunCallbackThread"), callback_(std::move(callback)) {}
 
+  RunCallbackThread(const RunCallbackThread&) = delete;
+  RunCallbackThread& operator=(const RunCallbackThread&) = delete;
+
  private:
   // SimpleThread:
   void Run() override { std::move(callback_).Run(); }
 
   OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackThread);
 };
 
 // Runs a callback on a new thread synchronously.
@@ -88,7 +90,7 @@ TEST(ThreadCheckerTest,
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(sequence_token);
-    thread_checker.reset(new ThreadCheckerImpl);
+    thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
@@ -113,7 +115,7 @@ TEST(ThreadCheckerTest,
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    thread_checker.reset(new ThreadCheckerImpl);
+    thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
@@ -153,7 +155,7 @@ TEST(ThreadCheckerTest, DisallowedSameThreadDifferentSequence) {
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    thread_checker.reset(new ThreadCheckerImpl);
+    thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
@@ -203,12 +205,14 @@ class ThreadCheckerOwner {
     if (detach_from_thread)
       checker_.DetachFromThread();
   }
+
+  ThreadCheckerOwner(const ThreadCheckerOwner&) = delete;
+  ThreadCheckerOwner& operator=(const ThreadCheckerOwner&) = delete;
+
   ~ThreadCheckerOwner() { EXPECT_TRUE(checker_.CalledOnValidThread()); }
 
  private:
   ThreadCheckerImpl checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerOwner);
 };
 
 // Verifies ThreadCheckerImpl::CalledOnValidThread() returns true if called
@@ -310,6 +314,9 @@ class ThreadCheckerMacroTest : public testing::Test {
  public:
   ThreadCheckerMacroTest() = default;
 
+  ThreadCheckerMacroTest(const ThreadCheckerMacroTest&) = delete;
+  ThreadCheckerMacroTest& operator=(const ThreadCheckerMacroTest&) = delete;
+
   void ExpectDeathOnOtherThread() {
 #if DCHECK_IS_ON()
     EXPECT_DCHECK_DEATH({ DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); });
@@ -321,15 +328,10 @@ class ThreadCheckerMacroTest : public testing::Test {
 
   void ExpectNoDeathOnOtherThreadAfterDetach() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_)
-        << "Make sure it compiles when DCHECK is off";
   }
 
  protected:
   THREAD_CHECKER(thread_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerMacroTest);
 };
 
 }  // namespace

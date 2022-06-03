@@ -14,9 +14,7 @@
 namespace extensions {
 
 DeclarativeContentConditionTrackerTest::DeclarativeContentConditionTrackerTest()
-    : profile_(new TestingProfile),
-      next_predicate_group_id_(1) {
-}
+    : next_predicate_group_id_(1) {}
 
 DeclarativeContentConditionTrackerTest::
 ~DeclarativeContentConditionTrackerTest() {
@@ -29,8 +27,7 @@ DeclarativeContentConditionTrackerTest::
 std::unique_ptr<content::WebContents>
 DeclarativeContentConditionTrackerTest::MakeTab() {
   std::unique_ptr<content::WebContents> tab(
-      content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                        nullptr));
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   content::RenderFrameHostTester::For(tab->GetMainFrame())
       ->InitializeRenderFrameIfNeeded();
   return tab;
@@ -41,6 +38,21 @@ DeclarativeContentConditionTrackerTest::GetMockRenderProcessHost(
     content::WebContents* contents) {
   return static_cast<content::MockRenderProcessHost*>(
       contents->GetMainFrame()->GetProcess());
+}
+
+TestingProfile::TestingFactories
+DeclarativeContentConditionTrackerTest::GetTestingFactories() const {
+  return {};
+}
+
+TestingProfile* DeclarativeContentConditionTrackerTest::profile() {
+  if (!profile_) {
+    for (auto& pair : GetTestingFactories())
+      profile_builder_.AddTestingFactory(pair.first, pair.second);
+
+    profile_ = profile_builder_.Build();
+  }
+  return profile_.get();
 }
 
 const void* DeclarativeContentConditionTrackerTest::GeneratePredicateGroupID() {

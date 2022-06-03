@@ -5,10 +5,9 @@
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
@@ -18,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -25,7 +25,7 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
-#if defined(CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -45,6 +45,9 @@ class FakeReceiverDelegate final : public PresentationReceiverWindowDelegate {
       : web_contents_(WebContents::Create(WebContents::CreateParams(profile))) {
   }
 
+  FakeReceiverDelegate(const FakeReceiverDelegate&) = delete;
+  FakeReceiverDelegate& operator=(const FakeReceiverDelegate&) = delete;
+
   void set_window_closed_callback(base::OnceClosure callback) {
     closed_callback_ = std::move(callback);
   }
@@ -61,13 +64,16 @@ class FakeReceiverDelegate final : public PresentationReceiverWindowDelegate {
  private:
   std::unique_ptr<content::WebContents> web_contents_;
   base::OnceClosure closed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeReceiverDelegate);
 };
 
 class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
  protected:
   PresentationReceiverWindowViewBrowserTest() = default;
+
+  PresentationReceiverWindowViewBrowserTest(
+      const PresentationReceiverWindowViewBrowserTest&) = delete;
+  PresentationReceiverWindowViewBrowserTest& operator=(
+      const PresentationReceiverWindowViewBrowserTest&) = delete;
 
   PresentationReceiverWindowView* CreateReceiverWindowView(
       PresentationReceiverWindowDelegate* delegate,
@@ -102,13 +108,11 @@ class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
   }
 
   const gfx::Rect bounds_{100, 100};
-  std::unique_ptr<FakeReceiverDelegate> fake_delegate_ = nullptr;
+  std::unique_ptr<FakeReceiverDelegate> fake_delegate_;
   PresentationReceiverWindowView* receiver_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowViewBrowserTest);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
                        ChromeOSHardwareFullscreenButton) {
   // Bypass ExclusiveAccessContext and default accelerator to simulate hardware
@@ -137,6 +141,10 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
               &FullscreenWaiter::OnViewVisibilityChanged,
               base::Unretained(this), base::Unretained(location_bar_view)));
     }
+
+    FullscreenWaiter(const FullscreenWaiter&) = delete;
+    FullscreenWaiter& operator=(const FullscreenWaiter&) = delete;
+
     ~FullscreenWaiter() = default;
 
    private:
@@ -148,11 +156,9 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
     }
 
     PresentationReceiverWindowView* const receiver_view_;
-    views::PropertyChangedSubscription subscription_;
+    base::CallbackListSubscription subscription_;
     const AwaitType await_type_;
     base::OnceClosure fullscreen_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(FullscreenWaiter);
   };
 
   {

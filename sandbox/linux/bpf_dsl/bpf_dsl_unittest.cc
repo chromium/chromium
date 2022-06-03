@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
@@ -83,6 +84,9 @@ class PolicyEmulator {
     }
   }
 
+  PolicyEmulator(const PolicyEmulator&) = delete;
+  PolicyEmulator& operator=(const PolicyEmulator&) = delete;
+
   ~PolicyEmulator() {}
 
   void ExpectAllow(const struct arch_seccomp_data& data) const {
@@ -109,13 +113,15 @@ class PolicyEmulator {
   }
 
   CodeGen::Program program_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyEmulator);
 };
 
 class BasicPolicy : public Policy {
  public:
   BasicPolicy() {}
+
+  BasicPolicy(const BasicPolicy&) = delete;
+  BasicPolicy& operator=(const BasicPolicy&) = delete;
+
   ~BasicPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_getpgid) {
@@ -128,9 +134,6 @@ class BasicPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BasicPolicy);
 };
 
 TEST(BPFDSL, Basic) {
@@ -148,6 +151,10 @@ TEST(BPFDSL, Basic) {
 class BooleanLogicPolicy : public Policy {
  public:
   BooleanLogicPolicy() {}
+
+  BooleanLogicPolicy(const BooleanLogicPolicy&) = delete;
+  BooleanLogicPolicy& operator=(const BooleanLogicPolicy&) = delete;
+
   ~BooleanLogicPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_socketpair) {
@@ -160,9 +167,6 @@ class BooleanLogicPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BooleanLogicPolicy);
 };
 
 TEST(BPFDSL, BooleanLogic) {
@@ -194,6 +198,10 @@ TEST(BPFDSL, BooleanLogic) {
 class MoreBooleanLogicPolicy : public Policy {
  public:
   MoreBooleanLogicPolicy() {}
+
+  MoreBooleanLogicPolicy(const MoreBooleanLogicPolicy&) = delete;
+  MoreBooleanLogicPolicy& operator=(const MoreBooleanLogicPolicy&) = delete;
+
   ~MoreBooleanLogicPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_setresuid) {
@@ -204,9 +212,6 @@ class MoreBooleanLogicPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MoreBooleanLogicPolicy);
 };
 
 TEST(BPFDSL, MoreBooleanLogic) {
@@ -234,6 +239,10 @@ static const uintptr_t kDeadBeefAddr =
 class ArgSizePolicy : public Policy {
  public:
   ArgSizePolicy() {}
+
+  ArgSizePolicy(const ArgSizePolicy&) = delete;
+  ArgSizePolicy& operator=(const ArgSizePolicy&) = delete;
+
   ~ArgSizePolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_uname) {
@@ -242,9 +251,6 @@ class ArgSizePolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArgSizePolicy);
 };
 
 TEST(BPFDSL, ArgSizeTest) {
@@ -257,6 +263,10 @@ TEST(BPFDSL, ArgSizeTest) {
 class NegativeConstantsPolicy : public Policy {
  public:
   NegativeConstantsPolicy() {}
+
+  NegativeConstantsPolicy(const NegativeConstantsPolicy&) = delete;
+  NegativeConstantsPolicy& operator=(const NegativeConstantsPolicy&) = delete;
+
   ~NegativeConstantsPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_fcntl) {
@@ -265,9 +275,6 @@ class NegativeConstantsPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NegativeConstantsPolicy);
 };
 
 TEST(BPFDSL, NegativeConstantsTest) {
@@ -285,6 +292,10 @@ TEST(BPFDSL, NegativeConstantsTest) {
 class TrappingPolicy : public Policy {
  public:
   TrappingPolicy() {}
+
+TrappingPolicy(const TrappingPolicy&) = delete;
+TrappingPolicy& operator=(const TrappingPolicy&) = delete;
+
   ~TrappingPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_uname) {
@@ -300,8 +311,6 @@ class TrappingPolicy : public Policy {
     BPF_ASSERT_EQ(&count_, aux);
     return ++count_;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TrappingPolicy);
 };
 
 intptr_t TrappingPolicy::count_;
@@ -316,6 +325,10 @@ BPF_TEST_C(BPFDSL, TrapTest, TrappingPolicy) {
 class MaskingPolicy : public Policy {
  public:
   MaskingPolicy() {}
+
+  MaskingPolicy(const MaskingPolicy&) = delete;
+  MaskingPolicy& operator=(const MaskingPolicy&) = delete;
+
   ~MaskingPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_setuid) {
@@ -332,9 +345,6 @@ class MaskingPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MaskingPolicy);
 };
 
 TEST(BPFDSL, MaskTest) {
@@ -359,6 +369,10 @@ TEST(BPFDSL, MaskTest) {
 class ElseIfPolicy : public Policy {
  public:
   ElseIfPolicy() {}
+
+  ElseIfPolicy(const ElseIfPolicy&) = delete;
+  ElseIfPolicy& operator=(const ElseIfPolicy&) = delete;
+
   ~ElseIfPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_setuid) {
@@ -370,9 +384,6 @@ class ElseIfPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ElseIfPolicy);
 };
 
 TEST(BPFDSL, ElseIfTest) {
@@ -393,6 +404,10 @@ TEST(BPFDSL, ElseIfTest) {
 class SwitchPolicy : public Policy {
  public:
   SwitchPolicy() {}
+
+  SwitchPolicy(const SwitchPolicy&) = delete;
+  SwitchPolicy& operator=(const SwitchPolicy&) = delete;
+
   ~SwitchPolicy() override {}
   ResultExpr EvaluateSyscall(int sysno) const override {
     if (sysno == __NR_fcntl) {
@@ -406,9 +421,6 @@ class SwitchPolicy : public Policy {
     }
     return Allow();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SwitchPolicy);
 };
 
 TEST(BPFDSL, SwitchTest) {
@@ -452,6 +464,10 @@ TEST(BPFDSL, IsAllowDeny) {
   EXPECT_FALSE(trap->IsAllow());
   EXPECT_TRUE(trap->IsDeny());
 
+  ResultExpr user_notify = UserNotify();
+  EXPECT_FALSE(user_notify->IsAllow());
+  EXPECT_TRUE(user_notify->IsDeny());
+
   const Arg<int> arg(0);
   ResultExpr maybe = If(arg == 0, Allow()).Else(Error(EPERM));
   EXPECT_FALSE(maybe->IsAllow());
@@ -467,6 +483,9 @@ TEST(BPFDSL, HasUnsafeTraps) {
 
   ResultExpr unsafe = UnsafeTrap(DummyTrap, nullptr);
   EXPECT_TRUE(unsafe->HasUnsafeTraps());
+
+  ResultExpr user_notify = UserNotify();
+  EXPECT_FALSE(allow->HasUnsafeTraps());
 
   const Arg<int> arg(0);
   ResultExpr maybe = If(arg == 0, allow).Else(unsafe);

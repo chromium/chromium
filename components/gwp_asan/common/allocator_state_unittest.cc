@@ -6,7 +6,7 @@
 
 #include <limits>
 
-#include "base/process/process_metrics.h"
+#include "base/memory/page_size.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -24,9 +24,12 @@ class HIDConnectionEvent final : public Event {
   HIDConnectionEvent(const AtomicString& type, const HIDConnectionEventInit*);
   HIDConnectionEvent(const AtomicString& type, HIDDevice*);
 
-  HIDDevice* device() const { return nullptr; }
+  HIDDevice* device() const { return device_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
+
+ private:
+  Member<HIDDevice> device_;
 };
 
 }  // namespace blink

@@ -1,0 +1,221 @@
+<style include="signin-dialog-shared">
+  :host {
+    --avatar-size: 100px;
+    --banner-height: 244px;
+    --banner-size: auto;
+    --footer-margin: 40px;
+    --content-container-margin-bottom: calc(48px + var(--footer-margin));
+    --content-container-margin-top: 104px;
+    --info-box-margin-inline: auto;
+    --info-box-margin-top: 32px;
+    --info-box-width: 514px;
+    --text-font-size: 1.16em;
+    color: var(--cr-primary-text-color);
+    display: block;
+  }
+
+  :host([is-modal-dialog_]) {
+    --avatar-size: 76px;
+    --banner-height: 128px;
+    --banner-size: 90% 90%;
+    --content-container-margin-bottom: 0;
+    --content-container-margin-top: 96px;
+    --info-box-margin-inline: 32px;
+    --info-box-margin-top: 28px;
+    --info-box-width: auto;
+    --footer-margin: 16px;
+    min-height: 468px;
+    position: relative;
+    width: 512px;
+  }
+
+  .secondary {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .action-container {
+    bottom: 0;
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+  }
+
+  #headerContainer {
+    background-color: var(--header-background-color);
+    height: var(--banner-height);
+    position: relative;
+    width: 100%;
+  }
+
+  #banner {
+    background-image: url(images/enterprise_profile_welcome_illustration.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: var(--banner-size);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 0;
+  }
+
+  #avatarContainer {
+    bottom: calc(var(--avatar-size)/-2);
+    height: var(--avatar-size);
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    width: var(--avatar-size);
+    z-index: 1;
+  }
+
+  #avatar {
+    border: 2px solid var(--md-background-color);
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+
+  .work-badge {
+    --badge-width: 30px;
+    --badge-offset: -6px;
+    border: 3px solid white;
+    border-radius: 50%;
+    bottom: var(--badge-offset);
+    height: var(--badge-width);
+    inset-inline-end: var(--badge-offset);
+    position: absolute;
+    width: var(--badge-width);
+  }
+
+  .work-badge > iron-icon {
+    --work-icon-size: 20px;
+    background-color: var(--md-background-color);
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    color: var(--signin-work-badge-foreground-color);
+    height: var(--work-icon-size);
+    padding: calc((var(--badge-width) - var(--work-icon-size)) / 2);
+    width: var(--work-icon-size);
+  }
+
+  #contentContainer {
+    margin-bottom: var(--content-container-margin-bottom);
+    margin-inline: auto;
+    margin-top: var(--content-container-margin-top);
+    text-align: center;
+  }
+
+  #contentContainer h2 {
+    font-size: 1.85em;
+    font-weight: normal;
+    margin-bottom: 8px;
+  }
+
+  .info-box {
+    align-items: center;
+    border: 1px solid var(--google-grey-200);
+    border-radius: 8px;
+    color: var(--google-grey-refresh-700);
+    display: flex;
+    flex-direction: row;
+    margin-inline: var(--info-box-margin-inline);
+    margin-top: var(--info-box-margin-top);
+    padding-block: 12px;
+    padding-inline-end: 18px;
+    width: var(--info-box-width);
+  }
+
+  .info-box > p {
+    flex-grow: 1;
+    margin-block: 0;
+    text-align: start;
+  }
+
+  .icon-container {
+    --icon-container-size: 28px;
+    --icon-container-margin: 16px;
+    background-color: var(--google-grey-refresh-100);
+    border-radius: 50%;
+    height: var(--icon-container-size);
+    margin-inline: var(--icon-container-margin);
+    width: var(--icon-container-size);
+  }
+
+  .icon-container iron-icon {
+    --icon-size: 16px;
+    height: var(--icon-size);
+    padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
+    width: var(--icon-size);
+  }
+
+  #buttonsContainer cr-button {
+    font-size: var(--text-font-size);
+    min-width: 111px;
+  }
+
+  #buttonsContainer #cancelButton {
+    font-weight: normal;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .work-badge {
+      border-color: var(--md-background-color);
+    }
+
+    .work-badge > iron-icon {
+      box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px
+        rgba(60, 64, 67, 0.15);
+    }
+
+    .info-box {
+      border-color: var(--google-grey-600);
+      color: var(--google-grey-refresh-100);
+    }
+
+    .icon-container {
+      background-color: var(--google-grey-refresh-700);
+    }
+  }
+</style>
+
+<div id="headerContainer">
+  <div id="banner"></div>
+  <div id="avatarContainer">
+    <img id="avatar" alt="" src="[[pictureUrl_]]">
+    <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
+      <iron-icon class="icon" icon="cr:domain"></iron-icon>
+    </div>
+  </div>
+</div>
+
+<div id="contentContainer">
+  <h2>
+    $i18n{enterpriseProfileWelcomeTitle}
+  </h2>
+  <template is="dom-if" if="[[enterpriseTitle_]]">
+    <p id="enterpriseTitle" class="secondary">
+      [[enterpriseTitle_]]
+    </p>
+  </template>
+  <template is="dom-if" if="[[enterpriseInfo_]]">
+    <div class="info-box">
+      <div class="icon-container">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+      <p id="enterpriseInfo" >
+        [[enterpriseInfo_]]
+      </p>
+    </div>
+  </template>
+</div>
+<div id="buttonsContainer" class="action-container">
+  <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
+      autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
+    [[proceedLabel_]]
+  </cr-button>
+  <cr-button id="cancelButton" on-click="onCancel_">
+    $i18n{cancelLabel}
+  </cr-button>
+</div>

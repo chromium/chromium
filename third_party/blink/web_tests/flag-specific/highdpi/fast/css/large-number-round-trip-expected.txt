@@ -1,0 +1,3 @@
+PASS: read 90010000px back as 2.23696e+07px, read again as 2.23696e+07px
+PASS: read -33554430px back as -2.23696e+07px, read again as -2.23696e+07px
+PASS: read -90010000px back as -2.23696e+07px, read again as -2.23696e+07px

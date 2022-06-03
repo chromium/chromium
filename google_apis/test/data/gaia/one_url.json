@@ -1,0 +1,7 @@
+{
+  "urls": {
+    "client_login_url": {
+      "url": "https://accounts.example.com/ExampleClientLogin"
+    }
+  }
+}

@@ -7,9 +7,10 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/secure_hash.h"
@@ -23,7 +24,15 @@ namespace extensions {
 namespace {
 
 bool g_ignore_verification_for_tests = false;
-ContentVerifyJob::TestObserver* g_content_verify_job_test_observer = NULL;
+
+base::LazyInstance<scoped_refptr<ContentVerifyJob::TestObserver>>::Leaky
+    g_content_verify_job_test_observer = LAZY_INSTANCE_INITIALIZER;
+
+scoped_refptr<ContentVerifyJob::TestObserver> GetTestObserver() {
+  if (!g_content_verify_job_test_observer.IsCreated())
+    return nullptr;
+  return g_content_verify_job_test_observer.Get();
+}
 
 class ScopedElapsedTimer {
  public:
@@ -86,13 +95,12 @@ void ContentVerifyJob::DidGetContentHashOnIO(
     scoped_refptr<const ContentHash> content_hash) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::AutoLock auto_lock(lock_);
-  if (g_content_verify_job_test_observer)
-    g_content_verify_job_test_observer->JobStarted(extension_id_,
-                                                   relative_path_);
+  scoped_refptr<TestObserver> test_observer = GetTestObserver();
+  if (test_observer)
+    test_observer->JobStarted(extension_id_, relative_path_);
   // Build |hash_reader_|.
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ContentHashReader::Create, relative_path_, content_hash),
       base::BindOnce(&ContentVerifyJob::OnHashesReady, this));
 }
@@ -119,10 +127,9 @@ void ContentVerifyJob::Done() {
 
   const bool can_proceed = has_ignorable_read_error_ || FinishBlock();
   if (can_proceed) {
-    if (g_content_verify_job_test_observer) {
-      g_content_verify_job_test_observer->JobFinished(extension_id_,
-                                                      relative_path_, NONE);
-    }
+    scoped_refptr<TestObserver> test_observer = GetTestObserver();
+    if (test_observer)
+      test_observer->JobFinished(extension_id_, relative_path_, NONE);
   } else {
     DispatchFailureCallback(HASH_MISMATCH);
   }
@@ -209,32 +216,39 @@ bool ContentVerifyJob::FinishBlock() {
 void ContentVerifyJob::OnHashesReady(
     std::unique_ptr<const ContentHashReader> hash_reader) {
   base::AutoLock auto_lock(lock_);
-  const bool success = hash_reader->succeeded();
   hash_reader_ = std::move(hash_reader);
 
   if (g_ignore_verification_for_tests)
     return;
-  if (g_content_verify_job_test_observer) {
-    g_content_verify_job_test_observer->OnHashesReady(extension_id_,
-                                                      relative_path_, success);
-  }
-  if (!success) {
-    if (!hash_reader_->has_content_hashes()) {
+  scoped_refptr<TestObserver> test_observer = GetTestObserver();
+  if (test_observer)
+    test_observer->OnHashesReady(extension_id_, relative_path_, *hash_reader_);
+
+  switch (hash_reader_->status()) {
+    case ContentHashReader::InitStatus::HASHES_MISSING: {
       DispatchFailureCallback(MISSING_ALL_HASHES);
       return;
     }
-
-    if (hash_reader_->file_missing_from_verified_contents()) {
-      // Ignore verification of non-existent resources.
-      if (g_content_verify_job_test_observer) {
-        g_content_verify_job_test_observer->JobFinished(extension_id_,
-                                                        relative_path_, NONE);
-      }
+    case ContentHashReader::InitStatus::HASHES_DAMAGED: {
+      DispatchFailureCallback(CORRUPTED_HASHES);
       return;
     }
-    DispatchFailureCallback(NO_HASHES_FOR_FILE);
-    return;
+    case ContentHashReader::InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE: {
+      // Ignore verification of non-existent resources.
+      test_observer = GetTestObserver();
+      if (test_observer)
+        test_observer->JobFinished(extension_id_, relative_path_, NONE);
+      return;
+    }
+    case ContentHashReader::InitStatus::NO_HASHES_FOR_RESOURCE: {
+      DispatchFailureCallback(NO_HASHES_FOR_FILE);
+      return;
+    }
+    case ContentHashReader::InitStatus::SUCCESS: {
+      // Just proceed with hashes in case of success.
+    }
   }
+  DCHECK_EQ(ContentHashReader::InitStatus::SUCCESS, hash_reader_->status());
 
   DCHECK(!failed_);
 
@@ -250,9 +264,10 @@ void ContentVerifyJob::OnHashesReady(
     ScopedElapsedTimer timer(&time_spent_);
     if (!has_ignorable_read_error_ && !FinishBlock()) {
       DispatchFailureCallback(HASH_MISMATCH);
-    } else if (g_content_verify_job_test_observer) {
-      g_content_verify_job_test_observer->JobFinished(extension_id_,
-                                                      relative_path_, NONE);
+    } else {
+      test_observer = GetTestObserver();
+      if (test_observer)
+        test_observer->JobFinished(extension_id_, relative_path_, NONE);
     }
   }
 }
@@ -264,11 +279,13 @@ void ContentVerifyJob::SetIgnoreVerificationForTests(bool value) {
 }
 
 // static
-void ContentVerifyJob::SetObserverForTests(TestObserver* observer) {
-  DCHECK(observer == nullptr || g_content_verify_job_test_observer == nullptr)
+void ContentVerifyJob::SetObserverForTests(
+    scoped_refptr<TestObserver> observer) {
+  DCHECK(observer == nullptr ||
+         g_content_verify_job_test_observer.Get() == nullptr)
       << "SetObserverForTests does not support interleaving. Observers should "
       << "be set and then cleared one at a time.";
-  g_content_verify_job_test_observer = observer;
+  g_content_verify_job_test_observer.Get() = std::move(observer);
 }
 
 void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
@@ -279,10 +296,9 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
             << relative_path_.MaybeAsASCII() << " reason:" << reason;
     std::move(failure_callback_).Run(reason);
   }
-  if (g_content_verify_job_test_observer) {
-    g_content_verify_job_test_observer->JobFinished(extension_id_,
-                                                    relative_path_, reason);
-  }
+  scoped_refptr<TestObserver> test_observer = GetTestObserver();
+  if (test_observer)
+    test_observer->JobFinished(extension_id_, relative_path_, reason);
 }
 
 }  // namespace extensions

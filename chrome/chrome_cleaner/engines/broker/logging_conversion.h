@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
 

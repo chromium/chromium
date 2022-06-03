@@ -7,18 +7,17 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
@@ -123,6 +122,9 @@ class UsbDeviceHandleImpl::InterfaceClaimer
                    int interface_number,
                    scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  InterfaceClaimer(const InterfaceClaimer&) = delete;
+  InterfaceClaimer& operator=(const InterfaceClaimer&) = delete;
+
   int interface_number() const { return interface_number_; }
   int alternate_setting() const { return alternate_setting_; }
   void set_alternate_setting(const int alternate_setting) {
@@ -143,8 +145,6 @@ class UsbDeviceHandleImpl::InterfaceClaimer
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ResultCallback release_callback_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceClaimer);
 };
 
 UsbDeviceHandleImpl::InterfaceClaimer::InterfaceClaimer(
@@ -644,7 +644,9 @@ void UsbDeviceHandleImpl::ResetDevice(ResultCallback callback) {
                                 std::move(callback)));
 }
 
-void UsbDeviceHandleImpl::ClearHalt(uint8_t endpoint, ResultCallback callback) {
+void UsbDeviceHandleImpl::ClearHalt(UsbTransferDirection direction,
+                                    uint8_t endpoint_number,
+                                    ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!device_) {
@@ -652,8 +654,11 @@ void UsbDeviceHandleImpl::ClearHalt(uint8_t endpoint, ResultCallback callback) {
     return;
   }
 
+  uint8_t endpoint_address =
+      ConvertTransferDirection(direction) | endpoint_number;
+
   InterfaceClaimer* interface_claimer =
-      GetClaimedInterfaceForEndpoint(endpoint).get();
+      GetClaimedInterfaceForEndpoint(endpoint_address).get();
   for (Transfer* transfer : transfers_) {
     if (transfer->claimed_interface() == interface_claimer) {
       transfer->Cancel();
@@ -662,7 +667,7 @@ void UsbDeviceHandleImpl::ClearHalt(uint8_t endpoint, ResultCallback callback) {
 
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UsbDeviceHandleImpl::ClearHaltBlocking, this,
-                                endpoint, std::move(callback)));
+                                endpoint_address, std::move(callback)));
 }
 
 void UsbDeviceHandleImpl::ControlTransfer(
@@ -859,8 +864,7 @@ UsbDeviceHandleImpl::~UsbDeviceHandleImpl() {
   } else {
     blocking_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<ScopedLibusbDeviceHandle>(),
-                       std::move(handle_)));
+        base::BindOnce([](ScopedLibusbDeviceHandle) {}, std::move(handle_)));
   }
 }
 
@@ -983,11 +987,11 @@ void UsbDeviceHandleImpl::ResetDeviceBlocking(ResultCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), rv == LIBUSB_SUCCESS));
 }
 
-void UsbDeviceHandleImpl::ClearHaltBlocking(uint8_t endpoint,
+void UsbDeviceHandleImpl::ClearHaltBlocking(uint8_t endpoint_address,
                                             ResultCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  int rv = libusb_clear_halt(handle(), endpoint);
+  int rv = libusb_clear_halt(handle(), endpoint_address);
   if (rv != LIBUSB_SUCCESS) {
     USB_LOG(EVENT) << "Failed to clear halt: "
                    << ConvertPlatformUsbErrorToString(rv);
@@ -1019,8 +1023,8 @@ void UsbDeviceHandleImpl::RefreshEndpointMap() {
 }
 
 scoped_refptr<UsbDeviceHandleImpl::InterfaceClaimer>
-UsbDeviceHandleImpl::GetClaimedInterfaceForEndpoint(uint8_t endpoint) {
-  const auto endpoint_it = endpoint_map_.find(endpoint);
+UsbDeviceHandleImpl::GetClaimedInterfaceForEndpoint(uint8_t endpoint_address) {
+  const auto endpoint_it = endpoint_map_.find(endpoint_address);
   if (endpoint_it != endpoint_map_.end())
     return claimed_interfaces_[endpoint_it->second.interface->interface_number];
   return nullptr;

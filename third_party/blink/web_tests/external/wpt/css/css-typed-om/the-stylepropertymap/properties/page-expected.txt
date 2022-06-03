@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
-FAIL Can set 'page' to CSS-wide keywords assert_not_equals: Computed value must not be null got disallowed value null
-FAIL Can set 'page' to var() references assert_not_equals: Computed value must not be null got disallowed value null
-FAIL Can set 'page' to the 'auto' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+PASS Can set 'page' to CSS-wide keywords
+PASS Can set 'page' to var() references
+PASS Can set 'page' to the 'auto' keyword
 FAIL Can set 'page' to the 'custom-ident' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 PASS Setting 'page' to a length throws TypeError
 PASS Setting 'page' to a percent throws TypeError

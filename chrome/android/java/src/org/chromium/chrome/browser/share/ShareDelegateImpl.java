@@ -5,32 +5,41 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
-import android.net.Uri;
-import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
+import org.chromium.chrome.browser.printing.TabPrinter;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
-import org.chromium.chrome.browser.share.qrcode.QrCodeShareActivity;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.util.ChromeFileProvider;
-import org.chromium.chrome.browser.util.UrlConstants;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.ui_metrics.CanonicalURLResult;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.net.GURLUtils;
+import org.chromium.printing.PrintManagerDelegateImpl;
+import org.chromium.printing.PrintingController;
+import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,52 +51,68 @@ public class ShareDelegateImpl implements ShareDelegate {
     static final String CANONICAL_URL_RESULT_HISTOGRAM = "Mobile.CanonicalURLResult";
 
     private final BottomSheetController mBottomSheetController;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Supplier<Tab> mTabProvider;
     private final ShareSheetDelegate mDelegate;
-    private final ActivityTabProvider mActivityTabProvider;
-    private final TabCreatorManager.TabCreator mTabCreator;
-
-    private static boolean sScreenshotCaptureSkippedForTesting;
+    private final boolean mIsCustomTab;
+    private long mShareStartTime;
 
     /**
-     * Construct a new {@link ShareDelegateImpl}.
+     * Constructs a new {@link ShareDelegateImpl}.
+     *
      * @param controller The BottomSheetController for the current activity.
-     * @param tabProvider The ActivityTabProvider for the current visible tab.
+     * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
+     * changes.
+     * @param tabProvider Supplier for the current activity tab.
      * @param delegate The ShareSheetDelegate for the current activity.
-     * @param tabCreator The TabCreator for the current selected {@link TabModel}.
+     * @param isCustomTab This share delegate is associated with a CCT.
      */
-    public ShareDelegateImpl(BottomSheetController controller, ActivityTabProvider tabProvider,
-            ShareSheetDelegate delegate, TabCreatorManager.TabCreator tabCreator) {
+    public ShareDelegateImpl(BottomSheetController controller,
+            ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
+            ShareSheetDelegate delegate, boolean isCustomTab) {
         mBottomSheetController = controller;
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mTabProvider = tabProvider;
         mDelegate = delegate;
-        mActivityTabProvider = tabProvider;
-        mTabCreator = tabCreator;
+        mIsCustomTab = isCustomTab;
     }
 
     // ShareDelegate implementation.
     @Override
-    public void share(ShareParams params) {
-        mDelegate.share(params, mBottomSheetController, mActivityTabProvider, mTabCreator);
+    public void share(
+            ShareParams params, ChromeShareExtras chromeShareExtras, @ShareOrigin int shareOrigin) {
+        if (mShareStartTime == 0L) {
+            mShareStartTime = System.currentTimeMillis();
+        }
+        boolean isSyncEnabled = SyncService.get() != null && SyncService.get().isSyncRequested();
+        mDelegate.share(params, chromeShareExtras, mBottomSheetController, mLifecycleDispatcher,
+                mTabProvider, this::printTab, shareOrigin, isSyncEnabled, mShareStartTime,
+                isSharingHubEnabled());
+        mShareStartTime = 0;
     }
 
     // ShareDelegate implementation.
     @Override
-    public void share(Tab currentTab, boolean shareDirectly) {
-        onShareSelected(currentTab.getWindowAndroid().getActivity().get(), currentTab,
+    public void share(Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin) {
+        mShareStartTime = System.currentTimeMillis();
+        onShareSelected(currentTab.getWindowAndroid().getActivity().get(), currentTab, shareOrigin,
                 shareDirectly, currentTab.isIncognito());
     }
 
     /**
      * Triggered when the share menu item is selected.
      * This creates and shows a share intent picker dialog or starts a share intent directly.
+     *
+     * @param shareOrigin Where the share originated.
      * @param shareDirectly Whether it should share directly with the activity that was most
-     *                      recently used to share.
+     * recently used to share.
      * @param isIncognito Whether currentTab is incognito.
      */
-    private void onShareSelected(
-            Activity activity, Tab currentTab, boolean shareDirectly, boolean isIncognito) {
+    private void onShareSelected(Activity activity, Tab currentTab, @ShareOrigin int shareOrigin,
+            boolean shareDirectly, boolean isIncognito) {
         if (currentTab == null) return;
 
-        List<Class<? extends ShareActivity>> classesToEnable = new ArrayList<>(2);
+        List<Class<? extends Activity>> classesToEnable = new ArrayList<>(2);
 
         if (PrintShareActivity.featureIsAvailable(currentTab)) {
             classesToEnable.add(PrintShareActivity.class);
@@ -97,87 +122,63 @@ public class ShareDelegateImpl implements ShareDelegate {
             classesToEnable.add(SendTabToSelfShareActivity.class);
         }
 
-        if (QrCodeShareActivity.featureIsAvailable()) {
-            classesToEnable.add(QrCodeShareActivity.class);
-        }
-
         if (!classesToEnable.isEmpty()) {
             OptionalShareTargetsManager.getInstance().enableOptionalShareActivities(activity,
-                    classesToEnable, () -> triggerShare(currentTab, shareDirectly, isIncognito));
+                    classesToEnable,
+                    () -> triggerShare(currentTab, shareOrigin, shareDirectly, isIncognito));
             return;
         }
 
-        triggerShare(currentTab, shareDirectly, isIncognito);
+        triggerShare(currentTab, shareOrigin, shareDirectly, isIncognito);
     }
 
-    protected void triggerShare(
-            final Tab currentTab, final boolean shareDirectly, boolean isIncognito) {
-        ScreenshotTabObserver tabObserver = ScreenshotTabObserver.from(currentTab);
-        if (tabObserver != null) {
-            tabObserver.onActionPerformedAfterScreenshot(
-                    ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
-        }
-
+    private void triggerShare(final Tab currentTab, @ShareOrigin final int shareOrigin,
+            final boolean shareDirectly, boolean isIncognito) {
         OfflinePageUtils.maybeShareOfflinePage(currentTab, (ShareParams p) -> {
             if (p != null) {
-                share(p);
+                share(p, new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build(),
+                        shareOrigin);
             } else {
                 WindowAndroid window = currentTab.getWindowAndroid();
                 // Could not share as an offline page.
                 if (shouldFetchCanonicalUrl(currentTab)) {
                     WebContents webContents = currentTab.getWebContents();
                     String title = currentTab.getTitle();
-                    String visibleUrl = currentTab.getUrl();
-                    webContents.getMainFrame().getCanonicalUrlForSharing(new Callback<String>() {
+                    GURL visibleUrl = currentTab.getUrl();
+                    webContents.getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
                         @Override
-                        public void onResult(String result) {
+                        public void onResult(GURL result) {
                             logCanonicalUrlResult(visibleUrl, result);
 
                             triggerShareWithCanonicalUrlResolved(window, webContents, title,
-                                    visibleUrl, result, shareDirectly, isIncognito);
+                                    visibleUrl, result, shareOrigin, shareDirectly, isIncognito);
                         }
                     });
                 } else {
                     triggerShareWithCanonicalUrlResolved(window, currentTab.getWebContents(),
-                            currentTab.getTitle(), currentTab.getUrl(), null, shareDirectly,
-                            isIncognito);
+                            currentTab.getTitle(), currentTab.getUrl(), GURL.emptyGURL(),
+                            shareOrigin, shareDirectly, isIncognito);
                 }
             }
         });
     }
 
     private void triggerShareWithCanonicalUrlResolved(final WindowAndroid window,
-            final WebContents webContents, final String title, final String visibleUrl,
-            final String canonicalUrl, final boolean shareDirectly, boolean isIncognito) {
-        // Share an empty blockingUri in place of screenshot file. The file ready notification is
-        // sent by onScreenshotReady call below when the file is written.
-        final Uri blockingUri = (isIncognito || webContents == null)
-                ? null
-                : ChromeFileProvider.generateUriAndBlockAccess();
+            final WebContents webContents, final String title, final @NonNull GURL visibleUrl,
+            final GURL canonicalUrl, @ShareOrigin final int shareOrigin,
+            final boolean shareDirectly, boolean isIncognito) {
         ShareParams.Builder builder =
                 new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
-                        .setShareDirectly(shareDirectly)
+                        .setScreenshotUri(null);
+        share(builder.build(),
+                new ChromeShareExtras.Builder()
                         .setSaveLastUsed(!shareDirectly)
-                        .setScreenshotUri(blockingUri);
-        share(builder.build());
-        if (shareDirectly) {
-            RecordUserAction.record("MobileMenuDirectShare");
-        } else {
-            RecordUserAction.record("MobileMenuShare");
-        }
+                        .setShareDirectly(shareDirectly)
+                        .setIsUrlOfVisiblePage(true)
+                        .build(),
+                shareOrigin);
 
-        if (blockingUri == null) return;
-
-        // Start screenshot capture and notify the provider when it is ready.
-        Callback<Uri> callback = (saveFile) -> {
-            // Unblock the file once it is saved to disk.
-            ChromeFileProvider.notifyFileReady(blockingUri, saveFile);
-        };
-        if (sScreenshotCaptureSkippedForTesting) {
-            callback.onResult(null);
-        } else {
-            ShareHelper.captureScreenshotForContents(webContents, 0, 0, callback);
-        }
+        HistoryClustersTabHelper.onCurrentTabUrlShared(webContents);
     }
 
     @VisibleForTesting
@@ -185,16 +186,14 @@ public class ShareDelegateImpl implements ShareDelegate {
         WebContents webContents = currentTab.getWebContents();
         if (webContents == null) return false;
         if (webContents.getMainFrame() == null) return false;
-        String url = currentTab.getUrl();
-        if (TextUtils.isEmpty(url)) return false;
-        if (currentTab.isShowingErrorPage() || ((TabImpl) currentTab).isShowingInterstitialPage()
-                || SadTab.isShowing(currentTab)) {
+        if (currentTab.getUrl().isEmpty()) return false;
+        if (currentTab.isShowingErrorPage() || SadTab.isShowing(currentTab)) {
             return false;
         }
         return true;
     }
 
-    private static void logCanonicalUrlResult(String visibleUrl, String canonicalUrl) {
+    private static void logCanonicalUrlResult(GURL visibleUrl, GURL canonicalUrl) {
         @CanonicalURLResult
         int result = getCanonicalUrlResult(visibleUrl, canonicalUrl);
         RecordHistogram.recordEnumeratedHistogram(CANONICAL_URL_RESULT_HISTOGRAM, result,
@@ -202,35 +201,28 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @VisibleForTesting
-    public static void setScreenshotCaptureSkippedForTesting(boolean value) {
-        sScreenshotCaptureSkippedForTesting = value;
-    }
-
-    @VisibleForTesting
-    static String getUrlToShare(String visibleUrl, String canonicalUrl) {
-        if (TextUtils.isEmpty(canonicalUrl)) return visibleUrl;
-        // TODO(tedchoc): Can we replace GURLUtils.getScheme with Uri.parse(...).getScheme()
-        //                https://crbug.com/783819
-        if (!UrlConstants.HTTPS_SCHEME.equals(GURLUtils.getScheme(visibleUrl))) {
-            return visibleUrl;
+    static String getUrlToShare(@NonNull GURL visibleUrl, GURL canonicalUrl) {
+        if (canonicalUrl == null || canonicalUrl.isEmpty()) {
+            return visibleUrl.getSpec();
         }
-        String canonicalScheme = GURLUtils.getScheme(canonicalUrl);
-        if (!UrlConstants.HTTP_SCHEME.equals(canonicalScheme)
-                && !UrlConstants.HTTPS_SCHEME.equals(canonicalScheme)) {
-            return visibleUrl;
+        if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
+            return visibleUrl.getSpec();
         }
-        return canonicalUrl;
+        if (!UrlUtilities.isHttpOrHttps(canonicalUrl)) {
+            return visibleUrl.getSpec();
+        }
+        return canonicalUrl.getSpec();
     }
 
     @CanonicalURLResult
-    private static int getCanonicalUrlResult(String visibleUrl, String canonicalUrl) {
-        if (!UrlConstants.HTTPS_SCHEME.equals(GURLUtils.getScheme(visibleUrl))) {
+    private static int getCanonicalUrlResult(GURL visibleUrl, GURL canonicalUrl) {
+        if (!UrlConstants.HTTPS_SCHEME.equals(visibleUrl.getScheme())) {
             return CanonicalURLResult.FAILED_VISIBLE_URL_NOT_HTTPS;
         }
-        if (TextUtils.isEmpty(canonicalUrl)) {
+        if (canonicalUrl == null || canonicalUrl.isEmpty()) {
             return CanonicalURLResult.FAILED_NO_CANONICAL_URL_DEFINED;
         }
-        String canonicalScheme = GURLUtils.getScheme(canonicalUrl);
+        String canonicalScheme = canonicalUrl.getScheme();
         if (!UrlConstants.HTTPS_SCHEME.equals(canonicalScheme)) {
             if (!UrlConstants.HTTP_SCHEME.equals(canonicalScheme)) {
                 return CanonicalURLResult.FAILED_CANONICAL_URL_INVALID;
@@ -238,11 +230,25 @@ public class ShareDelegateImpl implements ShareDelegate {
                 return CanonicalURLResult.SUCCESS_CANONICAL_URL_NOT_HTTPS;
             }
         }
-        if (TextUtils.equals(visibleUrl, canonicalUrl)) {
+        if (visibleUrl.equals(canonicalUrl)) {
             return CanonicalURLResult.SUCCESS_CANONICAL_URL_SAME_AS_VISIBLE;
         } else {
             return CanonicalURLResult.SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE;
         }
+    }
+
+    private void printTab(Tab tab) {
+        Activity activity = mTabProvider.get().getWindowAndroid().getActivity().get();
+        PrintingController printingController = PrintingControllerImpl.getInstance();
+        if (printingController != null && !printingController.isBusy()) {
+            printingController.startPrint(
+                    new TabPrinter(mTabProvider.get()), new PrintManagerDelegateImpl(activity));
+        }
+    }
+
+    @Override
+    public boolean isSharingHubEnabled() {
+        return !mIsCustomTab;
     }
 
     /**
@@ -252,17 +258,38 @@ public class ShareDelegateImpl implements ShareDelegate {
         /**
          * Trigger the share action for the specified params.
          */
-        void share(ShareParams params, BottomSheetController controller,
-                ActivityTabProvider tabProvider, TabCreatorManager.TabCreator tabCreator) {
-            if (params.shareDirectly()) {
-                ShareHelper.shareDirectly(params);
-            } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB)) {
-                ShareSheetCoordinator coordinator =
-                        new ShareSheetCoordinator(controller, tabProvider, tabCreator);
+        void share(ShareParams params, ChromeShareExtras chromeShareExtras,
+                BottomSheetController controller, ActivityLifecycleDispatcher lifecycleDispatcher,
+                Supplier<Tab> tabProvider, Callback<Tab> printCallback,
+                @ShareOrigin int shareOrigin, boolean isSyncEnabled, long shareStartTime,
+                boolean sharingHubEnabled) {
+            Profile profile = null;
+            if (tabProvider.get() != null && tabProvider.get().getWebContents() != null) {
+                profile = Profile.fromWebContents(tabProvider.get().getWebContents());
+            }
+            if (chromeShareExtras.shareDirectly()) {
+                ShareHelper.shareWithLastUsedComponent(params);
+            } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()
+                    && tabProvider.get() != null) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Sharing.SharingHubAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
+                ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.CHROME_SHARE_SHEET);
+                // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
+                // Re-enable it when tab group sharing is supported by sharing hub.
+                ShareSheetCoordinator coordinator = new ShareSheetCoordinator(controller,
+                        lifecycleDispatcher, tabProvider,
+                        new ShareSheetPropertyModelBuilder(controller,
+                                ContextUtils.getApplicationContext().getPackageManager(), profile),
+                        printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                        new SettingsLauncherImpl(), isSyncEnabled,
+                        AppHooks.get().getImageEditorModuleProvider(),
+                        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile()));
                 // TODO(crbug/1009124): open custom share sheet.
-                coordinator.showShareSheet(params);
+                coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
             } else {
-                ShareHelper.showDefaultShareUi(params);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Sharing.DefaultSharesheetAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
+                ShareHelper.showDefaultShareUi(params, profile, chromeShareExtras.saveLastUsed());
             }
         }
     }

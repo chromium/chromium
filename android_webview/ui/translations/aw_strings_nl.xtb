@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="6106989379647458772">De webpagina op <ph name="PAGE" /> is mogelijk tijdelijk niet beschikbaar of is permanent verplaatst naar een nieuw webadres.</translation>
-<translation id="6312113039770857350">Webpagina niet beschikbaar</translation>
-<translation id="8681531050781943054">De webpagina op <ph name="PAGE" /> kan niet worden geladen vanwege het volgende:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Suggesties:<ph name="MARKUP_2" />Controleer of er een gegevensverbinding beschikbaar is<ph name="MARKUP_3" />Laad deze pagina later opnieuw<ph name="MARKUP_4" />Controleer het adres dat je hebt opgegeven<ph name="MARKUP_5" /></translation>
 </translationbundle>

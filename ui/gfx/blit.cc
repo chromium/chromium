@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkPixmap.h"

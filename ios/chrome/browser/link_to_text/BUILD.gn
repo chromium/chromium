@@ -1,0 +1,74 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/js_compile.gni")
+
+source_set("link_to_text") {
+  sources = [
+    "link_to_text_java_script_feature.h",
+    "link_to_text_java_script_feature.mm",
+    "link_to_text_payload.h",
+    "link_to_text_payload.mm",
+    "link_to_text_response.h",
+    "link_to_text_response.mm",
+    "link_to_text_tab_helper.h",
+    "link_to_text_tab_helper.mm",
+  ]
+  deps = [
+    ":internal",
+    ":link_to_text_js",
+    "//components/shared_highlighting/core/common",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/tabs",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("internal") {
+  sources = [
+    "link_generation_outcome.h",
+    "link_to_text_constants.h",
+    "link_to_text_constants.mm",
+    "link_to_text_utils.h",
+    "link_to_text_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/shared_highlighting/core/common",
+    "//ios/web/public",
+    "//ios/web/public/ui",
+    "//url",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "link_to_text_tab_helper_unittest.mm",
+    "link_to_text_utils_unittest.mm",
+  ]
+  deps = [
+    ":internal",
+    ":link_to_text",
+    "//base",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+js_compile_bundle("link_to_text_js") {
+  visibility = [ ":link_to_text" ]
+  closure_entry_point = "__crWeb.linkToText"
+
+  sources = [
+    "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
+    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
+    "resources/link_to_text.js",
+  ]
+}

@@ -7,9 +7,10 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
-#include "base/strings/string16.h"
-#include "chrome/browser/password_manager/password_generation_dialog_view_interface.h"
+#include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 
 class PasswordGenerationController;
 
@@ -23,11 +24,16 @@ class PasswordGenerationDialogViewAndroid
   explicit PasswordGenerationDialogViewAndroid(
       PasswordGenerationController* controller);
 
+  PasswordGenerationDialogViewAndroid(
+      const PasswordGenerationDialogViewAndroid&) = delete;
+  PasswordGenerationDialogViewAndroid& operator=(
+      const PasswordGenerationDialogViewAndroid&) = delete;
+
   ~PasswordGenerationDialogViewAndroid() override;
 
   // Called to show the dialog. |password| is the generated password.
   void Show(
-      base::string16& password,
+      std::u16string& password,
       base::WeakPtr<password_manager::PasswordManagerDriver>
           target_frame_driver,
       autofill::password_generation::PasswordGenerationType type) override;
@@ -56,7 +62,6 @@ class PasswordGenerationDialogViewAndroid
   // Whether the dialog was shown for manual generation or not. Used for
   // metrics.
   autofill::password_generation::PasswordGenerationType generation_type_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationDialogViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_PASSWORD_GENERATION_DIALOG_VIEW_ANDROID_H_

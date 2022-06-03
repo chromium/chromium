@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("language_detection") {
+  sources = [
+    "language_detection_service_impl.cc",
+    "language_detection_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/translate/core/language_detection",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  public_deps = [
+    "//components/services/language_detection/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}

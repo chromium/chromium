@@ -1,0 +1,11 @@
+Tests that passing a string intestead of a protocol object does not crash crash backend (crbug.com/1154370)
+Error: {
+    error : {
+        code : -32602
+        data : Failed to deserialize params.headers - BINDINGS: dictionary value expected <somewhere>
+        message : Invalid parameters
+    }
+    id : <number>
+    sessionId : <string>
+}
+

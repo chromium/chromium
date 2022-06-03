@@ -101,10 +101,9 @@ void HostResolverResourceBase::SendResolve(
     const PP_HostResolver_Private_Hint* hint) {
   PpapiHostMsg_HostResolver_Resolve msg(host_port, *hint);
   Call<PpapiPluginMsg_HostResolver_ResolveReply>(
-      BROWSER,
-      msg,
-      base::Bind(&HostResolverResourceBase::OnPluginMsgResolveReply,
-                 base::Unretained(this)));
+      BROWSER, msg,
+      base::BindOnce(&HostResolverResourceBase::OnPluginMsgResolveReply,
+                     base::Unretained(this)));
 }
 
 bool HostResolverResourceBase::ResolveInProgress() const {

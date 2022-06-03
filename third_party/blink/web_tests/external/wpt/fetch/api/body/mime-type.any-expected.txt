@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Request: overriding explicit Content-Type assert_equals: expected "test/test" but got "text/plain"
+FAIL Response: overriding explicit Content-Type assert_equals: expected "test/test" but got "text/plain"
+FAIL Request: removing implicit Content-Type assert_equals: expected "" but got "application/x-www-form-urlencoded;charset=utf-8"
+FAIL Response: removing implicit Content-Type assert_equals: expected "" but got "application/x-www-form-urlencoded;charset=utf-8"
+FAIL Request: setting missing Content-Type assert_equals: expected "test/test" but got ""
+FAIL Response: setting missing Content-Type assert_equals: expected "test/test" but got ""
+Harness: the test ran to completion.
+

@@ -26,7 +26,7 @@
 // https://www.khronos.org/registry/webgl/extensions/WEBGL_debug_renderer_info/
 
 [
-    NoInterfaceObject,
+    LegacyNoInterfaceObject,
     DoNotCheckConstants
 ] interface WebGLDebugRendererInfo {
     const unsigned long UNMASKED_VENDOR_WEBGL = 0x9245;

@@ -5,7 +5,7 @@
 #ifndef CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_H_
 #define CC_TEST_FAKE_LAYER_TREE_HOST_IMPL_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "cc/test/fake_layer_tree_host_impl_client.h"
 #include "cc/test/fake_rendering_stats_instrumentation.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -15,6 +15,11 @@ namespace cc {
 
 class AnimationHost;
 
+// Note: If you're creating this as a pair with a FakeLayerTreeHost, consider
+// creating it via FakeLayerTreeHost::InitializeSingleThreaded if your test
+// will use a Proxy or FakeLayerTreeHost::CreateFakeLayerTreeHostImpl if it
+// doesn't use a Proxy. These will ensure we're not accidentally creating
+// multiple HostImpls.
 class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
  public:
   FakeLayerTreeHostImpl(TaskRunnerProvider* task_runner_provider,
@@ -38,7 +43,7 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
   void CreatePendingTree() override;
 
   void NotifyTileStateChanged(const Tile* tile) override;
-  viz::BeginFrameArgs CurrentBeginFrameArgs() const override;
+  const viz::BeginFrameArgs& CurrentBeginFrameArgs() const override;
   void AdvanceToNextFrame(base::TimeDelta advance_by);
 
   using LayerTreeHostImpl::ActivateSyncTree;

@@ -1,6 +1,8 @@
 <html>
 <head>
     <script src="../../resources/js-test.js"></script>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/visibility.js"></script>
     <script>
         description('<a href="http://crbug.com/259680">Bug 259680</a>: JavaScript setInterval lagging behind');
 
@@ -30,20 +32,19 @@
 
         function runTest()
         {
+            assert_equals(document.visibilityState, "hidden");
+
             if (!window.testRunner) {
                 debug('This test requires testRunner');
                 return;
             }
 
-            testRunner.dumpAsText();
-
-            testRunner.setPageVisibility("hidden");
             startTime = new Date().getTime();
             intervalID = window.setInterval(timerFired, intervalDuration);
         }
     </script>
 </head>
-<body onload="runTest()">
+<body onload="setMainWindowHidden(true).then(runTest)">
     <p>
     This test ensures that intervals on background pages whose duration is close to the timer alignment interval don't miss every other firing.
     </p>

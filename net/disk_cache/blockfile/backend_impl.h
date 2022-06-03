@@ -22,7 +22,6 @@
 #include "net/disk_cache/blockfile/rankings.h"
 #include "net/disk_cache/blockfile/stats.h"
 #include "net/disk_cache/blockfile/stress_support.h"
-#include "net/disk_cache/blockfile/trace.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace base {
@@ -67,6 +66,9 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
               const scoped_refptr<base::SingleThreadTaskRunner>& cache_thread,
               net::CacheType cache_type,
               net::NetLog* net_log);
+
+  BackendImpl(const BackendImpl&) = delete;
+  BackendImpl& operator=(const BackendImpl&) = delete;
 
   ~BackendImpl() override;
 
@@ -302,9 +304,6 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(StatsItems* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
-  size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const override;
 
  private:
   using EntriesMap = std::unordered_map<CacheAddr, EntryImpl*>;
@@ -396,8 +395,8 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   Index* data_;  // Pointer to the index data.
   BlockFiles block_files_;  // Set of files used to store all data.
   Rankings rankings_;  // Rankings to be able to trim the cache.
-  uint32_t mask_;            // Binary mask to map a hash to the hash table.
-  int32_t max_size_;         // Maximum data size for this instance.
+  uint32_t mask_ = 0;  // Binary mask to map a hash to the hash table.
+  int32_t max_size_ = 0;  // Maximum data size for this instance.
   Eviction eviction_;  // Handler of the eviction algorithm.
   EntriesMap open_entries_;  // Map of open entries.
   int num_refs_;  // Number of referenced cache entries.
@@ -406,30 +405,28 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   int entry_count_;  // Number of entries accessed lately.
   int byte_count_;  // Number of bytes read/written lately.
   int buffer_bytes_;  // Total size of the temporary entries' buffers.
-  int up_ticks_;  // The number of timer ticks received (OnStatsTimer).
-  int uma_report_;  // Controls transmission of UMA data.
+  int up_ticks_ = 0;  // The number of timer ticks received (OnStatsTimer).
+  int uma_report_ = 0;   // Controls transmission of UMA data.
   uint32_t user_flags_;  // Flags set by the user.
-  bool init_;  // controls the initialization of the system.
-  bool restarted_;
-  bool unit_test_;
-  bool read_only_;  // Prevents updates of the rankings data (used by tools).
-  bool disabled_;
-  bool new_eviction_;  // What eviction algorithm should be used.
-  bool first_timer_;  // True if the timer has not been called.
-  bool user_load_;  // True if we see a high load coming from the caller.
+  bool init_ = false;    // controls the initialization of the system.
+  bool restarted_ = false;
+  bool unit_test_ = false;
+  bool read_only_ =
+      false;  // Prevents updates of the rankings data (used by tools).
+  bool disabled_ = false;
+  bool new_eviction_ = false;  // What eviction algorithm should be used.
+  bool first_timer_ = true;    // True if the timer has not been called.
+  bool user_load_ =
+      false;  // True if we see a high load coming from the caller.
 
   // True if we should consider doing eviction at end of current operation.
-  bool consider_evicting_at_op_end_;
+  bool consider_evicting_at_op_end_ = false;
 
   net::NetLog* net_log_;
 
   Stats stats_;  // Usage statistics.
   std::unique_ptr<base::RepeatingTimer> timer_;  // Usage timer.
-  base::WaitableEvent done_;  // Signals the end of background work.
-  scoped_refptr<TraceObject> trace_object_;  // Initializes internal tracing.
   base::WeakPtrFactory<BackendImpl> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackendImpl);
 };
 
 }  // namespace disk_cache

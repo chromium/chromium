@@ -1,0 +1,32 @@
+<html>
+
+<head>
+  <style>
+    iframe {
+      width: 400px;
+      height: 200px;
+    }
+  </style>
+  <script>
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+    }
+    window.addEventListener("message", e => {
+      if (e.data == "PASS")
+        testRunner.notifyDone();
+      else
+        testRunner.testFailed("'top.location' didn't throw.");
+    });
+  </script>
+</head>
+
+<body>
+  <p>This tests that an iframe in a nested sandbox with 'allow-top-navigation'
+    can't navigate the top level page if its ancestor can't.</p>
+  <h4>DOMAIN</h4>
+  <iframe
+    src="http://localhost:8080/security/frameNavigation/resources/cross-iframe-that-performs-top-navigation-in-nested-sandboxed-frame.html"></iframe>
+</body>
+
+</html>

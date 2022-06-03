@@ -7,7 +7,12 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/power/battery_notification.h"
+#include "base/containers/contains.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 using session_manager::SessionState;
 
@@ -15,11 +20,27 @@ namespace ash {
 
 namespace {
 
+constexpr base::TimeDelta kLoginNotificationDelay = base::Seconds(6);
+
+// Set to false for tests so notifications can be generated without a delay.
+bool g_use_login_delay_for_test = true;
+
 bool CalculateShouldShowNotification() {
   SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
 
-  return !session_controller->IsRunningInAppMode();
+  SessionState state = session_controller->GetSessionState();
+  static const SessionState kNotificationBlockedStates[] = {
+      SessionState::OOBE, SessionState::LOGIN_PRIMARY,
+      SessionState::LOGIN_SECONDARY, SessionState::LOGGED_IN_NOT_ACTIVE};
+
+  // Do not show notifications in kiosk mode or before session starts.
+  if (session_controller->IsRunningInAppMode() ||
+      base::Contains(kNotificationBlockedStates, state)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool CalculateShouldShowPopup() {
@@ -51,8 +72,33 @@ SessionStateNotificationBlocker::~SessionStateNotificationBlocker() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
+// static
+void SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(
+    bool use_delay) {
+  g_use_login_delay_for_test = use_delay;
+}
+
+void SessionStateNotificationBlocker::OnLoginTimerEnded() {
+  NotifyBlockingStateChanged();
+}
+
 bool SessionStateNotificationBlocker::ShouldShowNotification(
     const message_center::Notification& notification) const {
+  // Do not show non system notifications for `kLoginNotificationsDelay`
+  // duration.
+  if (notification.notifier_id().type !=
+          message_center::NotifierType::SYSTEM_COMPONENT &&
+      login_delay_timer_.IsRunning()) {
+    return false;
+  }
+
+  // Never show notifications in kiosk mode.
+  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+    return false;
+
+  if (notification.id() == BatteryNotification::kNotificationId)
+    return true;
+
   return should_show_notification_;
 }
 
@@ -65,12 +111,25 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
   if (session_controller->IsRunningInAppMode())
     return false;
 
-  if (notification.notifier_id().profile_id.empty() &&
-      notification.priority() >= message_center::SYSTEM_PRIORITY) {
-    return true;
+  // Do not show non system notifications for `kLoginNotificationsDelay`
+  // duration.
+  if (notification.notifier_id().type !=
+          message_center::NotifierType::SYSTEM_COMPONENT &&
+      login_delay_timer_.IsRunning()) {
+    return false;
   }
 
+  if (notification.id() == BatteryNotification::kNotificationId)
+    return true;
+
   return should_show_popup_;
+}
+
+void SessionStateNotificationBlocker::OnFirstSessionStarted() {
+  if (!g_use_login_delay_for_test)
+    return;
+  login_delay_timer_.Start(FROM_HERE, kLoginNotificationDelay, this,
+                           &SessionStateNotificationBlocker::OnLoginTimerEnded);
 }
 
 void SessionStateNotificationBlocker::OnSessionStateChanged(

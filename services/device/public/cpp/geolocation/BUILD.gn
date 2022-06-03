@@ -2,12 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("geolocation") {
+component("geolocation") {
   sources = [
+    "geolocation_manager.cc",
+    "geolocation_manager.h",
     "geoposition.cc",
     "geoposition.h",
     "location_provider.h",
+    "location_system_permission_status.h",
   ]
+  defines = [ "IS_GEOLOCATION_IMPL=1" ]
+  output_name = "geolocation_service"
+
+  if (is_mac) {
+    frameworks = [ "CoreLocation.framework" ]
+    sources += [
+      "geolocation_manager_impl_mac.h",
+      "geolocation_manager_impl_mac.mm",
+    ]
+  }
 
   public_deps = [
     "//base",

@@ -1,0 +1,4 @@
+mixins: "//base/android/COMMON_METADATA"
+monorail {
+  component: "Test>Android"
+}

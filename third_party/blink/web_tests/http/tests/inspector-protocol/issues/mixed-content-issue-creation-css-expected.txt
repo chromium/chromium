@@ -1,0 +1,44 @@
+Verifies that mixed content issue is created from mixed content css.
+
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/inspector-protocol/resources/styles.css
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-css.html
+                request : {
+                    requestId : <string>
+                    url : http://devtools.test:8000/inspector-protocol/resources/styles.css
+                }
+                resolutionStatus : MixedContentBlocked
+                resourceType : Stylesheet
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/inspector-protocol/resources/styles.css
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-css.html
+                request : {
+                    requestId : <string>
+                    url : http://devtools.test:8000/inspector-protocol/resources/styles.css
+                }
+                resolutionStatus : MixedContentBlocked
+                resourceType : Stylesheet
+            }
+        }
+    }
+}
+requestIds and frameIds match: true
+

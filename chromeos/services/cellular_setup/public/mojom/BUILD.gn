@@ -7,9 +7,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "cellular_setup.mojom",
+    "esim_manager.mojom",
   ]
 
   public_deps = [
+    "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
 }

@@ -4,7 +4,8 @@
 
 #include "ui/gfx/bidi_line_iterator.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace ui {
 namespace gfx {
@@ -15,13 +16,10 @@ UBiDiLevel GetParagraphLevelForDirection(base::i18n::TextDirection direction) {
   switch (direction) {
     case base::i18n::UNKNOWN_DIRECTION:
       return UBIDI_DEFAULT_LTR;
-      break;
     case base::i18n::RIGHT_TO_LEFT:
       return 1;  // Highest RTL level.
-      break;
     case base::i18n::LEFT_TO_RIGHT:
       return 0;  // Highest LTR level.
-      break;
     default:
       NOTREACHED();
       return 0;
@@ -39,7 +37,7 @@ BiDiLineIterator::~BiDiLineIterator() {
   }
 }
 
-bool BiDiLineIterator::Open(const base::string16& text,
+bool BiDiLineIterator::Open(const std::u16string& text,
                             base::i18n::TextDirection direction) {
   DCHECK(!bidi_);
   UErrorCode error = U_ZERO_ERROR;

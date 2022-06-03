@@ -1,0 +1,5 @@
+const mojoTmp = self['mojo'];
+export {mojoTmp as mojo};
+if (preservedGlobalMojo) {
+  self.mojo = preservedGlobalMojo;
+}

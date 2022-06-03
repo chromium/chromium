@@ -30,6 +30,10 @@ namespace content {
 class ContentMockCertVerifier {
  public:
   ContentMockCertVerifier();
+
+  ContentMockCertVerifier(const ContentMockCertVerifier&) = delete;
+  ContentMockCertVerifier& operator=(const ContentMockCertVerifier&) = delete;
+
   virtual ~ContentMockCertVerifier();
 
   // Be sure to call these method from the relevant BrowserTestBase methods.
@@ -46,6 +50,10 @@ class ContentMockCertVerifier {
   class CertVerifier {
    public:
     explicit CertVerifier(net::MockCertVerifier* verifier);
+
+    CertVerifier(const CertVerifier&) = delete;
+    CertVerifier& operator=(const CertVerifier&) = delete;
+
     ~CertVerifier();
     void set_default_result(int default_result);
     void AddResultForCert(scoped_refptr<net::X509Certificate> cert,
@@ -61,8 +69,6 @@ class ContentMockCertVerifier {
 
     net::MockCertVerifier* verifier_;
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
-
-    DISALLOW_COPY_AND_ASSIGN(CertVerifier);
   };
 
   // Returns a pointer to the MockCertVerifier used by all profiles in
@@ -79,8 +85,6 @@ class ContentMockCertVerifier {
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
 
   CertVerifier cert_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentMockCertVerifier);
 };
 
 }  // namespace content

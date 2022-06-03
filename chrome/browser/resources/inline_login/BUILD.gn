@@ -1,0 +1,57 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags =
+      default_closure_args + [
+        "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+      ]
+  deps = [
+    ":inline_login_app",
+    ":inline_login_browser_proxy",
+    ":welcome_page_app",
+  ]
+}
+
+js_library("inline_login_app") {
+  deps = [
+    ":inline_login_browser_proxy",
+    ":welcome_page_app",
+    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [ "$externs_path/webview_tag.js" ]
+}
+
+js_library("welcome_page_app") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("inline_login_browser_proxy") {
+  deps = [
+    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "inline_login_app.js",
+    "welcome_page_app.js",
+  ]
+}

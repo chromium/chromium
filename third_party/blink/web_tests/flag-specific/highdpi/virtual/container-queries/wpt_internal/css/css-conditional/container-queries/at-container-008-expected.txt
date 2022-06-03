@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Querying nearest (unnamed) container
+PASS Querying nearest container by name
+PASS Querying intermediate container by name
+PASS Querying topmost container by name
+Harness: the test ran to completion.
+

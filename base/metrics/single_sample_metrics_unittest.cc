@@ -22,13 +22,13 @@ class SingleSampleMetricsTest : public testing::Test {
  public:
   SingleSampleMetricsTest() = default;
 
+  SingleSampleMetricsTest(const SingleSampleMetricsTest&) = delete;
+  SingleSampleMetricsTest& operator=(const SingleSampleMetricsTest&) = delete;
+
   ~SingleSampleMetricsTest() override {
     // Ensure we cleanup after ourselves.
     SingleSampleMetricsFactory::DeleteFactoryForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleSampleMetricsTest);
 };
 
 }  // namespace

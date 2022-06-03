@@ -26,12 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_FOR_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_FOR_CONTAINER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
@@ -54,7 +54,7 @@ namespace blink {
 //
 // SVGImageForContainer stores this per-use information and delegates to the
 // SVGImage for how to draw the image.
-class SVGImageForContainer final : public Image {
+class CORE_EXPORT SVGImageForContainer final : public Image {
   USING_FAST_MALLOC(SVGImageForContainer);
 
  public:
@@ -69,42 +69,36 @@ class SVGImageForContainer final : public Image {
         image, container_size_without_zoom, zoom, url));
   }
 
-  IntSize Size() const override;
-  FloatSize SizeAsFloat() const override;
+  IntSize SizeWithConfig(SizeConfig) const override;
+  FloatSize SizeWithConfigAsFloat(SizeConfig) const override;
 
   bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }
 
-  bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix) override;
+  bool ApplyShader(cc::PaintFlags&,
+                   const SkMatrix& local_matrix,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
+                   const ImageDrawOptions& draw_options) override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const FloatRect& dest_rect,
+            const FloatRect& src_rect,
+            const ImageDrawOptions&) override;
 
   // FIXME: Implement this to be less conservative.
   bool CurrentFrameKnownToBeOpaque() override { return false; }
 
-  PaintImage PaintImageForCurrentFrame() override;
+  bool IsSVGImageForContainer() const override { return true; }
 
-  DarkModeClassification CheckTypeSpecificConditionsForDarkMode(
-      const FloatRect& dest_rect,
-      DarkModeImageClassifier* classifier) override {
-    return image_->CheckTypeSpecificConditionsForDarkMode(dest_rect,
-                                                          classifier);
-  }
+  PaintImage PaintImageForCurrentFrame() override;
 
  protected:
   void DrawPattern(GraphicsContext&,
-                   const FloatRect&,
-                   const FloatSize&,
-                   const FloatPoint&,
-                   SkBlendMode,
-                   const FloatRect&,
-                   const FloatSize& repeat_spacing,
-                   RespectImageOrientationEnum) override;
+                   const cc::PaintFlags&,
+                   const FloatRect& dest_rect,
+                   const ImageTilingInfo&,
+                   const ImageDrawOptions& draw_options) override;
 
  private:
   SVGImageForContainer(SVGImage* image,

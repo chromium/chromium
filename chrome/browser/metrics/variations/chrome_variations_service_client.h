@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 
@@ -21,20 +20,24 @@ class ChromeVariationsServiceClient
     : public variations::VariationsServiceClient {
  public:
   ChromeVariationsServiceClient();
+
+  ChromeVariationsServiceClient(const ChromeVariationsServiceClient&) = delete;
+  ChromeVariationsServiceClient& operator=(
+      const ChromeVariationsServiceClient&) = delete;
+
   ~ChromeVariationsServiceClient() override;
 
   // variations::VariationsServiceClient:
-  VersionCallback GetVersionForSimulationCallback() override;
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
+  variations::Study::FormFactor GetCurrentFormFactor() override;
   bool IsEnterprise() override;
 
  private:
   // variations::VariationsServiceClient:
   version_info::Channel GetChannel() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVariationsServiceClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_VARIATIONS_CHROME_VARIATIONS_SERVICE_CLIENT_H_

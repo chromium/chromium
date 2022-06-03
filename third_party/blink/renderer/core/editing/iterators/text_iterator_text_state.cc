@@ -75,7 +75,7 @@ UChar TextIteratorTextState::CharacterAt(unsigned index) const {
 
 String TextIteratorTextState::GetTextForTesting() const {
   if (single_character_buffer_)
-    return String(&single_character_buffer_, 1);
+    return String(&single_character_buffer_, 1u);
   return text_.Substring(text_start_offset_, length());
 }
 
@@ -108,9 +108,9 @@ void TextIteratorTextState::ResetPositionContainerNode(
   DCHECK_NE(node_type, PositionNodeType::kNone);
   position_node_type_ = node_type;
   position_container_node_ = nullptr;
-  position_node_ = node;
-  position_start_offset_ = base::nullopt;
-  position_end_offset_ = base::nullopt;
+  position_node_ = &node;
+  position_start_offset_ = absl::nullopt;
+  position_end_offset_ = absl::nullopt;
 }
 
 void TextIteratorTextState::UpdatePositionOffsets(

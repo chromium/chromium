@@ -2,12 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './dom_switch.js';
+import './pwa_detail_view.js';
+import './arc_detail_view.js';
+import './chrome_app_detail_view.js';
+import './plugin_vm_page/plugin_vm_detail_view.js';
+import './borealis_page/borealis_detail_view.js';
+import '../../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../../router.js';
+import {routes} from '../../os_route.m.js';
+import {RouteObserverBehavior} from '../../route_observer_behavior.js';
+
+import {updateSelectedAppId} from './actions.js';
+import {AppManagementUserAction, AppType} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {getSelectedApp, openMainPage, recordAppManagementUserAction} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-app-detail-view',
 
   behaviors: [
-    app_management.StoreClient,
-    settings.RouteObserverBehavior,
+    AppManagementStoreClient,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -38,39 +59,39 @@ Polymer({
     },
   },
 
-  attached: function() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+  attached() {
+    this.watch('app_', state => getSelectedApp(state));
     this.watch('apps_', state => state.apps);
     this.watch('selectedAppId_', state => state.selectedAppId);
     this.updateFromStore();
   },
 
-  detached: function() {
-    this.dispatch(app_management.actions.updateSelectedAppId(null));
+  detached() {
+    this.dispatch(updateSelectedAppId(null));
   },
 
   /**
    * Updates selected app ID based on the URL query params.
    *
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} currentRoute
+   * RouteObserverBehavior
+   * @param {!Route} currentRoute
    * @protected
    */
-  currentRouteChanged: function(currentRoute) {
-    if (currentRoute !== settings.routes.APP_MANAGEMENT_DETAIL) {
+  currentRouteChanged(currentRoute) {
+    if (currentRoute !== routes.APP_MANAGEMENT_DETAIL) {
       return;
     }
 
     if (this.selectedAppNotFound_()) {
       this.async(() => {
-        app_management.util.openMainPage();
+        openMainPage();
       });
       return;
     }
 
-    const appId = settings.getQueryParameters().get('id');
+    const appId = Router.getInstance().getQueryParameters().get('id');
 
-    this.dispatch(app_management.actions.updateSelectedAppId(appId));
+    this.dispatch(updateSelectedAppId(appId));
   },
 
   /**
@@ -78,7 +99,7 @@ Polymer({
    * @return {?string}
    * @private
    */
-  getSelectedRouteId_: function(app) {
+  getSelectedRouteId_(app) {
     if (!app) {
       return null;
     }
@@ -88,17 +109,25 @@ Polymer({
       case (AppType.kWeb):
         return 'pwa-detail-view';
       case (AppType.kExtension):
+      case (AppType.kStandaloneBrowser):
+      case (AppType.kStandaloneBrowserExtension):
+        // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
+        // Lacros-hosted chrome-apps.
         return 'chrome-app-detail-view';
       case (AppType.kArc):
         return 'arc-detail-view';
+      case (AppType.kPluginVm):
+        return 'plugin-vm-detail-view';
+      case (AppType.kBorealis):
+        return 'borealis-detail-view';
       default:
         assertNotReached();
     }
   },
 
-  selectedAppIdChanged_: function(appId) {
+  selectedAppIdChanged_(appId) {
     if (appId && this.app_) {
-      app_management.util.recordAppManagementUserAction(
+      recordAppManagementUserAction(
           this.app_.type, AppManagementUserAction.ViewOpened);
     }
   },
@@ -106,10 +135,12 @@ Polymer({
   /**
    * @private
    */
-  appsChanged_: function() {
-    if (this.selectedAppNotFound_()) {
+  appsChanged_() {
+    if (Router.getInstance().getCurrentRoute() ===
+            routes.APP_MANAGEMENT_DETAIL &&
+        this.selectedAppNotFound_()) {
       this.async(() => {
-        app_management.util.openMainPage();
+        openMainPage();
       });
     }
   },
@@ -118,8 +149,9 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  selectedAppNotFound_: function() {
-    const appId = settings.getQueryParameters().get('id');
+  selectedAppNotFound_() {
+    const appId = /** @type {string} */ (
+        Router.getInstance().getQueryParameters().get('id'));
     return this.apps_ && !this.apps_[appId];
   },
 });

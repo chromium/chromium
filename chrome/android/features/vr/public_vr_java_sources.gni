@@ -13,18 +13,6 @@ public_vr_java_sources = [
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrFallbackUtils.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrIntentDelegate.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrIntentDelegateFallback.java",
-  "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModeObserver.java",
+  "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModeProviderImpl.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
 ]
-
-if (enable_vr) {
-  public_vr_java_sources += [
-    "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/ConsentFlowMetrics.java",
-    "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrConsentDialog.java",
-    "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrConsentListener.java",
-  ]
-}
-
-if (enable_arcore) {
-  public_vr_java_sources += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/ArConsentDialog.java" ]
-}

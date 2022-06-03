@@ -8,7 +8,6 @@
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
 
-#include "base/logging.h"
 
 namespace {
 // Copied from GTMUIImage+Resize in //third_party/google_toolbox_for_mac to

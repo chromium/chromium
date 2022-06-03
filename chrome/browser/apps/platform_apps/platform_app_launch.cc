@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/launch_service/launch_manager.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -16,6 +16,14 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/common/webui_url_constants.h"
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 namespace apps {
 
@@ -76,18 +84,19 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   if (launch_container == extensions::LaunchContainer::kLaunchContainerTab)
     return false;
 
+  if (app->from_bookmark())
+    return false;
+
   RecordCmdLineAppHistogram(app->GetType());
 
   apps::AppLaunchParams params(app_id, launch_container,
                                WindowOpenDisposition::NEW_WINDOW,
-                               extensions::AppLaunchSource::kSourceCommandLine);
+                               apps::mojom::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  if (app->from_bookmark()) {
-    params.launch_files =
-        LaunchManager::GetLaunchFilesFromCommandLine(command_line);
-  }
-  content::WebContents* tab_in_app_window = ::OpenApplication(profile, params);
+
+  content::WebContents* tab_in_app_window =
+      ::OpenApplication(profile, std::move(params));
 
   // Platform apps fire off a launch event which may or may not open a window.
   return tab_in_app_window != nullptr || ::CanLaunchViaEvent(app);
@@ -109,9 +118,31 @@ bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
       profile, apps::AppLaunchParams(
                    app_id, extensions::LaunchContainer::kLaunchContainerTab,
                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                   extensions::AppLaunchSource::kSourceCommandLine));
+                   apps::mojom::LaunchSource::kFromCommandLine));
   return app_tab != nullptr;
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+bool OpenDeprecatedApplicationPrompt(Profile* profile,
+                                     const std::string& app_id) {
+  if (!extensions::IsExtensionUnsupportedDeprecatedApp(profile, app_id))
+    return false;
+
+  Browser::CreateParams create_params(profile, /*user_gesture=*/false);
+  Browser* browser = Browser::Create(create_params);
+
+  NavigateParams params(browser, GURL(chrome::kChromeUIAppsURL),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
+  Navigate(&params);
+
+  browser->window()->Show();
+
+  // TODO(crbug.com/1225779): Show the deprecated apps dialog.
+  return true;
+}
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 bool OpenExtensionApplicationWithReenablePrompt(
     Profile* profile,
@@ -125,14 +156,15 @@ bool OpenExtensionApplicationWithReenablePrompt(
   apps::AppLaunchParams params(
       app_id, extensions::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW,
-      extensions::AppLaunchSource::kSourceCommandLine);
+      apps::mojom::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  ::OpenApplicationWithReenablePrompt(profile, params);
+  ::OpenApplicationWithReenablePrompt(profile, std::move(params));
   return true;
 }
 
-bool OpenExtensionAppShortcutWindow(Profile* profile, const GURL& url) {
+content::WebContents* OpenExtensionAppShortcutWindow(Profile* profile,
+                                                     const GURL& url) {
   const extensions::Extension* app = extensions::ExtensionRegistry::Get(profile)
                                          ->enabled_extensions()
                                          .GetAppByURL(url);
@@ -144,8 +176,7 @@ bool OpenExtensionAppShortcutWindow(Profile* profile, const GURL& url) {
         extensions::Manifest::TYPE_HOSTED_APP);
   }
 
-  content::WebContents* app_tab = ::OpenAppShortcutWindow(profile, url);
-  return app_tab != nullptr;
+  return ::OpenAppShortcutWindow(profile, url);
 }
 
 void RecordExtensionAppLaunchOnTabRestored(Profile* profile, const GURL& url) {

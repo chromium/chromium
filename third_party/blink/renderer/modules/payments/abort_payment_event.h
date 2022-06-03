@@ -36,18 +36,20 @@ class MODULES_EXPORT AbortPaymentEvent final : public ExtendableEvent {
                     const ExtendableEventInit*,
                     RespondWithObserver*,
                     WaitUntilObserver*);
+
+  AbortPaymentEvent(const AbortPaymentEvent&) = delete;
+  AbortPaymentEvent& operator=(const AbortPaymentEvent&) = delete;
+
   ~AbortPaymentEvent() override;
 
   const AtomicString& InterfaceName() const override;
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<RespondWithObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AbortPaymentEvent);
 };
 
 }  // namespace blink

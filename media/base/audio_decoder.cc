@@ -12,10 +12,6 @@ AudioDecoder::AudioDecoder() = default;
 
 AudioDecoder::~AudioDecoder() = default;
 
-bool AudioDecoder::IsPlatformDecoder() const {
-  return false;
-}
-
 bool AudioDecoder::NeedsBitstreamConversion() const {
   return false;
 }

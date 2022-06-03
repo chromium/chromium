@@ -20,7 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -178,15 +178,15 @@ String SVGTransform::ValueAsString() const {
     case SVGTransformType::kRotate: {
       arguments[argument_count++] = angle_;
 
-      double angle_in_rad = deg2rad(angle_);
+      double angle_in_rad = Deg2rad(angle_);
       double cos_angle = cos(angle_in_rad);
       double sin_angle = sin(angle_in_rad);
-      float cx = clampTo<float>(
+      float cx = ClampTo<float>(
           cos_angle != 1
               ? (matrix_.E() * (1 - cos_angle) - matrix_.F() * sin_angle) /
                     (1 - cos_angle) / 2
               : 0);
-      float cy = clampTo<float>(
+      float cy = ClampTo<float>(
           cos_angle != 1
               ? (matrix_.E() * sin_angle / (1 - cos_angle) + matrix_.F()) / 2
               : 0);
@@ -217,23 +217,24 @@ String SVGTransform::ValueAsString() const {
   return builder.ToString();
 }
 
-void SVGTransform::Add(SVGPropertyBase*, SVGElement*) {
+void SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 }
 
-void SVGTransform::CalculateAnimatedValue(const SVGAnimateElement&,
+void SVGTransform::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                           float,
                                           unsigned,
-                                          SVGPropertyBase*,
-                                          SVGPropertyBase*,
-                                          SVGPropertyBase*,
-                                          SVGElement*) {
+                                          const SVGPropertyBase*,
+                                          const SVGPropertyBase*,
+                                          const SVGPropertyBase*,
+                                          const SVGElement*) {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 }
 
-float SVGTransform::CalculateDistance(SVGPropertyBase*, SVGElement*) {
+float SVGTransform::CalculateDistance(const SVGPropertyBase*,
+                                      const SVGElement*) const {
   // SVGTransform is not animated by itself.
   NOTREACHED();
 

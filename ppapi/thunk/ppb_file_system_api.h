@@ -26,9 +26,9 @@ class PPB_FileSystem_API {
   virtual PP_FileSystemType GetType() = 0;
   virtual void OpenQuotaFile(PP_Resource file_io) = 0;
   virtual void CloseQuotaFile(PP_Resource file_io) = 0;
-  typedef base::Callback<void(int64_t)> RequestQuotaCallback;
+  typedef base::OnceCallback<void(int64_t)> RequestQuotaCallback;
   virtual int64_t RequestQuota(int64_t amount,
-                               const RequestQuotaCallback& callback) = 0;
+                               RequestQuotaCallback callback) = 0;
 };
 
 }  // namespace thunk

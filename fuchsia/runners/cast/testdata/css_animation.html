@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <style>
+    .animated {
+      left:0px;
+      width: 100px;
+      height: 100px;
+      background-color: red;
+      animation-name: anim;
+      animation-duration: 0.25s;
+      position: relative;
+    }
+
+    /* Standard syntax */
+    @keyframes anim {
+      0%   {background-color:red; left:0px; top:0px;}
+      25%  {background-color:yellow; left:200px; top:0px;}
+      50%  {background-color:blue; left:200px; top:200px;}
+      75%  {background-color:green; left:0px; top:200px;}
+      100% {background-color:red; left:0px; top:0px;}
+    }
+    </style>
+    <title>a document</title>
+  </head>
+  <body>
+    <div class="animated" id="animated">hello</div>
+    <script>
+      let animated = document.getElementById('animated');
+      let isStarted = false;
+      animated.addEventListener('animationstart', function() {
+        isStarted = true;
+      });
+      animated.addEventListener('animationend', function() {
+        cast.__platform__.PortConnector.bind('animation_finished');
+
+        document.addEventListener("visibilitychange", ()=>{
+          if (document.hidden) {
+            cast.__platform__.PortConnector.bind('view_hidden');
+          }
+        }, false);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script>
+onload = () => {
+    outerDiv.scrollTop = 300;
+    innerDiv.scrollTop = 404;
+}
+</script>
+<div style="height: 300px; overflow-y: scroll;" id="outerDiv">
+    <div style="height: 300px;"></div>
+    <div style="height: 400px; overflow-y: scroll;" id="innerDiv">
+        <table>
+            <tr><td style="height: 800px; width: 300px; background: green"></td></tr>
+        </table>
+    </div>
+</div>

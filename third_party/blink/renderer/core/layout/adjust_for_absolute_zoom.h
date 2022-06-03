@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ADJUST_FOR_ABSOLUTE_ZOOM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ADJUST_FOR_ABSOLUTE_ZOOM_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -78,6 +79,11 @@ class AdjustForAbsoluteZoom {
   inline static LayoutUnit AdjustLayoutUnit(LayoutUnit value,
                                             LayoutObject& layout_object) {
     return AdjustLayoutUnit(value, layout_object.StyleRef());
+  }
+  inline static PhysicalSize AdjustPhysicalSize(PhysicalSize size,
+                                                const ComputedStyle& style) {
+    return PhysicalSize(AdjustLayoutUnit(size.width, style),
+                        AdjustLayoutUnit(size.height, style));
   }
 
   inline static void AdjustFloatQuad(FloatQuad& quad,

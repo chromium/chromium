@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 
 if (is_android) {
@@ -19,10 +20,10 @@ static_library("browser") {
     "account_reconcilor.h",
     "account_reconcilor_delegate.cc",
     "account_reconcilor_delegate.h",
+    "account_reconcilor_throttler.cc",
+    "account_reconcilor_throttler.h",
     "chrome_connected_header_helper.cc",
     "chrome_connected_header_helper.h",
-    "consistency_cookie_manager_base.cc",
-    "consistency_cookie_manager_base.h",
     "cookie_reminter.cc",
     "cookie_reminter.h",
     "cookie_settings_util.cc",
@@ -31,8 +32,6 @@ static_library("browser") {
     "dice_account_reconcilor_delegate.h",
     "dice_header_helper.cc",
     "dice_header_helper.h",
-    "mice_account_reconcilor_delegate.cc",
-    "mice_account_reconcilor_delegate.h",
     "mirror_account_reconcilor_delegate.cc",
     "mirror_account_reconcilor_delegate.h",
     "signin_error_controller.cc",
@@ -51,15 +50,12 @@ static_library("browser") {
     "signin_status_metrics_provider_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
-    "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//google_apis",
     "//net",
@@ -69,6 +65,7 @@ static_library("browser") {
   ]
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/metrics",
     "//components/os_crypt",
@@ -81,24 +78,26 @@ static_library("browser") {
     "//third_party/icu",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "active_directory_account_reconcilor_delegate.cc",
       "active_directory_account_reconcilor_delegate.h",
     ]
-    deps += [ "//chromeos/tpm:tpm" ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/tpm:tpm",
+    ]
     sources -= [
       "signin_status_metrics_provider.cc",
       "signin_status_metrics_provider_delegate.cc",
     ]
   }
 
-  if (is_android) {
-    sources += [
-      "consistency_cookie_manager_android.cc",
-      "consistency_cookie_manager_android.h",
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
     ]
-    deps += [ "android:jni_headers" ]
   }
 
   if (!enable_dice_support) {
@@ -115,9 +114,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_investigator_unittest.cc",
+    "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
     "dice_account_reconcilor_delegate_unittest.cc",
-    "mice_account_reconcilor_delegate_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
     "signin_investigator_unittest.cc",
@@ -128,10 +127,10 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
@@ -146,16 +145,23 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//chromeos/tpm:test_support" ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/tpm:test_support",
+    ]
     sources -= [
       "account_investigator_unittest.cc",
       "signin_status_metrics_provider_unittest.cc",
     ]
   }
 
-  if (is_android) {
-    sources += [ "consistency_cookie_manager_unittest.cc" ]
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/lacros:test_support",
+    ]
   }
 
   if (!enable_dice_support) {
@@ -164,10 +170,16 @@ source_set("unit_tests") {
 }
 
 if (is_android) {
+  android_library("signin_enums_java") {
+    srcjar_deps = [ ":signin_enums_javagen" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
   java_cpp_enum("signin_enums_javagen") {
     sources = [
       "signin_header_helper.h",
       "signin_investigator.h",
     ]
+    visibility = [ ":*" ]  # Depend on through :signin_enums_java
   }
 }

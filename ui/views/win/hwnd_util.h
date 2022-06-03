@@ -28,7 +28,8 @@ VIEWS_EXPORT HWND HWNDForNativeView(const gfx::NativeView view);
 VIEWS_EXPORT HWND HWNDForNativeWindow(const gfx::NativeWindow window);
 
 VIEWS_EXPORT gfx::Rect GetWindowBoundsForClientBounds(
-    View* view, const gfx::Rect& client_bounds);
+    View* view,
+    const gfx::Rect& client_bounds);
 
 // Shows |window|'s system menu (at a specified |point| in screen physical
 // coordinates).

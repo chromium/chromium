@@ -21,14 +21,14 @@ customElements.define('control-element', ControlElement);
 
 test(() => {
   let control = new ControlElement();
-  assert_throws('NotFoundError', () => {
+  assert_throws_dom('NotFoundError', () => {
     control.i.setValidity({patternMismatch: true}, 'p', document.body);
   }, 'not a descendant');
-  assert_throws('NotFoundError', () => {
+  assert_throws_dom('NotFoundError', () => {
     control.i.setValidity({patternMismatch: true}, 'p', control);
   }, 'self');
   control.innerHTML = '<span>';
-  assert_throws('NotFoundError', () => {
+  assert_throws_dom('NotFoundError', () => {
     control.i.setValidity({patternMismatch: true}, 'p', control);
   }, 'self with a child');
 

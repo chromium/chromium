@@ -1,31 +1,31 @@
 <link rel="import" href="../../html/polymer.html">
 
 <link rel="import" href="../icons.html">
+<link rel="import" href="../shared_style_css.html">
 <link rel="import" href="../shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
 
 <dom-module id="cr-tooltip-icon">
   <template>
-    <style>
+    <style include="cr-shared-style">
       :host {
         display: flex;  /* Position independently from the line-height. */
-      }
-
-      paper-tooltip {
-        --paper-tooltip: var(--cr-tooltip);
       }
 
       iron-icon {
         --iron-icon-width: var(--cr-icon-size);
         --iron-icon-height: var(--cr-icon-size);
+        --iron-icon-fill-color:
+          var(--cr-tooltip-icon-fill-color, --google-grey-refresh-700);
       }
     </style>
     <iron-icon id="indicator" tabindex="0" aria-label$="[[iconAriaLabel]]"
-        aria-describedby="tooltip" icon="[[iconClass]]"></iron-icon>
-    <paper-tooltip id="tooltip" for="indicator" position="[[tooltipPosition]]"
+        aria-describedby="tooltip" icon="[[iconClass]]" role="img"></iron-icon>
+    <paper-tooltip id="tooltip"
+        for="indicator" position="[[tooltipPosition]]"
         fit-to-visible-bounds part="tooltip">
-      [[tooltipText]]
+      <slot name="tooltip-text">[[tooltipText]]</slot>
     </paper-tooltip>
   </template>
   <script src="cr_tooltip_icon.js"></script>

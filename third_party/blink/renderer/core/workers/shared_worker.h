@@ -42,22 +42,20 @@
 namespace blink {
 
 class ExceptionState;
+class V8UnionStringOrWorkerOptions;
 
 class CORE_EXPORT SharedWorker final
     : public AbstractWorker,
       public Supplementable<SharedWorker>,
       public ActiveScriptWrappable<SharedWorker> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SharedWorker);
 
  public:
-  static SharedWorker* Create(ExecutionContext*,
-                              const String& url,
-                              ExceptionState&);
-  static SharedWorker* Create(ExecutionContext*,
-                              const String& url,
-                              const String& name,
-                              ExceptionState&);
+  static SharedWorker* Create(
+      ExecutionContext* context,
+      const String& url,
+      const V8UnionStringOrWorkerOptions* name_or_options,
+      ExceptionState& exception_state);
 
   explicit SharedWorker(ExecutionContext*);
   ~SharedWorker() override;
@@ -72,7 +70,7 @@ class CORE_EXPORT SharedWorker final
   bool HasPendingActivity() const final;
 
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState state) override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<MessagePort> port_;

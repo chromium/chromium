@@ -5,15 +5,11 @@
 import("//build/config/ios/asset_catalog.gni")
 
 colorset("omnibox_incognito_background_color") {
-  sources = [
-    "omnibox_incognito_background_color.colorset/Contents.json",
-  ]
+  sources = [ "omnibox_incognito_background_color.colorset/Contents.json" ]
 }
 
 colorset("tab_toolbar_button_color_highlighted") {
-  sources = [
-    "tab_toolbar_button_color_highlighted.colorset/Contents.json",
-  ]
+  sources = [ "tab_toolbar_button_color_highlighted.colorset/Contents.json" ]
 }
 
 colorset("tab_toolbar_button_color_highlighted_incognito") {
@@ -23,15 +19,11 @@ colorset("tab_toolbar_button_color_highlighted_incognito") {
 }
 
 colorset("tab_toolbar_button_halo_color") {
-  sources = [
-    "tab_toolbar_button_halo_color.colorset/Contents.json",
-  ]
+  sources = [ "tab_toolbar_button_halo_color.colorset/Contents.json" ]
 }
 
 colorset("tab_toolbar_button_halo_color_incognito") {
-  sources = [
-    "tab_toolbar_button_halo_color_incognito.colorset/Contents.json",
-  ]
+  sources = [ "tab_toolbar_button_halo_color_incognito.colorset/Contents.json" ]
 }
 
 imageset("toolbar_new_tab_page") {
@@ -45,34 +37,14 @@ imageset("toolbar_new_tab_page") {
 imageset("toolbar_stop") {
   sources = [
     "toolbar_stop.imageset/Contents.json",
-    "toolbar_stop.imageset/toolbar_stop.png",
     "toolbar_stop.imageset/toolbar_stop@2x.png",
     "toolbar_stop.imageset/toolbar_stop@3x.png",
-  ]
-}
-
-imageset("toolbar_search") {
-  sources = [
-    "toolbar_search.imageset/Contents.json",
-    "toolbar_search.imageset/toolbar_search.png",
-    "toolbar_search.imageset/toolbar_search@2x.png",
-    "toolbar_search.imageset/toolbar_search@3x.png",
-  ]
-}
-
-imageset("toolbar_bookmark_active") {
-  sources = [
-    "toolbar_bookmark_active.imageset/Contents.json",
-    "toolbar_bookmark_active.imageset/toolbar_bookmark_active.png",
-    "toolbar_bookmark_active.imageset/toolbar_bookmark_active@2x.png",
-    "toolbar_bookmark_active.imageset/toolbar_bookmark_active@3x.png",
   ]
 }
 
 imageset("toolbar_reload") {
   sources = [
     "toolbar_reload.imageset/Contents.json",
-    "toolbar_reload.imageset/toolbar_reload.png",
     "toolbar_reload.imageset/toolbar_reload@2x.png",
     "toolbar_reload.imageset/toolbar_reload@3x.png",
   ]
@@ -81,7 +53,6 @@ imageset("toolbar_reload") {
 imageset("toolbar_share") {
   sources = [
     "toolbar_share.imageset/Contents.json",
-    "toolbar_share.imageset/toolbar_share.png",
     "toolbar_share.imageset/toolbar_share@2x.png",
     "toolbar_share.imageset/toolbar_share@3x.png",
   ]
@@ -90,7 +61,6 @@ imageset("toolbar_share") {
 imageset("toolbar_back") {
   sources = [
     "toolbar_back.imageset/Contents.json",
-    "toolbar_back.imageset/toolbar_back.png",
     "toolbar_back.imageset/toolbar_back@2x.png",
     "toolbar_back.imageset/toolbar_back@3x.png",
   ]
@@ -108,17 +78,7 @@ imageset("toolbar_switcher") {
 imageset("toolbar_forward") {
   sources = [
     "toolbar_forward.imageset/Contents.json",
-    "toolbar_forward.imageset/toolbar_forward.png",
     "toolbar_forward.imageset/toolbar_forward@2x.png",
     "toolbar_forward.imageset/toolbar_forward@3x.png",
-  ]
-}
-
-imageset("toolbar_bookmark") {
-  sources = [
-    "toolbar_bookmark.imageset/Contents.json",
-    "toolbar_bookmark.imageset/toolbar_bookmark.png",
-    "toolbar_bookmark.imageset/toolbar_bookmark@2x.png",
-    "toolbar_bookmark.imageset/toolbar_bookmark@3x.png",
   ]
 }

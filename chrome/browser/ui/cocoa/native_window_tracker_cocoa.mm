@@ -11,7 +11,7 @@
   NSWindow* _window;
 }
 
-- (id)initWithNSWindow:(NSWindow*)window;
+- (instancetype)initWithNSWindow:(NSWindow*)window;
 - (bool)wasNSWindowClosed;
 - (void)onWindowWillClose:(NSNotification*)notification;
 
@@ -19,7 +19,7 @@
 
 @implementation BridgedNativeWindowTracker
 
-- (id)initWithNSWindow:(NSWindow*)window {
+- (instancetype)initWithNSWindow:(NSWindow*)window {
   _window = window;
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self

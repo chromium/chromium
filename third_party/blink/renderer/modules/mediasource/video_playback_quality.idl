@@ -28,6 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 [
+    Exposed=Window,
     RuntimeEnabled=VideoPlaybackQuality
 ] interface VideoPlaybackQuality {
     readonly attribute DOMHighResTimeStamp creationTime;

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/unguessable_token.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
 
@@ -24,12 +25,17 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
  public:
   using CreateCdmFactoryCB =
       base::RepeatingCallback<std::unique_ptr<::media::CdmFactory>(
-          service_manager::mojom::InterfaceProvider*)>;
+          ::media::mojom::FrameInterfaceFactory*)>;
 
   CastMojoMediaClient(CmaBackendFactory* backend_factory,
                       const CreateCdmFactoryCB& create_cdm_factory_cb,
                       VideoModeSwitcher* video_mode_switcher,
-                      VideoResolutionPolicy* video_resolution_policy);
+                      VideoResolutionPolicy* video_resolution_policy,
+                      external_service_support::ExternalConnector* connector);
+
+  CastMojoMediaClient(const CastMojoMediaClient&) = delete;
+  CastMojoMediaClient& operator=(const CastMojoMediaClient&) = delete;
+
   ~CastMojoMediaClient() override;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
@@ -40,30 +46,29 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
   // MojoMediaClient implementation:
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   std::unique_ptr<::media::Renderer> CreateCastRenderer(
-      service_manager::mojom::InterfaceProvider* host_interfaces,
+      ::media::mojom::FrameInterfaceFactory* frame_interfaces,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       ::media::MediaLog* media_log,
       const base::UnguessableToken& overlay_plane_id) override;
 #endif
   std::unique_ptr<::media::Renderer> CreateRenderer(
-      service_manager::mojom::InterfaceProvider* host_interfaces,
+      ::media::mojom::FrameInterfaceFactory* frame_interfaces,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       ::media::MediaLog* media_log,
       const std::string& audio_device_id) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
-      service_manager::mojom::InterfaceProvider* host_interfaces) override;
+      ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
 
  private:
   CmaBackendFactory* const backend_factory_;
   const CreateCdmFactoryCB create_cdm_factory_cb_;
   VideoModeSwitcher* video_mode_switcher_;
   VideoResolutionPolicy* video_resolution_policy_;
+  external_service_support::ExternalConnector* const connector_;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   VideoGeometrySetterService* video_geometry_setter_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CastMojoMediaClient);
 };
 
 }  // namespace media

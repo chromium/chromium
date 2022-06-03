@@ -26,6 +26,7 @@ enum SampleFormat {
   kSampleFormatAc3,         // Compressed AC3 bitstream.
   kSampleFormatEac3,        // Compressed E-AC3 bitstream.
   kSampleFormatMpegHAudio,  // Compressed MPEG-H audio bitstream.
+  kSampleFormatPlanarU8,    // Unsigned 8-bit w/ bias of 128 planar.
 
   // Must always be equal to largest value ever logged.
   kSampleFormatMax = kSampleFormatMpegHAudio,

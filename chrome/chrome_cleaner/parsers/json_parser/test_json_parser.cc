@@ -17,10 +17,10 @@ void TestJsonParser::Parse(const std::string& json,
           json, base::JSON_ALLOW_TRAILING_COMMAS |
                     base::JSON_REPLACE_INVALID_CHARACTERS);
   if (value_with_error.value) {
-    std::move(callback).Run(std::move(value_with_error.value), base::nullopt);
+    std::move(callback).Run(std::move(value_with_error.value), absl::nullopt);
   } else {
     std::move(callback).Run(
-        base::nullopt, base::make_optional(value_with_error.error_message));
+        absl::nullopt, absl::make_optional(value_with_error.error_message));
   }
 }
 

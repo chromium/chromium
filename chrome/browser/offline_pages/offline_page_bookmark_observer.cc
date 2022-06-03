@@ -34,8 +34,8 @@ void OfflinePageBookmarkObserver::BookmarkNodeRemoved(
   ClientId client_id = ClientId(kBookmarkNamespace, std::to_string(node->id()));
   offline_page_model_->GetOfflineIdsForClientId(
       client_id,
-      base::Bind(&OfflinePageBookmarkObserver::DoDeleteRemovedBookmarkPages,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&OfflinePageBookmarkObserver::DoDeleteRemovedBookmarkPages,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OfflinePageBookmarkObserver::DoDeleteRemovedBookmarkPages(
@@ -44,8 +44,9 @@ void OfflinePageBookmarkObserver::DoDeleteRemovedBookmarkPages(
   criteria.offline_ids = offline_ids;
   offline_page_model_->DeletePagesWithCriteria(
       criteria,
-      base::Bind(&OfflinePageBookmarkObserver::OnDeleteRemovedBookmarkPagesDone,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &OfflinePageBookmarkObserver::OnDeleteRemovedBookmarkPagesDone,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OfflinePageBookmarkObserver::OnDeleteRemovedBookmarkPagesDone(

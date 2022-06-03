@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_android.h"
 
 #include "base/android/jni_string.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/android/chrome_jni_headers/SharedClipboardMessageHandler_jni.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -18,6 +19,9 @@ SharedClipboardMessageHandlerAndroid::~SharedClipboardMessageHandlerAndroid() =
 
 void SharedClipboardMessageHandlerAndroid::ShowNotification(
     const std::string& device_name) {
+  TRACE_EVENT0("sharing",
+               "SharedClipboardMessageHandlerAndroid::ShowNotification");
+
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SharedClipboardMessageHandler_showNotification(
       env, base::android::ConvertUTF8ToJavaString(env, device_name));

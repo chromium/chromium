@@ -49,10 +49,9 @@ void AXPlatformNode::RegisterNativeWindowHandler(
   native_window_handler_.Get() = handler;
 }
 
-AXPlatformNode::AXPlatformNode() {}
+AXPlatformNode::AXPlatformNode() = default;
 
-AXPlatformNode::~AXPlatformNode() {
-}
+AXPlatformNode::~AXPlatformNode() = default;
 
 void AXPlatformNode::Destroy() {
 }
@@ -60,6 +59,14 @@ void AXPlatformNode::Destroy() {
 int32_t AXPlatformNode::GetUniqueId() const {
   DCHECK(GetDelegate()) << "|GetUniqueId| must be called after |Init|.";
   return GetDelegate() ? GetDelegate()->GetUniqueId().Get() : -1;
+}
+
+void AXPlatformNode::SetIsPrimaryWebContentsForWindow(bool is_primary) {
+  is_primary_web_contents_for_window_ = is_primary;
+}
+
+bool AXPlatformNode::IsPrimaryWebContentsForWindow() const {
+  return is_primary_web_contents_for_window_;
 }
 
 std::string AXPlatformNode::ToString() {
@@ -86,6 +93,7 @@ void AXPlatformNode::RemoveAXModeObserver(AXModeObserver* observer) {
 
 // static
 void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
+  // Note: this is only called on Windows, and in tests.
   AXMode new_ax_mode(ax_mode_);
   new_ax_mode |= mode_flags;
 
@@ -95,14 +103,17 @@ void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
   ax_mode_ = new_ax_mode;
   for (auto& observer : ax_mode_observers_.Get())
     observer.OnAXModeAdded(mode_flags);
+}
 
-  // Add a crash key with the ax_mode, to enable searching for top crashes that
-  // occur when accessibility is turned on. This adds it for the browser
-  // process, and elsewhere the same key is added to renderer processes.
-  static auto* ax_mode_crash_key = base::debug::AllocateCrashKeyString(
-      "ax_mode", base::debug::CrashKeySize::Size64);
-  if (ax_mode_crash_key)
-    base::debug::SetCrashKeyString(ax_mode_crash_key, new_ax_mode.ToString());
+// static
+void AXPlatformNode::SetAXMode(AXMode new_mode) {
+  // Note: this is only called on Windows.
+  ax_mode_ = new_mode;
+}
+
+// static
+void AXPlatformNode::ResetAxModeForTesting() {
+  ax_mode_ = 0;
 }
 
 // static

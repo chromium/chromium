@@ -10,10 +10,11 @@ android_library("java") {
     "//services:*",
     "//services/device:*",
   ]
-  java_files = [
+  sources = [
     "java/src/org/chromium/device/nfc/InvalidNdefMessageException.java",
     "java/src/org/chromium/device/nfc/NdefMessageUtils.java",
     "java/src/org/chromium/device/nfc/NdefMessageValidator.java",
+    "java/src/org/chromium/device/nfc/NfcBlocklist.java",
     "java/src/org/chromium/device/nfc/NfcImpl.java",
     "java/src/org/chromium/device/nfc/NfcProviderImpl.java",
     "java/src/org/chromium/device/nfc/NfcTagHandler.java",
@@ -21,11 +22,13 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//components/variations/android:variations_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
     "//services/device/public/java:nfc_java",
     "//services/device/public/mojom:mojom_java",
     "//services/service_manager/public/java:service_manager_java",
     "//services/service_manager/public/mojom:mojom_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

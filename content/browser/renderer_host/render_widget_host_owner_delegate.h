@@ -7,22 +7,17 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/common/visual_properties.h"
+#include "third_party/blink/public/common/widget/visual_properties.h"
 
 namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
 class WebMouseEvent;
 }
 
-namespace gfx {
-class Rect;
-}
-
 namespace content {
-struct ContextMenuParams;
-class FrameTreeNode;
 struct NativeWebKeyboardEvent;
-class RenderFrameHost;
-struct WebPreferences;
 
 //
 // RenderWidgetHostOwnerDelegate
@@ -33,15 +28,6 @@ struct WebPreferences;
 //  and http://crbug.com/478281.
 class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
  public:
-  // The RenderWidgetHost has been initialized.
-  virtual void RenderWidgetDidInit() = 0;
-
-  // The RenderWidget was closed. Only swapped-in RenderWidgets receive this.
-  virtual void RenderWidgetDidClose() = 0;
-
-  // The RenderWidget finished the first visually non-empty paint.
-  virtual void RenderWidgetDidFirstVisuallyNonEmptyPaint() = 0;
-
   // The RenderWidgetHost got the focus.
   virtual void RenderWidgetGotFocus() = 0;
 
@@ -61,10 +47,6 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
   // priority to the RenderProcessHost.
   virtual bool ShouldContributePriorityToProcess() = 0;
 
-  // Notify the OwnerDelegate that the renderer has requested a change in
-  // the bounds of the content area.
-  virtual void RequestSetBounds(const gfx::Rect& bounds) = 0;
-
   // When false, this allows the renderer's output to be transparent. By default
   // the renderer's background is forced to be opaque.
   virtual void SetBackgroundOpaque(bool opaque) = 0;
@@ -72,20 +54,13 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
   // Returns true if the main frame is active, false if it is swapped out.
   virtual bool IsMainFrameActive() = 0;
 
-  // Returns true if the page, including any widgets, will never be visible.
-  virtual bool IsNeverVisible() = 0;
+  // Returns true if all widgets will never be user-visible, and thus do not
+  // need to generate pixels for display.
+  virtual bool IsNeverComposited() = 0;
 
   // Returns the WebkitPreferences for the page. The preferences are shared
   // between all widgets for the page.
-  virtual WebPreferences GetWebkitPreferencesForWidget() = 0;
-
-  // Returns the focused frame.
-  virtual FrameTreeNode* GetFocusedFrame() = 0;
-
-  // Shows a context menu that is built using the context information
-  // provided in |params|.
-  virtual void ShowContextMenu(RenderFrameHost* render_frame_host,
-                               const ContextMenuParams& params) = 0;
+  virtual blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() = 0;
 
  protected:
   virtual ~RenderWidgetHostOwnerDelegate() {}

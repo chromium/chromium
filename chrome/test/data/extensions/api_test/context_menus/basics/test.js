@@ -3,10 +3,21 @@
 // found in the LICENSE file.
 
 var assertNoLastError = chrome.test.assertNoLastError;
+const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+var currentId = 1;
+
+// Add a unique menu ID if this is running in a Service Worker-based
+// extension and the 'id' property doesn't exist.
+function maybeAddId(createProperties) {
+  if (inServiceWorker && typeof createProperties['id'] === 'undefined')
+    createProperties['id'] = String(currentId++);
+  return createProperties;
+}
 
 var tests = [
   function simple() {
-    chrome.contextMenus.create({"title":"1"}, chrome.test.callbackPass());
+    chrome.contextMenus.create(maybeAddId({"title":"1"}),
+                               chrome.test.callbackPass());
   },
 
   function no_properties() {
@@ -18,7 +29,7 @@ var tests = [
 
   function remove() {
     var id;
-    id = chrome.contextMenus.create({"title":"1"}, function() {
+    id = chrome.contextMenus.create(maybeAddId({"title":"1"}), function() {
       assertNoLastError();
       chrome.contextMenus.remove(id, chrome.test.callbackPass());
     });
@@ -26,7 +37,8 @@ var tests = [
 
   function update() {
     var id;
-    id = chrome.contextMenus.create({"title":"update test"}, function() {
+    id = chrome.contextMenus.create(maybeAddId({"title":"update test"}),
+                                    function() {
       assertNoLastError();
       chrome.contextMenus.update(id, {"title": "test2"},
                                 chrome.test.callbackPass());
@@ -44,9 +56,9 @@ var tests = [
   },
 
   function removeAll() {
-    chrome.contextMenus.create({"title":"1"}, function() {
+    chrome.contextMenus.create(maybeAddId({"title":"1"}), function() {
       assertNoLastError();
-      chrome.contextMenus.create({"title":"2"}, function() {
+      chrome.contextMenus.create(maybeAddId({"title":"2"}), function() {
         assertNoLastError();
         chrome.contextMenus.removeAll(chrome.test.callbackPass());
       });
@@ -55,9 +67,9 @@ var tests = [
 
   function hasParent() {
     var id;
-    id = chrome.contextMenus.create({"title":"parent"}, function() {
+    id = chrome.contextMenus.create(maybeAddId({"title":"parent"}), function() {
       assertNoLastError();
-      chrome.contextMenus.create({"title":"child", "parentId":id},
+      chrome.contextMenus.create(maybeAddId({"title":"child", "parentId":id}),
                                 function() {
         assertNoLastError();
         chrome.test.succeed();
@@ -77,7 +89,7 @@ function makeCreateTest(type, contexts) {
     if (contexts && contexts.length > 0) {
       title += " " + contexts.join(",");
     }
-    var properties = {"title": title, "type": type};
+    var properties = maybeAddId({"title": title, "type": type});
 
     chrome.contextMenus.create(properties, chrome.test.callbackPass());
   };

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -22,8 +21,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::InvokeWithoutArgs;
 using media::cast::Packet;
+using ::testing::InvokeWithoutArgs;
 
 namespace mirroring {
 
@@ -36,6 +35,9 @@ class UdpSocketClientTest : public ::testing::Test {
         media::cast::test::GetFreeLocalPort(), network_context_remote_.get(),
         base::OnceClosure());
   }
+
+  UdpSocketClientTest(const UdpSocketClientTest&) = delete;
+  UdpSocketClientTest& operator=(const UdpSocketClientTest&) = delete;
 
   ~UdpSocketClientTest() override = default;
 
@@ -52,9 +54,6 @@ class UdpSocketClientTest : public ::testing::Test {
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<UdpSocketClient> udp_transport_client_;
   std::unique_ptr<Packet> received_packet_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UdpSocketClientTest);
 };
 
 TEST_F(UdpSocketClientTest, SendAndReceive) {
@@ -77,11 +76,11 @@ TEST_F(UdpSocketClientTest, SendAndReceive) {
   {
     // Request to send one packet.
     base::RunLoop run_loop;
-    base::RepeatingClosure cb;
+    base::OnceClosure cb;
     EXPECT_CALL(*socket, OnSend())
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     EXPECT_TRUE(udp_transport_client_->SendPacket(
-        new base::RefCountedData<Packet>(packet), cb));
+        new base::RefCountedData<Packet>(packet), std::move(cb)));
     run_loop.Run();
   }
 
@@ -112,7 +111,7 @@ TEST_F(UdpSocketClientTest, SendBeforeConnected) {
   Packet packet(data.begin(), data.end());
 
   // Request to send one packet.
-  base::MockCallback<base::RepeatingClosure> resume_send_cb;
+  base::MockCallback<base::OnceClosure> resume_send_cb;
   {
     EXPECT_CALL(resume_send_cb, Run()).Times(0);
     EXPECT_FALSE(udp_transport_client_->SendPacket(

@@ -7,14 +7,15 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/safe_mode/safe_mode_crashing_modules_config.h"
 #import "ios/chrome/browser/safe_mode/safe_mode_util.h"
 #import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#include "ios/chrome/common/crash_report/crash_helper.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
+#include "ui/base/device_form_factor.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -67,6 +68,11 @@ const NSTimeInterval kUploadTotalTime = 5;
 + (BOOL)hasSuggestions {
   if ([SafeModeViewController detectedThirdPartyMods])
     return YES;
+
+  static dispatch_once_t once_token = 0;
+  dispatch_once(&once_token, ^{
+    crash_helper::ProcessIntermediateReportsForSafeMode();
+  });
   return [SafeModeViewController hasReportToUpload];
 }
 
@@ -80,8 +86,8 @@ const NSTimeInterval kUploadTotalTime = 5;
   // If uploading is enabled and more than one report has stacked up, then we
   // assume that the app may be in a state that is preventing crash report
   // uploads before crashing again.
-  return breakpad_helper::UserEnabledUploading() &&
-         breakpad_helper::GetCrashReportCount() > 1;
+  return crash_helper::common::UserEnabledUploading() &&
+         crash_helper::GetPendingCrashReportCount() > 1;
 }
 
 // Return any jailbroken library that appears in SafeModeCrashingModulesConfig.
@@ -149,7 +155,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   // bounds will still be landscape at this point. Swap the height and width
   // here so that the dimensions will be correct once the app rotates to
   // portrait.
-  if (IsLandscape()) {
+  if (IsLandscape(self.view.window)) {
     mainBounds.size = CGSizeMake(mainBounds.size.height, mainBounds.size.width);
   }
   UIScrollView* scrollView = [[UIScrollView alloc] initWithFrame:mainBounds];
@@ -157,7 +163,10 @@ const NSTimeInterval kUploadTotalTime = 5;
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   const CGFloat kIPadInset =
       (mainBounds.size.width - kIPadWidth - kHorizontalSpacing) / 2;
-  const CGFloat widthInset = IsIPadIdiom() ? kIPadInset : kHorizontalSpacing;
+  const CGFloat widthInset =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIPadInset
+          : kHorizontalSpacing;
   _innerView = [[UIView alloc]
       initWithFrame:CGRectInset(mainBounds, widthInset, kVerticalSpacing * 2)];
   [scrollView addSubview:_innerView];
@@ -188,7 +197,10 @@ const NSTimeInterval kUploadTotalTime = 5;
   [description setNumberOfLines:0];
   [description setLineBreakMode:NSLineBreakByWordWrapping];
   CGRect frame = [description frame];
-  frame.size.width = IsIPadIdiom() ? kIPadWidth : kIPhoneWidth;
+  frame.size.width =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIPadWidth
+          : kIPhoneWidth;
   CGSize maxSize = CGSizeMake(frame.size.width, 999999.0f);
   frame.size.height =
       [[description text] cr_boundingSizeWithSize:maxSize
@@ -205,7 +217,10 @@ const NSTimeInterval kUploadTotalTime = 5;
   [_startButton titleLabel].textAlignment = NSTextAlignmentCenter;
   [_startButton titleLabel].lineBreakMode = NSLineBreakByWordWrapping;
   frame = [_startButton frame];
-  frame.size.width = IsIPadIdiom() ? kIPadWidth : kIPhoneWidth;
+  frame.size.width =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIPadWidth
+          : kIPhoneWidth;
   maxSize = CGSizeMake(frame.size.width, 999999.0f);
   const CGFloat kButtonBuffer = kVerticalSpacing / 2;
   CGSize startTextBoundingSize =
@@ -221,7 +236,7 @@ const NSTimeInterval kUploadTotalTime = 5;
 
   UIView* lastView = _startButton;
   if ([SafeModeViewController hasReportToUpload]) {
-    breakpad_helper::StartUploadingReportsInRecoveryMode();
+    crash_helper::StartUploadingReportsInRecoveryMode();
 
     // If there are no jailbreak modifications, then present the "Sending crash
     // report..." UI.
@@ -300,7 +315,7 @@ const NSTimeInterval kUploadTotalTime = 5;
 }
 
 - (void)startBrowserFromSafeMode {
-  breakpad_helper::RestoreDefaultConfiguration();
+  crash_helper::RestoreDefaultConfiguration();
   [_delegate startBrowserFromSafeMode];
 }
 

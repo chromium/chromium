@@ -4,13 +4,10 @@
 
 #include "gpu/command_buffer/service/external_vk_image_gl_representation.h"
 
-#include <utility>
 #include <vector>
 
-#include "base/posix/eintr_wrapper.h"
-#include "build/build_config.h"
-#include "gpu/vulkan/vulkan_function_pointers.h"
-#include "gpu/vulkan/vulkan_implementation.h"
+#include "base/logging.h"
+#include "ui/gl/gl_bindings.h"
 
 #define GL_LAYOUT_GENERAL_EXT 0x958D
 #define GL_LAYOUT_COLOR_ATTACHMENT_EXT 0x958E
@@ -21,8 +18,6 @@
 #define GL_LAYOUT_TRANSFER_DST_EXT 0x9593
 #define GL_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_EXT 0x9530
 #define GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT 0x9531
-
-#define GL_HANDLE_TYPE_OPAQUE_FD_EXT 0x9586
 
 namespace gpu {
 
@@ -58,11 +53,67 @@ GLenum ToGLImageLayout(VkImageLayout layout) {
 
 }  // namespace
 
+// static
+void ExternalVkImageGLRepresentationShared::AcquireTexture(
+    ExternalSemaphore* semaphore,
+    GLuint texture_id,
+    VkImageLayout src_layout) {
+  GLuint gl_semaphore = semaphore->GetGLSemaphore();
+  if (gl_semaphore) {
+    GLenum gl_layout = ToGLImageLayout(src_layout);
+    auto* api = gl::g_current_gl_context;
+    api->glWaitSemaphoreEXTFn(gl_semaphore, 0, nullptr, 1, &texture_id,
+                              &gl_layout);
+  }
+}
+
+// static
+ExternalSemaphore ExternalVkImageGLRepresentationShared::ReleaseTexture(
+    ExternalSemaphorePool* pool,
+    GLuint texture_id,
+    VkImageLayout dst_layout) {
+  ExternalSemaphore semaphore = pool->GetOrCreateSemaphore();
+  if (!semaphore) {
+    // TODO(crbug.com/933452): We should be able to handle this failure more
+    // gracefully rather than shutting down the whole process.
+    LOG(ERROR) << "Unable to create an ExternalSemaphore in "
+               << "ExternalVkImageGLRepresentation for synchronization with "
+               << "Vulkan";
+    return {};
+  }
+
+  GLuint gl_semaphore = semaphore.GetGLSemaphore();
+  if (!gl_semaphore) {
+    // TODO(crbug.com/933452): We should be able to semaphore_handle this
+    // failure more gracefully rather than shutting down the whole process.
+    LOG(ERROR) << "Unable to export VkSemaphore into GL in "
+               << "ExternalVkImageGLRepresentation for synchronization with "
+               << "Vulkan";
+    return {};
+  }
+
+  GLenum gl_layout = ToGLImageLayout(dst_layout);
+  auto* api = gl::g_current_gl_context;
+  api->glSignalSemaphoreEXTFn(gl_semaphore, 0, nullptr, 1, &texture_id,
+                              &gl_layout);
+  // Base on the spec, the glSignalSemaphoreEXT() call just inserts signal
+  // semaphore command in the gl context. It may or may not flush the context
+  // which depends on the implementation. So to make it safe, we always call
+  // glFlush() here. If the implementation does flush in the
+  // glSignalSemaphoreEXT() call, the glFlush() call should be a noop.
+  api->glFlushFn();
+
+  return semaphore;
+}
+
 ExternalVkImageGLRepresentationShared::ExternalVkImageGLRepresentationShared(
     SharedImageBacking* backing,
     GLuint texture_service_id)
     : backing_(static_cast<ExternalVkImageBacking*>(backing)),
       texture_service_id_(texture_service_id) {}
+
+ExternalVkImageGLRepresentationShared::
+    ~ExternalVkImageGLRepresentationShared() = default;
 
 bool ExternalVkImageGLRepresentationShared::BeginAccess(GLenum mode) {
   // There should not be multiple accesses in progress on the same
@@ -74,31 +125,24 @@ bool ExternalVkImageGLRepresentationShared::BeginAccess(GLenum mode) {
   }
 
   DCHECK(mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM ||
-         mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  const bool readonly = (mode == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+         mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM ||
+         mode == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
+  const bool readonly =
+      (mode != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
-  if (!readonly && backing_impl()->format() == viz::ResourceFormat::BGRA_8888) {
-    NOTIMPLEMENTED()
-        << "BeginAccess write on a BGRA_8888 backing is not supported.";
-    return false;
-  }
-
-  std::vector<SemaphoreHandle> handles;
-
-  if (!backing_impl()->BeginAccess(readonly, &handles, true /* is_gl */))
+  DCHECK(begin_access_semaphores_.empty());
+  if (!backing_impl()->BeginAccess(readonly, &begin_access_semaphores_,
+                                   true /* is_gl */))
     return false;
 
-  for (auto& handle : handles) {
-    GLuint gl_semaphore = ImportVkSemaphoreIntoGL(std::move(handle));
-    if (gl_semaphore) {
-      GrVkImageInfo info;
-      auto result = backing_impl()->backend_texture().getVkImageInfo(&info);
-      DCHECK(result);
-      GLenum src_layout = ToGLImageLayout(info.fImageLayout);
-      api()->glWaitSemaphoreEXTFn(gl_semaphore, 0, nullptr, 1,
-                                  &texture_service_id_, &src_layout);
-      api()->glDeleteSemaphoresEXTFn(1, &gl_semaphore);
-    }
+  for (auto& external_semaphore : begin_access_semaphores_) {
+    GrVkImageInfo info;
+    auto result = backing_impl()->backend_texture().getVkImageInfo(&info);
+    DCHECK(result);
+    DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
+    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
+    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
+    AcquireTexture(&external_semaphore, texture_service_id_, info.fImageLayout);
   }
   current_access_mode_ = mode;
   return true;
@@ -115,88 +159,38 @@ void ExternalVkImageGLRepresentationShared::EndAccess() {
 
   DCHECK(current_access_mode_ == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM ||
          current_access_mode_ ==
-             GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+             GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM ||
+         current_access_mode_ == GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
   const bool readonly =
-      (current_access_mode_ == GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+      (current_access_mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
   current_access_mode_ = 0;
 
-  VkSemaphore semaphore = VK_NULL_HANDLE;
-  SemaphoreHandle semaphore_handle;
-  GLuint gl_semaphore = 0;
-  if (backing_impl()->need_sychronization()) {
-    semaphore =
-        vk_implementation()->CreateExternalSemaphore(backing_impl()->device());
-    if (semaphore == VK_NULL_HANDLE) {
-      // TODO(crbug.com/933452): We should be able to handle this failure more
-      // gracefully rather than shutting down the whole process.
-      LOG(FATAL) << "Unable to create a VkSemaphore in "
-                 << "ExternalVkImageGLRepresentation for synchronization with "
-                 << "Vulkan";
-      return;
-    }
-
-    semaphore_handle =
-        vk_implementation()->GetSemaphoreHandle(vk_device(), semaphore);
-    vkDestroySemaphore(backing_impl()->device(), semaphore, nullptr);
-    if (!semaphore_handle.is_valid()) {
-      LOG(FATAL) << "Unable to export VkSemaphore into GL in "
-                 << "ExternalVkImageGLRepresentation for synchronization with "
-                 << "Vulkan";
-      return;
-    }
-
-    SemaphoreHandle dup_semaphore_handle = semaphore_handle.Duplicate();
-    gl_semaphore = ImportVkSemaphoreIntoGL(std::move(dup_semaphore_handle));
-
-    if (!gl_semaphore) {
-      // TODO(crbug.com/933452): We should be able to semaphore_handle this
-      // failure more gracefully rather than shutting down the whole process.
-      LOG(FATAL) << "Unable to export VkSemaphore into GL in "
-                 << "ExternalVkImageGLRepresentation for synchronization with "
-                 << "Vulkan";
+  ExternalSemaphore external_semaphore;
+  if (backing_impl()->need_synchronization() &&
+      backing_impl()->gl_reads_in_progress() <= 1) {
+    DCHECK(readonly == !!backing_impl()->gl_reads_in_progress());
+    GrVkImageInfo info;
+    auto result = backing_impl()->backend_texture().getVkImageInfo(&info);
+    DCHECK(result);
+    DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
+    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
+    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
+    external_semaphore =
+        ReleaseTexture(backing_impl()->external_semaphore_pool(),
+                       texture_service_id_, info.fImageLayout);
+    if (!external_semaphore) {
+      backing_impl()->context_state()->MarkContextLost();
       return;
     }
   }
-
-  GrVkImageInfo info;
-  auto result = backing_impl()->backend_texture().getVkImageInfo(&info);
-  DCHECK(result);
-  GLenum dst_layout = ToGLImageLayout(info.fImageLayout);
-  if (backing_impl()->need_sychronization()) {
-    api()->glSignalSemaphoreEXTFn(gl_semaphore, 0, nullptr, 1,
-                                  &texture_service_id_, &dst_layout);
-    api()->glDeleteSemaphoresEXTFn(1, &gl_semaphore);
-  }
-
-  backing_impl()->EndAccess(readonly, std::move(semaphore_handle),
+  backing_impl()->EndAccess(readonly, std::move(external_semaphore),
                             true /* is_gl */);
-}
 
-GLuint ExternalVkImageGLRepresentationShared::ImportVkSemaphoreIntoGL(
-    SemaphoreHandle handle) {
-  if (!handle.is_valid())
-    return 0;
-#if defined(OS_FUCHSIA)
-  NOTIMPLEMENTED_LOG_ONCE();
-  return 0;
-#elif defined(OS_LINUX)
-  if (handle.vk_handle_type() !=
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT) {
-    DLOG(ERROR) << "Importing semaphore handle of unexpected type:"
-                << handle.vk_handle_type();
-    return 0;
-  }
-  base::ScopedFD fd = handle.TakeHandle();
-  gl::GLApi* api = gl::g_current_gl_context;
-  GLuint gl_semaphore;
-  api->glGenSemaphoresEXTFn(1, &gl_semaphore);
-  api->glImportSemaphoreFdEXTFn(gl_semaphore, GL_HANDLE_TYPE_OPAQUE_FD_EXT,
-                                fd.release());
-
-  return gl_semaphore;
-#else  // !defined(OS_FUCHSIA) && !defined(OS_LINUX)
-#error Unsupported OS
-#endif
+  // We have done with |begin_access_semaphores_|. They should have been waited.
+  // So add them to pending semaphores for reusing or relaeasing.
+  backing_impl()->AddSemaphoresToPendingListOrRelease(
+      std::move(begin_access_semaphores_));
+  begin_access_semaphores_.clear();
 }
 
 ExternalVkImageGLRepresentation::ExternalVkImageGLRepresentation(
@@ -207,7 +201,9 @@ ExternalVkImageGLRepresentation::ExternalVkImageGLRepresentation(
     GLuint texture_service_id)
     : SharedImageRepresentationGLTexture(manager, backing, tracker),
       texture_(texture),
-      representation_shared_(backing, texture_service_id) {}
+      representation_shared_(backing, texture_service_id) {
+  DCHECK(texture_);
+}
 
 ExternalVkImageGLRepresentation::~ExternalVkImageGLRepresentation() {}
 
@@ -228,7 +224,9 @@ ExternalVkImageGLPassthroughRepresentation::
                                                MemoryTypeTracker* tracker,
                                                GLuint texture_service_id)
     : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
-      representation_shared_(backing, texture_service_id) {}
+      representation_shared_(backing, texture_service_id) {
+  DCHECK(representation_shared_.backing_impl()->GetTexturePassthrough());
+}
 
 ExternalVkImageGLPassthroughRepresentation::
     ~ExternalVkImageGLPassthroughRepresentation() {}

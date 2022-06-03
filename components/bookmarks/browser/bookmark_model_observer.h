@@ -7,6 +7,8 @@
 
 #include <set>
 
+#include <stddef.h>
+
 class GURL;
 
 namespace bookmarks {

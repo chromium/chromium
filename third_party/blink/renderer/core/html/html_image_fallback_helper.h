@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IMAGE_FALLBACK_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IMAGE_FALLBACK_HELPER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -18,9 +17,7 @@ class HTMLImageFallbackHelper {
 
  public:
   static void CreateAltTextShadowTree(Element&);
-  static scoped_refptr<ComputedStyle> CustomStyleForAltText(
-      Element&,
-      scoped_refptr<ComputedStyle> new_style);
+  static void CustomStyleForAltText(Element&, ComputedStyle& new_style);
 };
 
 }  // namespace blink

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test Clients.matchAll() assert_object_equals: property "url" expected "https://web-platform.test:8444/service-workers/service-worker/resources/clients-frame-freeze.html#1" got "https://web-platform.test:8444/service-workers/service-worker/resources/clients-frame-freeze.html#2"
+Harness: the test ran to completion.
+

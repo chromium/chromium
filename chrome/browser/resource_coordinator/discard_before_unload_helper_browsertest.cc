@@ -6,14 +6,15 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/app_modal/javascript_app_modal_dialog.h"
-#include "components/app_modal/native_app_modal_dialog.h"
+#include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -35,7 +36,7 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
   void TestDiscardBeforeUnloadHelper(const char* url,
                                      bool has_beforeunload_helper) {
     GURL gurl(embedded_test_server()->GetURL("a.com", url));
-    ui_test_utils::NavigateToURL(browser(), gurl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
     auto* wc = browser()->tab_strip_model()->GetActiveWebContents();
     content::PrepContentsForBeforeUnloadTest(wc);
 
@@ -52,7 +53,8 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
     HasBeforeUnloadHandler(wc, std::move(callback));
 
     // The callback should not be invoked synchronously. In a world where
-    // NeedToFireBeforeUnloadOrUnload works properly this expectation changes.
+    // NeedToFireBeforeUnloadOrUnloadEvents works properly this expectation
+    // changes.
     ASSERT_FALSE(callback_invoked);
 
     // Run the loop until we process the callback.
@@ -67,11 +69,11 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
     // the test to complete.
     browser()->tab_strip_model()->CloseAllTabs();
     if (has_beforeunload_helper) {
-      app_modal::JavaScriptAppModalDialog* alert =
+      javascript_dialogs::AppModalDialogController* alert =
           ui_test_utils::WaitForAppModalDialog();
       ASSERT_TRUE(alert);
       EXPECT_TRUE(alert->is_before_unload_dialog());
-      alert->native_dialog()->AcceptAppModalDialog();
+      alert->view()->AcceptAppModalDialog();
     }
   }
 };

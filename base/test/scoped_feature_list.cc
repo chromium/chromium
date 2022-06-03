@@ -4,12 +4,12 @@
 
 #include "base/test/scoped_feature_list.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -49,7 +49,7 @@ StringPiece GetFeatureName(StringPiece feature) {
   StringPiece feature_name = feature;
 
   // Remove default info.
-  if (feature_name.starts_with("*"))
+  if (StartsWith(feature_name, "*"))
     feature_name = feature_name.substr(1);
 
   // Remove field_trial info.
@@ -71,10 +71,10 @@ struct Features {
 // with GetFeatureName() and also could be without parameters.
 bool ContainsFeature(const std::vector<StringPiece>& feature_vector,
                      StringPiece feature_name) {
-  auto iter = std::find_if(feature_vector.begin(), feature_vector.end(),
-                           [&feature_name](const StringPiece& a) {
-                             return GetFeatureName(a) == feature_name;
-                           });
+  auto iter =
+      ranges::find_if(feature_vector, [&feature_name](const StringPiece& a) {
+        return GetFeatureName(a) == feature_name;
+      });
   return iter != feature_vector.end();
 }
 
@@ -135,6 +135,10 @@ ScopedFeatureList::FeatureAndParams::FeatureAndParams(
     const FeatureAndParams& other) = default;
 
 ScopedFeatureList::ScopedFeatureList() = default;
+
+ScopedFeatureList::ScopedFeatureList(const Feature& enable_feature) {
+  InitAndEnableFeature(enable_feature);
+}
 
 ScopedFeatureList::~ScopedFeatureList() {
   Reset();
@@ -271,7 +275,7 @@ void ScopedFeatureList::InitWithFeaturesImpl(
   // Restore other field trials. Note: We don't need to do anything for params
   // here because the param associator already has the right state, which has
   // been backed up via |original_params_| to be restored later.
-  FieldTrialList::CreateTrialsFromString(existing_trial_state, {});
+  FieldTrialList::CreateTrialsFromString(existing_trial_state);
 
   OverrideFeatures(current_enabled_features,
                    FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,

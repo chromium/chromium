@@ -32,9 +32,7 @@ source_set("core") {
     "//net",
     "//url",
   ]
-  public_deps = [
-    "//components/reading_list/core/proto",
-  ]
+  public_deps = [ "//components/reading_list/core/proto" ]
 }
 
 source_set("unit_tests") {

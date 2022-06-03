@@ -8,5 +8,5 @@
     RuntimeEnabled=WebAnimationsAPI,
     Exposed=Window
 ] interface DocumentTimeline : AnimationTimeline {
-  [CallWith=ExecutionContext] constructor(optional DocumentTimelineOptions options);
+  [CallWith=ExecutionContext] constructor(optional DocumentTimelineOptions options = {});
 };

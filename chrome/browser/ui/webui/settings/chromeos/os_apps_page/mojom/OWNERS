@@ -1,0 +1,6 @@
+# Primary Owners
+jimmyxgong@chromium.org
+hsuregan@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

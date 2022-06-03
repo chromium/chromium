@@ -6,14 +6,20 @@
 #define BASE_CONTAINERS_FLAT_SET_H_
 
 #include <functional>
+#include <vector>
 
 #include "base/containers/flat_tree.h"
+#include "base/functional/identity.h"
+#include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 
 namespace base {
 
 // flat_set is a container with a std::set-like interface that stores its
-// contents in a sorted vector.
+// contents in a sorted container, by default a vector.
+//
+// Its implementation mostly tracks the corresponding standardization proposal
+// https://wg21.link/P1222.
 //
 // Please see //base/containers/README.md for an overview of which container
 // to select.
@@ -34,7 +40,7 @@ namespace base {
 //
 //  - Iterators are invalidated across mutations.
 //  - If possible, construct a flat_set in one operation by inserting into
-//    a std::vector and moving that vector into the flat_set constructor.
+//    a container and moving that container into the flat_set constructor.
 //  - For multiple removals use base::EraseIf() which is O(n) rather than
 //    O(n * removed_items).
 //
@@ -45,13 +51,29 @@ namespace base {
 // reference, the functions available are:
 //
 // Constructors (inputs need not be sorted):
-//   flat_set(InputIterator first, InputIterator last,
-//            const Compare& compare = Compare());
 //   flat_set(const flat_set&);
 //   flat_set(flat_set&&);
-//   flat_set(std::vector<Key>,
+//   flat_set(InputIterator first, InputIterator last,
+//            const Compare& compare = Compare());
+//   flat_set(const container_type& items,
+//            const Compare& compare = Compare());
+//   flat_set(container_type&& items,
 //            const Compare& compare = Compare());  // Re-use storage.
 //   flat_set(std::initializer_list<value_type> ilist,
+//            const Compare& comp = Compare());
+//
+// Constructors (inputs need to be sorted):
+//   flat_set(sorted_unique_t,
+//            InputIterator first, InputIterator last,
+//            const Compare& compare = Compare());
+//   flat_set(sorted_unique_t,
+//            const container_type& items,
+//            const Compare& compare = Compare());
+//   flat_set(sorted_unique_t,
+//            container_type&& items,
+//            const Compare& compare = Compare());  // Re-use storage.
+//   flat_set(sorted_unique_t,
+//            std::initializer_list<value_type> ilist,
 //            const Compare& comp = Compare());
 //
 // Assignment functions:
@@ -93,6 +115,10 @@ namespace base {
 //   pair<iterator, bool> emplace(Args&&...);
 //   iterator             emplace_hint(const_iterator, Args&&...);
 //
+// Underlying type functions:
+//   container_type       extract() &&;
+//   void                 replace(container_type&&);
+//
 // Erase functions:
 //   iterator erase(iterator);
 //   iterator erase(const_iterator);
@@ -115,7 +141,7 @@ namespace base {
 //   template <typename K> const_iterator           upper_bound(const K&) const;
 //
 // General functions:
-//   void swap(flat_set&&);
+//   void swap(flat_set&);
 //
 // Non-member operators:
 //   bool operator==(const flat_set&, const flat_set);
@@ -125,12 +151,35 @@ namespace base {
 //   bool operator>=(const flat_set&, const flat_set);
 //   bool operator<=(const flat_set&, const flat_set);
 //
-template <class Key, class Compare = std::less<>>
-using flat_set = typename ::base::internal::flat_tree<
-    Key,
-    Key,
-    ::base::internal::GetKeyFromValueIdentity<Key>,
-    Compare>;
+template <class Key,
+          class Compare = std::less<>,
+          class Container = std::vector<Key>>
+using flat_set = typename ::base::internal::
+    flat_tree<Key, base::identity, Compare, Container>;
+
+// Utility function to simplify constructing a flat_set from a fixed list
+// of keys. The keys are obtained by applying the projection |proj| to the
+// |unprojected_elements|. The set's keys are sorted by |comp|.
+//
+// Example usage (creates a set {16, 9, 4, 1}):
+//   auto set = base::MakeFlatSet<int>(
+//       std::vector<int>{1, 2, 3, 4}, [](int i, int j) { return i > j; },
+//       [](int i) { return i * i; });
+template <class Key,
+          class Compare = std::less<>,
+          class Container = std::vector<Key>,
+          class InputContainer,
+          class Projection = base::identity>
+constexpr flat_set<Key, Compare, Container> MakeFlatSet(
+    const InputContainer& unprojected_elements,
+    const Compare& comp = Compare(),
+    const Projection& proj = Projection()) {
+  Container elements;
+  internal::ReserveIfSupported(elements, unprojected_elements);
+  base::ranges::transform(unprojected_elements, std::back_inserter(elements),
+                          proj);
+  return flat_set<Key, Compare, Container>(std::move(elements), comp);
+}
 
 }  // namespace base
 

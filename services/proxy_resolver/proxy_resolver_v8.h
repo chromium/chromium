@@ -8,11 +8,11 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 
 class GURL;
@@ -42,11 +42,11 @@ class ProxyResolverV8 {
                             bool* terminate) = 0;
 
     // Handler for "alert(message)"
-    virtual void Alert(const base::string16& message) = 0;
+    virtual void Alert(const std::u16string& message) = 0;
 
     // Handler for when an error is encountered. |line_number| may be -1
     // if a line number is not applicable to this error.
-    virtual void OnError(int line_number, const base::string16& error) = 0;
+    virtual void OnError(int line_number, const std::u16string& error) = 0;
 
    protected:
     virtual ~JSBindings() {}
@@ -56,6 +56,9 @@ class ProxyResolverV8 {
   static int Create(const scoped_refptr<net::PacFileData>& script_data,
                     JSBindings* bindings,
                     std::unique_ptr<ProxyResolverV8>* resolver);
+
+  ProxyResolverV8(const ProxyResolverV8&) = delete;
+  ProxyResolverV8& operator=(const ProxyResolverV8&) = delete;
 
   ~ProxyResolverV8();
 
@@ -75,8 +78,6 @@ class ProxyResolverV8 {
   explicit ProxyResolverV8(std::unique_ptr<Context> context);
 
   std::unique_ptr<Context> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverV8);
 };
 
 }  // namespace proxy_resolver

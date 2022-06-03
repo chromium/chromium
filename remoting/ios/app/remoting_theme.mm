@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "remoting/ios/app/remoting_theme.h"
 
-#import "ios/third_party/material_components_ios/src/components/Dialogs/src/ColorThemer/MDCAlertColorThemer.h"
-#import "ios/third_party/material_components_ios/src/components/Themes/src/MDCColorScheme.h"
+#import <MaterialComponents/MDCAlertColorThemer.h>
+#import <MaterialComponents/MDCColorScheme.h>
 
 #include "remoting/base/string_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @implementation RemotingTheme
 
@@ -338,7 +338,8 @@
   static UIImage* icon;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    icon = [UIImage imageNamed:@"ic_help"];
+    icon = [[UIImage imageNamed:@"ic_help"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   });
   return icon;
 }
@@ -347,7 +348,8 @@
   static UIImage* icon;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    icon = [UIImage imageNamed:@"ic_feedback"];
+    icon = [[UIImage imageNamed:@"ic_feedback"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   });
   return icon;
 }

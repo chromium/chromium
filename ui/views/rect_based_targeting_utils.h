@@ -10,7 +10,7 @@
 namespace gfx {
 class Point;
 class Rect;
-}
+}  // namespace gfx
 
 namespace views {
 

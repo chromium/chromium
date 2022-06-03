@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "ppapi/c/dev/ppb_view_dev.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/tracked_callback.h"

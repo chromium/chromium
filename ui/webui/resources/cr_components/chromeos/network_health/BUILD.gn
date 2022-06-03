@@ -1,0 +1,147 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+assert(is_chromeos, "Only ChromeOS components belong here.")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":mojo_interface_provider.m",
+    ":network_diagnostics.m",
+    ":network_diagnostics_mojo.m",
+    ":network_diagnostics_types.m",
+    ":network_health_container.m",
+    ":network_health_mojo.m",
+    ":network_health_summary.m",
+    ":routine_group.m",
+  ]
+}
+
+js_library("mojo_interface_provider.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/mojo_interface_provider.m.js" ]
+  deps = [ ":network_diagnostics_mojo.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("network_health_summary.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_summary.m.js" ]
+  deps = [
+    ":network_health_mojo.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":network_health_summary_module" ]
+}
+
+js_library("network_health_mojo.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_mojo.m.js" ]
+  deps = [
+    "//ash/services/network_health/public/mojom:mojom_js_library_for_compile",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("network_health_container.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_container.m.js" ]
+  deps =
+      [ "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon" ]
+  extra_deps = [ ":network_health_container_module" ]
+}
+
+js_library("network_diagnostics.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics.m.js" ]
+  deps = [
+    ":mojo_interface_provider.m",
+    ":network_diagnostics_mojo.m",
+    ":network_diagnostics_types.m",
+    ":routine_group.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":network_diagnostics_module" ]
+}
+
+js_library("network_diagnostics_mojo.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js" ]
+  deps = [
+    "//ash/services/network_health/public/mojom:mojom_js_library_for_compile",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("network_diagnostics_types.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.m.js" ]
+  deps = [ ":network_diagnostics_mojo.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("routine_group.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/routine_group.m.js" ]
+  deps = [
+    ":network_diagnostics_mojo.m",
+    ":network_diagnostics_types.m",
+    ":network_health_container.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":routine_group_module" ]
+}
+
+# polymer_modulizer for converting Polymer2 to Polymer3
+
+polymer_modulizer("network_health_summary") {
+  js_file = "network_health_summary.js"
+  html_file = "network_health_summary.html"
+  html_type = "dom-module"
+  auto_imports = [
+    "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
+  ]
+}
+
+polymer_modulizer("network_health_container") {
+  js_file = "network_health_container.js"
+  html_file = "network_health_container.html"
+  html_type = "dom-module"
+}
+
+polymer_modulizer("network_diagnostics") {
+  js_file = "network_diagnostics.js"
+  html_file = "network_diagnostics.html"
+  html_type = "dom-module"
+  auto_imports = [
+    "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Routine,RoutineResponse,RoutineGroup",
+    "ui/webui/resources/cr_components/chromeos/network_health/mojo_interface_provider.html|getNetworkDiagnosticsService",
+  ]
+}
+
+polymer_modulizer("routine_group") {
+  js_file = "routine_group.js"
+  html_file = "routine_group.html"
+  html_type = "dom-module"
+  auto_imports = [ "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Icons,Routine" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "mojo_interface_provider.js",
+    "network_health_mojo.js",
+    "network_diagnostics_mojo.js",
+    "network_diagnostics_types.js",
+  ]
+}
+
+group("polymer3_elements") {
+  public_deps = [
+    ":modulize",
+    ":network_diagnostics_module",
+    ":network_health_container_module",
+    ":network_health_summary_module",
+    ":routine_group_module",
+  ]
+}

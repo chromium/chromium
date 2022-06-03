@@ -9,24 +9,17 @@
 #include "base/metrics/user_metrics.h"
 
 namespace {
-
 struct ActionCallbackWrapper {
   base::ActionCallback action_callback;
 };
-
 }  // namespace
 
 namespace base {
 namespace android {
 
-static void JNI_RecordUserAction_RecordUserAction(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_action) {
-  RecordComputedAction(ConvertJavaStringToUTF8(env, j_action));
-}
-
 static void OnActionRecorded(const JavaRef<jobject>& callback,
-                             const std::string& action) {
+                             const std::string& action,
+                             TimeTicks action_time) {
   JNIEnv* env = AttachCurrentThread();
   Java_UserActionCallback_onActionRecorded(
       env, callback, ConvertUTF8ToJavaString(env, action));

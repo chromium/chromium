@@ -24,16 +24,23 @@ LearningTaskControllerHelper::LearningTaskControllerHelper(
 
 LearningTaskControllerHelper::~LearningTaskControllerHelper() = default;
 
-void LearningTaskControllerHelper::BeginObservation(base::UnguessableToken id,
-                                                    FeatureVector features) {
+void LearningTaskControllerHelper::BeginObservation(
+    base::UnguessableToken id,
+    FeatureVector features,
+    absl::optional<ukm::SourceId> source_id) {
   auto& pending_example = pending_examples_[id];
+
+  if (source_id)
+    pending_example.source_id = *source_id;
 
   // Start feature prediction, so that we capture the current values.
   if (!feature_provider_.is_null()) {
-    feature_provider_.Post(
-        FROM_HERE, &FeatureProvider::AddFeatures, std::move(features),
-        base::BindOnce(&LearningTaskControllerHelper::OnFeaturesReadyTrampoline,
-                       task_runner_, AsWeakPtr(), id));
+    // TODO(dcheng): Convert this to use Then() helper.
+    feature_provider_.AsyncCall(&FeatureProvider::AddFeatures)
+        .WithArgs(std::move(features),
+                  base::BindOnce(
+                      &LearningTaskControllerHelper::OnFeaturesReadyTrampoline,
+                      task_runner_, AsWeakPtr(), id));
   } else {
     pending_example.example.features = std::move(features);
     pending_example.features_done = true;
@@ -50,7 +57,6 @@ void LearningTaskControllerHelper::CompleteObservation(
   iter->second.example.target_value = completion.target_value;
   iter->second.example.weight = completion.weight;
   iter->second.target_done = true;
-  iter->second.source_id = completion.source_id;
   ProcessExampleIfFinished(std::move(iter));
 }
 

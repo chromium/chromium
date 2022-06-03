@@ -97,8 +97,8 @@ struct SYSTEM_PROCESS_INFORMATION {
   ULONGLONG KernelTime;
   UNICODE_STRING ImageName;
   KPRIORITY BasePriority;
-  HANDLE ProcessId;
-  HANDLE ParentProcessId;
+  HANDLE ProcessId;        // Actually process ID, not a handle
+  HANDLE ParentProcessId;  // Actually parent process ID, not a handle
   ULONG HandleCount;
   ULONG Reserved2[2];
   // Padding here in 64-bit
@@ -215,11 +215,62 @@ SystemInformationSampler::SystemInformationSampler(
   lstrcpyn(target_process_name_, process_name,
            sizeof(target_process_name_) / sizeof(wchar_t));
 
+  // If |target_process_name_| is numeric, treat it as a process ID.
+  errno = 0;
+  wchar_t* end_ptr;
+  target_process_id_ = wcstoul(target_process_name_, &end_ptr, 10);
+  // Discard result if error occurred, or if negative or only partially numeric.
+  if (errno != 0 || target_process_id_ < 0 || *end_ptr != L'\0')
+    target_process_id_ = 0;
+
   QueryPerformanceFrequency(&perf_frequency_);
   QueryPerformanceCounter(&initial_counter_);
 }
 
 SystemInformationSampler::~SystemInformationSampler() {}
+
+// Collect enough data to be able to do a diff between two snapshots. Some
+// threads might stop or new threads might be created between two snapshots. If
+// a thread with a large number of context switches gets terminated the total
+// number of context switches for the process might go down and the delta would
+// be negative. To avoid that we need to compare thread IDs between two
+// snapshots and not count context switches for threads that are missing in the
+// most recent snapshot.
+ProcessData GetProcessData(const SYSTEM_PROCESS_INFORMATION* const pi) {
+  ProcessData process_data;
+  process_data.cpu_time = pi->KernelTime + pi->UserTime;
+  // The PagefileUsage member measures Private Commit. Presumably the name was
+  // chosen because all private commit has to be backed by either memory or the
+  // page file. Private Commit is the standard measure for memory in Chromium,
+  // including in the Memory footprint column in Chrome's task manager.
+  // Private Commit is a much more stable and meaningful number than private
+  // working set which can be affected by memory pressure or other factors that
+  // cause Windows to drain the working set and page out or compress the memory.
+  process_data.memory = pi->VirtualMemoryCounters.PagefileUsage;
+  process_data.handle_count = pi->HandleCount;
+
+  // Iterate over threads and store each thread's ID and number of context
+  // switches.
+  for (ULONG thread_index = 0; thread_index < pi->NumberOfThreads;
+       ++thread_index) {
+    const SYSTEM_THREAD_INFORMATION* ti = &pi->Threads[thread_index];
+    if (ti->ClientId.UniqueProcess != pi->ProcessId)
+      continue;
+
+    ThreadData thread_data;
+    thread_data.thread_id = ti->ClientId.UniqueThread;
+    thread_data.context_switches = ti->ContextSwitchCount;
+    process_data.threads.push_back(thread_data);
+  }
+
+  // Order thread data by thread ID to help diff two snapshots.
+  std::sort(process_data.threads.begin(), process_data.threads.end(),
+            [](const ThreadData& l, const ThreadData r) {
+              return l.thread_id < r.thread_id;
+            });
+
+  return process_data;
+}
 
 std::unique_ptr<ProcessDataSnapshot> SystemInformationSampler::TakeSnapshot() {
   // Preallocate the buffer with the size determined on the previous call to
@@ -241,64 +292,47 @@ std::unique_ptr<ProcessDataSnapshot> SystemInformationSampler::TakeSnapshot() {
       perf_frequency_.QuadPart);
 
   for (size_t offset = 0; offset < data_buffer.size();) {
+    // Validate that the offset is valid.
+    if (offset + sizeof(SYSTEM_PROCESS_INFORMATION) > data_buffer.size())
+      break;
+
     auto pi = reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*>(
         data_buffer.data() + offset);
 
-    // Validate that the offset is valid and all needed data is within
-    // the buffer boundary.
-    if (offset + sizeof(SYSTEM_PROCESS_INFORMATION) > data_buffer.size())
-      break;
-    if (offset + sizeof(SYSTEM_PROCESS_INFORMATION) +
-            (pi->NumberOfThreads - 1) * sizeof(SYSTEM_THREAD_INFORMATION) >
-        data_buffer.size())
-      break;
-
-    if (pi->ImageName.Buffer) {
-      // Validate that the image name is within the buffer boundary.
-      // ImageName.Length seems to be in bytes rather than characters.
-      size_t image_name_offset =
-          reinterpret_cast<BYTE*>(pi->ImageName.Buffer) - data_buffer.data();
-      if (image_name_offset + pi->ImageName.Length > data_buffer.size())
+    // Skip processes that report zero threads (e.g., the "Secure System"
+    // process, which does not disclose its thread count).
+    if (pi->NumberOfThreads > 0) {
+      // Validate that |pi| and any additional SYSTEM_THREAD_INFORMATION structs
+      // that it may have are all within the buffer boundary.
+      if (offset + sizeof(SYSTEM_PROCESS_INFORMATION) +
+              (pi->NumberOfThreads - 1) * sizeof(SYSTEM_THREAD_INFORMATION) >
+          data_buffer.size()) {
         break;
+      }
 
-      // Check if this is a chrome process. Ignore all other processes.
-      if (wcsncmp(target_process_name_filter(), pi->ImageName.Buffer,
-                  lstrlen(target_process_name_filter())) == 0) {
-        // Collect enough data to be able to do a diff between two snapshots.
-        // Some threads might stop or new threads might be created between two
-        // snapshots. If a thread with a large number of context switches gets
-        // terminated the total number of context switches for the process might
-        // go down and the delta would be negative.
-        // To avoid that we need to compare thread IDs between two snapshots and
-        // not count context switches for threads that are missing in the most
-        // recent snapshot.
-        ProcessData process_data;
-
-        process_data.cpu_time = pi->KernelTime + pi->UserTime;
-        process_data.working_set = pi->WorkingSetPrivateSize;
-
-        // Iterate over threads and store each thread's ID and number of context
-        // switches.
-        for (ULONG thread_index = 0; thread_index < pi->NumberOfThreads;
-             ++thread_index) {
-          const SYSTEM_THREAD_INFORMATION* ti = &pi->Threads[thread_index];
-          if (ti->ClientId.UniqueProcess != pi->ProcessId)
-            continue;
-
-          ThreadData thread_data;
-          thread_data.thread_id = ti->ClientId.UniqueThread;
-          thread_data.context_switches = ti->ContextSwitchCount;
-          process_data.threads.push_back(thread_data);
+      if (target_process_id_ > 0) {
+        // If |pi| or its parent has the targeted process ID, add its data to
+        // the snapshot.
+        if (reinterpret_cast<uintptr_t>(pi->ProcessId) == target_process_id_ ||
+            reinterpret_cast<uintptr_t>(pi->ParentProcessId) ==
+                target_process_id_) {
+          snapshot->processes.insert(
+              std::make_pair(pi->ProcessId, GetProcessData(pi)));
         }
+      } else if (pi->ImageName.Buffer) {
+        // Validate that the image name is within the buffer boundary.
+        // ImageName.Length seems to be in bytes rather than characters.
+        size_t image_name_offset =
+            reinterpret_cast<BYTE*>(pi->ImageName.Buffer) - data_buffer.data();
+        if (image_name_offset + pi->ImageName.Length > data_buffer.size())
+          break;
 
-        // Order thread data by thread ID to help diff two snapshots.
-        std::sort(process_data.threads.begin(), process_data.threads.end(),
-                  [](const ThreadData& l, const ThreadData r) {
-                    return l.thread_id < r.thread_id;
-                  });
-
-        snapshot->processes.insert(
-            std::make_pair(pi->ProcessId, std::move(process_data)));
+        // If |pi| has the targeted process name, add its data to the snapshot.
+        if (wcsncmp(target_process_name_filter(), pi->ImageName.Buffer,
+                    lstrlen(target_process_name_filter())) == 0) {
+          snapshot->processes.insert(
+              std::make_pair(pi->ProcessId, GetProcessData(pi)));
+        }
       }
     }
 

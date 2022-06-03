@@ -14,6 +14,10 @@ class Profile;
 class DownloadsCounter : public browsing_data::BrowsingDataCounter {
  public:
   explicit DownloadsCounter(Profile* profile);
+
+  DownloadsCounter(const DownloadsCounter&) = delete;
+  DownloadsCounter& operator=(const DownloadsCounter&) = delete;
+
   ~DownloadsCounter() override;
 
   const char* GetPrefName() const override;
@@ -23,8 +27,6 @@ class DownloadsCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsCounter);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_COUNTERS_DOWNLOADS_COUNTER_H_

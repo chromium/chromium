@@ -102,8 +102,8 @@ void MessageCenterStatsCollector::OnNotificationUpdated(
 
 void MessageCenterStatsCollector::OnNotificationClicked(
     const std::string& notification_id,
-    const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   auto iter = stats_.find(notification_id);
   if (iter == stats_.end())
     return;

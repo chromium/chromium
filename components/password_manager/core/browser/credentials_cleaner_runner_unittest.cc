@@ -17,51 +17,27 @@ namespace password_manager {
 class MockCredentialsCleaner : public CredentialsCleaner {
  public:
   MockCredentialsCleaner() = default;
+  MockCredentialsCleaner(const MockCredentialsCleaner&) = delete;
+  MockCredentialsCleaner& operator=(const MockCredentialsCleaner&) = delete;
   ~MockCredentialsCleaner() override = default;
   MOCK_METHOD0(NeedsCleaning, bool());
   MOCK_METHOD1(StartCleaning, void(Observer* observer));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialsCleaner);
-};
-
-class DestructionCheckableCleanerRunner : public CredentialsCleanerRunner {
- public:
-  // |object_destroyed| is used to inform caller that the object destroyed
-  // itself.
-  explicit DestructionCheckableCleanerRunner(bool* object_destroyed)
-      : object_destroyed_(object_destroyed) {}
-
- private:
-  ~DestructionCheckableCleanerRunner() override { *object_destroyed_ = true; }
-
-  // The class will assign true to the pointee on destruction.
-  bool* object_destroyed_;
 };
 
 class CredentialsCleanerRunnerTest : public ::testing::Test {
  public:
   CredentialsCleanerRunnerTest() = default;
-
-  ~CredentialsCleanerRunnerTest() override { EXPECT_TRUE(runner_destroyed_); }
+  CredentialsCleanerRunnerTest(const CredentialsCleanerRunnerTest&) = delete;
+  CredentialsCleanerRunnerTest& operator=(const CredentialsCleanerRunnerTest&) =
+      delete;
+  ~CredentialsCleanerRunnerTest() override = default;
 
  protected:
-  CredentialsCleanerRunner* GetRunner() { return cleaning_tasks_runner_; }
+  CredentialsCleanerRunner* GetRunner() { return &cleaning_tasks_runner_; }
 
  private:
-  bool runner_destroyed_ = false;
-
-  // This is a non-owning pointer, because the runner will delete itself.
-  DestructionCheckableCleanerRunner* cleaning_tasks_runner_ =
-      new DestructionCheckableCleanerRunner(&runner_destroyed_);
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialsCleanerRunnerTest);
+  CredentialsCleanerRunner cleaning_tasks_runner_;
 };
-
-// This test would fail if the object doesn't delete itself.
-TEST_F(CredentialsCleanerRunnerTest, EmptyTasks) {
-  GetRunner()->StartCleaning();
-}
 
 // In this test we check that credential clean-ups runner executes the clean-up
 // tasks in the order they were added.
@@ -84,6 +60,61 @@ TEST_F(CredentialsCleanerRunnerTest, NonEmptyTasks) {
   cleaning_tasks_runner->StartCleaning();
   for (int i = 0; i < kCleanersCount; ++i)
     cleaning_tasks_runner->CleaningCompleted();
+
+  EXPECT_FALSE(cleaning_tasks_runner->HasPendingTasks());
+}
+
+// In this test we check that StartCleaning() can be called again after the
+// first one finished.
+TEST_F(CredentialsCleanerRunnerTest, CanBeCalledAgainAfterFinished) {
+  auto* cleaning_tasks_runner = GetRunner();
+
+  auto cleaner1 = std::make_unique<MockCredentialsCleaner>();
+  EXPECT_CALL(*cleaner1, NeedsCleaning).WillOnce(::testing::Return(true));
+
+  auto cleaner2 = std::make_unique<MockCredentialsCleaner>();
+  EXPECT_CALL(*cleaner2, NeedsCleaning).WillOnce(::testing::Return(true));
+
+  ::testing::InSequence dummy;
+  EXPECT_CALL(*cleaner1, StartCleaning(cleaning_tasks_runner));
+  EXPECT_CALL(*cleaner2, StartCleaning(cleaning_tasks_runner));
+
+  cleaning_tasks_runner->MaybeAddCleaningTask(std::move(cleaner1));
+  cleaning_tasks_runner->StartCleaning();
+  cleaning_tasks_runner->CleaningCompleted();  // cleaner1
+
+  cleaning_tasks_runner->MaybeAddCleaningTask(std::move(cleaner2));
+  cleaning_tasks_runner->StartCleaning();
+  cleaning_tasks_runner->CleaningCompleted();  // cleaner2
+
+  EXPECT_FALSE(cleaning_tasks_runner->HasPendingTasks());
+}
+
+// In this test we check that StartCleaning() can be called again before the
+// first one finished.
+TEST_F(CredentialsCleanerRunnerTest, CanBeCalledAgainBeforeFinished) {
+  auto* cleaning_tasks_runner = GetRunner();
+
+  auto cleaner1 = std::make_unique<MockCredentialsCleaner>();
+  EXPECT_CALL(*cleaner1, NeedsCleaning).WillOnce(::testing::Return(true));
+
+  auto cleaner2 = std::make_unique<MockCredentialsCleaner>();
+  EXPECT_CALL(*cleaner2, NeedsCleaning).WillOnce(::testing::Return(true));
+
+  ::testing::InSequence dummy;
+  EXPECT_CALL(*cleaner1, StartCleaning(cleaning_tasks_runner));
+  EXPECT_CALL(*cleaner2, StartCleaning(cleaning_tasks_runner));
+
+  cleaning_tasks_runner->MaybeAddCleaningTask(std::move(cleaner1));
+  cleaning_tasks_runner->StartCleaning();
+
+  cleaning_tasks_runner->MaybeAddCleaningTask(std::move(cleaner2));
+  cleaning_tasks_runner->StartCleaning();
+
+  cleaning_tasks_runner->CleaningCompleted();  // cleaner1
+  cleaning_tasks_runner->CleaningCompleted();  // cleaner2
+
+  EXPECT_FALSE(cleaning_tasks_runner->HasPendingTasks());
 }
 
 }  // namespace password_manager

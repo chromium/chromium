@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "content/public/browser/web_ui_message_handler.h"
+
+namespace base {
+class ListValue;
+class TimeTicks;
+}  // namespace base
 
 // UI Handler for chrome://user-actions/
 // It listens to user action notifications and passes those notifications
@@ -15,18 +19,22 @@
 class UserActionsUIHandler : public content::WebUIMessageHandler {
  public:
   UserActionsUIHandler();
+
+  UserActionsUIHandler(const UserActionsUIHandler&) = delete;
+  UserActionsUIHandler& operator=(const UserActionsUIHandler&) = delete;
+
   ~UserActionsUIHandler() override;
 
   // WebUIMessageHandler implementation:
-  // Does nothing for now.
   void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
  private:
-  void OnUserAction(const std::string& action);
+  void HandlePageLoaded(const base::ListValue* args);
+  void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
   base::ActionCallback action_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActionsUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_HANDLER_H_

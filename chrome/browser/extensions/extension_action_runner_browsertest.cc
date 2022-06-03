@@ -11,10 +11,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -23,7 +21,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_action.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -213,8 +213,9 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
     // Navigate to an URL (which matches the explicit host specified in the
     // extension content_scripts_explicit_hosts). All extensions should
     // inject the script.
-    ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(
-                                                "/extensions/test_file.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("/extensions/test_file.html")));
   };
 
   if (requires_consent == DOES_NOT_REQUIRE_CONSENT) {
@@ -235,6 +236,10 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
         : runner_(runner) {
       runner_->set_observer_for_testing(this);
     }
+
+    BlockedActionWaiter(const BlockedActionWaiter&) = delete;
+    BlockedActionWaiter& operator=(const BlockedActionWaiter&) = delete;
+
     ~BlockedActionWaiter() { runner_->set_observer_for_testing(nullptr); }
 
     void Wait() { run_loop_.Run(); }
@@ -245,8 +250,6 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
 
     ExtensionActionRunner* runner_;
     base::RunLoop run_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(BlockedActionWaiter);
   };
 
   BlockedActionWaiter waiter(runner);
@@ -300,10 +303,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
                        RemoveExtensionWithPendingInjections) {
   // Load up two extensions, each with content scripts.
-  const Extension* extension1 =
+  scoped_refptr<const Extension> extension1 =
       CreateExtension(ALL_HOSTS, CONTENT_SCRIPT, WITHHOLD_PERMISSIONS);
   ASSERT_TRUE(extension1);
-  const Extension* extension2 =
+  scoped_refptr<const Extension> extension2 =
       CreateExtension(ALL_HOSTS, CONTENT_SCRIPT, WITHHOLD_PERMISSIONS);
   ASSERT_TRUE(extension2);
 
@@ -317,12 +320,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   ASSERT_TRUE(action_runner);
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
 
   // Both extensions should have pending requests.
-  EXPECT_TRUE(action_runner->WantsToRun(extension1));
-  EXPECT_TRUE(action_runner->WantsToRun(extension2));
+  EXPECT_TRUE(action_runner->WantsToRun(extension1.get()));
+  EXPECT_TRUE(action_runner->WantsToRun(extension2.get()));
 
   // Unload one of the extensions.
   UnloadExtension(extension2->id());
@@ -331,15 +334,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
 
   // We should have pending requests for extension1, but not the removed
   // extension2.
-  EXPECT_TRUE(action_runner->WantsToRun(extension1));
-  EXPECT_FALSE(action_runner->WantsToRun(extension2));
+  EXPECT_TRUE(action_runner->WantsToRun(extension1.get()));
+  EXPECT_FALSE(action_runner->WantsToRun(extension2.get()));
 
   // We should still be able to run the request for extension1.
-  ExtensionTestMessageListener inject_success_listener(
-      new ExtensionTestMessageListener(kInjectSucceeded,
-                                       false /* won't reply */));
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
+                                                       false /* won't reply */);
   inject_success_listener.set_extension_id(extension1->id());
-  action_runner->RunAction(extension1, true);
+  action_runner->RunAction(extension1.get(), true);
   EXPECT_TRUE(inject_success_listener.WaitUntilSatisfied());
 }
 
@@ -359,14 +361,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
 
-  ExtensionTestMessageListener inject_success_listener(
-      new ExtensionTestMessageListener(kInjectSucceeded,
-                                       false /* won't reply */));
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
+                                                       false /* won't reply */);
   inject_success_listener.set_extension_id(extension->id());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The extension shouldn't be allowed to run.
   EXPECT_TRUE(action_runner->WantsToRun(extension));
@@ -380,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
 
   // Navigate again - this time, the extension should execute immediately (and
   // should not need to ask the script controller for permission).
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(action_runner->WantsToRun(extension));
   EXPECT_EQ(0, action_runner->num_page_requests());
   EXPECT_TRUE(inject_success_listener.WaitUntilSatisfied());
@@ -391,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_TRUE(RunAllPendingInRenderer(web_contents));
 
   // Re-navigate; the extension should again need permission to run.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(action_runner->WantsToRun(extension));
   EXPECT_EQ(1, action_runner->num_page_requests());
   EXPECT_FALSE(inject_success_listener.was_satisfied());
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));

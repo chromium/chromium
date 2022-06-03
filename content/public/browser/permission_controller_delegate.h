@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_
 
+#include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_permission_overrides.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -18,17 +19,17 @@ class RenderFrameHost;
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
   using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
+
+  // Identifier for an active subscription.
+  using SubscriptionId = base::IdType64<PermissionControllerDelegate>;
+
   virtual ~PermissionControllerDelegate() = default;
 
   // Requests a permission on behalf of a frame identified by
   // render_frame_host.
   // When the permission request is handled, whether it failed, timed out or
   // succeeded, the |callback| will be run.
-  // Returns a request id which can be used to cancel the permission (see
-  // CancelPermissionRequest). This can be kNoPendingOperation if
-  // there is no further need to cancel the permission in which case |callback|
-  // was invoked.
-  virtual int RequestPermission(
+  virtual void RequestPermission(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -41,11 +42,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // succeeded, the |callback| will be run. The order of statuses in the
   // returned vector will correspond to the order of requested permission
   // types.
-  // Returns a request id which can be used to cancel the request (see
-  // CancelPermissionRequest). This can be kNoPendingOperation if
-  // there is no further need to cancel the permission in which case |callback|
-  // was invoked.
-  virtual int RequestPermissions(
+  virtual void RequestPermissions(
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -80,27 +77,27 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   // Runs the given |callback| whenever the |permission| associated with the
   // given RenderFrameHost changes. A nullptr should be passed if the request
-  // is from a worker. Returns the subscription_id to be used to unsubscribe.
-  // Can be kNoPendingOperation if the subscribe was not successful.
-  virtual int SubscribePermissionStatusChange(
+  // is from a worker. Returns the ID to be used to unsubscribe, which can be
+  // `is_null()` if the subscribe was not successful.
+  virtual SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)>
           callback) = 0;
 
-  // Unregisters from permission status change notifications.
-  // The |subscription_id| must match the value returned by the
-  // SubscribePermissionStatusChange call. Unsubscribing
-  // an already unsubscribed |subscription_id| or providing the
-  // |subscription_id| kNoPendingOperation is a no-op.
-  virtual void UnsubscribePermissionStatusChange(int subscription_id) = 0;
+  // Unregisters from permission status change notifications. The
+  // |subscription_id| must match the value returned by the
+  // SubscribePermissionStatusChange call. Unsubscribing an already
+  // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
+  virtual void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) = 0;
 
   // Manually overrides default permission settings of delegate, if overrides
   // are tracked by the delegate. This method should only be called by the
   // PermissionController owning the delegate.
   virtual void SetPermissionOverridesForDevTools(
-      const url::Origin& origin,
+      const absl::optional<url::Origin>& origin,
       const PermissionOverrides& overrides) {}
 
   // Removes overrides that have been set, if any, for all origins. If delegate
@@ -109,10 +106,24 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   // Returns whether permission can be overridden by
   // DevToolsPermissionOverrides.
-  virtual bool IsPermissionOverridableByDevTools(PermissionType permission,
-                                                 const url::Origin& origin);
+  virtual bool IsPermissionOverridableByDevTools(
+      PermissionType permission,
+      const absl::optional<url::Origin>& origin);
 };
 
 }  // namespace content
+
+namespace std {
+
+template <>
+struct hash<content::PermissionControllerDelegate::SubscriptionId> {
+  std::size_t operator()(
+      const content::PermissionControllerDelegate::SubscriptionId& v) const {
+    content::PermissionControllerDelegate::SubscriptionId::Hasher hasher;
+    return hasher(v);
+  }
+};
+
+}  // namespace std
 
 #endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_DELEGATE_H_

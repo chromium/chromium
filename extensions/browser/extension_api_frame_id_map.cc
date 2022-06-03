@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -40,19 +40,14 @@ ExtensionApiFrameIdMap::FrameData::FrameData()
       tab_id(extension_misc::kUnknownTabId),
       window_id(extension_misc::kUnknownWindowId) {}
 
-ExtensionApiFrameIdMap::FrameData::FrameData(
-    int frame_id,
-    int parent_frame_id,
-    int tab_id,
-    int window_id,
-    GURL last_committed_main_frame_url,
-    base::Optional<GURL> pending_main_frame_url)
+ExtensionApiFrameIdMap::FrameData::FrameData(int frame_id,
+                                             int parent_frame_id,
+                                             int tab_id,
+                                             int window_id)
     : frame_id(frame_id),
       parent_frame_id(parent_frame_id),
       tab_id(tab_id),
-      window_id(window_id),
-      last_committed_main_frame_url(std::move(last_committed_main_frame_url)),
-      pending_main_frame_url(std::move(pending_main_frame_url)) {}
+      window_id(window_id) {}
 
 ExtensionApiFrameIdMap::FrameData::~FrameData() = default;
 
@@ -61,31 +56,9 @@ ExtensionApiFrameIdMap::FrameData::FrameData(
 ExtensionApiFrameIdMap::FrameData& ExtensionApiFrameIdMap::FrameData::operator=(
     const ExtensionApiFrameIdMap::FrameData& other) = default;
 
-ExtensionApiFrameIdMap::RenderFrameIdKey::RenderFrameIdKey()
-    : render_process_id(content::ChildProcessHost::kInvalidUniqueID),
-      frame_routing_id(MSG_ROUTING_NONE) {}
+ExtensionApiFrameIdMap::ExtensionApiFrameIdMap() = default;
 
-ExtensionApiFrameIdMap::RenderFrameIdKey::RenderFrameIdKey(
-    int render_process_id,
-    int frame_routing_id)
-    : render_process_id(render_process_id),
-      frame_routing_id(frame_routing_id) {}
-
-bool ExtensionApiFrameIdMap::RenderFrameIdKey::operator<(
-    const RenderFrameIdKey& other) const {
-  return std::tie(render_process_id, frame_routing_id) <
-         std::tie(other.render_process_id, other.frame_routing_id);
-}
-
-bool ExtensionApiFrameIdMap::RenderFrameIdKey::operator==(
-    const RenderFrameIdKey& other) const {
-  return render_process_id == other.render_process_id &&
-         frame_routing_id == other.frame_routing_id;
-}
-
-ExtensionApiFrameIdMap::ExtensionApiFrameIdMap() {}
-
-ExtensionApiFrameIdMap::~ExtensionApiFrameIdMap() {}
+ExtensionApiFrameIdMap::~ExtensionApiFrameIdMap() = default;
 
 // static
 ExtensionApiFrameIdMap* ExtensionApiFrameIdMap::Get() {
@@ -117,13 +90,7 @@ int ExtensionApiFrameIdMap::GetParentFrameId(content::RenderFrameHost* rfh) {
 // static
 int ExtensionApiFrameIdMap::GetParentFrameId(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame())
-    return kInvalidFrameId;
-
-  if (navigation_handle->IsParentMainFrame())
-    return kTopFrameId;
-
-  return navigation_handle->GetParentFrame()->GetFrameTreeNodeId();
+  return GetFrameId(navigation_handle->GetParentFrame());
 }
 
 // static
@@ -148,56 +115,47 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
   // given frame ID, so we must use an unsafe API here that could return a
   // different RenderFrameHost than the caller may have expected (e.g., one that
   // changed after a cross-process navigation).
-  return web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
+  content::RenderFrameHost* rfh =
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
+
+  // Fail if the frame is not active (e.g. in prerendering or in the
+  // back/forward cache).
+  if (!rfh || !rfh->IsActive())
+    return nullptr;
+
+  return rfh;
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
-    const RenderFrameIdKey& key,
+    content::GlobalRenderFrameHostId key,
     bool require_live_frame) const {
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      key.render_process_id, key.frame_routing_id);
+  return KeyToValue(content::RenderFrameHost::FromID(key), require_live_frame);
+}
 
+ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
+    content::RenderFrameHost* rfh,
+    bool require_live_frame) const {
   if (!rfh || (require_live_frame && !rfh->IsRenderFrameLive()))
     return FrameData();
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-
-  base::Optional<GURL> pending_main_frame_url;
-  // Only set |pending_main_frame_url| if |rfh| is the main frame and a pending
-  // entry exists.
-  if (rfh->GetParent() == nullptr && web_contents &&
-      web_contents->GetController().GetPendingEntry()) {
-    pending_main_frame_url =
-        web_contents->GetController().GetPendingEntry()->GetURL();
-  }
-
-  // The RenderFrameHost may not have an associated WebContents in cases
-  // such as interstitial pages.
-  GURL last_committed_main_frame_url =
-      web_contents ? web_contents->GetLastCommittedURL() : GURL();
   int tab_id = extension_misc::kUnknownTabId;
   int window_id = extension_misc::kUnknownWindowId;
   // The browser client can be null in unittests.
   if (ExtensionsBrowserClient::Get()) {
     ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
-        web_contents, &tab_id, &window_id);
+        content::WebContents::FromRenderFrameHost(rfh), &tab_id, &window_id);
   }
-  return FrameData(GetFrameId(rfh), GetParentFrameId(rfh), tab_id, window_id,
-                   std::move(last_committed_main_frame_url),
-                   std::move(pending_main_frame_url));
+  return FrameData(GetFrameId(rfh), GetParentFrameId(rfh), tab_id, window_id);
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::GetFrameData(
-    int render_process_id,
-    int render_frame_id) {
+    content::GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const RenderFrameIdKey key(render_process_id, render_frame_id);
-  auto frame_id_iter = deleted_frame_data_map_.find(key);
+  auto frame_id_iter = deleted_frame_data_map_.find(rfh_id);
   if (frame_id_iter != deleted_frame_data_map_.end())
     return frame_id_iter->second;
 
-  return KeyToValue(key, true /* require_live_frame */);
+  return KeyToValue(rfh_id, true /* require_live_frame */);
 }
 
 void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
@@ -205,20 +163,20 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(rfh);
 
-  const RenderFrameIdKey key(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+  const content::GlobalRenderFrameHostId key(rfh->GetGlobalId());
   // TODO(http://crbug.com/522129): This is necessary right now because beacon
   // requests made in window.onunload may start after this has been called.
   // Delay the RemoveFrameData() call, so we will still have the frame data
   // cached when the beacon request comes in.
   deleted_frame_data_map_.insert(
-      {key, KeyToValue(key, false /* require_live_frame */)});
+      {key, KeyToValue(rfh, false /* require_live_frame */)});
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](ExtensionApiFrameIdMap* self, const RenderFrameIdKey& key) {
-            self->deleted_frame_data_map_.erase(key);
-          },
-          base::Unretained(this), key));
+      FROM_HERE, base::BindOnce(
+                     [](ExtensionApiFrameIdMap* self,
+                        content::GlobalRenderFrameHostId key) {
+                       self->deleted_frame_data_map_.erase(key);
+                     },
+                     base::Unretained(this), key));
 }
 
 }  // namespace extensions

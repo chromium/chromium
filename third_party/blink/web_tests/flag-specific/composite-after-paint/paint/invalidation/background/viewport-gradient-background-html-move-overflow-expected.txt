@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 800, 600],
-          "reason": "background"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [0, 0, 800, 170],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

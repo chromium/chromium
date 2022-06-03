@@ -32,11 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_H_
 
 #include <memory>
+
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/probe/async_task_id.h"
@@ -48,15 +49,14 @@ namespace blink {
 class Blob;
 class ExceptionState;
 class ExecutionContext;
+class V8UnionArrayBufferOrString;
 enum class FileErrorCode;
-class StringOrArrayBuffer;
 
 class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
                                      public ActiveScriptWrappable<FileReader>,
-                                     public ContextLifecycleObserver,
+                                     public ExecutionContextLifecycleObserver,
                                      public FileReaderLoaderClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(FileReader);
 
  public:
   static FileReader* Create(ExecutionContext*);
@@ -75,11 +75,11 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   ReadyState getReadyState() const { return state_; }
   DOMException* error() { return error_; }
-  void result(ScriptState*, StringOrArrayBuffer& result_attribute) const;
+  V8UnionArrayBufferOrString* result() const;
   probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
 
-  // ContextLifecycleObserver
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
 
   // ScriptWrappable
   bool HasPendingActivity() const final;
@@ -87,7 +87,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   // EventTarget
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override {
-    return ContextLifecycleObserver::GetExecutionContext();
+    return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
   // FileReaderLoaderClient
@@ -103,7 +103,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(loadend, kLoadend)
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   class ThrottlingController;
@@ -135,7 +135,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   std::unique_ptr<FileReaderLoader> loader_;
   Member<DOMException> error_;
-  base::Optional<base::ElapsedTimer> last_progress_notification_time_;
+  absl::optional<base::ElapsedTimer> last_progress_notification_time_;
 };
 
 }  // namespace blink

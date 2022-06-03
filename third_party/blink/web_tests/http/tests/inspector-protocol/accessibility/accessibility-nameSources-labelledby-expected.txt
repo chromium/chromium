@@ -1,0 +1,1444 @@
+Tests name sources when used with aria-labelledby.
+{
+    childIds : <object>
+    domNode : div#div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : generic
+    }
+}
+{
+    childIds : <object>
+    domNode : button#self
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                type : relatedElement
+            }
+            [3] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents of button
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents of button
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label1
+                            nodeResult : div#label1
+                            text : Label 1
+                        }
+                    ]
+                    type : idrefList
+                    value : label1
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Label 1
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Label 1
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label1
+                        nodeResult : div#label1
+                        text : Label 1
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledbySelf
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : labelledbySelf
+                            nodeResult : button#labelledbySelf
+                            text : Contents
+                        }
+                    ]
+                    type : idrefList
+                    value : labelledbySelf
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : labelledbySelf
+                        nodeResult : button#labelledbySelf
+                        text : Contents
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby3
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : labelledby3
+                            nodeResult : button#labelledby3
+                            text : Contents
+                        }
+                        [1] : {
+                            idref : label3
+                            nodeResult : div#label3
+                            text : Label 3
+                        }
+                    ]
+                    type : idrefList
+                    value : labelledby3 label3
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Contents Label 3
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents Label 3
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : labelledby3
+                        nodeResult : button#labelledby3
+                        text : Contents
+                    }
+                    [1] : {
+                        idref : label3
+                        nodeResult : div#label3
+                        text : Label 3
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby4
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label4
+                            nodeResult : div#label4
+                            text : Contents 4
+                        }
+                    ]
+                    type : idrefList
+                    value : label4
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Contents 4
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents 4
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label4
+                        nodeResult : div#label4
+                        text : Contents 4
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby5
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    type : string
+                    value : label5
+                }
+                invalid : true
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                type : relatedElement
+            }
+            [3] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby6
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label6
+                            nodeResult : div#label6
+                            text : 
+                        }
+                    ]
+                    type : idrefList
+                    value : label6
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : 
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label6
+                        nodeResult : div#label6
+                        text : 
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby7
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label7
+                            nodeResult : h3#label7
+                            text : Invisible label
+                        }
+                    ]
+                    type : idrefList
+                    value : label7
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Invisible label
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Invisible label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label7
+                        nodeResult : h3#label7
+                        text : Invisible label
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby8
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label8
+                            nodeResult : h3#label8
+                            text : Display-none label
+                        }
+                    ]
+                    type : idrefList
+                    value : label8
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Display-none label
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Display-none label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label8
+                        nodeResult : h3#label8
+                        text : Display-none label
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelOnly
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : Label
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : Label
+                }
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#emptyLabel1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                type : relatedElement
+            }
+            [3] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#emptyLabel2
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                type : relatedElement
+            }
+            [3] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby9
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label9
+                            nodeResult : div#label9
+                            text : Labelledby 9
+                        }
+                    ]
+                    type : idrefList
+                    value : label9
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Labelledby 9
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : Label
+                }
+                superseded : true
+                type : attribute
+                value : {
+                    type : computedString
+                    value : Label
+                }
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Labelledby 9
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label9
+                        nodeResult : div#label9
+                        text : Labelledby 9
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby10
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label10
+                            nodeResult : div#label10
+                            text : Label 10 label
+                        }
+                    ]
+                    type : idrefList
+                    value : label10
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Label 10 label
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Label 10 label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label10
+                        nodeResult : div#label10
+                        text : Label 10 label
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby11
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label11
+                            nodeResult : div#label11
+                            text : Contents 11
+                        }
+                    ]
+                    type : idrefList
+                    value : label11
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Contents 11
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Contents 11
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label11
+                        nodeResult : div#label11
+                        text : Contents 11
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : button#labelledby12
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : label12
+                            nodeResult : div#label12
+                            text : Label 12 label
+                        }
+                    ]
+                    type : idrefList
+                    value : label12
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : Label 12 label
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : Contents
+                }
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : Label 12 label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : label12
+                        nodeResult : div#label12
+                        text : Label 12 label
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : input#input1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                attributeValue : {
+                    relatedNodes : [
+                        [0] : {
+                            idref : list1
+                            nodeResult : ul#list1
+                            text : A B C
+                        }
+                    ]
+                    type : idrefList
+                    value : list1
+                }
+                type : relatedElement
+                value : {
+                    type : computedString
+                    value : A B C
+                }
+            }
+            [1] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [2] : {
+                nativeSource : label
+                superseded : true
+                type : relatedElement
+            }
+            [3] : {
+                attribute : placeholder
+                superseded : true
+                type : placeholder
+            }
+            [4] : {
+                attribute : aria-placeholder
+                superseded : true
+                type : placeholder
+            }
+            [5] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : A B C
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : invalid
+            value : {
+                type : token
+                value : false
+            }
+        }
+        [1] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [2] : {
+            name : editable
+            value : {
+                type : token
+                value : plaintext
+            }
+        }
+        [3] : {
+            name : settable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [4] : {
+            name : multiline
+            value : {
+                type : boolean
+                value : false
+            }
+        }
+        [5] : {
+            name : readonly
+            value : {
+                type : boolean
+                value : false
+            }
+        }
+        [6] : {
+            name : required
+            value : {
+                type : boolean
+                value : false
+            }
+        }
+        [7] : {
+            name : labelledby
+            value : {
+                relatedNodes : [
+                    [0] : {
+                        idref : list1
+                        nodeResult : ul#list1
+                        text : A B C
+                    }
+                ]
+                type : nodeList
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : textbox
+    }
+}
+

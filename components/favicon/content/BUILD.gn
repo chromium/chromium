@@ -8,6 +8,8 @@ static_library("content") {
     "content_favicon_driver.h",
     "favicon_url_util.cc",
     "favicon_url_util.h",
+    "large_favicon_provider_getter.cc",
+    "large_favicon_provider_getter.h",
   ]
 
   public_deps = [
@@ -17,7 +19,6 @@ static_library("content") {
   deps = [
     "//base",
     "//components/favicon_base",
-    "//components/history/core/browser",
     "//content/public/browser",
     "//content/public/common",
     "//url",
@@ -26,9 +27,7 @@ static_library("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "content_favicon_driver_unittest.cc",
-  ]
+  sources = [ "content_favicon_driver_unittest.cc" ]
   deps = [
     ":content",
     "//base/test:test_support",

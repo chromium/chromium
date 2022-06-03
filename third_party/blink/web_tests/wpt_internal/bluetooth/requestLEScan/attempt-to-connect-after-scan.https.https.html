@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'Attempt to connect to scan result.';
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  const fake_device_address = '09:09:09:09:09:09';
+
+  const fake_device = await fake_central.simulatePreconnectedPeripheral({
+    address: fake_device_address,
+    name: 'Some Device',
+    manufacturerData: {},
+    knownServiceUUIDs: [],
+  });
+
+  await callWithTrustedClick(async () => {
+    await navigator.bluetooth.requestLEScan({acceptAllAdvertisements: true});
+  });
+
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let scan = {
+    deviceAddress: fake_device_address,
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  fake_central.simulateAdvertisementReceived(scan);
+
+  const expected =
+      new DOMException('GATT operation not authorized.', 'SecurityError');
+
+  await eventWatcher.wait_for(['advertisementreceived']).then(async (e) => {
+    assert_promise_rejects_with_message(e.device.gatt.connect(), expected);
+  })
+}, test_desc);
+</script>

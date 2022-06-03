@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.accounts.Account;
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
 import androidx.annotation.Nullable;
@@ -18,9 +18,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
-import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.signin.AccessTokenData;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -34,11 +38,10 @@ import java.util.Map;
  * This mainly a bridge to autofill_assistant::ClientAndroid.
  */
 @JNINamespace("autofill_assistant")
-class AutofillAssistantClient {
+public class AutofillAssistantClient {
     /** OAuth2 scope that RPCs require. */
     private static final String AUTH_TOKEN_TYPE =
             "oauth2:https://www.googleapis.com/auth/userinfo.profile";
-    private static final String PARAMETER_USER_EMAIL = "USER_EMAIL";
 
     /**
      * Pointer to the corresponding native autofill_assistant::ClientAndroid instance. Might be 0 if
@@ -75,47 +78,28 @@ class AutofillAssistantClient {
         return AutofillAssistantClientJni.get().fromWebContents(webContents);
     }
 
+    /**
+     * Notifies that an onboarding UI is shown or hidden.
+     */
+    public static void onOnboardingUiChange(WebContents webContents, boolean shown) {
+        AutofillAssistantClientJni.get().onOnboardingUiChange(webContents, shown);
+    }
+
+    @CalledByNative
     private AutofillAssistantClient(long nativeClientAndroid) {
         mNativeClientAndroid = nativeClientAndroid;
-    }
 
-    private void checkNativeClientIsAliveOrThrow() {
-        if (mNativeClientAndroid == 0) {
-            throw new IllegalStateException("Native instance is dead");
-        }
-    }
+        // Add listener for accessibility services with "FEEDBACK_SPOKEN" feedback type.
+        BrowserAccessibilityState.Listener listener = (unused) -> {
+            if (mNativeClientAndroid == 0) return;
 
-    /**
-     * Start a flow on the current URL, autostarting scripts defined for that URL.
-     *
-     * <p>This immediately shows the UI, with a loading message, then fetches scripts
-     * from the server and autostarts one of them.
-     *
-     * @param initialUrl the original deep link, if known. When started from CCT, this
-     * is the URL included into the intent
-     * @param parameters autobot parameters to set during the whole flow
-     * @param experimentIds comma-separated set of experiments to use while running the flow
-     * @param intentExtras extras of the original intent
-     * @param onboardingCoordinator if non-null, reuse existing UI elements, usually created to show
-     *         onboarding.
-     *
-     * @return true if the flow was started, false if the controller is in a state where
-     * autostarting is not possible, such as can happen if a script is already running. The flow can
-     * still fail after this method returns true; the failure will be displayed on the UI.
-     */
-    boolean start(String initialUrl, Map<String, String> parameters, String experimentIds,
-            Bundle intentExtras, @Nullable AssistantOnboardingCoordinator onboardingCoordinator) {
-        if (mNativeClientAndroid == 0) return false;
-
-        checkNativeClientIsAliveOrThrow();
-        chooseAccountAsyncIfNecessary(parameters.get(PARAMETER_USER_EMAIL), intentExtras);
-        return AutofillAssistantClientJni.get().start(mNativeClientAndroid,
-                AutofillAssistantClient.this, initialUrl, experimentIds,
-                parameters.keySet().toArray(new String[parameters.size()]),
-                parameters.values().toArray(new String[parameters.size()]), onboardingCoordinator,
-                /* onboardingShown= */
-                onboardingCoordinator != null && onboardingCoordinator.getOnboardingShown(),
-                AutofillAssistantServiceInjector.getServiceToInject());
+            AutofillAssistantClientJni.get().onSpokenFeedbackAccessibilityServiceChanged(
+                    mNativeClientAndroid, AutofillAssistantClient.this,
+                    isSpokenFeedbackAccessibilityServiceEnabled());
+        };
+        // BrowserAccessibilityState listeners are garbage-collected and automatically removed
+        // from the set of active listeners.
+        BrowserAccessibilityState.addListener(listener);
     }
 
     /**
@@ -124,7 +108,7 @@ class AutofillAssistantClient {
     public void destroyUi() {
         if (mNativeClientAndroid == 0) return;
 
-        AutofillAssistantClientJni.get().destroyUI(
+        AutofillAssistantClientJni.get().onJavaDestroyUI(
                 mNativeClientAndroid, AutofillAssistantClient.this);
     }
 
@@ -150,7 +134,7 @@ class AutofillAssistantClient {
             return;
         }
 
-        chooseAccountAsyncIfNecessary(userName.isEmpty() ? null : userName, null);
+        chooseAccountAsyncIfNecessary(userName.isEmpty() ? null : userName);
 
         // The native side calls sendDirectActionList() on the callback once the controller has
         // results.
@@ -186,15 +170,15 @@ class AutofillAssistantClient {
      *
      * @param actionId id of the action
      * @param experimentIds comma-separated set of experiments to use while running the flow
-     * @param arguments report these as autobot parameters while performing this specific action
-     * @param onboardingcoordinator if non-null, reuse existing UI elements, usually created to show
+     * @param arguments report these as script parameters while performing this specific action
+     * @param overlayCoordinator if non-null, reuse existing UI elements, usually created to show
      *         onboarding.
      * @return true if the action was found started, false otherwise. The action can still fail
      * after this method returns true; the failure will be displayed on the UI.
      */
     public boolean performDirectAction(String actionId, String experimentIds,
             Map<String, String> arguments,
-            @Nullable AssistantOnboardingCoordinator onboardingCoordinator) {
+            @Nullable AssistantOverlayCoordinator overlayCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         // Note that only fetchWebsiteActions can start AA, so only it needs
@@ -202,20 +186,25 @@ class AutofillAssistantClient {
         return AutofillAssistantClientJni.get().performDirectAction(mNativeClientAndroid,
                 AutofillAssistantClient.this, actionId, experimentIds,
                 arguments.keySet().toArray(new String[arguments.size()]),
-                arguments.values().toArray(new String[arguments.size()]), onboardingCoordinator);
+                arguments.values().toArray(new String[arguments.size()]), overlayCoordinator);
+    }
+
+    /**
+     * Displays a generic error message. Intended for direct actions only, to let specific direct
+     * actions show an error on failure.
+     */
+    public void showFatalError() {
+        if (mNativeClientAndroid == 0) return;
+        AutofillAssistantClientJni.get().showFatalError(
+                mNativeClientAndroid, AutofillAssistantClient.this);
     }
 
     @CalledByNative
-    private static AutofillAssistantClient create(long nativeClientAndroid) {
-        return new AutofillAssistantClient(nativeClientAndroid);
-    }
-
-    private void chooseAccountAsyncIfNecessary(
-            @Nullable String accountFromParameter, @Nullable Bundle extras) {
+    private void chooseAccountAsyncIfNecessary(@Nullable String userName) {
         if (mAccountInitializationStarted) return;
         mAccountInitializationStarted = true;
 
-        AccountManagerFacade.get().tryGetGoogleAccounts(accounts -> {
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             if (mNativeClientAndroid == 0) return;
             if (accounts.size() == 1) {
                 // If there's only one account, there aren't any doubts.
@@ -232,24 +221,11 @@ class AutofillAssistantClient {
                 return;
             }
 
-            if (accountFromParameter != null) {
-                Account account = findAccountByName(accounts, accountFromParameter);
+            if (userName != null) {
+                Account account = findAccountByName(accounts, userName);
                 if (account != null) {
                     onAccountChosen(account);
                     return;
-                }
-            }
-
-            if (extras != null) {
-                for (String extra : extras.keySet()) {
-                    // TODO(crbug.com/806868): Deprecate ACCOUNT_NAME.
-                    if (extra.endsWith("ACCOUNT_NAME")) {
-                        Account account = findAccountByName(accounts, extras.getString(extra));
-                        if (account != null) {
-                            onAccountChosen(account);
-                            return;
-                        }
-                    }
                 }
             }
             onAccountChosen(null);
@@ -293,13 +269,15 @@ class AutofillAssistantClient {
             return;
         }
 
-        IdentityServicesProvider.get().getIdentityManager().getAccessToken(
+        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                AutofillAssistantUiController.getProfile());
+        identityManager.getAccessToken(
                 mAccount, AUTH_TOKEN_TYPE, new IdentityManager.GetAccessTokenCallback() {
                     @Override
-                    public void onGetTokenSuccess(String token) {
+                    public void onGetTokenSuccess(AccessTokenData token) {
                         if (mNativeClientAndroid != 0) {
                             AutofillAssistantClientJni.get().onAccessToken(mNativeClientAndroid,
-                                    AutofillAssistantClient.this, true, token);
+                                    AutofillAssistantClient.this, true, token.getToken());
                         }
                     }
 
@@ -319,12 +297,14 @@ class AutofillAssistantClient {
             return;
         }
 
-        IdentityServicesProvider.get().getIdentityManager().invalidateAccessToken(accessToken);
+        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                AutofillAssistantUiController.getProfile());
+        identityManager.invalidateAccessToken(accessToken);
     }
 
     /** Returns the e-mail address that corresponds to the access token or an empty string. */
     @CalledByNative
-    private String getAccountEmailAddress() {
+    private String getEmailAddressForAccessTokenAccount() {
         return mAccount != null ? mAccount.name : "";
     }
 
@@ -334,6 +314,7 @@ class AutofillAssistantClient {
      * the LocationManager together with the Geocoder.
      */
     @CalledByNative
+    @Nullable
     private String getCountryCode() {
         TelephonyManager telephonyManager =
                 (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
@@ -366,6 +347,23 @@ class AutofillAssistantClient {
         return Build.MODEL;
     }
 
+    /** Returns whether a11y is enabled or not. */
+    @CalledByNative
+    private boolean isAccessibilityEnabled() {
+        return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+    }
+
+    /**
+     * Returns whether an accessibility service with "FEEDBACK_SPOKEN" feedback type is enabled
+     * or not.
+     */
+    @CalledByNative
+    private boolean isSpokenFeedbackAccessibilityServiceEnabled() {
+        return (BrowserAccessibilityState.getAccessibilityServiceFeedbackTypeMask()
+                       & AccessibilityServiceInfo.FEEDBACK_SPOKEN)
+                != 0;
+    }
+
     /** Adds a dynamic action to the given reporter. */
     @CalledByNative
     private void onFetchWebsiteActions(Callback<Boolean> callback, boolean success) {
@@ -380,14 +378,11 @@ class AutofillAssistantClient {
     @NativeMethods
     interface Natives {
         AutofillAssistantClient fromWebContents(WebContents webContents);
-        boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
-                String experimentIds, String[] parameterNames, String[] parameterValues,
-                @Nullable AssistantOnboardingCoordinator onboardingCoordinator,
-                boolean onboardingShown, long nativeService);
+        void onOnboardingUiChange(WebContents webContents, boolean shown);
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);
-        void destroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
+        void onJavaDestroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
         void transferUITo(
                 long nativeClientAndroid, AutofillAssistantClient caller, Object otherWebContents);
         void fetchWebsiteActions(long nativeClientAndroid, AutofillAssistantClient caller,
@@ -400,7 +395,9 @@ class AutofillAssistantClient {
 
         boolean performDirectAction(long nativeClientAndroid, AutofillAssistantClient caller,
                 String actionId, String experimentId, String[] argumentNames,
-                String[] argumentValues,
-                @Nullable AssistantOnboardingCoordinator onboardingCoordinator);
+                String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
+        void showFatalError(long nativeClientAndroid, AutofillAssistantClient caller);
+        void onSpokenFeedbackAccessibilityServiceChanged(
+                long nativeClientAndroid, AutofillAssistantClient caller, boolean enabled);
     }
 }

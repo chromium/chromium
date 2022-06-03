@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/picture-in-picture/v2/
+// https://w3c.github.io/picture-in-picture/#htmlvideoelement-extensions
 [
     ImplementedAs=HTMLElementPictureInPicture,
     RuntimeEnabled=PictureInPictureV2
 ]
 partial interface HTMLElement {
-    [CallWith=ScriptState, NewObject, RaisesException] Promise<PictureInPictureWindow> requestPictureInPicture(optional PictureInPictureOptions options);
+    [CallWith=ScriptState, NewObject, RaisesException] Promise<PictureInPictureWindow> requestPictureInPicture(optional PictureInPictureOptions options = {});
 };

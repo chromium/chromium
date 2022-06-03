@@ -1,0 +1,54 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1212, 930],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [912, 552, 150, 150],
+        [912, 372, 150, 150],
+        [912, 192, 150, 150],
+        [912, 12, 150, 150],
+        [732, 552, 150, 150],
+        [732, 372, 150, 150],
+        [732, 192, 150, 150],
+        [732, 12, 150, 150],
+        [552, 552, 150, 150],
+        [552, 372, 150, 150],
+        [552, 192, 150, 150],
+        [552, 12, 150, 150],
+        [372, 552, 150, 150],
+        [372, 372, 150, 150],
+        [372, 192, 150, 150],
+        [372, 12, 150, 150],
+        [192, 552, 150, 150],
+        [192, 372, 150, 150],
+        [192, 192, 150, 150],
+        [192, 12, 150, 150],
+        [12, 552, 150, 150],
+        [12, 372, 150, 150],
+        [12, 192, 150, 150],
+        [12, 12, 150, 150]
+      ]
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 878],
+      "bounds": [1178, 22],
+      "contentsOpaque": true
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 878],
+      "contentsOpaque": true
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [1178, 878],
+      "bounds": [22, 22]
+    }
+  ]
+}
+

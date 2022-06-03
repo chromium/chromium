@@ -1,0 +1,8 @@
+include_rules = [
+  "+base",
+  "+components/crash/core/common/crash_key.h",
+  "+components/infobars/core",
+  "+components/keyed_service/core",
+  "+net/base/net_errors.h",
+  "+ui/base",
+]

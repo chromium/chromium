@@ -8,15 +8,15 @@
 #include <list>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/component_export.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/trace_time.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
-#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
       : trace_writer_(producer->CreateTraceWriter(target_buffer)),
         trace_type_(trace_type),
         task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  SystemTraceWriter(const SystemTraceWriter&) = delete;
+  SystemTraceWriter& operator=(const SystemTraceWriter&) = delete;
 
   void WriteData(const StringType& data) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -93,7 +96,8 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
             trace_writer_->NewTracePacket();
         trace_packet_handle->set_timestamp(
             TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
-        trace_packet_handle->set_timestamp_clock_id(kTraceClockId);
+        trace_packet_handle->set_timestamp_clock_id(
+            base::tracing::kTraceClockId);
         ChromeEventBundleHandle event_bundle =
             ChromeEventBundleHandle(trace_packet_handle->set_chrome_events());
 
@@ -145,8 +149,6 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
   base::OnceClosure on_flush_complete_callback_;
 
   base::WeakPtrFactory<SystemTraceWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTraceWriter);
 };
 
 }  // namespace tracing

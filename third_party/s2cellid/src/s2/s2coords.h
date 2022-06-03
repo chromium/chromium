@@ -100,7 +100,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "s2/r2.h"
 #include "s2/s2coords-internal.h"
 #include "s2/s2point.h"

@@ -93,14 +93,6 @@ class GLES3DecoderWithShaderTest : public GLES2DecoderWithShaderTest {
   void SetUp() override;
 };
 
-class GLES3DecoderRGBBackbufferTest : public GLES2DecoderRGBBackbufferTest {
- public:
-  GLES3DecoderRGBBackbufferTest() { shader_language_version_ = 300; }
-
-  // Override default setup so ES3 capabilities are enabled by default.
-  void SetUp() override;
-};
-
 class GLES3DecoderManualInitTest : public GLES2DecoderManualInitTest {
  public:
   GLES3DecoderManualInitTest() { shader_language_version_ = 300; }

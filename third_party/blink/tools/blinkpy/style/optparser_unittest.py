@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit tests for parser.py."""
 
 import unittest
@@ -32,7 +31,6 @@ from blinkpy.style.optparser import DefaultCommandOptionValues
 
 
 class ArgumentPrinterTest(unittest.TestCase):
-
     """Tests the ArgumentPrinter class."""
 
     _printer = ArgumentPrinter()
@@ -42,16 +40,18 @@ class ArgumentPrinterTest(unittest.TestCase):
                         min_confidence=3,
                         filter_rules=None,
                         git_commit=None):
-        return ProcessorOptions(filter_rules=filter_rules,
-                                git_commit=git_commit,
-                                min_confidence=min_confidence,
-                                output_format=output_format)
+        return ProcessorOptions(
+            filter_rules=filter_rules,
+            git_commit=git_commit,
+            min_confidence=min_confidence,
+            output_format=output_format)
 
     def test_to_flag_string(self):
         options = self._create_options('vs7', 5, ['+foo', '-bar'], 'git')
-        self.assertEqual('--filter=+foo,-bar --git-commit=git '
-                         '--min-confidence=5 --output=vs7',
-                         self._printer.to_flag_string(options))
+        self.assertEqual(
+            '--filter=+foo,-bar --git-commit=git '
+            '--min-confidence=5 --output=vs7',
+            self._printer.to_flag_string(options))
 
         # This is to check that --filter and --git-commit do not
         # show up when not user-specified.
@@ -61,11 +61,9 @@ class ArgumentPrinterTest(unittest.TestCase):
 
 
 class ArgumentParserTest(LoggingTestCase):
-
     """Test the ArgumentParser class."""
 
     class _MockStdErr(object):
-
         def write(self, _):
             # We do not want the usage string or style categories
             # to print during unit tests, so print nothing.
@@ -78,8 +76,8 @@ class ArgumentParserTest(LoggingTestCase):
 
     def _create_defaults(self):
         """Return a DefaultCommandOptionValues instance for testing."""
-        return DefaultCommandOptionValues(min_confidence=3,
-                                          output_format='vs7')
+        return DefaultCommandOptionValues(
+            min_confidence=3, output_format='vs7')
 
     def _create_parser(self):
         """Return an ArgumentParser instance for testing."""
@@ -89,11 +87,12 @@ class ArgumentParserTest(LoggingTestCase):
 
         mock_stderr = self._MockStdErr()
 
-        return ArgumentParser(all_categories=all_categories,
-                              base_filter_rules=[],
-                              default_options=default_options,
-                              mock_stderr=mock_stderr,
-                              usage='test usage')
+        return ArgumentParser(
+            all_categories=all_categories,
+            base_filter_rules=[],
+            default_options=default_options,
+            mock_stderr=mock_stderr,
+            usage='test usage')
 
     def test_parse_documentation(self):
         parse = self._parse
@@ -118,30 +117,40 @@ class ArgumentParserTest(LoggingTestCase):
 
         with self.assertRaises(SystemExit):
             parse(['--min-confidence=bad'])
-        self.assertLog(['ERROR: option --min-confidence: '
-                        "invalid integer value: 'bad'\n"])
+        self.assertLog([
+            'ERROR: option --min-confidence: '
+            "invalid integer value: 'bad'\n"
+        ])
         with self.assertRaises(SystemExit):
             parse(['--min-confidence=0'])
-        self.assertLog(['ERROR: option --min-confidence: invalid integer: 0: '
-                        'value must be between 1 and 5\n'])
+        self.assertLog([
+            'ERROR: option --min-confidence: invalid integer: 0: '
+            'value must be between 1 and 5\n'
+        ])
         with self.assertRaises(SystemExit):
             parse(['--min-confidence=6'])
-        self.assertLog(['ERROR: option --min-confidence: invalid integer: 6: '
-                        'value must be between 1 and 5\n'])
+        self.assertLog([
+            'ERROR: option --min-confidence: invalid integer: 6: '
+            'value must be between 1 and 5\n'
+        ])
         parse(['--min-confidence=1'])  # works
         parse(['--min-confidence=5'])  # works
 
         with self.assertRaises(SystemExit):
             parse(['--output=bad'])
-        self.assertLog(['ERROR: option --output-format: invalid choice: '
-                        "'bad' (choose from 'emacs', 'vs7')\n"])
+        self.assertLog([
+            'ERROR: option --output-format: invalid choice: '
+            "'bad' (choose from 'emacs', 'vs7')\n"
+        ])
         parse(['--output=vs7'])  # works
 
         # Pass a filter rule not beginning with + or -.
         with self.assertRaises(SystemExit):
             parse(['--filter=build'])
-        self.assertLog(['ERROR: Invalid filter rule "build": '
-                        'every rule must start with + or -.\n'])
+        self.assertLog([
+            'ERROR: Invalid filter rule "build": '
+            'every rule must start with + or -.\n'
+        ])
         parse(['--filter=+build'])  # works
 
     def test_parse_default_arguments(self):
@@ -179,13 +188,11 @@ class ArgumentParserTest(LoggingTestCase):
 
         # Pass user_rules.
         _, options = parse(['--filter=+build,-whitespace'])
-        self.assertEqual(options.filter_rules,
-                         ['+build', '-whitespace'])
+        self.assertEqual(options.filter_rules, ['+build', '-whitespace'])
 
         # Pass spurious white space in user rules.
         _, options = parse(['--filter=+build, -whitespace'])
-        self.assertEqual(options.filter_rules,
-                         ['+build', '-whitespace'])
+        self.assertEqual(options.filter_rules, ['+build', '-whitespace'])
 
     def test_parse_files(self):
         parse = self._parse
@@ -199,7 +206,6 @@ class ArgumentParserTest(LoggingTestCase):
 
 
 class CommandOptionValuesTest(unittest.TestCase):
-
     """Tests CommandOptionValues class."""
 
     def test_init(self):
@@ -222,11 +228,12 @@ class CommandOptionValuesTest(unittest.TestCase):
         ProcessorOptions(min_confidence=5)  # works
 
         # Check attributes.
-        options = ProcessorOptions(filter_rules=['+'],
-                                   git_commit='commit',
-                                   is_verbose=True,
-                                   min_confidence=3,
-                                   output_format='vs7')
+        options = ProcessorOptions(
+            filter_rules=['+'],
+            git_commit='commit',
+            is_verbose=True,
+            min_confidence=3,
+            output_format='vs7')
         self.assertEqual(options.filter_rules, ['+'])
         self.assertEqual(options.git_commit, 'commit')
         self.assertTrue(options.is_verbose)
@@ -242,11 +249,12 @@ class CommandOptionValuesTest(unittest.TestCase):
         # Explicitly create a ProcessorOptions instance with all default
         # values.  We do this to be sure we are assuming the right default
         # values in our self.assertFalse() calls below.
-        options = ProcessorOptions(filter_rules=[],
-                                   git_commit=None,
-                                   is_verbose=False,
-                                   min_confidence=1,
-                                   output_format='emacs')
+        options = ProcessorOptions(
+            filter_rules=[],
+            git_commit=None,
+            is_verbose=False,
+            min_confidence=1,
+            output_format='emacs')
         # Verify that we created options correctly.
         self.assertTrue(options.__eq__(ProcessorOptions()))
 

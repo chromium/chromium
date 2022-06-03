@@ -2,11 +2,6 @@
     "images": [
         {
             "idiom": "universal",
-            "scale": "1x",
-            "filename": "addresses.png"
-        },
-        {
-            "idiom": "universal",
             "scale": "2x",
             "filename": "addresses@2x.png"
         },

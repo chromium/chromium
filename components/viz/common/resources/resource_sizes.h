@@ -9,7 +9,7 @@
 
 #include <limits>
 
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/numerics/safe_math.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/resources/resource_format.h"

@@ -31,6 +31,12 @@ class FakeGattDescriptorsResultWinrt
   explicit FakeGattDescriptorsResultWinrt(
       const std::vector<Microsoft::WRL::ComPtr<FakeGattDescriptorWinrt>>&
           fake_descriptors);
+
+  FakeGattDescriptorsResultWinrt(const FakeGattDescriptorsResultWinrt&) =
+      delete;
+  FakeGattDescriptorsResultWinrt& operator=(
+      const FakeGattDescriptorsResultWinrt&) = delete;
+
   ~FakeGattDescriptorsResultWinrt() override;
 
   // IGattDescriptorsResult:
@@ -49,8 +55,6 @@ class FakeGattDescriptorsResultWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattDescriptor>>
       descriptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattDescriptorsResultWinrt);
 };
 
 }  // namespace device

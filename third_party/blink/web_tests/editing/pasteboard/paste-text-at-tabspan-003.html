@@ -1,38 +1,24 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-	extendSelectionForwardByCharacterCommand();
-    copyCommand();
-    for (i = 0; i < 4; i++)
-		moveSelectionForwardByCharacterCommand();
-    pasteCommand();
-    typeCharacterCommand();
-}
-
+selection_test(
+    [
+        '<div contenteditable>',
+            'a<span style="white-space:pre">\t\t\t|</span>z',
+        '</div>',
+    ],
+    selection => {
+        if (!window.internals)
+            throw 'This test requires internals.';
+        selection.setClipboardData('X');
+        selection.document.execCommand('paste');
+    },
+    [
+        '<div contenteditable>',
+            'a<span style="white-space:pre">\t\t\t</span>X|z',
+        '</div>',
+    ],
+    'Paste in tabspan');
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body style="word-wrap: break-word; -khtml-nbsp-mode: space; -khtml-line-break: after-white-space; ">
-<div contenteditable id="root" class="editing">
-<span id="test">a<span style="white-space:pre">			</span>z</span>
-</div>
-
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

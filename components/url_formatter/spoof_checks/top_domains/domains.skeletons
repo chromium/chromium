@@ -6,509 +6,514 @@
 # components/url_formatter/spoof_checks/make_top_domain_skeletons.cc
 # DO NOT MANUALLY EDIT!
 
+# This list contains top 500 domains followed by the top 5000 domains. These are
+# separated by ###END_TOP_500### line.
+
+# For top 500 domains, each row has three columns: full skeleton, skeleton
+# without label separators (e.g. '.' and '-'), and the domain itself.
+
+# For top 5000 domains, each row has two columns: full skeleton and the domain
+# itself.
+
 # Each entry is the skeleton of a top domain for the confusability check
 # in components/url_formatter/url_formatter.cc.
 
-l7track.net, 17track.net
-24h.corn.vn, 24h.com.vn
-acadernia.edu, academia.edu
-acadernic.ru, academic.ru
-accuweather.corn, accuweather.com
-adobe.corn, adobe.com
-adp.corn, adp.com
-agoda.corn, agoda.com
-aif.ru, aif.ru
-airbnb.corn, airbnb.com
-alibaba.corn, alibaba.com
-aliexpress.corn, aliexpress.com
-allegro.pl, allegro.pl
-allocine.fr, allocine.fr
-alodokter.corn, alodokter.com
-arnazon.ca, amazon.ca
-arnazon.co.jp, amazon.co.jp
-arnazon.co.uk, amazon.co.uk
-arnazon.corn, amazon.com
-arnazon.corn.rnx, amazon.com.mx
-arnazon.de, amazon.de
-arnazon.es, amazon.es
-arnazon.fr, amazon.fr
-arnazon.in, amazon.in
-arnazon.it, amazon.it
-arneblo.jp, ameblo.jp
-arnericanexpress.corn, americanexpress.com
-ancestry.corn, ancestry.com
-anirneflv.net, animeflv.net
-anyxxx.pro, anyxxx.pro
-aol.corn, aol.com
-apkpure.corn, apkpure.com
-apple.corn, apple.com
-appledaily.corn, appledaily.com
-archive.org, archive.org
-asahi.corn, asahi.com
-ask.corn, ask.com
-asos.corn, asos.com
-asus.corn, asus.com
-autotrader.corn, autotrader.com
-avito.ru, avito.ru
-azlyrics.corn, azlyrics.com
-badoo.corn, badoo.com
-baidu.corn, baidu.com
-baixaki.corn.br, baixaki.com.br
-banggood.corn, banggood.com
-bankofarnerica.corn, bankofamerica.com
-battle.net, battle.net
-bbc.co.uk, bbc.co.uk
-bbc.corn, bbc.com
-beeg.corn, beeg.com
-bestbuy.corn, bestbuy.com
-bet365.corn, bet365.com
-biblegateway.corn, biblegateway.com
-biglobe.ne.jp, biglobe.ne.jp
-bild.de, bild.de
-bilibili.corn, bilibili.com
-bing.corn, bing.com
-blackboard.corn, blackboard.com
-blogspot.corn, blogspot.com
-bloornberg.corn, bloomberg.com
-booking.corn, booking.com
-bookrnyshow.corn, bookmyshow.com
-britannica.corn, britannica.com
-bukalapak.corn, bukalapak.com
-businessinsider.corn, businessinsider.com
-bustle.corn, bustle.com
-buzzfeed.corn, buzzfeed.com
-ca.gov, ca.gov
-caixa.gov.br, caixa.gov.br
-canada.ca, canada.ca
-canalrcn.corn, canalrcn.com
-canva.corn, canva.com
-capitalone.corn, capitalone.com
-cargurus.corn, cargurus.com
-cbsnews.corn, cbsnews.com
-cbssports.corn, cbssports.com
-ccrn.net, ccm.net
-cdc.gov, cdc.gov
-cdiscount.corn, cdiscount.com
-ceneo.pl, ceneo.pl
-chase.corn, chase.com
-chaturbate.corn, chaturbate.com
-chegg.corn, chegg.com
-chinatirnes.corn, chinatimes.com
-chip.de, chip.de
-chron.corn, chron.com
-cinecalidad.to, cinecalidad.to
-clarin.corn, clarin.com
-cnbc.corn, cnbc.com
-cnet.corn, cnet.com
-cnn.corn, cnn.com
-collegedunia.corn, collegedunia.com
-convert2rnp3.net, convert2mp3.net
-correios.corn.br, correios.com.br
-craigslist.org, craigslist.org
-cricbuzz.corn, cricbuzz.com
-dailyrnail.co.uk, dailymail.co.uk
-dailyrnotion.corn, dailymotion.com
-daurn.net, daum.net
-dell.corn, dell.com
-depositphotos.corn, depositphotos.com
-detik.corn, detik.com
-deviantart.corn, deviantart.com
-dhgate.corn, dhgate.com
-dhl.de, dhl.de
-dictionary.corn, dictionary.com
-discordapp.corn, discordapp.com
-drnrn.co.jp, dmm.co.jp
-drnrn.corn, dmm.com
-doorblog.jp, doorblog.jp
-drorn.ru, drom.ru
-dropbox.corn, dropbox.com
-ebay-kleinanzeigen.de, ebay-kleinanzeigen.de
-ebay.co.uk, ebay.co.uk
-ebay.corn, ebay.com
-ebay.corn.au, ebay.com.au
-ebay.de, ebay.de
-ebay.es, ebay.es
-ebay.fr, ebay.fr
-ebay.it, ebay.it
-egy.best, egy.best
-eksisozluk.corn, eksisozluk.com
-elconfidencial.corn, elconfidencial.com
-elintransigente.corn, elintransigente.com
-elrnundo.es, elmundo.es
-elpais.corn, elpais.com
-eluniversal.corn.rnx, eluniversal.com.mx
-ernag.ro, emag.ro
-engadget.corn, engadget.com
-epicgarnes.corn, epicgames.com
-espn.corn, espn.com
-etsy.corn, etsy.com
-europa.eu, europa.eu
-eventbrite.corn, eventbrite.com
-excite.co.jp, excite.co.jp
-expedia.corn, expedia.com
-express.co.uk, express.co.uk
-facebook.corn, facebook.com
-fandango.corn, fandango.com
-fandorn.corn, fandom.com
-fast.corn, fast.com
-fazenda.gov.br, fazenda.gov.br
-fc2.corn, fc2.com
-fedex.corn, fedex.com
-filrnweb.pl, filmweb.pl
-flickr.corn, flickr.com
-flipkart.corn, flipkart.com
-fnac.corn, fnac.com
-forbes.corn, forbes.com
-foxnews.corn, foxnews.com
-francetvinfo.fr, francetvinfo.fr
-free.fr, free.fr
-gaana.corn, gaana.com
-garnepedia.corn, gamepedia.com
-garnespot.corn, gamespot.com
-gearbest.corn, gearbest.com
-genius.corn, genius.com
-gfycat.corn, gfycat.com
-giphy.corn, giphy.com
-gisrneteo.ru, gismeteo.ru
-github.corn, github.com
-glassdoor.corn, glassdoor.com
-globo.corn, globo.com
-glosbe.corn, glosbe.com
-go.corn, go.com
-goal.corn, goal.com
-gofundrne.corn, gofundme.com
-goo.ne.jp, goo.ne.jp
-goodreads.corn, goodreads.com
-google.ca, google.ca
-google.cl, google.cl
-google.co.id, google.co.id
-google.co.in, google.co.in
-google.co.jp, google.co.jp
-google.co.kr, google.co.kr
-google.co.th, google.co.th
-google.co.uk, google.co.uk
-google.corn, google.com
-google.corn.ar, google.com.ar
-google.corn.au, google.com.au
-google.corn.br, google.com.br
-google.corn.co, google.com.co
-google.corn.rnx, google.com.mx
-google.corn.tr, google.com.tr
-google.corn.tw, google.com.tw
-google.de, google.de
-google.es, google.es
-google.fr, google.fr
-google.it, google.it
-google.nl, google.nl
-google.pl, google.pl
-google.pt, google.pt
-google.ru, google.ru
-gotporn.corn, gotporn.com
-gsrnarena.corn, gsmarena.com
-gurntree.corn, gumtree.com
-haberler.corn, haberler.com
-hatenablog.corn, hatenablog.com
-hdfcbank.corn, hdfcbank.com
-hdrezka.ag, hdrezka.ag
-healthline.corn, healthline.com
-hilton.corn, hilton.com
-hindustantirnes.corn, hindustantimes.com
-hornedepot.corn, homedepot.com
-hotels.corn, hotels.com
-hotpepper.jp, hotpepper.jp
-hotstar.corn, hotstar.com
-hp.corn, hp.com
-huawei.corn, huawei.com
-huffpost.corn, huffpost.com
-hulu.corn, hulu.com
-icicibank.corn, icicibank.com
-icloud.corn, icloud.com
-ign.corn, ign.com
-ikea.corn, ikea.com
-ilrneteo.it, ilmeteo.it
-ilovepdf.corn, ilovepdf.com
-irndb.corn, imdb.com
-irngur.corn, imgur.com
-irnpress.co.jp, impress.co.jp
-indeed.corn, indeed.com
-indiarnart.corn, indiamart.com
-indiatirnes.corn, indiatimes.com
-indiatoday.in, indiatoday.in
-infobae.corn, infobae.com
-instagrarn.corn, instagram.com
-instructables.corn, instructables.com
-instructure.corn, instructure.com
-interia.pl, interia.pl
-intuit.corn, intuit.com
-investing.corn, investing.com
-investopedia.corn, investopedia.com
-irecornrnend.ru, irecommend.ru
-irs.gov, irs.gov
-itau.corn.br, itau.com.br
-itrnedia.co.jp, itmedia.co.jp
-jobrapido.corn, jobrapido.com
-justdial.corn, justdial.com
-jw.org, jw.org
-kahoot.it, kahoot.it
-kakaku.corn, kakaku.com
-kakao.corn, kakao.com
-kayak.corn, kayak.com
-kenhl4.vn, kenh14.vn
-khanacaderny.org, khanacademy.org
-kinopoisk.ru, kinopoisk.ru
-kizlarsoruyor.corn, kizlarsoruyor.com
-kknews.cc, kknews.cc
-kohls.corn, kohls.com
-kornpas.corn, kompas.com
-kotobank.jp, kotobank.jp
-kp.ru, kp.ru
-lazada.co.th, lazada.co.th
-leagueoflegends.corn, leagueoflegends.com
-leboncoin.fr, leboncoin.fr
-lernonde.fr, lemonde.fr
-lenta.ru, lenta.ru
-letrnejerk.corn, letmejerk.com
-lifewire.corn, lifewire.com
-line.rne, line.me
-linkedin.corn, linkedin.com
-live.corn, live.com
-livedoor.biz, livedoor.biz
-livedoor.corn, livedoor.com
-livedoor.jp, livedoor.jp
-livejournal.corn, livejournal.com
-livescore.corn, livescore.com
-livestrong.corn, livestrong.com
-rnail.ru, mail.ru
-rnakernytrip.corn, makemytrip.com
-rnalavida.corn, malavida.com
-rnarca.corn, marca.com
-rnawdoo3.corn, mawdoo3.com
-rnayoclinic.org, mayoclinic.org
-rneb.gov.tr, meb.gov.tr
-rnediafire.corn, mediafire.com
-rnediurn.corn, medium.com
-rnega.nz, mega.nz
-rnercadolibre.corn, mercadolibre.com
-rnercadolibre.corn.ar, mercadolibre.com.ar
-rnercadolibre.corn.co, mercadolibre.com.co
-rnercadolibre.corn.rnx, mercadolibre.com.mx
-rnercadolivre.corn.br, mercadolivre.com.br
-rnercari.corn, mercari.com
-rnessenger.corn, messenger.com
-rni.corn, mi.com
-rnicrosoft.corn, microsoft.com
-rnicrosoftonline.corn, microsoftonline.com
-rnilliyet.corn.tr, milliyet.com.tr
-rnk.ru, mk.ru
-rnlb.corn, mlb.com
-rnobile.de, mobile.de
-rnobileOl.corn, mobile01.com
-rnonografias.corn, monografias.com
-rnsn.corn, msn.com
-rnundodeportivo.corn, mundodeportivo.com
-rnyanirnelist.net, myanimelist.net
-rnynavi.jp, mynavi.jp
-rnynet.corn, mynet.com
-nll.corn, n11.com
-narnu.wiki, namu.wiki
-naver.corn, naver.com
-naver.jp, naver.jp
-nba.corn, nba.com
-nbcnews.corn, nbcnews.com
-nbcsports.corn, nbcsports.com
-ndtv.corn, ndtv.com
-netflix.corn, netflix.com
-newsl8.corn, news18.com
-nextdoor.corn, nextdoor.com
-nhk.or.jp, nhk.or.jp
-nicovideo.jp, nicovideo.jp
-nifty.corn, nifty.com
-nih.gov, nih.gov
-nike.corn, nike.com
-nikkansports.corn, nikkansports.com
-nikkei.corn, nikkei.com
-nvidia.corn, nvidia.com
-nypost.corn, nypost.com
-nytirnes.corn, nytimes.com
-office.corn, office.com
-office365.corn, office365.com
-ok.ru, ok.ru
-okdiario.corn, okdiario.com
-olx.co.id, olx.co.id
-olx.corn.br, olx.com.br
-olx.pl, olx.pl
-olx.ua, olx.ua
-onet.pl, onet.pl
-onlinesbi.corn, onlinesbi.com
-onlinevideoconverter.corn, onlinevideoconverter.com
-op.gg, op.gg
-orange.fr, orange.fr
-otto.de, otto.de
-otvfoco.corn.br, otvfoco.com.br
-otzovik.corn, otzovik.com
-over-blog.corn, over-blog.com
-pantip.corn, pantip.com
-passeidireto.corn, passeidireto.com
-patreon.corn, patreon.com
-paypal.corn, paypal.com
-perfectgirls.net, perfectgirls.net
-pinterest.co.uk, pinterest.co.uk
-pinterest.corn, pinterest.com
-pinterest.es, pinterest.es
-pixiv.net, pixiv.net
-pixnet.net, pixnet.net
-playstation.corn, playstation.com
-politico.corn, politico.com
-polygon.corn, polygon.com
-pornhub.corn, pornhub.com
-prezi.corn, prezi.com
-prirnevideo.corn, primevideo.com
-prograrnrne-tv.net, programme-tv.net
-qq.corn, qq.com
-qualtrics.corn, qualtrics.com
-quizlet.corn, quizlet.com
-quora.corn, quora.com
-rakuten.co.jp, rakuten.co.jp
-rarnbler.ru, rambler.ru
-ranker.corn, ranker.com
-reddit.corn, reddit.com
-redtube.corn, redtube.com
-researchgate.net, researchgate.net
-reverso.net, reverso.net
-rg.ru, rg.ru
-rightrnove.co.uk, rightmove.co.uk
-roblox.corn, roblox.com
-rottentornatoes.corn, rottentomatoes.com
-rozetka.corn.ua, rozetka.com.ua
-rt.corn, rt.com
-sabah.corn.tr, sabah.com.tr
-sahibinden.corn, sahibinden.com
-sarnsung.corn, samsung.com
-sanook.corn, sanook.com
-sarkariresult.corn, sarkariresult.com
-savefrorn.net, savefrom.net
-sciencedirect.corn, sciencedirect.com
-scribd.corn, scribd.com
-sfgate.corn, sfgate.com
-shopee.co.th, shopee.co.th
-shutterstock.corn, shutterstock.com
-sinoptik.ua, sinoptik.ua
-sky.corn, sky.com
-skyscanner.net, skyscanner.net
-skysports.corn, skysports.com
-slideshare.net, slideshare.net
-srnallpdf.corn, smallpdf.com
-srni2.ru, smi2.ru
-softonic.corn, softonic.com
-soundcloud.corn, soundcloud.com
-souq.corn, souq.com
-sozcu.corn.tr, sozcu.com.tr
-spankbang.corn, spankbang.com
-speedtest.net, speedtest.net
-spiegel.de, spiegel.de
-spotify.corn, spotify.com
-sputniknews.corn, sputniknews.com
-stackexchange.corn, stackexchange.com
-stackoverflow.corn, stackoverflow.com
-stearncornrnunity.corn, steamcommunity.com
-stearnpowered.corn, steampowered.com
-study.corn, study.com
-surveyrnonkey.corn, surveymonkey.com
-t-online.de, t-online.de
-tabelog.corn, tabelog.com
-taleo.net, taleo.net
-taobao.corn, taobao.com
-target.corn, target.com
-techradar.corn, techradar.com
-techtudo.corn.br, techtudo.com.br
-telegraph.co.uk, telegraph.co.uk
-terrnornetropolitico.it, termometropolitico.it
-thebalancecareers.corn, thebalancecareers.com
-thedailybeast.corn, thedailybeast.com
-thefreedictionary.corn, thefreedictionary.com
-theguardian.corn, theguardian.com
-thepiratebay.org, thepiratebay.org
-thesaurus.corn, thesaurus.com
-theverge.corn, theverge.com
-thoughtco.corn, thoughtco.com
-tirn.it, tim.it
-tistory.corn, tistory.com
-tnaflix.corn, tnaflix.com
-tokopedia.corn, tokopedia.com
-trello.corn, trello.com
-tribunnews.corn, tribunnews.com
-tripadvisor.corn, tripadvisor.com
-trulia.corn, trulia.com
-trustpilot.corn, trustpilot.com
-turnblr.corn, tumblr.com
-tutorialspoint.corn, tutorialspoint.com
-twitch.tv, twitch.tv
-twitter.corn, twitter.com
-uber.corn, uber.com
-ubisoft.corn, ubisoft.com
-uderny.corn, udemy.com
-udn.corn, udn.com
-ultirnate-guitar.corn, ultimate-guitar.com
-unarn.rnx, unam.mx
-uniqlo.corn, uniqlo.com
-uol.corn.br, uol.com.br
-ups.corn, ups.com
-uptodown.corn, uptodown.com
-urbandictionary.corn, urbandictionary.com
-usatoday.corn, usatoday.com
-usps.corn, usps.com
-vice.corn, vice.com
-virneo.corn, vimeo.com
-vk.corn, vk.com
-vnexpress.net, vnexpress.net
-w3schools.corn, w3schools.com
-walrnart.corn, walmart.com
-washingtonpost.corn, washingtonpost.com
-wattpad.corn, wattpad.com
-weather.corn, weather.com
-web.de, web.de
-webrnd.corn, webmd.com
-weebly.corn, weebly.com
-wellsfargo.corn, wellsfargo.com
-wetransfer.corn, wetransfer.com
-whatsapp.corn, whatsapp.com
-wikihow.corn, wikihow.com
-wikipedia.org, wikipedia.org
-wiktionary.org, wiktionary.org
-wish.corn, wish.com
-wixsite.corn, wixsite.com
-wondershare.corn, wondershare.com
-wordpress.corn, wordpress.com
-wordreference.corn, wordreference.com
-wp.pl, wp.pl
-wsj.corn, wsj.com
-www.gob.rnx, www.gob.mx
-www.gov.uk, www.gov.uk
-xbox.corn, xbox.com
-xe.corn, xe.com
-xfinity.corn, xfinity.com
-xharnster.corn, xhamster.com
-xnxx.corn, xnxx.com
-xnxx2.pro, xnxx2.pro
-xozilla.corn, xozilla.com
-xvideos.corn, xvideos.com
-y2rnate.corn, y2mate.com
-yahoo.co.jp, yahoo.co.jp
-yahoo.corn, yahoo.com
-yandex.ru, yandex.ru
-yelp.corn, yelp.com
-yenisafak.corn, yenisafak.com
-youjizz.corn, youjizz.com
-yourn7.corn, youm7.com
-youporn.corn, youporn.com
-yourdictionary.corn, yourdictionary.com
-youtube.corn, youtube.com
-yts.arn, yts.am
-zendesk.corn, zendesk.com
-zillow.corn, zillow.com
-zing.vn, zing.vn
-znanija.corn, znanija.com
-zornato.corn, zomato.com
+l7track.net, l7tracknet, 17track.net
+24h.corn.vn, 24hcornvn, 24h.com.vn
+acadernia.edu, acaderniaedu, academia.edu
+acadernic.ru, acadernicru, academic.ru
+accuweather.corn, accuweathercorn, accuweather.com
+adobe.corn, adobecorn, adobe.com
+adp.corn, adpcorn, adp.com
+agoda.corn, agodacorn, agoda.com
+aif.ru, aifru, aif.ru
+airbnb.corn, airbnbcorn, airbnb.com
+alibaba.corn, alibabacorn, alibaba.com
+aliexpress.corn, aliexpresscorn, aliexpress.com
+allegro.pl, allegropl, allegro.pl
+allocine.fr, allocinefr, allocine.fr
+alodokter.corn, alodoktercorn, alodokter.com
+arnazon.ca, arnazonca, amazon.ca
+arnazon.co.jp, arnazoncojp, amazon.co.jp
+arnazon.co.uk, arnazoncouk, amazon.co.uk
+arnazon.corn, arnazoncorn, amazon.com
+arnazon.corn.rnx, arnazoncornrnx, amazon.com.mx
+arnazon.de, arnazonde, amazon.de
+arnazon.es, arnazones, amazon.es
+arnazon.fr, arnazonfr, amazon.fr
+arnazon.in, arnazonin, amazon.in
+arnazon.it, arnazonit, amazon.it
+arneblo.jp, arneblojp, ameblo.jp
+arnericanexpress.corn, arnericanexpresscorn, americanexpress.com
+ancestry.corn, ancestrycorn, ancestry.com
+anirneflv.net, anirneflvnet, animeflv.net
+anyxxx.pro, anyxxxpro, anyxxx.pro
+aol.corn, aolcorn, aol.com
+apkpure.corn, apkpurecorn, apkpure.com
+apple.corn, applecorn, apple.com
+appledaily.corn, appledailycorn, appledaily.com
+archive.org, archiveorg, archive.org
+asahi.corn, asahicorn, asahi.com
+ask.corn, askcorn, ask.com
+asos.corn, asoscorn, asos.com
+asus.corn, asuscorn, asus.com
+autotrader.corn, autotradercorn, autotrader.com
+avito.ru, avitoru, avito.ru
+azlyrics.corn, azlyricscorn, azlyrics.com
+badoo.corn, badoocorn, badoo.com
+baidu.corn, baiducorn, baidu.com
+baixaki.corn.br, baixakicornbr, baixaki.com.br
+banggood.corn, banggoodcorn, banggood.com
+bankofarnerica.corn, bankofarnericacorn, bankofamerica.com
+battle.net, battlenet, battle.net
+bbc.co.uk, bbccouk, bbc.co.uk
+bbc.corn, bbccorn, bbc.com
+beeg.corn, beegcorn, beeg.com
+bestbuy.corn, bestbuycorn, bestbuy.com
+bet365.corn, bet365corn, bet365.com
+biblegateway.corn, biblegatewaycorn, biblegateway.com
+biglobe.ne.jp, biglobenejp, biglobe.ne.jp
+bild.de, bildde, bild.de
+bilibili.corn, bilibilicorn, bilibili.com
+bing.corn, bingcorn, bing.com
+blackboard.corn, blackboardcorn, blackboard.com
+blogspot.corn, blogspotcorn, blogspot.com
+bloornberg.corn, bloornbergcorn, bloomberg.com
+booking.corn, bookingcorn, booking.com
+bookrnyshow.corn, bookrnyshowcorn, bookmyshow.com
+britannica.corn, britannicacorn, britannica.com
+bukalapak.corn, bukalapakcorn, bukalapak.com
+businessinsider.corn, businessinsidercorn, businessinsider.com
+bustle.corn, bustlecorn, bustle.com
+buzzfeed.corn, buzzfeedcorn, buzzfeed.com
+ca.gov, cagov, ca.gov
+caixa.gov.br, caixagovbr, caixa.gov.br
+canada.ca, canadaca, canada.ca
+canalrcn.corn, canalrcncorn, canalrcn.com
+canva.corn, canvacorn, canva.com
+capitalone.corn, capitalonecorn, capitalone.com
+cargurus.corn, carguruscorn, cargurus.com
+cbsnews.corn, cbsnewscorn, cbsnews.com
+cbssports.corn, cbssportscorn, cbssports.com
+ccrn.net, ccrnnet, ccm.net
+cdc.gov, cdcgov, cdc.gov
+cdiscount.corn, cdiscountcorn, cdiscount.com
+ceneo.pl, ceneopl, ceneo.pl
+chase.corn, chasecorn, chase.com
+chaturbate.corn, chaturbatecorn, chaturbate.com
+chegg.corn, cheggcorn, chegg.com
+chinatirnes.corn, chinatirnescorn, chinatimes.com
+chip.de, chipde, chip.de
+chron.corn, chroncorn, chron.com
+cinecalidad.to, cinecalidadto, cinecalidad.to
+clarin.corn, clarincorn, clarin.com
+cnbc.corn, cnbccorn, cnbc.com
+cnet.corn, cnetcorn, cnet.com
+cnn.corn, cnncorn, cnn.com
+collegedunia.corn, collegeduniacorn, collegedunia.com
+correios.corn.br, correioscornbr, correios.com.br
+craigslist.org, craigslistorg, craigslist.org
+cricbuzz.corn, cricbuzzcorn, cricbuzz.com
+dailyrnail.co.uk, dailyrnailcouk, dailymail.co.uk
+dailyrnotion.corn, dailyrnotioncorn, dailymotion.com
+daurn.net, daurnnet, daum.net
+dell.corn, dellcorn, dell.com
+depositphotos.corn, depositphotoscorn, depositphotos.com
+detik.corn, detikcorn, detik.com
+deviantart.corn, deviantartcorn, deviantart.com
+dhgate.corn, dhgatecorn, dhgate.com
+dhl.de, dhlde, dhl.de
+dictionary.corn, dictionarycorn, dictionary.com
+discordapp.corn, discordappcorn, discordapp.com
+drnrn.co.jp, drnrncojp, dmm.co.jp
+drnrn.corn, drnrncorn, dmm.com
+drorn.ru, drornru, drom.ru
+dropbox.corn, dropboxcorn, dropbox.com
+ebay-kleinanzeigen.de, ebaykleinanzeigende, ebay-kleinanzeigen.de
+ebay.co.uk, ebaycouk, ebay.co.uk
+ebay.corn, ebaycorn, ebay.com
+ebay.corn.au, ebaycornau, ebay.com.au
+ebay.de, ebayde, ebay.de
+ebay.es, ebayes, ebay.es
+ebay.fr, ebayfr, ebay.fr
+ebay.it, ebayit, ebay.it
+eksisozluk.corn, eksisozlukcorn, eksisozluk.com
+elconfidencial.corn, elconfidencialcorn, elconfidencial.com
+elintransigente.corn, elintransigentecorn, elintransigente.com
+elrnundo.es, elrnundoes, elmundo.es
+elpais.corn, elpaiscorn, elpais.com
+eluniversal.corn.rnx, eluniversalcornrnx, eluniversal.com.mx
+ernag.ro, ernagro, emag.ro
+engadget.corn, engadgetcorn, engadget.com
+epicgarnes.corn, epicgarnescorn, epicgames.com
+espn.corn, espncorn, espn.com
+etsy.corn, etsycorn, etsy.com
+europa.eu, europaeu, europa.eu
+eventbrite.corn, eventbritecorn, eventbrite.com
+excite.co.jp, excitecojp, excite.co.jp
+expedia.corn, expediacorn, expedia.com
+express.co.uk, expresscouk, express.co.uk
+facebook.corn, facebookcorn, facebook.com
+fandango.corn, fandangocorn, fandango.com
+fandorn.corn, fandorncorn, fandom.com
+fast.corn, fastcorn, fast.com
+fazenda.gov.br, fazendagovbr, fazenda.gov.br
+fc2.corn, fc2corn, fc2.com
+fedex.corn, fedexcorn, fedex.com
+filrnweb.pl, filrnwebpl, filmweb.pl
+flickr.corn, flickrcorn, flickr.com
+flipkart.corn, flipkartcorn, flipkart.com
+fnac.corn, fnaccorn, fnac.com
+forbes.corn, forbescorn, forbes.com
+foxnews.corn, foxnewscorn, foxnews.com
+francetvinfo.fr, francetvinfofr, francetvinfo.fr
+free.fr, freefr, free.fr
+gaana.corn, gaanacorn, gaana.com
+garnepedia.corn, garnepediacorn, gamepedia.com
+garnespot.corn, garnespotcorn, gamespot.com
+gearbest.corn, gearbestcorn, gearbest.com
+genius.corn, geniuscorn, genius.com
+gfycat.corn, gfycatcorn, gfycat.com
+giphy.corn, giphycorn, giphy.com
+gisrneteo.ru, gisrneteoru, gismeteo.ru
+github.corn, githubcorn, github.com
+glassdoor.corn, glassdoorcorn, glassdoor.com
+globo.corn, globocorn, globo.com
+glosbe.corn, glosbecorn, glosbe.com
+go.corn, gocorn, go.com
+goal.corn, goalcorn, goal.com
+gofundrne.corn, gofundrnecorn, gofundme.com
+goo.ne.jp, goonejp, goo.ne.jp
+goodreads.corn, goodreadscorn, goodreads.com
+google.ca, googleca, google.ca
+google.cl, googlecl, google.cl
+google.co.id, googlecoid, google.co.id
+google.co.in, googlecoin, google.co.in
+google.co.jp, googlecojp, google.co.jp
+google.co.kr, googlecokr, google.co.kr
+google.co.th, googlecoth, google.co.th
+google.co.uk, googlecouk, google.co.uk
+google.corn, googlecorn, google.com
+google.corn.ar, googlecornar, google.com.ar
+google.corn.au, googlecornau, google.com.au
+google.corn.br, googlecornbr, google.com.br
+google.corn.co, googlecornco, google.com.co
+google.corn.rnx, googlecornrnx, google.com.mx
+google.corn.tr, googlecorntr, google.com.tr
+google.corn.tw, googlecorntw, google.com.tw
+google.de, googlede, google.de
+google.es, googlees, google.es
+google.fr, googlefr, google.fr
+google.it, googleit, google.it
+google.nl, googlenl, google.nl
+google.pl, googlepl, google.pl
+google.pt, googlept, google.pt
+google.ru, googleru, google.ru
+gotporn.corn, gotporncorn, gotporn.com
+gsrnarena.corn, gsrnarenacorn, gsmarena.com
+gurntree.corn, gurntreecorn, gumtree.com
+haberler.corn, haberlercorn, haberler.com
+hatenablog.corn, hatenablogcorn, hatenablog.com
+hdfcbank.corn, hdfcbankcorn, hdfcbank.com
+hdrezka.ag, hdrezkaag, hdrezka.ag
+healthline.corn, healthlinecorn, healthline.com
+hilton.corn, hiltoncorn, hilton.com
+hindustantirnes.corn, hindustantirnescorn, hindustantimes.com
+hornedepot.corn, hornedepotcorn, homedepot.com
+hotels.corn, hotelscorn, hotels.com
+hotpepper.jp, hotpepperjp, hotpepper.jp
+hotstar.corn, hotstarcorn, hotstar.com
+hp.corn, hpcorn, hp.com
+huawei.corn, huaweicorn, huawei.com
+huffpost.corn, huffpostcorn, huffpost.com
+hulu.corn, hulucorn, hulu.com
+icicibank.corn, icicibankcorn, icicibank.com
+icloud.corn, icloudcorn, icloud.com
+ign.corn, igncorn, ign.com
+ikea.corn, ikeacorn, ikea.com
+ilrneteo.it, ilrneteoit, ilmeteo.it
+ilovepdf.corn, ilovepdfcorn, ilovepdf.com
+irndb.corn, irndbcorn, imdb.com
+irngur.corn, irngurcorn, imgur.com
+irnpress.co.jp, irnpresscojp, impress.co.jp
+indeed.corn, indeedcorn, indeed.com
+indiarnart.corn, indiarnartcorn, indiamart.com
+indiatirnes.corn, indiatirnescorn, indiatimes.com
+indiatoday.in, indiatodayin, indiatoday.in
+infobae.corn, infobaecorn, infobae.com
+instagrarn.corn, instagrarncorn, instagram.com
+instructables.corn, instructablescorn, instructables.com
+instructure.corn, instructurecorn, instructure.com
+interia.pl, interiapl, interia.pl
+intuit.corn, intuitcorn, intuit.com
+investing.corn, investingcorn, investing.com
+investopedia.corn, investopediacorn, investopedia.com
+irecornrnend.ru, irecornrnendru, irecommend.ru
+irs.gov, irsgov, irs.gov
+itau.corn.br, itaucornbr, itau.com.br
+itrnedia.co.jp, itrnediacojp, itmedia.co.jp
+jobrapido.corn, jobrapidocorn, jobrapido.com
+justdial.corn, justdialcorn, justdial.com
+jw.org, jworg, jw.org
+kahoot.it, kahootit, kahoot.it
+kakaku.corn, kakakucorn, kakaku.com
+kakao.corn, kakaocorn, kakao.com
+kayak.corn, kayakcorn, kayak.com
+kenhl4.vn, kenhl4vn, kenh14.vn
+khanacaderny.org, khanacadernyorg, khanacademy.org
+kinopoisk.ru, kinopoiskru, kinopoisk.ru
+kizlarsoruyor.corn, kizlarsoruyorcorn, kizlarsoruyor.com
+kknews.cc, kknewscc, kknews.cc
+kohls.corn, kohlscorn, kohls.com
+kornpas.corn, kornpascorn, kompas.com
+kotobank.jp, kotobankjp, kotobank.jp
+kp.ru, kpru, kp.ru
+lazada.co.th, lazadacoth, lazada.co.th
+leagueoflegends.corn, leagueoflegendscorn, leagueoflegends.com
+leboncoin.fr, leboncoinfr, leboncoin.fr
+lernonde.fr, lernondefr, lemonde.fr
+lenta.ru, lentaru, lenta.ru
+letrnejerk.corn, letrnejerkcorn, letmejerk.com
+lifewire.corn, lifewirecorn, lifewire.com
+line.rne, linerne, line.me
+linkedin.corn, linkedincorn, linkedin.com
+live.corn, livecorn, live.com
+livedoor.corn, livedoorcorn, livedoor.com
+livedoor.jp, livedoorjp, livedoor.jp
+livejournal.corn, livejournalcorn, livejournal.com
+livescore.corn, livescorecorn, livescore.com
+livestrong.corn, livestrongcorn, livestrong.com
+rnail.ru, rnailru, mail.ru
+rnakernytrip.corn, rnakernytripcorn, makemytrip.com
+rnalavida.corn, rnalavidacorn, malavida.com
+rnarca.corn, rnarcacorn, marca.com
+rnawdoo3.corn, rnawdoo3corn, mawdoo3.com
+rnayoclinic.org, rnayoclinicorg, mayoclinic.org
+rneb.gov.tr, rnebgovtr, meb.gov.tr
+rnediafire.corn, rnediafirecorn, mediafire.com
+rnediurn.corn, rnediurncorn, medium.com
+rnega.nz, rneganz, mega.nz
+rnercadolibre.corn, rnercadolibrecorn, mercadolibre.com
+rnercadolibre.corn.ar, rnercadolibrecornar, mercadolibre.com.ar
+rnercadolibre.corn.co, rnercadolibrecornco, mercadolibre.com.co
+rnercadolibre.corn.rnx, rnercadolibrecornrnx, mercadolibre.com.mx
+rnercadolivre.corn.br, rnercadolivrecornbr, mercadolivre.com.br
+rnercari.corn, rnercaricorn, mercari.com
+rnessenger.corn, rnessengercorn, messenger.com
+rni.corn, rnicorn, mi.com
+rnicrosoft.corn, rnicrosoftcorn, microsoft.com
+rnicrosoftonline.corn, rnicrosoftonlinecorn, microsoftonline.com
+rnilliyet.corn.tr, rnilliyetcorntr, milliyet.com.tr
+rnk.ru, rnkru, mk.ru
+rnlb.corn, rnlbcorn, mlb.com
+rnobile.de, rnobilede, mobile.de
+rnobileOl.corn, rnobileOlcorn, mobile01.com
+rnonografias.corn, rnonografiascorn, monografias.com
+rnsn.corn, rnsncorn, msn.com
+rnundodeportivo.corn, rnundodeportivocorn, mundodeportivo.com
+rnyanirnelist.net, rnyanirnelistnet, myanimelist.net
+rnynavi.jp, rnynavijp, mynavi.jp
+rnynet.corn, rnynetcorn, mynet.com
+nll.corn, nllcorn, n11.com
+narnu.wiki, narnuwiki, namu.wiki
+naver.corn, navercorn, naver.com
+naver.jp, naverjp, naver.jp
+nba.corn, nbacorn, nba.com
+nbcnews.corn, nbcnewscorn, nbcnews.com
+nbcsports.corn, nbcsportscorn, nbcsports.com
+ndtv.corn, ndtvcorn, ndtv.com
+netflix.corn, netflixcorn, netflix.com
+newsl8.corn, newsl8corn, news18.com
+nextdoor.corn, nextdoorcorn, nextdoor.com
+nhk.or.jp, nhkorjp, nhk.or.jp
+nicovideo.jp, nicovideojp, nicovideo.jp
+nifty.corn, niftycorn, nifty.com
+nih.gov, nihgov, nih.gov
+nike.corn, nikecorn, nike.com
+nikkansports.corn, nikkansportscorn, nikkansports.com
+nikkei.corn, nikkeicorn, nikkei.com
+nvidia.corn, nvidiacorn, nvidia.com
+nypost.corn, nypostcorn, nypost.com
+nytirnes.corn, nytirnescorn, nytimes.com
+office.corn, officecorn, office.com
+office365.corn, office365corn, office365.com
+ok.ru, okru, ok.ru
+okdiario.corn, okdiariocorn, okdiario.com
+olx.co.id, olxcoid, olx.co.id
+olx.corn.br, olxcornbr, olx.com.br
+olx.pl, olxpl, olx.pl
+olx.ua, olxua, olx.ua
+onet.pl, onetpl, onet.pl
+onlinesbi.corn, onlinesbicorn, onlinesbi.com
+onlinevideoconverter.corn, onlinevideoconvertercorn, onlinevideoconverter.com
+op.gg, opgg, op.gg
+orange.fr, orangefr, orange.fr
+otto.de, ottode, otto.de
+otvfoco.corn.br, otvfococornbr, otvfoco.com.br
+otzovik.corn, otzovikcorn, otzovik.com
+over-blog.corn, overblogcorn, over-blog.com
+pantip.corn, pantipcorn, pantip.com
+passeidireto.corn, passeidiretocorn, passeidireto.com
+patreon.corn, patreoncorn, patreon.com
+paypal.corn, paypalcorn, paypal.com
+perfectgirls.net, perfectgirlsnet, perfectgirls.net
+pinterest.co.uk, pinterestcouk, pinterest.co.uk
+pinterest.corn, pinterestcorn, pinterest.com
+pinterest.es, pinterestes, pinterest.es
+pixiv.net, pixivnet, pixiv.net
+pixnet.net, pixnetnet, pixnet.net
+playstation.corn, playstationcorn, playstation.com
+politico.corn, politicocorn, politico.com
+polygon.corn, polygoncorn, polygon.com
+pornhub.corn, pornhubcorn, pornhub.com
+prezi.corn, prezicorn, prezi.com
+prirnevideo.corn, prirnevideocorn, primevideo.com
+prograrnrne-tv.net, prograrnrnetvnet, programme-tv.net
+qq.corn, qqcorn, qq.com
+qualtrics.corn, qualtricscorn, qualtrics.com
+quizlet.corn, quizletcorn, quizlet.com
+quora.corn, quoracorn, quora.com
+rakuten.co.jp, rakutencojp, rakuten.co.jp
+rarnbler.ru, rarnblerru, rambler.ru
+ranker.corn, rankercorn, ranker.com
+reddit.corn, redditcorn, reddit.com
+redtube.corn, redtubecorn, redtube.com
+researchgate.net, researchgatenet, researchgate.net
+reverso.net, reversonet, reverso.net
+rg.ru, rgru, rg.ru
+rightrnove.co.uk, rightrnovecouk, rightmove.co.uk
+roblox.corn, robloxcorn, roblox.com
+rottentornatoes.corn, rottentornatoescorn, rottentomatoes.com
+rozetka.corn.ua, rozetkacornua, rozetka.com.ua
+rt.corn, rtcorn, rt.com
+sabah.corn.tr, sabahcorntr, sabah.com.tr
+sahibinden.corn, sahibindencorn, sahibinden.com
+sarnsung.corn, sarnsungcorn, samsung.com
+sanook.corn, sanookcorn, sanook.com
+sarkariresult.corn, sarkariresultcorn, sarkariresult.com
+savefrorn.net, savefrornnet, savefrom.net
+sciencedirect.corn, sciencedirectcorn, sciencedirect.com
+scribd.corn, scribdcorn, scribd.com
+sfgate.corn, sfgatecorn, sfgate.com
+shopee.co.th, shopeecoth, shopee.co.th
+shutterstock.corn, shutterstockcorn, shutterstock.com
+sinoptik.ua, sinoptikua, sinoptik.ua
+sky.corn, skycorn, sky.com
+skyscanner.net, skyscannernet, skyscanner.net
+skysports.corn, skysportscorn, skysports.com
+slideshare.net, slidesharenet, slideshare.net
+srnallpdf.corn, srnallpdfcorn, smallpdf.com
+srni2.ru, srni2ru, smi2.ru
+softonic.corn, softoniccorn, softonic.com
+soundcloud.corn, soundcloudcorn, soundcloud.com
+sozcu.corn.tr, sozcucorntr, sozcu.com.tr
+spankbang.corn, spankbangcorn, spankbang.com
+speedtest.net, speedtestnet, speedtest.net
+spiegel.de, spiegelde, spiegel.de
+spotify.corn, spotifycorn, spotify.com
+sputniknews.corn, sputniknewscorn, sputniknews.com
+stackexchange.corn, stackexchangecorn, stackexchange.com
+stackoverflow.corn, stackoverflowcorn, stackoverflow.com
+stearncornrnunity.corn, stearncornrnunitycorn, steamcommunity.com
+stearnpowered.corn, stearnpoweredcorn, steampowered.com
+study.corn, studycorn, study.com
+surveyrnonkey.corn, surveyrnonkeycorn, surveymonkey.com
+t-online.de, tonlinede, t-online.de
+tabelog.corn, tabelogcorn, tabelog.com
+taleo.net, taleonet, taleo.net
+taobao.corn, taobaocorn, taobao.com
+target.corn, targetcorn, target.com
+techradar.corn, techradarcorn, techradar.com
+techtudo.corn.br, techtudocornbr, techtudo.com.br
+telegraph.co.uk, telegraphcouk, telegraph.co.uk
+terrnornetropolitico.it, terrnornetropoliticoit, termometropolitico.it
+thebalancecareers.corn, thebalancecareerscorn, thebalancecareers.com
+thedailybeast.corn, thedailybeastcorn, thedailybeast.com
+thefreedictionary.corn, thefreedictionarycorn, thefreedictionary.com
+theguardian.corn, theguardiancorn, theguardian.com
+thepiratebay.org, thepiratebayorg, thepiratebay.org
+thesaurus.corn, thesauruscorn, thesaurus.com
+theverge.corn, thevergecorn, theverge.com
+thoughtco.corn, thoughtcocorn, thoughtco.com
+tirn.it, tirnit, tim.it
+tistory.corn, tistorycorn, tistory.com
+tnaflix.corn, tnaflixcorn, tnaflix.com
+tokopedia.corn, tokopediacorn, tokopedia.com
+trello.corn, trellocorn, trello.com
+tribunnews.corn, tribunnewscorn, tribunnews.com
+tripadvisor.corn, tripadvisorcorn, tripadvisor.com
+trulia.corn, truliacorn, trulia.com
+trustpilot.corn, trustpilotcorn, trustpilot.com
+turnblr.corn, turnblrcorn, tumblr.com
+tutorialspoint.corn, tutorialspointcorn, tutorialspoint.com
+twitch.tv, twitchtv, twitch.tv
+twitter.corn, twittercorn, twitter.com
+uber.corn, ubercorn, uber.com
+ubisoft.corn, ubisoftcorn, ubisoft.com
+uderny.corn, udernycorn, udemy.com
+udn.corn, udncorn, udn.com
+ultirnate-guitar.corn, ultirnateguitarcorn, ultimate-guitar.com
+unarn.rnx, unarnrnx, unam.mx
+uniqlo.corn, uniqlocorn, uniqlo.com
+uol.corn.br, uolcornbr, uol.com.br
+ups.corn, upscorn, ups.com
+uptodown.corn, uptodowncorn, uptodown.com
+urbandictionary.corn, urbandictionarycorn, urbandictionary.com
+usatoday.corn, usatodaycorn, usatoday.com
+usps.corn, uspscorn, usps.com
+vice.corn, vicecorn, vice.com
+virneo.corn, virneocorn, vimeo.com
+vk.corn, vkcorn, vk.com
+vnexpress.net, vnexpressnet, vnexpress.net
+w3schools.corn, w3schoolscorn, w3schools.com
+walrnart.corn, walrnartcorn, walmart.com
+washingtonpost.corn, washingtonpostcorn, washingtonpost.com
+wattpad.corn, wattpadcorn, wattpad.com
+weather.corn, weathercorn, weather.com
+web.de, webde, web.de
+webrnd.corn, webrndcorn, webmd.com
+weebly.corn, weeblycorn, weebly.com
+wellsfargo.corn, wellsfargocorn, wellsfargo.com
+wetransfer.corn, wetransfercorn, wetransfer.com
+whatsapp.corn, whatsappcorn, whatsapp.com
+wikihow.corn, wikihowcorn, wikihow.com
+wikipedia.org, wikipediaorg, wikipedia.org
+wiktionary.org, wiktionaryorg, wiktionary.org
+wish.corn, wishcorn, wish.com
+wixsite.corn, wixsitecorn, wixsite.com
+wondershare.corn, wondersharecorn, wondershare.com
+wordpress.corn, wordpresscorn, wordpress.com
+wordreference.corn, wordreferencecorn, wordreference.com
+wp.pl, wppl, wp.pl
+wsj.corn, wsjcorn, wsj.com
+www.gob.rnx, wwwgobrnx, www.gob.mx
+www.gov.uk, wwwgovuk, www.gov.uk
+xbox.corn, xboxcorn, xbox.com
+xe.corn, xecorn, xe.com
+xfinity.corn, xfinitycorn, xfinity.com
+xharnster.corn, xharnstercorn, xhamster.com
+xnxx.corn, xnxxcorn, xnxx.com
+xnxx2.pro, xnxx2pro, xnxx2.pro
+xozilla.corn, xozillacorn, xozilla.com
+xvideos.corn, xvideoscorn, xvideos.com
+y2rnate.corn, y2rnatecorn, y2mate.com
+yahoo.co.jp, yahoocojp, yahoo.co.jp
+yahoo.corn, yahoocorn, yahoo.com
+yandex.ru, yandexru, yandex.ru
+yelp.corn, yelpcorn, yelp.com
+yenisafak.corn, yenisafakcorn, yenisafak.com
+youjizz.corn, youjizzcorn, youjizz.com
+yourn7.corn, yourn7corn, youm7.com
+youporn.corn, youporncorn, youporn.com
+yourdictionary.corn, yourdictionarycorn, yourdictionary.com
+youtube.corn, youtubecorn, youtube.com
+yts.arn, ytsarn, yts.am
+zendesk.corn, zendeskcorn, zendesk.com
+zillow.corn, zillowcorn, zillow.com
+zing.vn, zingvn, zing.vn
+znanija.corn, znanijacorn, znanija.com
+zornato.corn, zornatocorn, zomato.com
+###END_TOP_500###
 Olnet.corn, 01net.com
 lOOO.rnenu, 1000.menu
 lOO86.cn, 10086.cn
@@ -989,7 +994,6 @@ biblehub.corn, biblehub.com
 biblestudytools.corn, biblestudytools.com
 bibliaon.corn, bibliaon.com
 bibliaonline.corn.br, bibliaonline.com.br
-biccarnera.corn, biccamera.com
 bienpublic.corn, bienpublic.com
 bigbasket.corn, bigbasket.com
 bigcartel.corn, bigcartel.com
@@ -2709,6 +2713,7 @@ leagueofgraphs.corn, leagueofgraphs.com
 lecker.de, lecker.de
 lecturas.corn, lecturas.com
 ledauphine.corn, ledauphine.com
+ledger.corn, ledger.com
 lefigaro.fr, lefigaro.fr
 legacy.corn, legacy.com
 leggo.it, leggo.it

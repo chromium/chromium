@@ -10,13 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.skia.mojom.ColorType;
-import org.chromium.skia.mojom.ImageInfo;
+import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.skia.mojom.BitmapN32ImageInfo;
 
 import java.nio.ByteBuffer;
 
@@ -29,32 +26,30 @@ public class TestUtils {
     public static final boolean IS_GMS_CORE_SUPPORTED = isGmsCoreSupported();
 
     private static boolean isGmsCoreSupported() {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                       ContextUtils.getApplicationContext())
-                == ConnectionResult.SUCCESS;
+        return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
+                ContextUtils.getApplicationContext());
     }
 
-    public static org.chromium.skia.mojom.Bitmap mojoBitmapFromBitmap(Bitmap bitmap) {
+    public static org.chromium.skia.mojom.BitmapN32 mojoBitmapFromBitmap(Bitmap bitmap) {
         ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
         bitmap.copyPixelsToBuffer(buffer);
 
-        org.chromium.skia.mojom.Bitmap mojoBitmap = new org.chromium.skia.mojom.Bitmap();
-        mojoBitmap.imageInfo = new ImageInfo();
+        org.chromium.skia.mojom.BitmapN32 mojoBitmap = new org.chromium.skia.mojom.BitmapN32();
+        mojoBitmap.imageInfo = new BitmapN32ImageInfo();
         mojoBitmap.imageInfo.width = bitmap.getWidth();
         mojoBitmap.imageInfo.height = bitmap.getHeight();
-        mojoBitmap.imageInfo.colorType = ColorType.RGBA_8888;
         mojoBitmap.pixelData = new org.chromium.mojo_base.mojom.BigBuffer();
         mojoBitmap.pixelData.setBytes(buffer.array());
         return mojoBitmap;
     }
 
-    public static org.chromium.skia.mojom.Bitmap mojoBitmapFromFile(String relPath) {
+    public static org.chromium.skia.mojom.BitmapN32 mojoBitmapFromFile(String relPath) {
         String path = UrlUtils.getIsolatedTestFilePath("services/test/data/" + relPath);
         Bitmap bitmap = BitmapFactory.decodeFile(path);
         return mojoBitmapFromBitmap(bitmap);
     }
 
-    public static org.chromium.skia.mojom.Bitmap mojoBitmapFromText(String[] texts) {
+    public static org.chromium.skia.mojom.BitmapN32 mojoBitmapFromText(String[] texts) {
         final int x = 10;
         final int baseline = 100;
 

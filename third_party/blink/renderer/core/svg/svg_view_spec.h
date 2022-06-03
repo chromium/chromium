@@ -32,8 +32,8 @@ class SVGViewElement;
 
 class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
  public:
-  static SVGViewSpec* CreateFromFragment(const String&);
-  static SVGViewSpec* CreateForViewElement(const SVGViewElement&);
+  static const SVGViewSpec* CreateFromFragment(const String&);
+  static const SVGViewSpec* CreateForViewElement(const SVGViewElement&);
 
   SVGViewSpec();
 
@@ -44,7 +44,7 @@ class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
   const SVGTransformList* Transform() const { return transform_; }
   SVGZoomAndPanType ZoomAndPan() const { return zoom_and_pan_; }
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   bool ParseViewSpec(const String&);

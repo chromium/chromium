@@ -30,21 +30,13 @@ class UrlKeyedDataCollectionConsentHelper {
   // Creates a new |UrlKeyedDataCollectionConsentHelper| instance that checks
   // whether *anonymized* data collection is enabled. This should be used when
   // the client needs to check whether the user has granted consent for
-  // *anonymized* URL-keyed data collection.
-  //
-  // Implementation-wise we distinguish the following cases:
-  // 1. If |is_unified_consent_enabled| true, then the instance is backed by
-  //    |pref_service|. Url-keyed data collection is enabled if the preference
-  //    |prefs::kUrlKeyedAnonymizedDataCollectionEnabled| is set to true.
-  //
-  // 2. If |is_unified_consent_enabled| is false, then the instance is backed by
-  //    the sync service. Url-keyed data collection is enabled if history sync
-  //    has an active upload state.
+  // *anonymized* URL-keyed data collection. It is enabled if the preference
+  // |prefs::kUrlKeyedAnonymizedDataCollectionEnabled| from |pref_service| is
+  // set to true.
   //
   // Note: |pref_service| must outlive the returned instance.
   static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
-  NewAnonymizedDataCollectionConsentHelper(PrefService* pref_service,
-                                           syncer::SyncService* sync_service);
+  NewAnonymizedDataCollectionConsentHelper(PrefService* pref_service);
 
   // Creates a new |UrlKeyedDataCollectionConsentHelper| instance that checks
   // whether *personalized* data collection is enabled. This should be used when
@@ -55,6 +47,11 @@ class UrlKeyedDataCollectionConsentHelper {
   // has an active upload state.
   static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
   NewPersonalizedDataCollectionConsentHelper(syncer::SyncService* sync_service);
+
+  UrlKeyedDataCollectionConsentHelper(
+      const UrlKeyedDataCollectionConsentHelper&) = delete;
+  UrlKeyedDataCollectionConsentHelper& operator=(
+      const UrlKeyedDataCollectionConsentHelper&) = delete;
 
   virtual ~UrlKeyedDataCollectionConsentHelper();
 
@@ -74,8 +71,6 @@ class UrlKeyedDataCollectionConsentHelper {
 
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlKeyedDataCollectionConsentHelper);
 };
 
 }  // namespace unified_consent

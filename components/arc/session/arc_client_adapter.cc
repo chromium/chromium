@@ -22,9 +22,8 @@ void ArcClientAdapter::RemoveObserver(Observer* observer) {
 }
 
 // static
-std::unique_ptr<ArcClientAdapter> ArcClientAdapter::Create(
-    version_info::Channel channel) {
-  return IsArcVmEnabled() ? CreateArcVmClientAdapter(channel)
+std::unique_ptr<ArcClientAdapter> ArcClientAdapter::Create() {
+  return IsArcVmEnabled() ? CreateArcVmClientAdapter()
                           : CreateArcContainerClientAdapter();
 }
 

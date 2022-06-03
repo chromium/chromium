@@ -4,10 +4,7 @@
 
 #include "third_party/blink/public/platform/web_font.h"
 
-#include "third_party/blink/public/platform/web_float_point.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_font_description.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_run.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -30,7 +27,6 @@ class WebFont::Impl final {
 
  public:
   explicit Impl(const WebFontDescription& description) : font_(description) {
-    font_.Update(nullptr);
   }
 
   const Font& GetFont() const { return font_; }
@@ -82,25 +78,25 @@ float WebFont::XHeight() const {
 
 void WebFont::DrawText(cc::PaintCanvas* canvas,
                        const WebTextRun& run,
-                       const WebFloatPoint& left_baseline,
+                       const gfx::PointF& left_baseline,
                        SkColor color) const {
   FontCachePurgePreventer font_cache_purge_preventer;
   TextRun text_run(run);
   TextRunPaintInfo run_info(text_run);
 
-  PaintRecordBuilder builder;
-  GraphicsContext& context = builder.Context();
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  GraphicsContext& context = builder->Context();
 
   {
-    DrawingRecorder recorder(context, builder, DisplayItem::kWebFont);
+    DrawingRecorder recorder(context, *builder, DisplayItem::kWebFont);
     context.Save();
     context.SetFillColor(color);
-    context.DrawText(private_->GetFont(), run_info, left_baseline,
-                     kInvalidDOMNodeId);
+    context.DrawText(private_->GetFont(), run_info, FloatPoint(left_baseline),
+                     kInvalidDOMNodeId, AutoDarkMode::Disabled());
     context.Restore();
   }
 
-  builder.EndRecording(*canvas);
+  builder->EndRecording(*canvas);
 }
 
 int WebFont::CalculateWidth(const WebTextRun& run) const {
@@ -109,16 +105,16 @@ int WebFont::CalculateWidth(const WebTextRun& run) const {
 
 int WebFont::OffsetForPosition(const WebTextRun& run, float position) const {
   return private_->GetFont().OffsetForPosition(
-      run, position, IncludePartialGlyphs, DontBreakGlyphs);
+      run, position, kIncludePartialGlyphs, BreakGlyphsOption(false));
 }
 
-WebFloatRect WebFont::SelectionRectForText(const WebTextRun& run,
-                                           const WebFloatPoint& left_baseline,
-                                           int height,
-                                           int from,
-                                           int to) const {
-  return private_->GetFont().SelectionRectForText(run, left_baseline, height,
-                                                  from, to);
+gfx::RectF WebFont::SelectionRectForText(const WebTextRun& run,
+                                         const gfx::PointF& left_baseline,
+                                         int height,
+                                         int from,
+                                         int to) const {
+  return ToGfxRectF(private_->GetFont().SelectionRectForText(
+      run, FloatPoint(left_baseline), height, from, to));
 }
 
 }  // namespace blink

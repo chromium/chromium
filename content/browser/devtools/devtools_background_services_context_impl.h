@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -36,8 +35,7 @@ class ServiceWorkerContextWrapper;
 // client, as the protocol handler will have access to an instance of the
 // context.
 //
-// TODO(crbug.com/824858): This class should be single-threaded after
-// the service worker core thread moves to the UI thread.
+// Lives on the UI thread.
 class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
     : public DevToolsBackgroundServicesContext,
       public base::RefCountedThreadSafe<DevToolsBackgroundServicesContextImpl> {
@@ -59,6 +57,11 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
+  DevToolsBackgroundServicesContextImpl(
+      const DevToolsBackgroundServicesContextImpl&) = delete;
+  DevToolsBackgroundServicesContextImpl& operator=(
+      const DevToolsBackgroundServicesContextImpl&) = delete;
+
   void AddObserver(EventObserver* observer);
   void RemoveObserver(const EventObserver* observer);
 
@@ -72,15 +75,8 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
       const std::string& instance_id,
       const std::map<std::string, std::string>& event_metadata) override;
 
-  // Helper functions for public overriden APIs. Can be used directly.
+  // Helper function for public override. Can be used directly.
   bool IsRecording(devtools::proto::BackgroundService service);
-  void LogBackgroundServiceEventOnCoreThread(
-      uint64_t service_worker_registration_id,
-      const url::Origin& origin,
-      DevToolsBackgroundService service,
-      const std::string& event_name,
-      const std::string& instance_id,
-      const std::map<std::string, std::string>& event_metadata);
 
   // Enables recording mode for |service|. This is capped at 3 days in case
   // developers forget to switch it off.
@@ -91,13 +87,12 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
 
   // Queries all logged events for |service| and returns them in sorted order
   // (by timestamp). |callback| is called with an empty vector if there was an
-  // error. Must be called from the UI thread.
+  // error.
   void GetLoggedBackgroundServiceEvents(
       devtools::proto::BackgroundService service,
       GetLoggedBackgroundServiceEventsCallback callback);
 
   // Clears all logged events related to |service|.
-  // Must be called from the UI thread.
   void ClearLoggedBackgroundServiceEvents(
       devtools::proto::BackgroundService service);
 
@@ -110,17 +105,10 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
   // Whether |service| has an expiration time and it was exceeded.
   bool IsRecordingExpired(devtools::proto::BackgroundService service);
 
-  void GetLoggedBackgroundServiceEventsOnCoreThread(
-      devtools::proto::BackgroundService service,
-      GetLoggedBackgroundServiceEventsCallback callback);
-
   void DidGetUserData(
       GetLoggedBackgroundServiceEventsCallback callback,
       const std::vector<std::pair<int64_t, std::string>>& user_data,
       blink::ServiceWorkerStatusCode status);
-
-  void ClearLoggedBackgroundServiceEventsOnCoreThread(
-      devtools::proto::BackgroundService service);
 
   void NotifyEventObservers(
       const devtools::proto::BackgroundServiceEvent& event);
@@ -132,19 +120,13 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
 
   // Maps from the background service to the time up until the events can be
   // recorded. The BackgroundService enum is used as the index.
-  // This should only be updated on the UI thread, but is also
-  // accessed from the service worker core thread.
   std::array<base::Time, devtools::proto::BackgroundService::COUNT>
       expiration_times_;
 
   base::ObserverList<EventObserver> observers_;
 
-  base::WeakPtrFactory<DevToolsBackgroundServicesContextImpl>
-      weak_ptr_factory_ui_{this};
-  base::WeakPtrFactory<DevToolsBackgroundServicesContextImpl>
-      weak_ptr_factory_core_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsBackgroundServicesContextImpl);
+  base::WeakPtrFactory<DevToolsBackgroundServicesContextImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content

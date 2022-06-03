@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/storage/settings_namespace.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace extensions {
 
@@ -29,16 +29,6 @@ std::string ToString(Namespace settings_namespace) {
   }
   NOTREACHED();
   return std::string();
-}
-
-Namespace FromString(const std::string& namespace_string) {
-  if (namespace_string == kLocalNamespace)
-    return LOCAL;
-  if (namespace_string == kSyncNamespace)
-    return SYNC;
-  if (namespace_string == kManagedNamespace)
-    return MANAGED;
-  return INVALID;
 }
 
 }  // namespace settings_namespace

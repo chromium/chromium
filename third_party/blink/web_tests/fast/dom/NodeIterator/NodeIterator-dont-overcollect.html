@@ -1,43 +1,51 @@
 <!DOCTYPE html>
 <html>
 <body>
+<script src="../../../resources/gc.js"></script>
 <script src="../../../resources/js-test.js"></script>
 <script>
-    var callbackWasTriggered = false;
-    var nodeIterator, callbackObservation, nodeFilterObservation,
-        nodeIteratorObservation;
 
-    // Do initialization work in an inner function to avoid references to
-    // objects remaining live on this function's stack frame.
-    // (http://crbug.com/595672/).
-    (function() {
-      var callback = function(node) {
-        callbackWasTriggered = true;
-        return NodeFilter.FILTER_ACCEPT;
-      };
+window.jsTestIsAsync = true;
 
-      nodeIterator = document.createNodeIterator(document,
-          NodeFilter.SHOW_ELEMENT, callback, false);
-      callbackObservation = internals.observeGC(callback);
-      nodeFilterObservation = internals.observeGC(nodeIterator.filter);
-      nodeIteratorObservation = internals.observeGC(nodeIterator);
-    })()
+var callbackWasTriggered = false;
+var nodeIterator, callbackObservation, nodeFilterObservation,
+    nodeIteratorObservation;
 
-    gc();
-    shouldBeFalse('nodeFilterObservation.wasCollected');
-    shouldBeFalse('callbackObservation.wasCollected');
+(async () => {
+  // Do initialization work in an inner function to avoid references to
+  // objects remaining live on this function's stack frame.
+  // (http://crbug.com/595672/).
+  (function() {
+    var callback = function(node) {
+      callbackWasTriggered = true;
+      return NodeFilter.FILTER_ACCEPT;
+    };
 
-    (function() {
-      nodeIterator.nextNode();
-      nodeIterator = null;
-    })();
+    nodeIterator = document.createNodeIterator(document,
+        NodeFilter.SHOW_ELEMENT, callback, false);
+    callbackObservation = internals.observeGC(callback);
+    nodeFilterObservation = internals.observeGC(nodeIterator.filter);
+    nodeIteratorObservation = internals.observeGC(nodeIterator);
+  })()
 
-    shouldBeTrue('callbackWasTriggered');
+  await asyncGC();
+  shouldBeFalse('nodeFilterObservation.wasCollected');
+  shouldBeFalse('callbackObservation.wasCollected');
 
-    gc();
-    shouldBeTrue('nodeIteratorObservation.wasCollected');
-    shouldBeTrue('nodeFilterObservation.wasCollected');
-    shouldBeTrue('callbackObservation.wasCollected');
+  (function() {
+    nodeIterator.nextNode();
+    nodeIterator = null;
+  })();
+
+  shouldBeTrue('callbackWasTriggered');
+
+  await asyncGC();
+  shouldBeTrue('nodeIteratorObservation.wasCollected');
+  shouldBeTrue('nodeFilterObservation.wasCollected');
+  shouldBeTrue('callbackObservation.wasCollected');
+
+  finishJSTest();
+})();
 </script>
 </body>
 </html>

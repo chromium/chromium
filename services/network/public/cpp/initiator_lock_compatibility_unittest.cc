@@ -4,19 +4,21 @@
 
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 
-#include "base/optional.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
 
-TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorSiteLock) {
+TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorOriginLock) {
   url::Origin opaque_origin = url::Origin();
   url::Origin opaque_origin2 = url::Origin();
 
   url::Origin ip_origin1 = url::Origin::Create(GURL("http://127.0.0.1/"));
+  url::Origin ip_origin1_with_different_port =
+      url::Origin::Create(GURL("http://127.0.0.1:1234/"));
   url::Origin ip_origin2 = url::Origin::Create(GURL("http://217.17.45.162/"));
 
   url::Origin example_com = url::Origin::Create(GURL("http://example.com"));
@@ -33,7 +35,7 @@ TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorSiteLock) {
 
   // Cases without a lock.
   EXPECT_EQ(InitiatorLockCompatibility::kNoLock,
-            VerifyRequestInitiatorLock(base::nullopt, base::nullopt));
+            VerifyRequestInitiatorLock(absl::nullopt, absl::nullopt));
 
   // Opaque initiator is always safe (and so results in kCompatibleLock).
   // OTOH, opaque lock is only compatible with an opaque initiator.
@@ -64,21 +66,19 @@ TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorSiteLock) {
   EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
             VerifyRequestInitiatorLock(foo_example_com, bar_example_com));
 
-  // Site-URL-based comparisons.
-  //
-  // TODO(lukasza): These should result in kIncorrectLock eventually (once
-  // request_initiator_site_lock becomes request_initiator_origin_lock - see
-  // https://crbug.com/891872.
-  EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
+  // Site != origin.
+  EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
             VerifyRequestInitiatorLock(example_com, bar_foo_example_com));
-  EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
+  EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
             VerifyRequestInitiatorLock(foo_example_com, bar_foo_example_com));
+  EXPECT_EQ(
+      InitiatorLockCompatibility::kIncorrectLock,
+      VerifyRequestInitiatorLock(ip_origin1, ip_origin1_with_different_port));
 
-  // The trailing dot is not important (at least for site-URL-based
-  // comparisons).
-  EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
+  // The trailing dot.
+  EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
             VerifyRequestInitiatorLock(foo_example_com_dot, foo_example_com));
-  EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
+  EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
             VerifyRequestInitiatorLock(foo_example_com, foo_example_com_dot));
 }
 

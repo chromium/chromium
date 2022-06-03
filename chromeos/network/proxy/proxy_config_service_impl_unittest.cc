@@ -9,8 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
@@ -48,18 +47,14 @@ class TestProxyConfigService : public net::ProxyConfigService {
 
 class ProxyConfigServiceImplTest : public testing::Test {
   void SetUp() override {
-    shill_clients::InitializeFakes();
-    chromeos::NetworkHandler::Initialize();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    // Wait for network initialization events to propagate.
     base::RunLoop().RunUntilIdle();
-  }
-
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
   }
 
  protected:
   base::test::TaskEnvironment environment_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
 // By default, ProxyConfigServiceImpl should ignore the state of the nested

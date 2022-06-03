@@ -27,7 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -54,14 +54,18 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   HTMLTreeBuilder(HTMLDocumentParser*,
                   Document&,
                   ParserContentPolicy,
-                  const HTMLParserOptions&);
+                  const HTMLParserOptions&,
+                  bool include_shadow_roots);
   HTMLTreeBuilder(HTMLDocumentParser*,
                   DocumentFragment*,
                   Element* context_element,
                   ParserContentPolicy,
-                  const HTMLParserOptions&);
+                  const HTMLParserOptions&,
+                  bool include_shadow_roots);
+  HTMLTreeBuilder(const HTMLTreeBuilder&) = delete;
+  HTMLTreeBuilder& operator=(const HTMLTreeBuilder&) = delete;
   ~HTMLTreeBuilder();
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
   const HTMLElementStack* OpenElements() const { return tree_.OpenElements(); }
 
@@ -204,6 +208,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
    public:
     FragmentParsingContext() = default;
+    FragmentParsingContext(const FragmentParsingContext&) = delete;
+    FragmentParsingContext& operator=(const FragmentParsingContext&) = delete;
     void Init(DocumentFragment*, Element* context_element);
 
     DocumentFragment* Fragment() const { return fragment_; }
@@ -216,13 +222,11 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
       return context_element_stack_item_.Get();
     }
 
-    void Trace(Visitor*);
+    void Trace(Visitor*) const;
 
    private:
     Member<DocumentFragment> fragment_;
     Member<HTMLStackItem> context_element_stack_item_;
-
-    DISALLOW_COPY_AND_ASSIGN(FragmentParsingContext);
   };
 
   // https://html.spec.whatwg.org/C/#frameset-ok-flag
@@ -246,6 +250,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   bool should_skip_leading_newline_;
 
+  const bool include_shadow_roots_;
+
   // We access parser because HTML5 spec requires that we be able to change the
   // state of the tokenizer from within parser actions. We also need it to track
   // the current position.
@@ -258,10 +264,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   TextPosition script_to_process_start_position_;
 
   HTMLParserOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLTreeBuilder);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TREE_BUILDER_H_

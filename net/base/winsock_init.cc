@@ -6,8 +6,8 @@
 
 #include "net/base/winsock_init.h"
 
+#include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 
 namespace {
 

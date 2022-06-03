@@ -2,54 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/build.gni")
-import("//third_party/abseil-cpp/abseil_clients.gni")
+import("//third_party/abseil-cpp/absl.gni")
 
-# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
-# adding projects to this list please reach out to cxx@chromium.org and CC:
-# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
-#
-# More information can be found at:
-# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
-if (build_with_chromium) {
-  visibility = absl_visibility
-  visibility += [ "//third_party/openscreen/*" ]
-} else {
-  visibility = [ "*" ]
-}
-
-source_set("random") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  public = [
-    "random.h",
-  ]
+absl_source_set("random") {
+  public = [ "random.h" ]
   deps = [
     ":distributions",
     ":seed_sequences",
-    "../random/internal:nonsecure_base",
-    "../random/internal:pcg_engine",
-    "../random/internal:pool_urbg",
-    "../random/internal:randen_engine",
+    "//third_party/abseil-cpp/absl/random/internal:nonsecure_base",
+    "//third_party/abseil-cpp/absl/random/internal:pcg_engine",
+    "//third_party/abseil-cpp/absl/random/internal:pool_urbg",
+    "//third_party/abseil-cpp/absl/random/internal:randen_engine",
   ]
 }
 
-source_set("distributions") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+absl_source_set("distributions") {
   public = [
     "bernoulli_distribution.h",
     "beta_distribution.h",
     "discrete_distribution.h",
-    "distribution_format_traits.h",
     "distributions.h",
     "exponential_distribution.h",
     "gaussian_distribution.h",
@@ -64,59 +35,51 @@ source_set("distributions") {
     "gaussian_distribution.cc",
   ]
   deps = [
-    "../base:base_internal",
-    "../base:core_headers",
-    "../meta:type_traits",
-    "../random/internal:distribution_impl",
-    "../random/internal:distributions",
-    "../random/internal:fast_uniform_bits",
-    "../random/internal:fastmath",
-    "../random/internal:iostream_state_saver",
-    "../random/internal:traits",
-    "../random/internal:uniform_helper",
-    "../strings",
-    "../types:span",
+    "//third_party/abseil-cpp/absl/base:base_internal",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
+    "//third_party/abseil-cpp/absl/random/internal:distribution_caller",
+    "//third_party/abseil-cpp/absl/random/internal:fast_uniform_bits",
+    "//third_party/abseil-cpp/absl/random/internal:fastmath",
+    "//third_party/abseil-cpp/absl/random/internal:generate_real",
+    "//third_party/abseil-cpp/absl/random/internal:iostream_state_saver",
+    "//third_party/abseil-cpp/absl/random/internal:traits",
+    "//third_party/abseil-cpp/absl/random/internal:uniform_helper",
+    "//third_party/abseil-cpp/absl/random/internal:wide_multiply",
+    "//third_party/abseil-cpp/absl/strings",
   ]
 }
 
-source_set("seed_gen_exception") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  public = [
-    "seed_gen_exception.h",
-  ]
-  sources = [
-    "seed_gen_exception.cc",
-  ]
-  deps = [
-    "../base:config",
-  ]
+absl_source_set("seed_gen_exception") {
+  public = [ "seed_gen_exception.h" ]
+  sources = [ "seed_gen_exception.cc" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
-source_set("seed_sequences") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  public = [
-    "seed_sequences.h",
-  ]
-  sources = [
-    "seed_sequences.cc",
-  ]
+absl_source_set("seed_sequences") {
+  public = [ "seed_sequences.h" ]
+  sources = [ "seed_sequences.cc" ]
   deps = [
     ":seed_gen_exception",
-    "../container:inlined_vector",
-    "../random/internal:nonsecure_base",
-    "../random/internal:pool_urbg",
-    "../random/internal:salted_seed_seq",
-    "../random/internal:seed_material",
-    "../types:span",
+    "//third_party/abseil-cpp/absl/container:inlined_vector",
+    "//third_party/abseil-cpp/absl/random/internal:nonsecure_base",
+    "//third_party/abseil-cpp/absl/random/internal:pool_urbg",
+    "//third_party/abseil-cpp/absl/random/internal:salted_seed_seq",
+    "//third_party/abseil-cpp/absl/random/internal:seed_material",
+    "//third_party/abseil-cpp/absl/types:span",
+  ]
+}
+
+absl_source_set("bit_gen_ref") {
+  public = [ "bit_gen_ref.h" ]
+  deps = [
+    ":random",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:fast_type_id",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/random/internal:distribution_caller",
+    "//third_party/abseil-cpp/absl/random/internal:fast_uniform_bits",
   ]
 }

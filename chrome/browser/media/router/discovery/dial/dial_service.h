@@ -10,9 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_address.h"
 #include "net/socket/udp_socket.h"
@@ -97,6 +95,10 @@ class DialService {
 class DialServiceImpl : public DialService {
  public:
   explicit DialServiceImpl(net::NetLog* net_log);
+
+  DialServiceImpl(const DialServiceImpl&) = delete;
+  DialServiceImpl& operator=(const DialServiceImpl&) = delete;
+
   ~DialServiceImpl() override;
 
   // DialService implementation
@@ -108,13 +110,17 @@ class DialServiceImpl : public DialService {
  private:
   friend void PostSendNetworkList(
       base::WeakPtr<DialServiceImpl> impl,
-      const base::Optional<net::NetworkInterfaceList>& networks);
+      const absl::optional<net::NetworkInterfaceList>& networks);
 
   // Represents a socket binding to a single network interface.
   // DialSocket lives on the IO thread.
   class DialSocket {
    public:
     explicit DialSocket(DialServiceImpl* dial_service);
+
+    DialSocket(const DialSocket&) = delete;
+    DialSocket& operator=(const DialSocket&) = delete;
+
     ~DialSocket();
 
     // Creates a socket using |net_log| and binds it to |bind_ip_address|.
@@ -182,8 +188,6 @@ class DialServiceImpl : public DialService {
 
     // Pointer to the DialServiceImpl that owns this socket.
     DialServiceImpl* const dial_service_;
-
-    DISALLOW_COPY_AND_ASSIGN(DialSocket);
   };
 
   // Starts the control flow for one discovery cycle.
@@ -191,7 +195,7 @@ class DialServiceImpl : public DialService {
 
   // For each network interface in |list|, finds all unqiue IPv4 network
   // interfaces and call |DiscoverOnAddresses()| with their IP addresses.
-  void SendNetworkList(const base::Optional<net::NetworkInterfaceList>& list);
+  void SendNetworkList(const absl::optional<net::NetworkInterfaceList>& list);
 
   // Calls |BindAndAddSocket()| for each address in |ip_addresses|, calls
   // |SendOneRequest()|, and start the timer to finish discovery if needed.
@@ -264,8 +268,6 @@ class DialServiceImpl : public DialService {
   // List of observers.
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  base::CancelableTaskTracker task_tracker_;
-
   // WeakPtrFactory for WeakPtrs that are invalidated on IO thread.
   base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_{this};
 
@@ -277,7 +279,6 @@ class DialServiceImpl : public DialService {
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestOnDiscoveryFinished);
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestOnDiscoveryRequest);
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestResponseParsing);
-  DISALLOW_COPY_AND_ASSIGN(DialServiceImpl);
 };
 
 }  // namespace media_router

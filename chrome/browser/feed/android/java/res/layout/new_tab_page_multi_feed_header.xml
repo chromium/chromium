@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.feed.sections.SectionHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp" >
+  <LinearLayout
+      android:id="@+id/main_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="@dimen/snippets_article_header_height"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:layoutDirection="locale"
+      android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2" >
+
+    <!-- Null content description for now because UX in flux. -->
+    <ImageView
+        android:id="@+id/status_indicator"
+        android:layout_width="@dimen/feed_header_icon_size"
+        android:layout_height="@dimen/feed_header_icon_size"
+        android:src="@drawable/ic_visibility_off_black"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        android:layout_marginEnd="@dimen/feed_header_icon_margin"
+        app:tint="?attr/default_icon_color_disabled"
+        tools:ignore="contentDescription" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_list_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/feed_header_height"
+        android:layout_weight="1"
+        style="@style/NtpHeaderTabLayoutStyle" />
+
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:visibility="gone" />
+
+    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+        android:id="@+id/header_menu"
+        android:layout_width="@dimen/feed_header_icon_size"
+        android:layout_height="@dimen/feed_header_height"
+        android:scaleType="centerInside"
+        android:layout_marginStart="@dimen/feed_header_icon_margin"
+        android:background="@null"
+        android:src="@drawable/ic_settings_gear_24dp"
+        android:contentDescription="@string/accessibility_ntp_feed_menu_button"
+        app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+        app:tint="@null" />
+  </LinearLayout>
+
+  <include layout="@layout/horizontal_divider" />
+
+  <FrameLayout
+      android:id="@+id/options_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2"
+      android:background="@color/default_bg_color_elev_1"
+      android:visibility="gone" />
+
+</org.chromium.chrome.browser.feed.sections.SectionHeaderView>

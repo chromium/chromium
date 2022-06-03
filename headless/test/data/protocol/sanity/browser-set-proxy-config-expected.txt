@@ -1,0 +1,5 @@
+Tests that headless session can configure proxy.
+
+No proxy: Page with body
+Proxied to itself: Page with body
+Proxied to another server: Hello headless world!

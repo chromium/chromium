@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/screens/packaged_license_screen.h"
+#include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 

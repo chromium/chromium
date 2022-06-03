@@ -15,7 +15,7 @@
         android:divider="@null"
         android:dividerHeight="0dp" />
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height_no_shadow"
@@ -24,7 +24,7 @@
     <View
         android:id="@+id/shadow"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/selectable_list_toolbar_shadow_height"
+        android:layout_height="@dimen/bookmark_dialog_toolbar_shadow_height"
         android:layout_marginTop="@dimen/toolbar_height_no_shadow"
         android:background="@drawable/bookmark_title_bar_shadow"
         android:visibility="gone" />

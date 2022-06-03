@@ -7,14 +7,12 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
+class ChromeBrowserState;
+
 namespace bookmarks {
 class BookmarkNode;
 class BookmarkModel;
 }
-
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
 
 @class CSSearchableItem;
 @class TopSitesSpotlightManager;
@@ -32,7 +30,7 @@ class ChromeBrowserState;
 @property(nonatomic, weak) id<BookmarkUpdatedDelegate> delegate;
 
 + (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:
-    (ios::ChromeBrowserState*)browserState;
+    (ChromeBrowserState*)browserState;
 
 // Checks the date of the latest global indexation and reindex all bookmarks if
 // needed.

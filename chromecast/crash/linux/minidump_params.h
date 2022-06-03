@@ -20,7 +20,10 @@ struct MinidumpParams {
                  const std::string& p_last_app_name,
                  const std::string& p_cast_release_version,
                  const std::string& p_cast_build_number,
-                 const std::string& p_reason);
+                 const std::string& p_reason,
+                 const std::string& p_stadia_session_id,
+                 const std::string& p_extra_info = "",
+                 const std::string& p_exec_name = "");
   MinidumpParams(const MinidumpParams& params);
   ~MinidumpParams();
 
@@ -35,6 +38,10 @@ struct MinidumpParams {
   std::string cast_build_number;
   // Reason for crash, if one is available.
   std::string reason;
+  // Stadia Session ID, if a Stadia session was running at the time of crash.
+  std::string stadia_session_id;
+  std::string extra_info;
+  std::string exec_name;
 };
 
 }  // namespace chromecast

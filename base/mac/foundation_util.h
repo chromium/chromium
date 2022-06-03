@@ -9,7 +9,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <string>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/logging.h"
@@ -34,36 +33,18 @@ class UIFont;
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-// Adapted from NSObjCRuntime.h NS_ENUM definition (used in Foundation starting
-// with the OS X 10.8 SDK and the iOS 6.0 SDK).
-#if __has_extension(cxx_strong_enums) && \
-    (defined(OS_IOS) || (defined(MAC_OS_X_VERSION_10_8) && \
-                         MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_8))
-#define CR_FORWARD_ENUM(_type, _name) enum _name : _type _name
-#else
-#define CR_FORWARD_ENUM(_type, _name) _type _name
-#endif
-
 // Adapted from NSPathUtilities.h and NSObjCRuntime.h.
 #if __LP64__ || NS_BUILD_32_LIKE_64
-typedef CR_FORWARD_ENUM(unsigned long, NSSearchPathDirectory);
+enum NSSearchPathDirectory : unsigned long;
 typedef unsigned long NSSearchPathDomainMask;
 #else
-typedef CR_FORWARD_ENUM(unsigned int, NSSearchPathDirectory);
+enum NSSearchPathDirectory : unsigned int;
 typedef unsigned int NSSearchPathDomainMask;
 #endif
 
-#if defined(OS_IOS) ||                  \
-    (defined(MAC_OS_X_VERSION_10_15) && \
-     MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_15)
 typedef struct CF_BRIDGED_TYPE(id) __SecCertificate* SecCertificateRef;
 typedef struct CF_BRIDGED_TYPE(id) __SecKey* SecKeyRef;
 typedef struct CF_BRIDGED_TYPE(id) __SecPolicy* SecPolicyRef;
-#else
-typedef struct OpaqueSecCertificateRef* SecCertificateRef;
-typedef struct OpaqueSecKeyRef* SecKeyRef;
-typedef struct OpaqueSecPolicyRef* SecPolicyRef;
-#endif
 
 namespace base {
 

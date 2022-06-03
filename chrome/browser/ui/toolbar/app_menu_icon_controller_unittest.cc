@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 
-#include "base/macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -29,8 +28,8 @@ class MockAppMenuIconControllerDelegate
  public:
   MOCK_METHOD1(UpdateTypeAndSeverity,
                void(AppMenuIconController::TypeAndSeverity type_and_severity));
-  MOCK_CONST_METHOD0(GetViewThemeProvider, const ui::ThemeProvider*());
-  MOCK_METHOD0(GetViewNativeTheme, ui::NativeTheme*());
+  MOCK_CONST_METHOD1(GetDefaultColorForSeverity,
+                     SkColor(AppMenuIconController::Severity severity));
 };
 
 // A fake upgrade detector that can broadcast an annoyance level change to its
@@ -41,33 +40,24 @@ class FakeUpgradeDetector : public UpgradeDetector {
       : UpgradeDetector(base::DefaultClock::GetInstance(),
                         base::DefaultTickClock::GetInstance()) {}
 
+  FakeUpgradeDetector(const FakeUpgradeDetector&) = delete;
+  FakeUpgradeDetector& operator=(const FakeUpgradeDetector&) = delete;
+
   void BroadcastLevel(UpgradeNotificationAnnoyanceLevel level) {
     set_upgrade_notification_stage(level);
     NotifyUpgrade();
   }
 
   // UpgradeDetector:
-  base::TimeDelta GetHighAnnoyanceLevelDelta() override;
-  base::Time GetHighAnnoyanceDeadline() override;
-
- private:
-  // UpgradeDetector:
-  void OnRelaunchNotificationPeriodPrefChanged() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpgradeDetector);
+  base::Time GetAnnoyanceLevelDeadline(
+      UpgradeNotificationAnnoyanceLevel level) override;
 };
 
-base::TimeDelta FakeUpgradeDetector::GetHighAnnoyanceLevelDelta() {
-  // This value is not important for this test.
-  return base::TimeDelta();
-}
-
-base::Time FakeUpgradeDetector::GetHighAnnoyanceDeadline() {
+base::Time FakeUpgradeDetector::GetAnnoyanceLevelDeadline(
+    UpgradeNotificationAnnoyanceLevel level) {
   // This value is not important for this test.
   return base::Time();
 }
-
-void FakeUpgradeDetector::OnRelaunchNotificationPeriodPrefChanged() {}
 
 }  // namespace
 
@@ -89,6 +79,11 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 #endif
   {
   }
+
+  AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
+  AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
+      delete;
+
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
   Profile* profile() { return &profile_; }
 
@@ -120,8 +115,6 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
   FakeUpgradeDetector upgrade_detector_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuIconControllerTest);
 };
 
 // Tests that the controller's delegate is notified with the proper icon type
@@ -140,7 +133,7 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
                     AppMenuIconController::IconType::NONE,
                     AppMenuIconController::Severity::NONE}))
-        .Times(4);
+        .Times(5);
   } else if (IsUnstableChannel()) {
     // For dev and canary channels, the upgrade notification should be sent out
     // at a low level for every annoyance level.
@@ -148,11 +141,12 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
                     AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
                     AppMenuIconController::Severity::LOW}))
-        .Times(4);
+        .Times(5);
   } else {
     // For stable and beta channels, the "none" type and severity should be sent
     // for the "very low" annoyance level, and the ordinary corresponding
-    // severity for each other annoyance level.
+    // severity for each other annoyance level ("high" is reported for both the
+    // "grace" and "high" annoyance levels).
     EXPECT_CALL(mock_delegate,
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
                     AppMenuIconController::IconType::NONE,
@@ -168,7 +162,8 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
     EXPECT_CALL(mock_delegate,
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
                     AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                    AppMenuIconController::Severity::HIGH}));
+                    AppMenuIconController::Severity::HIGH}))
+        .Times(2);
   }
   EXPECT_CALL(mock_delegate,
               UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
@@ -178,6 +173,7 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_LOW);
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
+  BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_GRACE);
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_NONE);
 }

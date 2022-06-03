@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests how debugger presents special properties of closures, bound functions and object wrappers.`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       console.dir(Object(true));
@@ -16,8 +16,8 @@
 
   ConsoleTestRunner.expandConsoleMessages(dumpConsoleMessages);
 
-  function dumpConsoleMessages() {
-    ConsoleTestRunner.dumpConsoleMessages(
+  async function dumpConsoleMessages() {
+    await ConsoleTestRunner.dumpConsoleMessages(
         false, false, TestRunner.textContentWithLineBreaks);
     TestRunner.completeTest();
   }

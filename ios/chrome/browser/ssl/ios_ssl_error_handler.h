@@ -8,9 +8,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "components/captive_portal/captive_portal_detector.h"
-#include "components/captive_portal/captive_portal_types.h"
-#include "ios/chrome/browser/interstitials/ios_security_interstitial_page.h"
+#include "components/captive_portal/core/captive_portal_detector.h"
+#include "components/captive_portal/core/captive_portal_types.h"
+#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
@@ -40,8 +40,11 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       const GURL& request_url,
       bool overridable,
       int64_t navigation_id,
-      base::OnceCallback<void(bool)> callback,
       base::OnceCallback<void(NSString*)> blocking_page_callback);
+
+  IOSSSLErrorHandler(const IOSSSLErrorHandler&) = delete;
+  IOSSSLErrorHandler& operator=(const IOSSSLErrorHandler&) = delete;
+
   ~IOSSSLErrorHandler() override;
 
  private:
@@ -63,7 +66,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       const GURL& request_url,
       bool overridable,
       int64_t navigation_id,
-      base::OnceCallback<void(bool)> callback,
       base::OnceCallback<void(NSString*)> blocking_page_callback);
 
   // Begins captive portal detection to determine which interstitial should be
@@ -100,10 +102,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
   const bool overridable_ = false;
   // The id of the navigation.
   const int64_t navigation_id_ = 0;
-  // The callback to run after the user is done interacting with this
-  // interstitial. |proceed| will be true if the user wants to procced with the
-  // page load of |request_url_|, false otherwise.
-  base::OnceCallback<void(bool proceed)> callback_;
   // The callback to run for showing a committed interstitial.
   base::OnceCallback<void(NSString*)> blocking_page_callback_;
   // A timer to display the SSL interstitial if the captive portal detection
@@ -113,8 +111,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
   base::WeakPtrFactory<IOSSSLErrorHandler> weak_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSSSLErrorHandler);
 };
 
 #endif  // IOS_CHROME_BROWSER_SSL_IOS_SSL_ERROR_HANDLER_H_

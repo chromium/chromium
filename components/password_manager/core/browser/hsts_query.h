@@ -7,13 +7,15 @@
 
 #include "base/callback_forward.h"
 
-class GURL;
-
 namespace network {
 namespace mojom {
 class NetworkContext;
 }
 }  // namespace network
+
+namespace url {
+class Origin;
+}
 
 namespace password_manager {
 
@@ -27,7 +29,7 @@ using HSTSCallback = base::OnceCallback<void(HSTSResult)>;
 // thread the network context lives on (in things based on content/ the UI
 // thread).
 void PostHSTSQueryForHostAndNetworkContext(
-    const GURL& origin,
+    const url::Origin& origin,
     network::mojom::NetworkContext* network_context,
     HSTSCallback callback);
 

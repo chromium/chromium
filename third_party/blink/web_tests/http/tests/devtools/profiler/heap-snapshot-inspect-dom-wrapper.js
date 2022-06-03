@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that resolving heap snapshot object to a JS object will not crash on DOM wrapper boilerplate. Test passes if it doesn't crash.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
   await TestRunner.evaluateInPagePromise(`
       // Make sure there is a body wrapper.
@@ -14,8 +14,8 @@
 
   var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
   heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
-  TestRunner.addSniffer(heapProfileType, '_snapshotReceived', snapshotReceived);
-  heapProfileType._takeHeapSnapshot();
+  TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
+  heapProfileType.takeHeapSnapshot();
 
   function finishHeapSnapshot(uid) {
     TestRunner.addResult('PASS: snapshot was taken');
@@ -33,8 +33,8 @@
 
   async function snapshotReceived(profile) {
     TestRunner.addResult('PASS: snapshot was received');
-    var snapshotProxy = profile._snapshotProxy;
-    var bodyWrapperIds = await snapshotProxy._callMethodPromise('idsOfObjectsWithName', 'HTMLBodyElement');
+    var snapshotProxy = profile.snapshotProxy;
+    var bodyWrapperIds = await snapshotProxy.callMethodPromise('idsOfObjectsWithName', 'HTMLBodyElement');
 
     if (bodyWrapperIds.length < 3)
       return clear('FAILED: less than 3 HTMLBodyElement objects were detected');
@@ -63,7 +63,7 @@
     if (errorMessage)
       TestRunner.addResult(errorMessage);
     setTimeout(done, 0);
-    UI.panels.heap_profiler._reset();
+    UI.panels.heap_profiler.reset();
     return !errorMessage;
   }
 

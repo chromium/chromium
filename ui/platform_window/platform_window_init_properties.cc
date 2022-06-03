@@ -9,8 +9,11 @@ namespace ui {
 PlatformWindowInitProperties::PlatformWindowInitProperties() = default;
 
 PlatformWindowInitProperties::PlatformWindowInitProperties(
-    const gfx::Rect& bounds)
-    : bounds(bounds) {}
+    const gfx::Rect& bounds,
+    bool to_enable_compositing_based_throttling)
+    : bounds(bounds),
+      enable_compositing_based_throttling(
+          to_enable_compositing_based_throttling) {}
 
 PlatformWindowInitProperties::PlatformWindowInitProperties(
     PlatformWindowInitProperties&& props) = default;

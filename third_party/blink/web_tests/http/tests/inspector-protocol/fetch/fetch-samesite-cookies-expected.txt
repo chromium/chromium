@@ -1,0 +1,59 @@
+Tests that fetch exposes cookies according to SameSite rules.
+Request to https://setcookies.a.test/, type: Document
+Request to https://subdomain.a.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies after same-site navigation:
+StrictCookie=1; LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://b.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies after cross-site navigation:
+LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://subdomain.a.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for same-site iframe:
+StrictCookie=1; LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://b.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for cross-site iframe:
+NoneCookie=1
+Request to https://subdomain.a.test/, type: Document
+Request to https://redirect.a.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for same-site initiated same-site redirect:
+StrictCookie=1; LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://subdomain.a.test/, type: Document
+Request to https://redirect.b.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for same-site initiated cross-site redirect:
+LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://b.test/, type: Document
+Request to https://redirect.a.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for cross-site initiated same-site redirect:
+LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://b.test/, type: Document
+Request to https://redirect.b.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for cross-site initiated cross-site redirect:
+LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://subdomain.a.test/, type: Document
+Request to https://redirect.a.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for same-site embedded same-site redirect:
+StrictCookie=1; LaxCookie=1; NoneCookie=1; UnspecifiedCookie=1
+Request to https://subdomain.a.test/, type: Document
+Request to https://redirect.b.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for same-site embedded cross-site redirect:
+NoneCookie=1
+Request to https://b.test/, type: Document
+Request to https://redirect.a.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for cross-site embedded same-site redirect:
+NoneCookie=1
+Request to https://b.test/, type: Document
+Request to https://redirect.b.test/, type: Document
+Request to https://a.test/, type: Document
+Cookies for cross-site embedded cross-site redirect:
+NoneCookie=1
+

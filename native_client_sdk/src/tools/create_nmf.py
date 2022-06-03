@@ -132,7 +132,7 @@ def ParseElfHeader(path):
   """Wrap elf.ParseElfHeader to return raise this module's Error on failure."""
   try:
     return elf.ParseElfHeader(path)
-  except elf.Error, e:
+  except elf.Error as e:
     raise Error(str(e))
 
 
@@ -248,14 +248,14 @@ class NmfUtils(object):
                                             self.lib_path)
     except get_shared_deps.NoObjdumpError:
       raise Error('No objdump executable found (see --help for more info)')
-    except get_shared_deps.Error, e:
+    except get_shared_deps.Error as e:
       raise Error(str(e))
 
     self.needed = {}
 
     # all_files is a dictionary mapping filename to architecture. self.needed
     # should be a dictionary of filename to ArchFile.
-    for filename, arch in all_files.iteritems():
+    for filename, arch in all_files.items():
       name = os.path.basename(filename)
       self.needed[filename] = ArchFile(name=name, path=filename, arch=arch)
 
@@ -286,7 +286,7 @@ class NmfUtils(object):
         main_dir = ''
       arch_to_main_dir[arch] = main_dir
 
-    for arch_file in self.needed.itervalues():
+    for arch_file in self.needed.values():
       prefix = ''
       if DirectoryTreeContainsFile(self.nmf_root, arch_file.path):
         # This file is already in the nmf_root tree, so it does not need to be
@@ -317,7 +317,7 @@ class NmfUtils(object):
       destination_dir: The destination directory for staging the dependencies
     """
     assert self.needed is not None
-    for arch_file in self.needed.itervalues():
+    for arch_file in self.needed.values():
       source = arch_file.path
       destination = os.path.join(destination_dir, arch_file.url)
 
@@ -377,7 +377,7 @@ class NmfUtils(object):
                                      url=url))
                       for key, arch, url in self.extra_files]
 
-    manifest_items = needed.items() + extra_files_kv
+    manifest_items = list(needed.items()) + extra_files_kv
 
     # Add dynamic loader to the program section.
     for need, archinfo in manifest_items:
@@ -703,7 +703,7 @@ def main(args):
 if __name__ == '__main__':
   try:
     rtn = main(sys.argv[1:])
-  except Error, e:
+  except Error as e:
     sys.stderr.write('%s: %s\n' % (os.path.basename(__file__), e))
     rtn = 1
   except KeyboardInterrupt:

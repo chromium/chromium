@@ -11,12 +11,12 @@
       function test() {
         // The factors are the same as those in Chrome settings.
         var zoomFactors = [1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5];
-        if (!window.eventSender)
+        if (!window.testRunner)
           return;
 
         for (i = 0; i < zoomFactors.length; ++i) {
           var output = document.getElementById('output');
-          eventSender.setPageZoomFactor(zoomFactors[i]);
+          testRunner.setPageZoomFactor(zoomFactors[i]);
           if (document.images[0].height == 10)
             output.innerHTML += "PASS: zoom " + Math.round(zoomFactors[i] * 100) + "%<br>";
           else

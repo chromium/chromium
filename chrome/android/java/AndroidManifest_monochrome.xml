@@ -8,7 +8,7 @@
 ## Note: This is a jinja2 template, processed at build time into the final manifest.
 ##
 
-{% block application_name %}org.chromium.chrome.browser.MonochromeApplication{% endblock %}
+{% block application_name %}org.chromium.chrome.browser.base.SplitMonochromeApplication{% endblock %}
 
 ##
 ## The below is same as internal version, it seems that jinja doesn't have
@@ -26,7 +26,7 @@ android:extractNativeLibs="false"
   <!-- No keyset definitions should exist for any monochrome apks -->
 {% endblock %}
 
-{% block extra_application_definitions %}
+{% block base_application_definitions %}
 {{ super() }}
 {{ webview.common(manifest_package, webview_library) }}
 {% endblock %}

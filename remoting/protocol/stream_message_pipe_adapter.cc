@@ -21,8 +21,8 @@ namespace protocol {
 
 StreamMessagePipeAdapter::StreamMessagePipeAdapter(
     std::unique_ptr<P2PStreamSocket> socket,
-    const ErrorCallback& error_callback)
-    : socket_(std::move(socket)), error_callback_(error_callback) {
+    ErrorCallback error_callback)
+    : socket_(std::move(socket)), error_callback_(std::move(error_callback)) {
   DCHECK(socket_);
   DCHECK(error_callback_);
 }
@@ -34,17 +34,17 @@ void StreamMessagePipeAdapter::Start(EventHandler* event_handler) {
   event_handler_ = event_handler;
 
   writer_ = std::make_unique<BufferedSocketWriter>();
-  writer_->Start(
-      base::Bind(&P2PStreamSocket::Write, base::Unretained(socket_.get())),
-      base::Bind(&StreamMessagePipeAdapter::CloseOnError,
-                 base::Unretained(this)));
+  writer_->Start(base::BindRepeating(&P2PStreamSocket::Write,
+                                     base::Unretained(socket_.get())),
+                 base::BindOnce(&StreamMessagePipeAdapter::CloseOnError,
+                                base::Unretained(this)));
 
   reader_ = std::make_unique<MessageReader>();
   reader_->StartReading(socket_.get(),
-                        base::Bind(&EventHandler::OnMessageReceived,
-                                   base::Unretained(event_handler_)),
-                        base::Bind(&StreamMessagePipeAdapter::CloseOnError,
-                                   base::Unretained(this)));
+                        base::BindRepeating(&EventHandler::OnMessageReceived,
+                                            base::Unretained(event_handler_)),
+                        base::BindOnce(&StreamMessagePipeAdapter::CloseOnError,
+                                       base::Unretained(this)));
 
   event_handler_->OnMessagePipeOpen();
 }
@@ -54,7 +54,7 @@ void StreamMessagePipeAdapter::Send(google::protobuf::MessageLite* message,
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("stream_message_pipe_adapter", R"(
         semantics {
-          sender: "Stream Message Pipe Adapter"
+          sender: "Chrome Remote Desktop"
           description: "Chrome Remote Desktop P2P channel."
           trigger: "Initiating a Chrome Remote Desktop connection."
           data:
@@ -104,10 +104,11 @@ StreamMessageChannelFactoryAdapter::~StreamMessageChannelFactoryAdapter() =
 
 void StreamMessageChannelFactoryAdapter::CreateChannel(
     const std::string& name,
-    const ChannelCreatedCallback& callback) {
+    ChannelCreatedCallback callback) {
   stream_channel_factory_->CreateChannel(
-      name, base::Bind(&StreamMessageChannelFactoryAdapter::OnChannelCreated,
-                       base::Unretained(this), callback));
+      name,
+      base::BindOnce(&StreamMessageChannelFactoryAdapter::OnChannelCreated,
+                     base::Unretained(this), std::move(callback)));
 }
 
 void StreamMessageChannelFactoryAdapter::CancelChannelCreation(
@@ -116,14 +117,14 @@ void StreamMessageChannelFactoryAdapter::CancelChannelCreation(
 }
 
 void StreamMessageChannelFactoryAdapter::OnChannelCreated(
-    const ChannelCreatedCallback& callback,
+    ChannelCreatedCallback callback,
     std::unique_ptr<P2PStreamSocket> socket) {
   if (!socket) {
     error_callback_.Run(net::ERR_FAILED);
     return;
   }
-  callback.Run(std::make_unique<StreamMessagePipeAdapter>(std::move(socket),
-                                                          error_callback_));
+  std::move(callback).Run(std::make_unique<StreamMessagePipeAdapter>(
+      std::move(socket), error_callback_));
 }
 
 }  // namespace protocol

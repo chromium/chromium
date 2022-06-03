@@ -4,7 +4,6 @@
 
 #include "chrome/browser/resource_coordinator/tab_manager_resource_coordinator_signal_observer.h"
 
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
@@ -23,9 +22,8 @@ namespace resource_coordinator {
 // and can't be forward declared.
 class TabManagerResourceCoordinatorSignalObserverHelper {
  public:
-  static void OnPageAlmostIdle(content::WebContents* web_contents) {
-    // This object is create on demand, so always exists.
-    TabLoadTracker::Get()->OnPageAlmostIdle(web_contents);
+  static void OnPageStoppedLoading(content::WebContents* web_contents) {
+    TabLoadTracker::Get()->OnPageStoppedLoading(web_contents);
   }
 };
 
@@ -37,33 +35,13 @@ TabManager::ResourceCoordinatorSignalObserver::
 TabManager::ResourceCoordinatorSignalObserver::
     ~ResourceCoordinatorSignalObserver() = default;
 
-void TabManager::ResourceCoordinatorSignalObserver::OnPageAlmostIdleChanged(
+void TabManager::ResourceCoordinatorSignalObserver::OnLoadingStateChanged(
     const PageNode* page_node) {
-  // Only notify of changes to almost idle.
-  if (!page_node->IsPageAlmostIdle())
-    return;
-  // Forward the notification over to the UI thread.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&OnPageAlmostIdleOnUi, tab_manager_,
-                                page_node->GetContentsProxy(),
-                                page_node->GetNavigationID()));
-}
-
-void TabManager::ResourceCoordinatorSignalObserver::
-    OnExpectedTaskQueueingDurationSample(const ProcessNode* process_node) {
-  // Report this measurement to all pages that are hosting a main frame in
-  // the process that was sampled.
-  const base::TimeDelta& duration =
-      process_node->GetExpectedTaskQueueingDuration();
-  auto associated_page_nodes =
-      performance_manager::GraphOperations::GetAssociatedPageNodes(
-          process_node);
-  for (auto* page_node : associated_page_nodes) {
-    // Forward the notification over to the UI thread.
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   base::BindOnce(&OnExpectedTaskQueueingDurationSampleOnUi,
-                                  tab_manager_, page_node->GetContentsProxy(),
-                                  page_node->GetNavigationID(), duration));
+  // Forward the notification over to the UI thread when the page stops loading.
+  if (page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&OnPageStoppedLoadingOnUi,
+                                  page_node->GetContentsProxy()));
   }
 }
 
@@ -94,32 +72,12 @@ TabManager::ResourceCoordinatorSignalObserver::GetContentsForDispatch(
 }
 
 // static
-void TabManager::ResourceCoordinatorSignalObserver::OnPageAlmostIdleOnUi(
-    const base::WeakPtr<TabManager>& tab_manager,
-    const WebContentsProxy& contents_proxy,
-    int64_t navigation_id) {
+void TabManager::ResourceCoordinatorSignalObserver::OnPageStoppedLoadingOnUi(
+    const WebContentsProxy& contents_proxy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (auto* contents =
-          GetContentsForDispatch(tab_manager, contents_proxy, navigation_id)) {
-    TabManagerResourceCoordinatorSignalObserverHelper::OnPageAlmostIdle(
+  if (auto* contents = contents_proxy.Get()) {
+    TabManagerResourceCoordinatorSignalObserverHelper::OnPageStoppedLoading(
         contents);
-  }
-}
-
-// static
-void TabManager::ResourceCoordinatorSignalObserver::
-    OnExpectedTaskQueueingDurationSampleOnUi(
-        const base::WeakPtr<TabManager>& tab_manager,
-        const WebContentsProxy& contents_proxy,
-        int64_t navigation_id,
-        base::TimeDelta duration) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (auto* contents =
-          GetContentsForDispatch(tab_manager, contents_proxy, navigation_id)) {
-    // This object is create on demand, so always exists.
-    g_browser_process->GetTabManager()
-        ->stats_collector()
-        ->RecordExpectedTaskQueueingDuration(contents, duration);
   }
 }
 

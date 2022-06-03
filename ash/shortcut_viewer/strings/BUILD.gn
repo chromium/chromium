@@ -1,0 +1,14 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
+
+grit("strings") {
+  source = "../shortcut_viewer_strings.grd"
+  outputs = [ "grit/shortcut_viewer_strings.h" ] +
+            process_file_template(
+                locales_with_pseudolocales,
+                [ "shortcut_viewer_strings_{{source_name_part}}.pak" ])
+}

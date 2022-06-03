@@ -1,0 +1,37 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [ 0 0 200 200 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Author (Chromium Authors)
+  /CreationDate (D:20200205153912+00'00' )
+  /Creator (Your Preferred Text Editor)
+  /Keywords (testing,chromium,pdfium,document,info)
+  /ModDate (D:20200206094234+00'00')
+  /Producer (fixup_pdf_template.py)
+  /Subject (Testing)
+  /Title (   Sample PDF Document Info   )
+>>
+endobj
+{{xref}}
+trailer <<
+  /Info 4 0 R
+  /Root 1 0 R
+  {{trailersize}}
+>>
+{{startxref}}
+%%EOF

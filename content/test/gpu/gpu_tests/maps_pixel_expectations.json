@@ -15,10 +15,6 @@
         "scale_factor": 1.47436
       },
       {
-        "device_type": "Nexus 6P",
-        "scale_factor": 1.472
-      },
-      {
         "device_type": "Nexus 9",
         "scale_factor": 1.566
       },
@@ -26,37 +22,46 @@
         "comment": "NVIDIA Shield",
         "device_type": "sb_na_wf",
         "scale_factor": 1.226
+      },
+      {
+        "device_type": "Pixel 2",
+        "scale_factor": 1.1067
+      },
+      {
+        "device_type": "Pixel 4",
+        "scale_factor": 1.1025
       }
     ]
   },
   {
     "comment": "light green",
-    "location": [ 43, 247 ],
+    "location": [ 35, 239 ],
     "size": [ 1, 1 ],
     "color": [ 214, 232, 186 ]
   },
   {
     "comment": "darker green",
-    "location": [ 326, 111 ],
+    "location": [ 318, 103 ],
     "size": [ 1, 1 ],
     "color": [ 203, 230, 163 ]
   },
   {
     "comment": "blue lake",
-    "location": [ 593, 393 ],
+    "location": [ 585, 385 ],
     "size": [ 1, 1 ],
     "color": [ 163, 205, 255 ]
   },
   {
     "comment": "gray",
-    "location": [ 95, 117 ],
+    "location": [ 87, 109 ],
     "size": [ 1, 1 ],
     "color": [ 232, 232, 232 ]
   },
   {
     "comment": "tan",
-    "location": [ 344, 263 ],
+    "location": [ 336, 255 ],
     "size": [ 1, 1 ],
     "color": [ 240, 237, 230 ]
   }
 ]
+

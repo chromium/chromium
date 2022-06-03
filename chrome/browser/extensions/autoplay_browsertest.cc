@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/extensions/browser_action_test_util.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/test/result_catcher.h"
@@ -28,20 +31,30 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowed) {
   ASSERT_TRUE(RunExtensionTest("autoplay")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowedInIframe) {
+// TODO(crbug.com/1166927): AutoplayAllowedInIframe sporadically (~10%?) times
+// out on Linux.
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AutoplayAllowedInIframe DISABLED_AutoplayAllowedInIframe
+#else
+#define MAYBE_AutoplayAllowedInIframe AutoplayAllowedInIframe
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
+                       MAYBE_AutoplayAllowedInIframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("autoplay_iframe"));
   ASSERT_TRUE(extension) << message_;
 
-  std::unique_ptr<BrowserActionTestUtil> browser_action_test_util =
-      BrowserActionTestUtil::Create(browser());
+  std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util =
+      ExtensionActionTestHelper::Create(browser());
   extensions::ResultCatcher catcher;
   content::WindowedNotificationObserver popup_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  browser_action_test_util->Press(0);
+  browser_action_test_util->Press(extension->id());
   popup_observer.Wait();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

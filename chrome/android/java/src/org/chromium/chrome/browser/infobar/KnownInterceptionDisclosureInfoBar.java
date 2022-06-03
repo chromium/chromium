@@ -9,7 +9,8 @@ import android.graphics.Bitmap;
 import androidx.annotation.ColorRes;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.ResourceId;
+import org.chromium.components.infobars.ConfirmInfoBar;
+import org.chromium.components.infobars.InfoBarLayout;
 
 /**
  * An infobar to disclose known monitoring to the user. This is a thin veneer over
@@ -23,11 +24,8 @@ public class KnownInterceptionDisclosureInfoBar extends ConfirmInfoBar {
      * Creates and begins the process for showing a KnownInterceptionDisclosureInfoBar.
      * This constructor is similar to ConfirmInfoBar's create(), adding a description.
      *
-     * @param enumeratedIconId ID corresponding to the icon that will be shown for the infobar.
-     *                         The ID must have been mapped using the ResourceMapper class before
-     *                         passing it to this function.
-     * @param iconBitmap Bitmap to use if there is no equivalent Java resource for
-     *                   enumeratedIconId.
+     * @param iconId ID corresponding to the icon that will be shown for the infobar.
+     * @param iconBitmap Bitmap to use if there is no equivalent Java resource for iconId.
      * @param message Title of message to display to the user indicating what the infobar is for.
      *                This should be 'title', but we're keeping consistency with ConfirmInfoBar.
      * @param linkText Link text to display in addition to the message.
@@ -35,12 +33,10 @@ public class KnownInterceptionDisclosureInfoBar extends ConfirmInfoBar {
      * @param description String to display below the "message" title.
      */
     @CalledByNative
-    private static ConfirmInfoBar create(int enumeratedIconId, Bitmap iconBitmap, String message,
+    private static ConfirmInfoBar create(int iconId, Bitmap iconBitmap, String message,
             String linkText, String buttonOk, String description) {
-        int drawableId = ResourceId.mapToDrawableId(enumeratedIconId);
-
         return new KnownInterceptionDisclosureInfoBar(
-                drawableId, 0, iconBitmap, message, linkText, buttonOk, description);
+                iconId, 0, iconBitmap, message, linkText, buttonOk, description);
     }
 
     private KnownInterceptionDisclosureInfoBar(int iconDrawableId, @ColorRes int iconTintId,

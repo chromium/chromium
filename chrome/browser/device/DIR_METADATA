@@ -1,0 +1,5 @@
+monorail: {
+  component: "Internals>Flags"
+}
+team_email: "clank-app-team@google.com"
+os: ANDROID

@@ -4,16 +4,18 @@
 
 #include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
 
-#include "base/logging.h"
+#include <memory>
+
+#include "base/check_op.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 
 namespace media {
 namespace cast {
 
 TestRtcpPacketBuilder::TestRtcpPacketBuilder()
-    : ptr_of_length_(NULL),
+    : ptr_of_length_(nullptr),
       big_endian_writer_(reinterpret_cast<char*>(buffer_), kMaxIpPacketSize),
-      big_endian_reader_(NULL, 0) {}
+      big_endian_reader_(nullptr, 0) {}
 
 void TestRtcpPacketBuilder::AddSr(uint32_t remote_ssrc,
                                   int number_of_report_blocks) {
@@ -231,8 +233,7 @@ void TestRtcpPacketBuilder::AddReceiverEventLog(uint16_t event_data,
 
 std::unique_ptr<media::cast::Packet> TestRtcpPacketBuilder::GetPacket() {
   PatchLengthField();
-  return std::unique_ptr<media::cast::Packet>(
-      new media::cast::Packet(buffer_, buffer_ + Length()));
+  return std::make_unique<media::cast::Packet>(buffer_, buffer_ + Length());
 }
 
 const uint8_t* TestRtcpPacketBuilder::Data() {
@@ -255,7 +256,7 @@ void TestRtcpPacketBuilder::PatchLengthField() {
         << "Packets must be a multiple of 32 bits long";
     *ptr_of_length_ = this_packet_length >> 10;
     *(ptr_of_length_ + 1) = (this_packet_length >> 2) & 0xFF;
-    ptr_of_length_ = NULL;
+    ptr_of_length_ = nullptr;
   }
 }
 

@@ -5,10 +5,11 @@
 import {HIDE_FOCUS_RING_ATTRIBUTE, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY} from 'chrome://bookmarks/bookmarks.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {keyDownOn, pressAndReleaseKeyOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, normalizeIterable, replaceBody} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {down, keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestStore} from './test_store.js';
+import {createFolder, normalizeIterable, replaceBody} from './test_util.js';
 
 suite('<bookmarks-app>', function() {
   let app;
@@ -79,13 +80,13 @@ suite('<bookmarks-app>', function() {
 
   test('focus ring hides and restores', async function() {
     await flushTasks();
-    const list = app.$$('bookmarks-list');
+    const list = app.shadowRoot.querySelector('bookmarks-list');
     const item = list.root.querySelectorAll('bookmarks-item')[0];
     const getFocusAttribute = () => app.getAttribute(HIDE_FOCUS_RING_ATTRIBUTE);
 
     assertEquals(null, getFocusAttribute());
 
-    tap(item);
+    down(item);
     assertEquals('', getFocusAttribute());
 
     keyDownOn(item, 16, [], 'Shift');
@@ -98,8 +99,8 @@ suite('<bookmarks-app>', function() {
   });
 
   test('when find shortcut is invoked, focus on search input', () => {
-    const searchInput =
-        app.$$('bookmarks-toolbar').searchField.getSearchInput();
+    const searchInput = app.shadowRoot.querySelector('bookmarks-toolbar')
+                            .searchField.getSearchInput();
     assertNotEquals(searchInput, getDeepActiveElement());
     pressAndReleaseKeyOn(document.body, '', isMac ? 'meta' : 'ctrl', 'f');
     assertEquals(searchInput, getDeepActiveElement());

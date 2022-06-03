@@ -9,17 +9,11 @@
 
 #include "content/browser/renderer_host/input/mock_input_router.h"
 #include "content/common/input/event_with_latency_info.h"
-#include "content/common/input/input_handler.mojom.h"
-#include "content/public/common/input_event_ack_source.h"
-#include "content/public/common/input_event_ack_state.h"
-#include "content/test/mock_widget_impl.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-
-namespace viz {
-class MockCompositorFrameSinkClient;
-}  // namespace viz
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 
 namespace content {
 
@@ -27,19 +21,22 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
  public:
   // Allow poking at a few private members.
   using RenderWidgetHostImpl::frame_token_message_queue_;
+  using RenderWidgetHostImpl::GetInitialVisualProperties;
   using RenderWidgetHostImpl::GetVisualProperties;
   using RenderWidgetHostImpl::input_router_;
   using RenderWidgetHostImpl::is_hidden_;
   using RenderWidgetHostImpl::old_visual_properties_;
   using RenderWidgetHostImpl::RendererExited;
-  using RenderWidgetHostImpl::SetInitialVisualProperties;
   using RenderWidgetHostImpl::visual_properties_ack_pending_;
+
+  MockRenderWidgetHost(const MockRenderWidgetHost&) = delete;
+  MockRenderWidgetHost& operator=(const MockRenderWidgetHost&) = delete;
 
   ~MockRenderWidgetHost() override;
 
   void OnTouchEventAck(const TouchEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result) override;
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
 
   void reset_new_content_rendering_timeout_fired() {
     new_content_rendering_timeout_fired_ = false;
@@ -56,12 +53,6 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
     return acked_touch_event_type_;
   }
 
-  // Mocks out |renderer_compositor_frame_sink_| with a
-  // CompositorFrameSinkClient bound to
-  // |mock_renderer_compositor_frame_sink|.
-  void SetMockRendererCompositorFrameSink(
-      viz::MockCompositorFrameSinkClient* mock_renderer_compositor_frame_sink);
-
   void SetupForInputRouterTest();
 
   MockInputRouter* mock_input_router() {
@@ -70,13 +61,20 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
 
   InputRouter* input_router() { return input_router_.get(); }
 
-  uint32_t processed_frame_messages_count();
+  static std::unique_ptr<MockRenderWidgetHost> Create(
+      FrameTree* frame_tree,
+      RenderWidgetHostDelegate* delegate,
+      AgentSchedulingGroupHost& agent_scheduling_group,
+      int32_t routing_id);
 
-  static MockRenderWidgetHost* Create(RenderWidgetHostDelegate* delegate,
-                                      RenderProcessHost* process,
-                                      int32_t routing_id);
+  static std::unique_ptr<MockRenderWidgetHost> Create(
+      FrameTree* frame_tree,
+      RenderWidgetHostDelegate* delegate,
+      AgentSchedulingGroupHost& agent_scheduling_group,
+      int32_t routing_id,
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget);
 
-  mojom::WidgetInputHandler* GetWidgetInputHandler() override;
+  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
 
   MockWidgetInputHandler mock_widget_input_handler_;
 
@@ -87,16 +85,14 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
   blink::WebInputEvent::Type acked_touch_event_type_;
 
  private:
-  MockRenderWidgetHost(RenderWidgetHostDelegate* delegate,
-                       RenderProcessHost* process,
-                       int routing_id,
-                       std::unique_ptr<MockWidgetImpl> widget_impl,
-                       mojo::PendingRemote<mojom::Widget> widget);
-
-  std::unique_ptr<MockWidgetImpl> widget_impl_;
+  MockRenderWidgetHost(
+      FrameTree* frame_tree,
+      RenderWidgetHostDelegate* delegate,
+      AgentSchedulingGroupHost& agent_scheduling_group,
+      int32_t routing_id,
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget);
 
   std::unique_ptr<FlingScheduler> fling_scheduler_;
-  DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHost);
 };
 
 }  // namespace content

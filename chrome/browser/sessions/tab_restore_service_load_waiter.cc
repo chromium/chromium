@@ -4,32 +4,20 @@
 
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 
-#include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "components/sessions/core/tab_restore_service.h"
-
-// Class used to run a message loop waiting for the TabRestoreService to finish
-// loading. Does nothing if the TabRestoreService was already loaded.
-TabRestoreServiceLoadWaiter::TabRestoreServiceLoadWaiter(Browser* browser)
-    : tab_restore_service_(
-          TabRestoreServiceFactory::GetForProfile(browser->profile())),
-      do_wait_(!tab_restore_service_->IsLoaded()) {
-  if (do_wait_)
-    tab_restore_service_->AddObserver(this);
+TabRestoreServiceLoadWaiter::TabRestoreServiceLoadWaiter(
+    sessions::TabRestoreService* service)
+    : service_(service) {
+  observation_.Observe(service_);
 }
 
-TabRestoreServiceLoadWaiter::~TabRestoreServiceLoadWaiter() {
-  if (do_wait_)
-    tab_restore_service_->RemoveObserver(this);
-}
+TabRestoreServiceLoadWaiter::~TabRestoreServiceLoadWaiter() = default;
 
 void TabRestoreServiceLoadWaiter::Wait() {
-  if (do_wait_)
+  if (!service_->IsLoaded())
     run_loop_.Run();
 }
 
 void TabRestoreServiceLoadWaiter::TabRestoreServiceLoaded(
     sessions::TabRestoreService* service) {
-  DCHECK(do_wait_);
   run_loop_.Quit();
 }

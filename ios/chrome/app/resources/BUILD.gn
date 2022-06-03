@@ -17,16 +17,13 @@ group("resources") {
     ":launchscreen_xib",
     ":quick_action_icons",
     ":system_strings",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
   ]
 }
 
 grit("ios_resources") {
   source = "ios_resources.grd"
   output_dir = "$root_gen_dir/ios/chrome"
-
-  # The .grd contains references to generated files.
-  source_is_generated = true
 
   outputs = [
     "grit/ios_resources.h",
@@ -48,7 +45,7 @@ ios_chrome_repack_locales("repack_locales") {
   output_locales = ios_packed_locales_as_mac_outputs
 }
 
-ios_chrome_repack_all_scales("repack_scalable_resources") {
+ios_chrome_repack_scalables("repack_scalable_resources") {
   visibility = [ ":packed_resources" ]
   scales = [
     "100",
@@ -61,17 +58,21 @@ repack("repack_unscaled_resources") {
   visibility = [ ":packed_resources" ]
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/sync_driver_resources.pak",
+    "$root_gen_dir/components/dev_ui_components_resources.pak",
+    "$root_gen_dir/components/download_internals_resources.pak",
+    "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/ios/chrome/ios_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
+    "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   deps = [
     ":ios_resources",
+    "//components/download/resources/download_internals:resources",
     "//components/resources",
-    "//components/sync/driver:resources",
+    "//components/sync/driver/resources",
     "//ios/web:resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
@@ -92,7 +93,6 @@ appiconset("chromium_icons") {
     "chromium/AppIcon.appiconset/Icon-29.png",
     "chromium/AppIcon.appiconset/Icon-40.png",
     "chromium/AppIcon.appiconset/Icon-58.png",
-    "chromium/AppIcon.appiconset/Icon-76.png",
     "chromium/AppIcon.appiconset/Icon-80.png",
     "chromium/AppIcon.appiconset/Icon-87.png",
   ]
@@ -120,37 +120,33 @@ group("launchscreen_assets") {
   public_deps = [
     ":launchscreen_app_logo",
     ":launchscreen_brand_name",
-    "//ios/chrome/common/colors/resources:background_color",
+    "//ios/chrome/common/ui/colors/resources:background_color",
   ]
 }
 
-if (ios_enable_multi_window) {
-  # Multi window requires both additional plist entries (handled in ../BUILD.gn) and
-  # an additional storyboard file.
-  bundle_data_ib_file("base_scene_storyboard") {
-    source = "BaseScene.storyboard"
-  }
+# The scene startup flow (which is needed for multi-window) requires both
+# additional plist entries (handled in ../BUILD.gn) and an additional storyboard
+# file.
+bundle_data_ib_file("base_scene_storyboard") {
+  source = "BaseScene.storyboard"
 }
 
 bundle_data_ib_file("launchscreen_xib") {
   source = "LaunchScreen.xib"
-  deps = [
-    ios_launchscreen_assets_target,
-  ]
+  deps = [ ios_launchscreen_assets_target ]
 }
 
 generate_localizable_strings("system_strings") {
   config_file = "chrome_localize_strings_config.plist"
-  datapack_dir = get_label_info(ios_packed_resources_target, "target_gen_dir")
+  datapack_dir = get_label_info("//ios/chrome/app/resources:packed_resources",
+                                "target_gen_dir")
   packed_locales = ios_packed_locales_as_mac_outputs
   output_filenames = [
     "InfoPlist.strings",
     "Localizable.strings",
     "Intents.strings",
   ]
-  deps = [
-    ios_packed_resources_target,
-  ]
+  deps = [ "//ios/chrome/app/resources:packed_resources" ]
 }
 
 imageset("quick_action_incognito_search") {

@@ -7,25 +7,25 @@
 #include <stdint.h>
 #include <windows.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/numerics/ranges.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/windows_version.h"
 #include "remoting/base/util.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/host/touch_injector_win.h"
 #include "remoting/proto/event.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace remoting {
@@ -39,7 +39,9 @@ using protocol::MouseEvent;
 using protocol::TouchEvent;
 
 // Helper used to call SendInput() API.
-void SendKeyboardInput(uint32_t flags, uint16_t scancode) {
+void SendKeyboardInput(uint32_t flags,
+                       uint16_t scancode,
+                       uint16_t virtual_key) {
   // Populate a Windows INPUT structure for the event.
   INPUT input;
   memset(&input, 0, sizeof(input));
@@ -47,6 +49,7 @@ void SendKeyboardInput(uint32_t flags, uint16_t scancode) {
   input.ki.time = 0;
   input.ki.dwFlags = flags;
   input.ki.wScan = scancode;
+  input.ki.wVk = virtual_key;
 
   if ((flags & KEYEVENTF_UNICODE) == 0) {
     // Windows scancodes are only 8-bit, so store the low-order byte into the
@@ -77,8 +80,8 @@ void ParseMouseMoveEvent(const MouseEvent& event, std::vector<INPUT>* output) {
     int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
     int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
     if (width > 1 && height > 1) {
-      int x = base::ClampToRange(event.x(), 0, width);
-      int y = base::ClampToRange(event.y(), 0, height);
+      int x = base::clamp(event.x(), 0, width);
+      int y = base::clamp(event.y(), 0, height);
       input.mi.dx = static_cast<int>((x * 65535) / (width - 1));
       input.mi.dy = static_cast<int>((y * 65535) / (height - 1));
       input.mi.dwFlags =
@@ -164,22 +167,14 @@ bool IsLockKey(int scancode) {
 }
 
 // Sets the keyboard lock states to those provided.
-void SetLockStates(base::Optional<bool> caps_lock,
-                   base::Optional<bool> num_lock) {
-  // Can't use SendKeyboardInput because we need to send virtual key codes, not
-  // scan codes.
-  INPUT input[2] = {};
-  input[0].type = INPUT_KEYBOARD;
-  input[1].type = INPUT_KEYBOARD;
-  input[1].ki.dwFlags = KEYEVENTF_KEYUP;
-
+void SetLockStates(absl::optional<bool> caps_lock,
+                   absl::optional<bool> num_lock) {
   if (caps_lock) {
     bool client_capslock_state = *caps_lock;
     bool host_capslock_state = (GetKeyState(VK_CAPITAL) & 1) != 0;
     if (client_capslock_state != host_capslock_state) {
-      input[0].ki.wVk = VK_CAPITAL;
-      input[1].ki.wVk = VK_CAPITAL;
-      SendInput(base::size(input), input, sizeof(INPUT));
+      SendKeyboardInput(0, 0, VK_CAPITAL);
+      SendKeyboardInput(KEYEVENTF_KEYUP, 0, VK_CAPITAL);
     }
   }
 
@@ -188,9 +183,8 @@ void SetLockStates(base::Optional<bool> caps_lock,
     bool client_numlock_state = *num_lock;
     bool host_numlock_state = (GetKeyState(VK_NUMLOCK) & 1) != 0;
     if (client_numlock_state != host_numlock_state) {
-      input[0].ki.wVk = VK_NUMLOCK;
-      input[1].ki.wVk = VK_NUMLOCK;
-      SendInput(base::size(input), input, sizeof(INPUT));
+      SendKeyboardInput(0, 0, VK_NUMLOCK);
+      SendKeyboardInput(KEYEVENTF_KEYUP, 0, VK_NUMLOCK);
     }
   }
 }
@@ -200,6 +194,10 @@ class InputInjectorWin : public InputInjector {
  public:
   InputInjectorWin(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  InputInjectorWin(const InputInjectorWin&) = delete;
+  InputInjectorWin& operator=(const InputInjectorWin&) = delete;
+
   ~InputInjectorWin() override;
 
   // ClipboardStub interface.
@@ -221,6 +219,9 @@ class InputInjectorWin : public InputInjector {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
          scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     // Mirrors the ClipboardStub interface.
     void InjectClipboardEvent(const ClipboardEvent& event);
@@ -249,13 +250,9 @@ class InputInjectorWin : public InputInjector {
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
     std::unique_ptr<Clipboard> clipboard_;
     std::unique_ptr<TouchInjectorWin> touch_injector_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorWin);
 };
 
 InputInjectorWin::InputInjectorWin(
@@ -396,8 +393,8 @@ void InputInjectorWin::Core::HandleKey(const KeyEvent& event) {
     return;
 
   if (event.pressed() && !IsLockKey(scancode)) {
-    base::Optional<bool> caps_lock;
-    base::Optional<bool> num_lock;
+    absl::optional<bool> caps_lock;
+    absl::optional<bool> num_lock;
 
     // For caps lock, check both the new caps_lock field and the old lock_states
     // field.
@@ -419,18 +416,25 @@ void InputInjectorWin::Core::HandleKey(const KeyEvent& event) {
   }
 
   uint32_t flags = KEYEVENTF_SCANCODE | (event.pressed() ? 0 : KEYEVENTF_KEYUP);
-  SendKeyboardInput(flags, scancode);
+  SendKeyboardInput(flags, scancode, 0);
 }
 
 void InputInjectorWin::Core::HandleText(const TextEvent& event) {
   // HostEventDispatcher should filter events missing the pressed field.
   DCHECK(event.has_text());
 
-  base::string16 text = base::UTF8ToUTF16(event.text());
-  for (base::string16::const_iterator it = text.begin();
-       it != text.end(); ++it)  {
-    SendKeyboardInput(KEYEVENTF_UNICODE, *it);
-    SendKeyboardInput(KEYEVENTF_UNICODE | KEYEVENTF_KEYUP, *it);
+  std::u16string text = base::UTF8ToUTF16(event.text());
+  for (std::u16string::const_iterator it = text.begin(); it != text.end();
+       ++it) {
+    if (*it == '\n') {
+      // The WM_CHAR event generated for carriage return is '\r', not '\n', and
+      // some applications may check for VK_RETURN explicitly, so handle
+      // newlines specially.
+      SendKeyboardInput(0, 0, VK_RETURN);
+      SendKeyboardInput(KEYEVENTF_KEYUP, 0, VK_RETURN);
+    }
+    SendKeyboardInput(KEYEVENTF_UNICODE, *it, 0);
+    SendKeyboardInput(KEYEVENTF_UNICODE | KEYEVENTF_KEYUP, *it, 0);
   }
 }
 

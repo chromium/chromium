@@ -1,0 +1,10 @@
+<div aria-hidden="true">
+  <input id="input" aria-label="search" value="foo">
+</div>
+<script>
+  function go() {
+    var input = document.getElementById("input");
+    input.focus();
+    input.setSelectionRange(1, 1);
+  }
+</script>

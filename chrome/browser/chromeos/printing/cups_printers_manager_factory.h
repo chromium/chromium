@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_PRINTERS_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_PRINTERS_MANAGER_FACTORY_H_
 
+#include <memory>
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -19,12 +20,21 @@ struct DefaultSingletonTraits;
 namespace chromeos {
 
 class CupsPrintersManager;
+class CupsPrintersManagerProxy;
 
 class CupsPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static CupsPrintersManagerFactory* GetInstance();
   static CupsPrintersManager* GetForBrowserContext(
       content::BrowserContext* context);
+
+  CupsPrintersManagerFactory(const CupsPrintersManagerFactory&) = delete;
+  CupsPrintersManagerFactory& operator=(const CupsPrintersManagerFactory&) =
+      delete;
+
+  // Returns the CupsPrintersManagerProxy object which is always attached to the
+  // primary profile.
+  CupsPrintersManagerProxy* GetProxy();
 
  private:
   friend struct base::DefaultSingletonTraits<CupsPrintersManagerFactory>;
@@ -35,12 +45,14 @@ class CupsPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintersManagerFactory);
+  // Proxy object always attached to the primary profile.
+  std::unique_ptr<CupsPrintersManagerProxy> proxy_;
 };
 
 }  // namespace chromeos

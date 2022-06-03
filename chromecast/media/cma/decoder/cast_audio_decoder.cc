@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/cma/decoder/cast_audio_decoder.h"
+#include "chromecast/media/api/cast_audio_decoder.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -11,17 +11,17 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
-#include "chromecast/media/cma/base/decoder_config_logging.h"
+#include "chromecast/media/cma/decoder/external_audio_decoder_wrapper.h"
+#include "chromecast/media/common/base/decoder_config_logging.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/cdm_context.h"
@@ -29,46 +29,63 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/sample_format.h"
+#include "media/base/status.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
 
 namespace {
 
+// This class wraps the underlying data of a DecoderBufferBase.
+// This class does not take the ownership of the data. The DecoderBufferBase
+// is still responsible for deleting the data. This class holds a reference
+// to the DecoderBufferBase so that it lives longer than this DecoderBuffer.
+class DecoderBuffer : public ::media::DecoderBuffer {
+ public:
+  DecoderBuffer(scoped_refptr<DecoderBufferBase> buffer)
+      : ::media::DecoderBuffer(
+            std::unique_ptr<uint8_t[]>(const_cast<uint8_t*>(buffer->data())),
+            buffer->data_size()),
+        buffer_(std::move(buffer)) {
+    set_timestamp(::base::Microseconds(buffer_->timestamp()));
+  }
+
+ private:
+  ~DecoderBuffer() override {
+    // Releases the data to prevent it from being deleted.
+    DCHECK_EQ(data_.get(), buffer_->data());
+    data_.release();
+  }
+
+  scoped_refptr<DecoderBufferBase> buffer_;
+};
+
 class CastAudioDecoderImpl : public CastAudioDecoder {
  public:
   CastAudioDecoderImpl(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                       InitializedCallback initialized_callback,
+                       const media::AudioConfig& config,
                        OutputFormat output_format)
       : task_runner_(std::move(task_runner)),
-        initialized_callback_(std::move(initialized_callback)),
         output_format_(output_format),
-        initialized_(false),
-        decode_pending_(false),
         weak_factory_(this) {
     weak_this_ = weak_factory_.GetWeakPtr();
     DCHECK(task_runner_);
-    DCHECK(initialized_callback_);
-  }
 
-  void Initialize(const media::AudioConfig& config) {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    DCHECK(!initialized_);
+    input_config_ = config;
+    input_config_.encryption_scheme = EncryptionScheme::kUnencrypted;
 
-    config_ = config;
-    if (config_.is_encrypted()) {
-      LOG(ERROR) << "Cannot decode encrypted audio";
-      // TODO(kmackay) Should call OnInitialized(false) here, but that generally
-      // causes the browsertests to crash since it happens during the render
-      // pipeline initialization.
-      config_.encryption_scheme = EncryptionScheme::kUnencrypted;
-    }
+    output_config_ = input_config_;
+    output_config_.codec = kCodecPCM;
+    output_config_.sample_format =
+        (output_format_ == kOutputSigned16 ? kSampleFormatS16
+                                           : kSampleFormatPlanarF32);
 
     decoder_ = std::make_unique<::media::FFmpegAudioDecoder>(task_runner_,
                                                              &media_log_);
     decoder_->Initialize(
-        media::DecoderConfigAdapter::ToMediaAudioDecoderConfig(config_),
+        media::DecoderConfigAdapter::ToMediaAudioDecoderConfig(input_config_),
         nullptr,
         base::BindRepeating(&CastAudioDecoderImpl::OnInitialized, weak_this_),
         base::BindRepeating(&CastAudioDecoderImpl::OnDecoderOutput, weak_this_),
@@ -77,14 +94,22 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     // (the pipeline status callback is posted to the task runner).
   }
 
+  CastAudioDecoderImpl(const CastAudioDecoderImpl&) = delete;
+  CastAudioDecoderImpl& operator=(const CastAudioDecoderImpl&) = delete;
+
   // CastAudioDecoder implementation:
+  const AudioConfig& GetOutputConfig() const override { return output_config_; }
+
   void Decode(scoped_refptr<media::DecoderBufferBase> data,
               DecodeCallback decode_callback) override {
     DCHECK(decode_callback);
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    if (data->decrypt_context() != nullptr) {
-      LOG(ERROR) << "Audio decoder doesn't support encrypted stream";
+    if (data->decrypt_context() != nullptr || error_) {
+      if (data->decrypt_context() != nullptr) {
+        LOG(ERROR) << "Audio decoder doesn't support encrypted stream";
+      }
+
       // Post the task to ensure that |decode_callback| is not called from
       // within a call to Decode().
       task_runner_->PostTask(
@@ -106,7 +131,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   void CallDecodeCallback(DecodeCallback decode_callback,
                           Status status,
                           scoped_refptr<media::DecoderBufferBase> data) {
-    std::move(decode_callback).Run(status, config_, std::move(data));
+    std::move(decode_callback).Run(status, output_config_, std::move(data));
   }
 
   void DecodeNow(scoped_refptr<media::DecoderBufferBase> data,
@@ -122,61 +147,63 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     }
 
     // FFmpegAudioDecoder requires a timestamp to be set.
-    base::TimeDelta timestamp =
-        base::TimeDelta::FromMicroseconds(data->timestamp());
+    base::TimeDelta timestamp = base::Microseconds(data->timestamp());
     if (timestamp == ::media::kNoTimestamp)
       data->set_timestamp(base::TimeDelta());
 
     decode_pending_ = true;
     pending_decode_callback_ = std::move(decode_callback);
-    decoder_->Decode(data->ToMediaBuffer(),
+    decoder_->Decode(base::WrapRefCounted(new DecoderBuffer(std::move(data))),
                      base::BindRepeating(&CastAudioDecoderImpl::OnDecodeStatus,
                                          weak_this_, timestamp));
   }
 
-  void OnInitialized(bool success) {
+  void OnInitialized(::media::Status status) {
     DCHECK(!initialized_);
-    DCHECK(initialized_callback_);
-    if (success) {
-      initialized_ = true;
+    initialized_ = true;
+    if (status.is_ok()) {
       if (!decode_queue_.empty()) {
         auto& d = decode_queue_.front();
         DecodeNow(std::move(d.first), std::move(d.second));
         decode_queue_.pop();
       }
-    } else {
-      LOG(ERROR) << "Failed to initialize FFmpegAudioDecoder";
-      LOG(INFO) << "Config:";
-      LOG(INFO) << "\tEncrypted: "
-                << (config_.is_encrypted() ? "true" : "false");
-      LOG(INFO) << "\tCodec: " << config_.codec;
-      LOG(INFO) << "\tSample format: " << config_.sample_format;
-      LOG(INFO) << "\tChannels: " << config_.channel_number;
-      LOG(INFO) << "\tSample rate: " << config_.samples_per_second;
+      return;
     }
 
-    std::move(initialized_callback_).Run(initialized_);
+    error_ = true;
+    LOG(ERROR) << "Failed to initialize audio decoder";
+    LOG(INFO) << "Config:";
+    LOG(INFO) << "\tCodec: " << input_config_.codec;
+    LOG(INFO) << "\tSample format: " << input_config_.sample_format;
+    LOG(INFO) << "\tChannels: " << input_config_.channel_number;
+    LOG(INFO) << "\tSample rate: " << input_config_.samples_per_second;
+
+    while (!decode_queue_.empty()) {
+      auto& d = decode_queue_.front();
+      std::move(d.second).Run(kDecodeError, output_config_, std::move(d.first));
+      decode_queue_.pop();
+    }
   }
 
   void OnDecodeStatus(base::TimeDelta buffer_timestamp,
-                      ::media::DecodeStatus status) {
+                      ::media::Status status) {
     DCHECK(pending_decode_callback_);
 
     Status result_status = kDecodeOk;
     scoped_refptr<media::DecoderBufferBase> decoded;
-    if (status == ::media::DecodeStatus::OK && !decoded_chunks_.empty()) {
+    if (status.is_ok() && !decoded_chunks_.empty()) {
       decoded = ConvertDecoded();
     } else {
-      if (status != ::media::DecodeStatus::OK)
+      if (!status.is_ok())
         result_status = kDecodeError;
       decoded = base::MakeRefCounted<media::DecoderBufferAdapter>(
-          config_.id, base::MakeRefCounted<::media::DecoderBuffer>(0));
+          output_config_.id, base::MakeRefCounted<::media::DecoderBuffer>(0));
     }
     decoded_chunks_.clear();
     decoded->set_timestamp(buffer_timestamp);
     base::WeakPtr<CastAudioDecoderImpl> self = weak_factory_.GetWeakPtr();
     std::move(pending_decode_callback_)
-        .Run(result_status, config_, std::move(decoded));
+        .Run(result_status, output_config_, std::move(decoded));
     if (!self)
       return;  // Return immediately if the decode callback deleted this.
 
@@ -196,16 +223,16 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   }
 
   void OnDecoderOutput(scoped_refptr<::media::AudioBuffer> decoded) {
-    if (decoded->sample_rate() != config_.samples_per_second) {
+    if (decoded->sample_rate() != output_config_.samples_per_second) {
       LOG(WARNING) << "sample_rate changed to " << decoded->sample_rate()
-                   << " from " << config_.samples_per_second;
-      config_.samples_per_second = decoded->sample_rate();
+                   << " from " << output_config_.samples_per_second;
+      output_config_.samples_per_second = decoded->sample_rate();
     }
 
-    if (decoded->channel_count() != config_.channel_number) {
+    if (decoded->channel_count() != output_config_.channel_number) {
       LOG(WARNING) << "channel_count changed to " << decoded->channel_count()
-                   << " from " << config_.channel_number;
-      config_.channel_number = decoded->channel_count();
+                   << " from " << output_config_.channel_number;
+      output_config_.channel_number = decoded->channel_count();
       decoded_bus_.reset();
     }
 
@@ -220,8 +247,8 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
     // Copy decoded data into an AudioBus for conversion.
     if (!decoded_bus_ || decoded_bus_->frames() < num_frames) {
-      decoded_bus_ =
-          ::media::AudioBus::Create(config_.channel_number, num_frames * 2);
+      decoded_bus_ = ::media::AudioBus::Create(output_config_.channel_number,
+                                               num_frames * 2);
     }
     int bus_frame_offset = 0;
     for (auto& chunk : decoded_chunks_) {
@@ -241,8 +268,8 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     auto result = base::MakeRefCounted<::media::DecoderBuffer>(size);
 
     if (output_format_ == kOutputSigned16) {
-      bus->ToInterleaved(num_frames, OutputFormatSizeInBytes(output_format_),
-                         result->writable_data());
+      bus->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
+          num_frames, reinterpret_cast<int16_t*>(result->writable_data()));
     } else if (output_format_ == kOutputPlanarFloat) {
       // Data in an AudioBus is already in planar float format; just copy each
       // channel into the result buffer in order.
@@ -255,24 +282,25 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       NOTREACHED();
     }
 
-    result->set_duration(base::TimeDelta::FromMicroseconds(
-        num_frames * base::Time::kMicrosecondsPerSecond /
-        config_.samples_per_second));
-    return base::MakeRefCounted<media::DecoderBufferAdapter>(config_.id,
+    result->set_duration(
+        base::Microseconds(num_frames * base::Time::kMicrosecondsPerSecond /
+                           output_config_.samples_per_second));
+    return base::MakeRefCounted<media::DecoderBufferAdapter>(output_config_.id,
                                                              result);
   }
 
   ::media::NullMediaLog media_log_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  InitializedCallback initialized_callback_;
   OutputFormat output_format_;
-  bool initialized_;
-  media::AudioConfig config_;
+  bool initialized_ = false;
+  bool error_ = false;
+  media::AudioConfig input_config_;
+  media::AudioConfig output_config_;
 
   std::unique_ptr<::media::AudioDecoder> decoder_;
   base::queue<DecodeBufferCallbackPair> decode_queue_;
 
-  bool decode_pending_;
+  bool decode_pending_ = false;
   DecodeCallback pending_decode_callback_;
   std::vector<scoped_refptr<::media::AudioBuffer>> decoded_chunks_;
 
@@ -280,8 +308,6 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
   base::WeakPtr<CastAudioDecoderImpl> weak_this_;
   base::WeakPtrFactory<CastAudioDecoderImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioDecoderImpl);
 };
 
 }  // namespace
@@ -290,12 +316,18 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 std::unique_ptr<CastAudioDecoder> CastAudioDecoder::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const media::AudioConfig& config,
-    OutputFormat output_format,
-    InitializedCallback initialized_callback) {
-  std::unique_ptr<CastAudioDecoderImpl> decoder(new CastAudioDecoderImpl(
-      std::move(task_runner), std::move(initialized_callback), output_format));
-  decoder->Initialize(config);
-  return std::move(decoder);
+    OutputFormat output_format) {
+  if (ExternalAudioDecoderWrapper::IsSupportedConfig(config)) {
+    auto external_decoder = std::make_unique<ExternalAudioDecoderWrapper>(
+        std::move(task_runner), config, output_format);
+    if (!external_decoder->initialized()) {
+      return nullptr;
+    }
+    return external_decoder;
+  }
+
+  return std::make_unique<CastAudioDecoderImpl>(std::move(task_runner), config,
+                                                output_format);
 }
 
 // static

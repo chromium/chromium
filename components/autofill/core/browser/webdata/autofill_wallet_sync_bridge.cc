@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -24,11 +26,10 @@
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/model/sync_merge_result.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/model_impl/sync_metadata_store_change_list.h"
+#include "components/sync/model/sync_metadata_store_change_list.h"
 
 using sync_pb::AutofillWalletSpecifics;
 using syncer::EntityData;
@@ -147,7 +148,7 @@ void AutofillWalletSyncBridge::CreateForWebDataServiceAndBackend(
       std::make_unique<AutofillWalletSyncBridge>(
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::AUTOFILL_WALLET_DATA,
-              /*dump_stack=*/base::RepeatingClosure()),
+              /*dump_stack=*/base::DoNothing()),
           web_data_backend));
 }
 
@@ -180,11 +181,11 @@ AutofillWalletSyncBridge::CreateMetadataChangeList() {
       GetAutofillTable(), syncer::AUTOFILL_WALLET_DATA);
 }
 
-base::Optional<syncer::ModelError> AutofillWalletSyncBridge::MergeSyncData(
+absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // All metadata changes have been already written, return early for an error.
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       static_cast<syncer::SyncMetadataStoreChangeList*>(
           metadata_change_list.get())
           ->TakeError();
@@ -198,16 +199,16 @@ base::Optional<syncer::ModelError> AutofillWalletSyncBridge::MergeSyncData(
 
   // TODO(crbug.com/853688): Update the AutofillTable API to know about write
   // errors and report them here.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<syncer::ModelError> AutofillWalletSyncBridge::ApplySyncChanges(
+absl::optional<syncer::ModelError> AutofillWalletSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This bridge does not support incremental updates, so whenever this is
   // called, the change list should be empty.
   DCHECK(entity_data.empty()) << "Received an unsupported incremental update.";
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AutofillWalletSyncBridge::GetData(StorageKeyList storage_keys,
@@ -356,12 +357,17 @@ bool AutofillWalletSyncBridge::SetWalletCards(
       ComputeAutofillWalletDiff(existing_cards, wallet_cards);
 
   if (!diff.IsEmpty()) {
+    // Check if there is any update on cards' virtual card metadata. If so, make
+    // changes to the credit card art image table and log it.
+    ProcessVirtualCardMetadataChanges(existing_cards, wallet_cards);
+
     table->SetServerCardsData(wallet_cards);
+
     if (notify_metadata_bridge) {
-      for (const CreditCardChange& change : diff.changes) {
+      for (const CreditCardChange& change : diff.changes)
         web_data_backend_->NotifyOfCreditCardChanged(change);
-      }
     }
+
     return true;
   }
   return false;
@@ -436,7 +442,7 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> existing_data;
   table->GetCreditCardCloudTokenData(&existing_data);
 
-  if (ShouldResetAutofillWalletData(existing_data, cloud_token_data)) {
+  if (AreAnyItemsDifferent(existing_data, cloud_token_data)) {
     table->SetCreditCardCloudTokenData(cloud_token_data);
     return true;
   }
@@ -513,36 +519,6 @@ AutofillWalletSyncBridge::ComputeAutofillWalletDiff(
   return result;
 }
 
-template <class Item>
-bool AutofillWalletSyncBridge::ShouldResetAutofillWalletData(
-    const std::vector<std::unique_ptr<Item>>& old_data,
-    const std::vector<Item>& new_data) {
-  std::vector<const Item*> old_ptrs;
-  old_ptrs.reserve(old_data.size());
-  for (const std::unique_ptr<Item>& old_item : old_data)
-    old_ptrs.push_back(old_item.get());
-  std::vector<const Item*> new_ptrs;
-  new_ptrs.reserve(new_data.size());
-  for (const Item& new_item : new_data)
-    new_ptrs.push_back(&new_item);
-
-  if (old_ptrs.size() != new_ptrs.size())
-    return true;
-
-  // Sort our vectors.
-  auto compare_less = [](const Item* lhs, const Item* rhs) {
-    return lhs->Compare(*rhs) < 0;
-  };
-  std::sort(old_ptrs.begin(), old_ptrs.end(), compare_less);
-  std::sort(new_ptrs.begin(), new_ptrs.end(), compare_less);
-
-  auto compare_equal = [](const Item* lhs, const Item* rhs) {
-    return lhs->Compare(*rhs) == 0;
-  };
-  return !std::equal(old_ptrs.begin(), old_ptrs.end(), new_ptrs.begin(),
-                     compare_equal);
-}
-
 AutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
@@ -564,6 +540,48 @@ void AutofillWalletSyncBridge::LoadMetadata() {
   }
 
   change_processor()->ModelReadyToSync(std::move(batch));
+}
+
+void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
+    const std::vector<std::unique_ptr<CreditCard>>& old_data,
+    const std::vector<CreditCard>& new_data) {
+  std::vector<std::string> updated_server_ids;
+  for (const CreditCard& new_card : new_data) {
+    // If this new card is not enrolled for virtual cards, continue.
+    if (new_card.virtual_card_enrollment_state() !=
+        CreditCard::VirtualCardEnrollmentState::ENROLLED) {
+      continue;
+    }
+
+    // Otherwise try to find the old card with same server id.
+    auto old_data_iterator =
+        std::find_if(old_data.begin(), old_data.end(),
+                     [&new_card](const std::unique_ptr<CreditCard>& old_card) {
+                       return new_card.server_id() == old_card->server_id();
+                     });
+
+    // No existing card with the same ID found.
+    if (old_data_iterator == old_data.end()) {
+      updated_server_ids.push_back(new_card.server_id());
+      // log the newly-synced card.
+      AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/false);
+      continue;
+    }
+
+    // If the virtual card metadata has changed from the old card to the new
+    // cards, log the updated sync.
+    if ((*old_data_iterator)->virtual_card_enrollment_state() !=
+            new_card.virtual_card_enrollment_state() ||
+        (*old_data_iterator)->card_art_url() != new_card.card_art_url()) {
+      updated_server_ids.push_back(new_card.server_id());
+      AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/true);
+    }
+  }
+
+  // After traversing all the new cards, notify the observer the ids of card
+  // whose image should be updated.
+  if (!updated_server_ids.empty() && web_data_backend_)
+    web_data_backend_->NotifyOfCreditCardArtImagesChanged(updated_server_ids);
 }
 
 }  // namespace autofill

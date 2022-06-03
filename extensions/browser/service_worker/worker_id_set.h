@@ -19,12 +19,17 @@ namespace extensions {
 class WorkerIdSet {
  public:
   WorkerIdSet();
+
+  WorkerIdSet(const WorkerIdSet&) = delete;
+  WorkerIdSet& operator=(const WorkerIdSet&) = delete;
+
   ~WorkerIdSet();
 
   void Add(const WorkerId& worker_id);
   bool Remove(const WorkerId& worker_id);
-  void RemoveAllForExtension(const ExtensionId& extension_id);
   bool Contains(const WorkerId& worker_id) const;
+  std::vector<WorkerId> GetAllForExtension(
+      const ExtensionId& extension_id) const;
   std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
                                            int render_process_id) const;
 
@@ -33,8 +38,6 @@ class WorkerIdSet {
 
  private:
   std::set<WorkerId> workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerIdSet);
 };
 
 }  // namespace extensions

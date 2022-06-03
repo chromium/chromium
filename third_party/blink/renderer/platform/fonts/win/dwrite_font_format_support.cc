@@ -25,6 +25,8 @@ bool DWriteVersionSupportsVariations() {
     auto fm(SkFontMgr::RefDefault());
     sk_sp<SkTypeface> probe_typeface =
         fm->legacyMakeTypeface(nullptr, SkFontStyle());
+    if (!probe_typeface)
+      return false;
     int variation_design_position_result =
         probe_typeface->getVariationDesignPosition(nullptr, 0);
 

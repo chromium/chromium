@@ -37,9 +37,9 @@ bool ShellSpecialStoragePolicy::HasSessionOnlyOrigins() {
   return false;
 }
 
-network::SessionCleanupCookieStore::DeleteCookiePredicate
+network::DeleteCookiePredicate
 ShellSpecialStoragePolicy::CreateDeleteCookieOnExitPredicate() {
-  return network::SessionCleanupCookieStore::DeleteCookiePredicate();
+  return network::DeleteCookiePredicate();
 }
 
 bool ShellSpecialStoragePolicy::HasIsolatedStorage(const GURL& origin) {

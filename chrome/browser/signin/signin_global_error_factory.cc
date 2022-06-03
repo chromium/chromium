@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/signin_global_error_factory.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
@@ -35,7 +36,7 @@ SigninGlobalErrorFactory* SigninGlobalErrorFactory::GetInstance() {
 
 KeyedService* SigninGlobalErrorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return nullptr;
 #endif
 

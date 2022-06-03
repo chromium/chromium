@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS div[align=left] legend
+FAIL div[align=center] legend assert_equals: expected legend[align=left] expected 24 but got 394
+FAIL div[align=right] legend assert_equals: expected legend[align=left] expected 24 but got 764
+PASS div[align=justify] legend
+FAIL div[style="text-align: center"] legend assert_equals: expected legend[align=left] expected 24 but got 394
+FAIL div[style="text-align: center"][align=center] legend assert_equals: expected legend[align=left] expected 24 but got 394
+PASS legend[style="margin: 0 auto"]
+PASS legend[style="margin: 0 0 0 auto"]
+PASS fieldset[dir=rtl] legend
+FAIL fieldset[dir=rtl] legend[style="text-align: left"] assert_equals: expected legend[align=right] expected 764 but got 24
+Harness: the test ran to completion.
+

@@ -21,6 +21,12 @@ class NetworkingPrivateEventRouterImpl
  public:
   explicit NetworkingPrivateEventRouterImpl(
       content::BrowserContext* browser_context);
+
+  NetworkingPrivateEventRouterImpl(const NetworkingPrivateEventRouterImpl&) =
+      delete;
+  NetworkingPrivateEventRouterImpl& operator=(
+      const NetworkingPrivateEventRouterImpl&) = delete;
+
   ~NetworkingPrivateEventRouterImpl() override;
 
  protected:
@@ -46,8 +52,6 @@ class NetworkingPrivateEventRouterImpl
 
   content::BrowserContext* browser_context_;
   bool listening_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateEventRouterImpl);
 };
 
 NetworkingPrivateEventRouterImpl::NetworkingPrivateEventRouterImpl(
@@ -135,8 +139,7 @@ void NetworkingPrivateEventRouterImpl::OnNetworksChangedEvent(
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (!event_router)
     return;
-  std::unique_ptr<base::ListValue> args(
-      api::networking_private::OnNetworksChanged::Create(network_guids));
+  auto args(api::networking_private::OnNetworksChanged::Create(network_guids));
   std::unique_ptr<Event> netchanged_event(new Event(
       events::NETWORKING_PRIVATE_ON_NETWORKS_CHANGED,
       api::networking_private::OnNetworksChanged::kEventName, std::move(args)));
@@ -148,7 +151,7 @@ void NetworkingPrivateEventRouterImpl::OnNetworkListChangedEvent(
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (!event_router)
     return;
-  std::unique_ptr<base::ListValue> args(
+  auto args(
       api::networking_private::OnNetworkListChanged::Create(network_guids));
   std::unique_ptr<Event> netlistchanged_event(
       new Event(events::NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED,

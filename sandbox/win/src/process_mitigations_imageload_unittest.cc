@@ -204,7 +204,7 @@ void TestWin10ImageLoadPreferSys32(bool baseline_test, bool expect_sys32_path) {
                                : sandbox::SBOX_TEST_FAILED),
             runner.RunTest(test.c_str()));
 
-  EXPECT_TRUE(base::DeleteFileW(new_dll_path, false));
+  EXPECT_TRUE(base::DeleteFile(new_dll_path));
 }
 
 }  // namespace

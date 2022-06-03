@@ -21,7 +21,7 @@ Wildcards can be used to run specific sets of tests:
 `tast run $HOST video.DecodeAccelPerf*1080P60FPS`
 
 Check the
-[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/)
+[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/bundles/cros/video/)
 for a list of all available tests.
 See the
 [Tast quickstart guide](https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/quickstart.md)
@@ -90,8 +90,13 @@ Multiple command line arguments can be given to the command:
     --output_folder      overwrite the output folder used to store
                          performance metrics, if not specified results
                          will be stored in the current working directory.
-    --use_vd             use the new VD-based video decoders, instead of
-                         the default VDA-based video decoders.
+    --use-legacy         use the legacy VDA-based video decoders.\n"
+    --use_vd             use the new VD-based video decoders.\n"
+                         (enabled by default)\n"
+    --use_vd_vda         use the new VD-based video decoders with a wrapper
+                         that translates to the VDA interface, used to test
+                         interaction with older components expecting the VDA
+                         interface.
     --gtest_help         display the gtest help and exit.
     --help               display this help and exit.
 

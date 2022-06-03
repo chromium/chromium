@@ -28,17 +28,17 @@ const char kDisplayPlacementDisplayIdKey[] = "display_id";
 const char kDisplayPlacementParentDisplayIdKey[] = "parent_display_id";
 
 bool AddLegacyValuesFromValue(const base::Value& value, DisplayLayout* layout) {
-  const base::DictionaryValue* dict_value = nullptr;
-  if (!value.GetAsDictionary(&dict_value))
+  if (!value.is_dict())
     return false;
-  int offset;
-  if (dict_value->GetInteger(kOffsetKey, &offset)) {
+
+  absl::optional<int> optional_offset = value.FindIntKey(kOffsetKey);
+  if (optional_offset) {
     DisplayPlacement::Position position;
-    std::string position_str;
-    if (!dict_value->GetString(kPositionKey, &position_str))
+    const std::string* position_str = value.FindStringKey(kPositionKey);
+    if (!position_str)
       return false;
-    DisplayPlacement::StringToPosition(position_str, &position);
-    layout->placement_list.emplace_back(position, offset);
+    DisplayPlacement::StringToPosition(*position_str, &position);
+    layout->placement_list.emplace_back(position, *optional_offset);
   }
   return true;
 }
@@ -46,92 +46,112 @@ bool AddLegacyValuesFromValue(const base::Value& value, DisplayLayout* layout) {
 // Returns true if
 //     The key is missing - output is left unchanged
 //     The key matches the type - output is updated to the value.
-template <typename Getter, typename Output>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
+bool UpdateFromDict(const base::Value& value,
                     const std::string& field_name,
-                    Getter getter,
-                    Output* output) {
-  const base::Value* field = nullptr;
-  if (!dict_value->Get(field_name, &field)) {
+                    bool* output) {
+  const base::Value* field = value.FindKey(field_name);
+  if (!field) {
     LOG(WARNING) << "Missing field: " << field_name;
     return true;
   }
 
-  return (field->*getter)(output);
+  absl::optional<bool> field_value = field->GetIfBool();
+  if (!field_value)
+    return false;
+
+  *output = *field_value;
+  return true;
 }
 
-// No implementation here as specialization is required.
-template <typename Output>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
-                    const std::string& field_name,
-                    Output* output);
-
-template <>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
-                    const std::string& field_name,
-                    bool* output) {
-  return UpdateFromDict(dict_value, field_name, &base::Value::GetAsBoolean,
-                        output);
-}
-
-template <>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
+// Returns true if
+//     The key is missing - output is left unchanged
+//     The key matches the type - output is updated to the value.
+bool UpdateFromDict(const base::Value& value,
                     const std::string& field_name,
                     int* output) {
-  return UpdateFromDict(dict_value, field_name, &base::Value::GetAsInteger,
-                        output);
+  const base::Value* field = value.FindKey(field_name);
+  if (!field) {
+    LOG(WARNING) << "Missing field: " << field_name;
+    return true;
+  }
+
+  absl::optional<int> field_value = field->GetIfInt();
+  if (!field_value)
+    return false;
+
+  *output = *field_value;
+  return true;
 }
 
-template <>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
+// Returns true if
+//     The key is missing - output is left unchanged
+//     The key matches the type - output is updated to the value.
+bool UpdateFromDict(const base::Value& value,
                     const std::string& field_name,
                     DisplayPlacement::Position* output) {
-  bool (base::Value::*getter)(std::string*) const = &base::Value::GetAsString;
-  std::string value;
-  if (!UpdateFromDict(dict_value, field_name, getter, &value))
+  const base::Value* field = value.FindKey(field_name);
+  if (!field) {
+    LOG(WARNING) << "Missing field: " << field_name;
+    return true;
+  }
+
+  const std::string* field_value = field->GetIfString();
+  if (!field_value)
     return false;
 
-  return value.empty() ? true
-                       : DisplayPlacement::StringToPosition(value, output);
+  return field_value->empty()
+             ? true
+             : DisplayPlacement::StringToPosition(*field_value, output);
 }
 
-template <>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
+// Returns true if
+//     The key is missing - output is left unchanged
+//     The key matches the type - output is updated to the value.
+bool UpdateFromDict(const base::Value& value,
                     const std::string& field_name,
                     int64_t* output) {
-  bool (base::Value::*getter)(std::string*) const = &base::Value::GetAsString;
-  std::string value;
-  if (!UpdateFromDict(dict_value, field_name, getter, &value))
+  const base::Value* field = value.FindKey(field_name);
+  if (!field) {
+    LOG(WARNING) << "Missing field: " << field_name;
+    return true;
+  }
+
+  const std::string* field_value = field->GetIfString();
+  if (!field_value)
     return false;
 
-  return value.empty() ? true : base::StringToInt64(value, output);
+  return field_value->empty() ? true
+                              : base::StringToInt64(*field_value, output);
 }
 
-template <>
-bool UpdateFromDict(const base::DictionaryValue* dict_value,
+// Returns true if
+//     The key is missing - output is left unchanged
+//     The key matches the type - output is updated to the value.
+bool UpdateFromDict(const base::Value& value,
                     const std::string& field_name,
                     std::vector<DisplayPlacement>* output) {
-  bool (base::Value::*getter)(const base::ListValue**) const =
-      &base::Value::GetAsList;
-  const base::ListValue* list = nullptr;
-  if (!UpdateFromDict(dict_value, field_name, getter, &list))
+  const base::Value* field = value.FindKey(field_name);
+  if (!field) {
+    LOG(WARNING) << "Missing field: " << field_name;
+    return true;
+  }
+
+  if (!field->is_list())
     return false;
 
-  if (list == nullptr)
-    return true;
+  const base::Value::ConstListView list = field->GetList();
+  output->reserve(list.size());
 
-  output->reserve(list->GetSize());
-  for (const auto& list_item : *list) {
-    const base::DictionaryValue* item_values = nullptr;
-    if (!list_item.GetAsDictionary(&item_values))
+  for (const base::Value& list_item : list) {
+    if (!list_item.is_dict())
       return false;
 
     DisplayPlacement item;
-    if (!UpdateFromDict(item_values, kOffsetKey, &item.offset) ||
-        !UpdateFromDict(item_values, kPositionKey, &item.position) ||
-        !UpdateFromDict(item_values, kDisplayPlacementDisplayIdKey,
+    if (!UpdateFromDict(list_item, kOffsetKey, &item.offset) ||
+        !UpdateFromDict(list_item, kPositionKey, &item.position) ||
+        !UpdateFromDict(list_item, kDisplayPlacementDisplayIdKey,
                         &item.display_id) ||
-        !UpdateFromDict(item_values, kDisplayPlacementParentDisplayIdKey,
+        !UpdateFromDict(list_item, kDisplayPlacementParentDisplayIdKey,
                         &item.parent_display_id)) {
       return false;
     }
@@ -145,18 +165,15 @@ bool UpdateFromDict(const base::DictionaryValue* dict_value,
 
 bool JsonToDisplayLayout(const base::Value& value, DisplayLayout* layout) {
   layout->placement_list.clear();
-  const base::DictionaryValue* dict_value = nullptr;
-  if (!value.GetAsDictionary(&dict_value))
+  if (!value.is_dict())
     return false;
 
-  if (!UpdateFromDict(dict_value, kDefaultUnifiedKey,
-                      &layout->default_unified) ||
-      !UpdateFromDict(dict_value, kPrimaryIdKey, &layout->primary_id)) {
+  if (!UpdateFromDict(value, kDefaultUnifiedKey, &layout->default_unified) ||
+      !UpdateFromDict(value, kPrimaryIdKey, &layout->primary_id)) {
     return false;
   }
 
-  UpdateFromDict(dict_value, kDisplayPlacementKey, &layout->placement_list);
-
+  UpdateFromDict(value, kDisplayPlacementKey, &layout->placement_list);
   if (layout->placement_list.size() != 0u)
     return true;
 
@@ -165,28 +182,27 @@ bool JsonToDisplayLayout(const base::Value& value, DisplayLayout* layout) {
 }
 
 bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
-  base::DictionaryValue* dict_value = nullptr;
-  if (!value->GetAsDictionary(&dict_value))
+  if (!value->is_dict())
     return false;
 
-  dict_value->SetBoolean(kDefaultUnifiedKey, layout.default_unified);
-  dict_value->SetString(kPrimaryIdKey, base::NumberToString(layout.primary_id));
+  value->SetBoolKey(kDefaultUnifiedKey, layout.default_unified);
+  value->SetStringKey(kPrimaryIdKey, base::NumberToString(layout.primary_id));
 
-  std::unique_ptr<base::ListValue> placement_list(new base::ListValue);
+  base::Value::ListStorage placement_list;
   for (const auto& placement : layout.placement_list) {
-    std::unique_ptr<base::DictionaryValue> placement_value(
-        new base::DictionaryValue);
-    placement_value->SetString(
+    base::Value placement_value(base::Value::Type::DICTIONARY);
+    placement_value.SetStringKey(
         kPositionKey, DisplayPlacement::PositionToString(placement.position));
-    placement_value->SetInteger(kOffsetKey, placement.offset);
-    placement_value->SetString(kDisplayPlacementDisplayIdKey,
-                               base::NumberToString(placement.display_id));
-    placement_value->SetString(
+    placement_value.SetIntKey(kOffsetKey, placement.offset);
+    placement_value.SetStringKey(kDisplayPlacementDisplayIdKey,
+                                 base::NumberToString(placement.display_id));
+    placement_value.SetStringKey(
         kDisplayPlacementParentDisplayIdKey,
         base::NumberToString(placement.parent_display_id));
-    placement_list->Append(std::move(placement_value));
+    placement_list.push_back(std::move(placement_value));
   }
-  dict_value->Set(kDisplayPlacementKey, std::move(placement_list));
+  value->SetKey(kDisplayPlacementKey, base::Value(std::move(placement_list)));
+
   return true;
 }
 

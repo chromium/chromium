@@ -18,6 +18,16 @@ constexpr FilePath::CharType kScopedDirPrefix[] =
 
 ScopedTempDir::ScopedTempDir() = default;
 
+ScopedTempDir::ScopedTempDir(ScopedTempDir&& other) noexcept
+    : path_(other.Take()) {}
+
+ScopedTempDir& ScopedTempDir::operator=(ScopedTempDir&& other) {
+  if (!path_.empty() && !Delete())
+    DLOG(WARNING) << "Could not delete temp dir in operator=().";
+  path_ = other.Take();
+  return *this;
+}
+
 ScopedTempDir::~ScopedTempDir() {
   if (!path_.empty() && !Delete())
     DLOG(WARNING) << "Could not delete temp dir in dtor.";
@@ -65,7 +75,7 @@ bool ScopedTempDir::Delete() {
   if (path_.empty())
     return false;
 
-  bool ret = DeleteFileRecursively(path_);
+  bool ret = DeletePathRecursively(path_);
   if (ret) {
     // We only clear the path if deleted the directory.
     path_.clear();
@@ -75,9 +85,7 @@ bool ScopedTempDir::Delete() {
 }
 
 FilePath ScopedTempDir::Take() {
-  FilePath ret = path_;
-  path_ = FilePath();
-  return ret;
+  return std::exchange(path_, FilePath());
 }
 
 const FilePath& ScopedTempDir::GetPath() const {

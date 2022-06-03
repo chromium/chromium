@@ -24,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -60,7 +61,6 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
         .AddExtension(test::kY4mFileExtension);
     command_line->AppendSwitchPath(switches::kUseFileForFakeVideoCapture,
                                    input_video);
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
   // Tries to extract data from peerConnectionDataStore in the webrtc-internals
@@ -102,8 +102,9 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
 
   std::unique_ptr<base::DictionaryValue> MeasureWebRtcInternalsData(
       int duration_msec) {
-    chrome::AddTabAt(browser(), GURL(), -1, true);
-    ui_test_utils::NavigateToURL(browser(), GURL("chrome://webrtc-internals"));
+    chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("chrome://webrtc-internals")));
     content::WebContents* webrtc_internals_tab =
         browser()->tab_strip_model()->GetActiveWebContents();
 

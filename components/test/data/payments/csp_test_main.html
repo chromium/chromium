@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-eval'; frame-src https://other.example:*"
+    >
+  </head>
+  <body>
+    <p>This page is a regression test for <a href="https://crbug.com/1055360">
+      crbug/1055360</a>.</p>
+    <ul>
+      <li>Setup:</li>
+        <ul>
+          <li>This top-level document has a CSP policy that sets img-src to
+            'self'</li>
+          <li>The cross-origin iframe creates a payment request that triggers
+            JIT
+            crawling of the payment method manifest hosted at kylepay.com.
+          </li>
+        </ul>
+      <li>Test: if Chrome handles CSP policy correctly, request.canMakePayment()
+        should return true as the payment method manifest crawl is successful.
+      </li>
+    </ul>
+    <iframe id="test" allow="payment">
+    </iframe>
+  </body>
+</html>

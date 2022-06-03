@@ -7,16 +7,15 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/services/device_sync/proto/securemessage.pb.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace chromeos {
 
@@ -42,7 +41,7 @@ constexpr securemessage::SigScheme kSecureMessageSignatureScheme =
 // expected Header parameters.
 void VerifyEncryptedPayload(
     const std::string& expected_session_public_key,
-    const base::Optional<std::string>& encrypted_payload) {
+    const absl::optional<std::string>& encrypted_payload) {
   ASSERT_TRUE(encrypted_payload);
   EXPECT_FALSE(encrypted_payload->empty());
   EXPECT_NE(kPayloadNotSet, encrypted_payload);
@@ -63,6 +62,12 @@ void VerifyEncryptedPayload(
 }  // namespace
 
 class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthEciesEncryptorImplTest(
+      const DeviceSyncCryptAuthEciesEncryptorImplTest&) = delete;
+  DeviceSyncCryptAuthEciesEncryptorImplTest& operator=(
+      const DeviceSyncCryptAuthEciesEncryptorImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthEciesEncryptorImplTest()
       : fake_secure_message_delegate_factory_(
@@ -72,13 +77,13 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
   ~DeviceSyncCryptAuthEciesEncryptorImplTest() override = default;
 
   void SetUp() override {
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         fake_secure_message_delegate_factory_.get());
   }
 
   void Encrypt(const std::string& unencrypted_payload,
                const std::string& encrypting_public_key) {
-    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Get()->BuildInstance();
+    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Create();
     fake_secure_message_delegate()->set_next_public_key(kSessionPublicKey);
 
     base::RunLoop run_loop;
@@ -95,7 +100,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
 
   void BatchEncrypt(const CryptAuthEciesEncryptor::IdToInputMap&
                         id_to_unencrypted_payload_map) {
-    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Get()->BuildInstance();
+    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Create();
     fake_secure_message_delegate()->set_next_public_key(kSessionPublicKey);
 
     base::RunLoop run_loop;
@@ -112,7 +117,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
 
   void Decrypt(const std::string& encrypted_payload,
                const std::string& decrypting_private_key) {
-    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Get()->BuildInstance();
+    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Create();
 
     base::RunLoop run_loop;
     encryptor_->Decrypt(
@@ -125,7 +130,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
 
   void BatchDecrypt(const CryptAuthEciesEncryptor::IdToInputMap&
                         id_to_encrypted_payload_map) {
-    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Get()->BuildInstance();
+    encryptor_ = CryptAuthEciesEncryptorImpl::Factory::Create();
 
     base::RunLoop run_loop;
     encryptor_->BatchDecrypt(
@@ -137,7 +142,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
   }
 
   void VerifyDecryption(
-      const base::Optional<std::string>& expected_decrypted_payload) {
+      const absl::optional<std::string>& expected_decrypted_payload) {
     EXPECT_EQ(expected_decrypted_payload, decrypted_payload_);
   }
 
@@ -158,7 +163,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
         id_to_encrypted_payload_and_private_key_map =
             id_to_unencrypted_payload_and_public_key_map;
     for (auto& id_pk_pair : id_to_encrypted_payload_and_private_key_map) {
-      const base::Optional<std::string>& encrypted_payload =
+      const absl::optional<std::string>& encrypted_payload =
           (*batch_encrypted_payloads_)[id_pk_pair.first];
       EXPECT_TRUE(encrypted_payload);
 
@@ -171,7 +176,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
     return id_to_encrypted_payload_and_private_key_map;
   }
 
-  const base::Optional<std::string>& encrypted_payload() {
+  const absl::optional<std::string>& encrypted_payload() {
     return encrypted_payload_;
   }
 
@@ -182,7 +187,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
  private:
   void OnEncryptionFinished(
       base::OnceClosure quit_closure,
-      const base::Optional<std::string>& encrypted_payload) {
+      const absl::optional<std::string>& encrypted_payload) {
     encrypted_payload_ = encrypted_payload;
     std::move(quit_closure).Run();
   }
@@ -196,7 +201,7 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
 
   void OnDecryptionFinished(
       base::OnceClosure quit_closure,
-      const base::Optional<std::string>& decrypted_payload) {
+      const absl::optional<std::string>& decrypted_payload) {
     decrypted_payload_ = decrypted_payload;
     std::move(quit_closure).Run();
   }
@@ -228,17 +233,15 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
   const base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<CryptAuthEciesEncryptor> encryptor_;
-  base::Optional<std::string> encrypted_payload_ = kPayloadNotSet;
-  base::Optional<std::string> decrypted_payload_ = kPayloadNotSet;
-  base::Optional<CryptAuthEciesEncryptor::IdToOutputMap>
+  absl::optional<std::string> encrypted_payload_ = kPayloadNotSet;
+  absl::optional<std::string> decrypted_payload_ = kPayloadNotSet;
+  absl::optional<CryptAuthEciesEncryptor::IdToOutputMap>
       batch_encrypted_payloads_;
-  base::Optional<CryptAuthEciesEncryptor::IdToOutputMap>
+  absl::optional<CryptAuthEciesEncryptor::IdToOutputMap>
       batch_decrypted_payloads_;
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthEciesEncryptorImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest, EncryptAndDecrypt) {
@@ -268,7 +271,7 @@ TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
   Encrypt(kUnencryptedPayload1, kPublicKey1);
 
   Decrypt(*encrypted_payload(), "Invalid private key");
-  VerifyDecryption(base::nullopt /* expected_decrypted_payload */);
+  VerifyDecryption(absl::nullopt /* expected_decrypted_payload */);
 }
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
@@ -288,7 +291,7 @@ TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
 
   BatchDecrypt(encrypted_input);
   VerifyBatchDecryption(
-      {{kPayloadId1, kUnencryptedPayload1}, {kPayloadId2, base::nullopt}});
+      {{kPayloadId1, kUnencryptedPayload1}, {kPayloadId2, absl::nullopt}});
 }
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
@@ -305,7 +308,7 @@ TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
   Decrypt(
       secure_message_with_invalid_header_and_body.SerializeAsString(),
       fake_secure_message_delegate()->GetPrivateKeyForPublicKey(kPublicKey1));
-  VerifyDecryption(base::nullopt /* expected_decrypted_payload */);
+  VerifyDecryption(absl::nullopt /* expected_decrypted_payload */);
 }
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
@@ -345,7 +348,7 @@ TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
 
   BatchDecrypt(encrypted_input);
   VerifyBatchDecryption(
-      {{kPayloadId1, base::nullopt}, {kPayloadId2, base::nullopt}});
+      {{kPayloadId1, absl::nullopt}, {kPayloadId2, absl::nullopt}});
 }
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
@@ -363,7 +366,7 @@ TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest,
   Decrypt(
       secure_message.SerializeAsString(),
       fake_secure_message_delegate()->GetPrivateKeyForPublicKey(kPublicKey1));
-  VerifyDecryption(base::nullopt /* expected_decrypted_payload */);
+  VerifyDecryption(absl::nullopt /* expected_decrypted_payload */);
 }
 
 }  // namespace device_sync

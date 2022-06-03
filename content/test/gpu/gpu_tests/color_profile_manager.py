@@ -2,19 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import atexit
 import sys
 
-has_forced_srgb = False
+
 # Force all displays to use an sRGB color profile. By default, restore
 # them at exit.
 def ForceUntilExitSRGB(skip_restoring_color_profile=False):
-  global has_forced_srgb
   if not sys.platform.startswith('darwin'):
     return
-  if has_forced_srgb:
+  if ForceUntilExitSRGB.has_forced_srgb:
     return
-  has_forced_srgb = True
+  ForceUntilExitSRGB.has_forced_srgb = True
 
   from gpu_tests import color_profile_manager_mac
   # Record the current color profiles.
@@ -27,9 +28,13 @@ def ForceUntilExitSRGB(skip_restoring_color_profile=False):
   # Register an atexit handler to restore the previous color profiles.
   def Restore():
     if skip_restoring_color_profile:
-      print "Skipping restoring the original color profile"
+      print("Skipping restoring the original color profile")
       return
     for display_id in display_profile_url_map:
       color_profile_manager_mac.SetDisplayCustomProfile(
           display_id, display_profile_url_map[display_id])
+
   atexit.register(Restore)
+
+
+ForceUntilExitSRGB.has_forced_srgb = False

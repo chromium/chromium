@@ -5,6 +5,7 @@
 #include "components/viz/service/display/bsp_tree.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"

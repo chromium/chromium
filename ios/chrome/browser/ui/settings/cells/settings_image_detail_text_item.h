@@ -18,15 +18,24 @@
 // UIImageRenderingModeAlwaysTemplate.
 @property(nonatomic, strong) UIImage* image;
 
-// Whether the image should be tinted as an icon or not (if it is already
-// colored). The tint color will match the text color.
-@property(nonatomic, assign) BOOL imageShouldBeTinted;
+// The image View's tint color.
+@property(nonatomic, strong) UIColor* imageViewTintColor;
+
+// If true, aligns the image with the first line of text.
+@property(nonatomic, assign) BOOL alignImageWithFirstLineOfText;
 
 // The title text to display.
 @property(nonatomic, copy) NSString* text;
 
+// The attributed text to display.
+@property(nonatomic, copy) NSAttributedString* attributedText;
+
 // The detail text to display.
 @property(nonatomic, copy) NSString* detailText;
+
+// UIColor for the cell's detailTextLabel. If not set,
+// [UIColor colorNamed:kTextSecondaryColor] is used.
+@property(nonatomic, strong) UIColor* detailTextColor;
 
 @end
 

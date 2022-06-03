@@ -42,8 +42,8 @@ fuchsia::web::Cookie ConvertCanonicalCookie(
   return cookie;
 }
 
-class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
-                            public network::mojom::CookieChangeListener {
+class CookiesIteratorImpl final : public fuchsia::web::CookiesIterator,
+                                  public network::mojom::CookieChangeListener {
  public:
   // |this| will delete itself when |mojo_request| or |changes| disconnect.
   CookiesIteratorImpl(
@@ -65,21 +65,27 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
           ConvertCanonicalCookie(cookie, net::CookieChangeCause::INSERTED);
     }
   }
-  // Same as above except it takes CookieStatusList instead of just CookieList.
+  // Same as above except it takes CookieAccessResultList instead of just
+  // CookieList.
   CookiesIteratorImpl(
-      const std::vector<net::CookieWithStatus>& cookies_with_statuses,
+      const std::vector<net::CookieWithAccessResult>&
+          cookies_with_access_results,
       fidl::InterfaceRequest<fuchsia::web::CookiesIterator> iterator)
       : CookiesIteratorImpl(std::move(iterator)) {
-    for (const auto& cookie_with_status : cookies_with_statuses) {
-      queued_cookies_[cookie_with_status.cookie.UniqueKey()] =
-          ConvertCanonicalCookie(cookie_with_status.cookie,
+    for (const auto& cookie_with_access_result : cookies_with_access_results) {
+      queued_cookies_[cookie_with_access_result.cookie.UniqueKey()] =
+          ConvertCanonicalCookie(cookie_with_access_result.cookie,
                                  net::CookieChangeCause::INSERTED);
     }
   }
-  ~CookiesIteratorImpl() final = default;
+
+  CookiesIteratorImpl(const CookiesIteratorImpl&) = delete;
+  CookiesIteratorImpl& operator=(const CookiesIteratorImpl&) = delete;
+
+  ~CookiesIteratorImpl() override = default;
 
   // fuchsia::web::CookiesIterator implementation:
-  void GetNext(GetNextCallback callback) final {
+  void GetNext(GetNextCallback callback) override {
     DCHECK(!get_next_callback_);
     get_next_callback_ = std::move(callback);
     MaybeSendQueuedCookies();
@@ -131,7 +137,7 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
   }
 
   // network::mojom::CookieChangeListener implementation:
-  void OnCookieChange(const net::CookieChangeInfo& change) final {
+  void OnCookieChange(const net::CookieChangeInfo& change) override {
     queued_cookies_[change.cookie.UniqueKey()] =
         ConvertCanonicalCookie(change.cookie, change.cause);
     MaybeSendQueuedCookies();
@@ -144,11 +150,8 @@ class CookiesIteratorImpl : public fuchsia::web::CookiesIterator,
 
   // Map from "unique key"s (see net::CanonicalCookie::UniqueKey()) to the
   // corresponding fuchsia::web::Cookie.
-  std::map<std::tuple<std::string, std::string, std::string>,
-           fuchsia::web::Cookie>
+  std::map<net::CanonicalCookie::UniqueCookieKey, fuchsia::web::Cookie>
       queued_cookies_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesIteratorImpl);
 };
 
 void OnAllCookiesReceived(
@@ -159,12 +162,12 @@ void OnAllCookiesReceived(
 
 void OnCookiesAndExcludedReceived(
     fidl::InterfaceRequest<fuchsia::web::CookiesIterator> iterator,
-    const std::vector<net::CookieWithStatus>& cookies_with_statuses,
-    const std::vector<net::CookieWithStatus>& excluded_cookies) {
+    const std::vector<net::CookieWithAccessResult>& cookies_with_access_results,
+    const std::vector<net::CookieWithAccessResult>& excluded_cookies) {
   // Since CookieOptions::set_return_excluded_cookies() is not used when calling
   // the Mojo GetCookieList() API, |excluded_cookies| should be empty.
   DCHECK(excluded_cookies.empty());
-  new CookiesIteratorImpl(cookies_with_statuses, std::move(iterator));
+  new CookiesIteratorImpl(cookies_with_access_results, std::move(iterator));
 }
 
 }  // namespace
@@ -186,7 +189,7 @@ void CookieManagerImpl::ObserveCookieChanges(
                           std::move(changes));
 
   if (url) {
-    base::Optional<std::string> maybe_name;
+    absl::optional<std::string> maybe_name;
     if (name)
       maybe_name = *name;
     cookie_manager_->AddCookieChangeListener(GURL(*url), maybe_name,
@@ -211,10 +214,10 @@ void CookieManagerImpl::GetCookieList(
       net::CookieOptions options;
       options.set_include_httponly();
       options.set_same_site_cookie_context(
-          net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
+          net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
       cookie_manager_->GetCookieList(
-          GURL(*url), options,
+          GURL(*url), options, net::CookiePartitionKeychain::Todo(),
           base::BindOnce(&OnCookiesAndExcludedReceived, std::move(iterator)));
     } else {
       // TODO(858853): Support filtering by name.

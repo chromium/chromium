@@ -15,7 +15,7 @@ namespace blink {
 // Represents a (non-strict) subset of a PropertySpecificKeyframe's value broken
 // down into interpolable and non-interpolable parts. InterpolationValues can be
 // composed together to represent a whole PropertySpecificKeyframe value.
-struct InterpolationValue {
+struct CORE_EXPORT InterpolationValue {
   DISALLOW_NEW();
 
   explicit InterpolationValue(

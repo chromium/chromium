@@ -36,8 +36,8 @@ void SurroundingTextTest::SetUp() {
 }
 
 void SurroundingTextTest::SetHTML(const String& content) {
-  GetDocument().body()->SetInnerHTMLFromString(content);
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().body()->setInnerHTML(content);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 }
 
 EphemeralRange SurroundingTextTest::Select(int start, int end) {
@@ -307,7 +307,7 @@ TEST_F(SurroundingTextTest, EmptyInputElementWithChild) {
   TextControlElement* input_element = reinterpret_cast<TextControlElement*>(
       GetDocument().getElementById("input_name"));
   input_element->SetInnerEditorValue("John Smith");
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // BODY
   //   INPUT

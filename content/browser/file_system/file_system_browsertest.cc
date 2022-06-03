@@ -9,8 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/thread_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -36,6 +36,10 @@ class FileSystemBrowserTest : public ContentBrowserTest,
  public:
   FileSystemBrowserTest() { is_incognito_ = GetParam(); }
 
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
   void SimpleTest(const GURL& test_url) {
     // The test page will perform tests on FileAPI, then navigate to either
     // a #pass or #fail ref.
@@ -44,10 +48,7 @@ class FileSystemBrowserTest : public ContentBrowserTest,
     VLOG(0) << "Navigation done.";
     std::string result = browser()->web_contents()->GetLastCommittedURL().ref();
     if (result != "pass") {
-      std::string js_result;
-      ASSERT_TRUE(ExecuteScriptAndExtractString(
-          browser(), "window.domAutomationController.send(getLog())",
-          &js_result));
+      std::string js_result = EvalJs(browser(), "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;
     }
   }
@@ -71,15 +72,18 @@ INSTANTIATE_TEST_SUITE_P(All, FileSystemBrowserTest, ::testing::Bool());
 class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    SetLowQuota(BrowserContext::GetDefaultStoragePartition(
-                    browser()->web_contents()->GetBrowserContext())
+    FileSystemBrowserTest::SetUpOnMainThread();
+    SetLowQuota(browser()
+                    ->web_contents()
+                    ->GetBrowserContext()
+                    ->GetDefaultStoragePartition()
                     ->GetQuotaManager());
   }
 
   static void SetLowQuota(scoped_refptr<QuotaManager> qm) {
     if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-      base::PostTask(
-          FROM_HERE, {BrowserThread::IO},
+      GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
           base::BindOnce(&FileSystemBrowserTestWithLowQuota::SetLowQuota, qm));
       return;
     }
@@ -100,15 +104,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(FileSystemBrowserTest, RequestTest) {
-  SimpleTest(GetTestUrl("fileapi", "request_test.html"));
+  SimpleTest(embedded_test_server()->GetURL("/fileapi/request_test.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemBrowserTest, CreateTest) {
-  SimpleTest(GetTestUrl("fileapi", "create_test.html"));
+  SimpleTest(embedded_test_server()->GetURL("/fileapi/create_test.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemBrowserTestWithLowQuota, QuotaTest) {
-  SimpleTest(GetTestUrl("fileapi", "quota_test.html"));
+  SimpleTest(embedded_test_server()->GetURL("/fileapi/quota_test.html"));
 }
 
 }  // namespace content

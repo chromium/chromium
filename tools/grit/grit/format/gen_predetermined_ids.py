@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,11 +16,11 @@ import re
 import sys
 
 # Regular expression for parsing the #define macro format. Matches both the
-# version of the macro with whitelist support and the one without. For example,
-# Without generate whitelist flag:
+# version of the macro with allowlist support and the one without. For example,
+# Without generate allowlist flag:
 #   #define IDS_FOO_MESSAGE 1234
-# With generate whitelist flag:
-#   #define IDS_FOO_MESSAGE (::ui::WhitelistedResource<1234>(), 1234)
+# With generate allowlist flag:
+#   #define IDS_FOO_MESSAGE (::ui::AllowlistedResource<1234>(), 1234)
 RESOURCE_EXTRACT_REGEX = re.compile(r'^#define (\S*).* (\d+)\)?$', re.MULTILINE)
 
 ORDERED_RESOURCE_IDS_REGEX = re.compile(r'^Resource=(\d*)$', re.MULTILINE)

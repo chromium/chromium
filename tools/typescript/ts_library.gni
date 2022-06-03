@@ -1,0 +1,130 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+template("ts_library") {
+  node(target_name) {
+    script = "//tools/typescript/ts_library.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "extra_deps",
+                             "in_files",
+                             "tsconfig_base",
+                           ])
+
+    inputs = [ "//tools/typescript/tsconfig_base.json" ]
+    outputs = [ "$target_gen_dir/tsconfig.json" ]
+
+    assert(defined(in_files) || defined(invoker.definitions))
+
+    root_dir = "."
+    if (defined(invoker.root_dir)) {
+      root_dir = invoker.root_dir
+    }
+
+    out_dir = target_gen_dir
+    if (defined(invoker.out_dir)) {
+      out_dir = invoker.out_dir
+    }
+
+    composite = false
+    if (defined(invoker.composite)) {
+      composite = invoker.composite
+    }
+
+    if (defined(in_files)) {
+      outputs += [ "$target_gen_dir/tsconfig.manifest" ]
+      foreach(_source, in_files) {
+        inputs += [ "$root_dir/$_source" ]
+        _dirname =
+            rebase_path(get_path_info(_source, "gen_dir"), target_gen_dir)
+        _filename = get_path_info(_source, "name")
+        outputs += [ "$out_dir/$_dirname/$_filename.js" ]
+
+        if (composite) {
+          outputs += [ "$out_dir/$_dirname/$_filename.d.ts" ]
+        }
+      }
+    }
+
+    args = [
+      "--root_dir",
+      rebase_path(root_dir, root_build_dir),
+      "--gen_dir",
+      rebase_path(target_gen_dir, root_build_dir),
+      "--out_dir",
+      rebase_path(out_dir, root_build_dir),
+    ]
+
+    if (defined(in_files)) {
+      args += [ "--in_files" ] + in_files
+    }
+
+    if (defined(invoker.definitions)) {
+      inputs += invoker.definitions
+      definitions = []
+      foreach(_definition, invoker.definitions) {
+        definitions += [ rebase_path(_definition, target_gen_dir) ]
+      }
+      args += [ "--definitions" ] + definitions
+    }
+
+    if (defined(deps)) {
+      args += [ "--deps" ]
+      foreach(dep, deps) {
+        args +=
+            [ rebase_path(get_label_info(dep, "dir"), ".") + "/tsconfig.json" ]
+      }
+    }
+
+    if (defined(tsconfig_base)) {
+      inputs += [ tsconfig_base ]
+      args += [
+        "--tsconfig_base",
+        rebase_path(tsconfig_base, target_gen_dir),
+      ]
+    }
+
+    if (composite) {
+      args += [ "--composite" ]
+    }
+
+    if (defined(extra_deps)) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += extra_deps
+    }
+
+    path_mappings = [
+      "chrome://resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
+                      target_gen_dir),
+      "//resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
+                      target_gen_dir),
+      "chrome://resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
+      "//resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
+      "chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
+              target_gen_dir),
+      "//resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
+              target_gen_dir),
+      "/tools/typescript/definitions/*|" +
+          rebase_path("//tools/typescript/definitions/*", target_gen_dir),
+    ]
+    args += [ "--path_mappings" ] + path_mappings
+    if (defined(invoker.path_mappings)) {
+      args += invoker.path_mappings
+    }
+  }
+}

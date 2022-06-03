@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# The purpose of this script is to set up all the neccessary magic to
+# The purpose of this script is to set up all the necessary magic to
 # pipe network traffic through a user-space process. That user-space
 # process can then delay, reorder and drop packets as it pleases to
 # emulate various network environments.

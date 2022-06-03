@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef PPAPI_SIMPLE_PS_CONTEXT_2D_H_
-#define PPAPI_SIMPLE_PS_CONTEXT_2D_H_
+#ifndef LIBRARIES_PPAPI_SIMPLE_PS_CONTEXT_2D_H_
+#define LIBRARIES_PPAPI_SIMPLE_PS_CONTEXT_2D_H_
 
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/ppb_graphics_2d.h"
@@ -71,4 +71,4 @@ int PSContext2DSwapBuffer(PSContext2D_t* ctx);
 
 EXTERN_C_END
 
-#endif  /* PPAPI_SIMPLE_PS_CONTEXT_2D_H_ */
+#endif  // LIBRARIES_PPAPI_SIMPLE_PS_CONTEXT_2D_H_

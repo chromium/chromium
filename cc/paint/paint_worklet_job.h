@@ -5,6 +5,8 @@
 #ifndef CC_PAINT_PAINT_WORKLET_JOB_H_
 #define CC_PAINT_PAINT_WORKLET_JOB_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_export.h"
@@ -24,7 +26,8 @@ class CC_PAINT_EXPORT PaintWorkletJob {
   // For a custom property, its name is sufficient to uniquely identify it.
   // TODO(xidachen): support more property types such as color.
   using AnimatedPropertyValues =
-      base::flat_map<std::string, PaintWorkletInput::PropertyValue>;
+      base::flat_map<PaintWorkletInput::PropertyKey,
+                     PaintWorkletInput::PropertyValue>;
   PaintWorkletJob(int layer_id,
                   scoped_refptr<const PaintWorkletInput> input,
                   AnimatedPropertyValues animated_property_values);

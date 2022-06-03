@@ -59,9 +59,11 @@ typedef struct {
    float noisiness;
    float activity;
    float music_prob;
-   float vad_prob;
+   float music_prob_min;
+   float music_prob_max;
    int   bandwidth;
    float activity_probability;
+   float max_pitch_ratio;
    /* Store as Q6 char to save space. */
    unsigned char leak_boost[LEAK_BANDS];
 } AnalysisInfo;
@@ -206,6 +208,13 @@ static OPUS_INLINE int fromOpus(unsigned char c)
 #define COMBFILTER_MINPERIOD 15
 
 extern const signed char tf_select_table[4][8];
+
+#if defined(ENABLE_HARDENING) || defined(ENABLE_ASSERTIONS)
+void validate_celt_decoder(CELTDecoder *st);
+#define VALIDATE_CELT_DECODER(st) validate_celt_decoder(st)
+#else
+#define VALIDATE_CELT_DECODER(st)
+#endif
 
 int resampling_factor(opus_int32 rate);
 

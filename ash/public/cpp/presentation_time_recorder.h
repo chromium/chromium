@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -31,6 +30,9 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
    public:
     explicit TestApi(PresentationTimeRecorder* recorder);
 
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     void OnCompositingDidCommit(ui::Compositor* compositor);
     void OnPresented(int count,
                      base::TimeTicks requested_time,
@@ -42,11 +44,14 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 
    private:
     PresentationTimeRecorder* recorder_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   explicit PresentationTimeRecorder(
       std::unique_ptr<PresentationTimeRecorderInternal> internal);
+
+  PresentationTimeRecorder(const PresentationTimeRecorder&) = delete;
+  PresentationTimeRecorder& operator=(const PresentationTimeRecorder&) = delete;
+
   ~PresentationTimeRecorder();
 
   // Start recording next frame. It skips requesting next frame and returns
@@ -59,18 +64,16 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 
  private:
   std::unique_ptr<PresentationTimeRecorderInternal> recorder_internal_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationTimeRecorder);
 };
 
 // Creates a PresentationTimeRecorder that records timing histograms of
-// presentation time and max latency. The time range is 1 to 200 ms, with 50
-// buckets.
+// presentation time and (if given) max latency. The time range is 1 to 200 ms,
+// with 50 buckets.
 ASH_PUBLIC_EXPORT std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
-    const char* max_latency_histogram_name);
+    const char* max_latency_histogram_name = "");
 
 }  // namespace ash
 

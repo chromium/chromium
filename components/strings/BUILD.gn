@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/locales.gni")
+import("//components/feed/features.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
@@ -28,14 +30,14 @@ group("strings") {
 grit("components_strings") {
   source = "../components_strings.grd"
   defines = [
+    "enable_arcore=$enable_arcore",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
+    "enable_vr=$enable_vr",
   ]
 
-  outputs = [
-    "grit/components_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/components_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_strings_$locale.pak" ]
   }
 
@@ -49,28 +51,22 @@ if (is_android) {
     grit_output_dir = "$root_gen_dir/components/strings/java/res"
     generated_files =
         rebase_path(android_components_strings_java_resources, "java/res", ".")
-    deps = [
-      ":components_strings",
-    ]
+    deps = [ ":components_strings" ]
   }
 }
 
 grit("components_chromium_strings") {
   source = "../components_chromium_strings.grd"
-  outputs = [
-    "grit/components_chromium_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/components_chromium_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_chromium_strings_$locale.pak" ]
   }
 }
 
 grit("components_google_chrome_strings") {
   source = "../components_google_chrome_strings.grd"
-  outputs = [
-    "grit/components_google_chrome_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/components_google_chrome_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_google_chrome_strings_$locale.pak" ]
   }
 }
@@ -85,10 +81,8 @@ if (is_android) {
 
 grit("components_locale_settings") {
   source = "../components_locale_settings.grd"
-  outputs = [
-    "grit/components_locale_settings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/components_locale_settings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "components_locale_settings_$locale.pak" ]
   }
 
@@ -104,8 +98,6 @@ if (is_android) {
         rebase_path(android_components_locale_settings_java_resources,
                     "java/res",
                     ".")
-    deps = [
-      ":components_locale_settings",
-    ]
+    deps = [ ":components_locale_settings" ]
   }
 }

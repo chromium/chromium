@@ -122,7 +122,7 @@ typedef xmlSchemaValidCtxt *xmlSchemaValidCtxtPtr;
  * @line: returned line information
  *
  * A schemas validation locator, a callback called by the validator.
- * This is used when file or node informations are not available
+ * This is used when file or node information are not available
  * to find out what file and line number are affected
  *
  * Returns: 0 in case of success and -1 in case of error

@@ -20,8 +20,14 @@
 namespace {
 
 static constexpr char kBase64UrlError[] = " must be a base64url encoded string";
+static constexpr char kExtensionsMustBeList[] =
+    "extensions must be a list of strings";
 static constexpr char kDevToolsDidNotReturnExpectedValue[] =
     "DevTools did not return the expected value";
+static constexpr char kUnrecognizedExtension[] =
+    " is not a recognized extension";
+static constexpr char kUnrecognizedProtocol[] =
+    " is not a recognized protocol version";
 
 // Creates a base::DictionaryValue by cloning the parameters specified by
 // |mapping| from |params|.
@@ -41,7 +47,7 @@ base::DictionaryValue MapParams(
 // status error if conversion of one of the keys failed.
 Status ConvertBase64UrlToBase64(base::Value* params,
                                 const std::vector<std::string> keys) {
-  for (const std::string key : keys) {
+  for (const std::string& key : keys) {
     base::Value* maybe_value = params->FindKey(key);
     if (!maybe_value)
       continue;
@@ -65,7 +71,7 @@ Status ConvertBase64UrlToBase64(base::Value* params,
 // Converts the string |keys| in |params| from base64 to base64url.
 void ConvertBase64ToBase64Url(base::Value* params,
                               const std::vector<std::string> keys) {
-  for (const std::string key : keys) {
+  for (const std::string& key : keys) {
     std::string* maybe_value = params->FindStringKey(key);
     if (!maybe_value)
       continue;
@@ -115,11 +121,40 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
       },
       params);
 
+  const base::Value* extensions = params.FindKey("extensions");
+  if (extensions) {
+    if (!extensions->is_list())
+      return Status(kInvalidArgument, kExtensionsMustBeList);
+    for (const base::Value& extension : extensions->GetList()) {
+      if (!extension.is_string())
+        return Status(kInvalidArgument, kExtensionsMustBeList);
+      const std::string& extension_string = extension.GetString();
+      if (extension_string == "largeBlob") {
+        mapped_params.SetPath("options.hasLargeBlob", base::Value(true));
+      } else if (extension_string == "credBlob") {
+        mapped_params.SetPath("options.hasCredBlob", base::Value(true));
+      } else {
+        return Status(kUnsupportedOperation,
+                      extension_string + kUnrecognizedExtension);
+      }
+    }
+  }
+
   // The spec calls u2f "ctap1/u2f", convert the value here since devtools does
   // not support slashes on enums.
   std::string* protocol = mapped_params.FindStringPath("options.protocol");
-  if (protocol && *protocol == "ctap1/u2f")
-    *protocol = "u2f";
+  if (protocol) {
+    if (*protocol == "ctap1/u2f") {
+      *protocol = "u2f";
+    } else if (*protocol == "ctap2") {
+      mapped_params.SetPath("options.ctap2Version", base::Value("ctap2_0"));
+    } else if (*protocol == "ctap2_1") {
+      *protocol = "ctap2";
+      mapped_params.SetPath("options.ctap2Version", base::Value("ctap2_1"));
+    } else {
+      return Status(kUnsupportedOperation, *protocol + kUnrecognizedProtocol);
+    }
+  }
 
   std::unique_ptr<base::Value> result;
   Status status = web_view->SendCommandAndGetResult(
@@ -127,7 +162,7 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
   if (status.IsError())
     return status;
 
-  base::Optional<base::Value> authenticator_id =
+  absl::optional<base::Value> authenticator_id =
       result->ExtractKey("authenticatorId");
   if (!authenticator_id)
     return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
@@ -156,11 +191,12 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.privateKey", "privateKey"},
           {"credential.userHandle", "userHandle"},
           {"credential.signCount", "signCount"},
+          {"credential.largeBlob", "largeBlob"},
       },
       params);
-  Status status =
-      ConvertBase64UrlToBase64(mapped_params.FindKey("credential"),
-                               {"credentialId", "privateKey", "userHandle"});
+  Status status = ConvertBase64UrlToBase64(
+      mapped_params.FindKey("credential"),
+      {"credentialId", "privateKey", "userHandle", "largeBlob"});
   if (status.IsError())
     return status;
 
@@ -178,13 +214,13 @@ Status ExecuteGetCredentials(WebView* web_view,
   if (status.IsError())
     return status;
 
-  base::Optional<base::Value> credentials = result->ExtractKey("credentials");
+  absl::optional<base::Value> credentials = result->ExtractKey("credentials");
   if (!credentials)
     return Status(kUnknownError, kDevToolsDidNotReturnExpectedValue);
 
   for (base::Value& credential : credentials->GetList()) {
-    ConvertBase64ToBase64Url(&credential,
-                             {"credentialId", "privateKey", "userHandle"});
+    ConvertBase64ToBase64Url(
+        &credential, {"credentialId", "privateKey", "userHandle", "largeBlob"});
   }
   *value = std::make_unique<base::Value>(std::move(*credentials));
   return status;

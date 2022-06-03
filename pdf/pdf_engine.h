@@ -8,28 +8,24 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "pdf/document_layout.h"
-#include "ppapi/c/dev/pp_cursor_type_dev.h"
-#include "ppapi/c/dev/ppp_printing_dev.h"
-#include "ppapi/c/ppb_input_event.h"
-#include "ppapi/cpp/completion_callback.h"
-#include "ppapi/cpp/image_data.h"
-#include "ppapi/cpp/private/pdf.h"
-#include "ppapi/cpp/rect.h"
-#include "ppapi/cpp/size.h"
-#include "ppapi/cpp/url_loader.h"
-#include "ppapi/cpp/var_array.h"
+#include "pdf/ppapi_migration/callback.h"
+#include "printing/mojom/print.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -41,50 +37,79 @@ typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
                                                       size_t text_length);
 #endif
 
-struct PP_PdfAccessibilityActionData;
-struct PP_PdfPrintSettings_Dev;
+class SkBitmap;
+
+namespace base {
+class Location;
+}  // namespace base
+
+namespace blink {
+class WebInputEvent;
+struct WebPrintParams;
+}  // namespace blink
 
 namespace gfx {
+class Point;
 class Rect;
 class Size;
-}
-
-namespace pp {
-class InputEvent;
-class VarDictionary;
-}
+class SizeF;
+class Vector2d;
+}  // namespace gfx
 
 namespace chrome_pdf {
 
+class Thumbnail;
+class UrlLoader;
+struct AccessibilityActionData;
+struct AccessibilityFocusInfo;
+struct AccessibilityLinkInfo;
+struct AccessibilityHighlightInfo;
+struct AccessibilityImageInfo;
+struct AccessibilityTextFieldInfo;
+struct AccessibilityTextRunInfo;
+struct DocumentAttachmentInfo;
+struct DocumentMetadata;
+
+using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
+
+enum class FontMappingMode {
+  // Do not perform font mapping.
+  kNoMapping,
+  // Perform font mapping in renderer processes using Blink/content APIs.
+  kBlink,
+  // Perform font mapping in plugin processes using PPAPI.
+  // TODO(crbug.com/702993): Remove when PPAPI is gone.
+  kPepper,
+};
+
+enum class DocumentPermission {
+  kCopy,
+  kCopyAccessible,
+  kPrintLowQuality,
+  kPrintHighQuality,
+};
+
 // Do one time initialization of the SDK.
-// If |enable_v8| is false, then the PDFEngine will not be able to run
+// If `enable_v8` is false, then the PDFEngine will not be able to run
 // JavaScript.
-void InitializeSDK(bool enable_v8);
+void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode);
 // Tells the SDK that we're shutting down.
 void ShutdownSDK();
 
 // This class encapsulates a PDF rendering engine.
 class PDFEngine {
  public:
-  enum DocumentPermission {
-    PERMISSION_COPY,
-    PERMISSION_COPY_ACCESSIBLE,
-    PERMISSION_PRINT_LOW_QUALITY,
-    PERMISSION_PRINT_HIGH_QUALITY,
-  };
-
-  // Values other then |kCount| are persisted to logs as part of metric
-  // collection, so should not be changed.
-  enum class FormType {
-    kNone = 0,
-    kAcroForm = 1,
-    kXFAFull = 2,
-    kXFAForeground = 3,
-    kCount = 4,
-  };
-
   // Maximum number of parameters a nameddest view can contain.
   static constexpr size_t kMaxViewParams = 4;
+
+  enum class FocusFieldType {
+    // Focus is not on any form field.
+    kNoFocus,
+    // Focus is on a form text field or form combobox text field.
+    kText,
+    // Focus is on a non-text field.
+    kNonText,
+  };
 
   // Named destination in a document.
   struct NamedDestination {
@@ -98,44 +123,25 @@ class PDFEngine {
     // Number of parameters for the view.
     unsigned long num_params;
 
-    // Parameters for the view. Their meaning depends on the |view| and their
-    // number is defined by |num_params| but is at most |kMaxViewParams|.
+    // Parameters for the view. Their meaning depends on the `view` and their
+    // number is defined by `num_params` but is at most `kMaxViewParams`. Note:
+    // If a parameter stands for the x/y coordinates, it should be transformed
+    // into the corresponding in-screen coordinates before it's sent to the
+    // viewport.
     float params[kMaxViewParams];
-  };
 
-  // Features in a document that are relevant to measure.
-  struct DocumentFeatures {
-    // Number of pages in document.
-    size_t page_count = 0;
-    // Whether any files are attached to document (see "File Attachment
-    // Annotations" on page 637 of PDF Reference 1.7).
-    bool has_attachments = false;
-    // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
-    bool is_tagged = false;
-    // What type of form the document contains.
-    FormType form_type = FormType::kNone;
-  };
-
-  // Features in a page that are relevant to measure.
-  struct PageFeatures {
-    PageFeatures();
-    PageFeatures(const PageFeatures& other);
-    ~PageFeatures();
-
-    // Whether the instance has been initialized and filled.
-    bool IsInitialized() const;
-
-    // 0-based page index in the document. < 0 when uninitialized.
-    int index = -1;
-
-    // Set of annotation types found in page.
-    std::set<int> annotation_types;
+    // A string of parameters for view fit type XYZ in the format of "x,y,zoom",
+    // where x and y parameters are the in-screen coordinates and zoom is the
+    // zoom level. If a parameter is "null", then current value of that
+    // parameter in the viewport should be retained. Note: This string is empty
+    // if the view's fit type is not XYZ.
+    std::string xyz_params;
   };
 
   // The interface that's provided to the rendering engine.
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     // Proposes a document layout to the client. For the proposed layout to
     // become effective, the client must call PDFEngine::ApplyDocumentLayout()
@@ -143,42 +149,39 @@ class PDFEngine {
     virtual void ProposeDocumentLayout(const DocumentLayout& layout) = 0;
 
     // Informs the client that the given rect needs to be repainted.
-    virtual void Invalidate(const pp::Rect& rect) {}
+    virtual void Invalidate(const gfx::Rect& rect) {}
 
     // Informs the client to scroll the plugin area by the given offset.
-    virtual void DidScroll(const pp::Point& point) {}
+    virtual void DidScroll(const gfx::Vector2d& offset) {}
 
     // Scroll the horizontal/vertical scrollbars to a given position.
     // Values are in screen coordinates, where 0 is the top/left of the document
     // and a positive value is the distance in pixels from that line.
-    // For ScrollToY, setting |compensate_for_toolbar| will align the position
-    // with the bottom of the toolbar so the given position is always visible.
-    virtual void ScrollToX(int x_in_screen_coords) {}
-    virtual void ScrollToY(int y_in_screen_coords,
-                           bool compensate_for_toolbar) {}
+    virtual void ScrollToX(int x_screen_coords) {}
+    virtual void ScrollToY(int y_screen_coords) {}
 
     // Scroll by a given delta relative to the current position.
-    virtual void ScrollBy(const pp::Point& point) {}
+    virtual void ScrollBy(const gfx::Vector2d& delta) {}
 
-    // Scroll to zero-based |page|.
+    // Scroll to zero-based `page`.
     virtual void ScrollToPage(int page) {}
 
     // Navigate to the given url.
     virtual void NavigateTo(const std::string& url,
                             WindowOpenDisposition disposition) {}
 
-    // Navigate to the given destination. Zero-based |page| index. |x|, |y| and
-    // |zoom| are optional and can be nullptr.
+    // Navigate to the given destination. Zero-based `page` index. `x`, `y` and
+    // `zoom` are optional and can be nullptr.
     virtual void NavigateToDestination(int page,
                                        const float* x,
                                        const float* y,
                                        const float* zoom) {}
 
     // Updates the cursor.
-    virtual void UpdateCursor(PP_CursorType_Dev cursor) {}
+    virtual void UpdateCursor(ui::mojom::CursorType new_cursor_type) {}
 
     // Updates the tick marks in the vertical scrollbar.
-    virtual void UpdateTickMarks(const std::vector<pp::Rect>& tickmarks) {}
+    virtual void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) {}
 
     // Updates the number of find results for the current search term.  If
     // there are no matches 0 should be passed in.  Only when the plugin has
@@ -190,14 +193,12 @@ class PDFEngine {
     // Updates the index of the currently selected search item.
     virtual void NotifySelectedFindResultChanged(int current_find_index) {}
 
-    // Notifies a page became visible.
-    virtual void NotifyPageBecameVisible(
-        const PDFEngine::PageFeatures* page_features) {}
+    virtual void NotifyTouchSelectionOccurred() {}
 
     // Prompts the user for a password to open this document. The callback is
     // called when the password is retrieved.
     virtual void GetDocumentPassword(
-        pp::CompletionCallbackWithOutput<pp::Var> callback) {}
+        base::OnceCallback<void(const std::string&)> callback) {}
 
     // Play a "beeping" sound.
     virtual void Beep() {}
@@ -233,7 +234,7 @@ class PDFEngine {
                             int length) {}
 
     // Creates and returns new URL loader for partial document requests.
-    virtual pp::URLLoader CreateURLLoader() = 0;
+    virtual std::unique_ptr<UrlLoader> CreateUrlLoader() = 0;
 
     // Searches the given string for "term" and returns the results.  Unicode-
     // aware.
@@ -242,18 +243,19 @@ class PDFEngine {
       int length;
     };
     virtual std::vector<SearchStringResult> SearchString(
-        const base::char16* string,
-        const base::char16* term,
+        const char16_t* string,
+        const char16_t* term,
         bool case_sensitive) = 0;
 
     // Notifies the client that the document has finished loading.
-    virtual void DocumentLoadComplete(
-        const DocumentFeatures& document_features) {}
+    virtual void DocumentLoadComplete() {}
 
     // Notifies the client that the document has failed to load.
     virtual void DocumentLoadFailed() {}
 
-    virtual pp::Instance* GetPluginInstance() = 0;
+    // Asks the client to set the last plugin instance when applicable.
+    // TODO(crbug.com/702993): Remove after migrating away from PPAPI.
+    virtual void SetLastPluginInstance() {}
 
     // Notifies that an unsupported feature in the PDF was encountered.
     virtual void DocumentHasUnsupportedFeature(const std::string& feature) {}
@@ -261,77 +263,75 @@ class PDFEngine {
     // Notifies the client about document load progress.
     virtual void DocumentLoadProgress(uint32_t available, uint32_t doc_size) {}
 
-    // Notifies the client about focus changes for form text fields.
-    virtual void FormTextFieldFocusChange(bool in_focus) {}
+    // Notifies the client about focus changes for form fields.
+    virtual void FormFieldFocusChange(FocusFieldType type) {}
 
     // Returns true if the plugin has been opened within print preview.
-    virtual bool IsPrintPreview() = 0;
+    virtual bool IsPrintPreview() const = 0;
 
     // Get the background color of the PDF.
-    virtual uint32_t GetBackgroundColor() = 0;
+    virtual SkColor GetBackgroundColor() = 0;
 
     // Sets selection status.
-    virtual void IsSelectingChanged(bool is_selecting) {}
+    virtual void SetIsSelecting(bool is_selecting) {}
 
-    virtual void SelectionChanged(const pp::Rect& left, const pp::Rect& right) {
-    }
+    virtual void SelectionChanged(const gfx::Rect& left,
+                                  const gfx::Rect& right) {}
 
-    // Sets edit mode state.
-    virtual void IsEditModeChanged(bool is_edit_mode) {}
+    // The caret position in the editable form (if applicable) changed.
+    virtual void CaretChanged(const gfx::Rect& caret_rect) {}
 
-    // Gets the height of the top toolbar in screen coordinates. This is
-    // independent of whether it is hidden or not at the moment.
-    virtual float GetToolbarHeightInScreenCoords() = 0;
+    // Notifies the client that the PDF has been edited.
+    virtual void EnteredEditMode() {}
+
+    // Notifies the client about focus changes for the document.
+    virtual void DocumentFocusChanged(bool document_has_focus) {}
+
+    // Sets selected text.
+    virtual void SetSelectedText(const std::string& selected_text) = 0;
+
+    // Sets the link under cursor.
+    virtual void SetLinkUnderCursor(const std::string& link_under_cursor) = 0;
+
+    // If the link cannot be converted to JS payload struct, then it is not
+    // possible to pass it to JS. In this case, ignore the link like other PDF
+    // viewers.
+    // See https://crbug.com/312882 for an example.
+    virtual bool IsValidLink(const std::string& url) = 0;
+
+    // Schedules work to be executed on a main thread after a specific delay.
+    // The `result` parameter will be passed as the argument to the `callback`.
+    // `result` is needed sometimes to emulate calls of some callbacks, but it's
+    // not always needed. `delay` should be no longer than `INT32_MAX`
+    // milliseconds for the Pepper plugin implementation to prevent integer
+    // overflow.
+    virtual void ScheduleTaskOnMainThread(const base::Location& from_here,
+                                          ResultCallback callback,
+                                          int32_t result,
+                                          base::TimeDelta delay) = 0;
   };
 
-  struct AccessibilityLinkInfo {
-    std::string url;
-    int start_char_index;
-    int char_count;
-    pp::FloatRect bounds;
-  };
-
-  struct AccessibilityImageInfo {
-    std::string alt_text;
-    pp::FloatRect bounds;
-  };
-
-  struct AccessibilityHighlightInfo {
-    int start_char_index = -1;
-    int char_count;
-    pp::FloatRect bounds;
-  };
-
-  // Factory method to create an instance of the PDF Engine.
-  static std::unique_ptr<PDFEngine> Create(Client* client,
-                                           bool enable_javascript);
-
-  virtual ~PDFEngine() {}
+  virtual ~PDFEngine() = default;
 
   // Most of these functions are similar to the Pepper functions of the same
   // name, so not repeating the description here unless it's different.
-  virtual bool New(const char* url, const char* headers) = 0;
-  virtual void PageOffsetUpdated(const pp::Point& page_offset) = 0;
-  virtual void PluginSizeUpdated(const pp::Size& size) = 0;
+  virtual void PageOffsetUpdated(const gfx::Vector2d& page_offset) = 0;
+  virtual void PluginSizeUpdated(const gfx::Size& size) = 0;
   virtual void ScrolledToXPosition(int position) = 0;
   virtual void ScrolledToYPosition(int position) = 0;
   // Paint is called a series of times. Before these n calls are made, PrePaint
   // is called once. After Paint is called n times, PostPaint is called once.
   virtual void PrePaint() = 0;
-  virtual void Paint(const pp::Rect& rect,
-                     pp::ImageData* image_data,
-                     std::vector<pp::Rect>* ready,
-                     std::vector<pp::Rect>* pending) = 0;
+  virtual void Paint(const gfx::Rect& rect,
+                     SkBitmap& image_data,
+                     std::vector<gfx::Rect>& ready,
+                     std::vector<gfx::Rect>& pending) = 0;
   virtual void PostPaint() = 0;
-  virtual bool HandleDocumentLoad(const pp::URLLoader& loader) = 0;
-  virtual bool HandleEvent(const pp::InputEvent& event) = 0;
-  virtual uint32_t QuerySupportedPrintOutputFormats() = 0;
+  virtual bool HandleInputEvent(const blink::WebInputEvent& event) = 0;
   virtual void PrintBegin() = 0;
-  virtual pp::Resource PrintPages(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings) = 0;
+  virtual std::vector<uint8_t> PrintPages(
+      const std::vector<int>& page_numbers,
+      const blink::WebPrintParams& print_params) = 0;
   virtual void PrintEnd() = 0;
   virtual void StartFind(const std::string& text, bool case_sensitive) = 0;
   virtual bool SelectFindResult(bool forward) = 0;
@@ -339,76 +339,101 @@ class PDFEngine {
   virtual void ZoomUpdated(double new_zoom_level) = 0;
   virtual void RotateClockwise() = 0;
   virtual void RotateCounterclockwise() = 0;
+  virtual bool IsReadOnly() const = 0;
+  virtual void SetReadOnly(bool enable) = 0;
+  virtual void SetTwoUpView(bool enable) = 0;
+  virtual void DisplayAnnotations(bool display) = 0;
 
   // Applies the document layout options proposed by a call to
   // PDFEngine::Client::ProposeDocumentLayout(), returning the overall size of
   // the new effective layout.
-  virtual pp::Size ApplyDocumentLayout(
+  virtual gfx::Size ApplyDocumentLayout(
       const DocumentLayout::Options& options) = 0;
 
   virtual std::string GetSelectedText() = 0;
   // Returns true if focus is within an editable form text area.
-  virtual bool CanEditText() = 0;
+  virtual bool CanEditText() const = 0;
   // Returns true if focus is within an editable form text area and the text
   // area has text.
-  virtual bool HasEditableText() = 0;
+  virtual bool HasEditableText() const = 0;
   // Replace selected text within an editable form text area with another
   // string. If there is no selected text, append the replacement text after the
   // current caret position.
   virtual void ReplaceSelection(const std::string& text) = 0;
   // Methods to check if undo/redo is possible, and to perform them.
-  virtual bool CanUndo() = 0;
-  virtual bool CanRedo() = 0;
+  virtual bool CanUndo() const = 0;
+  virtual bool CanRedo() const = 0;
   virtual void Undo() = 0;
   virtual void Redo() = 0;
   // Handles actions invoked by Accessibility clients.
   virtual void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) = 0;
-  virtual std::string GetLinkAtPosition(const pp::Point& point) = 0;
+      const AccessibilityActionData& action_data) = 0;
+  virtual std::string GetLinkAtPosition(const gfx::Point& point) = 0;
   // Checks the permissions associated with this document.
   virtual bool HasPermission(DocumentPermission permission) const = 0;
   virtual void SelectAll() = 0;
+  // Gets the list of DocumentAttachmentInfo from the document.
+  virtual const std::vector<DocumentAttachmentInfo>&
+  GetDocumentAttachmentInfoList() const = 0;
+  // Gets the content of an attachment by the attachment's `index`. `index`
+  // must be in the range of [0, attachment_count-1), where `attachment_count`
+  // is the number of attachments embedded in the document.
+  // The caller of this method is responsible for checking whether the
+  // attachment is readable, attachment size is not 0 byte, and the return
+  // value's size matches the corresponding DocumentAttachmentInfo's
+  // `size_bytes`.
+  virtual std::vector<uint8_t> GetAttachmentData(size_t index) = 0;
+  // Gets metadata about the document.
+  virtual const DocumentMetadata& GetDocumentMetadata() const = 0;
   // Gets the number of pages in the document.
-  virtual int GetNumberOfPages() = 0;
+  virtual int GetNumberOfPages() const = 0;
   // Gets the named destination by name.
-  virtual base::Optional<PDFEngine::NamedDestination> GetNamedDestination(
+  virtual absl::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) = 0;
   // Gets the index of the most visible page, or -1 if none are visible.
   virtual int GetMostVisiblePage() = 0;
   // Gets the rectangle of the page not including the shadow.
-  virtual pp::Rect GetPageBoundsRect(int index) = 0;
+  virtual gfx::Rect GetPageBoundsRect(int index) = 0;
   // Gets the rectangle of the page excluding any additional areas.
-  virtual pp::Rect GetPageContentsRect(int index) = 0;
+  virtual gfx::Rect GetPageContentsRect(int index) = 0;
   // Returns a page's rect in screen coordinates, as well as its surrounding
   // border areas and bottom separator.
-  virtual pp::Rect GetPageScreenRect(int page_index) const = 0;
-  // Gets the offset of the vertical scrollbar from the top in document
-  // coordinates.
-  virtual int GetVerticalScrollbarYPosition() = 0;
+  virtual gfx::Rect GetPageScreenRect(int page_index) const = 0;
   // Set color / grayscale rendering modes.
   virtual void SetGrayscale(bool grayscale) = 0;
   // Get the number of characters on a given page.
   virtual int GetCharCount(int page_index) = 0;
   // Get the bounds in page pixels of a character on a given page.
-  virtual pp::FloatRect GetCharBounds(int page_index, int char_index) = 0;
+  virtual gfx::RectF GetCharBounds(int page_index, int char_index) = 0;
   // Get a given unicode character on a given page.
   virtual uint32_t GetCharUnicode(int page_index, int char_index) = 0;
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out
-  // pp::PDF::PrivateAccessibilityTextRunInfo on success or base::nullopt on
-  // failure. e.g. When |start_char_index| is out of bounds.
-  virtual base::Optional<pp::PDF::PrivateAccessibilityTextRunInfo>
-  GetTextRunInfo(int page_index, int start_char_index) = 0;
-  // For all the links on page |page_index|, get their urls, underlying text
+  // AccessibilityTextRunInfo on success or absl::nullopt on failure. e.g. When
+  // `start_char_index` is out of bounds.
+  virtual absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(
+      int page_index,
+      int start_char_index) = 0;
+  // For all the links on page `page_index`, get their urls, underlying text
   // ranges and bounding boxes.
-  virtual std::vector<AccessibilityLinkInfo> GetLinkInfo(int page_index) = 0;
-  // For all the images in page |page_index|, get their alt texts and bounding
+  virtual std::vector<AccessibilityLinkInfo> GetLinkInfo(
+      int page_index,
+      const std::vector<AccessibilityTextRunInfo>& text_runs) = 0;
+  // For all the images in page `page_index`, get their alt texts and bounding
   // boxes.
-  virtual std::vector<AccessibilityImageInfo> GetImageInfo(int page_index) = 0;
-  // For all the highlights in page |page_index|, get their underlying text
+  virtual std::vector<AccessibilityImageInfo> GetImageInfo(
+      int page_index,
+      uint32_t text_run_count) = 0;
+  // For all the highlights in page `page_index`, get their underlying text
   // ranges and bounding boxes.
   virtual std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
-      int page_index) = 0;
+      int page_index,
+      const std::vector<AccessibilityTextRunInfo>& text_runs) = 0;
+  // For all the text fields in page `page_index`, get their properties like
+  // name, value, bounding boxes etc.
+  virtual std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
+      int page_index,
+      uint32_t text_run_count) = 0;
 
   // Gets the PDF document's print scaling preference. True if the document can
   // be scaled to fit.
@@ -416,32 +441,32 @@ class PDFEngine {
   // Returns number of copies to be printed.
   virtual int GetCopiesToPrint() = 0;
   // Returns the duplex setting.
-  virtual int GetDuplexType() = 0;
-  // Returns true if all the pages are the same size.
-  virtual bool GetPageSizeAndUniformity(pp::Size* size) = 0;
+  virtual printing::mojom::DuplexMode GetDuplexMode() = 0;
+  // Returns the uniform page size of the document in points. Returns
+  // `absl::nullopt` if the document has more than one page size.
+  virtual absl::optional<gfx::Size> GetUniformPageSizePoints() = 0;
 
-  // Returns a VarArray of Bookmarks, each a VarDictionary containing the
-  // following key/values:
-  // - "title" - a string Var.
-  // - "page" - an int Var.
-  // - "children" - a VarArray(), with each entry containing a VarDictionary of
-  //   the same structure.
-  virtual pp::VarArray GetBookmarks() = 0;
+  // Returns a list of Values of Bookmarks. Each Bookmark is a dictionary Value
+  // which contains the following key/values:
+  // - "title" - a string Value.
+  // - "page" - an int Value.
+  // - "children" - a list of Values, with each entry containing
+  //   a dictionary Value of the same structure.
+  virtual base::Value GetBookmarks() = 0;
 
-  // Append blank pages to make a 1-page document to a |num_pages| document.
+  // Append blank pages to make a 1-page document to a `num_pages` document.
   // Always retain the first page data.
   virtual void AppendBlankPages(size_t num_pages) = 0;
-  // Append the first page of the document loaded with the |engine| to this
-  // document at page |index|.
+  // Append the first page of the document loaded with the `engine` to this
+  // document at page `index`.
   virtual void AppendPage(PDFEngine* engine, int index) = 0;
 
-  virtual std::string GetMetadata(const std::string& key) = 0;
   virtual std::vector<uint8_t> GetSaveData() = 0;
 
-  virtual void SetCaretPosition(const pp::Point& position) = 0;
-  virtual void MoveRangeSelectionExtent(const pp::Point& extent) = 0;
-  virtual void SetSelectionBounds(const pp::Point& base,
-                                  const pp::Point& extent) = 0;
+  virtual void SetCaretPosition(const gfx::Point& position) = 0;
+  virtual void MoveRangeSelectionExtent(const gfx::Point& extent) = 0;
+  virtual void SetSelectionBounds(const gfx::Point& base,
+                                  const gfx::Point& extent) = 0;
   virtual void GetSelection(uint32_t* selection_start_page_index,
                             uint32_t* selection_start_char_index,
                             uint32_t* selection_end_page_index,
@@ -450,34 +475,46 @@ class PDFEngine {
   // Remove focus from form widgets, consolidating the user input.
   virtual void KillFormFocus() = 0;
 
+  // Notify whether the PDF currently has the focus or not.
+  virtual void UpdateFocus(bool has_focus) = 0;
+
+  // Returns the focus info of current focus item.
+  virtual AccessibilityFocusInfo GetFocusInfo() = 0;
+
   virtual uint32_t GetLoadedByteSize() = 0;
   virtual bool ReadLoadedBytes(uint32_t length, void* buffer) = 0;
+
+  // Requests for a thumbnail to be sent using a callback when the page is ready
+  // to be rendered. `send_callback` is run with the thumbnail data when ready.
+  virtual void RequestThumbnail(int page_index,
+                                float device_pixel_ratio,
+                                SendThumbnailCallback send_callback) = 0;
 };
 
 // Interface for exports that wrap the PDF engine.
 class PDFEngineExports {
  public:
   struct RenderingSettings {
-    RenderingSettings(int dpi_x,
-                      int dpi_y,
-                      const pp::Rect& bounds,
+    RenderingSettings(const gfx::Size& dpi,
+                      const gfx::Rect& bounds,
                       bool fit_to_bounds,
                       bool stretch_to_bounds,
                       bool keep_aspect_ratio,
                       bool center_in_bounds,
                       bool autorotate,
-                      bool use_color);
+                      bool use_color,
+                      bool render_for_printing);
     RenderingSettings(const RenderingSettings& that);
 
-    int dpi_x;
-    int dpi_y;
-    pp::Rect bounds;
+    gfx::Size dpi;
+    gfx::Rect bounds;
     bool fit_to_bounds;
     bool stretch_to_bounds;
     bool keep_aspect_ratio;
     bool center_in_bounds;
     bool autorotate;
     bool use_color;
+    bool render_for_printing;
   };
 
   PDFEngineExports() {}
@@ -527,19 +564,24 @@ class PDFEngineExports {
 
   virtual bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                              int* page_count,
-                             double* max_page_width) = 0;
+                             float* max_page_width) = 0;
 
   // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
   // Returns true if it's a tagged (accessible) PDF, false if it's a valid
   // PDF but untagged, and nullopt if the PDF can't be parsed.
-  virtual base::Optional<bool> IsPDFDocTagged(
+  virtual absl::optional<bool> IsPDFDocTagged(
       base::span<const uint8_t> pdf_buffer) = 0;
 
+  // Given a tagged PDF (see IsPDFDocTagged, above), return the portion of
+  // the structure tree for a given page as a hierarchical tree of base::Values.
+  virtual base::Value GetPDFStructTreeForPage(
+      base::span<const uint8_t> pdf_buffer,
+      int page_index) = 0;
+
   // See the definition of GetPDFPageSizeByIndex in pdf.cc for details.
-  virtual bool GetPDFPageSizeByIndex(base::span<const uint8_t> pdf_buffer,
-                                     int page_number,
-                                     double* width,
-                                     double* height) = 0;
+  virtual absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
+      base::span<const uint8_t> pdf_buffer,
+      int page_number) = 0;
 };
 
 }  // namespace chrome_pdf

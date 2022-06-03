@@ -9,9 +9,11 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include "base/fuchsia/file_utils.h"
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/logging.h"
+#include "base/macros.h"
 
 namespace base {
-namespace fuchsia {
 
 StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
   std::unique_ptr<sys::ServiceDirectory> incoming_services;
@@ -54,13 +56,15 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
         std::move(startup_info.launch_info.additional_services->provider));
     additional_services_directory_ = std::make_unique<sys::OutgoingDirectory>();
     for (auto& name : startup_info.launch_info.additional_services->names) {
-      additional_services_directory_->AddPublicService(
+      zx_status_t status = additional_services_directory_->AddPublicService(
           std::make_unique<vfs::Service>([this, name](
                                              zx::channel channel,
                                              async_dispatcher_t* dispatcher) {
             additional_services_->ConnectToService(name, std::move(channel));
           }),
           name);
+      ZX_CHECK(status == ZX_OK, status)
+          << "AddPublicService(" << name << ") failed";
     }
 
     // Publish those services to the caller as |incoming_services|.
@@ -75,7 +79,7 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
   if (!incoming_services) {
     LOG(WARNING) << "Component started without a service directory";
 
-    // Create a dummy ServiceDirectoryClient with a channel that's not
+    // Create a dummy ServiceDirectory with a channel that's not
     // connected on the other end.
     fidl::InterfaceHandle<::fuchsia::io::Directory> dummy_directory;
     ignore_result(dummy_directory.NewRequest());
@@ -87,11 +91,6 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
       std::make_unique<sys::ComponentContext>(std::move(incoming_services));
   outgoing_directory_request_ =
       std::move(startup_info.launch_info.directory_request);
-
-  service_directory_ =
-      std::make_unique<ServiceDirectory>(component_context_->outgoing().get());
-  service_directory_client_ = std::make_unique<ServiceDirectoryClient>(
-      component_context_->svc()->CloneChannel());
 }
 
 StartupContext::~StartupContext() = default;
@@ -101,11 +100,4 @@ void StartupContext::ServeOutgoingDirectory() {
   component_context_->outgoing()->Serve(std::move(outgoing_directory_request_));
 }
 
-ServiceDirectory* StartupContext::public_services() {
-  if (outgoing_directory_request_)
-    ServeOutgoingDirectory();
-  return service_directory_.get();
-}
-
-}  // namespace fuchsia
 }  // namespace base

@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -30,6 +30,9 @@ const char kURL3[] = "https://chromium.org/3";
 class WebStateListTestObserver : public WebStateListObserver {
  public:
   WebStateListTestObserver() = default;
+
+  WebStateListTestObserver(const WebStateListTestObserver&) = delete;
+  WebStateListTestObserver& operator=(const WebStateListTestObserver&) = delete;
 
   // Reset statistics whether events have been called.
   void ResetStatistics() {
@@ -100,7 +103,7 @@ class WebStateListTestObserver : public WebStateListObserver {
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,
                            int active_index,
-                           int reason) override {
+                           ActiveWebStateChangeReason reason) override {
     web_state_activated_called_ = true;
   }
 
@@ -120,15 +123,16 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_activated_called_ = false;
   bool batch_operation_started_ = false;
   bool batch_operation_ended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTestObserver);
 };
 
 // A fake NavigationManager used to test opener-opened relationship in the
 // WebStateList.
-class FakeNavigationManager : public web::TestNavigationManager {
+class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
+
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
 
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override {
@@ -154,8 +158,6 @@ class FakeNavigationManager : public web::TestNavigationManager {
   void GoToIndex(int index) override { last_committed_item_index = index; }
 
   int last_committed_item_index = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace
@@ -166,6 +168,9 @@ class WebStateListTest : public PlatformTest {
     web_state_list_.AddObserver(&observer_);
   }
 
+  WebStateListTest(const WebStateListTest&) = delete;
+  WebStateListTest& operator=(const WebStateListTest&) = delete;
+
   ~WebStateListTest() override { web_state_list_.RemoveObserver(&observer_); }
 
  protected:
@@ -173,12 +178,12 @@ class WebStateListTest : public PlatformTest {
   WebStateList web_state_list_;
   WebStateListTestObserver observer_;
 
-  std::unique_ptr<web::TestWebState> CreateWebState(const char* url) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
-    test_web_state->SetCurrentURL(GURL(url));
-    test_web_state->SetNavigationManager(
+  std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetCurrentURL(GURL(url));
+    fake_web_state->SetNavigationManager(
         std::make_unique<FakeNavigationManager>());
-    return test_web_state;
+    return fake_web_state;
   }
 
   void AppendNewWebState(const char* url) {
@@ -191,17 +196,14 @@ class WebStateListTest : public PlatformTest {
                                    WebStateList::INSERT_NO_FLAGS, opener);
   }
 
-  void AppendNewWebState(std::unique_ptr<web::TestWebState> web_state) {
+  void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
     web_state_list_.InsertWebState(
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTest);
 };
 
-// Test that empty() matches count() != 0.
+// Tests that empty() matches count() != 0.
 TEST_F(WebStateListTest, IsEmpty) {
   EXPECT_EQ(0, web_state_list_.count());
   EXPECT_TRUE(web_state_list_.empty());
@@ -213,7 +215,7 @@ TEST_F(WebStateListTest, IsEmpty) {
   EXPECT_FALSE(web_state_list_.empty());
 }
 
-// Test that inserting a single webstate works.
+// Tests that inserting a single webstate works.
 TEST_F(WebStateListTest, InsertUrlSingle) {
   AppendNewWebState(kURL0);
 
@@ -222,7 +224,7 @@ TEST_F(WebStateListTest, InsertUrlSingle) {
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
 }
 
-// Test that inserting multiple webstates puts them in the expected places.
+// Tests that inserting multiple webstates puts them in the expected places.
 TEST_F(WebStateListTest, InsertUrlMultiple) {
   web_state_list_.InsertWebState(0, CreateWebState(kURL0),
                                  WebStateList::INSERT_FORCE_INDEX,
@@ -241,7 +243,7 @@ TEST_F(WebStateListTest, InsertUrlMultiple) {
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec());
 }
 
-// Test webstate activation.
+// Tests webstate activation.
 TEST_F(WebStateListTest, ActivateWebState) {
   AppendNewWebState(kURL0);
   EXPECT_EQ(nullptr, web_state_list_.GetActiveWebState());
@@ -254,7 +256,7 @@ TEST_F(WebStateListTest, ActivateWebState) {
             web_state_list_.GetActiveWebState());
 }
 
-// Test activating a webstate as it is inserted.
+// Tests activating a webstate as it is inserted.
 TEST_F(WebStateListTest, InsertActivate) {
   web_state_list_.InsertWebState(
       0, CreateWebState(kURL0),
@@ -267,11 +269,11 @@ TEST_F(WebStateListTest, InsertActivate) {
             web_state_list_.GetActiveWebState());
 }
 
-// Test finding a known webstate.
+// Tests finding a known webstate.
 TEST_F(WebStateListTest, GetIndexOfWebState) {
-  std::unique_ptr<web::TestWebState> web_state_0 = CreateWebState(kURL0);
+  auto web_state_0 = CreateWebState(kURL0);
   web::WebState* target_web_state = web_state_0.get();
-  std::unique_ptr<web::TestWebState> other_web_state = CreateWebState(kURL1);
+  auto other_web_state = CreateWebState(kURL1);
 
   // Target not yet in list.
   EXPECT_EQ(WebStateList::kInvalidIndex,
@@ -295,7 +297,7 @@ TEST_F(WebStateListTest, GetIndexOfWebState) {
   EXPECT_EQ(2, web_state_list_.GetIndexOfWebState(target_web_state));
 }
 
-// Test finding a webstate by URL.
+// Tests finding a webstate by URL.
 TEST_F(WebStateListTest, GetIndexOfWebStateWithURL) {
   // Empty list.
   EXPECT_EQ(WebStateList::kInvalidIndex,
@@ -316,7 +318,7 @@ TEST_F(WebStateListTest, GetIndexOfWebStateWithURL) {
   EXPECT_EQ(1, web_state_list_.GetIndexOfWebStateWithURL(GURL(kURL0)));
 }
 
-// Test finding a non-active webstate by URL.
+// Tests finding a non-active webstate by URL.
 TEST_F(WebStateListTest, GetIndexOfInactiveWebStateWithURL) {
   // Empty list.
   EXPECT_EQ(WebStateList::kInvalidIndex,
@@ -356,7 +358,7 @@ TEST_F(WebStateListTest, GetIndexOfInactiveWebStateWithURL) {
   EXPECT_EQ(2, web_state_list_.GetIndexOfInactiveWebStateWithURL(GURL(kURL0)));
 }
 
-// Test that inserted webstates correctly inherit openers.
+// Tests that inserted webstates correctly inherit openers.
 TEST_F(WebStateListTest, InsertInheritOpener) {
   AppendNewWebState(kURL0);
   web_state_list_.ActivateWebStateAt(0);
@@ -374,7 +376,7 @@ TEST_F(WebStateListTest, InsertInheritOpener) {
             web_state_list_.GetOpenerOfWebStateAt(1).opener);
 }
 
-// Test moving webstates one place to the "right" (to a higher index).
+// Tests moving webstates one place to the "right" (to a higher index).
 TEST_F(WebStateListTest, MoveWebStateAtRightByOne) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -396,7 +398,8 @@ TEST_F(WebStateListTest, MoveWebStateAtRightByOne) {
   EXPECT_EQ(kURL2, web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec());
 }
 
-// Test moving webstates more than one place to the "right" (to a higher index).
+// Tests moving webstates more than one place to the "right" (to a higher
+// index).
 TEST_F(WebStateListTest, MoveWebStateAtRightByMoreThanOne) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -418,7 +421,7 @@ TEST_F(WebStateListTest, MoveWebStateAtRightByMoreThanOne) {
   EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec());
 }
 
-// Test moving webstates one place to the "left" (to a lower index).
+// Tests moving webstates one place to the "left" (to a lower index).
 TEST_F(WebStateListTest, MoveWebStateAtLeftByOne) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -440,7 +443,7 @@ TEST_F(WebStateListTest, MoveWebStateAtLeftByOne) {
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec());
 }
 
-// Test moving webstates more than one place to the "left" (to a lower index).
+// Tests moving webstates more than one place to the "left" (to a lower index).
 TEST_F(WebStateListTest, MoveWebStateAtLeftByMoreThanOne) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -462,7 +465,7 @@ TEST_F(WebStateListTest, MoveWebStateAtLeftByMoreThanOne) {
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec());
 }
 
-// Test "moving" webstates (calling MoveWebStateAt with the same source and
+// Tests "moving" webstates (calling MoveWebStateAt with the same source and
 // destination indexes.
 TEST_F(WebStateListTest, MoveWebStateAtSameIndex) {
   AppendNewWebState(kURL0);
@@ -485,7 +488,7 @@ TEST_F(WebStateListTest, MoveWebStateAtSameIndex) {
   EXPECT_EQ(kURL2, web_state_list_.GetWebStateAt(2)->GetVisibleURL().spec());
 }
 
-// Test replacing webstates.
+// Tests replacing webstates.
 TEST_F(WebStateListTest, ReplaceWebStateAt) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -507,7 +510,7 @@ TEST_F(WebStateListTest, ReplaceWebStateAt) {
   EXPECT_EQ(kURL1, old_web_state->GetVisibleURL().spec());
 }
 
-// Test detaching webstates at index 0.
+// Tests detaching webstates at index 0.
 TEST_F(WebStateListTest, DetachWebStateAtIndexBegining) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -528,7 +531,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexBegining) {
   EXPECT_EQ(kURL2, web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec());
 }
 
-// Test detaching webstates at an index that isn't 0 or the last index.
+// Tests detaching webstates at an index that isn't 0 or the last index.
 TEST_F(WebStateListTest, DetachWebStateAtIndexMiddle) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -549,7 +552,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexMiddle) {
   EXPECT_EQ(kURL2, web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec());
 }
 
-// Test detaching webstates at the last index.
+// Tests detaching webstates at the last index.
 TEST_F(WebStateListTest, DetachWebStateAtIndexLast) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -570,7 +573,7 @@ TEST_F(WebStateListTest, DetachWebStateAtIndexLast) {
   EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec());
 }
 
-// Test finding opended-by indexes on an empty list.
+// Tests finding opended-by indexes on an empty list.
 TEST_F(WebStateListTest, OpenersEmptyList) {
   EXPECT_TRUE(web_state_list_.empty());
 
@@ -589,26 +592,7 @@ TEST_F(WebStateListTest, OpenersEmptyList) {
                 nullptr, WebStateList::kInvalidIndex, true));
 }
 
-// Test detaching a webstate which has an invalid opener.  This is a regression
-// test for https://crbug.com/960628.
-TEST_F(WebStateListTest, DetachWebStateWithInvalidOpener) {
-  AppendNewWebState(kURL0);
-  AppendNewWebState(kURL1);
-  // Sanity check before closing WebState.
-  ASSERT_EQ(2, web_state_list_.count());
-  EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
-  EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec());
-  web_state_list_.ActivateWebStateAt(1);
-  // Update a WebState to have an invalid opener.
-  web_state_list_.SetOpenerOfWebStateAt(
-      1, WebStateOpener(web_state_list_.GetWebStateAt(1)));
-  // After detaching, the active index should be valid.
-  web_state_list_.DetachWebStateAt(1);
-  EXPECT_EQ(1, web_state_list_.count());
-  EXPECT_TRUE(web_state_list_.ContainsIndex(web_state_list_.active_index()));
-}
-
-// Test finding opended-by indexes when no webstates have been opened.
+// Tests finding opended-by indexes when no webstates have been opened.
 TEST_F(WebStateListTest, OpenersNothingOpened) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -632,7 +616,7 @@ TEST_F(WebStateListTest, OpenersNothingOpened) {
   }
 }
 
-// Test finding opended-by indexes when the opened child is at an index after
+// Tests finding opended-by indexes when the opened child is at an index after
 // the parent.
 TEST_F(WebStateListTest, OpenersChildsAfterOpener) {
   AppendNewWebState(kURL0);
@@ -686,7 +670,7 @@ TEST_F(WebStateListTest, OpenersChildsAfterOpener) {
                    opener, start_index, true));
 }
 
-// Test finding opended-by indexes when the opened child is at an index before
+// Tests finding opended-by indexes when the opened child is at an index before
 // the parent.
 TEST_F(WebStateListTest, OpenersChildsBeforeOpener) {
   AppendNewWebState(kURL0);
@@ -697,22 +681,13 @@ TEST_F(WebStateListTest, OpenersChildsBeforeOpener) {
   web_state_list_.MoveWebStateAt(0, 2);
 
   const int start_index = web_state_list_.GetIndexOfWebState(opener);
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            web_state_list_.GetIndexOfNextWebStateOpenedBy(opener, start_index,
-                                                           false));
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            web_state_list_.GetIndexOfLastWebStateOpenedBy(opener, start_index,
-                                                           false));
-
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            web_state_list_.GetIndexOfNextWebStateOpenedBy(opener, start_index,
-                                                           true));
-  EXPECT_EQ(WebStateList::kInvalidIndex,
-            web_state_list_.GetIndexOfLastWebStateOpenedBy(opener, start_index,
-                                                           true));
+  EXPECT_EQ(0, web_state_list_.GetIndexOfNextWebStateOpenedBy(
+                   opener, start_index, false));
+  EXPECT_EQ(1, web_state_list_.GetIndexOfLastWebStateOpenedBy(
+                   opener, start_index, false));
 }
 
-// Test closing all webstates.
+// Tests closing all webstates.
 TEST_F(WebStateListTest, CloseAllWebStates) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -731,7 +706,7 @@ TEST_F(WebStateListTest, CloseAllWebStates) {
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 
-// Test closing one webstate.
+// Tests closing one webstate.
 TEST_F(WebStateListTest, CloseWebState) {
   AppendNewWebState(kURL0);
   AppendNewWebState(kURL1);
@@ -749,7 +724,7 @@ TEST_F(WebStateListTest, CloseWebState) {
   EXPECT_FALSE(observer_.batch_operation_ended());
 }
 
-// Test that batch operation can be empty.
+// Tests that batch operation can be empty.
 TEST_F(WebStateListTest, PerformBatchOperation_EmptyCallback) {
   observer_.ResetStatistics();
 
@@ -759,7 +734,7 @@ TEST_F(WebStateListTest, PerformBatchOperation_EmptyCallback) {
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 
-// Test that batch operation WebStateList is the correct one.
+// Tests that batch operation WebStateList is the correct one.
 TEST_F(WebStateListTest, PerformBatchOperation_CorrectWebStateList) {
   WebStateList* captured_web_state_list = nullptr;
   web_state_list_.PerformBatchOperation(base::BindOnce(
@@ -769,4 +744,19 @@ TEST_F(WebStateListTest, PerformBatchOperation_CorrectWebStateList) {
       &captured_web_state_list));
 
   EXPECT_EQ(captured_web_state_list, &web_state_list_);
+}
+
+// Tests that IsBatchInProgress() returns the correct value.
+TEST_F(WebStateListTest, PerformBatchOperation_IsBatchInProgress) {
+  EXPECT_FALSE(web_state_list_.IsBatchInProgress());
+
+  bool captured_batch_in_progress = false;
+  web_state_list_.PerformBatchOperation(base::BindOnce(
+      [](bool* captured_batch_in_progress, WebStateList* web_state_list) {
+        *captured_batch_in_progress = web_state_list->IsBatchInProgress();
+      },
+      &captured_batch_in_progress));
+
+  EXPECT_FALSE(web_state_list_.IsBatchInProgress());
+  EXPECT_TRUE(captured_batch_in_progress);
 }

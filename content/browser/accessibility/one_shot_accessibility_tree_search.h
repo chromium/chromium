@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_SEARCH_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_SEARCH_H_
+#ifndef CONTENT_BROWSER_ACCESSIBILITY_ONE_SHOT_ACCESSIBILITY_TREE_SEARCH_H_
+#define CONTENT_BROWSER_ACCESSIBILITY_ONE_SHOT_ACCESSIBILITY_TREE_SEARCH_H_
 
 #include <stddef.h>
 
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -51,7 +50,6 @@ DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityListItemPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityLiveRegionPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityMainPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityMediaPredicate);
-DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityPopupButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityRadioButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityRadioGroupPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTablePredicate);
@@ -85,6 +83,12 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   // they will all be within the subtree of the *parent* of |scope| - in other
   // words, siblings of |scope| and their descendants.
   explicit OneShotAccessibilityTreeSearch(BrowserAccessibility* scope);
+
+  OneShotAccessibilityTreeSearch(const OneShotAccessibilityTreeSearch&) =
+      delete;
+  OneShotAccessibilityTreeSearch& operator=(
+      const OneShotAccessibilityTreeSearch&) = delete;
+
   virtual ~OneShotAccessibilityTreeSearch();
 
   //
@@ -121,7 +125,8 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   // name, description, or value. Case-insensitive.
   void SetSearchText(const std::string& text);
 
-  // Restricts the matches to only those that satisfy all predicates.
+  // Restricts the matches to only those that satisfy at least one of the
+  // predicates.
   void AddPredicate(AccessibilityMatchPredicate predicate);
 
   //
@@ -151,10 +156,8 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   std::vector<BrowserAccessibility*> matches_;
 
   bool did_search_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotAccessibilityTreeSearch);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_SEARCH_H_
+#endif  // CONTENT_BROWSER_ACCESSIBILITY_ONE_SHOT_ACCESSIBILITY_TREE_SEARCH_H_

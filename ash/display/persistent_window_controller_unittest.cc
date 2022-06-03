@@ -5,13 +5,19 @@
 #include "ash/display/persistent_window_controller.h"
 
 #include "ash/display/display_move_window_util.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/screen_util.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/test/display_manager_test_api.h"
 
 using session_manager::SessionState;
@@ -21,7 +27,7 @@ namespace ash {
 using PersistentWindowControllerTest = AshTestBase;
 
 TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -31,7 +37,10 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  const int64_t secondary_id = display_manager()->GetSecondaryDisplay().id();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
 
   display::ManagedDisplayInfo primary_info =
       display_manager()->GetDisplayInfo(primary_id);
@@ -72,7 +81,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   // A third id which is different from primary and secondary.
   const int64_t third_id = secondary_id + 1;
   display::ManagedDisplayInfo third_info =
-      display::CreateDisplayInfo(third_id, gfx::Rect(0, 501, 500, 500));
+      display::CreateDisplayInfo(third_id, gfx::Rect(0, 501, 600, 500));
   // Connects another secondary display with |third_id|.
   display_info_list.push_back(third_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -101,7 +110,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
 }
 
 TEST_F(PersistentWindowControllerTest, ThreeDisplays) {
-  UpdateDisplay("0+0-500x500,0+501-500x500,0+1002-500x500");
+  UpdateDisplay("500x600,500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -179,7 +188,7 @@ TEST_F(PersistentWindowControllerTest, ThreeDisplays) {
 }
 
 TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -189,19 +198,19 @@ TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   // Enables mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
   // Disables mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 }
 
 TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
-  UpdateDisplay("0+0-500x500,0+501-500x500,0+1002-500x500");
+  UpdateDisplay("500x600,500x600,500x600");
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
   aura::Window* w2 =
@@ -229,7 +238,7 @@ TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
   dst_ids.emplace_back(second_id);
   display_manager()->SetMirrorMode(
       display::MirrorMode::kMixed,
-      base::make_optional<display::MixedMirrorModeParams>(primary_id, dst_ids));
+      absl::make_optional<display::MixedMirrorModeParams>(primary_id, dst_ids));
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_TRUE(display_manager()->mixed_mirror_mode_params());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
@@ -237,7 +246,7 @@ TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
   EXPECT_EQ(gfx::Rect(502, 0, 400, 200), w3->GetBoundsInScreen());
 
   // Turn off mixed mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   EXPECT_FALSE(display_manager()->mixed_mirror_mode_params());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
@@ -246,7 +255,7 @@ TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
 }
 
 TEST_F(PersistentWindowControllerTest, WindowMovedByAccel) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -256,7 +265,10 @@ TEST_F(PersistentWindowControllerTest, WindowMovedByAccel) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  const int64_t secondary_id = display_manager()->GetSecondaryDisplay().id();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
 
   display::ManagedDisplayInfo primary_info =
       display_manager()->GetDisplayInfo(primary_id);
@@ -299,7 +311,7 @@ TEST_F(PersistentWindowControllerTest, WindowMovedByAccel) {
 }
 
 TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -309,7 +321,10 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  const int64_t secondary_id = display_manager()->GetSecondaryDisplay().id();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
 
   display::ManagedDisplayInfo primary_info =
       display_manager()->GetDisplayInfo(primary_id);
@@ -331,7 +346,7 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
   display_info_list.push_back(secondary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
-  EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   // Unlocks and checks that |w2| is restored.
   GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
@@ -340,7 +355,7 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
 }
 
 TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
   aura::Window* w2 =
@@ -349,7 +364,10 @@ TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
-  const int64_t secondary_id = display_manager()->GetSecondaryDisplay().id();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
 
   display::ManagedDisplayInfo primary_info =
       display_manager()->GetDisplayInfo(primary_id);
@@ -365,7 +383,7 @@ TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
-      PersistentWindowController::kNumOfWindowsRestoredHistogramName, 0);
+      PersistentWindowController::kNumOfWindowsRestoredOnDisplayAdded, 0);
 
   // Reconnects secondary display.
   display_info_list.push_back(secondary_info);
@@ -374,7 +392,7 @@ TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 
   histogram_tester.ExpectTotalCount(
-      PersistentWindowController::kNumOfWindowsRestoredHistogramName, 1);
+      PersistentWindowController::kNumOfWindowsRestoredOnDisplayAdded, 1);
 }
 
 // Tests that swapping primary display shall not do persistent window restore.
@@ -384,9 +402,9 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
           .SetFirstDisplayAsInternalDisplay();
   const display::ManagedDisplayInfo native_display_info =
       display::CreateDisplayInfo(internal_display_id,
-                                 gfx::Rect(0, 0, 500, 500));
+                                 gfx::Rect(0, 0, 500, 600));
   const display::ManagedDisplayInfo secondary_display_info =
-      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 400, 400));
+      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 400, 500));
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(native_display_info);
@@ -402,12 +420,449 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
 
   // Swaps primary display and check window bounds.
   SwapPrimaryDisplay();
-  ASSERT_EQ(gfx::Rect(-500, 0, 500, 500),
+  ASSERT_EQ(gfx::Rect(-500, 0, 500, 600),
             display_manager()->GetDisplayForId(internal_display_id).bounds());
-  ASSERT_EQ(gfx::Rect(0, 0, 400, 400),
+  ASSERT_EQ(gfx::Rect(0, 0, 400, 500),
             display_manager()->GetDisplayForId(10).bounds());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(-499, 0, 200, 100), w2->GetBoundsInScreen());
+}
+
+// Tests that restore bounds persist after adding and removing a display.
+TEST_F(PersistentWindowControllerTest, RestoreBounds) {
+  UpdateDisplay("500x600,500x600");
+
+  std::unique_ptr<aura::Window> window = CreateTestWindow(gfx::Rect(200, 200));
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  display::Screen* screen = display::Screen::GetScreen();
+  ASSERT_EQ(primary_id, screen->GetDisplayNearestWindow(window.get()).id());
+
+  // Move the window to the secondary display and maximize it.
+  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
+  ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->Maximize();
+  EXPECT_TRUE(window_state->HasRestoreBounds());
+  const gfx::Rect restore_bounds_in_screen =
+      window_state->GetRestoreBoundsInScreen();
+
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+
+  // Disconnect secondary display.
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(primary_id, screen->GetDisplayNearestWindow(window.get()).id());
+
+  // Reconnect secondary display. On restoring the maximized window, the bounds
+  // should be the same as they were before maximizing and disconnecting the
+  // display.
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(window.get()).id());
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Restore the window (i.e. press restore button on header).
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(restore_bounds_in_screen, window->GetBoundsInScreen());
+}
+
+// Tests that the MRU order is maintained visually after adding and removing a
+// display.
+TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
+  UpdateDisplay("500x600,500x600");
+
+  // Add three windows, all on the secondary display.
+  const gfx::Rect bounds(500, 0, 200, 200);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+
+  // MRU order should be opposite of the order the windows were created. Verify
+  // that all three windows are indeed on the secondary display.
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  display::Screen* screen = display::Screen::GetScreen();
+  const std::vector<aura::Window*> expected_mru_order = {
+      window3.get(), window2.get(), window1.get()};
+  ASSERT_EQ(
+      expected_mru_order,
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
+  for (auto* window : expected_mru_order)
+    ASSERT_EQ(secondary_id, screen->GetDisplayNearestWindow(window).id());
+
+  // Disconnect secondary display. The windows should move to the primary
+  // display and retain MRU ordering.
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // The order which the children are stacked in is the reverse of the order
+  // they are in the children() field.
+  aura::Window* parent = window1->parent();
+  ASSERT_TRUE(parent);
+  std::vector<aura::Window*> children_ordered_by_stacking = parent->children();
+  std::reverse(children_ordered_by_stacking.begin(),
+               children_ordered_by_stacking.end());
+  EXPECT_EQ(
+      expected_mru_order,
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
+  EXPECT_EQ(expected_mru_order, children_ordered_by_stacking);
+  EXPECT_EQ(primary_id, screen->GetDisplayNearestWindow(parent).id());
+
+  // Reconnect secondary display. The windows should move to the secondary
+  // display and retain MRU ordering.
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  parent = window1->parent();
+  children_ordered_by_stacking = parent->children();
+  std::reverse(children_ordered_by_stacking.begin(),
+               children_ordered_by_stacking.end());
+  ASSERT_TRUE(parent);
+  EXPECT_EQ(
+      expected_mru_order,
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
+  EXPECT_EQ(expected_mru_order, children_ordered_by_stacking);
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(parent).id());
+}
+
+// Similar to the above test but with windows created on both displays.
+TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
+  UpdateDisplay("500x600,500x600");
+
+  // Add four windows, two on each display.
+  const gfx::Rect primary_bounds(200, 200);
+  const gfx::Rect secondary_bounds(500, 0, 200, 200);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(primary_bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(secondary_bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(primary_bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(secondary_bounds);
+
+  // MRU order should be opposite of the order the windows were created.
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  display::Screen* screen = display::Screen::GetScreen();
+  const std::vector<aura::Window*> expected_mru_order = {
+      window4.get(), window3.get(), window2.get(), window1.get()};
+  ASSERT_EQ(
+      expected_mru_order,
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
+
+  // Disconnect secondary display. The windows should move to the primary
+  // display and retain MRU ordering. Note that this logic is part of
+  // RootWindowController and not PersistentWindowController.
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // The order which the children are stacked in is the reverse of the order
+  // they are in the children() field.
+  aura::Window* parent = window1->parent();
+  ASSERT_TRUE(parent);
+  ASSERT_EQ(parent, window2->parent());
+  std::vector<aura::Window*> children_ordered_by_stacking = parent->children();
+  std::reverse(children_ordered_by_stacking.begin(),
+               children_ordered_by_stacking.end());
+  EXPECT_EQ(
+      expected_mru_order,
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
+  EXPECT_EQ(expected_mru_order, children_ordered_by_stacking);
+  EXPECT_EQ(primary_id, screen->GetDisplayNearestWindow(parent).id());
+
+  // Reconnect secondary display. |window2| and |window4| should move back to
+  // the secondary display.
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(
+      expected_mru_order,
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks));
+  parent = window1->parent();
+  EXPECT_EQ(primary_id, screen->GetDisplayNearestWindow(parent).id());
+  ASSERT_EQ(2u, parent->children().size());
+  EXPECT_EQ(window1.get(), parent->children()[0]);
+  EXPECT_EQ(window3.get(), parent->children()[1]);
+
+  parent = window2->parent();
+  EXPECT_EQ(secondary_id, screen->GetDisplayNearestWindow(parent).id());
+  ASSERT_EQ(2u, parent->children().size());
+  EXPECT_EQ(window2.get(), parent->children()[0]);
+  EXPECT_EQ(window4.get(), parent->children()[1]);
+}
+
+// Tests that if a window is on a primary display which gets disconnected, on
+// reconnect the windows bounds will be persisted.
+TEST_F(PersistentWindowControllerTest, DisconnectingPrimaryDisplay) {
+  // Create two displays with the one higher resolution.
+  UpdateDisplay("500x600,1500x500");
+  const int64_t small_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t large_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+
+  // Set the larger display to be the primary display.
+  Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(large_id);
+  ASSERT_EQ(large_id, WindowTreeHostManager::GetPrimaryDisplayId());
+
+  // Add a window on the larger display.
+  const gfx::Rect bounds(0, 200, 1500, 200);
+  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+
+  // Disconnect the large display. The windows should move to the new primary
+  // display (small display) and shrink to fit.
+  display::ManagedDisplayInfo small_info =
+      display_manager()->GetDisplayInfo(small_id);
+  display::ManagedDisplayInfo large_info =
+      display_manager()->GetDisplayInfo(large_id);
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(small_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(small_id, WindowTreeHostManager::GetPrimaryDisplayId());
+  EXPECT_EQ(gfx::Size(500, 200), window->bounds().size());
+
+  // Reconnect the large display. The window should move back and have the old
+  // size.
+  display_info_list.push_back(large_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(large_id, WindowTreeHostManager::GetPrimaryDisplayId());
+  EXPECT_EQ(gfx::Size(1500, 200), window->bounds().size());
+}
+
+TEST_F(PersistentWindowControllerTest, RestoreBoundsOnScreenRotation) {
+  UpdateDisplay("800x600");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  gfx::Rect bounds_in_landscape = gfx::Rect(420, 200, 200, 100);
+  aura::Window* w1 = CreateTestWindowInShellWithBounds(bounds_in_landscape);
+
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+  EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
+
+  // The window should be fully visible after rotation.
+  base::HistogramTester histogram_tester;
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitPrimary);
+  gfx::Rect bounds_in_portrait = w1->GetBoundsInScreen();
+  EXPECT_NE(bounds_in_landscape, bounds_in_portrait);
+  EXPECT_TRUE(GetPrimaryDisplay().bounds().Contains(bounds_in_portrait));
+  histogram_tester.ExpectTotalCount(
+      PersistentWindowController::kNumOfWindowsRestoredOnScreenRotation, 0);
+
+  // The window's bounds should be restored after rotated back to landscape
+  // primary.
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+  EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
+  histogram_tester.ExpectTotalCount(
+      PersistentWindowController::kNumOfWindowsRestoredOnScreenRotation, 1);
+
+  // Update window's bounds in portrait primary.
+  auto* window_state = WindowState::Get(w1);
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitPrimary);
+  EXPECT_EQ(bounds_in_portrait, w1->GetBoundsInScreen());
+  w1->SetBounds(gfx::Rect(
+      gfx::Point(bounds_in_portrait.x() - 100, bounds_in_portrait.y() - 100),
+      bounds_in_portrait.size()));
+  window_state->set_bounds_changed_by_user(true);
+  bounds_in_portrait = w1->GetBoundsInScreen();
+  EXPECT_FALSE(window_state->persistent_window_info_of_screen_rotation());
+
+  // The window's bounds should not be restored after rotated to landscape
+  // secondary, since the window's bounds has been changed by user.
+  test_api.SetDisplayRotation(display::Display::ROTATE_180,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapeSecondary);
+  EXPECT_NE(bounds_in_landscape, w1->GetBoundsInScreen());
+  bounds_in_landscape = w1->GetBoundsInScreen();
+
+  // The window's bounds should be the same as its bounds in portrait primary
+  // after rotated to portrait secondary.
+  test_api.SetDisplayRotation(display::Display::ROTATE_90,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitSecondary);
+  EXPECT_EQ(bounds_in_portrait, w1->GetBoundsInScreen());
+
+  // The window's bounds should be the same as its bounds in landscape secondary
+  // after rotated to landscape primary.
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+  EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
+}
+
+TEST_F(PersistentWindowControllerTest, RotationOnLockScreen) {
+  UpdateDisplay("800x600");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  const gfx::Rect bounds_in_landscape = gfx::Rect(420, 200, 200, 100);
+  aura::Window* w1 = CreateTestWindowInShellWithBounds(bounds_in_landscape);
+
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+  EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
+
+  // Rotates to portrait primary.
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+
+  // Enters locked session state and rotates the screen back to landscape
+  // primary.
+  GetSessionControllerClient()->SetSessionState(SessionState::LOCKED);
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+
+  // Unlocks and checks that `w1` is restored.
+  GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
+  EXPECT_EQ(bounds_in_landscape, w1->GetBoundsInScreen());
+}
+
+TEST_F(PersistentWindowControllerTest, RotationOnDisplayReconnecting) {
+  UpdateDisplay("500x600,500x600");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+
+  const gfx::Rect w1_bounds_in_landscape = gfx::Rect(200, 0, 100, 200);
+  const gfx::Rect w2_bounds_in_second_display = gfx::Rect(501, 0, 200, 100);
+  aura::Window* w1 = CreateTestWindowInShellWithBounds(w1_bounds_in_landscape);
+  aura::Window* w2 =
+      CreateTestWindowInShellWithBounds(w2_bounds_in_second_display);
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+
+  // Disconnects secondary display.
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(w1_bounds_in_landscape, w1->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
+
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+
+  test_api.SetDisplayRotation(display::Display::ROTATE_270,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitPrimary);
+
+  // Reconnects secondary display, `w2` should be restored.
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(w2_bounds_in_second_display, w2->GetBoundsInScreen());
+
+  // Rotates the internal display back to landscape primary.
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(w1_bounds_in_landscape, w1->GetBoundsInScreen());
+}
+
+TEST_F(PersistentWindowControllerTest, NoRestoreOnRotationForSnappedWindows) {
+  UpdateDisplay("800x600");
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_0,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapePrimary);
+
+  aura::Window* w1 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 200, 200));
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+
+  // Snap the unique window in clamshell mode will not enter split view mode.
+  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  auto* window_state = WindowState::Get(w1);
+  window_state->OnWMEvent(&wm_left_snap_event);
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  const gfx::Rect bounds_in_landscape_primary = w1->GetBoundsInScreen();
+  EXPECT_EQ(0, bounds_in_landscape_primary.x());
+
+  // Snapped window should not have persistent window info on screen rotation
+  // so its bounds will not be restored.
+  test_api.SetDisplayRotation(display::Display::ROTATE_90,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kPortraitSecondary);
+  EXPECT_FALSE(window_state->persistent_window_info_of_screen_rotation());
+
+  // Snapped window's bounds should not be restored on screen rotation. The
+  // primary snapped window in landscape primary should still be primary snapped
+  // after rotated to landscape secondary, and be kept at the right side of the
+  // screen.
+  test_api.SetDisplayRotation(display::Display::ROTATE_180,
+                              display::Display::RotationSource::ACTIVE);
+  EXPECT_EQ(test_api.GetCurrentOrientation(),
+            chromeos::OrientationType::kLandscapeSecondary);
+  EXPECT_FALSE(window_state->persistent_window_info_of_screen_rotation());
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  const gfx::Rect bounds_in_landscape_secondary = w1->GetBoundsInScreen();
+  EXPECT_NE(bounds_in_landscape_primary, bounds_in_landscape_secondary);
+  EXPECT_NE(0, bounds_in_landscape_secondary.x());
+  EXPECT_EQ(
+      bounds_in_landscape_secondary.right(),
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(w1)
+          .right());
 }
 
 }  // namespace ash

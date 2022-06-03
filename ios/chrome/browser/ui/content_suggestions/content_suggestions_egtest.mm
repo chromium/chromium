@@ -12,9 +12,11 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -31,28 +33,11 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(CHROME_EARL_GREY_2)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ContentSuggestionsAppInterface);
-#pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
-
 namespace {
 
 const char kPageLoadedString[] = "Page loaded!";
 const char kPageURL[] = "/test-page.html";
 const char kPageTitle[] = "Page title!";
-
-//  Scrolls the collection view in order to have the toolbar menu icon visible.
-void ScrollUp() {
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::ContentSuggestionCollectionView()]
-      assertWithMatcher:grey_notNil()];
-}
 
 // Provides responses for redirect and changed window location URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -69,21 +54,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Select the cell with the |matcher| by scrolling the collection.
-// 200 is a reasonable scroll displacement that works for all UI elements, while
-// not being too slow.
-GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
-  // Start the scroll from the middle of the screen in case the bottom of the
-  // screen is obscured by the bottom toolbar.
-  id<GREYAction> action =
-      grey_scrollInDirectionWithStartPoint(kGREYDirectionDown, 230, 0.5, 0.5);
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(matcher, grey_sufficientlyVisible(),
-                                          nil)]
-         usingSearchAction:action
-      onElementWithMatcher:chrome_test_util::ContentSuggestionCollectionView()];
-}
-
 }  // namespace
 
 #pragma mark - TestCase
@@ -97,172 +67,43 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 
 #pragma mark - Setup/Teardown
 
-#if defined(CHROME_EARL_GREY_2)
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kDiscoverFeedInNtp);
+  return config;
+}
+
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   [self setUpHelper];
 }
-#elif defined(CHROME_EARL_GREY_1)
-+ (void)setUp {
-  [super setUp];
-  [self setUpHelper];
-}
-#else
-#error Not an EarlGrey Test
-#endif
 
 + (void)setUpHelper {
   [self closeAllTabs];
 
-  [ContentSuggestionsAppInterface setUpService];
+  [NewTabPageAppInterface setUpService];
 }
 
 + (void)tearDown {
   [self closeAllTabs];
 
-  [ContentSuggestionsAppInterface resetService];
+  [NewTabPageAppInterface resetService];
 
   [super tearDown];
 }
 
 - (void)setUp {
   [super setUp];
-  [ContentSuggestionsAppInterface makeSuggestionsAvailable];
+  [NewTabPageAppInterface makeSuggestionsAvailable];
 }
 
 - (void)tearDown {
-  [ContentSuggestionsAppInterface disableSuggestions];
+  [NewTabPageAppInterface disableSuggestions];
   [ChromeEarlGrey clearBrowsingHistory];
   [super tearDown];
 }
 
 #pragma mark - Tests
-
-// Tests that the additional items (when more is pressed) are kept when
-// switching tabs.
-- (void)testAdditionalItemsKept {
-  // Set server up.
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Add 3 suggestions, persisted accross page loads.
-  [ContentSuggestionsAppInterface
-        addNumberOfSuggestions:3
-      additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
-
-  // Tap on more, which adds 10 elements.
-  [CellWithMatcher(chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE)) performAction:grey_tap()];
-
-  // Make sure some items are loaded.
-  [CellWithMatcher(grey_accessibilityID(@"AdditionalSuggestion2"))
-      assertWithMatcher:grey_notNil()];
-
-  // Open a new Tab.
-  ScrollUp();
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey waitForMainTabCount:2];
-
-  // Go back to the previous tab.
-  [ChromeEarlGrey selectTabAtIndex:0];
-
-  // Make sure the additional items are still displayed.
-  [CellWithMatcher(grey_accessibilityID(@"AdditionalSuggestion2"))
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests that when the page is reloaded using the tools menu, the suggestions
-// are updated.
-- (void)testReloadPage {
-  // Add 2 suggestions, persisted accross page loads.
-  [ContentSuggestionsAppInterface addNumberOfSuggestions:2
-                                additionalSuggestionsURL:nil];
-
-  // Change the suggestions to have one the second one.
-  [ContentSuggestionsAppInterface addSuggestionNumber:2];
-
-  // Check that the first suggestion is still displayed.
-  [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/1"))
-      assertWithMatcher:grey_notNil()];
-
-  // Reload the page using the tools menu.
-  [ChromeEarlGreyUI reload];
-
-  // Check that the first suggestion is no longer displayed.
-  [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/1"))
-      assertWithMatcher:grey_nil()];
-  [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/2"))
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests that when tapping a suggestion, it is opened. When going back, the
-// disposition of the collection takes into account the previous scroll, even
-// when more is tapped.
-- (void)testOpenPageAndGoBackWithMoreContent {
-  // Set server up.
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Add 3 suggestions, persisted accross page loads.
-  [ContentSuggestionsAppInterface
-        addNumberOfSuggestions:3
-      additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
-
-  // Tap on more, which adds 10 elements.
-  [CellWithMatcher(chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE)) performAction:grey_tap()];
-
-  // Make sure to scroll to the bottom.
-  [CellWithMatcher(grey_accessibilityID(kContentSuggestionsLearnMoreIdentifier))
-      assertWithMatcher:grey_notNil()];
-
-  // Open the last item. After the extra space of the last suggestion is
-  // removed, this test case fails on iPhoneX. Double-Tap on the last suggestion
-  // is a workaround.
-  // TODO(crbug.com/979143): Find out the reason and fix it. Also consider
-  // converting the test case to EG2 or deprecating MDCCollectionView.
-  [CellWithMatcher(grey_accessibilityID(@"AdditionalSuggestion9"))
-      performAction:grey_doubleTap()];
-
-  // Check that the page has been opened.
-  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForMainTabCount:1];
-  [ChromeEarlGrey waitForIncognitoTabCount:0];
-
-  // Go back.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
-
-  // Check that the first items are visible as the collection should be
-  // scrolled.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"http://chromium.org/3")]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the "Learn More" cell is present only if there is a suggestion in
-// the section.
-- (void)testLearnMore {
-  id<GREYAction> action =
-      grey_scrollInDirectionWithStartPoint(kGREYDirectionDown, 200, 0.5, 0.5);
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kContentSuggestionsLearnMoreIdentifier)]
-         usingSearchAction:action
-      onElementWithMatcher:chrome_test_util::ContentSuggestionCollectionView()]
-      assertWithMatcher:grey_nil()];
-
-  [ContentSuggestionsAppInterface addNumberOfSuggestions:1
-                                additionalSuggestionsURL:nil];
-
-  [CellWithMatcher(grey_accessibilityID(kContentSuggestionsLearnMoreIdentifier))
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
 
 // Tests the "Open in New Tab" action of the Most Visited context menu.
 - (void)testMostVisitedNewTab {
@@ -282,8 +123,7 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   // Check that the tab has been opened in background.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            ContentSuggestionCollectionView()]
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;
@@ -307,9 +147,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   const GURL pageURL = self.testServer->GetURL(kPageURL);
 
   // Open in new incognito tab.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInIncognitoButton()]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -386,13 +225,7 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 - (void)testMostVisitedLongPress {
   [self setupMostVisitedTileLongPress];
 
-  if (![ChromeEarlGrey isRegularXRegularSizeClass]) {
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(
-                       IDS_APP_CANCEL)] assertWithMatcher:grey_interactable()];
-  }
-
-  // No read later.
+  // No "Add to Reading List" item.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)]
@@ -403,7 +236,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 
 // Setup a most visited tile, and open the context menu by long pressing on it.
 - (void)setupMostVisitedTileLongPress {
-  self.testServer->RegisterRequestHandler(base::Bind(&StandardResponse));
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   NSString* pageTitle = base::SysUTF8ToNSString(kPageTitle);
@@ -420,9 +254,10 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle)]
-      performAction:grey_longPress()];
+  id<GREYMatcher> matcher =
+      grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(pageTitle),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()];
 }
 
 @end

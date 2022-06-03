@@ -1,20 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="security_keys_browser_proxy.html">
-
-<dom-module id="settings-security-keys-set-pin-dialog">
-  <template>
     <style include="settings-shared">
       cr-input {
         display: inline-block;
@@ -28,6 +11,11 @@
       #newPINRow {
         display: flex;
         flex-direction: row;
+      }
+
+      #newPINRow cr-input {
+        width: 8em;
+        --cr-input-error-white-space: nowrap;
       }
 
       paper-spinner-lite {
@@ -55,8 +43,9 @@
               <p>$i18nRaw{securityKeysCurrentPINIntro}</p>
 
               <div id="currentPINRow">
-                <cr-input id="currentPIN" value="{{currentPIN_}}" minLength="4"
-                    maxLength="255" spellcheck="false"
+                <cr-input id="currentPIN" value="{{currentPIN_}}"
+                    min-length="[[currentMinPinLength_]]"
+                    max-length="255" spellcheck="false"
                     on-input="onCurrentPINInput_"
                     invalid="[[isNonEmpty_(currentPINError_)]]"
                     label="$i18n{securityKeysCurrentPIN}" tabindex="0"
@@ -72,11 +61,12 @@
               </div>
             </div>
 
-            <p>$i18n{securityKeysNewPIN}</p>
+            <p>[[newPINDialogDescription_]]</p>
 
             <div id="newPINRow">
-              <cr-input id="newPIN" value="{{newPIN_}}" minLength="4"
-                  maxLength="255" spellcheck="false" on-input="onNewPINInput_"
+              <cr-input id="newPIN" value="{{newPIN_}}"
+                  min-length="[[newMinPinLength_]]"
+                  max-length="255" spellcheck="false" on-input="onNewPINInput_"
                   label="$i18n{securityKeysPIN}"
                   tabindex="0" type$="[[inputType_(pinsVisible_)]]"
                   invalid="[[isNonEmpty_(newPINError_)]]"
@@ -88,8 +78,9 @@
                 <div style="height: 36px" slot="suffix"
                      hidden="[[showCurrentEntry_]]"></div>
               </cr-input>
-              <cr-input id="confirmPIN" value="{{confirmPIN_}}" minLength="4"
-                  maxLength="255" spellcheck="false"
+              <cr-input id="confirmPIN" value="{{confirmPIN_}}"
+                  min-length="[[newMinPinLength_]]"
+                  max-length="255" spellcheck="false"
                   on-input="onConfirmPINInput_"
                   label="$i18n{securityKeysConfirmPIN}" tabindex="0"
                   invalid="[[isNonEmpty_(confirmPINError_)]]"
@@ -136,6 +127,3 @@
         </cr-button>
       </div>
     </cr-dialog>
-  </template>
-  <script src="security_keys_set_pin_dialog.js"></script>
-</dom-module>

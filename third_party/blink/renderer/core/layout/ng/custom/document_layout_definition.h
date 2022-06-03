@@ -37,7 +37,7 @@ class DocumentLayoutDefinition final
     return registered_definitions_count_;
   }
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   bool IsEqual(const CSSLayoutDefinition&);

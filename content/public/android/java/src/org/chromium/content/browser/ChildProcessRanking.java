@@ -6,8 +6,8 @@ package org.chromium.content.browser;
 
 import android.os.Handler;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.ChildProcessImportance;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
  * Ranking of ChildProcessConnections for a particular ChildConnectionAllocator.
  */
 public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
-    private static final boolean ENABLE_CHECKS = BuildConfig.DCHECK_IS_ON;
+    private static final boolean ENABLE_CHECKS = BuildConfig.ENABLE_ASSERTS;
     private static final int NO_GROUP = 0;
     private static final int LOW_RANK_GROUP = 1;
 
@@ -86,9 +86,8 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             // * (visible and main frame) or ChildProcessImportance.IMPORTANT
             // * (visible and subframe and intersect viewport) or ChildProcessImportance.MODERATE
             // ---- cutoff for shouldBeInLowRankGroup ----
-            // * invisible main frame
             // * visible subframe and not intersect viewport
-            // * invisible subframes
+            // * invisible main and sub frames (not ranked by frame depth)
             // Within each group, ties are broken by intersect viewport and then frame depth where
             // applicable. Note boostForPendingViews is not used for ranking.
 
@@ -120,24 +119,19 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                 return 1;
             }
 
-            boolean o1InvisibleMainFrame = !o1.visible && o1.frameDepth == 0;
-            boolean o2InvisibleMainFrame = !o2.visible && o2.frameDepth == 0;
-            if (o1InvisibleMainFrame && o2InvisibleMainFrame) {
-                return 0;
-            } else if (o1InvisibleMainFrame && !o2InvisibleMainFrame) {
-                return -1;
-            } else if (!o1InvisibleMainFrame && o2InvisibleMainFrame) {
-                return 1;
-            }
-
-            // The rest of the groups can just be ranked by visibility, intersects viewport, and
-            // frame depth.
-            if (o1.visible && !o2.visible) {
+            if (o1.visible && o2.visible) {
+                return compareByIntersectsViewportAndDepth(o1, o2);
+            } else if (o1.visible && !o2.visible) {
                 return -1;
             } else if (!o1.visible && o2.visible) {
                 return 1;
             }
-            return compareByIntersectsViewportAndDepth(o1, o2);
+
+            // Invisible are in one group and are purposefully not ranked by frame depth.
+            // This is because a crashed sub frame will cause the whole tab to be reloaded
+            // when it becomes visible, so there is no need to specifically protect the
+            // main frame or lower depth frames.
+            return 0;
         }
     }
 

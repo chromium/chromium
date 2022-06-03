@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Warning: One off below, do not use for other purpose.
+         Ask for a UX approval before adding a new one.
+    -->
+
+    <!-- Background color for dark mode animations and images-->
+    <color name="header_background_dark" tools:ignore="UnusedResources">#28282B</color>
+
+    <!-- TODO(https://crbug.com/1020436): Update the highlight colors to meet accessibility
+         contrast ratio. -->
+    <color name="highlight_color_on_light_text" tools:ignore="UnusedResources">#CC5595FE</color>
+    <color name="highlight_color_on_dark_text" tools:ignore="UnusedResources">#C6DAFC</color>
+
+    <color name="black_alpha_12" tools:ignore="UnusedResources">#1F000000</color>
+    <color name="black_alpha_20" tools:ignore="UnusedResources">#33000000</color>
+    <color name="black_alpha_30" tools:ignore="UnusedResources">#4D000000</color>
+
+    <color name="green_50">#E6F4EA</color>
+
+    <color name="white_alpha_65" tools:ignore="UnusedResources">#A6FFFFFF</color>
+    <color name="white_alpha_75" tools:ignore="UnusedResources">#BFFFFFFF</color>
+
+    <color name="find_result_bar_result" tools:ignore="UnusedResources">#FFDE43</color>
+    <color name="find_result_bar_result_border" tools:ignore="UnusedResources">#C9AF35</color>
+    <color name="find_result_bar_active" tools:ignore="UnusedResources">#FF9632</color>
+    <color name="find_result_bar_active_border" tools:ignore="UnusedResources">#C37E3B</color>
+
+    <color name="progress_bar_background_deprecated" tools:ignore="UnusedResources">#3D4386F7</color>
+</resources>

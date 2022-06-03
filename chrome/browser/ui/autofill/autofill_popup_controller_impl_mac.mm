@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_mac.h"
 
-#include "base/mac/availability.h"
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -29,7 +28,7 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
   }
 
   if (previous.get())
-    previous->Hide();
+    previous->Hide(PopupHidingReason::kViewDestroyed);
 
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImplMac(
       delegate, web_contents, container_view, element_bounds, text_direction);
@@ -73,8 +72,8 @@ void AutofillPopupControllerImplMac::Show(
 }
 
 void AutofillPopupControllerImplMac::UpdateDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   if (touch_bar_controller_)
     [touch_bar_controller_ invalidateTouchBar];
 
@@ -84,13 +83,13 @@ void AutofillPopupControllerImplMac::UpdateDataListValues(
   // |UpdateDataListValues| should be the last line.
 }
 
-void AutofillPopupControllerImplMac::Hide() {
+void AutofillPopupControllerImplMac::Hide(PopupHidingReason reason) {
   if (touch_bar_controller_) {
     [touch_bar_controller_ hideCreditCardAutofillTouchBar];
     touch_bar_controller_ = nil;
   }
 
-  AutofillPopupControllerImpl::Hide();
+  AutofillPopupControllerImpl::Hide(reason);
   // No code below this line!
   // |Hide()| destroys |this|, so it should be the last line.
 }

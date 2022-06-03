@@ -6,6 +6,7 @@
 #define CHROME_CHROME_CLEANER_TEST_TEST_TASK_SCHEDULER_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
@@ -24,7 +25,7 @@ class TestTaskScheduler : public TaskScheduler {
   bool DeleteTask(const wchar_t* task_name) override;
   bool GetNextTaskRunTime(const wchar_t* task_name,
                           base::Time* next_run_time) override;
-  bool GetTaskNameList(std::vector<base::string16>* task_names) override;
+  bool GetTaskNameList(std::vector<std::wstring>* task_names) override;
   bool GetTaskInfo(const wchar_t* task_name,
                    TaskScheduler::TaskInfo* info) override;
   bool RegisterTask(const wchar_t* task_name,
@@ -45,7 +46,7 @@ class TestTaskScheduler : public TaskScheduler {
   bool delete_task_called_ = false;
   bool register_task_called_ = false;
   bool register_task_return_value_ = true;
-  std::map<base::string16, TaskInfo> tasks_;
+  std::map<std::wstring, TaskInfo> tasks_;
 };
 
 }  // namespace chrome_cleaner

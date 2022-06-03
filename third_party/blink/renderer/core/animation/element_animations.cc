@@ -36,151 +36,45 @@
 
 namespace blink {
 
-namespace {
-
-void UpdateAnimationFlagsForEffect(const KeyframeEffect& effect,
-                                   ComputedStyle& style) {
-  if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
-    style.SetHasCurrentOpacityAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyTranslate())))
-    style.SetHasCurrentTransformAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
-    style.SetHasCurrentFilterAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
-    style.SetHasCurrentBackdropFilterAnimation(true);
-}
-
-#if DCHECK_IS_ON()
-// Under certain conditions ComputedStyle::operator==() may return false for
-// differences that are permitted during an animation.
-bool ShouldCheckComputedStyles(const ComputedStyle& base_computed_style,
-                               const ComputedStyle& computed_style) {
-  // The FontFaceCache version number may be increased without forcing a style
-  // recalc (see crbug.com/471079).
-  if (!base_computed_style.GetFont().IsFallbackValid())
-    return false;
-  // Images use instance equality rather than value equality (see
-  // crbug.com/781461).
-  for (CSSPropertyID id :
-       {CSSPropertyID::kBackgroundImage, CSSPropertyID::kWebkitMaskImage}) {
-    if (!CSSPropertyEquality::PropertiesEqual(
-            PropertyHandle(CSSProperty::Get(id)), base_computed_style,
-            computed_style)) {
-      return false;
-    }
-  }
-  return true;
-}
-#endif  // DCHECK_IS_ON()
-
-}  // namespace
-
 ElementAnimations::ElementAnimations() : animation_style_change_(false) {}
 
 ElementAnimations::~ElementAnimations() = default;
-
-void ElementAnimations::UpdateAnimationFlags(ComputedStyle& style) {
-  for (const auto& entry : animations_) {
-    const Animation& animation = *entry.key;
-    DCHECK(animation.effect());
-    // FIXME: Needs to consider AnimationGroup once added.
-    DCHECK(IsA<KeyframeEffect>(animation.effect()));
-    const auto& effect = *To<KeyframeEffect>(animation.effect());
-    if (!effect.IsCurrent())
-      continue;
-    UpdateAnimationFlagsForEffect(effect, style);
-  }
-
-  for (const auto& entry : worklet_animations_) {
-    const KeyframeEffect& effect = *entry->GetEffect();
-    // TODO(majidvp): we should check the effect's phase before updating the
-    // style once the timing of effect is ready to use.
-    // https://crbug.com/814851.
-    UpdateAnimationFlagsForEffect(effect, style);
-  }
-
-  if (style.HasCurrentOpacityAnimation()) {
-    style.SetIsRunningOpacityAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyOpacity())));
-  }
-  if (style.HasCurrentTransformAnimation()) {
-    style.SetIsRunningTransformAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyTransform())));
-  }
-  if (style.HasCurrentFilterAnimation()) {
-    style.SetIsRunningFilterAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyFilter())));
-  }
-  if (style.HasCurrentBackdropFilterAnimation()) {
-    style.SetIsRunningBackdropFilterAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyBackdropFilter())));
-  }
-}
 
 void ElementAnimations::RestartAnimationOnCompositor() {
   for (const auto& entry : animations_)
     entry.key->RestartAnimationOnCompositor();
 }
 
-void ElementAnimations::Trace(blink::Visitor* visitor) {
+void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(css_animations_);
   visitor->Trace(effect_stack_);
   visitor->Trace(animations_);
   visitor->Trace(worklet_animations_);
 }
 
-const ComputedStyle* ElementAnimations::BaseComputedStyle() const {
-// When DCHECK is on we lie and claim to never have a base computed style
-// stored. This allows us to check that an invariant holds; see the comments in
-// |UpdateBaseComputedStyle|.
-#if !DCHECK_IS_ON()
-  if (IsAnimationStyleChange())
-    return base_computed_style_.get();
-#endif
-  return nullptr;
-}
-
-void ElementAnimations::UpdateBaseComputedStyle(
-    const ComputedStyle* computed_style) {
-  DCHECK(computed_style);
-  if (!IsAnimationStyleChange()) {
-    base_computed_style_ = nullptr;
-    return;
+bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
+    const FloatSize& box_size) {
+  bool preserves_axis_alignment = true;
+  for (auto& entry : animations_) {
+    Animation& animation = *entry.key;
+    if (auto* effect = DynamicTo<KeyframeEffect>(animation.effect())) {
+      if (!effect->IsCurrent() && !effect->IsInEffect())
+        continue;
+      if (!effect->UpdateBoxSizeAndCheckTransformAxisAlignment(box_size))
+        preserves_axis_alignment = false;
+    }
   }
-#if DCHECK_IS_ON()
-  // The invariant in the base computed style optimization is that as long as
-  // |IsAnimationStyleChange| is true, the computed style that would be
-  // generated by the style resolver is equivalent to the one we hold
-  // internally. To ensure this we disable the optimization when DCHECKs are
-  // enabled, but keep the internal base computed style and make sure the
-  // equivalency holds here.
-  if (base_computed_style_ && computed_style &&
-      ShouldCheckComputedStyles(*base_computed_style_, *computed_style)) {
-    DCHECK(*base_computed_style_ == *computed_style);
-  }
-#endif
-  base_computed_style_ = ComputedStyle::Clone(*computed_style);
+  return preserves_axis_alignment;
 }
 
-void ElementAnimations::ClearBaseComputedStyle() {
-  base_computed_style_ = nullptr;
-}
-
-bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
-  for (const auto& entry : animations_) {
-    const Animation& animation = *entry.key;
-    DCHECK(animation.effect());
-    DCHECK(IsA<KeyframeEffect>(animation.effect()));
-    const auto& effect = *To<KeyframeEffect>(animation.effect());
-    if (!effect.AnimationsPreserveAxisAlignment())
-      return false;
+bool ElementAnimations::IsIdentityOrTranslation() const {
+  for (auto& entry : animations_) {
+    if (auto* effect = DynamicTo<KeyframeEffect>(entry.key->effect())) {
+      if (!effect->IsCurrent() && !effect->IsInEffect())
+        continue;
+      if (!effect->IsIdentityOrTranslation())
+        return false;
+    }
   }
   return true;
 }

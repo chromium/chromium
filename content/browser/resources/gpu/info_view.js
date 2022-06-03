@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {VulkanInfo} from './vulkan_info.js';
 
 /**
  * @fileoverview This view displays information on the current GPU
  * hardware.  Its primary usefulness is to allow users to copy-paste
  * their data in an easy to read format for bug reports.
  */
-cr.define('gpu', function() {
+export function makeInfoView(browserBridge) {
   /**
    * Provides information on the GPU process and underlying graphics hardware.
    * @constructor
-   * @extends {cr.ui.TabPanel}
    */
-  const InfoView = cr.ui.define(cr.ui.TabPanel);
+  const InfoView = crUiDefine('div');
 
   InfoView.prototype = {
-    __proto__: cr.ui.TabPanel.prototype,
+    __proto__: HTMLDivElement.prototype,
 
     decorate: function() {
-      cr.ui.TabPanel.prototype.decorate.apply(this);
-
       browserBridge.addEventListener('gpuInfoUpdate', this.refresh.bind(this));
       browserBridge.addEventListener(
           'logMessagesChange', this.refresh.bind(this));
@@ -99,6 +100,8 @@ cr.define('gpu', function() {
       const workaroundsList = this.querySelector('.workarounds-list');
       const ANGLEFeaturesDiv = this.querySelector('.angle-features-div');
       const ANGLEFeaturesList = this.querySelector('.angle-features-list');
+      const DAWNInfoDiv = this.querySelector('.dawn-info-div');
+      const DAWNInfoList = this.querySelector('.dawn-info-list');
 
       const basicInfoForHardwareGpuDiv =
           this.querySelector('.basic-info-for-hardware-gpu-div');
@@ -188,13 +191,21 @@ cr.define('gpu', function() {
           if (gpuInfo.ANGLEFeatures.length) {
             ANGLEFeaturesDiv.hidden = false;
             ANGLEFeaturesList.textContent = '';
-            for (i = 0; i < gpuInfo.ANGLEFeatures.length; i++) {
-              const ANGLEFeature = gpuInfo.ANGLEFeatures[i];
+            for (const ANGLEFeature of gpuInfo.ANGLEFeatures) {
               const ANGLEFeatureEl = this.createANGLEFeatureEl_(ANGLEFeature);
               ANGLEFeaturesList.appendChild(ANGLEFeatureEl);
             }
           } else {
             ANGLEFeaturesDiv.hidden = true;
+          }
+        }
+
+        if (gpuInfo.dawnInfo) {
+          if (gpuInfo.dawnInfo.length) {
+            DAWNInfoDiv.hidden = false;
+            this.createDawnInfoEl_(DAWNInfoList, gpuInfo.dawnInfo);
+          } else {
+            DAWNInfoDiv.hidden = true;
           }
         }
 
@@ -213,7 +224,7 @@ cr.define('gpu', function() {
         }
 
         if (gpuInfo.vulkanInfo) {
-          const vulkanInfo = new gpu.VulkanInfo(gpuInfo.vulkanInfo);
+          const vulkanInfo = new VulkanInfo(gpuInfo.vulkanInfo);
           const data = [{
             'description': 'info',
             'value': vulkanInfo.toString(),
@@ -224,11 +235,17 @@ cr.define('gpu', function() {
           this.setTable_('vulkan-info', []);
         }
 
+        if (gpuInfo.devicePerfInfo) {
+          this.setTable_('device-perf-info', gpuInfo.devicePerfInfo);
+        } else {
+          this.setTable_('device-perf-info', []);
+        }
       } else {
         this.setText_('basic-info', '... loading ...');
         diagnosticsDiv.hidden = true;
         featureStatusList.textContent = '';
         problemsDiv.hidden = true;
+        DAWNInfoDiv.hidden = true;
       }
 
       // Log messages
@@ -246,9 +263,6 @@ cr.define('gpu', function() {
         'gpu_compositing': 'Compositing',
         'webgl': 'WebGL',
         'multisampling': 'WebGL multisampling',
-        'flash_3d': 'Flash',
-        'flash_stage3d': 'Flash Stage3D',
-        'flash_stage3d_baseline': 'Flash Stage3D Baseline profile',
         'texture_sharing': 'Texture Sharing',
         'video_decode': 'Video Decode',
         'rasterization': 'Rasterization',
@@ -263,6 +277,9 @@ cr.define('gpu', function() {
         'vpx_decode': 'VPx Video Decode',
         'webgl2': 'WebGL2',
         'skia_renderer': 'Skia Renderer',
+        'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
+        'raw_draw': 'Raw Draw',
+        'video_encode': 'Video Encode',
       };
 
       const statusMap = {
@@ -325,8 +342,7 @@ cr.define('gpu', function() {
       if (featureInfo.problems.length) {
         problemsDiv.hidden = false;
         problemsList.textContent = '';
-        for (i = 0; i < featureInfo.problems.length; i++) {
-          const problem = featureInfo.problems[i];
+        for (const problem of featureInfo.problems) {
           const problemEl = this.createProblemEl_(problem);
           problemsList.appendChild(problemEl);
         }
@@ -338,9 +354,9 @@ cr.define('gpu', function() {
       if (featureInfo.workarounds.length) {
         workaroundsDiv.hidden = false;
         workaroundsList.textContent = '';
-        for (i = 0; i < featureInfo.workarounds.length; i++) {
+        for (const workaround of featureInfo.workarounds) {
           const workaroundEl = document.createElement('li');
-          workaroundEl.textContent = featureInfo.workarounds[i];
+          workaroundEl.textContent = workaround;
           workaroundsList.appendChild(workaroundEl);
         }
       } else {
@@ -353,7 +369,15 @@ cr.define('gpu', function() {
 
       // Description of issue
       const desc = document.createElement('a');
-      desc.textContent = problem.description;
+      let text = problem.description;
+      const pattern = ' Please update your graphics driver via this link: ';
+      const pos = text.search(pattern);
+      let url = '';
+      if (pos > 0) {
+        url = text.substring(pos + pattern.length);
+        text = text.substring(0, pos);
+      }
+      desc.textContent = text;
       problemEl.appendChild(desc);
 
       // Spacing ':' element
@@ -390,9 +414,9 @@ cr.define('gpu', function() {
         problemEl.appendChild(iNode);
 
         const headNode = document.createElement('span');
-        if (problem.tag == 'disabledFeatures') {
+        if (problem.tag === 'disabledFeatures') {
           headNode.textContent = 'Disabled Features: ';
-        } else {  // problem.tag == 'workarounds'
+        } else {  // problem.tag === 'workarounds'
           headNode.textContent = 'Applied Workarounds: ';
         }
         iNode.appendChild(headNode);
@@ -403,14 +427,33 @@ cr.define('gpu', function() {
             iNode.appendChild(separateNode);
           }
           const nameNode = document.createElement('span');
-          if (problem.tag == 'disabledFeatures') {
+          if (problem.tag === 'disabledFeatures') {
             nameNode.classList.add('feature-red');
-          } else {  // problem.tag == 'workarounds'
+          } else {  // problem.tag === 'workarounds'
             nameNode.classList.add('feature-yellow');
           }
           nameNode.textContent = problem.affectedGpuSettings[j];
           iNode.appendChild(nameNode);
         }
+      }
+
+      // Append driver update link.
+      if (pos > 0) {
+        const brNode = document.createElement('br');
+        problemEl.appendChild(brNode);
+
+        const bNode = document.createElement('b');
+        bNode.classList.add('bg-yellow');
+        problemEl.appendChild(bNode);
+
+        const tmp = document.createElement('span');
+        tmp.textContent = 'Please update your graphics driver via ';
+        bNode.appendChild(tmp);
+
+        const link = document.createElement('a');
+        link.textContent = 'this link';
+        link.href = url;
+        bNode.appendChild(link);
       }
 
       return problemEl;
@@ -459,7 +502,7 @@ cr.define('gpu', function() {
       ANGLEFeatureEl.appendChild(separator);
 
       const status = document.createElement('span');
-      if (ANGLEFeature.status == 'enabled') {
+      if (ANGLEFeature.status === 'enabled') {
         status.textContent = 'Enabled';
         status.classList.add('feature-green');
       } else {
@@ -505,10 +548,75 @@ cr.define('gpu', function() {
         throw new Error('Node ' + outputElementId + ' not found');
       }
 
-      peg.innerHTML = '';
+      peg.innerHTML = trustedTypes.emptyHTML;
       peg.appendChild(template);
-    }
+    },
+
+    createDawnInfoEl_: function(DAWNInfoList, gpuDawnInfo) {
+      DAWNInfoList.textContent = '';
+      let inProcessingToggles = false;
+
+      for (let i = 0; i < gpuDawnInfo.length; ++i) {
+        let infoString = gpuDawnInfo[i];
+        let infoEl;
+
+        if (infoString.startsWith('<')) {
+          // GPU type and backend type.
+          // Add an empty line for the next adaptor.
+          const separator = document.createElement('br');
+          separator.textContent = '';
+          DAWNInfoList.appendChild(separator);
+
+          // e.g. <Discrete GPU> D3D12 backend
+          infoEl = document.createElement('b');
+          infoEl.textContent = infoString;
+          DAWNInfoList.appendChild(infoEl);
+          // Go to the next line.
+          infoEl = document.createElement('br');
+          infoEl.textContent = '';
+          inProcessingToggles = false;
+        } else if (infoString.startsWith('[')) {
+          // e.g. [Default Toggle Names]
+          infoEl = document.createElement('span');
+          infoEl.classList.add('feature-green');
+          infoEl.textContent = infoString;
+
+          if (infoString == '[Supported Features]') {
+            inProcessingToggles = false;
+          } else {
+            inProcessingToggles = true;
+          }
+        } else if (inProcessingToggles) {
+          // Each toggle takes 3 strings
+          infoEl = document.createElement('li');
+
+          // The toggle name comes first, bolded.
+          const name = document.createElement('b');
+          name.textContent = infoString + ':  ';
+          infoEl.appendChild(name);
+
+          // URL
+          infoString = gpuDawnInfo[++i];
+          const url = document.createElement('a');
+          url.textContent = infoString;
+          url.href = infoString;
+          infoEl.appendChild(url);
+
+          // Description, italicized
+          infoString = gpuDawnInfo[++i];
+          const description = document.createElement('i');
+          description.textContent = ':  ' + infoString;
+          infoEl.appendChild(description);
+        } else {
+          // Display supported extensions
+          infoEl = document.createElement('li');
+          infoEl.textContent = infoString;
+        }
+
+        DAWNInfoList.appendChild(infoEl);
+      }
+    },
   };
 
-  return {InfoView: InfoView};
-});
+  return InfoView;
+}

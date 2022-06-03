@@ -47,7 +47,7 @@ RevealSelectionScope::~RevealSelectionScope() {
     return;
   if (!frame_->Selection().IsAvailable())
     return;
-  frame_->Selection().RevealSelection(ScrollAlignment::kAlignToEdgeIfNeeded,
+  frame_->Selection().RevealSelection(ScrollAlignment::ToEdgeIfNeeded(),
                                       kRevealExtent);
 }
 
@@ -55,7 +55,7 @@ Editor& RevealSelectionScope::GetEditor() {
   return frame_->GetEditor();
 }
 
-void RevealSelectionScope::Trace(Visitor* visitor) {
+void RevealSelectionScope::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
 }
 

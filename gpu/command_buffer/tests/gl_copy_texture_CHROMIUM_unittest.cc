@@ -13,7 +13,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -175,6 +176,9 @@ void getExpectedColorAndMask(GLenum src_internal_format,
     case GL_LUMINANCE_ALPHA:
       setColor(color[0], color[0], color[0], color[1], adjusted_color);
       break;
+    case GL_RG16_EXT:
+      setColor(color[0], color[1], 0, 255, adjusted_color);
+      break;
     case GL_RGB:
     case GL_RGB8:
     case GL_RGB_YCBCR_420V_CHROMIUM:
@@ -183,6 +187,7 @@ void getExpectedColorAndMask(GLenum src_internal_format,
       break;
     case GL_RGBA:
     case GL_RGBA8:
+    case GL_RGBA16_EXT:
       setColor(color[0], color[1], color[2], color[3], adjusted_color);
       break;
     case GL_BGRA_EXT:
@@ -253,7 +258,7 @@ void getExpectedColorAndMask(GLenum src_internal_format,
 
       setColor(adjusted_color[0], adjusted_color[1], adjusted_color[2],
                alpha_value, expected_color);
-#if defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
       // The alpha channel values for LUMINANCE_ALPHA source don't work OK
       // on Mac or Linux, so skip comparison of those, see crbug.com/926579
       setColor(1, 1, 1, src_internal_format != GL_LUMINANCE_ALPHA,
@@ -466,7 +471,7 @@ class GLCopyTextureCHROMIUMTest
     glBindTexture(source_target, textures_[0]);
     glTexParameteri(source_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(source_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     // TODO(qiankun.miao@intel.com): Remove this workaround for Mac OSX, once
     // integer texture rendering bug is fixed on Mac OSX: crbug.com/679639.
     glTexImage2D(source_target, 0, src_format_type.internal_format,
@@ -497,7 +502,7 @@ class GLCopyTextureCHROMIUMTest
                        dest_format_type.type, nullptr);
         }
       }
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       // TODO(qiankun.miao@intel.com): Remove this workaround for Mac OSX, once
       // framebuffer complete bug is fixed on Mac OSX: crbug.com/678526.
       glTexImage2D(dest_target, 0, dest_format_type.internal_format,
@@ -599,13 +604,7 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
     GLManager::Options options;
     options.context_type = CONTEXT_TYPE_OPENGLES3;
     options.size = gfx::Size(64, 64);
-    GpuDriverBugWorkarounds workarounds;
-#if defined(OS_MACOSX)
-    // Sampling of seamless integer cube map texture has bug on Intel GEN7 gpus
-    // on Mac OSX, see crbug.com/658930.
-    workarounds.disable_texture_cube_map_seamless = true;
-#endif
-    gl_.InitializeWithWorkarounds(options, workarounds);
+    gl_.Initialize(options);
 
     width_ = 8;
     height_ = 8;
@@ -638,7 +637,8 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
 
   bool ShouldSkipNorm16() const {
     DCHECK(!ShouldSkipTest());
-#if (defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_LINUX)) && \
+#if (defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
+     defined(OS_CHROMEOS)) &&                                   \
     (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
     // Make sure it's tested; it is safe to assume that the flag is always true
     // on desktop.
@@ -646,6 +646,17 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
         gl_.decoder()->GetFeatureInfo()->feature_flags().ext_texture_norm16);
 #endif
     return !gl_.decoder()->GetFeatureInfo()->feature_flags().ext_texture_norm16;
+  }
+
+  bool ShouldSkipRGBA16ToRGB10A2() const {
+    DCHECK(!ShouldSkipTest());
+#if (defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+    (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
+    // // TODO(crbug.com/1046873): Fails on mac and linux intel.
+    return true;
+#else
+    return false;
+#endif
   }
 
   bool ShouldSkipRGB10A2() const {
@@ -660,6 +671,23 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
         GLTestHelper::HasExtension("GL_EXT_texture_type_2_10_10_10_REV");
     EXPECT_TRUE(supports_rgb10_a2);
     return !supports_rgb10_a2;
+  }
+
+  bool IsMacArm64() const {
+    DCHECK(!ShouldSkipTest());
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+    return true;
+#else
+    return false;
+#endif
+  }
+
+  bool IsMac() const {
+#if defined(OS_MAC)
+    return true;
+#else
+    return false;
+#endif
   }
 };
 
@@ -722,10 +750,20 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, BigTexture) {
 TEST_P(GLCopyTextureCHROMIUMES3Test, FormatCombinations) {
   if (ShouldSkipTest())
     return;
+  if (IsMacArm64()) {
+    LOG(INFO) << "TODO(crbug.com/1135372): fails on Apple DTK. Skipping.";
+    return;
+  }
   if (gl_.gpu_preferences().use_passthrough_cmd_decoder) {
     // TODO(geofflang): anglebug.com/1932
     LOG(INFO)
         << "Passthrough command decoder expected failure. Skipping test...";
+    return;
+  }
+  if (IsMac() && !gl_.gpu_preferences().use_passthrough_cmd_decoder) {
+    // TODO(crbug.com/1227853): Remove this suppression once this passes on Mac
+    // 11.
+    LOG(INFO) << "Validating decoder on Mac. Skipping.";
     return;
   }
   const CopyType copy_type = GetParam();
@@ -740,6 +778,8 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, FormatCombinations) {
       {GL_BGRA_EXT, GL_BGRA_EXT, GL_UNSIGNED_BYTE},
       {GL_BGRA8_EXT, GL_BGRA_EXT, GL_UNSIGNED_BYTE},
       {GL_R16_EXT, GL_RED, GL_UNSIGNED_SHORT},
+      {GL_RG16_EXT, GL_RG, GL_UNSIGNED_SHORT},
+      {GL_RGBA16_EXT, GL_RGBA, GL_UNSIGNED_SHORT},
       {GL_RGB10_A2, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV},
   };
 
@@ -806,9 +846,16 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, FormatCombinations) {
           ShouldSkipSRGBEXT()) {
         continue;
       }
-      if (src_format_type.internal_format == GL_R16_EXT && ShouldSkipNorm16())
+      if ((src_format_type.internal_format == GL_R16_EXT ||
+           src_format_type.internal_format == GL_RG16_EXT ||
+           src_format_type.internal_format == GL_RGBA16_EXT) &&
+          ShouldSkipNorm16())
         continue;
       if (src_format_type.internal_format == GL_RGB10_A2 && ShouldSkipRGB10A2())
+        continue;
+      if (src_format_type.internal_format == GL_RGBA16_EXT &&
+          dest_format_type.internal_format == GL_RGB10_A2 &&
+          ShouldSkipRGBA16ToRGB10A2())
         continue;
 
       RunCopyTexture(GL_TEXTURE_2D, copy_type, src_format_type, 0,

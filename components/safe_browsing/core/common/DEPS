@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/policy/core/browser",
+  "+components/policy/core/common",
+  "+components/policy/policy_constants.h",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+components/strings/grit/components_strings.h",
+  "+crypto/sha2.h",
+  "+ipc",
+  "+third_party/opencv",
+  "+third_party/skia/include",
+  "+ui/gfx",
+  "+url"
+]

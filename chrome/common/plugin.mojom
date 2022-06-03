@@ -13,9 +13,6 @@ import "url/mojom/url.mojom";
 
 // Plugin messages sent from renderer to the host.
 interface PluginHost {
-  // Tells the browser to show the Flash permission bubble in the same tab.
-  ShowFlashPermissionBubble();
-
   // Tells the browser that there was an error loading a plugin.
   CouldNotLoadPlugin(mojo_base.mojom.FilePath file_path);
 
@@ -23,11 +20,9 @@ interface PluginHost {
   BlockedOutdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
                         string group_id);
 
-  // Notifies when a plugin couldn't be loaded because it requires a
-  // component update.
-  BlockedComponentUpdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
-                                string group_id);
-
+  // Tells the browser to open a PDF file. Used when no PDF Viewer is
+  // available, and the user clicks to view a PDF from the placeholder UI.
+  OpenPDF(url.mojom.Url url);
 };
 
 // Plugin messages sent from renderer to the host requiring user auth actions.
@@ -46,16 +41,14 @@ enum PluginStatus {
   kBlockedByPolicy,
   // Plugin is blocked, and cannot be manually loaded via context menu.
   kBlockedNoLoading,
-  kComponentUpdateRequired,
   kDisabled,
-  // Flash is blocked, but user can click on the placeholder to trigger the
-  // Flash permission prompt.
-  kFlashHiddenPreferHtml,
   kNotFound,
   kOutdatedBlocked,
   kOutdatedDisallowed,
+  // Similar to kOutdatedBlocked or kOutdatedDisallowed, but with no hope of
+  // updating and running. This is distinct to allow for separate UI treatment.
+  kDeprecated,
   kPlayImportantContent,
-  kRestartRequired,
   kUnauthorized,
 };
 
@@ -85,7 +78,6 @@ interface PluginInfoHost {
 
 // Plugin messages sent from a host to the renderer.
 interface PluginRenderer {
-
   // Notifies a missing plugin placeholder that we have finished downloading
   // the plugin.
   FinishedDownloading();

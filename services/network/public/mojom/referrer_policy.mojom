@@ -4,21 +4,27 @@
 
 module network.mojom;
 
-// Don't make backwards-incompatible changes to this definition!
-// It's used in PageState serialization, so backwards incompatible changes
-// would cause stored PageState objects to be un-parseable. Please contact the
-// page state serialization owners before making such a change.
+[Stable]
 enum ReferrerPolicy {
-    kAlways,
-    kDefault,
-    kNoReferrerWhenDowngrade,
-    kNever,
-    kOrigin,
-    kOriginWhenCrossOrigin,
-    // This policy corresponds to strict-origin-when-cross-origin.
-    // TODO(estark): rename to match the spec.
-    kNoReferrerWhenDowngradeOriginWhenCrossOrigin,
-    kSameOrigin,
-    kStrictOrigin,
-    kLast = kStrictOrigin,
+  kAlways,
+  kDefault,
+  kNoReferrerWhenDowngrade,
+  kNever,
+  kOrigin,
+  kOriginWhenCrossOrigin,
+  kStrictOriginWhenCrossOrigin,
+  kSameOrigin,
+  kStrictOrigin,
+};
+
+// This enum corresponds to net::ReferrerPolicy. See its comments.
+enum URLRequestReferrerPolicy {
+  kClearReferrerOnTransitionFromSecureToInsecure,
+  kReduceReferrerGranularityOnTransitionCrossOrigin,
+  kOriginOnlyOnTransitionCrossOrigin,
+  kNeverClearReferrer,
+  kOrigin,
+  kClearReferrerOnTransitionCrossOrigin,
+  kOriginClearOnTransitionFromSecureToInsecure,
+  kNoReferrer
 };

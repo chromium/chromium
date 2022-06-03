@@ -34,7 +34,8 @@
           "Height with pinch-zoom");
 
       // Apply browser zoom.
-      eventSender.setPageZoomFactor(browserZoomFactor);
+      if (window.testRunner)
+        testRunner.setPageZoomFactor(browserZoomFactor);
 
       // Since the scrollbars don't change size to the user as we zoom, they're
       // actuall smaller in CSS pixels.

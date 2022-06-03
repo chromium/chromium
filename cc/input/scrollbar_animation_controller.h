@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_SCROLLBAR_ANIMATION_CONTROLLER_H_
 #define CC_INPUT_SCROLLBAR_ANIMATION_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -72,17 +74,13 @@ class CC_EXPORT ScrollbarAnimationController {
   // Effect both Android and Aura Overlay Scrollbar.
   void DidScrollUpdate();
 
-  void DidScrollBegin();
-  void DidScrollEnd();
-
   void DidMouseDown();
   void DidMouseUp();
   void DidMouseLeave();
   void DidMouseMove(const gfx::PointF& device_viewport_point);
 
-  // Called when Blink wants to show the scrollbars (via
-  // ScrollableArea::showOverlayScrollbars).
-  void DidRequestShowFromMainThread();
+  // Called when we want to show the scrollbars.
+  void DidRequestShow();
 
   void UpdateTickmarksVisibility(bool show);
 
@@ -98,7 +96,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
  private:
   // Describes whether the current animation should FadeIn or FadeOut.
-  enum AnimationChange { NONE, FADE_IN, FADE_OUT };
+  enum class AnimationChange { NONE, FADE_IN, FADE_OUT };
 
   ScrollbarAnimationController(ElementId scroll_element_id,
                                ScrollbarAnimationControllerClient* client,
@@ -150,8 +148,6 @@ class CC_EXPORT ScrollbarAnimationController {
   AnimationChange animation_change_;
 
   const ElementId scroll_element_id_;
-  bool currently_scrolling_;
-  bool show_in_fast_scroll_;
 
   base::CancelableOnceClosure delayed_scrollbar_animation_;
 

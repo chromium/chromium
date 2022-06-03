@@ -14,23 +14,24 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/base_paths_win.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "components/onc/onc_constants.h"
 #include "components/wifi/network_properties.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 
@@ -184,6 +185,10 @@ namespace wifi {
 class WiFiServiceImpl : public WiFiService {
  public:
   WiFiServiceImpl();
+
+  WiFiServiceImpl(const WiFiServiceImpl&) = delete;
+  WiFiServiceImpl& operator=(const WiFiServiceImpl&) = delete;
+
   ~WiFiServiceImpl() override;
 
   // WiFiService interface implementation.
@@ -310,8 +315,8 @@ class WiFiServiceImpl : public WiFiService {
   DWORD CloseClientHandle();
 
   // Get |profile_name| from unique |network_guid|.
-  base::string16 ProfileNameFromGUID(const std::string& network_guid) const {
-    return base::UTF8ToUTF16(network_guid);
+  std::wstring ProfileNameFromGUID(const std::string& network_guid) const {
+    return base::UTF8ToWide(network_guid);
   }
 
   // Get |dot11_ssid| from unique |network_guid|.
@@ -485,7 +490,6 @@ class WiFiServiceImpl : public WiFiService {
   static const int kMaxAttempts = 100;
   // Delay between attempts to check that network has connected successfully.
   static const int kAttemptDelayMs = 100;
-  DISALLOW_COPY_AND_ASSIGN(WiFiServiceImpl);
 };
 
 WiFiServiceImpl::WiFiServiceImpl()
@@ -631,12 +635,10 @@ void WiFiServiceImpl::CreateNetwork(
   }
 
   if (tkip_profile_xml != profile_xml) {
-    std::unique_ptr<base::DictionaryValue> tkip_profile(
-        new base::DictionaryValue());
-    tkip_profile->SetString(kProfileXmlKey, tkip_profile_xml);
-    tkip_profile->SetBoolean(kProfileSharedKey, shared);
-    created_profiles_.SetWithoutPathExpansion(network_properties.guid,
-                                              std::move(tkip_profile));
+    base::DictionaryValue tkip_profile;
+    tkip_profile.SetStringKey(kProfileXmlKey, tkip_profile_xml);
+    tkip_profile.SetBoolKey(kProfileSharedKey, shared);
+    created_profiles_.SetKey(network_properties.guid, std::move(tkip_profile));
   }
 
   *network_guid = network_properties.guid;
@@ -879,20 +881,20 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
     LOG(ERROR) << kMaxAttempts << " attempts exceeded waiting for connect to "
                << network_guid;
 
-    base::DictionaryValue* created_profile = nullptr;
+    base::Value* created_profile = created_profiles_.FindDictKey(network_guid);
     // Check, whether this connection is using newly created profile.
-    if (created_profiles_.GetDictionaryWithoutPathExpansion(
-        network_guid, &created_profile)) {
-      std::string tkip_profile_xml;
-      bool shared = false;
+    if (created_profile) {
+      const std::string* tkip_profile_xml =
+          created_profile->FindStringKey(kProfileXmlKey);
+      absl::optional<bool> shared =
+          created_profile->FindBoolKey(kProfileSharedKey);
       // Check, if this connection there is alternative TKIP profile xml that
       // should be tried. If there is, then set it up and try to connect again.
-      if (created_profile->GetString(kProfileXmlKey, &tkip_profile_xml) &&
-          created_profile->GetBoolean(kProfileSharedKey, &shared)) {
+      if (tkip_profile_xml && shared) {
         // Remove TKIP profile xml, so it will not be tried again.
-        created_profile->Remove(kProfileXmlKey, nullptr);
-        created_profile->Remove(kProfileSharedKey, nullptr);
-        DWORD error_code = SetProfile(shared, tkip_profile_xml, true);
+        created_profile->RemoveKey(kProfileXmlKey);
+        created_profile->RemoveKey(kProfileSharedKey);
+        DWORD error_code = SetProfile(*shared, *tkip_profile_xml, true);
         if (error_code == ERROR_SUCCESS) {
           // Try to connect with new profile.
           error_code = Connect(network_guid,
@@ -933,7 +935,7 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
     if (error != ERROR_SUCCESS)
       LOG(ERROR) << error;
     // There is no need to keep created profile as network is connected.
-    created_profiles_.RemoveWithoutPathExpansion(network_guid, nullptr);
+    created_profiles_.RemoveKey(network_guid);
     // Restore previously suppressed notifications.
     enable_notify_network_changed_ = true;
     RestoreNwCategoryWizard();
@@ -944,7 +946,7 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
         FROM_HERE,
         base::BindOnce(&WiFiServiceImpl::WaitForNetworkConnect,
                        base::Unretained(this), network_guid, ++attempt),
-        base::TimeDelta::FromMilliseconds(kAttemptDelayMs));
+        base::Milliseconds(kAttemptDelayMs));
   }
 }
 
@@ -1137,7 +1139,7 @@ DWORD WiFiServiceImpl::ResetDHCP() {
 DWORD WiFiServiceImpl::FindAdapterIndexMapByGUID(
     const GUID& interface_guid,
     IP_ADAPTER_INDEX_MAP* adapter_index_map) {
-  const auto guid_string = base::win::String16FromGUID(interface_guid);
+  const auto guid_string = base::win::WStringFromGUID(interface_guid);
 
   ULONG buffer_length = 0;
   DWORD error = ::GetInterfaceInfo(nullptr, &buffer_length);
@@ -1582,7 +1584,7 @@ DWORD WiFiServiceImpl::Connect(const std::string& network_guid,
   error = GetDesiredBssList(ssid, frequency, &desired_bss_list);
   if (error == ERROR_SUCCESS) {
     if (HaveProfile(network_guid)) {
-      base::string16 profile_name = ProfileNameFromGUID(network_guid);
+      std::wstring profile_name = ProfileNameFromGUID(network_guid);
       WLAN_CONNECTION_PARAMETERS wlan_params = {
           wlan_connection_mode_profile, profile_name.c_str(), nullptr,
           desired_bss_list.get(),       dot11_BSS_type_any,   0};
@@ -1630,7 +1632,7 @@ DWORD WiFiServiceImpl::Disconnect() {
 DWORD WiFiServiceImpl::SaveTempProfile(const std::string& network_guid) {
   DCHECK(client_);
   DWORD error = ERROR_SUCCESS;
-  base::string16 profile_name = ProfileNameFromGUID(network_guid);
+  std::wstring profile_name = ProfileNameFromGUID(network_guid);
   // TODO(mef): WlanSaveTemporaryProfile is not available on XP. If XP support
   // is needed, then different method of saving network profile will have to be
   // used.
@@ -1649,7 +1651,7 @@ DWORD WiFiServiceImpl::GetProfile(const std::string& network_guid,
                                   std::string* profile_xml) {
   DCHECK(client_);
   DWORD error = ERROR_SUCCESS;
-  base::string16 profile_name = ProfileNameFromGUID(network_guid);
+  std::wstring profile_name = ProfileNameFromGUID(network_guid);
   DWORD flags = get_plaintext_key ? WLAN_PROFILE_GET_PLAINTEXT_KEY : 0;
   LPWSTR str_profile_xml = nullptr;
   error =
@@ -1657,7 +1659,7 @@ DWORD WiFiServiceImpl::GetProfile(const std::string& network_guid,
                                nullptr, &str_profile_xml, &flags, nullptr);
 
   if (error == ERROR_SUCCESS && str_profile_xml) {
-    *profile_xml = base::UTF16ToUTF8(str_profile_xml);
+    *profile_xml = base::WideToUTF8(str_profile_xml);
   }
   // Clean up.
   if (str_profile_xml) {
@@ -1672,7 +1674,7 @@ DWORD WiFiServiceImpl::SetProfile(bool shared,
                                   bool overwrite) {
   DWORD error_code = ERROR_SUCCESS;
 
-  base::string16 profile_xml16(base::UTF8ToUTF16(profile_xml));
+  std::wstring profile_xml16(base::UTF8ToWide(profile_xml));
   DWORD reason_code = 0u;
 
   error_code = WlanSetProfile_function_(
@@ -1688,16 +1690,14 @@ bool WiFiServiceImpl::HaveProfile(const std::string& network_guid) {
 
 
 DWORD WiFiServiceImpl::DeleteCreatedProfile(const std::string& network_guid) {
-  base::DictionaryValue* created_profile = nullptr;
   DWORD error_code = ERROR_SUCCESS;
   // Check, whether this connection is using new created profile, and remove it.
-  if (created_profiles_.GetDictionaryWithoutPathExpansion(
-      network_guid, &created_profile)) {
+  if (created_profiles_.HasKey(network_guid)) {
     // Connection has failed, so delete it.
-    base::string16 profile_name = ProfileNameFromGUID(network_guid);
+    std::wstring profile_name = ProfileNameFromGUID(network_guid);
     error_code = WlanDeleteProfile_function_(client_, &interface_guid_,
                                              profile_name.c_str(), nullptr);
-    created_profiles_.RemoveWithoutPathExpansion(network_guid, nullptr);
+    created_profiles_.RemoveKey(network_guid);
   }
   return error_code;
 }

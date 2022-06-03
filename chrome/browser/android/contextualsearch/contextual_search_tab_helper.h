@@ -8,17 +8,22 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
+// Provides the native support needed by the Java class by the same name.
+// This coordinates Tab changes with Contextual Search.
 class ContextualSearchTabHelper {
  public:
   ContextualSearchTabHelper(JNIEnv* env, jobject obj, Profile* profile);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+
+  ContextualSearchTabHelper(const ContextualSearchTabHelper&) = delete;
+  ContextualSearchTabHelper& operator=(const ContextualSearchTabHelper&) =
+      delete;
 
   // Installs the UnhandledTapNotifier Mojo handler if needed.
   // The |j_base_web_contents| is a java WebContents of the base page tab.
@@ -47,7 +52,6 @@ class ContextualSearchTabHelper {
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::WeakPtrFactory<ContextualSearchTabHelper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchTabHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_TAB_HELPER_H_

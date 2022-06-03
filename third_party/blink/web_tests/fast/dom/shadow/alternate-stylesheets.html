@@ -2,7 +2,7 @@
 <script src="../../../resources/js-test.js"></script>
 <div id="host"></div>
 <script>
-    var root = host.createShadowRoot();
+    var root = host.attachShadow({mode: 'open'});
     root.innerHTML = '<style title="not-preferred">div { color: red }</style><style title="ignored">div { color: green }</style><div>Should be green</div>';
 </script>
 <style>#alternate { color: green }</style>

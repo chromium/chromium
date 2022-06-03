@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!-- crbug.com/1172438 -->
+<!-- Test passes if it doesn't crash. -->
+<div id="target"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javascript">
+  setup({single_test: true});
+  const animation =
+      target.animate({ transform: ['scale(1)', 'scale(100)'] },
+                     { iterations: Infinity, duration: 1000 });
+  animation.ready.then(() => {
+    animation.currentTime = 1e30;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        done();
+      });
+    });
+  });
+</script>

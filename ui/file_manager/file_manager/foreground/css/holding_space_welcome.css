@@ -1,0 +1,90 @@
+/* Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Holding space welcome banner. */
+
+.holding-space-welcome {
+  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
+  box-sizing: border-box;
+  display: block !important;
+  flex: none;
+  height: 0;
+  opacity: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 150ms ease 50ms;
+  visibility: hidden;
+}
+
+.holding-space-welcome:not([hidden]) {
+  height: 72px;
+  opacity: 1;
+  visibility: visible;
+}
+
+.holding-space-welcome .holding-space-welcome-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 71px;
+}
+
+.holding-space-welcome .holding-space-welcome-icon {
+  background-image: url(../images/files/ui/holding_space_welcome_image.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 32px 32px;
+  border-radius: 4px;
+  flex: none;
+  height: 32px;
+  margin-inline-end: 20px;
+  margin-inline-start: 16px;
+  width: 32px;
+}
+
+.holding-space-welcome .holding-space-welcome-message {
+  z-index: 1;
+}
+
+.holding-space-welcome .holding-space-welcome-title {
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.holding-space-welcome .holding-space-welcome-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.holding-space-welcome .holding-space-welcome-text span.icon {
+  -webkit-mask-image: url(../images/files/ui/menu_ng.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(--cros-text-color-primary);
+  display: inline-block;
+  height: 100%;
+  width: 13px;
+}
+
+body.tablet-mode-enabled .holding-space-welcome
+    .holding-space-welcome-text:not(.tablet-mode-enabled),
+body:not(.tablet-mode-enabled) .holding-space-welcome
+    .holding-space-welcome-text.tablet-mode-enabled {
+  display: none;
+}
+
+.holding-space-welcome .text-button {
+  border: 0;
+  height: 32px;
+  margin-inline-end: 20px;
+  padding-inline-end: 16px;
+  padding-inline-start: 16px;
+  position: relative;
+}

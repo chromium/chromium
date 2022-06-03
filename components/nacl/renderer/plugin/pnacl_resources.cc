@@ -8,8 +8,9 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/nacl/renderer/plugin/plugin.h"
 #include "ppapi/c/pp_errors.h"
 

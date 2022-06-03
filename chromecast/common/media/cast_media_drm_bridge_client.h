@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_COMMON_MEDIA_CAST_MEDIA_DRM_BRIDGE_CLIENT_H_
 #define CHROMECAST_COMMON_MEDIA_CAST_MEDIA_DRM_BRIDGE_CLIENT_H_
 
-#include <map>
-
 #include "base/macros.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/cdm/playready_drm_delegate_android.h"
@@ -19,6 +17,10 @@ namespace media {
 class CastMediaDrmBridgeClient : public ::media::MediaDrmBridgeClient {
  public:
   CastMediaDrmBridgeClient();
+
+  CastMediaDrmBridgeClient(const CastMediaDrmBridgeClient&) = delete;
+  CastMediaDrmBridgeClient& operator=(const CastMediaDrmBridgeClient&) = delete;
+
   ~CastMediaDrmBridgeClient() override;
 
  private:
@@ -32,8 +34,6 @@ class CastMediaDrmBridgeClient : public ::media::MediaDrmBridgeClient {
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
   cdm::WidevineDrmDelegateAndroid widevine_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaDrmBridgeClient);
 };
 
 }  // namespace media

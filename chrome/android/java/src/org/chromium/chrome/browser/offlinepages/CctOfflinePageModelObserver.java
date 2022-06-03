@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
@@ -20,7 +21,7 @@ import org.chromium.chrome.browser.AppHooks;
  * Java-side handler for Offline page model changes.
  *
  * Will send a broadcast intent to the originating app if a page related to it has changed
- * and the app is part of the whitelist set of apps.
+ * and the app is part of the allowlist set of apps.
  */
 public class CctOfflinePageModelObserver {
     private static final String TAG = "CctModelObserver";
@@ -54,8 +55,8 @@ public class CctOfflinePageModelObserver {
     }
 
     private static void compareSignaturesAndFireIntent(OfflinePageOrigin origin, Bundle pageInfo) {
-        if (!isInWhitelist(origin.getAppName())) {
-            Log.w(TAG, "Non-whitelisted app: " + origin.getAppName());
+        if (!isInAllowlist(origin.getAppName())) {
+            Log.w(TAG, "Non-allowlisted app: " + origin.getAppName());
             return;
         }
         Context context = ContextUtils.getApplicationContext();
@@ -70,8 +71,9 @@ public class CctOfflinePageModelObserver {
 
         // Create a pending intent and cancel it, as this is only expected to verify
         // that chrome created the OFFLINE_PAGES_UPDATED broadcast, not for actual use.
-        PendingIntent originVerification = PendingIntent.getBroadcast(
-                context, 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent originVerification = PendingIntent.getBroadcast(context, 0, new Intent(),
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
         originVerification.cancel();
 
         intent.putExtra(ORIGIN_VERIFICATION_KEY, originVerification);
@@ -79,7 +81,7 @@ public class CctOfflinePageModelObserver {
         context.sendBroadcast(intent);
     }
 
-    private static boolean isInWhitelist(String appName) {
-        return AppHooks.get().getOfflinePagesCctWhitelist().contains(appName);
+    private static boolean isInAllowlist(String appName) {
+        return AppHooks.get().getOfflinePagesCctAllowlist().contains(appName);
     }
 }

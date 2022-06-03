@@ -8,25 +8,25 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/crostini/crostini_disk.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_types.mojom.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/crostini/crostini_installer.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/display/screen.h"
 
 namespace chromeos {
 namespace settings {
@@ -56,256 +56,276 @@ void CrostiniHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "requestCrostiniInstallerView",
       base::BindRepeating(&CrostiniHandler::HandleRequestCrostiniInstallerView,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestRemoveCrostini",
       base::BindRepeating(&CrostiniHandler::HandleRequestRemoveCrostini,
-                          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "getCrostiniSharedPathsDisplayText",
-      base::BindRepeating(
-          &CrostiniHandler::HandleGetCrostiniSharedPathsDisplayText,
-          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "removeCrostiniSharedPath",
-      base::BindRepeating(&CrostiniHandler::HandleRemoveCrostiniSharedPath,
-                          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "getCrostiniSharedUsbDevices",
-      base::BindRepeating(&CrostiniHandler::HandleGetCrostiniSharedUsbDevices,
-                          weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
-      "setCrostiniUsbDeviceShared",
-      base::BindRepeating(&CrostiniHandler::HandleSetCrostiniUsbDeviceShared,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "exportCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleExportCrostiniContainer,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "importCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleImportCrostiniContainer,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniInstallerStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniInstallerStatusRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniExportImportOperationStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniExportImportOperationStatusRequest,
-          weak_ptr_factory_.GetWeakPtr()));
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestArcAdbSideloadStatus",
       base::BindRepeating(&CrostiniHandler::HandleQueryArcAdbRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "getCanChangeArcAdbSideloading",
+      base::BindRepeating(
+          &CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest,
+          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "enableArcAdbSideload",
       base::BindRepeating(&CrostiniHandler::HandleEnableArcAdbRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "disableArcAdbSideload",
       base::BindRepeating(&CrostiniHandler::HandleDisableArcAdbRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniContainerUpgradeView",
       base::BindRepeating(&CrostiniHandler::HandleRequestContainerUpgradeView,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "requestCrostiniUpgraderDialogStatus",
+      base::BindRepeating(
+          &CrostiniHandler::HandleCrostiniUpgraderDialogStatusRequest,
+          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "requestCrostiniContainerUpgradeAvailable",
+      base::BindRepeating(
+          &CrostiniHandler::HandleCrostiniContainerUpgradeAvailableRequest,
+          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "addCrostiniPortForward",
+      base::BindRepeating(&CrostiniHandler::HandleAddCrostiniPortForward,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "getCrostiniDiskInfo",
+      base::BindRepeating(&CrostiniHandler::HandleGetCrostiniDiskInfo,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "resizeCrostiniDisk",
+      base::BindRepeating(&CrostiniHandler::HandleResizeCrostiniDisk,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "removeCrostiniPortForward",
+      base::BindRepeating(&CrostiniHandler::HandleRemoveCrostiniPortForward,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "removeAllCrostiniPortForwards",
+      base::BindRepeating(&CrostiniHandler::HandleRemoveAllCrostiniPortForwards,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "activateCrostiniPortForward",
+      base::BindRepeating(&CrostiniHandler::HandleActivateCrostiniPortForward,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "deactivateCrostiniPortForward",
+      base::BindRepeating(&CrostiniHandler::HandleDeactivateCrostiniPortForward,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "getCrostiniActivePorts",
+      base::BindRepeating(&CrostiniHandler::HandleGetCrostiniActivePorts,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "checkCrostiniIsRunning",
+      base::BindRepeating(&CrostiniHandler::HandleCheckCrostiniIsRunning,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "shutdownCrostini",
+      base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    web_ui()->RegisterMessageCallback(
+        "createContainer",
+        base::BindRepeating(&CrostiniHandler::HandleCreateContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "deleteContainer",
+        base::BindRepeating(&CrostiniHandler::HandleDeleteContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "requestContainerInfo",
+        base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "stopContainer",
+        base::BindRepeating(&CrostiniHandler::HandleStopContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void CrostiniHandler::OnJavascriptAllowed() {
-  crostini::CrostiniManager::GetForProfile(profile_)
-      ->AddInstallerViewStatusObserver(this);
-  if (chromeos::CrosUsbDetector::Get()) {
-    chromeos::CrosUsbDetector::Get()->AddUsbDeviceObserver(this);
-  }
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+  crostini_manager->AddCrostiniDialogStatusObserver(this);
+  crostini_manager->AddCrostiniContainerPropertiesObserver(this);
+  crostini_manager->AddContainerStartedObserver(this);
+  crostini_manager->AddContainerShutdownObserver(this);
   crostini::CrostiniExportImport::GetForProfile(profile_)->AddObserver(this);
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddObserver(this);
+
+  // Observe ADB sideloading device policy and react to its changes
+  adb_sideloading_device_policy_subscription_ =
+      chromeos::CrosSettings::Get()->AddSettingsObserver(
+          chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+          base::BindRepeating(&CrostiniHandler::FetchCanChangeAdbSideloading,
+                              handler_weak_ptr_factory_.GetWeakPtr()));
+
+  // Observe ADB sideloading user policy and react to its changes
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      crostini::prefs::kCrostiniArcAdbSideloadingUserPref,
+      base::BindRepeating(&CrostiniHandler::FetchCanChangeAdbSideloading,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+
+  // Observe changes to containers in general
+  pref_change_registrar_.Add(
+      crostini::prefs::kCrostiniContainers,
+      base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
+                          handler_weak_ptr_factory_.GetWeakPtr(),
+                          base::Value(base::Value::Type::LIST).GetList()));
 }
 
 void CrostiniHandler::OnJavascriptDisallowed() {
-  if (crostini::CrostiniManager::GetForProfile(profile_)
-          ->HasInstallerViewStatusObserver(this)) {
-    crostini::CrostiniManager::GetForProfile(profile_)
-        ->RemoveInstallerViewStatusObserver(this);
-  }
-  if (chromeos::CrosUsbDetector::Get()) {
-    chromeos::CrosUsbDetector::Get()->RemoveUsbDeviceObserver(this);
-  }
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+  crostini_manager->RemoveCrostiniDialogStatusObserver(this);
+  crostini_manager->RemoveCrostiniContainerPropertiesObserver(this);
+  crostini_manager->RemoveContainerStartedObserver(this);
+  crostini_manager->RemoveContainerShutdownObserver(this);
   crostini::CrostiniExportImport::GetForProfile(profile_)->RemoveObserver(this);
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveObserver(
+      this);
+
+  adb_sideloading_device_policy_subscription_ = {};
+  pref_change_registrar_.RemoveAll();
+  callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void CrostiniHandler::HandleRequestCrostiniInstallerView(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   crostini::CrostiniInstaller::GetForProfile(Profile::FromWebUI(web_ui()))
       ->ShowDialog(crostini::CrostiniUISurface::kSettings);
 }
 
-void CrostiniHandler::HandleRequestRemoveCrostini(const base::ListValue* args) {
+void CrostiniHandler::HandleRequestRemoveCrostini(
+    base::Value::ConstListView args) {
   AllowJavascript();
   ShowCrostiniUninstallerView(Profile::FromWebUI(web_ui()),
                               crostini::CrostiniUISurface::kSettings);
 }
 
-void CrostiniHandler::HandleGetCrostiniSharedPathsDisplayText(
-    const base::ListValue* args) {
-  AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
-  std::string callback_id;
-  const base::ListValue* paths;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetList(1, &paths));
-
-  base::ListValue texts;
-  for (auto it = paths->begin(); it != paths->end(); ++it) {
-    texts.AppendString(file_manager::util::GetPathDisplayTextForSettings(
-        profile_, it->GetString()));
-  }
-  ResolveJavascriptCallback(base::Value(callback_id), texts);
-}
-
-void CrostiniHandler::HandleRemoveCrostiniSharedPath(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  std::string vm_name;
-  CHECK(args->GetString(0, &vm_name));
-  std::string path;
-  CHECK(args->GetString(1, &path));
-
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnsharePath(
-      vm_name, base::FilePath(path),
-      /*unpersist=*/true,
-      base::BindOnce(
-          [](const std::string& path, bool result,
-             const std::string& failure_reason) {
-            if (!result) {
-              LOG(ERROR) << "Error unsharing " << path << ": "
-                         << failure_reason;
-            }
-          },
-          path));
-}
-
 namespace {
-base::ListValue UsbDevicesToListValue(
-    const std::vector<CrosUsbDeviceInfo> shared_usbs) {
-  base::ListValue usb_devices_list;
-  for (auto device : shared_usbs) {
-    base::Value device_info(base::Value::Type::DICTIONARY);
-    device_info.SetKey("guid", base::Value(device.guid));
-    device_info.SetKey("label", base::Value(device.label));
-    const bool shared_in_crostini =
-        device.vm_sharing_info[crostini::kCrostiniDefaultVmName].shared;
-    device_info.SetKey("shared", base::Value(shared_in_crostini));
-    usb_devices_list.Append(std::move(device_info));
+
+base::Value CrostiniDiskInfoToValue(
+    std::unique_ptr<crostini::CrostiniDiskInfo> disk_info) {
+  base::Value disk_value(base::Value::Type::DICTIONARY);
+  if (!disk_info) {
+    disk_value.SetBoolKey("succeeded", false);
+    return disk_value;
   }
-  return usb_devices_list;
+  disk_value.SetBoolKey("succeeded", true);
+  disk_value.SetBoolKey("canResize", disk_info->can_resize);
+  disk_value.SetBoolKey("isUserChosenSize", disk_info->is_user_chosen_size);
+  disk_value.SetBoolKey("isLowSpaceAvailable",
+                        disk_info->is_low_space_available);
+  disk_value.SetIntKey("defaultIndex", disk_info->default_index);
+  base::Value ticks(base::Value::Type::LIST);
+  for (const auto& tick : disk_info->ticks) {
+    base::Value t(base::Value::Type::DICTIONARY);
+    t.SetDoubleKey("value", static_cast<double>(tick->value));
+    t.SetStringKey("ariaValue", tick->aria_value);
+    t.SetStringKey("label", tick->label);
+    ticks.Append(std::move(t));
+  }
+  disk_value.SetKey("ticks", std::move(ticks));
+  return disk_value;
 }
 }  // namespace
 
-void CrostiniHandler::HandleGetCrostiniSharedUsbDevices(
-    const base::ListValue* args) {
-  AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
-
-  std::string callback_id = args->GetList()[0].GetString();
-
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  if (!detector) {
-    ResolveJavascriptCallback(base::Value(callback_id), base::ListValue());
-    return;
-  }
-
-  ResolveJavascriptCallback(
-      base::Value(callback_id),
-      UsbDevicesToListValue(detector->GetDevicesSharableWithCrostini()));
-}
-
-void CrostiniHandler::HandleSetCrostiniUsbDeviceShared(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  const auto& args_list = args->GetList();
-  std::string guid = args_list[0].GetString();
-  bool shared = args_list[1].GetBool();
-
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  if (!detector)
-    return;
-
-  if (shared) {
-    detector->AttachUsbDeviceToVm(crostini::kCrostiniDefaultVmName, guid,
-                                  base::DoNothing());
-    return;
-  }
-  detector->DetachUsbDeviceFromVm(crostini::kCrostiniDefaultVmName, guid,
-                                  base::DoNothing());
-}
-
-void CrostiniHandler::OnUsbDevicesChanged() {
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
-  DCHECK(detector);  // This callback is called by the detector.
-  FireWebUIListener(
-      "crostini-shared-usb-devices-changed",
-      UsbDevicesToListValue(detector->GetDevicesSharableWithCrostini()));
-}
-
 void CrostiniHandler::HandleExportCrostiniContainer(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
   crostini::CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
       web_ui()->GetWebContents());
 }
 
 void CrostiniHandler::HandleImportCrostiniContainer(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
   crostini::CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
       web_ui()->GetWebContents());
 }
 
 void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args.size());
   bool status = crostini::CrostiniManager::GetForProfile(profile_)
-                    ->GetInstallerViewStatus();
-  OnCrostiniInstallerViewStatusChanged(status);
+                    ->GetCrostiniDialogStatus(crostini::DialogType::INSTALLER);
+  OnCrostiniDialogStatusChanged(crostini::DialogType::INSTALLER, status);
 }
 
 void CrostiniHandler::HandleCrostiniExportImportOperationStatusRequest(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args.size());
   bool in_progress = crostini::CrostiniExportImport::GetForProfile(profile_)
                          ->GetExportImportOperationStatus();
   OnCrostiniExportImportOperationStatusChanged(in_progress);
 }
 
-void CrostiniHandler::OnCrostiniInstallerViewStatusChanged(bool status) {
+void CrostiniHandler::OnCrostiniDialogStatusChanged(
+    crostini::DialogType dialog_type,
+    bool status) {
   // It's technically possible for this to be called before Javascript is
   // enabled, in which case we must not call FireWebUIListener
   if (IsJavascriptAllowed()) {
     // Other side listens with cr.addWebUIListener
-    FireWebUIListener("crostini-installer-status-changed", base::Value(status));
+    switch (dialog_type) {
+      case crostini::DialogType::INSTALLER:
+        FireWebUIListener("crostini-installer-status-changed",
+                          base::Value(status));
+        break;
+      case crostini::DialogType::UPGRADER:
+        FireWebUIListener("crostini-upgrader-status-changed",
+                          base::Value(status));
+        break;
+      case crostini::DialogType::REMOVER:
+        FireWebUIListener("crostini-remover-status-changed",
+                          base::Value(status));
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
   }
 }
 
-void CrostiniHandler::OnCrostiniExportImportOperationStatusChanged(
-    bool in_progress) {
-  // Other side listens with cr.addWebUIListener
-  FireWebUIListener("crostini-export-import-operation-status-changed",
-                    base::Value(in_progress));
-}
-
-void CrostiniHandler::HandleQueryArcAdbRequest(const base::ListValue* args) {
-  AllowJavascript();
-  CHECK_EQ(0U, args->GetSize());
-
-  chromeos::SessionManagerClient* client =
-      chromeos::SessionManagerClient::Get();
-  client->QueryAdbSideload(base::Bind(&CrostiniHandler::OnQueryAdbSideload,
-                                      weak_ptr_factory_.GetWeakPtr()));
+void CrostiniHandler::OnContainerOsReleaseChanged(
+    const crostini::ContainerId& container_id,
+    bool can_upgrade) {
+  if (crostini::CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(
+          profile_) &&
+      container_id == crostini::DefaultContainerId()) {
+    FireWebUIListener("crostini-container-upgrade-available-changed",
+                      base::Value(can_upgrade));
+  }
 }
 
 void CrostiniHandler::OnQueryAdbSideload(
@@ -323,9 +343,18 @@ void CrostiniHandler::OnQueryAdbSideload(
                     base::Value(enabled), base::Value(need_powerwash));
 }
 
-void CrostiniHandler::HandleEnableArcAdbRequest(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
-  if (!CheckEligibilityToChangeArcAdbSideloading())
+void CrostiniHandler::HandleEnableArcAdbRequest(
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
+
+  crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
+      profile_, base::BindOnce(&CrostiniHandler::OnCanEnableArcAdbSideloading,
+                               handler_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniHandler::OnCanEnableArcAdbSideloading(
+    bool can_change_adb_sideloading) {
+  if (!can_change_adb_sideloading)
     return;
 
   LogEvent(CrostiniSettingsEvent::kEnableAdbSideloading);
@@ -337,9 +366,18 @@ void CrostiniHandler::HandleEnableArcAdbRequest(const base::ListValue* args) {
   chrome::AttemptRelaunch();
 }
 
-void CrostiniHandler::HandleDisableArcAdbRequest(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
-  if (!CheckEligibilityToChangeArcAdbSideloading())
+void CrostiniHandler::HandleDisableArcAdbRequest(
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
+
+  crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
+      profile_, base::BindOnce(&CrostiniHandler::OnCanDisableArcAdbSideloading,
+                               handler_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniHandler::OnCanDisableArcAdbSideloading(
+    bool can_change_adb_sideloading) {
+  if (!can_change_adb_sideloading)
     return;
 
   LogEvent(CrostiniSettingsEvent::kDisableAdbSideloading);
@@ -352,35 +390,403 @@ void CrostiniHandler::HandleDisableArcAdbRequest(const base::ListValue* args) {
       power_manager::REQUEST_RESTART_FOR_USER, "disable adb sideloading");
 }
 
-bool CrostiniHandler::CheckEligibilityToChangeArcAdbSideloading() const {
-  if (!chromeos::ProfileHelper::IsOwnerProfile(profile_)) {
-    DVLOG(1) << "Only the owner can change adb sideloading status";
-    return false;
-  }
-
-  if (user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
-    DVLOG(1) << "adb sideloading is currently unsupported for child account";
-    return false;
-  }
-
-  if (profile_->GetProfilePolicyConnector()->IsManaged()) {
-    DVLOG(1) << "adb sideloading is currently unsupported for managed user";
-    return false;
-  }
-
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged()) {
-    DVLOG(1) << "adb sideloading is currently unsupported on managed device";
-    return false;
-  }
-  return true;
+void CrostiniHandler::LaunchTerminal(apps::mojom::IntentPtr intent) {
+  crostini::LaunchCrostiniAppWithIntent(
+      profile_, crostini::kCrostiniTerminalSystemAppId,
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      std::move(intent));
 }
 
 void CrostiniHandler::HandleRequestContainerUpgradeView(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
-  chromeos::CrostiniUpgraderDialog::Show(profile_, base::DoNothing());
+    base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
+  chromeos::CrostiniUpgraderDialog::Show(
+      profile_,
+      base::BindOnce(&CrostiniHandler::LaunchTerminal,
+                     handler_weak_ptr_factory_.GetWeakPtr(),
+                     /*intent=*/nullptr),
+      // If the user cancels the upgrade, we won't need to restart Crostini and
+      // we don't want to run the launch closure which would launch Terminal.
+      /*only_run_launch_closure_on_restart=*/true);
+}
+
+void CrostiniHandler::OnCrostiniExportImportOperationStatusChanged(
+    bool in_progress) {
+  // Other side listens with cr.addWebUIListener
+  FireWebUIListener("crostini-export-import-operation-status-changed",
+                    base::Value(in_progress));
+}
+
+void CrostiniHandler::HandleQueryArcAdbRequest(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+  CHECK_EQ(0U, args.size());
+
+  chromeos::SessionManagerClient* client =
+      chromeos::SessionManagerClient::Get();
+  client->QueryAdbSideload(
+      base::BindOnce(&CrostiniHandler::OnQueryAdbSideload,
+                     handler_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+  CHECK_EQ(0U, args.size());
+
+  FetchCanChangeAdbSideloading();
+}
+
+void CrostiniHandler::FetchCanChangeAdbSideloading() {
+  crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
+      profile_, base::BindOnce(&CrostiniHandler::OnCanChangeArcAdbSideloading,
+                               handler_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniHandler::OnCanChangeArcAdbSideloading(
+    bool can_change_arc_adb_sideloading) {
+  FireWebUIListener("crostini-can-change-arc-adb-sideload-changed",
+                    base::Value(can_change_arc_adb_sideloading));
+}
+
+void CrostiniHandler::HandleCrostiniUpgraderDialogStatusRequest(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+  CHECK_EQ(0U, args.size());
+  bool is_open = crostini::CrostiniManager::GetForProfile(profile_)
+                     ->GetCrostiniDialogStatus(crostini::DialogType::UPGRADER);
+  OnCrostiniDialogStatusChanged(crostini::DialogType::UPGRADER, is_open);
+}
+
+void CrostiniHandler::HandleCrostiniContainerUpgradeAvailableRequest(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+
+  bool can_upgrade = crostini::ShouldAllowContainerUpgrade(profile_);
+  OnContainerOsReleaseChanged(crostini::DefaultContainerId(), can_upgrade);
+}
+
+void CrostiniHandler::OnActivePortsChanged(const base::ListValue& activePorts) {
+  // Other side listens with cr.addWebUIListener
+  FireWebUIListener("crostini-port-forwarder-active-ports-changed",
+                    activePorts);
+}
+
+void CrostiniHandler::HandleAddCrostiniPortForward(
+    base::Value::ConstListView args) {
+  CHECK_EQ(6U, args.size());
+
+  std::string callback_id = args[0].GetString();
+  std::string vm_name = args[1].GetString();
+  std::string container_name = args[2].GetString();
+  int port_number = args[3].GetInt();
+  int protocol_type = args[4].GetInt();
+  std::string label = args[5].GetString();
+
+  if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
+    OnPortForwardComplete(callback_id, false);
+    return;
+  }
+
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddPort(
+      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
+      port_number,
+      static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
+      std::move(label),
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
+}
+
+void CrostiniHandler::HandleRemoveCrostiniPortForward(
+    base::Value::ConstListView args) {
+  const auto& list = args;
+  CHECK_EQ(5U, list.size());
+  std::string callback_id = list[0].GetString();
+  std::string vm_name = list[1].GetString();
+  std::string container_name = list[2].GetString();
+  int port_number = list[3].GetInt();
+  int protocol_type = list[4].GetInt();
+
+  if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
+    OnPortForwardComplete(callback_id, false);
+    return;
+  }
+
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemovePort(
+      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
+      port_number,
+      static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
+}
+
+void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+  const auto& args_list = args;
+  std::string vm_name = args_list[0].GetString();
+  std::string container_name = args_list[1].GetString();
+
+  if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
+    return;
+  }
+
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveAllPorts(
+      crostini::ContainerId(std::move(vm_name), std::move(container_name)));
+}
+
+void CrostiniHandler::HandleActivateCrostiniPortForward(
+    base::Value::ConstListView args) {
+  const auto& list = args;
+  CHECK_EQ(5U, list.size());
+
+  std::string callback_id = list[0].GetString();
+  std::string vm_name = list[1].GetString();
+  std::string container_name = list[2].GetString();
+  int port_number = list[3].GetInt();
+  int protocol_type = list[4].GetInt();
+
+  if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
+    OnPortForwardComplete(callback_id, false);
+    return;
+  }
+
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->ActivatePort(
+      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
+      port_number,
+      static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
+}
+
+void CrostiniHandler::HandleDeactivateCrostiniPortForward(
+    base::Value::ConstListView args) {
+  const auto& list = args;
+  CHECK_EQ(5U, list.size());
+
+  std::string callback_id = list[0].GetString();
+  std::string vm_name = list[1].GetString();
+  std::string container_name = list[2].GetString();
+  int port_number = list[3].GetInt();
+  int protocol_type = list[4].GetInt();
+
+  if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
+    OnPortForwardComplete(callback_id, false);
+    return;
+  }
+
+  crostini::CrostiniPortForwarder::GetForProfile(profile_)->DeactivatePort(
+      crostini::ContainerId(std::move(vm_name), std::move(container_name)),
+      port_number,
+      static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
+      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
+}
+
+void CrostiniHandler::OnPortForwardComplete(std::string callback_id,
+                                            bool success) {
+  ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
+}
+
+void CrostiniHandler::ResolveGetCrostiniDiskInfoCallback(
+    const std::string& callback_id,
+    std::unique_ptr<crostini::CrostiniDiskInfo> disk_info) {
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            CrostiniDiskInfoToValue(std::move(disk_info)));
+}
+
+void CrostiniHandler::HandleGetCrostiniDiskInfo(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+  CHECK_EQ(3U, args.size());
+  std::string callback_id = args[0].GetString();
+  std::string vm_name = args[1].GetString();
+  bool full_info = args[2].GetBool();
+  crostini::disk::GetDiskInfo(
+      base::BindOnce(&CrostiniHandler::ResolveGetCrostiniDiskInfoCallback,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)),
+      profile_, std::move(vm_name), full_info);
+}
+
+void CrostiniHandler::HandleResizeCrostiniDisk(
+    base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
+  std::string callback_id = args[0].GetString();
+  std::string vm_name = args[1].GetString();
+  double bytes = args[2].GetDouble();
+  crostini::disk::ResizeCrostiniDisk(
+      profile_, std::move(vm_name), bytes,
+      base::BindOnce(&CrostiniHandler::ResolveResizeCrostiniDiskCallback,
+                     callback_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_id)));
+}
+
+void CrostiniHandler::ResolveResizeCrostiniDiskCallback(
+    const std::string& callback_id,
+    bool succeeded) {
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            base::Value(succeeded));
+}
+
+void CrostiniHandler::HandleGetCrostiniActivePorts(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+
+  std::string callback_id = args[0].GetString();
+
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      crostini::CrostiniPortForwarder::GetForProfile(profile_)
+          ->GetActivePorts());
+}
+
+void CrostiniHandler::HandleCheckCrostiniIsRunning(
+    base::Value::ConstListView args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+
+  std::string callback_id = args[0].GetString();
+
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(crostini::IsCrostiniRunning(profile_)));
+}
+
+void CrostiniHandler::OnContainerStarted(
+    const crostini::ContainerId& container_id) {
+  FireWebUIListener("crostini-status-changed", base::Value(true));
+  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
+}
+
+void CrostiniHandler::OnContainerShutdown(
+    const crostini::ContainerId& container_id) {
+  FireWebUIListener("crostini-status-changed", base::Value(false));
+  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
+}
+
+void CrostiniHandler::HandleShutdownCrostini(base::Value::ConstListView args) {
+  CHECK_EQ(0U, args.size());
+
+  const std::string vm_name = "termina";
+
+  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(std::move(vm_name),
+                                                             base::DoNothing());
+}
+
+void CrostiniHandler::HandleCreateContainer(base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
+  crostini::ContainerId container_id(args[0]);
+  GURL image_server_url(args[1].GetString());
+  std::string image_alias(args[2].GetString());
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+
+  if (!args[1].GetString().empty() && !image_server_url.is_valid()) {
+    LOG(ERROR) << "Malformed data. image_server_url=" << args[1].GetString()
+               << ", image_alias=" << image_alias;
+    return;
+  }
+  VLOG(1) << "Creating container_id = " << container_id;
+
+  crostini::CrostiniManager::RestartOptions options;
+  if (image_server_url.is_valid()) {
+    options.image_server_url = image_server_url.spec();
+    VLOG(1) << "image_server_url = " << image_server_url;
+  }
+  if (!image_alias.empty()) {
+    options.image_alias = image_alias;
+    VLOG(1) << "image_alias = " << image_alias;
+  }
+  if (options.image_server_url || options.image_alias) {
+    auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+    crostini_manager->SetRestartOptions(container_id, std::move(options));
+  }
+
+  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
+  intent->extras = container_id.ToMap();
+  LaunchTerminal(std::move(intent));
+}
+
+void CrostiniHandler::HandleDeleteContainer(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+
+  crostini::ContainerId container_id(args[0]);
+  if (container_id == crostini::DefaultContainerId()) {
+    LOG(ERROR) << "Deleting " << container_id << " not permitted";
+    return;
+  }
+  VLOG(1) << "Deleting " << container_id;
+
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+  crostini::CrostiniManager::RestartOptions options;
+  options.stop_after_lxd_available = true;
+  crostini_manager->RestartCrostiniWithOptions(
+      container_id, std::move(options),
+      base::BindOnce(
+          [](base::WeakPtr<crostini::CrostiniManager> crostini_manager,
+             crostini::ContainerId container_id,
+             crostini::CrostiniResult result) {
+            if (crostini_manager &&
+                result == crostini::CrostiniResult::SUCCESS) {
+              crostini_manager->DeleteLxdContainer(container_id,
+                                                   base::DoNothing());
+            }
+          },
+          crostini_manager->GetWeakPtr(), container_id));
+}
+
+void CrostiniHandler::HandleRequestContainerInfo(
+    base::Value::ConstListView args) {
+  constexpr char kIdKey[] = "id";
+  constexpr char kIpv4Key[] = "ipv4";
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+  base::Value container_info_list(base::Value::Type::LIST);
+
+  base::Value::ConstListView containers =
+      profile_->GetPrefs()
+          ->GetList(crostini::prefs::kCrostiniContainers)
+          ->GetList();
+
+  for (const auto& dict : containers) {
+    crostini::ContainerId container_id(dict);
+    base::Value container_info_value(base::Value::Type::DICTIONARY);
+    container_info_value.SetKey(kIdKey, container_id.ToDictValue());
+    auto info =
+        crostini::CrostiniManager::GetForProfile(profile_)->GetContainerInfo(
+            container_id);
+    if (info) {
+      container_info_value.SetStringKey(kIpv4Key, info->ipv4_address);
+    }
+    container_info_list.Append(std::move(container_info_value));
+  }
+  FireWebUIListener("crostini-container-info", container_info_list);
+}
+
+void CrostiniHandler::HandleStopContainer(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+
+  crostini::ContainerId container_id(args[0]);
+  // For now, we only can stop the whole VM.
+  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
+      container_id.vm_name, base::DoNothing());
 }
 
 }  // namespace settings

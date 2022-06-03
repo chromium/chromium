@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 
 @class BridgedNativeWindowTracker;
@@ -14,6 +13,10 @@
 class NativeWindowTrackerCocoa : public NativeWindowTracker {
  public:
   explicit NativeWindowTrackerCocoa(gfx::NativeWindow window);
+
+  NativeWindowTrackerCocoa(const NativeWindowTrackerCocoa&) = delete;
+  NativeWindowTrackerCocoa& operator=(const NativeWindowTrackerCocoa&) = delete;
+
   ~NativeWindowTrackerCocoa() override;
 
   // NativeWindowTracker:
@@ -21,8 +24,6 @@ class NativeWindowTrackerCocoa : public NativeWindowTracker {
 
  private:
   base::scoped_nsobject<BridgedNativeWindowTracker> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowTrackerCocoa);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_

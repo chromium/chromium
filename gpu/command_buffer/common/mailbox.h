@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_MAILBOX_H_
-#define GPU_COMMAND_BUFFER_MAILBOX_H_
+#ifndef GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_
+#define GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_
 
 #include <stdint.h>
 #include <string.h>
 
 #include <string>
 
-#include "gpu/gpu_export.h"
+#include "base/component_export.h"
 
 // From gl2/gl2ext.h.
 #ifndef GL_MAILBOX_SIZE_CHROMIUM
@@ -26,7 +26,7 @@ namespace gpu {
 // name is valid.
 // See src/gpu/GLES2/extensions/CHROMIUM/CHROMIUM_texture_mailbox.txt for more
 // details.
-struct GPU_EXPORT Mailbox {
+struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   using Name = int8_t[GL_MAILBOX_SIZE_CHROMIUM];
 
   Mailbox();
@@ -72,5 +72,4 @@ struct GPU_EXPORT Mailbox {
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_MAILBOX_H_
-
+#endif  // GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_

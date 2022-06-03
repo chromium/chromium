@@ -1,0 +1,23 @@
+%PDF-4.2
+% ò¤ô
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [ 0 0 200 200 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

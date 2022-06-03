@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.payments;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 import android.view.View;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,9 +19,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -29,8 +31,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** An integration test for shipping address and payer's contact information delegation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
 public class PaymentHandlerEnableDelegationsTest {
     // Disable animations to reduce flakiness.
@@ -40,7 +41,7 @@ public class PaymentHandlerEnableDelegationsTest {
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule
-    public PaymentRequestTestRule mRule = new PaymentRequestTestRule("about:blank");
+    public PaymentRequestTestRule mRule = new PaymentRequestTestRule("about:blank", null, true);
 
     // Host the tests on https://127.0.0.1, because file:// URLs cannot have service workers.
     private EmbeddedTestServer mServer;
@@ -114,6 +115,7 @@ public class PaymentHandlerEnableDelegationsTest {
     @Test
     @Feature({"Payments"})
     @MediumTest
+    @DisabledTest(message = "crbug.com/1131674")
     public void testShippingAndContactInfoDelegation() throws Throwable {
         installPaymentHandlerWithDelegations(
                 "['shippingAddress', 'payerName', 'payerEmail', 'payerPhone']");

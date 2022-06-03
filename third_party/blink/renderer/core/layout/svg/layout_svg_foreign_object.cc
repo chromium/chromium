@@ -23,106 +23,126 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
 namespace blink {
 
 LayoutSVGForeignObject::LayoutSVGForeignObject(SVGForeignObjectElement* node)
-    : LayoutSVGBlock(node), needs_transform_update_(true) {}
+    : LayoutSVGBlock(node) {}
 
 LayoutSVGForeignObject::~LayoutSVGForeignObject() = default;
 
 bool LayoutSVGForeignObject::IsChildAllowed(LayoutObject* child,
                                             const ComputedStyle& style) const {
+  NOT_DESTROYED();
   // Disallow arbitary SVG content. Only allow proper <svg xmlns="svgNS">
   // subdocuments.
   return !child->IsSVGChild();
 }
 
 void LayoutSVGForeignObject::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
   SVGForeignObjectPainter(*this).Paint(paint_info);
 }
 
-LayoutUnit LayoutSVGForeignObject::ElementX() const {
-  return LayoutUnit(
-      roundf(SVGLengthContext(GetElement())
-                 .ValueForLength(StyleRef().SvgStyle().X(), StyleRef(),
-                                 SVGLengthMode::kWidth)));
-}
-
-LayoutUnit LayoutSVGForeignObject::ElementY() const {
-  return LayoutUnit(
-      roundf(SVGLengthContext(GetElement())
-                 .ValueForLength(StyleRef().SvgStyle().Y(), StyleRef(),
-                                 SVGLengthMode::kHeight)));
-}
-
-LayoutUnit LayoutSVGForeignObject::ElementWidth() const {
-  return LayoutUnit(SVGLengthContext(GetElement())
-                        .ValueForLength(StyleRef().Width(), StyleRef(),
-                                        SVGLengthMode::kWidth));
-}
-
-LayoutUnit LayoutSVGForeignObject::ElementHeight() const {
-  return LayoutUnit(SVGLengthContext(GetElement())
-                        .ValueForLength(StyleRef().Height(), StyleRef(),
-                                        SVGLengthMode::kHeight));
-}
-
 void LayoutSVGForeignObject::UpdateLogicalWidth() {
-  SetLogicalWidth(StyleRef().IsHorizontalWritingMode() ? ElementWidth()
-                                                       : ElementHeight());
+  NOT_DESTROYED();
+  const ComputedStyle& style = StyleRef();
+  float logical_width =
+      style.IsHorizontalWritingMode() ? viewport_.width() : viewport_.height();
+  logical_width *= style.EffectiveZoom();
+  SetLogicalWidth(LayoutUnit(logical_width));
 }
 
 void LayoutSVGForeignObject::ComputeLogicalHeight(
     LayoutUnit,
     LayoutUnit logical_top,
     LogicalExtentComputedValues& computed_values) const {
-  computed_values.extent_ =
-      StyleRef().IsHorizontalWritingMode() ? ElementHeight() : ElementWidth();
+  NOT_DESTROYED();
+  const ComputedStyle& style = StyleRef();
+  float logical_height =
+      style.IsHorizontalWritingMode() ? viewport_.height() : viewport_.width();
+  logical_height *= style.EffectiveZoom();
+  computed_values.extent_ = LayoutUnit(logical_height);
   computed_values.position_ = logical_top;
 }
 
+AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
+  NOT_DESTROYED();
+  // Include a zoom inverse in the local-to-parent transform since descendants
+  // of the <foreignObject> will have regular zoom applied, and thus need to
+  // have that removed when moving into the <fO> ancestors chain (the SVG root
+  // will then reapply the zoom again if that boundary is crossed).
+  AffineTransform transform = local_transform_;
+  transform.Scale(1 / StyleRef().EffectiveZoom());
+  return transform;
+}
+
 void LayoutSVGForeignObject::UpdateLayout() {
+  NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
   auto* foreign = To<SVGForeignObjectElement>(GetElement());
 
-  bool update_cached_boundaries_in_parents = false;
+  // Update our transform before layout, in case any of our descendants rely on
+  // the transform being somewhat accurate.  The |needs_transform_update_| flag
+  // will be cleared after layout has been performed.
+  // TODO(fs): Remove this. AFAICS in all cases where descendants compute some
+  // form of CTM, they stop at their nearest ancestor LayoutSVGRoot, and thus
+  // will not care about (reach) this value.
   if (needs_transform_update_) {
     local_transform_ =
         foreign->CalculateTransform(SVGElement::kIncludeMotionTransform);
-    needs_transform_update_ = false;
-    update_cached_boundaries_in_parents = true;
   }
 
-  LayoutRect old_viewport = FrameRect();
+  LayoutRect old_frame_rect = FrameRect();
+
+  // Resolve the viewport in the local coordinate space - this does not include
+  // zoom.
+  SVGLengthContext length_context(foreign);
+  const ComputedStyle& style = StyleRef();
+  gfx::Vector2dF origin =
+      length_context.ResolveLengthPair(style.X(), style.Y(), style);
+  gfx::Vector2dF size =
+      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  // SetRect() will clamp negative width/height to zero.
+  viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
+
+  // Use the zoomed version of the viewport as the location, because we will
+  // interpose a transform that "unzooms" the effective zoom to let the children
+  // of the foreign object exist with their specified zoom.
+  gfx::PointF zoomed_location =
+      gfx::ScalePoint(viewport_.origin(), style.EffectiveZoom());
 
   // Set box origin to the foreignObject x/y translation, so positioned objects
   // in XHTML content get correct positions. A regular LayoutBoxModelObject
   // would pull this information from ComputedStyle - in SVG those properties
   // are ignored for non <svg> elements, so we mimic what happens when
   // specifying them through CSS.
-  SetX(ElementX());
-  SetY(ElementY());
+  SetLocation(LayoutPoint(zoomed_location));
 
-  bool layout_changed = EverHadLayout() && SelfNeedsLayout();
   LayoutBlock::UpdateLayout();
   DCHECK(!NeedsLayout());
+  const bool bounds_changed = old_frame_rect != FrameRect();
 
-  // If our bounds changed, notify the parents.
-  if (!update_cached_boundaries_in_parents)
-    update_cached_boundaries_in_parents = old_viewport != FrameRect();
-  if (update_cached_boundaries_in_parents)
+  // Invalidate all resources of this client if our reference box changed.
+  if (EverHadLayout() && bounds_changed)
+    SVGResourceInvalidator(*this).InvalidateEffects();
+
+  bool update_parent_boundaries = bounds_changed;
+  if (UpdateTransformAfterLayout(bounds_changed))
+    update_parent_boundaries = true;
+
+  // Notify ancestor about our bounds changing.
+  if (update_parent_boundaries)
     LayoutSVGBlock::SetNeedsBoundariesUpdate();
 
-  // Invalidate all resources of this client if our layout changed.
-  if (layout_changed)
-    SVGResourcesCache::ClientLayoutChanged(*this);
+  DCHECK(!needs_transform_update_);
 }
 
 bool LayoutSVGForeignObject::NodeAtPointFromSVG(
@@ -130,9 +150,10 @@ bool LayoutSVGForeignObject::NodeAtPointFromSVG(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction) {
+  NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
   TransformedHitTestLocation local_location(hit_test_location,
-                                            LocalSVGTransform());
+                                            LocalToSVGParentTransform());
   if (!local_location)
     return false;
 
@@ -165,28 +186,16 @@ bool LayoutSVGForeignObject::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction hit_test_action) {
+  NOT_DESTROYED();
   // Skip LayoutSVGBlock's override.
   return LayoutBlockFlow::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action);
 }
 
 PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
+  NOT_DESTROYED();
   // Skip LayoutSVGBlock's override.
   return LayoutBlockFlow::LayerTypeRequired();
-}
-
-void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
-                                            const ComputedStyle* old_style) {
-  LayoutSVGBlock::StyleDidChange(diff, old_style);
-
-  if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=
-                    SVGLayoutSupport::IsOverflowHidden(StyleRef()))) {
-    // See NeedsOverflowClip() in PaintPropertyTreeBuilder for the reason.
-    SetNeedsPaintPropertyUpdate();
-
-    if (Layer())
-      Layer()->SetNeedsCompositingInputsUpdate();
-  }
 }
 
 }  // namespace blink

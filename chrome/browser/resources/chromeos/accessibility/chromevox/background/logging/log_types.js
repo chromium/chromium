@@ -14,150 +14,153 @@ goog.provide('TreeLog');
 
 goog.require('QueueMode');
 
-/** @constructor */
-BaseLog = function(logType) {
-  /**
-   * @type {!LogStore.LogType}
-   */
-  this.logType = logType;
+BaseLog = class {
+  constructor(logType) {
+    /**
+     * @type {!LogStore.LogType}
+     */
+    this.logType = logType;
 
-  /**
-   * @type {!Date}
-   */
-  this.date = new Date();
-};
-
-/** @return {string} */
-BaseLog.prototype.toString = function() {
-  return '';
-};
-
-/**
- * @param {!chrome.automation.AutomationEvent} event
- * @constructor
- * @extends {BaseLog}
- */
-EventLog = function(event) {
-  BaseLog.call(this, LogStore.LogType.EVENT);
-
-  /**
-   * @type {chrome.automation.EventType}
-   * @private
-   */
-  this.type_ = event.type;
-
-  /**
-   * @type {string | undefined}
-   * @private
-   */
-  this.targetName_ = event.target.name;
-
-  /**
-   * @type {string | undefined}
-   * @private
-   */
-  this.rootName_ = event.target.root.name;
-
-  /**
-   * @type {string | undefined}
-   * @private
-   */
-  this.docUrl_ = event.target.docUrl;
-};
-goog.inherits(EventLog, BaseLog);
-
-/** @override */
-EventLog.prototype.toString = function() {
-  return `EventType = ${this.type_}, TargetName = ${this.targetName_}, ` +
-      `RootName = ${this.rootName_}, DocumentURL = ${this.docUrl_}`;
-};
-
-/**
- * @param {!string} textString
- * @param {!QueueMode} queueMode
- * @param {?string} category
- * @constructor
- * @extends {BaseLog}
- */
-SpeechLog = function(textString, queueMode, category) {
-  BaseLog.call(this, LogStore.LogType.SPEECH);
-
-  /**
-   * @type {string}
-   * @private
-   */
-  this.textString_ = textString;
-
-  /**
-   * @type {QueueMode}
-   * @private
-   */
-  this.queueMode_ = queueMode;
-
-  /**
-   * @type {?string}
-   * @private
-   */
-  this.category_ = category;
-};
-goog.inherits(SpeechLog, BaseLog);
-
-/** @override */
-SpeechLog.prototype.toString = function() {
-  let logStr = 'Speak';
-  if (this.queueMode_ == QueueMode.FLUSH) {
-    logStr += ' (I)';
-  } else if (this.queueMode_ == QueueMode.CATEGORY_FLUSH) {
-    logStr += ' (C)';
-  } else {
-    logStr += ' (Q)';
+    /**
+     * @type {!Date}
+     */
+    this.date = new Date();
   }
-  if (this.category_) {
-    logStr += ' category=' + this.category_;
+
+  /** @return {string} */
+  toString() {
+    return '';
   }
-  logStr += ' "' + this.textString_ + '"';
-  return logStr;
 };
 
-/**
- * @param {string} logStr
- * @param {!LogStore.LogType} logType
- * @constructor
- * @extends {BaseLog}
- */
-TextLog = function(logStr, logType) {
-  BaseLog.call(this, logType);
 
+EventLog = class extends BaseLog {
   /**
-   * @type {string}
-   * @private
+   * @param {!chrome.automation.AutomationEvent} event
    */
-  this.logStr_ = logStr;
+  constructor(event) {
+    super(LogStore.LogType.EVENT);
+
+    /**
+     * @type {chrome.automation.EventType}
+     * @private
+     */
+    this.type_ = event.type;
+
+    /**
+     * @type {string | undefined}
+     * @private
+     */
+    this.targetName_ = event.target.name;
+
+    /**
+     * @type {string | undefined}
+     * @private
+     */
+    this.rootName_ = event.target.root.name;
+
+    /**
+     * @type {string | undefined}
+     * @private
+     */
+    this.docUrl_ = event.target.docUrl;
+  }
+
+  /** @override */
+  toString() {
+    return `EventType = ${this.type_}, TargetName = ${this.targetName_}, ` +
+        `RootName = ${this.rootName_}, DocumentURL = ${this.docUrl_}`;
+  }
 };
-goog.inherits(TextLog, BaseLog);
 
-/** @override */
-TextLog.prototype.toString = function() {
-  return this.logStr_;
-};
 
-/**
- * @param {!TreeDumper} logTree
- * @constructor
- * @extends {BaseLog}
- */
-TreeLog = function(logTree) {
-  BaseLog.call(this, LogStore.LogType.TREE);
-
+SpeechLog = class extends BaseLog {
   /**
-   * @type {!TreeDumper}
-   * @private
+   * @param {!string} textString
+   * @param {!QueueMode} queueMode
+   * @param {?string} category
    */
-  this.logTree_ = logTree;
-};
-goog.inherits(TreeLog, BaseLog);
+  constructor(textString, queueMode, category) {
+    super(LogStore.LogType.SPEECH);
 
-/** @override */
-TreeLog.prototype.toString = function() {
-  return this.logTree_.treeToString();
+    /**
+     * @type {string}
+     * @private
+     */
+    this.textString_ = textString;
+
+    /**
+     * @type {QueueMode}
+     * @private
+     */
+    this.queueMode_ = queueMode;
+
+    /**
+     * @type {?string}
+     * @private
+     */
+    this.category_ = category;
+  }
+
+  /** @override */
+  toString() {
+    let logStr = 'Speak';
+    if (this.queueMode_ === QueueMode.FLUSH) {
+      logStr += ' (F)';
+    } else if (this.queueMode_ === QueueMode.CATEGORY_FLUSH) {
+      logStr += ' (C)';
+    } else if (this.queueMode_ === QueueMode.INTERJECT) {
+      logStr += ' (I)';
+    } else {
+      logStr += ' (Q)';
+    }
+    if (this.category_) {
+      logStr += ' category=' + this.category_;
+    }
+    logStr += ' "' + this.textString_ + '"';
+    return logStr;
+  }
+};
+
+
+TextLog = class extends BaseLog {
+  /**
+   * @param {string} logStr
+   * @param {!LogStore.LogType} logType
+   */
+  constructor(logStr, logType) {
+    super(logType);
+
+    /**
+     * @type {string}
+     * @private
+     */
+    this.logStr_ = logStr;
+  }
+
+  /** @override */
+  toString() {
+    return this.logStr_;
+  }
+};
+
+
+TreeLog = class extends BaseLog {
+  /**
+   * @param {!TreeDumper} logTree
+   */
+  constructor(logTree) {
+    super(LogStore.LogType.TREE);
+
+    /**
+     * @type {!TreeDumper}
+     * @private
+     */
+    this.logTree_ = logTree;
+  }
+
+  /** @override */
+  toString() {
+    return this.logTree_.treeToString();
+  }
 };

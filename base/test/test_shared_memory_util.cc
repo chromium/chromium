@@ -24,7 +24,7 @@
 #include <zircon/rights.h>
 #endif
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include <mach/mach_vm.h>
 #endif
 
@@ -41,7 +41,7 @@ static const size_t kDataSize = 1024;
 // Common routine used with Posix file descriptors. Check that shared memory
 // file descriptor |fd| does not allow writable mappings. Return true on
 // success, false otherwise.
-#if defined(OS_POSIX) && !(defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_POSIX) && !defined(OS_MAC)
 static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
 // Note that the error on Android is EPERM, unlike other platforms where
 // it will be EACCES.
@@ -66,7 +66,7 @@ static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
   }
   return true;
 }
-#endif  // OS_POSIX && !(defined(OS_MACOSX) && !defined(OS_IOS))
+#endif  // OS_POSIX && !defined(OS_MAC)
 
 #if defined(OS_FUCHSIA)
 // Fuchsia specific implementation.
@@ -74,7 +74,7 @@ bool CheckReadOnlySharedMemoryFuchsiaHandle(zx::unowned_vmo handle) {
   const uint32_t flags = ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
   uintptr_t addr;
   const zx_status_t status =
-      zx::vmar::root_self()->map(0, *handle, 0U, kDataSize, flags, &addr);
+      zx::vmar::root_self()->map(flags, 0, *handle, 0U, kDataSize, &addr);
   if (status == ZX_OK) {
     LOG(ERROR) << "zx_vmar_map() should have failed!";
     zx::vmar::root_self()->unmap(addr, kDataSize);
@@ -88,7 +88,7 @@ bool CheckReadOnlySharedMemoryFuchsiaHandle(zx::unowned_vmo handle) {
   return true;
 }
 
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
 bool CheckReadOnlySharedMemoryMachPort(mach_port_t memory_object) {
   mach_vm_address_t memory;
   const kern_return_t kr = mach_vm_map(
@@ -126,7 +126,7 @@ bool CheckReadOnlyPlatformSharedMemoryRegionForTesting(
     return false;
   }
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   return CheckReadOnlySharedMemoryMachPort(region.GetPlatformHandle());
 #elif defined(OS_FUCHSIA)
   return CheckReadOnlySharedMemoryFuchsiaHandle(region.GetPlatformHandle());

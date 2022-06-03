@@ -5,15 +5,17 @@
 #include "content/browser/media/midi_host.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 #include "base/process/process.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "media/midi/message_util.h"
 #include "media/midi/midi_message_queue.h"
 #include "media/midi/midi_service.h"
@@ -127,6 +129,8 @@ void MidiHost::ReceiveMidiData(uint32_t port,
     // SendData() does.
     if (message[0] == kSysExByte) {
       if (!has_sys_ex_permission_) {
+        // TODO(987505): This should check permission with the Frame and not the
+        // Process.
         has_sys_ex_permission_ =
             ChildProcessSecurityPolicyImpl::GetInstance()
                 ->CanSendMidiSysExMessage(renderer_process_id_);
@@ -166,15 +170,25 @@ void MidiHost::Detach() {
 
 void MidiHost::StartSession(
     mojo::PendingReceiver<midi::mojom::MidiSession> session_receiver,
-    mojo::PendingRemote<midi::mojom::MidiSessionClient> client) {
+    mojo::PendingRemote<midi::mojom::MidiSessionClient> pending_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // When the feature is disabled return early and use a temporary remote to
+  // send a "not supported" response before closing the pipes.
+  if (!base::FeatureList::IsEnabled(features::kWebMidi)) {
+    mojo::Remote<midi::mojom::MidiSessionClient> client(
+        std::move(pending_client));
+    client->SessionStarted(Result::NOT_SUPPORTED);
+    return;
+  }
+
   DCHECK(!pending_session_receiver_);
   // Checks to see if |midi_session_| isn't already bound to another
   // MidiSessionRequest.
   pending_session_receiver_ = std::move(session_receiver);
 
   DCHECK(!midi_client_);
-  midi_client_.Bind(std::move(client));
+  midi_client_.Bind(std::move(pending_client));
   midi_client_.set_disconnect_handler(
       base::BindOnce(&MidiHost::EndSession, base::Unretained(this)));
 
@@ -204,15 +218,13 @@ void MidiHost::SendData(uint32_t port,
   // Check |has_sys_ex_permission_| first to avoid searching kSysExByte in large
   // bulk data transfers for correct uses.
   if (!has_sys_ex_permission_ && base::Contains(data, kSysExByte)) {
+    has_sys_ex_permission_ =
+        ChildProcessSecurityPolicyImpl::GetInstance()->CanSendMidiSysExMessage(
+            renderer_process_id_);
     if (!has_sys_ex_permission_) {
-      has_sys_ex_permission_ =
-          ChildProcessSecurityPolicyImpl::GetInstance()
-              ->CanSendMidiSysExMessage(renderer_process_id_);
-      if (!has_sys_ex_permission_) {
-        bad_message::ReceivedBadMessage(renderer_process_id_,
-                                        bad_message::MH_SYS_EX_PERMISSION);
-        return;
-      }
+      bad_message::ReceivedBadMessage(renderer_process_id_,
+                                      bad_message::MH_SYS_EX_PERMISSION);
+      return;
     }
   }
 
@@ -235,8 +247,8 @@ void MidiHost::SendData(uint32_t port,
 template <typename Method, typename... Params>
 void MidiHost::CallClient(Method method, Params... params) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTask(FROM_HERE, {BrowserThread::IO},
-                   base::BindOnce(&MidiHost::CallClient<Method, Params...>,
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&MidiHost::CallClient<Method, Params...>,
                                   AsWeakPtr(), method, std::move(params)...));
     return;
   }

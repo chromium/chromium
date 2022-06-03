@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/logging.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "remoting/codec/video_encoder_vpx.h"
 #include "remoting/proto/video.pb.h"
@@ -12,7 +13,7 @@
 namespace remoting {
 namespace test {
 
-static const int kIntervalBetweenFramesMs = 33;
+constexpr auto kIntervalBetweenFrames = base::Seconds(1) / 30;
 
 struct CodecParams {
   CodecParams(bool use_vp9, bool lossless, bool lossless_color)
@@ -101,7 +102,7 @@ TEST_P(CodecPerfTest, EncodeLatency) {
         break;
     }
 
-    clock_.Advance(base::TimeDelta::FromMilliseconds(kIntervalBetweenFramesMs));
+    clock_.Advance(kIntervalBetweenFrames);
   }
 
   VLOG(0) << "Total time: " << total_latency.InMillisecondsF();
@@ -132,8 +133,7 @@ TEST_P(CodecPerfTest, MaxFramerate) {
   base::TimeDelta total_latency;
 
   // Update the whole screen on every frame.
-  frame_generator_->set_frame_cycle_period(
-      base::TimeDelta::FromMilliseconds(kIntervalBetweenFramesMs));
+  frame_generator_->set_frame_cycle_period(kIntervalBetweenFrames);
 
   for (int i = 0; i < kTotalFrames; ++i) {
     std::unique_ptr<webrtc::DesktopFrame> frame =
@@ -147,11 +147,10 @@ TEST_P(CodecPerfTest, MaxFramerate) {
 
     total_latency += latency;
 
-    clock_.Advance(base::TimeDelta::FromMilliseconds(kIntervalBetweenFramesMs));
+    clock_.Advance(kIntervalBetweenFrames);
   }
 
-  VLOG(0) << "Max framerate: "
-          << (kTotalFrames * base::TimeDelta::FromSeconds(1) / total_latency);
+  VLOG(0) << "Max framerate: " << kTotalFrames / total_latency.InSecondsF();
 }
 
 }  // namespace test

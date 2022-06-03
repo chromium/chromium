@@ -7,33 +7,88 @@
 
 #include <stddef.h>
 #include <string>
+#include <vector>
 
-#include "base/optional.h"
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace extensions {
 namespace declarative_net_request {
 
-// Holds the ParseResult together with the id of the rule at which the error
-// occurred, if any.
+// Holds the result of indexing a JSON ruleset.
 class ParseInfo {
  public:
-  explicit ParseInfo(ParseResult result);
-  ParseInfo(ParseResult result, int rule_id);
-  ParseInfo(const ParseInfo&);
-  ParseInfo& operator=(const ParseInfo&);
+  struct RuleWarning {
+    int rule_id;
+    std::string message;
+  };
 
-  ParseResult result() const { return result_; }
+  // Constructor to be used on success.
+  ParseInfo(size_t rules_count,
+            size_t regex_rules_count,
+            std::vector<RuleWarning> rule_ignored_warnings,
+            flatbuffers::DetachedBuffer buffer,
+            int ruleset_checksum);
 
-  // Returns the error string corresponding to this ParseInfo. Should not be
-  // called on a successful parse.
-  std::string GetErrorDescription() const;
+  // Constructor to be used on error.
+  ParseInfo(ParseResult error_reason, int rule_id);
+
+  ParseInfo(ParseInfo&&);
+  ParseInfo& operator=(ParseInfo&&);
+  ~ParseInfo();
+
+
+  bool has_error() const { return has_error_; }
+  ParseResult error_reason() const {
+    DCHECK(has_error_);
+    return error_reason_;
+  }
+  const std::string& error() const {
+    DCHECK(has_error_);
+    return error_;
+  }
+
+  const std::vector<RuleWarning>& rule_ignored_warnings() const {
+    DCHECK(!has_error_);
+    return rule_ignored_warnings_;
+  }
+
+  size_t rules_count() const {
+    DCHECK(!has_error_);
+    return rules_count_;
+  }
+
+  size_t regex_rules_count() const {
+    DCHECK(!has_error_);
+    return regex_rules_count_;
+  }
+
+  int ruleset_checksum() const {
+    DCHECK(!has_error_);
+    return ruleset_checksum_;
+  }
+
+  base::span<const uint8_t> GetBuffer() const {
+    return base::make_span(buffer_.data(), buffer_.size());
+  }
 
  private:
-  ParseResult result_;
-  // When set, denotes the id of the rule with which the |result_| is
-  // associated.
-  base::Optional<int> rule_id_;
+  bool has_error_ = false;
+
+  // Only valid iff |has_error_| is true.
+  std::string error_;
+  ParseResult error_reason_ = ParseResult::NONE;
+
+  // Only valid iff |has_error_| is false.
+  size_t rules_count_ = 0;
+  size_t regex_rules_count_ = 0;
+  flatbuffers::DetachedBuffer buffer_;
+  int ruleset_checksum_ = -1;
+
+  // Warnings for rules which could not be parsed and were therefore ignored.
+  std::vector<RuleWarning> rule_ignored_warnings_;
 };
 
 }  // namespace declarative_net_request

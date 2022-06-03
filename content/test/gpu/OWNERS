@@ -5,11 +5,5 @@ kbr@chromium.org
 ynovikov@chromium.org
 zmo@chromium.org
 
-# For Telemetry refactorings.
-crouleau@chromium.org
-
 # Emeritus:
 # dtu@chromium.org
-
-# COMPONENT: Internals>GPU>Internals
-# TEAM: graphics-dev@chromium.org

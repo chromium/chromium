@@ -15,8 +15,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/spin_wait.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
@@ -43,13 +43,12 @@ class ConditionVariableTest : public PlatformTest {
   const TimeDelta kOneHundredMs;
 
   ConditionVariableTest()
-      : kZeroMs(TimeDelta::FromMilliseconds(0)),
-        kTenMs(TimeDelta::FromMilliseconds(10)),
-        kThirtyMs(TimeDelta::FromMilliseconds(30)),
-        kFortyFiveMs(TimeDelta::FromMilliseconds(45)),
-        kSixtyMs(TimeDelta::FromMilliseconds(60)),
-        kOneHundredMs(TimeDelta::FromMilliseconds(100)) {
-  }
+      : kZeroMs(Milliseconds(0)),
+        kTenMs(Milliseconds(10)),
+        kThirtyMs(Milliseconds(30)),
+        kFortyFiveMs(Milliseconds(45)),
+        kSixtyMs(Milliseconds(60)),
+        kOneHundredMs(Milliseconds(100)) {}
 };
 
 //------------------------------------------------------------------------------
@@ -58,7 +57,7 @@ class ConditionVariableTest : public PlatformTest {
 // construct an instance of a WorkQueue.  The WorkQueue will spin up some
 // threads and control them throughout their lifetime, as well as maintaining
 // a central repository of the work thread's activity.  Finally, the WorkQueue
-// will command the the worker threads to terminate.  At that point, the test
+// will command the worker threads to terminate.  At that point, the test
 // cases will validate that the WorkQueue has records showing that the desired
 // activities were performed.
 //------------------------------------------------------------------------------
@@ -181,9 +180,9 @@ TEST_F(ConditionVariableTest, TimeoutTest) {
   lock.Acquire();
 
   TimeTicks start = TimeTicks::Now();
-  const TimeDelta WAIT_TIME = TimeDelta::FromMilliseconds(300);
+  const TimeDelta WAIT_TIME = Milliseconds(300);
   // Allow for clocking rate granularity.
-  const TimeDelta FUDGE_TIME = TimeDelta::FromMilliseconds(50);
+  const TimeDelta FUDGE_TIME = Milliseconds(50);
 
   cv.TimedWait(WAIT_TIME + FUDGE_TIME);
   TimeDelta duration = TimeTicks::Now() - start;
@@ -228,9 +227,9 @@ TEST_F(ConditionVariableTest, DISABLED_TimeoutAcrossSetTimeOfDay) {
   thread.task_runner()->PostTask(FROM_HERE, base::BindOnce(&BackInTime, &lock));
 
   TimeTicks start = TimeTicks::Now();
-  const TimeDelta kWaitTime = TimeDelta::FromMilliseconds(300);
+  const TimeDelta kWaitTime = Milliseconds(300);
   // Allow for clocking rate granularity.
-  const TimeDelta kFudgeTime = TimeDelta::FromMilliseconds(50);
+  const TimeDelta kFudgeTime = Milliseconds(50);
 
   cv.TimedWait(kWaitTime + kFudgeTime);
   TimeDelta duration = TimeTicks::Now() - start;
@@ -239,22 +238,14 @@ TEST_F(ConditionVariableTest, DISABLED_TimeoutAcrossSetTimeOfDay) {
   // We can't use EXPECT_GE here as the TimeDelta class does not support the
   // required stream conversion.
   EXPECT_TRUE(duration >= kWaitTime);
-  EXPECT_TRUE(duration <= TimeDelta::FromSeconds(kDiscontinuitySeconds));
+  EXPECT_TRUE(duration <= Seconds(kDiscontinuitySeconds));
 
   lock.Release();
 }
 #endif
 
-// Suddenly got flaky on Win, see http://crbug.com/10607 (starting at
-// comment #15).
-// This is also flaky on Fuchsia, see http://crbug.com/738275.
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
-#define MAYBE_MultiThreadConsumerTest DISABLED_MultiThreadConsumerTest
-#else
-#define MAYBE_MultiThreadConsumerTest MultiThreadConsumerTest
-#endif
 // Test serial task servicing, as well as two parallel task servicing methods.
-TEST_F(ConditionVariableTest, MAYBE_MultiThreadConsumerTest) {
+TEST_F(ConditionVariableTest, MultiThreadConsumerTest) {
   const int kThreadCount = 10;
   WorkQueue queue(kThreadCount);  // Start the threads.
 
@@ -394,17 +385,11 @@ TEST_F(ConditionVariableTest, MAYBE_MultiThreadConsumerTest) {
   }
   queue.work_is_available()->Broadcast();  // Force check for shutdown.
 
-  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(TimeDelta::FromMinutes(1),
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(Minutes(1),
                                    queue.ThreadSafeCheckShutdown(kThreadCount));
 }
 
-#if defined(OS_FUCHSIA)
-// TODO(crbug.com/751894): This flakily times out on Fuchsia.
-#define MAYBE_LargeFastTaskTest DISABLED_LargeFastTaskTest
-#else
-#define MAYBE_LargeFastTaskTest LargeFastTaskTest
-#endif
-TEST_F(ConditionVariableTest, MAYBE_LargeFastTaskTest) {
+TEST_F(ConditionVariableTest, LargeFastTaskTest) {
   const int kThreadCount = 200;
   WorkQueue queue(kThreadCount);  // Start the threads.
 
@@ -491,7 +476,7 @@ TEST_F(ConditionVariableTest, MAYBE_LargeFastTaskTest) {
   queue.work_is_available()->Broadcast();  // Force check for shutdown.
 
   // Wait for shutdowns to complete.
-  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(TimeDelta::FromMinutes(1),
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(Minutes(1),
                                    queue.ThreadSafeCheckShutdown(kThreadCount));
 }
 
@@ -517,7 +502,7 @@ WorkQueue::WorkQueue(int thread_count)
   EXPECT_GE(thread_count_, 1);
   ResetHistory();
   SetTaskCount(0);
-  SetWorkTime(TimeDelta::FromMilliseconds(30));
+  SetWorkTime(Milliseconds(30));
 
   for (int i = 0; i < thread_count_; ++i) {
     PlatformThreadHandle pth;
@@ -685,7 +670,7 @@ void WorkQueue::SpinUntilAllThreadsAreWaiting() {
       if (waiting_thread_count_ == thread_count_)
         break;
     }
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+    PlatformThread::Sleep(Milliseconds(30));
   }
 }
 
@@ -696,7 +681,7 @@ void WorkQueue::SpinUntilTaskCountLessThan(int task_count) {
       if (task_count_ < task_count)
         break;
     }
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+    PlatformThread::Sleep(Milliseconds(30));
   }
 }
 
@@ -753,7 +738,7 @@ void WorkQueue::ThreadMain() {
     if (could_use_help)
       work_is_available()->Signal();  // Get help from other threads.
 
-    if (work_time > TimeDelta::FromMilliseconds(0)) {
+    if (work_time > Milliseconds(0)) {
       // We could just sleep(), but we'll instead further exercise the
       // condition variable class, and do a timed wait.
       base::AutoLock auto_lock(private_lock);

@@ -38,11 +38,13 @@ select {
 <!-- shadow -->
 <select style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"><option>foo</option></select> <br>
  
-<!-- font -->
+Font-size and baseline:
 <select style="font-size: 16px;"><option>foo</option></select>
 <select style="font-size: 20px;"><option>foo</option></select>
 <select style="font-size: 24px;"><option>foo</option></select>
 <select style="-webkit-appearance:menulist-button; font-weight:bold"><option>September 2016</option></select>
+<select></select>
+<select style="font-size: 24px;"></select>
 <br>
 
 <!-- zoom -->
@@ -115,6 +117,7 @@ for (var i = 0; i < 1234; ++i) {
 
 <!-- drop down arrow overlap test -->
 <select style="width:60px"><option>Month</option></select>
+<select style="width:70px; text-overflow:ellipsis"><option>Long long long long long long long</option></select>
 <br>
 <!-- Test RTL menulist without and with border -->
 <select style="direction:rtl;"><option>foo</option></select>

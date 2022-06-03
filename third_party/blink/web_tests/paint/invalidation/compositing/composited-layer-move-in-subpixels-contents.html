@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<style>
+#container div {
+  height: 50.2px;
+  border: 1px solid black;
+  margin-top: 2px;
+}
+#container {
+  /* Not using will-change:transform because it ignores subpixel accumulation. */ 
+  will-change: opacity;
+  margin-top: 100.3px;
+}
+</style>
+<div id="container">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+// Disable under-invalidation checking which would force full layer
+// invalidation on subpixel accumulation change.
+if (window.internals)
+  internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
+function repaintTest() {
+  container.style.marginTop = '110.1px';
+}
+onload = runRepaintAndPixelTest;
+</script>

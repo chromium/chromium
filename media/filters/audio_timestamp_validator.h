@@ -20,6 +20,10 @@ class MEDIA_EXPORT AudioTimestampValidator {
  public:
   AudioTimestampValidator(const AudioDecoderConfig& decoder_config,
                           MediaLog* media_log);
+
+  AudioTimestampValidator(const AudioTimestampValidator&) = delete;
+  AudioTimestampValidator& operator=(const AudioTimestampValidator&) = delete;
+
   ~AudioTimestampValidator();
 
   // These methods monitor DecoderBuffer timestamps for gaps for the purpose of
@@ -61,8 +65,6 @@ class MEDIA_EXPORT AudioTimestampValidator {
 
   // Tracks the number of MEDIA_LOG warnings when large timestamp gap detected.
   int num_timestamp_gap_warnings_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTimestampValidator);
 };
 
 }  // namespace media

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
@@ -29,22 +28,22 @@ class RemoteDeviceLoader {
  public:
   class Factory {
    public:
-    static std::unique_ptr<RemoteDeviceLoader> NewInstance(
+    static std::unique_ptr<RemoteDeviceLoader> Create(
         const std::vector<cryptauth::ExternalDeviceInfo>& device_info_list,
         const std::string& user_email,
         const std::string& user_private_key,
         std::unique_ptr<multidevice::SecureMessageDelegate>
             secure_message_delegate);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<RemoteDeviceLoader> BuildInstance(
+    virtual std::unique_ptr<RemoteDeviceLoader> CreateInstance(
         const std::vector<cryptauth::ExternalDeviceInfo>& device_info_list,
         const std::string& user_email,
         const std::string& user_private_key,
         std::unique_ptr<multidevice::SecureMessageDelegate>
-            secure_message_delegate);
+            secure_message_delegate) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -63,12 +62,15 @@ class RemoteDeviceLoader {
       std::unique_ptr<multidevice::SecureMessageDelegate>
           secure_message_delegate);
 
+  RemoteDeviceLoader(const RemoteDeviceLoader&) = delete;
+  RemoteDeviceLoader& operator=(const RemoteDeviceLoader&) = delete;
+
   virtual ~RemoteDeviceLoader();
 
   // Loads the RemoteDevice objects. |callback| will be invoked upon completion.
-  typedef base::Callback<void(const multidevice::RemoteDeviceList&)>
+  typedef base::OnceCallback<void(const multidevice::RemoteDeviceList&)>
       RemoteDeviceCallback;
-  virtual void Load(const RemoteDeviceCallback& callback);
+  virtual void Load(RemoteDeviceCallback callback);
 
  private:
   // Called when the PSK is derived for each device. If the PSKs for all devices
@@ -95,8 +97,6 @@ class RemoteDeviceLoader {
   multidevice::RemoteDeviceList remote_devices_;
 
   base::WeakPtrFactory<RemoteDeviceLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceLoader);
 };
 
 }  // namespace device_sync

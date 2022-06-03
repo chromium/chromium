@@ -12,12 +12,8 @@
 
 namespace web {
 
-void FakeNavigationManagerDelegate::ClearTransientContent() {}
 void FakeNavigationManagerDelegate::ClearDialogs() {}
 void FakeNavigationManagerDelegate::RecordPageStateInNavigationItem() {}
-void FakeNavigationManagerDelegate::OnGoToIndexSameDocumentNavigation(
-    NavigationInitiationType type,
-    bool has_user_gesture) {}
 void FakeNavigationManagerDelegate::LoadCurrentItem(
     NavigationInitiationType type) {}
 void FakeNavigationManagerDelegate::LoadIfNecessary() {}
@@ -27,6 +23,8 @@ void FakeNavigationManagerDelegate::OnNavigationItemCommitted(
 WebState* FakeNavigationManagerDelegate::GetWebState() {
   return web_state_;
 }
+void FakeNavigationManagerDelegate::SetWebStateUserAgent(
+    UserAgentType user_agent_type) {}
 id<CRWWebViewNavigationProxy>
 FakeNavigationManagerDelegate::GetWebViewNavigationProxy() const {
   return test_web_view_;

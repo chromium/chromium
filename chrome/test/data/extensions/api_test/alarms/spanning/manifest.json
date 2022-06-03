@@ -1,0 +1,12 @@
+{
+   "permissions": ["alarms"],
+   "background": {
+     "scripts": ["background.js"],
+     "persistent": false
+   },
+   "description": "An extension which triggers an alarm to ensure that when incognito is in split mode onAlarm is only called in the same context the alarm was created     in.",
+   "manifest_version": 2,
+   "incognito": "spanning",
+   "name": "Alarm Incognito Split Test Extension",
+   "version": "0.1.1"
+}

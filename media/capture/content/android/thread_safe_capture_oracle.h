@@ -23,7 +23,7 @@ namespace media {
 
 struct VideoCaptureParams;
 class VideoFrame;
-class VideoFrameMetadata;
+struct VideoFrameMetadata;
 
 // Thread-safe, refcounted proxy to the VideoCaptureOracle.  This proxy wraps
 // the VideoCaptureOracle, which decides which frames to capture, and a
@@ -78,7 +78,9 @@ class CAPTURE_EXPORT ThreadSafeCaptureOracle
   // Signal device started to the client.
   void ReportStarted();
 
-  void OnConsumerReportingUtilization(int frame_number, double utilization);
+  void OnConsumerReportingUtilization(
+      int frame_number,
+      const media::VideoCaptureFeedback& feedback);
 
  private:
   // Helper struct to hold the many arguments needed by DidCaptureFrame(), and

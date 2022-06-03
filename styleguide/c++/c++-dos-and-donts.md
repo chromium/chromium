@@ -2,8 +2,8 @@
 
 ## A Note About Usage
 
-Unlike the style guide, the content of this page is advisory, not required. You
-can always deviate from something on this page, if the relevant
+Unlike the [style guide](c++.md), the content of this page is advisory, not
+required. You can always deviate from something on this page, if the relevant
 author/reviewer/OWNERS agree that another course is better.
 
 ## Minimize Code in Headers
@@ -80,7 +80,7 @@ general rules:
 
    ```cpp
    MyClass c(1.7, false, "test");
-   std::vector<double> v(500, 0.97);  // Creates 50 copies of the provided initializer
+   std::vector<double> v(500, 0.97);  // Creates 500 copies of the provided initializer
    ```
 3. Use C++11 "uniform init" syntax ("{}" without '=') only when neither of the
    above work:
@@ -147,7 +147,7 @@ declaration.
 When possible, avoid bare `new` by using
 [`std::make_unique<T>(...)`](http://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique)
 and
-[`base::MakeRefCounted<T>(...)`](https://cs.chromium.org/chromium/src/base/memory/scoped_refptr.h?q=MakeRefCounted):
+[`base::MakeRefCounted<T>(...)`](https://source.chromium.org/chromium/chromium/src/+/main:base/memory/scoped_refptr.h;l=98;drc=f8c5bd9d40969f02ddeb3e6c7bdb83029a99ca63):
 
 ```cpp
 // BAD: bare call to new; for refcounted types, not compatible with one-based
@@ -157,13 +157,13 @@ return base::WrapRefCounted(new T(1, 2, 3));
 
 // BAD: same as the above, plus mentions type names twice.
 std::unique_ptr<T> t(new T(1, 2, 3));
-base::scoped_refptr<T> t(new T(1, 2, 3));
+scoped_refptr<T> t(new T(1, 2, 3));
 return std::unique_ptr<T>(new T(1, 2, 3));
-return base::scoped_refptr<T>(new T(1, 2, 3));
+return scoped_refptr<T>(new T(1, 2, 3));
 
 // OK, but verbose: type name still mentioned twice.
 std::unique_ptr<T> t = std::make_unique<T>(1, 2, 3);
-base::scoped_refptr<T> t = base::MakeRefCounted<T>(1, 2, 3);
+scoped_refptr<T> t = base::MakeRefCounted<T>(1, 2, 3);
 
 // GOOD; make_unique<>/MakeRefCounted<> are clear enough indicators of the
 // returned type.
@@ -227,8 +227,8 @@ Do not use `auto` when the type would be deduced to be a pointer type; this can
 cause confusion. Instead, specify the "pointer" part outside of `auto`:
 
 ```cpp
-auto item = new Item();  // BAD: auto deduces to Item*, type of |item| is Item*
-auto* item = new Item(); // GOOD: auto deduces to Item, type of |item| is Item*
+auto item = new Item();  // BAD: auto deduces to Item*, type of `item` is Item*
+auto* item = new Item(); // GOOD: auto deduces to Item, type of `item` is Item*
 ```
 
 ## Use `const` correctly
@@ -268,17 +268,25 @@ Good::Good() = default;
 
 ## Comment style
 
-The common ways to represent names in comments are as follows:
-* Class and type names: `FooClass`
-* Function name: `FooFunction()`. The trailing parens disambiguate against
-  class names, and, occasionally, English words.
-* Variable name: `|foo_var|`. Again, the vertical lines disambiguate against
-  English words, and, occasionally, inlined function names. Code search will
-  also automatically convert `|foo_var|` into a clickable link.
+References to code in comments should be wrapped in `` ` ` `` pairs. Codesearch uses
+this as a heuristic for finding C++ symbols in comments and generating
+cross-references for that symbol.
+
+* Class and type names: `` `FooClass` ``.
+* Function names: `` `FooFunction()` ``. The trailing parens disambiguate
+  against class names, and occasionally, English words.
+* Variable names: `` `foo_var` ``. Historically, Chrome also used `||` pairs to
+  delimit variable names; codesearch understands both conventions and will
+  generate a cross-reference either way.
+* Tracking comments for future improvements: `// TODO(crbug.com/12345): ...`,
+  or, less optimally, `// TODO(knowledgeable_username): ...`.  Tracking bugs
+  provide space to give background context and current status; a username might
+  at least provide a starting point for asking about an issue.
 
 ```cpp
-// FooImpl implements the FooBase class.
-// FooFunction() modifies |foo_member_|.
+// `FooImpl` implements the `FooBase` class.
+// `FooFunction()` modifies `foo_member_`.
+// TODO(crbug.com/1): Rename things to something more descriptive than "foo".
 ```
 
 ## Named namespaces
@@ -286,3 +294,69 @@ The common ways to represent names in comments are as follows:
 Named namespaces are discouraged in top-level embedders (e.g., `chrome/`). See
 [this thread](https://groups.google.com/a/chromium.org/d/msg/chromium-dev/8ROncnL1t4k/J7uJMCQ8BwAJ)
 for background and discussion.
+
+## Guarding with DCHECK_IS_ON()
+
+Any code written inside a `DCHECK()` macro, or the various `DCHECK_EQ()` and
+similar macros, will be compiled out in builds where DCHECKs are disabled. That
+includes any non-debug build where the `dcheck_always_on` GN arg is not present.
+
+Thus even if your `DHECK()` would perform some expensive operation, you can
+be confident that **code within the macro will not run in our official
+release builds**, and that the linker will consider any function it calls to be
+dead code if it's not used elsewhere.
+
+However, if your `DCHECK()` relies on work that is done outside of the
+`DCHECK()` macro, that work may not be eliminated in official release builds.
+Thus any code that is only present to support a `DCHECK()` should be guarded by
+`#if DCHECK_IS_ON()` to avoid including that code in official release builds.
+
+This code is fine without any guards for `DCHECK_IS_ON()`.
+```cpp
+void ExpensiveStuff() { ... }  // No problem.
+
+// The ExpensiveStuff() call will not happen in official release builds. No need
+// to use checks for DCHECK_IS_ON() anywhere.
+DCHECK(ExpensiveStuff());
+
+std::string ExpensiveDebugMessage() { ... }  // No problem.
+
+// Calls in stream operators are also dead code in official release builds (not
+// called with the result discarded). This is fine.
+DCHECK(...) << ExpensiveDebugMessage();
+```
+
+This code will probably do expensive things that are not needed in official
+release builds, which is bad.
+```cpp
+// The result of this call is only used in a DCHECK(), but the code here is
+// outside of the macro. That means it's likely going to show up in official
+// release builds.
+int c = ExpensiveStuff();  // Bad. Don't do this.
+...
+DCHECK_EQ(c, ExpensiveStuff());
+```
+
+Instead, any code outside of a `DCHECK()` macro, that is only needed when
+DCHECKs are enabled, should be explicitly eliminated by checking
+`DCHECK_IS_ON()` as this code does.
+```cpp
+// The result of this call is only used in a DCHECK(), but the code here is
+// outside of the macro. We can't rely on the compiler to remove this in
+// official release builds, so we should guard it with a check for
+// DCHECK_IS_ON().
+#if DCHECK_IS_ON()
+int c = ExpensiveStuff();  // Great, this will be eliminated.
+#endif
+...
+#if DCHECK_IS_ON()
+DCHECK_EQ(c, ExpensiveStuff());  // Must be guarded since `c` won't exist.
+#endif
+```
+
+The `DCHECK()` and friends macros still require the variables and functions they
+use to be declared at compile time, even though they will not be used at
+runtime. This is done to avoid "unused variable" and "unused function" warnings
+when DCHECKs are turned off. This means that you may need to guard the
+`DCHECK()` macro if it depends on a variable or function that is also guarded
+by a check for `DCHECK_IS_ON()`.

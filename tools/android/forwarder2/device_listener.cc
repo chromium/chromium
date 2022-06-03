@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "tools/android/forwarder2/command.h"
 #include "tools/android/forwarder2/forwarder.h"
@@ -82,7 +82,7 @@ void DeviceListener::AcceptNextClientSoon() {
 }
 
 void DeviceListener::AcceptClientOnInternalThread() {
-  device_data_socket_.reset(new Socket());
+  device_data_socket_ = std::make_unique<Socket>();
   if (!listener_socket_->Accept(device_data_socket_.get())) {
     if (listener_socket_->DidReceiveEvent()) {
       LOG(INFO) << "Received exit notification, stopped accepting clients.";

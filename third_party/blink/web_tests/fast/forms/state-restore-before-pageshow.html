@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../external/wpt/html/interaction/focus/the-autofocus-attribute/resources/utils.js"></script>
+<body>
+<iframe src="resources/state-restore-before-pageshow-frame.html"></iframe>
+<script>
+let promiseResolver = null;
+
+promise_test(async t => {
+  await waitForEvent(window, 'load', {once:true});
+  const iframe = document.querySelector('iframe');
+  let doc = iframe.contentDocument;
+
+  // Change control state.
+  doc.querySelector('select').value = 'o2';
+
+  // Navigate in the frame
+  iframe.src = 'data:text/html,<h1></h1>';
+  await waitForEvent(iframe, 'load', {once:true});
+
+  // Navigate back
+  const valueOnPageShow = await new Promise((resolve, reject) => {
+    window.promiseResolver = resolve;
+    history.back();
+  });
+  assert_equals(valueOnPageShow, 'o2');
+}, '');
+</script>

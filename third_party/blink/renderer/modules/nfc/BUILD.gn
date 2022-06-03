@@ -14,13 +14,10 @@ blink_modules_sources("nfc") {
     "ndef_reading_event.h",
     "ndef_record.cc",
     "ndef_record.h",
-    "ndef_writer.cc",
-    "ndef_writer.h",
     "nfc_proxy.cc",
     "nfc_proxy.h",
     "nfc_type_converters.cc",
     "nfc_type_converters.h",
-    "nfc_utils.cc",
-    "nfc_utils.h",
   ]
+  deps = [ "//third_party/blink/renderer/modules/permissions" ]
 }

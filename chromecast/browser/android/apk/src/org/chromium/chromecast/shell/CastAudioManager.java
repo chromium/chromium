@@ -4,12 +4,14 @@
 
 package org.chromium.chromecast.shell;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.audiopolicy.AudioPolicy;
-import android.os.Build;
-import android.support.annotation.Nullable;
+import android.os.Build.VERSION_CODES;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -65,7 +67,7 @@ public class CastAudioManager {
     public Observable<AudioFocusLoss> requestAudioFocusWhen(
             Observable<CastAudioFocusRequest> event) {
         Controller<AudioFocusLoss> audioFocusLossState = new Controller<>();
-        audioFocusLossState.set(AudioFocusLoss.NORMAL);
+        audioFocusLossState.set(AudioFocusLoss.NOT_REQUESTED);
         event.subscribe(focusRequest -> {
             focusRequest.setAudioFocusChangeListener((int focusChange) -> {
                 audioFocusLossState.set(AudioFocusLoss.from(focusChange));
@@ -85,35 +87,6 @@ public class CastAudioManager {
         return audioFocusLossState;
     }
 
-    // Only called on Lollipop and below, in an Activity's onPause() event.
-    // On Lollipop and below, setStreamMute() calls are cumulative and per-application, and if
-    // Activities don't unmute the streams that they mute, the stream remains muted to other
-    // applications, which are unable to unmute the stream themselves. Therefore, when an Activity
-    // is paused, it must unmute any streams it had muted.
-    // More context in b/19964892 and b/22204758.
-    @SuppressWarnings("deprecation")
-    public void releaseStreamMuteIfNecessary(int streamType) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-            // On L, if we try to unmute a stream that is not muted, a warning Toast appears.
-            // Check the stream mute state to determine whether to unmute.
-            boolean isMuted = false;
-            try {
-                // isStreamMute() was only made public in M, but it can be accessed through
-                // reflection in L.
-                isMuted = (Boolean) mInternal.getClass()
-                                  .getMethod("isStreamMute", int.class)
-                                  .invoke(mInternal, streamType);
-            } catch (Exception e) {
-                Log.e(TAG, "Can not call AudioManager.isStreamMute().", e);
-            }
-
-            if (isMuted) {
-                // Note: this is a no-op on fixed-volume devices.
-                mInternal.setStreamMute(streamType, false);
-            }
-        }
-    }
-
     public int getStreamMaxVolume(int streamType) {
         return mInternal.getStreamMaxVolume(streamType);
     }
@@ -124,6 +97,11 @@ public class CastAudioManager {
 
     public void unregisterAudioPolicyAsync(AudioPolicy audioPolicy) {
         mInternal.unregisterAudioPolicyAsync(audioPolicy);
+    }
+
+    @TargetApi(VERSION_CODES.M)
+    public AudioDeviceInfo[] getDevices(int flags) {
+        return mInternal.getDevices(flags);
     }
 
     // TODO(sanfin): Do not expose this. All needed AudioManager methods can be adapted with
@@ -139,7 +117,8 @@ public class CastAudioManager {
     public enum AudioFocusLoss {
         NORMAL,
         TRANSIENT,
-        TRANSIENT_CAN_DUCK;
+        TRANSIENT_CAN_DUCK,
+        NOT_REQUESTED;
 
         private static @Nullable AudioFocusLoss from(int focusChange) {
             switch (focusChange) {

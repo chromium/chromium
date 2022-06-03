@@ -13,7 +13,7 @@ AnimationWorkletMessagingProxy::AnimationWorkletMessagingProxy(
     ExecutionContext* execution_context)
     : ThreadedWorkletMessagingProxy(execution_context) {}
 
-void AnimationWorkletMessagingProxy::Trace(blink::Visitor* visitor) {
+void AnimationWorkletMessagingProxy::Trace(Visitor* visitor) const {
   ThreadedWorkletMessagingProxy::Trace(visitor);
 }
 

@@ -10,7 +10,7 @@
 
 #include "components/exo/pointer.h"
 #include "components/exo/wayland/server_util.h"
-#include "ui/base/cursor/types/cursor_types.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace exo {
 namespace wayland {
@@ -20,11 +20,11 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 // cursor_shapes interface:
 
-static ui::CursorType GetCursorType(int32_t cursor_shape) {
+static ui::mojom::CursorType GetCursorType(int32_t cursor_shape) {
   switch (cursor_shape) {
 #define ADD_CASE(wayland, chrome)                        \
   case ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_##wayland: \
-    return ui::CursorType::chrome
+    return ui::mojom::CursorType::chrome
 
     ADD_CASE(POINTER, kPointer);
     ADD_CASE(CROSS, kCross);
@@ -75,7 +75,7 @@ static ui::CursorType GetCursorType(int32_t cursor_shape) {
     ADD_CASE(DND_LINK, kDndLink);
 #undef ADD_CASE
     default:
-      return ui::CursorType::kNull;
+      return ui::mojom::CursorType::kNull;
   }
 }
 
@@ -83,8 +83,8 @@ void cursor_shapes_set_cursor_shape(wl_client* client,
                                     wl_resource* resource,
                                     wl_resource* pointer_resource,
                                     int32_t shape) {
-  ui::CursorType cursor_type = GetCursorType(shape);
-  if (cursor_type == ui::CursorType::kNull) {
+  ui::mojom::CursorType cursor_type = GetCursorType(shape);
+  if (cursor_type == ui::mojom::CursorType::kNull) {
     wl_resource_post_error(resource, ZCR_CURSOR_SHAPES_V1_ERROR_INVALID_SHAPE,
                            "Unrecognized shape %d", shape);
     return;

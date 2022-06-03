@@ -29,12 +29,15 @@ class PressStory(page_module.Page):
   DETERMINISTIC_JS = False
   NAME = None
 
-  def __init__(self, ps):
-    super(PressStory, self).__init__(
-        self.URL, ps,
-        base_dir=ps.base_dir,
-        make_javascript_deterministic=self.DETERMINISTIC_JS,
-        name=self.NAME if self.NAME else self.URL)
+  def __init__(self, ps, tags=None, extra_browser_args=None):
+    super(PressStory,
+          self).__init__(self.URL,
+                         ps,
+                         base_dir=ps.base_dir,
+                         make_javascript_deterministic=self.DETERMINISTIC_JS,
+                         name=self.NAME if self.NAME else self.URL,
+                         tags=tags,
+                         extra_browser_args=extra_browser_args)
     self._measurements = []
     self._action_runner = None
 
@@ -80,6 +83,10 @@ class PressStory(page_module.Page):
 
   def GetMeasurements(self):
     return self._measurements
+
+  def Run(self, shared_state):
+    self._measurements = []
+    super(PressStory, self).Run(shared_state)
 
   def ExecuteTest(self, action_runner):
     pass

@@ -10,11 +10,9 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 
+class ChromeBrowserState;
 @protocol SyncPresenter;
 
-namespace ios {
-class ChromeBrowserState;
-}
 namespace web {
 class WebState;
 }
@@ -27,25 +25,16 @@ NSString* GetSyncErrorDescriptionForSyncSetupService(
 // Gets the string message associated with the sync error state of
 // |browserState|. The returned error message does not contain any links.
 // Returns nil if there is no sync error.
-NSString* GetSyncErrorMessageForBrowserState(
-    ios::ChromeBrowserState* browserState);
+NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState);
 
 // Gets the title of the button to fix the sync error of |browserState|.
 // Returns nil if there is no sync error or it can't be fixed by a user action.
 NSString* GetSyncErrorButtonTitleForBrowserState(
-    ios::ChromeBrowserState* browserState);
+    ChromeBrowserState* browserState);
 
 // Gets the sync state of |browserState|.
 SyncSetupService::SyncServiceState GetSyncStateForBrowserState(
-    ios::ChromeBrowserState* browserState);
-
-// Returns true if sync signin should be displayed based on |syncState|.
-bool ShouldShowSyncSignin(SyncSetupService::SyncServiceState syncState);
-
-// Returns true if sync passphrase settings should be displayed based on
-// |syncState|.
-bool ShouldShowSyncPassphraseSettings(
-    SyncSetupService::SyncServiceState syncState);
+    ChromeBrowserState* browserState);
 
 // Returns true if sync settings (or the google services settings when unified
 // consent is enabled) should be displayed based on |syncState|.
@@ -53,7 +42,7 @@ bool ShouldShowSyncSettings(SyncSetupService::SyncServiceState syncState);
 
 // Check for sync errors, and display any that ought to be shown to the user.
 // Returns true if an infobar was brought up.
-bool DisplaySyncErrors(ios::ChromeBrowserState* browser_state,
+bool DisplaySyncErrors(ChromeBrowserState* browser_state,
                        web::WebState* web_state,
                        id<SyncPresenter> presenter);
 

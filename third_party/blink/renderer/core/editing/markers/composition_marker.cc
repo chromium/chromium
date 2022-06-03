@@ -6,15 +6,20 @@
 
 namespace blink {
 
-CompositionMarker::CompositionMarker(unsigned start_offset,
-                                     unsigned end_offset,
-                                     Color underline_color,
-                                     ui::mojom::ImeTextSpanThickness thickness,
-                                     Color background_color)
+CompositionMarker::CompositionMarker(
+    unsigned start_offset,
+    unsigned end_offset,
+    Color underline_color,
+    ui::mojom::ImeTextSpanThickness thickness,
+    ui::mojom::ImeTextSpanUnderlineStyle underline_style,
+    Color text_color,
+    Color background_color)
     : StyleableMarker(start_offset,
                       end_offset,
                       underline_color,
                       thickness,
+                      underline_style,
+                      text_color,
                       background_color) {}
 
 DocumentMarker::MarkerType CompositionMarker::GetType() const {

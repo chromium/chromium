@@ -7,10 +7,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
@@ -28,6 +29,10 @@ constexpr char kTestJson[] = R"(
 class SafeXmlParserTest : public InProcessBrowserTest {
  public:
   SafeXmlParserTest() = default;
+
+  SafeXmlParserTest(const SafeXmlParserTest&) = delete;
+  SafeXmlParserTest& operator=(const SafeXmlParserTest&) = delete;
+
   ~SafeXmlParserTest() override = default;
 
  protected:
@@ -44,7 +49,7 @@ class SafeXmlParserTest : public InProcessBrowserTest {
     }
 
     data_decoder::DataDecoder::ParseXmlIsolated(
-        xml.as_string(),
+        std::string(xml),
         base::BindOnce(&SafeXmlParserTest::XmlParsingDone,
                        base::Unretained(this), run_loop.QuitClosure(),
                        std::move(expected_value)));
@@ -52,7 +57,7 @@ class SafeXmlParserTest : public InProcessBrowserTest {
   }
 
  private:
-  void XmlParsingDone(base::Closure quit_loop_closure,
+  void XmlParsingDone(base::OnceClosure quit_loop_closure,
                       std::unique_ptr<base::Value> expected_value,
                       data_decoder::DataDecoder::ValueOrError result) {
     base::ScopedClosureRunner runner(std::move(quit_loop_closure));
@@ -65,8 +70,6 @@ class SafeXmlParserTest : public InProcessBrowserTest {
     ASSERT_TRUE(result.value);
     EXPECT_EQ(*expected_value, *result.value);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SafeXmlParserTest);
 };
 
 }  // namespace
@@ -77,4 +80,3 @@ IN_PROC_BROWSER_TEST_F(SafeXmlParserTest, Parse) {
   TestParse("[\"this is JSON not XML\"]", "");
   TestParse(kTestXml, kTestJson);
 }
-

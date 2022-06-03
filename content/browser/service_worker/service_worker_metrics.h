@@ -6,19 +6,11 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_METRICS_H_
 
 #include <stddef.h>
-#include <map>
-#include <set>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/public/browser/service_worker_context.h"
-#include "content/public/common/resource_type.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "ui/base/page_transition_types.h"
-
-class GURL;
 
 namespace content {
 
@@ -41,30 +33,12 @@ class ServiceWorkerMetrics {
   };
 
   // Used for UMA. Append-only.
-  enum DeleteAndStartOverResult {
-    DELETE_OK,
-    DELETE_DATABASE_ERROR,
-    DELETE_DISK_CACHE_ERROR,
-    NUM_DELETE_AND_START_OVER_RESULT_TYPES,
-  };
-
-  // Used for UMA. Append-only.
-  enum class StopStatus {
-    NORMAL,
-    DETACH_BY_REGISTRY,
-    TIMEOUT,
-    // Add new types here.
-    kMaxValue = TIMEOUT,
-  };
-
-  // Used for UMA. Append-only.
   // This class is used to indicate which event is fired/finished. Most events
   // have only one request that starts the event and one response that finishes
-  // the event, but the fetch and the foreign fetch event have two responses, so
-  // there are two types of EventType to break down the measurement into two:
-  // FETCH/FOREIGN_FETCH and FETCH_WAITUNTIL/FOREIGN_FETCH_WAITUNTIL.
-  // Moreover, FETCH is separated into the four: MAIN_FRAME, SUB_FRAME,
-  // SHARED_WORKER and SUB_RESOURCE for more detailed UMA.
+  // the event, but the fetch event has two responses, so there are two types of
+  // EventType to break down the measurement into two: FETCH and
+  // FETCH_WAITUNTIL. Moreover, FETCH is separated into the four: MAIN_FRAME,
+  // SUB_FRAME, SHARED_WORKER and SUB_RESOURCE for more detailed UMA.
   enum class EventType {
     ACTIVATE = 0,
     INSTALL = 1,
@@ -81,9 +55,9 @@ class ServiceWorkerMetrics {
     FETCH_SHARED_WORKER = 12,
     FETCH_SUB_RESOURCE = 13,
     UNKNOWN = 14,  // Used when event type is not known.
-    FOREIGN_FETCH = 15,
+    // FOREIGN_FETCH = 15,  // Obsolete
     FETCH_WAITUNTIL = 16,
-    FOREIGN_FETCH_WAITUNTIL = 17,
+    // FOREIGN_FETCH_WAITUNTIL = 17,  // Obsolete
     // NAVIGATION_HINT_LINK_MOUSE_DOWN = 18,  // Obsolete
     // NAVIGATION_HINT_LINK_TAP_UNCONFIRMED = 19,  // Obsolete
     // NAVIGATION_HINT_LINK_TAP_DOWN = 20,  // Obsolete
@@ -103,21 +77,10 @@ class ServiceWorkerMetrics {
     BACKGROUND_FETCH_SUCCESS = 32,
     PERIODIC_SYNC = 33,
     CONTENT_DELETE = 34,
+    PUSH_SUBSCRIPTION_CHANGE = 35,
+    FETCH_FENCED_FRAME = 36,
     // Add new events to record here.
-    kMaxValue = CONTENT_DELETE,
-  };
-
-  // Used for UMA. Append only.
-  enum class Site {
-    OTHER,  // Obsolete for UMA. Use WITH_FETCH_HANDLER or
-            // WITHOUT_FETCH_HANDLER.
-    NEW_TAB_PAGE,
-    WITH_FETCH_HANDLER,
-    WITHOUT_FETCH_HANDLER,
-    PLUS,
-    INBOX,
-    DOCS,
-    kMaxValue = DOCS,
+    kMaxValue = FETCH_FENCED_FRAME,
   };
 
   // Not used for UMA.
@@ -166,10 +129,19 @@ class ServiceWorkerMetrics {
 
     // The browser received the worker started IPC.
     base::TimeTicks local_end;
-
-    // Counts the time overhead of UI/IO thread hops during startup.
-    base::TimeDelta thread_hop_time;
   };
+
+  // Used for UMA. Append-only.
+  enum class OfflineCapableReason {
+    kTimeout = 0,
+    kSuccess = 1,
+    kRedirect = 2,
+    kMaxValue = kRedirect,
+  };
+
+  ServiceWorkerMetrics() = delete;
+  ServiceWorkerMetrics(const ServiceWorkerMetrics&) = delete;
+  ServiceWorkerMetrics& operator=(const ServiceWorkerMetrics&) = delete;
 
   // Converts an event type to a string. Used for tracing.
   static const char* EventTypeToString(EventType event_type);
@@ -177,22 +149,10 @@ class ServiceWorkerMetrics {
   // Converts a start situation to a string. Used for tracing.
   static const char* StartSituationToString(StartSituation start_situation);
 
-  // If the |url| is not a special site, returns Site::OTHER.
-  static Site SiteFromURL(const GURL& url);
-
-  // Used for ServiceWorkerDiskCache.
-  static void CountInitDiskCacheResult(bool result);
+  // Counts the result of reading a service worker script from storage.
   static void CountReadResponseResult(ReadResponseResult result);
+  // Counts the result of writing a service worker script to storage.
   static void CountWriteResponseResult(WriteResponseResult result);
-
-  // Used for ServiceWorkerStorage.
-  static void RecordPurgeResourceResult(int net_error);
-  static void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result);
-
-  // Counts the number of page loads controlled by a Service Worker.
-  static void CountControlledPageLoad(Site site,
-                                      const GURL& url,
-                                      bool is_main_frame_load);
 
   // Records the result of trying to start an installed worker.
   static void RecordStartInstalledWorkerStatus(
@@ -208,70 +168,35 @@ class ServiceWorkerMetrics {
                                     StartSituation start_situation,
                                     EventType purpose);
 
-  // Records the result of trying to stop a worker.
-  static void RecordWorkerStopped(StopStatus status);
-
-  // Records the time taken to successfully stop a worker.
-  static void RecordStopWorkerTime(base::TimeDelta time);
-
   static void RecordActivateEventStatus(blink::ServiceWorkerStatusCode status,
                                         bool is_shutdown);
-  static void RecordInstallEventStatus(blink::ServiceWorkerStatusCode status);
+  static void RecordInstallEventStatus(blink::ServiceWorkerStatusCode status,
+                                       uint32_t fetch_count);
 
   // Records the amount of time spent handling an event.
   static void RecordEventDuration(EventType event,
                                   base::TimeDelta time,
-                                  bool was_handled);
+                                  bool was_handled,
+                                  uint32_t fetch_count);
 
   // Records the result of dispatching a fetch event to a service worker.
   static void RecordFetchEventStatus(bool is_main_resource,
                                      blink::ServiceWorkerStatusCode status);
-
-  static void RecordProcessCreated(bool is_new_process);
 
   CONTENT_EXPORT static void RecordStartWorkerTiming(const StartTimes& times,
                                                      StartSituation situation);
   static void RecordStartWorkerTimingClockConsistency(
       CrossProcessTimeDelta type);
 
-  // Records the result of a start attempt that occurred after the worker had
-  // failed |failure_count| consecutive times.
-  static void RecordStartStatusAfterFailure(
-      int failure_count,
-      blink::ServiceWorkerStatusCode status);
-
   // Records the size of Service-Worker-Navigation-Preload header when the
   // navigation preload request is to be sent.
   static void RecordNavigationPreloadRequestHeaderSize(size_t size);
 
-  static void RecordRuntime(base::TimeDelta time);
-
-  // Records the result of starting service worker for a navigation hint.
-  static void RecordStartServiceWorkerForNavigationHintResult(
-      StartServiceWorkerForNavigationHintResult result);
-
-  // Records the number of origins with a registered service worker.
-  static void RecordRegisteredOriginCount(size_t origin_count);
-
-  // Records the duration of looking up an existing registration.
-  // |status| is the result of lookup. The records for the cases where
-  // the registration is found (kOk), not found (kErrorNotFound), or an error
-  // happens (other errors) are saved separately into a relevant suffixed
-  // histogram.
-  static void RecordLookupRegistrationTime(
-      blink::ServiceWorkerStatusCode status,
-      base::TimeDelta duration);
-
-  // Records the result of byte-for-byte update checking.
-  // |has_found_update| should be true when the update checking finds update of
-  // the script. It's recorded only when |status| is kOk.
-  // This is used only when ServiceWorkerImportedScriptUpdateCheck is enabled.
-  static void RecordByteForByteUpdateCheckStatus(
-      blink::ServiceWorkerStatusCode status,
-      bool has_found_update);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ServiceWorkerMetrics);
+  // Records the reason a service worker was deemed to be offline capable. The
+  // reason may be that the service worker responded with 2xx..., 3xx..., or the
+  // check timed out.
+  static void RecordOfflineCapableReason(blink::ServiceWorkerStatusCode status,
+                                         int status_code);
 };
 
 }  // namespace content

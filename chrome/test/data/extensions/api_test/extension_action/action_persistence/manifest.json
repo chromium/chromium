@@ -1,0 +1,11 @@
+{
+  "name": "Action persistence check",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": { "service_worker": "worker.js" },
+  "action": {
+    "default_popup": "default_popup.html",
+    "default_title": "default title"
+  },
+  "permissions": ["storage"]
+}

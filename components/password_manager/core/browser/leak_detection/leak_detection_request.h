@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_factory.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -41,14 +42,15 @@ class LeakDetectionRequest : public LeakDetectionRequestInterface {
   ~LeakDetectionRequest() override;
 
   // Initiates a leak lookup network request for the credential corresponding to
-  // |username_hash_prefix| and |encrypted_payload|. |access_token| is required
-  // to authenticate the request. Invokes |callback| on completion, unless this
-  // instance is deleted beforehand. If the request failed, |callback| is
-  // invoked with |nullptr|, otherwise a SingleLookupResponse is returned.
+  // |username_hash_prefix| and |encrypted_payload|.
+  // |access_token| is required to authenticate the request for signed-in users.
+  // |access_token| should be |absl::nullopt| for signed-out users.
+  // Invokes |callback| on completion, unless this instance is deleted
+  // beforehand. If the request failed, |callback| is invoked with |nullptr|,
+  // otherwise a SingleLookupResponse is returned.
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const std::string& access_token,
-                        std::string username_hash_prefix,
-                        std::string encrypted_payload,
+                        const absl::optional<std::string>& access_token,
+                        LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override;
 
  private:

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -53,16 +54,17 @@ class SVGNumberOptionalNumber final : public SVGPropertyBase {
   void SetInitial(unsigned);
   static constexpr int kInitialValueBits = SVGNumber::kInitialValueBits;
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement* context_element) override;
-  float CalculateDistance(SVGPropertyBase* to,
-                          SVGElement* context_element) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement* context_element) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() {
     return kAnimatedNumberOptionalNumber;
@@ -72,14 +74,19 @@ class SVGNumberOptionalNumber final : public SVGPropertyBase {
   SVGNumber* FirstNumber() const { return first_number_; }
   SVGNumber* SecondNumber() const { return second_number_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   Member<SVGNumber> first_number_;
   Member<SVGNumber> second_number_;
 };
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGNumberOptionalNumber);
+template <>
+struct DowncastTraits<SVGNumberOptionalNumber> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGNumberOptionalNumber::ClassType();
+  }
+};
 
 }  // namespace blink
 

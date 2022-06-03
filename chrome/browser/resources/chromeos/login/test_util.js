@@ -3,22 +3,20 @@
 // found in the LICENSE file.
 
 cr.define('cr', function() {
-  function ErrorStore() {
-    var self = this;
-    window.addEventListener('error', function(e) {
-      self.store_.push(e);
-    });
-  }
-
-  cr.addSingletonGetter(ErrorStore);
-
-  ErrorStore.prototype = {
-    store_: [],
+  class ErrorStore {
+    constructor() {
+      this.store_ = [];
+      window.addEventListener('error', (e) => {
+        this.store_.push(e);
+      });
+    }
 
     get length() {
       return this.store_.length;
-    },
-  };
+    }
+  }
+
+  cr.addSingletonGetter(ErrorStore);
 
   return {
     ErrorStore: ErrorStore,

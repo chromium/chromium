@@ -22,6 +22,8 @@ content::WebUIDataSource* CreateDeviceEmulatorUIDataSource() {
   content::WebUIDataSource* html =
       content::WebUIDataSource::Create(chrome::kChromeUIDeviceEmulatorHost);
 
+  html->DisableTrustedTypesCSP();
+
   // Add resources.
   html->AddResourcePath("audio_settings.js",
                         IDR_DEVICE_EMULATOR_AUDIO_SETTINGS_JS);

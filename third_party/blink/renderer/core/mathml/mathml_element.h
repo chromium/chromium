@@ -5,12 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_MATHML_MATHML_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MATHML_MATHML_ELEMENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+class CSSToLengthConversionData;
+class QualifiedName;
 
 class CORE_EXPORT MathMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,16 +30,30 @@ class CORE_EXPORT MathMLElement : public Element {
     return HasLocalName(name.LocalName());
   }
 
- private:
-  bool IsPresentationAttribute(const QualifiedName&) const final;
-  void CollectStyleForPresentationAttribute(const QualifiedName&,
-                                            const AtomicString&,
-                                            MutableCSSPropertyValueSet*) final;
-
-  void ParseAttribute(const AttributeModificationParams&) final;
-
   bool IsMathMLElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
+
+  bool IsTokenElement() const;
+
+  virtual bool IsGroupingElement() const { return false; }
+
+ protected:
+  bool IsPresentationAttribute(const QualifiedName&) const override;
+  void CollectStyleForPresentationAttribute(
+      const QualifiedName&,
+      const AtomicString&,
+      MutableCSSPropertyValueSet*) override;
+
+  enum class AllowPercentages { kYes, kNo };
+  absl::optional<Length> AddMathLengthToComputedStyle(
+      const CSSToLengthConversionData&,
+      const QualifiedName&,
+      AllowPercentages allow_percentages = AllowPercentages::kYes);
+
+  void ParseAttribute(const AttributeModificationParams&) override;
+
+  // https://w3c.github.io/mathml-core/#dfn-boolean
+  absl::optional<bool> BooleanAttribute(const QualifiedName& name) const;
 };
 
 template <typename T>

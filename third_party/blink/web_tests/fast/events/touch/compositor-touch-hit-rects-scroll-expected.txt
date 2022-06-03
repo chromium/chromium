@@ -9,12 +9,12 @@ scrollContent6: layer(273x12) has hit test rect (0,0 273x12)
 nestedContent: layer(256x72) has hit test rect (0,30 256x12)
 
 overflowwithhandler: layer(256x116) has hit test rect (0,0 256x116)
-overflowwithhandler: layer(273x52) has hit test rect (0,0 273x52)
+overflowwithhandler: layer(273x112) has hit test rect (0,10 273x52)
 
-overflowwithborder: layer(290x70) has hit test rect (0,0 290x70)
-overflowwithborder: layer(263x124) has hit test rect (4,4 255x116)
+overflowwithborder: layer(255x116) has hit test rect (0,0 255x116)
+overflowwithborder: layer(769x753) has hit test rect (5,349 290x70)
 
 withTransform: layer(271x12) has hit test rect (0,0 271x12)
-withTransform: layer(282x77) has hit test rect (0,13 273x14)
+withTransform: layer(273x77) has hit test rect (0,13 273x14)
 
 

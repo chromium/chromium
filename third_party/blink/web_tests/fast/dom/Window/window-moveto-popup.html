@@ -5,8 +5,7 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script>
 if (window.testRunner) {
-  testRunner.setCanOpenWindows();
-  testRunner.setCloseRemainingWindowsWhenComplete();
+  testRunner.setPopupBlockingEnabled(false);
   testRunner.dumpAsText();
 }
 test(function () {

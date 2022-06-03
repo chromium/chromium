@@ -5,7 +5,5 @@
 import("//build/config/ios/asset_catalog.gni")
 
 colorset("popup_menu_separator_color") {
-  sources = [
-    "popup_menu_separator_color.colorset/Contents.json",
-  ]
+  sources = [ "popup_menu_separator_color.colorset/Contents.json" ]
 }

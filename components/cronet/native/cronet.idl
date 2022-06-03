@@ -135,7 +135,7 @@ struct Error {
    * Cronet internal error code. This may provide more specific error
    * diagnosis than |error_code|, but the constant values may change over time.
    * See
-   * <a href=https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h>
+   * <a href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>
    * here</a> for the lastest list of values.
    */
   int32 internal_error_code = 0;
@@ -528,7 +528,7 @@ struct EngineParams {
    * is enabled. If QUIC is enabled, then QUIC User Agent Id
    * containing application name and Cronet version is sent to the server.
    */
-  bool enable_quic = false;
+  bool enable_quic = true;
 
   /**
    * Whether <a href="https://tools.ietf.org/html/rfc7540">HTTP/2</a>
@@ -1228,6 +1228,23 @@ struct UrlRequestParams {
    * start running in the future.
    */
   Executor? request_finished_executor;
+
+  enum IDEMPOTENCY {
+    DEFAULT_IDEMPOTENCY = 0,
+    IDEMPOTENT = 1,
+    NOT_IDEMPOTENT = 2,
+  };
+
+ /**
+   * Idempotency of the request, which determines that if it is safe to enable
+   * 0-RTT for the Cronet request. By default, 0-RTT is only enabled for safe
+   * HTTP methods, i.e., GET, HEAD, OPTIONS, and TRACE. For other methods,
+   * enabling 0-RTT may cause security issues since a network observer can
+   * replay the request. If the request has any side effects, those effects can
+   * happen multiple times. It is only safe to enable the 0-RTT if it is known
+   * that the request is idempotent.
+   */
+  IDEMPOTENCY idempotency = DEFAULT_IDEMPOTENCY;
 };
 
 /**

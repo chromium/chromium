@@ -13,6 +13,12 @@
         --test-filter=<failing test case>`
    Don't touch phone while the tests are running.
 
+If you are reproducing an issue with the AR tests, run
+`export DOWNLOAD_VR_TEST_APKS=1 && gclient runhooks` in order to get the
+playback datasets that are necessary. This requires authentication, run
+`gsutil.py config` [documentation](https://chromium.googlesource.com/chromiumos/docs/+/main/gsutil.md) 
+to set this up if necessary.
+
 **NOTE** The message "Main  Unable to find package info for org.chromium.chrome"
          is usually displayed when the test package is being installed and does
          not indicate any problem.
@@ -20,13 +26,8 @@
 ## Introduction
 
 This directory contains all the Java-side infrastructure for running
-instrumentation tests for XR (VR/Virtual Reality and AR/Augmented Reality)
-features currently in Chrome:
-
-* [WebVR](https://webvr.info/) - Experience VR content on the web
-* [WebXR](https://immersive-web.github.io/webxr-samples/explainer.html) -
-Successor to WebVR, experience VR and AR content on the web
-* VR Browser - Browse the 2D web from a VR headset
+instrumentation tests for [WebXR][webxr_spec]
+(VR/Virtual Reality and AR/Augmented Reality) features currently in Chrome.
 
 These tests are integration/end-to-end tests run in the full Chromium browser on
 actual Android devices.
@@ -39,9 +40,6 @@ testing.
 ### Subdirectories
 
 * `mock/` - Contains all the classes for mock implementations of XR classes.
-* `nfc_apk/` - Contains the code for the standalone APK for NFC simulation. Used
-by Telemetry tests, not instrumentation tests, but kept here since it uses code
-from `util/`.
 * `rules/` - Contains all the XR-specific JUnit4 rules for handling
 functionality such as running tests multiple times in different activities and
 handling the fake VR pose tracker service.
@@ -171,41 +169,27 @@ headset. The currently supported files are:
   those that require the DON flow to be enabled. This will pair the device with
   a Daydream View headset, set the DON flow to be skipped, and enable controller
   emulation.
-* `//chrome/android/shared_preference_files/test/vr_enable_vr_settings_service.json`
-  combined with the extra `--vr-settings-service-enabled` and
-  `--annotation=Restriction=VR_Settings_Service` flags will cause all tests that
-  are using the `RESTRICTION_TYPE_VR_SETTINGS_SERVICE` restriction to run. See
-  the section below for more detail on this.
+* `//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json`
+  combined with the extra `--vr-don-enabled` and
+  `--annotation=Restriction=VR_DON_Enabled` flags will cause all tests that
+  are using the `RESTRICTION_TYPE_VR_DON_ENABLED` restriction to run. This runs
+  tests that expect to have the DON flow enabled.
 
 The test runner will automatically revert any changed settings back to their
 pre-test values after the test suite has completed. If for whatever reason you
 want to manually apply settings outside of a test, you can do so with
 `//build/android/apply_shared_preference_file.py`.
 
-#### vr-settings-service-enabled
-
-`--vr-settings-service-enabled --annotation=Restriction=VR_Settings_Service`
-
-Tells the test runner to allow the running of tests that utilize the VR settings
-service to dynamically change VrCore settings during a test instead of relying
-on whatever was set by the shared preference file that was applied. This is used
-as a catch-all for less standard tests, such as those that require the DON flow
-to be enabled or that need to switch the paired viewer mid-test.
-
-This should only be used when `--shared-prefs-file` is passed
-`//chrome/android/shared_preference_files/test/vr_enable_vr_settings_service.json`
-as otherwise trying to use the service will be a NOOP.
-
 ## Adding New Tests
 
 See [adding_new_tests.md][adding_new_tests].
 
-
+[webxr_spec]: https://immersive-web.github.io/webxr-samples/explainer.html
 [shared_prefs_dir]:
-https://chromium.googlesource.com/chromium/src/+/master/chrome/android/shared_preference_files/test
-[html_dir]: https://chromium.googlesource.com/chromium/src/+/master/chrome/test/data/xr/e2e_test_files
-[vr_test_apks]: https://chromium.googlesource.com/chromium/src/+/master/third_party/gvr-android-sdk/test-apks
-[vr_test_libraries]: https://chromium.googlesource.com/chromium/src/+/master/third_party/gvr-android-sdk/test-libraries
-[ar_test_apks]: https://chromium.googlesource.com/chromium/src/+/master/third_party/arcore-android-sdk/test-apks
+https://chromium.googlesource.com/chromium/src/+/main/chrome/android/shared_preference_files/test
+[html_dir]: https://chromium.googlesource.com/chromium/src/+/main/chrome/test/data/xr/e2e_test_files
+[vr_test_apks]: https://chromium.googlesource.com/chromium/src/+/main/third_party/gvr-android-sdk/test-apks
+[vr_test_libraries]: https://chromium.googlesource.com/chromium/src/+/main/third_party/gvr-android-sdk/test-libraries
+[ar_test_apks]: https://chromium.googlesource.com/chromium/src/+/main/third_party/arcore-android-sdk/test-apks
 [adding_new_tests]:
-https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/adding_new_tests.md
+https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/adding_new_tests.md

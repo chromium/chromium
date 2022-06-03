@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -28,17 +28,21 @@ namespace {
 
 class VideoThumbnailDecoderTest : public testing::Test {
  public:
-  VideoThumbnailDecoderTest() {}
-  ~VideoThumbnailDecoderTest() override {}
+  VideoThumbnailDecoderTest() = default;
+  VideoThumbnailDecoderTest(const VideoThumbnailDecoderTest&) = delete;
+  VideoThumbnailDecoderTest& operator=(const VideoThumbnailDecoderTest&) =
+      delete;
+  ~VideoThumbnailDecoderTest() override = default;
 
  protected:
   void SetUp() override {
     auto mock_video_decoder = std::make_unique<MockVideoDecoder>();
     mock_video_decoder_ = mock_video_decoder.get();
     VideoDecoderConfig valid_config(
-        kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
-        VideoColorSpace(), kNoTransformation, gfx::Size(1, 1), gfx::Rect(1, 1),
-        gfx::Size(1, 1), EmptyExtraData(), EncryptionScheme::kUnencrypted);
+        VideoCodec::kVP8, VP8PROFILE_ANY,
+        VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+        kNoTransformation, gfx::Size(1, 1), gfx::Rect(1, 1), gfx::Size(1, 1),
+        EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
     thumbnail_decoder_ = std::make_unique<VideoThumbnailDecoder>(
         std::move(mock_video_decoder), valid_config, std::vector<uint8_t>{0u});
@@ -76,8 +80,6 @@ class VideoThumbnailDecoderTest : public testing::Test {
 
   // The video frame returned from the thumbnail decoder.
   scoped_refptr<VideoFrame> frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoThumbnailDecoderTest);
 };
 
 // Verifies a video frame can be delivered when decoder successfully created
@@ -85,8 +87,8 @@ class VideoThumbnailDecoderTest : public testing::Test {
 TEST_F(VideoThumbnailDecoderTest, Success) {
   auto expected_frame = CreateFrame();
   EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
-      .WillOnce(
-          DoAll(RunOnceCallback<3>(true), RunCallback<4>(expected_frame)));
+      .WillOnce(DoAll(RunOnceCallback<3>(OkStatus()),
+                      RunCallback<4>(expected_frame)));
   EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
       .Times(2)
       .WillRepeatedly(RunOnceCallback<1>(DecodeStatus::OK));
@@ -99,7 +101,7 @@ TEST_F(VideoThumbnailDecoderTest, Success) {
 TEST_F(VideoThumbnailDecoderTest, InitializationFailed) {
   auto expected_frame = CreateFrame();
   EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<3>(false));
+      .WillOnce(RunOnceCallback<3>(StatusCode::kCodeOnlyForTesting));
 
   Start();
   EXPECT_FALSE(frame());
@@ -109,7 +111,7 @@ TEST_F(VideoThumbnailDecoderTest, InitializationFailed) {
 TEST_F(VideoThumbnailDecoderTest, DecodingFailed) {
   auto expected_frame = CreateFrame();
   EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<3>(true));
+      .WillOnce(RunOnceCallback<3>(OkStatus()));
   EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
       .WillOnce(RunOnceCallback<1>(DecodeStatus::DECODE_ERROR));
 

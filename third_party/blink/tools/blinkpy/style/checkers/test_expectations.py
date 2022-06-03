@@ -25,14 +25,13 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Checks WebKit style for test_expectations files."""
 
 import logging
 
 from blinkpy.style.checkers.common import TabChecker
 from blinkpy.common.host import Host
-from blinkpy.web_tests.models.test_expectations import TestExpectationParser
+from blinkpy.web_tests.models.typ_types import TestExpectations
 
 
 class TestExpectationsChecker(object):
@@ -51,17 +50,15 @@ class TestExpectationsChecker(object):
         self._port_obj = host.port_factory.get()
 
         # Suppress error messages of test_expectations module since they will be reported later.
-        log = logging.getLogger('blinkpy.web_tests.layout_package.test_expectations')
+        log = logging.getLogger(
+            'blinkpy.web_tests.layout_package.test_expectations')
         log.setLevel(logging.CRITICAL)
 
     def check_test_expectations(self, expectations_str, tests=None):
-        parser = TestExpectationParser(self._port_obj, tests, is_lint_mode=True)
-        expectations = parser.parse('expectations', expectations_str)
-
-        level = 5
-        for expectation_line in expectations:
-            for warning in expectation_line.warnings:
-                self._handle_style_error(expectation_line.line_numbers, 'test/expectations', level, warning)
+        expectations = TestExpectations()
+        ret, errors = expectations.parse_tagged_list(expectations_str)
+        if ret:
+            self._handle_style_error(message=errors)
 
     def check_tabs(self, lines):
         self._tab_checker.check(lines)
@@ -69,7 +66,8 @@ class TestExpectationsChecker(object):
     def check(self, lines):
         expectations = '\n'.join(lines)
         if self._port_obj:
-            self.check_test_expectations(expectations_str=expectations, tests=None)
+            self.check_test_expectations(
+                expectations_str=expectations, tests=None)
 
         # Warn tabs in lines as well
         self.check_tabs(lines)

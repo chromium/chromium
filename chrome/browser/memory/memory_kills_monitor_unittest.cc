@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/memory/memory_kills_histogram.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,11 +17,12 @@ namespace memory {
 namespace {
 
 base::HistogramBase* GetLowMemoryKillsCountHistogram() {
-  return base::StatisticsRecorder::FindHistogram("Arc.LowMemoryKiller.Count");
+  return base::StatisticsRecorder::FindHistogram(
+      "Memory.LowMemoryKiller.Count");
 }
 
 base::HistogramBase* GetOOMKillsCountHistogram() {
-  return base::StatisticsRecorder::FindHistogram("Arc.OOMKills.Count");
+  return base::StatisticsRecorder::FindHistogram("Memory.OOMKills.Count");
 }
 
 }  // namespace.
@@ -84,7 +84,7 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
 
   {
     auto* histogram_freed_size = base::StatisticsRecorder::FindHistogram(
-        "Arc.LowMemoryKiller.FreedSize");
+        "Memory.LowMemoryKiller.FreedSize");
     ASSERT_TRUE(histogram_freed_size);
     auto freed_size_samples = histogram_freed_size->SnapshotSamples();
     EXPECT_EQ(3, freed_size_samples->TotalCount());
@@ -96,7 +96,7 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
 
   {
     auto* histogram_time_delta = base::StatisticsRecorder::FindHistogram(
-        "Arc.LowMemoryKiller.TimeDelta");
+        "Memory.LowMemoryKiller.TimeDelta");
     ASSERT_TRUE(histogram_time_delta);
     auto time_delta_samples = histogram_time_delta->SnapshotSamples();
     EXPECT_EQ(3, time_delta_samples->TotalCount());
@@ -108,18 +108,9 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
   }
 
   // OOM kills.
-  const char* sample_lines[] = {
-      "3,3429,812967386,-;Out of memory: Kill process 8291 (handle-watcher-) "
-      "score 674 or sacrifice child",
-      "3,3431,812981331,-;Out of memory: Kill process 8271 (.gms.persistent) "
-      "score 652 or sacrifice child",
-      "3,3433,812993014,-;Out of memory: Kill process 9210 (lowpool[11]) "
-      "score 653 or sacrifice child"
-  };
-
-  for (unsigned long i = 0; i < base::size(sample_lines); ++i) {
-    MemoryKillsMonitor::TryMatchOomKillLine(sample_lines[i]);
-  }
+  // Simulate getting 3 more oom kills.
+  g_memory_kills_monitor_unittest_instance->CheckOOMKillImpl(
+      g_memory_kills_monitor_unittest_instance->last_oom_kills_count_ + 3);
 
   oom_count_histogram = GetOOMKillsCountHistogram();
   ASSERT_TRUE(oom_count_histogram);
@@ -132,38 +123,6 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
     EXPECT_EQ(1, count_samples->GetCount(2));
     EXPECT_EQ(1, count_samples->GetCount(3));
   }
-
-  {
-    auto* histogram_score =
-        base::StatisticsRecorder::FindHistogram("Arc.OOMKills.Score");
-    ASSERT_TRUE(histogram_score);
-    auto score_samples = histogram_score->SnapshotSamples();
-    EXPECT_EQ(3, score_samples->TotalCount());
-    EXPECT_EQ(1, score_samples->GetCount(674));
-    EXPECT_EQ(1, score_samples->GetCount(652));
-    EXPECT_EQ(1, score_samples->GetCount(653));
-  }
-
-  {
-    auto* histogram_time_delta =
-        base::StatisticsRecorder::FindHistogram("Arc.OOMKills.TimeDelta");
-    ASSERT_TRUE(histogram_time_delta);
-    auto time_delta_samples = histogram_time_delta->SnapshotSamples();
-    EXPECT_EQ(3, time_delta_samples->TotalCount());
-    // First time delta is set to kMaxMemoryKillTimeDelta.
-    EXPECT_EQ(1, time_delta_samples->GetCount(
-                     kMaxMemoryKillTimeDelta.InMilliseconds()));
-    EXPECT_EQ(1, time_delta_samples->GetCount(11));
-    EXPECT_EQ(1, time_delta_samples->GetCount(13));
-  }
-
-  // Call StartMonitoring multiple times.
-  base::PlatformThreadId tid1 = g_memory_kills_monitor_unittest_instance
-                                    ->non_joinable_worker_thread_->tid();
-  g_memory_kills_monitor_unittest_instance->StartMonitoring();
-  base::PlatformThreadId tid2 = g_memory_kills_monitor_unittest_instance
-                                    ->non_joinable_worker_thread_->tid();
-  EXPECT_EQ(tid1, tid2);
 
   lmk_count_histogram = GetLowMemoryKillsCountHistogram();
   ASSERT_TRUE(lmk_count_histogram);

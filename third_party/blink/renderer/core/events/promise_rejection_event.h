@@ -9,12 +9,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/promise_rejection_event_init.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 
 namespace blink {
+
+class PromiseRejectionEventInit;
 
 class CORE_EXPORT PromiseRejectionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -31,6 +32,7 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
   PromiseRejectionEvent(ScriptState*,
                         const AtomicString&,
                         const PromiseRejectionEventInit*);
+  ~PromiseRejectionEvent() override;
 
   ScriptValue reason(ScriptState*) const;
   ScriptPromise promise(ScriptState*) const;
@@ -41,11 +43,9 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
   // observed across different worlds.
   bool CanBeDispatchedInWorld(const DOMWrapperWorld&) const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  ~PromiseRejectionEvent() override;
-
   scoped_refptr<DOMWrapperWorld> world_;
   TraceWrapperV8Reference<v8::Value> promise_;
   TraceWrapperV8Reference<v8::Value> reason_;

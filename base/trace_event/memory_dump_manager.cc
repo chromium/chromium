@@ -16,19 +16,20 @@
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
+#include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
-#include "base/trace_event/heap_profiler_event_filter.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_scheduler.h"
-#include "base/trace_event/memory_infra_background_whitelist.h"
+#include "base/trace_event/memory_infra_background_allowlist.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -98,10 +99,7 @@ MemoryDumpManager::CreateInstanceForTesting() {
   return instance;
 }
 
-MemoryDumpManager::MemoryDumpManager()
-    : is_coordinator_(false),
-      tracing_process_id_(kInvalidTracingProcessId),
-      dumper_registrations_ignored_for_testing_(false) {}
+MemoryDumpManager::MemoryDumpManager() = default;
 
 MemoryDumpManager::~MemoryDumpManager() {
   Thread* dump_thread = nullptr;
@@ -180,14 +178,13 @@ void MemoryDumpManager::RegisterDumpProviderInternal(
     return;
 
   // Only a handful of MDPs are required to compute the memory metrics. These
-  // have small enough performance overhead that it is resonable to run them
+  // have small enough performance overhead that it is reasonable to run them
   // in the background while the user is doing other things. Those MDPs are
-  // 'whitelisted for background mode'.
-  bool whitelisted_for_background_mode = IsMemoryDumpProviderWhitelisted(name);
+  // 'allowed in background mode'.
+  bool allowed_in_background_mode = IsMemoryDumpProviderInAllowlist(name);
 
-  scoped_refptr<MemoryDumpProviderInfo> mdpinfo =
-      new MemoryDumpProviderInfo(mdp, name, std::move(task_runner), options,
-                                 whitelisted_for_background_mode);
+  scoped_refptr<MemoryDumpProviderInfo> mdpinfo = new MemoryDumpProviderInfo(
+      mdp, name, std::move(task_runner), options, allowed_in_background_mode);
 
   {
     AutoLock lock(lock_);
@@ -269,10 +266,14 @@ bool MemoryDumpManager::IsDumpProviderRegisteredForTesting(
   return false;
 }
 
+scoped_refptr<SequencedTaskRunner>
+MemoryDumpManager::GetDumpThreadTaskRunner() {
+  base::AutoLock lock(lock_);
+  return GetOrCreateBgTaskRunnerLocked();
+}
+
 scoped_refptr<base::SequencedTaskRunner>
 MemoryDumpManager::GetOrCreateBgTaskRunnerLocked() {
-  lock_.AssertAcquired();
-
   if (dump_thread_)
     return dump_thread_->task_runner();
 
@@ -286,7 +287,7 @@ MemoryDumpManager::GetOrCreateBgTaskRunnerLocked() {
 void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
                                           ProcessMemoryDumpCallback callback) {
   char guid_str[20];
-  sprintf(guid_str, "0x%" PRIx64, args.dump_guid);
+  snprintf(guid_str, base::size(guid_str), "0x%" PRIx64, args.dump_guid);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTraceCategory, "ProcessMemoryDump",
                                     TRACE_ID_LOCAL(args.dump_guid), "dump_guid",
                                     TRACE_STR_COPY(guid_str));
@@ -305,9 +306,9 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
   {
     AutoLock lock(lock_);
 
-    pmd_async_state.reset(new ProcessMemoryDumpAsyncState(
+    pmd_async_state = std::make_unique<ProcessMemoryDumpAsyncState>(
         args, dump_providers_, std::move(callback),
-        GetOrCreateBgTaskRunnerLocked()));
+        GetOrCreateBgTaskRunnerLocked());
   }
 
   // Start the process dump. This involves task runner hops as specified by the
@@ -348,7 +349,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
     // providers. Ignore other providers and continue.
     if (pmd_async_state->req_args.level_of_detail ==
             MemoryDumpLevelOfDetail::BACKGROUND &&
-        !mdpinfo->whitelisted_for_background_mode) {
+        !mdpinfo->allowed_in_background_mode) {
       pmd_async_state->pending_dump_providers.pop_back();
       continue;
     }

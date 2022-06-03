@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/dev_mode_bubble_delegate.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

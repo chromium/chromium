@@ -70,7 +70,7 @@ void PaymentRequestUpdateEvent::updateWith(ScriptState* script_state,
                    UpdatePaymentDetailsFunction::ResolveType::kReject));
 }
 
-void PaymentRequestUpdateEvent::Trace(blink::Visitor* visitor) {
+void PaymentRequestUpdateEvent::Trace(Visitor* visitor) const {
   visitor->Trace(request_);
   Event::Trace(visitor);
 }

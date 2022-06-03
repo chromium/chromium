@@ -17,7 +17,6 @@ class PointF;
 class Point3F;
 class Rect;
 class RectF;
-class ScrollOffset;
 class Size;
 class SizeF;
 class Vector2d;
@@ -109,16 +108,6 @@ struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::Rect> {
 template <>
 struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::RectF> {
   typedef gfx::RectF param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct GFX_IPC_GEOMETRY_EXPORT ParamTraits<gfx::ScrollOffset> {
-  typedef gfx::ScrollOffset param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

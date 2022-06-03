@@ -6,27 +6,26 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process_metrics.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
-#include "base/trace_event/memory_infra_background_whitelist.h"
+#include "base/trace_event/memory_infra_background_allowlist.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
 #include "winbase.h"
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <sys/mman.h>
-#endif
-
-#if defined(OS_IOS)
-#include "base/ios/ios_util.h"
 #endif
 
 namespace base {
@@ -146,7 +145,7 @@ TEST(ProcessMemoryDumpTest, Clear) {
   ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
   ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad2->flags());
 
-  traced_value.reset(new TracedValue);
+  traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd1.reset();
@@ -210,7 +209,7 @@ TEST(ProcessMemoryDumpTest, TakeAllDumpsFrom) {
   ASSERT_TRUE(MemoryAllocatorDump::Flags::WEAK & shared_mad2->flags());
 
   // Check that calling serialization routines doesn't cause a crash.
-  traced_value.reset(new TracedValue);
+  traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd1.reset();
@@ -384,8 +383,8 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
   std::unique_ptr<ProcessMemoryDump> pmd(
       new ProcessMemoryDump(background_args));
   ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = true;
-  SetAllocatorDumpNameWhitelistForTesting(kTestDumpNameWhitelist);
-  MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad();
+  SetAllocatorDumpNameAllowlistForTesting(kTestDumpNameWhitelist);
+  MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad(std::string());
 
   // GetAllocatorDump works for uncreated dumps.
   EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotWhitelisted/TestName"));
@@ -428,19 +427,19 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
   EXPECT_NE(black_hole_mad, pmd->GetAllocatorDump("Whitelisted/TestName"));
 
   // Test whitelisted entries.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameWhitelisted("Whitelisted/TestName"));
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Whitelisted/TestName"));
 
   // Global dumps should be whitelisted.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameWhitelisted("global/13456"));
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("global/13456"));
 
   // Global dumps with non-guids should not be.
-  ASSERT_FALSE(IsMemoryAllocatorDumpNameWhitelisted("global/random"));
+  ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("global/random"));
 
   // Random names should not.
-  ASSERT_FALSE(IsMemoryAllocatorDumpNameWhitelisted("NotWhitelisted/TestName"));
+  ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("NotWhitelisted/TestName"));
 
   // Check hex processing.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameWhitelisted("Whitelisted/0xA1b2"));
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Whitelisted/0xA1b2"));
 }
 
 TEST(ProcessMemoryDumpTest, GuidsTest) {
@@ -490,17 +489,20 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
   const size_t size1 = 5 * page_size;
   void* memory1 = Map(size1);
   memset(memory1, 0, size1);
-  size_t res1 = ProcessMemoryDump::CountResidentBytes(memory1, size1);
-  ASSERT_EQ(res1, size1);
+  absl::optional<size_t> res1 =
+      ProcessMemoryDump::CountResidentBytes(memory1, size1);
+  ASSERT_TRUE(res1.has_value());
+  ASSERT_EQ(res1.value(), size1);
   Unmap(memory1, size1);
 
   // Allocate a large memory segment (> 8Mib).
   const size_t kVeryLargeMemorySize = 15 * 1024 * 1024;
   void* memory2 = Map(kVeryLargeMemorySize);
   memset(memory2, 0, kVeryLargeMemorySize);
-  size_t res2 =
+  absl::optional<size_t> res2 =
       ProcessMemoryDump::CountResidentBytes(memory2, kVeryLargeMemorySize);
-  ASSERT_EQ(res2, kVeryLargeMemorySize);
+  ASSERT_TRUE(res2.has_value());
+  ASSERT_EQ(res2.value(), kVeryLargeMemorySize);
   Unmap(memory2, kVeryLargeMemorySize);
 }
 
@@ -512,13 +514,6 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
 #define MAYBE_CountResidentBytesInSharedMemory CountResidentBytesInSharedMemory
 #endif
 TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
-#if defined(OS_IOS)
-  // TODO(crbug.com/748410): Reenable this test.
-  if (!base::ios::IsRunningOnIOS10OrLater()) {
-    return;
-  }
-#endif
-
   const size_t page_size = ProcessMemoryDump::GetSystemPageSize();
 
   // Allocate few page of dirty memory and check if it is resident.
@@ -527,7 +522,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region = base::WritableSharedMemoryRegion::Create(kDirtyMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kDirtyMemorySize);
-    base::Optional<size_t> res1 =
+    absl::optional<size_t> res1 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res1.has_value());
@@ -541,7 +536,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
         base::WritableSharedMemoryRegion::Create(kVeryLargeMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kVeryLargeMemorySize);
-    base::Optional<size_t> res2 =
+    absl::optional<size_t> res2 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res2.has_value());
@@ -554,7 +549,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region = base::WritableSharedMemoryRegion::Create(kTouchedMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kTouchedMemorySize);
-    base::Optional<size_t> res3 =
+    absl::optional<size_t> res3 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res3.has_value());

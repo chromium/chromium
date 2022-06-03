@@ -25,8 +25,10 @@
 
 #include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
@@ -37,8 +39,7 @@ struct SameSizeAsCompactHTMLToken {
   TextPosition text_position;
 };
 
-static_assert(sizeof(CompactHTMLToken) == sizeof(SameSizeAsCompactHTMLToken),
-              "CompactHTMLToken should stay small");
+ASSERT_SIZE(CompactHTMLToken, SameSizeAsCompactHTMLToken);
 
 CompactHTMLToken::CompactHTMLToken(const HTMLToken* token,
                                    const TextPosition& text_position)

@@ -7,8 +7,8 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace web_app {
@@ -29,7 +29,7 @@ WebAppMetricsFactory::WebAppMetricsFactory()
     : BrowserContextKeyedServiceFactory(
           "WebAppMetrics",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   DependsOn(WebAppProviderFactory::GetInstance());
 }
 
@@ -41,13 +41,13 @@ KeyedService* WebAppMetricsFactory::BuildServiceInstanceFor(
   return new WebAppMetrics(profile);
 }
 
-bool WebAppMetricsFactory::ServiceIsCreatedWithBrowserContext() const {
-  return false;
-}
-
 content::BrowserContext* WebAppMetricsFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return GetBrowserContextForWebAppMetrics(context);
+}
+
+bool WebAppMetricsFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
 }
 
 }  //  namespace web_app

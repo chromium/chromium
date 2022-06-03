@@ -1,5 +1,4 @@
 specific_include_rules = {
-  # TODO(mash): Fix. https://crbug.com/856375.
   "core_oobe_handler\.cc": [
     "+ash/shell.h",
   ],
@@ -8,8 +7,6 @@ specific_include_rules = {
     "+ash/shell.h",
   ],
   "oobe_display_chooser_unittest.cc": [
-    # TODO(mash) Use a non-ash test ui::InputDeviceEventObserver
-    # environment for testing this.
     "+ash/display/display_configuration_controller.h",
     "+ash/shell.h",
     "+ash/test/ash_test_base.h",

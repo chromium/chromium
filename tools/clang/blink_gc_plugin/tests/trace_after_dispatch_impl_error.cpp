@@ -6,7 +6,7 @@
 
 namespace blink {
 
-inline void TraceAfterDispatchInlinedBase::Trace(Visitor* visitor) {
+inline void TraceAfterDispatchInlinedBase::Trace(Visitor* visitor) const {
   // Implement a simple form of manual dispatching, because BlinkGCPlugin
   // checks if the tracing is dispatched to all derived classes.
   //
@@ -21,7 +21,7 @@ inline void TraceAfterDispatchInlinedBase::Trace(Visitor* visitor) {
   }
 }
 
-void TraceAfterDispatchExternBase::Trace(Visitor* visitor) {
+void TraceAfterDispatchExternBase::Trace(Visitor* visitor) const {
   if (tag_ == DERIVED) {
     // Missing dispatch call:
     // static_cast<TraceAfterDispatchExternDerived*>(this)->TraceAfterDispatch(
@@ -31,12 +31,12 @@ void TraceAfterDispatchExternBase::Trace(Visitor* visitor) {
   }
 }
 
-void TraceAfterDispatchExternBase::TraceAfterDispatch(Visitor* visitor) {
+void TraceAfterDispatchExternBase::TraceAfterDispatch(Visitor* visitor) const {
   // No Trace call.
 }
 
-void TraceAfterDispatchExternDerived::TraceAfterDispatch(Visitor* visitor) {
+void TraceAfterDispatchExternDerived::TraceAfterDispatch(
+    Visitor* visitor) const {
   // Ditto.
 }
-
 }

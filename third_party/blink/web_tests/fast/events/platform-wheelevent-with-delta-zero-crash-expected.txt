@@ -1,3 +1,0 @@
-Ensures that a mouse scrolling with (deltaX=0, deltaY=0) doesn't crash the browser.
-
-Passes if doesn't crash.

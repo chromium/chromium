@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "media/base/video_frame.h"
 
 namespace media {
@@ -16,16 +17,15 @@ namespace cast {
 SizeAdaptableVideoEncoderBase::SizeAdaptableVideoEncoderBase(
     const scoped_refptr<CastEnvironment>& cast_environment,
     const FrameSenderConfig& video_config,
-    const StatusChangeCallback& status_change_cb)
+    StatusChangeCallback status_change_cb)
     : cast_environment_(cast_environment),
       video_config_(video_config),
-      status_change_cb_(status_change_cb),
+      status_change_cb_(std::move(status_change_cb)),
       frames_in_encoder_(0),
       next_frame_id_(FrameId::first()) {
   cast_environment_->PostTask(
-      CastEnvironment::MAIN,
-      FROM_HERE,
-      base::Bind(status_change_cb_, STATUS_INITIALIZED));
+      CastEnvironment::MAIN, FROM_HERE,
+      base::BindOnce(status_change_cb_, STATUS_INITIALIZED));
 }
 
 SizeAdaptableVideoEncoderBase::~SizeAdaptableVideoEncoderBase() {
@@ -34,8 +34,8 @@ SizeAdaptableVideoEncoderBase::~SizeAdaptableVideoEncoderBase() {
 
 bool SizeAdaptableVideoEncoderBase::EncodeVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
-    const base::TimeTicks& reference_time,
-    const FrameEncodedCallback& frame_encoded_callback) {
+    base::TimeTicks reference_time,
+    FrameEncodedCallback frame_encoded_callback) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
   const gfx::Size frame_size = video_frame->visible_rect().size();
@@ -56,24 +56,28 @@ bool SizeAdaptableVideoEncoderBase::EncodeVideoFrame(
 
   const bool is_frame_accepted = encoder_->EncodeVideoFrame(
       std::move(video_frame), reference_time,
-      base::Bind(&SizeAdaptableVideoEncoderBase::OnEncodedVideoFrame,
-                 weak_factory_.GetWeakPtr(), frame_encoded_callback));
-  if (is_frame_accepted)
+      base::BindOnce(&SizeAdaptableVideoEncoderBase::OnEncodedVideoFrame,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(frame_encoded_callback)));
+  if (is_frame_accepted) {
     ++frames_in_encoder_;
+  }
   return is_frame_accepted;
 }
 
 void SizeAdaptableVideoEncoderBase::SetBitRate(int new_bit_rate) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   video_config_.start_bitrate = new_bit_rate;
-  if (encoder_)
+  if (encoder_) {
     encoder_->SetBitRate(new_bit_rate);
+  }
 }
 
 void SizeAdaptableVideoEncoderBase::GenerateKeyFrame() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  if (encoder_)
+  if (encoder_) {
     encoder_->GenerateKeyFrame();
+  }
 }
 
 std::unique_ptr<VideoFrameFactory>
@@ -84,15 +88,17 @@ SizeAdaptableVideoEncoderBase::CreateVideoFrameFactory() {
 
 void SizeAdaptableVideoEncoderBase::EmitFrames() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  if (encoder_)
+  if (encoder_) {
     encoder_->EmitFrames();
+  }
 }
 
 StatusChangeCallback
     SizeAdaptableVideoEncoderBase::CreateEncoderStatusChangeCallback() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  return base::Bind(&SizeAdaptableVideoEncoderBase::OnEncoderStatusChange,
-                    weak_factory_.GetWeakPtr());
+  return base::BindRepeating(
+      &SizeAdaptableVideoEncoderBase::OnEncoderStatusChange,
+      weak_factory_.GetWeakPtr());
 }
 
 void SizeAdaptableVideoEncoderBase::OnEncoderReplaced(
@@ -117,12 +123,14 @@ void SizeAdaptableVideoEncoderBase::TrySpawningReplacementEncoder(
     encoder_->EmitFrames();
     // Check again, since EmitFrames() is a synchronous operation for some
     // encoders.
-    if (frames_in_encoder_ > 0)
+    if (frames_in_encoder_ > 0) {
       return;
+    }
   }
 
-  if (frames_in_encoder_ == kEncoderIsInitializing)
+  if (frames_in_encoder_ == kEncoderIsInitializing) {
     return;  // Already spawned.
+  }
 
   DestroyEncoder();
   frames_in_encoder_ = kEncoderIsInitializing;
@@ -148,15 +156,16 @@ void SizeAdaptableVideoEncoderBase::OnEncoderStatusChange(
 }
 
 void SizeAdaptableVideoEncoderBase::OnEncodedVideoFrame(
-    const FrameEncodedCallback& frame_encoded_callback,
+    FrameEncodedCallback frame_encoded_callback,
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   --frames_in_encoder_;
   DCHECK_GE(frames_in_encoder_, 0);
 
-  if (encoded_frame)
+  if (encoded_frame) {
     next_frame_id_ = encoded_frame->frame_id + 1;
-  frame_encoded_callback.Run(std::move(encoded_frame));
+  }
+  std::move(frame_encoded_callback).Run(std::move(encoded_frame));
 }
 
 }  // namespace cast

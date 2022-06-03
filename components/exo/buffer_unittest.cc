@@ -14,12 +14,12 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/viz/common/gpu/context_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/in_process_context_provider.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace exo {
@@ -28,6 +28,11 @@ namespace {
 using BufferTest = test::ExoTestBase;
 
 void Release(int* release_call_count) {
+  (*release_call_count)++;
+}
+
+void ExplicitRelease(int* release_call_count,
+                     gfx::GpuFenceHandle release_fence) {
   (*release_call_count)++;
 }
 
@@ -58,25 +63,30 @@ TEST_F(BufferTest, ReleaseCallback) {
   // Set the release callback.
   int release_call_count = 0;
   buffer->set_release_callback(
-      base::Bind(&Release, base::Unretained(&release_call_count)));
+      base::BindRepeating(&Release, base::Unretained(&release_call_count)));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
   // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::BindOnce(&ExplicitRelease,
+                     base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
 
   // Release buffer.
-  viz::ReturnedResource returned_resource;
-  returned_resource.id = resource.id;
-  returned_resource.sync_token = resource.mailbox_holder.sync_token;
-  returned_resource.lost = false;
-  std::vector<viz::ReturnedResource> resources = {returned_resource};
-  frame_sink_holder->ReclaimResources(resources);
+  std::vector<viz::ReturnedResource> resources;
+  resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+                         /*release_fence=*/gfx::GpuFenceHandle(),
+                         /*count=*/0, /*lost=*/false);
+  frame_sink_holder->ReclaimResources(std::move(resources));
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 0);
+
+  // The resource should have been released even if the whole buffer hasn't.
+  ASSERT_EQ(release_resource_count, 1);
 
   buffer->OnDetach();
 
@@ -96,7 +106,8 @@ TEST_F(BufferTest, IsLost) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::DoNothing());
   ASSERT_TRUE(rv);
 
   scoped_refptr<viz::RasterContextProvider> context_provider =
@@ -110,29 +121,27 @@ TEST_F(BufferTest, IsLost) {
   }
 
   // Release buffer.
-  bool is_lost = true;
-  viz::ReturnedResource returned_resource;
-  returned_resource.id = resource.id;
-  returned_resource.sync_token = gpu::SyncToken();
-  returned_resource.lost = is_lost;
-  std::vector<viz::ReturnedResource> resources = {returned_resource};
-  frame_sink_holder->ReclaimResources(resources);
+  std::vector<viz::ReturnedResource> resources;
+  resources.emplace_back(resource.id, gpu::SyncToken(),
+                         /*release_fence=*/gfx::GpuFenceHandle(),
+                         /*count=*/0, /*lost=*/true);
+  frame_sink_holder->ReclaimResources(std::move(resources));
   base::RunLoop().RunUntilIdle();
 
   // Producing a new texture transferable resource for the contents of the
   // buffer.
   viz::TransferableResource new_resource;
   rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &new_resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &new_resource,
+      base::DoNothing());
   ASSERT_TRUE(rv);
   buffer->OnDetach();
 
-  viz::ReturnedResource returned_resource2;
-  returned_resource2.id = new_resource.id;
-  returned_resource2.sync_token = gpu::SyncToken();
-  returned_resource2.lost = false;
-  std::vector<viz::ReturnedResource> resources2 = {returned_resource2};
-  frame_sink_holder->ReclaimResources(resources2);
+  std::vector<viz::ReturnedResource> resources2;
+  resources2.emplace_back(new_resource.id, gpu::SyncToken(),
+                          /*release_fence=*/gfx::GpuFenceHandle(),
+                          /*count=*/0, /*lost=*/false);
+  frame_sink_holder->ReclaimResources(std::move(resources2));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -151,7 +160,8 @@ TEST_F(BufferTest, OnLostResources) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::DoNothing());
   ASSERT_TRUE(rv);
 
   viz::RasterContextProvider* context_provider =
@@ -178,13 +188,16 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
   // Set the release callback.
   int release_call_count = 0;
   buffer->set_release_callback(
-      base::Bind(&Release, base::Unretained(&release_call_count)));
+      base::BindRepeating(&Release, base::Unretained(&release_call_count)));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
   // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::BindOnce(&ExplicitRelease,
+                     base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
@@ -197,10 +210,9 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
     frame.metadata.begin_frame_ack.has_damage = true;
     frame.metadata.frame_token = 1;
     frame.metadata.device_scale_factor = 1;
-    frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(1, gfx::Rect(buffer_size), gfx::Rect(buffer_size),
-                 gfx::Transform());
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
+                 gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame.resource_list.push_back(resource);
     VerifySyncTokensInCompositorFrame(&frame);
@@ -210,10 +222,12 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
   buffer->OnDetach();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 0);
+  ASSERT_EQ(release_resource_count, 0);
 
   surface_tree_host.reset();
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
 }
 
 TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
@@ -231,13 +245,16 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
   // Set the release callback.
   int release_call_count = 0;
   buffer->set_release_callback(
-      base::Bind(&Release, base::Unretained(&release_call_count)));
+      base::BindRepeating(&Release, base::Unretained(&release_call_count)));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
   // Produce a transferable resource for the contents of the buffer.
+  int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource);
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      base::BindOnce(&ExplicitRelease,
+                     base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
 
   // Submit frame with resource.
@@ -249,10 +266,9 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     frame.metadata.begin_frame_ack.has_damage = true;
     frame.metadata.frame_token = 1;
     frame.metadata.device_scale_factor = 1;
-    frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(1, gfx::Rect(buffer_size), gfx::Rect(buffer_size),
-                 gfx::Transform());
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
+                 gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame.resource_list.push_back(resource);
     VerifySyncTokensInCompositorFrame(&frame);
@@ -260,13 +276,11 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
 
     // Try to release buffer in last frame. This can happen during a resize
     // when frame sink id changes.
-    viz::ReturnedResource returned_resource;
-    returned_resource.id = resource.id;
-    returned_resource.sync_token = resource.mailbox_holder.sync_token;
-    returned_resource.lost = false;
-
-    std::vector<viz::ReturnedResource> resources = {returned_resource};
-    frame_sink_holder->ReclaimResources(resources);
+    std::vector<viz::ReturnedResource> resources;
+    resources.emplace_back(resource.id, resource.mailbox_holder.sync_token,
+                           /*release_fence=*/gfx::GpuFenceHandle(),
+                           /*count=*/0, /*lost=*/false);
+    frame_sink_holder->ReclaimResources(std::move(resources));
   }
 
   base::RunLoop().RunUntilIdle();
@@ -274,6 +288,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
 
   // Release() should not have been called as resource is used by last frame.
   ASSERT_EQ(release_call_count, 0);
+  ASSERT_EQ(release_resource_count, 0);
 
   // Submit frame without resource. This should cause buffer to be released.
   {
@@ -284,10 +299,9 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     frame.metadata.begin_frame_ack.has_damage = true;
     frame.metadata.frame_token = 1;
     frame.metadata.device_scale_factor = 1;
-    frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(1, gfx::Rect(buffer_size), gfx::Rect(buffer_size),
-                 gfx::Transform());
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
+                 gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame_sink_holder->SubmitCompositorFrame(std::move(frame));
   }
@@ -295,6 +309,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
   base::RunLoop().RunUntilIdle();
   // Release() should have been called exactly once.
   ASSERT_EQ(release_call_count, 1);
+  ASSERT_EQ(release_resource_count, 1);
 }
 
 }  // namespace

@@ -10,15 +10,15 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_codec_loop.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/callback_registry.h"
+#include "media/base/cdm_context.h"
 #include "media/base/media_export.h"
 
 // MediaCodecAudioDecoder is based on Android's MediaCodec API.
@@ -80,17 +80,20 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
  public:
   explicit MediaCodecAudioDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  MediaCodecAudioDecoder(const MediaCodecAudioDecoder&) = delete;
+  MediaCodecAudioDecoder& operator=(const MediaCodecAudioDecoder&) = delete;
+
   ~MediaCodecAudioDecoder() override;
 
   // AudioDecoder implementation.
-  std::string GetDisplayName() const override;
+  AudioDecoderType GetDecoderType() const override;
   void Initialize(const AudioDecoderConfig& config,
                   CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure closure) override;
   bool NeedsBitstreamConversion() const override;
 
@@ -126,15 +129,15 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
 
   // A helper method to start CDM initialization.  This must be called if and
   // only if we were constructed with |is_encrypted| set to true.
-  void SetCdm(InitCB init_cb);
+  void SetCdm(CdmContext* cdm_context, InitCB init_cb);
 
   // This callback is called after CDM obtained a MediaCrypto object.
   void OnMediaCryptoReady(InitCB init_cb,
                           JavaObjectPtr media_crypto,
                           bool requires_secure_video_codec);
 
-  // Callback called when a new key is available.
-  void OnKeyAdded();
+  // Callback for the CDM to notify |this|.
+  void OnCdmContextEvent(CdmContext::Event event);
 
   // Calls DecodeCB with |decode_status| for every frame in |input_queue| and
   // then clears it.
@@ -199,9 +202,8 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   // Owned by CDM which is external to this decoder.
   MediaCryptoContext* media_crypto_context_;
 
-  // MediaDrmBridge requires registration/unregistration of the player, this
-  // registration id is used for this.
-  int cdm_registration_id_;
+  // To keep the CdmContext event callback registered.
+  std::unique_ptr<CallbackRegistration> event_cb_registration_;
 
   // Pool which helps avoid thrashing memory when returning audio buffers.
   scoped_refptr<AudioBufferMemoryPool> pool_;
@@ -211,8 +213,6 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   JavaObjectPtr media_crypto_;
 
   base::WeakPtrFactory<MediaCodecAudioDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecAudioDecoder);
 };
 
 }  // namespace media

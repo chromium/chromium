@@ -1,0 +1,15 @@
+This tests that the specified height is honored (*) for <input> and <button> elements.
+(*) The Mac ports ignore the specified height for <input type="button"> elements unless a border and/or background CSS property is also specified (see the fifth button below). Disregarding padding, they render the button with a height equal to the height of the font used for the button label.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS document.getElementById('button1').offsetHeight is document.getElementById('button2').offsetHeight
+PASS document.getElementById('button3').offsetHeight is 40
+PASS document.getElementById('button4').offsetHeight is 40
+FAIL document.getElementById('button5').offsetHeight is incorrect for this platform. Should be the same height as button 1 for the Mac ports and 40 otherwise.
+
+TEST COMPLETE

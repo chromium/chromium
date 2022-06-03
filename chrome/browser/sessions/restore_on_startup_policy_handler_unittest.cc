@@ -29,8 +29,7 @@ namespace policy {
 
 class RestoreOnStartupPolicyHandlerTest : public testing::Test {
  protected:
-  void SetPolicyValue(const std::string& policy,
-                      std::unique_ptr<base::Value> value) {
+  void SetPolicyValue(const std::string& policy, base::Value value) {
     policies_.Set(policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_CLOUD, std::move(value), nullptr);
   }
@@ -52,7 +51,7 @@ class RestoreOnStartupPolicyHandlerTest : public testing::Test {
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_FailsTypeCheck) {
   // Handler expects an int; pass it a bool.
-  SetPolicyValue(key::kRestoreOnStartup, std::make_unique<base::Value>(false));
+  SetPolicyValue(key::kRestoreOnStartup, base::Value(false));
   // Checking should fail and add an error to the error map.
   EXPECT_FALSE(CheckPolicySettings());
   ASSERT_EQ(1U, errors().size());
@@ -75,8 +74,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_UnknownValue) {
   int impossible_value = SessionStartupPref::kPrefValueLast +
                          SessionStartupPref::kPrefValueURLs +
                          SessionStartupPref::kPrefValueNewTab;
-  SetPolicyValue(key::kRestoreOnStartup,
-                 std::make_unique<base::Value>(impossible_value));
+  SetPolicyValue(key::kRestoreOnStartup, base::Value(impossible_value));
   // Checking should succeed but add an error to the error map.
   EXPECT_TRUE(CheckPolicySettings());
   ASSERT_EQ(1U, errors().size());
@@ -90,7 +88,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_HomePage) {
   // Specify the HomePage value.
   SetPolicyValue(key::kRestoreOnStartup,
                  // kPrefValueHomePage, deprecated.
-                 std::make_unique<base::Value>(0));
+                 base::Value(0));
   // Checking should succeed but add an error to the error map.
   EXPECT_TRUE(CheckPolicySettings());
   ASSERT_EQ(1U, errors().size());
@@ -101,11 +99,10 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_HomePage) {
 TEST_F(RestoreOnStartupPolicyHandlerTest,
        CheckPolicySettings_RestoreLastSession_SessionCookies) {
   // Specify the Last value and the Session-Only Cookies value.
-  SetPolicyValue(
-      key::kRestoreOnStartup,
-      base::WrapUnique(new base::Value(SessionStartupPref::kPrefValueLast)));
-  std::unique_ptr<base::ListValue> urls(new base::ListValue);
-  urls->AppendString("http://foo.com");
+  SetPolicyValue(key::kRestoreOnStartup,
+                 base::Value(SessionStartupPref::kPrefValueLast));
+  base::Value urls(base::Value::Type::LIST);
+  urls.Append("http://foo.com");
   SetPolicyValue(key::kCookiesSessionOnlyForUrls, std::move(urls));
   // Checking should succeed but add an error to the error map.
   EXPECT_TRUE(CheckPolicySettings());
@@ -120,8 +117,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest,
 TEST_F(RestoreOnStartupPolicyHandlerTest, ApplyPolicySettings_NotHomePage) {
   // Specify anything except the HomePage value.
   int not_home_page = 1;  // kPrefValueHomePage + 1, deprecated.
-  SetPolicyValue(key::kRestoreOnStartup,
-                 std::make_unique<base::Value>(not_home_page));
+  SetPolicyValue(key::kRestoreOnStartup, base::Value(not_home_page));
   ApplyPolicySettings();
   // The resulting prefs should have the value we specified.
   int result;
@@ -132,9 +128,8 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, ApplyPolicySettings_NotHomePage) {
 TEST_F(RestoreOnStartupPolicyHandlerTest,
        CheckPolicySettings_RestoreLastSession) {
   // Specify the Last value without the conflicts.
-  SetPolicyValue(
-      key::kRestoreOnStartup,
-      base::WrapUnique(new base::Value(SessionStartupPref::kPrefValueLast)));
+  SetPolicyValue(key::kRestoreOnStartup,
+                 base::Value(SessionStartupPref::kPrefValueLast));
   // Checking should succeed with no errors.
   EXPECT_TRUE(CheckPolicySettings());
   EXPECT_TRUE(errors().empty());
@@ -142,9 +137,8 @@ TEST_F(RestoreOnStartupPolicyHandlerTest,
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_URLs) {
   // Specify the URLs value.
-  SetPolicyValue(
-      key::kRestoreOnStartup,
-      base::WrapUnique(new base::Value(SessionStartupPref::kPrefValueURLs)));
+  SetPolicyValue(key::kRestoreOnStartup,
+                 base::Value(SessionStartupPref::kPrefValueURLs));
   // Checking should succeed with no errors.
   EXPECT_TRUE(CheckPolicySettings());
   EXPECT_TRUE(errors().empty());
@@ -152,9 +146,8 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_URLs) {
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, CheckPolicySettings_NewTab) {
   // Specify the NewTab value.
-  SetPolicyValue(
-      key::kRestoreOnStartup,
-      base::WrapUnique(new base::Value(SessionStartupPref::kPrefValueNewTab)));
+  SetPolicyValue(key::kRestoreOnStartup,
+                 base::Value(SessionStartupPref::kPrefValueNewTab));
   // Checking should succeed with no errors.
   EXPECT_TRUE(CheckPolicySettings());
   EXPECT_TRUE(errors().empty());
@@ -169,7 +162,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest, ApplyPolicySettings_NoValue) {
 
 TEST_F(RestoreOnStartupPolicyHandlerTest, ApplyPolicySettings_WrongType) {
   // Handler expects an int; pass it a bool.
-  SetPolicyValue(key::kRestoreOnStartup, std::make_unique<base::Value>(false));
+  SetPolicyValue(key::kRestoreOnStartup, base::Value(false));
   // The resulting prefs should be empty.
   EXPECT_TRUE(prefs().empty());
 }

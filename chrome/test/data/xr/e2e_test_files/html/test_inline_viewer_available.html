@@ -11,6 +11,8 @@ identity reference space
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
+      setup({single_test: true});
+
       let session = null;
       let testFrames = 5;
       let numFramesReceived = 0;

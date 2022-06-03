@@ -25,4 +25,13 @@ int ServerSocket::ListenWithAddressAndPort(const std::string& address_string,
   return Listen(IPEndPoint(ip_address, port), backlog);
 }
 
+int ServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
+                         net::CompletionOnceCallback callback,
+                         net::IPEndPoint* peer_address) {
+  if (peer_address) {
+    *peer_address = IPEndPoint();
+  }
+  return Accept(socket, std::move(callback));
+}
+
 }  // namespace net

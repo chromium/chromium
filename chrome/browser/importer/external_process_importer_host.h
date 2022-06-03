@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
@@ -34,6 +33,10 @@ class ExternalProcessImporterHost
     : public bookmarks::BaseBookmarkModelObserver {
  public:
   ExternalProcessImporterHost();
+
+  ExternalProcessImporterHost(const ExternalProcessImporterHost&) = delete;
+  ExternalProcessImporterHost& operator=(const ExternalProcessImporterHost&) =
+      delete;
 
   void Cancel();
 
@@ -132,10 +135,8 @@ class ExternalProcessImporterHost
   // True if we're waiting for the model to finish loading.
   bool waiting_for_bookmarkbar_model_;
 
-  // May contain a Subscription waiting for the TemplateURLService to finish
-  // loading.
-  std::unique_ptr<TemplateURLService::Subscription>
-      template_service_subscription_;
+  // Non-empty when waiting for the TemplateURLService to finish loading.
+  base::CallbackListSubscription template_service_subscription_;
 
   // Have we installed a listener on the bookmark model?
   bool installed_bookmark_observer_;
@@ -160,8 +161,6 @@ class ExternalProcessImporterHost
 
   // Vends weak pointers for the importer to call us back.
   base::WeakPtrFactory<ExternalProcessImporterHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterHost);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_EXTERNAL_PROCESS_IMPORTER_HOST_H_

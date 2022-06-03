@@ -1,0 +1,11 @@
+include_rules = [
+    "+url/url_constants.h",
+]
+
+specific_include_rules = {
+    "validate_blink_interest_group_test.cc": [
+        "+base",
+        "+url/gurl.h",
+        "+url/origin.h",
+    ],
+}

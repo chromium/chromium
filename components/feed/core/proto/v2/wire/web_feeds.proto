@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package feedwire.webfeed;
+
+import "components/feed/core/proto/v2/wire/consistency_token.proto";
+import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message WebFeed {
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    INACTIVE = 1;
+    ACTIVE = 2;
+    WAITING_FOR_CONTENT = 4;
+  }
+  string name = 1;
+  string title = 2;
+  string subtitle = 3;
+  string detail_text = 4;
+  string visit_uri = 5;
+  string rss_uri = 6;
+  Image favicon = 7;
+  int64 follower_count = 8;
+  State state = 9;
+  repeated WebFeedMatcher web_feed_matchers = 10;
+}
+message Image {
+  string uri = 1;
+}
+message ListWebFeedsRequest {
+  ConsistencyToken consistency_token = 1;
+}
+message ListWebFeedsResponse {
+  repeated WebFeed web_feeds = 1;
+}
+message FollowWebFeedRequest {
+  oneof identifier {
+    string name = 1;
+    string web_page_uri = 2;
+  }
+  repeated string page_rss_uris = 3;
+  ConsistencyToken consistency_token = 4;
+}
+message FollowWebFeedResponse {
+  WebFeed web_feed = 1;
+  ConsistencyToken consistency_token = 2;
+}
+message UnfollowWebFeedRequest {
+  string name = 1;
+  ConsistencyToken consistency_token = 2;
+}
+message UnfollowWebFeedResponse {
+  ConsistencyToken consistency_token = 1;
+}
+message ListRecommendedWebFeedsRequest {
+  ConsistencyToken consistency_token = 1;
+}
+message ListRecommendedWebFeedsResponse {
+  repeated WebFeed recommended_web_feeds = 1;
+}

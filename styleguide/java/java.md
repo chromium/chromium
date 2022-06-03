@@ -1,7 +1,7 @@
 # Chromium Java style guide
 
 _For other languages, please see the [Chromium style
-guides](https://chromium.googlesource.com/chromium/src/+/master/styleguide/styleguide.md)._
+guides](https://chromium.googlesource.com/chromium/src/+/main/styleguide/styleguide.md)._
 
 Chromium follows the [Android Open Source style
 guide](http://source.android.com/source/code-style.html) unless an exception
@@ -10,7 +10,7 @@ is listed below.
 You can propose changes to this style guide by sending an email to
 `java@chromium.org`. Ideally, the list will arrive at some consensus and you can
 request review for a change to this file. If there's no consensus,
-[`//styleguide/java/OWNERS`](https://chromium.googlesource.com/chromium/src/+/master/styleguide/java/OWNERS)
+[`//styleguide/java/OWNERS`](https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/OWNERS)
 get to decide.
 
 [TOC]
@@ -30,9 +30,6 @@ is encouraged, but there are some gotchas:
 
 ### Lambdas and Method References
  * These are syntactic sugar for creating anonymous inner classes.
-   * Furthermore, stateless lambdas 
-     [become singletons](https://stackoverflow.com/questions/27524445/does-a-lambda-expression-create-an-object-on-the-heap-every-time-its-executed)
-     and so do not result in new instances when used in loops.
  * Use them only where the cost of an extra class & method definition is
    justified.
 
@@ -95,9 +92,10 @@ The Chromium build system strips asserts in release builds (via ProGuard) and
 enables them in debug builds (or when `dcheck_always_on=true`) (via a [build
 step](https://codereview.chromium.org/2517203002)). You should use asserts in
 the [same
-scenarios](https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#CHECK_DCHECK_and-NOTREACHED)
+scenarios](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#CHECK_DCHECK_and-NOTREACHED)
 where C++ DCHECK()s make sense. For multi-statement asserts, use
-`org.chromium.base.BuildConfig.DCHECK_IS_ON` to guard your code.
+`org.chromium.build.BuildConfig.ENABLE_ASSERTS` to guard your code (similar to
+`#if DCHECK_IS_ON()` in C++).
 
 Example assert:
 
@@ -105,10 +103,14 @@ Example assert:
 assert someCallWithoutSideEffects() : "assert description";
 ```
 
-Example use of `DCHECK_IS_ON`:
+Example use of `BuildConfig.ENABLE_ASSERTS`:
 
 ```java
-if (org.chromium.base.BuildConfig.DCHECK_IS_ON) {
+import org.chromium.build.BuildConfig;
+
+...
+
+if (BuildConfig.ENABLE_ASSERTS) {
   // Any code here will be stripped in Release by ProGuard.
   ...
 }
@@ -124,15 +126,46 @@ Custom finalizers:
 * causes additional garbage collector jank.
 
 Classes that need destructor logic should provide an explicit `destroy()`
-method.
+method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/LifetimeAssert.java)
+to ensure in debug builds and tests that `destroy()` is called.
 
-### Other Android Support Library Annotations
+### AndroidX Annotations
 * Use them! They are [documented here](https://developer.android.com/studio/write/annotations).
   * They generally improve readability.
   * Some make lint more useful.
-* `javax.annotation.Nullable` vs `android.support.annotation.Nullable`
-  * Always prefer `android.support.annotation.Nullable`.
+* `javax.annotation.Nullable` vs `androidx.annotation.Nullable`
+  * Always prefer `androidx.annotation.Nullable`.
   * It uses `@Retention(SOURCE)` rather than `@Retention(RUNTIME)`.
+
+### IntDef Instead of Enum
+
+Java enums generate far more bytecode than integer constants. When integers are
+sufficient, prefer using an [@IntDef annotation], which will have usage checked
+by [Android lint].
+
+Values can be declared outside or inside the `@interface`. We recommend the
+latter, with constants nested within it as follows:
+
+```java
+@IntDef({ContactsPickerAction.CANCEL, ContactsPickerAction.CONTACTS_SELECTED,
+        ContactsPickerAction.SELECT_ALL, ContactsPickerAction.UNDO_SELECT_ALL})
+@Retention(RetentionPolicy.SOURCE)
+public @interface ContactsPickerAction {
+    int CANCEL = 0;
+    int CONTACTS_SELECTED = 1;
+    int SELECT_ALL = 2;
+    int UNDO_SELECT_ALL = 3;
+    int NUM_ENTRIES = 4;
+}
+// ...
+void onContactsPickerUserAction(@ContactsPickerAction int action, ...);
+```
+
+Values of `Integer` type are also supported, which allows using a sentinel
+`null` if needed.
+
+[@IntDef annotation]: https://developer.android.com/studio/write/annotations#enum-annotations
+[Android lint]: https://chromium.googlesource.com/chromium/src/+/HEAD/build/android/docs/lint.md
 
 ## Tools
 
@@ -147,8 +180,8 @@ You can run `git cl format` to apply the automatic formatting.
 For automatically using the correct style, follow the guide to set up your
 favorite IDE:
 
-* [Android Studio](https://chromium.googlesource.com/chromium/src/+/master/docs/android_studio.md)
-* [Eclipse](https://chromium.googlesource.com/chromium/src/+/master/docs/eclipse.md)
+* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
+* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
 
 ### Checkstyle
 Checkstyle is automatically run by the build bots, and to ensure you do not have
@@ -157,12 +190,12 @@ guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
 
 ### Lint
 Lint is run as part of the build. For more information, see
-[here](https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md).
+[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
 
 ## Style / Formatting
 
 ### File Headers
-* Use the same format as in the [C++ style guide](https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#File-headers).
+* Use the same format as in the [C++ style guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#File-headers).
 
 ### TODOs
 * TODO should follow chromium convention. Examples:
@@ -216,16 +249,23 @@ This is the order of the import groups:
 1. java
 1. javax
 
+## Test-only Code
+Functions used only for testing should be restricted to test-only usages
+with the testing suffixes supported [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
+`ForTesting` is the conventional suffix although similar patterns, such as
+`ForTest`, are also accepted. These suffixes are checked at presubmit time
+to ensure the functions are called only by test files.
+
 ## Location
 "Top level directories" are defined as directories with a GN file, such as
-[//base](https://chromium.googlesource.com/chromium/src/+/master/base/)
+[//base](https://chromium.googlesource.com/chromium/src/+/main/base/)
 and
-[//content](https://chromium.googlesource.com/chromium/src/+/master/content/),
+[//content](https://chromium.googlesource.com/chromium/src/+/main/content/),
 Chromium Java should live in a directory named
 `<top level directory>/android/java`, with a package name
 `org.chromium.<top level directory>`.  Each top level directory's Java should
 build into a distinct JAR that honors the abstraction specified in a native
-[checkdeps](https://chromium.googlesource.com/chromium/buildtools/+/master/checkdeps/checkdeps.py)
+[checkdeps](https://chromium.googlesource.com/chromium/buildtools/+/main/checkdeps/checkdeps.py)
 (e.g. `org.chromium.base` does not import `org.chromium.content`).  The full
 path of any java file should contain the complete package name.
 
@@ -238,7 +278,7 @@ For example, top level directory `//base` might contain a file named
 
 New `<top level directory>/android` directories should have an `OWNERS` file
 much like
-[//base/android/OWNERS](https://chromium.googlesource.com/chromium/src/+/master/base/android/OWNERS).
+[//base/android/OWNERS](https://chromium.googlesource.com/chromium/src/+/main/base/android/OWNERS).
 
 ## Miscellany
 * Use UTF-8 file encodings and LF line endings.

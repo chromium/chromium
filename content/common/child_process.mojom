@@ -4,51 +4,39 @@
 
 module content.mojom;
 
-import "components/tracing/common/background_tracing_agent.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
-import "services/service_manager/public/mojom/service.mojom";
+import "services/tracing/public/mojom/background_tracing_agent.mojom";
+import "services/tracing/public/mojom/system_tracing_service.mojom";
 
 // The primordial interface child processes use to push requests to their
 // browser-side host object.
 interface ChildProcessHost {
+  // Pings the parent process, expecting a reply. Used to verify that the
+  // process and this interface connection are operational. When a child
+  // process is started, it begins a timer (default 15 seconds) and sends this
+  // message to the browser. If no reply comes back before time runs out, the
+  // process self-terminates. There are no other interesting side effects, nor
+  // are there any constraints on what either process can do while this is in
+  // flight.
+  Ping() => ();
+
   // Requests that the browser bind |receiver| on behalf of the child process.
   // Whether or not the interface type encapsulated by |receiver| is supported
   // depends on the process type and potentially on the Content embedder.
   BindHostReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
 };
 
-// An interface bound on the browser's IO thread to accept a ChildProcessHost
-// receiver from the child process. A remote to this interface is sent to child
-// processes via |ChildProcess.Initialize()| so that the child process may in
-// turn send back a ChildProcessHost receiver for the browser to bind. This
-// allows the child process to begin queuing messages on its ChildProcessHost
-// immediately upon startup without first waiting for
-// |ChildProcess.Initialize()|.
-//
-// NOTE: This is a separate interface and message rather than a simple reply to
-// |ChildProcess.Initialize()| because RenderProcessHostImpl binds its
-// ChildProcess remote on the main thread, and the ChildProcessHost receiver
-// needs to be accepted and bound on the IO thread without a main-thread hop.
-interface ChildProcessHostBootstrap {
-  BindProcessHost(pending_receiver<ChildProcessHost> receiver);
-};
-
 // A control interface the browser uses to drive the behavior of all types of
 // Content child processes.
 interface ChildProcess {
-  // The first message sent by the process host to the child process. This is
-  // sent to allow the child process to bootstrap its own ChildProcessHost
-  // interface, to which it may have already queued messages.
-  Initialize(pending_remote<ChildProcessHostBootstrap> boostrap);
-
   // Tells the child process that it's safe to shutdown.
   ProcessShutdown();
 
   // Requests the child process send its Mach task port to the caller.
   [EnableIf=is_mac]
-  GetTaskPort() => (handle task_port);
+  GetTaskPort() => (handle<platform> task_port);
 
   // Tells the child process to begin or end IPC message logging.
   [EnableIf=ipc_logging]
@@ -58,12 +46,21 @@ interface ChildProcess {
   GetBackgroundTracingAgentProvider(
       pending_receiver<tracing.mojom.BackgroundTracingAgentProvider> receiver);
 
+  // Used for connecting to the Perfetto system tracing service in the child
+  // process. The child process uses |remote| to request the browser process
+  // to make the socket connection and pass the connection back to the child.
+  // This interface only accesses the producer socket. A child process
+  // should never access the consumer socket.
+  //
+  // Enabled on POSIX platforms except Android: Android child processes connects
+  // to the system tracing service directly.
+  [EnableIf=is_non_android_posix]
+  EnableSystemTracingService(
+      pending_remote<tracing.mojom.SystemTracingService> remote);
+
   // Force the child process to crash immediately (i.e. a hard crash, no
   // cleanup, generating a crash report).
   CrashHungProcess();
-
-  // Binds the legacy IPC Channel bootstrapping pipe.
-  BootstrapLegacyIpc(pending_receiver<IPC.mojom.ChannelBootstrap> receiver);
 
   // Tells the child process to run an instance of a service named
   // |service_name|, binding it to |receiver|. This is used by the browser to
@@ -71,8 +68,7 @@ interface ChildProcess {
   //
   // DEPRECATED: |BindServiceInterface()| should be used instead. This will be
   // removed soon.
-  RunService(string service_name,
-             pending_receiver<service_manager.mojom.Service> receiver);
+  RunServiceDeprecated(string service_name, handle<message_pipe> service_pipe);
 
   // Requests that the process bind a receiving pipe targeting the service
   // interface named by |receiver|.
@@ -91,7 +87,20 @@ interface ChildProcess {
   // depends on the process type and potentially on the Content embedder.
   BindReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
 
-  // Sets the coverage file for the child process.
-  [EnableIf=clang_coverage]
-  SetCoverageFile(mojo_base.mojom.File file);
+  // Sets the profiling file for the child process.
+  // Used for the coverage builds.
+  [EnableIf=clang_profiling_inside_sandbox]
+  SetProfilingFile(mojo_base.mojom.File file);
+
+  // Write out the accumulated code profiling profile to the configured file.
+  // The callback is invoked once the profile has been flushed to disk.
+  [EnableIf=clang_profiling_inside_sandbox]
+  WriteClangProfilingProfile() => ();
+
+  // Sets the pseudonymization salt in a child process.
+  //
+  // PRIVACY NOTE: It is important that the `salt` is never persisted anywhere
+  // or sent to a server.  Whoever has access to the salt can de-anonymize
+  // results of the content::PseudonymizationUtil::PseudonymizeString method.
+  SetPseudonymizationSalt(uint32 salt);
 };

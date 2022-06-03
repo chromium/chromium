@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -15,7 +16,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -49,10 +50,20 @@ class CORE_EXPORT ModuleScript : public Script {
   KURL ResolveModuleSpecifier(const String& module_request,
                               String* failure_reason = nullptr) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   virtual void ProduceCache() {}
   const KURL& SourceURL() const { return source_url_; }
+
+  // https://html.spec.whatwg.org/C/#run-a-module-script
+  // Callers must enter a `v8::HandleScope` before calling.
+  // See the class comments of `RethrowErrorsOption` and
+  // `ScriptEvaluationResult` for exception handling and return value semantics.
+  WARN_UNUSED_RESULT ScriptEvaluationResult RunScriptAndReturnValue(
+      V8ScriptRunner::RethrowErrorsOption =
+          V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
+
+  Modulator* SettingsObject() const { return settings_object_; }
 
  protected:
   ModuleScript(Modulator*,
@@ -61,14 +72,14 @@ class CORE_EXPORT ModuleScript : public Script {
                const KURL& base_url,
                const ScriptFetchOptions&);
 
-  Modulator* SettingsObject() const { return settings_object_; }
-
  private:
-  mojom::ScriptType GetScriptType() const override {
-    return mojom::ScriptType::kModule;
+  mojom::blink::ScriptType GetScriptType() const override {
+    return mojom::blink::ScriptType::kModule;
   }
-  void RunScript(LocalFrame*, const SecurityOrigin*) override;
-  void RunScriptOnWorker(WorkerGlobalScope&) override;
+  void RunScript(LocalDOMWindow*) override;
+  bool RunScriptOnWorkerOrWorklet(WorkerOrWorkletGlobalScope&) override;
+
+  std::pair<size_t, size_t> GetClassicScriptSizes() const override;
 
   friend class ModuleTreeLinkerTestModulator;
 
@@ -76,9 +87,6 @@ class CORE_EXPORT ModuleScript : public Script {
   Member<Modulator> settings_object_;
 
   // https://html.spec.whatwg.org/C/#concept-script-record
-  // TODO(keishi): Visitor only defines a trace method for v8::Value so this
-  // needs to be cast.
-  GC_PLUGIN_IGNORE("757708")
   TraceWrapperV8Reference<v8::Module> record_;
 
   // https://html.spec.whatwg.org/C/#concept-script-parse-error

@@ -10,7 +10,8 @@ import android.os.Trace;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
+import androidx.webkit.WebViewClientCompat;
 
 /**
  * This activity is designed for Telemetry testing of WebView.
@@ -70,7 +71,7 @@ public class TelemetryActivity extends Activity {
             settings.setUserAgentString(userAgentString);
         }
 
-        webView.setWebViewClient(new WebViewClient() {
+        webView.setWebViewClient(new WebViewClientCompat() {
             @SuppressWarnings("deprecation") // because we support api level 19 and up.
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {

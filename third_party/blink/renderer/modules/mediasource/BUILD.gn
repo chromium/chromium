@@ -2,16 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("mediasource") {
   sources = [
+    "cross_thread_media_source_attachment.cc",
+    "cross_thread_media_source_attachment.h",
     "html_video_element_media_source.cc",
     "html_video_element_media_source.h",
     "media_source.cc",
     "media_source.h",
-    "media_source_registry.cc",
-    "media_source_registry.h",
+    "media_source_attachment_supplement.cc",
+    "media_source_attachment_supplement.h",
+    "media_source_registry_impl.cc",
+    "media_source_registry_impl.h",
+    "same_thread_media_source_attachment.cc",
+    "same_thread_media_source_attachment.h",
+    "same_thread_media_source_tracer.cc",
+    "same_thread_media_source_tracer.h",
     "source_buffer.cc",
     "source_buffer.h",
     "source_buffer_list.cc",
@@ -26,5 +35,12 @@ blink_modules_sources("mediasource") {
     "url_media_source.h",
     "video_playback_quality.cc",
     "video_playback_quality.h",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//media",
+
+    # Ensure the generated webcodecs v8 config and chunk bindings are available.
+    "//third_party/blink/renderer/modules/webcodecs:webcodecs",
   ]
 }

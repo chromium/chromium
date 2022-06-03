@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/tests/service_manager/test_manifests.h"
 
@@ -17,20 +17,28 @@ namespace {
 
 class PackagedService : public service_manager::Service {
  public:
-  explicit PackagedService(service_manager::mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)) {}
+  explicit PackagedService(
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)) {}
+
+  PackagedService(const PackagedService&) = delete;
+  PackagedService& operator=(const PackagedService&) = delete;
+
   ~PackagedService() override = default;
 
  private:
-  service_manager::ServiceBinding service_binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(PackagedService);
+  service_manager::ServiceReceiver service_receiver_;
 };
 
 class Embedder : public service_manager::Service {
  public:
-  explicit Embedder(service_manager::mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)) {}
+  explicit Embedder(
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver)
+      : service_receiver_(this, std::move(receiver)) {}
+
+  Embedder(const Embedder&) = delete;
+  Embedder& operator=(const Embedder&) = delete;
+
   ~Embedder() override = default;
 
  private:
@@ -42,24 +50,23 @@ class Embedder : public service_manager::Service {
     if (service_name == service_manager::kTestRegularServiceName ||
         service_name == service_manager::kTestSharedServiceName ||
         service_name == service_manager::kTestSingletonServiceName) {
-      packaged_service_ = std::make_unique<PackagedService>(
-          service_manager::mojom::ServiceRequest(std::move(receiver)));
+      packaged_service_ =
+          std::make_unique<PackagedService>(std::move(receiver));
       std::move(callback).Run(base::GetCurrentProcId());
     } else {
       LOG(ERROR) << "Failed to create unknown service " << service_name;
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(absl::nullopt);
     }
   }
 
-  service_manager::ServiceBinding service_binding_;
+  service_manager::ServiceReceiver service_receiver_;
   std::unique_ptr<service_manager::Service> packaged_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(Embedder);
 };
 
 }  // namespace
 
-void ServiceMain(service_manager::mojom::ServiceRequest request) {
+void ServiceMain(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
   base::SingleThreadTaskExecutor main_task_executor;
-  Embedder(std::move(request)).RunUntilTermination();
+  Embedder(std::move(receiver)).RunUntilTermination();
 }

@@ -599,7 +599,7 @@ Here are ways to resolve some common problems that can prevent loading:
 .. _native-client-discuss: https://groups.google.com/group/native-client-discuss
 .. _deprecated in Chrome: http://blog.chromium.org/2013/09/saying-goodbye-to-our-old-friend-npapi.html
 .. _OpenGL ES 2.0: https://www.khronos.org/opengles/
-.. _GLES2 file: https://code.google.com/p/chromium/codesearch#chromium/src/ppapi/lib/gl/gles2/gles2.c
+.. _GLES2 file: https://source.chromium.org/chromium/chromium/src/+/HEAD:ppapi/lib/gl/gles2/gles2.c
 .. _Google Chrome privacy policy: https://www.google.com/chrome/intl/en/privacy.html
 .. _Google Chrome Terms of Service: https://www.google.com/chrome/intl/en/eula_text.html
 .. _webports: https://chromium.googlesource.com/webports

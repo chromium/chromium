@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_WIN_NOTIFICATION_LAUNCH_ID_H_
 #define CHROME_BROWSER_NOTIFICATIONS_WIN_NOTIFICATION_LAUNCH_ID_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "url/gurl.h"
 
@@ -93,7 +96,12 @@ class NotificationLaunchId {
 
   // Extracts the profile ID from |launch_id_str|.
   static std::string GetProfileIdFromLaunchId(
-      const base::string16& launch_id_str);
+      const std::wstring& launch_id_str);
+
+  // Retrieves the profile basename from the notification launch command line,
+  // if any.
+  static base::FilePath GetNotificationLaunchProfileBaseName(
+      const base::CommandLine& command_line);
 
  private:
   // The notification type this launch ID is associated with.

@@ -8,16 +8,13 @@
 #include "base/command_line.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/task/post_task.h"
 #include "chrome/common/service_process_util_posix.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using content::BrowserThread;
-
 void ServiceProcessControl::Launcher::DoRun() {
   launched_ = mac::services::SubmitJob(
       GetServiceProcessJobOptions(cmd_line_.get(), false));
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&Launcher::Notify, this));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Launcher::Notify, this));
 }

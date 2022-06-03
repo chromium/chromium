@@ -34,9 +34,10 @@ extern const char kProcessTypeHost[];
 extern const char kProcessTypeRdpDesktopSession[];
 extern const char kProcessTypeEvaluateCapability[];
 extern const char kProcessTypeFileChooser[];
-#if defined(OS_LINUX)
+extern const char kProcessTypeUrlForwarderConfigurator[];
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 extern const char kProcessTypeXSessionChooser[];
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 extern const char kEvaluateCapabilitySwitchName[];
 
@@ -46,6 +47,9 @@ extern const char kEvaluateCapabilitySwitchName[];
 extern const char kEvaluateD3D[];
 // Executes Evaluate3dDisplayMode() function.
 extern const char kEvaluate3dDisplayMode[];
+// Used in combination with |kProcessTypeUrlForwarderConfigurator| to set up
+// the URL forwarder on Windows.
+extern const char kSetUpUrlForwarderSwitchName[];
 #endif
 
 // Used to pass the HWND for the parent process to a child process.
@@ -61,10 +65,7 @@ extern const char kOutputSwitchName[];
 // processes.
 extern const char kMojoPipeToken[];
 
-// Switch to upgrade the host config with a new refresh token.
-extern const char kUpgradeTokenSwitchName[];
-
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 // NativeMessagingHost switch to check for required OS permissions and request
 // them if necessary.
 extern const char kCheckPermissionSwitchName[];
@@ -74,7 +75,10 @@ extern const char kCheckAccessibilityPermissionSwitchName[];
 
 // Command line switch to check for Screen Recording permission.
 extern const char kCheckScreenRecordingPermissionSwitchName[];
-#endif  // defined OS_MACOSX
+
+// Command line switch to list all audio devices and their UID.
+extern const char kListAudioDevicesSwitchName[];
+#endif  // defined OS_APPLE
 
 }  // namespace remoting
 

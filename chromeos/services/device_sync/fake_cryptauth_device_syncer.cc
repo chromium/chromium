@@ -33,14 +33,18 @@ FakeCryptAuthDeviceSyncerFactory::FakeCryptAuthDeviceSyncerFactory() = default;
 FakeCryptAuthDeviceSyncerFactory::~FakeCryptAuthDeviceSyncerFactory() = default;
 
 std::unique_ptr<CryptAuthDeviceSyncer>
-FakeCryptAuthDeviceSyncerFactory::BuildInstance(
+FakeCryptAuthDeviceSyncerFactory::CreateInstance(
     CryptAuthDeviceRegistry* device_registry,
     CryptAuthKeyRegistry* key_registry,
     CryptAuthClientFactory* client_factory,
+    SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+    PrefService* pref_service,
     std::unique_ptr<base::OneShotTimer> timer) {
   last_device_registry_ = device_registry;
   last_key_registry_ = key_registry;
   last_client_factory_ = client_factory;
+  last_synced_bluetooth_address_tracker_ = synced_bluetooth_address_tracker;
+  last_pref_service_ = pref_service;
 
   auto instance = std::make_unique<FakeCryptAuthDeviceSyncer>();
   instances_.push_back(instance.get());

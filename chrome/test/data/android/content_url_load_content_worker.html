@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- can not be in a sub-directory as TestContentProvider does not support it -->
+<html>
+<head><title>running</title></head>
+<body><script>
+try {
+  const worker = new Worker('./worker.js');
+  worker.onerror = e => document.title = 'error';
+  worker.onmessage = e => document.title = e.data;
+  worker.postMessage([]);
+} catch (e) {
+  document.title = 'exception'
+}
+</script></body>
+</html>

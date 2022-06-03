@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/tweak_info_plist.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ios/rules.gni")
-import("//build/mac/tweak_info_plist.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/credits/credits.gni")
@@ -58,28 +58,28 @@ template("ios_remoting_app_tmpl") {
   _credits_bundle_target_name = "${target_name}_credits_bundle"
   bundle_data(_credits_bundle_target_name) {
     sources = get_target_outputs(":$_credits_resources_target_name")
-    public_deps = [
-      ":$_credits_resources_target_name",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/{{source_file_part}}",
-    ]
+    public_deps = [ ":$_credits_resources_target_name" ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 
   ios_app_bundle(target_name) {
-    output_name = invoker.output_name
+    forward_variables_from(invoker,
+                           [
+                             "bundle_deps",
+                             "deps",
+                             "output_name",
+                           ])
 
     entitlements_path = invoker.entitlements_path
     info_plist_target = ":$_info_plist_target_name"
 
     if (defined(invoker.bundle_id)) {
-      bundle_id = invoker.bundle_id
+      bundle_identifier = invoker.bundle_id
     } else {
-      bundle_id = remoting_ios_bundle_id
+      bundle_identifier = remoting_ios_bundle_id
     }
 
     extra_substitutions = [
-      "BUNDLE_IDENTIFIER=$bundle_id",
       "DISPLAY_NAME=$remoting_ios_display_name",
       "EXECUTABLE_NAME=$output_name",
       "PRODUCT_NAME=$output_name",
@@ -87,7 +87,7 @@ template("ios_remoting_app_tmpl") {
       "VERSION_SHORT=$remoting_version_short",
     ]
 
-    libs = [
+    frameworks = [
       "Accelerate.framework",
       "AudioToolbox.framework",
       "CoreAudio.framework",
@@ -96,14 +96,15 @@ template("ios_remoting_app_tmpl") {
       "CoreVideo.framework",
       "GLKit.framework",
       "OpenGLES.framework",
-      "Webkit.framework",
+      "WebKit.framework",
       "SafariServices.framework",
       "SystemConfiguration.framework",
     ]
 
-    deps = invoker.deps
-
-    bundle_deps = [
+    if (!defined(bundle_deps)) {
+      bundle_deps = []
+    }
+    bundle_deps += [
       ":$_credits_bundle_target_name",
       ":$_launchscreen_storyboard_target_name",
     ]

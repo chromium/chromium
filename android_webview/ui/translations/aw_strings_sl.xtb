@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="6106989379647458772">Spletna stran na naslovu <ph name="PAGE" /> morda začasno ni na voljo ali pa je trajno preseljena na drug spletni naslov.</translation>
-<translation id="6312113039770857350">Spletna stran ni na voljo</translation>
-<translation id="8681531050781943054">Spletne strani na naslovu <ph name="PAGE" /> ni bilo mogoče naložiti zaradi teh razlogov:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Predlogi:<ph name="MARKUP_2" />Poskrbite, da imate podatkovno povezavo<ph name="MARKUP_3" />Znova naložite to spletno stran pozneje<ph name="MARKUP_4" />Preverite naslov, ki ste ga vnesli<ph name="MARKUP_5" /></translation>
 </translationbundle>

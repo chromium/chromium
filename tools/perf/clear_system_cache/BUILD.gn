@@ -5,9 +5,7 @@
 executable("clear_system_cache") {
   testonly = true
 
-  sources = [
-    "clear_system_cache_main.cc",
-  ]
+  sources = [ "clear_system_cache_main.cc" ]
 
   deps = [
     "//base",

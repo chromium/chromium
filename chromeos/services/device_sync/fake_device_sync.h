@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/device_sync_base.h"
 
 namespace chromeos {
@@ -18,6 +17,10 @@ namespace device_sync {
 class FakeDeviceSync : public DeviceSyncBase {
  public:
   FakeDeviceSync();
+
+  FakeDeviceSync(const FakeDeviceSync&) = delete;
+  FakeDeviceSync& operator=(const FakeDeviceSync&) = delete;
+
   ~FakeDeviceSync() override;
 
   using DeviceSyncBase::NotifyOnEnrollmentFinished;
@@ -35,9 +38,9 @@ class FakeDeviceSync : public DeviceSyncBase {
   }
 
   void InvokePendingGetLocalDeviceMetadataCallback(
-      const base::Optional<multidevice::RemoteDevice>& local_device_metadata);
+      const absl::optional<multidevice::RemoteDevice>& local_device_metadata);
   void InvokePendingGetSyncedDevicesCallback(
-      const base::Optional<std::vector<multidevice::RemoteDevice>>&
+      const absl::optional<std::vector<multidevice::RemoteDevice>>&
           remote_devices);
   void InvokePendingSetSoftwareFeatureStateCallback(
       mojom::NetworkRequestResult result_code);
@@ -50,7 +53,7 @@ class FakeDeviceSync : public DeviceSyncBase {
       mojom::NetworkRequestResult result_code);
   void InvokePendingGetDevicesActivityStatusCallback(
       mojom::NetworkRequestResult result_code,
-      base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+      absl::optional<std::vector<mojom::DeviceActivityStatusPtr>>
           get_devices_activity_status_response);
   void InvokePendingGetDebugInfoCallback(mojom::DebugInfoPtr debug_info_ptr);
 
@@ -95,8 +98,6 @@ class FakeDeviceSync : public DeviceSyncBase {
   std::queue<GetDevicesActivityStatusCallback>
       get_devices_activity_status_callback_queue_;
   std::queue<GetDebugInfoCallback> get_debug_info_callback_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceSync);
 };
 
 }  // namespace device_sync

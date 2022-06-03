@@ -8,7 +8,8 @@
 #include <cmath>
 #include <cstring>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "media/base/vector_math.h"
 
 namespace {
@@ -68,9 +69,13 @@ namespace media {
 SlewVolume::SlewVolume() : SlewVolume(kMaxSlewTimeMs) {}
 
 SlewVolume::SlewVolume(int max_slew_time_ms)
+    : SlewVolume(max_slew_time_ms, false) {}
+
+SlewVolume::SlewVolume(int max_slew_time_ms, bool use_cosine_slew)
     : sample_rate_(kDefaultSampleRate),
       max_slew_time_ms_(max_slew_time_ms),
-      max_slew_per_sample_(1000.0 / (max_slew_time_ms_ * sample_rate_)) {}
+      max_slew_per_sample_(1000.0 / (max_slew_time_ms_ * sample_rate_)),
+      use_cosine_slew_(use_cosine_slew) {}
 
 void SlewVolume::SetSampleRate(int sample_rate) {
   CHECK_GT(sample_rate, 0);
@@ -92,6 +97,16 @@ void SlewVolume::SetVolume(double volume_scale) {
       std::max(0.1, std::fabs(volume_scale_ - current_volume_));
   max_slew_per_sample_ =
       volume_diff * 1000.0 / (max_slew_time_ms_ * sample_rate_);
+
+  if (use_cosine_slew_) {
+    // Set initial state for cosine slew. Cosine fading always lasts
+    // max_slew_time_ms_.
+    slew_counter_ = max_slew_time_ms_ * 0.001 * sample_rate_;
+    slew_angle_ = sin(M_PI / slew_counter_);
+    slew_offset_ = (current_volume_ + volume_scale_) * 0.5;
+    slew_cos_ = (current_volume_ - volume_scale_) * 0.5;
+    slew_sin_ = 0.0;
+  }
 }
 
 float SlewVolume::LastBufferMaxMultiplier() {
@@ -163,7 +178,24 @@ void SlewVolume::ProcessData(bool repeat_transition,
     return;
   }
 
-  if (current_volume_ < volume_scale_) {
+  if (use_cosine_slew_) {
+    int slew_frames = std::min(slew_counter_, frames);
+    frames -= slew_frames;
+    slew_counter_ -= slew_frames;
+    for (; slew_frames > 0; --slew_frames) {
+      slew_cos_ -= slew_sin_ * slew_angle_;
+      slew_sin_ += slew_cos_ * slew_angle_;
+      current_volume_ = base::clamp(slew_offset_ + slew_cos_, 0.0, 1.0);
+      for (int i = 0; i < channels; ++i) {
+        Traits::ProcessSingleDatum(src, current_volume_, dest);
+        ++src;
+        ++dest;
+      }
+    }
+    if (!slew_counter_) {
+      current_volume_ = volume_scale_;
+    }
+  } else if (current_volume_ < volume_scale_) {
     do {
       for (int i = 0; i < channels; ++i) {
         Traits::ProcessSingleDatum(src, current_volume_, dest);

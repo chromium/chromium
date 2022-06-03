@@ -43,7 +43,7 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
   CSSURIValue* ValueWithURLMadeAbsolute(const KURL& base_url,
                                         const WTF::TextEncoding&) const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   KURL AbsoluteUrl() const;

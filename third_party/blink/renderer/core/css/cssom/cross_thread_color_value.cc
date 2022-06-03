@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_color_value.h"
 
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 
 namespace blink {
 
 CSSStyleValue* CrossThreadColorValue::ToCSSStyleValue() {
-  return MakeGarbageCollected<CSSUnsupportedColorValue>(value_);
+  return MakeGarbageCollected<CSSUnsupportedColor>(value_);
 }
 
 bool CrossThreadColorValue::operator==(

@@ -16,6 +16,7 @@ source_set("open_in") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/web/public",
     "//ui/base:base",
     "//url",
@@ -25,9 +26,7 @@ source_set("open_in") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "open_in_tab_helper_unittest.mm",
-  ]
+  sources = [ "open_in_tab_helper_unittest.mm" ]
   deps = [
     ":open_in",
     "//base",

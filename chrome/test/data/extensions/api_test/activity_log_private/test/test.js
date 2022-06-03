@@ -480,7 +480,6 @@ chrome.activityLogPrivate.onExtensionActivity.addListener(
       if (callIndx > -1) {
         expectedCall = testCase.expected_activity[callIndx];
       }
-      console.log('Logged:' + apiCall + ' Expected:' + expectedCall);
       // Allow either a RegExp or a strict string comparison.
       if (expectedCall instanceof RegExp)
         chrome.test.assertTrue(expectedCall.test(apiCall));

@@ -5,12 +5,18 @@
 #ifndef IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_DATA_SOURCE_H_
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_DATA_SOURCE_H_
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
+#include "base/containers/span.h"
 #include "base/supports_user_data.h"
 
 namespace base {
 class DictionaryValue;
+}
+
+namespace webui {
+struct LocalizedString;
 }
 
 namespace web {
@@ -29,7 +35,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name,
-                         const base::string16& value) = 0;
+                         const std::u16string& value) = 0;
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name, const std::string& value) = 0;
@@ -40,6 +46,9 @@ class WebUIIOSDataSource : public base::SupportsUserData {
 
   virtual void AddLocalizedStrings(
       const base::DictionaryValue& localized_strings) = 0;
+
+  virtual void AddLocalizedStrings(
+      base::span<const webui::LocalizedString> strings) = 0;
 
   // Adds a boolean keyed to its name to our dictionary.
   virtual void AddBoolean(const std::string& name, bool value) = 0;

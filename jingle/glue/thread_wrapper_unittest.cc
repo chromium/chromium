@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "jingle/glue/thread_wrapper.h"
@@ -32,7 +32,7 @@ static const int kMaxTestDelay = 40;
 
 namespace {
 
-class MockMessageHandler : public rtc::MessageHandler {
+class MockMessageHandler : public rtc::MessageHandlerAutoCleanup {
  public:
   MOCK_METHOD1(OnMessage, void(rtc::Message* msg));
 };
@@ -80,9 +80,7 @@ class ThreadWrapperTest : public testing::Test {
   }
 
  protected:
-  ThreadWrapperTest()
-      : thread_(NULL) {
-  }
+  ThreadWrapperTest() : thread_(nullptr) {}
 
   void SetUp() override {
     JingleThreadWrapper::EnsureForCurrentMessageLoop();
@@ -157,8 +155,7 @@ TEST_F(ThreadWrapperTest, PostDelayed) {
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(kMaxTestDelay));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kMaxTestDelay));
   run_loop.Run();
 }
 
@@ -213,8 +210,7 @@ TEST_F(ThreadWrapperTest, ClearDelayed) {
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(kMaxTestDelay));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kMaxTestDelay));
   run_loop.Run();
 }
 

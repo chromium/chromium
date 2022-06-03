@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <xf86drm.h>
 
+#include "base/logging.h"
+
 namespace ui {
 
 DrmRenderNodeHandle::DrmRenderNodeHandle() = default;

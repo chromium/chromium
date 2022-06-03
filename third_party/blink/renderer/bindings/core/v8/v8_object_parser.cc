@@ -13,6 +13,7 @@ namespace blink {
 
 bool V8ObjectParser::ParseCSSPropertyList(
     v8::Local<v8::Context> context,
+    const ExecutionContext* execution_context,
     v8::Local<v8::Object> constructor,
     const AtomicString list_name,
     Vector<CSSPropertyID>* native_properties,
@@ -37,7 +38,7 @@ bool V8ObjectParser::ParseCSSPropertyList(
       return false;
 
     for (const auto& property : properties) {
-      CSSPropertyID property_id = cssPropertyID(property);
+      CSSPropertyID property_id = CssPropertyID(execution_context, property);
       if (property_id == CSSPropertyID::kVariable) {
         custom_properties->push_back(std::move(property));
       } else if (property_id != CSSPropertyID::kInvalid) {

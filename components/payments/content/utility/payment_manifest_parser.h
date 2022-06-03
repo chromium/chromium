@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/payments/content/web_app_manifest.h"
@@ -29,14 +28,14 @@ class ErrorLogger;
 // Example 1 of valid payment method manifest structure:
 //
 // {
-//   "default_applications": ["https://bobpay.com/payment-app.json"],
+//   "default_applications": ["payment-app.json"],
 //   "supported_origins": ["https://alicepay.com"]
 // }
 //
 // Example 2 of valid payment method manifest structure:
 //
 // {
-//   "default_applications": ["https://bobpay.com/payment-app.json"],
+//   "default_applications": ["payment-app.json"],
 //   "supported_origins": "*"
 // }
 //
@@ -69,7 +68,9 @@ class ErrorLogger;
 // }
 //
 // Specs:
-// https://docs.google.com/document/d/1izV4uC-tiRJG3JLooqY3YRLU22tYOsLTNq0P_InPJeE
+// https://developers.google.com/web/fundamentals/payments/payment-apps-developer-guide/web-payment-apps
+// https://developers.google.com/web/fundamentals/payments/payment-apps-developer-guide/android-payment-apps
+// https://w3c.github.io/payment-method-manifest/
 // https://w3c.github.io/manifest/
 //
 // Note the JSON parsing is done using the DataDecoder (either OOP or in a safe
@@ -91,10 +92,13 @@ class PaymentManifestParser {
     std::string type;
   };
 
+  // TODO(crbug.com/1065337): Return manifest parser errors to caller.
+
   // Called on successful parsing of a payment method manifest. Parse failure
   // results in empty vectors and "false".
-  using PaymentMethodCallback = base::OnceCallback<
-      void(const std::vector<GURL>&, const std::vector<url::Origin>&, bool)>;
+  using PaymentMethodCallback =
+      base::OnceCallback<void(const std::vector<GURL>&,
+                              const std::vector<url::Origin>&)>;
   // Called on successful parsing of a web app manifest. Parse failure results
   // in an empty vector.
   using WebAppCallback =
@@ -107,9 +111,14 @@ class PaymentManifestParser {
                               std::unique_ptr<std::vector<WebAppIcon>>)>;
 
   explicit PaymentManifestParser(std::unique_ptr<ErrorLogger> log);
+
+  PaymentManifestParser(const PaymentManifestParser&) = delete;
+  PaymentManifestParser& operator=(const PaymentManifestParser&) = delete;
+
   ~PaymentManifestParser();
 
-  void ParsePaymentMethodManifest(const std::string& content,
+  void ParsePaymentMethodManifest(const GURL& manifest_url,
+                                  const std::string& content,
                                   PaymentMethodCallback callback);
   void ParseWebAppManifest(const std::string& content, WebAppCallback callback);
 
@@ -122,11 +131,11 @@ class PaymentManifestParser {
 
   // Visible for tests.
   static void ParsePaymentMethodManifestIntoVectors(
+      const GURL& manifest_url,
       std::unique_ptr<base::Value> value,
       const ErrorLogger& log,
       std::vector<GURL>* web_app_manifest_urls,
-      std::vector<url::Origin>* supported_origins,
-      bool* all_origins_supported);
+      std::vector<url::Origin>* supported_origins);
 
   static bool ParseWebAppManifestIntoVector(
       std::unique_ptr<base::Value> value,
@@ -140,7 +149,8 @@ class PaymentManifestParser {
       std::vector<WebAppIcon>* icons);
 
  private:
-  void OnPaymentMethodParse(PaymentMethodCallback callback,
+  void OnPaymentMethodParse(const GURL& manifest_url,
+                            PaymentMethodCallback callback,
                             data_decoder::DataDecoder::ValueOrError result);
   void OnWebAppParse(WebAppCallback callback,
                      data_decoder::DataDecoder::ValueOrError result);
@@ -153,8 +163,6 @@ class PaymentManifestParser {
 
   std::unique_ptr<ErrorLogger> log_;
   base::WeakPtrFactory<PaymentManifestParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestParser);
 };
 
 }  // namespace payments

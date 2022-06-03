@@ -27,7 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_
 
-#include "base/macros.h"
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -41,7 +42,9 @@ class WTF_EXPORT StringBuilder {
 
  public:
   StringBuilder() : no_buffer_() {}
-  ~StringBuilder() { Clear(); }
+  StringBuilder(const StringBuilder&) = delete;
+  StringBuilder& operator=(const StringBuilder&) = delete;
+  ~StringBuilder() { ClearBuffer(); }
 
   void Append(const UChar*, unsigned length);
   void Append(const LChar*, unsigned length);
@@ -156,15 +159,39 @@ class WTF_EXPORT StringBuilder {
 
   void erase(unsigned);
 
+  // ReleaseString is similar to ToString but releases the string_ object
+  // to the caller, preventing refcount trashing. Prefer it over ToString()
+  // if the StringBuilder is going to be destroyed or cleared afterwards.
+  String ReleaseString();
   String ToString();
   AtomicString ToAtomicString();
   String Substring(unsigned start, unsigned length) const;
+
+  operator StringView() const {
+    if (Is8Bit()) {
+      return StringView(Characters8(), length());
+    } else {
+      return StringView(Characters16(), length());
+    }
+  }
 
   unsigned length() const { return length_; }
   bool IsEmpty() const { return !length_; }
 
   unsigned Capacity() const;
+  // Increase the capacity of the backing buffer to at least |new_capacity|. The
+  // behavior is the same as |Vector::ReserveCapacity|:
+  // * Increase the capacity even when there are existing characters or a
+  //   capacity.
+  // * The characters in the backing buffer are not affected.
+  // * This function does not shrink the size of the backing buffer, even if
+  //   |new_capacity| is small.
+  // * This function may cause a reallocation.
   void ReserveCapacity(unsigned new_capacity);
+  // This is analogous to |Ensure16Bit| and |ReserveCapacity|, but can avoid
+  // double reallocations when the current buffer is 8 bits and is smaller than
+  // |new_capacity|.
+  void Reserve16BitCapacity(unsigned new_capacity);
 
   // TODO(esprehn): Rename to shrink().
   void Resize(unsigned new_size);
@@ -225,6 +252,15 @@ class WTF_EXPORT StringBuilder {
   void ClearBuffer();
   bool HasBuffer() const { return has_buffer_; }
 
+  template <typename StringType>
+  void BuildString() {
+    if (is_8bit_)
+      string_ = StringType(Characters8(), length_);
+    else
+      string_ = StringType(Characters16(), length_);
+    ClearBuffer();
+  }
+
   String string_;
   union {
     char no_buffer_;
@@ -234,8 +270,6 @@ class WTF_EXPORT StringBuilder {
   unsigned length_ = 0;
   bool is_8bit_ = true;
   bool has_buffer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(StringBuilder);
 };
 
 template <typename CharType>

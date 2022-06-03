@@ -8,7 +8,6 @@
 class Browser;
 class GURL;
 class Profile;
-struct WebApplicationInfo;
 
 namespace content {
 class WebContents;
@@ -26,15 +25,8 @@ namespace browsertest_util {
 // actual production devices, but some tests need to do it manually.
 void CreateAndInitializeLocalCache();
 
-// Installs a Bookmark App into |profile| using |info|.
-const Extension* InstallBookmarkApp(Profile* profile, WebApplicationInfo info);
-
 // Launches a new app window for |app| in |profile|.
 Browser* LaunchAppBrowser(Profile* profile, const Extension* app);
-
-// Launches a new tab for |app| in |profile|.
-Browser* LaunchBrowserForAppInTab(Profile* profile,
-                                  const Extension* extension_app);
 
 // Adds a tab to |browser| and returns the newly added WebContents.
 content::WebContents* AddTab(Browser* browser, const GURL& url);

@@ -6,7 +6,8 @@
 #define CHROME_CHROME_CLEANER_HTTP_HTTP_RESPONSE_H_
 
 #include <stdint.h>
-#include "base/strings/string16.h"
+
+#include <string>
 
 namespace chrome_cleaner {
 
@@ -37,7 +38,7 @@ class HttpResponse {
   // @returns true if the content type is retrieved or not specified in the
   //     response.
   virtual bool GetContentType(bool* has_content_type,
-                              base::string16* content_type) = 0;
+                              std::wstring* content_type) = 0;
 
   // Checks the response body stream.
   // @param has_data Is set to true if data is available to read

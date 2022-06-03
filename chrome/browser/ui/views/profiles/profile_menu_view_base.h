@@ -9,18 +9,18 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/link_listener.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 
@@ -28,20 +28,17 @@ class Browser;
 
 namespace views {
 class Button;
-class Label;
 }  // namespace views
 
-struct AccountInfo;
-// TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-class DiceSigninButtonView;
+namespace ui {
+class ColorProvider;
+class ImageModel;
+}  // namespace ui
 
 // This class provides the UI for different menus that are created by user
 // clicking the avatar button.
 class ProfileMenuViewBase : public content::WebContentsDelegate,
-                            public views::BubbleDialogDelegateView,
-                            public views::ButtonListener,
-                            public views::StyledLabelListener,
-                            public views::LinkListener {
+                            public views::BubbleDialogDelegateView {
  public:
   // Enumeration of all actionable items in the profile menu.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -53,10 +50,12 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kAddressesButton = 3,
     kGuestProfileButton = 4,
     kManageProfilesButton = 5,
-    kLockButton = 6,
+    // DEPRECATED: kLockButton = 6,
     kExitProfileButton = 7,
     kSyncErrorButton = 8,
-    kCurrentProfileCard = 9,
+    // DEPRECATED: kCurrentProfileCard = 9,
+    // Note: kSigninButton and kSigninAccountButton should probably be renamed
+    // to kSigninAndEnableSyncButton and kEnableSyncForSignedInAccountButton.
     kSigninButton = 10,
     kSigninAccountButton = 11,
     kSignoutButton = 12,
@@ -65,50 +64,34 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kAddNewProfileButton = 15,
     kSyncSettingsButton = 16,
     kEditProfileButton = 17,
-    kMaxValue = kEditProfileButton,
+    kCreateIncognitoShortcutButton = 18,
+    kMaxValue = kCreateIncognitoShortcutButton,
   };
 
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  // MenuItems struct keeps the menu items and meta data for a group of items in
-  // a menu. It takes the ownership of views and passes it to the menu when menu
-  // is constructed.
-  struct MenuItems {
-    MenuItems();
-    MenuItems(MenuItems&&);
-    ~MenuItems();
+  struct EditButtonParams {
+    EditButtonParams(const gfx::VectorIcon* edit_icon,
+                     const std::u16string& edit_tooltip_text,
+                     base::RepeatingClosure edit_action);
+    EditButtonParams(const EditButtonParams&);
+    ~EditButtonParams();
 
-    enum ItemType {
-      kNone,
-      kTitleCard,
-      kLabel,
-      kButton,
-      kStyledButton,
-      kGeneral
-    };
-
-    std::vector<std::unique_ptr<views::View>> items;
-
-    ItemType first_item_type;
-    ItemType last_item_type;
-    bool different_item_types;
-
-    DISALLOW_COPY_AND_ASSIGN(MenuItems);
+    const gfx::VectorIcon* edit_icon;
+    std::u16string edit_tooltip_text;
+    base::RepeatingClosure edit_action;
   };
 
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  enum GroupMarginSize { kNone, kTiny, kSmall, kLarge };
+  // Size of the large identity image in the menu.
+  static constexpr int kIdentityImageSize = 64;
 
   // Shows the bubble if one is not already showing.  This allows us to easily
   // make a button toggle the bubble on and off when clicked: we unconditionally
   // call this function when the button is clicked and if the bubble isn't
   // showing it will appear while if it is showing, nothing will happen here and
   // the existing bubble will auto-close due to focus loss.
-  static void ShowBubble(
-      profiles::BubbleViewMode view_mode,
-      signin_metrics::AccessPoint access_point,
-      views::Button* anchor_button,
-      Browser* browser,
-      bool is_source_keyboard);
+  static void ShowBubble(profiles::BubbleViewMode view_mode,
+                         views::Button* anchor_button,
+                         Browser* browser,
+                         bool is_source_accelerator);
 
   static bool IsShowing();
   static void Hide();
@@ -119,83 +102,58 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                       Browser* browser);
   ~ProfileMenuViewBase() override;
 
+  ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
+  ProfileMenuViewBase& operator=(const ProfileMenuViewBase&) = delete;
+
   // This method is called once to add all menu items.
   virtual void BuildMenu() = 0;
 
-  // API to build the profile menu.
-  void SetHeading(const base::string16& heading,
-                  const base::string16& tooltip_text,
-                  base::RepeatingClosure action);
-  void SetIdentityInfo(const gfx::ImageSkia& image,
-                       const gfx::ImageSkia& badge,
-                       const base::string16& title,
-                       const base::string16& subtitle = base::string16());
-  void SetSyncInfo(const gfx::ImageSkia& icon,
-                   const base::string16& description,
-                   const base::string16& clickable_text,
-                   base::RepeatingClosure action);
-  void SetSyncInfoBackgroundColor(SkColor bg_color);
-  void AddShortcutFeatureButton(const gfx::ImageSkia& icon,
-                                const base::string16& text,
+  // Override to supply a sync icon for the profile menu.
+  virtual gfx::ImageSkia GetSyncIcon() const;
+
+  // If |profile_name| is empty, no heading will be displayed.
+  void SetProfileIdentityInfo(
+      const std::u16string& profile_name,
+      SkColor profile_background_color,
+      absl::optional<EditButtonParams> edit_button_params,
+      const ui::ImageModel& image_model,
+      const std::u16string& title,
+      const std::u16string& subtitle = std::u16string(),
+      const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
+  // Displays the sync info section as a rounded rectangle with text on top and
+  // a button on the bottom. Clicking the button triggers |action|.
+  void BuildSyncInfoWithCallToAction(const std::u16string& description,
+                                     const std::u16string& button_text,
+                                     ui::ColorId background_color_id,
+                                     const base::RepeatingClosure& action,
+                                     bool show_sync_badge);
+  // Displays the sync info section as a rectangle with text. Clicking the
+  // rectangle triggers |action|.
+  void BuildSyncInfoWithoutCallToAction(const std::u16string& text,
+                                        const base::RepeatingClosure& action);
+  void AddShortcutFeatureButton(const gfx::VectorIcon& icon,
+                                const std::u16string& text,
                                 base::RepeatingClosure action);
-  void AddFeatureButton(const gfx::ImageSkia& icon,
-                        const base::string16& text,
-                        base::RepeatingClosure action);
-  void SetProfileManagementHeading(const base::string16& heading);
-  void AddSelectableProfile(const gfx::ImageSkia& image,
-                            const base::string16& name,
+  void AddFeatureButton(const std::u16string& text,
+                        base::RepeatingClosure action,
+                        const gfx::VectorIcon& icon = gfx::kNoneIcon,
+                        float icon_to_image_ratio = 1.0f);
+  void SetProfileManagementHeading(const std::u16string& heading);
+  void AddSelectableProfile(const ui::ImageModel& image_model,
+                            const std::u16string& name,
+                            bool is_guest,
                             base::RepeatingClosure action);
-  void AddProfileManagementShortcutFeatureButton(const gfx::ImageSkia& icon,
-                                                 const base::string16& text,
+  void AddProfileManagementShortcutFeatureButton(const gfx::VectorIcon& icon,
+                                                 const std::u16string& text,
                                                  base::RepeatingClosure action);
-  void AddProfileManagementFeatureButton(const gfx::ImageSkia& icon,
-                                         const base::string16& text,
+  void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
+                                         const std::u16string& text,
                                          base::RepeatingClosure action);
-  // 0 < |icon_to_image_ratio| <= 1 is the size ratio of |icon| in the returned
-  // image. E.g. a value of 0.8 means that |icon| only takes up 80% of the
-  // returned image, with the rest being padding around it.
-  gfx::ImageSkia ImageForMenu(const gfx::VectorIcon& icon,
-                              float icon_to_image_ratio = 1.0f);
+
   gfx::ImageSkia ColoredImageForMenu(const gfx::VectorIcon& icon,
-                                     SkColor color);
+                                     SkColor color) const;
   // Should be called inside each button/link action.
   void RecordClick(ActionableItem item);
-
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  // Initializes a new group of menu items. A separator is added before them if
-  // |add_separator| is true.
-  void AddMenuGroup(bool add_separator = true);
-
-  // TODO(crbug.com/1021587): Remove methods below after ProfileMenuRevamp.
-  // The following functions add different menu items to the latest menu group.
-  // They pass the ownership of the generated item to |menu_item_groups_| and
-  // return a raw pointer to the object. The ownership is transferred to the
-  // menu when view is repopulated from menu items.
-  // Please use |AddViewItem| only if none of the previous ones match.
-  views::Button* CreateAndAddButton(const gfx::ImageSkia& icon,
-                                    const base::string16& title,
-                                    base::RepeatingClosure action);
-  views::Button* CreateAndAddBlueButton(const base::string16& text,
-                                        bool md_style,
-                                        base::RepeatingClosure action);
-  // If |action| is null the card will be disabled.
-  views::Button* CreateAndAddTitleCard(std::unique_ptr<views::View> icon_view,
-                                       const base::string16& title,
-                                       const base::string16& subtitle,
-                                       base::RepeatingClosure action);
-#if !defined(OS_CHROMEOS)
-  DiceSigninButtonView* CreateAndAddDiceSigninButton(
-      AccountInfo* account_info,
-      gfx::Image* account_icon,
-      base::RepeatingClosure action);
-#endif
-  views::Label* CreateAndAddLabel(
-      const base::string16& text,
-      int text_context = views::style::CONTEXT_LABEL);
-  views::StyledLabel* CreateAndAddLabelWithLink(const base::string16& text,
-                                                gfx::Range link_range,
-                                                base::RepeatingClosure action);
-  void AddViewItem(std::unique_ptr<views::View> view);
 
   Browser* browser() const { return browser_; }
 
@@ -205,68 +163,40 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   views::Button* anchor_button() const { return anchor_button_; }
 
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  gfx::ImageSkia CreateVectorIcon(const gfx::VectorIcon& icon);
-
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  int GetDefaultIconSize();
+  bool perform_menu_actions() const { return perform_menu_actions_; }
+  void set_perform_menu_actions_for_testing(bool perform_menu_actions) {
+    perform_menu_actions_ = perform_menu_actions;
+  }
 
  private:
+  class AXMenuWidgetObserver;
+
   friend class ProfileMenuViewExtensionsTest;
 
   void Reset();
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  void RepopulateViewFromMenuItems();
+  void OnWindowClosing();
 
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  // Requests focus for a button when opened by keyboard.
-  virtual void FocusButtonOnKeyboardOpen() {}
+  // Requests focus for the first profile in the 'Other profiles' section (if it
+  // exists).
+  void FocusFirstProfileButton();
+
+  void BuildSyncInfoCallToActionBackground(
+      ui::ColorId background_color_id,
+      const ui::ColorProvider* color_provider);
 
   // views::BubbleDialogDelegateView:
   void Init() final;
-  void WindowClosing() override;
   void OnThemeChanged() override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
 
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* button, const ui::Event& event) final;
-
-  // views::LinkListener:
-  void LinkClicked(views::Link* link, int event_flags) final;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* link,
-                              const gfx::Range& range,
-                              int event_flags) final;
-
-  // Handles all click events.
-  void OnClick(views::View* clickable_view);
-
-  void RegisterClickAction(views::View* clickable_view,
-                           base::RepeatingClosure action);
-
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  // Returns the size of different margin types.
-  int GetMarginSize(GroupMarginSize margin_size) const;
-
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  void AddMenuItemInternal(std::unique_ptr<views::View> view,
-                           MenuItems::ItemType item_type);
+  void ButtonPressed(base::RepeatingClosure action);
 
   Browser* const browser_;
 
-  // TODO(crbug.com/1021587): Remove after ProfileMenuRevamp.
-  // ProfileMenuViewBase takes ownership of all menu_items and passes it to the
-  // underlying view when it is created.
-  std::vector<MenuItems> menu_item_groups_;
-
   views::Button* const anchor_button_;
-
-  std::map<views::View*, base::RepeatingClosure> click_actions_;
 
   // Component containers.
   views::View* heading_container_ = nullptr;
@@ -280,9 +210,26 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   views::View* profile_mgmt_shortcut_features_container_ = nullptr;
   views::View* profile_mgmt_features_container_ = nullptr;
 
+  // The first profile button that should be focused when the menu is opened
+  // using a key accelerator.
+  views::Button* first_profile_button_ = nullptr;
+
+  // May be disabled by tests that only watch to histogram records and don't
+  // care about actual actions.
+  bool perform_menu_actions_ = true;
+
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
 
-  DISALLOW_COPY_AND_ASSIGN(ProfileMenuViewBase);
+  // Builds the background for |sync_info_container_|. This requires
+  // ui::ColorProvider, which is only available once OnThemeChanged() is called,
+  // so the class caches this callback and calls it afterwards.
+  base::RepeatingCallback<void(const ui::ColorProvider*)>
+      sync_info_background_callback_ = base::DoNothing();
+
+  // Actual heading string would be set by children classes.
+  std::u16string profile_mgmt_heading_;
+
+  std::unique_ptr<AXMenuWidgetObserver> ax_widget_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_BASE_H_

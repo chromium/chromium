@@ -4,13 +4,16 @@
 
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 
+#include <memory>
+
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -29,19 +32,23 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
-    notifier_.reset(new PublicIpAddressLocationNotifier(
+    notifier_ = std::make_unique<PublicIpAddressLocationNotifier>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         network::TestNetworkConnectionTracker::GetInstance(),
-        kTestGeolocationApiKey));
+        kTestGeolocationApiKey);
   }
+
+  PublicIpAddressGeolocatorTest(const PublicIpAddressGeolocatorTest&) = delete;
+  PublicIpAddressGeolocatorTest& operator=(
+      const PublicIpAddressGeolocatorTest&) = delete;
 
   ~PublicIpAddressGeolocatorTest() override {}
 
  protected:
   void SetUp() override {
     // Intercept Mojo bad-message errors.
-    mojo::core::SetDefaultProcessErrorCallback(
+    mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&PublicIpAddressGeolocatorTest::OnMojoBadMessage,
                             base::Unretained(this)));
 
@@ -56,8 +63,7 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
   void TearDown() override {
     // Stop intercepting Mojo bad-message errors.
-    mojo::core::SetDefaultProcessErrorCallback(
-        mojo::core::ProcessErrorCallback());
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   // Deal with mojo bad message.
@@ -110,8 +116,6 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
   // Test URLLoaderFactory for handling requests to the geolocation API.
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicIpAddressGeolocatorTest);
 };
 
 // Basic test of a client invoking QueryNextPosition.

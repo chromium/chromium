@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color1' value='#000000' oninput='inputEventCount++;' onchange='changeEventCount++;'>
+<script>
+'use strict';
+
+var inputEventCount = 0;
+var changeEventCount = 0;
+
+promise_test(() => {
+  let colorControl = document.getElementById('color1');
+  return openPickerWithPromise(colorControl)
+  .then(() => {
+    internals.pagePopupWindow.focus();
+    eventSender.keyDown('Enter');
+    assert_equals(inputEventCount, 0, 'No input event should have fired if color value was not changed.');
+    return new Promise((resolve) => {
+      window.setTimeout(() => {
+        assert_equals(changeEventCount, 0, 'No change event should have fired if color value was not changed.');
+        resolve();
+      }, 0)
+    });
+  });
+}, "Color picker: Opening and closing popup with no changes should not fire input/change events");
+
+</script>
+</body>
+</html>

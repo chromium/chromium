@@ -36,7 +36,7 @@ ServerEnvironment::ServerEnvironment()
   base::CommandLine::Init(0, nullptr);
 
   base::Thread::Options ui_options(base::MessagePumpType::UI, 0);
-  ui_thread_.StartWithOptions(ui_options);
+  ui_thread_.StartWithOptions(std::move(ui_options));
   WaylandClientTestHelper::SetUIThreadTaskRunner(ui_thread_.task_runner());
 }
 
@@ -60,17 +60,17 @@ void ServerEnvironment::SetUpOnUIThread(base::WaitableEvent* event) {
   base::FilePath ash_test_strings =
       path.Append(FILE_PATH_LITERAL("ash_test_strings.pak"));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ash_test_strings);
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_100P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath ash_test_resources_100 =
         path.AppendASCII("ash_test_resources_100_percent.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        ash_test_resources_100, ui::SCALE_FACTOR_100P);
+        ash_test_resources_100, ui::k100Percent);
   }
-  if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+  if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
     base::FilePath ash_test_resources_200 =
         path.Append(FILE_PATH_LITERAL("ash_test_resources_200_percent.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        ash_test_resources_200, ui::SCALE_FACTOR_200P);
+        ash_test_resources_200, ui::k200Percent);
   }
 
   env_ = aura::Env::CreateInstance();

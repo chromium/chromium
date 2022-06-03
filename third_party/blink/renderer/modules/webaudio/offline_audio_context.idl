@@ -25,15 +25,14 @@
 
 // See https://webaudio.github.io/web-audio-api/#OfflineAudioContext
 [
-    Exposed=Window,
-    Measure
+    Exposed=Window
 ] interface OfflineAudioContext : BaseAudioContext {
-    [CallWith=ExecutionContext, RaisesException] constructor(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate);
-    [CallWith=ExecutionContext, RaisesException] constructor(OfflineAudioContextOptions options);
+    [CallWith=ExecutionContext, RaisesException, Measure] constructor(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate);
+    [CallWith=ExecutionContext, RaisesException, Measure] constructor(OfflineAudioContextOptions options);
     // Offline rendering
     attribute EventHandler oncomplete;
     readonly attribute unsigned long length;
-    [CallWith=ScriptState, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering();
+    [CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering();
     [CallWith=ScriptState, ImplementedAs=suspendContext, MeasureAs=OfflineAudioContextSuspend] Promise<void> suspend(double suspendTime);
     [MeasureAs=OfflineAudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<void> resume();
 };

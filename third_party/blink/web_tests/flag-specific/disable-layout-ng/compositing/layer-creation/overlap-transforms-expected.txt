@@ -1,22 +1,17 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
-      "bounds": [122, 242],
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='transformed box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 3
+      "transform": 2
     }
   ],
   "transforms": [
@@ -26,22 +21,12 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [19, 19, 0, 1]
       ]
     },
     {
       "id": 2,
       "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [11, 11, 0, 1]
-      ]
-    },
-    {
-      "id": 3,
-      "parent": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

@@ -7,9 +7,9 @@ def web_socket_do_extra_handshake(request):
 
 
 def web_socket_transfer_data(request):
-    payload1 = 'This first text should be received.'
-    payload2 = 'This second text '
-    payload3 = 'should be received, too.'
+    payload1 = b'This first text should be received.'
+    payload2 = b'This second text '
+    payload3 = b'should be received, too.'
 
     # send ''
     request.connection.write(

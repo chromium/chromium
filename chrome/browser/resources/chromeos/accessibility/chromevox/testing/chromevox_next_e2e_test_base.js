@@ -4,116 +4,146 @@
 
 // Include test fixture.
 GEN_INCLUDE(['chromevox_e2e_test_base.js']);
+GEN_INCLUDE(['mock_feedback.js']);
 
 /**
  * Base test fixture for ChromeVox Next end to end tests.
- *
  * These tests are identical to ChromeVoxE2ETests except for performing the
  * necessary setup to run ChromeVox Next.
- * @constructor
- * @extends {ChromeVoxE2ETest}
  */
-function ChromeVoxNextE2ETest() {
-  ChromeVoxE2ETest.call(this);
+ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
+  constructor() {
+    super();
 
-  if (this.runtimeDeps.length > 0) {
-    chrome.extension.getViews().forEach(function(w) {
-      this.runtimeDeps.forEach(function(dep) {
-        if (w[dep]) {
-          window[dep] = w[dep];
-        }
+    if (this.runtimeDeps.length > 0) {
+      chrome.extension.getViews().forEach(function(w) {
+        this.runtimeDeps.forEach(function(dep) {
+          if (w[dep]) {
+            window[dep] = w[dep];
+          }
+        }.bind(this));
       }.bind(this));
-    }.bind(this));
+    }
+
+    // For tests, enable announcement of events we trigger via automation.
+    DesktopAutomationHandler.announceActions = true;
+
+    this.originalOutputContextValues_ = {};
+    for (const role in OutputRoleInfo) {
+      this.originalOutputContextValues_[role] =
+          OutputRoleInfo[role]['contextOrder'];
+    }
   }
 
-  // For tests, enable announcement of events we trigger via automation.
-  DesktopAutomationHandler.announceActions = true;
-
-  this.originalOutputContextValues_ = {};
-  for (var role in Output.ROLE_INFO_) {
-    this.originalOutputContextValues_[role] =
-        Output.ROLE_INFO_[role]['outputContextFirst'];
+  /** @override */
+  setUp() {
+    window.EventType = chrome.automation.EventType;
+    window.RoleType = chrome.automation.RoleType;
+    window.TreeChangeType = chrome.automation.TreeChangeType;
+    window.doCmd = this.doCmd;
+    window.doGesture = this.doGesture;
+    window.Gesture = chrome.accessibilityPrivate.Gesture;
   }
-}
 
-ChromeVoxNextE2ETest.prototype = {
-  __proto__: ChromeVoxE2ETest.prototype,
+  /** @return {!MockFeedback} */
+  createMockFeedback() {
+    const mockFeedback =
+        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
+    mockFeedback.install();
+    return mockFeedback;
+  }
+
+  /**
+   * Create a mock event object.
+   * @param {number} keyCode
+   * @param {{altGraphKey: boolean=,
+   *         altKey: boolean=,
+   *         ctrlKey: boolean=,
+   *         metaKey: boolean=,
+   *         searchKeyHeld: boolean=,
+   *         shiftKey: boolean=,
+   *         stickyMode: boolean=,
+   *         prefixKey: boolean=}=} opt_modifiers
+   * @return {Object} The mock event.
+   */
+  createMockKeyEvent(keyCode, opt_modifiers) {
+    const modifiers = opt_modifiers === undefined ? {} : opt_modifiers;
+    const keyEvent = {};
+    keyEvent.keyCode = keyCode;
+    for (const key in modifiers) {
+      keyEvent[key] = modifiers[key];
+    }
+    keyEvent.preventDefault = _ => {};
+    keyEvent.stopPropagation = _ => {};
+    return keyEvent;
+  }
+
+  /**
+   * Create a function which performs the command |cmd|.
+   * @param {string} cmd
+   * @return {function(): void}
+   */
+  doCmd(cmd) {
+    return () => {
+      CommandHandler.onCommand(cmd);
+    };
+  }
+
+  /**
+   * Create a function which performs the gesture |gesture|.
+   * @param {chrome.accessibilityPrivate.Gesture} gesture
+   * @param {number} opt_x
+   * @param {number} opt_y
+   * @return {function(): void}
+   */
+  doGesture(gesture, opt_x, opt_y) {
+    return () => {
+      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
+    };
+  }
 
   /**
    * Dependencies defined on a background window other than this one.
    * @type {!Array<string>}
    */
-  runtimeDeps: [],
+  get runtimeDeps() {
+    return [];
+  }
 
-  /**
-   * Gets the desktop from the automation API and Launches a new tab with
-   * the given document, and runs |callback| when a load complete fires.
-   * Arranges to call |testDone()| after |callback| returns.
-   * NOTE: Callbacks creatd instide |opt_callback| must be wrapped with
-   * |this.newCallback| if passed to asynchonous calls.  Otherwise, the test
-   * will be finished prematurely.
-   * @param {function() : void} doc Snippet wrapped inside of a function.
-   * @param {function(chrome.automation.AutomationNode)} callback
-   *     Called once the document is ready.
-   * @param {string=} opt_url Optional url to wait for. Defaults to undefined.
-   */
-  runWithLoadedTree: function(doc, callback, opt_url) {
+  /** @override */
+  runWithLoadedTree(doc, callback, opt_params = {}) {
     callback = this.newCallback(callback);
-    chrome.automation.getDesktop(function(r) {
-      var url = opt_url || TestUtils.createUrlForDoc(doc);
-      var listener = function(evt) {
-        if (evt.target.root.url != url) {
-          return;
-        }
+    const wrappedCallback = (node) => {
+      CommandHandler.onCommand('nextObject');
+      callback(node);
+    };
 
-        if (!evt.target.root.docLoaded) {
-          return;
-        }
-
-        r.removeEventListener('focus', listener, true);
-        r.removeEventListener('loadComplete', listener, true);
-        CommandHandler.onCommand('nextObject');
-        callback && callback(evt.target);
-        callback = null;
-      };
-      r.addEventListener('focus', listener, true);
-      r.addEventListener('loadComplete', listener, true);
-      var createParams = {active: true, url: url};
-      chrome.tabs.create(createParams);
-    }.bind(this));
-  },
-
-  listenOnce: function(node, eventType, callback, capture) {
-    var innerCallback = this.newCallback(function() {
-      node.removeEventListener(eventType, innerCallback, capture);
-      callback.apply(this, arguments);
-    });
-    node.addEventListener(eventType, innerCallback, capture);
-  },
+    super.runWithLoadedTree(doc, wrappedCallback, opt_params);
+  }
 
   /**
    * Forces output to place context utterances at the end of output. This eases
    * rebaselining when changing context ordering for a specific role.
    */
-  forceContextualLastOutput: function() {
-    for (var role in Output.ROLE_INFO_) {
-      Output.ROLE_INFO_[role]['outputContextFirst'] = undefined;
+  forceContextualLastOutput() {
+    for (const role in OutputRoleInfo) {
+      OutputRoleInfo[role]['contextOrder'] = OutputContextOrder.LAST;
     }
-  },
+  }
 
   /**
    * Forces output to place context utterances at the beginning of output.
    */
-  forceContextualFirstOutput: function() {
-    for (var role in Output.ROLE_INFO_) {
-      Output.ROLE_INFO_[role]['outputContextFirst'] = true;
+  forceContextualFirstOutput() {
+    for (const role in OutputRoleInfo) {
+      OutputRoleInfo[role]['contextOrder'] = OutputContextOrder.FIRST;
     }
-  },
+  }
 
   /** Resets contextual output values to their defaults. */
-  resetContextualOutput: function() {
-    for (var role in Output.ROLE_INFO_) {
-      Output.ROLE_INFO_[role]['outputContextFirst'] =
+  resetContextualOutput() {
+    for (const role in OutputRoleInfo) {
+      OutputRoleInfo[role]['contextOrder'] =
           this.originalOutputContextValues_[role];
     }
   }

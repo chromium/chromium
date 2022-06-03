@@ -8,15 +8,14 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -33,7 +32,7 @@ struct CrxUpdateItem {
   // caller by responding to the |CrxDataCallback|. If the caller can't
   // provide this value, for instance, in cases where the CRX was uninstalled,
   // then the |component| member will not be present.
-  base::Optional<CrxComponent> component;
+  absl::optional<CrxComponent> component;
 
   // Time when an update check for this CRX has happened.
   base::TimeTicks last_check;
@@ -41,9 +40,22 @@ struct CrxUpdateItem {
   base::Version next_version;
   std::string next_fp;
 
+  // The byte counts below are valid for the current url being fetched.
+  // |total_bytes| is equal to the size of the CRX file and |downloaded_bytes|
+  // represents how much has been downloaded up to that point. Since the CRX
+  // downloader is attempting downloading from a set of URLs, and switching from
+  // URL to URL, the value of |downloaded_bytes| may not monotonically increase.
+  // A value of -1 means that the byte count is unknown.
+  int64_t downloaded_bytes = -1;
+  int64_t total_bytes = -1;
+
+  // A value of -1 means that the progress is unknown.
+  int install_progress = -1;
+
   ErrorCategory error_category = ErrorCategory::kNone;
   int error_code = 0;
   int extra_code1 = 0;
+  std::map<std::string, std::string> custom_updatecheck_data;
 };
 
 }  // namespace update_client

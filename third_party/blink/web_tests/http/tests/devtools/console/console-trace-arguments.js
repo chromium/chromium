@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console.trace dumps arguments alongside the stack trace.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function a()
@@ -14,8 +14,8 @@
     }
   `);
 
-  function callback() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function callback() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
   TestRunner.evaluateInPage('setTimeout(a, 0)');

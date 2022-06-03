@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_CACHE_FACADE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -27,6 +26,10 @@ class SiteDataCacheFacade : public KeyedService,
                             public history::HistoryServiceObserver {
  public:
   explicit SiteDataCacheFacade(content::BrowserContext* browser_context);
+
+  SiteDataCacheFacade(const SiteDataCacheFacade&) = delete;
+  SiteDataCacheFacade& operator=(const SiteDataCacheFacade&) = delete;
+
   ~SiteDataCacheFacade() override;
 
   void IsDataCacheRecordingForTesting(base::OnceCallback<void(bool)> cb);
@@ -43,10 +46,9 @@ class SiteDataCacheFacade : public KeyedService,
   // The browser context associated with this cache.
   content::BrowserContext* browser_context_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCacheFacade);
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 };
 
 }  // namespace performance_manager

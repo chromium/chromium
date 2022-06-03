@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_STATUS_ICONS_DESKTOP_NOTIFICATION_BALLOON_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class ImageSkia;
@@ -24,18 +23,21 @@ struct NotifierId;
 class DesktopNotificationBalloon {
  public:
   DesktopNotificationBalloon();
+
+  DesktopNotificationBalloon(const DesktopNotificationBalloon&) = delete;
+  DesktopNotificationBalloon& operator=(const DesktopNotificationBalloon&) =
+      delete;
+
   virtual ~DesktopNotificationBalloon();
 
   void DisplayBalloon(const gfx::ImageSkia& icon,
-                      const base::string16& title,
-                      const base::string16& contents,
+                      const std::u16string& title,
+                      const std::u16string& contents,
                       const message_center::NotifierId& notifier_id);
 
  private:
   // Counter to provide unique ids to notifications.
   static int id_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNotificationBalloon);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_DESKTOP_NOTIFICATION_BALLOON_H_

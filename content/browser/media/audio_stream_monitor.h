@@ -5,12 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_AUDIO_STREAM_MONITOR_H_
 #define CONTENT_BROWSER_MEDIA_AUDIO_STREAM_MONITOR_H_
 
-#include <map>
-#include <utility>
-
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -42,6 +37,10 @@ class WebContents;
 class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
  public:
   explicit AudioStreamMonitor(WebContents* contents);
+
+  AudioStreamMonitor(const AudioStreamMonitor&) = delete;
+  AudioStreamMonitor& operator=(const AudioStreamMonitor&) = delete;
+
   ~AudioStreamMonitor() override;
 
   // Returns true if audio has recently been audible from the tab.  This is
@@ -77,7 +76,8 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // WebContentsObserver implementation
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   // Overloaded to avoid conflict with RenderProcessGone(int).
-  void RenderProcessGone(base::TerminationStatus status) override {}
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {}
 
   void set_was_recently_audible_for_testing(bool value) {
     indicator_is_on_ = value;
@@ -85,8 +85,24 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   void set_is_currently_audible_for_testing(bool value) { is_audible_ = value; }
 
+  // Class to help automatically remove audible client.
+  class CONTENT_EXPORT AudibleClientRegistration {
+   public:
+    explicit AudibleClientRegistration(
+        AudioStreamMonitor* audio_stream_monitor);
+    ~AudibleClientRegistration();
+
+   private:
+    AudioStreamMonitor* audio_stream_monitor_;
+  };
+
+  // Registers an audible client, which will be unregistered when the returned
+  // AudibleClientRegistration is released.
+  std::unique_ptr<AudibleClientRegistration> RegisterAudibleClient();
+
  private:
   friend class AudioStreamMonitorTest;
+  friend class AudibleClientRegistration;
 
   enum {
     // Minimum amount of time to hold a tab indicator on after it becomes
@@ -117,7 +133,9 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   void MaybeToggle();
   void UpdateStreams();
 
-  // void OnStreamRemoved();
+  // Adds/Removes Audible clients.
+  void AddAudibleClient();
+  void RemoveAudibleClient();
 
   // The WebContents instance to receive indicator toggle notifications.  This
   // pointer should be valid for the lifetime of AudioStreamMonitor.
@@ -134,21 +152,22 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // streams will have an entry in this map.
   base::flat_map<StreamID, bool> streams_;
 
+  // Number of non-stream audible clients, e.g. players not using AudioServices.
+  int audible_clients_ = 0;
+
   // Records the last time at which all streams became silent.
   base::TimeTicks last_became_silent_time_;
 
   // Set to true if the last call to MaybeToggle() determined the indicator
   // should be turned on.
-  bool indicator_is_on_;
+  bool indicator_is_on_ = false;
 
   // Whether the WebContents is currently audible.
-  bool is_audible_;
+  bool is_audible_ = false;
 
   // Started only when an indicator is toggled on, to turn it off again in the
   // future.
   base::OneShotTimer off_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioStreamMonitor);
 };
 
 }  // namespace content

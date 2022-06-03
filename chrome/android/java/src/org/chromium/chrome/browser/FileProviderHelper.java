@@ -6,7 +6,8 @@ package org.chromium.chrome.browser;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.v4.content.FileProvider;
+
+import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;

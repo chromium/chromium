@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/certificate_error_reporter.h"
 #include "components/security_interstitials/content/cert_logger.pb.h"
@@ -38,6 +37,10 @@ enum ExpectReport { CERT_REPORT_NOT_EXPECTED, CERT_REPORT_EXPECTED };
 class SSLCertReporterCallback {
  public:
   explicit SSLCertReporterCallback(base::RunLoop* run_loop);
+
+  SSLCertReporterCallback(const SSLCertReporterCallback&) = delete;
+  SSLCertReporterCallback& operator=(const SSLCertReporterCallback&) = delete;
+
   ~SSLCertReporterCallback();
 
   void ReportSent(const std::string& hostname,
@@ -52,8 +55,6 @@ class SSLCertReporterCallback {
   base::RunLoop* run_loop_;
   std::string latest_hostname_reported_;
   chrome_browser_ssl::CertLoggerRequest::ChromeChannel chrome_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLCertReporterCallback);
 };
 
 #if !defined(OS_ANDROID)
@@ -66,9 +67,9 @@ void SetCertReportingOptIn(Browser* browser, OptIn opt_in);
 // |report_sent_callback| when a report is sent. It also checks that a
 // report is sent or not sent according to |expect_report|.
 std::unique_ptr<SSLCertReporter> CreateMockSSLCertReporter(
-    const base::Callback<
+    base::RepeatingCallback<
         void(const std::string&,
-             const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>&
+             const chrome_browser_ssl::CertLoggerRequest_ChromeChannel)>
         report_sent_callback,
     ExpectReport expect_report);
 

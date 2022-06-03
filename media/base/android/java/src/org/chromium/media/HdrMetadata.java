@@ -83,8 +83,8 @@ class HdrMetadata {
             hdrStaticInfo.putShort((short) ((primaryBChromaticityY() * MAX_CHROMATICITY) + 0.5f));
             hdrStaticInfo.putShort((short) ((whitePointChromaticityX() * MAX_CHROMATICITY) + 0.5f));
             hdrStaticInfo.putShort((short) ((whitePointChromaticityY() * MAX_CHROMATICITY) + 0.5f));
-            hdrStaticInfo.putShort((short) (maxMasteringLuminance() + 0.5f));
-            hdrStaticInfo.putShort((short) (minMasteringLuminance() + 0.5f));
+            hdrStaticInfo.putShort((short) (maxColorVolumeLuminance() + 0.5f));
+            hdrStaticInfo.putShort((short) (minColorVolumeLuminance() + 0.5f));
             hdrStaticInfo.putShort((short) maxContentLuminance());
             hdrStaticInfo.putShort((short) maxFrameAverageLuminance());
 
@@ -174,12 +174,14 @@ class HdrMetadata {
                 mNativeJniHdrMetadata, HdrMetadata.this);
     }
 
-    private float maxMasteringLuminance() {
-        return HdrMetadataJni.get().maxMasteringLuminance(mNativeJniHdrMetadata, HdrMetadata.this);
+    private float maxColorVolumeLuminance() {
+        return HdrMetadataJni.get().maxColorVolumeLuminance(
+                mNativeJniHdrMetadata, HdrMetadata.this);
     }
 
-    private float minMasteringLuminance() {
-        return HdrMetadataJni.get().minMasteringLuminance(mNativeJniHdrMetadata, HdrMetadata.this);
+    private float minColorVolumeLuminance() {
+        return HdrMetadataJni.get().minColorVolumeLuminance(
+                mNativeJniHdrMetadata, HdrMetadata.this);
     }
 
     private int maxContentLuminance() {
@@ -204,8 +206,8 @@ class HdrMetadata {
         float primaryBChromaticityY(long nativeJniHdrMetadata, HdrMetadata caller);
         float whitePointChromaticityX(long nativeJniHdrMetadata, HdrMetadata caller);
         float whitePointChromaticityY(long nativeJniHdrMetadata, HdrMetadata caller);
-        float maxMasteringLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
-        float minMasteringLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
+        float maxColorVolumeLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
+        float minColorVolumeLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
         int maxContentLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
         int maxFrameAverageLuminance(long nativeJniHdrMetadata, HdrMetadata caller);
     }

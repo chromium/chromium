@@ -5,8 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  java_files =
-      [ "java/src/org/chromium/chrome/modules/extra_icu/ExtraIcu.java" ]
+  sources = [ "java/src/org/chromium/chrome/modules/extra_icu/ExtraIcu.java" ]
   deps = [
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",

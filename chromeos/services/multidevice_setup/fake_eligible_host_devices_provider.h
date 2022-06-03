@@ -5,11 +5,8 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_ELIGIBLE_HOST_DEVICES_PROVIDER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_ELIGIBLE_HOST_DEVICES_PROVIDER_H_
 
-#include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/multidevice_setup/eligible_host_devices_provider.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
 
@@ -19,6 +16,12 @@ namespace multidevice_setup {
 class FakeEligibleHostDevicesProvider : public EligibleHostDevicesProvider {
  public:
   FakeEligibleHostDevicesProvider();
+
+  FakeEligibleHostDevicesProvider(const FakeEligibleHostDevicesProvider&) =
+      delete;
+  FakeEligibleHostDevicesProvider& operator=(
+      const FakeEligibleHostDevicesProvider&) = delete;
+
   ~FakeEligibleHostDevicesProvider() override;
 
   void set_eligible_host_devices(
@@ -40,8 +43,6 @@ class FakeEligibleHostDevicesProvider : public EligibleHostDevicesProvider {
 
   multidevice::RemoteDeviceRefList eligible_host_devices_;
   multidevice::DeviceWithConnectivityStatusList eligible_active_host_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEligibleHostDevicesProvider);
 };
 
 }  // namespace multidevice_setup

@@ -10,7 +10,9 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 
+namespace value_store {
 class ValueStore;
+}
 
 namespace extensions {
 
@@ -27,7 +29,7 @@ class Extension;
 // posted to FILE after ShutdownOnUI().
 class ValueStoreCache {
  public:
-  typedef base::Callback<void(ValueStore*)> StorageCallback;
+  using StorageCallback = base::OnceCallback<void(value_store::ValueStore*)>;
 
   // Invoked on FILE.
   virtual ~ValueStoreCache();
@@ -45,7 +47,7 @@ class ValueStoreCache {
   // asynchronously posted as a task to the loop returned by GetMessageLoop(),
   // and this guarantees the Extension is still valid when the method executes.
   virtual void RunWithValueStoreForExtension(
-      const StorageCallback& callback,
+      StorageCallback callback,
       scoped_refptr<const Extension> extension) = 0;
 
   // Requests the cache to delete any storage used by |extension_id|.

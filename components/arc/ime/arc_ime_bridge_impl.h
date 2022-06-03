@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
@@ -27,16 +25,22 @@ class ArcBridgeService;
 class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
  public:
   ArcImeBridgeImpl(Delegate* delegate, ArcBridgeService* bridge_service);
+
+  ArcImeBridgeImpl(const ArcImeBridgeImpl&) = delete;
+  ArcImeBridgeImpl& operator=(const ArcImeBridgeImpl&) = delete;
+
   ~ArcImeBridgeImpl() override;
 
   // ArcImeBridge overrides:
   void SendSetCompositionText(const ui::CompositionText& composition) override;
   void SendConfirmCompositionText() override;
-  void SendInsertText(const base::string16& text) override;
+  void SendInsertText(const std::u16string& text,
+                      int new_cursor_position) override;
   void SendExtendSelectionAndDelete(size_t before, size_t after) override;
   void SendOnKeyboardAppearanceChanging(const gfx::Rect& new_bounds,
                                         bool is_available) override;
   void SendSelectionRange(const gfx::Range& selection_range) override;
+  void SendSetComposingRegion(const gfx::Range& composing_range) override;
 
   // mojom::ImeHost overrides:
   void OnTextInputTypeChanged(ui::TextInputType type,
@@ -51,13 +55,13 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
                                               const std::string& text_in_range,
                                               const gfx::Range& selection_range,
                                               bool screen_coordinates) override;
-  void RequestHideIme() override;
+  void RequestHideImeDeprecated() override;
+  void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
+                    SendKeyEventCallback callback) override;
 
  private:
   Delegate* const delegate_;
   ArcBridgeService* const bridge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcImeBridgeImpl);
 };
 
 }  // namespace arc

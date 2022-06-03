@@ -20,38 +20,40 @@ namespace {
 class FakeSerialPort : public mojom::SerialPort {
  public:
   FakeSerialPort(
-      mojo::PendingReceiver<mojom::SerialPort> receiver,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher)
-      : receiver_(this, std::move(receiver)), watcher_(std::move(watcher)) {
-    receiver_.set_disconnect_handler(base::BindOnce(
-        [](FakeSerialPort* self) { delete self; }, base::Unretained(this)));
+      : watcher_(std::move(watcher)), client_(std::move(client)) {
     watcher_.set_disconnect_handler(base::BindOnce(
         [](FakeSerialPort* self) { delete self; }, base::Unretained(this)));
   }
 
+  FakeSerialPort(const FakeSerialPort&) = delete;
+  FakeSerialPort& operator=(const FakeSerialPort&) = delete;
+
   ~FakeSerialPort() override = default;
 
+  mojo::PendingRemote<mojom::SerialPort> BindNewPipeAndPassRemote() {
+    auto remote = receiver_.BindNewPipeAndPassRemote();
+    receiver_.set_disconnect_handler(base::BindOnce(
+        [](FakeSerialPort* self) { delete self; }, base::Unretained(this)));
+    return remote;
+  }
+
   // mojom::SerialPort
-  void Open(mojom::SerialConnectionOptionsPtr options,
-            mojo::ScopedDataPipeConsumerHandle in_stream,
-            mojo::ScopedDataPipeProducerHandle out_stream,
-            mojo::PendingRemote<mojom::SerialPortClient> client,
-            OpenCallback callback) override {
-    in_stream_ = std::move(in_stream);
-    out_stream_ = std::move(out_stream);
-    client_.Bind(std::move(client));
-    std::move(callback).Run(true);
+  void StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) override {
+    in_stream_ = std::move(consumer);
   }
 
-  void ClearSendError(mojo::ScopedDataPipeConsumerHandle consumer) override {
+  void StartReading(mojo::ScopedDataPipeProducerHandle producer) override {
+    out_stream_ = std::move(producer);
+  }
+
+  void Flush(device::mojom::SerialPortFlushMode mode,
+             FlushCallback callback) override {
     NOTREACHED();
   }
 
-  void ClearReadError(mojo::ScopedDataPipeProducerHandle producer) override {
-    NOTREACHED();
-  }
-
-  void Flush(FlushCallback callback) override { NOTREACHED(); }
+  void Drain(DrainCallback callback) override { NOTREACHED(); }
 
   void GetControlSignals(GetControlSignalsCallback callback) override {
     NOTREACHED();
@@ -72,15 +74,13 @@ class FakeSerialPort : public mojom::SerialPort {
   void Close(CloseCallback callback) override { std::move(callback).Run(); }
 
  private:
-  mojo::Receiver<mojom::SerialPort> receiver_;
+  mojo::Receiver<mojom::SerialPort> receiver_{this};
   mojo::Remote<mojom::SerialPortConnectionWatcher> watcher_;
 
   // Mojo handles to keep open in order to simulate an active connection.
   mojo::ScopedDataPipeConsumerHandle in_stream_;
   mojo::ScopedDataPipeProducerHandle out_stream_;
   mojo::Remote<mojom::SerialPortClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSerialPort);
 };
 
 }  // namespace
@@ -97,6 +97,24 @@ void FakeSerialPortManager::AddReceiver(
 void FakeSerialPortManager::AddPort(mojom::SerialPortInfoPtr port) {
   base::UnguessableToken token = port->token;
   ports_[token] = std::move(port);
+
+  for (auto& client : clients_)
+    client->OnPortAdded(ports_[token]->Clone());
+}
+
+void FakeSerialPortManager::RemovePort(base::UnguessableToken token) {
+  auto it = ports_.find(token);
+  DCHECK(it != ports_.end());
+  mojom::SerialPortInfoPtr info = std::move(it->second);
+  ports_.erase(it);
+
+  for (auto& client : clients_)
+    client->OnPortRemoved(info.Clone());
+}
+
+void FakeSerialPortManager::SetClient(
+    mojo::PendingRemote<mojom::SerialPortManagerClient> client) {
+  clients_.Add(std::move(client));
 }
 
 void FakeSerialPortManager::GetDevices(GetDevicesCallback callback) {
@@ -106,13 +124,22 @@ void FakeSerialPortManager::GetDevices(GetDevicesCallback callback) {
   std::move(callback).Run(std::move(ports));
 }
 
-void FakeSerialPortManager::GetPort(
+void FakeSerialPortManager::OpenPort(
     const base::UnguessableToken& token,
-    mojo::PendingReceiver<mojom::SerialPort> receiver,
-    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher) {
-  // The new FakeSerialPort instance is owned by the |receiver| and |watcher|
-  // pipes.
-  new FakeSerialPort(std::move(receiver), std::move(watcher));
+    bool use_alternate_path,
+    device::mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
+    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+    OpenPortCallback callback) {
+  if (simulate_open_failure_) {
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  // This FakeSerialPort is owned by |receiver_| and |watcher_| and will
+  // self-destruct on close.
+  auto* port = new FakeSerialPort(std::move(client), std::move(watcher));
+  std::move(callback).Run(port->BindNewPipeAndPassRemote());
 }
 
 }  // namespace device

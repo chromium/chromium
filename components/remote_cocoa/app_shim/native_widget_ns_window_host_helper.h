@@ -59,6 +59,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowHostHelper {
   // Return a pointer to the host's ui::TextInputClient.
   // TODO(ccameron): Remove the needs for this call.
   virtual ui::TextInputClient* GetTextInputClient() = 0;
+
+  // Return whether or not the nested run loop to animate in a sheet must be
+  // made on a fresh stack, produced by posting a task to make the call.
+  // https://crbug.com/1234509
+  virtual bool MustPostTaskToRunModalSheetAnimation() const = 0;
 };
 
 }  // namespace remote_cocoa

@@ -21,8 +21,10 @@ proto_library("proto") {
     "internal.proto",
     "layout_key_function.proto",
     "mux.proto",
-    "process_stats.proto",
+    "remote_open_url.proto",
+    "remote_webauthn.proto",
     "test_data_channel_manager.proto",
+    "url_forwarder_control.proto",
     "video.proto",
     "video_stats.proto",
   ]

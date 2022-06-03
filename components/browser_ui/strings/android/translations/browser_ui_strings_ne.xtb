@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ne">
+<translation id="1006017844123154345">अनलाइन खोल्नुहोस्</translation>
+<translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
+<translation id="1124090076051167250">यस कार्यले साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> बराबरका डेटा र कुकीहरू मेटाउने छ।</translation>
+<translation id="1178581264944972037">पज गर्नुहोस्</translation>
+<translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1201402288615127009">अर्को</translation>
+<translation id="1242008676835033345"><ph name="WEBSITE_URL" /> मा इम्बेड गरिएको</translation>
+<translation id="1272079795634619415">रोक्नुहोस्</translation>
+<translation id="1289742167380433257">तपाईंको डेटाको खपत कम गर्न Google ले यो पृष्ठका फोटोहरू अप्टिमाइज गरेको छ।</translation>
+<translation id="129382876167171263">वेबसाइटहरूले सुरक्षित गरेका फाइल यहाँ देखिने छन्</translation>
+<translation id="1317194122196776028">इतिहासबाट यो साइटका विवरण हटाउनुहोस्</translation>
+<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
+<translation id="1369915414381695676">साइट <ph name="SITE_NAME" /> थपियो</translation>
+<translation id="1383876407941801731">खोज्नुहोस्</translation>
+<translation id="1384959399684842514">डाउनलोड रोकिएको छ</translation>
+<translation id="1415402041810619267">URL छोटो बनाइयो</translation>
+<translation id="1446450296470737166">MIDI डिभाइसहरूको पूर्ण नियन्त्रणलाई अनुमति दिनुहोस्</translation>
+<translation id="1620510694547887537">क्यामेरा</translation>
+<translation id="1644574205037202324">इतिहास</translation>
+<translation id="1647582022260550163">तपाईं साँच्चिकै अनुमतिहरू रिसेट गर्न र कुकी तथा साइटसम्बन्धी डेटा मेटाउन चाहनुहुन्छ?</translation>
+<translation id="1660204651932907780">साइटहरूलाई आवाज प्ले गर्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="1677097821151855053">कुकी र साइटका अन्य डेटा तपाईंको जानकारी याद राख्न प्रयोग गरिन्छन्। जस्तै, कुकी र साइटका अन्य डेटा तपाईंलाई साइन इन गराउन वा तपाईंको चाखअनुसारका विज्ञापन देखाउन प्रयोग गरिन्छन्। सबै साइटका कुकीहरू व्यवस्थापन गर्न <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
+<translation id="1688867105868176567">साइटको डेटा खाली गर्ने हो?</translation>
+<translation id="169515064810179024">साइटहरूलाई चालसम्बन्धी सेन्सरहरूमाथि पहुँच राख्नबाट रोक्नुहोस्‌</translation>
+<translation id="1717218214683051432">चालसम्बन्धी सेन्सरहरू</translation>
+<translation id="1743802530341753419">साइटहरूलाई कुनै यन्त्रमा जडान गर्ने अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="1779089405699405702">छविको डिकोडर</translation>
+<translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
+<translation id="1864927262126810325"><ph name="SOURCE_NAME" /> बाट प्राप्त जानकारी</translation>
+<translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="1919345977826869612">विज्ञापनहरू</translation>
+<translation id="1919950603503897840">सम्पर्कहरू चयन गर्नुहोस्</translation>
+<translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1984937141057606926">अनुमति छ, तेस्रो-पक्ष बाहेकलाई</translation>
+<translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
+<translation id="1994173015038366702">साइट URL</translation>
+<translation id="2004697686368036666">केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
+<translation id="2025115093177348061">अग्मेन्टेड रियालिटी</translation>
+<translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> मा फर्कन ट्याप गर्नुहोस्</translation>
+<translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
+<translation id="2091887806945687916">आवाज</translation>
+<translation id="2107397443965016585">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="2146738493024040262">तात्कालिक एप खोल्नुहोस्</translation>
+<translation id="2148716181193084225">आज</translation>
+<translation id="2182457891543959921">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन दिनुअघि मलाई सोधियोस् (सिफारिस गरिएको)</translation>
+<translation id="2212565012507486665">कुकीहरूलाई अनुमति दिनुहोस्</translation>
+<translation id="2228071138934252756"><ph name="APP_NAME" /> लाई आफ्नो क्यामेरा प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
+<translation id="2241634353105152135">एकपटक मात्र</translation>
+<translation id="2289270750774289114">कुनै साइटले छेउछाउका ब्लुटुथ यन्त्रहरू पत्ता लगाउन खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="2315043854645842844">अपरेटिङ सिस्टमले क्लाइन्ट साइड प्रमाणपत्रको चयनलाई समर्थन गर्दैन।</translation>
+<translation id="2359808026110333948">जारी राख्नुहोस्</translation>
+<translation id="2379925928934107488">Chrome मा अँध्यारो थिम प्रयोग गरिएका बेला साइटहरूमा सकेसम्म अँध्यारो थिम लागू गर्नुहोस्</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> एम.बि.</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छ}}</translation>
+<translation id="2434158240863470628">डाउनलोड सम्पन्न भयो <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">सधैँ साइटको डेस्कटप भ्यू देखाइयोस्</translation>
+<translation id="2482878487686419369">सूचनाहरू</translation>
+<translation id="2485422356828889247">विस्थापन गर्नुहोस्</translation>
+<translation id="2490684707762498678"><ph name="APP_NAME" /> ले व्यवस्थापन गरेको</translation>
+<translation id="2498359688066513246">मद्दत र प्रतिक्रिया</translation>
+<translation id="2501278716633472235">पछाडि जानुहोस्</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{१ कुकीमाथि रोक लगाइयो}other{# कुकीहरूमाथि रोक लगाइयो}}</translation>
+<translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="257931822824936280">विस्तृत गरिएको - संक्षिप्त पार्न क्लिक गर्नुहोस्</translation>
+<translation id="2586657967955657006">क्लिपबोर्ड</translation>
+<translation id="2597457036804169544">साइटहरूमा अँध्यारो थिम लागू नगर्नुहोस्</translation>
+<translation id="2621115761605608342">कुनै विशेष साइटलाई JavaScript को प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
+<translation id="2653659639078652383">पेश गर्नुहोस्</translation>
+<translation id="2677748264148917807">छोड्नुहोस्</translation>
+<translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
+<translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
+<translation id="2717722538473713889">इमेल ठेगानाहरू</translation>
+<translation id="2785051990912111074">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> का कुकीहरू मेटाइने छन्</translation>
+<translation id="2822354292072154809">तपाईं साँच्चिकै <ph name="CHOSEN_OBJECT_NAME" /> का साइटसम्बन्धी सम्पूर्ण अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
+<translation id="2870560284913253234">साइट</translation>
+<translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
+<translation id="2903493209154104877">ठेगानाहरू</translation>
+<translation id="2910701580606108292">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति दिनुअघि सोध्नुहोस्</translation>
+<translation id="2913331724188855103">साइटहरूलाई कुकी डेटा सुरक्षित गर्ने र पढ्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="2932883381142163287">दुरूपयोग रिपोर्ट गर्नुहोस्</translation>
+<translation id="2968755619301702150">प्रमाणपत्र दर्शक</translation>
+<translation id="300526633675317032">यसले वेबसाइटको भण्डारणको सबै <ph name="SIZE_IN_KB" /> खाली गर्ने छ।</translation>
+<translation id="3008272652534848354">अनुमतिहरू रिसेट गर्नुहोस्</translation>
+<translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
+<translation id="3114012059975132928">भिडियो प्लेयर</translation>
+<translation id="3115898365077584848">जानकारी देखाउनुहोस्</translation>
+<translation id="3123473560110926937">केही साइटका हकमा रोक लगाइएको छ</translation>
+<translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> भण्डारण डेटा</translation>
+<translation id="321187648315454507"><ph name="APP_NAME" /> लाई तपाईंलाई सूचनाहरू पठाउन दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई सूचनाहरू पनि अन गर्नुहोस्।</translation>
+<translation id="3227137524299004712">माइक्रोफोन</translation>
+<translation id="3277252321222022663">साइटहरूलाई सेन्सरहरूमाथि पहुँच राख्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="3295602654194328831">जानकारी लुकाउनुहोस्</translation>
+<translation id="3328801116991980348">साइट जानकारी</translation>
+<translation id="3333961966071413176">सबै सम्पर्कहरू</translation>
+<translation id="3386292677130313581">साइटहरूलाई तपाईँको स्थान थाहा पाउने अनुमति दिनु भन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
+<translation id="3538390592868664640">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन नदिनुहोस्</translation>
+<translation id="3551268116566418498">इन्कोग्निटो मोडबाट बाहिरिने हो?</translation>
+<translation id="3586500876634962664">क्यामेरा र माइक्रोफोनको प्रयोग</translation>
+<translation id="358794129225322306">साइटलाई एकभन्दा बढी फाइलहरू स्वतः डाउनलोड गर्ने अनुमति दिनुहोस्।</translation>
+<translation id="3594780231884063836">भिडियो म्युट गर्नुहोस्</translation>
+<translation id="3596414637720633074">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
+<translation id="3600792891314830896">आवाज प्ले गर्ने साइटहरूलाई म्युट गर्नुहोस्‌</translation>
+<translation id="3744111561329211289">पृष्ठभूमिमा सिंक गर्ने सुविधा</translation>
+<translation id="3763247130972274048">१० सेकेन्ड छाडेर अगाडि पछाडि जान भिडियोको बायाँ वा दायाँतिर डबल ट्याप गर्नुहोस्</translation>
+<translation id="3797520601150691162">निश्चित साइटमा अँध्यारो थिम लागू नगर्नुहोस्</translation>
+<translation id="381841723434055211">फोन नम्बरहरू</translation>
+<translation id="3835233591525155343">तपाईंको डिभाइसको प्रयोग</translation>
+<translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="3859306556332390985">अगाडि खोज्नुहोस्</translation>
+<translation id="3955193568934677022">साइटहरूलाई सुरक्षित सामग्री प्ले गर्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
+<translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
+<translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="4002066346123236978">शीर्षक</translation>
+<translation id="4008040567710660924">कुनै खास साइटमा कुकीहरूलाई अनुमति दिनुहोस्।</translation>
+<translation id="4046123991198612571">अर्को ट्र्याक</translation>
+<translation id="4165986682804962316">साइट सेटिङहरू</translation>
+<translation id="4200726100658658164">स्थानसम्बन्धी सेटिङ खोल्नुहोस्</translation>
+<translation id="4226663524361240545">सूचनाहरूले गर्दा यन्त्र कम्पन गर्न सक्छ</translation>
+<translation id="4259722352634471385">नेभिगेशन रोकियो: <ph name="URL" /></translation>
+<translation id="4278390842282768270">अनुमति प्राप्त</translation>
+<translation id="429312253194641664">कुनै साइटले मिडियो प्ले गरिरहेको छ</translation>
+<translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
+<translation id="4336434711095810371">सबै डेटा मेटाउनुहोस्</translation>
+<translation id="4402755511846832236">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा साइटहरूलाई थाहा पाउन नदिनुहोस्</translation>
+<translation id="4434045419905280838">पपअप तथा रिडिरेक्टहरू</translation>
+<translation id="445467742685312942">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति दिनुहोस्</translation>
+<translation id="4468959413250150279">निश्चित साइटको ध्वनि म्युट गर्नुहोस्।</translation>
+<translation id="4479647676395637221">साइटहरूलाई तपाईँको क्यामेरा प्रयोग गर्न अनुमति दिनुभन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
+<translation id="4505788138578415521">URL विस्तृत गरियो</translation>
+<translation id="4534723447064627427"><ph name="APP_NAME" /> लाई आफ्नो माइक्रोफोन प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई माइक्रोफोन पनि अन गर्नुहोस्।</translation>
+<translation id="4570913071927164677">विवरणहरू</translation>
+<translation id="4645575059429386691">तपाईँको अविभावक द्वारा प्रबन्ध गरिएको</translation>
+<translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
+<translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
+<translation id="4836046166855586901">कुनै साइटले मैले यो डिभाइस चलाइरहेको छु कि छुइनँ भन्ने कुराको जानकारी माग्दा मलाई सोधियोस्</translation>
+<translation id="4883854917563148705">व्यवस्थित सेटिङ रिसेट गर्न सकिँदैन</translation>
+<translation id="4887024562049524730">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="4962975101802056554">डिभाइसका सबै अनुमतिहरू फिर्ता लिनुहोस्</translation>
+<translation id="497421865427891073">अगाडि जानुहोस्</translation>
+<translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
+<translation id="4994033804516042629">कुनै पनि सम्पर्क ठेगाना भेटिएन</translation>
+<translation id="4996978546172906250">मार्फत साझा गर्नुहोस्</translation>
+<translation id="5014906230196386306">कुकीहरू मेटाउने हो?</translation>
+<translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
+<translation id="5048398596102334565">साइटहरूलाई चालसम्बन्धी सेन्सरहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्‌ (सिफारिस गरिएको)</translation>
+<translation id="5050380848339752099">यो साइटले इन्कोग्निटो मोडबाहिरको एपसँग जानकारी सेयर गर्न लागिरहेको छ।</translation>
+<translation id="5063480226653192405">उपयोग</translation>
+<translation id="509133520954049755">डेस्कटप भ्यू देखाउन अनुरोध गरियोस्</translation>
+<translation id="5100237604440890931">संक्षिप्त भयो - विस्तृत गर्न क्लिक गर्नुहोस्</translation>
+<translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
+<translation id="5134599672855298214">मोबाइल भ्यू देखाउन अनुरोध गरियोस् (सिफारिस गरिएको)</translation>
+<translation id="5186036860380548585">यो विकल्प स्क्रिनको सिरान छेउमा उपलब्ध छ</translation>
+<translation id="5197729504361054390">तपाईंले चयन गर्ने सम्पर्कहरू <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> सँग आदान प्रदान गरिने छन्।</translation>
+<translation id="5216942107514965959">पछिल्लो पटक आज खोलिएको</translation>
+<translation id="528192093759286357">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि शीर्षबाट तानेर पछाडि बटनलाई छुनुहोस्।</translation>
+<translation id="5300589172476337783">देखाउनुहोस्</translation>
+<translation id="5301954838959518834">ठिक छ, बुझेँ</translation>
+<translation id="5313967007315987356">साइट थप्नुहोस्</translation>
+<translation id="5317780077021120954">बचत गर्नुहोस्</translation>
+<translation id="5335288049665977812">साइटहरूलाई JavaScript सञ्चालन गर्न अनुमति दिने (सिफारिस गरिएको)</translation>
+<translation id="534295439873310000">NFC यन्त्रहरू</translation>
+<translation id="5354152178998424783">यस कार्यले साइटहरूले भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटाउने छ।</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
+<translation id="5403592356182871684">नामहरू</translation>
+<translation id="5438097262470833822">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> लाई दिइएका अनुमतिहरू रिसेट गरिने छन्</translation>
+<translation id="5489227211564503167"><ph name="TOTAL_TIME" /> मध्ये <ph name="ELAPSED_TIME" /> समय बित्यो।</translation>
+<translation id="5494752089476963479">हस्तक्षेपकारी वा भ्रामक विज्ञापन देखाउने साइटका विज्ञापनहरूलाई रोक लगाउनुहोस्</translation>
+<translation id="5502860503640766021"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ, <ph name="PERMISSION_2" /> ब्लक गरिएको छ</translation>
+<translation id="5505264765875738116">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्दैनन्।</translation>
+<translation id="5516455585884385570">सूचनाका सेटिङहरू खोल्नुहोस्</translation>
+<translation id="5527111080432883924">साइटहरूलाई क्लिपबोर्डका पाठ तथा फोटो पढ्ने अनुमति दिनुभन्दा पहिले सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="5553374991681107062">नवीनतम</translation>
+<translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
+<translation id="5596627076506792578">अन्य विकल्पहरू</translation>
+<translation id="5649053991847567735">स्वचालित डाउनलोडहरू</translation>
+<translation id="5677928146339483299">ब्लक गरिएको छ</translation>
+<translation id="5689516760719285838">स्थान</translation>
+<translation id="5690795753582697420">Android का सेटिङमा क्यामेरा बन्द गरिएको छ</translation>
+<translation id="5710871682236653961">तपाईंले NFC यन्त्रहरूमा ट्याप गर्दा साइटहरूलाई जानकारी पठाउने र प्राप्त गर्ने अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="5719847187258001597">यस कार्यले <ph name="ORIGIN" /> ले वा यसको एपले तपाईंको होम स्क्रिनमा भण्डारण गरेका सबै डेटा र कुकीहरू मेटाउने छ।</translation>
+<translation id="5771720122942595109"><ph name="PERMISSION_1" /> ब्लक गरिएको छ</translation>
+<translation id="5804241973901381774">अनुमतिहरू</translation>
+<translation id="5860033963881614850">बन्द</translation>
+<translation id="5876056640971328065">भिडियो पज गर्नुहोस्</translation>
+<translation id="5887687176710214216">पछिल्लो पटक हिजो खोलिएको</translation>
+<translation id="5916664084637901428">अन</translation>
+<translation id="5922853908706496913">तपाईंको स्क्रिन सेयर गर्दै</translation>
+<translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
+<translation id="5975083100439434680">जुम आउट</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" />, <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015775454662021376">यो साइटले तपाईंको यन्त्र प्रयोग गर्न पाउने कि नपाउने भन्ने कुरा नियन्त्रण गर्नुहोस्</translation>
+<translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
+<translation id="6042308850641462728">थप</translation>
+<translation id="6064125863973209585">पूरा भएका डाउनलोडहरू</translation>
+<translation id="6165508094623778733">थप जान्नुहोस्</translation>
+<translation id="6177111841848151710">हालको खोज इन्जिनका लागि रोक लगाइएको</translation>
+<translation id="6177128806592000436">यस साइटमा तपाईँको जडान सुरक्षित छैन</translation>
+<translation id="6181444274883918285">साइटको अपवाद थप्नुुहोस्</translation>
+<translation id="6192792657125177640">अपवाद</translation>
+<translation id="6196640612572343990">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
+<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> विकल्पहरू</translation>
+<translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइन्स्टल गर्ने हो?</translation>
+<translation id="6262279340360821358"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> ब्लक गरियो</translation>
+<translation id="6270391203985052864">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्छन्।</translation>
+<translation id="6295158916970320988">सबै साइटहरू</translation>
+<translation id="6320088164292336938">कम्पन</translation>
+<translation id="6388207532828177975">खाली गरेर रिसेट गर्नुहोस्</translation>
+<translation id="6398765197997659313">पूर्ण स्क्रिनलाई हटाउनुहोस्</translation>
+<translation id="6439114592976064011">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न रोक लगाउनुहोस्</translation>
+<translation id="6447842834002726250">कुकीहरू</translation>
+<translation id="6527303717912515753">साझा गर्नुहोस्</translation>
+<translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}}</translation>
+<translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
+<translation id="6561560012278703671">सुटुक्क सन्देश पठाउने सुविधा प्रयोग गर्नुहोस् (यसले सूचनाका प्रम्प्टलाई आफूलाई बाधा पुर्‍याउनबाट रोक लगाउँछ)</translation>
+<translation id="6593061639179217415">डेस्कटप साइट</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> जि.बि.</translation>
+<translation id="6612358246767739896">संरक्षित सामग्री</translation>
+<translation id="662080504995468778">यहीँ रहनुहोस्</translation>
+<translation id="6643016212128521049">खालि गर्नुहोस्</translation>
+<translation id="6689172468748959065">प्रोफाइल तस्बिरहरू</translation>
+<translation id="6697925417670533197">जारी डाउनलोडहरू</translation>
+<translation id="6746124502594467657">तल सार्नुहोस्</translation>
+<translation id="6749077623962119521">अनुमति रिसेट गर्ने हो?</translation>
+<translation id="6766622839693428701">बन्द गर्न तलतिर स्वाइप गर्नुहोस्।</translation>
+<translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
+<translation id="6818926723028410516">वस्तुहरू छनाैट गर्नुहोस्</translation>
+<translation id="6864395892908308021">यस यन्त्रले NFC पढ्न सक्दैन</translation>
+<translation id="6910211073230771657">मेटाइएको</translation>
+<translation id="6912998170423641340">साइटहरूलाई क्लिपबोर्डका पाठ तथा फोटो पढ्नबाट रोक लगाउनुहोस्</translation>
+<translation id="6945221475159498467">चयन गर्नुहोस्</translation>
+<translation id="6965382102122355670">ठिक छ</translation>
+<translation id="6992289844737586249">साइटहरूलाई तपाईँको माइक्रोफोन प्रयोग गर्न अनुमति दिनुभन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
+<translation id="7000754031042624318">Android का सेटिङहरूमा अनुमति निष्क्रिय पारिएको छ</translation>
+<translation id="7016516562562142042">हालको खोज इन्जिनका लागि अनुमति दिइएको</translation>
+<translation id="7053983685419859001">रोक्नुहोस्</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{१ चयन गरियो}other{# चयन गरिए}}</translation>
+<translation id="7070090581017165256">यो साइटका बारेमा जानकारी</translation>
+<translation id="7087918508125750058"><ph name="ITEM_COUNT" /> चयन गरिए।  विकल्पहरू स्क्रिनको शीर्षभागको नजिकै उपलब्ध छन्</translation>
+<translation id="7141896414559753902">साइटहरूलाई पपअपहरू देखाउन र रिडिरेक्ट गर्नबाट रोक्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> के.बि.</translation>
+<translation id="723171743924126238">फोटो चयन गर्नुहोस्</translation>
+<translation id="7243308994586599757">विकल्पहरू स्क्रिनको तल नजिकै उपलब्ध छ</translation>
+<translation id="7250468141469952378"><ph name="ITEM_COUNT" /> चयन गरिए</translation>
+<translation id="7260727271532453612"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति दिइएको छ</translation>
+<translation id="7302486331832100261">तपाईं सामान्यतया सूचनाहरूमाथि रोक लगाउनुहुन्छ। अनुमति दिन विवरणहरूमा ट्याप गर्नुहोस्।</translation>
+<translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
+<translation id="7423538860840206698">क्लिपबोर्डका सामग्री पढ्नबाट रोक लगाइयो</translation>
+<translation id="7425915948813553151">साइटहरूमा लागू हुने अँध्यारो थिम</translation>
+<translation id="7521387064766892559">JavaScript</translation>
+<translation id="7554752735887601236">कुनै साइटले तपाईंको माइक्रोफोन प्रयोग गर्दै छ</translation>
+<translation id="7561196759112975576">सधैं</translation>
+<translation id="7572498721684305250">तपाईंले NFC यन्त्रहरूमा ट्याप गर्दा साइटहरूलाई जानकारी पठाउन र प्राप्त गर्न रोक लगाउनुहोस्</translation>
+<translation id="757524316907819857">साइटहरूलाई संरक्षित सामग्री प्ले गर्न रोक लगाउनुहोस्</translation>
+<translation id="7649070708921625228">मद्दत</translation>
+<translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7781829728241885113">हिजो</translation>
+<translation id="7791543448312431591">थप्नुहोस्</translation>
+<translation id="780301667611848630">भयो, धन्यवाद</translation>
+<translation id="7804248752222191302">कुनै साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
+<translation id="7817023149356982970">तपाईं यो साइटबाट साइन आउट हुनु हुने छ।</translation>
+<translation id="7828557259026017104">कुकीहरू भनेका तपाईं जाने वेबसाइटहरूले सिर्जना गर्ने फाइल हुन्। तपाईंका प्राथमिकताहरू याद राख्न वेबसाइटहरूले ती कुकीहरूको प्रयोग गर्छन्। अन्य वेबसाइटहरूले तेस्रो पक्षीय कुकीहरू सिर्जना गर्छन्। तपाईं जाने वेबपृष्ठमा तपाईंले देख्ने विज्ञापन वा फोटो जस्ता केही सामग्री यी वेबसाइटहरूको स्वामित्वमा हुन्छन्।</translation>
+<translation id="7835852323729233924">प्ले भइरहेको मिडिया</translation>
+<translation id="783819812427904514">भिडियो अनम्युट गर्नुहोस्</translation>
+<translation id="7846076177841592234">चयन रद्द गर्नुहोस्</translation>
+<translation id="7846621471902887024">तपाईं सबै साइटहरूबाट साइन आउट हुनु हुने छ।</translation>
+<translation id="7882806643839505685">निश्चित साइटको ध्वनिलाई अनुमति दिनुहोस्‌।</translation>
+<translation id="7940722705963108451">मलाई स्मरण गराइयोस्</translation>
+<translation id="7986741934819883144">कुनै सम्पर्क ठेगाना चयन गर्नुहोस्</translation>
+<translation id="7999064672810608036">के तपाईं कुकीहरू सहित सबै स्थानीय डेटा खाली गर्न चाहनुहुन्छ, र यो वेबसाइटको लागि सबै अनुमतिहरू रिसेट गर्न चाहनुहुन्छ?</translation>
+<translation id="8007176423574883786">यस डिभाइसका लागि बन्द गरियो।</translation>
+<translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
+<translation id="8042586301629853791">यसअनुसार क्रमबद्ध गर्नुहोस्:</translation>
+<translation id="8067883171444229417">भिडियो प्ले गर्नुहोस्</translation>
+<translation id="8068648041423924542">प्रमाणपत्र चयन गर्न असमर्थ।</translation>
+<translation id="8087000398470557479">यो Google द्वारा डेलिभर गरिएको <ph name="DOMAIN_NAME" /> को सामग्री हो।</translation>
+<translation id="8116925261070264013">म्युट गरियो</translation>
+<translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>
+<translation id="8131740175452115882">निश्चित</translation>
+<translation id="8154912474061769055">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
+<translation id="8197286292360124385"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ</translation>
+<translation id="8200772114523450471">रिजुमी</translation>
+<translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
+<translation id="8211406090763984747">जडान सुरक्षित छ</translation>
+<translation id="8249310407154411074">शीर्षभागमा सार्नुहोस्</translation>
+<translation id="8261506727792406068">मेट्नुहोस्</translation>
+<translation id="8300705686683892304">अनुप्रयोगले व्यवस्थापन गरेको</translation>
+<translation id="8324158725704657629">फेरि नसोधियोस्</translation>
+<translation id="8372893542064058268">कुनै विशेष साइटलाई पृष्ठभूमिमा सिंक गर्ने सुविधाको प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
+<translation id="8376384591331888629">यस साइटका तेस्रो पक्षीय कुकीसमेत</translation>
+<translation id="83792324527827022">कुनै साइटले तपाईंको क्यामेरा र माइक्रोफोन प्रयोग गर्दै छ</translation>
+<translation id="8380167699614421159">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ</translation>
+<translation id="8394832520002899662">साइटमा फर्कन ट्याप गर्नुहोस्</translation>
+<translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
+<translation id="8441146129660941386">पछाडि खोज्नुहोस्</translation>
+<translation id="8444433999583714703"><ph name="APP_NAME" /> लाई आफ्नो स्थान प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई लोकेसन सर्भिस पनि अन गर्नुहोस्।</translation>
+<translation id="8447861592752582886">यन्त्र सम्बन्धी अनुमतिलाई उल्टाउनुहोस्</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{एउटा कुकी प्रयोग भइरहेको छ}other{# वटा कुकी प्रयोग भइरहेका छन्}}</translation>
+<translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
+<translation id="848952951823693243">सधैँ साइटको मोबाइल भ्यू देखाइयोस्</translation>
+<translation id="851751545965956758">साइटहरूलाई यन्त्रमा जडान गर्नबाट रोक लगाउनुहोस्</translation>
+<translation id="8525306231823319788">पूर्ण स्क्रीन</translation>
+<translation id="857943718398505171">(सिफारिस गरिएको) अनुमति दिएको</translation>
+<translation id="8609465669617005112">माथि सार्नुहोस्</translation>
+<translation id="8676374126336081632">आगत मेटाउनुहोस्</translation>
+<translation id="868929229000858085">आफ्ना सम्पर्कहरू खोज्नुहोस्</translation>
+<translation id="8702612070107455751">सबै अफलाइन डेटा हटाइने छ।</translation>
+<translation id="8712637175834984815">भयो</translation>
+<translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई <ph name="APP_NAME" /> लाई अनुमति दिनुहोस्।</translation>
+<translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
+<translation id="8730621377337864115">गरियो</translation>
+<translation id="8737217482364735741">यस कार्यले <ph name="ORIGIN" /> ले भण्डारण गरेका सबै डेटा र कुकीहरू मेटाउने छ।</translation>
+<translation id="8751914237388039244">कुनै छवि छनौट गर्नुहोस्‌</translation>
+<translation id="8801436777607969138">कुनै खास साइटमा JavaScript लाई रोक लगाउनुहोस्।</translation>
+<translation id="8816026460808729765">साइटहरूलाई सेन्सरहरूमाथि पहुँच राख्न नदिनुहोस्</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">जुम इन</translation>
+<translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
+<translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="8941729603749328384">www.example.com</translation>
+<translation id="8958424370300090006">कुनै खास साइटमा कुकीहरूलाई रोक लगाउनुहोस्।</translation>
+<translation id="8959122750345127698">नेभिगेशन पहुँचयोग्य छैन: <ph name="URL" /></translation>
+<translation id="8986362086234534611">बिर्सनुहोस्</translation>
+<translation id="9019902583201351841">तपाईँको अविभावक द्वारा व्यवस्थित</translation>
+<translation id="9074739597929991885">ब्लुटुथ</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}}</translation>
+<translation id="913657688200966289"><ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई <ph name="APP_NAME" /> लाई अनुमति दिनुहोस्।</translation>
+<translation id="9162462602695099906">यो पेज खतरनाक छ</translation>
+<translation id="930525582205581608">यो साइटसम्बन्धी जानकारी मेटाउने हो?</translation>
+<translation id="967624055006145463">डेटा भण्डारण गरियो</translation>
+</translationbundle>

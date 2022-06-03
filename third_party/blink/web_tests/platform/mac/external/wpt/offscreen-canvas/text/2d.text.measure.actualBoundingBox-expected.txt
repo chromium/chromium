@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing actualBoundingBox for OffscreenCanvas assert_equals: Math.abs(ctx.measureText('A').actualBoundingBoxLeft) === 0 (got 0.732421875[number], expected 0[number]) expected 0 but got 0.732421875
-Harness: the test ran to completion.
-

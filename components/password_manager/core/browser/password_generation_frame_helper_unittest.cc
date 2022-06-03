@@ -8,19 +8,20 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
-#include "components/autofill/core/common/signatures_util.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -62,7 +63,6 @@ class TestPasswordManagerDriver : public StubPasswordManagerDriver {
     ON_CALL(*this, GetLastCommittedURL())
         .WillByDefault(testing::ReturnRef(empty_url_));
   }
-  ~TestPasswordManagerDriver() override {}
 
   // PasswordManagerDriver implementation.
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override {
@@ -107,11 +107,11 @@ class FakePasswordRequirementsSpecFetcher
   ~FakePasswordRequirementsSpecFetcher() override = default;
 
   void Fetch(GURL origin, FetchCallback callback) override {
-    if (origin.GetOrigin().host_piece().find(kNoServerResponse) !=
-        std::string::npos) {
+    if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+            kNoServerResponse) != std::string::npos) {
       std::move(callback).Run(PasswordRequirementsSpec());
-    } else if (origin.GetOrigin().host_piece().find(kHasServerResponse) !=
-               std::string::npos) {
+    } else if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+                   kHasServerResponse) != std::string::npos) {
       std::move(callback).Run(GetDomainWideRequirements());
     } else {
       NOTREACHED();
@@ -129,20 +129,24 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         store_(new TestPasswordStore),
         driver_(this),
         password_requirements_service_(
-            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {}
+            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {
+    store_->Init(prefs_.get(), /*affiliated_match_helper=*/nullptr);
+  }
 
   ~MockPasswordManagerClient() override { store_->ShutdownOnUIThread(); }
 
-  PasswordStore* GetProfilePasswordStore() const override {
+  PasswordStoreInterface* GetProfilePasswordStore() const override {
     return store_.get();
   }
   PrefService* GetPrefs() const override { return prefs_.get(); }
   PasswordRequirementsService* GetPasswordRequirementsService() override {
     return &password_requirements_service_;
   }
-  void SetLastCommittedEntryUrl(const GURL& url) { last_committed_url_ = url; }
-  const GURL& GetLastCommittedEntryURL() const override {
-    return last_committed_url_;
+  void SetLastCommittedEntryUrl(const GURL& url) {
+    last_committed_origin_ = url::Origin::Create(url);
+  }
+  url::Origin GetLastCommittedOrigin() const override {
+    return last_committed_origin_;
   }
 
   TestPasswordManagerDriver* test_driver() { return &driver_; }
@@ -152,7 +156,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   scoped_refptr<TestPasswordStore> store_;
   TestPasswordManagerDriver driver_;
   PasswordRequirementsService password_requirements_service_;
-  GURL last_committed_url_;
+  url::Origin last_committed_origin_;
 };
 
 }  // anonymous namespace
@@ -167,7 +171,7 @@ class PasswordGenerationFrameHelperTest : public testing::Test {
         new TestingPrefServiceSimple());
     prefs->registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            true);
-    client_.reset(new MockPasswordManagerClient(std::move(prefs)));
+    client_ = std::make_unique<MockPasswordManagerClient>(std::move(prefs));
   }
 
   void TearDown() override { client_.reset(); }
@@ -191,12 +195,12 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
   // be enabled, unless the sync is with a custom passphrase.
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*client_->GetMockPasswordFeatureManager(), IsGenerationEnabled())
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(true));
   EXPECT_TRUE(IsGenerationEnabled());
 
   // Disabling password syncing should cause generation to be disabled.
-  EXPECT_CALL(*client_->GetMockPasswordFeatureManager(), IsGenerationEnabled())
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(false));
   EXPECT_FALSE(IsGenerationEnabled());
 
@@ -204,7 +208,7 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
   // if syncing is enabled.
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*client_->GetMockPasswordFeatureManager(), IsGenerationEnabled())
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(true));
   EXPECT_FALSE(IsGenerationEnabled());
 }
@@ -215,7 +219,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
   // Setup so that IsGenerationEnabled() returns true.
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*client_->GetMockPasswordFeatureManager(), IsGenerationEnabled())
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(true));
   struct {
     const char* name;
@@ -263,7 +267,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     ++test_counter;
 
     autofill::FormFieldData username;
-    username.name = ASCIIToUTF16("login");
+    username.name = u"login";
     username.form_control_type = "text";
 
     autofill::FormFieldData password;
@@ -282,7 +286,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     autofill::FormData account_creation_form;
     account_creation_form.url = origin;
     account_creation_form.action = origin;
-    account_creation_form.name = ASCIIToUTF16("account_creation_form");
+    account_creation_form.name = u"account_creation_form";
     account_creation_form.fields.push_back(username);
     account_creation_form.fields.push_back(password);
 
@@ -292,23 +296,36 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     // EMAIL_ADDRESS = 9
     // ACCOUNT_CREATION_PASSWORD = 76
-    autofill::AutofillQueryResponseContents response;
-    response.add_field()->set_overall_type_prediction(9);
-    response.add_field()->set_overall_type_prediction(76);
+    autofill::AutofillQueryResponse response;
+    auto* form_suggestion = response.add_form_suggestions();
+
+    auto* field_suggestion = form_suggestion->add_field_suggestions();
+    field_suggestion->set_field_signature(
+        CalculateFieldSignatureForField(username).value());
+    field_suggestion->add_predictions()->set_type(9);
+
+    field_suggestion = form_suggestion->add_field_suggestions();
+    field_suggestion->set_field_signature(
+        CalculateFieldSignatureForField(password).value());
+    field_suggestion->add_predictions()->set_type(76);
 
     if (test.has_field_requirements) {
-      *response.mutable_field(1)->mutable_password_requirements() =
-          GetFieldRequirements();
+      *form_suggestion->mutable_field_suggestions(1)
+           ->mutable_password_requirements() = GetFieldRequirements();
     }
 
     client_->SetLastCommittedEntryUrl(origin);
 
+    std::string unencoded_response_string;
     std::string response_string;
-    ASSERT_TRUE(response.SerializeToString(&response_string));
-    autofill::FormStructure::ParseQueryResponse(response_string, forms,
-                                                nullptr);
+    ASSERT_TRUE(response.SerializeToString(&unencoded_response_string));
+    base::Base64Encode(unencoded_response_string, &response_string);
 
-    GetGenerationHelper()->PrefetchSpec(origin.GetOrigin());
+    autofill::FormStructure::ParseApiQueryResponse(
+        response_string, forms, autofill::test::GetEncodedSignatures(forms),
+        /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+
+    GetGenerationHelper()->PrefetchSpec(origin.DeprecatedGetOriginAsURL());
 
     // Processs the password requirements with expected side effects of
     // either storing the requirements from the AutofillQueryResponseContents)
@@ -327,7 +344,8 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     PasswordRequirementsSpec spec_for_unknown_signature =
         client_->GetPasswordRequirementsService()->GetSpec(
-            origin, form_signature + 1, field_signature);
+            origin, autofill::FormSignature(form_signature.value() + 1),
+            field_signature);
     EXPECT_EQ(test.expected_spec_for_unknown_signature.max_length(),
               spec.max_length());
   }
@@ -341,7 +359,7 @@ TEST_F(PasswordGenerationFrameHelperTest, UpdatePasswordSyncStateIncognito) {
   EXPECT_CALL(*client_, IsIncognito()).WillRepeatedly(testing::Return(true));
   PrefService* prefs = client_->GetPrefs();
   prefs->SetBoolean(prefs::kCredentialsEnableService, true);
-  EXPECT_CALL(*client_->GetMockPasswordFeatureManager(), IsGenerationEnabled())
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(true));
 
   EXPECT_FALSE(IsGenerationEnabled());
@@ -350,7 +368,7 @@ TEST_F(PasswordGenerationFrameHelperTest, UpdatePasswordSyncStateIncognito) {
 TEST_F(PasswordGenerationFrameHelperTest, GenerationDisabledForGoogle) {
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*client_->GetMockPasswordFeatureManager(), IsGenerationEnabled())
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), IsGenerationEnabled())
       .WillRepeatedly(testing::Return(true));
 
   GURL accounts_url = GURL("https://accounts.google.com/path?q=1");

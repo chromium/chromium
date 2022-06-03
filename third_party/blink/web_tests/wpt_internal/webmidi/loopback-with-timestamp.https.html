@@ -1,0 +1,27 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<p>Regression test to check if non-zero timestamp works well.</p>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+promise_test(async () => {
+  await setMidiPermission({sysex: true}, 'granted');
+  let access = await navigator.requestMIDIAccess({sysex: true});
+  let input = access.inputs.values().next().value;
+  let output = access.outputs.values().next().value;
+
+  let expected_time = performance.now() + 1000;
+  let data = [0x80, 0x00, 0x00];
+  output.send(data, expected_time);
+
+  let event = await new Promise(resolve => {
+    input.addEventListener('midimessage', resolve);
+  });
+
+  assert_array_equals(data, event.data);
+  assert_greater_than_equal(performance.now(), expected_time);
+}, 'Test MIDIOutput.send() with non-zero timestamp.');
+</script>

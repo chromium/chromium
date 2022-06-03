@@ -13,7 +13,7 @@ layer at (0,0) size 800x600
         LayoutText {#text} at (0,0) size 0x0
       LayoutBlockFlow {UL} at (0,229) size 800x20
         LayoutListItem {LI} at (40,0) size 760x20
-          LayoutListMarker (anonymous) at (-18,0) size 7x19: bullet
+          LayoutListMarker {::marker} at (-18,0) size 7x19: bullet
           LayoutText {#text} at (0,0) size 288x19
             text run at (0,0) width 288: "Abe should be outside the frame and inside it."
 layer at (0,0) size 208x208

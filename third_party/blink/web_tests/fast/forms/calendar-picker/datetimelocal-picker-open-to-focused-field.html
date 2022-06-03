@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../resources/common.js"></script>
+  <script src="../resources/picker-common.js"></script>
+</head>
+<body>
+
+<input type="datetime-local" id="datetime" value="2020-08-19T11:34:00" />
+<input type="datetime-local" step="1" id="datetimeWithSeconds" value="2020-08-19T11:34:45" />
+
+<script>
+
+function runDateTimeLocalTest(input, includesSeconds)
+{
+    let seconds = includesSeconds ? 45 : 0;
+    let secondsStr = includesSeconds ? (":" + seconds) : "";
+    // Note: Assuming mm/dd/yyyy format, but it doesn't really matter.
+    // Update date
+    input.focus();
+    assert_equals(internals.pagePopupWindow, null);
+    return openPickerWithPromise(input).then(() => {
+        // Default focus moves the day element.
+        assert_not_equals(internals.pagePopupWindow, null);
+        eventSender.keyDown('ArrowUp');
+        assert_equals(input.value, "2020-08-12T11:34" + secondsStr);
+        eventSender.keyDown('ArrowDown');
+        assert_equals(input.value, "2020-08-19T11:34" + secondsStr);
+    }).then(() => {
+        // Update date when focused on day element
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To day
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "2020-08-12T11:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "2020-08-19T11:34" + secondsStr);
+        });
+    }).then(() => {
+        // Update date when focused on year element
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To day
+        eventSender.keyDown("Tab"); // To year
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "2020-08-12T11:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "2020-08-19T11:34" + secondsStr);
+        });
+    }).then(() => {
+        // Update hours
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To day
+        eventSender.keyDown("Tab"); // To year
+        eventSender.keyDown("Tab"); // To hour
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "2020-08-19T10:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "2020-08-19T11:34" + secondsStr);
+        });
+    }).then(() => {
+        // Update minutes
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To day
+        eventSender.keyDown("Tab"); // To year
+        eventSender.keyDown("Tab"); // To hour
+        eventSender.keyDown("Tab"); // To minutes
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "2020-08-19T11:33" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "2020-08-19T11:34" + secondsStr);
+        });
+    }).then(() => {
+        if (!includesSeconds)
+            return;
+        // Update seconds
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To day
+        eventSender.keyDown("Tab"); // To year
+        eventSender.keyDown("Tab"); // To hour
+        eventSender.keyDown("Tab"); // To minutes
+        eventSender.keyDown("Tab"); // To seconds
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            seconds--;
+            assert_equals(input.value, "2020-08-19T11:34:" + seconds);
+            eventSender.keyDown('ArrowDown');
+            seconds++;
+            assert_equals(input.value, "2020-08-19T11:34:" + seconds);
+        });
+    }).then(() => {
+        // Update am/pm
+        input.blur();
+        input.focus();
+        eventSender.keyDown("Tab"); // To day
+        eventSender.keyDown("Tab"); // To year
+        eventSender.keyDown("Tab"); // To hour
+        eventSender.keyDown("Tab"); // To minutes
+        if (includesSeconds)
+            eventSender.keyDown("Tab"); // To seconds
+        eventSender.keyDown("Tab"); // To AM/PM
+        assert_equals(internals.pagePopupWindow, null);
+        return openPickerWithPromise(input).then(() => {
+            assert_not_equals(internals.pagePopupWindow, null);
+            eventSender.keyDown('ArrowUp');
+            assert_equals(input.value, "2020-08-19T23:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "2020-08-19T11:34" + secondsStr);
+            eventSender.keyDown('ArrowDown');
+            assert_equals(input.value, "2020-08-19T23:34" + secondsStr);
+            input.blur();
+        });
+    });
+}
+
+promise_test(() => {
+    var input = document.getElementById("datetime");
+    return runDateTimeLocalTest(input, false);
+}, "Test opening datetime-local picker to focused field.");
+
+promise_test(() => {
+    var input = document.getElementById("datetimeWithSeconds");
+    return runDateTimeLocalTest(input, true);
+}, "Test opening datetime-local picker to focused field with seconds.");
+
+</script>
+</body>
+</html>

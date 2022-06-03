@@ -8,6 +8,7 @@ component("shill") {
   defines = [ "IS_SHILL_CLIENT_IMPL" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/dbus:common",
     "//chromeos/dbus/constants",
@@ -61,10 +62,9 @@ component("shill") {
 
 source_set("test_support") {
   testonly = true
-  public_deps = [
-    ":shill",
-  ]
+  public_deps = [ ":shill" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus:common",

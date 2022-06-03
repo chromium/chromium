@@ -1,0 +1,17 @@
+// Copyright 2020 Google LLC.
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto2";
+
+package perfetto.protos;
+
+import "protos/perfetto/metrics/metrics.proto";
+import "protos/perfetto/metrics/custom_options.proto";
+
+message CpuTimeMetric {
+  optional double cpu_time_percentage = 1 [(unit) = "n%_smallerIsBetter"];
+}
+
+extend TraceMetrics {
+  optional CpuTimeMetric cpu_time_metric = 460;
+}

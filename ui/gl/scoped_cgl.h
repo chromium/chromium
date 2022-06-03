@@ -8,7 +8,6 @@
 #include <OpenGL/OpenGL.h>
 
 #include "base/mac/scoped_typeref.h"
-#include "base/macros.h"
 #include "ui/gl/gl_export.h"
 
 namespace base {
@@ -42,6 +41,11 @@ namespace gl {
 class GL_EXPORT ScopedCGLSetCurrentContext {
  public:
   explicit ScopedCGLSetCurrentContext(CGLContextObj context);
+
+  ScopedCGLSetCurrentContext(const ScopedCGLSetCurrentContext&) = delete;
+  ScopedCGLSetCurrentContext& operator=(const ScopedCGLSetCurrentContext&) =
+      delete;
+
   ~ScopedCGLSetCurrentContext();
  private:
   // Note that if a context is destroyed when it is current, then the current
@@ -50,8 +54,6 @@ class GL_EXPORT ScopedCGLSetCurrentContext {
   // will be made current, then released, so NULL will be current if that
   // release destroys the context).
   base::ScopedTypeRef<CGLContextObj> previous_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCGLSetCurrentContext);
 };
 
 }  // namespace gl

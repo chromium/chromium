@@ -51,7 +51,7 @@ void EXTDisjointTimerQueryWebGL2::queryCounterEXT(WebGLQuery* query,
   query->ResetCachedResult();
 }
 
-void EXTDisjointTimerQueryWebGL2::Trace(blink::Visitor* visitor) {
+void EXTDisjointTimerQueryWebGL2::Trace(Visitor* visitor) const {
   WebGLExtension::Trace(visitor);
 }
 

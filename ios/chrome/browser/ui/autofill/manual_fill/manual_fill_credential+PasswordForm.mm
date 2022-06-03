@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential+PasswordForm.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -17,8 +17,8 @@
 @implementation ManualFillCredential (PasswordForm)
 
 - (instancetype)initWithPasswordForm:
-    (const autofill::PasswordForm&)passwordForm {
-  std::string host = passwordForm.origin.host();
+    (const password_manager::PasswordForm&)passwordForm {
+  std::string host = passwordForm.url.host();
   std::string site_name =
       net::registry_controlled_domains::GetDomainAndRegistry(
           host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -33,7 +33,7 @@
                        password:password
                        siteName:siteName.length ? siteName : credentialHost
                            host:credentialHost
-                            URL:passwordForm.origin];
+                            URL:passwordForm.url];
 }
 
 @end

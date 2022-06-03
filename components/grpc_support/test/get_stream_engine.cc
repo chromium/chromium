@@ -8,12 +8,11 @@
 #include "components/grpc_support/test/get_stream_engine.h"
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/grpc_support/include/bidirectional_stream_c.h"
 #include "net/base/host_port_pair.h"
@@ -21,6 +20,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
@@ -42,23 +42,28 @@ class BidirectionalStreamTestURLRequestContextGetter
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
       : task_runner_(task_runner) {}
 
+  BidirectionalStreamTestURLRequestContextGetter(
+      const BidirectionalStreamTestURLRequestContextGetter&) = delete;
+  BidirectionalStreamTestURLRequestContextGetter& operator=(
+      const BidirectionalStreamTestURLRequestContextGetter&) = delete;
+
   net::URLRequestContext* GetURLRequestContext() override {
     if (!request_context_) {
-      request_context_.reset(
-          new net::TestURLRequestContext(true /* delay_initialization */));
+      request_context_ = std::make_unique<net::TestURLRequestContext>(
+          true /* delay_initialization */);
       auto mock_host_resolver = std::make_unique<net::MockHostResolver>();
-      host_resolver_.reset(
-          new net::MappedHostResolver(std::move(mock_host_resolver)));
+      host_resolver_ = std::make_unique<net::MappedHostResolver>(
+          std::move(mock_host_resolver));
       UpdateHostResolverRules();
       auto test_cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                                "quic-chain.pem");
-      mock_cert_verifier_.reset(new net::MockCertVerifier());
+      mock_cert_verifier_ = std::make_unique<net::MockCertVerifier>();
       net::CertVerifyResult verify_result;
       verify_result.verified_cert = test_cert;
       verify_result.is_issued_by_known_root = true;
       mock_cert_verifier_->AddResultForCert(test_cert, verify_result, net::OK);
 
-      auto params = std::make_unique<net::HttpNetworkSession::Params>();
+      auto params = std::make_unique<net::HttpNetworkSessionParams>();
       params->enable_quic = true;
       params->enable_http2 = true;
       request_context_->set_cert_verifier(mock_cert_verifier_.get());
@@ -104,8 +109,6 @@ class BidirectionalStreamTestURLRequestContextGetter
   std::unique_ptr<net::MappedHostResolver> host_resolver_;
   std::unique_ptr<net::TestURLRequestContext> request_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamTestURLRequestContextGetter);
 };
 
 base::LazyInstance<
@@ -122,7 +125,7 @@ void CreateRequestContextGetterIfNecessary() {
         new base::Thread("grpc_support_test_io_thread");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    bool started = test_io_thread_->StartWithOptions(options);
+    bool started = test_io_thread_->StartWithOptions(std::move(options));
     DCHECK(started);
 
     g_request_context_getter_.Get() =

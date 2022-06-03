@@ -14,6 +14,9 @@
 #include <userenv.h>
 #include <winspool.h>
 
+#include <memory>
+#include <string>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -22,7 +25,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -59,7 +61,7 @@ struct MonitorData {
 };
 
 struct PortData {
-  PortData() : job_id(0), printer_handle(NULL), file(0) {}
+  PortData() : job_id(0), printer_handle(NULL), file(nullptr) {}
   ~PortData() { Close(); }
   void Close() {
     if (printer_handle) {
@@ -68,7 +70,7 @@ struct PortData {
     }
     if (file) {
       base::CloseFile(file);
-      file = NULL;
+      file = nullptr;
     }
   }
   DWORD job_id;
@@ -86,18 +88,18 @@ MONITORUI g_monitor_ui = {sizeof(MONITORUI), MonitorUiAddPortUi,
 MONITOR2 g_monitor_2 = {sizeof(MONITOR2),
                         Monitor2EnumPorts,
                         Monitor2OpenPort,
-                        NULL,  // OpenPortEx is not supported.
+                        nullptr,  // OpenPortEx is not supported.
                         Monitor2StartDocPort,
                         Monitor2WritePort,
                         Monitor2ReadPort,
                         Monitor2EndDocPort,
                         Monitor2ClosePort,
-                        NULL,  // AddPort is not supported.
-                        NULL,  // AddPortEx is not supported.
-                        NULL,  // ConfigurePort is not supported.
-                        NULL,  // DeletePort is not supported.
-                        NULL,
-                        NULL,  // SetPortTimeOuts is not supported.
+                        nullptr,  // AddPort is not supported.
+                        nullptr,  // AddPortEx is not supported.
+                        nullptr,  // ConfigurePort is not supported.
+                        nullptr,  // DeletePort is not supported.
+                        nullptr,
+                        nullptr,  // SetPortTimeOuts is not supported.
                         Monitor2XcvOpenPort,
                         Monitor2XcvDataPort,
                         Monitor2XcvClosePort,
@@ -121,12 +123,12 @@ base::FilePath GetAppDataDir() {
 
 // Delete files which where not deleted by chrome.
 void DeleteLeakedFiles(const base::FilePath& dir) {
-  base::Time delete_before = base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time delete_before = base::Time::Now() - base::Days(1);
   base::FileEnumerator enumerator(dir, false, base::FileEnumerator::FILES);
   for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
        file_path = enumerator.Next()) {
     if (enumerator.GetInfo().GetLastModifiedTime() < delete_before)
-      base::DeleteFile(file_path, false);
+      base::DeleteFile(file_path);
   }
 }
 
@@ -134,7 +136,7 @@ void DeleteLeakedFiles(const base::FilePath& dir) {
 // On success returns TRUE and the first title_chars characters of the job title
 // are copied into title.
 // On failure returns FALSE and title is unmodified.
-bool GetJobTitle(HANDLE printer_handle, DWORD job_id, base::string16* title) {
+bool GetJobTitle(HANDLE printer_handle, DWORD job_id, std::wstring* title) {
   DCHECK(printer_handle != NULL);
   DCHECK(title != NULL);
   DWORD bytes_needed = 0;
@@ -158,7 +160,7 @@ bool GetJobTitle(HANDLE printer_handle, DWORD job_id, base::string16* title) {
 // Verifies that a valid parent Window exists and then just displays an
 // error message to let the user know that there is no interactive
 // configuration.
-void HandlePortUi(HWND hwnd, const base::string16& caption) {
+void HandlePortUi(HWND hwnd, const std::wstring& caption) {
   if (hwnd != NULL && IsWindow(hwnd)) {
     DisplayWindowsMessage(hwnd, CO_E_NOT_SUPPORTED, cloud_print::kPortName);
   }
@@ -198,14 +200,14 @@ bool LaunchCommandAsUser(const base::CommandLine& command) {
 
 // Escape the command line argument as necessary per Microsoft rules.
 // See QuoteForCommandLineToArgvW in base/command_line.cc
-base::string16 EscapeCommandLineArg(const base::string16& arg) {
-  base::string16 quotable_chars(L" \\\"");
-  if (arg.find_first_of(quotable_chars) == base::string16::npos) {
+std::wstring EscapeCommandLineArg(const std::wstring& arg) {
+  std::wstring quotable_chars(L" \\\"");
+  if (arg.find_first_of(quotable_chars) == std::wstring::npos) {
     // No quoting necessary.
     return arg;
   }
 
-  base::string16 out;
+  std::wstring out;
   out.push_back(L'"');
   for (size_t i = 0; i < arg.size(); ++i) {
     if (arg[i] == '\\') {
@@ -240,10 +242,10 @@ base::string16 EscapeCommandLineArg(const base::string16& arg) {
 }
 
 // Launch the print command as specified in the cloud print registry.
-bool LaunchPrintCommandFromTemplate(const base::string16& command_template,
+bool LaunchPrintCommandFromTemplate(const std::wstring& command_template,
                                     const base::FilePath& xps_path,
-                                    const base::string16& job_title) {
-  base::string16 command_string(command_template);
+                                    const std::wstring& job_title) {
+  std::wstring command_string(command_template);
   // Substitude the place holder with the document path wrapped in quotes.
   base::ReplaceFirstSubstringAfterOffset(
       &command_string, 0, kDocumentPathPlaceHolder,
@@ -311,29 +313,29 @@ bool ValidateCurrentUser() {
 }
 }  // namespace
 
-base::string16 ReadStringFromRegistry(HKEY root, const wchar_t* path_name) {
+std::wstring ReadStringFromRegistry(HKEY root, const wchar_t* path_name) {
   base::win::RegKey gcp_key(root, kCloudPrintRegKey, KEY_READ);
-  base::string16 data;
+  std::wstring data;
   gcp_key.ReadValue(path_name, &data);
   return data;
 }
 
-base::string16 ReadStringFromAnyRegistry(const wchar_t* path_name) {
-  base::string16 result = ReadStringFromRegistry(HKEY_CURRENT_USER, path_name);
+std::wstring ReadStringFromAnyRegistry(const wchar_t* path_name) {
+  std::wstring result = ReadStringFromRegistry(HKEY_CURRENT_USER, path_name);
   if (!result.empty())
     return result;
   return ReadStringFromRegistry(HKEY_LOCAL_MACHINE, path_name);
 }
 
 base::FilePath GetChromeExePath() {
-  base::string16 value = ReadStringFromAnyRegistry(kChromeExePathRegValue);
+  std::wstring value = ReadStringFromAnyRegistry(kChromeExePathRegValue);
   if (!value.empty() && base::PathExists(base::FilePath(value)))
     return base::FilePath(value);
   return chrome_launcher_support::GetAnyChromePath(false /* is_sxs */);
 }
 
 base::FilePath GetChromeProfilePath() {
-  base::string16 value = ReadStringFromAnyRegistry(kChromeProfilePathRegValue);
+  std::wstring value = ReadStringFromAnyRegistry(kChromeProfilePathRegValue);
   if (!value.empty() && base::DirectoryExists(base::FilePath(value)))
     return base::FilePath(value);
   return base::FilePath();
@@ -341,7 +343,7 @@ base::FilePath GetChromeProfilePath() {
 
 // Launches the Cloud Print dialog in Chrome.
 bool LaunchChromePrintDialog(const base::FilePath& xps_path,
-                             const base::string16& job_title) {
+                             const std::wstring& job_title) {
   base::FilePath chrome_path = GetChromeExePath();
   if (chrome_path.empty()) {
     LOG(ERROR) << "Unable to get chrome exe path.";
@@ -362,7 +364,7 @@ bool LaunchChromePrintDialog(const base::FilePath& xps_path,
   return LaunchCommandAsUser(command_line);
 }
 
-base::string16 GetPrintCommandTemplate() {
+std::wstring GetPrintCommandTemplate() {
   return ReadStringFromAnyRegistry(kPrintCommandRegValue);
 }
 
@@ -371,8 +373,8 @@ base::string16 GetPrintCommandTemplate() {
 // xps_path references a file to print.
 // job_title is the title to be used for the resulting print job.
 bool LaunchPrintCommand(const base::FilePath& xps_path,
-                        const base::string16& job_title) {
-  base::string16 command_template = GetPrintCommandTemplate();
+                        const std::wstring& job_title) {
+  std::wstring command_template = GetPrintCommandTemplate();
   if (!command_template.empty()) {
     return LaunchPrintCommandFromTemplate(command_template, xps_path,
                                           job_title);
@@ -497,7 +499,7 @@ BOOL WINAPI Monitor2StartDocPort(HANDLE port_handle,
     return FALSE;
   }
   port_data->file = base::OpenFile(file_path, "wb+");
-  if (port_data->file == NULL) {
+  if (port_data->file == nullptr) {
     LOG(ERROR) << "Error opening file " << file_path.value() << ".";
     return FALSE;
   }
@@ -540,14 +542,14 @@ BOOL WINAPI Monitor2EndDocPort(HANDLE port_handle) {
     return FALSE;
   }
 
-  if (port_data->file != NULL) {
+  if (port_data->file != nullptr) {
     base::CloseFile(port_data->file);
-    port_data->file = NULL;
+    port_data->file = nullptr;
     bool delete_file = true;
     int64_t file_size = 0;
     base::GetFileSize(port_data->file_path, &file_size);
     if (file_size > 0) {
-      base::string16 job_title;
+      std::wstring job_title;
       if (port_data->printer_handle != NULL) {
         GetJobTitle(port_data->printer_handle, port_data->job_id, &job_title);
       }
@@ -556,7 +558,7 @@ BOOL WINAPI Monitor2EndDocPort(HANDLE port_handle) {
       }
     }
     if (delete_file)
-      base::DeleteFile(port_data->file_path, false);
+      base::DeleteFile(port_data->file_path);
   }
   if (port_data->printer_handle != NULL) {
     // Tell the spooler that the job is complete.
@@ -668,7 +670,7 @@ MONITOR2* WINAPI InitializePrintMonitor2(MONITORINIT*, HANDLE* handle) {
   *handle = monitor_data;
   if (!cloud_print::kIsUnittest) {
     // Unit tests set up their own AtExitManager
-    monitor_data->at_exit_manager.reset(new base::AtExitManager());
+    monitor_data->at_exit_manager = std::make_unique<base::AtExitManager>();
     // Single spooler.exe handles verbose users.
     base::PathService::DisableCache();
   }

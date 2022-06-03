@@ -1,0 +1,13 @@
+Name: Maven Wagon Lightweight HTTP Provider
+Short Name: wagon-http-lightweight
+URL: https://maven.apache.org/
+Version: 1.0-beta-6
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Wagon that gets and puts artifacts through http using standard Java library
+
+Local Modifications:
+No modifications.

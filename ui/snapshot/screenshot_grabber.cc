@@ -9,15 +9,15 @@
 #include <climits>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop_current.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/current_thread.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/snapshot/snapshot.h"
@@ -51,6 +51,9 @@ class ScreenshotGrabber::ScopedCursorHider {
         base::WrapUnique(new ScopedCursorHider(window)));
   }
 
+  ScopedCursorHider(const ScopedCursorHider&) = delete;
+  ScopedCursorHider& operator=(const ScopedCursorHider&) = delete;
+
   ~ScopedCursorHider() {
     aura::client::CursorClient* cursor_client =
         aura::client::GetCursorClient(window_);
@@ -60,8 +63,6 @@ class ScreenshotGrabber::ScopedCursorHider {
  private:
   explicit ScopedCursorHider(aura::Window* window) : window_(window) {}
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCursorHider);
 };
 #endif
 
@@ -73,7 +74,7 @@ ScreenshotGrabber::~ScreenshotGrabber() {
 void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
                                        const gfx::Rect& rect,
                                        ScreenshotCallback callback) {
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
   last_screenshot_timestamp_ = base::TimeTicks::Now();
 
   bool is_partial = true;
@@ -98,7 +99,7 @@ void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
 bool ScreenshotGrabber::CanTakeScreenshot() {
   return last_screenshot_timestamp_.is_null() ||
          base::TimeTicks::Now() - last_screenshot_timestamp_ >
-             base::TimeDelta::FromMilliseconds(kScreenshotMinimumIntervalInMS);
+             base::Milliseconds(kScreenshotMinimumIntervalInMS);
 }
 
 void ScreenshotGrabber::GrabWindowSnapshotAsyncCallback(
@@ -106,7 +107,7 @@ void ScreenshotGrabber::GrabWindowSnapshotAsyncCallback(
     bool is_partial,
     ScreenshotCallback callback,
     scoped_refptr<base::RefCountedMemory> png_data) {
-  DCHECK(base::MessageLoopCurrentForUI::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet());
 
 #if defined(USE_AURA)
   cursor_hider_.reset();

@@ -22,8 +22,6 @@ using mojom::blink::ScreenAvailability;
 class MockPresentationAvailabilityObserver
     : public GarbageCollected<MockPresentationAvailabilityObserver>,
       public PresentationAvailabilityObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(MockPresentationAvailabilityObserver);
-
  public:
   explicit MockPresentationAvailabilityObserver(const Vector<KURL>& urls)
       : urls_(urls) {}

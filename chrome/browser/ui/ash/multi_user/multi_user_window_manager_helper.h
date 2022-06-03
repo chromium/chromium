@@ -8,9 +8,6 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <string>
-
-#include "base/macros.h"
 
 class AccountId;
 class MultiProfileSupport;
@@ -33,6 +30,10 @@ class Window;
 // which internally owns the real ash::MultiUserWindowManager implementation.
 class MultiUserWindowManagerHelper {
  public:
+  MultiUserWindowManagerHelper(const MultiUserWindowManagerHelper&) = delete;
+  MultiUserWindowManagerHelper& operator=(const MultiUserWindowManagerHelper&) =
+      delete;
+
   // Creates an instance of the MultiUserWindowManagerHelper.
   static MultiUserWindowManagerHelper* CreateInstance();
 
@@ -57,6 +58,12 @@ class MultiUserWindowManagerHelper {
   // implementation.
   static void CreateInstanceForTest(
       std::unique_ptr<ash::MultiUserWindowManager> window_manager);
+
+  // Initializes |multi_profile_support_| if there is one. Separated from
+  // constructor because |multi_profile_support_| initialization code path
+  // accesses the helper instance via GetInstance(), which return nullptr
+  // before the constructor finishes. See https://crbug.com/1038300
+  void Init();
 
   // Adds user to monitor starting and running V1/V2 application windows.
   // Returns immediately if the user (identified by a |profile|) is already
@@ -89,8 +96,6 @@ class MultiUserWindowManagerHelper {
   // The MultiUserWindowManager implementation to use. If null, the
   // MultiUserWindowManager comes from |multi_profile_support_|.
   std::unique_ptr<ash::MultiUserWindowManager> multi_user_window_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserWindowManagerHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_HELPER_H_

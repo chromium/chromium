@@ -8,8 +8,8 @@
 #include <cmath>
 #include <limits>
 
+#include "base/check_op.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
 namespace zucchini {

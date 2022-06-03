@@ -17,7 +17,10 @@
     await dp.Network.continueInterceptedRequest(response);
   }
 
-  let loadCount = 5;
+  // Main frame load + initial oopif-a load + initial oopif-b load +
+  // oopif-a redirect + oopif-b redirect.
+  const expectedRequests = 5;
+  let loadCount = 0;
   let loadCallback;
   const loadPromise = new Promise(fulfill => loadCallback = fulfill);
 
@@ -30,8 +33,15 @@
       dp.Network.enable(),
       dp.Page.enable()
     ]);
+    dp.Page.onFrameStartedLoading(e => {
+      ++loadCount;
+    });
     dp.Page.onFrameStoppedLoading(e => {
-      if (!--loadCount)
+      // When loading is done, we should have done 5 network requests. But (with
+      // site isolation off) we may finish loading both iframes before the
+      // redirects start, and loadCount would go to zero. So we want to wait for
+      // loadCount to go to zero after we have done the redirects.
+      if (!--loadCount && interceptionLog.length == expectedRequests)
         loadCallback();
     });
     await dp.Runtime.runIfWaitingForDebugger();

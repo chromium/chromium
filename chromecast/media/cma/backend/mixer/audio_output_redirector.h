@@ -19,6 +19,7 @@
 #include "chromecast/net/io_buffer_pool.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/volume_control.h"
+#include "media/base/channel_layout.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -57,10 +58,17 @@ class AudioOutputRedirector {
   AudioOutputRedirector(StreamMixer* mixer,
                         std::unique_ptr<mixer_service::MixerSocket> socket,
                         const mixer_service::Generic& message);
+
+  AudioOutputRedirector(const AudioOutputRedirector&) = delete;
+  AudioOutputRedirector& operator=(const AudioOutputRedirector&) = delete;
+
   ~AudioOutputRedirector();
 
   int order() const { return config_.order; }
   int num_output_channels() const { return config_.num_output_channels; }
+  ::media::ChannelLayout output_channel_layout() const {
+    return output_channel_layout_;
+  }
 
   int64_t extra_delay_microseconds() const {
     return config_.extra_delay_microseconds;
@@ -110,6 +118,7 @@ class AudioOutputRedirector {
 
   StreamMixer* const mixer_;
   const Config config_;
+  const ::media::ChannelLayout output_channel_layout_;
   std::unique_ptr<RedirectionConnection> output_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
@@ -129,8 +138,6 @@ class AudioOutputRedirector {
   base::flat_set<MixerInput*> non_redirected_inputs_;
 
   base::WeakPtrFactory<AudioOutputRedirector> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputRedirector);
 };
 
 }  // namespace media

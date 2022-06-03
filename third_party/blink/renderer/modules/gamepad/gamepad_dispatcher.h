@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_DISPATCHER_H_
 
-#include <memory>
-
 #include "base/memory/scoped_refptr.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_listener.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace device {
 class Gamepad;
@@ -25,11 +25,8 @@ class GamepadSharedMemoryReader;
 class GamepadDispatcher final : public GarbageCollected<GamepadDispatcher>,
                                 public PlatformEventDispatcher,
                                 public GamepadListener {
-  USING_GARBAGE_COLLECTED_MIXIN(GamepadDispatcher);
-
  public:
-  explicit GamepadDispatcher(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit GamepadDispatcher(ExecutionContext& context);
   ~GamepadDispatcher() override;
 
   void SampleGamepads(device::Gamepads&);
@@ -43,7 +40,7 @@ class GamepadDispatcher final : public GarbageCollected<GamepadDispatcher>,
                               device::mojom::blink::GamepadHapticsManager::
                                   ResetVibrationActuatorCallback);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void InitializeHaptics();
@@ -54,16 +51,16 @@ class GamepadDispatcher final : public GarbageCollected<GamepadDispatcher>,
   void ButtonOrAxisDidChange(uint32_t index, const device::Gamepad&) override;
 
   // PlatformEventDispatcher
-  void StartListening(LocalFrame* frame) override;
+  void StartListening(LocalDOMWindow*) override;
   void StopListening() override;
 
   void DispatchDidConnectOrDisconnectGamepad(uint32_t index,
                                              const device::Gamepad&,
                                              bool connected);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  std::unique_ptr<GamepadSharedMemoryReader> reader_;
-  mojo::Remote<device::mojom::blink::GamepadHapticsManager>
+  WeakMember<ExecutionContext> execution_context_;
+  Member<GamepadSharedMemoryReader> reader_;
+  HeapMojoRemote<device::mojom::blink::GamepadHapticsManager>
       gamepad_haptics_manager_remote_;
 };
 

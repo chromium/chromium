@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,9 +45,9 @@ const CGFloat kLabelSize = 14;
   [super setHighlighted:highlighted];
   if (highlighted) {
     self.tabCountLabel.textColor =
-        self.configuration.buttonsTintColorHighlighted;
+        self.toolbarConfiguration.buttonsTintColorHighlighted;
   } else {
-    self.tabCountLabel.textColor = self.configuration.buttonsTintColor;
+    self.tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
   }
 }
 
@@ -70,7 +69,7 @@ const CGFloat kLabelSize = 14;
     _tabCountLabel.minimumScaleFactor = 0.1;
     _tabCountLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     _tabCountLabel.textAlignment = NSTextAlignmentCenter;
-    _tabCountLabel.textColor = self.configuration.buttonsTintColor;
+    _tabCountLabel.textColor = self.toolbarConfiguration.buttonsTintColor;
   }
   return _tabCountLabel;
 }

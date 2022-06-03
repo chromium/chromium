@@ -6,10 +6,12 @@
 
 #include <dlfcn.h>
 #include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <va/va.h>
 #include <va/va_drm.h>
 #include <va/va_drmcommon.h>
+#include <va/va_str.h>
 #include <va/va_version.h>
 
 #include <algorithm>
@@ -18,33 +20,37 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/bits.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/cpu.h"
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
+#include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
 
-#include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/vaapi/vaapi_picture.h"
-#include "media/gpu/vaapi/vaapi_utils.h"
+#include "third_party/libva_protected_content/va_protected_content.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -55,47 +61,152 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 
-#if defined(USE_X11)
-#include <va/va_x11.h>
-#include "ui/gfx/x/x11_types.h"  // nogncheck
-#endif
+#if BUILDFLAG(USE_VAAPI_X11)
+typedef XID Drawable;
+
+extern "C" {
+#include "media/gpu/vaapi/va_x11.sigs"
+}
+
+#include "ui/gfx/x/connection.h"  // nogncheck
+#endif                            // BUILDFLAG(USE_VAAPI_X11)
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <va/va_prot.h>
+using media_gpu_vaapi::kModuleVa_prot;
+#endif
+
 using media_gpu_vaapi::kModuleVa;
 using media_gpu_vaapi::kModuleVa_drm;
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::kModuleVa_x11;
-#endif
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::InitializeStubs;
 using media_gpu_vaapi::IsVaInitialized;
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::IsVa_x11Initialized;
-#endif
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::IsVa_drmInitialized;
 using media_gpu_vaapi::StubPathMap;
 
-#define LOG_VA_ERROR_AND_REPORT(va_error, err_msg)                  \
-  do {                                                              \
-    LOG(ERROR) << err_msg << " VA error: " << vaErrorStr(va_error); \
-    report_error_to_uma_cb_.Run();                                  \
+namespace media {
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "VaapiFunctions" in src/tools/metrics/histograms/enums.xml.
+enum class VaapiFunctions {
+  kVABeginPicture = 0,
+  kVACreateBuffer = 1,
+  kVACreateConfig = 2,
+  kVACreateContext = 3,
+  kVACreateImage = 4,
+  kVACreateSurfaces_Allocating = 5,
+  kVACreateSurfaces_Importing = 6,
+  kVADestroyBuffer = 7,
+  kVADestroyConfig = 8,
+  kVADestroyContext = 9,
+  kVADestroySurfaces = 10,
+  kVAEndPicture = 11,
+  kVAExportSurfaceHandle = 12,
+  kVAGetConfigAttributes = 13,
+  kVAPutImage = 14,
+  kVAPutSurface = 15,
+  kVAQueryConfigAttributes = 16,
+  kVAQueryImageFormats = 17,
+  kVAQuerySurfaceAttributes = 18,
+  kVAQueryVideoProcPipelineCaps = 19,
+  kVARenderPicture_VABuffers = 20,
+  kVARenderPicture_Vpp = 21,
+  kVASyncSurface = 22,
+  kVATerminate = 23,
+  kVAUnmapBuffer = 24,
+  // Protected mode functions below.
+  kVACreateProtectedSession = 25,
+  kVADestroyProtectedSession = 26,
+  kVAAttachProtectedSession = 27,
+  kVADetachProtectedSession = 28,
+  kVAProtectedSessionHwUpdate_Deprecated = 29,
+  kVAProtectedSessionExecute = 30,
+  // Anything else is captured in this last entry.
+  kOtherVAFunction = 31,
+  kMaxValue = kOtherVAFunction,
+};
+
+void ReportVaapiErrorToUMA(const std::string& histogram_name,
+                           VaapiFunctions value) {
+  UMA_HISTOGRAM_ENUMERATION(histogram_name, value);
+}
+
+constexpr std::array<const char*,
+                     static_cast<size_t>(VaapiFunctions::kMaxValue) + 1>
+    kVaapiFunctionNames = {"vaBeginPicture",
+                           "vaCreateBuffer",
+                           "vaCreateConfig",
+                           "vaCreateContext",
+                           "vaCreateImage",
+                           "vaCreateSurfaces (allocate mode)",
+                           "vaCreateSurfaces (import mode)",
+                           "vaDestroyBuffer",
+                           "vaDestroyConfig",
+                           "vaDestroyContext",
+                           "vaDestroySurfaces",
+                           "vaEndPicture",
+                           "vaExportSurfaceHandle",
+                           "vaGetConfigAttributes",
+                           "vaPutImage",
+                           "vaPutSurface",
+                           "vaQueryConfigAttributes",
+                           "vaQueryImageFormats",
+                           "vaQuerySurfaceAttributes",
+                           "vaQueryVideoProcPipelineCaps",
+                           "vaRenderPicture (|pending_va_buffers_|)",
+                           "vaRenderPicture using Vpp",
+                           "vaSyncSurface",
+                           "vaTerminate",
+                           "vaUnmapBuffer",
+                           "vaCreateProtectedSession",
+                           "vaDestroyProtectedSession",
+                           "vaAttachProtectedSession",
+                           "vaDetachProtectedSession",
+                           "vaProtectedSessionHwUpdate (Deprecated)",
+                           "vaProtectedSessionExecute",
+                           "Other VA function"};
+
+// Translates |function| into a human readable string for logging.
+const char* VaapiFunctionName(VaapiFunctions function) {
+  DCHECK(function <= VaapiFunctions::kMaxValue);
+  return kVaapiFunctionNames[static_cast<size_t>(function)];
+}
+
+}  // namespace media
+
+#define LOG_VA_ERROR_AND_REPORT(va_error, function)              \
+  do {                                                           \
+    LOG(ERROR) << VaapiFunctionName(function)                    \
+               << " failed, VA error: " << vaErrorStr(va_error); \
+    report_error_to_uma_cb_.Run(function);                       \
   } while (0)
 
-#define VA_LOG_ON_ERROR(va_error, err_msg)        \
-  do {                                            \
-    if ((va_error) != VA_STATUS_SUCCESS)          \
-      LOG_VA_ERROR_AND_REPORT(va_error, err_msg); \
+#define VA_LOG_ON_ERROR(va_res, function)                        \
+  do {                                                           \
+    const VAStatus va_res_va_log_on_error = (va_res);            \
+    if (va_res_va_log_on_error != VA_STATUS_SUCCESS)             \
+      LOG_VA_ERROR_AND_REPORT(va_res_va_log_on_error, function); \
   } while (0)
 
-#define VA_SUCCESS_OR_RETURN(va_error, err_msg, ret) \
-  do {                                               \
-    if ((va_error) != VA_STATUS_SUCCESS) {           \
-      LOG_VA_ERROR_AND_REPORT(va_error, err_msg);    \
-      return (ret);                                  \
-    }                                                \
+#define VA_SUCCESS_OR_RETURN(va_res, function, ret)                  \
+  do {                                                               \
+    const VAStatus va_res_va_sucess_or_return = (va_res);            \
+    if (va_res_va_sucess_or_return != VA_STATUS_SUCCESS) {           \
+      LOG_VA_ERROR_AND_REPORT(va_res_va_sucess_or_return, function); \
+      return (ret);                                                  \
+    }                                                                \
+    DVLOG(3) << VaapiFunctionName(function);                         \
   } while (0)
 
 namespace {
@@ -114,8 +225,10 @@ uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
       return VA_FOURCC_YV12;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return VA_FOURCC_NV12;
+    case gfx::BufferFormat::P010:
+      return VA_FOURCC_P010;
     default:
-      NOTREACHED();
+      NOTREACHED() << gfx::BufferFormatToString(fmt);
       return 0;
   }
 }
@@ -140,125 +253,215 @@ media::VAImplementation VendorStringToImplementationType(
 namespace media {
 
 namespace {
+// VAEntrypoint is an enumeration starting from 1, but has no "invalid" value.
+constexpr VAEntrypoint kVAEntrypointInvalid = static_cast<VAEntrypoint>(0);
 
-// Maximum framerate of encoded profile. This value is an arbitary limit
-// and not taken from HW documentation.
-constexpr int kMaxEncoderFramerate = 30;
-
-// A map between VideoCodecProfile and VAProfile.
-static const struct {
-  VideoCodecProfile profile;
-  VAProfile va_profile;
-} kProfileMap[] = {
-    {H264PROFILE_BASELINE, VAProfileH264Baseline},
-    {H264PROFILE_MAIN, VAProfileH264Main},
-    // TODO(posciak): See if we can/want to support other variants of
-    // H264PROFILE_HIGH*.
-    {H264PROFILE_HIGH, VAProfileH264High},
-    {VP8PROFILE_ANY, VAProfileVP8Version0_3},
-    {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
-    {VP9PROFILE_PROFILE1, VAProfileVP9Profile1},
-    // TODO(crbug.com/1011454, crbug.com/1011469): Reenable VP9PROFILE_PROFILE2
-    // and _PROFILE3 when P010 is completely supported.
-    //{VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
-    //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
-};
-
-// Converts the given |va_profile| to the corresponding string.
-// See: http://go/gh/intel/libva/blob/master/va/va.h#L359
-std::string VAProfileToString(VAProfile va_profile) {
-  switch (va_profile) {
-    case VAProfileNone:
-      return "VAProfileNone";
-    case VAProfileMPEG2Simple:
-      return "VAProfileMPEG2Simple";
-    case VAProfileMPEG2Main:
-      return "VAProfileMPEG2Main";
-    case VAProfileMPEG4Simple:
-      return "VAProfileMPEG4Simple";
-    case VAProfileMPEG4AdvancedSimple:
-      return "VAProfileMPEG4AdvancedSimple";
-    case VAProfileMPEG4Main:
-      return "VAProfileMPEG4Main";
-    case VAProfileH264Baseline:
-      return "VAProfileH264Baseline";
-    case VAProfileH264Main:
-      return "VAProfileH264Main";
-    case VAProfileH264High:
-      return "VAProfileH264High";
-    case VAProfileVC1Simple:
-      return "VAProfileVC1Simple";
-    case VAProfileVC1Main:
-      return "VAProfileVC1Main";
-    case VAProfileVC1Advanced:
-      return "VAProfileVC1Advanced";
-    case VAProfileH263Baseline:
-      return "VAProfileH263Baseline";
-    case VAProfileJPEGBaseline:
-      return "VAProfileJPEGBaseline";
-    case VAProfileH264ConstrainedBaseline:
-      return "VAProfileH264ConstrainedBaseline";
-    case VAProfileVP8Version0_3:
-      return "VAProfileVP8Version0_3";
-    case VAProfileH264MultiviewHigh:
-      return "VAProfileH264MultiviewHigh";
-    case VAProfileH264StereoHigh:
-      return "VAProfileH264StereoHigh";
-    case VAProfileHEVCMain:
-      return "VAProfileHEVCMain";
-    case VAProfileHEVCMain10:
-      return "VAProfileHEVCMain10";
-    case VAProfileVP9Profile0:
-      return "VAProfileVP9Profile0";
-    case VAProfileVP9Profile1:
-      return "VAProfileVP9Profile1";
-    case VAProfileVP9Profile2:
-      return "VAProfileVP9Profile2";
-    case VAProfileVP9Profile3:
-      return "VAProfileVP9Profile3";
-#if VA_MAJOR_VERSION >= 2 || (VA_MAJOR_VERSION == 1 && VA_MINOR_VERSION >= 2)
-    case VAProfileHEVCMain12:
-      return "VAProfileHEVCMain12";
-    case VAProfileHEVCMain422_10:
-      return "VAProfileHEVCMain422_10";
-    case VAProfileHEVCMain422_12:
-      return "VAProfileHEVCMain422_12";
-    case VAProfileHEVCMain444:
-      return "VAProfileHEVCMain444";
-    case VAProfileHEVCMain444_10:
-      return "VAProfileHEVCMain444_10";
-    case VAProfileHEVCMain444_12:
-      return "VAProfileHEVCMain444_12";
-    case VAProfileHEVCSccMain:
-      return "VAProfileHEVCSccMain";
-    case VAProfileHEVCSccMain10:
-      return "VAProfileHEVCSccMain10";
-    case VAProfileHEVCSccMain444:
-      return "VAProfileHEVCSccMain444";
-#endif
-    default:
-      NOTREACHED();
-      return "";
-  }
+// Returns true if the SoC has a Gen8 GPU. CPU model ID's are referenced from
+// the following file in the kernel source: arch/x86/include/asm/intel-family.h.
+bool IsGen8Gpu() {
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  constexpr int kBroadwellCoreModelId = 0x3D;
+  constexpr int kBroadwellGT3EModelId = 0x47;
+  constexpr int kBroadwellXModelId = 0x4F;
+  constexpr int kBroadwellXeonDModelId = 0x56;
+  constexpr int kBraswellModelId = 0x4C;
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_gen8_gpu = cpuid->family() == kPentiumAndLaterFamily &&
+                                  (cpuid->model() == kBroadwellCoreModelId ||
+                                   cpuid->model() == kBroadwellGT3EModelId ||
+                                   cpuid->model() == kBroadwellXModelId ||
+                                   cpuid->model() == kBroadwellXeonDModelId ||
+                                   cpuid->model() == kBraswellModelId);
+  return is_gen8_gpu;
 }
 
-bool IsBlackListedDriver(const std::string& va_vendor_string,
-                         VaapiWrapper::CodecMode mode,
-                         VAProfile va_profile) {
-  if (mode != VaapiWrapper::CodecMode::kEncode)
-    return false;
+// Returns true if the SoC has a Gen9 GPU. CPU model ID's are referenced from
+// the following file in the kernel source: arch/x86/include/asm/intel-family.h.
+bool IsGen9Gpu() {
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  constexpr int kSkyLakeModelId = 0x5E;
+  constexpr int kSkyLake_LModelId = 0x4E;
+  constexpr int kApolloLakeModelId = 0x5c;
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_gen9_gpu = cpuid->family() == kPentiumAndLaterFamily &&
+                                  (cpuid->model() == kSkyLakeModelId ||
+                                   cpuid->model() == kSkyLake_LModelId ||
+                                   cpuid->model() == kApolloLakeModelId);
+  return is_gen9_gpu;
+}
 
-  // TODO(crbug.com/828482): Remove once H264 encoder on AMD is enabled by
-  // default.
-  if (VendorStringToImplementationType(va_vendor_string) ==
-          VAImplementation::kMesaGallium &&
-      va_vendor_string.find("AMD STONEY") != std::string::npos &&
-      !base::FeatureList::IsEnabled(kVaapiH264AMDEncoder)) {
-    constexpr VAProfile kH264Profiles[] = {VAProfileH264Baseline,
-                                           VAProfileH264Main, VAProfileH264High,
-                                           VAProfileH264ConstrainedBaseline};
-    if (base::Contains(kH264Profiles, va_profile))
-      return true;
+// Returns true if the SoC has a 9.5 GPU. CPU model IDs are referenced from the
+// following file in the kernel source:  arch/x86/include/asm/intel-family.h.
+bool IsGen95Gpu() {
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  constexpr int kKabyLakeModelId = 0x9E;
+  // Amber Lake, Whiskey Lake and some Comet Lake CPU IDs are the same as KBL L.
+  constexpr int kKabyLake_LModelId = 0x8E;
+  constexpr int kGeminiLakeModelId = 0x7A;
+  constexpr int kCometLakeModelId = 0xA5;
+  constexpr int kCometLake_LModelId = 0xA6;
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_gen95_gpu = cpuid->family() == kPentiumAndLaterFamily &&
+                                   (cpuid->model() == kKabyLakeModelId ||
+                                    cpuid->model() == kKabyLake_LModelId ||
+                                    cpuid->model() == kGeminiLakeModelId ||
+                                    cpuid->model() == kCometLakeModelId ||
+                                    cpuid->model() == kCometLake_LModelId);
+  return is_gen95_gpu;
+}
+
+// Returns true if the intel hybrid driver is used for decoding |va_profile|.
+// https://github.com/intel/intel-hybrid-driver
+// Note that since the hybrid driver runs as a part of the i965 driver,
+// vaQueryVendorString() returns "Intel i965 driver".
+bool IsUsingHybridDriverForDecoding(VAProfile va_profile) {
+  // Note that Skylake (not gen8) also needs the hybrid decoder for VP9
+  // decoding. However, it is disabled today on ChromeOS
+  // (see crrev.com/c/390511).
+  return va_profile == VAProfileVP9Profile0 && IsGen8Gpu();
+}
+
+// Returns true if the SoC is considered a low power one, i.e. it's an Intel
+// Pentium, Celeron, or a Core Y-series. See go/intel-socs-101 or
+// https://www.intel.com/content/www/us/en/processors/processor-numbers.html.
+bool IsLowPowerIntelProcessor() {
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  static const base::NoDestructor<base::CPU> cpuid;
+  static const bool is_core_y_processor =
+      base::MatchPattern(cpuid->cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
+
+  static const bool is_low_power_intel =
+      cpuid->family() == kPentiumAndLaterFamily &&
+      (base::Contains(cpuid->cpu_brand(), "Pentium") ||
+       base::Contains(cpuid->cpu_brand(), "Celeron") || is_core_y_processor);
+  return is_low_power_intel;
+}
+
+bool IsModeEncoding(VaapiWrapper::CodecMode mode) {
+  return mode == VaapiWrapper::CodecMode::kEncodeConstantBitrate ||
+         mode == VaapiWrapper::CodecMode::kEncodeConstantQuantizationParameter;
+}
+
+bool GetNV12VisibleWidthBytes(int visible_width,
+                              uint32_t plane,
+                              size_t* bytes) {
+  if (plane == 0) {
+    *bytes = base::checked_cast<size_t>(visible_width);
+    return true;
+  }
+
+  *bytes = base::checked_cast<size_t>(visible_width);
+  return visible_width % 2 == 0 ||
+         base::CheckAdd<int>(visible_width, 1).AssignIfValid(bytes);
+}
+
+// Fill 0 on VAImage's non visible area.
+bool ClearNV12Padding(const VAImage& image,
+                      const gfx::Size& visible_size,
+                      uint8_t* data) {
+  DCHECK_EQ(2u, image.num_planes);
+  DCHECK_EQ(image.format.fourcc, static_cast<uint32_t>(VA_FOURCC_NV12));
+
+  size_t visible_width_bytes[2] = {};
+  if (!GetNV12VisibleWidthBytes(visible_size.width(), 0u,
+                                &visible_width_bytes[0]) ||
+      !GetNV12VisibleWidthBytes(visible_size.width(), 1u,
+                                &visible_width_bytes[1])) {
+    return false;
+  }
+
+  for (uint32_t plane = 0; plane < image.num_planes; plane++) {
+    size_t row_bytes = base::strict_cast<size_t>(image.pitches[plane]);
+    if (row_bytes == visible_width_bytes[plane])
+      continue;
+
+    CHECK_GT(row_bytes, visible_width_bytes[plane]);
+    int visible_height = visible_size.height();
+    if (plane == 1 && !(base::CheckAdd<int>(visible_size.height(), 1) / 2)
+                           .AssignIfValid(&visible_height)) {
+      return false;
+    }
+
+    const size_t padding_bytes = row_bytes - visible_width_bytes[plane];
+    uint8_t* plane_data = data + image.offsets[plane];
+    for (int row = 0; row < visible_height; row++, plane_data += row_bytes)
+      memset(plane_data + visible_width_bytes[plane], 0, padding_bytes);
+
+    CHECK_GE(base::strict_cast<int>(image.height), visible_height);
+    size_t image_height = base::strict_cast<size_t>(image.height);
+    if (plane == 1 && !(base::CheckAdd<size_t>(image.height, 1) / 2)
+                           .AssignIfValid(&image_height)) {
+      return false;
+    }
+
+    base::CheckedNumeric<size_t> remaining_area(image_height);
+    remaining_area -= base::checked_cast<size_t>(visible_height);
+    remaining_area *= row_bytes;
+    if (!remaining_area.IsValid())
+      return false;
+    memset(plane_data, 0, remaining_area.ValueOrDie());
+  }
+
+  return true;
+}
+
+// Can't statically initialize the profile map:
+// https://google.github.io/styleguide/cppguide.html#Static_and_Global_Variables
+using ProfileCodecMap = std::map<VideoCodecProfile, VAProfile>;
+const ProfileCodecMap& GetProfileCodecMap() {
+  static const base::NoDestructor<ProfileCodecMap> kMediaToVAProfileMap({
+      // VAProfileH264Baseline is deprecated in <va/va.h> since libva 2.0.0.
+      {H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline},
+          {H264PROFILE_MAIN, VAProfileH264Main},
+          // TODO(posciak): See if we can/want to support other variants of
+          // H264PROFILE_HIGH*.
+          {H264PROFILE_HIGH, VAProfileH264High},
+          {VP8PROFILE_ANY, VAProfileVP8Version0_3},
+          {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
+          // VaapiWrapper does not support VP9 Profile 1, see b/153680337.
+          // {VP9PROFILE_PROFILE1, VAProfileVP9Profile1},
+          {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
+      // VaapiWrapper does not support Profile 3.
+      //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
+          {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
+        // VaapiWrapper does not support AV1 Profile 1.
+        // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+          {HEVCPROFILE_MAIN, VAProfileHEVCMain},
+          {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
+#endif
+  });
+  return *kMediaToVAProfileMap;
+}
+
+// Maps a VideoCodecProfile |profile| to a VAProfile, or VAProfileNone.
+VAProfile ProfileToVAProfile(VideoCodecProfile profile,
+                             VaapiWrapper::CodecMode mode) {
+  const auto& profiles = GetProfileCodecMap();
+  const auto& maybe_profile = profiles.find(profile);
+  if (maybe_profile == profiles.end())
+    return VAProfileNone;
+  return maybe_profile->second;
+}
+
+bool IsVAProfileSupported(VAProfile va_profile) {
+  const auto& profiles = GetProfileCodecMap();
+  // VAProfileJPEGBaseline and VAProfileProtected are always recognized but are
+  // not video codecs per se.
+  return va_profile == VAProfileJPEGBaseline ||
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+         va_profile == VAProfileProtected ||
+#endif
+         std::find_if(profiles.begin(), profiles.end(),
+                      [va_profile](const auto& entry) {
+                        return entry.second == va_profile;
+                      }) != profiles.end();
+}
+
+bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
+  if (!IsModeEncoding(mode)) {
+    return va_profile == VAProfileAV1Profile0 &&
+           !base::FeatureList::IsEnabled(kVaapiAV1Decoder);
   }
 
   // TODO(posciak): Remove once VP8 encoding is to be enabled by default.
@@ -267,8 +470,7 @@ bool IsBlackListedDriver(const std::string& va_vendor_string,
     return true;
   }
 
-  // TODO(crbug.com/811912): Remove once VP9 encoding is to be enabled by
-  // default.
+  // TODO(crbug.com/811912): Remove once VP9 encoding is enabled by default.
   if (va_profile == VAProfileVP9Profile0 &&
       !base::FeatureList::IsEnabled(kVaapiVP9Encoder)) {
     return true;
@@ -283,15 +485,18 @@ class VADisplayState {
  public:
   static VADisplayState* Get();
 
+  VADisplayState(const VADisplayState&) = delete;
+  VADisplayState& operator=(const VADisplayState&) = delete;
+
   // Initialize static data before sandbox is enabled.
   static void PreSandboxInitialization();
 
   bool Initialize();
-  void Deinitialize(VAStatus* status);
+  VAStatus Deinitialize();
 
   base::Lock* va_lock() { return &va_lock_; }
   VADisplay va_display() const { return va_display_; }
-  const std::string& va_vendor_string() const { return va_vendor_string_; }
+  VAImplementation implementation_type() const { return implementation_type_; }
 
   void SetDrmFd(base::PlatformFile fd) { drm_fd_.reset(HANDLE_EINTR(dup(fd))); }
 
@@ -303,6 +508,8 @@ class VADisplayState {
 
   // Implementation of Initialize() called only once.
   bool InitializeOnce() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  bool InitializeVaDisplay_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  bool InitializeVaDriver_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   int refcount_ GUARDED_BY(va_lock_);
 
@@ -314,16 +521,14 @@ class VADisplayState {
   // Drm fd used to obtain access to the driver interface by VA.
   base::ScopedFD drm_fd_;
 
-  // The VADisplay handle.
+  // The VADisplay handle. Valid between Initialize() and Deinitialize().
   VADisplay va_display_;
 
-  // True if vaInitialize() has been called successfully.
+  // True if vaInitialize() has been called successfully, until Deinitialize().
   bool va_initialized_;
 
-  // String acquired by vaQueryVendorString().
-  std::string va_vendor_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(VADisplayState);
+  // Enumerated version of vaQueryVendorString(). Valid after Initialize().
+  VAImplementation implementation_type_ = VAImplementation::kInvalid;
 };
 
 // static
@@ -348,13 +553,23 @@ VADisplayState::VADisplayState()
 bool VADisplayState::Initialize() {
   base::AutoLock auto_lock(va_lock_);
 
-  if (!IsVaInitialized() ||
-#if defined(USE_X11)
-      !IsVa_x11Initialized() ||
-#endif
-      !IsVa_drmInitialized()) {
+#if defined(USE_OZONE) && defined(OS_LINUX)
+  // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
+  // Linux. See comment in OzonePlatform::PlatformProperties::supports_vaapi
+  // for more details. This will also require revisiting everything that's
+  // guarded by USE_VAAPI_X11. For example, if USE_VAAPI_X11 is true, but the
+  // user chooses the Wayland backend for Ozone at runtime, then many things (if
+  // not all) that we do for X11 won't apply.
+  if (!ui::OzonePlatform::GetInstance()->GetPlatformProperties().supports_vaapi)
     return false;
-  }
+#endif
+
+  bool libraries_initialized = IsVaInitialized() && IsVa_drmInitialized();
+#if BUILDFLAG(USE_VAAPI_X11)
+  libraries_initialized = libraries_initialized && IsVa_x11Initialized();
+#endif
+  if (!libraries_initialized)
+    return false;
 
   // Manual refcounting to ensure the rest of the method is called only once.
   if (refcount_++ > 0)
@@ -366,65 +581,87 @@ bool VADisplayState::Initialize() {
   return success;
 }
 
-bool VADisplayState::InitializeOnce() {
-  static_assert(
-      VA_MAJOR_VERSION >= 2 || (VA_MAJOR_VERSION == 1 && VA_MINOR_VERSION >= 1),
-      "Requires VA-API >= 1.1.0");
+#if BUILDFLAG(USE_VAAPI_X11)
 
+absl::optional<VADisplay> GetVADisplayStateX11(const base::ScopedFD& drm_fd) {
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationEGLGLES2:
-      va_display_ = vaGetDisplayDRM(drm_fd_.get());
-      break;
-    case gl::kGLImplementationDesktopGL:
-#if defined(USE_X11)
-      va_display_ = vaGetDisplay(gfx::GetXDisplay());
-#else
-      LOG(WARNING) << "VAAPI video acceleration not available without "
-                      "DesktopGL (GLX).";
-#endif  // USE_X11
-      break;
-    // Cannot infer platform from GL, try all available displays
+      return vaGetDisplayDRM(drm_fd.get());
+
     case gl::kGLImplementationNone:
-#if defined(USE_X11)
-      va_display_ = vaGetDisplay(gfx::GetXDisplay());
-      if (vaDisplayIsValid(va_display_))
-        break;
-#endif  // USE_X11
-      va_display_ = vaGetDisplayDRM(drm_fd_.get());
-      break;
+
+    case gl::kGLImplementationDesktopGL: {
+      VADisplay display =
+          vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
+      if (vaDisplayIsValid(display))
+        return display;
+      return vaGetDisplayDRM(drm_fd.get());
+    }
+
+    case gl::kGLImplementationEGLANGLE:
+      return vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
 
     default:
       LOG(WARNING) << "VAAPI video acceleration not available for "
-                   << gl::GetGLImplementationName(gl::GetGLImplementation());
-      return false;
+                   << gl::GetGLImplementationGLName(
+                          gl::GetGLImplementationParts());
+      return absl::nullopt;
   }
+}
 
+#else
+
+absl::optional<VADisplay> GetVADisplayState(const base::ScopedFD& drm_fd) {
+  switch (gl::GetGLImplementation()) {
+    case gl::kGLImplementationEGLGLES2:
+    case gl::kGLImplementationNone:
+      return vaGetDisplayDRM(drm_fd.get());
+    default:
+      LOG(WARNING) << "VAAPI video acceleration not available for "
+                   << gl::GetGLImplementationGLName(
+                          gl::GetGLImplementationParts());
+      return absl::nullopt;
+  }
+}
+
+#endif  // BUILDFLAG(USE_VAAPI_X11)
+
+bool VADisplayState::InitializeVaDisplay_Locked() {
+  absl::optional<VADisplay> display =
+#if BUILDFLAG(USE_VAAPI_X11)
+      GetVADisplayStateX11(drm_fd_);
+#else
+      GetVADisplayState(drm_fd_);
+#endif
+
+  if (!display)
+    return false;
+
+  va_display_ = *display;
   if (!vaDisplayIsValid(va_display_)) {
     LOG(ERROR) << "Could not get a valid VA display";
     return false;
   }
 
-  // Set VA logging level to enable error messages, unless already set
-  constexpr char libva_log_level_env[] = "LIBVA_MESSAGING_LEVEL";
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (!env->HasVar(libva_log_level_env))
-    env->SetVar(libva_log_level_env, "1");
+  return true;
+}
 
+bool VADisplayState::InitializeVaDriver_Locked() {
   // The VAAPI version.
   int major_version, minor_version;
   VAStatus va_res = vaInitialize(va_display_, &major_version, &minor_version);
   if (va_res != VA_STATUS_SUCCESS) {
-    LOG(ERROR) << "vaInitialize failed: " << vaErrorStr(va_res);
+    VLOGF(1) << "vaInitialize failed: " << vaErrorStr(va_res);
     return false;
   }
-
-  va_initialized_ = true;
-
-  va_vendor_string_ = vaQueryVendorString(va_display_);
-  DLOG_IF(WARNING, va_vendor_string_.empty())
+  const std::string va_vendor_string = vaQueryVendorString(va_display_);
+  DLOG_IF(WARNING, va_vendor_string.empty())
       << "Vendor string empty or error reading.";
   DVLOG(1) << "VAAPI version: " << major_version << "." << minor_version << " "
-           << va_vendor_string_;
+           << va_vendor_string;
+  implementation_type_ = VendorStringToImplementationType(va_vendor_string);
+
+  va_initialized_ = true;
 
   // The VAAPI version is determined from what is loaded on the system by
   // calling vaInitialize(). Since the libva is now ABI-compatible, relax the
@@ -434,19 +671,58 @@ bool VADisplayState::InitializeOnce() {
   // guaranteed to be backward (and not forward) compatible.
   if (VA_MAJOR_VERSION > major_version ||
       (VA_MAJOR_VERSION == major_version && VA_MINOR_VERSION > minor_version)) {
-    LOG(ERROR) << "The system version " << major_version << "." << minor_version
-               << " should be greater than or equal to "
-               << VA_MAJOR_VERSION << "." << VA_MINOR_VERSION;
+    VLOGF(1) << "The system version " << major_version << "." << minor_version
+             << " should be greater than or equal to " << VA_MAJOR_VERSION
+             << "." << VA_MINOR_VERSION;
     return false;
   }
   return true;
 }
 
-void VADisplayState::Deinitialize(VAStatus* status) {
+bool VADisplayState::InitializeOnce() {
+  static_assert(
+      VA_MAJOR_VERSION >= 2 || (VA_MAJOR_VERSION == 1 && VA_MINOR_VERSION >= 1),
+      "Requires VA-API >= 1.1.0");
+
+  // Set VA logging level, unless already set.
+  constexpr char libva_log_level_env[] = "LIBVA_MESSAGING_LEVEL";
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  if (!env->HasVar(libva_log_level_env))
+    env->SetVar(libva_log_level_env, "1");
+
+  if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
+    return false;
+
+#if BUILDFLAG(USE_VAAPI_X11)
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      implementation_type_ == VAImplementation::kIntelIHD) {
+    constexpr char libva_driver_impl_env[] = "LIBVA_DRIVER_NAME";
+    // TODO(crbug/1116703) The libva intel-media driver has a known segfault in
+    // vaPutSurface, so until this is fixed, fall back to the i965 driver. There
+    // is discussion of the issue here:
+    // https://github.com/intel/media-driver/issues/818
+    if (!env->HasVar(libva_driver_impl_env))
+      env->SetVar(libva_driver_impl_env, "i965");
+
+    // Re-initialize with the new driver.
+    va_display_ = nullptr;
+    va_initialized_ = false;
+    implementation_type_ = VAImplementation::kInvalid;
+
+    if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
+      return false;
+  }
+#endif  // BUILDFLAG(USE_VAAPI_X11)
+
+  return true;
+}
+
+VAStatus VADisplayState::Deinitialize() {
   base::AutoLock auto_lock(va_lock_);
+  VAStatus va_res = VA_STATUS_SUCCESS;
 
   if (--refcount_ > 0)
-    return;
+    return va_res;
 
   // Must check if vaInitialize completed successfully, to work around a bug in
   // libva. The bug was fixed upstream:
@@ -454,35 +730,96 @@ void VADisplayState::Deinitialize(VAStatus* status) {
   // TODO(mgiuca): Remove this check, and the |va_initialized_| variable, once
   // the fix has rolled out sufficiently.
   if (va_initialized_ && va_display_)
-    *status = vaTerminate(va_display_);
+    va_res = vaTerminate(va_display_);
   va_initialized_ = false;
   va_display_ = nullptr;
-  va_vendor_string_ = "";
+  return va_res;
 }
 
-static VAEntrypoint GetVaEntryPoint(VaapiWrapper::CodecMode mode,
-                                    VAProfile profile) {
-  switch (mode) {
-    case VaapiWrapper::kDecode:
-      return VAEntrypointVLD;
-    case VaapiWrapper::kEncode:
-      if (profile == VAProfileJPEGBaseline)
-        return VAEntrypointEncPicture;
-      else
-        return VAEntrypointEncSlice;
-    case VaapiWrapper::kVideoProcess:
-      return VAEntrypointVideoProc;
-    case VaapiWrapper::kCodecModeMax:
-      NOTREACHED();
-      return VAEntrypointVLD;
+// Returns all the VAProfiles that the driver lists as supported, regardless of
+// what Chrome supports or not.
+std::vector<VAProfile> GetSupportedVAProfiles(const base::Lock* va_lock,
+                                              VADisplay va_display) {
+  va_lock->AssertAcquired();
+
+  // Query the driver for supported profiles.
+  const int max_va_profiles = vaMaxNumProfiles(va_display);
+  std::vector<VAProfile> va_profiles(
+      base::checked_cast<size_t>(max_va_profiles));
+
+  int num_va_profiles;
+  const VAStatus va_res =
+      vaQueryConfigProfiles(va_display, &va_profiles[0], &num_va_profiles);
+  if (va_res != VA_STATUS_SUCCESS) {
+    LOG(ERROR) << "vaQueryConfigProfiles failed: " << vaErrorStr(va_res);
+    return {};
   }
+  if (num_va_profiles < 0 || num_va_profiles > max_va_profiles) {
+    LOG(ERROR) << "vaQueryConfigProfiles returned: " << num_va_profiles
+               << " profiles";
+    return {};
+  }
+
+  va_profiles.resize(base::checked_cast<size_t>(num_va_profiles));
+  return va_profiles;
 }
 
-static bool GetRequiredAttribs(const base::Lock* va_lock,
-                               VADisplay va_display,
-                               VaapiWrapper::CodecMode mode,
-                               VAProfile profile,
-                               std::vector<VAConfigAttrib>* required_attribs) {
+// Queries the driver for the supported entrypoints for |va_profile|, then
+// returns those allowed for |mode|.
+std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
+                                                   VADisplay va_display,
+                                                   VaapiWrapper::CodecMode mode,
+                                                   VAProfile va_profile) {
+  va_lock->AssertAcquired();
+
+  const int max_entrypoints = vaMaxNumEntrypoints(va_display);
+  std::vector<VAEntrypoint> va_entrypoints(
+      base::checked_cast<size_t>(max_entrypoints));
+
+  int num_va_entrypoints;
+  const VAStatus va_res = vaQueryConfigEntrypoints(
+      va_display, va_profile, &va_entrypoints[0], &num_va_entrypoints);
+  if (va_res != VA_STATUS_SUCCESS) {
+    LOG(ERROR) << "vaQueryConfigEntrypoints failed, VA error: "
+               << vaErrorStr(va_res);
+    return {};
+  }
+  if (num_va_entrypoints < 0 || num_va_entrypoints > max_entrypoints) {
+    LOG(ERROR) << "vaQueryConfigEntrypoints returned: " << num_va_entrypoints
+               << " entry points, when the max is: " << max_entrypoints;
+    return {};
+  }
+  va_entrypoints.resize(num_va_entrypoints);
+
+  const std::vector<VAEntrypoint> kAllowedEntryPoints[] = {
+    {VAEntrypointVLD},  // kDecode.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {VAEntrypointVLD, VAEntrypointProtectedContent},  // kDecodeProtected.
+#endif
+    {VAEntrypointEncSlice, VAEntrypointEncPicture,
+     VAEntrypointEncSliceLP},  // kEncodeConstantBitrate.
+    {VAEntrypointEncSlice,
+     VAEntrypointEncSliceLP},  // kEncodeConstantQuantizationParameter.
+    {VAEntrypointVideoProc}    // kVideoProcess.
+  };
+  static_assert(base::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
+                "");
+
+  std::vector<VAEntrypoint> entrypoints;
+  std::copy_if(va_entrypoints.begin(), va_entrypoints.end(),
+               std::back_inserter(entrypoints),
+               [&kAllowedEntryPoints, mode](VAEntrypoint entry_point) {
+                 return base::Contains(kAllowedEntryPoints[mode], entry_point);
+               });
+  return entrypoints;
+}
+
+bool GetRequiredAttribs(const base::Lock* va_lock,
+                        VADisplay va_display,
+                        VaapiWrapper::CodecMode mode,
+                        VAProfile profile,
+                        VAEntrypoint entrypoint,
+                        std::vector<VAConfigAttrib>* required_attribs) {
   va_lock->AssertAcquired();
 
   // Choose a suitable VAConfigAttribRTFormat for every |mode|. For video
@@ -491,37 +828,95 @@ static bool GetRequiredAttribs(const base::Lock* va_lock,
   if (profile == VAProfileVP9Profile2 || profile == VAProfileVP9Profile3) {
     required_attribs->push_back(
         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420_10BPP});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (profile == VAProfileProtected) {
+    DCHECK_EQ(mode, VaapiWrapper::kDecodeProtected);
+    constexpr int kWidevineUsage = 0x1;
+    required_attribs->push_back(
+        {VAConfigAttribProtectedContentUsage, kWidevineUsage});
+    required_attribs->push_back(
+        {VAConfigAttribProtectedContentCipherAlgorithm, VA_PC_CIPHER_AES});
+    required_attribs->push_back(
+        {VAConfigAttribProtectedContentCipherBlockSize, VA_PC_BLOCK_SIZE_128});
+    required_attribs->push_back(
+        {VAConfigAttribProtectedContentCipherMode, VA_PC_CIPHER_MODE_CTR});
+#endif
   } else {
     required_attribs->push_back({VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420});
   }
 
-  if (mode != VaapiWrapper::kEncode)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
+    required_attribs->push_back(
+        {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR});
+  }
+#endif
+
+  if (!IsModeEncoding(mode))
     return true;
 
-  // All encoding use constant bit rate except for JPEG.
-  if (profile != VAProfileJPEGBaseline)
-    required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CBR});
+  if (profile == VAProfileJPEGBaseline)
+    return true;
 
+  if (mode == VaapiWrapper::kEncodeConstantBitrate)
+    required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CBR});
+  if (mode == VaapiWrapper::kEncodeConstantQuantizationParameter)
+    required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CQP});
+
+  constexpr VAProfile kSupportedH264VaProfilesForEncoding[] = {
+      VAProfileH264ConstrainedBaseline, VAProfileH264Main, VAProfileH264High};
   // VAConfigAttribEncPackedHeaders is H.264 specific.
-  if ((profile >= VAProfileH264Baseline && profile <= VAProfileH264High) ||
-      (profile == VAProfileH264ConstrainedBaseline)) {
-    // Encode with Packed header if a driver supports.
-    VAEntrypoint entrypoint =
-        GetVaEntryPoint(VaapiWrapper::CodecMode::kEncode, profile);
-    VAConfigAttrib attrib;
+  if (base::Contains(kSupportedH264VaProfilesForEncoding, profile)) {
+    // Encode with Packed header if the driver supports.
+    VAConfigAttrib attrib{};
     attrib.type = VAConfigAttribEncPackedHeaders;
-    VAStatus va_res =
+    const VAStatus va_res =
         vaGetConfigAttributes(va_display, profile, entrypoint, &attrib, 1);
     if (va_res != VA_STATUS_SUCCESS) {
-      LOG(ERROR) << "GetConfigAttributes failed for va_profile "
-                 << VAProfileToString(profile);
+      LOG(ERROR) << "vaGetConfigAttributes failed: " << vaProfileStr(profile);
       return false;
     }
 
-    if (attrib.value != VA_ENC_PACKED_HEADER_NONE) {
+    const uint32_t packed_header_attributes =
+        (VA_ENC_PACKED_HEADER_SEQUENCE | VA_ENC_PACKED_HEADER_PICTURE |
+         VA_ENC_PACKED_HEADER_SLICE);
+    if ((packed_header_attributes & attrib.value) == packed_header_attributes) {
       required_attribs->push_back(
-          {VAConfigAttribEncPackedHeaders,
-           VA_ENC_PACKED_HEADER_SEQUENCE | VA_ENC_PACKED_HEADER_PICTURE});
+          {VAConfigAttribEncPackedHeaders, packed_header_attributes});
+    } else {
+      required_attribs->push_back(
+          {VAConfigAttribEncPackedHeaders, VA_ENC_PACKED_HEADER_NONE});
+    }
+  }
+  return true;
+}
+
+// Returns true if |va_profile| for |entrypoint| with |required_attribs| is
+// supported.
+bool AreAttribsSupported(const base::Lock* va_lock,
+                         VADisplay va_display,
+                         VAProfile va_profile,
+                         VAEntrypoint entrypoint,
+                         const std::vector<VAConfigAttrib>& required_attribs) {
+  va_lock->AssertAcquired();
+  // Query the driver for required attributes.
+  std::vector<VAConfigAttrib> attribs = required_attribs;
+  for (size_t i = 0; i < required_attribs.size(); ++i)
+    attribs[i].value = 0;
+
+  VAStatus va_res = vaGetConfigAttributes(va_display, va_profile, entrypoint,
+                                          &attribs[0], attribs.size());
+  if (va_res != VA_STATUS_SUCCESS) {
+    LOG(ERROR) << "vaGetConfigAttributes failed error: " << vaErrorStr(va_res);
+    return false;
+  }
+  for (size_t i = 0; i < required_attribs.size(); ++i) {
+    if (attribs[i].type != required_attribs[i].type ||
+        (attribs[i].value & required_attribs[i].value) !=
+            required_attribs[i].value) {
+      DVLOG(1) << "Unsupported value " << required_attribs[i].value << " for "
+               << vaConfigAttribTypeStr(required_attribs[i].type);
+      return false;
     }
   }
   return true;
@@ -533,6 +928,7 @@ class VASupportedProfiles {
  public:
   struct ProfileInfo {
     VAProfile va_profile;
+    VAEntrypoint va_entrypoint;
     gfx::Size min_resolution;
     gfx::Size max_resolution;
     std::vector<uint32_t> pixel_formats;
@@ -540,65 +936,47 @@ class VASupportedProfiles {
   };
   static const VASupportedProfiles& Get();
 
-  VAImplementation GetImplementationType() const {
-    return implementation_type_;
-  }
+  VASupportedProfiles(const VASupportedProfiles&) = delete;
+  VASupportedProfiles& operator=(const VASupportedProfiles&) = delete;
 
-  const std::vector<ProfileInfo>& GetSupportedProfileInfosForCodecMode(
-      VaapiWrapper::CodecMode mode) const;
-
-  // Determines if the |va_profile| is supported for |mode|. If so (and
-  // |profile_info| is not nullptr), *|profile_info| is filled with the profile
-  // information.
-  bool IsProfileSupported(VaapiWrapper::CodecMode mode,
-                          VAProfile va_profile,
-                          ProfileInfo* profile_info = nullptr) const;
+  // Determines if |mode| supports |va_profile| (and |va_entrypoint| if defined
+  // and valid). If so, returns a const pointer to its ProfileInfo, otherwise
+  // returns nullptr.
+  const ProfileInfo* IsProfileSupported(
+      VaapiWrapper::CodecMode mode,
+      VAProfile va_profile,
+      VAEntrypoint va_entrypoint = kVAEntrypointInvalid) const;
 
  private:
   friend class base::NoDestructor<VASupportedProfiles>;
 
+  friend std::map<VAProfile, std::vector<VAEntrypoint>>
+  VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
+      CodecMode mode);
+
   VASupportedProfiles();
   ~VASupportedProfiles() = default;
 
-  bool GetSupportedVAProfiles(std::vector<VAProfile>* profiles) const;
-
-  // Gets supported profile infos for |mode|.
-  std::vector<ProfileInfo> GetSupportedProfileInfosForCodecModeInternal(
-      VaapiWrapper::CodecMode mode) const;
-
-  // Checks if |va_profile| supports |entrypoint| or not.
-  bool IsEntrypointSupported_Locked(VAProfile va_profile,
-                                    VAEntrypoint entrypoint) const
-      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
-
-  // Returns true if |va_profile| for |entrypoint| with |required_attribs| is
-  // supported.
-  bool AreAttribsSupported_Locked(
-      VAProfile va_profile,
-      VAEntrypoint entrypoint,
-      const std::vector<VAConfigAttrib>& required_attribs) const
-      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  // Fills in |supported_profiles_|.
+  void FillSupportedProfileInfos(base::Lock* va_lock, VADisplay va_display);
 
   // Fills |profile_info| for |va_profile| and |entrypoint| with
   // |required_attribs|. If the return value is true, the operation was
   // successful. Otherwise, the information in *|profile_info| shouldn't be
   // relied upon.
-  bool FillProfileInfo_Locked(VAProfile va_profile,
+  bool FillProfileInfo_Locked(const base::Lock* va_lock,
+                              VADisplay va_display,
+                              VAProfile va_profile,
                               VAEntrypoint entrypoint,
                               std::vector<VAConfigAttrib>& required_attribs,
-                              ProfileInfo* profile_info) const
-      EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+                              ProfileInfo* profile_info) const;
 
-  VAImplementation implementation_type_ = VAImplementation::kInvalid;
   std::vector<ProfileInfo> supported_profiles_[VaapiWrapper::kCodecModeMax];
+  static_assert(std::extent<decltype(supported_profiles_)>() ==
+                    VaapiWrapper::kCodecModeMax,
+                "|supported_profiles_| size is incorrect.");
 
-  // Pointer to VADisplayState's members |va_lock_| and its |va_display_|.
-  base::Lock* va_lock_;
-  VADisplay va_display_ GUARDED_BY(va_lock_);
-
-  const base::Closure report_error_to_uma_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(VASupportedProfiles);
+  const ReportErrorToUMACB report_error_to_uma_cb_;
 };
 
 // static
@@ -607,181 +985,109 @@ const VASupportedProfiles& VASupportedProfiles::Get() {
   return *profile_infos;
 }
 
-const std::vector<VASupportedProfiles::ProfileInfo>&
-VASupportedProfiles::GetSupportedProfileInfosForCodecMode(
-    VaapiWrapper::CodecMode mode) const {
-  return supported_profiles_[mode];
-}
-
-bool VASupportedProfiles::IsProfileSupported(VaapiWrapper::CodecMode mode,
-                                             VAProfile va_profile,
-                                             ProfileInfo* profile_info) const {
-  auto iter = std::find_if(supported_profiles_[mode].begin(),
-                           supported_profiles_[mode].end(),
-                           [va_profile](const ProfileInfo& profile) {
-                             return profile.va_profile == va_profile;
-                           });
-  if (profile_info && iter != supported_profiles_[mode].end())
-    *profile_info = *iter;
-  return iter != supported_profiles_[mode].end();
+const VASupportedProfiles::ProfileInfo* VASupportedProfiles::IsProfileSupported(
+    VaapiWrapper::CodecMode mode,
+    VAProfile va_profile,
+    VAEntrypoint va_entrypoint) const {
+  auto iter = std::find_if(
+      supported_profiles_[mode].begin(), supported_profiles_[mode].end(),
+      [va_profile, va_entrypoint](const ProfileInfo& profile) {
+        return profile.va_profile == va_profile &&
+               (va_entrypoint == kVAEntrypointInvalid ||
+                profile.va_entrypoint == va_entrypoint);
+      });
+  if (iter != supported_profiles_[mode].end())
+    return &*iter;
+  return nullptr;
 }
 
 VASupportedProfiles::VASupportedProfiles()
-    : va_lock_(VADisplayState::Get()->va_lock()),
-      va_display_(nullptr),
-      report_error_to_uma_cb_(base::DoNothing()) {
+    : report_error_to_uma_cb_(base::DoNothing()) {
   VADisplayState* display_state = VADisplayState::Get();
-
-  static_assert(std::extent<decltype(supported_profiles_)>() ==
-                    VaapiWrapper::kCodecModeMax,
-                "The array size of supported profile is incorrect.");
-
   if (!display_state->Initialize())
     return;
 
-  {
-    base::AutoLock auto_lock(*va_lock_);
-    implementation_type_ =
-        VendorStringToImplementationType(display_state->va_vendor_string());
-    va_display_ = display_state->va_display();
-  }
+  VADisplay va_display = display_state->va_display();
+  DCHECK(va_display) << "VADisplayState hasn't been properly Initialize()d";
 
-  DCHECK(va_display_) << "VADisplayState hasn't been properly Initialize()d";
-  for (size_t i = 0; i < VaapiWrapper::kCodecModeMax; ++i) {
-    supported_profiles_[i] = GetSupportedProfileInfosForCodecModeInternal(
-        static_cast<VaapiWrapper::CodecMode>(i));
-  }
+  FillSupportedProfileInfos(VADisplayState::Get()->va_lock(), va_display);
 
-  VAStatus va_res = VA_STATUS_SUCCESS;
-  display_state->Deinitialize(&va_res);
-  VA_LOG_ON_ERROR(va_res, "VADisplayState::Deinitialize failed");
-
-  {
-    base::AutoLock auto_lock(*va_lock_);
-    va_display_ = nullptr;
-  }
+  const VAStatus va_res = display_state->Deinitialize();
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVATerminate);
 }
 
-std::vector<VASupportedProfiles::ProfileInfo>
-VASupportedProfiles::GetSupportedProfileInfosForCodecModeInternal(
-    VaapiWrapper::CodecMode mode) const {
-  std::vector<ProfileInfo> supported_profile_infos;
-  std::vector<VAProfile> va_profiles;
-  if (!GetSupportedVAProfiles(&va_profiles))
-    return supported_profile_infos;
+void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
+                                                    VADisplay va_display) {
+  base::AutoLock auto_lock(*va_lock);
 
-  base::AutoLock auto_lock(*va_lock_);
-  const std::string& va_vendor_string =
-      VADisplayState::Get()->va_vendor_string();
-  for (const auto& va_profile : va_profiles) {
-    VAEntrypoint entrypoint = GetVaEntryPoint(mode, va_profile);
-    std::vector<VAConfigAttrib> required_attribs;
-    if (!GetRequiredAttribs(va_lock_, va_display_, mode, va_profile,
-                            &required_attribs))
-      continue;
-    if (!IsEntrypointSupported_Locked(va_profile, entrypoint))
-      continue;
-    if (!AreAttribsSupported_Locked(va_profile, entrypoint, required_attribs))
-      continue;
-    if (IsBlackListedDriver(va_vendor_string, mode, va_profile))
-      continue;
+  const std::vector<VAProfile> va_profiles =
+      GetSupportedVAProfiles(va_lock, va_display);
 
-    ProfileInfo profile_info{};
-    if (!FillProfileInfo_Locked(va_profile, entrypoint, required_attribs,
-                                &profile_info)) {
-      LOG(ERROR) << "FillProfileInfo_Locked failed for va_profile "
-                 << VAProfileToString(va_profile) << " and entrypoint "
-                 << entrypoint;
-      continue;
+  constexpr VaapiWrapper::CodecMode kWrapperModes[] = {
+    VaapiWrapper::kDecode,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    VaapiWrapper::kDecodeProtected,
+#endif
+    VaapiWrapper::kEncodeConstantBitrate,
+    VaapiWrapper::kEncodeConstantQuantizationParameter,
+    VaapiWrapper::kVideoProcess
+  };
+  static_assert(base::size(kWrapperModes) == VaapiWrapper::kCodecModeMax, "");
+
+  for (VaapiWrapper::CodecMode mode : kWrapperModes) {
+    std::vector<ProfileInfo> supported_profile_infos;
+
+    for (const auto& va_profile : va_profiles) {
+      if (IsBlockedDriver(mode, va_profile))
+        continue;
+
+      if ((mode != VaapiWrapper::kVideoProcess) &&
+          !IsVAProfileSupported(va_profile)) {
+        continue;
+      }
+
+      const std::vector<VAEntrypoint> supported_entrypoints =
+          GetEntryPointsForProfile(va_lock, va_display, mode, va_profile);
+
+      for (const auto& entrypoint : supported_entrypoints) {
+        std::vector<VAConfigAttrib> required_attribs;
+        if (!GetRequiredAttribs(va_lock, va_display, mode, va_profile,
+                                entrypoint, &required_attribs)) {
+          continue;
+        }
+        if (!AreAttribsSupported(va_lock, va_display, va_profile, entrypoint,
+                                 required_attribs)) {
+          continue;
+        }
+        ProfileInfo profile_info{};
+        if (!FillProfileInfo_Locked(va_lock, va_display, va_profile, entrypoint,
+                                    required_attribs, &profile_info)) {
+          LOG(ERROR) << "FillProfileInfo_Locked failed for va_profile "
+                     << vaProfileStr(va_profile) << " and entrypoint "
+                     << vaEntrypointStr(entrypoint);
+          continue;
+        }
+
+        supported_profile_infos.push_back(profile_info);
+      }
     }
-    supported_profile_infos.push_back(profile_info);
+    supported_profiles_[static_cast<int>(mode)] = supported_profile_infos;
   }
-  return supported_profile_infos;
-}
-
-bool VASupportedProfiles::GetSupportedVAProfiles(
-    std::vector<VAProfile>* profiles) const {
-  base::AutoLock auto_lock(*va_lock_);
-  // Query the driver for supported profiles.
-  const int max_profiles = vaMaxNumProfiles(va_display_);
-  std::vector<VAProfile> supported_profiles(
-      base::checked_cast<size_t>(max_profiles));
-
-  int num_supported_profiles;
-  VAStatus va_res = vaQueryConfigProfiles(va_display_, &supported_profiles[0],
-                                          &num_supported_profiles);
-  VA_SUCCESS_OR_RETURN(va_res, "vaQueryConfigProfiles failed", false);
-  if (num_supported_profiles < 0 || num_supported_profiles > max_profiles) {
-    LOG(ERROR) << "vaQueryConfigProfiles returned: " << num_supported_profiles;
-    return false;
-  }
-
-  supported_profiles.resize(base::checked_cast<size_t>(num_supported_profiles));
-  *profiles = std::move(supported_profiles);
-  return true;
-}
-
-bool VASupportedProfiles::IsEntrypointSupported_Locked(
-    VAProfile va_profile,
-    VAEntrypoint entrypoint) const {
-  va_lock_->AssertAcquired();
-  // Query the driver for supported entrypoints.
-  int max_entrypoints = vaMaxNumEntrypoints(va_display_);
-  std::vector<VAEntrypoint> supported_entrypoints(
-      base::checked_cast<size_t>(max_entrypoints));
-
-  int num_supported_entrypoints;
-  VAStatus va_res = vaQueryConfigEntrypoints(va_display_, va_profile,
-                                             &supported_entrypoints[0],
-                                             &num_supported_entrypoints);
-  VA_SUCCESS_OR_RETURN(va_res, "vaQueryConfigEntrypoints failed", false);
-  if (num_supported_entrypoints < 0 ||
-      num_supported_entrypoints > max_entrypoints) {
-    LOG(ERROR) << "vaQueryConfigEntrypoints returned: "
-               << num_supported_entrypoints;
-    return false;
-  }
-
-  return base::Contains(supported_entrypoints, entrypoint);
-}
-
-bool VASupportedProfiles::AreAttribsSupported_Locked(
-    VAProfile va_profile,
-    VAEntrypoint entrypoint,
-    const std::vector<VAConfigAttrib>& required_attribs) const {
-  va_lock_->AssertAcquired();
-  // Query the driver for required attributes.
-  std::vector<VAConfigAttrib> attribs = required_attribs;
-  for (size_t i = 0; i < required_attribs.size(); ++i)
-    attribs[i].value = 0;
-
-  VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile, entrypoint,
-                                          &attribs[0], attribs.size());
-  VA_SUCCESS_OR_RETURN(va_res, "vaGetConfigAttributes failed", false);
-
-  for (size_t i = 0; i < required_attribs.size(); ++i) {
-    if (attribs[i].type != required_attribs[i].type ||
-        (attribs[i].value & required_attribs[i].value) !=
-            required_attribs[i].value) {
-      DVLOG(1) << "Unsupported value " << required_attribs[i].value
-               << " for attribute type " << required_attribs[i].type;
-      return false;
-    }
-  }
-  return true;
 }
 
 bool VASupportedProfiles::FillProfileInfo_Locked(
+    const base::Lock* va_lock,
+    VADisplay va_display,
     VAProfile va_profile,
     VAEntrypoint entrypoint,
     std::vector<VAConfigAttrib>& required_attribs,
     ProfileInfo* profile_info) const {
-  va_lock_->AssertAcquired();
+  va_lock->AssertAcquired();
   VAConfigID va_config_id;
   VAStatus va_res =
-      vaCreateConfig(va_display_, va_profile, entrypoint, &required_attribs[0],
+      vaCreateConfig(va_display, va_profile, entrypoint, &required_attribs[0],
                      required_attribs.size(), &va_config_id);
-  VA_SUCCESS_OR_RETURN(va_res, "vaCreateConfig failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
   base::ScopedClosureRunner vaconfig_destroyer(base::BindOnce(
       [](VADisplay display, VAConfigID id) {
         if (id != VA_INVALID_ID) {
@@ -791,26 +1097,38 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
                        << vaErrorStr(va_res);
         }
       },
-      va_display_, va_config_id));
+      va_display, va_config_id));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Nothing further to query for protected profile.
+  if (va_profile == VAProfileProtected) {
+    profile_info->va_profile = va_profile;
+    profile_info->va_entrypoint = entrypoint;
+    return true;
+  }
+#endif
 
   // Calls vaQuerySurfaceAttributes twice. The first time is to get the number
   // of attributes to prepare the space and the second time is to get all
   // attributes.
   unsigned int num_attribs;
-  va_res = vaQuerySurfaceAttributes(va_display_, va_config_id, nullptr,
-                                    &num_attribs);
-  VA_SUCCESS_OR_RETURN(va_res, "vaQuerySurfaceAttributes failed", false);
+  va_res =
+      vaQuerySurfaceAttributes(va_display, va_config_id, nullptr, &num_attribs);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQuerySurfaceAttributes,
+                       false);
   if (!num_attribs)
     return false;
 
   std::vector<VASurfaceAttrib> attrib_list(
       base::checked_cast<size_t>(num_attribs));
 
-  va_res = vaQuerySurfaceAttributes(va_display_, va_config_id, &attrib_list[0],
+  va_res = vaQuerySurfaceAttributes(va_display, va_config_id, &attrib_list[0],
                                     &num_attribs);
-  VA_SUCCESS_OR_RETURN(va_res, "vaQuerySurfaceAttributes failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQuerySurfaceAttributes,
+                       false);
 
   profile_info->va_profile = va_profile;
+  profile_info->va_entrypoint  = entrypoint;
   profile_info->min_resolution = gfx::Size();
   profile_info->max_resolution = gfx::Size();
   for (const auto& attrib : attrib_list) {
@@ -839,12 +1157,38 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
     return false;
   }
 
+  if (va_profile != VAProfileJPEGBaseline) {
+    // Set a reasonable minimum value for both encoding and decoding.
+    profile_info->min_resolution.SetToMax(gfx::Size(16, 16));
+
+    const bool is_encoding = entrypoint == VAEntrypointEncSliceLP ||
+                             entrypoint == VAEntrypointEncSlice;
+    const bool is_hybrid_decoding = entrypoint == VAEntrypointVLD &&
+                                    IsUsingHybridDriverForDecoding(va_profile);
+
+    // Using HW encoding for small resolutions is less efficient than using a SW
+    // encoder. Similarly, using the intel-hybrid-driver for decoding is less
+    // efficient than using a SW decoder. In both cases, increase
+    // |min_resolution| to QVGA + 1 which is an experimental lower threshold.
+    // This can be turned off with kVaapiVideoMinResolutionForPerformance for
+    // testing.
+    if ((is_encoding || is_hybrid_decoding) &&
+        base::FeatureList::IsEnabled(kVaapiVideoMinResolutionForPerformance)) {
+      constexpr gfx::Size kMinVideoResolution(320 + 1, 240 + 1);
+      profile_info->min_resolution.SetToMax(kMinVideoResolution);
+      DVLOG(2) << "Setting the minimum supported resolution for "
+               << vaProfileStr(va_profile)
+               << (is_encoding ? " encoding" : " decoding") << " to "
+               << profile_info->min_resolution.ToString();
+    }
+  }
+
   // Create a new configuration to find the supported RT formats. We don't pass
   // required attributes here because we want the driver to tell us all the
   // supported RT formats.
-  va_res = vaCreateConfig(va_display_, va_profile, entrypoint, nullptr, 0,
+  va_res = vaCreateConfig(va_display, va_profile, entrypoint, nullptr, 0,
                           &va_config_id);
-  VA_SUCCESS_OR_RETURN(va_res, "vaCreateConfig failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
   base::ScopedClosureRunner vaconfig_no_attribs_destroyer(base::BindOnce(
       [](VADisplay display, VAConfigID id) {
         if (id != VA_INVALID_ID) {
@@ -854,26 +1198,28 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
                        << vaErrorStr(va_res);
         }
       },
-      va_display_, va_config_id));
+      va_display, va_config_id));
   profile_info->supported_internal_formats = {};
   size_t max_num_config_attributes;
-  if (!base::CheckedNumeric<int>(vaMaxNumConfigAttributes(va_display_))
+  if (!base::CheckedNumeric<int>(vaMaxNumConfigAttributes(va_display))
            .AssignIfValid(&max_num_config_attributes)) {
     LOG(ERROR) << "Can't get the maximum number of config attributes";
     return false;
   }
   std::vector<VAConfigAttrib> config_attributes(max_num_config_attributes);
   int num_config_attributes;
-  va_res = vaQueryConfigAttributes(va_display_, va_config_id, &va_profile,
+  va_res = vaQueryConfigAttributes(va_display, va_config_id, &va_profile,
                                    &entrypoint, config_attributes.data(),
                                    &num_config_attributes);
-  VA_SUCCESS_OR_RETURN(va_res, "vaQueryConfigAttributes failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQueryConfigAttributes, false);
   for (int i = 0; i < num_config_attributes; i++) {
     const VAConfigAttrib& attrib = config_attributes[i];
     if (attrib.type != VAConfigAttribRTFormat)
       continue;
     if (attrib.value & VA_RT_FORMAT_YUV420)
       profile_info->supported_internal_formats.yuv420 = true;
+    if (attrib.value & VA_RT_FORMAT_YUV420_10)
+      profile_info->supported_internal_formats.yuv420_10 = true;
     if (attrib.value & VA_RT_FORMAT_YUV422)
       profile_info->supported_internal_formats.yuv422 = true;
     if (attrib.value & VA_RT_FORMAT_YUV444)
@@ -883,7 +1229,8 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
 
   // Now work around some driver misreporting for JPEG decoding.
   if (va_profile == VAProfileJPEGBaseline && entrypoint == VAEntrypointVLD) {
-    if (implementation_type_ == VAImplementation::kMesaGallium) {
+    if (VADisplayState::Get()->implementation_type() ==
+        VAImplementation::kMesaGallium) {
       // TODO(andrescj): the VAAPI state tracker in mesa does not report
       // VA_RT_FORMAT_YUV422 as being supported for JPEG decoding. However, it
       // is happy to allocate YUYV surfaces
@@ -894,40 +1241,12 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
   }
   const bool is_any_profile_supported =
       profile_info->supported_internal_formats.yuv420 ||
+      profile_info->supported_internal_formats.yuv420_10 ||
       profile_info->supported_internal_formats.yuv422 ||
       profile_info->supported_internal_formats.yuv444;
   DLOG_IF(ERROR, !is_any_profile_supported)
       << "No cool internal formats supported";
   return is_any_profile_supported;
-}
-
-// Maps VideoCodecProfile enum values to VaProfile values. This function
-// includes a workaround for https://crbug.com/345569: if va_profile is h264
-// baseline and it is not supported, we try constrained baseline.
-VAProfile ProfileToVAProfile(VideoCodecProfile profile,
-                             VaapiWrapper::CodecMode mode) {
-  VAProfile va_profile = VAProfileNone;
-  for (size_t i = 0; i < base::size(kProfileMap); ++i) {
-    if (kProfileMap[i].profile == profile) {
-      va_profile = kProfileMap[i].va_profile;
-      break;
-    }
-  }
-  const VASupportedProfiles& supported_profiles = VASupportedProfiles::Get();
-  if (!supported_profiles.IsProfileSupported(mode, va_profile) &&
-      va_profile == VAProfileH264Baseline) {
-    // https://crbug.com/345569: ProfileIDToVideoCodecProfile() currently strips
-    // the information whether the profile is constrained or not, so we have no
-    // way to know here. Try for baseline first, but if it is not supported,
-    // try constrained baseline and hope this is what it actually is
-    // (which in practice is true for a great majority of cases).
-    if (supported_profiles.IsProfileSupported(
-            mode, VAProfileH264ConstrainedBaseline)) {
-      va_profile = VAProfileH264ConstrainedBaseline;
-      DVLOG(1) << "Fall back to constrained baseline profile.";
-    }
-  }
-  return va_profile;
 }
 
 void DestroyVAImage(VADisplay va_display, VAImage image) {
@@ -940,6 +1259,9 @@ void DestroyVAImage(VADisplay va_display, VAImage image) {
 class VASupportedImageFormats {
  public:
   static const VASupportedImageFormats& Get();
+
+  VASupportedImageFormats(const VASupportedImageFormats&) = delete;
+  VASupportedImageFormats& operator=(const VASupportedImageFormats&) = delete;
 
   bool IsImageFormatSupported(const VAImageFormat& va_format) const;
 
@@ -959,9 +1281,7 @@ class VASupportedImageFormats {
   VADisplay va_display_ GUARDED_BY(va_lock_);
 
   std::vector<VAImageFormat> supported_formats_;
-  const base::RepeatingClosure report_error_to_uma_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(VASupportedImageFormats);
+  const ReportErrorToUMACB report_error_to_uma_cb_;
 };
 
 // static
@@ -1009,9 +1329,8 @@ VASupportedImageFormats::VASupportedImageFormats()
       LOG(ERROR) << "Failed to get supported image formats";
   }
 
-  VAStatus va_res = VA_STATUS_SUCCESS;
-  display_state->Deinitialize(&va_res);
-  VA_LOG_ON_ERROR(va_res, "VADisplayState::Deinitialize failed");
+  const VAStatus va_res = display_state->Deinitialize();
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVATerminate);
 }
 
 bool VASupportedImageFormats::InitSupportedImageFormats_Locked() {
@@ -1029,7 +1348,7 @@ bool VASupportedImageFormats::InitSupportedImageFormats_Locked() {
   int num_image_formats;
   const VAStatus va_res = vaQueryImageFormats(
       va_display_, supported_formats_.data(), &num_image_formats);
-  VA_SUCCESS_OR_RETURN(va_res, "vaQueryImageFormats failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQueryImageFormats, false);
   if (num_image_formats < 0 || num_image_formats > max_image_formats) {
     LOG(ERROR) << "vaQueryImageFormats returned: " << num_image_formats;
     supported_formats_.clear();
@@ -1040,8 +1359,7 @@ bool VASupportedImageFormats::InitSupportedImageFormats_Locked() {
   supported_formats_.resize(static_cast<size_t>(num_image_formats));
 
   // Now work around some driver misreporting.
-  if (VendorStringToImplementationType(
-          VADisplayState::Get()->va_vendor_string()) ==
+  if (VADisplayState::Get()->implementation_type() ==
       VAImplementation::kMesaGallium) {
     // TODO(andrescj): considering that the VAAPI state tracker in mesa can
     // convert from NV12 to IYUV when doing vaGetImage(), it's reasonable to
@@ -1060,6 +1378,29 @@ bool VASupportedImageFormats::InitSupportedImageFormats_Locked() {
   return true;
 }
 
+bool IsLowPowerEncSupported(VAProfile va_profile) {
+  constexpr VAProfile kSupportedLowPowerEncodeProfiles[] = {
+      VAProfileH264ConstrainedBaseline,
+      VAProfileH264Main,
+      VAProfileH264High,
+      VAProfileVP9Profile0,
+      VAProfileVP9Profile2};
+  if (!base::Contains(kSupportedLowPowerEncodeProfiles, va_profile))
+    return false;
+
+  if ((IsGen95Gpu() || IsGen9Gpu()) &&
+      !base::FeatureList::IsEnabled(kVaapiLowPowerEncoderGen9x)) {
+    return false;
+  }
+
+  if (VASupportedProfiles::Get().IsProfileSupported(
+          VaapiWrapper::kEncodeConstantBitrate, va_profile,
+          VAEntrypointEncSliceLP)) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 NativePixmapAndSizeInfo::NativePixmapAndSizeInfo() = default;
@@ -1068,26 +1409,40 @@ NativePixmapAndSizeInfo::~NativePixmapAndSizeInfo() = default;
 
 // static
 VAImplementation VaapiWrapper::GetImplementationType() {
-  return VASupportedProfiles::Get().GetImplementationType();
+  return VADisplayState::Get()->implementation_type();
 }
 
 // static
 scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
     CodecMode mode,
     VAProfile va_profile,
-    const base::Closure& report_error_to_uma_cb) {
+    EncryptionScheme encryption_scheme,
+    const ReportErrorToUMACB& report_error_to_uma_cb,
+    bool enforce_sequence_affinity) {
   if (!VASupportedProfiles::Get().IsProfileSupported(mode, va_profile)) {
-    DVLOG(1) << "Unsupported va_profile: " << va_profile;
+    DVLOG(1) << "Unsupported va_profile: " << vaProfileStr(va_profile);
     return nullptr;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In protected decode |mode| we need to ensure that |va_profile| is supported
+  // (which we verified above) and that VAProfileProtected is supported, which
+  // we check here.
+  if (mode == kDecodeProtected &&
+      !VASupportedProfiles::Get().IsProfileSupported(mode,
+                                                     VAProfileProtected)) {
+    LOG(ERROR) << "Protected content profile not supported";
+    return nullptr;
+  }
+#endif
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper(new VaapiWrapper(mode));
+  scoped_refptr<VaapiWrapper> vaapi_wrapper(
+      new VaapiWrapper(mode, enforce_sequence_affinity));
   if (vaapi_wrapper->VaInitialize(report_error_to_uma_cb)) {
-    if (vaapi_wrapper->Initialize(mode, va_profile))
+    if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
       return vaapi_wrapper;
   }
   LOG(ERROR) << "Failed to create VaapiWrapper for va_profile: "
-             << VAProfileToString(va_profile);
+             << vaProfileStr(va_profile);
   return nullptr;
 }
 
@@ -1095,37 +1450,77 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::Create(
 scoped_refptr<VaapiWrapper> VaapiWrapper::CreateForVideoCodec(
     CodecMode mode,
     VideoCodecProfile profile,
-    const base::Closure& report_error_to_uma_cb) {
-  VAProfile va_profile = ProfileToVAProfile(profile, mode);
-  return Create(mode, va_profile, report_error_to_uma_cb);
+    EncryptionScheme encryption_scheme,
+    const ReportErrorToUMACB& report_error_to_uma_cb,
+    bool enforce_sequence_affinity) {
+  const VAProfile va_profile = ProfileToVAProfile(profile, mode);
+  return Create(mode, va_profile, encryption_scheme, report_error_to_uma_cb,
+                enforce_sequence_affinity);
+}
+
+// static
+std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
+    VideoCodecProfile media_profile,
+    VAProfile va_profile) {
+  std::vector<SVCScalabilityMode> scalability_modes;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (media_profile == VP9PROFILE_PROFILE0) {
+    scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+    scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+    if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
+        GetDefaultVaEntryPoint(
+            VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile) ==
+            VAEntrypointEncSliceLP) {
+      scalability_modes.push_back(SVCScalabilityMode::kL2T2Key);
+      scalability_modes.push_back(SVCScalabilityMode::kL2T3Key);
+      scalability_modes.push_back(SVCScalabilityMode::kL3T2Key);
+      scalability_modes.push_back(SVCScalabilityMode::kL3T3Key);
+    }
+  }
+
+  if (media_profile >= H264PROFILE_MIN && media_profile <= H264PROFILE_MAX) {
+    // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
+    // drivers support them.
+    VAImplementation implementation = VaapiWrapper::GetImplementationType();
+    if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
+        (implementation == VAImplementation::kIntelI965 ||
+         implementation == VAImplementation::kIntelIHD)) {
+      scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+      scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+    }
+  }
+#endif
+  return scalability_modes;
 }
 
 // static
 VideoEncodeAccelerator::SupportedProfiles
 VaapiWrapper::GetSupportedEncodeProfiles() {
   VideoEncodeAccelerator::SupportedProfiles profiles;
-  const std::vector<VASupportedProfiles::ProfileInfo>& encode_profile_infos =
-      VASupportedProfiles::Get().GetSupportedProfileInfosForCodecMode(kEncode);
 
-  for (size_t i = 0; i < base::size(kProfileMap); ++i) {
-    VAProfile va_profile = ProfileToVAProfile(kProfileMap[i].profile, kEncode);
-    if (va_profile == VAProfileNone)
+  for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
+    const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
+    const VAProfile va_profile = media_to_va_profile_map_entry.second;
+    DCHECK(va_profile != VAProfileNone);
+
+    const VASupportedProfiles::ProfileInfo* profile_info =
+        VASupportedProfiles::Get().IsProfileSupported(kEncodeConstantBitrate,
+                                                      va_profile);
+    if (!profile_info)
       continue;
-    for (const auto& profile_info : encode_profile_infos) {
-      if (profile_info.va_profile == va_profile) {
-        VideoEncodeAccelerator::SupportedProfile profile;
-        profile.profile = kProfileMap[i].profile;
-        // Using VA-API for accelerated encoding frames smaller than a certain
-        // size is less efficient than using a software encoder.
-        const gfx::Size kMinEncodeResolution = gfx::Size(320 + 1, 240 + 1);
-        profile.min_resolution = kMinEncodeResolution;
-        profile.max_resolution = profile_info.max_resolution;
-        profile.max_framerate_numerator = kMaxEncoderFramerate;
-        profile.max_framerate_denominator = 1;
-        profiles.push_back(profile);
-        break;
-      }
-    }
+
+    VideoEncodeAccelerator::SupportedProfile profile;
+    profile.profile = media_profile;
+    profile.min_resolution = profile_info->min_resolution;
+    profile.max_resolution = profile_info->max_resolution;
+    // Maximum framerate of encoded profile. This value is an arbitrary
+    // limit and not taken from HW documentation.
+    constexpr int kMaxEncoderFramerate = 30;
+    profile.max_framerate_numerator = kMaxEncoderFramerate;
+    profile.max_framerate_denominator = 1;
+    profile.scalability_modes =
+        GetSupportedScalabilityModes(media_profile, va_profile);
+    profiles.push_back(profile);
   }
   return profiles;
 }
@@ -1134,23 +1529,22 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
 VideoDecodeAccelerator::SupportedProfiles
 VaapiWrapper::GetSupportedDecodeProfiles() {
   VideoDecodeAccelerator::SupportedProfiles profiles;
-  const std::vector<VASupportedProfiles::ProfileInfo>& decode_profile_infos =
-      VASupportedProfiles::Get().GetSupportedProfileInfosForCodecMode(kDecode);
 
-  for (size_t i = 0; i < base::size(kProfileMap); ++i) {
-    VAProfile va_profile = ProfileToVAProfile(kProfileMap[i].profile, kDecode);
-    if (va_profile == VAProfileNone)
+  for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
+    const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
+    const VAProfile va_profile = media_to_va_profile_map_entry.second;
+    DCHECK(va_profile != VAProfileNone);
+
+    const VASupportedProfiles::ProfileInfo* profile_info =
+        VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
+    if (!profile_info)
       continue;
-    for (const auto& profile_info : decode_profile_infos) {
-      if (profile_info.va_profile == va_profile) {
-        VideoDecodeAccelerator::SupportedProfile profile;
-        profile.profile = kProfileMap[i].profile;
-        profile.max_resolution = profile_info.max_resolution;
-        profile.min_resolution.SetSize(16, 16);
-        profiles.push_back(profile);
-        break;
-      }
-    }
+
+    VideoDecodeAccelerator::SupportedProfile profile;
+    profile.profile = media_profile;
+    profile.max_resolution = profile_info->max_resolution;
+    profile.min_resolution = profile_info->min_resolution;
+    profiles.push_back(profile);
   }
   return profiles;
 }
@@ -1163,28 +1557,28 @@ bool VaapiWrapper::IsDecodeSupported(VAProfile va_profile) {
 // static
 VaapiWrapper::InternalFormats VaapiWrapper::GetDecodeSupportedInternalFormats(
     VAProfile va_profile) {
-  VASupportedProfiles::ProfileInfo profile_info;
-  if (!VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile,
-                                                     &profile_info)) {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
+  if (!profile_info)
     return InternalFormats{};
-  }
-  return profile_info.supported_internal_formats;
+  return profile_info->supported_internal_formats;
 }
 
 // static
 bool VaapiWrapper::IsDecodingSupportedForInternalFormat(
     VAProfile va_profile,
     unsigned int rt_format) {
-  static const base::NoDestructor<VaapiWrapper::InternalFormats>
-      supported_internal_formats(
-          VaapiWrapper::GetDecodeSupportedInternalFormats(va_profile));
+  static const VaapiWrapper::InternalFormats supported_internal_formats(
+      VaapiWrapper::GetDecodeSupportedInternalFormats(va_profile));
   switch (rt_format) {
     case VA_RT_FORMAT_YUV420:
-      return supported_internal_formats->yuv420;
+      return supported_internal_formats.yuv420;
+    case VA_RT_FORMAT_YUV420_10:
+      return supported_internal_formats.yuv420_10;
     case VA_RT_FORMAT_YUV422:
-      return supported_internal_formats->yuv422;
+      return supported_internal_formats.yuv422;
     case VA_RT_FORMAT_YUV444:
-      return supported_internal_formats->yuv444;
+      return supported_internal_formats.yuv444;
   }
   return false;
 }
@@ -1192,25 +1586,24 @@ bool VaapiWrapper::IsDecodingSupportedForInternalFormat(
 // static
 bool VaapiWrapper::GetDecodeMinResolution(VAProfile va_profile,
                                           gfx::Size* min_size) {
-  VASupportedProfiles::ProfileInfo profile_info;
-  if (!VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile,
-                                                     &profile_info)) {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
+  if (!profile_info)
     return false;
-  }
-  *min_size = gfx::Size(std::max(1, profile_info.min_resolution.width()),
-                        std::max(1, profile_info.min_resolution.height()));
+  *min_size = gfx::Size(std::max(1, profile_info->min_resolution.width()),
+                        std::max(1, profile_info->min_resolution.height()));
   return true;
 }
 
 // static
 bool VaapiWrapper::GetDecodeMaxResolution(VAProfile va_profile,
                                           gfx::Size* max_size) {
-  VASupportedProfiles::ProfileInfo profile_info;
-  if (!VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile,
-                                                     &profile_info)) {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
+  if (!profile_info)
     return false;
-  }
-  *max_size = profile_info.max_resolution;
+
+  *max_size = profile_info->max_resolution;
   return true;
 }
 
@@ -1261,6 +1654,14 @@ bool VaapiWrapper::GetJpegDecodeSuitableImageFourCC(unsigned int rt_format,
         preferred_fourcc == VA_FOURCC_P010) {
       preferred_fourcc = VA_FOURCC_I420;
     }
+  } else if (GetImplementationType() == VAImplementation::kIntelIHD) {
+    // (b/159896972): iHD v20.1.1 cannot create Y216 and Y416 images from a
+    // decoded JPEG on gen 12. It is also failing to support Y800 format.
+    if (preferred_fourcc == VA_FOURCC_Y216 ||
+        preferred_fourcc == VA_FOURCC_Y416 ||
+        preferred_fourcc == VA_FOURCC_Y800) {
+      preferred_fourcc = VA_FOURCC_I420;
+    }
   }
 
   if (!VASupportedImageFormats::Get().IsImageFormatSupported(
@@ -1275,26 +1676,45 @@ bool VaapiWrapper::GetJpegDecodeSuitableImageFourCC(unsigned int rt_format,
 
 // static
 bool VaapiWrapper::IsVppResolutionAllowed(const gfx::Size& size) {
-  VASupportedProfiles::ProfileInfo profile_info;
-  if (!VASupportedProfiles::Get().IsProfileSupported(
-          kVideoProcess, VAProfileNone, &profile_info)) {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kVideoProcess,
+                                                    VAProfileNone);
+  if (!profile_info)
     return false;
-  }
-  return gfx::Rect(profile_info.min_resolution.width(),
-                   profile_info.min_resolution.height(),
-                   profile_info.max_resolution.width(),
-                   profile_info.max_resolution.height())
-      .Contains(size.width(), size.height());
+
+  return size.width() >= profile_info->min_resolution.width() &&
+         size.width() <= profile_info->max_resolution.width() &&
+         size.height() >= profile_info->min_resolution.height() &&
+         size.height() <= profile_info->max_resolution.height();
 }
 
 // static
 bool VaapiWrapper::IsVppFormatSupported(uint32_t va_fourcc) {
-  VASupportedProfiles::ProfileInfo profile_info;
-  if (!VASupportedProfiles::Get().IsProfileSupported(
-          kVideoProcess, VAProfileNone, &profile_info)) {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kVideoProcess,
+                                                    VAProfileNone);
+  if (!profile_info)
     return false;
+
+  return base::Contains(profile_info->pixel_formats, va_fourcc);
+}
+
+// static
+std::vector<Fourcc> VaapiWrapper::GetVppSupportedFormats() {
+  const VASupportedProfiles::ProfileInfo* profile_info =
+      VASupportedProfiles::Get().IsProfileSupported(kVideoProcess,
+                                                    VAProfileNone);
+  if (!profile_info)
+    return {};
+
+  std::vector<Fourcc> supported_fourccs;
+  for (uint32_t pixel_format : profile_info->pixel_formats) {
+    auto fourcc = Fourcc::FromVAFourCC(pixel_format);
+    if (!fourcc)
+      continue;
+    supported_fourccs.push_back(*fourcc);
   }
-  return base::Contains(profile_info.pixel_formats, va_fourcc);
+  return supported_fourccs;
 }
 
 // static
@@ -1317,7 +1737,7 @@ bool VaapiWrapper::IsVppSupportedForJpegDecodedSurfaceToFourCC(
 
 // static
 bool VaapiWrapper::IsJpegEncodeSupported() {
-  return VASupportedProfiles::Get().IsProfileSupported(kEncode,
+  return VASupportedProfiles::Get().IsProfileSupported(kEncodeConstantBitrate,
                                                        VAProfileJPEGBaseline);
 }
 
@@ -1333,6 +1753,46 @@ VaapiWrapper::GetSupportedImageFormatsForTesting() {
 }
 
 // static
+std::map<VAProfile, std::vector<VAEntrypoint>>
+VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(CodecMode mode) {
+  std::map<VAProfile, std::vector<VAEntrypoint>> configurations;
+  for (const auto& supported_profile :
+       VASupportedProfiles::Get().supported_profiles_[mode]) {
+    configurations[supported_profile.va_profile].push_back(
+        supported_profile.va_entrypoint);
+  }
+  return configurations;
+}
+
+// static
+VAEntrypoint VaapiWrapper::GetDefaultVaEntryPoint(CodecMode mode,
+                                                  VAProfile profile) {
+  switch (mode) {
+    case VaapiWrapper::kDecode:
+      return VAEntrypointVLD;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case VaapiWrapper::kDecodeProtected:
+      if (profile == VAProfileProtected)
+        return VAEntrypointProtectedContent;
+      return VAEntrypointVLD;
+#endif
+    case VaapiWrapper::kEncodeConstantBitrate:
+    case VaapiWrapper::kEncodeConstantQuantizationParameter:
+      if (profile == VAProfileJPEGBaseline)
+        return VAEntrypointEncPicture;
+      DCHECK(IsModeEncoding(mode));
+      if (IsLowPowerEncSupported(profile))
+        return VAEntrypointEncSliceLP;
+      return VAEntrypointEncSlice;
+    case VaapiWrapper::kVideoProcess:
+      return VAEntrypointVideoProc;
+    case VaapiWrapper::kCodecModeMax:
+      NOTREACHED();
+      return VAEntrypointVLD;
+  }
+}
+
+// static
 uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
   switch (fmt) {
     case gfx::BufferFormat::BGRX_8888:
@@ -1343,8 +1803,10 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return VA_RT_FORMAT_YUV420;
+    case gfx::BufferFormat::P010:
+      return VA_RT_FORMAT_YUV420_10BPP;
     default:
-      NOTREACHED();
+      NOTREACHED() << gfx::BufferFormatToString(fmt);
       return 0;
   }
 }
@@ -1352,9 +1814,11 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
 bool VaapiWrapper::CreateContextAndSurfaces(
     unsigned int va_format,
     const gfx::Size& size,
-    SurfaceUsageHint surface_usage_hint,
+    const std::vector<SurfaceUsageHint>& surface_usage_hints,
     size_t num_surfaces,
     std::vector<VASurfaceID>* va_surfaces) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   DVLOG(2) << "Creating " << num_surfaces << " surfaces";
   DCHECK(va_surfaces->empty());
 
@@ -1364,7 +1828,7 @@ bool VaapiWrapper::CreateContextAndSurfaces(
     return false;
   }
 
-  if (!CreateSurfaces(va_format, size, surface_usage_hint, num_surfaces,
+  if (!CreateSurfaces(va_format, size, surface_usage_hints, num_surfaces,
                       va_surfaces)) {
     return false;
   }
@@ -1375,35 +1839,222 @@ bool VaapiWrapper::CreateContextAndSurfaces(
   return success;
 }
 
-std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateContextAndScopedVASurface(
+std::vector<std::unique_ptr<ScopedVASurface>>
+VaapiWrapper::CreateContextAndScopedVASurfaces(
     unsigned int va_format,
     const gfx::Size& size,
-    const base::Optional<gfx::Size>& visible_size) {
+    const std::vector<SurfaceUsageHint>& usage_hints,
+    size_t num_surfaces,
+    const absl::optional<gfx::Size>& visible_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   if (va_context_id_ != VA_INVALID_ID) {
     LOG(ERROR) << "The current context should be destroyed before creating a "
                   "new one";
-    return nullptr;
+    return {};
   }
 
-  std::unique_ptr<ScopedVASurface> scoped_va_surface =
-      CreateScopedVASurface(va_format, size, visible_size);
-  if (!scoped_va_surface)
-    return nullptr;
+  std::vector<std::unique_ptr<ScopedVASurface>> scoped_va_surfaces =
+      CreateScopedVASurfaces(va_format, size, usage_hints, num_surfaces,
+                             visible_size, /*va_fourcc=*/absl::nullopt);
+  if (scoped_va_surfaces.empty())
+    return {};
 
   if (CreateContext(size))
-    return scoped_va_surface;
+    return scoped_va_surfaces;
 
   DestroyContext();
-  return nullptr;
+  return {};
+}
+
+bool VaapiWrapper::CreateProtectedSession(
+    EncryptionScheme encryption,
+    const std::vector<uint8_t>& hw_config,
+    std::vector<uint8_t>* hw_identifier_out) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK_EQ(va_protected_config_id_, VA_INVALID_ID);
+  DCHECK_EQ(va_protected_session_id_, VA_INVALID_ID);
+  DCHECK(hw_identifier_out);
+  if (mode_ != kDecodeProtected) {
+    LOG(ERROR) << "Cannot attached protected context if not in protected mode";
+    return false;
+  }
+  if (encryption == EncryptionScheme::kUnencrypted) {
+    LOG(ERROR) << "Must specify encryption scheme for protected mode";
+    return false;
+  }
+  const VAProfile va_profile = VAProfileProtected;
+  const VAEntrypoint entrypoint = GetDefaultVaEntryPoint(mode_, va_profile);
+  {
+    base::AutoLock auto_lock(*va_lock_);
+    std::vector<VAConfigAttrib> required_attribs;
+    if (!GetRequiredAttribs(va_lock_, va_display_, mode_, va_profile,
+                            entrypoint, &required_attribs)) {
+      LOG(ERROR) << "Failed getting required attributes for protected mode";
+      return false;
+    }
+    DCHECK(!required_attribs.empty());
+
+    // We need to adjust the attribute for encryption scheme.
+    for (auto& attrib : required_attribs) {
+      if (attrib.type == VAConfigAttribProtectedContentCipherMode) {
+        attrib.value = (encryption == EncryptionScheme::kCbcs)
+                           ? VA_PC_CIPHER_MODE_CBC
+                           : VA_PC_CIPHER_MODE_CTR;
+      }
+    }
+
+    VAStatus va_res = vaCreateConfig(
+        va_display_, va_profile, entrypoint, &required_attribs[0],
+        required_attribs.size(), &va_protected_config_id_);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
+
+    va_res = vaCreateProtectedSession(va_display_, va_protected_config_id_,
+                                      &va_protected_session_id_);
+    DCHECK(va_res == VA_STATUS_SUCCESS ||
+           va_protected_session_id_ == VA_INVALID_ID);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateProtectedSession,
+                         false);
+  }
+  // We have to hold the VABuffer outside of the lock because its destructor
+  // will acquire the lock when it goes out of scope. We also must do this after
+  // we create the protected session.
+  VAProtectedSessionExecuteBuffer hw_update_buf;
+  std::unique_ptr<ScopedVABuffer> hw_update = CreateVABuffer(
+      VAProtectedSessionExecuteBufferType, sizeof(hw_update_buf));
+  {
+    base::AutoLock auto_lock(*va_lock_);
+    constexpr size_t kHwIdentifierMaxSize = 64;
+    memset(&hw_update_buf, 0, sizeof(hw_update_buf));
+    hw_update_buf.function_id = VA_TEE_EXEC_TEE_FUNCID_HW_UPDATE;
+    hw_update_buf.input.data_size = hw_config.size();
+    hw_update_buf.input.data =
+        static_cast<void*>(const_cast<uint8_t*>(hw_config.data()));
+    hw_update_buf.output.max_data_size = kHwIdentifierMaxSize;
+    hw_identifier_out->resize(kHwIdentifierMaxSize);
+    hw_update_buf.output.data = hw_identifier_out->data();
+    if (!MapAndCopy_Locked(
+            hw_update->id(),
+            {hw_update->type(), hw_update->size(), &hw_update_buf})) {
+      LOG(ERROR) << "Failed mapping Execute buf";
+      return false;
+    }
+
+    VAStatus va_res = vaProtectedSessionExecute(
+        va_display_, va_protected_session_id_, hw_update->id());
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAProtectedSessionExecute,
+                         false);
+
+    ScopedVABufferMapping mapping(va_lock_, va_display_, hw_update->id());
+    if (!mapping.IsValid()) {
+      LOG(ERROR) << "Failed mapping returned Execute buf";
+      return false;
+    }
+    auto* hw_update_buf_out =
+        reinterpret_cast<VAProtectedSessionExecuteBuffer*>(mapping.data());
+    if (!hw_update_buf_out->output.data_size) {
+      LOG(ERROR) << "Received empty HW identifier";
+      return false;
+    }
+    hw_identifier_out->resize(hw_update_buf_out->output.data_size);
+    memcpy(hw_identifier_out->data(), hw_update_buf_out->output.data,
+           hw_update_buf_out->output.data_size);
+
+    // If the decoding context is created, attach the protected session.
+    // Otherwise this is done in CreateContext when the decoding context is
+    // created.
+    return MaybeAttachProtectedSession_Locked();
+  }
+#else
+  NOTIMPLEMENTED() << "Protected content mode not supported";
+  return false;
+#endif
+}
+
+bool VaapiWrapper::IsProtectedSessionDead() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return IsProtectedSessionDead(va_protected_session_id_);
+#else
+  return false;
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool VaapiWrapper::IsProtectedSessionDead(
+    VAProtectedSessionID va_protected_session_id) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  if (va_protected_session_id == VA_INVALID_ID)
+    return false;
+
+  uint8_t alive;
+  VAProtectedSessionExecuteBuffer tee_exec_buf = {};
+  tee_exec_buf.function_id = VA_TEE_EXEC_TEE_FUNCID_IS_SESSION_ALIVE;
+  tee_exec_buf.input.data_size = 0;
+  tee_exec_buf.input.data = nullptr;
+  tee_exec_buf.output.data_size = sizeof(alive);
+  tee_exec_buf.output.data = &alive;
+
+  base::AutoLock auto_lock(*va_lock_);
+  VABufferID buf_id;
+  VAStatus va_res = vaCreateBuffer(
+      va_display_, va_protected_session_id, VAProtectedSessionExecuteBufferType,
+      sizeof(tee_exec_buf), 1, &tee_exec_buf, &buf_id);
+  // Failure here is valid if the protected session has been closed.
+  if (va_res != VA_STATUS_SUCCESS)
+    return true;
+
+  va_res =
+      vaProtectedSessionExecute(va_display_, va_protected_session_id, buf_id);
+  vaDestroyBuffer(va_display_, buf_id);
+  if (va_res != VA_STATUS_SUCCESS)
+    return true;
+
+  return !alive;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+VAProtectedSessionID VaapiWrapper::GetProtectedSessionID() const {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  return va_protected_session_id_;
+}
+#endif
+
+void VaapiWrapper::DestroyProtectedSession() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (va_protected_session_id_ == VA_INVALID_ID)
+    return;
+  base::AutoLock auto_lock(*va_lock_);
+  VAStatus va_res =
+      vaDestroyProtectedSession(va_display_, va_protected_session_id_);
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyProtectedSession);
+  va_res = vaDestroyConfig(va_display_, va_protected_config_id_);
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyConfig);
+  va_protected_session_id_ = VA_INVALID_ID;
+  va_protected_config_id_ = VA_INVALID_ID;
+#endif
 }
 
 void VaapiWrapper::DestroyContextAndSurfaces(
     std::vector<VASurfaceID> va_surfaces) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   DestroyContext();
   DestroySurfaces(va_surfaces);
 }
 
 bool VaapiWrapper::CreateContext(const gfx::Size& size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  DVLOG(2) << "Creating context";
   base::AutoLock auto_lock(*va_lock_);
 
   // vaCreateContext() doesn't really need an array of VASurfaceIDs (see
@@ -1417,27 +2068,51 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   // vpp, just passing 0x0.
   const int flag = mode_ != kVideoProcess ? VA_PROGRESSIVE : 0x0;
   const gfx::Size picture_size = mode_ != kVideoProcess ? size : gfx::Size();
-  const VAStatus va_res = vaCreateContext(
+  if (base::FeatureList::IsEnabled(kVaapiEnforceVideoMinMaxResolution) &&
+      mode_ != kVideoProcess) {
+    const VASupportedProfiles::ProfileInfo* profile_info =
+        VASupportedProfiles::Get().IsProfileSupported(mode_, va_profile_,
+                                                      va_entrypoint_);
+    DCHECK(profile_info);
+    const bool is_picture_within_bounds =
+        gfx::Rect(picture_size)
+            .Contains(gfx::Rect(profile_info->min_resolution)) &&
+        gfx::Rect(profile_info->max_resolution)
+            .Contains(gfx::Rect(picture_size));
+    if (!is_picture_within_bounds) {
+      VLOG(2) << "Requested resolution=" << picture_size.ToString()
+              << " is not within bounds ["
+              << profile_info->min_resolution.ToString() << ", "
+              << profile_info->max_resolution.ToString() << "]";
+      return false;
+    }
+  }
+
+  VAStatus va_res = vaCreateContext(
       va_display_, va_config_id_, picture_size.width(), picture_size.height(),
       flag, empty_va_surfaces_ids_pointer, empty_va_surfaces_ids_size,
       &va_context_id_);
-  VA_LOG_ON_ERROR(va_res, "vaCreateContext failed");
-  return va_res == VA_STATUS_SUCCESS;
-}
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVACreateContext);
+  if (va_res != VA_STATUS_SUCCESS)
+    return false;
 
-scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForVideoFrame(
-    const VideoFrame* frame) {
-  DCHECK(frame);
-  scoped_refptr<gfx::NativePixmap> pixmap = CreateNativePixmapDmaBuf(frame);
-  if (!pixmap) {
-    LOG(ERROR) << "Failed to create NativePixmap from VideoFrame";
-    return nullptr;
+  // TODO(b/200779101): Remove low resolution i965 condition. This was
+  // added to avoid a duplicated frame specific to quality 7 at ~400kbps.
+  if (IsModeEncoding(mode_) && IsLowPowerIntelProcessor() &&
+      !(GetImplementationType() == VAImplementation::kIntelI965 &&
+        picture_size.GetArea() <= gfx::Size(320, 240).GetArea())) {
+    MaybeSetLowQualityEncoding_Locked();
   }
-  return CreateVASurfaceForPixmap(std::move(pixmap));
+
+  // If we have a protected session already, attach it to this new context.
+  return MaybeAttachProtectedSession_Locked();
 }
 
 scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
-    scoped_refptr<gfx::NativePixmap> pixmap) {
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    bool protected_content) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   const gfx::BufferFormat buffer_format = pixmap->GetBufferFormat();
 
   // Create a VASurface for a NativePixmap by importing the underlying dmabufs.
@@ -1456,18 +2131,41 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   }
   va_attrib_extbuf.num_planes = num_planes;
 
-  if (pixmap->GetDmaBufFd(0) < 0) {
+  const int dma_buf_fd = pixmap->GetDmaBufFd(0);
+  if (dma_buf_fd < 0) {
     LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
     return nullptr;
   }
+  const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
+  if (data_size == static_cast<off_t>(-1)) {
+    PLOG(ERROR) << "Failed to get the size of the dma-buf";
+    return nullptr;
+  }
+  if (lseek(dma_buf_fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
+    PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
+    return nullptr;
+  }
+  // If the data size doesn't fit in a uint32_t, we probably have bigger
+  // problems.
+  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(data_size);
+
   // We only have to pass the first file descriptor to a driver. A VA-API driver
   // shall create a VASurface from the single fd correctly.
-  uintptr_t fd = base::checked_cast<uintptr_t>(pixmap->GetDmaBufFd(0));
+  uintptr_t fd = base::checked_cast<uintptr_t>(dma_buf_fd);
   va_attrib_extbuf.buffers = &fd;
   va_attrib_extbuf.num_buffers = 1u;
 
   DCHECK_EQ(va_attrib_extbuf.flags, 0u);
   DCHECK_EQ(va_attrib_extbuf.private_data, nullptr);
+
+  uint32_t va_format = BufferFormatToVARTFormat(buffer_format);
+
+  if (protected_content) {
+    if (GetImplementationType() == VAImplementation::kMesaGallium)
+      va_format |= VA_RT_FORMAT_PROTECTED;
+    else
+      va_attrib_extbuf.flags = VA_SURFACE_EXTBUF_DESC_PROTECTED;
+  }
 
   std::vector<VASurfaceAttrib> va_attribs(2);
 
@@ -1481,8 +2179,6 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   va_attribs[1].value.type = VAGenericValueTypePointer;
   va_attribs[1].value.value.p = &va_attrib_extbuf;
 
-  const unsigned int va_format = BufferFormatToVARTFormat(buffer_format);
-
   VASurfaceID va_surface_id = VA_INVALID_ID;
   {
     base::AutoLock auto_lock(*va_lock_);
@@ -1490,34 +2186,96 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
         va_display_, va_format, base::checked_cast<unsigned int>(size.width()),
         base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1,
         &va_attribs[0], va_attribs.size());
-    VA_SUCCESS_OR_RETURN(va_res, "Failed to create unowned VASurface", nullptr);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Importing,
+                         nullptr);
   }
-
+  DVLOG(2) << __func__ << " " << va_surface_id;
   // VASurface shares an ownership of the buffer referred by the passed file
   // descriptor. We can release |pixmap| here.
   return new VASurface(va_surface_id, size, va_format,
                        base::BindOnce(&VaapiWrapper::DestroySurface, this));
 }
 
-std::unique_ptr<NativePixmapAndSizeInfo>
-VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(
-    const ScopedVASurface& scoped_va_surface) {
-  if (!scoped_va_surface.IsValid()) {
-    LOG(ERROR) << "Cannot export an invalid surface";
-    return nullptr;
-  }
+scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
+    const gfx::Size& size,
+    uintptr_t* buffers,
+    size_t buffer_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  VASurfaceAttribExternalBuffers va_attrib_extbuf{};
+  va_attrib_extbuf.num_planes = 3;
+  va_attrib_extbuf.buffers = buffers;
+  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(buffer_size);
+  va_attrib_extbuf.num_buffers = 1u;
+  va_attrib_extbuf.width = base::checked_cast<uint32_t>(size.width());
+  va_attrib_extbuf.height = base::checked_cast<uint32_t>(size.height());
+  va_attrib_extbuf.offsets[0] = 0;
+  va_attrib_extbuf.offsets[1] = size.GetCheckedArea().ValueOrDie<uint32_t>();
+  va_attrib_extbuf.offsets[2] =
+      (size.GetCheckedArea() * 2).ValueOrDie<uint32_t>();
+  std::fill(va_attrib_extbuf.pitches, va_attrib_extbuf.pitches + 3,
+            base::checked_cast<uint32_t>(size.width()));
+  va_attrib_extbuf.pixel_format = VA_FOURCC_RGBP;
 
+  std::vector<VASurfaceAttrib> va_attribs(2);
+  va_attribs[0].flags = VA_SURFACE_ATTRIB_SETTABLE;
+  va_attribs[0].type = VASurfaceAttribMemoryType;
+  va_attribs[0].value.type = VAGenericValueTypeInteger;
+  va_attribs[0].value.value.i = VA_SURFACE_ATTRIB_MEM_TYPE_USER_PTR;
+
+  va_attribs[1].flags = VA_SURFACE_ATTRIB_SETTABLE;
+  va_attribs[1].type = VASurfaceAttribExternalBufferDescriptor;
+  va_attribs[1].value.type = VAGenericValueTypePointer;
+  va_attribs[1].value.value.p = &va_attrib_extbuf;
+
+  VASurfaceID va_surface_id = VA_INVALID_ID;
+  const unsigned int va_format = VA_RT_FORMAT_RGBP;
+  {
+    base::AutoLock auto_lock(*va_lock_);
+    VAStatus va_res = vaCreateSurfaces(
+        va_display_, va_format, base::checked_cast<unsigned int>(size.width()),
+        base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1,
+        &va_attribs[0], va_attribs.size());
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Importing,
+                         nullptr);
+  }
+  DVLOG(2) << __func__ << " " << va_surface_id;
+  return new VASurface(va_surface_id, size, va_format,
+                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+}
+
+scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(
+    unsigned int va_rt_format,
+    const gfx::Size& size,
+    const std::vector<SurfaceUsageHint>& usage_hints) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  std::vector<VASurfaceID> surfaces;
+  if (!CreateSurfaces(va_rt_format, size, usage_hints, 1, &surfaces))
+    return nullptr;
+  return new VASurface(surfaces[0], size, va_rt_format,
+                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+}
+
+std::unique_ptr<NativePixmapAndSizeInfo>
+VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
+    VASurfaceID va_surface_id,
+    const gfx::Size& va_surface_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  DCHECK_NE(va_surface_id, VA_INVALID_SURFACE);
+  DCHECK(!va_surface_size.IsEmpty());
   VADRMPRIMESurfaceDescriptor descriptor;
   {
     base::AutoLock auto_lock(*va_lock_);
-    VAStatus va_res = vaSyncSurface(va_display_, scoped_va_surface.id());
-    VA_SUCCESS_OR_RETURN(va_res, "Cannot sync VASurface", nullptr);
+    VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, nullptr);
     va_res = vaExportSurfaceHandle(
-        va_display_, scoped_va_surface.id(),
-        VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME_2,
+        va_display_, va_surface_id, VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME_2,
         VA_EXPORT_SURFACE_READ_ONLY | VA_EXPORT_SURFACE_SEPARATE_LAYERS,
         &descriptor);
-    VA_SUCCESS_OR_RETURN(va_res, "Failed to export VASurface", nullptr);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAExportSurfaceHandle,
+                         nullptr);
   }
 
   // We only support one bo containing all the planes. The fd should be owned by
@@ -1589,154 +2347,166 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(
   exported_pixmap->byte_size =
       base::strict_cast<size_t>(descriptor.objects[0].size);
   if (!gfx::Rect(exported_pixmap->va_surface_resolution)
-           .Contains(gfx::Rect(scoped_va_surface.size()))) {
-    LOG(ERROR) << "A " << scoped_va_surface.size().ToString()
-               << " ScopedVASurface cannot be contained by a "
+           .Contains(gfx::Rect(va_surface_size))) {
+    LOG(ERROR) << "A " << va_surface_size.ToString()
+               << " surface cannot be contained by a "
                << exported_pixmap->va_surface_resolution.ToString()
                << " buffer";
     return nullptr;
   }
   exported_pixmap->pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      scoped_va_surface.size(), buffer_format, std::move(handle));
+      va_surface_size, buffer_format, std::move(handle));
   return exported_pixmap;
 }
 
+std::unique_ptr<NativePixmapAndSizeInfo>
+VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(const VASurface& va_surface) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  if (va_surface.id() == VA_INVALID_SURFACE || va_surface.size().IsEmpty() ||
+      va_surface.format() == kInvalidVaRtFormat) {
+    LOG(ERROR) << "Cannot export an invalid surface";
+    return nullptr;
+  }
+  return ExportVASurfaceAsNativePixmapDmaBufUnwrapped(va_surface.id(),
+                                                      va_surface.size());
+}
+
+std::unique_ptr<NativePixmapAndSizeInfo>
+VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBuf(
+    const ScopedVASurface& scoped_va_surface) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  if (!scoped_va_surface.IsValid()) {
+    LOG(ERROR) << "Cannot export an invalid surface";
+    return nullptr;
+  }
+  return ExportVASurfaceAsNativePixmapDmaBufUnwrapped(scoped_va_surface.id(),
+                                                      scoped_va_surface.size());
+}
+
 bool VaapiWrapper::SyncSurface(VASurfaceID va_surface_id) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   DCHECK_NE(va_surface_id, VA_INVALID_ID);
 
   base::AutoLock auto_lock(*va_lock_);
 
   VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed syncing surface", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
   return true;
 }
 
 bool VaapiWrapper::SubmitBuffer(VABufferType va_buffer_type,
                                 size_t size,
-                                const void* buffer) {
-  DCHECK_LT(va_buffer_type, VABufferTypeMax);
-  DCHECK(buffer);
+                                const void* data) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffer");
   base::AutoLock auto_lock(*va_lock_);
-  TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBufferLocked");
-
-  VABufferID buffer_id;
-  VAStatus va_res = vaCreateBuffer(va_display_, va_context_id_, va_buffer_type,
-                                   size, 1, nullptr, &buffer_id);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed to create a VA buffer", false);
-
-  ScopedVABufferMapping mapping(
-      va_lock_, va_display_, buffer_id,
-      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
-  if (!mapping.IsValid())
-    return false;
-
-  // TODO(selcott): Investigate potentially faster alternatives to memcpy here
-  // such as libyuv::CopyX and family.
-  memcpy(mapping.data(), buffer, size);
-
-  switch (va_buffer_type) {
-    case VASliceParameterBufferType:
-    case VASliceDataBufferType:
-    case VAEncSliceParameterBufferType:
-      pending_slice_bufs_.push_back(buffer_id);
-      break;
-
-    default:
-      pending_va_bufs_.push_back(buffer_id);
-      break;
-  }
-
-  return true;
+  return SubmitBuffer_Locked({va_buffer_type, size, data});
 }
 
-bool VaapiWrapper::SubmitVAEncMiscParamBuffer(
-    VAEncMiscParameterType misc_param_type,
-    size_t size,
-    const void* buffer) {
+bool VaapiWrapper::SubmitBuffers(
+    const std::vector<VABufferDescriptor>& va_buffers) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffers");
   base::AutoLock auto_lock(*va_lock_);
-
-  VABufferID buffer_id;
-  VAStatus va_res = vaCreateBuffer(
-      va_display_, va_context_id_, VAEncMiscParameterBufferType,
-      sizeof(VAEncMiscParameterBuffer) + size, 1, NULL, &buffer_id);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed to create a VA buffer", false);
-
-  ScopedVABufferMapping mapping(
-      va_lock_, va_display_, buffer_id,
-      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
-  if (!mapping.IsValid())
-    return false;
-
-  auto* params = reinterpret_cast<VAEncMiscParameterBuffer*>(mapping.data());
-  params->type = misc_param_type;
-  memcpy(params->data, buffer, size);
-
-  pending_va_bufs_.push_back(buffer_id);
+  for (const VABufferDescriptor& va_buffer : va_buffers) {
+    if (!SubmitBuffer_Locked(va_buffer))
+      return false;
+  }
   return true;
 }
 
 void VaapiWrapper::DestroyPendingBuffers() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DestroyPendingBuffers");
   base::AutoLock auto_lock(*va_lock_);
   DestroyPendingBuffers_Locked();
 }
 
 void VaapiWrapper::DestroyPendingBuffers_Locked() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DestroyPendingBuffers_Locked");
   va_lock_->AssertAcquired();
-  for (const auto& pending_va_buf : pending_va_bufs_) {
+  for (const auto& pending_va_buf : pending_va_buffers_) {
     VAStatus va_res = vaDestroyBuffer(va_display_, pending_va_buf);
-    VA_LOG_ON_ERROR(va_res, "vaDestroyBuffer failed");
+    VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyBuffer);
   }
-
-  for (const auto& pending_slice_buf : pending_slice_bufs_) {
-    VAStatus va_res = vaDestroyBuffer(va_display_, pending_slice_buf);
-    VA_LOG_ON_ERROR(va_res, "vaDestroyBuffer failed");
-  }
-
-  pending_va_bufs_.clear();
-  pending_slice_bufs_.clear();
+  pending_va_buffers_.clear();
 }
 
 bool VaapiWrapper::ExecuteAndDestroyPendingBuffers(VASurfaceID va_surface_id) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   base::AutoLock auto_lock(*va_lock_);
-  bool result = Execute_Locked(va_surface_id);
+  bool result = Execute_Locked(va_surface_id, pending_va_buffers_);
   DestroyPendingBuffers_Locked();
   return result;
 }
 
-#if defined(USE_X11)
+bool VaapiWrapper::MapAndCopyAndExecute(
+    VASurfaceID va_surface_id,
+    const std::vector<std::pair<VABufferID, VABufferDescriptor>>& va_buffers) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  DCHECK_NE(va_surface_id, VA_INVALID_SURFACE);
+
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::MapAndCopyAndExecute");
+  base::AutoLock auto_lock(*va_lock_);
+  std::vector<VABufferID> va_buffer_ids;
+
+  for (const auto& va_buffer : va_buffers) {
+    const VABufferID va_buffer_id = va_buffer.first;
+    const VABufferDescriptor& descriptor = va_buffer.second;
+    DCHECK_NE(va_buffer_id, VA_INVALID_ID);
+
+    if (!MapAndCopy_Locked(va_buffer_id, descriptor))
+      return false;
+
+    va_buffer_ids.push_back(va_buffer_id);
+  }
+
+  return Execute_Locked(va_surface_id, va_buffer_ids);
+}
+
+#if BUILDFLAG(USE_VAAPI_X11)
 bool VaapiWrapper::PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
-                                        Pixmap x_pixmap,
+                                        x11::Pixmap x_pixmap,
                                         gfx::Size dest_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   base::AutoLock auto_lock(*va_lock_);
 
   VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed syncing surface", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
 
   // Put the data into an X Pixmap.
-  va_res = vaPutSurface(va_display_,
-                        va_surface_id,
-                        x_pixmap,
-                        0, 0, dest_size.width(), dest_size.height(),
-                        0, 0, dest_size.width(), dest_size.height(),
-                        NULL, 0, 0);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed putting surface to pixmap", false);
+  va_res =
+      vaPutSurface(va_display_, va_surface_id, static_cast<uint32_t>(x_pixmap),
+                   0, 0, dest_size.width(), dest_size.height(), 0, 0,
+                   dest_size.width(), dest_size.height(), nullptr, 0, 0);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutSurface, false);
   return true;
 }
-#endif  // USE_X11
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 
 std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
     VASurfaceID va_surface_id,
     VAImageFormat* format,
     const gfx::Size& size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
     base::AutoLock auto_lock(*va_lock_);
 
     VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
-    VA_SUCCESS_OR_RETURN(va_res, "Failed syncing surface", nullptr);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, nullptr);
 
     scoped_image = std::make_unique<ScopedVAImage>(va_lock_, va_display_,
                                                    va_surface_id, format, size);
@@ -1745,36 +2515,52 @@ std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
 }
 
 bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
-                                             VASurfaceID va_surface_id) {
+                                             VASurfaceID va_surface_id,
+                                             const gfx::Size& va_surface_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface");
   base::AutoLock auto_lock(*va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurfaceLocked");
 
-  const gfx::Size size = frame.coded_size();
-  bool va_create_put_fallback = false;
+  if (frame.visible_rect().origin() != gfx::Point(0, 0)) {
+    LOG(ERROR) << "The origin of the frame's visible rectangle is not (0, 0), "
+               << "frame.visible_rect().origin()="
+               << frame.visible_rect().origin().ToString();
+    return false;
+  }
+
+  const gfx::Size visible_size = frame.visible_rect().size();
+  bool needs_va_put_image = false;
   VAImage image;
   VAStatus va_res = vaDeriveImage(va_display_, va_surface_id, &image);
   if (va_res == VA_STATUS_ERROR_OPERATION_FAILED) {
     DVLOG(4) << "vaDeriveImage failed and fallback to Create_PutImage";
-    va_create_put_fallback = true;
     constexpr VAImageFormat kImageFormatNV12{.fourcc = VA_FOURCC_NV12,
                                              .byte_order = VA_LSB_FIRST,
                                              .bits_per_pixel = 12};
     VAImageFormat image_format = kImageFormatNV12;
 
-    va_res = vaCreateImage(va_display_, &image_format, size.width(),
-                           size.height(), &image);
-    VA_SUCCESS_OR_RETURN(va_res, "vaCreateImage failed", false);
+    va_res = vaCreateImage(va_display_, &image_format, va_surface_size.width(),
+                           va_surface_size.height(), &image);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateImage, false);
+    needs_va_put_image = true;
   }
   base::ScopedClosureRunner vaimage_deleter(
-      base::Bind(&DestroyVAImage, va_display_, image));
+      base::BindOnce(&DestroyVAImage, va_display_, image));
 
   if (image.format.fourcc != VA_FOURCC_NV12) {
     LOG(ERROR) << "Unsupported image format: " << image.format.fourcc;
     return false;
   }
 
-  if (gfx::Rect(image.width, image.height) < gfx::Rect(size)) {
+  if (image.width % 2 != 0 || image.height % 2 != 0) {
+    LOG(ERROR) << "Buffer's width and height are not even, "
+               << "width=" << image.width << ", height=" << image.height;
+    return false;
+  }
+
+  if (!gfx::Rect(image.width, image.height).Contains(gfx::Rect(visible_size))) {
     LOG(ERROR) << "Buffer too small to fit the frame.";
     return false;
   }
@@ -1784,8 +2570,15 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     return false;
   uint8_t* image_ptr = static_cast<uint8_t*>(mapping.data());
 
+  if (!ClearNV12Padding(image, visible_size, image_ptr)) {
+    LOG(ERROR) << "Failed to clear non visible area of VAImage";
+    return false;
+  }
+
   int ret = 0;
   {
+    TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface_copy");
+
     base::AutoUnlock auto_unlock(*va_lock_);
     switch (frame.format()) {
       case PIXEL_FORMAT_I420:
@@ -1794,45 +2587,88 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
             frame.data(VideoFrame::kUPlane), frame.stride(VideoFrame::kUPlane),
             frame.data(VideoFrame::kVPlane), frame.stride(VideoFrame::kVPlane),
             image_ptr + image.offsets[0], image.pitches[0],
-            image_ptr + image.offsets[1], image.pitches[1], image.width,
-            image.height);
+            image_ptr + image.offsets[1], image.pitches[1],
+            visible_size.width(), visible_size.height());
         break;
-      case PIXEL_FORMAT_NV12:
+      case PIXEL_FORMAT_NV12: {
+        int uv_width = visible_size.width();
+        if (visible_size.width() % 2 != 0 &&
+            !base::CheckAdd<int>(visible_size.width(), 1)
+                 .AssignIfValid(&uv_width)) {
+          return false;
+        }
+
+        int uv_height = 0;
+        if (!(base::CheckAdd<int>(visible_size.height(), 1) / 2)
+                 .AssignIfValid(&uv_height)) {
+          return false;
+        }
+
         libyuv::CopyPlane(frame.data(VideoFrame::kYPlane),
                           frame.stride(VideoFrame::kYPlane),
                           image_ptr + image.offsets[0], image.pitches[0],
-                          image.width, image.height);
+                          visible_size.width(), visible_size.height());
         libyuv::CopyPlane(frame.data(VideoFrame::kUVPlane),
                           frame.stride(VideoFrame::kUVPlane),
                           image_ptr + image.offsets[1], image.pitches[1],
-                          image.width, image.height / 2);
-        break;
+                          uv_width, uv_height);
+      } break;
       default:
         LOG(ERROR) << "Unsupported pixel format: " << frame.format();
         return false;
     }
   }
-  if (va_create_put_fallback) {
+  if (needs_va_put_image) {
     va_res = vaPutImage(va_display_, va_surface_id, image.image_id, 0, 0,
-                        size.width(), size.height(), 0, 0, size.width(),
-                        size.height());
-    VA_SUCCESS_OR_RETURN(va_res, "vaPutImage failed", false);
+                        visible_size.width(), visible_size.height(), 0, 0,
+                        visible_size.width(), visible_size.height());
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutImage, false);
   }
   return ret == 0;
 }
 
-bool VaapiWrapper::CreateVABuffer(size_t size, VABufferID* buffer_id) {
+std::unique_ptr<ScopedVABuffer> VaapiWrapper::CreateVABuffer(VABufferType type,
+                                                             size_t size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::CreateVABuffer");
   base::AutoLock auto_lock(*va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::CreateVABufferLocked");
-  VAStatus va_res =
-      vaCreateBuffer(va_display_, va_context_id_, VAEncCodedBufferType, size, 1,
-                     NULL, buffer_id);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed to create a coded buffer", false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  VAContextID context_id = type == VAProtectedSessionExecuteBufferType
+                               ? va_protected_session_id_
+                               : va_context_id_;
+#else
+  VAContextID context_id = va_context_id_;
+#endif
 
-  const auto is_new_entry = va_buffers_.insert(*buffer_id).second;
-  DCHECK(is_new_entry);
-  return true;
+  if (context_id == VA_INVALID_ID)
+    return nullptr;
+  return ScopedVABuffer::Create(va_lock_, va_display_, context_id, type, size);
+}
+
+uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
+                                           VASurfaceID sync_surface_id) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSize");
+  base::AutoLock auto_lock(*va_lock_);
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSizeLocked");
+  VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, 0u);
+
+  ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
+  if (!mapping.IsValid())
+    return 0u;
+
+  uint64_t coded_data_size = 0;
+  for (auto* buffer_segment =
+           reinterpret_cast<VACodedBufferSegment*>(mapping.data());
+       buffer_segment; buffer_segment = reinterpret_cast<VACodedBufferSegment*>(
+                           buffer_segment->next)) {
+    coded_data_size += buffer_segment->size;
+  }
+  return coded_data_size;
 }
 
 bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
@@ -1840,13 +2676,21 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
                                         uint8_t* target_ptr,
                                         size_t target_size,
                                         size_t* coded_data_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   DCHECK(target_ptr);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer");
   base::AutoLock auto_lock(*va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferLocked");
 
-  VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, "Failed syncing surface", false);
+  // vaSyncSurface() is not necessary on Intel platforms as long as there is a
+  // vaMapBuffer() like in ScopedVABufferMapping below, see b/184312032.
+  if (GetImplementationType() != VAImplementation::kIntelI965 &&
+      GetImplementationType() != VAImplementation::kIntelIHD) {
+    TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer_SyncSurface");
+    const VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
+  }
 
   ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
   if (!mapping.IsValid())
@@ -1858,7 +2702,7 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
   // cause another thread to acquire the lock and we'd have to wait delaying the
   // notification that the encode is done.
   {
-    TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferCopyEncoded");
+    TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer_copy");
     *coded_data_size = 0;
 
     while (buffer_segment) {
@@ -1869,13 +2713,11 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
                    << ", the buffer segment size: " << buffer_segment->size;
         break;
       }
-
       memcpy(target_ptr, buffer_segment->buf, buffer_segment->size);
 
       target_ptr += buffer_segment->size;
-      *coded_data_size += buffer_segment->size;
       target_size -= buffer_segment->size;
-
+      *coded_data_size += buffer_segment->size;
       buffer_segment =
           reinterpret_cast<VACodedBufferSegment*>(buffer_segment->next);
     }
@@ -1886,66 +2728,95 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
 
 bool VaapiWrapper::GetVAEncMaxNumOfRefFrames(VideoCodecProfile profile,
                                              size_t* max_ref_frames) {
-  VAProfile va_profile =
-      ProfileToVAProfile(profile, VaapiWrapper::CodecMode::kEncode);
-  VAEntrypoint entrypoint =
-      GetVaEntryPoint(VaapiWrapper::CodecMode::kEncode, va_profile);
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  const VAProfile va_profile =
+      ProfileToVAProfile(profile, CodecMode::kEncodeConstantBitrate);
   VAConfigAttrib attrib;
   attrib.type = VAConfigAttribEncMaxRefFrames;
 
   base::AutoLock auto_lock(*va_lock_);
-  VAStatus va_res =
-      vaGetConfigAttributes(va_display_, va_profile, entrypoint, &attrib, 1);
-  if (va_res) {
-    LOG_VA_ERROR_AND_REPORT(va_res, "vaGetConfigAttributes failed");
-    return false;
-  }
+  VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile,
+                                          va_entrypoint_, &attrib, 1);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAGetConfigAttributes, false);
 
   *max_ref_frames = attrib.value;
   return true;
 }
 
-void VaapiWrapper::DestroyVABuffer(VABufferID buffer_id) {
+bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
+                                             bool& packed_sps,
+                                             bool& packed_pps,
+                                             bool& packed_slice) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  const VAProfile va_profile =
+      ProfileToVAProfile(profile, CodecMode::kEncodeConstantBitrate);
+  VAConfigAttrib attrib{};
+  attrib.type = VAConfigAttribEncPackedHeaders;
   base::AutoLock auto_lock(*va_lock_);
-  VAStatus va_res = vaDestroyBuffer(va_display_, buffer_id);
-  VA_LOG_ON_ERROR(va_res, "vaDestroyBuffer failed");
-  const auto was_found = va_buffers_.erase(buffer_id);
-  DCHECK(was_found);
+  const VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile,
+                                                va_entrypoint_, &attrib, 1);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAGetConfigAttributes, false);
+  packed_sps = attrib.value & VA_ENC_PACKED_HEADER_SEQUENCE;
+  packed_pps = attrib.value & VA_ENC_PACKED_HEADER_PICTURE;
+  packed_slice = attrib.value & VA_ENC_PACKED_HEADER_SLICE;
+
+  return true;
 }
 
-void VaapiWrapper::DestroyVABuffers() {
+bool VaapiWrapper::IsRotationSupported() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   base::AutoLock auto_lock(*va_lock_);
+  VAProcPipelineCaps pipeline_caps;
+  memset(&pipeline_caps, 0, sizeof(pipeline_caps));
+  VAStatus va_res = vaQueryVideoProcPipelineCaps(va_display_, va_context_id_,
+                                                 nullptr, 0, &pipeline_caps);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQueryVideoProcPipelineCaps,
+                       false);
 
-  for (auto it = va_buffers_.begin(); it != va_buffers_.end(); ++it) {
-    VAStatus va_res = vaDestroyBuffer(va_display_, *it);
-    VA_LOG_ON_ERROR(va_res, "vaDestroyBuffer failed");
+  if (!pipeline_caps.rotation_flags) {
+    DVLOG(2) << "VA-API driver doesn't support any rotation";
+    return false;
   }
-
-  va_buffers_.clear();
+  return true;
 }
 
-bool VaapiWrapper::BlitSurface(const scoped_refptr<VASurface>& va_surface_src,
-                               const scoped_refptr<VASurface>& va_surface_dest,
-                               base::Optional<gfx::Rect> src_rect,
-                               base::Optional<gfx::Rect> dest_rect) {
+bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
+                               const VASurface& va_surface_dest,
+                               absl::optional<gfx::Rect> src_rect,
+                               absl::optional<gfx::Rect> dest_rect,
+                               VideoRotation rotation
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                               ,
+                               VAProtectedSessionID va_protected_session_id
+#endif
+) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  DCHECK_EQ(mode_, kVideoProcess);
   base::AutoLock auto_lock(*va_lock_);
 
-  if (va_buffers_.empty()) {
+  // Create a buffer for VPP if it has not been created.
+  if (!va_buffer_for_vpp_) {
     DCHECK_NE(VA_INVALID_ID, va_context_id_);
-    // Create a buffer for VPP if it has not been created.
-    VABufferID buffer_id;
-    VAStatus va_res = vaCreateBuffer(
-        va_display_, va_context_id_, VAProcPipelineParameterBufferType,
-        sizeof(VAProcPipelineParameterBuffer), 1, nullptr, &buffer_id);
-    VA_SUCCESS_OR_RETURN(va_res, "Couldn't create buffer", false);
-    DCHECK_NE(buffer_id, VA_INVALID_ID);
-    va_buffers_.emplace(buffer_id);
+    va_buffer_for_vpp_ =
+        ScopedVABuffer::Create(va_lock_, va_display_, va_context_id_,
+                               VAProcPipelineParameterBufferType,
+                               sizeof(VAProcPipelineParameterBuffer));
+    if (!va_buffer_for_vpp_)
+      return false;
   }
 
-  DCHECK_EQ(va_buffers_.size(), 1u);
-  VABufferID buffer_id = *va_buffers_.begin();
+  // Note that since we store pointers to these regions in our mapping below,
+  // these may be accessed after the Unmap() below. These must therefore live
+  // until the end of the function.
+  VARectangle input_region;
+  VARectangle output_region;
   {
-    ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
+    ScopedVABufferMapping mapping(va_lock_, va_display_,
+                                  va_buffer_for_vpp_->id());
     if (!mapping.IsValid())
       return false;
     auto* pipeline_param =
@@ -1953,20 +2824,18 @@ bool VaapiWrapper::BlitSurface(const scoped_refptr<VASurface>& va_surface_src,
 
     memset(pipeline_param, 0, sizeof *pipeline_param);
     if (!src_rect)
-      src_rect.emplace(gfx::Rect(va_surface_src->size()));
+      src_rect.emplace(gfx::Rect(va_surface_src.size()));
     if (!dest_rect)
-      dest_rect.emplace(gfx::Rect(va_surface_dest->size()));
+      dest_rect.emplace(gfx::Rect(va_surface_dest.size()));
 
-    VARectangle input_region;
     input_region.x = src_rect->x();
     input_region.y = src_rect->y();
     input_region.width = src_rect->width();
     input_region.height = src_rect->height();
     pipeline_param->surface_region = &input_region;
-    pipeline_param->surface = va_surface_src->id();
+    pipeline_param->surface = va_surface_src.id();
     pipeline_param->surface_color_standard = VAProcColorStandardNone;
 
-    VARectangle output_region;
     output_region.x = dest_rect->x();
     output_region.y = dest_rect->y();
     output_region.width = dest_rect->width();
@@ -1976,19 +2845,54 @@ bool VaapiWrapper::BlitSurface(const scoped_refptr<VASurface>& va_surface_src,
     pipeline_param->output_color_standard = VAProcColorStandardNone;
     pipeline_param->filter_flags = VA_FILTER_SCALING_DEFAULT;
 
-    VA_SUCCESS_OR_RETURN(mapping.Unmap(), "Couldn't unmap vpp buffer", false);
+    switch (rotation) {
+      case VIDEO_ROTATION_0:
+        pipeline_param->rotation_state = VA_ROTATION_NONE;
+        break;
+      case VIDEO_ROTATION_90:
+        pipeline_param->rotation_state = VA_ROTATION_90;
+        break;
+      case VIDEO_ROTATION_180:
+        pipeline_param->rotation_state = VA_ROTATION_180;
+        break;
+      case VIDEO_ROTATION_270:
+        pipeline_param->rotation_state = VA_ROTATION_270;
+        break;
+    }
+
+    const VAStatus va_res = mapping.Unmap();
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAUnmapBuffer, false);
   }
 
-  VA_SUCCESS_OR_RETURN(
-      vaBeginPicture(va_display_, va_context_id_, va_surface_dest->id()),
-      "Couldn't begin picture", false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::ScopedClosureRunner protected_session_detacher;
+  if (va_protected_session_id != VA_INVALID_ID) {
+    const VAStatus va_res = vaAttachProtectedSession(
+        va_display_, va_context_id_, va_protected_session_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAAttachProtectedSession,
+                         false);
+    // Note that we use a lambda expression to wrap vaDetachProtectedSession()
+    // because the function in |protected_session_detacher| must return void.
+    protected_session_detacher.ReplaceClosure(base::BindOnce(
+        [](VADisplay va_display, VAContextID va_context_id) {
+          vaDetachProtectedSession(va_display, va_context_id);
+        },
+        va_display_, va_context_id_));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  VA_SUCCESS_OR_RETURN(
-      vaRenderPicture(va_display_, va_context_id_, &buffer_id, 1),
-      "Couldn't render picture", false);
+  TRACE_EVENT2("media,gpu", "VaapiWrapper::BlitSurface", "src_rect",
+               src_rect->ToString(), "dest_rect", dest_rect->ToString());
 
-  VA_SUCCESS_OR_RETURN(vaEndPicture(va_display_, va_context_id_),
-                       "Couldn't end picture", false);
+  VAStatus va_res =
+      vaBeginPicture(va_display_, va_context_id_, va_surface_dest.id());
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVABeginPicture, false);
+
+  VABufferID va_buffer_id = va_buffer_for_vpp_->id();
+  va_res = vaRenderPicture(va_display_, va_context_id_, &va_buffer_id, 1);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVARenderPicture_Vpp, false);
+  va_res = vaEndPicture(va_display_, va_context_id_);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAEndPicture, false);
 
   return true;
 }
@@ -2002,8 +2906,11 @@ void VaapiWrapper::PreSandboxInitialization() {
 
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);
   paths[kModuleVa_drm].push_back(std::string("libva-drm.so.") + va_suffix);
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
   paths[kModuleVa_x11].push_back(std::string("libva-x11.so.") + va_suffix);
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  paths[kModuleVa_prot].push_back(std::string("libva.so.") + va_suffix);
 #endif
 
   // InitializeStubs dlopen() VA-API libraries
@@ -2030,65 +2937,112 @@ void VaapiWrapper::PreSandboxInitialization() {
   VASupportedProfiles::Get();
 }
 
-VaapiWrapper::VaapiWrapper(CodecMode mode)
+VaapiWrapper::VaapiWrapper(CodecMode mode, bool enforce_sequence_affinity)
     : mode_(mode),
+      enforce_sequence_affinity_(enforce_sequence_affinity),
       va_lock_(VADisplayState::Get()->va_lock()),
       va_display_(NULL),
-      va_config_id_(VA_INVALID_ID),
-      va_context_id_(VA_INVALID_ID) {}
+      va_profile_(VAProfileNone),
+      va_entrypoint_(kVAEntrypointInvalid) {}
 
 VaapiWrapper::~VaapiWrapper() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  // Destroy ScopedVABuffer before VaapiWrappers are destroyed to ensure
+  // VADisplay is valid on ScopedVABuffer's destruction.
+  va_buffer_for_vpp_.reset();
   DestroyPendingBuffers();
-  DestroyVABuffers();
   DestroyContext();
   Deinitialize();
 }
 
-bool VaapiWrapper::Initialize(CodecMode mode, VAProfile va_profile) {
-  if (mode != kVideoProcess)
-    TryToSetVADisplayAttributeToLocalGPU();
-
-  VAEntrypoint entrypoint = GetVaEntryPoint(mode, va_profile);
-
-  if (mode == CodecMode::kEncode && IsLowPowerEncSupported(va_profile) &&
-      base::FeatureList::IsEnabled(kVaapiLowPowerEncoder)) {
-    entrypoint = VAEntrypointEncSliceLP;
-    DVLOG(2) << "Enable VA-API Low-Power Encode Entrypoint";
+bool VaapiWrapper::Initialize(VAProfile va_profile,
+                              EncryptionScheme encryption_scheme) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+#if DCHECK_IS_ON()
+  if (mode_ == kEncodeConstantQuantizationParameter) {
+    DCHECK_NE(va_profile, VAProfileJPEGBaseline)
+        << "JPEG Encoding doesn't support CQP bitrate control";
   }
+#endif  // DCHECK_IS_ON()
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (encryption_scheme != EncryptionScheme::kUnencrypted &&
+      mode_ != kDecodeProtected) {
+    return false;
+  }
+#endif
+
+  const VAEntrypoint entrypoint = GetDefaultVaEntryPoint(mode_, va_profile);
 
   base::AutoLock auto_lock(*va_lock_);
   std::vector<VAConfigAttrib> required_attribs;
-  if (!GetRequiredAttribs(va_lock_, va_display_, mode, va_profile,
-                          &required_attribs))
+  if (!GetRequiredAttribs(va_lock_, va_display_, mode_, va_profile, entrypoint,
+                          &required_attribs)) {
     return false;
+  }
 
-  VAStatus va_res =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (encryption_scheme != EncryptionScheme::kUnencrypted) {
+    DCHECK(!required_attribs.empty());
+    // We need to adjust the attribute for encryption scheme.
+    for (auto& attrib : required_attribs) {
+      if (attrib.type == VAConfigAttribEncryption) {
+        attrib.value = (encryption_scheme == EncryptionScheme::kCbcs)
+                           ? VA_ENCRYPTION_TYPE_SUBSAMPLE_CBC
+                           : VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  const VAStatus va_res =
       vaCreateConfig(va_display_, va_profile, entrypoint,
                      required_attribs.empty() ? nullptr : &required_attribs[0],
                      required_attribs.size(), &va_config_id_);
-  VA_SUCCESS_OR_RETURN(va_res, "vaCreateConfig failed", false);
+  va_profile_ = va_profile;
+  va_entrypoint_ = entrypoint;
+
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateConfig, false);
   return true;
 }
 
 void VaapiWrapper::Deinitialize() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   {
     base::AutoLock auto_lock(*va_lock_);
-    if (va_config_id_ != VA_INVALID_ID) {
-      VAStatus va_res = vaDestroyConfig(va_display_, va_config_id_);
-      VA_LOG_ON_ERROR(va_res, "vaDestroyConfig failed");
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (va_protected_session_id_ != VA_INVALID_ID) {
+      VAStatus va_res =
+          vaDestroyProtectedSession(va_display_, va_protected_session_id_);
+      VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyProtectedSession);
+      va_res = vaDestroyConfig(va_display_, va_protected_config_id_);
+      VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyConfig);
     }
+#endif
+    if (va_config_id_ != VA_INVALID_ID) {
+      const VAStatus va_res = vaDestroyConfig(va_display_, va_config_id_);
+      VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyConfig);
+    }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    va_protected_session_id_ = VA_INVALID_ID;
+    va_protected_config_id_ = VA_INVALID_ID;
+#endif
     va_config_id_ = VA_INVALID_ID;
     va_display_ = nullptr;
   }
 
-  VAStatus va_res = VA_STATUS_SUCCESS;
-  VADisplayState::Get()->Deinitialize(&va_res);
-  VA_LOG_ON_ERROR(va_res, "vaTerminate failed");
+  const VAStatus va_res = VADisplayState::Get()->Deinitialize();
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVATerminate);
 }
 
-bool VaapiWrapper::VaInitialize(const base::Closure& report_error_to_uma_cb) {
+bool VaapiWrapper::VaInitialize(
+    const ReportErrorToUMACB& report_error_to_uma_cb) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   report_error_to_uma_cb_ = report_error_to_uma_cb;
-
   if (!VADisplayState::Get()->Initialize())
     return false;
 
@@ -2101,46 +3055,53 @@ bool VaapiWrapper::VaInitialize(const base::Closure& report_error_to_uma_cb) {
 }
 
 void VaapiWrapper::DestroyContext() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   base::AutoLock auto_lock(*va_lock_);
   DVLOG(2) << "Destroying context";
 
   if (va_context_id_ != VA_INVALID_ID) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (va_protected_session_id_ != VA_INVALID_ID) {
+      const VAStatus va_res =
+          vaDetachProtectedSession(va_display_, va_context_id_);
+      VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADetachProtectedSession);
+    }
+#endif
     const VAStatus va_res = vaDestroyContext(va_display_, va_context_id_);
-    VA_LOG_ON_ERROR(va_res, "vaDestroyContext failed");
+    VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyContext);
   }
 
   va_context_id_ = VA_INVALID_ID;
 }
 
-bool VaapiWrapper::CreateSurfaces(unsigned int va_format,
-                                  const gfx::Size& size,
-                                  SurfaceUsageHint usage_hint,
-                                  size_t num_surfaces,
-                                  std::vector<VASurfaceID>* va_surfaces) {
+bool VaapiWrapper::CreateSurfaces(
+    unsigned int va_format,
+    const gfx::Size& size,
+    const std::vector<SurfaceUsageHint>& usage_hints,
+    size_t num_surfaces,
+    std::vector<VASurfaceID>* va_surfaces) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   DVLOG(2) << "Creating " << num_surfaces << " " << size.ToString()
-           << " surfaces ";
+           << " surfaces";
   DCHECK_NE(va_format, kInvalidVaRtFormat);
   DCHECK(va_surfaces->empty());
 
   va_surfaces->resize(num_surfaces);
-  VASurfaceAttrib attribute{};
+  VASurfaceAttrib attribute;
+  memset(&attribute, 0, sizeof(attribute));
   attribute.type = VASurfaceAttribUsageHint;
   attribute.flags = VA_SURFACE_ATTRIB_SETTABLE;
   attribute.value.type = VAGenericValueTypeInteger;
-  switch (usage_hint) {
-    case SurfaceUsageHint::kVideoDecoder:
-      attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_DECODER;
-      break;
-    case SurfaceUsageHint::kVideoEncoder:
-      attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_ENCODER;
-      break;
-    case SurfaceUsageHint::kVideoProcessWrite:
-      attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_VPP_WRITE;
-      break;
-    case SurfaceUsageHint::kGeneric:
-      attribute.value.value.i = VA_SURFACE_ATTRIB_USAGE_HINT_GENERIC;
-      break;
-  }
+  attribute.value.value.i = 0;
+  for (SurfaceUsageHint usage_hint : usage_hints)
+    attribute.value.value.i |= static_cast<int32_t>(usage_hint);
+  static_assert(std::is_same<decltype(attribute.value.value.i), int32_t>::value,
+                "attribute.value.value.i is not int32_t");
+  static_assert(std::is_same<std::underlying_type<SurfaceUsageHint>::type,
+                             int32_t>::value,
+                "The underlying type of SurfaceUsageHint is not int32_t");
 
   VAStatus va_res;
   {
@@ -2150,46 +3111,76 @@ bool VaapiWrapper::CreateSurfaces(unsigned int va_format,
         base::checked_cast<unsigned int>(size.height()), va_surfaces->data(),
         num_surfaces, &attribute, 1u);
   }
-  VA_LOG_ON_ERROR(va_res, "vaCreateSurfaces failed");
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVACreateSurfaces_Allocating);
   return va_res == VA_STATUS_SUCCESS;
 }
 
-std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateScopedVASurface(
+std::vector<std::unique_ptr<ScopedVASurface>>
+VaapiWrapper::CreateScopedVASurfaces(
     unsigned int va_rt_format,
     const gfx::Size& size,
-    const base::Optional<gfx::Size>& visible_size) {
+    const std::vector<SurfaceUsageHint>& usage_hints,
+    size_t num_surfaces,
+    const absl::optional<gfx::Size>& visible_size,
+    const absl::optional<uint32_t>& va_fourcc) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   if (kInvalidVaRtFormat == va_rt_format) {
     LOG(ERROR) << "Invalid VA RT format to CreateScopedVASurface";
-    return nullptr;
+    return {};
   }
 
   if (size.IsEmpty()) {
     LOG(ERROR) << "Invalid visible size input to CreateScopedVASurface";
-    return nullptr;
+    return {};
   }
 
-  base::AutoLock auto_lock(*va_lock_);
-  VASurfaceID va_surface_id = VA_INVALID_ID;
-  VAStatus va_res = vaCreateSurfaces(
-      va_display_, va_rt_format, base::checked_cast<unsigned int>(size.width()),
-      base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1u, NULL,
-      0);
-  VA_SUCCESS_OR_RETURN(va_res, "vaCreateSurfaces failed", nullptr);
+  VASurfaceAttrib attribs[2];
+  unsigned int num_attribs = 1;
+  memset(attribs, 0, sizeof(attribs));
+  attribs[0].type = VASurfaceAttribUsageHint;
+  attribs[0].flags = VA_SURFACE_ATTRIB_SETTABLE;
+  attribs[0].value.type = VAGenericValueTypeInteger;
+  attribs[0].value.value.i = 0;
+  for (SurfaceUsageHint usage_hint : usage_hints)
+    attribs[0].value.value.i |= static_cast<int32_t>(usage_hint);
 
-  DCHECK_NE(VA_INVALID_ID, va_surface_id)
+  if (va_fourcc) {
+    num_attribs += 1;
+    attribs[1].type = VASurfaceAttribPixelFormat;
+    attribs[1].flags = VA_SURFACE_ATTRIB_SETTABLE;
+    attribs[1].value.type = VAGenericValueTypeInteger;
+    attribs[1].value.value.i = base::checked_cast<int32_t>(*va_fourcc);
+  }
+  base::AutoLock auto_lock(*va_lock_);
+  std::vector<VASurfaceID> va_surface_ids(num_surfaces, VA_INVALID_ID);
+  const VAStatus va_res = vaCreateSurfaces(
+      va_display_, va_rt_format, base::checked_cast<unsigned int>(size.width()),
+      base::checked_cast<unsigned int>(size.height()), va_surface_ids.data(),
+      num_surfaces, attribs, num_attribs);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Allocating,
+                       std::vector<std::unique_ptr<ScopedVASurface>>{});
+
+  DCHECK(!base::Contains(va_surface_ids, VA_INVALID_ID))
       << "Invalid VA surface id after vaCreateSurfaces";
 
   DCHECK(!visible_size.has_value() || !visible_size->IsEmpty());
-  auto scoped_va_surface = std::make_unique<ScopedVASurface>(
-      this, va_surface_id, visible_size.has_value() ? *visible_size : size,
-      va_rt_format);
+  std::vector<std::unique_ptr<ScopedVASurface>> scoped_va_surfaces;
+  scoped_va_surfaces.reserve(num_surfaces);
+  for (const VASurfaceID va_surface_id : va_surface_ids) {
+    auto scoped_va_surface = std::make_unique<ScopedVASurface>(
+        this, va_surface_id, visible_size.has_value() ? *visible_size : size,
+        va_rt_format);
+    DCHECK(scoped_va_surface->IsValid());
+    scoped_va_surfaces.push_back(std::move(scoped_va_surface));
+  }
 
-  DCHECK(scoped_va_surface);
-  DCHECK(scoped_va_surface->IsValid());
-  return scoped_va_surface;
+  return scoped_va_surfaces;
 }
 
 void VaapiWrapper::DestroySurfaces(std::vector<VASurfaceID> va_surfaces) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   DVLOG(2) << "Destroying " << va_surfaces.size() << " surfaces";
 
   // vaDestroySurfaces() makes no guarantees about VA_INVALID_SURFACE.
@@ -2200,103 +3191,165 @@ void VaapiWrapper::DestroySurfaces(std::vector<VASurfaceID> va_surfaces) {
   base::AutoLock auto_lock(*va_lock_);
   const VAStatus va_res =
       vaDestroySurfaces(va_display_, va_surfaces.data(), va_surfaces.size());
-  VA_LOG_ON_ERROR(va_res, "vaDestroySurfaces failed");
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroySurfaces);
 }
 
 void VaapiWrapper::DestroySurface(VASurfaceID va_surface_id) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   if (va_surface_id == VA_INVALID_SURFACE)
     return;
+  DVLOG(2) << __func__ << " " << va_surface_id;
   base::AutoLock auto_lock(*va_lock_);
   const VAStatus va_res = vaDestroySurfaces(va_display_, &va_surface_id, 1);
-  VA_LOG_ON_ERROR(va_res, "vaDestroySurfaces on surface failed");
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroySurfaces);
 }
 
-bool VaapiWrapper::Execute(VASurfaceID va_surface_id) {
-  TRACE_EVENT0("media,gpu", "VaapiWrapper::Execute");
-  base::AutoLock auto_lock(*va_lock_);
-  return Execute_Locked(va_surface_id);
-}
-
-bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id) {
+bool VaapiWrapper::Execute_Locked(VASurfaceID va_surface_id,
+                                  const std::vector<VABufferID>& va_buffers) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::Execute_Locked");
   va_lock_->AssertAcquired();
 
-  DVLOG(4) << "Pending VA bufs to commit: " << pending_va_bufs_.size();
-  DVLOG(4) << "Pending slice bufs to commit: " << pending_slice_bufs_.size();
+  DVLOG(4) << "Pending VA bufs to commit: " << pending_va_buffers_.size();
   DVLOG(4) << "Target VA surface " << va_surface_id;
+  const auto decode_start_time = base::TimeTicks::Now();
 
   // Get ready to execute for given surface.
   VAStatus va_res = vaBeginPicture(va_display_, va_context_id_, va_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, "vaBeginPicture failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVABeginPicture, false);
 
-  if (pending_va_bufs_.size() > 0) {
-    // Commit parameter and slice buffers.
-    va_res = vaRenderPicture(va_display_, va_context_id_, &pending_va_bufs_[0],
-                             pending_va_bufs_.size());
-    VA_SUCCESS_OR_RETURN(va_res, "vaRenderPicture for va_bufs failed", false);
+  if (!va_buffers.empty()) {
+    // vaRenderPicture() needs a non-const pointer, possibly unnecessarily.
+    VABufferID* va_buffers_data = const_cast<VABufferID*>(va_buffers.data());
+    va_res = vaRenderPicture(va_display_, va_context_id_, va_buffers_data,
+                             base::checked_cast<int>(va_buffers.size()));
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVARenderPicture_VABuffers,
+                         false);
   }
 
-  if (pending_slice_bufs_.size() > 0) {
-    va_res =
-        vaRenderPicture(va_display_, va_context_id_, &pending_slice_bufs_[0],
-                        pending_slice_bufs_.size());
-    VA_SUCCESS_OR_RETURN(va_res, "vaRenderPicture for slices failed", false);
-  }
-
-  // Instruct HW codec to start processing committed buffers.
-  // Does not block and the job is not finished after this returns.
+  // Instruct HW codec to start processing the submitted commands. In theory,
+  // this shouldn't be blocking, relying on vaSyncSurface() instead, however
+  // evidence points to it actually waiting for the job to be done.
   va_res = vaEndPicture(va_display_, va_context_id_);
-  VA_SUCCESS_OR_RETURN(va_res, "vaEndPicture failed", false);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAEndPicture, false);
+
+  UMA_HISTOGRAM_TIMES("Media.PlatformVideoDecoding.Decode",
+                      base::TimeTicks::Now() - decode_start_time);
 
   return true;
 }
 
-void VaapiWrapper::TryToSetVADisplayAttributeToLocalGPU() {
-  base::AutoLock auto_lock(*va_lock_);
-  VADisplayAttribute item = {VADisplayAttribRenderMode,
-                             1,   // At least support '_LOCAL_OVERLAY'.
-                             -1,  // The maximum possible support 'ALL'.
-                             VA_RENDER_MODE_LOCAL_GPU,
-                             VA_DISPLAY_ATTRIB_SETTABLE};
+bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  TRACE_EVENT0("media,gpu", "VaapiWrapper::SubmitBuffer_Locked");
+  va_lock_->AssertAcquired();
 
-  VAStatus va_res = vaSetDisplayAttributes(va_display_, &item, 1);
-  if (va_res != VA_STATUS_SUCCESS)
-    DVLOG(2) << "vaSetDisplayAttributes unsupported, ignoring by default.";
-}
+  DCHECK(IsValidVABufferType(va_buffer.type));
+  base::ScopedClosureRunner pending_buffers_destroyer_on_failure(base::BindOnce(
+      &VaapiWrapper::DestroyPendingBuffers_Locked, base::Unretained(this)));
+  unsigned int va_buffer_size;
+  // We use a null |va_buffer|.data for testing: it signals that we want this
+  // SubmitBuffer_Locked() call to fail.
+  if (!va_buffer.data || !base::CheckedNumeric<size_t>(va_buffer.size)
+                              .AssignIfValid(&va_buffer_size)) {
+    return false;
+  }
 
-// Check the support for low-power encode
-bool VaapiWrapper::IsLowPowerEncSupported(VAProfile va_profile) const {
-  // Only enabled for H264/AVC
-  if (va_profile != VAProfileH264ConstrainedBaseline &&
-      va_profile != VAProfileH264Main && va_profile != VAProfileH264High)
+  VABufferID buffer_id;
+  {
+    TRACE_EVENT0("media,gpu",
+                 "VaapiWrapper::SubmitBuffer_Locked_vaCreateBuffer");
+    const VAStatus va_res =
+        vaCreateBuffer(va_display_, va_context_id_, va_buffer.type,
+                       va_buffer_size, 1, nullptr, &buffer_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
+  }
+
+  if (!MapAndCopy_Locked(buffer_id, va_buffer))
     return false;
 
-  constexpr VAEntrypoint kLowPowerEncEntryPoint = VAEntrypointEncSliceLP;
-  std::vector<VAConfigAttrib> required_attribs;
-
-  base::AutoLock auto_lock(*va_lock_);
-  GetRequiredAttribs(va_lock_, va_display_, VaapiWrapper::CodecMode::kEncode,
-                     va_profile, &required_attribs);
-  // Query the driver for required attributes.
-  std::vector<VAConfigAttrib> attribs = required_attribs;
-  for (size_t i = 0; i < required_attribs.size(); ++i)
-    attribs[i].value = 0;
-
-  VAStatus va_res =
-      vaGetConfigAttributes(va_display_, va_profile, kLowPowerEncEntryPoint,
-                            &attribs[0], attribs.size());
-  VA_SUCCESS_OR_RETURN(va_res, "vaGetConfigAttributes failed", false);
-
-  for (size_t i = 0; i < required_attribs.size(); ++i) {
-    if (attribs[i].type != required_attribs[i].type ||
-        (attribs[i].value & required_attribs[i].value) !=
-            required_attribs[i].value) {
-      DVLOG(1) << "Unsupported value " << required_attribs[i].value
-               << " for attribute type " << required_attribs[i].type;
-      return false;
-    }
-  }
+  pending_va_buffers_.push_back(buffer_id);
+  pending_buffers_destroyer_on_failure.ReplaceClosure(base::DoNothing());
   return true;
+}
+
+bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
+                                     const VABufferDescriptor& va_buffer) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  va_lock_->AssertAcquired();
+
+  DCHECK_NE(va_buffer_id, VA_INVALID_ID);
+  DCHECK(IsValidVABufferType(va_buffer.type));
+  DCHECK(va_buffer.data);
+
+  ScopedVABufferMapping mapping(
+      va_lock_, va_display_, va_buffer_id,
+      base::BindOnce(base::IgnoreResult(&vaDestroyBuffer), va_display_));
+  if (!mapping.IsValid())
+    return false;
+
+  return memcpy(mapping.data(), va_buffer.data, va_buffer.size);
+}
+
+void VaapiWrapper::MaybeSetLowQualityEncoding_Locked() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  DCHECK(IsModeEncoding(mode_));
+  va_lock_->AssertAcquired();
+
+  // Query if encoding quality (VAConfigAttribEncQualityRange) is supported, and
+  // if so, use the associated value for lowest quality and power consumption.
+  VAConfigAttrib attrib{};
+  attrib.type = VAConfigAttribEncQualityRange;
+  const VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile_,
+                                                va_entrypoint_, &attrib, 1);
+  if (va_res != VA_STATUS_SUCCESS) {
+    LOG(ERROR) << "vaGetConfigAttributes failed: " << vaProfileStr(va_profile_);
+    return;
+  }
+  // From libva's va.h: 'A value less than or equal to 1 means that the
+  // encoder only has a single "quality setting,"'.
+  if (attrib.value == VA_ATTRIB_NOT_SUPPORTED || attrib.value <= 1u)
+    return;
+
+  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) +
+                           sizeof(VAEncMiscParameterBufferQualityLevel);
+  std::vector<char> temp(temp_size);
+
+  auto* const va_buffer =
+      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
+  va_buffer->type = VAEncMiscParameterTypeQualityLevel;
+  auto* const enc_quality =
+      reinterpret_cast<VAEncMiscParameterBufferQualityLevel*>(va_buffer->data);
+  enc_quality->quality_level = attrib.value;
+
+  const bool success =
+      SubmitBuffer_Locked({VAEncMiscParameterBufferType, temp_size, va_buffer});
+  LOG_IF(ERROR, !success) << "Error setting encoding quality to "
+                          << enc_quality->quality_level;
+}
+
+bool VaapiWrapper::MaybeAttachProtectedSession_Locked() {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  va_lock_->AssertAcquired();
+  if (va_context_id_ == VA_INVALID_ID)
+    return true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (va_protected_session_id_ == VA_INVALID_ID)
+    return true;
+
+  VAStatus va_res = vaAttachProtectedSession(va_display_, va_context_id_,
+                                             va_protected_session_id_);
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVAAttachProtectedSession);
+  return va_res == VA_STATUS_SUCCESS;
+#else
+  return true;
+#endif
 }
 
 }  // namespace media

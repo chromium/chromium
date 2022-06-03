@@ -8,26 +8,25 @@ namespace chromeos {
 
 class Printer;
 
-enum class PrinterSetupSource;
-
 // Interface that exposes methods for tracking the installation of a printer.
 class PrinterInstallationManager {
  public:
   virtual ~PrinterInstallationManager() = default;
 
-  // Record that the given printers has been installed in CUPS for usage.  If
-  // |printer| is not a saved or enterprise printer, this will have the
-  // side effect of moving |printer| into the saved class.
+  // Record that the given printers has been installed in CUPS for usage.
   // Parameter |is_automatic| should be set to true if the printer was
   // saved automatically (without requesting additional information
   // from the user).
-  virtual void PrinterInstalled(const Printer& printer,
-                                bool is_automatic,
-                                PrinterSetupSource source) = 0;
+  virtual void PrinterInstalled(const Printer& printer, bool is_automatic) = 0;
 
   // Returns true if |printer| is currently installed in CUPS with this
   // configuration.
   virtual bool IsPrinterInstalled(const Printer& printer) const = 0;
+
+  // Record that a requested printer installation failed because the printer
+  // is not autoconfigurable (does not meet IPP Everywhere requirements).
+  // This results in shifting the printer from automatic to discovered class.
+  virtual void PrinterIsNotAutoconfigurable(const Printer& printer) = 0;
 };
 
 }  // namespace chromeos

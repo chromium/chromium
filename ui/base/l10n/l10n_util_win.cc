@@ -9,7 +9,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,13 +23,16 @@ namespace {
 class OverrideLocaleHolder {
  public:
   OverrideLocaleHolder() {}
+
+  OverrideLocaleHolder(const OverrideLocaleHolder&) = delete;
+  OverrideLocaleHolder& operator=(const OverrideLocaleHolder&) = delete;
+
   const std::vector<std::string>& value() const { return value_; }
   void swap_value(std::vector<std::string>* override_value) {
     value_.swap(*override_value);
   }
  private:
   std::vector<std::string> value_;
-  DISALLOW_COPY_AND_ASSIGN(OverrideLocaleHolder);
 };
 
 base::LazyInstance<OverrideLocaleHolder>::DestructorAtExit
@@ -63,18 +65,14 @@ void HWNDSetRTLLayout(HWND hwnd) {
   }
 }
 
-bool IsLocaleSupportedByOS(const std::string& locale) {
-  return true;
-}
-
-bool NeedOverrideDefaultUIFont(base::string16* override_font_family,
+bool NeedOverrideDefaultUIFont(std::wstring* override_font_family,
                                double* font_size_scaler) {
   // This is rather simple-minded to deal with the UI font size
   // issue for some Indian locales (ml, bn, hi) for which
   // the default Windows fonts are too small to be legible.  For those
   // locales, IDS_UI_FONT_FAMILY is set to an actual font family to
   // use while for other locales, it's set to 'default'.
-  base::string16 ui_font_family = GetStringUTF16(IDS_UI_FONT_FAMILY);
+  std::wstring ui_font_family = GetWideString(IDS_UI_FONT_FAMILY);
   int scaler100;
   if (!base::StringToInt(l10n_util::GetStringUTF16(IDS_UI_FONT_SIZE_SCALER),
                          &scaler100))
@@ -97,12 +95,12 @@ bool NeedOverrideDefaultUIFont(base::string16* override_font_family,
 }
 
 void OverrideLocaleWithUILanguageList() {
-  std::vector<base::string16> ui_languages;
+  std::vector<std::wstring> ui_languages;
   if (base::win::i18n::GetThreadPreferredUILanguageList(&ui_languages)) {
     std::vector<std::string> ascii_languages;
     ascii_languages.reserve(ui_languages.size());
     std::transform(ui_languages.begin(), ui_languages.end(),
-                   std::back_inserter(ascii_languages), &base::UTF16ToASCII);
+                   std::back_inserter(ascii_languages), &base::WideToASCII);
     override_locale_holder.Get().swap_value(&ascii_languages);
   } else {
     NOTREACHED() << "Failed to determine the UI language for locale override.";
@@ -111,6 +109,10 @@ void OverrideLocaleWithUILanguageList() {
 
 const std::vector<std::string>& GetLocaleOverrides() {
   return override_locale_holder.Get().value();
+}
+
+std::wstring GetWideString(int message_id) {
+  return base::UTF16ToWide(GetStringUTF16(message_id));
 }
 
 }  // namespace l10n_util

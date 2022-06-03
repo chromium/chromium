@@ -6,9 +6,7 @@
 #define COMPONENTS_SCHEDULING_METRICS_THREAD_METRICS_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/task/sequence_manager/task_queue.h"
-#include "base/time/time.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/thread_type.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"
@@ -22,16 +20,18 @@ namespace scheduling_metrics {
 class COMPONENT_EXPORT(SCHEDULING_METRICS) ThreadMetrics {
  public:
   ThreadMetrics(ThreadType thread_type, bool has_cpu_timing_for_each_task);
+
+  ThreadMetrics(const ThreadMetrics&) = delete;
+  ThreadMetrics& operator=(const ThreadMetrics&) = delete;
+
   ~ThreadMetrics();
 
   bool ShouldDiscardTask(
-      base::sequence_manager::TaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
   // Record task metrics which are shared between threads.
   void RecordTaskMetrics(
-      base::sequence_manager::TaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
@@ -46,8 +46,6 @@ class COMPONENT_EXPORT(SCHEDULING_METRICS) ThreadMetrics {
   TaskDurationMetricReporter<ThreadType> thread_task_cpu_duration_reporter_;
   TaskDurationMetricReporter<ThreadType> tracked_cpu_duration_reporter_;
   TaskDurationMetricReporter<ThreadType> non_tracked_cpu_duration_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadMetrics);
 };
 
 }  // namespace scheduling_metrics

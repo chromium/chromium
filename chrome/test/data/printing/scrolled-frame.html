@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<style>
+  body { margin: 0; }
+</style>
+<script>
+  for (var i = 0; i < 10000; i++)
+      document.write("filler ");
+</script>
+
+<div id="target" style="width:100px; height:100px; background:green;"></div>
+
+<script>
+  for (var i = 0; i < 10000; i++)
+      document.write("filler ");
+  window.scrollTo(0, target.offsetTop);
+</script>

@@ -8,6 +8,7 @@ import "ui/accessibility/ax_enums.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 
 // See ui::AXTreeData for comments / explanations of these fields.
+[Stable, Uuid="c3178208-371c-4425-bb47-1de23134396b"]
 struct AXTreeData {
   ax.mojom.AXTreeID tree_id;
   ax.mojom.AXTreeID parent_tree_id;
@@ -26,4 +27,6 @@ struct AXTreeData {
   int32 sel_focus_object_id;
   int32 sel_focus_offset;
   ax.mojom.TextAffinity sel_focus_affinity;
+  int32 root_scroller_id;
+  [MinVersion=2] array<string>? metadata;
 };

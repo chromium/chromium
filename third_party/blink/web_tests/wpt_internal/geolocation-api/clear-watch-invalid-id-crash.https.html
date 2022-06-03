@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+document.body.onload = function() {
+    const mock = new GeolocationMock();
+    mock.setGeolocationPermission(true);
+    mock.setGeolocationPosition(51.478, -0.166, 100);
+
+    navigator.geolocation.watchPosition(() => {});
+    navigator.geolocation.clearWatch(0);
+
+    // This triggers unload, exercising the regression path which could crash
+    // the renderer due to the invalid clearWatch invocation above. The test
+    // passes if it doesn't crash.
+    location = "resources/pass-test.html#no crash on unload after clearing invalid watch id";
+}
+</script>
+</body>
+</html>

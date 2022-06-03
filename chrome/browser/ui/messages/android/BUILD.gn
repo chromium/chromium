@@ -4,9 +4,89 @@
 import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
-  custom_package = "org.chromium.chrome.ui.messages"
-  resource_dirs = [ "java/res" ]
+  sources = [
+    "java/res/drawable/snackbar_background_tablet.xml",
+    "java/res/layout/snackbar.xml",
+    "java/res/values/dimens.xml",
+  ]
+
   deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/infobars/android:java_resources",
     "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/messages/infobar/SimpleConfirmInfoBarBuilder.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarCollection.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManagerProvider.java",
+    "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarView.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//components/infobars/android:infobar_android_enums_java",
+    "//components/infobars/android:java",
+    "//components/infobars/core:infobar_enums_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_utils_java",
+  ]
+
+  resources_package = "org.chromium.chrome.ui.messages"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/messages/infobar/SimpleConfirmInfoBarBuilder.java" ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarCollectionUnitTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/util:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
   ]
 }

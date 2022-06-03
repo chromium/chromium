@@ -9,8 +9,10 @@
 
 #include "ash/host/ash_window_tree_host_mirroring_delegate.h"
 #include "ash/host/root_window_transformer.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/macros.h"
+#include "base/notreached.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -29,6 +31,9 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     DCHECK(delegate);
   }
 
+  UnifiedEventTargeter(const UnifiedEventTargeter&) = delete;
+  UnifiedEventTargeter& operator=(const UnifiedEventTargeter&) = delete;
+
   ui::EventTarget* FindTargetForEvent(ui::EventTarget* root,
                                       ui::Event* event) override {
     if (root == src_root_ && !event->target()) {
@@ -40,7 +45,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
             static_cast<aura::Window*>(nullptr), dst_root_);
       }
       ignore_result(
-          dst_root_->GetHost()->event_sink()->OnEventFromSource(event));
+          dst_root_->GetHost()->GetEventSink()->OnEventFromSource(event));
 
       // Reset the source host.
       delegate_->SetCurrentEventTargeterSourceHost(nullptr);
@@ -56,8 +61,6 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
   aura::Window* src_root_;
   aura::Window* dst_root_;
   AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedEventTargeter);
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(
@@ -102,9 +105,9 @@ void AshWindowTreeHostUnified::OnCursorVisibilityChangedNative(bool show) {
     host->AsWindowTreeHost()->OnCursorVisibilityChanged(show);
 }
 
-void AshWindowTreeHostUnified::OnBoundsChanged(const gfx::Rect& bounds) {
+void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& bounds) {
   if (platform_window())
-    OnHostResizedInPixels(bounds.size());
+    OnHostResizedInPixels(bounds.bounds.size());
 }
 
 void AshWindowTreeHostUnified::OnWindowDestroying(aura::Window* window) {

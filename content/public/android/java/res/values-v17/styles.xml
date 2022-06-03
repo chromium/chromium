@@ -32,6 +32,6 @@
         <item name="android:paddingTop">8dp</item>
         <item name="android:singleLine">true</item>
         <!-- v21 uses android:attr/colorAccent -->
-        <item name="android:textAppearance">@style/TextAppearance.BlueButtonText2</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
     </style>
 </resources>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
 class WallPaperApiTest : public extensions::ExtensionApiTest {

@@ -19,7 +19,9 @@ class BrowserContext;
 }
 
 namespace apps {
+struct FileHandler;
 struct FileHandlerInfo;
+using FileHandlers = std::vector<FileHandler>;
 }
 
 namespace extensions {
@@ -34,6 +36,30 @@ namespace app_file_handler_util {
 
 extern const char kInvalidParameters[];
 extern const char kSecurityError[];
+
+class WebAppFileHandlerMatch {
+ public:
+  explicit WebAppFileHandlerMatch(const apps::FileHandler* file_handler);
+  ~WebAppFileHandlerMatch();
+
+  const apps::FileHandler& file_handler() const;
+
+  // Returns true if |file_handler_| matched an entry on MIME type.
+  bool matched_mime_type() const;
+
+  // Returns true if |file_handler_| matched an entry on file extension.
+  bool matched_file_extension() const;
+
+  // Returns whether |file_handler_| can handle |entry| on either MIME type or
+  // file extension, and sets the values of |matched_mime_type_| and
+  // |matched_file_extension_|.
+  bool DoMatch(const EntryInfo& entry);
+
+ private:
+  const apps::FileHandler* const file_handler_;
+  bool matched_mime_type_ = false;
+  bool matched_file_extension_ = false;
+};
 
 // Returns the file handler with the specified |handler_id|, or NULL if there
 // is no such handler.
@@ -52,8 +78,17 @@ std::vector<FileHandlerMatch> MatchesFromFileHandlersForEntries(
     const FileHandlersInfo& file_handlers,
     const std::vector<EntryInfo>& entries);
 
+// Returns the apps::FileHandlers that can handle all files in |entries", along
+// with metadata about how the handler matched (MIME type or file extension).
+std::vector<WebAppFileHandlerMatch> MatchesFromWebAppFileHandlersForEntries(
+    const apps::FileHandlers& file_handlers,
+    const std::vector<EntryInfo>& entries);
+
 bool FileHandlerCanHandleEntry(const apps::FileHandlerInfo& handler,
                                const EntryInfo& entry);
+
+bool WebAppFileHandlerCanHandleEntry(const apps::FileHandler& handler,
+                                     const EntryInfo& entry);
 
 // Creates a new file entry and allows |renderer_id| to access |path|. This
 // registers a new file system for |path|.

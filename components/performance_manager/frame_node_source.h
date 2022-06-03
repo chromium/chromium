@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/observer_list_types.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace performance_manager {
 
@@ -22,20 +23,20 @@ class FrameNodeSource {
   using OnbeforeFrameNodeRemovedCallback =
       base::OnceCallback<void(FrameNodeImpl*)>;
 
-  // Returns the frame node associated with |render_process_id| and |frame_id|.
-  // Returns null if no such node exists.
-  virtual FrameNodeImpl* GetFrameNode(int render_process_id, int frame_id) = 0;
+  // Returns the frame node associated with |render_process_host_id|. Returns
+  // null if no such node exists.
+  virtual FrameNodeImpl* GetFrameNode(
+      content::GlobalRenderFrameHostId render_process_host_id) = 0;
 
   // Subscribes to receive removal notification for a frame node.
   virtual void SubscribeToFrameNode(
-      int render_process_id,
-      int frame_id,
+      content::GlobalRenderFrameHostId render_process_host_id,
       OnbeforeFrameNodeRemovedCallback
           on_before_frame_node_removed_callback) = 0;
 
   // Unsubscribes to a frame node
-  virtual void UnsubscribeFromFrameNode(int render_process_id,
-                                        int frame_id) = 0;
+  virtual void UnsubscribeFromFrameNode(
+      content::GlobalRenderFrameHostId render_process_host_id) = 0;
 };
 
 }  // namespace performance_manager

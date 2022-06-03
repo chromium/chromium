@@ -23,9 +23,7 @@ source_set("test_support") {
     "test_download_service.h",
   ]
 
-  deps = [
-    "//services/network/public/cpp",
-  ]
+  deps = [ "//services/network/public/cpp" ]
 
   public_deps = [
     "//base",

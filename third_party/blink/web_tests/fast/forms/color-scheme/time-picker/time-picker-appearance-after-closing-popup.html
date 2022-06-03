@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../resources/picker-common.js"></script>
+<input type="time" id="time" value="14:15">
+<script>
+openPicker(document.getElementById('time'), () => {
+  eventSender.keyDown('ArrowDown');
+  eventSender.keyDown('Enter');
+  testRunner.notifyDone();
+}, () => testRunner.notifyDone());
+</script>

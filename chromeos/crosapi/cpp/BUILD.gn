@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# C++ components used by both lacros-chrome and ash-chrome.
+config("crosapi_implementation") {
+  defines = [ "IS_CROSAPI_IMPL" ]
+}
+
+component("cpp") {
+  output_name = "crosapi_public_cpp"
+  sources = [
+    "crosapi_constants.cc",
+    "crosapi_constants.h",
+    "keystore_service_util.cc",
+    "keystore_service_util.h",
+    "scoped_allow_sync_call.cc",
+    "scoped_allow_sync_call.h",
+  ]
+  configs += [ ":crosapi_implementation" ]
+  deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
+  sources = [ "keystore_service_util_unittest.cc" ]
+}

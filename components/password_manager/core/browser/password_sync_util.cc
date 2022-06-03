@@ -6,7 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -14,11 +16,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/origin.h"
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
-
-using autofill::PasswordForm;
 using url::Origin;
 
 namespace {
@@ -44,10 +41,11 @@ std::string GetSyncUsernameIfSyncingPasswords(
     return std::string();
   }
 
-  return identity_manager->GetPrimaryAccountInfo().email;
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+      .email;
 }
 
-bool IsSyncAccountCredential(const autofill::PasswordForm& form,
+bool IsSyncAccountCredential(const PasswordForm& form,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager) {
   if (!GURL(form.signon_realm).DomainIs("google.com"))
@@ -70,7 +68,9 @@ bool IsSyncAccountEmail(const std::string& username,
   if (!identity_manager)
     return false;
 
-  std::string sync_email = identity_manager->GetPrimaryAccountInfo().email;
+  std::string sync_email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
 
   if (sync_email.empty() || username.empty())
     return false;
@@ -86,15 +86,14 @@ bool IsGaiaCredentialPage(const std::string& signon_realm) {
          signon_realm == kGoogleChangePasswordSignonRealm;
 }
 
-bool ShouldSaveEnterprisePasswordHash(const autofill::PasswordForm& form,
+bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs) {
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
-  return safe_browsing::MatchesPasswordProtectionLoginURL(form.origin, prefs) ||
-         safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.origin,
-                                                                   prefs);
-#else
+  if (base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
+    return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||
+           safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.url,
+                                                                     prefs);
+  }
   return false;
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
 }
 
 }  // namespace sync_util

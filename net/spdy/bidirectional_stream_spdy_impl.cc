@@ -206,9 +206,15 @@ void BidirectionalStreamSpdyImpl::OnHeadersSent() {
     delegate_->OnStreamReady(/*request_headers_sent=*/true);
 }
 
+void BidirectionalStreamSpdyImpl::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  DCHECK(stream_);
+  // TODO(crbug.com/671310): Plumb Early Hints to `delegate_` if needed.
+}
+
 void BidirectionalStreamSpdyImpl::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers,
-    const spdy::SpdyHeaderBlock* pushed_request_headers) {
+    const spdy::Http2HeaderBlock& response_headers,
+    const spdy::Http2HeaderBlock* pushed_request_headers) {
   DCHECK(stream_);
 
   if (delegate_)
@@ -246,7 +252,7 @@ void BidirectionalStreamSpdyImpl::OnDataSent() {
 }
 
 void BidirectionalStreamSpdyImpl::OnTrailers(
-    const spdy::SpdyHeaderBlock& trailers) {
+    const spdy::Http2HeaderBlock& trailers) {
   DCHECK(stream_);
   DCHECK(!stream_closed_);
 
@@ -291,7 +297,7 @@ NetLogSource BidirectionalStreamSpdyImpl::source_dependency() const {
 }
 
 int BidirectionalStreamSpdyImpl::SendRequestHeadersHelper() {
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   HttpRequestInfo http_request_info;
   http_request_info.url = request_info_->url;
   http_request_info.method = request_info_->method;
@@ -357,7 +363,7 @@ void BidirectionalStreamSpdyImpl::ScheduleBufferedRead() {
   }
 
   more_read_data_pending_ = false;
-  timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kBufferTimeMs),
+  timer_->Start(FROM_HERE, base::Milliseconds(kBufferTimeMs),
                 base::BindOnce(&BidirectionalStreamSpdyImpl::DoBufferedRead,
                                weak_factory_.GetWeakPtr()));
 }

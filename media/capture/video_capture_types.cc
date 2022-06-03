@@ -4,19 +4,18 @@
 
 #include "media/capture/video_capture_types.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
-#include "media/base/video_frame.h"
 
 namespace media {
 
 // This list is ordered by precedence of use.
 static VideoPixelFormat const kSupportedCapturePixelFormats[] = {
-    PIXEL_FORMAT_I420, PIXEL_FORMAT_YV12,  PIXEL_FORMAT_NV12,
-    PIXEL_FORMAT_NV21, PIXEL_FORMAT_YUY2,  PIXEL_FORMAT_RGB24,
-    PIXEL_FORMAT_ARGB, PIXEL_FORMAT_MJPEG,
+    PIXEL_FORMAT_I420,  PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12,
+    PIXEL_FORMAT_NV21,  PIXEL_FORMAT_UYVY, PIXEL_FORMAT_YUY2,
+    PIXEL_FORMAT_RGB24, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_MJPEG,
 };
 
 VideoCaptureFormat::VideoCaptureFormat()
@@ -30,18 +29,14 @@ VideoCaptureFormat::VideoCaptureFormat(const gfx::Size& frame_size,
       pixel_format(pixel_format) {}
 
 bool VideoCaptureFormat::IsValid() const {
-  return (frame_size.width() < media::limits::kMaxDimension) &&
-         (frame_size.height() < media::limits::kMaxDimension) &&
+  return (frame_size.width() <= media::limits::kMaxDimension) &&
+         (frame_size.height() <= media::limits::kMaxDimension) &&
          (frame_size.GetArea() >= 0) &&
-         (frame_size.GetArea() < media::limits::kMaxCanvas) &&
+         (frame_size.GetArea() <= media::limits::kMaxCanvas) &&
          (frame_rate >= 0.0f) &&
-         (frame_rate < media::limits::kMaxFramesPerSecond) &&
+         (frame_rate <= media::limits::kMaxFramesPerSecond) &&
          (pixel_format >= PIXEL_FORMAT_UNKNOWN &&
           pixel_format <= PIXEL_FORMAT_MAX);
-}
-
-size_t VideoCaptureFormat::ImageAllocationSize() const {
-  return VideoFrame::AllocationSize(pixel_format, frame_size);
 }
 
 // static

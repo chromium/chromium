@@ -24,7 +24,7 @@ EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::ToMojom(
     case base::MessagePumpType::JAVA:
       return mojo_base::mojom::MessagePumpType::kJava;
 #endif
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     case base::MessagePumpType::NS_RUNLOOP:
       return mojo_base::mojom::MessagePumpType::kNsRunloop;
 #endif
@@ -59,7 +59,7 @@ bool EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::
       *output = base::MessagePumpType::JAVA;
       return true;
 #endif
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     case mojo_base::mojom::MessagePumpType::kNsRunloop:
       *output = base::MessagePumpType::NS_RUNLOOP;
       return true;

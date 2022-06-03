@@ -6,8 +6,9 @@
 
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 
 namespace media {
 
@@ -39,12 +40,23 @@ void AudioDeviceThread::Callback::InitializeOnAudioThread() {
 // AudioDeviceThread implementation
 
 AudioDeviceThread::AudioDeviceThread(Callback* callback,
-                                     base::SyncSocket::Handle socket,
+                                     base::SyncSocket::ScopedHandle socket,
                                      const char* thread_name,
                                      base::ThreadPriority thread_priority)
-    : callback_(callback), thread_name_(thread_name), socket_(socket) {
-  CHECK(base::PlatformThread::CreateWithPriority(0, this, &thread_handle_,
-                                                 thread_priority));
+    : callback_(callback),
+      thread_name_(thread_name),
+      socket_(std::move(socket)) {
+#if defined(ARCH_CPU_X86)
+  // Audio threads don't need a huge stack, they don't have a message loop and
+  // they are used exclusively for polling the next frame of audio. See
+  // https://crbug.com/1141563 for discussion.
+  constexpr size_t kStackSize = 256 * 1024;
+#else
+  constexpr size_t kStackSize = 0;  // Default.
+#endif
+
+  CHECK(base::PlatformThread::CreateWithPriority(
+      kStackSize, this, &thread_handle_, thread_priority));
 
   DCHECK(!thread_handle_.is_null());
 }
@@ -54,6 +66,10 @@ AudioDeviceThread::~AudioDeviceThread() {
   if (thread_handle_.is_null())
     return;
   base::PlatformThread::Join(thread_handle_);
+}
+
+base::TimeDelta AudioDeviceThread::GetRealtimePeriod() {
+  return callback_->buffer_duration();
 }
 
 void AudioDeviceThread::ThreadMain() {

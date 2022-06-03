@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
-#define COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
+#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_
+#define COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_provider_logos/logo_common.h"
@@ -23,14 +23,18 @@ class LogoObserver;
 //
 class LogoService : public KeyedService {
  public:
+  LogoService(const LogoService&) = delete;
+  LogoService& operator=(const LogoService&) = delete;
+
   // Gets the logo for the default search provider and calls the provided
   // callbacks with the encoded and decoded logos. The service will:
   //
   // 1.  Load a cached logo, and call callbacks.on_cached_{en,de}coded_logo.
   // 2.  Fetch a fresh logo, and call callbacks.on_fresh_{en,de}coded_logo.
   //
-  // At least one member of |callbacks| must be non-null.
-  virtual void GetLogo(LogoCallbacks callbacks) = 0;
+  // At least one member of |callbacks| must be non-null. If |for_webui_ntp| is
+  // true fetches a logo that is compatible with the WebUI NTP.
+  virtual void GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) = 0;
 
   // Gets the logo for the default search provider and notifies |observer|
   // 0-2 times with the results. The service will:
@@ -46,11 +50,8 @@ class LogoService : public KeyedService {
 
  protected:
   LogoService();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoService);
 };
 
 }  // namespace search_provider_logos
 
-#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
+#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_

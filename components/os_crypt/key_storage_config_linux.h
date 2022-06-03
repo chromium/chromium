@@ -10,9 +10,8 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace os_crypt {
 
@@ -20,12 +19,22 @@ namespace os_crypt {
 struct COMPONENT_EXPORT(OS_CRYPT) Config {
  public:
   Config();
+
+  Config(const Config&) = delete;
+  Config& operator=(const Config&) = delete;
+
   ~Config();
 
   // Force OSCrypt to use a specific linux password store.
   std::string store;
   // The product name to use for permission prompts.
   std::string product_name;
+  // The application name to store the key under. For Chromium/Chrome builds
+  // leave this unset and it will default correctly.  This config option is
+  // for embedders to provide their application name in place of "Chromium".
+  // Only used when the allow_runtime_configurable_key_storage feature is
+  // enabled.
+  std::string application_name;
   // A runner on the main thread for gnome-keyring to be called from.
   // TODO(crbug/466975): Libsecret and KWallet don't need this. We can remove
   // this when we stop supporting keyring.
@@ -34,9 +43,6 @@ struct COMPONENT_EXPORT(OS_CRYPT) Config {
   bool should_use_preference;
   // Preferences are stored in a separate file in the user data directory.
   base::FilePath user_data_path;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Config);
 };
 
 }  // namespace os_crypt

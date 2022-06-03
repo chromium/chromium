@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_CRYPTO_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_CRYPTO_H_
 
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/crypto/subtle_crypto.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -48,10 +49,11 @@ class Crypto final : public ScriptWrappable {
 
   NotShared<DOMArrayBufferView> getRandomValues(NotShared<DOMArrayBufferView>,
                                                 ExceptionState&);
+  String randomUUID();
 
   SubtleCrypto* subtle();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<SubtleCrypto> subtle_crypto_;

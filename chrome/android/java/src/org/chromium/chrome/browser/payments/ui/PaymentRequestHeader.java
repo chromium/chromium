@@ -17,11 +17,12 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.OmniboxUrlEmphasizer;
+import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.widget.TintedDrawable;
-import org.chromium.chrome.browser.util.ColorUtils;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
+import org.chromium.ui.util.ColorUtils;
 
 /** This class represents a bar to display at the top of the payment request UI. */
 public class PaymentRequestHeader extends FrameLayout {
@@ -57,17 +58,21 @@ public class PaymentRequestHeader extends FrameLayout {
      * @param title         The title to display on the header.
      * @param origin        The origin to display on the header.
      * @param securityLevel The security level of the page that invoked PaymentRequest.
+     * @param profile       The current profile to initialize ChromeAutocompleteSchemeClassifier.
      */
-    public void setTitleAndOrigin(String title, String origin, int securityLevel) {
+    public void setTitleAndOrigin(String title, String origin, int securityLevel, Profile profile) {
         ((TextView) findViewById(R.id.page_title)).setText(title);
 
         TextView hostName = (TextView) findViewById(R.id.hostname);
         Spannable url = new SpannableStringBuilder(origin);
         final boolean useDarkColors =
                 !ColorUtils.shouldUseLightForegroundOnBackground(mBackgroundColor);
+        ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
+                new ChromeAutocompleteSchemeClassifier(profile);
         OmniboxUrlEmphasizer.emphasizeUrl(url, mContext.getResources(),
-                Profile.getLastUsedProfile(), securityLevel, false /* isInternalPage */,
+                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
                 useDarkColors, true /* emphasizeHttpsScheme */);
+        chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 
         if (origin.startsWith(UrlConstants.HTTPS_URL_PREFIX)) {

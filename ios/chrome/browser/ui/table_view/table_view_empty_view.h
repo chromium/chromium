@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/table_view/chrome_empty_table_view_background.h"
+
 // Displays an UIImage on top of a message over a clearBackground.
-@interface TableViewEmptyView : UIView
+@interface TableViewEmptyView : UIView <ChromeEmptyTableViewBackground>
 
 // Designated initializer for a view that displays |message| with default
 // styling and |image| above the message.
@@ -23,13 +25,6 @@
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-
-// The accessibility label to use for the message label.  Default value is the
-// message iteself.
-@property(nonatomic, strong) NSString* messageAccessibilityLabel;
-
-// Insets of the inner ScrollView.
-@property(nonatomic, assign) UIEdgeInsets scrollViewContentInsets;
 
 // The empty view's accessibility identifier.
 + (NSString*)accessibilityIdentifier;

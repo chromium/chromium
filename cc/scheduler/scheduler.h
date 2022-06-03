@@ -7,19 +7,22 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/event_metrics.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/draw_result.h"
-#include "cc/scheduler/scheduler.h"
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/tiles/tile_priority.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace perfetto {
 namespace protos {
@@ -39,10 +42,13 @@ struct FrameTimingDetails;
 namespace cc {
 struct BeginMainFrameMetrics;
 class CompositorTimingHistory;
+class CompositorFrameReportingController;
 
 enum class FrameSkippedReason {
   kRecoverLatency,
   kNoDamage,
+  kWaitingOnMain,
+  kDrawThrottled,
 };
 
 class SchedulerClient {
@@ -66,7 +72,13 @@ class SchedulerClient {
   virtual void ScheduledActionInvalidateLayerTreeFrameSink(
       bool needs_redraw) = 0;
   virtual void ScheduledActionPerformImplSideInvalidation() = 0;
-  virtual void DidFinishImplFrame() = 0;
+  // Called when the scheduler is done processing a frame. Note that the
+  // BeginFrameArgs instance passed may not necessarily be the same instance
+  // that was passed to WillBeginImplFrame(). Rather, |last_activated_args|
+  // represents the latest BeginFrameArgs instance that caused an activation to
+  // happen.
+  virtual void DidFinishImplFrame(
+      const viz::BeginFrameArgs& last_activated_args) = 0;
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
   virtual void WillNotReceiveBeginFrame() = 0;
@@ -76,11 +88,7 @@ class SchedulerClient {
   virtual void FrameIntervalUpdated(base::TimeDelta interval) = 0;
 
   // Functions used for reporting animation targeting UMA, crbug.com/758439.
-  virtual size_t CompositedAnimationsCount() const = 0;
-  virtual size_t MainThreadAnimationsCount() const = 0;
-  virtual bool HasCustomPropertyAnimations() const = 0;
-  virtual bool CurrentFrameHadRAF() const = 0;
-  virtual bool NextFrameHasPendingRAF() const = 0;
+  virtual bool HasInvalidationAnimation() const = 0;
 
  protected:
   virtual ~SchedulerClient() {}
@@ -88,11 +96,16 @@ class SchedulerClient {
 
 class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
  public:
-  Scheduler(SchedulerClient* client,
-            const SchedulerSettings& scheduler_settings,
-            int layer_tree_host_id,
-            base::SingleThreadTaskRunner* task_runner,
-            std::unique_ptr<CompositorTimingHistory> compositor_timing_history);
+  Scheduler(
+      SchedulerClient* client,
+      const SchedulerSettings& scheduler_settings,
+      int layer_tree_host_id,
+      base::SingleThreadTaskRunner* task_runner,
+      std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
+      gfx::RenderingPipeline* main_thread_pipeline,
+      gfx::RenderingPipeline* compositor_thread_pipeline,
+      CompositorFrameReportingController* compositor_frame_reporting_controller,
+      power_scheduler::PowerModeArbiter* power_mode_arbiter);
   Scheduler(const Scheduler&) = delete;
   ~Scheduler() override;
 
@@ -169,7 +182,9 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Drawing should result in submitting a CompositorFrame to the
   // LayerTreeFrameSink and then calling this.
-  void DidSubmitCompositorFrame(uint32_t frame_token);
+  void DidSubmitCompositorFrame(uint32_t frame_token,
+                                EventMetricsSet events_metrics,
+                                bool has_missing_content);
   // The LayerTreeFrameSink acks when it is ready for a new frame which
   // should result in this getting called to unblock the next draw.
   void DidReceiveCompositorFrameAck();
@@ -236,6 +251,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void SetMainThreadWantsBeginMainFrameNotExpected(bool new_state);
 
   void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       perfetto::protos::pbzero::ChromeCompositorSchedulerState* state) const;
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
@@ -270,14 +286,18 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   bool observing_begin_frame_source_ = false;
 
   bool skipped_last_frame_missed_exceeded_deadline_ = false;
-  bool skipped_last_frame_to_reduce_latency_ = false;
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history_;
+
+  // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
+  // destroyed.
+  CompositorFrameReportingController* compositor_frame_reporting_controller_;
 
   // What the latest deadline was, and when it was scheduled.
   base::TimeTicks deadline_;
   base::TimeTicks deadline_scheduled_at_;
-  SchedulerStateMachine::BeginImplFrameDeadlineMode deadline_mode_;
+  SchedulerStateMachine::BeginImplFrameDeadlineMode deadline_mode_ =
+      SchedulerStateMachine::BeginImplFrameDeadlineMode::NONE;
 
   BeginFrameTracker begin_impl_frame_tracker_;
   viz::BeginFrameAck last_begin_frame_ack_;
@@ -297,7 +317,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // Task posted for the deadline or drawing phase of the scheduler. This task
   // can be rescheduled e.g. when the condition for the deadline is met, it is
   // scheduled to run immediately.
-  // NOTE: Scheduler weak ptrs are not necessary if CancelableCallback is used.
+  // NOTE: Scheduler weak ptrs are not necessary if CancelableOnceCallback is
+  // used.
   base::CancelableOnceClosure begin_impl_frame_deadline_task_;
 
   // This is used for queueing begin frames while scheduler is waiting for
@@ -315,9 +336,23 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   bool stopped_ = false;
 
+  bool needs_finish_frame_for_synchronous_compositor_ = false;
+
   // Keeps track of the begin frame interval from the last BeginFrameArgs to
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
+
+  gfx::RenderingPipeline* const main_thread_pipeline_;
+  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
+      main_thread_pipeline_active_;
+
+  gfx::RenderingPipeline* const compositor_thread_pipeline_;
+  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
+      compositor_thread_pipeline_active_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
+  power_scheduler::PowerMode last_power_mode_vote_ =
+      power_scheduler::PowerMode::kIdle;
 
  private:
   // Posts the deadline task if needed by checking
@@ -350,18 +385,11 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void DrawForced();
   void ProcessScheduledActions();
   void UpdateCompositorTimingHistoryRecordingEnabled();
-  bool ShouldRecoverMainLatency(const viz::BeginFrameArgs& args,
-                                bool can_activate_before_deadline) const;
-  bool ShouldRecoverImplLatency(const viz::BeginFrameArgs& args,
-                                bool can_activate_before_deadline) const;
-  bool CanBeginMainFrameAndActivateBeforeDeadline(
-      const viz::BeginFrameArgs& args,
-      base::TimeDelta bmf_to_activate_estimate,
-      base::TimeTicks now) const;
   void AdvanceCommitStateIfPossible();
 
   void BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args);
   void BeginImplFrameSynchronous(const viz::BeginFrameArgs& args);
+  void FinishImplFrameSynchronous();
   void BeginImplFrame(const viz::BeginFrameArgs& args, base::TimeTicks now);
   void FinishImplFrame();
   void SendDidNotProduceFrame(const viz::BeginFrameArgs& args,
@@ -373,6 +401,12 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   bool IsInsideAction(SchedulerStateMachine::Action action) {
     return inside_action_ == action;
   }
+
+  void UpdatePowerModeVote();
+
+  // Used only for UMa metric calculations.
+  base::TimeDelta cc_frame_time_available_;
+  base::TimeTicks cc_frame_start_;  // Begin impl frame time.
 };
 
 }  // namespace cc

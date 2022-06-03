@@ -8,7 +8,6 @@
 #include <map>
 
 #include "media/capture/video/video_capture_device_factory.h"
-#include "mojo/public/cpp/bindings/binding.h"
 
 namespace media {
 
@@ -26,14 +25,7 @@ class MockDeviceFactory : public media::VideoCaptureDeviceFactory {
   // media::VideoCaptureDeviceFactory implementation.
   std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
       const media::VideoCaptureDeviceDescriptor& device_descriptor) override;
-  void GetDeviceDescriptors(
-      media::VideoCaptureDeviceDescriptors* device_descriptors) override;
-  void GetSupportedFormats(
-      const media::VideoCaptureDeviceDescriptor& device_descriptor,
-      media::VideoCaptureFormats* supported_formats) override;
-  void GetCameraLocationsAsync(
-      std::unique_ptr<media::VideoCaptureDeviceDescriptors> device_descriptors,
-      DeviceDescriptorsCallback result_callback) override;
+  void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
  private:
   std::map<media::VideoCaptureDeviceDescriptor, media::VideoCaptureDevice*>

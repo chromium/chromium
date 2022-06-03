@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
 #include "chrome/services/media_gallery_util/video_thumbnail_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -19,7 +19,7 @@ void OnVideoFrameExtracted(
     MediaParser::ExtractVideoFrameCallback video_frame_callback,
     bool success,
     chrome::mojom::VideoFrameDataPtr frame_data,
-    const base::Optional<media::VideoDecoderConfig>& config) {
+    const absl::optional<media::VideoDecoderConfig>& config) {
   std::move(video_frame_callback).Run(success, std::move(frame_data), config);
 }
 
@@ -42,6 +42,7 @@ void MediaParserAndroid::ExtractVideoFrame(
   // be deleted when utility process dies or |OnVideoFrameExtracted| callback
   // is called.
   auto parser = std::make_unique<VideoThumbnailParser>(std::move(data_source));
-  parser->Start(base::BindOnce(&OnVideoFrameExtracted, std::move(parser),
-                               std::move(video_frame_callback)));
+  auto* const parser_ptr = parser.get();
+  parser_ptr->Start(base::BindOnce(&OnVideoFrameExtracted, std::move(parser),
+                                   std::move(video_frame_callback)));
 }

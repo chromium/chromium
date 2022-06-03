@@ -1,0 +1,17 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/raw-sockets/blob/main/docs/explainer.md#udp
+
+[
+    Exposed=Window,
+    RuntimeEnabled=DirectSockets,
+    DirectSocketEnabled
+] interface UDPSocket {
+  // TODO(crbug.com/1119620): Add support for sending, receiving
+  // TODO(crbug.com/1119620): Add measurement
+
+  [RaisesException, CallWith=ScriptState]
+  Promise<void> close();
+};

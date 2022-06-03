@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEMergeElement
 
-interface SVGFEMergeElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEMergeElement : SVGElement {
 };
 
 SVGFEMergeElement includes SVGFilterPrimitiveStandardAttributes;

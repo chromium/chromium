@@ -14,9 +14,31 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace content {
+
+namespace {
+
+void DidCheckOfflineCapability(
+    ContentIndexServiceImpl::CheckOfflineCapabilityCallback callback,
+    int64_t expected_registration_id,
+    OfflineCapability capability,
+    int64_t registration_id) {
+  switch (capability) {
+    case OfflineCapability::kUnsupported:
+      std::move(callback).Run(false);
+      return;
+    case OfflineCapability::kSupported:
+      std::move(callback).Run(expected_registration_id == registration_id);
+      return;
+  }
+}
+
+}  // namespace
 
 // static
 void ContentIndexServiceImpl::CreateForFrame(
@@ -29,15 +51,18 @@ void ContentIndexServiceImpl::CreateForFrame(
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
 
-  mojo::MakeSelfOwnedReceiver(std::make_unique<ContentIndexServiceImpl>(
-                                  render_frame_host->GetLastCommittedOrigin(),
-                                  storage_partition->GetContentIndexContext()),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ContentIndexServiceImpl>(
+          render_frame_host->GetLastCommittedOrigin(),
+          storage_partition->GetContentIndexContext(),
+          storage_partition->GetServiceWorkerContext(),
+          render_frame_host->GetParentOrOuterDocument() == nullptr),
+      std::move(receiver));
 }
 
 // static
 void ContentIndexServiceImpl::CreateForWorker(
-    const ServiceWorkerVersionInfo& info,
+    const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::ContentIndexService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -50,17 +75,23 @@ void ContentIndexServiceImpl::CreateForWorker(
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ContentIndexServiceImpl>(
-          info.script_origin, storage_partition->GetContentIndexContext()),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ContentIndexServiceImpl>(
+                                  info.storage_key.origin(),
+                                  storage_partition->GetContentIndexContext(),
+                                  storage_partition->GetServiceWorkerContext(),
+                                  info.storage_key.IsFirstPartyContext()),
+                              std::move(receiver));
 }
 
 ContentIndexServiceImpl::ContentIndexServiceImpl(
     const url::Origin& origin,
-    scoped_refptr<ContentIndexContextImpl> content_index_context)
+    scoped_refptr<ContentIndexContextImpl> content_index_context,
+    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
+    bool is_top_level_context)
     : origin_(origin),
-      content_index_context_(std::move(content_index_context)) {
+      content_index_context_(std::move(content_index_context)),
+      service_worker_context_(std::move(service_worker_context)),
+      is_top_level_context_(is_top_level_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -72,6 +103,18 @@ void ContentIndexServiceImpl::GetIconSizes(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   content_index_context_->GetIconSizes(category, std::move(callback));
+}
+
+void ContentIndexServiceImpl::CheckOfflineCapability(
+    int64_t service_worker_registration_id,
+    const GURL& launch_url,
+    CheckOfflineCapabilityCallback callback) {
+  // TODO(rayankans): Figure out if we can check the service worker specified
+  // by |service_worker_registration_id| rather than any service worker.
+  service_worker_context_->CheckOfflineCapability(
+      launch_url, blink::StorageKey(url::Origin::Create(launch_url)),
+      base::BindOnce(&DidCheckOfflineCapability, std::move(callback),
+                     service_worker_registration_id));
 }
 
 void ContentIndexServiceImpl::Add(
@@ -91,16 +134,16 @@ void ContentIndexServiceImpl::Add(
     }
   }
 
-  if (!launch_url.is_valid() ||
-      !origin_.IsSameOriginWith(url::Origin::Create(launch_url.GetOrigin()))) {
+  if (!launch_url.is_valid() || !origin_.IsSameOriginWith(url::Origin::Create(
+                                    launch_url.DeprecatedGetOriginAsURL()))) {
     mojo::ReportBadMessage("Invalid launch URL");
     std::move(callback).Run(blink::mojom::ContentIndexError::INVALID_PARAMETER);
     return;
   }
 
   content_index_context_->database().AddEntry(
-      service_worker_registration_id, origin_, std::move(description), icons,
-      launch_url, std::move(callback));
+      service_worker_registration_id, origin_, is_top_level_context_,
+      std::move(description), icons, launch_url, std::move(callback));
 }
 
 void ContentIndexServiceImpl::Delete(int64_t service_worker_registration_id,
@@ -118,7 +161,7 @@ void ContentIndexServiceImpl::GetDescriptions(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   content_index_context_->database().GetDescriptions(
-      service_worker_registration_id, std::move(callback));
+      service_worker_registration_id, origin_, std::move(callback));
 }
 
 }  // namespace content

@@ -1,0 +1,39 @@
+<!--
+@WIN-DENY:EVENT_SYSTEM_SCROLLINGEND*
+@UIA-WIN-ALLOW:ActiveTextPositionChangedEventId*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <style>
+      ul {
+          min-height: 100vh;
+      }
+  </style>
+  <p>Start of test</p>
+  <ul>
+  <li><a id="s1" href="#section1-content">Section 1</a></li>
+  <li><a id="s2" href="#section2-content">Section 2</a></li>
+  <li><a id="s3" href="#section3-content">Section 3</a></li>
+  </ul>
+
+  <a name="section1-content"><h1>Section 1 content</h1></a>
+  <p>This is text for section 1</p>
+  <a name="section2-content"><h1>Section 2 content</h1></a>
+  <p>This is text for section 2</p>
+  <a name="section3-content"><h1>Section 3 content</h1></a>
+  <p>This is text for section 3</p>
+
+    <script>
+      var go_passes = [
+        () => document.getElementById('s1').click(),
+        () => document.getElementById('s3').click(),
+      ];
+      var current_pass = 0;
+      function go() {
+        go_passes[current_pass++].call();
+        return current_pass < go_passes.length;
+      }
+    </script>
+</body>
+</html>

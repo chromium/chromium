@@ -5,8 +5,7 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODES_WIN_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODES_WIN_H_
 
-#include <windows.h>
-#include <ime.h>
+#include "ui/events/keycodes/keyboard_defines_win.h"
 
 namespace ui {
 

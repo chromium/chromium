@@ -104,6 +104,23 @@ bool FetchHeaderList::Get(const String& name, String& result) const {
   return found;
 }
 
+String FetchHeaderList::GetAsRawString(int status_code,
+                                       String status_message) const {
+  StringBuilder builder;
+  builder.Append("HTTP/1.1 ");
+  builder.AppendNumber(status_code);
+  builder.Append(" ");
+  builder.Append(status_message);
+  builder.Append("\r\n");
+  for (auto& it : header_list_) {
+    builder.Append(it.first);
+    builder.Append(":");
+    builder.Append(it.second);
+    builder.Append("\r\n");
+  }
+  return builder.ToString();
+}
+
 bool FetchHeaderList::Has(const String& name) const {
   // https://fetch.spec.whatwg.org/#header-list-contains
   // "A header list (|list|) contains a name (|name|) if |list| contains a

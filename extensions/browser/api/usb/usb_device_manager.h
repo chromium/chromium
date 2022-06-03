@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -30,6 +32,9 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
                          public EventRouter::Observer,
                          public device::mojom::UsbDeviceManagerClient {
  public:
+  UsbDeviceManager(const UsbDeviceManager&) = delete;
+  UsbDeviceManager& operator=(const UsbDeviceManager&) = delete;
+
   static UsbDeviceManager* Get(content::BrowserContext* browser_context);
 
   // BrowserContextKeyedAPI implementation.
@@ -87,6 +92,7 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "UsbDeviceManager"; }
+  static const bool kServiceHasOwnInstanceInIncognito = true;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -127,7 +133,6 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<UsbDeviceManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceManager);
 };
 
 template <>

@@ -8,14 +8,16 @@
 #include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 
 class BookmarkModelLoadedObserver
     : public bookmarks::BaseBookmarkModelObserver {
  public:
-  explicit BookmarkModelLoadedObserver(ios::ChromeBrowserState* browser_state);
+  explicit BookmarkModelLoadedObserver(ChromeBrowserState* browser_state);
+
+  BookmarkModelLoadedObserver(const BookmarkModelLoadedObserver&) = delete;
+  BookmarkModelLoadedObserver& operator=(const BookmarkModelLoadedObserver&) =
+      delete;
 
  private:
   void BookmarkModelChanged() override;
@@ -23,9 +25,7 @@ class BookmarkModelLoadedObserver
                            bool ids_reassigned) override;
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
 
-  ios::ChromeBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelLoadedObserver);
+  ChromeBrowserState* browser_state_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_BOOKMARK_MODEL_LOADED_OBSERVER_H_

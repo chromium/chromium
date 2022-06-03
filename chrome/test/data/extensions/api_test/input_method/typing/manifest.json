@@ -10,11 +10,8 @@
   "permissions": [ "input", "inputMethodPrivate" ],
   "input_components": [{
     "name": "Test IME",
-    "type": "ime",
     "id": "test",
-    "description": "Test",
     "language": "en",
     "layouts": ["us::eng"]
   }]
 }
-

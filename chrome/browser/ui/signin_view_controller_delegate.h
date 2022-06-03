@@ -5,15 +5,23 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 
-class Browser;
-class SigninViewController;
+#include "base/callback.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 
-namespace signin_metrics {
-enum class AccessPoint;
-}
+class Browser;
+struct AccountInfo;
+struct CoreAccountId;
 
 namespace content {
 class WebContents;
+}
+
+namespace signin_metrics {
+enum class ReauthAccessPoint;
 }
 
 // Interface to the platform-specific managers of the Signin and Sync
@@ -24,19 +32,51 @@ class WebContents;
 // managing closes.
 class SigninViewControllerDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a dialog controlled by this SigninViewControllerDelegate is
+    // closed.
+    virtual void OnModalSigninClosed() = 0;
+  };
+
+  SigninViewControllerDelegate(const SigninViewControllerDelegate&) = delete;
+  SigninViewControllerDelegate& operator=(const SigninViewControllerDelegate&) =
+      delete;
+
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the sync confirmation dialog. The returned object should delete
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncConfirmationDelegate(
-      SigninViewController* signin_view_controller,
       Browser* browser);
 
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the modal sign in error dialog. The returned object should delete
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSigninErrorDelegate(
-      SigninViewController* signin_view_controller,
       Browser* browser);
+
+  // Returns a platform-specific SigninViewContolllerDelegate instance that
+  // displays the reauth confirmation modal dialog. The returned object should
+  // delete itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateReauthConfirmationDelegate(
+      Browser* browser,
+      const CoreAccountId& account_id,
+      signin_metrics::ReauthAccessPoint access_point);
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns a platform-specific SigninViewContolllerDelegate instance that
+  // displays the enterprise confirmation modal dialog. The returned object
+  // should delete itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateEnterpriseConfirmationDelegate(
+      Browser* browser,
+      const AccountInfo& account_info,
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> callback);
+#endif
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Closes the sign-in dialog. Note that this method may destroy this object,
   // so the caller should no longer use this object after calling this method.
@@ -50,8 +90,17 @@ class SigninViewControllerDelegate {
   // Returns the web contents of the modal dialog.
   virtual content::WebContents* GetWebContents() = 0;
 
+  // Overrides currently displayed WebContents with |web_contents|.
+  virtual void SetWebContents(content::WebContents* web_contents) = 0;
+
  protected:
-  virtual ~SigninViewControllerDelegate() = default;
+  SigninViewControllerDelegate();
+  virtual ~SigninViewControllerDelegate();
+
+  void NotifyModalSigninClosed();
+
+ private:
+  base::ObserverList<Observer, true> observer_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_

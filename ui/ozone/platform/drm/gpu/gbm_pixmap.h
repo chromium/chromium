@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_BUFFER_H_
-#define UI_OZONE_PLATFORM_DRM_GPU_GBM_BUFFER_H_
+#ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_PIXMAP_H_
+#define UI_OZONE_PLATFORM_DRM_GPU_GBM_PIXMAP_H_
 
 #include <memory>
 #include <vector>
@@ -24,6 +24,9 @@ class GbmPixmap : public gfx::NativePixmap {
             std::unique_ptr<GbmBuffer> buffer,
             scoped_refptr<DrmFramebuffer> framebuffer);
 
+  GbmPixmap(const GbmPixmap&) = delete;
+  GbmPixmap& operator=(const GbmPixmap&) = delete;
+
   // NativePixmap:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
@@ -36,12 +39,9 @@ class GbmPixmap : public gfx::NativePixmap {
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+                            const gfx::OverlayPlaneData& overlay_plane_data,
+                            std::vector<gfx::GpuFence> acquire_fences,
+                            std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;
 
   GbmBuffer* buffer() const { return buffer_.get(); }
@@ -55,10 +55,8 @@ class GbmPixmap : public gfx::NativePixmap {
   GbmSurfaceFactory* const surface_manager_;
   const std::unique_ptr<GbmBuffer> buffer_;
   const scoped_refptr<DrmFramebuffer> framebuffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GbmPixmap);
 };
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_DRM_GPU_GBM_BUFFER_H_
+#endif  // UI_OZONE_PLATFORM_DRM_GPU_GBM_PIXMAP_H_

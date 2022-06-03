@@ -57,7 +57,7 @@ class CORE_EXPORT Attr final : public Node {
   const AtomicString& namespaceURI() const { return name_.NamespaceURI(); }
   const AtomicString& prefix() const { return name_.Prefix(); }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool IsElementNode() const =

@@ -7,8 +7,9 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "base/debug/crash_logging.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -45,12 +46,31 @@ struct MessagingEndpoint {
   // Identifier of the extension (or the content script).  It is required for
   // |type| of kExtension.  For |type| of kTab, it is set if the endpoint is a
   // content script (otherwise, it's the web page).
-  base::Optional<ExtensionId> extension_id;
+  absl::optional<ExtensionId> extension_id;
 
   // Name of the native application.  It is required for |type| of kNativeApp.
   // It is not used for other types.
-  base::Optional<std::string> native_app_name;
+  absl::optional<std::string> native_app_name;
 };
+
+namespace debug {
+
+class ScopedMessagingEndpointCrashKeys {
+ public:
+  explicit ScopedMessagingEndpointCrashKeys(const MessagingEndpoint& endpoint);
+  ~ScopedMessagingEndpointCrashKeys();
+
+  ScopedMessagingEndpointCrashKeys(const ScopedMessagingEndpointCrashKeys&) =
+      delete;
+  ScopedMessagingEndpointCrashKeys& operator=(
+      const ScopedMessagingEndpointCrashKeys&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString type_;
+  base::debug::ScopedCrashKeyString extension_id_or_app_name_;
+};
+
+}  // namespace debug
 
 }  // namespace extensions
 

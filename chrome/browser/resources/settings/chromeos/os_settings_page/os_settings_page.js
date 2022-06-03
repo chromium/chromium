@@ -6,31 +6,49 @@
  * @fileoverview
  * 'os-settings-page' is the settings page containing the actual OS settings.
  */
-(function() {
-'use strict';
 
-const BROWSER_BANNER_INTERACTION_METRIC_NAME =
-    'ChromeOS.Settings.BrowserBannerInteraction';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './settings_idle_load.js';
+import '../os_apps_page/os_apps_page.js';
+import '../os_people_page/os_people_page.m.js';
+import '../os_privacy_page/os_privacy_page.js';
+import '../os_printing_page/os_printing_page.js';
+import '../os_search_page/os_search_page.js';
+import '../personalization_page/personalization_page.m.js';
+import '../../settings_page/settings_section.js';
+import '../../settings_page_css.js';
+import '../bluetooth_page/bluetooth_page.js';
+import '../device_page/device_page.js';
+import '../internet_page/internet_page.js';
+import '../kerberos_page/kerberos_page.js';
+import '../multidevice_page/multidevice_page.m.js';
+import '../os_bluetooth_page/os_bluetooth_page.js';
+import '../os_icons.m.js';
 
-/**
- * These values are persisted to logs and should not be renumbered or re-used.
- * See tools/metrics/histograms/enums.xml.
- * @enum {number}
- */
-const CrosSettingsBrowserBannerInteraction = {
-  NotShown: 0,
-  Shown: 1,
-  Clicked: 2,
-  Closed: 3,
-};
+import {assert} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {MainPageBehavior} from './main_page_behavior.js';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-page',
 
   behaviors: [
-    settings.MainPageBehavior,
-    settings.RouteObserverBehavior,
-    PrefsBehavior,
+    MainPageBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -43,13 +61,15 @@ Polymer({
 
     showAndroidApps: Boolean,
 
-    showAppManagement: Boolean,
-
-    showApps: Boolean,
-
     showCrostini: Boolean,
 
+    showPluginVm: Boolean,
+
     showReset: Boolean,
+
+    showStartup: Boolean,
+
+    showKerberosSection: Boolean,
 
     allowCrostini_: Boolean,
 
@@ -69,11 +89,11 @@ Polymer({
 
     /**
      * Dictionary defining page visibility.
-     * @type {!PageVisibility}
+     * @type {!OSPageVisibility}
      */
     pageVisibility: {
       type: Object,
-      value: function() {
+      value() {
         return {};
       },
     },
@@ -105,14 +125,26 @@ Polymer({
       computed: 'computeShowSecondaryUserBanner_(hasExpandedSection_)',
     },
 
-    showBrowserSettingsBanner_: {
+    /**
+     * Whether to show banner indicating the user to return this device as an
+     * update is required as per policy but the device has reached end of life.
+     * @private
+     */
+    showUpdateRequiredEolBanner_: {
       type: Boolean,
-      computed: 'computeShowBrowserSettingsBanner_(' +
-          'prefs.settings.cros.show_browser_banner.value, currentRoute_)',
+      value: !!loadTimeData.getString('updateRequiredEolBannerText'),
     },
 
-    /** @private {!settings.Route|undefined} */
+    /** @private {!Route|undefined} */
     currentRoute_: Object,
+
+    /** @private */
+    isBluetoothRevampEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableBluetoothRevamp');
+      }
+    },
   },
 
   hostAttributes: {
@@ -129,51 +161,46 @@ Polymer({
    */
   advancedTogglingInProgress_: false,
 
-  /** @private {boolean} */
-  browserBannerShowMetricRecorded_: false,
-
   /** @override */
   attached: function() {
-    this.currentRoute_ = settings.getCurrentRoute();
+    this.currentRoute_ = Router.getInstance().getCurrentRoute();
 
     this.allowCrostini_ = loadTimeData.valueExists('allowCrostini') &&
         loadTimeData.getBoolean('allowCrostini');
 
     this.addWebUIListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
-    settings.AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
+    AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
   },
 
   /**
-   * @param {!settings.Route} newRoute
-   * @param {settings.Route} oldRoute
+   * @param {!Route} newRoute
+   * @param {Route} oldRoute
    */
-  currentRouteChanged: function(newRoute, oldRoute) {
+  currentRouteChanged(newRoute, oldRoute) {
     this.currentRoute_ = newRoute;
 
-    if (settings.routes.ADVANCED &&
-        settings.routes.ADVANCED.contains(newRoute)) {
+    if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
       this.advancedToggleExpanded = true;
     }
 
     if (oldRoute && oldRoute.isSubpage()) {
       // If the new route isn't the same expanded section, reset
       // hasExpandedSection_ for the next transition.
-      if (!newRoute.isSubpage() || newRoute.section != oldRoute.section) {
+      if (!newRoute.isSubpage() || newRoute.section !== oldRoute.section) {
         this.hasExpandedSection_ = false;
       }
     } else {
       assert(!this.hasExpandedSection_);
     }
 
-    settings.MainPageBehavior.currentRouteChanged.call(
-        this, newRoute, oldRoute);
+    MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
   },
 
-  // Override settings.MainPageBehavior method.
-  containsRoute: function(route) {
-    return !route || settings.routes.BASIC.contains(route) ||
-        settings.routes.ADVANCED.contains(route);
+  // Override MainPageBehavior method.
+  containsRoute(route) {
+    return !route || routes.BASIC.contains(route) ||
+        routes.ADVANCED.contains(route);
   },
 
   /**
@@ -181,129 +208,49 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  showPage_: function(visibility) {
+  showPage_(visibility) {
     return visibility !== false;
-  },
-
-  /**
-   * Queues a task to search the basic sections, then another for the advanced
-   * sections.
-   * @param {string} query The text to search for.
-   * @return {!Promise<!settings.SearchResult>} A signal indicating that
-   *     searching finished.
-   */
-  searchContents: function(query) {
-    const whenSearchDone = [
-      settings.getSearchManager().search(query, assert(this.$$('#basicPage'))),
-    ];
-
-    whenSearchDone.push(
-        this.$$('#advancedPageTemplate').get().then(function(advancedPage) {
-          return settings.getSearchManager().search(query, advancedPage);
-        }));
-
-    return Promise.all(whenSearchDone).then(function(requests) {
-      // Combine the SearchRequests results to a single SearchResult object.
-      return {
-        canceled: requests.some(function(r) {
-          return r.canceled;
-        }),
-        didFindMatches: requests.some(function(r) {
-          return r.didFindMatches();
-        }),
-        // All requests correspond to the same user query, so only need to check
-        // one of them.
-        wasClearSearch: requests[0].isSame(''),
-      };
-    });
   },
 
   /**
    * @return {boolean}
    * @private
    */
-  computeShowSecondaryUserBanner_: function() {
+  computeShowSecondaryUserBanner_() {
     return !this.hasExpandedSection_ &&
         loadTimeData.getBoolean('isSecondaryUser');
   },
 
   /**
-   * @return {boolean|undefined}
+   * @return {boolean}
    * @private
    */
-  computeShowBrowserSettingsBanner_: function() {
-    // this.prefs is implicitly used by this.getPref() below, but may not be
-    // initialized yet.
-    if (!this.prefs || !this.currentRoute_) {
-      return;
-    }
-    const showPref = /** @type {boolean} */ (
-        this.getPref('settings.cros.show_browser_banner').value);
-
-    // Banner only shows on the main page because direct navigations to a
-    // sub-page (e.g. to the bluetooth section from the system tray) are
-    // unlikely to be due to a user looking for a browser setting.
-    const show = showPref && !this.currentRoute_.isSubpage();
-
-    // Record the show metric once. We can't record the metric in attached()
-    // because prefs might not be ready yet.
-    if (!this.browserBannerShowMetricRecorded_) {
-      chrome.metricsPrivate.recordEnumerationValue(
-          BROWSER_BANNER_INTERACTION_METRIC_NAME,
-          show ? CrosSettingsBrowserBannerInteraction.Shown :
-                 CrosSettingsBrowserBannerInteraction.NotShown,
-          Object.keys(CrosSettingsBrowserBannerInteraction).length);
-      this.browserBannerShowMetricRecorded_ = true;
-    }
-    return show;
+  computeShowUpdateRequiredEolBanner_() {
+    return !this.hasExpandedSection_ && this.showUpdateRequiredEolBanner_;
   },
 
   /**
    * @param {!AndroidAppsInfo} info
    * @private
    */
-  androidAppsInfoUpdate_: function(info) {
+  androidAppsInfoUpdate_(info) {
     this.androidAppsInfo = info;
   },
 
   /**
-   * Returns true in case Android apps settings should be shown. It is not
-   * shown in case we don't have the Play Store app and settings app is not
-   * yet available.
-   * @return {boolean}
+   * Hides the update required EOL banner. It is shown again when Settings is
+   * re-opened.
    * @private
    */
-  shouldShowAndroidAppsSection_: function() {
-    if (this.havePlayStoreApp ||
-        (this.androidAppsInfo && this.androidAppsInfo.settingsAppAvailable)) {
-      return true;
-    }
-    return false;
-  },
-
-  /** @private */
-  onBrowserSettingsClick_: function() {
-    // The label has a link that opens the page, so just record the metric.
-    chrome.metricsPrivate.recordEnumerationValue(
-        BROWSER_BANNER_INTERACTION_METRIC_NAME,
-        CrosSettingsBrowserBannerInteraction.Clicked,
-        Object.keys(CrosSettingsBrowserBannerInteraction).length);
-  },
-
-  /** @private */
-  onBrowserSettingsBannerClosed_: function() {
-    this.setPrefValue('settings.cros.show_browser_banner', false);
-    chrome.metricsPrivate.recordEnumerationValue(
-        BROWSER_BANNER_INTERACTION_METRIC_NAME,
-        CrosSettingsBrowserBannerInteraction.Closed,
-        Object.keys(CrosSettingsBrowserBannerInteraction).length);
+  onCloseEolBannerClicked_() {
+    this.showUpdateRequiredEolBanner_ = false;
   },
 
   /**
    * Hides everything but the newly expanded subpage.
    * @private
    */
-  onSubpageExpanded_: function() {
+  onSubpageExpanded_() {
     this.hasExpandedSection_ = true;
   },
 
@@ -311,19 +258,19 @@ Polymer({
    * Render the advanced page now (don't wait for idle).
    * @private
    */
-  advancedToggleExpandedChanged_: function() {
+  advancedToggleExpandedChanged_() {
     if (!this.advancedToggleExpanded) {
       return;
     }
 
     // In Polymer2, async() does not wait long enough for layout to complete.
-    // Polymer.RenderStatus.beforeNextRender() must be used instead.
-    Polymer.RenderStatus.beforeNextRender(this, () => {
+    // beforeNextRender() must be used instead.
+    beforeNextRender(this, () => {
       this.$$('#advancedPageTemplate').get();
     });
   },
 
-  advancedToggleClicked_: function() {
+  advancedToggleClicked_() {
     if (this.advancedTogglingInProgress_) {
       return;
     }
@@ -354,42 +301,28 @@ Polymer({
   },
 
   /**
-   * @param {boolean} inSearchMode
-   * @param {boolean} hasExpandedSection
-   * @return {boolean}
-   * @private
-   */
-  showAdvancedToggle_: function(inSearchMode, hasExpandedSection) {
-    return !inSearchMode && !hasExpandedSection;
-  },
-
-  /**
-   * @param {!settings.Route} currentRoute
-   * @param {boolean} inSearchMode
+   * @param {!Route} currentRoute
    * @param {boolean} hasExpandedSection
    * @return {boolean} Whether to show the basic page, taking into account
    *     both routing and search state.
    * @private
    */
-  showBasicPage_: function(currentRoute, inSearchMode, hasExpandedSection) {
-    return !hasExpandedSection || settings.routes.BASIC.contains(currentRoute);
+  showBasicPage_(currentRoute, hasExpandedSection) {
+    return !hasExpandedSection || routes.BASIC.contains(currentRoute);
   },
 
   /**
-   * @param {!settings.Route} currentRoute
-   * @param {boolean} inSearchMode
+   * @param {!Route} currentRoute
    * @param {boolean} hasExpandedSection
    * @param {boolean} advancedToggleExpanded
    * @return {boolean} Whether to show the advanced page, taking into account
    *     both routing and search state.
    * @private
    */
-  showAdvancedPage_: function(
-      currentRoute, inSearchMode, hasExpandedSection, advancedToggleExpanded) {
+  showAdvancedPage_(currentRoute, hasExpandedSection, advancedToggleExpanded) {
     return hasExpandedSection ?
-        (settings.routes.ADVANCED &&
-         settings.routes.ADVANCED.contains(currentRoute)) :
-        advancedToggleExpanded || inSearchMode;
+        (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
+        advancedToggleExpanded;
   },
 
   /**
@@ -397,7 +330,7 @@ Polymer({
    * @return {boolean} True unless visibility is false.
    * @private
    */
-  showAdvancedSettings_: function(visibility) {
+  showAdvancedSettings_(visibility) {
     return visibility !== false;
   },
 
@@ -406,7 +339,7 @@ Polymer({
    * @return {string} Icon name.
    * @private
    */
-  getArrowIcon_: function(opened) {
+  getArrowIcon_(opened) {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   },
 
@@ -415,8 +348,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  boolToString_: function(bool) {
+  boolToString_(bool) {
     return bool.toString();
   },
 });
-})();

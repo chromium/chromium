@@ -8,6 +8,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -19,15 +20,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::RunClosure;
 using ::testing::_;
 
 namespace media {
 
 namespace {
-
-ACTION_P(RunClosure, closure) {
-  closure.Run();
-}
 
 // Base id and class identifiers for Controls to be modified and later tested
 // agains default values.
@@ -38,7 +36,7 @@ static struct {
                        {V4L2_CID_CAMERA_CLASS_BASE, V4L2_CID_CAMERA_CLASS}};
 
 // Determines if |control_id| is special, i.e. controls another one's state, or
-// if it should be skipped (blacklisted, https://crbug.com/697885).
+// if it should be denied (see https://crbug.com/697885).
 #if !defined(V4L2_CID_PAN_SPEED)
 #define V4L2_CID_PAN_SPEED (V4L2_CID_CAMERA_CLASS_BASE + 32)
 #endif
@@ -48,7 +46,7 @@ static struct {
 #if !defined(V4L2_CID_PANTILT_CMD)
 #define V4L2_CID_PANTILT_CMD (V4L2_CID_CAMERA_CLASS_BASE + 34)
 #endif
-static bool IsSpecialOrBlacklistedControl(int control_id) {
+static bool IsSpecialOrBlockedControl(int control_id) {
   switch (control_id) {
     case V4L2_CID_AUTO_WHITE_BALANCE:
     case V4L2_CID_EXPOSURE_AUTO:
@@ -113,7 +111,7 @@ static void SetControlsToMaxValues(int device_fd) {
         break;
       range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 
-      if (IsSpecialOrBlacklistedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
+      if (IsSpecialOrBlockedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
       DVLOG(1) << __func__ << " " << range.name << " set to " << range.maximum;
 
@@ -138,7 +136,7 @@ static void SetControlsToMaxValues(int device_fd) {
         break;
       range.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 
-      if (IsSpecialOrBlacklistedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
+      if (IsSpecialOrBlockedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
       DVLOG(1) << __func__ << " " << range.name << " set to " << range.maximum;
 
@@ -200,7 +198,8 @@ class V4L2CaptureDelegateTest : public ::testing::Test {
 #define MAYBE_CreateAndDestroyAndVerifyControls \
   DISABLED_CreateAndDestroyAndVerifyControls
 #else
-#define MAYBE_CrashingTest CreateAndDestroyAndVerifyControls
+#define MAYBE_CreateAndDestroyAndVerifyControls \
+  CreateAndDestroyAndVerifyControls
 #endif
 TEST_F(V4L2CaptureDelegateTest, MAYBE_CreateAndDestroyAndVerifyControls) {
   // Check that there is at least a video device, otherwise bail.
@@ -234,7 +233,7 @@ TEST_F(V4L2CaptureDelegateTest, MAYBE_CreateAndDestroyAndVerifyControls) {
                                 10.0 /* frame_rate */, std::move(client));
 
     base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
     EXPECT_CALL(*client_ptr, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
         .Times(1)
         .WillOnce(RunClosure(quit_closure));

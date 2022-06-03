@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -32,8 +31,7 @@ class ContentSettingsPref {
  public:
   typedef base::RepeatingCallback<void(const ContentSettingsPattern&,
                                        const ContentSettingsPattern&,
-                                       ContentSettingsType,
-                                       const std::string&)>
+                                       ContentSettingsType)>
       NotifyObserversCallback;
 
   ContentSettingsPref(ContentSettingsType content_type,
@@ -41,25 +39,28 @@ class ContentSettingsPref {
                       PrefChangeRegistrar* registrar,
                       const std::string& pref_name,
                       bool off_the_record,
+                      bool restore_session,
                       NotifyObserversCallback notify_callback);
+
+  ContentSettingsPref(const ContentSettingsPref&) = delete;
+  ContentSettingsPref& operator=(const ContentSettingsPref&) = delete;
+
   ~ContentSettingsPref();
 
   // Returns nullptr to indicate the RuleIterator is empty.
   std::unique_ptr<RuleIterator> GetRuleIterator(
-      const ResourceIdentifier& resource_identifier,
       bool off_the_record) const;
 
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
-                         const ResourceIdentifier& resource_identifier,
                          base::Time modified_time,
-                         std::unique_ptr<base::Value>&& value);
+                         std::unique_ptr<base::Value>&& value,
+                         const ContentSettingConstraints& constraints);
 
   // Returns the |last_modified| date of a setting.
   base::Time GetWebsiteSettingLastModified(
       const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      const ResourceIdentifier& resource_identifier);
+      const ContentSettingsPattern& secondary_pattern);
 
   void ClearPref();
 
@@ -69,12 +70,6 @@ class ContentSettingsPref {
 
   // Tries to lock |lock_|. If successful, returns true and releases the lock.
   bool TryLockForTesting() const;
-  void set_allow_resource_identifiers_for_testing() {
-    allow_resource_identifiers_ = true;
-  }
-  void reset_allow_resource_identifiers_for_testing() {
-    allow_resource_identifiers_ = false;
-  }
 
  private:
   // Reads all content settings exceptions from the preference and loads them
@@ -90,9 +85,9 @@ class ContentSettingsPref {
   // preference changes.
   void UpdatePref(const ContentSettingsPattern& primary_pattern,
                   const ContentSettingsPattern& secondary_pattern,
-                  const ResourceIdentifier& resource_identifier,
                   const base::Time last_modified,
-                  const base::Value* value);
+                  const base::Value* value,
+                  const ContentSettingConstraints& constraints);
 
   // In the debug mode, asserts that |lock_| is not held by this thread. It's
   // ok if some other thread holds |lock_|, as long as it will eventually
@@ -113,6 +108,8 @@ class ContentSettingsPref {
 
   bool off_the_record_;
 
+  bool restore_session_;
+
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.
   bool updating_preferences_;
@@ -127,12 +124,6 @@ class ContentSettingsPref {
   mutable base::Lock lock_;
 
   base::ThreadChecker thread_checker_;
-
-  // Used for setting preferences with resource identifiers to simmulate legacy
-  // prefs that did have resource identifiers set.
-  bool allow_resource_identifiers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsPref);
 };
 
 }  // namespace content_settings

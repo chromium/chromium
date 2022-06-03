@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/core/editing/commands/apply_style_command.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/editing_style.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -67,9 +70,9 @@ TEST_F(ApplyStyleCommandTest, JustifyRightDetachesDestination) {
       "<button></button>"
       "</ruby");
   Element* body = GetDocument().body();
-  // The bug does't reproduce with a contenteditable <div> as container.
+  // The bug doesn't reproduce with a contenteditable <div> as container.
   body->setAttribute(html_names::kContenteditableAttr, "true");
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectAll();
 
   auto* style =
@@ -91,16 +94,137 @@ TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithSpanElement) {
           "<div contenteditable>^<div></div>a<span></span>|</div>"),
       SetSelectionOptions());
 
-  auto* style =
-      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kWebkitFontSizeDelta, "3",
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kInternalFontSizeDelta, "3px",
                      /* important */ false,
-                     GetDocument().GetSecureContextMode());
+                     GetFrame().DomWindow()->GetSecureContextMode());
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kNone)
       ->Apply();
   EXPECT_EQ("<div contenteditable><div></div><span>^a|</span></div>",
             GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1172007
+TEST_F(ApplyStyleCommandTest, JustifyRightWithSVGForeignObject) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<svg>"
+                             "<foreignObject>1</foreignObject>"
+                             "<foreignObject>&#x20;2^<b></b>|</foreignObject>"
+                             "</svg>"),
+      SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kTextAlign, "right",
+                     /* important */ false,
+                     GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatJustifyRight,
+      ApplyStyleCommand::kForceBlockProperties)
+      ->Apply();
+  EXPECT_EQ(
+      "<svg>"
+      "<foreignObject>"
+      "<div style=\"text-align: right;\">|1</div>"
+      "</foreignObject>"
+      "<foreignObject>"
+      "<div style=\"text-align: right;\">2</div><b></b>"
+      "</foreignObject>"
+      "</svg>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1188946
+TEST_F(ApplyStyleCommandTest, JustifyCenterWithNonEditable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("|x<div contenteditable=false></div>"),
+      SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kTextAlign, "center",
+                     /* important */ false,
+                     GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatJustifyCenter,
+      ApplyStyleCommand::kForceBlockProperties)
+      ->Apply();
+
+  EXPECT_EQ("<div style=\"text-align: center;\">|<br>x</div>",
+            GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1199902
+TEST_F(ApplyStyleCommandTest, StyledInlineElementIsActuallyABlock) {
+  InsertStyleElement("sub { display: block; }");
+  Selection().SetSelection(SetSelectionTextToBody("^<sub>a</sub>|"),
+                           SetSelectionOptions());
+  GetDocument().setDesignMode("on");
+  Element* styled_inline_element = GetDocument().QuerySelector("sub");
+  bool remove_only = true;
+  // Shouldn't crash.
+  MakeGarbageCollected<ApplyStyleCommand>(styled_inline_element, remove_only)
+      ->Apply();
+  EXPECT_EQ("^a|", GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1239729
+TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
+  GetDocument().setDesignMode("on");
+  SetBodyContent("a<select multiple><option></option></select>b");
+
+  Element* body = GetDocument().body();
+  Element* select = GetDocument().QuerySelector("select");
+  Element* option = GetDocument().QuerySelector("option");
+  EXPECT_FALSE(EditingIgnoresContent(*body));
+  EXPECT_TRUE(EditingIgnoresContent(*select));
+  EXPECT_FALSE(EditingIgnoresContent(*option));
+
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position(body, 0))
+                               .Extend(Position(option, 0))
+                               .Build(),
+                           SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kFontStyle, "italic",
+                     /* important */ false,
+                     GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatItalic)
+      ->Apply();
+
+#if defined(OS_ANDROID)
+  EXPECT_EQ("|a<select multiple><option></option></select>b",
+            GetSelectionTextFromBody());
+#else
+  EXPECT_EQ("<i>^a<select multiple><option>|</option></select></i>b",
+            GetSelectionTextFromBody());
+#endif
+}
+
+// This is a regression test for https://crbug.com/1246190
+TEST_F(ApplyStyleCommandTest, RemoveEmptyItalic) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("i {display: inline-block; width: 1px; height: 1px}");
+  SetBodyContent("<div><input><i></i>&#x20;</div>A");
+
+  Element* div = GetDocument().QuerySelector("div");
+  Element* i = GetDocument().QuerySelector("i");
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(Position(i, 0)).Build(),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(div),
+      InputEvent::InputType::kFormatRemove);
+
+  // Shouldn't crash.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ("<div><input>| </div>A", GetSelectionTextFromBody());
 }
 }  // namespace blink

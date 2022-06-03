@@ -9,9 +9,10 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -43,7 +44,7 @@ class SimpleConsole {
   virtual bool Init() = 0;
 
   // Writes a string to the console with the current color.
-  virtual bool Write(const base::string16& text) = 0;
+  virtual bool Write(const std::u16string& text) = 0;
 
   // Called when the program is about to exit.
   virtual void OnQuit() = 0;
@@ -70,13 +71,17 @@ class WinConsole : public SimpleConsole {
     ::AllocConsole();
   }
 
+  WinConsole(const WinConsole&) = delete;
+  WinConsole& operator=(const WinConsole&) = delete;
+
   ~WinConsole() override { ::FreeConsole(); }
 
   bool Init() override { return SetIOHandles(); }
 
-  bool Write(const base::string16& txt) override {
+  bool Write(const std::u16string& txt) override {
     DWORD sz = txt.size();
-    return (TRUE == ::WriteConsoleW(std_out_, txt.c_str(), sz, &sz, NULL));
+    return (TRUE ==
+            ::WriteConsoleW(std_out_, base::as_wcstr(txt), sz, &sz, NULL));
   }
 
   // Reads a string from the console. Internally it is limited to 256
@@ -84,7 +89,7 @@ class WinConsole : public SimpleConsole {
   void OnQuit() override {
     // Block here so the user can see the results.
     SetColor(SimpleConsole::DEFAULT);
-    Write(L"Press [enter] to continue\n");
+    Write(u"Press [enter] to continue\n");
     wchar_t buf[256];
     DWORD read = base::size(buf);
     ::ReadConsoleW(std_in_, buf, read, &read, NULL);
@@ -121,8 +126,6 @@ class WinConsole : public SimpleConsole {
   // implemented as pipes but they have non-documented protocol.
   HANDLE std_out_;
   HANDLE std_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(WinConsole);
 };
 
 }  // namespace
@@ -136,6 +139,9 @@ class PosixConsole : public SimpleConsole {
  public:
   PosixConsole() : use_color_(false) {}
 
+  PosixConsole(const PosixConsole&) = delete;
+  PosixConsole& operator=(const PosixConsole&) = delete;
+
   bool Init() override {
     // Technically, we should also check the terminal capabilities before using
     // color, but in practice this is unlikely to be an issue.
@@ -143,7 +149,7 @@ class PosixConsole : public SimpleConsole {
     return true;
   }
 
-  bool Write(const base::string16& text) override {
+  bool Write(const std::u16string& text) override {
     // We're assuming that the terminal is using UTF-8 encoding.
     printf("%s", base::UTF16ToUTF8(text).c_str());
     return true;
@@ -177,8 +183,6 @@ class PosixConsole : public SimpleConsole {
 
  private:
   bool use_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(PosixConsole);
 };
 
 }  // namespace

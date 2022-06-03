@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <title>RTCRtpSender.prototype.replaceTrack</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -39,7 +40,7 @@
     const { sender } = transceiver;
     pc.close();
 
-    return promise_rejects(t, 'InvalidStateError',
+    return promise_rejects_dom(t, 'InvalidStateError',
       sender.replaceTrack(track));
   }, 'Calling replaceTrack on closed connection should reject with InvalidStateError');
 
@@ -59,7 +60,7 @@
     const transceiver = pc.addTransceiver('audio');
     const { sender } = transceiver;
 
-    return promise_rejects(t, new TypeError(),
+    return promise_rejects_js(t, TypeError,
       sender.replaceTrack(track));
   }, 'Calling replaceTrack with track of different kind should reject with TypeError');
 
@@ -79,7 +80,7 @@
     const { sender } = transceiver;
     transceiver.stop();
 
-    return promise_rejects(t, 'InvalidStateError',
+    return promise_rejects_dom(t, 'InvalidStateError',
       sender.replaceTrack(track));
   }, 'Calling replaceTrack on stopped sender should reject with InvalidStateError');
 
@@ -272,5 +273,35 @@
                 without negotiating.
             3.  Queue a task that runs the following steps:
               1.  If connection's [[isClosed]] slot is true, abort these steps.
-   */
+  */
+
+promise_test(async t => {
+  const v = document.createElement('video');
+  v.autoplay = true;
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+  const stream1 = await getNoiseStream({video: {signal: 20}});
+  t.add_cleanup(() => stream1.getTracks().forEach(track => track.stop()));
+  const [track1] = stream1.getTracks();
+  const stream2 = await getNoiseStream({video: {signal: 250}});
+  t.add_cleanup(() => stream2.getTracks().forEach(track => track.stop()));
+  const [track2] = stream2.getTracks();
+  const sender = pc1.addTrack(track1);
+  pc2.ontrack = (e) => {
+    v.srcObject = new MediaStream([e.track]);
+  };
+  const metadataToBeLoaded = new Promise((resolve) => {
+    v.addEventListener('loadedmetadata', () => {
+      resolve();
+    });
+  });
+  exchangeIceCandidates(pc1, pc2);
+  exchangeOfferAnswer(pc1, pc2);
+  await metadataToBeLoaded;
+  await detectSignal(t, v, 20);
+  await sender.replaceTrack(track2);
+  await detectSignal(t, v, 250);
+}, 'ReplaceTrack transmits the new track not the old track');
 </script>
